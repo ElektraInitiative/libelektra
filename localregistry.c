@@ -62,19 +62,36 @@ $LastChangedBy$
 
 extern int errno;
 
-
-
-
+/**
+ * Opens a registry session.
+ * 
+ * By now it does nothing. This might change in the future, so it's good
+ * practice to always call <i>registryOpen()</i> before using the registry.
+ * @see registryClose()
+ */
 int registryOpen() {
 	return 0;
 }
 
-
+/**
+ * Closes a registry session.
+ *
+ * This is the counterpart of <i>registryOpen()</i>.
+ * @see registryOpen()
+ */
 int registryClose() {
 	return 0;
 }
 
-
+/**
+ * Returns the size of the given key, once it is serialized.
+ *
+ * This call gives you a preview of the amount of memory required to
+ * store the given key in its serialized form. Every field is taken into
+ * account, including comments.
+ * @param key the key which serialized size is to be calculated.
+ * @return the serialized size in bytes.
+ */
 size_t keyGetSerializedSize(Key *key) {
 	size_t size,tmp;
 
@@ -87,9 +104,18 @@ size_t keyGetSerializedSize(Key *key) {
 	return size;
 }
 
-
-
-
+/**
+ * Unencodes a buffer of hexadecimal values.
+ *
+ * <b>internal usage only-</b>
+ *
+ * The allowed format for the hexadecimal values is just
+ * a stream of pairs of plain hex-digits, all together or
+ * space-separated.
+ * @param encoded the source of ASCII hexadecimal digits.
+ * @param returned the destination for the unencoded data.
+ * @return the amount of bytes unencoded.
+ */
 size_t unencode(char *encoded,void *returned) {
 	char byteInHexa[5]="0x";
 	char *readCursor=encoded;
@@ -121,16 +147,23 @@ size_t unencode(char *encoded,void *returned) {
 	return (long int)writeCursor-(long int)returned;
 }
 
-
-
+/**
+ *
+ * <b>internal usage only-</b>
+ *
+ */
 int registryNeedsUTF8Conversion() {
 	setlocale(LC_ALL,"");
 	return strcmp(nl_langinfo(CODESET),"UTF-8");
 }
 
 
-/** Converts string to (direction=UTF8_TO) and
-    from (direction=UTF8_FROM) UTF-8 */
+/** 
+ * Converts string to (direction=UTF8_TO) and from (direction=UTF8_FROM) UTF-8.
+ *
+ * <b>internal usage only-</b>
+ *
+ */
 int UTF8Engine(int direction, char **string, size_t *inputByteSize) {
 	char *currentCharset=0;
 	char *converted=0;
@@ -178,8 +211,11 @@ int UTF8Engine(int direction, char **string, size_t *inputByteSize) {
 	return 0;
 }
 
-
-
+/**
+ *
+ * <b>internal usage only-</b>
+ *
+ */
 int handleOldKeyFileVersion(Key *key,FILE *input,u_int16_t nversion) {
 	char generalBuffer[100];
 	size_t currentBufferSize;
@@ -308,9 +344,13 @@ int handleOldKeyFileVersion(Key *key,FILE *input,u_int16_t nversion) {
 	return -1;
 }
 
-
-
-
+/**
+ * Makes a key from its serialized form, coming from a file.
+ *
+ * @param key the key we want to receive the data.
+ * @param input the opened file from which we want to read.
+ * @return 0 on success.
+ */
 int keyFileUnserialize(Key *key,FILE *input) {
 	char generalBuffer[100];
 	size_t currentBufferSize;
@@ -448,6 +488,20 @@ int keyFileUnserialize(Key *key,FILE *input) {
 
 
 
+/**
+ * Encodes a buffer of data onto hexadecimal ASCII.
+ *
+ * <b>internal usage only-</b>
+ *
+ * The resulting data is made up of pairs of ASCII hex-digits,
+ * space- and newline-separated. This is the counterpart of
+ * <i>encode()</i>.
+ * @param unencoded the source buffer.
+ * @param size the size of the source buffer in bytes.
+ * @param returned the destination for the ASCII-encoded data.
+ * @return the amount of bytes used in the resulting encoded buffer.
+ * @see encode()
+ */
 size_t encode(void *unencoded, size_t size, char *returned) {
 	void *readCursor=unencoded;
 	void *writeCursor=returned;
@@ -477,9 +531,15 @@ size_t encode(void *unencoded, size_t size, char *returned) {
 	return (writeCursor)-(void *)returned;
 }
 
-
-
-
+/**
+ * Writes the serialized form of the given key onto a file.
+ *
+ * This is the counterpart of <i>keyFileUnserialize()</i>.
+ * @param key the key we want to serialize.
+ * @param output the opened file to be written.
+ * @return 0 on success.
+ * @see keyFileUnserialize()
+ */
 int keyFileSerialize(Key *key, FILE *output) {
 	/* The serialized format is
 	   -------------------------

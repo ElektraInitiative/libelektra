@@ -27,9 +27,19 @@ $LastChangedBy$
 		
 		&author;
 		
-		<pubdate>2004-07-27</pubdate>
+		<pubdate>2004-07-30</pubdate>
 		
 		<revhistory>
+			<revision>
+				<revnumber>2004-07-30</revnumber>
+				<date>30 Jul 2004</date>
+				<authorinitials>avi</authorinitials>
+				<revdescription>
+					<itemizedlist>
+						<listitem><simpara>Added Doxygen API documentation</simpara></listitem>
+					</itemizedlist>
+				</revdescription>
+			</revision>
 			<revision>
 				<revnumber>2004-07-27</revnumber>
 				<date>27 Jul 2004</date>
@@ -257,9 +267,9 @@ $LastChangedBy$
 		<!-- ML admin: https://lists.sourceforge.net/lists/admin/registry-list -->
 		<para>Linux Registry is licensed under the <ulink url="http://www.gnu.org/licenses/lgpl.html">LGPL</ulink></para>
 		<para>
-			<ulink url="http://sourceforge.net/"><graphic srccredit="SourceForge.net" fileref="http://sourceforge.net/sflogo.php?group_id=99628&amp;type=5" label="SourceForge.net Logo" align="center"/></ulink>
+			<ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628"><graphic srccredit="SourceForge.net" fileref="http://sourceforge.net/sflogo.php?group_id=99628&amp;type=5" label="SourceForge.net Logo" align="center"/></ulink><ulink url="http://freshmeat.net/projects/registry/"><graphic srccredit="freashmeat.net" fileref="images/link_button_1.gif" label="Freshmeat.net Logo" align="center"/></ulink>
 		</para>
-		<section id="man"><title>Online Manual Pages</title>
+		<section id="man"><title>Online Manual Pages and API Documentation</title>
 			<para>Linux Registry man pages can be accessed online:</para>
 			<orderedlist>
 				<listitem><simpara><ulink url="registry.3.html">registry.3</ulink>: C API documentation for the Registry class.</simpara></listitem>
@@ -268,6 +278,7 @@ $LastChangedBy$
 				<listitem><simpara><ulink url="registry.7.html">registry.7</ulink>: Discussion about what is the Registry etc. You don't need it if you are already reading this.</simpara></listitem>
 				<listitem><simpara><ulink url="registry.5.html">registry.5</ulink>: Registry internals.</simpara></listitem>
 			</orderedlist>
+			<para>You can also <ulink url="api/html/">browse</ulink> or <ulink url="registry-api.tar.gz">download</ulink> the API documentation (also provided in the <ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628">-devel RPM</ulink>, by Doxygen.</para>
 		</section>
 
 	

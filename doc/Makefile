@@ -12,8 +12,11 @@ HTMLSTYLE=htmltitlepage.xsl
 	xsltproc -o $@ ${HTMLSTYLE} $<
 
 
-all: man
+all: man doxygen
 
+doxygen:
+	cd ..; doxygen
+	find api | cpio -H tar -o | gzip -c --best > registry-api.tar.gz
 
 man: rg.1 registry.7 registry.5 registry.3 key.3
 
@@ -60,13 +63,15 @@ clean:
 	-rm csource.xml
 	-rm docbook
 	-rm example.c
-	-rm -rf doxy
+	-rm -rf api
+	-rm -rf registry-api.tar.gz
 
-install: man
+install: all
 	[ -d ${DESTDIR}/usr/share/man/man1 ] || mkdir -p ${DESTDIR}/usr/share/man/man1
 	[ -d ${DESTDIR}/usr/share/man/man3 ] || mkdir -p ${DESTDIR}/usr/share/man/man3
 	[ -d ${DESTDIR}/usr/share/man/man5 ] || mkdir -p ${DESTDIR}/usr/share/man/man5
 	[ -d ${DESTDIR}/usr/share/man/man7 ] || mkdir -p ${DESTDIR}/usr/share/man/man7
+	find api | cpio -pdm ${DESTDIR}/usr/share/doc/registry-devel/
 	for m in `ls *.1`; do gzip -c --best $$m > ${DESTDIR}/usr/share/man/man1/$$m.gz; done
 	for m in `ls *.3`; do gzip -c --best $$m > ${DESTDIR}/usr/share/man/man3/$$m.gz; done
 	for m in `ls *.5`; do gzip -c --best $$m > ${DESTDIR}/usr/share/man/man5/$$m.gz; done
@@ -78,5 +83,5 @@ install: man
 	
 	
 	
-pub: html
-	scp *html aviram@shell.sf.net:/home/groups/r/re/registry/htdocs
+pub: html doxygen
+	scp -r registry-api.tar.gz api *html aviram@shell.sf.net:/home/groups/r/re/registry/htdocs

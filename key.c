@@ -1404,15 +1404,15 @@ int ksCompare(KeySet *ks1, KeySet *ks2, KeySet *removed) {
  *
  * String generated is of the form:
  *
- *	<key id="123445" uid="root" gid="root" mode="0660"
+ *	\<key id="123445" uid="root" gid="root" mode="0660"
  *		atime="123456" ctime="123456" mtime="123456"
  *	
  *		name="system/sw/XFree/Monitor/Monitor0/Name"
  *		type="string">
  *		
- *		<value>Samsung TFT panel</value>
- *		<comment>My monitor</comment>
- *	</key>
+ *		\<value>Samsung TFT panel\</value>
+ *		\<comment>My monitor\</comment>
+ *	\</key>
  *
  * Accepted options:
  * RG_O_NUMBERS: Do not convert UID and GID into user and group names
