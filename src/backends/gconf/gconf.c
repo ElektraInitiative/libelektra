@@ -17,16 +17,6 @@
 
 
 
-/***************************************************************************
- *                                                                         *
- *   This is the skeleton of the methods you'll have to implement in order *
- *   to provide libkdb.so a valid backend.                                 *
- *   Simple fill the empty _backend functions with your code and you are   *
- *   ready to go.                                                          *
- *                                                                         *
- ***************************************************************************/
-
-
 /* Subversion stuff
 
 $Id:$
