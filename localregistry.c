@@ -895,7 +895,7 @@ int registryGetChildKeys(char *parentName, KeySet *returned, unsigned long optio
 
 
 int registryGetRootKeys(KeySet *returned) {
-	Key *system,*user;
+	Key *system=0,*user=0;
 	
 	system=malloc(sizeof(Key));
 	keyInit(system);
