@@ -4,6 +4,7 @@
 - keyInit is now less smart: it will not test if the key is initialized or not. This is now a programmer responsability.
 - Code migrated to Subversion, thanks to Sean Russel. http://germane-software.com/repositories/tlr/
 - Added $Id: etc to source files.
+- Added 'make commit' to deal with 'svn ci'
 
 * Sat May 22 2004 Avi Alkalay <avi@unix.sh> 0.2.4
 - Improved rgsetenv login script: now set aliases too.

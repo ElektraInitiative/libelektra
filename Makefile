@@ -68,7 +68,10 @@ rg: rg.o
 	${CC} -g -L. ${XMLLIBS} -lregistry -o $@ $<
 	# ld -shared -lc -lregistry -static -lxml2 -lz -o $@ $<
 
-	
+
+commit: clean
+	cd ..; \
+	svn ci registry	
 	
 dist: clean registry.spec
 	DIR=`basename \`pwd\``;\
