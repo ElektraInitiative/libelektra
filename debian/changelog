@@ -1,8 +1,8 @@
-elektra (0.4.7-2) unstable; urgency=low
+elektra (0.4.11-5) unstable; urgency=low
 
-  * Update to 0.4.8
+  * Update to 0.4.11-5
 
- -- Markus Raab <markus@superbyte.at>  Thu, 05 Dec 2004 17:52:22 +0200
+ -- Markus Raab <debian@markus-raab.rog>  Fri, 25 Mar 2005 09:35:14 +0100
  
 elektra (0.4.7-2) unstable; urgency=low
 

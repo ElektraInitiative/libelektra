@@ -189,7 +189,6 @@ int kdbStatKey_ini(Key *key) {
 	return 0; /* success */
 }
 
-
 /**
  * Get the filename for the Key forKey.
  * The filename has 2 parts:
@@ -277,7 +276,9 @@ int IniGetFileName (const Key * forKey, char * filename, char * keyname)
 
 int count = 0;
 
-#define BUFFER_SIZE 4
+/**Debug: Define very small Buffer Size to make
+ * sure that realloc works!*/
+// #define BUFFER_SIZE 4
 
 /**
  * Read one key out of a file.
@@ -286,12 +287,13 @@ int count = 0;
  * 
  * @ingroup backend
  */
-int IniGetKey (FILE * fc, Key * key)
+int IniGetKey (FILE * fc, Key * key, char * root)
 {
 	char * buffer;
 	char * buffer_value;
 	char * buffer_key;
 	char * buffer_comment;
+	char * buffer_name;
 	
 	int i;
 	int state = STATE_KEY;	// start reading the key
@@ -320,21 +322,19 @@ int IniGetKey (FILE * fc, Key * key)
 	for (i=0; i < string_length; i++) {
 //		fprintf (stderr, "Processing |%c|%d|\n", buffer[i], buffer[i]);
 		if (buffer[i] == '\n') { // end of line found
-			fprintf (stderr, "Found end of key (\\n)\n");
+//			fprintf (stderr, "Found end of key (\\n)\n");
 			break;
 		}
 		else if (buffer[i] ==  '\0' ) {	// anticipated end?
-			fprintf (stderr, "Possible end found (\\0)\n");
 			if (i==string_length-1) { // no its not
 				string_length += BUFFER_SIZE;
-				fprintf (stderr, "srealloc buffer to %d"
-					"(buffer: %p, &buffer: %p) [%d]\n", 
-					string_length, buffer, &buffer, count ++);
 				if (srealloc ((void**) & buffer, string_length) < 0) {
 					fprintf (stderr, "Reallocation error\n");
+					free (buffer_value);
+					free (buffer_key);
+					free (buffer_comment);
 					return -1;
 				}
-//				fprintf (stderr, "fget next part");
 				fgets (buffer+string_length-BUFFER_SIZE,
 					BUFFER_SIZE,fc);
 			} else {
@@ -353,9 +353,11 @@ int IniGetKey (FILE * fc, Key * key)
 			if (k == key_length-1)
 			{
 				key_length += BUFFER_SIZE;
-				fprintf (stderr, "srealloc key\n");
 				if (srealloc ((void **) & buffer_key, key_length) < 0) {
 					fprintf (stderr, "Reallocation error\n");
+					free (buffer);
+					free (buffer_value);
+					free (buffer_comment);
 					return -1;
 				}					
 			}
@@ -365,61 +367,80 @@ int IniGetKey (FILE * fc, Key * key)
 			if (v == value_length-1) 
 			{
 				value_length += BUFFER_SIZE;
-				fprintf (stderr, "srealloc value\n");
 				if (srealloc ((void **) & buffer_value, value_length) < 0) {
 					fprintf (stderr, "Reallocation error\n");
+					free (buffer);
+					free (buffer_key);
+					free (buffer_comment);
 					return -1;
 				}					
 			}
 		}
 		else if (state == STATE_COMMENT) {
-	//		fprintf (stderr, "Comment |%c|%d|\n", buffer[i], buffer[i]);
 			buffer_comment [c++] = buffer[i];
 			if (c == comment_length-1)
 			{
 				comment_length += BUFFER_SIZE;
-				fprintf (stderr, "srealloc comment\n");
 				if (srealloc ((void **) & buffer_comment, comment_length) < 0) {
 					fprintf (stderr, "Reallocation error\n");
+					free (buffer);
+					free (buffer_value);
+					free (buffer_key);
 					return -1;
 				}					
 			}
 		}
 	}
 
-	fprintf (stderr, "Setting key...\n");
-	
+	free (buffer);
 	buffer_value [v] = 0;
 	buffer_key [k] = 0;
 	buffer_comment [c] = 0;	// key eingelesen
 
+	/*if (key->key) free (key->key);
+	key->key = malloc (k+1);
+	strcpy (key->key, buffer_key);*/
+
 	
-	if (key->data) free (key->data);	
+	if ((buffer_name = malloc (strlen(buffer_key) + strlen(root) + 2)) == NULL)
+	{
+		fprintf (stderr, "Allocation error");
+		free (buffer_key);
+		free (buffer_value);
+		free (buffer_comment);
+		return -1;
+	}
+	buffer_name[0] = '\0';	// buffer_name is empty
+	strcat (buffer_name, root);
+	strcat (buffer_name, "/");
+	strcat (buffer_name, buffer_key);
+	keySetName (key, buffer_name);
+	fprintf (stderr, "Name set to %s\n", buffer_name);
+	free (buffer_name);
+	
+	/*if (key->data) free (key->data);	
 	key->data = malloc (v+1);
 	strcpy (key->data, buffer_value);
-	key->dataSize = v+1;
+	key->dataSize = v+1;*/
+	keySetString (key, buffer_value);
+	fprintf (stderr, "Value set to %s\n", buffer_value);
 	
-	if (key->comment) free (key->comment);
+	/*if (key->comment) free (key->comment);
 	key->comment = malloc (c+1);
 	strcpy (key->comment, buffer_comment);
-	key->commentSize = c+1;
-
-	if (key->key) free (key->key);
-	key->key = malloc (k+1);
-	strcpy (key->key, buffer_key);
+	key->commentSize = c+1;*/
+	keySetComment (key, buffer_comment);
+	fprintf (stderr, "Comment set to %s\n", buffer_comment);
 	
-	key->type = KEY_TYPE_STRING;
+	/*key->type = KEY_TYPE_STRING;
+	key->recordSize = v+c+2;*/
 
-	key->recordSize = v+c+2;
-
+	// remove sync flag
 	key->flags &= ~KEY_SWITCH_NEEDSYNC;
 
-/*	free (buffer);
 	free (buffer_value);
 	free (buffer_key);
-	free (buffer_comment);*/
-	
-	fprintf (stderr, "done\n");
+	free (buffer_comment);
 	
 	return 0; /* success */
 }
@@ -437,6 +458,8 @@ int kdbGetKey_ini(Key *key) {
 	int pos;
 	int keySize;
 	char * keyFullName;
+	char * keyRoot;
+	char * end;
 	FILE * fc; int fd;	// filedescriptor
 	
 	fprintf (stderr, "kdbGetKey_ini() entered\n");
@@ -445,7 +468,15 @@ int kdbGetKey_ini(Key *key) {
 	
 	keySize = keyGetNameSize (key);
 	keyFullName = malloc (keySize+1);
-	strncpy (keyFullName, key->key, keySize);
+	keyGetName(key, keyFullName, keySize);
+	
+	end = strrchr (keyFullName, '/');	// dirname
+	*end = 0;
+	keyRoot = malloc (strlen (keyFullName));
+	strcpy (keyRoot, keyFullName);
+	*end = '/';
+	
+	fprintf (stderr, "keyRoot: %s\n", keyRoot);
 
 	if (! pos) {
 		fprintf (stderr, "Could not receive filename");
@@ -465,10 +496,12 @@ int kdbGetKey_ini(Key *key) {
 	
 	fc = fdopen (fd,"r");
 	
-	while ((pos=IniGetKey (fc, key)) == 0)
+	while ((pos=IniGetKey (fc, key, keyRoot)) == 0)
 	{
-//		fprintf (stderr, "Compare: %s with %s\n", readKey->key, keyName);
-		if (strcmp (key->key, keyName) == 0) {	// right Key found
+		fprintf (stderr, "Compare: %s with %s\n", key->key, keyFullName);
+		if (strcmp (key->key, keyFullName) == 0) {	// right Key found
+			//TODO: use keySetName (key, keyFullName);
+			//or DONT EVEN SET, because key->key and keyFullName is the same
 			fprintf (stderr, "Key found\n");
 			if (key->key) free(key->key);
 			key->key = malloc (keySize+1);
@@ -496,6 +529,7 @@ int kdbGetKey_ini(Key *key) {
 	close (fd); // close filedescriptor
 
 	free (keyFullName);
+	free (keyRoot);
 	
 	return pos; /* success */
 }
@@ -506,18 +540,15 @@ int kdbGetKey_ini(Key *key) {
  * 
  * @ingroup backend
  */
-ssize_t kdbGetKeys (char * keyFileName, char * keyName, KeySet * set)
+ssize_t kdbGetKeys (char * keyFileName, char * keyRoot, KeySet * returned)
 {
 	Key * key;
 	int pos;
-	size_t keyNameSize;
-	char * keyNewName;
-	size_t keyNewNameSize;
+//	size_t keyNameSize;
+//	char * keyNewName;
+//	size_t keyNewNameSize;
 	FILE * fc; int fd;	// filedescriptor
-	keyNameSize = strlen (keyName);
 
-	fprintf (stderr, "Stepped into kdbGetKeys\n");
-	
 	fd = open (keyFileName, O_RDONLY);
 	if (fd == -1) {
 		fprintf (stderr, "Unable to open file, %s\n", keyFileName);
@@ -530,37 +561,17 @@ ssize_t kdbGetKeys (char * keyFileName, char * keyName, KeySet * set)
 	
 	fc = fdopen (fd,"r");
 
-	key = keyNew ("",KEY_SWITCH_END);
-	
-	while ((pos=IniGetKey (fc, key)) == 0)
+	key = keyNew (0);
+
+	fprintf (stderr, "Call IniGetKey(%s)\n", keyRoot);
+	while ((pos=IniGetKey (fc, key, keyRoot)) == 0)
 	{
-		fprintf (stderr, "Left IniGetKey\n");
-		keyNewNameSize = keyNameSize + strlen (key->key) + 1;
-		keyNewName = malloc (keyNewNameSize+1);
-		strncpy (keyNewName, keyName, keyNameSize);
-		keyNewName[keyNameSize] = '/';
-		strncpy (keyNewName+keyNameSize+1, key->key, keyNewNameSize-keyNameSize-1);
+		ksAppend (returned,key);
 
-		if (key->key) free(key->key);
-		key->key = keyNewName;
-
-		fprintf (stderr, "key: %s, value: %s, comment: %s\n",
-			key->key, (char *) key->data, key->comment);
-		// break;
-
-		fprintf (stderr, "INSERT key...\n");
-		
-		// ksAppend (set,key);
-		//CRASH: for whatever reason???
-		// ksInsert (set, key);
-
-		key = keyNew ("",KEY_SWITCH_END);
-		
-		fprintf (stderr, "... done\n");
+		key = keyNew (0);
 	}
 	
 	keyDel (key); // delete the not used key left
-	free (key);
 	
 	if (flock (fd, LOCK_UN) == -1) {
 		perror ("Unable to unlock file");
@@ -583,14 +594,13 @@ ssize_t kdbGetKeyChildKeys_ini(const Key * key, KeySet *returned, unsigned long 
 	char fileFullName [MAX_PATH_LENGTH];
 	char * keyName;
 	size_t keyLength;
+	char * keyRoot;
+	size_t keyRootLength;
 	int ret;
 	DIR * dir;
 	struct dirent * filename;
 
 	ret = IniGetName (key, pathName);
-	keyLength= keyGetNameSize (key);
-	keyName = malloc (keyLength);
-	keyGetName (key, keyName, keyLength);
 	
 	if (ret == -1) {
 		fprintf (stderr, "Error, could not get FileName\n");
@@ -599,7 +609,12 @@ ssize_t kdbGetKeyChildKeys_ini(const Key * key, KeySet *returned, unsigned long 
 
 	fprintf (stderr, "Pathname: %s, Keyname: %s\n", pathName, keyName);
 
+	//TODO: it might be a file/section!
 	dir = opendir (pathName);
+	if (dir == NULL) {
+		fprintf (stderr, "Could not open directory %s", pathName);
+		return -1;
+	}
 	
 	while ((filename = readdir (dir)))
 	{
@@ -609,13 +624,26 @@ ssize_t kdbGetKeyChildKeys_ini(const Key * key, KeySet *returned, unsigned long 
 		
 		if (filename->d_name[0] == '.' && !(options & KDB_O_INACTIVE))
 			continue;
+	
+		keyLength = keyGetNameSize (key);
+		keyRootLength= keyLength + strlen (filename->d_name) + 1;
+		keyRoot = malloc (keyRootLength);
+		keyName = malloc (keyLength);
+		keyGetName (key, keyName, keyGetNameSize (key));
+		strcat (keyRoot, keyName);
+		strcat (keyRoot, "/");
+		strcat (keyRoot, filename->d_name);
 
 		fileFullName[0] = 0;	// delete old Name
 		strncat (fileFullName, pathName, MAX_PATH_LENGTH);
 		strncat (fileFullName, "/", MAX_PATH_LENGTH);
 		strncat (fileFullName, filename->d_name, MAX_PATH_LENGTH);
-		fprintf (stderr, "Getting Keys out of File: %s\n", fileFullName);
-		kdbGetKeys (fileFullName, keyName, returned);
+		fprintf (stderr, "Call kdbGetKeys(fileFullName: %s, keyRoot: %s,returned)\n", 
+			fileFullName, keyRoot);
+		kdbGetKeys (fileFullName, keyRoot, returned);
+		
+		free (keyRoot);
+		free (keyName);
 	}
 
 	closedir (dir);
