@@ -1,3 +1,10 @@
+* Fri Nov 14 2004 Avi Alkalay <avi@unix.sh> 0.4.7
+- Better BuildPrereq in spec file
+- Small updates to documentation
+- New 'kdb mv' command (needs improvement)
+- Updated kdb.1 manpage to include 'kdb mv'
+- The KDB_ROOT env var to kdb command (needs manpage), thanks to Markus Raab
+
 * Fri Nov 05 2004 Avi Alkalay <avi@unix.sh> 0.4.6
 - New method: kdbRename()
 - Updates to spec files, to conform to Fedora conventions

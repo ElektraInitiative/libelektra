@@ -26,6 +26,10 @@ $LastChangedBy$
 				<listitem><para>Creates a key that is a symbolic links to another key.</para></listitem>
 			</varlistentry>
 
+			<varlistentry><term><command>mv</command></term>
+				<listitem><para>Move, or renames a key. Currently it can't move keys across different filesystems.</para></listitem>
+			</varlistentry>
+
 			<varlistentry><term><command>rm</command></term>
 				<listitem><para>As the <citerefentry><refentrytitle>rm</refentrytitle><manvolnum>1</manvolnum></citerefentry> command, removes the key specified.</para></listitem>
 			</varlistentry>

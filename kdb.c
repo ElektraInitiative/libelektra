@@ -91,7 +91,8 @@ int argType=KEY_TYPE_UNDEFINED;
 int parseCommandLine(int argc, char *argv[]) {
 	char sargType[ARGSIZE],argUser[ARGSIZE],argGroup[ARGSIZE];
 	char sargMode[ARGSIZE],sargCommand[ARGSIZE];
-	char * keyEnv; size_t keyEnvLength, keyOptLength;
+	char * keyEnv;
+	size_t keyEnvLength=0, keyOptLength=0;
 
 	int opt;
 
@@ -158,15 +159,15 @@ int parseCommandLine(int argc, char *argv[]) {
 					strncpy(sargCommand,optarg,ARGSIZE);
 				} else if (!argKeyName) { /* parse key name */
 					keyEnv = getenv ("KDB_ROOT");
-					if (keyEnv) keyEnvLength += strlen (keyEnv);
+					if (keyEnv) keyEnvLength += strblen (keyEnv);
 					else keyEnvLength = 0;
-					keyOptLength = strlen (optarg);
+					keyOptLength = strblen (optarg);
 					argKeyName=realloc(argKeyName,
 						keyEnvLength + keyOptLength + 1);
 					if (keyEnv) strncpy (argKeyName, keyEnv,   keyEnvLength);
 					strncpy(argKeyName + keyEnvLength, optarg, keyOptLength);
 				} else if (!argData) { /* parse value */
-					argData=realloc(argData,strlen(optarg)+1);
+					argData=realloc(argData,strblen(optarg)+1);
 					strcpy(argData,optarg);
 				}
 				break;

@@ -12,6 +12,7 @@ $LastChangedBy$
 		<para><prompt>bash$ </prompt><command>kdb ls -laR user:valeria</command></para>
 		<para><prompt>bash# </prompt><command>kdb set -t link system/sw/XFree/current system/sw/XFree/handmade</command></para>
 		<para><prompt>bash# </prompt><command>kdb ln system/sw/XFree/handmade system/sw/XFree/current</command>     # same as last command</para>
+		<para><prompt>bash# </prompt><command>kdb mv system/sw/xorg/current system/sw/xorg/old</command></para>
 		<para><prompt>bash$ </prompt><command>kdb ls -lR system/sw/XFree/current</command></para>
 		<para><prompt>bash# </prompt><command>kdb rm system/inittab/rc4</command></para>
 		<para><prompt>bash# </prompt><command>kdb export user/sw/app | sed -e 's|/app/|/app2/|g' | kdb import</command></para>

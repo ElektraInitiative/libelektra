@@ -125,6 +125,12 @@ $LastChangedBy$
 		</cmdsynopsis>
 		
 		<cmdsynopsis>
+			<command>kdb mv</command>
+			<arg choice="plain">key/src</arg>
+			<arg choice="plain">key/dest</arg>
+		</cmdsynopsis>
+		
+		<cmdsynopsis>
 			<command>kdb ln</command>
 			<arg choice="plain">key/src</arg>
 			<arg choice="plain">key/dest</arg>
