@@ -38,16 +38,13 @@ $LastChangedBy$
 
 
 #include "kdb.h"
+#include "kdbbackend.h"
 #include "kdbprivate.h"
 
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 #include <stdlib.h>
+#include <dlfcn.h>
 #include <unistd.h>
-#include <pwd.h>
-#include <dirent.h>
 #include <errno.h>
 #include <stdio.h>
 #include <iconv.h>
@@ -55,30 +52,12 @@ $LastChangedBy$
 #include <langinfo.h>
 #include <ctype.h>
 #include <string.h>
-#include <utmp.h>
 
 
-#define UTF8_TO   1
-#define UTF8_FROM 0
 
-#define BUFFER_SIZE 100
-
-#ifdef UT_NAMESIZE
-#define USER_NAME_SIZE UT_NAMESIZE
-#else
-#define USER_NAME_SIZE 100
+#ifndef KDB_DEFAULT_BACKEND
+#define KDB_DEFAULT_BACKEND "filesys"
 #endif
-
-/**Some systems have even longer pathnames*/
-#ifdef PATH_MAX
-#define MAX_PATH_LENGTH PATH_MAX
-/**This value is garanteed on any Posixsystem*/
-#elif __USE_POSIX
-#define MAX_PATH_LENGTH _POSIX_PATH_MAX
-#else 
-#define MAX_PATH_LENGTH 4096
-#endif
-
 
 extern int errno;
 
@@ -96,12 +75,12 @@ extern int errno;
  *
  * This is the class that accesses the storage backend. When writing a new
  * backend, these are the methods you'll have to reimplement:
- * kdbGetKey(), kdbSetKey(), kdbStatKey(), kdbRemove(), kdbRename(),
- * kdbGetKeyChildKeys()
+ * kdbOpen(), kdbClose(), kdbGetKey(), kdbSetKey(), kdbStatKey(),
+ * kdbGetKeyChildKeys(), kdbRemove(), kdbRename().
  *
  * And methods that is suggested to reimplement (but not needed) if you want
- * them to get the benefits of your new backend: kdbOpen(), kdbClose(),
- * kdbMonitorKey(), kdbMonitorKeys()
+ * them to get the benefits of your new backend: kdbSetKeys(),
+ * kdbMonitorKey(), kdbMonitorKeys().
  *
  * The other methods are higher level. They use the above methods to do their
  * job, and generally don't have to be reimplemented for a different backend.
@@ -122,26 +101,125 @@ extern int errno;
 
 
 
+struct _KDBBackend {
+	void *dlHandle;
+	
+	
+	
+	/* These are the must-have methods */
+	
+	int (*kdbOpen)();
+	int (*kdbClose)();
+	
+	int (*kdbGetKey)(Key *);
+	int (*kdbSetKey)(Key *);
+	int (*kdbStatKey)(Key *);
+	int (*kdbRename)(Key *, const char *);
+	int (*kdbRemove)(const char *);
+	int (*kdbGetKeyChildKeys)(const Key *, KeySet *, unsigned long);
+
+	
+	
+	/* These are the optional methods */
+	
+	int (*kdbSetKeys)(KeySet *);
+	u_int32_t (*kdbMonitorKey)(Key *, u_int32_t,unsigned long, unsigned);
+	u_int32_t (*kdbMonitorKeys)(KeySet *, u_int32_t,unsigned long, unsigned);
+};
+
+
+
+
+KDBBackend *backend;
+
+
+
 /**
- * Opens a session with the Key database
+ * Opens the session with the Key database.
  *
  * You should allways call this method before retrieving or commiting any
  * keys to the database. Otherwise, consequences are unpredictable.
+ * 
+ * kdbOpen() relyies on libkdb.so's backend with kdbOpenBackend().
+ * The backend defined by the environment variable @e $KDB_BACKEND will
+ * be used. If this var is not set in the environment, the backend defined
+ * as default at compilation time will be used.
  *
+ * Currently you can have only one backend (and key database session)
+ * initialized at a certain time. 
+ * 
  * To simply manipulate Key or KeySet objects, you don't need to open the key
  * database before with this method.
+ * 
+ * @see kdbOpenBackend()
  * @see kdbClose()
  * @ingroup kdb
  */
 int kdbOpen() {
-	/* load the environment and make us aware of codeset conversions */
-	setlocale(LC_ALL,"");
-
-	return 0;
+	char *backendName=0;
+	
+	backendName=getenv("KDB_BACKEND");
+	if (!backendName) backendName=KDB_DEFAULT_BACKEND;
+	
+	return kdbOpenBackend(backendName);
 }
 
+
+
 /**
- * Closes a session with the Key database.
+ * Dynamically load a storage beckend for libkdb.so.
+ * 
+ * After dynamic loading, the backend will be initialized with its
+ * implementation of kdbOpen().
+ * @param backendName used to define the module filename as
+ * 	libkdb-@p "backendName".so
+ * @return 0 on success, or whatever is returned by backend's kdbOpen()
+ * @see kdbOpen()
+ * @ingroup kdb
+ */
+int kdbOpenBackend(char *backendName) {
+	void *dlhandle=0;
+	char backendlib[300];
+	KDBBackendFactory kdbBackendNew=0;
+	
+	backend=0;
+	
+	/* load the environment and make us aware of codeset conversions */
+	setlocale(LC_ALL,"");
+	
+	sprintf(backendlib,"libkdb-%s.so",backendName);
+	dlhandle=dlopen(backendlib,RTLD_LAZY);
+	if (dlhandle == 0) {
+		fprintf(stderr, "libkdb: Could not open \"%s\" backend: %s\n",
+			backendName,dlerror());
+		return 1; /* error */
+	}
+	
+	kdbBackendNew=dlsym(dlhandle,"kdbBackendFactory");
+	if (kdbBackendNew == 0) {
+		fprintf(stderr, "libkdb: \"%s\" backend: %s\n",backendName,dlerror());
+		return 1; /* error */
+	}
+	
+	backend=(*kdbBackendNew)();
+	if (backend == 0) {
+		fprintf(stderr,"libkdb: Can't initialize \"%s\" backend\n",
+			backendName);
+		return 1; /* error */
+	}
+
+	/* save the handle for future use */
+	backend->dlHandle=dlhandle;
+	
+	/* let the backend initialize itself */
+	return backend->kdbOpen();
+}
+ 
+
+
+
+/**
+ * Closes the session with the Key database.
  *
  * You should call this method when you finished your affairs with the key
  * database. You can manipulate Key and KeySet objects after kdbClose().
@@ -151,33 +229,21 @@ int kdbOpen() {
  * @ingroup kdb
  */
 int kdbClose() {
-	return 0;
+	int rc=backend->kdbClose();
+	
+	if (rc == 0) {
+		dlclose(backend->dlHandle);
+		free(backend);
+	}
+	
+	return rc;
 }
 
-/**
- * Returns the size of the given key, once it is serialized.
- *
- * This call gives you a preview of the amount of memory required to
- * store the given key in its serialized form. Every field is taken into
- * account, including comments.
- * @param key the key which serialized size is to be calculated.
- * @return the serialized size in bytes.
- * @ingroup internals
- */
-size_t keyGetSerializedSize(const Key *key) {
-	size_t size,tmp;
 
 
-	size=5+sizeof(u_int8_t)+1; /* RG000\nT\n */
-	if (key->comment) size+=strblen(key->comment);
-	size++;
-	tmp=key->dataSize;
-	size+=tmp;
-	return size;
-}
 
 /**
- * Unencodes a buffer of hexadecimal values.
+ * Unencodes a buffer of hexadecimal values. This is a helper function.
  *
  * The allowed format for the hexadecimal values is just
  * a stream of pairs of plain hex-digits, all together or
@@ -185,7 +251,7 @@ size_t keyGetSerializedSize(const Key *key) {
  * @param encoded the source of ASCII hexadecimal digits.
  * @param returned the destination for the unencoded data.
  * @return the amount of bytes unencoded.
- * @ingroup internals
+ * @ingroup backend
  */
 size_t unencode(char *encoded,void *returned) {
 	char byteInHexa[5]="0x";
@@ -223,10 +289,10 @@ size_t unencode(char *encoded,void *returned) {
 }
 
 /**
+ * Checks if UTF-8 conversion is needed in current context.
  *
- * <b>internal usage only-</b>
- * @ingroup internals
- *
+ * @return 0 if not needed, anything else if needed
+ * @ingroup backend
  */
 int kdbNeedsUTF8Conversion() {
 	return strcmp(nl_langinfo(CODESET),"UTF-8");
@@ -236,10 +302,13 @@ int kdbNeedsUTF8Conversion() {
 /**
  * Converts string to (direction=UTF8_TO) and from
  * (direction=UTF8_FROM) UTF-8.
+ * 
+ * Since Elektra provides portability key values between different codesets,
+ * use this helper in your backend to convert the to universal UTF-8
+ * strings when storing key names, values and comments.
  *
- * <b>internal usage only-</b>
- * @ingroup internals
  * @return 0 on success, -1 otherwise, and propagate @c errno
+ * @ingroup backend
  *
  */
 int UTF8Engine(int direction, char **string, size_t *inputByteSize) {
@@ -292,293 +361,8 @@ int UTF8Engine(int direction, char **string, size_t *inputByteSize) {
 
 
 
-
 /**
- *
- * <b>internal usage only-</b>
- * @ingroup internals
- *
- */
-int handleOldKeyFileVersion(Key *key,FILE *input,u_int16_t nversion) {
-	char generalBuffer[BUFFER_SIZE];
-	size_t currentBufferSize;
-
-	char type[5];
-	char *data=0;
-	size_t dataSize=0;
-	char *comment=0;
-	size_t commentSize=0;
-
-	int readComment=1;
-	int eof=0;
-
-	/*
-		This is a very dirty helper.
-		It has the parsing code for old version of key files.
-		If your editor doesn't have code folding it will be a pain.
-	*/
-
-
-	switch (nversion) {
-		case 1: {
-			if (!fgets(type,    sizeof(type),    input)) return -1;
-
-			while (readComment) {
-				if (fgets(generalBuffer,sizeof(generalBuffer),input)) {
-					if (memcmp(generalBuffer,"<DATA>\n\0",8)) {
-						/* This is not the begining of the data part so it is part of comment */
-						currentBufferSize=strblen(generalBuffer);
-						if (!comment) {
-							comment=(char *)malloc(commentSize=currentBufferSize);
-							strcpy(comment,generalBuffer);
-						} else {
-							char *buffer=0;
-
-							--commentSize; /* remove awareness of previous \0 */
-							buffer=malloc(commentSize+currentBufferSize);
-							strcpy(buffer,comment);
-							strcat(buffer,generalBuffer);
-							comment=realloc(comment,commentSize+=currentBufferSize);
-							strcpy(comment,buffer);
-							free(buffer);
-						}
-					} else readComment=0;
-				} else {
-					readComment=0;
-					eof=1;
-				}
-			}
-
-			/* Remove last \n */
-			if (commentSize > 1 && (*(comment+commentSize-2) == '\n')) {
-				*(comment+commentSize-2)=0;
-				--commentSize;
-			}
-
-
-			if (comment && UTF8Engine(UTF8_FROM,&comment,&commentSize)) {
-				free(comment);
-				return -1;
-			}
-
-			/* Now read the data section */
-			if (!eof) {
-				while (fgets(generalBuffer,sizeof(generalBuffer),input)) {
-					currentBufferSize=strlen(generalBuffer);
-					if (!data) {
-						data=(char *)malloc(dataSize=(currentBufferSize+1));
-						strcpy(data,generalBuffer);
-					} else {
-						char *buffer=0;
-
-						buffer=malloc(dataSize+currentBufferSize);
-						strcpy(buffer,data);
-						strcat(buffer,generalBuffer);
-						data=realloc(data,dataSize+=currentBufferSize);
-						strcpy(data,buffer);
-						free(buffer);
-					}
-				}
-			}
-
-			/* Put in the Key object */
-			keySetComment(key,comment);
-			if (comment) free(comment);
-
-			/* This is what changed from version 1 to
-			   version 2 format: key type numbers */
-			{
-				u_int8_t oldVersion=atoi(type);
-				switch (oldVersion) {
-					case 1: keySetType(key,KEY_TYPE_BINARY); break;
-					case 2: keySetType(key,KEY_TYPE_STRING); break;
-					default: keySetType(key,oldVersion);
-				}
-			}
-			if (!dataSize) {
-				keySetRaw(key,0,0);
-				return 0;
-			}
-
-			if (key->type <= KEY_TYPE_BINARY) {
-				/* Binary data. Unencode. */
-				char *unencoded=0;
-				size_t unencodedSize;
-
-				/* raw data is maximum half the size of text-encoded data */
-				unencodedSize=dataSize/2;
-
-				unencoded=malloc(unencodedSize);
-				if (!(unencodedSize=unencode(data,unencoded))) return -1;
-				keySetRaw(key,unencoded,unencodedSize);
-				free(unencoded);
-			} else {
-				if (UTF8Engine(UTF8_FROM,&data,&dataSize)) {
-					free(data);
-					return -1;
-				}
-				keySetRaw(key,data,dataSize);
-			}
-
-			free(data);
-
-			return 0;
-		} /* version 1 */
-	} /* switch */
-	return -1;
-}
-
-
-
-
-
-/**
- * Makes a key object from its serialized form, coming from a file.
- *
- * @param key the pre-initialized key that will contain our data.
- * @param input the opened file from which we want to read.
- * @return 0 on success.
- * @ingroup internals
- */
-int keyFileUnserialize(Key *key,FILE *input) {
-	char generalBuffer[BUFFER_SIZE];
-	size_t currentBufferSize;
-
-	char version[10];
-	u_int16_t nversion=0;
-	char type[5];
-	char *data=0;
-	size_t dataSize=0;
-	char *comment=0;
-	size_t commentSize=0;
-
-	int readComment=1;
-	int eof=0;
-
-	/* The serialized format is
-	   -------------------------
-	   RG001\n
-	   type\n
-	   comment (with newlines)\n
-	   <DATA>\n
-	   The data encoded as text
-	   -------------------------
-	*/
-
-	if (!fgets(version, sizeof(version), input)) return -1;
-	if (strncmp(version,"RG",2)) {
-		/* Doesn't look like a key file */
-		errno=KDB_RET_INVALIDKEY;
-		return -1;
-	}
-
-	nversion=atoi(version+2);
-	if (!nversion || nversion > RG_KEY_FORMAT_VERSION) {
-		errno=KDB_RET_INVALIDKEY;
-		return -1;
-	}
-
-	if (nversion != RG_KEY_FORMAT_VERSION)
-		return handleOldKeyFileVersion(key,input,nversion);
-
-	if (!fgets(type,    sizeof(type),    input)) return -1;
-
-	while (readComment) {
-		if (fgets(generalBuffer,sizeof(generalBuffer),input)) {
-			if (memcmp(generalBuffer,"<DATA>\n\0",8)) {
-				/* This is not the begining of the data part so it is part of comment */
-				currentBufferSize=strblen(generalBuffer);
-				if (!comment) {
-					comment=(char *)malloc(commentSize=currentBufferSize);
-					strcpy(comment,generalBuffer);
-				} else {
-					char *buffer=0;
-
-					--commentSize; /* remove awareness of previous \0 */
-					buffer=malloc(commentSize+currentBufferSize);
-					strcpy(buffer,comment);
-					strcat(buffer,generalBuffer);
-					comment=realloc(comment,commentSize+=currentBufferSize);
-					strcpy(comment,buffer);
-					free(buffer);
-				}
-			} else readComment=0;
-		} else {
-			readComment=0;
-			eof=1;
-		}
-	}
-
-	/* Remove last \n */
-	if (commentSize > 1 && (*(comment+commentSize-2) == '\n')) {
-		*(comment+commentSize-2)=0;
-		--commentSize;
-	}
-
-	if (comment && UTF8Engine(UTF8_FROM,&comment,&commentSize)) {
-		free(comment);
-		return -1;
-	}
-
-	/* Now read the data section */
-	if (!eof) {
-		while (fgets(generalBuffer,sizeof(generalBuffer),input)) {
-			currentBufferSize=strlen(generalBuffer);
-			if (!data) {
-				data=(char *)malloc(dataSize=(currentBufferSize+1));
-				strcpy(data,generalBuffer);
-			} else {
-				char *buffer=0;
-
-				buffer=malloc(dataSize+currentBufferSize);
-				strcpy(buffer,data);
-				strcat(buffer,generalBuffer);
-				data=realloc(data,dataSize+=currentBufferSize);
-				strcpy(data,buffer);
-				free(buffer);
-			}
-		}
-	}
-
-	/* Put in the Key object */
-	keySetComment(key,comment);
-	if (comment) free(comment);
-	keySetType(key,atoi(type));
-	if (!dataSize) {
-		keySetRaw(key,0,0);
-		return 0;
-	}
-
-	/* TODO: test this.... */
-	if (key->type >= KEY_TYPE_STRING) {
-		if (UTF8Engine(UTF8_FROM,&data,&dataSize)) {
-			free(data);
-			return -1;
-		}
-		keySetRaw(key,data,dataSize);
-	} else {
-		/* Binary data. Unencode. */
-		char *unencoded=0;
-		size_t unencodedSize;
-
-		/* raw data is maximum half the size of text-encoded data */
-		unencodedSize=dataSize/2;
-
-		unencoded=malloc(unencodedSize);
-		if (!(unencodedSize=unencode(data,unencoded))) return -1;
-		keySetRaw(key,unencoded,unencodedSize);
-		free(unencoded);
-	}
-
-	free(data);
-
-	return 0;
-}
-
-
-
-/**
- * Encodes a buffer of data onto hexadecimal ASCII.
+ * Encodes a buffer of data onto hexadecimal ASCII. This is a helper function.
  *
  * The resulting data is made up of pairs of ASCII hex-digits,
  * space- and newline-separated. This is the counterpart of
@@ -588,8 +372,8 @@ int keyFileUnserialize(Key *key,FILE *input) {
  * @param size the size of the source buffer in bytes.
  * @param returned the destination for the ASCII-encoded data.
  * @return the amount of bytes used in the resulting encoded buffer.
- * @see encode()
- * @ingroup internals
+ * @see unencode()
+ * @ingroup backend
  */
 size_t encode(void *unencoded, size_t size, char *returned) {
 	void *readCursor=unencoded;
@@ -621,233 +405,6 @@ size_t encode(void *unencoded, size_t size, char *returned) {
 }
 
 
-
-
-
-/**
- * Writes the serialized form of the given key onto a file.
- *
- * This is the counterpart of <i>keyFileUnserialize()</i>.
- * @param key the key we want to serialize.
- * @param output the opened file to be written.
- * @return 0 on success.
- * @see keyFileUnserialize()
- * @ingroup internals
- */
-int keyFileSerialize(Key *key, FILE *output) {
-	/* The serialized format is
-	   -------------------------
-	   RG001\n
-	   type\n
-	   comment (with newlines)\n
-	   <DATA>\n
-	   The data encoded as text
-	   -------------------------
-	*/
-
-	size_t dataSize;
-
-	fprintf(output,"RG%03d\n",RG_KEY_FORMAT_VERSION);
-	fprintf(output,"%d\n",key->type);
-	if (key->comment) {
-		if (kdbNeedsUTF8Conversion()) {
-			size_t convertedCommentSize=key->commentSize;
-			char *convertedComment=malloc(convertedCommentSize);
-
-			memcpy(convertedComment,key->comment,key->commentSize);
-			if (UTF8Engine(UTF8_TO,&convertedComment,&convertedCommentSize)) {
-				free(convertedComment);
-				return -1;
-			}
-			fprintf(output,"%s\n",convertedComment);
-			free(convertedComment);
-		} else fprintf(output,"%s\n",key->comment);
-	}
-
-	fputs("<DATA>\n",output);
-	fflush(output);
-
-	dataSize=key->dataSize;
-	if (dataSize) {
-		/* There is some data to write */
-		if (key->type >= KEY_TYPE_STRING) {
-			/* String or similar type of value */
-			if (kdbNeedsUTF8Conversion()) {
-				size_t convertedDataSize=key->dataSize;
-				char *convertedData=malloc(convertedDataSize);
-
-				memcpy(convertedData,key->data,key->dataSize);
-				if (UTF8Engine(UTF8_TO,&convertedData,&convertedDataSize)) {
-					free(convertedData);
-					return -1;
-				}
-				fprintf(output,"%s",convertedData);
-				free(convertedData);
-			} else fputs(key->data,output);
-		} else {
-			/* Binary values */
-			char *encoded=malloc(3*dataSize);
-			size_t encodedSize;
-
-			encodedSize=encode(key->data,dataSize,encoded);
-			fwrite(encoded,encodedSize,1,output);
-			free(encoded);
-		}
-	}
-	return 0;
-}
-
-
-/**
- * This is a helper to kdbGetFilename()
- *
- * @param relativeFileName the buffer to return the calculated filename
- * @param maxSize maximum number of bytes that fit the buffer
- * @see kdbGetFilename()
- * @return number of bytes written to the buffer, or 0 on error
- * @ingroup internals
- */
-size_t keyCalcRelativeFileName(const Key *key,char *relativeFileName,size_t maxSize) {
-	if (!key || !keyIsInitialized(key)) {
-		errno=KDB_RET_UNINITIALIZED;
-		return 0;
-	}
-	if (!key->key) {
-		errno=KDB_RET_NOKEY;
-		return 0;
-	}
-
-// 	cursor=key->key;
-// 	while (*cursor) {
-// 		if (pos+1 > maxSize) {
-// 			errno=E2BIG;
-// 			return -1;
-// 		}
-// 		switch (*cursor) {
-// 			case '\\':
-// 				cursor++;
-// 				relativeFileName[pos]=*cursor;
-// 				break;
-// 			case '.':
-// 				relativeFileName[pos]='/';
-// 				break;
-// 			default:
-// 				relativeFileName[pos]=*cursor;
-// 		}
-// 		cursor++;
-// 		pos++;
-// 	}
-// 	relativeFileName[pos]=0;
-// 	pos++;
-
-	if (kdbNeedsUTF8Conversion()) {
-		char *converted;
-		size_t size;
-
-		if (!(size=keyGetNameSize(key))) return 0;
-
-		converted=malloc(size);
-		keyGetName(key,converted,size);
-
-// 		memcpy(converted,relativeFileName,convertedSize);
-
-		if (UTF8Engine(UTF8_TO,&converted,&size)) {
-			free(converted);
-			return 0;
-		}
-
-		if (size>maxSize) {
-			free(converted);
-			errno=E2BIG;
-			return 0;
-		}
-
-		memcpy(relativeFileName,converted,size);
-		free(converted);
-
-		return size;
-	} else return keyGetName(key,relativeFileName,maxSize);
-
-	return 0;
-}
-
-
-
-
-
-
-/**
- * Stats a key file.
- * Will not open the key file, but only stat it, not changing its last
- * access time.
- * The resulting key will have all info, but comment, value and value type.
- *
- * @param stat the stat structure to get metadata from
- * @param key object to be filled with info from stat structure
- * @return 0 on success, -1 otherwise
- * @ingroup internals
- */
-int keyFromStat(Key *key,struct stat *stat) {
-	if (!key) {
-		errno=KDB_RET_NULLKEY;
-		return -1;
-	}
-
-	keySetAccess(key,stat->st_mode);
-	keySetUID(key,stat->st_uid);
-	keySetGID(key,stat->st_gid);
-	if (S_ISDIR(stat->st_mode)) keySetType(key,KEY_TYPE_DIR);
-	key->atime=stat->st_atime;
-	key->mtime=stat->st_mtime;
-	key->ctime=stat->st_ctime;
-	key->recordSize=stat->st_size;
-	return 0;
-}
-
-
-
-
-/**
- * Calculate the real file name for a key.
- *
- * @param returned the buffer to return the calculated filename
- * @param maxSize maximum number of bytes that fit the buffer
- * @see kdbCalcRelativeFilename()
- * @return number of bytes written to the buffer, or 0 on error
- * @ingroup internals
- */
-size_t kdbGetFilename(const Key *forKey,char *returned,size_t maxSize) {
-	size_t length=0;
-
-	switch (keyGetNamespace(forKey)) {
-		case KEY_NS_SYSTEM: {
-			/* Prepare to use the 'system/ *' database */
-			strncpy(returned,KDB_DB_SYSTEM,maxSize);
-			length=strlen(returned);
-			break;
-		}
-		case KEY_NS_USER: {
-			/* Prepare to use the 'user:????/ *' database */
-			struct passwd *user=0;
-
-			if (forKey->userDomain) user=getpwnam(forKey->userDomain);
-			else user=getpwnam(getenv("USER"));
-			
-			if (!user) return 0; /* propagate errno */
-			length=snprintf(returned,maxSize,"%s/%s",user->pw_dir,KDB_DB_USER);
-			break;
-		}
-		default: {
-			errno=KDB_RET_INVALIDKEY;
-			return 0;
-		}
-	}
-
-	returned[length]='/'; length++;
-	length+=keyCalcRelativeFileName(forKey,returned+length,maxSize-length);
-
-	return length;
-}
 
 
 
@@ -1098,94 +655,7 @@ while (key) {
  *
  */
 int kdbGetKeyChildKeys(const Key *parentKey, KeySet *returned, unsigned long options) {
-	size_t parentNameSize=keyGetFullNameSize(parentKey);
-	char realParentName[parentNameSize];
-	DIR *parentDir;
-	char buffer[MAX_PATH_LENGTH];
-	struct dirent *entry;
-
-	/*
-		- Convert parent key name into a real filename
-		- Check if it is a directory. Open it
-		- Browse, read and include in the KeySet
-	*/
-	kdbGetFilename(parentKey,buffer,sizeof(buffer));
-	parentDir=opendir(buffer);
-
-	/* Check if Key is not a directory or doesn't exist.
-	 * Propagate errno */
-	if (!parentDir) return -1;
-
-	keyGetFullName(parentKey,realParentName,parentNameSize);
-
-	while ((entry=readdir(parentDir))) {
-		Key *keyEntry;
-		char *transformedName=0;
-		size_t keyNameSize=0;
-
-		/* Ignore '.' and '..' directory entries */
-		if (!strcmp(entry->d_name,".") || !strcmp(entry->d_name,".."))
-			continue;
-
-		/* If key name starts with '.', and don't want INACTIVE keys, ignore it */
-		if ((*entry->d_name == '.') && !(options & KDB_O_INACTIVE))
-			continue;
-
-		/* Next 2 ifs are required to transform filename from UTF-8 */
-		if (!transformedName) {
-			transformedName=
-				realloc(transformedName,keyNameSize=strblen(entry->d_name));
-			strcpy(transformedName,entry->d_name);
-		}
-		if (UTF8Engine(UTF8_FROM,&transformedName,&keyNameSize)) {
-			free(transformedName);
-			closedir(parentDir);
-			return -1;  /* propagate errno */
-		}
-
-		/* Copy the entire transformed key name to our final buffer */
-		sprintf(buffer,"%s/%s",realParentName,transformedName);
-		free(transformedName); /* don't need it anymore */
-
-		keyEntry=keyNew(buffer,KEY_SWITCH_END);
-
-		if (options & KDB_O_STATONLY) kdbStatKey(keyEntry);
-		else if (options & KDB_O_NFOLLOWLINK) {
-			kdbStatKey(keyEntry);
-			if (!keyIsLink(keyEntry)) kdbGetKey(keyEntry);
-		} else {
-			int rc=kdbGetKey(keyEntry);
-			/* If this is a permission problem, at least stat the key */
-			if (rc && errno==KDB_RET_NOCRED) kdbStatKey(keyEntry);
-		}
-
-		if (keyIsDir(keyEntry)) {
-			if (options & KDB_O_RECURSIVE) {
-				KeySet *children;
-
-				children=ksNew();
-				/* Act recursively, without sorting. Sort in the end, once */
-				kdbGetKeyChildKeys(keyEntry,children, ~(KDB_O_SORT) & options);
-
-				/* Insert the current directory key in the returned list before its children */
-				if (options & KDB_O_DIR) ksAppend(returned,keyEntry);
-				else keyDel(keyEntry);
-
-				/* Insert the children */
-				ksAppendKeys(returned,children);
-				ksDel(children);
-			} else if (options & KDB_O_DIR) ksAppend(returned,keyEntry);
-				else keyDel(keyEntry);
-		} else if (options & KDB_O_NOVALUE) keyDel(keyEntry);
-			else ksAppend(returned,keyEntry);
-	} /* while(readdir) */
-	
-	closedir(parentDir);
-
-	if ((options & (KDB_O_SORT)) && (ksGetSize(returned) > 1))
-		ksSort(returned);
-
-	return 0;
+	return backend->kdbGetKeyChildKeys(parentKey,returned,options);
 }
 
 
@@ -1255,39 +725,14 @@ int kdbGetRootKeys(KeySet *returned) {
  * @ingroup kdb
  */
 int kdbStatKey(Key *key) {
-	char keyFileName[MAX_PATH_LENGTH];
-	struct stat keyFileNameInfo;
-	size_t pos;
-	u_int32_t semiflag;
-
-	pos=kdbGetFilename(key,keyFileName,sizeof(keyFileName));
-	if (!pos) return -1; /* something is wrong */
-
-	if (lstat(keyFileName,&keyFileNameInfo)) return -1;
-	keyFromStat(key,&keyFileNameInfo);
-
-	if (keyIsLink(key) && key->recordSize) {
-		char *data=malloc(key->recordSize+1); /* Add 1 byte for ending 0 */
-
-		readlink(keyFileName,data,key->recordSize);
-		data[key->recordSize]=0; /* null terminate it */
-		keySetLink(key,data);
-		free(data);
-	}
-
-	/* Remove the NEEDSYNC flag */
-	semiflag=KEY_SWITCH_NEEDSYNC;
-	semiflag=~semiflag;
-	key->flags &= semiflag;
-	key->flags |= KEY_SWITCH_ACTIVE;
-
-	return 0;
+	return backend->kdbStatKey(key);
 }
 
 
 
 /**
  * Fully retrieves the passed @p key from the backend storage.
+ * 
  * @param key a pointer to a Key that has a name set
  * @return 0 on success, or other value and @c errno is set
  * @see kdbSetKey()
@@ -1295,37 +740,7 @@ int kdbStatKey(Key *key) {
  * @ingroup kdb
  */
 int kdbGetKey(Key *key) {
-	char keyFileName[500];
-	struct stat keyFileNameInfo;
-	int fd;
-	size_t pos;
-	u_int32_t semiflag;
-
-	pos=kdbGetFilename(key,keyFileName,sizeof(keyFileName));
-	if (!pos) return -1; /* something is wrong */
-
-	if ((fd=open(keyFileName,O_RDONLY))==-1) return -1;
-	/* TODO: lock at this point */
-	fstat(fd,&keyFileNameInfo);
-	keyFromStat(key,&keyFileNameInfo);
-	if (!keyIsDir(key)) {
-		FILE *input;
-
-		input=fdopen(fd,"r");
-		if (keyFileUnserialize(key,input)) {
-			fclose(input);
-			return -1;
-		}
-		/* TODO: unlock at this point */
-		fclose(input);
-	} else close(fd);
-
-	/* Remove the NEEDSYNC flag */
-	semiflag=KEY_SWITCH_NEEDSYNC;
-	semiflag=~semiflag;
-	key->flags &= semiflag;
-
-	return 0;
+	return backend->kdbGetKey(key);
 }
 
 
@@ -1353,6 +768,12 @@ int kdbGetKey(Key *key) {
  * @ingroup kdb
  */
 int kdbSetKeys(KeySet *ks) {
+	return backend->kdbSetKeys(ks);
+}
+
+
+
+int kdbSetKeys_default(KeySet *ks) {
 	Key *current=ksCurrent(ks);
 	int ret;
 
@@ -1381,125 +802,7 @@ int kdbSetKeys(KeySet *ks) {
  * @ingroup kdb
  */
 int kdbSetKey(Key *key) {
-	char keyFileName[MAX_PATH_LENGTH];
-	char folderMaker[MAX_PATH_LENGTH];
-	char *cursor, *last;
-	int fd;
-	FILE *output=0;
-	size_t pos;
-	u_int32_t semiflag;
-	struct stat stated;
-
-	pos=kdbGetFilename(key,keyFileName,sizeof(keyFileName));
-	if (!pos) return -1; /* Something is wrong. Propagate errno. */
-
-	if (stat(keyFileName,&stated))
-		if (errno==ENOENT) {
-			/* check if parent dir already exists */
-			last=rindex(keyFileName,'/');
-			strncpy(folderMaker,keyFileName,last-keyFileName);
-			folderMaker[last-keyFileName]=0;
-			if (stat(folderMaker,&stated)) {
-				/* create all path recursively until before our basename */
-				mode_t parentMode;
-				mode_t umaskValue=umask(0);
-				
-				umask(umaskValue);
-				parentMode=((S_IRWXU | S_IRWXG | S_IRWXO) & (~ umaskValue)) |
-					S_IWUSR | S_IXUSR;  /* from coreutils::mkdir.c */
-				
-				last   =rindex(keyFileName,'/');
-				cursor = index(keyFileName,'/'); cursor++; /* skip first occurence */
-				if (!last || !cursor) { /* bizarre key name */
-					errno=KDB_RET_INVALIDKEY;
-					return -1;
-				}
-				for (cursor=index(cursor,'/');
-						cursor && (cursor <= last);
-						cursor=index(cursor,'/')) {
-					strncpy(folderMaker,keyFileName,cursor-keyFileName);
-					folderMaker[cursor-keyFileName]=0;
-					if (mkdir(folderMaker,parentMode)<0 && errno!=EEXIST)
-						return -1;       /* propagate errno */
-					cursor++;
-				}
-			}
-		} else return -1; /* propagate errno */
-	else { /* A file or dir or link is already there. Lets check details */
-		/* TODO: Check for existing link */
-		if ( S_ISDIR(stated.st_mode) && !keyIsDir(key)) {
-			errno=EISDIR;
-			return -1;
-		}
-		if (!S_ISDIR(stated.st_mode) &&  keyIsDir(key)) {
-			errno=ENOTDIR;
-			return -1;
-		}
-	}
-
-	/* Enough of checking. Real write now, with a bit of other checks :-) */
-
-	if (keyIsLink(key)) {
-		char targetName[MAX_PATH_LENGTH];
-		Key target;
-		int rc;
-
-		/*
-			If targetName starts with:
-			- "system" | "user" | any future root name: Convert to a FS path,
-			  and symlink it
-			- other: It is an absolute FS path, or relative inside-kdb
-			  namespace path, and symlink it
-		*/
-
-		keyInit(&target);
-
-		/* Setting the name will let us know if this is a valid keyname */
-		if (keySetName(&target,key->data)) {
-			/* target has a valid key name */
-			kdbGetFilename(&target,targetName,sizeof(targetName));
-			keyClose(&target);
-		} else if (errno==KDB_RET_INVALIDKEY) {
-			/* Is an invalid key name. So treat it as a regular file */
-			strncpy(targetName,key->data,sizeof(targetName));
-			keyClose(&target); /* get rid of invalid stuff */
-		} else {
-			keyClose(&target); /* get rid of invalid stuff */
-			return -1; /* propagate errno from keySetName() */
-		}
-
-
-		/* Now, targetName has the real destination of our link */
-
-		/* TODO: handle null targetName */
-		rc=symlink(targetName,keyFileName);
-
-		return rc; /* propagate errno */
-	} else if (keyIsDir(key)) {
-		if (mkdir(keyFileName,key->access)<0 &&
-				errno!=EEXIST) return -1;
-	} else {
-		/* Try to open key file with its full file name */
-		/* TODO: Make it more "transactional" without truncating */
-		fd=open(keyFileName,O_CREAT | O_RDWR | O_TRUNC, key->access);
-		/* TODO: lock file here */
-		if (fd==-1) return -1;
-		if (getuid() == 0) fchown(fd,key->uid,key->gid);
-		if (!(output=fdopen(fd,"w+"))) return -1;
-		if (keyFileSerialize(key,output)) {
-			fclose(output);
-			return -1;
-		}
-		/* TODO: unlock file here */
-		fclose(output);
-	}
-
-	/* Remove the NEEDSYNC flag */
-	semiflag=KEY_SWITCH_NEEDSYNC;
-	semiflag=~semiflag;
-	key->flags &= semiflag;
-
-	return 0;
+	return backend->kdbSetKey(key);
 }
 
 
@@ -1514,22 +817,7 @@ int kdbSetKey(Key *key) {
  * @ingroup kdb
  */
 int kdbRename(Key *key, const char *newName) {
-	char oldFileName[MAX_PATH_LENGTH];
-	char newFileName[MAX_PATH_LENGTH];
-	Key *newKey;
-	int rc;
-	
-	newKey=keyNew(0);
-	rc=keySetName(newKey,newName);
-	if (rc) return rc;
-	rc=kdbGetFilename(key,oldFileName,sizeof(oldFileName));
-	if (!rc) return -1;
-	rc=kdbGetFilename(newKey,newFileName,sizeof(newFileName));
-	if (!rc) return -1;
-	
-	keyDel(newKey);
-	
-	return rename(oldFileName,newFileName);
+	return backend->kdbRename(key,newName);
 }
 
 
@@ -1546,18 +834,7 @@ int kdbRename(Key *key, const char *newName) {
  * @ingroup kdb
  */
 int kdbRemove(const char *keyName) {
-	Key *key;
-	char fileName[MAX_PATH_LENGTH];
-	off_t rc;
-
-	key=keyNew(0);
-	rc=keySetName(key,keyName);
-	if (rc==-1) return -1;
-	rc=kdbGetFilename(key,fileName,sizeof(fileName));
-	keyDel(key);
-	if (!rc) return -1;
-
-	return remove(fileName);
+	return backend->kdbRemove(keyName);
 }
 
 
@@ -1655,6 +932,12 @@ ksDel(myConfigs);
  */
 u_int32_t kdbMonitorKeys(KeySet *interests, u_int32_t diffMask,
 		unsigned long iterations, unsigned sleep) {
+	return backend->kdbMonitorKeys(interests,diffMask,iterations,sleep);
+}
+
+
+u_int32_t kdbMonitorKeys_default(KeySet *interests, u_int32_t diffMask,
+		unsigned long iterations, unsigned sleep) {
 	Key *start,*current;
 	u_int32_t diff;
 	int infinitum=0;
@@ -1725,6 +1008,14 @@ u_int32_t kdbMonitorKeys(KeySet *interests, u_int32_t diffMask,
  */
 u_int32_t kdbMonitorKey(Key *interest, u_int32_t diffMask,
 		unsigned long iterations, unsigned sleep) {
+	return backend->kdbMonitorKey(interest,diffMask,iterations,sleep);
+}
+
+
+
+
+u_int32_t kdbMonitorKey_default(Key *interest, u_int32_t diffMask,
+		unsigned long iterations, unsigned sleep) {
 	Key *tested;
 	int rc;
 	u_int32_t diff;
@@ -1776,6 +1067,80 @@ u_int32_t kdbMonitorKey(Key *interest, u_int32_t diffMask,
 	return 0;
 }
 
+
+
+/**
+ * This method must be called by kdbBackendFactory() of a backend to
+ * define the backend's methods that must be exported. Its job is to
+ * organize a libkdb.so's internal structure with pointers to backend
+ * dependent methods.
+ * 
+ * @param kdbOpen address of the backend initialization method
+ * @param kdbClose address of the backend implementation of kdbClose()
+ * @param kdbGetKey address of the backend implementation of kdbGetKey()
+ * @param kdbSetKey address of the backend implementation of kdbSetKey()
+ * @param kdbStatKey address of the backend implementation of kdbStatKey()
+ * @param kdbRename address of the backend implementation of kdbRename()
+ * @param kdbRemove address of the backend implementation of kdbRemove()
+ * @param kdbGetKeyChildKeys address of the backend implementation of
+ * 	kdbGetKeyChildKeys()
+ 
+ * @param kdbSetKeys address of the backend implementation of kdbSetKeys().
+ * 	Can be NULL, in which a default inefficient implementation will be used.
+ * @param kdbMonitorKey address of the backend implementation of
+ * 	kdbMonitorKey(). Can be NULL, in which a default inefficient implementation
+ * 	will be used.
+ * @param kdbMonitorKeys address of the backend implementation of
+ * 	kdbMonitorKeys(). Can be NULL, in which a default inefficient implementation
+ * 	will be used.
+ * @return an object that contains all backend informations needed by
+ * 	libkdb.so
+ * @ingroup backend
+ */
+KDBBackend *kdbBackendExport(
+	int (*kdbOpen)(),
+	int (*kdbClose)(),
+	
+	int (*kdbGetKey)(Key *),
+	int (*kdbSetKey)(Key *),
+	int (*kdbStatKey)(Key *),
+	int (*kdbRename)(Key *, const char *),
+	int (*kdbRemove)(const char *),
+	int (*kdbGetKeyChildKeys)(const Key *, KeySet *, unsigned long),
+
+	
+	/* These are the optional methods */
+	
+	int (*kdbSetKeys)(KeySet *),
+	u_int32_t (*kdbMonitorKey)(Key *, u_int32_t,unsigned long, unsigned),
+	u_int32_t (*kdbMonitorKeys)(KeySet *, u_int32_t,unsigned long, unsigned))
+{
+	KDBBackend *returned;
+	
+	returned=malloc(sizeof(KDBBackend));
+	memset(returned,0,sizeof(KDBBackend));
+	
+	returned->kdbOpen=kdbOpen;
+	returned->kdbClose=kdbClose;
+	returned->kdbGetKey=kdbGetKey;
+	returned->kdbSetKey=kdbSetKey;
+	returned->kdbStatKey=kdbStatKey;
+	returned->kdbRename=kdbRename;
+	returned->kdbRemove=kdbRemove;
+	returned->kdbGetKeyChildKeys=kdbGetKeyChildKeys;
+
+
+	returned->kdbSetKeys=
+		(kdbSetKeys!=0?kdbSetKeys:&kdbSetKeys_default);
+		
+	returned->kdbMonitorKey=
+		(kdbMonitorKey!=0?kdbMonitorKey:&kdbMonitorKey_default);
+		
+	returned->kdbMonitorKeys=
+		(kdbMonitorKeys!=0?kdbMonitorKeys:&kdbMonitorKeys_default);
+	
+	return returned;
+}
 
 
 /**

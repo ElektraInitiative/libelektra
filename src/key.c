@@ -3146,6 +3146,33 @@ size_t ksInsert(KeySet *ks, Key *toInsert) {
 }
 
 
+/**
+ * Remove and return the first key of @p ks. If @p ks' cursor was positioned
+ * in the poped key, @p ks will be ksRewind()ed.
+ * 
+ * ksInsert() provides the 'push' bahavior.
+ *
+ * @return the first key of @p ks, or NULL if @p ks is empty
+ * @param ks KeySet to work with
+ * @see ksInsert()
+ * @see ksRewind()
+ * @see commandList() for an example
+ *
+ */
+Key *ksPop(KeySet *ks) {
+	Key *key=0;
+	
+	if (ks->start) {
+		key=ks->start;
+		ks->start=key->next;
+		if (ks->end == key) ks->end=0;
+		ks->size--;
+		if (ks->cursor == key) ks->cursor=0;
+	}
+	
+	return key;
+}
+
 
 /**
  * Transfers all keys from @p toInsert to the begining of @p ksa.

@@ -687,16 +687,13 @@ int commandList() {
 		kdbGetRootKeys(roots);
 
 		if (argRecursive) {
-			Key *walker=ksHead(roots);
+			Key *walker=0;
 			
-			while (walker) {
+			while ((walker=ksPop(roots))) {
 				/* walk root by root, retrieve entire subtree
 				 * and append it to ks
 				 */
-				KeySet *thisRoot=0;
-				Key *temp=0;
-
-				thisRoot=ksNew();
+				KeySet *thisRoot=ksNew();
 				
 				if (argValue) ret=kdbGetKeyChildKeys(walker,thisRoot,
 					(argSort?KDB_O_SORT:0) | (argRecursive?KDB_O_RECURSIVE:0) |
@@ -709,12 +706,9 @@ int commandList() {
 				/* A hack to transfer a key from a keyset to another.
 				 * Don't do this at home.
 				 */
-				temp=keyNext(walker);
 				ksAppend(ks,walker);
 				ksAppendKeys(ks,thisRoot);
-				walker=temp;
-				
-				ksDel(thisRoot);
+				ksDel(thisRoot); /* we don't need the container anymore */
 			}
 		} else ksAppendKeys(ks,roots);
 		ksDel(roots);

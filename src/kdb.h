@@ -1,5 +1,5 @@
 /***************************************************************************
-                kdb.h  -  Exported methods of the Elektra Project
+                kdb.h  -  Exported methods of the Elektra Library
                              -------------------
     begin                : Mon Dec 29 2003
     copyright            : (C) 2003 by Avi Alkalay
@@ -339,8 +339,8 @@ struct _KeySet {                        /* _DEPRECATED_ */
 
 
 
-typedef struct _Key Key;
-typedef struct _KeySet KeySet;
+typedef struct _Key       Key;
+typedef struct _KeySet    KeySet;
 
 
 
@@ -357,6 +357,7 @@ KeyDB methods
 ***************************************/
 
 int kdbOpen();
+int kdbOpenBackend(char *backendName);
 int kdbClose();
 
 int kdbGetValue(const char *keyname, char *returned,size_t maxSize);
@@ -522,6 +523,7 @@ size_t ksGetSize(KeySet *ks);
 
 size_t ksInsert(KeySet *ks, Key *toInsert);
 size_t ksAppend(KeySet *ks, Key *toAppend);
+Key *ksPop(KeySet *ks);
 
 size_t ksInsertKeys(KeySet *ks, KeySet *toInsert);
 size_t ksAppendKeys(KeySet *ks, KeySet *toAppend);
@@ -565,4 +567,4 @@ size_t strblen(const char *s);
 #endif
 
 
-#endif /* KDB\_H */
+#endif /* KDB_H */

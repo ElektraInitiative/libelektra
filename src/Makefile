@@ -21,10 +21,11 @@ LIBVERSION=1  # for libkdb.so.$(LIBVERSION)
 
 
 OPTIMIZATIONS=-O
-CC=gcc -g ${OPTIMIZATIONS} -Wall
+CC=gcc -I. -g ${OPTIMIZATIONS} -Wall
 #CC=gcc -g ${OPTIMIZATIONS} -Wcomment -Wformat -Wimplicit-int -Wimplicit-function-declaration -Wparentheses -Wreturn-type -Wunused -Wuninitialized
 XMLINCLUDES=`xml2-config --cflags`
 XMLLIBS=`xml2-config --libs`
+DEFAULT_BACKEND=\"filesys\"
 
 
 .c.o:
@@ -33,11 +34,19 @@ XMLLIBS=`xml2-config --libs`
 
 
 all: libkdb.a libkdb.so libregistry.so kdb kdbfuture.h
-
+	for x in ${BACKENDS}; do (cd "backends/$$x"; $(MAKE) \
+		OPTIMIZATIONS="${OPTIMIZATIONS}" \
+		DTDVERSION=${DTDVERSION} \
+		DOCDIR=${DOCDIR} MANDIR=${MANDIR} SGMLDIR=${SGMLDIR} \
+		BINDIR=${BINDIR} LIBDIR=${LIBDIR} \
+		UBINDIR=${UBINDIR} ULIBDIR=${ULIBDIR} \
+		CONFDIR=${CONFDIR} INCDIR=${INCDIR} $@); \
+	done
 
 clean:
 	-rm core* *~ *.o *.so* *.a kdb kdbfuture.h localeinfo svn-commit*
-	-find . -name "*~" | xargs rm
+	-find . -name "*~" -o -name ".kdbg*" | xargs rm
+	for x in ${BACKENDS}; do (cd "backends/$$x"; $(MAKE) $@); done
 
 
 distclean: clean
@@ -48,7 +57,7 @@ libregistry.so: registrystub.o libkdb.so
 
 
 libkdb.so: localkdb.o key.o
-	${CC} -shared -fpic -Wl,-soname,$@.$(LIBVERSION) -o $@.$(LIBVERSION) localkdb.o key.o
+	${CC} -shared -fpic -ldl -Wl,-soname,$@.$(LIBVERSION) -o $@.$(LIBVERSION) localkdb.o key.o
 	ln -sf $@.$(LIBVERSION) $@
 
 
@@ -67,7 +76,7 @@ key.o: key.c kdb.h kdbprivate.h
 
 
 localkdb.o: localkdb.c kdb.h kdbprivate.h
-	${CC} -fpic -c $<
+	${CC} -DKDB_DEFAULT_BACKEND=${DEFAULT_BACKEND} -fpic -c $<
 
 
 
@@ -94,7 +103,16 @@ install: all
 	cp libkdb.a ${DESTDIR}${ULIBDIR}
 	cp libregistry.so ${DESTDIR}${LIBDIR} # remove me in the future
 	cp kdb ${DESTDIR}${BINDIR}
-	cp kdb.h ${DESTDIR}${INCDIR}
-	cp kdb.c ${DESTDIR}${DOCDIR}/${NAME}-devel
+	cp kdb.h kdbprivate.h kdbbackend.h ${DESTDIR}${INCDIR}
+	cp kdb.c ${DESTDIR}${DOCDIR}/${NAME}-devel/examples/
 	cp kdbfuture.h ${DESTDIR}${DOCDIR}/${NAME}-devel
+	cp -r backends/template ${DESTDIR}${DOCDIR}/${NAME}-devel/backend-template
+	for x in ${BACKENDS}; do (cd "backends/$$x"; $(MAKE) \
+		OPTIMIZATIONS="${OPTIMIZATIONS}" \
+		DTDVERSION=${DTDVERSION} \
+		DOCDIR=${DOCDIR} MANDIR=${MANDIR} SGMLDIR=${SGMLDIR} \
+		BINDIR=${BINDIR} LIBDIR=${LIBDIR} \
+		UBINDIR=${UBINDIR} ULIBDIR=${ULIBDIR} \
+		CONFDIR=${CONFDIR} INCDIR=${INCDIR} $@); \
+	done
 

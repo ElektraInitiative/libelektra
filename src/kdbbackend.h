@@ -1,7 +1,7 @@
 /***************************************************************************
-      kdbprivate.h  -  Private stuff for the kdb implementation
+                kdbbackend.h  -  Methods for backend programing
                              -------------------
-    begin                : Mon Apr 12 2004
+    begin                : Mon Dec 25 2004
     copyright            : (C) 2004 by Avi Alkalay
     email                : avi@unix.sh
  ***************************************************************************/
@@ -18,49 +18,58 @@
 
 /* Subversion stuff
 
-$Id$
-$LastChangedBy$
+$Id: $
+$LastChangedBy: aviram $
 
 */
 
-#ifndef KDBPRIVATE_H
-#define KDBPRIVATE_H
+#ifndef KDBBACKEND_H
+#define KDBBACKEND_H
 
-/* Elektra data directories */
-#define KDB_DB_SYSTEM            "/etc/kdb"
-#define KDB_DB_USER              ".kdb"   /* $HOME/.kdb */
-
+#include <kdb.h>
+#include <kdbprivate.h>
 
 
-#define BUFFER_SIZE 100
 
-#ifdef UT_NAMESIZE
-#define USER_NAME_SIZE UT_NAMESIZE
-#else
-#define USER_NAME_SIZE 100
+typedef struct _KDBBackend KDBBackend;
+
+
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+KDBBackend *kdbBackendExport(
+	int (*kdbOpen)(),
+	int (*kdbClose)(),
+	
+	int (*kdbGetKey)(Key *),
+	int (*kdbSetKey)(Key *),
+	int (*kdbStatKey)(Key *),
+	int (*kdbRename)(Key *, const char *),
+	int (*kdbRemove)(const char *),
+	int (*kdbGetKeyChildKeys)(const Key *, KeySet *, unsigned long),
+
+	
+	/* These are the optional methods */
+	
+	int (*kdbSetKeys)(KeySet *),
+	u_int32_t (*kdbMonitorKey)(Key *, u_int32_t,unsigned long, unsigned),
+	u_int32_t (*kdbMonitorKeys)(KeySet *, u_int32_t,unsigned long, unsigned)
+);
+
+
+
+typedef KDBBackend *(*KDBBackendFactory)(void);
+
+
+#ifdef __cplusplus
+}
 #endif
 
 
 
 
-#define UTF8_TO   1
-#define UTF8_FROM 0
 
-
-
-
-
-
-size_t encode(void *unencoded, size_t size, char *returned);
-size_t unencode(char *encoded, void *returned);
-
-int kdbNeedsUTF8Conversion();
-int UTF8Engine(int direction, char **string, size_t *inputByteSize);
-
-
-
-
-
-
-
-#endif /* KDBPRIVATE_H */
+#endif /* KDBBACKEND_H */

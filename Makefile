@@ -7,6 +7,10 @@ NAME=elektra
 DTDVERSION=0.1.1
 SVNREP=http://germane-software.com/repositories/elektra
 
+# List here the backends to be compiled
+BACKENDS=filesys
+# The one single default backend
+DEFAULT_BACKEND=filesys
 
 # Default dirs we use for installation, that can be substituted by the
 # command line. See the README file or the RPM spec file.
@@ -30,24 +34,26 @@ DIRS=src doc dtd xmlschema
 
 all: elektra.pc
 	for x in ${DIRS}; do (cd "$$x"; $(MAKE) \
+		BACKENDS=${BACKENDS} \
 		OPTIMIZATIONS="${OPTIMIZATIONS}" \
 		DTDVERSION=${DTDVERSION} \
 		DOCDIR=${DOCDIR} MANDIR=${MANDIR} SGMLDIR=${SGMLDIR} \
 		BINDIR=${BINDIR} LIBDIR=${LIBDIR} \
 		UBINDIR=${UBINDIR} ULIBDIR=${ULIBDIR} \
-		CONFDIR=${CONFDIR} INCDIR=${INCDIR} $@); done
+		CONFDIR=${CONFDIR} INCDIR=${INCDIR} $@); \
+	done
 
 
 cleanhere:
 	-rm *~ elektra.spec elektra.pc svn-commit*
-	-find . -name "*~" | xargs rm
+	-find . -name "*~" -o -name ".kdbg*" | xargs rm
 
 
 clean: cleanhere
-	for x in ${DIRS}; do (cd "$$x"; $(MAKE) $@); done
+	for x in ${DIRS}; do (cd "$$x"; $(MAKE) BACKENDS=${BACKENDS} $@); done
 
 distclean: cleanhere
-	for x in ${DIRS}; do (cd "$$x"; $(MAKE) $@); done
+	for x in ${DIRS}; do (cd "$$x"; $(MAKE) BACKENDS=${BACKENDS} $@); done
 
 
 commit: clean
@@ -112,8 +118,9 @@ install: all
 	[ -d "${DESTDIR}${INCDIR}" ] || mkdir -p ${DESTDIR}${INCDIR}
 	[ -d "${DESTDIR}${CONFDIR}/profile.d" ] || mkdir -p ${DESTDIR}${CONFDIR}/profile.d
 	[ -d "${DESTDIR}${DOCDIR}/${NAME}" ] || mkdir -p ${DESTDIR}${DOCDIR}/${NAME}
-	[ -d "${DESTDIR}${DOCDIR}/${NAME}-devel" ] || mkdir -p ${DESTDIR}${DOCDIR}/${NAME}-devel
+	[ -d "${DESTDIR}${DOCDIR}/${NAME}-devel/examples" ] || mkdir -p ${DESTDIR}${DOCDIR}/${NAME}-devel/examples
 	for x in ${DIRS}; do (cd "$$x"; $(MAKE) DTDVERSION=${DTDVERSION} \
+		BACKENDS=${BACKENDS} \
 		DOCDIR=${DOCDIR} MANDIR=${MANDIR} SGMLDIR=${SGMLDIR} \
 		BINDIR=${BINDIR} LIBDIR=${LIBDIR} \
 		UBINDIR=${UBINDIR} ULIBDIR=${ULIBDIR} \
@@ -124,5 +131,5 @@ install: all
 	cp LICENSE ${DESTDIR}${DOCDIR}/${NAME}
 	cp ChangeLog ${DESTDIR}${DOCDIR}/${NAME}
 	cp example/*-convert example/*.xml ${DESTDIR}${DOCDIR}/${NAME}
-	cp example/*.c ${DESTDIR}${DOCDIR}/${NAME}-devel
+	cp example/*.c ${DESTDIR}${DOCDIR}/${NAME}-devel/examples/
 	-[ `id -u` -eq "0" ] && kdb set system/sw/kdb/current/schemapath "${DESTDIR}${SGMLDIR}/elektra-${DTDVERSION}/elektra.xsd"
