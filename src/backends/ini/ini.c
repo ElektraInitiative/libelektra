@@ -22,7 +22,18 @@
  *   
  *   key1=value1;comment
  *
- *   It does not work over NFS.
+ * TODO:
+ *   Filelock does not work over NFS. (use fcntl instead of flock)
+ *   make \n\t engine
+ *   there is no multiple fetching keys, even it could be done very fast
+ *   setting keys does not work
+ *   setting errno properly
+ *   remove debugging features
+ *
+ * EXTRA:
+ *   include statement (like linking)
+ *   monitor/stat files (in which the keys are)
+ *   rename/remove keys features
  *
  ***************************************************************************/
 
@@ -257,42 +268,53 @@ int IniGetFileName (Key * forKey, char * filename, char * keyname)
  */
 int IniGetKey (FILE * fc, Key * key)
 {
-	char * buffer;// [BUFFER_SIZE];
-	char buffer_value [BUFFER_SIZE];
-	char buffer_key [BUFFER_SIZE];
-	char buffer_comment [BUFFER_SIZE];
-	char * ptr;
+	char * buffer;
+	char * buffer_value;
+	char * buffer_key;
+	char * buffer_comment;
 	
-	int state;
-	int string_length, i;
+	int i;
+	int state = STATE_KEY;	// start reading the key
+	
+	int string_length = BUFFER_SIZE;
+	int value_length = BUFFER_SIZE;
+	int key_length = BUFFER_SIZE;
+	int comment_length = BUFFER_SIZE;
 	
 	int v=0;	// position of value
 	int k=0;	// position of key
 	int c=0;	// position of comment
 	
-	buffer = (char*) malloc (BUFFER_SIZE);
-
+	buffer = (char*) malloc (BUFFER_SIZE+1);
+	buffer_value = (char*) malloc (BUFFER_SIZE+1);
+	buffer_key = (char*) malloc (BUFFER_SIZE+1);
+	buffer_comment = (char*) malloc (BUFFER_SIZE+1);
+	
 	if (fgets (buffer, BUFFER_SIZE,fc) == NULL) {
 		printf ("End of File\n");
 		return -1;
 	}
-	state = STATE_KEY;
-	k=0; v=0; c=0;
 	
-	string_length=BUFFER_SIZE;
 	for (i=0; i < string_length; i++) {
-		if (buffer[i] ==  '\0' ) {	// anticipated end?
+	//	fprintf (stderr, "Processing |%c|%d|\n", buffer[i], buffer[i]);
+		if (buffer[i] == '\n') { // end of line found
+			fprintf (stderr, "Found end of key\n");
+			break;
+		}
+		else if (buffer[i] ==  '\0' ) {	// anticipated end?
 			if (i==string_length-1) { // no its not
 				string_length += BUFFER_SIZE;
-				ptr = realloc (buffer, string_length);
-				if (ptr != buffer) {
+				printf (".");
+				buffer = realloc (buffer, string_length);
+				if (buffer == NULL) {
 					printf ("Reallocation error\n");
 					return -1;
-				}
+				} 
 				fgets (buffer+string_length-BUFFER_SIZE,
 					BUFFER_SIZE,fc);
 			} else {
-				break;
+				fprintf (stderr, "No Enter found in this line?\n");
+				return -1;
 			}
 		}
 		else if (buffer[i] == '=') {	// value follows
@@ -303,12 +325,43 @@ int IniGetKey (FILE * fc, Key * key)
 		}
 		else if (state == STATE_KEY) {
 			buffer_key [k++] = buffer[i];
+			if (k == key_length-1)
+			{
+				key_length += BUFFER_SIZE;
+				buffer_key = realloc (buffer_key, key_length);
+				printf ("k");
+				if (buffer_key == NULL) {
+					printf ("Reallocation error\n");
+					return -1;
+				}					
+			}
 		}
 		else if (state == STATE_VALUE) {
 			buffer_value [v++] = buffer[i];
+			if (v == value_length-1) 
+			{
+				value_length += BUFFER_SIZE;
+				buffer_value = realloc (buffer_value, value_length);
+				printf ("v");
+				if (buffer_value == NULL) {
+					printf ("Reallocation error\n");
+					return -1;
+				}					
+			}
 		}
 		else if (state == STATE_COMMENT) {
+	//		fprintf (stderr, "Comment |%c|%d|\n", buffer[i], buffer[i]);
 			buffer_comment [c++] = buffer[i];
+			if (c == comment_length-1)
+			{
+				comment_length += BUFFER_SIZE;
+				buffer_comment = realloc (buffer_comment, comment_length);
+				printf ("c");
+				if (buffer_comment == NULL) {
+					printf ("Reallocation error\n");
+					return -1;
+				}					
+			}
 		}
 	}
 
@@ -388,8 +441,8 @@ int kdbGetKey_ini(Key *key) {
 			key->key = malloc (keySize+1);
 			strncpy (key->key, keyFullName, keySize);
 	
-			printf ("[key: %d] key: %s, value: %s, comment: %s\n", 
-				key, key->key, key->data, key->comment);
+			printf ("key: %s, value: %s, comment: %s\n", 
+				key->key, (char *) key->data, key->comment);
 		
 			
 			pos = 1;
