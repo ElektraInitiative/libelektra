@@ -2047,6 +2047,8 @@ size_t keyGetRootName(const Key *key, char *returned, size_t maxSize) {
  */
 size_t keyGetFullRootName(const Key *key, char *returned, size_t maxSize) {
 	size_t size;
+	size_t userSize;
+	char *cursor;
 
 	if (!key || !keyIsInitialized(key)) {
 		errno=KDB_RET_UNINITIALIZED;
@@ -2061,12 +2063,27 @@ size_t keyGetFullRootName(const Key *key, char *returned, size_t maxSize) {
 	if (!(size=keyGetFullRootNameSize(key))) {
 		errno=KDB_RET_NOKEY;
 		return 0;
-	}
+	}	
+	
 
 	if (maxSize < size) {
 		errno=KDB_RET_TRUNC;
 		return 0;
-	} else strncpy(returned,key->key,size);
+	}
+	
+	userSize = keyGetRootNameSize (key);
+	strncpy(returned,key->key, userSize); //copy "user" or "system"
+	cursor = returned + userSize;
+	if (keyIsUser(key)) {
+		*cursor = ':'; cursor++;
+		if (key->userDomain)
+		{
+			strncpy (cursor, key->userDomain, size - userSize);
+		} else {
+			strncpy (cursor, getenv("USER"), size - userSize);
+		}
+	}
+
 	return size;
 }
 

@@ -146,5 +146,7 @@ private:
 	std::string user_root;
 };
 
+extern ckdb config;
+
 #endif
 

@@ -13,9 +13,9 @@
  * user/sw/test.*/
 ckdb::ckdb (std::string root /// Root of app
 		)
-{	
-       	char keyName [BUFFER_SIZE + 1];
-        char value   [BUFFER_SIZE + 1];
+{
+	char keyName [BUFFER_SIZE + 1];
+	char value   [BUFFER_SIZE + 1];
 	std::string sname, svalue, app_root;
     Key *current;
 	Key *k;
@@ -108,7 +108,7 @@ void ckdb::write ()
 	{
 		k = p->second;
 		if (kdbSetKey (k))
-			cerr << "Storing Key failed" <<  strerror (errno) <<  endl;
+			cerr << "Storing Key \"" << p->first << "\" failed: " <<  strerror (errno) <<  endl;
 		keyClose (k);
 		delete k;
 	}
@@ -136,13 +136,18 @@ void ckdb::write ()
 }
 
 /**Overwrites a key with another key. If the key has already
-	been in the KeySet, the old Key will be deleted.*/
+ * been in the KeySet, the old Key will be deleted.
+ * When setting a key with this function, you are not allowed, to
+ * delete the key, until you commit with write(). You can also
+ * wait for termination of the program, then the destructor will
+ * write and the OS will clean up the leak.*/
 void ckdb::setKey (std::string key, Key * overwrite)
 {
+	needs_sync = true;
 	if (add_keys.find(key) != add_keys.end())	// does element exists?
 	{
 		Key * k;
-		k = add_keys [key];  	// generate new key
+		k = add_keys [key];  	// delete old key
 		keyClose (k);
 		delete k;
 	}
@@ -169,6 +174,7 @@ void ckdb::setKey (std::string key, Key * overwrite)
 /*inline*/ Key* ckdb::dup(std::string key)
 {
 	Key * n = new Key;
+	keyInit (n);
 	keyDup(getKey (key),n);
 	return n;
 }
@@ -350,20 +356,20 @@ std::string ckdb::getComment(std::string key)
 }
 
 /**Sets another UID for a key. This will always
- * fail, because you are a user*/
+ * fail, because you are a user.*/
 /*inline*/ void ckdb::setUID(std::string key, uid_t uid)
 {
 	keySetUID (getKey (key), uid);
 }
 
-/**Gets the Groupid from a specific key*/
+/**Gets the Groupid from a specific key.*/
 /*inline*/ gid_t ckdb::getGID(std::string key)
 {
 	return keyGetGID (getKey (key));
 }
 
 /**Sets the Groupid for a specific key. Only
- * groups where the user is a member a valid*/
+ * groups where the user is a member a valid.*/
 /*inline*/ void ckdb::setGID(std::string key, gid_t gid)
 {
 	keySetGID (getKey (key), gid);
@@ -444,7 +450,9 @@ std::string ckdb::getOwner(std::string key)
  * or decoded.*/
 /*inline*/ size_t ckdb::getBinary(std::string key, void *returnedBinary, size_t maxSize)
 {
+	bool sy = needs_sync;
 	return keyGetBinary (getKey (key), returnedBinary, maxSize);
+	needs_sync = sy;	// restore syncstate, sync not needed!
 }
 
 /**Sets a binary Value of a key*/
