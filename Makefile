@@ -3,7 +3,7 @@
 # $LastChangedBy$
 
 NAME=elektra
-CC=gcc -O3 -g -Wcomment -Wformat -Wimplicit-int -Wimplicit-function-declaration -Wparentheses -Wreturn-type -Wunused -Wuninitialized
+CC=gcc -Wcomment -Wformat -Wimplicit-int -Wimplicit-function-declaration -Wparentheses -Wreturn-type -Wunused -Wuninitialized ${OPTIMIZATIONS}
 XMLINCLUDES=`xml2-config --cflags`
 XMLLIBS=`xml2-config --libs`
 
@@ -11,12 +11,24 @@ DTDVERSION=0.1.0
 SVNREP=http://germane-software.com/repositories/elektra
 
 
+# Default dirs we use for installation, that can be substituted by the command line.
+BINDIR=/bin
+UBINDIR=/usr/bin
+LIBDIR=/lib
+ULIBDIR=/usr/lib
+CONFDIR=/etc
+INCDIR=/usr/include
+DOCDIR=/usr/share/doc
+MANDIR=/usr/share/man
+SGMLDIR=/usr/share/sgml
+
+
 DIRS=doc dtd
 
 
 
 .c.o:
-	${CC} -g -fpic -o $@ -c $<
+	${CC} -fpic -o $@ -c $<
 
 
 
@@ -89,7 +101,7 @@ dist: distclean elektra.spec
 	PACK=`cat VERSION`;\
 	PACK=${NAME}-$$PACK;\
 	cd ..;\
-	find $$DIR/ | grep -v .svn | sort | cpio -H tar -o | gzip --best -c > $$PACK.tar.gz
+	tar --exclude .svn -czf $$PACK.tar.gz $$DIR/
 
 
 
@@ -119,25 +131,27 @@ elektra.spec: elektra.spec.in
 
 
 install: all
-	for x in ${DIRS}; do (cd "$$x"; make DTDVERSION=${DTDVERSION} $@); done
+	for x in ${DIRS}; do (cd "$$x"; make DTDVERSION=${DTDVERSION} \
+		DOCDIR=${DOCDIR} MANDIR=${MANDIR} SGMLDIR=${SGMLDIR} $@); done
 	strip libkdb.so
 	strip libregistry.so  # remove me in the future
-	[ -d "${DESTDIR}/lib" ] || mkdir -p ${DESTDIR}/lib
-	[ -d "${DESTDIR}/usr/lib" ] || mkdir -p ${DESTDIR}/usr/lib
-	[ -d "${DESTDIR}/bin" ] || mkdir -p ${DESTDIR}/bin
-	[ -d "${DESTDIR}/usr/include" ] || mkdir -p ${DESTDIR}/usr/include
-	[ -d "${DESTDIR}/etc/profile.d" ] || mkdir -p ${DESTDIR}/etc/profile.d
-	[ -d "${DESTDIR}/usr/share/doc/${NAME}" ] || mkdir -p ${DESTDIR}/usr/share/doc/${NAME}
-	[ -d "${DESTDIR}/usr/share/doc/${NAME}-devel" ] || mkdir -p ${DESTDIR}/usr/share/doc/${NAME}-devel
-	cp libkdb.so ${DESTDIR}/lib
-	cp libkdb.a ${DESTDIR}/usr/lib
-	cp libregistry.so ${DESTDIR}/lib # remove me in the future
+	[ -d "${DESTDIR}${LIBDIR}" ] || mkdir -p ${DESTDIR}${LIBDIR}
+	[ -d "${DESTDIR}${ULIBDIR}" ] || mkdir -p ${DESTDIR}${ULIBDIR}
+	[ -d "${DESTDIR}${BINDIR}" ] || mkdir -p ${DESTDIR}${BINDIR}
+	[ -d "${DESTDIR}${INCDIR}" ] || mkdir -p ${DESTDIR}${INCDIR}
+	[ -d "${DESTDIR}${CONFDIR}/profile.d" ] || mkdir -p ${DESTDIR}${CONFDIR}/profile.d
+	[ -d "${DESTDIR}${DOCDIR}/${NAME}" ] || mkdir -p ${DESTDIR}${DOCDIR}/${NAME}
+	[ -d "${DESTDIR}${DOCDIR}/${NAME}-devel" ] || mkdir -p ${DESTDIR}${DOCDIR}/${NAME}-devel
+	cp libkdb.so ${DESTDIR}${LIBDIR}
+	cp libkdb.a ${DESTDIR}${ULIBDIR}
+	cp libregistry.so ${DESTDIR}${LIBDIR} # remove me in the future
 	strip kdb
-	cp kdb ${DESTDIR}/bin
-	cp kdb.h ${DESTDIR}/usr/include
-	cp scripts/elektraenv ${DESTDIR}/etc/profile.d/elektraenv.sh
+	cp kdb ${DESTDIR}${BINDIR}
+	cp kdb.h ${DESTDIR}${INCDIR}
+	cp scripts/elektraenv ${DESTDIR}${CONFDIR}/profile.d/elektraenv.sh
 	chmod a+x example/*-convert
-	cp LICENSE ${DESTDIR}/usr/share/doc/${NAME}
-	cp example/*-convert ${DESTDIR}/usr/share/doc/${NAME}
-	cp kdb.c example/example.c ${DESTDIR}/usr/share/doc/${NAME}-devel
+	cp LICENSE ${DESTDIR}${DOCDIR}/${NAME}
+	cp ChangeLog ${DESTDIR}${DOCDIR}/${NAME}
+	cp example/*-convert ${DESTDIR}${DOCDIR}/${NAME}
+	cp kdb.c example/example.c ${DESTDIR}${DOCDIR}/${NAME}-devel
 

@@ -1,4 +1,7 @@
 
+# Default dirs we use for installation, that can be substituted by the command line.
+SGMLDIR=/usr/share/sgml
+
 .SUFFIXES: .dtd
 
 all:
@@ -9,8 +12,8 @@ clean:
 distclean: clean
 
 install:
-	mkdir -p ${DESTDIR}/usr/share/sgml/elektra-${DTDVERSION}/
-	cp *dtd catalog ${DESTDIR}/usr/share/sgml/elektra-${DTDVERSION}/
+	mkdir -p ${DESTDIR}${SGMLDIR}/elektra-${DTDVERSION}/
+	cp *dtd catalog ${DESTDIR}${SGMLDIR}/elektra-${DTDVERSION}/
 
 
 pub: all

@@ -6,8 +6,14 @@ HTMLSTYLE=htmltitlepage.xsl
 APIDIR=elektra-api
 DOXYSOURCES=../localkdb.c ../kdb.c ../kdb.h ../key.c
 
+
+# Default dirs we use for installation, that can be substituted by the command line.
+DOCDIR=/usr/share/doc
+MANDIR=/usr/share/man
+
+
 .SUFFIXES: .xml .html .pdf .ps .rtf .xsl .fo .tpl
-.SILENT:
+#.SILENT:
 
 .xml.html:
 	if [ ! -L docbook ]; then ln -s ../../doc-common/docbook .; fi
@@ -27,7 +33,8 @@ elektra-api.tar.gz: $(DOXYSOURCES)
 	-rm -rf ${APIDIR}.tar.gz
 	echo "Making Doxygen..."
 	cd ..; doxygen
-	find ${APIDIR}/html | cpio -H tar -o | gzip -c --best > ${APIDIR}.tar.gz
+	tar -czf ${APIDIR}.tar.gz ${APIDIR}/html
+	# find ${APIDIR}/html | cpio -H tar -o | gzip -c --best > ${APIDIR}.tar.gz
 
 example.c:
 	ln -s ../example/example.c .
@@ -80,21 +87,21 @@ clean: distclean
 
 
 install: all
-	[ -d ${DESTDIR}/usr/share/man/man1 ] || mkdir -p ${DESTDIR}/usr/share/man/man1
-	[ -d ${DESTDIR}/usr/share/man/man3 ] || mkdir -p ${DESTDIR}/usr/share/man/man3
-	[ -d ${DESTDIR}/usr/share/man/man5 ] || mkdir -p ${DESTDIR}/usr/share/man/man5
-	[ -d ${DESTDIR}/usr/share/man/man7 ] || mkdir -p ${DESTDIR}/usr/share/man/man7
-	find ${APIDIR}/html | cpio -pdm ${DESTDIR}/usr/share/doc/elektra-devel/
-	for m in `ls *.1`; do gzip -c --best $$m > ${DESTDIR}/usr/share/man/man1/$$m.gz; done
-#	for m in `ls *.3`; do gzip -c --best $$m > ${DESTDIR}/usr/share/man/man3/$$m.gz; done
-	gzip ${APIDIR}/man/man3/kdb*.3 ${APIDIR}/man/man3/key*.3 ${APIDIR}/man/man3/ks*.3
-	cp ${APIDIR}/man/man3/kdb*.3.gz ${APIDIR}/man/man3/key*.3.gz ${APIDIR}/man/man3/ks*.3.gz ${DESTDIR}/usr/share/man/man3/
-	for m in `ls *.5`; do gzip -c --best $$m > ${DESTDIR}/usr/share/man/man5/$$m.gz; done
-	for m in `ls *.7`; do gzip -c --best $$m > ${DESTDIR}/usr/share/man/man7/$$m.gz; done
+	[ -d ${DESTDIR}${MANDIR}/man1 ] || mkdir -p ${DESTDIR}${MANDIR}/man1
+	[ -d ${DESTDIR}${MANDIR}/man3 ] || mkdir -p ${DESTDIR}${MANDIR}/man3
+	[ -d ${DESTDIR}${MANDIR}/man5 ] || mkdir -p ${DESTDIR}${MANDIR}/man5
+	[ -d ${DESTDIR}${MANDIR}/man7 ] || mkdir -p ${DESTDIR}${MANDIR}/man7
+	find ${APIDIR}/html | cpio -pdm ${DESTDIR}${DOCDIR}/elektra-devel/
+	for m in `ls *.1`; do gzip -c --best $$m > ${DESTDIR}${MANDIR}/man1/$$m.gz; done
+#	for m in `ls *.3`; do gzip -c --best $$m > ${DESTDIR}${MANDIR}/man3/$$m.gz; done
+	gzip ${APIDIR}/man/man3/{kdb,key,ks}*.3
+	cp ${APIDIR}/man/man3/{kdb,key,ks}*.3.gz ${DESTDIR}${MANDIR}/man3/
+	for m in `ls *.5`; do gzip -c --best $$m > ${DESTDIR}${MANDIR}/man5/$$m.gz; done
+	for m in `ls *.7`; do gzip -c --best $$m > ${DESTDIR}${MANDIR}/man7/$$m.gz; done
 #	cat kdb.3.xml | perl -e '{while (<>) {m/<function>(\w*)<\/function>/; print $$1 . "\n" if ($$1); }}' | \
-#		grep kdb | sort -u | while read f; do ln -s kdb.3.gz ${DESTDIR}/usr/share/man/man3/$$f.3.gz; done
+#		grep kdb | sort -u | while read f; do ln -s kdb.3.gz ${DESTDIR}${MANDIR}/man3/$$f.3.gz; done
 #	cat key.3.xml | perl -e '{while (<>) {m/<function>(\w*)<\/function>/; print $$1 . "\n" if ($$1); }}' | \
-#		egrep "key|ks" | sort -u | while read f; do ln -s key.3.gz ${DESTDIR}/usr/share/man/man3/$$f.3.gz; done
+#		egrep "key|ks" | sort -u | while read f; do ln -s key.3.gz ${DESTDIR}${MANDIR}/man3/$$f.3.gz; done
 
 
 

@@ -25,8 +25,6 @@ leveraging easy application integration.
 Summary:      Include files and API documentation for Elektra Project
 Group:        Development/System
 Requires:     elektra = %{version}-%{release}
-Obsoletes:    registry-devel
-Provides:     registry-devel
 
 %description devel
 The Elektra Project provides a framework to store generic configuration data
@@ -49,14 +47,33 @@ if [ "$numprocs" = "0" ]; then
 	numprocs=1
 fi
 
-gmake %{?_smp_mflags} all
+gmake OPTIMIZATIONS="$RPM_OPT_FLAGS" \
+	%{?_smp_mflags} \
+	UBINDIR=%{_bindir} \
+	ULIBDIR=%{_libdir} \
+	CONFDIR=%{_sysconfdir} \
+	INCDIR=%{_includedir} \
+	DOCDIR=%{_docdir} \
+	MANDIR=%{_mandir} \
+	SGMLDIR=%{_datadir}/sgml \
+	all
 
 %install
-gmake  %{?_smp_mflags} DESTDIR=$RPM_BUILD_ROOT install
+rm -rf $RPM_BUILD_ROOT
+gmake  %{?_smp_mflags} \
+	DESTDIR=$RPM_BUILD_ROOT \
+	UBINDIR=%{_bindir} \
+	ULIBDIR=%{_libdir} \
+	CONFDIR=%{_sysconfdir} \
+	INCDIR=%{_includedir} \
+	DOCDIR=%{_docdir} \
+	MANDIR=%{_mandir} \
+	SGMLDIR=%{_datadir}/sgml \
+	install
 
 %clean
-rm -rf $RPM_BUILD_ROOT/*
-rm -rf $RPM_BUILD_DIR/%{name}
+rm -rf $RPM_BUILD_ROOT
+#rm -rf $RPM_BUILD_DIR/%{name}
 
 
 
@@ -82,20 +99,20 @@ kdb set -t dir system/sw
 %defattr(-,root,root,0755)
 /lib/*.so
 /bin/*
-/etc/profile.d/*
-%doc /usr/share/doc/%{name}
-%doc /usr/share/man/man1/*
-%doc /usr/share/man/man7/*
-%doc /usr/share/man/man5/*
-/usr/share/sgml/*
+%{_sysconfdir}/profile.d/*
+%doc %{_docdir}/%{name}
+%doc %{_mandir}/man1/*
+%doc %{_mandir}/man7/*
+%doc %{_mandir}/man5/*
+%{_datadir}/sgml/*
 
 
 
 %files devel
 %defattr(-,root,root,0755)
-/usr/include/*
-/usr/lib/*.a
-%doc /usr/share/doc/%{name}-devel
-%doc /usr/share/man/man3/*
+%{_includedir}/*
+%{_libdir}/*.a
+%doc %{_docdir}/%{name}-devel
+%doc %{_mandir}/man3/*
 
 %changelog
