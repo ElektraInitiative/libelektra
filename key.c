@@ -96,23 +96,6 @@ size_t strblen(const char *s) {
  */
 
  
-/**
- * A destructor for Key objects.
- * It will keyClose() and free() the @p key pointer.
- *
- * @see keyNew()
- * @return whatever is returned by keyClose()
- *
- */ 
-int keyDel(Key *key) {
-	int rc;
-	
-	rc=keyClose(key);
-	free(key);
-	
-	return rc;
- }
-
  
  
 /**
@@ -301,6 +284,23 @@ Key *keyNew(char *keyName, ...) {
  
  
  
+/**
+ * A destructor for Key objects.
+ * It will keyClose() and free() the @p key pointer.
+ *
+ * @see keyNew()
+ * @return whatever is returned by keyClose()
+ *
+ */ 
+int keyDel(Key *key) {
+	int rc;
+	
+	rc=keyClose(key);
+	free(key);
+	
+	return rc;
+ }
+
  
  
  
