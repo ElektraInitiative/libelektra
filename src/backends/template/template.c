@@ -27,7 +27,10 @@
 
 /* Subversion stuff
 
-$Id: libkdb.c 160 2005-01-23 15:51:41Z aviram $
+$Id$
+$Id $
+$Id:$
+$Id: $
 $LastChangedBy: aviram $
 
 */
@@ -42,10 +45,10 @@ $LastChangedBy: aviram $
 
 
 
-/**Some systems have even longer pathnames*/
+/**Some systems have even longer pathnames */
 #ifdef PATH_MAX
 #define MAX_PATH_LENGTH PATH_MAX
-/**This value is garanteed on any Posixsystem*/
+/**This value is garanteed on any Posix system */
 #elif __USE_POSIX
 #define MAX_PATH_LENGTH _POSIX_PATH_MAX
 #else 
