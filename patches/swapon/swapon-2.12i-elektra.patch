@@ -1,0 +1,255 @@
+*** swapon.old.c	2004-12-27 20:11:18.653573136 +0100
+--- swapon.c	2004-12-27 20:11:33.452323384 +0100
+***************
+*** 21,26 ****
+--- 21,27 ----
+  #include <mntent.h>
+  #include <errno.h>
+  #include <sys/stat.h>
++ #include <kdb.h>
+  #include "swap_constants.h"
+  #include "swapargs.h"
+  #include "nls.h"
+***************
+*** 29,34 ****
+--- 30,37 ----
+  
+  #define	_PATH_FSTAB     "/etc/fstab"
+  #define PROC_SWAPS      "/proc/swaps"
++ #define KDB_FSTAB   "system/filesystems"
++ 
+  
+  #define SWAPON_NEEDS_TWO_ARGS
+  
+***************
+*** 107,112 ****
+--- 110,160 ----
+  static int numSwaps;
+  static char **swapFiles;	/* array of swap file and partition names */
+  
++ 
++ /*
++  *  function added by Rémi Flament <remipouak@yahoo.fr> (27/12/2004)
++  *  return a mntent struct from a key which from system/filesystems
++  */
++ static struct mntent* get_elektra_mntent(Key* key)
++ {
++ 	char keyName[300];
++ 	char buf[3];
++ 	char *device;
++ 	char *mpoint;
++ 	char *type;
++ 	char *opts;
++ 	struct mntent* mnt=malloc(sizeof(struct mntent));
++ 	
++ 	mnt->mnt_freq=0;
++ 	mnt->mnt_passno=0;
++ 	keyGetFullName(key,keyName,sizeof(keyName));
++ 	
++ 	// size of buffers are choosen arbitrary, I guess that should be changed...
++ 	device=malloc(300);
++ 	mpoint=malloc(300);
++ 	type=malloc(100);
++ 	opts=malloc(200);
++ 	
++ 	kdbGetValueByParent(keyName,"device",device,300);
++ 	kdbGetValueByParent(keyName,"mpoint",mpoint,300);
++ 	kdbGetValueByParent(keyName,"type",type,100);
++ 	kdbGetValueByParent(keyName,"options",opts,200);
++ 	
++ 	mnt->mnt_fsname=device;
++ 	mnt->mnt_dir=mpoint;
++ 	mnt->mnt_type=type;
++ 	mnt->mnt_opts=opts;
++ 	
++ 	kdbGetValueByParent(keyName,"passno",buf,3);
++ 	if (isdigit(buf[0])) mnt->mnt_passno=atoi(buf);
++ 	
++ 	kdbGetValueByParent(keyName,"dumpfreq",buf,3);
++ 	if (isdigit(buf[0])) mnt->mnt_freq=atoi(buf);
++ 	
++ 	return mnt;
++ }
++ 
++ 
+  static void
+  read_proc_swaps(void) {
+  	FILE *swaps;
+***************
+*** 306,335 ****
+  	if (all) {
+  		read_proc_swaps();
+  
+! 		fp = setmntent(_PATH_FSTAB, "r");
+! 		if (fp == NULL) {
+! 			int errsv = errno;
+! 			fprintf(stderr, _("%s: cannot open %s: %s\n"),
+! 				program_name, _PATH_FSTAB, strerror(errsv));
+! 			exit(2);
+! 		}
+! 		while ((fstab = getmntent(fp)) != NULL) {
+! 			char *special = fstab->mnt_fsname;
+! 
+! 			if (streq(fstab->mnt_type, MNTTYPE_SWAP) &&
+! 			    !is_in_proc_swaps(special)
+! 			    && (!ifexists || !access(special, R_OK))) {
+! 				/* parse mount options; */
+! 				char *opt, *opts = strdup(fstab->mnt_opts);
+! 	   
+! 				for (opt = strtok(opts, ","); opt != NULL;
+! 				     opt = strtok(NULL, ","))
+! 					if (strncmp(opt, "pri=", 4) == 0)
+! 						priority = atoi(opt+4);
+! 				status |= do_swapon(special, priority);
+  			}
+! 		}
+! 		fclose(fp);
+  	}
+  
+  	while (*argv != NULL)
+--- 354,421 ----
+  	if (all) {
+  		read_proc_swaps();
+  
+! 		KeySet *entries=ksNew();
+! 		Key *current;
+! 		int rc;
+! 		
+! 		// modified by Rémi Flament (27/12/2004) to use elektra if it can
+! 		// otherwise it fallbacks to /etc/fstab
+! 		kdbOpen();
+! 		rc=kdbGetChildKeys(KDB_FSTAB, entries, KDB_O_SORT|KDB_O_DIR);
+! 		if (rc==0)
+! 			{
+! 			ksRewind(entries);
+! 			while ((current=ksNext(entries))) 
+! 				{
+! 				fstab = get_elektra_mntent(current);
+! 				
+! 				char *special = fstab->mnt_fsname;
+! 		
+! 				if (streq(fstab->mnt_type, MNTTYPE_SWAP) &&
+! 				!is_in_proc_swaps(special)
+! 				&& (!ifexists || !access(special, R_OK))) 
+! 					{
+! 					/* parse mount options; */
+! 					char *opt, *opts = strdup(fstab->mnt_opts);
+! 					for (opt = strtok(opts, ","); opt != NULL;
+! 					opt = strtok(NULL, ","))
+! 						if (strncmp(opt, "pri=", 4) == 0)
+! 							priority = atoi(opt+4);
+! 					status |= do_swapon(special, priority);
+! 					}
+! 				
+! 				}
+  			}
+! 		else
+! 			{
+! 			printf("\nElektra keys haven't been found ! Falling back to the old method...\n\n");
+! 			fp = setmntent(_PATH_FSTAB, "r");
+! 			if (fp == NULL) {
+! 				int errsv = errno;
+! 				fprintf(stderr, _("%s: cannot open %s: %s\n"),
+! 					program_name, _PATH_FSTAB, strerror(errsv));
+! 				exit(2);
+! 			}
+! 			while ((fstab = getmntent(fp)) != NULL) {
+! 				char *special = fstab->mnt_fsname;
+! 	
+! 				if (streq(fstab->mnt_type, MNTTYPE_SWAP) &&
+! 				!is_in_proc_swaps(special)
+! 				&& (!ifexists || !access(special, R_OK))) {
+! 					/* parse mount options; */
+! 					char *opt, *opts = strdup(fstab->mnt_opts);
+! 		
+! 					for (opt = strtok(opts, ","); opt != NULL;
+! 					opt = strtok(NULL, ","))
+! 						if (strncmp(opt, "pri=", 4) == 0)
+! 							priority = atoi(opt+4);
+! 					status |= do_swapon(special, priority);
+! 				}
+! 			}
+! 			fclose(fp);
+! 			}
+! 		ksDel(entries);
+! 		kdbClose();
+  	}
+  
+  	while (*argv != NULL)
+***************
+*** 391,414 ****
+  		for(i=0; i<numSwaps; i++)
+  			status |= do_swapoff(swapFiles[i], QUIET);
+  
+! 		/*
+! 		 * Unmount stuff mentioned in /etc/fstab.
+! 		 * Probably it was unmounted already, so errors are not bad.
+! 		 * Doing swapoff -a twice should not give error messages.
+! 		 */
+! 		fp = setmntent(_PATH_FSTAB, "r");
+! 		if (fp == NULL) {
+! 			int errsv = errno;
+! 			fprintf(stderr, _("%s: cannot open %s: %s\n"),
+! 				program_name, _PATH_FSTAB, strerror(errsv));
+! 			exit(2);
+! 		}
+! 		while ((fstab = getmntent(fp)) != NULL) {
+! 			if (streq(fstab->mnt_type, MNTTYPE_SWAP) &&
+! 			    !is_in_proc_swaps(fstab->mnt_fsname))
+! 				do_swapoff(fstab->mnt_fsname, QUIET);
+! 		}
+! 		fclose(fp);
+  	}
+  
+  	return status;
+--- 477,526 ----
+  		for(i=0; i<numSwaps; i++)
+  			status |= do_swapoff(swapFiles[i], QUIET);
+  
+! 			
+! 		KeySet *entries=ksNew();
+! 		Key *current;
+! 		int rc;
+! 		
+! 		// modified by Rémi Flament (27/12/2004) to use elektra if it can
+! 		// otherwise it fallbacks to /etc/fstab
+! 		kdbOpen();
+! 		rc=kdbGetChildKeys(KDB_FSTAB, entries, KDB_O_SORT|KDB_O_DIR);
+! 		if (rc==0)
+! 			{
+! 			ksRewind(entries);
+! 			while ((current=ksNext(entries))) 
+! 				{
+! 				fstab = get_elektra_mntent(current);
+! 				if (streq(fstab->mnt_type, MNTTYPE_SWAP) &&
+! 				!is_in_proc_swaps(fstab->mnt_fsname))
+! 					do_swapoff(fstab->mnt_fsname, QUIET);
+! 				}
+! 			}
+! 		else
+! 			{	
+! 			printf("\nElektra keys haven't been found ! Falling back to the old method...\n\n");
+! 			/*
+! 			* Unmount stuff mentioned in /etc/fstab.
+! 			* Probably it was unmounted already, so errors are not bad.
+! 			* Doing swapoff -a twice should not give error messages.
+! 			*/
+! 			fp = setmntent(_PATH_FSTAB, "r");
+! 			if (fp == NULL) {
+! 				int errsv = errno;
+! 				fprintf(stderr, _("%s: cannot open %s: %s\n"),
+! 					program_name, _PATH_FSTAB, strerror(errsv));
+! 				exit(2);
+! 			}
+! 			while ((fstab = getmntent(fp)) != NULL) {
+! 				if (streq(fstab->mnt_type, MNTTYPE_SWAP) &&
+! 				!is_in_proc_swaps(fstab->mnt_fsname))
+! 					do_swapoff(fstab->mnt_fsname, QUIET);
+! 			}
+! 			fclose(fp);
+! 			}
+! 		ksDel(entries);
+! 		kdbClose();
+  	}
+  
+  	return status;
