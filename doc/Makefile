@@ -16,7 +16,7 @@ all: man doxygen
 
 doxygen:
 	cd ..; doxygen
-	find api | cpio -H tar -o | gzip -c --best > elektra-api.tar.gz
+	find api/html | cpio -H tar -o | gzip -c --best > elektra-api.tar.gz
 
 docbookman: kdb.1 elektra.7 elektra.5
 

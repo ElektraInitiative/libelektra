@@ -1,6 +1,6 @@
 Name: elektra
 Version: _VERSION_
-Release: 12
+Release: 14
 Source:    http://registry.sf.net/%{name}-%{version}.tar.gz
 Group:     System Environment/Libraries
 Copyright: LGPL
@@ -11,7 +11,7 @@ Obsoletes: registry
 Provides: registry
 BuildRoot:   %{_tmppath}/%{name}-%{version}-build
 BuildRequires: /usr/bin/xsltproc
-Summary: A registry to store general key-value pairs for software configuration
+Summary: A key/value pair database to store software configurations
 
 %description
 The Elektra Project provides a framework to store generic configuration data
