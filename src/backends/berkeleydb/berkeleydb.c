@@ -308,7 +308,7 @@ int dbTreeInit(DBTree *newDB) {
  * The returned new DBTree must be included in the static single
  * DBContainer by the caller.
  */
-DBTree *dbTreeNew(Key *forKey) {
+DBTree *dbTreeNew(const Key *forKey) {
 	DBTree *newDB;
 	int ret;
 	int newlyCreated; /* True if this is a new database */
@@ -457,7 +457,7 @@ DBTree *dbTreeNew(Key *forKey) {
  * Lookup in the list of opened DBs (DBContainer). If not found, tries to
  * open it with dbTreeNew().
  */
-DBTree *getDBForKey(Key *key) {
+DBTree *getDBForKey(const Key *key) {
 	DBTree *current,*newDB;
 	char rootName[100];
 	rootName[0]=0; /* just to be sure... */
@@ -771,8 +771,85 @@ int kdbRemoveKey_backend(const Key *key) {
  * @ingroup backend
  */
 int kdbGetKeyChildKeys_bdb(const Key *parentKey, KeySet *returned, unsigned long options) {
-	/* retrieve multiple hierarchical keys */
-	return 0; /* success */
+	DBTree *db=0;
+	DBC *cursor=0;
+	DBT parent,keyName,keyData;
+	Key *retrievedKey;
+	int ret;
+	
+	/* Get/create the DB for the parent key */
+	db=getDBForKey(parentKey);
+
+	if (db == 0) { /* handle error */}
+
+
+		
+	/* Create a private cursor to not mess up threads
+	 * TODO: Check if BDB has some option to avoid this */
+	ret = db->db.keyValuePairs->cursor(db->db.keyValuePais, NULL, &cursor, 0);
+
+	memset(&parent,0,sizeof(parent));
+	parent.size=strblen(parentKey->key);
+	parent.data=malloc(parent.size);
+	/* TODO: UTF-8 conversion */
+	memcpy(parent.data,parentKey->key,parent.size);
+
+	memset(&keyName,0,sizeof(keyName));
+	memset(&keyData,0,sizeof(keyData));
+	
+    ret=cursor->c_pget(cursor,&parent,&keyName,&keyData,DB_SET);
+
+	if (ret==DB_NOTFOUND) {
+		cursor->c_close(cursor);
+		errno=KDB_RET_NOTFOUND;
+		return -1;
+	}
+
+	do {
+		/* Check if is inactive before doing higher level operations */
+		if (*(char *)keyName.data=='.' && !(options & KDB_O_INACTIVE)) {
+			/* fetch next */
+			ret=cursor->c_pget(cursor,&parent,&keyName,&keyData,DB_NEXT);
+			continue;
+		}
+		
+		/* TODO: UTF-8 conversion */
+		retrievedKey=keyNew(KEY_SWITCH_END);
+		keyFromBDB(retrievedKey,&keyName,&keyData);
+		/* TODO: handle KDB_O_STATONLY */
+		/* TODO: handle KDB_O_NFOLLOWLINK */
+
+		if (keyIsDir(retrievedKey)) {
+			if (options & KDB_O_RECURSIVE) {
+				KeySet *children=ksNew();
+
+				/* Act recursively, without sorting. Sort in the end, once */
+				kdbGetKeyChildKeys_bdb(retrievedKey,children,
+					~(KDB_O_SORT) & options);
+
+				/* Insert the current directory key in the returned list
+				 * before its children */
+				if (options & KDB_O_DIR) ksAppend(returned,retrievedKey);
+				else keyDel(retrievedKey);
+
+				/* Insert the children */
+				ksAppendKeys(returned,children);
+				ksDel(children);
+			} else if (options & KDB_O_DIR) ksAppend(returned,retrievedKey);
+				else keyDel(retrievedKey);
+		} else if (options & KDB_O_DIRONLY) keyDel(retrievedKey);
+			else ksAppend(returned,retrievedKey);
+    
+		ret=cursor->c_pget(cursor,&parent,&keyName,&keyData,DB_NEXT);
+
+	} while (ret != DB_NOTFOUND);
+	
+	if ((options & (KDB_O_SORT)) && (returned->size > 1))
+		ksSort(returned);
+	
+	cursor->c_close(cursor);
+	
+	return 0;
 }
 
 

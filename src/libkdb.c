@@ -640,8 +640,8 @@ int kdbGetKeyByParentKey(const Key *parent, const char *baseName, Key *returned)
  *   By default, folder keys will not be returned because they don't have
  *   values and exist only to define hierarchy. Use this option if you need
  *   them to be included in the returned KeySet.
- * - @p KDBOptions::KDB_O_NOVALUE \n
- *   Do not include in @p returned the regular value keys. The resulting KeySet
+ * - @p KDBOptions::KDB_O_DIRONLY \n
+ *   Include in @p returned only the directory keys. The resulting KeySet
  *   will be only the skeleton of the tree.
  * - @p KDBOptions::KDB_O_STATONLY \n
  *   Only stat(2) the keys; do not retrieve the value, comment and key data

@@ -322,7 +322,7 @@ int kdbGetKeyChildKeys_filesys(const Key *parentKey, KeySet *returned, unsigned 
 	char realParentName[parentNameSize];
 	DIR *parentDir;
 	char buffer[MAX_PATH_LENGTH];
-	struct dirent *entry;
+	struct dirent *entry;                                       
 
 	/*
 		- Convert parent key name into a real filename
@@ -385,7 +385,8 @@ int kdbGetKeyChildKeys_filesys(const Key *parentKey, KeySet *returned, unsigned 
 
 				children=ksNew();
 				/* Act recursively, without sorting. Sort in the end, once */
-				kdbGetKeyChildKeys_filesys(keyEntry,children, ~(KDB_O_SORT) & options);
+				kdbGetKeyChildKeys_filesys(keyEntry,children,
+					~(KDB_O_SORT) & options);
 
 				/* Insert the current directory key in the returned list
 				 * before its children */
@@ -397,7 +398,7 @@ int kdbGetKeyChildKeys_filesys(const Key *parentKey, KeySet *returned, unsigned 
 				ksDel(children);
 			} else if (options & KDB_O_DIR) ksAppend(returned,keyEntry);
 				else keyDel(keyEntry);
-		} else if (options & KDB_O_NOVALUE) keyDel(keyEntry);
+		} else if (options & KDB_O_DIRONLY) keyDel(keyEntry);
 			else ksAppend(returned,keyEntry);
 	} /* while(readdir) */
 	

@@ -227,8 +227,7 @@ enum KDBErr {
 enum KDBOptions {
 	KDB_O_RECURSIVE=1,       /*!< Act recursively. */
 	KDB_O_DIR=1<<1,          /*!< Include dir keys in result. */
-	KDB_O_NOVALUE=1<<2,      /*!< Retrieve only keys that don't have values
-	                              (a.k.a dir keys). */
+	KDB_O_DIRONLY=1<<2,      /*!< Retrieve only directory keys. */
 	KDB_O_NOEMPTY=1<<3,      /* unused ???? */
 	KDB_O_STATONLY=1<<4,     /*!< Only stat key, instead of getting entirelly. */
 	KDB_O_INACTIVE=1<<5,     /*!< Do not ignore inactive keys (that name begins
@@ -248,8 +247,12 @@ enum KDBOptions {
 	
 /* Options used by ksLookupRE() methods */
 	KDB_O_NOCASE=1<<15,      /*!< Ignore case in ksLookup*() methods */
-	KDB_O_NOSPANPARENT=1<<16 /*!< Don't continue search if end of current
+	KDB_O_NOSPANPARENT=1<<16, /*!< Don't continue search if end of current
 	                              folder reached, in ksLookupRE() */
+
+/* Obsolete/renamed options */
+	KDB_O_NOVALUE=KDB_O_DIRONLY
+
 };
 
 
