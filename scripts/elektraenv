@@ -1,0 +1,69 @@
+#!/bin/sh
+
+###########################################################################
+##
+## This is a /etc/profile.d script to set user environment and aliases
+## based on Elektra keys under 'user/env'.
+##
+## Bellow user/env there must be three priorities for environment
+## variables:
+##
+##     user/env/env1
+##     user/env/env2
+##     user/env/env3
+##
+## You should distribute your environment variables according to their
+## dependencies. For example, if we want to
+## set PATH as $JAVA_HOME/bin:$PATH, we'll have to set
+##
+##     user/env/env1/JAVA_HOME
+##     user/env/env2/PATH
+##
+## This way it is guaranteed that the variables under user/env/env1 are
+## set before those under user/env/env2, and before those under
+## user/env/env3
+##
+## The folder user/env/alias contains keys to define shell aliases.
+## For instance user/env/alias/ls may contain 'ls -Fh', to set an alias
+## to the 'ls' command.
+##
+## Avi Alkalay <avi at unix dot sh>
+## April 2004
+##
+
+
+if [ -z "$RG" ]; then
+	RG=kdb
+fi
+
+FILE="/tmp/elektraenv$$"
+
+#set -vx
+
+readEnvTree() {
+	echo "echo Setting environment from the Elektra key database under '$1'"
+
+	for stage in 1 2 3; do
+		echo "# Stage $stage"
+		$RG ls $1/env$stage 2>/dev/null | while read key; do
+			echo export `$RG get -s $key`
+		done
+	done
+
+	echo
+	echo "# Aliases"
+	$RG ls $1/alias 2>/dev/null | while read key; do
+		echo alias `$RG get -s $key`
+	done
+}
+
+
+readEnvTree system/env > $FILE
+(echo; echo; echo) >> $FILE
+readEnvTree user/env >> $FILE
+
+# Execute it
+[ -f $FILE ] && . $FILE
+
+# Remove it
+[ -f $FILE ] && rm -f $FILE
