@@ -14,6 +14,7 @@ $LastChangedBy:$
 				<listitem><para>It is much more an agreenment then a piece of software. Relation is 99% to 1%.</para></listitem>
 				<listitem><para>It is a simple and consistent API to help software developers programatically store and retrieve global and user-specific configuration parameters.</para></listitem>
 				<listitem><para>All key-value pairs are stored in clear-text files.</para></listitem>
+				<listitem><para>API supports change notifications and multiple backends.</para></listitem>
 				<listitem><para>It provides a unique namespace for all values. Anywhere, anytime, any program can preciselly access keys by their names. Security restrictions may obviously apply.</para></listitem>
 				<listitem><para>It is designed to be secure and lightweight, to let even early boot-stage programs like <command>/sbin/init</command> to use it, instead of <filename>/etc/inittab</filename> file.</para></listitem>
 				<listitem><para>It is designed to be easy to administrate with regular command line tools like <command>cat</command>, <command>vi</command>, <command>cp</command>, <command>ls</command>, <command>ln</command>. Its storage is 100% open.</para></listitem>

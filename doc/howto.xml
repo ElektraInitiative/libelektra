@@ -288,7 +288,7 @@ $LastChangedBy$
 				<listitem><simpara><ulink url="registry.7.html">registry.7</ulink>: Discussion about what is the Registry etc. You don't need it if you are already reading this.</simpara></listitem>
 				<listitem><simpara><ulink url="registry.5.html">registry.5</ulink>: Registry internals.</simpara></listitem>
 			</orderedlist>
-			<para>You can also <ulink url="api/html/index.html">browse</ulink> or <ulink url="registry-api.tar.gz">download</ulink> the API documentation (also provided in the <ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628">-devel RPM</ulink>), by Doxygen.</para>
+			<para>You can also <ulink url="api/html/index.html">browse</ulink> or <ulink url="registry-api.tar.gz">download</ulink> the API documentation (also provided in the <ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628">-devel RPM</ulink>), by Doxygen. It is complete, with many code examples.</para>
 		</section>
 
 	

@@ -60,6 +60,7 @@ $LastChangedBy$
 #define CMD_EDIT      6
 #define CMD_LOAD      7
 #define CMD_SAVE      8
+#define CMD_MONITOR   9
 
 #define ARGSIZE      30
 
@@ -182,6 +183,8 @@ int parseCommandLine(int argc, char *argv[]) {
 	else if (!strcmp(sargCommand,"import")) argCommand=CMD_LOAD;
 	else if (!strcmp(sargCommand,"save")) argCommand=CMD_SAVE;
 	else if (!strcmp(sargCommand,"export")) argCommand=CMD_SAVE;
+	else if (!strcmp(sargCommand,"mon")) argCommand=CMD_MONITOR;
+	else if (!strcmp(sargCommand,"monitor")) argCommand=CMD_MONITOR;
 	else {
 		fprintf(stderr,"Invalid subcommand\n");
 		exit(1);
@@ -524,7 +527,7 @@ int commandLink() {
  * @see registryGetChildKeys()
  * @see keyToStream()
  * @see ksToStream()
- * @see commandSave() for the 'rg export' command
+ * @see commandExport() for the 'rg export' command
  */
 int commandList() {
 	KeySet ks;
@@ -1032,7 +1035,7 @@ int commandEdit() {
  * @see registrySetKeys()
  * @see commandSave()
  */
-int commandLoad() {
+int commandImport() {
 	KeySet ks;
 
 	ksInit(&ks);
@@ -1062,10 +1065,10 @@ int commandLoad() {
  * @endcode
  *
  * @see commandList()
- * @see commandLoad()
+ * @see commandImport()
  *
  */
-int commandSave() {
+int commandExport() {
 	argSort=1;
 	argRecursive=1;
 	argAll=1;
@@ -1080,17 +1083,59 @@ int commandSave() {
 }
 
 
+/**
+ * Business logic behind 'rg mon' command.
+ *
+ * Will block your command line until some change happens to the
+ * interested key.
+ *
+ * @par Example:
+ * @code
+ * bash$ rg mon system/sw/MyApp/someKey
+ * @endcode
+ *
+ * @see registryMonitorKey()
+ * @see registryMonitorKeys()
+ */
+int commandMonitor() {
+	Key toMonitor;
+	u_int32_t diff;
+	char *newData=0;
+	size_t dataSize;
+	
+	keyInit(&toMonitor);
+	keySetName(&toMonitor,argKeyName);
+	registryGetKey(&toMonitor);
+	
+	diff=registryMonitorKey(
+		&toMonitor,          /* key to monitor */
+		RG_KEY_FLAG_HASDATA, /* particular info from the key we are interested */
+		0,                   /* how many times to poll. 0 = ad-infinitum */
+		500                  /* usecs between polls. 0 defaults to 1 second */);
+		
+	/* 
+	 * Since in our case we'll hang completelly until we get a key's
+	 * value change, we don't have to check diff.
+	 * So if method returned, the value has changed, and toMonitor has it.
+	 */
+	newData=malloc(dataSize=keyGetDataSize(&toMonitor));
+	keyGetString(&toMonitor,newData,dataSize);
+	printf("New value is %s\n",newData);
+	return 0;
+}
+
 
 int doCommand(int command) {
 	switch (command) {
-		case CMD_SET: return commandSet();
-		case CMD_LIST: return commandList();
-		case CMD_LINK: return commandLink();
-		case CMD_GET: return commandGet();
-		case CMD_REMOVE: return commandRemove();
-		case CMD_EDIT: return commandEdit();
-		case CMD_LOAD: return commandLoad();
-		case CMD_SAVE: return commandSave();
+		case CMD_SET:             return commandSet();
+		case CMD_LIST:            return commandList();
+		case CMD_LINK:            return commandLink();
+		case CMD_GET:             return commandGet();
+		case CMD_REMOVE:          return commandRemove();
+		case CMD_EDIT:            return commandEdit();
+		case CMD_LOAD:            return commandImport();
+		case CMD_SAVE:            return commandExport();
+		case CMD_MONITOR:         return commandMonitor();
 	}
 	return 0;
 }

@@ -51,11 +51,12 @@ size_t strblen(char *s) {
 
 
 /**
- * @defgroup key Key Manipulation Methods
- * @brief These are methods to manipulate Keys.
+ * @defgroup key Key Class
+ * @brief The Key Class and its methods.
  *
+ * 
  * A Key is the essential class that contains all key data and metadata.
- * Its properties are
+ * Its properties are:
  * - Key name
  * - User domain
  * - Key value or data
@@ -65,8 +66,11 @@ size_t strblen(char *s) {
  * - Access, change and modification times
  * - A general flag
  *
+ * 
  *
- * Described here the methods to get and set, and make various manipulations in the objects of class Key.
+ *
+ * Described here the methods to get and set, and make various manipulations
+ * in the objects of class Key.
  * 
  * @{
  */
@@ -2130,6 +2134,7 @@ int ksClose(KeySet *ks) {
  * the KeySet and the first key is returned.
  *
  * @see ksRewind()
+ * @see ksCurrent()
  * @return the new current Key
  *
  */
@@ -2146,12 +2151,28 @@ Key *ksNext(KeySet *ks) {
  * Resets a KeySet internal cursor.
  *
  * @see ksNext()
+ * @see ksCurrent()
+ * @see registryMonitorKeys() for an example
  * @return allways 0
  *
  */
 int ksRewind(KeySet *ks) {
 	ks->cursor=0;
 	return 0;
+}
+
+
+
+/**
+ * Return the current Key
+ *
+ * @see ksNext()
+ * @see ksRewind()
+ * @see registryMonitorKeys() for an example
+ * @return pointer to the Key pointed by @p ks's cursor
+ */
+Key *ksCurrent(KeySet *ks) {
+	return ks->cursor;
 }
 
 

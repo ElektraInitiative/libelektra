@@ -126,6 +126,10 @@ $LastChangedBy$
 		<cmdsynopsis>
 			<command>rg import file.xml</command>
 		</cmdsynopsis>
+		
+		<cmdsynopsis>
+			<command>rg monitor some/key/name</command>
+		</cmdsynopsis>
 	</refsynopsisdiv>
 
 	&rgcmd;

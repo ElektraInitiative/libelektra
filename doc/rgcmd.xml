@@ -41,6 +41,10 @@ $LastChangedBy$
 			<varlistentry><term><command>import</command></term><term><command>load</command></term>
 				<listitem><para>Import an XML representation of keys and save it to the registry. If no filename is passed right after the <command>import</command> command, standard input is used.</para></listitem>
 			</varlistentry>
+			
+			<varlistentry><term><command>monitor</command></term><term><command>mon</command></term>
+				<listitem><para>Monitor a key for some value change. It will block your command line until a change in the key value is detected, then return its new value.</para></listitem>
+			</varlistentry>
 		</variablelist>
 	</section>
 	

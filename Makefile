@@ -64,14 +64,14 @@ rg.o: rg.c registry.h registryprivate.h
 
 
 
-rg: rg.o
+rg: rg.o libregistry.so
 	${CC} -g -L. ${XMLLIBS} -lregistry -o $@ $<
 	# ld -shared -lc -lregistry -static -lxml2 -lz -o $@ $<
 
 
 commit: clean
 	cd ..; \
-	svn ci registry	
+	svn ci registry
 
 
 

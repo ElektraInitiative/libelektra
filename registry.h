@@ -63,13 +63,8 @@ $LastChangedBy$
 
 
 
-/* Numerical types (deprecated) */
-#define RG_DWORD  long long int
-#define RG_DOUBLE double
-
-
 /*
-The key flags bit array. The '.' indicator means unknown:
+The key flags bit array. The '.' means whatever:
 
 7654 3210 7654 3210 7654 3210 7654 3210
 ...1 0... .0.. .1.. ..1. ..0. ...0 1... 0x10042008 Initialized
@@ -237,7 +232,10 @@ int registryGetRootKeys(KeySet *returned);
 
 int registrySetKeys(KeySet *ks);
 
-
+u_int32_t registryMonitorKey(Key *interest, u_int32_t diffMask,
+	unsigned long iterations, unsigned usleep);
+u_int32_t registryMonitorKeys(KeySet *interests, u_int32_t diffMask,
+		unsigned long iterations, unsigned sleep);
 
 
 
@@ -363,6 +361,7 @@ int ksCompare(KeySet *ks1, KeySet *ks2, KeySet *removed);
 
 int ksRewind(KeySet *ks);
 Key *ksNext(KeySet *ks);
+Key *ksCurrent(KeySet *ks);
 
 
 // Key *ksLookupByName(KeySet *ks,char *keyName);

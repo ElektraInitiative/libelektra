@@ -1,3 +1,9 @@
+* Mon Aug 10 2004 Avi Alkalay <avi@unix.sh> 0.3
+- Registry now supports key and key sets CHANGE NOTIFICATIONS
+- New 'rg monitor' command, using notifications framework
+- 100% fully documented methods with Doxygen
+- Thinking seriously in a project name change. I have an idea for a new name
+
 * Fri Jul 30 2004 Avi Alkalay <avi@unix.sh> 0.2.9
 - Doxygen finaly generates methods documentation. Not very nice though.
 - Included in -devel RPM

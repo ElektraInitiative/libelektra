@@ -84,4 +84,4 @@ install: all
 	
 	
 pub: html doxygen
-	scp -r registry-api.tar.gz api *html aviram@shell.sf.net:/home/groups/r/re/registry/htdocs
+	find registry-api.tar.gz *html | cpio -o | ssh -l aviram shell.sf.net "cd /home/groups/r/re/registry/htdocs; cpio -idvm; rm -rf api; tar -zxvf registry-api.tar.gz"

@@ -804,6 +804,7 @@ size_t registryGetFilename(Key *forKey,char *returned,size_t maxSize) {
  * @see registryGetKey()
  * @see registryGetValueByParent()
  * @see keyGetString()
+ * @return 0 on success, or other value and errno is set
  * @param keyname the name of the key to receive the value
  * @param returned a buffer to put the key value
  * @param maxSize the size of the buffer
@@ -838,7 +839,7 @@ int registryGetValue(char *keyname,char *returned,size_t maxSize) {
  * @see registrySetKey()
  * @param keyname the name of the key to receive the value
  * @param value the value to be set
- * @return 0 on success, and error code otherwise
+ * @return 0 on success, other value otherwise, and errno is set
  * @ingroup registry
  */
 int registrySetValue(char *keyname, char *value) {
@@ -918,7 +919,7 @@ int registrySetValueByParent(char *parentName, char *baseName, char *value) {
  * @param parentName parent key name
  * @param baseName leaf or child name
  * @param returned a pointer to an initialized key to be filled
- * @return 0 on success, or a return code if key was not retrieved for some reason
+ * @return 0 on success, or what registryGetKey() returns, and errno is set
  * @see registryGetKey()
  * @see registryGetValueByParent()
  * @see registryGetKeyByParentKey()
@@ -940,6 +941,7 @@ int registryGetKeyByParent(char *parentName, char *baseName, Key *returned) {
  * @see registryGetKey()
  * @see registryGetKeyByParent()
  * @see registryGetValueByParent()
+ * @return 0 on success, or what registryGetKey() returns, and errno is set
  * @ingroup registry
  */
 int registryGetKeyByParentKey(Key *parent, char *baseName, Key *returned) {
@@ -1009,11 +1011,12 @@ registryClose();
  * @param parentName name of the parent key
  * @param returned the KeySet returned with all keys found
  * @param options ORed options to control approaches
- * @ingroup registry
- *
  * @see commandList() code in rg command for usage example
  * @see commandEdit() code in rg command for usage example
  * @see commandSave() code in rg command for usage example
+ * @return 0 on success, other value on error and errno is set
+ * @ingroup registry
+ *
  */
 int registryGetChildKeys(char *parentName, KeySet *returned, unsigned long options) {
 	char *realParentName=0;
@@ -1159,9 +1162,9 @@ int registryGetChildKeys(char *parentName, KeySet *returned, unsigned long optio
  * Currently, the \c system and current user's \c user keys are returned.
  * @param returned the initialized KeySet to be filled
  * @return 0
+ * @see commandList() code in rg command for usage example
  * @ingroup registry
  *
- * @see commandList() code in rg command for usage example
  */
 int registryGetRootKeys(KeySet *returned) {
 	Key *system=0,*user=0;
@@ -1198,8 +1201,8 @@ int registryGetRootKeys(KeySet *returned) {
  * Info like comments and key data type are not retrieved.
  *
  * @param key an initialized Key pointer to be filled.
- * @ingroup registry
  * @return 0 on success, -1 otherwise
+ * @ingroup registry
  */
 int registryStatKey(Key *key) {
 	char keyFileName[800];
@@ -1237,10 +1240,10 @@ int registryStatKey(Key *key) {
 /**
  * Fully retrieves the passed \p key from the backend storage.
  * @param key a pointer to a Key that has a name set
- * @return 0 on success, other value otherwise
+ * @return 0 on success, or other value and errno is set
  * @see registrySetKey()
- * @ingroup registry
  * @see commandGet() code in rg command for usage example
+ * @ingroup registry
  */
 int registryGetKey(Key *key) {
 	char keyFileName[500];
@@ -1309,7 +1312,7 @@ int registrySetKeys(KeySet *ks) {
  * @see registryGetKey()
  * @see registrySetKeys()
  * @see commandSet() code in rg command for usage example
- * @return 0 on success, other value otherwise.
+ * @return 0 on success, or other value and errno is set
  * @ingroup registry
  */
 int registrySetKey(Key *key) {
@@ -1486,31 +1489,178 @@ int registryLink(char *oldPath,char *newKeyName) {
 }
 
 
-long registryNotifyKeySet(KeySet *interests, unsigned long iterations,
-		unsigned usleep) {
+
+
+
+/**
+ * Monitor a KeySet for some key change.
+ *
+ * This method will scan the @p interests KeySet, starting and finishing in
+ * the KeySet next cursor position, in a circular behavior, looking for some
+ * change defined in the @p diffMask mask. It will use registryMonitorKey()
+ * and will return at the first key change ocurrence, or when requested
+ * iterations finish.
+ *
+ * You may check the return code to see if some key changed, and get
+ * the updated key using ksCurrent().
+ *
+ * @par Example:
+ * @code
+KeySet myConfigs;
+
+ksInit(&myConfigs);
+registryGetChildKeys("system/sw/MyApp",&myConfigs,RG_O_ALL);
+
+// use the keys . . . .
+
+// now monitor any key change
+ksRewind(&myConfigs);
+while (1) {
+	Key *changed=0;
+	char keyName[300];
+	char keyData[300];
+	u_int32_t diff;
 	
+	// block until any change in key value or comment . . .
+	diff=registryMonitorKeys(&myConfigs,
+		RG_KEY_FLAG_HASDATA | RG_KEY_FLAG_HASCOMMENT,
+		0,0); // ad-infinitum
+
+	changed=ksCurrent(&myConfigs);
+	keyGetName(changed,keyName,sizeof(keyName));
+	
+	switch (diff) {
+		case RG_KEY_FLAG_FLAG:
+			printf("Key %s was deleted\n",keyName);
+			break;
+		case RG_KEY_FLAG_NEEDSYNC:
+			printf("No cretentials to access Key %s\n",keyName);
+			break;
+		default:
+			keyGetString(changed,keyData,sizeof(keyData));
+			printf("Key %s has changed its value to %s\n",keyName,keyData);
+	}
+}
+ * @endcode 
+ *
+ * @see registryMonitorKey()
+ * @see ksCurrent()
+ * @see ksRewind()
+ * @see ksNext()
+ * @see commandMonitor() code in rg command for usage example
+ * @ingroup registry
+ *
+ */
+u_int32_t registryMonitorKeys(KeySet *interests, u_int32_t diffMask,
+		unsigned long iterations, unsigned sleep) {
+	Key *start,*current;
+	u_int32_t diff;
+	int infinitum=0;
+
+	if (!interests || !interests->size) return 0;
+	
+	/* Unacceptable 0 usecs sleep. Defaults to 1 second */
+	if (!sleep) sleep=1000;
+	
+	if (!iterations) infinitum=1;
+	else infinitum=0;
+	
+	current=start=ksCurrent(interests);
+	
+	while (infinitum || --iterations) {
+		do {
+			diff=registryMonitorKey(current,diffMask,1,0);
+			if (diff) return diff;
+			current=ksNext(interests);
+		} while (current!=start);
+		
+		/* Test if some iterations left . . . */
+		if (infinitum || iterations) usleep(sleep);
+	}
+	return 0;
 }
 
 
 
-
-u_int32_t registryNotifyKey(Key *interest, unsigned long iterations,
-		unsigned usleep) {
+/**
+ * Monitor a key change.
+ *
+ * This method will block your program until one of the folowing happens:
+ * - All requested iterations, with requested sleep times, finish.
+ *   If no change happens, zero is returned.
+ * - Requested key info and meta-info (defined by @p diffMask) changes when
+ *   keyCompare()ed with the original @p interest.
+ *
+ * @p interest should be a full key with name, value, comments, permissions,
+ * etc, and all will be compared and then masked by @p diffMask.
+ *
+ * If @p interest is a folder key, use @c RG_KEY_FLAG_HASTIME in @p diffMask
+ * to detect a time change, so you'll know something happened (key
+ * modification, creation, deletion) inside the folder.
+ *
+ * If @p interest was not found, or deleted, the method will return
+ * immediatly a @c RG_KEY_FLAG_FLAG value.
+ *
+ * If you don't have access rights to @p interest, the method will return
+ * immediatly a @c RG_KEY_FLAG_NEEDSYNC value.
+ *
+ * If something from @p diffMask has changed in @p interest, it will be
+ * updated, so when method returns, you'll have an updated version of the key.
+ *
+ * @param interest key that will be monitored
+ * @param diffMask what particular info change we are interested
+ * @param iterations how many times to test, when 0 means until 
+ * some change happens
+ * @param sleep time to sleep, in microseconds, between iterations.
+ * 0 defaults to 1 second.
+ * @return the ORed RG_KEY_FLAG_* flags of what changed
+ * @see keyCompare()
+ * @see registryMonitoryKeys() to monitor KeySets, and for a code example
+ * @see commandMonitor() code in rg command for usage example
+ * @ingroup registry
+ *
+ */
+u_int32_t registryMonitorKey(Key *interest, u_int32_t diffMask,
+		unsigned long iterations, unsigned sleep) {
 	Key tested;
 	int rc;
+	u_int32_t diff;
+	int infinitum=0;
 
-	keyInit(tested);
+	/* consistency */
+	if (!interest || !keyGetNameSize(interest)) return 0;
+	
+	/* Unacceptable 0 usecs sleep. Defaults to 1 second */
+	if (!sleep) sleep=1000;
+	
+	if (!iterations) infinitum=1;
+	else infinitum=0;
+	
+	/* Work with a copy of the key */
+	keyInit(&tested);
 	keyDup(interest,&tested);
-	rc=registryGetKey(&tested);
-
-	if (rc) {
-		/* check what type of problem happened.... */
-		switch (errno) {
-			case RG_KEY_RET_NOCRED:
-			case RG_KEY_RET_NOTFOUND:
-				/* key was deleted */
-
+	
+	while (infinitum || --iterations) {
+		rc=registryGetKey(&tested);
+		if (rc) {
+			/* check what type of problem happened.... */
+			switch (errno) {
+				case RG_KEY_RET_NOCRED:
+					return RG_KEY_FLAG_NEEDSYNC;
+				case RG_KEY_RET_NOTFOUND:
+					return RG_KEY_FLAG_FLAG;
+			}
 		}
+		diff=keyCompare(&tested,interest);
+		if (diff & diffMask) {
+			/* If differences are in the diff mask...*/
+			keyDup(&tested,interest);
+			keyClose(&tested);
+			return diff;
+		}
+		/* Test if some iterations left . . . */
+		if (infinitum || iterations) usleep(sleep);
 	}
 
+	return 0;
 }
