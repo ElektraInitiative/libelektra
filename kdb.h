@@ -363,6 +363,7 @@ int keySetGID(Key *key, gid_t gid);
 mode_t keyGetAccess(const Key *key);
 int keySetAccess(Key *key, mode_t mode);
 
+size_t keyGetOwnerSize(const Key *key);
 size_t keyGetOwner(const Key *key, char *returned, size_t maxSize);
 size_t keySetOwner(Key *key, const char *userDomain);
 

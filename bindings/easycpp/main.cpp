@@ -8,13 +8,12 @@ int main()
 {
 	ckdb config("sw/test");
 
-	cout << config.get ("hallo") << endl;
-	config.set ("what", "hejo");
-	config.set ("hallo", "jo");
-	config.set ("nono", "what");
-	config.set ("hallo", "successfully overwritten");
-	config.write();
-	cout << config.get ("hallo") << endl;
-	config.set ("destr", "works also");
+	config.set ("t1", "ähhm, Säße!");
+	cout << config.get ("t1") << endl;
+	//config.set ("t2", "=()=<NO>");
+	//config.set ("t3", "§$ -- $§");
+	config.set ("t1", "successfully overwritten");
+	cout << config.get ("t1") << endl;
+	config.setFlag("t1");
 	return 0;
 }

@@ -623,6 +623,27 @@ size_t keyGetOwner(const Key *key, char *returned, size_t maxSize) {
 	return bytes;
 }
 
+/**
+ * Return the size of the user domain of the Key.
+ * 
+ * @return number of bytes
+ * @see keyGetOwner()
+ */
+size_t keyGetOwnerSize(const Key *key) {
+	
+	if (!key || !keyIsInitialized(key)) {
+		errno=KDB_RET_UNINITIALIZED;
+		return 0;
+	}
+
+	if (!key->userDomain) {
+		errno=KDB_RET_NODOMAIN;
+		return 0;
+	}
+
+	return strblen(key->userDomain);
+}
+
 
 /**
  * Set the user domain of a key. A user domain is a user name.
@@ -1020,7 +1041,12 @@ size_t keySetRaw(Key *key, const void *newBinary, size_t dataSize) {
 
 
 
+
+
 size_t keyGetLink(const Key *key, char *returnedTarget, size_t maxSize) {
+/**TODO: Remove or:
+ * - update Doc
+ * - add keyGetLinkSize()*/
 	if (!key || !keyIsInitialized(key))
 		return errno=KDB_RET_UNINITIALIZED;
 
