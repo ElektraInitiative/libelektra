@@ -1,6 +1,6 @@
 Name:          elektra
 Version:       _VERSION_
-%define myRelease 2
+%define myRelease 3
 %define vepoch 1
 Release:       0.fdr.%{vepoch}.%{myRelease}
 Source:        http://aleron.dl.sourceforge.net/sourceforge/elektra/%{name}-%{version}.tar.gz
@@ -90,8 +90,7 @@ fi
 kdb set -t dir system/sw
 
 
-%postun
-/sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 
 

@@ -133,8 +133,10 @@ elektra.spec: elektra.spec.in
 install: all
 	for x in ${DIRS}; do (cd "$$x"; make DTDVERSION=${DTDVERSION} \
 		DOCDIR=${DOCDIR} MANDIR=${MANDIR} SGMLDIR=${SGMLDIR} $@); done
-	strip libkdb.so
-	strip libregistry.so  # remove me in the future
+	# Strips will be done automatically by rpmbuild
+	# strip libkdb.so
+	# strip libregistry.so  # remove me in the future
+	# strip kdb
 	[ -d "${DESTDIR}${LIBDIR}" ] || mkdir -p ${DESTDIR}${LIBDIR}
 	[ -d "${DESTDIR}${ULIBDIR}" ] || mkdir -p ${DESTDIR}${ULIBDIR}
 	[ -d "${DESTDIR}${BINDIR}" ] || mkdir -p ${DESTDIR}${BINDIR}
@@ -145,7 +147,6 @@ install: all
 	cp libkdb.so ${DESTDIR}${LIBDIR}
 	cp libkdb.a ${DESTDIR}${ULIBDIR}
 	cp libregistry.so ${DESTDIR}${LIBDIR} # remove me in the future
-	strip kdb
 	cp kdb ${DESTDIR}${BINDIR}
 	cp kdb.h ${DESTDIR}${INCDIR}
 	cp scripts/elektraenv ${DESTDIR}${CONFDIR}/profile.d/elektraenv.sh

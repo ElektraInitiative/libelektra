@@ -5,7 +5,7 @@
 - Updated kdb.1 manpage to include 'kdb mv'
 - The KDB_ROOT env var to kdb command (needs manpage), thanks to Markus Raab
 - Fixed a bug in spec file, section %post
-- Acknoledged comments from https://bugzilla.fedora.us/show_bug.cgi?id=2250
+- Acknowledged comments from https://bugzilla.fedora.us/show_bug.cgi?id=2250
 
 * Fri Nov 05 2004 Avi Alkalay <avi@unix.sh> 0.4.6
 - New method: kdbRename()

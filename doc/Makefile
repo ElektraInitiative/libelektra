@@ -13,7 +13,7 @@ MANDIR=/usr/share/man
 
 
 .SUFFIXES: .xml .html .pdf .ps .rtf .xsl .fo .tpl
-#.SILENT:
+.SILENT:
 
 .xml.html:
 	if [ ! -L docbook ]; then ln -s ../../doc-common/docbook .; fi
