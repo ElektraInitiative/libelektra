@@ -9,7 +9,8 @@
 - Added 'undefined' key type to XML schema
 - Improved documentation for backend API
 - New layout style and improvements for API documentation with many new links
-- Better and more exmaples to the kdb command man page
+- Better and more examples to the kdb command man page
+- Moved the dtd/ dir to xmldtd/
 
 * Tue Jan 10 2005 Avi Alkalay <avi@unix.sh> 0.4.10
 - Added the libkdb-fstab.so backend to treat the /etc/fstab file as a backend storage
