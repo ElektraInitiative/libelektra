@@ -1,13 +1,16 @@
 Compiling and Packaging
 -----------------------
-Elektra is such a simple software, that you'll probably wont need it to
-recompile from source. Use the binary RPM from the main repository. It should
-work for any RPM based distribution.
+Elektra is such a bundle of software. First check out, if your distro
+has precompiled binary packages. You probably don't need to
+recompile it from source.
 
-If you still wants to compile it, do not use the fresh files from the
-Subversion repository since they contain only useless templates for some files.
-Avoid using the tarball. It is an obsolete method of compiling software. Use
-the source RPM instead.
+For rpm-based distros:
+Use the binary RPM from the main repository. It should work for any RPM 
+based distribution with a recent enough glibc.
+
+If you want to compile it on a RPM-based distro, do not use the fresh files 
+from the Subversion repository since they contain only useless templates for 
+some files. Avoid using the tarball. Use the source RPM instead.
 
 Download it from the main repository as elektra-*.src.rpm and rebuild the RPMs:
 
@@ -19,7 +22,13 @@ It was reported that the Makefiles will only work with gmake, which makes
 absolutelly no difference for Linux, but is a crucial information when
 building on BSD.
 
-On non-RPM systems, use the tarball.
+For deb-based distros:
+You can use the deb Package from the main repository. It works for Debian
+stable and distros based on it. You can also build the Debian Package
+out of the sources, using dpkg-buildpackage -rfakeroot. It is not possible
+to build the man-pages with Debian, see below.
+
+On non-rpm,deb systems, use the tarball.
 
 See the "Makefile" session bellow for some notes on building.
 
@@ -75,6 +84,10 @@ Usually you should build it like this:
 
 For more info, please use the elektra.spec file as a reference.
 
+It is recommended to provide a tool like update-libkdb, to make it
+safe for admins to change the backend. See under 
+scripts/update-backend an idea how the script could look like. Of
+course it has to be adopted for your distributions need.
 
 
 License
@@ -102,6 +115,7 @@ globaly even without these tools.
 
 Makefile
 --------
+
 You can issue the following subcomands to make:
 
 - make or make all
@@ -175,3 +189,10 @@ gmake OPTIMIZATIONS="$RPM_OPT_FLAGS" \
 	MANDIR=%{_mandir} \         # /usr/share/man
 	SGMLDIR=%{_datadir}/sgml \  # /usr/share/sgml
 	install
+
+You can also edit the Makefile for your special needs. If you don't
+like to build all the backends you can BACKENDS to the backends
+you would like to build. The DEFAULT_BACKEND is the backend used
+in the beginning, but it is possible to change the backend, even
+during the process its not possible to start new programs depending
+on elektra.

@@ -275,6 +275,8 @@ int IniGetFileName (const Key * forKey, char * filename, char * keyname)
 #define STATE_COMMENT 4
 #define STATE_END 8
 
+#define BUFFER_SIZE 3
+
 /**
  * Read one key out of a file.
  *
@@ -322,8 +324,7 @@ int IniGetKey (FILE * fc, Key * key)
 		else if (buffer[i] ==  '\0' ) {	// anticipated end?
 			if (i==string_length-1) { // no its not
 				string_length += BUFFER_SIZE;
-				buffer = realloc (buffer, string_length);
-				if (buffer == NULL) {
+				if (srealloc ((void**) & buffer, string_length) < 0) {
 					fprintf (stderr, "Reallocation error\n");
 					return -1;
 				} 
@@ -345,8 +346,7 @@ int IniGetKey (FILE * fc, Key * key)
 			if (k == key_length-1)
 			{
 				key_length += BUFFER_SIZE;
-				buffer_key = realloc (buffer_key, key_length);
-				if (buffer_key == NULL) {
+				if (srealloc ((void **) & buffer_key, key_length) < 0) {
 					fprintf (stderr, "Reallocation error\n");
 					return -1;
 				}					
@@ -357,8 +357,7 @@ int IniGetKey (FILE * fc, Key * key)
 			if (v == value_length-1) 
 			{
 				value_length += BUFFER_SIZE;
-				buffer_value = realloc (buffer_value, value_length);
-				if (buffer_value == NULL) {
+				if (srealloc ((void **) & buffer_value, value_length) < 0) {
 					fprintf (stderr, "Reallocation error\n");
 					return -1;
 				}					

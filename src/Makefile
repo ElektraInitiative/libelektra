@@ -5,7 +5,7 @@
 NAME=elektra
 DTDVERSION=0.1.1
 
-LIBVERSION=2.0     # used as libkdb.so.$(LIBVERSION)
+LIBVERSION=1.0     # used as libkdb.so.$(LIBVERSION)
 
 # Default dirs we use for installation, that can be substituted by the
 # command line. See the README file or the RPM spec file.

@@ -507,6 +507,7 @@ Helpers
 
 
 size_t strblen(const char *s);
+inline int srealloc (void ** p, size_t new_size);
 
 #ifdef __cplusplus
 }

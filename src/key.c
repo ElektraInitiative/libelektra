@@ -52,6 +52,24 @@ size_t strblen(const char *s) {
 	return 0;
 }
 
+/**
+ * A save method for realloc.
+ * 
+ * This function differs from realloc() because it
+ * handels error situations right.
+ * @return 0 at success, -1 on error (no memory leak)
+ * @ingroup backend
+ */
+inline int srealloc (void ** ptr, size_t new_size) {
+	void * h;
+	h = realloc (* ptr, new_size);
+	if (h == NULL) {
+		free (* ptr);
+		return -1;
+	}
+	ptr = h;
+	return 0;
+}
 
 /**
  * @defgroup key Key :: Basic Methods
