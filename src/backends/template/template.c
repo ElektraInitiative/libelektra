@@ -146,7 +146,7 @@ int kdbOpen_backend() {
  * @ingroup backend
  */
 int kdbClose_backend() {
-	/* free all backend resources and shutdown */
+	/* free all backend resources and shut it down */
 	return 0; /* success */
 }
 
