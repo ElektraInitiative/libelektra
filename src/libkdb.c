@@ -361,18 +361,26 @@ int kdbNeedsUTF8Conversion() {
 
 
 /**
- * Converts string to (direction=UTF8_TO) and from
- * (direction=UTF8_FROM) UTF-8.
+ * Converts string to (@p direction = @c UTF8_TO) and from
+ * (@p direction = @c UTF8_FROM) UTF-8.
  * 
- * Since Elektra provides portability key values between different codesets,
- * use this helper in your backend to convert the to universal UTF-8
- * strings when storing key names, values and comments.
+ * Since Elektra provides portability for key names and string values between
+ * different codesets, you should use this helper in your backend to convert
+ * to and from universal UTF-8 strings, when storing key names, values and
+ * comments.
  *
+ * @param direction must be @c UTF8_TO (convert from current non-UTF-8 to
+ * 	UTF-8) or @c UTF8-FROM (convert from UTF-8 to current non-UTF-8)
+ * @param string before the call: the string to be converted; after the call:
+ * 	reallocated to carry the converted string
+ * @param inputOutputByteSize before the call: the size of the string including
+ * 	leading NULL; after the call: the size of the converted string including
+ * 	leading NULL
  * @return 0 on success, -1 otherwise, and propagate @c errno
  * @ingroup backend
  *
  */
-int UTF8Engine(int direction, char **string, size_t *inputByteSize) {
+int UTF8Engine(int direction, char **string, size_t *inputOutputByteSize) {
 	char *currentCharset=0;
 	char *converted=0;
 	char *readCursor, *writeCursor;
@@ -388,14 +396,14 @@ int UTF8Engine(int direction, char **string, size_t *inputByteSize) {
 	if (converter == (iconv_t)(-1)) return -1;
 
 	/* work with worst case, when all chars are wide */
-	bufferSize=*inputByteSize * 4;
+	bufferSize=*inputOutputByteSize * 4;
 	converted=malloc(bufferSize);
 	if (!converted) return -1;
 
 	readCursor=*string;
 	writeCursor=converted;
 	if (iconv(converter,
-			&readCursor,inputByteSize,
+			&readCursor,inputOutputByteSize,
 			&writeCursor,&bufferSize) == (size_t)(-1)) {
 		free(converted);
 		iconv_close(converter);
@@ -403,13 +411,13 @@ int UTF8Engine(int direction, char **string, size_t *inputByteSize) {
 	}
 
 	/* calculate the UTF-8 string byte size, that will be returned */
-	*inputByteSize=writeCursor-converted;
+	*inputOutputByteSize=writeCursor-converted;
 	/* store the current unencoded string for future free */
 	readCursor=*string;
 	/* allocate an optimal size area to store the converted string */
-	*string=malloc(*inputByteSize);
+	*string=malloc(*inputOutputByteSize);
 	/* copy all that matters for returning */
-	memcpy(*string,converted,*inputByteSize);
+	memcpy(*string,converted,*inputOutputByteSize);
 	/* release memory used by passed string */
 	free(readCursor);
 	/* release buffer memory */

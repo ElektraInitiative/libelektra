@@ -339,7 +339,7 @@ DBTree *dbTreeNew(const Key *forKey) {
 		int ret;
 		
 		printf("Going to create dir %s\n",dbDir);
-		ret=mkdir(dbDir,DEFFILEMODE);
+		ret=mkdir(dbDir,DEFFILEMODE | S_IXUSR);
 		if (ret) return 0; /* propagate errno */
 	} else {
 		/* Something exist there. Check it first */
@@ -730,6 +730,7 @@ int kdbSetKey_bdb(Key *key) {
 	free(data.data); data.data=0;
 
 	dbctx->db.keyValuePairs->sync(dbctx->db.keyValuePairs,0);
+	dbctx->db.parentIndex->sync(dbctx->db.parentIndex,0);
 	
 	return 0; /* success */
 }
@@ -772,7 +773,7 @@ int kdbRemoveKey_backend(const Key *key) {
  */
 int kdbGetKeyChildKeys_bdb(const Key *parentKey, KeySet *returned, unsigned long options) {
 	DBTree *db=0;
-	DBC *cursor=0;
+	DBC *cursor=0,*joincurs=0,*carray[2];
 	DBT parent,keyName,keyData;
 	Key *retrievedKey;
 	int ret;
@@ -786,7 +787,7 @@ int kdbGetKeyChildKeys_bdb(const Key *parentKey, KeySet *returned, unsigned long
 		
 	/* Create a private cursor to not mess up threads
 	 * TODO: Check if BDB has some option to avoid this */
-	ret = db->db.keyValuePairs->cursor(db->db.keyValuePairs, NULL, &cursor, 0);
+	ret = db->db.parentIndex->cursor(db->db.parentIndex, NULL, &cursor, 0);
 
 	memset(&parent,0,sizeof(parent));
 	parent.size=strblen(parentKey->key);
@@ -797,19 +798,26 @@ int kdbGetKeyChildKeys_bdb(const Key *parentKey, KeySet *returned, unsigned long
 	memset(&keyName,0,sizeof(keyName));
 	memset(&keyData,0,sizeof(keyData));
 	
-    ret=cursor->c_pget(cursor,&parent,&keyName,&keyData,DB_SET);
-
+	ret=cursor->c_get(cursor,&parent,&keyData,DB_SET);
+	
 	if (ret==DB_NOTFOUND) {
 		cursor->c_close(cursor);
 		errno=KDB_RET_NOTFOUND;
 		return -1;
 	}
 
+	carray[0]=cursor;
+	carray[1]=0;
+
+	ret=db->db.keyValuePairs->join(db->db.keyValuePairs,carray,&joincurs,0);
+
+	ret=joincurs->c_get(joincurs,&keyName,&keyData,0);
+	
 	do {
 		/* Check if is inactive before doing higher level operations */
 		if (*(char *)keyName.data=='.' && !(options & KDB_O_INACTIVE)) {
 			/* fetch next */
-			ret=cursor->c_pget(cursor,&parent,&keyName,&keyData,DB_NEXT);
+			ret=joincurs->c_get(joincurs,&keyName,&keyData,0);
 			continue;
 		}
 		
@@ -840,8 +848,7 @@ int kdbGetKeyChildKeys_bdb(const Key *parentKey, KeySet *returned, unsigned long
 		} else if (options & KDB_O_DIRONLY) keyDel(retrievedKey);
 			else ksAppend(returned,retrievedKey);
     
-		ret=cursor->c_pget(cursor,&parent,&keyName,&keyData,DB_NEXT);
-
+		ret=joincurs->c_get(joincurs,&keyName,&keyData,0);
 	} while (ret != DB_NOTFOUND);
 	
 	if ((options & (KDB_O_SORT)) && (returned->size > 1))
@@ -854,36 +861,6 @@ int kdbGetKeyChildKeys_bdb(const Key *parentKey, KeySet *returned, unsigned long
 
 
 
-
-
-/**
- * The implementation of this method is optional.
- * The builtin inefficient implementation will use kdbGetKey() for each
- * key inside @p interests.
- *
- * @see kdbMonitorKeys() for expected behavior.
- * @ingroup backend
- */
-u_int32_t kdbMonitorKeys_backend(KeySet *interests, u_int32_t diffMask,
-		unsigned long iterations, unsigned sleep) {
-	return 0;
-}
-
-
-
-/**
- *
- * The implementation of this method is optional.
- * The builtin inefficient implementation will use kdbGetKey() for
- * @p interest.
- *
- * @see kdbMonitorKey() for expected behavior.
- * @ingroup backend
- */
-u_int32_t kdbMonitorKey_backend(Key *interest, u_int32_t diffMask,
-		unsigned long iterations, unsigned sleep) {
-	return 0;
-}
 
 
 /**

@@ -47,7 +47,7 @@ readEnvTree() {
 		echo "# Stage $stage"
 		$RG ls $1/env$stage 2>/dev/null | while read key; do
 			# This stuff is so complicated, with sed etc, because
-			# we need to superescape a '\$'
+			# we need to superescape a '\$' for envs like PS1
 			echo -n "export "
 			$RG get -s $key | sed -e 's/\([^\\]\)\\\$/\1\\\\\$/g;'
 		done
