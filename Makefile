@@ -23,11 +23,12 @@ all: libkdb.a libkdb.so libregistry.so kdb
 	for x in ${DIRS}; do (cd "$$x"; make $@); done
 
 
-
-
-clean:
+cleanhere:
 	-rm core* *~ *.o *.so *.a kdb elektra.spec localeinfo
 	-find . -name "*~" | xargs rm
+
+
+clean: cleanhere
 	for x in ${DIRS}; do (cd "$$x"; make $@); done
 
 

@@ -87,19 +87,28 @@ extern int errno;
 /**
  * Opens a session with the Key database
  *
- * By now it does nothing. This might change in the future, so it's good
- * practice to always call <i>kdbOpen()</i> before using the Elektra database.
+ * You should allways call this method before retrieving or commiting any
+ * keys to the database. Otherwise, consequences are unpredictable.
+ *
+ * To simply manipulate Key or KeySet objects, you don't need to open the key
+ * database before with this method.
  * @see kdbClose()
  * @ingroup kdb
  */
 int kdbOpen() {
+	/* load the environment and make us aware of codeset conversions */
+	setlocale(LC_ALL,"");
+	
 	return 0;
 }
 
 /**
  * Closes a session with the Key database.
  *
- * This is the counterpart of <i>kdbOpen()</i>.
+ * You should call this method when you finished your affairs with the key
+ * database. You can manipulate Key and KeySet objects after kdbClose().
+ *
+ * This is the counterpart of kdbOpen().
  * @see kdbOpen()
  * @ingroup kdb
  */
@@ -180,7 +189,6 @@ size_t unencode(char *encoded,void *returned) {
  *
  */
 int kdbNeedsUTF8Conversion() {
-	setlocale(LC_ALL,0);
 	return strcmp(nl_langinfo(CODESET),"UTF-8");
 }
 
@@ -191,6 +199,7 @@ int kdbNeedsUTF8Conversion() {
  *
  * <b>internal usage only-</b>
  * @ingroup internals
+ * @return 0 on success, -1 otherwise, and propagate @p errno
  *
  */
 int UTF8Engine(int direction, char **string, size_t *inputByteSize) {
@@ -203,12 +212,13 @@ int UTF8Engine(int direction, char **string, size_t *inputByteSize) {
 	if (kdbNeedsUTF8Conversion()) currentCharset=nl_langinfo(CODESET);
 	else return 0;
 
-	if (direction) converter=iconv_open("UTF-8",currentCharset);
+	if (direction==UTF8_TO) converter=iconv_open("UTF-8",currentCharset);
 	else converter=iconv_open(currentCharset,"UTF-8");
 
 	if (converter == (iconv_t)(-1)) return -1;
 
-	bufferSize=*inputByteSize*2; /* work with worst case */
+	/* work with worst case, when all chars are wide */
+	bufferSize=*inputByteSize * 4;
 	converted=malloc(bufferSize);
 	if (!converted) return -1;
 

@@ -27,9 +27,22 @@ $LastChangedBy$
 
 		&author;
 
-		<pubdate>2004-09-03</pubdate>
+		<pubdate>2004-09-09</pubdate>
 
 		<revhistory>
+			<revision>
+				<revnumber>2004-09-09</revnumber>
+				<date>09 Sep 2004</date>
+				<authorinitials>avi</authorinitials>
+				<revdescription>
+					<itemizedlist>
+						<listitem><simpara>Removed my IBM e-mail</simpara></listitem>
+						<listitem><simpara>Included the /sbin/init patch</simpara></listitem>
+						<listitem><simpara>Splited Ecosystem section</simpara></listitem>
+						<listitem><simpara>Updated 'kdb edit' image</simpara></listitem>
+					</itemizedlist>
+				</revdescription>
+			</revision>
 			<revision>
 				<revnumber>2004-09-03</revnumber>
 				<date>03 Sep 2004</date>
@@ -351,16 +364,26 @@ $LastChangedBy$
 	
 		<section id="ecosystem"><title>Building an Ecosystem</title>
 			<para>The objective of the Elektra Project is to help create a pervasive, ubiquitous configuration system. This is an entire ecosystem, much more than a piece of code. This section lists the work of some people that are helping to build it.</para>
+			
+			<section id="ecotools"><title>Tools and Software Patches</title>
+				<itemizedlist>
+					<listitem><simpara><ulink url="http://www.livejournal.com/users/gregorburger/">Regedit GUI to edit the key database</ulink>, using the QT library, by Gregor Burger. There is a <ulink url="http://developer.berlios.de/projects/tlr-regedit/">Berlios entry</ulink> with Subversion repository, and <ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628">RPM packages available</ulink>.</simpara></listitem>
+					<listitem><simpara><ulink url="http://sourceforge.net/project/showfiles.php?group_id=117521">Elektrified <filename>/sbin/init</filename> and Fedora Core 2 RPMs</ulink> for the <ulink url="ftp://ftp.cistron.nl/pub/people/miquels/sysvinit/">original sysvinit package from Miquel van Smoorenburg</ulink>.</simpara></listitem>
+					<listitem><simpara><ulink url="http://nss-registry.skumler.net">Users and Groups Name System Module for GLibC</ulink>, by Jens Andersen. This is a module that can be activated by the name system switch mechanism (<filename>/etc/nsswitch.conf</filename>) to let users and groups databases be Elektrified, instead of <filename>/etc/{passwd|shadow|groups}</filename>.</simpara></listitem>
+					<listitem>Daniel Lambea and Israel Bethencourt are writing patches for basic system tools, and will have soon a full Elektrified Linux distribution.</listitem>
+				</itemizedlist>
+			</section>
 
-			<itemizedlist>
-				<listitem><simpara><ulink url="http://www.livejournal.com/users/gregorburger/">Regedit GUI to edit the key database</ulink>, using the QT library, by Gregor Burger. There is a <ulink url="http://developer.berlios.de/projects/tlr-regedit/">Berlios entry</ulink> with Subversion repository, and <ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628">RPM packages available.</ulink></simpara></listitem>
-				<listitem><simpara><ulink url="http://www.germane-software.com/software/Libraries/registry">Ruby bindings</ulink>, by Sean Russel. If you are writing code in Ruby, and need an easy way to store/retrieve configuration/state data, this is for you.</simpara></listitem>
-				<listitem><simpara><ulink url="http://acm.cs.uwec.edu/~lemkesr/">Python bindings</ulink>, by Scott Lemke.</simpara></listitem>
-				<listitem><simpara><ulink url="http://nss-registry.skumler.net">Users and Groups Name System Module for GLibC</ulink>, by Jens Andersen. This is a module that can be activated by the name system switch mechanism (<filename>/etc/nsswitch.conf</filename>) to let users and groups databases be Elektrified, instead of <filename>/etc/{passwd|shadow|groups}</filename>.</simpara></listitem>
-				<listitem>Daniel Lambea and Israel Bethencourt are writing patches for basic system tools, and will have soon a full Elektrified Linux distribution.</listitem>
-				<listitem><simpara><ulink url="http://sourceforge.net/projects/jreg">JRegistry</ulink>, by Alexopoulos Charalampos, are Java bindings for the Elektra API, and apparently a GUI for Elektra administration.</simpara></listitem>
-			</itemizedlist>
-			<para>All of them can be found on the <ulink url="https://lists.sourceforge.net/lists/listinfo/registry-list">Elektra mailling list</ulink>.</para>
+			<section id="ecobind"><title>Language Bindings</title>
+				<itemizedlist>
+					<listitem><simpara><ulink url="http://www.germane-software.com/software/Libraries/registry">Ruby bindings</ulink>, by Sean Russel. If you are writing code in Ruby, and need an easy way to store/retrieve configuration/state data, this is for you.</simpara></listitem>
+					<listitem><simpara><ulink url="http://acm.cs.uwec.edu/~lemkesr/">Python bindings</ulink>, by Scott Lemke.</simpara></listitem>
+
+					<listitem><simpara><ulink url="http://sourceforge.net/projects/jreg">JRegistry</ulink>, by Alexopoulos Charalampos, are Java bindings for the Elektra API, and apparently a GUI for Elektra administration.</simpara></listitem>
+				</itemizedlist>
+			</section>
+			
+			<para>All people working on that can be found on the <ulink url="https://lists.sourceforge.net/lists/listinfo/registry-list">Elektra mailling list</ulink>.</para>
 		</section>
 
 	</section>
@@ -427,8 +450,8 @@ $LastChangedBy$
 		</section>
 		
 		<section id="edit"><title>Easily Editing Elektra Keys</title>
-			<para>The <command>kdb edit</command> command provides an easy way to edit a group of keys using your prefered editor. It will dump the selected keys into an XML representation, and run the editor to let the user edit them. After user modifications, it will update, remove or include the keys based on the modified XML file. This real screenshot shows me using <command>kedit</command> to modify the XFree configuration keys related to the monitor.</para>
-			<graphic srccredit="kdb edit" fileref="images/rgedit.png" label="kdb edit command" align="center"/>
+			<para>The <command>kdb edit</command> command provides an easy way to edit a group of keys using your prefered editor. It will dump the selected keys into an XML representation, and run the editor to let the user edit them. After user modifications, it will update, remove or include the keys based on the modified XML file. This real screenshot shows me using <command>kate</command> to modify the XFree configuration keys related to the monitor. If I didn't force it with the <envar>EDITOR</envar> environment, <command>vi</command> would be used.</para>
+			<graphic srccredit="kdb edit" fileref="images/kdbedit.png" label="kdb edit command" align="center"/>
 			<para>Or you can use Gregor Burger's regedit GUI to edit keys very easily. Here is a screenshot editing the same above key.</para>
 			<graphic srccredit="regedit" fileref="images/regedit1.png" label="regedit" align="center"/>
 			

@@ -13,10 +13,7 @@ $LastChangedBy$
 				<surname>Alkalay</surname>
 				<affiliation>
 					<shortaffil>Linux Market Developer</shortaffil>
-					<address>
-						<email>avi at unix.sh</email>
-						<email>avi at br.ibm.com</email>
-					</address>
+					<address><email>avi at unix.sh</email></address>
 					<orgdiv>Senior IT and Software Architect</orgdiv>
 					<orgname>IBM Linux Impact Team :: <ulink url="http://ibm.com/linux">ibm.com/linux</ulink></orgname>
 				</affiliation>

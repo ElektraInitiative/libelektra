@@ -1,3 +1,8 @@
+* Tue Sep 09 2004 Avi Alkalay <avi@unix.sh> 0.4.1
+- Fixed some wrong charset handling
+- License changed to BSD
+- Updates to documentation
+
 * Tue Aug 31 2004 Avi Alkalay <avi@unix.sh> 0.4
 - Name changed to Elektra
 - rg command changed to kbd

@@ -49,7 +49,7 @@ $LastChangedBy$
 #include <ctype.h>
 #include <locale.h>
 
-/* FIXME: remove libXML dependencies */
+/* FIXME: remove libXML dependencies for kdb command */
 #include <libxml/xmlreader.h>
 
 
@@ -252,6 +252,14 @@ int parseCommandLine(int argc, char *argv[]) {
 }
 
 
+
+
+
+
+/*
+ * Helper for the 'kdb ls' command
+ *
+ */
 void listAccess(Key *key,char *readable) {
 	mode_t mode=keyGetAccess(key);
 
@@ -272,6 +280,12 @@ void listAccess(Key *key,char *readable) {
 }
 
 
+
+
+/*
+ * Helper for the 'kdb ls' command
+ *
+ */
 void listTime(time_t when,char *readable) {
 	time_t current_time=time(0);
 	char buf[400];
@@ -304,6 +318,10 @@ void listTime(time_t when,char *readable) {
 
 
 
+/*
+ * Helper for the 'kdb ls' command
+ *
+ */
 void listSingleKey(Key *key) {
 	char buffer[400];
 	char *p=buffer;
@@ -1131,8 +1149,12 @@ int commandExport() {
 	argValue=1;
 	argFullName=1;
 
-	/* force UTF-8 */
-	setlocale(LC_ALL,"en_US.UTF-8");
+	/* force UTF-8 for a superuniversal charset */
+	setenv("LANG","en_US.UTF-8",1);
+	
+	/* reopen key database to forced charset to take effect */
+	kdbClose();
+	kdbOpen();
 
 	return commandList();
 }
