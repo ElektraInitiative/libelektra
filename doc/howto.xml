@@ -27,9 +27,19 @@ $LastChangedBy$
 		
 		&author;
 		
-		<pubdate>2004-07-13</pubdate>
+		<pubdate>2004-07-20</pubdate>
 		
 		<revhistory>
+			<revision>
+				<revnumber>2004-07-20</revnumber>
+				<date>20 Jul 2004</date>
+				<authorinitials>avi</authorinitials>
+				<revdescription>
+					<itemizedlist>
+						<listitem><simpara>Added links to Python bindings and Regedit.</simpara></listitem>
+					</itemizedlist>
+				</revdescription>
+			</revision>
 			<revision>
 				<revnumber>2004-07-13</revnumber>
 				<date>13 Jul 2004</date>
@@ -254,9 +264,11 @@ $LastChangedBy$
 			<para>The objective of the Linux Registry is to help create a pervasive, ubiquitous configuration system. Without an ecosystem around, this is impossible. This section lists the work of some people that are helping to build this ecosystem.</para>
 		
 			<itemizedlist>
+				<listitem><simpara><ulink url="http://www.livejournal.com/users/gregorburger/">Regedit GUI to edit the registry</ulink>, using the QT library, by Gregor Burger. There is also <ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628">RPM packages available.</ulink></simpara></listitem>
+				<listitem><simpara><ulink url="http://www.germane-software.com/software/Libraries/registry">Ruby bindings</ulink>, by Sean Russel. If you are writting code in Ruby, and need an easy way to store/retrieve configuration/state data, this is for you.</simpara></listitem>
+				<listitem><simpara><ulink url="http://acm.cs.uwec.edu/~lemkesr/">Python bindings</ulink>, by Scott Lemke.</simpara></listitem>
 				<listitem><simpara><ulink url="http://nss-registry.skumler.net">Users and Groups Name System Module for GLibC</ulink>, by Jens Andersen. This is a module that can be activated by the name system switch mechanism (<filename>/etc/nsswitch.conf</filename>) to let users and groups databases be stored in the Registry, instead of <filename>/etc/{passwd|shadow|groups}</filename>.</simpara></listitem>
 				<listitem>Daniel Lambea and Israel Bethencourt are writting patches for basic system tools, and will have soon a full Linux distribution ported to the Registry.</listitem>
-				<listitem><simpara><ulink url="http://www.germane-software.com/software/Libraries/registry">Ruby bindings</ulink>, by Sean Russel. If you are writting code in Ruby, and need an easy way to store/retrieve configuration/state data, this is for you.</simpara></listitem>
 				<listitem><simpara><ulink url="http://sourceforge.net/projects/jreg">JRegistry</ulink>, by Alexopoulos Charalampos, are Java bindings for the Registry API, and apparently a GUI for registry administration.</simpara></listitem>
 			</itemizedlist>
 			<para>All of them can be found on the <ulink url="https://lists.sourceforge.net/lists/listinfo/registry-list">Registry mailling list</ulink>.</para>
