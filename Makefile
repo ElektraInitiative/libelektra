@@ -119,12 +119,13 @@ install: all
 	[ -d "${DESTDIR}${CONFDIR}/profile.d" ] || mkdir -p ${DESTDIR}${CONFDIR}/profile.d
 	[ -d "${DESTDIR}${DOCDIR}/${NAME}" ] || mkdir -p ${DESTDIR}${DOCDIR}/${NAME}
 	[ -d "${DESTDIR}${DOCDIR}/${NAME}-devel/examples" ] || mkdir -p ${DESTDIR}${DOCDIR}/${NAME}-devel/examples
-	for x in ${DIRS}; do (cd "$$x"; $(MAKE) DTDVERSION=${DTDVERSION} \
-		BACKENDS=${BACKENDS} \
+	for x in ${DIRS}; do (cd "$$x"; $(MAKE) DESTDIR=${DESTDIR} \
+		DTDVERSION=${DTDVERSION} BACKENDS=${BACKENDS} \
 		DOCDIR=${DOCDIR} MANDIR=${MANDIR} SGMLDIR=${SGMLDIR} \
 		BINDIR=${BINDIR} LIBDIR=${LIBDIR} \
 		UBINDIR=${UBINDIR} ULIBDIR=${ULIBDIR} \
-		CONFDIR=${CONFDIR} INCDIR=${INCDIR} $@); done
+		CONFDIR=${CONFDIR} INCDIR=${INCDIR} $@); \
+	done
 	cp scripts/elektraenv ${DESTDIR}${CONFDIR}/profile.d/elektraenv.sh
 	chmod a+x example/*-convert
 	cp elektra.pc ${DESTDIR}${ULIBDIR}/pkgconfig/elektra.pc

@@ -9,9 +9,7 @@
 /***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
+ *   it under the terms of the BSD License (revised).                      *
  *                                                                         *
  ***************************************************************************/
 
@@ -389,7 +387,7 @@ void listSingleKey(Key *key) {
 	}
 	if (argFullName) keyGetFullName(key,p,sizeof(buffer)-(p-buffer));
 	else keyGetName(key,p,sizeof(buffer)-(p-buffer));
-	if (argValue && (keyGetDataSize(key)>0)) {
+	if (argValue && (keyGetValueSize(key)>0)) {
 		u_int8_t ktype;
 
 		p+=strlen(p);
@@ -459,7 +457,6 @@ int commandRemove() {
 int commandMove() {
 	Key *key;
 	size_t size=0;
-	char argDataPrivate[500];
 	int rc;
 	
 	key=keyNew(argKeyName,KEY_SWITCH_END);
@@ -475,10 +472,7 @@ int commandMove() {
 		return 1;
 	}
 	
-	/* This hack due to a compiler optimization problem */
-	strcpy(argDataPrivate,argData);
-	
-	rc=kdbRename(key,argDataPrivate);
+	rc=kdbRename(key,argData);
 	if (rc != 0) {
 		/* Handle a non-zero rc, with same behavior of Unix mv command */
 		switch (errno) {
@@ -813,10 +807,7 @@ int commandList() {
  * @param argLong show also the key name (-l)
  * @param argFullName with @p argLong, show the user domain too (-f)
  *
- * @see kdbGetKey()
- * @see kdbGetBaseName()
- * @see keyGetComment()
- * @see keyGetString()
+ * @see kdbGetKey(), kdbGetBaseName(), keyGetComment(), keyGetString()
  *
  */
 int commandGet() {
@@ -844,7 +835,7 @@ int commandGet() {
 		perror(error);
 		return ret;
 	}
-	size=keyGetDataSize(key);
+	size=keyGetValueSize(key);
 	if (argDescriptive) {
 		cs=keyGetCommentSize(key);
 		if (cs) size+=cs+3;
@@ -880,13 +871,13 @@ int commandGet() {
 	
 	keyType=keyGetType(key);
 
-	if (keyType<KEY_TYPE_STRING) p+=keyGetBinary(key,p,size-(p-buffer));
+	if (keyIsBin(key)) p+=keyGetBinary(key,p,size-(p-buffer));
 	else p+=keyGetString(key,p,size-(p-buffer));
 	if (argShell) {
 		*--p='\"'; p++;
 		*p=0;
 	}
-	if (keyType<KEY_TYPE_STRING) fwrite(buffer,size,1,stdout);
+	if (keyIsBin(key)) fwrite(buffer,size,1,stdout);
 	else printf("%s\n",buffer);
 
 
@@ -1472,8 +1463,6 @@ int commandExport() {
 int commandMonitor() {
 	Key *toMonitor;
 	u_int32_t diff;
-	char *newData=0;
-	size_t dataSize;
 	
 	toMonitor=keyNew(argKeyName,KEY_SWITCH_NEEDSYNC,KEY_SWITCH_END);
 	
@@ -1488,9 +1477,7 @@ int commandMonitor() {
 	 * value change, we don't have to check diff.
 	 * So if method returned, the value has changed, and toMonitor has it.
 	 */
-	newData=malloc(dataSize=keyGetDataSize(toMonitor));
-	keyGetString(toMonitor,newData,dataSize);
-	printf("New value is %s\n",newData);
+	printf("New value is %s\n",(char *)keyStealValue(toMonitor));
 	
 	keyDel(toMonitor);
 	return 0;

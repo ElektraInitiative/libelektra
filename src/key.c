@@ -9,9 +9,7 @@
 /***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
+ *   it under the terms of the BSD License (revised).                      *
  *                                                                         *
  ***************************************************************************/
 
@@ -568,17 +566,37 @@ size_t keySetName(Key *key, const char *newName) {
  * 
  */
 size_t keyAddBaseName(Key *key,const char *baseName) {
-	size_t nameSize=strblen(key->key);
+	size_t nameSize=strblen(key->key)-1;
 	size_t newSize=strblen(baseName);
 	
-	if (key->key[nameSize-2] == '/') newSize--;
-	
-	newSize+=nameSize;
-	
-	key->key=realloc(key->key,newSize);
-	
-	strcat(key->key,"/");
-	strcat(key->key,baseName);
+	/* Remove leading '/' if caller passed some */
+	while (key->key[nameSize-1]==RG_KEY_DELIM &&
+	       key->key[nameSize-2]!=RG_KEY_DELIM) {
+		key->key[nameSize-1]=0;
+		nameSize--;
+	}
+
+	if (key->key[nameSize-1] == RG_KEY_DELIM) {
+		int ndelim=0;
+		if (baseName[0] == RG_KEY_DELIM) {
+			newSize-=1; /* remove extra '/' */
+			ndelim=1;
+		}
+		newSize+=nameSize;
+		key->key=realloc(key->key,newSize);
+		strcat(key->key,baseName+ndelim);
+	} else {
+		if (baseName[0] == RG_KEY_DELIM) {
+			newSize+=nameSize;
+			key->key=realloc(key->key,newSize);
+		} else {
+			nameSize++;
+			newSize+=nameSize;
+			key->key=realloc(key->key,newSize);
+			strcat(key->key,"/");
+		}
+		strcat(key->key,baseName);
+	}
 	
 	return newSize;
 }
@@ -602,7 +620,6 @@ size_t keyAddBaseName(Key *key,const char *baseName) {
  * 
  */
 size_t keySetBaseName(Key *key, const char *baseName) {
-	size_t nameSize=strblen(key->key);
 	size_t newSize=strblen(baseName);
 	char *end;
 	
@@ -643,7 +660,7 @@ size_t keyGetNameSize(const Key *key) {
 /**
  * Get abreviated key name (without user domain name).
  *
- * @return number of bytes written
+ * @return number of bytes written to @p returnedName
  * @param key the key object
  * @param returnedName pre-allocated memory to write the key name
  * @param maxSize maximum number of bytes that will fit in returnedName, including the final NULL
@@ -671,6 +688,25 @@ size_t keyGetName(const Key *key, char *returnedName, size_t maxSize) {
 	}
 	return bytes;
 }
+
+
+
+/**
+ * Returns a pointer to the real internal @p key abreviated name (without
+ * user domain name).
+ * This is a much more efficient version of keyGetName() and you should use
+ * it if you are responsible enough to not mess up things.
+ *
+ * @param key the key object
+ * @see keyGetNameSize(), keyGetFullName(), keyGetFullNameSize()
+ * @see keyStealValue() for an example
+ * @ingroup keyname
+ */
+char *keyStealName(const Key *key) {
+	return key->key;
+}
+
+
 
 
 
@@ -1238,17 +1274,27 @@ size_t keyGetBaseName(const Key *key, char *returned, size_t maxSize) {
 
 
 /**
+ * An alias to keyGetValueSize().
+ * 
+ * @ingroup keyvalue
+ */
+size_t keyGetDataSize(const Key *key) {
+	return keyGetValueSize(key);
+}
+
+
+
+/**
  * Returns the number of bytes needed to store the key value, including the
  * NULL terminator.
  *
  * This method is used with malloc() before a keyGetString() or keyGetBinary().
  *
  * @return the number of bytes needed to store the key value
- * @see keyGetString()
- * @see keyGetBinary()
+ * @see keyGetString(), keyGetBinary(), keyStealValue()
  * @ingroup keyvalue
  */
-size_t keyGetDataSize(const Key *key) {
+size_t keyGetValueSize(const Key *key) {
 	if (!key || !keyIsInitialized(key)) {
 		errno=KDB_RET_UNINITIALIZED;
 		return -1;
@@ -1266,7 +1312,7 @@ size_t keyGetDataSize(const Key *key) {
  *
  * @param newString NULL-terminated text string
  * @return the number of bytes actually copied including final NULL
- * @see keyGetString()
+ * @see keyGetString(), keyStealValue()
  * @ingroup keyvalue
  */
 size_t keySetString(Key *key, const char *newString) {
@@ -1287,10 +1333,21 @@ size_t keySetString(Key *key, const char *newString) {
  * If the value can't be represented as a text string (binary value),
  * errno is set to KDB_RET_TYPEMISMATCH.
  *
+ * @par Example:
+ * @code
+Key *key;
+char buffer[300];
+
+// populate key somehow...
+
+if (keyIsBin(key)) keyGetBinary(key,buffer,sizeof(buffer));
+else keyGetString(key,buffer,sizeof(buffer));
+ * @endcode
+ *
  * @param returnedString pre-allocated memory to store a copy of the key value
  * @param maxSize number of bytes of pre-allocated memory
  * @return the number of bytes actually copied
- * @see keySetString()
+ * @see keyStealValue(), keySetString()
  * @ingroup keyvalue
  */
 size_t keyGetString(const Key *key, char *returnedString, size_t maxSize) {
@@ -1318,6 +1375,69 @@ size_t keyGetString(const Key *key, char *returnedString, size_t maxSize) {
 	strcpy(returnedString,key->data);
 	return key->dataSize;
 }
+
+
+
+
+
+
+/**
+ * Return a pointer to the real internal @p key value.
+ * This is a much more efficient version of keyGetString(), keyGetLink(),
+ * keyGetBinary(), and you should use it if you are responsible enough to
+ * not mess up things.
+ * 
+ * If @p key is not binary (keyIsBin()), you may cast the returned as a
+ * @c "char *" because you'll get a NULL terminated regular string.
+ * If it is binary, the size of the value can be determined by
+ * keyGetValueSize().
+ * 
+ * Note that the Key structure also has as data size field that is calculated
+ * by library internal calls to keySetRaw(), so to avoid inconsistencies, you
+ * must never used the pointer returned by keyStealValue() method to set a new
+ * value. Use keySetString(), keySetBinary(), keySetLink(), keySetRaw()
+ * instead.
+ * 
+ * @par Example:
+ * @code
+KeySet *ks=ksNew();
+Key *current=0;
+
+kdbGetChildKeys("system/sw/my",ks,KDB_O_SORT|KDB_O_RECURSIVE);
+
+ksRewind(ks);
+while(current=ksNext(ks)) {
+	size_t size=0;
+	
+	if (keyIsBin(current)) {
+		size=keyGetValueSize(current);
+		printf("Key %s has a value of size %d bytes. Value: <BINARY>\nComment: %s",
+			keyStealName(current),
+			size,
+			keyStealComment(current));
+	} else {
+		size=strblen((char *)keyStealValue(current));
+		printf("Key %s has a value of size %d bytes. Value: %s\nComment: %s",
+			keyStealName(current),
+			size,
+			(char *)keyStealValue(current),
+			keyStealComment(current));
+	}
+}
+ * @endcode
+ * 
+ * @param key the key object to work with
+ * @see keyGetValueSize(), keyGetString(), keyGetBinary(), keyGetLink()
+ * @ingroup keyvalue
+ */
+void *keyStealValue(const Key *key) {
+	return key->data;
+}
+
+
+
+
+
 
 
 
@@ -1438,7 +1558,7 @@ int keyIsBin(const Key *key) {
  * @param returnedBinary pre-allocated memory to store a copy of the key value
  * @param maxSize number of bytes of pre-allocated memory
  * @return the number of bytes actually copied
- * @see keySetBinary(), keyGetString(), keyIsBin()
+ * @see keySetBinary(), keyGetString(), keyStealValue(), keyIsBin()
  * @ingroup keyvalue
  */
 size_t keyGetBinary(const Key *key, void *returnedBinary, size_t maxSize) {
@@ -1473,7 +1593,8 @@ size_t keyGetBinary(const Key *key, void *returnedBinary, size_t maxSize) {
  * @param newBinary random bytes
  * @param dataSize number of bytes to copy from newBinary
  * @return the number of bytes actually copied
- * @see keyGetBinary(), keyIsBin(), keyGetString(), keySetString()
+ * @see keyGetBinary(), keyIsBin(), keyGetString(), keyStealValue(),
+ * 	keySetString()
  * @ingroup keyvalue
  */
 size_t keySetBinary(Key *key, const void *newBinary, size_t dataSize) {
@@ -1886,6 +2007,20 @@ size_t keyGetComment(const Key *key, char *returnedDesc, size_t maxSize) {
 	return bytes;
 }
 
+
+/**
+ * Return a pointer to the real internal @p key comment.
+ * This is a much more efficient version of keyGetComment() and you
+ * should use it if you are responsible enough to not mess up things.
+ * 
+ * @param key the key object to work with
+ * @see keyGetCommentSize()
+ * @see keyStealValue() for and example
+ * @ingroup keymeta
+ */
+char *keyStealComment(const Key *key) {
+	return key->comment;
+}
 
 
 
@@ -3568,18 +3703,20 @@ void ksSort(KeySet *ks) {
 	Key *cursor;
 	size_t c=0;
 
-	for (cursor=ks->start; cursor; cursor=cursor->next, c++)
-		keys[c]=cursor;
+	if (ks->size) {
+		for (cursor=ks->start; cursor; cursor=cursor->next, c++)
+			keys[c]=cursor;
 
-	qsort(keys,ks->size,sizeof(Key *),keyCompareByName);
+		qsort(keys,ks->size,sizeof(Key *),keyCompareByName);
 
-	ks->start=cursor=keys[0];
-	for (c=1; c<ks->size; c++) {
-		cursor->next=keys[c];
-		cursor=cursor->next;
+		ks->start=cursor=keys[0];
+		for (c=1; c<ks->size; c++) {
+			cursor->next=keys[c];
+			cursor=cursor->next;
+		}
+		cursor->next=0;
+		ks->end=cursor;
 	}
-	cursor->next=0;
-	ks->end=cursor;
 }
 
 

@@ -9,24 +9,11 @@
 /***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
+ *   it under the terms of the BSD License (revised).                      *
  *                                                                         *
  ***************************************************************************/
 
 
-
-/***************************************************************************
- *                                                                         *
- *   This is the implementation of a filesystem backend for the            *
- *   Elektra Project. Each Key is a file in the filesystem.                *
- *   It is as secure as filesystem security. It is as reliable             *
- *   as filesystem. It uses only standards C calls, which makes it         *
- *   usable by very low level or early boot stage software, like           *
- *   /sbin/init.                                                           *
- *                                                                         *
- ***************************************************************************/
 
 
 /* Subversion stuff
@@ -55,10 +42,6 @@ $LastChangedBy$
 #include <string.h>
 
 
-
-#ifndef KDB_DEFAULT_BACKEND
-#define KDB_DEFAULT_BACKEND "filesys"
-#endif
 
 extern int errno;
 
@@ -136,24 +119,27 @@ KDBBackend *backend;
 
 
 /**
- * Opens the session with the Key database.
- *
- * You should allways call this method before retrieving or commiting any
- * keys to the database. Otherwise, consequences are unpredictable.
+ * Opens the session with the Key database, using a backend defined by
+ * environment var @e $KDB_BACKEND. If the environment is not set
+ * the @e default backend will be opened.
  * 
- * kdbOpen() relyies on libkdb.so's backend with kdbOpenBackend().
- * The backend defined by the environment variable @e $KDB_BACKEND will
- * be used. If this var is not set in the environment, the backend defined
- * as default at compilation time will be used.
+ * You should allways call this method before retrieving or commiting any
+ * keys to the database. Otherwise, consequences are unpredictable. And
+ * after using the key database, you should not forget to kdbClose().
+ * 
+ * This is the best way to have affairs with the key database, unless
+ * the program is concerned about security and authentication (e.g. su,
+ * login, telnetd, etc), in which kdbOpenDefault() should be used. kdbOpen()
+ * is used by the kdb command.
  *
  * Currently you can have only one backend (and key database session)
  * initialized at a certain time. 
  * 
- * To simply manipulate Key or KeySet objects, you don't need to open the key
- * database before with this method.
+ * To simply manipulate Key or KeySet objects without having to retrieve them
+ * from the storage, you don't need to open the key database before with any
+ * of the kdbOpen*() methods.
  * 
- * @see kdbOpenBackend()
- * @see kdbClose()
+ * @see kdbOpenDefault(), kdbOpenBackend(), kdbClose()
  * @return 0 on success or whatever is returned by kdbOpenBackend()
  * @ingroup kdb
  */
@@ -161,18 +147,41 @@ int kdbOpen() {
 	char *backendName=0;
 	
 	backendName=getenv("KDB_BACKEND");
-	if (!backendName) backendName=KDB_DEFAULT_BACKEND;
-	
-	return kdbOpenBackend(backendName);
+	if (backendName) return kdbOpenBackend(backendName);
+	else return kdbOpenBackend("default");
 }
 
 
 
 /**
- * Dynamically load a storage beckend for libkdb.so.
+ * Opens the session with the Key database.
+ *
+ * Different from kdbOpen(), kdbOpenDefault() will completely ignore
+ * the @e $KDB_BACKEND environment and open the @e default backend.
+ * So kdbOpenDefault() must be used by programs concerned about security
+ * (e.g. su, login, sshd, etc).
+ * 
+ * The @e default backend use to be a symlink to the real backend, and
+ * is found in /lib/libkdb-default.so
+ *
+ * @see kdbOpen(), kdbOpenBackend(), kdbClose()
+ * @return 0 on success or whatever is returned by kdbOpenBackend()
+ * @ingroup kdb
+ */
+int kdbOpenDefault() {
+	return kdbOpenBackend("default");
+}
+
+
+
+
+/**
+ * Opens the session with the Key database, dynamically loading a specific
+ * beckend for libkdb.so.
  * 
  * After dynamic loading, the backend will be initialized with its
  * implementation of kdbOpen().
+ * 
  * @param backendName used to define the module filename as
  * 	libkdb-@p "backendName".so
  * @return 0 on success. On failure, @c errno is set to KDBErr::KDB_RET_NOSYS
@@ -257,7 +266,6 @@ int kdbOpenBackend(char *backendName) {
 	}
 	return rc;
 }
- 
 
 
 
@@ -466,14 +474,11 @@ size_t encode(void *unencoded, size_t size, char *returned) {
  * This method is valid only for string keys.
  * You should use other methods to get non-string keys.
  *
- * @see kdbSetValue()
- * @see kdbGetKey()
- * @see kdbGetValueByParent()
- * @see keyGetString()
- * @return 0 on success, or other value and @c errno is set
  * @param keyname the name of the key to receive the value
  * @param returned a buffer to put the key value
  * @param maxSize the size of the buffer
+ * @return 0 on success, or other value and @c errno is set
+ * @see kdbSetValue(), kdbGetKey(), kdbGetValueByParent(), keyGetString()
  * @ingroup kdb
  *
  */
@@ -499,12 +504,10 @@ int kdbGetValue(const char *keyname, char *returned,size_t maxSize) {
  *
  * This will set a text key. So if the key was previously a binary, etc key, it will be retyped as text.
  *
- * @see kdbGetValue()
- * @see keySetString()
- * @see kdbSetKey()
  * @param keyname the name of the key to receive the value
  * @param value the value to be set
  * @return 0 on success, other value otherwise, and @c errno is set
+ * @see kdbGetValue(), keySetString(), kdbSetKey()
  * @ingroup kdb
  */
 int kdbSetValue(const char *keyname, const char *value) {
@@ -540,12 +543,12 @@ for (c=0; c<3; c++) {
 
  * @endcode
  *
- * @see kdbGetKeyByParent()
  * @param parentName the name of the parent key
  * @param baseName the name of the child key
  * @param returned pre-allocated buffer to be filled with key value
  * @param maxSize size of the \p returned buffer
  * @return whathever is returned by kdbGetValue()
+ * @see kdbGetKeyByParent()
  * @ingroup kdb
  */
 int kdbGetValueByParent(const char *parentName, const char *baseName, char *returned, size_t maxSize) {
@@ -1283,8 +1286,8 @@ u_int32_t kdbMonitorKey_default(Key *interest, u_int32_t diffMask,
 
 int kdbOpen_backend() {...}
 int kdbClose_backend() {...}
-int kdbGetKey_backend() {...}
-int kdbSetKey_backend() {...}
+int kdbGetKey_backend(Key *key) {...}
+int kdbSetKey_backend(Key *key) {...}
 
 ... etc implementations of other methods ...
 

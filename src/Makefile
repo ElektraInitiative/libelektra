@@ -25,7 +25,7 @@ CC=gcc -I. -g ${OPTIMIZATIONS} -Wall
 #CC=gcc -g ${OPTIMIZATIONS} -Wcomment -Wformat -Wimplicit-int -Wimplicit-function-declaration -Wparentheses -Wreturn-type -Wunused -Wuninitialized
 XMLINCLUDES=`xml2-config --cflags`
 XMLLIBS=`xml2-config --libs`
-DEFAULT_BACKEND=\"filesys\"
+DEFAULT_BACKEND=filesys
 
 
 .c.o:
@@ -69,14 +69,12 @@ libkdb.a: localkdb.o key.o
 
 
 key.o: key.c kdb.h kdbprivate.h
-	${CC} -fpic -o $@ -c $<
 
 
 
 
 
 localkdb.o: localkdb.c kdb.h kdbprivate.h
-	${CC} -DKDB_DEFAULT_BACKEND=${DEFAULT_BACKEND} -fpic -c $<
 
 
 
@@ -107,7 +105,7 @@ install: all
 	cp kdb.c ${DESTDIR}${DOCDIR}/${NAME}-devel/examples/
 	cp kdbfuture.h ${DESTDIR}${DOCDIR}/${NAME}-devel
 	cp -r backends/template ${DESTDIR}${DOCDIR}/${NAME}-devel/backend-template
-	for x in ${BACKENDS}; do (cd "backends/$$x"; $(MAKE) \
+	for x in ${BACKENDS}; do (cd "backends/$$x"; $(MAKE) DESTDIR=${DESTDIR}\
 		OPTIMIZATIONS="${OPTIMIZATIONS}" \
 		DTDVERSION=${DTDVERSION} \
 		DOCDIR=${DOCDIR} MANDIR=${MANDIR} SGMLDIR=${SGMLDIR} \
@@ -115,4 +113,5 @@ install: all
 		UBINDIR=${UBINDIR} ULIBDIR=${ULIBDIR} \
 		CONFDIR=${CONFDIR} INCDIR=${INCDIR} $@); \
 	done
+	ln -s libkdb-${DEFAULT_BACKEND}.so ${DESTDIR}/${LIBDIR}/libkdb-default.so
 

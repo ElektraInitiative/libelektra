@@ -74,10 +74,11 @@ GConfEngine *gconf;
 
 
 enum KeyGConfType {
-	KEY_GCONFTYPE_STRING=KEY_TYPE_STRING,
-	KEY_GCONFTYPE_INT=KEY_TYPE_STRING+1,
-	KEY_GCONFTYPE_FLOAT=KEY_TYPE_STRING+2,
-	KEY_GCONFTYPE_BOOL=KEY_TYPE_STRING+3,
+	KEY_GCONFTYPE_STRING=         KEY_TYPE_STRING,
+	KEY_GCONFTYPE_INT=            KEY_TYPE_STRING+1,
+	KEY_GCONFTYPE_FLOAT=          KEY_TYPE_STRING+2,
+	KEY_GCONFTYPE_BOOL=           KEY_TYPE_STRING+3,
+	KEY_GCONFTYPE_BOOL=           KEY_TYPE_STRING+3,
 };
  
 
@@ -85,14 +86,19 @@ enum KeyGConfType {
 
 Key *gEntryToKey(const GConfEntry *gentry) {
 	Key *new=0;
-	char buffer[100];
+	char buffer[500];
 	GConfValue *gvalue=0;
+	GSList *list=0;
+	GConfValueType listType;
 	
 	new=keyNew("user",KEY_SWITCH_END);
 	keyAddBaseName(new,(const char *)gconf_entry_get_key(gentry));
 	
-	switch ((gvalue=gconf_entry_get_value(gentry))->type) {
-		default:
+	gvalue=gconf_entry_get_value(gentry);
+	if (!gvalue) return new;
+	
+	switch (gvalue->type) {
+		case GCONF_VALUE_STRING:
 			keySetString(new,gconf_value_get_string(gvalue));
 			break;
 		case GCONF_VALUE_INT:
@@ -109,6 +115,28 @@ Key *gEntryToKey(const GConfEntry *gentry) {
 			sprintf(buffer,"%d",gconf_value_get_bool(gvalue));
 			keySetString(new,buffer);
 			keySetType(new,KEY_GCONFTYPE_BOOL);
+			break;
+		case GCONF_VALUE_LIST:
+			listType=gconf_value_get_list_type(gvalue);
+			list=gconf_value_get_list(gvalue);
+			int prev=0;
+			
+			strcpy(buffer,"[");
+			
+			if (list) {
+				GConfValue *val=0;
+				while (list) {
+					val=(GConfValue *)list->data;
+					if (prev) strcat(buffer,",");
+					strcat(buffer,gconf_value_get_string(val));
+					
+					prev=1;
+					list=list->next;
+				}
+			}
+			
+			strcat(buffer,"]");
+			keySetString(new,buffer);
 			break;
 		/* TODO: list and car+cdr. */
 	}
@@ -130,10 +158,24 @@ GConfEntry *keyToGEntry(const Key *key) {
 	if (!keyIsUser(key)) return 0;
 	
 	/* prepare key name */
-	size=keyGetNameSize(key);
-	keyName=malloc(size);
-	keyGetName(key,keyName,size);
-	strcpy(keyName,keyName+sizeof("user/"));
+	if (strblen(key->key)<sizeof("user/")) {
+		keyName=malloc(2);
+		strcpy(keyName,"/");
+	} else {
+		char *start=0;
+		
+		size=keyGetNameSize(key);
+		keyName=malloc(size);
+		keyGetName(key,keyName,size);
+		strcpy(keyName,keyName+sizeof("user")-1);
+		
+		/* remove multiple '/' in the begining */
+		start=keyName;
+		while (start[0]==RG_KEY_DELIM && start[1]==RG_KEY_DELIM)
+			start++;
+		
+		if (start != keyName) strcpy(keyName,start);
+	}
 	
 	/* prepare value */
 	switch (keyGetType(key)) {
@@ -234,22 +276,42 @@ int kdbRemove_backend(const char *keyName) {
 int kdbGetKeyChildKeys_gconf(const Key *parentKey, KeySet *returned, unsigned long options) {
 	GConfEntry *entry=keyToGEntry(parentKey);
 	GError *gerr=0;
-	GSList *glist=0,*current=0;
+	GSList *dirs=0,*entries=0,*current=0;
 	
-	glist=gconf_engine_all_dirs(gconf,entry->key,&gerr);
-	glist=g_slist_concat(glist,gconf_engine_all_entries(gconf,entry->key,0));
+	dirs=gconf_engine_all_dirs(gconf,entry->key,&gerr);
+	entries=gconf_engine_all_entries(gconf,entry->key,&gerr);
 
 	gconf_entry_free(entry); entry=0;
 	
-	while (glist) {
-		ksAppend(returned,gEntryToKey((GConfEntry *)glist->data));
+	while (entries) {
+		ksAppend(returned,gEntryToKey((GConfEntry *)entries->data));
 		
-		current=glist;
-		glist=g_slist_remove_link(glist,current);
+		current=entries;
+		entries=g_slist_remove_link(entries,current);
 		
 		gconf_entry_free((GConfEntry *)current->data);
 		g_slist_free(current);
 	}
+	
+	while (dirs) {
+		Key *toAppend=keyNew("user",
+			KEY_SWITCH_TYPE,KEY_TYPE_DIR,
+			KEY_SWITCH_END);
+		
+		keyAddBaseName(toAppend,(char *)dirs->data);
+		ksAppend(returned,toAppend);
+		
+		if (options & KDB_O_RECURSIVE)
+			kdbGetKeyChildKeys_gconf(toAppend,returned,options & ~KDB_O_SORT);
+		
+		current=dirs;
+		dirs=g_slist_remove_link(dirs,current);
+		
+		g_free(current->data);
+		g_slist_free(current);
+	}
+	
+	if (options & KDB_O_SORT) ksSort(returned);
 	
 	return 0; /* success */
 }

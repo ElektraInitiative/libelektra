@@ -9,9 +9,7 @@
 /***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
+ *   it under the terms of the BSD License (revised).                      *
  *                                                                         *
  ***************************************************************************/
 
@@ -169,7 +167,7 @@ enum KeyFlags {                                       /* _DEPRECATED_ */
 	KEY_FLAG_HASCOMMENT   = KEY_SWITCH_COMMENT,       /* _DEPRECATED_ */
 	KEY_FLAG_HASUID       = KEY_SWITCH_UID,           /* _DEPRECATED_ */
 	KEY_FLAG_HASGID       = KEY_SWITCH_GID,           /* _DEPRECATED_ */
-	KEY_FLAG_HASPRM       = KEY_SWITCH_MODE,           /* _DEPRECATED_ */
+	KEY_FLAG_HASPRM       = KEY_SWITCH_MODE,          /* _DEPRECATED_ */
 	KEY_FLAG_HASTIME      = KEY_SWITCH_TIME,          /* _DEPRECATED_ */
 	KEY_FLAG_NEEDSYNC     = KEY_SWITCH_NEEDSYNC,      /* _DEPRECATED_ */
 	KEY_FLAG_FLAG         = KEY_SWITCH_FLAG,          /* _DEPRECATED_ */
@@ -433,6 +431,7 @@ size_t keyGetNameSize(const Key *key);
 size_t keyGetFullNameSize(const Key *key);
 
 size_t keyGetName(const Key *key, char *returnedName, size_t maxSize);
+char *keyStealName(const Key *key);
 size_t keySetName(Key *key, const char *newName);
 
 size_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize);
@@ -453,6 +452,7 @@ size_t keyGetFullRootNameSize(const Key *key);
 
 size_t keyGetCommentSize(const Key *key);
 size_t keyGetComment(const Key *key, char *returnedDesc, size_t maxSize);
+char *keyStealComment(const Key *key);
 size_t keySetComment(Key *key, const char *newDesc);
 
 uid_t keyGetUID(const Key *key);
@@ -469,10 +469,12 @@ size_t keyGetOwner(const Key *key, char *returned, size_t maxSize);
 size_t keySetOwner(Key *key, const char *userDomain);
 
 
+size_t keyGetValueSize(const Key *key);
 size_t keyGetDataSize(const Key *key);
 
 size_t keyGetString(const Key *key, char *returnedString, size_t maxSize);
 size_t keySetString(Key *key, const char *newString);
+void *keyStealValue(const Key *key);
 
 size_t keyGetBinary(const Key *key, void *returnedBinary, size_t maxSize);
 size_t keySetBinary(Key *key, const void *newBinary, size_t dataSize);
@@ -501,6 +503,7 @@ int keyNameGetNamespace(const char *keyName);
 
 int keyIsDir(const Key *key);
 int keyIsLink(const Key *key);
+int keyIsBin(const Key *key);
 
 Key *keyNext(Key *key);
 
