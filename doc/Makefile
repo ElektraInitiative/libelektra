@@ -12,7 +12,7 @@ HTMLSTYLE=htmltitlepage.xsl
 	xsltproc -o $@ ${HTMLSTYLE} $<
 
 
-all: man doxygen
+all: man
 
 doxygen:
 	cd ..; doxygen
@@ -79,8 +79,8 @@ install: all
 	find api/html | cpio -pdm ${DESTDIR}/usr/share/doc/elektra-devel/
 	for m in `ls *.1`; do gzip -c --best $$m > ${DESTDIR}/usr/share/man/man1/$$m.gz; done
 #	for m in `ls *.3`; do gzip -c --best $$m > ${DESTDIR}/usr/share/man/man3/$$m.gz; done
-	cp api/man/man3/kdb*.3 api/man/man3/key*.3 api/man/man3/ks*.3 ${DESTDIR}/usr/share/man/man3/
-	gzip ${DESTDIR}/usr/share/man/man3/*
+	gzip api/man/man3/kdb*.3 api/man/man3/key*.3 api/man/man3/ks*.3
+	cp api/man/man3/kdb*.3.gz api/man/man3/key*.3.gz api/man/man3/ks*.3.gz ${DESTDIR}/usr/share/man/man3/
 	for m in `ls *.5`; do gzip -c --best $$m > ${DESTDIR}/usr/share/man/man5/$$m.gz; done
 	for m in `ls *.7`; do gzip -c --best $$m > ${DESTDIR}/usr/share/man/man7/$$m.gz; done
 #	cat kdb.3.xml | perl -e '{while (<>) {m/<function>(\w*)<\/function>/; print $$1 . "\n" if ($$1); }}' | \
