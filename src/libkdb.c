@@ -370,7 +370,7 @@ int kdbNeedsUTF8Conversion() {
  * comments.
  *
  * @param direction must be @c UTF8_TO (convert from current non-UTF-8 to
- * 	UTF-8) or @c UTF8-FROM (convert from UTF-8 to current non-UTF-8)
+ * 	UTF-8) or @c UTF8_FROM (convert from UTF-8 to current non-UTF-8)
  * @param string before the call: the string to be converted; after the call:
  * 	reallocated to carry the converted string
  * @param inputOutputByteSize before the call: the size of the string including

@@ -116,7 +116,36 @@ DBContainer *dbs=0;
 int keyToBDB(Key *key, DBT *dbkey, DBT *dbdata) {
 	void *serialized;
 	size_t metaInfoSize;
+	int utf8Conversion=0;
+	char *convertedName=key->key;
+	size_t sizeName=strblen(key->key);
+	char *convertedValue=key->data;
+	size_t sizeValue=key->dataSize;
+	char *convertedComment=key->comment;
+	size_t sizeComment=key->commentSize;
 
+
+	/* First convert all to UTF-8 */
+	if ((utf8Conversion=kdbNeedsUTF8Conversion())) {
+		if (key->key) {
+			convertedName=malloc(sizeName);
+			memcpy(convertedName,key->key,sizeName);
+			UTF8Engine(UTF8_TO,&convertedName,&sizeName);
+		} else convertedName=key->key;
+
+		if (!keyIsBin(key)) {
+			convertedValue=malloc(sizeValue);
+			memcpy(convertedValue,key->data,sizeValue);
+			UTF8Engine(UTF8_TO,&convertedValue,&sizeValue);
+		} else convertedValue=key->data;
+		 
+		if (key->comment) {
+			convertedComment=malloc(sizeComment);
+			memcpy(convertedComment,key->comment,sizeComment);
+			UTF8Engine(UTF8_TO,&convertedComment,&sizeComment);
+		} else convertedComment=key->comment;
+	}
+	
 	memset(dbkey, 0, sizeof(DBT));
 	memset(dbdata, 0, sizeof(DBT));
 
@@ -132,23 +161,31 @@ int keyToBDB(Key *key, DBT *dbkey, DBT *dbdata) {
 		+ sizeof(key->dataSize);
 
 	
-	dbdata->size = metaInfoSize + key->dataSize + key->commentSize;
+	dbdata->size = metaInfoSize + sizeValue + sizeComment;
 	serialized = malloc(dbdata->size);
 
 	/* First part: the metainfo */
 	memcpy(serialized,key,metaInfoSize);
 
 	/* Second part: the comment */
-	memcpy(serialized+metaInfoSize,key->comment,key->commentSize);
-
+	memcpy(serialized+metaInfoSize,convertedComment,sizeComment);
+	
 	/* Third part: the value */
-	memcpy(serialized+metaInfoSize+key->commentSize,key->data,key->dataSize);
+	memcpy(serialized+metaInfoSize+sizeComment,convertedValue,sizeValue);
 	
 	dbdata->data=serialized;
+	
+	if (utf8Conversion) {
+		free(convertedComment);
+		free(convertedValue);
 
-	dbkey->size=strblen(key->key);
-	dbkey->data=malloc(dbkey->size);
-	strcpy(dbkey->data,key->key);
+		dbkey->size=sizeName;
+		dbkey->data=convertedName;
+	} else {
+		dbkey->size=strblen(key->key);
+		dbkey->data=malloc(dbkey->size);
+		strcpy(dbkey->data,key->key);
+	}
 	
 	return 0;
 }
@@ -182,7 +219,6 @@ int keyFromBDB(Key *key, DBT *dbkey, DBT *dbdata) {
 	
 	key->flags = KEY_SWITCH_INITIALIZED;
 
-	/* Set key name. TODO: not needed... we can hack internally for speed */
 	keySetName(key,dbkey->data);
 	
 	/* Set comment */
@@ -192,12 +228,20 @@ int keyFromBDB(Key *key, DBT *dbkey, DBT *dbdata) {
 	/* Set value. Key type came from the metaInfo importing above. */
 	keySetRaw(key,dbdata->data+metaInfoSize+key->commentSize,key->dataSize);
 	
-	/* since we just got the key from the storage structure, it is synced. */
-	key->flags &= ~KEY_SWITCH_NEEDSYNC;
+	if (kdbNeedsUTF8Conversion()) {
+		size_t size=strblen(key->key);
+		
+		UTF8Engine(UTF8_FROM,&key->key,&size);
+		UTF8Engine(UTF8_FROM,&key->comment,&key->commentSize);
+		if (!keyIsBin(key)) UTF8Engine(UTF8_FROM,(char **)&key->data,&key->dataSize);
+	}
 	
 	/* userDomain must be set outside this function,
 	 * someplace more aware of the context */
 	
+	/* since we just got the key from the storage structure, it is synced. */
+	key->flags &= ~KEY_SWITCH_NEEDSYNC;
+
 	return 0;
 }
 

@@ -13,6 +13,9 @@ Summary:       A key/value pair database to store software configurations
 
 %define DTDVERSION _DTDVERSION_
 
+# A buggy version of rpmbuild
+%define _sysconfdir /etc
+
 %description
 The Elektra Project provides a framework to store generic configuration data
 in an hierarchical key-value pair database, instead of a human-readable only
