@@ -63,25 +63,20 @@ $LastChangedBy$
 
 #define BUFFER_SIZE 100
 
-#define USER_NAME_SIZE 100
-
-#ifndef UT_NAMESIZE
+#ifdef UT_NAMESIZE
 #define USER_NAME_SIZE UT_NAMESIZE
-#endif
-
-/**4096 was taken from my  system (pathconf and PATH_MAX)
- * TODO: Should be taken from pathconf(pathname, _PC_PATH_MAX)
- * but then the buffers have to be malloced.*/
-#define MAX_PATH_LENGTH 4096
-
-/**This value is garanteed on any Posixsystem*/
-#ifndef  __USE_POSIX
-#define MAX_PATH_LENGTH _POSIX_PATH_MAX
+#else
+#define USER_NAME_SIZE 100
 #endif
 
 /**Some systems have even longer pathnames*/
-#ifndef PATH_MAX
+#ifdef PATH_MAX
 #define MAX_PATH_LENGTH PATH_MAX
+/**This value is garanteed on any Posixsystem*/
+#elif __USE_POSIX
+#define MAX_PATH_LENGTH _POSIX_PATH_MAX
+#else 
+#define MAX_PATH_LENGTH 4096
 #endif
 
 
