@@ -985,7 +985,7 @@ int keyCompareByName(const void *p1, const void *p2) {
  *   values and exist only to define hierarchy. Use this option if you need
  *   them to be included in the returned KeySet.
  * - \c RG_O_NOVALUE \n
- *   Do not include in returned the regular value keys. The resulting KeySet
+ *   Do not include in @p returned the regular value keys. The resulting KeySet
  *   will be only the skeleton of the tree.
  * - \c RG_O_STATONLY \n
  *   Only stat(2) the keys; do not retrieve the value, comment and key data
@@ -993,7 +993,7 @@ int keyCompareByName(const void *p1, const void *p2) {
  *   informational purposes. The rg(1) ls command, without the -v switch
  *   uses this option.
  * - \c RG_O_INACTIVE \n
- *   Will make it not ignore inactive keys. So returned will be filled also
+ *   Will make it not ignore inactive keys. So @p returned will be filled also
  *   with inactive keys. See registry(7) to understand how inactive keys work.
  * - \c RG_O_SORT \n
  *   Will sort keys alphabetically by their names.
@@ -1006,6 +1006,20 @@ ksInit(&myConfig);
 registryOpen();
 rc=registryGetChildKeys("system/sw/MyApp", &myConfig, RG_O_RECURSIVE);
 registryClose();
+
+// Check and handle propagated error
+if (rc) switch (errno) {
+	case....
+	case...
+}
+
+ksRewind(&myConfig); // go to begining of KeySet
+Key *key=ksNext(&myConfig);
+while (key) {
+	// do something with key . . .
+
+	key=nsNext(&myConfig)); // next key
+}
  * @endcode
  *
  * @param parentName name of the parent key
@@ -1013,8 +1027,8 @@ registryClose();
  * @param options ORed options to control approaches
  * @see commandList() code in rg command for usage example
  * @see commandEdit() code in rg command for usage example
- * @see commandSave() code in rg command for usage example
- * @return 0 on success, other value on error and errno is set
+ * @see commandExport() code in rg command for usage example
+ * @return 0 on success, other value on error and @c errno is set
  * @ingroup registry
  *
  */
@@ -1035,9 +1049,13 @@ int registryGetChildKeys(char *parentName, KeySet *returned, unsigned long optio
 	keySetName(&parentKey,parentName);
 	registryGetFilename(&parentKey,buffer,sizeof(buffer));
 	parentDir=opendir(buffer);
-	if (!parentDir) return -1; /* Key is not a directory or doesn't exist. Propagate errno */
 
-	realParentName=realloc(realParentName,parentNameSize=keyGetFullNameSize(&parentKey));
+	/* Check if Key is not a directory or doesn't exist.
+	 * Propagate errno */
+	if (!parentDir) return -1;
+
+	parentNameSize=keyGetFullNameSize(&parentKey);
+	realParentName=realloc(realParentName,parentNameSize);
 	keyGetFullName(&parentKey,realParentName,parentNameSize);
 
 	while ((entry=readdir(parentDir))) {

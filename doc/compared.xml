@@ -6,12 +6,12 @@ $LastChangedBy: $
 	<section id="compared"><title>Linux Registry and Other Registry-like Software</title>
 		<para>Known problems of other implementations are cited here.</para>
 		<orderedlist>
-			<listitem><simpara><command>Other implementations are a single point of failure; if something makes them fail, they become unavailable system-wide</command>. The Linux Registry is not a service. It can be seen as a mapper from the key's name space to their physical location on disk. If a key gets corrupted, it will not affect other keys, neither other users/programs accessing the Registry.</simpara></listitem>
+			<listitem><simpara><command>Other implementations are a single point of failure; if something makes them fail, they become unavailable system-wide</command>. The Linux Registry is not a service. It can be seen as a mapper from the key's namespace to its physical location on the disk. If a key gets corrupted, it will not affect other keys, neither other users/programs accessing the Registry.</simpara></listitem>
 			<listitem><simpara><command>Very small applications must open their database to get values</command>. The Linux Registry will only open very small files when requested; one file per key.</simpara></listitem>
 			<listitem><simpara><command>An application that uses the registry must scan many keys to find the one it is looking for</command>. The Linux Registry uses the fastest scan engine available: the file system. There is nothing to scan; given a key name, it is mapped to its corresponding file, and then opened.</simpara></listitem>
 			<listitem><simpara><command>A system administrator must use special tools to edit values in those blackbox registry implementation</command>. The Linux Registry provides a command line tool, <citerefentry><refentrytitle>rg</refentrytitle><manvolnum>1</manvolnum></citerefentry>, to edit it consistently. But a system administrator can also use a text editor or system's tools (<command>chmod</command>, <command>mv</command>, <command>cp</command>, <command>vi</command>) to modify the Registry.</simpara></listitem>
 		</orderedlist>
-		<para>Compared to Gnome's GConf, the Linux Registry is not a daemon, and is much lighter. GConf uses XML documents as backends, stored in user's home directory. XML based software are memory eaters. GConf seems not to be preocupied with access permissions, making it a good solution only for personal use in desktop (high level) systems. Also it is heavily Gnome dependent as we can see from the libraries it uses:</para>
+		<para>Compared to Gnome's GConf, the Linux Registry is not a daemon, and is much lighter. GConf uses XML documents as backends, stored in user's home directory. XML based software are memory eaters. GConf seems not to be preoccupied with access permissions, making it a good solution only for personal use in desktop (high level) systems. Also it is heavily Gnome dependent as we can see from the libraries it uses:</para>
 		<screen>$ ldd /usr/bin/gconfd-1
     libgconf-1.so.1 => /usr/lib/libgconf-1.so.1 (0x4375b000)
     liboaf.so.0 => /usr/lib/liboaf.so.0 (0x4373f000)
@@ -29,7 +29,7 @@ $LastChangedBy: $
     /lib/ld-linux.so.2 => /lib/ld-linux.so.2 (0x009fd000)
     libnsl.so.1 => /lib/libnsl.so.1 (0x4f727000)
 		</screen>
-		<para>This is useless for an early boot stage program (<filename>/usr/lib</filename> may be still unmounted), and for a very small OS installation that won't require desktop features, like a router, small firewall, or any other appliance. In the other hand, the Linux Registry client library is very slim with a minimum of dependencies:</para>
+		<para>This is useless for an early boot stage program (<filename>/usr/lib</filename> may be still unmounted), and for a very small OS installation that won't require desktop features, like a router, small firewall, or any other appliance. On the other hand, the Linux Registry client library is very slim with a minimum of dependencies:</para>
 		<screen>$ ldd /lib/libregistry.so
     libc.so.6 => /lib/tls/libc.so.6 (0x00111000)
     /lib/ld-linux.so.2 => /lib/ld-linux.so.2 (0x009fd000)

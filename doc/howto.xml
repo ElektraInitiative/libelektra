@@ -27,9 +27,21 @@ $LastChangedBy$
 		
 		&author;
 		
-		<pubdate>2004-07-30</pubdate>
+		<pubdate>2004-08-15</pubdate>
 		
 		<revhistory>
+			<revision>
+				<revnumber>2004-08-15</revnumber>
+				<date>15 Aug 2004</date>
+				<authorinitials>avi</authorinitials>
+				<revdescription>
+					<itemizedlist>
+						<listitem><simpara>Added note about UTF-8 and charsets in the True Facts section</simpara></listitem>
+						<listitem><simpara>Added link to the OOo presentatio</simpara></listitem>
+						<listitem><simpara>Typos and corrections by Vesa Kaihlavirta (vpkaihla@gmail.com)</simpara></listitem>
+					</itemizedlist>
+				</revdescription>
+			</revision>
 			<revision>
 				<revnumber>2004-07-30</revnumber>
 				<date>30 Jul 2004</date>
@@ -254,7 +266,7 @@ $LastChangedBy$
 	</articleinfo>
 
 	<section id="links"><title>Getting The Linux Registry</title>
-		<para>The Linux Registry can be found at <ulink url="http://registry.sf.net/">registry.sf.net</ulink> and in all this following places:
+		<para>The Linux Registry can be found at <ulink url="http://registry.sf.net/">registry.sf.net</ulink> and (in all) the following places:
 			<itemizedlist>
 				<listitem><simpara><ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628">C source and RPMs</ulink> from <ulink url="http://sourceforge.net/projects/registry">sourceforge.net</ulink></simpara></listitem>
 				<listitem><simpara><ulink url="http://www.germane-software.com/repositories/tlr/trunk/">Subversion repository</ulink>, thanks to Sean Russel</simpara></listitem>
@@ -266,7 +278,8 @@ $LastChangedBy$
 				<listitem><simpara><ulink url="https://lists.sourceforge.net/lists/listinfo/registry-list">Subscribe to general discussions list</ulink> or <ulink url="http://sourceforge.net/mailarchive/forum.php?forum=registry-list">see the list archives</ulink></simpara></listitem>
 			</itemizedlist>
 		</para>
-		<para>Get Subversion installed on your system and:
+		<para>There is an <ulink url="registry.sxi">OpenOffice.org presentation</ulink> that anybody can run in community events, to help create Linux Registry awareness.</para>
+		<para>Install Subversion and do the following:
 			<screen><prompt>bash:~$</prompt> <command>cd src</command>
 <prompt>bash:~/src$</prompt> <command>svn co http://germane-software.com/repositories/tlr/trunk registry</command>
 <prompt>bash:~/src$</prompt> <command>cd registry</command>
@@ -297,10 +310,10 @@ $LastChangedBy$
 		
 			<itemizedlist>
 				<listitem><simpara><ulink url="http://www.livejournal.com/users/gregorburger/">Regedit GUI to edit the registry</ulink>, using the QT library, by Gregor Burger. There is a <ulink url="http://developer.berlios.de/projects/tlr-regedit/">Berlios entry</ulink> with Subversion repository, and <ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628">RPM packages available.</ulink></simpara></listitem>
-				<listitem><simpara><ulink url="http://www.germane-software.com/software/Libraries/registry">Ruby bindings</ulink>, by Sean Russel. If you are writting code in Ruby, and need an easy way to store/retrieve configuration/state data, this is for you.</simpara></listitem>
+				<listitem><simpara><ulink url="http://www.germane-software.com/software/Libraries/registry">Ruby bindings</ulink>, by Sean Russel. If you are writing code in Ruby, and need an easy way to store/retrieve configuration/state data, this is for you.</simpara></listitem>
 				<listitem><simpara><ulink url="http://acm.cs.uwec.edu/~lemkesr/">Python bindings</ulink>, by Scott Lemke.</simpara></listitem>
 				<listitem><simpara><ulink url="http://nss-registry.skumler.net">Users and Groups Name System Module for GLibC</ulink>, by Jens Andersen. This is a module that can be activated by the name system switch mechanism (<filename>/etc/nsswitch.conf</filename>) to let users and groups databases be stored in the Registry, instead of <filename>/etc/{passwd|shadow|groups}</filename>.</simpara></listitem>
-				<listitem>Daniel Lambea and Israel Bethencourt are writting patches for basic system tools, and will have soon a full Linux distribution ported to the Registry.</listitem>
+				<listitem>Daniel Lambea and Israel Bethencourt are writing patches for basic system tools, and will have soon a full Linux distribution ported to the Registry.</listitem>
 				<listitem><simpara><ulink url="http://sourceforge.net/projects/jreg">JRegistry</ulink>, by Alexopoulos Charalampos, are Java bindings for the Registry API, and apparently a GUI for registry administration.</simpara></listitem>
 			</itemizedlist>
 			<para>All of them can be found on the <ulink url="https://lists.sourceforge.net/lists/listinfo/registry-list">Registry mailling list</ulink>.</para>
@@ -317,21 +330,21 @@ $LastChangedBy$
 		<para>Look into <filename>/etc/fstab</filename> file. Now look into <filename>/etc/modules.conf</filename>, <filename>/etc/passwd</filename>, <filename>/etc/ssh/sshd_config</filename>, <filename>/etc/httpd/conf/httpd.conf</filename>. I see here two terrible problems:</para>
 		<orderedlist numeration="arabic">
 			<listitem><para>They don't have a common file format.</para></listitem>
-			<listitem><para>Their localization in the filesystem may be different from Linux distribution to distribution.</para></listitem>
+			<listitem><para>Their location in the filesystem may be different from Linux distribution to distribution.</para></listitem>
 		</orderedlist>
 		
 		<para>These 2 issues leverages other problems:</para>
 		
 		<orderedlist numeration="arabic">
 			<listitem><para>When two different softwares want to integrate themselves, it is programatically very hard to read, understand and correctly change its partner's configuration file. Think about installing a third-party video driver in XFree86, a new Apache plug-in, etc, and letting this new piece of software do the integration automatically, instead of the sysadmin <command>vi</command> the configuration file, understand and change it in the right way. So basic software integration is a pain today for ISVs (Independent Software Vendors).</para></listitem>
-			<listitem><para>A software developer must waste a lot of time to write the plumbing code for configuration file parsing etc. And it is completelly out of his scope to write code to interoperate with other software's configurations files.</para></listitem>
-			<listitem><para>Different distributions use to put different software configuration in different places with differente formats. A regular SuSE system administrator, for example, will be lost when asked to work in a Debian or Slackware system. Think about the most primitive example: network configuration parameters. Each distro has its own approach.</para></listitem>
+			<listitem><para>A software developer must waste a lot of time to write the plumbing code for configuration file parsing etc. It is completelly out of his scope to write code to interoperate with other software's configurations files.</para></listitem>
+			<listitem><para>Different distributions tend to place different software configuration in different places with different formats. A regular SuSE system administrator, for example, will be lost when asked to work in a Debian or Slackware system. Think about the most primitive example: network configuration parameters. Each distro has its own approach.</para></listitem>
 			<listitem><para>A system administrator must know all these formats.</para></listitem>
 			<listitem><para>There is no way to know today what was changed in a specific configuration file. If <filename>/etc/shadow</filename> file time changes, there is no way to know if the change was related to nobody's or root's record.</para></listitem>
-			<listitem><para>High-level system administration GUIs (webmin, redhat-config-*, SuSE's YAST, etc) are just a dream today. They can never track successfully all changes that happens in the format of the configuration files of such a rich diversity of Open Source software (<filename>httpd.conf</filename>, <filename>smb.conf</filename>, <filename>modules.conf</filename>, <filename>fstab</filename>, etc, etc, etc). The approach of some of them is to keep the configuration ideas in a private database and regenerate the specific configuration file whenever a change happens in this database. Welcome to the inconsistency nightmare.</para></listitem>
+			<listitem><para>High-level system administration GUIs (webmin, redhat-config-*, SuSE's YAST, etc) are just a dream today. They can never track successfully all the changes that happens in the format of the configuration files of such a rich diversity of Open Source software (<filename>httpd.conf</filename>, <filename>smb.conf</filename>, <filename>modules.conf</filename>, <filename>fstab</filename>, etc, etc, etc). The approach of some of them is to keep the configuration ideas in a private database and regenerate the specific configuration file whenever a change happens in this database. Welcome to the inconsistency nightmare.</para></listitem>
 		</orderedlist>
 	
-		<para>Other OSes solved this problem centralizing their configurations, and creating a framework to access them. Configurations then are no more represented by 'configuration files', but by <emphasis>key-value pairs</emphasis> organized in a structured tree commited to some naming convetions.</para>
+		<para>Other OSes solved this problem by centralizing their configurations, and creating a framework to access them. Configurations then are no more represented by 'configuration files', but by <emphasis>key-value pairs</emphasis> organized in a structured tree commited to some naming convetions.</para>
 		<para>To achieve multi-vendor/provider consistent software integration, and ease of administration across heterogeneous Linux distributions,  Linux needs a Registry.</para>
 	
 	</section>
@@ -343,8 +356,8 @@ $LastChangedBy$
 	&garbage;
 	
 	<section id="adoption"><title>Adoption by Legacy System Software</title>
-		<para>The benefits of the Registry will be felt only when configurations like those under <filename>/etc</filename> will move into it. It is expected that this will take time, but awareness should be done by the community to speed the process.</para>
-		<para>Experienced Unix sysadmins seems (and were expected to be) sceptical about a registry on Linux, even when the Linux Registry tries to address other OSes registry's problems (centralization, security, consistency). But it is a truly required OS component from a good architecture perspective, and it can solve most of the Linux software integration issues, when adopted.</para>
+		<para>The benefits of the Registry will be felt only when configurations like those under <filename>/etc</filename> will move into it. It is expected that this will take time, but awareness should be raised in the community to speed the process.</para>
+		<para>Experienced Unix sysadmins seem (and were expected to be) sceptical about a registry on Linux, even when the Linux Registry tries to address other OSes registry's problems (centralization, security, consistency). But it is a truly required OS component from a good architecture perspective, and it can solve most of the Linux software integration issues, when adopted.</para>
 		<para>The registry is expected to be adopted by developers of high-level software applications. Then by some Linux distribution specific admin tools, like redhat-config-network, then finally by main OS programs and libraries, like <command>/sbin/init</command>, PAM, <command>/bin/mount</command>, etc.</para>
 	</section>
 		
@@ -353,19 +366,19 @@ $LastChangedBy$
 	&compared;
 	
 	<section id="screenshots"><title>Virtual Screenshots</title>
-		<para>The Registry can't produce screenshots, because it is just a library/API as you'll read bellow, but since everybody loves them, lets use some visual efects to show some Registry's concepts.</para>
+		<para>The Registry can't produce screenshots, because it is just a library/API as we saw above, but since everybody loves them, let's use some visual effects to show some of Registry's concepts.</para>
 		<section id="system.hw"><title>Hardware Status Migrated Into the Registry</title>
-			<para>This tree was generated by the <command>hwconfKudzu-convert</command> program that converts the <filename>/etc/sysconfig/hwconf</filename> file into Registry's keys. It puts in evidence the mice detected in a laptop. The keys under <filename>system/hw/byClass/MOUSE/GenericMousePS2psaux</filename> have all hardware properties detected by <command>kudzu</command>. There is also a <filename>system/hw/byBus</filename> tree that contains symbolic links to the <filename>byClass</filename> tree, to facilitate key access.</para>
+			<para>This tree was generated by the <command>hwconfKudzu-convert</command> program that converts the <filename>/etc/sysconfig/hwconf</filename> file into Registry's keys. In this example, we see that it detected a connected mouse. The keys under <filename>system/hw/byClass/MOUSE/GenericMousePS2psaux</filename> have all hardware properties detected by <command>kudzu</command>. There is also a <filename>system/hw/byBus</filename> tree that contains symbolic links to the <filename>byClass</filename> tree, to facilitate key access.</para>
 			<graphic srccredit="system/hw" fileref="images/hw.png" label="system/hw view" align="center"/>
 		</section>
 		
 		<section id="system.filesystems"><title>Filesystems Table Into the Registry</title>
-			<para><command>fstab-convert</command> created this <filename>system/filesystems</filename> tree showed here, based on <filename>/etc/fstab</filename>. A unique identifier was calculated for each filesystem, and a key name generated. <filename>system/filesystems/mntwork</filename> is in evidence, showing the <filename>/mnt/work</filename> filesystem. Bellow we can see standard key names for this filesystem properties. An example is <filename>system/filesystems/mntwork/mpoint</filename> that contains the value <emphasis>/mnt/work</emphasis>, or <filename>system/filesystems/mntwork/type</filename> that contains <emphasis>ext2</emphasis>.</para>
+			<para><command>fstab-convert</command> created this <filename>system/filesystems</filename> tree showed here, based on <filename>/etc/fstab</filename>. A unique identifier was calculated for each filesystem, and a key name generated. <filename>system/filesystems/mntwork</filename> is in evidence, showing the <filename>/mnt/work</filename> filesystem. Bellow, we can see standard key names for this filesystem properties. An example is <filename>system/filesystems/mntwork/mpoint</filename> that contains the value <emphasis>/mnt/work</emphasis>, or <filename>system/filesystems/mntwork/type</filename> that contains <emphasis>ext2</emphasis>.</para>
 			<graphic srccredit="system/filesystems" fileref="images/fstab.png" label="system/filesystems view" align="center"/>
 		</section>
 
 		<section id="xfree"><title>XFree Configurations at the Registry</title>
-			<para>All higher level software keys are located under <filename>system/sw</filename>, as showed above for XFree86 configuration. Pay attention on how is programatically easy to access and change XFree configration, without any <filename>/etc/X11/XF86Config</filename> parsing effort, when using the registry. XFree will look for its keys under <filename>system/sw/XFree/current</filename> which is a symbolic link to <filename>system/sw/XFree/handmade</filename>. This is an example on how the high level usage of symbolic links into the registry provides a lot of flexibility.</para>
+			<para>All higher level software keys are located under <filename>system/sw</filename>, as showed above for XFree86 configuration. Pay attention to how easy it is to access and change XFree configuration, without any <filename>/etc/X11/XF86Config</filename> parsing effort, when using the registry. XFree will look for its keys under <filename>system/sw/XFree/current</filename> which is a symbolic link to <filename>system/sw/XFree/handmade</filename>. This is an example on how the high level usage of symbolic links into the registry provides a lot of flexibility.</para>
 			<graphic srccredit="system/sw/XFree" fileref="images/xfree.png" label="system/sw/XFree view" align="center"/>
 		</section>
 		
@@ -392,8 +405,8 @@ $LastChangedBy$
 	<section id="helping"><title>Supporting Linux Registry</title>
 		<para>Help wanted:</para>
 		<orderedlist>
-			<listitem><simpara>Writting patches to legacy software like <command>mount</command>, <command>glibc</command>, <command>init</command>, etc to support the Registry.</simpara></listitem>
-			<listitem><simpara>Writting bindings to other higher level languages like Python, Perl, etc.</simpara></listitem>
+			<listitem><simpara>Writing patches to legacy software like <command>mount</command>, <command>glibc</command>, <command>init</command>, etc to support the Registry.</simpara></listitem>
+			<listitem><simpara>Writing bindings to other higher level languages like Python, Perl, etc.</simpara></listitem>
 			<listitem><simpara>Making the documentation more convincent and english corrections.</simpara></listitem>
 			<listitem><simpara>Advertising and advocating the project.</simpara></listitem>
 		</orderedlist>

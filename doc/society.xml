@@ -4,11 +4,11 @@ $Id$
 $LastChangedBy$
 -->
 <section id="society"><title>A Society of Softwares, Bureocracy and Integration</title>
-	<para>Lets imagine that every Open Source project (and commercial software) out there are members of a society. They can't live alone each one in its own cave. XFree, Apache, Samba can't work without an OS, and an OS is useless without higher level software. KDE, Gnome need X. Nobody can think about setting up an Internet MTA without an anti-SPAM tool, and strong commercial anti-virus. Apache needs third party plugins and extensions to add value to what it does: serve HTTP. And all of them need a growing number of users to justify a purpose for them to exist.</para>
+	<para>Let's imagine that every Open Source project (and commercial software) out there are members of a society. They can't live alone each one in its own cave. XFree, Apache, Samba can't work without an OS, and an OS is useless without higher level software. KDE, Gnome need X. Nobody can think about setting up an Internet MTA without an anti-SPAM tool, and strong commercial anti-virus software. Apache needs third party plugins and extensions to add value to what it does. And all of them need a growing number of users to justify a purpose for them to exist.</para>
 	
-	<para>The way this members start to work together - and then really make the <emphasis>society</emphasis> evolve - is through their configurations. As an example, an advanced commodity video card must say to X Window System: "Hey! I'm providing this driver and parameters, and I guarantee for you and your customer super exciting fast graphics!! Let me show you how to do that". And then X must say: "That's great! Please proceed making my customer happy, without taking his and <emphasis>my</emphasis> time to show we can work together. And BTW lets make some co-marketing to advertise the value of our alliance."</para>
+	<para>The way these members start to work together - and then really make the <emphasis>society</emphasis> evolve - is through their configurations. As an example, an advanced commodity video card must say to X Window System: "Hey! I'm providing this driver and parameters, and I guarantee for you and your customer super exciting fast graphics!! Let me show you how to do that". And then X must say: "That's great! Please proceed making my customer happy, without taking his and <emphasis>my</emphasis> time to show we can work together. And BTW lets make some co-marketing to advertise the value of our alliance."</para>
 	
-	<para>But the hipotetical conversation happening today is:</para>
+	<para>But the hypothetical conversation happening today is:</para>
 	
 	<simpara><emphasis>Commercial Driver:</emphasis> "Hey, XFree, I'd like to reach your customers 'cause they like that 'F' word in your name. I'd put together some code to work with your supply chain specification (driver API), but you have such a big network of brokers (OS distros), and each one showed me its set of paper forms (configuration files) I have to fill to work with you."</simpara>
 	
@@ -22,9 +22,9 @@ $LastChangedBy$
 	
 	<simpara>(this conversation received a considerable amount of drama, it is just an example, and this specific entities in real life may not have exactly the issues showed here)</simpara>
 	
-	<para>Which advanced Linux/*BSD/GNU user was asked to help a newbie friend to setup his video card? I have plenty of them.</para>
+	<para>How many advanced Linux/*BSD/GNU user have been asked to help a newbie friend to setup his video card? I know plenty of them.</para>
 	
-	<para>Because of the Bazar-way of developing Open Source Software, each of them still didn't agree in a common way to store configurations, so this part of the software is still like 20 years ago: a human-readable text file format that each project invented for itself. This makes them relativelly easy to be managed by human beings, but not sociable at all in this hipotetical software society. It is programatically difficult to make different software have "social relations" in the current way configurations are handled. An application's configuration is its personality.</para>
+	<para>Because of the Bazar-way of developing Open Source Software, each software project still dodn't agree in a common way to store configurations, so this part of the software is still like 20 years ago: a human-readable text file format that each project invented for itself. This makes them relatively easy to be managed by human beings, but not sociable at all in this hipotetical software society. It is programatically difficult to make different software have "social relations" in the current way configurations are handled. An application's configuration is its personality.</para>
 	
 	<important><para>A registry system brings little or no additional value for a software that is using it to store its configurations/state. But it is vital to make it more "easy-going" in a society of softwares. This will benefit the society as whole, and consequently all of its members.</para></important>
 </section>
