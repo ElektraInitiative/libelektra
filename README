@@ -1,95 +1,3 @@
-Compiling and Packaging
------------------------
-Elektra is such a bundle of software. First check out, if your distro
-has precompiled binary packages. You probably don't need to
-recompile it from source.
-
-For rpm-based distros:
-Use the binary RPM from the main repository. It should work for any RPM 
-based distribution with a recent enough glibc.
-
-If you want to compile it on a RPM-based distro, do not use the fresh files 
-from the Subversion repository since they contain only useless templates for 
-some files. Avoid using the tarball. Use the source RPM instead.
-
-Download it from the main repository as elektra-*.src.rpm and rebuild the RPMs:
-
-  $ rpm --rebuild elektra-*.src.rpm
-
-This will generate RPMs in your packages directory, ready to be installed.
-
-It was reported that the Makefiles will only work with gmake, which makes
-absolutelly no difference for Linux, but is a crucial information when
-building on BSD.
-
-For deb-based distros:
-You can use the deb Package from the main repository. It works for Debian
-stable and distros based on it. You can also build the Debian Package
-out of the sources, using dpkg-buildpackage -rfakeroot. It is not possible
-to build the man-pages with Debian, see below.
-
-On non-rpm,deb systems, use the tarball.
-
-See the "Makefile" session bellow for some notes on building.
-
-
-Note for Packagers
-------------------
-Elektra is divided in 2 packages: "elektra" and "elektra-devel".
-
-The "elektra" package sugested files:
-   /bin/kdb
-   /etc/profile.d/elektraenv.sh
-   /lib/libkdb.so*
-   /lib/libkdbtools.so*
-   /lib/libkdb-*.so      (backends)
-   /lib/libregistry.so   (backwards compatibility: will be removed in future)
-   /usr/share/doc/elektra
-   /usr/share/doc/elektra/fstab-convert
-   /usr/share/doc/elektra/hosts-convert
-   /usr/share/doc/elektra/hwconfKudzu-convert
-   /usr/share/doc/elektra/inittab-convert
-   /usr/share/doc/elektra/network-convert
-   /usr/share/doc/elektra/users-convert
-   /usr/share/doc/elektra/xfree-convert
-   /usr/share/man/man1/kdb.1.gz
-   /usr/share/man/man5/elektra.5.gz
-   /usr/share/man/man7/elektra.7.gz
-   /usr/share/sgml/elektra-0.1.1
-   /usr/share/sgml/elektra-0.1.1/catalog
-   /usr/share/sgml/elektra-0.1.1/elektra.dtd
-   /usr/share/sgml/elektra-0.1.1/elektra.xsd
-
-
-The "elektra-devel" package sugested files:
-   /usr/include/kdb.h          (main include)
-   /usr/include/kdbtools.h     (higher level functions)
-   /usr/include/kdbbackend.h   (backend development)
-   /usr/include/kdbprivate.h   (used by kdbbackend.h)
-   /usr/lib/libkdb.a
-   /usr/share/doc/elektra-devel
-   /usr/share/doc/elektra-devel/backend-template/*  (backend development examples)
-   /usr/share/doc/elektra-devel/elektra-api/*  (Doxygen API documentation)
-   /usr/share/doc/elektra-devel/examples/*     (Many examples in C language)
-   /usr/share/man/man3/kdb*.3.gz       (Manpages for the kdb*() methods)
-   /usr/share/man/man3/key*.3.gz       (Manpages for the key*() methods)
-   /usr/share/man/man3/ks*.3.gz        (Manpages for the ks*() methods)
-
-   
-   
-Usually you should build it like this:
-
-   bash$ gmake all
-   bash$ gmake DESTDIR=/some/fake/system/root install
-
-For more info, please use the elektra.spec file as a reference.
-
-It is recommended to provide a tool like update-libkdb, to make it
-safe for admins to change the backend. See under 
-scripts/update-backend an idea how the script could look like. Of
-course it has to be adopted for your distributions need.
-
-
 License
 -------
 Since version 0.4.1, Elektra must be distributed under a BSD license.
@@ -97,24 +5,66 @@ Before that, Elektra was LGPL.
 
 
 
-About Man Pages
+
+Compiling and Packaging
+-----------------------
+Elektra is such a simple software, that you'll probably wont need it to
+recompile from source. Use the binary RPM from the main repository. It should
+work for any RPM based distribution.
+
+Do not use the fresh files from the Subversion repository since they contain
+only useless templates for some files.
+
+Building on RPM-based distros:
+Avoid using the tarball. Use the source RPM instead because it contains all the
+logic to correctly build Elektra:
+
+  $ rpm --rebuild elektra-*.src.rpm
+
+This will generate RPMs in your packages directory, ready to be installed.
+
+Building on deb-based distros:
+You can use the deb Package from the main repository. It works for Debian
+stable and distros based on it. You can also build the Debian Package
+out of the sources, using dpkg-buildpackage -rfakeroot. It is not possible
+to build the man-pages with Debian, see below.
+
+On non-RPM and non-deb systems, use the tarball.
+
+It was reported that the Makefiles will only work with gmake, which makes
+absolutelly no difference for Linux, but is a crucial information when
+building on BSD.
+
+See the "Makefile" session bellow for some notes on building.
+
+
+
+
+
+Compile Options
 ---------------
-Some man pages are generated from a DocBook XML using XSLTs from the
-docbook-style-xsl package (on Fedora), and the xsltproc as the XSLT engine.
-So rg.1.xml docbook source is converted to the rg.1 man page, for example.
 
-This caused several problems when compiling them in other distros, because of
-the lack of these tools.
+These are the parameters you can pass to 'make [PARAMETERS] all':
 
-Since version 0.2.7, the compiled man pages are included in the tarball. So
-unless you 'make clean' globally, you'll be able to 'make; make install'
-globaly even without these tools.
+- BACKENDS="filesys fstab ini gconf"
+  The list of backends you want to build. You can remove some of these
+  backends if you don't want it.
+
+- DEFAULT_BACKEND=filesys
+  Selects the default backend that will be hardcoded in the runtime.
+  Elektra needs to know which backend to use as default, but the user will
+  allways be able to change it manipulating environment vars.
+
+- DIRS="src xmldtd xmlschema doc"
+  Tells make which components to build. You can exclude "doc" from this list
+  to skip doc building.
 
 
+The following example will comile only the "filesys" and "gconf" backends, and
+make the "filesys" be the default:
 
+   $ make    BACKENDS="filesys gconf"   DEFAULT_BACKEND=filesys   all
 
-Makefile
---------
 
 You can issue the following subcomands to make:
 
@@ -190,9 +140,81 @@ gmake OPTIMIZATIONS="$RPM_OPT_FLAGS" \
 	SGMLDIR=%{_datadir}/sgml \  # /usr/share/sgml
 	install
 
-You can also edit the Makefile for your special needs. If you don't
-like to build all the backends you can BACKENDS to the backends
-you would like to build. The DEFAULT_BACKEND is the backend used
-in the beginning, but it is possible to change the backend, even
-during the process its not possible to start new programs depending
-on elektra.
+You can also edit the Makefile for your special needs.
+
+
+
+
+
+Notes for Packagers
+-------------------
+Elektra is divided in 2 packages: "elektra" and "elektra-devel".
+
+The "elektra" package sugested files:
+   /bin/kdb
+   /etc/profile.d/elektraenv.sh
+   /lib/libkdb.so*
+   /lib/libkdbtools.so*
+   /lib/libkdb-*.so      (backends)
+   /lib/libregistry.so   (backwards compatibility: will be removed in future)
+   /usr/share/doc/elektra
+   /usr/share/doc/elektra/fstab-convert
+   /usr/share/doc/elektra/hosts-convert
+   /usr/share/doc/elektra/hwconfKudzu-convert
+   /usr/share/doc/elektra/inittab-convert
+   /usr/share/doc/elektra/network-convert
+   /usr/share/doc/elektra/users-convert
+   /usr/share/doc/elektra/xfree-convert
+   /usr/share/man/man1/kdb.1.gz
+   /usr/share/man/man5/elektra.5.gz
+   /usr/share/man/man7/elektra.7.gz
+   /usr/share/sgml/elektra-0.1.1
+   /usr/share/sgml/elektra-0.1.1/catalog
+   /usr/share/sgml/elektra-0.1.1/elektra.dtd
+   /usr/share/sgml/elektra-0.1.1/elektra.xsd
+
+
+The "elektra-devel" package sugested files:
+   /usr/include/kdb.h          (main include)
+   /usr/include/kdbtools.h     (higher level functions)
+   /usr/include/kdbbackend.h   (backend development)
+   /usr/include/kdbprivate.h   (used by kdbbackend.h)
+   /usr/lib/libkdb.a
+   /usr/share/doc/elektra-devel
+   /usr/share/doc/elektra-devel/backend-template/*  (backend development examples)
+   /usr/share/doc/elektra-devel/elektra-api/*  (Doxygen API documentation)
+   /usr/share/doc/elektra-devel/examples/*     (Many examples in C language)
+   /usr/share/man/man3/kdb*.3.gz       (Manpages for the kdb*() methods)
+   /usr/share/man/man3/key*.3.gz       (Manpages for the key*() methods)
+   /usr/share/man/man3/ks*.3.gz        (Manpages for the ks*() methods)
+
+   
+   
+Usually you should build it like this:
+
+   bash$ gmake all
+   bash$ gmake DESTDIR=/some/fake/system/root install
+
+For more info, please use the elektra.spec file as a reference.
+
+It is recommended to provide a tool like update-libkdb, to make it
+safe for admins to change the backend. See under 
+scripts/update-backend an idea how the script could look like. Of
+course it has to be adopted for your distributions need.
+
+
+
+
+About Man Pages
+---------------
+Some man pages are generated from a DocBook XML using XSLTs from the
+docbook-style-xsl package (on Fedora), and the xsltproc as the XSLT engine.
+So rg.1.xml docbook source is converted to the rg.1 man page, for example.
+
+This caused several problems when compiling them in other distros, because of
+the lack of these tools.
+
+Since version 0.2.7, the compiled man pages are included in the tarball. So
+unless you 'make clean' globally, you'll be able to 'make; make install'
+globaly even without these tools.
+
