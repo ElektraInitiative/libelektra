@@ -167,13 +167,13 @@ typedef struct _Key {
 Key::key is the key name. It is a unique identifier for a registry key.
 An exmaple of a complex key name is:
 
-	user:some\.user.My Environment.SOME\.VAR
+	user:some.user/My Environment/SOME.VAR
 
 From this example:
-  Root name = "user:some\.user"
+  Root name = "user:some.user"
       Owner = "some.user"
-  Base name = "SOME\.VAR"
-Parent name = "user:some\.user.My Environment"
+  Base name = "SOME.VAR"
+Parent name = "user:some.user/My Environment"
 
 */
 
@@ -198,12 +198,10 @@ Registry methods
 
 ***************************************/
 
-/** All registry operations must be done on an opened registry object.
-This method initializes a connection to the Registry server */
 int registryOpen();
 
 
-/** Closes the connection to the Registry server, and frees some internal memory */
+
 int registryClose();
 
 
@@ -222,8 +220,8 @@ int registryGetKeyByParent(char *parentName, char *baseName, Key *returned);
 int registryGetKeyByParentKey(Key *parent, char *basename, Key *returned);
 int registryGetValueByParent(char *parentName, char *baseName, char *returned, size_t maxSize);
 
-// int registryGetLink(char *keyname, char *returned,int maxSize);
-// int registrySetLink(char *keyname, char *value);
+/* int registryGetLink(char *keyname, char *returned,int maxSize); */
+/* int registrySetLink(char *keyname, char *value); */
 
 int registryGetComment(char *keyname, char *returned,size_t maxSize);
 size_t registrySetComment(char *keyname, char *comment);

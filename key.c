@@ -48,7 +48,13 @@ size_t strblen(char *s) {
 }
 
 
-
+/**
+ * Initializes a Key object.
+ *
+ * Every Key object that will be used must be initialized first, to setup
+ * pointers, counters, etc.
+ * @see keyClose()
+ */
 int keyInit(Key *key) {
 	if (!key) return errno=RG_KEY_RET_NULLKEY;
 
@@ -67,6 +73,14 @@ int keyInit(Key *key) {
 
 
 
+/**
+ * Finishes the usage of a Key object.
+ *
+ * Frees all internally allocated memory, and leave the Key object
+ * ready to be destroyed, or explicitly by a <i>free()</i>, or a
+ * local variable dealocation.
+ * @see keyInit()
+ */
 int keyClose(Key *key) {
 	if (!key) return errno=RG_KEY_RET_NULLKEY;
 	if (!keyIsInitialized(key)) return 0;
@@ -85,7 +99,15 @@ int keyClose(Key *key) {
 
 
 
-
+/**
+ * Test if a Key object is initialized.
+ *
+ * It is more or less reliable.
+ * You'd better guarantee your code is robust enough using
+ * <i>keyInit()</i> and <i>keyClose()</i> everytime.
+ * @see keyInit()
+ * @see keyClose()
+ */
 int keyIsInitialized(Key *key) {
 	if (!key) return 0;
 	return ((key->flags & RG_KEY_FLAG_INITMASK)==RG_KEY_FLAG_INITIALIZED);
@@ -93,7 +115,11 @@ int keyIsInitialized(Key *key) {
 
 
 
-
+/**
+ * Test if a Key object was changed after retrieved from disk.
+ *
+ * @return 1 if the key was changed, 0 otherwise.
+ */
 int keyNeedsSync(Key *key) {
 	if (!key) return 0;
 	return (key->flags & RG_KEY_FLAG_NEEDSYNC);
@@ -101,6 +127,36 @@ int keyNeedsSync(Key *key) {
 
 
 
+/**
+ * Returns the key data type.
+ *
+ * Data types are:
+ *
+ * <b>Between RG_KEY_TYPE_BINARY and RG_KEY_TYPE_BINARY+19</b>
+ * Binary value. The data will be encoded into a text format. Only
+ * RG_KEY_TYPE_BINARY is implemented in the basic library, and means a raw
+ * stream of bytes with no special semantics to the Registry. The other
+ * values are reserved for future use; being treated still as binary values
+ * but possibly with some semantics to a higher level application or
+ * framework.
+ *
+ * <b>RG_KEY_TYPE_STRING up to 254</b>
+ * Text, UTF-8 encoded. Values higher then 40 are reserved for future or
+ * application specific implementations of more abstract data types, like
+ * time/date, color, font, etc. But always represented as pure text that 
+ * can be edited in any text editor like vi(1).
+ *
+ * <b>RG_KEY_TYPE_DIR and RG_KEY_TYPE_LINK</b>
+ * The special types for a folder key symbolic link keys.
+ *
+ * <b>RG_KEY_TYPE_UNDEFINED</b>
+ * When the key still has no type. This is what you'll get right
+ * after a <i>keyInit()</i>.
+ *
+ * @see keySetType()
+ * @return the key type
+ * 
+ */
 u_int8_t keyGetType(Key *key) {
 	if (!key || !keyIsInitialized(key)) {
 		errno=RG_KEY_RET_UNINITIALIZED;
@@ -111,8 +167,21 @@ u_int8_t keyGetType(Key *key) {
 }
 
 
-
-
+/**
+ * Force a key type
+ *
+ * This method is usually not needed, unless you are working with higher
+ * level key types, or want to force a specific type for a key.
+ * It is not usually needed because the data type is automatically set
+ * when setting the key value.
+ *
+ * The <b>RG_KEY_TYPE_DIR</b> is the only type that has no value, so when
+ * using this method to set to this type, the key value will be freed.
+ *
+ * @see keyGetType()
+ * @return the new type
+ *
+ */
 u_int8_t keySetType(Key *key,u_int8_t newType) {
 	mode_t dirSwitch=0111;
 
@@ -140,6 +209,14 @@ u_int8_t keySetType(Key *key,u_int8_t newType) {
 
 
 
+/**
+ * Returns the number of bytes of the key value
+ *
+ * This method is used with <i>malloc()</i> before a <i>keyGetValue()</i>.
+ *
+ * @return the number of bytes needed to store the key value
+ * @see keyGetValue()
+ */
 size_t keyGetDataSize(Key *key) {
 	if (!key || !keyIsInitialized(key)) {
 		errno=RG_KEY_RET_UNINITIALIZED;
@@ -360,8 +437,8 @@ size_t keySetName(Key *key, char *newName) {
 
 
 /** Extracts the user name from Key::key.
-	Given 'user:someuser.*' return 'someuser'
-	Given 'user:some\.user.*' return 'some.user'
+	Given 'user:someuser/*' return 'someuser'
+	Given 'user:some.user/*' return 'some.user'
 */
 size_t keyGetOwner(Key *key, char *returned, size_t maxSize) {
 	size_t bytes;
@@ -987,7 +1064,8 @@ u_int32_t keyCompare(Key *key1, Key *key2) {
 
 /**
     Compare ks1 against ks2.
-    A key (by full name) that is present on ks1 and ks2, and has something different, will be transfered from ks2 to ks1, and ks1's version deleted.
+    A key (by full name) that is present on ks1 and ks2, and has something different, will
+    be transfered from ks2 to ks1, and ks1's version deleted.
     Keys that are in ks1, but aren't in ks2 will be trasnsfered from ks1 to removed.
     Keys that are keyCompare() equal in ks1 and ks2 will be deleted from ks2.
     Keys that are available in ks2 but don't exist in ks1 will be transfered to ks1.

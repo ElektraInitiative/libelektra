@@ -60,6 +60,7 @@ clean:
 	-rm csource.xml
 	-rm docbook
 	-rm example.c
+	-rm -rf doxy
 
 install: man
 	[ -d ${DESTDIR}/usr/share/man/man1 ] || mkdir -p ${DESTDIR}/usr/share/man/man1
