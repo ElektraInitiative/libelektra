@@ -1,3 +1,8 @@
+
+<!--
+$Id$
+$LastChangedBy$
+-->
 <section id="society"><title>A Society of Softwares, Bureocracy and Integration</title>
 	<para>Lets imagine that every Open Source project (and commercial software) out there are members of a society. They can't live alone each one in its own cave. XFree, Apache, Samba can't work without an OS, and an OS is useless without higher level software. KDE, Gnome need X. Nobody can think about setting up an Internet MTA without an anti-SPAM tool, and strong commercial anti-virus. Apache needs third party plugins and extensions to add value to what it does: serve HTTP. And all of them need a growing number of users to justify a reason for them to exist.</para>
 	

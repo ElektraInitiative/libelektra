@@ -29,6 +29,13 @@
  ***************************************************************************/
 
 
+/* Subversion stuff
+
+$Id$
+$LastChangedBy$
+
+*/
+
 
 #include "registry.h"
 #include "registryprivate.h"

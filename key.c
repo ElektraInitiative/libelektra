@@ -15,6 +15,12 @@
  *                                                                         *
  ***************************************************************************/
 
+/* Subversion stuff
+
+$Id$
+$LastChangedBy$
+
+*/
 
 #include <stdio.h>
 #include <strings.h>

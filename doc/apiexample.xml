@@ -1,4 +1,7 @@
-		
+<!--
+$Id$
+$LastChangedBy$
+-->
 	<section id="exprm"><title>Example program</title>
 		<para>Here is an example of how to use the Registry API. This program will get all keys that matter under <varname>system/sw/MyApp</varname> manipulate some, and re-save them.</para>
 		&csource;

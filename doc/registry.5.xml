@@ -3,6 +3,10 @@
 	<!ENTITY storage SYSTEM "storage.xml">
 ]>
 
+<!--
+$Id$
+$LastChangedBy$
+-->
 <refentry id="registry">
 
 	<refentryinfo>

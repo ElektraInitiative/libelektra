@@ -1,3 +1,8 @@
+
+<!--
+$Id$
+$LastChangedBy$
+-->
 	<section id="rgdesc"><title>Description</title>
 		<para>The <command>rg</command> command implements a set of subcommands to manipulate the Linux Registry's (see <citerefentry><refentrytitle>registry</refentrytitle><manvolnum>7</manvolnum></citerefentry>) keys.</para>
 		<para>The subcommands implemented are very similar to regular UNIX commands like <command>ls</command>, and <command>rm</command>, specially in their output and options.</para>

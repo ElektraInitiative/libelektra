@@ -4,6 +4,10 @@
 	<!ENTITY apiexampl SYSTEM "apiexampl.xml">
 ]>
 
+<!--
+$Id$
+$LastChangedBy$
+-->
 <refentry id="key">
 
 	<refentryinfo>

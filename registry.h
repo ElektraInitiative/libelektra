@@ -16,6 +16,13 @@
  ***************************************************************************/
 
 
+/* Subversion stuff
+
+$Id$
+$LastChangedBy$
+
+*/
+
 #ifndef REGISTRY_H
 #define REGISTRY_H
 

@@ -1,3 +1,7 @@
+<!--
+$Id$
+$LastChangedBy$
+-->
 	<section id="example"><title>Examples</title>
 		<para><prompt>bash$ </prompt><command>rg set -c "My first key" user/example/key "Some nice value"</command></para>
 		<para><prompt>bash$ </prompt><command>rg set user:luciana/example/key -- "Some - nice - value with dashes"</command></para>

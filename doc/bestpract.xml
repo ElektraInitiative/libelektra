@@ -1,4 +1,8 @@
 
+<!--
+$Id$
+$LastChangedBy$
+-->
 	<section id="bestpract"><title>Best Practices When Creating Keys</title>
 		<para>When using the Registry to store your application's configuration and state, please keep in mind the following rules:</para>
 			<itemizedlist>

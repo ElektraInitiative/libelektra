@@ -1,3 +1,8 @@
+
+<!--
+$Id$
+$LastChangedBy$
+-->
 	<section id="overview"><title>Overview of the Linux Registry</title>
 		<para>The Linux Registry is an alternative back-end for text configuration files.</para>
 		<para>Instead of each program to have its own text configuration files, with a variety of formats, the Registry tries to provide an universal, hierarchical, fast and consistent name space and infrastructure to access configuration parameters through a key-value pair mechanism. This way any software can read/save its configuration/state using a consistent API.</para>

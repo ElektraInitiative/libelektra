@@ -1,4 +1,5 @@
-
+# $Id$
+# $LastChangedBy$
 
 MANSTYLE=manstyle.xsl
 HTMLSTYLE=htmltitlepage.xsl
@@ -14,6 +15,8 @@ all: man
 
 man: rg.1 registry.7 registry.5 registry.3 key.3
 
+example.c:
+	ln -s ../example/example.c .
 
 csource.xml: example.c
 	(echo "<programlisting><![CDATA["; sed -e 's/\&/\&amp\;/g' < example.c; echo "]]></programlisting>") > csource.xml

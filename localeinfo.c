@@ -1,3 +1,12 @@
+
+/* Subversion stuff
+
+$Id$
+$LastChangedBy$
+
+*/
+
+
 #include <langinfo.h>
 #include <locale.h>
 #include <stdio.h>

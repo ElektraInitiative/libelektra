@@ -1,3 +1,7 @@
+<!--
+$Id$
+$LastChangedBy$
+-->
 <section id="api"><title>Application Programing Interface</title>
 	<para>Registry's API consists of 3 classes of objects and methods to manipulate them. The main implementation of the library is written in C.</para>
 	<para>The classes are:</para>

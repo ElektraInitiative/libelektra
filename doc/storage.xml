@@ -1,4 +1,8 @@
 
+<!--
+$Id$
+$LastChangedBy$
+-->
 	<note><para>This section is provided for the sake of the openness of the Linux Registry. You should not access the Registry's key files directly. You should use the API or the <citerefentry><refentrytitle>rg</refentrytitle><manvolnum>1</manvolnum></citerefentry> command for that.</para></note>
 	<section id="keystor"><title>Registry Key Storage Strategy</title>
 		<para>The Linux Registry implements a very simple way to store the key-value pairs. The value (and some metainfo) for each key is stored in a single file. The key name (and some of its context) is sufficient to find the file name that stores the value.</para>

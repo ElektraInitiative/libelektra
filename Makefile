@@ -1,3 +1,8 @@
+
+# $Id$
+# $LastChangedBy$
+
+
 CC=gcc -O3 -g -Wcomment -Wformat -Wimplicit-int -Wimplicit-function-declaration -Wparentheses -Wreturn-type -Wunused -Wuninitialized
 XMLINCLUDES=`xml2-config --cflags`
 XMLLIBS=`xml2-config --libs`
@@ -70,7 +75,7 @@ dist: clean registry.spec
 	PACK=`cat VERSION`;\
 	PACK=registry-$$PACK;\
 	cd ..;\
-	find $$DIR/ | grep -v Docs-LinCS | cpio -H tar -o | gzip --best -c > $$PACK.tar.gz
+	find $$DIR/ | grep -v .svn | cpio -H tar -o | gzip --best -c > $$PACK.tar.gz
 
 	
 	
