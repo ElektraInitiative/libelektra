@@ -27,9 +27,19 @@ $LastChangedBy$
 
 		&author;
 
-		<pubdate>2004-09-11</pubdate>
+		<pubdate>2004-09-19</pubdate>
 
 		<revhistory>
+			<revision>
+				<revnumber>2004-09-19</revnumber>
+				<date>19 Sep 2004</date>
+				<authorinitials>avi</authorinitials>
+				<revdescription>
+					<itemizedlist>
+						<listitem><simpara>Added the Lua language bindings by Rob King jking@deadpixi.com</simpara></listitem>
+					</itemizedlist>
+				</revdescription>
+			</revision>
 			<revision>
 				<revnumber>2004-09-11</revnumber>
 				<date>11 Sep 2004</date>
@@ -390,6 +400,7 @@ $LastChangedBy$
 				<itemizedlist>
 					<listitem><simpara><ulink url="http://www.germane-software.com/software/Libraries/registry">Ruby bindings</ulink>, by Sean Russel. If you are writing code in Ruby, and need an easy way to store/retrieve configuration/state data, this is for you.</simpara></listitem>
 					<listitem><simpara><ulink url="http://acm.cs.uwec.edu/~lemkesr/">Python bindings</ulink>, by Scott Lemke.</simpara></listitem>
+					<listitem><simpara><ulink url="http://www.deadpixi.com/software/">Lua bindings</ulink>, by Rob King<!-- jking@deadpixi.com -->. Check also its <ulink url="http://www.deadpixi.com/software/ElektraLua/README">README</ulink> file.</simpara></listitem>
 
 					<listitem><simpara><ulink url="http://sourceforge.net/projects/jreg">JRegistry</ulink>, by Alexopoulos Charalampos, are Java bindings for the Elektra API, and apparently a GUI for Elektra administration.</simpara></listitem>
 				</itemizedlist>
