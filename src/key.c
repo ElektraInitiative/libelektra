@@ -1515,8 +1515,10 @@ size_t keyGetLink(const Key *key, char *returnedTarget, size_t maxSize) {
 /**TODO: Remove or:
  * - update Doc
  * - add keyGetLinkSize()*/
-	if (!key || !keyIsInitialized(key))
-		return errno=KDB_RET_UNINITIALIZED;
+	if (!key || !keyIsInitialized(key)) {
+		errno=KDB_RET_UNINITIALIZED;
+		return 0;
+	}
 
 	if (!key->data) {
 		errno=KDB_RET_NODATA;
@@ -1601,8 +1603,10 @@ int keyIsBin(const Key *key) {
  * @ingroup keyvalue
  */
 size_t keyGetBinary(const Key *key, void *returnedValue, size_t maxSize) {
-	if (!key || !keyIsInitialized(key))
-		return errno=KDB_RET_UNINITIALIZED;
+	if (!key || !keyIsInitialized(key)) {
+		errno=KDB_RET_UNINITIALIZED;
+		return 0;
+	}
 
 	if (!key->data) {
 		errno=KDB_RET_NODATA;
@@ -2112,92 +2116,6 @@ Key *keyNext(Key *key) {
 
 
 
-
-
-
-/*
-
-int keyGetInteger(Key *key, RG_DWORD *returnedInt) {
-	if (!key || !keyIsInitialized(key))
-		return errno=KDB_RET_UNINITIALIZED;
-
-	if (!key->data)
-		return errno=KDB_RET_NODATA;
-
-	if (key->type > KEY_TYPE_DOUBLE)
-		return errno=KDB_RET_TYPEMISMATCH;
-
-	switch (key->type) {
-		case KEY_TYPE_DOUBLE:
-			*returnedInt=floor(*(double *)key->data);
-			break;
-		case KEY_TYPE_DWORD:
-			*returnedInt=*(long long int *)key->data;
-			break;
-	}
-
-	return 0;
-}
-
-
-
-
-
-size_t keySetInteger(Key *key, RG_DWORD newInt) {
-	size_t ret;
-	char number[60];
-
-	ret=sprintf(number,"%d",newInt);
-
-	if ((ret=keySetRaw(key,number,ret+1))<0) {
-		return ret;
-	}
-
-	key->type=KEY_TYPE_STRING;
-
-	return ret;
-}
-*/
-
-
-/*
-
-int keyGetDouble(Key *key, double *returnedDouble) {
-	if (!key || !keyIsInitialized(key))
-		return errno=KDB_RET_UNINITIALIZED;
-
-	if (!key->data)
-		return errno=KDB_RET_NODATA;
-
-	if (key->type > KEY_TYPE_DOUBLE)
-		return errno=KDB_RET_TYPEMISMATCH;
-
-	switch (key->type) {
-		case KEY_TYPE_DOUBLE:
-			*returnedDouble=*(double *)key->data;
-			break;
-		case KEY_TYPE_DWORD:
-			*returnedDouble=*(long long int *)key->data;
-			break;
-	}
-
-	return 0;
-}
-
-
-
-size_t keySetDouble(Key *key, double newDouble) {
-	size_t ret;
-
-	if ((ret=keySetRaw(key,&newDouble,sizeof(double)))<0) {
-		return ret;
-	}
-
-	key->type=KEY_TYPE_DOUBLE;
-
-	return ret;
-}
-*/
 
 
 

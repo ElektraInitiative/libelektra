@@ -454,6 +454,7 @@ KeyDB methods
 ***************************************/
 
 int kdbOpen();
+int kdbOpenDefault();
 int kdbOpenBackend(char *backendName);
 int kdbClose();
 
@@ -591,8 +592,6 @@ size_t keySetLink(Key *key, const char *target);
 time_t keyGetMTime(const Key *key);
 time_t keyGetATime(const Key *key);
 time_t keyGetCTime(const Key *key);
-
-size_t keyToString(const Key *key, char *returned, size_t maxSize);
 
 int keyIsSystem(const Key *key);
 int keyNameIsSystem(const char *keyName);
