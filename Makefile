@@ -99,7 +99,8 @@ rpm: dist
 	VER=`cat VERSION`;\
 	rpmbuild -ta ../${NAME}-$$VER.tar.gz
 
-
+deb:
+	dpkg-buildpackage -rfakeroot
 
 
 elektra.spec: elektra.spec.in

@@ -1,0 +1,22 @@
+Document: elektra
+Title: Debian elektra Manual
+Author: Avi Alkalay
+Abstract: This manual describes what elektra is
+ and how it can be used to
+ manage online manuals on Debian systems.
+Section: base
+
+Format: debiandoc-sgml
+Files: /usr/share/doc/elektra/elektra.sgml.gz
+
+Format: postscript
+Files: /usr/share/doc/elektra/elektra.ps.gz
+
+Format: text
+Files: /usr/share/doc/elektra/elektra.text.gz
+
+Format: HTML
+Index: /usr/share/doc/elektra/html/index.html
+Files: /usr/share/doc/elektra/html/*.html
+
+  
