@@ -4,24 +4,17 @@
 
 using namespace std;
 
-int main(int argc, char ** argv)
+int main()
 {
 	ckdb config("sw/test");
-	if (argc < 3)
-	{
-		cout << argv[0] << " {set|get}" << " keyname" << endl;
-		return 1;
-	}
-	
-	if (strcmp (argv[1], "get") == 0)
-	{	
-		cout << config.get (argv[2]) << endl;
-	} else if (strcmp (argv[1], "set") == 0)
-	{
-		string s;
-		cout << "Enter Text for Value, End with ." << endl;
-		getline (cin, s, '.');	
-		config.set (argv[2], s);
-	}
+
+	cout << config.get ("hallo") << endl;
+	config.set ("what", "hejo");
+	config.set ("hallo", "jo");
+	config.set ("nono", "what");
+	config.set ("hallo", "successfully overwritten");
+	config.write();
+	cout << config.get ("hallo") << endl;
+	config.set ("destr", "works also");
 	return 0;
 }
