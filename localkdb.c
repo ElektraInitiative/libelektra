@@ -55,10 +55,35 @@ $LastChangedBy$
 #include <langinfo.h>
 #include <ctype.h>
 #include <string.h>
+#include <utmp.h>
 
 
 #define UTF8_TO   1
 #define UTF8_FROM 0
+
+#define BUFFER_SIZE 100
+
+#define USER_NAME_SIZE 100
+
+#ifndef UT_NAMESIZE
+#define USER_NAME_SIZE UT_NAMESIZE
+#endif
+
+/**4096 was taken from my  system (pathconf and PATH_MAX)
+ * TODO: Should be taken from pathconf(pathname, _PC_PATH_MAX)
+ * but then the buffers have to be malloced.*/
+#define MAX_PATH_LENGTH 4096
+
+/**This value is garanteed on any Posixsystem*/
+#ifndef  __USE_POSIX
+#define MAX_PATH_LENGTH _POSIX_PATH_MAX
+#endif
+
+/**Some systems have even longer pathnames*/
+#ifndef PATH_MAX
+#define MAX_PATH_LENGTH PATH_MAX
+#endif
+
 
 extern int errno;
 
@@ -260,7 +285,7 @@ int UTF8Engine(int direction, char **string, size_t *inputByteSize) {
  *
  */
 int handleOldKeyFileVersion(Key *key,FILE *input,u_int16_t nversion) {
-	char generalBuffer[100];
+	char generalBuffer[BUFFER_SIZE];
 	size_t currentBufferSize;
 
 	char type[5];
@@ -400,7 +425,7 @@ int handleOldKeyFileVersion(Key *key,FILE *input,u_int16_t nversion) {
  * @ingroup internals
  */
 int keyFileUnserialize(Key *key,FILE *input) {
-	char generalBuffer[100];
+	char generalBuffer[BUFFER_SIZE];
 	size_t currentBufferSize;
 
 	char version[10];
@@ -784,7 +809,7 @@ size_t kdbGetFilename(Key *forKey,char *returned,size_t maxSize) {
 		case KEY_NS_USER: {
 			/* Prepare to use the 'user:????/ *' database */
 			struct passwd *user=0;
-			char userName[100];
+			char userName[USER_NAME_SIZE];
 
 			length=keyGetOwner(forKey,userName,sizeof(userName));
 			if (!length) strncpy(userName,getenv("USER"),sizeof(userName));
@@ -1052,7 +1077,7 @@ int kdbGetChildKeys(const char *parentName, KeySet *returned, unsigned long opti
 	size_t parentNameSize;
 	DIR *parentDir;
 	Key parentKey;
-	char buffer[800];
+	char buffer[MAX_PATH_LENGTH];
 	struct dirent *entry;
 
 	/*
@@ -1226,7 +1251,7 @@ int kdbGetRootKeys(KeySet *returned) {
  * @ingroup kdb
  */
 int kdbStatKey(Key *key) {
-	char keyFileName[800];
+	char keyFileName[MAX_PATH_LENGTH];
 	struct stat keyFileNameInfo;
 	size_t pos;
 	u_int32_t semiflag;
@@ -1338,8 +1363,8 @@ int kdbSetKeys(KeySet *ks) {
  * @ingroup kdb
  */
 int kdbSetKey(Key *key) {
-	char keyFileName[800];
-	char folderMaker[800];
+	char keyFileName[MAX_PATH_LENGTH];
+	char folderMaker[MAX_PATH_LENGTH];
 	char *cursor, *last;
 	int fd;
 	FILE *output=0;
@@ -1408,8 +1433,8 @@ int kdbSetKey(Key *key) {
 		/* Setting the name will let us know if this is a valid keyname */
 		if (keySetName(&target,targetName)) {
 			/* target has a valid key name */
-			targetName=realloc(targetName,800);
-			kdbGetFilename(&target,targetName,800);
+			targetName=realloc(targetName,MAX_PATH_LENGTH);
+			kdbGetFilename(&target,targetName,MAX_PATH_LENGTH);
 			keyClose(&target);
 		} else if (errno==KDB_RET_INVALIDKEY) {
 			/* Is an invalid key name. So treat it as a regular file */
@@ -1470,7 +1495,7 @@ int kdbSetKey(Key *key) {
  */
 int kdbRemove(const char *keyName) {
 	Key key;
-	char fileName[800];
+	char fileName[MAX_PATH_LENGTH];
 	off_t rc;
 
 	keyInit(&key);
