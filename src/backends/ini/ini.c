@@ -275,7 +275,9 @@ int IniGetFileName (const Key * forKey, char * filename, char * keyname)
 #define STATE_COMMENT 4
 #define STATE_END 8
 
-#define BUFFER_SIZE 3
+int count = 0;
+
+#define BUFFER_SIZE 4
 
 /**
  * Read one key out of a file.
@@ -318,16 +320,21 @@ int IniGetKey (FILE * fc, Key * key)
 	for (i=0; i < string_length; i++) {
 //		fprintf (stderr, "Processing |%c|%d|\n", buffer[i], buffer[i]);
 		if (buffer[i] == '\n') { // end of line found
-//			fprintf (stderr, "Found end of key\n");
+			fprintf (stderr, "Found end of key (\\n)\n");
 			break;
 		}
 		else if (buffer[i] ==  '\0' ) {	// anticipated end?
+			fprintf (stderr, "Possible end found (\\0)\n");
 			if (i==string_length-1) { // no its not
 				string_length += BUFFER_SIZE;
+				fprintf (stderr, "srealloc buffer to %d"
+					"(buffer: %p, &buffer: %p) [%d]\n", 
+					string_length, buffer, &buffer, count ++);
 				if (srealloc ((void**) & buffer, string_length) < 0) {
 					fprintf (stderr, "Reallocation error\n");
 					return -1;
-				} 
+				}
+//				fprintf (stderr, "fget next part");
 				fgets (buffer+string_length-BUFFER_SIZE,
 					BUFFER_SIZE,fc);
 			} else {
@@ -346,6 +353,7 @@ int IniGetKey (FILE * fc, Key * key)
 			if (k == key_length-1)
 			{
 				key_length += BUFFER_SIZE;
+				fprintf (stderr, "srealloc key\n");
 				if (srealloc ((void **) & buffer_key, key_length) < 0) {
 					fprintf (stderr, "Reallocation error\n");
 					return -1;
@@ -357,6 +365,7 @@ int IniGetKey (FILE * fc, Key * key)
 			if (v == value_length-1) 
 			{
 				value_length += BUFFER_SIZE;
+				fprintf (stderr, "srealloc value\n");
 				if (srealloc ((void **) & buffer_value, value_length) < 0) {
 					fprintf (stderr, "Reallocation error\n");
 					return -1;
@@ -369,8 +378,8 @@ int IniGetKey (FILE * fc, Key * key)
 			if (c == comment_length-1)
 			{
 				comment_length += BUFFER_SIZE;
-				buffer_comment = realloc (buffer_comment, comment_length);
-				if (buffer_comment == NULL) {
+				fprintf (stderr, "srealloc comment\n");
+				if (srealloc ((void **) & buffer_comment, comment_length) < 0) {
 					fprintf (stderr, "Reallocation error\n");
 					return -1;
 				}					
@@ -429,6 +438,8 @@ int kdbGetKey_ini(Key *key) {
 	int keySize;
 	char * keyFullName;
 	FILE * fc; int fd;	// filedescriptor
+	
+	fprintf (stderr, "kdbGetKey_ini() entered\n");
 	
 	pos = IniGetFileName(key, keyFileName, keyName);
 	

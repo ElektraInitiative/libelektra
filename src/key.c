@@ -57,17 +57,46 @@ size_t strblen(const char *s) {
  * 
  * This function differs from realloc() because it
  * handels error situations right.
+ * The function can also allocate new memory, but it
+ * is not recommended.
+ * It is also possible to free the memory, when setting
+ * new_size to 0. This is not recommended too.
+ * ptr must not be NULL, this case is checked.
+ * *ptr must be a previous allocated memory or NULL,
+ * otherwise realloc will sigfault, this case can't
+ * be checked.
+ * par example
+ * code
+long int max = 100;
+long int * array;
+
+if ( (array = malloc ((max+1) * sizeof(long int))) == NULL )
+{
+	fprintf (stderr, "out of memory\n");
+	return 1;
+}
+
+scanf ("%ld", &max);
+if (srealloc ((void **)&array, (max+1) * sizeof(long int)) < 0)
+{
+	fprintf (stderr, "out of memory\n");
+	return 1;
+}
+ * endcode
  * @return 0 at success, -1 on error (no memory leak)
  * @ingroup backend
  */
 inline int srealloc (void ** ptr, size_t new_size) {
 	void * h;
+	if (ptr == NULL)
+		return -1;
 	h = realloc (* ptr, new_size);
 	if (h == NULL) {
-		free (* ptr);
+		if (new_size > 0) // dont free() twice
+			free (* ptr);
 		return -1;
 	}
-	ptr = h;
+	*ptr = h;
 	return 0;
 }
 
