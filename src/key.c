@@ -334,7 +334,7 @@ ksAppend(ks,keyNew("user/tmp/ex3",
 	KEY_SWITCH_END));                      // end of args
 	
 ksAppend(ks,keyNew("user/tmp/ex4",
-	KEY_SWITCH_TYPE,KEY_TYPE_BINARY,7      // key type and value size (because it is binary)
+	KEY_SWITCH_TYPE,KEY_TYPE_BINARY,7,     // key type and value size (because it is binary)
 	KEY_SWITCH_DOMAIN,"root",              // owner (not uid) is root
 	KEY_SWITCH_VALUE,"some data",          // value that will be truncated
 	KEY_SWITCH_COMMENT,"value is truncated",
