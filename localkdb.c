@@ -192,7 +192,11 @@ size_t unencode(char *encoded,void *returned) {
 
 	byteInHexa[4]=0;
 	while (*readCursor) {
-		if (isspace((int)*readCursor)) readCursor++;
+		if (isspace((int)*readCursor)) 
+		{
+		readCursor++;
+		continue;
+		}
 		if (isxdigit((int)*readCursor)) {
 			long int converted;
 			byteInHexa[2]=readCursor[0];
