@@ -411,6 +411,7 @@ KeySet methods
 
 int ksInit(KeySet *ks);
 int ksClose(KeySet *ks);
+size_t ksGetSize(KeySet *ks);
 
 size_t ksInsert(KeySet *ks, Key *toInsert);
 size_t ksAppend(KeySet *ks, Key *toAppend);

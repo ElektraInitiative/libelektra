@@ -23,18 +23,33 @@
 [ -z "$RG" ] && RG="kdb"
 [ -z "$ROOT" ] && ROOT="system/filesystems"
 
+num=0
 
 cat /etc/fstab | while read dev mpoint type options dumpfreq passno; do
 	
-	fsname=`echo $mpoint | sed -e 's^/^^g'`
-	[ -z "$fsname" ] && fsname="rootfs"
+	expr match "$dev" '#.*' > /dev/null && continue
+	test $dev || continue
+
+	case "$mpoint" in 
+	"none")
+		num=$(( $num + 1 ))
+		fsname="$type$num"
+		;;
+	'/')
+		fsname="roofs"
+		;;
+	*)
+		fsname=`echo $mpoint | sed -e 's^/^^g'`
+		;;
+	esac
+
 	
-	echo $RG set -c \"Device or label\" $ROOT/$fsname/device \'$dev\'
+	echo $RG set -c \"Device or Label\" $ROOT/$fsname/device \'$dev\'
 	echo $RG set -c \"Mount point\" $ROOT/$fsname/mpoint \'$mpoint\'
 	echo $RG set -c \'Filesystem type. See fs\(5\)\' $ROOT/$fsname/type \'$type\'
 	echo $RG set -c \"Filesystem specific options. See mount\(8\)\" $ROOT/$fsname/options \'$options\'
-	echo $RG set -c \"dump frequency in days\" $ROOT/$fsname/dumpfreq \'$dumpfreq\'
-	echo $RG set -c \"pass number on parallel fsck\" $ROOT/$fsname/passno \'$passno\'
+	echo $RG set -c \"Dump frequency in days\" $ROOT/$fsname/dumpfreq \'$dumpfreq\'
+	echo $RG set -c \"Pass number on parallel fsck\" $ROOT/$fsname/passno \'$passno\'
 	echo
 	
 done

@@ -303,10 +303,11 @@ u_int8_t keySetType(Key *key,u_int8_t newType) {
 /**
  * Returns the number of bytes of the key value
  *
- * This method is used with <i>malloc()</i> before a <i>keyGetValue()</i>.
+ * This method is used with malloc() before a keyGetString() or keyGetBinary().
  *
  * @return the number of bytes needed to store the key value
- * @see keyGetValue()
+ * @see keyGetString()
+ * @see keyGetBinary()
  */
 size_t keyGetDataSize(const Key *key) {
 	if (!key || !keyIsInitialized(key)) {
@@ -2212,6 +2213,18 @@ int ksClose(KeySet *ks) {
 	}
 	ks->start=ks->end=ks->cursor;
 	return 0;
+}
+
+
+
+
+
+/**
+ * @return the number of keys in the @p ks.
+ *
+ */
+size_t ksGetSize(KeySet *ks) {
+	return ks->size;
 }
 
 
