@@ -12,5 +12,6 @@ $LastChangedBy$
 		<para><prompt>bash# </prompt><command>rg ln system/sw/XFree/handmade system/sw/XFree/current</command>     # same as last command</para>
 		<para><prompt>bash$ </prompt><command>rg ls -lR system/sw/XFree/current</command></para>
 		<para><prompt>bash# </prompt><command>rg rm system/inittab/rc4</command></para>
+		<para><prompt>bash# </prompt><command>rg export user/sw/app | sed -e 's|/app/|/app2/|g' | rg import</command></para>
 	</section>
 	

@@ -33,6 +33,14 @@ $LastChangedBy$
 			<varlistentry><term><command>edit</command></term>
 				<listitem><para>A very powerfull subcommand that lets you edit an XML representation of the keys. The parameters it accepts is usually a parent key, so its child keys will be gathered. Can be used with the <option>-R</option> flag to work recursively. The editor used is the one set in the <envar>$EDITOR</envar> environment variable, or <command>vi</command>. After editing the keys, <command>rg edit</command> will analyze them and commit only the changed keys, remove the keys removed, and add the keys added.</para></listitem>
 			</varlistentry>
+			
+			<varlistentry><term><command>export</command></term><term><command>save</command></term>
+				<listitem><para>Export a subtree of keys to XML. If no subtree is defined right after the <command>export</command> command, <filename>system</filename> and current <filename>user</filename> trees will be exported. Output is written to standard output.</para></listitem>
+			</varlistentry>
+			
+			<varlistentry><term><command>import</command></term><term><command>load</command></term>
+				<listitem><para>Import an XML representation of keys and save it to the registry. If no filename is passed right after the <command>import</command> command, standard input is used.</para></listitem>
+			</varlistentry>
 		</variablelist>
 	</section>
 	

@@ -116,6 +116,16 @@ $LastChangedBy$
 			<arg choice="plain">key/src</arg>
 			<arg choice="plain">key/dest</arg>
 		</cmdsynopsis>
+		<cmdsynopsis>
+			<command>rg export system/some/tree.root &#062; file.xml</command>
+		</cmdsynopsis>
+		<cmdsynopsis>
+			<command>rg import &#060; file.xml</command>
+		</cmdsynopsis>
+		
+		<cmdsynopsis>
+			<command>rg import file.xml</command>
+		</cmdsynopsis>
 	</refsynopsisdiv>
 
 	&rgcmd;
