@@ -61,10 +61,14 @@ clean:
 	-rm example.c
 
 install: man
+	[ -d ${DESTDIR}/usr/share/man/man1 ] || mkdir -p ${DESTDIR}/usr/share/man/man1
+	[ -d ${DESTDIR}/usr/share/man/man3 ] || mkdir -p ${DESTDIR}/usr/share/man/man3
+	[ -d ${DESTDIR}/usr/share/man/man5 ] || mkdir -p ${DESTDIR}/usr/share/man/man5
+	[ -d ${DESTDIR}/usr/share/man/man7 ] || mkdir -p ${DESTDIR}/usr/share/man/man7
 	for m in `ls *.1`; do gzip -c --best $$m > ${DESTDIR}/usr/share/man/man1/$$m.gz; done
-	for m in `ls *.7`; do gzip -c --best $$m > ${DESTDIR}/usr/share/man/man7/$$m.gz; done
-	for m in `ls *.5`; do gzip -c --best $$m > ${DESTDIR}/usr/share/man/man5/$$m.gz; done
 	for m in `ls *.3`; do gzip -c --best $$m > ${DESTDIR}/usr/share/man/man3/$$m.gz; done
+	for m in `ls *.5`; do gzip -c --best $$m > ${DESTDIR}/usr/share/man/man5/$$m.gz; done
+	for m in `ls *.7`; do gzip -c --best $$m > ${DESTDIR}/usr/share/man/man7/$$m.gz; done
 	cat registry.3.xml | perl -e '{while (<>) {m/<function>(\w*)<\/function>/; print $$1 . "\n" if ($$1); }}' | \
 		grep registry | sort -u | while read f; do ln -s registry.3.gz ${DESTDIR}/usr/share/man/man3/$$f.3.gz; done
 	cat key.3.xml | perl -e '{while (<>) {m/<function>(\w*)<\/function>/; print $$1 . "\n" if ($$1); }}' | \
