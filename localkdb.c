@@ -98,8 +98,9 @@ extern int errno;
  * backend, these are the methods you'll have to reimplement:
  * kdbGetKey(), kdbSetKey(), kdbStatKey(), kdbRemove(), kdbGetChildKeys()
  *
- * And methods that you'll probably have to reimplement to get benefits
- * of your new backend: kdbOpen(), kdbClose(), kdbMonitorKey(), kdbMonitorKeys()
+ * And methods that is suggested to reimplement (but not needed) if you want
+ * them to get the benefits of your new backend: kdbOpen(), kdbClose(),
+ * kdbMonitorKey(), kdbMonitorKeys()
  *
  * The other methods are higher level. They use the above methods to do their
  * job, and generally don't have to be reimplemented for a different backend.
