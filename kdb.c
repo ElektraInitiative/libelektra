@@ -465,19 +465,26 @@ int commandSet() {
 
 	if (argFile) {
 		FILE *f;
+		int end=0;
 		
 		if (argData) free(argData);
+		argData=0;
 		f=fopen(argFile,"r");
 		
 		if (!f) {
 			sprintf(error,"kdb set: %s",argFile);
 			perror(error);
+ 			return -1;
 		}
-		while (! feof(f)) {
+		while (! end) {
 			char buffer[100];
-			size_t r;
+			ssize_t r;
 			
-			r=fread(buffer,sizeof(buffer),1,f);
+			r=read(fileno(f),buffer,sizeof(buffer));
+			if (r == 0) {
+				r=lseek(fileno(f),0,SEEK_END)-offset;
+				end=1;
+			}
 			argData=realloc(argData,offset+r);
 			memcpy(argData+offset,buffer,r);
 			offset+=r;

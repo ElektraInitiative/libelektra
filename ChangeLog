@@ -2,6 +2,8 @@
 - Added documentation on how to write new backends
 - Fixed "kdb get" when getting binary values
 - Fixed a bug when converting binary key values to hex digits
+- Fixed a bug in the reverse way: from hex to binary (jens)
+- Added -b to kdb, to set key values with the content of a file
 - Trying to fix something wrong in kdbGetKey()
 
 * Wed Sep 22 2004 Avi Alkalay <avi@unix.sh> 0.4.3

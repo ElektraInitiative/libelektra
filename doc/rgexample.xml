@@ -6,6 +6,8 @@ $LastChangedBy$
 		<para><prompt>bash$ </prompt><command>kdb set -c "My first key" user/example/key "Some nice value"</command></para>
 		<para><prompt>bash$ </prompt><command>kdb set user:luciana/example/key -- "Some - nice - value with dashes"</command></para>
 		<para><prompt>bash# </prompt><command>kdb set -u nobody -g http user:httpd/sw/httpd/key "Some value"</command></para>
+		<para><prompt>bash$ </prompt><command>kdb set -b image.png -t bin user/example/binaryKey</command></para>
+		<para><prompt>bash$ </prompt><command>kdb set -b file.txt user/example/regularKey</command></para>
 		<para><prompt>bash$ </prompt><command>kdb get user/example/key</command></para>
 		<para><prompt>bash$ </prompt><command>kdb ls -laR user:valeria</command></para>
 		<para><prompt>bash# </prompt><command>kdb set -t link system/sw/XFree/current system/sw/XFree/handmade</command></para>

@@ -15,7 +15,7 @@ $LastChangedBy$
 			</varlistentry>
 
 			<varlistentry><term><command>set</command></term>
-				<listitem><para>Set the value to the specified key. Accepts options: <option>-c</option>, <option>-t</option>, <option>-m</option></para></listitem>
+				<listitem><para>Set the value to the specified key. Accepts options: <option>-c</option>, <option>-t</option>, <option>-m</option>, <option>-b</option></para></listitem>
 			</varlistentry>
 
 			<varlistentry><term><command>ls</command></term>
@@ -73,27 +73,39 @@ $LastChangedBy$
 			<varlistentry><term><option>-d</option></term>
 				<listitem><para>Causes <command>get</command> to work descriptivelly. When requesting a key it will show the comment, key name and its value in a fancy format</para></listitem>
 			</varlistentry>
+			
 			<varlistentry><term><option>-s</option></term>
 				<listitem><para>Causes <command>get</command> to be more friendly to Shell scripts. For example, when requesting <filename>user/env/env2/PATH</filename>, the output will be PATH="the value", that is, only the basename of the key will be showed and the value will be surrounded by ' " '.</para></listitem>
 			</varlistentry>
+			
 			<varlistentry><term><option>-t type</option></term>
 				<listitem><para>When <command>set</command>ting a key's value, you can specify the type with this switch. Currently accepted types are <type>string</type> for plain text, <type>bin</type> for binary as-is values, <type>dir</type> to create folder keys and <type>link</type> to create symbolic links between keys. Plain text are always stored as <citerefentry><refentrytitle>UTF-8</refentrytitle><manvolnum>7</manvolnum></citerefentry> in Elektra, regardeless of your current encoding (<envar>$LANG</envar>). If you want to force a value to be stored without the <citerefentry><refentrytitle>UTF-8</refentrytitle><manvolnum>7</manvolnum></citerefentry> encoding (a bad idea), you can set it as binary. Binary values should be avoided, because they are black boxes for system administrators.</para></listitem>
 			</varlistentry>
+			
+			<varlistentry><term><option>-b filename</option></term>
+				<listitem><para>Set the key value as the content of file <filename>filename</filename>. This option is more usefull when setting binary keys.</para></listitem>
+			</varlistentry>
+
 			<varlistentry><term><option>-m mode</option></term>
 				<listitem><para>For the <command>set</command> command. Will set the key access permission to <option>mode</option>, which must be an octal number as for <citerefentry><refentrytitle><command>chmod</command></refentrytitle><manvolnum>1</manvolnum></citerefentry>.</para></listitem>
 			</varlistentry>
+			
 			<varlistentry><term><option>-u uid</option></term>
 				<listitem><para>Create the key with <option>uid</option> user ID. It can be a user name or a uid number.</para></listitem>
 			</varlistentry>
+			
 			<varlistentry><term><option>-g gid</option></term>
 				<listitem><para>Create the key with <option>gid</option> group ID. It can be a group name or a gid number</para></listitem>
 			</varlistentry>
+			
 			<varlistentry><term><option>-c comment</option></term>
 				<listitem><para>When <command>set</command>ting keys, you can use this argument to set a descriptive comment for it. This comment is exactly as a comment in a plain text configuration file. The comment is stored as <citerefentry><refentrytitle>UTF-8</refentrytitle><manvolnum>7</manvolnum></citerefentry> regardeless of your current encoding (<envar>$LANG</envar>).</para></listitem>
 			</varlistentry>
+			
 			<varlistentry><term><option>-v</option></term>
 				<listitem><para>With the <command>ls</command> subcommand, will make it show also the value stored in the key.</para></listitem>
 			</varlistentry>
+			
 			<varlistentry><term><option>--</option></term>
 				<listitem><para>With the <command>set</command> subcommand, everything after it will be considered the value, even text with dashes (-).</para></listitem>
 			</varlistentry>

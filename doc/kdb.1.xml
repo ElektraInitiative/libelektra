@@ -81,6 +81,19 @@ $LastChangedBy$
 		</cmdsynopsis>
 		
 		<cmdsynopsis>
+			<command>kdb set</command>
+			<arg choice="opt">
+				<option>-t</option>
+				<option>type</option>
+			</arg>
+			<arg choice="opt">
+				<option>-b</option>
+				<option>file</option>
+			</arg>
+			<arg choice="plain">key/name</arg>
+		</cmdsynopsis>
+		
+		<cmdsynopsis>
 			<command>kdb ls</command>
 			<arg choice="opt">
 				<option>-lRfv</option>
