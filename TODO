@@ -1,6 +1,11 @@
 TO PROJECT
 - Patches to init, gconf, KConfig
 
+TO PUBLISH
+- freedesktop.org
+- gnu
+- newsgroups of unix programming
+- brave GNU World: column@brave-gnu-world.org
 
 TO CODE
 - Support for key change notifications
