@@ -49,7 +49,7 @@ $LastChangedBy$
 #include <ctype.h>
 #include <locale.h>
 
-/* FIXME: remove libXML dependencies for kdb command */
+/* FIXME: remove kdb command libXML dependencies */
 #include <libxml/xmlreader.h>
 #include <libxml/xmlschemas.h>
 

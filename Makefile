@@ -91,7 +91,7 @@ deb:
 
 elektra.spec: elektra.spec.in
 	VERSION=`cat VERSION` ;\
-	sed -e "s/_VERSION_/$$VERSION/g" < $< > $@ ;\
+	sed -e "s/_VERSION_/$$VERSION/g; s/_DTDVERSION_/${DTDVERSION}/g;" < $< > $@ ;\
 	cat ChangeLog >> $@
 
 elektra.pc: elektra.pc.in
@@ -125,4 +125,4 @@ install: all
 	cp ChangeLog ${DESTDIR}${DOCDIR}/${NAME}
 	cp example/*-convert example/*.xml ${DESTDIR}${DOCDIR}/${NAME}
 	cp example/*.c ${DESTDIR}${DOCDIR}/${NAME}-devel
-	kdb set system/sw/kdb/current/schemapath "${DESTDIR}${SGMLDIR}/elektra-${DTDVERSION}/elektra.xsd"
+	-[ `id -u` -eq "0" ] && kdb set system/sw/kdb/current/schemapath "${DESTDIR}${SGMLDIR}/elektra-${DTDVERSION}/elektra.xsd"

@@ -1,3 +1,6 @@
+* Tue Dec 22 2004 Avi Alkalay <avi@unix.sh> 0.4.9
+- kdb now validates an imported XML against a XML schema, thanks to Remi Pouak
+- elektraenv script is more secure now, thanks to Johan Kiviniemi (ion at ion.yi.org)
 * Sat Dec 06 2004 Avi Alkalay <avi@unix.sh> 0.4.8
 - Whish me a happy birthday
 - All sources moved to src/

@@ -11,6 +11,8 @@ BuildRoot:     %{_tmppath}/%{name}-%{version}-build
 BuildRequires: doxygen libxml2-devel /usr/bin/xsltproc
 Summary:       A key/value pair database to store software configurations
 
+%define DTDVERSION _DTDVERSION_
+
 %description
 The Elektra Project provides a framework to store generic configuration data
 in an hierarchical key-value pair database, instead of a human-readable only
@@ -88,6 +90,7 @@ fi
 
 # Create basic key structure for apps
 kdb set -t dir system/sw
+kdb set system/sw/kdb/current/schemapath "%{_datadir}/sgml/elektra-%{DTDVERSION}/elektra.xsd"
 
 
 %postun -p /sbin/ldconfig
