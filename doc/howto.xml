@@ -23,13 +23,23 @@ $LastChangedBy$
 <article>
 
 	<articleinfo>
-		<title>The Linux Registry</title>
+		<title>Linux Registry Project</title>
 		
 		&author;
 		
-		<pubdate>2004-06-24</pubdate>
+		<pubdate>2004-07-13</pubdate>
 		
 		<revhistory>
+			<revision>
+				<revnumber>2004-07-13</revnumber>
+				<date>13 Jul 2004</date>
+				<authorinitials>avi</authorinitials>
+				<revdescription>
+					<itemizedlist>
+						<listitem><simpara>Changes in the Supporting Linux Registry section</simpara></listitem>
+					</itemizedlist>
+				</revdescription>
+			</revision>
 			<revision>
 				<revnumber>2004-06-24</revnumber>
 				<date>24 Jun 2004</date>
@@ -332,13 +342,12 @@ $LastChangedBy$
 		&storage;
 	</section-->
 	
-	<section id="helping"><title>Supporting the Linux Registry</title>
+	<section id="helping"><title>Supporting Linux Registry</title>
 		<para>Help wanted:</para>
 		<orderedlist>
-			<listitem><simpara>Making the documentation more convincent.</simpara></listitem>
-			<listitem><simpara>English corrections to the documentation.</simpara></listitem>
 			<listitem><simpara>Writting patches to legacy software like <command>mount</command>, <command>glibc</command>, <command>init</command>, etc to support the Registry.</simpara></listitem>
-			<listitem><simpara>Improving the API with more methods.</simpara></listitem>
+			<listitem><simpara>Writting bindings to other higher level languages like Python, Perl, etc.</simpara></listitem>
+			<listitem><simpara>Making the documentation more convincent and english corrections.</simpara></listitem>
 			<listitem><simpara>Advertising and advocating the project.</simpara></listitem>
 		</orderedlist>
 	</section>

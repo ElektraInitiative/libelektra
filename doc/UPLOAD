@@ -1,6 +1,22 @@
 
-To update http://registry.sf.net
-Put this in Konqueror: fish://aviram@shell.sf.net/home/groups/r/re/registry/htdocs
-Or, scp to aviram@shell.sf.net:/home/groups/r/re/registry/htdocs
+To update http://registry.sf.net . . . . .
 
+Put this in Konqueror and start copying:
+
+	fish://aviram@shell.sf.net/home/groups/r/re/registry/htdocs
+
+
+
+
+
+Or
+	scp *html aviram@shell.sf.net:/home/groups/r/re/registry/htdocs
+
+
+
+
+
+Or simply:
+
+	make pub
 

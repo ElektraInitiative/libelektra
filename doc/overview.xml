@@ -9,7 +9,7 @@ $LastChangedBy:$
 		<para>It is designed to be lightweight, with no dependencies, ready to be used also by early boot stage programs.</para>
 		<para>Using the Registry, configuration file's syntax and handling will not be a rework for each software.</para>
 		<para>The Registry lets system administrators control security in a much fine grained way. With the current flat file paradigm it is impossible to control permissions and access times on each <filename>/etc/passwd</filename> or <filename>/etc/shadow</filename> atoms. The Linux Registry lets you do that because each information atom stored in it (key) has a unique name (key name) and access properties. See <ulink url="http://namesys.com/v4/v4.html#etc_passwd">Hans Reiser (creator of ReiserFS) comments about it</ulink>.</para>
-		<section id="rgfacts"><title>True Facts About The Linux Registry</title>
+		<section id="rgfacts"><title>True Facts About Linux Registry</title>
 			<itemizedlist>
 				<listitem><para>It is much more an agreenment then a piece of software. Relation is 99% to 1%.</para></listitem>
 				<listitem><para>It is a simple and consistent API to help software developers programatically store and retrieve global and user-specific configuration parameters.</para></listitem>
@@ -23,7 +23,7 @@ $LastChangedBy:$
 			</itemizedlist>
 		</section>
 		
-		<section id="rgnot"><title>The Registry Is Not</title>
+		<section id="rgnot"><title>Linux Registry Is Not</title>
 			<itemizedlist>
 				<listitem><para>Is NOT something that accesses SQL/relational databases.</para ></listitem>
 				<listitem><para>Is NOT an OS service that can become unavailable and make system unusable. It is just a library to access files according to a namespace.</para ></listitem >

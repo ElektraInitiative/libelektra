@@ -5,6 +5,7 @@ MANSTYLE=manstyle.xsl
 HTMLSTYLE=htmltitlepage.xsl
 
 .SUFFIXES: .xml .html .pdf .ps .rtf .xsl .fo .tpl
+.SILENT:
 
 .xml.html:
 	if [ ! -L docbook ]; then ln -s ../../doc-common/docbook .; fi
@@ -76,3 +77,5 @@ install: man
 	
 	
 	
+pub: html
+	scp *html aviram@shell.sf.net:/home/groups/r/re/registry/htdocs
