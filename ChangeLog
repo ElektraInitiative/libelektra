@@ -1,10 +1,10 @@
-* Tue Dec 26 2004 Avi Alkalay <avi@unix.sh> 0.4.9
+* Tue Dec 27 2004 Avi Alkalay <avi@unix.sh> 0.4.9
 - Full nice elegant documented support for dynamic pluggable backends
 - kdb now validates an imported XML against an XML schema, thanks to Remi Pouak
 - -devel RPM includes the framework and examples for backends development
 - elektraenv script is more secure now, thanks to Johan Kiviniemi (ion at ion.yi.org)
 - Removed unused #includes
-- new kdbOpenBackend() and ksPop()
+- new kdbOpenBackend() and ksPop() methods
 - install examples in elektra-devel/examples/ directory
 
 * Sat Dec 06 2004 Avi Alkalay <avi@unix.sh> 0.4.8
