@@ -35,7 +35,8 @@ int readConfig(KeySet *myConfig) {
 void changeConfig(KeySet *myConfig) {
 	Key *current;
 	
-	for (current=myConfig->start; current; current=current->next) {
+	ksRewind(myConfig);
+	while ((current=ksNext(myConfig))) {
 		char keyName[200];
 		char value[300];
 		
@@ -68,23 +69,21 @@ int saveConfig(KeySet *myConfig) {
 
 
 int main(int argc, char **argv) {
-	KeySet myConfig;
-	
-	ksInit(&myConfig);
+	KeySet *myConfig=ksNew();
 	
 	/* Get configuration values, and just continue if there is no error */
-	if (readConfig(&myConfig)) {
+	if (readConfig(myConfig)) {
 		perror("Couldn't get my configuration. Reason");
 		exit(1);
 	} else {
-		printf("Retrieved %d keys\n",myConfig.size);
+		printf("Retrieved %d keys\n",ksGetSize(myConfig));
 	}
 		
-	changeConfig(&myConfig);
-	saveConfig(&myConfig);
+	changeConfig(myConfig);
+	saveConfig(myConfig);
 	
 	/* Free all keys and resources in the key set */
-	ksClose(&myConfig);
+	ksDel(myConfig);
 	
 	return 0;
 }

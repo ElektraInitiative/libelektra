@@ -44,7 +44,7 @@ The doctype with FPI for this DTD is:
 <!ATTLIST key
 	id       ID                                   #IMPLIED
 	name     CDATA                                #REQUIRED
-	type     (string | binary | directory | link) "string"
+	type     (string | binary | directory | link | undefined) "string"
 	uid      CDATA                                #IMPLIED
 	gid      CDATA                                #IMPLIED
 	mode     CDATA                                #IMPLIED

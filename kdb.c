@@ -67,6 +67,11 @@ $LastChangedBy$
 
 #define ARGSIZE      30
 
+
+/* we are cheating . . . */
+size_t unencode(char *encoded, void *returned);
+
+
 char *argComment=0;
 char *argFile=0;
 char *argData=0;
@@ -215,11 +220,17 @@ int parseCommandLine(int argc, char *argv[]) {
 	/* Parse type */
 	if (*sargType!=0) {
 		/* TODO: use regex */
-		if (!strcmp(sargType,"string")) argType=KEY_TYPE_STRING;
-		else if (!strcmp(sargType,"bin")) argType=KEY_TYPE_BINARY;
+		if      (!strcmp(sargType,"string")) argType=KEY_TYPE_STRING;
+		else if (!strcmp(sargType,"bin"))    argType=KEY_TYPE_BINARY;
 		else if (!strcmp(sargType,"binary")) argType=KEY_TYPE_BINARY;
-		else if (!strcmp(sargType,"dir")) argType=KEY_TYPE_DIR;
-		else if (!strcmp(sargType,"link")) argType=KEY_TYPE_LINK;
+		else if (!strcmp(sargType,"dir"))    argType=KEY_TYPE_DIR;
+		else if (!strcmp(sargType,"link"))   argType=KEY_TYPE_LINK;
+		else {
+			argType=strtol(sargType,0,10);
+			if (errno == ERANGE || errno == EINVAL)
+				/* handle undefined later */
+				argType=KEY_TYPE_UNDEFINED;
+		}
 	} else if (argCommand==CMD_SET) { /* We must have a type */
 		argType=KEY_TYPE_STRING;
 	}
@@ -441,12 +452,12 @@ int commandRemove() {
  * @param argData name of the target key
  */
 int commandMove() {
-	Key key;
-	size_t size;
+	Key *key;
+	size_t size=0;
 	int rc;
 	
-	keyInit(&key);
-	size=keySetName(&key,argKeyName);
+	key=keyNew(argKeyName,0);
+	size=keyGetNameSize(key);
 	
 	if (size == 0) {
 		char error[100];
@@ -455,13 +466,15 @@ int commandMove() {
 		perror(error);
 	}
 	
-	rc=kdbRename(&key,argData);
+	rc=kdbRename(key,argData);
 	if (rc == 0) return 0; /* return if OK */
 	
 	/* Handle a non-zero rc, with same behavior of Unix mv command */
 	switch (errno) {
 		
 	}
+	
+	keyDel(key);
 	
 	return 0;
 }
@@ -488,7 +501,7 @@ int commandMove() {
  * @param argFile a filename to use as the input for the value
  */
 int commandSet() {
-	Key key;
+	Key *key;
 	int ret;
 	char error[200];
 	size_t offset=0;
@@ -500,21 +513,25 @@ int commandSet() {
 		return -1;
 	}
 
-	keyInit(&key);
-	keySetName(&key,argKeyName);
-	ret=kdbGetKey(&key);
-	if (!ret) { /* key already exist. good. */
-		if (argComment) keySetComment(&key,argComment);
-		if (argType==KEY_TYPE_UNDEFINED) argType=keyGetType(&key);
+	key=keyNew(argKeyName,KEY_SWITCH_END);
+	ret=kdbGetKey(key);
+	if (ret == 0) { /* Key already exists. Good. */
+		/* Overwrite comment if user passed some */
+		if (argComment) keySetComment(key,argComment);
+		/* Use existed key type if user didn't give us one */
+		if (argType==KEY_TYPE_UNDEFINED) argType=keyGetType(key);
 	} else if (errno!=KDB_RET_NOTFOUND) {
+		/* Handle errors different from NOTFOUND */
 		sprintf(error,"kdb set: %s",argKeyName);
 		perror(error);
 	}
 
-	if (argUID) keySetUID(&key,*argUID);
-	if (argGID) keySetGID(&key,*argGID);
+	/* Set or overwrite everything else... */
+	
+	if (argUID) keySetUID(key,*argUID);
+	if (argGID) keySetGID(key,*argGID);
 
-	if (argMode) keySetAccess(&key,argMode);
+	if (argMode) keySetAccess(key,argMode);
 
 	if (argFile) {
 		FILE *f;
@@ -544,28 +561,37 @@ int commandSet() {
 		}
 		fclose(f);
 	}
+
+
+	/* Set key value . . . */
+	if (argType == KEY_TYPE_UNDEFINED)
+		keySetString(key,argData); /* the most common here */
+	else if (argType == KEY_TYPE_DIR)
+		keySetType(key,KEY_TYPE_DIR);
+	else if (argType == KEY_TYPE_LINK)
+		keySetLink(key,argData);
+	else if (argData) { /* Handle special type values . . . */
 	
-	switch (argType) {
-		case KEY_TYPE_DIR: keySetType(&key,KEY_TYPE_DIR);
-			break;
-		case KEY_TYPE_STRING:
-			if (argData) keySetString(&key,argData);
-			break;
-		case KEY_TYPE_BINARY:
-			if (argData) {
-				if (offset) keySetBinary(&key,argData,offset);
-				else keySetBinary(&key,argData,strblen(argData));
-			}
-			break;
-		case KEY_TYPE_LINK: keySetLink(&key,argData);
-			break;
+		/* set raw data */
+		if (offset) keySetRaw(key,argData,offset);
+		else if (KEY_TYPE_BINARY <= argType && argType < KEY_TYPE_STRING)
+			 /* command-line-passed bin values have unwanted \0 in the end */
+			 keySetRaw(key,argData,strblen(argData)-1);
+		else keySetRaw(key,argData,strblen(argData));
+		
+		/* set type explicitly */
+		keySetType(key,argType);
 	}
 
-	ret=kdbSetKey(&key);
+
+	ret=kdbSetKey(key);
 	if (ret) {
 		sprintf(error,"kdb set: \'%s\'",argKeyName);
 		perror(error);
 	}
+	
+	keyDel(key);
+	
 	return ret;
 }
 
@@ -645,66 +671,76 @@ int commandLink() {
  * @see commandExport() for the 'kdb export' command
  */
 int commandList() {
-	KeySet ks;
+	KeySet *ks;
 	Key *key=0;
 	int ret;
 
-	ksInit(&ks);
+	ks=ksNew();
 
 	if (!argKeyName) {
-		KeySet roots;
+		KeySet *roots;
 		/* User don't want a specific key, so list the root keys */
 
-		ksInit(&roots);
-		kdbGetRootKeys(&roots);
+		roots=ksNew();
+		kdbGetRootKeys(roots);
 
 		if (argRecursive) {
-			key=roots.start;
+			key=ksHead(roots);
 			while (key) {
+				/* walk root by root, retrieve entire subtree
+				 * and append it to ks
+				 */
 				char rootName[200];
-				KeySet thisRoot;
+				KeySet *thisRoot;
 				Key *temp;
 
-				ksInit(&thisRoot);
+				thisRoot=ksNew();
 				keyGetFullName(key,rootName,sizeof(rootName));
-				if (argValue) ret=kdbGetChildKeys(rootName,&thisRoot,
+				
+				if (argValue) ret=kdbGetChildKeys(rootName,thisRoot,
 					(argSort?KDB_O_SORT:0) | (argRecursive?KDB_O_RECURSIVE:0) |
 					KDB_O_DIR | (argAll?KDB_O_INACTIVE:0) | KDB_O_NFOLLOWLINK);
-				else ret=kdbGetChildKeys(rootName,&thisRoot,
+				else ret=kdbGetChildKeys(rootName,thisRoot,
 					(argSort?KDB_O_SORT:0) | KDB_O_STATONLY |
 					(argRecursive?KDB_O_RECURSIVE:0) | KDB_O_DIR |
 					(argAll?KDB_O_INACTIVE:0) | KDB_O_NFOLLOWLINK);
-				temp=key->next;
-				ksAppend(&ks,key);
-				ksAppendKeys(&ks,&thisRoot);
+				
+				/* A hach to transfer a key from a keyset to another.
+				 * Don't do this at home.
+				 */
+				temp=keyNext(key);
+				ksAppend(ks,key);
+				ksAppendKeys(ks,thisRoot);
 				key=temp;
+				
+				ksDel(thisRoot);
 			}
-		} else ksAppendKeys(&ks,&roots);
+		} else ksAppendKeys(ks,roots);
+		ksDel(roots);
 	} else {
 		/* User gave us a specific key to start with */
 
-		if (argValue) ret=kdbGetChildKeys(argKeyName,&ks,
+		if (argValue) ret=kdbGetChildKeys(argKeyName,ks,
 			(argSort?KDB_O_SORT:0) | (argRecursive?KDB_O_RECURSIVE:0) |
 			KDB_O_DIR | (argAll?KDB_O_INACTIVE:0) | KDB_O_NFOLLOWLINK);
-		else ret=kdbGetChildKeys(argKeyName,&ks,
+		else ret=kdbGetChildKeys(argKeyName,ks,
 			(argSort?KDB_O_SORT:0) | KDB_O_STATONLY |
 			(argRecursive?KDB_O_RECURSIVE:0) | KDB_O_DIR |
 			(argAll?KDB_O_INACTIVE:0) | KDB_O_NFOLLOWLINK);
 	
 		if (ret) {
-				/* We got an error. Check if it is because its not a folder key */
+			/* We got an error. Check if it is because its not a folder key */
 			if (errno==ENOTDIR) {
 				/* We still have a chance, since there is something there */
-				key=(Key *)malloc(sizeof(Key));
-				keyInit(key);
-				keySetName(key,argKeyName);
+				key=keyNew(argKeyName,KEY_SWITCH_END);
 				if (argValue) ret=kdbGetKey(key);
 				else ret=kdbStatKey(key);
 				if (ret) {
+					/* There is absolutelly nothing there */
 					char error[200];
 
 					keyDel(key);
-					ksClose(&ks);
+					ksDel(ks);
 					
 					sprintf(error,"kdb ls: %s",argKeyName);
 					perror(error);
@@ -713,7 +749,7 @@ int commandList() {
 			} else { /* A real error */
 				char error[200];
 				
-				ksClose(&ks);
+				ksClose(ks);
 
 				sprintf(error,"kdb ls: %s",argKeyName);
 				perror(error);
@@ -725,19 +761,19 @@ int commandList() {
 	if (argShow) {
 		if (argXML) {
 			if (key) keyToStream(key,stdout,0);
-			else if (ks.size)
-				ksToStream(&ks,stdout,KDB_O_XMLHEADERS);
+			else if (ksGetSize(ks))
+				ksToStream(ks,stdout,KDB_O_XMLHEADERS);
 		} else {
 			if (key) listSingleKey(key);
-			else if (ks.size) {
-				ksRewind(&ks);
-				while ((key=ksNext(&ks)))
+			else if (ksGetSize(ks)) {
+				ksRewind(ks);
+				while ((key=ksNext(ks)))
 					listSingleKey(key);
 			}
 		}
 	}
 
-	ksClose(&ks);
+	ksClose(ks);
 	if (key) keyDel(key);
 	return 0;
 }
@@ -772,7 +808,7 @@ int commandList() {
  */
 int commandGet() {
 	int ret;
-	Key key;
+	Key *key;
 	char *buffer;
 	char *p;
 	size_t size,cs=0;
@@ -783,28 +819,29 @@ int commandGet() {
 		return -1;
 	}
 
-	keyInit(&key);
-	keySetName(&key,argKeyName);
+	key=keyNew(argKeyName,KEY_SWITCH_END);
+	
+	ret=kdbGetKey(key);
 
-	ret=kdbGetKey(&key);
 	if (ret) {
 		char error[200];
 
+		keyDel(key);
 		sprintf(error,"kdb get: %s",argKeyName);
 		perror(error);
 		return ret;
 	}
-	size=keyGetDataSize(&key);
+	size=keyGetDataSize(key);
 	if (argDescriptive) {
-		cs=keyGetCommentSize(&key);
+		cs=keyGetCommentSize(key);
 		if (cs) size+=cs+3;
 	}
 	if (argShell) {
-		size+=keyGetBaseNameSize(&key);
+		size+=keyGetBaseNameSize(key);
 		size+=2; /* for 2 '"' to wrap the value */
 	} else if (argLong) {
-		if (argFullName) size+=keyGetFullNameSize(&key);
-		else size+=keyGetNameSize(&key);
+		if (argFullName) size+=keyGetFullNameSize(key);
+		else size+=keyGetNameSize(key);
 	}
 
 
@@ -814,24 +851,24 @@ int commandGet() {
 	if (argDescriptive) {
 		if (cs) {
 			p+=sprintf(p,"# ");
-			p+=keyGetComment(&key,p,size-(p-buffer));
+			p+=keyGetComment(key,p,size-(p-buffer));
 			*--p='\n'; p++;
 		}
 	}
 	if (argShell) {
-		p+=keyGetBaseName(&key,p,size-(p-buffer));
+		p+=keyGetBaseName(key,p,size-(p-buffer));
 		*--p='='; p++;
 		*p='\"'; p++;
 	} else if (argLong) {
-		if (argFullName) p+=keyGetFullName(&key,p,size-(p-buffer));
-		else p+=keyGetName(&key,p,size-(p-buffer));
+		if (argFullName) p+=keyGetFullName(key,p,size-(p-buffer));
+		else p+=keyGetName(key,p,size-(p-buffer));
 		*--p='='; p++;
 	}
 	
-	keyType=keyGetType(&key);
+	keyType=keyGetType(key);
 
-	if (keyType<KEY_TYPE_STRING) p+=keyGetBinary(&key,p,size-(p-buffer));
-	else p+=keyGetString(&key,p,size-(p-buffer));
+	if (keyType<KEY_TYPE_STRING) p+=keyGetBinary(key,p,size-(p-buffer));
+	else p+=keyGetString(key,p,size-(p-buffer));
 	if (argShell) {
 		*--p='\"'; p++;
 		*p=0;
@@ -841,6 +878,7 @@ int commandGet() {
 
 
 	free(buffer);
+	keyDel(key);
 
 	return 0;
 }
@@ -865,10 +903,10 @@ int processNode(KeySet *ks, xmlTextReaderPtr reader) {
 	
 	nodeName=xmlTextReaderName(reader);
 	if (!strcmp(nodeName,"key")) {
+		u_int8_t type=KEY_TYPE_STRING; /* default type */
 		int end=0;
 		
-		newKey=malloc(sizeof(Key));
-		keyInit(newKey);
+		newKey=keyNew(0);
 		
 		xmlFree(nodeName); nodeName=0;
 		
@@ -878,16 +916,30 @@ int processNode(KeySet *ks, xmlTextReaderPtr reader) {
 		
 		buffer=xmlTextReaderGetAttribute(reader,"type");
 		if (!strcmp(buffer,"string"))
-			keySetType(newKey,KEY_TYPE_STRING);
-		else if (!strcmp(buffer,"binary"))
-			keySetType(newKey,KEY_TYPE_BINARY);
+			type=KEY_TYPE_STRING;
 		else if (!strcmp(buffer,"link"))
-			keySetType(newKey,KEY_TYPE_LINK);
+			type=KEY_TYPE_LINK;
 		else if (!strcmp(buffer,"directory"))
-			keySetType(newKey,KEY_TYPE_DIR);
+			type=KEY_TYPE_DIR;
+		else if (!strcmp(buffer,"binary"))
+			type=KEY_TYPE_BINARY;
+		else if (!strcmp(buffer,"undefined"))
+			type=KEY_TYPE_UNDEFINED;
+		else { /* special user-defined value types */
+			void *converter=0;
+			
+			type=strtol(buffer,(char **)&converter,10);
+			if ((void *)buffer==converter)
+				/* in case of error, fallback to default type again */
+				type=KEY_TYPE_STRING;
+		}
+		
+		keySetType(newKey,type);
+		
 		xmlFree(buffer); buffer=0;
 
-		
+
+
 		/* Parse UID */
 		buffer=xmlTextReaderGetAttribute(reader,"uid");
 		if (isdigit(*buffer)) {
@@ -932,17 +984,18 @@ int processNode(KeySet *ks, xmlTextReaderPtr reader) {
 				xmlTextReaderRead(reader);
 				buffer=xmlTextReaderValue(reader);
 				if (buffer) {
-					switch (keyGetType(newKey)) {
-						case KEY_TYPE_STRING:
-							keySetString(newKey,buffer);
-							break;
-						case KEY_TYPE_BINARY:
-							keySetBinary(newKey,buffer,strlen(buffer)+1);
-							break;
-						case KEY_TYPE_LINK:
-							keySetLink(newKey,buffer);
-							break;
-					}
+					/* Key's value type was already set above */
+					if (KEY_TYPE_BINARY <= type && type < KEY_TYPE_STRING) {
+						char *unencoded=0;
+						size_t unencodedSize;
+						
+						unencodedSize=strblen(buffer)/2;
+						unencoded=malloc(unencodedSize);
+						unencodedSize=unencode(buffer,unencoded);
+						if (!unencodedSize) return -1;
+						keySetRaw(newKey,unencoded,unencodedSize);
+						free(unencoded);
+					} else keySetRaw(newKey,buffer,strblen(buffer));
 				}
 			} else if (!strcmp(nodeName,"comment")) {
 				if (xmlTextReaderIsEmptyElement(reader) ||
@@ -1109,32 +1162,30 @@ int ksFromXML(KeySet *ks,int fd) {
  * @param EDITOR environment var that defines editor to use, or @p vi
  */
 int commandEdit() {
-	KeySet ks;
-	KeySet ksEdited;
-	KeySet toRemove;
+	KeySet *ks;
+	KeySet *ksEdited;
+	KeySet *toRemove;
 	Key *current;
 	int ret;
 	char filename[]="/var/tmp/kdbeditXXXXXX";
 	char command[300];
 	FILE *xmlfile=0;
 
-	ksInit(&ks);
+	ks=ksNew();
 
-	kdbGetChildKeys(argKeyName,&ks, KDB_O_SORT | KDB_O_NFOLLOWLINK |
+	kdbGetChildKeys(argKeyName,ks, KDB_O_SORT | KDB_O_NFOLLOWLINK |
 		(argAll?KDB_O_INACTIVE:0) | (argRecursive?KDB_O_RECURSIVE:0));
 
-	if (!ks.size) {
+	if (! ksGetSize(ks)) {
 		/* Maybe the user parameter is not a parent key, but a single key */
-		current=malloc(sizeof(Key));
-		keyInit(current);
-		keySetName(current,argKeyName);
+		current=keyNew(argKeyName,KEY_SWITCH_END);
 		if (kdbGetKey(current)) {
 			/* Failed. Cleanup */
 			keyDel(current);
 			current=0;
 		} else {
 			/* We have something. */
-			ksAppend(&ks,current);
+			ksAppend(ks,current);
 			current=0;
 		}
 	}
@@ -1149,43 +1200,52 @@ int commandEdit() {
 
 	xmlfile=fdopen(mkstemp(filename),"rw+");
 
-	ksToStream(&ks,xmlfile,KDB_O_XMLHEADERS);
+	ksToStream(ks,xmlfile,KDB_O_XMLHEADERS);
 	fclose(xmlfile);
 
 	/* execute the editor and wait for it to finish */
 	sprintf(command,"[ -z \"$EDITOR\" ] && EDITOR=vi; $EDITOR %s",filename);
 	system(command);
 
-	ksInit(&toRemove);
-	ksInit(&ksEdited);
+	toRemove=ksNew();
+	ksEdited=ksNew();
 
 	/* ksFromXML is not a library function.
 	 * It is implemented in and for this program only.
 	 * It is pretty reusable code, though.
 	 */
-	ksFromXMLfile(&ksEdited,filename);
+	ksFromXMLfile(ksEdited,filename);
 	remove(filename);
 
-	ksCompare(&ks,&ksEdited,&toRemove);
+	ksCompare(ks,ksEdited,toRemove);
 
-	ksRewind(&ks);
-	while ((ret=kdbSetKeys(&ks))) {
+	/* Discard ksEdited because there is nothing else here
+	 * after keyCompare() */
+	ksDel(ksEdited);
+	
+	/* Commit changed keys */
+	ksRewind(ks);
+	while ((ret=kdbSetKeys(ks))) {
 		/* We got an error. Warn user. */
 		Key *problem;
 		char error[500];
 		char keyname[300]="";
 		
-		problem=ksCurrent(&ks);
+		problem=ksCurrent(ks);
 		if (problem) keyGetFullName(problem,keyname,sizeof(keyname));
-		sprintf(error,"kdb edit: while updating %s", keyname);
+		sprintf(error,"kdb edit: while setting/updating %s", keyname);
 		perror(error);
 		
-		/* And try to set keys again starting from the next key */
-		ksNext(&ks);
+		/* And try to set keys again starting from the next key,
+		 * unless we reached the end of the KeySet */
+		if (ksNext(ks) == 0) break;
 	}
+	
+	ksDel(ks); /* Finished with this KeySet */
 
-	ksRewind(&toRemove);
-	while ((current=ksNext(&toRemove))) {
+	/* Remove removed keys */
+	ksRewind(toRemove);
+	while ((current=ksNext(toRemove))) {
 		char keyName[800];
 
 		keyGetFullName(current,keyName,sizeof(keyName));
@@ -1199,6 +1259,9 @@ int commandEdit() {
 		}
 	}
 
+	/* Finished with this KeySet too */
+	ksDel(toRemove);
+	
 	return 0;
 }
 
@@ -1220,29 +1283,30 @@ int commandEdit() {
  * @see commandExport()
  */
 int commandImport() {
-	KeySet ks;
+	KeySet *ks;
 	int ret;
 
-	ksInit(&ks);
+	ks=ksNew();
 	/* The command line parsing function will put the XML filename
 	   in the argKeyName global, so forget the variable name. */
-	if (argKeyName) ksFromXMLfile(&ks,argKeyName);
-	else ksFromXML(&ks,fileno(stdin) /* more elegant then just '0' */);
+	if (argKeyName) ksFromXMLfile(ks,argKeyName);
+	else ksFromXML(ks,fileno(stdin) /* more elegant then just '0' */);
 
-	ksRewind(&ks);
-	while ((ret=kdbSetKeys(&ks))) {
+	ksRewind(ks);
+	while ((ret=kdbSetKeys(ks))) {
 		/* We got an error. Warn user. */
 		Key *problem;
-		char error[500];
+		char error[500]="";
 		char keyname[300]="";
-		
-		problem=ksCurrent(&ks);
+
+		problem=ksCurrent(ks);
 		if (problem) keyGetFullName(problem,keyname,sizeof(keyname));
 		sprintf(error,"kdb import: while importing %s", keyname);
 		perror(error);
 		
-		/* And try to set keys again starting from the next key */
-		ksNext(&ks);
+		/* And try to set keys again starting from the next key,
+		 *  unless we reached the end of KeySet */
+		if (ksNext(ks) == 0) break;
 	}
 	
 	return ret;
@@ -1308,18 +1372,16 @@ int commandExport() {
  * @see kdbMonitorKeys()
  */
 int commandMonitor() {
-	Key toMonitor;
+	Key *toMonitor;
 	u_int32_t diff;
 	char *newData=0;
 	size_t dataSize;
 	
-	keyInit(&toMonitor);
-	keySetName(&toMonitor,argKeyName);
-	kdbGetKey(&toMonitor);
+	toMonitor=keyNew(argKeyName,KEY_SWITCH_NEEDSYNC,KEY_SWITCH_END);
 	
 	diff=kdbMonitorKey(
-		&toMonitor,          /* key to monitor */
-		KEY_FLAG_HASDATA,    /* particular info from the key we are interested */
+		toMonitor,           /* key to monitor */
+		KEY_SWITCH_VALUE,    /* key info we are interested in */
 		0,                   /* how many times to poll. 0 = ad-infinitum */
 		500                  /* usecs between polls. 0 defaults to 1 second */);
 
@@ -1328,9 +1390,11 @@ int commandMonitor() {
 	 * value change, we don't have to check diff.
 	 * So if method returned, the value has changed, and toMonitor has it.
 	 */
-	newData=malloc(dataSize=keyGetDataSize(&toMonitor));
-	keyGetString(&toMonitor,newData,dataSize);
+	newData=malloc(dataSize=keyGetDataSize(toMonitor));
+	keyGetString(toMonitor,newData,dataSize);
 	printf("New value is %s\n",newData);
+	
+	keyDel(toMonitor);
 	return 0;
 }
 

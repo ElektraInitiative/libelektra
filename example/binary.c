@@ -12,17 +12,17 @@
  */
 
 int main(void) {
-	Key key;
 	int i=25;
+	Key *key=keyNew("user/tmp/bin",KEY_SWITCH_END);
 	
 	kdbOpen();
 	
-	keyInit(&key);
-	keySetName(&key,"user/tmp/bin");
-	keySetBinary(&key,&i,sizeof(i));
-	kdbSetKey(&key);
+	keySetBinary(key,&i,sizeof(i));
+	kdbSetKey(key);
 	
 	printf("Size of the value in bytes: %d\n",sizeof(i));
+	
+	keyDel(key);
 	
 	kdbClose();
 	

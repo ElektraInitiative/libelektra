@@ -334,6 +334,7 @@ int handleOldKeyFileVersion(Key *key,FILE *input,u_int16_t nversion) {
 						} else {
 							char *buffer=0;
 
+							--commentSize; /* remove awareness of previous \0 */
 							buffer=malloc(commentSize+currentBufferSize);
 							strcpy(buffer,comment);
 							strcat(buffer,generalBuffer);
@@ -434,7 +435,7 @@ int handleOldKeyFileVersion(Key *key,FILE *input,u_int16_t nversion) {
 /**
  * Makes a key object from its serialized form, coming from a file.
  *
- * @param key the key we want to receive the data.
+ * @param key the pre-initialized key that will contain our data.
  * @param input the opened file from which we want to read.
  * @return 0 on success.
  * @ingroup internals
@@ -493,6 +494,7 @@ int keyFileUnserialize(Key *key,FILE *input) {
 				} else {
 					char *buffer=0;
 
+					--commentSize; /* remove awareness of previous \0 */
 					buffer=malloc(commentSize+currentBufferSize);
 					strcpy(buffer,comment);
 					strcat(buffer,generalBuffer);
@@ -547,7 +549,14 @@ int keyFileUnserialize(Key *key,FILE *input) {
 		return 0;
 	}
 
-	if (keyGetType(key) <= KEY_TYPE_BINARY) {
+	/* TODO: test this.... */
+	if (keyGetType(key) >= KEY_TYPE_STRING) {
+		if (UTF8Engine(UTF8_FROM,&data,&dataSize)) {
+			free(data);
+			return -1;
+		}
+		keySetRaw(key,data,dataSize);
+	} else {
 		/* Binary data. Unencode. */
 		char *unencoded=0;
 		size_t unencodedSize;
@@ -559,12 +568,6 @@ int keyFileUnserialize(Key *key,FILE *input) {
 		if (!(unencodedSize=unencode(data,unencoded))) return -1;
 		keySetRaw(key,unencoded,unencodedSize);
 		free(unencoded);
-	} else {
-		if (UTF8Engine(UTF8_FROM,&data,&dataSize)) {
-			free(data);
-			return -1;
-		}
-		keySetRaw(key,data,dataSize);
 	}
 
 	free(data);
@@ -667,7 +670,8 @@ int keyFileSerialize(Key *key, FILE *output) {
 	dataSize=keyGetDataSize(key);
 	if (dataSize) {
 		/* There is some data to write */
-		if (keyGetType(key) > KEY_TYPE_BINARY) {
+		if (keyGetType(key) >= KEY_TYPE_STRING) {
+			/* String or similar type of value */
 			if (kdbNeedsUTF8Conversion()) {
 				size_t convertedDataSize=key->dataSize;
 				char *convertedData=malloc(convertedDataSize);
@@ -681,6 +685,7 @@ int keyFileSerialize(Key *key, FILE *output) {
 				free(convertedData);
 			} else fputs(key->data,output);
 		} else {
+			/* Binary values */
 			char *encoded=malloc(3*dataSize);
 			size_t encodedSize;
 
@@ -865,15 +870,14 @@ size_t kdbGetFilename(Key *forKey,char *returned,size_t maxSize) {
  *
  */
 int kdbGetValue(const char *keyname, char *returned,size_t maxSize) {
-	Key key;
+	Key *key;
 	int rc=0;
 
-	keyInit(&key);
-	keySetName(&key,keyname);
-	rc=kdbGetKey(&key);
-	if (rc == 0) keyGetString(&key,returned,maxSize);
+	key=keyNew(keyname,KEY_SWITCH_END);
+	rc=kdbGetKey(key);
+	if (rc == 0) keyGetString(key,returned,maxSize);
 	else rc=errno; /* store errno before a possible change */
-	keyClose(&key);
+	keyDel(key);
 	errno=rc;
 	return rc;
 }
@@ -896,15 +900,15 @@ int kdbGetValue(const char *keyname, char *returned,size_t maxSize) {
  * @ingroup kdb
  */
 int kdbSetValue(const char *keyname, const char *value) {
-	Key key;
+	Key *key;
 	int rc;
 
 /* TODO: check key type first */
-	keySetName(&key,keyname);
-	rc=kdbGetKey(&key);
-	keySetString(&key,value);
-	rc=kdbSetKey(&key);
-	keyClose(&key);
+	key=keyNew(keyname,KEY_SWITCH_END);
+	rc=kdbGetKey(key);
+	keySetString(key,value);
+	rc=kdbSetKey(key);
+	keyDel(key);
 	return rc;
 }
 
@@ -1092,7 +1096,7 @@ int kdbGetChildKeys(const char *parentName, KeySet *returned, unsigned long opti
 	char *realParentName=0;
 	size_t parentNameSize;
 	DIR *parentDir;
-	Key parentKey;
+	Key *parentKey;
 	char buffer[MAX_PATH_LENGTH];
 	struct dirent *entry;
 
@@ -1101,18 +1105,17 @@ int kdbGetChildKeys(const char *parentName, KeySet *returned, unsigned long opti
 		- Check if it is a directory. Open it
 		- Browse, read and include in the KeySet
 	*/
-	keyInit(&parentKey);
-	keySetName(&parentKey,parentName);
-	kdbGetFilename(&parentKey,buffer,sizeof(buffer));
+	parentKey=keyNew(parentName);
+	kdbGetFilename(parentKey,buffer,sizeof(buffer));
 	parentDir=opendir(buffer);
 
 	/* Check if Key is not a directory or doesn't exist.
 	 * Propagate errno */
 	if (!parentDir) return -1;
 
-	parentNameSize=keyGetFullNameSize(&parentKey);
+	parentNameSize=keyGetFullNameSize(parentKey);
 	realParentName=realloc(realParentName,parentNameSize);
-	keyGetFullName(&parentKey,realParentName,parentNameSize);
+	keyGetFullName(parentKey,realParentName,parentNameSize);
 
 	while ((entry=readdir(parentDir))) {
 		Key *keyEntry;
@@ -1120,10 +1123,12 @@ int kdbGetChildKeys(const char *parentName, KeySet *returned, unsigned long opti
 		size_t keyNameSize=0;
 
 		/* Ignore '.' and '..' directory entries */
-		if (!strcmp(entry->d_name,".") || !strcmp(entry->d_name,"..")) continue;
+		if (!strcmp(entry->d_name,".") || !strcmp(entry->d_name,".."))
+			continue;
 
 		/* If key name starts with '.', and don't want INACTIVE keys, ignore it */
-		if ((*entry->d_name == '.') && !(options & KDB_O_INACTIVE)) continue;
+		if ((*entry->d_name == '.') && !(options & KDB_O_INACTIVE))
+			continue;
 
 		/* Next 2 ifs are required to transform filename from UTF-8 */
 		if (!transformedName) {
@@ -1140,8 +1145,7 @@ int kdbGetChildKeys(const char *parentName, KeySet *returned, unsigned long opti
 		sprintf(buffer,"%s/%s",realParentName,transformedName);
 		free(transformedName); /* don't need it anymore */
 
-		keyEntry=(Key *)malloc(sizeof(Key)); keyInit(keyEntry);
-		keySetName(keyEntry,buffer);
+		keyEntry=keyNew(buffer,KEY_SWITCH_END);
 
 		if (options & KDB_O_STATONLY) kdbStatKey(keyEntry);
 		else if (options & KDB_O_NFOLLOWLINK) {
@@ -1153,35 +1157,35 @@ int kdbGetChildKeys(const char *parentName, KeySet *returned, unsigned long opti
 			if (rc && errno==KDB_RET_NOCRED) kdbStatKey(keyEntry);
 		}
 
-		if (S_ISDIR(keyEntry->access)) {
+		if (keyIsDir(keyEntry)) {
 			if (options & KDB_O_RECURSIVE) {
-				KeySet children;
+				KeySet *children;
 				char *fullName;
 				size_t fullNameSize;
 
 				fullName=malloc(fullNameSize=keyGetFullNameSize(keyEntry));
 				keyGetFullName(keyEntry,fullName,fullNameSize);
 
-				ksInit(&children);
+				children=ksNew();
 				/* Act recursively, without sorting. Sort in the end, once */
-				kdbGetChildKeys(fullName,&children, ~(KDB_O_SORT) & options);
+				kdbGetChildKeys(fullName,children, ~(KDB_O_SORT) & options);
 
 				/* Insert the current directory key in the returned list before its children */
 				if (options & KDB_O_DIR) ksAppend(returned,keyEntry);
 				else keyDel(keyEntry);
 
 				/* Insert the children */
-				ksAppendKeys(returned,&children);
+				ksAppendKeys(returned,children);
 				free(fullName);
 			} else if (options & KDB_O_DIR) ksAppend(returned,keyEntry);
 				else keyDel(keyEntry);
 		} else if (options & KDB_O_NOVALUE) keyDel(keyEntry);
 			else ksAppend(returned,keyEntry);
 	} /* while(readdir) */
-	keyClose(&parentKey);
-	free(realParentName);
+	
+	keyDel(parentKey);
 
-	if ((options & (KDB_O_SORT)) && (returned->size > 1))
+	if ((options & (KDB_O_SORT)) && (ksGetSize(returned) > 1))
 		ksSort(returned);
 
 	return 0;
@@ -1195,8 +1199,9 @@ int kdbGetChildKeys(const char *parentName, KeySet *returned, unsigned long opti
 
 
 /**
- * Returns a KeySet with all root keys currently recognized.
- * Currently, the @p system and current user's @p user keys are returned.
+ * Returns a KeySet with all root keys currently recognized and present
+ * on the system. Currently, the @p system and current user's @p user keys
+ * are returned.
  * @param returned the initialized KeySet to be filled
  * @return 0
  * @see KeyNamespace
@@ -1207,19 +1212,15 @@ int kdbGetChildKeys(const char *parentName, KeySet *returned, unsigned long opti
 int kdbGetRootKeys(KeySet *returned) {
 	Key *system=0,*user=0;
 
-	system=malloc(sizeof(Key));
-	keyInit(system);
-	keySetName(system,"system");
+	system=keyNew("system",KEY_SWITCH_END);
 	if (kdbGetKey(system)) {
-		free(system);
+		keyDel(system);
 		system=0;
 	}
 
-	user=malloc(sizeof(Key));
-	keyInit(user);
-	keySetName(user,"user");
+	user=keyNew("user",KEY_SWITCH_END);
 	if (kdbGetKey(user)) {
-		free(user);
+		keyDel(user);
 		user=0;
 	}
 
@@ -1264,10 +1265,10 @@ int kdbStatKey(Key *key) {
 	}
 
 	/* Remove the NEEDSYNC flag */
-	semiflag=KEY_FLAG_NEEDSYNC;
+	semiflag=KEY_SWITCH_NEEDSYNC;
 	semiflag=~semiflag;
 	key->flags &= semiflag;
-	key->flags |= KEY_FLAG_ACTIVE;
+	key->flags |= KEY_SWITCH_ACTIVE;
 
 	return 0;
 }
@@ -1309,7 +1310,7 @@ int kdbGetKey(Key *key) {
 	} else close(fd);
 
 	/* Remove the NEEDSYNC flag */
-	semiflag=KEY_FLAG_NEEDSYNC;
+	semiflag=KEY_SWITCH_NEEDSYNC;
 	semiflag=~semiflag;
 	key->flags &= semiflag;
 
@@ -1336,8 +1337,8 @@ int kdbGetKey(Key *key) {
  * @see keyNeedsSync()
  * @see ksNext()
  * @see ksCurrent()
- * @see commandEdit() code in kdb command for usage example
- * @see commandImport() code in kdb command for usage example
+ * @see commandEdit(), commandImport() code in kdb command for usage and error
+ *       handling example
  * @ingroup kdb
  */
 int kdbSetKeys(KeySet *ks) {
@@ -1389,6 +1390,13 @@ int kdbSetKey(Key *key) {
 			folderMaker[last-keyFileName]=0;
 			if (stat(folderMaker,&stated)) {
 				/* create all path recursively until before our basename */
+				mode_t parentMode;
+				mode_t umaskValue=umask(0);
+				
+				umask(umaskValue);
+				parentMode=((S_IRWXU | S_IRWXG | S_IRWXO) & (~ umaskValue)) |
+					S_IWUSR | S_IXUSR;  /* from coreutils::mkdir.c */
+				
 				last   =rindex(keyFileName,'/');
 				cursor = index(keyFileName,'/'); cursor++; /* skip first occurence */
 				if (!last || !cursor) { /* bizarre key name */
@@ -1400,7 +1408,8 @@ int kdbSetKey(Key *key) {
 						cursor=index(cursor,'/')) {
 					strncpy(folderMaker,keyFileName,cursor-keyFileName);
 					folderMaker[cursor-keyFileName]=0;
-					if (mkdir(folderMaker,0775)<0 && errno!=EEXIST) return -1;
+					if (mkdir(folderMaker,parentMode)<0 && errno!=EEXIST)
+						return -1;       /* propagate errno */
 					cursor++;
 				}
 			}
@@ -1417,7 +1426,7 @@ int kdbSetKey(Key *key) {
 		}
 	}
 
-	/* Enough of checking. Now real write stuff, with a bit other checks :-) */
+	/* Enough of checking. Real write now, with a bit of other checks :-) */
 
 	if (keyIsLink(key)) {
 		char *targetName=0;
@@ -1478,7 +1487,7 @@ int kdbSetKey(Key *key) {
 	}
 
 	/* Remove the NEEDSYNC flag */
-	semiflag=KEY_FLAG_NEEDSYNC;
+	semiflag=KEY_SWITCH_NEEDSYNC;
 	semiflag=~semiflag;
 	key->flags &= semiflag;
 
@@ -1489,7 +1498,7 @@ int kdbSetKey(Key *key) {
 
 
 /**
- * Rename a key.
+ * Rename a key in the backend storage.
  *
  * @param key the key to be renamed
  * @param newName the new key name
@@ -1499,16 +1508,18 @@ int kdbSetKey(Key *key) {
 int kdbRename(Key *key, const char *newName) {
 	char oldFileName[MAX_PATH_LENGTH];
 	char newFileName[MAX_PATH_LENGTH];
-	Key newKey;
+	Key *newKey;
 	int rc;
 	
-	keyInit(&newKey);
-	rc=keySetName(&newKey,newName);
+	newKey=keyNew(0);
+	rc=keySetName(newKey,newName);
 	if (rc) return rc;
 	rc=kdbGetFilename(key,oldFileName,sizeof(oldFileName));
 	if (!rc) return -1;
-	rc=kdbGetFilename(&newKey,newFileName,sizeof(newFileName));
+	rc=kdbGetFilename(newKey,newFileName,sizeof(newFileName));
 	if (!rc) return -1;
+	
+	keyDel(newKey);
 	
 	return rename(oldFileName,newFileName);
 }
@@ -1527,15 +1538,15 @@ int kdbRename(Key *key, const char *newName) {
  * @ingroup kdb
  */
 int kdbRemove(const char *keyName) {
-	Key key;
+	Key *key;
 	char fileName[MAX_PATH_LENGTH];
 	off_t rc;
 
-	keyInit(&key);
-	rc=keySetName(&key,keyName);
+	key=keyNew(0);
+	rc=keySetName(key,keyName);
 	if (rc==-1) return -1;
-	rc=kdbGetFilename(&key,fileName,sizeof(fileName));
-	keyClose(&key);
+	rc=kdbGetFilename(key,fileName,sizeof(fileName));
+	keyDel(key);
 	if (!rc) return -1;
 
 	return remove(fileName);
@@ -1546,7 +1557,7 @@ int kdbRemove(const char *keyName) {
 
 
 /**
- * Create a link key that points to other key.
+ * Create a link key on the backend storage that points to other key.
  *
  * @param oldPath destination key name
  * @param newKeyName name of the key that will be created and will point
@@ -1557,15 +1568,14 @@ int kdbRemove(const char *keyName) {
  * @ingroup kdb
  */
 int kdbLink(const char *oldPath, const char *newKeyName) {
-	Key key;
+	Key *key;
 	int rc;
 
-	keyInit(&key);
-	keySetName(&key,newKeyName);
-	keySetLink(&key,oldPath);
+	key=keyNew(newKeyName,KEY_SWITCH_END);
+	keySetLink(key,oldPath);
 
-	rc=kdbSetKey(&key);
-	keyClose(&key);
+	rc=kdbSetKey(key);
+	keyDel(key);
 
 	return rc;
 }
@@ -1604,17 +1614,17 @@ while (1) {
 
 	// block until any change in key value or comment . . .
 	diff=kdbMonitorKeys(&myConfigs,
-		KEY_FLAG_HASDATA | KEY_FLAG_HASCOMMENT,
+		KEY_VALUE | KEY_COMMENT,
 		0,0); // ad-infinitum
 
 	changed=ksCurrent(&myConfigs);
 	keyGetName(changed,keyName,sizeof(keyName));
 
 	switch (diff) {
-		case KEY_FLAG_FLAG:
+		case KEY_FLAG:
 			printf("Key %s was deleted\n",keyName);
 			break;
-		case KEY_FLAG_NEEDSYNC:
+		case KEY_NEEDSYNC:
 			printf("No cretentials to access Key %s\n",keyName);
 			break;
 		default:
@@ -1676,15 +1686,15 @@ u_int32_t kdbMonitorKeys(KeySet *interests, u_int32_t diffMask,
  * @p interest should be a full key with name, value, comments, permissions,
  * etc, and all will be compared and then masked by @p diffMask.
  *
- * If @p interest is a folder key, use @c KEY_FLAG_HASTIME in @p diffMask
+ * If @p interest is a folder key, use @c KEY_TIME in @p diffMask
  * to detect a time change, so you'll know something happened (key
  * modification, creation, deletion) inside the folder.
  *
  * If @p interest was not found, or deleted, the method will return
- * immediatly a @c KEY_FLAG_FLAG value.
+ * immediatly a @c KEY_FLAG value.
  *
  * If you don't have access rights to @p interest, the method will return
- * immediatly a @c KEY_FLAG_NEEDSYNC value.
+ * immediatly a @c KEY_NEEDSYNC value.
  *
  * If something from @p diffMask has changed in @p interest, it will be
  * updated, so when method returns, you'll have an updated version of the key.
@@ -1695,7 +1705,7 @@ u_int32_t kdbMonitorKeys(KeySet *interests, u_int32_t diffMask,
  * some change happens
  * @param sleep time to sleep, in microseconds, between iterations.
  * 0 defaults to 1 second.
- * @return the ORed @p KEY_FLAG_* flags of what changed
+ * @return the ORed @p KEY_SWITCH_* flags of what changed
  * @see KeyFlags
  * @see keyCompare()
  * @see kdbMonitorKeys() to monitor KeySets, and for a code example
@@ -1705,7 +1715,7 @@ u_int32_t kdbMonitorKeys(KeySet *interests, u_int32_t diffMask,
  */
 u_int32_t kdbMonitorKey(Key *interest, u_int32_t diffMask,
 		unsigned long iterations, unsigned sleep) {
-	Key tested;
+	Key *tested;
 	int rc;
 	u_int32_t diff;
 	int infinitum=0;
@@ -1720,38 +1730,38 @@ u_int32_t kdbMonitorKey(Key *interest, u_int32_t diffMask,
 	else infinitum=0;
 
 	/* Work with a copy of the key */
-	keyInit(&tested);
-	keyDup(interest,&tested);
+	tested=keyNew(0);
+	keyDup(interest,tested);
 
 	while (infinitum || --iterations) {
-		rc=kdbGetKey(&tested);
+		rc=kdbGetKey(tested);
 		if (rc) {
-			keyClose(&tested);
+			keyDel(tested);
 			/* check what type of problem happened.... */
 			switch (errno) {
 				case KDB_RET_NOCRED:
-					return KEY_FLAG_NEEDSYNC;
+					return KEY_SWITCH_NEEDSYNC;
 				case KDB_RET_NOTFOUND:
-					return KEY_FLAG_FLAG;
+					return KEY_SWITCH_FLAG;
 			}
 		}
 		
-		diff=keyCompare(&tested,interest);
+		diff=keyCompare(tested,interest);
 		
 		if (diff & diffMask) {
 			/* If differences interests us, return it, otherwise cycle again.
 			 * We don't loose the original key context in a KeySet because
 			 * we worked with a copy of the key.
 			 */
-			keyDup(&tested,interest);
-			keyClose(&tested);
+			keyDup(tested,interest);
+			keyDel(tested);
 			return diff;
 		}
 		/* Test if some iterations left . . . */
 		if (infinitum || iterations) usleep(sleep);
 	}
 	
-	keyClose(&tested);
+	keyDel(tested);
 
 	return 0;
 }
@@ -1759,7 +1769,7 @@ u_int32_t kdbMonitorKey(Key *interest, u_int32_t diffMask,
 
 
 /**
- * @mainpage The Elektra Project API
+ * @mainpage The Elektra Key/Value Pair Database API
  *
  * @section overview Elektra Project Overview
  *

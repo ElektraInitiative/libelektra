@@ -58,29 +58,30 @@ $LastChangedBy$
  * If your application needs value types with more semantics, like @p Color,
  * @p Font, etc, you can still use it. You'll have to define a new type
  * number in the scope of your application, and force the type with
- * keySetType().
+ * keySetType(), or keyNew().
  *
- * The type number is a value between 0 and 255. If you define it
- * bigger than @p KEY_TYPE_STRING, it will be still treated as a string
- * (in the terms of Unicode handling). If you define it between
- * @p KEY_TYPE_BINARY and @p KEY_TYPE_STRING, Elektra will handle it as
- * a binary, will not make Unicode handling and will save it hex-encoded.
+ * The type number is a value between 0 and 255. If your user-defined
+ * type >= @p KEY_TYPE_STRING, it will be still treated as a string
+ * (in the terms of Unicode handling). If 
+ * @p KEY_TYPE_BINARY <= type < @p KEY_TYPE_STRING, Elektra will handle it
+ * as a binary value, will not make Unicode handling and will save it
+ * hex-encoded.
  *
  * @ingroup key
  * @see keyGetType()
  * @see keySetType() for an example of how to define custom types
  */
 enum KeyType {
-	KEY_TYPE_UNDEFINED=0, /*!< Undefined key type */
-	KEY_TYPE_DIR=1, /*!< A directory key */
-	KEY_TYPE_LINK=2, /*!< A symbolink link key.
-	                      This gap is for special key meta types,
-	                      that can't go into regular files. */
-	KEY_TYPE_BINARY=20, /*!< A binary key.
-	                         This gap is for binary data types
-	                         that have some semantics that somebody
-	                         can invent in the future */
-	KEY_TYPE_STRING=40 /*!< A string key */
+	KEY_TYPE_UNDEFINED=0,  /*!< Undefined key type */
+	KEY_TYPE_DIR=1,        /*!< A directory key */
+	KEY_TYPE_LINK=2,       /*!< A symbolink link key.
+	                          This gap is for special key meta types,
+	                          that can't go into regular files. */
+	KEY_TYPE_BINARY=20,    /*!< A binary key.
+	                          This gap is for binary data types
+	                          that have some semantics that somebody
+	                          can invent in the future */
+	KEY_TYPE_STRING=40     /*!< A string key */
 };
 
 
@@ -96,8 +97,8 @@ enum KeyType {
  * @see keyNameGetNamespace()
  */
 enum KeyNamespace {
-	KEY_NS_SYSTEM=1,  /*!< The @p system keys */
-	KEY_NS_USER=2  /*!< The @p user keys */
+	KEY_NS_SYSTEM=1,       /*!< The @p system keys */
+	KEY_NS_USER=2          /*!< The @p user keys */
 };
 
 
@@ -108,15 +109,15 @@ The key flags bit array. The '.' means whatever:
 7654 3210 7654 3210 7654 3210 7654 3210
 ...1 0... .0.. .1.. ..1. ..0. ...0 1... 0x10042008 Initialized
 ...1 1... .1.. .1.. ..1. ..1. ...1 1... 0x18442218 Initialized mask
-.... .... .... .... .... .... .... ...1 0x00000001 HASTYPE
-.... .... .... .... .... .... .... ..1. 0x00000002 HASKEY
-.... .... .... .... .... .... .... .1.. 0x00000004 HASDATA
-.... .... .... .... .... .... ..1. .... 0x00000020 HASDOMAIN
-.... .... .... .... .... .... .1.. .... 0x00000040 HASCOMMENT
-.... .... .... .... .... .... 1... .... 0x00000060 HASUID
-.... .... .... .... .... ...1 .... .... 0x00000080 HASGID
-.... .... .... .... .... .1.. .... .... 0x00000400 HASPRM
-.... .... .... .... .... 1... .... .... 0x00000800 HASTIME
+.... .... .... .... .... .... .... ...1 0x00000001 TYPE
+.... .... .... .... .... .... .... ..1. 0x00000002 NAME
+.... .... .... .... .... .... .... .1.. 0x00000004 VALUE
+.... .... .... .... .... .... ..1. .... 0x00000020 DOMAIN
+.... .... .... .... .... .... .1.. .... 0x00000040 COMMENT
+.... .... .... .... .... .... 1... .... 0x00000060 UID
+.... .... .... .... .... ...1 .... .... 0x00000080 GID
+.... .... .... .... .... .1.. .... .... 0x00000400 PRM
+.... .... .... .... .... 1... .... .... 0x00000800 TIME
 .... .... .... .... ...1 .... .... .... 0x00001000 NEEDSYNC
 .... .... .... .... .1.. .... .... .... 0x00004000 ACTIVE ***DEPRECATED***
 1... .... .... .... .... .... .... .... 0x80000000 FLAG (general flag)
@@ -125,32 +126,54 @@ The key flags bit array. The '.' means whatever:
 
 
 /**
- * Flags that can be used with keys.
+ * Switches to denote the various Key attributes in methods throughout
+ * this library.
  * @ingroup key
+ * @see keyNew()
  * @see keyCompare()
- * @see kdbMonitorKey() the diffMask parameter
- * @see kdbMonitorKeys() the diffMask parameter
- * @see keyGetFlag()
+ * @see kdbMonitorKey(), kdbMonitorKeys(), the diffMask parameter
+ * @see keyGetFlag(), keySetFlag()
  */
-enum KeyFlags {
-	KEY_FLAG_INITIALIZED=0x10042008,
-	KEY_FLAG_INITMASK=0x18442218,
-
-	KEY_FLAG_HASTYPE=1,       /*!< Flag for the key type */
-	KEY_FLAG_HASKEY=1<<1,     /*!< Flag for the key name */
-	KEY_FLAG_HASDATA=1<<2,    /*!< Flag for the key data */
-	KEY_FLAG_HASDOMAIN=1<<5,  /*!< Flag for the key user domain */
-	KEY_FLAG_HASCOMMENT=1<<6, /*!< Flag for the key comment */
-	KEY_FLAG_HASUID=1<<7,     /*!< Flag for the key UID */
-	KEY_FLAG_HASGID=1<<8,     /*!< Flag for the key GID */
-	KEY_FLAG_HASPRM=1<<10,    /*!< Flag for the key permissions */
-	KEY_FLAG_HASTIME=1<<11,   /*!< Flag for the key change time */
-	KEY_FLAG_NEEDSYNC=1<<12,  /*!< Flags that key needs syncronization */
-	KEY_FLAG_ACTIVE=1<<14,  /* ****deprecated**** */
-	KEY_FLAG_FLAG=1<<31,      /*!< General purpose flag that has semantics
+enum KeySwitch {
+	KEY_SWITCH_TYPE=1,          /*!< Flag for the key type */
+	KEY_SWITCH_NAME=1<<1,       /*!< Flag for the key name */
+	KEY_SWITCH_VALUE=1<<2,      /*!< Flag for the key data */
+	KEY_SWITCH_DOMAIN=1<<5,     /*!< Flag for the key user domain */
+	KEY_SWITCH_COMMENT=1<<6,    /*!< Flag for the key comment */
+	KEY_SWITCH_UID=1<<7,        /*!< Flag for the key UID */
+	KEY_SWITCH_GID=1<<8,        /*!< Flag for the key GID */
+	KEY_SWITCH_PRM=1<<10,       /*!< Flag for the key permissions */
+	KEY_SWITCH_TIME=1<<11,      /*!< Flag for the key change time */
+	KEY_SWITCH_NEEDSYNC=1<<12,  /*!< Flags that key needs syncronization */
+	KEY_SWITCH_ACTIVE=1<<14,    /* ****deprecated**** */
+	KEY_SWITCH_FLAG=1<<31,      /*!< General purpose flag that has semantics
 	                               only to your app */
+	KEY_SWITCH_INITIALIZED=0x10042008,
+	KEY_SWITCH_INITMASK=0x18442218,
+
+	KEY_SWITCH_END=0            /*!< Used as a terminator to keyNew() */
 };
 
+
+
+/*
+ * Deprecated flag names, here for legacy compatibility.
+ * Will be removed in the future.
+ * Use KeySwitches instead.
+ *
+enum KeyFlags {
+	KEY_FLAG_HASTYPE      = KEY_SWITCH_TYPE
+	KEY_FLAG_HASKEY       = KEY_SWITCH_NAME
+	KEY_FLAG_HASDATA      = KEY_SWITCH_VALUE
+	KEY_FLAG_HASDOMAIN    = KEY_SWITCH_DOMAIN
+	KEY_FLAG_HASCOMMENT   = KEY_SWITCH_COMMENT
+	KEY_FLAG_HASUID       = KEY_SWITCH_UID
+	KEY_FLAG_HASGID       = KEY_SWITCH_GID
+	KEY_FLAG_HASPRM       = KEY_SWITCH_PRM
+	KEY_FLAG_HASTIME      = KEY_SWITCH_TIME
+	KEY_FLAG_NEEDSYNC     = KEY_SWITCH_NEEDSYNC
+}
+*/
 
 
 /**
@@ -177,8 +200,10 @@ enum KDBErr {
 	KDB_RET_NOCRED=EACCES,        /*!< No credentials to access resource */
 	KDB_RET_NOTIME=ENOMSG,        /*!< Key has no access time set */
 	KDB_RET_TRUNC=ENOBUFS,        /*!< Buffer was too small */
-	KDB_RET_TYPEMISMATCH=EILSEQ,  /*!< Failed to convert key data due to data type */
-	KDB_RET_INVALIDKEY=EAFNOSUPPORT, /*!< Key name is no 'system/' or 'user/' */
+	KDB_RET_TYPEMISMATCH=EILSEQ,  /*!< Failed to convert key data due to
+	                                      data type */
+	KDB_RET_INVALIDKEY=EAFNOSUPPORT, /*!< Key name is not @p 'system/something'
+	                                      or @p 'user/something...' */
 	KDB_RET_NOTFOUND=ENOENT,      /*!< Key was not found */
 };
 
@@ -221,7 +246,7 @@ typedef struct _Key {
 	    uid_t      gid;         /* owner group ID */
 	   mode_t      access;      /* access control */
 	   time_t      atime;       /* time for last access */
-	   time_t      mtime;       /* time for last modidification */
+	   time_t      mtime;       /* time for last modification */
 	   time_t      ctime;       /* time for last change (meta info) */
 	   size_t      commentSize; /* size of the description string */
 	   size_t      dataSize;    /* size of the value */
@@ -329,7 +354,7 @@ Key methods
 int keyInit(Key *key);
 int keyClose(Key *key);
 
-Key *keyNew(char * keyName, ...);
+Key *keyNew(const char *keyName, ...);
 int keyDel(Key *key);
 
 int keyIsInitialized(const Key *key);
@@ -393,6 +418,8 @@ size_t keySetString(Key *key, const char *newString);
 size_t keyGetBinary(const Key *key, void *returnedBinary, size_t maxSize);
 size_t keySetBinary(Key *key, const void *newBinary, size_t dataSize);
 
+size_t keySetRaw(Key *key, const void *newBinary, size_t dataSize);
+
 size_t keyGetLink(const Key *key, char *returnedTarget, size_t maxSize);
 size_t keySetLink(Key *key, const char *target);
 
@@ -416,6 +443,8 @@ int keyNameGetNamespace(const char *keyName);
 int keyIsDir(const Key *key);
 int keyIsLink(const Key *key);
 
+Key *keyNext(Key *key);
+
 u_int32_t keyCompare(const Key *key1, const Key *key2);
 
 size_t keyToStream(const Key *key, FILE* stream, unsigned long options);
@@ -426,6 +455,10 @@ size_t keyToStream(const Key *key, FILE* stream, unsigned long options);
 KeySet methods
 
 ***************************************/
+
+KeySet *ksNew();
+int ksDel(KeySet *ks);
+int ksFree(KeySet *ks);
 
 int ksInit(KeySet *ks);
 int ksClose(KeySet *ks);
@@ -444,6 +477,9 @@ void ksSort(KeySet *ks);
 int ksRewind(KeySet *ks);
 Key *ksNext(KeySet *ks);
 Key *ksCurrent(const KeySet *ks);
+
+Key *ksHead(KeySet *ks);
+Key *ksTail(KeySet *ks);
 
 
 // Key *ksLookupByName(KeySet *ks,char *keyName);

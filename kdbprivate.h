@@ -31,9 +31,7 @@ $LastChangedBy$
 #define RG_DB_USER              ".kdb"   /* $HOME/.kdb */
 
 
-
-size_t keySetRaw(Key *key, const void *newBinary, size_t dataSize);
-
-
+size_t encode(void *unencoded, size_t size, char *returned);
+size_t unencode(char *encoded, void *returned);
 
 #endif /* KDBPRIVATE_H */

@@ -103,33 +103,33 @@ size_t strblen(const char *s) {
  * This function tries to mimic the C++ way for constructors.
  *
  * You can call it in many different ways depending on the attribute tags you
- * pass as parameters. Tags are represented as the @p "enum KeyFlags" values,
+ * pass as parameters. Tags are represented as the @p "enum KeySwitch" values,
  * and they tell keyNew() which Key attribute comes next.
  * 
  * The simplest way to call it is with no tags, only a key name. See example bellow.
  * 
  * The Key attribute tags are the following:
- * - @p KEY_FLAG_HASTYPE \n
+ * - @p KEY_SWITCH_TYPE \n
  *   This tag requires 1 or 2 more parameters. The first is obviously the
  *   type. If the type is KEY_TYPE_BINARY or any other binary-like
  *   user-defined type (see keySetType()), a second parameter is needed and
  *   is the size in bytes (size_t) of the data passed on the subsequent
- *   KEY_FLAG_HASDATA parameter. You must use this tag before
- *   KEY_FLAG_HASDATA, otherwise KEY_TYPE_STRING is assumed.
- * - @p KEY_FLAG_HASDATA \n
+ *   KEY_SWITCH_VALUE parameter. You must use this tag before
+ *   KEY_SWITCH_VALUE, otherwise KEY_TYPE_STRING is assumed.
+ * - @p KEY_SWITCH_VALUE \n
  *   Next parameter is a pointer to the value that will be set to the key.
- *   If no KEY_FLAG_HASTYPE was used before, KEY_TYPE_STRING is assumed.
- * - @p KEY_FLAG_HASUID, @p KEY_FLAG_HASGID \n
- *   Next parameter is taken as the UID (uid_t) or GID (gid_t) that will
+ *   If no KEY_SWITCH_TYPE was used before, KEY_TYPE_STRING is assumed.
+ * - @p KEY_SWITCH_UID, @p KEY_SWITCH_GID \n
+ *   Next parametkeySetRawer is taken as the UID (uid_t) or GID (gid_t) that will
  *   be defined on the key. See keySetUID() and keySetGID().
- * - @p KEY_FLAG_HASPRM \n
+ * - @p KEY_SWITCH_PRM \n
  *   Next parameter is taken as access permissions (mode_t) to the key.
  *   See keySetAccess().
- * - @p KEY_FLAG_HASDOMAIN \n
+ * - @p KEY_SWITCH_DOMAIN \n
  *   Next parameter is the user domain. See keySetOwner().
- * - @p KEY_FLAG_HASCOMMENT \n
+ * - @p KEY_SWITCH_COMMENT \n
  *   Next parameter is a comment. See keySetComment().
- * - @p KEY_FLAG_NEEDSYNC \n
+ * - @p KEY_SWITCH_NEEDSYNC \n
  *   Needs no extra parameter. Makes keyNew() retrieve the Key from the
  *   backend with kdbGetKey(). In the same keyNew() call you can use this
  *   tag in conjunction with any other, which will make keyNew() modify
@@ -138,67 +138,68 @@ size_t strblen(const char *s) {
  *   was unssuccessful, you'll still have a valid, but flaged, key.
  *   Check with keyGetFlag(), and @p errno. You will have to kdbOpen()
  *   before using keyNew() with this tag.
- * - 0 \n
- *   A 0 (zero) parameter means the end of the parameters. It is allways
+ * - KEY_SWITCH_END \n
+ *   Must be the last parameter passed to keyNew(). It is allways
  *   required, unless the @p keyName is NULL too.
  *   
- *   @par Example:
- *   @code
-KeySet ks;
+ * @par Example:
+ * @code
+KeySet *ks=ksNew();
 
 kdbOpen();
-ksInit(&ks);
 	
-ksAppend(&ks,keyNew(0));     // an empty key
+ksAppend(ks,keyNew(0));     // an empty key
 	
-ksAppend(&ks,keyNew("user/sw",           // a simple key
-	0));                                 // no more args
+ksAppend(ks,keyNew("user/sw",              // a simple key
+	KEY_SWITCH_END));                      // no more args
+	
 ksAppend(&ks,keyNew("system/sw",
-	KEY_FLAG_NEEDSYNC,0));               // a key retrieved from storage
+	KEY_SWITCH_NEEDSYNC,                   // a key retrieved from storage
+	KEY_SWITCH_END));                      // end of args               
 	
 ksAppend(&ks,keyNew("user/tmp/ex1",
-	KEY_FLAG_HASDATA,"some data",        // with a simple value
-	0));                                 // end of args
+	KEY_SWITCH_VALUE,"some data",          // with a simple value
+	KEY_SWITCH_END));                      // end of args
 	
 ksAppend(&ks,keyNew("user/tmp/ex2",
-	KEY_FLAG_HASDATA,"some data",        // with a simple value
-	KEY_FLAG_HASPRM,0777,                // permissions
-	0));                                 // end of args
+	KEY_SWITCH_VALUE,"some data",          // with a simple value
+	KEY_SWITCH_PRM,0777,                   // permissions
+	KEY_SWITCH_END));                      // end of args
 	
 ksAppend(&ks,keyNew("user/tmp/ex3",
-	KEY_FLAG_HASTYPE,KEY_TYPE_LINK,      // only type
-	KEY_FLAG_HASDATA,"system/mtp/x",     // link destination
-	KEY_FLAG_HASPRM,0654,                // weird permissions
-	0));                                 // end of args
+	KEY_SWITCH_TYPE,KEY_TYPE_LINK,         // only type
+	KEY_SWITCH_VALUE,"system/mtp/x",       // link destination
+	KEY_SWITCH_PRM,0654,                   // weird permissions
+	KEY_SWITCH_END));                      // end of args
 	
 ksAppend(&ks,keyNew("user/tmp/ex4",
-	KEY_FLAG_HASTYPE,KEY_TYPE_BINARY,7,  // type and value size
-	KEY_FLAG_HASCOMMENT,"value is truncated",
-	KEY_FLAG_HASDOMAIN,"root",           // owner (not uid) is root
-	KEY_FLAG_HASDATA,"some data",        // value that will be truncated
-	KEY_FLAG_HASUID,0,                   // root uid
-	0));                                 // end of args
+	KEY_SWITCH_TYPE,KEY_TYPE_BINARY,7,     // type and value size
+	KEY_SWITCH_COMMENT,"value is truncated",
+	KEY_SWITCH_DOMAIN,"root",              // owner (not uid) is root
+	KEY_SWITCH_VALUE,"some data",          // value that will be truncated
+	KEY_SWITCH_UID,0,                      // root uid
+	KEY_SWITCH_END));                      // end of args
 	
-ksAppend(&ks,keyNew("user/env/alias/ls", // a key we know we have
-	KEY_FLAG_NEEDSYNC,                   // retrieve from storage
-	0));                                 // do nothing more
+ksAppend(&ks,keyNew("user/env/alias/ls",   // a key we know we have
+	KEY_SWITCH_NEEDSYNC,                   // retrieve from storage
+	KEY_SWITCH_END));                      // do nothing more
 	
-ksAppend(&ks,keyNew("user/env/alias/ls", // same key
-	KEY_FLAG_NEEDSYNC,                   // retrieve from storage
-	KEY_FLAG_HASDOMAIN,"root",           // set new owner (not uid) as root
-	KEY_FLAG_HASCOMMENT,"new comment",   // set new comment
-	0));                                 // end of args
+ksAppend(&ks,keyNew("user/env/alias/ls",   // same key
+	KEY_SWITCH_NEEDSYNC,                   // retrieve from storage
+	KEY_SWITCH_DOMAIN,"root",              // set new owner (not uid) as root
+	KEY_SWITCH_COMMENT,"new comment",      // set new comment
+	KEY_SWITCH_END));                      // end of args
 	
-ksToStream(&ks,stdout,KDB_O_XMLHEADERS);
+ksToStream(ks,stdout,KDB_O_XMLHEADERS);
 	
-ksClose(&ks);
+ksDel(ks);
 kdbClose();
- *   @endcode
+ * @endcode
  *
  * @see keyDel()
- * @return a pointer to an initialized Key object
+ * @return a pointer to a new allocated and initialized Key object
  */ 
-Key *keyNew(char *keyName, ...) {
+Key *keyNew(const char *keyName, ...) {
 	va_list va;
 	Key *key;
 	u_int32_t action=0;
@@ -210,14 +211,17 @@ Key *keyNew(char *keyName, ...) {
 	keyInit(key);
 	
 	if (keyName) {
-		keySetName(key,keyName);
+		size_t nameSize;
+		
+		nameSize=keySetName(key,keyName);
+		if (! nameSize) keySetFlag(key);
 		
 		va_start(va,keyName);
 		
 		action=va_arg(va,u_int32_t);
 		while (action) {
 			switch (action) {
-				case KEY_FLAG_HASTYPE:
+				case KEY_SWITCH_TYPE:
 					/* We are waiting for 1 or 2 parameters
 					 * following this action */
 					
@@ -232,7 +236,7 @@ Key *keyNew(char *keyName, ...) {
 					keySetType(key,keyType);
 					
 					break;
-				case KEY_FLAG_HASDATA:
+				case KEY_SWITCH_VALUE:
 					if (keyType == KEY_TYPE_UNDEFINED)
 						keyType=KEY_TYPE_STRING;
 
@@ -252,22 +256,22 @@ Key *keyNew(char *keyName, ...) {
 						keySetType(key,keyType);
 					
 					break;
-				case KEY_FLAG_HASUID:
+				case KEY_SWITCH_UID:
 					keySetUID(key,va_arg(va,uid_t));
 					break;
-				case KEY_FLAG_HASGID:
+				case KEY_SWITCH_GID:
 					keySetUID(key,va_arg(va,gid_t));
 					break;
-				case KEY_FLAG_HASPRM:
+				case KEY_SWITCH_PRM:
 					keySetAccess(key,va_arg(va,mode_t));
 					break;
-				case KEY_FLAG_HASDOMAIN:
+				case KEY_SWITCH_DOMAIN:
 					keySetOwner(key,va_arg(va,char *));
 					break;
-				case KEY_FLAG_HASCOMMENT:
+				case KEY_SWITCH_COMMENT:
 					keySetComment(key,va_arg(va,char *));
 					break;
-				case KEY_FLAG_NEEDSYNC: {
+				case KEY_SWITCH_NEEDSYNC: {
 					int rc=0;
 					rc=kdbGetKey(key);
 					if (rc) /* errno will be propagated */
@@ -285,7 +289,8 @@ Key *keyNew(char *keyName, ...) {
  
  
 /**
- * A destructor for Key objects.
+ * A destructor for Key objects. Every key created by keyNew() must be
+ * deleted with keyDel().
  * It will keyClose() and free() the @p key pointer.
  *
  * @see keyNew()
@@ -302,7 +307,9 @@ int keyDel(Key *key) {
  }
 
  
- 
+int keyFree(Key *key) {
+	return keyDel(key);
+}
  
  
  
@@ -311,30 +318,26 @@ int keyDel(Key *key) {
 /**
  * Initializes a previously allocated Key object.
  *
+ * You'll find the keyNew() function more usefull and straight forward
+ * than keyInit().
+ * 
  * Every Key object that will be used must be initialized first, to setup
  * pointers, counters, etc.
  * 
- * You'll find the keyNew() function more usefull and straight forward than keyInit().
- * 
- * @par Example 1:
+ * @par Example
  * @code
-Key *key;
+Key *key=keyNew("system/some/key",KEY_SWITCH_END);
 
-key=malloc(sizeof(Key));
-keyInit(key);
+// Do something with the key....
+
+// Now reuse the memory allocated by keyNew()
+keyClose(key);  // free all internal attributes first
+keyInit(key);   // reinitialize it
 // do something with key...
 keyClose(key);
 free(key);
  * @endcode
- *
- * @par Example 2:
- * @code
-Key key;
-
-keyInit(&key);
-// do something with key...
-keyClose(&key);
- * @endcode
+ * 
  * @see keyNew()
  * @see keyDel()
  * @see keyClose()
@@ -347,9 +350,9 @@ int keyInit(Key *key) {
 	key->uid=getuid();
 	key->gid=getgid();
 	key->access=umask(0); umask(key->access);
-	key->access=0666 & ~key->access;
+	key->access=DEFFILEMODE & ~key->access;
 
-	key->flags |= KEY_FLAG_INITIALIZED | KEY_FLAG_ACTIVE;
+	key->flags |= KEY_SWITCH_INITIALIZED | KEY_SWITCH_ACTIVE;
 
 	return 0;
 }
@@ -361,8 +364,7 @@ int keyInit(Key *key) {
  * Finishes the usage of a Key object.
  *
  * Frees all internally allocated memory, and leave the Key object
- * ready to be destroyed, or explicitly by a <i>free()</i>, or a
- * local variable dealocation.
+ * ready to be keyInit()ed to reuse, or deallocated.
  * 
  * @see keyInit() for usage example
  * @see keyNew() as a more usefull function
@@ -397,7 +399,7 @@ int keyClose(Key *key) {
  */
 int keyIsInitialized(const Key *key) {
 	if (!key) return 0;
-	return ((key->flags & KEY_FLAG_INITMASK)==KEY_FLAG_INITIALIZED);
+	return ((key->flags & KEY_SWITCH_INITMASK)==KEY_SWITCH_INITIALIZED);
 }
 
 
@@ -411,7 +413,7 @@ int keyIsInitialized(const Key *key) {
  */
 int keyNeedsSync(const Key *key) {
 	if (!key) return 0;
-	return (key->flags & KEY_FLAG_NEEDSYNC);
+	return (key->flags & KEY_SWITCH_NEEDSYNC);
 }
 
 
@@ -435,10 +437,11 @@ u_int8_t keyGetType(const Key *key) {
 
 
 /**
- * Force a key type.
+ * Force a key type. See the @e "enum KeyType" documentation to
+ * understand the concepts behind Elektra key's value types. 
  *
  * This method is usually not needed, unless you are working with more
- * semantic key types, or want to force a specific type for a key.
+ * semantic value types, or want to force a specific value type for a key.
  * It is not usually needed because the data type is automatically set
  * when setting the key value.
  *
@@ -449,47 +452,50 @@ u_int8_t keyGetType(const Key *key) {
  * @code
 #define KEY_TYPE_COLOR KEY_TYPE_STRING+4
 
-Key color1;
-Key color2;
+Key *color1;
+Key *color2;
 
 // Set color1 key
-keyInit(&color1);
-keySetName(&color1,"user/sw/MyApp/colors/someColor")
-keySetString(&color1,"#4B52CA");
-keySetComment(&color1,"a custom color");
-keySetType(&color1,KEY_TYPE_COLOR);
+color1=keyNew("user/sw/MyApp/colors/someColor",
+	KEY_SWITCH_TYPE,KEY_TYPE_COLOR,
+	KEY_SWITCH_VALUE,"#4B52CA",
+	KEY_SWITCH_COMMENT,"a custom color",
+	KEY_SWITCH_END);
 
 // Set color2 key
-keyInit(&color2);
-keySetName(&color2,"system/sw/MyApp/colors/green")
-keySetString(&color2,"green");
-keySetComment(&color2,"the green color");
-keySetType(&color2,KEY_TYPE_COLOR);
-
+color2=keyNew("system/sw/MyApp/colors/green",
+	KEY_SWITCH_TYPE,KEY_TYPE_COLOR,
+	KEY_SWITCH_VALUE,"green",
+	KEY_SWITCH_COMMENT,"the green color",
+	KEY_SWITCH_END);
 
 // Start affairs with Key database
 kdbOpen();
 
 // Commit the keys
-kdbSetKey(&color1);
-kdbSetKey(&color2);
+kdbSetKey(color1);
+kdbSetKey(color2);
 
 // Reset memory related to our structures to reuse them later
-kdbClose(&color1);
-kdbClose(&color2);
+keyClose(color1);
+keyClose(color2);
 
 // Retrieve keys from the database
-keySetName(&color1,"user/sw/MyApp/colors/someColor")
-keySetName(&color2,"system/sw/MyApp/colors/green")
-kdbGetKey(&color1);
-kdbGetKey(&color2);
+keySetName(color1,"user/sw/MyApp/colors/someColor");
+kdbGetKey(color1);
 
-// End of Key database affairs by now
+keySetName(color2,"system/sw/MyApp/colors/green");
+kdbGetKey(color2);
+
+// End of the affairs with Key database by now
 kdbClose();
 
 // Get the key types, which should be our user-defined KEY_TYPE_COLOR
-u_int8_t tcolor1=keyGetType(&color1);
-u_int8_t tcolor2=keyGetType(&color2);
+u_int8_t tcolor1=keyGetType(color1);
+u_int8_t tcolor2=keyGetType(color2);
+
+keyDel(color1);
+keyDel(color2);
  * @endcode
  *
  * @see keyGetType()
@@ -517,7 +523,7 @@ u_int8_t keySetType(Key *key,u_int8_t newType) {
 		default:
 			key->type=newType;
 			key->access &= ~(S_IFDIR | dirSwitch);
-			key->flags |= KEY_FLAG_NEEDSYNC;
+			key->flags |= KEY_SWITCH_NEEDSYNC;
 	}
 	return key->type;
 }
@@ -556,7 +562,7 @@ size_t keyGetRecordSize(const Key *key) {
 
 
 /**
- * Space needed to store the key name without user domain
+ * Bytes needed to store the key name without user domain.
  *
  * @return number of bytes needed to store key name without user domain
  * @see keyGetName()
@@ -576,7 +582,7 @@ size_t keyGetNameSize(const Key *key) {
 
 
 /**
- * Space needed to store the key name including user domain
+ * Bytes needed to store the key name including user domain.
  *
  * @return number of bytes needed to store key name including user domain
  * @see keyGetFullName()
@@ -602,6 +608,13 @@ size_t keyGetFullNameSize(const Key *key) {
 
 
 
+
+Key *keyNext(Key *key) {
+	return key->next;
+}
+
+
+
 /**
  * Get key full name, including the user domain name.
  *
@@ -616,6 +629,11 @@ size_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize) {
 	char *cursor;
 
 	length=keyGetFullNameSize(key);
+	if (length == 0) {
+		errno=KDB_RET_NOKEY;
+		returnedName[0]=0;
+		return length;
+	}
 	if (length < 0) return length;
 	if (length > maxSize) {
 		errno=KDB_RET_TRUNC;
@@ -642,7 +660,7 @@ size_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize) {
 
 
 /**
- * Get abreviated key name (without user domain name)
+ * Get abreviated key name (without user domain name).
  *
  * @return number of bytes written
  * @param key the key object
@@ -659,6 +677,7 @@ size_t keyGetName(const Key *key, char *returnedName, size_t maxSize) {
 
 	if (!key->key) {
 		errno=KDB_RET_NOKEY;
+		returnedName[0]=0;
 		return 0;
 	}
 
@@ -693,6 +712,7 @@ size_t keyGetName(const Key *key, char *returnedName, size_t maxSize) {
  * @return size in bytes of this new key name. When 0 is returned, or @p newName is empty, or something wrong happened and @p errno is propagated
  * @param key the key object
  * @param newName the new key name
+ * @see keyNew()
  * @see keyGetName()
  * @see keyGetFullName()
  */
@@ -708,12 +728,12 @@ size_t keySetName(Key *key, const char *newName) {
 	if (!keyIsInitialized(key)) keyInit(key);
 
 	/* handle null new key name, removing the old key */
-	if (!newName || !(length=strlen(newName))) {
+	if (!newName || !(length=strblen(newName)-1)) {
 		if (key->key) {
 			free(key->key);
 			key->key=0;
 		}
-		key->flags &= ~(KEY_FLAG_HASKEY | KEY_FLAG_NEEDSYNC);
+		key->flags &= ~(KEY_SWITCH_NAME | KEY_SWITCH_NEEDSYNC);
 		return 0;
 	}
 
@@ -797,7 +817,7 @@ size_t keySetName(Key *key, const char *newName) {
 		return 0;
 	}
 
-	key->flags |= KEY_FLAG_HASKEY | KEY_FLAG_NEEDSYNC;
+	key->flags |= KEY_SWITCH_NAME | KEY_SWITCH_NEEDSYNC;
 
 	return keyNameSize;
 }
@@ -897,12 +917,12 @@ size_t keySetOwner(Key *key, const char *userDomain) {
 		if (!key->userDomain) return -1; /* propagate errno */
 
 		strcpy(key->userDomain,userDomain);
-		key->flags |= KEY_FLAG_HASDOMAIN | KEY_FLAG_NEEDSYNC;
+		key->flags |= KEY_SWITCH_DOMAIN | KEY_SWITCH_NEEDSYNC;
 		return size;
 	} else if (key->userDomain) {
 		free(key->userDomain);
 		key->userDomain=0;
-		key->flags &= ~(KEY_FLAG_HASDOMAIN | KEY_FLAG_NEEDSYNC);
+		key->flags &= ~(KEY_SWITCH_DOMAIN | KEY_SWITCH_NEEDSYNC);
 	}
 	return 0;
 }
@@ -964,7 +984,7 @@ size_t keySetComment(Key *key, const char *newComment) {
 	if (!keyIsInitialized(key)) keyInit(key);
 
 	if (newComment && (size=strblen(newComment)) > 0) {
-		if (key->flags & KEY_FLAG_HASCOMMENT) {
+		if (key->flags & KEY_SWITCH_COMMENT) {
 			key->comment=realloc(key->comment,size);
 		} else {
 			key->comment=malloc(size);
@@ -972,12 +992,12 @@ size_t keySetComment(Key *key, const char *newComment) {
 		if (!key->comment) return 0;
 
 		strcpy(key->comment,newComment);
-		key->flags |= KEY_FLAG_HASCOMMENT | KEY_FLAG_NEEDSYNC;
+		key->flags |= KEY_SWITCH_COMMENT | KEY_SWITCH_NEEDSYNC;
 		return key->commentSize=size;
-	} else if (key->flags & KEY_FLAG_HASCOMMENT) {
+	} else if (key->flags & KEY_SWITCH_COMMENT) {
 		free(key->comment);
 		key->comment=0;
-		key->flags &= ~(KEY_FLAG_HASCOMMENT | KEY_FLAG_NEEDSYNC);
+		key->flags &= ~(KEY_SWITCH_COMMENT | KEY_SWITCH_NEEDSYNC);
 	}
 	return key->commentSize=0;
 }
@@ -1244,8 +1264,8 @@ size_t keySetRaw(Key *key, const void *newBinary, size_t dataSize) {
 			free(key->data);
 			key->data=0;
 		}
-		key->flags &= ~(KEY_FLAG_HASDATA);
-		key->flags |= KEY_FLAG_NEEDSYNC;
+		key->flags &= ~(KEY_SWITCH_VALUE);
+		key->flags |= KEY_SWITCH_NEEDSYNC;
 		return 0;
 	}
 
@@ -1256,7 +1276,7 @@ size_t keySetRaw(Key *key, const void *newBinary, size_t dataSize) {
 	if (!key->data) return 0;
 
 	memcpy(key->data,newBinary,key->dataSize);
-	key->flags |= KEY_FLAG_HASDATA | KEY_FLAG_NEEDSYNC;
+	key->flags |= KEY_SWITCH_VALUE | KEY_SWITCH_NEEDSYNC;
 	return key->dataSize;
 }
 
@@ -1366,7 +1386,7 @@ uid_t keyGetUID(const Key *key) {
 		return -1;
 	}
 
-	/*if (!(key->flags & KEY_FLAG_HASUID)) return KDB_RET_NOCRED;*/
+	/*if (!(key->flags & KEY_SWITCH_UID)) return KDB_RET_NOCRED;*/
 
 	return key->uid;
 }
@@ -1390,7 +1410,7 @@ int keySetUID(Key *key, uid_t uid) {
 	if (!keyIsInitialized(key)) keyInit(key);
 
 	key->uid=uid;
-	key->flags |= KEY_FLAG_HASUID | KEY_FLAG_NEEDSYNC;
+	key->flags |= KEY_SWITCH_UID | KEY_SWITCH_NEEDSYNC;
 
 	return 0;
 }
@@ -1410,7 +1430,7 @@ gid_t keyGetGID(const Key *key) {
 		return -1;
 	}
 
-	/*if (!(key->flags & KEY_FLAG_HASGID)) return KDB_RET_NOCRED;*/
+	/*if (!(key->flags & KEY_SWITCH_GID)) return KDB_RET_NOCRED;*/
 
 	return key->gid;
 }
@@ -1429,7 +1449,7 @@ int keySetGID(Key *key, gid_t gid) {
 	if (!keyIsInitialized(key)) keyInit(key);
 
 	key->gid=gid;
-	key->flags |= KEY_FLAG_HASGID | KEY_FLAG_NEEDSYNC;
+	key->flags |= KEY_SWITCH_GID | KEY_SWITCH_NEEDSYNC;
 
 	return 0;
 }
@@ -1446,7 +1466,7 @@ mode_t keyGetAccess(const Key *key) {
 		return -1;
 	}
 
-	/*if (!(key->flags & KEY_FLAG_HASPRM)) return KDB_RET_NOCRED;*/
+	/*if (!(key->flags & KEY_SWITCH_PRM)) return KDB_RET_NOCRED;*/
 
 	return key->access;
 }
@@ -1465,7 +1485,7 @@ int keySetAccess(Key *key, mode_t mode) {
 	if (!keyIsInitialized(key)) keyInit(key);
 
 	key->access=mode;
-	key->flags |= KEY_FLAG_HASPRM | KEY_FLAG_NEEDSYNC;
+	key->flags |= KEY_SWITCH_PRM | KEY_SWITCH_NEEDSYNC;
 
 	return 0;
 }
@@ -1482,7 +1502,7 @@ time_t keyGetMTime(const Key *key) {
 		errno=KDB_RET_UNINITIALIZED;
 		return -1;
 	}
-	/*if (!(key->flags & KEY_FLAG_HASTIME)) return KDB_RET_NOTIME;*/
+	/*if (!(key->flags & KEY_SWITCH_TIME)) return KDB_RET_NOTIME;*/
 
 	return key->mtime;
 }
@@ -1497,7 +1517,7 @@ time_t keyGetATime(const Key *key) {
 		errno=KDB_RET_UNINITIALIZED;
 		return -1;
 	}
-	/*if (!(key->flags & KEY_FLAG_HASTIME)) return KDB_RET_NOTIME;*/
+	/*if (!(key->flags & KEY_SWITCH_TIME)) return KDB_RET_NOTIME;*/
 
 	return key->atime;
 }
@@ -1511,7 +1531,7 @@ time_t keyGetCTime(const Key *key) {
 		errno=KDB_RET_UNINITIALIZED;
 		return -1;
 	}
-	/*if (!(key->flags & KEY_FLAG_HASTIME)) return KDB_RET_NOTIME;*/
+	/*if (!(key->flags & KEY_SWITCH_TIME)) return KDB_RET_NOTIME;*/
 
 	return key->ctime;
 }
@@ -1585,51 +1605,51 @@ size_t keyGetParent(const Key *key, char *returnedParent, size_t maxSize) {
  * Compare 2 keys.
  *
  * The returned flag array has 1s (different) or 0s (same) for each key meta
- * info compared, that can be logically ORed with @p KEY_FLAG_* flags.
+ * info compared, that can be logically ORed with @p KEY_SWITCH_* flags.
  *
  * @return a bit array poiting the differences
  * @see ksCompare() for examples and more detailed description
- * @see KeyFlags
+ * @see KeySwitch
  */
 u_int32_t keyCompare(const Key *key1, const Key *key2) {
 	u_int32_t ret=0;
 
 
 	/* Compare these numeric properties */
-	if (key1->uid != key2->uid)                    ret|=KEY_FLAG_HASUID;
-	if (key1->gid != key2->gid)                    ret|=KEY_FLAG_HASGID;
-	if (key1->type != key2->type)                  ret|=KEY_FLAG_HASTYPE;
+	if (key1->uid != key2->uid)                    ret|=KEY_SWITCH_UID;
+	if (key1->gid != key2->gid)                    ret|=KEY_SWITCH_GID;
+	if (key1->type != key2->type)                  ret|=KEY_SWITCH_TYPE;
 	if ((key1->access & (S_IRWXU|S_IRWXG|S_IRWXO)) !=
-		(key2->access & (S_IRWXU|S_IRWXG|S_IRWXO))) ret|=KEY_FLAG_HASPRM;
+		(key2->access & (S_IRWXU|S_IRWXG|S_IRWXO))) ret|=KEY_SWITCH_PRM;
 
 	/* Compare these string properties.
 	   A lot of decisions because strcmp can't handle NULL pointers */
 	if (key1->key && key2->key) {
-		if (strcmp(key1->key,key2->key))            ret|=KEY_FLAG_HASKEY;
+		if (strcmp(key1->key,key2->key))            ret|=KEY_SWITCH_NAME;
 	} else {
-		if (key1->key)                              ret|=KEY_FLAG_HASKEY;
-		else if (key2->key)                         ret|=KEY_FLAG_HASKEY;
+		if (key1->key)                              ret|=KEY_SWITCH_NAME;
+		else if (key2->key)                         ret|=KEY_SWITCH_NAME;
 	}
 
 	if (key1->comment && key2->comment) {
-		if (strcmp(key1->comment,key2->comment))    ret|=KEY_FLAG_HASCOMMENT;
+		if (strcmp(key1->comment,key2->comment))    ret|=KEY_SWITCH_COMMENT;
 	} else {
-		if (key1->comment)                          ret|=KEY_FLAG_HASCOMMENT;
-		else if (key2->comment)                     ret|=KEY_FLAG_HASCOMMENT;
+		if (key1->comment)                          ret|=KEY_SWITCH_COMMENT;
+		else if (key2->comment)                     ret|=KEY_SWITCH_COMMENT;
 	}
 
 	if (key1->userDomain && key2->userDomain) {
-		if (strcmp(key1->userDomain,key2->userDomain)) ret|=KEY_FLAG_HASDOMAIN;
+		if (strcmp(key1->userDomain,key2->userDomain)) ret|=KEY_SWITCH_DOMAIN;
 	} else {
-		if (key1->userDomain)                       ret|=KEY_FLAG_HASDOMAIN;
-		else if (key2->comment)                     ret|=KEY_FLAG_HASDOMAIN;
+		if (key1->userDomain)                       ret|=KEY_SWITCH_DOMAIN;
+		else if (key2->comment)                     ret|=KEY_SWITCH_DOMAIN;
 	}
 
 
 	/* Compare data */
 	if (memcmp(key1->data,key2->data,
 			(key1->dataSize<=key2->dataSize?key1->dataSize:key2->dataSize)))
-		ret|=KEY_FLAG_HASDATA;
+		ret|=KEY_SWITCH_VALUE;
 
 	return ret;
 }
@@ -1671,7 +1691,7 @@ size_t keyToStream(const Key *key, FILE* stream, unsigned long options) {
 	struct group *grp=0;
 
 
-	if (!key || !keyIsInitialized(key) || !key->key) {
+	if (!key || !keyIsInitialized(key) /* || !key->key */) {
 		errno=KDB_RET_UNINITIALIZED;
 		return 0;
 	}
@@ -1712,6 +1732,9 @@ size_t keyToStream(const Key *key, FILE* stream, unsigned long options) {
 			case KEY_TYPE_DIR:
 				strcpy(buffer,"directory");
 				break;
+			case KEY_TYPE_UNDEFINED:
+				strcpy(buffer,"undefined");
+				break;
 		}
 		if (buffer[0]) written+=fprintf(stream,"type=\"%s\"", buffer);
 		else written+=fprintf(stream,"type=\"%d\"", type);
@@ -1734,10 +1757,28 @@ size_t keyToStream(const Key *key, FILE* stream, unsigned long options) {
 	if (!(options & KDB_O_CONDENSED) && (key->data || key->comment))
 		written+=fprintf(stream,"\n\n     ");
 
-	if (key->data)
-		written+=
-			fprintf(stream,"<value><![CDATA[%s]]></value>",(char *)key->data);
+	if (key->data) {
+		written+=fprintf(stream,"<value>");
+		fflush(stream);
+		if (key->type >= KEY_TYPE_STRING || key->type < KEY_TYPE_BINARY)
+			 /* must chop ending \0 */
+			 written+=write(fileno(stream),key->data,key->dataSize-1);
+		else {
+			/* Binary values */
+			char *encoded=malloc(3*key->dataSize);
+			size_t encodedSize;
 
+			written+=fprintf(stream,"\n");
+			fflush(stream);
+			encodedSize=encode(key->data,key->dataSize,encoded);
+			written+=write(fileno(stream),encoded,encodedSize);
+			fflush(stream);
+			free(encoded);
+			written+=fprintf(stream,"\n");
+		}
+		fflush(stream);
+		written+=fprintf(stream,"</value>");
+	}
 
 
 	if (!(options & KDB_O_CONDENSED)) {
@@ -1839,7 +1880,7 @@ size_t keyGetSerializedSize(Key *key) {
 //
 // 	if (!key) return KDB_RET_NULLKEY;
 // 	if (!keyIsInitialized(key)) return KDB_RET_UNINITIALIZED;
-// 	if (!(key->flags & KEY_FLAG_HASKEY)) return KDB_RET_NOKEY;
+// 	if (!(key->flags & KEY_SWITCH_NAME)) return KDB_RET_NOKEY;
 //
 // 	/* A valid serialized key has the following layout
 // 	   - Null terminated full key name
@@ -1869,7 +1910,7 @@ size_t keyGetSerializedSize(Key *key) {
 //
 // 	if (!key) return KDB_RET_NULLKEY;
 // 	if (!keyIsInitialized(key)) return KDB_RET_UNINITIALIZED;
-// 	if (!(key->flags & KEY_FLAG_HASKEY)) return KDB_RET_NOKEY;
+// 	if (!(key->flags & KEY_SWITCH_NAME)) return KDB_RET_NOKEY;
 //
 // 	/* A valid serialized key has the following layout
 // 	   - Null terminated key name
@@ -2368,7 +2409,7 @@ int keySetFlag(Key *key) {
 		return -1;
 	}
 
-	key->flags|=KEY_FLAG_FLAG;
+	key->flags|=KEY_SWITCH_FLAG;
 
 	return 0;
 }
@@ -2390,7 +2431,7 @@ int keyClearFlag(Key *key) {
 		return -1;
 	}
 
-	key->flags &= ~KEY_FLAG_FLAG;
+	key->flags &= ~KEY_SWITCH_FLAG;
 
 	return 0;
 }
@@ -2407,7 +2448,7 @@ int keyClearFlag(Key *key) {
  *
  * @see keySetFlag()
  * @see keyClearFlag()
- * @see keyNew() with KEY_FLAG_NEEDSYNC
+ * @see keyNew() with KEY_SWITCH_NEEDSYNC
  * @return 1 if flag is set, 0 otherwise
  */
 int keyGetFlag(const Key *key) {
@@ -2416,7 +2457,7 @@ int keyGetFlag(const Key *key) {
 		return 0;
 	}
 
-	return (key->flags | KEY_FLAG_FLAG) ? 1:0;
+	return (key->flags | KEY_SWITCH_FLAG) ? 1:0;
 }
 
 /**
@@ -2425,7 +2466,6 @@ int keyGetFlag(const Key *key) {
 
 
 
-ir
 /**
  * @defgroup keyset KeySet Class Methods
  * @brief Methods to manipulate KeySets.
@@ -2442,12 +2482,86 @@ ir
  * @{
  */
 
+ 
+/**
+ * Allocate, initialize and return a new KeySet object.
+ * Objects created with ksNew() must be destroyed with ksDel().
+ * 
+ * @see ksDel()
+ * @return a ready to use KeySet object
+ */ 
+KeySet *ksNew() {
+	KeySet *new=(KeySet *)malloc(sizeof(KeySet));
+	ksInit(new);
+	return new;
+} 
 
 /**
- * KeySet object constructor.
+ * A destructor for KeySet objects.
+ * 
+ * Cleans all internal dynamic attributes, keyDel() all contained Keys,
+ * and free()s the release the KeySet object memory (that was previously
+ * allocated by ksNew())
+ *
+ * @see ksNew()
+ * @see ksClose()
+ * @return whatever is returned by ksClose()
+ */
+int ksDel(KeySet *ks) {
+	int rc;
+	
+	rc=ksClose(ks);
+	free(ks);
+	
+	return rc;
+}
+
+
+
+/**
+ * Same as ksDel(), provided as different function name option.
+ */
+int ksFree(KeySet *ks) {
+	return ksDel(ks);
+}
+
+
+/**
+ * Return the first key in the KeySet, whithout changing the KeySet's
+ * internal cursor.
+ * 
+ * @see ksTail(), ksCurrent(), ksNext()
+ * @see ksRewind() which also resets the internal cursor.
+ */
+Key *ksHead(KeySet *ks) {
+	return ks->start;
+}
+
+
+
+
+/**
+ * Return the last key in the KeySet, whithout changing the KeySet's
+ * internal cursor.
+ * 
+ * @see ksHead(), ksCurrent(), ksNext()
+ */
+Key *ksTail(KeySet *ks) {
+	return ks->end;
+}
+
+
+
+/**
+ * KeySet object initializer.
+ * 
+ * You should always use ksNew() instead of ksInit().
  *
  * Every KeySet object that will be used must be initialized first, to setup
- * pointers, counters, etc.
+ * pointers, counters, etc. After use, all ksInit()ialized KeySets must be
+ * cleaned with ksClose().
+ * 
+ * @see ksNew()
  * @see ksClose()
  * @see keyInit()
  */
@@ -2460,14 +2574,13 @@ int ksInit(KeySet *ks) {
 
 
 /**
- * KeySet destructor.
+ * KeySet object cleaner.
  *
- * Will cause keyClose() destructor to be called for all contained keys,
- * and then frees the key object. This is why you should not ksAppend() or
- * ksInsert() a Key that is a local variable, only dinamycally allocated Keys.
- *
- * After this call, @p ks object is ready to be freed by you.
+ * Will keyDel() all contained keys, reset internal pointers and counters.
  * 
+ * After this call, the @p ks object is ready to be freed by you.
+ * 
+ * @see keyDel()
  * @see ksInit()
  * @see keyClose()
  * @see ksAppend() for details on how keys are inserted in KeySets
@@ -2491,7 +2604,7 @@ int ksClose(KeySet *ks) {
 
 
 /**
- * @return the number of keys in the @p ks.
+ * @return the number of keys contained by the @p ks.
  *
  */
 size_t ksGetSize(KeySet *ks) {
@@ -2544,7 +2657,7 @@ int ksRewind(KeySet *ks) {
  *
  * @see ksNext()
  * @see ksRewind()
- * @see kdbMonitorKeys() for an example
+ * @see kdbMonitorKeys() for a usage example
  * @return pointer to the Key pointed by @p ks's cursor
  */
 Key *ksCurrent(const KeySet *ks) {
@@ -2555,9 +2668,9 @@ Key *ksCurrent(const KeySet *ks) {
 
 
 /**
- * Insert a new Key in the begining of the KeySet. A reference to key will
- * be stored, and not a copy of the key. So a future ksClose() on @p ks will
- * keyClose() @p toInsert and free() the @p toInsert object.
+ * Insert a new Key in the begining of the KeySet. A reference to the key will
+ * be stored, and not a copy of the key. So a future ksClose() or ksDel() on
+ * @p ks will keyDel() the @p toInsert object.
  * The KeySet internal cursor is not moved.
  *
  * Do not ksInsert() Keys that are already members of other KeySets.
@@ -2568,7 +2681,7 @@ Key *ksCurrent(const KeySet *ks) {
  * @see ksAppend()
  * @see ksInsertKeys()
  * @see ksAppendKeys()
- * @see ksClose()
+ * @see ksDel()
  * @see keyNew()
  *
  */
@@ -2583,9 +2696,9 @@ size_t ksInsert(KeySet *ks, Key *toInsert) {
 
 
 /**
- * Transfers an entire KeySet to the begining of the KeySet.
+ * Transfers all keys from @p toInsert to the begining of @p ksa.
  *
- * After this call, the @p toInsert KeySet will be empty.
+ * After this call, @p toInsert will be empty.
  *
  * @return the size of the KeySet after insertion
  * @param ks the KeySet that will receive the keys
@@ -2612,16 +2725,17 @@ size_t ksInsertKeys(KeySet *ks, KeySet *toInsert) {
 
 
 /**
- * Append a new Key to the end of the KeySet. You should not append Keys that
- * are local variables to a KeySet, only dinamycally allocated ones, due to
- * the future ksClose() you'll call on the KeySet.
+ * Appends a new Key to the end @p ks. A reference to the key will
+ * be stored, and not a private copy. So a future ksClose() or ksDel() on
+ * @p ks will keyDel() the @p toAppend object.
  * The KeySet internal cursor is not moved.
  *
- * Do not ksAppend() Keys that are already members of other KeySets.
+ * Do not ksAppend() Keys that are already contained by other KeySets.
  *
  * @return the size of the KeySet after insertion
  * @param ks KeySet that will receive the key
  * @param toAppend Key that will be appended to ks
+ * @see ksDel()
  * @see ksClose()
  * @see ksInsert()
  * @see ksInsertKeys()
@@ -2640,9 +2754,9 @@ size_t ksAppend(KeySet *ks, Key *toAppend) {
 
 
 /**
- * Transfers an entire KeySet to the end of the KeySet.
+ * Transfers all @p toAppend contained keys to the end of the @p ks.
  *
- * After this call, the toAppend KeySet will be empty.
+ * After this call, the @p toAppend KeySet will be empty.
  *
  * @return the size of the KeySet after transfer
  * @param ks the KeySet that will receive the keys
@@ -2693,7 +2807,7 @@ size_t ksAppendKeys(KeySet *ks, KeySet *toAppend) {
  *  will be empty.
  *
  *  After ksCompare(), you should:
- *  - free(ks2)
+ *  - ksDel(ks2)
  *  - call kdbSetKeys() on @p ks1 to commit all changed keys
  *  - kdbRemove() for all keys in the @p removed KeySet
  *
@@ -2701,8 +2815,8 @@ size_t ksAppendKeys(KeySet *ks, KeySet *toAppend) {
  *  @see commandEdit() at the kdb command
  *  @param ks1 first KeySet
  *  @param ks2 second KeySet
- *  @param removed empty KeySet that will be filled with keys removed
- *  from @p ks1
+ *  @param removed initially empty KeySet that will be filled with keys
+ *  removed from @p ks1
  */
 int ksCompare(KeySet *ks1, KeySet *ks2, KeySet *removed) {
 	int flagRemoved=1;
@@ -2719,7 +2833,7 @@ int ksCompare(KeySet *ks1, KeySet *ks2, KeySet *removed) {
 		for (ks2Cursor=ks2->start; ks2Cursor; ks2Cursor=ks2Cursor->next) {
 			u_int32_t flags=keyCompare(ks1Cursor,ks2Cursor);
 			
-			if (!(flags & (KEY_FLAG_HASKEY | KEY_FLAG_HASDOMAIN))) {
+			if (!(flags & (KEY_SWITCH_NAME | KEY_SWITCH_DOMAIN))) {
 				/* Comparing fullname-equal keys */
 				flagRemoved=0; /* key was not removed */
 					
@@ -2865,7 +2979,7 @@ void ksSort(KeySet *ks) {
  * KDB_O_NOSPANPARENT: find under current subtree only
  * KDB_O_CYCLE: restart from begining of KeySet if end reached
  * 
- */
+ *
 Key *ksFindRE(const KeySet *ks, const regex_t *regexp, unsigned long options) {
 	Key *current, *walker;
 	regmatch_t matched;
@@ -2873,12 +2987,14 @@ Key *ksFindRE(const KeySet *ks, const regex_t *regexp, unsigned long options) {
 	
 	current=ks->cursor;
 	
+	// TODO: finish this method
 	
 	rc=regexec(regexp,walker->key,1,&matched,0);
 	
 	if (rc == 0) return current;
+	else return 0;
 }
-
+*/
 /**
  * @} // end of KeySet group
  */
