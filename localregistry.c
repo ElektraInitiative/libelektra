@@ -1,5 +1,5 @@
 /***************************************************************************
-                          registry.h  -  Methods for accessing the Linux Registry
+            registry.h  -  Methods for accessing the Linux Registry
                              -------------------
     begin                : Mon Dec 29 2003
     copyright            : (C) 2003 by Avi Alkalay
