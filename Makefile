@@ -100,6 +100,13 @@ registry.spec: registry.spec.in
 install: all
 	for x in ${DIRS}; do (cd "$$x"; make DTDVERSION=${DTDVERSION} $@); done
 	strip libregistry.so
+	[ -d "${DESTDIR}/lib" ] || mkdir -p ${DESTDIR}/lib
+	[ -d "${DESTDIR}/usr/lib" ] || mkdir -p ${DESTDIR}/usr/lib
+	[ -d "${DESTDIR}/bin" ] || mkdir -p ${DESTDIR}/bin
+	[ -d "${DESTDIR}/usr/include" ] || mkdir -p ${DESTDIR}/usr/include
+	[ -d "${DESTDIR}/etc/profile.d" ] || mkdir -p ${DESTDIR}/etc/profile.d
+	[ -d "${DESTDIR}/usr/share/doc/registry" ] || mkdir -p ${DESTDIR}/usr/share/doc/registry
+	[ -d "${DESTDIR}/usr/share/doc/registry-devel" ] || mkdir -p ${DESTDIR}/usr/share/doc/registry-devel
 	cp libregistry.so ${DESTDIR}/lib
 	cp libregistry.a ${DESTDIR}/usr/lib
 	strip rg
