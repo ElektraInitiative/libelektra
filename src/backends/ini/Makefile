@@ -13,7 +13,8 @@ SOURCES=${BACKENDNAME}.c
 # Usually nothing else to change under this point
 
 
-OPTIMIZATIONS=-O
+#TODO: make Optimizations (at least -O)
+OPTIMIZATIONS=
 CC=gcc -g ${OPTIMIZATIONS} -Wall
 
 

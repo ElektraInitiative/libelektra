@@ -56,6 +56,7 @@ $LastChangedBy: aviram $
 #include <string.h>
 #include <pwd.h>
 #include <fcntl.h>
+#include <dirent.h>
 
 #include <sys/stat.h>
 #include <sys/file.h>
@@ -149,7 +150,7 @@ $LastChangedBy: aviram $
  * @ingroup backend
  */
 int kdbOpen_ini() {
-	printf ("Open Backend ini\n");
+	fprintf (stderr, "Open Backend ini\n");
 	return 0;
 }
 
@@ -170,7 +171,7 @@ int kdbOpen_ini() {
  * @ingroup backend
  */
 int kdbClose_ini() {
-	printf ("Close Backend ini\n");
+	fprintf (stderr, "Close Backend ini\n");
 	return 0; /* success */
 }
 
@@ -184,7 +185,7 @@ int kdbClose_ini() {
  */
 int kdbStatKey_ini(Key *key) {
 	//TODO
-	printf ("Stat key\n");
+	fprintf (stderr, "Stat key\n");
 	return 0; /* success */
 }
 
@@ -203,12 +204,11 @@ int kdbStatKey_ini(Key *key) {
  * 
  * @ingroup backend
  */
-int IniGetFileName (Key * forKey, char * filename, char * keyname)
+int IniGetName (const Key * forKey, char * filename)
 {
-	char * name;
-	char * end;
-	size_t namesize;
 	size_t length;
+	int namesize;
+	char * name;
 
         switch (keyGetNamespace(forKey)) {
                 case KEY_NS_SYSTEM: {
@@ -232,8 +232,8 @@ int IniGetFileName (Key * forKey, char * filename, char * keyname)
                         errno=KDB_RET_INVALIDKEY;
                         return 0;
                 }
-        }	// system/user part done
-
+        }
+	
         filename[length]='/'; length++; // now the Keyname follows
 
 	namesize = keyGetNameSize (forKey);
@@ -246,7 +246,23 @@ int IniGetFileName (Key * forKey, char * filename, char * keyname)
 
 	strncpy (filename + length, name, namesize);
 	length += namesize;
+	free (name);
+	
+	return length;
+}
 
+/**
+ * Splits the IniGetName into two parts.
+ * 
+ * @ingroup backend
+ */
+int IniGetFileName (const Key * forKey, char * filename, char * keyname)
+{
+	int length;
+	char * end;
+
+	length = IniGetName (forKey, filename);
+	
 	end = strrchr (filename, '/');	// dirname
 	*end = 0;
 	strncpy (keyname, end+1, MAX_PATH_LENGTH);
@@ -286,28 +302,29 @@ int IniGetKey (FILE * fc, Key * key)
 	int c=0;	// position of comment
 	
 	buffer = (char*) malloc (BUFFER_SIZE+1);
+	
+	if (fgets (buffer, BUFFER_SIZE,fc) == NULL) {
+		fprintf (stderr, "End of File\n");
+		free (buffer);
+		return -1;
+	}
+	
 	buffer_value = (char*) malloc (BUFFER_SIZE+1);
 	buffer_key = (char*) malloc (BUFFER_SIZE+1);
 	buffer_comment = (char*) malloc (BUFFER_SIZE+1);
 	
-	if (fgets (buffer, BUFFER_SIZE,fc) == NULL) {
-		printf ("End of File\n");
-		return -1;
-	}
-	
 	for (i=0; i < string_length; i++) {
-	//	fprintf (stderr, "Processing |%c|%d|\n", buffer[i], buffer[i]);
+//		fprintf (stderr, "Processing |%c|%d|\n", buffer[i], buffer[i]);
 		if (buffer[i] == '\n') { // end of line found
-			fprintf (stderr, "Found end of key\n");
+//			fprintf (stderr, "Found end of key\n");
 			break;
 		}
 		else if (buffer[i] ==  '\0' ) {	// anticipated end?
 			if (i==string_length-1) { // no its not
 				string_length += BUFFER_SIZE;
-				printf (".");
 				buffer = realloc (buffer, string_length);
 				if (buffer == NULL) {
-					printf ("Reallocation error\n");
+					fprintf (stderr, "Reallocation error\n");
 					return -1;
 				} 
 				fgets (buffer+string_length-BUFFER_SIZE,
@@ -329,9 +346,8 @@ int IniGetKey (FILE * fc, Key * key)
 			{
 				key_length += BUFFER_SIZE;
 				buffer_key = realloc (buffer_key, key_length);
-				printf ("k");
 				if (buffer_key == NULL) {
-					printf ("Reallocation error\n");
+					fprintf (stderr, "Reallocation error\n");
 					return -1;
 				}					
 			}
@@ -342,9 +358,8 @@ int IniGetKey (FILE * fc, Key * key)
 			{
 				value_length += BUFFER_SIZE;
 				buffer_value = realloc (buffer_value, value_length);
-				printf ("v");
 				if (buffer_value == NULL) {
-					printf ("Reallocation error\n");
+					fprintf (stderr, "Reallocation error\n");
 					return -1;
 				}					
 			}
@@ -356,15 +371,16 @@ int IniGetKey (FILE * fc, Key * key)
 			{
 				comment_length += BUFFER_SIZE;
 				buffer_comment = realloc (buffer_comment, comment_length);
-				printf ("c");
 				if (buffer_comment == NULL) {
-					printf ("Reallocation error\n");
+					fprintf (stderr, "Reallocation error\n");
 					return -1;
 				}					
 			}
 		}
 	}
 
+	fprintf (stderr, "Setting key...\n");
+	
 	buffer_value [v] = 0;
 	buffer_key [k] = 0;
 	buffer_comment [c] = 0;	// key eingelesen
@@ -390,6 +406,13 @@ int IniGetKey (FILE * fc, Key * key)
 
 	key->flags &= ~KEY_SWITCH_NEEDSYNC;
 
+	free (buffer);
+	free (buffer_value);
+	free (buffer_key);
+	free (buffer_comment);
+	
+	fprintf (stderr, "done\n");
+	
 	return 0; /* success */
 }
 
@@ -415,33 +438,33 @@ int kdbGetKey_ini(Key *key) {
 	strncpy (keyFullName, key->key, keySize);
 
 	if (! pos) {
-		printf ("Could not receive filename");
+		fprintf (stderr, "Could not receive filename");
 		return -1;
 	}
-	printf ("Get Key %s [%d] in File: %s\n", keyName, keySize, keyFileName);
+	fprintf (stderr, "Get Key %s [%d] in File: %s\n", keyName, keySize, keyFileName);
 
 	fd = open (keyFileName, O_RDONLY);
 	if (fd == -1) {
-		printf ("Unable to open file");
+		fprintf (stderr, "Unable to open file\n");
 		return -1;
 	}
 	
 	if (flock (fd, LOCK_EX) == -1) {
-		printf ("Unable to lock file");
+		fprintf (stderr, "Unable to lock file\n");
 	}
 	
 	fc = fdopen (fd,"r");
 	
 	while ((pos=IniGetKey (fc, key)) == 0)
 	{
-//		printf ("Compare: %s with %s\n", readKey->key, keyName);
+//		fprintf (stderr, "Compare: %s with %s\n", readKey->key, keyName);
 		if (strcmp (key->key, keyName) == 0) {	// right Key found
-			printf ("Key found\n");
+			fprintf (stderr, "Key found\n");
 			if (key->key) free(key->key);
 			key->key = malloc (keySize+1);
 			strncpy (key->key, keyFullName, keySize);
 	
-			printf ("key: %s, value: %s, comment: %s\n", 
+			fprintf (stderr, "key: %s, value: %s, comment: %s\n", 
 				key->key, (char *) key->data, key->comment);
 		
 			
@@ -461,50 +484,83 @@ int kdbGetKey_ini(Key *key) {
 		perror ("Unable to unlock file");
 	}	
 	close (fd); // close filedescriptor
+
+	free (keyFullName);
 	
 	return pos; /* success */
 }
 
 
-
 /**
- * Implementation for kdbSetKey() method.
- *
- * @see kdbSetKey() for expected behavior.
+ * Get out all the keys of a file
+ * 
  * @ingroup backend
  */
-int kdbSetKey_ini(Key *key) {
-	printf ("Set Key in File\n");
+ssize_t kdbGetKeys (char * keyFileName, char * keyName, KeySet * set)
+{
+	Key * key;
+	int pos;
+	size_t keyNameSize;
+	char * keyNewName;
+	size_t keyNewNameSize;
+	FILE * fc; int fd;	// filedescriptor
+	keyNameSize = strlen (keyName);
+
+	fprintf (stderr, "Stepped into kdbGetKeys\n");
+	
+	fd = open (keyFileName, O_RDONLY);
+	if (fd == -1) {
+		fprintf (stderr, "Unable to open file, %s\n", keyFileName);
+		return -1;
+	}
+	
+	if (flock (fd, LOCK_EX) == -1) {
+		fprintf (stderr, "Unable to lock file\n");
+	}
+	
+	fc = fdopen (fd,"r");
+
+	key = malloc (sizeof (Key));
+	keyInit (key);
+	
+	while ((pos=IniGetKey (fc, key)) == 0)
+	{
+		fprintf (stderr, "Left IniGetKey\n");
+		keyNewNameSize = keyNameSize + strlen (key->key) + 1;
+		keyNewName = malloc (keyNewNameSize+1);
+		strncpy (keyNewName, keyName, keyNameSize);
+		keyNewName[keyNameSize] = '/';
+		strncpy (keyNewName+keyNameSize+1, key->key, keyNewNameSize-keyNameSize-1);
+
+		if (key->key) free(key->key);
+		key->key = keyNewName;
+
+		fprintf (stderr, "key: %s, value: %s, comment: %s\n",
+			key->key, (char *) key->data, key->comment);
+		// break;
+
+		fprintf (stderr, "INSERT key...\n");
+		
+		// ksAppend (set,key);
+		//CRASH: for whatever reason???
+		// ksInsert (set, key);
+
+		key = malloc (sizeof (Key));
+		keyInit (key);
+		
+		fprintf (stderr, "... done\n");
+	}
+	
+	keyDel (key); // delete the not used key left
+	free (key);
+	
+	if (flock (fd, LOCK_UN) == -1) {
+		perror ("Unable to unlock file");
+	}	
+	close (fd); // close filedescriptor
+	
 	return 0; /* success */
 }
-
-
-
-/**
- * Implementation for kdbRename() method.
- *
- * @see kdbRename() for expected behavior.
- * @ingroup backend
- */
-int kdbRename_ini(Key *key, const char *newName) {
-	printf ("Give Key a new Name\n");
-	return 0; /* success */
-}
-
-
-
-
-/**
- * Implementation for kdbRemoveKey() method.
- *
- * @see kdbRemove() for expected behavior.
- * @ingroup backend
- */
-int kdbRemoveKey_ini(const Key *key) {
-	printf ("Remove Key from Database\n");
-	return 0;  /* success */
-}
-
 
 
 
@@ -515,9 +571,89 @@ int kdbRemoveKey_ini(const Key *key) {
  * @ingroup backend
  */
 ssize_t kdbGetKeyChildKeys_ini(const Key * key, KeySet *returned, unsigned long options) {
-	printf ("Get many Keys at once\n");	
+	char pathName [MAX_PATH_LENGTH];
+	char fileFullName [MAX_PATH_LENGTH];
+	char * keyName;
+	size_t keyLength;
+	int ret;
+	DIR * dir;
+	struct dirent * filename;
+
+	ret = IniGetName (key, pathName);
+	keyLength= keyGetNameSize (key);
+	keyName = malloc (keyLength);
+	keyGetName (key, keyName, keyLength);
+	
+	if (ret == -1) {
+		fprintf (stderr, "Error, could not get FileName\n");
+		return -1;
+	}
+
+	fprintf (stderr, "Pathname: %s, Keyname: %s\n", pathName, keyName);
+
+	dir = opendir (pathName);
+	
+	while ((filename = readdir (dir)))
+	{
+		if (	strcmp(filename->d_name, ".")  == 0 || 
+			strcmp(filename->d_name, "..") == 0)
+			continue;
+		
+		if (filename->d_name[0] == '.' && !(options & KDB_O_INACTIVE))
+			continue;
+
+		fileFullName[0] = 0;	// delete old Name
+		strncat (fileFullName, pathName, MAX_PATH_LENGTH);
+		strncat (fileFullName, "/", MAX_PATH_LENGTH);
+		strncat (fileFullName, filename->d_name, MAX_PATH_LENGTH);
+		fprintf (stderr, "Getting Keys out of File: %s\n", fileFullName);
+		kdbGetKeys (fileFullName, keyName, returned);
+	}
+
+	closedir (dir);
+
+	free (keyName);
+	
 	return returned->size; /* success */
 }
+
+
+/**
+ * Implementation for kdbSetKey() method.
+ *
+ * @see kdbSetKey() for expected behavior.
+ * @ingroup backend
+ */
+int kdbSetKey_ini(Key *key) {
+	fprintf (stderr, "Set Key in File\n");
+	return 0; /* success */
+}
+
+
+/**
+ * Implementation for kdbRename() method.
+ *
+ * @see kdbRename() for expected behavior.
+ * @ingroup backend
+ */
+int kdbRename_ini(Key *key, const char *newName) {
+	fprintf (stderr, "Give Key a new Name\n");
+	return 0; /* success */
+}
+
+/**
+ * Implementation for kdbRemoveKey() method.
+ *
+ * @see kdbRemove() for expected behavior.
+ * @ingroup backend
+ */
+int kdbRemoveKey_ini(const Key *key) {
+	fprintf (stderr, "Remove Key from Database\n");
+	return 0;  /* success */
+}
+
+
+
 
 
 /**
@@ -531,7 +667,7 @@ ssize_t kdbGetKeyChildKeys_ini(const Key * key, KeySet *returned, unsigned long 
  * @ingroup backend
  */
 int kdbSetKeys_ini(KeySet *ks) {
-	printf ("Set many Keys at once\n");
+	fprintf (stderr, "Set many Keys at once\n");
 	return 0;
 }
 
@@ -546,7 +682,7 @@ int kdbSetKeys_ini(KeySet *ks) {
  */
 u_int32_t kdbMonitorKeys_ini(KeySet *interests, u_int32_t diffMask,
 		unsigned long iterations, unsigned sleep) {
-	printf ("Monitor many Keys at once\n");
+	fprintf (stderr, "Monitor many Keys at once\n");
 	return 0;
 }
 
@@ -563,7 +699,7 @@ u_int32_t kdbMonitorKeys_ini(KeySet *interests, u_int32_t diffMask,
  */
 u_int32_t kdbMonitorKey_ini(Key *interest, u_int32_t diffMask,
 		unsigned long iterations, unsigned sleep) {
-	printf ("Monitor a key\n");
+	fprintf (stderr, "Monitor a key\n");
 	return 0;
 }
 
