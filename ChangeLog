@@ -1,3 +1,6 @@
+* Thu Jul 4 2004 Avi Alkalay <avi@unix.sh> 0.2.7
+- First atempt to workaround the manpage creation when XSL tools are not available.
+
 * Thu Jun 24 2004 Avi Alkalay <avi@unix.sh> 0.2.6
 - Moved responsability of creating dirs in the installation process from spec to Makefile.
 - Detected a problem of manpage creation in other distros, thanks to Tim Witham from OSDL. Not fixed yet.

@@ -27,9 +27,19 @@ $LastChangedBy$
 		
 		&author;
 		
-		<pubdate>0.2.10 :: 2004-06-10</pubdate>
+		<pubdate>2004-06-24</pubdate>
 		
 		<revhistory>
+			<revision>
+				<revnumber>2004-06-24</revnumber>
+				<date>24 Jun 2004</date>
+				<authorinitials>avi</authorinitials>
+				<revdescription>
+					<itemizedlist>
+						<listitem><simpara>Document version is now publication date</simpara></listitem>
+					</itemizedlist>
+				</revdescription>
+			</revision>
 			<revision>
 				<revnumber>0.2.10</revnumber>
 				<date>10 Jun 2004</date>

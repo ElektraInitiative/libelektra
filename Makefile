@@ -74,6 +74,7 @@ commit: clean
 	svn ci registry	
 	
 dist: clean registry.spec
+	make -C doc    # leave mans already generated
 	DIR=`basename \`pwd\``;\
 	PACK=`cat VERSION`;\
 	PACK=registry-$$PACK;\

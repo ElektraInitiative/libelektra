@@ -1,0 +1,6 @@
+Man pages are generated from a DocBook XML using XSLTs from the docbook-style-xsl package (on Fedora), and the xsltproc as the XSLT engine. So rg.1.xml docbook source is converted to the rg.1 man page, for example.
+
+This caused several problems when compiling them in other distros, because of the lack of these tools.
+
+Since version 0.2.7, the compiled man pages are included in the tarball. So unless you 'make clean' globally, you'll be able to 'make; make install' globaly even without these tools.
+
