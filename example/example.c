@@ -2,7 +2,7 @@
 
 To compile this example:
 
-	$ cc -l kdb -o example example.c
+	$ cc -L /lib -l kdb -o example example.c
 
 
 **********************************************************/

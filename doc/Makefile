@@ -26,7 +26,8 @@ example.c:
 	ln -s ../example/example.c .
 
 csource.xml: example.c
-	(echo "<programlisting><![CDATA["; sed -e 's/\&/\&amp\;/g' < example.c; echo "]]></programlisting>") > csource.xml
+	(echo "<programlisting><![CDATA["; cat  example.c; echo "]]></programlisting>") > csource.xml
+	#(echo "<programlisting><![CDATA["; sed -e 's/\&/\&amp\;/g' < example.c; echo "]]></programlisting>") > csource.xml
 
 kdb.1: kdb.1.xml author.xml bestpract.xml rgexample.xml rgcmd.xml
 	xsltproc ${MANSTYLE} $<
