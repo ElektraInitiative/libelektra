@@ -1,3 +1,6 @@
+* Wed Sep 22 2004 Avi Alkalay <avi@unix.sh> 0.4.3
+- Removed kdbOption instantiation from kdb.h
+
 * Sun Sep 12 2004 Avi Alkalay <avi@unix.sh> 0.4.2
 - Fixed a gzip problem in the build system
 - Added ksGetSize() method
