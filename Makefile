@@ -11,14 +11,15 @@ SVNREP=http://germane-software.com/repositories/elektra
 # Default dirs we use for installation, that can be substituted by the
 # command line. See the README file or the RPM spec file.
 BINDIR=/bin
-UBINDIR=/usr/bin
+UDIR=/usr
+UBINDIR=$(UDIR)/bin
 LIBDIR=/lib
-ULIBDIR=/usr/lib
+ULIBDIR=$(UDIR)/lib
 CONFDIR=/etc
-INCDIR=/usr/include
-DOCDIR=/usr/share/doc
-MANDIR=/usr/share/man
-SGMLDIR=/usr/share/sgml
+INCDIR=$(UDIR)/include
+DOCDIR=$(UDIR)/share/doc
+MANDIR=$(UDIR)/share/man
+SGMLDIR=$(UDIR)/share/sgml
 
 
 DIRS=src doc dtd
@@ -27,7 +28,7 @@ DIRS=src doc dtd
 
 
 
-all:
+all: elektra.pc
 	for x in ${DIRS}; do (cd "$$x"; $(MAKE) \
 		OPTIMIZATIONS="${OPTIMIZATIONS}" \
 		DTDVERSION=${DTDVERSION} \
@@ -38,7 +39,7 @@ all:
 
 
 cleanhere:
-	-rm *~ elektra.spec svn-commit*
+	-rm *~ elektra.spec elektra.pc svn-commit*
 	-find . -name "*~" | xargs rm
 
 
@@ -58,7 +59,7 @@ vtag:
 	svn cp ${SVNREP}/trunk ${SVNREP}/tags/$$PACK
 
 
-dist: distclean elektra.spec
+dist: distclean elektra.spec elektra.pc
 	# svn export wont work here...
 	$(MAKE) -C doc docbookman   # leave mans already generated
 	DIR=`basename \`pwd\``;\
@@ -93,12 +94,20 @@ elektra.spec: elektra.spec.in
 	sed -e "s/_VERSION_/$$VERSION/g" < $< > $@ ;\
 	cat ChangeLog >> $@
 
+elektra.pc: elektra.pc.in
+	VERSION=`cat VERSION` ;\
+	PCUDIR=`echo $(UDIR) | sed -e "s,/,\\\/,g"` ;\
+	PCLIBDIR=`echo $(LIBDIR) | sed -e "s,/,\\\/,g"` ;\
+	cat $< | sed -e "s/_VERSION_/$$VERSION/g" |\
+	sed -e "s,_UDIR_,$$PCUDIR,g" |\
+	sed -e "s,_LIBDIR_,$$PCLIBDIR,g" > $@ ;
 
 
 
 install: all
 	[ -d "${DESTDIR}${LIBDIR}" ] || mkdir -p ${DESTDIR}${LIBDIR}
 	[ -d "${DESTDIR}${ULIBDIR}" ] || mkdir -p ${DESTDIR}${ULIBDIR}
+	[ -d "${DESTDIR}${ULIBDIR}/pkgconfig" ] || mkdir -p ${DESTDIR}${ULIBDIR}/pkgconfig
 	[ -d "${DESTDIR}${BINDIR}" ] || mkdir -p ${DESTDIR}${BINDIR}
 	[ -d "${DESTDIR}${INCDIR}" ] || mkdir -p ${DESTDIR}${INCDIR}
 	[ -d "${DESTDIR}${CONFDIR}/profile.d" ] || mkdir -p ${DESTDIR}${CONFDIR}/profile.d
@@ -111,8 +120,9 @@ install: all
 		CONFDIR=${CONFDIR} INCDIR=${INCDIR} $@); done
 	cp scripts/elektraenv ${DESTDIR}${CONFDIR}/profile.d/elektraenv.sh
 	chmod a+x example/*-convert
+	cp elektra.pc ${DESTDIR}${ULIBDIR}/pkgconfig/elektra.pc
 	cp LICENSE ${DESTDIR}${DOCDIR}/${NAME}
 	cp ChangeLog ${DESTDIR}${DOCDIR}/${NAME}
-	cp example/*-convert ${DESTDIR}${DOCDIR}/${NAME}
-	cp example/*.c example/*.xml ${DESTDIR}${DOCDIR}/${NAME}-devel
+	cp example/*-convert example/*.xml ${DESTDIR}${DOCDIR}/${NAME}
+	cp example/*.c ${DESTDIR}${DOCDIR}/${NAME}-devel
 

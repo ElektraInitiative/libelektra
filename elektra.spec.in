@@ -111,6 +111,7 @@ kdb set -t dir system/sw
 %defattr(-,root,root,0755)
 %{_includedir}/*
 %{_libdir}/*.a
+%{_libdir}/pkgconfig/*
 %doc %{_docdir}/%{name}-devel
 %doc %{_mandir}/man3/*
 

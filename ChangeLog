@@ -15,7 +15,8 @@
 - XML export can now supress user domain for 'user/*' keys
 - new keyNewExample.c and lookup.c on example/
 - new example/keyset.xml with example of complex keys, and how they look XML-exported.
-- XML DTD were droped. Now we have XML schemas, thanks to Rémi.
+- XML DTD were droped. Now we have XML schemas, thanks to Rémi <remipouak@yahoo.fr>.
+- pkgconfig support, thanks to Pier Luigi Fiorini <pierluigi.fiorini@mockup.org>
 
 * Fri Nov 28 2004 Avi Alkalay <avi@unix.sh> 0.4.7
 - Better BuildPrereq in spec file
