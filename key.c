@@ -1319,20 +1319,20 @@ u_int32_t keyCompare(Key *key1, Key *key2) {
  * Prints an XML version of the key.
  *
  * String generated is of the form:
- *
- *	\<key id="123445" uid="root" gid="root" mode="0660"
- *		atime="123456" ctime="123456" mtime="123456"
- *	
- *		name="system/sw/XFree/Monitor/Monitor0/Name"
- *		type="string">
- *		
- *		\<value>Samsung TFT panel\</value>
- *		\<comment>My monitor\</comment>
- *	\</key>
- *
- * Accepted options:
- * - RG_O_NUMBERS: Do not convert UID and GID into user and group names
- * - RG_O_CONDENSED: Less human readable, more condensed output
+ * @verbatim
+	<key id="123445" uid="root" gid="root" mode="0660"
+		atime="123456" ctime="123456" mtime="123456"
+	
+		name="system/sw/XFree/Monitor/Monitor0/Name"
+		type="string">
+		
+		<value>Samsung TFT panel\</value>
+		<comment>My monitor\</comment>
+	</key>@endverbatim
+	
+ * Accepted options that can be ORed:
+ * - \c RG_O_NUMBERS: Do not convert UID and GID into user and group names
+ * - \c RG_O_CONDENSED: Less human readable, more condensed output
  *
  * @param stream where to write output: a file or stdout
  * @param options ORed of RG_O_* options
@@ -1628,7 +1628,7 @@ size_t keyGetSerializedSize(Key *key) {
 /**
  * Check whether a key name is under the system namespace or not
  *
- * @return 1 if string begins with "system", 0 otherwise
+ * @return 1 if string begins with \c system , 0 otherwise
  * @param keyName the name of a key
  * @see keyIsSystem()
  * @see keyIsUser()
@@ -1647,7 +1647,7 @@ int keyNameIsSystem(char *keyName) {
 /**
  * Check whether a key name is under the user namespace or not
  *
- * @return 1 if string begins with "user", 0 otherwise
+ * @return 1 if string begins with \c user, 0 otherwise
  * @param keyName the name of a key
  * @see keyIsSystem()
  * @see keyIsUser()
@@ -1667,7 +1667,7 @@ int keyNameIsUser(char *keyName) {
 /**
  * Check whether a key is under the system namespace or not
  *
- * @return 1 if key name begins with "system", 0 otherwise
+ * @return 1 if key name begins with \c system, 0 otherwise
  * @see keyNameIsSystem()
  * @see keyIsUser()
  * @see keyNameIsUser()

@@ -1,15 +1,15 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <!DOCTYPE KDevPrjSession>
 <KDevPrjSession>
- <DocsAndViews NumberOfDocuments="5" >
+ <DocsAndViews NumberOfDocuments="6" >
   <Doc0 NumberOfViews="1" URL="file:/home/aviram/src/registry/key.c" >
-   <View0 line="1067" Type="???" >
-    <AdditionalSettings Top="2" Width="729" Attach="1" Height="384" Left="2" MinMaxMode="0" />
+   <View0 line="1771" Type="???" >
+    <AdditionalSettings Top="2" Width="825" Attach="1" Height="432" Left="2" MinMaxMode="0" />
    </View0>
   </Doc0>
   <Doc1 NumberOfViews="1" URL="file:/home/aviram/src/registry/registry.h" >
-   <View0 line="291" Type="???" >
-    <AdditionalSettings Top="2" Width="727" Attach="1" Height="392" Left="2" MinMaxMode="0" />
+   <View0 line="240" Type="???" >
+    <AdditionalSettings Top="2" Width="823" Attach="1" Height="432" Left="2" MinMaxMode="0" />
    </View0>
   </Doc1>
   <Doc2 NumberOfViews="1" URL="file:/home/aviram/src/registry/rg.c" >
@@ -23,10 +23,15 @@
    </View0>
   </Doc3>
   <Doc4 NumberOfViews="1" URL="file:/home/aviram/src/registry/localregistry.c" >
-   <View0 line="709" Type="???" >
-    <AdditionalSettings Top="2" Width="823" Attach="1" Height="195" Left="2" MinMaxMode="0" />
+   <View0 line="955" Type="???" >
+    <AdditionalSettings Top="2" Width="825" Attach="1" Height="432" Left="2" MinMaxMode="0" />
    </View0>
   </Doc4>
+  <Doc5 NumberOfViews="1" URL="file:/home/aviram/src/registry/Doxyfile" >
+   <View0 line="285" Type="???" >
+    <AdditionalSettings Top="2" Width="823" Attach="1" Height="432" Left="2" MinMaxMode="0" />
+   </View0>
+  </Doc5>
  </DocsAndViews>
  <pluginList>
   <kdevbookmarks>

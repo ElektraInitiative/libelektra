@@ -934,7 +934,27 @@ int keyCompareByName(const void *p1, const void *p2) {
  * Returns a KeySet with all retrieved keys. So if your application keys
  * live bellow system/sw/myApp, you'll use this method to get them all.
  *
- *
+ * Option can be any of the following, ORed:
+ * - \c RG_O_RECURSIVE \n
+ *   Retrieve also the keys under the child keys, recursively.
+ *   The rg(1) ls command, with switch -R uses this option.
+ * - \c RG_O_DIR \n
+ *   By default, folder keys will not be returned because they don't have 
+ *   values and exist only to define hierarchy. Use this option if you need 
+ *   them to be included in the returned KeySet. 
+ * - \c RG_O_NOVALUE \n
+ *   Do not include in returned the regular value keys. The resulting KeySet
+ *   will be only the skeleton of the tree. 
+ * - \c RG_O_STATONLY \n
+ *   Only stat(2) the keys; do not retrieve the value, comment and key data
+ *   type. The resulting keys will be empty and usefull only for 
+ *   informational purposes. The rg(1) ls command, without the -v switch 
+ *   uses this option. 
+ * - \c RG_O_INACTIVE \n
+ *   Will make it not ignore inactive keys. So returned will be filled also 
+ *   with inactive keys. See registry(7) to understand how inactive keys work.
+ * - \c RG_O_SORT \n
+ *   Will sort keys alphabetically by their names. 
  *
  * @param parentName name of the parent key
  * @param returned the KeySet returned with all keys found
