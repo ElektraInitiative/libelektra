@@ -32,7 +32,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 The doctype with FPI for this DTD is:
 
 <!DOCTYPE keyset PUBLIC "-//Avi Alkalay//DTD Elektra 0.1.0//EN"
-                   "http://registry.sf.net/dtd/elektra.dtd">
+                   "http://elektra.sf.net/dtd/elektra.dtd">
 
 -->
 

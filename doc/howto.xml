@@ -311,7 +311,7 @@ $LastChangedBy$
 				<listitem><simpara><ulink url="https://lists.sourceforge.net/lists/listinfo/registry-list">Subscribe to general discussions list</ulink> or <ulink url="http://sourceforge.net/mailarchive/forum.php?forum=registry-list">see the list archives</ulink></simpara></listitem>
 			</itemizedlist>
 		</para>
-		<para>There is an <ulink url="elektra.sxi">OpenOffice.org presentation</ulink> [<ulink url="presentation/elektra.html">HTML</ulink>] that anybody can deliver in community events, to help create awareness about the Elektra Project.</para>
+		<para>There is an <ulink url="elektra.sxi">OpenOffice.org presentation</ulink> [<ulink url="presentation/elektra.html">HTML without animations</ulink>] that anybody can deliver in community events, to help create awareness about the Elektra Project.</para>
 		<para>To get the last snapshot from Subversion do the following:
 			<screen><prompt>bash:~$</prompt> <command>cd src</command>
 <prompt>bash:~/src$</prompt> <command>svn co http://germane-software.com/repositories/tlr/trunk elektra</command>
