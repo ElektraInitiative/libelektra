@@ -66,6 +66,7 @@ $LastChangedBy$
 #define ARGSIZE      30
 
 char *argComment=0;
+char *argFile=0;
 char *argData=0;
 char *argKeyName=0;
 char *argDomain=0;
@@ -96,7 +97,7 @@ int parseCommandLine(int argc, char *argv[]) {
 
 	*sargType=*argUser=*argGroup=*sargCommand=*sargMode=0;
 
-	while ((opt=getopt(argc,argv,"-t:c:u:g:m:raflvRdxsi"))!=-1) {
+	while ((opt=getopt(argc,argv,"-t:c:u:g:m:b:raflvRdxsi"))!=-1) {
 		switch (opt) {
 			case 't':
 				strncpy(sargType,optarg,ARGSIZE);
@@ -104,6 +105,10 @@ int parseCommandLine(int argc, char *argv[]) {
 			case 'c':
 				argComment=realloc(argComment,strlen(optarg)+1);
 				strcpy(argComment,optarg);
+				break;
+			case 'b':
+				argFile=realloc(argFile,strlen(optarg)+1);
+				strcpy(argFile,optarg);
 				break;
 			case 'u':
 				strncpy(argUser,optarg,ARGSIZE);
@@ -427,11 +432,13 @@ int commandRemove() {
  * @param argUID UID to be set to sey
  * @param argGID GID to be set to sey
  * @param argData the value to the key
+ * @param argFile a filename to use as the input for the value
  */
 int commandSet() {
 	Key key;
 	int ret;
 	char error[200];
+	size_t offset=0;
 
 
 	/* Consistency */
@@ -456,6 +463,28 @@ int commandSet() {
 
 	if (argMode) keySetAccess(&key,argMode);
 
+	if (argFile) {
+		FILE *f;
+		
+		if (argData) free(argData);
+		f=fopen(argFile,"r");
+		
+		if (!f) {
+			sprintf(error,"kdb set: %s",argFile);
+			perror(error);
+		}
+		while (! feof(f)) {
+			char buffer[100];
+			size_t r;
+			
+			r=fread(buffer,sizeof(buffer),1,f);
+			argData=realloc(argData,offset+r);
+			memcpy(argData+offset,buffer,r);
+			offset+=r;
+		}
+		fclose(f);
+	}
+	
 	switch (argType) {
 		case KEY_TYPE_DIR: keySetType(&key,KEY_TYPE_DIR);
 			break;
@@ -463,7 +492,10 @@ int commandSet() {
 			if (argData) keySetString(&key,argData);
 			break;
 		case KEY_TYPE_BINARY:
-			if (argData) keySetBinary(&key,argData,strblen(argData));
+			if (argData) {
+				if (offset) keySetBinary(&key,argData,offset);
+				else keySetBinary(&key,argData,strblen(argData));
+			}
 			break;
 		case KEY_TYPE_LINK: keySetLink(&key,argData);
 			break;
@@ -717,8 +749,7 @@ int commandGet() {
 	}
 
 
-	if ((keyType=keyGetType(&key))<KEY_TYPE_STRING) p=buffer=malloc(size+1);
-	else p=buffer=malloc(size);
+	p=buffer=malloc(size);
 
 
 	if (argDescriptive) {
@@ -744,11 +775,10 @@ int commandGet() {
 		*--p='\"'; p++;
 		*p=0;
 	}
-	if (keyType<KEY_TYPE_STRING) {
-		*p=0;
-	}
+	if (keyType<KEY_TYPE_STRING) fwrite(buffer,size,1,stdout);
+	else printf("%s\n",buffer);
 
-	printf("%s\n",buffer);
+
 	free(buffer);
 
 	return 0;

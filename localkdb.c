@@ -172,8 +172,6 @@ size_t keyGetSerializedSize(const Key *key) {
 /**
  * Unencodes a buffer of hexadecimal values.
  *
- * <b>internal usage only-</b>
- *
  * The allowed format for the hexadecimal values is just
  * a stream of pairs of plain hex-digits, all together or
  * space-separated.
@@ -588,7 +586,7 @@ size_t encode(void *unencoded, size_t size, char *returned) {
 	int currentInLine=0;
 
 	while ((readCursor-unencoded)<size) {
-		sprintf(writeCursor,"%01x",*(u_int8_t *)readCursor);
+		sprintf(writeCursor,"%02x",*(u_int8_t *)readCursor);
 		readCursor++;
 		writeCursor+=2;
 		currentInBlock++;
