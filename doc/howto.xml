@@ -426,11 +426,12 @@ $LastChangedBy$
 		<section id="man"><title>Online Manual Pages and API Documentation</title>
 			<para>Elektra man pages can be accessed online:</para>
 			<orderedlist>
-				<listitem><simpara><ulink url="kdb.3.html">kdb.3</ulink>: C API documentation for the KeyDB class.</simpara></listitem>
-				<listitem><simpara><ulink url="key.3.html">key.3</ulink>: C API documentation for the Key and KeySet class.</simpara></listitem>
 				<listitem><simpara><ulink url="kdb.1.html">kdb.1</ulink>: The <command>kdb</command> command man page. Describes the usage of the command used to administer Elektra's key database. You don't need it if you are already reading this.</simpara></listitem>
 				<listitem><simpara><ulink url="elektra.7.html">elektra.7</ulink>: Discussion about what is the Elektra Project etc. You don't need it if you are already reading this.</simpara></listitem>
 				<listitem><simpara><ulink url="elektra.5.html">elektra.5</ulink>: Elektra internals.</simpara></listitem>
+				<listitem><simpara><ulink url="kdb.3.html">kdb.3</ulink>: C API documentation for the KeyDB class. <ulink url="elektra-api/html/group__kdb.html">Browse the doxygen</ulink> instead.</simpara></listitem>
+				<listitem><simpara><ulink url="key.3.html">key.3</ulink>: C API documentation for the Key class. <ulink url="elektra-api/html/group__key.html">Browse the doxygen</ulink> instead.</simpara></listitem>
+				<listitem><simpara><ulink url="keyset.3.html">keyset.3</ulink>: C API documentation for the KeySet class. <ulink url="elektra-api/html/group__keyset.html">Browse the doxygen</ulink> instead.</simpara></listitem>
 			</orderedlist>
 			<para>You can also <ulink url="elektra-api/html/index.html">browse</ulink> or <ulink url="elektra-api.tar.gz">download</ulink> the API documentation (also provided in the <ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628">-devel RPM</ulink>), by Doxygen. It is complete, with many code examples.</para>
 		</section>
