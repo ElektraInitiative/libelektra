@@ -53,6 +53,8 @@ $LastChangedBy$
 #include <libxml/xmlreader.h>
 #include <libxml/xmlschemas.h>
 
+#define KDB_SCHEMA_PATH   "system/sw/kdb/current/schemapath"
+
 
 #define CMD_GET       1
 #define CMD_SET       2
@@ -1062,18 +1064,26 @@ int ksFromXMLReader(KeySet *ks,xmlTextReaderPtr reader) {
 int ksFromXMLfile(KeySet *ks,char *filename) {
 	xmlTextReaderPtr reader;
 	int ret;
-
+	char schema_path[513];
 	
 	xmlSchemaValidCtxtPtr ctxt;
 	xmlSchemaPtr wxschemas = NULL;
-	xmlSchemaParserCtxtPtr ctxt2;
+	xmlSchemaParserCtxtPtr ctxt2=NULL;
 	xmlDocPtr doc;
 
 	doc = xmlParseFile(filename);
 	if (doc==NULL) return 1;
 
-	//TODO : get the schema path from with elektra api. kdb is like any other program, its config should go into elektra...
-	ctxt2 = xmlSchemaNewParserCtxt("/usr/share/sgml/elektra-0.1.0/elektra.xsd");
+	// get the schema path from elektra . kdb is like any other program, its config should go into elektra...
+	/* Open the kdb to get the xml schema path*/
+	kdbOpen();
+	ret=kdbGetValue(KDB_SCHEMA_PATH,schema_path,512);
+	if (ret==0)
+		{
+		ctxt2 = xmlSchemaNewParserCtxt(schema_path);
+		}
+	kdbClose();
+
 	
 	if (ctxt2==NULL) 
 		{
