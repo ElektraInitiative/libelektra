@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE project-listing SYSTEM "http://freshmeat.net/backend/fm-projects-0.4.dtd">
+<project-listing>
+  <project>
+    <project_id>45092</project_id>
+    <date_added>2004-02-25 12:43:19</date_added>
+    <date_updated>2004-11-02 05:41:10</date_updated>
+    <projectname_short>elektra</projectname_short>
+    <projectname_full>Elektra Project</projectname_full>
+    <desc_short>A key-value pair framework for storing configurations.</desc_short>
+    <desc_full>Elektra (formerly Linux Registry) provides a
+universal and secure framework to store
+configuration parameters in a hierarchical
+key-value pair mechanism, instead of each program
+using its own text configuration files. This
+allows any program to read and save its
+configuration with a consistent API, and allows
+them to be aware of other applications'
+configurations, permitting easy application
+integration. While architecturally similar to
+other OS registries, Elektra does not have most of
+the problems found in those implementations.
+</desc_full>
+    <vitality_score>132.32</vitality_score>
+    <vitality_percent>0.09</vitality_percent>
+    <vitality_rank>2226</vitality_rank>
+    <popularity_score>1276.34</popularity_score>
+    <popularity_percent>2.66</popularity_percent>
+    <popularity_rank>1392</popularity_rank>
+    <rating>7.24</rating>
+    <rating_count>10</rating_count>
+    <rating_rank>272</rating_rank>
+    <subscriptions>73</subscriptions>
+    <branch_name>Default</branch_name>
+    <url_project_page>http://freshmeat.net/projects/elektra/</url_project_page>
+    <url_homepage>http://freshmeat.net/redir/elektra/48188/url_homepage/</url_homepage>
+    <url_tgz>http://freshmeat.net/redir/elektra/48188/url_tgz/</url_tgz>
+    <url_bz2></url_bz2>
+    <url_zip></url_zip>
+    <url_changelog></url_changelog>
+    <url_rpm>http://freshmeat.net/redir/elektra/48188/url_rpm/</url_rpm>
+    <url_deb></url_deb>
+    <url_osx></url_osx>
+    <url_bsdport></url_bsdport>
+    <url_purchase></url_purchase>
+    <url_cvs></url_cvs>
+    <url_list>http://freshmeat.net/redir/elektra/48188/url_list/</url_list>
+    <url_mirror></url_mirror>
+    <url_demo></url_demo>
+    <license>BSD License (revised)</license>
+    <latest_release>
+      <latest_release_version>0.4.5</latest_release_version>
+      <latest_release_id>177735</latest_release_id>
+      <latest_release_date>2004-11-02 05:41:10</latest_release_date>
+    </latest_release>
+    <screenshot_thumb>http://download.freshmeat.net/screenshots/45092_thumb.png</screenshot_thumb>
+    <authors>
+      <author>
+        <author_name>Avi Alkalay</author_name>
+        <author_url>http://freshmeat.net/~aviram/</author_url>
+        <author_role>Owner</author_role>
+      </author>
+    </authors>
+    <descriminators>
+      <trove_id>15</trove_id>
+      <trove_id>45</trove_id>
+      <trove_id>810</trove_id>
+      <trove_id>147</trove_id>
+      <trove_id>253</trove_id>
+      <trove_id>4</trove_id>
+      <trove_id>233</trove_id>
+      <trove_id>3</trove_id>
+      <trove_id>200</trove_id>
+      <trove_id>201</trove_id>
+      <trove_id>164</trove_id>
+      <trove_id>1023</trove_id>
+      <trove_id>11</trove_id>
+      <trove_id>178</trove_id>
+      <trove_id>835</trove_id>
+      <trove_id>185</trove_id>
+      <trove_id>1089</trove_id>
+      <trove_id>165</trove_id>
+      <trove_id>912</trove_id>
+      <trove_id>955</trove_id>
+      <trove_id>809</trove_id>
+      <trove_id>136</trove_id>
+    </descriminators>
+    <dependencies>
+    </dependencies>
+  </project>
+</project-listing>
