@@ -27,9 +27,19 @@ $LastChangedBy$
 		
 		&author;
 		
-		<pubdate>2004-07-25</pubdate>
+		<pubdate>2004-07-27</pubdate>
 		
 		<revhistory>
+			<revision>
+				<revnumber>2004-07-27</revnumber>
+				<date>27 Jul 2004</date>
+				<authorinitials>avi</authorinitials>
+				<revdescription>
+					<itemizedlist>
+						<listitem><simpara>Added screenshot of regedit</simpara></listitem>
+					</itemizedlist>
+				</revdescription>
+			</revision>
 			<revision>
 				<revnumber>2004-07-25</revnumber>
 				<date>25 Jul 2004</date>
@@ -341,6 +351,9 @@ $LastChangedBy$
 		<section id="edit"><title>Easily Editing Keys in the Registry</title>
 			<para>The <command>rg edit</command> command provides an easy way to edit a group of keys using your prefered editor. It will dump the selected keys into an XML representation, and run the editor to let the user edit them. After user modifications, it will update, remove or include the keys based on the modified XML file. This real screenshot shows me using <command>kedit</command> to modify the XFree configuration keys related to the monitor.</para>
 			<graphic srccredit="rg edit" fileref="images/rgedit.png" label="rg edit command" align="center"/>
+			<para>Or you can use Gregor Burger's regedit GUI to edit keys very easily. Here is a screenshot editing the same above key.</para>
+			<graphic srccredit="regedit" fileref="images/regedit1.png" label="regedit" align="center"/>
+			
 		</section>
 	</section>
 
