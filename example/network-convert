@@ -20,7 +20,7 @@
 ########################################################################
 
 
-[ -z "$RG" ] && RG="rg"
+[ -z "$RG" ] && RG="kdb"
 [ -z "$ROOT" ] && ROOT="system"
 
 PROFILES_HOME="/etc/sysconfig/networking/profiles"

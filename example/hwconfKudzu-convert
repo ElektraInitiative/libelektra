@@ -32,7 +32,7 @@
 
 $HWFILE="/etc/sysconfig/hwconf";
 $ROOT="system/hw";
-$RG="rg";
+$RG="kdb";
 
 
 
