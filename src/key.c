@@ -1242,7 +1242,7 @@ size_t keyGetBaseNameSize(const Key *key) {
  * @param returned a pre-allocated buffer to store the basename
  * @param maxSize size of the @p returned buffer
  * @return number of bytes copied to @p returned, or 0 and @p errno is set
- * @see keyGetBaseNameSize()
+ * @see keyStealBaseName(), keyGetBaseNameSize()
  * @ingroup keyname
  */
 size_t keyGetBaseName(const Key *key, char *returned, size_t maxSize) {
@@ -1276,6 +1276,21 @@ size_t keyGetBaseName(const Key *key, char *returned, size_t maxSize) {
 }
 
 
+/**
+ * Returns a pointer to the real internal key name where the basename starts.
+ * 
+ * This is a much more efficient version of keyGetBaseName() and you should
+ * use it if you are responsible enough to not mess up things.
+ * @param key the object to obtain the basename from
+ * @see keyGetBaseName(), keyGetBaseNameSize()
+ * @ingroup keyname
+ */
+char *keyStealBaseName(const Key *key) {
+	char *end=strrchr(key->key,RG_KEY_DELIM);
+	
+	if (end) return end++;
+	else return 0;
+}
 
 
 /******************************************* 

@@ -462,6 +462,7 @@ size_t keyGetRootName(const Key *key, char *returned, size_t maxSize);
 size_t keyGetFullRootName(const Key *key, char *returned, size_t maxSize);
 
 size_t keyGetBaseName(const Key *key, char *returned, size_t maxSize);
+char *keyStealBaseName(const Key *key);
 size_t keyNameGetBaseNameSize(const char *keyName);
 size_t keyGetBaseNameSize(const Key *key);
 size_t keyAddBaseName(Key *key,const char *baseName);
