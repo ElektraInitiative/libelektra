@@ -1,7 +1,7 @@
 #!/bin/sh
 
-$Id$
-$LastChangedBy$
+# $Id$
+# $LastChangedBy$
 
 ROOT="user/bench"
 LEVELS=4
