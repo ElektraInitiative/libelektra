@@ -582,8 +582,6 @@ $LastChangedBy$
 				<listitem><simpara>Perl</simpara></listitem>
 				<listitem><simpara>C++ with real classes</simpara></listitem>
 				<listitem><simpara>Better Java support</simpara></listitem>
-				<listitem><simpara>Convert the <ulink url="dtd/">XML DTD</ulink> to XML Schema.</simpara></listitem>
-				
 			</orderedlist>
 		</section>
 	</section>
