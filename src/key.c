@@ -122,7 +122,7 @@ size_t strblen(const char *s) {
  * - @p KEY_SWITCH_UID, @p KEY_SWITCH_GID \n
  *   Next parametkeySetRawer is taken as the UID (uid_t) or GID (gid_t) that will
  *   be defined on the key. See keySetUID() and keySetGID().
- * - @p KEY_SWITCH_PRM \n
+ * - @p KEY_SWITCH_MODE \n
  *   Next parameter is taken as access permissions (mode_t) to the key.
  *   See keySetAccess().
  * - @p KEY_SWITCH_DOMAIN \n
@@ -138,7 +138,7 @@ size_t strblen(const char *s) {
  *   was unssuccessful, you'll still have a valid, but flaged, key.
  *   Check with keyGetFlag(), and @p errno. You will have to kdbOpen()
  *   before using keyNew() with this tag.
- * - KEY_SWITCH_END \n
+ * - @p KEY_SWITCH_END \n
  *   Must be the last parameter passed to keyNew(). It is allways
  *   required, unless the @p keyName is NULL too.
  *   
@@ -153,38 +153,38 @@ ksAppend(ks,keyNew(0));     // an empty key
 ksAppend(ks,keyNew("user/sw",              // a simple key
 	KEY_SWITCH_END));                      // no more args
 	
-ksAppend(&ks,keyNew("system/sw",
+ksAppend(ks,keyNew("system/sw",
 	KEY_SWITCH_NEEDSYNC,                   // a key retrieved from storage
 	KEY_SWITCH_END));                      // end of args               
 	
-ksAppend(&ks,keyNew("user/tmp/ex1",
+ksAppend(ks,keyNew("user/tmp/ex1",
 	KEY_SWITCH_VALUE,"some data",          // with a simple value
 	KEY_SWITCH_END));                      // end of args
 	
-ksAppend(&ks,keyNew("user/tmp/ex2",
+ksAppend(ks,keyNew("user/tmp/ex2",
 	KEY_SWITCH_VALUE,"some data",          // with a simple value
-	KEY_SWITCH_PRM,0777,                   // permissions
+	KEY_SWITCH_MODE,0777,                  // permissions
 	KEY_SWITCH_END));                      // end of args
 	
-ksAppend(&ks,keyNew("user/tmp/ex3",
+ksAppend(ks,keyNew("user/tmp/ex3",
 	KEY_SWITCH_TYPE,KEY_TYPE_LINK,         // only type
 	KEY_SWITCH_VALUE,"system/mtp/x",       // link destination
-	KEY_SWITCH_PRM,0654,                   // weird permissions
+	KEY_SWITCH_MODE,0654,                  // weird permissions
 	KEY_SWITCH_END));                      // end of args
 	
-ksAppend(&ks,keyNew("user/tmp/ex4",
-	KEY_SWITCH_TYPE,KEY_TYPE_BINARY,7,     // type and value size
-	KEY_SWITCH_COMMENT,"value is truncated",
+ksAppend(ks,keyNew("user/tmp/ex4",
+	KEY_SWITCH_TYPE,KEY_TYPE_BINARY,7      // key type and value size (because it is binary)
 	KEY_SWITCH_DOMAIN,"root",              // owner (not uid) is root
 	KEY_SWITCH_VALUE,"some data",          // value that will be truncated
+	KEY_SWITCH_COMMENT,"value is truncated",
 	KEY_SWITCH_UID,0,                      // root uid
 	KEY_SWITCH_END));                      // end of args
 	
-ksAppend(&ks,keyNew("user/env/alias/ls",   // a key we know we have
+ksAppend(ks,keyNew("user/env/alias/ls",    // a key we know we have
 	KEY_SWITCH_NEEDSYNC,                   // retrieve from storage
 	KEY_SWITCH_END));                      // do nothing more
 	
-ksAppend(&ks,keyNew("user/env/alias/ls",   // same key
+ksAppend(ks,keyNew("user/env/alias/ls",    // same key
 	KEY_SWITCH_NEEDSYNC,                   // retrieve from storage
 	KEY_SWITCH_DOMAIN,"root",              // set new owner (not uid) as root
 	KEY_SWITCH_COMMENT,"new comment",      // set new comment
@@ -204,6 +204,7 @@ Key *keyNew(const char *keyName, ...) {
 	Key *key;
 	u_int32_t action=0;
 	u_int8_t keyType=KEY_TYPE_UNDEFINED;
+	u_int8_t keyTypeBinary=0; /* a boolean shortcut */
 	size_t valueSize=0;
 	
 	key=(Key *)malloc(sizeof(Key));
@@ -228,10 +229,8 @@ Key *keyNew(const char *keyName, ...) {
 					/* First is the type */
 					keyType=(u_int8_t)va_arg(va,unsigned int);
 					
-					if (keyType < KEY_TYPE_STRING && 
-							keyType >= KEY_TYPE_BINARY)
-						/* Second parameter is needed and is the valueSize */
-						valueSize=va_arg(va,size_t);
+					keyTypeBinary=(KEY_TYPE_BINARY <= keyType &&
+						keyType < KEY_TYPE_STRING);
 					
 					keySetType(key,keyType);
 					
@@ -240,21 +239,18 @@ Key *keyNew(const char *keyName, ...) {
 					if (keyType == KEY_TYPE_UNDEFINED)
 						keyType=KEY_TYPE_STRING;
 
-					
-					if (keyType >= KEY_TYPE_STRING || 
-							keyType < KEY_TYPE_BINARY) /* most popular cases */
+					if (!keyTypeBinary) {
+						/* most popular cases */
 						keySetString(key,va_arg(va,char *));
-					else if (keyType < KEY_TYPE_STRING && 
-							keyType >= KEY_TYPE_BINARY) /* binary types */
-						keySetRaw(key,va_arg(va,void *),valueSize);
-
-					
-					if (keyType > KEY_TYPE_STRING ||
-							keyType < KEY_TYPE_BINARY)
 						/* reset the type due to the
 						 * above keySetString override */
 						keySetType(key,keyType);
-					
+					} else {
+						/* Binary val: we need first the size of the value */
+						valueSize=va_arg(va,size_t);
+						keySetRaw(key,va_arg(va,void *),valueSize);
+					}
+
 					break;
 				case KEY_SWITCH_UID:
 					keySetUID(key,va_arg(va,uid_t));
@@ -262,7 +258,7 @@ Key *keyNew(const char *keyName, ...) {
 				case KEY_SWITCH_GID:
 					keySetUID(key,va_arg(va,gid_t));
 					break;
-				case KEY_SWITCH_PRM:
+				case KEY_SWITCH_MODE:
 					keySetAccess(key,va_arg(va,mode_t));
 					break;
 				case KEY_SWITCH_DOMAIN:
@@ -312,79 +308,6 @@ int keyFree(Key *key) {
 }
  
  
- 
- 
- 
-/**
- * Initializes a previously allocated Key object.
- *
- * You'll find the keyNew() function more usefull and straight forward
- * than keyInit().
- * 
- * Every Key object that will be used must be initialized first, to setup
- * pointers, counters, etc.
- * 
- * @par Example
- * @code
-Key *key=keyNew("system/some/key",KEY_SWITCH_END);
-
-// Do something with the key....
-
-// Now reuse the memory allocated by keyNew()
-keyClose(key);  // free all internal attributes first
-keyInit(key);   // reinitialize it
-// do something with key...
-keyClose(key);
-free(key);
- * @endcode
- * 
- * @see keyNew()
- * @see keyDel()
- * @see keyClose()
- */
-int keyInit(Key *key) {
-	if (!key) return errno=KDB_RET_NULLKEY;
-
-	memset(key,0,sizeof(Key));
-	key->type=KEY_TYPE_UNDEFINED;
-	key->uid=getuid();
-	key->gid=getgid();
-	key->access=umask(0); umask(key->access);
-	key->access=DEFFILEMODE & ~key->access;
-
-	key->flags |= KEY_SWITCH_INITIALIZED | KEY_SWITCH_ACTIVE;
-
-	return 0;
-}
-
-
-
-
-/**
- * Finishes the usage of a Key object.
- *
- * Frees all internally allocated memory, and leave the Key object
- * ready to be keyInit()ed to reuse, or deallocated.
- * 
- * @see keyInit() for usage example
- * @see keyNew() as a more usefull function
- * @see keyDel()
- */
-int keyClose(Key *key) {
-	if (!key) return errno=KDB_RET_NULLKEY;
-	if (!keyIsInitialized(key)) return 0;
-
-	free(key->key);
-	free(key->data);
-	free(key->comment);
-	free(key->userDomain);
-	memset(key,0,sizeof(Key));
-	return 0;
-}
-
-
-
-
 
 
 
@@ -393,7 +316,8 @@ int keyClose(Key *key) {
  *
  * It is more or less reliable.
  * You'd better guarantee your code is robust enough using
- * keyInit() and keyClose() everytime.
+ * keyNew() and keyDel() everytime.
+ * 
  * @see keyInit()
  * @see keyClose()
  */
@@ -403,294 +327,9 @@ int keyIsInitialized(const Key *key) {
 }
 
 
-
-/**
- * Test if an in-memory Key object was changed after retrieved from disk.
- * All Key methods that change objects properties will set an internal flag,
- * that is checked by this method.
- *
- * @return 1 if the key was changed, 0 otherwise.
- */
-int keyNeedsSync(const Key *key) {
-	if (!key) return 0;
-	return (key->flags & KEY_SWITCH_NEEDSYNC);
-}
-
-
-
-/**
- * Returns the key data type.
- *
- * @see keySetType()
- * @see KeyType
- * @return the key type
- *
- */
-u_int8_t keyGetType(const Key *key) {
-	if (!key || !keyIsInitialized(key)) {
-		errno=KDB_RET_UNINITIALIZED;
-		return KEY_TYPE_UNDEFINED;
-	}
-
-	return key->type;
-}
-
-
-/**
- * Force a key type. See the @e "enum KeyType" documentation to
- * understand the concepts behind Elektra key's value types. 
- *
- * This method is usually not needed, unless you are working with more
- * semantic value types, or want to force a specific value type for a key.
- * It is not usually needed because the data type is automatically set
- * when setting the key value.
- *
- * The @p KEY_TYPE_DIR is the only type that has no value, so when
- * using this method to set to this type, the key value will be freed.
- *
- * @par Example:
- * @code
-#define KEY_TYPE_COLOR KEY_TYPE_STRING+4
-
-Key *color1;
-Key *color2;
-
-// Set color1 key
-color1=keyNew("user/sw/MyApp/colors/someColor",
-	KEY_SWITCH_TYPE,KEY_TYPE_COLOR,
-	KEY_SWITCH_VALUE,"#4B52CA",
-	KEY_SWITCH_COMMENT,"a custom color",
-	KEY_SWITCH_END);
-
-// Set color2 key
-color2=keyNew("system/sw/MyApp/colors/green",
-	KEY_SWITCH_TYPE,KEY_TYPE_COLOR,
-	KEY_SWITCH_VALUE,"green",
-	KEY_SWITCH_COMMENT,"the green color",
-	KEY_SWITCH_END);
-
-// Start affairs with Key database
-kdbOpen();
-
-// Commit the keys
-kdbSetKey(color1);
-kdbSetKey(color2);
-
-// Reset memory related to our structures to reuse them later
-keyClose(color1);
-keyClose(color2);
-
-// Retrieve keys from the database
-keySetName(color1,"user/sw/MyApp/colors/someColor");
-kdbGetKey(color1);
-
-keySetName(color2,"system/sw/MyApp/colors/green");
-kdbGetKey(color2);
-
-// End of the affairs with Key database by now
-kdbClose();
-
-// Get the key types, which should be our user-defined KEY_TYPE_COLOR
-u_int8_t tcolor1=keyGetType(color1);
-u_int8_t tcolor2=keyGetType(color2);
-
-keyDel(color1);
-keyDel(color2);
- * @endcode
- *
- * @see keyGetType()
- * @see KeyType
- * @return the new type
- *
- */
-u_int8_t keySetType(Key *key,u_int8_t newType) {
-	mode_t dirSwitch=0111;
-
-	if (!key) {
-		errno=KDB_RET_UNINITIALIZED;
-		return KEY_TYPE_UNDEFINED;
-	}
-	if (!keyIsInitialized(key)) keyInit(key);
-
-	switch (newType) {
-		case KEY_TYPE_DIR:
-			key->type=KEY_TYPE_DIR;
-			dirSwitch=umask(0); umask(dirSwitch);
-			dirSwitch=0111 & ~dirSwitch;
-			key->access|=dirSwitch | S_IFDIR;
-			keySetRaw(key,0,0); /* remove data */
-			break;
-		default:
-			key->type=newType;
-			key->access &= ~(S_IFDIR | dirSwitch);
-			key->flags |= KEY_SWITCH_NEEDSYNC;
-	}
-	return key->type;
-}
-
-
-
-/**
- * Returns the number of bytes of the key value
- *
- * This method is used with malloc() before a keyGetString() or keyGetBinary().
- *
- * @return the number of bytes needed to store the key value
- * @see keyGetString()
- * @see keyGetBinary()
- */
-size_t keyGetDataSize(const Key *key) {
-	if (!key || !keyIsInitialized(key)) {
-		errno=KDB_RET_UNINITIALIZED;
-		return -1;
-	}
-
-	return key->dataSize;
-}
-
-
-size_t keyGetRecordSize(const Key *key) {
-	if (!key || !keyIsInitialized(key)) {
-		errno=KDB_RET_UNINITIALIZED;
-		return -1;
-	}
-
-	return key->recordSize;
-}
-
-
-
-
-/**
- * Bytes needed to store the key name without user domain.
- *
- * @return number of bytes needed to store key name without user domain
- * @see keyGetName()
- * @see keyGetFullNameSize()
- */
-size_t keyGetNameSize(const Key *key) {
-	if (!key || !keyIsInitialized(key)) {
-		errno=KDB_RET_UNINITIALIZED;
-		return 0;
-	}
-
-	if (key->key) return strblen(key->key);
-	else return 0;
-}
-
-
-
-
-/**
- * Bytes needed to store the key name including user domain.
- *
- * @return number of bytes needed to store key name including user domain
- * @see keyGetFullName()
- * @see keyGetNameSize()
- */
-size_t keyGetFullNameSize(const Key *key) {
-	size_t returnedSize;
-
-	if (!key || !keyIsInitialized(key)) {
-		errno=KDB_RET_UNINITIALIZED;
-		return -1;
-	}
-
-	if (!key->key) return 0;
-
-	returnedSize=strblen(key->key);
-
-	if (!strncmp("user",key->key,sizeof("user")-1) && key->userDomain)
-		returnedSize+=strblen(key->userDomain);
-
-	return returnedSize;
-}
-
-
-
-
-Key *keyNext(Key *key) {
-	return key->next;
-}
-
-
-
-/**
- * Get key full name, including the user domain name.
- *
- * @return number of bytes written
- * @param key the key object
- * @param returnedName pre-allocated memory to write the key name
- * @param maxSize maximum number of bytes that will fit in returnedName, including the final NULL
- */
-size_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize) {
-	size_t userSize=sizeof("user")-1;
-	size_t userDomainSize,length;
-	char *cursor;
-
-	length=keyGetFullNameSize(key);
-	if (length == 0) {
-		errno=KDB_RET_NOKEY;
-		returnedName[0]=0;
-		return length;
-	}
-	if (length < 0) return length;
-	if (length > maxSize) {
-		errno=KDB_RET_TRUNC;
-		return -1;
-	}
-
-	cursor=returnedName;
-	if (!strncmp("user",key->key,userSize)) {
-		strncpy(cursor,key->key,userSize);
-		cursor+=userSize;
-		if (key->userDomain) {
-			*cursor=':'; ++cursor;
-			userDomainSize=strblen(key->userDomain)-1;
-			strcpy(cursor,key->userDomain);
-			cursor+=userDomainSize;
-		}
-		strcpy(cursor,key->key+userSize);
-	} else strcpy(cursor,key->key);
-
-	return length;
-}
-
-
-
-
-/**
- * Get abreviated key name (without user domain name).
- *
- * @return number of bytes written
- * @param key the key object
- * @param returnedName pre-allocated memory to write the key name
- * @param maxSize maximum number of bytes that will fit in returnedName, including the final NULL
- */
-size_t keyGetName(const Key *key, char *returnedName, size_t maxSize) {
-	size_t bytes;
-
-	if (!key || !keyIsInitialized(key)) {
-		errno=KDB_RET_UNINITIALIZED;
-		return 0;
-	}
-
-	if (!key->key) {
-		errno=KDB_RET_NOKEY;
-		returnedName[0]=0;
-		return 0;
-	}
-
-	bytes=strblen(strncpy(returnedName,key->key,maxSize));
-	if (maxSize < strblen(key->key)) {
-		errno=KDB_RET_TRUNC;
-		return 0;
-	}
-	return bytes;
-}
-
-
-
+/******************************************* 
+ *    General name manipulation methods    *
+ *******************************************/
 
 
 /**
@@ -822,30 +461,38 @@ size_t keySetName(Key *key, const char *newName) {
 	return keyNameSize;
 }
 
+ 
 
 
 /**
- * Return the user domain of the key.
- * - Given @p user:someuser/..... return @p someuser
- * - Given @p user:some.user/.... return @p some.user
- * - Given @p user/.... return the current user
+ * Bytes needed to store the key name without user domain.
  *
- * Only @p user/... keys have user domains.
- * For @p system/... keys (that doesn't have user domains) nothing is returned.
- *
- * Although usually the same, the user domain of a key is not related to its
- * UID. User domains are related to WHERE the key is stored on disk, while
- * UIDs are related to access controls of a key.
- *
- * @param key the object to work with
- * @param returned a pre-allocated space to store the owner
- * @param maxSize maximum number of bytes that fit returned
- * @return number of bytes written to buffer
- * @see keySetName()
- * @see keySetOwner()
- * @see keyGetFullName()
+ * @return number of bytes needed to store key name without user domain
+ * @see keyGetName()
+ * @see keyGetFullNameSize()
  */
-size_t keyGetOwner(const Key *key, char *returned, size_t maxSize) {
+size_t keyGetNameSize(const Key *key) {
+	if (!key || !keyIsInitialized(key)) {
+		errno=KDB_RET_UNINITIALIZED;
+		return 0;
+	}
+
+	if (key->key) return strblen(key->key);
+	else return 0;
+}
+
+
+
+
+/**
+ * Get abreviated key name (without user domain name).
+ *
+ * @return number of bytes written
+ * @param key the key object
+ * @param returnedName pre-allocated memory to write the key name
+ * @param maxSize maximum number of bytes that will fit in returnedName, including the final NULL
+ */
+size_t keyGetName(const Key *key, char *returnedName, size_t maxSize) {
 	size_t bytes;
 
 	if (!key || !keyIsInitialized(key)) {
@@ -853,38 +500,920 @@ size_t keyGetOwner(const Key *key, char *returned, size_t maxSize) {
 		return 0;
 	}
 
-	if (!key->userDomain) {
-		errno=KDB_RET_NODOMAIN;
+	if (!key->key) {
+		errno=KDB_RET_NOKEY;
+		returnedName[0]=0;
 		return 0;
 	}
 
-	if (maxSize < (bytes=strblen(key->userDomain))) {
+	bytes=strblen(strncpy(returnedName,key->key,maxSize));
+	if (maxSize < strblen(key->key)) {
 		errno=KDB_RET_TRUNC;
 		return 0;
-	} else strcpy(returned,key->userDomain);
+	}
 	return bytes;
 }
 
+
+
+
 /**
- * Return the size of the user domain of the Key.
- * 
- * @return number of bytes
- * @see keyGetOwner()
+ * Bytes needed to store the key name including user domain.
+ *
+ * @return number of bytes needed to store key name including user domain
+ * @see keyGetFullName()
+ * @see keyGetNameSize()
  */
-size_t keyGetOwnerSize(const Key *key) {
-	
+size_t keyGetFullNameSize(const Key *key) {
+	size_t returnedSize;
+
+	if (!key || !keyIsInitialized(key)) {
+		errno=KDB_RET_UNINITIALIZED;
+		return -1;
+	}
+
+	if (!key->key) return 0;
+
+	returnedSize=strblen(key->key);
+
+	if (!strncmp("user",key->key,sizeof("user")-1) && key->userDomain)
+		returnedSize+=strblen(key->userDomain);
+
+	return returnedSize;
+}
+
+
+
+
+/**
+ * Get key full name, including the user domain name.
+ *
+ * @return number of bytes written
+ * @param key the key object
+ * @param returnedName pre-allocated memory to write the key name
+ * @param maxSize maximum number of bytes that will fit in returnedName, including the final NULL
+ */
+size_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize) {
+	size_t userSize=sizeof("user")-1;
+	size_t userDomainSize,length;
+	char *cursor;
+
+	length=keyGetFullNameSize(key);
+	if (length == 0) {
+		errno=KDB_RET_NOKEY;
+		returnedName[0]=0;
+		return length;
+	}
+	if (length < 0) return length;
+	if (length > maxSize) {
+		errno=KDB_RET_TRUNC;
+		return -1;
+	}
+
+	cursor=returnedName;
+	if (!strncmp("user",key->key,userSize)) {
+		strncpy(cursor,key->key,userSize);
+		cursor+=userSize;
+		if (key->userDomain) {
+			*cursor=':'; ++cursor;
+			userDomainSize=strblen(key->userDomain)-1;
+			strcpy(cursor,key->userDomain);
+			cursor+=userDomainSize;
+		}
+		strcpy(cursor,key->key+userSize);
+	} else strcpy(cursor,key->key);
+
+	return length;
+}
+
+
+
+
+
+/**
+ * Return the namespace of a key name
+ *
+ * Currently valid namespaces are KEY_NS_SYSTEM and KEY_NS_USER.
+ *
+ * @return KEY_NS_SYSTEM, KEY_NS_USER or 0
+ * @see keyGetNamespace()
+ * @see keyIsUser()
+ * @see keyIsSystem()
+ * @see KeyNamespace
+ *
+ */
+int keyNameGetNamespace(const char *keyName) {
+	if (keyNameIsSystem(keyName)) return KEY_NS_SYSTEM;
+	if (keyNameIsUser(keyName)) return KEY_NS_USER;
+	return 0;
+}
+
+
+
+/**
+ * Return the namespace of a key
+ *
+ * Currently valid namespaces are KEY_NS_SYSTEM and KEY_NS_USER.
+ *
+ * @return KEY_NS_SYSTEM, KEY_NS_USER or 0
+ * @see keyNameGetNameSpace()
+ * @see keyIsUser()
+ * @see keyIsSystem()
+ * @see KeyNamespace
+ *
+ */
+int keyGetNamespace(const Key *key) {
+	if (!key) return 0;
+	if (!keyIsInitialized(key)) return 0;
+
+	return keyNameGetNamespace(key->key);
+}
+
+
+
+/**
+ * Check whether a key name is under the @p system namespace or not
+ *
+ * @return 1 if string begins with @p system , 0 otherwise
+ * @param keyName the name of a key
+ * @see keyIsSystem()
+ * @see keyIsUser()
+ * @see keyNameIsUser()
+ *
+ */
+int keyNameIsSystem(const char *keyName) {
+	if (!keyName) return 0;
+	if (!strlen(keyName)) return 0;
+
+	if (!strncmp("system",keyName,sizeof("system")-1)) return 1;
+	return 0;
+}
+
+
+
+/**
+ * Check whether a key is under the @p system namespace or not
+ *
+ * @return 1 if key name begins with @p system, 0 otherwise
+ * @see keyNameIsSystem()
+ * @see keyIsUser()
+ * @see keyNameIsUser()
+ *
+ */
+int keyIsSystem(const Key *key) {
+	if (!key) return 0;
+	if (!keyIsInitialized(key)) return 0;
+
+	return keyNameIsSystem(key->key);
+}
+
+
+
+/**
+ * Check whether a key name is under the @p user namespace or not
+ *
+ * @return 1 if string begins with @p user, 0 otherwise
+ * @param keyName the name of a key
+ * @see keyIsSystem()
+ * @see keyIsUser()
+ * @see keyNameIsSystem()
+ *
+ */
+int keyNameIsUser(const char *keyName) {
+	if (!keyName) return 0;
+	if (!strlen(keyName)) return 0;
+
+	if (!strncmp("user",keyName,sizeof("user")-1)) return 1;
+	return 0;
+}
+
+
+
+/**
+ * Check whether a key is under the @p user namespace or not
+ *
+ * @return 1 if key name begins with @p user, 0 otherwise
+ * @see keyNameIsSystem()
+ * @see keyIsSystem()
+ * @see keyNameIsUser()
+ *
+ */
+int keyIsUser(const Key *key) {
+	if (!key) return 0;
+	if (!keyIsInitialized(key)) return 0;
+
+	return keyNameIsUser(key->key);
+}
+
+
+
+/**
+ * Gets number of bytes needed to store root name of a key name
+ *
+ * Possible root key names are @p system, @p user or @p "user:someuser" .
+ *
+ * @return number of bytes needed without ending NULL
+ * @param keyName the name of the key
+ * @see keyGetRootNameSize()
+ */
+size_t keyNameGetRootNameSize(const char *keyName) {
+	char *end;
+	int length=strlen(keyName);
+
+	if (!length) return 0;
+
+	/*
+		Possible situations:
+		user:someuser
+		user:someuser/
+		user:someuser/key/name
+		user:some.user/key/name
+		.
+		\.
+		(empty)
+	*/
+	end=strchr(keyName,RG_KEY_DELIM);
+	if (!end) /* Reached end of string. Root is entire key. */
+		end = (char *)keyName + length;
+
+	return end-keyName;
+}
+
+
+
+/**
+ * Gets number of bytes needed to store root name of a key.
+ *
+ * Possible root key names are @p system or @p user .
+ * This method does not consider the user domain in @p user:username keys.
+ *
+ * @return number of bytes needed without the ending NULL
+ * @see keyGetFullRootNameSize()
+ * @see keyNameGetRootNameSize()
+ */
+size_t keyGetRootNameSize(const Key *key) {
+	if (!key) return 0;
+	if (!keyIsInitialized(key)) return 0;
+	if (!key->key) return 0;
+
+	return keyNameGetRootNameSize(key->key);
+}
+
+
+
+/**
+ * Copy to @p returned the root name of @p key.
+ *
+ * Some examples:
+ * - root of @p system/some/key is @p system
+ * - root of @p user:denise/some/key is @p user
+ * - root of @p user/env/env1 is @p user
+ *
+ * Use keyGetFullRootName() to get also the user domain.
+ *
+ * @param key the key to extract root from
+ * @param returned a pre-allocated buffer to store the rootname
+ * @param maxSize size of the @p returned buffer
+ * @return number of bytes needed without ending NULL
+ * @see keyNameGetRootNameSize()
+ * @see keyGetRootNameSize()
+ * @see keyGetFullRootName()
+ */
+size_t keyGetRootName(const Key *key, char *returned, size_t maxSize) {
+	size_t size;
+
+	if (!key || !keyIsInitialized(key)) {
+		errno=KDB_RET_UNINITIALIZED;
+		return -1;
+	}
+
+	if (!key->key) {
+		errno=KDB_RET_NOKEY;
+		return -1;
+	}
+
+	if (!(size=keyGetRootNameSize(key))) {
+		errno=KDB_RET_NOKEY;
+		return -1;
+	}
+
+	if (maxSize < size) {
+		errno=KDB_RET_TRUNC;
+		return -1;
+	} else strncpy(returned,key->key,size);
+	return size;
+}
+
+
+
+/**
+ * Calculates number of bytes needed to store full root name of a key.
+ *
+ * Possible root key names are @p system, @p user or @p user:someuser.
+ * In contrast to keyGetRootNameSize(), this method considers the user
+ * domain part, and you should prefer this one.
+ *
+ * @return number of bytes needed without ending NULL
+ * @see keyNameGetRootNameSize()
+ * @see keyGetRootNameSize()
+ */
+size_t keyGetFullRootNameSize(const Key *key) {
+	size_t size=0;
+
+	if (keyIsUser(key)) {
+		if (key->userDomain) size=strblen(key->userDomain);
+		else size=strblen(getenv("USER"));
+	}
+
+	return size+keyNameGetRootNameSize(key->key);
+}
+
+
+
+/**
+ * Copy to @p returned the full root name of the key.
+ *
+ * Some examples:
+ * - root of @p system/some/key is @p system
+ * - root of @p user:denise/some/key is @p user:denise
+ * - root of @p user/env/env1 is @p user:$USER
+ *
+ * This method is more robust then keyGetRootName()
+ *
+ * @param key the key to extract root from
+ * @param returned a pre-allocated buffer to store the rootname
+ * @param maxSize size of the @p returned buffer
+ * @return number of bytes written to @p returned without ending NULL
+ * @see keyGetFullRootNameSize()
+ * @see keyGetRootName()
+ */
+size_t keyGetFullRootName(const Key *key, char *returned, size_t maxSize) {
+	size_t size;
+	size_t userSize;
+	char *cursor;
+
 	if (!key || !keyIsInitialized(key)) {
 		errno=KDB_RET_UNINITIALIZED;
 		return 0;
 	}
 
-	if (!key->userDomain) {
-		errno=KDB_RET_NODOMAIN;
+	if (!key->key) {
+		errno=KDB_RET_NOKEY;
 		return 0;
 	}
 
-	return strblen(key->userDomain);
+	if (!(size=keyGetFullRootNameSize(key))) {
+		errno=KDB_RET_NOKEY;
+		return 0;
+	}
+
+	if (maxSize < size) {
+		errno=KDB_RET_TRUNC;
+		return 0;
+	}
+	
+	userSize = keyGetRootNameSize (key);
+	strncpy(returned,key->key, userSize); /* copy "user" or "system" */
+	if (keyIsUser(key)) {
+		cursor = returned + userSize;
+		*cursor = ':'; cursor++;
+		if (key->userDomain)
+			strncpy (cursor, key->userDomain, size - userSize);
+		else
+			strncpy (cursor, getenv("USER"),  size - userSize);
+	}
+
+	return size;
 }
+
+
+
+/**
+ * Calculates number of bytes needed to store basename of a key name.
+ *
+ * Basenames are denoted as:
+ * - @p system/some/thing/basename
+ * - @p user:domain/some/thing/basename
+ *
+ * @return number of bytes needed without ending NULL
+ * @see keyGetBaseNameSize()
+ */
+size_t keyNameGetBaseNameSize(const char *keyName) {
+	char *end;
+	size_t size,keySize;
+	unsigned char found=0;
+
+	if (!(keySize=strblen(keyName))) return 0;
+
+	size=keyNameGetRootNameSize(keyName);
+	if (!size || size==keySize) return 0; /* key is a root key */
+
+	/* Possible situations left:
+
+		system/something/basename
+		system/something/basename/
+	*/
+
+	end=strrchr(keyName,RG_KEY_DELIM);
+	if (*(end-1)!='\\') return keyName+keySize-(end+1);
+
+	/* TODO: review bellow this point. obsolete code */
+	/* Possible situations left:
+
+		system/something/base\.name
+		system/something/basename\.
+	*/
+
+	while (!found) {
+		end--;
+		if (*end=='.') found=1;
+	}
+	return keyName+keySize-(end+1);
+}
+
+
+
+/**
+ * Calculates number of bytes needed to store basename of a key.
+ *
+ * Basenames are denoted as:
+ * - @p system/some/thing/basename
+ * - @p user:domain/some/thing/basename
+ *
+ * @return number of bytes needed without ending NULL
+ * @see keyNameGetBaseNameSize()
+ */
+size_t keyGetBaseNameSize(const Key *key) {
+	if (!key) return 0;
+	if (!keyIsInitialized(key)) return 0;
+	if (!key->key) return 0;
+
+	return keyNameGetBaseNameSize(key->key);
+}
+
+
+
+/**
+ * Calculate the basename of a key name and put it in @p returned.
+ *
+ * Some examples:
+ * - basename of @p system/some/keyname is @p keyname
+ * - basename of @p "user/tmp/some key" is @p "some key"
+ *
+ * @param key the key to extract basename from
+ * @param returned a pre-allocated buffer to store the basename
+ * @param maxSize size of the @p returned buffer
+ * @return number of bytes copied to @p returned, or 0 and @p errno is set
+ * @see keyGetBaseNameSize()
+ */
+size_t keyGetBaseName(const Key *key, char *returned, size_t maxSize) {
+	size_t size;
+	size_t keySize;
+
+	if (!key) {
+		errno=KDB_RET_NULLKEY;
+		return 0;
+	}
+
+	if (!keyIsInitialized(key)) {
+		errno=KDB_RET_UNINITIALIZED;
+		return 0;
+	}
+
+	if (!(size=keyGetBaseNameSize(key))) {
+		errno=KDB_RET_NOKEY;
+		return 0;
+	}
+
+	keySize=strblen(key->key);
+
+	if (maxSize < size) {
+		strncpy(returned,key->key+keySize-size,maxSize);
+		errno=KDB_RET_TRUNC;
+		return size;
+	} else strncpy(returned,key->key+keySize-size,size);
+
+	return size;
+}
+
+
+
+
+/******************************************* 
+ *    General value manipulation methods   *
+ *******************************************/
+
+
+
+
+/**
+ * Returns the number of bytes needed to store the key value, including the
+ * NULL terminator.
+ *
+ * This method is used with malloc() before a keyGetString() or keyGetBinary().
+ *
+ * @return the number of bytes needed to store the key value
+ * @see keyGetString()
+ * @see keyGetBinary()
+ */
+size_t keyGetDataSize(const Key *key) {
+	if (!key || !keyIsInitialized(key)) {
+		errno=KDB_RET_UNINITIALIZED;
+		return -1;
+	}
+
+	return key->dataSize;
+}
+
+
+
+/**
+ * Set the value of a key as a string.
+ *
+ * On disk, text will be encoded to UTF-8.
+ *
+ * @param newString NULL-terminated text string
+ * @return the number of bytes actually copied including final NULL
+ * @see keyGetString()
+ */
+size_t keySetString(Key *key, const char *newString) {
+	size_t ret=newString?strblen(newString):0;
+
+	if (!newString || !ret) ret=keySetRaw(key,0,0);
+	else keySetRaw(key,newString,ret);
+
+	keySetType(key,KEY_TYPE_STRING);
+
+	return ret;
+}
+
+
+
+/**
+ * Get the value of a key as a string.
+ * If the value can't be represented as a text string (binary value),
+ * errno is set to KDB_RET_TYPEMISMATCH.
+ *
+ * @param returnedString pre-allocated memory to store a copy of the key value
+ * @param maxSize number of bytes of pre-allocated memory
+ * @return the number of bytes actually copied
+ * @see keySetString()
+ */
+size_t keyGetString(const Key *key, char *returnedString, size_t maxSize) {
+	if (!key || !keyIsInitialized(key)) {
+		errno=KDB_RET_UNINITIALIZED;
+		return 0;
+	}
+
+	if (!key->data) {
+		*returnedString=0;
+		errno=KDB_RET_NODATA;
+		return 0;
+	}
+
+	if (key->dataSize > maxSize) {
+		errno=KDB_RET_TRUNC;
+		return 0;
+	}
+
+	if (key->type < KEY_TYPE_STRING) {
+		errno=KDB_RET_TYPEMISMATCH;
+		return 0;
+	}
+
+	strcpy(returnedString,key->data);
+	return key->dataSize;
+}
+
+
+
+/**
+ * Set @p key as type @p KEY_TYPE_LINK with target @p target.
+ * 
+ * @param key the object to work with
+ * @param target the value to set to @p key
+ * @return whatever returned by keySetRaw()
+ *
+ */
+size_t keySetLink(Key *key, const char *target) {
+	size_t ret=target?strblen(target):0;
+
+	if (!target || !ret) ret=keySetRaw(key,0,0);
+	else keySetRaw(key,target,ret);
+
+	keySetType(key,KEY_TYPE_LINK);
+
+	return ret;
+}
+
+
+
+/**
+ * Get the target key pointed by @p key.
+ * 
+ * @param returnedTarget a pre-allocated buffer to store the target
+ * @param maxSize the size in bytes of the @p returnedTarget buffer
+ * @param key the link key
+ * @return the size in bytes of the copied target string
+ *
+ */
+size_t keyGetLink(const Key *key, char *returnedTarget, size_t maxSize) {
+/**TODO: Remove or:
+ * - update Doc
+ * - add keyGetLinkSize()*/
+	if (!key || !keyIsInitialized(key))
+		return errno=KDB_RET_UNINITIALIZED;
+
+	if (!key->data) {
+		errno=KDB_RET_NODATA;
+		return 0;
+	}
+
+	if (key->type != KEY_TYPE_LINK) {
+		errno=KDB_RET_TYPEMISMATCH;
+		return 0;
+	}
+
+	if (key->dataSize > maxSize) {
+		errno=KDB_RET_TRUNC;
+		return 0;
+	}
+
+	strcpy(returnedTarget,key->data);
+	return key->dataSize;
+}
+
+
+
+/**
+ * Check if a key is a link key
+ *
+ * The value of link keys is the key they point to.
+ *
+ * @return 1 if key is a link, 0 otherwise
+ * @see keyIsDir()
+ * @see keyGetType()
+ */
+int keyIsLink(const Key *key) {
+	if (!key) return 0;
+	if (!keyIsInitialized(key)) return 0;
+
+	return (S_ISLNK(key->access) || (key->type==KEY_TYPE_LINK));
+}
+
+
+
+/**
+ * Check if a key is folder key
+ *
+ * Folder keys have no value.
+ *
+ * @return 1 if key is a folder, 0 otherwise
+ * @see keyIsLink()
+ * @see keyGetType()
+ */
+int keyIsDir(const Key *key) {
+	if (!key) return 0;
+	if (!keyIsInitialized(key)) return 0;
+
+	return (S_ISDIR(key->access) || (key->type==KEY_TYPE_DIR));
+}
+
+
+
+/**
+ * Get the value of a binary or string key.
+ *
+ * @param returnedBinary pre-allocated memory to store a copy of the key value
+ * @param maxSize number of bytes of pre-allocated memory
+ * @return the number of bytes actually copied
+ * @see keySetBinary()
+ * @see keyGetString()
+ */
+size_t keyGetBinary(const Key *key, void *returnedBinary, size_t maxSize) {
+	if (!key || !keyIsInitialized(key))
+		return errno=KDB_RET_UNINITIALIZED;
+
+	if (!key->data) {
+		errno=KDB_RET_NODATA;
+		return 0;
+	}
+
+	if (key->dataSize > maxSize) {
+		errno=KDB_RET_TRUNC;
+		return 0;
+	}
+
+	memcpy(returnedBinary,key->data,key->dataSize);
+	return key->dataSize;
+}
+
+
+
+/**
+ * Set the value of a key as a binary.
+ *
+ * On disk, value will be encoded into a human readable hex-digit text
+ * format and no UTF-8 encoding will be applied.
+ *
+ * UNIX sysadmins don't like to deal with binary, sand box data.
+ * Consider using a string key instead.
+ *
+ * @param newBinary random bytes
+ * @param dataSize number of bytes to copy from newBinary
+ * @return the number of bytes actually copied
+ * @see keyGetBinary()
+ * @see keyGetString()
+ * @see keySetString()
+ */
+size_t keySetBinary(Key *key, const void *newBinary, size_t dataSize) {
+	size_t ret=keySetRaw(key,newBinary,dataSize);
+
+	keySetType(key,KEY_TYPE_BINARY);
+
+	return ret;
+}
+
+
+
+/**
+ * Test if an in-memory Key object was changed after retrieved from disk.
+ * All Key methods that change objects properties will set an internal flag,
+ * that is checked by this method.
+ *
+ * @return 1 if the key was changed, 0 otherwise.
+ */
+int keyNeedsSync(const Key *key) {
+	if (!key) return 0;
+	return (key->flags & KEY_SWITCH_NEEDSYNC);
+}
+
+
+
+/**
+ * Returns the key data type.
+ *
+ * @see keySetType()
+ * @see KeyType
+ * @return the key type
+ *
+ */
+u_int8_t keyGetType(const Key *key) {
+	if (!key || !keyIsInitialized(key)) {
+		errno=KDB_RET_UNINITIALIZED;
+		return KEY_TYPE_UNDEFINED;
+	}
+
+	return key->type;
+}
+
+
+
+/**
+ * Force a key type. See the @e "enum KeyType" documentation to
+ * understand the concepts behind Elektra key's value types. 
+ *
+ * This method is usually not needed, unless you are working with more
+ * semantic value types, or want to force a specific value type for a key.
+ * It is not usually needed because the data type is automatically set
+ * when setting the key value.
+ *
+ * The @p KEY_TYPE_DIR is the only type that has no value, so when
+ * using this method to set to this type, the key value will be freed.
+ *
+ * @par Example:
+ * @code
+#define KEY_TYPE_COLOR KEY_TYPE_STRING+4
+
+Key *color1;
+Key *color2;
+
+// Set color1 key
+color1=keyNew("user/sw/MyApp/colors/someColor",
+	KEY_SWITCH_TYPE,KEY_TYPE_COLOR,
+	KEY_SWITCH_VALUE,"#4B52CA",
+	KEY_SWITCH_COMMENT,"a custom color",
+	KEY_SWITCH_END);
+
+// Set color2 key
+color2=keyNew("system/sw/MyApp/colors/green",
+	KEY_SWITCH_TYPE,KEY_TYPE_COLOR,
+	KEY_SWITCH_VALUE,"green",
+	KEY_SWITCH_COMMENT,"the green color",
+	KEY_SWITCH_END);
+
+// Start affairs with Key database
+kdbOpen();
+
+// Commit the keys
+kdbSetKey(color1);
+kdbSetKey(color2);
+
+// Reset memory related to our structures to reuse them later
+keyClose(color1);
+keyClose(color2);
+
+// Retrieve keys from the database
+keySetName(color1,"user/sw/MyApp/colors/someColor");
+kdbGetKey(color1);
+
+keySetName(color2,"system/sw/MyApp/colors/green");
+kdbGetKey(color2);
+
+// End of the affairs with Key database by now
+kdbClose();
+
+// Get the key types, which should be our user-defined KEY_TYPE_COLOR
+u_int8_t tcolor1=keyGetType(color1);
+u_int8_t tcolor2=keyGetType(color2);
+
+keyDel(color1);
+keyDel(color2);
+ * @endcode
+ *
+ * @see keyGetType()
+ * @see KeyType
+ * @return the new type
+ *
+ */
+u_int8_t keySetType(Key *key,u_int8_t newType) {
+	mode_t dirSwitch=0111;
+
+	if (!key) {
+		errno=KDB_RET_UNINITIALIZED;
+		return KEY_TYPE_UNDEFINED;
+	}
+	if (!keyIsInitialized(key)) keyInit(key);
+
+	switch (newType) {
+		case KEY_TYPE_DIR:
+			key->type=KEY_TYPE_DIR;
+			dirSwitch=umask(0); umask(dirSwitch);
+			dirSwitch=0111 & ~dirSwitch;
+			key->access|=dirSwitch | S_IFDIR;
+			keySetRaw(key,0,0); /* remove data */
+			break;
+		default:
+			key->type=newType;
+			key->access &= ~(S_IFDIR | dirSwitch);
+			key->flags |= KEY_SWITCH_NEEDSYNC;
+	}
+	return key->type;
+}
+
+
+
+/**
+ * Set raw data as the value of a key.
+ * If NULL pointers are passed, key value is cleaned.
+ * This method will not change or set the key type, and should not be
+ * used unless working with user-defined value types.
+ *
+ * @param newBinary array of bytes to set as the value
+ * @param dataSize number bytes to use from newBinary, including the final NULL
+ * @see keySetType()
+ * @see keySetString()
+ * @see keySetBinary()
+ */
+size_t keySetRaw(Key *key, const void *newBinary, size_t dataSize) {
+	if (!key) {
+		errno=KDB_RET_UNINITIALIZED;
+		return 0;
+	}
+	if (!keyIsInitialized(key)) keyInit(key);
+
+	if (!dataSize || !newBinary) {
+		if (key->data) {
+			free(key->data);
+			key->data=0;
+		}
+		key->flags &= ~(KEY_SWITCH_VALUE);
+		key->flags |= KEY_SWITCH_NEEDSYNC;
+		return 0;
+	}
+
+	key->dataSize=dataSize;
+	if (key->data) key->data=realloc(key->data,key->dataSize);
+	else key->data=malloc(key->dataSize);
+
+	if (!key->data) return 0;
+
+	memcpy(key->data,newBinary,key->dataSize);
+	key->flags |= KEY_SWITCH_VALUE | KEY_SWITCH_NEEDSYNC;
+	return key->dataSize;
+}
+
+
+
+
+
+
+
+
+/***************************************************** 
+ *    General owner or domain manipulation methods   *
+ *****************************************************/
+
 
 
 /**
@@ -929,19 +1458,51 @@ size_t keySetOwner(Key *key, const char *userDomain) {
 
 
 
+/**
+ * Return the size of the user domain of the Key.
+ * 
+ * @return number of bytes
+ * @see keyGetOwner()
+ */
+size_t keyGetOwnerSize(const Key *key) {
+	
+	if (!key || !keyIsInitialized(key)) {
+		errno=KDB_RET_UNINITIALIZED;
+		return 0;
+	}
+
+	if (!key->userDomain) {
+		errno=KDB_RET_NODOMAIN;
+		return 0;
+	}
+
+	return strblen(key->userDomain);
+}
+
+
 
 /**
- * Get the key comment.
+ * Return the user domain of the key.
+ * - Given @p user:someuser/..... return @p someuser
+ * - Given @p user:some.user/.... return @p some.user
+ * - Given @p user/.... return the current user
  *
- * A Key comment is pretty much as a comment in a text configuration file.
+ * Only @p user/... keys have user domains.
+ * For @p system/... keys (that doesn't have user domains) nothing is returned.
  *
- * @param returnedDesc pre-allocated memory to copy the comments to
- * @param maxSize number of bytes that will fit returnedDesc
- * @return number of bytes written
- * @see keyGetCommentSize()
- * @see keySetComment()
+ * Although usually the same, the user domain of a key is not related to its
+ * UID. User domains are related to WHERE the key is stored on disk, while
+ * UIDs are related to access controls of a key.
+ *
+ * @param key the object to work with
+ * @param returned a pre-allocated space to store the owner
+ * @param maxSize maximum number of bytes that fit returned
+ * @return number of bytes written to buffer
+ * @see keySetName()
+ * @see keySetOwner()
+ * @see keyGetFullName()
  */
-size_t keyGetComment(const Key *key, char *returnedDesc, size_t maxSize) {
+size_t keyGetOwner(const Key *key, char *returned, size_t maxSize) {
 	size_t bytes;
 
 	if (!key || !keyIsInitialized(key)) {
@@ -949,18 +1510,29 @@ size_t keyGetComment(const Key *key, char *returnedDesc, size_t maxSize) {
 		return 0;
 	}
 
-	if (!key->comment) {
-		errno=KDB_RET_NODESC;
+	if (!key->userDomain) {
+		errno=KDB_RET_NODOMAIN;
 		return 0;
 	}
 
-	bytes=strblen(strncpy(returnedDesc,key->comment,maxSize));
-	if (maxSize < strblen(key->comment)) {
+	if (maxSize < (bytes=strblen(key->userDomain))) {
 		errno=KDB_RET_TRUNC;
 		return 0;
-	}
+	} else strcpy(returned,key->userDomain);
 	return bytes;
 }
+
+
+
+
+
+
+
+
+
+/********************************************* 
+ *    General comment manipulation methods   *
+ *********************************************/
 
 
 
@@ -1026,6 +1598,61 @@ size_t keyGetCommentSize(const Key *key) {
 	}
 
 	return strblen(key->comment);
+}
+
+
+
+/**
+ * Get the key comment.
+ *
+ * A Key comment is pretty much as a comment in a text configuration file.
+ *
+ * @param returnedDesc pre-allocated memory to copy the comments to
+ * @param maxSize number of bytes that will fit returnedDesc
+ * @return number of bytes written
+ * @see keyGetCommentSize()
+ * @see keySetComment()
+ */
+size_t keyGetComment(const Key *key, char *returnedDesc, size_t maxSize) {
+	size_t bytes;
+
+	if (!key || !keyIsInitialized(key)) {
+		errno=KDB_RET_UNINITIALIZED;
+		return 0;
+	}
+
+	if (!key->comment) {
+		errno=KDB_RET_NODESC;
+		return 0;
+	}
+
+	bytes=strblen(strncpy(returnedDesc,key->comment,maxSize));
+	if (maxSize < strblen(key->comment)) {
+		errno=KDB_RET_TRUNC;
+		return 0;
+	}
+	return bytes;
+}
+
+
+
+
+
+
+
+size_t keyGetRecordSize(const Key *key) {
+	if (!key || !keyIsInitialized(key)) {
+		errno=KDB_RET_UNINITIALIZED;
+		return -1;
+	}
+
+	return key->recordSize;
+}
+
+
+
+Key *keyNext(Key *key) {
+	return key->next;
 }
 
 
@@ -1120,213 +1747,6 @@ size_t keySetDouble(Key *key, double newDouble) {
 
 
 
-/**
- * Get the value of a key as a string.
- * If the value can't be represented as a text string (binary value),
- * errno is set to KDB_RET_TYPEMISMATCH.
- *
- * @param returnedString pre-allocated memory to store a copy of the key value
- * @param maxSize number of bytes of pre-allocated memory
- * @return the number of bytes actually copied
- * @see keySetString()
- */
-size_t keyGetString(const Key *key, char *returnedString, size_t maxSize) {
-	if (!key || !keyIsInitialized(key)) {
-		errno=KDB_RET_UNINITIALIZED;
-		return 0;
-	}
-
-	if (!key->data) {
-		*returnedString=0;
-		errno=KDB_RET_NODATA;
-		return 0;
-	}
-
-	if (key->dataSize > maxSize) {
-		errno=KDB_RET_TRUNC;
-		return 0;
-	}
-
-	if (key->type < KEY_TYPE_STRING) {
-		errno=KDB_RET_TYPEMISMATCH;
-		return 0;
-	}
-
-	strcpy(returnedString,key->data);
-	return key->dataSize;
-}
-
-
-
-
-
-/**
- * Set the value of a key as a string.
- *
- * On disk, text will be encoded to UTF-8.
- *
- * @param newString NULL-terminated text string
- * @return the number of bytes actually copied including final NULL
- * @see keyGetString()
- */
-size_t keySetString(Key *key, const char *newString) {
-	size_t ret=newString?strblen(newString):0;
-
-	if (!newString || !ret) ret=keySetRaw(key,0,0);
-	else keySetRaw(key,newString,ret);
-
-	keySetType(key,KEY_TYPE_STRING);
-
-	return ret;
-}
-
-
-
-
-/**
- * Get the value of a binary or string key.
- *
- * @param returnedBinary pre-allocated memory to store a copy of the key value
- * @param maxSize number of bytes of pre-allocated memory
- * @return the number of bytes actually copied
- * @see keySetBinary()
- * @see keyGetString()
- */
-size_t keyGetBinary(const Key *key, void *returnedBinary, size_t maxSize) {
-	if (!key || !keyIsInitialized(key))
-		return errno=KDB_RET_UNINITIALIZED;
-
-	if (!key->data) {
-		errno=KDB_RET_NODATA;
-		return 0;
-	}
-
-	if (key->dataSize > maxSize) {
-		errno=KDB_RET_TRUNC;
-		return 0;
-	}
-
-	memcpy(returnedBinary,key->data,key->dataSize);
-	return key->dataSize;
-}
-
-
-
-
-/**
- * Set the value of a key as a binary.
- *
- * On disk, value will be encoded into a human readable hex-digit text
- * format and no UTF-8 encoding will be applied.
- *
- * UNIX sysadmins don't like to deal with binary, sand box data.
- * Consider using a string key instead.
- *
- * @param newBinary random bytes
- * @param dataSize number of bytes to copy from newBinary
- * @return the number of bytes actually copied
- * @see keyGetBinary()
- * @see keyGetString()
- * @see keySetString()
- */
-size_t keySetBinary(Key *key, const void *newBinary, size_t dataSize) {
-	size_t ret=keySetRaw(key,newBinary,dataSize);
-
-	keySetType(key,KEY_TYPE_BINARY);
-
-	return ret;
-}
-
-
-
-
-/**
- * Set raw data as the value of a key.
- * If NULL pointers are passed, key value is cleaned.
- * This method will not change or set the key type, and should not be
- * used unless working with user-defined value types.
- *
- * @param newBinary array of bytes to set as the value
- * @param dataSize number bytes to use from newBinary, including the final NULL
- * @see keySetType()
- * @see keySetString()
- * @see keySetBinary()
- */
-size_t keySetRaw(Key *key, const void *newBinary, size_t dataSize) {
-	if (!key) {
-		errno=KDB_RET_UNINITIALIZED;
-		return 0;
-	}
-	if (!keyIsInitialized(key)) keyInit(key);
-
-	if (!dataSize || !newBinary) {
-		if (key->data) {
-			free(key->data);
-			key->data=0;
-		}
-		key->flags &= ~(KEY_SWITCH_VALUE);
-		key->flags |= KEY_SWITCH_NEEDSYNC;
-		return 0;
-	}
-
-	key->dataSize=dataSize;
-	if (key->data) key->data=realloc(key->data,key->dataSize);
-	else key->data=malloc(key->dataSize);
-
-	if (!key->data) return 0;
-
-	memcpy(key->data,newBinary,key->dataSize);
-	key->flags |= KEY_SWITCH_VALUE | KEY_SWITCH_NEEDSYNC;
-	return key->dataSize;
-}
-
-
-
-
-
-
-size_t keyGetLink(const Key *key, char *returnedTarget, size_t maxSize) {
-/**TODO: Remove or:
- * - update Doc
- * - add keyGetLinkSize()*/
-	if (!key || !keyIsInitialized(key))
-		return errno=KDB_RET_UNINITIALIZED;
-
-	if (!key->data) {
-		errno=KDB_RET_NODATA;
-		return 0;
-	}
-
-	if (key->type != KEY_TYPE_LINK) {
-		errno=KDB_RET_TYPEMISMATCH;
-		return 0;
-	}
-
-	if (key->dataSize > maxSize) {
-		errno=KDB_RET_TRUNC;
-		return 0;
-	}
-
-	strcpy(returnedTarget,key->data);
-	return key->dataSize;
-}
-
-
-
-
-
-size_t keySetLink(Key *key, const char *target) {
-	size_t ret=target?strblen(target):0;
-
-	if (!target || !ret) ret=keySetRaw(key,0,0);
-	else keySetRaw(key,target,ret);
-
-	keySetType(key,KEY_TYPE_LINK);
-
-	return ret;
-}
-
-
 
 /**
  * Clone a key.
@@ -1390,7 +1810,6 @@ uid_t keyGetUID(const Key *key) {
 
 	return key->uid;
 }
-
 
 
 
@@ -1466,7 +1885,7 @@ mode_t keyGetAccess(const Key *key) {
 		return -1;
 	}
 
-	/*if (!(key->flags & KEY_SWITCH_PRM)) return KDB_RET_NOCRED;*/
+	/*if (!(key->flags & KEY_SWITCH_MODE)) return KDB_RET_NOCRED;*/
 
 	return key->access;
 }
@@ -1485,7 +1904,7 @@ int keySetAccess(Key *key, mode_t mode) {
 	if (!keyIsInitialized(key)) keyInit(key);
 
 	key->access=mode;
-	key->flags |= KEY_SWITCH_PRM | KEY_SWITCH_NEEDSYNC;
+	key->flags |= KEY_SWITCH_MODE | KEY_SWITCH_NEEDSYNC;
 
 	return 0;
 }
@@ -1604,12 +2023,73 @@ size_t keyGetParent(const Key *key, char *returnedParent, size_t maxSize) {
 /**
  * Compare 2 keys.
  *
- * The returned flag array has 1s (different) or 0s (same) for each key meta
- * info compared, that can be logically ORed with @p KEY_SWITCH_* flags.
+ * The returned flags bit array has 1s (differ) or 0s (equal) for each key
+ * meta info compared, that can be logically ORed with @p KEY_SWITCH_* flags.
+ * The flags you can use are @p KEY_SWITCH_TYPE, @p KEY_SWITCH_NAME,
+ * @p KEY_SWITCH_VALUE, @p KEY_SWITCH_OWNER, @p KEY_SWITCH_COMMENT,
+ * @p KEY_SWITCH_UID, @p KEY_SWITCH_GID, @p KEY_SWITCH_MODE,
+ * @p KEY_SWITCH_NEEDSYNC and @p KEY_SWITCH_FLAG.
  *
  * @return a bit array poiting the differences
  * @see ksCompare() for examples and more detailed description
  * @see KeySwitch
+ * 
+ * @par Example of very powerfull specific Key lookup in a KeySet:
+ * @code
+KeySet *ks=ksNew();
+Key *base;
+Key *current;
+u_int32_t match;
+u_int32_t interests;
+
+
+kdbGetChildKeys(ks,"usr/sw/MyApp",KDB_O_RECURSIVE);
+
+// assemble a key we'll use to compare our KeySet to
+base=keyNew("user/sw/MyApp/some/deep/key",
+	KEY_SWITCH_TYPE,KEY_TYPE_LINK,
+	KEY_SWITCH_VALUE,"system/mtp/x",
+	KEY_SWITCH_MODE,0654,
+	KEY_SWITCH_END));
+
+// we are interested only in key type and access permissions
+interests=(KEY_SWITCH_TYPE | KEY_SWITCH_MODE);
+	
+ksRewind(ks);   // put cursor in the begining
+while ((curren=ksNext(ks))) {
+	match=keyCompare(current,base);
+	
+	if ((~match & interests) == interests) {
+		char buffer[300];
+		
+		keyGetName(current,buffer,sizeof(buffer));
+		printf("Key %s has same type and permissions of base key",buffer);
+	}
+	// continue walking in the KeySet....
+}
+
+// now we want same name and/or value and/or sync status
+interests=(KEY_SWITCH_NAME | KEY_SWITCH_VALUE | KEY_SWITCH_NEEDSYNC);
+
+// we don't really need this, since previous loop achieved end of KeySet
+ksRewind(ks);
+while ((current=ksNext(ks))) {
+	match=keyCompare(current,basE);
+	
+	if ((~match & interests) == interests) {
+		char buffer[300];
+		
+		keyGetName(current,buffer,sizeof(buffer));
+		printf("Key %s has same name, value, and storage syncronization
+			status of base key",buffer);
+	}
+	// continue walking in the KeySet....
+}
+
+keyDel(base);
+ksDel(ks);
+ * @endcode
+ * 
  */
 u_int32_t keyCompare(const Key *key1, const Key *key2) {
 	u_int32_t ret=0;
@@ -1620,7 +2100,7 @@ u_int32_t keyCompare(const Key *key1, const Key *key2) {
 	if (key1->gid != key2->gid)                    ret|=KEY_SWITCH_GID;
 	if (key1->type != key2->type)                  ret|=KEY_SWITCH_TYPE;
 	if ((key1->access & (S_IRWXU|S_IRWXG|S_IRWXO)) !=
-		(key2->access & (S_IRWXU|S_IRWXG|S_IRWXO))) ret|=KEY_SWITCH_PRM;
+		(key2->access & (S_IRWXU|S_IRWXG|S_IRWXO))) ret|=KEY_SWITCH_MODE;
 
 	/* Compare these string properties.
 	   A lot of decisions because strcmp can't handle NULL pointers */
@@ -1645,7 +2125,9 @@ u_int32_t keyCompare(const Key *key1, const Key *key2) {
 		else if (key2->comment)                     ret|=KEY_SWITCH_DOMAIN;
 	}
 
-
+	/* compare and select some flags */
+	ret|=(key1->flags ^ key2->flags) & (KEY_SWITCH_FLAG | KEY_SWITCH_NEEDSYNC);
+	
 	/* Compare data */
 	if (memcmp(key1->data,key2->data,
 			(key1->dataSize<=key2->dataSize?key1->dataSize:key2->dataSize)))
@@ -1664,11 +2146,8 @@ u_int32_t keyCompare(const Key *key1, const Key *key2) {
  *
  * String generated is of the form:
  * @verbatim
-	<key id="123445" uid="root" gid="root" mode="0660"
-		atime="123456" ctime="123456" mtime="123456"
-
-		name="system/sw/XFree/Monitor/Monitor0/Name"
-		type="string">
+	<key name="system/sw/XFree/Monitor/Monitor0/Name"
+		type="string" uid="root" gid="root" mode="0660">
 
 		<value>Samsung TFT panel</value>
 		<comment>My monitor</comment>
@@ -1987,449 +2466,7 @@ size_t keyGetSerializedSize(Key *key) {
 
 
 
-/**
- * Check whether a key name is under the @p system namespace or not
- *
- * @return 1 if string begins with @p system , 0 otherwise
- * @param keyName the name of a key
- * @see keyIsSystem()
- * @see keyIsUser()
- * @see keyNameIsUser()
- *
- */
-int keyNameIsSystem(const char *keyName) {
-	if (!keyName) return 0;
-	if (!strlen(keyName)) return 0;
 
-	if (!strncmp("system",keyName,sizeof("system")-1)) return 1;
-	return 0;
-}
-
-
-/**
- * Check whether a key name is under the @p user namespace or not
- *
- * @return 1 if string begins with @p user, 0 otherwise
- * @param keyName the name of a key
- * @see keyIsSystem()
- * @see keyIsUser()
- * @see keyNameIsSystem()
- *
- */
-int keyNameIsUser(const char *keyName) {
-	if (!keyName) return 0;
-	if (!strlen(keyName)) return 0;
-
-	if (!strncmp("user",keyName,sizeof("user")-1)) return 1;
-	return 0;
-}
-
-
-
-/**
- * Check whether a key is under the @p system namespace or not
- *
- * @return 1 if key name begins with @p system, 0 otherwise
- * @see keyNameIsSystem()
- * @see keyIsUser()
- * @see keyNameIsUser()
- *
- */
-int keyIsSystem(const Key *key) {
-	if (!key) return 0;
-	if (!keyIsInitialized(key)) return 0;
-
-	return keyNameIsSystem(key->key);
-}
-
-
-
-/**
- * Check whether a key is under the @p user namespace or not
- *
- * @return 1 if key name begins with @p user, 0 otherwise
- * @see keyNameIsSystem()
- * @see keyIsSystem()
- * @see keyNameIsUser()
- *
- */
-int keyIsUser(const Key *key) {
-	if (!key) return 0;
-	if (!keyIsInitialized(key)) return 0;
-
-	return keyNameIsUser(key->key);
-}
-
-
-
-
-/**
- * Return the namespace of a key name
- *
- * Currently valid namespaces are KEY_NS_SYSTEM and KEY_NS_USER.
- *
- * @return KEY_NS_SYSTEM, KEY_NS_USER or 0
- * @see keyGetNamespace()
- * @see keyIsUser()
- * @see keyIsSystem()
- * @see KeyNamespace
- *
- */
-int keyNameGetNamespace(const char *keyName) {
-	if (keyNameIsSystem(keyName)) return KEY_NS_SYSTEM;
-	if (keyNameIsUser(keyName)) return KEY_NS_USER;
-	return 0;
-}
-
-
-
-/**
- * Return the namespace of a key
- *
- * Currently valid namespaces are KEY_NS_SYSTEM and KEY_NS_USER.
- *
- * @return KEY_NS_SYSTEM, KEY_NS_USER or 0
- * @see keyNameGetNameSpace()
- * @see keyIsUser()
- * @see keyIsSystem()
- * @see KeyNamespace
- *
- */
-int keyGetNamespace(const Key *key) {
-	if (!key) return 0;
-	if (!keyIsInitialized(key)) return 0;
-
-	return keyNameGetNamespace(key->key);
-}
-
-
-/**
- * Check if a key is folder key
- *
- * Folder keys have no value.
- *
- * @return 1 if key is a folder, 0 otherwise
- * @see keyIsLink()
- * @see keyGetType()
- */
-int keyIsDir(const Key *key) {
-	if (!key) return 0;
-	if (!keyIsInitialized(key)) return 0;
-
-	return (S_ISDIR(key->access) || (key->type==KEY_TYPE_DIR));
-}
-
-
-/**
- * Check if a key is a link key
- *
- * The value of link keys is the key they point to.
- *
- * @return 1 if key is a link, 0 otherwise
- * @see keyIsDir()
- * @see keyGetType()
- */
-int keyIsLink(const Key *key) {
-	if (!key) return 0;
-	if (!keyIsInitialized(key)) return 0;
-
-	return (S_ISLNK(key->access) || (key->type==KEY_TYPE_LINK));
-}
-
-
-/**
- * Gets number of bytes needed to store root name of a key name
- *
- * Possible root key names are @p system, @p user or @p "user:someuser" .
- *
- * @return number of bytes needed without ending NULL
- * @param keyName the name of the key
- * @see keyGetRootNameSize()
- */
-size_t keyNameGetRootNameSize(const char *keyName) {
-	char *end;
-	int length=strlen(keyName);
-
-	if (!length) return 0;
-
-	/*
-		Possible situations:
-		user:someuser
-		user:someuser/
-		user:someuser/key/name
-		user:some.user/key/name
-		.
-		\.
-		(empty)
-	*/
-	end=strchr(keyName,RG_KEY_DELIM);
-	if (!end) /* Reached end of string. Root is entire key. */
-		end = (char *)keyName + length;
-
-	return end-keyName;
-}
-
-
-
-
-/**
- * Gets number of bytes needed to store root name of a key.
- *
- * Possible root key names are @p system or @p user .
- * This method does not consider the user domain in @p user:username keys.
- *
- * @return number of bytes needed without the ending NULL
- * @see keyGetFullRootNameSize()
- * @see keyNameGetRootNameSize()
- */
-size_t keyGetRootNameSize(const Key *key) {
-	if (!key) return 0;
-	if (!keyIsInitialized(key)) return 0;
-	if (!key->key) return 0;
-
-	return keyNameGetRootNameSize(key->key);
-}
-
-
-
-
-
-/**
- * Calculates number of bytes needed to store full root name of a key.
- *
- * Possible root key names are @p system, @p user or @p user:someuser.
- * In contrast to keyGetRootNameSize(), this method considers the user
- * domain part, and you should prefer this one.
- *
- * @return number of bytes needed without ending NULL
- * @see keyNameGetRootNameSize()
- * @see keyGetRootNameSize()
- */
-size_t keyGetFullRootNameSize(const Key *key) {
-	size_t size=0;
-
-	if (keyIsUser(key)) {
-		if (key->userDomain) size=strblen(key->userDomain);
-		else size=strblen(getenv("USER"));
-	}
-
-	return size+keyNameGetRootNameSize(key->key);
-}
-
-
-
-/**
- * Calculates number of bytes needed to store basename of a key name.
- *
- * Basenames are denoted as:
- * - @p system/some/thing/basename
- * - @p user:domain/some/thing/basename
- *
- * @return number of bytes needed without ending NULL
- * @see keyGetBaseNameSize()
- */
-size_t keyNameGetBaseNameSize(const char *keyName) {
-	char *end;
-	size_t size,keySize;
-	unsigned char found=0;
-
-	if (!(keySize=strblen(keyName))) return 0;
-
-	size=keyNameGetRootNameSize(keyName);
-	if (!size || size==keySize) return 0; /* key is a root key */
-
-	/* Possible situations left:
-
-		system/something/basename
-		system/something/basename/
-	*/
-
-	end=strrchr(keyName,RG_KEY_DELIM);
-	if (*(end-1)!='\\') return keyName+keySize-(end+1);
-
-	/* TODO: review bellow this point. obsolete code */
-	/* Possible situations left:
-
-		system/something/base\.name
-		system/something/basename\.
-	*/
-
-	while (!found) {
-		end--;
-		if (*end=='.') found=1;
-	}
-	return keyName+keySize-(end+1);
-}
-
-
-
-
-/**
- * Calculates number of bytes needed to store basename of a key.
- *
- * Basenames are denoted as:
- * - @p system/some/thing/basename
- * - @p user:domain/some/thing/basename
- *
- * @return number of bytes needed without ending NULL
- * @see keyNameGetBaseNameSize()
- */
-size_t keyGetBaseNameSize(const Key *key) {
-	if (!key) return 0;
-	if (!keyIsInitialized(key)) return 0;
-	if (!key->key) return 0;
-
-	return keyNameGetBaseNameSize(key->key);
-}
-
-
-
-
-/**
- * Copy to @p returned the root name of the key.
- *
- * Some examples:
- * - root of @p system/some/key is @p system
- * - root of @p user:denise/some/key is @p user
- * - root of @p user/env/env1 is @p user
- *
- * Use keyGetFullRootName() to get also the user domain.
- *
- * @param key the key to extract root from
- * @param returned a pre-allocated buffer to store the rootname
- * @param maxSize size of the @p returned buffer
- * @return number of bytes needed without ending NULL
- * @see keyNameGetRootNameSize()
- * @see keyGetRootNameSize()
- * @see keyGetFullRootName()
- */
-size_t keyGetRootName(const Key *key, char *returned, size_t maxSize) {
-	size_t size;
-
-	if (!key || !keyIsInitialized(key)) {
-		errno=KDB_RET_UNINITIALIZED;
-		return -1;
-	}
-
-	if (!key->key) {
-		errno=KDB_RET_NOKEY;
-		return -1;
-	}
-
-	if (!(size=keyGetRootNameSize(key))) {
-		errno=KDB_RET_NOKEY;
-		return -1;
-	}
-
-	if (maxSize < size) {
-		errno=KDB_RET_TRUNC;
-		return -1;
-	} else strncpy(returned,key->key,size);
-	return size;
-}
-
-
-
-/**
- * Copy to @p returned the full root name of the key.
- *
- * Some examples:
- * - root of @p system/some/key is @p system
- * - root of @p user:denise/some/key is @p user:denise
- * - root of @p user/env/env1 is @p user:$USER
- *
- * This method is more robust then keyGetRootName()
- *
- * @param key the key to extract root from
- * @param returned a pre-allocated buffer to store the rootname
- * @param maxSize size of the @p returned buffer
- * @return number of bytes written to @p returned without ending NULL
- * @see keyGetFullRootNameSize()
- * @see keyGetRootName()
- */
-size_t keyGetFullRootName(const Key *key, char *returned, size_t maxSize) {
-	size_t size;
-	size_t userSize;
-	char *cursor;
-
-	if (!key || !keyIsInitialized(key)) {
-		errno=KDB_RET_UNINITIALIZED;
-		return 0;
-	}
-
-	if (!key->key) {
-		errno=KDB_RET_NOKEY;
-		return 0;
-	}
-
-	if (!(size=keyGetFullRootNameSize(key))) {
-		errno=KDB_RET_NOKEY;
-		return 0;
-	}
-
-	if (maxSize < size) {
-		errno=KDB_RET_TRUNC;
-		return 0;
-	}
-	
-	userSize = keyGetRootNameSize (key);
-	strncpy(returned,key->key, userSize); /* copy "user" or "system" */
-	if (keyIsUser(key)) {
-		cursor = returned + userSize;
-		*cursor = ':'; cursor++;
-		if (key->userDomain)
-			strncpy (cursor, key->userDomain, size - userSize);
-		else
-			strncpy (cursor, getenv("USER"),  size - userSize);
-	}
-
-	return size;
-}
-
-
-
-/**
- * Calculate the basename of a key name and put it in @p returned.
- *
- * Some examples:
- * - basename of @p system/some/keyname is @p keyname
- * - basename of @p "user/tmp/some key" is @p "some key"
- *
- * @param key the key to extract basename from
- * @param returned a pre-allocated buffer to store the basename
- * @param maxSize size of the @p returned buffer
- * @return number of bytes copied to @p returned, or 0 and @p errno is set
- * @see keyGetBaseNameSize()
- */
-size_t keyGetBaseName(const Key *key, char *returned, size_t maxSize) {
-	size_t size;
-	size_t keySize;
-
-	if (!key) {
-		errno=KDB_RET_NULLKEY;
-		return 0;
-	}
-
-	if (!keyIsInitialized(key)) {
-		errno=KDB_RET_UNINITIALIZED;
-		return 0;
-	}
-
-	if (!(size=keyGetBaseNameSize(key))) {
-		errno=KDB_RET_NOKEY;
-		return 0;
-	}
-
-	keySize=strblen(key->key);
-
-	if (maxSize < size) {
-		strncpy(returned,key->key+keySize-size,maxSize);
-		errno=KDB_RET_TRUNC;
-		return size;
-	} else strncpy(returned,key->key+keySize-size,size);
-
-	return size;
-}
 
 
 
@@ -2477,9 +2514,6 @@ int keyClearFlag(Key *key) {
 
 
 
-
-
-
 /**
  * Get the flag from the Key.
  *
@@ -2498,6 +2532,81 @@ int keyGetFlag(const Key *key) {
 
 	return (key->flags | KEY_SWITCH_FLAG) ? 1:0;
 }
+
+
+
+ 
+ 
+/**
+ * Initializes a previously allocated Key object.
+ *
+ * You'll find the keyNew() function more usefull and straight forward
+ * than keyInit().
+ * 
+ * Every Key object that will be used must be initialized first, to setup
+ * pointers, counters, etc.
+ * 
+ * @par Example
+ * @code
+Key *key=keyNew("system/some/key",KEY_SWITCH_END);
+
+// Do something with the key....
+
+// Now reuse the memory allocated by keyNew()
+keyClose(key);  // free all internal attributes first
+keyInit(key);   // reinitialize it
+// do something with key...
+keyClose(key);
+free(key);
+ * @endcode
+ * 
+ * @see keyNew()
+ * @see keyDel()
+ * @see keyClose()
+ */
+int keyInit(Key *key) {
+	if (!key) return errno=KDB_RET_NULLKEY;
+
+	memset(key,0,sizeof(Key));
+	key->type=KEY_TYPE_UNDEFINED;
+	key->uid=getuid();
+	key->gid=getgid();
+	key->access=umask(0); umask(key->access);
+	key->access=DEFFILEMODE & ~key->access;
+
+	key->flags |= KEY_SWITCH_INITIALIZED | KEY_SWITCH_ACTIVE;
+
+	return 0;
+}
+
+
+
+
+/**
+ * Finishes the usage of a Key object.
+ *
+ * Frees all internally allocated memory, and leave the Key object
+ * ready to be keyInit()ed to reuse, or deallocated.
+ * 
+ * @see keyInit() for usage example
+ * @see keyNew() as a more usefull function
+ * @see keyDel()
+ */
+int keyClose(Key *key) {
+	if (!key) return errno=KDB_RET_NULLKEY;
+	if (!keyIsInitialized(key)) return 0;
+
+	free(key->key);
+	free(key->data);
+	free(key->comment);
+	free(key->userDomain);
+	memset(key,0,sizeof(Key));
+	return 0;
+}
+
+
+
+
 
 /**
  * @} // end of Key group
@@ -2588,56 +2697,6 @@ Key *ksHead(KeySet *ks) {
 Key *ksTail(KeySet *ks) {
 	return ks->end;
 }
-
-
-
-/**
- * KeySet object initializer.
- * 
- * You should always use ksNew() instead of ksInit().
- *
- * Every KeySet object that will be used must be initialized first, to setup
- * pointers, counters, etc. After use, all ksInit()ialized KeySets must be
- * cleaned with ksClose().
- * 
- * @see ksNew()
- * @see ksClose()
- * @see keyInit()
- */
-int ksInit(KeySet *ks) {
-	ks->start=ks->end=ks->cursor=0;
-	ks->size=0;
-	
-	return 0;
-}
-
-
-/**
- * KeySet object cleaner.
- *
- * Will keyDel() all contained keys, reset internal pointers and counters.
- * 
- * After this call, the @p ks object is ready to be freed by you.
- * 
- * @see keyDel()
- * @see ksInit()
- * @see keyClose()
- * @see ksAppend() for details on how keys are inserted in KeySets
- * @return 0
- */
-int ksClose(KeySet *ks) {
-	if (ks->size) {
-		while (ks->size) {
-			Key *destroyer=ks->start;
-			ks->start=destroyer->next;
-			keyDel(destroyer);
-			--ks->size;
-		}
-	}
-	ks->cursor=ks->end=ks->start;
-	return 0;
-}
-
 
 
 
@@ -2962,13 +3021,16 @@ size_t ksToStream(const KeySet *ks, FILE* stream, unsigned long options) {
 		written+=fprintf(stream,"<?xml version=\"1.0\" encoding=\"%s\"?>\n",
 			nl_langinfo(CODESET));
 		written+=fprintf(stream,
-			"<!DOCTYPE keyset PUBLIC \"-//Avi Alkalay//DTD Elektra 0.1.0//EN\" \"http://elektra.sf.net/dtd/elektra.dtd\">\n\n\n");
-		written+=fprintf(stream,
-			"<!-- Generated by Elektra API. Total of %d keys. -->\n\n\n\n",ks->size);
-	}
+			"\n\n<!-- Generated by Elektra API. Total of %d keys. -->\n\n\n\n",ks->size);
+		
+		written+=fprintf(stream,"<keyset xmlns=\"http://elektra.sourceforge.net\"\n\
+        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n\
+        xsi:schemaLocation=\"http://elektra.sourceforge.net elektra.xsd\">\n\n\n");
+		
+		/* written+=fprintf(stream,
+			"<!DOCTYPE keyset PUBLIC \"-//Avi Alkalay//DTD Elektra 0.1.0//EN\" \"http://elektra.sf.net/dtd/elektra.dtd\">\n\n\n"); */
+	} else written+=fprintf(stream,"<keyset>\n\n\n");
 
-	written+=fprintf(stream,"<keyset>\n\n\n");
-	
 	for (key=ks->start; key; key=key->next)
 		written+=keyToStream(key,stream,options);
 	
@@ -2988,7 +3050,7 @@ int keyCompareByName(const void *p1, const void *p2) {
 
 
 /**
- * Sorts a KeySet aphabetically by Key names.
+ * Sorts a KeySet aphabetically by Key name, using qsort().
  *
  * @param ks KeySet to be sorted
  */
@@ -3013,27 +3075,178 @@ void ksSort(KeySet *ks) {
 
 
 
+
+/**
+ * Find a Key contained in @p ks KeySet that matches @p name, starting at
+ * @p ks' current internal cursor position.
+ * If found, @p ks internal cursor will be positioned in the matched key
+ * (also accessible by ksCurrent()), and a pointer to the Key is returned.
+ * If not found, @p ks internal cursor won't move, and a NULL pointer is
+ * returned.
+ *
+ * @see keyCompare() for very powerfull Key lookups in KeySets
+ * @see ksCurrent()
+ * @see ksRewind()
+ * @see ksNext()
+ * @return the Key found, 0 otherwise
+ */
+Key *ksLookupByName(KeySet *ks, const char *name) {
+	Key *init=0;
+	Key *current=0;
+	
+	init=ks->cursor;
+	
+	while ((current=ksNext(ks))) {
+		if (current->key == name) return current;
+		if ((current->key && name) &&
+			!strcmp(current->key,name)) return current;
+	}
+	
+	/* Reached end of KeySet. Put cursor in initial position. */
+	ks->cursor=init;
+	
+	return 0;
+}
+
+
+
+
+
+/**
+ * Find a Key contained in @p ks KeySet that matches @p value, starting at
+ * @p ks' current internal cursor position.
+ * If found, @p ks internal cursor will be positioned in the matched key
+ * (also accessible by ksCurrent()), and a pointer to the Key is returned.
+ * If not found, @p ks internal cursor won't move, and a NULL pointer is
+ * returned.
+ * 
+ * This function will also look into binary keys, but @p value must be a
+ * NULL-terminated regular string.
+ *
+ * @see keyCompare() for very powerfull Key lookups in KeySets
+ * @see ksCurrent()
+ * @see ksRewind()
+ * @see ksNext()
+ * @return the Key found, 0 otherwise
+ */
+Key *ksLookupByValue(KeySet *ks, const char *value) {
+	Key *init=0;
+	Key *current=0;
+	size_t size=0;
+	
+	size=strblen(value);
+	init=ks->cursor;
+	
+	while ((current=ksNext(ks))) {
+		if (current->data == value) return current;
+		if ((current->data && value) &&
+			!memcmp(current->data,value,
+			size<=current->dataSize?size:current->dataSize)) return current;
+	}
+	
+	/* reached end of KeySet */
+	ks->cursor=init;
+	
+	return 0;
+}
+
+
 /*
  * KDB_O_SORT: the ks is NOT sorted
  * KDB_O_NOSPANPARENT: find under current subtree only
  * KDB_O_CYCLE: restart from begining of KeySet if end reached
  * 
- *
-Key *ksFindRE(const KeySet *ks, const regex_t *regexp, unsigned long options) {
-	Key *current, *walker;
-	regmatch_t matched;
-	u_int rc;
+ */
+u_int32_t ksLookupRE(KeySet *ks, const regex_t *regexp,
+		u_int32_t where, unsigned long options) {
+	Key *init, *walker;
+	regmatch_t offsets;
+	u_int32_t match=0;
 	
-	current=ks->cursor;
+	init=ks->cursor;
 	
 	// TODO: finish this method
+	while ((walker=ksNext(ks))) {
+		if ((where & KEY_SWITCH_NAME) && walker->key)
+			if (!regexec(regexp,walker->key,1,&offsets,0))
+				match |= KEY_SWITCH_NAME;
+		
+		if ((where & KEY_SWITCH_VALUE) && walker->data &&
+			!(KEY_TYPE_BINARY <= walker->type && walker->type < KEY_TYPE_STRING))
+			if (!regexec(regexp,(char *)walker->data,1,&offsets,0))
+				match |= KEY_SWITCH_VALUE;
+		
+		if ((where & KEY_SWITCH_OWNER) && keyIsUser(walker))
+			if (!regexec(regexp,walker->userDomain,1,&offsets,0))
+				match |= KEY_SWITCH_OWNER;
+		
+		if ((where & KEY_SWITCH_COMMENT) && walker->comment)
+			if (!regexec(regexp,walker->comment,1,&offsets,0))
+				match |= KEY_SWITCH_OWNER;
+		
+		if (match) return match;
+	}
 	
-	rc=regexec(regexp,walker->key,1,&matched,0);
+	ks->cursor=init;
 	
-	if (rc == 0) return current;
-	else return 0;
+	return 0;
 }
-*/
+
+
+
+
+/**
+ * KeySet object initializer.
+ * 
+ * You should always use ksNew() instead of ksInit().
+ *
+ * Every KeySet object that will be used must be initialized first, to setup
+ * pointers, counters, etc. After use, all ksInit()ialized KeySets must be
+ * cleaned with ksClose().
+ * 
+ * @see ksNew()
+ * @see ksClose()
+ * @see keyInit()
+ */
+int ksInit(KeySet *ks) {
+	ks->start=ks->end=ks->cursor=0;
+	ks->size=0;
+	
+	return 0;
+}
+
+
+/**
+ * KeySet object cleaner.
+ *
+ * Will keyDel() all contained keys, reset internal pointers and counters.
+ * 
+ * After this call, the @p ks object is ready to be freed by you.
+ * 
+ * @see keyDel()
+ * @see ksInit()
+ * @see keyClose()
+ * @see ksAppend() for details on how keys are inserted in KeySets
+ * @return 0
+ */
+int ksClose(KeySet *ks) {
+	if (ks->size) {
+		while (ks->size) {
+			Key *destroyer=ks->start;
+			ks->start=destroyer->next;
+			keyDel(destroyer);
+			--ks->size;
+		}
+	}
+	ks->cursor=ks->end=ks->start;
+	return 0;
+}
+
+
+
+
+
+
 /**
  * @} // end of KeySet group
  */

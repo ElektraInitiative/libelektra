@@ -5,16 +5,17 @@
 - enum KeyFlags changed to enum KeySwitch (KeyFlags values maps to new KeySwitch for compatibility)
 - New stupendous keyNew(), keyDel(), ksNew(), ksDel() functions
 - All documentation and examples changed to increase usage of keyNew()
-- ksSort(), ksHead(), ksTail() methods appeared and documented
+- ksSort(), ksHead(), ksTail() methods appeared and documented.
+- ksLookupByName(), ksLookupByValu(), ksLookupRE() appeared as beta.
 - #ifdef __cplusplus to make it C++ safe
-- Working in ksFind*() methods
 - Many small fixes that appeared in the switch to keyNew()
 - Many other fixes, code robustness and cleanup
 - User-defined key types greatly improved, fixed and tested
 - XML export can now supress obvious UID and GID for 'user/*' keys
 - XML export can now supress user domain for 'user/*' keys
-- new keyNewExample.c on example/
+- new keyNewExample.c and lookup.c on example/
 - new example/keyset.xml with example of complex keys, and how they look XML-exported.
+- XML DTD were droped. Now we have XML schemas, thanks to Rémi.
 
 * Fri Nov 28 2004 Avi Alkalay <avi@unix.sh> 0.4.7
 - Better BuildPrereq in spec file

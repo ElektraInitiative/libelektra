@@ -138,11 +138,12 @@ enum KeySwitch {
 	KEY_SWITCH_TYPE=1,          /*!< Flag for the key type */
 	KEY_SWITCH_NAME=1<<1,       /*!< Flag for the key name */
 	KEY_SWITCH_VALUE=1<<2,      /*!< Flag for the key data */
-	KEY_SWITCH_DOMAIN=1<<5,     /*!< Flag for the key user domain */
+	KEY_SWITCH_OWNER=1<<5,      /*!< Flag for the key user domain */
+	KEY_SWITCH_DOMAIN=KEY_SWITCH_OWNER, /*!< An alias */
 	KEY_SWITCH_COMMENT=1<<6,    /*!< Flag for the key comment */
 	KEY_SWITCH_UID=1<<7,        /*!< Flag for the key UID */
 	KEY_SWITCH_GID=1<<8,        /*!< Flag for the key GID */
-	KEY_SWITCH_PRM=1<<10,       /*!< Flag for the key permissions */
+	KEY_SWITCH_MODE=1<<10,      /*!< Flag for the key permissions */
 	KEY_SWITCH_TIME=1<<11,      /*!< Flag for the key change time */
 	KEY_SWITCH_NEEDSYNC=1<<12,  /*!< Flags that key needs syncronization */
 	KEY_SWITCH_ACTIVE=1<<14,    /* ****deprecated**** */
@@ -170,7 +171,7 @@ enum KeyFlags {                                       /* _DEPRECATED_ */
 	KEY_FLAG_HASCOMMENT   = KEY_SWITCH_COMMENT,       /* _DEPRECATED_ */
 	KEY_FLAG_HASUID       = KEY_SWITCH_UID,           /* _DEPRECATED_ */
 	KEY_FLAG_HASGID       = KEY_SWITCH_GID,           /* _DEPRECATED_ */
-	KEY_FLAG_HASPRM       = KEY_SWITCH_PRM,           /* _DEPRECATED_ */
+	KEY_FLAG_HASPRM       = KEY_SWITCH_MODE,           /* _DEPRECATED_ */
 	KEY_FLAG_HASTIME      = KEY_SWITCH_TIME,          /* _DEPRECATED_ */
 	KEY_FLAG_NEEDSYNC     = KEY_SWITCH_NEEDSYNC,      /* _DEPRECATED_ */
 	KEY_FLAG_FLAG         = KEY_SWITCH_FLAG,          /* _DEPRECATED_ */
@@ -525,6 +526,11 @@ size_t ksAppendKeys(KeySet *ks, KeySet *toAppend);
 size_t ksToStream(const KeySet *ks, FILE* stream, unsigned long options);
 int ksCompare(KeySet *ks1, KeySet *ks2, KeySet *removed);
 void ksSort(KeySet *ks);
+
+Key *ksLookupByName(KeySet *ks, const char *name);
+Key *ksLookupByValue(KeySet *ks, const char *value);
+u_int32_t ksLookupRE(KeySet *ks, const regex_t *regexp,
+		u_int32_t where, unsigned long options);
 
 int ksRewind(KeySet *ks);
 Key *ksNext(KeySet *ks);

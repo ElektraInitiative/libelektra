@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- By Rémi <remipouak@yahoo.fr> -->
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns="http://elektra.sourceforge.net"
+	targetNamespace="http://elektra.sourceforge.net"
+	elementFormDefault="qualified">
+	
+	<xsd:element name="keyset" type="keysettype"/>
+	
+	<xsd:complexType name="keysettype">
+		<xsd:sequence>
+			<xsd:element name="key" maxOccurs="unbounded">
+				<xsd:complexType>
+				
+					<xsd:sequence>
+						<xsd:element name="value" minOccurs="0"/>
+						<xsd:element name="comment" minOccurs="0">
+							<xsd:annotation>
+								<xsd:documentation>This is CDATA, but I think it could be a xsd:string</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+					
+					<xsd:attribute name="id" type="xsd:decimal" use="optional"/>
+					<xsd:attribute name="name" type="xsd:string" use="required"/>
+					<xsd:attribute name="type" type="key_type" use="optional" default="string"/>
+					<xsd:attribute name="uid" type="xsd:string" use="optional"/>
+					<xsd:attribute name="gid" type="xsd:string" use="optional"/>
+					<xsd:attribute name="mode" type="mode_type" use="optional"/>
+					<xsd:attribute name="atime"  use="optional"/>
+					<xsd:attribute name="ctime" use="optional"/>
+					<xsd:attribute name="mtime"  use="optional"/>
+					
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:simpleType name="key_type">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="string"/>
+			<xsd:enumeration value="binary"/>
+			<xsd:enumeration value="directory"/>
+			<xsd:enumeration value="link"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="mode_type">
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value="[0-7]{4}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+</xsd:schema>
