@@ -120,7 +120,7 @@ install: all
 	cp kdb ${DESTDIR}${BINDIR}
 	cp kdb.h kdbprivate.h kdbbackend.h kdbtools.h ${DESTDIR}${INCDIR}
 	cp kdb.c ${DESTDIR}${DOCDIR}/${NAME}-devel/examples/
-	cp kdbfuture.h ${DESTDIR}${DOCDIR}/${NAME}-devel
+	# cp kdbfuture.h ${DESTDIR}${DOCDIR}/${NAME}-devel
 	cp -r backends/template ${DESTDIR}${DOCDIR}/${NAME}-devel/backend-template
 	for x in ${BACKENDS}; do (cd "backends/$$x"; $(MAKE) DESTDIR=${DESTDIR}\
 		OPTIMIZATIONS="${OPTIMIZATIONS}" \
