@@ -239,7 +239,7 @@ int kdbNeedsUTF8Conversion() {
  *
  * <b>internal usage only-</b>
  * @ingroup internals
- * @return 0 on success, -1 otherwise, and propagate @p errno
+ * @return 0 on success, -1 otherwise, and propagate @c errno
  *
  */
 int UTF8Engine(int direction, char **string, size_t *inputByteSize) {
@@ -857,7 +857,7 @@ size_t kdbGetFilename(Key *forKey,char *returned,size_t maxSize) {
  * @see kdbGetKey()
  * @see kdbGetValueByParent()
  * @see keyGetString()
- * @return 0 on success, or other value and errno is set
+ * @return 0 on success, or other value and @c errno is set
  * @param keyname the name of the key to receive the value
  * @param returned a buffer to put the key value
  * @param maxSize the size of the buffer
@@ -892,7 +892,7 @@ int kdbGetValue(const char *keyname, char *returned,size_t maxSize) {
  * @see kdbSetKey()
  * @param keyname the name of the key to receive the value
  * @param value the value to be set
- * @return 0 on success, other value otherwise, and errno is set
+ * @return 0 on success, other value otherwise, and @c errno is set
  * @ingroup kdb
  */
 int kdbSetValue(const char *keyname, const char *value) {
@@ -973,7 +973,7 @@ int kdbSetValueByParent(const char *parentName, const char *baseName, const char
  * @param parentName parent key name
  * @param baseName leaf or child name
  * @param returned a pointer to an initialized key to be filled
- * @return 0 on success, or what kdbGetKey() returns, and errno is set
+ * @return 0 on success, or what kdbGetKey() returns, and @c errno is set
  * @see kdbGetKey()
  * @see kdbGetValueByParent()
  * @see kdbGetKeyByParentKey()
@@ -995,7 +995,7 @@ int kdbGetKeyByParent(const char *parentName, const char *baseName, Key *returne
  * @see kdbGetKey()
  * @see kdbGetKeyByParent()
  * @see kdbGetValueByParent()
- * @return 0 on success, or what kdbGetKey() returns, and errno is set
+ * @return 0 on success, or what kdbGetKey() returns, and @c errno is set
  * @ingroup kdb
  */
 int kdbGetKeyByParentKey(const Key *parent, const char *baseName, Key *returned) {
@@ -1012,15 +1012,6 @@ int kdbGetKeyByParentKey(const Key *parent, const char *baseName, Key *returned)
 }
 
 
-
-
-/* Used by the qsort() function */
-int keyCompareByName(const void *p1, const void *p2) {
-	Key *key1=*(Key **)p1;
-	Key *key2=*(Key **)p2;
-
-	return strcmp(key1->key, key2->key);
-}
 
 
 
@@ -1048,7 +1039,7 @@ int keyCompareByName(const void *p1, const void *p2) {
  *   uses this option.
  * - @p KDB_O_INACTIVE \n
  *   Will make it not ignore inactive keys. So @p returned will be filled also
- *   with inactive keys. See registry(7) to understand how inactive keys work.
+ *   with inactive keys. See elektra(7) to understand how inactive keys work.
  * - @p KDB_O_SORT \n
  *   Will sort keys alphabetically by their names.
  *
@@ -1080,14 +1071,14 @@ if (rc) switch (errno) {
 ksRewind(&myConfig); // go to begining of KeySet
 Key *key=ksNext(&myConfig);
 while (key) {
-	// do something with key . . .
+	// do something with each key . . .
 
 	key=ksNext(&myConfig); // next key
 }
  * @endcode
  *
  * @param parentName name of the parent key
- * @param returned the KeySet returned with all keys found
+ * @param returned the (pre-initialized) KeySet returned with all keys found
  * @param options ORed options to control approaches
  * @see KDBOptions
  * @see commandList() code in kdb command for usage example
@@ -1198,24 +1189,8 @@ int kdbGetChildKeys(const char *parentName, KeySet *returned, unsigned long opti
 	keyClose(&parentKey);
 	free(realParentName);
 
-	if ((options & (KDB_O_SORT)) && (returned->size > 1)) {
-		Key *keys[returned->size];
-		Key *cursor;
-		size_t c=0;
-
-		for (cursor=returned->start; cursor; cursor=cursor->next, c++)
-			keys[c]=cursor;
-
-		qsort(keys,returned->size,sizeof(Key *),keyCompareByName);
-
-		returned->start=cursor=keys[0];
-		for (c=1; c<returned->size; c++) {
-			cursor->next=keys[c];
-			cursor=cursor->next;
-		}
-		cursor->next=0;
-		returned->end=cursor;
-	}
+	if ((options & (KDB_O_SORT)) && (returned->size > 1))
+		ksSort(returned);
 
 	return 0;
 }
@@ -1310,7 +1285,7 @@ int kdbStatKey(Key *key) {
 /**
  * Fully retrieves the passed @p key from the backend storage.
  * @param key a pointer to a Key that has a name set
- * @return 0 on success, or other value and @p errno is set
+ * @return 0 on success, or other value and @c errno is set
  * @see kdbSetKey()
  * @see commandGet() code in kdb command for usage example
  * @ingroup kdb
@@ -1361,7 +1336,7 @@ int kdbGetKey(Key *key) {
  * If some error occurs, kdbSetKeys() stops and returns whatever kdbSetKey()
  * returned. The KeySet internal cursor is left on the key that generated
  * the error (so you may check it latter with ksCurrent()). The internal 
- * kdbSetKey() also sets @p errno in case of error.
+ * kdbSetKey() also sets @c errno in case of error.
  *
  * @param ks a KeySet full of changed keys
  * @return 0 on success, or whatever kdbSetKey() returns
@@ -1393,12 +1368,12 @@ int kdbSetKeys(KeySet *ks) {
 
 /**
  * Commits a key to the backend storage.
- * If failed (see return), the @p errno global is set accordingly.
+ * If failed (see return), the @c errno global is set accordingly.
  *
  * @see kdbGetKey()
  * @see kdbSetKeys()
  * @see commandSet() code in kdb command for usage example
- * @return 0 on success, or other value and errno is set
+ * @return 0 on success, or other value and @c errno is set
  * @ingroup kdb
  */
 int kdbSetKey(Key *key) {
@@ -1526,7 +1501,7 @@ int kdbSetKey(Key *key) {
  *
  * @param key the key to be renamed
  * @param newName the new key name
- * @return -1 or whathever is returned by rename(), and @p errno is propagated
+ * @return -1 or whathever is returned by rename(), and @c errno is propagated
  * @ingroup kdb
  */
 int kdbRename(Key *key, const char *newName) {
@@ -1555,7 +1530,7 @@ int kdbRename(Key *key, const char *newName) {
  * This method is not recursive.
  *
  * @param keyName the name of the key to be removed
- * @return whathever is returned by remove(), and @p errno is propagated
+ * @return whathever is returned by remove(), and @c errno is propagated
  * @see commandRemove() code in kdb command for usage example
  * @ingroup kdb
  */
@@ -1584,7 +1559,7 @@ int kdbRemove(const char *keyName) {
  * @param oldPath destination key name
  * @param newKeyName name of the key that will be created and will point
  * to @param oldPath
- * @return whathever is returned by kdbSetKey(), and \p errno is set
+ * @return whathever is returned by kdbSetKey(), and @c errno is set
  * @see commandLink() code in kdb command for usage example
  * @see commandSet() code in kdb command for usage example
  * @ingroup kdb
@@ -1613,7 +1588,7 @@ int kdbLink(const char *oldPath, const char *newKeyName) {
  * the KeySet next cursor position, in a circular behavior, looking for some
  * change defined in the @p diffMask mask. It will use kdbMonitorKey()
  * and will return at the first key change ocurrence, or when requested
- * iterations finish.
+ * @p iterations finish.
  *
  * You may check the return code to see if some key changed, and get
  * the updated key using ksCurrent().
@@ -1700,8 +1675,8 @@ u_int32_t kdbMonitorKeys(KeySet *interests, u_int32_t diffMask,
 /**
  * Monitor a key change.
  *
- * This method will block your program until one of the folowing happens:
- * - All requested iterations, with requested sleep times, finish.
+ * This method will block execution until one of the folowing happens:
+ * - All requested @p iterations, with requested @p sleep times, finish.
  *   If no change happens, zero is returned.
  * - Requested key info and meta-info (defined by @p diffMask) changes when
  *   keyCompare()ed with the original @p interest.
@@ -1724,7 +1699,7 @@ u_int32_t kdbMonitorKeys(KeySet *interests, u_int32_t diffMask,
  *
  * @param interest key that will be monitored
  * @param diffMask what particular info change we are interested
- * @param iterations how many times to test, when 0 means until
+ * @param iterations how many times to test. 0 means infinitum or until
  * some change happens
  * @param sleep time to sleep, in microseconds, between iterations.
  * 0 defaults to 1 second.
@@ -1759,6 +1734,7 @@ u_int32_t kdbMonitorKey(Key *interest, u_int32_t diffMask,
 	while (infinitum || --iterations) {
 		rc=kdbGetKey(&tested);
 		if (rc) {
+			keyClose(&tested);
 			/* check what type of problem happened.... */
 			switch (errno) {
 				case KDB_RET_NOCRED:
@@ -1767,9 +1743,14 @@ u_int32_t kdbMonitorKey(Key *interest, u_int32_t diffMask,
 					return KEY_FLAG_FLAG;
 			}
 		}
+		
 		diff=keyCompare(&tested,interest);
+		
 		if (diff & diffMask) {
-			/* If differences are in the diff mask...*/
+			/* If differences interests us, return it, otherwise cycle again.
+			 * We don't loose the original key context in a KeySet because
+			 * we worked with a copy of the key.
+			 */
 			keyDup(&tested,interest);
 			keyClose(&tested);
 			return diff;
@@ -1777,6 +1758,8 @@ u_int32_t kdbMonitorKey(Key *interest, u_int32_t diffMask,
 		/* Test if some iterations left . . . */
 		if (infinitum || iterations) usleep(sleep);
 	}
+	
+	keyClose(&tested);
 
 	return 0;
 }

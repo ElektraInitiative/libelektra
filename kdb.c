@@ -63,6 +63,7 @@ $LastChangedBy$
 #define CMD_SAVE      8
 #define CMD_MONITOR   9
 #define CMD_MOVE      10
+#define CMD_HELP      30
 
 #define ARGSIZE      30
 
@@ -205,8 +206,9 @@ int parseCommandLine(int argc, char *argv[]) {
 	else if (!strcmp(sargCommand,"mon")) argCommand=CMD_MONITOR;
 	else if (!strcmp(sargCommand,"monitor")) argCommand=CMD_MONITOR;
 	else if (!strcmp(sargCommand,"mv")) argCommand=CMD_MOVE;
+	else if (!strcmp(sargCommand,"help")) argCommand=CMD_HELP;
 	else {
-		fprintf(stderr,"Invalid subcommand\n");
+		fprintf(stderr,"kdb: Invalid subcommand.\n");
 		exit(1);
 	}
 
@@ -666,11 +668,12 @@ int commandList() {
 				ksInit(&thisRoot);
 				keyGetFullName(key,rootName,sizeof(rootName));
 				if (argValue) ret=kdbGetChildKeys(rootName,&thisRoot,
-					(argSort?KDB_O_SORT:0) | argRecursive | KDB_O_DIR |
-					(argAll?KDB_O_INACTIVE:0) | KDB_O_NFOLLOWLINK);
-				else ret=kdbGetChildKeys(rootName,&thisRoot,
-					(argSort?KDB_O_SORT:0) | KDB_O_STATONLY | argRecursive |
+					(argSort?KDB_O_SORT:0) | (argRecursive?KDB_O_RECURSIVE:0) |
 					KDB_O_DIR | (argAll?KDB_O_INACTIVE:0) | KDB_O_NFOLLOWLINK);
+				else ret=kdbGetChildKeys(rootName,&thisRoot,
+					(argSort?KDB_O_SORT:0) | KDB_O_STATONLY |
+					(argRecursive?KDB_O_RECURSIVE:0) | KDB_O_DIR |
+					(argAll?KDB_O_INACTIVE:0) | KDB_O_NFOLLOWLINK);
 				temp=key->next;
 				ksAppend(&ks,key);
 				ksAppendKeys(&ks,&thisRoot);
@@ -681,11 +684,12 @@ int commandList() {
 		/* User gave us a specific key to start with */
 
 		if (argValue) ret=kdbGetChildKeys(argKeyName,&ks,
-			(argSort?KDB_O_SORT:0) | argRecursive | KDB_O_DIR |
-			(argAll?KDB_O_INACTIVE:0) | KDB_O_NFOLLOWLINK);
-		else ret=kdbGetChildKeys(argKeyName,&ks,
-			(argSort?KDB_O_SORT:0) | KDB_O_STATONLY | argRecursive |
+			(argSort?KDB_O_SORT:0) | (argRecursive?KDB_O_RECURSIVE:0) |
 			KDB_O_DIR | (argAll?KDB_O_INACTIVE:0) | KDB_O_NFOLLOWLINK);
+		else ret=kdbGetChildKeys(argKeyName,&ks,
+			(argSort?KDB_O_SORT:0) | KDB_O_STATONLY |
+			(argRecursive?KDB_O_RECURSIVE:0) | KDB_O_DIR |
+			(argAll?KDB_O_INACTIVE:0) | KDB_O_NFOLLOWLINK);
 	
 		if (ret) {
 				/* We got an error. Check if it is because its not a folder key */
@@ -735,8 +739,8 @@ int commandList() {
 
 	ksClose(&ks);
 	if (key) {
-	        keyClose(key);
-	        free(key);
+		keyClose(key);
+		free(key);
 	}
 	return 0;
 }
@@ -1078,16 +1082,17 @@ int ksFromXML(KeySet *ks,int fd) {
 /**
  * Opens an editor to edit an XML representation of the keys.
  * This is one of the most complex commands of the kdb program.
- * Is will
+ * It will
  * -# retrieve the desired keys
- * -# put them as inside an editor in an XML format to let the user edit
+ * -# put them inside an editor in an XML format to let the user change them
  * -# wait for the editor to finish
  * -# reread the edited XML, converting to an internal KeySet
- * -# compare original and edited KeySets to detect differences
+ * -# compare original and edited KeySets, with ksCompare(), to detect
+ *    differences
  * -# remove removed keys
  * -# update updated keys
  * -# add added keys
- * -# leave untouched the not changed keys
+ * -# leave untouched the not-changed keys
  *
  * @par Example:
  * @code
@@ -1099,6 +1104,7 @@ int ksFromXML(KeySet *ks,int fd) {
  * @see ksCompare()
  * @see kdbGetChildKeys()
  * @see ksToStream()
+ * @see kdbRemove()
  * @see kdbSetKeys()
  * @param argKeyName the parent key name (and children) that will be edited
  * @param argRecursive whether to act recursivelly or not
@@ -1150,6 +1156,7 @@ int commandEdit() {
 	ksToStream(&ks,xmlfile,KDB_O_XMLHEADERS);
 	fclose(xmlfile);
 
+	/* execute the editor and wait for it to finish */
 	sprintf(command,"[ -z \"$EDITOR\" ] && EDITOR=vi; $EDITOR %s",filename);
 	system(command);
 
@@ -1158,7 +1165,7 @@ int commandEdit() {
 
 	/* ksFromXML is not a library function.
 	 * It is implemented in and for this program only.
-   *       It is pretty reusable code, though.
+	 * It is pretty reusable code, though.
 	 */
 	ksFromXMLfile(&ksEdited,filename);
 	remove(filename);
@@ -1166,16 +1173,19 @@ int commandEdit() {
 	ksCompare(&ks,&ksEdited,&toRemove);
 
 	ksRewind(&ks);
-	ret=kdbSetKeys(&ks);
-	if (ret != 0) {
+	while ((ret=kdbSetKeys(&ks))) {
+		/* We got an error. Warn user. */
 		Key *problem;
 		char error[500];
 		char keyname[300]="";
 		
 		problem=ksCurrent(&ks);
 		if (problem) keyGetFullName(problem,keyname,sizeof(keyname));
-		sprintf(error,"kdb edit: when commiting %s",keyname);
+		sprintf(error,"kdb edit: while updating %s", keyname);
 		perror(error);
+		
+		/* And try to set keys again starting from the next key */
+		ksNext(&ks);
 	}
 
 	ksRewind(&toRemove);
@@ -1183,7 +1193,14 @@ int commandEdit() {
 		char keyName[800];
 
 		keyGetFullName(current,keyName,sizeof(keyName));
-		kdbRemove(keyName);
+		ret=kdbRemove(keyName);
+		if (ret != 0) {
+			char error[500];
+			char keyname[300]="";
+			
+			sprintf(error,"kdb edit: while removing %s",keyname);
+			perror(error);
+		}
 	}
 
 	return 0;
@@ -1217,17 +1234,19 @@ int commandImport() {
 	else ksFromXML(&ks,fileno(stdin) /* more elegant then just '0' */);
 
 	ksRewind(&ks);
-	ret=kdbSetKeys(&ks);
-	
-	if (ret != 0) {
+	while ((ret=kdbSetKeys(&ks))) {
+		/* We got an error. Warn user. */
 		Key *problem;
 		char error[500];
 		char keyname[300]="";
 		
 		problem=ksCurrent(&ks);
 		if (problem) keyGetFullName(problem,keyname,sizeof(keyname));
-		sprintf(error,"kdb import: when commiting %s",keyname);
+		sprintf(error,"kdb import: while importing %s", keyname);
 		perror(error);
+		
+		/* And try to set keys again starting from the next key */
+		ksNext(&ks);
 	}
 	
 	return ret;
@@ -1267,7 +1286,7 @@ int commandExport() {
 	argValue=1;
 	argFullName=1;
 
-	/* force UTF-8 for a superuniversal charset */
+	/* force a superuniversal modern charset: UTF-8 */
 	setenv("LANG","en_US.UTF-8",1);
 	
 	/* reopen key database to forced charset to take effect */
@@ -1320,6 +1339,37 @@ int commandMonitor() {
 }
 
 
+/**
+ * Prints on stderr some brief examples on how to use kdb command.
+ *
+ * @par Example:
+ * @code
+ * bash$ kdb help
+ * @endcode
+ */
+int commandHelp() {
+	fprintf(stderr,"Use kdb to manipulate the Key Database. Examples:\n\n");
+	fprintf(stderr," kdb get [-dlr] key/name\n");
+	fprintf(stderr," kdb set [-t type] [-c \"A comment about this key\"] [-m mode] [-u uid]\n");
+	fprintf(stderr,"         [-g gid] key/name \"the value\"\n");
+	fprintf(stderr," kdb set [-t type] [-m mode] [-c \"A comment\"] key/name -- \"the value\"\n");
+	fprintf(stderr," kdb set [-t type] [-b file] key/name\n");
+	fprintf(stderr," kdb ls [-lRfv] [key/dir | key/name]\n");
+	fprintf(stderr," kdb ls [-lRfvx] [key/dir | key/name] > keys.xml\n");
+	fprintf(stderr," kdb edit [-R] [key/dir | key/name]\n");
+	fprintf(stderr," kdb rm key/name\n");
+	fprintf(stderr," kdb mv key/src key/dest\n");
+	fprintf(stderr," kdb ln key/src key/dest\n");
+	fprintf(stderr," kdb export system/some/tree.root > file.xml\n");
+	fprintf(stderr," kdb import < file.xml\n");
+	fprintf(stderr," kdb import file.xml\n");
+	fprintf(stderr," kdb monitor some/key/name\n\n");
+	fprintf(stderr,"For additional info see kdb(1).\n");
+	
+	return 0;
+}
+
+
 int doCommand(int command) {
 	switch (command) {
 		case CMD_SET:             return commandSet();
@@ -1332,6 +1382,7 @@ int doCommand(int command) {
 		case CMD_SAVE:            return commandExport();
 		case CMD_MONITOR:         return commandMonitor();
 		case CMD_MOVE:            return commandMove();
+		case CMD_HELP:            return commandHelp();
 	}
 	return 0;
 }

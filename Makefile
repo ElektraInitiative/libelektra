@@ -3,7 +3,7 @@
 # $LastChangedBy$
 
 NAME=elektra
-CC=gcc -Wcomment -Wformat -Wimplicit-int -Wimplicit-function-declaration -Wparentheses -Wreturn-type -Wunused -Wuninitialized ${OPTIMIZATIONS}
+CC=gcc ${OPTIMIZATIONS} -Wcomment -Wformat -Wimplicit-int -Wimplicit-function-declaration -Wparentheses -Wreturn-type -Wunused -Wuninitialized
 XMLINCLUDES=`xml2-config --cflags`
 XMLLIBS=`xml2-config --libs`
 
@@ -11,7 +11,8 @@ DTDVERSION=0.1.0
 SVNREP=http://germane-software.com/repositories/elektra
 
 
-# Default dirs we use for installation, that can be substituted by the command line.
+# Default dirs we use for installation, that can be substituted by the
+# command line. See the README file or the RPM spec file.
 BINDIR=/bin
 UBINDIR=/usr/bin
 LIBDIR=/lib

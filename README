@@ -148,3 +148,19 @@ Under the doc/ folder, you can make:
 - make pubi
   Publish only image files
 
+
+To all makes, you can pass parameters to define installation directories
+and optimizations.
+This is an example of how we call it from a full RPM build:
+
+gmake OPTIMIZATIONS="$RPM_OPT_FLAGS" \
+	%{?_smp_mflags} \
+	DESTDIR=$RPM_BUILD_ROOT \   # / (default)
+	UBINDIR=%{_bindir} \        # /usr/bin
+	ULIBDIR=%{_libdir} \        # /usr/lib
+	CONFDIR=%{_sysconfdir} \    # /etc
+	INCDIR=%{_includedir} \     # /usr/include
+	DOCDIR=%{_docdir} \         # /usr/share/doc
+	MANDIR=%{_mandir} \         # /usr/share/man
+	SGMLDIR=%{_datadir}/sgml \  # /usr/share/sgml
+	install

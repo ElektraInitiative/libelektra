@@ -1089,10 +1089,10 @@ size_t keySetLink(Key *key, const char *target) {
 /**
  * Clone a key.
  *
- * All private information of the source key will be copied, and nothing
- * will be shared between both keys.
- * keyClose() will be used on destination key before the operation. Internal
- * buffers will be automatically allocated on destination.
+ * All private attributes of the source key will be copied, including its
+ * context on a KeySet, and nothing will be shared between both keys.
+ * keyClose() will be used on @p dest key before the operation, and internal
+ * buffers will be automatically allocated on @p dest.
  *
  * @param source the source key
  * @param dest the new copy of the key
@@ -1105,7 +1105,7 @@ int keyDup(const Key *source, Key *dest) {
 	/* clear everything first */
 	keyClose(dest);
 
-	/* Copy the struct data */
+	/* Copy the struct data, including the "next" pointer */
 	*dest=*source;
 
 	/* prepare to set dynamic properties */
@@ -2600,6 +2600,61 @@ size_t ksToStream(const KeySet *ks, FILE* stream, unsigned long options) {
 	return written;
 }
 
+
+
+/* Used by the qsort() function */
+int keyCompareByName(const void *p1, const void *p2) {
+	Key *key1=*(Key **)p1;
+	Key *key2=*(Key **)p2;
+
+	return strcmp(key1->key, key2->key);
+}
+
+
+/**
+ * Sorts a KeySet aphabetically by Key names.
+ *
+ * @param ks KeySet to be sorted
+ */
+void ksSort(KeySet *ks) {
+	Key *keys[ks->size];
+	Key *cursor;
+	size_t c=0;
+
+	for (cursor=ks->start; cursor; cursor=cursor->next, c++)
+		keys[c]=cursor;
+
+	qsort(keys,ks->size,sizeof(Key *),keyCompareByName);
+
+	ks->start=cursor=keys[0];
+	for (c=1; c<ks->size; c++) {
+		cursor->next=keys[c];
+		cursor=cursor->next;
+	}
+	cursor->next=0;
+	ks->end=cursor;
+}
+
+
+
+/*
+ * KDB_O_SORT: the ks is NOT sorted
+ * KDB_O_NOSPANPARENT: find under current subtree only
+ * KDB_O_CYCLE: restart from begining of KeySet if end reached
+ * 
+ */
+Key *ksFindRE(const KeySet *ks, const regex_t *regexp, unsigned long options) {
+	Key *current, *walker;
+	regmatch_t matched;
+	u_int rc;
+	
+	current=ks->cursor;
+	
+	
+	rc=regexec(regexp,walker->key,1,&matched,0);
+	
+	if (rc == 0) return current;
+}
 
 /**
  * @} // end of KeySet group

@@ -36,6 +36,7 @@ $LastChangedBy$
 				<authorinitials>avi</authorinitials>
 				<revdescription>
 					<itemizedlist>
+						<listitem><simpara>Changed link to regedit RPMs.</simpara></listitem>
 						<listitem><simpara>Added link to the X.org patch.</simpara></listitem>
 					</itemizedlist>
 				</revdescription>
@@ -429,7 +430,7 @@ $LastChangedBy$
 			
 			<section id="ecotools"><title>Tools and Software Patches</title>
 				<itemizedlist>
-					<listitem><simpara><ulink url="http://www.livejournal.com/users/gregorburger/">Regedit GUI to edit the key database</ulink>, using the QT library, by Gregor Burger. There is a <ulink url="http://developer.berlios.de/projects/tlr-regedit/">Berlios entry</ulink> with Subversion repository, and <ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628">RPM packages available</ulink>.</simpara></listitem>
+					<listitem><simpara><ulink url="http://www.livejournal.com/users/gregorburger/">Regedit GUI to edit the key database</ulink>, using the QT library, by Gregor Burger. There is a <ulink url="http://developer.berlios.de/projects/tlr-regedit/">Berlios entry</ulink> with Subversion repository, and <ulink url="http://sourceforge.net/project/showfiles.php?group_id=117521">RPM packages available</ulink>.</simpara></listitem>
 					<listitem><simpara><ulink url="http://sourceforge.net/project/showfiles.php?group_id=117521">Elektrified <emphasis>X.org</emphasis></ulink> to use a key database instead of <filename>xorg.conf</filename> file.</simpara></listitem>
 					<listitem><simpara><ulink url="http://sourceforge.net/project/showfiles.php?group_id=117521">Elektrified <filename>/sbin/init</filename> and Fedora Core 2 RPMs</ulink> for the <ulink url="ftp://ftp.cistron.nl/pub/people/miquels/sysvinit/">original sysvinit package from Miquel van Smoorenburg</ulink>.</simpara></listitem>
 					<listitem><simpara><ulink url="http://nss-registry.skumler.net">Users and Groups Name System Module for GLibC</ulink>, by Jens Andersen. This is a module that can be activated by the name system switch mechanism (<filename>/etc/nsswitch.conf</filename>) to let users and groups databases be Elektrified, instead of <filename>/etc/{passwd|shadow|groups}</filename>.</simpara></listitem>
