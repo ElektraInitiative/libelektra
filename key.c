@@ -437,8 +437,8 @@ size_t keySetName(Key *key, char *newName) {
 
 
 /** Extracts the user name from Key::key.
-	Given 'user:someuser/*' return 'someuser'
-	Given 'user:some.user/*' return 'some.user'
+	Given 'user:someuser/.....' return 'someuser'
+	Given 'user:some.user/....' return 'some.user'
 */
 size_t keyGetOwner(Key *key, char *returned, size_t maxSize) {
 	size_t bytes;

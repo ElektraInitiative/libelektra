@@ -167,6 +167,7 @@ int parseCommandLine(int argc, char *argv[]) {
 	else if (!strcmp(sargCommand,"vi")) argCommand=CMD_EDIT;
 	else if (!strcmp(sargCommand,"edit")) argCommand=CMD_EDIT;
 	else if (!strcmp(sargCommand,"load")) argCommand=CMD_LOAD;
+	else if (!strcmp(sargCommand,"import")) argCommand=CMD_LOAD;
 	else {
 		fprintf(stderr,"Invalid subcommand\n");
 		exit(1);
@@ -727,6 +728,7 @@ int processNode(KeySet *ks, xmlTextReaderPtr reader) {
 }
 
 
+/* This function is completelly dependent on libxml */
 int ksFromXML(KeySet *ks,char *filename) {
 	xmlTextReaderPtr reader;
 	int ret;
@@ -744,11 +746,6 @@ int ksFromXML(KeySet *ks,char *filename) {
 	} else {
 		printf("Unable to open %s\n", filename);
 	}
-	return 0;
-}
-
-
-int commandLoad() {
 	return 0;
 }
 
@@ -803,6 +800,11 @@ int commandEdit() {
 	
 	ksInit(&toRemove);
 	ksInit(&ksEdited);
+
+	/* ksFromXML is not a library function.
+	   It is implemented in and for this program only.
+           It is pretty reusable code, though.
+	*/
 	ksFromXML(&ksEdited,filename);
 	remove(filename);
 	
@@ -821,6 +823,19 @@ int commandEdit() {
 	return 0;
 }
 
+
+int commandLoad() {
+	KeySet ks;
+	FILE *xmlfile=0;
+
+	ksInit(&ks);
+	/* The command line parsing function will put the XML filename
+	   in the argKeyName global, so forget the variable name. */
+	if (*argKeyName) ksFromXML(&ks,argKeyName);
+	/* else process stdin */
+
+	return registrySetKeys(&ks);
+}
 
 
 int doCommand(int command) {
