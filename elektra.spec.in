@@ -42,10 +42,18 @@ API in C.
 
 It also provides the framework to create storage backends to libkdb.so
 
+
+
+
+
+
+
+
+
 %package backend-gconf
-Summary:      Include files and API documentation for Elektra Project
-Group:        Development/System
-Requires:     elektra = %{version}-%{release}
+Summary:      A GConf backend for Elektra
+Group:        System Environment/Libraries
+Requires:     elektra
 
 
 %description backend-gconf
@@ -57,7 +65,31 @@ This way any software can read/save his configuration using a consistent API.
 Also, applications can be aware of other applications configurations,
 leveraging easy application integration.
 
-This package contains a GConf backend for Elektra.
+This package contains a GConf backend for Elektra, to let Elektra use a GConf
+daemon to store its keys.
+
+
+
+
+
+%package backend-berkeleydb
+Summary:      Include files and API documentation for Elektra Project
+Group:        System Environment/Libraries
+Requires:     elektra
+
+
+%description backend-berkeleydb
+The Elektra Project provides a framework to store generic configuration data
+in an hierarchical key-value pair database, instead of a human-readable only
+text file.
+
+This way any software can read/save his configuration using a consistent API.
+Also, applications can be aware of other applications configurations,
+leveraging easy application integration.
+
+This package contains a Berkeley DB backend for Elektra, to let Elektra use
+Berkeley DB databases to store its keys.
+
 
 
 %prep
@@ -148,6 +180,10 @@ kdb set system/sw/kdb/current/schemapath "%{_datadir}/sgml/elektra-%{DTDVERSION}
 %files backend-gconf
 %defattr(-,root,root,0755)
 /lib/*gconf.so*
+
+%files backend-berkeleydb
+%defattr(-,root,root,0755)
+/lib/*berkeleydb.so*
 
 
 

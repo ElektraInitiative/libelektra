@@ -101,6 +101,7 @@ typedef struct _DBTree {
  */
 typedef struct {
 	size_t size;       /* number of opened databases */
+	DBTree *cursor;
 	DBTree *first;     /* databases */
 } DBContainer;
 
@@ -178,16 +179,21 @@ int keyFromBDB(Key *key, DBT *dbkey, DBT *dbdata) {
 	memcpy(key,          /* destination */
 		dbdata->data,    /* source */
 		metaInfoSize);   /* size */
+	
+	key->flags = KEY_SWITCH_INITIALIZED;
 
-	/* Set key name */
+	/* Set key name. TODO: not needed... we can hack internally for speed */
 	keySetName(key,dbkey->data);
 	
 	/* Set comment */
 	if (key->commentSize)
 		keySetComment(key,dbdata->data+metaInfoSize);
 	
-	/* Set value */
+	/* Set value. Key type came from the metaInfo importing above. */
 	keySetRaw(key,dbdata->data+metaInfoSize+key->commentSize,key->dataSize);
+	
+	/* since we just got the key from the storage structure, it is synced. */
+	key->flags &= ~KEY_SWITCH_NEEDSYNC;
 	
 	/* userDomain must be set outside this function,
 	 * someplace more aware of the context */
@@ -200,31 +206,48 @@ int keyFromBDB(Key *key, DBT *dbkey, DBT *dbdata) {
 
 
 
-int parentIndexCallback(DB *registry, const DBT *rkey, const DBT *rdata, DBT *pkey) {
+int parentIndexCallback(DB *db, const DBT *rkey, const DBT *rdata, DBT *pkey) {
 	size_t baseNameSize,parentNameSize;
 	char *parentPrivateCopy=0;
 
-	memset(pkey, 0, sizeof(DBT));
-
 	baseNameSize=keyNameGetBaseNameSize(rkey->data);
+	if (baseNameSize == 0) return DB_DONOTINDEX;
+
+	memset(pkey, 0, sizeof(DBT));
 
 	parentNameSize=strblen(rkey->data)-baseNameSize;
 	parentPrivateCopy=malloc(parentNameSize);
 
 	if (parentPrivateCopy) {
-		strncpy(parentPrivateCopy,rkey->data,parentNameSize-1);
-		parentPrivateCopy[parentNameSize]=0;
+		memcpy(parentPrivateCopy,rkey->data,parentNameSize-1);
+		parentPrivateCopy[parentNameSize-1]=0;
 	}
 
 	pkey->data=parentPrivateCopy;
 	pkey->size=parentNameSize;
+	pkey->flags=DB_DBT_APPMALLOC;
 
-/*	RgEntryDestructor(entry);*/
-	return (0);
+	return 0;
 }
 
 
 
+
+
+
+
+
+int dbTreeDel(DBTree *dbtree) {
+	if (dbtree->userDomain) free(dbtree->userDomain);
+	if (dbtree->db.keyValuePairs)
+		dbtree->db.keyValuePairs->close(dbtree->db.keyValuePairs,0);
+	if (dbtree->db.parentIndex)
+		dbtree->db.parentIndex->close(dbtree->db.parentIndex,0);
+	
+	free(dbtree);
+	
+	return 0;
+}
 
 
 
@@ -243,17 +266,16 @@ int dbTreeInit(DBTree *newDB) {
 		root=keyNew("system",
 			KEY_SWITCH_UID,0,
 			KEY_SWITCH_GID,0,
+			KEY_SWITCH_TYPE,KEY_TYPE_DIR,
 			KEY_SWITCH_END);
 	} else {
 		struct passwd *userOwner;
 		userOwner=getpwnam(newDB->userDomain);
 		root=keyNew("user",
-			KEY_SWITCH_UID,userOwner->pw_uid,
-			KEY_SWITCH_GID,userOwner->pw_gid,
+			KEY_SWITCH_TYPE,KEY_TYPE_DIR,
 			KEY_SWITCH_END);
 	}
 
-	keySetAccess(root,S_IRUSR | S_IWUSR);
 	root->atime=root->mtime=root->ctime=time(0); /* set current time */
 
 	keyToBDB(root,&dbkey,&data);
@@ -314,12 +336,18 @@ DBTree *dbTreeNew(Key *forKey) {
 
 	if (stat(dbDir,&dbDirInfo)) {
 		/* Directory does not exist. create it */
+		int ret;
+		
 		printf("Going to create dir %s\n",dbDir);
-		mkdir(dbDir,S_IRWXU);
+		ret=mkdir(dbDir,DEFFILEMODE);
+		if (ret) return 0; /* propagate errno */
 	} else {
 		/* Something exist there. Check it first */
-		if (!S_ISDIR(dbDirInfo.st_mode)) return 0;
-		/* TODO: WTF? */
+		if (!S_ISDIR(dbDirInfo.st_mode)) {
+			/* It is not a directory ! */
+			errno=EACCES;
+			return 0;
+		}
 	}
 
 	sprintf(keys,"%s/%s",dbDir,DB_FILE_KEYVALUE);
@@ -337,8 +365,10 @@ DBTree *dbTreeNew(Key *forKey) {
 	 * The main database. The one you can find the real key-value pairs
 	 *****************/
 	if ((ret = db_create(&newDB->db.keyValuePairs, NULL, 0)) != 0) {
-		fprintf(stderr, "db_create: %s\n", db_strerror(ret));
-		exit (1);
+		fprintf(stderr, "db_create: %s: %s\n", keys, db_strerror(ret));
+		free(newDB);
+		errno=KDB_RET_EBACKEND;
+		return 0;
 	}
 
 	ret=newDB->db.keyValuePairs->open(newDB->db.keyValuePairs,NULL,keys,
@@ -353,7 +383,9 @@ DBTree *dbTreeNew(Key *forKey) {
 	if (ret) {
 		newDB->db.keyValuePairs->err(newDB->db.keyValuePairs, ret,
 			"%s", keys);
-		exit(1);
+		dbTreeDel(newDB);
+		errno=KDB_RET_EBACKEND;
+		return 0;
 	}
 
 
@@ -365,22 +397,33 @@ DBTree *dbTreeNew(Key *forKey) {
 	 *****************/
 	ret=db_create(&newDB->db.parentIndex, NULL, 0);
 	if (ret != 0) {
-		fprintf(stderr, "db_create: %s\n", db_strerror(ret));
-		exit (1);
+		fprintf(stderr, "db_create: %s: %s\n", hier, db_strerror(ret));
+		dbTreeDel(newDB);
+		errno=KDB_RET_EBACKEND;
+		return 0;
 	}
 	
 	ret = newDB->db.parentIndex->set_flags(newDB->db.parentIndex,
 		DB_DUP | DB_DUPSORT);
-	if (ret != 0) fprintf(stderr, "error: %d\n",ret);
+	if (ret != 0) fprintf(stderr, "set_flags: %s: %d\n",hier,ret);
 	
 	ret = newDB->db.parentIndex->open(newDB->db.parentIndex,
 		NULL, hier, NULL, DB_BTREE, DB_CREATE | DB_THREAD, 0600);
-	if (ret != 0)
+	if (ret != 0) {
 		newDB->db.parentIndex->err(newDB->db.parentIndex, ret, "%s", hier);
+		dbTreeDel(newDB);
+		errno=KDB_RET_EBACKEND;
+		return 0;
+	}
 	
 	ret = newDB->db.keyValuePairs->associate(newDB->db.keyValuePairs, NULL,
 		newDB->db.parentIndex, parentIndexCallback, DB_DBT_APPMALLOC);
-	if (ret != 0) fprintf(stderr, "error: %d\n",ret);
+	if (ret != 0) {
+		fprintf(stderr, "error: %s: %d\n",hier,ret);
+		dbTreeDel(newDB);
+		errno=KDB_RET_EBACKEND;
+		return 0;
+	}
 
 
 
@@ -408,35 +451,59 @@ DBTree *dbTreeNew(Key *forKey) {
 
 
 
+
 /**
  * Return the DB suitable for the key.
  * Lookup in the list of opened DBs (DBContainer). If not found, tries to
  * open it with dbTreeNew().
  */
 DBTree *getDBForKey(Key *key) {
-	DBTree *db;
+	DBTree *current,*newDB;
 	char rootName[100];
 	rootName[0]=0; /* just to be sure... */
 
-	/* Look for a DB in our opened DBs */
-	if (keyIsSystem(key)) {
-		for (db=dbs->first; db; db=db->next)
-			if (db->isSystem) return db;
-	} else if (keyIsUser(key)) {
-		for (db=dbs->first; db; db=db->next)
-			if (!db->isSystem && !strcmp(key->userDomain,db->userDomain))
-				return db;
+	if (dbs->cursor) current=dbs->cursor;
+	else current=dbs->cursor=dbs->first;
+	
+	/* We found some DB opened.
+	 * Browse it starting from the cursor. */
+	if (current) {
+		/* Look for a DB in our opened DBs */
+		if (keyIsSystem(key))
+			do {
+				if (current->isSystem) return dbs->cursor=current;
+			
+				current=current->next;
+				if (!current) current=dbs->first;
+			} while (current && current!=dbs->cursor);
+		else if (keyIsUser(key))
+			do {
+				if (!current->isSystem && !strcmp(key->userDomain,current->userDomain))
+					return dbs->cursor=current;
+				
+				current=current->next;
+				if (!current) current=dbs->first;
+			} while (current && current!=dbs->cursor);
 	}
+	
+	/* If we reached this point, the DB for our key is not it our container.
+	 * Open it and include in the container. */
 
-	/* Not opened yet. Open a DB and include it in the DBContainer */
-	db=dbTreeNew(key);
-	if (db) {
-		db->next=dbs->first;
-		dbs->first=db;
+	newDB=dbTreeNew(key);
+	if (newDB) {
+		/* Put the new DB right after the container's current DB (cursor).
+		 * And set the cursor to be the new DB. */
+		if (dbs->cursor) {
+			newDB->next=dbs->cursor->next;
+			dbs->cursor->next=newDB;
+			dbs->cursor=newDB;
+		} else dbs->cursor=dbs->first=newDB;
 		dbs->size++;
 	}
-
-	return db;
+	
+	/* If some error ocurred inside dbTreeNew(), errno will be propagated */
+	
+	return dbs->cursor;
 }
 
 
@@ -453,7 +520,7 @@ DBTree *getDBForKey(Key *key) {
 
 int kdbOpen_bdb() {
 	/* Create only the DB container.
-	 * DBs will be allocated on demaind
+	 * DBs will be allocated on demand
 	 */
 	dbs=malloc(sizeof(DBContainer));
 	memset(dbs,0,sizeof(DBContainer));
@@ -464,7 +531,14 @@ int kdbOpen_bdb() {
 
 
 int kdbClose_bdb() {
-	/* free all backend resources and shut it down */
+	if (dbs) {
+		while (dbs->first) {
+			dbs->cursor=dbs->first;
+			dbs->first=dbs->cursor->next;
+
+			dbTreeDel(dbs->cursor);
+		}
+	}
 	return 0; /* success */
 }
 
@@ -479,9 +553,57 @@ int kdbStatKey_bdb(Key *key) {
 
 
 
-int kdbGetKey_backend(Key *key) {
-	/* fully gets a key */
-	return 0; /* success */
+int kdbGetKey_bdb(Key *key) {
+	DBTree *dbctx;
+	DBT dbkey,data;
+	int ret;
+	uid_t user=getuid();
+	gid_t group=getgid();
+	int canRead=0;
+
+	dbctx=getDBForKey(key);
+	if (!dbctx) return 1; /* propagate errno from getDBForKey() */
+
+
+	memset(&dbkey,0,sizeof(DBT));
+	memset(&data,0,sizeof(DBT));
+	dbkey.size=dbkey.ulen=strblen(key->key);
+	dbkey.data=key->key;
+	dbkey.flags=data.flags=DB_DBT_REALLOC;
+
+	ret = dbctx->db.keyValuePairs->get(dbctx->db.keyValuePairs,
+		NULL, &dbkey, &data, 0);
+		
+	switch (ret) {
+		case 0: { /* Key found and retrieved. Check permissions */
+			Key buffer;
+
+			keyInit(&buffer);
+			keyFromBDB(&buffer,&dbkey,&data);
+			
+			/* Check permissions. */
+			if (keyGetUID(&buffer) == user)
+				canRead = keyGetAccess(&buffer) & S_IRUSR;
+			else if (keyGetGID(&buffer) == group)
+				canRead = keyGetAccess(&buffer) & S_IRGRP;
+			else canRead= keyGetAccess(&buffer) & S_IROTH;
+
+			if (canRead) {
+				keyDup(&buffer,key);
+				keyClose(&buffer);
+				return 0;
+			} else {
+				keyClose(&buffer);
+				return errno=KDB_RET_NOCRED;
+			}
+			break;
+		}
+		case DB_NOTFOUND:
+			return errno=KDB_RET_NOTFOUND;
+			break;
+	}
+	
+	return 0; /* success, but we'll never reach this point */
 }
 
 
@@ -496,8 +618,9 @@ int kdbSetKey_bdb(Key *key) {
 	DBTree *dbctx;
 	DBT dbkey,data;
 	int ret;
+	uid_t user=getuid();
+	gid_t group=getgid();
 	int canWrite=0;
-	uid_t user=0;
 
 	dbctx=getDBForKey(key);
 	if (!dbctx) return 1; /* propagate errno from getDBForKey() */
@@ -505,7 +628,6 @@ int kdbSetKey_bdb(Key *key) {
 	/* Check access permissions.
 	   Check if this client can commit this key to the database */
 
-/*	user=clientGetUser(forClient); */
 	memset(&dbkey,0,sizeof(DBT));
 	memset(&data,0,sizeof(DBT));
 	dbkey.size=dbkey.ulen=strblen(key->key);
@@ -518,85 +640,97 @@ int kdbSetKey_bdb(Key *key) {
 	switch (ret) {
 		case 0: { /* Key found and retrieved. Check permissions */
 			Key buffer;
-			uid_t storedUser;
-			mode_t storedPerms;
-
+			
 			keyInit(&buffer);
 			keyFromBDB(&buffer,&dbkey,&data);
-			storedUser=keyGetUID(&buffer);
-			storedPerms=keyGetAccess(&buffer);
+			keySetOwner(&buffer,dbctx->userDomain);
+
+			/* Check parent permissions to write bellow it. */
+			if (keyGetUID(&buffer) == user)
+				canWrite = keyGetAccess(&buffer) & S_IWUSR;
+			else if (keyGetGID(&buffer) == group)
+				canWrite = keyGetAccess(&buffer) & S_IWGRP;
+			else canWrite= keyGetAccess(&buffer) & S_IWOTH;
+			
 			keyClose(&buffer);
-
-			/* TODO: Check group perms */
-			if (user == 0) canWrite=1;
-			else if (user == storedUser) canWrite=(storedPerms & S_IWUSR);
-			else canWrite=(storedPerms & S_IWOTH);
-
 			break;
 		}
 		case DB_NOTFOUND: {
 			/* We don't have this key yet.
 			   Check if we have a parent and its permissions. */
-			Key parent;
+			Key *parent=0;
 			u_int32_t parentNameSize;
 			char *parentName;
-			uid_t storedUser;
 
-			parentNameSize=strblen(key->key)-keyNameGetBaseNameSize(key->key);
-			parentName=malloc(parentNameSize); /* includes the leading \0 */
-			strncpy(parentName,key->key,parentNameSize-1);
-			parentName[parentNameSize-1]=0; /* substitute leading '.' by \0 */
-
+			parentNameSize=keyGetParentNameSize(key);
+			parentName=malloc(parentNameSize+1); /* includes the leading \0 */
+			keyGetParentName(key,parentName,parentNameSize+1);
+			
 			memset(&dbkey,0,sizeof(DBT));
 			memset(&data,0,sizeof(DBT));
 			dbkey.data=parentName;
-			dbkey.size=parentNameSize;
+			dbkey.size=parentNameSize+1;
 			dbkey.flags=data.flags=DB_DBT_REALLOC;
 
 			ret = dbctx->db.keyValuePairs->get(dbctx->db.keyValuePairs, NULL,
 				&dbkey, &data, 0);
 
-			// free(parentName);
-			/* If we don't have a parent key, return. */
-			if (ret == DB_NOTFOUND) return  errno=KDB_RET_NOTFOUND;
-
-
-			/* Yes we have. Check parent's permissions for children. */
-			keyInit(&parent);
-			keyFromBDB(&parent,&dbkey,&data);
-			storedUser=keyGetUID(&parent);
-			/* keyGetChildAccess(&parent,&childPerms); */
-			keyClose(&parent);
-
-			/* TODO: Check group perms */
-			if (storedUser == user) {
-				/* We are in family */
-				/* canWrite=childPerms & S_IWUSR; */
+			if (ret == DB_NOTFOUND) {
+				/* No, we don't have a parent. Create dirs recursivelly */
+				
+				/* umask etc will be the defaults for current user */
+				parent=keyNew(parentName,
+					KEY_SWITCH_TYPE,KEY_TYPE_DIR,
+					KEY_SWITCH_END);
+				
+				if (kdbSetKey_bdb(parent))
+					/* Some error happened in this recursive call.
+					 * Propagate errno.
+					 */
+					return 1;
 			} else {
-				/* canWrite=childPerms & S_IWOTH; */
+				/* Yes, we have a parent already. */
+				parent=keyNew(0);
+				keyFromBDB(parent,&dbkey,&data);
+				keySetOwner(parent,dbctx->userDomain);
 			}
+
+			/* Check parent permissions to write bellow it. */
+			if (keyGetUID(parent) == user)
+				canWrite = keyGetAccess(parent) & S_IWUSR;
+			else if (keyGetGID(parent) == group)
+				canWrite = keyGetAccess(parent) & S_IWGRP;
+			else canWrite= keyGetAccess(parent) & S_IWOTH;
+			
+			keyDel(parent);
 			break;
 		}
 	}
 
 	if (! canWrite) return errno=KDB_RET_NOCRED;
 
-	/* TODO: If passed key doesn't have permissions, hinerit from some where */
-	key->mtime=time(0); /* set current time into key */
+	key->mtime=key->atime=time(0); /* set current time into key */
 	keyToBDB(key,&dbkey,&data);
 
 	if ((ret = dbctx->db.keyValuePairs->put(dbctx->db.keyValuePairs,
-			NULL, &dbkey, &data, 0)) == 0)
-		printf("db: %s: key stored.\n", (char *)dbkey.data);
-	else {
+			NULL, &dbkey, &data, 0)) != 0) {
 		dbctx->db.keyValuePairs->err(dbctx->db.keyValuePairs, ret, "DB->put");
+		
+		free(dbkey.data); dbkey.data=0;
+		free(data.data); data.data=0;
+
+		errno=KDB_RET_NOCRED; /* probably this is the error */
+		return 1;
 	}
+
+	/* Mark the key as synced */
+	key->flags &= ~KEY_SWITCH_NEEDSYNC;
 
 	free(dbkey.data); dbkey.data=0;
 	free(data.data); data.data=0;
 
 	dbctx->db.keyValuePairs->sync(dbctx->db.keyValuePairs,0);
-
+	
 	return 0; /* success */
 }
 
@@ -636,26 +770,13 @@ int kdbRemoveKey_backend(const Key *key) {
  * @see kdbGetKeyChildKeys() for expected behavior.
  * @ingroup backend
  */
-int kdbGetKeyChildKeys_backend(const Key *parentKey, KeySet *returned, unsigned long options) {
+int kdbGetKeyChildKeys_bdb(const Key *parentKey, KeySet *returned, unsigned long options) {
 	/* retrieve multiple hierarchical keys */
 	return 0; /* success */
 }
 
 
-/**
- * Implementation for kdbSetKeys() method.
- * 
- * The implementation of this method is optional, and a builtin, probablly 
- * inefficient implementation can be explicitly used when exporting the
- * backend with kdbBackendExport(), using kdbSetKeys_default().
- * 
- * @see kdbSetKeys() for expected behavior.
- * @ingroup backend
- */
-int kdbSetKeys_backend(KeySet *ks) {
-	/* set many keys */
-	return 0;
-}
+
 
 
 /**
@@ -707,15 +828,15 @@ KDBBackend *kdbBackendFactory(void) {
 	return kdbBackendExport(BACKENDNAME,
 		KDB_BE_OPEN,           &kdbOpen_bdb,
 		KDB_BE_CLOSE,          &kdbClose_bdb,
-		KDB_BE_GETKEY,         &kdbGetKey_backend,
+		KDB_BE_GETKEY,         &kdbGetKey_bdb,
 		KDB_BE_SETKEY,         &kdbSetKey_bdb,
-		KDB_BE_STATKEY,        &kdbStatKey_bdb,
+/*		KDB_BE_STATKEY,        &kdbStatKey_bdb,
 		KDB_BE_RENAME,         &kdbRename_backend,
-		KDB_BE_REMOVEKEY,      &kdbRemoveKey_backend,
-		KDB_BE_GETCHILD,       &kdbGetKeyChildKeys_backend,
-		KDB_BE_MONITORKEY,     &kdbMonitorKey_backend,
-		KDB_BE_MONITORKEYS,    &kdbMonitorKeys_backend,
+		KDB_BE_REMOVEKEY,      &kdbRemoveKey_backend, */
+		KDB_BE_GETCHILD,       &kdbGetKeyChildKeys_bdb,
 		/* set to default implementation: */
+		KDB_BE_MONITORKEY,     &kdbMonitorKey_default,
+		KDB_BE_MONITORKEYS,    &kdbMonitorKeys_default,
 		KDB_BE_SETKEYS,        &kdbSetKeys_default,
 		KDB_BE_END);
 }

@@ -1,3 +1,8 @@
+* Tue Jan 27 2005 Avi Alkalay <avi@unix.sh> 0.4.11.1
+- An almost ready Berkeley DB backend
+- Key, KeySet and KeyDB classes earned robusteness through the implementation of a new backend
+
+
 * Tue Jan 23 2005 Avi Alkalay <avi@unix.sh> 0.4.11
 - kdbOpen() uses $KDB_BACKEND
 - kdbOpenDefault() ignores env

@@ -26,7 +26,7 @@ all: libkdb-${BACKENDNAME}.so
 
 
 libkdb-${BACKENDNAME}.so: ${SOURCES:.c=.o}
-	${CC} -shared -fpic -o $@ $<
+	${CC} -shared -fpic -ldb -o $@ $<
 
 
 

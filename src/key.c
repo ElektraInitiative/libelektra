@@ -471,7 +471,8 @@ size_t keySetName(Key *key, const char *newName) {
 			free(key->key);
 			key->key=0;
 		}
-		key->flags &= ~(KEY_SWITCH_NAME | KEY_SWITCH_NEEDSYNC);
+		key->flags &= ~(KEY_SWITCH_NAME | KEY_SWITCH_NEEDSYNC |
+		                KEY_SWITCH_ISSYSTEM | KEY_SWITCH_ISUSER);
 		return 0;
 	}
 
@@ -533,7 +534,8 @@ size_t keySetName(Key *key, const char *newName) {
 				strncpy(key->userDomain,getenv("USER"),bsize);
 			}
 		}
-
+		key->flags |= KEY_SWITCH_ISUSER;
+		key->flags &= ~KEY_SWITCH_ISSYSTEM;
 	} else if (!strncmp("system",newName,systemLength<length?systemLength:length)) {
 		/* handle "system*" */
 		if (length > systemLength && *(newName+systemLength)!=RG_KEY_DELIM) {
@@ -549,6 +551,9 @@ size_t keySetName(Key *key, const char *newName) {
 
 		strncpy(key->key,newName,length);
 		key->key[keyNameSize-1]=0;
+		
+		key->flags |= KEY_SWITCH_ISSYSTEM;
+		key->flags &= ~KEY_SWITCH_ISUSER;
 	} else {
 		/* Passed name is neither "system" or "user" */
 		errno=KDB_RET_INVALIDKEY;
@@ -836,7 +841,9 @@ int keyGetNamespace(const Key *key) {
 	if (!key) return 0;
 	if (!keyIsInitialized(key)) return 0;
 
-	return keyNameGetNamespace(key->key);
+	if (key->flags & KEY_SWITCH_ISSYSTEM) return KEY_NS_SYSTEM;
+	if (key->flags & KEY_SWITCH_ISUSER) return KEY_NS_USER;
+	return 0;
 }
 
 
@@ -872,7 +879,7 @@ int keyIsSystem(const Key *key) {
 	if (!key) return 0;
 	if (!keyIsInitialized(key)) return 0;
 
-	return keyNameIsSystem(key->key);
+	return (key->flags & KEY_SWITCH_ISSYSTEM)?1:0;
 }
 
 
@@ -908,7 +915,7 @@ int keyIsUser(const Key *key) {
 	if (!key) return 0;
 	if (!keyIsInitialized(key)) return 0;
 
-	return keyNameIsUser(key->key);
+	return (key->flags & KEY_SWITCH_ISUSER)?1:0;
 }
 
 
@@ -1097,11 +1104,13 @@ size_t keyGetFullRootName(const Key *key, char *returned, size_t maxSize) {
 
 
 /**
- * Get the number of bytes needed to store this key's parent name.
- * @see keyGetParent()
+ * Get the number of bytes needed to store this key's parent name without
+ * the ending NULL.
+ * 
+ * @see keyGetParentName() for example
  * @ingroup keyname
  */
-size_t keyGetParentSize(const Key *key) {
+size_t keyGetParentNameSize(const Key *key) {
 	char *parentNameEnd;
 
 	if (!key || !keyIsInitialized(key)) {
@@ -1120,7 +1129,7 @@ size_t keyGetParentSize(const Key *key) {
 		user/parent/base/ (size=sizeof("user/parent"))
 	*/
 
-	parentNameEnd=rindex(key->key,RG_KEY_DELIM);
+	parentNameEnd=strrchr(key->key,RG_KEY_DELIM);
 
 	if (!parentNameEnd || parentNameEnd==key->key) {
 		/* handle NULL or /something */
@@ -1128,7 +1137,7 @@ size_t keyGetParentSize(const Key *key) {
 	}
 
 	/* handle system/parent/base/ */
-	if ((parentNameEnd-key->key) == (strlen(key->key)-1)) {
+	if ((parentNameEnd-key->key) == (strblen(key->key)-2)) {
 		parentNameEnd--;
 		while (*parentNameEnd!=RG_KEY_DELIM) parentNameEnd--;
 	}
@@ -1141,21 +1150,33 @@ size_t keyGetParentSize(const Key *key) {
 /**
  * Copy this key's parent name into a pre-allocated buffer.
  *
- * @see keyGetParentSize()
+ * @see keyGetParentNameSize()
  * @param returnedParent pre-allocated buffer to copy parent name to
  * @param maxSize number of bytes pre-allocated
+ * @par Example:
+ * @code
+Key *key=keyNew("system/parent/base",KEY_SWITCH_END);
+char *parentName;
+size_t parentSize;
+
+parentSize=keyGetParentNameSize(key);
+parentName=malloc(parentSize+1);
+keyGetParentName(key,parentName,parentSize+1);
+ * @endcode
  * @ingroup keyname
  */
-size_t keyGetParent(const Key *key, char *returnedParent, size_t maxSize) {
+size_t keyGetParentName(const Key *key, char *returnedParent, size_t maxSize) {
 	size_t parentSize;
 
-	parentSize=keyGetParentSize(key);
+	parentSize=keyGetParentNameSize(key);
 
-	if (parentSize > maxSize) {
+	if (parentSize+1 > maxSize) {
 		errno=KDB_RET_TRUNC;
 		return 0;
 	} else strncpy(returnedParent,key->key,parentSize);
 
+	returnedParent[parentSize]=0; /* ending NULL */
+	
 	return parentSize;
 }
 
@@ -1165,7 +1186,10 @@ size_t keyGetParent(const Key *key, char *returnedParent, size_t maxSize) {
 
 
 /**
- * Calculates number of bytes needed to store basename of a key name.
+ * Calculates number of bytes needed to store a basename of a key name.
+ * Key names that have only root names (e.g. @c "system" or @c "user"
+ * or @c "user:domain" ) does not have basenames, thus the function will
+ * return 0 bytes.
  *
  * Basenames are denoted as:
  * - @p system/some/thing/basename
@@ -1177,45 +1201,23 @@ size_t keyGetParent(const Key *key, char *returnedParent, size_t maxSize) {
  */
 size_t keyNameGetBaseNameSize(const char *keyName) {
 	char *end;
-	size_t size,keySize;
-	unsigned char found=0;
-
-	if (!(keySize=strblen(keyName))) return 0;
-
-	size=keyNameGetRootNameSize(keyName);
-	if (!size || size==keySize) return 0; /* key is a root key */
-
-	/* Possible situations left:
-
-		system/something/basename
-		system/something/basename/
-	*/
 
 	end=strrchr(keyName,RG_KEY_DELIM);
-	if (*(end-1)!='\\') return keyName+keySize-(end+1);
-
-	/* TODO: review bellow this point. obsolete code */
-	/* Possible situations left:
-
-		system/something/base\.name
-		system/something/basename\.
-	*/
-
-	while (!found) {
-		end--;
-		if (*end=='.') found=1;
-	}
-	return keyName+keySize-(end+1);
+	if (end) return keyName+strblen(keyName)-1-end;
+	else return 0;
 }
 
 
 
 /**
- * Calculates number of bytes needed to store basename of a key.
+ * Calculates number of bytes needed to store basename of @p key.
+ * Key names that have only root names (e.g. @c "system" or @c "user"
+ * or @c "user:domain" ) does not have basenames, thus the function will
+ * return 0 bytes.
  *
  * Basenames are denoted as:
- * - @p system/some/thing/basename
- * - @p user:domain/some/thing/basename
+ * - @c system/some/thing/basename
+ * - @c user:domain/some/thing/basename
  *
  * @return number of bytes needed without ending NULL
  * @see keyNameGetBaseNameSize()
@@ -1848,6 +1850,14 @@ size_t keySetOwner(Key *key, const char *userDomain) {
 		return -1;
 	}
 	if (!keyIsInitialized(key)) keyInit(key);
+	
+	if (userDomain == 0) {
+		if (key->userDomain) {
+			free(key->userDomain);
+			key->userDomain=0;
+		}
+		return 0;
+	}
 
 	if ((size=strblen(userDomain)) > 0) {
 		if (key->userDomain) {
@@ -3195,9 +3205,9 @@ u_int32_t ksLookupRE(KeySet *ks, u_int32_t where,
 	
 	if (options & KDB_O_NOSPANPARENT) {
 		/* User wants siblings. Prepare context. */
-		parentNameSize=keyGetParentSize(init);
+		parentNameSize=keyGetParentNameSize(init);
 		parentName=(char *)malloc(parentNameSize);
-		keyGetParent(init,parentName,parentNameSize);
+		keyGetParentName(init,parentName,parentNameSize);
 	}
 	
 	while ((walker=ksNext(ks))) {

@@ -116,6 +116,8 @@ The key flags bit array. The '.' means whatever:
 .... .... .... .... .... 1... .... .... 0x00000800 TIME
 .... .... .... .... ...1 .... .... .... 0x00001000 NEEDSYNC
 .... .... .... .... .1.. .... .... .... 0x00004000 ACTIVE ***DEPRECATED***
+.... .... 1... .... .... .... .... .... 0x00800000 ISSYSTEM
+.... ...1 .... .... .... .... .... .... 0x01000000 ISUSER
 1... .... .... .... .... .... .... .... 0x80000000 FLAG (general flag)
 */
 
@@ -143,6 +145,8 @@ enum KeySwitch {
 	KEY_SWITCH_TIME=1<<11,      /*!< Flag for the key change time */
 	KEY_SWITCH_NEEDSYNC=1<<12,  /*!< Flags that key needs syncronization */
 	KEY_SWITCH_ACTIVE=1<<14,    /* ****deprecated**** */
+	KEY_SWITCH_ISSYSTEM=1<<23,  /*!< Flag to denote a @c "system" key */
+	KEY_SWITCH_ISUSER=1<<24,    /*!< Flag to denote a @c "user" key */
 	KEY_SWITCH_FLAG=1<<31,      /*!< General purpose flag that has semantics
 	                                 only to your app */
 	KEY_SWITCH_END=0,           /*!< Used as a parameter terminator to
@@ -207,6 +211,7 @@ enum KDBErr {
 	KDB_RET_INVALIDKEY=EAFNOSUPPORT, /*!< Key name is not @p 'system/something'
 	                                      or @p 'user/something...' */
 	KDB_RET_NOTFOUND=ENOENT,      /*!< Key was not found */
+	KDB_RET_EBACKEND=EIO          /*!< Error opening backend */
 };
 
 
@@ -537,6 +542,8 @@ size_t keyGetBaseNameSize(const Key *key);
 size_t keyAddBaseName(Key *key,const char *baseName);
 size_t keySetBaseName(Key *key,const char *baseName);
 
+size_t keyGetParentName(const Key *key, char *returned, size_t maxSize);
+size_t keyGetParentNameSize(const Key *key);
 
 size_t keyNameGetRootNameSize(const char *keyName);
 size_t keyGetRootNameSize(const Key *key);
@@ -581,8 +588,6 @@ size_t keySetLink(Key *key, const char *target);
 time_t keyGetMTime(const Key *key);
 time_t keyGetATime(const Key *key);
 time_t keyGetCTime(const Key *key);
-
-size_t keyGetParentName(const Key *key, char *returned, size_t maxSize);
 
 size_t keyToString(const Key *key, char *returned, size_t maxSize);
 
