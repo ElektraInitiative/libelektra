@@ -703,7 +703,7 @@ int commandList() {
 				if (ret) {
 					char error[200];
 
-					keyClose(key); free(key);
+					keyDel(key);
 					ksClose(&ks);
 					
 					sprintf(error,"kdb ls: %s",argKeyName);
@@ -738,10 +738,7 @@ int commandList() {
 	}
 
 	ksClose(&ks);
-	if (key) {
-		keyClose(key);
-		free(key);
-	}
+	if (key) keyDel(key);
 	return 0;
 }
 
@@ -1117,7 +1114,7 @@ int commandEdit() {
 	KeySet toRemove;
 	Key *current;
 	int ret;
-	char filename[]="/var/tmp/rgeditXXXXXX";
+	char filename[]="/var/tmp/kdbeditXXXXXX";
 	char command[300];
 	FILE *xmlfile=0;
 
@@ -1133,8 +1130,7 @@ int commandEdit() {
 		keySetName(current,argKeyName);
 		if (kdbGetKey(current)) {
 			/* Failed. Cleanup */
-			keyClose(current);
-			free(current);
+			keyDel(current);
 			current=0;
 		} else {
 			/* We have something. */

@@ -23,6 +23,7 @@ $LastChangedBy$
 */
 
 #include <stdio.h>
+#include <stdarg.h>
 #include <strings.h>
 #include <string.h>
 #include <stdlib.h>
@@ -94,11 +95,227 @@ size_t strblen(const char *s) {
  * @{
  */
 
+ 
 /**
- * Initializes a Key object.
+ * A destructor for Key objects.
+ * It will keyClose() and free() the @p key pointer.
+ *
+ * @see keyNew()
+ * @return whatever is returned by keyClose()
+ *
+ */ 
+int keyDel(Key *key) {
+	int rc;
+	
+	rc=keyClose(key);
+	free(key);
+	
+	return rc;
+ }
+
+ 
+ 
+/**
+ * A practical way to fully create a Key object in one step.
+ * This function tries to mimic the C++ way for constructors.
+ *
+ * You can call it in many different ways depending on the attribute tags you
+ * pass as parameters. Tags are represented as the @p "enum KeyFlags" values,
+ * and they tell keyNew() which Key attribute comes next.
+ * 
+ * The simplest way to call it is with no tags, only a key name. See example bellow.
+ * 
+ * The Key attribute tags are the following:
+ * - @p KEY_FLAG_HASTYPE \n
+ *   This tag requires 1 or 2 more parameters. The first is obviously the
+ *   type. If the type is KEY_TYPE_BINARY or any other binary-like
+ *   user-defined type (see keySetType()), a second parameter is needed and
+ *   is the size in bytes (size_t) of the data passed on the subsequent
+ *   KEY_FLAG_HASDATA parameter. You must use this tag before
+ *   KEY_FLAG_HASDATA, otherwise KEY_TYPE_STRING is assumed.
+ * - @p KEY_FLAG_HASDATA \n
+ *   Next parameter is a pointer to the value that will be set to the key.
+ *   If no KEY_FLAG_HASTYPE was used before, KEY_TYPE_STRING is assumed.
+ * - @p KEY_FLAG_HASUID, @p KEY_FLAG_HASGID \n
+ *   Next parameter is taken as the UID (uid_t) or GID (gid_t) that will
+ *   be defined on the key. See keySetUID() and keySetGID().
+ * - @p KEY_FLAG_HASPRM \n
+ *   Next parameter is taken as access permissions (mode_t) to the key.
+ *   See keySetAccess().
+ * - @p KEY_FLAG_HASDOMAIN \n
+ *   Next parameter is the user domain. See keySetOwner().
+ * - @p KEY_FLAG_HASCOMMENT \n
+ *   Next parameter is a comment. See keySetComment().
+ * - @p KEY_FLAG_NEEDSYNC \n
+ *   Needs no extra parameter. Makes keyNew() retrieve the Key from the
+ *   backend with kdbGetKey(). In the same keyNew() call you can use this
+ *   tag in conjunction with any other, which will make keyNew() modify
+ *   only some attributes of the retrieved key, and return it for you.
+ *   Order of parameters do matter. If the internal call to kdbGetKey()
+ *   was unssuccessful, you'll still have a valid, but flaged, key.
+ *   Check with keyGetFlag(), and @p errno. You will have to kdbOpen()
+ *   before using keyNew() with this tag.
+ * - 0 \n
+ *   A 0 (zero) parameter means the end of the parameters. It is allways
+ *   required, unless the @p keyName is NULL too.
+ *   
+ *   @par Example:
+ *   @code
+KeySet ks;
+
+kdbOpen();
+ksInit(&ks);
+	
+ksAppend(&ks,keyNew(0));     // an empty key
+	
+ksAppend(&ks,keyNew("user/sw",           // a simple key
+	0));                                 // no more args
+ksAppend(&ks,keyNew("system/sw",
+	KEY_FLAG_NEEDSYNC,0));               // a key retrieved from storage
+	
+ksAppend(&ks,keyNew("user/tmp/ex1",
+	KEY_FLAG_HASDATA,"some data",        // with a simple value
+	0));                                 // end of args
+	
+ksAppend(&ks,keyNew("user/tmp/ex2",
+	KEY_FLAG_HASDATA,"some data",        // with a simple value
+	KEY_FLAG_HASPRM,0777,                // permissions
+	0));                                 // end of args
+	
+ksAppend(&ks,keyNew("user/tmp/ex3",
+	KEY_FLAG_HASTYPE,KEY_TYPE_LINK,      // only type
+	KEY_FLAG_HASDATA,"system/mtp/x",     // link destination
+	KEY_FLAG_HASPRM,0654,                // weird permissions
+	0));                                 // end of args
+	
+ksAppend(&ks,keyNew("user/tmp/ex4",
+	KEY_FLAG_HASTYPE,KEY_TYPE_BINARY,7,  // type and value size
+	KEY_FLAG_HASCOMMENT,"value is truncated",
+	KEY_FLAG_HASDOMAIN,"root",           // owner (not uid) is root
+	KEY_FLAG_HASDATA,"some data",        // value that will be truncated
+	KEY_FLAG_HASUID,0,                   // root uid
+	0));                                 // end of args
+	
+ksAppend(&ks,keyNew("user/env/alias/ls", // a key we know we have
+	KEY_FLAG_NEEDSYNC,                   // retrieve from storage
+	0));                                 // do nothing more
+	
+ksAppend(&ks,keyNew("user/env/alias/ls", // same key
+	KEY_FLAG_NEEDSYNC,                   // retrieve from storage
+	KEY_FLAG_HASDOMAIN,"root",           // set new owner (not uid) as root
+	KEY_FLAG_HASCOMMENT,"new comment",   // set new comment
+	0));                                 // end of args
+	
+ksToStream(&ks,stdout,KDB_O_XMLHEADERS);
+	
+ksClose(&ks);
+kdbClose();
+ *   @endcode
+ *
+ * @see keyDel()
+ * @return a pointer to an initialized Key object
+ */ 
+Key *keyNew(char *keyName, ...) {
+	va_list va;
+	Key *key;
+	u_int32_t action=0;
+	u_int8_t keyType=KEY_TYPE_UNDEFINED;
+	size_t valueSize=0;
+	
+	key=(Key *)malloc(sizeof(Key));
+	if (!key) return 0;
+	keyInit(key);
+	
+	if (keyName) {
+		keySetName(key,keyName);
+		
+		va_start(va,keyName);
+		
+		action=va_arg(va,u_int32_t);
+		while (action) {
+			switch (action) {
+				case KEY_FLAG_HASTYPE:
+					/* We are waiting for 1 or 2 parameters
+					 * following this action */
+					
+					/* First is the type */
+					keyType=(u_int8_t)va_arg(va,unsigned int);
+					
+					if (keyType < KEY_TYPE_STRING && 
+							keyType >= KEY_TYPE_BINARY)
+						/* Second parameter is needed and is the valueSize */
+						valueSize=va_arg(va,size_t);
+					
+					keySetType(key,keyType);
+					
+					break;
+				case KEY_FLAG_HASDATA:
+					if (keyType == KEY_TYPE_UNDEFINED)
+						keyType=KEY_TYPE_STRING;
+
+					
+					if (keyType >= KEY_TYPE_STRING || 
+							keyType < KEY_TYPE_BINARY) /* most popular cases */
+						keySetString(key,va_arg(va,char *));
+					else if (keyType < KEY_TYPE_STRING && 
+							keyType >= KEY_TYPE_BINARY) /* binary types */
+						keySetRaw(key,va_arg(va,void *),valueSize);
+
+					
+					if (keyType > KEY_TYPE_STRING ||
+							keyType < KEY_TYPE_BINARY)
+						/* reset the type due to the
+						 * above keySetString override */
+						keySetType(key,keyType);
+					
+					break;
+				case KEY_FLAG_HASUID:
+					keySetUID(key,va_arg(va,uid_t));
+					break;
+				case KEY_FLAG_HASGID:
+					keySetUID(key,va_arg(va,gid_t));
+					break;
+				case KEY_FLAG_HASPRM:
+					keySetAccess(key,va_arg(va,mode_t));
+					break;
+				case KEY_FLAG_HASDOMAIN:
+					keySetOwner(key,va_arg(va,char *));
+					break;
+				case KEY_FLAG_HASCOMMENT:
+					keySetComment(key,va_arg(va,char *));
+					break;
+				case KEY_FLAG_NEEDSYNC: {
+					int rc=0;
+					rc=kdbGetKey(key);
+					if (rc) /* errno will be propagated */
+						keySetFlag(key); /* just flag the key */
+				} break;
+			}
+			action=va_arg(va,u_int32_t);
+		}
+		va_end(va);
+	}
+	return key;
+}
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+/**
+ * Initializes a previously allocated Key object.
  *
  * Every Key object that will be used must be initialized first, to setup
  * pointers, counters, etc.
+ * 
+ * You'll find the keyNew() function more usefull and straight forward than keyInit().
+ * 
  * @par Example 1:
  * @code
 Key *key;
@@ -118,6 +335,8 @@ keyInit(&key);
 // do something with key...
 keyClose(&key);
  * @endcode
+ * @see keyNew()
+ * @see keyDel()
  * @see keyClose()
  */
 int keyInit(Key *key) {
@@ -144,7 +363,10 @@ int keyInit(Key *key) {
  * Frees all internally allocated memory, and leave the Key object
  * ready to be destroyed, or explicitly by a <i>free()</i>, or a
  * local variable dealocation.
+ * 
  * @see keyInit() for usage example
+ * @see keyNew() as a more usefull function
+ * @see keyDel()
  */
 int keyClose(Key *key) {
 	if (!key) return errno=KDB_RET_NULLKEY;
@@ -2185,6 +2407,7 @@ int keyClearFlag(Key *key) {
  *
  * @see keySetFlag()
  * @see keyClearFlag()
+ * @see keyNew() with KEY_FLAG_NEEDSYNC
  * @return 1 if flag is set, 0 otherwise
  */
 int keyGetFlag(const Key *key) {
@@ -2202,7 +2425,7 @@ int keyGetFlag(const Key *key) {
 
 
 
-
+ir
 /**
  * @defgroup keyset KeySet Class Methods
  * @brief Methods to manipulate KeySets.
@@ -2255,8 +2478,7 @@ int ksClose(KeySet *ks) {
 		while (ks->size) {
 			Key *destroyer=ks->start;
 			ks->start=destroyer->next;
-			keyClose(destroyer);
-			free(destroyer);
+			keyDel(destroyer);
 			--ks->size;
 		}
 	}
@@ -2347,6 +2569,7 @@ Key *ksCurrent(const KeySet *ks) {
  * @see ksInsertKeys()
  * @see ksAppendKeys()
  * @see ksClose()
+ * @see keyNew()
  *
  */
 size_t ksInsert(KeySet *ks, Key *toInsert) {
@@ -2403,6 +2626,7 @@ size_t ksInsertKeys(KeySet *ks, KeySet *toInsert) {
  * @see ksInsert()
  * @see ksInsertKeys()
  * @see ksAppendKeys()
+ * @see keyNew()
  *
  */
 size_t ksAppend(KeySet *ks, Key *toAppend) {
@@ -2515,7 +2739,7 @@ int ksCompare(KeySet *ks1, KeySet *ks2, KeySet *removed) {
 					ks2Cursor->next=ks1Cursor->next;
 					
 					/* delete old version */
-					keyClose(ks1Cursor); free(ks1Cursor);
+					keyDel(ks1Cursor);
 					
 					/* Reset pointers */
 					ks1Cursor=ks2Cursor;
@@ -2523,8 +2747,7 @@ int ksCompare(KeySet *ks1, KeySet *ks2, KeySet *removed) {
 					/* Keys are identical. Delete ks2's key. */
 
 					/* Delete ks2Cusrsor */
-					keyClose(ks2Cursor);
-					free(ks2Cursor);
+					keyDel(ks2Cursor);
 				}
 				/* Don't need to walk through ks2 anymore */
 				break;

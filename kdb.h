@@ -329,6 +329,9 @@ Key methods
 int keyInit(Key *key);
 int keyClose(Key *key);
 
+Key *keyNew(char * keyName, ...);
+int keyDel(Key *key);
+
 int keyIsInitialized(const Key *key);
 int keyNeedsSync(const Key *key);
 int keyDup(const Key *source,Key *dest);

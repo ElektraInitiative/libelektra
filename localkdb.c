@@ -1168,23 +1168,15 @@ int kdbGetChildKeys(const char *parentName, KeySet *returned, unsigned long opti
 
 				/* Insert the current directory key in the returned list before its children */
 				if (options & KDB_O_DIR) ksAppend(returned,keyEntry);
-				else {
-					keyClose(keyEntry);
-					free(keyEntry);
-				}
+				else keyDel(keyEntry);
 
 				/* Insert the children */
 				ksAppendKeys(returned,&children);
 				free(fullName);
 			} else if (options & KDB_O_DIR) ksAppend(returned,keyEntry);
-				else {
-					keyClose(keyEntry);
-					free(keyEntry);
-				}
-		} else if (options & KDB_O_NOVALUE) {
-			keyClose(keyEntry);
-			free(keyEntry);
-		} else ksAppend(returned,keyEntry);
+				else keyDel(keyEntry);
+		} else if (options & KDB_O_NOVALUE) keyDel(keyEntry);
+			else ksAppend(returned,keyEntry);
 	} /* while(readdir) */
 	keyClose(&parentKey);
 	free(realParentName);
