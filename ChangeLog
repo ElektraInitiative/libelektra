@@ -1,6 +1,7 @@
 * Fri Jul 30 2004 Avi Alkalay <avi@unix.sh> 0.2.9
 - Doxygen finaly generates methods documentation. Not very nice though.
 - Included in -devel RPM
+- Included Advogato project page in the documentation
 
 * Sun Jul 25 2004 Avi Alkalay <avi@unix.sh> 0.2.8
 - Added the export and import subcommands to rg.

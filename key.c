@@ -51,6 +51,27 @@ size_t strblen(char *s) {
 
 
 /**
+ * @defgroup key Key Manipulation Methods
+ * @brief These are methods to manipulate Keys.
+ *
+ * A Key is the essential class that contains all key data and metadata.
+ * Its properties are
+ * - Key name
+ * - User domain
+ * - Key value or data
+ * - Data type
+ * - Comment about the key
+ * - UID, GID and access filesystem-like permissions
+ * - Access, change and modification times
+ * - A general flag
+ *
+ *
+ * Described here the methods to get and set, and make various manipulations in the objects of class Key.
+ * 
+ * @{
+ */
+
+/**
  * Initializes a Key object.
  *
  * Every Key object that will be used must be initialized first, to setup
@@ -262,37 +283,6 @@ size_t keyGetNameSize(Key *key) {
 
 
 /**
- * Get abreviated key name (without user domain name)
- *
- * @return number of bytes written
- * @param key the key object
- * @param returnedName pre-allocated memory to write the key name
- * @param maxSize maximum number of bytes that will fit in returnedName, including the final NULL
- */
-size_t keyGetName(Key *key, char *returnedName, size_t maxSize) {
-	size_t bytes;
-
-	if (!key || !keyIsInitialized(key)) {
-		errno=RG_KEY_RET_UNINITIALIZED;
-		return 0;
-	}
-
-	if (!key->key) {
-		errno=RG_KEY_RET_NOKEY;
-		return 0;
-	}
-
-	bytes=strblen(strncpy(returnedName,key->key,maxSize));
-	if (maxSize < strblen(key->key)) {
-		errno=RG_KEY_RET_TRUNC;
-		return 0;
-	}
-	return bytes;
-}
-
-
-
-/**
  * Space needed to store the key name including user domain
  *
  * @return number of bytes needed to store key name including user domain
@@ -355,6 +345,37 @@ size_t keyGetFullName(Key *key, char *returnedName, size_t maxSize) {
 	return length;
 }
 
+
+
+
+/**
+ * Get abreviated key name (without user domain name)
+ *
+ * @return number of bytes written
+ * @param key the key object
+ * @param returnedName pre-allocated memory to write the key name
+ * @param maxSize maximum number of bytes that will fit in returnedName, including the final NULL
+ */
+size_t keyGetName(Key *key, char *returnedName, size_t maxSize) {
+	size_t bytes;
+
+	if (!key || !keyIsInitialized(key)) {
+		errno=RG_KEY_RET_UNINITIALIZED;
+		return 0;
+	}
+
+	if (!key->key) {
+		errno=RG_KEY_RET_NOKEY;
+		return 0;
+	}
+
+	bytes=strblen(strncpy(returnedName,key->key,maxSize));
+	if (maxSize < strblen(key->key)) {
+		errno=RG_KEY_RET_TRUNC;
+		return 0;
+	}
+	return bytes;
+}
 
 
 
@@ -575,9 +596,10 @@ size_t keySetOwner(Key *key, char *userDomain) {
 
 
 
-
 /**
- * Get comment about the key.
+ * Get the key comment.
+ * 
+ * A Key comment is pretty much as a comment in a text configuration file.
  *
  * @param returnedDesc pre-allocated memory to copy the comments to
  * @param maxSize number of bytes that will fit returnedDesc
@@ -605,33 +627,6 @@ size_t keyGetComment(Key *key, char *returnedDesc, size_t maxSize) {
 	}
 	return bytes;
 }
-
-
-
-/**
- * Calculates number of bytes needed to store a key comment, including
- * final NULL.
- *
- * Use this method to allocate memory to retrieve a key comment.
- *
- * @return number of bytes needed
- * @see keyGetComment()
- * @see keySetComment()
- */
-size_t keyGetCommentSize(Key *key) {
-	if (!key || !keyIsInitialized(key)) {
-		errno=RG_KEY_RET_UNINITIALIZED;
-		return 0;
-	}
-
-	if (!key->comment) {
-		errno=RG_KEY_RET_NODESC;
-		return 0;
-	}
-
-	return strblen(key->comment);
-}
-
 
 
 
@@ -671,6 +666,32 @@ size_t keySetComment(Key *key, char *newComment) {
 		key->flags &= ~(RG_KEY_FLAG_HASCOMMENT | RG_KEY_FLAG_NEEDSYNC);
 	}
 	return key->commentSize=0;
+}
+
+
+
+/**
+ * Calculates number of bytes needed to store a key comment, including
+ * final NULL.
+ *
+ * Use this method to allocate memory to retrieve a key comment.
+ *
+ * @return number of bytes needed
+ * @see keyGetComment()
+ * @see keySetComment()
+ */
+size_t keyGetCommentSize(Key *key) {
+	if (!key || !keyIsInitialized(key)) {
+		errno=RG_KEY_RET_UNINITIALIZED;
+		return 0;
+	}
+
+	if (!key->comment) {
+		errno=RG_KEY_RET_NODESC;
+		return 0;
+	}
+
+	return strblen(key->comment);
 }
 
 
@@ -762,47 +783,6 @@ size_t keySetDouble(Key *key, double newDouble) {
 	return ret;
 }
 */
-
-
-/**
- * Set raw data as the value of a key.
- * If NULL pointers are passed, key value is cleaned.
- * This method will not change or set the key type, and should not be
- * used unless working with user defined value types.
- *
- * @param newBinary array of bytes to set as the value
- * @param dataSize number bytes to use from newBinary, including the final NULL
- * @see keySetType() 
- *
- */
-size_t keySetRaw(Key *key, void *newBinary, size_t dataSize) {
-	if (!key) {
-		errno=RG_KEY_RET_UNINITIALIZED;
-		return 0;
-	}
-	if (!keyIsInitialized(key)) keyInit(key);
-
-	if (!dataSize || !newBinary) {
-		if (key->data) {
-			free(key->data);
-			key->data=0;
-		}
-		key->flags &= ~(RG_KEY_FLAG_HASDATA);
-		key->flags |= RG_KEY_FLAG_NEEDSYNC;
-		return 0;
-	}
-
-	key->dataSize=dataSize;
-	if (key->data) key->data=realloc(key->data,key->dataSize);
-	else key->data=malloc(key->dataSize);
-
-	if (!key->data) return 0;
-
-	memcpy(key->data,newBinary,key->dataSize);
-	key->flags |= RG_KEY_FLAG_HASDATA | RG_KEY_FLAG_NEEDSYNC;
-	return key->dataSize;
-}
-
 
 
 
@@ -921,6 +901,49 @@ size_t keySetBinary(Key *key, void *newBinary, size_t dataSize) {
 	keySetType(key,RG_KEY_TYPE_BINARY);
 	
 	return ret;
+}
+
+
+
+
+/**
+ * Set raw data as the value of a key.
+ * If NULL pointers are passed, key value is cleaned.
+ * This method will not change or set the key type, and should not be
+ * used unless working with user defined value types.
+ *
+ * @param newBinary array of bytes to set as the value
+ * @param dataSize number bytes to use from newBinary, including the final NULL
+ * @see keySetType() 
+ * @see keySetString()
+ * @see keySetBinary()
+ */
+size_t keySetRaw(Key *key, void *newBinary, size_t dataSize) {
+	if (!key) {
+		errno=RG_KEY_RET_UNINITIALIZED;
+		return 0;
+	}
+	if (!keyIsInitialized(key)) keyInit(key);
+
+	if (!dataSize || !newBinary) {
+		if (key->data) {
+			free(key->data);
+			key->data=0;
+		}
+		key->flags &= ~(RG_KEY_FLAG_HASDATA);
+		key->flags |= RG_KEY_FLAG_NEEDSYNC;
+		return 0;
+	}
+
+	key->dataSize=dataSize;
+	if (key->data) key->data=realloc(key->data,key->dataSize);
+	else key->data=malloc(key->dataSize);
+
+	if (!key->data) return 0;
+
+	memcpy(key->data,newBinary,key->dataSize);
+	key->flags |= RG_KEY_FLAG_HASDATA | RG_KEY_FLAG_NEEDSYNC;
+	return key->dataSize;
 }
 
 
@@ -1095,7 +1118,7 @@ int keySetGID(Key *key, gid_t gid) {
 
 
 /**
- * Get the access permissions to the key.
+ * Return the key access permissions.
  */
 mode_t keyGetAccess(Key *key) {
 	if (!key || !keyIsInitialized(key)) {
@@ -1112,7 +1135,7 @@ mode_t keyGetAccess(Key *key) {
 
 
 /**
- * Set the access permissions to the key.
+ * Set the key access permissions.
  */
 int keySetAccess(Key *key, mode_t mode) {
 	if (!key) return errno=RG_KEY_RET_UNINITIALIZED;
@@ -1288,113 +1311,6 @@ u_int32_t keyCompare(Key *key1, Key *key2) {
 }
 
 
-/**
- *  Compare 2 KeySets.
- *  A key (by full name) that is present on ks1 and ks2, and has something
- *  different, will be transfered from ks2 to ks1, and ks1's version deleted.
- *  Keys that are in ks1, but aren't in ks2 will be trasnsfered from ks1 to
- *  removed.
- *  Keys that are keyCompare() equal in ks1 and ks2 will be deleted from ks2.
- *  Keys that are available in ks2 but don't exist in ks1 will be transfered
- *  to ks1.
- *
- *  In the end, ks1 will have all the keys that matter, and ks2 will be empty.
- *  After ksCompare(), you should: 
- *  - call registrySetKeys(ks1) to commit all changed keys
- *  - registryRemove() for all keys in the removed KeySet
- *  - free(ks2)
- *
- *  @see keyCompare()
- *  @param ks1 first KeySet
- *  @param ks2 second KeySet
- *  @param removed empty KeySet that will be filled with keys removed from ks1
- */
-int ksCompare(KeySet *ks1, KeySet *ks2, KeySet *removed) {
-	int flagRemoved=1;
-	Key *ks1Cursor=0;
-	Key *ks2Cursor=0;
-	
-	Key *ks1PrevCursor=0;
-	
-	ks1Cursor=ks1->start;
-	while (ks1Cursor) {
-		Key *ks2PrevCursor=0;
-		flagRemoved=1;
-		
-		for (ks2Cursor=ks2->start; ks2Cursor; ks2Cursor=ks2Cursor->next) {
-			u_int32_t flags=keyCompare(ks1Cursor,ks2Cursor);
-			
-			if (!(flags & (RG_KEY_FLAG_HASKEY | RG_KEY_FLAG_HASDOMAIN))) {
-				/* Comparing fullname-equal keys */
-				flagRemoved=0; /* key was not removed */
-					
-				/* First remove from ks2 */
-				if (ks2PrevCursor) ks2PrevCursor->next=ks2Cursor->next;
-				else ks2->start=ks2Cursor->next;
-				if (ks2->end==ks2Cursor) ks2->end=ks2PrevCursor;
-				ks2->size--;
-					
-				if (flags) {
-					/* keys are different. Transfer to ks1. */
-					
-					/* Put in ks1 */
-					if (ks1PrevCursor) ks1PrevCursor->next=ks2Cursor;
-					else ks1->start=ks2Cursor;
-					if (ks1->end==ks1Cursor) ks1->end=ks2Cursor;
-					ks2Cursor->next=ks1Cursor->next;
-					
-					/* delete old version */
-					keyClose(ks1Cursor); free(ks1Cursor);
-					
-					/* Reset pointers */
-					ks1Cursor=ks2Cursor;
-				} else {
-					/* Keys are identical. Delete ks2's key. */
-
-					/* Delete ks2Cusrsor */
-					keyClose(ks2Cursor);
-					free(ks2Cursor);
-				}
-				/* Don't need to walk through ks2 anymore */
-				break;
-			}
-			ks2PrevCursor=ks2Cursor;
-			
-		} /* ks2 iteration */
-		
-		if (flagRemoved) {
-			/* This ks1 key was not found in ks2 */
-			/* Transfer it from ks1 to removed */
-			
-			/* Remove from ks1 */
-			if (ks1PrevCursor) ks1PrevCursor->next=ks1Cursor->next;
-			else ks1->start=ks1Cursor->next;
-			if (ks1->end==ks1Cursor) ks1->end=ks1PrevCursor;
-			ks1->size--;
-
-			/* Append to removed */
-			ksAppend(removed,ks1Cursor);
-			
-			/* Reset pointers */
-			if (ks1PrevCursor) ks1Cursor=ks1PrevCursor->next;
-			else ks1Cursor=ks1->start;
-		} else {
-			ks1PrevCursor=ks1Cursor;
-			ks1Cursor=ks1Cursor->next;
-		}
-	} /* ks1 iteration */
-	
-	/* Now transfer all remaining ks2 keys to ks1 */
-	ksAppendKeys(ks1,ks2);
-	
-	return 0;
-}
-
-
-
-
-
-
 
 
 
@@ -1415,8 +1331,8 @@ int ksCompare(KeySet *ks1, KeySet *ks2, KeySet *removed) {
  *	\</key>
  *
  * Accepted options:
- * RG_O_NUMBERS: Do not convert UID and GID into user and group names
- * RG_O_CONDENSED: Less human readable, more condensed output
+ * - RG_O_NUMBERS: Do not convert UID and GID into user and group names
+ * - RG_O_CONDENSED: Less human readable, more condensed output
  *
  * @param stream where to write output: a file or stdout
  * @param options ORed of RG_O_* options
@@ -1520,42 +1436,6 @@ size_t keyToStream(Key *key, FILE* stream, unsigned long options) {
 
 
 
-/**
- * Prints an XML version of a KeySet object.
- *
- * Accepted options:
- * RG_O_NUMBERS: Do not convert UID and GID into user and group names
- * RG_O_CONDENSED: Less human readable, more condensed output
- * RG_O_XMLHEADERS: Include the correct XML headers in the output. Use it.
- *
- * @param stream where to write output: a file or stdout
- * @param options ORed of RG_O_* options
- * @see keyToStream()
- * @return number of bytes written to output
- */
-size_t ksToStream(KeySet *ks, FILE* stream, unsigned long options) {
-	size_t written=0;
-	Key *key=0;
-	
-	if (options & RG_O_XMLHEADERS) {
-		written+=fprintf(stream,"<?xml version=\"1.0\" encoding=\"%s\"?>\n",
-			nl_langinfo(CODESET));
-		written+=fprintf(stream,
-			"<!DOCTYPE keyset PUBLIC \"-//Avi Alkalay//DTD Registry 0.1.0//EN\" \"http://registry.sf.net/dtd/registry.dtd\">\n\n\n");
-		written+=fprintf(stream,
-			"<!-- Generated by the Linux Registry API. Total of %d keys. -->\n\n\n\n",ks->size);
-	}
-	
-	written+=fprintf(stream,"<keyset>\n\n\n");
-	
-	for (key=ks->start; key; key=key->next)
-		written+=keyToStream(key,stream,options);
-	
-	written+=fprintf(stream,"</keyset>\n");
-	return written;
-}
-
-
 
 /**
  * Deprecated.
@@ -1597,116 +1477,6 @@ size_t keyToString(Key *key, char *returned, size_t maxSize) {
 
 	return cursor-returned;
 }
-
-
-
-/**
- * KeySet object constructor.
- *
- * Every KeySet object that will be used must be initialized first, to setup
- * pointers, counters, etc.
- * @see ksClose()
- * @see keyInit()
- */
-int ksInit(KeySet *ks) {
-	ks->start=ks->end=ks->cursor=0;
-	ks->size=0;
-	
-	return 0;
-}
-
-
-/**
- * KeySet destructor.
- *
- * The keyClose() destructor will be called for all contained keys,
- * and then freed. Then all internal KeySet pointers etc cleaned too.
- * Sets the object ready to be freed by you.
- * 
- * @see ksInit()
- * @see keyClose()
- */
-int ksClose(KeySet *ks) {
-	if (ks->size) {
-		Key *cursor=ks->start;
-		while (ks->size) {
-			Key *destroyer=cursor;
-			cursor=cursor->next;
-			keyClose(destroyer);
-			free(destroyer);
-			--ks->size;
-		}
-	}
-	ks->start=ks->end=ks->cursor;
-	return 0;
-}
-
-
-Key *ksNext(KeySet *ks) {
-	if (!ks->cursor) ks->cursor=ks->start;
-	else ks->cursor=ks->cursor->next;
-	
-	return ks->cursor;
-}
-
-
-int ksRewind(KeySet *ks) {
-	ks->cursor=0;
-	return 0;
-}
-
-unsigned int ksInsert(KeySet *ks, Key *toInsert) {
-	toInsert->next=ks->start;
-	ks->start=toInsert;
-	if (!ks->end) ks->end=toInsert;
-	return ++ks->size;
-}
-
-
-unsigned int ksAppend(KeySet *ks, Key *toAppend) {
-	toAppend->next=0;
-	if (ks->end) ks->end->next=toAppend;
-	if (!ks->start) ks->start=toAppend;
-	ks->end=toAppend;
-	return ++ks->size;
-}
-
-
-unsigned int ksInsertKeys(KeySet *ks, KeySet *toInsert) {
-	if (toInsert->size) {
-		toInsert->end->next=ks->start;
-		ks->start=toInsert->start;
-
-		ks->size+=toInsert->size;
-		
-		/* Invalidate the old KeySet */
-		toInsert->start=toInsert->end=0;
-		toInsert->size=0;
-	}
-	return ks->size;
-}
-
-
-
-unsigned int ksAppendKeys(KeySet *ks, KeySet *toAppend) {
-	if (toAppend->size) {
-		if (ks->end) {
-			ks->end->next=toAppend->start;
-			ks->end=toAppend->end;
-		} else {
-			ks->end=toAppend->end;
-			ks->start=toAppend->start;
-		}
-
-		ks->size+=toAppend->size;
-		
-		/* Invalidate the old KeySet */
-		toAppend->start=toAppend->end=0;
-		toAppend->size=0;
-	}
-	return ks->size;
-}
-
 
 
 
@@ -1855,6 +1625,16 @@ size_t keyGetSerializedSize(Key *key) {
 
 
 
+/**
+ * Check whether a key name is under the system namespace or not
+ *
+ * @return 1 if string begins with "system", 0 otherwise
+ * @param keyName the name of a key
+ * @see keyIsSystem()
+ * @see keyIsUser()
+ * @see keyNameIsUser()
+ * 
+ */
 int keyNameIsSystem(char *keyName) {
 	if (!keyName) return 0;
 	if (!strlen(keyName)) return 0;
@@ -1864,6 +1644,16 @@ int keyNameIsSystem(char *keyName) {
 }
 
 
+/**
+ * Check whether a key name is under the user namespace or not
+ *
+ * @return 1 if string begins with "user", 0 otherwise
+ * @param keyName the name of a key
+ * @see keyIsSystem()
+ * @see keyIsUser()
+ * @see keyNameIsSystem()
+ * 
+ */
 int keyNameIsUser(char *keyName) {
 	if (!keyName) return 0;
 	if (!strlen(keyName)) return 0;
@@ -1874,6 +1664,15 @@ int keyNameIsUser(char *keyName) {
 
 
 
+/**
+ * Check whether a key is under the system namespace or not
+ *
+ * @return 1 if key name begins with "system", 0 otherwise
+ * @see keyNameIsSystem()
+ * @see keyIsUser()
+ * @see keyNameIsUser()
+ * 
+ */
 int keyIsSystem(Key *key) {
 	if (!key) return 0;
 	if (!keyIsInitialized(key)) return 0;
@@ -1883,6 +1682,15 @@ int keyIsSystem(Key *key) {
 
 
 
+/**
+ * Check whether a key is under the user namespace or not
+ *
+ * @return 1 if key name begins with "user", 0 otherwise
+ * @see keyNameIsSystem()
+ * @see keyIsSystem()
+ * @see keyNameIsUser()
+ * 
+ */
 int keyIsUser(Key *key) {
 	if (!key) return 0;
 	if (!keyIsInitialized(key)) return 0;
@@ -1891,6 +1699,19 @@ int keyIsUser(Key *key) {
 }
 
 
+
+
+/**
+ * Return the namespace of a key name
+ *
+ * Currently valid namespaces are RG_NS_SYSTEM and RG_NS_USER.
+ * 
+ * @return RG_NS_SYSTEM, RG_NS_USER or 0
+ * @see keyGetNameSpace()
+ * @see keyIsUser()
+ * @see keyIsSystem()
+ * 
+ */
 int keyNameGetNameSpace(char *keyName) {
 	if (keyNameIsSystem(keyName)) return RG_NS_SYSTEM;
 	if (keyNameIsUser(keyName)) return RG_NS_USER;
@@ -1899,6 +1720,17 @@ int keyNameGetNameSpace(char *keyName) {
 
 
 
+/**
+ * Return the namespace of a key
+ *
+ * Currently valid namespaces are RG_NS_SYSTEM and RG_NS_USER.
+ * 
+ * @return RG_NS_SYSTEM, RG_NS_USER or 0
+ * @see keyNameGetNameSpace()
+ * @see keyIsUser()
+ * @see keyIsSystem()
+ * 
+ */
 int keyGetNameSpace(Key *key) {
 	if (!key) return 0;
 	if (!keyIsInitialized(key)) return 0;
@@ -1907,7 +1739,15 @@ int keyGetNameSpace(Key *key) {
 }
 
 
-
+/**
+ * Check if a key is folder key
+ *
+ * Folder keys have no value.
+ *
+ * @return 1 if key is a folder, 0 otherwise
+ * @see keyIsLink()
+ * @see keyGetType()
+ */
 int keyIsDir(Key *key) {
 	if (!key) return 0;
 	if (!keyIsInitialized(key)) return 0;
@@ -1916,6 +1756,15 @@ int keyIsDir(Key *key) {
 }
 
 
+/**
+ * Check if a key is a link key
+ *
+ * The value of link keys is the key they point to.
+ *
+ * @return 1 if key is a link, 0 otherwise
+ * @see keyIsDir()
+ * @see keyGetType()
+ */
 int keyIsLink(Key *key) {
 	if (!key) return 0;
 	if (!keyIsInitialized(key)) return 0;
@@ -1924,7 +1773,15 @@ int keyIsLink(Key *key) {
 }
 
 
-/** Return the key's root name size not considering the NULL termination char */
+/**
+ * Gets number of bytes needed to store root name of a key name
+ * 
+ * Possible root key names are 'system', 'user' or 'user:someuser'.
+ *
+ * @return number of bytes needed without ending NULL
+ * @param keyName the name of the key
+ * @see keyGetRootNameSize()
+ */
 size_t keyNameGetRootNameSize(char *keyName) {
 	char *end;
 	int length=strlen(keyName);
@@ -1953,6 +1810,16 @@ size_t keyNameGetRootNameSize(char *keyName) {
 
 
 
+/**
+ * Gets number of bytes needed to store root name of a key.
+ * 
+ * Possible root key names are 'system' or 'user'.
+ * This method does not consider the user domain in 'user:username' keys.
+ *
+ * @return number of bytes needed without the ending NULL
+ * @see keyGetFullRootNameSize()
+ * @see keyNameGetRootNameSize()
+ */
 size_t keyGetRootNameSize(Key *key) {
 	if (!key) return 0;
 	if (!keyIsInitialized(key)) return 0;
@@ -1962,6 +1829,20 @@ size_t keyGetRootNameSize(Key *key) {
 }
 
 
+
+
+
+/**
+ * Gets number of bytes needed to store full root name of a key.
+ * 
+ * Possible root key names are 'system', 'user' or 'user:someuser'.
+ * In contrast to keyGetRootNameSize(), this method considers the user
+ * domain part, and you should prefer this one.
+ *
+ * @return number of bytes needed without ending NULL
+ * @see keyNameGetRootNameSize()
+ * @see keyGetRootNameSize()
+ */
 size_t keyGetFullRootNameSize(Key *key) {
 	size_t size=0;
 
@@ -1975,6 +1856,16 @@ size_t keyGetFullRootNameSize(Key *key) {
 
 
 
+/**
+ * Calculates number of bytes needed to store basename of a key name.
+ * 
+ * Basenames are denoted as:
+ * system/some/thing/basename
+ * user:domain/some/thing/basename
+ *
+ * @return number of bytes needed without ending NULL
+ * @see keyGetBaseNameSize()
+ */
 size_t keyNameGetBaseNameSize(char *keyName) {
 	char *end;
 	size_t size,keySize;
@@ -1994,10 +1885,11 @@ size_t keyNameGetBaseNameSize(char *keyName) {
 	end=strrchr(keyName,RG_KEY_DELIM);
 	if (*(end-1)!='\\') return keyName+keySize-(end+1);
 
+	/* TODO: review bellow this point. obsolete code */
 	/* Possible situations left:
 
-		system.something.base\.name
-		system.something.basename\.
+		system/something/base\.name
+		system/something/basename\.
 	*/
 
 	while (!found) {
@@ -2010,6 +1902,16 @@ size_t keyNameGetBaseNameSize(char *keyName) {
 
 
 
+/**
+ * Calculates number of bytes needed to store basename of a key.
+ * 
+ * Basenames are denoted as:
+ * system/some/thing/basename
+ * user:domain/some/thing/basename
+ *
+ * @return number of bytes needed without ending NULL
+ * @see keyNameGetBaseNameSize()
+ */
 size_t keyGetBaseNameSize(Key *key) {
 	if (!key) return 0;
 	if (!keyIsInitialized(key)) return 0;
@@ -2096,7 +1998,14 @@ size_t keyGetBaseName(Key *key, char *returned, size_t maxSize) {
 
 
 
-
+/**
+ * Set a general flag in the Key
+ *
+ * The flag has no semantics to the library, only to your application.
+ *
+ * @see keyGetFlag()
+ * @return 0 unless key is invalid.
+ */
 int keySetFlag(Key *key) {
 	if (!key || !keyIsInitialized(key)) {
 		errno=RG_KEY_RET_UNINITIALIZED;
@@ -2109,6 +2018,18 @@ int keySetFlag(Key *key) {
 }
 
 
+
+
+
+
+/**
+ * Get the flag from the Key
+ *
+ * The flag has no semantics to the library, only to your application.
+ *
+ * @see keySetFlag()
+ * @return 1 if flag is set
+ */
 int keyGetFlag(Key *key) {
 	if (!key || !keyIsInitialized(key)) {
 		errno=RG_KEY_RET_UNINITIALIZED;
@@ -2117,3 +2038,356 @@ int keyGetFlag(Key *key) {
 
 	return (key->flags | RG_KEY_FLAG_FLAG)?1:0;
 }
+
+/**
+ * @} // end of Key group
+ */
+
+ 
+
+
+/**
+ * @defgroup keyset KeySet Manipulation Methods
+ * @brief These are methods to manipulate KeySets.
+ * A KeySet is a linked list to group a number of Keys.
+ * It has an internal cursor to help in the Key navigation.
+ *
+ * These are the methods to make various manipulations in the objects of class KeySet.
+ * Methods for sorting, merging, comparing, and internal cursor manipulation are provided.
+ * 
+ * @{
+ */
+
+
+/**
+ * KeySet object constructor.
+ *
+ * Every KeySet object that will be used must be initialized first, to setup
+ * pointers, counters, etc.
+ * @see ksClose()
+ * @see keyInit()
+ */
+int ksInit(KeySet *ks) {
+	ks->start=ks->end=ks->cursor=0;
+	ks->size=0;
+	
+	return 0;
+}
+
+
+/**
+ * KeySet destructor.
+ *
+ * The keyClose() destructor will be called for all contained keys,
+ * and then freed. Then all internal KeySet pointers etc cleaned too.
+ * Sets the object ready to be freed by you.
+ * 
+ * @see ksInit()
+ * @see keyClose()
+ */
+int ksClose(KeySet *ks) {
+	if (ks->size) {
+		Key *cursor=ks->start;
+		while (ks->size) {
+			Key *destroyer=cursor;
+			cursor=cursor->next;
+			keyClose(destroyer);
+			free(destroyer);
+			--ks->size;
+		}
+	}
+	ks->start=ks->end=ks->cursor;
+	return 0;
+}
+
+
+/**
+ * Returns the next Key in a KeySet.
+ * KeySets have an internal cursor that can be reset with ksRewind(). Every
+ * time ksNext() is called the cursor is incremented and the new current Key
+ * is returned.
+ * You'll get a NULL pointer if the end of KeySet was reached. After that,
+ * if ksNext() is called again, it will set the cursor to the begining of
+ * the KeySet and the first key is returned.
+ *
+ * @see ksRewind()
+ * @return the new current Key
+ *
+ */
+Key *ksNext(KeySet *ks) {
+	if (!ks->cursor) ks->cursor=ks->start;
+	else ks->cursor=ks->cursor->next;
+	
+	return ks->cursor;
+}
+
+
+
+/**
+ * Resets a KeySet internal cursor.
+ *
+ * @see ksNext()
+ * @return allways 0
+ *
+ */
+int ksRewind(KeySet *ks) {
+	ks->cursor=0;
+	return 0;
+}
+
+
+
+
+/**
+ * Insert a new Key in the begining of the KeySet.
+ * The KeySet internal cursor is not moved.
+ * 
+ * @return the size of the KeySet after insertion
+ * @param ks KeySet that will receive the key
+ * @param toInsert Key that will be inserted into ks
+ * @see ksAppend()
+ * @see ksInsertKeys()
+ * @see ksAppendKeys()
+ * 
+ */
+size_t ksInsert(KeySet *ks, Key *toInsert) {
+	toInsert->next=ks->start;
+	ks->start=toInsert;
+	if (!ks->end) ks->end=toInsert;
+	return ++ks->size;
+}
+
+
+/**
+ * Append a new Key to the end of the KeySet.
+ * The KeySet internal cursor is not moved.
+ * 
+ * @return the size of the KeySet after insertion
+ * @param ks KeySet that will receive the key
+ * @param toAppend Key that will be appended to ks
+ * @see ksInsert()
+ * @see ksInsertKeys()
+ * @see ksAppendKeys()
+ * 
+ */
+size_t ksAppend(KeySet *ks, Key *toAppend) {
+	toAppend->next=0;
+	if (ks->end) ks->end->next=toAppend;
+	if (!ks->start) ks->start=toAppend;
+	ks->end=toAppend;
+	return ++ks->size;
+}
+
+
+
+/**
+ * Transfers an entire KeySet to the begining of the KeySet.
+ * 
+ * After this call, the toInsert KeySet will be empty.
+ *
+ * @return the size of the KeySet after insertion
+ * @param ks the KeySet that will receive the keys
+ * @param toInsert the KeySet that provides the keys that will be transfered
+ * @see ksAppend()
+ * @see ksInsert()
+ * @see ksAppendKeys()
+ * 
+ */
+size_t ksInsertKeys(KeySet *ks, KeySet *toInsert) {
+	if (toInsert->size) {
+		toInsert->end->next=ks->start;
+		ks->start=toInsert->start;
+
+		ks->size+=toInsert->size;
+		
+		/* Invalidate the old KeySet */
+		toInsert->start=toInsert->end=0;
+		toInsert->size=0;
+	}
+	return ks->size;
+}
+
+
+
+/**
+ * Transfers an entire KeySet to the end of the KeySet.
+ * 
+ * After this call, the toAppend KeySet will be empty.
+ *
+ * @return the size of the KeySet after transfer
+ * @param ks the KeySet that will receive the keys
+ * @param toAppend the KeySet that provides the keys that will be transfered
+ * @see ksAppend()
+ * @see ksInsert()
+ * @see ksInsertKeys()
+ * 
+ */
+size_t ksAppendKeys(KeySet *ks, KeySet *toAppend) {
+	if (toAppend->size) {
+		if (ks->end) {
+			ks->end->next=toAppend->start;
+			ks->end=toAppend->end;
+		} else {
+			ks->end=toAppend->end;
+			ks->start=toAppend->start;
+		}
+
+		ks->size+=toAppend->size;
+		
+		/* Invalidate the old KeySet */
+		toAppend->start=toAppend->end=0;
+		toAppend->size=0;
+	}
+	return ks->size;
+}
+
+
+
+
+
+
+
+/**
+ *  Compare 2 KeySets.
+ *  A key (by full name) that is present on ks1 and ks2, and has something
+ *  different, will be transfered from ks2 to ks1, and ks1's version deleted.
+ *  Keys that are in ks1, but aren't in ks2 will be trasnsfered from ks1 to
+ *  removed.
+ *  Keys that are keyCompare() equal in ks1 and ks2 will be deleted from ks2.
+ *  Keys that are available in ks2 but don't exist in ks1 will be transfered
+ *  to ks1.
+ *
+ *  In the end, ks1 will have all the keys that matter, and ks2 will be empty.
+ *  After ksCompare(), you should: 
+ *  - call registrySetKeys(ks1) to commit all changed keys
+ *  - registryRemove() for all keys in the removed KeySet
+ *  - free(ks2)
+ *
+ *  @see keyCompare()
+ *  @param ks1 first KeySet
+ *  @param ks2 second KeySet
+ *  @param removed empty KeySet that will be filled with keys removed from ks1
+ */
+int ksCompare(KeySet *ks1, KeySet *ks2, KeySet *removed) {
+	int flagRemoved=1;
+	Key *ks1Cursor=0;
+	Key *ks2Cursor=0;
+	
+	Key *ks1PrevCursor=0;
+	
+	ks1Cursor=ks1->start;
+	while (ks1Cursor) {
+		Key *ks2PrevCursor=0;
+		flagRemoved=1;
+		
+		for (ks2Cursor=ks2->start; ks2Cursor; ks2Cursor=ks2Cursor->next) {
+			u_int32_t flags=keyCompare(ks1Cursor,ks2Cursor);
+			
+			if (!(flags & (RG_KEY_FLAG_HASKEY | RG_KEY_FLAG_HASDOMAIN))) {
+				/* Comparing fullname-equal keys */
+				flagRemoved=0; /* key was not removed */
+					
+				/* First remove from ks2 */
+				if (ks2PrevCursor) ks2PrevCursor->next=ks2Cursor->next;
+				else ks2->start=ks2Cursor->next;
+				if (ks2->end==ks2Cursor) ks2->end=ks2PrevCursor;
+				ks2->size--;
+					
+				if (flags) {
+					/* keys are different. Transfer to ks1. */
+					
+					/* Put in ks1 */
+					if (ks1PrevCursor) ks1PrevCursor->next=ks2Cursor;
+					else ks1->start=ks2Cursor;
+					if (ks1->end==ks1Cursor) ks1->end=ks2Cursor;
+					ks2Cursor->next=ks1Cursor->next;
+					
+					/* delete old version */
+					keyClose(ks1Cursor); free(ks1Cursor);
+					
+					/* Reset pointers */
+					ks1Cursor=ks2Cursor;
+				} else {
+					/* Keys are identical. Delete ks2's key. */
+
+					/* Delete ks2Cusrsor */
+					keyClose(ks2Cursor);
+					free(ks2Cursor);
+				}
+				/* Don't need to walk through ks2 anymore */
+				break;
+			}
+			ks2PrevCursor=ks2Cursor;
+			
+		} /* ks2 iteration */
+		
+		if (flagRemoved) {
+			/* This ks1 key was not found in ks2 */
+			/* Transfer it from ks1 to removed */
+			
+			/* Remove from ks1 */
+			if (ks1PrevCursor) ks1PrevCursor->next=ks1Cursor->next;
+			else ks1->start=ks1Cursor->next;
+			if (ks1->end==ks1Cursor) ks1->end=ks1PrevCursor;
+			ks1->size--;
+
+			/* Append to removed */
+			ksAppend(removed,ks1Cursor);
+			
+			/* Reset pointers */
+			if (ks1PrevCursor) ks1Cursor=ks1PrevCursor->next;
+			else ks1Cursor=ks1->start;
+		} else {
+			ks1PrevCursor=ks1Cursor;
+			ks1Cursor=ks1Cursor->next;
+		}
+	} /* ks1 iteration */
+	
+	/* Now transfer all remaining ks2 keys to ks1 */
+	ksAppendKeys(ks1,ks2);
+	
+	return 0;
+}
+
+
+
+
+/**
+ * Prints an XML version of a KeySet object.
+ *
+ * Accepted options:
+ * - RG_O_NUMBERS: Do not convert UID and GID into user and group names
+ * - RG_O_CONDENSED: Less human readable, more condensed output
+ * - RG_O_XMLHEADERS: Include the correct XML headers in the output. Use it.
+ *
+ * @param stream where to write output: a file or stdout
+ * @param options ORed of RG_O_* options
+ * @see keyToStream()
+ * @return number of bytes written to output
+ */
+size_t ksToStream(KeySet *ks, FILE* stream, unsigned long options) {
+	size_t written=0;
+	Key *key=0;
+	
+	if (options & RG_O_XMLHEADERS) {
+		written+=fprintf(stream,"<?xml version=\"1.0\" encoding=\"%s\"?>\n",
+			nl_langinfo(CODESET));
+		written+=fprintf(stream,
+			"<!DOCTYPE keyset PUBLIC \"-//Avi Alkalay//DTD Registry 0.1.0//EN\" \"http://registry.sf.net/dtd/registry.dtd\">\n\n\n");
+		written+=fprintf(stream,
+			"<!-- Generated by the Linux Registry API. Total of %d keys. -->\n\n\n\n",ks->size);
+	}
+	
+	written+=fprintf(stream,"<keyset>\n\n\n");
+	
+	for (key=ks->start; key; key=key->next)
+		written+=keyToStream(key,stream,options);
+	
+	written+=fprintf(stream,"</keyset>\n");
+	return written;
+}
+
+
+/**
+ * @} // end of KeySet group
+ */

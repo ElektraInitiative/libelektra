@@ -37,6 +37,8 @@ $LastChangedBy$
 				<revdescription>
 					<itemizedlist>
 						<listitem><simpara>Added Doxygen API documentation</simpara></listitem>
+						<listitem><simpara>Added link to Advogato project page</simpara></listitem>
+						<listitem><simpara>Rewriten project links section</simpara></listitem>
 					</itemizedlist>
 				</revdescription>
 			</revision>
@@ -252,19 +254,27 @@ $LastChangedBy$
 	</articleinfo>
 
 	<section id="links"><title>Getting The Linux Registry</title>
-		<para>The Linux Registry can be found at <ulink url="http://registry.sf.net/">registry.sf.net</ulink>. C source and RPMs can be found at <ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628">sourceforge.net</ulink>, and its <ulink url="http://freshmeat.net">Freshmeat</ulink> entry is <ulink url="http://freshmeat.net/projects/registry/">http://freshmeat.net/projects/registry/</ulink>.</para>
-		<para>There is also a <ulink url="http://tlr.pirack.com/LinuxRegistry">Wiki space</ulink>, made available by Daniel Lambea, and an <ulink url="http://www.orkut.com/Community.aspx?cmm=89174">Orkut Community</ulink>.</para>
-		<para>Source code snapshots are available through a <ulink url="http://www.germane-software.com/repositories/tlr/trunk/">Subversion repository</ulink>, thanks to Sean Russel. Get Subversion installed on your system and:
+		<para>The Linux Registry can be found at <ulink url="http://registry.sf.net/">registry.sf.net</ulink> and in all this following places:
+			<itemizedlist>
+				<listitem><simpara><ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628">C source and RPMs</ulink> from <ulink url="http://sourceforge.net/projects/registry">sourceforge.net</ulink></simpara></listitem>
+				<listitem><simpara><ulink url="http://www.germane-software.com/repositories/tlr/trunk/">Subversion repository</ulink>, thanks to Sean Russel</simpara></listitem>
+				<listitem><simpara><ulink url="http://tlr.pirack.com/LinuxRegistry">Wiki space</ulink>, made available by Daniel Lambea</simpara></listitem>
+				<listitem><simpara><ulink url="http://freshmeat.net/projects/registry/">Freshmeat project page</ulink></simpara></listitem>
+				<listitem><simpara><ulink url="http://www.advogato.org/proj/Linux Registry/">Advogato project page</ulink></simpara></listitem>
+				<listitem><simpara><ulink url="http://www.orkut.com/Community.aspx?cmm=89174">Orkut Community</ulink></simpara></listitem>
+				<!-- ML admin: https://lists.sourceforge.net/lists/admin/registry-list -->
+				<listitem><simpara><ulink url="https://lists.sourceforge.net/lists/listinfo/registry-list">Subscribe to general discussions list</ulink> or <ulink url="http://sourceforge.net/mailarchive/forum.php?forum=registry-list">see the list archives</ulink></simpara></listitem>
+			</itemizedlist>
+		</para>
+		<para>Get Subversion installed on your system and:
 			<screen><prompt>bash:~$</prompt> <command>cd src</command>
 <prompt>bash:~/src$</prompt> <command>svn co http://germane-software.com/repositories/tlr/trunk registry</command>
 <prompt>bash:~/src$</prompt> <command>cd registry</command>
-<prompt>bash:~/src/registry$</prompt> <command># files are places here</command>
+<prompt>bash:~/src/registry$</prompt> <command># files are placed here</command>
 			</screen>
 
 </para>
 
-		<para>Subscribe to the <ulink url="https://lists.sourceforge.net/lists/listinfo/registry-list">general discussions list</ulink> or <ulink url="http://sourceforge.net/mailarchive/forum.php?forum=registry-list">see the list archives</ulink>.</para>
-		<!-- ML admin: https://lists.sourceforge.net/lists/admin/registry-list -->
 		<para>Linux Registry is licensed under the <ulink url="http://www.gnu.org/licenses/lgpl.html">LGPL</ulink></para>
 		<para>
 			<ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628"><graphic srccredit="SourceForge.net" fileref="http://sourceforge.net/sflogo.php?group_id=99628&amp;type=5" label="SourceForge.net Logo" align="center"/></ulink><ulink url="http://freshmeat.net/projects/registry/"><graphic srccredit="freashmeat.net" fileref="images/link_button_1.gif" label="Freshmeat.net Logo" align="center"/></ulink>
@@ -278,7 +288,7 @@ $LastChangedBy$
 				<listitem><simpara><ulink url="registry.7.html">registry.7</ulink>: Discussion about what is the Registry etc. You don't need it if you are already reading this.</simpara></listitem>
 				<listitem><simpara><ulink url="registry.5.html">registry.5</ulink>: Registry internals.</simpara></listitem>
 			</orderedlist>
-			<para>You can also <ulink url="api/html/">browse</ulink> or <ulink url="registry-api.tar.gz">download</ulink> the API documentation (also provided in the <ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628">-devel RPM</ulink>, by Doxygen.</para>
+			<para>You can also <ulink url="api/html/index.html">browse</ulink> or <ulink url="registry-api.tar.gz">download</ulink> the API documentation (also provided in the <ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628">-devel RPM</ulink>), by Doxygen.</para>
 		</section>
 
 	

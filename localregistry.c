@@ -62,12 +62,31 @@ $LastChangedBy$
 
 extern int errno;
 
+
+
+
+/**
+ * @defgroup registry Registry Access Methods
+ * @brief These are general methods to access the Key database.
+ * 
+ */
+
+ 
+/**
+ * @defgroup internals Registry internals
+ * @brief These methods are not to be used by your application.
+ * 
+ */
+
+ 
+ 
 /**
  * Opens a registry session.
  * 
  * By now it does nothing. This might change in the future, so it's good
  * practice to always call <i>registryOpen()</i> before using the registry.
  * @see registryClose()
+ * @ingroup registry
  */
 int registryOpen() {
 	return 0;
@@ -78,6 +97,7 @@ int registryOpen() {
  *
  * This is the counterpart of <i>registryOpen()</i>.
  * @see registryOpen()
+ * @ingroup registry
  */
 int registryClose() {
 	return 0;
@@ -91,6 +111,7 @@ int registryClose() {
  * account, including comments.
  * @param key the key which serialized size is to be calculated.
  * @return the serialized size in bytes.
+ * @ingroup internals
  */
 size_t keyGetSerializedSize(Key *key) {
 	size_t size,tmp;
@@ -115,6 +136,7 @@ size_t keyGetSerializedSize(Key *key) {
  * @param encoded the source of ASCII hexadecimal digits.
  * @param returned the destination for the unencoded data.
  * @return the amount of bytes unencoded.
+ * @ingroup internals
  */
 size_t unencode(char *encoded,void *returned) {
 	char byteInHexa[5]="0x";
@@ -150,6 +172,7 @@ size_t unencode(char *encoded,void *returned) {
 /**
  *
  * <b>internal usage only-</b>
+ * @ingroup internals
  *
  */
 int registryNeedsUTF8Conversion() {
@@ -162,6 +185,7 @@ int registryNeedsUTF8Conversion() {
  * Converts string to (direction=UTF8_TO) and from (direction=UTF8_FROM) UTF-8.
  *
  * <b>internal usage only-</b>
+ * @ingroup internals
  *
  */
 int UTF8Engine(int direction, char **string, size_t *inputByteSize) {
@@ -214,6 +238,7 @@ int UTF8Engine(int direction, char **string, size_t *inputByteSize) {
 /**
  *
  * <b>internal usage only-</b>
+ * @ingroup internals
  *
  */
 int handleOldKeyFileVersion(Key *key,FILE *input,u_int16_t nversion) {
@@ -344,12 +369,17 @@ int handleOldKeyFileVersion(Key *key,FILE *input,u_int16_t nversion) {
 	return -1;
 }
 
+
+
+
+
 /**
- * Makes a key from its serialized form, coming from a file.
+ * Makes a key object from its serialized form, coming from a file.
  *
  * @param key the key we want to receive the data.
  * @param input the opened file from which we want to read.
  * @return 0 on success.
+ * @ingroup internals
  */
 int keyFileUnserialize(Key *key,FILE *input) {
 	char generalBuffer[100];
@@ -501,6 +531,7 @@ int keyFileUnserialize(Key *key,FILE *input) {
  * @param returned the destination for the ASCII-encoded data.
  * @return the amount of bytes used in the resulting encoded buffer.
  * @see encode()
+ * @ingroup internals
  */
 size_t encode(void *unencoded, size_t size, char *returned) {
 	void *readCursor=unencoded;
@@ -531,6 +562,10 @@ size_t encode(void *unencoded, size_t size, char *returned) {
 	return (writeCursor)-(void *)returned;
 }
 
+
+
+
+
 /**
  * Writes the serialized form of the given key onto a file.
  *
@@ -539,6 +574,7 @@ size_t encode(void *unencoded, size_t size, char *returned) {
  * @param output the opened file to be written.
  * @return 0 on success.
  * @see keyFileUnserialize()
+ * @ingroup internals
  */
 int keyFileSerialize(Key *key, FILE *output) {
 	/* The serialized format is
@@ -602,7 +638,15 @@ int keyFileSerialize(Key *key, FILE *output) {
 }
 
 
-
+/**
+ * This is a helper to registryGetFilename()
+ * 
+ * @param relativeFileName the buffer to return the calculated filename
+ * @param maxSize maximum number of bytes that fit the buffer
+ * @see registryGetFilename()
+ * @return number of bytes written to the buffer, or 0 on error
+ * @ingroup internals
+ */
 size_t keyCalcRelativeFileName(Key *key,char *relativeFileName,size_t maxSize) {
 	if (!key || !keyIsInitialized(key)) {
 		errno=RG_KEY_RET_UNINITIALIZED;
@@ -669,6 +713,19 @@ size_t keyCalcRelativeFileName(Key *key,char *relativeFileName,size_t maxSize) {
 
 
 
+
+
+
+/**
+ * Stats a key file.
+ * Will not open the key file, but only stat it, not changing its last access time.
+ * The resulting key will have all info, but comment, value and value type.
+ *
+ * @param stat the stat structure to get metadata from
+ * @param key object to be filled with info from stat structure
+ * @return 0 on success, -1 otherwise
+ * @ingroup internals
+ */
 int keyFromStat(Key *key,struct stat *stat) {
 	if (!key) {
 		errno=RG_KEY_RET_NULLKEY;
@@ -689,6 +746,15 @@ int keyFromStat(Key *key,struct stat *stat) {
 
 
 
+/**
+ * Calculate the real file name for a key.
+ * 
+ * @param returned the buffer to return the calculated filename
+ * @param maxSize maximum number of bytes that fit the buffer
+ * @see registryCalcRelativeFilename()
+ * @return number of bytes written to the buffer, or 0 on error
+ * @ingroup internals
+ */
 size_t registryGetFilename(Key *forKey,char *returned,size_t maxSize) {
 	size_t length=0;
 
@@ -725,7 +791,21 @@ size_t registryGetFilename(Key *forKey,char *returned,size_t maxSize) {
 }
 
 
-
+/**
+ * A high-level method to set a value to a key, by key name.
+ * It will obviously check if key exists first, and keep its metadata.
+ * So you'll not loose the precious key comment.
+ * 
+ * This will set a text key. So if the key was previously a binary, etc key, it will be retyped as text.
+ *
+ * @see registryGetValue()
+ * @see keySetString()
+ * @see registrySetKey()
+ * @param keyname the name of the key to receive the value
+ * @param value the value to be set
+ * @return 0 on success, and error code otherwise
+ * @ingroup registry
+ */
 int registrySetValue(char *keyname, char *value) {
 	Key key;
 	int rc;
@@ -741,6 +821,20 @@ int registrySetValue(char *keyname, char *value) {
 
 
 
+/**
+ * A high-level method to get a key value, by key name.
+ * This method is valid only for string keys.
+ * You should use other methods to get non-string keys.
+ *
+ * @see registrySetValue()
+ * @see registryGetKey()
+ * @see keyGetString()
+ * @param keyname the name of the key to receive the value
+ * @param returned a buffer to put the key value
+ * @param maxSize the size of the buffer
+ * @ingroup registry
+ *
+ */
 int registryGetValue(char *keyname,char *returned,size_t maxSize) {
 	Key key;
 	int rc=0;
@@ -756,6 +850,22 @@ int registryGetValue(char *keyname,char *returned,size_t maxSize) {
 }
 
 
+
+/**
+ * Given a parent key name plus a basename, returns the key.
+ *
+ * So here you'll provide something like
+ * - system/sw/myApp plus key1 to get system/sw/myApp/key1
+ * - user/sw/MyApp plus dir1/key2 to get user/sw/MyApp/dir1/key2
+ *
+ * @param parentName parent key name
+ * @param baseName leaf name
+ * @param returned the returned key
+ * @return 0 on success, or a return code if key was not retrieved for some reason
+ * @see registryGetKey()
+ * @see registryGetValueByParent()
+ * @ingroup registry
+ */
 int registryGetKeyByParent(char *parentName, char *baseName, Key *returned) {
 	char name[strblen(parentName)+strblen(baseName)];
 	
@@ -766,7 +876,9 @@ int registryGetKeyByParent(char *parentName, char *baseName, Key *returned) {
 }
 
 
-
+/**
+ * @ingroup registry
+ */
 int registryGetKeyByParentKey(Key *parent, char *baseName, Key *returned) {
 	size_t size=keyGetFullNameSize(parent);
 	char name[size+strblen(baseName)];
@@ -781,6 +893,9 @@ int registryGetKeyByParentKey(Key *parent, char *baseName, Key *returned) {
 }
 
 
+/**
+ * @ingroup registry
+ */
 int registryGetValueByParent(char *parentName, char *baseName, char *returned, size_t maxSize) {
 	char name[strblen(parentName)+strblen(baseName)];
 	
@@ -790,6 +905,9 @@ int registryGetValueByParent(char *parentName, char *baseName, char *returned, s
 
 
 
+/**
+ * @ingroup registry
+ */
 int registrySetValueByParent(char *parentName, char *baseName, char *value) {
 	char name[strblen(parentName)+strblen(baseName)];
 
@@ -810,11 +928,19 @@ int keyCompareByName(const void *p1, const void *p2) {
 
 
 
-int registryGetChildKey(char *parentName, Key *returned, unsigned long options) {
-	return 0;
-}
-
-
+/**
+ * Retrieve a number of inter-related keys in one shot.
+ * This is one of the most practicall methods of the library.
+ * Returns a KeySet with all retrieved keys. So if your application keys
+ * live bellow system/sw/myApp, you'll use this method to get them all.
+ *
+ *
+ *
+ * @param parentName name of the parent key
+ * @param returned the KeySet returned with all keys found
+ * @param options ORed options to control approaches
+ * @ingroup registry
+ */
 int registryGetChildKeys(char *parentName, KeySet *returned, unsigned long options) {
 	char *realParentName=0;
 	size_t parentNameSize;
@@ -954,6 +1080,9 @@ int registryGetChildKeys(char *parentName, KeySet *returned, unsigned long optio
 
 
 
+/**
+ * @ingroup registry
+ */
 int registryGetRootKeys(KeySet *returned) {
 	Key *system=0,*user=0;
 	
@@ -981,6 +1110,9 @@ int registryGetRootKeys(KeySet *returned) {
 
 
 
+/**
+ * @ingroup registry
+ */
 int registryStatKey(Key *key) {
 	char keyFileName[800];
 	struct stat keyFileNameInfo;
@@ -1014,6 +1146,9 @@ int registryStatKey(Key *key) {
 
 
 
+/**
+ * @ingroup registry
+ */
 int registryGetKey(Key *key) {
 	char keyFileName[500];
 	struct stat keyFileNameInfo;
@@ -1048,6 +1183,9 @@ int registryGetKey(Key *key) {
 
 
 
+/**
+ * @ingroup registry
+ */
 int registrySetKeys(KeySet *ks) {
 	Key *current;
 	
@@ -1062,6 +1200,9 @@ int registrySetKeys(KeySet *ks) {
 
 
 
+/**
+ * @ingroup registry
+ */
 int registrySetKey(Key *key) {
 	char keyFileName[800];
 	char folderMaker[800];
@@ -1183,6 +1324,9 @@ int registrySetKey(Key *key) {
 
 
 
+/**
+ * @ingroup registry
+ */
 int registryRemove(char *keyName) {
 	Key key;
 	char fileName[800];
@@ -1202,6 +1346,9 @@ int registryRemove(char *keyName) {
 
 
 
+/**
+ * @ingroup registry
+ */
 int registryLink(char *oldPath,char *newKeyName) {
 	Key key;
 	int rc;
@@ -1215,3 +1362,4 @@ int registryLink(char *oldPath,char *newKeyName) {
 	
 	return rc;
 }
+

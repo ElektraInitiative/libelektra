@@ -72,14 +72,22 @@ rg: rg.o
 commit: clean
 	cd ..; \
 	svn ci registry	
+
+
+
+
 	
 dist: clean registry.spec
+	# svn export wont work here...
 	make -C doc man   # leave mans already generated
 	DIR=`basename \`pwd\``;\
 	PACK=`cat VERSION`;\
 	PACK=registry-$$PACK;\
 	cd ..;\
 	find $$DIR/ | grep -v .svn | sort | cpio -H tar -o | gzip --best -c > $$PACK.tar.gz
+
+
+
 
 	
 	
