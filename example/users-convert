@@ -12,7 +12,7 @@
 ##
 ## To make tests you can do:
 ##
-## $ ROOT=user.test ./users-convert | sh -e
+## $ ROOT=user/test ./users-convert | sh -e
 ##
 ## Avi Alkalay <avi@unix.sh>
 ## March 2004

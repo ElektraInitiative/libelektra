@@ -12,7 +12,7 @@
 ##
 ## To make tests you can do:
 ##
-## $ ROOT=user.test ./net-convert | sh -e
+## $ ROOT=user/test ./net-convert | sh -e
 ##
 ## Avi Alkalay <avi@unix.sh>
 ## March 2004

@@ -1,6 +1,6 @@
 <!--
-$Id: $
-$LastChangedBy: $
+$Id:$
+$LastChangedBy:$
 -->
 	<section id="overview"><title>Overview of the Linux Registry</title>
 		<para>The Linux Registry is an alternative back-end for text configuration files.</para>
@@ -152,7 +152,7 @@ $LastChangedBy: $
 		<para>There are only two types of data that can be stored:</para>
 		<variablelist>
 			<varlistentry><term><type>Text</type></term>
-				<listitem><para>Handled as pure text. Regardeless of the charset being used, these values are allways stored as UTF-8. This ensures very strong internationalization and migration capabilities, while keeping simplicity. If you want the Registry framework to not convert your non-ASCII text to UTF-8 (not recomended), you should use the Binary data format.</para></listitem>
+				<listitem><para>Handled as pure text. Regardeless of the charset being used, these values are always stored as UTF-8. This ensures very strong internationalization and migration capabilities, while keeping simplicity. If you want the Registry framework to not convert your non-ASCII text to UTF-8 (not recomended), you should use the Binary data format.</para></listitem>
 			</varlistentry>
 			<varlistentry><term><type>Binary</type></term>
 				<listitem><para>A stream of bytes, not necessarily text. It is recommended that you avoid using binary values because UNIX system administrators tend to consider them as unmanageable blackboxes. Anyway, the value will be encoded into pure text format based on hexadecimal digits, for openness and ease of administration. This data type should also be avoided because it is less efficient.</para></listitem>

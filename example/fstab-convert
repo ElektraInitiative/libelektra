@@ -12,7 +12,7 @@
 ##
 ## To make tests you can do:
 ##
-## $ ROOT=user.test ./fstab-convert | sh -e
+## $ ROOT=user/test ./fstab-convert | sh -e
 ##
 ## Avi Alkalay <avi@unix.sh>
 ## April 2004

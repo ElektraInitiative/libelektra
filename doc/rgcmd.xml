@@ -62,16 +62,16 @@ $LastChangedBy$
 				<listitem><para>Causes <command>get</command> to work descriptivelly. When requesting a key it will show the comment, key name and its value in a fancy format</para></listitem>
 			</varlistentry>
 			<varlistentry><term><option>-t type</option></term>
-				<listitem><para>When <command>set</command>ting a key's value, you can specify the type with this switch. Currently accepted types are <type>string</type> for plain text, <type>bin</type> for binary as-is values, <type>dir</type> to create folder keys and <type>link</type> to create symbolic links between keys. Plain text are allways stored as <citerefentry><refentrytitle>UTF-8</refentrytitle><manvolnum>7</manvolnum></citerefentry> in the Registry, regardeless of your current encoding (<envar>$LANG</envar>). If you want to force a value to be stored without the <citerefentry><refentrytitle>UTF-8</refentrytitle><manvolnum>7</manvolnum></citerefentry> encoding (a bad idea), you can set it as binary. Binary values should be avoided, because they are black boxes for system administrators.</para></listitem>
+				<listitem><para>When <command>set</command>ting a key's value, you can specify the type with this switch. Currently accepted types are <type>string</type> for plain text, <type>bin</type> for binary as-is values, <type>dir</type> to create folder keys and <type>link</type> to create symbolic links between keys. Plain text are always stored as <citerefentry><refentrytitle>UTF-8</refentrytitle><manvolnum>7</manvolnum></citerefentry> in the Registry, regardeless of your current encoding (<envar>$LANG</envar>). If you want to force a value to be stored without the <citerefentry><refentrytitle>UTF-8</refentrytitle><manvolnum>7</manvolnum></citerefentry> encoding (a bad idea), you can set it as binary. Binary values should be avoided, because they are black boxes for system administrators.</para></listitem>
 			</varlistentry>
 			<varlistentry><term><option>-m mode</option></term>
 				<listitem><para>For the <command>set</command> command. Will set the key access permission to <option>mode</option>, which must be an octal number as for <citerefentry><refentrytitle><command>chmod</command></refentrytitle><manvolnum>1</manvolnum></citerefentry>.</para></listitem>
 			</varlistentry>
 			<varlistentry><term><option>-u uid</option></term>
-				<listitem><para>Crete the key with <option>uid</option> user ID. It can be a user name or a uid number.</para></listitem>
+				<listitem><para>Create the key with <option>uid</option> user ID. It can be a user name or a uid number.</para></listitem>
 			</varlistentry>
 			<varlistentry><term><option>-g gid</option></term>
-				<listitem><para>Crete the key with <option>gid</option> group ID. It can be a group name or a gid number</para></listitem>
+				<listitem><para>Create the key with <option>gid</option> group ID. It can be a group name or a gid number</para></listitem>
 			</varlistentry>
 			<varlistentry><term><option>-c comment</option></term>
 				<listitem><para>When <command>set</command>ting keys, you can use this argument to set a descriptive comment for it. This comment is exactly as a comment in a plain text configuration file. The comment is stored as <citerefentry><refentrytitle>UTF-8</refentrytitle><manvolnum>7</manvolnum></citerefentry> regardeless of your current encoding (<envar>$LANG</envar>).</para></listitem>

@@ -12,7 +12,7 @@
 ##
 ## To make tests you can do:
 ##
-## $ ROOT=user.test ./inittab-convert | sh -e
+## $ ROOT=user/test ./inittab-convert | sh -e
 ##
 ## Avi Alkalay <avi@unix.sh>
 ## March 2004
