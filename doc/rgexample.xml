@@ -3,15 +3,15 @@ $Id$
 $LastChangedBy$
 -->
 	<section id="example"><title>Examples</title>
-		<para><prompt>bash$ </prompt><command>rg set -c "My first key" user/example/key "Some nice value"</command></para>
-		<para><prompt>bash$ </prompt><command>rg set user:luciana/example/key -- "Some - nice - value with dashes"</command></para>
-		<para><prompt>bash# </prompt><command>rg set -u nobody -g http user:httpd/sw/httpd/key "Some value"</command></para>
-		<para><prompt>bash$ </prompt><command>rg get user/example/key</command></para>
-		<para><prompt>bash$ </prompt><command>rg ls -laR user:valeria</command></para>
-		<para><prompt>bash# </prompt><command>rg set -t link system/sw/XFree/current system/sw/XFree/handmade</command></para>
-		<para><prompt>bash# </prompt><command>rg ln system/sw/XFree/handmade system/sw/XFree/current</command>     # same as last command</para>
-		<para><prompt>bash$ </prompt><command>rg ls -lR system/sw/XFree/current</command></para>
-		<para><prompt>bash# </prompt><command>rg rm system/inittab/rc4</command></para>
-		<para><prompt>bash# </prompt><command>rg export user/sw/app | sed -e 's|/app/|/app2/|g' | rg import</command></para>
+		<para><prompt>bash$ </prompt><command>kdb set -c "My first key" user/example/key "Some nice value"</command></para>
+		<para><prompt>bash$ </prompt><command>kdb set user:luciana/example/key -- "Some - nice - value with dashes"</command></para>
+		<para><prompt>bash# </prompt><command>kdb set -u nobody -g http user:httpd/sw/httpd/key "Some value"</command></para>
+		<para><prompt>bash$ </prompt><command>kdb get user/example/key</command></para>
+		<para><prompt>bash$ </prompt><command>kdb ls -laR user:valeria</command></para>
+		<para><prompt>bash# </prompt><command>kdb set -t link system/sw/XFree/current system/sw/XFree/handmade</command></para>
+		<para><prompt>bash# </prompt><command>kdb ln system/sw/XFree/handmade system/sw/XFree/current</command>     # same as last command</para>
+		<para><prompt>bash$ </prompt><command>kdb ls -lR system/sw/XFree/current</command></para>
+		<para><prompt>bash# </prompt><command>kdb rm system/inittab/rc4</command></para>
+		<para><prompt>bash# </prompt><command>kdb export user/sw/app | sed -e 's|/app/|/app2/|g' | kdb import</command></para>
 	</section>
 	

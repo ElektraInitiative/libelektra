@@ -4,7 +4,7 @@ $Id$
 $LastChangedBy$
 -->
 	<section id="bestpract"><title>Best Practices When Creating Keys</title>
-		<para>When using the Registry to store your application's configuration and state, please keep in mind the following rules:</para>
+		<para>When using Elektra to store your application's configuration and state, please keep in mind the following rules:</para>
 			<itemizedlist>
 				<listitem><para>You are not allowed to create keys right under <filename>system</filename> or <filename>user</filename>.</para></listitem>
 				<listitem><para>You are not allowed to create folder keys right under <filename>system</filename> or <filename>user</filename>. They are reserved for very essential OS subsystems.</para></listitem>

@@ -7,27 +7,27 @@
 $Id$
 $LastChangedBy$
 -->
-<refentry id="registry">
+<refentry id="elektra">
 
 	<refentryinfo>
 		&author;
 	</refentryinfo>
 	
 	<refmeta>
-		<refentrytitle>registry</refentrytitle>
+		<refentrytitle>elektra</refentrytitle>
 		<manvolnum>5</manvolnum>
 	</refmeta>
 
 	<refnamediv>
-		<refname>registry</refname>
+		<refname>elektra</refname>
 		<refpurpose>A framework to store configuration atoms hierarchically</refpurpose>
 	</refnamediv>
 
 	&storage;
 		
 	<refsection><title>See Also</title>
-		<para><citerefentry><refentrytitle>rg</refentrytitle><manvolnum>1</manvolnum></citerefentry>, <citerefentry><refentrytitle>registry</refentrytitle><manvolnum>7</manvolnum></citerefentry></para>
+		<para><citerefentry><refentrytitle>kdb</refentrytitle><manvolnum>1</manvolnum></citerefentry>, <citerefentry><refentrytitle>elektra</refentrytitle><manvolnum>7</manvolnum></citerefentry></para>
 	</refsection>
-	
+
 
 </refentry>

@@ -1,5 +1,5 @@
 
-  -- Catalog data for Linux Registry 
+  -- Catalog data for Elektra Project keys
 
      Copyright (c) 2000-2002 Avi Alkalay
      All rights reserved.
@@ -31,4 +31,4 @@
   
   --
 
-PUBLIC "-//Avi Alkalay//DTD Registry 0.1.0//EN" "registry.dtd"
+PUBLIC "-//Avi Alkalay//DTD Elektra 0.1.0//EN" "elektra.dtd"

@@ -1,5 +1,5 @@
 /***************************************************************************
-      registryprivate.h  -  Private stuff for the registry implementation
+      kdbprivate.h  -  Private stuff for the kdb implementation
                              -------------------
     begin                : Mon Apr 12 2004
     copyright            : (C) 2004 by Avi Alkalay
@@ -15,7 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
- 
+
 /* Subversion stuff
 
 $Id$
@@ -23,17 +23,17 @@ $LastChangedBy$
 
 */
 
-#ifndef REGISTRYPRIVATE_H
-#define REGISTRYPRIVATE_H
+#ifndef KDBPRIVATE_H
+#define KDBPRIVATE_H
 
 /* Registry data directories */
-#define RG_DB_SYSTEM            "/etc/registry"
-#define RG_DB_USER              ".registry"   /* $HOME/.registry */
+#define RG_DB_SYSTEM            "/etc/kdb"
+#define RG_DB_USER              ".kdb"   /* $HOME/.kdb */
 
 
 
-size_t keySetRaw(Key *key, void *newBinary, size_t dataSize);
+size_t keySetRaw(Key *key, const void *newBinary, size_t dataSize);
 
 
 
-#endif /* REGISTRYPRIVATE_H */
+#endif /* KDBPRIVATE_H */

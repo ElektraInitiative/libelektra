@@ -1,5 +1,5 @@
 /***************************************************************************
-            registry.h  -  Methods for accessing the Linux Registry
+            localkdb.c  -  Methods for accessing the Key Database
                              -------------------
     begin                : Mon Dec 29 2003
     copyright            : (C) 2003 by Avi Alkalay
@@ -20,7 +20,7 @@
 /***************************************************************************
  *                                                                         *
  *   This is the implementation of a filesystem backend for the            *
- *   Linux Registry. Each Key is a file in the filesystem.                 *
+ *   Elektra Project. Each Key is a file in the filesystem.                *
  *   It is as secure as filesystem security. It is as reliable             *
  *   as filesystem. It uses only standards C calls, which makes it         *
  *   usable by very low level or early boot stage software, like           *
@@ -37,8 +37,8 @@ $LastChangedBy$
 */
 
 
-#include "registry.h"
-#include "registryprivate.h"
+#include "kdb.h"
+#include "kdbprivate.h"
 
 
 #include <sys/types.h>
@@ -66,14 +66,18 @@ extern int errno;
 
 
 /**
- * @defgroup registry Registry Access Methods
- * @brief These are general methods to access the Key database.
+ * @defgroup kdb KeyDB Class Methods
+ * @brief General methods to access the Key database.
  *
+ * To use them:
+ * @code
+#include <kdb.h>
+ * @endcode
  */
 
 
-/**
- * @defgroup internals Registry internals
+/*
+ * @defgroup internals Elektra internals
  * @brief These methods are not to be used by your application.
  *
  */
@@ -81,25 +85,25 @@ extern int errno;
 
 
 /**
- * Opens a registry session.
+ * Opens a session with the Key database
  *
  * By now it does nothing. This might change in the future, so it's good
- * practice to always call <i>registryOpen()</i> before using the registry.
- * @see registryClose()
- * @ingroup registry
+ * practice to always call <i>kdbOpen()</i> before using the Elektra database.
+ * @see kdbClose()
+ * @ingroup kdb
  */
-int registryOpen() {
+int kdbOpen() {
 	return 0;
 }
 
 /**
- * Closes a registry session.
+ * Closes a session with the Key database.
  *
- * This is the counterpart of <i>registryOpen()</i>.
- * @see registryOpen()
- * @ingroup registry
+ * This is the counterpart of <i>kdbOpen()</i>.
+ * @see kdbOpen()
+ * @ingroup kdb
  */
-int registryClose() {
+int kdbClose() {
 	return 0;
 }
 
@@ -113,7 +117,7 @@ int registryClose() {
  * @return the serialized size in bytes.
  * @ingroup internals
  */
-size_t keyGetSerializedSize(Key *key) {
+size_t keyGetSerializedSize(const Key *key) {
 	size_t size,tmp;
 
 
@@ -162,7 +166,7 @@ size_t unencode(char *encoded,void *returned) {
 			writeCursor++;
 		} else {
 			/* This is suposed to be a hex-digit stream. But is not, so return. */
-			errno=RG_KEY_RET_TYPEMISMATCH;
+			errno=KDB_RET_TYPEMISMATCH;
 			return 0;
 		}
 	}
@@ -175,8 +179,8 @@ size_t unencode(char *encoded,void *returned) {
  * @ingroup internals
  *
  */
-int registryNeedsUTF8Conversion() {
-	setlocale(LC_ALL,"");
+int kdbNeedsUTF8Conversion() {
+	setlocale(LC_ALL,0);
 	return strcmp(nl_langinfo(CODESET),"UTF-8");
 }
 
@@ -196,7 +200,7 @@ int UTF8Engine(int direction, char **string, size_t *inputByteSize) {
 	size_t bufferSize;
 	iconv_t converter;
 
-	if (registryNeedsUTF8Conversion()) currentCharset=nl_langinfo(CODESET);
+	if (kdbNeedsUTF8Conversion()) currentCharset=nl_langinfo(CODESET);
 	else return 0;
 
 	if (direction) converter=iconv_open("UTF-8",currentCharset);
@@ -248,7 +252,7 @@ int UTF8Engine(int direction, char **string, size_t *inputByteSize) {
 int handleOldKeyFileVersion(Key *key,FILE *input,u_int16_t nversion) {
 	char generalBuffer[100];
 	size_t currentBufferSize;
-	
+
 	char type[5];
 	char *data=0;
 	size_t dataSize=0;
@@ -257,14 +261,14 @@ int handleOldKeyFileVersion(Key *key,FILE *input,u_int16_t nversion) {
 
 	int readComment=1;
 	int eof=0;
-	
+
 	/*
 		This is a very dirty helper.
 		It has the parsing code for old version of key files.
 		If your editor doesn't have code folding it will be a pain.
 	*/
-	
-	
+
+
 	switch (nversion) {
 		case 1: {
 			if (!fgets(type,    sizeof(type),    input)) return -1;
@@ -300,7 +304,7 @@ int handleOldKeyFileVersion(Key *key,FILE *input,u_int16_t nversion) {
 				--commentSize;
 			}
 
-			
+
 			if (comment && UTF8Engine(UTF8_FROM,&comment,&commentSize)) {
 				free(comment);
 				return -1;
@@ -329,14 +333,14 @@ int handleOldKeyFileVersion(Key *key,FILE *input,u_int16_t nversion) {
 			/* Put in the Key object */
 			keySetComment(key,comment);
 			if (comment) free(comment);
-			
+
 			/* This is what changed from version 1 to
 			   version 2 format: key type numbers */
 			{
 				u_int8_t oldVersion=atoi(type);
 				switch (oldVersion) {
-					case 1: keySetType(key,RG_KEY_TYPE_BINARY); break;
-					case 2: keySetType(key,RG_KEY_TYPE_STRING); break;
+					case 1: keySetType(key,KEY_TYPE_BINARY); break;
+					case 2: keySetType(key,KEY_TYPE_STRING); break;
 					default: keySetType(key,oldVersion);
 				}
 			}
@@ -345,7 +349,7 @@ int handleOldKeyFileVersion(Key *key,FILE *input,u_int16_t nversion) {
 				return 0;
 			}
 
-			if (keyGetType(key) <= RG_KEY_TYPE_BINARY) {
+			if (keyGetType(key) <= KEY_TYPE_BINARY) {
 				/* Binary data. Unencode. */
 				char *unencoded=0;
 				size_t unencodedSize;
@@ -388,7 +392,7 @@ int handleOldKeyFileVersion(Key *key,FILE *input,u_int16_t nversion) {
 int keyFileUnserialize(Key *key,FILE *input) {
 	char generalBuffer[100];
 	size_t currentBufferSize;
-	
+
 	char version[10];
 	u_int16_t nversion=0;
 	char type[5];
@@ -413,19 +417,19 @@ int keyFileUnserialize(Key *key,FILE *input) {
 	if (!fgets(version, sizeof(version), input)) return -1;
 	if (strncmp(version,"RG",2)) {
 		/* Doesn't look like a key file */
-		errno=RG_KEY_RET_INVALIDKEY;
+		errno=KDB_RET_INVALIDKEY;
 		return -1;
 	}
 
 	nversion=atoi(version+2);
 	if (!nversion || nversion > RG_KEY_FORMAT_VERSION) {
-		errno=RG_KEY_RET_INVALIDKEY;
+		errno=KDB_RET_INVALIDKEY;
 		return -1;
 	}
 
 	if (nversion != RG_KEY_FORMAT_VERSION)
 		return handleOldKeyFileVersion(key,input,nversion);
-	
+
 	if (!fgets(type,    sizeof(type),    input)) return -1;
 
 	while (readComment) {
@@ -458,7 +462,7 @@ int keyFileUnserialize(Key *key,FILE *input) {
 		*(comment+commentSize-2)=0;
 		--commentSize;
 	}
-	
+
 	if (comment && UTF8Engine(UTF8_FROM,&comment,&commentSize)) {
 		free(comment);
 		return -1;
@@ -493,7 +497,7 @@ int keyFileUnserialize(Key *key,FILE *input) {
 		return 0;
 	}
 
-	if (keyGetType(key) <= RG_KEY_TYPE_BINARY) {
+	if (keyGetType(key) <= KEY_TYPE_BINARY) {
 		/* Binary data. Unencode. */
 		char *unencoded=0;
 		size_t unencodedSize;
@@ -523,11 +527,10 @@ int keyFileUnserialize(Key *key,FILE *input) {
 /**
  * Encodes a buffer of data onto hexadecimal ASCII.
  *
- * <b>internal usage only-</b>
- *
  * The resulting data is made up of pairs of ASCII hex-digits,
  * space- and newline-separated. This is the counterpart of
- * <i>encode()</i>.
+ * unencode().
+ *
  * @param unencoded the source buffer.
  * @param size the size of the source buffer in bytes.
  * @param returned the destination for the ASCII-encoded data.
@@ -594,7 +597,7 @@ int keyFileSerialize(Key *key, FILE *output) {
 	fprintf(output,"RG%03d\n",RG_KEY_FORMAT_VERSION);
 	fprintf(output,"%d\n",key->type);
 	if (key->comment) {
-		if (registryNeedsUTF8Conversion()) {
+		if (kdbNeedsUTF8Conversion()) {
 			size_t convertedCommentSize=key->commentSize;
 			char *convertedComment=malloc(convertedCommentSize);
 
@@ -614,8 +617,8 @@ int keyFileSerialize(Key *key, FILE *output) {
 	dataSize=keyGetDataSize(key);
 	if (dataSize) {
 		/* There is some data to write */
-		if (keyGetType(key) > RG_KEY_TYPE_BINARY) {
-			if (registryNeedsUTF8Conversion()) {
+		if (keyGetType(key) > KEY_TYPE_BINARY) {
+			if (kdbNeedsUTF8Conversion()) {
 				size_t convertedDataSize=key->dataSize;
 				char *convertedData=malloc(convertedDataSize);
 
@@ -641,21 +644,21 @@ int keyFileSerialize(Key *key, FILE *output) {
 
 
 /**
- * This is a helper to registryGetFilename()
- * 
+ * This is a helper to kdbGetFilename()
+ *
  * @param relativeFileName the buffer to return the calculated filename
  * @param maxSize maximum number of bytes that fit the buffer
- * @see registryGetFilename()
+ * @see kdbGetFilename()
  * @return number of bytes written to the buffer, or 0 on error
  * @ingroup internals
  */
 size_t keyCalcRelativeFileName(Key *key,char *relativeFileName,size_t maxSize) {
 	if (!key || !keyIsInitialized(key)) {
-		errno=RG_KEY_RET_UNINITIALIZED;
+		errno=KDB_RET_UNINITIALIZED;
 		return 0;
 	}
 	if (!key->key) {
-		errno=RG_KEY_RET_NOKEY;
+		errno=KDB_RET_NOKEY;
 		return 0;
 	}
 
@@ -682,12 +685,12 @@ size_t keyCalcRelativeFileName(Key *key,char *relativeFileName,size_t maxSize) {
 // 	relativeFileName[pos]=0;
 // 	pos++;
 
-	if (registryNeedsUTF8Conversion()) {
+	if (kdbNeedsUTF8Conversion()) {
 		char *converted;
 		size_t size;
-		
+
 		if (!(size=keyGetNameSize(key))) return 0;
-		
+
 		converted=malloc(size);
 		keyGetName(key,converted,size);
 
@@ -697,7 +700,7 @@ size_t keyCalcRelativeFileName(Key *key,char *relativeFileName,size_t maxSize) {
 			free(converted);
 			return 0;
 		}
-		
+
 		if (size>maxSize) {
 			free(converted);
 			errno=E2BIG;
@@ -709,7 +712,7 @@ size_t keyCalcRelativeFileName(Key *key,char *relativeFileName,size_t maxSize) {
 
 		return size;
 	} else return keyGetName(key,relativeFileName,maxSize);
-	
+
 	return 0;
 }
 
@@ -731,14 +734,14 @@ size_t keyCalcRelativeFileName(Key *key,char *relativeFileName,size_t maxSize) {
  */
 int keyFromStat(Key *key,struct stat *stat) {
 	if (!key) {
-		errno=RG_KEY_RET_NULLKEY;
+		errno=KDB_RET_NULLKEY;
 		return -1;
 	}
 
 	keySetAccess(key,stat->st_mode);
 	keySetUID(key,stat->st_uid);
 	keySetGID(key,stat->st_gid);
-	if (S_ISDIR(stat->st_mode)) keySetType(key,RG_KEY_TYPE_DIR);
+	if (S_ISDIR(stat->st_mode)) keySetType(key,KEY_TYPE_DIR);
 	key->atime=stat->st_atime;
 	key->mtime=stat->st_mtime;
 	key->ctime=stat->st_ctime;
@@ -751,24 +754,24 @@ int keyFromStat(Key *key,struct stat *stat) {
 
 /**
  * Calculate the real file name for a key.
- * 
+ *
  * @param returned the buffer to return the calculated filename
  * @param maxSize maximum number of bytes that fit the buffer
- * @see registryCalcRelativeFilename()
+ * @see kdbCalcRelativeFilename()
  * @return number of bytes written to the buffer, or 0 on error
  * @ingroup internals
  */
-size_t registryGetFilename(Key *forKey,char *returned,size_t maxSize) {
+size_t kdbGetFilename(Key *forKey,char *returned,size_t maxSize) {
 	size_t length=0;
 
-	switch (keyGetNameSpace(forKey)) {
-		case RG_NS_SYSTEM: {
+	switch (keyGetNamespace(forKey)) {
+		case KEY_NS_SYSTEM: {
 			/* Prepare to use the 'system/ *' database */
 			strncpy(returned,RG_DB_SYSTEM,maxSize);
 			length=strlen(returned);
 			break;
 		}
-		case RG_NS_USER: {
+		case KEY_NS_USER: {
 			/* Prepare to use the 'user:????/ *' database */
 			struct passwd *user=0;
 			char userName[100];
@@ -782,7 +785,7 @@ size_t registryGetFilename(Key *forKey,char *returned,size_t maxSize) {
 			break;
 		}
 		default: {
-			errno=RG_KEY_RET_INVALIDKEY;
+			errno=KDB_RET_INVALIDKEY;
 			return 0;
 		}
 	}
@@ -800,24 +803,24 @@ size_t registryGetFilename(Key *forKey,char *returned,size_t maxSize) {
  * This method is valid only for string keys.
  * You should use other methods to get non-string keys.
  *
- * @see registrySetValue()
- * @see registryGetKey()
- * @see registryGetValueByParent()
+ * @see kdbSetValue()
+ * @see kdbGetKey()
+ * @see kdbGetValueByParent()
  * @see keyGetString()
  * @return 0 on success, or other value and errno is set
  * @param keyname the name of the key to receive the value
  * @param returned a buffer to put the key value
  * @param maxSize the size of the buffer
- * @ingroup registry
+ * @ingroup kdb
  *
  */
-int registryGetValue(char *keyname,char *returned,size_t maxSize) {
+int kdbGetValue(const char *keyname, char *returned,size_t maxSize) {
 	Key key;
 	int rc=0;
 
 	keyInit(&key);
 	keySetName(&key,keyname);
-	rc=registryGetKey(&key);
+	rc=kdbGetKey(&key);
 	if (rc == 0) keyGetString(&key,returned,maxSize);
 	else rc=errno; /* store errno before a possible change */
 	keyClose(&key);
@@ -834,23 +837,23 @@ int registryGetValue(char *keyname,char *returned,size_t maxSize) {
  *
  * This will set a text key. So if the key was previously a binary, etc key, it will be retyped as text.
  *
- * @see registryGetValue()
+ * @see kdbGetValue()
  * @see keySetString()
- * @see registrySetKey()
+ * @see kdbSetKey()
  * @param keyname the name of the key to receive the value
  * @param value the value to be set
  * @return 0 on success, other value otherwise, and errno is set
- * @ingroup registry
+ * @ingroup kdb
  */
-int registrySetValue(char *keyname, char *value) {
+int kdbSetValue(const char *keyname, const char *value) {
 	Key key;
 	int rc;
 
 /* TODO: check key type first */
 	keySetName(&key,keyname);
-	rc=registryGetKey(&key);
+	rc=kdbGetKey(&key);
 	keySetString(&key,value);
-	rc=registrySetKey(&key);
+	rc=kdbSetKey(&key);
 	keyClose(&key);
 	return rc;
 }
@@ -869,42 +872,43 @@ char buffer[150];   // a big buffer
 int c;
 
 for (c=0; c<3; c++) {
-	registryGetValueByParent(parent,keys[c],buffer,sizeof(buffer));
+	kdbGetValueByParent(parent,keys[c],buffer,sizeof(buffer));
 	// Do something with buffer....
 }
 
  * @endcode
  *
- * @see registryGetKeyByParent()
+ * @see kdbGetKeyByParent()
  * @param parentName the name of the parent key
  * @param baseName the name of the child key
  * @param returned pre-allocated buffer to be filled with key value
  * @param maxSize size of the \p returned buffer
- * @return whathever is returned by registryGetValue()
- * @ingroup registry
+ * @return whathever is returned by kdbGetValue()
+ * @ingroup kdb
  */
-int registryGetValueByParent(char *parentName, char *baseName, char *returned, size_t maxSize) {
+int kdbGetValueByParent(const char *parentName, const char *baseName, char *returned, size_t maxSize) {
 	char name[strblen(parentName)+strblen(baseName)];
 
 	sprintf(name,"%s/%s",parentName,baseName);
-	return registryGetValue(name,returned,maxSize);
+	return kdbGetValue(name,returned,maxSize);
 }
 
 
 
 /**
- * Sets the provided \p value to the key whose name is the concatenation of
- * \p parentName and \p baseName.
+ * Sets the provided @p value to the key whose name is the concatenation of
+ * @p parentName and @p baseName.
+ *
  * @param parentName the name of the parent key
  * @param baseName the name of the child key
  * @param value the value to set
- * @ingroup registry
+ * @ingroup kdb
  */
-int registrySetValueByParent(char *parentName, char *baseName, char *value) {
+int kdbSetValueByParent(const char *parentName, const char *baseName, const char *value) {
 	char name[strblen(parentName)+strblen(baseName)];
 
 	sprintf(name,"%s/%s",parentName,baseName);
-	return registrySetValue(name,value);
+	return kdbSetValue(name,value);
 }
 
 
@@ -913,38 +917,38 @@ int registrySetValueByParent(char *parentName, char *baseName, char *value) {
  * Given a parent key name plus a basename, returns the key.
  *
  * So here you'll provide something like
- * - system/sw/myApp plus key1 to get system/sw/myApp/key1
- * - user/sw/MyApp plus dir1/key2 to get user/sw/MyApp/dir1/key2
+ * - @p system/sw/myApp plus @p key1 to get @p system/sw/myApp/key1
+ * - @p user/sw/MyApp plus @p dir1/key2 to get @p user/sw/MyApp/dir1/key2
  *
  * @param parentName parent key name
  * @param baseName leaf or child name
  * @param returned a pointer to an initialized key to be filled
- * @return 0 on success, or what registryGetKey() returns, and errno is set
- * @see registryGetKey()
- * @see registryGetValueByParent()
- * @see registryGetKeyByParentKey()
- * @ingroup registry
+ * @return 0 on success, or what kdbGetKey() returns, and errno is set
+ * @see kdbGetKey()
+ * @see kdbGetValueByParent()
+ * @see kdbGetKeyByParentKey()
+ * @ingroup kdb
  */
-int registryGetKeyByParent(char *parentName, char *baseName, Key *returned) {
+int kdbGetKeyByParent(const char *parentName, const char *baseName, Key *returned) {
 	char name[strblen(parentName)+strblen(baseName)];
 
 	sprintf(name,"%s/%s",parentName,baseName);
 	keySetName(returned,name);
 
-	return registryGetKey(returned);
+	return kdbGetKey(returned);
 }
 
 
 /**
  * Similar to previous, provided for convenience.
  * @param parent pointer to the parent key
- * @see registryGetKey()
- * @see registryGetKeyByParent()
- * @see registryGetValueByParent()
- * @return 0 on success, or what registryGetKey() returns, and errno is set
- * @ingroup registry
+ * @see kdbGetKey()
+ * @see kdbGetKeyByParent()
+ * @see kdbGetValueByParent()
+ * @return 0 on success, or what kdbGetKey() returns, and errno is set
+ * @ingroup kdb
  */
-int registryGetKeyByParentKey(Key *parent, char *baseName, Key *returned) {
+int kdbGetKeyByParentKey(const Key *parent, const char *baseName, Key *returned) {
 	size_t size=keyGetFullNameSize(parent);
 	char name[size+strblen(baseName)];
 
@@ -954,7 +958,7 @@ int registryGetKeyByParentKey(Key *parent, char *baseName, Key *returned) {
 
 	keySetName(returned,name);
 
-	return registryGetKey(returned);
+	return kdbGetKey(returned);
 }
 
 
@@ -974,28 +978,28 @@ int keyCompareByName(const void *p1, const void *p2) {
  * Retrieve a number of inter-related keys in one shot.
  * This is one of the most practicall methods of the library.
  * Returns a KeySet with all retrieved keys. So if your application keys
- * live bellow system/sw/myApp, you'll use this method to get them all.
+ * live bellow @p system/sw/myApp, you'll use this method to get them all.
  *
  * Option can be any of the following, ORed:
- * - \c RG_O_RECURSIVE \n
+ * - @p KDB_O_RECURSIVE \n
  *   Retrieve also the keys under the child keys, recursively.
- *   The rg(1) ls command, with switch -R uses this option.
- * - \c RG_O_DIR \n
+ *   The kdb(1) ls command, with switch -R uses this option.
+ * - @p KDB_O_DIR \n
  *   By default, folder keys will not be returned because they don't have
  *   values and exist only to define hierarchy. Use this option if you need
  *   them to be included in the returned KeySet.
- * - \c RG_O_NOVALUE \n
+ * - @p KDB_O_NOVALUE \n
  *   Do not include in @p returned the regular value keys. The resulting KeySet
  *   will be only the skeleton of the tree.
- * - \c RG_O_STATONLY \n
+ * - @p KDB_O_STATONLY \n
  *   Only stat(2) the keys; do not retrieve the value, comment and key data
  *   type. The resulting keys will be empty and usefull only for
- *   informational purposes. The rg(1) ls command, without the -v switch
+ *   informational purposes. The kdb(1) ls command, without the -v switch
  *   uses this option.
- * - \c RG_O_INACTIVE \n
+ * - @p KDB_O_INACTIVE \n
  *   Will make it not ignore inactive keys. So @p returned will be filled also
  *   with inactive keys. See registry(7) to understand how inactive keys work.
- * - \c RG_O_SORT \n
+ * - @p KDB_O_SORT \n
  *   Will sort keys alphabetically by their names.
  *
  * @par Example:
@@ -1003,9 +1007,9 @@ int keyCompareByName(const void *p1, const void *p2) {
 KeySet myConfig;
 ksInit(&myConfig);
 
-registryOpen();
-rc=registryGetChildKeys("system/sw/MyApp", &myConfig, RG_O_RECURSIVE);
-registryClose();
+kdbOpen();
+rc=kdbGetChildKeys("system/sw/MyApp", &myConfig, KDB_O_RECURSIVE);
+kdbClose();
 
 // Check and handle propagated error
 if (rc) switch (errno) {
@@ -1018,21 +1022,22 @@ Key *key=ksNext(&myConfig);
 while (key) {
 	// do something with key . . .
 
-	key=nsNext(&myConfig)); // next key
+	key=ksNext(&myConfig)); // next key
 }
  * @endcode
  *
  * @param parentName name of the parent key
  * @param returned the KeySet returned with all keys found
  * @param options ORed options to control approaches
- * @see commandList() code in rg command for usage example
- * @see commandEdit() code in rg command for usage example
- * @see commandExport() code in rg command for usage example
+ * @see KDBOptions
+ * @see commandList() code in kdb command for usage example
+ * @see commandEdit() code in kdb command for usage example
+ * @see commandExport() code in kdb command for usage example
  * @return 0 on success, other value on error and @c errno is set
- * @ingroup registry
+ * @ingroup kdb
  *
  */
-int registryGetChildKeys(char *parentName, KeySet *returned, unsigned long options) {
+int kdbGetChildKeys(const char *parentName, KeySet *returned, unsigned long options) {
 	char *realParentName=0;
 	size_t parentNameSize;
 	DIR *parentDir;
@@ -1047,7 +1052,7 @@ int registryGetChildKeys(char *parentName, KeySet *returned, unsigned long optio
 	*/
 	keyInit(&parentKey);
 	keySetName(&parentKey,parentName);
-	registryGetFilename(&parentKey,buffer,sizeof(buffer));
+	kdbGetFilename(&parentKey,buffer,sizeof(buffer));
 	parentDir=opendir(buffer);
 
 	/* Check if Key is not a directory or doesn't exist.
@@ -1066,26 +1071,13 @@ int registryGetChildKeys(char *parentName, KeySet *returned, unsigned long optio
 		/* Ignore '.' and '..' directory entries */
 		if (!strcmp(entry->d_name,".") || !strcmp(entry->d_name,"..")) continue;
 
-// // // /*		/* Dots ('.') in key name must be escaped */
-// // // 		while (cursor=index(cursor,'.')) {
-// // // 			if (!transformedName) transformedName=realloc(transformedName,200);
-// // // 			strncat(transformedName,lastCursor,cursor-lastCursor);
-// // // 			strncat(transformedName,"\\",1);
-// // // 			lastCursor=cursor;
-// // // 			cursor++;
-// // // 		}
-// // // 		/* copy the last chunk */
-// // // 		if (transformedName) {
-// // // 			strcat(transformedName,lastCursor);
-// // // 			keyNameSize=strblen(transformedName);
-// // // 		}*/
-
 		/* If key name starts with '.', and don't want INACTIVE keys, ignore it */
-		if ((*entry->d_name == '.') && !(options & RG_O_INACTIVE)) continue;
+		if ((*entry->d_name == '.') && !(options & KDB_O_INACTIVE)) continue;
 
-		/* Next 2 ifs are required to transform from UTF-8 */
+		/* Next 2 ifs are required to transform filename from UTF-8 */
 		if (!transformedName) {
-			transformedName=realloc(transformedName,keyNameSize=strblen(entry->d_name));
+			transformedName=
+				realloc(transformedName,keyNameSize=strblen(entry->d_name));
 			strcpy(transformedName,entry->d_name);
 		}
 		if (UTF8Engine(UTF8_FROM,&transformedName,&keyNameSize)) {
@@ -1100,18 +1092,18 @@ int registryGetChildKeys(char *parentName, KeySet *returned, unsigned long optio
 		keyEntry=(Key *)malloc(sizeof(Key)); keyInit(keyEntry);
 		keySetName(keyEntry,buffer);
 
-		if (options & RG_O_STATONLY) registryStatKey(keyEntry);
-		else if (options & RG_O_NFOLLOWLINK) {
-			registryStatKey(keyEntry);
-			if (!keyIsLink(keyEntry)) registryGetKey(keyEntry);
+		if (options & KDB_O_STATONLY) kdbStatKey(keyEntry);
+		else if (options & KDB_O_NFOLLOWLINK) {
+			kdbStatKey(keyEntry);
+			if (!keyIsLink(keyEntry)) kdbGetKey(keyEntry);
 		} else {
-			int rc=registryGetKey(keyEntry);
+			int rc=kdbGetKey(keyEntry);
 			/* If this is a permission problem, at least stat the key */
-			if (rc && errno==RG_KEY_RET_NOCRED) registryStatKey(keyEntry);
+			if (rc && errno==KDB_RET_NOCRED) kdbStatKey(keyEntry);
 		}
 
 		if (S_ISDIR(keyEntry->access)) {
-			if (options & RG_O_RECURSIVE) {
+			if (options & KDB_O_RECURSIVE) {
 				KeySet children;
 				char *fullName;
 				size_t fullNameSize;
@@ -1121,10 +1113,10 @@ int registryGetChildKeys(char *parentName, KeySet *returned, unsigned long optio
 
 				ksInit(&children);
 				/* Act recursively, without sorting. Sort in the end, once */
-				registryGetChildKeys(fullName,&children, ~(RG_O_SORT) & options);
+				kdbGetChildKeys(fullName,&children, ~(KDB_O_SORT) & options);
 
 				/* Insert the current directory key in the returned list before its children */
-				if (options & RG_O_DIR) ksAppend(returned,keyEntry);
+				if (options & KDB_O_DIR) ksAppend(returned,keyEntry);
 				else {
 					keyClose(keyEntry);
 					free(keyEntry);
@@ -1133,12 +1125,12 @@ int registryGetChildKeys(char *parentName, KeySet *returned, unsigned long optio
 				/* Insert the children */
 				ksAppendKeys(returned,&children);
 				free(fullName);
-			} else if (options & RG_O_DIR) ksAppend(returned,keyEntry);
+			} else if (options & KDB_O_DIR) ksAppend(returned,keyEntry);
 				else {
 					keyClose(keyEntry);
 					free(keyEntry);
 				}
-		} else if (options & RG_O_NOVALUE) {
+		} else if (options & KDB_O_NOVALUE) {
 			keyClose(keyEntry);
 			free(keyEntry);
 		} else ksAppend(returned,keyEntry);
@@ -1146,7 +1138,7 @@ int registryGetChildKeys(char *parentName, KeySet *returned, unsigned long optio
 	keyClose(&parentKey);
 	free(realParentName);
 
-	if ((options & (RG_O_SORT)) && (returned->size > 1)) {
+	if ((options & (KDB_O_SORT)) && (returned->size > 1)) {
 		Key *keys[returned->size];
 		Key *cursor;
 		size_t c=0;
@@ -1177,20 +1169,21 @@ int registryGetChildKeys(char *parentName, KeySet *returned, unsigned long optio
 
 /**
  * Returns a KeySet with all root keys currently recognized.
- * Currently, the \c system and current user's \c user keys are returned.
+ * Currently, the @p system and current user's @p user keys are returned.
  * @param returned the initialized KeySet to be filled
  * @return 0
- * @see commandList() code in rg command for usage example
- * @ingroup registry
+ * @see KeyNamespace
+ * @see commandList() code in kdb command for usage example
+ * @ingroup kdb
  *
  */
-int registryGetRootKeys(KeySet *returned) {
+int kdbGetRootKeys(KeySet *returned) {
 	Key *system=0,*user=0;
 
 	system=malloc(sizeof(Key));
 	keyInit(system);
 	keySetName(system,"system");
-	if (registryGetKey(system)) {
+	if (kdbGetKey(system)) {
 		free(system);
 		system=0;
 	}
@@ -1198,7 +1191,7 @@ int registryGetRootKeys(KeySet *returned) {
 	user=malloc(sizeof(Key));
 	keyInit(user);
 	keySetName(user,"user");
-	if (registryGetKey(user)) {
+	if (kdbGetKey(user)) {
 		free(user);
 		user=0;
 	}
@@ -1220,15 +1213,15 @@ int registryGetRootKeys(KeySet *returned) {
  *
  * @param key an initialized Key pointer to be filled.
  * @return 0 on success, -1 otherwise
- * @ingroup registry
+ * @ingroup kdb
  */
-int registryStatKey(Key *key) {
+int kdbStatKey(Key *key) {
 	char keyFileName[800];
 	struct stat keyFileNameInfo;
 	size_t pos;
 	u_int32_t semiflag;
 
-	pos=registryGetFilename(key,keyFileName,sizeof(keyFileName));
+	pos=kdbGetFilename(key,keyFileName,sizeof(keyFileName));
 	if (!pos) return -1; /* something is wrong */
 
 	if (lstat(keyFileName,&keyFileNameInfo)) return -1;
@@ -1244,36 +1237,36 @@ int registryStatKey(Key *key) {
 	}
 
 	/* Remove the NEEDSYNC flag */
-	semiflag=RG_KEY_FLAG_NEEDSYNC;
+	semiflag=KEY_FLAG_NEEDSYNC;
 	semiflag=~semiflag;
 	key->flags &= semiflag;
-	key->flags |= RG_KEY_FLAG_ACTIVE;
+	key->flags |= KEY_FLAG_ACTIVE;
 
 	return 0;
 }
 
 
 
-
 /**
- * Fully retrieves the passed \p key from the backend storage.
+ * Fully retrieves the passed @p key from the backend storage.
  * @param key a pointer to a Key that has a name set
- * @return 0 on success, or other value and errno is set
- * @see registrySetKey()
- * @see commandGet() code in rg command for usage example
- * @ingroup registry
+ * @return 0 on success, or other value and @p errno is set
+ * @see kdbSetKey()
+ * @see commandGet() code in kdb command for usage example
+ * @ingroup kdb
  */
-int registryGetKey(Key *key) {
+int kdbGetKey(Key *key) {
 	char keyFileName[500];
 	struct stat keyFileNameInfo;
 	int fd;
 	size_t pos;
 	u_int32_t semiflag;
 
-	pos=registryGetFilename(key,keyFileName,sizeof(keyFileName));
+	pos=kdbGetFilename(key,keyFileName,sizeof(keyFileName));
 	if (!pos) return -1; /* something is wrong */
 
 	if ((fd=open(keyFileName,O_RDONLY))==-1) return -1;
+	/* TODO: lock at this point */
 	fstat(fd,&keyFileNameInfo);
 	keyFromStat(key,&keyFileNameInfo);
 	if (!keyIsDir(key)) {
@@ -1284,11 +1277,12 @@ int registryGetKey(Key *key) {
 			fclose(input);
 			return -1;
 		}
+		/* TODO: unlock at this point */
 		fclose(input);
 	} else close(fd);
 
 	/* Remove the NEEDSYNC flag */
-	semiflag=RG_KEY_FLAG_NEEDSYNC;
+	semiflag=KEY_FLAG_NEEDSYNC;
 	semiflag=~semiflag;
 	key->flags &= semiflag;
 
@@ -1304,17 +1298,17 @@ int registryGetKey(Key *key) {
  *
  * @param ks a KeySet full of changed keys
  * @return 0 (no way to know if some key failled currently)
- * @see registrySetKey()
- * @see commandEdit() code in rg command for usage example
- * @see commandLoad() code in rg command for usage example
- * @ingroup registry
+ * @see kdbSetKey()
+ * @see commandEdit() code in kdb command for usage example
+ * @see commandLoad() code in kdb command for usage example
+ * @ingroup kdb
  */
-int registrySetKeys(KeySet *ks) {
+int kdbSetKeys(KeySet *ks) {
 	Key *current;
 
 	for (current=ks->start; current; current=current->next) {
 		if (keyNeedsSync(current)) {
-			registrySetKey(current);
+			kdbSetKey(current);
 		}
 	}
 
@@ -1325,15 +1319,15 @@ int registrySetKeys(KeySet *ks) {
 
 /**
  * Commits a key to the backend storage.
- * If failed (see return), the \c errno global is set accordingly.
+ * If failed (see return), the @p errno global is set accordingly.
  *
- * @see registryGetKey()
- * @see registrySetKeys()
- * @see commandSet() code in rg command for usage example
+ * @see kdbGetKey()
+ * @see kdbSetKeys()
+ * @see commandSet() code in kdb command for usage example
  * @return 0 on success, or other value and errno is set
- * @ingroup registry
+ * @ingroup kdb
  */
-int registrySetKey(Key *key) {
+int kdbSetKey(Key *key) {
 	char keyFileName[800];
 	char folderMaker[800];
 	char *cursor, *last;
@@ -1343,7 +1337,7 @@ int registrySetKey(Key *key) {
 	u_int32_t semiflag;
 	struct stat stated;
 
-	pos=registryGetFilename(key,keyFileName,sizeof(keyFileName));
+	pos=kdbGetFilename(key,keyFileName,sizeof(keyFileName));
 	if (!pos) return -1; /* Something is wrong. Propagate errno. */
 
 	if (stat(keyFileName,&stated))
@@ -1357,7 +1351,7 @@ int registrySetKey(Key *key) {
 				last   =rindex(keyFileName,'/');
 				cursor = index(keyFileName,'/'); cursor++; /* skip first occurence */
 				if (!last || !cursor) { /* bizarre key name */
-					errno=RG_KEY_RET_INVALIDKEY;
+					errno=KDB_RET_INVALIDKEY;
 					return -1;
 				}
 				for (cursor=index(cursor,'/');
@@ -1383,31 +1377,31 @@ int registrySetKey(Key *key) {
 	}
 
 	/* Enough of checking. Now real write stuff, with a bit other checks :-)  */
-	
+
 	if (keyIsLink(key)) {
 		char *targetName=0;
 		Key target;
 		int rc;
-	
+
 		/*
 			If targetName starts with:
 			- "system" | "user" | any future root name: Convert to a FS path,
 			  and symlink it
-			- other: It is an absolute FS path, or relative inside-registry
+			- other: It is an absolute FS path, or relative inside-kdb
 			  namespace path, and symlink it
 		*/
 
 		keyInit(&target);
 		if (key->data) targetName=malloc(key->dataSize);
 		keyGetLink(key,targetName,key->dataSize);
-		
+
 		/* Setting the name will let us know if this is a valid keyname */
 		if (keySetName(&target,targetName)) {
 			/* target has a valid key name */
 			targetName=realloc(targetName,800);
-			registryGetFilename(&target,targetName,800);
+			kdbGetFilename(&target,targetName,800);
 			keyClose(&target);
-		} else if (errno==RG_KEY_RET_INVALIDKEY) {
+		} else if (errno==KDB_RET_INVALIDKEY) {
 			/* Is an invalid key name. So treat it as a regular file */
 			keyClose(&target); /* get rid of invalid stuff */
 		} else {
@@ -1421,7 +1415,7 @@ int registrySetKey(Key *key) {
 		/* TODO: handle null targetName */
 		rc=symlink(targetName,keyFileName);
 		free(targetName);
-		
+
 		return rc; /* propagate errno */
 	} else if (keyIsDir(key)) {
 		if (mkdir(keyFileName,keyGetAccess(key))<0 &&
@@ -1430,6 +1424,7 @@ int registrySetKey(Key *key) {
 		/* Try to open key file with its full file name */
 		/* TODO: Make it more "transactional" without truncating */
 		fd=open(keyFileName,O_CREAT | O_RDWR | O_TRUNC, keyGetAccess(key));
+		/* TODO: lock file here */
 		if (fd==-1) return -1;
 		if (getuid() == 0) fchown(fd,keyGetUID(key),keyGetGID(key));
 		if (!(output=fdopen(fd,"w+"))) return -1;
@@ -1437,14 +1432,15 @@ int registrySetKey(Key *key) {
 			fclose(output);
 			return -1;
 		}
+		/* TODO: unlock file here */
 		fclose(output);
 	}
 
 	/* Remove the NEEDSYNC flag */
-	semiflag=RG_KEY_FLAG_NEEDSYNC;
+	semiflag=KEY_FLAG_NEEDSYNC;
 	semiflag=~semiflag;
 	key->flags &= semiflag;
-	
+
 	return 0;
 }
 
@@ -1458,11 +1454,11 @@ int registrySetKey(Key *key) {
  * This method is not recursive.
  *
  * @param keyName the name of the key to be removed
- * @return whathever is returned by remove(), and \c errno is propagated
- * @see commandRemove() code in rg command for usage example
- * @ingroup registry
+ * @return whathever is returned by remove(), and @p errno is propagated
+ * @see commandRemove() code in kdb command for usage example
+ * @ingroup kdb
  */
-int registryRemove(char *keyName) {
+int kdbRemove(const char *keyName) {
 	Key key;
 	char fileName[800];
 	off_t rc;
@@ -1470,7 +1466,7 @@ int registryRemove(char *keyName) {
 	keyInit(&key);
 	rc=keySetName(&key,keyName);
 	if (rc==-1) return -1;
-	rc=registryGetFilename(&key,fileName,sizeof(fileName));
+	rc=kdbGetFilename(&key,fileName,sizeof(fileName));
 	keyClose(&key);
 	if (!rc) return -1;
 
@@ -1486,23 +1482,23 @@ int registryRemove(char *keyName) {
  *
  * @param oldPath destination key name
  * @param newKeyName name of the key that will be created and will point
- * to \p oldPath
- * @return whathever is returned by registrySetKey(), and \p errno is set
- * @see commandLink() code in rg command for usage example
- * @see commandSet() code in rg command for usage example
- * @ingroup registry
+ * to @param oldPath
+ * @return whathever is returned by kdbSetKey(), and \p errno is set
+ * @see commandLink() code in kdb command for usage example
+ * @see commandSet() code in kdb command for usage example
+ * @ingroup kdb
  */
-int registryLink(char *oldPath,char *newKeyName) {
+int kdbLink(const char *oldPath, const char *newKeyName) {
 	Key key;
 	int rc;
-	
+
 	keyInit(&key);
 	keySetName(&key,newKeyName);
 	keySetLink(&key,oldPath);
 
-	rc=registrySetKey(&key);
+	rc=kdbSetKey(&key);
 	keyClose(&key);
-	
+
 	return rc;
 }
 
@@ -1515,7 +1511,7 @@ int registryLink(char *oldPath,char *newKeyName) {
  *
  * This method will scan the @p interests KeySet, starting and finishing in
  * the KeySet next cursor position, in a circular behavior, looking for some
- * change defined in the @p diffMask mask. It will use registryMonitorKey()
+ * change defined in the @p diffMask mask. It will use kdbMonitorKey()
  * and will return at the first key change ocurrence, or when requested
  * iterations finish.
  *
@@ -1527,7 +1523,7 @@ int registryLink(char *oldPath,char *newKeyName) {
 KeySet myConfigs;
 
 ksInit(&myConfigs);
-registryGetChildKeys("system/sw/MyApp",&myConfigs,RG_O_ALL);
+kdbGetChildKeys("system/sw/MyApp",&myConfigs,KDB_O_ALL);
 
 // use the keys . . . .
 
@@ -1538,20 +1534,20 @@ while (1) {
 	char keyName[300];
 	char keyData[300];
 	u_int32_t diff;
-	
+
 	// block until any change in key value or comment . . .
-	diff=registryMonitorKeys(&myConfigs,
-		RG_KEY_FLAG_HASDATA | RG_KEY_FLAG_HASCOMMENT,
+	diff=kdbMonitorKeys(&myConfigs,
+		KEY_FLAG_HASDATA | KEY_FLAG_HASCOMMENT,
 		0,0); // ad-infinitum
 
 	changed=ksCurrent(&myConfigs);
 	keyGetName(changed,keyName,sizeof(keyName));
-	
+
 	switch (diff) {
-		case RG_KEY_FLAG_FLAG:
+		case KEY_FLAG_FLAG:
 			printf("Key %s was deleted\n",keyName);
 			break;
-		case RG_KEY_FLAG_NEEDSYNC:
+		case KEY_FLAG_NEEDSYNC:
 			printf("No cretentials to access Key %s\n",keyName);
 			break;
 		default:
@@ -1559,39 +1555,40 @@ while (1) {
 			printf("Key %s has changed its value to %s\n",keyName,keyData);
 	}
 }
- * @endcode 
+ * @endcode
  *
- * @see registryMonitorKey()
+ * @see kdbMonitorKey()
  * @see ksCurrent()
  * @see ksRewind()
  * @see ksNext()
- * @see commandMonitor() code in rg command for usage example
- * @ingroup registry
+ * @see KeyFlags
+ * @see commandMonitor() code in kdb command for usage example
+ * @ingroup kdb
  *
  */
-u_int32_t registryMonitorKeys(KeySet *interests, u_int32_t diffMask,
+u_int32_t kdbMonitorKeys(KeySet *interests, u_int32_t diffMask,
 		unsigned long iterations, unsigned sleep) {
 	Key *start,*current;
 	u_int32_t diff;
 	int infinitum=0;
 
 	if (!interests || !interests->size) return 0;
-	
+
 	/* Unacceptable 0 usecs sleep. Defaults to 1 second */
 	if (!sleep) sleep=1000;
-	
+
 	if (!iterations) infinitum=1;
 	else infinitum=0;
-	
+
 	current=start=ksCurrent(interests);
-	
+
 	while (infinitum || --iterations) {
 		do {
-			diff=registryMonitorKey(current,diffMask,1,0);
+			diff=kdbMonitorKey(current,diffMask,1,0);
 			if (diff) return diff;
 			current=ksNext(interests);
 		} while (current!=start);
-		
+
 		/* Test if some iterations left . . . */
 		if (infinitum || iterations) usleep(sleep);
 	}
@@ -1612,33 +1609,34 @@ u_int32_t registryMonitorKeys(KeySet *interests, u_int32_t diffMask,
  * @p interest should be a full key with name, value, comments, permissions,
  * etc, and all will be compared and then masked by @p diffMask.
  *
- * If @p interest is a folder key, use @c RG_KEY_FLAG_HASTIME in @p diffMask
+ * If @p interest is a folder key, use @c KEY_FLAG_HASTIME in @p diffMask
  * to detect a time change, so you'll know something happened (key
  * modification, creation, deletion) inside the folder.
  *
  * If @p interest was not found, or deleted, the method will return
- * immediatly a @c RG_KEY_FLAG_FLAG value.
+ * immediatly a @c KEY_FLAG_FLAG value.
  *
  * If you don't have access rights to @p interest, the method will return
- * immediatly a @c RG_KEY_FLAG_NEEDSYNC value.
+ * immediatly a @c KEY_FLAG_NEEDSYNC value.
  *
  * If something from @p diffMask has changed in @p interest, it will be
  * updated, so when method returns, you'll have an updated version of the key.
  *
  * @param interest key that will be monitored
  * @param diffMask what particular info change we are interested
- * @param iterations how many times to test, when 0 means until 
+ * @param iterations how many times to test, when 0 means until
  * some change happens
  * @param sleep time to sleep, in microseconds, between iterations.
  * 0 defaults to 1 second.
- * @return the ORed RG_KEY_FLAG_* flags of what changed
+ * @return the ORed @p KEY_FLAG_* flags of what changed
+ * @see KeyFlags
  * @see keyCompare()
- * @see registryMonitoryKeys() to monitor KeySets, and for a code example
- * @see commandMonitor() code in rg command for usage example
- * @ingroup registry
+ * @see kdbMonitorKeys() to monitor KeySets, and for a code example
+ * @see commandMonitor() code in kdb command for usage example
+ * @ingroup kdb
  *
  */
-u_int32_t registryMonitorKey(Key *interest, u_int32_t diffMask,
+u_int32_t kdbMonitorKey(Key *interest, u_int32_t diffMask,
 		unsigned long iterations, unsigned sleep) {
 	Key tested;
 	int rc;
@@ -1647,26 +1645,26 @@ u_int32_t registryMonitorKey(Key *interest, u_int32_t diffMask,
 
 	/* consistency */
 	if (!interest || !keyGetNameSize(interest)) return 0;
-	
+
 	/* Unacceptable 0 usecs sleep. Defaults to 1 second */
 	if (!sleep) sleep=1000;
-	
+
 	if (!iterations) infinitum=1;
 	else infinitum=0;
-	
+
 	/* Work with a copy of the key */
 	keyInit(&tested);
 	keyDup(interest,&tested);
-	
+
 	while (infinitum || --iterations) {
-		rc=registryGetKey(&tested);
+		rc=kdbGetKey(&tested);
 		if (rc) {
 			/* check what type of problem happened.... */
 			switch (errno) {
-				case RG_KEY_RET_NOCRED:
-					return RG_KEY_FLAG_NEEDSYNC;
-				case RG_KEY_RET_NOTFOUND:
-					return RG_KEY_FLAG_FLAG;
+				case KDB_RET_NOCRED:
+					return KEY_FLAG_NEEDSYNC;
+				case KDB_RET_NOTFOUND:
+					return KEY_FLAG_FLAG;
 			}
 		}
 		diff=keyCompare(&tested,interest);
@@ -1682,3 +1680,91 @@ u_int32_t registryMonitorKey(Key *interest, u_int32_t diffMask,
 
 	return 0;
 }
+
+
+
+/**
+ * @mainpage The Elektra Project
+ *
+ * @section overview Elektra Overview
+ *
+ * Elektra is a project to unify Linux/Unix configurations. It does that
+ * providing an hierarchical namespace to store configuration keys and
+ * their values, an API to access/modify them, and some command line tools.
+ *
+ * @section classes Elektra API
+ *
+ * The API was written in pure C because Elektra was designed to be usefull
+ * even for the most basic system programs, which are all made in C. Also,
+ * being C, bindings to other languages can appear, as we already have for
+ * Python, Ruby, etc.
+ *
+ * The API follows an Object Oriented design, and there are only 3 classes
+ * as shown by the figure:
+ *
+ * @image html classes.png "Elektra Classes"
+ *
+ * Some general things you can do with each class are:
+ *
+ * @subsection KeyDB KeyDB
+ *   - Retrieve and commit Keys and KeySets, recursively or not
+ *   - Retrieve and commit individual Keys value, by absolute name or relative to parent
+ *   - Monitor and notify changes in Keys and KeySets
+ *   - Create and delete regular, folder or symbolic link Keys
+ *
+ * @subsection Key Key
+ *   - Get and Set key properties like name, root and base name, value, type,
+ *      permissions, changed time, description, etc
+ *   - Compare all properties with other keys
+ *   - Test if changed, if is a @p user/ or @p system/ key, etc
+ *   - Flag it and test if key has a flag
+ *   - Export Keys to an XML representation
+ *
+ * @subsection KeySet KeySet
+ *   - Linked list of Key objects
+ *   - Insert and append entire KeySets or Keys
+ *   - Work with its internal cursor
+ *   - Compare entire KeySets
+ *   - Export KeySets to an XML representation
+ *
+ *
+ * @section keynames Key Names and Namespaces
+ *
+ * There are 2 trees of keys: @p system and @p user
+ *
+ * @subsection systemtree The "system" Subtree
+ *
+ * It is provided to store system-wide configuration keys, that is,
+ * configurations that daemons and system services will use.
+ *
+ * @subsection usertree The "user" Subtree
+ *
+ * Used to store user-specific configurations, like the personal settings
+ * of a user to certains programs
+ *
+ *
+ * @section rules Rules for Key Names
+ *
+ * When using Elektra to store your application's configuration and state,
+ * please keep in mind the following rules:
+ * - You are not allowed to create keys right under @p system or @p user.
+ * - You are not allowed to create folder keys right under @p system or @p user.
+ *   They are reserved for very essential OS subsystems.
+ * - The keys for your application, called say @e MyApp, should be created under
+ *   @p system/sw/MyApp and/or @p user/sw/MyApp.
+ * - It is suggested to make your application look for default keys under
+ *   @p system/sw/MyApp/current and/or @p user/sw/MyApp/current. This way, from
+ *   a sysadmin perspective, it will be possible to copy the
+ *   @p system/sw/MyApp/current tree to something like @p system/sw/MyApp/old,
+ *   and keep system clean and organized.
+ *
+ *
+ */
+
+
+
+
+
+
+
+

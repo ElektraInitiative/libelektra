@@ -23,13 +23,23 @@ $LastChangedBy$
 <article>
 
 	<articleinfo>
-		<title>Linux Registry Project</title>
-		
+		<title>Elektra Project</title>
+
 		&author;
-		
-		<pubdate>2004-08-17</pubdate>
-		
+
+		<pubdate>2004-08-31</pubdate>
+
 		<revhistory>
+			<revision>
+				<revnumber>2004-08-31</revnumber>
+				<date>31 Aug 2004</date>
+				<authorinitials>avi</authorinitials>
+				<revdescription>
+					<itemizedlist>
+						<listitem><simpara>Project name changed to Elektra. All documentation was changed for that.</simpara></listitem>
+					</itemizedlist>
+				</revdescription>
+			</revision>
 			<revision>
 				<revnumber>2004-08-17</revnumber>
 				<date>17 Aug 2004</date>
@@ -189,7 +199,7 @@ $LastChangedBy$
 					</itemizedlist>
 				</revdescription>
 			</revision>
-			
+
 			<revision>
 				<revnumber>0.2.3</revnumber>
 				<date>15 Apr 2004</date>
@@ -276,8 +286,9 @@ $LastChangedBy$
 
 	</articleinfo>
 
-	<section id="links"><title>Getting The Linux Registry</title>
-		<para>The Linux Registry can be found at <ulink url="http://registry.sf.net/">registry.sf.net</ulink> and (in all) the following places:
+	<section id="links"><title>Getting The Elektra Software</title>
+		<para>Elektra was formerly named Linux Registry, so many links will still take you to "Linux Registry" named pages. They'll change over time.</para>
+		<para>The Elektra Project can be found at <ulink url="http://registry.sf.net/">registry.sf.net</ulink> and (in all) the following places:
 			<itemizedlist>
 				<listitem><simpara><ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628">C source and RPMs</ulink> from <ulink url="http://sourceforge.net/projects/registry">sourceforge.net</ulink></simpara></listitem>
 				<listitem><simpara><ulink url="http://www.germane-software.com/repositories/tlr/trunk/">Subversion repository</ulink>, thanks to Sean Russel</simpara></listitem>
@@ -289,7 +300,7 @@ $LastChangedBy$
 				<listitem><simpara><ulink url="https://lists.sourceforge.net/lists/listinfo/registry-list">Subscribe to general discussions list</ulink> or <ulink url="http://sourceforge.net/mailarchive/forum.php?forum=registry-list">see the list archives</ulink></simpara></listitem>
 			</itemizedlist>
 		</para>
-		<para>There is an <ulink url="registry.sxi">OpenOffice.org presentation</ulink> that anybody can run in community events, to help create Linux Registry awareness.</para>
+		<para>There is an <ulink url="elektra.sxi">OpenOffice.org presentation</ulink> that anybody can deliver in community events, to help create awareness about the Elektra Project.</para>
 		<para>Install Subversion and do the following:
 			<screen><prompt>bash:~$</prompt> <command>cd src</command>
 <prompt>bash:~/src$</prompt> <command>svn co http://germane-software.com/repositories/tlr/trunk registry</command>
@@ -299,45 +310,45 @@ $LastChangedBy$
 
 </para>
 
-		<para>Linux Registry is licensed under the <ulink url="http://www.gnu.org/licenses/lgpl.html">LGPL</ulink></para>
+		<para>Elektra is licensed under the <ulink url="http://www.gnu.org/licenses/lgpl.html">LGPL</ulink></para>
 		<para>
 			<ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628"><graphic srccredit="SourceForge.net" fileref="http://sourceforge.net/sflogo.php?group_id=99628&amp;type=5" label="SourceForge.net Logo" align="center"/></ulink><ulink url="http://freshmeat.net/projects/registry/"><graphic srccredit="freashmeat.net" fileref="images/link_button_1.gif" label="Freshmeat.net Logo" align="center"/></ulink>
 		</para>
 		<section id="man"><title>Online Manual Pages and API Documentation</title>
-			<para>Linux Registry man pages can be accessed online:</para>
+			<para>Elektra man pages can be accessed online:</para>
 			<orderedlist>
-				<listitem><simpara><ulink url="registry.3.html">registry.3</ulink>: C API documentation for the Registry class.</simpara></listitem>
+				<listitem><simpara><ulink url="kdb.3.html">kdb.3</ulink>: C API documentation for the KeyDB class.</simpara></listitem>
 				<listitem><simpara><ulink url="key.3.html">key.3</ulink>: C API documentation for the Key and KeySet class.</simpara></listitem>
-				<listitem><simpara><ulink url="rg.1.html">rg.1</ulink>: The <command>rg</command> command man page. Describes the usage of the command used to administer the registry. You don't need it if you are already reading this.</simpara></listitem>
-				<listitem><simpara><ulink url="registry.7.html">registry.7</ulink>: Discussion about what is the Registry etc. You don't need it if you are already reading this.</simpara></listitem>
-				<listitem><simpara><ulink url="registry.5.html">registry.5</ulink>: Registry internals.</simpara></listitem>
+				<listitem><simpara><ulink url="kdb.1.html">kdb.1</ulink>: The <command>kdb</command> command man page. Describes the usage of the command used to administer Elektra's key database. You don't need it if you are already reading this.</simpara></listitem>
+				<listitem><simpara><ulink url="elektra.7.html">elektra.7</ulink>: Discussion about what is the Elektra Project etc. You don't need it if you are already reading this.</simpara></listitem>
+				<listitem><simpara><ulink url="elektra.5.html">elektra.5</ulink>: Elektra internals.</simpara></listitem>
 			</orderedlist>
-			<para>You can also <ulink url="api/html/index.html">browse</ulink> or <ulink url="registry-api.tar.gz">download</ulink> the API documentation (also provided in the <ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628">-devel RPM</ulink>), by Doxygen. It is complete, with many code examples.</para>
+			<para>You can also <ulink url="api/html/index.html">browse</ulink> or <ulink url="elektra-api.tar.gz">download</ulink> the API documentation (also provided in the <ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628">-devel RPM</ulink>), by Doxygen. It is complete, with many code examples.</para>
 		</section>
 
 	
 		<section id="ecosystem"><title>Building an Ecosystem</title>
-			<para>The objective of the Linux Registry Project is to help create a pervasive, ubiquitous configuration system. This is an entire ecosystem, much more than a piece of code. This section lists the work of some people that are helping to build it.</para>
-		
+			<para>The objective of the Elektra Project is to help create a pervasive, ubiquitous configuration system. This is an entire ecosystem, much more than a piece of code. This section lists the work of some people that are helping to build it.</para>
+
 			<itemizedlist>
-				<listitem><simpara><ulink url="http://www.livejournal.com/users/gregorburger/">Regedit GUI to edit the registry</ulink>, using the QT library, by Gregor Burger. There is a <ulink url="http://developer.berlios.de/projects/tlr-regedit/">Berlios entry</ulink> with Subversion repository, and <ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628">RPM packages available.</ulink></simpara></listitem>
+				<listitem><simpara><ulink url="http://www.livejournal.com/users/gregorburger/">Regedit GUI to edit the key database</ulink>, using the QT library, by Gregor Burger. There is a <ulink url="http://developer.berlios.de/projects/tlr-regedit/">Berlios entry</ulink> with Subversion repository, and <ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628">RPM packages available.</ulink></simpara></listitem>
 				<listitem><simpara><ulink url="http://www.germane-software.com/software/Libraries/registry">Ruby bindings</ulink>, by Sean Russel. If you are writing code in Ruby, and need an easy way to store/retrieve configuration/state data, this is for you.</simpara></listitem>
 				<listitem><simpara><ulink url="http://acm.cs.uwec.edu/~lemkesr/">Python bindings</ulink>, by Scott Lemke.</simpara></listitem>
-				<listitem><simpara><ulink url="http://nss-registry.skumler.net">Users and Groups Name System Module for GLibC</ulink>, by Jens Andersen. This is a module that can be activated by the name system switch mechanism (<filename>/etc/nsswitch.conf</filename>) to let users and groups databases be stored in the Registry, instead of <filename>/etc/{passwd|shadow|groups}</filename>.</simpara></listitem>
-				<listitem>Daniel Lambea and Israel Bethencourt are writing patches for basic system tools, and will have soon a full Linux distribution ported to the Registry.</listitem>
-				<listitem><simpara><ulink url="http://sourceforge.net/projects/jreg">JRegistry</ulink>, by Alexopoulos Charalampos, are Java bindings for the Registry API, and apparently a GUI for registry administration.</simpara></listitem>
+				<listitem><simpara><ulink url="http://nss-registry.skumler.net">Users and Groups Name System Module for GLibC</ulink>, by Jens Andersen. This is a module that can be activated by the name system switch mechanism (<filename>/etc/nsswitch.conf</filename>) to let users and groups databases be Elektrified, instead of <filename>/etc/{passwd|shadow|groups}</filename>.</simpara></listitem>
+				<listitem>Daniel Lambea and Israel Bethencourt are writing patches for basic system tools, and will have soon a full Elektrified Linux distribution.</listitem>
+				<listitem><simpara><ulink url="http://sourceforge.net/projects/jreg">JRegistry</ulink>, by Alexopoulos Charalampos, are Java bindings for the Elektra API, and apparently a GUI for Elektra administration.</simpara></listitem>
 			</itemizedlist>
-			<para>All of them can be found on the <ulink url="https://lists.sourceforge.net/lists/listinfo/registry-list">Registry mailling list</ulink>.</para>
+			<para>All of them can be found on the <ulink url="https://lists.sourceforge.net/lists/listinfo/registry-list">Elektra mailling list</ulink>.</para>
 		</section>
 
 	</section>
 
-	<section id="needs"><title>Why Linux Needs a Registry</title>
-	
+	<section id="needs"><title>Why Linux Needs to be Elektrified</title>
+
 		<para>Today's GNU/Linux systems (or other UNIX) are a sum of independent components collected in a bazar. Each of them already have a working, but selfish configuration system. Please read this section thinking about a system as a whole, not a sum of many parts.</para>
-		
-		<para>The Linux Registry tries to upgrade a '1 + 1 = 2' system into a '1 * 1 = 1' one.</para>
-		
+
+		<para>The Elektra Project tries to upgrade a '1+1=2' system into a '1*1=1' one.</para>
+
 		<para>Look into <filename>/etc/fstab</filename> file. Now look into <filename>/etc/modules.conf</filename>, <filename>/etc/passwd</filename>, <filename>/etc/ssh/sshd_config</filename>, <filename>/etc/httpd/conf/httpd.conf</filename>. I see here two terrible problems:</para>
 		<orderedlist numeration="arabic">
 			<listitem><para>They don't have a common file format.</para></listitem>
@@ -356,7 +367,7 @@ $LastChangedBy$
 		</orderedlist>
 	
 		<para>Other OSes solved this problem by centralizing their configurations, and creating a framework to access them. Configurations then are no more represented by 'configuration files', but by <emphasis>key-value pairs</emphasis> organized in a structured tree commited to some naming convetions.</para>
-		<para>To achieve multi-vendor/provider consistent software integration, and ease of administration across heterogeneous Linux distributions,  Linux needs a Registry.</para>
+		<para>To achieve multi-vendor/provider consistent software integration, and ease of administration across heterogeneous Linux distributions,  Linux needs a key-value pair mechanism to store its configurations.</para>
 	
 	</section>
 
@@ -367,42 +378,42 @@ $LastChangedBy$
 	&garbage;
 	
 	<section id="adoption"><title>Adoption by Legacy System Software</title>
-		<para>The benefits of the Registry will be felt only when configurations like those under <filename>/etc</filename> will move into it. It is expected that this will take time, but awareness should be raised in the community to speed the process.</para>
-		<para>Experienced Unix sysadmins seem (and were expected to be) sceptical about a registry on Linux, even when the Linux Registry tries to address other OSes registry's problems (centralization, security, consistency). But it is a truly required OS component from a good architecture perspective, and it can solve most of the Linux software integration issues, when adopted.</para>
-		<para>The registry is expected to be adopted by developers of high-level software applications. Then by some Linux distribution specific admin tools, like redhat-config-network, then finally by main OS programs and libraries, like <command>/sbin/init</command>, PAM, <command>/bin/mount</command>, etc.</para>
+		<para>The benefits of Elektra will be felt only when configurations like those under <filename>/etc</filename> will move into it. It is expected that this will take time, but awareness should be raised in the community to speed the process.</para>
+		<para>Experienced Unix sysadmins seem (and were expected to be) sceptical about a key-value database on Linux, even when the Elektra Project tries to address other OSes registry's problems (centralization, security, consistency). But it is a truly required OS component from a good architecture perspective, and it can solve most of the Linux software integration issues, when adopted.</para>
+		<para>The Elektra Project is expected to be adopted by developers of high-level software applications. Then by some Linux distribution specific admin tools, like redhat-config-network, then finally by main OS programs and libraries, like <command>/sbin/init</command>, PAM, <command>/bin/mount</command>, etc.</para>
 	</section>
-		
+
 	&society;
-	
+
 	&compared;
-	
+
 	<section id="screenshots"><title>Virtual Screenshots</title>
-		<para>The Registry can't produce screenshots, because it is just a library/API as we saw above, but since everybody loves them, let's use some visual effects to show some of Registry's concepts.</para>
-		<section id="system.hw"><title>Hardware Status Migrated Into the Registry</title>
-			<para>This tree was generated by the <command>hwconfKudzu-convert</command> program that converts the <filename>/etc/sysconfig/hwconf</filename> file into Registry's keys. In this example, we see that it detected a connected mouse. The keys under <filename>system/hw/byClass/MOUSE/GenericMousePS2psaux</filename> have all hardware properties detected by <command>kudzu</command>. There is also a <filename>system/hw/byBus</filename> tree that contains symbolic links to the <filename>byClass</filename> tree, to facilitate key access.</para>
+		<para>Elektra alone can't produce screenshots, because it is just a library/API as we saw above, but since everybody loves them, let's use some visual effects to show some of Elektra's concepts.</para>
+		<section id="system.hw"><title>Hardware Status, Elektrified</title>
+			<para>This tree was generated by the <command>hwconfKudzu-convert</command> program that converts the <filename>/etc/sysconfig/hwconf</filename> file into Elektra's keys. In this example, we see that it detected a connected mouse. The keys under <filename>system/hw/byClass/MOUSE/GenericMousePS2psaux</filename> have all hardware properties detected by <command>kudzu</command>. There is also a <filename>system/hw/byBus</filename> tree that contains symbolic links to the <filename>byClass</filename> tree, to facilitate key access.</para>
 			<graphic srccredit="system/hw" fileref="images/hw.png" label="system/hw view" align="center"/>
 		</section>
-		
-		<section id="system.filesystems"><title>Filesystems Table Into the Registry</title>
+
+		<section id="system.filesystems"><title>Filesystems Table, Elektrified</title>
 			<para><command>fstab-convert</command> created this <filename>system/filesystems</filename> tree showed here, based on <filename>/etc/fstab</filename>. A unique identifier was calculated for each filesystem, and a key name generated. <filename>system/filesystems/mntwork</filename> is in evidence, showing the <filename>/mnt/work</filename> filesystem. Bellow, we can see standard key names for this filesystem properties. An example is <filename>system/filesystems/mntwork/mpoint</filename> that contains the value <emphasis>/mnt/work</emphasis>, or <filename>system/filesystems/mntwork/type</filename> that contains <emphasis>ext2</emphasis>.</para>
 			<graphic srccredit="system/filesystems" fileref="images/fstab.png" label="system/filesystems view" align="center"/>
 		</section>
 
-		<section id="xfree"><title>XFree Configurations at the Registry</title>
-			<para>All higher level software keys are located under <filename>system/sw</filename>, as showed above for XFree86 configuration. Pay attention to how easy it is to access and change XFree configuration, without any <filename>/etc/X11/XF86Config</filename> parsing effort, when using the registry. XFree will look for its keys under <filename>system/sw/XFree/current</filename> which is a symbolic link to <filename>system/sw/XFree/handmade</filename>. This is an example on how the high level usage of symbolic links into the registry provides a lot of flexibility.</para>
+		<section id="xfree"><title>XFree Configurations Elektrified</title>
+			<para>All higher level software keys are located under <filename>system/sw</filename>, as showed above for XFree86 configuration. Pay attention to how easy it is to access and change XFree configuration, without any <filename>/etc/X11/XF86Config</filename> parsing effort, when using Elektra. XFree will look for its keys under <filename>system/sw/XFree/current</filename> which is a symbolic link to <filename>system/sw/XFree/handmade</filename>. This is an example on how the high level usage of symbolic links into the registry provides a lot of flexibility.</para>
 			<graphic srccredit="system/sw/XFree" fileref="images/xfree.png" label="system/sw/XFree view" align="center"/>
 		</section>
 		
-		<section id="edit"><title>Easily Editing Keys in the Registry</title>
-			<para>The <command>rg edit</command> command provides an easy way to edit a group of keys using your prefered editor. It will dump the selected keys into an XML representation, and run the editor to let the user edit them. After user modifications, it will update, remove or include the keys based on the modified XML file. This real screenshot shows me using <command>kedit</command> to modify the XFree configuration keys related to the monitor.</para>
-			<graphic srccredit="rg edit" fileref="images/rgedit.png" label="rg edit command" align="center"/>
+		<section id="edit"><title>Easily Editing Elektra Keys</title>
+			<para>The <command>kdb edit</command> command provides an easy way to edit a group of keys using your prefered editor. It will dump the selected keys into an XML representation, and run the editor to let the user edit them. After user modifications, it will update, remove or include the keys based on the modified XML file. This real screenshot shows me using <command>kedit</command> to modify the XFree configuration keys related to the monitor.</para>
+			<graphic srccredit="kdb edit" fileref="images/rgedit.png" label="kdb edit command" align="center"/>
 			<para>Or you can use Gregor Burger's regedit GUI to edit keys very easily. Here is a screenshot editing the same above key.</para>
 			<graphic srccredit="regedit" fileref="images/regedit1.png" label="regedit" align="center"/>
 			
 		</section>
 	</section>
 
-	<section id="rgcmd"><title>The <command>rg</command> Command</title>
+	<section id="rgcmd"><title>The <command>kdb</command> Command</title>
 		&rgcmd;
 		&rgexample;
 	</section>
@@ -412,11 +423,11 @@ $LastChangedBy$
 	<!--section id="internals"><title>Registry Internals</title>
 		&storage;
 	</section-->
-	
-	<section id="helping"><title>Supporting Linux Registry</title>
+
+	<section id="helping"><title>Supporting The Elektra Project</title>
 		<para>Help wanted:</para>
 		<orderedlist>
-			<listitem><simpara>Writing patches to legacy software like <command>mount</command>, <command>glibc</command>, <command>init</command>, etc to support the Registry.</simpara></listitem>
+			<listitem><simpara>Writing patches to legacy software like <command>mount</command>, <command>glibc</command>, <command>init</command>, etc to support Elektra.</simpara></listitem>
 			<listitem><simpara>Writing bindings to other higher level languages like Python, Perl, etc.</simpara></listitem>
 			<listitem><simpara>Making the documentation more convincent and english corrections.</simpara></listitem>
 			<listitem><simpara>Advertising and advocating the project.</simpara></listitem>
@@ -425,7 +436,7 @@ $LastChangedBy$
 	
 	<appendix id="about"><title>About this Document</title>
 		<para>This document must be distributed under the terms of <ulink url="http://www.gnu.org/licenses/fdl.html">GNU Free Documentation License</ulink>.</para>
-		<para>This document was written in DocBook XML format, and is a wrapper for Registry's man pages with some addons.</para>
+		<para>This document was written in DocBook XML format, and is a wrapper for Elektra's man pages with some addons.</para>
 		<para>Copyright 2004, Avi Alkalay.</para>
 	</appendix>
 </article>

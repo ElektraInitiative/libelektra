@@ -10,25 +10,25 @@
 $Id$
 $LastChangedBy$
 -->
-<refentry id="rg">
+<refentry id="kdb">
 
 	<refentryinfo>
 		&author;
 	</refentryinfo>
 
 	<refmeta>
-		<refentrytitle>rg</refentrytitle>
+		<refentrytitle>kdb</refentrytitle>
 		<manvolnum>1</manvolnum>
 	</refmeta>
 
 	<refnamediv>
-		<refname>rg</refname>
-		<refpurpose>Registry command line administration tool</refpurpose>
+		<refname>kdb</refname>
+		<refpurpose>Elektra key database command line administration tool</refpurpose>
 	</refnamediv>
 
 	<refsynopsisdiv>
 		<cmdsynopsis>
-			<command>rg get</command>
+			<command>kdb get</command>
 			<arg choice="opt">
 				<option>-dlr</option>
 			</arg>
@@ -36,7 +36,7 @@ $LastChangedBy$
 		</cmdsynopsis>
 		
 		<cmdsynopsis>
-			<command>rg set</command>
+			<command>kdb set</command>
 			<arg choice="opt">
 				<option>-t</option>
 				<option>type</option>
@@ -62,7 +62,7 @@ $LastChangedBy$
 		</cmdsynopsis>
 		
 		<cmdsynopsis>
-			<command>rg set</command>
+			<command>kdb set</command>
 			<arg choice="opt">
 				<option>-t</option>
 				<option>type</option>
@@ -81,7 +81,7 @@ $LastChangedBy$
 		</cmdsynopsis>
 		
 		<cmdsynopsis>
-			<command>rg ls</command>
+			<command>kdb ls</command>
 			<arg choice="opt">
 				<option>-lRfv</option>
 			</arg>
@@ -89,7 +89,7 @@ $LastChangedBy$
 		</cmdsynopsis>
 		
 		<cmdsynopsis>
-			<command>rg ls</command>
+			<command>kdb ls</command>
 			<arg choice="opt">
 				<option>-lRfvx</option>
 			</arg>
@@ -99,7 +99,7 @@ $LastChangedBy$
 		</cmdsynopsis>
 		
 		<cmdsynopsis>
-			<command>rg edit</command>
+			<command>kdb edit</command>
 			<arg choice="opt">
 				<option>-R</option>
 			</arg>
@@ -107,28 +107,28 @@ $LastChangedBy$
 		</cmdsynopsis>
 		
 		<cmdsynopsis>
-			<command>rg rm</command>
+			<command>kdb rm</command>
 			<arg choice="plain">key/name</arg>
 		</cmdsynopsis>
 		
 		<cmdsynopsis>
-			<command>rg ln</command>
+			<command>kdb ln</command>
 			<arg choice="plain">key/src</arg>
 			<arg choice="plain">key/dest</arg>
 		</cmdsynopsis>
 		<cmdsynopsis>
-			<command>rg export system/some/tree.root &#062; file.xml</command>
+			<command>kdb export system/some/tree.root &#062; file.xml</command>
 		</cmdsynopsis>
 		<cmdsynopsis>
-			<command>rg import &#060; file.xml</command>
-		</cmdsynopsis>
-		
-		<cmdsynopsis>
-			<command>rg import file.xml</command>
+			<command>kdb import &#060; file.xml</command>
 		</cmdsynopsis>
 		
 		<cmdsynopsis>
-			<command>rg monitor some/key/name</command>
+			<command>kdb import file.xml</command>
+		</cmdsynopsis>
+		
+		<cmdsynopsis>
+			<command>kdb monitor some/key/name</command>
 		</cmdsynopsis>
 	</refsynopsisdiv>
 
@@ -139,8 +139,8 @@ $LastChangedBy$
 	
 	<refsection><title>See Also</title>
 		<para>
-			<citerefentry><refentrytitle>registry</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
-			<citerefentry><refentrytitle>registry</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+			<citerefentry><refentrytitle>elektra</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
+			<citerefentry><refentrytitle>elektra</refentrytitle><manvolnum>5</manvolnum></citerefentry>
 		</para>
 	</refsection>
 </refentry>

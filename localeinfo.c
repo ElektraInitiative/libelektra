@@ -15,4 +15,5 @@ $LastChangedBy$
 int main(int argc, char **argv) {
 	setlocale(LC_ALL,"");
 	printf("Used charset: %s\n", nl_langinfo(CODESET));
+	return 0;
 }

@@ -3,18 +3,18 @@ $Id$
 $LastChangedBy$
 -->
 	<section id="exprm"><title>Example program</title>
-		<para>Here is an example of how to use the Registry API. This program will get all keys that matter under <varname>system/sw/MyApp</varname> manipulate some, and re-save them.</para>
+		<para>Here is an example of how to use the Elektra API. This program will get all keys that matter under <varname>system/sw/MyApp</varname> manipulate some, and re-save them.</para>
 		&csource;
 		<para> Things to note in this source:</para>
 		<orderedlist>
-			<listitem><simpara>The keys are manipulated in <function>changeConfig()</function> after we called <function>registryClose()</function>. You don't need the Registry to be open to manipulate keys.</simpara></listitem>
-			<listitem><simpara>We called <function>registryOpen()</function> again in <function>saveConfig()</function>, to prepare to commit the changes.</simpara></listitem>
+			<listitem><simpara>The keys are manipulated in <function>changeConfig()</function> after we called <function>kdbClose()</function>. You don't need the Registry to be open to manipulate keys.</simpara></listitem>
+			<listitem><simpara>We called <function>kdbOpen()</function> again in <function>saveConfig()</function>, to prepare to commit the changes.</simpara></listitem>
 			<listitem><simpara>We called <function>ksClose()</function> in the end to free all memory resources we used.</simpara></listitem>
 		</orderedlist>
 		
 	</section>
 	
 	<section id="linking"><title>Compiling and Linking</title>
-		<para>All Linux Registry methods are declared in the <filename>/usr/include/registry.h</filename> file and defined in the <filename>/lib/libregistry.so</filename> library. So to compile it you simply need to:</para>
-<screen><prompt>bash$ </prompt><command>cc -lregistry -o myapp myapp.c</command></screen>
+		<para>All Linux Registry methods are declared in the <filename>/usr/include/kdb.h</filename> file and defined in the <filename>/lib/libkdb.so</filename> library. So to compile it you simply need to:</para>
+<screen><prompt>bash$ </prompt><command>cc -lkdb -o myapp myapp.c</command></screen>
 	</section>

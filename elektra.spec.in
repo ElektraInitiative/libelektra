@@ -1,0 +1,95 @@
+Name: elektra
+Version: _VERSION_
+Release: 12
+Source:    http://registry.sf.net/%{name}-%{version}.tar.gz
+Group:     System Environment/Libraries
+Copyright: LGPL
+Vendor: Avi Alkalay <avi@unix.sh>
+Packager: Avi Alkalay <avi@unix.sh>
+URL: http://registry.sf.net
+Obsoletes: registry
+Provides: registry
+BuildRoot:   %{_tmppath}/%{name}-%{version}-build
+BuildRequires: /usr/bin/xsltproc
+Summary: A registry to store general key-value pairs for software configuration
+
+%description
+The Elektra Project provides a framework to store generic configuration data
+in an hierarchical key-value pair database, instead of a human-readable only
+text file.
+
+This way any software can read/save his configuration using a consistent API.
+Also, applications can be aware of other applications configurations,
+leveraging easy application integration.
+
+
+%package devel
+Summary: Include files and API documentation for Elektra Project
+Group: Development/System
+Requires: elektra = %{version}-%{release}
+Obsoletes: registry-devel
+Provides: registry-devel
+
+%description devel
+The Elektra Project provides a framework to store generic configuration data
+in an hierarchical key-value pair database, instead of a human-readable only
+text file.
+
+This way any software can read/save his configuration using a consistent API.
+Also, applications can be aware of other applications configurations,
+leveraging easy application integration.
+
+This package contains the include files and API manual pages to use the Elektra
+API in C.
+
+%prep
+%setup -n elektra
+%build
+# Setup for parallel builds
+numprocs=`egrep -c ^cpu[0-9]+ /proc/stat || :`
+if [ "$numprocs" = "0" ]; then
+	numprocs=1
+fi
+
+gmake all
+
+%install
+gmake DESTDIR=$RPM_BUILD_ROOT install
+
+%clean
+rm -rf $RPM_BUILD_ROOT/*
+rm -rf $RPM_BUILD_DIR/%{name}
+
+
+
+
+%post
+# Backwards compatibility, from the Linux Registry days
+if [ -d /etc/registry -a ! -d /etc/kdb ]; then
+	mv /etc/registry /etc/kdb
+	ln -s kdb /etc/registry
+fi
+
+# Create basic key structure for apps
+kdb set -t dir system/sw
+
+
+%files
+%defattr(-,root,root,0755)
+/lib/*.so
+/bin/*
+/etc/profile.d/*
+/usr/share/doc/%{name}
+/usr/share/man/man1/*
+/usr/share/man/man7/*
+/usr/share/man/man5/*
+/usr/share/sgml/*
+
+%files devel
+%defattr(-,root,root,0755)
+/usr/include/*
+/usr/lib/*.a
+/usr/share/doc/%{name}-devel
+/usr/share/man/man3/*
+
+%changelog

@@ -1,5 +1,30 @@
+* Tue Aug 31 2004 Avi Alkalay <avi@unix.sh> 0.4
+- Name changed to Elektra
+- rg command changed to kbd
+- registry.h to kdb.h
+- libregistry.so to libkbd.so
+- The former still provided as a wrapper for binary compatibility
+- Most #defines now are enums
+- Enums now documented
+- "*NameSpace()" to "*Namespace()"
+- Appeared keyClearFlag()
+- Changed documentation due to new name
+- Greatly improved documentation. It is now 100% complete
+- API man pages are now from Doxygen
+- Tested build in BSD: iconv is a separate library there
+- Changed some error codes for BSD compatibility
+- Used the "const" parameter modifier everyplace that is needed
+- 'kdb export' now allways exports as UTF-8, regardeless of current encoding
+- 'kdb get' now has a shell mode with -s option
+- elektrasetenv now uses the new 'kdb get' command, and it is less comples
+- elektrasetenv now set environment from system/env and user/env
+
 * Mon Aug 17 2004 Avi Alkalay <avi@unix.sh> 0.3.1
-- Fixed a bug in keyToStream() regarding export of comments
+- Fixed a bug in keyToStream() regarding XML export of comments
+- Make rg.c compile with older XML library
+- .spec now uses gmake instead of make
+- Moved ENODATA to ENOMSG, for better BSD compatibility
+- Improved the README documentation with packaging info
 
 * Mon Aug 10 2004 Avi Alkalay <avi@unix.sh> 0.3
 - Registry now supports key and key sets CHANGE NOTIFICATIONS

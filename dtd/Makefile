@@ -8,6 +8,6 @@ clean:
 
 
 install:
-	mkdir -p ${DESTDIR}/usr/share/sgml/registry-${DTDVERSION}/
-	cp *dtd catalog ${DESTDIR}/usr/share/sgml/registry-${DTDVERSION}/
+	mkdir -p ${DESTDIR}/usr/share/sgml/elektra-${DTDVERSION}/
+	cp *dtd catalog ${DESTDIR}/usr/share/sgml/elektra-${DTDVERSION}/
 

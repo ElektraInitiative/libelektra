@@ -1,5 +1,5 @@
 /***************************************************************************
-                          rg.c  -  Tool for Registry administration
+                          kdb.c  -  Tool for the kdb administration
                              -------------------
     begin                : Mon Mar 02 2003
     copyright            : (C) 2003 by Avi Alkalay
@@ -25,7 +25,7 @@ $LastChangedBy$
 
 
 /**
- * @defgroup libexample rg Command: An Example of Full Library Utilization
+ * @defgroup libexample Example of Full Library Utilization: kdb command
  * @{
  */
 
@@ -35,7 +35,7 @@ $LastChangedBy$
 
 
 
-#include "registry.h"
+#include "kdb.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -47,6 +47,7 @@ $LastChangedBy$
 #include <pwd.h>
 #include <time.h>
 #include <ctype.h>
+#include <locale.h>
 
 /* FIXME: remove libXML dependencies */
 #include <libxml/xmlreader.h>
@@ -79,9 +80,10 @@ int argSort=1;
 int argDescriptive=0;
 int argFullName=0;
 int argShow=1;
+int argShell=0;
 int argXML=0;
 mode_t argMode=0;
-int argType=RG_KEY_TYPE_UNDEFINED;
+int argType=KEY_TYPE_UNDEFINED;
 
 
 int parseCommandLine(int argc, char *argv[]) {
@@ -113,7 +115,7 @@ int parseCommandLine(int argc, char *argv[]) {
 				strncpy(sargMode,optarg,ARGSIZE);
 				break;
 			case 'R':
-				argRecursive=RG_O_RECURSIVE;
+				argRecursive=KDB_O_RECURSIVE;
 				break;
 			case 'l':
 				argLong=1;
@@ -128,10 +130,13 @@ int parseCommandLine(int argc, char *argv[]) {
 			case 'a':
 				argAll=1;
 				break;
+			case 's':
+				argShell=1;
+				break;
 			case 'f':
 				argFullName=1;
 				break;
-			case 's':
+			case 'n':
 				argSort=0;
 				break;
 			case 'i':
@@ -193,13 +198,13 @@ int parseCommandLine(int argc, char *argv[]) {
 	/* Parse type */
 	if (*sargType!=0) {
 		/* TODO: use regex */
-		if (!strcmp(sargType,"string")) argType=RG_KEY_TYPE_STRING;
-		else if (!strcmp(sargType,"bin")) argType=RG_KEY_TYPE_BINARY;
-		else if (!strcmp(sargType,"binary")) argType=RG_KEY_TYPE_BINARY;
-		else if (!strcmp(sargType,"dir")) argType=RG_KEY_TYPE_DIR;
-		else if (!strcmp(sargType,"link")) argType=RG_KEY_TYPE_LINK;
+		if (!strcmp(sargType,"string")) argType=KEY_TYPE_STRING;
+		else if (!strcmp(sargType,"bin")) argType=KEY_TYPE_BINARY;
+		else if (!strcmp(sargType,"binary")) argType=KEY_TYPE_BINARY;
+		else if (!strcmp(sargType,"dir")) argType=KEY_TYPE_DIR;
+		else if (!strcmp(sargType,"link")) argType=KEY_TYPE_LINK;
 	} else if (argCommand==CMD_SET) { /* We must have a type */
-		argType=RG_KEY_TYPE_STRING;
+		argType=KEY_TYPE_STRING;
 	}
 
 
@@ -215,7 +220,7 @@ int parseCommandLine(int argc, char *argv[]) {
 				argUID=malloc(sizeof(uid_t));
 				*argUID=pwd->pw_uid;
 			} else {
-				fprintf(stderr,"rg: Invalid user %s. Ignoring\n", argUser);
+				fprintf(stderr,"kdb: Invalid user %s. Ignoring\n", argUser);
 			}
 		}
 	}
@@ -233,7 +238,7 @@ int parseCommandLine(int argc, char *argv[]) {
 				argGID=malloc(sizeof(gid_t));
 				*argGID=grp->gr_gid;
 			} else {
-				fprintf(stderr,"rg: Invalid group %s. Ignoring\n",argGroup);
+				fprintf(stderr,"kdb: Invalid group %s. Ignoring\n",argGroup);
 			}
 		}
 	}
@@ -340,11 +345,11 @@ void listSingleKey(Key *key) {
 		*p='='; p++;
 
 		ktype=keyGetType(key);
-		if (ktype >= RG_KEY_TYPE_STRING)
+		if (ktype >= KEY_TYPE_STRING)
 			p+=keyGetString(key,p,sizeof(buffer)-(p-buffer));
-		else if (ktype >= RG_KEY_TYPE_BINARY)
+		else if (ktype >= KEY_TYPE_BINARY)
 			p+=sprintf(p,"<BINARY VALUE>");
-		else if (ktype == RG_KEY_TYPE_LINK)
+		else if (ktype == KEY_TYPE_LINK)
 			p+=keyGetLink(key,p,sizeof(buffer)-(p-buffer));
 
 		*p=0;
@@ -360,23 +365,23 @@ void listSingleKey(Key *key) {
 
 
 /**
- * The business logic behind 'rg rm' command
+ * The business logic behind 'kdb rm' command
  * @par Example:
  * @code
- * bash$ rg rm user/env/alias/ls   # get rid to the ls alias
+ * bash$ kdb rm user/env/alias/ls   # get rid to the ls alias
  * @endcode
  *
- * @see registryRemove()
+ * @see kdbRemove()
  * @param argKeyName name of the key that will be removed
  */
 int commandRemove() {
 	if (!argKeyName) {
-		fprintf(stderr,"rg rm: No key name\n");
+		fprintf(stderr,"kdb rm: No key name\n");
 		return -1;
 	}
 
-	if (registryRemove(argKeyName)) {
-		perror("rg rm");
+	if (kdbRemove(argKeyName)) {
+		perror("kdb rm");
 		return -1;
 	}
 	return 0;
@@ -388,15 +393,15 @@ int commandRemove() {
 
 
 /**
- * The business logic behind 'rg set' command.
+ * The business logic behind 'kdb set' command.
  * Sets value to a single key.
  *
  * @par Example:
  * @code
- * bash$ rg set -c "My shell prompt" user/env/env1/PS1 '\h:\w\$'
+ * bash$ kdb set -c "My shell prompt" user/env/env1/PS1 '\h:\w\$'
  * @endcode
  *
- * @see registrySetKey()
+ * @see kdbSetKey()
  * @param argKeyName name of the key that will be set
  * @param argComment comment to be set to key (-c)
  * @param argType type of the key (-t)
@@ -413,18 +418,18 @@ int commandSet() {
 
 	/* Consistency */
 	if (!argKeyName) {
-		fprintf(stderr,"rg set: No key name\n");
+		fprintf(stderr,"kdb set: No key name\n");
 		return -1;
 	}
 
 	keyInit(&key);
 	keySetName(&key,argKeyName);
-	ret=registryGetKey(&key);
+	ret=kdbGetKey(&key);
 	if (!ret) { /* key already exist. good. */
 		if (argComment) keySetComment(&key,argComment);
-		if (argType==RG_KEY_TYPE_UNDEFINED) argType=keyGetType(&key);
-	} else if (errno!=RG_KEY_RET_NOTFOUND) {
-		sprintf(error,"rg set: %s",argKeyName);
+		if (argType==KEY_TYPE_UNDEFINED) argType=keyGetType(&key);
+	} else if (errno!=KDB_RET_NOTFOUND) {
+		sprintf(error,"kdb set: %s",argKeyName);
 		perror(error);
 	}
 
@@ -434,21 +439,21 @@ int commandSet() {
 	if (argMode) keySetAccess(&key,argMode);
 
 	switch (argType) {
-		case RG_KEY_TYPE_DIR: keySetType(&key,RG_KEY_TYPE_DIR);
+		case KEY_TYPE_DIR: keySetType(&key,KEY_TYPE_DIR);
 			break;
-		case RG_KEY_TYPE_STRING:
+		case KEY_TYPE_STRING:
 			if (argData) keySetString(&key,argData);
 			break;
-		case RG_KEY_TYPE_BINARY:
+		case KEY_TYPE_BINARY:
 			if (argData) keySetBinary(&key,argData,strblen(argData));
 			break;
-		case RG_KEY_TYPE_LINK: keySetLink(&key,argData);
+		case KEY_TYPE_LINK: keySetLink(&key,argData);
 			break;
 	}
 
-	ret=registrySetKey(&key);
+	ret=kdbSetKey(&key);
 	if (ret) {
-		sprintf(error,"rg set: %s",argKeyName);
+		sprintf(error,"kdb set: %s",argKeyName);
 		perror(error);
 	}
 	return ret;
@@ -460,14 +465,14 @@ int commandSet() {
 
 
 /**
- * The business logic behind 'rg ln' command
+ * The business logic behind 'kdb ln' command
  * 
  * @par Example:
  * @code
- * bash$ rg ln user:valeria/sw/MyApp user/sw/MyApp  # make my personal MyApp configurations be a link to valerias configs
+ * bash$ kdb ln user:valeria/sw/MyApp user/sw/MyApp  # make my personal MyApp configurations be a link to valerias configs
  * @endcode
  *
- * @see registryLink()
+ * @see kdbLink()
  * @see keySetType()
  * @param argKeyName name of the target key
  * @param argData name of the link key to be created
@@ -477,17 +482,17 @@ int commandLink() {
 
 	/* Consistency */
 	if (!argKeyName) {
-		fprintf(stderr,"rg ln: No target specified\n");
+		fprintf(stderr,"kdb ln: No target specified\n");
 		return -1;
 	}
 
 	if (!argData) {
-		fprintf(stderr,"rg ln: %s: No destination specified",argKeyName);
+		fprintf(stderr,"kdb ln: %s: No destination specified",argKeyName);
 		return -1;
 	}
 
-	if ((rc=registryLink(argKeyName,argData))) {
-		perror("rg ln");
+	if ((rc=kdbLink(argKeyName,argData))) {
+		perror("kdb ln");
 	}
 
 	return rc;
@@ -507,7 +512,7 @@ int commandLink() {
 
 
 /**
- * The business logic behind 'rg ls' command.
+ * The business logic behind 'kdb ls' command.
  * @param argKeyName key name to be listed
  * @param argRecursive whether to act recursivelly (-R)
  * @param argValue whether to show key values or not (-v)
@@ -516,18 +521,18 @@ int commandLink() {
  *
  * @par Example:
  * @code
- * bash$ rg ls -R   # list all keys from system and user trees
- * bash$ rg ls -Ra  # list them all plus the hidden/inactive keys
- * bash$ rg ls -Rav # list all showing value
- * bash# rg ls -Rxv # equivalent to 'rg export'
- * bash$ rg ls -Rv user/env # list my aliases and environment vars
+ * bash$ kdb ls -R   # list all keys from system and user trees
+ * bash$ kdb ls -Ra  # list them all plus the hidden/inactive keys
+ * bash$ kdb ls -Rav # list all showing value
+ * bash# kdb ls -Rxv # equivalent to 'kdb export'
+ * bash$ kdb ls -Rv user/env # list my aliases and environment vars
  * @endcode
  *
- * @see registryGetRootKeys()
- * @see registryGetChildKeys()
+ * @see kdbGetRootKeys()
+ * @see kdbGetChildKeys()
  * @see keyToStream()
  * @see ksToStream()
- * @see commandExport() for the 'rg export' command
+ * @see commandExport() for the 'kdb export' command
  */
 int commandList() {
 	KeySet ks;
@@ -541,7 +546,7 @@ int commandList() {
 		/* User don't want a specific key, so list the root keys */
 
 		ksInit(&roots);
-		registryGetRootKeys(&roots);
+		kdbGetRootKeys(&roots);
 
 		if (argRecursive) {
 			key=roots.start;
@@ -552,12 +557,12 @@ int commandList() {
 
 				ksInit(&thisRoot);
 				keyGetFullName(key,rootName,sizeof(rootName));
-				if (argValue) ret=registryGetChildKeys(rootName,&thisRoot,
-					(argSort?RG_O_SORT:0) | argRecursive | RG_O_DIR |
-					(argAll?RG_O_INACTIVE:0) | RG_O_NFOLLOWLINK);
-				else ret=registryGetChildKeys(rootName,&thisRoot,
-					(argSort?RG_O_SORT:0) | RG_O_STATONLY | argRecursive |
-					RG_O_DIR | (argAll?RG_O_INACTIVE:0) | RG_O_NFOLLOWLINK);
+				if (argValue) ret=kdbGetChildKeys(rootName,&thisRoot,
+					(argSort?KDB_O_SORT:0) | argRecursive | KDB_O_DIR |
+					(argAll?KDB_O_INACTIVE:0) | KDB_O_NFOLLOWLINK);
+				else ret=kdbGetChildKeys(rootName,&thisRoot,
+					(argSort?KDB_O_SORT:0) | KDB_O_STATONLY | argRecursive |
+					KDB_O_DIR | (argAll?KDB_O_INACTIVE:0) | KDB_O_NFOLLOWLINK);
 				temp=key->next;
 				ksAppend(&ks,key);
 				ksAppendKeys(&ks,&thisRoot);
@@ -567,12 +572,12 @@ int commandList() {
 	} else {
 		/* User gave us a specific key to start with */
 
-		if (argValue) ret=registryGetChildKeys(argKeyName,&ks,
-			(argSort?RG_O_SORT:0) | argRecursive | RG_O_DIR |
-			(argAll?RG_O_INACTIVE:0) | RG_O_NFOLLOWLINK);
-		else ret=registryGetChildKeys(argKeyName,&ks,
-			(argSort?RG_O_SORT:0) | RG_O_STATONLY | argRecursive |
-			RG_O_DIR | (argAll?RG_O_INACTIVE:0) | RG_O_NFOLLOWLINK);
+		if (argValue) ret=kdbGetChildKeys(argKeyName,&ks,
+			(argSort?KDB_O_SORT:0) | argRecursive | KDB_O_DIR |
+			(argAll?KDB_O_INACTIVE:0) | KDB_O_NFOLLOWLINK);
+		else ret=kdbGetChildKeys(argKeyName,&ks,
+			(argSort?KDB_O_SORT:0) | KDB_O_STATONLY | argRecursive |
+			KDB_O_DIR | (argAll?KDB_O_INACTIVE:0) | KDB_O_NFOLLOWLINK);
 	
 		if (ret) {
 				/* We got an error. Check if it is because its not a folder key */
@@ -581,15 +586,15 @@ int commandList() {
 				key=(Key *)malloc(sizeof(Key));
 				keyInit(key);
 				keySetName(key,argKeyName);
-				if (argValue) ret=registryGetKey(key);
-				else ret=registryStatKey(key);
+				if (argValue) ret=kdbGetKey(key);
+				else ret=kdbStatKey(key);
 				if (ret) {
 					char error[200];
 
 					keyClose(key); free(key);
 					ksClose(&ks);
 					
-					sprintf(error,"rg ls: %s",argKeyName);
+					sprintf(error,"kdb ls: %s",argKeyName);
 					perror(error);
 					return ret;
 				}
@@ -598,7 +603,7 @@ int commandList() {
 				
 				ksClose(&ks);
 
-				sprintf(error,"rg ls: %s",argKeyName);
+				sprintf(error,"kdb ls: %s",argKeyName);
 				perror(error);
 				return ret;
 			}
@@ -609,7 +614,7 @@ int commandList() {
 		if (argXML) {
 			if (key) keyToStream(key,stdout,0);
 			else if (ks.size)
-				ksToStream(&ks,stdout,RG_O_XMLHEADERS);
+				ksToStream(&ks,stdout,KDB_O_XMLHEADERS);
 		} else {
 			if (key) listSingleKey(key);
 			else if (ks.size) {
@@ -635,19 +640,23 @@ int commandList() {
 
 
 /**
- * Business logic behind the 'rg get' command.
+ * Business logic behind the 'kdb get' command.
  * Get a key and return its value to you.
  *
  * @par Example:
  * @code
- * bash$ rg get user/env/alias/ls
+ * bash$ kdb get user/env/alias/ls
  * ls -Fh --color=tty
  * @endcode
  *
  * @param argKeyName key to get value
  * @param argDescriptive show also the key comment (-d)
+ * @param argShell output suitable for shell scripts (-s)
+ * @param argLong show also the key name (-l)
+ * @param argFullName with @p argLong, show the user domain too (-f)
  *
- * @see registryGetKey() 
+ * @see kdbGetKey()
+ * @see kdbGetBaseName()
  * @see keyGetComment()
  * @see keyGetString()
  *
@@ -660,18 +669,18 @@ int commandGet() {
 	size_t size,cs=0;
 
 	if (!argKeyName) {
-		fprintf(stderr,"rg get: No key name\n");
+		fprintf(stderr,"kdb get: No key name\n");
 		return -1;
 	}
 
 	keyInit(&key);
 	keySetName(&key,argKeyName);
 
-	ret=registryGetKey(&key);
+	ret=kdbGetKey(&key);
 	if (ret) {
 		char error[200];
-			
-		sprintf(error,"rg get: %s",argKeyName);
+
+		sprintf(error,"kdb get: %s",argKeyName);
 		perror(error);
 		return ret;
 	}
@@ -680,13 +689,16 @@ int commandGet() {
 		cs=keyGetCommentSize(&key);
 		if (cs) size+=cs+3;
 	}
-	if (argLong) {
+	if (argShell) {
+		size+=keyGetBaseNameSize(&key);
+		size+=2; /* for 2 '"' to surround the value */
+	} else if (argLong) {
 		if (argFullName) size+=keyGetFullNameSize(&key);
 		else size+=keyGetNameSize(&key);
 	}
 
 
-	if (keyGetType(&key)<=RG_KEY_TYPE_BINARY) p=buffer=malloc(size+1);
+	if (keyGetType(&key)<=KEY_TYPE_BINARY) p=buffer=malloc(size+1);
 	else p=buffer=malloc(size);
 
 
@@ -694,24 +706,32 @@ int commandGet() {
 		if (cs) {
 			p+=sprintf(p,"# ");
 			p+=keyGetComment(&key,p,size-(p-buffer));
-			*p='\n'; p++;
+			*--p='\n'; p++;
 		}
 	}
-	if (argLong) {
+	if (argShell) {
+		p+=keyGetBaseName(&key,p,size-(p-buffer));
+		*--p='='; p++;
+		*p='\"'; p++;
+	} else if (argLong) {
 		if (argFullName) p+=keyGetFullName(&key,p,size-(p-buffer));
 		else p+=keyGetName(&key,p,size-(p-buffer));
-		*p='='; p++;
+		*--p='='; p++;
 	}
 
-	keyGetString(&key,p,size-(p-buffer));
-	if (keyGetType(&key)<=RG_KEY_TYPE_BINARY) {
+	p+=keyGetString(&key,p,size-(p-buffer));
+	if (argShell) {
+		*--p='\"'; p++;
+		*p=0;
+	}
+	if (keyGetType(&key)<=KEY_TYPE_BINARY) {
 		p+=keyGetDataSize(&key);
 		*p=0;
 	}
 
 	printf("%s\n",buffer);
 	free(buffer);
-	
+
 	return 0;
 }
 
@@ -748,13 +768,13 @@ int processNode(KeySet *ks, xmlTextReaderPtr reader) {
 		
 		buffer=xmlTextReaderGetAttribute(reader,"type");
 		if (!strcmp(buffer,"string"))
-			keySetType(newKey,RG_KEY_TYPE_STRING);
+			keySetType(newKey,KEY_TYPE_STRING);
 		else if (!strcmp(buffer,"binary"))
-			keySetType(newKey,RG_KEY_TYPE_BINARY);
+			keySetType(newKey,KEY_TYPE_BINARY);
 		else if (!strcmp(buffer,"link"))
-			keySetType(newKey,RG_KEY_TYPE_LINK);
+			keySetType(newKey,KEY_TYPE_LINK);
 		else if (!strcmp(buffer,"directory"))
-			keySetType(newKey,RG_KEY_TYPE_DIR);
+			keySetType(newKey,KEY_TYPE_DIR);
 		xmlFree(buffer); buffer=0;
 
 		
@@ -766,7 +786,7 @@ int processNode(KeySet *ks, xmlTextReaderPtr reader) {
 			struct passwd *pwd;
 			pwd=getpwnam(buffer);
 			if (pwd) keySetUID(newKey,pwd->pw_uid);
-			else fprintf(stderr,"rg: Ignoring invalid user %s.\n", buffer);
+			else fprintf(stderr,"kdb: Ignoring invalid user %s.\n", buffer);
 		}
 		xmlFree(buffer); buffer=0;
 
@@ -779,17 +799,17 @@ int processNode(KeySet *ks, xmlTextReaderPtr reader) {
 			struct group *grp;
 			grp=getgrnam(buffer);
 			if (grp) keySetGID(newKey,grp->gr_gid);
-			else fprintf(stderr,"rg: Ignoring invalid group %s.\n",buffer);
+			else fprintf(stderr,"kdb: Ignoring invalid group %s.\n",buffer);
 		}
 		xmlFree(buffer); buffer=0;
 
-	
+
 		/* Parse permissions */
 		buffer=xmlTextReaderGetAttribute(reader,"mode");
 		if (buffer) keySetAccess(newKey,strtol(buffer,0,8));
 		xmlFree(buffer); buffer=0;
-		
-		
+
+
 		/* Parse everything else */
 		while (!end) {
 			xmlFree(nodeName); nodeName=0;
@@ -803,13 +823,13 @@ int processNode(KeySet *ks, xmlTextReaderPtr reader) {
 				buffer=xmlTextReaderValue(reader);
 				if (buffer) {
 					switch (keyGetType(newKey)) {
-						case RG_KEY_TYPE_STRING:
+						case KEY_TYPE_STRING:
 							keySetString(newKey,buffer);
 							break;
-						case RG_KEY_TYPE_BINARY:
+						case KEY_TYPE_BINARY:
 							keySetBinary(newKey,buffer,strlen(buffer)+1);
 							break;
-						case RG_KEY_TYPE_LINK:
+						case KEY_TYPE_LINK:
 							keySetLink(newKey,buffer);
 							break;
 					}
@@ -819,18 +839,18 @@ int processNode(KeySet *ks, xmlTextReaderPtr reader) {
 					xmlTextReaderNodeType(reader)==15) continue;
 				xmlTextReaderRead(reader);
 				buffer=xmlTextReaderValue(reader);
-				
+
 				keySetComment(newKey,buffer);
 			} else if (!strcmp(nodeName,"key")) {
 				if (xmlTextReaderNodeType(reader)==15) end=1;
 			}
-			
+
 			xmlFree(buffer); buffer=0;
 		}
 	}
-	
+
 	if (nodeName) xmlFree(nodeName),nodeName=0;
-	
+
 	if (newKey) ksAppend(ks,newKey);
 	return 0;
 }
@@ -846,7 +866,7 @@ int processNode(KeySet *ks, xmlTextReaderPtr reader) {
  */
 int ksFromXMLReader(KeySet *ks,xmlTextReaderPtr reader) {
 	int ret;
-	
+
 	ret = xmlTextReaderRead(reader); /* <keyset> */
 	ret = xmlTextReaderRead(reader); /* first <key> */
 	while (ret == 1) {
@@ -854,33 +874,10 @@ int ksFromXMLReader(KeySet *ks,xmlTextReaderPtr reader) {
 		ret = xmlTextReaderRead(reader);
 	}
 	xmlFreeTextReader(reader);
-	if (ret) fprintf(stderr,"rg: Failed to parse XML input\n");
-	
+	if (ret) fprintf(stderr,"kdb: Failed to parse XML input\n");
+
 	return ret;
 }
-
-
-
-
-
-
-
-
-int ksFromXML(KeySet *ks,int fd) {
-	xmlTextReaderPtr reader=0;
-	int ret;
-
-	reader=xmlReaderForFd(fd,"file:/tmp/imp.xml",0,0); /* a complete XML document is expected */
-	if (reader) {
-		ret=ksFromXMLReader(ks,reader);
-	} else {
-		printf("rg: Unable to open file descriptor %d for XML reading\n", fd);
-		return 1;
-	}
-	return ret;
-}
-
-
 
 
 
@@ -898,11 +895,64 @@ int ksFromXMLfile(KeySet *ks,char *filename) {
 	if (reader) {
 		ret=ksFromXMLReader(ks,reader);
 	} else {
-		printf("rg: Unable to open %s for XML reading\n", filename);
+		perror("kdb");
 		return 1;
 	}
 	return ret;
 }
+
+
+
+
+
+
+int ksFromXML(KeySet *ks,int fd) {
+	/* Support for old XML library, that doesn't have xmlReaderForFd() */
+	char filename[]="/var/tmp/rgeditXXXXXX";
+	FILE *xmlfile=0;
+	xmlfile=fdopen(mkstemp(filename),"rw+");
+	while (! feof(xmlfile)) {
+		char buffer[1000];
+		ssize_t readed, writen;
+
+		readed=read(fd,buffer,sizeof(buffer));
+		if (readed<0) {
+			perror("kdb");
+			fclose(xmlfile);
+			remove(filename);
+			return 1;
+		}
+
+		writen=write(fileno(xmlfile),buffer,readed);
+		if (writen<0) {
+			perror("kdb");
+			fclose(xmlfile);
+			remove(filename);
+			return 1;
+		}
+	}
+	fclose(xmlfile);
+	return ksFromXMLfile(ks,filename);
+	/* end of support */
+
+	/* This code requires a newer version of XML library. Don't use it yet
+	// a complete XML document is expected
+	xmlTextReaderPtr reader=0;
+	int ret;
+	reader=xmlReaderForFd(fd,"file:/tmp/imp.xml",0,0);
+	if (reader) {
+		ret=ksFromXMLReader(ks,reader);
+	} else {
+		printf("kdb: Unable to open file descriptor %d for XML reading\n", fd);
+		return 1;
+	}
+	return ret;
+	// end of newer code */
+}
+
+
+
+
 
 
 
@@ -918,7 +968,7 @@ int ksFromXMLfile(KeySet *ks,char *filename) {
 
 /**
  * Opens an editor to edit an XML representation of the keys.
- * This is one of the most complex commands of the rg program.
+ * This is one of the most complex commands of the kdb program.
  * Is will
  * -# retrieve the desired keys
  * -# put them as inside an editor in an XML format to let the user edit
@@ -932,19 +982,19 @@ int ksFromXMLfile(KeySet *ks,char *filename) {
  *
  * @par Example:
  * @code
- * bash$ EDITOR=kedit rg edit -R user/env # edit with kedit
- * bash# rg edit -R system/sw/MyApp       # defaults to vi editor
+ * bash$ EDITOR=kedit kdb edit -R user/env # edit with kedit
+ * bash# kdb edit -R system/sw/MyApp       # defaults to vi editor
  * @endcode
  *
  * @see keyCompare()
  * @see ksCompare()
- * @see registryGetChildKeys()
+ * @see kdbGetChildKeys()
  * @see ksToStream()
- * @see registrySetKeys()
+ * @see kdbSetKeys()
  * @param argKeyName the parent key name (and children) that will be edited
  * @param argRecursive whether to act recursivelly or not
  * @param argAll whether to edit inactive keys or not
- * @param EDITOR environment var that defines editor to use, or \c vi
+ * @param EDITOR environment var that defines editor to use, or @p vi
  */
 int commandEdit() {
 	KeySet ks;
@@ -956,16 +1006,16 @@ int commandEdit() {
 	FILE *xmlfile=0;
 
 	ksInit(&ks);
-	
-	registryGetChildKeys(argKeyName,&ks, RG_O_SORT | RG_O_NFOLLOWLINK |
-		(argAll?RG_O_INACTIVE:0) | (argRecursive?RG_O_RECURSIVE:0));
-		
+
+	kdbGetChildKeys(argKeyName,&ks, KDB_O_SORT | KDB_O_NFOLLOWLINK |
+		(argAll?KDB_O_INACTIVE:0) | (argRecursive?KDB_O_RECURSIVE:0));
+
 	if (!ks.size) {
 		/* Maybe the user parameter is not a parent key, but a single key */
 		current=malloc(sizeof(Key));
 		keyInit(current);
 		keySetName(current,argKeyName);
-		if (registryGetKey(current)) {
+		if (kdbGetKey(current)) {
 			/* Failed. Cleanup */
 			keyClose(current);
 			free(current);
@@ -984,15 +1034,15 @@ int commandEdit() {
 		}
 	}
 */
-	
+
 	xmlfile=fdopen(mkstemp(filename),"rw+");
-	
-	ksToStream(&ks,xmlfile,RG_O_XMLHEADERS);
+
+	ksToStream(&ks,xmlfile,KDB_O_XMLHEADERS);
 	fclose(xmlfile);
-	
+
 	sprintf(command,"[ -z \"$EDITOR\" ] && EDITOR=vi; $EDITOR %s",filename);
 	system(command);
-	
+
 	ksInit(&toRemove);
 	ksInit(&ksEdited);
 
@@ -1005,14 +1055,14 @@ int commandEdit() {
 
 	ksCompare(&ks,&ksEdited,&toRemove);
 
-	registrySetKeys(&ks);
+	kdbSetKeys(&ks);
 
 	ksRewind(&toRemove);
 	while ((current=ksNext(&toRemove))) {
 		char keyName[800];
 
 		keyGetFullName(current,keyName,sizeof(keyName));
-		registryRemove(keyName);
+		kdbRemove(keyName);
 	}
 
 	return 0;
@@ -1022,17 +1072,17 @@ int commandEdit() {
 
 
 /**
- * Business logic behind the 'rg import' command.
+ * Business logic behind the 'kdb import' command.
  * Import an XML file (or standard input) into the key database.
  * This is usefull to import full programs keys, or restore backups.
  *
  * @par Example:
  * @code
- * bash$ rg import myAppDefaultKeys.xml
- * bash$ generateKeys | rg import
+ * bash$ kdb import myAppDefaultKeys.xml
+ * bash$ generateKeys | kdb import
  * @endcode
  * 
- * @see registrySetKeys()
+ * @see kdbSetKeys()
  * @see commandSave()
  */
 int commandImport() {
@@ -1044,7 +1094,7 @@ int commandImport() {
 	if (argKeyName) ksFromXMLfile(&ks,argKeyName);
 	else ksFromXML(&ks,fileno(stdin) /* more elegant then just '0' */);
 
-	return registrySetKeys(&ks);
+	return kdbSetKeys(&ks);
 }
 
 
@@ -1052,16 +1102,16 @@ int commandImport() {
 
 
 /**
- * Business logic behind the 'rg export' command.
+ * Business logic behind the 'kdb export' command.
  * Export a set of keys to an XML format. Usefull to make backups or copy
  * keys to other machine or user.
- * Equivalent to 'rg ls -xRv base/key/name'
+ * Equivalent to 'kdb ls -xRv base/key/name'
  *
  * @par Example:
  * @code
- * bash# rg export system > systemConfigurationBackup.xml
- * bash# rg export system/sw/MyApp > myAppConfiguration.xml
- * bash$ rg export system/sw/MyApp | sed -e 's|system/sw|user/sw|g' | rg import
+ * bash# kdb export system > systemConfigurationBackup.xml
+ * bash# kdb export system/sw/MyApp > myAppConfiguration.xml
+ * bash$ kdb export system/sw/MyApp | sed -e 's|system/sw|user/sw|g' | kdb import
  * @endcode
  *
  * @see commandList()
@@ -1069,6 +1119,10 @@ int commandImport() {
  *
  */
 int commandExport() {
+
+	/* Equivalent to 'kdb ls -xRv
+	   So lets mimic and reuse code */
+
 	argSort=1;
 	argRecursive=1;
 	argAll=1;
@@ -1076,26 +1130,27 @@ int commandExport() {
 	argShow=1;
 	argValue=1;
 	argFullName=1;
-	
-	/* Equivalent to 'rg ls -xRv*/
-	
+
+	/* force UTF-8 */
+	setlocale(LC_ALL,"en_US.UTF-8");
+
 	return commandList();
 }
 
 
 /**
- * Business logic behind 'rg mon' command.
+ * Business logic behind 'kdb mon' command.
  *
  * Will block your command line until some change happens to the
  * interested key.
  *
  * @par Example:
  * @code
- * bash$ rg mon system/sw/MyApp/someKey
+ * bash$ kdb mon system/sw/MyApp/someKey
  * @endcode
  *
- * @see registryMonitorKey()
- * @see registryMonitorKeys()
+ * @see kdbMonitorKey()
+ * @see kdbMonitorKeys()
  */
 int commandMonitor() {
 	Key toMonitor;
@@ -1105,15 +1160,15 @@ int commandMonitor() {
 	
 	keyInit(&toMonitor);
 	keySetName(&toMonitor,argKeyName);
-	registryGetKey(&toMonitor);
+	kdbGetKey(&toMonitor);
 	
-	diff=registryMonitorKey(
+	diff=kdbMonitorKey(
 		&toMonitor,          /* key to monitor */
-		RG_KEY_FLAG_HASDATA, /* particular info from the key we are interested */
+		KEY_FLAG_HASDATA,    /* particular info from the key we are interested */
 		0,                   /* how many times to poll. 0 = ad-infinitum */
 		500                  /* usecs between polls. 0 defaults to 1 second */);
-		
-	/* 
+
+	/*
 	 * Since in our case we'll hang completelly until we get a key's
 	 * value change, we don't have to check diff.
 	 * So if method returned, the value has changed, and toMonitor has it.
@@ -1147,9 +1202,9 @@ int main(int argc, char **argv) {
 
 	command=parseCommandLine(argc,argv);
 
-	registryOpen();
+	kdbOpen();
 	ret=doCommand(command);
-	registryClose();
+	kdbClose();
 
 	return ret;
 }

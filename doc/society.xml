@@ -26,5 +26,5 @@ $LastChangedBy$
 	
 	<para>Because of the Bazar-way of developing Open Source Software, each software project still dodn't agree in a common way to store configurations, so this part of the software is still like 20 years ago: a human-readable text file format that each project invented for itself. This makes them relatively easy to be managed by human beings, but not sociable at all in this hipotetical software society. It is programatically difficult to make different software have "social relations" in the current way configurations are handled. An application's configuration is its personality.</para>
 	
-	<important><para>A registry system brings little or no additional value for a software that is using it to store its configurations/state. But it is vital to make it more "easy-going" in a society of softwares. This will benefit the society as whole, and consequently all of its members.</para></important>
+	<important><para>A key-value pair mechanism brings little or no additional value for a software that is using it to store its configurations/state. But it is vital to make it more "easy-going" in a society of softwares. This will benefit the society as a whole, and consequently all of its members.</para></important>
 </section>

@@ -2,14 +2,14 @@
 
 To compile this example:
 
-	$ cc -l registry -o example example.c
+	$ cc -l kdb -o example example.c
 
 
 **********************************************************/
 
 
 #include <stdio.h>
-#include <registry.h>
+#include <kdb.h>
 
 #define MY_APP_ROOT   "system/sw/MyApp"
 
@@ -18,14 +18,14 @@ To compile this example:
 int readConfig(KeySet *myConfig) {
 	int rc;
 
-	/* Open the registry */
-	registryOpen();
+	/* Open the kdb */
+	kdbOpen();
 	
 	/* Get all value keys for this application */
-	rc=registryGetChildKeys(MY_APP_ROOT, myConfig, RG_O_RECURSIVE);
+	rc=kdbGetChildKeys(MY_APP_ROOT, myConfig, RG_O_RECURSIVE);
 	
-	/* Close the Registry */
-	registryClose();
+	/* Close the Key database */
+	kdbClose();
 	
 	return rc;
 }
@@ -60,9 +60,9 @@ void changeConfig(KeySet *myConfig) {
 
 /* Save the modified keys */
 int saveConfig(KeySet *myConfig) {
-	registryOpen();
-	registrySetKeys(myConfig);
-	registryClose();
+	kdbOpen();
+	kdbSetKeys(myConfig);
+	kdbClose();
 }
 
 

@@ -1,6 +1,6 @@
 <!--
 
-registry.dtd - An XML way to represent Registry's keys/values
+elektra.dtd - An XML way to represent Elektra's keys/values
 
 
 Copyright (c) 2004 Avi Alkalay
@@ -31,8 +31,8 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 The doctype with FPI for this DTD is:
 
-<!DOCTYPE keyset PUBLIC "-//Avi Alkalay//DTD Registry 0.1.0//EN"
-                   "http://registry.sf.net/dtd/registry.dtd">
+<!DOCTYPE keyset PUBLIC "-//Avi Alkalay//DTD Elektra 0.1.0//EN"
+                   "http://registry.sf.net/dtd/elektra.dtd">
 
 -->
 

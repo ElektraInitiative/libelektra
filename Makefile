@@ -2,7 +2,7 @@
 # $Id$
 # $LastChangedBy$
 
-
+NAME=elektra
 CC=gcc -O3 -g -Wcomment -Wformat -Wimplicit-int -Wimplicit-function-declaration -Wparentheses -Wreturn-type -Wunused -Wuninitialized
 XMLINCLUDES=`xml2-config --cflags`
 XMLLIBS=`xml2-config --libs`
@@ -19,109 +19,110 @@ DIRS=doc dtd
 
 
 
-all: libregistry.a libregistry.so rg
+all: libkdb.a libkdb.so libregistry.so kdb
 	for x in ${DIRS}; do (cd "$$x"; make $@); done
 
-	
-	
-	
+
+
+
 clean:
-	-rm *~ *.o core.* libregistry.so libregistry.a rg registry.spec
+	-rm core* *~ *.o *.so *.a kdb elektra.spec localeinfo
 	-find . -name "*~" | xargs rm
 	for x in ${DIRS}; do (cd "$$x"; make $@); done
 
-	
-	
+
+
+libregistry.so: registrystub.o libkdb.so
+	${CC} -shared -fpic -o $@ libkdb.so registrystub.o
+
+
+libkdb.so: localkdb.o key.o
+	${CC} -shared -fpic -o $@ localkdb.o key.o
 
 
 
-libregistry.so: localregistry.o key.o
-	${CC} -shared -fpic -o $@ localregistry.o key.o
-
-
-
-libregistry.a: localregistry.o key.o
-	ar q $@ localregistry.o key.o
+libkdb.a: localkdb.o key.o
+	ar q $@ localkdb.o key.o
 
 
 
 
-key.o: key.c registry.h registryprivate.h
+key.o: key.c kdb.h kdbprivate.h
 	${CC} -g -fpic -o $@ -c $<
 
 
 
 
-	
-localregistry.o: localregistry.c registry.h registryprivate.h
+
+localkdb.o: localkdb.c kdb.h kdbprivate.h
 	${CC} -g -fpic -c $<
 
 
-	
-	
-rg.o: rg.c registry.h registryprivate.h
+
+
+kdb.o: kdb.c kdb.h kdbprivate.h
 	${CC} -g ${XMLINCLUDES} -fpic -c $<
 
 
 
-rg: rg.o libregistry.so
-	${CC} -g -L. ${XMLLIBS} -lregistry -o $@ $<
-	# ld -shared -lc -lregistry -static -lxml2 -lz -o $@ $<
+kdb: kdb.o libkdb.so
+	${CC} -g -L. ${XMLLIBS} -lkdb -o $@ $<
+	# ld -shared -lc -lkdb -static -lxml2 -lz -o $@ $<
 
 
 commit: clean
 	cd ..; \
-	svn ci registry
+	svn ci elektra
 
 
-
-
-	
-dist: clean registry.spec
+dist: clean elektra.spec
 	# svn export wont work here...
-	make -C doc man   # leave mans already generated
+	make -C doc docbookman   # leave mans already generated
 	DIR=`basename \`pwd\``;\
 	PACK=`cat VERSION`;\
-	PACK=registry-$$PACK;\
+	PACK=${NAME}-$$PACK;\
 	cd ..;\
 	find $$DIR/ | grep -v .svn | sort | cpio -H tar -o | gzip --best -c > $$PACK.tar.gz
 
 
 
 
-	
-	
+
+
 rpm: dist
 	VER=`cat VERSION`;\
-	rpmbuild -ta ../registry-$$VER.tar.gz
+	rpmbuild -ta ../${NAME}-$$VER.tar.gz
 
-	
-	
-	
-registry.spec: registry.spec.in
+
+
+
+elektra.spec: elektra.spec.in
 	VERSION=`cat VERSION` ;\
-	sed -e "s/_VERSION_/$$VERSION/g" < registry.spec.in > registry.spec ;\
-	cat ChangeLog >> registry.spec
+	sed -e "s/_VERSION_/$$VERSION/g" < $< > $@ ;\
+	cat ChangeLog >> $@
 
 
-	
-	
+
+
 install: all
 	for x in ${DIRS}; do (cd "$$x"; make DTDVERSION=${DTDVERSION} $@); done
-	strip libregistry.so
+	strip libkdb.so
+	strip libregistry.so  # remove me in the future
 	[ -d "${DESTDIR}/lib" ] || mkdir -p ${DESTDIR}/lib
 	[ -d "${DESTDIR}/usr/lib" ] || mkdir -p ${DESTDIR}/usr/lib
 	[ -d "${DESTDIR}/bin" ] || mkdir -p ${DESTDIR}/bin
 	[ -d "${DESTDIR}/usr/include" ] || mkdir -p ${DESTDIR}/usr/include
 	[ -d "${DESTDIR}/etc/profile.d" ] || mkdir -p ${DESTDIR}/etc/profile.d
-	[ -d "${DESTDIR}/usr/share/doc/registry" ] || mkdir -p ${DESTDIR}/usr/share/doc/registry
-	[ -d "${DESTDIR}/usr/share/doc/registry-devel" ] || mkdir -p ${DESTDIR}/usr/share/doc/registry-devel
-	cp libregistry.so ${DESTDIR}/lib
-	cp libregistry.a ${DESTDIR}/usr/lib
-	strip rg
-	cp rg ${DESTDIR}/bin
-	cp registry.h ${DESTDIR}/usr/include
-	cp scripts/rgsetenv ${DESTDIR}/etc/profile.d/rgsetenv.sh
-	cp example/*-convert ${DESTDIR}/usr/share/doc/registry
-	cp rg.c example/example.c ${DESTDIR}/usr/share/doc/registry-devel
-	
+	[ -d "${DESTDIR}/usr/share/doc/${NAME}" ] || mkdir -p ${DESTDIR}/usr/share/doc/${NAME}
+	[ -d "${DESTDIR}/usr/share/doc/${NAME}-devel" ] || mkdir -p ${DESTDIR}/usr/share/doc/${NAME}-devel
+	cp libkdb.so ${DESTDIR}/lib
+	cp libkdb.a ${DESTDIR}/usr/lib
+	cp libregistry.so ${DESTDIR}/lib # remove me in the future
+	strip kdb
+	cp kdb ${DESTDIR}/bin
+	cp kdb.h ${DESTDIR}/usr/include
+	cp scripts/elektraenv ${DESTDIR}/etc/profile.d/elektraenv.sh
+	chmod a+x example/*-convert
+	cp example/*-convert ${DESTDIR}/usr/share/doc/${NAME}
+	cp kdb.c example/example.c ${DESTDIR}/usr/share/doc/${NAME}-devel
+
