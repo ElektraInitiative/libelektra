@@ -51,6 +51,7 @@ $LastChangedBy$
 
 /* FIXME: remove libXML dependencies for kdb command */
 #include <libxml/xmlreader.h>
+#include <libxml/xmlschemas.h>
 
 
 #define CMD_GET       1
@@ -1062,13 +1063,70 @@ int ksFromXMLfile(KeySet *ks,char *filename) {
 	xmlTextReaderPtr reader;
 	int ret;
 
-	reader = xmlNewTextReaderFilename(filename);
-	if (reader) {
-		ret=ksFromXMLReader(ks,reader);
-	} else {
-		perror("kdb");
+	
+	xmlSchemaValidCtxtPtr ctxt;
+	xmlSchemaPtr wxschemas = NULL;
+	xmlSchemaParserCtxtPtr ctxt2;
+	xmlDocPtr doc;
+
+	doc = xmlParseFile(filename);
+	if (doc==NULL) return 1;
+
+	//TODO : get the schema path from with elektra api. kdb is like any other program, its config should go into elektra...
+	ctxt2 = xmlSchemaNewParserCtxt("/usr/share/sgml/elektra-0.1.0/elektra.xsd");
+	
+	if (ctxt2==NULL) 
+		{
+		xmlFreeDoc(doc);
 		return 1;
-	}
+		}
+	
+	xmlSchemaSetParserErrors(ctxt2,
+		(xmlSchemaValidityErrorFunc) fprintf,
+		(xmlSchemaValidityWarningFunc) fprintf,
+		stderr);
+	wxschemas = xmlSchemaParse(ctxt2);
+	
+	if (wxschemas==NULL) 
+		{
+		xmlSchemaFreeParserCtxt(ctxt2);
+		xmlFreeDoc(doc);
+		return 1;
+		}
+	
+	// try to validate the doc against the xml schema
+	ctxt = xmlSchemaNewValidCtxt(wxschemas);
+	xmlSchemaSetValidErrors(ctxt,
+		(xmlSchemaValidityErrorFunc) fprintf,
+		(xmlSchemaValidityWarningFunc) fprintf,
+		stderr);
+	
+	if (ctxt==NULL)
+		{
+		xmlSchemaFree(wxschemas);
+		xmlSchemaFreeParserCtxt(ctxt2);
+		xmlFreeDoc(doc);
+		return 1;
+		}
+		
+	ret = xmlSchemaValidateDoc(ctxt, doc);
+	xmlSchemaFreeValidCtxt(ctxt);
+	xmlSchemaFree(wxschemas);
+	xmlSchemaFreeParserCtxt(ctxt2);
+	
+	
+	// if the validation is successful
+	if (!ret)
+		{
+		reader=xmlReaderWalker(doc);
+		if (reader) {
+			ret=ksFromXMLReader(ks,reader);
+		} else {
+			perror("kdb");
+			return 1;
+		}
+		}
+	xmlFreeDoc(doc);
 	return ret;
 }
 
@@ -1176,6 +1234,7 @@ int commandEdit() {
 	char filename[]="/var/tmp/kdbeditXXXXXX";
 	char command[300];
 	FILE *xmlfile=0;
+	char choice[5];
 
 	ks=ksNew();
 
@@ -1210,6 +1269,8 @@ int commandEdit() {
 		(argFullName?(KDB_O_FULLNAME | KDB_O_FULLUGID):0));
 	fclose(xmlfile);
 
+	do 
+		{
 	/* execute the editor and wait for it to finish */
 	sprintf(command,"[ -z \"$EDITOR\" ] && EDITOR=vi; $EDITOR %s",filename);
 	system(command);
@@ -1221,53 +1282,69 @@ int commandEdit() {
 	 * It is implemented in and for this program only.
 	 * It is pretty reusable code, though.
 	 */
-	ksFromXMLfile(ksEdited,filename);
-	remove(filename);
-
-	ksCompare(ks,ksEdited,toRemove);
-
-	/* Discard ksEdited because there is nothing else here
-	 * after keyCompare() */
-	ksDel(ksEdited);
-	
-	/* Commit changed keys */
-	ksRewind(ks);
-	while ((ret=kdbSetKeys(ks))) {
-		/* We got an error. Warn user. */
-		Key *problem;
-		char error[500];
-		char keyname[300]="";
-		
-		problem=ksCurrent(ks);
-		if (problem) keyGetFullName(problem,keyname,sizeof(keyname));
-		sprintf(error,"kdb edit: while setting/updating %s", keyname);
-		perror(error);
-		
-		/* And try to set keys again starting from the next key,
-		 * unless we reached the end of the KeySet */
-		if (ksNext(ks) == 0) break;
+	 ret=ksFromXMLfile(ksEdited,filename);
+	if (ret!=0)
+		{
+		printf("kdb cannot import this file, because it is not valid !\n");
+		strcpy(choice,"");
+		while (choice[0]!='E' && choice[0]!='C')
+			{
+			printf("Do you want to edit it again or to cancel ? (E/C) : ");
+			fgets(choice,4, stdin );
+			}
+		}
 	}
+	while (ret!=0 && choice[0]=='E');
+	remove(filename);
 	
-	ksDel(ks); /* Finished with this KeySet */
+	if (ret==0)
+		{
 
-	/* Remove removed keys */
-	ksRewind(toRemove);
-	while ((current=ksNext(toRemove))) {
-		char keyName[800];
-
-		keyGetFullName(current,keyName,sizeof(keyName));
-		ret=kdbRemove(keyName);
-		if (ret != 0) {
+		ksCompare(ks,ksEdited,toRemove);
+	
+		/* Discard ksEdited because there is nothing else here
+		* after keyCompare() */
+		ksDel(ksEdited);
+		
+		/* Commit changed keys */
+		ksRewind(ks);
+		while ((ret=kdbSetKeys(ks))) {
+			/* We got an error. Warn user. */
+			Key *problem;
 			char error[500];
 			char keyname[300]="";
 			
-			sprintf(error,"kdb edit: while removing %s",keyname);
+			problem=ksCurrent(ks);
+			if (problem) keyGetFullName(problem,keyname,sizeof(keyname));
+			sprintf(error,"kdb edit: while setting/updating %s", keyname);
 			perror(error);
+			
+			/* And try to set keys again starting from the next key,
+			* unless we reached the end of the KeySet */
+			if (ksNext(ks) == 0) break;
 		}
-	}
-
-	/* Finished with this KeySet too */
-	ksDel(toRemove);
+		
+		ksDel(ks); /* Finished with this KeySet */
+	
+		/* Remove removed keys */
+		ksRewind(toRemove);
+		while ((current=ksNext(toRemove))) {
+			char keyName[800];
+	
+			keyGetFullName(current,keyName,sizeof(keyName));
+			ret=kdbRemove(keyName);
+			if (ret != 0) {
+				char error[500];
+				char keyname[300]="";
+				
+				sprintf(error,"kdb edit: while removing %s",keyname);
+				perror(error);
+			}
+		}
+	
+		/* Finished with this KeySet too */
+		ksDel(toRemove);
+		}
 	
 	return 0;
 }
