@@ -294,6 +294,7 @@ int IniGetKey (FILE * fc, Key * key, char * root)
 	char * buffer_key;
 	char * buffer_comment;
 	char * buffer_name;
+	int rc;
 	
 	int i;
 	int state = STATE_KEY;	// start reading the key
@@ -414,23 +415,29 @@ int IniGetKey (FILE * fc, Key * key, char * root)
 	strcat (buffer_name, root);
 	strcat (buffer_name, "/");
 	strcat (buffer_name, buffer_key);
-	keySetName (key, buffer_name);
-	fprintf (stderr, "Name set to %s\n", buffer_name);
+	rc = keySetName (key, buffer_name);
+	if (rc==0) {
+		fprintf (stderr, "Unable to set name\n");
+	} else	fprintf (stderr, "Name set to %s\n", buffer_name);
 	free (buffer_name);
 	
 	/*if (key->data) free (key->data);	
 	key->data = malloc (v+1);
 	strcpy (key->data, buffer_value);
 	key->dataSize = v+1;*/
-	keySetString (key, buffer_value);
-	fprintf (stderr, "Value set to %s\n", buffer_value);
+	rc = keySetString (key, buffer_value);
+	if (rc==0) {
+		fprintf (stderr, "Unable to set value\n");
+	} else fprintf (stderr, "Value set to %s\n", buffer_value);
 	
 	/*if (key->comment) free (key->comment);
 	key->comment = malloc (c+1);
 	strcpy (key->comment, buffer_comment);
 	key->commentSize = c+1;*/
-	keySetComment (key, buffer_comment);
-	fprintf (stderr, "Comment set to %s\n", buffer_comment);
+	rc = keySetComment (key, buffer_comment);
+	if (rc==0) {
+		fprintf (stderr, "Unable to set comment\n");
+	} else fprintf (stderr, "Comment set to %s\n", buffer_comment);
 	
 	/*key->type = KEY_TYPE_STRING;
 	key->recordSize = v+c+2;*/
@@ -561,14 +568,15 @@ ssize_t kdbGetKeys (char * keyFileName, char * keyRoot, KeySet * returned)
 	
 	fc = fdopen (fd,"r");
 
-	key = keyNew (0);
+	key = keyNew (KEY_SWITCH_END);
 
 	fprintf (stderr, "Call IniGetKey(%s)\n", keyRoot);
 	while ((pos=IniGetKey (fc, key, keyRoot)) == 0)
 	{
+		fprintf (stderr, "Append key\n");
 		ksAppend (returned,key);
 
-		key = keyNew (0);
+		key = keyNew (KEY_SWITCH_END);
 	}
 	
 	keyDel (key); // delete the not used key left
@@ -649,6 +657,8 @@ ssize_t kdbGetKeyChildKeys_ini(const Key * key, KeySet *returned, unsigned long 
 	closedir (dir);
 
 	free (keyName);
+
+	fprintf (stderr, "Leaving (ret: %d)\n", returned->size);
 	
 	return returned->size; /* success */
 }

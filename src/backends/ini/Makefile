@@ -25,7 +25,6 @@ CC=gcc -g ${OPTIMIZATIONS} -Wall
 all: libkdb-${BACKENDNAME}.so
 
 
-
 libkdb-${BACKENDNAME}.so: ${SOURCES:.c=.o}
 	${CC} -shared -fpic -o $@ $<
 
@@ -34,8 +33,6 @@ libkdb-${BACKENDNAME}.so: ${SOURCES:.c=.o}
 
 ${BACKENDNAME}.o: ${BACKENDNAME}.c
 	${CC} -I../.. -fpic -o $@ -c $<
-
-
 
 
 install: all
