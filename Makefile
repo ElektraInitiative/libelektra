@@ -28,7 +28,7 @@ DIRS=src doc dtd
 
 
 all:
-	for x in ${DIRS}; do (cd "$$x"; gmake \
+	for x in ${DIRS}; do (cd "$$x"; $(MAKE) \
 		OPTIMIZATIONS="${OPTIMIZATIONS}" \
 		DTDVERSION=${DTDVERSION} \
 		DOCDIR=${DOCDIR} MANDIR=${MANDIR} SGMLDIR=${SGMLDIR} \
@@ -43,10 +43,10 @@ cleanhere:
 
 
 clean: cleanhere
-	for x in ${DIRS}; do (cd "$$x"; make $@); done
+	for x in ${DIRS}; do (cd "$$x"; $(MAKE) $@); done
 
 distclean: cleanhere
-	for x in ${DIRS}; do (cd "$$x"; make $@); done
+	for x in ${DIRS}; do (cd "$$x"; $(MAKE) $@); done
 
 
 commit: clean
@@ -60,7 +60,7 @@ vtag:
 
 dist: distclean elektra.spec
 	# svn export wont work here...
-	make -C doc docbookman   # leave mans already generated
+	$(MAKE) -C doc docbookman   # leave mans already generated
 	DIR=`basename \`pwd\``;\
 	PACK=`cat VERSION`;\
 	PACK=${NAME}-$$PACK;\
@@ -104,7 +104,7 @@ install: all
 	[ -d "${DESTDIR}${CONFDIR}/profile.d" ] || mkdir -p ${DESTDIR}${CONFDIR}/profile.d
 	[ -d "${DESTDIR}${DOCDIR}/${NAME}" ] || mkdir -p ${DESTDIR}${DOCDIR}/${NAME}
 	[ -d "${DESTDIR}${DOCDIR}/${NAME}-devel" ] || mkdir -p ${DESTDIR}${DOCDIR}/${NAME}-devel
-	for x in ${DIRS}; do (cd "$$x"; gmake DTDVERSION=${DTDVERSION} \
+	for x in ${DIRS}; do (cd "$$x"; $(MAKE) DTDVERSION=${DTDVERSION} \
 		DOCDIR=${DOCDIR} MANDIR=${MANDIR} SGMLDIR=${SGMLDIR} \
 		BINDIR=${BINDIR} LIBDIR=${LIBDIR} \
 		UBINDIR=${UBINDIR} ULIBDIR=${ULIBDIR} \
