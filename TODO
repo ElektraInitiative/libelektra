@@ -1,5 +1,5 @@
 TO PROJECT
-- Patches to gconf, KConfig, X.org, modprobe
+- Patches to gconf, KConfig, modprobe
 
 TO PUBLISH
 - freedesktop.org
@@ -8,11 +8,12 @@ TO PUBLISH
 - brave GNU World: column@brave-gnu-world.org
 
 TO CODE
-- registryLink must create directories recursively
+- Perl binding
+- Networking server through Apache and a Perl CGI script
+- Network (HTTP) based backend
+- kdbLink must create directories recursively
 - kdb ls must show links
-- Support for moving/renaming keys. Something like kdbMove().
 - kdb to support recursive removing
 - Syslog logging
 - Handle special keys: named pipe
-- Better KeySet manipulation and gathering
 - Scripts for other /etc files conversion

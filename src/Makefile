@@ -33,7 +33,7 @@ DEFAULT_BACKEND=filesys
 
 
 
-all: libkdb.a libkdb.so libregistry.so kdb kdbfuture.h
+all: libkdb.a libkdb.so libregistry.so libkdbtools.so kdb kdbfuture.h
 	for x in ${BACKENDS}; do (cd "backends/$$x"; $(MAKE) \
 		OPTIMIZATIONS="${OPTIMIZATIONS}" \
 		DTDVERSION=${DTDVERSION} \
@@ -56,36 +56,52 @@ libregistry.so: registrystub.o libkdb.so
 	${CC} -shared -fpic -o $@ libkdb.so.$(LIBVERSION) registrystub.o
 
 
-libkdb.so: localkdb.o key.o
-	${CC} -shared -fpic -ldl -Wl,-soname,$@.$(LIBVERSION) -o $@.$(LIBVERSION) localkdb.o key.o
+libkdb.so: libkdb.o key.o
+	${CC} -shared -fpic -ldl -Wl,-soname,$@.$(LIBVERSION) -o $@.$(LIBVERSION) libkdb.o key.o
 	ln -sf $@.$(LIBVERSION) $@
 
 
 
-libkdb.a: localkdb.o key.o
-	ar q $@ localkdb.o key.o
+libkdb.a: libkdb.o key.o
+	ar q $@ libkdb.o key.o
+
+
+
+libkdbtools.so: kdbtools.o
+	${CC} -shared -fpic ${XMLLIBS} -ldl -Wl,-soname,$@.$(LIBVERSION) -o $@.$(LIBVERSION) kdbtools.o
+	ln -sf $@.$(LIBVERSION) $@
+
+
+
+libkdbtools.a: kdbtools.o
+	ar q $@ kdbtools.o
 
 
 
 
+	
+	
 key.o: key.c kdb.h kdbprivate.h
 
 
 
 
 
-localkdb.o: localkdb.c kdb.h kdbprivate.h
+libkdb.o: libkdb.c kdb.h kdbprivate.h
 
 
-
-
-kdb.o: kdb.c kdb.h kdbprivate.h
+kdbtools.o: kdbtools.c kdbtools.h kdb.h
 	${CC} ${XMLINCLUDES} -fpic -c $<
 
 
 
+kdb.o: kdb.c kdb.h kdbprivate.h
+#	${CC} ${XMLINCLUDES} -fpic -c $<
+
+
+
 kdb: kdb.o libkdb.so
-	${CC} -DKDB_SCHEMA_PATH="${SGMLDIR}/elektra.xsd" -Wl,-rpath,. -L. ${XMLLIBS} -lkdb -o $@ $<
+	${CC} -DKDB_SCHEMA_PATH="${SGMLDIR}/elektra.xsd" -Wl,-rpath,. -L. -lkdb -o $@ $<
 
 
 kdbfuture.h: kdb.h
@@ -98,10 +114,11 @@ install: all
 	# strip libregistry.so  # remove me in the future
 	# strip kdb
 	cp -d libkdb.so* ${DESTDIR}${LIBDIR}
+	cp -d libkdbtools.so* ${DESTDIR}${ULIBDIR}
 	cp libkdb.a ${DESTDIR}${ULIBDIR}
 	cp libregistry.so ${DESTDIR}${LIBDIR} # remove me in the future
 	cp kdb ${DESTDIR}${BINDIR}
-	cp kdb.h kdbprivate.h kdbbackend.h ${DESTDIR}${INCDIR}
+	cp kdb.h kdbprivate.h kdbbackend.h kdbtools.h ${DESTDIR}${INCDIR}
 	cp kdb.c ${DESTDIR}${DOCDIR}/${NAME}-devel/examples/
 	cp kdbfuture.h ${DESTDIR}${DOCDIR}/${NAME}-devel
 	cp -r backends/template ${DESTDIR}${DOCDIR}/${NAME}-devel/backend-template

@@ -296,26 +296,38 @@ Parent name = "user:some.user/My Environment"
  * 
  */ 
 
-
+ 
+ 
+/**
+ * The private Key struct.
+ * 
+ * Its internal private attributes should not be accessed directly by regular
+ * programs. Use the @ref key "Key access methods" instead.
+ * Only a backend writer needs to have access to the private attributes of the
+ * Key object which is defined as:
+ * @code
+typedef struct _Key Key;
+ * @endcode
+ * 
+ * @ingroup backend
+ */
 struct _Key {                                                                    /* _DEPRECATED_ */
-	/* All attributes are private. */                                            /* _DEPRECATED_ */
-	/* Do not access them directly */                                            /* _DEPRECATED_ */
-	 u_int8_t      type;        /* data type */                                  /* _DEPRECATED_ */
-	    uid_t      uid;         /* owner user ID */                              /* _DEPRECATED_ */
-	    uid_t      gid;         /* owner group ID */                             /* _DEPRECATED_ */
-	   mode_t      access;      /* access control */                             /* _DEPRECATED_ */
-	   time_t      atime;       /* time for last access */                       /* _DEPRECATED_ */
-	   time_t      mtime;       /* time for last modification */                 /* _DEPRECATED_ */
-	   time_t      ctime;       /* time for last change (meta info) */           /* _DEPRECATED_ */
-	   size_t      commentSize; /* size of the description string */             /* _DEPRECATED_ */
-	   size_t      dataSize;    /* size of the value */                          /* _DEPRECATED_ */
-	   size_t      recordSize;  /* dataSize + commentSize + control */           /* _DEPRECATED_ */
-	u_int32_t      flags;       /* Some control flags */                         /* _DEPRECATED_ */
-	   char *      key;         /* The name of the key */                        /* _DEPRECATED_ */
-	   char *      comment;     /* A comment about this key-value pair */        /* _DEPRECATED_ */
-	   char *      userDomain;  /* User domain */                                /* _DEPRECATED_ */
-	   void *      data;        /* The value */                                  /* _DEPRECATED_ */
-	struct _Key * next;                                                          /* _DEPRECATED_ */
+	 u_int8_t      type;        /**< Value type from #KeyType */                 /* _DEPRECATED_ */
+	    uid_t      uid;         /**< Owner user ID */                            /* _DEPRECATED_ */
+	    uid_t      gid;         /**< Owner group ID */                           /* _DEPRECATED_ */
+	   mode_t      access;      /**< Access control */                           /* _DEPRECATED_ */
+	   time_t      atime;       /**< Time for last access (stat) */              /* _DEPRECATED_ */
+	   time_t      mtime;       /**< Time for last modification */               /* _DEPRECATED_ */
+	   time_t      ctime;       /**< Time for last change (meta info) */         /* _DEPRECATED_ */
+	   size_t      commentSize; /**< Size of the description string including ending NULL */  /* _DEPRECATED_ */
+	   size_t      dataSize;    /**< Size of the value including ending NULL */  /* _DEPRECATED_ */
+	   size_t      recordSize;  /**< dataSize + commentSize + some control */    /* _DEPRECATED_ */
+	u_int32_t      flags;       /**< Some control flags */                       /* _DEPRECATED_ */
+	   char *      key;         /**< The name of the key */                      /* _DEPRECATED_ */
+	   char *      comment;     /**< A comment about this key-value pair */      /* _DEPRECATED_ */
+	   char *      userDomain;  /**< User domain */                              /* _DEPRECATED_ */
+	   void *      data;        /**< The value, which is a NULL terminated string or binary */ /* _DEPRECATED_ */
+	struct _Key * next;         /**< Link to the next object in a KeySet context */ /* _DEPRECATED_ */
 };                                                                               /* _DEPRECATED_ */
 
 
@@ -324,14 +336,25 @@ struct _Key {                                                                   
 
 
 
-struct _KeySet {                        /* _DEPRECATED_ */
-	/* All attributes are private. */   /* _DEPRECATED_ */
-	/* Do not access them directly */   /* _DEPRECATED_ */
-	struct _Key * start;                /* _DEPRECATED_ */
-	struct _Key * end;                  /* _DEPRECATED_ */
-	struct _Key * cursor;               /* _DEPRECATED_ */
-	size_t        size;                 /* _DEPRECATED_ */
-};                                      /* _DEPRECATED_ */
+/**
+ * The private KeySet struct.
+ * 
+ * Its internal private attributes should not be accessed directly by regular
+ * programs. Use the @ref keyset "KeySet access methods" instead.
+ * Only a backend writer needs to have access to the private attributes of the
+ * KeySet object which is defined as:
+ * @code
+typedef struct _KeySet KeySet;
+ * @endcode
+ * 
+ * @ingroup backend
+ */
+struct _KeySet {                                                             /* _DEPRECATED_ */
+	struct _Key * start;   /**< First key on the list */                     /* _DEPRECATED_ */
+	struct _Key * end;     /**< Last key on the list */                       /* _DEPRECATED_ */
+	struct _Key * cursor;  /**< Internal cursor */                           /* _DEPRECATED_ */
+	size_t        size;    /**< Number of keys contained in the KeySet */    /* _DEPRECATED_ */
+};                                                                           /* _DEPRECATED_ */
 
 
 

@@ -60,7 +60,8 @@ $LastChangedBy: aviram $
  * @brief The tactics to create pluggable backends to libkdb.so
  *
  * Since version 0.4.9, Elektra can dynamically load different key storage
- * backends.
+ * backends. Fast jump to kdbBackendExport() to see an example of a backend
+ * implementation.
  * 
  * The methods of class KeyDB that are backend dependent are kdbOpen(),
  * kdbClose(), kdbGetKey(), kdbSetKey(), kdbStatKey(),
@@ -79,15 +80,34 @@ $LastChangedBy: aviram $
  * parameters, that is responsible of exporting the implementations of 
  * libkdb.so backend dependent methods.
  * 
+ * The backend implementation must:
+ * @code
+#include <kdb.h>
+#include <kdbbackend.h>
+ * @endcode
+ * 
+ * <b>Better than that, a skeleton of a backend implementation is provided inside
+ * Elektra development package or source code tree, and should be used as a
+ * base for the implementation.</b>
+ * 
+ * An elektrified program will use the backend defined by environment variable
+ * @e $KDB_BACKEND, The backend library is dynamically loaded when the program
+ * calls kdbOpen(), unless if the program is security/authentication/setuid
+ * related, in which it probably uses the more secure kdbOpenDefault() which
+ * completely ignores the @e $KDB_BACKEND environment and will use the
+ * @c "default" named backend defined by the sysadmin. Look at
+ * @c /lib/libkdb-default.so link to see the default backend for your
+ * system.
+ * 
  * Elektra source code or development package provides a skeleton and Makefile
  * to implement a backend, and we'll document this skeleton here.
  * 
  * A backend is defined by a single name, for example @c BACKENDNAME, that
  * causes libkdb.so look for its library as @c libkdb-BACKENDNAME.so.
  * 
- * See kdbBackendExport() documentation for an example of a complete backend
- * implementation.
- *
+ * Elektra source code tree includes several backend implementations
+ * (http://germane-software.com/repositories/elektra/trunk/src/backends)
+ * that can also be used as a reference.
  */
 
 
@@ -133,6 +153,7 @@ int kdbClose_backend() {
 
 
 /**
+ * Implementation for kdbStatKey() method.
  * 
  * @see kdbStatKey() for expected behavior.
  * @ingroup backend
@@ -144,6 +165,7 @@ int kdbStatKey_backend(Key *key) {
 
 
 /**
+ * Implementation for kdbGetKey() method.
  *
  * @see kdbGetKey() for expected behavior.
  * @ingroup backend
@@ -156,6 +178,7 @@ int kdbGetKey_backend(Key *key) {
 
 
 /**
+ * Implementation for kdbSetKey() method.
  *
  * @see kdbSetKey() for expected behavior.
  * @ingroup backend
@@ -168,6 +191,7 @@ int kdbSetKey_backend(Key *key) {
 
 
 /**
+ * Implementation for kdbRename() method.
  *
  * @see kdbRename() for expected behavior.
  * @ingroup backend
@@ -181,11 +205,12 @@ int kdbRename_backend(Key *key, const char *newName) {
 
 
 /**
+ * Implementation for kdbRemoveKey() method.
  *
  * @see kdbRemove() for expected behavior.
  * @ingroup backend
  */
-int kdbRemove_backend(const char *keyName) {
+int kdbRemoveKey_backend(const Key *key) {
 	/* remove a key from the database */
 	return 0;  /* success */
 }
@@ -194,6 +219,7 @@ int kdbRemove_backend(const char *keyName) {
 
 
 /**
+ * Implementation for kdbGetKeyChildKeys() method.
  *
  * @see kdbGetKeyChildKeys() for expected behavior.
  * @ingroup backend
@@ -205,10 +231,12 @@ int kdbGetKeyChildKeys_backend(const Key *parentKey, KeySet *returned, unsigned 
 
 
 /**
- * The implementation of this method is optional.
- * The builtin inefficient implementation will use kdbSetKey() for each
- * key inside @p ks.
- *
+ * Implementation for kdbSetKeys() method.
+ * 
+ * The implementation of this method is optional, and a builtin, probablly 
+ * inefficient implementation can be explicitly used when exporting the
+ * backend with kdbBackendExport(), using kdbSetKeys_default().
+ * 
  * @see kdbSetKeys() for expected behavior.
  * @ingroup backend
  */
@@ -247,9 +275,9 @@ u_int32_t kdbMonitorKey_backend(Key *interest, u_int32_t diffMask,
 
 
 /**
- * All KeyDB methods implemented by the backend can have random names, but
- * kdbBackendFactory() because this is the single symbol that will be looked
- * for when loading the backend, and the first method of the backend
+ * All KeyDB methods implemented by the backend can have random names, except
+ * kdbBackendFactory(). This is the single symbol that will be looked up
+ * when loading the backend, and the first method of the backend
  * implementation that will be called.
  * 
  * Its purpose is to "publish" the exported methods for libkdb.so. The

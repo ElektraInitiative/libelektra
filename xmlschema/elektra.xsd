@@ -40,7 +40,7 @@
 	
 	<xsd:simpleType name="key_type">
 		<xsd:restriction base="xsd:string">
-			<xsd:pattern value="[0-9]*|string|binary|directory|link"/>
+			<xsd:pattern value="[0-9]*|undefined|string|binary|directory|link"/>
 		</xsd:restriction>
 	</xsd:simpleType>
 	

@@ -22,14 +22,6 @@ $LastChangedBy$
 */
 
 
-/**
- * @defgroup libexample  The kdb Command Source Code: Example of Full Library Utilization
- * @{
- */
-
-
-
-
 
 
 
@@ -37,24 +29,17 @@ $LastChangedBy$
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
 #include <stdio.h>
+#include <time.h>
+#include <locale.h>
+#include <unistd.h>
+#include <string.h>
+#include <stdlib.h>
 #include <grp.h>
 #include <pwd.h>
-#include <time.h>
 #include <ctype.h>
-#include <locale.h>
+#include <dlfcn.h>
 
-/* FIXME: remove kdb command libXML dependencies */
-#include <libxml/xmlreader.h>
-#include <libxml/xmlschemas.h>
-
-#ifndef KDB_SCHEMA_PATH
-#define KDB_SCHEMA_PATH       "/usr/share/sgml/elektra-0.1.1/elektra.xsd"
-#endif
-#define KDB_SCHEMA_PATH_KEY   "system/sw/kdb/current/schemapath"
 
 #define CMD_GET       1
 #define CMD_SET       2
@@ -73,6 +58,19 @@ $LastChangedBy$
 
 /* we are cheating . . . */
 size_t unencode(char *encoded, void *returned);
+
+
+/* We'll load this methods dynamically to avoid libxml dependencies */
+int (*ksFromXMLfile)(KeySet *ks,char *filename);
+int (*ksFromXML)(KeySet *ks,int fd);
+
+
+
+/**
+ * @defgroup libexample  The kdb Command Source Code: Example of Full Library Utilization
+ * @{
+ */
+
 
 
 char *argComment=0;
@@ -496,7 +494,6 @@ int commandMove() {
  * bash$ kdb set -c "My shell prompt" user/env/env1/PS1 '\h:\w\$'
  * @endcode
  *
- * @see kdbSetKey()
  * @param argKeyName name of the key that will be set
  * @param argComment comment to be set to key (-c)
  * @param argType type of the key (-t)
@@ -505,6 +502,7 @@ int commandMove() {
  * @param argGID GID to be set to sey
  * @param argData the value to the key
  * @param argFile a filename to use as the input for the value
+ * @see kdbSetKey()
  */
 int commandSet() {
 	Key *key;
@@ -614,10 +612,9 @@ int commandSet() {
  * bash$ kdb ln user:valeria/sw/MyApp user/sw/MyApp  # make my personal MyApp configurations be a link to valerias configs
  * @endcode
  *
- * @see kdbLink()
- * @see keySetType()
  * @param argKeyName name of the target key
  * @param argData name of the link key to be created
+ * @see kdbLink(), keySetType()
  */
 int commandLink() {
 	int rc;
@@ -670,10 +667,7 @@ int commandLink() {
  * bash$ kdb ls -Rv user/env # list my aliases and environment vars
  * @endcode
  *
- * @see kdbGetRootKeys()
- * @see kdbGetKeyChildKeys()
- * @see keyToStream()
- * @see ksToStream()
+ * @see kdbGetRootKeys(), kdbGetKeyChildKeys(), keyToStream(), ksToStream()
  * @see commandExport() for the 'kdb export' command
  */
 int commandList() {
@@ -896,310 +890,6 @@ int commandGet() {
 
 
 
-
-/*
- * This function is completelly dependent on libxml.
- */
-int processNode(KeySet *ks, xmlTextReaderPtr reader) {
-	xmlChar *nodeName=0;
-	xmlChar *buffer=0;
-	Key *newKey=0;
-	
-	nodeName=xmlTextReaderName(reader);
-	if (!strcmp(nodeName,"key")) {
-		u_int8_t type=KEY_TYPE_STRING; /* default type */
-		int end=0;
-		
-		newKey=keyNew(0);
-		
-		xmlFree(nodeName); nodeName=0;
-		
-		buffer=xmlTextReaderGetAttribute(reader,"name");
-		keySetName(newKey,(char *)buffer);
-		xmlFree(buffer); buffer=0;
-		
-		buffer=xmlTextReaderGetAttribute(reader,"type");
-		if (!strcmp(buffer,"string"))
-			type=KEY_TYPE_STRING;
-		else if (!strcmp(buffer,"link"))
-			type=KEY_TYPE_LINK;
-		else if (!strcmp(buffer,"directory"))
-			type=KEY_TYPE_DIR;
-		else if (!strcmp(buffer,"binary"))
-			type=KEY_TYPE_BINARY;
-		else if (!strcmp(buffer,"undefined"))
-			type=KEY_TYPE_UNDEFINED;
-		else { /* special user-defined value types */
-			void *converter=0;
-			
-			type=strtol(buffer,(char **)&converter,10);
-			if ((void *)buffer==converter)
-				/* in case of error, fallback to default type again */
-				type=KEY_TYPE_STRING;
-		}
-		
-		keySetType(newKey,type);
-		
-		xmlFree(buffer); buffer=0;
-
-
-
-		/* Parse UID */
-		buffer=xmlTextReaderGetAttribute(reader,"uid");
-		if (buffer) {
-			if (isdigit(*buffer))
-				keySetUID(newKey,atoi(buffer));
-			else {
-				struct passwd *pwd;
-				pwd=getpwnam(buffer);
-				if (pwd) keySetUID(newKey,pwd->pw_uid);
-				else fprintf(stderr,"kdb: Ignoring invalid user %s.\n",
-						buffer);
-			}
-			xmlFree(buffer); buffer=0;
-		}
-
-		
-		/* Parse GID */
-		buffer=xmlTextReaderGetAttribute(reader,"gid");
-		if (buffer) {
-			if (isdigit(*buffer)) {
-				keySetGID(newKey,atoi(buffer));
-			} else {
-				struct group *grp;
-				grp=getgrnam(buffer);
-				if (grp) keySetGID(newKey,grp->gr_gid);
-				else fprintf(stderr,"kdb: Ignoring invalid group %s.\n",
-						buffer);
-			}
-			xmlFree(buffer); buffer=0;
-		}
-
-
-		/* Parse permissions */
-		buffer=xmlTextReaderGetAttribute(reader,"mode");
-		if (buffer) keySetAccess(newKey,strtol(buffer,0,8));
-		xmlFree(buffer); buffer=0;
-
-
-		/* Parse everything else */
-		while (!end) {
-			xmlFree(nodeName); nodeName=0;
-			xmlTextReaderRead(reader);
-			nodeName=xmlTextReaderName(reader);
-
-			if (!strcmp(nodeName,"value")) {
-				if (xmlTextReaderIsEmptyElement(reader) ||
-					xmlTextReaderNodeType(reader)==15) continue;
-				xmlTextReaderRead(reader);
-				buffer=xmlTextReaderValue(reader);
-				if (buffer) {
-					/* Key's value type was already set above */
-					if (KEY_TYPE_BINARY <= type && type < KEY_TYPE_STRING) {
-						char *unencoded=0;
-						size_t unencodedSize;
-						
-						unencodedSize=strblen(buffer)/2;
-						unencoded=malloc(unencodedSize);
-						unencodedSize=unencode(buffer,unencoded);
-						if (!unencodedSize) return -1;
-						keySetRaw(newKey,unencoded,unencodedSize);
-						free(unencoded);
-					} else keySetRaw(newKey,buffer,strblen(buffer));
-				}
-			} else if (!strcmp(nodeName,"comment")) {
-				if (xmlTextReaderIsEmptyElement(reader) ||
-					xmlTextReaderNodeType(reader)==15) continue;
-				xmlTextReaderRead(reader);
-				buffer=xmlTextReaderValue(reader);
-
-				keySetComment(newKey,buffer);
-			} else if (!strcmp(nodeName,"key")) {
-				if (xmlTextReaderNodeType(reader)==15) end=1;
-			}
-
-			xmlFree(buffer); buffer=0;
-		}
-	}
-
-	if (nodeName) xmlFree(nodeName),nodeName=0;
-
-	if (newKey) ksAppend(ks,newKey);
-	return 0;
-}
-
-
-
-
-
-
-/*
- * This function is completelly dependent on libxml.
- * It is the workhorse for ksFromXML() and ksFromXMLfile()
- */
-int ksFromXMLReader(KeySet *ks,xmlTextReaderPtr reader) {
-	int ret;
-
-	ret = xmlTextReaderRead(reader); /* <keyset> */
-	ret = xmlTextReaderRead(reader); /* first <key> */
-	while (ret == 1) {
-		processNode(ks, reader);
-		ret = xmlTextReaderRead(reader);
-	}
-	xmlFreeTextReader(reader);
-	if (ret) fprintf(stderr,"kdb: Failed to parse XML input\n");
-
-	return ret;
-}
-
-
-
-
-
-
-
-
-
-int ksFromXMLfile(KeySet *ks,char *filename) {
-	xmlTextReaderPtr reader;
-	int ret;
-	char schema_path[513];
-	
-	xmlSchemaValidCtxtPtr ctxt;
-	xmlSchemaPtr wxschemas = NULL;
-	xmlSchemaParserCtxtPtr ctxt2=NULL;
-	xmlDocPtr doc;
-
-	doc = xmlParseFile(filename);
-	if (doc==NULL) return 1;
-
-	/* Open the kdb to get the xml schema path */
-	schema_path[0]=0;
-	ret=kdbGetValue(KDB_SCHEMA_PATH_KEY,schema_path,sizeof(schema_path));
-	if (ret==0) ctxt2 = xmlSchemaNewParserCtxt(schema_path);
-	else ctxt2 = xmlSchemaNewParserCtxt(KDB_SCHEMA_PATH); /* fallback to builtin */
-
-	
-	if (ctxt2==NULL) 
-		{
-		xmlFreeDoc(doc);
-		return 1;
-		}
-	
-	xmlSchemaSetParserErrors(ctxt2,
-		(xmlSchemaValidityErrorFunc) fprintf,
-		(xmlSchemaValidityWarningFunc) fprintf,
-		stderr);
-	wxschemas = xmlSchemaParse(ctxt2);
-	
-	if (wxschemas==NULL) 
-		{
-		xmlSchemaFreeParserCtxt(ctxt2);
-		xmlFreeDoc(doc);
-		return 1;
-		}
-	
-	// try to validate the doc against the xml schema
-	ctxt = xmlSchemaNewValidCtxt(wxschemas);
-	xmlSchemaSetValidErrors(ctxt,
-		(xmlSchemaValidityErrorFunc) fprintf,
-		(xmlSchemaValidityWarningFunc) fprintf,
-		stderr);
-	
-	if (ctxt==NULL)
-		{
-		xmlSchemaFree(wxschemas);
-		xmlSchemaFreeParserCtxt(ctxt2);
-		xmlFreeDoc(doc);
-		return 1;
-		}
-		
-	ret = xmlSchemaValidateDoc(ctxt, doc);
-	xmlSchemaFreeValidCtxt(ctxt);
-	xmlSchemaFree(wxschemas);
-	xmlSchemaFreeParserCtxt(ctxt2);
-	
-	
-	// if the validation is successful
-	if (!ret)
-		{
-		reader=xmlReaderWalker(doc);
-		if (reader) {
-			ret=ksFromXMLReader(ks,reader);
-		} else {
-			perror("kdb");
-			return 1;
-		}
-		}
-	xmlFreeDoc(doc);
-	return ret;
-}
-
-
-
-
-
-/* FIXME: its not working when fd is stdin */
-int ksFromXML(KeySet *ks,int fd) {
-	/* Support for old XML library, that doesn't have xmlReaderForFd() */
-	char filename[]="/var/tmp/kdbeditXXXXXX";
-	FILE *xmlfile=0;
-	xmlfile=fdopen(mkstemp(filename),"rw+");
-	while (! feof(xmlfile)) {
-		char buffer[1000];
-		ssize_t readed, writen;
-
-		readed=read(fd,buffer,sizeof(buffer));
-		if (readed<0) {
-			perror("kdb");
-			fclose(xmlfile);
-			remove(filename);
-			return 1;
-		}
-
-		writen=write(fileno(xmlfile),buffer,readed);
-		if (writen<0) {
-			perror("kdb");
-			fclose(xmlfile);
-			remove(filename);
-			return 1;
-		}
-	}
-	fclose(xmlfile);
-	return ksFromXMLfile(ks,filename);
-	/* end of support */
-
-	/* This code requires a newer version of XML library. Don't use it yet
-	// a complete XML document is expected
-	xmlTextReaderPtr reader=0;
-	int ret;
-	reader=xmlReaderForFd(fd,"file:/tmp/imp.xml",0,0);
-	if (reader) {
-		ret=ksFromXMLReader(ks,reader);
-	} else {
-		printf("kdb: Unable to open file descriptor %d for XML reading\n", fd);
-		return 1;
-	}
-	return ret;
-	// end of newer code */
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /**
  * Opens an editor to edit an XML representation of the keys.
  * This is one of the most complex commands of the kdb program.
@@ -1221,14 +911,12 @@ int ksFromXML(KeySet *ks,int fd) {
  * bash# kdb edit -R system/sw/MyApp       # defaults to vi editor
  * @endcode
  *
- * @see keyCompare(), ksCompare()
- * @see kdbGetChildKeys(), kdbSetKeys()
- * @see ksToStream()
- * @see kdbRemoveKey()
  * @param argKeyName the parent key name (and children) that will be edited
  * @param argRecursive whether to act recursivelly or not
  * @param argAll whether to edit inactive keys or not
  * @param EDITOR environment var that defines editor to use, or @p vi
+ * @see keyCompare(), ksCompare(), kdbGetChildKeys(), kdbSetKeys(),
+ * 	ksToStream(), kdbRemoveKey()
  */
 int commandEdit() {
 	KeySet *ks;
@@ -1241,6 +929,8 @@ int commandEdit() {
 	FILE *xmlfile=0;
 	char choice[5];
 
+	if (!ksFromXMLfile) return 1;
+	
 	ks=ksNew();
 
 	kdbGetChildKeys(argKeyName,ks, KDB_O_SORT | KDB_O_NFOLLOWLINK |
@@ -1367,13 +1057,15 @@ int commandEdit() {
  * bash$ generateKeys | kdb import
  * @endcode
  * 
- * @see kdbSetKeys()
- * @see commandExport()
+ * @see kdbSetKeys(), commandExport()
  */
 int commandImport() {
 	KeySet *ks;
 	int ret;
 
+	if (!ksFromXMLfile || !ksFromXML) return 1;
+	
+	
 	ks=ksNew();
 	/* The command line parsing function will put the XML filename
 	   in the argKeyName global, so forget the variable name. */
@@ -1417,8 +1109,7 @@ int commandImport() {
  * bash$ kdb export system/sw/MyApp | sed -e 's|system/sw|user/sw|g' | kdb import
  * @endcode
  *
- * @see commandList()
- * @see commandImport()
+ * @see commandList(), commandImport()
  *
  */
 int commandExport() {
@@ -1456,8 +1147,7 @@ int commandExport() {
  * bash$ kdb mon system/sw/MyApp/someKey
  * @endcode
  *
- * @see kdbMonitorKey()
- * @see kdbMonitorKeys()
+ * @see kdbMonitorKey(), kdbMonitorKeys()
  */
 int commandMonitor() {
 	Key *toMonitor;
@@ -1514,6 +1204,21 @@ int commandHelp() {
 }
 
 
+int loadToolsLib(void) {
+	void *dlhandle=0;
+	
+	dlhandle=dlopen("libkdbtools.so",RTLD_LAZY);
+	if (dlhandle == 0) {
+		fprintf(stderr, "kdb: %s\n",dlerror());
+		return 1;
+	}
+	
+	ksFromXMLfile=dlsym(dlhandle,"ksFromXMLfile");
+	ksFromXML=dlsym(dlhandle,"ksFromXML");
+	
+	return 0;
+}
+
 int doCommand(int command) {
 	switch (command) {
 		case CMD_SET:             return commandSet();
@@ -1536,6 +1241,9 @@ int main(int argc, char **argv) {
 	int command=0;
 	int ret=0;
 
+	if (loadToolsLib())
+		fprintf(stderr,"kdb: XML importing and editing disabled\n");
+	
 	command=parseCommandLine(argc,argv);
 
 	kdbOpen();

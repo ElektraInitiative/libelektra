@@ -1,14 +1,23 @@
 H1 {
 	text-align: center;
 	font-family: Verdana, Bitstream Vera Sans, Helvetica, sans-serif;
+	font-weight: bold;
+	font-size: 28px;
+	color: #ff6600;
 }
 H2 {
 	font-family: Verdana, Bitstream Vera Sans, Helvetica, sans-serif;
+	font-weight: bold;
+	font-size: 22px;
+	color: #ff6600;
+}
+H3 {
+	font-size: 18px;
+	color: #ff9933;
 }
 CAPTION { font-weight: bold }
 CODE {
 	font-weight: bold;
-	font-size: small;
 }
 DIV.qindex { width: 100%;
              background-color: #eeeeff;
@@ -31,6 +40,10 @@ A.code { text-decoration: none; font-weight: normal; color: #4444ee }
 A.codeRef { font-weight: normal; color: #4444ee }
 A:hover { text-decoration: none; background-color: #f2f2ff }
 DL.el { margin-left: -1cm }
+DL {
+	font-family: Verdana, Bitstream Vera Sans, Helvetica, sans-serif;
+	font-size: 11px;
+}
 DIV.fragment {
 	width: 98%;
 	border: 1px solid #CCCCCC;
@@ -39,17 +52,45 @@ DIV.fragment {
 	margin: 4px;
 }
 DIV.ah { background-color: black; font-weight: bold; color: #ffffff; margin-bottom: 3px; margin-top: 3px }
-TD.md { background-color: #f2bbbb; font-weight: bold; }
-TD.mdname1 { background-color: #f2bbbb; font-weight: bold; color: #602020; }
-TD.mdname { background-color: #f2bbbb; font-weight: bold; color: #602020; width: 600px; }
+TD.md {
+	color: #ff6600;
+	font-family: Tahoma, Bitstream Vera Sans, Helvetica, sans-serif;
+	font-size: 18px;
+	font-weight: bold;
+}
+TD.mdname1 {
+	font-weight: bold;
+	font-size: 18px;
+	color: #ff6600;
+}
+TD.mdname {
+	font-weight: bold;
+	font-size: 18px;
+	color: #ff6600;
+}
 DIV.groupHeader { margin-left: 16px; margin-top: 12px; margin-bottom: 6px; font-weight: bold }
 DIV.groupText { margin-left: 16px; font-style: italic; font-size: smaller }
 BODY {
+	font-family: Verdana, Bitstream Vera Sans, Helvetica, sans-serif;
 	font-size: 11px;
 	background: white;
 	color: black;
 	margin-right: 20px;
 	margin-left: 20px;
+}
+P {
+	font-family: Verdana, Bitstream Vera Sans, Helvetica, sans-serif;
+	font-size: 11px;
+}
+EM {
+	font-family: Tahoma, Bitstream Vera Sans, Helvetica, sans-serif;
+	color: #ff6600;
+	font-style: normal;
+	text-decoration: underline;
+}
+TD {
+	font-family: Verdana, Bitstream Vera Sans, Helvetica, sans-serif;
+	font-size: 11px;
 }
 TD.indexkey { 
    background-color: #eeeeff; 
@@ -89,15 +130,19 @@ SPAN.preprocessor  { color: #806020 }
 SPAN.stringliteral { color: #002080 }
 SPAN.charliteral   { color: #008080 }
 .mdTable {
-	border: 2px solid #dd8686;
-	background-color: #f2bbbb;
+	margin-top:0pt;
+	margin-bottom:0pt ! important;
+	border-top-style: groove;
+	border-left-style: groove;
+	border-width: 4pt;
+	border-color: #6565FF;
 }
 .mdRow {
 	padding: 8px 20px;
 }
 .mdescLeft {
 	font-size: smaller;
-	font-family: Verdana, Bitstream Vera Sans, Helvetica, sans-serif;
+	font-family: Tahoma, Bitstream Vera Sans, Helvetica, sans-serif;
 	background-color: #FAFAFA;
 	padding-left: 8px;
 	border-top: 1px none #E0E0E0;
@@ -107,8 +152,7 @@ SPAN.charliteral   { color: #008080 }
 	margin: 0px;
 }
 .mdescRight {
-	font-size: smaller;
-	font-family: Verdana, Bitstream Vera Sans, Helvetica, sans-serif;
+	font-family: Tahoma, Bitstream Vera Sans, Helvetica, sans-serif;
 	background-color: #FAFAFA;
 	padding-left: 4px;
 	border-top: 1px none #E0E0E0;
@@ -135,8 +179,8 @@ SPAN.charliteral   { color: #008080 }
 	border-bottom-style: none;
 	border-left-style: none;
 	background-color: #FAFAFA;
-	font-family: Verdana, Bitstream Vera Sans, Helvetica, sans-serif;
-	font-size: 11pt;
+	font-family: Tahoma, Bitstream Vera Sans, Helvetica, sans-serif;
+	font-size: 11px;
 }
 .memItemRight {
 	padding: 1px 0px 0px 8px;
@@ -154,8 +198,8 @@ SPAN.charliteral   { color: #008080 }
 	border-bottom-style: none;
 	border-left-style: none;
 	background-color: #FAFAFA;
-	font-family: Verdana, Bitstream Vera Sans, Helvetica, sans-serif;
-	font-size: 11pt;
+	font-family: Tahoma, Bitstream Vera Sans, Helvetica, sans-serif;
+	font-size: 11px;
 }
 .search     { color: #0000ee;
               font-weight: bold;

@@ -86,7 +86,7 @@ Key *gEntryToKey(const GConfEntry *gentry) {
 	GConfValueType listType;
 	
 	new=keyNew("user",KEY_SWITCH_END);
-	c1=gconf_entry_get_key(gentry);
+	c1=(char *)gconf_entry_get_key(gentry);
 	if (!strcmp("/apps",c1) || !strncmp("/apps/",c1,strlen("/apps/"))) {
 		/* convert "/apps/" to "user/sw/" */
 		c1=index(c1+1,'/');
@@ -98,7 +98,9 @@ Key *gEntryToKey(const GConfEntry *gentry) {
 	if (!gvalue) return new;
 	
 	switch (gvalue->type) {
+		case GCONF_VALUE_PAIR:
 		case GCONF_VALUE_SCHEMA:
+			/* please stop that stupid compiler warnings ! */
 			break;
 		case GCONF_VALUE_INVALID:
 		case GCONF_VALUE_STRING:
@@ -154,6 +156,10 @@ Key *gEntryToKey(const GConfEntry *gentry) {
 						if (gconf_value_get_bool(val)) strcat(buffer,"1");
 						else strcat(buffer,"0");
 						break;
+					case GCONF_VALUE_LIST:
+					case GCONF_VALUE_PAIR:
+						/* please stop these stupid compiler warnings ! */
+						break;
 				}
 				prev=1;
 				list=list->next;
@@ -162,7 +168,7 @@ Key *gEntryToKey(const GConfEntry *gentry) {
 			strcat(buffer,"]");
 			keySetRaw(new,buffer,strblen(buffer));
 			break;
-		/* TODO: list and car+cdr. */
+		/* TODO: car+cdr (pair). */
 	}
 	
 	/* TODO: metainfo */
@@ -320,18 +326,11 @@ int kdbOpen_gconf() {
 
 
 
-
 int kdbClose_gconf() {
 	gconf_engine_unref(gconf);
 	return 0; /* success */
 }
 
-
-
-int kdbStatKey_gconf(Key *key) {
-	/* get the most possible key metainfo */
-	return 0; /* success */
-}
 
 
 int kdbGetKey_gconf(Key *key) {
@@ -351,6 +350,17 @@ int kdbGetKey_gconf(Key *key) {
 	g_free(gkey->key);
 	if (gkey->value) gconf_value_free(gkey->value);
 	g_free(gkey);
+	
+	if (gerr != 0) {
+		errno=gerr->code;
+		g_error_free(gerr);
+		
+		g_free(gentry->key);
+		if (gentry->value) gconf_value_free(gentry->value);
+		g_free(gentry);
+		
+		return errno;
+	}
 	
 	if (gentry) {
 		dup=gEntryToKey(gentry);
@@ -381,24 +391,16 @@ int kdbSetKey_gconf(Key *key) {
 	
 	gentry=keyToGEntry(key);
 	gconf_engine_set(gconf,gconf_entry_get_key(gentry),gconf_entry_get_value(gentry),&err);
+	gconf_entry_free(gentry);
 	
-	
+	if (err != 0) {
+		errno=err->code;
+		g_error_free(err);
+		return errno;
+	}
 	
 	return 0; /* success */
 }
-
-
-
-/**
- *
- * @see kdbRename() for expected behavior.
- * @ingroup backend
- */
-int kdbRename_backend(Key *key, const char *newName) {
-	/* rename a key to another name */
-	return 0; /* success */
-}
-
 
 
 
@@ -407,10 +409,39 @@ int kdbRename_backend(Key *key, const char *newName) {
  * @see kdbRemove() for expected behavior.
  * @ingroup backend
  */
-int kdbRemove_backend(const char *keyName) {
-	/* remove a key from the database */
+int kdbRemoveKey_gconf(const Key *key) {
+	GError *err=0;
+	GConfEntry *gentry;
+	gboolean rc=0;
+	
+	if (!key || !key->key) {
+		errno=KDB_RET_NULLKEY;
+		return 1; /* errno is propagated */
+	}
+	
+	gentry=keyToGEntry(key);
+	rc=gconf_engine_unset(gconf,gentry->key,&err);
+	gconf_entry_free(gentry);
+	
+	
+	/* GConf would not tell us anything about a failure to remove
+	 * a directory, so this test block is almost useless for this
+	 * purpose.
+	 * In fact, it looks like there is no way to remove a directory
+	 * in GConf. What a shame.
+	 */ 
+	if (!rc) {
+		if (err != 0) {
+			errno=err->code;
+			g_error_free(err);
+		}
+		
+		return 1;
+	}
+	
 	return 0;  /* success */
 }
+
 
 
 
@@ -468,34 +499,16 @@ int kdbGetKeyChildKeys_gconf(const Key *parentKey, KeySet *returned, unsigned lo
 
 
 
-/**
- * The implementation of this method is optional.
- * The builtin inefficient implementation will use kdbGetKey() for each
- * key inside @p interests.
- *
- * @see kdbMonitorKeys() for expected behavior.
- * @ingroup backend
- */
-u_int32_t kdbMonitorKeys_backend(KeySet *interests, u_int32_t diffMask,
-		unsigned long iterations, unsigned sleep) {
-	return 0;
+int kdbRename_gconf(Key *key, const char *newName) {
+	int rc;
+	
+	if ((rc=kdbGetKey_gconf(key))) return rc;
+	if ((rc=kdbRemoveKey_gconf(key))) return rc;
+	if (! keySetName(key,newName)) return 1;
+	return kdbSetKey_gconf(key);
 }
 
 
-
-/**
- *
- * The implementation of this method is optional.
- * The builtin inefficient implementation will use kdbGetKey() for
- * @p interest.
- *
- * @see kdbMonitorKey() for expected behavior.
- * @ingroup backend
- */
-u_int32_t kdbMonitorKey_backend(Key *interest, u_int32_t diffMask,
-		unsigned long iterations, unsigned sleep) {
-	return 0;
-}
 
 
 KDBBackend *kdbBackendFactory(void) {
@@ -504,13 +517,13 @@ KDBBackend *kdbBackendFactory(void) {
 		KDB_BE_CLOSE,          &kdbClose_gconf,
 		KDB_BE_GETKEY,         &kdbGetKey_gconf,
 		KDB_BE_SETKEY,         &kdbSetKey_gconf,
-		KDB_BE_STATKEY,        &kdbStatKey_gconf,
-		KDB_BE_RENAME,         &kdbRename_backend,
-		KDB_BE_REMOVEKEY,      &kdbRemove_backend,
+		KDB_BE_STATKEY,        &kdbGetKey_gconf,
+		KDB_BE_RENAME,         &kdbRename_gconf,
+		KDB_BE_REMOVEKEY,      &kdbRemoveKey_gconf,
 		KDB_BE_GETCHILD,       &kdbGetKeyChildKeys_gconf,
-		KDB_BE_MONITORKEY,     &kdbMonitorKey_backend,
-		KDB_BE_MONITORKEYS,    &kdbMonitorKeys_backend,
 		/* set to default implementation: */
+		KDB_BE_MONITORKEY,     &kdbMonitorKey_default,
+		KDB_BE_MONITORKEYS,    &kdbMonitorKeys_default,
 		KDB_BE_SETKEYS,        &kdbSetKeys_default,
 		KDB_BE_END);
 }

@@ -163,8 +163,13 @@ $LastChangedBy$
 
 	&rgcmd;
 	&bestpract;
-	&example;
 	
+	<refsection><title>Environment</title>
+		<para><envar>KDB_ROOT</envar> if defined, prepends it to key names.</para>
+		<para><envar>KDB_BACKEND</envar> defines the name of another backend plugin library to use</para>
+	</refsection>
+	
+	&example;
 	
 	<refsection><title>See Also</title>
 		<para>

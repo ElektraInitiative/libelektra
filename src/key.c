@@ -40,7 +40,12 @@ extern int errno;
 
 
 /**
- * @return number of bytes used by the string, including the final NULL
+ * Calculates the lenght in bytes of a string.
+ * 
+ * This function differs from strlen() because it is Unicode and multibyte
+ * chars safe. While strlen() counts characters and ignores the final NULL,
+ * strblen() count bytes including the ending NULL.
+ * @return number of bytes used by the string, including the final NULL.
  * @ingroup backend
  */
 size_t strblen(const char *s) {
@@ -54,21 +59,22 @@ size_t strblen(const char *s) {
  * @defgroup key Key :: Basic Methods
  * @brief Key construction and initialization methods.
  *
- * To use it:
+ * To use them:
  * @code
 #include <kdb.h>
  * @endcode
  *
- * A Key is the essential class that contains all key data and metadata.
+ * A Key is the essential class that encapsulates key @link keyname name @endlink,
+ * @link keyvalue value @endlink and @link keymeta metainfo @endlink.
  * Key properties are:
- * - Key name
- * - Key value or data
- * - Data type
- * - Comment about the key
- * - User domain (the user that owns the key)
- * - UID, GID and filesystem-like access permissions
- * - Access, change and modification times
- * - A general flag
+ * - @link keyname Key name @endlink
+ * - @link keyvalue Key value or data @endlink
+ * - @link keySetType() Data type @endlink
+ * - @link keyGetComment() Comment about the key @endlink
+ * - @link keyGetOwner() User domain @endlink (the user that owns the key)
+ * - @link keymeta UID, GID and filesystem-like access permissions @endlink
+ * - @link keymeta Access, change and modification times @endlink
+ * - @link keySetFlag() A general flag @endlink
  *
  * Described here the methods to get and set, and make various manipulations
  * in the objects of class Key.
@@ -172,7 +178,7 @@ size_t strblen(const char *s) {
  * A practical way to fully create a Key object in one step.
  * This function tries to mimic the C++ way for constructors.
  *
- * Due to ABI compatibility, the @p Key structure is not defined kdb.h,
+ * Due to ABI compatibility, the @p Key structure is not defined in kdb.h,
  * only declared. So you can only declare @p pointers to @p Keys in your
  * program, and allocate and free memory for them with keyNew()
  * and keyDel() respectively.
@@ -182,7 +188,8 @@ size_t strblen(const char *s) {
  * pass as parameters. Tags are represented as the #KeySwitch values,
  * and tell keyNew() which Key attribute comes next.
  * 
- * The simplest way to call it is with no tags, only a key name. See example bellow.
+ * The simplest way to call it is with no tags, only a key name. See example
+ * bellow.
  * 
  * The Key attribute tags are the following:
  * - KeySwitch::KEY_SWITCH_TYPE \n
@@ -191,7 +198,8 @@ size_t strblen(const char *s) {
  *   user-defined type (see keySetType()), a second parameter is needed and
  *   is the size in bytes (size_t) of the data passed on the subsequent
  *   KeySwitch::KEY_SWITCH_VALUE parameter. You must use this tag before
- *   KeySwitch::KEY_SWITCH_VALUE, otherwise KeyType::KEY_TYPE_STRING is assumed.
+ *   KeySwitch::KEY_SWITCH_VALUE, otherwise KeyType::KEY_TYPE_STRING is
+ *   assumed.
  * - KeySwitch::KEY_SWITCH_VALUE \n
  *   Next parameter is a pointer to the value that will be set to the key.
  *   If no KeySwitch::KEY_SWITCH_TYPE was used before,
@@ -355,8 +363,11 @@ Key *keyNew(const char *keyName, ...) {
 				case KEY_SWITCH_NEEDSYNC: {
 					int rc=0;
 					rc=kdbGetKey(key);
-					if (rc) /* errno will be propagated */
-						keySetFlag(key); /* just flag the key */
+					if (rc)
+						/* Flag the key to indicate an error in
+						 * kdbGetKey(). Propagated errno will indicate
+						 * the error ocurred. */
+						key->flags|=KEY_SWITCH_FLAG; /* same as keySetFlag(key) */
 				} break;
 			}
 			action=va_arg(va,u_int32_t);
@@ -395,13 +406,12 @@ int keyDel(Key *key) {
 
 
 /**
- * Test if a Key object is initialized.
+ * Test if @p key is initialized.
  *
- * It is more or less reliable.
+ * This function is more or less reliable.
  * You'd better guarantee your code is robust enough using
- * keyNew() and keyDel() everytime.
+ * keyNew(), keyInit(), keyDel() and keyClose() everytime.
  * 
- * @see keyInit(), keyClose()
  * @ingroup keytest
  * 
  */
@@ -419,7 +429,7 @@ int keyIsInitialized(const Key *key) {
 /**
  * Set a new name to a key.
  *
- * A valid name is of the form:
+ * A valid name is of the forms:
  * - @p system/something
  * - @p user/something
  * - @p user:username/something
@@ -428,16 +438,20 @@ int keyIsInitialized(const Key *key) {
  * know in which user folder to save the key. A user domain is a user name.
  * If not defined (the second form) current user is calculated and used
  * as default.
+ * 
+ * You should allways follow the guidelines for key tree structure creation at
+ * @ref rules.
  *
  * A private copy of the key name will be stored, and the @p newName
  * parameter can be freed after this call.
  *
  * @return size in bytes of this new key name, or 0 if @p newName is empty,
- * 	or something wrong happened and @p errno is set.
+ * 	or if @p newName is invalid, in which case @c errno is set to
+ * 	KDBErrr::KDB_RET_INVALIDKEY.
  * @param key the key object
  * @param newName the new key name
  * @see keyNew(), keySetOwner()
- * @see keyGetName(), keyGetFullName()
+ * @see keyGetName(), keyGetFullName(), keyStealName()
  * @ingroup keyname
  */
 size_t keySetName(Key *key, const char *newName) {
@@ -568,6 +582,7 @@ size_t keySetName(Key *key, const char *newName) {
 size_t keyAddBaseName(Key *key,const char *baseName) {
 	size_t nameSize=0;
 	size_t newSize=0;
+	int ndelim=0;
 	
 	if (key->key) nameSize=strblen(key->key)-1;
 	if (baseName) newSize=strblen(baseName);
@@ -575,35 +590,30 @@ size_t keyAddBaseName(Key *key,const char *baseName) {
 	
 	if (newSize==0) return nameSize;
 	
-	/* Remove leading '/' if caller passed some */
 	if (key->key) {
+		/* Remove leading '/' if caller passed some */
 		while (key->key[nameSize-1]==RG_KEY_DELIM &&
 		       key->key[nameSize-2]!=RG_KEY_DELIM) {
-			key->key[nameSize-1]=0;
-			nameSize--;
+			key->key[--nameSize]=0;
 		}
 		
-		if (key->key[nameSize-1] == RG_KEY_DELIM) {
-			int ndelim=0;
-			if (baseName[0] == RG_KEY_DELIM) {
-				newSize-=1; /* remove extra '/' */
-				ndelim=1;
-			}
-			newSize+=nameSize;
-			key->key=realloc(key->key,newSize);
-			strcat(key->key,baseName+ndelim);
-		} else {
-			if (baseName[0] == RG_KEY_DELIM) {
-				newSize+=nameSize;
-				key->key=realloc(key->key,newSize);
-			} else {
-				nameSize++;
-				newSize+=nameSize;
-				key->key=realloc(key->key,newSize);
-				strcat(key->key,"/");
-			}
-			strcat(key->key,baseName);
+		if (key->key[nameSize-1] != RG_KEY_DELIM) nameSize++;
+		
+		/* Remove all '/' in the begining of baseName */
+		while (baseName[ndelim] && baseName[ndelim] == RG_KEY_DELIM) {
+			newSize--;
+			ndelim++;
 		}
+		
+		/* Now we know the final key size */
+		newSize+=nameSize;
+		key->key=realloc(key->key,newSize);
+		
+		if (key->key[nameSize-1] != RG_KEY_DELIM && baseName[ndelim])
+			strcat(key->key,"/");
+		
+		strcat(key->key,baseName+ndelim);
+		
 	} else return keySetName(key,baseName);
 	
 	return newSize;
@@ -723,8 +733,7 @@ char *keyStealName(const Key *key) {
  * Bytes needed to store the key name including user domain.
  *
  * @return number of bytes needed to store key name including user domain
- * @see keyGetFullName()
- * @see keyGetNameSize()
+ * @see keyGetFullName(), keyGetNameSize()
  * @ingroup keyname
  */
 size_t keyGetFullNameSize(const Key *key) {
@@ -946,8 +955,7 @@ size_t keyNameGetRootNameSize(const char *keyName) {
  * This method does not consider the user domain in @p user:username keys.
  *
  * @return number of bytes needed without the ending NULL
- * @see keyGetFullRootNameSize()
- * @see keyNameGetRootNameSize()
+ * @see keyGetFullRootNameSize(), keyNameGetRootNameSize()
  * @ingroup keyname
  */
 size_t keyGetRootNameSize(const Key *key) {
@@ -974,9 +982,7 @@ size_t keyGetRootNameSize(const Key *key) {
  * @param returned a pre-allocated buffer to store the rootname
  * @param maxSize size of the @p returned buffer
  * @return number of bytes needed without ending NULL
- * @see keyNameGetRootNameSize()
- * @see keyGetRootNameSize()
- * @see keyGetFullRootName()
+ * @see keyNameGetRootNameSize(), keyGetRootNameSize(), keyGetFullRootName()
  * @ingroup keyname
  */
 size_t keyGetRootName(const Key *key, char *returned, size_t maxSize) {
@@ -1014,8 +1020,7 @@ size_t keyGetRootName(const Key *key, char *returned, size_t maxSize) {
  * domain part, and you should prefer this one.
  *
  * @return number of bytes needed without ending NULL
- * @see keyNameGetRootNameSize()
- * @see keyGetRootNameSize()
+ * @see keyNameGetRootNameSize(), keyGetRootNameSize()
  * @ingroup keyname
  */
 size_t keyGetFullRootNameSize(const Key *key) {
@@ -1044,8 +1049,7 @@ size_t keyGetFullRootNameSize(const Key *key) {
  * @param returned a pre-allocated buffer to store the rootname
  * @param maxSize size of the @p returned buffer
  * @return number of bytes written to @p returned without ending NULL
- * @see keyGetFullRootNameSize()
- * @see keyGetRootName()
+ * @see keyGetFullRootNameSize(), keyGetRootName()
  * @ingroup keyname
  */
 size_t keyGetFullRootName(const Key *key, char *returned, size_t maxSize) {
@@ -1314,20 +1318,27 @@ size_t keyGetValueSize(const Key *key) {
 
 
 /**
- * Set the value of a key as a string.
+ * Set the value for @p key as @p newStringValue.
+ * The function will allocate and save a private copy of @p newStringValue, so
+ * the parameter can be freed after the call. 
  *
- * On disk, text will be encoded to UTF-8.
+ * String values will be saved in backend storage, when kdbSetKey() will be
+ * called, in UTF-8 universal encoding,regardeless of the program's current
+ * encoding.
  *
- * @param newString NULL-terminated text string
- * @return the number of bytes actually copied including final NULL
+ * @param key the key to set the string value
+ * @param newStringValue NULL-terminated text string to be set as @p key's
+ * 	value
+ * @return the number of bytes actually saved in private struct including final
+ * 	NULL
  * @see keyGetString(), keyStealValue()
  * @ingroup keyvalue
  */
-size_t keySetString(Key *key, const char *newString) {
-	size_t ret=newString?strblen(newString):0;
+size_t keySetString(Key *key, const char *newStringValue) {
+	size_t ret=newStringValue?strblen(newStringValue):0;
 
-	if (!newString || !ret) ret=keySetRaw(key,0,0);
-	else keySetRaw(key,newString,ret);
+	if (!newStringValue || !ret) ret=keySetRaw(key,0,0);
+	else keySetRaw(key,newStringValue,ret);
 
 	keySetType(key,KEY_TYPE_STRING);
 
@@ -1338,8 +1349,8 @@ size_t keySetString(Key *key, const char *newString) {
 
 /**
  * Get the value of a key as a string.
- * If the value can't be represented as a text string (binary value),
- * errno is set to KDB_RET_TYPEMISMATCH.
+ * If the value can't be represented as a text string (binary value, see
+ * keyIsBin()), @c errno is set to KDBErr::KDB_RET_TYPEMISMATCH.
  *
  * @par Example:
  * @code
@@ -1352,10 +1363,12 @@ if (keyIsBin(key)) keyGetBinary(key,buffer,sizeof(buffer));
 else keyGetString(key,buffer,sizeof(buffer));
  * @endcode
  *
+ * @param key the object to gather the value
  * @param returnedString pre-allocated memory to store a copy of the key value
- * @param maxSize number of bytes of pre-allocated memory
- * @return the number of bytes actually copied
- * @see keyStealValue(), keySetString()
+ * @param maxSize number of bytes of pre-allocated memory in @p returnedString
+ * @return the number of bytes actually copied to @p returnedString, including
+ * 	final NULL
+ * @see keyStealValue(), keySetString(), keyGetBinary()
  * @ingroup keyvalue
  */
 size_t keyGetString(const Key *key, char *returnedString, size_t maxSize) {
@@ -1548,7 +1561,8 @@ int keyIsDir(const Key *key) {
 /**
  * Check if a key is of some binary type
  *
- * @return 1 if KeyType::KEY_TYPE_BINARY <= type < KeyType::KEY_TYPE_STRING, 0 otherwise
+ * @return 1 if @link KeyType::KEY_TYPE_BINARY KEY_TYPE_BINARY @endlink <= type < @link KeyType::KEY_TYPE_STRING KEY_TYPE_STRING @endlink, 0 otherwise
+ * @see keyGetBinary(), keySetBinary()
  * @ingroup keytest
  */
 int keyIsBin(const Key *key) {
@@ -1561,15 +1575,15 @@ int keyIsBin(const Key *key) {
 
 
 /**
- * Get the value of a binary or string key.
+ * Get the binary or string value of @p key.
  *
- * @param returnedBinary pre-allocated memory to store a copy of the key value
+ * @param returnedValue pre-allocated memory to store a copy of @p key's value
  * @param maxSize number of bytes of pre-allocated memory
- * @return the number of bytes actually copied
+ * @return the number of bytes actually copied to @p returnedValue
  * @see keySetBinary(), keyGetString(), keyStealValue(), keyIsBin()
  * @ingroup keyvalue
  */
-size_t keyGetBinary(const Key *key, void *returnedBinary, size_t maxSize) {
+size_t keyGetBinary(const Key *key, void *returnedValue, size_t maxSize) {
 	if (!key || !keyIsInitialized(key))
 		return errno=KDB_RET_UNINITIALIZED;
 
@@ -1583,7 +1597,7 @@ size_t keyGetBinary(const Key *key, void *returnedBinary, size_t maxSize) {
 		return 0;
 	}
 
-	memcpy(returnedBinary,key->data,key->dataSize);
+	memcpy(returnedValue,key->data,key->dataSize);
 	return key->dataSize;
 }
 
@@ -1591,16 +1605,19 @@ size_t keyGetBinary(const Key *key, void *returnedBinary, size_t maxSize) {
 
 /**
  * Set the value of a key as a binary.
+ * A private copy of @p newBinary will allocated and saved inside @p key,
+ * so the parameter can be deallocated after the call.
  *
- * On disk, value will be encoded into a human readable hex-digit text
- * format and no UTF-8 encoding will be applied.
+ * The @c filesys backend, when used through a kdbSetKey(), will make the
+ * value be encoded into a human readable hex-digit text format.
  *
- * UNIX sysadmins don't like to deal with binary, sand box data.
+ * UNIX sysadmins don't like to deal with binary sand box data.
  * Consider using a string key instead.
  *
- * @param newBinary random bytes
- * @param dataSize number of bytes to copy from newBinary
- * @return the number of bytes actually copied
+ * @param key the object on which to set the value
+ * @param newBinary value octet stream
+ * @param dataSize number of bytes to copy from @p newBinary
+ * @return the number of bytes actually copied to internal struct storage
  * @see keyGetBinary(), keyIsBin(), keyGetString(), keyStealValue(),
  * 	keySetString()
  * @ingroup keyvalue
@@ -1616,11 +1633,11 @@ size_t keySetBinary(Key *key, const void *newBinary, size_t dataSize) {
 
 
 /**
- * Test if an in-memory Key object was changed after retrieved from disk.
- * All Key methods that change objects properties will set an internal flag,
- * that is checked by this method.
+ * Test if the in-memory @p key object was changed after retrieved from disk.
+ * All library methods that change Key properties take care of setting a 'key
+ * is dirty' internal flag, that is checked by this method.
  *
- * @return 1 if the key was changed, 0 otherwise.
+ * @return 1 if @p key was changed in memory, 0 otherwise.
  * @ingroup keytest
  */
 int keyNeedsSync(const Key *key) {
@@ -2361,11 +2378,17 @@ time_t keyGetCTime(const Key *key) {
  * Compare 2 keys.
  *
  * The returned flags bit array has 1s (differ) or 0s (equal) for each key
- * meta info compared, that can be logically ORed with @p KEY_SWITCH_* flags.
- * The flags you can use are @p KEY_SWITCH_TYPE, @p KEY_SWITCH_NAME,
- * @p KEY_SWITCH_VALUE, @p KEY_SWITCH_OWNER, @p KEY_SWITCH_COMMENT,
- * @p KEY_SWITCH_UID, @p KEY_SWITCH_GID, @p KEY_SWITCH_MODE,
- * @p KEY_SWITCH_NEEDSYNC and @p KEY_SWITCH_FLAG.
+ * meta info compared, that can be logically ORed using @c #KeySwitch flags.
+ * The flags you can use are @link KeySwitch::KEY_SWITCH_TYPE KEY_SWITCH_TYPE
+ * @endlink, @link KeySwitch::KEY_SWITCH_NAME KEY_SWITCH_NAME @endlink,
+ * @link KeySwitch::KEY_SWITCH_VALUE KEY_SWITCH_VALUE @endlink,
+ * @link KeySwitch::KEY_SWITCH_OWNER KEY_SWITCH_OWNER @endlink,
+ * @link KeySwitch::KEY_SWITCH_COMMENT KEY_SWITCH_COMMENT @endlink,
+ * @link KeySwitch::KEY_SWITCH_UID KEY_SWITCH_UID @endlink,
+ * @link KeySwitch::KEY_SWITCH_GID KEY_SWITCH_GID @endlink,
+ * @link KeySwitch::KEY_SWITCH_MODE KEY_SWITCH_MODE @endlink,
+ * @link KeySwitch::KEY_SWITCH_NEEDSYNC KEY_SWITCH_NEEDSYNC @endlink and
+ * @link KeySwitch::KEY_SWITCH_FLAG KEY_SWITCH_FLAG @endlink.
  *
  * @return a bit array poiting the differences
  * @see ksCompare() for examples and more detailed description
@@ -2397,29 +2420,23 @@ ksRewind(ks);   // put cursor in the begining
 while ((curren=ksNext(ks))) {
 	match=keyCompare(current,base);
 	
-	if ((~match & interests) == interests) {
-		char buffer[300];
-		
-		keyGetName(current,buffer,sizeof(buffer));
-		printf("Key %s has same type and permissions of base key",buffer);
-	}
+	if ((~match & interests) == interests)
+		printf("Key %s has same type and permissions of base key",keyStealName(current));
+
 	// continue walking in the KeySet....
 }
 
 // now we want same name and/or value and/or sync status
 interests=(KEY_SWITCH_NAME | KEY_SWITCH_VALUE | KEY_SWITCH_NEEDSYNC);
 
-// we don't really need this, since previous loop achieved end of KeySet
+// we don't really need ksRewind(), since previous loop achieved end of KeySet
 ksRewind(ks);
 while ((current=ksNext(ks))) {
 	match=keyCompare(current,base);
 	
 	if ((~match & interests) == interests) {
-		char buffer[300];
-		
-		keyGetName(current,buffer,sizeof(buffer));
-		printf("Key %s has same name, value, and storage syncronization
-			status of base key",buffer);
+		printf("Key %s has same name, value, and sync status
+			of base key",keyStealName(current));
 	}
 	// continue walking in the KeySet....
 }
@@ -2492,15 +2509,14 @@ u_int32_t keyCompare(const Key *key1, const Key *key2) {
 	</key>@endverbatim
 
  * Accepted options that can be ORed:
+ * @param stream where to write output: a file or stdout
+ * @param options Some #KDBOptions ORed:
  * - @p KDBOptions::KDB_O_NUMBERS \n
  *   Do not convert UID and GID into user and group names
  * - @p KDBOptions::KDB_O_CONDENSED \n
  *   Less human readable, more condensed output
  *
- * @param stream where to write output: a file or stdout
- * @param options ORed of KDB_O_* options
  * @see ksToStream()
- * @see #KDBOptions
  * @return number of bytes written to output
  * @ingroup keymisc
  */
@@ -2744,7 +2760,7 @@ int keyGetFlag(const Key *key) {
 		return 0;
 	}
 
-	return (key->flags | KEY_SWITCH_FLAG) ? 1:0;
+	return (key->flags & KEY_SWITCH_FLAG) ? 1:0;
 }
 
 
@@ -2787,7 +2803,7 @@ int keyInit(Key *key) {
 	key->access=umask(0); umask(key->access);
 	key->access=DEFFILEMODE & ~key->access;
 
-	key->flags |= KEY_SWITCH_INITIALIZED | KEY_SWITCH_ACTIVE;
+	key->flags = KEY_SWITCH_INITIALIZED;
 
 	return 0;
 }
@@ -2802,8 +2818,8 @@ int keyInit(Key *key) {
  * ready to be keyInit()ed to reuse, or deallocated.
  * 
  * @see keyInit() for usage example
- * @see keyNew() as a more usefull function
- * @see keyDel()
+ * @see keyNew() and keyDel() as a more practicall approach for Key
+ * 	construction and destruction
  * @ingroup key
  */
 int keyClose(Key *key) {
@@ -2825,14 +2841,17 @@ int keyClose(Key *key) {
 
 
 /**
- * @defgroup keyset KeySet Class Methods
+ * @defgroup keyset KeySet :: Class Methods
  * @brief Methods to manipulate KeySets.
  * A KeySet is a linked list to group a number of Keys.
- * Key Sets have an internal cursor to help in the Key navigation.
+ * Key Sets have an @link ksCurrent() internal cursor @endlink to help
+ * in the Key navigation.
  *
  * These are the methods to make various manipulations in the objects of class KeySet.
- * Methods for sorting, merging, comparing, and internal cursor manipulation are provided.
- * To use it:
+ * Methods for @link ksSort() sorting @endlink, @link ksAppendKeys() merging
+ * @endlink, @link ksCompare() comparing @endlink, and @link ksNext() internal
+ * cursor manipulation @endlink are provided.
+ * To use them:
  * @code
 #include <kdb.h>
  * @endcode
@@ -2870,8 +2889,7 @@ KeySet *ksNew() {
  * allocated by ksNew()). There is the @p ksFree() macro if you prefer this
  * method name.
  *
- * @see ksNew()
- * @see ksClose()
+ * @see ksNew(), ksClose()
  * @return whatever is returned by ksClose()
  */
 int ksDel(KeySet *ks) {
@@ -2886,8 +2904,7 @@ int ksDel(KeySet *ks) {
 
 
 /**
- * @return the number of keys contained by the @p ks.
- *
+ * Return the number of keys contained by @p ks.
  */
 size_t ksGetSize(KeySet *ks) {
 	return ks->size;
@@ -2909,10 +2926,8 @@ size_t ksGetSize(KeySet *ks) {
  * Resets a KeySet internal cursor.
  * Use it to set the cursor to the begining of the KeySet
  *
- * @see ksNext()
- * @see ksCurrent()
- * @see kdbMonitorKeys() for an example
  * @return allways 0
+ * @see ksNext(), ksCurrent(), kdbMonitorKeys() for an example
  *
  */
 int ksRewind(KeySet *ks) {
@@ -2931,9 +2946,8 @@ int ksRewind(KeySet *ks) {
  * if ksNext() is called again, it will set the cursor to the begining of
  * the KeySet and the first key is returned.
  *
- * @see ksRewind()
- * @see ksCurrent()
  * @return the new current Key
+ * @see ksRewind(), ksCurrent()
  *
  */
 Key *ksNext(KeySet *ks) {
@@ -2948,10 +2962,9 @@ Key *ksNext(KeySet *ks) {
 /**
  * Return the current Key
  *
- * @see ksNext()
- * @see ksRewind()
- * @see kdbMonitorKeys() for a usage example
  * @return pointer to the Key pointed by @p ks's cursor
+ * @see ksNext(), ksRewind()
+ * @see kdbMonitorKeys() for a usage example
  */
 Key *ksCurrent(const KeySet *ks) {
 	return ks->cursor;
@@ -2998,28 +3011,28 @@ Key *ksTail(KeySet *ks) {
 
 
 /**
- * The @p ksLookup*() set of methods are designed to let you work with
- * entirely pre-loaded KeySets, so instead of kdbGetKey(), key by key, the
- * idea is to fully kdbGetChildKeys() for your application root key (which is
- * more performatic), and process it all at once.
- *
- * ksLookupByName() will look for a Key contained in @p ks KeySet that
- * matches @p name, starting from ks' ksNext() position.
+ * Look for a Key contained in @p ks that matches @p name, starting from
+ * ks' ksNext() position.
  * 
  * If found, @p ks internal cursor will be positioned in the matched key
  * (also accessible by ksCurrent()), and a pointer to the Key is returned.
  * If not found, @p ks internal cursor will not move, and a NULL pointer is
  * returned.
  * 
+ * The @p ksLookup*() set of methods are designed to let you work with
+ * entirely pre-loaded KeySets, so instead of kdbGetKey(), key by key, the
+ * idea is to fully kdbGetChildKeys() for your application root key (which is
+ * more performatic), and process it all at once with @p ksLookup*().
+ *
  * @param ks where to look for
  * @param name key name you are looking for
  * @param options some @p KDB_O_* option bits. Currently suported:
  * 	- @p KDB_O_NOCASE @n
  * 	  Lookup ignoring case.
+ * @return pointer to the Key found, 0 otherwise
  * @see ksLookupRE() for powerfull regular expressions based lookups
  * @see keyCompare() for very powerfull Key lookups in KeySets
  * @see ksCurrent(), ksRewind(), ksNext()
- * @return the Key found, 0 otherwise
  */
 Key *ksLookupByName(KeySet *ks, const char *name, unsigned long options) {
 	Key *init=0;
@@ -3059,13 +3072,14 @@ Key *ksLookupByName(KeySet *ks, const char *name, unsigned long options) {
  * @param ks the KeySet to lookup into
  * @param where any of @p KEY_SWITCH_NAME, @p KEY_SWITCH_VALUE,
  * 	@p KEY_SWITCH_OWNER, @p KEY_SWITCH_COMMENT ORed.
- * @param regex a regcomp(3) pre-compiled regular expression
+ * @param regexp a regcomp(3) pre-compiled regular expression
  * @param options some @p KDB_O_* ORed options to change lookup behavior.
  * 	Currently supported options:
  * - @p KDB_O_NOSPANPARENT @n
  *   Lookup only keys under ksCurrent()'s parent. If we are in the begining of
  *   the KeySet (ksCurrent()==NULL), this option is ignored. @p ks must be
- *   ksSort()ed (or kdbGetChildKeys() with KDB_O_SORT) for this to work.
+ *   ksSort()ed (or kdbGetChildKeys() with @link KDBOption::KDB_O_SORT
+ *   KDB_O_SORT @endlink) for this to work.
  * 
  * @return some of @p KEY_SWITCH_NAME, @p KEY_SWITCH_VALUE,
  * 	@p KEY_SWITCH_OWNER, @p KEY_SWITCH_COMMENT switches ORed to
@@ -3073,8 +3087,7 @@ Key *ksLookupByName(KeySet *ks, const char *name, unsigned long options) {
  * 
  * @see ksLookupByName(), ksLookupByValue(), keyCompare() for other types of
  * 	lookups.
- * @see kdbGetChildKeys()
- * @see ksSort()
+ * @see kdbGetChildKeys(), ksSort()
  * 
  * @par Example:
  * @code
@@ -3226,12 +3239,10 @@ while (key=ksLookupByValue(ks,"my value",0)) {
  * @param options some @p KDB_O_* option bits. Currently supported:
  * 	- @p KDB_O_NOCASE @n
  * 	  Lookup ignoring case.
+ * @return the Key found, 0 otherwise
  * @see ksLookupByBinaryValue()
  * @see keyCompare() for very powerfull Key lookups in KeySets
- * @see ksCurrent()
- * @see ksRewind()
- * @see ksNext()
- * @return the Key found, 0 otherwise
+ * @see ksCurrent(), ksRewind(), ksNext()
  */
 Key *ksLookupByValue(KeySet *ks, const char *value, unsigned long options) {
 	Key *init=0;
@@ -3277,10 +3288,10 @@ Key *ksLookupByValue(KeySet *ks, const char *value, unsigned long options) {
  * @param value the value which owner key you want to find
  * @param size the size of @p value
  * @param options some @p KDB_O_* option bits, for future use
+ * @return the Key found, 0 otherwise
  * @see ksLookupByValue()
  * @see keyCompare() for very powerfull Key lookups in KeySets
  * @see ksCurrent(), ksRewind(), ksNext()
- * @return the Key found, 0 otherwise
  */
 Key *ksLookupByBinaryValue(KeySet *ks, void *value, size_t size,
 		unsigned long options) {
@@ -3326,11 +3337,7 @@ Key *ksLookupByBinaryValue(KeySet *ks, void *value, size_t size,
  * @return the size of the KeySet after insertion
  * @param ks KeySet that will receive the key
  * @param toInsert Key that will be inserted into ks
- * @see ksAppend()
- * @see ksInsertKeys()
- * @see ksAppendKeys()
- * @see ksDel()
- * @see keyNew()
+ * @see ksAppend(), ksInsertKeys(), ksAppendKeys(), ksDel(), keyNew()
  *
  */
 size_t ksInsert(KeySet *ks, Key *toInsert) {
@@ -3417,9 +3424,7 @@ Key *ksPopLast(KeySet *ks) {
  * @return the size of the KeySet after insertion
  * @param ks the KeySet that will receive the keys
  * @param toInsert the KeySet that provides the keys that will be transfered
- * @see ksAppend()
- * @see ksInsert()
- * @see ksAppendKeys()
+ * @see ksAppend(), ksInsert(), ksAppendKeys()
  *
  */
 size_t ksInsertKeys(KeySet *ks, KeySet *toInsert) {
@@ -3449,12 +3454,7 @@ size_t ksInsertKeys(KeySet *ks, KeySet *toInsert) {
  * @return the size of the KeySet after insertion
  * @param ks KeySet that will receive the key
  * @param toAppend Key that will be appended to ks
- * @see ksDel()
- * @see ksClose()
- * @see ksInsert()
- * @see ksInsertKeys()
- * @see ksAppendKeys()
- * @see keyNew()
+ * @see ksInsert(), ksInsertKeys(), ksAppendKeys(), keyNew(), ksDel()
  *
  */
 size_t ksAppend(KeySet *ks, Key *toAppend) {
@@ -3476,9 +3476,7 @@ size_t ksAppend(KeySet *ks, Key *toAppend) {
  * @return the size of the KeySet after transfer
  * @param ks the KeySet that will receive the keys
  * @param toAppend the KeySet that provides the keys that will be transfered
- * @see ksAppend()
- * @see ksInsert()
- * @see ksInsertKeys()
+ * @see ksAppend(), ksInsert(), ksInsertKeys()
  * 
  */
 size_t ksAppendKeys(KeySet *ks, KeySet *toAppend) {
@@ -3515,31 +3513,34 @@ size_t ksAppendKeys(KeySet *ks, KeySet *toAppend) {
 
 
 /**
- *  Compare 2 KeySets with the following behavior:
- *  - A key (by full name) that is present on @p ks1 and @p ks2, and has
- *    something different, will be transfered from @p ks2 to @p ks1, and
- *    @p ks1's (old) version deleted.
- *  - Keys that are in @p ks1, but aren't in @p ks2 will be trasnsfered
- *    from @p ks1 to @p removed.
- *  - Keys that are keyCompare() equal in @p ks1 and @p ks2 will be
- *    deleted from @p ks2.
- *  - Keys that are available in @p ks2 but don't exist in @p ks1 will
- *    be transfered to @p ks1.
+ * Compare 2 KeySets.
+ *  
+ * This method behavior is the following:
+ * - A key (by full name) that is present on @p ks1 and @p ks2, and has
+ *   something different, will be transfered from @p ks2 to @p ks1, and
+ *   @p ks1's (old) version deleted.
+ * - Keys present in @p ks1, but not in @p ks2 will be transfered from @p ks1
+ *   to @p removed.
+ * - Keys that are keyCompare() equal in @p ks1 and @p ks2 will be
+ *   keyDel()eted from @p ks2.
+ * - Keys present in @p ks2 but not in @p ks1 will
+ *   be transfered to @p ks1.
  *
- *  In the end, @p ks1 will have all the keys that matter, and @p ks2
- *  will be empty.
+ * In the end, @p ks1 will have all the keys that matter, and @p ks2
+ * will be empty.
  *
- *  After ksCompare(), you should:
- *  - ksDel(ks2)
- *  - call kdbSetKeys() on @p ks1 to commit all changed keys
- *  - kdbRemoveKey() for all keys in the @p removed KeySet
+ * After ksCompare(), you should, in this order:
+ * -# ksDel(ks2)
+ * -# call kdbSetKeys() on @p ks1 to commit all changed keys
+ * -# kdbRemoveKey() for all keys in the @p removed KeySet
+ * -# ksDel(removed)
  *
- *  @param ks1 first KeySet
- *  @param ks2 second KeySet
- *  @param removed initially empty KeySet that will be filled with keys
- *  	removed from @p ks1
- *  @see keyCompare()
- *  @see commandEdit() at the kdb command
+ * @param ks1 first and main KeySet
+ * @param ks2 second KeySet
+ * @param removed (generally empty) KeySet that will be filled with keys
+ * 	removed from @p ks1
+ * @see keyCompare()
+ * @see commandEdit() at the kdb command
  * @par Example
  * @code
 KeySet *ks1,*ks2,*removed;
@@ -3555,17 +3556,19 @@ removed=ksNew();
 
 ksCompare(ks1,ks2,removed);
 
-kdbSetKeys(ks1);
-ksDel(ks1);  // don't need it anymore
-ksDel(ks2);  // don't need it anymore
+ksDel(ks2);  // second KeySet is allways empty after ksCompare()
+kdbSetKeys(ks1); // commit changed keys
+ksDel(ks1);  // don't need ks1 anymore
 
-ksSort(removed);
+// Remove all keys that disapeared from ks1...
+ksSort(removed); // Sort it first so then we ensure child keys are removed
+                 // before their parents
 while (key=ksPopLast(removed)) {
 	kdbRemoveKey(key);
 	keyDel(key);
 }
 
-ksDel(removed);
+ksDel(removed); // free the KeySet memory
  * @endcode
  */
 int ksCompare(KeySet *ks1, KeySet *ks2, KeySet *removed) {
@@ -3652,17 +3655,37 @@ int ksCompare(KeySet *ks1, KeySet *ks2, KeySet *removed) {
 
 
 /**
- * Prints an XML version of a KeySet object.
+ * Writes to @p stream an XML version of the @p ks object.
  *
- * Accepted options:
- * - @p KDB_O_NUMBERS: Do not convert UID and GID into user and group names
- * - @p KDB_O_CONDENSED: Less human readable, more condensed output
- * - @p KDB_O_XMLHEADERS: Include the correct XML headers in the output. Use it.
+ * String generated is of the form:
+ * @verbatim
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Generated by Elektra API. Total of 7 keys. -->
+  
+<keyset xmlns="http://elektra.sourceforge.net"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://elektra.sourceforge.net elektra.xsd">
+
+
+<key ...>...</key>
+<key ...>...</key>
+<key ...>...</key>
+
+</keyset>@endverbatim
  *
  * @param stream where to write output: a file or stdout
- * @param options ORed of @p KDB_O_* options
+ * @param options accepted #KDBOptions ORed:
+ * - @p KDBOptions::KDB_O_NUMBERS \n
+ *   Do not convert UID and GID into user and group names.
+ * - @p KDBOptions::KDB_O_CONDENSED \n
+ *   Less human readable, more condensed output.
+ * - @p KDBOptions::KDB_O_XMLHEADERS \n
+ *   Use it. Include the correct XML headers in the output. If not used, the
+ *   <?xml?> and schema info inside the <keyset> object will not be generated.
+ *
  * @see keyToStream()
- * @see #KDBOptions
+ * @see commandList() for usage example
  * @return number of bytes written to output
  */
 size_t ksToStream(const KeySet *ks, FILE* stream, unsigned long options) {
@@ -3741,9 +3764,7 @@ void ksSort(KeySet *ks) {
  * pointers, counters, etc. After use, all ksInit()ialized KeySets must be
  * cleaned with ksClose().
  * 
- * @see ksNew()
- * @see ksClose()
- * @see keyInit()
+ * @see ksNew(), ksClose(), keyInit()
  */
 int ksInit(KeySet *ks) {
 	ks->start=ks->end=ks->cursor=0;
@@ -3760,9 +3781,7 @@ int ksInit(KeySet *ks) {
  * 
  * After this call, the @p ks object is ready to be freed by you.
  * 
- * @see keyDel()
- * @see ksInit()
- * @see keyClose()
+ * @see keyDel(), ksInit(), keyClose()
  * @see ksAppend() for details on how keys are inserted in KeySets
  * @return 0
  */

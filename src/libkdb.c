@@ -49,7 +49,7 @@ extern int errno;
 
 
 /**
- * @defgroup kdb KeyDB Class Methods
+ * @defgroup kdb KeyDB :: Class Methods
  * @brief General methods to access the Key database.
  *
  * To use them:
@@ -57,12 +57,12 @@ extern int errno;
 #include <kdb.h>
  * @endcode
  *
- * This is the class that accesses the storage backend. When writing a new
- * backend, these are the methods you'll have to reimplement:
+ * This is the class that accesses the storage backend. When @link backend writing a new
+ * backend @endlink, these are the methods you'll have to reimplement:
  * kdbOpen(), kdbClose(), kdbGetKey(), kdbSetKey(), kdbStatKey(),
  * kdbGetKeyChildKeys(), kdbRemove(), kdbRename().
  *
- * And methods that is suggested to reimplement (but not needed) if you want
+ * And methods that are suggested to reimplement (but not needed) if you want
  * them to get the benefits of your new backend: kdbSetKeys(),
  * kdbMonitorKey(), kdbMonitorKeys().
  *
@@ -589,9 +589,7 @@ int kdbSetValueByParent(const char *parentName, const char *baseName, const char
  * @param baseName leaf or child name
  * @param returned a pointer to an initialized key to be filled
  * @return 0 on success, or what kdbGetKey() returns, and @c errno is set
- * @see kdbGetKey()
- * @see kdbGetValueByParent()
- * @see kdbGetKeyByParentKey()
+ * @see kdbGetKey(), kdbGetValueByParent(), kdbGetKeyByParentKey()
  * @ingroup kdb
  */
 int kdbGetKeyByParent(const char *parentName, const char *baseName, Key *returned) {
@@ -607,9 +605,7 @@ int kdbGetKeyByParent(const char *parentName, const char *baseName, Key *returne
 /**
  * Similar to previous, provided for convenience.
  * @param parent pointer to the parent key
- * @see kdbGetKey()
- * @see kdbGetKeyByParent()
- * @see kdbGetValueByParent()
+ * @see kdbGetKey(), kdbGetKeyByParent(), kdbGetValueByParent()
  * @return 0 on success, or what kdbGetKey() returns, and @c errno is set
  * @ingroup kdb
  */
@@ -696,7 +692,7 @@ while (key) {
 }
  * @endcode
  *
- * @param parentName name of the parent key
+ * @param parentKey parent key
  * @param returned the (pre-initialized) KeySet returned with all keys found
  * @param options ORed options to control approaches
  * @see #KDBOptions
@@ -750,7 +746,7 @@ int kdbGetChildKeys(const char *parentName, KeySet *returned, unsigned long opti
  * on the system. Currently, the @p system and current user's @p user keys
  * are returned.
  * @param returned the initialized KeySet to be filled
- * @return 0
+ * @return allways 0
  * @see #KeyNamespace
  * @see commandList() code in kdb command for usage example
  * @ingroup kdb
@@ -759,20 +755,17 @@ int kdbGetChildKeys(const char *parentName, KeySet *returned, unsigned long opti
 int kdbGetRootKeys(KeySet *returned) {
 	Key *system=0,*user=0;
 
-	system=keyNew("system",KEY_SWITCH_END);
-	if (kdbGetKey(system)) {
-		keyDel(system);
-		system=0;
-	}
-
-	user=keyNew("user",KEY_SWITCH_END);
-	if (kdbGetKey(user)) {
+	user=keyNew("user",KEY_SWITCH_NEEDSYNC,KEY_SWITCH_END);
+	if (user->flags & KEY_SWITCH_FLAG) {
 		keyDel(user);
 		user=0;
-	}
+	} else ksInsert(returned,user);
 
-	if (system) ksInsert(returned,system);
-	if (user) ksAppend(returned,user);
+	system=keyNew("system",KEY_SWITCH_NEEDSYNC,KEY_SWITCH_END);
+	if (system->flags & KEY_SWITCH_FLAG) {
+		keyDel(system);
+		system=0;
+	} else ksInsert(returned,system);
 
 	return 0;
 }
@@ -780,9 +773,10 @@ int kdbGetRootKeys(KeySet *returned) {
 
 
 /**
- * Retrieves only the meta-info of a key from backend storage.
+ * Taps the key only for its meta-info from the backend storage.
+ * 
  * The bahavior may change from backend to backend. In the filesystem
- * backend, it will make only a stat to the key.
+ * backend, it will make only a stat on the key.
  *
  * Info like comments and key data type are not retrieved.
  *
@@ -843,10 +837,7 @@ int kdbGetKey(Key *key) {
  *
  * @param ks a KeySet full of changed keys
  * @return 0 on success, or whatever kdbSetKey() returns
- * @see kdbSetKey()
- * @see keyNeedsSync()
- * @see ksNext()
- * @see ksCurrent()
+ * @see kdbSetKey(), keyNeedsSync(), ksNext(), ksCurrent()
  * @see commandEdit(), commandImport() code in kdb command for usage and error
  *       handling example
  * @ingroup kdb
@@ -867,9 +858,10 @@ int kdbSetKeys(KeySet *ks) {
 
 
 /**
- * A high level, probably inefficient, implementation for the kdbSetKeys()
+ * A high level, probably inefficient implementation for the kdbSetKeys()
  * method. If a backend doesn't want to reimplement this method, this
- * implementation can be used.
+ * implementation can be used, in which kdbSetKey() will be called for
+ * each Key object contained by @p ks.
  *
  * @ingroup backend
  */
@@ -895,8 +887,7 @@ int kdbSetKeys_default(KeySet *ks) {
  * Commits a key to the backend storage.
  * If failed (see return), the @c errno global is set accordingly.
  *
- * @see kdbGetKey()
- * @see kdbSetKeys()
+ * @see kdbGetKey(), kdbSetKeys()
  * @see commandSet() code in kdb command for usage example
  * @return 0 on success, or other value and @c errno is set
  * @ingroup kdb
@@ -1077,11 +1068,7 @@ while (1) {
 ksDel(myConfigs);
  * @endcode
  *
- * @see kdbMonitorKey()
- * @see ksCurrent()
- * @see ksRewind()
- * @see ksNext()
- * @see KeyFlags
+ * @see kdbMonitorKey(), ksCurrent(), ksRewind(), ksNext(), #KeySwitch
  * @see commandMonitor() code in kdb command for usage example
  * @ingroup kdb
  *
@@ -1262,7 +1249,7 @@ u_int32_t kdbMonitorKey_default(Key *interest, u_int32_t diffMask,
 /**
  * This function must be called by a backend's kdbBackendFactory() to
  * define the backend's methods that will be exported. Its job is to
- * organize a libkdb.so's internal structure with pointers to backend
+ * organize a libkdb.so's table of virtual methods with pointers to backend
  * dependent methods.
  * 
  * The order and number of arguments are flexible (as keyNew()) to let
@@ -1278,6 +1265,18 @@ u_int32_t kdbMonitorKey_default(Key *interest, u_int32_t diffMask,
  * 
  * @par Example of a complete backend:
  * @code
+//
+// This is my implementation for an Elektra backend storage.
+//
+// To compile it:
+// $ cc -fpic -o myback.o -c myback.c
+// $ cc -shared -fpic -o libkdb-myback.so myback.o
+// 
+// To use it:
+// $ export KDB_BACKEND=myback
+// $ kdb ls -Rv
+//
+
 #include <kdb.h>
 #include <kdbbackend.h>
 
@@ -1382,15 +1381,15 @@ KDBBackend *kdbBackendExport(const char *backendName, ...) {
 
 
 /**
- * @mainpage The Elektra Key/Value Pair Database API
+ * @mainpage The Elektra API
  *
- * @section overview Elektra Project Overview
+ * @section overview Elektra Initiative Overview
  *
- * Elektra is a project to unify Linux/Unix configurations. It does that
+ * Elektra is an initiative to unify Linux/Unix configurations. It does that
  * providing an hierarchical namespace to store configuration keys and
- * their values, an API to access/modify them, and some command line tools.
+ * their values, an API to access/modify them, and command line tools.
  *
- * Everything about the project can be found at http://elektra.sf.net
+ * Everything about the initiative can be found at http://elektra.sf.net
  *
  * @section classes Elektra API
  *
@@ -1407,33 +1406,47 @@ KDBBackend *kdbBackendExport(const char *backendName, ...) {
  * Some general things you can do with each class are:
  *
  * @subsection KeyDB KeyDB
- *   - Retrieve and commit Keys and KeySets, recursively or not
- *   - Retrieve and commit individual Keys value, by absolute name or relative to parent
- *   - Monitor and notify changes in Keys and KeySets
+ *   - @link kdbGetKey() Retrieve @endlink and @link kdbSetKey() commit
+ *     @endlink Keys and @link kdbSetKeys() KeySets @endlink,
+ *     @link kdbGetKeyChildKeys() recursively @endlink or not
+ *   - Retrieve and commit individual @link kdbGetValue() Key value @endlink, by
+ *     absolute name or @link kdbGetValueByParent() relative to parent @endlink
+ *   - Monitor and notify changes in @link kdbMonitorKey() Keys @endlink and
+ *     @link kdbMonitorKeys() KeySets @endlink
  *   - Create and delete regular, folder or symbolic link Keys
  *   - See @ref kdb "class documentation" for more
  *
  * @subsection Key Key
- *   - Get and Set key properties like name, root and base name, value, type,
- *      permissions, changed time, description, etc
- *   - Compare all properties with other keys
- *   - Test if changed, if is a @p user/ or @p system/ key, etc
- *   - Flag it and test if key has a flag
- *   - Export Keys to an XML representation
+ *   - Get and Set key properties like @link keySetName() name @endlink,
+ *     root and @link keySetBaseName() base name @endlink,
+ *     @link keySetString() value @endlink, @link keySetType() type @endlink,
+ *     @link keyGetAccess() permissions @endlink,
+ *     @link keyGetMTime() changed time @endlink,
+ *     @link keyGetComment() comment @endlink, etc
+ *   - @link keyCompare() Make powerfull comparations of all key properties
+ *     with other keys @endlink
+ *   - @link keyNeedsSync() Test if changed @endlink, if it is a
+ *     @link keyIsUser() @p user/ @endlink or @link keyIsSystem() @p system/
+ *     @endlink key, etc
+ *   - @link keySetFlag() Flag it @endlink and @link keyGetFlag() test if key
+ *     has a flag @endlink
+ *   - @link keyToStream() Export Keys to an XML representation @endlink
  *   - See @ref key "class documentation" for more
  *
  * @subsection KeySet KeySet
  *   - Linked list of Key objects
- *   - Insert and append entire KeySets or Keys
- *   - Work with its internal cursor
- *   - Compare entire KeySets
- *   - Export KeySets to an XML representation
+ *   - @link ksInsert() Insert @endlink and @link ksAppend() append @endlink
+ *     entire @link ksInsertKeys() KeySets @endlink or Keys
+ *   - @link ksNext() Work with @endlink its @link ksCurrent() internal
+ *     cursor @endlink
+ *   - @link ksCompare() Compare entire KeySets @endlink
+ *   - @link ksToStream() Export KeySets to an XML representation @endlink
  *   - See @ref keyset "class documentation" for more
  *
  *
  * @section keynames Key Names and Namespaces
  *
- * There are 2 trees of keys: @p system and @p user
+ * There are 2 trees of keys: @c system and @c user
  *
  * @subsection systemtree The "system" Subtree
  *

@@ -1,6 +1,6 @@
 Name:          elektra
 Version:       _VERSION_
-%define myRelease 9
+%define myRelease 1
 %define vepoch 1
 Release:       0.fdr.%{vepoch}.%{myRelease}
 Source:        http://aleron.dl.sourceforge.net/sourceforge/elektra/%{name}-%{version}.tar.gz
@@ -124,6 +124,7 @@ kdb set system/sw/kdb/current/schemapath "%{_datadir}/sgml/elektra-%{DTDVERSION}
 /lib/*kdb-default.so*
 /lib/*kdb-fstab.so*
 /lib/*registry.so*
+%{_libdir}/*kdbtools.so*
 /bin/*
 %{_sysconfdir}/profile.d/*
 %doc %{_docdir}/%{name}

@@ -74,7 +74,11 @@ int kdbClose_fstab() {
 	return 0; /* success */
 }
 
-
+int kdbGetKey_fstab(Key *key) {
+	if (!keyIsSystem(key)) return 1;
+	errno=KDB_RET_NOSYS;
+	return 0;
+}
 
 
 int kdbGetKeyChildKeys_fstab(const Key *parentKey, KeySet *returned,
