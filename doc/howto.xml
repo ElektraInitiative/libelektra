@@ -379,7 +379,7 @@ $LastChangedBy$
 
 		<para>Elektra has a <ulink url="http://www.opensource.org/licenses/bsd-license.php">BSD</ulink> license.</para>
 		<para>
-			<ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628"><graphic srccredit="SourceForge.net" fileref="http://sourceforge.net/sflogo.php?group_id=99628&amp;type=5" label="SourceForge.net Logo" align="center"/></ulink><ulink url="http://freshmeat.net/projects/elektra/"><graphic srccredit="freashmeat.net" fileref="images/link_button_1.gif" label="Freshmeat.net Logo" align="center"/></ulink>
+			<ulink url="http://sourceforge.net/projects/elektra"><graphic srccredit="SourceForge.net" fileref="http://sourceforge.net/sflogo.php?group_id=99628&amp;type=5" label="SourceForge.net Logo" align="center"/></ulink><ulink url="http://freshmeat.net/projects/elektra/"><graphic srccredit="freashmeat.net" fileref="images/link_button_1.gif" label="Freshmeat.net Logo" align="center"/></ulink>
 		</para>
 		<section id="man"><title>Online Manual Pages and API Documentation</title>
 			<para>Elektra man pages can be accessed online:</para>
