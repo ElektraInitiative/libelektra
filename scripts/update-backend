@@ -1,0 +1,57 @@
+#!/bin/sh
+# update-backend
+
+# This Tool helps you to select another
+# backend. Its in a very pre-alpha state,
+# dont use it.
+
+# Author: Markus Raab
+# Licence: BSD
+
+PATH="/bin"
+
+DEBUG=echo
+TMPFILE="/tmp/$$.kdb.xml"
+
+if [ ! "$1" ]
+then
+	echo "Usage: $0 backend"
+	exit 1
+fi
+
+if [ "$UID" != 0 ]
+then
+	echo "Only root can run this script"
+	exit 2
+fi
+
+if [ ! -f "/lib/libkdb-$1.so" ]
+then
+	echo "Choosen backend not available"
+	exit 3
+fi
+
+kdb export > "$TMPFILE"
+
+if [ "$?" != 0 ]
+then
+	echo "Exporting was not possible"
+	exit 4
+fi
+
+$DEBUG rm -f "/lib/libkdb-default.so"
+$DEBUG ln -s "/lib/libkdb-$1.so" "/lib/libkdb-default.so"
+
+kdb import < "$TMPFILE"
+
+if [ "$?" != 0 ]
+then
+	echo "Warning: Import Configuration was not possible!"
+	echo "Check $TMPFILE to fix the problem."
+	exit 5
+fi
+
+$DEBUG rm "$TMPFILE"
+
+echo "Installed new backend $1 successfully!"
+
