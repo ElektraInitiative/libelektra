@@ -23,8 +23,8 @@
  *   Linux Registry. Each Key is a file in the filesystem.                 *
  *   It is as secure as filesystem security. It is as reliable             *
  *   as filesystem. It uses only standards C calls, which makes it         *
- *   be usable by very low level or early boot stage software, like        *
- *   /sbin/init.  This is good business.                                   *
+ *   usable by very low level or early boot stage software, like           *
+ *   /sbin/init.                                                           *
  *                                                                         *
  ***************************************************************************/
 

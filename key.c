@@ -40,7 +40,9 @@ $LastChangedBy$
 extern int errno;
 
 
-
+/**
+ * @return number of bytes used by the string, including the final NULL
+ */
 size_t strblen(char *s) {
 	char *found=index(s,0);
 	if (found) return found-s+1;
@@ -239,6 +241,13 @@ size_t keyGetRecordSize(Key *key) {
 
 
 
+/**
+ * Space needed to store the key name without user domain
+ *
+ * @return number of bytes needed to store key name without user domain
+ * @see keyGetName()
+ * @see keyGetFullNameSize()
+ */
 size_t keyGetNameSize(Key *key) {
 	if (!key || !keyIsInitialized(key)) {
 		errno=RG_KEY_RET_UNINITIALIZED;
@@ -252,6 +261,14 @@ size_t keyGetNameSize(Key *key) {
 
 
 
+/**
+ * Get abreviated key name (without user domain name)
+ *
+ * @return number of bytes written
+ * @param key the key object
+ * @param returnedName pre-allocated memory to write the key name
+ * @param maxSize maximum number of bytes that will fit in returnedName, including the final NULL
+ */
 size_t keyGetName(Key *key, char *returnedName, size_t maxSize) {
 	size_t bytes;
 
@@ -275,6 +292,13 @@ size_t keyGetName(Key *key, char *returnedName, size_t maxSize) {
 
 
 
+/**
+ * Space needed to store the key name including user domain
+ *
+ * @return number of bytes needed to store key name including user domain
+ * @see keyGetFullName()
+ * @see keyGetNameSize()
+ */
 size_t keyGetFullNameSize(Key *key) {
 	size_t returnedSize;
 
@@ -295,6 +319,14 @@ size_t keyGetFullNameSize(Key *key) {
 
 
 
+/**
+ * Get key full name, including the user domain name.
+ *
+ * @return number of bytes written
+ * @param key the key object
+ * @param returnedName pre-allocated memory to write the key name
+ * @param maxSize maximum number of bytes that will fit in returnedName, including the final NULL
+ */
 size_t keyGetFullName(Key *key, char *returnedName, size_t maxSize) {
 	size_t userSize=sizeof("user")-1;
 	size_t userDomainSize,length;
@@ -328,6 +360,28 @@ size_t keyGetFullName(Key *key, char *returnedName, size_t maxSize) {
 
 
 
+/**
+ * Set a new name to a key.
+ *
+ * A valid name is of the form:
+ * - system/something
+ * - user/something
+ * - user:username/something
+ *
+ * The last form has explicitly set the user domain, to let the library
+ * know in which user folder to save the key. A user domain is a user name.
+ * If not defined (the second form) current user is calculated and used
+ * as default. 
+ *
+ * A private copy of the key name will be stored, and the newName
+ * parameter can be freed after this call.
+ *
+ * @return number of bytes of this new key name
+ * @param key the key object
+ * @param newName the new key name
+ * @see keyGetName()
+ * @see keySetFullName()
+ */
 size_t keySetName(Key *key, char *newName) {
 	size_t length;
 	size_t rootLength, userLength, systemLength, userDomainLength;
@@ -436,10 +490,27 @@ size_t keySetName(Key *key, char *newName) {
 
 
 
-/** Extracts the user name from Key::key.
-	Given 'user:someuser/.....' return 'someuser'
-	Given 'user:some.user/....' return 'some.user'
-*/
+/**
+ * Return the user domain of the key.
+ *	Given 'user:someuser/.....' return 'someuser'
+ *	Given 'user:some.user/....' return 'some.user'
+ *      Given 'user/....' return the current user
+ *
+ * Only user/... keys have user domains.
+ * For system/... keys (that doesn't have user domains) nothing is returned.
+ *
+ * Although usually the same, the user domain of a key is not related to its
+ * UID. User domains are related to WHERE the key is stored on disk, while
+ * UIDs are related to access control of a key.
+ *
+ * @param key the object to work with
+ * @param returned a pre-allocated space to store the owner
+ * @param maxSize maximum number of bytes that fit returned
+ * @return number of bytes written
+ * @see keySetName()
+ * @see keySetOwner()
+ * @see keyGetFullName()
+ */
 size_t keyGetOwner(Key *key, char *returned, size_t maxSize) {
 	size_t bytes;
 
@@ -461,7 +532,18 @@ size_t keyGetOwner(Key *key, char *returned, size_t maxSize) {
 }
 
 
-
+/**
+ * Set the user domain of a key. A user domain is a user name.
+ *
+ * A private copy is stored, so the passed parameter can be freed after
+ * the call.
+ *
+ * @param userDomain the user domain (or user name)
+ * @return the number of bytes copied
+ * @see keySetName()
+ * @see keyGetOwner()
+ * @see keyGetFullName()
+ */
 size_t keySetOwner(Key *key, char *userDomain) {
 	size_t size;
 
@@ -494,6 +576,15 @@ size_t keySetOwner(Key *key, char *userDomain) {
 
 
 
+/**
+ * Get comment about the key.
+ *
+ * @param returnedDesc pre-allocated memory to copy the comments to
+ * @param maxSize number of bytes that will fit returnedDesc
+ * @return number of bytes written
+ * @see keyGetCommentSize()
+ * @see keySetComment()
+ */
 size_t keyGetComment(Key *key, char *returnedDesc, size_t maxSize) {
 	size_t bytes;
 
@@ -517,6 +608,16 @@ size_t keyGetComment(Key *key, char *returnedDesc, size_t maxSize) {
 
 
 
+/**
+ * Calculates number of bytes needed to store a key comment, including
+ * final NULL.
+ *
+ * Use this method to allocate memory to retrieve a key comment.
+ *
+ * @return number of bytes needed
+ * @see keyGetComment()
+ * @see keySetComment()
+ */
 size_t keyGetCommentSize(Key *key) {
 	if (!key || !keyIsInitialized(key)) {
 		errno=RG_KEY_RET_UNINITIALIZED;
@@ -534,7 +635,16 @@ size_t keyGetCommentSize(Key *key) {
 
 
 
-
+/**
+ * Set a comment for a key.
+ *
+ * A key comment is like a configuration file comment. It has no size limit.
+ * A private copy will be stored.
+ *
+ * @param newComment the comment, that can be freed after this call.
+ * @return the number of bytes copied
+ * @see keyGetComment()
+ */
 size_t keySetComment(Key *key, char *newComment) {
 	size_t size;
 
@@ -654,7 +764,17 @@ size_t keySetDouble(Key *key, double newDouble) {
 */
 
 
-
+/**
+ * Set raw data as the value of a key.
+ * If NULL pointers are passed, key value is cleaned.
+ * This method will not change or set the key type, and should not be
+ * used unless working with user defined value types.
+ *
+ * @param newBinary array of bytes to set as the value
+ * @param dataSize number bytes to use from newBinary, including the final NULL
+ * @see keySetType() 
+ *
+ */
 size_t keySetRaw(Key *key, void *newBinary, size_t dataSize) {
 	if (!key) {
 		errno=RG_KEY_RET_UNINITIALIZED;
@@ -686,7 +806,16 @@ size_t keySetRaw(Key *key, void *newBinary, size_t dataSize) {
 
 
 
-
+/**
+ * Get the value of a key as a string.
+ * If the value can't be represented as a text string (binary value),
+ * errno is set to RG_KEY_RET_TYPEMISMATCH.
+ * 
+ * @param returnedString pre-allocated memory to store a copy of the key value
+ * @param maxSize number of bytes of pre-allocated memory
+ * @return the number of bytes actually copied
+ * @see keySetString()
+ */
 size_t keyGetString(Key *key, char *returnedString, size_t maxSize) {
 	if (!key || !keyIsInitialized(key)) {
 		errno=RG_KEY_RET_UNINITIALIZED;
@@ -717,6 +846,15 @@ size_t keyGetString(Key *key, char *returnedString, size_t maxSize) {
 
 
 
+/**
+ * Set the value of a key as a string.
+ *
+ * On disk, text will be encoded to UTF-8.
+ * 
+ * @param newString NULL-terminated text string
+ * @return the number of bytes actually copied including final NULL
+ * @see keyGetString()
+ */
 size_t keySetString(Key *key, char *newString) {
 	size_t ret=newString?strblen(newString):0;
 
@@ -731,6 +869,15 @@ size_t keySetString(Key *key, char *newString) {
 
 
 
+/**
+ * Get the value of a binary or string key.
+ * 
+ * @param returnedBinary pre-allocated memory to store a copy of the key value
+ * @param maxSize number of bytes of pre-allocated memory
+ * @return the number of bytes actually copied
+ * @see keySetBinary()
+ * @see keyGetString()
+ */
 size_t keyGetBinary(Key *key, void *returnedBinary, size_t maxSize) {
 	if (!key || !keyIsInitialized(key))
 		return errno=RG_KEY_RET_UNINITIALIZED;
@@ -752,6 +899,22 @@ size_t keyGetBinary(Key *key, void *returnedBinary, size_t maxSize) {
 
 
 
+/**
+ * Set the value of a key as a binary.
+ *
+ * On disk, value will be encoded into a human readable hex-digit text
+ * format and no UTF-8 encoding will be applied.
+ * 
+ * UNIX sysadmins don't like to deal with binary, sand box data.
+ * Consider using a string key instead.
+ *
+ * @param newBinary random bytes
+ * @param dataSize number of bytes to copy from newBinary
+ * @return the number of bytes actually copied
+ * @see keyGetBinary()
+ * @see keyGetString()
+ * @see keySetString()
+ */
 size_t keySetBinary(Key *key, void *newBinary, size_t dataSize) {
 	size_t ret=keySetRaw(key,newBinary,dataSize);
 	
@@ -803,7 +966,20 @@ size_t keySetLink(Key *key, char *target) {
 
 
 
-
+/**
+ * Clone a key.
+ *
+ * All private information of the source key will be copied, and nothing
+ * will be shared between both keys.
+ * keyClose() will be used on destination key before the operation. Internal
+ * buffers will be automatically allocated on destination.
+ *
+ * @param source the source key
+ * @param dest the new copy of the key
+ * @return 0 on success
+ * @see keyClose()
+ * @see keyInit()
+ */
 int keyDup(Key *source, Key *dest) {
 
 	/* clear everything first */
@@ -831,7 +1007,17 @@ int keyDup(Key *source, Key *dest) {
 
 
 
-
+/**
+ * Get the user ID of a key
+ *
+ * Although usually the same, the UID of a key is not related to its user
+ * domain.
+ *
+ * @return the system UID of the key
+ * @see keyGetGID()
+ * @see keySetUID()
+ * @see keyGetOwner()
+ */
 uid_t keyGetUID(Key *key) {
 	if (!key || !keyIsInitialized(key)) {
 		errno=RG_KEY_RET_UNINITIALIZED;
@@ -846,7 +1032,17 @@ uid_t keyGetUID(Key *key) {
 
 
 
-
+/**
+ * Set the user ID of a key.
+ *
+ * Although usually the same, the UID of a key is not related to its user
+ * domain.
+ *
+ * @return 0 on success
+ * @see keySetGID()
+ * @see keyGetUID()
+ * @see keyGetOwner()
+ */
 int keySetUID(Key *key, uid_t uid) {
 	if (!key) return errno=RG_KEY_RET_UNINITIALIZED;
 	if (!keyIsInitialized(key)) keyInit(key);
@@ -859,6 +1055,13 @@ int keySetUID(Key *key, uid_t uid) {
 
 
 
+/**
+ * Get the system group ID of a key
+ *
+ * @return the system GID of the key
+ * @see keySetGID()
+ * @see keyGetUID()
+ */
 gid_t keyGetGID(Key *key) {
 	if (!key || !keyIsInitialized(key)) {
 		errno=RG_KEY_RET_UNINITIALIZED;
@@ -872,6 +1075,13 @@ gid_t keyGetGID(Key *key) {
 
 
 
+/**
+ * Set the system group ID of a key
+ *
+ * @return the system GID of the key
+ * @see keyGetGID()
+ * @see keySetUID()
+ */
 int keySetGID(Key *key, gid_t gid) {
 	if (!key) return errno=RG_KEY_RET_UNINITIALIZED;
 	if (!keyIsInitialized(key)) keyInit(key);
@@ -884,6 +1094,9 @@ int keySetGID(Key *key, gid_t gid) {
 
 
 
+/**
+ * Get the access permissions to the key.
+ */
 mode_t keyGetAccess(Key *key) {
 	if (!key || !keyIsInitialized(key)) {
 		errno=RG_KEY_RET_UNINITIALIZED;
@@ -898,6 +1111,9 @@ mode_t keyGetAccess(Key *key) {
 
 
 
+/**
+ * Set the access permissions to the key.
+ */
 int keySetAccess(Key *key, mode_t mode) {
 	if (!key) return errno=RG_KEY_RET_UNINITIALIZED;
 	if (!keyIsInitialized(key)) keyInit(key);
@@ -912,7 +1128,9 @@ int keySetAccess(Key *key, mode_t mode) {
 
 
 
-
+/**
+ * Get last modification time of the key on disk.
+ */
 time_t keyGetMTime(Key *key) {
 	if (!key || !keyIsInitialized(key)) {
 		errno=RG_KEY_RET_UNINITIALIZED;
@@ -925,6 +1143,9 @@ time_t keyGetMTime(Key *key) {
 
 
 
+/**
+ * Get last time the key data was read from disk.
+ */
 time_t keyGetATime(Key *key) {
 	if (!key || !keyIsInitialized(key)) {
 		errno=RG_KEY_RET_UNINITIALIZED;
@@ -936,7 +1157,9 @@ time_t keyGetATime(Key *key) {
 }
 
 
-
+/**
+ * Get last time the key was stated from disk.
+ */
 time_t keyGetCTime(Key *key) {
 	if (!key || !keyIsInitialized(key)) {
 		errno=RG_KEY_RET_UNINITIALIZED;
@@ -949,6 +1172,10 @@ time_t keyGetCTime(Key *key) {
 
 
 
+/**
+ * Get the number of bytes needed to store this key's parent name.
+ * @see keyGetParent()
+ */
 size_t keyGetParentSize(Key *key) {
 	char *parentNameEnd;
 	
@@ -986,7 +1213,13 @@ size_t keyGetParentSize(Key *key) {
 
 
 
-
+/**
+ * Copy this key's parent name into a pre-allocated buffer.
+ *
+ * @see keyGetParentSize()
+ * @param returnedParent pre-allocated buffer to copy parent name to
+ * @param maxSize number of bytes pre-allocated
+ */
 size_t keyGetParent(Key *key, char *returnedParent, size_t maxSize) {
 	size_t parentSize;
 	
@@ -1002,22 +1235,15 @@ size_t keyGetParent(Key *key, char *returnedParent, size_t maxSize) {
 
 
 
-/*
-	String generated is of the form:
-
-	<key id="123445" uid="root" gid="root" mode="0660"
-		atime="123456" ctime="123456" mtime="123456"
-	
-		name="system/sw/XFree/Monitor/Monitor0/Name"
-		type="string">
-		
-		<value>Samsung TFT panel</value>
-		<comment>My monitor</comment>
-	</key>
-	
-*/
-
-
+/**
+ * Compare 2 keys.
+ *
+ * The returned flag array has 1s (different) or 0s (same) for each key meta
+ * info compared, that can be logically ORed with RG_KEY_FLAG_* flags.
+ *
+ * @return a bit array poiting the differences
+ * @see ksCompare()
+ */
 u_int32_t keyCompare(Key *key1, Key *key2) {
 	u_int32_t ret=0;
 	
@@ -1063,19 +1289,26 @@ u_int32_t keyCompare(Key *key1, Key *key2) {
 
 
 /**
-    Compare ks1 against ks2.
-    A key (by full name) that is present on ks1 and ks2, and has something different, will
-    be transfered from ks2 to ks1, and ks1's version deleted.
-    Keys that are in ks1, but aren't in ks2 will be trasnsfered from ks1 to removed.
-    Keys that are keyCompare() equal in ks1 and ks2 will be deleted from ks2.
-    Keys that are available in ks2 but don't exist in ks1 will be transfered to ks1.
-
-    In the end, ks1 will have all the keys that matter, and ks2 will be empty.
-    After ksCompare(), you should: 
-    - call registrySetKeys(ks1) to commit all changed keys
-    - registryRemove() for all keys in the removed KeySet
-    - free(ks2)
-*/
+ *  Compare 2 KeySets.
+ *  A key (by full name) that is present on ks1 and ks2, and has something
+ *  different, will be transfered from ks2 to ks1, and ks1's version deleted.
+ *  Keys that are in ks1, but aren't in ks2 will be trasnsfered from ks1 to
+ *  removed.
+ *  Keys that are keyCompare() equal in ks1 and ks2 will be deleted from ks2.
+ *  Keys that are available in ks2 but don't exist in ks1 will be transfered
+ *  to ks1.
+ *
+ *  In the end, ks1 will have all the keys that matter, and ks2 will be empty.
+ *  After ksCompare(), you should: 
+ *  - call registrySetKeys(ks1) to commit all changed keys
+ *  - registryRemove() for all keys in the removed KeySet
+ *  - free(ks2)
+ *
+ *  @see keyCompare()
+ *  @param ks1 first KeySet
+ *  @param ks2 second KeySet
+ *  @param removed empty KeySet that will be filled with keys removed from ks1
+ */
 int ksCompare(KeySet *ks1, KeySet *ks2, KeySet *removed) {
 	int flagRemoved=1;
 	Key *ks1Cursor=0;
@@ -1158,6 +1391,38 @@ int ksCompare(KeySet *ks1, KeySet *ks2, KeySet *removed) {
 }
 
 
+
+
+
+
+
+
+
+
+/**
+ * Prints an XML version of the key.
+ *
+ * String generated is of the form:
+ *
+ *	<key id="123445" uid="root" gid="root" mode="0660"
+ *		atime="123456" ctime="123456" mtime="123456"
+ *	
+ *		name="system/sw/XFree/Monitor/Monitor0/Name"
+ *		type="string">
+ *		
+ *		<value>Samsung TFT panel</value>
+ *		<comment>My monitor</comment>
+ *	</key>
+ *
+ * Accepted options:
+ * RG_O_NUMBERS: Do not convert UID and GID into user and group names
+ * RG_O_CONDENSED: Less human readable, more condensed output
+ *
+ * @param stream where to write output: a file or stdout
+ * @param options ORed of RG_O_* options
+ * @see ksToStream()
+ * @return number of bytes written to output
+ */
 size_t keyToStream(Key *key, FILE* stream, unsigned long options) {
 	size_t written=0;
 	char buffer[800];
@@ -1255,6 +1520,19 @@ size_t keyToStream(Key *key, FILE* stream, unsigned long options) {
 
 
 
+/**
+ * Prints an XML version of a KeySet object.
+ *
+ * Accepted options:
+ * RG_O_NUMBERS: Do not convert UID and GID into user and group names
+ * RG_O_CONDENSED: Less human readable, more condensed output
+ * RG_O_XMLHEADERS: Include the correct XML headers in the output. Use it.
+ *
+ * @param stream where to write output: a file or stdout
+ * @param options ORed of RG_O_* options
+ * @see keyToStream()
+ * @return number of bytes written to output
+ */
 size_t ksToStream(KeySet *ks, FILE* stream, unsigned long options) {
 	size_t written=0;
 	Key *key=0;
@@ -1279,7 +1557,10 @@ size_t ksToStream(KeySet *ks, FILE* stream, unsigned long options) {
 
 
 
-
+/**
+ * Deprecated.
+ * @see keyToStream()
+ */
 size_t keyToString(Key *key, char *returned, size_t maxSize) {
 	char *cursor=returned;
 
@@ -1319,6 +1600,14 @@ size_t keyToString(Key *key, char *returned, size_t maxSize) {
 
 
 
+/**
+ * KeySet object constructor.
+ *
+ * Every KeySet object that will be used must be initialized first, to setup
+ * pointers, counters, etc.
+ * @see ksClose()
+ * @see keyInit()
+ */
 int ksInit(KeySet *ks) {
 	ks->start=ks->end=ks->cursor=0;
 	ks->size=0;
@@ -1327,6 +1616,16 @@ int ksInit(KeySet *ks) {
 }
 
 
+/**
+ * KeySet destructor.
+ *
+ * The keyClose() destructor will be called for all contained keys,
+ * and then freed. Then all internal KeySet pointers etc cleaned too.
+ * Sets the object ready to be freed by you.
+ * 
+ * @see ksInit()
+ * @see keyClose()
+ */
 int ksClose(KeySet *ks) {
 	if (ks->size) {
 		Key *cursor=ks->start;
