@@ -1911,7 +1911,7 @@ size_t keyGetOwnerSize(const Key *key) {
  * @param returned a pre-allocated space to store the owner
  * @param maxSize maximum number of bytes that fit returned
  * @return number of bytes written to buffer
- * @see keySetName(), keySetOwner(), keyGetFullName()
+ * @see keySetName(), keySetOwner(), keyStealOwner(), keyGetFullName()
  * @ingroup keymeta
  */
 size_t keyGetOwner(const Key *key, char *returned, size_t maxSize) {
@@ -1936,6 +1936,19 @@ size_t keyGetOwner(const Key *key, char *returned, size_t maxSize) {
 
 
 
+
+/**
+ * Return a pointer to the real internal @p key owner or user domain.
+ * This is a much more efficient version of keyGetOwner() and you
+ * should use it if you are responsible enough to not mess up things.
+ * 
+ * @param key the key object to work with
+ * @see keyGetOwner(), keySetOwner()
+ * @ingroup keymeta
+ */
+char *keyStealOwner(const Key *key) {
+	return key->userDomain;
+}
 
 
 

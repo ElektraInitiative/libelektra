@@ -256,6 +256,7 @@ int kdbSetKeys_backend(KeySet *ks) {
  */
 u_int32_t kdbMonitorKeys_backend(KeySet *interests, u_int32_t diffMask,
 		unsigned long iterations, unsigned sleep) {
+	return 0;
 }
 
 
@@ -271,6 +272,7 @@ u_int32_t kdbMonitorKeys_backend(KeySet *interests, u_int32_t diffMask,
  */
 u_int32_t kdbMonitorKey_backend(Key *interest, u_int32_t diffMask,
 		unsigned long iterations, unsigned sleep) {
+	return 0;
 }
 
 

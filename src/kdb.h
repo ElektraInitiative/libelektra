@@ -312,20 +312,89 @@ typedef struct _Key Key;
  * @ingroup backend
  */
 struct _Key {                                                                    /* _DEPRECATED_ */
-	 u_int8_t      type;        /**< Value type from #KeyType */                 /* _DEPRECATED_ */
-	    uid_t      uid;         /**< Owner user ID */                            /* _DEPRECATED_ */
-	    uid_t      gid;         /**< Owner group ID */                           /* _DEPRECATED_ */
-	   mode_t      access;      /**< Access control */                           /* _DEPRECATED_ */
-	   time_t      atime;       /**< Time for last access (stat) */              /* _DEPRECATED_ */
-	   time_t      mtime;       /**< Time for last modification */               /* _DEPRECATED_ */
-	   time_t      ctime;       /**< Time for last change (meta info) */         /* _DEPRECATED_ */
-	   size_t      commentSize; /**< Size of the description string including ending NULL */  /* _DEPRECATED_ */
-	   size_t      dataSize;    /**< Size of the value including ending NULL */  /* _DEPRECATED_ */
+	 /**
+	  * Type of the value, from #KeyType.
+	  * @see keyGetType(), keySetType(), keyIsBin()
+	  */ 
+	 u_int8_t      type;                                                         /* _DEPRECATED_ */
+	 
+	 /**
+	  * System UID of this key.
+	  * @see keyGetUID(), keySetUID()
+	  */ 
+	    uid_t      uid;                                                          /* _DEPRECATED_ */
+	 
+	 /**
+	  * System GID of this key.
+	  * @see keyGetGID(), keySetGID()
+	  */ 
+	    uid_t      gid;                                                          /* _DEPRECATED_ */
+	 
+	 /**
+	  * File-like access control
+	  * @see keyGetAccess(), keySetAccess()
+	  */ 
+	   mode_t      access;                                                       /* _DEPRECATED_ */
+	   
+	 /**
+	  * Time for last access (stat).
+	  * @see keyGetATime()
+	  */ 
+	   time_t      atime;                                                        /* _DEPRECATED_ */
+	   
+	 /**
+	  * Time for last modification.
+	  * @see keyGetMTime()
+	  */ 
+	   time_t      mtime;                                                        /* _DEPRECATED_ */
+	 
+	 /**
+	  * Time for last change (meta info)
+	  * @see keyGetCTime()
+	  */ 
+	   time_t      ctime;                                                        /* _DEPRECATED_ */
+	 
+	 /**
+	  * Size of the comment of description string, including ending NULL.
+	  * @see keyGetCommentSize(), keySetComment(), keyGetComment()
+	  */ 
+	   size_t      commentSize;                                                  /* _DEPRECATED_ */
+	 
+	 /**
+	  * Size of the value, in bytes, including ending NULL.
+	  * @see keyGetCommentSize(), keySetComment(), keyGetComment()
+	  */ 
+	   size_t      dataSize;                                                     /* _DEPRECATED_ */
 	   size_t      recordSize;  /**< dataSize + commentSize + some control */    /* _DEPRECATED_ */
-	u_int32_t      flags;       /**< Some control flags */                       /* _DEPRECATED_ */
-	   char *      key;         /**< The name of the key */                      /* _DEPRECATED_ */
-	   char *      comment;     /**< A comment about this key-value pair */      /* _DEPRECATED_ */
-	   char *      userDomain;  /**< User domain */                              /* _DEPRECATED_ */
+	 
+	 /**
+	  * Some control and internal flags.
+	  * @see keySetFlag(), keyGetFlag()
+	  */ 
+	u_int32_t      flags;                                                        /* _DEPRECATED_ */
+	 
+	 /**
+	  * The name of the key.
+	  * @see keySetName(), keyGetName()
+	  */ 
+	   char *      key;                                                         /* _DEPRECATED_ */
+	 
+	 /**
+	  * A comment about the key.
+	  * @see keySetComment(), keyGetComment()
+	  */ 
+	   char *      comment;                                                      /* _DEPRECATED_ */
+	 
+	 /**
+	  * The user that owns the key.
+	  * @see keySetComment(), keyGetComment()
+	  */ 
+	   char *      userDomain;                                                   /* _DEPRECATED_ */
+	 
+	 /**
+	  * The user that owns the key.
+	  * @see keySetString(), keyGetString()
+	  */ 
 	   void *      data;        /**< The value, which is a NULL terminated string or binary */ /* _DEPRECATED_ */
 	struct _Key * next;         /**< Link to the next object in a KeySet context */ /* _DEPRECATED_ */
 };                                                                               /* _DEPRECATED_ */
@@ -490,6 +559,7 @@ int keySetAccess(Key *key, mode_t mode);
 
 size_t keyGetOwnerSize(const Key *key);
 size_t keyGetOwner(const Key *key, char *returned, size_t maxSize);
+char *keyStealOwner(const Key *key);
 size_t keySetOwner(Key *key, const char *userDomain);
 
 
