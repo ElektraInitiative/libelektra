@@ -1,16 +1,16 @@
 
-To update http://registry.sf.net . . . . .
+To update http://elektra.sf.net . . . . .
 
 Put this in Konqueror and start copying:
 
-	fish://aviram@shell.sf.net/home/groups/r/re/registry/htdocs
+	fish://aviram@shell.sf.net/home/groups/e/el/elektra/htdocs
 
 
 
 
 
 Or
-	scp *html aviram@shell.sf.net:/home/groups/r/re/registry/htdocs
+	scp *html aviram@shell.sf.net:/home/groups/e/el/elektra/htdocs
 
 
 

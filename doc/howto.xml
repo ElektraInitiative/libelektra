@@ -27,9 +27,20 @@ $LastChangedBy$
 
 		&author;
 
-		<pubdate>2004-08-31</pubdate>
+		<pubdate>2004-09-01</pubdate>
 
 		<revhistory>
+			<revision>
+				<revnumber>2004-09-01</revnumber>
+				<date>01 Sep 2004</date>
+				<authorinitials>avi</authorinitials>
+				<revdescription>
+					<itemizedlist>
+						<listitem><simpara>elektra.sf.net finaly available, so changed some links.</simpara></listitem>
+						<listitem><simpara>Added link to the HTML version of the presentation.</simpara></listitem>
+					</itemizedlist>
+				</revdescription>
+			</revision>
 			<revision>
 				<revnumber>2004-08-31</revnumber>
 				<date>31 Aug 2004</date>
@@ -288,20 +299,20 @@ $LastChangedBy$
 
 	<section id="links"><title>Getting The Elektra Software</title>
 		<para>Elektra was formerly named Linux Registry, so many links will still take you to "Linux Registry" named pages. They'll change over time.</para>
-		<para>The Elektra Project can be found at <ulink url="http://registry.sf.net/">registry.sf.net</ulink> and (in all) the following places:
+		<para>The Elektra Project can be found at <ulink url="http://elektra.sf.net/">elektra.sf.net</ulink> and (in all) the following places:
 			<itemizedlist>
 				<listitem><simpara><ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628">C source and RPMs</ulink> from <ulink url="http://sourceforge.net/projects/registry">sourceforge.net</ulink></simpara></listitem>
 				<listitem><simpara><ulink url="http://www.germane-software.com/repositories/tlr/trunk/">Subversion repository</ulink>, thanks to Sean Russel</simpara></listitem>
 				<listitem><simpara><ulink url="http://tlr.pirack.com/LinuxRegistry">Wiki space</ulink>, made available by Daniel Lambea</simpara></listitem>
-				<listitem><simpara><ulink url="http://freshmeat.net/projects/registry/">Freshmeat project page</ulink></simpara></listitem>
+				<listitem><simpara><ulink url="http://freshmeat.net/projects/elektra/">Freshmeat project page</ulink></simpara></listitem>
 				<listitem><simpara><ulink url="http://www.advogato.org/proj/Linux Registry/">Advogato project page</ulink></simpara></listitem>
 				<listitem><simpara><ulink url="http://www.orkut.com/Community.aspx?cmm=89174">Orkut Community</ulink></simpara></listitem>
 				<!-- ML admin: https://lists.sourceforge.net/lists/admin/registry-list -->
 				<listitem><simpara><ulink url="https://lists.sourceforge.net/lists/listinfo/registry-list">Subscribe to general discussions list</ulink> or <ulink url="http://sourceforge.net/mailarchive/forum.php?forum=registry-list">see the list archives</ulink></simpara></listitem>
 			</itemizedlist>
 		</para>
-		<para>There is an <ulink url="elektra.sxi">OpenOffice.org presentation</ulink> that anybody can deliver in community events, to help create awareness about the Elektra Project.</para>
-		<para>Install Subversion and do the following:
+		<para>There is an <ulink url="elektra.sxi">OpenOffice.org presentation</ulink> [<ulink url="presentation/elektra.html">HTML</ulink>] that anybody can deliver in community events, to help create awareness about the Elektra Project.</para>
+		<para>To get the last snapshot from Subversion do the following:
 			<screen><prompt>bash:~$</prompt> <command>cd src</command>
 <prompt>bash:~/src$</prompt> <command>svn co http://germane-software.com/repositories/tlr/trunk elektra</command>
 <prompt>bash:~/src$</prompt> <command>cd elektra</command>
@@ -312,7 +323,7 @@ $LastChangedBy$
 
 		<para>Elektra is licensed under the <ulink url="http://www.gnu.org/licenses/lgpl.html">LGPL</ulink></para>
 		<para>
-			<ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628"><graphic srccredit="SourceForge.net" fileref="http://sourceforge.net/sflogo.php?group_id=99628&amp;type=5" label="SourceForge.net Logo" align="center"/></ulink><ulink url="http://freshmeat.net/projects/registry/"><graphic srccredit="freashmeat.net" fileref="images/link_button_1.gif" label="Freshmeat.net Logo" align="center"/></ulink>
+			<ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628"><graphic srccredit="SourceForge.net" fileref="http://sourceforge.net/sflogo.php?group_id=99628&amp;type=5" label="SourceForge.net Logo" align="center"/></ulink><ulink url="http://freshmeat.net/projects/elektra/"><graphic srccredit="freashmeat.net" fileref="images/link_button_1.gif" label="Freshmeat.net Logo" align="center"/></ulink>
 		</para>
 		<section id="man"><title>Online Manual Pages and API Documentation</title>
 			<para>Elektra man pages can be accessed online:</para>

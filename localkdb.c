@@ -1684,13 +1684,15 @@ u_int32_t kdbMonitorKey(Key *interest, u_int32_t diffMask,
 
 
 /**
- * @mainpage The Elektra Project
+ * @mainpage The Elektra Project API
  *
- * @section overview Elektra Overview
+ * @section overview Elektra Project Overview
  *
  * Elektra is a project to unify Linux/Unix configurations. It does that
  * providing an hierarchical namespace to store configuration keys and
  * their values, an API to access/modify them, and some command line tools.
+ *
+ * Everything about the project can be found at http://elektra.sf.net
  *
  * @section classes Elektra API
  *
