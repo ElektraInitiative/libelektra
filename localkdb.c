@@ -93,6 +93,16 @@ extern int errno;
  * @code
 #include <kdb.h>
  * @endcode
+ *
+ * This is the class that accesses the storage backend. When writing a new
+ * backend, these are the methods you'll have to reimplement:
+ * kdbGetKey(), kdbSetKey(), kdbStatKey(), kdbRemove(), kdbGetChildKeys()
+ *
+ * And methods that you'll probably have to reimplement to get benefits
+ * of your new backend: kdbOpen(), kdbClose(), kdbMonitorKey(), kdbMonitorKeys()
+ *
+ * The other methods are higher level. They use the above methods to do their
+ * job, and generally don't have to be reimplemented for a different backend.
  */
 
 
@@ -118,7 +128,7 @@ extern int errno;
 int kdbOpen() {
 	/* load the environment and make us aware of codeset conversions */
 	setlocale(LC_ALL,"");
-	
+
 	return 0;
 }
 
@@ -1052,7 +1062,7 @@ Key *key=ksNext(&myConfig);
 while (key) {
 	// do something with key . . .
 
-	key=ksNext(&myConfig)); // next key
+	key=ksNext(&myConfig); // next key
 }
  * @endcode
  *
