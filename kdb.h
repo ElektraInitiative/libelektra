@@ -277,6 +277,7 @@ int kdbGetValueByParent(const char *parentName, const char *baseName, char *retu
 int kdbSetValue(const char *keyname, const char *value);
 int kdbSetValueByParent(const char *parentName, const char *baseName, const char *value);
 
+int kdbRename(Key *key, const char *newName);
 int kdbRemove(const char *keyName);
 int kdbLink(const char *oldPath, const char *newKeyName);
 

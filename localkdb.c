@@ -1526,7 +1526,7 @@ int kdbSetKey(Key *key) {
  *
  * @param key the key to be renamed
  * @param newName the new key name
- * @return whathever is returned by rename(), and @p errno is propagated
+ * @return -1 or whathever is returned by rename(), and @p errno is propagated
  * @ingroup kdb
  */
 int kdbRename(Key *key, const char *newName) {
@@ -1813,6 +1813,7 @@ u_int32_t kdbMonitorKey(Key *interest, u_int32_t diffMask,
  *   - Retrieve and commit individual Keys value, by absolute name or relative to parent
  *   - Monitor and notify changes in Keys and KeySets
  *   - Create and delete regular, folder or symbolic link Keys
+ *   - See @ref kdb "class documentation" for more
  *
  * @subsection Key Key
  *   - Get and Set key properties like name, root and base name, value, type,
@@ -1821,6 +1822,7 @@ u_int32_t kdbMonitorKey(Key *interest, u_int32_t diffMask,
  *   - Test if changed, if is a @p user/ or @p system/ key, etc
  *   - Flag it and test if key has a flag
  *   - Export Keys to an XML representation
+ *   - See @ref key "class documentation" for more
  *
  * @subsection KeySet KeySet
  *   - Linked list of Key objects
@@ -1828,6 +1830,7 @@ u_int32_t kdbMonitorKey(Key *interest, u_int32_t diffMask,
  *   - Work with its internal cursor
  *   - Compare entire KeySets
  *   - Export KeySets to an XML representation
+ *   - See @ref keyset "class documentation" for more
  *
  *
  * @section keynames Key Names and Namespaces

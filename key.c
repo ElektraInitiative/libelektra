@@ -465,14 +465,14 @@ size_t keyGetName(const Key *key, char *returnedName, size_t maxSize) {
  * If not defined (the second form) current user is calculated and used
  * as default.
  *
- * A private copy of the key name will be stored, and the @param newName
+ * A private copy of the key name will be stored, and the @p newName
  * parameter can be freed after this call.
  *
- * @return number of bytes of this new key name
+ * @return size in bytes of this new key name. When 0 is returned, or @p newName is empty, or something wrong happened and @p errno is propagated
  * @param key the key object
  * @param newName the new key name
  * @see keyGetName()
- * @see keySetFullName()
+ * @see keyGetFullName()
  */
 size_t keySetName(Key *key, const char *newName) {
 	size_t length;

@@ -96,9 +96,15 @@ dist: distclean elektra.spec
 
 
 
-rpm: dist
+rpmsig: dist
 	VER=`cat VERSION`;\
 	rpmbuild --sign -ta ../${NAME}-$$VER.tar.gz
+
+
+rpm: dist
+	VER=`cat VERSION`;\
+	rpmbuild -ta ../${NAME}-$$VER.tar.gz
+
 
 deb:
 	dpkg-buildpackage -rfakeroot

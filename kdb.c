@@ -25,7 +25,7 @@ $LastChangedBy$
 
 
 /**
- * @defgroup libexample Example of Full Library Utilization: kdb command
+ * @defgroup libexample  The kdb Command Source Code: Example of Full Library Utilization
  * @{
  */
 
@@ -225,7 +225,7 @@ int parseCommandLine(int argc, char *argv[]) {
 				argUID=malloc(sizeof(uid_t));
 				*argUID=pwd->pw_uid;
 			} else {
-				fprintf(stderr,"kdb: Invalid user %s. Ignoring\n", argUser);
+				fprintf(stderr,"kdb: Invalid user \'%s\'. Ignoring\n", argUser);
 			}
 		}
 	}
@@ -243,7 +243,7 @@ int parseCommandLine(int argc, char *argv[]) {
 				argGID=malloc(sizeof(gid_t));
 				*argGID=grp->gr_gid;
 			} else {
-				fprintf(stderr,"kdb: Invalid group %s. Ignoring\n",argGroup);
+				fprintf(stderr,"kdb: Invalid group \'%s\'. Ignoring\n",argGroup);
 			}
 		}
 	}
@@ -404,7 +404,10 @@ int commandRemove() {
 	}
 
 	if (kdbRemove(argKeyName)) {
-		perror("kdb rm");
+		char error[300];
+		
+		sprintf(error,"kdb rm: \'%s\'",argKeyName);
+		perror(error);
 		return -1;
 	}
 	return 0;
@@ -412,6 +415,44 @@ int commandRemove() {
 
 
 
+/**
+ * The business logic behind 'kdb mv' command.
+ * The central method used is kdbRename() but this function is
+ * way more robust, and is an example on how to handle errors.
+ * @par Example:
+ * @code
+ * bash# kdb mv user/env  user:tatiana/env
+ * @endcode
+ *
+ * @see kdbRename()
+ * @param argKeyName name of the source key
+ * @param argData name of the target key
+ */
+int commandMove() {
+	Key key;
+	size_t size;
+	int rc;
+	
+	keyInit(&key);
+	size=keySetName(&key,argKeyName);
+	
+	if (size == 0) {
+		char error[100];
+		
+		sprintf(error,"kdb mv: \'%s\'", argKeyName);
+		perror(error);
+	}
+	
+	rc=kdbRename(&key,argData);
+	if (rc == 0) return 0; /* return if OK */
+	
+	/* Handle a non-zero rc, with same behavior of Unix mv command */
+	switch (errno) {
+		
+	}
+	
+	return 0;
+}
 
 
 
@@ -472,7 +513,7 @@ int commandSet() {
 		f=fopen(argFile,"r");
 		
 		if (!f) {
-			sprintf(error,"kdb set: %s",argFile);
+			sprintf(error,"kdb set: \'%s\'",argFile);
 			perror(error);
  			return -1;
 		}
@@ -510,7 +551,7 @@ int commandSet() {
 
 	ret=kdbSetKey(&key);
 	if (ret) {
-		sprintf(error,"kdb set: %s",argKeyName);
+		sprintf(error,"kdb set: \'%s\'",argKeyName);
 		perror(error);
 	}
 	return ret;
@@ -544,7 +585,7 @@ int commandLink() {
 	}
 
 	if (!argData) {
-		fprintf(stderr,"kdb ln: %s: No destination specified",argKeyName);
+		fprintf(stderr,"kdb ln: \'%s\': No destination specified",argKeyName);
 		return -1;
 	}
 

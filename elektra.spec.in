@@ -10,7 +10,7 @@ URL:           http://elektra.sf.net
 Obsoletes:     registry
 Provides:      registry
 BuildRoot:     %{_tmppath}/%{name}-%{version}-build
-BuildRequires: /usr/bin/xsltproc
+BuildRequires: doxygen libxml2-devel /usr/bin/xsltproc
 Summary:       A key/value pair database to store software configurations
 
 %description
