@@ -27,9 +27,20 @@ $LastChangedBy$
 
 		&author;
 
-		<pubdate>2004-09-01</pubdate>
+		<pubdate>2004-09-03</pubdate>
 
 		<revhistory>
+			<revision>
+				<revnumber>2004-09-03</revnumber>
+				<date>03 Sep 2004</date>
+				<authorinitials>avi</authorinitials>
+				<revdescription>
+					<itemizedlist>
+						<listitem><simpara>Better "Help Needed" section.</simpara></listitem>
+						<listitem><simpara>Some more fixes due to name change.</simpara></listitem>
+					</itemizedlist>
+				</revdescription>
+			</revision>
 			<revision>
 				<revnumber>2004-09-01</revnumber>
 				<date>01 Sep 2004</date>
@@ -301,7 +312,7 @@ $LastChangedBy$
 		<para>Elektra was formerly named Linux Registry, so many links will still take you to "Linux Registry" named pages. They'll change over time.</para>
 		<para>The Elektra Project can be found at <ulink url="http://elektra.sf.net/">elektra.sf.net</ulink> and (in all) the following places:
 			<itemizedlist>
-				<listitem><simpara><ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628">C source and RPMs</ulink> from <ulink url="http://sourceforge.net/projects/registry">sourceforge.net</ulink></simpara></listitem>
+				<listitem><simpara><ulink url="http://sourceforge.net/project/showfiles.php?group_id=117521">C source and RPMs</ulink> from <ulink url="http://sourceforge.net/projects/elektra">sourceforge.net</ulink></simpara></listitem>
 				<listitem><simpara><ulink url="http://www.germane-software.com/repositories/tlr/trunk/">Subversion repository</ulink>, thanks to Sean Russel</simpara></listitem>
 				<listitem><simpara><ulink url="http://tlr.pirack.com/LinuxRegistry">Wiki space</ulink>, made available by Daniel Lambea</simpara></listitem>
 				<listitem><simpara><ulink url="http://freshmeat.net/projects/elektra/">Freshmeat project page</ulink></simpara></listitem>
@@ -424,26 +435,52 @@ $LastChangedBy$
 		</section>
 	</section>
 
+	<!--section id="internals"><title>Registry Internals</title>
+		&storage;
+	</section-->
+
+	<section id="help"><title>Wanna Help The Elektra Project ?</title>
+		<para>We need a lot of help. The main software library is ready to be used, but we really need it to be used, so then in can become a standard.</para>
+		<section id="help-patch"><title>Software Patches</title>
+			<orderedlist>
+				<listitem><simpara>We need patches for Modprobe, Samba, Apache, PAM etc to use Elektra, instead of <filename>/etc/modules.conf</filename>, <filename>/etc/smb.conf</filename>, <filename>/etc/httpd/httpd.conf</filename>, etc.</simpara></listitem>
+				<listitem><simpara>Patches for system initialization scripts to use Elektra instead of <filename>/etc/sysconfig/*</filename>, <filename>/etc/sysconfig/network-scripts/*</filename> files.</simpara></listitem>
+			</orderedlist>
+		</section>
+
+		<section id="help-awareness"><title>Marketing and Awareness</title>
+			<para>We need more participation in community events making presentations and advocating. There is an <ulink url="elektra.sxi">OpenOffice presentation entirelly commented</ulink> that can be used. So if you have strong communication skills, think about making an Elektra presentation in an event close to your town.</para>
+		</section>
+
+		<section id="help-port"><title>Porting and Backends</title>
+			<orderedlist>
+				<listitem><simpara>Elektra needs platform specific storage backends to be written. For Linux, BSD and Unix, the current backend is fine. For Windows, a Registry storage backend is needed.</simpara></listitem>
+				<listitem><simpara>Elektra needs to be ported, mainteined and packaged in other platforms. Windows, BSD, Mac, other Unix.</simpara></listitem>
+				<listitem><simpara>Elektra binary packages and their maintainers are need for Slackware, Debian, SuSE Linux, Mandrake, etc. I provide Fedora/Red Hat RPMs.</simpara></listitem>
+			</orderedlist>
+		</section>
+
+		<section id="help-perf"><title>Performance Improvements</title>
+			<para>Speed up reading and writing of keys is needed.</para>
+		</section>
+
+		<section id="help-bindings"><title>Language Bindings</title>
+			<orderedlist>
+				<listitem><simpara>Perl</simpara></listitem>
+				<listitem><simpara>C++ with real classes</simpara></listitem>
+				<listitem><simpara>Better Java support</simpara></listitem>
+				<listitem><simpara>Convert the <ulink url="dtd/">XML DTD</ulink> to XML Schema.</simpara></listitem>
+				
+			</orderedlist>
+		</section>
+	</section>
+	
 	<section id="rgcmd"><title>The <command>kdb</command> Command</title>
 		&rgcmd;
 		&rgexample;
 	</section>
 	
 	&api;
-	
-	<!--section id="internals"><title>Registry Internals</title>
-		&storage;
-	</section-->
-
-	<section id="helping"><title>Supporting The Elektra Project</title>
-		<para>Help wanted:</para>
-		<orderedlist>
-			<listitem><simpara>Writing patches to legacy software like <command>mount</command>, <command>glibc</command>, <command>init</command>, etc to support Elektra.</simpara></listitem>
-			<listitem><simpara>Writing bindings to other higher level languages like Python, Perl, etc.</simpara></listitem>
-			<listitem><simpara>Making the documentation more convincent and english corrections.</simpara></listitem>
-			<listitem><simpara>Advertising and advocating the project.</simpara></listitem>
-		</orderedlist>
-	</section>
 	
 	<appendix id="about"><title>About this Document</title>
 		<para>This document must be distributed under the terms of <ulink url="http://www.gnu.org/licenses/fdl.html">GNU Free Documentation License</ulink>.</para>

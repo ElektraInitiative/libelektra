@@ -7,7 +7,7 @@ $LastChangedBy$
 		&csource;
 		<para> Things to note in this source:</para>
 		<orderedlist>
-			<listitem><simpara>The keys are manipulated in <function>changeConfig()</function> after we called <function>kdbClose()</function>. You don't need the Registry to be open to manipulate keys.</simpara></listitem>
+			<listitem><simpara>The keys are manipulated in <function>changeConfig()</function> after we called <function>kdbClose()</function>. You don't need the key database to be open to manipulate keys.</simpara></listitem>
 			<listitem><simpara>We called <function>kdbOpen()</function> again in <function>saveConfig()</function>, to prepare to commit the changes.</simpara></listitem>
 			<listitem><simpara>We called <function>ksClose()</function> in the end to free all memory resources we used.</simpara></listitem>
 		</orderedlist>
@@ -15,6 +15,6 @@ $LastChangedBy$
 	</section>
 	
 	<section id="linking"><title>Compiling and Linking</title>
-		<para>All Linux Registry methods are declared in the <filename>/usr/include/kdb.h</filename> file and defined in the <filename>/lib/libkdb.so</filename> library. So to compile it you simply need to:</para>
+		<para>All Elektra methods are declared in the <filename>/usr/include/kdb.h</filename> file and defined in the <filename>/lib/libkdb.so</filename> library. So to compile it you simply need to:</para>
 <screen><prompt>bash$ </prompt><command>cc -lkdb -o myapp myapp.c</command></screen>
 	</section>

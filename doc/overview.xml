@@ -37,7 +37,7 @@ $LastChangedBy:$
 		</section>
 	</section>
 	
-	<section id="namespace"><title>Key Names and Namespaces</title>
+	<section id="namespace"><title>Namespaces and Key Names</title>
 		<para>All keys are organized in a hierarchical tree with 2 Namespaces (subtrees) as showed by the picture:</para>
 		<para><graphic srccredit="roots" fileref="images/roots.png" label="roots" align="center"/></para>
 		<variablelist>

@@ -92,6 +92,9 @@ install: all
 pub: html doxygen
 	find elektra-api.tar.gz *html docbook.css | cpio -o | ssh -l aviram shell.sf.net "cd /home/groups/e/el/elektra/htdocs; cpio -idvm; rm -rf api; tar -zxvf elektra-api.tar.gz"
 
+pubh: html
+	scp *html docbook.css aviram@shell.sf.net:/home/groups/e/el/elektra/htdocs
+
 pubi:
 	find images | grep -v .svn | cpio -o | ssh -l aviram shell.sf.net "cd /home/groups/e/el/elektra/htdocs; cpio -idvm"
 	
