@@ -1,6 +1,6 @@
 Name: elektra
 Version: _VERSION_
-Release: 14
+Release: 15
 Source:    http://registry.sf.net/%{name}-%{version}.tar.gz
 Group:     System Environment/Libraries
 Copyright: LGPL

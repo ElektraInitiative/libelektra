@@ -22,7 +22,7 @@ int readConfig(KeySet *myConfig) {
 	kdbOpen();
 	
 	/* Get all value keys for this application */
-	rc=kdbGetChildKeys(MY_APP_ROOT, myConfig, RG_O_RECURSIVE);
+	rc=kdbGetChildKeys(MY_APP_ROOT, myConfig, KDB_O_RECURSIVE);
 	
 	/* Close the Key database */
 	kdbClose();
