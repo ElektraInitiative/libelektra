@@ -2041,7 +2041,7 @@ size_t keyGetRootName(const Key *key, char *returned, size_t maxSize) {
  * @param key the key to extract root from
  * @param returned a pre-allocated buffer to store the rootname
  * @param maxSize size of the @p returned buffer
- * @return number of bytes needed without ending NULL
+ * @return number of bytes written to @p returned without ending NULL
  * @see keyGetFullRootNameSize()
  * @see keyGetRootName()
  */
@@ -2063,8 +2063,7 @@ size_t keyGetFullRootName(const Key *key, char *returned, size_t maxSize) {
 	if (!(size=keyGetFullRootNameSize(key))) {
 		errno=KDB_RET_NOKEY;
 		return 0;
-	}	
-	
+	}
 
 	if (maxSize < size) {
 		errno=KDB_RET_TRUNC;
@@ -2072,16 +2071,14 @@ size_t keyGetFullRootName(const Key *key, char *returned, size_t maxSize) {
 	}
 	
 	userSize = keyGetRootNameSize (key);
-	strncpy(returned,key->key, userSize); //copy "user" or "system"
-	cursor = returned + userSize;
+	strncpy(returned,key->key, userSize); /* copy "user" or "system" */
 	if (keyIsUser(key)) {
+		cursor = returned + userSize;
 		*cursor = ':'; cursor++;
 		if (key->userDomain)
-		{
 			strncpy (cursor, key->userDomain, size - userSize);
-		} else {
-			strncpy (cursor, getenv("USER"), size - userSize);
-		}
+		else
+			strncpy (cursor, getenv("USER"),  size - userSize);
 	}
 
 	return size;
