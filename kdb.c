@@ -62,6 +62,7 @@ $LastChangedBy$
 #define CMD_LOAD      7
 #define CMD_SAVE      8
 #define CMD_MONITOR   9
+#define CMD_MOVE      10
 
 #define ARGSIZE      30
 
@@ -195,6 +196,7 @@ int parseCommandLine(int argc, char *argv[]) {
 	else if (!strcmp(sargCommand,"export")) argCommand=CMD_SAVE;
 	else if (!strcmp(sargCommand,"mon")) argCommand=CMD_MONITOR;
 	else if (!strcmp(sargCommand,"monitor")) argCommand=CMD_MONITOR;
+	else if (!strcmp(sargCommand,"mv")) argCommand=CMD_MOVE;
 	else {
 		fprintf(stderr,"Invalid subcommand\n");
 		exit(1);
@@ -1321,6 +1323,7 @@ int doCommand(int command) {
 		case CMD_LOAD:            return commandImport();
 		case CMD_SAVE:            return commandExport();
 		case CMD_MONITOR:         return commandMonitor();
+		case CMD_MOVE:            return commandMove();
 	}
 	return 0;
 }
