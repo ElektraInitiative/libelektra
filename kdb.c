@@ -923,7 +923,7 @@ int ksFromXMLfile(KeySet *ks,char *filename) {
 
 
 
-
+/* FIXME: its not working when fd is stdin */
 int ksFromXML(KeySet *ks,int fd) {
 	/* Support for old XML library, that doesn't have xmlReaderForFd() */
 	char filename[]="/var/tmp/rgeditXXXXXX";
