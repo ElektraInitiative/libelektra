@@ -1,0 +1,38 @@
+#!/bin/sh
+
+$Id$
+$LastChangedBy$
+
+ROOT="user/bench"
+LEVELS=4
+DIRS=5
+KEYS=5
+
+genLevel() {
+	local level=$1
+	local myRoot=$2
+
+	echo "Generating keys under $myRoot" >&2
+	
+	# Generate local keys
+	local k=0
+	while [ $k -lt $KEYS ]; do
+		kdb set -c "${RANDOM}${RANDOM}" \
+			"$myRoot/${RANDOM}${RANDOM}" \
+			"${RANDOM}${RANDOM}"
+
+		k=`expr $k + 1`
+	done
+
+	if [ $level -lt $LEVELS ]; then
+		# Generate sublevels
+		local d=0
+		while [ $d -lt $DIRS ]; do
+			genLevel `expr $level + 1` "$myRoot/${RANDOM}${RANDOM}"
+			d=`expr $d + 1`
+		done
+	fi
+}
+
+
+genLevel 0 $ROOT

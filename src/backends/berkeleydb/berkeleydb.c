@@ -169,9 +169,20 @@ int keyToBDB(Key *key, DBT *dbkey, DBT *dbdata) {
 
 	/* Second part: the comment */
 	memcpy(serialized+metaInfoSize,convertedComment,sizeComment);
+	/* adjust comment size from UTF-8 conversion */
+	if (key->commentSize!=sizeComment)
+		memcpy(serialized+metaInfoSize-
+			sizeof(key->commentSize)-sizeof(key->dataSize),
+			sizeComment,sizeof(sizeComment));
 	
+	
+		
 	/* Third part: the value */
 	memcpy(serialized+metaInfoSize+sizeComment,convertedValue,sizeValue);
+	/* adjust value size from UTF-8 conversion */
+	if (key->dataSize!=sizeValue)
+		memcpy(serialized+metaInfoSize-sizeof(key->dataSize),
+			sizeValue,sizeof(sizeValue));
 	
 	dbdata->data=serialized;
 	
@@ -416,17 +427,16 @@ DBTree *dbTreeNew(const Key *forKey) {
 	}
 
 	ret=newDB->db.keyValuePairs->open(newDB->db.keyValuePairs,NULL,keys,
-		NULL, DB_BTREE, DB_CREATE | DB_EXCL  | DB_THREAD, 0600);
-	if (ret != EEXIST) newlyCreated=1;
-	else {
+		NULL, DB_BTREE, DB_CREATE | DB_EXCL  | DB_THREAD, 0);
+	if (ret == EEXIST || ret == EACCES) {
 		/* DB already exist. Only open it */
 		ret=newDB->db.keyValuePairs->open(newDB->db.keyValuePairs,NULL, keys,
 			NULL, DB_BTREE, DB_THREAD, 0);
-	}
+	} else newlyCreated=1;
 
 	if (ret) {
-		newDB->db.keyValuePairs->err(newDB->db.keyValuePairs, ret,
-			"%s", keys);
+		newDB->db.keyValuePairs->err(newDB->db.keyValuePairs,
+			ret, "%s", keys);
 		dbTreeDel(newDB);
 		errno=KDB_RET_EBACKEND;
 		return 0;
@@ -452,10 +462,10 @@ DBTree *dbTreeNew(const Key *forKey) {
 	if (ret != 0) fprintf(stderr, "set_flags: %s: %d\n",hier,ret);
 	
 	ret = newDB->db.parentIndex->open(newDB->db.parentIndex,
-		NULL, hier, NULL, DB_BTREE, DB_CREATE | DB_THREAD, 0600);
+		NULL, hier, NULL, DB_BTREE, DB_CREATE | DB_THREAD, 0);
 	if (ret != 0) {
 		newDB->db.parentIndex->err(newDB->db.parentIndex, ret, "%s", hier);
-		dbTreeDel(newDB);
+		dbTreeDel(newDB); 
 		errno=KDB_RET_EBACKEND;
 		return 0;
 	}
