@@ -11,6 +11,7 @@
 	<!ENTITY csource SYSTEM "csource.xml">
 	<!ENTITY rgexample SYSTEM "rgexample.xml">
 	<!ENTITY society SYSTEM "society.xml">
+	<!ENTITY compared SYSTEM "compared.xml">
 ]>
 
 
@@ -274,6 +275,8 @@ $LastChangedBy$
 	&overview;
 	
 	&bestpract;
+
+	&compared;
 	
 	&garbage;
 	
