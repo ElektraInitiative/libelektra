@@ -1791,6 +1791,7 @@ u_int8_t keySetType(Key *key,u_int8_t newType) {
  *
  * @param newBinary array of bytes to set as the value
  * @param dataSize number bytes to use from newBinary, including the final NULL
+ * @return The number of bytes actually set in internall buffer.
  * @see keySetType(), keySetString(), keySetBinary()
  * @ingroup keyvalue
  */
