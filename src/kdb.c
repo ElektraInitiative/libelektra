@@ -760,9 +760,11 @@ int commandList() {
 
 	if (argShow) {
 		if (argXML) {
-			if (key) keyToStream(key,stdout,0);
+			if (key) keyToStream(key,stdout,
+				(argFullName?(KDB_O_FULLNAME | KDB_O_FULLUGID):0));
 			else if (ksGetSize(ks))
-				ksToStream(ks,stdout,KDB_O_XMLHEADERS);
+				ksToStream(ks,stdout,KDB_O_XMLHEADERS |
+					(argFullName?(KDB_O_FULLNAME | KDB_O_FULLUGID):0));
 		} else {
 			if (key) listSingleKey(key);
 			else if (ksGetSize(ks)) {
@@ -942,28 +944,34 @@ int processNode(KeySet *ks, xmlTextReaderPtr reader) {
 
 		/* Parse UID */
 		buffer=xmlTextReaderGetAttribute(reader,"uid");
-		if (isdigit(*buffer)) {
-			keySetUID(newKey,atoi(buffer));
-		} else {
-			struct passwd *pwd;
-			pwd=getpwnam(buffer);
-			if (pwd) keySetUID(newKey,pwd->pw_uid);
-			else fprintf(stderr,"kdb: Ignoring invalid user %s.\n", buffer);
+		if (buffer) {
+			if (isdigit(*buffer))
+				keySetUID(newKey,atoi(buffer));
+			else {
+				struct passwd *pwd;
+				pwd=getpwnam(buffer);
+				if (pwd) keySetUID(newKey,pwd->pw_uid);
+				else fprintf(stderr,"kdb: Ignoring invalid user %s.\n",
+						buffer);
+			}
+			xmlFree(buffer); buffer=0;
 		}
-		xmlFree(buffer); buffer=0;
 
 		
 		/* Parse GID */
 		buffer=xmlTextReaderGetAttribute(reader,"gid");
-		if (isdigit(*buffer)) {
-			keySetGID(newKey,atoi(buffer));
-		} else {
-			struct group *grp;
-			grp=getgrnam(buffer);
-			if (grp) keySetGID(newKey,grp->gr_gid);
-			else fprintf(stderr,"kdb: Ignoring invalid group %s.\n",buffer);
+		if (buffer) {
+			if (isdigit(*buffer)) {
+				keySetGID(newKey,atoi(buffer));
+			} else {
+				struct group *grp;
+				grp=getgrnam(buffer);
+				if (grp) keySetGID(newKey,grp->gr_gid);
+				else fprintf(stderr,"kdb: Ignoring invalid group %s.\n",
+						buffer);
+			}
+			xmlFree(buffer); buffer=0;
 		}
-		xmlFree(buffer); buffer=0;
 
 
 		/* Parse permissions */
@@ -1344,7 +1352,7 @@ int commandExport() {
 	argXML=1;
 	argShow=1;
 	argValue=1;
-	argFullName=1;
+	/* argFullName=1; */
 
 	/* force a superuniversal modern charset: UTF-8 */
 	setenv("LANG","en_US.UTF-8",1);

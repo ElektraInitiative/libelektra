@@ -1696,19 +1696,15 @@ size_t keyToStream(const Key *key, FILE* stream, unsigned long options) {
 		return 0;
 	}
 
-	keyGetFullName(key,buffer,sizeof(buffer));
-
-	if (!(options & KDB_O_NUMBERS)) {
-		pwd=getpwuid(keyGetUID(key));
-		grp=getgrgid(keyGetGID(key));
-	}
+	if (options & KDB_O_FULLNAME)
+		keyGetFullName(key,buffer,sizeof(buffer));
+	else keyGetName(key,buffer,sizeof(buffer));
 
 	/* Write key name */
 	written+=fprintf(stream,"<key name=\"%s\"", buffer);
 
 	if (options & KDB_O_CONDENSED) written+=fprintf(stream," ");
 	else written+=fprintf(stream,"\n     ");
-
 
 
 
@@ -1741,13 +1737,52 @@ size_t keyToStream(const Key *key, FILE* stream, unsigned long options) {
 	}
 
 
+	if (keyIsUser(key)) {
+		struct passwd *domainPwd=0;
+		int uidMatch,gidMatch;
+		
+		keyGetOwner(key,buffer,sizeof(buffer));
+		domainPwd=getpwnam(buffer);
+		pwd=getpwuid(keyGetUID(key));
+		grp=getgrgid(keyGetGID(key));
+		
+		uidMatch=(keyGetUID(key) == domainPwd->pw_uid);
+		gidMatch=(keyGetGID(key) == domainPwd->pw_gid);
+		
+		if (options & KDB_O_FULLUGID) {
+			if (pwd && !(options & KDB_O_NUMBERS))
+				written+=fprintf(stream," uid=\"%s\"",pwd->pw_name);
+			else written+=fprintf(stream,   " uid=\"%d\"",keyGetUID(key));
+		
+			if (grp && !(options & KDB_O_NUMBERS))
+				written+=fprintf(stream," gid=\"%s\"",grp->gr_name);
+			else  written+=fprintf(stream,   " gid=\"%d\"",keyGetGID(key));
+		} else {
+			if (!uidMatch) {
+				if (pwd && !(options & KDB_O_NUMBERS))
+					written+=fprintf(stream," uid=\"%s\"",pwd->pw_name);
+				else written+=fprintf(stream,   " uid=\"%d\"",keyGetUID(key));
+			}
 
-	/* UID, GID, mode */
-	if (pwd) written+=fprintf(stream," uid=\"%s\"",pwd->pw_name);
-	else  written+=fprintf(stream,   " uid=\"%d\"",keyGetUID(key));
+			if (!gidMatch) {
+				if (grp && !(options & KDB_O_NUMBERS))
+					written+=fprintf(stream," gid=\"%s\"",grp->gr_name);
+				else written+=fprintf(stream,   " gid=\"%d\"",keyGetGID(key));
+			}
+		}
+	} else {
+		if (!(options & KDB_O_NUMBERS)) {
+			pwd=getpwuid(keyGetUID(key));
+			grp=getgrgid(keyGetGID(key));
+		}
 
-	if (grp) written+=fprintf(stream," gid=\"%s\"",grp->gr_name);
-	else  written+=fprintf(stream,   " gid=\"%d\"",keyGetGID(key));
+		/* UID, GID, mode */
+		if (pwd) written+=fprintf(stream," uid=\"%s\"",pwd->pw_name);
+		else  written+=fprintf(stream,   " uid=\"%d\"",keyGetUID(key));
+
+		if (grp) written+=fprintf(stream," gid=\"%s\"",grp->gr_name);
+		else  written+=fprintf(stream,   " gid=\"%d\"",keyGetGID(key));
+	}
 
 	written+=fprintf(stream," mode=\"0%o\">",
 		keyGetAccess(key) & (S_IRWXU|S_IRWXG|S_IRWXO));
@@ -1760,10 +1795,14 @@ size_t keyToStream(const Key *key, FILE* stream, unsigned long options) {
 	if (key->data) {
 		written+=fprintf(stream,"<value>");
 		fflush(stream);
-		if (key->type >= KEY_TYPE_STRING || key->type < KEY_TYPE_BINARY)
-			 /* must chop ending \0 */
-			 written+=write(fileno(stream),key->data,key->dataSize-1);
-		else {
+		if (key->type >= KEY_TYPE_STRING || key->type < KEY_TYPE_BINARY) {
+			written+=fprintf(stream,"<![CDATA[");
+			fflush(stream);
+			
+			/* must chop ending \0 */
+			written+=write(fileno(stream),key->data,key->dataSize-1);
+			written+=fprintf(stream,"]]>");
+		} else {
 			/* Binary values */
 			char *encoded=malloc(3*key->dataSize);
 			size_t encodedSize;

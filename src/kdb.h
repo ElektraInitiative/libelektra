@@ -147,11 +147,12 @@ enum KeySwitch {
 	KEY_SWITCH_NEEDSYNC=1<<12,  /*!< Flags that key needs syncronization */
 	KEY_SWITCH_ACTIVE=1<<14,    /* ****deprecated**** */
 	KEY_SWITCH_FLAG=1<<31,      /*!< General purpose flag that has semantics
-	                               only to your app */
+	                                 only to your app */
+	KEY_SWITCH_END=0,           /*!< Used as a parameter terminator to
+	                                 keyNew() */
+	
 	KEY_SWITCH_INITIALIZED=0x10042008,
 	KEY_SWITCH_INITMASK=0x18442218,
-
-	KEY_SWITCH_END=0            /*!< Used as a terminator to keyNew() */
 };
 
 
@@ -160,20 +161,23 @@ enum KeySwitch {
  * Deprecated flag names, here for legacy compatibility.
  * Will be removed in the future.
  * Use KeySwitches instead.
- *
-enum KeyFlags {
-	KEY_FLAG_HASTYPE      = KEY_SWITCH_TYPE
-	KEY_FLAG_HASKEY       = KEY_SWITCH_NAME
-	KEY_FLAG_HASDATA      = KEY_SWITCH_VALUE
-	KEY_FLAG_HASDOMAIN    = KEY_SWITCH_DOMAIN
-	KEY_FLAG_HASCOMMENT   = KEY_SWITCH_COMMENT
-	KEY_FLAG_HASUID       = KEY_SWITCH_UID
-	KEY_FLAG_HASGID       = KEY_SWITCH_GID
-	KEY_FLAG_HASPRM       = KEY_SWITCH_PRM
-	KEY_FLAG_HASTIME      = KEY_SWITCH_TIME
-	KEY_FLAG_NEEDSYNC     = KEY_SWITCH_NEEDSYNC
-}
-*/
+ */
+enum KeyFlags {                                       /* _DEPRECATED_ */
+	KEY_FLAG_HASTYPE      = KEY_SWITCH_TYPE,          /* _DEPRECATED_ */
+	KEY_FLAG_HASKEY       = KEY_SWITCH_NAME,          /* _DEPRECATED_ */
+	KEY_FLAG_HASDATA      = KEY_SWITCH_VALUE,         /* _DEPRECATED_ */
+	KEY_FLAG_HASDOMAIN    = KEY_SWITCH_DOMAIN,        /* _DEPRECATED_ */
+	KEY_FLAG_HASCOMMENT   = KEY_SWITCH_COMMENT,       /* _DEPRECATED_ */
+	KEY_FLAG_HASUID       = KEY_SWITCH_UID,           /* _DEPRECATED_ */
+	KEY_FLAG_HASGID       = KEY_SWITCH_GID,           /* _DEPRECATED_ */
+	KEY_FLAG_HASPRM       = KEY_SWITCH_PRM,           /* _DEPRECATED_ */
+	KEY_FLAG_HASTIME      = KEY_SWITCH_TIME,          /* _DEPRECATED_ */
+	KEY_FLAG_NEEDSYNC     = KEY_SWITCH_NEEDSYNC,      /* _DEPRECATED_ */
+	KEY_FLAG_FLAG         = KEY_SWITCH_FLAG,          /* _DEPRECATED_ */
+	KEY_FLAG_INITIALIZED  = KEY_SWITCH_INITIALIZED,   /* _DEPRECATED_ */
+	KEY_FLAG_INITMASK     = KEY_SWITCH_INITMASK       /* _DEPRECATED_ */
+};                                                    /* _DEPRECATED_ */
+
 
 
 /**
@@ -201,7 +205,7 @@ enum KDBErr {
 	KDB_RET_NOTIME=ENOMSG,        /*!< Key has no access time set */
 	KDB_RET_TRUNC=ENOBUFS,        /*!< Buffer was too small */
 	KDB_RET_TYPEMISMATCH=EILSEQ,  /*!< Failed to convert key data due to
-	                                      data type */
+	                                   data type */
 	KDB_RET_INVALIDKEY=EAFNOSUPPORT, /*!< Key name is not @p 'system/something'
 	                                      or @p 'user/something...' */
 	KDB_RET_NOTFOUND=ENOENT,      /*!< Key was not found */
@@ -218,47 +222,31 @@ enum KDBErr {
  * @see keyToStream()
  */
 enum KDBOptions {
-	KDB_O_RECURSIVE=1,      /*!< Act recursively */
-	KDB_O_DIR=1<<1,         /*!< Include dir keys in result */
-	KDB_O_NOVALUE=1<<2,     /*!< Retrieve only keys that don't have values (a.k.a dir keys) */
-	KDB_O_NOEMPTY=1<<3,     /* unused ???? */
-	KDB_O_STATONLY=1<<4,    /*!< Only stat key, instead of getting entirelly */
-	KDB_O_INACTIVE=1<<5,    /*!< Do not ignore inactive keys (that name begins with .) */
-	KDB_O_SORT=1<<6,        /*!< Sort keys */
-	KDB_O_NFOLLOWLINK=1<<7, /*!< Do not follow symlinks */
+	KDB_O_RECURSIVE=1,       /*!< Act recursively. */
+	KDB_O_DIR=1<<1,          /*!< Include dir keys in result. */
+	KDB_O_NOVALUE=1<<2,      /*!< Retrieve only keys that don't have values
+	                              (a.k.a dir keys). */
+	KDB_O_NOEMPTY=1<<3,      /* unused ???? */
+	KDB_O_STATONLY=1<<4,     /*!< Only stat key, instead of getting entirelly. */
+	KDB_O_INACTIVE=1<<5,     /*!< Do not ignore inactive keys (that name begins
+	                              with .). */
+	KDB_O_SORT=1<<6,         /*!< Sort keys. */
+	KDB_O_NFOLLOWLINK=1<<7,  /*!< Do not follow symlinks. */
 
-/* XML exporting options for keytoStrem() */
-	KDB_O_CONDENSED=1<<8,   /*!< Compressed XML, not usefull for human eyes */
-	KDB_O_NUMBERS=1<<9,     /*!< Use UID and GID intead of user and group names */
-	KDB_O_XMLHEADERS=1<<10, /*!< Show also the XML header of the document */
+/* XML exporting options for keyToStrem() */
+	KDB_O_CONDENSED=1<<8,    /*!< Compressed XML, not usefull for human eyes. */
+	KDB_O_NUMBERS=1<<9,      /*!< Use numbers intead of user and group names. */
+	KDB_O_XMLHEADERS=1<<10,  /*!< Show also the XML header of the document. */
+	KDB_O_FULLNAME=1<<11,    /*!< Export @p user keys using full name
+	                              (e.g. user:username/some/key). */
+	KDB_O_FULLUGID=1<<12,    /*!< Don't supress obvious key UID,
+	                              GID, and user domain. Affects
+	                              only @p user keys. */
 	
 /* Options used by ksFind*() methods */
-	KDB_O_NOSPANPARENT=1<<11,
-	KDB_O_CYCLE=1<<12
+	KDB_O_NOSPANPARENT=1<<12,
+	KDB_O_CYCLE=1<<13
 };
-
-
-typedef struct _Key {
-	/* All attributes are private.
-	   Do not access them directly */
-	 u_int8_t      type;        /* data type */
-	    uid_t      uid;         /* owner user ID */
-	    uid_t      gid;         /* owner group ID */
-	   mode_t      access;      /* access control */
-	   time_t      atime;       /* time for last access */
-	   time_t      mtime;       /* time for last modification */
-	   time_t      ctime;       /* time for last change (meta info) */
-	   size_t      commentSize; /* size of the description string */
-	   size_t      dataSize;    /* size of the value */
-	   size_t      recordSize;  /* dataSize + commentSize + control */
-	u_int32_t      flags;       /* Some control flags */
-	   char *      key;         /* The name of the key */
-	   char *      comment;     /* A comment about this key-value pair */
-	   char *      userDomain;  /* User domain */
-	   void *      data;        /* The value */
-	struct _Key *  next;
-} Key;
-
 
 
 /* Key Name Anatomy
@@ -277,17 +265,81 @@ Parent name = "user:some.user/My Environment"
 */
 
 
+/* The 'struct _Key' and 'struct _KeySet' will be removed from this file in
+ * future versios of the library. The library is mature enough in terms of
+ * methods to access each Key and KeySet attributes. So you should use them.
+ * So you should never instantiate a Key or KeySet object like this:
+ * 
+ *    Key    myKey;      // don't do this
+ *    KeySet myKeySet;   // don't do this
+ *    keyInit(&myKey);   // don't do this
+ *    ksInit(&myKeySet); // don't do this
+ * 
+ * You should always use pointers instead:
+ * 
+ *    Key    *myKey;
+ *    KeySet *myKeySet;
+ *    myKey=keyNew("user/some/key");
+ *    myKeySet=ksNew();
+ * 
+ * This lets Elektra upgrades to not break previously compiled programs.
+ * This is binary compatibility for your programs across different versions of
+ * the library.
+ * 
+ * You can currently check if your sources are ready for this change. Simply
+ * test a recompilation changing <kdb.h> to 
+ * 
+ *     #include "/usr/share/doc/elektra-devel/kdbfuture.h"
+ * 
+ * This include file is identical to kdb.h but without the hidden structs. So
+ * kdbfuture.h will be used in place of kdb.h in future versions of the
+ * library.
+ * 
+ */ 
+
+
+struct _Key {                                                                    /* _DEPRECATED_ */
+	/* All attributes are private. */                                            /* _DEPRECATED_ */
+	/* Do not access them directly */                                            /* _DEPRECATED_ */
+	 u_int8_t      type;        /* data type */                                  /* _DEPRECATED_ */
+	    uid_t      uid;         /* owner user ID */                              /* _DEPRECATED_ */
+	    uid_t      gid;         /* owner group ID */                             /* _DEPRECATED_ */
+	   mode_t      access;      /* access control */                             /* _DEPRECATED_ */
+	   time_t      atime;       /* time for last access */                       /* _DEPRECATED_ */
+	   time_t      mtime;       /* time for last modification */                 /* _DEPRECATED_ */
+	   time_t      ctime;       /* time for last change (meta info) */           /* _DEPRECATED_ */
+	   size_t      commentSize; /* size of the description string */             /* _DEPRECATED_ */
+	   size_t      dataSize;    /* size of the value */                          /* _DEPRECATED_ */
+	   size_t      recordSize;  /* dataSize + commentSize + control */           /* _DEPRECATED_ */
+	u_int32_t      flags;       /* Some control flags */                         /* _DEPRECATED_ */
+	   char *      key;         /* The name of the key */                        /* _DEPRECATED_ */
+	   char *      comment;     /* A comment about this key-value pair */        /* _DEPRECATED_ */
+	   char *      userDomain;  /* User domain */                                /* _DEPRECATED_ */
+	   void *      data;        /* The value */                                  /* _DEPRECATED_ */
+	struct _Key * next;                                                          /* _DEPRECATED_ */
+};                                                                               /* _DEPRECATED_ */
 
 
 
-typedef struct _KeySet {
-	/* All attributes are private.
-	   Do not access them directly */
-	 Key *         start;
-	 Key *         end;
-	 Key *         cursor;
-	size_t         size;
-} KeySet;
+
+
+
+
+struct _KeySet {                        /* _DEPRECATED_ */
+	/* All attributes are private. */   /* _DEPRECATED_ */
+	/* Do not access them directly */   /* _DEPRECATED_ */
+	struct _Key * start;                /* _DEPRECATED_ */
+	struct _Key * end;                  /* _DEPRECATED_ */
+	struct _Key * cursor;               /* _DEPRECATED_ */
+	size_t        size;                 /* _DEPRECATED_ */
+};                                      /* _DEPRECATED_ */
+
+
+
+
+typedef struct _Key Key;
+typedef struct _KeySet KeySet;
+
 
 
 

@@ -3,9 +3,6 @@
 # $LastChangedBy$
 
 NAME=elektra
-CC=gcc ${OPTIMIZATIONS} -Wcomment -Wformat -Wimplicit-int -Wimplicit-function-declaration -Wparentheses -Wreturn-type -Wunused -Wuninitialized
-XMLINCLUDES=`xml2-config --cflags`
-XMLLIBS=`xml2-config --libs`
 
 DTDVERSION=0.1.0
 SVNREP=http://germane-software.com/repositories/elektra
@@ -24,21 +21,22 @@ MANDIR=/usr/share/man
 SGMLDIR=/usr/share/sgml
 
 
-DIRS=doc dtd
+DIRS=src doc dtd
 
 
 
-.c.o:
-	${CC} -fpic -o $@ -c $<
 
 
-
-all: libkdb.a libkdb.so libregistry.so kdb
-	for x in ${DIRS}; do (cd "$$x"; make $@); done
+all:
+	for x in ${DIRS}; do (cd "$$x"; make DTDVERSION=${DTDVERSION} \
+		DOCDIR=${DOCDIR} MANDIR=${MANDIR} SGMLDIR=${SGMLDIR} \
+		BINDIR=${BINDIR} LIBDIR=${LIBDIR} \
+		UBINDIR=${UBINDIR} ULIBDIR=${ULIBDIR} \
+		CONFDIR=${CONFDIR} INCDIR=${INCDIR} $@); done
 
 
 cleanhere:
-	-rm core* *~ *.o *.so *.a kdb elektra.spec localeinfo svn-commit*
+	-rm *~ elektra.spec svn-commit*
 	-find . -name "*~" | xargs rm
 
 
@@ -47,43 +45,6 @@ clean: cleanhere
 
 distclean: cleanhere
 	for x in ${DIRS}; do (cd "$$x"; make $@); done
-
-libregistry.so: registrystub.o libkdb.so
-	${CC} -shared -fpic -o $@ libkdb.so registrystub.o
-
-
-libkdb.so: localkdb.o key.o
-	${CC} -shared -fpic -o $@ localkdb.o key.o
-
-
-
-libkdb.a: localkdb.o key.o
-	ar q $@ localkdb.o key.o
-
-
-
-
-key.o: key.c kdb.h kdbprivate.h
-	${CC} -g -fpic -o $@ -c $<
-
-
-
-
-
-localkdb.o: localkdb.c kdb.h kdbprivate.h
-	${CC} -g -fpic -c $<
-
-
-
-
-kdb.o: kdb.c kdb.h kdbprivate.h
-	${CC} -g ${XMLINCLUDES} -fpic -c $<
-
-
-
-kdb: kdb.o libkdb.so
-	${CC} -g -L. ${XMLLIBS} -lkdb -o $@ $<
-	# ld -shared -lc -lkdb -static -lxml2 -lz -o $@ $<
 
 
 commit: clean
@@ -102,7 +63,9 @@ dist: distclean elektra.spec
 	PACK=`cat VERSION`;\
 	PACK=${NAME}-$$PACK;\
 	cd ..;\
-	tar --exclude .svn -czf $$PACK.tar.gz $$DIR/
+	ln -s $$DIR $$PACK;\
+	tar --exclude .svn -czf $$PACK.tar.gz $$PACK/*;\
+	rm $$PACK
 
 
 
@@ -132,12 +95,6 @@ elektra.spec: elektra.spec.in
 
 
 install: all
-	for x in ${DIRS}; do (cd "$$x"; make DTDVERSION=${DTDVERSION} \
-		DOCDIR=${DOCDIR} MANDIR=${MANDIR} SGMLDIR=${SGMLDIR} $@); done
-	# Strips will be done automatically by rpmbuild
-	# strip libkdb.so
-	# strip libregistry.so  # remove me in the future
-	# strip kdb
 	[ -d "${DESTDIR}${LIBDIR}" ] || mkdir -p ${DESTDIR}${LIBDIR}
 	[ -d "${DESTDIR}${ULIBDIR}" ] || mkdir -p ${DESTDIR}${ULIBDIR}
 	[ -d "${DESTDIR}${BINDIR}" ] || mkdir -p ${DESTDIR}${BINDIR}
@@ -145,15 +102,15 @@ install: all
 	[ -d "${DESTDIR}${CONFDIR}/profile.d" ] || mkdir -p ${DESTDIR}${CONFDIR}/profile.d
 	[ -d "${DESTDIR}${DOCDIR}/${NAME}" ] || mkdir -p ${DESTDIR}${DOCDIR}/${NAME}
 	[ -d "${DESTDIR}${DOCDIR}/${NAME}-devel" ] || mkdir -p ${DESTDIR}${DOCDIR}/${NAME}-devel
-	cp libkdb.so ${DESTDIR}${LIBDIR}
-	cp libkdb.a ${DESTDIR}${ULIBDIR}
-	cp libregistry.so ${DESTDIR}${LIBDIR} # remove me in the future
-	cp kdb ${DESTDIR}${BINDIR}
-	cp kdb.h ${DESTDIR}${INCDIR}
+	for x in ${DIRS}; do (cd "$$x"; make DTDVERSION=${DTDVERSION} \
+		DOCDIR=${DOCDIR} MANDIR=${MANDIR} SGMLDIR=${SGMLDIR} \
+		BINDIR=${BINDIR} LIBDIR=${LIBDIR} \
+		UBINDIR=${UBINDIR} ULIBDIR=${ULIBDIR} \
+		CONFDIR=${CONFDIR} INCDIR=${INCDIR} $@); done
 	cp scripts/elektraenv ${DESTDIR}${CONFDIR}/profile.d/elektraenv.sh
 	chmod a+x example/*-convert
 	cp LICENSE ${DESTDIR}${DOCDIR}/${NAME}
 	cp ChangeLog ${DESTDIR}${DOCDIR}/${NAME}
 	cp example/*-convert ${DESTDIR}${DOCDIR}/${NAME}
-	cp kdb.c example/example.c ${DESTDIR}${DOCDIR}/${NAME}-devel
+	cp example/*.c example/*.xml ${DESTDIR}${DOCDIR}/${NAME}-devel
 

@@ -1,6 +1,6 @@
 Name:          elektra
 Version:       _VERSION_
-%define myRelease 10
+%define myRelease 12
 %define vepoch 1
 Release:       0.fdr.%{vepoch}.%{myRelease}
 Source:        http://aleron.dl.sourceforge.net/sourceforge/elektra/%{name}-%{version}.tar.gz
@@ -39,7 +39,7 @@ This package contains the include files and API manual pages to use the Elektra
 API in C.
 
 %prep
-%setup -n elektra
+%setup
 %build
 # Setup for parallel builds
 numprocs=`egrep -c ^cpu[0-9]+ /proc/stat || :`

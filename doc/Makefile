@@ -4,7 +4,7 @@
 MANSTYLE=manstyle.xsl
 HTMLSTYLE=htmltitlepage.xsl
 APIDIR=elektra-api
-DOXYSOURCES=../localkdb.c ../kdb.c ../kdb.h ../key.c
+DOXYSOURCES=../src/localkdb.c ../src/kdb.c ../src/kdb.h ../src/key.c
 
 
 # Default dirs we use for installation, that can be substituted by the command line.
@@ -32,7 +32,7 @@ elektra-api.tar.gz: $(DOXYSOURCES)
 	-rm -rf ${APIDIR}
 	-rm -rf ${APIDIR}.tar.gz
 	echo "Making Doxygen..."
-	cd ..; doxygen
+	cd ../src; doxygen
 	tar -czf ${APIDIR}.tar.gz ${APIDIR}/html
 	# find ${APIDIR}/html | cpio -H tar -o | gzip -c --best > ${APIDIR}.tar.gz
 

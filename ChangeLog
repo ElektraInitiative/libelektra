@@ -1,5 +1,6 @@
 * Sat Dec 06 2004 Avi Alkalay <avi@unix.sh> 0.4.8
 - Whish me a happy birthday
+- All sources moved to src/
 - New 'kdb help' to show some usage examples
 - enum KeyFlags changed to enum KeySwitch (KeyFlags values maps to new KeySwitch for compatibility)
 - New stupendous keyNew(), keyDel(), ksNew(), ksDel() functions
@@ -9,7 +10,9 @@
 - Working in ksFind*() methods
 - Many small fixes that appeared in the switch to keyNew()
 - Many other fixes, code robustness and cleanup
-- User-defined key types greatlly improved, fixed and tested
+- User-defined key types greatly improved, fixed and tested
+- XML export can now supress obvious UID and GID for 'user/*' keys
+- XML export can now supress user domain for 'user/*' keys
 - new keyNewExample.c on example/
 - new example/keyset.xml with example of complex keys, and how they look XML-exported.
 
