@@ -38,13 +38,14 @@ $LastChangedBy:$
 	</section>
 	
 	<section id="namespace"><title>Key Names and Namespaces</title>
-		<para>All keys are organized in a hierarchical tree with 2 Namespaces (subtrees):</para>
+		<para>All keys are organized in a hierarchical tree with 2 Namespaces (subtrees) as showed by the picture:</para>
+		<para><graphic srccredit="roots" fileref="images/roots.png" label="roots" align="center"/></para>
 		<variablelist>
 			<varlistentry><term><type>system</type></term>
 				<listitem><para>Contains all subsystems and global application keys/configuration. Equivalent to files under <filename>/etc</filename> directory.</para></listitem>
 			</varlistentry>
 			<varlistentry><term><type>user</type></term>
-				<listitem><para>The current user's keys. Equivalent to the dotfiles in a user's <envar>$HOME</envar> directory.</para></listitem >
+				<listitem><para>The current user's keys. Equivalent to the dotfiles in a user's <envar>$HOME</envar> directory. These keys are phisically stored under the owner user home directory. The many <filename>user:</filename><replaceable>username</replaceable> in the picture shows the full name of those trees. Read about user domains bellow for more.</para></listitem>
 			</varlistentry>
 		</variablelist>
 		<section><title>User Domains</title>
@@ -52,7 +53,14 @@ $LastChangedBy:$
 			<para>User domains were implemented also to address situations when different user names (<envar>$USER</envar>) have same UID. So a user key is stored in his home directory based on the user name, not the UID.</para>
 		</section>
 		<section id="inactivekey"><title>Inactive Keys</title>
-			<para>A great thing about text configuration files is that some configuration items can be there as an example, but inactive or commented. The Linux Registry provides a very simple way to simulate this behavior: if the key name begins with a dot (.), it is considered inactive or commented. In real world applications, the Registry API will ignore these keys by default, but the keys are still accessible if the developer wants to. See examples bellow of inactive keys.</para>
+			<para>A great thing about text configuration files is that some configuration items can be there as an example, but inactive or commented. The Linux Registry provides a very simple way to simulate this behavior: if the key name begins with a dot (.), it is considered inactive or commented. In real world applications, the Registry API will ignore these keys by default, but the keys are still accessible if the developer wants to.</para>
+			<para>These are some keys that have inactive subtrees:</para>
+			<itemizedlist>
+				<listitem><simpara><filename>system/sw/XFree/InputDevice/.Mouse3/Driver</filename>: All keys under <filename>.Mouse3/*</filename> subtree won't be read by default.</simpara></listitem>
+				<listitem><simpara><filename>user:valeria/env/env2/.PATH</filename>: The <envar>$PATH</envar> environment variable <emphasis>won't</emphasis> be set when <replaceable>valeria</replaceable> login.</simpara></listitem>
+				<listitem><simpara><filename>system/users/.louis/uid</filename>: The entire <filename>.louis/*</filename> subtree is inactive. This is the same as commenting the user entry from a configuration file.</simpara></listitem>
+			</itemizedlist>
+			<para>See bellow more examples of inactive keys.</para>
 		</section>
 		<section><title>Key Examples</title>
 			<para>Here are some valid key names, and their values:</para>

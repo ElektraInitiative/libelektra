@@ -27,9 +27,20 @@ $LastChangedBy$
 		
 		&author;
 		
-		<pubdate>2004-08-15</pubdate>
+		<pubdate>2004-08-17</pubdate>
 		
 		<revhistory>
+			<revision>
+				<revnumber>2004-08-17</revnumber>
+				<date>17 Aug 2004</date>
+				<authorinitials>avi</authorinitials>
+				<revdescription>
+					<itemizedlist>
+						<listitem><simpara>Added picture in the key namespaces explanation section, and a few comments.</simpara></listitem>
+						<listitem><simpara>Added inactive keys examples and comments.</simpara></listitem>
+					</itemizedlist>
+				</revdescription>
+			</revision>
 			<revision>
 				<revnumber>2004-08-15</revnumber>
 				<date>15 Aug 2004</date>
