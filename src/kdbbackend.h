@@ -16,8 +16,8 @@
 
 /* Subversion stuff
 
-$Id: $
-$LastChangedBy: aviram $
+$Id$
+$LastChangedBy$
 
 */
 

@@ -27,8 +27,8 @@
 
 /* Subversion stuff
 
-$Id: registrystub.c 51 2004-08-15 13:39:13Z aviram $
-$LastChangedBy: aviram $
+$Id$
+$LastChangedBy$
 
 */
 

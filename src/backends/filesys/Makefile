@@ -1,5 +1,5 @@
-	# $Id: Makefile 111 2004-12-04 14:11:47Z aviram $
-# $LastChangedBy: aviram $
+	# $Id$
+# $LastChangedBy$
 
 
 

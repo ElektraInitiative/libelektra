@@ -30,8 +30,8 @@
 $Id$
 $Id $
 $Id:$
-$Id: $
-$LastChangedBy: aviram $
+$Id$
+$LastChangedBy$
 
 */
 
