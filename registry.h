@@ -49,7 +49,7 @@ $LastChangedBy$
    that somebody can invent in the future */
 #define RG_KEY_TYPE_STRING    40
 /* Data types bigger than RG_KEY_TYPE_STRING are still strings, but may have
-   some semantics that will be handled by other livraries */
+   some semantics that will be handled by other libraries */
 
 
 

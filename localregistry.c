@@ -68,21 +68,21 @@ extern int errno;
 /**
  * @defgroup registry Registry Access Methods
  * @brief These are general methods to access the Key database.
- * 
+ *
  */
 
- 
+
 /**
  * @defgroup internals Registry internals
  * @brief These methods are not to be used by your application.
- * 
+ *
  */
 
- 
- 
+
+
 /**
  * Opens a registry session.
- * 
+ *
  * By now it does nothing. This might change in the future, so it's good
  * practice to always call <i>registryOpen()</i> before using the registry.
  * @see registryClose()
@@ -181,8 +181,9 @@ int registryNeedsUTF8Conversion() {
 }
 
 
-/** 
- * Converts string to (direction=UTF8_TO) and from (direction=UTF8_FROM) UTF-8.
+/**
+ * Converts string to (direction=UTF8_TO) and from
+ * (direction=UTF8_FROM) UTF-8.
  *
  * <b>internal usage only-</b>
  * @ingroup internals
@@ -234,6 +235,9 @@ int UTF8Engine(int direction, char **string, size_t *inputByteSize) {
 
 	return 0;
 }
+
+
+
 
 /**
  *
@@ -406,21 +410,19 @@ int keyFileUnserialize(Key *key,FILE *input) {
 	   -------------------------
 	*/
 
-	/* TODO: Handle different format versions */
-
 	if (!fgets(version, sizeof(version), input)) return -1;
 	if (strncmp(version,"RG",2)) {
 		/* Doesn't look like a key file */
 		errno=RG_KEY_RET_INVALIDKEY;
 		return -1;
 	}
-	
+
 	nversion=atoi(version+2);
 	if (!nversion || nversion > RG_KEY_FORMAT_VERSION) {
 		errno=RG_KEY_RET_INVALIDKEY;
 		return -1;
 	}
-	
+
 	if (nversion != RG_KEY_FORMAT_VERSION)
 		return handleOldKeyFileVersion(key,input,nversion);
 	
@@ -704,7 +706,7 @@ size_t keyCalcRelativeFileName(Key *key,char *relativeFileName,size_t maxSize) {
 
 		memcpy(relativeFileName,converted,size);
 		free(converted);
-		
+
 		return size;
 	} else return keyGetName(key,relativeFileName,maxSize);
 	
@@ -718,7 +720,8 @@ size_t keyCalcRelativeFileName(Key *key,char *relativeFileName,size_t maxSize) {
 
 /**
  * Stats a key file.
- * Will not open the key file, but only stat it, not changing its last access time.
+ * Will not open the key file, but only stat it, not changing its last
+ * access time.
  * The resulting key will have all info, but comment, value and value type.
  *
  * @param stat the stat structure to get metadata from
@@ -777,7 +780,7 @@ size_t registryGetFilename(Key *forKey,char *returned,size_t maxSize) {
                         if (!user) return 0; /* propagate errno */
 			length=snprintf(returned,maxSize,"%s/%s",user->pw_dir,RG_DB_USER);
 			break;
-		} 
+		}
 		default: {
 			errno=RG_KEY_RET_INVALIDKEY;
 			return 0;
@@ -791,35 +794,6 @@ size_t registryGetFilename(Key *forKey,char *returned,size_t maxSize) {
 }
 
 
-/**
- * A high-level method to set a value to a key, by key name.
- * It will obviously check if key exists first, and keep its metadata.
- * So you'll not loose the precious key comment.
- * 
- * This will set a text key. So if the key was previously a binary, etc key, it will be retyped as text.
- *
- * @see registryGetValue()
- * @see keySetString()
- * @see registrySetKey()
- * @param keyname the name of the key to receive the value
- * @param value the value to be set
- * @return 0 on success, and error code otherwise
- * @ingroup registry
- */
-int registrySetValue(char *keyname, char *value) {
-	Key key;
-	int rc;
-	
-/* TODO: check key type first */
-	keySetName(&key,keyname);
-	rc=registryGetKey(&key);
-	keySetString(&key,value);
-	rc=registrySetKey(&key);
-	keyClose(&key);
-	return rc;
-}
-
-
 
 /**
  * A high-level method to get a key value, by key name.
@@ -828,6 +802,7 @@ int registrySetValue(char *keyname, char *value) {
  *
  * @see registrySetValue()
  * @see registryGetKey()
+ * @see registryGetValueByParent()
  * @see keyGetString()
  * @param keyname the name of the key to receive the value
  * @param returned a buffer to put the key value
@@ -852,53 +827,64 @@ int registryGetValue(char *keyname,char *returned,size_t maxSize) {
 
 
 /**
- * Given a parent key name plus a basename, returns the key.
+ * A high-level method to set a value to a key, by key name.
+ * It will obviously check if key exists first, and keep its metadata.
+ * So you'll not loose the precious key comment.
  *
- * So here you'll provide something like
- * - system/sw/myApp plus key1 to get system/sw/myApp/key1
- * - user/sw/MyApp plus dir1/key2 to get user/sw/MyApp/dir1/key2
+ * This will set a text key. So if the key was previously a binary, etc key, it will be retyped as text.
  *
- * @param parentName parent key name
- * @param baseName leaf name
- * @param returned the returned key
- * @return 0 on success, or a return code if key was not retrieved for some reason
- * @see registryGetKey()
- * @see registryGetValueByParent()
+ * @see registryGetValue()
+ * @see keySetString()
+ * @see registrySetKey()
+ * @param keyname the name of the key to receive the value
+ * @param value the value to be set
+ * @return 0 on success, and error code otherwise
  * @ingroup registry
  */
-int registryGetKeyByParent(char *parentName, char *baseName, Key *returned) {
-	char name[strblen(parentName)+strblen(baseName)];
-	
-	sprintf(name,"%s/%s",parentName,baseName);
-	keySetName(returned,name);
-	
-	return registryGetKey(returned);
+int registrySetValue(char *keyname, char *value) {
+	Key key;
+	int rc;
+
+/* TODO: check key type first */
+	keySetName(&key,keyname);
+	rc=registryGetKey(&key);
+	keySetString(&key,value);
+	rc=registrySetKey(&key);
+	keyClose(&key);
+	return rc;
 }
 
 
-/**
- * @ingroup registry
- */
-int registryGetKeyByParentKey(Key *parent, char *baseName, Key *returned) {
-	size_t size=keyGetFullNameSize(parent);
-	char name[size+strblen(baseName)];
-	
-	keyGetFullName(parent,name,size);
-	name[size-1]='/';
-	strcpy((char *)(parent+size),baseName);
 
-	keySetName(returned,name);
-	
-	return registryGetKey(returned);
+/**
+ * Fills the \p returned buffer with the value of a key, which name
+ * is the concatenation of \p parentName and \p baseName.
+ *
+ * @par Example:
+ * @code
+char *parent="user/sw/MyApp";
+char *keys[]={"key1","key2","key3"};
+char buffer[150];   // a big buffer
+int c;
+
+for (c=0; c<3; c++) {
+	registryGetValueByParent(parent,keys[c],buffer,sizeof(buffer));
+	// Do something with buffer....
 }
 
-
-/**
+ * @endcode
+ *
+ * @see registryGetKeyByParent()
+ * @param parentName the name of the parent key
+ * @param baseName the name of the child key
+ * @param returned pre-allocated buffer to be filled with key value
+ * @param maxSize size of the \p returned buffer
+ * @return whathever is returned by registryGetValue()
  * @ingroup registry
  */
 int registryGetValueByParent(char *parentName, char *baseName, char *returned, size_t maxSize) {
 	char name[strblen(parentName)+strblen(baseName)];
-	
+
 	sprintf(name,"%s/%s",parentName,baseName);
 	return registryGetValue(name,returned,maxSize);
 }
@@ -906,6 +892,11 @@ int registryGetValueByParent(char *parentName, char *baseName, char *returned, s
 
 
 /**
+ * Sets the provided \p value to the key whose name is the concatenation of
+ * \p parentName and \p baseName.
+ * @param parentName the name of the parent key
+ * @param baseName the name of the child key
+ * @param value the value to set
  * @ingroup registry
  */
 int registrySetValueByParent(char *parentName, char *baseName, char *value) {
@@ -917,12 +908,61 @@ int registrySetValueByParent(char *parentName, char *baseName, char *value) {
 
 
 
+/**
+ * Given a parent key name plus a basename, returns the key.
+ *
+ * So here you'll provide something like
+ * - system/sw/myApp plus key1 to get system/sw/myApp/key1
+ * - user/sw/MyApp plus dir1/key2 to get user/sw/MyApp/dir1/key2
+ *
+ * @param parentName parent key name
+ * @param baseName leaf or child name
+ * @param returned a pointer to an initialized key to be filled
+ * @return 0 on success, or a return code if key was not retrieved for some reason
+ * @see registryGetKey()
+ * @see registryGetValueByParent()
+ * @see registryGetKeyByParentKey()
+ * @ingroup registry
+ */
+int registryGetKeyByParent(char *parentName, char *baseName, Key *returned) {
+	char name[strblen(parentName)+strblen(baseName)];
+
+	sprintf(name,"%s/%s",parentName,baseName);
+	keySetName(returned,name);
+
+	return registryGetKey(returned);
+}
+
+
+/**
+ * Similar to previous, provided for convenience.
+ * @param parent pointer to the parent key
+ * @see registryGetKey()
+ * @see registryGetKeyByParent()
+ * @see registryGetValueByParent()
+ * @ingroup registry
+ */
+int registryGetKeyByParentKey(Key *parent, char *baseName, Key *returned) {
+	size_t size=keyGetFullNameSize(parent);
+	char name[size+strblen(baseName)];
+
+	keyGetFullName(parent,name,size);
+	name[size-1]='/';
+	strcpy((char *)(parent+size),baseName);
+
+	keySetName(returned,name);
+
+	return registryGetKey(returned);
+}
+
+
+
 
 /* Used by the qsort() function */
 int keyCompareByName(const void *p1, const void *p2) {
 	Key *key1=*(Key **)p1;
 	Key *key2=*(Key **)p2;
-	
+
 	return strcmp(key1->key, key2->key);
 }
 
@@ -939,27 +979,41 @@ int keyCompareByName(const void *p1, const void *p2) {
  *   Retrieve also the keys under the child keys, recursively.
  *   The rg(1) ls command, with switch -R uses this option.
  * - \c RG_O_DIR \n
- *   By default, folder keys will not be returned because they don't have 
- *   values and exist only to define hierarchy. Use this option if you need 
- *   them to be included in the returned KeySet. 
+ *   By default, folder keys will not be returned because they don't have
+ *   values and exist only to define hierarchy. Use this option if you need
+ *   them to be included in the returned KeySet.
  * - \c RG_O_NOVALUE \n
  *   Do not include in returned the regular value keys. The resulting KeySet
- *   will be only the skeleton of the tree. 
+ *   will be only the skeleton of the tree.
  * - \c RG_O_STATONLY \n
  *   Only stat(2) the keys; do not retrieve the value, comment and key data
- *   type. The resulting keys will be empty and usefull only for 
- *   informational purposes. The rg(1) ls command, without the -v switch 
- *   uses this option. 
+ *   type. The resulting keys will be empty and usefull only for
+ *   informational purposes. The rg(1) ls command, without the -v switch
+ *   uses this option.
  * - \c RG_O_INACTIVE \n
- *   Will make it not ignore inactive keys. So returned will be filled also 
+ *   Will make it not ignore inactive keys. So returned will be filled also
  *   with inactive keys. See registry(7) to understand how inactive keys work.
  * - \c RG_O_SORT \n
- *   Will sort keys alphabetically by their names. 
+ *   Will sort keys alphabetically by their names.
+ *
+ * @par Example:
+ * @code
+KeySet myConfig;
+ksInit(&myConfig);
+
+registryOpen();
+rc=registryGetChildKeys("system/sw/MyApp", &myConfig, RG_O_RECURSIVE);
+registryClose();
+ * @endcode
  *
  * @param parentName name of the parent key
  * @param returned the KeySet returned with all keys found
  * @param options ORed options to control approaches
  * @ingroup registry
+ *
+ * @see commandList() code in rg command for usage example
+ * @see commandEdit() code in rg command for usage example
+ * @see commandSave() code in rg command for usage example
  */
 int registryGetChildKeys(char *parentName, KeySet *returned, unsigned long options) {
 	char *realParentName=0;
@@ -987,10 +1041,10 @@ int registryGetChildKeys(char *parentName, KeySet *returned, unsigned long optio
 		Key *keyEntry;
 		char *transformedName=0;
 		size_t keyNameSize=0;
-		
+
 		/* Ignore '.' and '..' directory entries */
 		if (!strcmp(entry->d_name,".") || !strcmp(entry->d_name,"..")) continue;
-		
+
 // // // /*		/* Dots ('.') in key name must be escaped */
 // // // 		while (cursor=index(cursor,'.')) {
 // // // 			if (!transformedName) transformedName=realloc(transformedName,200);
@@ -998,13 +1052,13 @@ int registryGetChildKeys(char *parentName, KeySet *returned, unsigned long optio
 // // // 			strncat(transformedName,"\\",1);
 // // // 			lastCursor=cursor;
 // // // 			cursor++;
-// // // 		} 
+// // // 		}
 // // // 		/* copy the last chunk */
 // // // 		if (transformedName) {
 // // // 			strcat(transformedName,lastCursor);
 // // // 			keyNameSize=strblen(transformedName);
 // // // 		}*/
-		
+
 		/* If key name starts with '.', and don't want INACTIVE keys, ignore it */
 		if ((*entry->d_name == '.') && !(options & RG_O_INACTIVE)) continue;
 
@@ -1017,14 +1071,14 @@ int registryGetChildKeys(char *parentName, KeySet *returned, unsigned long optio
 			free(transformedName);
 			return -1;
 		}
-		
+
 		/* Copy the entire transformed key name to our final buffer */
 		sprintf(buffer,"%s/%s",realParentName,transformedName);
 		free(transformedName); /* don't need it anymore */
-	
+
 		keyEntry=(Key *)malloc(sizeof(Key)); keyInit(keyEntry);
 		keySetName(keyEntry,buffer);
-		
+
 		if (options & RG_O_STATONLY) registryStatKey(keyEntry);
 		else if (options & RG_O_NFOLLOWLINK) {
 			registryStatKey(keyEntry);
@@ -1034,7 +1088,7 @@ int registryGetChildKeys(char *parentName, KeySet *returned, unsigned long optio
 			/* If this is a permission problem, at least stat the key */
 			if (rc && errno==RG_KEY_RET_NOCRED) registryStatKey(keyEntry);
 		}
-		
+
 		if (S_ISDIR(keyEntry->access)) {
 			if (options & RG_O_RECURSIVE) {
 				KeySet children;
@@ -1047,14 +1101,14 @@ int registryGetChildKeys(char *parentName, KeySet *returned, unsigned long optio
 				ksInit(&children);
 				/* Act recursively, without sorting. Sort in the end, once */
 				registryGetChildKeys(fullName,&children, ~(RG_O_SORT) & options);
-				
+
 				/* Insert the current directory key in the returned list before its children */
 				if (options & RG_O_DIR) ksAppend(returned,keyEntry);
 				else {
 					keyClose(keyEntry);
 					free(keyEntry);
 				}
-				
+
 				/* Insert the children */
 				ksAppendKeys(returned,&children);
 				free(fullName);
@@ -1062,7 +1116,7 @@ int registryGetChildKeys(char *parentName, KeySet *returned, unsigned long optio
 				else {
 					keyClose(keyEntry);
 					free(keyEntry);
-				} 
+				}
 		} else if (options & RG_O_NOVALUE) {
 			keyClose(keyEntry);
 			free(keyEntry);
@@ -1075,12 +1129,12 @@ int registryGetChildKeys(char *parentName, KeySet *returned, unsigned long optio
 		Key *keys[returned->size];
 		Key *cursor;
 		size_t c=0;
-		
+
 		for (cursor=returned->start; cursor; cursor=cursor->next, c++)
 			keys[c]=cursor;
-			
+
 		qsort(keys,returned->size,sizeof(Key *),keyCompareByName);
-		
+
 		returned->start=cursor=keys[0];
 		for (c=1; c<returned->size; c++) {
 			cursor->next=keys[c];
@@ -1089,7 +1143,7 @@ int registryGetChildKeys(char *parentName, KeySet *returned, unsigned long optio
 		cursor->next=0;
 		returned->end=cursor;
 	}
-	
+
 	return 0;
 }
 
@@ -1101,11 +1155,17 @@ int registryGetChildKeys(char *parentName, KeySet *returned, unsigned long optio
 
 
 /**
+ * Returns a KeySet with all root keys currently recognized.
+ * Currently, the \c system and current user's \c user keys are returned.
+ * @param returned the initialized KeySet to be filled
+ * @return 0
  * @ingroup registry
+ *
+ * @see commandList() code in rg command for usage example
  */
 int registryGetRootKeys(KeySet *returned) {
 	Key *system=0,*user=0;
-	
+
 	system=malloc(sizeof(Key));
 	keyInit(system);
 	keySetName(system,"system");
@@ -1113,7 +1173,7 @@ int registryGetRootKeys(KeySet *returned) {
 		free(system);
 		system=0;
 	}
-	
+
 	user=malloc(sizeof(Key));
 	keyInit(user);
 	keySetName(user,"user");
@@ -1121,17 +1181,25 @@ int registryGetRootKeys(KeySet *returned) {
 		free(user);
 		user=0;
 	}
-	
+
 	if (system) ksInsert(returned,system);
 	if (user) ksAppend(returned,user);
-	
+
 	return 0;
 }
 
 
 
 /**
+ * Retrieves only the meta-info of a key from backend storage.
+ * The bahavior may change from backend to backend. In the filesystem
+ * backend, it will make only a stat to the key.
+ *
+ * Info like comments and key data type are not retrieved.
+ *
+ * @param key an initialized Key pointer to be filled.
  * @ingroup registry
+ * @return 0 on success, -1 otherwise
  */
 int registryStatKey(Key *key) {
 	char keyFileName[800];
@@ -1144,16 +1212,16 @@ int registryStatKey(Key *key) {
 
 	if (lstat(keyFileName,&keyFileNameInfo)) return -1;
 	keyFromStat(key,&keyFileNameInfo);
-	
+
 	if (keyIsLink(key) && key->recordSize) {
 		char *data=malloc(key->recordSize+1); /* Add 1 byte for ending 0 */
-		
+
 		readlink(keyFileName,data,key->recordSize);
 		data[key->recordSize]=0; /* null terminate it */
 		keySetLink(key,data);
 		free(data);
 	}
-	
+
 	/* Remove the NEEDSYNC flag */
 	semiflag=RG_KEY_FLAG_NEEDSYNC;
 	semiflag=~semiflag;
@@ -1167,7 +1235,12 @@ int registryStatKey(Key *key) {
 
 
 /**
+ * Fully retrieves the passed \p key from the backend storage.
+ * @param key a pointer to a Key that has a name set
+ * @return 0 on success, other value otherwise
+ * @see registrySetKey()
  * @ingroup registry
+ * @see commandGet() code in rg command for usage example
  */
 int registryGetKey(Key *key) {
 	char keyFileName[500];
@@ -1197,30 +1270,46 @@ int registryGetKey(Key *key) {
 	semiflag=RG_KEY_FLAG_NEEDSYNC;
 	semiflag=~semiflag;
 	key->flags &= semiflag;
-	
+
 	return 0;
 }
 
 
 
 /**
+ * Commits an entire KeySet to the backend storage.
+ * Each key is checked with keyNeedsSync() before being actually commited. So
+ * only changed keys are updated.
+ *
+ * @param ks a KeySet full of changed keys
+ * @return 0 (no way to know if some key failled currently)
+ * @see registrySetKey()
+ * @see commandEdit() code in rg command for usage example
+ * @see commandLoad() code in rg command for usage example
  * @ingroup registry
  */
 int registrySetKeys(KeySet *ks) {
 	Key *current;
-	
+
 	for (current=ks->start; current; current=current->next) {
 		if (keyNeedsSync(current)) {
 			registrySetKey(current);
 		}
 	}
-	
+
 	return 0;
 }
 
 
 
 /**
+ * Commits a key to the backend storage.
+ * If failed (see return), the \c errno global is set accordingly.
+ *
+ * @see registryGetKey()
+ * @see registrySetKeys()
+ * @see commandSet() code in rg command for usage example
+ * @return 0 on success, other value otherwise.
  * @ingroup registry
  */
 int registrySetKey(Key *key) {
@@ -1255,7 +1344,6 @@ int registrySetKey(Key *key) {
 						cursor=index(cursor,'/')) {
 					strncpy(folderMaker,keyFileName,cursor-keyFileName);
 					folderMaker[cursor-keyFileName]=0;
-					/* TODO: use correct user's umask() for dir permissions */
 					if (mkdir(folderMaker,0775)<0 && errno!=EEXIST) return -1;
 					cursor++;
 				}
@@ -1287,7 +1375,7 @@ int registrySetKey(Key *key) {
 			- other: It is an absolute FS path, or relative inside-registry
 			  namespace path, and symlink it
 		*/
-	
+
 		keyInit(&target);
 		if (key->data) targetName=malloc(key->dataSize);
 		keyGetLink(key,targetName,key->dataSize);
@@ -1308,7 +1396,7 @@ int registrySetKey(Key *key) {
 
 
 		/* Now, targetName has the real destination of our link */
-		
+
 		/* TODO: handle null targetName */
 		rc=symlink(targetName,keyFileName);
 		free(targetName);
@@ -1345,6 +1433,12 @@ int registrySetKey(Key *key) {
 
 
 /**
+ * Remove a key from the backend storage.
+ * This method is not recursive.
+ *
+ * @param keyName the name of the key to be removed
+ * @return whathever is returned by remove(), and \c errno is propagated
+ * @see commandRemove() code in rg command for usage example
  * @ingroup registry
  */
 int registryRemove(char *keyName) {
@@ -1367,6 +1461,14 @@ int registryRemove(char *keyName) {
 
 
 /**
+ * Create a link key that points to other key.
+ *
+ * @param oldPath destination key name
+ * @param newKeyName name of the key that will be created and will point
+ * to \p oldPath
+ * @return whathever is returned by registrySetKey(), and \p errno is set
+ * @see commandLink() code in rg command for usage example
+ * @see commandSet() code in rg command for usage example
  * @ingroup registry
  */
 int registryLink(char *oldPath,char *newKeyName) {
@@ -1376,10 +1478,39 @@ int registryLink(char *oldPath,char *newKeyName) {
 	keyInit(&key);
 	keySetName(&key,newKeyName);
 	keySetLink(&key,oldPath);
-	
+
 	rc=registrySetKey(&key);
 	keyClose(&key);
 	
 	return rc;
 }
 
+
+long registryNotifyKeySet(KeySet *interests, unsigned long iterations,
+		unsigned usleep) {
+	
+}
+
+
+
+
+u_int32_t registryNotifyKey(Key *interest, unsigned long iterations,
+		unsigned usleep) {
+	Key tested;
+	int rc;
+
+	keyInit(tested);
+	keyDup(interest,&tested);
+	rc=registryGetKey(&tested);
+
+	if (rc) {
+		/* check what type of problem happened.... */
+		switch (errno) {
+			case RG_KEY_RET_NOCRED:
+			case RG_KEY_RET_NOTFOUND:
+				/* key was deleted */
+
+		}
+	}
+
+}

@@ -76,6 +76,25 @@ size_t strblen(char *s) {
  *
  * Every Key object that will be used must be initialized first, to setup
  * pointers, counters, etc.
+ * @par Example 1:
+ * @code
+Key *key;
+
+key=malloc(sizeof(Key));
+keyInit(key);
+// do something with key...
+keyClose(key);
+free(key);
+ * @endcode
+ *
+ * @par Example 2:
+ * @code
+Key key;
+
+keyInit(&key);
+// do something with key...
+keyClose(&key);
+ * @endcode
  * @see keyClose()
  */
 int keyInit(Key *key) {
@@ -102,7 +121,7 @@ int keyInit(Key *key) {
  * Frees all internally allocated memory, and leave the Key object
  * ready to be destroyed, or explicitly by a <i>free()</i>, or a
  * local variable dealocation.
- * @see keyInit()
+ * @see keyInit() for usage example
  */
 int keyClose(Key *key) {
 	if (!key) return errno=RG_KEY_RET_NULLKEY;
@@ -1269,15 +1288,15 @@ size_t keyGetParent(Key *key, char *returnedParent, size_t maxSize) {
  */
 u_int32_t keyCompare(Key *key1, Key *key2) {
 	u_int32_t ret=0;
-	
-	
+
+
 	/* Compare these numeric properties */
 	if (key1->uid != key2->uid)                    ret|=RG_KEY_FLAG_HASUID;
 	if (key1->gid != key2->gid)                    ret|=RG_KEY_FLAG_HASGID;
 	if (key1->type != key2->type)                  ret|=RG_KEY_FLAG_HASTYPE;
 	if ((key1->access & (S_IRWXU|S_IRWXG|S_IRWXO)) !=
 		(key2->access & (S_IRWXU|S_IRWXG|S_IRWXO))) ret|=RG_KEY_FLAG_HASPRM;
-	
+
 	/* Compare these string properties.
 	   A lot of decisions because strcmp can't handle NULL pointers */
 	if (key1->key && key2->key) {
@@ -2251,21 +2270,24 @@ size_t ksAppendKeys(KeySet *ks, KeySet *toAppend) {
 
 /**
  *  Compare 2 KeySets.
- *  A key (by full name) that is present on ks1 and ks2, and has something
- *  different, will be transfered from ks2 to ks1, and ks1's version deleted.
- *  Keys that are in ks1, but aren't in ks2 will be trasnsfered from ks1 to
- *  removed.
- *  Keys that are keyCompare() equal in ks1 and ks2 will be deleted from ks2.
+ *  A key (by full name) that is present on \c ks1 and \c ks2, and has
+ *  something different, will be transfered from \c ks2 to \c ks1, and
+ *  \c ks1's version deleted.
+ *  Keys that are in \c ks1, but aren't in \c ks2 will be trasnsfered
+ *  from \c ks1 to \c removed.
+ *  Keys that are keyCompare() equal in \c ks1 and \c ks2 will be deleted
+ *  from \c ks2.
  *  Keys that are available in ks2 but don't exist in ks1 will be transfered
  *  to ks1.
  *
  *  In the end, ks1 will have all the keys that matter, and ks2 will be empty.
- *  After ksCompare(), you should: 
- *  - call registrySetKeys(ks1) to commit all changed keys
+ *  After ksCompare(), you should:
+ *  - call registrySetKeys() on \c ks1 to commit all changed keys
  *  - registryRemove() for all keys in the removed KeySet
  *  - free(ks2)
  *
  *  @see keyCompare()
+ *  @see commandEdit() at the rg command
  *  @param ks1 first KeySet
  *  @param ks2 second KeySet
  *  @param removed empty KeySet that will be filled with keys removed from ks1
@@ -2274,7 +2296,7 @@ int ksCompare(KeySet *ks1, KeySet *ks2, KeySet *removed) {
 	int flagRemoved=1;
 	Key *ks1Cursor=0;
 	Key *ks2Cursor=0;
-	
+
 	Key *ks1PrevCursor=0;
 	
 	ks1Cursor=ks1->start;

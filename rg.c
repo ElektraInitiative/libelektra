@@ -15,7 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
- 
+
 /* Subversion stuff
 
 $Id$
@@ -23,7 +23,18 @@ $LastChangedBy$
 
 */
 
- 
+
+/**
+ * @defgroup libexample rg Command: An Example of Full Library Utilization
+ * @{
+ */
+
+
+
+
+
+
+
 #include "registry.h"
 
 #include <sys/types.h>
@@ -235,11 +246,11 @@ int parseCommandLine(int argc, char *argv[]) {
 
 void listAccess(Key *key,char *readable) {
 	mode_t mode=keyGetAccess(key);
-	
+
 	if (S_ISDIR(mode)) readable[0]='d';
 	else if (S_ISLNK(mode)) readable[0]='l';
 	else readable[0]='-';
-	
+
 	readable[1] = mode & S_IRUSR ? 'r' : '-';
 	readable[2] = mode & S_IWUSR ? 'w' : '-';
 	readable[3] = mode & S_IXUSR ? 'x' : '-';
@@ -321,10 +332,10 @@ void listSingleKey(Key *key) {
 	else keyGetName(key,p,sizeof(buffer)-(p-buffer));
 	if (argValue && (keyGetDataSize(key)>0)) {
 		u_int8_t ktype;
-		
+
 		p+=strlen(p);
 		*p='='; p++;
-		
+
 		ktype=keyGetType(key);
 		if (ktype >= RG_KEY_TYPE_STRING)
 			p+=keyGetString(key,p,sizeof(buffer)-(p-buffer));
@@ -332,7 +343,7 @@ void listSingleKey(Key *key) {
 			p+=sprintf(p,"<BINARY VALUE>");
 		else if (ktype == RG_KEY_TYPE_LINK)
 			p+=keyGetLink(key,p,sizeof(buffer)-(p-buffer));
-		
+
 		*p=0;
 	}
 	puts(buffer);
@@ -345,6 +356,16 @@ void listSingleKey(Key *key) {
 
 
 
+/**
+ * The business logic behind 'rg rm' command
+ * @par Example:
+ * @code
+ * bash$ rg rm user/env/alias/ls   # get rid to the ls alias
+ * @endcode
+ *
+ * @see registryRemove()
+ * @param argKeyName name of the key that will be removed
+ */
 int commandRemove() {
 	if (!argKeyName) {
 		fprintf(stderr,"rg rm: No key name\n");
@@ -363,7 +384,24 @@ int commandRemove() {
 
 
 
-
+/**
+ * The business logic behind 'rg set' command.
+ * Sets value to a single key.
+ *
+ * @par Example:
+ * @code
+ * bash$ rg set -c "My shell prompt" user/env/env1/PS1 '\h:\w\$'
+ * @endcode
+ *
+ * @see registrySetKey()
+ * @param argKeyName name of the key that will be set
+ * @param argComment comment to be set to key (-c)
+ * @param argType type of the key (-t)
+ * @param argMode access permissions that will be set to sey (-m)
+ * @param argUID UID to be set to sey
+ * @param argGID GID to be set to sey
+ * @param argData the value to the key
+ */
 int commandSet() {
 	Key key;
 	int ret;
@@ -391,14 +429,14 @@ int commandSet() {
 	if (argGID) keySetGID(&key,*argGID);
 
 	if (argMode) keySetAccess(&key,argMode);
-	
+
 	switch (argType) {
 		case RG_KEY_TYPE_DIR: keySetType(&key,RG_KEY_TYPE_DIR);
 			break;
-		case RG_KEY_TYPE_STRING: 
+		case RG_KEY_TYPE_STRING:
 			if (argData) keySetString(&key,argData);
 			break;
-		case RG_KEY_TYPE_BINARY: 
+		case RG_KEY_TYPE_BINARY:
 			if (argData) keySetBinary(&key,argData,strblen(argData));
 			break;
 		case RG_KEY_TYPE_LINK: keySetLink(&key,argData);
@@ -418,6 +456,19 @@ int commandSet() {
 
 
 
+/**
+ * The business logic behind 'rg ln' command
+ * 
+ * @par Example:
+ * @code
+ * bash$ rg ln user:valeria/sw/MyApp user/sw/MyApp  # make my personal MyApp configurations be a link to valerias configs
+ * @endcode
+ *
+ * @see registryLink()
+ * @see keySetType()
+ * @param argKeyName name of the target key
+ * @param argData name of the link key to be created
+ */
 int commandLink() {
 	int rc;
 
@@ -426,7 +477,7 @@ int commandLink() {
 		fprintf(stderr,"rg ln: No target specified\n");
 		return -1;
 	}
-	
+
 	if (!argData) {
 		fprintf(stderr,"rg ln: %s: No destination specified",argKeyName);
 		return -1;
@@ -435,7 +486,7 @@ int commandLink() {
 	if ((rc=registryLink(argKeyName,argData))) {
 		perror("rg ln");
 	}
-	
+
 	return rc;
 }
 
@@ -452,27 +503,50 @@ int commandLink() {
 
 
 
+/**
+ * The business logic behind 'rg ls' command.
+ * @param argKeyName key name to be listed
+ * @param argRecursive whether to act recursivelly (-R)
+ * @param argValue whether to show key values or not (-v)
+ * @param argAll whether to list also inactive keys (-a)
+ * @param argXML whether to create XML output (-x)
+ *
+ * @par Example:
+ * @code
+ * bash$ rg ls -R   # list all keys from system and user trees
+ * bash$ rg ls -Ra  # list them all plus the hidden/inactive keys
+ * bash$ rg ls -Rav # list all showing value
+ * bash# rg ls -Rxv # equivalent to 'rg export'
+ * bash$ rg ls -Rv user/env # list my aliases and environment vars
+ * @endcode
+ *
+ * @see registryGetRootKeys()
+ * @see registryGetChildKeys()
+ * @see keyToStream()
+ * @see ksToStream()
+ * @see commandSave() for the 'rg export' command
+ */
 int commandList() {
 	KeySet ks;
 	Key *key=0;
 	int ret;
 
 	ksInit(&ks);
-	
+
 	if (!argKeyName) {
 		KeySet roots;
 		/* User don't want a specific key, so list the root keys */
-		
+
 		ksInit(&roots);
 		registryGetRootKeys(&roots);
-		
+
 		if (argRecursive) {
 			key=roots.start;
 			while (key) {
 				char rootName[200];
 				KeySet thisRoot;
 				Key *temp;
-				
+
 				ksInit(&thisRoot);
 				keyGetFullName(key,rootName,sizeof(rootName));
 				if (argValue) ret=registryGetChildKeys(rootName,&thisRoot,
@@ -557,7 +631,24 @@ int commandList() {
 
 
 
-
+/**
+ * Business logic behind the 'rg get' command.
+ * Get a key and return its value to you.
+ *
+ * @par Example:
+ * @code
+ * bash$ rg get user/env/alias/ls
+ * ls -Fh --color=tty
+ * @endcode
+ *
+ * @param argKeyName key to get value
+ * @param argDescriptive show also the key comment (-d)
+ *
+ * @see registryGetKey() 
+ * @see keyGetComment()
+ * @see keyGetString()
+ *
+ */
 int commandGet() {
 	int ret;
 	Key key;
@@ -662,7 +753,7 @@ int processNode(KeySet *ks, xmlTextReaderPtr reader) {
 		else if (!strcmp(buffer,"directory"))
 			keySetType(newKey,RG_KEY_TYPE_DIR);
 		xmlFree(buffer); buffer=0;
-		
+
 		
 		/* Parse UID */
 		buffer=xmlTextReaderGetAttribute(reader,"uid");
@@ -688,7 +779,7 @@ int processNode(KeySet *ks, xmlTextReaderPtr reader) {
 			else fprintf(stderr,"rg: Ignoring invalid group %s.\n",buffer);
 		}
 		xmlFree(buffer); buffer=0;
-		
+
 	
 		/* Parse permissions */
 		buffer=xmlTextReaderGetAttribute(reader,"mode");
@@ -701,7 +792,7 @@ int processNode(KeySet *ks, xmlTextReaderPtr reader) {
 			xmlFree(nodeName); nodeName=0;
 			xmlTextReaderRead(reader);
 			nodeName=xmlTextReaderName(reader);
-			
+
 			if (!strcmp(nodeName,"value")) {
 				if (xmlTextReaderIsEmptyElement(reader) ||
 					xmlTextReaderNodeType(reader)==15) continue;
@@ -822,7 +913,36 @@ int ksFromXMLfile(KeySet *ks,char *filename) {
 
 
 
-
+/**
+ * Opens an editor to edit an XML representation of the keys.
+ * This is one of the most complex commands of the rg program.
+ * Is will
+ * -# retrieve the desired keys
+ * -# put them as inside an editor in an XML format to let the user edit
+ * -# wait for the editor to finish
+ * -# reread the edited XML, converting to an internal KeySet
+ * -# compare original and edited KeySets to detect differences
+ * -# remove removed keys
+ * -# update updated keys
+ * -# add added keys
+ * -# leave untouched the not changed keys
+ *
+ * @par Example:
+ * @code
+ * bash$ EDITOR=kedit rg edit -R user/env # edit with kedit
+ * bash# rg edit -R system/sw/MyApp       # defaults to vi editor
+ * @endcode
+ *
+ * @see keyCompare()
+ * @see ksCompare()
+ * @see registryGetChildKeys()
+ * @see ksToStream()
+ * @see registrySetKeys()
+ * @param argKeyName the parent key name (and children) that will be edited
+ * @param argRecursive whether to act recursivelly or not
+ * @param argAll whether to edit inactive keys or not
+ * @param EDITOR environment var that defines editor to use, or \c vi
+ */
 int commandEdit() {
 	KeySet ks;
 	KeySet ksEdited;
@@ -831,7 +951,7 @@ int commandEdit() {
 	char filename[]="/var/tmp/rgeditXXXXXX";
 	char command[300];
 	FILE *xmlfile=0;
-	
+
 	ksInit(&ks);
 	
 	registryGetChildKeys(argKeyName,&ks, RG_O_SORT | RG_O_NFOLLOWLINK |
@@ -874,31 +994,44 @@ int commandEdit() {
 	ksInit(&ksEdited);
 
 	/* ksFromXML is not a library function.
-	   It is implemented in and for this program only.
-           It is pretty reusable code, though.
-	*/
+	 * It is implemented in and for this program only.
+   *       It is pretty reusable code, though.
+	 */
 	ksFromXMLfile(&ksEdited,filename);
 	remove(filename);
-	
+
 	ksCompare(&ks,&ksEdited,&toRemove);
-	
+
 	registrySetKeys(&ks);
-	
+
 	ksRewind(&toRemove);
 	while ((current=ksNext(&toRemove))) {
 		char keyName[800];
-		
+
 		keyGetFullName(current,keyName,sizeof(keyName));
 		registryRemove(keyName);
 	}
-	
+
 	return 0;
 }
 
 
 
 
-
+/**
+ * Business logic behind the 'rg import' command.
+ * Import an XML file (or standard input) into the key database.
+ * This is usefull to import full programs keys, or restore backups.
+ *
+ * @par Example:
+ * @code
+ * bash$ rg import myAppDefaultKeys.xml
+ * bash$ generateKeys | rg import
+ * @endcode
+ * 
+ * @see registrySetKeys()
+ * @see commandSave()
+ */
 int commandLoad() {
 	KeySet ks;
 
@@ -915,7 +1048,23 @@ int commandLoad() {
 
 
 
-
+/**
+ * Business logic behind the 'rg export' command.
+ * Export a set of keys to an XML format. Usefull to make backups or copy
+ * keys to other machine or user.
+ * Equivalent to 'rg ls -xRv base/key/name'
+ *
+ * @par Example:
+ * @code
+ * bash# rg export system > systemConfigurationBackup.xml
+ * bash# rg export system/sw/MyApp > myAppConfiguration.xml
+ * bash$ rg export system/sw/MyApp | sed -e 's|system/sw|user/sw|g' | rg import
+ * @endcode
+ *
+ * @see commandList()
+ * @see commandLoad()
+ *
+ */
 int commandSave() {
 	argSort=1;
 	argRecursive=1;
@@ -960,3 +1109,6 @@ int main(int argc, char **argv) {
 	return ret;
 }
 
+/**
+ * @}
+ */
