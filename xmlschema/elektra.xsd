@@ -23,15 +23,15 @@
 						</xsd:element>
 					</xsd:sequence>
 					
-					<xsd:attribute name="id" type="xsd:decimal" use="optional"/>
+					<xsd:attribute name="id" type="xsd:ID" use="optional"/>
 					<xsd:attribute name="name" type="xsd:string" use="required"/>
 					<xsd:attribute name="type" type="key_type" use="optional" default="string"/>
 					<xsd:attribute name="uid" type="xsd:string" use="optional"/>
 					<xsd:attribute name="gid" type="xsd:string" use="optional"/>
 					<xsd:attribute name="mode" type="mode_type" use="optional"/>
-					<xsd:attribute name="atime"  use="optional"/>
-					<xsd:attribute name="ctime" use="optional"/>
-					<xsd:attribute name="mtime"  use="optional"/>
+					<xsd:attribute name="atime" type="xsd:dateTime" use="optional"/>
+					<xsd:attribute name="ctime" type="xsd:dateTime" use="optional"/>
+					<xsd:attribute name="mtime" type="xsd:dateTime" use="optional"/>
 					
 				</xsd:complexType>
 			</xsd:element>
@@ -40,10 +40,7 @@
 	
 	<xsd:simpleType name="key_type">
 		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="string"/>
-			<xsd:enumeration value="binary"/>
-			<xsd:enumeration value="directory"/>
-			<xsd:enumeration value="link"/>
+			<xsd:pattern value="[0-9]*|string|binary|directory|link"/>
 		</xsd:restriction>
 	</xsd:simpleType>
 	
