@@ -1009,7 +1009,7 @@ int keyDup(Key *source, Key *dest) {
 	keyClose(dest);
 	
 	/* Copy the struct data */
-	dest=source;
+	*dest=*source;
 	
 	/* prepare to set dynamic properties */
 	dest->key=
@@ -2158,26 +2158,6 @@ size_t ksInsert(KeySet *ks, Key *toInsert) {
 }
 
 
-/**
- * Append a new Key to the end of the KeySet.
- * The KeySet internal cursor is not moved.
- * 
- * @return the size of the KeySet after insertion
- * @param ks KeySet that will receive the key
- * @param toAppend Key that will be appended to ks
- * @see ksInsert()
- * @see ksInsertKeys()
- * @see ksAppendKeys()
- * 
- */
-size_t ksAppend(KeySet *ks, Key *toAppend) {
-	toAppend->next=0;
-	if (ks->end) ks->end->next=toAppend;
-	if (!ks->start) ks->start=toAppend;
-	ks->end=toAppend;
-	return ++ks->size;
-}
-
 
 
 /**
@@ -2205,6 +2185,28 @@ size_t ksInsertKeys(KeySet *ks, KeySet *toInsert) {
 		toInsert->size=0;
 	}
 	return ks->size;
+}
+
+
+
+/**
+ * Append a new Key to the end of the KeySet.
+ * The KeySet internal cursor is not moved.
+ * 
+ * @return the size of the KeySet after insertion
+ * @param ks KeySet that will receive the key
+ * @param toAppend Key that will be appended to ks
+ * @see ksInsert()
+ * @see ksInsertKeys()
+ * @see ksAppendKeys()
+ * 
+ */
+size_t ksAppend(KeySet *ks, Key *toAppend) {
+	toAppend->next=0;
+	if (ks->end) ks->end->next=toAppend;
+	if (!ks->start) ks->start=toAppend;
+	ks->end=toAppend;
+	return ++ks->size;
 }
 
 
