@@ -38,7 +38,7 @@ $LastChangedBy$
 					<itemizedlist>
 						<listitem><simpara>Modified sections order</simpara></listitem>
 						<listitem><simpara>Included the '1*1=1' concept</simpara></listitem>
-						<listitem><simpara>Added link to Wiki</simpara></listitem>
+						<listitem><simpara>Added link to Wiki and Orkut community</simpara></listitem>
 					</itemizedlist>
 				</revdescription>
 			</revision>
@@ -202,7 +202,7 @@ $LastChangedBy$
 
 	<section id="links"><title>Getting The Linux Registry</title>
 		<para>The Linux Registry can be found at <ulink url="http://registry.sf.net/">registry.sf.net</ulink>. C source and RPMs can be found at <ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628">sourceforge.net</ulink>, and its <ulink url="http://freshmeat.net">Freshmeat</ulink> entry is <ulink url="http://freshmeat.net/projects/registry/">http://freshmeat.net/projects/registry/</ulink>.</para>
-		<para>There is also a <ulink url="http://tlr.pirack.com/LinuxRegistry">Wiki space</ulink>, made available by Daniel Lambea.</para>
+		<para>There is also a <ulink url="http://tlr.pirack.com/LinuxRegistry">Wiki space</ulink>, made available by Daniel Lambea, and an <ulink url="http://www.orkut.com/Community.aspx?cmm=89174">Orkut Community</ulink>.</para>
 		<para>Source code snapshots are available through a <ulink url="http://www.germane-software.com/repositories/tlr/trunk/">Subversion repository</ulink>, thanks to Sean Russel. Get Subversion installed on your system and:
 			<screen><prompt>bash:~$</prompt> <command>cd src</command>
 <prompt>bash:~/src$</prompt> <command>svn co http://germane-software.com/repositories/tlr/trunk registry</command>
