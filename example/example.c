@@ -2,7 +2,9 @@
 
 To compile this example:
 
-	$ cc -L /lib -l kdb -o example example.c
+	$ cc `pkg-config --libs elektra` -o example example.c
+		or
+	$ cc -L/lib -lkdb -o example example.c
 
 
 **********************************************************/
