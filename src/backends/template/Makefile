@@ -4,7 +4,7 @@
 # This is a Makefile for the template backend.
 # You probably will have to change these 2 next vars to match your sources.
 
-BACKENDNAME=template
+BACKENDNAME=ini
 SOURCES=${BACKENDNAME}.c
 
 
