@@ -296,11 +296,17 @@ $LastChangedBy$
 	
 	&bestpract;
 
-	&compared;
-	
 	&garbage;
 	
+	<section id="adoption"><title>Adoption by Legacy System Software</title>
+		<para>The benefits of the Registry will be felt only when configurations like those under <filename>/etc</filename> will move into it. It is expected that this will take time, but awareness should be done by the community to speed the process.</para>
+		<para>Experienced Unix sysadmins seems (and were expected to be) sceptical about a registry on Linux, even when the Linux Registry tries to address other OSes registry's problems (centralization, security, consistency). But it is a truly required OS component from a good architecture perspective, and it can solve most of the Linux software integration issues, when adopted.</para>
+		<para>The registry is expected to be adopted by developers of high-level software applications. Then by some Linux distribution specific admin tools, like redhat-config-network, then finally by main OS programs and libraries, like <command>/sbin/init</command>, PAM, <command>/bin/mount</command>, etc.</para>
+	</section>
+		
 	&society;
+	
+	&compared;
 	
 	<section id="screenshots"><title>Virtual Screenshots</title>
 		<para>The Registry can't produce screenshots, because it is just a library/API as you'll read bellow, but since everybody loves them, lets use some visual efects to show some Registry's concepts.</para>
@@ -325,12 +331,6 @@ $LastChangedBy$
 		</section>
 	</section>
 
-	<section id="adoption"><title>Registry Adoption by Legacy System Software</title>
-		<para>The benefits of the Registry will be felt only when configurations like those under <filename>/etc</filename> will move into it. It is expected that this will take time, but awareness should be done by the community to speed the process.</para>
-		<para>Experienced Unix sysadmins seems (and were expected to be) sceptical about a registry on Linux, even when the Linux Registry tries to address other OSes registry's problems (centralization, security, consistency). But it is a truly required OS component from a good architecture perspective, and it can solve most of the Linux software integration issues, when adopted.</para>
-		<para>The registry is expected to be adopted by developers of high-level software applications. Then by some Linux distribution specific admin tools, like redhat-config-network, then finally by main OS programs and libraries, like <command>/sbin/init</command>, PAM, <command>/bin/mount</command>, etc.</para>
-	</section>
-		
 	<section id="rgcmd"><title>The <command>rg</command> Command</title>
 		&rgcmd;
 		&rgexample;
