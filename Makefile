@@ -25,7 +25,7 @@ all: libkdb.a libkdb.so libregistry.so kdb
 
 
 cleanhere:
-	-rm core* *~ *.o *.so *.a kdb elektra.spec localeinfo
+	-rm core* *~ *.o *.so *.a kdb elektra.spec localeinfo svn-commit*
 	-find . -name "*~" | xargs rm
 
 

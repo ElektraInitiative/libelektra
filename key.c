@@ -1208,8 +1208,8 @@ mode_t keyGetAccess(const Key *key) {
 
 /**
  * Set the key filesystem-like access permissions.
- * @par key the key to set access permissions
- * @par mode the access permissions as for chmod(2)
+ * @param key the key to set access permissions
+ * @param mode the access permissions as for chmod(2)
  * @see keyGetAccess()
  */
 int keySetAccess(Key *key, mode_t mode) {
@@ -1719,7 +1719,7 @@ int keyIsSystem(const Key *key) {
 /**
  * Check whether a key is under the @p user namespace or not
  *
- * @return 1 if key name begins with "user", 0 otherwise
+ * @return 1 if key name begins with @p user, 0 otherwise
  * @see keyNameIsSystem()
  * @see keyIsSystem()
  * @see keyNameIsUser()
@@ -1812,7 +1812,7 @@ int keyIsLink(const Key *key) {
 /**
  * Gets number of bytes needed to store root name of a key name
  *
- * Possible root key names are @p system, @p user or @p user:someuser .
+ * Possible root key names are @p system, @p user or @p "user:someuser" .
  *
  * @return number of bytes needed without ending NULL
  * @param keyName the name of the key

@@ -370,7 +370,7 @@ $LastChangedBy$
 				<listitem><simpara><ulink url="elektra.7.html">elektra.7</ulink>: Discussion about what is the Elektra Project etc. You don't need it if you are already reading this.</simpara></listitem>
 				<listitem><simpara><ulink url="elektra.5.html">elektra.5</ulink>: Elektra internals.</simpara></listitem>
 			</orderedlist>
-			<para>You can also <ulink url="api/html/index.html">browse</ulink> or <ulink url="elektra-api.tar.gz">download</ulink> the API documentation (also provided in the <ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628">-devel RPM</ulink>), by Doxygen. It is complete, with many code examples.</para>
+			<para>You can also <ulink url="elektra-api/html/index.html">browse</ulink> or <ulink url="elektra-api.tar.gz">download</ulink> the API documentation (also provided in the <ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628">-devel RPM</ulink>), by Doxygen. It is complete, with many code examples.</para>
 		</section>
 
 	

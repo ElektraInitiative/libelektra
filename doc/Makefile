@@ -3,6 +3,7 @@
 
 MANSTYLE=manstyle.xsl
 HTMLSTYLE=htmltitlepage.xsl
+APIDIR=elektra-api
 
 .SUFFIXES: .xml .html .pdf .ps .rtf .xsl .fo .tpl
 .SILENT:
@@ -16,7 +17,7 @@ all: man
 
 doxygen:
 	cd ..; doxygen
-	find api/html | cpio -H tar -o | gzip -c --best > elektra-api.tar.gz
+	find ${APIDIR}/html | cpio -H tar -o | gzip -c --best > elektra-api.tar.gz
 
 docbookman: kdb.1 elektra.7 elektra.5
 
@@ -50,8 +51,8 @@ html: man howto.html doxygen
 	man2html -r < kdb.1 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > kdb.1.html
 	man2html -r < elektra.7 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > elektra.7.html
 	man2html -r < elektra.5 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > elektra.5.html
-	man2html -r < api/man/man3/kdb.3 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > kdb.3.html
-	man2html -r < api/man/man3/key.3 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > key.3.html
+	man2html -r < ${APIDIR}/man/man3/kdb.3 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > kdb.3.html
+	man2html -r < ${APIDIR}/man/man3/key.3 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > key.3.html
 	mv howto.html index.html
 
 
@@ -66,7 +67,7 @@ clean:
 	-rm csource.xml
 	-rm docbook
 	-rm example.c
-	-rm -rf api
+	-rm -rf ${APIDIR}
 	-rm -rf *-api.tar.gz
 
 
@@ -76,11 +77,11 @@ install: all
 	[ -d ${DESTDIR}/usr/share/man/man3 ] || mkdir -p ${DESTDIR}/usr/share/man/man3
 	[ -d ${DESTDIR}/usr/share/man/man5 ] || mkdir -p ${DESTDIR}/usr/share/man/man5
 	[ -d ${DESTDIR}/usr/share/man/man7 ] || mkdir -p ${DESTDIR}/usr/share/man/man7
-	find api/html | cpio -pdm ${DESTDIR}/usr/share/doc/elektra-devel/
+	find ${APIDIR}/html | cpio -pdm ${DESTDIR}/usr/share/doc/elektra-devel/
 	for m in `ls *.1`; do gzip -c --best $$m > ${DESTDIR}/usr/share/man/man1/$$m.gz; done
 #	for m in `ls *.3`; do gzip -c --best $$m > ${DESTDIR}/usr/share/man/man3/$$m.gz; done
-	gzip api/man/man3/kdb*.3 api/man/man3/key*.3 api/man/man3/ks*.3
-	cp api/man/man3/kdb*.3.gz api/man/man3/key*.3.gz api/man/man3/ks*.3.gz ${DESTDIR}/usr/share/man/man3/
+	gzip ${APIDIR}/man/man3/kdb*.3 ${APIDIR}/man/man3/key*.3 ${APIDIR}/man/man3/ks*.3
+	cp ${APIDIR}/man/man3/kdb*.3.gz ${APIDIR}/man/man3/key*.3.gz ${APIDIR}/man/man3/ks*.3.gz ${DESTDIR}/usr/share/man/man3/
 	for m in `ls *.5`; do gzip -c --best $$m > ${DESTDIR}/usr/share/man/man5/$$m.gz; done
 	for m in `ls *.7`; do gzip -c --best $$m > ${DESTDIR}/usr/share/man/man7/$$m.gz; done
 #	cat kdb.3.xml | perl -e '{while (<>) {m/<function>(\w*)<\/function>/; print $$1 . "\n" if ($$1); }}' | \
@@ -93,8 +94,17 @@ install: all
 pub: html doxygen
 	find elektra-api.tar.gz *html docbook.css | cpio -o | ssh -l aviram shell.sf.net "cd /home/groups/e/el/elektra/htdocs; cpio -idvm; rm -rf api; tar -zxvf elektra-api.tar.gz"
 
+
+
 pubh: html
 	scp *html docbook.css aviram@shell.sf.net:/home/groups/e/el/elektra/htdocs
+
+
+
+pubd: doxygen
+	find elektra-api.tar.gz | cpio -o | ssh -l aviram shell.sf.net "cd /home/groups/e/el/elektra/htdocs; cpio -idvm; rm -rf api; tar -zxvf elektra-api.tar.gz"
+
+
 
 pubi:
 	find images | grep -v .svn | cpio -o | ssh -l aviram shell.sf.net "cd /home/groups/e/el/elektra/htdocs; cpio -idvm"
