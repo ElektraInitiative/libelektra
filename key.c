@@ -169,7 +169,7 @@ int keyClose(Key *key) {
  *
  * It is more or less reliable.
  * You'd better guarantee your code is robust enough using
- * <i>keyInit()</i> and <i>keyClose()</i> everytime.
+ * keyInit() and keyClose() everytime.
  * @see keyInit()
  * @see keyClose()
  */
@@ -181,7 +181,9 @@ int keyIsInitialized(const Key *key) {
 
 
 /**
- * Test if a Key object was changed after retrieved from disk.
+ * Test if an in-memory Key object was changed after retrieved from disk.
+ * All Key methods that change objects properties will set an internal flag,
+ * that is checked by this method.
  *
  * @return 1 if the key was changed, 0 otherwise.
  */
@@ -1187,7 +1189,8 @@ int keySetGID(Key *key, gid_t gid) {
 
 
 /**
- * Return the key access permissions.
+ * Return the key filesystem-like access permissions.
+ * @see keySetAccess()
  */
 mode_t keyGetAccess(const Key *key) {
 	if (!key || !keyIsInitialized(key)) {
@@ -1204,7 +1207,10 @@ mode_t keyGetAccess(const Key *key) {
 
 
 /**
- * Set the key access permissions.
+ * Set the key filesystem-like access permissions.
+ * @par key the key to set access permissions
+ * @par mode the access permissions as for chmod(2)
+ * @see keyGetAccess()
  */
 int keySetAccess(Key *key, mode_t mode) {
 	if (!key) return errno=KDB_RET_UNINITIALIZED;

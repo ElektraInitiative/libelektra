@@ -204,7 +204,7 @@ enum KDBOptions {
 	KDB_O_CONDENSED=1<<8,   /*!< Compressed XML, not usefull for human eyes */
 	KDB_O_NUMBERS=1<<9,     /*!< Use UID and GID intead of user and group names */
 	KDB_O_XMLHEADERS=1<<10, /*!< Show also the XML header of the document */
-} kdbOption;
+};
 
 
 typedef struct _Key {
