@@ -52,47 +52,48 @@ size_t strblen(const char *s) {
 	return 0;
 }
 
+
+
 /**
- * A save method for realloc.
+ * A safer substitute method for realloc().
  * 
- * This function differs from realloc() because it
- * handels error situations right.
- * The function can also allocate new memory, but it
- * is not recommended.
- * It is also possible to free the memory, when setting
- * new_size to 0. This is not recommended too.
- * ptr must not be NULL, this case is checked.
- * *ptr must be a previous allocated memory or NULL,
- * otherwise realloc will sigfault, this case can't
- * be checked.
- * par example
- * code
+ * This function differs from realloc() because it handels error situations
+ * right. It can also allocate new memory, but it is not recommended.
+ * It is also possible to free the memory, when setting @p new_size to 0, but
+ * this is not recommended too.
+ * 
+ * @par Example:
+ * @code
 long int max = 100;
 long int * array;
 
-if ( (array = malloc ((max+1) * sizeof(long int))) == NULL )
-{
+if ( (array = malloc ((max+1) * sizeof(long int))) == NULL ) {
 	fprintf (stderr, "out of memory\n");
 	return 1;
 }
 
 scanf ("%ld", &max);
-if (srealloc ((void **)&array, (max+1) * sizeof(long int)) < 0)
-{
+if (srealloc ((void **)&array, (max+1) * sizeof(long int)) < 0) {
 	fprintf (stderr, "out of memory\n");
 	return 1;
 }
- * endcode
+ * @endcode
+ *
+ * @param ptr A pointer to pointer that will be reallocated. @p *ptr must be a
+ * 	previously allocated memory address by malloc(). Must not be NULL, this
+ * 	case is checked.
+ * @param new_size New total size of allocated memory.
+ *  
  * @return 0 at success, -1 on error (no memory leak)
  * @ingroup backend
  */
 inline int srealloc (void ** ptr, size_t new_size) {
-	void * h;
-	if (ptr == NULL)
-		return -1;
-	h = realloc (* ptr, new_size);
+	void *h;
+	
+	if (ptr == NULL) return -1;
+	h = realloc (*ptr, new_size);
 	if (h == NULL) {
-		if (new_size > 0) // dont free() twice
+		if (new_size > 0) /* don't free() twice */
 			free (* ptr);
 		return -1;
 	}

@@ -16,7 +16,11 @@ $LastChangedBy$
 	
 	<section id="linking"><title>Compiling and Linking</title>
 		<para>All Elektra methods are declared in the <filename>/usr/include/kdb.h</filename> file and defined in the <filename>/lib/libkdb.so</filename> library. So to compile it you simply need to:</para>
-<screen><prompt>bash$ </prompt><command>cc `pkg-config --libs elektra` -o myapp myapp.c</command></screen>
+		<screen>
+<prompt>bash$ </prompt><command>cc `pkg-config --libs elektra` -o myapp myapp.c</command>
+		</screen>
 		<para>or, if you don't have <command>pkg-config</command>:</para>
-<screen><prompt>bash$ </prompt><command>cc -L /lib -lkdb -o myapp myapp.c</command></screen>
+		<screen>
+<prompt>bash$ </prompt><command>cc -L /lib -lkdb -o myapp myapp.c</command>
+		</screen>
 	</section>

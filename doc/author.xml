@@ -6,14 +6,14 @@ $LastChangedBy$
 
 		<copyright><year>2004</year><holder>Avi Alkalay</holder></copyright>
 		<date>March 2004</date>
-		<productname>Linux Registry</productname>
+		<productname>Elektra Initiative</productname>
 		<authorgroup>
 			<author>
 				<firstname>Avi</firstname>
 				<surname>Alkalay</surname>
+				<email>avi at unix.sh</email>
 				<affiliation>
 					<shortaffil>Linux Market Developer</shortaffil>
-					<address><email>avi at unix.sh</email></address>
 					<orgdiv>Senior IT and Software Architect</orgdiv>
 					<orgname>IBM Linux Impact Team :: <ulink url="http://ibm.com/linux">ibm.com/linux</ulink></orgname>
 				</affiliation>

@@ -8,7 +8,7 @@ Group:         System Environment/Libraries
 License:       BSD
 URL:           http://elektra.sourceforge.net
 BuildRoot:     %{_tmppath}/%{name}-%{version}-build
-BuildRequires: doxygen db4-devel GConf2-devel libxml2-devel /usr/bin/xsltproc
+BuildRequires: doxygen docbook-style-xsl db4-devel GConf2-devel libxml2-devel /usr/bin/xsltproc
 Summary:       A key/value pair database to store software configurations
 
 %define DTDVERSION _DTDVERSION_

@@ -8,12 +8,9 @@ Before that, Elektra was LGPL.
 
 Compiling and Packaging
 -----------------------
-Elektra is such a simple software, that you'll probably wont need it to
-recompile from source. Use the binary RPM from the main repository. It should
+Elektra is such a simple software that you'll probably wont need to recompile
+it from source. Use the binary RPM from the main repository. It should
 work for any RPM based distribution.
-
-Do not use the fresh files from the Subversion repository since they contain
-only useless templates for some files.
 
 Building on RPM-based distros:
 Avoid using the tarball. Use the source RPM instead because it contains all the
@@ -29,7 +26,10 @@ stable and distros based on it. You can also build the Debian Package
 out of the sources, using dpkg-buildpackage -rfakeroot. It is not possible
 to build the man-pages with Debian, see below.
 
-On non-RPM and non-deb systems, use the tarball.
+On non-RPM and non-deb systems, use the tarball. Do not use the fresh files
+from the Subversion repository since they contain only useless templates for
+some files.
+
 
 It was reported that the Makefiles will only work with gmake, which makes
 absolutelly no difference for Linux, but is a crucial information when
@@ -205,16 +205,15 @@ course it has to be adopted for your distributions need.
 
 
 
-About Man Pages
----------------
-Some man pages are generated from a DocBook XML using XSLTs from the
-docbook-style-xsl package (on Fedora), and the xsltproc as the XSLT engine.
-So rg.1.xml docbook source is converted to the rg.1 man page, for example.
-
-This caused several problems when compiling them in other distros, because of
-the lack of these tools.
+Building Documentation and Man Pages from Doxygen and DocBook
+-------------------------------------------------------------
+Doxygen is needed for API documentation, and the xsltproc program (from
+libxslt) with DocBook XSL Stylesheets are needed for some other man pages.
+On Red Hat/Fedora systems, the DocBook stylesheets can be found under
+the folder /usr/share/sgml/docbook/xsl-stylesheets and where installed by
+the docbook-style-xsl RPM. Please find this tools on your system for
+documentation building.
 
 Since version 0.2.7, the compiled man pages are included in the tarball. So
 unless you 'make clean' globally, you'll be able to 'make; make install'
 globaly even without these tools.
-

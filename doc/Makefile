@@ -1,8 +1,15 @@
 # $Id$
 # $LastChangedBy$
 
-MANSTYLE=manstyle.xsl
-HTMLSTYLE=htmltitlepage.xsl
+# The root dir of your DocBook XSL Stylesheets distribution
+DBROOT=/usr/share/sgml/docbook/xsl-stylesheets
+
+MANSTYLE=${DBROOT}/manpages/docbook.xsl
+
+# Layout and confiruations to generate HTML for the web site
+HTML_TITLE_LAYOUT=html-titlepage-layout.tpl
+HTML_PARAMS=html-params.xsl
+
 APIDIR=elektra-api
 DOXYSOURCES=../src/libkdb.c ../src/kdb.c ../src/kdbtools.c ../src/kdb.h ../src/kdbbackend.h ../src/kdbprivate.h ../src/key.c ../src/backends/template/template.c ../src/Doxyfile
 PATCHSOURCES=patches/xorg/README.xorg.Elektra.txt patches/sysvinit/README.sysvinit.Elektra.txt
@@ -24,8 +31,9 @@ XSLTPROC=xsltproc
 
 
 .xml.html:
-	if [ ! -L docbook ]; then ln -s ../../doc-common/docbook .; fi
-	${XSLTPROC} -o $@ ${HTMLSTYLE} $<
+	#if [ ! -L docbook ]; then ln -s ../../doc-common/docbook .; fi
+	${XSLTPROC} -o ${HTML_TITLE_LAYOUT:.tpl=.xsl} ${DBROOT}/template/titlepage.xsl ${HTML_TITLE_LAYOUT}
+	${XSLTPROC} -o $@ ${HTML_TITLE_LAYOUT:.tpl=.xsl} $<
 
 
 all: man
@@ -109,16 +117,19 @@ html: man howto.html doxygen patchdoc
 
 
 
-
+# 'make distclean' will not remove docbook- and doxygen-generated man pages
 distclean:
 	-find patches/ -name "README*html" | grep -v .svn | xargs rm
+	-rm *titlepage-layout.xsl
 	-rm *.html
 	-rm *~
 	-rm csource.xml
 	-rm docbook
 	-rm example.c
 	-rm -rf ${APIDIR}
-	-rm -rf ${APIDIR}.tar.gz
+	#-find ${APIDIR}/man | egrep -v "key.*3|ks.*3" | xargs rm
+	#-rm -rf ${APIDIR}/html
+	#-rm -rf ${APIDIR}.tar.gz
 
 
 

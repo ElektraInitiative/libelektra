@@ -534,7 +534,7 @@ $LastChangedBy$
 			<graphic srccredit="system/filesystems" fileref="images/fstab.png" label="system/filesystems view" align="center"/>
 		</section>
 
-		<section id="xfree"><title>XFree Configurations Elektrified</title>
+		<section id="xfree"><title>X.Org Configurations Elektrified</title>
 			<para>All higher level software keys are located under <filename>system/sw</filename>, as showed above for XFree86 configuration. Pay attention to how easy it is to access and change XFree configuration, without any <filename>/etc/X11/XF86Config</filename> parsing effort, when using Elektra. XFree will look for its keys under <filename>system/sw/XFree/current</filename> which is a symbolic link to <filename>system/sw/XFree/handmade</filename>. This is an example on how the high level usage of symbolic links into the key database provides a lot of flexibility.</para>
 			<graphic srccredit="system/sw/XFree" fileref="images/xfree.png" label="system/sw/XFree view" align="center"/>
 		</section>
