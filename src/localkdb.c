@@ -43,6 +43,7 @@ $LastChangedBy$
 
 
 #include <stdlib.h>
+#include <stdarg.h>
 #include <dlfcn.h>
 #include <unistd.h>
 #include <errno.h>
@@ -104,7 +105,7 @@ extern int errno;
 struct _KDBBackend {
 	void *dlHandle;
 	
-	
+	char *name;
 	
 	/* These are the must-have methods */
 	
@@ -232,6 +233,7 @@ int kdbClose() {
 	int rc=backend->kdbClose();
 	
 	if (rc == 0) {
+		if (backend->name) free(backend->name);
 		dlclose(backend->dlHandle);
 		free(backend);
 	}
@@ -813,7 +815,8 @@ int kdbSetKey(Key *key) {
  *
  * @param key the key to be renamed
  * @param newName the new key name
- * @return -1 or whathever is returned by rename(), and @c errno is propagated
+ * @return 0 on success, -1 or whathever is returned by rename() on failure,
+ * 	and @c errno is propagated
  * @ingroup kdb
  */
 int kdbRename(Key *key, const char *newName) {
@@ -1070,74 +1073,128 @@ u_int32_t kdbMonitorKey_default(Key *interest, u_int32_t diffMask,
 
 
 /**
- * This method must be called by kdbBackendFactory() of a backend to
- * define the backend's methods that must be exported. Its job is to
+ * This function must be called by a backend's kdbBackendFactory() to
+ * define the backend's methods that will be exported. Its job is to
  * organize a libkdb.so's internal structure with pointers to backend
  * dependent methods.
  * 
- * @param kdbOpen address of the backend initialization method
- * @param kdbClose address of the backend implementation of kdbClose()
- * @param kdbGetKey address of the backend implementation of kdbGetKey()
- * @param kdbSetKey address of the backend implementation of kdbSetKey()
- * @param kdbStatKey address of the backend implementation of kdbStatKey()
- * @param kdbRename address of the backend implementation of kdbRename()
- * @param kdbRemove address of the backend implementation of kdbRemove()
- * @param kdbGetKeyChildKeys address of the backend implementation of
- * 	kdbGetKeyChildKeys()
- 
- * @param kdbSetKeys address of the backend implementation of kdbSetKeys().
- * 	Can be NULL, in which a default inefficient implementation will be used.
- * @param kdbMonitorKey address of the backend implementation of
- * 	kdbMonitorKey(). Can be NULL, in which a default inefficient implementation
- * 	will be used.
- * @param kdbMonitorKeys address of the backend implementation of
- * 	kdbMonitorKeys(). Can be NULL, in which a default inefficient implementation
- * 	will be used.
+ * The order and number of arguments are flexible (as keyNew()) to let
+ * libkdb.so evolve without breaking its ABI compatibility with backends.
+ * So for each method a backend must export, there is a flag defined by
+ * #KDBBackendMethod. Each flag tells kdbBackendExport() which method comes
+ * next. A backend can have no implementation for a few methods that have
+ * default inefficient high-level implementations -- kdbSetKeys(),
+ * kdbMonitorKey(), kdbMonitorKeys() -- and to use these defaults, simply
+ * don't pass anything to kdbBackendExport() about them.
+ * 
+ * The last parameter must be @c KDB_BE_END .
+ * 
+ * @par Example of a complete backend:
+ * @code
+#include <kdb.h>
+#include <kdbbackend.h>
+
+#define BACKENDNAME "my_elektra_backend_implementation"
+
+
+int kdbOpen_backend() {...}
+int kdbClose_backend() {...}
+int kdbGetKey_backend() {...}
+int kdbSetKey_backend() {...}
+
+... etc implementations of other methods ...
+
+
+
+KDBBackend *kdbBackendFactory(void) {
+	return kdbBackendExport(BACKENDNAME,
+		KDB_BE_OPEN,&kdbOpen_backend,
+		KDB_BE_CLOSE,&kdbClose_backend,
+		KDB_BE_GETKEY,&kdbGetKey_backend,
+		KDB_BE_SETKEY,&kdbSetKey_backend,
+		KDB_BE_STATKEY,&kdbStatKey_backend,
+		KDB_BE_RENAME,&kdbRename_backend,
+		KDB_BE_REMOVE,&kdbRemove_backend,
+		KDB_BE_GETCHILD,&kdbGetKeyChildKeys_backend,
+		KDB_BE_SETKEYS,&kdbSetKeys_backend,
+		KDB_BE_MONITORKEY,&kdbMonitorKey_backend,
+		KDB_BE_MONITORKEYS,&kdbMonitorKeys_backend,
+		KDB_BE_END);
+}
+ * @endcode
+ *
+ * In the example, the *_backend() methods can have other random names,
+ * since you'll correctly pass them later to kdbBackendExport().
+ * 
+ * @param backendName a simple name for this backend
  * @return an object that contains all backend informations needed by
  * 	libkdb.so
  * @ingroup backend
  */
-KDBBackend *kdbBackendExport(
-	int (*kdbOpen)(),
-	int (*kdbClose)(),
-	
-	int (*kdbGetKey)(Key *),
-	int (*kdbSetKey)(Key *),
-	int (*kdbStatKey)(Key *),
-	int (*kdbRename)(Key *, const char *),
-	int (*kdbRemove)(const char *),
-	int (*kdbGetKeyChildKeys)(const Key *, KeySet *, unsigned long),
-
-	
-	/* These are the optional methods */
-	
-	int (*kdbSetKeys)(KeySet *),
-	u_int32_t (*kdbMonitorKey)(Key *, u_int32_t,unsigned long, unsigned),
-	u_int32_t (*kdbMonitorKeys)(KeySet *, u_int32_t,unsigned long, unsigned))
-{
+KDBBackend *kdbBackendExport(const char *backendName, ...) {
+	va_list va;
 	KDBBackend *returned;
+	u_int32_t method=0;
+
+	if (backendName == 0) return 0;
 	
 	returned=malloc(sizeof(KDBBackend));
 	memset(returned,0,sizeof(KDBBackend));
 	
-	returned->kdbOpen=kdbOpen;
-	returned->kdbClose=kdbClose;
-	returned->kdbGetKey=kdbGetKey;
-	returned->kdbSetKey=kdbSetKey;
-	returned->kdbStatKey=kdbStatKey;
-	returned->kdbRename=kdbRename;
-	returned->kdbRemove=kdbRemove;
-	returned->kdbGetKeyChildKeys=kdbGetKeyChildKeys;
+	returned->name=(char *)malloc(strblen(backendName));
+	strcpy(returned->name,backendName);
+	
+	/* Default inefficient high-level internal implementations */
+	returned->kdbSetKeys=&kdbSetKeys_default;
+	returned->kdbMonitorKey=&kdbMonitorKey_default;
+	returned->kdbMonitorKeys=&kdbMonitorKeys_default;
+	
+	
+	/* Start processing parameters */
+	
+	va_start(va,backendName);
 
-
-	returned->kdbSetKeys=
-		(kdbSetKeys!=0?kdbSetKeys:&kdbSetKeys_default);
-		
-	returned->kdbMonitorKey=
-		(kdbMonitorKey!=0?kdbMonitorKey:&kdbMonitorKey_default);
-		
-	returned->kdbMonitorKeys=
-		(kdbMonitorKeys!=0?kdbMonitorKeys:&kdbMonitorKeys_default);
+	while ((method=va_arg(va,u_int32_t))) {
+		switch (method) {
+			case KDB_BE_OPEN:
+				returned->kdbOpen=va_arg(va,int (*)());
+				break;
+			case KDB_BE_CLOSE:
+				returned->kdbClose=va_arg(va,int (*)());
+				break;
+			case KDB_BE_STATKEY:
+				returned->kdbStatKey=va_arg(va,int (*)(Key *));
+				break;
+			case KDB_BE_GETKEY:
+				returned->kdbGetKey=va_arg(va,int (*)(Key *));
+				break;
+			case KDB_BE_SETKEY:
+				returned->kdbSetKey=va_arg(va,int (*)(Key *));
+				break;
+			case KDB_BE_RENAME:
+				returned->kdbRename=va_arg(va,int (*)(Key *, const char *));
+				break;
+			case KDB_BE_REMOVE:
+				returned->kdbRemove=va_arg(va,int (*)(const char *));
+				break;
+			case KDB_BE_GETCHILD:
+				returned->kdbGetKeyChildKeys=
+					va_arg(va,int (*)(const Key *, KeySet *, unsigned long));
+				break;
+			case KDB_BE_SETKEYS:
+				returned->kdbSetKeys=va_arg(va,int (*)(KeySet *));
+				break;
+			case KDB_BE_MONITORKEY:
+				returned->kdbMonitorKey=
+					va_arg(va,u_int32_t (*)(Key *, u_int32_t,unsigned long, unsigned));
+				break;
+			case KDB_BE_MONITORKEYS:
+				returned->kdbMonitorKeys=
+					va_arg(va,u_int32_t (*)(KeySet *, u_int32_t,unsigned long, unsigned));
+				break;
+		}
+	}
+	va_end(va);
 	
 	return returned;
 }

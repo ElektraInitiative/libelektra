@@ -4,7 +4,7 @@
 MANSTYLE=manstyle.xsl
 HTMLSTYLE=htmltitlepage.xsl
 APIDIR=elektra-api
-DOXYSOURCES=../src/localkdb.c ../src/kdb.c ../src/kdb.h ../src/key.c
+DOXYSOURCES=../src/localkdb.c ../src/kdb.c ../src/kdb.h ../src/kdbbackend.h ../src/key.c ../src/backends/template/template.c
 PATCHSOURCES=patches/xorg/README.xorg.Elektra.txt patches/sysvinit/README.sysvinit.Elektra.txt
 
 # Default dirs we use for installation, that can be substituted by the command line.

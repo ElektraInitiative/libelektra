@@ -49,7 +49,7 @@ $LastChangedBy: aviram $
 #include <string.h>
 #include <pwd.h>
 
-
+#define BACKENDNAME "filesys"
 
 /**Some systems have even longer pathnames*/
 #ifdef PATH_MAX
@@ -71,7 +71,7 @@ int keyFromStat(Key *key,struct stat *stat);
 
 
 
-int kdbOpen_backend() {
+int kdbOpen_filesys() {
 	/* backend initialization logic */
 	return 0;
 }
@@ -79,14 +79,14 @@ int kdbOpen_backend() {
 
 
 
-int kdbClose_backend() {
+int kdbClose_filesys() {
 	/* free all backend resources and shutdown */
 	return 0;
 }
 
 
 
-int kdbStatKey_backend(Key *key) {
+int kdbStatKey_filesys(Key *key) {
 	char keyFileName[MAX_PATH_LENGTH];
 	struct stat keyFileNameInfo;
 	size_t pos;
@@ -117,7 +117,7 @@ int kdbStatKey_backend(Key *key) {
 }
 
 
-int kdbGetKey_backend(Key *key) {
+int kdbGetKey_filesys(Key *key) {
 	char keyFileName[500];
 	struct stat keyFileNameInfo;
 	int fd;
@@ -153,7 +153,7 @@ int kdbGetKey_backend(Key *key) {
 
 
 
-int kdbSetKey_backend(Key *key) {
+int kdbSetKey_filesys(Key *key) {
 	char keyFileName[MAX_PATH_LENGTH];
 	char folderMaker[MAX_PATH_LENGTH];
 	char *cursor, *last;
@@ -277,7 +277,7 @@ int kdbSetKey_backend(Key *key) {
 
 
 
-int kdbRename_backend(Key *key, const char *newName) {
+int kdbRename_filesys(Key *key, const char *newName) {
 	char oldFileName[MAX_PATH_LENGTH];
 	char newFileName[MAX_PATH_LENGTH];
 	Key *newKey;
@@ -285,13 +285,20 @@ int kdbRename_backend(Key *key, const char *newName) {
 	
 	newKey=keyNew(0);
 	rc=keySetName(newKey,newName);
-	if (rc) return rc;
-	rc=kdbGetFilename(key,oldFileName,sizeof(oldFileName));
-	if (!rc) return -1;
-	rc=kdbGetFilename(newKey,newFileName,sizeof(newFileName));
-	if (!rc) return -1;
+	if (rc == 0) {
+		keyDel(newKey);
+		return -1;
+	}
 	
-	keyDel(newKey);
+	rc=kdbGetFilename(key,oldFileName,sizeof(oldFileName));
+	if (rc == 0) {
+		keyDel(newKey);
+		return -1;
+	}
+	
+	rc=kdbGetFilename(newKey,newFileName,sizeof(newFileName));
+	keyDel(newKey); /* won't need it anymore */
+	if (rc == 0) return -1;
 	
 	return rename(oldFileName,newFileName);
 }
@@ -299,7 +306,7 @@ int kdbRename_backend(Key *key, const char *newName) {
 
 
 
-int kdbRemove_backend(const char *keyName) {
+int kdbRemove_filesys(const char *keyName) {
 	Key *key;
 	char fileName[MAX_PATH_LENGTH];
 	off_t rc;
@@ -317,7 +324,7 @@ int kdbRemove_backend(const char *keyName) {
 
 
 
-int kdbGetKeyChildKeys_backend(const Key *parentKey, KeySet *returned, unsigned long options) {
+int kdbGetKeyChildKeys_filesys(const Key *parentKey, KeySet *returned, unsigned long options) {
 	size_t parentNameSize=keyGetFullNameSize(parentKey);
 	char realParentName[parentNameSize];
 	DIR *parentDir;
@@ -369,14 +376,14 @@ int kdbGetKeyChildKeys_backend(const Key *parentKey, KeySet *returned, unsigned 
 
 		keyEntry=keyNew(buffer,KEY_SWITCH_END);
 
-		if (options & KDB_O_STATONLY) kdbStatKey_backend(keyEntry);
+		if (options & KDB_O_STATONLY) kdbStatKey_filesys(keyEntry);
 		else if (options & KDB_O_NFOLLOWLINK) {
-			kdbStatKey_backend(keyEntry);
-			if (!keyIsLink(keyEntry)) kdbGetKey_backend(keyEntry);
+			kdbStatKey_filesys(keyEntry);
+			if (!keyIsLink(keyEntry)) kdbGetKey_filesys(keyEntry);
 		} else {
-			int rc=kdbGetKey_backend(keyEntry);
+			int rc=kdbGetKey_filesys(keyEntry);
 			/* If this is a permission problem, at least stat the key */
-			if (rc && errno==KDB_RET_NOCRED) kdbStatKey_backend(keyEntry);
+			if (rc && errno==KDB_RET_NOCRED) kdbStatKey_filesys(keyEntry);
 		}
 
 		if (keyIsDir(keyEntry)) {
@@ -385,7 +392,7 @@ int kdbGetKeyChildKeys_backend(const Key *parentKey, KeySet *returned, unsigned 
 
 				children=ksNew();
 				/* Act recursively, without sorting. Sort in the end, once */
-				kdbGetKeyChildKeys_backend(keyEntry,children, ~(KDB_O_SORT) & options);
+				kdbGetKeyChildKeys_filesys(keyEntry,children, ~(KDB_O_SORT) & options);
 
 				/* Insert the current directory key in the returned list before its children */
 				if (options & KDB_O_DIR) ksAppend(returned,keyEntry);
@@ -932,20 +939,14 @@ size_t kdbGetFilename(const Key *forKey,char *returned,size_t maxSize) {
 
 
 KDBBackend *kdbBackendFactory(void) {
-	return kdbBackendExport(
-		&kdbOpen_backend,
-		&kdbClose_backend,
-		&kdbGetKey_backend,
-		&kdbSetKey_backend,
-		&kdbStatKey_backend,
-		&kdbRename_backend,
-		&kdbRemove_backend,
-		&kdbGetKeyChildKeys_backend,
-		
-		/* This backend does not implement these methods,
-		 * so the library will use high-level implementations */
-		0,
-		0,
-		0
-	);
+	return kdbBackendExport(BACKENDNAME,
+		KDB_BE_OPEN,&kdbOpen_filesys,
+		KDB_BE_CLOSE,&kdbClose_filesys,
+		KDB_BE_GETKEY,&kdbGetKey_filesys,
+		KDB_BE_SETKEY,&kdbSetKey_filesys,
+		KDB_BE_STATKEY,&kdbStatKey_filesys,
+		KDB_BE_RENAME,&kdbRename_filesys,
+		KDB_BE_REMOVE,&kdbRemove_filesys,
+		KDB_BE_GETCHILD,&kdbGetKeyChildKeys_filesys,
+		KDB_BE_END);
 }

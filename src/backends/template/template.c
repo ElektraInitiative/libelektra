@@ -40,6 +40,9 @@ $LastChangedBy: aviram $
 #include <kdbbackend.h>
 
 
+#define BACKENDNAME "my_backend"
+
+
 
 /**Some systems have even longer pathnames*/
 #ifdef PATH_MAX
@@ -84,40 +87,8 @@ $LastChangedBy: aviram $
  * A backend is defined by a single name, for example @c BACKENDNAME, that
  * causes libkdb.so look for its library as @c libkdb-BACKENDNAME.so.
  * 
- * So a KeyDB backend implementation will look like:
- * @code
-#include <kdb.h>
-#include <kdbbackend.h>
-
-int kdbOpen_backend() {...}
-int kdbClose_backend() {...}
-int kdbGetKey_backend() {...}
-int kdbSetKey_backend() {...}
-
-... etc implementations of other methods ...
-
-
-KDBBackend *kdbBackendFactory(void) {
-	return kdbBackendExport(
-		&kdbOpen_backend,
-		&kdbClose_backend,
-		&kdbGetKey_backend,
-		&kdbSetKey_backend,
-		&kdbStatKey_backend,
-		&kdbRename_backend,
-		&kdbRemove_backend,
-		&kdbGetKeyChildKeys_backend,
-		
-		&kdbSetKeys_default,
-		&kdbMonitorKey_backend,
-		&kdbMonitorKeys_backend
-	);
-}
-
- * @endcode
- *
- * In the example, the *_backend() methods can have other random names,
- * since you'll correctly pass them later to kdbBackendExport().
+ * See kdbBackendExport() documentation for an example of a complete backend
+ * implementation.
  *
  */
 
@@ -145,6 +116,9 @@ int kdbOpen_backend() {
 
 /**
  * All finalization logic of the backend should go here.
+ * 
+ * After this call, libkdb.so will unload the backend library, so this is
+ * the point to shutdown any affairs with the storage.
  *
  * @return 0 on success, anything else otherwise.
  * @see kdbClose()
@@ -278,28 +252,26 @@ u_int32_t kdbMonitorKey_backend(Key *interest, u_int32_t diffMask,
  * implementation that will be called.
  * 
  * Its purpose is to "publish" the exported methods for libkdb.so. The
- * implementation inside the provided skeleton is usually enough, calling
- * kdbBackendExport() with all methods that must be exported.
+ * implementation inside the provided skeleton is usually enough: simply
+ * call kdbBackendExport() with all methods that must be exported.
  * 
  * @return whatever kdbBackendExport() returns
+ * @see kdbBackendExport() for an example
  * @see kdbOpenBackend()
  * @ingroup backend
  */
 KDBBackend *kdbBackendFactory(void) {
-	return kdbBackendExport(
-		&kdbOpen_backend,
-		&kdbClose_backend,
-		&kdbGetKey_backend,
-		&kdbSetKey_backend,
-		&kdbStatKey_backend,
-		&kdbRename_backend,
-		&kdbRemove_backend,
-		&kdbGetKeyChildKeys_backend,
-		
-		/* Next parameters can be NULL, then a default high-level
-		 * inneficient implementation will be used */
-		&kdbSetKeys_default,
-		&kdbMonitorKey_backend,
-		&kdbMonitorKeys_backend
-	);
+	return kdbBackendExport(BACKENDNAME,
+		KDB_BE_OPEN,&kdbOpen_backend,
+		KDB_BE_CLOSE,&kdbClose_backend,
+		KDB_BE_GETKEY,&kdbGetKey_backend,
+		KDB_BE_SETKEY,&kdbSetKey_backend,
+		KDB_BE_STATKEY,&kdbStatKey_backend,
+		KDB_BE_RENAME,&kdbRename_backend,
+		KDB_BE_REMOVE,&kdbRemove_backend,
+		KDB_BE_GETCHILD,&kdbGetKeyChildKeys_backend,
+		KDB_BE_SETKEYS,&kdbSetKeys_backend,
+		KDB_BE_MONITORKEY,&kdbMonitorKey_backend,
+		KDB_BE_MONITORKEYS,&kdbMonitorKeys_backend,
+		KDB_BE_END);
 }

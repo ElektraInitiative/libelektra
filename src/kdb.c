@@ -457,9 +457,10 @@ int commandRemove() {
 int commandMove() {
 	Key *key;
 	size_t size=0;
+	char argDataPrivate[500];
 	int rc;
 	
-	key=keyNew(argKeyName,0);
+	key=keyNew(argKeyName,KEY_SWITCH_END);
 	size=keyGetNameSize(key);
 	
 	if (size == 0) {
@@ -467,19 +468,25 @@ int commandMove() {
 		
 		sprintf(error,"kdb mv: \'%s\'", argKeyName);
 		perror(error);
+		
+		keyDel(key);
+		return 1;
 	}
 	
-	rc=kdbRename(key,argData);
-	if (rc == 0) return 0; /* return if OK */
+	/* This hack due to a compiler optimization problem */
+	strcpy(argDataPrivate,argData);
 	
-	/* Handle a non-zero rc, with same behavior of Unix mv command */
-	switch (errno) {
-		
+	rc=kdbRename(key,argDataPrivate);
+	if (rc != 0) {
+		/* Handle a non-zero rc, with same behavior of Unix mv command */
+		switch (errno) {
+			
+		}
 	}
 	
 	keyDel(key);
 	
-	return 0;
+	return rc;
 }
 
 

@@ -34,32 +34,32 @@ $LastChangedBy: aviram $
 typedef struct _KDBBackend KDBBackend;
 
 
+/**
+ * Switches to denote the backend methods. Used in calls to kdbBackendExport().
+ * 
+ * @ingroup backend
+ */
+enum KDBBackendMethod {
+	KDB_BE_OPEN=1,               /*!< Next arg is backend for kdbOpen() */
+	KDB_BE_CLOSE=1<<1,           /*!< Next arg is backend for kdbClose() */
+	KDB_BE_STATKEY=1<<2,         /*!< Next arg is backend for kdbStatKey() */
+	KDB_BE_GETKEY=1<<3,          /*!< Next arg is backend for kdbGetKey() */
+	KDB_BE_SETKEY=1<<4,          /*!< Next arg is backend for kdbSetKey() */
+	KDB_BE_SETKEYS=1<<5,         /*!< Next arg is backend for kdbSetKeys() */
+	KDB_BE_RENAME=1<<6,          /*!< Next arg is backend for kdbRename() */
+	KDB_BE_REMOVE=1<<7,          /*!< Next arg is backend for kdbRemove() */
+	KDB_BE_GETCHILD=1<<8,        /*!< Next arg is backend for kdbGetKeyChildKeys() */
+	KDB_BE_MONITORKEY=1<<9,      /*!< Next arg is backend for kdbMonitorKey() */
+	KDB_BE_MONITORKEYS=1<<10,    /*!< Next arg is backend for kdbMonitorKeys() */
+	KDB_BE_END=0                 /*!< End of arguments */
+};
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-KDBBackend *kdbBackendExport(
-	int (*kdbOpen)(),
-	int (*kdbClose)(),
-	
-	int (*kdbGetKey)(Key *),
-	int (*kdbSetKey)(Key *),
-	int (*kdbStatKey)(Key *),
-	int (*kdbRename)(Key *, const char *),
-	int (*kdbRemove)(const char *),
-	int (*kdbGetKeyChildKeys)(const Key *, KeySet *, unsigned long),
-
-	
-	/* These are the optional methods */
-	
-	int (*kdbSetKeys)(KeySet *),
-	u_int32_t (*kdbMonitorKey)(Key *, u_int32_t,unsigned long, unsigned),
-	u_int32_t (*kdbMonitorKeys)(KeySet *, u_int32_t,unsigned long, unsigned)
-);
-
-
+KDBBackend *kdbBackendExport(const char *backendName, ...);
 
 typedef KDBBackend *(*KDBBackendFactory)(void);
 
