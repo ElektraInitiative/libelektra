@@ -28,9 +28,6 @@
 /* Subversion stuff
 
 $Id$
-$Id $
-$Id:$
-$Id$
 $LastChangedBy$
 
 */

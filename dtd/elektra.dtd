@@ -36,6 +36,12 @@ The doctype with FPI for this DTD is:
 
 -->
 
+
+<!--
+  $Id$
+  $LastChangedBy$
+-->
+
 <!ELEMENT keyset (key*)>
 
 

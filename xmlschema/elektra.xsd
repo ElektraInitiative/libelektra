@@ -2,6 +2,12 @@
 
 <!-- By Rémi <remipouak@yahoo.fr> -->
 
+
+<!--
+  $Id$
+  $LastChangedBy$
+-->
+
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 	xmlns="http://elektra.sourceforge.net"
 	targetNamespace="http://elektra.sourceforge.net"
