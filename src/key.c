@@ -476,8 +476,8 @@ size_t keySetName(Key *key, const char *newName) {
 		return 0;
 	}
 
-	/* Remove leading '/' if caller passed some */
-	while (newName[length]==RG_KEY_DELIM) {
+	/* Remove trailing  '/' if caller passed some */
+	while (length && newName[length]==RG_KEY_DELIM) {
 		length--;
 	}
 
@@ -596,8 +596,8 @@ size_t keyAddBaseName(Key *key,const char *baseName) {
 	if (newSize==0) return nameSize;
 	
 	if (key->key) {
-		/* Remove leading '/' if caller passed some */
-		while (key->key[nameSize-1]==RG_KEY_DELIM &&
+		/* Remove trailing '/' if caller passed some */
+		while (nameSize-2 && key->key[nameSize-1]==RG_KEY_DELIM &&
 		       key->key[nameSize-2]!=RG_KEY_DELIM) {
 			key->key[--nameSize]=0;
 		}
