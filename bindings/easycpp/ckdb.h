@@ -9,6 +9,7 @@ extern "C"
 #include <kdb.h>
 }
 
+#define Key _Key
 
 /**ckdb is a class for very easy c++ access to elektra.
  * It trys to be fully-feature and remain lean.*/
@@ -23,8 +24,8 @@ public:
 	Key* getKey (std::string key);
 	void setKey (std::string key, Key * overwrite);
 	
-	std::string & get (string key);
-	void set (std::string key, string value);
+	std::string & get (std::string key);
+	void set (std::string key, std::string value);
 
 	Key * dup(std::string source);
 
@@ -140,8 +141,8 @@ public:
 	// ostream!
 	
 private:	
-	map <string, string> container;
-	map <string, Key * > add_keys;
+	std::map <std::string, std::string> container;
+	std::map <std::string, Key * > add_keys;
 	bool needs_sync;
 	std::string user_root;
 };

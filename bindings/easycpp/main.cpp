@@ -8,47 +8,15 @@ ckdb config ("sw/test");
 void testSetComments();
 void testGetComments();
 void testSetNames();
-void testGetNames();
+void testGetNames(string);
 void testGetSystem();
 void testSetAccess();
 void testBool();
 
 int main()
 {
-//TODO: Binärdaten werden automatisch gelöscht!
-	
-	//char * write = "somebinary";
-	//config.setBinary ("i", (void *) write, 10);
-	config.get ("i");
-	
-	// char * read = new char [10];
-	// config.getBinary ("i", (void *) read, 10);
-	// cout << read << endl;
-	
-	/*Key * k = new Key;
-	keyInit (k);
-	keySetName (k, "user/sw/test/bin");
-	
-	kdbOpen ();
-	kdbSetKey (k);
-	kdbClose ();
-	
-	keyClose (k);
-	delete k;*/
-	
-	/*Key * k = new Key;
-	keyInit (k);
-	
-	kdbOpen ();
-	kdbGetKeyByParent ("user/sw/test", "i", k);
-	kdbClose();
-	
-	keyGetString (k,read,10);
-	cout << read << endl;
-	
-	keyClose (k);
-	delete k;*/
-	
+	testGetNames("t1");
+	testGetSystem();
 	return 0;
 }
 
@@ -63,6 +31,9 @@ void testSetComments()
 void testGetComments()
 {
 	cout << "[" << config.getCommentSize ("t1") << "] " << config.getComment ("t1") << endl;
+	cout << "[" << config.getCommentSize ("t2") << "] " << config.getComment ("t2") << endl;
+	cout << "[" << config.getCommentSize ("t3") << "] " << config.getComment ("t3") << endl;
+	cout << "[" << config.getCommentSize ("t4") << "] " << config.getComment ("t4") << endl;
 }
 
 void testSetNames()
@@ -73,18 +44,19 @@ void testSetNames()
 	config.set ("t4", "Just 4 values!");
 }
 
-void testGetNames()
+void testGetNames(std::string str)
 {
-	cout << "Name:    \t[ " << config.getNameSize("t1") << "  ]\t" << config.getName("t1") << endl;
-	cout << "FullName:\t[ " << config.getFullNameSize("t1") << "  ]\t" << config.getFullName("t1") << endl;
-	cout << "RootName:\t[ " << config.getRootNameSize("t1") << "  ]\t" << config.getRootName("t1") << endl;
-	cout << "FullRootName:\t[ " << config.getFullRootNameSize("t1") << "  ]\t" << config.getFullRootName("t1") << endl;
-	cout << "BaseName:\t[ " << config.getBaseNameSize("t1") << "  ]\t" << config.getBaseName("t1") << endl;
+	cout << "Name:    \t[ " << config.getNameSize(str) << "  ]\t" << config.getName(str) << endl;
+	cout << "FullName:\t[ " << config.getFullNameSize(str) << "  ]\t" << config.getFullName(str) << endl;
+	cout << "RootName:\t[ " << config.getRootNameSize(str) << "  ]\t" << config.getRootName(str) << endl;
+	cout << "FullRootName:\t[ " << config.getFullRootNameSize(str) << "  ]\t" << config.getFullRootName(str) << endl;
+	cout << "BaseName:\t[ " << config.getBaseNameSize(str) << "  ]\t" << config.getBaseName(str) << endl;
 }
 
 void testGetSystem()
 {
-	cout << config.getOwner("t1") << "\tUID: " << config.getUID("t1") << endl;
+	cout << "Username: " << config.getOwner("t1") << endl;
+	cout << "UID: " << config.getUID("t1") << endl;
 	cout << "GID: " << config.getGID("t1") << endl;
 	cout << "Mode: " << oct << config.getAccess ("t1") << endl;
 }
