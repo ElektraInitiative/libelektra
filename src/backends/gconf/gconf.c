@@ -54,7 +54,7 @@ GConfEngine *gconf;
 
 /*
  *
- *   /apps/            <->    user/apps/
+ *   /apps/            <->    user/sw/
  *   /system/          <->    user/system/
  *   /desktop/gnome/   <->    user/desktop/gnome/
  *
@@ -68,7 +68,10 @@ enum KeyGConfType {
 	KEY_GCONFTYPE_INT=            KEY_TYPE_STRING+1,
 	KEY_GCONFTYPE_FLOAT=          KEY_TYPE_STRING+2,
 	KEY_GCONFTYPE_BOOL=           KEY_TYPE_STRING+3,
-	KEY_GCONFTYPE_BOOL=           KEY_TYPE_STRING+3,
+	KEY_GCONFTYPE_LIST_STRING=    KEY_TYPE_STRING+4,
+	KEY_GCONFTYPE_LIST_INT=       KEY_TYPE_STRING+5,
+	KEY_GCONFTYPE_LIST_FLOAT=     KEY_TYPE_STRING+6,
+	KEY_GCONFTYPE_LIST_BOOL=      KEY_TYPE_STRING+7
 };
  
 
@@ -77,17 +80,27 @@ enum KeyGConfType {
 Key *gEntryToKey(const GConfEntry *gentry) {
 	Key *new=0;
 	char buffer[500];
+	char *c1=0;
 	GConfValue *gvalue=0;
 	GSList *list=0;
 	GConfValueType listType;
 	
 	new=keyNew("user",KEY_SWITCH_END);
-	keyAddBaseName(new,(const char *)gconf_entry_get_key(gentry));
+	c1=gconf_entry_get_key(gentry);
+	if (!strcmp("/apps",c1) || !strncmp("/apps/",c1,strlen("/apps/"))) {
+		/* convert "/apps/" to "user/sw/" */
+		c1=index(c1+1,'/');
+		keyAddBaseName(new,"sw");
+	}
+	keyAddBaseName(new,(const char *)c1);
 	
 	gvalue=gconf_entry_get_value(gentry);
 	if (!gvalue) return new;
 	
 	switch (gvalue->type) {
+		case GCONF_VALUE_SCHEMA:
+			break;
+		case GCONF_VALUE_INVALID:
 		case GCONF_VALUE_STRING:
 			keySetString(new,gconf_value_get_string(gvalue));
 			break;
@@ -113,20 +126,41 @@ Key *gEntryToKey(const GConfEntry *gentry) {
 			
 			strcpy(buffer,"[");
 			
-			if (list) {
+			while (list) {
 				GConfValue *val=0;
-				while (list) {
-					val=(GConfValue *)list->data;
-					if (prev) strcat(buffer,",");
-					strcat(buffer,gconf_value_get_string(val));
-					
-					prev=1;
-					list=list->next;
+				val=(GConfValue *)list->data;
+				if (prev) strcat(buffer,",");
+				
+				switch (listType) {
+					case GCONF_VALUE_SCHEMA:
+						break;
+					case GCONF_VALUE_INVALID:
+					case GCONF_VALUE_STRING:
+						keySetType(new,KEY_GCONFTYPE_LIST_STRING);
+						strcat(buffer,gconf_value_get_string(val));
+						break;
+					case GCONF_VALUE_INT:
+						keySetType(new,KEY_GCONFTYPE_LIST_INT);
+						sprintf(buffer+strblen(buffer)-1,"%d",
+							gconf_value_get_int(val));
+						break;
+					case GCONF_VALUE_FLOAT:
+						keySetType(new,KEY_GCONFTYPE_LIST_FLOAT);
+						sprintf(buffer+strblen(buffer)-1,"%g",
+							gconf_value_get_float(val));
+						break;
+					case GCONF_VALUE_BOOL:
+						keySetType(new,KEY_GCONFTYPE_LIST_BOOL);
+						if (gconf_value_get_bool(val)) strcat(buffer,"1");
+						else strcat(buffer,"0");
+						break;
 				}
+				prev=1;
+				list=list->next;
 			}
 			
 			strcat(buffer,"]");
-			keySetString(new,buffer);
+			keySetRaw(new,buffer,strblen(buffer));
 			break;
 		/* TODO: list and car+cdr. */
 	}
@@ -144,6 +178,12 @@ GConfEntry *keyToGEntry(const Key *key) {
 	GConfValue *gval=0;
 	char *keyName=0;
 	size_t size=0;
+	GSList *list=0;
+	char *cursor=0;
+	char *previous=0;
+	char *end=0;
+	char element[300];
+	GConfValue *valelement=0;
 	
 	if (!keyIsUser(key)) return 0;
 	
@@ -157,7 +197,17 @@ GConfEntry *keyToGEntry(const Key *key) {
 		size=keyGetNameSize(key);
 		keyName=malloc(size);
 		keyGetName(key,keyName,size);
-		strcpy(keyName,keyName+sizeof("user")-1);
+		
+		if (!strcmp("user/sw",keyName) || !strncmp("user/sw/",keyName,sizeof("user/sw/")-1)) {
+			/* convert to "/apps" */
+			strcpy(keyName,"/apps");
+			start=keyName+sizeof("user/sw")-1;
+		} else {
+			start=keyName+sizeof("user")-1;
+			keyName[0]=0;
+		}
+		
+		strcat(keyName,start);
 		
 		/* remove multiple '/' in the begining */
 		start=keyName;
@@ -168,14 +218,14 @@ GConfEntry *keyToGEntry(const Key *key) {
 	}
 	
 	/* prepare value */
-	switch (keyGetType(key)) {
+	switch (key->type) {
 		case KEY_GCONFTYPE_STRING:
-			gconf_value_new(GCONF_VALUE_STRING);
+			gval=gconf_value_new(GCONF_VALUE_STRING);
 			gconf_value_set_string(gval,(char *)key->data);
 			break;
 		case KEY_GCONFTYPE_INT:  
 			gval=gconf_value_new(GCONF_VALUE_INT);
-			gconf_value_set_float(gval,atoi((char *)key->data));
+			gconf_value_set_int(gval,atoi((char *)key->data));
 			break;
 		case KEY_GCONFTYPE_FLOAT:  
 			gval=gconf_value_new(GCONF_VALUE_FLOAT);
@@ -184,6 +234,71 @@ GConfEntry *keyToGEntry(const Key *key) {
 		case KEY_GCONFTYPE_BOOL:  
 			gval=gconf_value_new(GCONF_VALUE_BOOL);
 			gconf_value_set_bool(gval,atoi((char *)key->data));
+			break;
+		case KEY_GCONFTYPE_LIST_INT:
+		case KEY_GCONFTYPE_LIST_FLOAT:
+		case KEY_GCONFTYPE_LIST_BOOL:
+		case KEY_GCONFTYPE_LIST_STRING:
+			gval=gconf_value_new(GCONF_VALUE_LIST);
+			
+			end=rindex(key->data,']');
+			
+			previous=key->data+1; // jump '['
+			while ((cursor=index(previous,','))) {
+				strncpy(element,previous,cursor-previous);
+				element[cursor-previous]=0;
+				
+				switch (key->type) {
+					case KEY_GCONFTYPE_LIST_INT:
+						valelement=gconf_value_new(GCONF_VALUE_INT);
+						gconf_value_set_int(valelement,atoi(element));
+						break;
+					case KEY_GCONFTYPE_LIST_BOOL:
+						valelement=gconf_value_new(GCONF_VALUE_BOOL);
+						gconf_value_set_bool(valelement,atoi(element));
+						break;
+					case KEY_GCONFTYPE_LIST_FLOAT:
+						valelement=gconf_value_new(GCONF_VALUE_FLOAT);
+						gconf_value_set_float(valelement,atof(element));
+						break;
+					case KEY_GCONFTYPE_LIST_STRING:
+						valelement=gconf_value_new(GCONF_VALUE_STRING);
+						gconf_value_set_string(valelement,element);
+						break;
+				}
+				
+				list=g_slist_append(list,valelement);
+				previous=cursor+1;
+			}
+			
+			strncpy(element,previous,(char *)key->data+key->dataSize-2-previous);
+			element[(char *)key->data+key->dataSize-2-previous]=0;
+			
+			switch (key->type) {
+				case KEY_GCONFTYPE_LIST_INT:
+					valelement=gconf_value_new(GCONF_VALUE_INT);
+					gconf_value_set_int(valelement,atoi(element));
+					gconf_value_set_list_type(gval,GCONF_VALUE_INT);
+					break;
+				case KEY_GCONFTYPE_LIST_BOOL:
+					valelement=gconf_value_new(GCONF_VALUE_BOOL);
+					gconf_value_set_bool(valelement,atoi(element));
+					gconf_value_set_list_type(gval,GCONF_VALUE_BOOL);
+					break;
+				case KEY_GCONFTYPE_LIST_FLOAT:
+					valelement=gconf_value_new(GCONF_VALUE_FLOAT);
+					gconf_value_set_float(valelement,atof(element));
+					gconf_value_set_list_type(gval,GCONF_VALUE_FLOAT);
+					break;
+				case KEY_GCONFTYPE_LIST_STRING:
+					valelement=gconf_value_new(GCONF_VALUE_STRING);
+					gconf_value_set_string(valelement,element);
+					gconf_value_set_list_type(gval,GCONF_VALUE_STRING);
+					break;
+			}
+			g_slist_append(list,valelement);
+			
+			gconf_value_set_list_nocopy(gval,list);
 			break;
 	}
 	
@@ -220,8 +335,35 @@ int kdbStatKey_gconf(Key *key) {
 
 
 int kdbGetKey_gconf(Key *key) {
-	/* fully gets a key */
-	return 0; /* success */
+	GConfEntry *gentry=0, *gkey;
+	Key *dup;
+	GError *gerr=0;
+	int rc=0;
+	
+	gkey=keyToGEntry(key);
+	if (!gkey) {
+		errno=ENOENT;
+		return -1;
+	}
+	
+	gentry=gconf_engine_get_entry(gconf,gconf_entry_get_key(gkey),0,1,&gerr);
+	
+	g_free(gkey->key);
+	if (gkey->value) gconf_value_free(gkey->value);
+	g_free(gkey);
+	
+	if (gentry) {
+		dup=gEntryToKey(gentry);
+		keyDup(dup,key);
+		keyDel(dup);
+		rc=0;
+	} else rc=1;
+	
+	g_free(gentry->key);
+	if (gentry->value) gconf_value_free(gentry->value);
+	g_free(gentry);
+	
+	return rc;
 }
 
 
@@ -231,8 +373,17 @@ int kdbGetKey_gconf(Key *key) {
  * @see kdbSetKey() for expected behavior.
  * @ingroup backend
  */
-int kdbSetKey_backend(Key *key) {
-	/* fully sets a key */
+int kdbSetKey_gconf(Key *key) {
+	GConfEntry *gentry=0;
+	GError *err=0;
+	
+	if (key->type == KEY_TYPE_DIR) return 0;
+	
+	gentry=keyToGEntry(key);
+	gconf_engine_set(gconf,gconf_entry_get_key(gentry),gconf_entry_get_value(gentry),&err);
+	
+	
+	
 	return 0; /* success */
 }
 
@@ -268,6 +419,11 @@ int kdbGetKeyChildKeys_gconf(const Key *parentKey, KeySet *returned, unsigned lo
 	GError *gerr=0;
 	GSList *dirs=0,*entries=0,*current=0;
 	
+	if (!entry) {
+		errno=ENOENT;
+		return -1;
+	}
+	
 	dirs=gconf_engine_all_dirs(gconf,entry->key,&gerr);
 	entries=gconf_engine_all_entries(gconf,entry->key,&gerr);
 
@@ -284,11 +440,15 @@ int kdbGetKeyChildKeys_gconf(const Key *parentKey, KeySet *returned, unsigned lo
 	}
 	
 	while (dirs) {
-		Key *toAppend=keyNew("user",
-			KEY_SWITCH_TYPE,KEY_TYPE_DIR,
-			KEY_SWITCH_END);
+		Key *toAppend=0;
+		GConfEntry entry;
 		
-		keyAddBaseName(toAppend,(char *)dirs->data);
+		entry.key=dirs->data;
+		entry.value=0;
+		
+		toAppend=gEntryToKey(&entry);
+		
+		keySetType(toAppend,KEY_TYPE_DIR);
 		ksAppend(returned,toAppend);
 		
 		if (options & KDB_O_RECURSIVE)
@@ -306,19 +466,6 @@ int kdbGetKeyChildKeys_gconf(const Key *parentKey, KeySet *returned, unsigned lo
 	return 0; /* success */
 }
 
-
-/**
- * The implementation of this method is optional.
- * The builtin inefficient implementation will use kdbSetKey() for each
- * key inside @p ks.
- *
- * @see kdbSetKeys() for expected behavior.
- * @ingroup backend
- */
-int kdbSetKeys_backend(KeySet *ks) {
-	/* set many keys */
-	return 0;
-}
 
 
 /**
@@ -356,7 +503,7 @@ KDBBackend *kdbBackendFactory(void) {
 		KDB_BE_OPEN,           &kdbOpen_gconf,
 		KDB_BE_CLOSE,          &kdbClose_gconf,
 		KDB_BE_GETKEY,         &kdbGetKey_gconf,
-		KDB_BE_SETKEY,         &kdbSetKey_backend,
+		KDB_BE_SETKEY,         &kdbSetKey_gconf,
 		KDB_BE_STATKEY,        &kdbStatKey_gconf,
 		KDB_BE_RENAME,         &kdbRename_backend,
 		KDB_BE_REMOVEKEY,      &kdbRemove_backend,

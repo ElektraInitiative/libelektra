@@ -566,37 +566,45 @@ size_t keySetName(Key *key, const char *newName) {
  * 
  */
 size_t keyAddBaseName(Key *key,const char *baseName) {
-	size_t nameSize=strblen(key->key)-1;
-	size_t newSize=strblen(baseName);
+	size_t nameSize=0;
+	size_t newSize=0;
+	
+	if (key->key) nameSize=strblen(key->key)-1;
+	if (baseName) newSize=strblen(baseName);
+	else return nameSize;
+	
+	if (newSize==0) return nameSize;
 	
 	/* Remove leading '/' if caller passed some */
-	while (key->key[nameSize-1]==RG_KEY_DELIM &&
-	       key->key[nameSize-2]!=RG_KEY_DELIM) {
-		key->key[nameSize-1]=0;
-		nameSize--;
-	}
-
-	if (key->key[nameSize-1] == RG_KEY_DELIM) {
-		int ndelim=0;
-		if (baseName[0] == RG_KEY_DELIM) {
-			newSize-=1; /* remove extra '/' */
-			ndelim=1;
+	if (key->key) {
+		while (key->key[nameSize-1]==RG_KEY_DELIM &&
+		       key->key[nameSize-2]!=RG_KEY_DELIM) {
+			key->key[nameSize-1]=0;
+			nameSize--;
 		}
-		newSize+=nameSize;
-		key->key=realloc(key->key,newSize);
-		strcat(key->key,baseName+ndelim);
-	} else {
-		if (baseName[0] == RG_KEY_DELIM) {
+		
+		if (key->key[nameSize-1] == RG_KEY_DELIM) {
+			int ndelim=0;
+			if (baseName[0] == RG_KEY_DELIM) {
+				newSize-=1; /* remove extra '/' */
+				ndelim=1;
+			}
 			newSize+=nameSize;
 			key->key=realloc(key->key,newSize);
+			strcat(key->key,baseName+ndelim);
 		} else {
-			nameSize++;
-			newSize+=nameSize;
-			key->key=realloc(key->key,newSize);
-			strcat(key->key,"/");
+			if (baseName[0] == RG_KEY_DELIM) {
+				newSize+=nameSize;
+				key->key=realloc(key->key,newSize);
+			} else {
+				nameSize++;
+				newSize+=nameSize;
+				key->key=realloc(key->key,newSize);
+				strcat(key->key,"/");
+			}
+			strcat(key->key,baseName);
 		}
-		strcat(key->key,baseName);
-	}
+	} else return keySetName(key,baseName);
 	
 	return newSize;
 }

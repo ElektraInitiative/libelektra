@@ -1073,8 +1073,7 @@ int ksFromXMLfile(KeySet *ks,char *filename) {
 	doc = xmlParseFile(filename);
 	if (doc==NULL) return 1;
 
-	// get the schema path from elektra . kdb is like any other program, its config should go into elektra...
-	/* Open the kdb to get the xml schema path*/
+	/* Open the kdb to get the xml schema path */
 	schema_path[0]=0;
 	ret=kdbGetValue(KDB_SCHEMA_PATH_KEY,schema_path,sizeof(schema_path));
 	if (ret==0) ctxt2 = xmlSchemaNewParserCtxt(schema_path);
@@ -1143,7 +1142,7 @@ int ksFromXMLfile(KeySet *ks,char *filename) {
 /* FIXME: its not working when fd is stdin */
 int ksFromXML(KeySet *ks,int fd) {
 	/* Support for old XML library, that doesn't have xmlReaderForFd() */
-	char filename[]="/var/tmp/rgeditXXXXXX";
+	char filename[]="/var/tmp/kdbeditXXXXXX";
 	FILE *xmlfile=0;
 	xmlfile=fdopen(mkstemp(filename),"rw+");
 	while (! feof(xmlfile)) {
