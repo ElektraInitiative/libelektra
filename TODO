@@ -6,5 +6,3 @@
 - Handle special keys: named pipe
 - Better KeySet manipulation and gathering
 - Scripts for other /etc files conversion
-
-$Id$
