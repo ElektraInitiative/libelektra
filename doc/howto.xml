@@ -27,9 +27,19 @@ $LastChangedBy$
 
 		&author;
 
-		<pubdate>2004-11-14</pubdate>
+		<pubdate>2004-11-29</pubdate>
 
 		<revhistory>
+			<revision>
+				<revnumber>2004-11-29</revnumber>
+				<date>29 Nov 2004</date>
+				<authorinitials>avi</authorinitials>
+				<revdescription>
+					<itemizedlist>
+						<listitem><simpara>Added link to the X.org patch.</simpara></listitem>
+					</itemizedlist>
+				</revdescription>
+			</revision>
 			<revision>
 				<revnumber>2004-11-14</revnumber>
 				<date>14 Nov 2004</date>
@@ -420,13 +430,14 @@ $LastChangedBy$
 			<section id="ecotools"><title>Tools and Software Patches</title>
 				<itemizedlist>
 					<listitem><simpara><ulink url="http://www.livejournal.com/users/gregorburger/">Regedit GUI to edit the key database</ulink>, using the QT library, by Gregor Burger. There is a <ulink url="http://developer.berlios.de/projects/tlr-regedit/">Berlios entry</ulink> with Subversion repository, and <ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628">RPM packages available</ulink>.</simpara></listitem>
+					<listitem><simpara><ulink url="http://sourceforge.net/project/showfiles.php?group_id=117521">Elektrified <emphasis>X.org</emphasis></ulink> to use a key database instead of <filename>xorg.conf</filename> file.</simpara></listitem>
 					<listitem><simpara><ulink url="http://sourceforge.net/project/showfiles.php?group_id=117521">Elektrified <filename>/sbin/init</filename> and Fedora Core 2 RPMs</ulink> for the <ulink url="ftp://ftp.cistron.nl/pub/people/miquels/sysvinit/">original sysvinit package from Miquel van Smoorenburg</ulink>.</simpara></listitem>
 					<listitem><simpara><ulink url="http://nss-registry.skumler.net">Users and Groups Name System Module for GLibC</ulink>, by Jens Andersen. This is a module that can be activated by the name system switch mechanism (<filename>/etc/nsswitch.conf</filename>) to let users and groups databases be Elektrified, instead of <filename>/etc/{passwd|shadow|groups}</filename>.</simpara></listitem>
 					<listitem>Daniel Lambea and Israel Bethencourt are writing patches for basic system tools, and will have soon a full Elektrified Linux distribution.</listitem>
 				</itemizedlist>
 			</section>
 
-			<section id="ecobind"><title>Language Bindings and  Packages</title>
+			<section id="ecobind"><title>Language Bindings and Packages</title>
 				<itemizedlist>
 					<listitem><simpara><ulink url="http://www.germane-software.com/software/Libraries/registry">Ruby bindings</ulink>, by Sean Russel. If you are writing code in Ruby, and need an easy way to store/retrieve configuration/state data, this is for you.</simpara></listitem>
 					<listitem><simpara><ulink url="http://acm.cs.uwec.edu/~lemkesr/">Python bindings</ulink>, by Scott Lemke.</simpara></listitem>
