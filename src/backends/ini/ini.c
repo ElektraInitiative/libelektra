@@ -514,9 +514,9 @@ int kdbRemoveKey_ini(const Key *key) {
  * @see kdbGetKeyChildKeys() for expected behavior.
  * @ingroup backend
  */
-int kdbGetKeyChildKeys_ini(const Key * key, KeySet *returned, unsigned long options) {
+ssize_t kdbGetKeyChildKeys_ini(const Key * key, KeySet *returned, unsigned long options) {
 	printf ("Get many Keys at once\n");	
-	return 0; /* success */
+	return returned->size; /* success */
 }
 
 
