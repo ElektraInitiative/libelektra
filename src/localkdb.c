@@ -1616,17 +1616,17 @@ while (1) {
 
 	// block until any change in key value or comment . . .
 	diff=kdbMonitorKeys(&myConfigs,
-		KEY_VALUE | KEY_COMMENT,
+		KEY_SWITCH_VALUE | KEY_SWITCH_COMMENT,
 		0,0); // ad-infinitum
 
 	changed=ksCurrent(&myConfigs);
 	keyGetName(changed,keyName,sizeof(keyName));
 
 	switch (diff) {
-		case KEY_FLAG:
+		case KEY_SWITCH_FLAG:
 			printf("Key %s was deleted\n",keyName);
 			break;
-		case KEY_NEEDSYNC:
+		case KEY_SWITCH_NEEDSYNC:
 			printf("No cretentials to access Key %s\n",keyName);
 			break;
 		default:
@@ -1688,15 +1688,15 @@ u_int32_t kdbMonitorKeys(KeySet *interests, u_int32_t diffMask,
  * @p interest should be a full key with name, value, comments, permissions,
  * etc, and all will be compared and then masked by @p diffMask.
  *
- * If @p interest is a folder key, use @c KEY_TIME in @p diffMask
+ * If @p interest is a folder key, use @p KEY_SWITCH_TIME in @p diffMask
  * to detect a time change, so you'll know something happened (key
  * modification, creation, deletion) inside the folder.
  *
  * If @p interest was not found, or deleted, the method will return
- * immediatly a @c KEY_FLAG value.
+ * immediatly a @p KEY_SWITCH_FLAG value.
  *
  * If you don't have access rights to @p interest, the method will return
- * immediatly a @c KEY_NEEDSYNC value.
+ * immediatly a @p KEY_SWITCH_NEEDSYNC value.
  *
  * If something from @p diffMask has changed in @p interest, it will be
  * updated, so when method returns, you'll have an updated version of the key.
@@ -1708,7 +1708,7 @@ u_int32_t kdbMonitorKeys(KeySet *interests, u_int32_t diffMask,
  * @param sleep time to sleep, in microseconds, between iterations.
  * 0 defaults to 1 second.
  * @return the ORed @p KEY_SWITCH_* flags of what changed
- * @see KeyFlags
+ * @see #KeySwitch
  * @see keyCompare()
  * @see kdbMonitorKeys() to monitor KeySets, and for a code example
  * @see commandMonitor() code in kdb command for usage example
