@@ -299,7 +299,7 @@ KDBBackend *kdbBackendFactory(void) {
 		KDB_BE_SETKEY,         &kdbSetKey_backend,
 		KDB_BE_STATKEY,        &kdbStatKey_backend,
 		KDB_BE_RENAME,         &kdbRename_backend,
-		KDB_BE_REMOVEKEY,      &kdbRemove_backend,
+		KDB_BE_REMOVEKEY,      &kdbRemoveKey_backend,
 		KDB_BE_GETCHILD,       &kdbGetKeyChildKeys_backend,
 		KDB_BE_MONITORKEY,     &kdbMonitorKey_backend,
 		KDB_BE_MONITORKEYS,    &kdbMonitorKeys_backend,
