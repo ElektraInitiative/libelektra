@@ -27,7 +27,7 @@ The "elektra" package sugested files:
    /bin/kdb
    /etc/profile.d/elektraenv.sh
    /lib/libkdb.so
-   /lib/libregistry.so
+   /lib/libregistry.so   (backwards compatibility: will be removed in future)
    /usr/share/doc/elektra
    /usr/share/doc/elektra/fstab-convert
    /usr/share/doc/elektra/hosts-convert
@@ -48,12 +48,12 @@ The "elektra-devel" package sugested files:
    /usr/include/kdb.h
    /usr/lib/libkdb.a
    /usr/share/doc/elektra-devel
-   /usr/share/doc/elektra-devel/api/*  (Doxygen API documentation files)
+   /usr/share/doc/elektra-devel/elektra-api/*  (Doxygen API documentation)
    /usr/share/doc/elektra-devel/example.c
    /usr/share/doc/elektra-devel/kdb.c
-   /usr/share/man/man3/kdb*.3.gz       (Manpages of the kdb*() methods)
-   /usr/share/man/man3/key*.3.gz       (Manpages of the key*() methods)
-   /usr/share/man/man3/ks*.3.gz        (Manpage of the ks*() methods)
+   /usr/share/man/man3/kdb*.3.gz       (Manpages for the kdb*() methods)
+   /usr/share/man/man3/key*.3.gz       (Manpages for the key*() methods)
+   /usr/share/man/man3/ks*.3.gz        (Manpages for the ks*() methods)
 
    
    
@@ -75,7 +75,7 @@ Before that, Elektra was LGPL.
 
 About Man Pages
 ---------------
-Man pages are generated from a DocBook XML using XSLTs from the
+Some man pages are generated from a DocBook XML using XSLTs from the
 docbook-style-xsl package (on Fedora), and the xsltproc as the XSLT engine.
 So rg.1.xml docbook source is converted to the rg.1 man page, for example.
 
@@ -114,6 +114,9 @@ You can issue the following subcomands to make:
 
 - make rpm
   Makes tarball, compiles and generate Elektra RPMs
+
+- make deb
+  Makes tarball, compiles and generate Elektra Debian .debs
 
 
 Under the doc/ folder, you can make:

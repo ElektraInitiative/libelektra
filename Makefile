@@ -130,6 +130,7 @@ install: all
 	cp kdb.h ${DESTDIR}/usr/include
 	cp scripts/elektraenv ${DESTDIR}/etc/profile.d/elektraenv.sh
 	chmod a+x example/*-convert
+	cp LICENSE ${DESTDIR}/usr/share/doc/${NAME}
 	cp example/*-convert ${DESTDIR}/usr/share/doc/${NAME}
 	cp kdb.c example/example.c ${DESTDIR}/usr/share/doc/${NAME}-devel
 

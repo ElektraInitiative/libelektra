@@ -3,7 +3,7 @@ Version: _VERSION_
 Release: 1
 Source:    http://registry.sf.net/%{name}-%{version}.tar.gz
 Group:     System Environment/Libraries
-Copyright: LGPL
+Copyright: BSD
 Vendor: Avi Alkalay <avi@unix.sh>
 Packager: Avi Alkalay <avi@unix.sh>
 URL: http://registry.sf.net
@@ -79,17 +79,17 @@ kdb set -t dir system/sw
 /lib/*.so
 /bin/*
 /etc/profile.d/*
-/usr/share/doc/%{name}
-/usr/share/man/man1/*
-/usr/share/man/man7/*
-/usr/share/man/man5/*
+%doc /usr/share/doc/%{name}
+%doc /usr/share/man/man1/*
+%doc /usr/share/man/man7/*
+%doc /usr/share/man/man5/*
 /usr/share/sgml/*
 
 %files devel
 %defattr(-,root,root,0755)
 /usr/include/*
 /usr/lib/*.a
-/usr/share/doc/%{name}-devel
-/usr/share/man/man3/*
+%doc /usr/share/doc/%{name}-devel
+%doc /usr/share/man/man3/*
 
 %changelog

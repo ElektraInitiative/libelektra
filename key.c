@@ -2298,6 +2298,8 @@ Key *ksCurrent(const KeySet *ks) {
  * keyClose() @p toInsert and free() the @p toInsert object.
  * The KeySet internal cursor is not moved.
  *
+ * Do not ksInsert() Keys that are already members of other KeySets.
+ *
  * @return the size of the KeySet after insertion
  * @param ks KeySet that will receive the key
  * @param toInsert Key that will be inserted into ks
@@ -2351,6 +2353,8 @@ size_t ksInsertKeys(KeySet *ks, KeySet *toInsert) {
  * are local variables to a KeySet, only dinamycally allocated ones, due to
  * the future ksClose() you'll call on the KeySet.
  * The KeySet internal cursor is not moved.
+ *
+ * Do not ksAppend() Keys that are already members of other KeySets.
  *
  * @return the size of the KeySet after insertion
  * @param ks KeySet that will receive the key
