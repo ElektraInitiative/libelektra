@@ -27,9 +27,21 @@ $LastChangedBy$
 
 		&author;
 
-		<pubdate>2004-09-09</pubdate>
+		<pubdate>2004-09-11</pubdate>
 
 		<revhistory>
+			<revision>
+				<revnumber>2004-09-11</revnumber>
+				<date>11 Sep 2004</date>
+				<authorinitials>avi</authorinitials>
+				<revdescription>
+					<itemizedlist>
+						<listitem><simpara>Changed the Subversion repository</simpara></listitem>
+						<listitem><simpara>Fixed the amp problem in the example source code</simpara></listitem>
+						<listitem><simpara>License changed to BSD</simpara></listitem>
+					</itemizedlist>
+				</revdescription>
+			</revision>
 			<revision>
 				<revnumber>2004-09-09</revnumber>
 				<date>09 Sep 2004</date>
@@ -338,14 +350,14 @@ $LastChangedBy$
 		<para>There is an <ulink url="elektra.sxi">OpenOffice.org presentation</ulink> [<ulink url="presentation/elektra.html">HTML without animations</ulink>] that anybody can deliver in community events, to help create awareness about the Elektra Project.</para>
 		<para>To get the last snapshot from Subversion do the following:
 			<screen><prompt>bash:~$</prompt> <command>cd src</command>
-<prompt>bash:~/src$</prompt> <command>svn co http://germane-software.com/repositories/tlr/trunk elektra</command>
+<prompt>bash:~/src$</prompt> <command>svn co http://germane-software.com/repositories/elektra/trunk elektra</command>
 <prompt>bash:~/src$</prompt> <command>cd elektra</command>
 <prompt>bash:~/src/elektra$</prompt> <command># files are here</command>
 			</screen>
 
 </para>
 
-		<para>Elektra is licensed under the <ulink url="http://www.gnu.org/licenses/lgpl.html">LGPL</ulink></para>
+		<para>Elektra has a <ulink url="http://www.opensource.org/licenses/bsd-license.php">BSD</ulink> license.</para>
 		<para>
 			<ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628"><graphic srccredit="SourceForge.net" fileref="http://sourceforge.net/sflogo.php?group_id=99628&amp;type=5" label="SourceForge.net Logo" align="center"/></ulink><ulink url="http://freshmeat.net/projects/elektra/"><graphic srccredit="freashmeat.net" fileref="images/link_button_1.gif" label="Freshmeat.net Logo" align="center"/></ulink>
 		</para>
