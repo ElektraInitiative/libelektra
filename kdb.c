@@ -685,6 +685,7 @@ int commandGet() {
 	char *buffer;
 	char *p;
 	size_t size,cs=0;
+	u_int8_t keyType;
 
 	if (!argKeyName) {
 		fprintf(stderr,"kdb get: No key name\n");
@@ -716,7 +717,7 @@ int commandGet() {
 	}
 
 
-	if (keyGetType(&key)<=KEY_TYPE_BINARY) p=buffer=malloc(size+1);
+	if ((keyType=keyGetType(&key))<KEY_TYPE_STRING) p=buffer=malloc(size+1);
 	else p=buffer=malloc(size);
 
 
@@ -737,13 +738,13 @@ int commandGet() {
 		*--p='='; p++;
 	}
 
-	p+=keyGetString(&key,p,size-(p-buffer));
+	if (keyType<KEY_TYPE_STRING) p+=keyGetBinary(&key,p,size-(p-buffer));
+	else p+=keyGetString(&key,p,size-(p-buffer));
 	if (argShell) {
 		*--p='\"'; p++;
 		*p=0;
 	}
-	if (keyGetType(&key)<=KEY_TYPE_BINARY) {
-		p+=keyGetDataSize(&key);
+	if (keyType<KEY_TYPE_STRING) {
 		*p=0;
 	}
 

@@ -1053,8 +1053,12 @@ kdbClose();
 
 // Check and handle propagated error
 if (rc) switch (errno) {
-	case....
-	case...
+	case KDB_RET_INVALIDKEY:
+		frptinf(stderr,"Invalid key name");
+		break;
+	case KDB_RET_NOTFOUND:
+		frptinf(stderr,"Key not found");
+		break;
 }
 
 ksRewind(&myConfig); // go to begining of KeySet

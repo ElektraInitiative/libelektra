@@ -160,6 +160,7 @@ enum KeyFlags {
  * Then errno is propagated.
  *
  * A very robust program should check errno after each API call.
+ * @see kdbGetChildKeys() for an example on how to handle errors
  *
  * @ingroup kdb
  */
