@@ -520,8 +520,6 @@ int commandSet() {
 	key=keyNew(argKeyName,KEY_SWITCH_END);
 	ret=kdbGetKey(key);
 	if (ret == 0) { /* Key already exists. Good. */
-		/* Overwrite comment if user passed some */
-		if (argComment) keySetComment(key,argComment);
 		/* Use existed key type if user didn't give us one */
 		if (argType==KEY_TYPE_UNDEFINED) argType=keyGetType(key);
 	} else if (errno!=KDB_RET_NOTFOUND) {
@@ -534,9 +532,10 @@ int commandSet() {
 	
 	if (argUID) keySetUID(key,*argUID);
 	if (argGID) keySetGID(key,*argGID);
-
 	if (argMode) keySetAccess(key,argMode);
 
+	if (argComment) keySetComment(key,argComment);
+	
 	if (argFile) {
 		FILE *f;
 		int end=0;

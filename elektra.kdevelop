@@ -18,10 +18,10 @@
   </general>
   <kdevcustomproject>
     <run>
-      <mainprogram>src/kdb</mainprogram>
-      <directoryradio>executable</directoryradio>
-      <customdirectory>/</customdirectory>
-      <programargs>export -R user/tmp</programargs>
+      <mainprogram>/home/aviram/src/elektra/src/kdb</mainprogram>
+      <directoryradio>custom</directoryradio>
+      <customdirectory>/home/aviram/src/elektra/src/</customdirectory>
+      <programargs>set -c &quot;cómentário&quot; user/tmp/coração &quot;à tôua&quot;</programargs>
       <terminal>false</terminal>
       <autocompile>true</autocompile>
       <envvars/>
