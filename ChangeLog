@@ -1,5 +1,15 @@
-* Sun Oct 26 2004 Avi Alkalay <avi@unix.sh> 0.4.5
+* Fri Nov 05 2004 Avi Alkalay <avi@unix.sh> 0.4.6
+- New method: kdbRename()
+- Updates to spec files, to conform to Fedora conventions
+- First GPG sign
+- Ready to be sent to fedora.us
+
+* Mon Nov 02 2004 Avi Alkalay <avi@unix.sh> 0.4.5
 - Fixed a bug in kdbGetKeyByParentKey()
+- Changed the behavior of kdbSetKeys(): now developer may know where errors occured
+- Changed kdb to to fit new kdbSetKeys behavior
+- Small fixes in the doxygen documentation, improved code examples
+- More efficient documentation build
 
 * Sun Oct 25 2004 Avi Alkalay <avi@unix.sh> 0.4.4
 - Added documentation on how to write new backends

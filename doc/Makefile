@@ -4,6 +4,7 @@
 MANSTYLE=manstyle.xsl
 HTMLSTYLE=htmltitlepage.xsl
 APIDIR=elektra-api
+DOXYSOURCES=../localkdb.c ../kdb.c ../kdb.h ../key.c
 
 .SUFFIXES: .xml .html .pdf .ps .rtf .xsl .fo .tpl
 .SILENT:
@@ -15,13 +16,18 @@ APIDIR=elektra-api
 
 all: man
 
-doxygen:
-	cd ..; doxygen
-	find ${APIDIR}/html | cpio -H tar -o | gzip -c --best > elektra-api.tar.gz
+doxygen: ${APIDIR}.tar.gz
 
 docbookman: kdb.1 elektra.7 elektra.5
 
 man: doxygen docbookman
+
+elektra-api.tar.gz: $(DOXYSOURCES)
+	-rm -rf ${APIDIR}
+	-rm -rf ${APIDIR}.tar.gz
+	echo "Making Doxygen..."
+	cd ..; doxygen
+	find ${APIDIR}/html | cpio -H tar -o | gzip -c --best > ${APIDIR}.tar.gz
 
 example.c:
 	ln -s ../example/example.c .
@@ -57,18 +63,19 @@ html: man howto.html doxygen
 
 
 
-
-
-
-clean:
-	-rm *.[1357]
+distclean:
 	-rm *.html
 	-rm *~
 	-rm csource.xml
 	-rm docbook
 	-rm example.c
 	-rm -rf ${APIDIR}
-	-rm -rf *-api.tar.gz
+	-rm -rf ${APIDIR}.tar.gz
+
+
+
+clean: distclean
+	-rm *.[1357]
 
 
 

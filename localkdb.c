@@ -96,7 +96,8 @@ extern int errno;
  *
  * This is the class that accesses the storage backend. When writing a new
  * backend, these are the methods you'll have to reimplement:
- * kdbGetKey(), kdbSetKey(), kdbStatKey(), kdbRemove(), kdbGetChildKeys()
+ * kdbGetKey(), kdbSetKey(), kdbStatKey(), kdbRemove(), kdbRename(),
+ * kdbGetChildKeys()
  *
  * And methods that is suggested to reimplement (but not needed) if you want
  * them to get the benefits of your new backend: kdbOpen(), kdbClose(),
@@ -104,6 +105,12 @@ extern int errno;
  *
  * The other methods are higher level. They use the above methods to do their
  * job, and generally don't have to be reimplemented for a different backend.
+ *
+ * Language binding writers should follow the same rules:
+ * - You should relay completelly on the backend-dependent methods
+ * - You may use or reimplement the second set of methods
+ * - You should completelly reimplement in your language the higher
+ *   lever methods
  */
 
 
@@ -1047,6 +1054,7 @@ int keyCompareByName(const void *p1, const void *p2) {
  *
  * @par Example:
  * @code
+char errormsg[300];
 KeySet myConfig;
 ksInit(&myConfig);
 
@@ -1057,10 +1065,15 @@ kdbClose();
 // Check and handle propagated error
 if (rc) switch (errno) {
 	case KDB_RET_INVALIDKEY:
-		frptinf(stderr,"Invalid key name");
+		sprintf(errormsg,"Something invalid");
+		perror(errormsg); // use system error messages
 		break;
 	case KDB_RET_NOTFOUND:
-		frptinf(stderr,"Key not found");
+		fprintf(stderr,"Key not found"); // custom error message
+		break;
+	default:
+		sprintf(errormsg,"My application");
+		perror(errormsg); // use system error messages
 		break;
 }
 
@@ -1339,24 +1352,38 @@ int kdbGetKey(Key *key) {
 
 
 /**
- * Commits an entire KeySet to the backend storage.
+ * Commits the @p ks KeySet to the backend storage, starting from @p ks's
+ * current cursor until its end. This is why it is suggested that you call
+ * ksRewind() on @p ks beffore calling this method.
  * Each key is checked with keyNeedsSync() before being actually commited. So
  * only changed keys are updated.
  *
+ * If some error occurs, kdbSetKeys() stops and returns whatever kdbSetKey()
+ * returned. The KeySet internal cursor is left on the key that generated
+ * the error (so you may check it latter with ksCurrent()). The internal 
+ * kdbSetKey() also sets @p errno in case of error.
+ *
  * @param ks a KeySet full of changed keys
- * @return 0 (no way to know if some key failled currently)
+ * @return 0 on success, or whatever kdbSetKey() returns
  * @see kdbSetKey()
+ * @see keyNeedsSync()
+ * @see ksNext()
+ * @see ksCurrent()
  * @see commandEdit() code in kdb command for usage example
- * @see commandLoad() code in kdb command for usage example
+ * @see commandImport() code in kdb command for usage example
  * @ingroup kdb
  */
 int kdbSetKeys(KeySet *ks) {
-	Key *current;
+	Key *current=ksCurrent(ks);
+	int ret;
 
-	for (current=ks->start; current; current=current->next) {
-		if (keyNeedsSync(current)) {
-			kdbSetKey(current);
-		}
+	if (!current) current=ksNext(ks);
+	while (current) {
+		if (keyNeedsSync(current))
+			if ((ret=kdbSetKey(current))) /* check error */
+				return ret;
+		
+		current=ksNext(ks);
 	}
 
 	return 0;
@@ -1423,7 +1450,7 @@ int kdbSetKey(Key *key) {
 		}
 	}
 
-	/* Enough of checking. Now real write stuff, with a bit other checks :-)  */
+	/* Enough of checking. Now real write stuff, with a bit other checks :-) */
 
 	if (keyIsLink(key)) {
 		char *targetName=0;
@@ -1494,6 +1521,33 @@ int kdbSetKey(Key *key) {
 
 
 
+/**
+ * Rename a key.
+ *
+ * @param key the key to be renamed
+ * @param newName the new key name
+ * @return whathever is returned by rename(), and @p errno is propagated
+ * @ingroup kdb
+ */
+int kdbRename(Key *key, const char *newName) {
+	char oldFileName[MAX_PATH_LENGTH];
+	char newFileName[MAX_PATH_LENGTH];
+	Key newKey;
+	int rc;
+	
+	keyInit(&newKey);
+	rc=keySetName(&newKey,newName);
+	if (rc) return rc;
+	rc=kdbGetFilename(key,oldFileName,sizeof(oldFileName));
+	if (!rc) return -1;
+	rc=kdbGetFilename(&newKey,newFileName,sizeof(newFileName));
+	if (!rc) return -1;
+	
+	return rename(oldFileName,newFileName);
+}
+
+
+
 
 
 /**
@@ -1548,7 +1602,6 @@ int kdbLink(const char *oldPath, const char *newKeyName) {
 
 	return rc;
 }
-
 
 
 

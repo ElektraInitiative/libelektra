@@ -1,17 +1,17 @@
-Name: elektra
-Version: _VERSION_
-Release: 1
-Source:    http://registry.sf.net/%{name}-%{version}.tar.gz
-Group:     System Environment/Libraries
-Copyright: BSD
-Vendor: Avi Alkalay <avi@unix.sh>
-Packager: Avi Alkalay <avi@unix.sh>
-URL: http://registry.sf.net
-Obsoletes: registry
-Provides: registry
-BuildRoot:   %{_tmppath}/%{name}-%{version}-build
+Name:          elektra
+Version:       _VERSION_
+%define myRelease 1
+%define vepoch 1
+Release:       0.fdr.%{vepoch}.%{myRelease}
+Source:        http://aleron.dl.sourceforge.net/sourceforge/elektra/%{name}-%{version}.tar.gz
+Group:         System Environment/Libraries
+License:       BSD
+URL:           http://elektra.sf.net
+Obsoletes:     registry
+Provides:      registry
+BuildRoot:     %{_tmppath}/%{name}-%{version}-build
 BuildRequires: /usr/bin/xsltproc
-Summary: A key/value pair database to store software configurations
+Summary:       A key/value pair database to store software configurations
 
 %description
 The Elektra Project provides a framework to store generic configuration data
@@ -24,11 +24,11 @@ leveraging easy application integration.
 
 
 %package devel
-Summary: Include files and API documentation for Elektra Project
-Group: Development/System
-Requires: elektra = %{version}-%{release}
-Obsoletes: registry-devel
-Provides: registry-devel
+Summary:      Include files and API documentation for Elektra Project
+Group:        Development/System
+Requires:     elektra = %{version}-%{release}
+Obsoletes:    registry-devel
+Provides:     registry-devel
 
 %description devel
 The Elektra Project provides a framework to store generic configuration data
@@ -51,10 +51,10 @@ if [ "$numprocs" = "0" ]; then
 	numprocs=1
 fi
 
-gmake all
+gmake %{?_smp_mflags} all
 
 %install
-gmake DESTDIR=$RPM_BUILD_ROOT install
+gmake  %{?_smp_mflags} DESTDIR=$RPM_BUILD_ROOT install
 
 %clean
 rm -rf $RPM_BUILD_ROOT/*
@@ -63,7 +63,7 @@ rm -rf $RPM_BUILD_DIR/%{name}
 
 
 
-%post
+%post -p /sbin/ldconfig
 # Backwards compatibility, from the Linux Registry days
 if [ -d /etc/registry -a ! -d /etc/kdb ]; then
 	mv /etc/registry /etc/kdb
@@ -72,6 +72,10 @@ fi
 
 # Create basic key structure for apps
 kdb set -t dir system/sw
+
+
+%postun -p /sbin/ldconfig
+
 
 
 %files
@@ -84,6 +88,8 @@ kdb set -t dir system/sw
 %doc /usr/share/man/man7/*
 %doc /usr/share/man/man5/*
 /usr/share/sgml/*
+
+
 
 %files devel
 %defattr(-,root,root,0755)

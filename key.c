@@ -2292,8 +2292,8 @@ size_t ksGetSize(KeySet *ks) {
  *
  */
 Key *ksNext(KeySet *ks) {
-	if (!ks->cursor) ks->cursor=ks->start;
-	else ks->cursor=ks->cursor->next;
+	if (ks->cursor) ks->cursor=ks->cursor->next;
+	else ks->cursor=ks->start;
 
 	return ks->cursor;
 }

@@ -32,7 +32,8 @@ cleanhere:
 clean: cleanhere
 	for x in ${DIRS}; do (cd "$$x"; make $@); done
 
-
+distclean: cleanhere
+	for x in ${DIRS}; do (cd "$$x"; make $@); done
 
 libregistry.so: registrystub.o libkdb.so
 	${CC} -shared -fpic -o $@ libkdb.so registrystub.o
@@ -81,7 +82,7 @@ vtag:
 	svn cp ${SVNREP}/trunk ${SVNREP}/tags/$$PACK
 
 
-dist: clean elektra.spec
+dist: distclean elektra.spec
 	# svn export wont work here...
 	make -C doc docbookman   # leave mans already generated
 	DIR=`basename \`pwd\``;\
@@ -97,7 +98,7 @@ dist: clean elektra.spec
 
 rpm: dist
 	VER=`cat VERSION`;\
-	rpmbuild -ta ../${NAME}-$$VER.tar.gz
+	rpmbuild --sign -ta ../${NAME}-$$VER.tar.gz
 
 deb:
 	dpkg-buildpackage -rfakeroot

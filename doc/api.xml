@@ -17,7 +17,7 @@ $LastChangedBy$
 			<listitem><simpara>A group of <type>Key</type>s. Real applications use to get and set several keys, and this class is used to store corelated keys that were retrieved together in one shot. Example of its methods are <function>ksInsert</function>, <function>ksAppend</function>, <function>ksInsertKeys</function>, etc.</simpara></listitem>
 		</varlistentry>
 	</variablelist>
-	<para>The API is documented in manual pages <citerefentry><refentrytitle>key</refentrytitle><manvolnum>3</manvolnum></citerefentry> and <citerefentry><refentrytitle>kdb</refentrytitle><manvolnum>3</manvolnum></citerefentry>.</para>
+	<para>The API is documented in manual pages <citerefentry><refentrytitle>key</refentrytitle><manvolnum>3</manvolnum></citerefentry> and <citerefentry><refentrytitle>kdb</refentrytitle><manvolnum>3</manvolnum></citerefentry> or you can <ulink url="elektra-api/html/index.html">browse</ulink> or <ulink url="elektra-api.tar.gz">download</ulink> the full API documentation.</para>
 
 	&apiexample;
 	

@@ -93,63 +93,63 @@ $LastChangedBy:$
 				<listitem><simpara><filename>system/init/x/process</filename>: /etc/X11/prefdm -nodaemon</simpara></listitem>
 			</itemizedlist>
 			<para>The users database files and <filename>/etc/inittab</filename> were Elektrified to key-value pairs using the <command>users-convert</command> and <command>inittab-convert</command> scripts included with the distribution.</para>
-			<para>An example of an elektrified <filename>/etc/X11/XF86Config</filename>:</para>
+			<para>An example of an elektrified <filename>/etc/X11/xorg.conf</filename> or <filename>/etc/X11/XF86Config</filename>:</para>
 			<itemizedlist>
-				<listitem><simpara><filename>system/sw/XFree/current/Module/Load</filename>: dbe,extmod,fbdevhw,glx,record,freetype,type1,dri</simpara></listitem>
-
-				<listitem><simpara><filename>system/sw/XFree/current/Files/FontPath</filename>: unix/:7100</simpara></listitem>
-				<listitem><simpara><filename>system/sw/XFree/current/Files/RgbPath</filename>: /usr/X11R6/lib/X11/rgb</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Layouts/Default Layout/Inputs/Keyboard0/CoreKeyboard</filename>:</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Layouts/Default Layout/Inputs/Mouse0/CorePointer</filename>:</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Layouts/Default Layout/Screens/Screen0/Absolute.x</filename>: 0</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Layouts/Default Layout/Screens/Screen0/Absolute.y</filename>: 0</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Layouts/Default Layout/Screens/Screen0/ScreenNumber</filename>: 0</simpara></listitem>
 				
-				<listitem><simpara><filename>system/sw/XFree/current/ServerLayout/Default/Screen</filename>: Screen0</simpara></listitem>
-				<listitem><simpara><filename>system/sw/XFree/current/ServerLayout/Default/InputDevice/CorePointer</filename>: Mouse0</simpara></listitem>
-				<listitem><simpara><filename>system/sw/XFree/current/ServerLayout/Default/InputDevice/CoreKeyboard</filename>: Keyboard0</simpara></listitem>
-				<listitem><simpara><filename>system/sw/XFree/current/ServerLayout/Default/InputDevice/AlwaysCore</filename>: DevInputMice</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Files/FontPath</filename>: unix/:7100</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Files/RgbPath</filename>: /usr/X11R6/lib/X11/rgb</simpara></listitem>
 				
-				<listitem><simpara><filename>system/sw/XFree/current/Screen/Screen0/Device</filename>: Videocard0</simpara></listitem>
-				<listitem><simpara><filename>system/sw/XFree/current/Screen/Screen0/Monitor</filename>: Monitor0</simpara></listitem>
-				<listitem><simpara><filename>system/sw/XFree/current/Screen/Screen0/DefaultDepth</filename>: 16</simpara></listitem>
-				<listitem><simpara><filename>system/sw/XFree/current/Screen/Screen0/Display/Depth</filename>: 16</simpara></listitem>
-				<listitem><simpara><filename>system/sw/XFree/current/Screen/Screen0/Display/Modes</filename>: 1024x768,800x600,640x480</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Devices/Videocard0/BoardName</filename>: Intel 740 (generic)</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Devices/Videocard0/Driver</filename>: i740</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Devices/Videocard0/VendorName</filename>: Videocard vendor</simpara></listitem>
 				
-				<listitem><simpara><filename>system/sw/XFree/current/Device/Videocard0/Driver</filename>: radeon</simpara></listitem>
-				<listitem><simpara><filename>system/sw/XFree/current/Device/Videocard0/BoardName</filename>: ATI Radeon Mobility 7500</simpara></listitem>
-				<listitem><simpara><filename>system/sw/XFree/current/Device/Videocard0/VendorName</filename>: ATI/IBM</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/InputDevices/Keyboard0/Driver</filename>: keyboard</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/InputDevices/Keyboard0/Options/XkbLayout</filename>: us_intl</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/InputDevices/Keyboard0/Options/XkbModel</filename>: pc105</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/InputDevices/Mouse0/Driver</filename>: mouse</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/InputDevices/Mouse0/Options/Device</filename>: /dev/input/mice</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/InputDevices/Mouse0/Options/Emulate3Buttons</filename>: yes</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/InputDevices/Mouse0/Options/Protocol</filename>: IMPS/2</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/InputDevices/Mouse0/Options/ZAxisMapping</filename>: 4 5</simpara></listitem>
 				
-				<listitem><simpara><filename>system/sw/XFree/current/InputDevice/Keyboard0/Driver</filename>: keyboard</simpara></listitem>
-				<listitem><simpara><filename>system/sw/XFree/current/InputDevice/Keyboard0/Option/XkbRules</filename>: xfree86</simpara></listitem>
-				<listitem><simpara><filename>system/sw/XFree/current/InputDevice/Keyboard0/Option/XkbModel</filename>: pc105</simpara></listitem>
-				<listitem><simpara><filename>system/sw/XFree/current/InputDevice/Keyboard0/Option/XkbLayout</filename>: us_intl</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Monitors/Monitor0/DisplaySize.height</filename>: 230</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Monitors/Monitor0/DisplaySize.width</filename>: 300</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Monitors/Monitor0/HorizSync</filename>: 30.0 - 61.0</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Monitors/Monitor0/ModelName</filename>: SyncMaster</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Monitors/Monitor0/Options/dpms</filename>:</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Monitors/Monitor0/VendorName</filename>: Monitor Vendor</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Monitors/Monitor0/VertRefresh</filename>: 56.0 - 75.0</simpara></listitem>
 				
-				<listitem><simpara><filename>system/sw/XFree/current/InputDevice/Mouse0/Driver</filename>: mouse</simpara></listitem>
-				<listitem><simpara><filename>system/sw/XFree/current/InputDevice/Mouse0/Option/Protocol</filename>: IMPS/2</simpara></listitem>
-				<listitem><simpara><filename>system/sw/XFree/current/InputDevice/Mouse0/Option/Device</filename>: /dev/input/mice</simpara></listitem>
-				<listitem><simpara><filename>system/sw/XFree/current/InputDevice/Mouse0/Option/ZAxisMapping</filename>: 4 5</simpara></listitem>
-				<listitem><simpara><filename>system/sw/XFree/current/InputDevice/Mouse0/Option/Emulate3Buttons</filename>: no</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Monitors/.Monitor1/HorizSync</filename>: 30.0 - 61.0</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Monitors/.Monitor1/ModelName</filename>: Impression</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Monitors/.Monitor1/Options/dpms</filename>:</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Monitors/.Monitor1/VendorName</filename>: Monitor Vendor</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Monitors/.Monitor1/VertRefresh</filename>: 56.0 - 75.0</simpara></listitem>
 				
-				<listitem><simpara><filename>system/sw/XFree/current/InputDevice/DevInputMice/Driver</filename>: mouse</simpara></listitem>
-				<listitem><simpara><filename>system/sw/XFree/current/InputDevice/DevInputMice/Option/Protocol</filename>: PS/2</simpara></listitem>
-				<listitem><simpara><filename>system/sw/XFree/current/InputDevice/DevInputMice/Option/Device</filename>: /dev/psaux</simpara></listitem>
-				<listitem><simpara><filename>system/sw/XFree/current/InputDevice/DevInputMice/Option/ZAxisMapping</filename>: 4 5</simpara></listitem>
-				<listitem><simpara><filename>system/sw/XFree/current/InputDevice/DevInputMice/Option/Emulate3Buttons</filename>: no</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Screens/Screen0/DefaultDepth</filename>: 16</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Screens/Screen0/Device</filename>: Videocard0</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Screens/Screen0/Displays/00/Depth</filename>: 16</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Screens/Screen0/Displays/00/Modes</filename>: 1024x768,800x600,640x480</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Screens/Screen0/Displays/00/Viewport.x</filename>:  0</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Screens/Screen0/Displays/00/Viewport.y</filename>:  0</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Screens/Screen0/Monitor</filename>:  Monitor0</simpara></listitem>
 				
-				<listitem><simpara><filename>system/sw/XFree/current/Monitor/Monitor0/VendorName</filename>: IBM T40 monitor</simpara></listitem>
-				<listitem><simpara><filename>system/sw/XFree/current/Monitor/Monitor0/ModelName</filename>: LCD Panel 1024x768</simpara></listitem>
-				<listitem><simpara><filename>system/sw/XFree/current/Monitor/Monitor0/HorizSync/min</filename>: 31.5</simpara></listitem>
-				<listitem><simpara><filename>system/sw/XFree/current/Monitor/Monitor0/HorizSync/max</filename>: 48.5</simpara></listitem>
-				<listitem><simpara><filename>system/sw/XFree/current/Monitor/Monitor0/VertRefresh/min</filename>: 40</simpara></listitem>
-				<listitem><simpara><filename>system/sw/XFree/current/Monitor/Monitor0/VertRefresh/max</filename>: 70</simpara></listitem>
-				<listitem><simpara><filename>system/sw/XFree/current/Monitor/Monitor0/Option/dpms</filename>: 1</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Modules/dbe</filename>: </simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Modules/dri</filename>: </simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Modules/extmod</filename>: </simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Modules/fbdevhw</filename>: </simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Modules/freetype</filename>: </simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Modules/glx</filename>: </simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Modules/record</filename>: </simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Modules/type1</filename>:</simpara></listitem>
 				
-				<listitem><simpara><filename>system/sw/XFree/current/Monitor/.Monitor1/VendorName</filename>: Samsung</simpara></listitem>
-				<listitem><simpara><filename>system/sw/XFree/current/Monitor/.Monitor1/ModelName</filename>: SyncMaster 152T</simpara></listitem>
-				<listitem><simpara><filename>system/sw/XFree/current/Monitor/.Monitor1/HorizSync/min</filename>: 31.5</simpara></listitem>
-				<listitem><simpara><filename>system/sw/XFree/current/Monitor/.Monitor1/HorizSync/max</filename>: 48.5</simpara></listitem>
-				<listitem><simpara><filename>system/sw/XFree/current/Monitor/.Monitor1/VertRefresh/min</filename>: 40</simpara></listitem>
-				<listitem><simpara><filename>system/sw/XFree/current/Monitor/.Monitor1/VertRefresh/max</filename>: 70</simpara></listitem>
-				<listitem><simpara><filename>system/sw/XFree/current/Monitor/.Monitor1/Option/dpms</filename>: 1</simpara></listitem>
-				
-				<listitem><simpara><filename>system/sw/XFree/current/DRI/Group</filename>: 0</simpara></listitem>
-				<listitem><simpara><filename>system/sw/XFree/current/DRI/Mode</filename>: 0666</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/DRI/Group</filename>: 0</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/DRI/Mode</filename>: 0666</simpara></listitem>
 			</itemizedlist>
 			<para>Pay attention that the keys bellow <filename>system/sw/XFree/current/Monitor/.Monitor1</filename> are inactive because we have <filename>.Monitor1</filename> as their parent. So unless special options are used when calling the API, these keys will not be retrieved from the database.</para>
 			<para>Throughout this text you will see other examples of key names.</para>

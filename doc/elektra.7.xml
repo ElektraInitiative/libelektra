@@ -29,7 +29,7 @@ $LastChangedBy$
 	&example;
 	
 	<refsection><title>See Also</title>
-		<para><citerefentry><refentrytitle>rg</refentrytitle><manvolnum>1</manvolnum></citerefentry>, <citerefentry><refentrytitle>elektra</refentrytitle><manvolnum>5</manvolnum></citerefentry></para>
+		<para><citerefentry><refentrytitle>kdb</refentrytitle><manvolnum>1</manvolnum></citerefentry>, <citerefentry><refentrytitle>elektra</refentrytitle><manvolnum>5</manvolnum></citerefentry></para>
 	</refsection>
 	
 	

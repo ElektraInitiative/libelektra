@@ -1,5 +1,5 @@
 TO PROJECT
-- Patches to init, gconf, KConfig
+- Patches to gconf, KConfig, X.org, modprobe
 
 TO PUBLISH
 - freedesktop.org
@@ -8,11 +8,10 @@ TO PUBLISH
 - brave GNU World: column@brave-gnu-world.org
 
 TO CODE
-- Support for key change notifications
 - registryLink must create directories recursively
-- rg ls must show links
-- Support for moving/renaming keys
-- rg to support recursive removing
+- kdb ls must show links
+- Support for moving/renaming keys. Something like kdbMove().
+- kdb to support recursive removing
 - Syslog logging
 - Handle special keys: named pipe
 - Better KeySet manipulation and gathering

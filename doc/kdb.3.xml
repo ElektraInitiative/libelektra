@@ -155,7 +155,7 @@ $LastChangedBy$
 		<para><function>regitryGetChildKeys</function> is the best way to get all keys that matters to your application. It will look for keys hierarchically bellow <parameter>parentKeyName</parameter> and return a KeySet in <parameter>returned</parameter>. You can control the behavior ORing the following options:</para>
 		<variablelist>
 			<varlistentry><term>RG_O_RECURSIVE</term>
-				<listitem><simpara>Retrieve also the keys under the child keys, recursively. The <citerefentry><refentrytitle>rg</refentrytitle><manvolnum>1</manvolnum></citerefentry> ls command, with switch -R uses this option.</simpara></listitem>
+				<listitem><simpara>Retrieve also the keys under the child keys, recursively. The <citerefentry><refentrytitle>kdb</refentrytitle><manvolnum>1</manvolnum></citerefentry> ls command, with switch -R uses this option.</simpara></listitem>
 			</varlistentry>
 			<varlistentry><term>RG_O_DIR</term>
 				<listitem><simpara>By default, folder keys will not be returned because they don't have values and exist only to define hierarchy. Use this option if you need them to be included in the <parameter>returned</parameter> <type>KeySet</type>.</simpara></listitem>
@@ -164,7 +164,7 @@ $LastChangedBy$
 				<listitem><simpara>Do not include in <parameter>returned</parameter> the regular value keys. The resulting <type>KeySet</type> will be only the skeleton of the tree.</simpara></listitem>
 			</varlistentry>
 			<varlistentry><term>RG_O_STATONLY</term>
-				<listitem><simpara>Only <citerefentry><refentrytitle>stat</refentrytitle><manvolnum>2</manvolnum></citerefentry> the keys; do not retrieve the value, comment and key data type. The resulting keys will be empty and usefull only for informational purposes. The <citerefentry><refentrytitle>rg</refentrytitle><manvolnum>1</manvolnum></citerefentry> <option>ls</option> command, without the -v switch uses this option.</simpara></listitem>
+				<listitem><simpara>Only <citerefentry><refentrytitle>stat</refentrytitle><manvolnum>2</manvolnum></citerefentry> the keys; do not retrieve the value, comment and key data type. The resulting keys will be empty and usefull only for informational purposes. The <citerefentry><refentrytitle>kdb</refentrytitle><manvolnum>1</manvolnum></citerefentry> <option>ls</option> command, without the -v switch uses this option.</simpara></listitem>
 			</varlistentry>
 			<varlistentry><term>RG_O_INACTIVE</term>
 				<listitem><simpara>Will make it not ignore inactive keys. So <parameter>returned</parameter> will be filled also with inactive keys. See <citerefentry><refentrytitle>kdb</refentrytitle><manvolnum>7</manvolnum></citerefentry> to understand how inactive keys work.</simpara></listitem>

@@ -6,6 +6,7 @@ all:
 clean:
 	-rm *~
 
+distclean: clean
 
 install:
 	mkdir -p ${DESTDIR}/usr/share/sgml/elektra-${DTDVERSION}/

@@ -749,7 +749,7 @@ int commandGet() {
 	}
 	if (argShell) {
 		size+=keyGetBaseNameSize(&key);
-		size+=2; /* for 2 '"' to surround the value */
+		size+=2; /* for 2 '"' to wrap the value */
 	} else if (argLong) {
 		if (argFullName) size+=keyGetFullNameSize(&key);
 		else size+=keyGetNameSize(&key);
@@ -775,6 +775,8 @@ int commandGet() {
 		else p+=keyGetName(&key,p,size-(p-buffer));
 		*--p='='; p++;
 	}
+	
+	keyType=keyGetType(&key);
 
 	if (keyType<KEY_TYPE_STRING) p+=keyGetBinary(&key,p,size-(p-buffer));
 	else p+=keyGetString(&key,p,size-(p-buffer));
@@ -1057,6 +1059,7 @@ int commandEdit() {
 	KeySet ksEdited;
 	KeySet toRemove;
 	Key *current;
+	int ret;
 	char filename[]="/var/tmp/rgeditXXXXXX";
 	char command[300];
 	FILE *xmlfile=0;
@@ -1111,7 +1114,18 @@ int commandEdit() {
 
 	ksCompare(&ks,&ksEdited,&toRemove);
 
-	kdbSetKeys(&ks);
+	ksRewind(&ks);
+	ret=kdbSetKeys(&ks);
+	if (ret != 0) {
+		Key *problem;
+		char error[500];
+		char keyname[300]="";
+		
+		problem=ksCurrent(&ks);
+		if (problem) keyGetFullName(problem,keyname,sizeof(keyname));
+		sprintf(error,"kdb edit: when commiting %s",keyname);
+		perror(error);
+	}
 
 	ksRewind(&toRemove);
 	while ((current=ksNext(&toRemove))) {
@@ -1139,10 +1153,11 @@ int commandEdit() {
  * @endcode
  * 
  * @see kdbSetKeys()
- * @see commandSave()
+ * @see commandExport()
  */
 int commandImport() {
 	KeySet ks;
+	int ret;
 
 	ksInit(&ks);
 	/* The command line parsing function will put the XML filename
@@ -1150,7 +1165,21 @@ int commandImport() {
 	if (argKeyName) ksFromXMLfile(&ks,argKeyName);
 	else ksFromXML(&ks,fileno(stdin) /* more elegant then just '0' */);
 
-	return kdbSetKeys(&ks);
+	ksRewind(&ks);
+	ret=kdbSetKeys(&ks);
+	
+	if (ret != 0) {
+		Key *problem;
+		char error[500];
+		char keyname[300]="";
+		
+		problem=ksCurrent(&ks);
+		if (problem) keyGetFullName(problem,keyname,sizeof(keyname));
+		sprintf(error,"kdb import: when commiting %s",keyname);
+		perror(error);
+	}
+	
+	return ret;
 }
 
 
