@@ -39,7 +39,7 @@ $LastChangedBy$
 			</varlistentry>
 
 			<varlistentry><term><command>export</command></term><term><command>save</command></term>
-				<listitem><para>Export a subtree of keys to XML. If no subtree is defined right after the <command>export</command> command, <filename>system</filename> and current <filename>user</filename> trees will be exported. Output is written to standard output. The output encoding will allways be UTF-8, regardeless of your system encoding. UTF-8 is the most universal charset you can get when exchanging data between multiple systems.</para></listitem>
+				<listitem><para>Export a subtree of keys to XML. If no subtree is defined right after the <command>export</command> command, <filename>system</filename> and current <filename>user</filename> trees will be exported. Output is written to standard output. The output encoding will allways be UTF-8, regardeless of your system encoding. UTF-8 is the most universal charset you can get when exchanging data between multiple systems. Accepts <option>-f</option>.</para></listitem>
 			</varlistentry>
 
 			<varlistentry><term><command>import</command></term><term><command>load</command></term>
@@ -71,7 +71,7 @@ $LastChangedBy$
 			</varlistentry>
 
 			<varlistentry><term><option>-f</option></term>
-				<listitem><para>Causes to work with full key names. A full key name makes sense only on <filename>user/*</filename> keys, and differentiate from the regular key names in specifying the owner user. If the current user is <filename>someuser</filename>, the <filename>user/some/key</filename> full name is <filename>user:someuser/some/key</filename>. Makes effect in <command>ls</command> and <command>get</command> subcommands.</para></listitem>
+				<listitem><para>Causes to work with full key names. A full key name makes sense only on <filename>user/*</filename> keys, and differentiate from the regular key names in specifying the owner user. If the current user is <filename>someuser</filename>, the <filename>user/some/key</filename> full name is <filename>user:someuser/some/key</filename>. Makes effect in <command>ls</command>, <command>export</command> and <command>get</command> subcommands.</para></listitem>
 			</varlistentry>
 
 			<varlistentry><term><option>-d</option></term>

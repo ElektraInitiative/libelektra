@@ -1158,12 +1158,10 @@ int ksFromXML(KeySet *ks,int fd) {
  * bash# kdb edit -R system/sw/MyApp       # defaults to vi editor
  * @endcode
  *
- * @see keyCompare()
- * @see ksCompare()
- * @see kdbGetChildKeys()
+ * @see keyCompare(), ksCompare()
+ * @see kdbGetChildKeys(), kdbSetKeys()
  * @see ksToStream()
  * @see kdbRemove()
- * @see kdbSetKeys()
  * @param argKeyName the parent key name (and children) that will be edited
  * @param argRecursive whether to act recursivelly or not
  * @param argAll whether to edit inactive keys or not
@@ -1208,7 +1206,8 @@ int commandEdit() {
 
 	xmlfile=fdopen(mkstemp(filename),"rw+");
 
-	ksToStream(ks,xmlfile,KDB_O_XMLHEADERS);
+	ksToStream(ks,xmlfile,KDB_O_XMLHEADERS | 
+		(argFullName?(KDB_O_FULLNAME | KDB_O_FULLUGID):0));
 	fclose(xmlfile);
 
 	/* execute the editor and wait for it to finish */

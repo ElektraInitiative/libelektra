@@ -5,6 +5,7 @@
 NAME=elektra
 DTDVERSION=0.1.0
 
+LIBVERSION=1  # for libkdb.so.$(LIBVERSION)
 
 # Default dirs we use for installation, that can be substituted by the
 # command line. See the README file or the RPM spec file.
@@ -35,7 +36,7 @@ all: libkdb.a libkdb.so libregistry.so kdb kdbfuture.h
 
 
 clean:
-	-rm core* *~ *.o *.so *.a kdb kdbfuture.h localeinfo svn-commit*
+	-rm core* *~ *.o *.so* *.a kdb kdbfuture.h localeinfo svn-commit*
 	-find . -name "*~" | xargs rm
 
 
@@ -43,11 +44,12 @@ distclean: clean
 
 
 libregistry.so: registrystub.o libkdb.so
-	${CC} -shared -fpic -o $@ libkdb.so registrystub.o
+	${CC} -shared -fpic -o $@ libkdb.so.$(LIBVERSION) registrystub.o
 
 
 libkdb.so: localkdb.o key.o
-	${CC} -shared -fpic -o $@ localkdb.o key.o
+	${CC} -shared -fpic -Wl,-soname,$@.$(LIBVERSION) -o $@.$(LIBVERSION) localkdb.o key.o
+	ln -sf $@.$(LIBVERSION) $@
 
 
 
@@ -76,8 +78,7 @@ kdb.o: kdb.c kdb.h kdbprivate.h
 
 
 kdb: kdb.o libkdb.so
-	${CC} -L. ${XMLLIBS} -lkdb -o $@ $<
-	# ld -shared -lc -lkdb -static -lxml2 -lz -o $@ $<
+	${CC} -Wl,-rpath,. -L. ${XMLLIBS} -lkdb -o $@ $<
 
 
 kdbfuture.h: kdb.h
@@ -89,7 +90,7 @@ install: all
 	# strip libkdb.so
 	# strip libregistry.so  # remove me in the future
 	# strip kdb
-	cp libkdb.so ${DESTDIR}${LIBDIR}
+	cp -d libkdb.so* ${DESTDIR}${LIBDIR}
 	cp libkdb.a ${DESTDIR}${ULIBDIR}
 	cp libregistry.so ${DESTDIR}${LIBDIR} # remove me in the future
 	cp kdb ${DESTDIR}${BINDIR}

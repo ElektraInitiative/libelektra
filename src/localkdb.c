@@ -1084,7 +1084,9 @@ while (key) {
  * @param parentName name of the parent key
  * @param returned the (pre-initialized) KeySet returned with all keys found
  * @param options ORed options to control approaches
- * @see KDBOptions
+ * @see #KDBOptions
+ * @see ksLookupByName(), ksLookupRE(), ksLookupByValue()
+ * @see ksSort()
  * @see commandList() code in kdb command for usage example
  * @see commandEdit() code in kdb command for usage example
  * @see commandExport() code in kdb command for usage example
@@ -1204,7 +1206,7 @@ int kdbGetChildKeys(const char *parentName, KeySet *returned, unsigned long opti
  * are returned.
  * @param returned the initialized KeySet to be filled
  * @return 0
- * @see KeyNamespace
+ * @see #KeyNamespace
  * @see commandList() code in kdb command for usage example
  * @ingroup kdb
  *

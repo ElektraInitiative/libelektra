@@ -136,18 +136,28 @@ $LastChangedBy$
 			<arg choice="plain">key/dest</arg>
 		</cmdsynopsis>
 		<cmdsynopsis>
-			<command>kdb export system/some/tree.root &#062; file.xml</command>
+			<command>kdb export</command>
+			<arg choice="opt">
+				<option>-f</option>
+			</arg>
+			<arg choice="plain">system/some/tree.root</arg>
+			<arg choice="plain">&#062;</arg>
+			<arg choic="plain">file.xml</arg>
 		</cmdsynopsis>
 		<cmdsynopsis>
-			<command>kdb import &#060; file.xml</command>
+			<command>kdb import</command>
+			<arg choice="plain">&#060;</arg>
+			<arg choice="plain">file.xml</arg>
 		</cmdsynopsis>
 		
 		<cmdsynopsis>
-			<command>kdb import file.xml</command>
+			<command>kdb import</command>
+			<arg choice="plain">file.xml</arg>
 		</cmdsynopsis>
 		
 		<cmdsynopsis>
-			<command>kdb monitor some/key/name</command>
+			<command>kdb monitor</command>
+			<arg choice="plain">some/key/name</arg>
 		</cmdsynopsis>
 	</refsynopsisdiv>
 

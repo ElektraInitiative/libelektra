@@ -1,4 +1,4 @@
-#include <kdbfuture.h>
+#include <kdb.h>
 #include <stdio.h>
 
 int main(int argc,char **argv) {
@@ -14,8 +14,10 @@ int main(int argc,char **argv) {
 	kdbClose();
 	
 	ksRewind(ks);
-	key=ksLookupByName(ks,"system/sw/xorg/current/Screens/Screen0/Displays/00/Depth");
+	key=ksLookupByName(ks,"system/sw/xorg/current/screens/screen0/displays/00/depth",
+		KDB_O_NOCASE);
 	
+	printf("*************** Name matching\n\n");
 	if (key) {
 		keyToStream(key,stdout,0);
 		
@@ -24,14 +26,16 @@ int main(int argc,char **argv) {
 		keyToStream(key,stdout,0); /* should be the same */
 	}
 	
+	printf("*************** Value matching\n\n");
+	
 	ksRewind(ks);
-	while (key=ksLookupByValue(ks,"24")) {
+	while (key=ksLookupByValue(ks,"24",0)) {
 		/* show all keys which value="24" */
 		keyToStream(key,stdout,0);
 	}
 	
 	ksRewind(ks);
-	while (key=ksLookupByValue(ks,"0")) {
+	while (key=ksLookupByValue(ks,"0",0)) {
 		/* show all keys which value="0" */
 		keyToStream(key,stdout,0);
 	}
@@ -44,7 +48,7 @@ int main(int argc,char **argv) {
 	
 	ksRewind(ks);
 	do {
-		match=ksLookupRE(ks,&regex,where,0);
+		match=ksLookupRE(ks,where,&regex,KDB_O_NOSPANPARENT);
 		if (match) {
 			key=ksCurrent(ks);
 			keyToStream(key,stdout,0);

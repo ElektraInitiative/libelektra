@@ -96,7 +96,7 @@ kdb set -t dir system/sw
 
 %files
 %defattr(-,root,root,0755)
-/lib/*.so
+/lib/*.so*
 /bin/*
 %{_sysconfdir}/profile.d/*
 %doc %{_docdir}/%{name}

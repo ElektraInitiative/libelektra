@@ -102,8 +102,14 @@ size_t strblen(const char *s) {
  * A practical way to fully create a Key object in one step.
  * This function tries to mimic the C++ way for constructors.
  *
+ * Due to ABI compatibility, the @p Key structure is only declared in kdb.h,
+ * and not defined. So you can only declare @p pointers to @p Keys in your
+ * program, and allocate and free memory for them with keyNew()
+ * and keyDel() respectively.
+ * See http://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html#AEN135
+ * 
  * You can call it in many different ways depending on the attribute tags you
- * pass as parameters. Tags are represented as the @p "enum KeySwitch" values,
+ * pass as parameters. Tags are represented as the #KeySwitch values,
  * and they tell keyNew() which Key attribute comes next.
  * 
  * The simplest way to call it is with no tags, only a key name. See example bellow.
@@ -142,6 +148,8 @@ size_t strblen(const char *s) {
  *   Must be the last parameter passed to keyNew(). It is allways
  *   required, unless the @p keyName is NULL too.
  *   
+ * There is the @p keyFree() macro if you prefer this method name.
+ * 
  * @par Example:
  * @code
 KeySet *ks=ksNew();
@@ -302,11 +310,6 @@ int keyDel(Key *key) {
 	return rc;
  }
 
- 
-int keyFree(Key *key) {
-	return keyDel(key);
-}
- 
  
 
 
@@ -599,7 +602,7 @@ size_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize) {
  * @see keyGetNamespace()
  * @see keyIsUser()
  * @see keyIsSystem()
- * @see KeyNamespace
+ * @see #KeyNamespace
  *
  */
 int keyNameGetNamespace(const char *keyName) {
@@ -619,7 +622,7 @@ int keyNameGetNamespace(const char *keyName) {
  * @see keyNameGetNameSpace()
  * @see keyIsUser()
  * @see keyIsSystem()
- * @see KeyNamespace
+ * @see #KeyNamespace
  *
  */
 int keyGetNamespace(const Key *key) {
@@ -885,6 +888,75 @@ size_t keyGetFullRootName(const Key *key, char *returned, size_t maxSize) {
 
 	return size;
 }
+
+
+
+
+
+
+/**
+ * Get the number of bytes needed to store this key's parent name.
+ * @see keyGetParent()
+ */
+size_t keyGetParentSize(const Key *key) {
+	char *parentNameEnd;
+
+	if (!key || !keyIsInitialized(key)) {
+		errno=KDB_RET_UNINITIALIZED;
+		return 0;
+	}
+
+	if (!key->key) {
+		errno=KDB_RET_NOKEY;
+		return 0;
+	}
+
+	/*
+		user   (size=0)
+		user/parent/base
+		user/parent/base/ (size=sizeof("user/parent"))
+	*/
+
+	parentNameEnd=rindex(key->key,RG_KEY_DELIM);
+
+	if (!parentNameEnd || parentNameEnd==key->key) {
+		/* handle NULL or /something */
+		return 0;
+	}
+
+	/* handle system/parent/base/ */
+	if ((parentNameEnd-key->key) == (strlen(key->key)-1)) {
+		parentNameEnd--;
+		while (*parentNameEnd!=RG_KEY_DELIM) parentNameEnd--;
+	}
+
+	return parentNameEnd - key->key;
+}
+
+
+
+/**
+ * Copy this key's parent name into a pre-allocated buffer.
+ *
+ * @see keyGetParentSize()
+ * @param returnedParent pre-allocated buffer to copy parent name to
+ * @param maxSize number of bytes pre-allocated
+ */
+size_t keyGetParent(const Key *key, char *returnedParent, size_t maxSize) {
+	size_t parentSize;
+
+	parentSize=keyGetParentSize(key);
+
+	if (parentSize > maxSize) {
+		errno=KDB_RET_TRUNC;
+		return 0;
+	} else strncpy(returnedParent,key->key,parentSize);
+
+	return parentSize;
+}
+
+
+
 
 
 
@@ -1254,7 +1326,7 @@ int keyNeedsSync(const Key *key) {
  * Returns the key data type.
  *
  * @see keySetType()
- * @see KeyType
+ * @see #KeyType
  * @return the key type
  *
  */
@@ -1270,7 +1342,7 @@ u_int8_t keyGetType(const Key *key) {
 
 
 /**
- * Force a key type. See the @e "enum KeyType" documentation to
+ * Force a key type. See the #KeyType documentation to
  * understand the concepts behind Elektra key's value types. 
  *
  * This method is usually not needed, unless you are working with more
@@ -1332,7 +1404,7 @@ keyDel(color2);
  * @endcode
  *
  * @see keyGetType()
- * @see KeyType
+ * @see #KeyType
  * @return the new type
  *
  */
@@ -1957,68 +2029,6 @@ time_t keyGetCTime(const Key *key) {
 
 
 
-/**
- * Get the number of bytes needed to store this key's parent name.
- * @see keyGetParent()
- */
-size_t keyGetParentSize(const Key *key) {
-	char *parentNameEnd;
-
-	if (!key || !keyIsInitialized(key)) {
-		errno=KDB_RET_UNINITIALIZED;
-		return 0;
-	}
-
-	if (!key->key) {
-		errno=KDB_RET_NOKEY;
-		return 0;
-	}
-
-	/*
-		user   (size=0)
-		user/parent/base
-		user/parent/base/ (size=sizeof("user/parent"))
-	*/
-
-	parentNameEnd=rindex(key->key,RG_KEY_DELIM);
-
-	if (!parentNameEnd || parentNameEnd==key->key) {
-		/* handle NULL or /something */
-		return 0;
-	}
-
-	/* handle system/parent/base/ */
-	if ((parentNameEnd-key->key) == (strlen(key->key)-1)) {
-		parentNameEnd--;
-		while (*parentNameEnd!=RG_KEY_DELIM) parentNameEnd--;
-	}
-
-	return parentNameEnd - key->key;
-}
-
-
-
-/**
- * Copy this key's parent name into a pre-allocated buffer.
- *
- * @see keyGetParentSize()
- * @param returnedParent pre-allocated buffer to copy parent name to
- * @param maxSize number of bytes pre-allocated
- */
-size_t keyGetParent(const Key *key, char *returnedParent, size_t maxSize) {
-	size_t parentSize;
-
-	parentSize=keyGetParentSize(key);
-
-	if (parentSize > maxSize) {
-		errno=KDB_RET_TRUNC;
-		return 0;
-	} else strncpy(returnedParent,key->key,parentSize);
-
-	return parentSize;
-}
-
-
 
 /**
  * Compare 2 keys.
@@ -2032,7 +2042,7 @@ size_t keyGetParent(const Key *key, char *returnedParent, size_t maxSize) {
  *
  * @return a bit array poiting the differences
  * @see ksCompare() for examples and more detailed description
- * @see KeySwitch
+ * @see #KeySwitch
  * 
  * @par Example of very powerfull specific Key lookup in a KeySet:
  * @code
@@ -2160,7 +2170,7 @@ u_int32_t keyCompare(const Key *key1, const Key *key2) {
  * @param stream where to write output: a file or stdout
  * @param options ORed of KDB_O_* options
  * @see ksToStream()
- * @see KDBOptions
+ * @see #KDBOptions
  * @return number of bytes written to output
  */
 size_t keyToStream(const Key *key, FILE* stream, unsigned long options) {
@@ -2635,6 +2645,12 @@ int keyClose(Key *key) {
  * Allocate, initialize and return a new KeySet object.
  * Objects created with ksNew() must be destroyed with ksDel().
  * 
+ * Due to ABI compatibility, the @p KeySet structure is only declared in kdb.h,
+ * and not defined. So you can only declare @p pointers to @p KeySets in your
+ * program, and allocate and free memory for them with ksNew() and ksDel()
+ * respectively.
+ * See http://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html#AEN135
+ * 
  * @see ksDel()
  * @return a ready to use KeySet object
  */ 
@@ -2644,12 +2660,15 @@ KeySet *ksNew() {
 	return new;
 } 
 
+
+
 /**
  * A destructor for KeySet objects.
  * 
  * Cleans all internal dynamic attributes, keyDel() all contained Keys,
  * and free()s the release the KeySet object memory (that was previously
- * allocated by ksNew())
+ * allocated by ksNew()). There is the @p ksFree() macro if you prefer this
+ * method name.
  *
  * @see ksNew()
  * @see ksClose()
@@ -2667,47 +2686,40 @@ int ksDel(KeySet *ks) {
 
 
 /**
- * Same as ksDel(), provided as different function name option.
- */
-int ksFree(KeySet *ks) {
-	return ksDel(ks);
-}
-
-
-/**
- * Return the first key in the KeySet, whithout changing the KeySet's
- * internal cursor.
- * 
- * @see ksTail(), ksCurrent(), ksNext()
- * @see ksRewind() which also resets the internal cursor.
- */
-Key *ksHead(KeySet *ks) {
-	return ks->start;
-}
-
-
-
-
-/**
- * Return the last key in the KeySet, whithout changing the KeySet's
- * internal cursor.
- * 
- * @see ksHead(), ksCurrent(), ksNext()
- */
-Key *ksTail(KeySet *ks) {
-	return ks->end;
-}
-
-
-
-
-/**
  * @return the number of keys contained by the @p ks.
  *
  */
 size_t ksGetSize(KeySet *ks) {
 	return ks->size;
 }
+
+
+
+
+
+
+
+
+/******************************************* 
+ *           KeySet walking methods        *
+ *******************************************/
+
+
+/**
+ * Resets a KeySet internal cursor.
+ * Use it to set the cursor to the begining of the KeySet
+ *
+ * @see ksNext()
+ * @see ksCurrent()
+ * @see kdbMonitorKeys() for an example
+ * @return allways 0
+ *
+ */
+int ksRewind(KeySet *ks) {
+	ks->cursor=0;
+	return 0;
+}
+
 
 
 /**
@@ -2734,23 +2746,6 @@ Key *ksNext(KeySet *ks) {
 
 
 /**
- * Resets a KeySet internal cursor.
- * Use it to set the cursor to the begining of the KeySet
- *
- * @see ksNext()
- * @see ksCurrent()
- * @see kdbMonitorKeys() for an example
- * @return allways 0
- *
- */
-int ksRewind(KeySet *ks) {
-	ks->cursor=0;
-	return 0;
-}
-
-
-
-/**
  * Return the current Key
  *
  * @see ksNext()
@@ -2764,7 +2759,362 @@ Key *ksCurrent(const KeySet *ks) {
 
 
 
+/**
+ * Return the first key in the KeySet, whithout changing the KeySet's
+ * internal cursor.
+ * 
+ * @see ksTail(), ksCurrent(), ksNext()
+ * @see ksRewind() which also resets the internal cursor.
+ */
+Key *ksHead(KeySet *ks) {
+	return ks->start;
+}
 
+
+
+/**
+ * Return the last key in the KeySet, whithout changing the KeySet's
+ * internal cursor.
+ * 
+ * @see ksHead(), ksCurrent(), ksNext()
+ */
+Key *ksTail(KeySet *ks) {
+	return ks->end;
+}
+
+
+
+
+
+
+
+
+
+
+
+/******************************************* 
+ *    Looking up Keys inside KeySets       *
+ *******************************************/
+
+
+/**
+ * The @p ksLookup*() set of methods are designed to let you work with
+ * entirely pre-loaded KeySets, so instead of kdbGetKey(), key by key, the
+ * idea is to fully kdbGetChildKeys() for your application root key (which is
+ * more performatic), and process it all at once.
+ *
+ * ksLookupByName() will look for a Key contained in @p ks KeySet that
+ * matches @p name, starting from ks' ksNext() position.
+ * 
+ * If found, @p ks internal cursor will be positioned in the matched key
+ * (also accessible by ksCurrent()), and a pointer to the Key is returned.
+ * If not found, @p ks internal cursor will not move, and a NULL pointer is
+ * returned.
+ * 
+ * @param ks where to look for
+ * @param name key name you are looking for
+ * @param options some @p KDB_O_* option bits. Currently suported:
+ * 	- @p KDB_O_NOCASE @n
+ * 	  Lookup ignoring case.
+ * @see ksLookupRE() for powerfull regular expressions based lookups
+ * @see keyCompare() for very powerfull Key lookups in KeySets
+ * @see ksCurrent(), ksRewind(), ksNext()
+ * @return the Key found, 0 otherwise
+ */
+Key *ksLookupByName(KeySet *ks, const char *name, unsigned long options) {
+	Key *init=0;
+	Key *current=0;
+	size_t nameSize;
+	size_t currentNameSize;
+	
+	nameSize=strblen(name);
+	
+	init=ks->cursor;
+	
+	while ((current=ksNext(ks))) {
+		if (current->key == name) return current; /* for NULLs */
+		
+		currentNameSize=keyGetNameSize(current);
+		if (currentNameSize != nameSize) continue;
+		
+		if ((current->key && name)) {
+			if ((options & KDB_O_NOCASE) &&
+				!strcasecmp(current->key,name)) return current;
+			else if (!strcmp(current->key,name)) return current;
+		}
+	}
+	
+	/* Reached end of KeySet. Put cursor in initial position. */
+	ks->cursor=init;
+	
+	return 0;
+}
+
+
+
+/**
+ * Lookup for a key which any of its @p where components matches the
+ * @p regex regular expression.
+ * 
+ * @param ks the KeySet to lookup into
+ * @param where any of @p KEY_SWITCH_NAME, @p KEY_SWITCH_VALUE,
+ * 	@p KEY_SWITCH_OWNER, @p KEY_SWITCH_COMMENT ORed.
+ * @param regex a regcomp(3) pre-compiled regular expression
+ * @param options some @p KDB_O_* ORed options to change lookup behavior.
+ * 	Currently supported options:
+ * - @p KDB_O_NOSPANPARENT @n
+ *   Lookup only keys under ksCurrent()'s parent. If we are in the begining of
+ *   the KeySet (ksCurrent()==NULL), this option is ignored. @p ks must be
+ *   ksSort()ed (or kdbGetChildKeys() with KDB_O_SORT) for this to work.
+ * 
+ * @return some of @p KEY_SWITCH_NAME, @p KEY_SWITCH_VALUE,
+ * 	@p KEY_SWITCH_OWNER, @p KEY_SWITCH_COMMENT switches ORed to
+ * 	indicate @p where the @p regex matched.
+ * 
+ * @see ksLookupByName(), ksLookupByValue(), keyCompare() for other types of
+ * 	lookups.
+ * @see kdbGetChildKeys()
+ * @see ksSort()
+ * 
+ * @par Example:
+ * @code
+// This code will process all Devices options, device by device.
+// Look how we use nested loops, palying with KDB_O_NOSPANPARENT.
+// We can do more interesting things when playing with 2 or more regular
+// expressions.
+
+regex_t regex;
+
+// you are NOT seeing spaces in this regex
+regcomp(&regex,".* /InputDevices/.* /Options/.*",REG_NOSUB);
+where=KEY_SWITCH_NAME; // look for it only in key names
+
+ksRewind(ks);
+do {
+	// show all keys that match this name, and are siblings of the first match
+	match=ksLookupRE(ks,where,&regex,0);
+	if (match) {
+		// We found a device and its first option,
+		
+		processOption(ksCurrent(ks));
+		
+		// now process other options of this same device
+		do {
+			// fetch only the options with same parent with the
+			// help of KDB_O_NOSPANPARENT
+			match=ksLookupRE(ks,where,&regex,KDB_O_NOSPANPARENT);
+			
+			if (match) processOption(ksCurrent(ks));
+		} while (match);
+	}
+} while (match);
+
+regfree(&regex); // free regex resources
+ * @endcode
+ * 
+ * @par Examples of regular expressions:
+ * @code
+regex_t regex;
+
+// The spaces between '*' and '/' and '*' chars are Doxygen mirages :)
+
+regcomp(&regex,
+	"some value .* more text",  // match this
+	REG_NEWLINE | REG_NOSUB);   // all in a single line
+
+regcomp(&regex,
+	"Device/.* /Options/ *",      // only interested in option keys
+	REG_ICASE | REG_NOSUB);      // ignore case
+
+regcomp(&regex,
+	"^system/folder/.* /basename$", // match real system/ keys that end with 'basename'
+	REG_NOSUB);       // allways use REG_NOSUB to increase performance
+
+regcomp(&regex,
+	"^system/sw/xorg/.* /Screen[0-9]* /Displays/[0-9]* /Depth$", // we want all X.org's depths of all displays of all screens
+	REG_ICASE | REG_NOSUB);   // we don't care about the case
+
+
+regfree(&regex);        // don't forget to free resources
+
+ * @endcode
+ */
+u_int32_t ksLookupRE(KeySet *ks, u_int32_t where,
+		const regex_t *regexp, unsigned long options) {
+	regmatch_t offsets;
+	u_int32_t match=0;
+	Key *init, *walker;
+	char *parentName=0;
+	size_t walkerNameSize=0,parentNameSize=0;
+	
+	init=ks->cursor;
+	if (!init)
+		/* I don't have a parent to match. Ignore this option. */
+		options &= options & ~KDB_O_NOSPANPARENT;
+	
+	if (options & KDB_O_NOSPANPARENT) {
+		/* User wants siblings. Prepare context. */
+		parentNameSize=keyGetParentSize(init);
+		parentName=(char *)malloc(parentNameSize);
+		keyGetParent(init,parentName,parentNameSize);
+	}
+	
+	while ((walker=ksNext(ks))) {
+		walkerNameSize=keyGetNameSize(walker);
+		
+		if (options & KDB_O_NOSPANPARENT) {
+			/* User wants siblings. Check if walker is a sibling of init. */
+			if (walkerNameSize < parentNameSize)
+				/* we're out of out scope, so abort */
+				break;
+			
+			if (memcmp(parentName,walker->key,parentNameSize))
+				/* walker has a different parent, so abort */
+				break;
+		}
+	
+		if ((where & KEY_SWITCH_NAME) && walker->key)
+			if (!regexec(regexp,walker->key,1,&offsets,0))
+				match |= KEY_SWITCH_NAME;
+		
+		if ((where & KEY_SWITCH_VALUE) && walker->data &&
+			!(KEY_TYPE_BINARY <= walker->type && walker->type < KEY_TYPE_STRING))
+			if (!regexec(regexp,(char *)walker->data,1,&offsets,0))
+				match |= KEY_SWITCH_VALUE;
+		
+		if ((where & KEY_SWITCH_OWNER) && keyIsUser(walker))
+			if (!regexec(regexp,walker->userDomain,1,&offsets,0))
+				match |= KEY_SWITCH_OWNER;
+		
+		if ((where & KEY_SWITCH_COMMENT) && walker->comment)
+			if (!regexec(regexp,walker->comment,1,&offsets,0))
+				match |= KEY_SWITCH_OWNER;
+		
+		if (match) return match;
+	}
+	
+	if (parentName) free(parentName);
+	ks->cursor=init;
+	
+	return 0;
+}
+
+
+
+/**
+ * Lookup for a Key contained in @p ks KeySet that matches @p value,
+ * starting from ks' ksNext() position.
+ * 
+ * If found, @p ks internal cursor will be positioned in the matched key
+ * (also accessible by ksCurrent()), and a pointer to the Key is returned.
+ * If not found, @p ks internal cursor won't move, and a NULL pointer is
+ * returned.
+ * 
+ * This method jumps binary keys, unless @p value is NULL.
+ * 
+ * @par Example:
+ * @code
+ksRewind(ks);
+while (key=ksLookupByValue(ks,"my value",0)) {
+	// show all keys which value="my value"
+	keyToStream(key,stdout,0);
+}
+ * @endcode
+ * 
+ * @param ks where to look for
+ * @param value the value which owner key you want to find
+ * @param options some @p KDB_O_* option bits. Currently supported:
+ * 	- @p KDB_O_NOCASE @n
+ * 	  Lookup ignoring case.
+ * @see ksLookupByBinaryValue()
+ * @see keyCompare() for very powerfull Key lookups in KeySets
+ * @see ksCurrent()
+ * @see ksRewind()
+ * @see ksNext()
+ * @return the Key found, 0 otherwise
+ */
+Key *ksLookupByValue(KeySet *ks, const char *value, unsigned long options) {
+	Key *init=0;
+	Key *current=0;
+	size_t size=0;
+	
+	size=strblen(value);
+	init=ks->cursor;
+	
+	while ((current=ksNext(ks))) {
+		if (current->data == value) return current;
+		
+		if (size != current->dataSize) continue;
+		
+		if (KEY_TYPE_BINARY<= current->type && current->type < KEY_TYPE_STRING)
+			continue;
+		
+		if ((current->data && value)) {
+			if ((options & KDB_O_NOCASE) && 
+				!strcasecmp(current->data,value)) return current;
+			else if (!strcmp(current->data,value)) return current;
+		}
+	}
+	
+	/* reached end of KeySet */
+	ks->cursor=init;
+	
+	return 0;
+}
+
+
+
+/**
+ * Lookup for a Key contained in @p ks KeySet that matches the binary @p value,
+ * starting from ks' ksNext() position.
+ * 
+ * If found, @p ks internal cursor will be positioned in the matched key
+ * (also accessible by ksCurrent()), and a pointer to the Key is returned.
+ * If not found, @p ks internal cursor won't move, and a NULL pointer is
+ * returned.
+ * 
+ * @param ks where to look for
+ * @param value the value which owner key you want to find
+ * @param size the size of @p value
+ * @param options some @p KDB_O_* option bits, for future use
+ * @see ksLookupByValue()
+ * @see keyCompare() for very powerfull Key lookups in KeySets
+ * @see ksCurrent(), ksRewind(), ksNext()
+ * @return the Key found, 0 otherwise
+ */
+Key *ksLookupByBinaryValue(KeySet *ks, void *value, size_t size,
+		unsigned long options) {
+	Key *init=0;
+	Key *current=0;
+	
+	init=ks->cursor;
+	
+	while ((current=ksNext(ks))) {
+		if (current->data == value) return current;
+		
+		if (size != current->dataSize) continue;
+		
+		if ((current->data && value) && 
+				!memcmp(current->data,value,size)) return current;
+	}
+	
+	/* reached end of KeySet, so reset cursor */
+	ks->cursor=init;
+	
+	return 0;
+}
+
+
+
+
+
+
+
+/******************************************* 
+ *           Filling up KeySets            *
+ *******************************************/
+
+ 
 /**
  * Insert a new Key in the begining of the KeySet. A reference to the key will
  * be stored, and not a copy of the key. So a future ksClose() or ksDel() on
@@ -2789,7 +3139,6 @@ size_t ksInsert(KeySet *ks, Key *toInsert) {
 	if (!ks->end) ks->end=toInsert;
 	return ++ks->size;
 }
-
 
 
 
@@ -2887,6 +3236,14 @@ size_t ksAppendKeys(KeySet *ks, KeySet *toAppend) {
 
 
 
+
+
+
+
+
+/******************************************* 
+ *    Other operations                     *
+ *******************************************/
 
 
 /**
@@ -3010,7 +3367,7 @@ int ksCompare(KeySet *ks1, KeySet *ks2, KeySet *removed) {
  * @param stream where to write output: a file or stdout
  * @param options ORed of @p KDB_O_* options
  * @see keyToStream()
- * @see KDBOptions
+ * @see #KDBOptions
  * @return number of bytes written to output
  */
 size_t ksToStream(const KeySet *ks, FILE* stream, unsigned long options) {
@@ -3074,123 +3431,6 @@ void ksSort(KeySet *ks) {
 }
 
 
-
-
-/**
- * Find a Key contained in @p ks KeySet that matches @p name, starting at
- * @p ks' current internal cursor position.
- * If found, @p ks internal cursor will be positioned in the matched key
- * (also accessible by ksCurrent()), and a pointer to the Key is returned.
- * If not found, @p ks internal cursor won't move, and a NULL pointer is
- * returned.
- *
- * @see keyCompare() for very powerfull Key lookups in KeySets
- * @see ksCurrent()
- * @see ksRewind()
- * @see ksNext()
- * @return the Key found, 0 otherwise
- */
-Key *ksLookupByName(KeySet *ks, const char *name) {
-	Key *init=0;
-	Key *current=0;
-	
-	init=ks->cursor;
-	
-	while ((current=ksNext(ks))) {
-		if (current->key == name) return current;
-		if ((current->key && name) &&
-			!strcmp(current->key,name)) return current;
-	}
-	
-	/* Reached end of KeySet. Put cursor in initial position. */
-	ks->cursor=init;
-	
-	return 0;
-}
-
-
-
-
-
-/**
- * Find a Key contained in @p ks KeySet that matches @p value, starting at
- * @p ks' current internal cursor position.
- * If found, @p ks internal cursor will be positioned in the matched key
- * (also accessible by ksCurrent()), and a pointer to the Key is returned.
- * If not found, @p ks internal cursor won't move, and a NULL pointer is
- * returned.
- * 
- * This function will also look into binary keys, but @p value must be a
- * NULL-terminated regular string.
- *
- * @see keyCompare() for very powerfull Key lookups in KeySets
- * @see ksCurrent()
- * @see ksRewind()
- * @see ksNext()
- * @return the Key found, 0 otherwise
- */
-Key *ksLookupByValue(KeySet *ks, const char *value) {
-	Key *init=0;
-	Key *current=0;
-	size_t size=0;
-	
-	size=strblen(value);
-	init=ks->cursor;
-	
-	while ((current=ksNext(ks))) {
-		if (current->data == value) return current;
-		if ((current->data && value) &&
-			!memcmp(current->data,value,
-			size<=current->dataSize?size:current->dataSize)) return current;
-	}
-	
-	/* reached end of KeySet */
-	ks->cursor=init;
-	
-	return 0;
-}
-
-
-/*
- * KDB_O_SORT: the ks is NOT sorted
- * KDB_O_NOSPANPARENT: find under current subtree only
- * KDB_O_CYCLE: restart from begining of KeySet if end reached
- * 
- */
-u_int32_t ksLookupRE(KeySet *ks, const regex_t *regexp,
-		u_int32_t where, unsigned long options) {
-	Key *init, *walker;
-	regmatch_t offsets;
-	u_int32_t match=0;
-	
-	init=ks->cursor;
-	
-	// TODO: finish this method
-	while ((walker=ksNext(ks))) {
-		if ((where & KEY_SWITCH_NAME) && walker->key)
-			if (!regexec(regexp,walker->key,1,&offsets,0))
-				match |= KEY_SWITCH_NAME;
-		
-		if ((where & KEY_SWITCH_VALUE) && walker->data &&
-			!(KEY_TYPE_BINARY <= walker->type && walker->type < KEY_TYPE_STRING))
-			if (!regexec(regexp,(char *)walker->data,1,&offsets,0))
-				match |= KEY_SWITCH_VALUE;
-		
-		if ((where & KEY_SWITCH_OWNER) && keyIsUser(walker))
-			if (!regexec(regexp,walker->userDomain,1,&offsets,0))
-				match |= KEY_SWITCH_OWNER;
-		
-		if ((where & KEY_SWITCH_COMMENT) && walker->comment)
-			if (!regexec(regexp,walker->comment,1,&offsets,0))
-				match |= KEY_SWITCH_OWNER;
-		
-		if (match) return match;
-	}
-	
-	ks->cursor=init;
-	
-	return 0;
-}
 
 
 

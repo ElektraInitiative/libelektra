@@ -59,7 +59,7 @@ vtag:
 	svn cp ${SVNREP}/trunk ${SVNREP}/tags/$$PACK
 
 
-dist: distclean elektra.spec elektra.pc
+dist: distclean elektra.spec
 	# svn export wont work here...
 	$(MAKE) -C doc docbookman   # leave mans already generated
 	DIR=`basename \`pwd\``;\

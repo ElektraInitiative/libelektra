@@ -244,9 +244,10 @@ enum KDBOptions {
 	                              GID, and user domain. Affects
 	                              only @p user keys. */
 	
-/* Options used by ksFind*() methods */
-	KDB_O_NOSPANPARENT=1<<12,
-	KDB_O_CYCLE=1<<13
+/* Options used by ksLookupRE() methods */
+	KDB_O_NOCASE=1<<15,      /*!< Ignore case in ksLookup*() methods */
+	KDB_O_NOSPANPARENT=1<<16 /*!< Don't continue search if end of current
+	                              folder reached, in ksLookupRE() */
 };
 
 
@@ -409,6 +410,7 @@ int keyClose(Key *key);
 
 Key *keyNew(const char *keyName, ...);
 int keyDel(Key *key);
+#define keyFree(x) keyDel(x)
 
 int keyIsInitialized(const Key *key);
 int keyNeedsSync(const Key *key);
@@ -511,7 +513,7 @@ KeySet methods
 
 KeySet *ksNew();
 int ksDel(KeySet *ks);
-int ksFree(KeySet *ks);
+#define ksFree(x) ksDel(x)
 
 int ksInit(KeySet *ks);
 int ksClose(KeySet *ks);
@@ -527,10 +529,12 @@ size_t ksToStream(const KeySet *ks, FILE* stream, unsigned long options);
 int ksCompare(KeySet *ks1, KeySet *ks2, KeySet *removed);
 void ksSort(KeySet *ks);
 
-Key *ksLookupByName(KeySet *ks, const char *name);
-Key *ksLookupByValue(KeySet *ks, const char *value);
-u_int32_t ksLookupRE(KeySet *ks, const regex_t *regexp,
-		u_int32_t where, unsigned long options);
+Key *ksLookupByName(KeySet *ks, const char *name,unsigned long options);
+Key *ksLookupByValue(KeySet *ks, const char *value,unsigned long options);
+Key *ksLookupByBinaryValue(KeySet *ks, void *value, size_t size,
+	unsigned long options);
+u_int32_t ksLookupRE(KeySet *ks, u_int32_t where,
+	const regex_t *regexp, unsigned long options);
 
 int ksRewind(KeySet *ks);
 Key *ksNext(KeySet *ks);
