@@ -358,7 +358,7 @@ $LastChangedBy$
 		<para>The Elektra Project can be found at <ulink url="http://elektra.sf.net/">elektra.sf.net</ulink> and (in all) the following places:
 			<itemizedlist>
 				<listitem><simpara><ulink url="http://sourceforge.net/project/showfiles.php?group_id=117521">C source and RPMs</ulink> from <ulink url="http://sourceforge.net/projects/elektra">sourceforge.net</ulink></simpara></listitem>
-				<listitem><simpara><ulink url="http://www.germane-software.com/repositories/tlr/trunk/">Subversion repository</ulink>, thanks to Sean Russel</simpara></listitem>
+				<listitem><simpara><ulink url="http://www.germane-software.com/repositories/elektra/trunk/">Subversion repository</ulink>, thanks to Sean Russel</simpara></listitem>
 				<listitem><simpara><ulink url="http://tlr.pirack.com/LinuxRegistry">Wiki space</ulink>, made available by Daniel Lambea</simpara></listitem>
 				<listitem><simpara><ulink url="http://freshmeat.net/projects/elektra/">Freshmeat project page</ulink></simpara></listitem>
 				<listitem><simpara><ulink url="http://www.advogato.org/proj/Linux Registry/">Advogato project page</ulink></simpara></listitem>

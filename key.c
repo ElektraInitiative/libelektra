@@ -2199,25 +2199,28 @@ int ksInit(KeySet *ks) {
 /**
  * KeySet destructor.
  *
- * The keyClose() destructor will be called for all contained keys,
- * and then freed. Then all internal KeySet pointers etc cleaned too.
- * Sets the object ready to be freed by you.
+ * Will cause keyClose() destructor to be called for all contained keys,
+ * and then frees the key object. This is why you should not ksAppend() or
+ * ksInsert() a Key that is a local variable, only dinamycally allocated Keys.
+ *
+ * After this call, @p ks object is ready to be freed by you.
  * 
  * @see ksInit()
  * @see keyClose()
+ * @see ksAppend() for details on how keys are inserted in KeySets
+ * @return 0
  */
 int ksClose(KeySet *ks) {
 	if (ks->size) {
-		Key *cursor=ks->start;
 		while (ks->size) {
-			Key *destroyer=cursor;
-			cursor=cursor->next;
+			Key *destroyer=ks->start;
+			ks->start=destroyer->next;
 			keyClose(destroyer);
 			free(destroyer);
 			--ks->size;
 		}
 	}
-	ks->start=ks->end=ks->cursor;
+	ks->cursor=ks->end=ks->start;
 	return 0;
 }
 
@@ -2290,7 +2293,9 @@ Key *ksCurrent(const KeySet *ks) {
 
 
 /**
- * Insert a new Key in the begining of the KeySet.
+ * Insert a new Key in the begining of the KeySet. A reference to key will
+ * be stored, and not a copy of the key. So a future ksClose() on @p ks will
+ * keyClose() @p toInsert and free() the @p toInsert object.
  * The KeySet internal cursor is not moved.
  *
  * @return the size of the KeySet after insertion
@@ -2299,6 +2304,7 @@ Key *ksCurrent(const KeySet *ks) {
  * @see ksAppend()
  * @see ksInsertKeys()
  * @see ksAppendKeys()
+ * @see ksClose()
  *
  */
 size_t ksInsert(KeySet *ks, Key *toInsert) {
@@ -2314,7 +2320,7 @@ size_t ksInsert(KeySet *ks, Key *toInsert) {
 /**
  * Transfers an entire KeySet to the begining of the KeySet.
  *
- * After this call, the toInsert KeySet will be empty.
+ * After this call, the @p toInsert KeySet will be empty.
  *
  * @return the size of the KeySet after insertion
  * @param ks the KeySet that will receive the keys
@@ -2341,12 +2347,15 @@ size_t ksInsertKeys(KeySet *ks, KeySet *toInsert) {
 
 
 /**
- * Append a new Key to the end of the KeySet.
+ * Append a new Key to the end of the KeySet. You should not append Keys that
+ * are local variables to a KeySet, only dinamycally allocated ones, due to
+ * the future ksClose() you'll call on the KeySet.
  * The KeySet internal cursor is not moved.
  *
  * @return the size of the KeySet after insertion
  * @param ks KeySet that will receive the key
  * @param toAppend Key that will be appended to ks
+ * @see ksClose()
  * @see ksInsert()
  * @see ksInsertKeys()
  * @see ksAppendKeys()
