@@ -3,6 +3,7 @@
 - In registryStatKey(), handled error if file can't be found. Thanks to Jens Andersen.
 - keyInit is now less smart: it will not test if the key is initialized or not. This is now a programmer responsability.
 - Code migrated to Subversion, thanks to Sean Russel. http://germane-software.com/repositories/tlr/
+- Added $Id: etc to source files.
 
 * Sat May 22 2004 Avi Alkalay <avi@unix.sh> 0.2.4
 - Improved rgsetenv login script: now set aliases too.
