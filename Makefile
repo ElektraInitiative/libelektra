@@ -4,7 +4,7 @@
 
 NAME=elektra
 
-DTDVERSION=0.1.0
+DTDVERSION=0.1.1
 SVNREP=http://germane-software.com/repositories/elektra
 
 
@@ -125,4 +125,4 @@ install: all
 	cp ChangeLog ${DESTDIR}${DOCDIR}/${NAME}
 	cp example/*-convert example/*.xml ${DESTDIR}${DOCDIR}/${NAME}
 	cp example/*.c ${DESTDIR}${DOCDIR}/${NAME}-devel
-
+	kdb set system/sw/kdb/current/schemapath "${DESTDIR}${SGMLDIR}/elektra-${DTDVERSION}/elektra.xsd"
