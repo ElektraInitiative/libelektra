@@ -1,9 +1,10 @@
 <?xml version="1.0"?>
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN" "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+	<!ENTITY overview SYSTEM "overview.xml">
 	<!ENTITY bestpract SYSTEM "bestpract.xml">
+	<!ENTITY garbage SYSTEM "garbage.xml">
 	<!ENTITY storage SYSTEM "storage.xml">
 	<!ENTITY rgcmd SYSTEM "rgcmd.xml">
-	<!ENTITY generics SYSTEM "generics.xml">
 	<!ENTITY author SYSTEM "author.xml">
 	<!ENTITY api SYSTEM "api.xml">
 	<!ENTITY apiexample SYSTEM "apiexample.xml">
@@ -25,9 +26,21 @@ $LastChangedBy$
 		
 		&author;
 		
-		<pubdate>0.2.9 :: 2004-06-01</pubdate>
+		<pubdate>0.2.10 :: 2004-06-10</pubdate>
 		
 		<revhistory>
+			<revision>
+				<revnumber>0.2.10</revnumber>
+				<date>10 Jun 2004</date>
+				<authorinitials>avi</authorinitials>
+				<revdescription>
+					<itemizedlist>
+						<listitem><simpara>Modified sections order</simpara></listitem>
+						<listitem><simpara>Included the '1*1=1' concept</simpara></listitem>
+						<listitem><simpara>Added link to Wiki</simpara></listitem>
+					</itemizedlist>
+				</revdescription>
+			</revision>
 			<revision>
 				<revnumber>0.2.9</revnumber>
 				<date>01 Jun 2004</date>
@@ -188,7 +201,7 @@ $LastChangedBy$
 
 	<section id="links"><title>Getting The Linux Registry</title>
 		<para>The Linux Registry can be found at <ulink url="http://registry.sf.net/">registry.sf.net</ulink>. C source and RPMs can be found at <ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628">sourceforge.net</ulink>, and its <ulink url="http://freshmeat.net">Freshmeat</ulink> entry is <ulink url="http://freshmeat.net/projects/registry/">http://freshmeat.net/projects/registry/</ulink>.</para>
-
+		<para>There is also a <ulink url="http://tlr.pirack.com/LinuxRegistry">Wiki space</ulink>, made available by Daniel Lambea.</para>
 		<para>Source code snapshots are available through a <ulink url="http://www.germane-software.com/repositories/tlr/trunk/">Subversion repository</ulink>, thanks to Sean Russel. Get Subversion installed on your system and:
 			<screen><prompt>bash:~$</prompt> <command>cd src</command>
 <prompt>bash:~/src$</prompt> <command>svn co http://germane-software.com/repositories/tlr/trunk registry</command>
@@ -214,22 +227,58 @@ $LastChangedBy$
 				<listitem><simpara><ulink url="registry.5.html">registry.5</ulink>: Registry internals.</simpara></listitem>
 			</orderedlist>
 		</section>
-	</section>
 
 	
-	<section id="ecosystem"><title>Ecosystem Around the Registry</title>
-		<para>The objective of the Linux Registry is to help create a pervasive, ubiquitous configuration system. Without an ecosystem around, this is impossible. This section lists the work of some people that are helping to build this ecosystem.</para>
+		<section id="ecosystem"><title>Ecosystem Around the Registry</title>
+			<para>The objective of the Linux Registry is to help create a pervasive, ubiquitous configuration system. Without an ecosystem around, this is impossible. This section lists the work of some people that are helping to build this ecosystem.</para>
 		
-		<itemizedlist>
-			<listitem><simpara><ulink url="http://nss-registry.skumler.net">Users and Groups Name System Module for GLibC</ulink>, by Jens Andersen. This is a module that can be activated by the name system switch mechanism (<filename>/etc/nsswitch.conf</filename>) to let users and groups databases be stored in the Registry, instead of <filename>/etc/{passwd|shadow|groups}</filename>.</simpara></listitem>
-			<listitem>Daniel Lambea and Israel Bethencourt are writting patches for basic system tools, and will have soon a full Linux distribution ported to the Registry.</listitem>
-			<listitem><simpara><ulink url="http://www.germane-software.com/software/Libraries/registry">Ruby bindings</ulink>, by Sean Russel. If you are writting code in Ruby, and need an easy way to store/retrieve configuration/state data, this is for you.</simpara></listitem>
-			<listitem><simpara><ulink url="http://sourceforge.net/projects/jreg">JRegistry</ulink>, by Alexopoulos Charalampos, are Java bindings for the Registry API, and apparently a GUI for registry administration.</simpara></listitem>
-		</itemizedlist>
-		<para>All of them can be found on the <ulink url="https://lists.sourceforge.net/lists/listinfo/registry-list">Registry mailling list</ulink>.</para>
-	</section>
-	
+			<itemizedlist>
+				<listitem><simpara><ulink url="http://nss-registry.skumler.net">Users and Groups Name System Module for GLibC</ulink>, by Jens Andersen. This is a module that can be activated by the name system switch mechanism (<filename>/etc/nsswitch.conf</filename>) to let users and groups databases be stored in the Registry, instead of <filename>/etc/{passwd|shadow|groups}</filename>.</simpara></listitem>
+				<listitem>Daniel Lambea and Israel Bethencourt are writting patches for basic system tools, and will have soon a full Linux distribution ported to the Registry.</listitem>
+				<listitem><simpara><ulink url="http://www.germane-software.com/software/Libraries/registry">Ruby bindings</ulink>, by Sean Russel. If you are writting code in Ruby, and need an easy way to store/retrieve configuration/state data, this is for you.</simpara></listitem>
+				<listitem><simpara><ulink url="http://sourceforge.net/projects/jreg">JRegistry</ulink>, by Alexopoulos Charalampos, are Java bindings for the Registry API, and apparently a GUI for registry administration.</simpara></listitem>
+			</itemizedlist>
+			<para>All of them can be found on the <ulink url="https://lists.sourceforge.net/lists/listinfo/registry-list">Registry mailling list</ulink>.</para>
+		</section>
 
+	</section>
+
+	<section id="needs"><title>Why Linux Needs a Registry</title>
+	
+		<para>Today's GNU/Linux systems (or other UNIX) are a sum of independent components collected in a bazar. Each of them already have a working, but selfish configuration system. Please read this section thinking about a system as a whole, not a sum of many parts.</para>
+		
+		<para>The Linux Registry tries to upgrade a '1 + 1 = 2' system into a '1 * 1 = 1' one.</para>
+		
+		<para>Look into <filename>/etc/fstab</filename> file. Now look into <filename>/etc/modules.conf</filename>, <filename>/etc/passwd</filename>, <filename>/etc/ssh/sshd_config</filename>, <filename>/etc/httpd/conf/httpd.conf</filename>. I see here two terrible problems:</para>
+		<orderedlist numeration="arabic">
+			<listitem><para>They don't have a common file format.</para></listitem>
+			<listitem><para>Their localization in the filesystem may be different from Linux distribution to distribution.</para></listitem>
+		</orderedlist>
+		
+		<para>These 2 issues leverages other problems:</para>
+		
+		<orderedlist numeration="arabic">
+			<listitem><para>When two different softwares want to integrate themselves, it is programatically very hard to read, understand and correctly change its partner's configuration file. Think about installing a third-party video driver in XFree86, a new Apache plug-in, etc, and letting this new piece of software do the integration automatically, instead of the sysadmin <command>vi</command> the configuration file, understand and change it in the right way. So basic software integration is a pain today for ISVs (Independent Software Vendors).</para></listitem>
+			<listitem><para>A software developer must waste a lot of time to write the plumbing code for configuration file parsing etc. And it is completelly out of his scope to write code to interoperate with other software's configurations files.</para></listitem>
+			<listitem><para>Different distributions use to put different software configuration in different places with differente formats. A regular SuSE system administrator, for example, will be lost when asked to work in a Debian or Slackware system. Think about the most primitive example: network configuration parameters. Each distro has its own approach.</para></listitem>
+			<listitem><para>A system administrator must know all these formats.</para></listitem>
+			<listitem><para>There is no way to know today what was changed in a specific configuration file. If <filename>/etc/shadow</filename> file time changes, there is no way to know if the change was related to nobody's or root's record.</para></listitem>
+			<listitem><para>High-level system administration GUIs (webmin, redhat-config-*, SuSE's YAST, etc) are just a dream today. They can never track successfully all changes that happens in the format of the configuration files of such a rich diversity of Open Source software (<filename>httpd.conf</filename>, <filename>smb.conf</filename>, <filename>modules.conf</filename>, <filename>fstab</filename>, etc, etc, etc). The approach of some of them is to keep the configuration ideas in a private database and regenerate the specific configuration file whenever a change happens in this database. Welcome to the inconsistency nightmare.</para></listitem>
+		</orderedlist>
+	
+		<para>Other OSes solved this problem centralizing their configurations, and creating a framework to access them. Configurations then are no more represented by 'configuration files', but by <emphasis>key-value pairs</emphasis> organized in a structured tree commited to some naming convetions.</para>
+		<para>To achieve multi-vendor/provider consistent software integration, and ease of administration across heterogeneous Linux distributions,  Linux needs a Registry.</para>
+	
+	</section>
+
+	&overview;
+	
+	&bestpract;
+	
+	&garbage;
+	
+	&society;
+	
 	<section id="screenshots"><title>Virtual Screenshots</title>
 		<para>The Registry can't produce screenshots, because it is just a library/API as you'll read bellow, but since everybody loves them, lets use some visual efects to show some Registry's concepts.</para>
 		<section id="system.hw"><title>Hardware Status Migrated Into the Registry</title>
@@ -252,33 +301,6 @@ $LastChangedBy$
 			<graphic srccredit="rg edit" fileref="images/rgedit.png" label="rg edit command" align="center"/>
 		</section>
 	</section>
-	
-	&society;
-	
-	<section id="needs"><title>Why Linux/UNIX/*BSD Need a Registry</title>
-		<para>Look into <filename>/etc/fstab</filename> file. Now look into <filename>/etc/modules.conf</filename>, <filename>/etc/passwd</filename>, <filename>/etc/ssh/sshd_config</filename>, <filename>/etc/httpd/conf/httpd.conf</filename>. I see here two terrible problems:</para>
-		<orderedlist numeration="arabic">
-			<listitem><para>They don't have a common file format.</para></listitem>
-			<listitem><para>Their localization in the filesystem may be different from Linux distribution to distribution.</para></listitem>
-		</orderedlist>
-		
-		<para>These 2 issues leverages other problems:</para>
-		
-		<orderedlist numeration="arabic">
-			<listitem><para>When two different softwares want to integrate themselves, it is programatically very hard to read, understand and correctly change its partner's configuration file. Think about installing a third-party video driver in XFree86, a new Apache plug-in, etc, and letting this new piece of software do the integration automatically, instead of the sysadmin <command>vi</command> the configuration file, understand and change it in the right way. So basic software integration is a pain today for ISVs (Independent Software Vendors).</para></listitem>
-			<listitem><para>A system administrator must know all these formats.</para></listitem>
-			<listitem><para>There is no way to know today what was changed in a specific configuration file. If <filename>/etc/shadow</filename> file time changes, there is no way to know if the change was related to nobody's or root's record.</para></listitem>
-			<listitem><para>A software developer must waste a lot of time to write the plumbing code for configuration file parsing etc.</para></listitem>
-			<listitem><para>High-level system administration GUIs (webmin, redhat-config-*, SuSE's YAST, etc) are just a dream today. They can never track successfully all changes that happens in the format of the configuration files of such a rich diversity of Open Source software (<filename>httpd.conf</filename>, <filename>smb.conf</filename>, <filename>modules.conf</filename>, <filename>fstab</filename>, etc, etc, etc). The approach of some of them is to keep the configuration ideas in a private database and regenerate the specific configuration file whenever a change happens in this database. Welcome to the inconsistency nightmare.</para></listitem>
-			<listitem><para>Different distributions may put different software configuration in different places with differente formats. A regular SuSE system administrator, for example, will be lost when asked to work in a Debian or Slackware system. Think about the most primitive example: network configuration parameters. Each distro has its own approach.</para></listitem>
-		</orderedlist>
-	
-		<para>Other OSes solved this problem centralizing their configurations, and creating a framework to access them. Configurations then are no more represented by 'configuration files', but by <emphasis>key-value pairs</emphasis> organized in a structured tree commited to some naming convetions.</para>
-		<para>To achieve multi-vendor/provider consistent software integration, and ease of administration across heterogeneous Linux distributions,  Linux needs a Registry.</para>
-	
-	</section>
-
-	&generics;
 
 	<section id="adoption"><title>Registry Adoption by Legacy System Software</title>
 		<para>The benefits of the Registry will be felt only when configurations like those under <filename>/etc</filename> will move into it. It is expected that this will take time, but awareness should be done by the community to speed the process.</para>

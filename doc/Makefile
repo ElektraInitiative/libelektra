@@ -7,7 +7,7 @@ HTMLSTYLE=htmltitlepage.xsl
 .SUFFIXES: .xml .html .pdf .ps .rtf .xsl .fo .tpl
 
 .xml.html:
-	ln -s ../../doc-common/docbook .
+	if [ ! -L docbook ]; then ln -s ../../doc-common/docbook .; fi
 	xsltproc -o $@ ${HTMLSTYLE} $<
 
 
@@ -25,7 +25,7 @@ csource.xml: example.c
 rg.1: rg.1.xml author.xml bestpract.xml rgexample.xml rgcmd.xml
 	xsltproc ${MANSTYLE} $<
 
-registry.7: registry.7.xml author.xml generics.xml bestpract.xml rgexample.xml
+registry.7: registry.7.xml author.xml overview.xml bestpract.xml rgexample.xml
 	xsltproc ${MANSTYLE} $<
 
 registry.5: registry.5.xml author.xml storage.xml
@@ -37,7 +37,7 @@ registry.3: registry.3.xml author.xml csource.xml api.xml
 key.3: key.3.xml author.xml
 	xsltproc ${MANSTYLE} $<
 
-howto.html: howto.xml registry.7.xml author.xml generics.xml bestpract.xml rgexample.xml rgcmd.xml storage.xml csource.xml api.xml society.xml
+howto.html: howto.xml registry.7.xml author.xml garbage.xml overview.xml bestpract.xml rgexample.xml rgcmd.xml storage.xml csource.xml api.xml society.xml
 
 html: man howto.html
 	man2html -r < rg.1 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > rg.1.html
