@@ -1,5 +1,5 @@
 /***************************************************************************
-                          key.c  -  Methods for key manipulation
+                          key.c  -  Methods for Key and KeySet manipulation
                              -------------------
     begin                : Mon Dec 29 2003
     copyright            : (C) 2003 by Avi Alkalay
@@ -36,8 +36,6 @@ $LastChangedBy$
 #include "kdb.h"
 #include "kdbprivate.h"
 
-extern int errno;
-
 
 /**
  * Calculates the lenght in bytes of a string.
@@ -68,16 +66,15 @@ size_t strblen(const char *s) {
  * @link keyvalue value @endlink and @link keymeta metainfo @endlink.
  * Key properties are:
  * - @link keyname Key name @endlink
- * - @link keyvalue Key value or data @endlink
+ * - @link keyvalue Key value @endlink
  * - @link keySetType() Data type @endlink
- * - @link keyGetComment() Comment about the key @endlink
+ * - @link keyGetComment() Key comment @endlink
  * - @link keyGetOwner() User domain @endlink (the user that owns the key)
  * - @link keymeta UID, GID and filesystem-like access permissions @endlink
  * - @link keymeta Access, change and modification times @endlink
  * - @link keySetFlag() A general flag @endlink
  *
- * Described here the methods to get and set, and make various manipulations
- * in the objects of class Key.
+ * Described here the methods to allocate and free the key.
  *
  */
 
@@ -118,6 +115,24 @@ size_t strblen(const char *s) {
  * @defgroup keyvalue Key :: Value Manipulation Methods
  * @brief Methods to do various operations on Key values.
  *
+ * A key can contain a value in different format. The most
+ * likely situation is, that the value is interpreted as
+ * text. Use keyGetString() for that.
+ * You can save any Unicode Symbols and Elektra will
+ * take care that you get the same back, independent of
+ * your current Environment.
+ *
+ * In some situations this idea fails. When you need exactly
+ * the same value back without any interpretation of the
+ * characters, there is keySetBinary(). If you use that, its
+ * very likely that your Configuration is not according
+ * to the standard. Also for Numbers, Booleans and Date you
+ * should use keyGetString(). To do so, you might use strtod()
+ * strtol() and then atol() or atof() to convert back.
+ * 
+ * A key may also be just a Link. Here you will also find
+ * the manipulation methods for keyGetLink().
+ * 
  * To use them:
  * @code
 #include <kdb.h>
@@ -138,11 +153,24 @@ size_t strblen(const char *s) {
  *
  * Key metainfo are:
  * - Comment about the key
- * - User domain (the user that owns the key)
+ * - User domain
  * - UID, GID and filesystem-like access permissions
  * - Access, change and modification times
  * - A general flag
  *
+ * The comment can contain userdata which directly
+ * belong to that key.
+ *
+ * User domain is the user that owns the key. It only
+ * works for the user/ hierachy.
+ * 
+ * Every user and group of your System has a uniqe ID.
+ * These values are used in the keys too. They are
+ * very important for the access. See man 2 chown.
+ *
+ * With the access mode you can choose if a user, group
+ * or the world can access your key. See man 2 chmod.
+ * 
  */
 
  
@@ -2729,26 +2757,21 @@ int keyGetFlag(const Key *key) {
 /**
  * Initializes a previously allocated Key object.
  *
- * You'll find the keyNew() function more usefull and straight forward
- * than keyInit().
- * 
- * Every Key object that will be used must be initialized first, to setup
- * pointers, counters, etc.
- * 
- * @par Example
- * @code
-Key *key=keyNew("system/some/key",KEY_SWITCH_END);
-
-// Do something with the key....
-
-// Now reuse the memory allocated by keyNew()
-keyClose(key);  // free all internal attributes first
-keyInit(key);   // reinitialize it
-// do something with key...
-keyClose(key);
-free(key);
- * @endcode
- * 
+ * This function should not be used, use keyNew() instead.
+ *
+ * keyInit sets the key to a clear state. It uses
+ * memset to clear the memory. The type of the key
+ * is KEY_TYPE_UNDEFINED afterwards.
+ *
+ * uid, gid and access masks are set with the current
+ * values of your system.
+ *
+ * @par example
+ * code
+key=(Key *)malloc(sizeof(Key));
+if (!key) return 0;
+keyInit(key);
+ * endcode
  * @see keyNew(), keyDel(), keyClose()
  * @return allways 0;
  * @ingroup key

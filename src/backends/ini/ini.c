@@ -406,10 +406,10 @@ int IniGetKey (FILE * fc, Key * key)
 
 	key->flags &= ~KEY_SWITCH_NEEDSYNC;
 
-	free (buffer);
+/*	free (buffer);
 	free (buffer_value);
 	free (buffer_key);
-	free (buffer_comment);
+	free (buffer_comment);*/
 	
 	fprintf (stderr, "done\n");
 	
@@ -520,8 +520,7 @@ ssize_t kdbGetKeys (char * keyFileName, char * keyName, KeySet * set)
 	
 	fc = fdopen (fd,"r");
 
-	key = malloc (sizeof (Key));
-	keyInit (key);
+	key = keyNew ("",KEY_SWITCH_END);
 	
 	while ((pos=IniGetKey (fc, key)) == 0)
 	{
@@ -545,8 +544,7 @@ ssize_t kdbGetKeys (char * keyFileName, char * keyName, KeySet * set)
 		//CRASH: for whatever reason???
 		// ksInsert (set, key);
 
-		key = malloc (sizeof (Key));
-		keyInit (key);
+		key = keyNew ("",KEY_SWITCH_END);
 		
 		fprintf (stderr, "... done\n");
 	}
