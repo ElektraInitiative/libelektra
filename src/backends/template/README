@@ -1,0 +1,4 @@
+This is a skeleton for building a backend.
+You chould copy this files to another dir, rename them and start filling with code that accesses your specific backend.
+
+See http://elektra.sourceforge.net/elektra-api/html/group__backend.html is the documentation for backend programing.
