@@ -45,17 +45,17 @@ fi
 make all
 
 %install
-mkdir -p $RPM_BUILD_ROOT/bin
-mkdir -p $RPM_BUILD_ROOT/lib
-mkdir -p $RPM_BUILD_ROOT/usr/lib
-mkdir -p $RPM_BUILD_ROOT/usr/include
-mkdir -p $RPM_BUILD_ROOT/usr/share/doc/registry
-mkdir -p $RPM_BUILD_ROOT/usr/share/doc/registry-devel
-mkdir -p $RPM_BUILD_ROOT/usr/share/man/man1
-mkdir -p $RPM_BUILD_ROOT/usr/share/man/man3
-mkdir -p $RPM_BUILD_ROOT/usr/share/man/man5
-mkdir -p $RPM_BUILD_ROOT/usr/share/man/man7
-mkdir -p $RPM_BUILD_ROOT/etc/profile.d
+#mkdir -p $RPM_BUILD_ROOT/bin
+#mkdir -p $RPM_BUILD_ROOT/lib
+#mkdir -p $RPM_BUILD_ROOT/usr/lib
+#mkdir -p $RPM_BUILD_ROOT/usr/include
+#mkdir -p $RPM_BUILD_ROOT/usr/share/doc/registry
+#mkdir -p $RPM_BUILD_ROOT/usr/share/doc/registry-devel
+#mkdir -p $RPM_BUILD_ROOT/usr/share/man/man1
+#mkdir -p $RPM_BUILD_ROOT/usr/share/man/man3
+#mkdir -p $RPM_BUILD_ROOT/usr/share/man/man5
+#mkdir -p $RPM_BUILD_ROOT/usr/share/man/man7
+#mkdir -p $RPM_BUILD_ROOT/etc/profile.d
 
 make DESTDIR=$RPM_BUILD_ROOT install
 
