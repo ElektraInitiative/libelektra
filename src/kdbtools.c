@@ -273,7 +273,7 @@ int ksFromXMLfile(KeySet *ks,char *filename) {
 		return 1;
 	}
 	
-	// try to validate the doc against the xml schema
+	/* try to validate the doc against the xml schema */
 	ctxt = xmlSchemaNewValidCtxt(wxschemas);
 	xmlSchemaSetValidErrors(ctxt,
 		(xmlSchemaValidityErrorFunc) fprintf,

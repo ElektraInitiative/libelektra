@@ -153,7 +153,7 @@ enum KeySwitch {
 	                                 keyNew() */
 	
 	KEY_SWITCH_INITIALIZED=0x10042008,
-	KEY_SWITCH_INITMASK=0x18442218,
+	KEY_SWITCH_INITMASK=0x18442218
 };
 
 
@@ -654,8 +654,8 @@ Key *ksHead(KeySet *ks);
 Key *ksTail(KeySet *ks);
 
 
-// Key *ksLookupByName(KeySet *ks,char *keyName);
-// Key *ksLookupByRegex(KeySet *ks,regex_t *regex);
+/* Key *ksLookupByName(KeySet *ks,char *keyName); */
+/* Key *ksLookupByRegex(KeySet *ks,regex_t *regex); */
 
 
 

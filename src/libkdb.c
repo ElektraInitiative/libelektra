@@ -285,7 +285,7 @@ int kdbOpenBackend(char *backendName) {
 int kdbClose() {
 	int rc=0;
 	
-	if (backend && backend->kdbClose()) rc=backend->kdbClose();
+	if (backend && backend->kdbClose) rc=backend->kdbClose();
 	else {
 		errno=KDB_RET_NOSYS;
 		return -1;
