@@ -1,0 +1,11 @@
+
+<!--
+$Id: $
+$LastChangedBy: aviram $
+-->
+
+	<section id="garbage"><title>Unused/Old Keys Left Behind Into the Registry</title>
+		<para>Old/uninstalled software may leave unused keys into the Registry. Actually, this can happen also to nowadays regular text configuration files. Garbage collection of this kind of left behind keys or files is a package manager's or sysadmin's task. The Registry API and the <command>rg</command> command line tool provide ways to find keys that were not accessed for a long time.</para>
+		<para>When a user is removed from the system, his keys disapear when his <envar>$HOME</envar> dir is removed.</para>
+	</section>
+		
