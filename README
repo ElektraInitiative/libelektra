@@ -11,7 +11,7 @@ Download it from the main repository as elektra-*.src.rpm and rebuild the RPMs:
 
   $ rpm --rebuild elektra-*.src.rpm
 
-This will generate RPMs in your packages directory ready to be installed.
+This will generate RPMs in your packages directory, ready to be installed.
 
 It was reported that the Makefiles will only work with gmake, which makes
 absolutelly no difference for Linux, but is a crucial information when

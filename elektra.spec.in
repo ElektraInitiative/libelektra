@@ -1,14 +1,12 @@
 Name:          elektra
 Version:       _VERSION_
-%define myRelease 1
+%define myRelease 2
 %define vepoch 1
 Release:       0.fdr.%{vepoch}.%{myRelease}
 Source:        http://aleron.dl.sourceforge.net/sourceforge/elektra/%{name}-%{version}.tar.gz
 Group:         System Environment/Libraries
 License:       BSD
-URL:           http://elektra.sf.net
-Obsoletes:     registry
-Provides:      registry
+URL:           http://elektra.sourceforge.net
 BuildRoot:     %{_tmppath}/%{name}-%{version}-build
 BuildRequires: doxygen libxml2-devel /usr/bin/xsltproc
 Summary:       A key/value pair database to store software configurations
@@ -63,7 +61,8 @@ rm -rf $RPM_BUILD_DIR/%{name}
 
 
 
-%post -p /sbin/ldconfig
+%post
+/sbin/ldconfig
 # Backwards compatibility, from the Linux Registry days
 if [ -d /etc/registry -a ! -d /etc/kdb ]; then
 	mv /etc/registry /etc/kdb
@@ -74,7 +73,8 @@ fi
 kdb set -t dir system/sw
 
 
-%postun -p /sbin/ldconfig
+%postun
+/sbin/ldconfig
 
 
 
