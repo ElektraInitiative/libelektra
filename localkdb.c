@@ -997,7 +997,7 @@ int kdbGetKeyByParentKey(const Key *parent, const char *baseName, Key *returned)
 
 	keyGetFullName(parent,name,size);
 	name[size-1]='/';
-	strcpy((char *)(parent+size),baseName);
+	strcpy((char *)(name+size),baseName);
 
 	keySetName(returned,name);
 
