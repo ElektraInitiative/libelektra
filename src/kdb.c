@@ -53,8 +53,10 @@ $LastChangedBy$
 #include <libxml/xmlreader.h>
 #include <libxml/xmlschemas.h>
 
-#define KDB_SCHEMA_PATH   "system/sw/kdb/current/schemapath"
-
+#ifndef KDB_SCHEMA_PATH
+#define KDB_SCHEMA_PATH       "/usr/share/sgml/elektra-0.1.1/elektra.xsd"
+#endif
+#define KDB_SCHEMA_PATH_KEY   "system/sw/kdb/current/schemapath"
 
 #define CMD_GET       1
 #define CMD_SET       2
@@ -1082,13 +1084,10 @@ int ksFromXMLfile(KeySet *ks,char *filename) {
 
 	// get the schema path from elektra . kdb is like any other program, its config should go into elektra...
 	/* Open the kdb to get the xml schema path*/
-	kdbOpen();
-	ret=kdbGetValue(KDB_SCHEMA_PATH,schema_path,512);
-	if (ret==0)
-		{
-		ctxt2 = xmlSchemaNewParserCtxt(schema_path);
-		}
-	kdbClose();
+	schema_path[0]=0;
+	ret=kdbGetValue(KDB_SCHEMA_PATH_KEY,schema_path,sizeof(schema_path));
+	if (ret==0) ctxt2 = xmlSchemaNewParserCtxt(schema_path);
+	else ctxt2 = xmlSchemaNewParserCtxt(KDB_SCHEMA_PATH); /* fallback to builtin */
 
 	
 	if (ctxt2==NULL) 
@@ -1235,7 +1234,7 @@ int ksFromXML(KeySet *ks,int fd) {
  * @see keyCompare(), ksCompare()
  * @see kdbGetChildKeys(), kdbSetKeys()
  * @see ksToStream()
- * @see kdbRemove()
+ * @see kdbRemoveKey()
  * @param argKeyName the parent key name (and children) that will be edited
  * @param argRecursive whether to act recursivelly or not
  * @param argAll whether to edit inactive keys or not
@@ -1350,10 +1349,9 @@ int commandEdit() {
 			keyGetFullName(current,keyName,sizeof(keyName));
 			ret=kdbRemove(keyName);
 			if (ret != 0) {
-				char error[500];
-				char keyname[300]="";
+				char error[850];
 				
-				sprintf(error,"kdb edit: while removing %s",keyname);
+				sprintf(error,"kdb edit: while removing %s",keyName);
 				perror(error);
 			}
 		}

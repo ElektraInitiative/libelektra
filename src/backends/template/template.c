@@ -117,6 +117,9 @@ int kdbOpen_backend() {
 /**
  * All finalization logic of the backend should go here.
  * 
+ * Called prior to unloading the backend dynamic module. Should ensure that no
+ * functions or static/global variables from the module will ever be accessed again.
+ * Should free any memory that the backend no longer needs.
  * After this call, libkdb.so will unload the backend library, so this is
  * the point to shutdown any affairs with the storage.
  *
@@ -262,16 +265,17 @@ u_int32_t kdbMonitorKey_backend(Key *interest, u_int32_t diffMask,
  */
 KDBBackend *kdbBackendFactory(void) {
 	return kdbBackendExport(BACKENDNAME,
-		KDB_BE_OPEN,&kdbOpen_backend,
-		KDB_BE_CLOSE,&kdbClose_backend,
-		KDB_BE_GETKEY,&kdbGetKey_backend,
-		KDB_BE_SETKEY,&kdbSetKey_backend,
-		KDB_BE_STATKEY,&kdbStatKey_backend,
-		KDB_BE_RENAME,&kdbRename_backend,
-		KDB_BE_REMOVE,&kdbRemove_backend,
-		KDB_BE_GETCHILD,&kdbGetKeyChildKeys_backend,
-		KDB_BE_SETKEYS,&kdbSetKeys_backend,
-		KDB_BE_MONITORKEY,&kdbMonitorKey_backend,
-		KDB_BE_MONITORKEYS,&kdbMonitorKeys_backend,
+		KDB_BE_OPEN,           &kdbOpen_backend,
+		KDB_BE_CLOSE,          &kdbClose_backend,
+		KDB_BE_GETKEY,         &kdbGetKey_backend,
+		KDB_BE_SETKEY,         &kdbSetKey_backend,
+		KDB_BE_STATKEY,        &kdbStatKey_backend,
+		KDB_BE_RENAME,         &kdbRename_backend,
+		KDB_BE_REMOVEKEY,      &kdbRemove_backend,
+		KDB_BE_GETCHILD,       &kdbGetKeyChildKeys_backend,
+		KDB_BE_MONITORKEY,     &kdbMonitorKey_backend,
+		KDB_BE_MONITORKEYS,    &kdbMonitorKeys_backend,
+		/* set to default implementation: */
+		KDB_BE_SETKEYS,        &kdbSetKeys_default,
 		KDB_BE_END);
 }

@@ -47,10 +47,11 @@ enum KDBBackendMethod {
 	KDB_BE_SETKEY=1<<4,          /*!< Next arg is backend for kdbSetKey() */
 	KDB_BE_SETKEYS=1<<5,         /*!< Next arg is backend for kdbSetKeys() */
 	KDB_BE_RENAME=1<<6,          /*!< Next arg is backend for kdbRename() */
-	KDB_BE_REMOVE=1<<7,          /*!< Next arg is backend for kdbRemove() */
+	KDB_BE_REMOVE=1<<7,          /*!< Deprecated */
 	KDB_BE_GETCHILD=1<<8,        /*!< Next arg is backend for kdbGetKeyChildKeys() */
 	KDB_BE_MONITORKEY=1<<9,      /*!< Next arg is backend for kdbMonitorKey() */
 	KDB_BE_MONITORKEYS=1<<10,    /*!< Next arg is backend for kdbMonitorKeys() */
+	KDB_BE_REMOVEKEY=1<<11,      /*!< Next arg is backend for kdbRemove() */
 	KDB_BE_END=0                 /*!< End of arguments */
 };
 
@@ -62,6 +63,13 @@ extern "C" {
 KDBBackend *kdbBackendExport(const char *backendName, ...);
 
 typedef KDBBackend *(*KDBBackendFactory)(void);
+
+/* Let the backend be aware of default implementations we provide */
+int kdbSetKeys_default(KeySet *ks);
+u_int32_t kdbMonitorKeys_default(KeySet *interests, u_int32_t diffMask,
+		unsigned long iterations, unsigned sleep);
+u_int32_t kdbMonitorKey_default(Key *interest, u_int32_t diffMask,
+		unsigned long iterations, unsigned sleep);
 
 
 #ifdef __cplusplus

@@ -87,7 +87,7 @@ kdb.o: kdb.c kdb.h kdbprivate.h
 
 
 kdb: kdb.o libkdb.so
-	${CC} -Wl,-rpath,. -L. ${XMLLIBS} -lkdb -o $@ $<
+	${CC} -DKDB_SCHEMA_PATH="${SGMLDIR}/elektra.xsd" -Wl,-rpath,. -L. ${XMLLIBS} -lkdb -o $@ $<
 
 
 kdbfuture.h: kdb.h

@@ -1,3 +1,8 @@
+* Tue Dec 30 2004 Avi Alkalay <avi@unix.sh> 0.4.10
+- Added the libkdb-fstab.so backend to treat the /etc/fstab file as a backend storage
+- Divided Key documentation in several parts
+- Appeared ksPopLast()
+
 * Tue Dec 27 2004 Avi Alkalay <avi@unix.sh> 0.4.9
 - Full nice elegant documented support for dynamic pluggable backends
 - kdb now validates an imported XML against an XML schema, thanks to Remi Pouak

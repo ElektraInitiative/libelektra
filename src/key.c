@@ -43,6 +43,7 @@ extern int errno;
 
 /**
  * @return number of bytes used by the string, including the final NULL
+ * @ingroup backend
  */
 size_t strblen(const char *s) {
 	char *found=index(s,0);
@@ -52,8 +53,8 @@ size_t strblen(const char *s) {
 
 
 /**
- * @defgroup key Key Class Methods
- * @brief The Key Class and its methods.
+ * @defgroup key Key :: Basic Methods
+ * @brief Key construction and initialization methods.
  *
  * To use it:
  * @code
@@ -63,16 +64,32 @@ size_t strblen(const char *s) {
  * A Key is the essential class that contains all key data and metadata.
  * Key properties are:
  * - Key name
- * - User domain
  * - Key value or data
  * - Data type
  * - Comment about the key
- * - UID, GID and access filesystem-like permissions
+ * - User domain (the user that owns the key)
+ * - UID, GID and filesystem-like access permissions
  * - Access, change and modification times
  * - A general flag
  *
+ * Described here the methods to get and set, and make various manipulations
+ * in the objects of class Key.
  *
- * Rules for Key Names
+ */
+
+ 
+ 
+/**
+ * @defgroup keyname Key :: Name Manipulation Methods
+ * @brief Methods to do various operations on Key names.
+ *
+ * To use them:
+ * @code
+#include <kdb.h>
+ * @endcode
+ *
+ *
+ * @par Rules for Key Names
  *
  * When using Elektra to store your application's configuration and state,
  * please keep in mind the following rules:
@@ -89,15 +106,70 @@ size_t strblen(const char *s) {
  *
  *
  *
- * Described here the methods to get and set, and make various manipulations
- * in the objects of class Key.
  *
- * @{
+ */ 
+ 
+ 
+/**
+ * @defgroup keyvalue Key :: Value Manipulation Methods
+ * @brief Methods to do various operations on Key values.
+ *
+ * To use them:
+ * @code
+#include <kdb.h>
+ * @endcode
+ *
+ *
+ */
+
+ 
+/**
+ * @defgroup keymeta Key :: Meta Info Manipulation Methods
+ * @brief Methods to do various operations on Key metainfo
+ *
+ * To use them:
+ * @code
+#include <kdb.h>
+ * @endcode
+ *
+ * Key metainfo are:
+ * - Comment about the key
+ * - User domain (the user that owns the key)
+ * - UID, GID and filesystem-like access permissions
+ * - Access, change and modification times
+ * - A general flag
+ *
+ */
+
+ 
+/**
+ * @defgroup keytest Key :: Methods for Making Tests
+ * @brief Methods to do various tests on Keys
+ *
+ * To use them:
+ * @code
+#include <kdb.h>
+ * @endcode
+ *
+ *
+ */
+
+ 
+/**
+ * @defgroup keymisc Key :: Miscelaneous
+ * @brief Methods to do various things
+ *
+ * To use them:
+ * @code
+#include <kdb.h>
+ * @endcode
+ *
+ *
  */
 
  
  
- 
+   
 /**
  * A practical way to fully create a Key object in one step.
  * This function tries to mimic the C++ way for constructors.
@@ -115,27 +187,28 @@ size_t strblen(const char *s) {
  * The simplest way to call it is with no tags, only a key name. See example bellow.
  * 
  * The Key attribute tags are the following:
- * - @p KEY_SWITCH_TYPE \n
+ * - KeySwitch::KEY_SWITCH_TYPE \n
  *   This tag requires 1 or 2 more parameters. The first is obviously the
- *   type. If the type is KEY_TYPE_BINARY or any other binary-like
+ *   type. If the type is KeySwitch::KEY_TYPE_BINARY or any other binary-like
  *   user-defined type (see keySetType()), a second parameter is needed and
  *   is the size in bytes (size_t) of the data passed on the subsequent
- *   KEY_SWITCH_VALUE parameter. You must use this tag before
- *   KEY_SWITCH_VALUE, otherwise KEY_TYPE_STRING is assumed.
- * - @p KEY_SWITCH_VALUE \n
+ *   KeySwitch::KEY_SWITCH_VALUE parameter. You must use this tag before
+ *   KeySwitch::KEY_SWITCH_VALUE, otherwise KeyType::KEY_TYPE_STRING is assumed.
+ * - KeySwitch::KEY_SWITCH_VALUE \n
  *   Next parameter is a pointer to the value that will be set to the key.
- *   If no KEY_SWITCH_TYPE was used before, KEY_TYPE_STRING is assumed.
- * - @p KEY_SWITCH_UID, @p KEY_SWITCH_GID \n
- *   Next parametkeySetRawer is taken as the UID (uid_t) or GID (gid_t) that will
+ *   If no KeySwitch::KEY_SWITCH_TYPE was used before,
+ *   KeySwitch::KEY_TYPE_STRING is assumed.
+ * - KeySwitch::KEY_SWITCH_UID, @p KeySwitch::KEY_SWITCH_GID \n
+ *   Next parameter is taken as the UID (uid_t) or GID (gid_t) that will
  *   be defined on the key. See keySetUID() and keySetGID().
- * - @p KEY_SWITCH_MODE \n
+ * - KeySwitch::KEY_SWITCH_MODE \n
  *   Next parameter is taken as access permissions (mode_t) to the key.
  *   See keySetAccess().
- * - @p KEY_SWITCH_DOMAIN \n
+ * - KeySwitch::KEY_SWITCH_DOMAIN \n
  *   Next parameter is the user domain. See keySetOwner().
- * - @p KEY_SWITCH_COMMENT \n
+ * - KeySwitch::KEY_SWITCH_COMMENT \n
  *   Next parameter is a comment. See keySetComment().
- * - @p KEY_SWITCH_NEEDSYNC \n
+ * - KeySwitch::KEY_SWITCH_NEEDSYNC \n
  *   Needs no extra parameter. Makes keyNew() retrieve the Key from the
  *   backend with kdbGetKey(). In the same keyNew() call you can use this
  *   tag in conjunction with any other, which will make keyNew() modify
@@ -144,7 +217,7 @@ size_t strblen(const char *s) {
  *   failed, you'll still have a valid, but flaged, key.
  *   Check with keyGetFlag(), and @p errno. You will have to kdbOpen()
  *   before using keyNew() with this tag.
- * - @p KEY_SWITCH_END \n
+ * - KeySwitch::KEY_SWITCH_END \n
  *   Must be the last parameter passed to keyNew(). It is allways
  *   required, unless the @p keyName is NULL too.
  *   
@@ -154,7 +227,7 @@ KeySet *ks=ksNew();
 
 kdbOpen();
 	
-ksAppend(ks,keyNew(0));     // an empty key
+ksAppend(ks,keyNew(KEY_SWITCH_END));       // an empty key
 	
 ksAppend(ks,keyNew("user/sw",              // a simple key
 	KEY_SWITCH_END));                      // no more args
@@ -207,7 +280,9 @@ kdbClose();
  * @see keyDel()
  * @return a pointer to a new allocated and initialized Key object,
  * 	or NULL if an invalid @p keyName was passed (see keySetName()).
- */ 
+ * @ingroup key
+ * 
+ */
 Key *keyNew(const char *keyName, ...) {
 	va_list va;
 	Key *key;
@@ -268,7 +343,7 @@ Key *keyNew(const char *keyName, ...) {
 					keySetUID(key,va_arg(va,uid_t));
 					break;
 				case KEY_SWITCH_GID:
-					keySetUID(key,va_arg(va,gid_t));
+					keySetGID(key,va_arg(va,gid_t));
 					break;
 				case KEY_SWITCH_MODE:
 					keySetAccess(key,va_arg(va,mode_t));
@@ -305,6 +380,7 @@ Key *keyNew(const char *keyName, ...) {
  * 
  * @see keyNew()
  * @return whatever is returned by keyClose()
+ * @ingroup key
  *
  */ 
 int keyDel(Key *key) {
@@ -327,8 +403,9 @@ int keyDel(Key *key) {
  * You'd better guarantee your code is robust enough using
  * keyNew() and keyDel() everytime.
  * 
- * @see keyInit()
- * @see keyClose()
+ * @see keyInit(), keyClose()
+ * @ingroup keytest
+ * 
  */
 int keyIsInitialized(const Key *key) {
 	if (!key) return 0;
@@ -361,9 +438,9 @@ int keyIsInitialized(const Key *key) {
  * 	or something wrong happened and @p errno is set.
  * @param key the key object
  * @param newName the new key name
- * @see keyNew()
- * @see keyGetName()
- * @see keyGetFullName()
+ * @see keyNew(), keySetOwner()
+ * @see keyGetName(), keyGetFullName()
+ * @ingroup keyname
  */
 size_t keySetName(Key *key, const char *newName) {
 	size_t length;
@@ -473,13 +550,82 @@ size_t keySetName(Key *key, const char *newName) {
 
  
 
+/**
+ * Adds @p baseName to the current key name.
+ *
+ * Assumes that @p key is a directory. @p baseName is appended to it.
+ * The function adds @c '/' if needed while concatenating. This means it does not
+ * matter whether the current path has a trailing '/' or not. If there is
+ * none, it becomes appended.
+ * 
+ * So if @p key has name @c "system/dir1/dir2" and this method is called with
+ * @p baseName @c "mykey", the resulting key will have name
+ * @c "system/dir1/dir2/mykey".
+ *
+ * @return the size in bytes of the new key name
+ * @see keySetBaseName()
+ * @ingroup keyname
+ * 
+ */
+size_t keyAddBaseName(Key *key,const char *baseName) {
+	size_t nameSize=strblen(key->key);
+	size_t newSize=strblen(baseName);
+	
+	if (key->key[nameSize-2] == '/') newSize--;
+	
+	newSize+=nameSize;
+	
+	key->key=realloc(key->key,newSize);
+	
+	strcat(key->key,"/");
+	strcat(key->key,baseName);
+	
+	return newSize;
+}
+
+
+
+
+/**
+ * Sets @c baseName as the new basename for @c key.
+ *
+ * All text after the last @c '/' in the @p key keyname is erased and
+ * @p baseName is appended.
+ *
+ * So if @p key has name @c "system/dir1/dir2/mykey" and this method is
+ * called with @p baseName @c "herkey", the resulting key will have name
+ * @c "system/dir1/dir2/herkey".
+ *
+ * @return the size in bytes of the new key name
+ * @see keyAddBaseName()
+ * @ingroup keyname
+ * 
+ */
+size_t keySetBaseName(Key *key, const char *baseName) {
+	size_t nameSize=strblen(key->key);
+	size_t newSize=strblen(baseName);
+	char *end;
+	
+	end=rindex(key->key,'/');
+	
+	if (end) {
+		newSize+=end-key->key;
+		end[1]=0;
+		key->key=realloc(key->key,newSize);
+		strcat(key->key,baseName);
+		return newSize;
+	} else return keySetName(key,baseName);
+}
+
+
+
 
 /**
  * Bytes needed to store the key name without user domain.
  *
  * @return number of bytes needed to store key name without user domain
- * @see keyGetName()
- * @see keyGetFullNameSize()
+ * @see keyGetName(), keyGetFullNameSize()
+ * @ingroup keyname
  */
 size_t keyGetNameSize(const Key *key) {
 	if (!key || !keyIsInitialized(key)) {
@@ -501,6 +647,8 @@ size_t keyGetNameSize(const Key *key) {
  * @param key the key object
  * @param returnedName pre-allocated memory to write the key name
  * @param maxSize maximum number of bytes that will fit in returnedName, including the final NULL
+ * @see keyGetNameSize(), keyGetFullName(), keyGetFullNameSize()
+ * @ingroup keyname
  */
 size_t keyGetName(const Key *key, char *returnedName, size_t maxSize) {
 	size_t bytes;
@@ -533,6 +681,7 @@ size_t keyGetName(const Key *key, char *returnedName, size_t maxSize) {
  * @return number of bytes needed to store key name including user domain
  * @see keyGetFullName()
  * @see keyGetNameSize()
+ * @ingroup keyname
  */
 size_t keyGetFullNameSize(const Key *key) {
 	size_t returnedSize;
@@ -562,6 +711,7 @@ size_t keyGetFullNameSize(const Key *key) {
  * @param key the key object
  * @param returnedName pre-allocated memory to write the key name
  * @param maxSize maximum number of bytes that will fit in returnedName, including the final NULL
+ * @ingroup keyname
  */
 size_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize) {
 	size_t userSize=sizeof("user")-1;
@@ -601,15 +751,14 @@ size_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize) {
 
 
 /**
- * Return the namespace of a key name
+ * Return the namespace of a key name.
  *
- * Currently valid namespaces are KEY_NS_SYSTEM and KEY_NS_USER.
+ * Currently valid namespaces are KeyNamespace::KEY_NS_SYSTEM and KeyNamespace::KEY_NS_USER.
  *
- * @return KEY_NS_SYSTEM, KEY_NS_USER or 0
- * @see keyGetNamespace()
- * @see keyIsUser()
- * @see keyIsSystem()
+ * @return KeyNamespace::KEY_NS_SYSTEM, KeyNamespace::KEY_NS_USER or 0
+ * @see keyGetNamespace(), keyIsUser(), keyIsSystem()
  * @see #KeyNamespace
+ * @ingroup keytest
  *
  */
 int keyNameGetNamespace(const char *keyName) {
@@ -623,13 +772,11 @@ int keyNameGetNamespace(const char *keyName) {
 /**
  * Return the namespace of a key
  *
- * Currently valid namespaces are KEY_NS_SYSTEM and KEY_NS_USER.
+ * Currently valid namespaces are KeyNamespace::KEY_NS_SYSTEM and KeyNamespace::KEY_NS_USER.
  *
- * @return KEY_NS_SYSTEM, KEY_NS_USER or 0
- * @see keyNameGetNameSpace()
- * @see keyIsUser()
- * @see keyIsSystem()
- * @see #KeyNamespace
+ * @return KeyNamespace::KEY_NS_SYSTEM, KeyNamespace::KEY_NS_USER or 0
+ * @see keyNameGetNamespace(), keyIsUser(), keyIsSystem()
+ * @ingroup keytest
  *
  */
 int keyGetNamespace(const Key *key) {
@@ -646,9 +793,8 @@ int keyGetNamespace(const Key *key) {
  *
  * @return 1 if string begins with @p system , 0 otherwise
  * @param keyName the name of a key
- * @see keyIsSystem()
- * @see keyIsUser()
- * @see keyNameIsUser()
+ * @see keyIsSystem(), keyIsUser(), keyNameIsUser()
+ * @ingroup keyname
  *
  */
 int keyNameIsSystem(const char *keyName) {
@@ -665,9 +811,8 @@ int keyNameIsSystem(const char *keyName) {
  * Check whether a key is under the @p system namespace or not
  *
  * @return 1 if key name begins with @p system, 0 otherwise
- * @see keyNameIsSystem()
- * @see keyIsUser()
- * @see keyNameIsUser()
+ * @see keyNameIsSystem(), keyIsUser(), keyNameIsUser()
+ * @ingroup keytest
  *
  */
 int keyIsSystem(const Key *key) {
@@ -684,9 +829,8 @@ int keyIsSystem(const Key *key) {
  *
  * @return 1 if string begins with @p user, 0 otherwise
  * @param keyName the name of a key
- * @see keyIsSystem()
- * @see keyIsUser()
- * @see keyNameIsSystem()
+ * @see keyIsSystem(), keyIsUser(), keyNameIsSystem()
+ * @ingroup keyname
  *
  */
 int keyNameIsUser(const char *keyName) {
@@ -703,9 +847,8 @@ int keyNameIsUser(const char *keyName) {
  * Check whether a key is under the @p user namespace or not
  *
  * @return 1 if key name begins with @p user, 0 otherwise
- * @see keyNameIsSystem()
- * @see keyIsSystem()
- * @see keyNameIsUser()
+ * @see keyNameIsSystem(), keyIsSystem(), keyNameIsUser()
+ * @ingroup keytest
  *
  */
 int keyIsUser(const Key *key) {
@@ -725,6 +868,7 @@ int keyIsUser(const Key *key) {
  * @return number of bytes needed without ending NULL
  * @param keyName the name of the key
  * @see keyGetRootNameSize()
+ * @ingroup keyname
  */
 size_t keyNameGetRootNameSize(const char *keyName) {
 	char *end;
@@ -760,6 +904,7 @@ size_t keyNameGetRootNameSize(const char *keyName) {
  * @return number of bytes needed without the ending NULL
  * @see keyGetFullRootNameSize()
  * @see keyNameGetRootNameSize()
+ * @ingroup keyname
  */
 size_t keyGetRootNameSize(const Key *key) {
 	if (!key) return 0;
@@ -788,6 +933,7 @@ size_t keyGetRootNameSize(const Key *key) {
  * @see keyNameGetRootNameSize()
  * @see keyGetRootNameSize()
  * @see keyGetFullRootName()
+ * @ingroup keyname
  */
 size_t keyGetRootName(const Key *key, char *returned, size_t maxSize) {
 	size_t size;
@@ -826,6 +972,7 @@ size_t keyGetRootName(const Key *key, char *returned, size_t maxSize) {
  * @return number of bytes needed without ending NULL
  * @see keyNameGetRootNameSize()
  * @see keyGetRootNameSize()
+ * @ingroup keyname
  */
 size_t keyGetFullRootNameSize(const Key *key) {
 	size_t size=0;
@@ -839,8 +986,7 @@ size_t keyGetFullRootNameSize(const Key *key) {
 }
 
 
-
-/**
+/** 
  * Copy to @p returned the full root name of the key.
  *
  * Some examples:
@@ -856,6 +1002,7 @@ size_t keyGetFullRootNameSize(const Key *key) {
  * @return number of bytes written to @p returned without ending NULL
  * @see keyGetFullRootNameSize()
  * @see keyGetRootName()
+ * @ingroup keyname
  */
 size_t keyGetFullRootName(const Key *key, char *returned, size_t maxSize) {
 	size_t size;
@@ -904,6 +1051,7 @@ size_t keyGetFullRootName(const Key *key, char *returned, size_t maxSize) {
 /**
  * Get the number of bytes needed to store this key's parent name.
  * @see keyGetParent()
+ * @ingroup keyname
  */
 size_t keyGetParentSize(const Key *key) {
 	char *parentNameEnd;
@@ -948,6 +1096,7 @@ size_t keyGetParentSize(const Key *key) {
  * @see keyGetParentSize()
  * @param returnedParent pre-allocated buffer to copy parent name to
  * @param maxSize number of bytes pre-allocated
+ * @ingroup keyname
  */
 size_t keyGetParent(const Key *key, char *returnedParent, size_t maxSize) {
 	size_t parentSize;
@@ -976,6 +1125,7 @@ size_t keyGetParent(const Key *key, char *returnedParent, size_t maxSize) {
  *
  * @return number of bytes needed without ending NULL
  * @see keyGetBaseNameSize()
+ * @ingroup keyname
  */
 size_t keyNameGetBaseNameSize(const char *keyName) {
 	char *end;
@@ -1021,6 +1171,7 @@ size_t keyNameGetBaseNameSize(const char *keyName) {
  *
  * @return number of bytes needed without ending NULL
  * @see keyNameGetBaseNameSize()
+ * @ingroup keyname
  */
 size_t keyGetBaseNameSize(const Key *key) {
 	if (!key) return 0;
@@ -1044,6 +1195,7 @@ size_t keyGetBaseNameSize(const Key *key) {
  * @param maxSize size of the @p returned buffer
  * @return number of bytes copied to @p returned, or 0 and @p errno is set
  * @see keyGetBaseNameSize()
+ * @ingroup keyname
  */
 size_t keyGetBaseName(const Key *key, char *returned, size_t maxSize) {
 	size_t size;
@@ -1094,6 +1246,7 @@ size_t keyGetBaseName(const Key *key, char *returned, size_t maxSize) {
  * @return the number of bytes needed to store the key value
  * @see keyGetString()
  * @see keyGetBinary()
+ * @ingroup keyvalue
  */
 size_t keyGetDataSize(const Key *key) {
 	if (!key || !keyIsInitialized(key)) {
@@ -1114,6 +1267,7 @@ size_t keyGetDataSize(const Key *key) {
  * @param newString NULL-terminated text string
  * @return the number of bytes actually copied including final NULL
  * @see keyGetString()
+ * @ingroup keyvalue
  */
 size_t keySetString(Key *key, const char *newString) {
 	size_t ret=newString?strblen(newString):0;
@@ -1137,6 +1291,7 @@ size_t keySetString(Key *key, const char *newString) {
  * @param maxSize number of bytes of pre-allocated memory
  * @return the number of bytes actually copied
  * @see keySetString()
+ * @ingroup keyvalue
  */
 size_t keyGetString(const Key *key, char *returnedString, size_t maxSize) {
 	if (!key || !keyIsInitialized(key)) {
@@ -1167,11 +1322,12 @@ size_t keyGetString(const Key *key, char *returnedString, size_t maxSize) {
 
 
 /**
- * Set @p key as type @p KEY_TYPE_LINK with target @p target.
+ * Set @p key as type KeyType::KEY_TYPE_LINK with target @p target.
  * 
  * @param key the object to work with
  * @param target the value to set to @p key
  * @return whatever returned by keySetRaw()
+ * @ingroup keyvalue
  *
  */
 size_t keySetLink(Key *key, const char *target) {
@@ -1194,6 +1350,7 @@ size_t keySetLink(Key *key, const char *target) {
  * @param maxSize the size in bytes of the @p returnedTarget buffer
  * @param key the link key
  * @return the size in bytes of the copied target string
+ * @ingroup keyvalue
  *
  */
 size_t keyGetLink(const Key *key, char *returnedTarget, size_t maxSize) {
@@ -1230,8 +1387,8 @@ size_t keyGetLink(const Key *key, char *returnedTarget, size_t maxSize) {
  * The value of link keys is the key they point to.
  *
  * @return 1 if key is a link, 0 otherwise
- * @see keyIsDir()
- * @see keyGetType()
+ * @see keyIsDir(), keyGetType()
+ * @ingroup keytest
  */
 int keyIsLink(const Key *key) {
 	if (!key) return 0;
@@ -1248,8 +1405,8 @@ int keyIsLink(const Key *key) {
  * Folder keys have no value.
  *
  * @return 1 if key is a folder, 0 otherwise
- * @see keyIsLink()
- * @see keyGetType()
+ * @see keyIsLink(), keyGetType()
+ * @ingroup keytest
  */
 int keyIsDir(const Key *key) {
 	if (!key) return 0;
@@ -1261,13 +1418,28 @@ int keyIsDir(const Key *key) {
 
 
 /**
+ * Check if a key is of some binary type
+ *
+ * @return 1 if KeyType::KEY_TYPE_BINARY <= type < KeyType::KEY_TYPE_STRING, 0 otherwise
+ * @ingroup keytest
+ */
+int keyIsBin(const Key *key) {
+	if (!key) return 0;
+	if (!keyIsInitialized(key)) return 0;
+
+	return (KEY_TYPE_BINARY <= key->type && key->type < KEY_TYPE_STRING);
+}
+
+
+
+/**
  * Get the value of a binary or string key.
  *
  * @param returnedBinary pre-allocated memory to store a copy of the key value
  * @param maxSize number of bytes of pre-allocated memory
  * @return the number of bytes actually copied
- * @see keySetBinary()
- * @see keyGetString()
+ * @see keySetBinary(), keyGetString(), keyIsBin()
+ * @ingroup keyvalue
  */
 size_t keyGetBinary(const Key *key, void *returnedBinary, size_t maxSize) {
 	if (!key || !keyIsInitialized(key))
@@ -1301,9 +1473,8 @@ size_t keyGetBinary(const Key *key, void *returnedBinary, size_t maxSize) {
  * @param newBinary random bytes
  * @param dataSize number of bytes to copy from newBinary
  * @return the number of bytes actually copied
- * @see keyGetBinary()
- * @see keyGetString()
- * @see keySetString()
+ * @see keyGetBinary(), keyIsBin(), keyGetString(), keySetString()
+ * @ingroup keyvalue
  */
 size_t keySetBinary(Key *key, const void *newBinary, size_t dataSize) {
 	size_t ret=keySetRaw(key,newBinary,dataSize);
@@ -1321,6 +1492,7 @@ size_t keySetBinary(Key *key, const void *newBinary, size_t dataSize) {
  * that is checked by this method.
  *
  * @return 1 if the key was changed, 0 otherwise.
+ * @ingroup keytest
  */
 int keyNeedsSync(const Key *key) {
 	if (!key) return 0;
@@ -1332,9 +1504,10 @@ int keyNeedsSync(const Key *key) {
 /**
  * Returns the key data type.
  *
- * @see keySetType()
+ * @see keySetType(), keyIsBin(), keyIsDir(), keyIsLink()
  * @see #KeyType
  * @return the key type
+ * @ingroup keyvalue
  *
  */
 u_int8_t keyGetType(const Key *key) {
@@ -1357,12 +1530,12 @@ u_int8_t keyGetType(const Key *key) {
  * It is not usually needed because the data type is automatically set
  * when setting the key value.
  *
- * The @p KEY_TYPE_DIR is the only type that has no value, so when
+ * The KeyType::KEY_TYPE_DIR is the only type that has no value, so when
  * using this method to set to this type, the key value will be freed.
  *
  * @par Example:
  * @code
-#define KEY_TYPE_COLOR KEY_TYPE_STRING+4
+#define KEY_TYPE_COLOR (KEY_TYPE_STRING+4)
 
 Key *color1;
 Key *color2;
@@ -1413,6 +1586,7 @@ keyDel(color2);
  * @see keyGetType()
  * @see #KeyType
  * @return the new type
+ * @ingroup keyvalue
  *
  */
 u_int8_t keySetType(Key *key,u_int8_t newType) {
@@ -1450,9 +1624,8 @@ u_int8_t keySetType(Key *key,u_int8_t newType) {
  *
  * @param newBinary array of bytes to set as the value
  * @param dataSize number bytes to use from newBinary, including the final NULL
- * @see keySetType()
- * @see keySetString()
- * @see keySetBinary()
+ * @see keySetType(), keySetString(), keySetBinary()
+ * @ingroup keyvalue
  */
 size_t keySetRaw(Key *key, const void *newBinary, size_t dataSize) {
 	if (!key) {
@@ -1503,9 +1676,8 @@ size_t keySetRaw(Key *key, const void *newBinary, size_t dataSize) {
  *
  * @param userDomain the user domain (or user name)
  * @return the number of bytes copied
- * @see keySetName()
- * @see keyGetOwner()
- * @see keyGetFullName()
+ * @see keySetName(), keyGetOwner(), keyGetFullName()
+ * @ingroup keymeta
  */
 size_t keySetOwner(Key *key, const char *userDomain) {
 	size_t size;
@@ -1542,6 +1714,7 @@ size_t keySetOwner(Key *key, const char *userDomain) {
  * 
  * @return number of bytes
  * @see keyGetOwner()
+ * @ingroup keymeta
  */
 size_t keyGetOwnerSize(const Key *key) {
 	
@@ -1577,9 +1750,8 @@ size_t keyGetOwnerSize(const Key *key) {
  * @param returned a pre-allocated space to store the owner
  * @param maxSize maximum number of bytes that fit returned
  * @return number of bytes written to buffer
- * @see keySetName()
- * @see keySetOwner()
- * @see keyGetFullName()
+ * @see keySetName(), keySetOwner(), keyGetFullName()
+ * @ingroup keymeta
  */
 size_t keyGetOwner(const Key *key, char *returned, size_t maxSize) {
 	size_t bytes;
@@ -1624,6 +1796,7 @@ size_t keyGetOwner(const Key *key, char *returned, size_t maxSize) {
  * @param newComment the comment, that can be freed after this call.
  * @return the number of bytes copied
  * @see keyGetComment()
+ * @ingroup keymeta
  */
 size_t keySetComment(Key *key, const char *newComment) {
 	size_t size;
@@ -1662,8 +1835,8 @@ size_t keySetComment(Key *key, const char *newComment) {
  * Use this method to allocate memory to retrieve a key comment.
  *
  * @return number of bytes needed
- * @see keyGetComment()
- * @see keySetComment()
+ * @see keyGetComment(), keySetComment()
+ * @ingroup keymeta
  */
 size_t keyGetCommentSize(const Key *key) {
 	if (!key || !keyIsInitialized(key)) {
@@ -1689,8 +1862,8 @@ size_t keyGetCommentSize(const Key *key) {
  * @param returnedDesc pre-allocated memory to copy the comments to
  * @param maxSize number of bytes that will fit returnedDesc
  * @return number of bytes written
- * @see keyGetCommentSize()
- * @see keySetComment()
+ * @see keyGetCommentSize(), keySetComment()
+ * @ingroup keymeta
  */
 size_t keyGetComment(const Key *key, char *returnedDesc, size_t maxSize) {
 	size_t bytes;
@@ -1729,7 +1902,11 @@ size_t keyGetRecordSize(const Key *key) {
 }
 
 
-
+/**
+ * Return a pointer to the next key, if @p key is member of a KeySet.
+ * Different from ksNext(), this call does not affect the KeySet internal cursor.
+ * @ingroup keymisc
+ */
 Key *keyNext(Key *key) {
 	return key->next;
 }
@@ -1838,8 +2015,8 @@ size_t keySetDouble(Key *key, double newDouble) {
  * @param source the source key
  * @param dest the new copy of the key
  * @return 0 on success
- * @see keyClose()
- * @see keyInit()
+ * @see keyClose(), keyInit()
+ * @ingroup key
  */
 int keyDup(const Key *source, Key *dest) {
 
@@ -1875,9 +2052,8 @@ int keyDup(const Key *source, Key *dest) {
  * domain.
  *
  * @return the system's UID of the key
- * @see keyGetGID()
- * @see keySetUID()
- * @see keyGetOwner()
+ * @see keyGetGID(), keySetUID(), keyGetOwner()
+ * @ingroup keymeta
  */
 uid_t keyGetUID(const Key *key) {
 	if (!key || !keyIsInitialized(key)) {
@@ -1899,9 +2075,8 @@ uid_t keyGetUID(const Key *key) {
  * domain.
  *
  * @return 0 on success
- * @see keySetGID()
- * @see keyGetUID()
- * @see keyGetOwner()
+ * @see keySetGID(), keyGetUID(), keyGetOwner()
+ * @ingroup keymeta
  */
 int keySetUID(Key *key, uid_t uid) {
 	if (!key) return errno=KDB_RET_UNINITIALIZED;
@@ -1919,8 +2094,8 @@ int keySetUID(Key *key, uid_t uid) {
  * Get the system's group ID of a key
  *
  * @return the system's GID of the key
- * @see keySetGID()
- * @see keyGetUID()
+ * @see keySetGID(), keyGetUID()
+ * @ingroup keymeta
  */
 gid_t keyGetGID(const Key *key) {
 	if (!key || !keyIsInitialized(key)) {
@@ -1939,8 +2114,8 @@ gid_t keyGetGID(const Key *key) {
  * Set the system's group ID of a key
  *
  * @return the system's GID of the key
- * @see keyGetGID()
- * @see keySetUID()
+ * @see keyGetGID(), keySetUID()
+ * @ingroup keymeta
  */
 int keySetGID(Key *key, gid_t gid) {
 	if (!key) return errno=KDB_RET_UNINITIALIZED;
@@ -1957,6 +2132,7 @@ int keySetGID(Key *key, gid_t gid) {
 /**
  * Return the key filesystem-like access permissions.
  * @see keySetAccess()
+ * @ingroup keymeta
  */
 mode_t keyGetAccess(const Key *key) {
 	if (!key || !keyIsInitialized(key)) {
@@ -1971,12 +2147,12 @@ mode_t keyGetAccess(const Key *key) {
 
 
 
-
 /**
  * Set the key filesystem-like access permissions.
  * @param key the key to set access permissions
  * @param mode the access permissions as for chmod(2)
  * @see keyGetAccess()
+ * @ingroup keymeta
  */
 int keySetAccess(Key *key, mode_t mode) {
 	if (!key) return errno=KDB_RET_UNINITIALIZED;
@@ -1990,10 +2166,9 @@ int keySetAccess(Key *key, mode_t mode) {
 
 
 
-
-
 /**
  * Get last modification time of the key on disk.
+ * @ingroup keymeta
  */
 time_t keyGetMTime(const Key *key) {
 	if (!key || !keyIsInitialized(key)) {
@@ -2009,6 +2184,7 @@ time_t keyGetMTime(const Key *key) {
 
 /**
  * Get last time the key data was read from disk.
+ * @ingroup keymeta
  */
 time_t keyGetATime(const Key *key) {
 	if (!key || !keyIsInitialized(key)) {
@@ -2021,8 +2197,10 @@ time_t keyGetATime(const Key *key) {
 }
 
 
+
 /**
  * Get last time the key was stated from disk.
+ * @ingroup keymeta
  */
 time_t keyGetCTime(const Key *key) {
 	if (!key || !keyIsInitialized(key)) {
@@ -2033,7 +2211,6 @@ time_t keyGetCTime(const Key *key) {
 
 	return key->ctime;
 }
-
 
 
 
@@ -2052,6 +2229,7 @@ time_t keyGetCTime(const Key *key) {
  * @see #KeySwitch
  * 
  * @par Example of very powerfull specific Key lookup in a KeySet:
+ * @ingroup keytest
  * @code
 KeySet *ks=ksNew();
 Key *base;
@@ -2091,7 +2269,7 @@ interests=(KEY_SWITCH_NAME | KEY_SWITCH_VALUE | KEY_SWITCH_NEEDSYNC);
 // we don't really need this, since previous loop achieved end of KeySet
 ksRewind(ks);
 while ((current=ksNext(ks))) {
-	match=keyCompare(current,basE);
+	match=keyCompare(current,base);
 	
 	if ((~match & interests) == interests) {
 		char buffer[300];
@@ -2171,14 +2349,17 @@ u_int32_t keyCompare(const Key *key1, const Key *key2) {
 	</key>@endverbatim
 
  * Accepted options that can be ORed:
- * - @p KDB_O_NUMBERS: Do not convert UID and GID into user and group names
- * - @p KDB_O_CONDENSED: Less human readable, more condensed output
+ * - @p KDBOptions::KDB_O_NUMBERS \n
+ *   Do not convert UID and GID into user and group names
+ * - @p KDBOptions::KDB_O_CONDENSED \n
+ *   Less human readable, more condensed output
  *
  * @param stream where to write output: a file or stdout
  * @param options ORed of KDB_O_* options
  * @see ksToStream()
  * @see #KDBOptions
  * @return number of bytes written to output
+ * @ingroup keymisc
  */
 size_t keyToStream(const Key *key, FILE* stream, unsigned long options) {
 	size_t written=0;
@@ -2358,141 +2539,16 @@ size_t keyGetSerializedSize(Key *key) {
 
 
 
-// int keyUnserialize(Key *key,void *buffer) {
-// 	void *cursor=buffer;
-//
-// 	/* A valid serialized key has the following layout
-// 	   - Null terminated key name
-// 	   - KeyInfo structure
-// 	   - Null terminated key group
-// 	   - Null terminated key comment
-// 	   - Data
-// 	*/
-//
-// 	keySetName(key,cursor);
-// 	cursor+=strlen(cursor)+1;
-//
-// 	return keyUnserializeWithoutName(key,cursor);
-// }
-
-
-
-
-// int keyUnserializeWithoutName(Key *key,void *buffer) {
-// 	void *cursor=buffer;
-//
-// 	/* A valid serialized key has the following layout
-// 	   - KeyInfo structure
-// 	   - Null terminated key group
-// 	   - Null terminated key comment
-// 	   - Data
-// 	*/
-//
-// 	key->metaInfo=*(KeyInfo *)cursor;
-// 	cursor+=sizeof(KeyInfo);
-//
-// 	keySetGroup(key,cursor);
-// 	cursor+=key->groupSize;
-//
-// 	keySetComment(key,cursor);
-// 	cursor+=key->commentSize;
-//
-// 	keySetRaw(key,cursor,key->dataSize);
-//
-// 	return KDB_RET_OK;
-// }
-
-
-
-
-
-
-// int keySerialize(Key *key,void *buffer, size_t maxSize) {
-// 	void *cursor=buffer;
-// 	size_t keySize;
-//
-// 	if (!key) return KDB_RET_NULLKEY;
-// 	if (!keyIsInitialized(key)) return KDB_RET_UNINITIALIZED;
-// 	if (!(key->flags & KEY_SWITCH_NAME)) return KDB_RET_NOKEY;
-//
-// 	/* A valid serialized key has the following layout
-// 	   - Null terminated full key name
-// 	   - KeyInfo structure
-// 	   - Null terminated key group
-// 	   - Null terminated key comment
-// 	   - Data
-// 	*/
-//
-// 	/* The key name */
-// 	keyGetFullName(key,cursor,maxSize);
-// 	keySize=keyGetFullNameSize(key);
-// 	cursor+=keySize+1;
-//
-// 	return keySerializeWithoutName(key,cursor,maxSize-(cursor-buffer));
-// }
-
-
-
-
-
-
-
-
-// int keySerializeWithoutName(Key *key,void *buffer, size_t maxSize) {
-// 	void *cursor=buffer;
-//
-// 	if (!key) return KDB_RET_NULLKEY;
-// 	if (!keyIsInitialized(key)) return KDB_RET_UNINITIALIZED;
-// 	if (!(key->flags & KEY_SWITCH_NAME)) return KDB_RET_NOKEY;
-//
-// 	/* A valid serialized key has the following layout
-// 	   - Null terminated key name
-// 	   - KeyInfo structure
-// 	   - Null terminated key group
-// 	   - Null terminated key comment
-// 	   - Data
-// 	*/
-//
-// 	/* The KeyInfo whole struct */
-// 	memcpy(cursor, &key->metaInfo, sizeof(KeyInfo));
-// 	cursor+=sizeof(KeyInfo);
-//
-// 	/* The group name */
-// 	if (key->group)
-// 		memcpy(cursor, key->group, key->groupSize);
-// 	else *(char *)cursor=0;
-// 	if (key->groupSize<=1) cursor++;
-// 	else cursor+=key->groupSize;
-//
-//
-// 	/* The description */
-// 	if (key->comment) memcpy(cursor, key->comment, key->commentSize);
-// 	else *(char *)cursor=0;
-// 	if (key->commentSize<=1) cursor++;
-// 	else cursor+=key->commentSize;
-//
-//
-// 	/* The data */
-// 	if (key->data)
-// 		memcpy(cursor,key->data,key->dataSize);
-//
-// 	return KDB_RET_OK;
-// }
-
-
-
-
-
 
 
 /**
- * Set a general flag in the Key
+ * Set a general flag in the Key.
  *
  * The flag has no semantics to the library, only to your application.
  *
- * @see keyGetFlag()
- * @see keyClearFlag()
+ * @see keyGetFlag(), keyClearFlag()
  * @return 0, unless key is invalid.
+ * @ingroup keymeta
  */
 int keySetFlag(Key *key) {
 	if (!key || !keyIsInitialized(key)) {
@@ -2512,9 +2568,9 @@ int keySetFlag(Key *key) {
  *
  * The flag has no semantics to the library, only to your application.
  *
- * @see keyGetFlag()
- * @see keySetFlag()
+ * @see keyGetFlag(), keySetFlag()
  * @return 0, unless key is invalid.
+ * @ingroup keymeta
  */
 int keyClearFlag(Key *key) {
 	if (!key || !keyIsInitialized(key)) {
@@ -2534,10 +2590,10 @@ int keyClearFlag(Key *key) {
  *
  * The flag has no semantics to the library, only to your application.
  *
- * @see keySetFlag()
- * @see keyClearFlag()
- * @see keyNew() with KEY_SWITCH_NEEDSYNC
+ * @see keySetFlag(), keyClearFlag()
+ * @see keyNew() with KeySwitch::KEY_SWITCH_NEEDSYNC
  * @return 1 if flag is set, 0 otherwise
+ * @ingroup keymeta
  */
 int keyGetFlag(const Key *key) {
 	if (!key || !keyIsInitialized(key)) {
@@ -2575,9 +2631,8 @@ keyClose(key);
 free(key);
  * @endcode
  * 
- * @see keyNew()
- * @see keyDel()
- * @see keyClose()
+ * @see keyNew(), keyDel(), keyClose()
+ * @ingroup key
  */
 int keyInit(Key *key) {
 	if (!key) return errno=KDB_RET_NULLKEY;
@@ -2606,6 +2661,7 @@ int keyInit(Key *key) {
  * @see keyInit() for usage example
  * @see keyNew() as a more usefull function
  * @see keyDel()
+ * @ingroup key
  */
 int keyClose(Key *key) {
 	if (!key) return errno=KDB_RET_NULLKEY;
@@ -2622,10 +2678,6 @@ int keyClose(Key *key) {
 
 
 
-
-/**
- * @} // end of Key group
- */
 
 
 
@@ -3154,8 +3206,7 @@ size_t ksInsert(KeySet *ks, Key *toInsert) {
  *
  * @return the first key of @p ks, or NULL if @p ks is empty
  * @param ks KeySet to work with
- * @see ksInsert()
- * @see ksRewind()
+ * @see ksInsert(), ksRewind()
  * @see commandList() for an example
  *
  */
@@ -3169,6 +3220,47 @@ Key *ksPop(KeySet *ks) {
 		ks->size--;
 		if (ks->cursor == key) ks->cursor=0;
 	}
+	
+	return key;
+}
+
+
+/**
+ * Remove and return the last key of @p ks. If @p ks' cursor was positioned
+ * in the poped key, @p ks will be ksRewind()ed.
+ * 
+ * ksAppend() provides the 'push' bahavior.
+ *
+ * @return the last key of @p ks, or NULL if @p ks is empty
+ * @param ks KeySet to work with
+ * @see ksAppend(), ksRewind()
+ * @see commandList() and ksCompare() for examples
+ *
+ */
+Key *ksPopLast(KeySet *ks) {
+	Key *key=0;
+	Key *prev=0;
+	
+	/* When ks is empty: */
+	if (ks->end == 0) return 0;
+	
+	/* When ks has only one member: */
+	if (ks->start == ks->end) {
+		key=ks->end;
+		ks->cursor=ks->start=ks->end=0;
+		ks->size=0;
+		
+		return key;
+	}
+	
+	prev=ks->start;
+	while (prev->next!=ks->end) prev=prev->next;
+	
+	key=ks->end;
+	prev->next=0;
+	ks->end=prev;
+	ks->size--;
+	if (ks->cursor == key) ks->cursor=0;
 	
 	return key;
 }
@@ -3297,14 +3389,41 @@ size_t ksAppendKeys(KeySet *ks, KeySet *toAppend) {
  *  After ksCompare(), you should:
  *  - ksDel(ks2)
  *  - call kdbSetKeys() on @p ks1 to commit all changed keys
- *  - kdbRemove() for all keys in the @p removed KeySet
+ *  - kdbRemoveKey() for all keys in the @p removed KeySet
  *
- *  @see keyCompare()
- *  @see commandEdit() at the kdb command
  *  @param ks1 first KeySet
  *  @param ks2 second KeySet
  *  @param removed initially empty KeySet that will be filled with keys
- *  removed from @p ks1
+ *  	removed from @p ks1
+ *  @see keyCompare()
+ *  @see commandEdit() at the kdb command
+ * @par Example
+ * @code
+KeySet *ks1,*ks2,*removed;
+Key *key;
+
+ks1=ksNew();
+ks2=ksNew();
+removed=ksNew();
+
+// ...
+// Populate ks1 and ks2....
+// ...
+
+ksCompare(ks1,ks2,removed);
+
+kdbSetKeys(ks1);
+ksDel(ks1);  // don't need it anymore
+ksDel(ks2);  // don't need it anymore
+
+ksSort(removed);
+while (key=ksPopLast(removed)) {
+	kdbRemoveKey(key);
+	keyDel(key);
+}
+
+ksDel(removed);
+ * @endcode
  */
 int ksCompare(KeySet *ks1, KeySet *ks2, KeySet *removed) {
 	int flagRemoved=1;

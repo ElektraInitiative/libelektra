@@ -8,7 +8,7 @@ DTDVERSION=0.1.1
 SVNREP=http://germane-software.com/repositories/elektra
 
 # List here the backends to be compiled
-BACKENDS=filesys
+BACKENDS="filesys fstab gconf"
 # The one single default backend
 DEFAULT_BACKEND=filesys
 

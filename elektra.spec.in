@@ -1,6 +1,6 @@
 Name:          elektra
 Version:       _VERSION_
-%define myRelease 8
+%define myRelease 4
 %define vepoch 1
 Release:       0.fdr.%{vepoch}.%{myRelease}
 Source:        http://aleron.dl.sourceforge.net/sourceforge/elektra/%{name}-%{version}.tar.gz

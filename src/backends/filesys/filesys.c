@@ -306,16 +306,11 @@ int kdbRename_filesys(Key *key, const char *newName) {
 
 
 
-int kdbRemove_filesys(const char *keyName) {
-	Key *key;
+int kdbRemoveKey_filesys(const Key *key) {
 	char fileName[MAX_PATH_LENGTH];
 	off_t rc;
 
-	key=keyNew(0);
-	rc=keySetName(key,keyName);
-	if (rc==-1) return -1;
 	rc=kdbGetFilename(key,fileName,sizeof(fileName));
-	keyDel(key);
 	if (!rc) return -1;
 
 	return remove(fileName);
@@ -394,7 +389,8 @@ int kdbGetKeyChildKeys_filesys(const Key *parentKey, KeySet *returned, unsigned 
 				/* Act recursively, without sorting. Sort in the end, once */
 				kdbGetKeyChildKeys_filesys(keyEntry,children, ~(KDB_O_SORT) & options);
 
-				/* Insert the current directory key in the returned list before its children */
+				/* Insert the current directory key in the returned list
+				 * before its children */
 				if (options & KDB_O_DIR) ksAppend(returned,keyEntry);
 				else keyDel(keyEntry);
 
@@ -940,13 +936,18 @@ size_t kdbGetFilename(const Key *forKey,char *returned,size_t maxSize) {
 
 KDBBackend *kdbBackendFactory(void) {
 	return kdbBackendExport(BACKENDNAME,
-		KDB_BE_OPEN,&kdbOpen_filesys,
-		KDB_BE_CLOSE,&kdbClose_filesys,
-		KDB_BE_GETKEY,&kdbGetKey_filesys,
-		KDB_BE_SETKEY,&kdbSetKey_filesys,
-		KDB_BE_STATKEY,&kdbStatKey_filesys,
-		KDB_BE_RENAME,&kdbRename_filesys,
-		KDB_BE_REMOVE,&kdbRemove_filesys,
-		KDB_BE_GETCHILD,&kdbGetKeyChildKeys_filesys,
+		KDB_BE_OPEN,         &kdbOpen_filesys,
+		KDB_BE_CLOSE,        &kdbClose_filesys,
+		KDB_BE_GETKEY,       &kdbGetKey_filesys,
+		KDB_BE_SETKEY,       &kdbSetKey_filesys,
+		KDB_BE_STATKEY,      &kdbStatKey_filesys,
+		KDB_BE_RENAME,       &kdbRename_filesys,
+		KDB_BE_REMOVEKEY,    &kdbRemoveKey_filesys,
+		KDB_BE_GETCHILD,     &kdbGetKeyChildKeys_filesys,
+		
+		/* Explicitly set to default methods: */
+		KDB_BE_SETKEYS,      &kdbSetKeys_default,
+		KDB_BE_MONITORKEY,   &kdbMonitorKey_default,
+		KDB_BE_MONITORKEYS,  &kdbMonitorKeys_default,
 		KDB_BE_END);
 }

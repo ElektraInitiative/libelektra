@@ -92,9 +92,7 @@ enum KeyType {
 /**
  * Elektra currently supported Key namespaces.
  * @ingroup key
- * @see kdbGetRootKeys()
- * @see keyGetNamespace()
- * @see keyNameGetNamespace()
+ * @see kdbGetRootKeys(), keyGetNamespace(), keyNameGetNamespace()
  */
 enum KeyNamespace {
 	KEY_NS_SYSTEM=1,       /*!< The @p system keys */
@@ -205,6 +203,7 @@ enum KDBErr {
 	KDB_RET_NOCRED=EACCES,        /*!< No credentials to access resource */
 	KDB_RET_NOTIME=ENOMSG,        /*!< Key has no access time set */
 	KDB_RET_TRUNC=ENOBUFS,        /*!< Buffer was too small */
+	KDB_RET_NOSYS=ENOSYS,         /*!< Backend method not implemented */
 	KDB_RET_TYPEMISMATCH=EILSEQ,  /*!< Failed to convert key data due to
 	                                   data type */
 	KDB_RET_INVALIDKEY=EAFNOSUPPORT, /*!< Key name is not @p 'system/something'
@@ -443,6 +442,9 @@ size_t keyGetFullRootName(const Key *key, char *returned, size_t maxSize);
 size_t keyGetBaseName(const Key *key, char *returned, size_t maxSize);
 size_t keyNameGetBaseNameSize(const char *keyName);
 size_t keyGetBaseNameSize(const Key *key);
+size_t keyAddBaseName(Key *key,const char *baseName);
+size_t keySetBaseName(Key *key,const char *baseName);
+
 
 size_t keyNameGetRootNameSize(const char *keyName);
 size_t keyGetRootNameSize(const Key *key);
@@ -524,6 +526,7 @@ size_t ksGetSize(KeySet *ks);
 size_t ksInsert(KeySet *ks, Key *toInsert);
 size_t ksAppend(KeySet *ks, Key *toAppend);
 Key *ksPop(KeySet *ks);
+Key *ksPopLast(KeySet *ks);
 
 size_t ksInsertKeys(KeySet *ks, KeySet *toInsert);
 size_t ksAppendKeys(KeySet *ks, KeySet *toAppend);

@@ -116,7 +116,7 @@ struct _KDBBackend {
 	int (*kdbSetKey)(Key *);
 	int (*kdbStatKey)(Key *);
 	int (*kdbRename)(Key *, const char *);
-	int (*kdbRemove)(const char *);
+	int (*kdbRemoveKey)(const Key *);
 	int (*kdbGetKeyChildKeys)(const Key *, KeySet *, unsigned long);
 
 	
@@ -154,6 +154,7 @@ KDBBackend *backend;
  * 
  * @see kdbOpenBackend()
  * @see kdbClose()
+ * @return 0 on success or whatever is returned by kdbOpenBackend()
  * @ingroup kdb
  */
 int kdbOpen() {
@@ -174,14 +175,47 @@ int kdbOpen() {
  * implementation of kdbOpen().
  * @param backendName used to define the module filename as
  * 	libkdb-@p "backendName".so
- * @return 0 on success, or whatever is returned by backend's kdbOpen()
+ * @return 0 on success. On failure, @c errno is set to KDBErr::KDB_RET_NOSYS
+ * 	and 1 if backend library could not be opened, 2 if backend doesn't have
+ * 	the essential "kdbBackendFactory" initialization symbol, 3 if backend
+ * 	failed to export its methods, 4 if backend does not provide a kdbOpen()
+ * 	implementation, or anything else that the backend's kdbOpen() returns.
  * @see kdbOpen()
+ * @par Example of copying keys from one backend to another
+ * @code
+KeySet *ks=ksNew();
+
+kdbOpen(); // open default backend
+kdbGetChildKeys("system/sw/httpd",ks, 
+	KDB_O_NFOLLOWLINK |  // we want real links, not their targets
+	KDB_O_INACTIVE |     // even commented (inactive) keys
+	KDB_O_DIR |          // even pure directory keys
+	KDB_O_RECURSIVE |    // all of this recursivelly
+	KDB_O_SORT);         // sort all
+kdbClose();
+
+kdbOpenBackend("apache");
+
+// The hipotethical libkdb-apache.so backend implementation for kdbSetKeys()
+// simply interprets the passed KeySet and generates an old style
+// equivalent /etc/httpd/httpd.conf file.
+kdbSetKeys(ks);
+kdbClose();
+
+ksDel(ks);
+ * @endcode
+ * @par Emulating same bahavior of previous example but now with the kdb command
+ * @code
+bash# kdb export system/sw/httpd > apacheconf.xml
+bash# KDB_BACKEND=apache kdb import apacheconf.xml
+ * @endcode
  * @ingroup kdb
  */
 int kdbOpenBackend(char *backendName) {
 	void *dlhandle=0;
 	char backendlib[300];
 	KDBBackendFactory kdbBackendNew=0;
+	int rc=0;
 	
 	backend=0;
 	
@@ -193,27 +227,35 @@ int kdbOpenBackend(char *backendName) {
 	if (dlhandle == 0) {
 		fprintf(stderr, "libkdb: Could not open \"%s\" backend: %s\n",
 			backendName,dlerror());
+		errno=KDB_RET_NOSYS;
 		return 1; /* error */
 	}
 	
 	kdbBackendNew=dlsym(dlhandle,"kdbBackendFactory");
 	if (kdbBackendNew == 0) {
 		fprintf(stderr, "libkdb: \"%s\" backend: %s\n",backendName,dlerror());
-		return 1; /* error */
+		errno=KDB_RET_NOSYS;
+		return 2; /* error */
 	}
 	
 	backend=(*kdbBackendNew)();
 	if (backend == 0) {
 		fprintf(stderr,"libkdb: Can't initialize \"%s\" backend\n",
 			backendName);
-		return 1; /* error */
+		errno=KDB_RET_NOSYS;
+		return 3; /* error */
 	}
 
 	/* save the handle for future use */
 	backend->dlHandle=dlhandle;
 	
 	/* let the backend initialize itself */
-	return backend->kdbOpen();
+	if (backend->kdbOpen) rc=backend->kdbOpen();
+	else {
+		errno=KDB_RET_NOSYS;
+		rc=4;
+	}
+	return rc;
 }
  
 
@@ -227,15 +269,24 @@ int kdbOpenBackend(char *backendName) {
  *
  * This is the counterpart of kdbOpen().
  * @see kdbOpen()
+ * @return 0 on success, anything else on failure, and @c errno is set.
+ * 	If the backend implementation of kdbOpen can't be found, @c errno is
+ * 	set to KDBErr::KDB_RET_NOSYS.
  * @ingroup kdb
  */
 int kdbClose() {
-	int rc=backend->kdbClose();
+	int rc=0;
+	
+	if (backend && backend->kdbClose()) rc=backend->kdbClose();
+	else {
+		errno=KDB_RET_NOSYS;
+		return -1;
+	}
 	
 	if (rc == 0) {
 		if (backend->name) free(backend->name);
 		dlclose(backend->dlHandle);
-		free(backend);
+		free(backend); backend=0;
 	}
 	
 	return rc;
@@ -583,25 +634,25 @@ int kdbGetKeyByParentKey(const Key *parent, const char *baseName, Key *returned)
  * live bellow @p system/sw/myApp, you'll use this method to get them all.
  *
  * Option can be any of the following, ORed:
- * - @p KDB_O_RECURSIVE \n
+ * - @p KDBOptions::KDB_O_RECURSIVE \n
  *   Retrieve also the keys under the child keys, recursively.
  *   The kdb(1) ls command, with switch -R uses this option.
- * - @p KDB_O_DIR \n
+ * - @p KDBOptions::KDB_O_DIR \n
  *   By default, folder keys will not be returned because they don't have
  *   values and exist only to define hierarchy. Use this option if you need
  *   them to be included in the returned KeySet.
- * - @p KDB_O_NOVALUE \n
+ * - @p KDBOptions::KDB_O_NOVALUE \n
  *   Do not include in @p returned the regular value keys. The resulting KeySet
  *   will be only the skeleton of the tree.
- * - @p KDB_O_STATONLY \n
+ * - @p KDBOptions::KDB_O_STATONLY \n
  *   Only stat(2) the keys; do not retrieve the value, comment and key data
  *   type. The resulting keys will be empty and usefull only for
  *   informational purposes. The kdb(1) ls command, without the -v switch
  *   uses this option.
- * - @p KDB_O_INACTIVE \n
+ * - @p KDBOptions::KDB_O_INACTIVE \n
  *   Will make it not ignore inactive keys. So @p returned will be filled also
  *   with inactive keys. See elektra(7) to understand how inactive keys work.
- * - @p KDB_O_SORT \n
+ * - @p KDBOptions::KDB_O_SORT \n
  *   Will sort keys alphabetically by their names.
  *
  * @par Example:
@@ -647,8 +698,9 @@ while (key) {
  * @param options ORed options to control approaches
  * @see #KDBOptions
  * @see kdbGetChildKeys() for a convenience method
- * @see ksLookupByName(), ksLookupRE(), ksLookupByValue()
- * @see ksSort()
+ * @see ksLookupByName(), ksLookupRE(), ksLookupByValue() for powerfull
+ * 	lookups after the KeySet was retrieved
+ * @see ksSort() for what is done when you ask for KDBOptions::KDB_O_SORT
  * @see commandList() code in kdb command for usage example
  * @see commandEdit() code in kdb command for usage example
  * @see commandExport() code in kdb command for usage example
@@ -657,7 +709,16 @@ while (key) {
  *
  */
 int kdbGetKeyChildKeys(const Key *parentKey, KeySet *returned, unsigned long options) {
-	return backend->kdbGetKeyChildKeys(parentKey,returned,options);
+	int rc=0;
+	
+	if (backend && backend->kdbGetKeyChildKeys)
+		rc=backend->kdbGetKeyChildKeys(parentKey,returned,options);
+	else {
+		errno=KDB_RET_NOSYS;
+		return 1;
+	}
+	
+	return rc;
 }
 
 
@@ -727,7 +788,16 @@ int kdbGetRootKeys(KeySet *returned) {
  * @ingroup kdb
  */
 int kdbStatKey(Key *key) {
-	return backend->kdbStatKey(key);
+	int rc=0;
+	
+	if (backend && backend->kdbStatKey)
+		rc=backend->kdbStatKey(key);
+	else {
+		errno=KDB_RET_NOSYS;
+		return 1;
+	}
+	
+	return rc;
 }
 
 
@@ -742,14 +812,23 @@ int kdbStatKey(Key *key) {
  * @ingroup kdb
  */
 int kdbGetKey(Key *key) {
-	return backend->kdbGetKey(key);
+	int rc=0;
+	
+	if (backend && backend->kdbGetKey)
+		rc=backend->kdbGetKey(key);
+	else {
+		errno=KDB_RET_NOSYS;
+		return 1;
+	}
+	
+	return rc;
 }
 
 
 
 /**
  * Commits the @p ks KeySet to the backend storage, starting from @p ks's
- * current cursor until its end. This is why it is suggested that you call
+ * current position until its end. This is why it is suggested that you call
  * ksRewind() on @p ks beffore calling this method.
  * Each key is checked with keyNeedsSync() before being actually commited. So
  * only changed keys are updated.
@@ -770,11 +849,27 @@ int kdbGetKey(Key *key) {
  * @ingroup kdb
  */
 int kdbSetKeys(KeySet *ks) {
-	return backend->kdbSetKeys(ks);
+	int rc=0;
+	
+	if (backend && backend->kdbSetKeys)
+		rc=backend->kdbSetKeys(ks);
+	else {
+		errno=KDB_RET_NOSYS;
+		return 1;
+	}
+	
+	return rc;
 }
 
 
 
+/**
+ * A high level, probably inefficient, implementation for the kdbSetKeys()
+ * method. If a backend doesn't want to reimplement this method, this
+ * implementation can be used.
+ *
+ * @ingroup backend
+ */
 int kdbSetKeys_default(KeySet *ks) {
 	Key *current=ksCurrent(ks);
 	int ret;
@@ -804,7 +899,16 @@ int kdbSetKeys_default(KeySet *ks) {
  * @ingroup kdb
  */
 int kdbSetKey(Key *key) {
-	return backend->kdbSetKey(key);
+	int rc=0;
+	
+	if (backend && backend->kdbSetKey)
+		rc=backend->kdbSetKey(key);
+	else {
+		errno=KDB_RET_NOSYS;
+		return 1;
+	}
+	
+	return rc;
 }
 
 
@@ -820,10 +924,17 @@ int kdbSetKey(Key *key) {
  * @ingroup kdb
  */
 int kdbRename(Key *key, const char *newName) {
-	return backend->kdbRename(key,newName);
+	int rc=0;
+	
+	if (backend && backend->kdbRename)
+		rc=backend->kdbRename(key,newName);
+	else {
+		errno=KDB_RET_NOSYS;
+		return 1;
+	}
+	
+	return rc;
 }
-
-
 
 
 
@@ -831,13 +942,52 @@ int kdbRename(Key *key, const char *newName) {
  * Remove a key from the backend storage.
  * This method is not recursive.
  *
+ * @param key the key to be removed
+ * @return 0 on success, or whathever is returned by the backend
+ * 	implementation, and @c errno is propagated
+ * @see commandRemove(), and ksCompare() code in kdb command for usage example
+ * @ingroup kdb
+ */
+int kdbRemoveKey(const Key *key) {
+	int rc=0;
+	
+	if (backend && backend->kdbRemoveKey)
+		rc=backend->kdbRemoveKey(key);
+	else {
+		errno=KDB_RET_NOSYS;
+		return 1;
+	}
+	
+	return rc;
+}
+
+
+
+/**
+ * Remove a key by its name from the backend storage.
+ * This is a convenience to kdbRemoveKey().
+ *
  * @param keyName the name of the key to be removed
- * @return whathever is returned by remove(), and @c errno is propagated
+ * @return 0 on success, or whathever is returned by kdbRemoveKey(),
+ * 	and @c errno is propagated
  * @see commandRemove() code in kdb command for usage example
  * @ingroup kdb
  */
 int kdbRemove(const char *keyName) {
-	return backend->kdbRemove(keyName);
+	int rc=0;
+	Key *key=0;
+	
+	key=keyNew(KEY_SWITCH_END);
+	rc=keySetName(key,keyName);
+	if (rc == 0) {
+		keyDel(key);
+		return 1; /* error */
+	}
+	
+	rc=kdbRemoveKey(key);
+	keyDel(key);
+	
+	return rc;
 }
 
 
@@ -935,10 +1085,27 @@ ksDel(myConfigs);
  */
 u_int32_t kdbMonitorKeys(KeySet *interests, u_int32_t diffMask,
 		unsigned long iterations, unsigned sleep) {
-	return backend->kdbMonitorKeys(interests,diffMask,iterations,sleep);
+	
+	int rc=0;
+	
+	if (backend && backend->kdbMonitorKeys)
+		rc=backend->kdbMonitorKeys(interests,diffMask,iterations,sleep);
+	else {
+		errno=KDB_RET_NOSYS;
+		return 1;
+	}
+	
+	return rc;
 }
 
 
+/**
+ * A high level, probably inefficient, implementation for the kdbMonitorKeys()
+ * method. If a backend doesn't want to reimplement this method, this
+ * implementation can be used.
+ *
+ * @ingroup backend
+ */
 u_int32_t kdbMonitorKeys_default(KeySet *interests, u_int32_t diffMask,
 		unsigned long iterations, unsigned sleep) {
 	Key *start,*current;
@@ -1011,12 +1178,29 @@ u_int32_t kdbMonitorKeys_default(KeySet *interests, u_int32_t diffMask,
  */
 u_int32_t kdbMonitorKey(Key *interest, u_int32_t diffMask,
 		unsigned long iterations, unsigned sleep) {
-	return backend->kdbMonitorKey(interest,diffMask,iterations,sleep);
+	
+	int rc=0;
+	
+	if (backend && backend->kdbMonitorKey)
+		rc=backend->kdbMonitorKey(interest,diffMask,iterations,sleep);
+	else {
+		errno=KDB_RET_NOSYS;
+		return 1;
+	}
+	
+	return rc;
 }
 
 
 
 
+/**
+ * A high level, probably inefficient, implementation for the kdbMonitorKey()
+ * method. If a backend doesn't want to reimplement this method, this
+ * implementation can be used.
+ *
+ * @ingroup backend
+ */
 u_int32_t kdbMonitorKey_default(Key *interest, u_int32_t diffMask,
 		unsigned long iterations, unsigned sleep) {
 	Key *tested;
@@ -1108,17 +1292,17 @@ int kdbSetKey_backend() {...}
 
 KDBBackend *kdbBackendFactory(void) {
 	return kdbBackendExport(BACKENDNAME,
-		KDB_BE_OPEN,&kdbOpen_backend,
-		KDB_BE_CLOSE,&kdbClose_backend,
-		KDB_BE_GETKEY,&kdbGetKey_backend,
-		KDB_BE_SETKEY,&kdbSetKey_backend,
-		KDB_BE_STATKEY,&kdbStatKey_backend,
-		KDB_BE_RENAME,&kdbRename_backend,
-		KDB_BE_REMOVE,&kdbRemove_backend,
-		KDB_BE_GETCHILD,&kdbGetKeyChildKeys_backend,
-		KDB_BE_SETKEYS,&kdbSetKeys_backend,
-		KDB_BE_MONITORKEY,&kdbMonitorKey_backend,
-		KDB_BE_MONITORKEYS,&kdbMonitorKeys_backend,
+		KDB_BE_OPEN,          &kdbOpen_backend,
+		KDB_BE_CLOSE,         &kdbClose_backend,
+		KDB_BE_GETKEY,        &kdbGetKey_backend,
+		KDB_BE_SETKEY,        &kdbSetKey_backend,
+		KDB_BE_STATKEY,       &kdbStatKey_backend,
+		KDB_BE_RENAME,        &kdbRename_backend,
+		KDB_BE_REMOVEKEY,     &kdbRemoveKey_backend,
+		KDB_BE_GETCHILD,      &kdbGetKeyChildKeys_backend,
+		KDB_BE_SETKEYS,       &kdbSetKeys_backend,
+		KDB_BE_MONITORKEY,    &kdbMonitorKey_backend,
+		KDB_BE_MONITORKEYS,   &kdbMonitorKeys_backend,
 		KDB_BE_END);
 }
  * @endcode
@@ -1144,12 +1328,6 @@ KDBBackend *kdbBackendExport(const char *backendName, ...) {
 	returned->name=(char *)malloc(strblen(backendName));
 	strcpy(returned->name,backendName);
 	
-	/* Default inefficient high-level internal implementations */
-	returned->kdbSetKeys=&kdbSetKeys_default;
-	returned->kdbMonitorKey=&kdbMonitorKey_default;
-	returned->kdbMonitorKeys=&kdbMonitorKeys_default;
-	
-	
 	/* Start processing parameters */
 	
 	va_start(va,backendName);
@@ -1174,8 +1352,8 @@ KDBBackend *kdbBackendExport(const char *backendName, ...) {
 			case KDB_BE_RENAME:
 				returned->kdbRename=va_arg(va,int (*)(Key *, const char *));
 				break;
-			case KDB_BE_REMOVE:
-				returned->kdbRemove=va_arg(va,int (*)(const char *));
+			case KDB_BE_REMOVEKEY:
+				returned->kdbRemoveKey=va_arg(va,int (*)(const Key *));
 				break;
 			case KDB_BE_GETCHILD:
 				returned->kdbGetKeyChildKeys=
