@@ -57,7 +57,7 @@ $LastChangedBy$
 
 
 /* we are cheating . . . */
-size_t unencode(char *encoded, void *returned);
+ssize_t unencode(char *encoded, void *returned);
 
 
 /* We'll load this methods dynamically to avoid libxml dependencies */
@@ -671,7 +671,7 @@ int commandLink() {
  */
 int commandList() {
 	KeySet *ks; /* this is the container for all keys we'll collect bellow */
-	int ret;
+	ssize_t ret;
 
 	ks=ksNew();
 
@@ -719,7 +719,7 @@ int commandList() {
 			(argRecursive?KDB_O_RECURSIVE:0) | KDB_O_DIR |
 			(argAll?KDB_O_INACTIVE:0) | KDB_O_NFOLLOWLINK);
 	
-		if (ret) {
+		if (ret<0) {
 			/* We got an error. Check if it is because its not a folder key */
 			if (errno==ENOTDIR) {
 				/* We still have a chance, since there is something there */

@@ -884,7 +884,7 @@ int kdbRemoveKey_backend(const Key *key) {
  * @see kdbGetKeyChildKeys() for expected behavior.
  * @ingroup backend
  */
-int kdbGetKeyChildKeys_bdb(const Key *parentKey, KeySet *returned, unsigned long options) {
+ssize_t kdbGetKeyChildKeys_bdb(const Key *parentKey, KeySet *returned, unsigned long options) {
 	DBTree *db=0;
 	DBC *cursor=0,*joincurs=0,*carray[2];
 	DBT parent,keyName,keyData;
@@ -1024,7 +1024,7 @@ int kdbGetKeyChildKeys_bdb(const Key *parentKey, KeySet *returned, unsigned long
 	joincurs->c_close(joincurs);
 	cursor->c_close(cursor);
 	
-	return 0;
+	return returned->size;
 }
 
 

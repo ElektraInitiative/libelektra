@@ -224,9 +224,9 @@ int kdbRemoveKey_backend(const Key *key) {
  * @see kdbGetKeyChildKeys() for expected behavior.
  * @ingroup backend
  */
-int kdbGetKeyChildKeys_backend(const Key *parentKey, KeySet *returned, unsigned long options) {
+ssize_t kdbGetKeyChildKeys_backend(const Key *parentKey, KeySet *returned, unsigned long options) {
 	/* retrieve multiple hierarchical keys */
-	return 0; /* success */
+	return returned->size; /* success */
 }
 
 

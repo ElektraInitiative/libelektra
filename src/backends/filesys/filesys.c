@@ -113,6 +113,7 @@ int kdbStatKey_filesys(Key *key) {
 }
 
 
+
 int kdbGetKey_filesys(Key *key) {
 	char keyFileName[500];
 	struct stat keyFileNameInfo;
@@ -315,7 +316,7 @@ int kdbRemoveKey_filesys(const Key *key) {
 
 
 
-int kdbGetKeyChildKeys_filesys(const Key *parentKey, KeySet *returned, unsigned long options) {
+ssize_t kdbGetKeyChildKeys_filesys(const Key *parentKey, KeySet *returned, unsigned long options) {
 	size_t parentNameSize=keyGetFullNameSize(parentKey);
 	char realParentName[parentNameSize];
 	DIR *parentDir;
@@ -405,10 +406,10 @@ int kdbGetKeyChildKeys_filesys(const Key *parentKey, KeySet *returned, unsigned 
 	
 	closedir(parentDir);
 
-	if ((options & (KDB_O_SORT)) && (ksGetSize(returned) > 1))
+	if ((options & (KDB_O_SORT)) && (returned->size > 1))
 		ksSort(returned);
 
-	return 0;
+	return returned->size;
 }
 
 

@@ -311,10 +311,11 @@ int kdbClose() {
  * space-separated.
  * @param encoded the source of ASCII hexadecimal digits.
  * @param returned the destination for the unencoded data.
- * @return the amount of bytes unencoded.
+ * @return the amount of bytes unencoded, or a negative value and @c errno
+ * 	is set to KDB_RET_TYPEMISMATCH
  * @ingroup backend
  */
-size_t unencode(char *encoded,void *returned) {
+ssize_t unencode(char *encoded,void *returned) {
 	char byteInHexa[5]="0x";
 	char *readCursor=encoded;
 	char *writeCursor=returned;
@@ -343,7 +344,7 @@ size_t unencode(char *encoded,void *returned) {
 		} else {
 			/* This is suposed to be a hex-digit stream. But is not, so return. */
 			errno=KDB_RET_TYPEMISMATCH;
-			return 0;
+			return -1;
 		}
 	}
 	return (long int)writeCursor-(long int)returned;
@@ -376,7 +377,7 @@ int kdbNeedsUTF8Conversion() {
  * @param inputOutputByteSize before the call: the size of the string including
  * 	leading NULL; after the call: the size of the converted string including
  * 	leading NULL
- * @return 0 on success, -1 otherwise, and propagate @c errno
+ * @return 0 on success, -1 otherwise and @c errno is propagated
  * @ingroup backend
  *
  */
@@ -444,7 +445,7 @@ int UTF8Engine(int direction, char **string, size_t *inputOutputByteSize) {
  * @see unencode()
  * @ingroup backend
  */
-size_t encode(void *unencoded, size_t size, char *returned) {
+ssize_t encode(void *unencoded, size_t size, char *returned) {
 	void *readCursor=unencoded;
 	void *writeCursor=returned;
 	int blockStep=4; /* 4 bytes per block */
@@ -485,7 +486,7 @@ size_t encode(void *unencoded, size_t size, char *returned) {
  * @param keyname the name of the key to receive the value
  * @param returned a buffer to put the key value
  * @param maxSize the size of the buffer
- * @return 0 on success, or other value and @c errno is set
+ * @return 0 on success, or other value in case of error, and @c errno is set
  * @see kdbSetValue(), kdbGetKey(), kdbGetValueByParent(), keyGetString()
  * @ingroup kdb
  *
@@ -534,8 +535,8 @@ int kdbSetValue(const char *keyname, const char *value) {
 
 
 /**
- * Fills the \p returned buffer with the value of a key, which name
- * is the concatenation of \p parentName and \p baseName.
+ * Fills the @p returned buffer with the value of a key, which name
+ * is the concatenation of @p parentName and @p baseName.
  *
  * @par Example:
  * @code
@@ -575,6 +576,7 @@ int kdbGetValueByParent(const char *parentName, const char *baseName, char *retu
  * @param parentName the name of the parent key
  * @param baseName the name of the child key
  * @param value the value to set
+ * @Return whatever is returned by kdbSetValue()
  * @ingroup kdb
  */
 int kdbSetValueByParent(const char *parentName, const char *baseName, const char *value) {
@@ -711,21 +713,19 @@ while (key) {
  * @see commandList() code in kdb command for usage example
  * @see commandEdit() code in kdb command for usage example
  * @see commandExport() code in kdb command for usage example
- * @return 0 on success, other value on error and @c errno is set
+ * @return number of keys contained by @p returned, or a negative value on
+ * 	error and @c errno is set
  * @ingroup kdb
  *
  */
-int kdbGetKeyChildKeys(const Key *parentKey, KeySet *returned, unsigned long options) {
-	int rc=0;
+ssize_t kdbGetKeyChildKeys(const Key *parentKey, KeySet *returned, unsigned long options) {
 	
 	if (backend && backend->kdbGetKeyChildKeys)
-		rc=backend->kdbGetKeyChildKeys(parentKey,returned,options);
+		return backend->kdbGetKeyChildKeys(parentKey,returned,options);
 	else {
 		errno=KDB_RET_NOSYS;
-		return 1;
+		return -1;
 	}
-	
-	return rc;
 }
 
 
@@ -735,9 +735,9 @@ int kdbGetKeyChildKeys(const Key *parentKey, KeySet *returned, unsigned long opt
  * convenience.
  * @ingroup kdb
  */
-int kdbGetChildKeys(const char *parentName, KeySet *returned, unsigned long options) {
+ssize_t kdbGetChildKeys(const char *parentName, KeySet *returned, unsigned long options) {
 	Key *parentKey;
-	int rc;
+	ssize_t rc;
 	
 	parentKey=keyNew(parentName,KEY_SWITCH_END);
 	rc=kdbGetKeyChildKeys(parentKey,returned,options);
@@ -754,13 +754,13 @@ int kdbGetChildKeys(const char *parentName, KeySet *returned, unsigned long opti
  * on the system. Currently, the @p system and current user's @p user keys
  * are returned.
  * @param returned the initialized KeySet to be filled
- * @return allways 0
+ * @return the number of root keys found
  * @see #KeyNamespace
  * @see commandList() code in kdb command for usage example
  * @ingroup kdb
  *
  */
-int kdbGetRootKeys(KeySet *returned) {
+ssize_t kdbGetRootKeys(KeySet *returned) {
 	Key *system=0,*user=0;
 
 	user=keyNew("user",KEY_SWITCH_NEEDSYNC,KEY_SWITCH_END);
@@ -775,7 +775,7 @@ int kdbGetRootKeys(KeySet *returned) {
 		system=0;
 	} else ksInsert(returned,system);
 
-	return 0;
+	return returned->size;
 }
 
 
@@ -805,7 +805,7 @@ int kdbStatKey(Key *key) {
 		rc=backend->kdbStatKey(key);
 	else {
 		errno=KDB_RET_NOSYS;
-		return 1;
+		return -1;
 	}
 	
 	return rc;
@@ -829,7 +829,7 @@ int kdbGetKey(Key *key) {
 		rc=backend->kdbGetKey(key);
 	else {
 		errno=KDB_RET_NOSYS;
-		return 1;
+		return -1;
 	}
 	
 	return rc;
@@ -863,7 +863,7 @@ int kdbSetKeys(KeySet *ks) {
 		rc=backend->kdbSetKeys(ks);
 	else {
 		errno=KDB_RET_NOSYS;
-		return 1;
+		return -1;
 	}
 	
 	return rc;
@@ -875,7 +875,7 @@ int kdbSetKeys(KeySet *ks) {
  * A high level, probably inefficient implementation for the kdbSetKeys()
  * method. If a backend doesn't want to reimplement this method, this
  * implementation can be used, in which kdbSetKey() will be called for
- * each Key object contained by @p ks.
+ * each Key object contained in @p ks.
  *
  * @ingroup backend
  */
@@ -898,8 +898,7 @@ int kdbSetKeys_default(KeySet *ks) {
 
 
 /**
- * Commits a key to the backend storage.
- * If failed (see return), the @c errno global is set accordingly.
+ * Sets @p key in the backend storage.
  *
  * @see kdbGetKey(), kdbSetKeys()
  * @see commandSet() code in kdb command for usage example
@@ -913,7 +912,7 @@ int kdbSetKey(Key *key) {
 		rc=backend->kdbSetKey(key);
 	else {
 		errno=KDB_RET_NOSYS;
-		return 1;
+		return -1;
 	}
 	
 	return rc;
@@ -927,8 +926,8 @@ int kdbSetKey(Key *key) {
  *
  * @param key the key to be renamed
  * @param newName the new key name
- * @return 0 on success, -1 or whathever is returned by rename() on failure,
- * 	and @c errno is propagated
+ * @return 0 on success, or whathever is returned by the backend
+ * 	implementation on failure, and @c errno is propagated
  * @ingroup kdb
  */
 int kdbRename(Key *key, const char *newName) {
@@ -938,7 +937,7 @@ int kdbRename(Key *key, const char *newName) {
 		rc=backend->kdbRename(key,newName);
 	else {
 		errno=KDB_RET_NOSYS;
-		return 1;
+		return -1;
 	}
 	
 	return rc;
@@ -952,7 +951,7 @@ int kdbRename(Key *key, const char *newName) {
  *
  * @param key the key to be removed
  * @return 0 on success, or whathever is returned by the backend
- * 	implementation, and @c errno is propagated
+ * 	implementation on failure, and @c errno is propagated
  * @see commandRemove(), and ksCompare() code in kdb command for usage example
  * @ingroup kdb
  */
@@ -963,7 +962,7 @@ int kdbRemoveKey(const Key *key) {
 		rc=backend->kdbRemoveKey(key);
 	else {
 		errno=KDB_RET_NOSYS;
-		return 1;
+		return -1;
 	}
 	
 	return rc;
@@ -989,7 +988,7 @@ int kdbRemove(const char *keyName) {
 	rc=keySetName(key,keyName);
 	if (rc == 0) {
 		keyDel(key);
-		return 1; /* error */
+		return -1; /* error */
 	}
 	
 	rc=kdbRemoveKey(key);
@@ -1033,7 +1032,7 @@ int kdbLink(const char *oldPath, const char *newKeyName) {
  * Monitor a KeySet for some key change.
  *
  * This method will scan the @p interests KeySet, starting and finishing in
- * the KeySet next cursor position, in a circular behavior, looking for some
+ * the KeySet's next cursor position, in a circular behavior, looking for some
  * change defined in the @p diffMask mask. It will use kdbMonitorKey()
  * and will return at the first key change ocurrence, or when requested
  * @p iterations finish.
@@ -1090,13 +1089,13 @@ ksDel(myConfigs);
 u_int32_t kdbMonitorKeys(KeySet *interests, u_int32_t diffMask,
 		unsigned long iterations, unsigned sleep) {
 	
-	int rc=0;
+	u_int32_t rc=0;
 	
 	if (backend && backend->kdbMonitorKeys)
 		rc=backend->kdbMonitorKeys(interests,diffMask,iterations,sleep);
 	else {
 		errno=KDB_RET_NOSYS;
-		return 1;
+		return 0;
 	}
 	
 	return rc;
@@ -1169,9 +1168,9 @@ u_int32_t kdbMonitorKeys_default(KeySet *interests, u_int32_t diffMask,
  * @param interest key that will be monitored
  * @param diffMask what particular info change we are interested
  * @param iterations how many times to test. 0 means infinitum or until
- * some change happens
+ * 	some change happens
  * @param sleep time to sleep, in microseconds, between iterations.
- * 0 defaults to 1 second.
+ * 	0 defaults to 1 second.
  * @return the ORed @p KEY_SWITCH_* flags of what changed
  * @see #KeySwitch
  * @see keyCompare()
@@ -1189,7 +1188,7 @@ u_int32_t kdbMonitorKey(Key *interest, u_int32_t diffMask,
 		rc=backend->kdbMonitorKey(interest,diffMask,iterations,sleep);
 	else {
 		errno=KDB_RET_NOSYS;
-		return 1;
+		return 0;
 	}
 	
 	return rc;

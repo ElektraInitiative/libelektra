@@ -45,11 +45,10 @@ enum KDBBackendMethod {
 	KDB_BE_SETKEY=1<<4,          /*!< Next arg is backend for kdbSetKey() */
 	KDB_BE_SETKEYS=1<<5,         /*!< Next arg is backend for kdbSetKeys() */
 	KDB_BE_RENAME=1<<6,          /*!< Next arg is backend for kdbRename() */
-	KDB_BE_REMOVE=1<<7,          /*!< Deprecated */
+	KDB_BE_REMOVEKEY=1<<7,       /*!< Next arg is backend for kdbRemoveKey() */
 	KDB_BE_GETCHILD=1<<8,        /*!< Next arg is backend for kdbGetKeyChildKeys() */
 	KDB_BE_MONITORKEY=1<<9,      /*!< Next arg is backend for kdbMonitorKey() */
 	KDB_BE_MONITORKEYS=1<<10,    /*!< Next arg is backend for kdbMonitorKeys() */
-	KDB_BE_REMOVEKEY=1<<11,      /*!< Next arg is backend for kdbRemove() */
 	KDB_BE_END=0                 /*!< End of arguments */
 };
 

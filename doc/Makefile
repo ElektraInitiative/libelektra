@@ -4,13 +4,17 @@
 MANSTYLE=manstyle.xsl
 HTMLSTYLE=htmltitlepage.xsl
 APIDIR=elektra-api
-DOXYSOURCES=../src/libkdb.c ../src/kdb.c ../src/kdbtools.c ../src/kdb.h ../src/kdbbackend.h ../src/key.c ../src/backends/template/template.c ../src/Doxyfile
+DOXYSOURCES=../src/libkdb.c ../src/kdb.c ../src/kdbtools.c ../src/kdb.h ../src/kdbbackend.h ../src/kdbprivate.h ../src/key.c ../src/backends/template/template.c ../src/Doxyfile
 PATCHSOURCES=patches/xorg/README.xorg.Elektra.txt patches/sysvinit/README.sysvinit.Elektra.txt
 
 # Default dirs we use for installation, that can be substituted by the command line.
 DOCDIR=/usr/share/doc
 MANDIR=/usr/share/man
 
+
+# Workhorses
+DOXYGEN=doxygen
+XSLTPROC=xsltproc
 
 .SUFFIXES: .xml .html .pdf .ps .rtf .xsl .fo .tpl
 #.SILENT:
@@ -21,7 +25,7 @@ MANDIR=/usr/share/man
 
 .xml.html:
 	if [ ! -L docbook ]; then ln -s ../../doc-common/docbook .; fi
-	xsltproc -o $@ ${HTMLSTYLE} $<
+	${XSLTPROC} -o $@ ${HTMLSTYLE} $<
 
 
 all: man
@@ -39,7 +43,7 @@ elektra-api.tar.gz: $(DOXYSOURCES)
 	-rm -rf ${APIDIR}
 	-rm -rf ${APIDIR}.tar.gz
 	echo "Making Doxygen..."
-	cd ../src; doxygen
+	cd ../src; ${DOXYGEN}
 	tar -czf ${APIDIR}.tar.gz ${APIDIR}/html
 	# find ${APIDIR}/html | cpio -H tar -o | gzip -c --best > ${APIDIR}.tar.gz
 
@@ -70,19 +74,19 @@ csource.xml: example.c
 
 
 kdb.1: kdb.1.xml author.xml bestpract.xml rgexample.xml rgcmd.xml
-	xsltproc ${MANSTYLE} $<
+	${XSLTPROC} ${MANSTYLE} $<
 
 
 
 
 elektra.7: elektra.7.xml author.xml overview.xml bestpract.xml rgexample.xml
-	xsltproc ${MANSTYLE} $<
+	${XSLTPROC} ${MANSTYLE} $<
 
 
 
 
 elektra.5: elektra.5.xml author.xml storage.xml
-	xsltproc ${MANSTYLE} $<
+	${XSLTPROC} ${MANSTYLE} $<
 
 
 

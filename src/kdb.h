@@ -272,167 +272,6 @@ Parent name = "user:some.user/My Environment"
 */
 
 
-/* The 'struct _Key' and 'struct _KeySet' will be removed from this file in
- * future versios of the library. The library is mature enough in terms of
- * methods to access each Key and KeySet attributes. So you should use them.
- * So you should never instantiate a Key or KeySet object like this:
- * 
- *    Key    myKey;      // don't do this
- *    KeySet myKeySet;   // don't do this
- *    keyInit(&myKey);   // don't do this
- *    ksInit(&myKeySet); // don't do this
- * 
- * You should always use pointers instead:
- * 
- *    Key    *myKey;
- *    KeySet *myKeySet;
- *    myKey=keyNew("user/some/key");
- *    myKeySet=ksNew();
- * 
- * This lets Elektra upgrades to not break previously compiled programs.
- * This is binary compatibility for your programs across different versions of
- * the library.
- * 
- * You can currently check if your sources are ready for this change. Simply
- * test a recompilation changing <kdb.h> to 
- * 
- *     #include "/usr/share/doc/elektra-devel/kdbfuture.h"
- * 
- * This include file is identical to kdb.h but without the hidden structs. So
- * kdbfuture.h will be used in place of kdb.h in future versions of the
- * library.
- * 
- */ 
-
- 
- 
-/**
- * The private Key struct.
- * 
- * Its internal private attributes should not be accessed directly by regular
- * programs. Use the @ref key "Key access methods" instead.
- * Only a backend writer needs to have access to the private attributes of the
- * Key object which is defined as:
- * @code
-typedef struct _Key Key;
- * @endcode
- * 
- * @ingroup backend
- */
-struct _Key {                                                                    /* _DEPRECATED_ */
-	 /**
-	  * Type of the value, from #KeyType.
-	  * @see keyGetType(), keySetType(), keyIsBin()
-	  */ 
-	 u_int8_t      type;                                                         /* _DEPRECATED_ */
-	 
-	 /**
-	  * System UID of this key.
-	  * @see keyGetUID(), keySetUID()
-	  */ 
-	    uid_t      uid;                                                          /* _DEPRECATED_ */
-	 
-	 /**
-	  * System GID of this key.
-	  * @see keyGetGID(), keySetGID()
-	  */ 
-	    uid_t      gid;                                                          /* _DEPRECATED_ */
-	 
-	 /**
-	  * File-like access control
-	  * @see keyGetAccess(), keySetAccess()
-	  */ 
-	   mode_t      access;                                                       /* _DEPRECATED_ */
-	   
-	 /**
-	  * Time for last access (stat).
-	  * @see keyGetATime()
-	  */ 
-	   time_t      atime;                                                        /* _DEPRECATED_ */
-	   
-	 /**
-	  * Time for last modification.
-	  * @see keyGetMTime()
-	  */ 
-	   time_t      mtime;                                                        /* _DEPRECATED_ */
-	 
-	 /**
-	  * Time for last change (meta info)
-	  * @see keyGetCTime()
-	  */ 
-	   time_t      ctime;                                                        /* _DEPRECATED_ */
-	 
-	 /**
-	  * Size of the comment of description string, including ending NULL.
-	  * @see keyGetCommentSize(), keySetComment(), keyGetComment()
-	  */ 
-	   size_t      commentSize;                                                  /* _DEPRECATED_ */
-	 
-	 /**
-	  * Size of the value, in bytes, including ending NULL.
-	  * @see keyGetCommentSize(), keySetComment(), keyGetComment()
-	  */ 
-	   size_t      dataSize;                                                     /* _DEPRECATED_ */
-	   size_t      recordSize;  /**< dataSize + commentSize + some control */    /* _DEPRECATED_ */
-	 
-	 /**
-	  * Some control and internal flags.
-	  * @see keySetFlag(), keyGetFlag()
-	  */ 
-	u_int32_t      flags;                                                        /* _DEPRECATED_ */
-	 
-	 /**
-	  * The name of the key.
-	  * @see keySetName(), keyGetName()
-	  */ 
-	   char *      key;                                                         /* _DEPRECATED_ */
-	 
-	 /**
-	  * A comment about the key.
-	  * @see keySetComment(), keyGetComment()
-	  */ 
-	   char *      comment;                                                      /* _DEPRECATED_ */
-	 
-	 /**
-	  * The user that owns the key.
-	  * @see keySetComment(), keyGetComment()
-	  */ 
-	   char *      userDomain;                                                   /* _DEPRECATED_ */
-	 
-	 /**
-	  * The user that owns the key.
-	  * @see keySetString(), keyGetString()
-	  */ 
-	   void *      data;        /**< The value, which is a NULL terminated string or binary */ /* _DEPRECATED_ */
-	struct _Key * next;         /**< Link to the next object in a KeySet context */ /* _DEPRECATED_ */
-};                                                                               /* _DEPRECATED_ */
-
-
-
-
-
-
-
-/**
- * The private KeySet struct.
- * 
- * Its internal private attributes should not be accessed directly by regular
- * programs. Use the @ref keyset "KeySet access methods" instead.
- * Only a backend writer needs to have access to the private attributes of the
- * KeySet object which is defined as:
- * @code
-typedef struct _KeySet KeySet;
- * @endcode
- * 
- * @ingroup backend
- */
-struct _KeySet {                                                             /* _DEPRECATED_ */
-	struct _Key * start;   /**< First key on the list */                     /* _DEPRECATED_ */
-	struct _Key * end;     /**< Last key on the list */                       /* _DEPRECATED_ */
-	struct _Key * cursor;  /**< Internal cursor */                           /* _DEPRECATED_ */
-	size_t        size;    /**< Number of keys contained in the KeySet */    /* _DEPRECATED_ */
-};                                                                           /* _DEPRECATED_ */
-
 
 
 
@@ -483,9 +322,9 @@ int kdbStatKey(Key *key);
 int kdbGetKey(Key *key);
 int kdbSetKey(Key *key);
 
-int kdbGetKeyChildKeys(const Key *parentName, KeySet *returned, unsigned long options);
-int kdbGetChildKeys(const char *parentName, KeySet *returned, unsigned long options);
-int kdbGetRootKeys(KeySet *returned);
+ssize_t kdbGetKeyChildKeys(const Key *parentName, KeySet *returned, unsigned long options);
+ssize_t kdbGetChildKeys(const char *parentName, KeySet *returned, unsigned long options);
+ssize_t kdbGetRootKeys(KeySet *returned);
 
 int kdbSetKeys(KeySet *ks);
 
@@ -527,37 +366,37 @@ int keySetFlag(Key *key);
 int keyClearFlag(Key *key);
 int keyGetFlag(const Key *key);
 
-size_t keyGetRecordSize(const Key *key);
-size_t keyGetNameSize(const Key *key);
-size_t keyGetFullNameSize(const Key *key);
+ssize_t keyGetRecordSize(const Key *key);
+ssize_t keyGetNameSize(const Key *key);
+ssize_t keyGetFullNameSize(const Key *key);
 
-size_t keyGetName(const Key *key, char *returnedName, size_t maxSize);
+ssize_t keyGetName(const Key *key, char *returnedName, size_t maxSize);
 char *keyStealName(const Key *key);
-size_t keySetName(Key *key, const char *newName);
+ssize_t keySetName(Key *key, const char *newName);
 
-size_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize);
-size_t keyGetRootName(const Key *key, char *returned, size_t maxSize);
-size_t keyGetFullRootName(const Key *key, char *returned, size_t maxSize);
+ssize_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize);
+ssize_t keyGetRootName(const Key *key, char *returned, size_t maxSize);
+ssize_t keyGetFullRootName(const Key *key, char *returned, size_t maxSize);
 
-size_t keyGetBaseName(const Key *key, char *returned, size_t maxSize);
+ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize);
 char *keyStealBaseName(const Key *key);
-size_t keyNameGetBaseNameSize(const char *keyName);
-size_t keyGetBaseNameSize(const Key *key);
-size_t keyAddBaseName(Key *key,const char *baseName);
-size_t keySetBaseName(Key *key,const char *baseName);
+ssize_t keyNameGetBaseNameSize(const char *keyName);
+ssize_t keyGetBaseNameSize(const Key *key);
+ssize_t keyAddBaseName(Key *key,const char *baseName);
+ssize_t keySetBaseName(Key *key,const char *baseName);
 
-size_t keyGetParentName(const Key *key, char *returned, size_t maxSize);
-size_t keyGetParentNameSize(const Key *key);
+ssize_t keyGetParentName(const Key *key, char *returned, size_t maxSize);
+ssize_t keyGetParentNameSize(const Key *key);
 
-size_t keyNameGetRootNameSize(const char *keyName);
-size_t keyGetRootNameSize(const Key *key);
-size_t keyGetFullRootNameSize(const Key *key);
+ssize_t keyNameGetRootNameSize(const char *keyName);
+ssize_t keyGetRootNameSize(const Key *key);
+ssize_t keyGetFullRootNameSize(const Key *key);
 
 
-size_t keyGetCommentSize(const Key *key);
-size_t keyGetComment(const Key *key, char *returnedDesc, size_t maxSize);
+ssize_t keyGetCommentSize(const Key *key);
+ssize_t keyGetComment(const Key *key, char *returnedDesc, size_t maxSize);
 char *keyStealComment(const Key *key);
-size_t keySetComment(Key *key, const char *newDesc);
+ssize_t keySetComment(Key *key, const char *newDesc);
 
 uid_t keyGetUID(const Key *key);
 int keySetUID(Key *key, uid_t uid);
@@ -568,26 +407,26 @@ int keySetGID(Key *key, gid_t gid);
 mode_t keyGetAccess(const Key *key);
 int keySetAccess(Key *key, mode_t mode);
 
-size_t keyGetOwnerSize(const Key *key);
-size_t keyGetOwner(const Key *key, char *returned, size_t maxSize);
+ssize_t keyGetOwnerSize(const Key *key);
+ssize_t keyGetOwner(const Key *key, char *returned, size_t maxSize);
 char *keyStealOwner(const Key *key);
-size_t keySetOwner(Key *key, const char *userDomain);
+ssize_t keySetOwner(Key *key, const char *userDomain);
 
 
-size_t keyGetValueSize(const Key *key);
-size_t keyGetDataSize(const Key *key);
+ssize_t keyGetValueSize(const Key *key);
+ssize_t keyGetDataSize(const Key *key);
 
-size_t keyGetString(const Key *key, char *returnedString, size_t maxSize);
-size_t keySetString(Key *key, const char *newString);
+ssize_t keyGetString(const Key *key, char *returnedString, size_t maxSize);
+ssize_t keySetString(Key *key, const char *newString);
 void *keyStealValue(const Key *key);
 
-size_t keyGetBinary(const Key *key, void *returnedBinary, size_t maxSize);
-size_t keySetBinary(Key *key, const void *newBinary, size_t dataSize);
+ssize_t keyGetBinary(const Key *key, void *returnedBinary, size_t maxSize);
+ssize_t keySetBinary(Key *key, const void *newBinary, size_t dataSize);
 
-size_t keySetRaw(Key *key, const void *newBinary, size_t dataSize);
+ssize_t keySetRaw(Key *key, const void *newBinary, size_t dataSize);
 
-size_t keyGetLink(const Key *key, char *returnedTarget, size_t maxSize);
-size_t keySetLink(Key *key, const char *target);
+ssize_t keyGetLink(const Key *key, char *returnedTarget, size_t maxSize);
+ssize_t keySetLink(Key *key, const char *target);
 
 time_t keyGetMTime(const Key *key);
 time_t keyGetATime(const Key *key);
@@ -610,7 +449,7 @@ Key *keyNext(Key *key);
 
 u_int32_t keyCompare(const Key *key1, const Key *key2);
 
-size_t keyToStream(const Key *key, FILE* stream, unsigned long options);
+ssize_t keyToStream(const Key *key, FILE* stream, unsigned long options);
 
 
 /**************************************
@@ -625,17 +464,17 @@ int ksDel(KeySet *ks);
 
 int ksInit(KeySet *ks);
 int ksClose(KeySet *ks);
-size_t ksGetSize(KeySet *ks);
+ssize_t ksGetSize(KeySet *ks);
 
-size_t ksInsert(KeySet *ks, Key *toInsert);
-size_t ksAppend(KeySet *ks, Key *toAppend);
+ssize_t ksInsert(KeySet *ks, Key *toInsert);
+ssize_t ksAppend(KeySet *ks, Key *toAppend);
 Key *ksPop(KeySet *ks);
 Key *ksPopLast(KeySet *ks);
 
-size_t ksInsertKeys(KeySet *ks, KeySet *toInsert);
-size_t ksAppendKeys(KeySet *ks, KeySet *toAppend);
+ssize_t ksInsertKeys(KeySet *ks, KeySet *toInsert);
+ssize_t ksAppendKeys(KeySet *ks, KeySet *toAppend);
 
-size_t ksToStream(const KeySet *ks, FILE* stream, unsigned long options);
+ssize_t ksToStream(const KeySet *ks, FILE* stream, unsigned long options);
 int ksCompare(KeySet *ks1, KeySet *ks2, KeySet *removed);
 void ksSort(KeySet *ks);
 

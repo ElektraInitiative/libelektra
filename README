@@ -4,8 +4,10 @@ Elektra is such a simple software, that you'll probably wont need it to
 recompile from source. Use the binary RPM from the main repository. It should
 work for any RPM based distribution.
 
-If you still wants to compile it, avoid using the tarball. It is an obsolete
-method of compiling. Use the source RPM instead.
+If you still wants to compile it, do not use the fresh files from the
+Subversion repository since they contain only useless templates for some files.
+Avoid using the tarball. It is an obsolete method of compiling software. Use
+the source RPM instead.
 
 Download it from the main repository as elektra-*.src.rpm and rebuild the RPMs:
 
@@ -17,6 +19,9 @@ It was reported that the Makefiles will only work with gmake, which makes
 absolutelly no difference for Linux, but is a crucial information when
 building on BSD.
 
+On non-RPM systems, use the tarball.
+
+See the "Makefile" session bellow for some notes on building.
 
 
 Note for Packagers
@@ -26,7 +31,9 @@ Elektra is divided in 2 packages: "elektra" and "elektra-devel".
 The "elektra" package sugested files:
    /bin/kdb
    /etc/profile.d/elektraenv.sh
-   /lib/libkdb.so
+   /lib/libkdb.so*
+   /lib/libkdbtools.so*
+   /lib/libkdb-*.so      (backends)
    /lib/libregistry.so   (backwards compatibility: will be removed in future)
    /usr/share/doc/elektra
    /usr/share/doc/elektra/fstab-convert
@@ -39,18 +46,22 @@ The "elektra" package sugested files:
    /usr/share/man/man1/kdb.1.gz
    /usr/share/man/man5/elektra.5.gz
    /usr/share/man/man7/elektra.7.gz
-   /usr/share/sgml/elektra-0.1.0
-   /usr/share/sgml/elektra-0.1.0/catalog
-   /usr/share/sgml/elektra-0.1.0/elektra.dtd
+   /usr/share/sgml/elektra-0.1.1
+   /usr/share/sgml/elektra-0.1.1/catalog
+   /usr/share/sgml/elektra-0.1.1/elektra.dtd
+   /usr/share/sgml/elektra-0.1.1/elektra.xsd
 
 
 The "elektra-devel" package sugested files:
-   /usr/include/kdb.h
+   /usr/include/kdb.h          (main include)
+   /usr/include/kdbtools.h     (higher level functions)
+   /usr/include/kdbbackend.h   (backend development)
+   /usr/include/kdbprivate.h   (used by kdbbackend.h)
    /usr/lib/libkdb.a
    /usr/share/doc/elektra-devel
+   /usr/share/doc/elektra-devel/backend-template/*  (backend development examples)
    /usr/share/doc/elektra-devel/elektra-api/*  (Doxygen API documentation)
-   /usr/share/doc/elektra-devel/example.c
-   /usr/share/doc/elektra-devel/kdb.c
+   /usr/share/doc/elektra-devel/examples/*     (Many examples in C language)
    /usr/share/man/man3/kdb*.3.gz       (Manpages for the kdb*() methods)
    /usr/share/man/man3/key*.3.gz       (Manpages for the key*() methods)
    /usr/share/man/man3/ks*.3.gz        (Manpages for the ks*() methods)

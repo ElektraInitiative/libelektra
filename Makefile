@@ -26,7 +26,7 @@ MANDIR=$(UDIR)/share/man
 SGMLDIR=$(UDIR)/share/sgml
 
 
-DIRS=src doc xmldtd xmlschema
+DIRS=src xmldtd xmlschema doc
 
 
 

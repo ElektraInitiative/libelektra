@@ -81,7 +81,7 @@ int kdbGetKey_fstab(Key *key) {
 }
 
 
-int kdbGetKeyChildKeys_fstab(const Key *parentKey, KeySet *returned,
+ssize_t kdbGetKeyChildKeys_fstab(const Key *parentKey, KeySet *returned,
 		unsigned long options) {
 	FILE *fstab=0;
 	struct mntent *fstabEntry;
@@ -210,10 +210,10 @@ int kdbGetKeyChildKeys_fstab(const Key *parentKey, KeySet *returned,
 	
 	endmntent(fstab);
 	
-	if ((options & (KDB_O_SORT)) && (ksGetSize(returned) > 1))
+	if ((options & (KDB_O_SORT)) && (returned->size > 1))
 		ksSort(returned);
 
-	return 0; /* success */
+	return returned->size; /* success */
 }
 
 

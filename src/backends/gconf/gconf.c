@@ -445,7 +445,7 @@ int kdbRemoveKey_gconf(const Key *key) {
 
 
 
-int kdbGetKeyChildKeys_gconf(const Key *parentKey, KeySet *returned, unsigned long options) {
+ssize_t kdbGetKeyChildKeys_gconf(const Key *parentKey, KeySet *returned, unsigned long options) {
 	GConfEntry *entry=keyToGEntry(parentKey);
 	GError *gerr=0;
 	GSList *dirs=0,*entries=0,*current=0;
@@ -494,7 +494,7 @@ int kdbGetKeyChildKeys_gconf(const Key *parentKey, KeySet *returned, unsigned lo
 	
 	if (options & KDB_O_SORT) ksSort(returned);
 	
-	return 0; /* success */
+	return returned->size; /* success */
 }
 
 

@@ -416,7 +416,7 @@ int keyDel(Key *key) {
  * 
  */
 int keyIsInitialized(const Key *key) {
-	if (!key) return 0;
+	/* if (!key) return 0; */ /* removing to activate stupid mode */
 	return ((key->flags & KEY_SWITCH_INITMASK)==KEY_SWITCH_INITIALIZED);
 }
 
@@ -454,16 +454,17 @@ int keyIsInitialized(const Key *key) {
  * @see keyGetName(), keyGetFullName(), keyStealName()
  * @ingroup keyname
  */
-size_t keySetName(Key *key, const char *newName) {
+ssize_t keySetName(Key *key, const char *newName) {
 	size_t length;
 	size_t rootLength, userLength, systemLength, userDomainLength;
 	size_t keyNameSize=1; /* equal to length plus a space for \0 */
-
+	
+/*
 	if (!key) {
 		errno=KDB_RET_UNINITIALIZED;
 		return 0;
 	}
-	if (!keyIsInitialized(key)) keyInit(key);
+	if (!keyIsInitialized(key)) keyInit(key); */ /* commented for stupidity */
 
 	/* handle null new key name, removing the old key */
 	if (!newName || !(length=strblen(newName)-1)) {
@@ -484,7 +485,7 @@ size_t keySetName(Key *key, const char *newName) {
 	rootLength=keyNameGetRootNameSize(newName);
 	if (!rootLength) {
 		errno=KDB_RET_INVALIDKEY;
-		return 0;
+		return -1;
 	}
 	userLength=sizeof("user")-1;
 	systemLength=sizeof("system")-1;
@@ -506,7 +507,7 @@ size_t keySetName(Key *key, const char *newName) {
 			} else if (*(newName+userLength)!=RG_KEY_DELIM) {
 				/* handle when != "user/ *" */
 				errno=KDB_RET_INVALIDKEY;
-				return 0;
+				return -1;
 			} else {
 				/* handle regular "user/ *" */
 				keyNameSize+=length;
@@ -519,7 +520,7 @@ size_t keySetName(Key *key, const char *newName) {
 		key->key=realloc(key->key,keyNameSize);
 
 		/* here key->key must have a correct size allocated buffer */
-		if (!key->key) return 0;
+		if (!key->key) return -1;
 
 		strcpy(key->key,"user");
 		strncpy(key->key+userLength,newName+rootLength,length-rootLength);
@@ -541,13 +542,13 @@ size_t keySetName(Key *key, const char *newName) {
 		if (length > systemLength && *(newName+systemLength)!=RG_KEY_DELIM) {
 			/* handle when != "system/ *" */
 			errno=KDB_RET_INVALIDKEY;
-			return 0;
+			return -1;
 		}
 		keyNameSize+=length;
 		key->key=realloc(key->key,keyNameSize);
 
 		/* here key->key must have a correct size allocated buffer */
-		if (!key->key) return 0;
+		if (!key->key) return -1;
 
 		strncpy(key->key,newName,length);
 		key->key[keyNameSize-1]=0;
@@ -557,7 +558,7 @@ size_t keySetName(Key *key, const char *newName) {
 	} else {
 		/* Passed name is neither "system" or "user" */
 		errno=KDB_RET_INVALIDKEY;
-		return 0;
+		return -1;
 	}
 
 	key->flags |= KEY_SWITCH_NAME | KEY_SWITCH_NEEDSYNC;
@@ -584,7 +585,7 @@ size_t keySetName(Key *key, const char *newName) {
  * @ingroup keyname
  * 
  */
-size_t keyAddBaseName(Key *key,const char *baseName) {
+ssize_t keyAddBaseName(Key *key,const char *baseName) {
 	size_t nameSize=0;
 	size_t newSize=0;
 	int ndelim=0;
@@ -642,7 +643,7 @@ size_t keyAddBaseName(Key *key,const char *baseName) {
  * @ingroup keyname
  * 
  */
-size_t keySetBaseName(Key *key, const char *baseName) {
+ssize_t keySetBaseName(Key *key, const char *baseName) {
 	size_t newSize=strblen(baseName);
 	char *end;
 	
@@ -667,11 +668,11 @@ size_t keySetBaseName(Key *key, const char *baseName) {
  * @see keyGetName(), keyGetFullNameSize()
  * @ingroup keyname
  */
-size_t keyGetNameSize(const Key *key) {
-	if (!key || !keyIsInitialized(key)) {
+ssize_t keyGetNameSize(const Key *key) {
+	/* if (!key || !keyIsInitialized(key)) {
 		errno=KDB_RET_UNINITIALIZED;
 		return 0;
-	}
+	} */
 
 	if (key->key) return strblen(key->key);
 	else return 0;
@@ -690,13 +691,13 @@ size_t keyGetNameSize(const Key *key) {
  * @see keyGetNameSize(), keyGetFullName(), keyGetFullNameSize()
  * @ingroup keyname
  */
-size_t keyGetName(const Key *key, char *returnedName, size_t maxSize) {
+ssize_t keyGetName(const Key *key, char *returnedName, size_t maxSize) {
 	size_t bytes;
 
-	if (!key || !keyIsInitialized(key)) {
+	/* if (!key || !keyIsInitialized(key)) {
 		errno=KDB_RET_UNINITIALIZED;
 		return 0;
-	}
+	} */
 
 	if (!key->key) {
 		errno=KDB_RET_NOKEY;
@@ -707,7 +708,7 @@ size_t keyGetName(const Key *key, char *returnedName, size_t maxSize) {
 	bytes=strblen(strncpy(returnedName,key->key,maxSize));
 	if (maxSize < strblen(key->key)) {
 		errno=KDB_RET_TRUNC;
-		return 0;
+		return -1;
 	}
 	return bytes;
 }
@@ -741,13 +742,13 @@ char *keyStealName(const Key *key) {
  * @see keyGetFullName(), keyGetNameSize()
  * @ingroup keyname
  */
-size_t keyGetFullNameSize(const Key *key) {
+ssize_t keyGetFullNameSize(const Key *key) {
 	size_t returnedSize;
 
-	if (!key || !keyIsInitialized(key)) {
+	/* if (!key || !keyIsInitialized(key)) {
 		errno=KDB_RET_UNINITIALIZED;
 		return -1;
-	}
+	} */
 
 	if (!key->key) return 0;
 
@@ -771,9 +772,10 @@ size_t keyGetFullNameSize(const Key *key) {
  * @param maxSize maximum number of bytes that will fit in returnedName, including the final NULL
  * @ingroup keyname
  */
-size_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize) {
+ssize_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize) {
 	size_t userSize=sizeof("user")-1;
-	size_t userDomainSize,length;
+	size_t userDomainSize;
+	ssize_t length;
 	char *cursor;
 
 	length=keyGetFullNameSize(key);
@@ -838,8 +840,8 @@ int keyNameGetNamespace(const char *keyName) {
  *
  */
 int keyGetNamespace(const Key *key) {
-	if (!key) return 0;
-	if (!keyIsInitialized(key)) return 0;
+	/* if (!key) return 0;
+	if (!keyIsInitialized(key)) return 0; */
 
 	if (key->flags & KEY_SWITCH_ISSYSTEM) return KEY_NS_SYSTEM;
 	if (key->flags & KEY_SWITCH_ISUSER) return KEY_NS_USER;
@@ -858,8 +860,8 @@ int keyGetNamespace(const Key *key) {
  *
  */
 int keyNameIsSystem(const char *keyName) {
-	if (!keyName) return 0;
-	if (!strlen(keyName)) return 0;
+	/* if (!keyName) return 0;
+	if (!strlen(keyName)) return 0; */
 
 	if (!strncmp("system",keyName,sizeof("system")-1)) return 1;
 	return 0;
@@ -876,8 +878,8 @@ int keyNameIsSystem(const char *keyName) {
  *
  */
 int keyIsSystem(const Key *key) {
-	if (!key) return 0;
-	if (!keyIsInitialized(key)) return 0;
+	/* if (!key) return 0;
+	if (!keyIsInitialized(key)) return 0; */
 
 	return (key->flags & KEY_SWITCH_ISSYSTEM)?1:0;
 }
@@ -894,8 +896,8 @@ int keyIsSystem(const Key *key) {
  *
  */
 int keyNameIsUser(const char *keyName) {
-	if (!keyName) return 0;
-	if (!strlen(keyName)) return 0;
+	/* if (!keyName) return 0;
+	if (!strlen(keyName)) return 0; */
 
 	if (!strncmp("user",keyName,sizeof("user")-1)) return 1;
 	return 0;
@@ -912,8 +914,8 @@ int keyNameIsUser(const char *keyName) {
  *
  */
 int keyIsUser(const Key *key) {
-	if (!key) return 0;
-	if (!keyIsInitialized(key)) return 0;
+	/* if (!key) return 0;
+	if (!keyIsInitialized(key)) return 0; */
 
 	return (key->flags & KEY_SWITCH_ISUSER)?1:0;
 }
@@ -930,7 +932,7 @@ int keyIsUser(const Key *key) {
  * @see keyGetRootNameSize()
  * @ingroup keyname
  */
-size_t keyNameGetRootNameSize(const char *keyName) {
+ssize_t keyNameGetRootNameSize(const char *keyName) {
 	char *end;
 	int length=strlen(keyName);
 
@@ -965,9 +967,9 @@ size_t keyNameGetRootNameSize(const char *keyName) {
  * @see keyGetFullRootNameSize(), keyNameGetRootNameSize()
  * @ingroup keyname
  */
-size_t keyGetRootNameSize(const Key *key) {
-	if (!key) return 0;
-	if (!keyIsInitialized(key)) return 0;
+ssize_t keyGetRootNameSize(const Key *key) {
+	/* if (!key) return 0;
+	if (!keyIsInitialized(key)) return 0; */
 	if (!key->key) return 0;
 
 	return keyNameGetRootNameSize(key->key);
@@ -992,13 +994,13 @@ size_t keyGetRootNameSize(const Key *key) {
  * @see keyNameGetRootNameSize(), keyGetRootNameSize(), keyGetFullRootName()
  * @ingroup keyname
  */
-size_t keyGetRootName(const Key *key, char *returned, size_t maxSize) {
+ssize_t keyGetRootName(const Key *key, char *returned, size_t maxSize) {
 	size_t size;
 
-	if (!key || !keyIsInitialized(key)) {
+	/* if (!key || !keyIsInitialized(key)) {
 		errno=KDB_RET_UNINITIALIZED;
 		return -1;
-	}
+	} */
 
 	if (!key->key) {
 		errno=KDB_RET_NOKEY;
@@ -1030,7 +1032,7 @@ size_t keyGetRootName(const Key *key, char *returned, size_t maxSize) {
  * @see keyNameGetRootNameSize(), keyGetRootNameSize()
  * @ingroup keyname
  */
-size_t keyGetFullRootNameSize(const Key *key) {
+ssize_t keyGetFullRootNameSize(const Key *key) {
 	size_t size=0;
 
 	if (keyIsUser(key)) {
@@ -1059,15 +1061,15 @@ size_t keyGetFullRootNameSize(const Key *key) {
  * @see keyGetFullRootNameSize(), keyGetRootName()
  * @ingroup keyname
  */
-size_t keyGetFullRootName(const Key *key, char *returned, size_t maxSize) {
+ssize_t keyGetFullRootName(const Key *key, char *returned, size_t maxSize) {
 	size_t size;
 	size_t userSize;
 	char *cursor;
 
-	if (!key || !keyIsInitialized(key)) {
+	/* if (!key || !keyIsInitialized(key)) {
 		errno=KDB_RET_UNINITIALIZED;
 		return 0;
-	}
+	} */
 
 	if (!key->key) {
 		errno=KDB_RET_NOKEY;
@@ -1081,7 +1083,7 @@ size_t keyGetFullRootName(const Key *key, char *returned, size_t maxSize) {
 
 	if (maxSize < size) {
 		errno=KDB_RET_TRUNC;
-		return 0;
+		return -1;
 	}
 	
 	userSize = keyGetRootNameSize(key);
@@ -1110,13 +1112,13 @@ size_t keyGetFullRootName(const Key *key, char *returned, size_t maxSize) {
  * @see keyGetParentName() for example
  * @ingroup keyname
  */
-size_t keyGetParentNameSize(const Key *key) {
+ssize_t keyGetParentNameSize(const Key *key) {
 	char *parentNameEnd;
 
-	if (!key || !keyIsInitialized(key)) {
+	/* if (!key || !keyIsInitialized(key)) {
 		errno=KDB_RET_UNINITIALIZED;
 		return 0;
-	}
+	} */
 
 	if (!key->key) {
 		errno=KDB_RET_NOKEY;
@@ -1165,8 +1167,8 @@ keyGetParentName(key,parentName,parentSize+1);
  * @endcode
  * @ingroup keyname
  */
-size_t keyGetParentName(const Key *key, char *returnedParent, size_t maxSize) {
-	size_t parentSize;
+ssize_t keyGetParentName(const Key *key, char *returnedParent, size_t maxSize) {
+	ssize_t parentSize;
 
 	parentSize=keyGetParentNameSize(key);
 
@@ -1199,7 +1201,7 @@ size_t keyGetParentName(const Key *key, char *returnedParent, size_t maxSize) {
  * @see keyGetBaseNameSize()
  * @ingroup keyname
  */
-size_t keyNameGetBaseNameSize(const char *keyName) {
+ssize_t keyNameGetBaseNameSize(const char *keyName) {
 	char *end;
 
 	end=strrchr(keyName,RG_KEY_DELIM);
@@ -1223,9 +1225,9 @@ size_t keyNameGetBaseNameSize(const char *keyName) {
  * @see keyNameGetBaseNameSize()
  * @ingroup keyname
  */
-size_t keyGetBaseNameSize(const Key *key) {
-	if (!key) return 0;
-	if (!keyIsInitialized(key)) return 0;
+ssize_t keyGetBaseNameSize(const Key *key) {
+	/* if (!key) return 0;
+	if (!keyIsInitialized(key)) return 0; */
 	if (!key->key) return 0;
 
 	return keyNameGetBaseNameSize(key->key);
@@ -1247,11 +1249,11 @@ size_t keyGetBaseNameSize(const Key *key) {
  * @see keyStealBaseName(), keyGetBaseNameSize()
  * @ingroup keyname
  */
-size_t keyGetBaseName(const Key *key, char *returned, size_t maxSize) {
-	size_t size;
+ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize) {
+	ssize_t size;
 	size_t keySize;
 
-	if (!key) {
+	/* if (!key) {
 		errno=KDB_RET_NULLKEY;
 		return 0;
 	}
@@ -1259,7 +1261,7 @@ size_t keyGetBaseName(const Key *key, char *returned, size_t maxSize) {
 	if (!keyIsInitialized(key)) {
 		errno=KDB_RET_UNINITIALIZED;
 		return 0;
-	}
+	} */
 
 	if (!(size=keyGetBaseNameSize(key))) {
 		errno=KDB_RET_NOKEY;
@@ -1307,7 +1309,7 @@ char *keyStealBaseName(const Key *key) {
  * 
  * @ingroup keyvalue
  */
-size_t keyGetDataSize(const Key *key) {
+ssize_t keyGetDataSize(const Key *key) {
 	return keyGetValueSize(key);
 }
 
@@ -1323,11 +1325,11 @@ size_t keyGetDataSize(const Key *key) {
  * @see keyGetString(), keyGetBinary(), keyStealValue()
  * @ingroup keyvalue
  */
-size_t keyGetValueSize(const Key *key) {
-	if (!key || !keyIsInitialized(key)) {
+ssize_t keyGetValueSize(const Key *key) {
+	/* if (!key || !keyIsInitialized(key)) {
 		errno=KDB_RET_UNINITIALIZED;
 		return -1;
-	}
+	} */
 
 	return key->dataSize;
 }
@@ -1351,11 +1353,11 @@ size_t keyGetValueSize(const Key *key) {
  * @see keyGetString(), keyStealValue()
  * @ingroup keyvalue
  */
-size_t keySetString(Key *key, const char *newStringValue) {
-	size_t ret=newStringValue?strblen(newStringValue):0;
+ssize_t keySetString(Key *key, const char *newStringValue) {
+	ssize_t ret=newStringValue?strblen(newStringValue):0;
 
 	if (!newStringValue || !ret) ret=keySetRaw(key,0,0);
-	else keySetRaw(key,newStringValue,ret);
+	else ret=keySetRaw(key,newStringValue,ret);
 
 	keySetType(key,KEY_TYPE_STRING);
 
@@ -1388,11 +1390,11 @@ else keyGetString(key,buffer,sizeof(buffer));
  * @see keyStealValue(), keySetString(), keyGetBinary()
  * @ingroup keyvalue
  */
-size_t keyGetString(const Key *key, char *returnedString, size_t maxSize) {
-	if (!key || !keyIsInitialized(key)) {
+ssize_t keyGetString(const Key *key, char *returnedString, size_t maxSize) {
+	/* if (!key || !keyIsInitialized(key)) {
 		errno=KDB_RET_UNINITIALIZED;
 		return 0;
-	}
+	} */
 
 	if (!key->data) {
 		*returnedString=0;
@@ -1402,12 +1404,12 @@ size_t keyGetString(const Key *key, char *returnedString, size_t maxSize) {
 
 	if (key->dataSize > maxSize) {
 		errno=KDB_RET_TRUNC;
-		return 0;
+		return -1;
 	}
 
 	if (key->type < KEY_TYPE_STRING) {
 		errno=KDB_RET_TYPEMISMATCH;
-		return 0;
+		return -1;
 	}
 
 	strcpy(returnedString,key->data);
@@ -1488,11 +1490,11 @@ void *keyStealValue(const Key *key) {
  * @ingroup keyvalue
  *
  */
-size_t keySetLink(Key *key, const char *target) {
-	size_t ret=target?strblen(target):0;
+ssize_t keySetLink(Key *key, const char *target) {
+	ssize_t ret=target?strblen(target):0;
 
 	if (!target || !ret) ret=keySetRaw(key,0,0);
-	else keySetRaw(key,target,ret);
+	else ret=keySetRaw(key,target,ret);
 
 	keySetType(key,KEY_TYPE_LINK);
 
@@ -1511,14 +1513,14 @@ size_t keySetLink(Key *key, const char *target) {
  * @ingroup keyvalue
  *
  */
-size_t keyGetLink(const Key *key, char *returnedTarget, size_t maxSize) {
+ssize_t keyGetLink(const Key *key, char *returnedTarget, size_t maxSize) {
 /**TODO: Remove or:
  * - update Doc
  * - add keyGetLinkSize()*/
-	if (!key || !keyIsInitialized(key)) {
+	/* if (!key || !keyIsInitialized(key)) {
 		errno=KDB_RET_UNINITIALIZED;
 		return 0;
-	}
+	} */
 
 	if (!key->data) {
 		errno=KDB_RET_NODATA;
@@ -1527,12 +1529,12 @@ size_t keyGetLink(const Key *key, char *returnedTarget, size_t maxSize) {
 
 	if (key->type != KEY_TYPE_LINK) {
 		errno=KDB_RET_TYPEMISMATCH;
-		return 0;
+		return -1;
 	}
 
 	if (key->dataSize > maxSize) {
 		errno=KDB_RET_TRUNC;
-		return 0;
+		return -1;
 	}
 
 	strcpy(returnedTarget,key->data);
@@ -1551,8 +1553,8 @@ size_t keyGetLink(const Key *key, char *returnedTarget, size_t maxSize) {
  * @ingroup keytest
  */
 int keyIsLink(const Key *key) {
-	if (!key) return 0;
-	if (!keyIsInitialized(key)) return 0;
+	/* if (!key) return 0;
+	if (!keyIsInitialized(key)) return 0; */
 
 	return (S_ISLNK(key->access) || (key->type==KEY_TYPE_LINK));
 }
@@ -1569,8 +1571,8 @@ int keyIsLink(const Key *key) {
  * @ingroup keytest
  */
 int keyIsDir(const Key *key) {
-	if (!key) return 0;
-	if (!keyIsInitialized(key)) return 0;
+	/* if (!key) return 0;
+	if (!keyIsInitialized(key)) return 0; */
 
 	return (S_ISDIR(key->access) || (key->type==KEY_TYPE_DIR));
 }
@@ -1585,8 +1587,8 @@ int keyIsDir(const Key *key) {
  * @ingroup keytest
  */
 int keyIsBin(const Key *key) {
-	if (!key) return 0;
-	if (!keyIsInitialized(key)) return 0;
+	/* if (!key) return 0;
+	if (!keyIsInitialized(key)) return 0; */
 
 	return (KEY_TYPE_BINARY <= key->type && key->type < KEY_TYPE_STRING);
 }
@@ -1602,11 +1604,11 @@ int keyIsBin(const Key *key) {
  * @see keySetBinary(), keyGetString(), keyStealValue(), keyIsBin()
  * @ingroup keyvalue
  */
-size_t keyGetBinary(const Key *key, void *returnedValue, size_t maxSize) {
-	if (!key || !keyIsInitialized(key)) {
+ssize_t keyGetBinary(const Key *key, void *returnedValue, size_t maxSize) {
+	/* if (!key || !keyIsInitialized(key)) {
 		errno=KDB_RET_UNINITIALIZED;
 		return 0;
-	}
+	} */
 
 	if (!key->data) {
 		errno=KDB_RET_NODATA;
@@ -1615,7 +1617,7 @@ size_t keyGetBinary(const Key *key, void *returnedValue, size_t maxSize) {
 
 	if (key->dataSize > maxSize) {
 		errno=KDB_RET_TRUNC;
-		return 0;
+		return -1;
 	}
 
 	memcpy(returnedValue,key->data,key->dataSize);
@@ -1643,8 +1645,8 @@ size_t keyGetBinary(const Key *key, void *returnedValue, size_t maxSize) {
  * 	keySetString()
  * @ingroup keyvalue
  */
-size_t keySetBinary(Key *key, const void *newBinary, size_t dataSize) {
-	size_t ret=keySetRaw(key,newBinary,dataSize);
+ssize_t keySetBinary(Key *key, const void *newBinary, size_t dataSize) {
+	ssize_t ret=keySetRaw(key,newBinary,dataSize);
 
 	keySetType(key,KEY_TYPE_BINARY);
 
@@ -1662,7 +1664,7 @@ size_t keySetBinary(Key *key, const void *newBinary, size_t dataSize) {
  * @ingroup keytest
  */
 int keyNeedsSync(const Key *key) {
-	if (!key) return 0;
+	/* if (!key) return 0; */
 	return (key->flags & KEY_SWITCH_NEEDSYNC);
 }
 
@@ -1678,10 +1680,10 @@ int keyNeedsSync(const Key *key) {
  *
  */
 u_int8_t keyGetType(const Key *key) {
-	if (!key || !keyIsInitialized(key)) {
+	/* if (!key || !keyIsInitialized(key)) {
 		errno=KDB_RET_UNINITIALIZED;
 		return KEY_TYPE_UNDEFINED;
-	}
+	} */
 
 	return key->type;
 }
@@ -1759,11 +1761,11 @@ keyDel(color2);
 u_int8_t keySetType(Key *key,u_int8_t newType) {
 	mode_t dirSwitch=0111;
 
-	if (!key) {
+	/* if (!key) {
 		errno=KDB_RET_UNINITIALIZED;
 		return KEY_TYPE_UNDEFINED;
 	}
-	if (!keyIsInitialized(key)) keyInit(key);
+	if (!keyIsInitialized(key)) keyInit(key); */
 
 	switch (newType) {
 		case KEY_TYPE_DIR:
@@ -1795,12 +1797,12 @@ u_int8_t keySetType(Key *key,u_int8_t newType) {
  * @see keySetType(), keySetString(), keySetBinary()
  * @ingroup keyvalue
  */
-size_t keySetRaw(Key *key, const void *newBinary, size_t dataSize) {
-	if (!key) {
+ssize_t keySetRaw(Key *key, const void *newBinary, size_t dataSize) {
+	/* if (!key) {
 		errno=KDB_RET_UNINITIALIZED;
 		return 0;
 	}
-	if (!keyIsInitialized(key)) keyInit(key);
+	if (!keyIsInitialized(key)) keyInit(key); */
 
 	if (!dataSize || !newBinary) {
 		if (key->data) {
@@ -1816,7 +1818,7 @@ size_t keySetRaw(Key *key, const void *newBinary, size_t dataSize) {
 	if (key->data) key->data=realloc(key->data,key->dataSize);
 	else key->data=malloc(key->dataSize);
 
-	if (!key->data) return 0;
+	if (!key->data) return -1;
 
 	memcpy(key->data,newBinary,key->dataSize);
 	key->flags |= KEY_SWITCH_VALUE | KEY_SWITCH_NEEDSYNC;
@@ -1847,14 +1849,14 @@ size_t keySetRaw(Key *key, const void *newBinary, size_t dataSize) {
  * @see keySetName(), keyGetOwner(), keyGetFullName()
  * @ingroup keymeta
  */
-size_t keySetOwner(Key *key, const char *userDomain) {
-	size_t size;
+ssize_t keySetOwner(Key *key, const char *userDomain) {
+	ssize_t size;
 
-	if (!key) {
-		errno=KDB_RET_UNINITIALIZED; /* KDB_RET_NULLKEY */
+	/* if (!key) {
+		errno=KDB_RET_UNINITIALIZED; // KDB_RET_NULLKEY
 		return -1;
 	}
-	if (!keyIsInitialized(key)) keyInit(key);
+	if (!keyIsInitialized(key)) keyInit(key); */
 	
 	if (userDomain == 0) {
 		if (key->userDomain) {
@@ -1892,12 +1894,12 @@ size_t keySetOwner(Key *key, const char *userDomain) {
  * @see keyGetOwner()
  * @ingroup keymeta
  */
-size_t keyGetOwnerSize(const Key *key) {
+ssize_t keyGetOwnerSize(const Key *key) {
 	
-	if (!key || !keyIsInitialized(key)) {
+	/* if (!key || !keyIsInitialized(key)) {
 		errno=KDB_RET_UNINITIALIZED;
 		return 0;
-	}
+	} */
 
 	if (!key->userDomain) {
 		errno=KDB_RET_NODOMAIN;
@@ -1929,13 +1931,13 @@ size_t keyGetOwnerSize(const Key *key) {
  * @see keySetName(), keySetOwner(), keyStealOwner(), keyGetFullName()
  * @ingroup keymeta
  */
-size_t keyGetOwner(const Key *key, char *returned, size_t maxSize) {
-	size_t bytes;
+ssize_t keyGetOwner(const Key *key, char *returned, size_t maxSize) {
+	ssize_t bytes;
 
-	if (!key || !keyIsInitialized(key)) {
+	/* if (!key || !keyIsInitialized(key)) {
 		errno=KDB_RET_UNINITIALIZED;
 		return 0;
-	}
+	} */
 
 	if (!key->userDomain) {
 		errno=KDB_RET_NODOMAIN;
@@ -1944,7 +1946,7 @@ size_t keyGetOwner(const Key *key, char *returned, size_t maxSize) {
 
 	if (maxSize < (bytes=strblen(key->userDomain))) {
 		errno=KDB_RET_TRUNC;
-		return 0;
+		return -1;
 	} else strcpy(returned,key->userDomain);
 	return bytes;
 }
@@ -1987,14 +1989,14 @@ char *keyStealOwner(const Key *key) {
  * @see keyGetComment()
  * @ingroup keymeta
  */
-size_t keySetComment(Key *key, const char *newComment) {
-	size_t size;
+ssize_t keySetComment(Key *key, const char *newComment) {
+	ssize_t size;
 
-	if (!key) {
-		errno=KDB_RET_UNINITIALIZED; /* KDB_RET_NULLKEY */
+	/* if (!key) {
+		errno=KDB_RET_UNINITIALIZED; // KDB_RET_NULLKEY 
 		return 0;
-	}
-	if (!keyIsInitialized(key)) keyInit(key);
+	} 
+	if (!keyIsInitialized(key)) keyInit(key); */
 
 	if (newComment && (size=strblen(newComment)) > 0) {
 		if (key->flags & KEY_SWITCH_COMMENT) {
@@ -2002,7 +2004,7 @@ size_t keySetComment(Key *key, const char *newComment) {
 		} else {
 			key->comment=malloc(size);
 		}
-		if (!key->comment) return 0;
+		if (!key->comment) return -1;
 
 		strcpy(key->comment,newComment);
 		key->flags |= KEY_SWITCH_COMMENT | KEY_SWITCH_NEEDSYNC;
@@ -2027,11 +2029,11 @@ size_t keySetComment(Key *key, const char *newComment) {
  * @see keyGetComment(), keySetComment()
  * @ingroup keymeta
  */
-size_t keyGetCommentSize(const Key *key) {
-	if (!key || !keyIsInitialized(key)) {
+ssize_t keyGetCommentSize(const Key *key) {
+	/*  if (!key || !keyIsInitialized(key)) {
 		errno=KDB_RET_UNINITIALIZED;
 		return 0;
-	}
+	} */
 
 	if (!key->comment) {
 		errno=KDB_RET_NODESC;
@@ -2054,13 +2056,13 @@ size_t keyGetCommentSize(const Key *key) {
  * @see keyGetCommentSize(), keySetComment()
  * @ingroup keymeta
  */
-size_t keyGetComment(const Key *key, char *returnedDesc, size_t maxSize) {
-	size_t bytes;
+ssize_t keyGetComment(const Key *key, char *returnedDesc, size_t maxSize) {
+	ssize_t bytes;
 
-	if (!key || !keyIsInitialized(key)) {
+	/* if (!key || !keyIsInitialized(key)) {
 		errno=KDB_RET_UNINITIALIZED;
 		return 0;
-	}
+	} */
 
 	if (!key->comment) {
 		errno=KDB_RET_NODESC;
@@ -2070,7 +2072,7 @@ size_t keyGetComment(const Key *key, char *returnedDesc, size_t maxSize) {
 	bytes=strblen(strncpy(returnedDesc,key->comment,maxSize));
 	if (maxSize < strblen(key->comment)) {
 		errno=KDB_RET_TRUNC;
-		return 0;
+		return -1;
 	}
 	return bytes;
 }
@@ -2095,11 +2097,11 @@ char *keyStealComment(const Key *key) {
 
 
 
-size_t keyGetRecordSize(const Key *key) {
-	if (!key || !keyIsInitialized(key)) {
+ssize_t keyGetRecordSize(const Key *key) {
+	/* if (!key || !keyIsInitialized(key)) {
 		errno=KDB_RET_UNINITIALIZED;
 		return -1;
-	}
+	} */
 
 	return key->recordSize;
 }
@@ -2173,10 +2175,10 @@ int keyDup(const Key *source, Key *dest) {
  * @ingroup keymeta
  */
 uid_t keyGetUID(const Key *key) {
-	if (!key || !keyIsInitialized(key)) {
+	/* if (!key || !keyIsInitialized(key)) {
 		errno=KDB_RET_UNINITIALIZED;
 		return -1;
-	}
+	} */
 
 	/*if (!(key->flags & KEY_SWITCH_UID)) return KDB_RET_NOCRED;*/
 
@@ -2196,8 +2198,8 @@ uid_t keyGetUID(const Key *key) {
  * @ingroup keymeta
  */
 int keySetUID(Key *key, uid_t uid) {
-	if (!key) return errno=KDB_RET_UNINITIALIZED;
-	if (!keyIsInitialized(key)) keyInit(key);
+	/* if (!key) return errno=KDB_RET_UNINITIALIZED;
+	if (!keyIsInitialized(key)) keyInit(key); */
 
 	key->uid=uid;
 	key->flags |= KEY_SWITCH_UID | KEY_SWITCH_NEEDSYNC;
@@ -2215,10 +2217,10 @@ int keySetUID(Key *key, uid_t uid) {
  * @ingroup keymeta
  */
 gid_t keyGetGID(const Key *key) {
-	if (!key || !keyIsInitialized(key)) {
+	/* if (!key || !keyIsInitialized(key)) {
 		errno=KDB_RET_UNINITIALIZED;
 		return -1;
-	}
+	} */
 
 	/*if (!(key->flags & KEY_SWITCH_GID)) return KDB_RET_NOCRED;*/
 
@@ -2235,8 +2237,8 @@ gid_t keyGetGID(const Key *key) {
  * @ingroup keymeta
  */
 int keySetGID(Key *key, gid_t gid) {
-	if (!key) return errno=KDB_RET_UNINITIALIZED;
-	if (!keyIsInitialized(key)) keyInit(key);
+	/* if (!key) return errno=KDB_RET_UNINITIALIZED;
+	if (!keyIsInitialized(key)) keyInit(key); */
 
 	key->gid=gid;
 	key->flags |= KEY_SWITCH_GID | KEY_SWITCH_NEEDSYNC;
@@ -2252,10 +2254,10 @@ int keySetGID(Key *key, gid_t gid) {
  * @ingroup keymeta
  */
 mode_t keyGetAccess(const Key *key) {
-	if (!key || !keyIsInitialized(key)) {
+	/* if (!key || !keyIsInitialized(key)) {
 		errno=KDB_RET_UNINITIALIZED;
 		return -1;
-	}
+	} */
 
 	/*if (!(key->flags & KEY_SWITCH_MODE)) return KDB_RET_NOCRED;*/
 
@@ -2272,8 +2274,8 @@ mode_t keyGetAccess(const Key *key) {
  * @ingroup keymeta
  */
 int keySetAccess(Key *key, mode_t mode) {
-	if (!key) return errno=KDB_RET_UNINITIALIZED;
-	if (!keyIsInitialized(key)) keyInit(key);
+	/* if (!key) return errno=KDB_RET_UNINITIALIZED;
+	if (!keyIsInitialized(key)) keyInit(key); */
 
 	key->access=mode;
 	key->flags |= KEY_SWITCH_MODE | KEY_SWITCH_NEEDSYNC;
@@ -2288,10 +2290,10 @@ int keySetAccess(Key *key, mode_t mode) {
  * @ingroup keymeta
  */
 time_t keyGetMTime(const Key *key) {
-	if (!key || !keyIsInitialized(key)) {
+	/* if (!key || !keyIsInitialized(key)) {
 		errno=KDB_RET_UNINITIALIZED;
 		return -1;
-	}
+	} */
 	/*if (!(key->flags & KEY_SWITCH_TIME)) return KDB_RET_NOTIME;*/
 
 	return key->mtime;
@@ -2304,10 +2306,10 @@ time_t keyGetMTime(const Key *key) {
  * @ingroup keymeta
  */
 time_t keyGetATime(const Key *key) {
-	if (!key || !keyIsInitialized(key)) {
+	/* if (!key || !keyIsInitialized(key)) {
 		errno=KDB_RET_UNINITIALIZED;
 		return -1;
-	}
+	} */
 	/*if (!(key->flags & KEY_SWITCH_TIME)) return KDB_RET_NOTIME;*/
 
 	return key->atime;
@@ -2320,10 +2322,10 @@ time_t keyGetATime(const Key *key) {
  * @ingroup keymeta
  */
 time_t keyGetCTime(const Key *key) {
-	if (!key || !keyIsInitialized(key)) {
+	/* if (!key || !keyIsInitialized(key)) {
 		errno=KDB_RET_UNINITIALIZED;
 		return -1;
-	}
+	} */
 	/*if (!(key->flags & KEY_SWITCH_TIME)) return KDB_RET_NOTIME;*/
 
 	return key->ctime;
@@ -2477,17 +2479,17 @@ u_int32_t keyCompare(const Key *key1, const Key *key2) {
  * @return number of bytes written to output
  * @ingroup keymisc
  */
-size_t keyToStream(const Key *key, FILE* stream, unsigned long options) {
-	size_t written=0;
+ssize_t keyToStream(const Key *key, FILE* stream, unsigned long options) {
+	ssize_t written=0;
 	char buffer[800];
 	struct passwd *pwd=0;
 	struct group *grp=0;
 
 
-	if (!key || !keyIsInitialized(key) /* || !key->key */) {
+	/* if (!key || !keyIsInitialized(key) // || !key->key * / ) {
 		errno=KDB_RET_UNINITIALIZED;
 		return 0;
-	}
+	} */
 
 	/* Write key name */
 	if (options & KDB_O_FULLNAME) {
@@ -2663,14 +2665,14 @@ size_t keyGetSerializedSize(Key *key) {
  * The flag has no semantics to the library, only to your application.
  *
  * @see keyGetFlag(), keyClearFlag()
- * @return 0, unless key is invalid.
+ * @return allways 0
  * @ingroup keymeta
  */
 int keySetFlag(Key *key) {
-	if (!key || !keyIsInitialized(key)) {
+	/* if (!key || !keyIsInitialized(key)) {
 		errno=KDB_RET_UNINITIALIZED;
 		return -1;
-	}
+	} */
 
 	key->flags|=KEY_SWITCH_FLAG;
 
@@ -2685,14 +2687,14 @@ int keySetFlag(Key *key) {
  * The flag has no semantics to the library, only to your application.
  *
  * @see keyGetFlag(), keySetFlag()
- * @return 0, unless key is invalid.
+ * @return allways 0
  * @ingroup keymeta
  */
 int keyClearFlag(Key *key) {
-	if (!key || !keyIsInitialized(key)) {
+	/* if (!key || !keyIsInitialized(key)) {
 		errno=KDB_RET_UNINITIALIZED;
 		return -1;
-	}
+	} */
 
 	key->flags &= ~KEY_SWITCH_FLAG;
 
@@ -2712,10 +2714,10 @@ int keyClearFlag(Key *key) {
  * @ingroup keymeta
  */
 int keyGetFlag(const Key *key) {
-	if (!key || !keyIsInitialized(key)) {
+	/* if (!key || !keyIsInitialized(key)) {
 		errno=KDB_RET_UNINITIALIZED;
 		return 0;
-	}
+	} */
 
 	return (key->flags & KEY_SWITCH_FLAG) ? 1:0;
 }
@@ -2748,10 +2750,11 @@ free(key);
  * @endcode
  * 
  * @see keyNew(), keyDel(), keyClose()
+ * @return allways 0;
  * @ingroup key
  */
 int keyInit(Key *key) {
-	if (!key) return errno=KDB_RET_NULLKEY;
+	/* if (!key) return errno=KDB_RET_NULLKEY; */
 
 	memset(key,0,sizeof(Key));
 	key->type=KEY_TYPE_UNDEFINED;
@@ -2778,10 +2781,11 @@ int keyInit(Key *key) {
  * @see keyNew() and keyDel() as a more practicall approach for Key
  * 	construction and destruction
  * @ingroup key
+ * @return allways 0;
  */
 int keyClose(Key *key) {
-	if (!key) return errno=KDB_RET_NULLKEY;
-	if (!keyIsInitialized(key)) return 0;
+	/* if (!key) return errno=KDB_RET_NULLKEY;
+	if (!keyIsInitialized(key)) return 0; */
 
 	free(key->key);
 	free(key->data);
@@ -2863,7 +2867,7 @@ int ksDel(KeySet *ks) {
 /**
  * Return the number of keys contained by @p ks.
  */
-size_t ksGetSize(KeySet *ks) {
+ssize_t ksGetSize(KeySet *ks) {
 	return ks->size;
 }
 
@@ -3245,7 +3249,7 @@ Key *ksLookupByValue(KeySet *ks, const char *value, unsigned long options) {
  * @param value the value which owner key you want to find
  * @param size the size of @p value
  * @param options some @p KDB_O_* option bits, for future use
- * @return the Key found, 0 otherwise
+ * @return the Key found, NULL otherwise
  * @see ksLookupByValue()
  * @see keyCompare() for very powerfull Key lookups in KeySets
  * @see ksCurrent(), ksRewind(), ksNext()
@@ -3297,7 +3301,7 @@ Key *ksLookupByBinaryValue(KeySet *ks, void *value, size_t size,
  * @see ksAppend(), ksInsertKeys(), ksAppendKeys(), ksDel(), keyNew()
  *
  */
-size_t ksInsert(KeySet *ks, Key *toInsert) {
+ssize_t ksInsert(KeySet *ks, Key *toInsert) {
 	toInsert->next=ks->start;
 	ks->start=toInsert;
 	if (!ks->end) ks->end=toInsert;
@@ -3374,7 +3378,7 @@ Key *ksPopLast(KeySet *ks) {
 
 
 /**
- * Transfers all keys from @p toInsert to the begining of @p ksa.
+ * Transfers all keys from @p toInsert to the begining of @p ks.
  *
  * After this call, @p toInsert will be empty and can be deleted with ksDel().
  *
@@ -3384,7 +3388,7 @@ Key *ksPopLast(KeySet *ks) {
  * @see ksAppend(), ksInsert(), ksAppendKeys()
  *
  */
-size_t ksInsertKeys(KeySet *ks, KeySet *toInsert) {
+ssize_t ksInsertKeys(KeySet *ks, KeySet *toInsert) {
 	if (toInsert->size) {
 		toInsert->end->next=ks->start;
 		ks->start=toInsert->start;
@@ -3401,7 +3405,7 @@ size_t ksInsertKeys(KeySet *ks, KeySet *toInsert) {
 
 
 /**
- * Appends a new Key to the end @p ks. A reference to the key will
+ * Appends a new Key to the end of @p ks. A reference to the key will
  * be stored, and not a private copy. So a future ksClose() or ksDel() on
  * @p ks will keyDel() the @p toAppend object.
  * The KeySet internal cursor is not moved.
@@ -3414,7 +3418,7 @@ size_t ksInsertKeys(KeySet *ks, KeySet *toInsert) {
  * @see ksInsert(), ksInsertKeys(), ksAppendKeys(), keyNew(), ksDel()
  *
  */
-size_t ksAppend(KeySet *ks, Key *toAppend) {
+ssize_t ksAppend(KeySet *ks, Key *toAppend) {
 	toAppend->next=0;
 	if (ks->end) ks->end->next=toAppend;
 	if (!ks->start) ks->start=toAppend;
@@ -3436,7 +3440,7 @@ size_t ksAppend(KeySet *ks, Key *toAppend) {
  * @see ksAppend(), ksInsert(), ksInsertKeys()
  * 
  */
-size_t ksAppendKeys(KeySet *ks, KeySet *toAppend) {
+ssize_t ksAppendKeys(KeySet *ks, KeySet *toAppend) {
 	if (toAppend->size) {
 		if (ks->end) {
 			ks->end->next=toAppend->start;
@@ -3498,6 +3502,7 @@ size_t ksAppendKeys(KeySet *ks, KeySet *toAppend) {
  * 	removed from @p ks1
  * @see keyCompare()
  * @see commandEdit() at the kdb command
+ * @return allways 0
  * @par Example
  * @code
 KeySet *ks1,*ks2,*removed;
@@ -3643,9 +3648,9 @@ int ksCompare(KeySet *ks1, KeySet *ks2, KeySet *removed) {
  *
  * @see keyToStream()
  * @see commandList() for usage example
- * @return number of bytes written to output
+ * @return number of bytes written to output, or -1 if some error occurs
  */
-size_t ksToStream(const KeySet *ks, FILE* stream, unsigned long options) {
+ssize_t ksToStream(const KeySet *ks, FILE* stream, unsigned long options) {
 	size_t written=0;
 	Key *key=0;
 
@@ -3672,7 +3677,7 @@ size_t ksToStream(const KeySet *ks, FILE* stream, unsigned long options) {
 
 
 
-/* Used by the qsort() function */
+/* Used as a callback by the qsort() function */
 int keyCompareByName(const void *p1, const void *p2) {
 	Key *key1=*(Key **)p1;
 	Key *key2=*(Key **)p2;
@@ -3722,6 +3727,7 @@ void ksSort(KeySet *ks) {
  * cleaned with ksClose().
  * 
  * @see ksNew(), ksClose(), keyInit()
+ * @return allways 0
  */
 int ksInit(KeySet *ks) {
 	ks->start=ks->end=ks->cursor=0;
@@ -3740,7 +3746,7 @@ int ksInit(KeySet *ks) {
  * 
  * @see keyDel(), ksInit(), keyClose()
  * @see ksAppend() for details on how keys are inserted in KeySets
- * @return 0
+ * @return allways 0
  */
 int ksClose(KeySet *ks) {
 	if (ks->size) {

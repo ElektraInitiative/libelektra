@@ -49,14 +49,159 @@ $LastChangedBy$
 
 
 
-size_t encode(void *unencoded, size_t size, char *returned);
-size_t unencode(char *encoded, void *returned);
+ 
+ 
+/**
+ * The private Key struct.
+ * 
+ * Its internal private attributes should not be accessed directly by regular
+ * programs. Use the @ref key "Key access methods" instead.
+ * Only a backend writer needs to have access to the private attributes of the
+ * Key object which is defined as:
+ * @code
+typedef struct _Key Key;
+ * @endcode
+ * 
+ * @ingroup backend
+ */
+struct _Key {
+	/**
+	 * Type of the value, from #KeyType.
+	 * @see keyGetType(), keySetType(), keyIsBin()
+	 */ 
+	u_int8_t       type;
+	 
+	/**
+	 * System UID of this key.
+	 * @see keyGetUID(), keySetUID()
+	 */ 
+	uid_t          uid;
+	 
+	/**
+	 * System GID of this key.
+	 * @see keyGetGID(), keySetGID()
+	 */ 
+	uid_t          gid;
+	 
+	/**
+	 * File-like access control
+	 * @see keyGetAccess(), keySetAccess()
+	 */ 
+	mode_t         access;
+	   
+	/**
+	 * Time for last access (stat).
+	 * @see keyGetATime()
+	 */ 
+	time_t         atime;
+	   
+	/**
+	 * Time for last modification.
+	 * @see keyGetMTime()
+	 */ 
+	time_t         mtime;
+	 
+	/**
+	 * Time for last change (meta info)
+	 * @see keyGetCTime()
+	 */ 
+	time_t         ctime;
+	 
+	/**
+	 * Size of the comment of description string, including ending NULL.
+	 * @see keyGetCommentSize(), keySetComment(), keyGetComment()
+	 */ 
+	size_t         commentSize;
+	 
+	/**
+	 * Size of the value, in bytes, including ending NULL.
+	 * @see keyGetCommentSize(), keySetComment(), keyGetComment()
+	 */ 
+	size_t         dataSize;
+	size_t         recordSize;  /**< dataSize + commentSize + some control */
+	 
+	/**
+	 * Some control and internal flags.
+	 * @see keySetFlag(), keyGetFlag()
+	 */ 
+	u_int32_t      flags;
+	 
+	/**
+	 * The name of the key.
+	 * @see keySetName(), keyGetName()
+	 */ 
+	char *         key;
+	 
+	/**
+	 * A comment about the key.
+	 * @see keySetComment(), keyGetComment()
+	 */ 
+	char *         comment;
+	 
+	/**
+	 * The user that owns the key.
+	 * @see keySetComment(), keyGetComment()
+	 */ 
+	char *         userDomain;
+	 
+	/**
+	 * The user that owns the key.
+	 * @see keySetString(), keyGetString()
+	 */ 
+	void *         data;        /**< The value, which is a NULL terminated string or binary */
+	struct _Key *  next;        /**< Link to the next object in a KeySet context */
+};
+
+
+
+
+
+
+
+/**
+ * The private KeySet struct.
+ * 
+ * Its internal private attributes should not be accessed directly by regular
+ * programs. Use the @ref keyset "KeySet access methods" instead.
+ * Only a backend writer needs to have access to the private attributes of the
+ * KeySet object which is defined as:
+ * @code
+typedef struct _KeySet KeySet;
+ * @endcode
+ * 
+ * @ingroup backend
+ */
+struct _KeySet {
+	struct _Key * start;   /**< First key on the list */
+	struct _Key * end;     /**< Last key on the list */
+	struct _Key * cursor;  /**< Internal cursor */
+	size_t        size;    /**< Number of keys contained in the KeySet */
+};
+
+
+
+
+
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
+
+ssize_t encode(void *unencoded, size_t size, char *returned);
+ssize_t unencode(char *encoded, void *returned);
 
 int kdbNeedsUTF8Conversion();
 int UTF8Engine(int direction, char **string, size_t *inputByteSize);
 
 
 
+
+#ifdef __cplusplus
+}
+#endif
 
 
 
