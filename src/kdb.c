@@ -757,13 +757,9 @@ int commandList() {
 	if (argShow) {
 		size_t listSize=ksGetSize(ks);
 		
-		if (argXML) {
-			if (listSize == 1) keyToStream(ksHead(ks),stdout,
-				(argFullName?(KDB_O_FULLNAME | KDB_O_FULLUGID):0));
-			else if (listSize > 1)
-				ksToStream(ks,stdout,KDB_O_XMLHEADERS |
-					(argFullName?(KDB_O_FULLNAME | KDB_O_FULLUGID):0));
-		} else {
+		if (argXML) ksToStream(ks,stdout,KDB_O_XMLHEADERS |
+			(argFullName?(KDB_O_FULLNAME | KDB_O_FULLUGID):0));
+		else {
 			if (listSize == 1) listSingleKey(ksHead(ks));
 			else if (listSize > 1) {
 				Key *walker;
