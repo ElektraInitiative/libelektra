@@ -1,3 +1,7 @@
+* Sun Jul 25 2004 Avi Alkalay <avi@unix.sh> 0.2.8
+- Added the export and import subcommands to rg.
+- Updated man page for that.
+
 * Thu Jul 4 2004 Avi Alkalay <avi@unix.sh> 0.2.7
 - First atempt to workaround the manpage creation when XSL tools are not available.
 
