@@ -923,7 +923,7 @@ int registryStatKey(Key *key) {
 	pos=registryGetFilename(key,keyFileName,sizeof(keyFileName));
 	if (!pos) return -1; /* something is wrong */
 
-	lstat(keyFileName,&keyFileNameInfo);
+	if (lstat(keyFileName,&keyFileNameInfo)) return -1;
 	keyFromStat(key,&keyFileNameInfo);
 	
 	if (keyIsLink(key) && key->recordSize) {
