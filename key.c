@@ -2338,7 +2338,7 @@ size_t ksInsertKeys(KeySet *ks, KeySet *toInsert) {
 		ks->size+=toInsert->size;
 
 		/* Invalidate the old KeySet */
-		toInsert->start=toInsert->end=0;
+		toInsert->start=toInsert->end=toInsert->cursor=0;
 		toInsert->size=0;
 	}
 	return ks->size;
@@ -2397,7 +2397,7 @@ size_t ksAppendKeys(KeySet *ks, KeySet *toAppend) {
 		ks->size+=toAppend->size;
 		
 		/* Invalidate the old KeySet */
-		toAppend->start=toAppend->end=0;
+		toAppend->start=toAppend->end=toAppend->cursor=0;
 		toAppend->size=0;
 	}
 	return ks->size;
