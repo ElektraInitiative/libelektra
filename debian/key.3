@@ -1,0 +1,1420 @@
+.TH "Key Class Methods" 3 "18 Oct 2004" "Elektra Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Key Class Methods \- The Key Class and its methods. 
+More...
+.SS "Enumerations"
+
+.in +1c
+.ti -1c
+.RI "enum \fBKeyType\fP { \fBKEY_TYPE_UNDEFINED\fP = 0, \fBKEY_TYPE_DIR\fP = 1, \fBKEY_TYPE_LINK\fP = 2, \fBKEY_TYPE_BINARY\fP = 20, \fBKEY_TYPE_STRING\fP = 40 }"
+.br
+.ti -1c
+.RI "enum \fBKeyNamespace\fP { \fBKEY_NS_SYSTEM\fP = 1, \fBKEY_NS_USER\fP = 2 }"
+.br
+.ti -1c
+.RI "enum \fBKeyFlags\fP { , \fBKEY_FLAG_HASTYPE\fP = 1, \fBKEY_FLAG_HASKEY\fP = 1<<1, \fBKEY_FLAG_HASDATA\fP = 1<<2, \fBKEY_FLAG_HASDOMAIN\fP = 1<<5, \fBKEY_FLAG_HASCOMMENT\fP = 1<<6, \fBKEY_FLAG_HASUID\fP = 1<<7, \fBKEY_FLAG_HASGID\fP = 1<<8, \fBKEY_FLAG_HASPRM\fP = 1<<10, \fBKEY_FLAG_HASTIME\fP = 1<<11, \fBKEY_FLAG_NEEDSYNC\fP = 1<<12, \fBKEY_FLAG_FLAG\fP = 1<<31 }"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBkeyInit\fP (Key *key)"
+.br
+.ti -1c
+.RI "int \fBkeyClose\fP (Key *key)"
+.br
+.ti -1c
+.RI "int \fBkeyIsInitialized\fP (const Key *key)"
+.br
+.ti -1c
+.RI "int \fBkeyNeedsSync\fP (const Key *key)"
+.br
+.ti -1c
+.RI "u_int8_t \fBkeyGetType\fP (const Key *key)"
+.br
+.ti -1c
+.RI "u_int8_t \fBkeySetType\fP (Key *key, u_int8_t newType)"
+.br
+.ti -1c
+.RI "size_t \fBkeyGetDataSize\fP (const Key *key)"
+.br
+.ti -1c
+.RI "size_t \fBkeyGetNameSize\fP (const Key *key)"
+.br
+.ti -1c
+.RI "size_t \fBkeyGetFullNameSize\fP (const Key *key)"
+.br
+.ti -1c
+.RI "size_t \fBkeyGetFullName\fP (const Key *key, char *returnedName, size_t maxSize)"
+.br
+.ti -1c
+.RI "size_t \fBkeyGetName\fP (const Key *key, char *returnedName, size_t maxSize)"
+.br
+.ti -1c
+.RI "size_t \fBkeySetName\fP (Key *key, const char *newName)"
+.br
+.ti -1c
+.RI "size_t \fBkeyGetOwner\fP (const Key *key, char *returned, size_t maxSize)"
+.br
+.ti -1c
+.RI "size_t \fBkeyGetOwnerSize\fP (const Key *key)"
+.br
+.ti -1c
+.RI "size_t \fBkeySetOwner\fP (Key *key, const char *userDomain)"
+.br
+.ti -1c
+.RI "size_t \fBkeyGetComment\fP (const Key *key, char *returnedDesc, size_t maxSize)"
+.br
+.ti -1c
+.RI "size_t \fBkeySetComment\fP (Key *key, const char *newComment)"
+.br
+.ti -1c
+.RI "size_t \fBkeyGetCommentSize\fP (const Key *key)"
+.br
+.ti -1c
+.RI "size_t \fBkeyGetString\fP (const Key *key, char *returnedString, size_t maxSize)"
+.br
+.ti -1c
+.RI "size_t \fBkeySetString\fP (Key *key, const char *newString)"
+.br
+.ti -1c
+.RI "size_t \fBkeyGetBinary\fP (const Key *key, void *returnedBinary, size_t maxSize)"
+.br
+.ti -1c
+.RI "size_t \fBkeySetBinary\fP (Key *key, const void *newBinary, size_t dataSize)"
+.br
+.ti -1c
+.RI "size_t \fBkeySetRaw\fP (Key *key, const void *newBinary, size_t dataSize)"
+.br
+.ti -1c
+.RI "size_t \fBkeySetLink\fP (Key *key, const char *target)"
+.br
+.ti -1c
+.RI "int \fBkeyDup\fP (const Key *source, Key *dest)"
+.br
+.ti -1c
+.RI "uid_t \fBkeyGetUID\fP (const Key *key)"
+.br
+.ti -1c
+.RI "int \fBkeySetUID\fP (Key *key, uid_t uid)"
+.br
+.ti -1c
+.RI "gid_t \fBkeyGetGID\fP (const Key *key)"
+.br
+.ti -1c
+.RI "int \fBkeySetGID\fP (Key *key, gid_t gid)"
+.br
+.ti -1c
+.RI "mode_t \fBkeyGetAccess\fP (const Key *key)"
+.br
+.ti -1c
+.RI "int \fBkeySetAccess\fP (Key *key, mode_t mode)"
+.br
+.ti -1c
+.RI "time_t \fBkeyGetMTime\fP (const Key *key)"
+.br
+.ti -1c
+.RI "time_t \fBkeyGetATime\fP (const Key *key)"
+.br
+.ti -1c
+.RI "time_t \fBkeyGetCTime\fP (const Key *key)"
+.br
+.ti -1c
+.RI "size_t \fBkeyGetParentSize\fP (const Key *key)"
+.br
+.ti -1c
+.RI "size_t \fBkeyGetParent\fP (const Key *key, char *returnedParent, size_t maxSize)"
+.br
+.ti -1c
+.RI "u_int32_t \fBkeyCompare\fP (const Key *key1, const Key *key2)"
+.br
+.ti -1c
+.RI "size_t \fBkeyToStream\fP (const Key *key, FILE *stream, unsigned long options)"
+.br
+.ti -1c
+.RI "int \fBkeyNameIsSystem\fP (const char *keyName)"
+.br
+.ti -1c
+.RI "int \fBkeyNameIsUser\fP (const char *keyName)"
+.br
+.ti -1c
+.RI "int \fBkeyIsSystem\fP (const Key *key)"
+.br
+.ti -1c
+.RI "int \fBkeyIsUser\fP (const Key *key)"
+.br
+.ti -1c
+.RI "int \fBkeyNameGetNamespace\fP (const char *keyName)"
+.br
+.ti -1c
+.RI "int \fBkeyGetNamespace\fP (const Key *key)"
+.br
+.ti -1c
+.RI "int \fBkeyIsDir\fP (const Key *key)"
+.br
+.ti -1c
+.RI "int \fBkeyIsLink\fP (const Key *key)"
+.br
+.ti -1c
+.RI "size_t \fBkeyNameGetRootNameSize\fP (const char *keyName)"
+.br
+.ti -1c
+.RI "size_t \fBkeyGetRootNameSize\fP (const Key *key)"
+.br
+.ti -1c
+.RI "size_t \fBkeyGetFullRootNameSize\fP (const Key *key)"
+.br
+.ti -1c
+.RI "size_t \fBkeyNameGetBaseNameSize\fP (const char *keyName)"
+.br
+.ti -1c
+.RI "size_t \fBkeyGetBaseNameSize\fP (const Key *key)"
+.br
+.ti -1c
+.RI "size_t \fBkeyGetRootName\fP (const Key *key, char *returned, size_t maxSize)"
+.br
+.ti -1c
+.RI "size_t \fBkeyGetFullRootName\fP (const Key *key, char *returned, size_t maxSize)"
+.br
+.ti -1c
+.RI "size_t \fBkeyGetBaseName\fP (const Key *key, char *returned, size_t maxSize)"
+.br
+.ti -1c
+.RI "int \fBkeySetFlag\fP (Key *key)"
+.br
+.ti -1c
+.RI "int \fBkeyClearFlag\fP (Key *key)"
+.br
+.ti -1c
+.RI "int \fBkeyGetFlag\fP (const Key *key)"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+The Key Class and its methods.
+.PP
+.PP
+ To use it: 
+.PP
+.nf
+#include <kdb.h>
+.fi
+.PP
+A Key is the essential class that contains all key data and metadata. Key properties are:
+.TP
+Key name
+.TP
+User domain
+.TP
+Key value or data
+.TP
+Data type
+.TP
+Comment about the key
+.TP
+UID, GID and access filesystem-like permissions
+.TP
+Access, change and modification times
+.TP
+A general flag
+.PP
+Rules for Key Names
+.PP
+When using Elektra to store your application's configuration and state, please keep in mind the following rules:
+.TP
+You are not allowed to create keys right under \fCsystem\fP or \fCuser\fP.
+.TP
+You are not allowed to create folder keys right under \fCsystem\fP or \fCuser\fP. They are reserved for very essential OS subsystems.
+.TP
+The keys for your application, called say \fIMyApp\fP, should be created under \fCsystem/sw/MyApp\fP and/or \fCuser/sw/MyApp\fP.
+.TP
+It is suggested to make your application look for default keys under \fCsystem/sw/MyApp/current\fP and/or \fCuser/sw/MyApp/current\fP. This way, from a sysadmin perspective, it will be possible to copy the \fCsystem/sw/MyApp/current\fP tree to something like \fCsystem/sw/MyApp/old\fP, and keep system clean and organized.
+.PP
+Described here the methods to get and set, and make various manipulations in the objects of class Key. 
+.SH "ENUMERATION TYPE DOCUMENTATION"
+.PP 
+.SS "enum KeyFlags"
+.PP
+Flags that can be used with keys. 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyCompare\fP() , \fBkdbMonitorKey\fP() the diffMask parameter , \fBkdbMonitorKeys\fP() the diffMask parameter , \fBkeyGetFlag\fP() 
+.PP
+\fBEnumeration values:\fP
+.in +1c
+.TP
+\fB\fI\fIKEY_FLAG_HASTYPE\fP \fP\fP
+Flag for the key type 
+.TP
+\fB\fI\fIKEY_FLAG_HASKEY\fP \fP\fP
+Flag for the key name 
+.TP
+\fB\fI\fIKEY_FLAG_HASDATA\fP \fP\fP
+Flag for the key data 
+.TP
+\fB\fI\fIKEY_FLAG_HASDOMAIN\fP \fP\fP
+Flag for the key user domain 
+.TP
+\fB\fI\fIKEY_FLAG_HASCOMMENT\fP \fP\fP
+Flag for the key comment 
+.TP
+\fB\fI\fIKEY_FLAG_HASUID\fP \fP\fP
+Flag for the key UID 
+.TP
+\fB\fI\fIKEY_FLAG_HASGID\fP \fP\fP
+Flag for the key GID 
+.TP
+\fB\fI\fIKEY_FLAG_HASPRM\fP \fP\fP
+Flag for the key permissions 
+.TP
+\fB\fI\fIKEY_FLAG_HASTIME\fP \fP\fP
+Flag for the key change time 
+.TP
+\fB\fI\fIKEY_FLAG_NEEDSYNC\fP \fP\fP
+Flags that key needs syncronization 
+.TP
+\fB\fI\fIKEY_FLAG_FLAG\fP \fP\fP
+General purpose flag that has semantics only to your app 
+.PP
+Definition at line 134 of file kdb.h.
+.SS "enum KeyNamespace"
+.PP
+Elektra currently supported Key namespaces. 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkdbGetRootKeys\fP() , \fBkeyGetNamespace\fP() , \fBkeyNameGetNamespace\fP() 
+.PP
+\fBEnumeration values:\fP
+.in +1c
+.TP
+\fB\fI\fIKEY_NS_SYSTEM\fP \fP\fP
+The \fCsystem\fP keys 
+.TP
+\fB\fI\fIKEY_NS_USER\fP \fP\fP
+The \fCuser\fP keys 
+.PP
+Definition at line 97 of file kdb.h.
+.SS "enum KeyType"
+.PP
+Key data types.
+.PP
+Key type values grow from the semantically poor to the semantically rich. The gaps between them is for user-defined types.
+.PP
+If your application needs value types with more semantics, like \fCColor\fP, \fCFont\fP, etc, you can still use it. You'll have to define a new type number in the scope of your application, and force the type with \fBkeySetType\fP().
+.PP
+The type number is a value between 0 and 255. If you define it bigger than \fCKEY_TYPE_STRING\fP, it will be still treated as a string (in the terms of Unicode handling). If you define it between \fCKEY_TYPE_BINARY\fP and \fCKEY_TYPE_STRING\fP, Elektra will handle it as a binary, will not make Unicode handling and will save it hex-encoded.
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyGetType\fP() , \fBkeySetType\fP() for an example of how to define custom types 
+.PP
+\fBEnumeration values:\fP
+.in +1c
+.TP
+\fB\fI\fIKEY_TYPE_UNDEFINED\fP \fP\fP
+Undefined key type 
+.TP
+\fB\fI\fIKEY_TYPE_DIR\fP \fP\fP
+A directory key 
+.TP
+\fB\fI\fIKEY_TYPE_LINK\fP \fP\fP
+A symbolink link key. This gap is for special key meta types, that can't go into regular files. 
+.TP
+\fB\fI\fIKEY_TYPE_BINARY\fP \fP\fP
+A binary key. This gap is for binary data types that have some semantics that somebody can invent in the future 
+.TP
+\fB\fI\fIKEY_TYPE_STRING\fP \fP\fP
+A string key 
+.PP
+Definition at line 72 of file kdb.h.
+.SH "FUNCTION DOCUMENTATION"
+.PP 
+.SS "int keyClearFlag (Key * key)"
+.PP
+Clear the general flag in the Key
+.PP
+The flag has no semantics to the library, only to your application.
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyGetFlag\fP() , \fBkeySetFlag\fP() 
+.PP
+\fBReturns: \fP
+.in +1c
+0, unless key is invalid. 
+.PP
+Definition at line 2165 of file key.c.
+.SS "int keyClose (Key * key)"
+.PP
+Finishes the usage of a Key object.
+.PP
+Frees all internally allocated memory, and leave the Key object ready to be destroyed, or explicitly by a \fIfree()\fP, or a local variable dealocation. 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyInit\fP() for usage example 
+.PP
+Definition at line 149 of file key.c.
+.SS "u_int32_t keyCompare (const Key * key1, const Key * key2)"
+.PP
+Compare 2 keys.
+.PP
+The returned flag array has 1s (different) or 0s (same) for each key meta info compared, that can be logically ORed with \fCKEY_FLAG_*\fP flags.
+.PP
+\fBReturns: \fP
+.in +1c
+a bit array poiting the differences 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBksCompare\fP() for examples and more detailed description , \fBKeyFlags\fP 
+.PP
+Definition at line 1372 of file key.c.
+.SS "int keyDup (const Key * source, Key * dest)"
+.PP
+Clone a key.
+.PP
+All private information of the source key will be copied, and nothing will be shared between both keys. \fBkeyClose\fP() will be used on destination key before the operation. Internal buffers will be automatically allocated on destination.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIsource\fP\fP
+the source key 
+.TP
+\fB\fIdest\fP\fP
+the new copy of the key 
+.PP
+\fBReturns: \fP
+.in +1c
+0 on success 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyClose\fP() , \fBkeyInit\fP() 
+.PP
+Definition at line 1103 of file key.c.
+.SS "mode_t keyGetAccess (const Key * key)"
+.PP
+Return the key filesystem-like access permissions. 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeySetAccess\fP() 
+.PP
+Definition at line 1221 of file key.c.
+.SS "time_t keyGetATime (const Key * key)"
+.PP
+Get last time the key data was read from disk. 
+.PP
+Definition at line 1273 of file key.c.
+.SS "size_t keyGetBaseName (const Key * key, char * returned, size_t maxSize)"
+.PP
+Calculate the basename of a key name and put it in \fCreturned\fP.
+.PP
+Some examples:
+.TP
+basename of \fCsystem/some/keyname\fP is \fCkeyname\fP
+.TP
+basename of \fC'user/tmp/some key'\fP is \fC'some key'\fP
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIkey\fP\fP
+the key to extract basename from 
+.TP
+\fB\fIreturned\fP\fP
+a pre-allocated buffer to store the basename 
+.TP
+\fB\fImaxSize\fP\fP
+size of the \fCreturned\fP buffer 
+.PP
+\fBReturns: \fP
+.in +1c
+number of bytes copied to \fCreturned\fP, or 0 and \fCerrno\fP is set 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyGetBaseNameSize\fP() 
+.PP
+Definition at line 2102 of file key.c.
+.SS "size_t keyGetBaseNameSize (const Key * key)"
+.PP
+Calculates number of bytes needed to store basename of a key.
+.PP
+Basenames are denoted as:
+.TP
+\fCsystem/some/thing/basename\fP
+.TP
+\fCuser:domain/some/thing/basename\fP
+.PP
+\fBReturns: \fP
+.in +1c
+number of bytes needed without ending NULL 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyNameGetBaseNameSize\fP() 
+.PP
+Definition at line 1975 of file key.c.
+.SS "size_t keyGetBinary (const Key * key, void * returnedBinary, size_t maxSize)"
+.PP
+Get the value of a binary or string key.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIreturnedBinary\fP\fP
+pre-allocated memory to store a copy of the key value 
+.TP
+\fB\fImaxSize\fP\fP
+number of bytes of pre-allocated memory 
+.PP
+\fBReturns: \fP
+.in +1c
+the number of bytes actually copied 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeySetBinary\fP() , \fBkeyGetString\fP() 
+.PP
+Definition at line 953 of file key.c.
+.SS "size_t keyGetComment (const Key * key, char * returnedDesc, size_t maxSize)"
+.PP
+Get the key comment.
+.PP
+A Key comment is pretty much as a comment in a text configuration file.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIreturnedDesc\fP\fP
+pre-allocated memory to copy the comments to 
+.TP
+\fB\fImaxSize\fP\fP
+number of bytes that will fit returnedDesc 
+.PP
+\fBReturns: \fP
+.in +1c
+number of bytes written 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyGetCommentSize\fP() , \fBkeySetComment\fP() 
+.PP
+Definition at line 702 of file key.c.
+.SS "size_t keyGetCommentSize (const Key * key)"
+.PP
+Calculates number of bytes needed to store a key comment, including final NULL.
+.PP
+Use this method to allocate memory to retrieve a key comment.
+.PP
+\fBReturns: \fP
+.in +1c
+number of bytes needed 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyGetComment\fP() , \fBkeySetComment\fP() 
+.PP
+Definition at line 775 of file key.c.
+.SS "time_t keyGetCTime (const Key * key)"
+.PP
+Get last time the key was stated from disk. 
+.PP
+Definition at line 1287 of file key.c.
+.SS "size_t keyGetDataSize (const Key * key)"
+.PP
+Returns the number of bytes of the key value
+.PP
+This method is used with malloc() before a \fBkeyGetString\fP() or \fBkeyGetBinary\fP().
+.PP
+\fBReturns: \fP
+.in +1c
+the number of bytes needed to store the key value 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyGetString\fP() , \fBkeyGetBinary\fP() 
+.PP
+Definition at line 314 of file key.c.
+.SS "int keyGetFlag (const Key * key)"
+.PP
+Get the flag from the Key.
+.PP
+The flag has no semantics to the library, only to your application.
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeySetFlag\fP() , \fBkeyClearFlag\fP() 
+.PP
+\fBReturns: \fP
+.in +1c
+1 if flag is set, 0 otherwise 
+.PP
+Definition at line 2190 of file key.c.
+.SS "size_t keyGetFullName (const Key * key, char * returnedName, size_t maxSize)"
+.PP
+Get key full name, including the user domain name.
+.PP
+\fBReturns: \fP
+.in +1c
+number of bytes written 
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIkey\fP\fP
+the key object 
+.TP
+\fB\fIreturnedName\fP\fP
+pre-allocated memory to write the key name 
+.TP
+\fB\fImaxSize\fP\fP
+maximum number of bytes that will fit in returnedName, including the final NULL 
+.PP
+Definition at line 391 of file key.c.
+.SS "size_t keyGetFullNameSize (const Key * key)"
+.PP
+Space needed to store the key name including user domain
+.PP
+\fBReturns: \fP
+.in +1c
+number of bytes needed to store key name including user domain 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyGetFullName\fP() , \fBkeyGetNameSize\fP() 
+.PP
+Definition at line 363 of file key.c.
+.SS "size_t keyGetFullRootName (const Key * key, char * returned, size_t maxSize)"
+.PP
+Copy to \fCreturned\fP the full root name of the key.
+.PP
+Some examples:
+.TP
+root of \fCsystem/some/key\fP is \fCsystem\fP
+.TP
+root of \fCuser:denise/some/key\fP is \fCuser:denise\fP
+.TP
+root of \fCuser/env/env1\fP is \fCuser:$USER\fP
+.PP
+This method is more robust then \fBkeyGetRootName\fP()
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIkey\fP\fP
+the key to extract root from 
+.TP
+\fB\fIreturned\fP\fP
+a pre-allocated buffer to store the rootname 
+.TP
+\fB\fImaxSize\fP\fP
+size of the \fCreturned\fP buffer 
+.PP
+\fBReturns: \fP
+.in +1c
+number of bytes written to \fCreturned\fP without ending NULL 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyGetFullRootNameSize\fP() , \fBkeyGetRootName\fP() 
+.PP
+Definition at line 2048 of file key.c.
+.SS "size_t keyGetFullRootNameSize (const Key * key)"
+.PP
+Calculates number of bytes needed to store full root name of a key.
+.PP
+Possible root key names are \fCsystem\fP, \fCuser\fP or \fCuser:someuser\fP. In contrast to \fBkeyGetRootNameSize\fP(), this method considers the user domain part, and you should prefer this one.
+.PP
+\fBReturns: \fP
+.in +1c
+number of bytes needed without ending NULL 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyNameGetRootNameSize\fP() , \fBkeyGetRootNameSize\fP() 
+.PP
+Definition at line 1906 of file key.c.
+.SS "gid_t keyGetGID (const Key * key)"
+.PP
+Get the system's group ID of a key
+.PP
+\fBReturns: \fP
+.in +1c
+the system's GID of the key 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeySetGID\fP() , \fBkeyGetUID\fP() 
+.PP
+Definition at line 1185 of file key.c.
+.SS "time_t keyGetMTime (const Key * key)"
+.PP
+Get last modification time of the key on disk. 
+.PP
+Definition at line 1258 of file key.c.
+.SS "size_t keyGetName (const Key * key, char * returnedName, size_t maxSize)"
+.PP
+Get abreviated key name (without user domain name)
+.PP
+\fBReturns: \fP
+.in +1c
+number of bytes written 
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIkey\fP\fP
+the key object 
+.TP
+\fB\fIreturnedName\fP\fP
+pre-allocated memory to write the key name 
+.TP
+\fB\fImaxSize\fP\fP
+maximum number of bytes that will fit in returnedName, including the final NULL 
+.PP
+Definition at line 430 of file key.c.
+.SS "size_t keyGetNameSize (const Key * key)"
+.PP
+Space needed to store the key name without user domain
+.PP
+\fBReturns: \fP
+.in +1c
+number of bytes needed to store key name without user domain 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyGetName\fP() , \fBkeyGetFullNameSize\fP() 
+.PP
+Definition at line 343 of file key.c.
+.SS "int keyGetNamespace (const Key * key)"
+.PP
+Return the namespace of a key
+.PP
+Currently valid namespaces are KEY_NS_SYSTEM and KEY_NS_USER.
+.PP
+\fBReturns: \fP
+.in +1c
+KEY_NS_SYSTEM, KEY_NS_USER or 0 
+.PP
+\fBSee also: \fP
+.in +1c
+keyNameGetNameSpace() , \fBkeyIsUser\fP() , \fBkeyIsSystem\fP() , \fBKeyNamespace\fP 
+.PP
+Definition at line 1796 of file key.c.
+.SS "size_t keyGetOwner (const Key * key, char * returned, size_t maxSize)"
+.PP
+Return the user domain of the key.
+.TP
+Given \fCuser:someuser/\fP..... return \fCsomeuser\fP
+.TP
+Given \fCuser:some.user/\fP.... return \fCsome.user\fP
+.TP
+Given \fCuser/\fP.... return the current user
+.PP
+Only \fCuser/\fP... keys have user domains. For \fCsystem/\fP... keys (that doesn't have user domains) nothing is returned.
+.PP
+Although usually the same, the user domain of a key is not related to its UID. User domains are related to WHERE the key is stored on disk, while UIDs are related to access controls of a key.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIkey\fP\fP
+the object to work with 
+.TP
+\fB\fIreturned\fP\fP
+a pre-allocated space to store the owner 
+.TP
+\fB\fImaxSize\fP\fP
+maximum number of bytes that fit returned 
+.PP
+\fBReturns: \fP
+.in +1c
+number of bytes written to buffer 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeySetName\fP() , \fBkeySetOwner\fP() , \fBkeyGetFullName\fP() 
+.PP
+Definition at line 606 of file key.c.
+.SS "size_t keyGetOwnerSize (const Key * key)"
+.PP
+Return the size of the user domain of the Key.
+.PP
+\fBReturns: \fP
+.in +1c
+number of bytes 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyGetOwner\fP() 
+.PP
+Definition at line 632 of file key.c.
+.SS "size_t keyGetParent (const Key * key, char * returnedParent, size_t maxSize)"
+.PP
+Copy this key's parent name into a pre-allocated buffer.
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyGetParentSize\fP() 
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIreturnedParent\fP\fP
+pre-allocated buffer to copy parent name to 
+.TP
+\fB\fImaxSize\fP\fP
+number of bytes pre-allocated 
+.PP
+Definition at line 1347 of file key.c.
+.SS "size_t keyGetParentSize (const Key * key)"
+.PP
+Get the number of bytes needed to store this key's parent name. 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyGetParent\fP() 
+.PP
+Definition at line 1303 of file key.c.
+.SS "size_t keyGetRootName (const Key * key, char * returned, size_t maxSize)"
+.PP
+Copy to \fCreturned\fP the root name of the key.
+.PP
+Some examples:
+.TP
+root of \fCsystem/some/key\fP is \fCsystem\fP
+.TP
+root of \fCuser:denise/some/key\fP is \fCuser\fP
+.TP
+root of \fCuser/env/env1\fP is \fCuser\fP
+.PP
+Use \fBkeyGetFullRootName\fP() to get also the user domain.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIkey\fP\fP
+the key to extract root from 
+.TP
+\fB\fIreturned\fP\fP
+a pre-allocated buffer to store the rootname 
+.TP
+\fB\fImaxSize\fP\fP
+size of the \fCreturned\fP buffer 
+.PP
+\fBReturns: \fP
+.in +1c
+number of bytes needed without ending NULL 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyNameGetRootNameSize\fP() , \fBkeyGetRootNameSize\fP() , \fBkeyGetFullRootName\fP() 
+.PP
+Definition at line 2004 of file key.c.
+.SS "size_t keyGetRootNameSize (const Key * key)"
+.PP
+Gets number of bytes needed to store root name of a key.
+.PP
+Possible root key names are \fCsystem\fP or \fCuser\fP . This method does not consider the user domain in \fCuser:username\fP keys.
+.PP
+\fBReturns: \fP
+.in +1c
+number of bytes needed without the ending NULL 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyGetFullRootNameSize\fP() , \fBkeyNameGetRootNameSize\fP() 
+.PP
+Definition at line 1883 of file key.c.
+.SS "size_t keyGetString (const Key * key, char * returnedString, size_t maxSize)"
+.PP
+Get the value of a key as a string. If the value can't be represented as a text string (binary value), errno is set to KDB_RET_TYPEMISMATCH.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIreturnedString\fP\fP
+pre-allocated memory to store a copy of the key value 
+.TP
+\fB\fImaxSize\fP\fP
+number of bytes of pre-allocated memory 
+.PP
+\fBReturns: \fP
+.in +1c
+the number of bytes actually copied 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeySetString\fP() 
+.PP
+Definition at line 891 of file key.c.
+.SS "u_int8_t keyGetType (const Key * key)"
+.PP
+Returns the key data type.
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeySetType\fP() , \fBKeyType\fP 
+.PP
+\fBReturns: \fP
+.in +1c
+the key type 
+.PP
+Definition at line 205 of file key.c.
+.SS "uid_t keyGetUID (const Key * key)"
+.PP
+Get the user ID of a key
+.PP
+Although usually the same, the UID of a key is not related to its user domain.
+.PP
+\fBReturns: \fP
+.in +1c
+the system's UID of the key 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyGetGID\fP() , \fBkeySetUID\fP() , \fBkeyGetOwner\fP() 
+.PP
+Definition at line 1141 of file key.c.
+.SS "int keyInit (Key * key)"
+.PP
+Initializes a Key object.
+.PP
+Every Key object that will be used must be initialized first, to setup pointers, counters, etc. 
+.PP
+\fBExample 1:\fP
+.in +1c
+ 
+.PP
+.nf
+Key *key;
+
+key=malloc(sizeof(Key));
+keyInit(key);
+// do something with key...
+keyClose(key);
+free(key);
+.fi
+\fBExample 2:\fP
+.in +1c
+ 
+.PP
+.nf
+Key key;
+
+keyInit(&key);
+// do something with key...
+keyClose(&key);
+.fi
+ 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyClose\fP() 
+.PP
+Definition at line 123 of file key.c.
+.SS "int keyIsDir (const Key * key)"
+.PP
+Check if a key is folder key
+.PP
+Folder keys have no value.
+.PP
+\fBReturns: \fP
+.in +1c
+1 if key is a folder, 0 otherwise 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyIsLink\fP() , \fBkeyGetType\fP() 
+.PP
+Definition at line 1813 of file key.c.
+.SS "int keyIsInitialized (const Key * key)"
+.PP
+Test if a Key object is initialized.
+.PP
+It is more or less reliable. You'd better guarantee your code is robust enough using \fBkeyInit\fP() and \fBkeyClose\fP() everytime. 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyInit\fP() , \fBkeyClose\fP() 
+.PP
+Definition at line 176 of file key.c.
+.SS "int keyIsLink (const Key * key)"
+.PP
+Check if a key is a link key
+.PP
+The value of link keys is the key they point to.
+.PP
+\fBReturns: \fP
+.in +1c
+1 if key is a link, 0 otherwise 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyIsDir\fP() , \fBkeyGetType\fP() 
+.PP
+Definition at line 1830 of file key.c.
+.SS "int keyIsSystem (const Key * key)"
+.PP
+Check whether a key is under the \fCsystem\fP namespace or not
+.PP
+\fBReturns: \fP
+.in +1c
+1 if key name begins with \fCsystem\fP, 0 otherwise 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyNameIsSystem\fP() , \fBkeyIsUser\fP() , \fBkeyNameIsUser\fP() 
+.PP
+Definition at line 1736 of file key.c.
+.SS "int keyIsUser (const Key * key)"
+.PP
+Check whether a key is under the \fCuser\fP namespace or not
+.PP
+\fBReturns: \fP
+.in +1c
+1 if key name begins with \fCuser\fP, 0 otherwise 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyNameIsSystem\fP() , \fBkeyIsSystem\fP() , \fBkeyNameIsUser\fP() 
+.PP
+Definition at line 1754 of file key.c.
+.SS "size_t keyNameGetBaseNameSize (const char * keyName)"
+.PP
+Calculates number of bytes needed to store basename of a key name.
+.PP
+Basenames are denoted as:
+.TP
+\fCsystem/some/thing/basename\fP
+.TP
+\fCuser:domain/some/thing/basename\fP
+.PP
+\fBReturns: \fP
+.in +1c
+number of bytes needed without ending NULL 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyGetBaseNameSize\fP() 
+.PP
+Definition at line 1929 of file key.c.
+.SS "int keyNameGetNamespace (const char * keyName)"
+.PP
+Return the namespace of a key name
+.PP
+Currently valid namespaces are KEY_NS_SYSTEM and KEY_NS_USER.
+.PP
+\fBReturns: \fP
+.in +1c
+KEY_NS_SYSTEM, KEY_NS_USER or 0 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyGetNamespace\fP() , \fBkeyIsUser\fP() , \fBkeyIsSystem\fP() , \fBKeyNamespace\fP 
+.PP
+Definition at line 1776 of file key.c.
+.SS "size_t keyNameGetRootNameSize (const char * keyName)"
+.PP
+Gets number of bytes needed to store root name of a key name
+.PP
+Possible root key names are \fCsystem\fP, \fCuser\fP or \fC'user:someuser'\fP .
+.PP
+\fBReturns: \fP
+.in +1c
+number of bytes needed without ending NULL 
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIkeyName\fP\fP
+the name of the key 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyGetRootNameSize\fP() 
+.PP
+Definition at line 1847 of file key.c.
+.SS "int keyNameIsSystem (const char * keyName)"
+.PP
+Check whether a key name is under the \fCsystem\fP namespace or not
+.PP
+\fBReturns: \fP
+.in +1c
+1 if string begins with \fCsystem\fP , 0 otherwise 
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIkeyName\fP\fP
+the name of a key 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyIsSystem\fP() , \fBkeyIsUser\fP() , \fBkeyNameIsUser\fP() 
+.PP
+Definition at line 1698 of file key.c.
+.SS "int keyNameIsUser (const char * keyName)"
+.PP
+Check whether a key name is under the \fCuser\fP namespace or not
+.PP
+\fBReturns: \fP
+.in +1c
+1 if string begins with \fCuser\fP, 0 otherwise 
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIkeyName\fP\fP
+the name of a key 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyIsSystem\fP() , \fBkeyIsUser\fP() , \fBkeyNameIsSystem\fP() 
+.PP
+Definition at line 1717 of file key.c.
+.SS "int keyNeedsSync (const Key * key)"
+.PP
+Test if an in-memory Key object was changed after retrieved from disk. All Key methods that change objects properties will set an internal flag, that is checked by this method.
+.PP
+\fBReturns: \fP
+.in +1c
+1 if the key was changed, 0 otherwise. 
+.PP
+Definition at line 190 of file key.c.
+.SS "int keySetAccess (Key * key, mode_t mode)"
+.PP
+Set the key filesystem-like access permissions. 
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIkey\fP\fP
+the key to set access permissions 
+.TP
+\fB\fImode\fP\fP
+the access permissions as for chmod(2) 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyGetAccess\fP() 
+.PP
+Definition at line 1241 of file key.c.
+.SS "size_t keySetBinary (Key * key, const void * newBinary, size_t dataSize)"
+.PP
+Set the value of a key as a binary.
+.PP
+On disk, value will be encoded into a human readable hex-digit text format and no UTF-8 encoding will be applied.
+.PP
+UNIX sysadmins don't like to deal with binary, sand box data. Consider using a string key instead.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fInewBinary\fP\fP
+random bytes 
+.TP
+\fB\fIdataSize\fP\fP
+number of bytes to copy from newBinary 
+.PP
+\fBReturns: \fP
+.in +1c
+the number of bytes actually copied 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyGetBinary\fP() , \fBkeyGetString\fP() , \fBkeySetString\fP() 
+.PP
+Definition at line 990 of file key.c.
+.SS "size_t keySetComment (Key * key, const char * newComment)"
+.PP
+Set a comment for a key.
+.PP
+A key comment is like a configuration file comment. It has no size limit. A private copy will be stored.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fInewComment\fP\fP
+the comment, that can be freed after this call. 
+.PP
+\fBReturns: \fP
+.in +1c
+the number of bytes copied 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyGetComment\fP() 
+.PP
+Definition at line 735 of file key.c.
+.SS "int keySetFlag (Key * key)"
+.PP
+Set a general flag in the Key
+.PP
+The flag has no semantics to the library, only to your application.
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyGetFlag\fP() , \fBkeyClearFlag\fP() 
+.PP
+\fBReturns: \fP
+.in +1c
+0, unless key is invalid. 
+.PP
+Definition at line 2143 of file key.c.
+.SS "int keySetGID (Key * key, gid_t gid)"
+.PP
+Set the system's group ID of a key
+.PP
+\fBReturns: \fP
+.in +1c
+the system's GID of the key 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyGetGID\fP() , \fBkeySetUID\fP() 
+.PP
+Definition at line 1205 of file key.c.
+.SS "size_t keySetLink (Key * key, const char * target)"
+.PP
+TODO: Remove or:
+.TP
+update Doc
+.TP
+add keyGetLinkSize() 
+.PP
+.PP
+Definition at line 1076 of file key.c.
+.SS "size_t keySetName (Key * key, const char * newName)"
+.PP
+Set a new name to a key.
+.PP
+A valid name is of the form:
+.TP
+\fCsystem/something\fP
+.TP
+\fCuser/something\fP
+.TP
+\fCuser:username/something\fP
+.PP
+The last form has explicitly set the user domain, to let the library know in which user folder to save the key. A user domain is a user name. If not defined (the second form) current user is calculated and used as default.
+.PP
+A private copy of the key name will be stored, and the 
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fInewName\fP\fP
+parameter can be freed after this call.
+.PP
+\fBReturns: \fP
+.in +1c
+number of bytes of this new key name 
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIkey\fP\fP
+the key object 
+.TP
+\fB\fInewName\fP\fP
+the new key name 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyGetName\fP() , keySetFullName() 
+.PP
+Definition at line 477 of file key.c.
+.SS "size_t keySetOwner (Key * key, const char * userDomain)"
+.PP
+Set the user domain of a key. A user domain is a user name.
+.PP
+A private copy is stored, so the passed parameter can be freed after the call.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIuserDomain\fP\fP
+the user domain (or user name) 
+.PP
+\fBReturns: \fP
+.in +1c
+the number of bytes copied 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeySetName\fP() , \fBkeyGetOwner\fP() , \fBkeyGetFullName\fP() 
+.PP
+Definition at line 660 of file key.c.
+.SS "size_t keySetRaw (Key * key, const void * newBinary, size_t dataSize)"
+.PP
+Set raw data as the value of a key. If NULL pointers are passed, key value is cleaned. This method will not change or set the key type, and should not be used unless working with user-defined value types.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fInewBinary\fP\fP
+array of bytes to set as the value 
+.TP
+\fB\fIdataSize\fP\fP
+number bytes to use from newBinary, including the final NULL 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeySetType\fP() , \fBkeySetString\fP() , \fBkeySetBinary\fP() 
+.PP
+Definition at line 1013 of file key.c.
+.SS "size_t keySetString (Key * key, const char * newString)"
+.PP
+Set the value of a key as a string.
+.PP
+On disk, text will be encoded to UTF-8.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fInewString\fP\fP
+NULL-terminated text string 
+.PP
+\fBReturns: \fP
+.in +1c
+the number of bytes actually copied including final NULL 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeyGetString\fP() 
+.PP
+Definition at line 930 of file key.c.
+.SS "u_int8_t keySetType (Key * key, u_int8_t newType)"
+.PP
+Force a key type.
+.PP
+This method is usually not needed, unless you are working with more semantic key types, or want to force a specific type for a key. It is not usually needed because the data type is automatically set when setting the key value.
+.PP
+The \fCKEY_TYPE_DIR\fP is the only type that has no value, so when using this method to set to this type, the key value will be freed.
+.PP
+\fBExample:\fP
+.in +1c
+ 
+.PP
+.nf
+#define KEY_TYPE_COLOR KEY_TYPE_STRING+4
+
+Key color1;
+Key color2;
+
+// Set color1 key
+keyInit(&color1);
+keySetName(&color1,'user/sw/MyApp/colors/someColor')
+keySetString(&color1,'#4B52CA');
+keySetComment(&color1,'a custom color');
+keySetType(&color1,KEY_TYPE_COLOR);
+
+// Set color2 key
+keyInit(&color2);
+keySetName(&color2,'system/sw/MyApp/colors/green')
+keySetString(&color2,'green');
+keySetComment(&color2,'the green color');
+keySetType(&color2,KEY_TYPE_COLOR);
+
+
+// Start affairs with Key database
+kdbOpen();
+
+// Commit the keys
+kdbSetKey(&color1);
+kdbSetKey(&color2);
+
+// Reset memory related to our structures to reuse them later
+kdbClose(&color1);
+kdbClose(&color2);
+
+// Retrieve keys from the database
+keySetName(&color1,'user/sw/MyApp/colors/someColor')
+keySetName(&color2,'system/sw/MyApp/colors/green')
+kdbGetKey(&color1);
+kdbGetKey(&color2);
+
+// End of Key database affairs by now
+kdbClose();
+
+// Get the key types, which should be our user-defined KEY_TYPE_COLOR
+u_int8_t tcolor1=keyGetType(&color1);
+u_int8_t tcolor2=keyGetType(&color2);
+.fi
+\fBSee also: \fP
+.in +1c
+\fBkeyGetType\fP() , \fBKeyType\fP 
+.PP
+\fBReturns: \fP
+.in +1c
+the new type 
+.PP
+Definition at line 278 of file key.c.
+.SS "int keySetUID (Key * key, uid_t uid)"
+.PP
+Set the user ID of a key.
+.PP
+Although usually the same, the UID of a key is not related to its user domain.
+.PP
+\fBReturns: \fP
+.in +1c
+0 on success 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBkeySetGID\fP() , \fBkeyGetUID\fP() , \fBkeyGetOwner\fP() 
+.PP
+Definition at line 1166 of file key.c.
+.SS "size_t keyToStream (const Key * key, FILE * stream, unsigned long options)"
+.PP
+Prints an XML representation of the key.
+.PP
+String generated is of the form: 
+.PP
+.nf
+
+    <key id='123445' uid='root' gid='root' mode='0660'
+        atime='123456' ctime='123456' mtime='123456'
+
+        name='system/sw/XFree/Monitor/Monitor0/Name'
+        type='string'>
+
+        <value>Samsung TFT panel</value>
+        <comment>My monitor</comment>
+    </key>
+.fi
+.PP
+Accepted options that can be ORed:
+.TP
+\fCKDB_O_NUMBERS\fP: Do not convert UID and GID into user and group names
+.TP
+\fCKDB_O_CONDENSED\fP: Less human readable, more condensed output
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIstream\fP\fP
+where to write output: a file or stdout 
+.TP
+\fB\fIoptions\fP\fP
+ORed of KDB_O_* options 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBksToStream\fP() , \fBKDBOptions\fP 
+.PP
+\fBReturns: \fP
+.in +1c
+number of bytes written to output 
+.PP
+Definition at line 1445 of file key.c.

@@ -17,10 +17,11 @@ int main()
 {
 //TODO: Binärdaten werden automatisch gelöscht!
 	
-	// char * write = "somebinary";
-	// config.setBinary ("i", (void *) write, 10);
+	//char * write = "somebinary";
+	//config.setBinary ("i", (void *) write, 10);
+	config.get ("i");
 	
-	char * read = new char [10];
+	// char * read = new char [10];
 	// config.getBinary ("i", (void *) read, 10);
 	// cout << read << endl;
 	
@@ -35,7 +36,7 @@ int main()
 	keyClose (k);
 	delete k;*/
 	
-	Key * k = new Key;
+	/*Key * k = new Key;
 	keyInit (k);
 	
 	kdbOpen ();
@@ -46,7 +47,7 @@ int main()
 	cout << read << endl;
 	
 	keyClose (k);
-	delete k;
+	delete k;*/
 	
 	return 0;
 }

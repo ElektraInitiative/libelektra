@@ -1,5 +1,5 @@
 CXX      = g++
-CXXFLAGS = -pipe -Wall -W -ansi -pedantic-errors -g
+CXXFLAGS = -pipe -Wall -W -ansi -pedantic-errors -g -fno-inline
 INCPATH  = -I.
 LINK     = g++
 LFLAGS   = 
