@@ -106,6 +106,9 @@ You can issue the following subcomands to make:
 - make commit
   To commit changes to the Subversion repository.
 
+- make vtag
+  Creates a version tag in the Subversion repository.
+
 - make dist
   Generates the tarball in parent directory, using VERSION file.
 
@@ -116,7 +119,13 @@ You can issue the following subcomands to make:
 Under the doc/ folder, you can make:
 
 - make or make all or make man
-  Create the man files
+  Create the man files and doxygen
+
+- make doxygen
+  Create doxygen API documentation and API man files
+
+- make man
+  Create man files, doxygen and xsltproc
 
 - make clean
   Removes everything that was generated
@@ -129,3 +138,10 @@ Under the doc/ folder, you can make:
 
 - make pub
   Publish all documentation to elektra.sf.net
+
+- make pubh
+  Publish only HTML files. No doxygen, no images.
+
+- make pubi
+  Publish only image files
+

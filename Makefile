@@ -8,6 +8,7 @@ XMLINCLUDES=`xml2-config --cflags`
 XMLLIBS=`xml2-config --libs`
 
 DTDVERSION=0.1.0
+SVNREP=http://germane-software.com/repositories/elektra
 
 
 DIRS=doc dtd
@@ -74,6 +75,10 @@ kdb: kdb.o libkdb.so
 commit: clean
 	cd ..; \
 	svn ci elektra
+
+vtag:
+	PACK=`cat VERSION`;\
+	svn cp ${SVNREP}/trunk ${SVNREP}/tags/$$PACK
 
 
 dist: clean elektra.spec
