@@ -1,0 +1,206 @@
+ELEKTRIFYIED X.ORG: PRECISE AND PROGRAMATICALLY EASY X CONFIGURATION       
+
+   Your X server has to work with your installed video card, monitor, find
+   your font server and dirs, modules, extensions, drivers, plugins.
+   You have to tell him how to integrate it all through its xorg.conf file.
+   If you need to change something, you start a text editor and use your
+   human brain and eyes to find the correct line, understand it, have the
+   skills to change it, and change it in order to work.
+   
+   This is good for advanced technical guys, but very bad for people that
+   don't have this skills, and in fact, don't really want to. He just
+   wants to change the screen resolution to make that projector work with his
+   laptop, and go ahead with his sales presentation. This is just an example.
+   
+   The point is: it is very difficult to make simple programs or scripts
+   that make simple changes to X configuration. Another example is a monitor
+   vendor that wants to support X, and for this he'd like to provide easy
+   installation of his product, without having to ask his user to read
+   documentation about horizontal Sync, and vertical refresh rates. For him
+   again is difficult to write some simple software that preciselly changes X
+   configuration to work correctly with his product.
+   
+   The xorg.conf file (as most Unix configuration files) was designed for
+   human beings.
+   
+   The Elektra Project (http://elektra.sourceforge.net) introduces a new way
+   to handle configurations through a clean API (or command line
+   tool) that accesses atomic configuration data, into a standarized
+   hierarchycal tree of key-value pairs. It is similar to GConf, but
+   designed for system-wide use, which also implies it does not have
+   dependencies.
+   
+   And this is what this patch is about: to make the X server look for its
+   configurations into a machine-ready tree of key-value pairs, instead of
+   the human-ready xorg.conf.
+  
+   So where you had to look for "Device radeon" into a "Section Device",
+   with the key/value tree, X and other programs can look for it
+   preciselly at
+   
+      system/sw/xorg/current/Devices/Videocard0/Driver = radeon
+
+   
+   Where you once had to "vi" your "Section Monitor", now X and other
+   programs can do it accessing the keys:
+   
+      system/sw/xorg/current/Monitors/Monitor0/HorizSync = 31.5 - 48.5
+      system/sw/xorg/current/Monitors/Monitor0/VertRefresh = 40.0 - 70.0
+      system/sw/xorg/current/Monitors/Monitor0/ModelName = IBM T40 LCD Panel
+      system/sw/xorg/current/Monitors/Monitor0/VendorName = IBM
+      system/sw/xorg/current/Monitors/Monitor0/Options/dpms
+  
+   
+   Where once the salesman above had to "vi" the Screen Section to change
+   the resolution, color depth, etc, a program can help him accessing:
+   
+      system/sw/xorg/current/Screens/Screen0/Displays/00/Depth=24
+      system/sw/xorg/current/Screens/Screen0/Displays/00/Modes=1024x768
+
+   
+   And so on....
+   
+   We believe an elektrified X server can leverage more plug-and-play
+   configurations, providing configuration power to HW vendors in a
+   very simple way, and making users experience less painfull.
+   
+   
+
+   
+      
+
+BEHAVIOR OF AN ELEKTRIFIED X SERVER
+
+   A patched X server will look for its configuration keys under the
+   namespace:
+   
+      system/sw/xorg/current   first, then if not found it tries
+      system/sw/xorg
+      
+   If not found, it will default to some xorg.conf file, parse it, and store
+   in its internal structures, then convert and commit it to a set of
+   keys under system/sw/xorg/current, and reload these keys.
+   
+   So you get automatic one-time conversion from xorg.conf to the
+   hierarchycal configuration key/value pairs 
+   
+   Very complex examples of xorg.conf files were tested for conversion. Even
+   undocumented configuration parameters (because the original source was
+   used as the reference).
+   
+   The Elektrifyied X server also works for the Red Hat Graphical Boot,
+   where you still don't have mounted partitions, network, etc.
+
+   
+      
+
+
+ELEKTRIFING X.ORG
+
+   You'll need the elektra-devel package installed in order to build X with
+   Elektra support.
+
+     1. Download and unpack X.org source code from
+     2. Download the xorg-x11-6.8.1-elektra.patch file from 
+     3. Apply it:
+         ~/src/xc$ cd ..
+         ~/src$ patch -p0 < xorg-x11-6.8.1-elektra.patch
+         ~/src$ cd xc
+         ~/src/xc$ # ...configure your build in host.def
+     4. Enable the patch:
+         ~/src/xc$ echo “#define UseElektra” >> config/cf/host.def
+     5. Build X.Org
+
+   You'll find the new X server as file xc/programs/Xserver/Xorg .
+   
+   The patch will add the following files:
+
+      xc/programs/Xserver/hw/xfree86/parser/
+        elektra.h (exported methods)
+        elektra.c (key fetching and X structs integration business logic)
+        xorg-example.conf (a very complex conf file to test conversion)
+        xelektrify.c (cmd to convert xorg.conf->keys and vice-versa)
+        README.Elektra (this file)
+   
+   And it will instrument 
+   xc/programs/Xserver/hw/xfree86/common/xf86Config.c::xf86HandleConfigFile()
+   to trigger the one-time conversion, and key fetching logic.
+   
+   And instrument the Imakefiles for correct builds:
+   
+      xc/programs/Xserver/hw/xfree86/parser/Imakefile
+      xc/programs/Xserver/hw/xfree86/common/Imakefile
+      xc/programs/Xserver/Imakefile
+      
+   If "#define UseElektra" is not present in host.def, the patch is
+   completelly disabled, and you'll get a binary-identicall built as before
+   applying the patch. All patched code are surrounded by #ifdefs.
+
+   
+   
+      
+
+ELEKTRA MEETS X.ORG SOURCE CODE
+or how we wrote the patch....
+
+   X.org has an xorg.conf parser that takes this steps to handle
+   configuration:
+   
+      1. Lexically parse the xorg.conf file
+      2. Put each Section info in an equivalent struct
+      3. Encapsulate all structs together and pass them to a validator
+      4. Use structs to define X behavior
+
+   This process is triggered by the xf86HandleConfigFile() method from
+   
+      xc/programs/Xserver/hw/xfree86/common/xf86Config.c
+   
+   Each xorg.conf Section has an equivalent structure defined in
+
+      xc/programs/Xserver/hw/xfree86/parser/xf86Parser.h
+      
+   and the lexycall analyzer code to parse each Section is under
+   
+      xc/programs/Xserver/hw/xfree86/parser/
+   
+   A fully parsed file has its equivalent structures encapsulated in a
+   parent XF86Config struct. We have:
+   
+      struct XF86ConfModuleRec for the "Section Modules"
+      struct XF86ConfMonitorRec for the "Section Monitor"
+      struct XF86ConfDeviceRec for the "Section Device"
+      etc...
+      
+   These structs are a pure computer representation of the text in each
+   Section, so the methods under "parser/" convert text to structs, and
+   the structs to text. This is how original X.org source handles xorg.conf.
+   
+   The Elektrification add methods that act in steps 1 and 2 above. And also
+   include methods to convert each struct to a KeySet. Both old (xorg.conf)
+   and new (Elektra) ways to get configuration information can live together
+   and they are actually used to automatically convert xorg.conf to keys. So
+   at the first time you'll run your elektrified X server, it will:
+
+      1. Not find configuration keys (because it is the first time)
+      2. Parse xorg.conf into structs
+      3. Convert structs to Keys
+      4. Commit the keys to key database
+      5. Reload configurations from the key database
+
+   See the behavior in the previous section.
+      
+   After assembling the XF86Config C structure, X will decode all its info
+   into more practicall parameters for its further operation.
+   
+   As a side note, with a key/value pair configuration hierarchy paradigm,
+   the XF86Config assembling code (the parser) could be avoided, making X
+   look for its configurations in a programatically easier, yet
+   human-readable, configuration organization.
+   We worked at the parser level to keep compatibility and to not go too
+   deep in X.org source code.
+
+   
+http://elektra.sourceforge.net
+The Elektra Project
+Avi Alkalay
+November 2004

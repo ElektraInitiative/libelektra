@@ -1,0 +1,40 @@
+--- SysVinit.spec	2004-04-29 17:53:55.000000000 -0300
++++ SysVinit.elektra.spec	2004-09-11 06:56:26.000000000 -0300
+@@ -4,7 +4,7 @@
+ Summary: Programs which control basic system processes.
+ Name: SysVinit
+ Version: 2.85
+-Release: 25
++Release: 25.elektrified
+ License: GPL
+ Group: System Environment/Base
+ Source: ftp://ftp.cistron.nl/pub/people/miquels/sysvinit/sysvinit-%{version}.tar.gz
+@@ -23,6 +23,7 @@
+ Patch14: sysvinit-2.85-make.patch
+ Patch20: sysvinit-2.85-console.patch
+ Patch21: sysvinit-selinux.patch
++Patch22: sysvinit-2.85-elektra.patch
+ Source1: change_console.c
+ Source2: change_console.8
+ Buildroot: /var/tmp/init-root
+@@ -58,10 +59,11 @@
+ %patch20 -p1 -b .console
+ %if %{WITH_SELINUX}
+ %patch21 -p1 -b .selinux
++%patch22 -p1 -b .elektra
+ %endif
+ 
+ %build
+-make %{?_smp_mflags} CC=%{__cc} -C src
++make ELEKTRA=1 %{?_smp_mflags} CC=%{__cc} -C src
+ 
+ %{__cc} $RPM_OPT_FLAGS -o change_console -I./src %{SOURCE1}
+ 
+@@ -94,6 +96,7 @@
+ %defattr(-,root,root)
+ %doc doc/Changelog doc/Install
+ %doc doc/sysvinit-%{version}.lsm contrib/start-stop-daemon.* 
++%doc contrib/inittab-convert
+ /sbin/halt
+ /sbin/init
+ /sbin/killall5

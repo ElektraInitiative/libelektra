@@ -5,7 +5,7 @@ MANSTYLE=manstyle.xsl
 HTMLSTYLE=htmltitlepage.xsl
 APIDIR=elektra-api
 DOXYSOURCES=../src/localkdb.c ../src/kdb.c ../src/kdb.h ../src/key.c
-
+PATCHSOURCES=patches/xorg/README.xorg.Elektra.txt patches/sysvinit/README.sysvinit.Elektra.txt
 
 # Default dirs we use for installation, that can be substituted by the command line.
 DOCDIR=/usr/share/doc
@@ -13,7 +13,11 @@ MANDIR=/usr/share/man
 
 
 .SUFFIXES: .xml .html .pdf .ps .rtf .xsl .fo .tpl
-.SILENT:
+#.SILENT:
+
+
+
+
 
 .xml.html:
 	if [ ! -L docbook ]; then ln -s ../../doc-common/docbook .; fi
@@ -28,6 +32,9 @@ docbookman: kdb.1 elektra.7 elektra.5
 
 man: doxygen docbookman
 
+
+
+
 elektra-api.tar.gz: $(DOXYSOURCES)
 	-rm -rf ${APIDIR}
 	-rm -rf ${APIDIR}.tar.gz
@@ -36,31 +43,58 @@ elektra-api.tar.gz: $(DOXYSOURCES)
 	tar -czf ${APIDIR}.tar.gz ${APIDIR}/html
 	# find ${APIDIR}/html | cpio -H tar -o | gzip -c --best > ${APIDIR}.tar.gz
 
+
+
+patchdoc: $(PATCHSOURCES)
+	for f in $(PATCHSOURCES); do \
+		nf=`echo $$f | sed -e 's/\.txt$$/\.html/g'`; \
+		echo "<html><body><pre>" > $$nf; \
+		cat $$f >> $$nf; \
+		echo "</pre></body></html>" >> $$nf; \
+	done
+	
+
+#	find patches/ -name "*.txt" | grep -v .svn | while read f; do \
+
 example.c:
 	ln -s ../example/example.c .
+
+
+
 
 csource.xml: example.c
 	(echo "<programlisting><![CDATA["; cat  example.c; echo "]]></programlisting>") > csource.xml
 	#(echo "<programlisting><![CDATA["; sed -e 's/\&/\&amp\;/g' < example.c; echo "]]></programlisting>") > csource.xml
 
+
+
+
 kdb.1: kdb.1.xml author.xml bestpract.xml rgexample.xml rgcmd.xml
 	xsltproc ${MANSTYLE} $<
+
+
+
 
 elektra.7: elektra.7.xml author.xml overview.xml bestpract.xml rgexample.xml
 	xsltproc ${MANSTYLE} $<
 
+
+
+
 elektra.5: elektra.5.xml author.xml storage.xml
 	xsltproc ${MANSTYLE} $<
 
-#kdb.3: kdb.3.xml author.xml csource.xml api.xml
-#	xsltproc ${MANSTYLE} $<
 
-#key.3: key.3.xml author.xml
-#	xsltproc ${MANSTYLE} $<
+
 
 howto.html: howto.xml elektra.7.xml author.xml garbage.xml overview.xml bestpract.xml rgexample.xml rgcmd.xml storage.xml csource.xml api.xml society.xml
 
-html: man howto.html doxygen
+
+
+
+
+
+html: man howto.html doxygen patchdoc
 	man2html -r < kdb.1 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > kdb.1.html
 	man2html -r < elektra.7 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > elektra.7.html
 	man2html -r < elektra.5 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > elektra.5.html
@@ -70,7 +104,9 @@ html: man howto.html doxygen
 
 
 
+
 distclean:
+	-find patches/ -name "README*html" | grep -v .svn | xargs rm
 	-rm *.html
 	-rm *~
 	-rm csource.xml
@@ -106,7 +142,7 @@ install: all
 
 
 pub: html doxygen
-	find elektra-api.tar.gz *html docbook.css | cpio -o | ssh -l aviram shell.sf.net "cd /home/groups/e/el/elektra/htdocs; cpio -idvm; rm -rf api; tar -zxvf elektra-api.tar.gz"
+	find elektra-api.tar.gz *html docbook.css patches/ | grep -v .svn | cpio -o | ssh -l aviram shell.sf.net "cd /home/groups/e/el/elektra/htdocs; rm -rf patches; cpio -idvm; rm -rf api; tar -zxvf elektra-api.tar.gz"
 
 
 

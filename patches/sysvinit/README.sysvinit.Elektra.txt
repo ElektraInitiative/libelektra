@@ -1,0 +1,111 @@
+THE /sbin/init PROGRAM WAS ELEKTRIFIED
+
+   Instead of reading its actions from /etc/inittab, it can now work with a
+   configuration tree under system/init on the Elektra (http://elektra.sf.net)
+   key/value pair database.
+
+   So where you once had human-readable inittab entries like
+
+       l3:3:wait:/etc/rc.d/rc 3
+       ca::ctrlaltdel:/sbin/shutdown -t3 -r now
+       2:2345:respawn:/sbin/mingetty tty2
+       x:5:respawn:/etc/X11/prefdm -nodaemon
+
+   you'll have the equivalent human-and-machine-readable Elektra keys:
+
+       system/init/l3/action=wait
+       system/init/l3/process=/etc/rc.d/rc 3
+       system/init/l3/runlevels=3
+
+       system/init/ca/action=ctrlaltdel
+       system/init/ca/process=/sbin/shutdown -t3 -r now
+       system/init/ca/runlevels=
+
+       system/init/2/action=respawn
+       system/init/2/process=/sbin/mingetty tty2
+       system/init/2/runlevels=2345
+
+       system/init/x/action=respawn
+       system/init/x/process=/etc/X11/prefdm -nodaemon
+       system/init/x/runlevels=5
+
+       system/init/sequence=...,l3,ca,2,x,...       
+
+   Then, to change some value you wont have to manually edit
+   /etc/inittab anymore. You (or a program using Elektra API), with root
+   permissions, will be able to use the kdb command or regedit GUI tool to
+   change each single key. So to change your default run level to 5,
+   you'll do:
+
+       bash# kdb set system/init/id/runlevels 5
+
+   The patch was carefully written, so if the elektrified /sbin/init does not
+   find its configuration keys under system/init, it will default to the old
+   method (use /etc/inittab) and you'll see warnings on the screen about it.
+
+
+
+
+
+
+COMPILING SysVinit PACKAGE WHITH THE ELEKTRA PATCH
+
+   You'll obviously need Elektra installed to compile it, and you can
+   get it from http://elektra.sf.net, as source code or binray RPMs or debs.
+   If the the original distribution of SysVinit, from Miquel van Smoorenburg,
+   does not already contain the patch, you can get it also
+   from http://elektra.sf.net
+
+   So if needed, apply the patch:
+
+      bash$ tar -zxvf sysvinit-2.85.tar.gz
+      bash$ cd sysvinit-2.85
+      bash$ patch -p 1 -b < ../sysvinit-2.85-elektra.patch
+
+   These modifications only affect the init binary, since this is the only
+   program in the package that reads /etc/inittab.
+
+   To compile it, youll have to use a special make flag like this:
+
+      bash$ make ELEKTRA=1
+
+   otherwise you'll get a non-elektrified init binary, exactly the way it was
+   before applying the patch.
+
+   After compiling you can check it and see these results:
+
+      bash$ ldd ./init
+        libkdb.so => /lib/libkdb.so (0xb75d8000)
+        libc.so.6 => /lib/tls/libc.so.6 (0xb749f000)
+        /lib/ld-linux.so.2 => /lib/ld-linux.so.2 (0xb75eb000)
+
+   Now the init binary requires libkdb.so, which is the Elektra library.
+
+
+
+
+
+
+
+
+MIGRATING /etc/inittab TO ELEKTRA KEYS
+
+   A script is provided for you to convert your old /etc/inittab to
+   Elektra keys. To use it you'll need root permissions:
+
+       bash# inittab-convert | sh -e
+
+   After doing this, and installing the "elektrified" version of init in /sbin,
+   you can reboot your machine too see it booting.
+
+   You can see what the script does, without actually doing it, executing:
+
+       bash$ inittab-convert
+
+   and you don't need root permissions for that.
+
+
+Enjoy,
+Avi Alkalay
+The Elektra Project
+Sep 1, 2004
