@@ -28,7 +28,9 @@ DIRS=src doc dtd
 
 
 all:
-	for x in ${DIRS}; do (cd "$$x"; make DTDVERSION=${DTDVERSION} \
+	for x in ${DIRS}; do (cd "$$x"; gmake \
+		OPTIMIZATIONS="${OPTIMIZATIONS}" \
+		DTDVERSION=${DTDVERSION} \
 		DOCDIR=${DOCDIR} MANDIR=${MANDIR} SGMLDIR=${SGMLDIR} \
 		BINDIR=${BINDIR} LIBDIR=${LIBDIR} \
 		UBINDIR=${UBINDIR} ULIBDIR=${ULIBDIR} \
@@ -102,7 +104,7 @@ install: all
 	[ -d "${DESTDIR}${CONFDIR}/profile.d" ] || mkdir -p ${DESTDIR}${CONFDIR}/profile.d
 	[ -d "${DESTDIR}${DOCDIR}/${NAME}" ] || mkdir -p ${DESTDIR}${DOCDIR}/${NAME}
 	[ -d "${DESTDIR}${DOCDIR}/${NAME}-devel" ] || mkdir -p ${DESTDIR}${DOCDIR}/${NAME}-devel
-	for x in ${DIRS}; do (cd "$$x"; make DTDVERSION=${DTDVERSION} \
+	for x in ${DIRS}; do (cd "$$x"; gmake DTDVERSION=${DTDVERSION} \
 		DOCDIR=${DOCDIR} MANDIR=${MANDIR} SGMLDIR=${SGMLDIR} \
 		BINDIR=${BINDIR} LIBDIR=${LIBDIR} \
 		UBINDIR=${UBINDIR} ULIBDIR=${ULIBDIR} \
