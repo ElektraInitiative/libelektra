@@ -1,5 +1,5 @@
 * Sun Oct 26 2004 Avi Alkalay <avi@unix.sh> 0.4.5
-- Fixed a bug kdbGetKeyByParentKey()
+- Fixed a bug in kdbGetKeyByParentKey()
 
 * Sun Oct 25 2004 Avi Alkalay <avi@unix.sh> 0.4.4
 - Added documentation on how to write new backends
