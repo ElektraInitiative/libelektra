@@ -1,0 +1,80 @@
+#!/bin/sh
+
+########################################################################
+##
+## This script will create a registry tree based on
+## my /etc/X11/XF85Config. It doesn't parse anything, since this
+## is pretty dificult to do.
+##
+## The correct way to run it is:
+##
+## # ./xfree86-convert | sh -e
+##
+##
+## To make tests you can do:
+##
+## $ ROOT=user/test ./xfree-convert | sh -e
+##
+## Avi Alkalay <avi@unix.sh>
+## Apr 2004
+##
+########################################################################
+
+
+[ -z "$RG" ] && RG="rg"
+[ -z "$ROOT" ] && ROOT="system/sw/XFree/handmade"
+
+
+
+
+echo "$RG set $ROOT/Device/Videocard0/BoardName      'ATI Radeon Mobility 7500'"
+echo "$RG set $ROOT/Device/Videocard0/Driver         'radeon'"
+echo "$RG set $ROOT/Device/Videocard0/VendorName     'ATI/IBM'"
+echo
+echo "$RG set $ROOT/DRI/Group      '0'"
+echo "$RG set $ROOT/DRI/Mode       '0666'"
+echo
+echo "$RG set $ROOT/Files/FontPath      'unix/:7100'"
+echo "$RG set $ROOT/Files/RgbPath       '/usr/X11R6/lib/X11/rgb'"
+echo
+echo "$RG set $ROOT/InputDevice/DevInputMice/Driver                      'mouse'"
+echo "$RG set $ROOT/InputDevice/DevInputMice/Option/Device               '/dev/psaux'"
+echo "$RG set $ROOT/InputDevice/DevInputMice/Option/Emulate3Buttons      'no'"
+echo "$RG set $ROOT/InputDevice/DevInputMice/Option/Protocol             'PS/2'"
+echo "$RG set $ROOT/InputDevice/DevInputMice/Option/ZAxisMapping         '4 5'"
+echo
+echo "$RG set $ROOT/InputDevice/Keyboard0/Driver                'keyboard'"
+echo "$RG set $ROOT/InputDevice/Keyboard0/Option/XkbLayout      'us_intl'"
+echo "$RG set $ROOT/InputDevice/Keyboard0/Option/XkbModel       'pc105'"
+echo "$RG set $ROOT/InputDevice/Keyboard0/Option/XkbRules       'xfree86'"
+echo
+echo "$RG set $ROOT/InputDevice/Mouse0/Driver                      'mouse'"
+echo "$RG set $ROOT/InputDevice/Mouse0/Option/Device               '/dev/input/mice'"
+echo "$RG set $ROOT/InputDevice/Mouse0/Option/Emulate3Buttons      'no'"
+echo "$RG set $ROOT/InputDevice/Mouse0/Option/Protocol             'IMPS/2'"
+echo "$RG set $ROOT/InputDevice/Mouse0/Option/ZAxisMapping         '4 5'"
+echo
+echo "$RG set $ROOT/Module/Load      'dbe,extmod,fbdevhw,glx,record,freetype,type1,dri'"
+echo
+echo "$RG set $ROOT/Monitor/Monitor0/ModelName             'LCD Panel 1024x768'"
+echo "$RG set $ROOT/Monitor/Monitor0/VendorName            'IBM T40 monitor'"
+echo "$RG set $ROOT/Monitor/Monitor0/Option/dpms           '1'"
+echo "$RG set $ROOT/Monitor/Monitor0/HorizSync/max         '48.5'"
+echo "$RG set $ROOT/Monitor/Monitor0/HorizSync/min         '31.5'"
+echo "$RG set $ROOT/Monitor/Monitor0/VertRefresh/max       '70'"
+echo "$RG set $ROOT/Monitor/Monitor0/VertRefresh/min       '40'"
+echo
+echo "$RG set $ROOT/Screen/Screen0/Monitor             'Monitor0'"
+echo "$RG set $ROOT/Screen/Screen0/Device              'Videocard0'"
+echo "$RG set $ROOT/Screen/Screen0/DefaultDepth        '16'"
+echo "$RG set $ROOT/Screen/Screen0/Display/Depth       '16'"
+echo "$RG set $ROOT/Screen/Screen0/Display/Modes       '1024x768,800x600,640x480'"
+echo
+echo "$RG set $ROOT/ServerLayout/Default/Screen                      'Screen0'"
+echo "$RG set $ROOT/ServerLayout/Default/InputDevice/CoreKeyboard    'Keyboard0'"
+echo "$RG set $ROOT/ServerLayout/Default/InputDevice/AlwaysCore      'DevInputMice'"
+echo "$RG set $ROOT/ServerLayout/Default/InputDevice/CorePointer     'Mouse0'"
+echo
+echo "$RG ln `basename $ROOT` system/sw/XFree/current"
+echo
+echo

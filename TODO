@@ -1,0 +1,10 @@
+- registryLink must create directories recursively
+- rg ls must show links
+- Support for moving/renaming keys
+- rg to support recursive removing
+- Syslog logging
+- rg to support user and group in the command line
+- Handle special keys: link, named pipe
+- Better KeySet manipulation and gathering
+- Scripts for other /etc files conversion
+

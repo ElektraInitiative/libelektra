@@ -1,0 +1,172 @@
+<style type="text/css">
+
+a:link {
+	text-decoration: none;
+}
+
+a:active {
+	color: blue;
+}
+
+a:visited {
+	color: #3355cc;
+	text-decoration: none;
+}
+
+a:hover {
+	color: #4477cc;
+	text-decoration: underline;
+}
+
+
+body {
+	font-family: Verdana, Bitstream Versa Sans, Helvetica, Lucida, Arial;
+	font-size: 11px;
+	text-align: justify;
+}
+
+.article {
+	font-family: Verdana, Bitstream Versa Sans, Helvetica, Lucida, Arial;
+	font-size: 11px;
+	margin-top: 50pt;
+	margin-bottom: 0pt;
+	margin-left: 30pt;
+	margin-right: 30pt;
+	text-align: justify;
+}
+
+div.note p, div.important p {
+	font-family: Verdana, Bitstream Versa Sans, Helvetica, Lucida, Arial;
+	text-align: justify;
+	font-size: 11px;
+	font-weight: bold;
+	color: #0000AA;
+}
+
+.toc {
+	margin-left: 30pt;
+	margin-right: 30pt;
+}
+
+div.toc p {
+	color: #ff6600;
+	font-size: 26px;
+}
+
+div.toc dd dt, div.toc dd a {
+	font-size: 18px;
+	font-weight: bold;
+	color: #ff9933;
+}
+
+div.toc dt, div.toc a {
+	font-size: 20px;
+	font-weight: bold;
+	color: #ff9933;
+}
+
+hr {
+	border-color: #6565FF;
+}
+
+h1 {
+	font-size: 28px;
+	color: #ff6600;
+}
+
+h2.title {
+	margin-top:0pt;
+	margin-bottom:0pt ! important;
+	border-top-style: dotted;
+	border-width: 1pt;
+	border-color: #6565FF;
+	font-size: 22px;
+	color: #ff6600;
+}
+
+h3.title {
+	margin-top:10pt;
+	margin-bottom:0pt ! important;
+	border-top-style: dotted;
+	border-width: 1pt;
+	border-color: #6565FF;
+	font-size: 18px;
+	color: #ff9933;
+}
+
+.filename, .envar, tt {
+	font-family: lucidatypewriter, lucida console, courier, tahoma;
+	font-size: 10px;
+	text-decoration: underline;
+	color: green;
+/*	font-size: 10px; */
+}
+
+.function {
+	font-family: lucidatypewriter, lucida console, courier, tahoma;
+	font-size: 10px;
+	font-weight: bold;
+}
+
+
+.programlisting {
+	font-family: lucidatypewriter, lucida console, courier, tahoma;
+	color: #555555;
+	background-color: #FFF7EA;
+	font-size: 10px;
+}
+
+.screen {
+	font-family: lucidatypewriter, lucida console, courier, tahoma;
+	color: #00FF00;
+	background-color: #222222;
+	font-size: 10px;
+}
+
+p .command {
+	font-family: lucidatypewriter, lucida console, courier, tahoma;
+	font-size: 10px;
+	color: #298952;
+}
+
+.pubdate {
+	font-size: 14pt;
+}
+
+div.authorgroup {
+	font-family: Bitstream Vera Sans, Verdana, Helvetica, Lucida, Arial;
+	font-size: 11px;
+	margin-left: 30pt;
+	margin-top: 10pt;
+	margin-bottom: 0pt;
+}
+
+h3.author {
+	margin-top: 0pt;
+	margin-bottom: 0pt;
+	font-style: italic;
+}
+
+div.author {
+	border-left-style: dotted;
+	border-width: 1pt;
+	border-color: #ff9933;
+}
+
+.term {
+	margin-top: 0pt;
+	font-weight: bold;
+	font-style: italic;
+}
+
+
+div.variablelist dd {
+	margin-bottom: 10pt;
+}
+
+
+ul li {
+	list-style-image: url(images/img_arrow.png);
+}
+
+</style>

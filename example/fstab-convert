@@ -1,0 +1,40 @@
+#!/bin/sh
+
+########################################################################
+##
+## This script will read /etc/fstab and create an
+## equivalent registry tree under $ROOT.
+##
+## The correct way to run it is:
+##
+## # ./fstab-convert | sh -e
+##
+##
+## To make tests you can do:
+##
+## $ ROOT=user.test ./fstab-convert | sh -e
+##
+## Avi Alkalay <avi@unix.sh>
+## April 2004
+##
+########################################################################
+
+
+[ -z "$RG" ] && RG="rg"
+[ -z "$ROOT" ] && ROOT="system/filesystems"
+
+
+cat /etc/fstab | while read dev mpoint type options dumpfreq passno; do
+	
+	fsname=`echo $mpoint | sed -e 's^/^^g'`
+	[ -z "$fsname" ] && fsname="rootfs"
+	
+	echo $RG set -c \"Device or label\" $ROOT/$fsname/device \'$dev\'
+	echo $RG set -c \"Mount point\" $ROOT/$fsname/mpoint \'$mpoint\'
+	echo $RG set -c \'Filesystem type. See fs\(5\)\' $ROOT/$fsname/type \'$type\'
+	echo $RG set -c \"Filesystem specific options. See mount\(8\)\" $ROOT/$fsname/options \'$options\'
+	echo $RG set -c \"dump frequency in days\" $ROOT/$fsname/dumpfreq \'$dumpfreq\'
+	echo $RG set -c \"pass number on parallel fsck\" $ROOT/$fsname/passno \'$passno\'
+	echo
+	
+done

@@ -1,0 +1,12 @@
+
+	<section id="bestpract"><title>Best Practices When Creating Keys</title>
+		<para>When using the Registry to store your application's configuration and state, please keep in mind the following rules:</para>
+			<itemizedlist>
+				<listitem><para>You are not allowed to create keys right under <filename>system</filename> or <filename>user</filename>.</para></listitem>
+				<listitem><para>You are not allowed to create folder keys right under <filename>system</filename> or <filename>user</filename>. They are reserved for very essential OS' subsystems.</para></listitem>
+				<listitem><para>The keys for your application, called say <replaceable>MyApp</replaceable>, should be created under <filename>system/sw/MyApp</filename> and/or <filename>user/sw/MyApp</filename>.</para></listitem>
+				<listitem><para>It is suggested to make your application look for default keys under <filename>system/sw/MyApp/current</filename> and/or <filename>user/sw/MyApp/current</filename>. This way, from a sysadmin perspective, it will be possible to copy the <filename>system/sw/MyApp/current</filename> tree to something like <filename>system/sw/MyApp/old</filename>, and keep system clean and organized.</para></listitem>
+			</itemizedlist>
+	</section>
+
+	

@@ -1,0 +1,29 @@
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN" "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+	<!ENTITY author SYSTEM "author.xml">
+	<!ENTITY storage SYSTEM "storage.xml">
+]>
+
+<refentry id="registry">
+
+	<refentryinfo>
+		&author;
+	</refentryinfo>
+	
+	<refmeta>
+		<refentrytitle>registry</refentrytitle>
+		<manvolnum>5</manvolnum>
+	</refmeta>
+
+	<refnamediv>
+		<refname>registry</refname>
+		<refpurpose>A framework to store configuration atoms hierarchically</refpurpose>
+	</refnamediv>
+
+	&storage;
+		
+	<refsection><title>See Also</title>
+		<para><citerefentry><refentrytitle>rg</refentrytitle><manvolnum>1</manvolnum></citerefentry>, <citerefentry><refentrytitle>registry</refentrytitle><manvolnum>7</manvolnum></citerefentry></para>
+	</refsection>
+	
+
+</refentry>

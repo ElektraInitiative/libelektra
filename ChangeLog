@@ -1,0 +1,92 @@
+* Sat May 28 2004 Avi Alkalay <avi@unix.sh> 0.2.5
+- Fixed the absense of keyClose in some places.
+- keyInit is less smart: it will not test if the key is initialized or not. This is now a programmer responsability.
+
+* Sat May 22 2004 Avi Alkalay <avi@unix.sh> 0.2.4
+- Improved rgsetenv login script: now set aliases too.
+- New methods: registryGetKeyByParent, registryGetKeyByParentKey, registryGetValueByParent, registrySetValueByParent
+- First attempts to create a bianry 'rg' with libxml statically linked.
+- New libregistry.a provided in -devel package, for creation of static binaries.
+- API manpages can now be accessed by method name (example: man registryGetKey)
+
+
+* Thu May 06 2004 Avi Alkalay <avi@unix.sh> 0.2.3
+- Defined an XML DTD for keys
+- Defined keyToStream() and ksToStream() that dumps a key or keyset to XML format
+- Defined keyCompare() and ksCompare()
+- New 'rg edit' subcommand, to XML edit subtrees of the Regitry
+- Improved registryGetChildKeys() for better handling of symlinks
+- An /etc/profile.d script to set user environment is available in package now
+- New "Society of Softwares" section in documentation
+- Improved CSS of the HTML documentation
+
+	
+* Thu Apr 13 2004 Avi Alkalay <avi@unix.sh> 0.2.2
+- Implemented -u and -g in rg command to set Key UID and GID.
+- Included RG_O_SORT option for registyrGetChildKeys, to returned a KeySet sorted by key name.
+- Now every user/* key has an associated Owner defined, which defaults to $USER, when not specified in keySetName().
+- Upgrade in the key file format. Changes in the data type field.
+- New handleOldKeyFileVersion() to keep backwards compatibility with older key files.
+- Updates to documentation for this version changes.
+- Symbolic links between keys are now consolidated. There is a formal key type for them: RG_KEY_TYPE_LINK
+- Fixed a minor problem related to reading last \n in key comments
+- Updated userd-convert script to be make a more NIS compatible conversion
+- Included a new migration script: hwconfingKudzu-convert. To migrate kudzu data to the registry
+
+
+* Thu Apr 06 2004 Avi Alkalay <avi@unix.sh> 0.2.1
+- Change in key names: instead of (.) as hierarchy delimitator, we have (/) now. This is better for POSIX file name compliancy.
+- Consolidation of inactive keys.
+- Updates to documentations to include inactive keys concepts, etc.
+- Written key.3 manual page for key*() methods.
+- New conversion script to convert /etc/fstab
+- Removed a bug in UTF8Engine(). Data was written with a \n in the end. Thanks to Jens Andersen.
+
+* Thu Apr 01 2004 Avi Alkalay <avi@unix.sh> 0.1.6
+- Introduction to inactive keys
+- registryGetChildKeys by default do not include inactive keys in resulting KeySet. Use RG_O_INACTIVE instead.
+- rg.c changed, specially in the list subcommand, to work with new behavior
+
+* Wed Mar 31 2004 Avi Alkalay <avi@unix.sh> 0.1.5
+- Fixed in registryGetKey: Keys allways needed sync
+- Fixed bug releated to NEEDSYNC: ~RG_KEY_FLAG_NEEDSYNC needed a special cast to use the right number of bits
+- Improved HOWTO documentation and manual. Link to ReiserFS.
+- Started writting of the key.3 manual
+- One more bug related to strblen in registryFileUnserialize(), causing wrong data size calculation
+
+* Mon Mar 29 2004 Avi Alkalay <avi@unix.sh> 0.1.4
+- Written manual pages rg(1), registry(7), registry(5) and registry(3) using DocBook
+- Ported the OpenOffice.org specification to DocBook, using the modularized man pages
+- RPMs include manpages
+- RPMs have prerequesites now
+- Fixed bug regarding \0 in end of key names on recursive stats
+- More robust build system, catching warnings
+- New method: registryGetRootKeys(KeySet *returned)
+- Fixed some bugs related to usage of strblen()
+- Introduction of the RG_O_* method options
+- Removed bug related to permission when stat()ing keys
+- Removed bugs in some KeySet methods
+- Much improved 'rg ls' command, specially in recursive mode
+- New key flag, NEEDSYNC, to indicate the change status of a key
+- New method, registrySetKeys, to commit all modified keys on a KeySet
+
+* Tue Mar 16 2004 Avi Alkalay <avi@unix.sh> 0.1.2
+- The Linux Registry API is 100% usable
+- The rg command is very usable
+- Full support to UTF-8. Everything stored in the registry is UTF-8, regardeless of user's LANG. Conversions are on the fly.
+- Fixed bug on keySetName(), regarding wrong keyNameSize
+- Introduction of registryRemoveKey()
+- rg subcommands: ls, get, set, rm
+- rg now supports set octal permissions from command line
+- Key and Registry support for DIR type
+- Documentation process (man pages) in the very begining
+- Include files in a separate package
+
+* Sat Mar 06 2004 Avi Alkalay <avi@unix.sh> 0.0.9
+- Now no more IPC, Berkeley DB, threads, setuid, and other complexities
+- Simple library that accesses files on disk
+- rg has 'set' and partial 'ls' subcommands implemented
+- API can already be used
+
+* Sat Feb 15 2004 Avi Alkalay <avi@unix.sh> 0.0.2
+- Based on IPC, Berkeley DB, Threads, and many other complexities

@@ -1,0 +1,403 @@
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN" "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+	<!ENTITY author SYSTEM "author.xml">
+	<!ENTITY csource SYSTEM "csource.xml">
+	<!ENTITY apiexampl SYSTEM "apiexampl.xml">
+]>
+
+<refentry id="key">
+
+	<refentryinfo>
+		&author;
+	</refentryinfo>
+
+	<refmeta>
+		<refentrytitle>key</refentrytitle>
+		<manvolnum>3</manvolnum>
+	</refmeta>
+
+	<refnamediv>
+		<refname>key</refname>
+		<refpurpose>Linux Registy Key manipulation methods</refpurpose>
+	</refnamediv>
+
+	<refsynopsisdiv>
+		<funcsynopsis>
+			<funcsynopsisinfo>#include &lt;registry.h&gt;</funcsynopsisinfo>
+			
+			<funcprototype>
+				<funcdef><type>int </type><function>keyInit</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
+			</funcprototype>
+			
+			<funcprototype>
+				<funcdef><type>int </type><function>keyClose</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
+			</funcprototype>
+
+			<funcprototype>
+				<funcdef><type>int </type><function>keyIsInitialized</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
+			</funcprototype>
+
+			<funcprototype>
+				<funcdef><type>int </type><function>keyDup</function></funcdef>
+				<paramdef><type>Key *</type><parameter>source</parameter></paramdef>
+				<paramdef><type>Key *</type><parameter>dest</parameter></paramdef>
+			</funcprototype>
+			
+			<funcprototype>
+				<funcdef><type>size_t </type><function>keySetString</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
+				<paramdef><type>char *</type><parameter>newString</parameter></paramdef>
+			</funcprototype>
+			
+			<funcprototype>
+				<funcdef><type>size_t </type><function>keySetBinary</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
+				<paramdef><type>char *</type><parameter>newBinary</parameter></paramdef>
+				<paramdef><type>size_t </type><parameter>dataSize</parameter></paramdef>
+			</funcprototype>
+
+			<funcprototype>
+				<funcdef><type>size_t </type><function>keySetLink</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
+				<paramdef><type>char *</type><parameter>target</parameter></paramdef>
+			</funcprototype>
+			
+			<funcprototype>
+				<funcdef><type>size_t </type><function>keyGetDataSize</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
+			</funcprototype>
+			
+			<funcprototype>
+				<funcdef><type>size_t </type><function>keyGetString</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
+				<paramdef><type>char *</type><parameter>returnedString</parameter></paramdef>
+				<paramdef><type>size_t </type><parameter>maxSize</parameter></paramdef>
+			</funcprototype>
+			
+			<funcprototype>
+				<funcdef><type>size_t </type><function>keyGetBinary</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
+				<paramdef><type>char *</type><parameter>returnedBinary</parameter></paramdef>
+				<paramdef><type>size_t </type><parameter>maxSize</parameter></paramdef>
+			</funcprototype>
+			
+			<funcprototype>
+				<funcdef><type>size_t </type><function>keyGetLink</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
+				<paramdef><type>char *</type><parameter>returnedTarget</parameter></paramdef>
+				<paramdef><type>size_t </type><parameter>maxSize</parameter></paramdef>
+			</funcprototype>
+			
+			<funcprototype>
+				<funcdef><type>int </type><function>keyNeedsSync</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
+			</funcprototype>
+			
+			<funcprototype>
+				<funcdef><type>u_int8_t </type><function>keyGetType</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
+			</funcprototype>
+
+			<funcprototype>
+				<funcdef><type>u_int8_t </type><function>keySetType</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
+				<paramdef><type>u_int8_t </type><parameter>type</parameter></paramdef>
+			</funcprototype>
+
+			<funcprototype>
+				<funcdef><type>size_t </type><function>keyGetRecordSize</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
+			</funcprototype>
+
+			<funcprototype>
+				<funcdef><type>size_t </type><function>keyGetNameSize</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
+			</funcprototype>
+
+			<funcprototype>
+				<funcdef><type>size_t </type><function>keyGetFullNameSize</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
+			</funcprototype>
+			
+			<funcprototype>
+				<funcdef><type>size_t </type><function>keyGetName</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
+				<paramdef><type>char *</type><parameter>returnedName</parameter></paramdef>
+				<paramdef><type>size_t </type><parameter>maxSize</parameter></paramdef>
+			</funcprototype>
+
+			<funcprototype>
+				<funcdef><type>size_t </type><function>keyGetFullName</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
+				<paramdef><type>char *</type><parameter>returnedName</parameter></paramdef>
+				<paramdef><type>size_t </type><parameter>maxSize</parameter></paramdef>
+			</funcprototype>
+
+			<funcprototype>
+				<funcdef><type>size_t </type><function>keyGetRootName</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
+				<paramdef><type>char *</type><parameter>returned</parameter></paramdef>
+				<paramdef><type>size_t </type><parameter>maxSize</parameter></paramdef>
+			</funcprototype>
+
+			<funcprototype>
+				<funcdef><type>size_t </type><function>keyGetFullRootName</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
+				<paramdef><type>char *</type><parameter>returned</parameter></paramdef>
+				<paramdef><type>size_t </type><parameter>maxSize</parameter></paramdef>
+			</funcprototype>
+
+			<funcprototype>
+				<funcdef><type>size_t </type><function>keySetName</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
+				<paramdef><type>char *</type><parameter>newName</parameter></paramdef>
+			</funcprototype>
+			
+			<funcprototype>
+				<funcdef><type>size_t </type><function>keyGetCommentSize</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
+			</funcprototype>
+			
+			<funcprototype>
+				<funcdef><type>size_t </type><function>keyGetComment</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
+				<paramdef><type>char *</type><parameter>returnedComment</parameter></paramdef>
+				<paramdef><type>size_t </type><parameter>maxSize</parameter></paramdef>
+			</funcprototype>
+			
+			<funcprototype>
+				<funcdef><type>size_t </type><function>keySetComment</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
+				<paramdef><type>char *</type><parameter>newComment</parameter></paramdef>
+			</funcprototype>
+			
+			<funcprototype>
+				<funcdef><type>size_t </type><function>keyGetOwner</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
+				<paramdef><type>char *</type><parameter>returnedOwner</parameter></paramdef>
+				<paramdef><type>size_t </type><parameter>maxSize</parameter></paramdef>
+			</funcprototype>
+			
+			<funcprototype>
+				<funcdef><type>size_t </type><function>keySetOwner</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
+				<paramdef><type>char *</type><parameter>userDomain</parameter></paramdef>
+			</funcprototype>
+			
+			<funcprototype>
+				<funcdef><type>time_t </type><function>keyGetMTime</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
+			</funcprototype>
+			
+			<funcprototype>
+				<funcdef><type>time_t </type><function>keyGetATime</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
+			</funcprototype>
+			
+			<funcprototype>
+				<funcdef><type>time_t </type><function>keyGetCTime</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
+			</funcprototype>
+
+			<funcprototype>
+				<funcdef><type>int </type><function>keyGetNameSpace</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
+			</funcprototype>
+			
+			<funcprototype>
+				<funcdef><type>int </type><function>keyNameGetNameSpace</function></funcdef>
+				<paramdef><type>char *</type><parameter>keyName</parameter></paramdef>
+			</funcprototype>
+			
+			<funcprototype>
+				<funcdef><type>int </type><function>keyIsSystem</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
+			</funcprototype>
+			
+			<funcprototype>
+				<funcdef><type>int </type><function>keyNameIsSystem</function></funcdef>
+				<paramdef><type>char *</type><parameter>keyName</parameter></paramdef>
+			</funcprototype>
+			
+			<funcprototype>
+				<funcdef><type>int </type><function>keyIsUser</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
+			</funcprototype>
+			
+			<funcprototype>
+				<funcdef><type>int </type><function>keyNameIsUser</function></funcdef>
+				<paramdef><type>char *</type><parameter>keyName</parameter></paramdef>
+			</funcprototype>
+			
+			<funcprototype>
+				<funcdef><type>int </type><function>keySetFlag</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
+			</funcprototype>
+			
+			<funcprototype>
+				<funcdef><type>int </type><function>keyGetFlag</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
+			</funcprototype>
+			
+			<funcprototype>
+				<funcdef><type>size_t </type><function>keyToStream</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
+				<paramdef><type>FILE *</type><parameter>stream</parameter></paramdef>
+				<paramdef><type>unsigned long</type><parameter>options</parameter></paramdef>
+			</funcprototype>
+
+			<funcprototype>
+				<funcdef><type>u_int32_t </type><function>keyCompare</function></funcdef>
+				<paramdef><type>Key *</type><parameter>key1</parameter></paramdef>
+				<paramdef><type>Key *</type><parameter>key2</parameter></paramdef>
+			</funcprototype>
+			
+			
+			<!-- KeySet methods -->
+			
+			
+			<funcprototype>
+				<funcdef><type>int </type><function>ksInit</function></funcdef>
+				<paramdef><type>KeySet *</type><parameter>ks</parameter></paramdef>
+			</funcprototype>
+			
+			<funcprototype>
+				<funcdef><type>int </type><function>ksClose</function></funcdef>
+				<paramdef><type>KeySet *</type><parameter>ks</parameter></paramdef>
+			</funcprototype>
+			
+			<funcprototype>
+				<funcdef><type>size_t </type><function>ksInsert</function></funcdef>
+				<paramdef><type>KeySet *</type><parameter>ks</parameter></paramdef>
+				<paramdef><type>Key *</type><parameter>toInsert</parameter></paramdef>
+			</funcprototype>
+
+			<funcprototype>
+				<funcdef><type>size_t </type><function>ksAppend</function></funcdef>
+				<paramdef><type>KeySet *</type><parameter>ks</parameter></paramdef>
+				<paramdef><type>Key *</type><parameter>toAppend</parameter></paramdef>
+			</funcprototype>
+
+			<funcprototype>
+				<funcdef><type>size_t </type><function>ksInsertKeys</function></funcdef>
+				<paramdef><type>KeySet *</type><parameter>ks</parameter></paramdef>
+				<paramdef><type>KeySet *</type><parameter>toInsert</parameter></paramdef>
+			</funcprototype>
+
+			<funcprototype>
+				<funcdef><type>size_t </type><function>ksAppendKeys</function></funcdef>
+				<paramdef><type>KeySet *</type><parameter>ks</parameter></paramdef>
+				<paramdef><type>KeySet *</type><parameter>toAppend</parameter></paramdef>
+			</funcprototype>
+			
+			<funcprototype>
+				<funcdef><type>int </type><function>ksRewind</function></funcdef>
+				<paramdef><type>KeySet *</type><parameter>ks</parameter></paramdef>
+			</funcprototype>
+			
+			<funcprototype>
+				<funcdef><type>Key *</type><function>ksNext</function></funcdef>
+				<paramdef><type>KeySet *</type><parameter>ks</parameter></paramdef>
+			</funcprototype>
+
+			<funcprototype>
+				<funcdef><type>size_t </type><function>ksToStream</function></funcdef>
+				<paramdef><type>KeySet *</type><parameter>ks</parameter></paramdef>
+				<paramdef><type>FILE *</type><parameter>stream</parameter></paramdef>
+				<paramdef><type>unsigned long </type><parameter>options</parameter></paramdef>
+			</funcprototype>
+
+			<funcprototype>
+				<funcdef><type>int </type><function>ksCompare</function></funcdef>
+				<paramdef><type>KeySet *</type><parameter>ks1</parameter></paramdef>
+				<paramdef><type>KeySet *</type><parameter>ks2</parameter></paramdef>
+				<paramdef><type>KeySet *</type><parameter>removed</parameter></paramdef>
+			</funcprototype>
+			
+		</funcsynopsis>
+	</refsynopsisdiv>
+	
+
+	<section id="keyMethodDescription"><title>Description for Key Class Methods</title>
+		<para>These are the methods used to access and change every aspect of the Linux Registry's <type>Key</type> and <type>KeySet</type> objects. Changes made to keys with these methods happens in memory and will not be reflected into the Registry's database until you call <function>registrySetKey</function>. <function>keyNeedsSync</function> can tell you whether <parameter>key</parameter> has changed and is ready to be written.</para>
+		<para><type>Key</type> objects can be generated as a result to the call of <function>registryGetKey</function>, <function>registryGetChildKeys</function> or filled up by hand and then set by calling <function>registrySetKey</function>.</para>
+		<para>Before any operation on a <type>Key</type>, the object must be initialized with <function>keyInit</function>. <function>keyClose</function> is used to free all internally allocated resources related to <parameter>key</parameter> object, and must be called whenever you finished using <parameter>key</parameter>. <function>keyIsInitialized</function> returns non-zero if it can find the necessary conditions of an initialized key, and it is almost 100% trusty.</para>
+		
+		<para><function>keyGetType</function> and <function>keySetType</function> are used to get and set the key data type. Key data types can be <parameter>RG_KEY_TYPE_UNDEFINED</parameter>, <parameter>RG_KEY_TYPE_BINARY</parameter>, <parameter>RG_KEY_TYPE_STRING</parameter>, <parameter>RG_KEY_TYPE_DIR</parameter> or <parameter>RG_KEY_TYPE_LINK</parameter>. In the case of setting key type to <parameter>RG_KEY_TYPE_DIR</parameter>, all key data and comment previously set will be removed. For <parameter>RG_KEY_TYPE_LINK</parameter>, you should use <function>keySetLink</function> to set the destination of this link key. You can define your own data types if you understand how the <parameter>RG_KEY_TYPE_*</parameter> values are organized:</para>
+		
+		<variablelist>
+			<varlistentry><term>Between <type>RG_KEY_TYPE_BINARY</type> and <type>RG_KEY_TYPE_BINARY+19</type></term>
+				<listitem><simpara>Binary value. The data will be encoded into a text format. Only RG_KEY_TYPE_BINARY is implemented in the basic library, and means a raw stream of bytes with no special semantics to the Registry. The other values are reserved for future use; being treated still as binary values but possibly with some semantics to a higher level application or framework.</simpara></listitem>
+			</varlistentry>
+			<varlistentry><term><type>RG_KEY_TYPE_STRING</type> up to 254</term>
+				<listitem><simpara>Text, UTF-8 encoded. Values higher then 40 are reserved for future or application specific implementations of more abstract data types, like time/date, color, font, etc. But always represented as pure text that can be edited in any text editor like <citerefentry><refentrytitle>vi</refentrytitle><manvolnum>1</manvolnum></citerefentry>.</simpara></listitem>
+			</varlistentry>
+		</variablelist>
+
+		<para><function>keyGetName</function> and <function>keyGetFullName</function> will copy into <parameter>returned</parameter> the <parameter>key</parameter> name. The full name is related only to <filename>user</filename> keys and it is in the form of <filename>user:<replaceable>username</replaceable>/key/name</filename>. Up to <parameter>maxSize</parameter> bytes will be written including the ending \0. If <parameter>maxSize</parameter> is smaller then <parameter>key</parameter> name, or any other error occurs, 0 is returned and <parameter>errno</parameter> is set. Otherwise these methods return the number of bytes copied, including the ending \0.</para>
+		<para>Before calling these methods, the <function>keyGetNameSize</function> and <function>keyGetFullNameSize</function> mathods may be used to calculate the number of bytes required (including \0) to store the <parameter>key</parameter> name or full name.</para>
+		<para><function>keyGetRootName</function>, <function>keyGetFullRootName</function>, <function>keyGetRootName</function>, <function>keyGetRootNameSize</function>, <function>keyGetFullRootNameSize</function> works in the same way as the above methods, except they work only in the root name of the <parameter>key</parameter>. For example, the root of <filename>user:luciana/some/key</filename> is <filename>user</filename>, while the full root is <filename>user:luciana</filename>. For <filename>system</filename> keys, full and plain root name are the same.</para>
+		
+		<para><function>keySetName</function> will set <parameter>newName</parameter> as the new key name of <parameter>key</parameter>. The <parameter>newName</parameter> will be tested to see if it is a valid key name and will not be set otherwise. The method will allocate private memory to store the new name, so the memory that <parameter>newName</parameter> points to can be disallocated after the call. It returns the number of bytes allocated, or 0 in case of failure, and <parameter>errno</parameter> is set.</para>
+		
+		<para><function>keySetComment</function> is used to set <parameter>newComment</parameter> as the comment of <parameter>key</parameter>. <function>keyGetCommentSize</function> will return the size in bytes, including the ending \0, needed to store the <parameter>key</parameter> comment, and <function>keyGetComment</function> will copy into <parameter>returnedComment</parameter> the <parameter>key</parameter> comment if any, and if <parameter>maxSize</parameter> >= <function>keyGetCommentSize(<parameter>key</parameter>)</function>. The number of bytes copied, including \0, are returned, or 0 in case of failure, and <varname>errno</varname> is set.</para>
+		
+		<para><function>keyGetUID</function>, <function>keySetUID</function>, <function>keyGetGID</function> and <function>keySetGID</function> get and set UID and GID of <parameter>key</parameter>. <function>keyGetAccess</function> and <function>keySetAccess</function> get and set the access permissions of key. See the <parameter>S_*</parameter> values that can be ORed in <citerefentry><refentrytitle>stat</refentrytitle><manvolnum>2</manvolnum></citerefentry>, for a valid <parameter>mode</parameter>. <function>keyInit</function> initializes a key to current user's UID and GID, and access bits to a value based on its umask, so you have to call these methods only when you want to force some special access permissions. And underlying OS security schemas will apply when commiting the key to the Registry's database.</para>
+		
+		<para><function>keyGetOwner</function> and <function>keySetOwner</function> can be used to get and set user domain of a <filename>user:userDomain/*</filename> key. It has no effect on <filename>system/*</filename> keys. The user domain defaults to <envar>$USER</envar>, and may not be related to UID because it may happen that some wants to set a key in <parameter>userDomain</parameter>'s database with a different UID. The differentiation between UIDs and user domains is usefull also in situations we have different user names with same UID.</para>
+		
+		<para>Key data getting and setting can be done by <function>keyGetString</function>, <function>keySetString</function>, <function>keyGetBinary</function>, <function>keySetBinary</function>. These methods will automatically set the data type with <function>keySetType</function>. The data is copied into <parameter>returnedString</parameter> and <parameter>returnedBinary</parameter> if there is some data or <parameter>maxSize</parameter> has a good size. In the case of <function>keyGetString</function>, if there is no data, <parameter>returnedString[0]</parameter> is set to 0. They return the number of bytes copied or 0 if an error occurs, in which case <varname>errno</varname> is set. For zero-bytes data, <varname>errno</varname> is set to <varname>RG_KEY_RET_NODATA</varname> or <varname>ENODATA</varname>. <function>keyGetDataSize</function> returns the bytes needed to store the <parameter>key</parameter> data, including the ending \0, for string keys.</para>
+		
+		<para><function>keyGetLink</function> and <function>keySetLink</function> will define <parameter>key</parameter> as type <parameter>RG_KEY_TYPE_LINK</parameter> and get/set the destination as <parameter>returnedTarget</parameter>/<parameter>target</parameter>, respectively.</para>
+		
+		<para><function>keyGetMTime</function>, <function>keyGetATime</function>, <function>keyGetCTime</function> are used to get the <parameter>key</parameter>'s last modification, reading and stat time, respectively. These methods are usefull only when used on keys that were retrieved from the Registry's database, with <function>registryGetKey</function>, <function>registryStatKey</function> or <function>registryGetChildKeys</function>. Keys that were born in memory have these times set to 0.</para>
+		
+		<para><function>keyGetNameSpace</function> returns the namespace of <parameter>key</parameter>. Current namespaces are <varname>RG_NS_SYSTEM</varname> and <varname>RG_NS_USER</varname> for <filename>system/*</filename> and <filename>user/*</filename> respectively. <function>keyNameGetNameSpace</function> does the same but it only requires the key name.</para>
+		
+		<para><function>keyIsUser</function>, <function>keyIsSystem</function>, <function>keyNameIsUser</function> and <function>keyNameIsSystem</function> have the same functionality of above methods, and are provided for convenience.</para>
+		
+		<para><function>keyDup</function> will copy all contents of <parameter>source</parameter> key into <parameter>dest</parameter>, which will have its own private copies of dynamic data. If <parameter>dest</parameter> already has dynamic data associated, it will be flushed first with <function>keyClose</function>. The resulting <parameter>dest</parameter> will be a perfect copy of <parameter>source</parameter> with respect to key's internal status, type, access and modification time, etc.</para>
+		
+		<para><function>keySetFlag</function> and <function>keyGetFlag</function> are used to generically flag <parameter>key</parameter>. <function>keySetFlag</function> return 0 on success or -1 if the key is invalid. <function>keyGetFlag</function> returns 0 if the key is invalid or the flag is not set, 1 otherwise.</para>
+		
+		<para><function>keyToStream</function> writes an XML representation of <parameter>key</parameter> to <parameter>stream</parameter>. The recognized <parameter>options</parameter> is RG_O_CONDENSED, to not format the XML with spaces and newlines, making it smaller.</para>
+	</section>
+	
+	
+	
+	
+	<section id="keySetMethodDescription"><title>Description for KeySet Class Methods</title>
+		<para><function>ksInit</function> and <function>ksClose</function> must be used respectivelly before and after using <parameter>ks</parameter>. <function>ksClose</function> will <function>keyClose()</function> all <type>Key</type> objects inside <parameter>ks</parameter>.</para>
+		
+		<para><function>ksInsert</function> and <function>ksAppend</function> includes the second parameter in the begining or end of <parameter>ks</parameter>. They return the number keys in the KeySet after the inclusion.</para>
+		
+		<para><function>ksRewind</function> and <function>ksNext</function> methods manipulate the <type>KeySet</type> internal cursor, rewinding to the begining of the <type>KeySet</type>, or returning a pointer to the next <type>Key</type>. The returned <type>Key</type> should not be used in another <type>KeySet</type>, to not let the first loose its pointers. If you need to do that, create a copy of the key with <function>keyDup()</function> first, then use the copy.</para>
+		
+		<para><function>ksInsertKeys</function> and <function>ksAppendKeys</function> act in the same way but on entire <type>KeySet</type>s. They return the number of total keys, or 0 in case of failure. The second <type>KeySet</type> will become empty after return.</para>
+
+		<para><function>ksToStream</function> will write to <parameter>stream</parameter> an XML representation of <parameter>ks</parameter>. <parameter>options</parameter> control its behavior and currently understands:</para>
+		 
+		<variablelist>
+			<varlistentry><term>RG_O_XMLHEADERS</term>
+				<listitem><simpara>Will include &lt;?xml (with used charset) and &lt;!DOCTYPE to the begining of output.</simpara></listitem>
+			</varlistentry>
+			<varlistentry><term>RG_O_CONDENSED</term>
+				<listitem><simpara>Will make the resulting XML smaller by not using spaces and new lines.</simpara></listitem>
+			</varlistentry>
+		</variablelist>
+		 
+		 <para>The Document Type Definition for the result is defined at http://registry.sf.net/dtd/registry.dtd. The <command>rg ls -x</command> command uses this method.</para>
+		
+		<para><function>ksCompare</function> compares two <type>KeySet</type>s. A key (by full name) that is present on <parameter>ks1</parameter> and <parameter>ks2</parameter>, and has something different, will be transfered from <parameter>ks2</parameter> to <parameter>ks1</parameter>, and <parameter>ks1</parameter>'s version deleted. Keys that are in <parameter>ks1</parameter>, but aren't in <parameter>ks2</parameter> will be transfered from <parameter>ks1</parameter> to <parameter>removed</parameter>. Keys that are <function>keyCompare()</function> equal in <parameter>ks1</parameter> and <parameter>ks2</parameter> will be deleted from <parameter>ks2</parameter>. Keys that are available in <parameter>ks2</parameter> but don't exist in <parameter>ks1</parameter> will be transfered to <parameter>ks1</parameter>. In the end, <parameter>ks1</parameter> will have all the keys that matter, and <parameter>ks2</parameter> will be empty. After <function>ksCompare()</function>, you should (1) call <function>registrySetKeys(ks1)</function> to commit all changed keys, (2) <function>registryRemove()</function> for all keys in the <parameter>removed</parameter> KeySet, (3) call <function>free(ks2)</function>.
+		</para>
+		
+	</section>
+	
+	<refsection><title>See Also</title>
+		<para><citerefentry><refentrytitle>registry</refentrytitle><manvolnum>3</manvolnum></citerefentry>, <citerefentry><refentrytitle>registry</refentrytitle><manvolnum>5</manvolnum></citerefentry>, <citerefentry><refentrytitle>registry</refentrytitle><manvolnum>7</manvolnum></citerefentry></para>
+	</refsection>
+	
+	
+</refentry>

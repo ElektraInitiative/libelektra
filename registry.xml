@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE project-listing SYSTEM "http://freshmeat.net/backend/fm-projects-0.3.dtd">
+<project-listing>
+  <project>
+    <project_id>45092</project_id>
+    <date_added>2004-02-25 12:43:19</date_added>
+    <date_updated>2004-03-31 10:13:00</date_updated>
+    <projectname_short>registry</projectname_short>
+    <projectname_full>The Linux Registry</projectname_full>
+    <desc_short>A key-value pair framework for storing configurations.</desc_short>
+    <desc_full>The Linux Registry is an alternative back-end for text configuration files. Instead of each program having its own text configuration files, the Registry tries to provide a universal and secure framework for configuration parameters in a hierarchical key-value pair mechanism. This way, any program can read and save its configuration using a consistent API and can be aware of other applications configurations, permitting easy application integration. While architecturally similar to other OS registries, the Linux Registry does not have most of the problems those implementations have.</desc_full>
+    <vitality_score>92.50</vitality_score>
+    <vitality_percent>0.06</vitality_percent>
+    <vitality_rank>2490</vitality_rank>
+    <popularity_score>489.98</popularity_score>
+    <popularity_percent>1.18</popularity_percent>
+    <popularity_rank>3475</popularity_rank>
+    <rating>6.98</rating>
+    <rating_count>6</rating_count>
+    <rating_rank>227</rating_rank>
+    <subscriptions>37</subscriptions>
+    <branch_name>Default</branch_name>
+    <url_project_page>http://freshmeat.net/projects/registry/</url_project_page>
+    <url_homepage>http://freshmeat.net/redir/registry/48188/url_homepage/</url_homepage>
+    <url_tgz>http://freshmeat.net/redir/registry/48188/url_tgz/</url_tgz>
+    <url_bz2></url_bz2>
+    <url_zip></url_zip>
+    <url_changelog></url_changelog>
+    <url_rpm>http://freshmeat.net/redir/registry/48188/url_rpm/</url_rpm>
+    <url_deb></url_deb>
+    <url_osx></url_osx>
+    <url_bsdport></url_bsdport>
+    <url_purchase></url_purchase>
+    <url_cvs></url_cvs>
+    <url_list></url_list>
+    <url_mirror></url_mirror>
+    <url_demo></url_demo>
+    <license>GNU Lesser General Public License (LGPL)</license>
+    <latest_release>
+      <latest_release_version>0.1.5</latest_release_version>
+      <latest_release_id>156152</latest_release_id>
+      <latest_release_date>2004-03-31 10:13:00</latest_release_date>
+    </latest_release>
+    <screenshot_thumb>http://images.freshmeat.net/screenshots/45092_thumb.png</screenshot_thumb>
+    <descriminators>
+      <trove_id>45</trove_id>
+      <trove_id>810</trove_id>
+      <trove_id>147</trove_id>
+      <trove_id>253</trove_id>
+      <trove_id>4</trove_id>
+      <trove_id>233</trove_id>
+      <trove_id>3</trove_id>
+      <trove_id>16</trove_id>
+      <trove_id>200</trove_id>
+      <trove_id>201</trove_id>
+      <trove_id>164</trove_id>
+      <trove_id>10</trove_id>
+    </descriminators>
+    <dependencies>
+    </dependencies>
+  </project>
+</project-listing>

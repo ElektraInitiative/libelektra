@@ -1,0 +1,34 @@
+#!/bin/sh
+
+########################################################################
+##
+## This script will read the /etc/inittab and create an
+## equivalent registry tree under $ROOT.
+##
+## The correct way to run it is:
+##
+## # ./inittab-convert | sh -e
+##
+##
+## To make tests you can do:
+##
+## $ ROOT=user.test ./inittab-convert | sh -e
+##
+## Avi Alkalay <avi@unix.sh>
+## March 2004
+##
+########################################################################
+
+
+[ -z "$RG" ] && RG="rg"
+[ -z "$ROOT" ] && ROOT="system"
+
+
+cat /etc/inittab | sed -e 's/\#.*$//g; s/\"/\\"/g; s/\;/\\;/' | grep -v '^$' |
+		awk -F : "{
+			if (seq) seq=seq\",\"\$1;
+			else seq=\$1;
+			print \"$RG set -c \'Active runlevels\'   $ROOT/init/\" \$1 \"/runlevels    -- \" \$2;
+			print \"$RG set -c \'Approach\'           $ROOT/init/\" \$1 \"/action       -- \" \$3;
+			print \"$RG set -c \'Program to execute\' $ROOT/init/\" \$1 \"/process      -- \" \$4;
+		} END {print \"$RG set -c \'Sequence entries will be run\' $ROOT/init/sequence -- \" seq;}"

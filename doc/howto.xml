@@ -1,0 +1,292 @@
+<?xml version="1.0"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN" "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+	<!ENTITY bestpract SYSTEM "bestpract.xml">
+	<!ENTITY storage SYSTEM "storage.xml">
+	<!ENTITY rgcmd SYSTEM "rgcmd.xml">
+	<!ENTITY generics SYSTEM "generics.xml">
+	<!ENTITY author SYSTEM "author.xml">
+	<!ENTITY api SYSTEM "api.xml">
+	<!ENTITY apiexample SYSTEM "apiexample.xml">
+	<!ENTITY csource SYSTEM "csource.xml">
+	<!ENTITY rgexample SYSTEM "rgexample.xml">
+	<!ENTITY society SYSTEM "society.xml">
+]>
+
+
+
+<article>
+
+	<articleinfo>
+		<title>The Linux Registry</title>
+		
+		&author;
+		
+		<pubdate>0.2.8 :: 2004-05-06</pubdate>
+		
+		<revhistory>
+			<revision>
+				<revnumber>0.2.8</revnumber>
+				<date>06 May 2004</date>
+				<authorinitials>avi</authorinitials>
+				<revdescription>
+					<itemizedlist>
+						<listitem><simpara>Included screenshot fro rg edit</simpara></listitem>
+						<listitem><simpara>Updated documentation for registry-0.2.3</simpara></listitem>
+					</itemizedlist>
+				</revdescription>
+			</revision>
+			
+			<revision>
+				<revnumber>0.2.7</revnumber>
+				<date>01 May 2004</date>
+				<authorinitials>avi</authorinitials>
+				<revdescription>
+					<itemizedlist>
+						<listitem><simpara>The Software Society section created</simpara></listitem>
+					</itemizedlist>
+				</revdescription>
+			</revision>
+			
+			<revision>
+				<revnumber>0.2.6</revnumber>
+				<date>28 Apr 2004</date>
+				<authorinitials>avi</authorinitials>
+				<revdescription>
+					<itemizedlist>
+						<listitem><simpara>Ecosystem section created</simpara></listitem>
+						<listitem><simpara>Explanations on datatypes in manual pages</simpara></listitem>
+					</itemizedlist>
+				</revdescription>
+			</revision>
+			
+			<revision>
+				<revnumber>0.2.5</revnumber>
+				<date>23 Apr 2004</date>
+				<authorinitials>avi</authorinitials>
+				<revdescription>
+					<itemizedlist>
+						<listitem><simpara>Removed a memory leak in the example code.</simpara></listitem>
+						<listitem><simpara>Removed the Registry Internals section, because it is too internal, and a link is provided to registry.5, which is the same.</simpara></listitem>
+						<listitem><simpara>Reworked in the CSS</simpara></listitem>
+						<listitem><simpara>Small typos</simpara></listitem>
+						<listitem><simpara>Improved Key Data Types section</simpara></listitem>
+						<listitem><simpara>Improved "What Is" and "What Is Not" part</simpara></listitem>
+					</itemizedlist>
+				</revdescription>
+			</revision>
+			
+			<revision>
+				<revnumber>0.2.4</revnumber>
+				<date>17 Apr 2004</date>
+				<authorinitials>avi</authorinitials>
+				<revdescription>
+					<itemizedlist>
+						<listitem><simpara>Changed paragraph in Registry Internals, regarding performance, etc</simpara></listitem>
+					</itemizedlist>
+				</revdescription>
+			</revision>
+			
+			<revision>
+				<revnumber>0.2.3</revnumber>
+				<date>15 Apr 2004</date>
+				<authorinitials>avi</authorinitials>
+				<revdescription>
+					<itemizedlist>
+						<listitem><simpara>Included man pages online</simpara></listitem>
+					</itemizedlist>
+				</revdescription>
+			</revision>
+			
+			<revision>
+				<revnumber>0.2.2</revnumber>
+				<date>13 Apr 2004</date>
+				<authorinitials>avi</authorinitials>
+				<revdescription>
+					<itemizedlist>
+						<listitem><simpara>Fixed typos in rg command description</simpara></listitem>
+						<listitem><simpara>Updated storage section acording to the new key file format</simpara></listitem>
+						<listitem><simpara>Improved API section describing registry's classes</simpara></listitem>
+						<listitem><simpara>Included screenshots section</simpara></listitem>
+					</itemizedlist>
+				</revdescription>
+			</revision>
+			
+			<revision>
+				<revnumber>0.2</revnumber>
+				<date>06 Apr 2004</date>
+				<authorinitials>avi</authorinitials>
+				<revdescription>
+					<itemizedlist>
+						<listitem><simpara>Added section about inactive keys</simpara></listitem>
+						<listitem><simpara>Added more examples of key names, now with the XFree86 example</simpara></listitem>
+						<listitem><simpara>Added link to the discussion list</simpara></listitem>
+					</itemizedlist>
+				</revdescription>
+			</revision>
+			
+			<revision>
+				<revnumber>0.1.6</revnumber>
+				<date>01 Apr 2004</date>
+				<authorinitials>avi</authorinitials>
+				<revdescription>
+					<itemizedlist>
+						<listitem><simpara>Added section about why XML is bad for the Registry</simpara></listitem>
+					</itemizedlist>
+				</revdescription>
+			</revision>
+			
+			<revision>
+				<revnumber>0.1.5</revnumber>
+				<date>31 Mar 2004</date>
+				<authorinitials>avi</authorinitials>
+				<revdescription>
+					<itemizedlist>
+						<listitem><simpara>Added section with links</simpara></listitem>
+						<listitem><simpara>Corrected some XML validation errors</simpara></listitem>
+						<listitem><simpara>Clarified Internals section, based on some user questions</simpara></listitem>
+						<listitem><simpara>Added security examples</simpara></listitem>
+						<listitem><simpara>This HOWTO is the default main registry website; not a different specification anymore</simpara></listitem>
+					</itemizedlist>
+				</revdescription>
+			</revision>
+			
+			<revision>
+				<revnumber>0.1.4</revnumber>
+				<date>30 Mar 2004</date>
+				<authorinitials>avi</authorinitials>
+				<revdescription>
+					<itemizedlist>
+						<listitem><simpara>Included API usage example program</simpara></listitem>
+						<listitem><simpara>Small changes in the doc organization</simpara></listitem>
+					</itemizedlist>
+				</revdescription>
+			</revision>
+			
+			<revision>
+				<revnumber>0.1.3</revnumber>
+				<date>23 Mar 2004</date>
+				<authorinitials>avi</authorinitials>
+				<revremark>First version of the HOWTO</revremark>
+			</revision>
+		</revhistory>
+
+	</articleinfo>
+
+	<section id="links"><title>Getting The Linux Registry</title>
+		<para>The Linux Registry can be found at <ulink url="http://registry.sf.net/">registry.sf.net</ulink>. C source and RPMs can be found at <ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628">sourceforge.net</ulink>, and its <ulink url="http://freshmeat.net">Freshmeat</ulink> entry is <ulink url="http://freshmeat.net/projects/registry/">http://freshmeat.net/projects/registry/</ulink>.</para>
+		<para>Subscribe to the <ulink url="https://lists.sourceforge.net/lists/listinfo/registry-list">general discussions list</ulink>.</para>
+		<!-- ML admin: https://lists.sourceforge.net/lists/admin/registry-list -->
+		<para>Linux Registry is licensed under the <ulink url="http://www.gnu.org/licenses/lgpl.html">LGPL</ulink></para>
+		<para>
+			<ulink url="http://sourceforge.net/"><graphic srccredit="SourceForge.net" fileref="http://sourceforge.net/sflogo.php?group_id=99628&amp;type=5" label="SourceForge.net Logo" align="center"/></ulink>
+		</para>
+		<section id="man"><title>Online Manual Pages</title>
+			<para>Linux Registry man pages can be accessed online:</para>
+			<orderedlist>
+				<listitem><simpara><ulink url="registry.3.html">registry.3</ulink>: C API documentation for the Registry class.</simpara></listitem>
+				<listitem><simpara><ulink url="key.3.html">key.3</ulink>: C API documentation for the Key and KeySet class.</simpara></listitem>
+				<listitem><simpara><ulink url="rg.1.html">rg.1</ulink>: The <command>rg</command> command man page. Describes the usage of the command used to administer the registry. You don't need it if you are already reading this.</simpara></listitem>
+				<listitem><simpara><ulink url="registry.7.html">registry.7</ulink>: Discussion about what is the Registry etc. You don't need it if you are already reading this.</simpara></listitem>
+				<listitem><simpara><ulink url="registry.5.html">registry.5</ulink>: Registry internals.</simpara></listitem>
+			</orderedlist>
+		</section>
+	</section>
+
+	
+	<section id="ecosystem"><title>Ecosystem Around the Registry</title>
+		<para>The objective of the Linux Registry is to help create a pervasive, ubiquitous configuration system. Without an ecosystem around, this is impossible. This section lists the work of some people that are helping to build this ecosystem.</para>
+		
+		<itemizedlist>
+			<listitem><simpara><ulink url="http://nss-registry.skumler.net">Users and Groups Name System Module for GLibC</ulink>, by Jens Andersen. This is a module that can be activated by the name system switch mechanism (<filename>/etc/nsswitch.conf</filename>) to let users and groups databases be stored in the Registry, instead of <filename>/etc/{passwd|shadow|groups}</filename>.</simpara></listitem>
+			<listitem>Daniel Lambea and Israel Bethencourt are writting patches for basic system tools, and will have soon a full Linux distribution ported to the Registry.</listitem>
+			<listitem><simpara><ulink url="http://www.germane-software.com/software/Libraries/registry">Ruby bindings</ulink>, by Sean Russel. If you are writting code in Ruby, and need an easy way to store/retrieve configuration/state data, this is for you.</simpara></listitem>
+			<listitem><simpara><ulink url="http://sourceforge.net/projects/jreg">JRegistry</ulink>, by Alexopoulos Charalampos, are Java bindings for the Registry API, and apparently a GUI for registry administration.</simpara></listitem>
+		</itemizedlist>
+		<para>All of them can be found on the <ulink url="https://lists.sourceforge.net/lists/listinfo/registry-list">Registry mailling list</ulink>.</para>
+	</section>
+	
+
+	<section id="screenshots"><title>Virtual Screenshots</title>
+		<para>The Registry can't produce screenshots, because it is just a library/API as you'll read bellow, but since everybody loves them, lets use some visual efects to show some Registry's concepts.</para>
+		<section id="system.hw"><title>Hardware Status Migrated Into the Registry</title>
+			<para>This tree was generated by the <command>hwconfKudzu-convert</command> program that converts the <filename>/etc/sysconfig/hwconf</filename> file into Registry's keys. It puts in evidence the mice detected in a laptop. The keys under <filename>system/hw/byClass/MOUSE/GenericMousePS2psaux</filename> have all hardware properties detected by <command>kudzu</command>. There is also a <filename>system/hw/byBus</filename> tree that contains symbolic links to the <filename>byClass</filename> tree, to facilitate key access.</para>
+			<graphic srccredit="system/hw" fileref="images/hw.png" label="system/hw view" align="center"/>
+		</section>
+		
+		<section id="system.filesystems"><title>Filesystems Table Into the Registry</title>
+			<para><command>fstab-convert</command> created this <filename>system/filesystems</filename> tree showed here, based on <filename>/etc/fstab</filename>. A unique identifier was calculated for each filesystem, and a key name generated. <filename>system/filesystems/mntwork</filename> is in evidence, showing the <filename>/mnt/work</filename> filesystem. Bellow we can see standard key names for this filesystem properties. An example is <filename>system/filesystems/mntwork/mpoint</filename> that contains the value <emphasis>/mnt/work</emphasis>, or <filename>system/filesystems/mntwork/type</filename> that contains <emphasis>ext2</emphasis>.</para>
+			<graphic srccredit="system/filesystems" fileref="images/fstab.png" label="system/filesystems view" align="center"/>
+		</section>
+
+		<section id="xfree"><title>XFree Configurations at the Registry</title>
+			<para>All higher level software keys are located under <filename>system/sw</filename>, as showed above for XFree86 configuration. Pay attention on how is programatically easy to access and change XFree configration, without any <filename>/etc/X11/XF86Config</filename> parsing effort, when using the registry. XFree will look for its keys under <filename>system/sw/XFree/current</filename> which is a symbolic link to <filename>system/sw/XFree/handmade</filename>. This is an example on how the high level usage of symbolic links into the registry provides a lot of flexibility.</para>
+			<graphic srccredit="system/sw/XFree" fileref="images/xfree.png" label="system/sw/XFree view" align="center"/>
+		</section>
+		
+		<section id="edit"><title>Easily Editing Keys in the Registry</title>
+			<para>The <command>rg edit</command> command provides an easy way to edit a group of keys using your prefered editor. It will dump the selected keys into an XML representation, and run the editor to let the user edit them. After user modifications, it will update, remove or include the keys based on the modified XML file. This real screenshot shows me using <command>kedit</command> to modify the XFree configuration keys related to the monitor.</para>
+			<graphic srccredit="rg edit" fileref="images/rgedit.png" label="rg edit command" align="center"/>
+		</section>
+	</section>
+	
+	&society;
+	
+	<section id="needs"><title>Why Linux/UNIX/*BSD Need a Registry</title>
+		<para>Look into <filename>/etc/fstab</filename> file. Now look into <filename>/etc/modules.conf</filename>, <filename>/etc/passwd</filename>, <filename>/etc/ssh/sshd_config</filename>, <filename>/etc/httpd/conf/httpd.conf</filename>. I see here two terrible problems:</para>
+		<orderedlist numeration="arabic">
+			<listitem><para>They don't have a common file format.</para></listitem>
+			<listitem><para>Their localization in the filesystem may be different from Linux distribution to distribution.</para></listitem>
+		</orderedlist>
+		
+		<para>These 2 issues leverages other problems:</para>
+		
+		<orderedlist numeration="arabic">
+			<listitem><para>When two different softwares want to integrate themselves, it is programatically very hard to read, understand and correctly change its partner's configuration file. Think about installing a third-party video driver in XFree86, a new Apache plug-in, etc, and letting this new piece of software do the integration automatically, instead of the sysadmin <command>vi</command> the configuration file, understand and change it in the right way. So basic software integration is a pain today for ISVs (Independent Software Vendors).</para></listitem>
+			<listitem><para>A system administrator must know all these formats.</para></listitem>
+			<listitem><para>There is no way to know today what was changed in a specific configuration file. If <filename>/etc/shadow</filename> file time changes, there is no way to know if the change was related to nobody's or root's record.</para></listitem>
+			<listitem><para>A software developer must waste a lot of time to write the plumbing code for configuration file parsing etc.</para></listitem>
+			<listitem><para>High-level system administration GUIs (webmin, redhat-config-*, SuSE's YAST, etc) are just a dream today. They can never track successfully all changes that happens in the format of the configuration files of such a rich diversity of Open Source software (<filename>httpd.conf</filename>, <filename>smb.conf</filename>, <filename>modules.conf</filename>, <filename>fstab</filename>, etc, etc, etc). The approach of some of them is to keep the configuration ideas in a private database and regenerate the specific configuration file whenever a change happens in this database. Welcome to the inconsistency nightmare.</para></listitem>
+			<listitem><para>Different distributions may put different software configuration in different places with differente formats. A regular SuSE system administrator, for example, will be lost when asked to work in a Debian or Slackware system. Think about the most primitive example: network configuration parameters. Each distro has its own approach.</para></listitem>
+		</orderedlist>
+	
+		<para>Other OSes solved this problem centralizing their configurations, and creating a framework to access them. Configurations then are no more represented by 'configuration files', but by <emphasis>key-value pairs</emphasis> organized in a structured tree commited to some naming convetions.</para>
+		<para>To achieve multi-vendor/provider consistent software integration, and ease of administration across heterogeneous Linux distributions,  Linux needs a Registry.</para>
+	
+	</section>
+
+	&generics;
+
+	<section id="adoption"><title>Registry Adoption by Legacy System Software</title>
+		<para>The benefits of the Registry will be felt only when configurations like those under <filename>/etc</filename> will move into it. It is expected that this will take time, but awareness should be done by the community to speed the process.</para>
+		<para>Experienced Unix sysadmins seems (and were expected to be) sceptical about a registry on Linux, even when the Linux Registry tries to address other OSes registry's problems (centralization, security, consistency). But it is a truly required OS component from a good architecture perspective, and it can solve most of the Linux software integration issues, when adopted.</para>
+		<para>The registry is expected to be adopted by developers of high-level software applications. Then by some Linux distribution specific admin tools, like redhat-config-network, then finally by main OS programs and libraries, like <command>/sbin/init</command>, PAM, <command>/bin/mount</command>, etc.</para>
+	</section>
+		
+	<section id="rgcmd"><title>The <command>rg</command> Command</title>
+		&rgcmd;
+		&rgexample;
+	</section>
+	
+	&api;
+	
+	<!--section id="internals"><title>Registry Internals</title>
+		&storage;
+	</section-->
+	
+	<section id="helping"><title>Supporting the Linux Registry</title>
+		<para>Help wanted:</para>
+		<orderedlist>
+			<listitem><simpara>Making the documentation more convincent.</simpara></listitem>
+			<listitem><simpara>English corrections to the documentation.</simpara></listitem>
+			<listitem><simpara>Writting patches to legacy software like <command>mount</command>, <command>glibc</command>, <command>init</command>, etc to support the Registry.</simpara></listitem>
+			<listitem><simpara>Improving the API with more methods.</simpara></listitem>
+			<listitem><simpara>Advertising and advocating the project.</simpara></listitem>
+		</orderedlist>
+	</section>
+	
+	<appendix id="about"><title>About this Document</title>
+		<para>This document must be distributed under the terms of <ulink url="http://www.gnu.org/licenses/fdl.html">GNU Free Documentation License</ulink>.</para>
+		<para>This document was written in DocBook XML format, and is a wrapper for Registry's man pages with some addons.</para>
+		<para>Copyright 2004, Avi Alkalay.</para>
+	</appendix>
+</article>
