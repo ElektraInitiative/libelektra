@@ -27,8 +27,8 @@ $LastChangedBy$
 #define KDBPRIVATE_H
 
 /* Registry data directories */
-#define RG_DB_SYSTEM            "/etc/kdb"
-#define RG_DB_USER              ".kdb"   /* $HOME/.kdb */
+#define KDB_DB_SYSTEM            "/etc/kdb"
+#define KDB_DB_USER              ".kdb"   /* $HOME/.kdb */
 
 
 

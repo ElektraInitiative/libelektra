@@ -97,7 +97,7 @@ extern int errno;
  * This is the class that accesses the storage backend. When writing a new
  * backend, these are the methods you'll have to reimplement:
  * kdbGetKey(), kdbSetKey(), kdbStatKey(), kdbRemove(), kdbRename(),
- * kdbGetChildKeys()
+ * kdbGetKeyChildKeys()
  *
  * And methods that is suggested to reimplement (but not needed) if you want
  * them to get the benefits of your new backend: kdbOpen(), kdbClose(),
@@ -171,7 +171,7 @@ size_t keyGetSerializedSize(const Key *key) {
 	size=5+sizeof(u_int8_t)+1; /* RG000\nT\n */
 	if (key->comment) size+=strblen(key->comment);
 	size++;
-	tmp=keyGetDataSize(key);
+	tmp=key->dataSize;
 	size+=tmp;
 	return size;
 }
@@ -400,7 +400,7 @@ int handleOldKeyFileVersion(Key *key,FILE *input,u_int16_t nversion) {
 				return 0;
 			}
 
-			if (keyGetType(key) <= KEY_TYPE_BINARY) {
+			if (key->type <= KEY_TYPE_BINARY) {
 				/* Binary data. Unencode. */
 				char *unencoded=0;
 				size_t unencodedSize;
@@ -550,7 +550,7 @@ int keyFileUnserialize(Key *key,FILE *input) {
 	}
 
 	/* TODO: test this.... */
-	if (keyGetType(key) >= KEY_TYPE_STRING) {
+	if (key->type >= KEY_TYPE_STRING) {
 		if (UTF8Engine(UTF8_FROM,&data,&dataSize)) {
 			free(data);
 			return -1;
@@ -667,10 +667,10 @@ int keyFileSerialize(Key *key, FILE *output) {
 	fputs("<DATA>\n",output);
 	fflush(output);
 
-	dataSize=keyGetDataSize(key);
+	dataSize=key->dataSize;
 	if (dataSize) {
 		/* There is some data to write */
-		if (keyGetType(key) >= KEY_TYPE_STRING) {
+		if (key->type >= KEY_TYPE_STRING) {
 			/* String or similar type of value */
 			if (kdbNeedsUTF8Conversion()) {
 				size_t convertedDataSize=key->dataSize;
@@ -707,7 +707,7 @@ int keyFileSerialize(Key *key, FILE *output) {
  * @return number of bytes written to the buffer, or 0 on error
  * @ingroup internals
  */
-size_t keyCalcRelativeFileName(Key *key,char *relativeFileName,size_t maxSize) {
+size_t keyCalcRelativeFileName(const Key *key,char *relativeFileName,size_t maxSize) {
 	if (!key || !keyIsInitialized(key)) {
 		errno=KDB_RET_UNINITIALIZED;
 		return 0;
@@ -816,27 +816,25 @@ int keyFromStat(Key *key,struct stat *stat) {
  * @return number of bytes written to the buffer, or 0 on error
  * @ingroup internals
  */
-size_t kdbGetFilename(Key *forKey,char *returned,size_t maxSize) {
+size_t kdbGetFilename(const Key *forKey,char *returned,size_t maxSize) {
 	size_t length=0;
 
 	switch (keyGetNamespace(forKey)) {
 		case KEY_NS_SYSTEM: {
 			/* Prepare to use the 'system/ *' database */
-			strncpy(returned,RG_DB_SYSTEM,maxSize);
+			strncpy(returned,KDB_DB_SYSTEM,maxSize);
 			length=strlen(returned);
 			break;
 		}
 		case KEY_NS_USER: {
 			/* Prepare to use the 'user:????/ *' database */
 			struct passwd *user=0;
-			char userName[USER_NAME_SIZE];
 
-			length=keyGetOwner(forKey,userName,sizeof(userName));
-			if (!length) strncpy(userName,getenv("USER"),sizeof(userName));
-
-			user=getpwnam(userName);
-                        if (!user) return 0; /* propagate errno */
-			length=snprintf(returned,maxSize,"%s/%s",user->pw_dir,RG_DB_USER);
+			if (forKey->userDomain) user=getpwnam(forKey->userDomain);
+			else user=getpwnam(getenv("USER"));
+			
+			if (!user) return 0; /* propagate errno */
+			length=snprintf(returned,maxSize,"%s/%s",user->pw_dir,KDB_DB_USER);
 			break;
 		}
 		default: {
@@ -1050,11 +1048,15 @@ int kdbGetKeyByParentKey(const Key *parent, const char *baseName, Key *returned)
  * @par Example:
  * @code
 char errormsg[300];
-KeySet myConfig;
-ksInit(&myConfig);
+KeySet *myConfig;
+Key *key;
+
+key=keyNew("system/sw/MyApp",KEY_SWITCH_END);
+myConfig=ksNew();
 
 kdbOpen();
-rc=kdbGetChildKeys("system/sw/MyApp", &myConfig, KDB_O_RECURSIVE);
+rc=kdbGetKeyChildKeys(key, myConfig, KDB_O_RECURSIVE);
+keyDel(key); // free this resource.... we'll use it later
 kdbClose();
 
 // Check and handle propagated error
@@ -1072,12 +1074,12 @@ if (rc) switch (errno) {
 		break;
 }
 
-ksRewind(&myConfig); // go to begining of KeySet
-Key *key=ksNext(&myConfig);
+ksRewind(myConfig); // go to begining of KeySet
+key=ksNext(myConfig);
 while (key) {
 	// do something with each key . . .
 
-	key=ksNext(&myConfig); // next key
+	key=ksNext(myConfig); // next key
 }
  * @endcode
  *
@@ -1085,6 +1087,7 @@ while (key) {
  * @param returned the (pre-initialized) KeySet returned with all keys found
  * @param options ORed options to control approaches
  * @see #KDBOptions
+ * @see kdbGetChildKeys() for a convenience method
  * @see ksLookupByName(), ksLookupRE(), ksLookupByValue()
  * @see ksSort()
  * @see commandList() code in kdb command for usage example
@@ -1094,11 +1097,10 @@ while (key) {
  * @ingroup kdb
  *
  */
-int kdbGetChildKeys(const char *parentName, KeySet *returned, unsigned long options) {
-	char *realParentName=0;
-	size_t parentNameSize;
+int kdbGetKeyChildKeys(const Key *parentKey, KeySet *returned, unsigned long options) {
+	size_t parentNameSize=keyGetFullNameSize(parentKey);
+	char realParentName[parentNameSize];
 	DIR *parentDir;
-	Key *parentKey;
 	char buffer[MAX_PATH_LENGTH];
 	struct dirent *entry;
 
@@ -1107,7 +1109,6 @@ int kdbGetChildKeys(const char *parentName, KeySet *returned, unsigned long opti
 		- Check if it is a directory. Open it
 		- Browse, read and include in the KeySet
 	*/
-	parentKey=keyNew(parentName);
 	kdbGetFilename(parentKey,buffer,sizeof(buffer));
 	parentDir=opendir(buffer);
 
@@ -1115,8 +1116,6 @@ int kdbGetChildKeys(const char *parentName, KeySet *returned, unsigned long opti
 	 * Propagate errno */
 	if (!parentDir) return -1;
 
-	parentNameSize=keyGetFullNameSize(parentKey);
-	realParentName=realloc(realParentName,parentNameSize);
 	keyGetFullName(parentKey,realParentName,parentNameSize);
 
 	while ((entry=readdir(parentDir))) {
@@ -1140,7 +1139,8 @@ int kdbGetChildKeys(const char *parentName, KeySet *returned, unsigned long opti
 		}
 		if (UTF8Engine(UTF8_FROM,&transformedName,&keyNameSize)) {
 			free(transformedName);
-			return -1;
+			closedir(parentDir);
+			return -1;  /* propagate errno */
 		}
 
 		/* Copy the entire transformed key name to our final buffer */
@@ -1162,15 +1162,10 @@ int kdbGetChildKeys(const char *parentName, KeySet *returned, unsigned long opti
 		if (keyIsDir(keyEntry)) {
 			if (options & KDB_O_RECURSIVE) {
 				KeySet *children;
-				char *fullName;
-				size_t fullNameSize;
-
-				fullName=malloc(fullNameSize=keyGetFullNameSize(keyEntry));
-				keyGetFullName(keyEntry,fullName,fullNameSize);
 
 				children=ksNew();
 				/* Act recursively, without sorting. Sort in the end, once */
-				kdbGetChildKeys(fullName,children, ~(KDB_O_SORT) & options);
+				kdbGetKeyChildKeys(keyEntry,children, ~(KDB_O_SORT) & options);
 
 				/* Insert the current directory key in the returned list before its children */
 				if (options & KDB_O_DIR) ksAppend(returned,keyEntry);
@@ -1178,14 +1173,14 @@ int kdbGetChildKeys(const char *parentName, KeySet *returned, unsigned long opti
 
 				/* Insert the children */
 				ksAppendKeys(returned,children);
-				free(fullName);
+				ksDel(children);
 			} else if (options & KDB_O_DIR) ksAppend(returned,keyEntry);
 				else keyDel(keyEntry);
 		} else if (options & KDB_O_NOVALUE) keyDel(keyEntry);
 			else ksAppend(returned,keyEntry);
 	} /* while(readdir) */
 	
-	keyDel(parentKey);
+	closedir(parentDir);
 
 	if ((options & (KDB_O_SORT)) && (ksGetSize(returned) > 1))
 		ksSort(returned);
@@ -1195,8 +1190,22 @@ int kdbGetChildKeys(const char *parentName, KeySet *returned, unsigned long opti
 
 
 
-
-
+/**
+ * This method is similar and calls kdbGetKeyChildKeys(). It is provided for
+ * convenience.
+ * @ingroup kdb
+ */
+int kdbGetChildKeys(const char *parentName, KeySet *returned, unsigned long options) {
+	Key *parentKey;
+	int rc;
+	
+	parentKey=keyNew(parentName,KEY_SWITCH_END);
+	rc=kdbGetKeyChildKeys(parentKey,returned,options);
+	
+	keyDel(parentKey);
+	
+	return rc;
+}
 
 
 
@@ -1431,7 +1440,7 @@ int kdbSetKey(Key *key) {
 	/* Enough of checking. Real write now, with a bit of other checks :-) */
 
 	if (keyIsLink(key)) {
-		char *targetName=0;
+		char targetName[MAX_PATH_LENGTH];
 		Key target;
 		int rc;
 
@@ -1444,17 +1453,15 @@ int kdbSetKey(Key *key) {
 		*/
 
 		keyInit(&target);
-		if (key->data) targetName=malloc(key->dataSize);
-		keyGetLink(key,targetName,key->dataSize);
 
 		/* Setting the name will let us know if this is a valid keyname */
-		if (keySetName(&target,targetName)) {
+		if (keySetName(&target,key->data)) {
 			/* target has a valid key name */
-			targetName=realloc(targetName,MAX_PATH_LENGTH);
-			kdbGetFilename(&target,targetName,MAX_PATH_LENGTH);
+			kdbGetFilename(&target,targetName,sizeof(targetName));
 			keyClose(&target);
 		} else if (errno==KDB_RET_INVALIDKEY) {
 			/* Is an invalid key name. So treat it as a regular file */
+			strncpy(targetName,key->data,sizeof(targetName));
 			keyClose(&target); /* get rid of invalid stuff */
 		} else {
 			keyClose(&target); /* get rid of invalid stuff */
@@ -1466,19 +1473,18 @@ int kdbSetKey(Key *key) {
 
 		/* TODO: handle null targetName */
 		rc=symlink(targetName,keyFileName);
-		free(targetName);
 
 		return rc; /* propagate errno */
 	} else if (keyIsDir(key)) {
-		if (mkdir(keyFileName,keyGetAccess(key))<0 &&
+		if (mkdir(keyFileName,key->access)<0 &&
 				errno!=EEXIST) return -1;
 	} else {
 		/* Try to open key file with its full file name */
 		/* TODO: Make it more "transactional" without truncating */
-		fd=open(keyFileName,O_CREAT | O_RDWR | O_TRUNC, keyGetAccess(key));
+		fd=open(keyFileName,O_CREAT | O_RDWR | O_TRUNC, key->access);
 		/* TODO: lock file here */
 		if (fd==-1) return -1;
-		if (getuid() == 0) fchown(fd,keyGetUID(key),keyGetGID(key));
+		if (getuid() == 0) fchown(fd,key->uid,key->gid);
 		if (!(output=fdopen(fd,"w+"))) return -1;
 		if (keyFileSerialize(key,output)) {
 			fclose(output);
@@ -1599,15 +1605,15 @@ int kdbLink(const char *oldPath, const char *newKeyName) {
  *
  * @par Example:
  * @code
-KeySet myConfigs;
+KeySet *myConfigs;
 
-ksInit(&myConfigs);
-kdbGetChildKeys("system/sw/MyApp",&myConfigs,KDB_O_ALL);
+myConfigs=ksNew();
+kdbGetChildKeys("system/sw/MyApp",myConfigs,KDB_O_RECURSIVE | KDB_O_SORT);
 
 // use the keys . . . .
 
 // now monitor any key change
-ksRewind(&myConfigs);
+ksRewind(myConfigs);
 while (1) {
 	Key *changed=0;
 	char keyName[300];
@@ -1615,11 +1621,11 @@ while (1) {
 	u_int32_t diff;
 
 	// block until any change in key value or comment . . .
-	diff=kdbMonitorKeys(&myConfigs,
+	diff=kdbMonitorKeys(myConfigs,
 		KEY_SWITCH_VALUE | KEY_SWITCH_COMMENT,
 		0,0); // ad-infinitum
 
-	changed=ksCurrent(&myConfigs);
+	changed=ksCurrent(myConfigs);
 	keyGetName(changed,keyName,sizeof(keyName));
 
 	switch (diff) {
@@ -1634,6 +1640,8 @@ while (1) {
 			printf("Key %s has changed its value to %s\n",keyName,keyData);
 	}
 }
+
+ksDel(myConfigs);
  * @endcode
  *
  * @see kdbMonitorKey()

@@ -102,15 +102,15 @@ size_t strblen(const char *s) {
  * A practical way to fully create a Key object in one step.
  * This function tries to mimic the C++ way for constructors.
  *
- * Due to ABI compatibility, the @p Key structure is only declared in kdb.h,
- * and not defined. So you can only declare @p pointers to @p Keys in your
+ * Due to ABI compatibility, the @p Key structure is not defined kdb.h,
+ * only declared. So you can only declare @p pointers to @p Keys in your
  * program, and allocate and free memory for them with keyNew()
  * and keyDel() respectively.
  * See http://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html#AEN135
  * 
  * You can call it in many different ways depending on the attribute tags you
  * pass as parameters. Tags are represented as the #KeySwitch values,
- * and they tell keyNew() which Key attribute comes next.
+ * and tell keyNew() which Key attribute comes next.
  * 
  * The simplest way to call it is with no tags, only a key name. See example bellow.
  * 
@@ -141,15 +141,13 @@ size_t strblen(const char *s) {
  *   tag in conjunction with any other, which will make keyNew() modify
  *   only some attributes of the retrieved key, and return it for you.
  *   Order of parameters do matter. If the internal call to kdbGetKey()
- *   was unssuccessful, you'll still have a valid, but flaged, key.
+ *   failed, you'll still have a valid, but flaged, key.
  *   Check with keyGetFlag(), and @p errno. You will have to kdbOpen()
  *   before using keyNew() with this tag.
  * - @p KEY_SWITCH_END \n
  *   Must be the last parameter passed to keyNew(). It is allways
  *   required, unless the @p keyName is NULL too.
  *   
- * There is the @p keyFree() macro if you prefer this method name.
- * 
  * @par Example:
  * @code
 KeySet *ks=ksNew();
@@ -204,8 +202,11 @@ ksDel(ks);
 kdbClose();
  * @endcode
  *
+ * @param keyName a valid name to the key, or NULL to get a simple
+ * 	initialized, but really empty, object 
  * @see keyDel()
- * @return a pointer to a new allocated and initialized Key object
+ * @return a pointer to a new allocated and initialized Key object,
+ * 	or NULL if an invalid @p keyName was passed (see keySetName()).
  */ 
 Key *keyNew(const char *keyName, ...) {
 	va_list va;
@@ -223,7 +224,10 @@ Key *keyNew(const char *keyName, ...) {
 		size_t nameSize;
 		
 		nameSize=keySetName(key,keyName);
-		if (! nameSize) keySetFlag(key);
+		if (! nameSize) {
+			free(key);
+			return 0;
+		}
 		
 		va_start(va,keyName);
 		
@@ -297,6 +301,8 @@ Key *keyNew(const char *keyName, ...) {
  * deleted with keyDel().
  * It will keyClose() and free() the @p key pointer.
  *
+ * There is the @p keyFree() macro if you prefer this method name.
+ * 
  * @see keyNew()
  * @return whatever is returned by keyClose()
  *
@@ -351,7 +357,8 @@ int keyIsInitialized(const Key *key) {
  * A private copy of the key name will be stored, and the @p newName
  * parameter can be freed after this call.
  *
- * @return size in bytes of this new key name. When 0 is returned, or @p newName is empty, or something wrong happened and @p errno is propagated
+ * @return size in bytes of this new key name, or 0 if @p newName is empty,
+ * 	or something wrong happened and @p errno is set.
  * @param key the key object
  * @param newName the new key name
  * @see keyNew()
@@ -875,7 +882,7 @@ size_t keyGetFullRootName(const Key *key, char *returned, size_t maxSize) {
 		return 0;
 	}
 	
-	userSize = keyGetRootNameSize (key);
+	userSize = keyGetRootNameSize(key);
 	strncpy(returned,key->key, userSize); /* copy "user" or "system" */
 	if (keyIsUser(key)) {
 		cursor = returned + userSize;
@@ -2185,12 +2192,12 @@ size_t keyToStream(const Key *key, FILE* stream, unsigned long options) {
 		return 0;
 	}
 
-	if (options & KDB_O_FULLNAME)
-		keyGetFullName(key,buffer,sizeof(buffer));
-	else keyGetName(key,buffer,sizeof(buffer));
-
 	/* Write key name */
-	written+=fprintf(stream,"<key name=\"%s\"", buffer);
+	if (options & KDB_O_FULLNAME) {
+		keyGetFullName(key,buffer,sizeof(buffer));
+		written+=fprintf(stream,"<key name=\"%s\"", buffer);
+	} else written+=fprintf(stream,"<key name=\"%s\"", key->key);
+
 
 	if (options & KDB_O_CONDENSED) written+=fprintf(stream," ");
 	else written+=fprintf(stream,"\n     ");
@@ -2199,12 +2206,11 @@ size_t keyToStream(const Key *key, FILE* stream, unsigned long options) {
 
 	/* Key type */
 	if (options & KDB_O_NUMBERS) {
-		written+=fprintf(stream,"type=\"%d\"", keyGetType(key));
+		written+=fprintf(stream,"type=\"%d\"", key->type);
 	} else {
-		u_int8_t type=keyGetType(key);
 		buffer[0]=0;
 
-		switch (type) {
+		switch (key->type) {
 			case KEY_TYPE_STRING:
 				strcpy(buffer,"string");
 				break;
@@ -2222,7 +2228,7 @@ size_t keyToStream(const Key *key, FILE* stream, unsigned long options) {
 				break;
 		}
 		if (buffer[0]) written+=fprintf(stream,"type=\"%s\"", buffer);
-		else written+=fprintf(stream,"type=\"%d\"", type);
+		else written+=fprintf(stream,"type=\"%d\"", key->type);
 	}
 
 
@@ -2230,51 +2236,50 @@ size_t keyToStream(const Key *key, FILE* stream, unsigned long options) {
 		struct passwd *domainPwd=0;
 		int uidMatch,gidMatch;
 		
-		keyGetOwner(key,buffer,sizeof(buffer));
-		domainPwd=getpwnam(buffer);
-		pwd=getpwuid(keyGetUID(key));
-		grp=getgrgid(keyGetGID(key));
+		domainPwd=getpwnam(key->userDomain);
+		pwd=getpwuid(key->uid);
+		grp=getgrgid(key->gid);
 		
-		uidMatch=(keyGetUID(key) == domainPwd->pw_uid);
-		gidMatch=(keyGetGID(key) == domainPwd->pw_gid);
+		uidMatch=(key->uid == domainPwd->pw_uid);
+		gidMatch=(key->gid == domainPwd->pw_gid);
 		
 		if (options & KDB_O_FULLUGID) {
 			if (pwd && !(options & KDB_O_NUMBERS))
 				written+=fprintf(stream," uid=\"%s\"",pwd->pw_name);
-			else written+=fprintf(stream,   " uid=\"%d\"",keyGetUID(key));
+			else written+=fprintf(stream,   " uid=\"%d\"",key->uid);
 		
 			if (grp && !(options & KDB_O_NUMBERS))
 				written+=fprintf(stream," gid=\"%s\"",grp->gr_name);
-			else  written+=fprintf(stream,   " gid=\"%d\"",keyGetGID(key));
+			else  written+=fprintf(stream,   " gid=\"%d\"",key->gid);
 		} else {
 			if (!uidMatch) {
 				if (pwd && !(options & KDB_O_NUMBERS))
 					written+=fprintf(stream," uid=\"%s\"",pwd->pw_name);
-				else written+=fprintf(stream,   " uid=\"%d\"",keyGetUID(key));
+				else written+=fprintf(stream,   " uid=\"%d\"",key->uid);
 			}
 
 			if (!gidMatch) {
 				if (grp && !(options & KDB_O_NUMBERS))
 					written+=fprintf(stream," gid=\"%s\"",grp->gr_name);
-				else written+=fprintf(stream,   " gid=\"%d\"",keyGetGID(key));
+				else written+=fprintf(stream,   " gid=\"%d\"",key->gid);
 			}
 		}
 	} else {
 		if (!(options & KDB_O_NUMBERS)) {
-			pwd=getpwuid(keyGetUID(key));
-			grp=getgrgid(keyGetGID(key));
+			pwd=getpwuid(key->uid);
+			grp=getgrgid(key->gid);
 		}
 
 		/* UID, GID, mode */
 		if (pwd) written+=fprintf(stream," uid=\"%s\"",pwd->pw_name);
-		else  written+=fprintf(stream,   " uid=\"%d\"",keyGetUID(key));
+		else  written+=fprintf(stream,   " uid=\"%d\"",key->uid);
 
 		if (grp) written+=fprintf(stream," gid=\"%s\"",grp->gr_name);
-		else  written+=fprintf(stream,   " gid=\"%d\"",keyGetGID(key));
+		else  written+=fprintf(stream,   " gid=\"%d\"",key->gid);
 	}
 
 	written+=fprintf(stream," mode=\"0%o\">",
-		keyGetAccess(key) & (S_IRWXU|S_IRWXG|S_IRWXO));
+		key->access & (S_IRWXU|S_IRWXG|S_IRWXO));
 
 
 
@@ -2834,7 +2839,7 @@ Key *ksLookupByName(KeySet *ks, const char *name, unsigned long options) {
 	while ((current=ksNext(ks))) {
 		if (current->key == name) return current; /* for NULLs */
 		
-		currentNameSize=keyGetNameSize(current);
+		currentNameSize=current->key?strblen(current->key):0;
 		if (currentNameSize != nameSize) continue;
 		
 		if ((current->key && name)) {
@@ -3145,7 +3150,7 @@ size_t ksInsert(KeySet *ks, Key *toInsert) {
 /**
  * Transfers all keys from @p toInsert to the begining of @p ksa.
  *
- * After this call, @p toInsert will be empty.
+ * After this call, @p toInsert will be empty and can be deleted with ksDel().
  *
  * @return the size of the KeySet after insertion
  * @param ks the KeySet that will receive the keys
@@ -3203,7 +3208,8 @@ size_t ksAppend(KeySet *ks, Key *toAppend) {
 /**
  * Transfers all @p toAppend contained keys to the end of the @p ks.
  *
- * After this call, the @p toAppend KeySet will be empty.
+ * After this call, the @p toAppend KeySet will be empty, and can be
+ * deleted with ksDel().
  *
  * @return the size of the KeySet after transfer
  * @param ks the KeySet that will receive the keys

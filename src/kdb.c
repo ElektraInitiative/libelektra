@@ -668,14 +668,13 @@ int commandLink() {
  * @endcode
  *
  * @see kdbGetRootKeys()
- * @see kdbGetChildKeys()
+ * @see kdbGetKeyChildKeys()
  * @see keyToStream()
  * @see ksToStream()
  * @see commandExport() for the 'kdb export' command
  */
 int commandList() {
-	KeySet *ks;
-	Key *key=0;
+	KeySet *ks; /* this is the container for all keys we'll collect bellow */
 	int ret;
 
 	ks=ksNew();
@@ -688,33 +687,32 @@ int commandList() {
 		kdbGetRootKeys(roots);
 
 		if (argRecursive) {
-			key=ksHead(roots);
-			while (key) {
+			Key *walker=ksHead(roots);
+			
+			while (walker) {
 				/* walk root by root, retrieve entire subtree
 				 * and append it to ks
 				 */
-				char rootName[200];
-				KeySet *thisRoot;
-				Key *temp;
+				KeySet *thisRoot=0;
+				Key *temp=0;
 
 				thisRoot=ksNew();
-				keyGetFullName(key,rootName,sizeof(rootName));
 				
-				if (argValue) ret=kdbGetChildKeys(rootName,thisRoot,
+				if (argValue) ret=kdbGetKeyChildKeys(walker,thisRoot,
 					(argSort?KDB_O_SORT:0) | (argRecursive?KDB_O_RECURSIVE:0) |
 					KDB_O_DIR | (argAll?KDB_O_INACTIVE:0) | KDB_O_NFOLLOWLINK);
-				else ret=kdbGetChildKeys(rootName,thisRoot,
+				else ret=kdbGetKeyChildKeys(walker,thisRoot,
 					(argSort?KDB_O_SORT:0) | KDB_O_STATONLY |
 					(argRecursive?KDB_O_RECURSIVE:0) | KDB_O_DIR |
 					(argAll?KDB_O_INACTIVE:0) | KDB_O_NFOLLOWLINK);
 				
-				/* A hach to transfer a key from a keyset to another.
+				/* A hack to transfer a key from a keyset to another.
 				 * Don't do this at home.
 				 */
-				temp=keyNext(key);
-				ksAppend(ks,key);
+				temp=keyNext(walker);
+				ksAppend(ks,walker);
 				ksAppendKeys(ks,thisRoot);
-				key=temp;
+				walker=temp;
 				
 				ksDel(thisRoot);
 			}
@@ -735,10 +733,13 @@ int commandList() {
 			/* We got an error. Check if it is because its not a folder key */
 			if (errno==ENOTDIR) {
 				/* We still have a chance, since there is something there */
-				key=keyNew(argKeyName,KEY_SWITCH_END);
+				Key *key=keyNew(argKeyName,KEY_SWITCH_END);
+				
 				if (argValue) ret=kdbGetKey(key);
 				else ret=kdbStatKey(key);
-				if (ret) {
+				
+				if (ret == 0) ksAppend(ks,key);
+				else {
 					/* There is absolutelly nothing there */
 					char error[200];
 
@@ -749,10 +750,11 @@ int commandList() {
 					perror(error);
 					return ret;
 				}
+				
 			} else { /* A real error */
 				char error[200];
 				
-				ksClose(ks);
+				ksDel(ks);
 
 				sprintf(error,"kdb ls: %s",argKeyName);
 				perror(error);
@@ -762,24 +764,27 @@ int commandList() {
 	}
 
 	if (argShow) {
+		size_t listSize=ksGetSize(ks);
+		
 		if (argXML) {
-			if (key) keyToStream(key,stdout,
+			if (listSize == 1) keyToStream(ksHead(ks),stdout,
 				(argFullName?(KDB_O_FULLNAME | KDB_O_FULLUGID):0));
-			else if (ksGetSize(ks))
+			else if (listSize > 1)
 				ksToStream(ks,stdout,KDB_O_XMLHEADERS |
 					(argFullName?(KDB_O_FULLNAME | KDB_O_FULLUGID):0));
 		} else {
-			if (key) listSingleKey(key);
-			else if (ksGetSize(ks)) {
+			if (listSize == 1) listSingleKey(ksHead(ks));
+			else if (listSize > 1) {
+				Key *walker;
+			
 				ksRewind(ks);
-				while ((key=ksNext(ks)))
-					listSingleKey(key);
+				while ((walker=ksNext(ks)))
+					listSingleKey(walker);
 			}
 		}
 	}
 
 	ksClose(ks);
-	if (key) keyDel(key);
 	return 0;
 }
 

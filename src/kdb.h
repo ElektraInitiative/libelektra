@@ -384,7 +384,8 @@ int kdbStatKey(Key *key);
 int kdbGetKey(Key *key);
 int kdbSetKey(Key *key);
 
-int kdbGetChildKeys(const char *parent, KeySet *returned, unsigned long options);
+int kdbGetKeyChildKeys(const Key *parentName, KeySet *returned, unsigned long options);
+int kdbGetChildKeys(const char *parentName, KeySet *returned, unsigned long options);
 int kdbGetRootKeys(KeySet *returned);
 
 int kdbSetKeys(KeySet *ks);
