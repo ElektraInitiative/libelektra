@@ -786,7 +786,7 @@ int kdbGetKeyChildKeys_bdb(const Key *parentKey, KeySet *returned, unsigned long
 		
 	/* Create a private cursor to not mess up threads
 	 * TODO: Check if BDB has some option to avoid this */
-	ret = db->db.keyValuePairs->cursor(db->db.keyValuePais, NULL, &cursor, 0);
+	ret = db->db.keyValuePairs->cursor(db->db.keyValuePairs, NULL, &cursor, 0);
 
 	memset(&parent,0,sizeof(parent));
 	parent.size=strblen(parentKey->key);

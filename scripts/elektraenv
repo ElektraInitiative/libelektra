@@ -46,7 +46,10 @@ readEnvTree() {
 	for stage in 1 2 3; do
 		echo "# Stage $stage"
 		$RG ls $1/env$stage 2>/dev/null | while read key; do
-			echo export `$RG get -s $key`
+			# This stuff is so complicated, with sed etc, because
+			# we need to superescape a '\$'
+			echo -n "export "
+			$RG get -s $key | sed -e 's/\([^\\]\)\\\$/\1\\\\\$/g;'
 		done
 	done
 
@@ -60,7 +63,7 @@ readEnvTree() {
 
 readEnvTree system/env > $FILE
 (echo; echo; echo) >> $FILE
-readEnvTree user/env >> $FILE
+readEnvTree user:$USER/env >> $FILE
 
 # Execute it
 [ -f $FILE ] && . $FILE
