@@ -48,6 +48,7 @@ $LastChangedBy$
 #define CMD_LINK      5
 #define CMD_EDIT      6
 #define CMD_LOAD      7
+#define CMD_SAVE      8
 
 #define ARGSIZE      30
 
@@ -168,6 +169,8 @@ int parseCommandLine(int argc, char *argv[]) {
 	else if (!strcmp(sargCommand,"edit")) argCommand=CMD_EDIT;
 	else if (!strcmp(sargCommand,"load")) argCommand=CMD_LOAD;
 	else if (!strcmp(sargCommand,"import")) argCommand=CMD_LOAD;
+	else if (!strcmp(sargCommand,"save")) argCommand=CMD_SAVE;
+	else if (!strcmp(sargCommand,"export")) argCommand=CMD_SAVE;
 	else {
 		fprintf(stderr,"Invalid subcommand\n");
 		exit(1);
@@ -620,6 +623,17 @@ int commandGet() {
 
 
 
+
+
+
+
+
+
+
+
+/*
+ * This function is completelly dependent on libxml.
+ */
 int processNode(KeySet *ks, xmlTextReaderPtr reader) {
 	xmlChar *nodeName=0;
 	xmlChar *buffer=0;
@@ -658,7 +672,7 @@ int processNode(KeySet *ks, xmlTextReaderPtr reader) {
 			struct passwd *pwd;
 			pwd=getpwnam(buffer);
 			if (pwd) keySetUID(newKey,pwd->pw_uid);
-			else fprintf(stderr,"rg: Invalid user %s. Ignoring\n", buffer);
+			else fprintf(stderr,"rg: Ignoring invalid user %s.\n", buffer);
 		}
 		xmlFree(buffer); buffer=0;
 
@@ -671,7 +685,7 @@ int processNode(KeySet *ks, xmlTextReaderPtr reader) {
 			struct group *grp;
 			grp=getgrnam(buffer);
 			if (grp) keySetGID(newKey,grp->gr_gid);
-			else fprintf(stderr,"rg: Invalid group %s. Ignoring\n",buffer);
+			else fprintf(stderr,"rg: Ignoring invalid group %s.\n",buffer);
 		}
 		xmlFree(buffer); buffer=0;
 		
@@ -728,26 +742,84 @@ int processNode(KeySet *ks, xmlTextReaderPtr reader) {
 }
 
 
-/* This function is completelly dependent on libxml */
-int ksFromXML(KeySet *ks,char *filename) {
+
+
+
+
+/*
+ * This function is completelly dependent on libxml.
+ * It is the workhorse for ksFromXML() and ksFromXMLfile()
+ */
+int ksFromXMLReader(KeySet *ks,xmlTextReaderPtr reader) {
+	int ret;
+	
+	ret = xmlTextReaderRead(reader); /* <keyset> */
+	ret = xmlTextReaderRead(reader); /* first <key> */
+	while (ret == 1) {
+		processNode(ks, reader);
+		ret = xmlTextReaderRead(reader);
+	}
+	xmlFreeTextReader(reader);
+	if (ret) fprintf(stderr,"rg: Failed to parse XML input\n");
+	
+	return ret;
+}
+
+
+
+
+
+
+
+
+int ksFromXML(KeySet *ks,int fd) {
+	xmlTextReaderPtr reader=0;
+	int ret;
+
+	reader=xmlReaderForFd(fd,"file:/tmp/imp.xml",0,0); /* a complete XML document is expected */
+	if (reader) {
+		ret=ksFromXMLReader(ks,reader);
+	} else {
+		printf("rg: Unable to open file descriptor %d for XML reading\n", fd);
+		return 1;
+	}
+	return ret;
+}
+
+
+
+
+
+
+
+
+
+
+
+int ksFromXMLfile(KeySet *ks,char *filename) {
 	xmlTextReaderPtr reader;
 	int ret;
 
 	reader = xmlNewTextReaderFilename(filename);
 	if (reader) {
-		ret = xmlTextReaderRead(reader); /* <keyset> */
-		ret = xmlTextReaderRead(reader); /* <key> (first) */
-		while (ret == 1) {
-			processNode(ks, reader);
-			ret = xmlTextReaderRead(reader);
-		}
-		xmlFreeTextReader(reader);
-		if (ret) printf("%s : failed to parse\n", filename);
+		ret=ksFromXMLReader(ks,reader);
 	} else {
-		printf("Unable to open %s\n", filename);
+		printf("rg: Unable to open %s for XML reading\n", filename);
+		return 1;
 	}
-	return 0;
+	return ret;
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -805,7 +877,7 @@ int commandEdit() {
 	   It is implemented in and for this program only.
            It is pretty reusable code, though.
 	*/
-	ksFromXML(&ksEdited,filename);
+	ksFromXMLfile(&ksEdited,filename);
 	remove(filename);
 	
 	ksCompare(&ks,&ksEdited,&toRemove);
@@ -824,18 +896,40 @@ int commandEdit() {
 }
 
 
+
+
+
 int commandLoad() {
 	KeySet ks;
-	FILE *xmlfile=0;
 
 	ksInit(&ks);
 	/* The command line parsing function will put the XML filename
 	   in the argKeyName global, so forget the variable name. */
-	if (*argKeyName) ksFromXML(&ks,argKeyName);
-	/* else process stdin */
+	if (argKeyName) ksFromXMLfile(&ks,argKeyName);
+	else ksFromXML(&ks,fileno(stdin) /* more elegant then just '0' */);
 
 	return registrySetKeys(&ks);
 }
+
+
+
+
+
+
+int commandSave() {
+	argSort=1;
+	argRecursive=1;
+	argAll=1;
+	argXML=1;
+	argShow=1;
+	argValue=1;
+	argFullName=1;
+	
+	/* Equivalent to 'rg ls -xRv*/
+	
+	return commandList();
+}
+
 
 
 int doCommand(int command) {
@@ -847,6 +941,7 @@ int doCommand(int command) {
 		case CMD_REMOVE: return commandRemove();
 		case CMD_EDIT: return commandEdit();
 		case CMD_LOAD: return commandLoad();
+		case CMD_SAVE: return commandSave();
 	}
 	return 0;
 }

@@ -27,15 +27,16 @@ $LastChangedBy$
 		
 		&author;
 		
-		<pubdate>2004-07-20</pubdate>
+		<pubdate>2004-07-25</pubdate>
 		
 		<revhistory>
 			<revision>
-				<revnumber>2004-07-20</revnumber>
-				<date>20 Jul 2004</date>
+				<revnumber>2004-07-25</revnumber>
+				<date>25 Jul 2004</date>
 				<authorinitials>avi</authorinitials>
 				<revdescription>
 					<itemizedlist>
+						<listitem><simpara>Added link to Regedit and its Berlios</simpara></listitem>
 						<listitem><simpara>Added links to Python bindings and Regedit.</simpara></listitem>
 					</itemizedlist>
 				</revdescription>
@@ -260,11 +261,11 @@ $LastChangedBy$
 		</section>
 
 	
-		<section id="ecosystem"><title>Ecosystem Around the Registry</title>
-			<para>The objective of the Linux Registry is to help create a pervasive, ubiquitous configuration system. Without an ecosystem around, this is impossible. This section lists the work of some people that are helping to build this ecosystem.</para>
+		<section id="ecosystem"><title>Building an Ecosystem</title>
+			<para>The objective of the Linux Registry Project is to help create a pervasive, ubiquitous configuration system. This is an entire ecosystem, much more than a piece of code. This section lists the work of some people that are helping to build it.</para>
 		
 			<itemizedlist>
-				<listitem><simpara><ulink url="http://www.livejournal.com/users/gregorburger/">Regedit GUI to edit the registry</ulink>, using the QT library, by Gregor Burger. There is also <ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628">RPM packages available.</ulink></simpara></listitem>
+				<listitem><simpara><ulink url="http://www.livejournal.com/users/gregorburger/">Regedit GUI to edit the registry</ulink>, using the QT library, by Gregor Burger. There is a <ulink url="http://developer.berlios.de/projects/tlr-regedit/">Berlios entry</ulink> with Subversion repository, and <ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628">RPM packages available.</ulink></simpara></listitem>
 				<listitem><simpara><ulink url="http://www.germane-software.com/software/Libraries/registry">Ruby bindings</ulink>, by Sean Russel. If you are writting code in Ruby, and need an easy way to store/retrieve configuration/state data, this is for you.</simpara></listitem>
 				<listitem><simpara><ulink url="http://acm.cs.uwec.edu/~lemkesr/">Python bindings</ulink>, by Scott Lemke.</simpara></listitem>
 				<listitem><simpara><ulink url="http://nss-registry.skumler.net">Users and Groups Name System Module for GLibC</ulink>, by Jens Andersen. This is a module that can be activated by the name system switch mechanism (<filename>/etc/nsswitch.conf</filename>) to let users and groups databases be stored in the Registry, instead of <filename>/etc/{passwd|shadow|groups}</filename>.</simpara></listitem>
