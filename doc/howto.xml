@@ -25,9 +25,19 @@ $LastChangedBy$
 		
 		&author;
 		
-		<pubdate>0.2.8 :: 2004-05-06</pubdate>
+		<pubdate>0.2.9 :: 2004-06-01</pubdate>
 		
 		<revhistory>
+			<revision>
+				<revnumber>0.2.9</revnumber>
+				<date>01 Jun 2004</date>
+				<authorinitials>avi</authorinitials>
+				<revdescription>
+					<itemizedlist>
+						<listitem><simpara>Included link to mailing list archives and Subversion repository</simpara></listitem>
+					</itemizedlist>
+				</revdescription>
+			</revision>
 			<revision>
 				<revnumber>0.2.8</revnumber>
 				<date>06 May 2004</date>
@@ -178,7 +188,17 @@ $LastChangedBy$
 
 	<section id="links"><title>Getting The Linux Registry</title>
 		<para>The Linux Registry can be found at <ulink url="http://registry.sf.net/">registry.sf.net</ulink>. C source and RPMs can be found at <ulink url="http://sourceforge.net/project/showfiles.php?group_id=99628">sourceforge.net</ulink>, and its <ulink url="http://freshmeat.net">Freshmeat</ulink> entry is <ulink url="http://freshmeat.net/projects/registry/">http://freshmeat.net/projects/registry/</ulink>.</para>
-		<para>Subscribe to the <ulink url="https://lists.sourceforge.net/lists/listinfo/registry-list">general discussions list</ulink>.</para>
+
+		<para>Source code snapshots are available through a <ulink url="http://www.germane-software.com/repositories/tlr/trunk/">Subversion repository</ulink>, thanks to Sean Russel. Get Subversion installed on your system and:
+			<screen><prompt>bash:~$</prompt> <command>cd src</command>
+<prompt>bash:~/src$</prompt> <command>svn co http://germane-software.com/repositories/tlr/trunk registry</command>
+<prompt>bash:~/src$</prompt> <command>cd registry</command>
+<prompt>bash:~/src/registry$</prompt> <command># files are places here</command>
+			</screen>
+
+</para>
+
+		<para>Subscribe to the <ulink url="https://lists.sourceforge.net/lists/listinfo/registry-list">general discussions list</ulink> or <ulink url="http://sourceforge.net/mailarchive/forum.php?forum=registry-list">see the list archives</ulink>.</para>
 		<!-- ML admin: https://lists.sourceforge.net/lists/admin/registry-list -->
 		<para>Linux Registry is licensed under the <ulink url="http://www.gnu.org/licenses/lgpl.html">LGPL</ulink></para>
 		<para>

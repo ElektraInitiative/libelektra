@@ -1,4 +1,4 @@
-* Sat May 29 2004 Avi Alkalay <avi@unix.sh> 0.2.5
+* Sat Jun 02 2004 Avi Alkalay <avi@unix.sh> 0.2.5
 - Fixed the absense of keyClose in some places. Thanks to Victor.
 - In registryStatKey(), handled error if file can't be found. Thanks to Jens Andersen.
 - keyInit is now less smart: it will not test if the key is initialized or not. This is now a programmer responsability.

@@ -7,6 +7,7 @@ HTMLSTYLE=htmltitlepage.xsl
 .SUFFIXES: .xml .html .pdf .ps .rtf .xsl .fo .tpl
 
 .xml.html:
+	ln -s ../../doc-common/docbook .
 	xsltproc -o $@ ${HTMLSTYLE} $<
 
 
@@ -56,6 +57,8 @@ clean:
 	-rm *.html
 	-rm *~
 	-rm csource.xml
+	-rm docbook
+	-rm example.c
 
 install: man
 	for m in `ls *.1`; do gzip -c --best $$m > ${DESTDIR}/usr/share/man/man1/$$m.gz; done
