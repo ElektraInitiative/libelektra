@@ -56,7 +56,7 @@ $LastChangedBy$
 
 
 /****************************************************/
-/* Key name space types */
+/* Key namespaces types */
 #define RG_NS_SYSTEM        1  /* The 'system/ *' keys */
 #define RG_NS_USER          2  /* The   'user/ *' keys */
 

@@ -1444,7 +1444,7 @@ size_t keyToStream(Key *key, FILE* stream, unsigned long options) {
 	}
 	
 	if (key->comment) {
-		written+=fprintf(stream,"<comment><![CDATA[%s]]</comment>", key->comment);
+		written+=fprintf(stream,"<comment><![CDATA[%s]]></comment>", key->comment);
 		if (!(options & RG_O_CONDENSED))
 			written+=fprintf(stream,"\n");
 	}
