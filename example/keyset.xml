@@ -15,6 +15,14 @@
 	
   -->
 
+<!--
+	Subversion stuff.
+	
+	$Id$
+	$LastChangedBy$
+	
+ -->
+  
   
 <keyset xmlns="http://elektra.sourceforge.net"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
