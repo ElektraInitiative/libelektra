@@ -112,8 +112,30 @@ DBContainer *dbs=0;
 
 
 
+/* This BDB callback is not being used yet */
+u_int32_t compare_prefix(DB *dbp, const DBT *a, const DBT *b) {
+	size_t cnt, len;
+	u_int8_t *p1, *p2;
 
-int keyToBDB(Key *key, DBT *dbkey, DBT *dbdata) {
+	cnt = 1;
+	len = a->size > b->size ? b->size : a->size;
+	for (p1 = a->data, p2 = b->data; len--; ++p1, ++p2, ++cnt)
+		if (*p1 != *p2) return (cnt);
+	/*
+	 * They match up to the smaller of the two sizes.
+	 * Collate the longer after the shorter.
+	 */
+	if (a->size < b->size)
+		return (a->size + 1);
+	if (b->size < a->size)
+		return (b->size + 1);
+	return (b->size);
+}
+
+
+
+
+int keyToBDB(const Key *key, DBT *dbkey, DBT *dbdata) {
 	void *serialized;
 	size_t metaInfoSize;
 	int utf8Conversion=0;
@@ -173,7 +195,7 @@ int keyToBDB(Key *key, DBT *dbkey, DBT *dbdata) {
 	if (key->commentSize!=sizeComment)
 		memcpy(serialized+metaInfoSize-
 			sizeof(key->commentSize)-sizeof(key->dataSize),
-			sizeComment,sizeof(sizeComment));
+			&sizeComment,sizeof(sizeComment));
 	
 	
 		
@@ -182,7 +204,7 @@ int keyToBDB(Key *key, DBT *dbkey, DBT *dbdata) {
 	/* adjust value size from UTF-8 conversion */
 	if (key->dataSize!=sizeValue)
 		memcpy(serialized+metaInfoSize-sizeof(key->dataSize),
-			sizeValue,sizeof(sizeValue));
+			&sizeValue,sizeof(sizeValue));
 	
 	dbdata->data=serialized;
 	
@@ -206,7 +228,7 @@ int keyToBDB(Key *key, DBT *dbkey, DBT *dbdata) {
 
 
 
-int keyFromBDB(Key *key, DBT *dbkey, DBT *dbdata) {
+int keyFromBDB(Key *key, const DBT *dbkey, const DBT *dbdata) {
 	size_t metaInfoSize;
 	
 	metaInfoSize=
@@ -592,6 +614,7 @@ int kdbClose_bdb() {
 
 			dbTreeDel(dbs->cursor);
 		}
+		free(dbs); dbs=0;
 	}
 	return 0; /* success */
 }
@@ -599,26 +622,20 @@ int kdbClose_bdb() {
 
 
 
-int kdbStatKey_bdb(Key *key) {
-	/* get the most possible key metainfo */
-	return 0; /* success */
-}
-
-
-
-
-int kdbGetKey_bdb(Key *key) {
+int kdbGetKeyWithOptions(Key *key, u_int32_t options) {
 	DBTree *dbctx;
 	DBT dbkey,data;
 	int ret;
 	uid_t user=getuid();
 	gid_t group=getgid();
 	int canRead=0;
+	int isLink=0;
+	Key buffer;
 
 	dbctx=getDBForKey(key);
 	if (!dbctx) return 1; /* propagate errno from getDBForKey() */
 
-
+	keyInit(&buffer);
 	memset(&dbkey,0,sizeof(DBT));
 	memset(&data,0,sizeof(DBT));
 	dbkey.size=dbkey.ulen=strblen(key->key);
@@ -630,23 +647,19 @@ int kdbGetKey_bdb(Key *key) {
 		
 	switch (ret) {
 		case 0: { /* Key found and retrieved. Check permissions */
-			Key buffer;
-
-			keyInit(&buffer);
 			keyFromBDB(&buffer,&dbkey,&data);
+			
+			dbkey.data=0;
+			free(data.data); data.data=0;
 			
 			/* Check permissions. */
 			if (keyGetUID(&buffer) == user)
 				canRead = keyGetAccess(&buffer) & S_IRUSR;
 			else if (keyGetGID(&buffer) == group)
 				canRead = keyGetAccess(&buffer) & S_IRGRP;
-			else canRead= keyGetAccess(&buffer) & S_IROTH;
+			else canRead = keyGetAccess(&buffer) & S_IROTH;
 
-			if (canRead) {
-				keyDup(&buffer,key);
-				keyClose(&buffer);
-				return 0;
-			} else {
+			if (!canRead) {
 				keyClose(&buffer);
 				return errno=KDB_RET_NOCRED;
 			}
@@ -656,8 +669,47 @@ int kdbGetKey_bdb(Key *key) {
 			return errno=KDB_RET_NOTFOUND;
 			break;
 	}
+
+	// stat:= !link ? limpa
+	// !nf:= !link ? get()
+	// stat & nf:= !link ? limpa
 	
-	return 0; /* success, but we'll never reach this point */
+	isLink=keyIsLink(&buffer);
+	
+	if (canRead) {
+		if (!isLink && (options & KDB_O_STATONLY))
+			keySetRaw(&buffer,0,0);
+		if (isLink && !(options & KDB_O_NFOLLOWLINK)) {
+			/* If we have a link and user did not specify KDB_O_NFOLLOWLINK,
+			 * he want to dereference the link */
+			Key target;
+			
+			keyInit(&target);
+			keySetName(&target,buffer.data);
+
+			if (kdbGetKeyWithOptions(&target, options) == KDB_RET_NOTFOUND) {
+				keyClose(&target);
+				keyClose(&buffer);
+				return errno=KDB_RET_NOTFOUND;
+			}
+		}
+	}
+	
+	keyDup(&buffer,key);
+	keyClose(&buffer);
+	
+	return KDB_RET_OK; /* success */
+}
+
+
+int kdbGetKey_bdb(Key *key) {
+	return kdbGetKeyWithOptions(key,0);
+}
+
+
+
+int kdbStatKey_bdb(Key *key) {
+	return kdbGetKeyWithOptions(key,KDB_O_NFOLLOWLINK | KDB_O_STATONLY);
 }
 
 
@@ -698,13 +750,16 @@ int kdbSetKey_bdb(Key *key) {
 			keyInit(&buffer);
 			keyFromBDB(&buffer,&dbkey,&data);
 			keySetOwner(&buffer,dbctx->userDomain);
+			
+			dbkey.data=0;
+			free(data.data); data.data=0;
 
 			/* Check parent permissions to write bellow it. */
-			if (keyGetUID(&buffer) == user)
-				canWrite = keyGetAccess(&buffer) & S_IWUSR;
-			else if (keyGetGID(&buffer) == group)
-				canWrite = keyGetAccess(&buffer) & S_IWGRP;
-			else canWrite= keyGetAccess(&buffer) & S_IWOTH;
+			if (buffer.uid == user)
+				canWrite = buffer.access & S_IWUSR;
+			else if (buffer.gid == group)
+				canWrite = buffer.access & S_IWGRP;
+			else canWrite= buffer.access & S_IWOTH;
 			
 			keyClose(&buffer);
 			break;
@@ -716,14 +771,14 @@ int kdbSetKey_bdb(Key *key) {
 			u_int32_t parentNameSize;
 			char *parentName;
 
-			parentNameSize=keyGetParentNameSize(key);
-			parentName=malloc(parentNameSize+1); /* includes the leading \0 */
-			keyGetParentName(key,parentName,parentNameSize+1);
+			parentNameSize=keyGetParentNameSize(key)+1;
+			parentName=malloc(parentNameSize);
+			keyGetParentName(key,parentName,parentNameSize);
 			
 			memset(&dbkey,0,sizeof(DBT));
 			memset(&data,0,sizeof(DBT));
 			dbkey.data=parentName;
-			dbkey.size=parentNameSize+1;
+			dbkey.size=parentNameSize;
 			dbkey.flags=data.flags=DB_DBT_REALLOC;
 
 			ret = dbctx->db.keyValuePairs->get(dbctx->db.keyValuePairs, NULL,
@@ -736,9 +791,10 @@ int kdbSetKey_bdb(Key *key) {
 				parent=keyNew(parentName,
 					KEY_SWITCH_TYPE,KEY_TYPE_DIR,
 					KEY_SWITCH_END);
+				free(parentName);
 				
 				if (kdbSetKey_bdb(parent))
-					/* Some error happened in this recursive call.
+					/* If some error happened in this recursive call.
 					 * Propagate errno.
 					 */
 					return 1;
@@ -747,14 +803,17 @@ int kdbSetKey_bdb(Key *key) {
 				parent=keyNew(0);
 				keyFromBDB(parent,&dbkey,&data);
 				keySetOwner(parent,dbctx->userDomain);
+				
+				free(parentName);
+				free(data.data);
 			}
 
 			/* Check parent permissions to write bellow it. */
-			if (keyGetUID(parent) == user)
-				canWrite = keyGetAccess(parent) & S_IWUSR;
-			else if (keyGetGID(parent) == group)
-				canWrite = keyGetAccess(parent) & S_IWGRP;
-			else canWrite= keyGetAccess(parent) & S_IWOTH;
+			if (parent->uid == user)
+				canWrite = parent->access & S_IWUSR;
+			else if (parent->gid == group)
+				canWrite = parent->access & S_IWGRP;
+			else canWrite= parent->access & S_IWOTH;
 			
 			keyDel(parent);
 			break;
@@ -777,11 +836,11 @@ int kdbSetKey_bdb(Key *key) {
 		return 1;
 	}
 
-	/* Mark the key as synced */
-	key->flags &= ~KEY_SWITCH_NEEDSYNC;
-
 	free(dbkey.data); dbkey.data=0;
 	free(data.data); data.data=0;
+
+	/* Mark the key as synced */
+	key->flags &= ~KEY_SWITCH_NEEDSYNC;
 
 	dbctx->db.keyValuePairs->sync(dbctx->db.keyValuePairs,0);
 	dbctx->db.parentIndex->sync(dbctx->db.parentIndex,0);
@@ -830,6 +889,9 @@ int kdbGetKeyChildKeys_bdb(const Key *parentKey, KeySet *returned, unsigned long
 	DBC *cursor=0,*joincurs=0,*carray[2];
 	DBT parent,keyName,keyData;
 	Key *retrievedKey;
+	uid_t user=getuid();
+	gid_t group=getgid();
+	int8_t canRead=0; /* wether we have permissions to go ahead */
 	int ret;
 	
 	/* Get/create the DB for the parent key */
@@ -843,23 +905,35 @@ int kdbGetKeyChildKeys_bdb(const Key *parentKey, KeySet *returned, unsigned long
 	 * TODO: Check if BDB has some option to avoid this */
 	ret = db->db.parentIndex->cursor(db->db.parentIndex, NULL, &cursor, 0);
 
-	memset(&parent,0,sizeof(parent));
-	parent.size=strblen(parentKey->key);
-	parent.data=malloc(parent.size);
-	/* TODO: UTF-8 conversion */
-	memcpy(parent.data,parentKey->key,parent.size);
-
 	memset(&keyName,0,sizeof(keyName));
-	memset(&keyData,0,sizeof(keyData));
+	keyToBDB((const Key *)parentKey,&parent,&keyData);
 	
 	ret=cursor->c_get(cursor,&parent,&keyData,DB_SET);
 	
 	if (ret==DB_NOTFOUND) {
+		free(parent.data);
 		cursor->c_close(cursor);
 		errno=KDB_RET_NOTFOUND;
 		return -1;
 	}
 
+	/* Check parent permissions from DB */
+	retrievedKey=keyNew(KEY_SWITCH_END);
+	keyFromBDB(retrievedKey,&parent,&keyData);
+	free(parent.data); free(keyData.data);
+	if (retrievedKey->uid == user)
+		canRead = retrievedKey->access & (S_IRUSR | S_IXUSR);
+	else if (retrievedKey->gid == group)
+		canRead = retrievedKey->access & (S_IRGRP | S_IXGRP);
+	else canRead = retrievedKey->access & (S_IROTH | S_IXOTH);
+	
+	keyDel(retrievedKey);
+	
+	if (!canRead) {
+		cursor->c_close(cursor);
+		return errno=KDB_RET_NOCRED;
+	}
+	
 	carray[0]=cursor;
 	carray[1]=0;
 
@@ -867,6 +941,7 @@ int kdbGetKeyChildKeys_bdb(const Key *parentKey, KeySet *returned, unsigned long
 
 	ret=joincurs->c_get(joincurs,&keyName,&keyData,0);
 	
+	/* Now start retrieving all child keys */
 	do {
 		/* Check if is inactive before doing higher level operations */
 		if (*(char *)keyName.data=='.' && !(options & KDB_O_INACTIVE)) {
@@ -875,12 +950,50 @@ int kdbGetKeyChildKeys_bdb(const Key *parentKey, KeySet *returned, unsigned long
 			continue;
 		}
 		
-		/* TODO: UTF-8 conversion */
 		retrievedKey=keyNew(KEY_SWITCH_END);
 		keyFromBDB(retrievedKey,&keyName,&keyData);
-		/* TODO: handle KDB_O_STATONLY */
-		/* TODO: handle KDB_O_NFOLLOWLINK */
+		
+		/* check permissions for this key */
+		if (!(options & KDB_O_STATONLY)) {
+			canRead=0;
+			if (retrievedKey->uid == user)
+				canRead = retrievedKey->access & S_IRUSR;
+			else if (retrievedKey->gid == group)
+				canRead = retrievedKey->access & S_IRGRP;
+			else canRead = retrievedKey->access & S_IROTH;
+		}
+		
+		if (!canRead) {
+			keyDel(retrievedKey);
+			ret=joincurs->c_get(joincurs,&keyName,&keyData,0);
+			continue;
+		}
+		
+		if (!keyIsLink(retrievedKey) && (options & KDB_O_STATONLY))
+			keySetRaw(retrievedKey,0,0);
+		if (keyIsLink(retrievedKey) && !(options & KDB_O_NFOLLOWLINK)) {
+			/* If we have a link and user did not specify KDB_O_NFOLLOWLINK,
+			 * he want to dereference the link */
+			Key target;
+			
+			keyInit(&target);
+			keySetName(&target,retrievedKey->data);
 
+			if (kdbGetKeyWithOptions(&target, options) == KDB_RET_NOTFOUND) {
+				/* Invalid link target, so don't include in keyset */
+				
+				keyClose(&target);
+				
+				/* fetch next */
+				ret=joincurs->c_get(joincurs,&keyName,&keyData,0);
+				errno=KDB_RET_NOTFOUND;
+				continue;
+			} else {
+				keyDup(&target,retrievedKey);
+				keyClose(&target);
+			}
+		}
+		
 		if (keyIsDir(retrievedKey)) {
 			if (options & KDB_O_RECURSIVE) {
 				KeySet *children=ksNew();
@@ -908,6 +1021,7 @@ int kdbGetKeyChildKeys_bdb(const Key *parentKey, KeySet *returned, unsigned long
 	if ((options & (KDB_O_SORT)) && (returned->size > 1))
 		ksSort(returned);
 	
+	joincurs->c_close(joincurs);
 	cursor->c_close(cursor);
 	
 	return 0;

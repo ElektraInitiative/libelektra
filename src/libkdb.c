@@ -784,7 +784,13 @@ int kdbGetRootKeys(KeySet *returned) {
  * Taps the key only for its meta-info from the backend storage.
  * 
  * The bahavior may change from backend to backend. In the filesystem
- * backend, it will make only a stat on the key.
+ * backend, it will make only a stat(2) on the key.
+ * 
+ * A key of type KEY_TYPE_LINK will have its target address loaded in the
+ * @p key structure, which can be accessed later using keyStealValue() or
+ * keyGetString(). This is the only way to know the target of a link key
+ * without dereferencing it (in contrast to kdbGetKey(), where the link is
+ * dereferenced).
  *
  * Info like comments and key data type are not retrieved.
  *

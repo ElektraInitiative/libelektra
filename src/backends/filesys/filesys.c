@@ -97,19 +97,17 @@ int kdbStatKey_filesys(Key *key) {
 	keyFromStat(key,&keyFileNameInfo);
 
 	if (keyIsLink(key) && key->recordSize) {
-		char *data=malloc(key->recordSize+1); /* Add 1 byte for ending 0 */
+		key->data=malloc(key->recordSize+1); /* Add 1 byte for ending 0 */
 
-		readlink(keyFileName,data,key->recordSize);
-		data[key->recordSize]=0; /* null terminate it */
-		keySetLink(key,data);
-		free(data);
+		readlink(keyFileName,key->data,key->recordSize);
+		((char *)key->data)[key->recordSize]=0; /* null terminate it */
 	}
 
 	/* Remove the NEEDSYNC flag */
 	semiflag=KEY_SWITCH_NEEDSYNC;
 	semiflag=~semiflag;
 	key->flags &= semiflag;
-	key->flags |= KEY_SWITCH_ACTIVE;
+	key->flags |= KEY_SWITCH_ACTIVE; /* obsolete.... */
 
 	return 0;
 }
@@ -369,6 +367,8 @@ int kdbGetKeyChildKeys_filesys(const Key *parentKey, KeySet *returned, unsigned 
 
 		keyEntry=keyNew(buffer,KEY_SWITCH_END);
 
+
+		/* TODO: inefficient code in next block */
 		if (options & KDB_O_STATONLY) kdbStatKey_filesys(keyEntry);
 		else if (options & KDB_O_NFOLLOWLINK) {
 			kdbStatKey_filesys(keyEntry);
@@ -378,6 +378,7 @@ int kdbGetKeyChildKeys_filesys(const Key *parentKey, KeySet *returned, unsigned 
 			/* If this is a permission problem, at least stat the key */
 			if (rc && errno==KDB_RET_NOCRED) kdbStatKey_filesys(keyEntry);
 		}
+
 
 		if (keyIsDir(keyEntry)) {
 			if (options & KDB_O_RECURSIVE) {
