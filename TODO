@@ -1,3 +1,9 @@
+TO PROJECT
+- Patches to init, gconf, KConfig
+
+
+TO CODE
+- Support for key change notifications
 - registryLink must create directories recursively
 - rg ls must show links
 - Support for moving/renaming keys
