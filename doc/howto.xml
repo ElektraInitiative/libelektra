@@ -23,13 +23,23 @@ $LastChangedBy$
 <article>
 
 	<articleinfo>
-		<title>Elektra Project</title>
+		<title>The Elektra Initiative</title>
 
 		&author;
 
-		<pubdate>2004-12-14</pubdate>
+		<pubdate>2005-01-10</pubdate>
 
 		<revhistory>
+			<revision>
+				<revnumber>2005-01-10</revnumber>
+				<date>10 Jan 2005</date>
+				<authorinitials>avi</authorinitials>
+				<revdescription>
+					<itemizedlist>
+						<listitem><simpara>Elektra Project -> Elektra Initiative</simpara></listitem>
+					</itemizedlist>
+				</revdescription>
+			</revision>
 			<revision>
 				<revnumber>2004-12-14</revnumber>
 				<date>14 Dev 2004</date>
@@ -397,7 +407,7 @@ $LastChangedBy$
 
 	<section id="links"><title>Getting The Elektra Software</title>
 		<para>Elektra was formerly named Linux Registry, so many links will still take you to "Linux Registry" named pages. They'll change over time.</para>
-		<para>The Elektra Project can be found at <ulink url="http://elektra.sf.net/">elektra.sf.net</ulink> and (in all) the following places:
+		<para>The Elektra Initiative software and info can be found at <ulink url="http://elektra.sf.net/">elektra.sf.net</ulink> and (in all) the following places:
 			<itemizedlist>
 				<listitem><simpara><ulink url="http://sourceforge.net/project/showfiles.php?group_id=117521">C source and RPMs</ulink> from <ulink url="http://sourceforge.net/projects/elektra">sourceforge.net</ulink></simpara></listitem>
 				<listitem><simpara><ulink url="http://www.germane-software.com/repositories/elektra/trunk/">Subversion repository</ulink>, thanks to Sean Russel</simpara></listitem>
@@ -409,7 +419,7 @@ $LastChangedBy$
 				<listitem><simpara><ulink url="https://lists.sourceforge.net/lists/listinfo/registry-list">Subscribe to general discussions list</ulink> or <ulink url="http://sourceforge.net/mailarchive/forum.php?forum=registry-list">see the list archives</ulink></simpara></listitem>
 			</itemizedlist>
 		</para>
-		<para>There is an <ulink url="elektra.sxi">OpenOffice.org presentation</ulink> [<ulink url="presentation/elektra.html">HTML without animations</ulink>] that anybody can deliver in community events, to help create awareness about the Elektra Project.</para>
+		<para>There is an <ulink url="elektra.sxi">OpenOffice.org presentation</ulink> [<ulink url="presentation/elektra.html">HTML without animations</ulink>] that anybody can deliver in community events, to help create awareness about the Elektra Initiative.</para>
 		<para>To get the last snapshot from Subversion do the following:
 			<screen><prompt>bash:~$</prompt> <command>cd src</command>
 <prompt>bash:~/src$</prompt> <command>svn co http://germane-software.com/repositories/elektra/trunk elektra</command>
@@ -427,7 +437,7 @@ $LastChangedBy$
 			<para>Elektra man pages can be accessed online:</para>
 			<orderedlist>
 				<listitem><simpara><ulink url="kdb.1.html">kdb.1</ulink>: The <command>kdb</command> command man page. Describes the usage of the command used to administer Elektra's key database. You don't need it if you are already reading this.</simpara></listitem>
-				<listitem><simpara><ulink url="elektra.7.html">elektra.7</ulink>: Discussion about what is the Elektra Project etc. You don't need it if you are already reading this.</simpara></listitem>
+				<listitem><simpara><ulink url="elektra.7.html">elektra.7</ulink>: Discussion about what is the Elektra Initiative etc. You don't need it if you are already reading this.</simpara></listitem>
 				<listitem><simpara><ulink url="elektra.5.html">elektra.5</ulink>: Elektra internals.</simpara></listitem>
 				<listitem><simpara><ulink url="kdb.3.html">kdb.3</ulink>: C API documentation for the KeyDB class. <ulink url="elektra-api/html/group__kdb.html">Browse the doxygen</ulink> instead.</simpara></listitem>
 				<listitem><simpara><ulink url="key.3.html">key.3</ulink>: C API documentation for the Key class. <ulink url="elektra-api/html/group__key.html">Browse the doxygen</ulink> instead.</simpara></listitem>
@@ -438,7 +448,7 @@ $LastChangedBy$
 
 	
 		<section id="ecosystem"><title>Building an Ecosystem</title>
-			<para>The objective of the Elektra Project is to help create a pervasive, ubiquitous configuration system. This is an entire ecosystem, much more than a piece of code. This section lists the work of some people that are helping to build it.</para>
+			<para>The objective of the Elektra Initiative is to help create a pervasive, ubiquitous configuration system. This is an entire ecosystem, much more than a piece of code. This section lists the work of some people that joined the initiative and are helping to build this ecosystem.</para>
 			
 			<section id="ecotools"><title>Tools and Software Patches</title>
 				<itemizedlist>
@@ -472,7 +482,7 @@ $LastChangedBy$
 
 		<para>Today's GNU/Linux systems (or other UNIX) are a sum of independent components collected in a bazar. Each of them already have a working, but selfish configuration system. Please read this section thinking about a system as a whole, not a sum of many parts.</para>
 
-		<para>The Elektra Project tries to upgrade a '1+1=2' system into a '1*1=1' one.</para>
+		<para>The Elektra Initiative tries to upgrade a '1+1=2' system into a '1*1=1' one.</para>
 
 		<para>Look into <filename>/etc/fstab</filename> file. Now look into <filename>/etc/modules.conf</filename>, <filename>/etc/passwd</filename>, <filename>/etc/ssh/sshd_config</filename>, <filename>/etc/httpd/conf/httpd.conf</filename>. I see here two terrible problems:</para>
 		<orderedlist numeration="arabic">
@@ -504,8 +514,8 @@ $LastChangedBy$
 	
 	<section id="adoption"><title>Adoption by Legacy System Software</title>
 		<para>The benefits of Elektra will be felt only when configurations like those under <filename>/etc</filename> will move into it. It is expected that this will take time, but awareness should be raised in the community to speed the process.</para>
-		<para>Experienced Unix sysadmins seem (and were expected to be) sceptical about a key-value database on Linux, even when the Elektra Project tries to address other OSes registry's problems (centralization, security, consistency). But it is a truly required OS component from a good architecture perspective, and it can solve most of the Linux software integration issues, when adopted.</para>
-		<para>The Elektra Project is expected to be adopted by developers of high-level software applications. Then by some Linux distribution specific admin tools, like redhat-config-network, then finally by main OS programs and libraries, like <command>/sbin/init</command>, PAM, <command>/bin/mount</command>, etc.</para>
+		<para>Experienced Unix sysadmins seem (and were expected to be) sceptical about a key-value database on Linux, even when the Elektra Initiative tries to address other OSes registry's problems (centralization, security, consistency). But it is a truly required OS component from a good architecture perspective, and it can solve most of the Linux software integration issues, when adopted.</para>
+		<para>Elektra is expected to be adopted by developers of high-level software applications. Then by some Linux distribution specific admin tools, like redhat-config-network, then finally by main OS programs and libraries, like <command>/sbin/init</command>, PAM, <command>/bin/mount</command>, etc.</para>
 	</section>
 
 	&society;
@@ -542,7 +552,7 @@ $LastChangedBy$
 		&storage;
 	</section-->
 
-	<section id="help"><title>Wanna Help The Elektra Project ?</title>
+	<section id="help"><title>Wanna Help The Elektra Initiative ?</title>
 		<para>We need a lot of help. The main software library is ready to be used, but we really need it to be used, so then in can become a standard.</para>
 		<section id="help-patch"><title>Software Patches</title>
 			<orderedlist>
