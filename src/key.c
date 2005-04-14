@@ -2543,6 +2543,16 @@ u_int32_t keyCompare(const Key *key1, const Key *key2) {
 		<comment>My monitor</comment>
 	</key>@endverbatim
 
+
+
+ * @verbatim
+	<key parent="system/sw/XFree/Monitor/Monitor0" basename="Name"
+		type="string" uid="root" gid="root" mode="0660">
+
+		<value>Samsung TFT panel</value>
+		<comment>My monitor</comment>
+	</key>@endverbatim
+ *
  * Accepted options that can be ORed:
  * @param stream where to write output: a file or stdout
  * @param options Some #KDBOptions ORed:

@@ -73,10 +73,12 @@ $LastChangedBy$
  * 
  * This function is completelly dependent on libxml.
  */
-int processNode(KeySet *ks, xmlTextReaderPtr reader) {
+int processKeyNode(KeySet *ks, char *context, xmlTextReaderPtr reader) {
 	xmlChar *nodeName=0;
 	xmlChar *buffer=0;
+	xmlChar *privateContext=0;
 	Key *newKey=0;
+	int appended=0;
 	
 	nodeName=xmlTextReaderName(reader);
 	if (!strcmp(nodeName,"key")) {
@@ -88,27 +90,44 @@ int processNode(KeySet *ks, xmlTextReaderPtr reader) {
 		xmlFree(nodeName); nodeName=0;
 		
 		buffer=xmlTextReaderGetAttribute(reader,"name");
-		keySetName(newKey,(char *)buffer);
-		xmlFree(buffer); buffer=0;
+		if (buffer) {
+			keySetName(newKey,(char *)buffer);
+			xmlFree(buffer); buffer=0;
+		} else {
+			privateContext=xmlTextReaderGetAttribute(reader,"parent");
+			buffer=xmlTextReaderGetAttribute(reader,"basename");
+			
+			if (buffer) {
+				if (privateContext) keySetName(newKey,privateContext);
+				else keySetName(newKey,context);
+				
+				keyAddBaseName(newKey,buffer);
+				xmlFree(buffer);
+			} else {
+				/* error: where is the name? */
+			}
+		}
 		
 		buffer=xmlTextReaderGetAttribute(reader,"type");
-		if (!strcmp(buffer,"string"))
-			type=KEY_TYPE_STRING;
-		else if (!strcmp(buffer,"link"))
-			type=KEY_TYPE_LINK;
-		else if (!strcmp(buffer,"directory"))
-			type=KEY_TYPE_DIR;
-		else if (!strcmp(buffer,"binary"))
-			type=KEY_TYPE_BINARY;
-		else if (!strcmp(buffer,"undefined"))
-			type=KEY_TYPE_UNDEFINED;
-		else { /* special user-defined value types */
-			void *converter=0;
-			
-			type=strtol(buffer,(char **)&converter,10);
-			if ((void *)buffer==converter)
-				/* in case of error, fallback to default type again */
+		if (buffer) {
+			if (!strcmp(buffer,"string"))
 				type=KEY_TYPE_STRING;
+			else if (!strcmp(buffer,"link"))
+				type=KEY_TYPE_LINK;
+			else if (!strcmp(buffer,"directory"))
+				type=KEY_TYPE_DIR;
+			else if (!strcmp(buffer,"binary"))
+				type=KEY_TYPE_BINARY;
+			else if (!strcmp(buffer,"undefined"))
+				type=KEY_TYPE_UNDEFINED;
+			else { /* special user-defined value types */
+				void *converter=0;
+				
+				type=strtol(buffer,(char **)&converter,10);
+				if ((void *)buffer==converter)
+					/* in case of error, fallback to default type again */
+					type=KEY_TYPE_STRING;
+			}
 		}
 		
 		keySetType(newKey,type);
@@ -188,20 +207,63 @@ int processNode(KeySet *ks, xmlTextReaderPtr reader) {
 
 				keySetComment(newKey,buffer);
 			} else if (!strcmp(nodeName,"key")) {
-				if (xmlTextReaderNodeType(reader)==15) end=1;
+				/* Here we found </key> or a sub <key>.
+				   So include current key in the KeySet. */
+				if (newKey && !appended) {
+					ksAppend(ks,newKey);
+					appended=1;
+				}
+				
+				if (xmlTextReaderNodeType(reader)==15)
+				/* found a </key> */
+				end=1;
+				else {
+					/* found a sub <key> */
+					keySetType(newKey,KEY_TYPE_DIR);
+					/* prepare the context (parent) */
+					processKeyNode(ks,newKey->key,reader);
+				}
 			}
-
 			xmlFree(buffer); buffer=0;
 		}
+		if (privateContext) xmlFree(privateContext);
 	}
 
 	if (nodeName) xmlFree(nodeName),nodeName=0;
-
-	if (newKey) ksAppend(ks,newKey);
 	return 0;
 }
 
 
+
+
+int processKeySetNode(KeySet *ks, char *context, xmlTextReaderPtr reader) {
+	xmlChar *nodeName=0;
+	xmlChar *privateContext=0;
+	
+	nodeName=xmlTextReaderName(reader);
+	if (!strcmp(nodeName,"keyset")) {
+		int end=0;
+		
+		privateContext=xmlTextReaderGetAttribute(reader,"parent");
+		
+		/* Parse everything else */
+		while (!end) {
+			xmlFree(nodeName); nodeName=0;
+			xmlTextReaderRead(reader);
+			nodeName=xmlTextReaderName(reader);
+			
+			if (!strcmp(nodeName,"key")) {
+				if (privateContext) processKeyNode(ks,privateContext,reader);
+				else processKeyNode(ks,context,reader);
+			} else if (!strcmp(nodeName,"keyset")) {
+				if (xmlTextReaderNodeType(reader)==15)
+					 /* found a </keyset> */
+					end=1;
+			}
+		}
+	}
+	return 0;
+}
 
 
 
@@ -214,11 +276,17 @@ int processNode(KeySet *ks, xmlTextReaderPtr reader) {
  */
 int ksFromXMLReader(KeySet *ks,xmlTextReaderPtr reader) {
 	int ret;
+	xmlChar *nodeName=0;
 
-	ret = xmlTextReaderRead(reader); /* <keyset> */
-	ret = xmlTextReaderRead(reader); /* first <key> */
+	ret = xmlTextReaderRead(reader); /* go to first node */
 	while (ret == 1) {
-		processNode(ks, reader);
+		nodeName=xmlTextReaderName(reader);
+		
+		if (!strcmp(nodeName,"key"))
+			processKeyNode(ks, 0, reader);
+		else if (!strcmp(nodeName,"keyset"))
+			processKeySetNode(ks, 0, reader);
+		
 		ret = xmlTextReaderRead(reader);
 	}
 	xmlFreeTextReader(reader);
@@ -229,33 +297,15 @@ int ksFromXMLReader(KeySet *ks,xmlTextReaderPtr reader) {
 
 
 
-
-
-/**
- * Given an XML @p filename, open it, validate schema, process nodes,
- * convert and save it in the @p ks KeySet.
- * @ingroup tools
- */
-int ksFromXMLfile(KeySet *ks,char *filename) {
-	xmlTextReaderPtr reader;
-	int ret;
-	char schema_path[513];
-	
+int isValidXML(xmlDocPtr doc,char *schemaPath) {
 	xmlSchemaPtr wxschemas = NULL;
 	xmlSchemaValidCtxtPtr ctxt;
 	xmlSchemaParserCtxtPtr ctxt2=NULL;
-	xmlDocPtr doc;
+	int ret=0;
 
-	doc = xmlParseFile(filename);
-	if (doc==NULL) return 1;
+	ctxt2 = xmlSchemaNewParserCtxt(schemaPath);
 
-	/* Open the kdb to get the xml schema path */
-	schema_path[0]=0;
-	ret=kdbGetValue(KDB_SCHEMA_PATH_KEY,schema_path,sizeof(schema_path));
-	if (ret==0) ctxt2 = xmlSchemaNewParserCtxt(schema_path);
-	else ctxt2 = xmlSchemaNewParserCtxt(KDB_SCHEMA_PATH); /* fallback to builtin */
 
-	
 	if (ctxt2==NULL) {
 		xmlFreeDoc(doc);
 		return 1;
@@ -291,7 +341,33 @@ int ksFromXMLfile(KeySet *ks,char *filename) {
 	xmlSchemaFreeValidCtxt(ctxt);
 	xmlSchemaFree(wxschemas);
 	xmlSchemaFreeParserCtxt(ctxt2);
+
+	return ret;
+}
+
+
+
+/**
+ * Given an XML @p filename, open it, validate schema, process nodes,
+ * convert and save it in the @p ks KeySet.
+ * @ingroup tools
+ */
+int ksFromXMLfile(KeySet *ks,char *filename) {
+	xmlTextReaderPtr reader;
+	xmlDocPtr doc;
+	int ret;
+	char schemaPath[513];
+
+	doc = xmlParseFile(filename);
+	if (doc==NULL) return 1;
 	
+	/* Open the kdb to get the xml schema path */
+	schemaPath[0]=0;
+	ret=kdbGetValue(KDB_SCHEMA_PATH_KEY,schemaPath,sizeof(schemaPath));
+
+//	if (ret==0) ret = isValidXML(filename,schemaPath);
+//	else ret = isValidXML(filename,KDB_SCHEMA_PATH); /* fallback to builtin */
+
 	
 	/* if the validation was successful */
 	if (!ret) {

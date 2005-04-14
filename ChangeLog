@@ -1,8 +1,9 @@
-* Tue Mar 20 2005 Avi Alkalay <avi@unix.sh> 0.4.11.5
+* Tue Mar 20 2005 Avi Alkalay <avi@unix.sh> 0.4.11.7
 - An almost ready Berkeley DB backend
 - Key, KeySet and KeyDB classes earned robusteness through the implementation of a new backend
 - All size_t-returning functions now return ssize_t, so a -1 can be checked for errors
 - kdbGetChildKeys() method and similars now return the number of keys retrieved instead of 0
+- The import/export XML file can have nested keys, a real tree of keys
 
 
 * Tue Jan 23 2005 Avi Alkalay <avi@unix.sh> 0.4.11

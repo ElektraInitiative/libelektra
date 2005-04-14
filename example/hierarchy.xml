@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!--
+	Subversion stuff.
+	
+	$Id: keyset.xml 175 2005-01-27 08:28:07Z aviram $
+	$LastChangedBy: aviram $
+	
+ -->
+
+
+<keyset xmlns="http://elektra.sourceforge.net"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://elektra.sourceforge.net elektra.xsd"
+
+		parent="user/tmp">
+
+	<!-- The wrapping keyset is not really necessary. The key element
+		 can be a root key -->
+	
+	<key basename="dir1">
+		<key basename="xyz">
+			<value>abc</value>
+			<comment>comment1</comment>
+		</key>
+		<key basename="abc">
+			<value>xyz</value>
+			<comment>comment1</comment>
+		</key>
+		<key basename="dir2">
+			<key basename="def">
+				<value>cecece</value>
+			</key>
+			<key basename="uvw">
+				<value>tatata</value>
+			</key>
+		</key>
+	</key>
+</keyset>
+

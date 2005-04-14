@@ -13,43 +13,78 @@
 	targetNamespace="http://elektra.sourceforge.net"
 	elementFormDefault="qualified">
 	
-	<xsd:element name="keyset" type="keysettype"/>
+	<xsd:element name="key"            type="Key_type"/>
+	<xsd:element name="keyset"         type="KeySet_type"/>
 	
-	<xsd:complexType name="keysettype">
+	
+	<xsd:complexType name="Key_type">
+		<xsd:attribute name="id"       type="xsd:ID"       use="optional"/>
+		<xsd:attribute name="name"     type="xsd:string"   use="optional">
+			<xsd:annotation>
+				<xsd:documentation>A key must have a name (absolute) or a basename (relative). If both appear, the absolute name wins.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		
+		<xsd:attribute name="parent"   type="xsd:string"   use="optional">
+			<xsd:annotation>
+				<xsd:documentation>A parent can't appear in the same entry that has an absolute name. If parent appears together, name wins.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		
+		<xsd:attribute name="basename" type="xsd:string"   use="optional">
+			<xsd:annotation>
+				<xsd:documentation>A basename can't appear in the same entry that has an absolute name. If basename appears together, name wins. Absolute name = parent + basename.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		
+		<xsd:attribute name="type"     type="value_type"   use="optional" default="string"/>
+		<xsd:attribute name="uid"      type="xsd:string"   use="optional"/>
+		<xsd:attribute name="gid"      type="xsd:string"   use="optional"/>
+		<xsd:attribute name="mode"     type="mode_type"    use="optional"/>
+		<xsd:attribute name="atime"    type="xsd:dateTime" use="optional"/>
+		<xsd:attribute name="ctime"    type="xsd:dateTime" use="optional"/>
+		<xsd:attribute name="mtime"    type="xsd:dateTime" use="optional"/>
+
 		<xsd:sequence>
-			<xsd:element name="key" maxOccurs="unbounded">
-				<xsd:complexType>
-				
-					<xsd:sequence>
-						<xsd:element name="value" minOccurs="0"/>
-						<xsd:element name="comment" minOccurs="0">
-							<xsd:annotation>
-								<xsd:documentation>This is CDATA, but I think it could be a xsd:string</xsd:documentation>
-							</xsd:annotation>
-						</xsd:element>
-					</xsd:sequence>
-					
-					<xsd:attribute name="id" type="xsd:ID" use="optional"/>
-					<xsd:attribute name="name" type="xsd:string" use="required"/>
-					<xsd:attribute name="type" type="key_type" use="optional" default="string"/>
-					<xsd:attribute name="uid" type="xsd:string" use="optional"/>
-					<xsd:attribute name="gid" type="xsd:string" use="optional"/>
-					<xsd:attribute name="mode" type="mode_type" use="optional"/>
-					<xsd:attribute name="atime" type="xsd:dateTime" use="optional"/>
-					<xsd:attribute name="ctime" type="xsd:dateTime" use="optional"/>
-					<xsd:attribute name="mtime" type="xsd:dateTime" use="optional"/>
-					
-				</xsd:complexType>
+			<xsd:element name="value"      minOccurs="0"/>
+			<xsd:element name="comment"    minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>This is CDATA, but I think it could be a xsd:string</xsd:documentation>
+				</xsd:annotation>
 			</xsd:element>
+
+			<xsd:element name="key"        maxOccurs="unbounded"/>
 		</xsd:sequence>
+
 	</xsd:complexType>
+
+
+
+	<xsd:complexType name="KeySet_type">
 	
-	<xsd:simpleType name="key_type">
+		<xsd:attribute name="parent"   type="xsd:string"   use="optional">
+			<xsd:annotation>
+				<xsd:documentation>A parent indicates a directory key name that contains the keys under this KeySet. But, if some key happens to have an absolute name and is inside a keyset element, its absolute name wins.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		
+		<xsd:sequence>
+			<xsd:element name="key"        maxOccurs="unbounded"/>
+		</xsd:sequence>
+	
+	</xsd:complexType>
+
+
+
+
+
+
+	<xsd:simpleType name="value_type">
 		<xsd:restriction base="xsd:string">
 			<xsd:pattern value="[0-9]*|undefined|string|binary|directory|link"/>
 		</xsd:restriction>
 	</xsd:simpleType>
-	
+
 	<xsd:simpleType name="mode_type">
 		<xsd:restriction base="xsd:string">
 			<xsd:pattern value="[0-7]{4}"/>

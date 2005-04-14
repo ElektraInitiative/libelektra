@@ -1063,7 +1063,7 @@ int commandImport() {
 	
 	ks=ksNew();
 	/* The command line parsing function will put the XML filename
-	   in the argKeyName global, so forget the variable name. */
+	   in the argKeyName global. */
 	if (argKeyName) ksFromXMLfile(ks,argKeyName);
 	else ksFromXML(ks,fileno(stdin) /* more elegant then just '0' */);
 

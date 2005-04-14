@@ -129,7 +129,7 @@ distclean:
 	-rm -rf ${APIDIR}
 	#-find ${APIDIR}/man | egrep -v "key.*3|ks.*3" | xargs rm
 	#-rm -rf ${APIDIR}/html
-	#-rm -rf ${APIDIR}.tar.gz
+	-rm -rf ${APIDIR}.tar.gz
 
 
 
