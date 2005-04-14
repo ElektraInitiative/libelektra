@@ -78,6 +78,14 @@ $LastChangedBy: aviram $
 #endif
 
 
+/**This buffer size is fastest for reading and writing
+ * in files*/
+#define BUFFER_RDWR_SIZE 8024
+
+
+/**Global variables*/
+FILE * fc;
+int fd;
 
 
 /**
@@ -181,12 +189,152 @@ int kdbClose_ini() {
  * Implementation for kdbStatKey() method.
  * 
  * @see kdbStatKey() for expected behavior.
+ *
  * @ingroup backend
  */
 int kdbStatKey_ini(Key *key) {
 	//TODO
 	fprintf (stderr, "Stat key\n");
 	return 0; /* success */
+}
+
+
+/**
+ * Opens a file filename.
+ * The mode might be O_RDONLY or O_RDWR.
+ * @return 0 on success, -1 on failure
+ * @ingroup backend*/
+int open_file (char * filename, int mode)
+{
+	char buffer [2] = "\0\0";
+	
+	if (mode == O_RDWR)
+	{
+		buffer[0] = 'r';
+		buffer[1] = '+';
+	}
+	else if (mode == O_RDONLY)
+	{
+		buffer[0] = 'r';
+	} else {
+		fprintf (stderr, "Mode not useful\n");
+		return -1;
+	}
+
+	fd = open (filename, mode);
+	if (fd == -1) {
+		fprintf (stderr, "Unable to open file\n");
+		return -1;
+	}
+	
+	if (flock (fd, LOCK_EX) == -1) {
+		fprintf (stderr, "Unable to lock file\n");
+		return -1;
+	}
+		
+	
+	fc = fdopen (fd,buffer);
+	if (fc == NULL) {
+		fprintf (stderr, "fdopen() failed\n");
+		return -1;
+	}
+	return 0;
+}
+
+/**Close previous with open_file() opened file
+ * @return 0 on success, -1 on failure*/
+int close_file ()
+{
+	int ret;
+	
+	if (flock (fd, LOCK_UN) == -1) {
+		perror ("Unable to unlock file");
+		return -1;
+	}
+
+	ret = fclose (fc); // close file
+	if (ret != 0) {
+		perror ("Could not close file");
+		return -1;
+	}
+	return 0;
+}
+
+
+/**Enlarges file on place where with space bytes. The new
+ * place will contain the previous text. The text before
+ * where will not be touched.*/
+int enlarge_file (long where, long space)
+{
+	char buffer [BUFFER_RDWR_SIZE+1];
+	size_t sread;
+	long diff = 0;
+	int err;
+	int finished = 0;
+	long pos;
+
+	fseek (fc,0,SEEK_END); // begin at end
+	pos = ftell (fc);
+	do {
+		pos -= BUFFER_RDWR_SIZE;
+		if (pos < where) {
+			diff = where - pos;
+			pos = where;
+			finished = 1;
+		}
+		fseek (fc, pos, SEEK_SET);
+		sread = fread (buffer,1,BUFFER_RDWR_SIZE-diff,fc);	// read last peace
+		buffer[sread] = 0;	// mark end (not necessary)
+
+		fseek (fc,pos+space,SEEK_SET);	// jump to writepos
+
+		printf ("buffer: %s, sread: %d\n", buffer, sread);
+		fwrite (buffer,1,sread,fc);
+		err = ferror (fc);
+		if (err != 0)
+		{
+			fprintf (stderr, "Error in stream\n");
+			return -1;
+		}
+	} while (! finished);
+
+	return 0;
+}
+
+/**Shrinks file on place where with space bytes.
+ * The old text (length space after where) will 
+ * be lost! The text before where will not be touched.*/
+int shrink_file (long where, long space)
+{
+	char buffer [BUFFER_RDWR_SIZE+1];
+	size_t sread;
+	int err;
+	long pos;
+
+	fseek (fc,where, SEEK_SET);
+	pos = ftell (fc);
+	
+	do {
+		fseek (fc,pos+space,SEEK_SET); // jump to readposition
+		sread = fread (buffer,1,BUFFER_RDWR_SIZE,fc);	// read a peace
+		buffer[sread] = 0;	// mark end (not necessary)
+
+		fseek (fc,pos,SEEK_SET);	// jump to writepos
+
+		printf ("buffer: %s, sread: %d\n", buffer, sread);
+		fwrite (buffer,1,sread,fc);
+		err = ferror (fc);
+		if (err != 0)
+		{
+			fprintf (stderr, "Error in stream\n");
+			return -1;
+		}
+		pos += sread;
+	} while (sread == BUFFER_RDWR_SIZE);
+
+	ftruncate (fd,lseek(fd,0,SEEK_CUR));
+	
+	return 0;
 }
 
 /**
@@ -287,7 +435,7 @@ int count = 0;
  * 
  * @ingroup backend
  */
-int IniGetKey (FILE * fc, Key * key, char * root)
+int IniGetKey (Key * key, char * root)
 {
 	char * buffer;
 	char * buffer_value;
@@ -467,7 +615,6 @@ int kdbGetKey_ini(Key *key) {
 	char * keyFullName;
 	char * keyRoot;
 	char * end;
-	FILE * fc; int fd;	// filedescriptor
 	
 	fprintf (stderr, "kdbGetKey_ini() entered\n");
 	
@@ -491,19 +638,9 @@ int kdbGetKey_ini(Key *key) {
 	}
 	fprintf (stderr, "Get Key %s [%d] in File: %s\n", keyName, keySize, keyFileName);
 
-	fd = open (keyFileName, O_RDONLY);
-	if (fd == -1) {
-		fprintf (stderr, "Unable to open file\n");
-		return -1;
-	}
+	open_file (keyFileName, O_RDONLY);
 	
-	if (flock (fd, LOCK_EX) == -1) {
-		fprintf (stderr, "Unable to lock file\n");
-	}
-	
-	fc = fdopen (fd,"r");
-	
-	while ((pos=IniGetKey (fc, key, keyRoot)) == 0)
+	while ((pos=IniGetKey (key, keyRoot)) == 0)
 	{
 		fprintf (stderr, "Compare: %s with %s\n", key->key, keyFullName);
 		if (strcmp (key->key, keyFullName) == 0) {	// right Key found
@@ -530,11 +667,8 @@ int kdbGetKey_ini(Key *key) {
 		pos = 0;
 	}
 	
-	if (flock (fd, LOCK_UN) == -1) {
-		perror ("Unable to unlock file");
-	}	
-	close (fd); // close filedescriptor
-
+	close_file ();
+	
 	free (keyFullName);
 	free (keyRoot);
 	
@@ -551,27 +685,12 @@ ssize_t kdbGetKeys (char * keyFileName, char * keyRoot, KeySet * returned)
 {
 	Key * key;
 	int pos;
-//	size_t keyNameSize;
-//	char * keyNewName;
-//	size_t keyNewNameSize;
-	FILE * fc; int fd;	// filedescriptor
 
-	fd = open (keyFileName, O_RDONLY);
-	if (fd == -1) {
-		fprintf (stderr, "Unable to open file, %s\n", keyFileName);
-		return -1;
-	}
-	
-	if (flock (fd, LOCK_EX) == -1) {
-		fprintf (stderr, "Unable to lock file\n");
-	}
-	
-	fc = fdopen (fd,"r");
-
+	open_file (keyFileName, O_RDONLY);
 	key = keyNew (KEY_SWITCH_END);
 
 	fprintf (stderr, "Call IniGetKey(%s)\n", keyRoot);
-	while ((pos=IniGetKey (fc, key, keyRoot)) == 0)
+	while ((pos=IniGetKey (key, keyRoot)) == 0)
 	{
 		fprintf (stderr, "Append key\n");
 		ksAppend (returned,key);
@@ -580,11 +699,8 @@ ssize_t kdbGetKeys (char * keyFileName, char * keyRoot, KeySet * returned)
 	}
 	
 	keyDel (key); // delete the not used key left
-	
-	if (flock (fd, LOCK_UN) == -1) {
-		perror ("Unable to unlock file");
-	}	
-	close (fd); // close filedescriptor
+
+	close_file();
 	
 	return 0; /* success */
 }
