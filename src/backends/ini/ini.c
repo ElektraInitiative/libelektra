@@ -3,7 +3,7 @@
                              -------------------
     begin                : 01.03.2005
     copyright            : (C) 2005 by Markus Raab
-    email                : mail@markus-raab.org
+    email                : debian@markus-raab.org
  ***************************************************************************/
 
 /***************************************************************************
@@ -23,10 +23,9 @@
  *   key1=value1;comment
  *
  * TODO:
+ *   create new files and folders
  *   Filelock does not work over NFS. (use fcntl instead of flock)
  *   make \n\t engine
- *   there is no multiple fetching keys, even it could be done very fast
- *   setting keys does not work
  *   setting errno properly
  *   remove debugging features
  *
@@ -36,16 +35,6 @@
  *   rename/remove keys features
  *
  ***************************************************************************/
-
-
-/* Subversion stuff
-
-$Id: template.c 173 2005-01-26 01:24:26Z aviram $
-$LastChangedBy: aviram $
-
-*/
-
-
 
 #include <kdb.h>
 #include <kdbbackend.h>
@@ -705,6 +694,18 @@ ssize_t kdbGetKeys (char * keyFileName, char * keyRoot, KeySet * returned)
 	return 0; /* success */
 }
 
+/**
+ * Writes out a key into file on pos.
+ * keySet is the key which should be written there
+ *
+ * @ret Returnes 0 on success.
+ * 
+ * @ingroup backend
+ */
+int IniWriteKey (Key * keySet, long pos)
+{
+	return 0;
+}
 
 
 /**
@@ -787,8 +788,112 @@ ssize_t kdbGetKeyChildKeys_ini(const Key * key, KeySet *returned, unsigned long 
  * @ingroup backend
  */
 int kdbSetKey_ini(Key *key) {
-	fprintf (stderr, "Set Key in File\n");
-	return 0; /* success */
+	char keyFileName [MAX_PATH_LENGTH];
+	char keyName [MAX_PATH_LENGTH];
+	
+	int pos;
+	int keySize;
+	char * keyFullName;
+	char * keyRoot;
+	char * end;
+
+	Key * setKey;
+	long oldpos, newpos;
+	int needed_size;
+
+	setKey = keyNew (KEY_SWITCH_END);
+	keyDup (key, setKey);	// clone key
+	
+	fprintf (stderr, "kdbGetKey_ini() entered\n");
+	
+	pos = IniGetFileName(key, keyFileName, keyName);
+	
+	keySize = keyGetNameSize (key);
+	keyFullName = malloc (keySize+1);
+	keyGetName(key, keyFullName, keySize);
+	
+	end = strrchr (keyFullName, '/');	// dirname
+	*end = 0;
+	keyRoot = malloc (strlen (keyFullName));
+	strcpy (keyRoot, keyFullName);
+	*end = '/';
+	
+	fprintf (stderr, "keyRoot: %s\n", keyRoot);
+
+	if (! pos) {
+		fprintf (stderr, "Could not receive filename");
+		return -1;
+	}
+	fprintf (stderr, "Set Key %s [%d] in File: %s\n", keyName, keySize, keyFileName);
+
+	open_file (keyFileName, O_RDWR);
+	
+	while ((pos=IniGetKey (key, keyRoot)) == 0)
+	{
+		if (strcmp (key->key, keyFullName) == 0) {	// right Key found
+			//TODO: use keySetName (key, keyFullName);
+			//or DONT EVEN SET, because key->key and keyFullName is the same
+			fprintf (stderr, "Key found\n");
+			if (key->key) free(key->key);
+			key->key = malloc (keySize+1);
+			strncpy (key->key, keyFullName, keySize);
+
+			// use setkey to set the key to wished values
+			newpos = ftell (fc);
+			end = strrchr (keyStealName (setKey),'/')+1;
+			needed_size = strlen (end) +// =
+				keyGetDataSize (setKey) +	// ;
+				keyGetCommentSize (setKey) + 1;	// \n
+			if (newpos - oldpos > needed_size)
+			{
+				fprintf (stderr, "Shrinking File with %ld bytes",
+						newpos - oldpos - needed_size);
+				shrink_file (oldpos, newpos - oldpos -needed_size);
+			} else if (newpos - oldpos < needed_size) {
+				fprintf (stderr, "Enlarge File with %ld bytes",
+						needed_size - (newpos - oldpos));
+				enlarge_file (newpos, needed_size - (newpos - oldpos));
+			}
+			
+			fprintf(stderr, "Writing key to disc (pos: %ld|%ld|%d) ...\n",
+				oldpos, newpos, needed_size);
+			fseek (fc, oldpos, SEEK_SET);
+			
+			fwrite (       end, strlen(end), 1, fc);
+			fwrite ("=", 1,1,fc);
+			fwrite (keyStealValue (setKey), keyGetValueSize(setKey)-1, 1, fc);
+			fwrite (";", 1,1,fc);
+			fwrite (keyStealComment (setKey), keyGetCommentSize(setKey)-1, 1, fc);
+			fwrite ("\n", 1,1,fc);
+
+			newpos = ftell (fc);
+			fprintf (stderr, "Real endpos: %ld\n", newpos);
+	
+			fprintf (stderr, "key: %s, value: %s, comment: %s\n", 
+				setKey->key, (char *) setKey->data, setKey->comment);
+		
+			
+			pos = 1;
+			break;
+		}
+		oldpos = ftell (fc);
+	}
+	if (pos != 1) {	// key not found, leave it, so that app won't sigfault
+		errno = KDB_RET_NOKEY;
+		pos = -1;
+		fprintf (stderr, "Key not found!\n");
+	} else if (pos == 1) { // key found, everything went ok!
+		pos = 0;
+	}
+	
+	// ftruncate file
+
+	close_file ();
+	
+	free (keyFullName);
+	free (keyRoot);
+	
+	return pos; /* success */
 }
 
 
