@@ -386,7 +386,7 @@ int ksFromXMLfile(KeySet *ks,char *filename) {
 
 
 
-/* FIXME: its not working when fd is stdin */
+/* FIXME: not working when fd is stdin */
 /**
  * Given a file descriptor (that can be @p stdin) for an XML file, validate
  * schema, process nodes, convert and save it in the @p ks KeySet.

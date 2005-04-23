@@ -33,7 +33,7 @@ DEFAULT_BACKEND=filesys
 
 
 
-all: libkdb.a libkdb.so libregistry.so libkdbtools.so kdb     # kdbfuture.h
+all: libkdb.a libkdb.so libkdbtools.so kdb     # kdbfuture.h
 	for x in ${BACKENDS}; do (cd "backends/$$x"; $(MAKE) \
 		OPTIMIZATIONS="${OPTIMIZATIONS}" \
 		DTDVERSION=${DTDVERSION} \
@@ -116,7 +116,7 @@ install: all
 	cp -d libkdb.so* ${DESTDIR}${LIBDIR}
 	cp -d libkdbtools.so* ${DESTDIR}${ULIBDIR}
 	cp libkdb.a ${DESTDIR}${ULIBDIR}
-	cp libregistry.so ${DESTDIR}${LIBDIR} # remove me in the future
+	#cp libregistry.so ${DESTDIR}${LIBDIR} # remove me in the future
 	cp kdb ${DESTDIR}${BINDIR}
 	cp kdb.h kdbprivate.h kdbbackend.h kdbtools.h ${DESTDIR}${INCDIR}
 	cp kdb.c ${DESTDIR}${DOCDIR}/${NAME}-devel/examples/

@@ -158,7 +158,7 @@ kdb set system/sw/kdb/current/schemapath "%{_datadir}/sgml/elektra-%{DTDVERSION}
 /lib/*kdb-filesys.so*
 /lib/*kdb-default.so*
 /lib/*kdb-fstab.so*
-/lib/*registry.so*
+/lib/*kdb-ini.so*
 %{_libdir}/*kdbtools.so*
 /bin/*
 %{_sysconfdir}/profile.d/*

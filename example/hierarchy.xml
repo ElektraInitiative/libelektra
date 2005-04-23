@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 
+<!--
+	This is the new hierarchical XML style that supports nested <key>s and
+	two new attributes: parent and basename, being
+	"parent" + "/" + "basename" = "name".
+	
+	The ksFromXML() and ksFromXMLfile() supports this format since version 0.5.
+-->
+
 
 <!--
 	Subversion stuff.
 	
-	$Id: keyset.xml 175 2005-01-27 08:28:07Z aviram $
+	$Id$
 	$LastChangedBy: aviram $
 	
  -->
