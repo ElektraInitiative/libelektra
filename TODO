@@ -1,19 +1,11 @@
-TO PROJECT
-- Patches to gconf, KConfig, modprobe
-
-TO PUBLISH
-- freedesktop.org
-- gnu
-- newsgroups of unix programming
-- brave GNU World: column@brave-gnu-world.org
-
-TO CODE
+- Write a patch/backend for KConfigXT.
+- Update the X.org patch for the last API modifications
+- Write a daemon backend (maybe based on HTTP, CGI and XML)
+- Add methods for a better notification API, instead of monitoring
+- Write specifications for configuration trees. I already put something in the /specs/ dir on the source
+- Finish the Berkeley DB backend
+- Update the website and style for better browsing experience
 - Perl binding
-- Networking server through Apache and a Perl CGI script
-- Network (HTTP) based backend
-- kdbLink must create directories recursively
-- kdb ls must show links
-- kdb to support recursive removing
 - Syslog logging
-- Handle special keys: named pipe
-- Scripts for other /etc files conversion
+
+
