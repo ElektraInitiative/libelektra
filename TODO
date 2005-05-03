@@ -9,3 +9,11 @@
 - Syslog logging
 
 
+THE NEW NOTIFICATION API SHOULD BE:
+void kdbRegisterCallback(KeySet *interests, u_int32_t diffMask,
+    KdbCallback *cb, void *userdata);
+
+void kdbUnregisterCallback(KeySet *interests, u_int32_t diffMask,
+    KdbCallback *cb, void *userdata);
+
+void kdbDeliverEvents(long iterations, int sleep);
