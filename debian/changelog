@@ -1,3 +1,9 @@
+elektra (0.5) unstable; urgency=low
+
+  * Stabilize api. Won't changed during 0.5 development.
+
+ -- Markus Raab <debian@markus-raab.org>  Tue,  3 May 2005 08:26:02 +0200
+
 elektra (0.4.11-5) unstable; urgency=low
 
   * Update to 0.4.11-5
