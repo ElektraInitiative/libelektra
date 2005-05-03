@@ -900,7 +900,7 @@ ssize_t kdbGetKeyChildKeys_bdb(const Key *parentKey, KeySet *returned, unsigned 
 	if (db == 0) { /* handle error */}
 
 
-		
+	
 	/* Create a private cursor to not mess up threads
 	 * TODO: Check if BDB has some option to avoid this */
 	ret = db->db.parentIndex->cursor(db->db.parentIndex, NULL, &cursor, 0);
@@ -938,7 +938,9 @@ ssize_t kdbGetKeyChildKeys_bdb(const Key *parentKey, KeySet *returned, unsigned 
 	carray[1]=0;
 
 	ret=db->db.keyValuePairs->join(db->db.keyValuePairs,carray,&joincurs,0);
-
+	if (ret<0) db->db.keyValuePairs->err(db->db.keyValuePairs,ret,"%s");
+	
+	memset(&keyData,0,sizeof(keyData));
 	ret=joincurs->c_get(joincurs,&keyName,&keyData,0);
 	
 	/* Now start retrieving all child keys */

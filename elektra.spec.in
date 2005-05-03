@@ -93,7 +93,7 @@ leveraging easy application integration.
 This package contains a Berkeley DB backend for Elektra, to let Elektra use
 Berkeley DB databases to store its keys.
 
-
+%debug_package
 
 %prep
 %setup
