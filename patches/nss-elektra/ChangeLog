@@ -1,0 +1,16 @@
+0.1: First release
+
+0.2: Changes:
+* Changed getpwuid/getspuid/getgrgid functions to use the new .ByID tree.
+* Changed passwdconvert application to have many more options, 
+  better error checking and to create the new .ByID tree.
+* Added addtestuser.sh script to distribution
+
+0.3: Changes:
+* Fixed bugs regarding errorchecking when calling getspnam without proper access
+* Now logs weird errormessages regarding file access in getpw* and getgr*
+* Various other minor changes (Check cvs log)
+
+0.4: Changes:
+* Changed name to nss-elektra
+* Updated to support elektra(kdb) library instead of registry

@@ -1,0 +1,20 @@
+In order to get this working you have to do x things:
+Configure using ./configure (enable debug, if desired, with --enable-debug)
+make to Compile the package
+make install to install the module and the passwdconvert program. (Module should be installed in /lib
+Run passwdconvert to convert passwd, shadow and group database to registry.
+Note that if you previously converted the database with the 0.1 version 
+of the tool, you MUST convert again with this tool. 
+Else all the get??uid/getgrgid functions will not work.
+Once the installation and conversion is over you need to change your nsswitch.conf
+to tell it to use the registry database.
+you do this by change the lines to what is below:
+passwd: elektra
+group: elektra
+shadow: elektra
+
+(Most likely it will say either files or compat in your existing file)
+After this a restart of any services that retrieve database information is required (i.e. sshd, ftpd etc)
+Bugs can be reported to rayman@skumler.net or the help forum at 
+the nss-registry project page at developer.berlios.de.
+
