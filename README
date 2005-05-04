@@ -8,7 +8,7 @@ Before that, Elektra was LGPL.
 
 Compiling and Packaging
 -----------------------
-Elektra is such a simple software that you'll probably wont need to recompile
+Elektra is such a simple software, that you'll probably wont need to recompile
 it from source. Use the binary RPM from the main repository. It should
 work for any RPM based distribution.
 
