@@ -42,8 +42,8 @@ $Author: rayman $
 #define FALLBACK_SHELL "/bin/sh"
 
 /* Global keyset & key for setpwent, getpwent and endpwent */
-KeySet *ks = NULL;
-Key *key = NULL;
+KeySet *passwdks = NULL;
+Key *passwdkey = NULL;
 
 NSS_STATUS _nss_elektra_getpwuid_r (uid_t, struct passwd *, char *, size_t,
 				     int *);
@@ -74,7 +74,7 @@ _nss_elektra_getpwnam_r (const char *name, struct passwd *pw,
   *errnop = ENOENT;
 
 /* Open elektra connection */
-  kdbOpen ();
+  kdbOpenDefault ();
   if (_nss_elektra_finduserbyname (name) == NSS_STATUS_NOTFOUND)
     return NSS_STATUS_NOTFOUND;
 /* Yay! the users exists, lets continue */
@@ -238,7 +238,7 @@ _nss_elektra_getpwuid_r (uid_t uid, struct passwd * pw,
 /* I'm not sure how long a username can actually be, so...)*/
   char *username;
   NSS_STATUS tmpstatus;
-  kdbOpen ();
+  kdbOpenDefault ();
   if ((_nss_elektra_finduserbyuid (uid, &username)) == NSS_STATUS_NOTFOUND)
     return NSS_STATUS_NOTFOUND;
 /* Due to the way elektra is made it's far more efficient to work with
@@ -261,32 +261,33 @@ _nss_elektra_setpwent (void)
   int ret;
 /* We need to first open elektra, then get a KeySet of all keys in system/users
  * and store it globally, ready for returning the first key
+ * If user has previously called setpwent without calling endpwent, 
+ * memory leaks WILL occur! 
  */
-  kdbOpen ();
-  ks = (KeySet *) malloc (sizeof (KeySet));
-  memset(ks, 0, sizeof(KeySet));
-  ksInit (ks);
-  ret = kdbGetChildKeys ("system/users", ks, KDB_O_DIR);
+  kdbOpenDefault ();
+  passwdks = ksNew();
+  ret = kdbGetChildKeys ("system/users", passwdks, KDB_O_DIR);
   if (!ret)
-    {
-      if (ks->size <= 0)
-	{
-	  _nss_elektra_log (LOG_ERR, "No users in elektra database!\n");
-	  ksClose (ks);
-	  free (ks);
-	  ks = NULL;
-	  kdbClose ();
-	  return NSS_STATUS_NOTFOUND;
-	}
-      /* No error, return success! */
-      key = ks->start;
-      kdbClose ();
-      return NSS_STATUS_SUCCESS;
-    }
+  {
+    if (ksGetSize(passwdks) <= 0)
+	  {
+	    _nss_elektra_log (LOG_ERR, "No users in elektra database!\n");
+	    ksDel (passwdks);
+	    passwdks = NULL;
+	    kdbClose ();
+	    return NSS_STATUS_NOTFOUND;
+	  }
+    /* No error, return success! */
+    passwdkey = ksHead(passwdks);
+    kdbClose ();
+    return NSS_STATUS_SUCCESS;
+  }
 
 /* If we get here it usually means that system/users doesn't exist,
  * which means this function is unavailable :) as well as the other 
  * related ones */
+  ksDel(passwdks);
+  passwdks = NULL;
   kdbClose ();
   return NSS_STATUS_UNAVAIL;
 }
@@ -294,17 +295,16 @@ _nss_elektra_setpwent (void)
 NSS_STATUS
 _nss_elektra_endpwent (void)
 {
-  if (ks != NULL)
-    {
-      ksClose (ks);
-      free (ks);
-      ks = NULL;
-      key = NULL;
-    } else if(key != NULL)
-    {
-	keyClose(key);
-	free(key);
-    }
+  if (passwdks != NULL)
+  {
+    ksDel (passwdks);
+    passwdks = NULL;
+    passwdkey = NULL;
+  } else if(passwdkey != NULL)
+  {
+	  keyDel(passwdkey);
+	  passwdkey = NULL;
+  }
   return NSS_STATUS_SUCCESS;
 }
 
@@ -313,29 +313,28 @@ NSS_STATUS
 _nss_elektra_getpwent_r (struct passwd * pw, char *buffer,
 			  size_t buflen, int *errnop)
 {
-  Key *tempkey = NULL;
   int usernamesize = 0;
   char *username = NULL;
   NSS_STATUS tmpstatus;
 /* Hmm..I wonder if I should start it implicitly when this function is
  * called without setent */
 
-  if (ks == NULL)
+  if (passwdks == NULL)
   {
+    /* Implicitly setpwent in case user has forgotten to run it */
    _nss_elektra_setpwent();
    /* return NSS_STATUS_UNAVAIL;*/
   }
-  if (key == NULL)
-    {
-      /* End of list */
-      return NSS_STATUS_NOTFOUND;
-    }
-  usernamesize = keyGetBaseNameSize (key);
+  if (passwdkey == NULL)
+  {
+    /* End of list */
+    return NSS_STATUS_NOTFOUND;
+  }
+  usernamesize = keyGetBaseNameSize (passwdkey);
   username = (char *) malloc (usernamesize);
-  keyGetBaseName (key, username, usernamesize);
+  keyGetBaseName (passwdkey, username, usernamesize);
   tmpstatus = _nss_elektra_getpwnam_r (username, pw, buffer, buflen, errnop);
   free (username);
-  tempkey = key;
-  key = tempkey->next;
+  passwdkey = ksNext(passwdks);
   return tmpstatus;
 }

@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 # Svn Stuff
-# $Id: Makefile.am 36 2004-06-12 12:19:09Z rayman $
+# $Id: Makefile.am 40 2004-11-26 23:25:09Z rayman $
 # $LastChangedBy: rayman $
 
 srcdir = @srcdir@
@@ -476,25 +476,6 @@ uninstall-am: uninstall-info-am uninstall-slibLTLIBRARIES
 	tags uninstall uninstall-am uninstall-info-am \
 	uninstall-slibLTLIBRARIES
 
-
-#Taken from nss_db library
-
-# To mimmick the old glibc installation as closely as possible, we
-# shuffle the installed library and the links to it around a bit,
-# removing all traces from libtool in the process.
-#install-data-local:
-#	$(mkinstalldirs) $(DESTDIR)$(libdir)
-#	rm $(DESTDIR)$(slibdir)/libnss_elektra.la
-#	rm $(DESTDIR)$(slibdir)/libnss_elektra.so
-#	mv $(DESTDIR)$(slibdir)/libnss_registry.so.$(INTERFACE).0.0 \
-#	$(DESTDIR)$(slibdir)/libnss_registry-$(VERSION).so
-#	rm $(DESTDIR)$(slibdir)/libnss_registry.so.$(INTERFACE)
-#	$(top_srcdir)/rellns-sh $(DESTDIR)$(slibdir)/libnss_registry-$(VERSION).so \
-#		$(DESTDIR)$(slibdir)/libnss_registry.so.$(INTERFACE)
-#	rm -f $(DESTDIR)$(libdir)/libnss_registry.so
-#	$(top_srcdir)/rellns-sh \
-#		$(DESTDIR)$(slibdir)/libnss_registry.so.$(INTERFACE) \
-#		$(DESTDIR)$(libdir)/libnss_registry.so
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

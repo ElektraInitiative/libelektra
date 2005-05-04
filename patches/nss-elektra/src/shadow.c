@@ -73,7 +73,7 @@ _nss_elektra_getspnam_r (const char *name, struct spwd *pw,
   *errnop = ENOENT;
 
 /* Open elektra connection */
-  kdbOpen ();
+  kdbOpenDefault ();
   if (_nss_elektra_finduserbyname (name) == NSS_STATUS_NOTFOUND)
     return NSS_STATUS_NOTFOUND;
 /* Yay! the users exists, lets continue */
@@ -113,14 +113,10 @@ _nss_elektra_getspnam_r (const char *name, struct spwd *pw,
 
   tmpbuf = (char *) malloc (255);
   sprintf (tmpbuf, "system/users/%s/shadowPassword", pw->sp_namp);
-  tmpkey = (Key *) malloc (sizeof (Key));
-  memset(tmpkey, 0, sizeof(Key));
-  keyInit (tmpkey);
-  keySetName (tmpkey, tmpbuf);
+  tmpkey = ksNew(tmpbuf, KEY_SWITCH_END);
   kdbStatKey (tmpkey);
   pw->sp_lstchg = keyGetMTime (tmpkey) / (60 * 60 * 24);
-  keyClose (tmpkey);
-  free (tmpkey);
+  keyDel (tmpkey);
   free (tmpbuf);
 
   tmpbuf =
@@ -267,7 +263,7 @@ _nss_elektra_getspuid_r (uid_t uid, struct spwd * pw,
 {
   char *username;
   NSS_STATUS tmpstatus;
-  kdbOpen ();
+  kdbOpenDefault ();
   if ((_nss_elektra_finduserbyuid (uid, &username)) == NSS_STATUS_NOTFOUND)
     return NSS_STATUS_NOTFOUND;
 /* Due to the way elektra is made it's far more efficient to work with
@@ -291,28 +287,25 @@ _nss_elektra_setspent (void)
 /* We need to first open elektra, then get a KeySet of all keys in system/users
  * and store it globally, ready for returning the first key
  */
-  kdbOpen ();
-  shadowks = (KeySet *) malloc (sizeof (KeySet));
-  memset(shadowks, 0, sizeof(KeySet));
-  ksInit (shadowks);
+  kdbOpenDefault ();
+  shadowks = ksNew();
   ret = kdbGetChildKeys ("system/users", shadowks, KDB_O_DIR);
   if (!ret)
-    {
-      if (shadowks->size <= 0)
-	{
-	  _nss_elektra_log (LOG_ERR, "_nss_elektra_setspent: No users found."
+  {
+    if (ksGetSize(shadowks) <= 0)
+	  {
+	    _nss_elektra_log (LOG_ERR, "_nss_elektra_setspent: No users found."
                          "Fix your elektra.");
-	  ksClose (shadowks);
-	  free (shadowks);
-	  shadowks = NULL;
-	  kdbClose ();
-	  return NSS_STATUS_NOTFOUND;
-	}
-      /* No error, return success! */
-      shadowkey = shadowks->start;
-      kdbClose ();
-      return NSS_STATUS_SUCCESS;
-    }
+	    ksDel (shadowks);
+	    shadowks = NULL;
+	    kdbClose ();
+	    return NSS_STATUS_NOTFOUND;
+	  }
+    /* No error, return success! */
+    shadowkey = ksHead(shadowks);
+    kdbClose ();
+    return NSS_STATUS_SUCCESS;
+  }
 
 /* If we get here it usually means that system/users doesn't exist,
  * which means this function is unavailable :) as well as the other 
@@ -325,17 +318,15 @@ NSS_STATUS
 _nss_elektra_endspent (void)
 {
   if (shadowks != NULL)
-    {
-      ksClose (shadowks);
-      if (shadowks != NULL)
-	free (shadowks);
-      shadowks = NULL;
-      shadowkey = NULL;
-    } else if(shadowkey != NULL)
-    {
-      keyClose(shadowkey);
-      free(shadowkey);
-    }
+  {
+    ksDel (shadowks);
+    shadowks = NULL;
+    shadowkey = NULL;
+  } else if(shadowkey != NULL)
+  {
+    keyDel(shadowkey);
+    free(shadowkey);
+  }
   return NSS_STATUS_SUCCESS;
 }
 
@@ -344,7 +335,6 @@ NSS_STATUS
 _nss_elektra_getspent_r (struct spwd * pw, char *buffer,
 			  size_t buflen, int *errnop)
 {
-  Key *tempkey = NULL;
   int usernamesize;
   char *username = NULL;
   NSS_STATUS tmpstatus;
@@ -354,16 +344,15 @@ _nss_elektra_getspent_r (struct spwd * pw, char *buffer,
   if (shadowks == NULL)
     return NSS_STATUS_UNAVAIL;
   if (shadowkey == NULL)
-    {
-      /* End of list */
-      return NSS_STATUS_NOTFOUND;
-    }
+  {
+    /* End of list */
+    return NSS_STATUS_NOTFOUND;
+  }
   usernamesize = keyGetBaseNameSize (shadowkey);
   username = (char *) malloc (usernamesize);
   keyGetBaseName (shadowkey, username, usernamesize);
   tmpstatus = _nss_elektra_getspnam_r (username, pw, buffer, buflen, errnop);
   free (username);
-  tempkey = shadowkey;
-  shadowkey = tempkey->next;
+  shadowkey = ksNext(shadowks);
   return tmpstatus;
 }

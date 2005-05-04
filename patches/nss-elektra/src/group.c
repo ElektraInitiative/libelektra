@@ -84,15 +84,15 @@ _nss_elektra_getgrnam_r (const char *name, struct group * gr,
   int i, ret;
   char *tmpbuf = NULL, *end_of_buf;
   char **addrptr = NULL;
-  Key *key;
-  KeySet ks;
+  Key *key = NULL;
+  KeySet *ks = NULL;
   char *grname = NULL;
   int namesize;
 
   *errnop = ENOENT;
 
 /* Open elektra(kdb) connection */
-  kdbOpen ();
+  kdbOpenDefault ();
   if (_nss_elektra_findgroupbyname (name) == NSS_STATUS_NOTFOUND)
     return NSS_STATUS_NOTFOUND;
 /* Yay! the group exists, lets continue */
@@ -122,19 +122,19 @@ _nss_elektra_getgrnam_r (const char *name, struct group * gr,
   }
 
   if (_nss_elektra_isempty (tmpbuf))
-    {
-      /* Password isn't set so set it to "x" */
-      gr->gr_passwd = _nss_elektra_copy_to_buffer (&buffer, &buflen, "x");
-      /* Since isempty also checks if it just contains spaces I better 
-       * free this */
-      if (tmpbuf != NULL)
-	free (tmpbuf);
-    }
-  else
-    {
-      gr->gr_passwd = _nss_elektra_copy_to_buffer (&buffer, &buflen, tmpbuf);
+  {
+    /* Password isn't set so set it to "x" */
+    gr->gr_passwd = _nss_elektra_copy_to_buffer (&buffer, &buflen, "x");
+    /* Since isempty also checks if it just contains spaces I better 
+     * free this */
+    if (tmpbuf != NULL)
       free (tmpbuf);
-    }
+  }
+  else
+  {
+    gr->gr_passwd = _nss_elektra_copy_to_buffer (&buffer, &buflen, tmpbuf);
+    free (tmpbuf);
+  }
   if (!gr->gr_passwd)
     goto out_nomem;
 
@@ -151,34 +151,35 @@ _nss_elektra_getgrnam_r (const char *name, struct group * gr,
 			   "addr %p, data %p", addrptr,
 				buffer);*/
 
-  ksInit (&ks);
+  ks = ksNew(); /* Need error checking here */
   /* Not sure if this big a buffer is actually used? Do anyone have 1000 character or above usernames */
   tmpbuf = (char *) malloc (1024);
   snprintf (tmpbuf, 1023, "system/groups/%s/members", gr->gr_name);
-  ret = kdbGetChildKeys (tmpbuf, &ks, KDB_O_STATONLY);
+  ret = kdbGetChildKeys (tmpbuf, ks, KDB_O_STATONLY);
   free (tmpbuf);
-  if (ret == 0 && ks.size > 0)
-    {
-      for (key = ks.start; key; key = key->next)
-	{
-	  char *p, *tmp;
-	  namesize = keyGetBaseNameSize (key);
-	  grname = (char *) malloc (namesize);
-	  keyGetBaseName (key, grname, namesize);
-	  end_of_buf -= namesize;
-	  if ((void *) addrptr >= (void *) end_of_buf)
-	    goto out_nomem;
+  if (ret == 0 && ksGetSize(ks) > 0)
+  {
+    for (key = ksHead(ks); key; key = ksNext(ks))
+	  {
+	    char *p, *tmp;
+	    namesize = keyGetBaseNameSize (key);
+	    grname = (char *) malloc (namesize);
+	    keyGetBaseName (key, grname, namesize);
+	    end_of_buf -= namesize;
+	    if ((void *) addrptr >= (void *) end_of_buf)
+	      goto out_nomem;
 
-	  tmp = end_of_buf;
-	  p = _nss_elektra_copy_to_buffer (&tmp, NULL, grname);
-	  if (!p)
-	    goto out_nomem;
-	  *addrptr = p;
-	  ++addrptr;
-	  free (grname);
-	}
-    }
-  ksClose (&ks);
+	    tmp = end_of_buf;
+	    p = _nss_elektra_copy_to_buffer (&tmp, NULL, grname);
+	    if (!p)
+  	    goto out_nomem;
+	    *addrptr = p;
+	    ++addrptr;
+	    free (grname);
+	  }
+  }
+  ksDel (ks);
+  ks = NULL;
 
   if ((void *) addrptr >= (void *) end_of_buf)
     goto out_nomem;
@@ -199,6 +200,8 @@ out_nomem:
    */
   if (!grname)
     free (grname);
+  if (!ks)
+    ksDel(ks);
   *errnop = ERANGE;
   kdbClose ();
   return NSS_STATUS_TRYAGAIN;
@@ -211,7 +214,7 @@ _nss_elektra_getgrgid_r (gid_t gid, struct group * gr,
 {
   char *groupname;
   NSS_STATUS tmpstatus;
-  kdbOpen ();
+  kdbOpenDefault ();
   if ((_nss_elektra_findgroupbygid (gid, &groupname)) == NSS_STATUS_NOTFOUND)
     return NSS_STATUS_NOTFOUND;
 /* Due to the way the kdb is made it's far more efficient to work with
@@ -235,28 +238,25 @@ _nss_elektra_setgrent (void)
 /* We need to first open kdb, then get a KeySet of all keys in system/users
  * and store it globally, ready for returning the first key
  */
-  kdbOpen ();
-  groupks = (KeySet *) malloc (sizeof (KeySet));
-  memset(groupks, 0, sizeof(KeySet));
-  ksInit (groupks);
+  kdbOpenDefault ();
+  groupks = ksNew();
   ret = kdbGetChildKeys ("system/groups", groupks, KDB_O_DIR);
   if (!ret)
-    {
-      if (groupks->size <= 0)
-	{
+  {
+    if (ksGetSize(groupks) <= 0)
+	  {
 	    _nss_elektra_log (LOG_ERR, "No groups in tree."
                          "Fix your kdb entries.");
-	  ksClose (groupks);
-	  free (groupks);
-	  groupks = NULL;
-	  kdbClose ();
-	  return NSS_STATUS_NOTFOUND;
-	}
-      /* No error, return success! */
-      groupkey = groupks->start;
-      kdbClose ();
-      return NSS_STATUS_SUCCESS;
-    }
+	    ksDel (groupks);
+	    groupks = NULL;
+	    kdbClose ();
+	    return NSS_STATUS_NOTFOUND;
+	  }
+    /* No error, return success! */
+    groupkey = ksHead(groupks);
+    kdbClose ();
+    return NSS_STATUS_SUCCESS;
+  }
 
 /* If we get here it usually means that system/users doesn't exist,
  * which means this function is unavailable :) as well as the other 
@@ -269,16 +269,16 @@ NSS_STATUS
 _nss_elektra_endgrent (void)
 {
   if (groupks != NULL)
-    {
-      ksClose (groupks);
-      free (groupks);
-      groupks = NULL;
-      groupkey = NULL;
-    } else if(groupkey != NULL)
-    {
-      keyClose(groupkey);
-      free(groupkey);
-    }
+  {
+    ksDel (groupks); /* ksDel free's all associated keys as well */
+    groupks = NULL;
+    groupkey = NULL;
+  } else if(groupkey != NULL) /* If this happens the keyset has been closed but the key hasn't...That should _never_ happen */
+  {
+    /* It's probably not safe to do this, but do it anyways */
+    keyDel(groupkey);
+    groupkey = NULL;
+  }
   return NSS_STATUS_SUCCESS;
 }
 
@@ -287,7 +287,6 @@ NSS_STATUS
 _nss_elektra_getgrent_r (struct group * gr, char *buffer,
 			  size_t buflen, int *errnop)
 {
-  Key *tempkey = NULL;
   int groupnamesize;
   char *groupname = NULL;
   NSS_STATUS tmpstatus;
@@ -297,17 +296,16 @@ _nss_elektra_getgrent_r (struct group * gr, char *buffer,
   if (groupks == NULL)
     return NSS_STATUS_UNAVAIL;
   if (groupkey == NULL)
-    {
-      /* End of list */
-      return NSS_STATUS_NOTFOUND;
-    }
+  {
+    /* End of list */
+    return NSS_STATUS_NOTFOUND;
+  }
   groupnamesize = keyGetBaseNameSize (groupkey);
   groupname = (char *) malloc (groupnamesize);
   keyGetBaseName (groupkey, groupname, groupnamesize);
   tmpstatus =
     _nss_elektra_getgrnam_r (groupname, gr, buffer, buflen, errnop);
   free (groupname);
-  tempkey = groupkey;
-  groupkey = groupkey->next;
+  groupkey = ksNext(groupks);
   return tmpstatus;
 }

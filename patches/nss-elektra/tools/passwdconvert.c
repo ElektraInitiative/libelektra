@@ -114,7 +114,7 @@ if(geteuid() != 0)
 
 printf("Starting...\n");
 debugprint("Options = %d\n",options);
-kdbOpen();
+kdbOpenDefault();
 addusers(options);
 addgroups(options);
 kdbClose();
@@ -245,22 +245,22 @@ void SetValue(char *keyname, char *value, int mode)
 Key *key;
 int ret=0;
 /* mode -1 = standard access permissions */
+debugprint("SetValue('%s', '%s', '%d')\n", keyname, value, mode);
 if(mode == -1)
 {
 	ret = kdbSetValue(keyname,value);
-	debugprint("kdbySetValue key=%s , value=%s\nReturned %d\n",keyname, value, ret);
+	debugprint("kdbSetValue key=%s , value=%s\nReturned %d\n",keyname, value, ret);
 } else
 {
 /* Special Access permissions */
-	key = (Key *)malloc(sizeof(Key));
-	keyInit(key);
-	keySetName(key, keyname);
-	keySetString(key, value);
-	keySetAccess(key, mode);
+	key = keyNew(keyname, 
+		KEY_SWITCH_VALUE, value,
+		KEY_SWITCH_MODE, mode,
+		KEY_SWITCH_END);
 	kdbSetKey(key);
-	keyClose(key);
-	free(key);
+	keyDel(key);
 }
+debugprint("SetValue done with %s\n", keyname);
 }
 
 void addgroups(int options)
@@ -339,19 +339,19 @@ puts(" Note: You have to be root to use this program");
 int userexists(int type, const char *name)
 {
 char keypath[1024];
-Key key;
+Key *key;
 int ret;
 /* If it's not elektragroup then assume it's user */
 if(type == ELEKTRAGROUP)
 	snprintf(keypath,1023,"%s/groups/%s", root, name);
 else snprintf(keypath,1023,"%s/users/%s", root, name);
 
-keyInit(&key);
-keySetName(&key,keypath);
-ret = kdbGetKey(&key);
-keyClose(&key);
-if(ret == 0) return 1;
-else return 0;
+/* If stat succeeds the key exists and we have our answer */
+key = keyNew(keypath, KEY_SWITCH_END);
+ret = kdbStatKey(key);
+keyDel(key);
+
+return (ret == 0);
 }
 
 void debugprint(const char *format, ...)

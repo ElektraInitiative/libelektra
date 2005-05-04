@@ -6,12 +6,12 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT([libnss_elektra], [0.4], [rayman@skumler.net])
+AC_INIT([libnss_elektra], [0.5], [rayman@skumler.dk])
 AC_CONFIG_SRCDIR([src/lib.c])
 AM_CONFIG_HEADER([src/config.h])
 
 AC_PREFIX_DEFAULT(/usr)
-AM_INIT_AUTOMAKE([nss-elektra],[0.4])
+AM_INIT_AUTOMAKE([nss-elektra],[0.5])
 
 AC_CANONICAL_HOST
 slibdir=NONE
@@ -39,13 +39,12 @@ fi
 
 # Checks for programs.
 CFLAGS="${CFLAGS}"
+LDFLAGS="${LDFLAGS}"
+
 AC_PROG_CC
 AC_PROG_INSTALL
 AM_DISABLE_STATIC
 AM_PROG_LIBTOOL
-
-# Checks for libraries.
-AC_CHECK_LIB(kdb,kdbOpen,,AC_MSG_ERROR(No elektra support found))
 
 # Checks for header files.
 AC_HEADER_STDC
@@ -82,7 +81,7 @@ AC_ARG_WITH(elektra-include, dnl
             [dnl
 case "$with_elektra_include" in
 ''|no) ;;
-*) libeletra_include="-I$withval" ;;
+*) libelektra_include="-I$withval" ;;
 esac
 ])
 
@@ -98,6 +97,9 @@ esac
 
 ELEKTRA_CFLAGS="$libelektra_include"
 ELEKTRA_LIBS="$libelektra_libs"
+LIBS="$ELEKTRA_LIBS"
+# Checks for libraries.
+AC_CHECK_LIB(kdb,kdbOpen,,AC_MSG_ERROR(No elektra support found))
 
 CPPFLAGS="$CPPFLAGS $ELEKTRA_CFLAGS"
 AC_SUBST(ELEKTRA_CFLAGS)

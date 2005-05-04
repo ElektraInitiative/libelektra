@@ -83,11 +83,12 @@ _nss_elektra_get_string (int type, char *username, char *keyname, int *errnop)
       snprintf (keypath, 1023, "system/users/%s/%s", username, keyname);
     }
 
-  kdbOpen ();
-  key = (Key *)malloc(sizeof(Key));
+  kdbOpenDefault ();
+  /*key = (Key *)malloc(sizeof(Key));
   memset(key, 0, sizeof(Key));
   keyInit (key);
-  keySetName (key, keypath);
+  keySetName (key, keypath);*/
+  key = keyNew(keypath, KEY_SWITCH_END);
   ret = kdbGetKey (key);
 /* Key doesn't exist...Or other error? */
   if (ret)
@@ -117,8 +118,7 @@ _nss_elektra_get_string (int type, char *username, char *keyname, int *errnop)
 /* Where to goto to get out! */
 
   out_exit:
-  keyClose (key);
-  free(key);
+  keyDel (key);
   kdbClose ();
   return value;
 }
@@ -130,13 +130,12 @@ NSS_STATUS
 _nss_elektra_finduserbyname (const char *name)
 {
   char keypath[256];
-  Key key;
+  Key *key;
   int ret;
   sprintf (keypath, "system/users/%s", name);
-  keyInit (&key);
-  keySetName (&key, keypath);
-  ret = kdbGetKey (&key);
-  keyClose (&key);
+  key = keyNew(keypath, KEY_SWITCH_END);
+  ret = kdbStatKey (key);
+  keyDel (key);
   if (ret == 0)
     return NSS_STATUS_SUCCESS;
   else
@@ -149,43 +148,36 @@ _nss_elektra_finduserbyname (const char *name)
 NSS_STATUS
 _nss_elektra_finduserbyuid (uid_t uid, char **name)
 {
-  Key key;
+  Key *key;
   char keyname[1024];
   int ret;
 /* Where to store where the link points to */
   int linksize;
   char *link;
-#ifdef DEBUG
-  char fullpath[1024 + 1];
-#endif
   char *p;
   NSS_STATUS status = NSS_STATUS_NOTFOUND;
 
-  snprintf (keyname, 1023, "system/users/.ByID/%li", uid);
-  keyInit (&key);
-  keySetName (&key, keyname);
-#ifdef DEBUG
-  kdbGetFilename(&key,fullpath, sizeof(fullpath));
-  _D(LOG_INFO, "Full path to key %s is %s\n", keyname, fullpath);
-#endif
-  ret = kdbStatKey (&key);
+  snprintf (keyname, 1023, "system/users/.ByID/%d", uid);
+  key = keyNew(keyname, KEY_SWITCH_END);
+  ret = kdbStatKey (key);
   if (ret != 0)
   {
      _D(LOG_ERR, "Error accessing UID %d\nError(%d): %s\n", uid, errno, strerror(errno));
+     keyDel (key);
      return NSS_STATUS_NOTFOUND;
   }
-  if (!keyIsLink(&key))
+  if (!keyIsLink(key))
     {
       _nss_elektra_log (LOG_ERR,
 			 "finduserbyuid: Error: key %s is not a link!\n",
 			 keyname);
-      keyClose (&key);
+      keyDel (key);
       return NSS_STATUS_NOTFOUND;
     }
 /* Woo! it's a link and stuff...return basename of link */
-  linksize = keyGetDataSize (&key);
+  linksize = keyGetDataSize (key);
   link = (char *) malloc (linksize);
-  keyGetLink (&key, link, linksize);
+  keyGetLink (key, link, linksize);
   _D(LOG_ERR, "Got link for UID %li pointing to %s\n", uid, link);
   p = rindex (link, '/');
   if (p != NULL)
@@ -194,7 +186,7 @@ _nss_elektra_finduserbyuid (uid_t uid, char **name)
       *name = strdup (p);
       status = NSS_STATUS_SUCCESS;
     } else _D(LOG_ERR, "Error in link, no /. Unable to find username\n");
-  keyClose (&key);
+  keyDel (key);
   p = NULL;
   free (link);
 
@@ -208,13 +200,12 @@ NSS_STATUS
 _nss_elektra_findgroupbyname (const char *name)
 {
   char keypath[256];
-  Key key;
+  Key *key;
   int ret;
   sprintf (keypath, "system/groups/%s", name);
-  keyInit (&key);
-  keySetName (&key, keypath);
-  ret = kdbGetKey (&key);
-  keyClose (&key);
+  key = keyNew(keypath, KEY_SWITCH_END);
+  ret = kdbStatKey (key);
+  keyDel (key);
   if (ret == 0)
     return NSS_STATUS_SUCCESS;
   else
@@ -230,7 +221,7 @@ _nss_elektra_findgroupbyname (const char *name)
 NSS_STATUS
 _nss_elektra_findgroupbygid (gid_t gid, char **name)
 {
-  Key key;
+  Key *key;
   char keyname[1024];
   int ret;
 /* Where to store where the link points to */
@@ -239,27 +230,27 @@ _nss_elektra_findgroupbygid (gid_t gid, char **name)
   char *p;
   NSS_STATUS status = NSS_STATUS_NOTFOUND;;
 
-  snprintf (keyname, 1023, "system/groups/.ByID/%li", gid);
-  keyInit (&key);
-  keySetName (&key, keyname);
-  ret = kdbStatKey (&key);
+  snprintf (keyname, 1023, "system/groups/.ByID/%d", gid);
+  key = keyNew(keyname, KEY_SWITCH_END);
+  ret = kdbStatKey (key);
   if (ret != 0)
   {
     _D(LOG_ERR, "findgroupbygid: Error stat'ing key %s\nError(%d) : %s\n", keyname, errno, strerror(errno));
+    keyDel(key);
     return NSS_STATUS_NOTFOUND;
   }
-  if (!keyIsLink(&key))
+  if (!keyIsLink(key))
     {
       _nss_elektra_log (LOG_ERR,
 			 "findgroupbyuid: Error: key %s is not a link!\n",
 			 keyname);
-      keyClose (&key);
+      keyDel (key);
       return NSS_STATUS_NOTFOUND;
     }
 /* Woo! it's a link and stuff...return basename of link */
-  linksize = keyGetDataSize (&key);
+  linksize = keyGetDataSize (key);
   link = (char *) malloc (linksize);
-  keyGetLink (&key, link, linksize);
+  keyGetLink (key, link, linksize);
   p = rindex (link, '/');
   if (p != NULL)
     {
@@ -267,7 +258,7 @@ _nss_elektra_findgroupbygid (gid_t gid, char **name)
       *name = strdup (p);
       status = NSS_STATUS_SUCCESS;
     }
-  keyClose (&key);
+  keyDel (key);
   p = NULL;
   free (link);
 
