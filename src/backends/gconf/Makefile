@@ -26,7 +26,7 @@ all: libkdb-${BACKENDNAME}.so
 
 
 libkdb-${BACKENDNAME}.so: ${SOURCES:.c=.o}
-	${CC} `pkg-config --libs gconf-2.0` -shared -fpic -o $@ $<
+	${CC} `pkg-config --libs gconf-2.0` -shared -fpic -L../.. -lkdb -o $@ $<
 
 
 
