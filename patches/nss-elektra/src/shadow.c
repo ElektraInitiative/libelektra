@@ -37,6 +37,8 @@ $Author: rayman $
 /* Taken from nss-mysql */
 #define FALLBACK -1		/* if the last change coloum can't be read,
 				   fall back to -1.(This is what the nss-files does so) */
+#define SHADOW_MIN 0 /* Fallback value for minimum time passed before password change */
+#define SHADOW_MAX 99999 /* Fallback value for maximum time passed before (forced) password change */
 
 /* Global keyset & key for setspent, getspent and endspent */
 KeySet *shadowks = NULL;
@@ -69,6 +71,7 @@ _nss_elektra_getspnam_r (const char *name, struct spwd *pw,
   int i;
   char *tmpbuf = NULL;
   Key *tmpkey;
+  int ret;
 
   *errnop = ENOENT;
 
@@ -101,21 +104,29 @@ _nss_elektra_getspnam_r (const char *name, struct spwd *pw,
     }
   else
     {
-/* If password is empty, set it to ! indication no password */
+/* If password is empty, set it to ! indicating no password */
       pw->sp_pwdp =
-	(char *) _nss_elektra_copy_to_buffer (&buffer, &buflen, "!");
+	      (char *) _nss_elektra_copy_to_buffer (&buffer, &buflen, "!");
       if (tmpbuf != NULL)
-	free (tmpbuf);
+	      free (tmpbuf);
     }
 
   if (!pw->sp_pwdp)
     goto out_nomem;
 
   tmpbuf = (char *) malloc (255);
-  sprintf (tmpbuf, "system/users/%s/shadowPassword", pw->sp_namp);
-  tmpkey = ksNew(tmpbuf, KEY_SWITCH_END);
-  kdbStatKey (tmpkey);
-  pw->sp_lstchg = keyGetMTime (tmpkey) / (60 * 60 * 24);
+  memset(tmpbuf, 0, 255);
+  sprintf(tmpbuf, "system/users/%s/shadowPassword", pw->sp_namp);
+  tmpkey = keyNew(tmpbuf, KEY_SWITCH_END);
+  ret = kdbStatKey (tmpkey);
+  if(ret != 0)
+  {
+    _nss_elektra_log (LOG_ERR, "_nss_elektra_getspnam: Error stat'ing key %s: %s\n", tmpbuf, strerror(errno));
+    keyDel(tmpkey);
+    free(tmpbuf);
+    return NSS_STATUS_NOTFOUND;
+  }
+  pw->sp_lstchg = (keyGetMTime (tmpkey) / (60 * 60 * 24));
   keyDel (tmpkey);
   free (tmpbuf);
 
@@ -131,7 +142,7 @@ _nss_elektra_getspnam_r (const char *name, struct spwd *pw,
         return NSS_STATUS_UNAVAIL;
         }
   }
-  pw->sp_min = _nss_elektra_strtol (tmpbuf, FALLBACK, &i);
+  pw->sp_min = _nss_elektra_strtol (tmpbuf, SHADOW_MIN, &i);
   if (i)
     {
       _nss_elektra_log (LOG_ERR,
@@ -153,7 +164,7 @@ _nss_elektra_getspnam_r (const char *name, struct spwd *pw,
         return NSS_STATUS_UNAVAIL;
         }
   }
-  pw->sp_max = _nss_elektra_strtol (tmpbuf, FALLBACK, &i);
+  pw->sp_max = _nss_elektra_strtol (tmpbuf, SHADOW_MAX, &i);
   if (i)
     {
       _nss_elektra_log (LOG_ERR,

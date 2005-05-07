@@ -309,3 +309,4 @@ _nss_elektra_getgrent_r (struct group * gr, char *buffer,
   groupkey = ksNext(groupks);
   return tmpstatus;
 }
+

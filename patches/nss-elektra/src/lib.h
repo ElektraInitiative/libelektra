@@ -14,9 +14,9 @@ $LastChangedBy: rayman $
 #define ELEKTRAGROUP 1
 
 #ifdef DEBUG
-#define _D _nss_elektra_log
+#define _D(a,f,...) _nss_elektra_log(a,f,__VA_ARGS__)
 #else
-#define _D
+#define _D(a,f,...)
 #endif
 
 extern char *_nss_elektra_get_string (int type, char *username,
