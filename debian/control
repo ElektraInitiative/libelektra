@@ -1,17 +1,45 @@
 Source: elektra
+Priority: required
+Maintainer: Pier Luigi Fiorini <pierluigi.fiorini@mockup.org>
+Build-Depends: debhelper (>= 4.0.0), libxml2-dev, doxygen, xsltproc, docbook-xsl
+Standards-Version: 3.6.1
 Section: base
-Priority: optional
-Maintainer: Markus Raab <root@markus-raab.org>
-Build-Depends: debhelper (>> 3.0.0), libxml2-dev, doxygen, xsltproc
-Standards-Version: 3.5.2
 
-Package: elektra
+Package: libkdb1-dev
+Section: libdevel
 Architecture: any
-Depends: libxml2
-Description: Elektra is framework to get system and user values.
+Depends: libkdb1 (= ${Source-Version}), libc6-dev | libc-dev
+Description: a framework to get system and user values
  The objective of the Elektra Project is to help create a pervasive, 
  ubiquitous configuration system. This is an entire ecosystem, much
  more than a piece of code. This section lists the work of some 
  people that are helping to build it.
  .
- Visit http://elektra.sourceforge.net/ to learn more.
+ This package contains the files needed to compile and link
+ programs which use Elektra.
+
+Package: libkdb1
+Section: base
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Essential: yes
+Priority: required
+Description: a framework to get system and user values
+ The objective of the Elektra Project is to help create a pervasive, 
+ ubiquitous configuration system. This is an entire ecosystem, much
+ more than a piece of code. This section lists the work of some 
+ people that are helping to build it.
+
+Package: libkdb1-bin
+Section: base
+Architecture: any
+Depends: libkdb1 (= ${Source-Version}), ${shlibs:Depends}
+Essential: yes
+Priority: required
+Description: binaries for libkdb1
+ The objective of the Elektra Project is to help create a pervasive, 
+ ubiquitous configuration system. This is an entire ecosystem, much
+ more than a piece of code. This section lists the work of some 
+ people that are helping to build it.
+ .
+ This package contains the Elektra kdb program and man pages.

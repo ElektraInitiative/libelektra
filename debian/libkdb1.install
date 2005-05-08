@@ -1,0 +1,7 @@
+lib/libkdb.so.*
+lib/libkdb-default.so
+lib/libkdb-filesys.so
+lib/libregistry.so
+usr/lib/lib*.so.*
+usr/share/elektra*
+usr/share/sgml/elektra-0.1.1

@@ -1,37 +1,47 @@
 #!/usr/bin/make -f
+# -*- makefile -*-
 # Sample debian/rules that uses debhelper.
-# GNU copyright 1997 to 1999 by Joey Hess.
+# This file was originally written by Joey Hess and Craig Small.
+# As a special exception, when this file is copied by dh-make into a
+# dh-make output file, you may use that output file without restriction.
+# This special exception was added by Craig Small in version 0.37 of dh-make.
+
+include debian/scripts/vars
+BUILD_DIR=$(SOURCE_DIR)/$(TAR_DIR)
 
 # Uncomment this to turn on verbose mode.
-export DH_VERBOSE=1
+#export DH_VERBOSE=1
 
-# This is the debhelper compatibility version to use.
-export DH_COMPAT=3
+CFLAGS = -Wall -g
 
-
-
-ifneq (,$(findstring debug,$(DEB_BUILD_OPTIONS)))
-	CFLAGS += -g
+ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -O0
+else
+	CFLAGS += -O2
 endif
-ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
-	INSTALL_PROGRAM += -s
-endif
+
+# Ensure the build aborts when there are still references to undefined
+# symbols.
+LDFLAGS += -Wl,-z,defs
+
+# Make the linker work a bit harder so dynamic loading can be done faster
+LDFLAGS += -Wl,-O1
 
 configure: configure-stamp
 configure-stamp:
 	dh_testdir
-	# Add here commands to configure the package.
+	$(MAKE) -f debian/sys-build.mk source.make
 
+	mv $(BUILD_DIR)/doc/manstyle.xsl $(BUILD_DIR)/doc/manstyle.xsl.orig
+	cat $(BUILD_DIR)/doc/manstyle.xsl.orig | sed -e "s,/usr/share/sgml/docbook/xsl-stylesheets,/usr/share/sgml/docbook/stylesheet/xsl/nwalsh," > $(BUILD_DIR)/doc/manstyle.xsl
 	touch configure-stamp
 
 
 build: build-stamp
-
 build-stamp: configure-stamp 
 	dh_testdir
 
-	# Add here commands to compile the package.
-	$(MAKE)
+	$(MAKE) -C $(BUILD_DIR) BACKENDS=filesys LDFLAGS="$(LDFLAGS)"
 
 	touch build-stamp
 
@@ -40,20 +50,25 @@ clean:
 	dh_testroot
 	rm -f build-stamp configure-stamp
 
-	# Add here commands to clean up after the build process.
-	-$(MAKE) clean
+	$(MAKE) -f debian/sys-build.mk source.clean
+	-rm -rf $(BUILD_DIR)
+	-rm -rf $(STAMP_DIR)
 
-	dh_clean
+	dh_clean 
 
 install: build
 	dh_testdir
 	dh_testroot
-	dh_clean -k
+	dh_clean -k 
 	dh_installdirs
 
-	# Add here commands to install the package into debian/elektra.
-	$(MAKE) install DESTDIR=$(CURDIR)/debian/elektra
+	$(MAKE) -C $(BUILD_DIR) install BACKENDS=filesys DESTDIR=$(CURDIR)/debian/tmp
 
+	mkdir -p $(CURDIR)/debian/libkdb1/usr/share/doc/libkdb1
+	mkdir -p $(CURDIR)/debian/libkdb1-dev/usr/share/doc/libkdb1-dev
+	mv $(CURDIR)/debian/tmp/usr/share/doc/elektra/* $(CURDIR)/debian/libkdb1/usr/share/doc/libkdb1
+	mv $(CURDIR)/debian/tmp/usr/share/doc/elektra-devel/* $(CURDIR)/debian/libkdb1-dev/usr/share/doc/libkdb1-dev
+	rm -rf $(CURDIR)/debian/tmp/usr/share/doc/{elektra,elektra-devel}
 
 # Build architecture-independent files here.
 binary-indep: build install
@@ -61,33 +76,25 @@ binary-indep: build install
 
 # Build architecture-dependent files here.
 binary-arch: build install
-	dh_testdir
-	dh_testroot
-#	dh_installdebconf	
-	dh_installdocs
-	dh_installexamples
-	dh_installmenu
-#	dh_installlogrotate
-#	dh_installemacsen
-#	dh_installpam
-#	dh_installmime
-#	dh_installinit
-	dh_installcron
-	dh_installman
-	dh_installinfo
-#	dh_undocumented
-	dh_installchangelogs ChangeLog
-	dh_link
-	dh_strip
-	dh_compress
-	dh_fixperms
-#	dh_makeshlibs
-	dh_installdeb
-#	dh_perl
-	dh_shlibdeps
+	dh_testdir -a
+	dh_testroot -a
+	dh_installchangelogs -a
+	for file in ChangeLog AUTHORS LICENSE README TODO; do \
+		dh_installdocs -p libkdb1 -Nlibkdb1-dev -Nlibkdb1-bin -A $(BUILD_DIR)/$${file}; \
+	done
+	dh_installexamples -a
+	dh_installman -a
+	dh_install -a --sourcedir=debian/tmp
+	dh_link -a
+	dh_strip -a
+	dh_compress -a
+	dh_fixperms -a
+	dh_makeshlibs -V 'libkdb1 (>= 0.4.11)'
+	dh_installdeb -a
+	dh_shlibdeps -a
 	dh_gencontrol
-	dh_md5sums
-	dh_builddeb
+	dh_md5sums -a
+	dh_builddeb -a
 
 binary: binary-indep binary-arch
 .PHONY: build clean binary-indep binary-arch binary install configure

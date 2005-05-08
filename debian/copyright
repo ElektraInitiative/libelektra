@@ -1,9 +1,9 @@
-This package was debianized by Markus Raab <markus@superbyte.at> on
-Thu, 23 Sep 2004 12:55:10 +0200.
+This package was debianized by Pier Luigi Fiorini <pierluigi.fiorini@mockup.org> on
+Mon, 25 Apr 2005 19:44:10 +0200.
 
 It was downloaded from http://elektra.sourceforge.net/
 
-Upstream Author(s): Avi Alkalay <avi at unix.sh>
+Copyright Holder: Avi Alkalay <avi@unix.sh>
 
 Copyright: (c) 2004, Avi Alkalay
  All rights reserved.
@@ -34,4 +34,3 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
 ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-

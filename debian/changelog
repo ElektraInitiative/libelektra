@@ -1,5 +1,11 @@
 elektra (0.5) unstable; urgency=low
 
+  * Split to bin and dev packages.
+
+ -- Pier Luigi Fiorini <pierluigi.fiorini@mockup.org>  Mon, 25 Apr 2005 19:44:10 +0200
+
+elektra (0.5) unstable; urgency=low
+
   * Stabilize api. Won't changed during 0.5 development.
 
  -- Markus Raab <debian@markus-raab.org>  Tue,  3 May 2005 08:26:02 +0200
