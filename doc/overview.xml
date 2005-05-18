@@ -9,6 +9,12 @@ $LastChangedBy:$
 		<para>It is designed to be lightweight, with no dependencies, ready to be used also by early boot stage programs.</para>
 		<para>Using Elektra, configuration file's syntax and handling will not be a rework for each software.</para>
 		<para>Elektra lets system administrators control security in a much fine grained way. With the current flat file paradigm it is impossible to control permissions and access times on each <filename>/etc/passwd</filename> or <filename>/etc/shadow</filename> atoms. Elektra lets you do that because each information atom stored in it (key) has a unique name (key name) and access properties. See <ulink url="http://namesys.com/v4/v4.html#etc_passwd">Hans Reiser (creator of ReiserFS) comments about it</ulink>.</para>
+		<section id="libarchitecture"><title>Library Linkage Architecture</title>
+			<para>The layers of the library is a central point in the way Elektra wants to solve OS' configuration problems.</para>
+			<para><graphic srccredit="genericarch" fileref="images/genericarch.png" label="generic architecture" align="center"/></para>
+			<para><graphic srccredit="localbacks" fileref="images/localbacks.png" label="local backends" align="center"/></para>
+			<para><graphic srccredit="daemonback" fileref="images/daemonback.png" label="daemon backend" align="center"/></para>
+		</section>
 		<section id="rgfacts"><title>True Facts About Elektra</title>
 			<itemizedlist>
 				<listitem><para>It is much more an agreement then a piece of software. Relation is 99% to 1%.</para></listitem>
