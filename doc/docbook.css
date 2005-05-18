@@ -1,172 +1,267 @@
 <style type="text/css">
 
-a:link {
-	text-decoration: none;
-}
-
-a:active {
-	color: blue;
-}
-
-a:visited {
-	color: #3355cc;
-	text-decoration: none;
-}
-
-a:hover {
-	color: #4477cc;
-	text-decoration: underline;
-}
+	body, .article, .titlepage, .toc, .section, .appendix, .glossary {
+		font-family: Verdana, Helvetica, Lucida, Arial;
+		font-size: 11px;
+	}
 
 
-body {
-	font-family: Verdana, Bitstream Versa Sans, Helvetica, Lucida, Arial;
-	font-size: 11px;
-	text-align: justify;
-}
+	/* Titlepage stuff */
 
-.article {
-	font-family: Verdana, Bitstream Versa Sans, Helvetica, Lucida, Arial;
-	font-size: 11px;
-	margin-top: 50pt;
-	margin-bottom: 0pt;
-	margin-left: 30pt;
-	margin-right: 30pt;
-	text-align: justify;
-}
+	.titlepage .title {
+		font-family: Verdana, Helvetica, Lucida, Arial;
+		font-size: 26px;
+		color: #ff6600;
+		text-align: left;
+	}
 
-div.note p, div.important p {
-	font-family: Verdana, Bitstream Versa Sans, Helvetica, Lucida, Arial;
-	text-align: justify;
-	font-size: 11px;
-	font-weight: bold;
-	color: #0000AA;
-}
-
-.toc {
-	margin-left: 30pt;
-	margin-right: 30pt;
-}
-
-div.toc p {
-	color: #ff6600;
-	font-size: 26px;
-}
-
-div.toc dd dt, div.toc dd a {
-	font-size: 18px;
-	font-weight: bold;
-	color: #ff9933;
-}
-
-div.toc dt, div.toc a {
-	font-size: 20px;
-	font-weight: bold;
-	color: #ff9933;
-}
-
-hr {
-	border-color: #6565FF;
-}
-
-h1 {
-	font-size: 28px;
-	color: #ff6600;
-}
-
-h2.title {
-	margin-top:0pt;
-	margin-bottom:0pt ! important;
-	border-top-style: dotted;
-	border-width: 1pt;
-	border-color: #6565FF;
-	font-size: 22px;
-	color: #ff6600;
-}
-
-h3.title {
-	margin-top:10pt;
-	margin-bottom:0pt ! important;
-	border-top-style: dotted;
-	border-width: 1pt;
-	border-color: #6565FF;
-	font-size: 18px;
-	color: #ff9933;
-}
-
-.filename, .envar, tt {
-	font-family: lucidatypewriter, lucida console, courier, tahoma;
-	font-size: 10px;
-	text-decoration: underline;
-	color: green;
-/*	font-size: 10px; */
-}
-
-.function {
-	font-family: lucidatypewriter, lucida console, courier, tahoma;
-	font-size: 10px;
-	font-weight: bold;
-}
+	.titlepage .pubdate {
+		font-family: Verdana, Helvetica, Lucida, Arial;
+		font-size: 14pt;
+	}
 
 
-.programlisting {
-	font-family: lucidatypewriter, lucida console, courier, tahoma;
-	color: #555555;
-	background-color: #FFF7EA;
-	font-size: 10px;
-}
-
-.screen {
-	font-family: lucidatypewriter, lucida console, courier, tahoma;
-	color: #00FF00;
-	background-color: #222222;
-	font-size: 10px;
-}
-
-p .command {
-	font-family: lucidatypewriter, lucida console, courier, tahoma;
-	font-size: 10px;
-	color: #298952;
-}
-
-.pubdate {
-	font-size: 14pt;
-}
-
-div.authorgroup {
-	font-family: Bitstream Vera Sans, Verdana, Helvetica, Lucida, Arial;
-	font-size: 11px;
-	margin-left: 30pt;
-	margin-top: 10pt;
-	margin-bottom: 0pt;
-}
-
-h3.author {
-	margin-top: 0pt;
-	margin-bottom: 0pt;
-	font-style: italic;
-}
-
-div.author {
-	border-left-style: dotted;
-	border-width: 1pt;
-	border-color: #ff9933;
-}
-
-.term {
-	margin-top: 0pt;
-	font-weight: bold;
-	font-style: italic;
-}
 
 
-div.variablelist dd {
-	margin-bottom: 10pt;
-}
+/* Author related stuff */
+
+	.authorgroup {
+		font-family: Verdana, Helvetica, Lucida, Arial;
+		font-size: 11px;
+		margin-left: 30pt;
+		margin-top: 10pt;
+		margin-bottom: 0pt;
+		border-left-style: dotted;
+		border-width: 1pt;
+		border-color: #ff9933;
+		padding-left: 10pt;
+	}
+
+	h3.author {
+		font-family: Verdana, Helvetica, Lucida, Arial;
+		font-size: 14px;
+		margin-top: 15pt;
+		margin-bottom: 0pt;
+	}
+
+	.contrib {
+		font-family: Verdana, Helvetica, Lucida, Arial;
+		font-size: 11px;
+		text-align: justify;
+	}
 
 
-ul li {
-	list-style-image: url(images/img_arrow.png);
-}
+
+
+/* Table of Contents rendering */
+
+	div.toc {
+		font-family: Verdana, Helvetica, Lucida, Arial;
+		font-size: 18px;
+		margin-bottom: 50pt;
+		margin-left: 60pt;
+	}
+
+	.toc p {
+		font-family: Verdana, Helvetica, Lucida, Arial;
+		font-size: 26px;
+		color: #6565FF;
+	}
+
+	.toc dl dt {
+		font-family: Verdana, Helvetica, Lucida, Arial;
+		margin-left: 20pt;
+		font-size: 18px;
+		color: #ff6600;
+	}
+
+	.toc dl dt a {
+		font-family: Verdana, Helvetica, Lucida, Arial;
+		font-size: 18px;
+		color: #ff6600;
+	}
+
+	.toc dl dd dl dt {
+		font-family: Verdana, Helvetica, Lucida, Arial;
+		font-size: 16px;
+		margin-left: 0pt;
+		color: #ff9933;
+	}
+
+	.toc dl dd dl dt a {
+		font-family: Verdana, Helvetica, Lucida, Arial;
+		font-size: 16px;
+		color: #ff9933;
+	}
+
+
+
+
+
+/* Section and appendix stuff */
+
+	.section, .appendix, .glossary {
+		font-family: Verdana, Helvetica, Lucida, Arial;
+		font-size: 11px;
+		text-align: justify;
+		margin-top: 50pt;
+		margin-bottom: 0pt;
+		margin-left: 30pt;
+		margin-right: 30pt;
+	}
+
+	/* Nested sections */
+	.section .section, .appendix .appendix {
+		margin-left: 0pt;
+		margin-right: 0pt;
+		margin-top: 10pt;
+	}
+
+	.section .titlepage .title, .appendix .title, .glossary .title {
+		font-family: Verdana, Helvetica, Lucida, Arial;
+		font-size: 22px;
+		color: #ff6600;
+		margin-top:0pt;
+		border-top-style: dotted;
+		border-width: 1pt;
+		border-color: #6565FF;
+	}
+
+
+	.section .section .titlepage .title {
+		font-family: Verdana, Helvetica, Lucida, Arial;
+		font-size: 18px;
+		color: #ff9933;
+		margin-top:0pt;
+		border-top-style: dotted;
+		border-width: 1pt;
+		border-color: #6565FF;
+	}
+
+	.bridgehead {
+		font-family: Verdana, Helvetica, Lucida, Arial;
+		font-size: 18px;
+		color: #ff9933;
+		margin-bottom: 0pt;
+	}
+
+
+
+/* Tips, warnings, etc */
+
+	.note p, .tip p, .important p, .warning p, .caution p {
+		color: #ff9933;
+	}
+
+
+	
+
+/* Tables, examples and screens rendering */
+
+	.table .title, .example .title, .figure .title {
+		font-family: Verdana, Helvetica, Lucida, Arial;
+		font-size: 11px;
+		color: black;
+		border: 0pt;
+		margin: 0pt;
+		margin-top: 5pt;
+	}
+
+	.glossary dt {
+		font-weight: bold;
+	}
+
+	.table table {
+		background-color: #FFF7EA;
+	}
+
+	.table table th {
+		font-family: Tahoma, Verdana, Helvetica, Lucida, Arial;
+		font-size: 11px;
+		color: black;
+		border-width: 0pt;
+		border-bottom-width: 2pt;
+		border-style: solid;
+		border-color: #6565FF;
+	}
+
+	.table table td {
+		font-family: Tahoma, Verdana, Helvetica, Lucida, Arial;
+		font-size: 11px;
+		color: black;
+		border-width: 0pt;
+		border-bottom-width: 1pt;
+		border-style: solid;
+		/*background: #FFF7EA;*/
+	}
+
+	.table table td .strong em {
+		font-family: Tahoma, Verdana, Helvetica, Lucida, Arial;
+		font-size: 11px;
+		font-weight: bold;
+	}
+
+	.programlisting, .screen {
+		font-family: lucidatypewriter, lucida console, courier, tahoma;
+		font-size: 12px;
+		color: #555555;
+		background-color: #FFF7EA;
+		border-width: 2pt;
+		border-style: solid;
+		border-color: #CCCCCC;
+	}
+
+	.variablelist dt {
+		margin-top: 20pt;
+	}
+
+
+
+/* Inline elements rendering */
+
+	.command {
+		color: #298952;
+	}
+
+	p {
+		font-family: Verdana, Helvetica, Lucida, Arial;
+		font-size: 11px;
+		text-align: justify;
+	}
+
+	.filename, .envar, tt {
+		font-family: lucidatypewriter, lucida console, courier, tahoma;
+		/*	font-size: 10px; */
+	}
+
+	a:link {
+		text-decoration: none;
+	}
+
+	a:active {
+		color: blue;
+	}
+
+	a:visited {
+		color: #3355cc;
+		text-decoration: none;
+	}
+
+	a:hover {
+		color: #4477cc;
+		text-decoration: underline;
+	}
+
+
+
+/* Misc */
+
+	hr {
+		border-color: #6565FF;
+	}
+
+	ul li {
+		list-style-image: url(images/img_arrow.png);
+	}
 
 </style>

@@ -27,9 +27,19 @@ $LastChangedBy$
 
 		&author;
 
-		<pubdate>2005-01-10</pubdate>
+		<pubdate>2005-05-18</pubdate>
 
 		<revhistory>
+			<revision>
+				<revnumber>2005-05-18</revnumber>
+				<date>18 May 2005</date>
+				<authorinitials>avi</authorinitials>
+				<revdescription>
+					<itemizedlist>
+						<listitem><simpara>Included raw graphics for the library architecture.</simpara></listitem>
+					</itemizedlist>
+				</revdescription>
+			</revision>
 			<revision>
 				<revnumber>2005-01-10</revnumber>
 				<date>10 Jan 2005</date>
