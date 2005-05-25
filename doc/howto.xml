@@ -37,6 +37,7 @@ $LastChangedBy$
 				<revdescription>
 					<itemizedlist>
 						<listitem><simpara>Included raw graphics for the library architecture.</simpara></listitem>
+						<listitem><simpara>Included link to the IRC channel.</simpara></listitem>
 					</itemizedlist>
 				</revdescription>
 			</revision>
@@ -425,6 +426,7 @@ $LastChangedBy$
 				<listitem><simpara><ulink url="http://freshmeat.net/projects/elektra/">Freshmeat project page</ulink></simpara></listitem>
 				<listitem><simpara><ulink url="http://www.advogato.org/proj/Linux Registry/">Advogato project page</ulink></simpara></listitem>
 				<listitem><simpara><ulink url="http://www.orkut.com/Community.aspx?cmm=89174">Orkut Community</ulink></simpara></listitem>
+				<listitem><simpara>Many Elektra developers use to get together in the <ulink url="irc://irc.freenode.net/elektra">#elektra channel of the irc.freenode.net IRC server</ulink></simpara></listitem>
 				<!-- ML admin: https://lists.sourceforge.net/lists/admin/registry-list -->
 				<listitem><simpara><ulink url="https://lists.sourceforge.net/lists/listinfo/registry-list">Subscribe to general discussions list</ulink> or <ulink url="http://sourceforge.net/mailarchive/forum.php?forum=registry-list">see the list archives</ulink></simpara></listitem>
 			</itemizedlist>

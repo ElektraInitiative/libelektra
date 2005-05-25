@@ -188,7 +188,7 @@ int kdbOpenDefault() {
  * 	and 1 if backend library could not be opened, 2 if backend doesn't have
  * 	the essential "kdbBackendFactory" initialization symbol, 3 if backend
  * 	failed to export its methods, 4 if backend does not provide a kdbOpen()
- * 	implementation, or anything else that the backend's kdbOpen() returns.
+ * 	implementation, or anything else that the backend's kdbOpen implementation (see kdbOpen_backend()) returns.
  * @see kdbOpen()
  * @par Example of copying keys from one backend to another
  * @code
@@ -876,6 +876,8 @@ int kdbSetKeys(KeySet *ks) {
  * method. If a backend doesn't want to reimplement this method, this
  * implementation can be used, in which kdbSetKey() will be called for
  * each Key object contained in @p ks.
+ *
+ * @see kdbSetKeys(), kdbSetKeys_backend()
  *
  * @ingroup backend
  */

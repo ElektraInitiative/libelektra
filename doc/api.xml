@@ -3,7 +3,7 @@ $Id$
 $LastChangedBy$
 -->
 <section id="api"><title>Application Programing Interface</title>
-	<para>Elektra's API consists of 3 classes of objects and methods to manipulate them. The main implementation of the library is written in C.</para>
+	<para>Elektra's API consists of 3 classes of objects and methods to manipulate them. The main implementation of the library is written in C and is <ulink url="elektra-api/html/index.html">fully documented in Doxygen</ulink>.</para>
 	<graphic srccredit="classes" fileref="images/classes.png" label="the classes" align="center"/>
 	<para>The classes are:</para>
 	<variablelist>

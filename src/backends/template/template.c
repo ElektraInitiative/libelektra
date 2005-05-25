@@ -119,6 +119,12 @@ $LastChangedBy$
  * This is the first method kdbOpenBackend() calls after dynamically loading
  * the backend library.
  *
+ * This method is responsible of:
+ * - backend's specific configuration gathering
+ * - all backend's internal structs initialization
+ * - initial setup of all I/O details such as opening a file, connecting to a
+ *   database, etc
+ *
  * @return 0 on success, anything else otherwise.
  * @see kdbOpenBackend()
  * @see kdbOpen()
@@ -154,7 +160,11 @@ int kdbClose_backend() {
 
 /**
  * Implementation for kdbStatKey() method.
- * 
+ *
+ * This method is responsible of:
+ * - make necessary I/O to retrieve @p key->name's metadata
+ * - fill the @p key struct with its metadata
+ *
  * @see kdbStatKey() for expected behavior.
  * @ingroup backend
  */
@@ -166,6 +176,10 @@ int kdbStatKey_backend(Key *key) {
 
 /**
  * Implementation for kdbGetKey() method.
+ *
+ * This method is responsible of:
+ * - make necessary I/O to retrieve all @p key->name's value and metadata
+ * - fill the @p key struct with its value and metadata
  *
  * @see kdbGetKey() for expected behavior.
  * @ingroup backend
@@ -179,6 +193,12 @@ int kdbGetKey_backend(Key *key) {
 
 /**
  * Implementation for kdbSetKey() method.
+ *
+ * This method is responsible of:
+ * - check the existence of @p key->name on persistent storage
+ * - prepare the backend to receive a new or updated key
+ * - use value and metadata from @p key to store them in the backend storage
+ * - fill the @p key struct with its value and metadata
  *
  * @see kdbSetKey() for expected behavior.
  * @ingroup backend

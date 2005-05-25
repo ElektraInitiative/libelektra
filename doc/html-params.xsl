@@ -9,7 +9,10 @@
 	<!--xsl:import href="_DBSTYLESHEET_"/-->
 
 	<xsl:output indent="yes" encoding="UTF-8"/>
-	
+
+	<xsl:param name="chunk.section.depth" select="1"/>
+	<xsl:param name="chunker.output.method" select="'html'"/>
+
 	<xsl:param name="html.stylesheet" select="'docbook.css'"/>
 	<xsl:param name="html.stylesheet.type">text/css</xsl:param>
 

@@ -10,9 +10,11 @@ $LastChangedBy:$
 		<para>Using Elektra, configuration file's syntax and handling will not be a rework for each software.</para>
 		<para>Elektra lets system administrators control security in a much fine grained way. With the current flat file paradigm it is impossible to control permissions and access times on each <filename>/etc/passwd</filename> or <filename>/etc/shadow</filename> atoms. Elektra lets you do that because each information atom stored in it (key) has a unique name (key name) and access properties. See <ulink url="http://namesys.com/v4/v4.html#etc_passwd">Hans Reiser (creator of ReiserFS) comments about it</ulink>.</para>
 		<section id="libarchitecture"><title>Library Linkage Architecture</title>
-			<para>The layers of the library is a central point in the way Elektra wants to solve OS' configuration problems.</para>
+			<para>The Elektra library (<filename>libkdb.so</filename>) has 2 layers: public methods and backend access, according to the following architecture (these pictures were taken from the <ulink url="elektra.sxi">Elektra presentation</ulink>):</para>
 			<para><graphic srccredit="genericarch" fileref="images/genericarch.png" label="generic architecture" align="center"/></para>
+			<para>When using local backends such as the filesys backend, all key access happens in the actual process space as bellow:</para>
 			<para><graphic srccredit="localbacks" fileref="images/localbacks.png" label="local backends" align="center"/></para>
+			<para>A remote daemon backend is also possible as noted bellow:</para>
 			<para><graphic srccredit="daemonback" fileref="images/daemonback.png" label="daemon backend" align="center"/></para>
 		</section>
 		<section id="rgfacts"><title>True Facts About Elektra</title>
@@ -54,7 +56,7 @@ $LastChangedBy:$
 				<listitem><para>The current user's keys. Equivalent to the dotfiles in a user's <envar>$HOME</envar> directory. These keys are phisically stored under the owner user home directory. The many <filename>user:</filename><replaceable>username</replaceable> in the picture shows the full name of those trees. Read about user domains bellow for more.</para></listitem>
 			</varlistentry>
 		</variablelist>
-		<section><title>User Domains</title>
+		<section id="userdomains"><title>User Domains</title>
 			<para>Different from the <filename>system</filename> namespace, the <filename>user</filename> namespace is dynamic. For example, the key <filename>user/env/PATH</filename> may have completely different values for users <replaceable>luciana</replaceable> and <replaceable>valeria</replaceable>. In this example, if <replaceable>valeria</replaceable> wants to access this key at <replaceable>luciana</replaceable>'s space, it should refer to <filename>user:luciana/env/PATH</filename>. Access permissions apply.</para>
 			<para>User domains were implemented also to address situations when different user names (<envar>$USER</envar>) have same UID. So a user key is stored in his home directory based on the user name, not the UID.</para>
 		</section>
@@ -68,7 +70,7 @@ $LastChangedBy:$
 			</itemizedlist>
 			<para>See bellow more examples of inactive keys.</para>
 		</section>
-		<section><title>Key Examples</title>
+		<section id="keyexamples"><title>Key Examples</title>
 			<para>Here are some valid key names, and their values:</para>
 			<para>The Elektra keys of the combined <filename>/etc/passwd</filename> and <filename>/etc/shadow</filename> entry for user 'nobody' would look like:</para>
 			<itemizedlist>
