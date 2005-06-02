@@ -31,7 +31,7 @@ XSLTPROC=xsltproc
 
 
 .xml.html:
-	#if [ ! -L docbook ]; then ln -s ../../doc-common/docbook .; fi
+#	if [ ! -L docbook ]; then ln -s ../../doc-common/docbook .; fi
 	${XSLTPROC} -o ${HTML_TITLE_LAYOUT:.tpl=.xsl} ${DBROOT}/template/titlepage.xsl ${HTML_TITLE_LAYOUT}
 	${XSLTPROC} -o $@ ${HTML_TITLE_LAYOUT:.tpl=.xsl} $<
 
@@ -50,10 +50,10 @@ man: doxygen docbookman
 elektra-api.tar.gz: $(DOXYSOURCES)
 	rm -rf ${APIDIR}
 	rm -rf ${APIDIR}.tar.gz
-	echo "Making Doxygen..."
+	@echo "Making Doxygen..."
 	cd ../src; ${DOXYGEN}
 	tar -czf ${APIDIR}.tar.gz ${APIDIR}/html
-	# find ${APIDIR}/html | cpio -H tar -o | gzip -c --best > ${APIDIR}.tar.gz
+#	find ${APIDIR}/html | cpio -H tar -o | gzip -c --best > ${APIDIR}.tar.gz
 
 
 
@@ -64,8 +64,6 @@ patchdoc: $(PATCHSOURCES)
 		cat $$f >> $$nf; \
 		echo "</pre></body></html>" >> $$nf; \
 	done
-	
-
 #	find patches/ -name "*.txt" | grep -v .svn | while read f; do \
 
 example.c:
@@ -76,7 +74,7 @@ example.c:
 
 csource.xml: example.c
 	(echo "<programlisting><![CDATA["; cat  example.c; echo "]]></programlisting>") > csource.xml
-	#(echo "<programlisting><![CDATA["; sed -e 's/\&/\&amp\;/g' < example.c; echo "]]></programlisting>") > csource.xml
+#	(echo "<programlisting><![CDATA["; sed -e 's/\&/\&amp\;/g' < example.c; echo "]]></programlisting>") > csource.xml
 
 
 
@@ -139,17 +137,13 @@ clean: distclean
 
 
 install: all
-	[ -d ${DESTDIR}${MANDIR}/man1 ] || mkdir -p ${DESTDIR}${MANDIR}/man1
-	[ -d ${DESTDIR}${MANDIR}/man3 ] || mkdir -p ${DESTDIR}${MANDIR}/man3
-	[ -d ${DESTDIR}${MANDIR}/man5 ] || mkdir -p ${DESTDIR}${MANDIR}/man5
-	[ -d ${DESTDIR}${MANDIR}/man7 ] || mkdir -p ${DESTDIR}${MANDIR}/man7
-	find ${APIDIR}/html | cpio -pdm ${DESTDIR}${DOCDIR}/elektra-devel/
-	for m in `ls *.1`; do gzip -c --best $$m > ${DESTDIR}${MANDIR}/man1/$$m.gz; done
-#	for m in `ls *.3`; do gzip -c --best $$m > ${DESTDIR}${MANDIR}/man3/$$m.gz; done
-	gzip ${APIDIR}/man/man3/{kdb,key,ks}*.3
-	cp ${APIDIR}/man/man3/{kdb,key,ks}*.3.gz ${DESTDIR}${MANDIR}/man3/
-	for m in `ls *.5`; do gzip -c --best $$m > ${DESTDIR}${MANDIR}/man5/$$m.gz; done
-	for m in `ls *.7`; do gzip -c --best $$m > ${DESTDIR}${MANDIR}/man7/$$m.gz; done
+	mkdir -p '${DESTDIR}${MANDIR}'/man{1,3,5,7}
+	find '${APIDIR}'/html | cpio -pdm '${DESTDIR}${DOCDIR}'/elektra-devel/
+	for m in *.1; do gzip -c --best "$$m" > '${DESTDIR}${MANDIR}'/man1/"$$m".gz; done
+#	for m in *.3; do gzip -c --best "$$m" > '${DESTDIR}${MANDIR}'/man3/"$$m".gz; done
+	for m in '${APIDIR}'/man/man3/{backend,tools,kdb,key,ks}*.3; do gzip -c --best "$$m" > '${DESTDIR}${MANDIR}'/man3/`basename $$m`.gz; done
+	for m in *.5; do gzip -c --best "$$m" > '${DESTDIR}${MANDIR}'/man5/"$$m".gz; done
+	for m in *.7; do gzip -c --best "$$m" > '${DESTDIR}${MANDIR}'/man7/"$$m".gz; done
 #	cat kdb.3.xml | perl -e '{while (<>) {m/<function>(\w*)<\/function>/; print $$1 . "\n" if ($$1); }}' | \
 #		grep kdb | sort -u | while read f; do ln -s kdb.3.gz ${DESTDIR}${MANDIR}/man3/$$f.3.gz; done
 #	cat key.3.xml | perl -e '{while (<>) {m/<function>(\w*)<\/function>/; print $$1 . "\n" if ($$1); }}' | \
@@ -174,4 +168,3 @@ pubd: doxygen
 
 pubi:
 	find images | grep -v .svn | cpio -o | ssh -l aviram shell.sf.net "cd /home/groups/e/el/elektra/htdocs; cpio -idvm"
-	
