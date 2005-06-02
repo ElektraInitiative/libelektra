@@ -44,8 +44,8 @@ all: libkdb.a libkdb.so libkdbtools.so kdb     # kdbfuture.h
 	done
 
 clean:
-	-rm core* *~ *.o *.so* *.a kdb kdbfuture.h localeinfo svn-commit*
-	-find . -name "*~" -o -name ".kdbg*" | xargs rm
+	rm -f core* *~ *.o *.so* *.a kdb kdbfuture.h localeinfo svn-commit*
+	-find . -name "*~" -o -name ".kdbg*" | xargs rm -f
 	for x in ${BACKENDS}; do (cd "backends/$$x"; $(MAKE) $@); done
 
 

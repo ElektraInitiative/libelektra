@@ -45,8 +45,8 @@ all: elektra.pc
 
 
 cleanhere:
-	-rm *~ elektra.spec elektra.pc svn-commit*
-	-find . -name "*~" -o -name ".kdbg*" | xargs rm
+	rm -f *~ elektra.spec elektra.pc svn-commit*
+	-find . -name "*~" -o -name ".kdbg*" | xargs rm -f
 
 
 clean: cleanhere
@@ -74,7 +74,7 @@ dist: distclean elektra.spec
 	cd ..;\
 	ln -s $$DIR $$PACK;\
 	tar --exclude .svn -czf $$PACK.tar.gz $$PACK/*;\
-	rm $$PACK
+	rm -f $$PACK
 
 
 

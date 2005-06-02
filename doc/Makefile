@@ -48,8 +48,8 @@ man: doxygen docbookman
 
 
 elektra-api.tar.gz: $(DOXYSOURCES)
-	-rm -rf ${APIDIR}
-	-rm -rf ${APIDIR}.tar.gz
+	rm -rf ${APIDIR}
+	rm -rf ${APIDIR}.tar.gz
 	echo "Making Doxygen..."
 	cd ../src; ${DOXYGEN}
 	tar -czf ${APIDIR}.tar.gz ${APIDIR}/html
@@ -119,22 +119,22 @@ html: man howto.html doxygen patchdoc
 
 # 'make distclean' will not remove docbook- and doxygen-generated man pages
 distclean:
-	-find patches/ -name "README*html" | grep -v .svn | xargs rm
-	-rm *titlepage-layout.xsl
-	-rm *.html
-	-rm *~
-	-rm csource.xml
-	-rm docbook
-	-rm example.c
-	-rm -rf ${APIDIR}
-	#-find ${APIDIR}/man | egrep -v "key.*3|ks.*3" | xargs rm
-	#-rm -rf ${APIDIR}/html
-	-rm -rf ${APIDIR}.tar.gz
+	-find patches/ -name "README*html" | grep -v .svn | xargs rm -f
+	rm -f *titlepage-layout.xsl
+	rm -f *.html
+	rm -f *~
+	rm -f csource.xml
+	rm -f docbook
+	rm -f example.c
+	rm -rf ${APIDIR}
+#	-find ${APIDIR}/man | egrep -v "key.*3|ks.*3" | xargs rm -f
+#	rm -rf ${APIDIR}/html
+	rm -rf ${APIDIR}.tar.gz
 
 
 
 clean: distclean
-	-rm *.[1357]
+	rm -f *.[1357]
 
 
 

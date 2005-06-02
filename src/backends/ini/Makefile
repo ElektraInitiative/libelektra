@@ -42,7 +42,7 @@ install: all
 
 
 clean:
-	-rm ${SOURCES:.c=.o} libkdb-${BACKENDNAME}.so
-	-find . -name "*~" -o -name ".kdbg*" | xargs rm
+	rm -f ${SOURCES:.c=.o} libkdb-${BACKENDNAME}.so
+	-find . -name "*~" -o -name ".kdbg*" | xargs rm -f
 
 
