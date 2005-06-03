@@ -1230,6 +1230,7 @@ u_int32_t kdbMonitorKey_default(Key *interest, u_int32_t diffMask,
 		rc=kdbGetKey(tested);
 		if (rc) {
 			keyDel(tested);
+			keyDup(interest,tested);
 			/* check what type of problem happened.... */
 			switch (errno) {
 				case KDB_RET_NOCRED:
