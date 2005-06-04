@@ -7,7 +7,7 @@ SGMLDIR=/usr/share/sgml
 all:
 
 clean:
-	rm -f *~
+	-rm -f *~
 
 distclean: clean
 

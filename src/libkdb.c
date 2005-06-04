@@ -122,11 +122,11 @@ KDBBackend *backend;
  * Opens the session with the Key database, using a backend defined by
  * environment var @e $KDB_BACKEND. If the environment is not set
  * the @e default backend will be opened.
- * 
+ *
  * You should allways call this method before retrieving or commiting any
  * keys to the database. Otherwise, consequences are unpredictable. And
  * after using the key database, you should not forget to kdbClose().
- * 
+ *
  * This is the best way to have affairs with the key database, unless
  * the program is concerned about security and authentication (e.g. su,
  * login, telnetd, etc), in which kdbOpenDefault() should be used. kdbOpen()
@@ -134,11 +134,11 @@ KDBBackend *backend;
  *
  * Currently you can have only one backend (and key database session)
  * initialized at a certain time. 
- * 
+ *
  * To simply manipulate Key or KeySet objects without having to retrieve them
  * from the storage, you don't need to open the key database before with any
  * of the kdbOpen*() methods.
- * 
+ *
  * @see kdbOpenDefault(), kdbOpenBackend(), kdbClose()
  * @return 0 on success or whatever is returned by kdbOpenBackend()
  * @ingroup kdb
@@ -160,7 +160,7 @@ int kdbOpen() {
  * the @e $KDB_BACKEND environment and open the @e default backend.
  * So kdbOpenDefault() must be used by programs concerned about security
  * (e.g. su, login, sshd, etc).
- * 
+ *
  * The @e default backend use to be a symlink to the real backend, and
  * is found in /lib/libkdb-default.so
  *

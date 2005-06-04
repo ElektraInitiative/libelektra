@@ -118,36 +118,39 @@ html: man howto.html doxygen patchdoc
 # 'make distclean' will not remove docbook- and doxygen-generated man pages
 distclean:
 	-find patches/ -name "README*html" | grep -v .svn | xargs rm -f
-	rm -f *titlepage-layout.xsl
-	rm -f *.html
-	rm -f *~
-	rm -f csource.xml
-	rm -f docbook
-	rm -f example.c
-	rm -rf ${APIDIR}
-#	-find ${APIDIR}/man | egrep -v "key.*3|ks.*3" | xargs rm -f
-#	rm -rf ${APIDIR}/html
-	rm -rf ${APIDIR}.tar.gz
+	-rm -f *titlepage-layout.xsl
+	-rm -f *.html
+	-rm -f *~
+	-rm -f csource.xml
+	-rm -f docbook
+	-rm -f example.c
+	-rm -rf ${APIDIR}
+	-rm -rf ${APIDIR}.tar.gz
 
 
 
 clean: distclean
-	rm -f *.[1357]
+	-rm -f *.[1357]
 
 
 
 install: all
-	mkdir -p '${DESTDIR}${MANDIR}'/man{1,3,5,7}
-	find '${APIDIR}'/html | cpio -pdm '${DESTDIR}${DOCDIR}'/elektra-devel/
-	for m in *.1; do gzip -c --best "$$m" > '${DESTDIR}${MANDIR}'/man1/"$$m".gz; done
-#	for m in *.3; do gzip -c --best "$$m" > '${DESTDIR}${MANDIR}'/man3/"$$m".gz; done
-	for m in '${APIDIR}'/man/man3/{backend,tools,kdb,key,ks}*.3; do gzip -c --best "$$m" > '${DESTDIR}${MANDIR}'/man3/`basename $$m`.gz; done
-	for m in *.5; do gzip -c --best "$$m" > '${DESTDIR}${MANDIR}'/man5/"$$m".gz; done
-	for m in *.7; do gzip -c --best "$$m" > '${DESTDIR}${MANDIR}'/man7/"$$m".gz; done
+#	All .3 mans are now generated from Doxygen, and not from the XMLs anymore
+	[ -d ${DESTDIR}${MANDIR}/man1 ] || mkdir -p ${DESTDIR}${MANDIR}/man1
+	[ -d ${DESTDIR}${MANDIR}/man3 ] || mkdir -p ${DESTDIR}${MANDIR}/man3
+	[ -d ${DESTDIR}${MANDIR}/man5 ] || mkdir -p ${DESTDIR}${MANDIR}/man5
+	[ -d ${DESTDIR}${MANDIR}/man7 ] || mkdir -p ${DESTDIR}${MANDIR}/man7
+	find ${APIDIR}/html | cpio -pdm ${DESTDIR}${DOCDIR}/elektra-devel/
+	for m in `ls *.1`; do gzip -c --best $$m > ${DESTDIR}${MANDIR}/man1/$$m.gz; done
+#	for m in `ls *.3`; do gzip -c --best $$m > ${DESTDIR}${MANDIR}/man3/$$m.gz; done
+	gzip ${APIDIR}/man/man3/{kdb,key,ks}*.3
+	cp ${APIDIR}/man/man3/{kdb,key,ks}*.3.gz ${DESTDIR}${MANDIR}/man3/
+	for m in `ls *.5`; do gzip -c --best $$m > ${DESTDIR}${MANDIR}/man5/$$m.gz; done
+	for m in `ls *.7`; do gzip -c --best $$m > ${DESTDIR}${MANDIR}/man7/$$m.gz; done
 #	cat kdb.3.xml | perl -e '{while (<>) {m/<function>(\w*)<\/function>/; print $$1 . "\n" if ($$1); }}' | \
-#		grep kdb | sort -u | while read f; do ln -s kdb.3.gz ${DESTDIR}${MANDIR}/man3/$$f.3.gz; done
+#		grep kdb | sort -u | while read f; do ln -sf kdb.3.gz ${DESTDIR}${MANDIR}/man3/$$f.3.gz; done
 #	cat key.3.xml | perl -e '{while (<>) {m/<function>(\w*)<\/function>/; print $$1 . "\n" if ($$1); }}' | \
-#		egrep "key|ks" | sort -u | while read f; do ln -s key.3.gz ${DESTDIR}${MANDIR}/man3/$$f.3.gz; done
+#		egrep "key|ks" | sort -u | while read f; do ln -sf key.3.gz ${DESTDIR}${MANDIR}/man3/$$f.3.gz; done
 
 
 

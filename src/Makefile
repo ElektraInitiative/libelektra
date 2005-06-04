@@ -5,7 +5,7 @@
 NAME=elektra
 DTDVERSION=0.1.1
 
-LIBVERSION=1.0     # used as libkdb.so.$(LIBVERSION)
+LIBVERSION=2.0     # used as libkdb.so.$(LIBVERSION)
 
 # Default dirs we use for installation, that can be substituted by the
 # command line. See the README file or the RPM spec file.
@@ -44,7 +44,7 @@ all: libkdb.a libkdb.so libkdbtools.so kdb     # kdbfuture.h
 	done
 
 clean:
-	rm -f core* *~ *.o *.so* *.a kdb kdbfuture.h localeinfo svn-commit*
+	-rm -f core* *~ *.o *.so* *.a kdb kdbfuture.h localeinfo svn-commit*
 	-find . -name "*~" -o -name ".kdbg*" | xargs rm -f
 	for x in ${BACKENDS}; do (cd "backends/$$x"; $(MAKE) $@); done
 

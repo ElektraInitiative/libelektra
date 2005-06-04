@@ -45,7 +45,7 @@ all: elektra.pc
 
 
 cleanhere:
-	rm -f *~ elektra.spec elektra.pc svn-commit*
+	-rm -f *~ elektra.spec elektra.pc svn-commit*
 	-find . -name "*~" -o -name ".kdbg*" | xargs rm -f
 
 
