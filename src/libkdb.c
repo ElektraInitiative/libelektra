@@ -1229,15 +1229,14 @@ u_int32_t kdbMonitorKey_default(Key *interest, u_int32_t diffMask,
 	while (infinitum || --iterations) {
 		rc=kdbGetKey(tested);
 		if (rc) {
-			keyDel(tested);
 			/* check what type of problem happened.... */
 			switch (errno) {
 				case KDB_RET_NOCRED:
+					keyDel(tested);
 					return KEY_SWITCH_NEEDSYNC;
 				case KDB_RET_NOTFOUND:
+					keyDel(tested);
 					return KEY_SWITCH_FLAG;
-				case default:
-					keyDup(interest,tested);
 			}
 		}
 		
