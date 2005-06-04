@@ -6,7 +6,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT([libnss_elektra], [0.5], [rayman@skumler.dk])
+AC_INIT([libnss_elektra], [0.5], [jens.andersen@gmail.com])
 AC_CONFIG_SRCDIR([src/lib.c])
 AM_CONFIG_HEADER([src/config.h])
 
