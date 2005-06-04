@@ -133,4 +133,4 @@ install: all
 	cp ChangeLog ${DESTDIR}${DOCDIR}/${NAME}
 	cp example/*-convert example/*.xml ${DESTDIR}${DOCDIR}/${NAME}
 	cp example/*.c ${DESTDIR}${DOCDIR}/${NAME}-devel/examples/
-	-LD_LIBRARY_PATH='${DESTDIR}${LIBDIR}':"$$LD_LIBRARY_PATH" [ `id -u` -eq "0" ] && kdb set s\ystem/sw/kdb/current/schemapath '${DESTDIR}${SGMLDIR}/elektra-${DTDVERSION}/ele\ktra.xsd'
+	-LD_LIBRARY_PATH='${DESTDIR}${LIBDIR}':"$$LD_LIBRARY_PATH" [ `id -u` -eq "0" ] && kdb set system/sw/kdb/current/schemapath '${DESTDIR}${SGMLDIR}/elektra-${DTDVERSION}/elektra.xsd'
