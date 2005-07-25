@@ -154,12 +154,12 @@ kdb set system/sw/kdb/current/schemapath "%{_datadir}/sgml/elektra-%{DTDVERSION}
 
 %files
 %defattr(-,root,root,0755)
-/lib/*kdb.so*
-/lib/*kdb-filesys.so*
-/lib/*kdb-default.so*
-/lib/*kdb-fstab.so*
-/lib/*kdb-ini.so*
-%{_libdir}/*kdbtools.so*
+/lib/*elektra.so*
+/lib/*elektra-filesys.so*
+/lib/*elektra-default.so*
+/lib/*elektra-fstab.so*
+/lib/*elektra-ini.so*
+%{_libdir}/*elektratools.so*
 /bin/*
 %{_sysconfdir}/profile.d/*
 %doc %{_docdir}/%{name}

@@ -1407,6 +1407,31 @@ KDBBackend *kdbBackendExport(const char *backendName, ...) {
  *
  * Everything about the initiative can be found at http://elektra.sf.net
  *
+ * @section using Using the Elektra Library
+ *
+ * A C or C++ source file that wants to use Elektra should include:
+ * @code
+ * #include <kdb.h>
+ * @endcode
+ *
+ * There is also a library that provides some
+ * @ref tools "optional XML manipulation methods called KDB Tools", and to use
+ * it you should include:
+ * @code
+ * #include <kdbtools.h>
+ * @endcode
+ *
+ * To link an executable with the Elektra library, the correct way is to
+ * use the @c pkg-config tool:
+ * @code
+ * bash$ cc `pkg-config --libs elektra` -o myapp myapp.c
+ * @endcode
+ *
+ * Or, if you don't have @c pkg-config:
+ * @code
+ * bash$ cc -L /lib -lelektra -o myapp myapp.c
+ * @endcode
+ *
  * @section classes Elektra API
  *
  * The API was written in pure C because Elektra was designed to be usefull

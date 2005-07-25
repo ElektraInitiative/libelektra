@@ -55,53 +55,6 @@ size_t strblen(const char *s) {
 
 
 /**
- * A safer substitute method for realloc().
- * 
- * This function differs from realloc() because it handels error situations
- * right. It can also allocate new memory, but it is not recommended.
- * It is also possible to free the memory, when setting @p new_size to 0, but
- * this is not recommended too.
- * 
- * @par Example:
- * @code
-long int max = 100;
-long int * array;
-
-if ( (array = malloc ((max+1) * sizeof(long int))) == NULL ) {
-	fprintf (stderr, "out of memory\n");
-	return 1;
-}
-
-scanf ("%ld", &max);
-if (srealloc ((void **)&array, (max+1) * sizeof(long int)) < 0) {
-	fprintf (stderr, "out of memory\n");
-	return 1;
-}
- * @endcode
- *
- * @param ptr A pointer to pointer that will be reallocated. @p *ptr must be a
- * 	previously allocated memory address by malloc(). Must not be NULL, this
- * 	case is checked.
- * @param new_size New total size of allocated memory.
- *  
- * @return 0 at success, -1 on error (no memory leak)
- * @ingroup backend
- */
-inline int srealloc (void ** ptr, size_t new_size) {
-	void *h;
-	
-	if (ptr == NULL) return -1;
-	h = realloc (*ptr, new_size);
-	if (h == NULL) {
-		if (new_size > 0) /* don't free() twice */
-			free (* ptr);
-		return -1;
-	}
-	*ptr = h;
-	return 0;
-}
-
-/**
  * @defgroup key Key :: Basic Methods
  * @brief Key construction and initialization methods.
  *
@@ -534,7 +487,8 @@ ssize_t keySetName(Key *key, const char *newName) {
 	size_t length;
 	size_t rootLength, userLength, systemLength, userDomainLength;
 	size_t keyNameSize=1; /* equal to length plus a space for \0 */
-	
+	char *p;
+
 /*
 	if (!key) {
 		errno=KDB_RET_UNINITIALIZED;
@@ -575,7 +529,9 @@ ssize_t keySetName(Key *key, const char *newName) {
 			if (*(newName+userLength)==':') {
 				/* handle "user:*" */
 				if (userDomainLength > 0) {
-					key->userDomain=realloc(key->userDomain,userDomainLength+1);
+                                        p=realloc(key->userDomain,userDomainLength+1);
+                                        if (NULL==p) goto error_mem;
+					key->userDomain=p;
 					strncpy(key->userDomain,newName+userLength+1,userDomainLength);
 					key->userDomain[userDomainLength]=0;
 				}
@@ -593,7 +549,9 @@ ssize_t keySetName(Key *key, const char *newName) {
 			keyNameSize+=userLength;
 		}
 
-		key->key=realloc(key->key,keyNameSize);
+		p=realloc(key->key,keyNameSize);
+		if (NULL==p) goto error_mem;
+		key->key=p;
 
 		/* here key->key must have a correct size allocated buffer */
 		if (!key->key) return -1;
@@ -621,7 +579,10 @@ ssize_t keySetName(Key *key, const char *newName) {
 			return -1;
 		}
 		keyNameSize+=length;
-		key->key=realloc(key->key,keyNameSize);
+		p=realloc(key->key,keyNameSize);
+		if (NULL==p) goto error_mem;
+		key->key=p;
+
 
 		/* here key->key must have a correct size allocated buffer */
 		if (!key->key) return -1;
@@ -640,6 +601,10 @@ ssize_t keySetName(Key *key, const char *newName) {
 	key->flags |= KEY_SWITCH_NAME | KEY_SWITCH_NEEDSYNC;
 
 	return keyNameSize;
+
+	error_mem:
+		errno=KDB_RET_NOMEM;
+		return -1;
 }
 
  
@@ -665,7 +630,8 @@ ssize_t keyAddBaseName(Key *key,const char *baseName) {
 	size_t nameSize=0;
 	size_t newSize=0;
 	int ndelim=0;
-	
+	char *p;
+
 	if (key->key) nameSize=strblen(key->key)-1;
 	if (baseName) newSize=strblen(baseName);
 	else return nameSize;
@@ -689,8 +655,13 @@ ssize_t keyAddBaseName(Key *key,const char *baseName) {
 		
 		/* Now we know the final key size */
 		newSize+=nameSize;
-		key->key=realloc(key->key,newSize);
-		
+		p=realloc(key->key,newSize);
+		if (NULL == p) {
+			errno=KDB_RET_NOMEM;
+			return -1;
+		}
+		key->key=p;
+
 		if (key->key[nameSize-1] != RG_KEY_DELIM && baseName[ndelim])
 			strcat(key->key,"/");
 		
@@ -722,13 +693,19 @@ ssize_t keyAddBaseName(Key *key,const char *baseName) {
 ssize_t keySetBaseName(Key *key, const char *baseName) {
 	size_t newSize=strblen(baseName);
 	char *end;
+        char *p;
 	
 	end=rindex(key->key,'/');
 	
 	if (end) {
 		newSize+=end-key->key;
 		end[1]=0;
-		key->key=realloc(key->key,newSize);
+		p=realloc(key->key,newSize);
+                if (NULL == p) {
+                        errno=KDB_RET_NOMEM;
+                	return -1;
+                }
+		key->key=p;
 		strcat(key->key,baseName);
 		return newSize;
 	} else return keySetName(key,baseName);
@@ -1891,8 +1868,14 @@ ssize_t keySetRaw(Key *key, const void *newBinary, size_t dataSize) {
 	}
 
 	key->dataSize=dataSize;
-	if (key->data) key->data=realloc(key->data,key->dataSize);
-	else key->data=malloc(key->dataSize);
+	if (key->data) {
+		char *p;
+		p=realloc(key->data,key->dataSize);
+		if (NULL==p) return -1;
+		key->data=p;
+	} else {
+		key->data=malloc(key->dataSize);
+        }
 
 	if (!key->data) return -1;
 
@@ -1944,7 +1927,13 @@ ssize_t keySetOwner(Key *key, const char *userDomain) {
 
 	if ((size=strblen(userDomain)) > 0) {
 		if (key->userDomain) {
-			key->userDomain=realloc(key->userDomain,size);
+			char *p;
+			p=realloc(key->userDomain,size);
+			if (NULL==p) {
+				errno=KDB_RET_NOMEM;
+				return -1;
+			}
+			key->userDomain=p;
 		} else {
 			key->userDomain=malloc(size);
 		}
@@ -2076,7 +2065,13 @@ ssize_t keySetComment(Key *key, const char *newComment) {
 
 	if (newComment && (size=strblen(newComment)) > 0) {
 		if (key->flags & KEY_SWITCH_COMMENT) {
-			key->comment=realloc(key->comment,size);
+			char *p;
+			p=realloc(key->comment,size);
+			if (NULL==p) {
+				errno=KDB_RET_NOMEM;
+				return -1;
+			}
+			key->comment=p;
 		} else {
 			key->comment=malloc(size);
 		}

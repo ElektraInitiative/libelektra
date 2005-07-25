@@ -5,6 +5,7 @@
 # You probably will have to change these 2 next vars to match your sources.
 
 BACKENDNAME=ini
+LIBNAME=libelektra
 SOURCES=${BACKENDNAME}.c
 
 
@@ -22,10 +23,10 @@ CC=gcc -g ${OPTIMIZATIONS} -Wall
 	${CC} -I../.. -fpic -o $@ -c $<
 
 
-all: libkdb-${BACKENDNAME}.so
+all: ${LIBNAME}-${BACKENDNAME}.so
 
 
-libkdb-${BACKENDNAME}.so: ${SOURCES:.c=.o}
+${LIBNAME}-${BACKENDNAME}.so: ${SOURCES:.c=.o}
 	${CC} -shared -fpic -L../.. -lkdb -o $@ $<
 
 
@@ -36,13 +37,13 @@ ${BACKENDNAME}.o: ${BACKENDNAME}.c
 
 
 install: all
-	cp -d libkdb-${BACKENDNAME}.so ${DESTDIR}${LIBDIR}
+	cp -d ${LIBNAME}-${BACKENDNAME}.so ${DESTDIR}${LIBDIR}
 
 
 
 
 clean:
-	-rm -f ${SOURCES:.c=.o} libkdb-${BACKENDNAME}.so
+	-rm -f ${SOURCES:.c=.o} ${LIBNAME}-${BACKENDNAME}.so
 	-find . -name "*~" -o -name ".kdbg*" | xargs rm -f
 
 

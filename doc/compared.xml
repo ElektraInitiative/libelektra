@@ -30,7 +30,7 @@ $LastChangedBy: $
     libnsl.so.1 => /lib/libnsl.so.1 (0x4f727000)
 		</screen>
 		<para>This is useless for an early boot stage program (<filename>/usr/lib</filename> may be still unmounted), and for a very small OS installation that won't require desktop features, like a router, small firewall, or any other appliance. On the other hand, the Elektra database access library is very slim with a minimum of dependencies:</para>
-		<screen>$ ldd /lib/libkdb.so
+		<screen>$ ldd /lib/libelektra.so
     libc.so.6 => /lib/tls/libc.so.6 (0x00111000)
     /lib/ld-linux.so.2 => /lib/ld-linux.so.2 (0x009fd000)
 		</screen>

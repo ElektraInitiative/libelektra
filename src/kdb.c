@@ -39,6 +39,7 @@ $LastChangedBy$
 #include <pwd.h>
 #include <ctype.h>
 #include <dlfcn.h>
+#include <assert.h>
 
 
 #define CMD_GET       1
@@ -114,10 +115,12 @@ int parseCommandLine(int argc, char *argv[]) {
 				break;
 			case 'c':
 				argComment=realloc(argComment,strlen(optarg)+1);
+				assert(argComment!=NULL);
 				strcpy(argComment,optarg);
 				break;
 			case 'b':
 				argFile=realloc(argFile,strlen(optarg)+1);
+				assert(argFile!=NULL);
 				strcpy(argFile,optarg);
 				break;
 			case 'u':
@@ -171,10 +174,12 @@ int parseCommandLine(int argc, char *argv[]) {
 					keyOptLength = strblen (optarg);
 					argKeyName=realloc(argKeyName,
 						keyEnvLength + keyOptLength + 1);
+					assert(argKeyName!=NULL);
 					if (keyEnv) strncpy (argKeyName, keyEnv,   keyEnvLength);
 					strncpy(argKeyName + keyEnvLength, optarg, keyOptLength);
 				} else if (!argData) { /* parse value */
 					argData=realloc(argData,strblen(optarg)+1);
+					assert(argData!=NULL);
 					strcpy(argData,optarg);
 				}
 				break;
@@ -190,6 +195,7 @@ int parseCommandLine(int argc, char *argv[]) {
 
 		while (wordind<argc) valueLength+=strlen(argv[wordind++])+1;
 		argData=realloc(argData,valueLength);
+		assert(argData!=NULL);
 		strcpy(argData,argv[optind++]);
 		/* very ugly */
 		while (optind<argc) sprintf(argData,"%s %s",argData,argv[optind++]);
@@ -559,6 +565,7 @@ int commandSet() {
 				end=1;
 			}
 			argData=realloc(argData,offset+r);
+			assert(argData!=NULL);
 			memcpy(argData+offset,buffer,r);
 			offset+=r;
 		}

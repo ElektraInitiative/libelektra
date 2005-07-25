@@ -569,7 +569,7 @@ $LastChangedBy$
 		<section id="help-patch"><title>Software Patches</title>
 			<orderedlist>
 				<listitem><simpara>We need patches for Modprobe, Samba, Apache, PAM etc to use Elektra, instead of <filename>/etc/modules.conf</filename>, <filename>/etc/smb.conf</filename>, <filename>/etc/httpd/httpd.conf</filename>, etc.</simpara></listitem>
-				<listitem><simpara>Patches for system initialization scripts to use Elektra instead of <filename>/etc/sysconfig/*</filename>, <filename>/etc/sysconfig/network-scripts/*</filename> files.</simpara></listitem>
+				<listitem><simpara>Patches for system initialization scripts to use Elektra instead of <filename>/etc/sysconfig/network-scripts/*, /etc/sysconfig/*</filename> files.</simpara></listitem>
 			</orderedlist>
 		</section>
 

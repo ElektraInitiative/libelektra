@@ -46,6 +46,7 @@ $LastChangedBy$
 #include <unistd.h>
 #include <string.h>
 #include <pwd.h>
+#include <assert.h>
 
 #define BACKENDNAME "filesys"
 
@@ -354,6 +355,7 @@ ssize_t kdbGetKeyChildKeys_filesys(const Key *parentKey, KeySet *returned, unsig
 		if (!transformedName) {
 			transformedName=
 				realloc(transformedName,keyNameSize=strblen(entry->d_name));
+			assert(transformedName!=NULL);
 			strcpy(transformedName,entry->d_name);
 		}
 		if (UTF8Engine(UTF8_FROM,&transformedName,&keyNameSize)) {
@@ -470,6 +472,7 @@ int handleOldKeyFileVersion(Key *key,FILE *input,u_int16_t nversion) {
 							strcpy(buffer,comment);
 							strcat(buffer,generalBuffer);
 							comment=realloc(comment,commentSize+=currentBufferSize);
+							assert(comment != NULL);
 							strcpy(comment,buffer);
 							free(buffer);
 						}
@@ -506,6 +509,7 @@ int handleOldKeyFileVersion(Key *key,FILE *input,u_int16_t nversion) {
 						strcpy(buffer,data);
 						strcat(buffer,generalBuffer);
 						data=realloc(data,dataSize+=currentBufferSize);
+						assert(data!=NULL);
 						strcpy(data,buffer);
 						free(buffer);
 					}
@@ -630,6 +634,7 @@ int keyFileUnserialize(Key *key,FILE *input) {
 					strcpy(buffer,comment);
 					strcat(buffer,generalBuffer);
 					comment=realloc(comment,commentSize+=currentBufferSize);
+					assert(comment!=NULL);
 					strcpy(comment,buffer);
 					free(buffer);
 				}
@@ -665,6 +670,7 @@ int keyFileUnserialize(Key *key,FILE *input) {
 				strcpy(buffer,data);
 				strcat(buffer,generalBuffer);
 				data=realloc(data,dataSize+=currentBufferSize);
+				assert(data!=NULL);
 				strcpy(data,buffer);
 				free(buffer);
 			}

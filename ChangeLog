@@ -1,3 +1,9 @@
+* Mon Jul 25 2005 Avi Alkalay <avi@unix.sh> 0.5.0.4
+- libkdb*.[so|a] renamed to libelektra*.[so|a] to avoid conflicts with Kerberos v4
+- Documentation updated to fit
+- Corrected duplicate error codes in the KDBErr enum
+- Some realloc robusteness was added with assert(), thanks to Bardur Arantsson
+
 * Tue Mar 20 2005 Avi Alkalay <avi@unix.sh> 0.5
 - An almost ready Berkeley DB backend
 - Key, KeySet and KeyDB classes earned robusteness through the implementation of a new backend

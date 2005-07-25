@@ -6,6 +6,6 @@ includedir=${prefix}/include
 Name: elektra
 Description: A key/value pair database to store software configurations
 Version: _VERSION_
-Libs: -L${libdir} -lkdb
+Libs: -L${libdir} -lelektra
 Cflags: -I${includedir}
 
