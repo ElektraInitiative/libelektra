@@ -27,9 +27,20 @@ $LastChangedBy$
 
 		&author;
 
-		<pubdate>2005-05-18</pubdate>
+		<pubdate>2005-07-25</pubdate>
 
 		<revhistory>
+			<revision>
+				<revnumber>2005-07-25</revnumber>
+				<date>27 Jul 2005</date>
+				<authorinitials>avi</authorinitials>
+				<revdescription>
+					<itemizedlist>
+						<listitem><simpara>Updated libname from libkdb.so to libelektra.so</simpara></listitem>
+						<listitem><simpara>Updated Graphics for the library architecture.</simpara></listitem>
+					</itemizedlist>
+				</revdescription>
+			</revision>
 			<revision>
 				<revnumber>2005-05-18</revnumber>
 				<date>18 May 2005</date>
