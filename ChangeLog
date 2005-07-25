@@ -3,6 +3,7 @@
 - Documentation updated to fit
 - Corrected duplicate error codes in the KDBErr enum
 - Some realloc robusteness was added with assert(), thanks to Bardur Arantsson
+- Added in Doxygen: a small guide on how to #include, compile and link with Elektra
 
 * Tue Mar 20 2005 Avi Alkalay <avi@unix.sh> 0.5
 - An almost ready Berkeley DB backend
