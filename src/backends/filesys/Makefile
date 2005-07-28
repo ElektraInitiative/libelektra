@@ -26,7 +26,7 @@ all: ${LIBNAME}-${BACKENDNAME}.so
 
 
 ${LIBNAME}-${BACKENDNAME}.so: ${SOURCES:.c=.o}
-	${CC} -shared -fpic -lkdb -L../../ -o $@ $<
+	${CC} -shared -fpic -lelektra -L../../ -o $@ $<
 
 
 

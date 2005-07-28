@@ -27,7 +27,7 @@ all: ${LIBNAME}-${BACKENDNAME}.so
 
 
 ${LIBNAME}-${BACKENDNAME}.so: ${SOURCES:.c=.o}
-	${CC} `pkg-config --libs gconf-2.0` -shared -fpic -L../.. -lkdb -o $@ $<
+	${CC} `pkg-config --libs gconf-2.0` -shared -fpic -L../.. -lelektra -o $@ $<
 
 
 
