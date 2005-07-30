@@ -162,7 +162,7 @@ int kdbOpen() {
  * (e.g. su, login, sshd, etc).
  *
  * The @e default backend use to be a symlink to the real backend, and
- * is found in /lib/libkdb-default.so
+ * is found in /lib/libelektra-default.so
  *
  * @see kdbOpen(), kdbOpenBackend(), kdbClose()
  * @return 0 on success or whatever is returned by kdbOpenBackend()
@@ -177,13 +177,13 @@ int kdbOpenDefault() {
 
 /**
  * Opens the session with the Key database, dynamically loading a specific
- * beckend for libkdb.so.
+ * beckend for libelektra.so.
  * 
  * After dynamic loading, the backend will be initialized with its
  * implementation of kdbOpen().
  * 
  * @param backendName used to define the module filename as
- * 	libkdb-@p "backendName".so
+ * 	libelektra-@p "backendName".so
  * @return 0 on success. On failure, @c errno is set to KDBErr::KDB_RET_NOSYS
  * 	and 1 if backend library could not be opened, 2 if backend doesn't have
  * 	the essential "kdbBackendFactory" initialization symbol, 3 if backend
@@ -205,7 +205,7 @@ kdbClose();
 
 kdbOpenBackend("apache");
 
-// The hipotethical libkdb-apache.so backend implementation for kdbSetKeys()
+// The hipotethical libelektra-apache.so backend implementation for kdbSetKeys()
 // simply interprets the passed KeySet and generates an old style
 // equivalent /etc/httpd/httpd.conf file.
 kdbSetKeys(ks);
@@ -231,10 +231,10 @@ int kdbOpenBackend(char *backendName) {
 	/* load the environment and make us aware of codeset conversions */
 	setlocale(LC_ALL,"");
 	
-	sprintf(backendlib,"libkdb-%s.so",backendName);
+	sprintf(backendlib,"libelektra-%s.so",backendName);
 	dlhandle=dlopen(backendlib,RTLD_LAZY);
 	if (dlhandle == 0) {
-		fprintf(stderr, "libkdb: Could not open \"%s\" backend: %s\n",
+		fprintf(stderr, "libelektra: Could not open \"%s\" backend: %s\n",
 			backendName,dlerror());
 		errno=KDB_RET_NOSYS;
 		return 1; /* error */
@@ -242,14 +242,14 @@ int kdbOpenBackend(char *backendName) {
 	
 	kdbBackendNew=dlsym(dlhandle,"kdbBackendFactory");
 	if (kdbBackendNew == 0) {
-		fprintf(stderr, "libkdb: \"%s\" backend: %s\n",backendName,dlerror());
+		fprintf(stderr, "libelektra: \"%s\" backend: %s\n",backendName,dlerror());
 		errno=KDB_RET_NOSYS;
 		return 2; /* error */
 	}
 	
 	backend=(*kdbBackendNew)();
 	if (backend == 0) {
-		fprintf(stderr,"libkdb: Can't initialize \"%s\" backend\n",
+		fprintf(stderr,"libelektra: Can't initialize \"%s\" backend\n",
 			backendName);
 		errno=KDB_RET_NOSYS;
 		return 3; /* error */
@@ -1265,11 +1265,11 @@ u_int32_t kdbMonitorKey_default(Key *interest, u_int32_t diffMask,
 /**
  * This function must be called by a backend's kdbBackendFactory() to
  * define the backend's methods that will be exported. Its job is to
- * organize a libkdb.so's table of virtual methods with pointers to backend
+ * organize a libelektra.so's table of virtual methods with pointers to backend
  * dependent methods.
  * 
  * The order and number of arguments are flexible (as keyNew()) to let
- * libkdb.so evolve without breaking its ABI compatibility with backends.
+ * libelektra.so evolve without breaking its ABI compatibility with backends.
  * So for each method a backend must export, there is a flag defined by
  * #KDBBackendMethod. Each flag tells kdbBackendExport() which method comes
  * next. A backend can have no implementation for a few methods that have
@@ -1286,7 +1286,7 @@ u_int32_t kdbMonitorKey_default(Key *interest, u_int32_t diffMask,
 //
 // To compile it:
 // $ cc -fpic -o myback.o -c myback.c
-// $ cc -shared -fpic -o libkdb-myback.so myback.o
+// $ cc -shared -fpic -o libelektra-myback.so myback.o
 // 
 // To use it:
 // $ export KDB_BACKEND=myback
@@ -1330,7 +1330,7 @@ KDBBackend *kdbBackendFactory(void) {
  * 
  * @param backendName a simple name for this backend
  * @return an object that contains all backend informations needed by
- * 	libkdb.so
+ * 	libelektra.so
  * @ingroup backend
  */
 KDBBackend *kdbBackendExport(const char *backendName, ...) {

@@ -1209,7 +1209,7 @@ int commandHelp() {
 int loadToolsLib(void) {
 	void *dlhandle=0;
 	
-	dlhandle=dlopen("libkdbtools.so",RTLD_LAZY);
+	dlhandle=dlopen("libelektratools.so",RTLD_LAZY);
 	if (dlhandle == 0) {
 		fprintf(stderr, "kdb: %s\n",dlerror());
 		return 1;
