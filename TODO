@@ -1,12 +1,50 @@
-- Write a patch/backend for KConfigXT.
-- Update the X.org patch for the last API modifications
-- Write a daemon backend (maybe based on HTTP, CGI and XML)
-- Add methods for a better notification API, instead of monitoring
-- Write specifications for configuration trees. I already put something in the /specs/ dir on the source
-- Finish the Berkeley DB backend
-- Update the website and style for better browsing experience
-- Perl binding
-- Syslog logging
+Update the website and style for better browsing experience
+
+improvements
+	Add methods for a better notification API, instead of monitoring
+	Write specifications for configuration trees (see /specs).
+	Statical build
+
+finish
+	Finish the Berkeley DB backend
+	Finish libini backend
+
+patches
+	Write a patch/backend for KConfigXT.
+	Update the X.org patch for the last API modifications
+	Write a daemon backend (maybe based on HTTP, CGI and XML)
+
+bindings
+	Perl
+	php (kontact: Kai-Uwe Behrmann <ku.b@gmx.de>)
+
+backends
+	sql
+	lexx parsing
+
+wishlist
+	Syslog logging
+	escaping engine for xml (<>&) and ini (=;) stuff
+	write really good tutorial!
+
+security
+	check for leaks
+	improve remalloc
+	scripts for performance and stability testing
+
+contact
+	xml: uni-xml (texasjdl@yahoo.com)
+
+porting
+	solaris
+	win32 (first mingw)
+
+publish
+	freedesktop.org
+	gnu
+	newsgroups of unix programming
+
+completely new features (dont't expect them to be here soon)
 
 
 THE NEW NOTIFICATION API SHOULD BE:
@@ -17,3 +55,18 @@ void kdbUnregisterCallback(KeySet *interests, u_int32_t diffMask,
     KdbCallback *cb, void *userdata);
 
 void kdbDeliverEvents(long iterations, int sleep);
+
+
+libcomment
+	multilanguage comments
+	type of key (list, int, bool,...)
+	validator of key (what is valid?)
+	important? (-20 for optional 20 for must have)
+	regexpr for keysets
+	version of key (full.major.minor)
+	user comments
+	without any field it will be taken as
+		comment for every language,
+		not especially specified
+
+
