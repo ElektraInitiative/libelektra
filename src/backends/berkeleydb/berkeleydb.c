@@ -1039,7 +1039,7 @@ ssize_t kdbGetKeyChildKeys_bdb(const Key *parentKey, KeySet *returned, unsigned 
  * when loading the backend, and the first method of the backend
  * implementation that will be called.
  * 
- * Its purpose is to "publish" the exported methods for libkdb.so. The
+ * Its purpose is to "publish" the exported methods for libelektra.so. The
  * implementation inside the provided skeleton is usually enough: simply
  * call kdbBackendExport() with all methods that must be exported.
  * 

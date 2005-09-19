@@ -18,7 +18,7 @@
 /***************************************************************************
  *                                                                         *
  *   This is the skeleton of the methods you'll have to implement in order *
- *   to provide libkdb.so a valid backend.                                 *
+ *   to provide libelektra.so a valid backend.                             *
  *   Simple fill the empty _backend functions with your code and you are   *
  *   ready to go.                                                          *
  *                                                                         *
@@ -57,7 +57,7 @@ $LastChangedBy$
 
 /**
  * @defgroup backend Elektra framework for pluggable backends
- * @brief The tactics to create pluggable backends to libkdb.so
+ * @brief The tactics to create pluggable backends to libelektra.so
  *
  * Since version 0.4.9, Elektra can dynamically load different key storage
  * backends. Fast jump to kdbBackendExport() to see an example of a backend
@@ -78,7 +78,7 @@ $LastChangedBy$
  * 
  * The backend must implement a method with name kdbBackendFactory() and no
  * parameters, that is responsible of exporting the implementations of 
- * libkdb.so backend dependent methods.
+ * libelektra.so backend dependent methods.
  * 
  * The backend implementation must:
  * @code
@@ -96,14 +96,14 @@ $LastChangedBy$
  * related, in which it probably uses the more secure kdbOpenDefault() which
  * completely ignores the @e $KDB_BACKEND environment and will use the
  * @c "default" named backend defined by the sysadmin. Look at
- * @c /lib/libkdb-default.so link to see the default backend for your
+ * @c /lib/libelektra-default.so link to see the default backend for your
  * system.
  * 
  * Elektra source code or development package provides a skeleton and Makefile
  * to implement a backend, and we'll document this skeleton here.
  * 
  * A backend is defined by a single name, for example @c BACKENDNAME, that
- * causes libkdb.so look for its library as @c libkdb-BACKENDNAME.so.
+ * causes libelektra.so look for its library as @c libelektra-BACKENDNAME.so.
  * 
  * Elektra source code tree includes several backend implementations
  * (http://germane-software.com/repositories/elektra/trunk/src/backends)
@@ -144,7 +144,7 @@ int kdbOpen_backend() {
  * Called prior to unloading the backend dynamic module. Should ensure that no
  * functions or static/global variables from the module will ever be accessed again.
  * Should free any memory that the backend no longer needs.
- * After this call, libkdb.so will unload the backend library, so this is
+ * After this call, libelektra.so will unload the backend library, so this is
  * the point to shutdown any affairs with the storage.
  *
  * @return 0 on success, anything else otherwise.
@@ -302,7 +302,7 @@ u_int32_t kdbMonitorKey_backend(Key *interest, u_int32_t diffMask,
  * when loading the backend, and the first method of the backend
  * implementation that will be called.
  * 
- * Its purpose is to "publish" the exported methods for libkdb.so. The
+ * Its purpose is to "publish" the exported methods for libelektra.so. The
  * implementation inside the provided skeleton is usually enough: simply
  * call kdbBackendExport() with all methods that must be exported.
  * 

@@ -25,7 +25,7 @@ then
 	exit 2
 fi
 
-if [ ! -f "/lib/libkdb-$1.so" ]
+if [ ! -f "/lib/libelektra-$1.so" ]
 then
 	echo "Choosen backend not available"
 	exit 3
@@ -39,8 +39,8 @@ then
 	exit 4
 fi
 
-$DEBUG rm -f "/lib/libkdb-default.so"
-$DEBUG ln -s "/lib/libkdb-$1.so" "/lib/libkdb-default.so"
+$DEBUG rm -f "/lib/libelektra-default.so"
+$DEBUG ln -s "/lib/libelektra-$1.so" "/lib/libelektra-default.so"
 
 kdb import < "$TMPFILE"
 

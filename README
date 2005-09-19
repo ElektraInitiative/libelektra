@@ -153,9 +153,9 @@ Elektra is divided in 2 packages: "elektra" and "elektra-devel".
 The "elektra" package sugested files:
    /bin/kdb
    /etc/profile.d/elektraenv.sh
-   /lib/libkdb.so*
-   /lib/libkdbtools.so*
-   /lib/libkdb-*.so      (backends)
+   /lib/libelektra.so*
+   /lib/libelektratools.so*
+   /lib/libelektra-*.so      (backends)
    /lib/libregistry.so   (backwards compatibility: will be removed in future)
    /usr/share/doc/elektra
    /usr/share/doc/elektra/fstab-convert
@@ -179,7 +179,7 @@ The "elektra-devel" package sugested files:
    /usr/include/kdbtools.h     (higher level functions)
    /usr/include/kdbbackend.h   (backend development)
    /usr/include/kdbprivate.h   (used by kdbbackend.h)
-   /usr/lib/libkdb.a
+   /usr/lib/libelektra.a
    /usr/share/doc/elektra-devel
    /usr/share/doc/elektra-devel/backend-template/*  (backend development examples)
    /usr/share/doc/elektra-devel/elektra-api/*  (Doxygen API documentation)
@@ -197,7 +197,7 @@ Usually you should build it like this:
 
 For more info, please use the elektra.spec file as a reference.
 
-It is recommended to provide a tool like update-libkdb, to make it
+It is recommended to provide a tool like update-libelektra, to make it
 safe for admins to change the backend. See under 
 scripts/update-backend an idea how the script could look like. Of
 course it has to be adopted for your distributions need.
