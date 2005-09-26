@@ -57,14 +57,14 @@ libregistry.so: registrystub.o ${LIBNAME}.so
 	${CC} -shared -fpic -o $@ ${LIBNAME}.so.$(LIBVERSION) registrystub.o
 
 
-${LIBNAME}.so: libkdb.o key.o
-	${CC} -shared -fpic -ldl -Wl,-soname,$@.$(LIBVERSION) -o $@.$(LIBVERSION) libkdb.o key.o
+${LIBNAME}.so: libkdb.o key.o keyset.o
+	${CC} -shared -fpic -ldl -Wl,-soname,$@.$(LIBVERSION) -o $@.$(LIBVERSION) libkdb.o key.o keyset.o
 	ln -sf $@.$(LIBVERSION) $@
 
 
 
-${LIBNAME}.a: libkdb.o key.o
-	ar q $@ libkdb.o key.o
+${LIBNAME}.a: libkdb.o key.o keyset.o
+	ar q $@ libkdb.o key.o keyset.o
 
 
 
@@ -84,7 +84,7 @@ ${LIBNAME}tools.a: kdbtools.o
 	
 key.o: key.c kdb.h kdbprivate.h
 
-
+keyset.o: keyset.c kdb.h kdbprivate.h
 
 
 
