@@ -1,0 +1,15 @@
+      <div class="section" lang="en" xml:lang="en">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="overview"></a>3. Overview of the Elektra Project</h2>
+            </div>
+          </div>
+          <div></div>
+        </div>
+        <p>The Elektra Project provides an alternative back-end for text configuration files.</p>
+        <p>Instead of each program to have its own text configuration files, with a variety of formats, Elektra tries to provide a universal, hierarchical, fast and consistent namespace and infrastructure to access configuration parameters through a key-value pair mechanism. This way any software can read/save its configuration/state using a consistent API.</p>
+        <p>Being a common infrastructure, it also lets other softwares be aware of this application configurations, leveraging easy software integration.</p>
+        <p>It is designed to be lightweight, with no dependencies, ready to be used also by early boot stage programs.</p>
+        <p>Using Elektra, configuration file's syntax and handling will not be a rework for each software.</p>
+        <p>Elektra lets system administrators control security in a much fine grained way. With the current flat file paradigm it is impossible to control permissions and access times on each <tt class="filename">/etc/passwd</tt> or <tt class="filename">/etc/shadow</tt> atoms. Elektra lets you do that because each information atom stored in it (key) has a unique name (key name) and access properties. See <a href="http://namesys.com/v4/v4.html#etc_passwd" target="_top">Hans Reiser (creator of ReiserFS) comments about it</a>.</p>

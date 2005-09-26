@@ -1,0 +1,41 @@
+        <div class="section" lang="en" xml:lang="en">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="rgfacts"></a>3.2. True Facts About Elektra</h3>
+              </div>
+            </div>
+            <div></div>
+          </div>
+          <div class="itemizedlist">
+            <ul type="disc">
+              <li>
+                <p>It is a simple and consistent API to help software developers programatically store and retrieve global and user-specific configuration parameters.</p>
+              </li>
+              <li>
+                <p>All key-value pairs are stored in clear-text files, UTF-8 encoded. All old charsets are also supported, with automatic transparent conversion to and from UTF-8.</p>
+              </li>
+              <li>
+                <p>API supports change notifications and multiple backends.</p>
+              </li>
+              <li>
+                <p>It provides a unique namespace for all values. Anywhere, anytime, any program can preciselly access keys by their names. Security restrictions may obviously apply.</p>
+              </li>
+              <li>
+                <p>It is designed to be secure and lightweight, to let even early boot-stage programs like <span><b class="command">/sbin/init</b></span> to use it, instead of <tt class="filename">/etc/inittab</tt> file.</p>
+              </li>
+              <li>
+                <p>It is designed to be easy to administrate with regular command line tools like <span><b class="command">cat</b></span>, <span><b class="command">vi</b></span>, <span><b class="command">cp</b></span>, <span><b class="command">ls</b></span>, <span><b class="command">ln</b></span>. Its storage is 100% open.</p>
+              </li>
+              <li>
+                <p>It tries to set distribution-independent naming standards to store things like hardware configuration, networking, user's session configuration, system's mime-types, parameters for kernel modules, etc, that are generally stored under <tt class="filename">/etc</tt>.</p>
+              </li>
+              <li>
+                <p>It requires existing software to be changed to use its API. This will substitute hundreds of configuration-text-file parsing code, into clear Elektra's API key-value access methods.</p>
+              </li>
+              <li>
+                <p>It is POSIX compliant. If it doesn't compile and run easily on some POSIX system, it should be easily modified to do so.</p>
+              </li>
+            </ul>
+          </div>
+        </div>

@@ -1,0 +1,1423 @@
+
+
+<HTML><HEAD><TITLE>Manpage of KeySet :: Class Methods</TITLE>
+</HEAD><BODY>
+<H1>KeySet :: Class Methods</H1>
+Section: C Library Functions (3)<BR>Updated: 25 Jul 2005<BR><A HREF="#index">Index</A>
+<A HREF="index.html">Return to Main Contents</A><HR>
+
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>NAME</H2>
+
+KeySet :: Class Methods - Methods to manipulate KeySets. A KeySet is a linked list to group a number of Keys. Key Sets have an <B>internal cursor </B> to help in the Key navigation.  
+<P>
+<P>
+
+<A NAME="lbAC">&nbsp;</A>
+<H3>Functions</H3>
+
+<P>
+
+<BR>
+
+<B>KeySet</B> * <B>ksNew</B> ()
+
+<BR>
+
+<I>Allocate, initialize and return a new KeySet object. </I>
+
+<BR>
+
+int <B>ksDel</B> (<B>KeySet</B> *ks)
+
+<BR>
+
+<I>A destructor for KeySet objects. </I>
+
+<BR>
+
+ssize_t <B>ksGetSize</B> (<B>KeySet</B> *ks)
+
+<BR>
+
+<I>Return the number of keys contained by </I>ks. 
+
+<BR>
+
+int <B>ksRewind</B> (<B>KeySet</B> *ks)
+
+<BR>
+
+<I>Resets a KeySet internal cursor. </I>
+
+<BR>
+
+<B>Key</B> * <B>ksNext</B> (<B>KeySet</B> *ks)
+
+<BR>
+
+<I>Returns the next Key in a KeySet. </I>
+
+<BR>
+
+<B>Key</B> * <B>ksCurrent</B> (const <B>KeySet</B> *ks)
+
+<BR>
+
+<I>Return the current Key. </I>
+
+<BR>
+
+<B>Key</B> * <B>ksHead</B> (<B>KeySet</B> *ks)
+
+<BR>
+
+<I>Return the first key in the KeySet, whithout changing the KeySet's internal cursor. </I>
+
+<BR>
+
+<B>Key</B> * <B>ksTail</B> (<B>KeySet</B> *ks)
+
+<BR>
+
+<I>Return the last key in the KeySet, whithout changing the KeySet's internal cursor. </I>
+
+<BR>
+
+<B>Key</B> * <B>ksLookupByName</B> (<B>KeySet</B> *ks, const char *name, unsigned long options)
+
+<BR>
+
+<I>Look for a Key contained in </I>ks that matches name, starting from ks' <B>ksNext()</B> position. 
+
+<BR>
+
+u_int32_t <B>ksLookupRE</B> (<B>KeySet</B> *ks, u_int32_t where, const regex_t *regexp, unsigned long options)
+
+<BR>
+
+<I>Lookup for a key which any of its </I>where components matches the regex regular expression. 
+
+<BR>
+
+<B>Key</B> * <B>ksLookupByValue</B> (<B>KeySet</B> *ks, const char *value, unsigned long options)
+
+<BR>
+
+<I>Lookup for a Key contained in </I>ks KeySet that matches value, starting from ks' <B>ksNext()</B> position. 
+
+<BR>
+
+<B>Key</B> * <B>ksLookupByBinaryValue</B> (<B>KeySet</B> *ks, void *value, size_t size, unsigned long options)
+
+<BR>
+
+<I>Lookup for a Key contained in </I>ks KeySet that matches the binary value, starting from ks' <B>ksNext()</B> position. 
+
+<BR>
+
+ssize_t <B>ksInsert</B> (<B>KeySet</B> *ks, <B>Key</B> *toInsert)
+
+<BR>
+
+<I>Insert a new Key in the begining of the KeySet. </I>
+
+<BR>
+
+<B>Key</B> * <B>ksPop</B> (<B>KeySet</B> *ks)
+
+<BR>
+
+<I>Remove and return the first key of </I>ks. 
+
+<BR>
+
+<B>Key</B> * <B>ksPopLast</B> (<B>KeySet</B> *ks)
+
+<BR>
+
+<I>Remove and return the last key of </I>ks. 
+
+<BR>
+
+ssize_t <B>ksInsertKeys</B> (<B>KeySet</B> *ks, <B>KeySet</B> *toInsert)
+
+<BR>
+
+<I>Transfers all keys from </I>toInsert to the begining of ks. 
+
+<BR>
+
+ssize_t <B>ksAppend</B> (<B>KeySet</B> *ks, <B>Key</B> *toAppend)
+
+<BR>
+
+<I>Appends a new Key to the end of </I>ks. 
+
+<BR>
+
+ssize_t <B>ksAppendKeys</B> (<B>KeySet</B> *ks, <B>KeySet</B> *toAppend)
+
+<BR>
+
+<I>Transfers all </I>toAppend contained keys to the end of the ks. 
+
+<BR>
+
+int <B>ksCompare</B> (<B>KeySet</B> *ks1, <B>KeySet</B> *ks2, <B>KeySet</B> *removed)
+
+<BR>
+
+<I>Compare 2 KeySets. </I>
+
+<BR>
+
+ssize_t <B>ksToStream</B> (const <B>KeySet</B> *ks, FILE *stream, unsigned long options)
+
+<BR>
+
+<I>Writes to </I>stream an XML version of the ks object. 
+
+<BR>
+
+void <B>ksSort</B> (<B>KeySet</B> *ks)
+
+<BR>
+
+<I>Sorts a KeySet aphabetically by Key name, using qsort(). </I>
+
+<BR>
+
+int <B>ksInit</B> (<B>KeySet</B> *ks)
+
+<BR>
+
+<I>KeySet object initializer. </I>
+
+<BR>
+
+int <B>ksClose</B> (<B>KeySet</B> *ks)
+
+<BR>
+
+<I>KeySet object cleaner. </I>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>Detailed Description</H2>
+
+<P>
+
+Methods to manipulate KeySets. A KeySet is a linked list to group a number of Keys. Key Sets have an <B>internal cursor </B> to help in the Key navigation. 
+<P>
+
+These are the methods to make various manipulations in the objects of class KeySet. Methods for <B>sorting </B>, <B>merging </B>, <B>comparing </B>, and <B>internal cursor manipulation </B> are provided. To use them: 
+<P>
+
+<PRE>
+#include &lt;<A HREF="file:/usr/include/kdb.h">kdb.h</A>&gt;
+
+</PRE>
+
+<P>
+
+<P>
+<A NAME="lbAE">&nbsp;</A>
+<H2>Function Documentation</H2>
+
+<P>
+
+<A NAME="lbAF">&nbsp;</A>
+<H3><B>KeySet</B>* ksNew ()</H3>
+
+<P>
+
+Allocate, initialize and return a new KeySet object. 
+<P>
+
+Objects created with <B>ksNew()</B> must be destroyed with <B>ksDel()</B>.
+<P>
+
+Due to ABI compatibility, the KeySet structure is only declared in <B>kdb.h</B>, and not defined. So you can only declare pointers to KeySets in your program, and allocate and free memory for them with <B>ksNew()</B> and <B>ksDel()</B> respectively. See <A HREF="http://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html#AEN135">http://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html#AEN135</A>
+<P>
+
+<B>See also:</B>
+<DL COMPACT><DT><DD>
+<B>ksDel()</B> 
+</DL>
+
+<P>
+
+<B>Returns:</B>
+<DL COMPACT><DT><DD>
+a ready to use KeySet object 
+</DL>
+
+<P>
+
+<P>
+<P>
+
+Definition at line 2913 of file key.c.
+<P>
+
+References ksInit().
+<P>
+
+Referenced by commandEdit(), commandImport(), and commandList().
+<A NAME="lbAG">&nbsp;</A>
+<H3>int ksDel (<B>KeySet</B> * ks)</H3>
+
+<P>
+
+A destructor for KeySet objects. 
+<P>
+
+Cleans all internal dynamic attributes, <B>keyDel()</B> all contained Keys, and free()s the release the KeySet object memory (that was previously allocated by <B>ksNew()</B>). There is the ksFree() macro if you prefer this method name.
+<P>
+
+<B>See also:</B>
+<DL COMPACT><DT><DD>
+<B>ksNew()</B>, <B>ksClose()</B> 
+</DL>
+
+<P>
+
+<B>Returns:</B>
+<DL COMPACT><DT><DD>
+whatever is returned by <B>ksClose()</B> 
+</DL>
+
+<P>
+
+<P>
+<P>
+
+Definition at line 2932 of file key.c.
+<P>
+
+References ksClose().
+<P>
+
+Referenced by commandEdit(), and commandList().
+<A NAME="lbAH">&nbsp;</A>
+<H3>int ksRewind (<B>KeySet</B> * ks)</H3>
+
+<P>
+
+Resets a KeySet internal cursor. 
+<P>
+
+Use it to set the cursor to the begining of the KeySet
+<P>
+
+<B>Returns:</B>
+<DL COMPACT><DT><DD>
+allways 0 
+</DL>
+
+<P>
+
+<B>See also:</B>
+<DL COMPACT><DT><DD>
+<B>ksNext()</B>, <B>ksCurrent()</B>, <B>kdbMonitorKeys()</B> for an example 
+</DL>
+
+<P>
+
+<P>
+<P>
+
+Definition at line 2970 of file key.c.
+<P>
+
+References _KeySet::cursor.
+<P>
+
+Referenced by commandEdit(), commandImport(), and commandList().
+<A NAME="lbAI">&nbsp;</A>
+<H3><B>Key</B>* ksNext (<B>KeySet</B> * ks)</H3>
+
+<P>
+
+Returns the next Key in a KeySet. 
+<P>
+
+KeySets have an internal cursor that can be reset with <B>ksRewind()</B>. Every time <B>ksNext()</B> is called the cursor is incremented and the new current Key is returned. You'll get a NULL pointer if the end of KeySet was reached. After that, if <B>ksNext()</B> is called again, it will set the cursor to the begining of the KeySet and the first key is returned.
+<P>
+
+<B>Returns:</B>
+<DL COMPACT><DT><DD>
+the new current Key 
+</DL>
+
+<P>
+
+<B>See also:</B>
+<DL COMPACT><DT><DD>
+<B>ksRewind()</B>, <B>ksCurrent()</B> 
+</DL>
+
+<P>
+
+<P>
+<P>
+
+Definition at line 2990 of file key.c.
+<P>
+
+References _KeySet::cursor, _Key::next, and _KeySet::start.
+<P>
+
+Referenced by commandEdit(), commandImport(), commandList(), kdbMonitorKeys_default(), kdbSetKeys_default(), ksLookupByBinaryValue(), ksLookupByName(), ksLookupByValue(), and ksLookupRE().
+<A NAME="lbAJ">&nbsp;</A>
+<H3><B>Key</B>* ksCurrent (const <B>KeySet</B> * ks)</H3>
+
+<P>
+
+Return the current Key. 
+<P>
+
+<B>Returns:</B>
+<DL COMPACT><DT><DD>
+pointer to the Key pointed by ks's cursor 
+</DL>
+
+<P>
+
+<B>See also:</B>
+<DL COMPACT><DT><DD>
+<B>ksNext()</B>, <B>ksRewind()</B> 
+<P>
+
+<B>kdbMonitorKeys()</B> for a usage example 
+</DL>
+
+<P>
+
+<P>
+<P>
+
+Definition at line 3006 of file key.c.
+<P>
+
+References _KeySet::cursor.
+<P>
+
+Referenced by commandEdit(), commandImport(), kdbMonitorKeys_default(), and kdbSetKeys_default().
+<A NAME="lbAK">&nbsp;</A>
+<H3><B>Key</B>* ksHead (<B>KeySet</B> * ks)</H3>
+
+<P>
+
+Return the first key in the KeySet, whithout changing the KeySet's internal cursor. 
+<P>
+
+<B>See also:</B>
+<DL COMPACT><DT><DD>
+<B>ksTail()</B>, <B>ksCurrent()</B>, <B>ksNext()</B> 
+<P>
+
+<B>ksRewind()</B> which also resets the internal cursor. 
+</DL>
+
+<P>
+
+<P>
+<P>
+
+Definition at line 3019 of file key.c.
+<P>
+
+References _KeySet::start.
+<P>
+
+Referenced by commandList().
+<A NAME="lbAL">&nbsp;</A>
+<H3><B>Key</B>* ksTail (<B>KeySet</B> * ks)</H3>
+
+<P>
+
+Return the last key in the KeySet, whithout changing the KeySet's internal cursor. 
+<P>
+
+<B>See also:</B>
+<DL COMPACT><DT><DD>
+<B>ksHead()</B>, <B>ksCurrent()</B>, <B>ksNext()</B> 
+</DL>
+
+<P>
+
+<P>
+<P>
+
+Definition at line 3031 of file key.c.
+<P>
+
+References _KeySet::end.
+<A NAME="lbAM">&nbsp;</A>
+<H3><B>Key</B>* ksLookupByName (<B>KeySet</B> * ks, const char * name, unsigned long options)</H3>
+
+<P>
+
+Look for a Key contained in ks that matches name, starting from ks' <B>ksNext()</B> position. 
+<P>
+
+If found, ks internal cursor will be positioned in the matched key (also accessible by <B>ksCurrent()</B>), and a pointer to the Key is returned. If not found, ks internal cursor will not move, and a NULL pointer is returned.
+<P>
+
+The ksLookup*() set of methods are designed to let you work with entirely pre-loaded KeySets, so instead of <B>kdbGetKey()</B>, key by key, the idea is to fully <B>kdbGetChildKeys()</B> for your application root key (which is more performatic), and process it all at once with ksLookup*().
+<P>
+
+<B>Parameters:</B>
+<DL COMPACT><DT><DD>
+<I>ks</I> where to look for 
+<BR>
+
+<I>name</I> key name you are looking for 
+<BR>
+
+<I>options</I> some KDB_O_* option bits. Currently suported:
+<DL COMPACT>
+<DT>*<DD>
+KDB_O_NOCASE 
+<BR>
+
+<BR>&nbsp;Lookup&nbsp;ignoring&nbsp;case.&nbsp;
+</DL>
+<P>
+
+</DL>
+
+<P>
+
+<B>Returns:</B>
+<DL COMPACT><DT><DD>
+pointer to the Key found, 0 otherwise 
+</DL>
+
+<P>
+
+<B>See also:</B>
+<DL COMPACT><DT><DD>
+<B>ksLookupRE()</B> for powerfull regular expressions based lookups 
+<P>
+
+<B>keyCompare()</B> for very powerfull Key lookups in KeySets 
+<P>
+
+<B>ksCurrent()</B>, <B>ksRewind()</B>, <B>ksNext()</B> 
+</DL>
+
+<P>
+
+<P>
+<P>
+
+Definition at line 3074 of file key.c.
+<P>
+
+References _KeySet::cursor, _Key::key, ksNext(), and strblen().
+<A NAME="lbAN">&nbsp;</A>
+<H3>u_int32_t ksLookupRE (<B>KeySet</B> * ks, u_int32_t where, const regex_t * regexp, unsigned long options)</H3>
+
+<P>
+
+Lookup for a key which any of its where components matches the regex regular expression. 
+<P>
+
+<B>Parameters:</B>
+<DL COMPACT><DT><DD>
+<I>ks</I> the KeySet to lookup into 
+<BR>
+
+<I>where</I> any of KEY_SWITCH_NAME, KEY_SWITCH_VALUE, KEY_SWITCH_OWNER, KEY_SWITCH_COMMENT ORed. 
+<BR>
+
+<I>regexp</I> a <A HREF="regcomp.3.html">regcomp</A>(3) pre-compiled regular expression 
+<BR>
+
+<I>options</I> some KDB_O_* ORed options to change lookup behavior. Currently supported options:
+<DL COMPACT>
+<DT>*<DD>
+KDB_O_NOSPANPARENT 
+<BR>
+
+<BR>&nbsp;Lookup&nbsp;only&nbsp;keys&nbsp;under&nbsp;<B>ksCurrent()</B>'s&nbsp;parent.&nbsp;If&nbsp;we&nbsp;are&nbsp;in&nbsp;the&nbsp;begining&nbsp;of&nbsp;the&nbsp;KeySet&nbsp;(<B>ksCurrent()</B>==NULL),&nbsp;this&nbsp;option&nbsp;is&nbsp;ignored.&nbsp;ks&nbsp;must&nbsp;be&nbsp;<B>ksSort()</B>ed&nbsp;(or&nbsp;<B>kdbGetChildKeys()</B>&nbsp;with&nbsp;<B>KDB_O_SORT&nbsp;</B>)&nbsp;for&nbsp;this&nbsp;to&nbsp;work.
+</DL>
+<P>
+
+</DL>
+
+<P>
+
+<B>Returns:</B>
+<DL COMPACT><DT><DD>
+some of KEY_SWITCH_NAME, KEY_SWITCH_VALUE, KEY_SWITCH_OWNER, KEY_SWITCH_COMMENT switches ORed to indicate where the regex matched.
+</DL>
+
+<P>
+
+<B>See also:</B>
+<DL COMPACT><DT><DD>
+<B>ksLookupByName()</B>, <B>ksLookupByValue()</B>, <B>keyCompare()</B> for other types of lookups. 
+<P>
+
+<B>kdbGetChildKeys()</B>, <B>ksSort()</B>
+</DL>
+
+<P>
+
+<B>Example:</B>.RS 4
+<P>
+<P>
+
+<PRE>
+// This code will process all Devices options, device by device.
+// Look how we use nested loops, palying with KDB_O_NOSPANPARENT.
+// We can do more interesting things when playing with 2 or more regular
+// expressions.
+
+regex_t regex;
+
+// you are NOT seeing spaces in this regex
+regcomp(&amp;regex,'.* /InputDevices/.* /Options/.*',REG_NOSUB);
+where=KEY_SWITCH_NAME; // look for it only in key names
+
+ksRewind(ks);
+do {
+    // show all keys that match this name, and are siblings of the first match
+    match=ksLookupRE(ks,where,&amp;regex,0);
+    if (match) {
+        // We found a device and its first option,
+        
+        processOption(ksCurrent(ks));
+        
+        // now process other options of this same device
+        do {
+            // fetch only the options with same parent with the
+            // help of KDB_O_NOSPANPARENT
+            match=ksLookupRE(ks,where,&amp;regex,KDB_O_NOSPANPARENT);
+            
+            if (match) processOption(ksCurrent(ks));
+        } while (match);
+    }
+} while (match);
+
+regfree(&amp;regex); // free regex resources
+
+</PRE>
+
+<P>
+
+
+<P>
+
+<B>Examples of regular expressions:</B>.RS 4
+<P>
+<P>
+
+<PRE>
+regex_t regex;
+
+// The spaces between '*' and '/' and '*' chars are Doxygen mirages :)
+
+regcomp(&amp;regex,
+    'some value .* more text',  // match this
+    REG_NEWLINE | REG_NOSUB);   // all in a single line
+
+regcomp(&amp;regex,
+    'Device/.* /Options/ *',      // only interested in option keys
+    REG_ICASE | REG_NOSUB);      // ignore case
+
+regcomp(&amp;regex,
+    '^system/folder/.* /basename$', // match real system/ keys that end with 'basename'
+    REG_NOSUB);       // allways use REG_NOSUB to increase performance
+
+regcomp(&amp;regex,
+    '^system/sw/xorg/.* /Screen[0-9]* /Displays/[0-9]* /Depth$', // we want all X.org's depths of all displays of all screens
+    REG_ICASE | REG_NOSUB);   // we don't care about the case
+
+
+regfree(&amp;regex);        // don't forget to free resources
+
+</PRE>
+
+<P>
+
+
+<P>
+
+<P>
+<P>
+
+Definition at line 3192 of file key.c.
+<P>
+
+References _Key::comment, _KeySet::cursor, _Key::data, _Key::key, KEY_TYPE_BINARY, keyGetNameSize(), keyGetParentName(), keyGetParentNameSize(), keyIsUser(), ksNext(), _Key::type, and _Key::userDomain.
+<A NAME="lbAO">&nbsp;</A>
+<H3><B>Key</B>* ksLookupByValue (<B>KeySet</B> * ks, const char * value, unsigned long options)</H3>
+
+<P>
+
+Lookup for a Key contained in ks KeySet that matches value, starting from ks' <B>ksNext()</B> position. 
+<P>
+
+If found, ks internal cursor will be positioned in the matched key (also accessible by <B>ksCurrent()</B>), and a pointer to the Key is returned. If not found, ks internal cursor won't move, and a NULL pointer is returned.
+<P>
+
+This method jumps binary keys, unless value is NULL.
+<P>
+
+<B>Example:</B>.RS 4
+<P>
+<P>
+
+<PRE>
+ksRewind(ks);
+while (key=ksLookupByValue(ks,'my value',0)) {
+    // show all keys which value='my value'
+    keyToStream(key,stdout,0);
+}
+
+</PRE>
+
+<P>
+
+
+<P>
+
+<B>Parameters:</B>
+<DL COMPACT><DT><DD>
+<I>ks</I> where to look for 
+<BR>
+
+<I>value</I> the value which owner key you want to find 
+<BR>
+
+<I>options</I> some KDB_O_* option bits. Currently supported:
+<DL COMPACT>
+<DT>*<DD>
+KDB_O_NOCASE 
+<BR>
+
+<BR>&nbsp;Lookup&nbsp;ignoring&nbsp;case.&nbsp;
+</DL>
+<P>
+
+</DL>
+
+<P>
+
+<B>Returns:</B>
+<DL COMPACT><DT><DD>
+the Key found, 0 otherwise 
+</DL>
+
+<P>
+
+<B>See also:</B>
+<DL COMPACT><DT><DD>
+<B>ksLookupByBinaryValue()</B> 
+<P>
+
+<B>keyCompare()</B> for very powerfull Key lookups in KeySets 
+<P>
+
+<B>ksCurrent()</B>, <B>ksRewind()</B>, <B>ksNext()</B> 
+</DL>
+
+<P>
+
+<P>
+<P>
+
+Definition at line 3284 of file key.c.
+<P>
+
+References _KeySet::cursor, _Key::data, _Key::dataSize, KEY_TYPE_BINARY, ksNext(), strblen(), and _Key::type.
+<A NAME="lbAP">&nbsp;</A>
+<H3><B>Key</B>* ksLookupByBinaryValue (<B>KeySet</B> * ks, void * value, size_t size, unsigned long options)</H3>
+
+<P>
+
+Lookup for a Key contained in ks KeySet that matches the binary value, starting from ks' <B>ksNext()</B> position. 
+<P>
+
+If found, ks internal cursor will be positioned in the matched key (also accessible by <B>ksCurrent()</B>), and a pointer to the Key is returned. If not found, ks internal cursor won't move, and a NULL pointer is returned.
+<P>
+
+<B>Parameters:</B>
+<DL COMPACT><DT><DD>
+<I>ks</I> where to look for 
+<BR>
+
+<I>value</I> the value which owner key you want to find 
+<BR>
+
+<I>size</I> the size of value 
+<BR>
+
+<I>options</I> some KDB_O_* option bits, for future use 
+</DL>
+
+<P>
+
+<B>Returns:</B>
+<DL COMPACT><DT><DD>
+the Key found, NULL otherwise 
+</DL>
+
+<P>
+
+<B>See also:</B>
+<DL COMPACT><DT><DD>
+<B>ksLookupByValue()</B> 
+<P>
+
+<B>keyCompare()</B> for very powerfull Key lookups in KeySets 
+<P>
+
+<B>ksCurrent()</B>, <B>ksRewind()</B>, <B>ksNext()</B> 
+</DL>
+
+<P>
+
+<P>
+<P>
+
+Definition at line 3333 of file key.c.
+<P>
+
+References _KeySet::cursor, _Key::data, _Key::dataSize, and ksNext().
+<A NAME="lbAQ">&nbsp;</A>
+<H3>ssize_t ksInsert (<B>KeySet</B> * ks, <B>Key</B> * toInsert)</H3>
+
+<P>
+
+Insert a new Key in the begining of the KeySet. 
+<P>
+
+A reference to the key will be stored, and not a copy of the key. So a future <B>ksClose()</B> or <B>ksDel()</B> on ks will <B>keyDel()</B> the toInsert object. The KeySet internal cursor is not moved.
+<P>
+
+Do not <B>ksInsert()</B> Keys that are already members of other KeySets.
+<P>
+
+<B>Returns:</B>
+<DL COMPACT><DT><DD>
+the size of the KeySet after insertion 
+</DL>
+
+<P>
+
+<B>Parameters:</B>
+<DL COMPACT><DT><DD>
+<I>ks</I> KeySet that will receive the key 
+<BR>
+
+<I>toInsert</I> Key that will be inserted into ks 
+</DL>
+
+<P>
+
+<B>See also:</B>
+<DL COMPACT><DT><DD>
+<B>ksAppend()</B>, <B>ksInsertKeys()</B>, <B>ksAppendKeys()</B>, <B>ksDel()</B>, <B>keyNew()</B> 
+</DL>
+
+<P>
+
+<P>
+<P>
+
+Definition at line 3380 of file key.c.
+<P>
+
+References _KeySet::end, _Key::next, _KeySet::size, and _KeySet::start.
+<P>
+
+Referenced by kdbGetRootKeys().
+<A NAME="lbAR">&nbsp;</A>
+<H3><B>Key</B>* ksPop (<B>KeySet</B> * ks)</H3>
+
+<P>
+
+Remove and return the first key of ks. 
+<P>
+
+If ks' cursor was positioned in the poped key, ks will be <B>ksRewind()</B>ed.
+<P>
+
+<B>ksInsert()</B> provides the 'push' bahavior.
+<P>
+
+<B>Returns:</B>
+<DL COMPACT><DT><DD>
+the first key of ks, or NULL if ks is empty 
+</DL>
+
+<P>
+
+<B>Parameters:</B>
+<DL COMPACT><DT><DD>
+<I>ks</I> KeySet to work with 
+</DL>
+
+<P>
+
+<B>See also:</B>
+<DL COMPACT><DT><DD>
+<B>ksInsert()</B>, <B>ksRewind()</B> 
+<P>
+
+<B>commandList()</B> for an example 
+</DL>
+
+<P>
+
+<P>
+<P>
+
+Definition at line 3400 of file key.c.
+<P>
+
+References _KeySet::cursor, _KeySet::end, _Key::next, _KeySet::size, and _KeySet::start.
+<P>
+
+Referenced by commandList().
+<A NAME="lbAS">&nbsp;</A>
+<H3><B>Key</B>* ksPopLast (<B>KeySet</B> * ks)</H3>
+
+<P>
+
+Remove and return the last key of ks. 
+<P>
+
+If ks' cursor was positioned in the poped key, ks will be <B>ksRewind()</B>ed.
+<P>
+
+<B>ksAppend()</B> provides the 'push' bahavior.
+<P>
+
+<B>Returns:</B>
+<DL COMPACT><DT><DD>
+the last key of ks, or NULL if ks is empty 
+</DL>
+
+<P>
+
+<B>Parameters:</B>
+<DL COMPACT><DT><DD>
+<I>ks</I> KeySet to work with 
+</DL>
+
+<P>
+
+<B>See also:</B>
+<DL COMPACT><DT><DD>
+<B>ksAppend()</B>, <B>ksRewind()</B> 
+<P>
+
+<B>commandList()</B> and <B>ksCompare()</B> for examples 
+</DL>
+
+<P>
+
+<P>
+<P>
+
+Definition at line 3427 of file key.c.
+<P>
+
+References _KeySet::cursor, _KeySet::end, _Key::next, _KeySet::size, and _KeySet::start.
+<A NAME="lbAT">&nbsp;</A>
+<H3>ssize_t ksInsertKeys (<B>KeySet</B> * ks, <B>KeySet</B> * toInsert)</H3>
+
+<P>
+
+Transfers all keys from toInsert to the begining of ks. 
+<P>
+
+After this call, toInsert will be empty and can be deleted with <B>ksDel()</B>.
+<P>
+
+<B>Returns:</B>
+<DL COMPACT><DT><DD>
+the size of the KeySet after insertion 
+</DL>
+
+<P>
+
+<B>Parameters:</B>
+<DL COMPACT><DT><DD>
+<I>ks</I> the KeySet that will receive the keys 
+<BR>
+
+<I>toInsert</I> the KeySet that provides the keys that will be transfered 
+</DL>
+
+<P>
+
+<B>See also:</B>
+<DL COMPACT><DT><DD>
+<B>ksAppend()</B>, <B>ksInsert()</B>, <B>ksAppendKeys()</B> 
+</DL>
+
+<P>
+
+<P>
+<P>
+
+Definition at line 3467 of file key.c.
+<P>
+
+References _KeySet::cursor, _KeySet::end, _Key::next, _KeySet::size, and _KeySet::start.
+<A NAME="lbAU">&nbsp;</A>
+<H3>ssize_t ksAppend (<B>KeySet</B> * ks, <B>Key</B> * toAppend)</H3>
+
+<P>
+
+Appends a new Key to the end of ks. 
+<P>
+
+A reference to the key will be stored, and not a private copy. So a future <B>ksClose()</B> or <B>ksDel()</B> on ks will <B>keyDel()</B> the toAppend object. The KeySet internal cursor is not moved.
+<P>
+
+Do not <B>ksAppend()</B> Keys that are already contained by other KeySets.
+<P>
+
+<B>Returns:</B>
+<DL COMPACT><DT><DD>
+the size of the KeySet after insertion 
+</DL>
+
+<P>
+
+<B>Parameters:</B>
+<DL COMPACT><DT><DD>
+<I>ks</I> KeySet that will receive the key 
+<BR>
+
+<I>toAppend</I> Key that will be appended to ks 
+</DL>
+
+<P>
+
+<B>See also:</B>
+<DL COMPACT><DT><DD>
+<B>ksInsert()</B>, <B>ksInsertKeys()</B>, <B>ksAppendKeys()</B>, <B>keyNew()</B>, <B>ksDel()</B> 
+</DL>
+
+<P>
+
+<P>
+<P>
+
+Definition at line 3497 of file key.c.
+<P>
+
+References _KeySet::end, _Key::next, _KeySet::size, and _KeySet::start.
+<P>
+
+Referenced by commandEdit(), commandList(), and ksCompare().
+<A NAME="lbAV">&nbsp;</A>
+<H3>ssize_t ksAppendKeys (<B>KeySet</B> * ks, <B>KeySet</B> * toAppend)</H3>
+
+<P>
+
+Transfers all toAppend contained keys to the end of the ks. 
+<P>
+
+After this call, the toAppend KeySet will be empty, and can be deleted with <B>ksDel()</B>.
+<P>
+
+<B>Returns:</B>
+<DL COMPACT><DT><DD>
+the size of the KeySet after transfer 
+</DL>
+
+<P>
+
+<B>Parameters:</B>
+<DL COMPACT><DT><DD>
+<I>ks</I> the KeySet that will receive the keys 
+<BR>
+
+<I>toAppend</I> the KeySet that provides the keys that will be transfered 
+</DL>
+
+<P>
+
+<B>See also:</B>
+<DL COMPACT><DT><DD>
+<B>ksAppend()</B>, <B>ksInsert()</B>, <B>ksInsertKeys()</B> 
+</DL>
+
+<P>
+
+<P>
+<P>
+
+Definition at line 3519 of file key.c.
+<P>
+
+References _KeySet::cursor, _KeySet::end, _Key::next, _KeySet::size, and _KeySet::start.
+<P>
+
+Referenced by commandList(), and ksCompare().
+<A NAME="lbAW">&nbsp;</A>
+<H3>int ksCompare (<B>KeySet</B> * ks1, <B>KeySet</B> * ks2, <B>KeySet</B> * removed)</H3>
+
+<P>
+
+Compare 2 KeySets. 
+<P>
+
+This method behavior is the following:
+<DL COMPACT>
+<DT>*<DD>
+A key (by full name) that is present on ks1 and ks2, and has something different, will be transfered from ks2 to ks1, and ks1's (old) version deleted.
+<DT>*<DD>
+Keys present in ks1, but not in ks2 will be transfered from ks1 to removed.
+<DT>*<DD>
+Keys that are <B>keyCompare()</B> equal in ks1 and ks2 will be <B>keyDel()</B>eted from ks2.
+<DT>*<DD>
+Keys present in ks2 but not in ks1 will be transfered to ks1.
+</DL>
+<P>
+
+<P>
+
+In the end, ks1 will have all the keys that matter, and ks2 will be empty.
+<P>
+
+After <B>ksCompare()</B>, you should, in this order:
+<DL COMPACT>
+<DT>1.<DD>
+ksDel(ks2)
+<DT>2.<DD>
+call <B>kdbSetKeys()</B> on ks1 to commit all changed keys
+<DT>3.<DD>
+<B>kdbRemoveKey()</B> for all keys in the removed KeySet
+<DT>4.<DD>
+ksDel(removed)
+</DL>
+<P>
+
+<P>
+
+<B>Parameters:</B>
+<DL COMPACT><DT><DD>
+<I>ks1</I> first and main KeySet 
+<BR>
+
+<I>ks2</I> second KeySet 
+<BR>
+
+<I>removed</I> (generally empty) KeySet that will be filled with keys removed from ks1 
+</DL>
+
+<P>
+
+<B>See also:</B>
+<DL COMPACT><DT><DD>
+<B>keyCompare()</B> 
+<P>
+
+<B>commandEdit()</B> at the <B>kdb</B> command 
+</DL>
+
+<P>
+
+<B>Returns:</B>
+<DL COMPACT><DT><DD>
+allways 0 
+</DL>
+
+<P>
+
+<B>Example</B>.RS 4
+<P>
+<P>
+
+<PRE>
+KeySet *ks1,*ks2,*removed;
+Key *key;
+
+ks1=ksNew();
+ks2=ksNew();
+removed=ksNew();
+
+// ...
+// Populate ks1 and ks2....
+// ...
+
+ksCompare(ks1,ks2,removed);
+
+ksDel(ks2);  // second KeySet is allways empty after ksCompare()
+kdbSetKeys(ks1); // commit changed keys
+ksDel(ks1);  // don't need ks1 anymore
+
+// Remove all keys that disapeared from ks1...
+ksSort(removed); // Sort it first so then we ensure child keys are removed
+                 // before their parents
+while (key=ksPopLast(removed)) {
+    kdbRemoveKey(key);
+    keyDel(key);
+}
+
+ksDel(removed); // free the KeySet memory
+
+</PRE>
+
+<P>
+
+
+<P>
+
+<P>
+<P>
+
+Definition at line 3612 of file key.c.
+<P>
+
+References _KeySet::end, KEY_SWITCH_NAME, keyCompare(), keyDel(), ksAppend(), ksAppendKeys(), _Key::next, _KeySet::size, and _KeySet::start.
+<P>
+
+Referenced by commandEdit().
+<A NAME="lbAX">&nbsp;</A>
+<H3>ssize_t ksToStream (const <B>KeySet</B> * ks, FILE * stream, unsigned long options)</H3>
+
+<P>
+
+Writes to stream an XML version of the ks object. 
+<P>
+
+String generated is of the form: 
+<P>
+
+<PRE>
+
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+
+&lt;!-- Generated by Elektra API. Total of 7 keys. --&gt;
+  
+&lt;keyset xmlns=&quot;<A HREF="http://elektra.sourceforge.net">http://elektra.sourceforge.net</A>&quot;
+        xmlns:xsi=&quot;<A HREF="http://www.w3.org/2001/XMLSchema-instance">http://www.w3.org/2001/XMLSchema-instance</A>&quot;
+        xsi:schemaLocation=&quot;<A HREF="http://elektra.sourceforge.net">http://elektra.sourceforge.net</A> elektra.xsd&quot;&gt;
+
+
+&lt;key ...&gt;...&lt;/key&gt;
+&lt;key ...&gt;...&lt;/key&gt;
+&lt;key ...&gt;...&lt;/key&gt;
+
+&lt;/keyset&gt;
+</PRE>
+
+<P>
+
+<P>
+
+<B>Parameters:</B>
+<DL COMPACT><DT><DD>
+<I>stream</I> where to write output: a file or stdout 
+<BR>
+
+<I>options</I> accepted <B>KDBOptions</B> ORed:
+<DL COMPACT>
+<DT>*<DD>
+<B>KDBOptions::KDB_O_NUMBERS</B> 
+<BR>
+
+<BR>&nbsp;Do&nbsp;not&nbsp;convert&nbsp;UID&nbsp;and&nbsp;GID&nbsp;into&nbsp;user&nbsp;and&nbsp;group&nbsp;names.
+<DT>*<DD>
+<B>KDBOptions::KDB_O_CONDENSED</B> 
+<BR>
+
+<BR>&nbsp;Less&nbsp;human&nbsp;readable,&nbsp;more&nbsp;condensed&nbsp;output.
+<DT>*<DD>
+<B>KDBOptions::KDB_O_XMLHEADERS</B> 
+<BR>
+
+<BR>&nbsp;Use&nbsp;it.&nbsp;Include&nbsp;the&nbsp;correct&nbsp;XML&nbsp;headers&nbsp;in&nbsp;the&nbsp;output.&nbsp;If&nbsp;not&nbsp;used,&nbsp;the&nbsp;&lt;?xml?&gt;&nbsp;and&nbsp;schema&nbsp;info&nbsp;inside&nbsp;the&nbsp;&lt;keyset&gt;&nbsp;object&nbsp;will&nbsp;not&nbsp;be&nbsp;generated.
+</DL>
+<P>
+
+</DL>
+
+<P>
+
+<B>See also:</B>
+<DL COMPACT><DT><DD>
+<B>keyToStream()</B> 
+<P>
+
+<B>commandList()</B> for usage example 
+</DL>
+
+<P>
+
+<B>Returns:</B>
+<DL COMPACT><DT><DD>
+number of bytes written to output, or -1 if some error occurs 
+</DL>
+
+<P>
+
+<P>
+<P>
+
+Definition at line 3729 of file key.c.
+<P>
+
+References keyToStream(), _Key::next, _KeySet::size, and _KeySet::start.
+<P>
+
+Referenced by commandEdit(), and commandList().
+<A NAME="lbAY">&nbsp;</A>
+<H3>void ksSort (<B>KeySet</B> * ks)</H3>
+
+<P>
+
+Sorts a KeySet aphabetically by Key name, using qsort(). 
+<P>
+
+<B>Parameters:</B>
+<DL COMPACT><DT><DD>
+<I>ks</I> KeySet to be sorted 
+</DL>
+
+<P>
+
+<P>
+<P>
+
+Definition at line 3770 of file key.c.
+<P>
+
+References _KeySet::end, _Key::next, _KeySet::size, and _KeySet::start.
+<A NAME="lbAZ">&nbsp;</A>
+<H3>int ksInit (<B>KeySet</B> * ks)</H3>
+
+<P>
+
+KeySet object initializer. 
+<P>
+
+You should always use <B>ksNew()</B> instead of <B>ksInit()</B>.
+<P>
+
+Every KeySet object that will be used must be initialized first, to setup pointers, counters, etc. After use, all <B>ksInit()</B>ialized KeySets must be cleaned with <B>ksClose()</B>.
+<P>
+
+<B>See also:</B>
+<DL COMPACT><DT><DD>
+<B>ksNew()</B>, <B>ksClose()</B>, <B>keyInit()</B> 
+</DL>
+
+<P>
+
+<B>Returns:</B>
+<DL COMPACT><DT><DD>
+allways 0 
+</DL>
+
+<P>
+
+<P>
+<P>
+
+Definition at line 3808 of file key.c.
+<P>
+
+References _KeySet::cursor, _KeySet::end, _KeySet::size, and _KeySet::start.
+<P>
+
+Referenced by ksNew().
+<A NAME="lbBA">&nbsp;</A>
+<H3>int ksClose (<B>KeySet</B> * ks)</H3>
+
+<P>
+
+KeySet object cleaner. 
+<P>
+
+Will <B>keyDel()</B> all contained keys, reset internal pointers and counters.
+<P>
+
+After this call, the ks object is ready to be freed by you.
+<P>
+
+<B>See also:</B>
+<DL COMPACT><DT><DD>
+<B>keyDel()</B>, <B>ksInit()</B>, <B>keyClose()</B> 
+<P>
+
+<B>ksAppend()</B> for details on how keys are inserted in KeySets 
+</DL>
+
+<P>
+
+<B>Returns:</B>
+<DL COMPACT><DT><DD>
+allways 0 
+</DL>
+
+<P>
+
+<P>
+<P>
+
+Definition at line 3827 of file key.c.
+<P>
+
+References _KeySet::cursor, _KeySet::end, keyDel(), _Key::next, _KeySet::size, and _KeySet::start.
+<P>
+
+Referenced by commandList(), and ksDel().
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">NAME</A><DD>
+<DL>
+<DT><A HREF="#lbAC">Functions</A><DD>
+</DL>
+<DT><A HREF="#lbAD">Detailed Description</A><DD>
+<DT><A HREF="#lbAE">Function Documentation</A><DD>
+<DL>
+<DT><A HREF="#lbAF"><B>KeySet</B>* ksNew ()</A><DD>
+<DT><A HREF="#lbAG">int ksDel (<B>KeySet</B> * ks)</A><DD>
+<DT><A HREF="#lbAH">int ksRewind (<B>KeySet</B> * ks)</A><DD>
+<DT><A HREF="#lbAI"><B>Key</B>* ksNext (<B>KeySet</B> * ks)</A><DD>
+<DT><A HREF="#lbAJ"><B>Key</B>* ksCurrent (const <B>KeySet</B> * ks)</A><DD>
+<DT><A HREF="#lbAK"><B>Key</B>* ksHead (<B>KeySet</B> * ks)</A><DD>
+<DT><A HREF="#lbAL"><B>Key</B>* ksTail (<B>KeySet</B> * ks)</A><DD>
+<DT><A HREF="#lbAM"><B>Key</B>* ksLookupByName (<B>KeySet</B> * ks, const char * name, unsigned long options)</A><DD>
+<DT><A HREF="#lbAN">u_int32_t ksLookupRE (<B>KeySet</B> * ks, u_int32_t where, const regex_t * regexp, unsigned long options)</A><DD>
+<DT><A HREF="#lbAO"><B>Key</B>* ksLookupByValue (<B>KeySet</B> * ks, const char * value, unsigned long options)</A><DD>
+<DT><A HREF="#lbAP"><B>Key</B>* ksLookupByBinaryValue (<B>KeySet</B> * ks, void * value, size_t size, unsigned long options)</A><DD>
+<DT><A HREF="#lbAQ">ssize_t ksInsert (<B>KeySet</B> * ks, <B>Key</B> * toInsert)</A><DD>
+<DT><A HREF="#lbAR"><B>Key</B>* ksPop (<B>KeySet</B> * ks)</A><DD>
+<DT><A HREF="#lbAS"><B>Key</B>* ksPopLast (<B>KeySet</B> * ks)</A><DD>
+<DT><A HREF="#lbAT">ssize_t ksInsertKeys (<B>KeySet</B> * ks, <B>KeySet</B> * toInsert)</A><DD>
+<DT><A HREF="#lbAU">ssize_t ksAppend (<B>KeySet</B> * ks, <B>Key</B> * toAppend)</A><DD>
+<DT><A HREF="#lbAV">ssize_t ksAppendKeys (<B>KeySet</B> * ks, <B>KeySet</B> * toAppend)</A><DD>
+<DT><A HREF="#lbAW">int ksCompare (<B>KeySet</B> * ks1, <B>KeySet</B> * ks2, <B>KeySet</B> * removed)</A><DD>
+<DT><A HREF="#lbAX">ssize_t ksToStream (const <B>KeySet</B> * ks, FILE * stream, unsigned long options)</A><DD>
+<DT><A HREF="#lbAY">void ksSort (<B>KeySet</B> * ks)</A><DD>
+<DT><A HREF="#lbAZ">int ksInit (<B>KeySet</B> * ks)</A><DD>
+<DT><A HREF="#lbBA">int ksClose (<B>KeySet</B> * ks)</A><DD>
+</DL>
+</DL>
+<HR>
+This document was created by
+<A HREF="http://localhost/cgi-bin/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 13:54:02 GMT, July 25, 2005
+</BODY>
+</HTML>

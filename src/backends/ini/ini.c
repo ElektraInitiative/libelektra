@@ -1,5 +1,5 @@
 /***************************************************************************
-            temaple.c  -  Skeleton of backends to access the Key Database
+            ini.c  -  Backend for ini-style like files
                              -------------------
     begin                : 01.03.2005
     copyright            : (C) 2005 by Markus Raab

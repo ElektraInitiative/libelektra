@@ -1,0 +1,12 @@
+        <div class="section" lang="en" xml:lang="en">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="userdomains"></a>4.1. User Domains</h3>
+              </div>
+            </div>
+            <div></div>
+          </div>
+          <p>Different from the <tt class="filename">system</tt> namespace, the <tt class="filename">user</tt> namespace is dynamic. For example, the key <tt class="filename">user/env/PATH</tt> may have completely different values for users <i class="replaceable"><tt>luciana</tt></i> and <i class="replaceable"><tt>valeria</tt></i>. In this example, if <i class="replaceable"><tt>valeria</tt></i> wants to access this key at <i class="replaceable"><tt>luciana</tt></i>'s space, it should refer to <tt class="filename">user:luciana/env/PATH</tt>. Access permissions apply.</p>
+          <p>User domains were implemented also to address situations when different user names (<tt class="envar">$USER</tt>) have same UID. So a user key is stored in his home directory based on the user name, not the UID.</p>
+        </div>

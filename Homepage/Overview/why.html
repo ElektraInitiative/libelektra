@@ -1,0 +1,63 @@
+      <div class="section" lang="en" xml:lang="en">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="needs"></a>2. Why Linux Needs to be Elektrified</h2>
+            </div>
+          </div>
+          <div></div>
+        </div>
+        <p>Today's GNU/Linux systems (or other UNIX) are a sum of independent components collected in a bazar. Each of them already have a working, but selfish configuration system. Please read this section thinking about a system as a whole, not a sum of many parts.</p>
+        <p>The Elektra Initiative tries to upgrade a '1+1=2' system into a '1*1=1' one.</p>
+        <p>Look into <tt class="filename">/etc/fstab</tt> file. Now look into <tt class="filename">/etc/modules.conf</tt>, <tt class="filename">/etc/passwd</tt>, <tt class="filename">/etc/ssh/sshd_config</tt>, <tt class="filename">/etc/httpd/conf/httpd.conf</tt>. I see here two terrible problems:</p>
+        <div class="orderedlist">
+          <ol type="1">
+            <li>
+              <p>They don't have a common file format.</p>
+            </li>
+            <li>
+              <p>Their location in the filesystem may be different from Linux distribution to distribution.</p>
+            </li>
+          </ol>
+        </div>
+        <p>These 2 issues leverages other problems:</p>
+        <div class="orderedlist">
+          <ol type="1">
+            <li>
+              <p>When two different softwares want to integrate themselves, it is programatically very hard to read, understand and correctly change its partner's configuration file. Think about installing a third-party video driver in XFree86, a new Apache plug-in, etc, and letting this new piece of software do the integration automatically, instead of the sysadmin <span><b class="command">vi</b></span> the configuration file, understand and change it in the right way. So basic software integration is a pain today for ISVs (Independent Software Vendors).</p>
+            </li>
+            <li>
+              <p>A software developer must waste a lot of time to write the plumbing code for configuration file parsing etc. It is completelly out of his scope to write code to interoperate with other software's configurations files.</p>
+            </li>
+            <li>
+              <p>Different distributions tend to place different software configuration in different places with different formats. A regular SuSE system administrator, for example, will be lost when asked to work in a Debian or Slackware system. Think about the most primitive example: network configuration parameters. Each distro has its own approach.</p>
+            </li>
+            <li>
+              <p>A system administrator must know all these formats.</p>
+            </li>
+            <li>
+              <p>There is no way to know today what was changed in a specific configuration file. If <tt class="filename">/etc/shadow</tt> file time changes, there is no way to know if the change was related to nobody's or root's record.</p>
+            </li>
+            <li>
+              <p>High-level system administration GUIs (webmin, redhat-config-*, SuSE's YAST, etc) are just a dream today. They can never track successfully all the changes that happens in the format of the configuration files of such a rich diversity of Open Source software (<tt class="filename">httpd.conf</tt>, <tt class="filename">smb.conf</tt>, <tt class="filename">modules.conf</tt>, <tt class="filename">fstab</tt>, etc, etc, etc). The approach of some of them is to keep the configuration ideas in a private database and regenerate the specific configuration file whenever a change happens in this database. Welcome to the inconsistency nightmare.</p>
+            </li>
+          </ol>
+        </div>
+        <p>Other OSes solved this problem by centralizing their configurations, and creating a framework to access them. Configurations then are no more represented by 'configuration files', but by <span class="emphasis"><em>key-value pairs</em></span> organized in a structured tree commited to some naming convetions.</p>
+        <p>To achieve multi-vendor/provider consistent software integration, and ease of administration across heterogeneous Linux distributions,  Linux needs a key-value pair mechanism to store its configurations.</p>
+      </div>
+      <div class="section" lang="en" xml:lang="en">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="overview"></a>3. Overview of the Elektra Project</h2>
+            </div>
+          </div>
+          <div></div>
+        </div>
+        <p>The Elektra Project provides an alternative back-end for text configuration files.</p>
+        <p>Instead of each program to have its own text configuration files, with a variety of formats, Elektra tries to provide a universal, hierarchical, fast and consistent namespace and infrastructure to access configuration parameters through a key-value pair mechanism. This way any software can read/save its configuration/state using a consistent API.</p>
+        <p>Being a common infrastructure, it also lets other softwares be aware of this application configurations, leveraging easy software integration.</p>
+        <p>It is designed to be lightweight, with no dependencies, ready to be used also by early boot stage programs.</p>
+        <p>Using Elektra, configuration file's syntax and handling will not be a rework for each software.</p>
+        <p>Elektra lets system administrators control security in a much fine grained way. With the current flat file paradigm it is impossible to control permissions and access times on each <tt class="filename">/etc/passwd</tt> or <tt class="filename">/etc/shadow</tt> atoms. Elektra lets you do that because each information atom stored in it (key) has a unique name (key name) and access properties. See <a href="http://namesys.com/v4/v4.html#etc_passwd" target="_top">Hans Reiser (creator of ReiserFS) comments about it</a>.</p>

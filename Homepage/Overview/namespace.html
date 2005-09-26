@@ -1,0 +1,33 @@
+      <div class="section" lang="en" xml:lang="en">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="namespace"></a>4. Namespaces and Key Names</h2>
+            </div>
+          </div>
+          <div></div>
+        </div>
+        <p>All keys are organized in a hierarchical tree with 2 Namespaces (subtrees) as showed by the picture:</p>
+        <div align="center">
+          <img src="pic/roots.png" align="middle" alt="roots" />
+        </div>
+        <div class="variablelist">
+          <dl>
+            <dt>
+              <span class="term">
+                <span class="type">system</span>
+              </span>
+            </dt>
+            <dd>
+              <p>Contains all subsystems and global application keys/configuration. Equivalent to files under <tt class="filename">/etc</tt> directory.</p>
+            </dd>
+            <dt>
+              <span class="term">
+                <span class="type">user</span>
+              </span>
+            </dt>
+            <dd>
+              <p>The current user's keys. Equivalent to the dotfiles in a user's <tt class="envar">$HOME</tt> directory. These keys are phisically stored under the owner user home directory. The many <tt class="filename">user:</tt><i class="replaceable"><tt>username</tt></i> in the picture shows the full name of those trees. Read about user domains bellow for more.</p>
+            </dd>
+          </dl>
+        </div>

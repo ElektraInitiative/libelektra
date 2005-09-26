@@ -1,4 +1,13 @@
 Update the website and style for better browsing experience
+using CDATA only when needed in xml output
+mark useless functions as depreciated
+get PATH_MAX with pathconf (3)
+
+local/(any folder), doc(/usr/share/doc/kdb) hierachys
+
+autoconf/make
+	libltdl3-dev: usr/include/ltdl.h
+
 
 improvements
 	Add methods for a better notification API, instead of monitoring

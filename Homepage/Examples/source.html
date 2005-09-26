@@ -1,0 +1,122 @@
+          <p>Here is an example of how to use the Elektra API. This program will get all keys that matter under <tt class="varname">system/sw/MyApp</tt> manipulate some, and re-save them.</p>
+          <pre class="programlisting">
+/*********************************************************
+
+To compile this example:
+
+	$ cc `pkg-config --libs elektra` -o example example.c
+		or
+	$ cc -L/lib -lelektra -o example example.c
+
+
+**********************************************************/
+
+
+#include &lt;stdio.h&gt;
+#include &lt;kdb.h&gt;
+
+#define MY_APP_ROOT   "system/sw/MyApp"
+
+
+/* Read config keys for this application */
+int readConfig(KeySet *myConfig) {
+	int rc;
+
+	/* Open the kdb */
+	kdbOpen();
+	
+	/* Get all value keys for this application */
+	rc=kdbGetChildKeys(MY_APP_ROOT, myConfig, KDB_O_RECURSIVE);
+	
+	/* Close the Key database */
+	kdbClose();
+	
+	return rc;
+}
+
+
+/* Change some keys */
+void changeConfig(KeySet *myConfig) {
+	Key *current;
+	
+	ksRewind(myConfig);
+	while ((current=ksNext(myConfig))) {
+		char keyName[200];
+		char value[300];
+		
+		keyGetFullName(current,keyName,sizeof(keyName));
+		keyGetString(current,value,sizeof(value));
+		
+		printf("Key %s was %s. ", keyName, value);
+		
+		/* Add "- modified" to the end of the string */
+		strcat(value,"- modified");
+		
+		/* change the key value */
+		keySetString(current,value);
+		
+		/* reget it, just as an example */
+		keyGetString(current,value,sizeof(value));
+		
+		printf("Now is %s\n", value);
+	}
+}
+
+
+/* Save the modified keys */
+int saveConfig(KeySet *myConfig) {
+	kdbOpen();
+	kdbSetKeys(myConfig);
+	kdbClose();
+}
+
+
+
+int main(int argc, char **argv) {
+	KeySet *myConfig=ksNew();
+	
+	/* Get configuration values, and just continue if there is no error */
+	if (readConfig(myConfig)) {
+		perror("Couldn't get my configuration. Reason");
+		exit(1);
+	} else {
+		printf("Retrieved %d keys\n",ksGetSize(myConfig));
+	}
+		
+	changeConfig(myConfig);
+	saveConfig(myConfig);
+	
+	/* Free all keys and resources in the key set */
+	ksDel(myConfig);
+	
+	return 0;
+}
+</pre>
+          <p> Things to note in this source:</p>
+          <div class="orderedlist">
+            <ol type="1">
+              <li>The keys are manipulated in <tt class="function">changeConfig()</tt> after we called <tt class="function">kdbClose()</tt>. You don't need the key database to be open to manipulate keys.</li>
+              <li>We called <tt class="function">kdbOpen()</tt> again in <tt class="function">saveConfig()</tt>, to prepare to commit the changes.</li>
+              <li>We called <tt class="function">ksClose()</tt> in the end to free all memory resources we used.</li>
+            </ol>
+          </div>
+        </div>
+        <div class="section" lang="en" xml:lang="en">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="linking"></a>15.2. Compiling and Linking</h3>
+              </div>
+            </div>
+            <div></div>
+          </div>
+          <p>All Elektra methods are declared in the <tt class="filename">/usr/include/kdb.h</tt> file and defined in the <tt class="filename">/lib/libelektra.so</tt> library. So to compile it you simply need to:</p>
+          <pre class="screen">
+<tt class="prompt">bash$ </tt><span><b class="command">cc `pkg-config --libs elektra` -o myapp myapp.c</b></span>
+		</pre>
+          <p>or, if you don't have <span><b class="command">pkg-config</b></span>:</p>
+          <pre class="screen">
+<tt class="prompt">bash$ </tt><span><b class="command">cc -L /lib -lelektra -o myapp myapp.c</b></span>
+		</pre>
+        </div>
+      </div>

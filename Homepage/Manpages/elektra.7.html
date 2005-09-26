@@ -1,0 +1,520 @@
+
+
+<HTML><HEAD><TITLE>Manpage of ELEKTRA</TITLE>
+</HEAD><BODY>
+<H1>ELEKTRA</H1>
+Section:  (7)<BR>Updated: March 2004<BR><A HREF="#index">Index</A>
+<A HREF="index.html">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>NAME</H2>
+
+elektra - A framework to store configuration atoms hierarchicallyOverview of the Elektra Project
+<P>
+
+The Elektra Project provides an alternative back-end for text configuration files.
+<P>
+<P>
+
+Instead of each program to have its own text configuration files, with a variety of formats, Elektra tries to provide a universal, hierarchical, fast and consistent namespace and infrastructure to access configuration parameters through a key-value pair mechanism. This way any software can read/save its configuration/state using a consistent API.
+<P>
+<P>
+
+Being a common infrastructure, it also lets other softwares be aware of this application configurations, leveraging easy software integration.
+<P>
+<P>
+
+It is designed to be lightweight, with no dependencies, ready to be used also by early boot stage programs.
+<P>
+<P>
+
+Using Elektra, configuration file's syntax and handling will not be a rework for each software.
+<P>
+<P>
+
+Elektra lets system administrators control security in a much fine grained way. With the current flat file paradigm it is impossible to control permissions and access times on each <I>/etc/passwd</I> or <I>/etc/shadow</I> atoms. Elektra lets you do that because each information atom stored in it (key) has a unique name (key name) and access properties. See Hans Reiser (creator of ReiserFS) comments about it: <I><A HREF="http://namesys.com/v4/v4.html#etc_passwd">http://namesys.com/v4/v4.html#etc_passwd</A></I>.
+Library Linkage Architecture
+<P>
+
+The Elektra library (<I>libelektra.so</I>) has 2 layers: public methods and backend access, according to the following architecture (these pictures were taken from the Elektra presentation: <I>elektra.sxi</I>):
+<P>
+<P>
+
+<P>
+<P>
+<P>
+
+When using local backends such as the filesys backend, all key access happens in the actual process space as bellow:
+<P>
+<P>
+
+<P>
+<P>
+<P>
+
+A remote daemon backend is also possible as noted bellow:
+<P>
+<P>
+
+<P>
+True Facts About Elektra
+<DL COMPACT>
+<DT>*<DD>
+It is much more an agreement then a piece of software. Relation is 99% to 1%.
+<DT>*<DD>
+It is a simple and consistent API to help software developers programatically store and retrieve global and user-specific configuration parameters.
+<DT>*<DD>
+All key-value pairs are stored in clear-text files, UTF-8 encoded. All old charsets are also supported, with automatic transparent conversion to and from UTF-8.
+<DT>*<DD>
+API supports change notifications and multiple backends.
+<DT>*<DD>
+It provides a unique namespace for all values. Anywhere, anytime, any program can preciselly access keys by their names. Security restrictions may obviously apply.
+<DT>*<DD>
+It is designed to be secure and lightweight, to let even early boot-stage programs like <B>/sbin/init</B> to use it, instead of <I>/etc/inittab</I> file.
+<DT>*<DD>
+It is designed to be easy to administrate with regular command line tools like <B>cat</B>, <B>vi</B>, <B>cp</B>, <B>ls</B>, <B>ln</B>. Its storage is 100% open.
+<DT>*<DD>
+It tries to set distribution-independent naming standards to store things like hardware configuration, networking, user's session configuration, system's mime-types, parameters for kernel modules, etc, that are generally stored under <I>/etc</I>.
+<DT>*<DD>
+It requires existing software to be changed to use its API. This will substitute hundreds of configuration-text-file parsing code, into clear Elektra's API key-value access methods.
+<DT>*<DD>
+It is POSIX compliant. If it doesn't compile and run easily on some POSIX system, it should be easily modified to do so.
+</DL>
+<P>
+
+Elektra Is Not
+<DL COMPACT>
+<DT>*<DD>
+Is NOT something that accesses SQL/relational databases.
+<DT>*<DD>
+Is NOT an OS service that can become unavailable and make system unusable. It is just a library to access files according to a namespace.
+<DT>*<DD>
+Is NOT an alternative to network information systems like LDAP or NIS. These are still required for networked environments.
+<DT>*<DD>
+Is NOT a Webmin-like or other GUI tool to be used by end users.
+<DT>*<DD>
+Is NOT an additional software layer to edit/generate existing configuration files.
+<DT>*<DD>
+Is NOT a &quot;configuration system&quot;, because one can't be created by simply writing some code. A configuration system is an ecosystem, and the Elektra Project tries to help build one.
+<DT>*<DD>
+It doesn't know a thing about the semantics of each data it stores.
+</DL>
+<P>
+
+Namespaces and Key Names
+<P>
+
+All keys are organized in a hierarchical tree with 2 Namespaces (subtrees) as showed by the picture:
+<P>
+<P>
+
+<P>
+<P>
+<DL COMPACT>
+<DT><B>system</B><DD>
+Contains all subsystems and global application keys/configuration. Equivalent to files under <I>/etc</I> directory.
+<P>
+<DT><B>user</B><DD>
+The current user's keys. Equivalent to the dotfiles in a user's <B>$HOME</B> directory. These keys are phisically stored under the owner user home directory. The many <I>user:</I><I>username</I> in the picture shows the full name of those trees. Read about user domains bellow for more.
+User Domains
+</DL>
+<P>
+
+Different from the <I>system</I> namespace, the <I>user</I> namespace is dynamic. For example, the key <I>user/env/PATH</I> may have completely different values for users <I>luciana</I> and <I>valeria</I>. In this example, if <I>valeria</I> wants to access this key at <I>luciana</I>'s space, it should refer to <I>user:luciana/env/PATH</I>. Access permissions apply.
+<P>
+<P>
+
+User domains were implemented also to address situations when different user names (<B>$USER</B>) have same UID. So a user key is stored in his home directory based on the user name, not the UID.
+Inactive Keys
+<P>
+
+A great thing about text configuration files is that some configuration items can be there as an example, but inactive or commented. Elektra provides a very simple way to simulate this behavior: if the key name begins with a dot (.), it is considered inactive or commented. In real world applications, the Elektra API will ignore these keys by default, but the keys are still accessible if the developer wants to.
+<P>
+<P>
+
+These are some keys that have inactive subtrees:
+<P>
+<DL COMPACT>
+<DT>*<DD>
+<I>system/sw/XFree/InputDevice/.Mouse3/Driver</I>: All keys under <I>.Mouse3/*</I> subtree won't be read by default.
+<DT>*<DD>
+<I>user:valeria/env/env2/.PATH</I>: The <B>$PATH</B> environment variable won't be set when <I>valeria</I> login.
+<DT>*<DD>
+<I>system/users/.louis/uid</I>: The entire <I>.louis/*</I> subtree is inactive. This is the same as commenting the user entry from a configuration file.
+</DL>
+<P>
+
+<P>
+<P>
+
+See bellow more examples of inactive keys.
+Key Examples
+<P>
+
+Here are some valid key names, and their values:
+<P>
+<P>
+
+The Elektra keys of the combined <I>/etc/passwd</I> and <I>/etc/shadow</I> entry for user 'nobody' would look like:
+<P>
+<DL COMPACT>
+<DT>*<DD>
+<I>system/users/nobody/uid</I>: 99
+<DT>*<DD>
+<I>system/users/nobody/gid</I>: 99
+<DT>*<DD>
+<I>system/users/nobody/gecos</I>: Nobody
+<DT>*<DD>
+<I>system/users/nobody/home</I>: /
+<DT>*<DD>
+<I>system/users/nobody/shell</I>: /sbin/nologin
+<DT>*<DD>
+<I>system/users/nobody/password</I>: *
+<DT>*<DD>
+<I>system/users/nobody/passwdChangeBefore</I>: 0
+<DT>*<DD>
+<I>system/users/nobody/passwdChangeAfter</I>: 99999
+<DT>*<DD>
+<I>system/users/nobody/passwdWarnBefore</I>: 7
+<DT>*<DD>
+<I>system/users/nobody/passwdDisableAfter</I>:
+<DT>*<DD>
+<I>system/users/nobody/passwdDisabledSince</I>:
+<DT>*<DD>
+<I>system/users/nobody/passwdReserved</I>:
+</DL>
+<P>
+
+<P>
+<P>
+
+The environment variables I want set, when I log in, with their full key name:
+<P>
+<DL COMPACT>
+<DT>*<DD>
+<I>user:aviram/env/env1/JAVA_HOME</I>: /usr/lib/jvm/java-1.4.1-ibm-1.4.1.0/jre
+<DT>*<DD>
+<I>user:aviram/env/env2/PATH</I>: $PATH:~/bin:$JAVA_HOME/bin
+<DT>*<DD>
+<I>user:aviram/env/env2/PS1</I>: \h:\w\$
+<DT>*<DD>
+<I>user:aviram/env/env3/PILOTRATE</I>: 57600
+</DL>
+<P>
+
+<P>
+<P>
+
+The entry in <I>/etc/inittab</I> that is responsible for starting X11 would look:
+<P>
+<DL COMPACT>
+<DT>*<DD>
+<I>system/init/x/runlevels</I>: 5
+<DT>*<DD>
+<I>system/init/x/action</I>: respawn
+<DT>*<DD>
+<I>system/init/x/process</I>: /etc/X11/prefdm -nodaemon
+</DL>
+<P>
+
+<P>
+<P>
+
+The users database files and <I>/etc/inittab</I> were Elektrified to key-value pairs using the <B>users-convert</B> and <B>inittab-convert</B> scripts included with the distribution.
+<P>
+<P>
+
+An example of an elektrified <I>/etc/X11/xorg.conf</I> or <I>/etc/X11/XF86Config</I>:
+<P>
+<DL COMPACT>
+<DT>*<DD>
+<I>system/sw/xorg/current/Layouts/Default Layout/Inputs/Keyboard0/CoreKeyboard</I>:
+<DT>*<DD>
+<I>system/sw/xorg/current/Layouts/Default Layout/Inputs/Mouse0/CorePointer</I>:
+<DT>*<DD>
+<I>system/sw/xorg/current/Layouts/Default Layout/Screens/Screen0/Absolute.x</I>: 0
+<DT>*<DD>
+<I>system/sw/xorg/current/Layouts/Default Layout/Screens/Screen0/Absolute.y</I>: 0
+<DT>*<DD>
+<I>system/sw/xorg/current/Layouts/Default Layout/Screens/Screen0/ScreenNumber</I>: 0
+<DT>*<DD>
+<I>system/sw/xorg/current/Files/FontPath</I>: unix/:7100
+<DT>*<DD>
+<I>system/sw/xorg/current/Files/RgbPath</I>: /usr/X11R6/lib/X11/rgb
+<DT>*<DD>
+<I>system/sw/xorg/current/Devices/Videocard0/BoardName</I>: Intel 740 (generic)
+<DT>*<DD>
+<I>system/sw/xorg/current/Devices/Videocard0/Driver</I>: i740
+<DT>*<DD>
+<I>system/sw/xorg/current/Devices/Videocard0/VendorName</I>: Videocard vendor
+<DT>*<DD>
+<I>system/sw/xorg/current/InputDevices/Keyboard0/Driver</I>: keyboard
+<DT>*<DD>
+<I>system/sw/xorg/current/InputDevices/Keyboard0/Options/XkbLayout</I>: us_intl
+<DT>*<DD>
+<I>system/sw/xorg/current/InputDevices/Keyboard0/Options/XkbModel</I>: pc105
+<DT>*<DD>
+<I>system/sw/xorg/current/InputDevices/Mouse0/Driver</I>: mouse
+<DT>*<DD>
+<I>system/sw/xorg/current/InputDevices/Mouse0/Options/Device</I>: /dev/input/mice
+<DT>*<DD>
+<I>system/sw/xorg/current/InputDevices/Mouse0/Options/Emulate3Buttons</I>: yes
+<DT>*<DD>
+<I>system/sw/xorg/current/InputDevices/Mouse0/Options/Protocol</I>: IMPS/2
+<DT>*<DD>
+<I>system/sw/xorg/current/InputDevices/Mouse0/Options/ZAxisMapping</I>: 4 5
+<DT>*<DD>
+<I>system/sw/xorg/current/Monitors/Monitor0/DisplaySize.height</I>: 230
+<DT>*<DD>
+<I>system/sw/xorg/current/Monitors/Monitor0/DisplaySize.width</I>: 300
+<DT>*<DD>
+<I>system/sw/xorg/current/Monitors/Monitor0/HorizSync</I>: 30.0 - 61.0
+<DT>*<DD>
+<I>system/sw/xorg/current/Monitors/Monitor0/ModelName</I>: SyncMaster
+<DT>*<DD>
+<I>system/sw/xorg/current/Monitors/Monitor0/Options/dpms</I>:
+<DT>*<DD>
+<I>system/sw/xorg/current/Monitors/Monitor0/VendorName</I>: Monitor Vendor
+<DT>*<DD>
+<I>system/sw/xorg/current/Monitors/Monitor0/VertRefresh</I>: 56.0 - 75.0
+<DT>*<DD>
+<I>system/sw/xorg/current/Monitors/.Monitor1/HorizSync</I>: 30.0 - 61.0
+<DT>*<DD>
+<I>system/sw/xorg/current/Monitors/.Monitor1/ModelName</I>: Impression
+<DT>*<DD>
+<I>system/sw/xorg/current/Monitors/.Monitor1/Options/dpms</I>:
+<DT>*<DD>
+<I>system/sw/xorg/current/Monitors/.Monitor1/VendorName</I>: Monitor Vendor
+<DT>*<DD>
+<I>system/sw/xorg/current/Monitors/.Monitor1/VertRefresh</I>: 56.0 - 75.0
+<DT>*<DD>
+<I>system/sw/xorg/current/Screens/Screen0/DefaultDepth</I>: 16
+<DT>*<DD>
+<I>system/sw/xorg/current/Screens/Screen0/Device</I>: Videocard0
+<DT>*<DD>
+<I>system/sw/xorg/current/Screens/Screen0/Displays/00/Depth</I>: 16
+<DT>*<DD>
+<I>system/sw/xorg/current/Screens/Screen0/Displays/00/Modes</I>: 1024x768,800x600,640x480
+<DT>*<DD>
+<I>system/sw/xorg/current/Screens/Screen0/Displays/00/Viewport.x</I>: 0
+<DT>*<DD>
+<I>system/sw/xorg/current/Screens/Screen0/Displays/00/Viewport.y</I>: 0
+<DT>*<DD>
+<I>system/sw/xorg/current/Screens/Screen0/Monitor</I>: Monitor0
+<DT>*<DD>
+<I>system/sw/xorg/current/Modules/dbe</I>:
+<DT>*<DD>
+<I>system/sw/xorg/current/Modules/dri</I>:
+<DT>*<DD>
+<I>system/sw/xorg/current/Modules/extmod</I>:
+<DT>*<DD>
+<I>system/sw/xorg/current/Modules/fbdevhw</I>:
+<DT>*<DD>
+<I>system/sw/xorg/current/Modules/freetype</I>:
+<DT>*<DD>
+<I>system/sw/xorg/current/Modules/glx</I>:
+<DT>*<DD>
+<I>system/sw/xorg/current/Modules/record</I>:
+<DT>*<DD>
+<I>system/sw/xorg/current/Modules/type1</I>:
+<DT>*<DD>
+<I>system/sw/xorg/current/DRI/Group</I>: 0
+<DT>*<DD>
+<I>system/sw/xorg/current/DRI/Mode</I>: 0666
+</DL>
+<P>
+
+<P>
+<P>
+
+Pay attention that the keys bellow <I>system/sw/XFree/current/Monitor/.Monitor1</I> are inactive because we have <I>.Monitor1</I> as their parent. So unless special options are used when calling the API, these keys will not be retrieved from the database.
+<P>
+<P>
+
+Throughout this text you will see other examples of key names.
+Key Data Types
+<P>
+
+There are only two types of data that can be stored:
+<P>
+<DL COMPACT>
+<DT><B>Text</B><DD>
+Handled as pure text. Regardeless of the charset being used, these values are always stored as UTF-8. This ensures very strong internationalization and migration capabilities, while keeping simplicity. If you don't want the Elektra framework to convert your non-ASCII text to UTF-8 (not recomended), you should use the Binary data format.
+<P>
+<DT><B>Binary</B><DD>
+A stream of bytes, not necessarily text. It is recommended that you avoid using binary values because UNIX system administrators tend to consider them as unmanageable blackboxes. Anyway, the value will be encoded into pure text format based on hexadecimal digits, for openness and ease of administration. This data type should also be avoided because it is less efficient.
+<P>
+</DL>
+<P>
+
+There are very good reasons why types like <B>Integer</B>, <B>Time</B>, <B>Font</B>, <B>List</B>, etc were not implemented: Elektra was designed to be usefull for any type of program, so having more specific data types implicates in the definition of value limits, separators in the storage format, etc, that may be good for some application and bad for other. So the semantics of the data is handled by the application. A program or framework may define its own special data handling methods using these essential basic types. See the <B>keyGetType()</B> and <B>keySetType()</B> methods documentation in the <B><A HREF="kdb.3.html">kdb</A></B>(3) man page to understand how to set keys with your own data types.
+<P>
+<P>
+
+There are more two types of keys:
+<P>
+<DL COMPACT>
+<DT><B>Directory</B><DD>
+It can't store a value, but, as a directory in a filesystem, it serves as a way to group correlated keys.
+<P>
+<DT><B>Link</B><DD>
+It is a link to another key. They work as symbolic links in the filesystem: when trying to access them, you will actually access the key they point to. The API also provides ways to access these special keys without dereferencing them.
+Key Meta Data
+</DL>
+<P>
+
+Besides the key name and the value, each key has other attributes:
+<P>
+<DL COMPACT>
+<DT><B>Owner's User and Group</B><DD>
+This is a system's UID and GID equal to the ones found in regular files' attributes.
+<P>
+<DT><B>Access Permissions</B><DD>
+Filesystem-like access permissions for user, group and others.
+<P>
+<DT><B>Modification, Access and Stat Times</B><DD>
+Last time a key was modified, readed and stated (listed), respectively.
+<P>
+<DT><B>Key Comment</B><DD>
+Pretty much as a configuration file comment. Not intended to be used in GUI applications, because it isn't internationalizable.
+Fine Grained Security Example
+</DL>
+<P>
+
+To show this metadata in action, this screen shows the <B>kdb</B> command listing keys and their attributes related to user <I>nobody</I>.
+<P>
+<DL COMPACT>
+<DT><DD>
+bash$ <B>kdb ls -Rlv system/users/nobody</B>
+-rw-r--r--   root  root    17 Mar 31 09:07 system/users/nobody/uid=99
+-rw-r--r--   root  root    17 Mar 31 09:07 system/users/nobody/gid=99
+-rw-r--r--   root  root    21 Mar 31 09:07 system/users/nobody/gecos=Nobody
+-rw-r--r--   root  root    16 Mar 31 09:07 system/users/nobody/home=/
+-rw-r--r--   root  root    28 Mar 31 09:07 system/users/nobody/shell=/sbin/nologin
+-rw-------   root  root    16 Mar 31 09:07 system/users/nobody/password
+-rw-------   root  root    16 Mar 31 09:07 system/users/nobody/passwdChangeBefore
+-rw-------   root  root    20 Mar 31 09:07 system/users/nobody/passwdChangeAfter
+-rw-------   root  root    16 Mar 31 09:07 system/users/nobody/passwdWarnBefore
+-rw-------   root  root    15 Mar 31 09:07 system/users/nobody/passwdDisableAfter
+-rw-------   root  root    15 Mar 31 09:07 system/users/nobody/passwdDisabledSince
+-rw-------   root  root    15 Mar 31 09:07 system/users/nobody/passwdReserved
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT><BR>
+</DL>
+<P>
+
+We ran the <B>kdb</B> command without super-user credentials, asking for long (<B>-l</B>), recursive (<B>-R</B>) listing, and to show each key value (<B>-v</B>). But (since we are) regular user, we don't have permission to see the values of the <I>system/users/nobody/passwd*</I> fields.
+<P>
+<P>
+
+The users database files were elektrified to key-value pairs using the <B>users-convert</B> script included with the distribution.
+ExamplesSetting Keys
+<P>
+
+bash$<B>kdb set -c &quot;My first key&quot; user/example/key &quot;Some nice value&quot;</B>
+<P>
+<P>
+
+bash$<B>kdb set user:luciana/example/key -- &quot;Some - nice - value with dashes&quot;</B>
+<P>
+<P>
+
+bash#<B>KDB_ROOT=user:http/sw/httpd kdb set -u nobody -g http key &quot;Some value&quot;</B>
+<P>
+<P>
+
+bash$<B>kdb set -b image.png -t bin user/example/binaryKey</B>
+<P>
+<P>
+
+bash$<B>kdb set -b file.txt user/example/regularKey</B>
+<P>
+<P>
+
+bash#<B>kdb set -t link system/sw/XFree/current system/sw/XFree/handmade</B>
+Getting Keys
+<P>
+
+bash$<B>KDB_ROOT=user/example kdb get key</B>
+<P>
+<P>
+
+bash$<B>KDB_BACKEND=gconf kdb get user/sw/gnome-terminal/global/active_encodings</B>
+Listing
+<P>
+
+bash$<B>kdb ls -laR user:valeria</B>
+<P>
+<P>
+
+bash$<B>kdb ls -lR system/sw/xorg/current</B>
+<P>
+<P>
+
+bash$<B>KDB_ROOT=system/sw kdb ls -lR xorg</B>
+<P>
+<P>
+
+bash$<B>KDB_BACKEND=fstab kdb ls -Rv system/filesystems</B>
+Miscelaneous
+<P>
+
+bash#<B>kdb ln system/sw/xorg/handmade system/sw/xorg/current</B>
+<P>
+<P>
+
+bash#<B>kdb mv system/sw/xorg/current system/sw/xorg/old</B>
+<P>
+<P>
+
+bash#<B>kdb rm system/inittab/rc4</B>
+<P>
+<P>
+
+bash$<B>KDB_BACKEND=gconf kdb rm user/gconfKey</B>
+XML Import and Export
+<P>
+
+bash#<B>kdb export user/sw/app | sed -e 's|/app/|/app2/|g' | kdb import</B>
+<P>
+<P>
+
+bash#<B>KDB_ROOT=system/sw kdb export myapp &gt; myappconf.xml</B>
+<P>
+<P>
+
+bash#<B>kdb import myappconf.xml</B>
+<P>
+<P>
+
+bash$<B>KDB_BACKEND=gconf kdb export user/sw</B>
+<P>
+<A NAME="lbAC">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<P>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT><BR>
+<P>
+
+<B><A HREF="kdb.1.html">kdb</A></B>(1), <B><A HREF="elektra.5.html">elektra</A></B>(5)
+<P>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT><BR>
+<A NAME="lbAD">&nbsp;</A>
+<H2>AUTHOR</H2>
+
+Avi Alkalay.
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">NAME</A><DD>
+<DT><A HREF="#lbAC">SEE ALSO</A><DD>
+<DT><A HREF="#lbAD">AUTHOR</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="http://localhost/cgi-bin/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 13:54:02 GMT, July 25, 2005
+</BODY>
+</HTML>

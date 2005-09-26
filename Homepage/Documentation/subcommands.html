@@ -1,0 +1,105 @@
+        <div class="section" lang="en" xml:lang="en">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="rgsubc"></a>14.2. Subcommands</h3>
+              </div>
+            </div>
+            <div></div>
+          </div>
+          <div class="variablelist">
+            <dl>
+              <dt>
+                <span class="term">
+                  <span>
+                    <b class="command">get</b>
+                  </span>
+                </span>
+              </dt>
+              <dd>
+                <p>Get the value from the specified key. Accepts options: <tt class="option">-d</tt>, <tt class="option">-l</tt>, <tt class="option">-f</tt>, <tt class="option">-s</tt></p>
+              </dd>
+              <dt>
+                <span class="term">
+                  <span>
+                    <b class="command">set</b>
+                  </span>
+                </span>
+              </dt>
+              <dd>
+                <p>Set the value to the specified key. Accepts options: <tt class="option">-c</tt>, <tt class="option">-t</tt>, <tt class="option">-m</tt>, <tt class="option">-b</tt></p>
+              </dd>
+              <dt>
+                <span class="term">
+                  <span>
+                    <b class="command">ls</b>
+                  </span>
+                </span>
+              </dt>
+              <dd>
+                <p>As the <span class="citerefentry"><span class="refentrytitle">ls</span>(1)</span> command, list key names for the specified key, or children keys, if specified a folder key. The <tt class="option">-v</tt> argument will make it show also the values of each key. The <tt class="option">-d</tt> (descriptive) will make it show the comment, key name and its value, as you are watching a plain text file. Accepts options: <tt class="option">-x</tt>, <tt class="option">-d</tt>, <tt class="option">-l</tt>, <tt class="option">-f</tt>, <tt class="option">-v</tt>, <tt class="option">-R</tt></p>
+              </dd>
+              <dt>
+                <span class="term">
+                  <span>
+                    <b class="command">ln</b>
+                  </span>
+                </span>
+              </dt>
+              <dd>
+                <p>Creates a key that is a symbolic links to another key.</p>
+              </dd>
+              <dt>
+                <span class="term">
+                  <span>
+                    <b class="command">mv</b>
+                  </span>
+                </span>
+              </dt>
+              <dd>
+                <p>Move, or renames a key. Currently it can't move keys across different filesystems.</p>
+              </dd>
+              <dt>
+                <span class="term">
+                  <span>
+                    <b class="command">rm</b>
+                  </span>
+                </span>
+              </dt>
+              <dd>
+                <p>As the <span class="citerefentry"><span class="refentrytitle">rm</span>(1)</span> command, removes the key specified.</p>
+              </dd>
+              <dt>
+                <span class="term">
+                  <span>
+                    <b class="command">edit</b>
+                  </span>
+                </span>
+              </dt>
+              <dd>
+                <p>A very powerfull subcommand that lets you edit an XML representation of the keys. The parameters it accepts is usually a parent key, so its child keys will be gathered. Can be used with the <tt class="option">-R</tt> flag to work recursively. The editor used is the one set in the <tt class="envar">$EDITOR</tt> environment variable, or <span><b class="command">vi</b></span>. After editing the keys, <span><b class="command">kdb edit</b></span> will analyze them and commit only the changed keys, remove the keys removed, and add the keys added.</p>
+              </dd>
+              <dt>
+                <span class="term"><span><b class="command">export</b></span>, </span>
+                <span class="term"><span><b class="command">save</b></span>, </span>
+              </dt>
+              <dd>
+                <p>Export a subtree of keys to XML. If no subtree is defined right after the <span><b class="command">export</b></span> command, <tt class="filename">system</tt> and current <tt class="filename">user</tt> trees will be exported. Output is written to standard output. The output encoding will allways be UTF-8, regardeless of your system encoding. UTF-8 is the most universal charset you can get when exchanging data between multiple systems. Accepts <tt class="option">-f</tt>.</p>
+              </dd>
+              <dt>
+                <span class="term"><span><b class="command">import</b></span>, </span>
+                <span class="term"><span><b class="command">load</b></span>, </span>
+              </dt>
+              <dd>
+                <p>Import an XML representation of keys and save it to the keys database. If no filename is passed right after the <span><b class="command">import</b></span> command, standard input is used.</p>
+              </dd>
+              <dt>
+                <span class="term"><span><b class="command">monitor</b></span>, </span>
+                <span class="term"><span><b class="command">mon</b></span>, </span>
+              </dt>
+              <dd>
+                <p>Monitor a key for some value change. It will block your command line until a change in the key value is detected, then return its new value.</p>
+              </dd>
+            </dl>
+          </div>
+        </div>

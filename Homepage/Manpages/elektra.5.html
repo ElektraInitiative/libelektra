@@ -1,0 +1,165 @@
+
+
+<HTML><HEAD><TITLE>Manpage of ELEKTRA</TITLE>
+</HEAD><BODY>
+<H1>ELEKTRA</H1>
+Section:  (5)<BR>Updated: March 2004<BR><A HREF="#index">Index</A>
+<A HREF="index.html">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>NAME</H2>
+
+elektra - A framework to store configuration atoms hierarchically
+<DL COMPACT><DT><DD>
+</DL>
+<A NAME="lbAC">&nbsp;</A>
+<H2>Note</H2>
+
+<P>
+<P>
+
+This section is provided for the sake of the openness of Elektra. You should not access the Elektra's key files directly. You should use the API or the <B><A HREF="kdb.1.html">kdb</A></B>(1) command for that.
+<P>
+
+Elektra Key Storage Strategy
+<P>
+
+Elektra implements a very simple way to store the key-value pairs. The value (and some metainfo) for each key is stored in a single file. The key name (and some of its context) is sufficient to find the file name that stores the value.
+<P>
+<P>
+
+The <I>system/*</I> keys are stored under <I>/etc/kdb/</I>, and the <I>user/*</I> keys can be found under each user's <I>$HOME/.kdb/</I>.
+<P>
+<P>
+
+Here are some examples of key names, and where Elektra goes to look for them in the disk.
+<P>
+<DL COMPACT>
+<DT><I>system/sw/XFree86/screen0/driver</I><DD>
+Maps to: <I>/etc/kdb/system/sw/XFree86/screen0/driver</I>
+<P>
+<DT><I>user/env/PATH</I><DD>
+Maps to: <I>~$USER/.kdb/user/env/PATH</I>
+<P>
+<DT><I>user:luciana/env/PATH</I><DD>
+Maps to: <I>~luciana/.kdb/user/env/PATH</I>
+<P>
+<DT><I>system/mime.types/some.mime</I><DD>
+Maps to: <I>/etc/kdb/system/mime.types/some.mime</I>
+<P>
+</DL>
+<P>
+
+Some may think that one file per key will consume many filesystem i-nodes. Actually, when not using Reiser4 filesystem, it may consume some more disk space, and it may also be not so efficient than reading one single text file, as KConfig does. But Elektra's nature lets applications load their keys on demand; so it is possible to avoid the read-all-use-some approach. Writing updated keys back to disk is also more robust, because unchanged keys won't be touched, different from a single file approach, that must be entirelly rewritten.
+<P>
+<P>
+
+Besides that, big applications (like Mozilla, Konqueror, KDE, Gnome) key gathering time is a very small part of what they have to do to start up. And the benefits of an homogeneous key database to the entire system are much bigger then these issues. Think about a common integration between everything, flexibility, security granularity and openness.
+XML, Storage Backends and Elektra
+<P>
+
+This document you are just reading was written in DocBook XML. XML is a wonderfull technology, but brings no value to this software. Two main goals of the Elektra Project are to be lightweight, and to be accessible by early boot stage programs like <B>/sbin/init</B> and the <I>/etc/rc.d</I> scripts.
+<P>
+<P>
+
+XML parsing libraries are memory eaters, not so fast as we can expect, and they are usualy located under <I>/usr/lib</I>, which may be unavailable to these early boot stage needs.
+<P>
+<P>
+
+Some discussions asked for a sort of plugin architecture to let user decide the format to store keys content. Well, the info that goes into the key file is not big deal as you'll see, and sometimes, too many options is bad business, and not the path for the Elektra Project.
+<P>
+<P>
+
+So no XML, no plugin architecture, no sophistication. Lets keep it simple and generic. A very straight forward text based file format was defined to store a single key value.
+Key Files Format
+<P>
+
+Inside Elektra key database, each key is a file, and every file is a key. So most of the key's metainformation are actually its file attributes, as you can see in a regular <B><A HREF="ls.1.html">ls</A></B>(1) command output.
+<P>
+<P>
+
+So what needs to be stored inside the key file is the data type (binary or text), key comment and the actual data. The format of each key file is:
+<P>
+<DL COMPACT>
+<DT><DD>
+File Format Version
+Data Type
+As many lines of
+comments as we want (UTF-8 encoded)
+&lt;DATA&gt;
+The data encoded as text
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT><BR>
+</DL>
+<P>
+
+So if we set the key <I>system/hw/eth0/driver</I> as type <B>String</B> and value &quot;<I>3com</I>&quot;, and comment &quot;<I>The driver for my network interface</I>&quot;, we'll find the file <I>/etc/kdb/system/hw/eth0/driver</I> containing:
+<P>
+<DL COMPACT>
+<DT><DD>
+RG002
+40
+The driver for my network interface
+&lt;DATA&gt;
+3com
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT><BR>
+</DL>
+<P>
+
+Other example: setting <I>user/tmp/proprietary</I> as <B>Binary</B>, and value &quot;<I>A groovy data I want to hide</I>&quot;, and comment &quot;<I>Stay away from here</I>&quot;, you'll get in <I>~$USER/.kdb/user/tmp/proprietary</I> the following:
+<P>
+<DL COMPACT>
+<DT><DD>
+RG002
+20
+Stay away from here
+&lt;DATA&gt;
+41206772 6f6f7679 20646174 61204920 77616e74 20746f20 68696465
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT><BR>
+</DL>
+<P>
+
+The current data types are:
+<P>
+<DL COMPACT>
+<DT>Between 20 and 39<DD>
+Binary value. The data will be encoded into a text format. Today only type 20 is used, and means a raw stream of bytes with no special semantics to Elektra. The other values are reserved for future use; being treated still as binary values but possibly with some semantics to Elektra or a higher level application.
+<P>
+<DT>40 up to 254<DD>
+Text, UTF-8 encoded. Values higher then 40 are reserved for future or application specific implementations of more abstract data types, like time/date, color, font, etc. But always represented as pure text that can be edited in any text editor like <B><A HREF="vi.1.html">vi</A></B>(1).
+<P>
+</DL>
+<P>
+
+Types between 0 and 19 are used only internaly in the API, and will never appear into a key file. They are used to define meta keys as directory, link, etc.
+<P>
+<A NAME="lbAD">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<P>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT><BR>
+<P>
+
+<B><A HREF="kdb.1.html">kdb</A></B>(1), <B><A HREF="elektra.7.html">elektra</A></B>(7)
+<P>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT><BR>
+<A NAME="lbAE">&nbsp;</A>
+<H2>AUTHOR</H2>
+
+Avi Alkalay.
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">NAME</A><DD>
+<DT><A HREF="#lbAC">Note</A><DD>
+<DT><A HREF="#lbAD">SEE ALSO</A><DD>
+<DT><A HREF="#lbAE">AUTHOR</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="http://localhost/cgi-bin/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 13:54:02 GMT, July 25, 2005
+</BODY>
+</HTML>

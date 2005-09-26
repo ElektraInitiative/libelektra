@@ -1,0 +1,20 @@
+        <div class="section" lang="en" xml:lang="en">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="inactivekey"></a>4.2. Inactive Keys</h3>
+              </div>
+            </div>
+            <div></div>
+          </div>
+          <p>A great thing about text configuration files is that some configuration items can be there as an example, but inactive or commented. Elektra provides a very simple way to simulate this behavior: if the key name begins with a dot (.), it is considered inactive or commented. In real world applications, the Elektra API will ignore these keys by default, but the keys are still accessible if the developer wants to.</p>
+          <p>These are some keys that have inactive subtrees:</p>
+          <div class="itemizedlist">
+            <ul type="disc">
+              <li><tt class="filename">system/sw/XFree/InputDevice/.Mouse3/Driver</tt>: All keys under <tt class="filename">.Mouse3/*</tt> subtree won't be read by default.</li>
+              <li><tt class="filename">user:valeria/env/env2/.PATH</tt>: The <tt class="envar">$PATH</tt> environment variable <span class="emphasis"><em>won't</em></span> be set when <i class="replaceable"><tt>valeria</tt></i> login.</li>
+              <li><tt class="filename">system/users/.louis/uid</tt>: The entire <tt class="filename">.louis/*</tt> subtree is inactive. This is the same as commenting the user entry from a configuration file.</li>
+            </ul>
+          </div>
+          <p>See bellow more examples of inactive keys.</p>
+        </div>
