@@ -1,236 +1,41 @@
-      <div class="toc">
-        <dl>
-          <dt>
-            <span class="section">
-              <a href="#links">1. Getting The Elektra Software</a>
-            </span>
-          </dt>
-          <dd>
-            <dl>
-              <dt>
-                <span class="section">
-                  <a href="#man">1.1. Online Manual Pages and API Documentation</a>
-                </span>
-              </dt>
-              <dt>
-                <span class="section">
-                  <a href="#ecosystem">1.2. Building an Ecosystem</a>
-                </span>
-              </dt>
-            </dl>
-          </dd>
-          <dt>
-            <span class="section">
-              <a href="#needs">2. Why Linux Needs to be Elektrified</a>
-            </span>
-          </dt>
-          <dt>
-            <span class="section">
-              <a href="#overview">3. Overview of the Elektra Project</a>
-            </span>
-          </dt>
-          <dd>
-            <dl>
-              <dt>
-                <span class="section">
-                  <a href="#libarchitecture">3.1. Library Linkage Architecture</a>
-                </span>
-              </dt>
-              <dt>
-                <span class="section">
-                  <a href="#rgfacts">3.2. True Facts About Elektra</a>
-                </span>
-              </dt>
-              <dt>
-                <span class="section">
-                  <a href="#rgnot">3.3. Elektra Is Not</a>
-                </span>
-              </dt>
-            </dl>
-          </dd>
-          <dt>
-            <span class="section">
-              <a href="#namespace">4. Namespaces and Key Names</a>
-            </span>
-          </dt>
-          <dd>
-            <dl>
-              <dt>
-                <span class="section">
-                  <a href="#userdomains">4.1. User Domains</a>
-                </span>
-              </dt>
-              <dt>
-                <span class="section">
-                  <a href="#inactivekey">4.2. Inactive Keys</a>
-                </span>
-              </dt>
-              <dt>
-                <span class="section">
-                  <a href="#keyexamples">4.3. Key Examples</a>
-                </span>
-              </dt>
-            </dl>
-          </dd>
-          <dt>
-            <span class="section">
-              <a href="#datatypes">5. Key Data Types</a>
-            </span>
-          </dt>
-          <dt>
-            <span class="section">
-              <a href="#metadata">6. Key Meta Data</a>
-            </span>
-          </dt>
-          <dd>
-            <dl>
-              <dt>
-                <span class="section">
-                  <a href="#securityexample">6.1. Fine Grained Security Example</a>
-                </span>
-              </dt>
-            </dl>
-          </dd>
-          <dt>
-            <span class="section">
-              <a href="#bestpract">7. Best Practices When Creating Keys</a>
-            </span>
-          </dt>
-          <dt>
-            <span class="section">
-              <a href="#garbage">8. Unused/Old Keys Left Behind Into the Key Database</a>
-            </span>
-          </dt>
-          <dt>
-            <span class="section">
-              <a href="#adoption">9. Adoption by Legacy System Software</a>
-            </span>
-          </dt>
-          <dt>
-            <span class="section">
-              <a href="#society">10. A Society of Softwares, Bureocracy and Integration</a>
-            </span>
-          </dt>
-          <dt>
-            <span class="section">
-              <a href="#compared">11. Elektra Project and Other Registry-like Software</a>
-            </span>
-          </dt>
-          <dt>
-            <span class="section">
-              <a href="#screenshots">12. Virtual Screenshots</a>
-            </span>
-          </dt>
-          <dd>
-            <dl>
-              <dt>
-                <span class="section">
-                  <a href="#system.hw">12.1. Hardware Status, Elektrified</a>
-                </span>
-              </dt>
-              <dt>
-                <span class="section">
-                  <a href="#system.filesystems">12.2. Filesystems Table, Elektrified</a>
-                </span>
-              </dt>
-              <dt>
-                <span class="section">
-                  <a href="#xfree">12.3. X.Org Configurations Elektrified</a>
-                </span>
-              </dt>
-              <dt>
-                <span class="section">
-                  <a href="#edit">12.4. Easily Editing Elektra Keys</a>
-                </span>
-              </dt>
-            </dl>
-          </dd>
-          <dt>
-            <span class="section">
-              <a href="#help">13. Wanna Help The Elektra Initiative ?</a>
-            </span>
-          </dt>
-          <dd>
-            <dl>
-              <dt>
-                <span class="section">
-                  <a href="#help-patch">13.1. Software Patches</a>
-                </span>
-              </dt>
-              <dt>
-                <span class="section">
-                  <a href="#help-awareness">13.2. Marketing and Awareness</a>
-                </span>
-              </dt>
-              <dt>
-                <span class="section">
-                  <a href="#help-port">13.3. Porting and Backends</a>
-                </span>
-              </dt>
-              <dt>
-                <span class="section">
-                  <a href="#help-perf">13.4. Performance Improvements</a>
-                </span>
-              </dt>
-              <dt>
-                <span class="section">
-                  <a href="#help-bindings">13.5. Language Bindings</a>
-                </span>
-              </dt>
-            </dl>
-          </dd>
-          <dt>
-            <span class="section">
-              <a href="#rgcmd">14. The kdb Command</a>
-            </span>
-          </dt>
-          <dd>
-            <dl>
-              <dt>
-                <span class="section">
-                  <a href="#rgdesc">14.1. Description</a>
-                </span>
-              </dt>
-              <dt>
-                <span class="section">
-                  <a href="#rgsubc">14.2. Subcommands</a>
-                </span>
-              </dt>
-              <dt>
-                <span class="section">
-                  <a href="#rgopt">14.3. Options</a>
-                </span>
-              </dt>
-              <dt>
-                <span class="section">
-                  <a href="#example">14.4. Examples</a>
-                </span>
-              </dt>
-            </dl>
-          </dd>
-          <dt>
-            <span class="section">
-              <a href="#api">15. Application Programing Interface</a>
-            </span>
-          </dt>
-          <dd>
-            <dl>
-              <dt>
-                <span class="section">
-                  <a href="#exprm">15.1. Example program</a>
-                </span>
-              </dt>
-              <dt>
-                <span class="section">
-                  <a href="#linking">15.2. Compiling and Linking</a>
-                </span>
-              </dt>
-            </dl>
-          </dd>
-          <dt>
-            <span class="appendix">
-              <a href="#about">A. About this Document</a>
-            </span>
-          </dt>
-        </dl>
-      </div>
+      <div class="section" lang="en" xml:lang="en">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="links"></a>1. Getting The Elektra Software</h2>
+            </div>
+          </div>
+          <div></div>
+        </div>
+        <p>The Elektra Initiative software and info can be found at <a href="http://libelektra.org/">libelektra.org</a> and (in all) the following places:
+			</p>
+        <div class="itemizedlist">
+          <ul type="disc">
+            <li><a href="http://sourceforge.net/project/showfiles.php?group_id=117521" target="_top">C source and RPMs</a> from <a href="http://sourceforge.net/projects/elektra" target="_top">sourceforge.net</a></li>
+            <li><a href="http://www.germane-software.com/repositories/elektra/trunk/" target="_top">Subversion repository</a>, thanks to Sean Russel</li>
+            <li><a href="http://tlr.pirack.com/LinuxRegistry" target="_top">Wiki space</a>, made available by Daniel Lambea</li>
+            <li><a href="http://freshmeatd.net/projects/elektra/" target="_top">Freshmeat project page</a></li>
+            <li><a href="http://www.advogato.org/proj/Linux Registry/" target="_top">Advogato project page</a></li>
+            <li><a href="http://www.orkut.com/Community.aspx?cmm=89174" target="_top">Orkut Community</a></li>
+            <li>The development takes pleace in the <a href="irc://irc.freenode.net/elektra" target="_top">#elektra channel of the irc.freenode.net IRC server</a></li>
+            <li>Some important design problems are discussed in the mailing list.<a href="https://lists.sourceforge.net/lists/listinfo/registry-list">Subscribe to general discussions list</a> or <a href="http://sourceforge.net/mailarchive/forum.php?forum=registry-list" target="_top">see the list archives</a></li>
+          </ul>
+        </div>
+        <p>
+		</p>
+        <p>There is an <a href="/Download/elektra.sxi" target="_top">OpenOffice.org presentation</a> [<a href="/Presentation/elektra.html" target="_top">HTML without animations</a>] that anybody can deliver in community events, to help create awareness about the Elektra Initiative. There is also a <a href="/Download/elektra_de.sxi" target="_top">german translation</a> by Markus Raab.</p>
+        <p>To get the last snapshot from Subversion do the following:
+			</p>
+        <pre class="screen"><tt class="prompt">bash:~$</tt> <span><b class="command">cd src</b></span>
+<tt class="prompt">bash:~/src$</tt> <span><b class="command">svn co http://germane-software.com/repositories/elektra/trunk elektra</b></span>
+<tt class="prompt">bash:~/src$</tt> <span><b class="command">cd elektra</b></span>
+<tt class="prompt">bash:~/src/elektra$</tt> <span><b class="command"># files are here</b></span>
+			</pre>
+        <p>
+
+</p>
+        <p>All Parts of Elektra have a <a href="http://www.opensource.org/licenses/bsd-license.php" target="_top">BSD</a> license. It is <a href="http://www.gnu.org/philosophy/free-sw.html">free software</a>.</p>
+        <p>
+			<a href="http://sourceforge.net/projects/elektra" target="_top"><img src="http://sourceforge.net/sflogo.php?group_id=99628&amp;type=5" align="middle" alt="Sourceforge" /></a>
+			<a href="http://freshmeat.net/projects/elektra/" target="_top"><img src="pic/link_button_1.gif" align="middle" alt="top" /></a>
+		</p>
