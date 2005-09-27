@@ -46,7 +46,7 @@
 	</div>
 	</div></div></div></div>
 	</td>
-	<td>
+	<td valign="top">
 	<a name="top"></a>
 	<div class="mybody">
 <? show_file()?><br/>
@@ -343,7 +343,8 @@ function generate_menu ()
 		if (	$entry == "." ||
 			$entry == ".." || 
 			$entry == "banner" ||
-			$entry == "pic") 
+			$entry == "pic" ||
+			$entry == ".svn") 
 			continue;
 		if ($pathname != ".")
 			$entry = $pathname . "/" . $entry;
@@ -353,6 +354,8 @@ function generate_menu ()
 		} else
 		{
 			$add=true;
+			if (ereg (".png$", $entry))
+				$add=false;
 			switch(basename($entry)) {
 			case "index.html":
 			case "greeting.html":
@@ -372,7 +375,8 @@ function generate_menu ()
 			if (	$entry == "." ||
 				$entry == ".." || 
 				$entry == "banner" ||
-				$entry == "pic") 
+				$entry == "pic" ||
+				$entry == ".svn") 
 				continue;
 			if (is_dir (dirname($pathname) . "/" . $entry))
 				$prevdirs[] = $entry;
@@ -464,6 +468,7 @@ function generate_banner()
 	while ($entry = $dir->read()) {	
 		if (	$entry == '.'||
 			$entry == '..' ||
+			$entry == '.svn' ||
 			ereg (".txt$", $entry))
 			continue;
 		echo '		<a href="';
