@@ -1,3 +1,43 @@
 <h1>Filesys</h1>
 <p>Developer: Avi Alkalay</p>
+<h2>Status</h2>
 <p>This backend is full featured.</p>
+<h2>About</h2>
+<p>Filesys stores every key in its own
+file. Folders are real folders inside
+the filesystem.</p>
+<p>Thus the right
+management in the filesystem is managed
+by the operating system, it will be on
+a maximum level of security. Every key
+can be equipped with its own set of
+permissions or even acls.</p>
+<p>Its biggest advantage is its biggest
+disadvantage. Because everything is
+handled over the operating system many
+files needed to be open (2) and close (2).
+This will cause a bad performance.
+Another Problem might be that every Key
+needs, depenend of the filesystem, a
+block (e.g. 4 kByte).</p>
+<p>The disadvantages might be solved in
+future through highly optimized filesystems
+which fit they need. Reiserfs is a kandidate
+available now.</p>
+<h2>Editing</h2>
+<p>It is not recommended to edit the Database
+per hand. A key looks like that:</p>
+<pre>
+RG002
+40
+Test
+&lt;DATA&gt;
+SERS
+</pre>
+<p>Does the RG002 and 40 have to be right, these
+parts should not be changed. (They set the type
+of this file, hopefully this can be removed in
+future)</p>
+<p>Test is the comment. It can be easily changed.</p>
+<p>After the Part &lt;DATA&gt; the Value of the key can be written.
+In this case it is SERS</p>
