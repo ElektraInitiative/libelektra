@@ -20,13 +20,13 @@ int main() {
 	
 	ksAppend(ks,keyNew("user/tmp/ex2",
 		KEY_SWITCH_VALUE,"some data",        /* with a simple value */
-		KEY_SWITCH_PRM,0777,                 /* permissions */
+		KEY_SWITCH_MODE,0777,                /* permissions */
 		KEY_SWITCH_END));                    /* end of args */
 	
 	ksAppend(ks,keyNew("user/tmp/ex3",
 		KEY_SWITCH_TYPE,KEY_TYPE_LINK,       /* only type */
 		KEY_SWITCH_VALUE,"system/mtp/x",     /* link destination */
-		KEY_SWITCH_PRM,0654,                 /* weird permissions */
+		KEY_SWITCH_MODE,0654,                /* weird permissions */
 		KEY_SWITCH_END));                                 /* end of args */
 	
 	ksAppend(ks,keyNew("user/tmp/ex4",
