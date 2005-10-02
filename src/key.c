@@ -1,5 +1,5 @@
 /***************************************************************************
-                          key.c  -  Methods for Key and KeySet manipulation
+                          key.c  -  Methods for Key manipulation
                              -------------------
     begin                : Mon Dec 29 2003
     copyright            : (C) 2003 by Avi Alkalay

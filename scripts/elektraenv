@@ -32,8 +32,8 @@
 ##
 
 
-if [ -z "$RG" ]; then
-	RG=kdb
+if [ -z "$KDB" ]; then
+	KDB=kdb
 fi
 
 FILE="/tmp/elektraenv${RANDOM}${RANDOM}"
@@ -41,25 +41,35 @@ FILE="/tmp/elektraenv${RANDOM}${RANDOM}"
 #set -vx
 
 readEnvTree() {
-	echo "echo Setting environment from the Elektra key database under '$1'"
+	keysAvailable=0
 
 	for stage in 1 2 3; do
 		echo "# Stage $stage"
-		$RG ls $1/env$stage 2>/dev/null | while read key; do
+		$KDB ls $1/env$stage 2>/dev/null | while read key; do
+			if [ -z $keysAvailable ]; then
+				keysAvailable=1
+				echo "echo Setting environment from the Elektra key database under '$1'"
+			fi
 			# This stuff is so complicated, with sed etc, because
 			# we need to superescape a '\$' for envs like PS1
 			echo -n "export "
-			$RG get -s $key | sed -e 's/\([^\\]\)\\\$/\1\\\\\$/g;'
+			$KDB get -s $key | sed -e 's/\([^\\]\)\\\$/\1\\\\\$/g;'
 		done
 	done
 
 	echo
 	echo "# Aliases"
-	$RG ls $1/alias 2>/dev/null | while read key; do
-		echo alias `$RG get -s $key`
+	$KDB ls $1/alias 2>/dev/null | while read key; do
+		echo alias `$KDB get -s $key`
 	done
 }
 
+
+
+########################
+##
+##  Main block
+##
 
 readEnvTree system/env > $FILE
 (echo; echo; echo) >> $FILE

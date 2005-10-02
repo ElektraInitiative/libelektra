@@ -1,8 +1,8 @@
 /***************************************************************************
-                          key.c  -  Methods for Key and KeySet manipulation
+                          keyset.c  -  Methods for KeySet manipulation
                              -------------------
-    begin                : Mon Dec 29 2003
-    copyright            : (C) 2003 by Avi Alkalay
+    begin                : Sun Oct 02 2005
+    copyright            : (C) 2005 by Avi Alkalay
     email                : avi@unix.sh
  ***************************************************************************/
 

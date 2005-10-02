@@ -322,7 +322,7 @@ ssize_t kdbGetKeyChildKeys_filesys(const Key *parentKey, KeySet *returned, unsig
 	char realParentName[parentNameSize];
 	DIR *parentDir;
 	char buffer[MAX_PATH_LENGTH];
-	struct dirent *entry;                                       
+	struct dirent *entry;
 
 	/*
 		- Convert parent key name into a real filename
