@@ -1,0 +1,70 @@
+#!/bin/sh
+
+########################################################################
+##
+## This script will read the /etc/{passwd,group,shadow} and create an
+## equivalent registry tree under $ROOT.
+##
+## The correct way to run it is:
+##
+## # ./users-convert | sh -e
+##
+##
+## To make tests you can do:
+##
+## $ ROOT=user/test ./users-convert | sh -e
+##
+## Avi Alkalay <avi@unix.sh>
+## March 2004
+##
+########################################################################
+
+
+[ -z "$RG" ] && RG="kdb"
+[ -z "$ROOT" ] && ROOT="system"
+
+
+cat /etc/passwd | awk -F : "{
+	print \"$RG set $ROOT/users/\" \$1 \"/uid \'\" \$3 \"\'\";
+	print \"$RG set $ROOT/users/\" \$1 \"/password \'\" \$2 \"\'\";
+	print \"$RG set $ROOT/users/\" \$1 \"/gid \'\" \$4 \"\'\";
+	print \"$RG set $ROOT/users/\" \$1 \"/gecos \'\" \$5 \"\'\";
+	print \"$RG set $ROOT/users/\" \$1 \"/home \'\" \$6 \"\'\";
+	print \"$RG set $ROOT/users/\" \$1 \"/shell \'\" \$7 \"\'\";
+	print \"\";
+}"
+
+echo
+echo
+
+cat /etc/group | awk -F : "{
+	print \"$RG set $ROOT/groups/\" \$1 \"/gid \'\" \$3 \"\'\";
+	print \"$RG set $ROOT/groups/\" \$1 \"/members \'\" \$4 \"\'\";
+	print \"\";
+}"
+
+echo
+echo
+
+if [ -r /etc/shadow ]; then
+	cat /etc/shadow | awk -F : "{
+		print \"$RG set -m 0600 $ROOT/users/\" \$1 \"/shadowPassword \'\" \$2 \"\'\";
+		print \"$RG set -m 0600 $ROOT/users/\" \$1 \"/passwdChangeBefore \'\" \$4 \"\'\";
+		print \"$RG set -m 0600 $ROOT/users/\" \$1 \"/passwdChangeAfter \'\" \$5 \"\'\";
+		print \"$RG set -m 0600 $ROOT/users/\" \$1 \"/passwdWarnBefore \'\" \$6 \"\'\";
+		print \"$RG set -m 0600 $ROOT/users/\" \$1 \"/passwdDisableAfter \'\" \$7 \"\'\";
+		print \"$RG set -m 0600 $ROOT/users/\" \$1 \"/passwdDisabledSince \'\" \$8 \"\'\";
+		print \"$RG set -m 0600 $ROOT/users/\" \$1 \"/passwdReserved \'\" \$9 \"\'\";
+		print \"\";
+	}"
+fi
+
+
+
+
+
+
+
+
+
+
