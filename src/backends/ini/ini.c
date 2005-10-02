@@ -133,7 +133,30 @@ int fd;
  */
 
 
-
+/**Reallocate Storage in a save way
+ * @code
+if (srealloc ((void **) & buffer, new_length) < 0) {
+	// here comes the failure handler
+	fprintf (stderr, "Reallocation error\n");
+	free (buffer);	// free the buffer
+	exit (1);
+}
+ * @return -1 on failure
+ * 0 on success*/
+int srealloc (void ** buffer, size_t size)
+{
+	void * ptr;
+	void * svr = *buffer;
+	ptr = realloc(*buffer, size);
+	if (ptr == NULL)
+	{
+		*buffer = svr;	// restore old buffer
+		return -1;
+	} else {
+		*buffer = ptr;
+		return 0;
+	}
+}
 
 
 /**
@@ -468,8 +491,9 @@ int IniGetKey (Key * key, char * root)
 				string_length += BUFFER_SIZE;
 				if (srealloc ((void**) & buffer, string_length) < 0) {
 					fprintf (stderr, "Reallocation error\n");
-					free (buffer_value);
+					free (buffer);
 					free (buffer_key);
+					free (buffer_value);
 					free (buffer_comment);
 					return -1;
 				}
@@ -494,6 +518,7 @@ int IniGetKey (Key * key, char * root)
 				if (srealloc ((void **) & buffer_key, key_length) < 0) {
 					fprintf (stderr, "Reallocation error\n");
 					free (buffer);
+					free (buffer_key);
 					free (buffer_value);
 					free (buffer_comment);
 					return -1;
@@ -509,6 +534,7 @@ int IniGetKey (Key * key, char * root)
 					fprintf (stderr, "Reallocation error\n");
 					free (buffer);
 					free (buffer_key);
+					free (buffer_value);
 					free (buffer_comment);
 					return -1;
 				}					
@@ -522,8 +548,9 @@ int IniGetKey (Key * key, char * root)
 				if (srealloc ((void **) & buffer_comment, comment_length) < 0) {
 					fprintf (stderr, "Reallocation error\n");
 					free (buffer);
-					free (buffer_value);
 					free (buffer_key);
+					free (buffer_value);
+					free (buffer_comment);
 					return -1;
 				}					
 			}
@@ -803,6 +830,7 @@ int kdbSetKey_ini(Key *key) {
 
 	setKey = keyNew (KEY_SWITCH_END);
 	keyDup (key, setKey);	// clone key
+
 	
 	fprintf (stderr, "kdbGetKey_ini() entered\n");
 	
@@ -834,6 +862,9 @@ int kdbSetKey_ini(Key *key) {
 			//TODO: use keySetName (key, keyFullName);
 			//or DONT EVEN SET, because key->key and keyFullName is the same
 			fprintf (stderr, "Key found\n");
+			fprintf(stderr, "Name: (%s), Value: (%s), Comment: (%s)\n",
+				keyStealName (setKey), (char *) keyStealValue(setKey), 
+				(char *) keyStealComment (setKey));
 			if (key->key) free(key->key);
 			key->key = malloc (keySize+1);
 			strncpy (key->key, keyFullName, keySize);
@@ -846,11 +877,11 @@ int kdbSetKey_ini(Key *key) {
 				keyGetCommentSize (setKey) + 1;	// \n
 			if (newpos - oldpos > needed_size)
 			{
-				fprintf (stderr, "Shrinking File with %ld bytes",
+				fprintf (stderr, "Shrinking File with %ld bytes\n",
 						newpos - oldpos - needed_size);
 				shrink_file (oldpos, newpos - oldpos -needed_size);
 			} else if (newpos - oldpos < needed_size) {
-				fprintf (stderr, "Enlarge File with %ld bytes",
+				fprintf (stderr, "Enlarge File with %ld bytes\n",
 						needed_size - (newpos - oldpos));
 				enlarge_file (newpos, needed_size - (newpos - oldpos));
 			}
@@ -859,11 +890,13 @@ int kdbSetKey_ini(Key *key) {
 				oldpos, newpos, needed_size);
 			fseek (fc, oldpos, SEEK_SET);
 			
-			fwrite (       end, strlen(end), 1, fc);
+			fwrite (end, strlen(end), 1, fc);
 			fwrite ("=", 1,1,fc);
-			fwrite (keyStealValue (setKey), keyGetValueSize(setKey)-1, 1, fc);
+			if (keyStealValue (setKey) != NULL)
+				fwrite (keyStealValue (setKey), keyGetValueSize(setKey)-1, 1, fc);
 			fwrite (";", 1,1,fc);
-			fwrite (keyStealComment (setKey), keyGetCommentSize(setKey)-1, 1, fc);
+			if (keyStealComment (setKey) != NULL)
+				fwrite (keyStealComment (setKey), keyGetCommentSize(setKey)-1, 1, fc);
 			fwrite ("\n", 1,1,fc);
 
 			newpos = ftell (fc);
