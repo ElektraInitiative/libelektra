@@ -5,7 +5,7 @@
 #
 
 AC_PREREQ(2.59)
-AC_INIT(elektra, 0.5.0.6, yl@itioweb.com)
+AC_INIT(elektra, 0.5.0.7, yl@itioweb.com)
 AC_CONFIG_SRCDIR(src/libelektra/libkdb.c)
 AM_INIT_AUTOMAKE
 AC_CONFIG_HEADER([config.h])
