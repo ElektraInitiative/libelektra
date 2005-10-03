@@ -15,22 +15,16 @@
 
 /* Subversion stuff
 
-$Id: key.c 248 2005-07-25 12:51:33Z aviram $
+$Id$
 $LastChangedBy: aviram $
 
 */
 
 #include <stdio.h>
-#include <stdarg.h>
+#include <stdlib.h>
+#include <errno.h>
 #include <strings.h>
 #include <string.h>
-#include <stdlib.h>
-#include <sys/stat.h>
-#include <errno.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <pwd.h>
-#include <grp.h>
 #include <langinfo.h>
 
 #include "kdb.h"
