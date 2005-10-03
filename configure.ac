@@ -3,6 +3,7 @@
 # 
 # Yannick Lecaillez <yl@itioweb.com>
 #
+# $Id$
 
 AC_PREREQ(2.59)
 AC_INIT(elektra, 0.5.0.7, avi@unix.sh)
