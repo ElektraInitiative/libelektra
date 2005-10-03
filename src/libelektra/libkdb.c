@@ -221,7 +221,7 @@ bash# KDB_BACKEND=apache kdb import apacheconf.xml
  * @ingroup kdb
  */
 int kdbOpenBackend(char *backendName) {
-	void *dlhandle=0;
+	lt_dlhandle *dlhandle=0;
 	char backendlib[300];
 	KDBBackendFactory kdbBackendNew=0;
 	int rc=0;
@@ -231,18 +231,25 @@ int kdbOpenBackend(char *backendName) {
 	/* load the environment and make us aware of codeset conversions */
 	setlocale(LC_ALL,"");
 	
+	/* init */
+	if ( (rc = lt_dlinit()) ) {
+		fprintf(stderr, "lt_dlinit() error %d\n", rc);
+		errno=KDB_RET_NOSYS;
+		return 1; /* error */
+	}	
+	
 	sprintf(backendlib,"libelektra-%s.so",backendName);
-	dlhandle=dlopen(backendlib,RTLD_LAZY);
+	dlhandle=lt_dlopen(backendlib);
 	if (dlhandle == 0) {
 		fprintf(stderr, "libelektra: Could not open \"%s\" backend: %s\n",
-			backendName,dlerror());
+			backendName,lt_dlerror());
 		errno=KDB_RET_NOSYS;
 		return 1; /* error */
 	}
 	
-	kdbBackendNew=dlsym(dlhandle,"kdbBackendFactory");
+	kdbBackendNew=lt_dlsym(dlhandle,"kdbBackendFactory");
 	if (kdbBackendNew == 0) {
-		fprintf(stderr, "libelektra: \"%s\" backend: %s\n",backendName,dlerror());
+		fprintf(stderr, "libelektra: \"%s\" backend: %s\n",backendName,lt_dlerror());
 		errno=KDB_RET_NOSYS;
 		return 2; /* error */
 	}
@@ -293,7 +300,7 @@ int kdbClose() {
 	
 	if (rc == 0) {
 		if (backend->name) free(backend->name);
-		dlclose(backend->dlHandle);
+		lt_dlclose(backend->dlHandle);
 		free(backend); backend=0;
 	}
 	
