@@ -1,4 +1,4 @@
-# $Id: Makefile 244 2005-06-04 15:17:31Z aviram $
+# $Id$
 # $LastChangedBy: aviram $
 
 EXTRA_DIST=kdb.1.xml elektra.7.xml elektra.5.xml author.xml bestpract.xml rgexample.xml rgcmd.xml storage.xml overview.xml
