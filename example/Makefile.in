@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-SOURCES = $(kdb_SOURCES)
+SOURCES = $(application_SOURCES) $(binary_SOURCES) $(example_SOURCES) $(keyNewExample_SOURCES) $(lookup_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -22,7 +22,7 @@ VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
-top_builddir = ../..
+top_builddir = ..
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 INSTALL = @INSTALL@
 install_sh_DATA = $(install_sh) -c -m 644
@@ -38,8 +38,9 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = kdb$(EXEEXT)
-subdir = src/kdb
+noinst_bin_PROGRAMS = example$(EXEEXT) application$(EXEEXT) \
+	binary$(EXEEXT) keyNewExample$(EXEEXT) lookup$(EXEEXT)
+subdir = example
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -48,13 +49,24 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
-am__installdirs = "$(DESTDIR)$(bindir)"
-binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
-PROGRAMS = $(bin_PROGRAMS)
-am_kdb_OBJECTS = kdb.$(OBJEXT)
-kdb_OBJECTS = $(am_kdb_OBJECTS)
-am__DEPENDENCIES_1 =
-kdb_DEPENDENCIES = $(am__DEPENDENCIES_1)
+am__installdirs = "$(DESTDIR)$(noinst_bindir)"
+noinst_binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
+PROGRAMS = $(noinst_bin_PROGRAMS)
+am_application_OBJECTS = application.$(OBJEXT)
+application_OBJECTS = $(am_application_OBJECTS)
+application_DEPENDENCIES =
+am_binary_OBJECTS = binary.$(OBJEXT)
+binary_OBJECTS = $(am_binary_OBJECTS)
+binary_DEPENDENCIES =
+am_example_OBJECTS = example.$(OBJEXT)
+example_OBJECTS = $(am_example_OBJECTS)
+example_DEPENDENCIES =
+am_keyNewExample_OBJECTS = keyNewExample.$(OBJEXT)
+keyNewExample_OBJECTS = $(am_keyNewExample_OBJECTS)
+keyNewExample_DEPENDENCIES =
+am_lookup_OBJECTS = lookup.$(OBJEXT)
+lookup_OBJECTS = $(am_lookup_OBJECTS)
+lookup_DEPENDENCIES =
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -66,8 +78,10 @@ LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(kdb_SOURCES)
-DIST_SOURCES = $(kdb_SOURCES)
+SOURCES = $(application_SOURCES) $(binary_SOURCES) $(example_SOURCES) \
+	$(keyNewExample_SOURCES) $(lookup_SOURCES)
+DIST_SOURCES = $(application_SOURCES) $(binary_SOURCES) \
+	$(example_SOURCES) $(keyNewExample_SOURCES) $(lookup_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -184,10 +198,23 @@ sharedstatedir = @sharedstatedir@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-kdb_SOURCES = kdb.c ../include/kdb.h
-kdb_LDFLAGS = -L../libelektra
-kdb_LDADD = -lelektra $(LIBLTDL)
-INCLUDES = -I../include $(LTDLINCL)
+noinst_bindir = .
+example_SOURCES = example.c
+example_LDFLAGS = -L../src/libelektra
+example_LDADD = -lelektra
+application_SOURCES = application.c
+application_LDFLAGS = -L../src/libelektra
+application_LDADD = -lelektra
+binary_SOURCES = binary.c
+binary_LDFLAGS = -L../src/libelektra
+binary_LDADD = -lelektra
+keyNewExample_SOURCES = keyNewExample.c
+keyNewExample_LDFLAGS = -L../src/libelektra
+keyNewExample_LDADD = -lelektra
+lookup_SOURCES = lookup.c
+lookup_LDFLAGS = -L../src/libelektra
+lookup_LDADD = -lelektra
+INCLUDES = -I../src/include
 all: all-am
 
 .SUFFIXES:
@@ -201,9 +228,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  src/kdb/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  example/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  src/kdb/Makefile
+	  $(AUTOMAKE) --gnu  example/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -221,37 +248,49 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-install-binPROGRAMS: $(bin_PROGRAMS)
+install-noinst_binPROGRAMS: $(noinst_bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
-	test -z "$(bindir)" || $(mkdir_p) "$(DESTDIR)$(bindir)"
-	@list='$(bin_PROGRAMS)'; for p in $$list; do \
+	test -z "$(noinst_bindir)" || $(mkdir_p) "$(DESTDIR)$(noinst_bindir)"
+	@list='$(noinst_bin_PROGRAMS)'; for p in $$list; do \
 	  p1=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
 	  if test -f $$p \
 	     || test -f $$p1 \
 	  ; then \
 	    f=`echo "$$p1" | sed 's,^.*/,,;$(transform);s/$$/$(EXEEXT)/'`; \
-	   echo " $(INSTALL_PROGRAM_ENV) $(LIBTOOL) --mode=install $(binPROGRAMS_INSTALL) '$$p' '$(DESTDIR)$(bindir)/$$f'"; \
-	   $(INSTALL_PROGRAM_ENV) $(LIBTOOL) --mode=install $(binPROGRAMS_INSTALL) "$$p" "$(DESTDIR)$(bindir)/$$f" || exit 1; \
+	   echo " $(INSTALL_PROGRAM_ENV) $(LIBTOOL) --mode=install $(noinst_binPROGRAMS_INSTALL) '$$p' '$(DESTDIR)$(noinst_bindir)/$$f'"; \
+	   $(INSTALL_PROGRAM_ENV) $(LIBTOOL) --mode=install $(noinst_binPROGRAMS_INSTALL) "$$p" "$(DESTDIR)$(noinst_bindir)/$$f" || exit 1; \
 	  else :; fi; \
 	done
 
-uninstall-binPROGRAMS:
+uninstall-noinst_binPROGRAMS:
 	@$(NORMAL_UNINSTALL)
-	@list='$(bin_PROGRAMS)'; for p in $$list; do \
+	@list='$(noinst_bin_PROGRAMS)'; for p in $$list; do \
 	  f=`echo "$$p" | sed 's,^.*/,,;s/$(EXEEXT)$$//;$(transform);s/$$/$(EXEEXT)/'`; \
-	  echo " rm -f '$(DESTDIR)$(bindir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(bindir)/$$f"; \
+	  echo " rm -f '$(DESTDIR)$(noinst_bindir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(noinst_bindir)/$$f"; \
 	done
 
-clean-binPROGRAMS:
-	@list='$(bin_PROGRAMS)'; for p in $$list; do \
+clean-noinst_binPROGRAMS:
+	@list='$(noinst_bin_PROGRAMS)'; for p in $$list; do \
 	  f=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
 	  echo " rm -f $$p $$f"; \
 	  rm -f $$p $$f ; \
 	done
-kdb$(EXEEXT): $(kdb_OBJECTS) $(kdb_DEPENDENCIES) 
-	@rm -f kdb$(EXEEXT)
-	$(LINK) $(kdb_LDFLAGS) $(kdb_OBJECTS) $(kdb_LDADD) $(LIBS)
+application$(EXEEXT): $(application_OBJECTS) $(application_DEPENDENCIES) 
+	@rm -f application$(EXEEXT)
+	$(LINK) $(application_LDFLAGS) $(application_OBJECTS) $(application_LDADD) $(LIBS)
+binary$(EXEEXT): $(binary_OBJECTS) $(binary_DEPENDENCIES) 
+	@rm -f binary$(EXEEXT)
+	$(LINK) $(binary_LDFLAGS) $(binary_OBJECTS) $(binary_LDADD) $(LIBS)
+example$(EXEEXT): $(example_OBJECTS) $(example_DEPENDENCIES) 
+	@rm -f example$(EXEEXT)
+	$(LINK) $(example_LDFLAGS) $(example_OBJECTS) $(example_LDADD) $(LIBS)
+keyNewExample$(EXEEXT): $(keyNewExample_OBJECTS) $(keyNewExample_DEPENDENCIES) 
+	@rm -f keyNewExample$(EXEEXT)
+	$(LINK) $(keyNewExample_LDFLAGS) $(keyNewExample_OBJECTS) $(keyNewExample_LDADD) $(LIBS)
+lookup$(EXEEXT): $(lookup_OBJECTS) $(lookup_DEPENDENCIES) 
+	@rm -f lookup$(EXEEXT)
+	$(LINK) $(lookup_LDFLAGS) $(lookup_OBJECTS) $(lookup_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -259,7 +298,11 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kdb.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/application.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/binary.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/example.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/keyNewExample.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lookup.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -371,7 +414,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(PROGRAMS)
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)"; do \
+	for dir in "$(DESTDIR)$(noinst_bindir)"; do \
 	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
 	done
 install: install-am
@@ -400,7 +443,8 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
+clean-am: clean-generic clean-libtool clean-noinst_binPROGRAMS \
+	mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -418,9 +462,9 @@ info: info-am
 
 info-am:
 
-install-data-am:
+install-data-am: install-noinst_binPROGRAMS
 
-install-exec-am: install-binPROGRAMS
+install-exec-am:
 
 install-info: install-info-am
 
@@ -446,19 +490,20 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS uninstall-info-am
+uninstall-am: uninstall-info-am uninstall-noinst_binPROGRAMS
 
-.PHONY: CTAGS GTAGS all all-am check check-am clean clean-binPROGRAMS \
-	clean-generic clean-libtool ctags distclean distclean-compile \
-	distclean-generic distclean-libtool distclean-tags distdir dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-binPROGRAMS install-data install-data-am install-exec \
+.PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
+	clean-libtool clean-noinst_binPROGRAMS ctags distclean \
+	distclean-compile distclean-generic distclean-libtool \
+	distclean-tags distdir dvi dvi-am html html-am info info-am \
+	install install-am install-data install-data-am install-exec \
 	install-exec-am install-info install-info-am install-man \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
-	pdf pdf-am ps ps-am tags uninstall uninstall-am \
-	uninstall-binPROGRAMS uninstall-info-am
+	install-noinst_binPROGRAMS install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags uninstall uninstall-am uninstall-info-am \
+	uninstall-noinst_binPROGRAMS
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

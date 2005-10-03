@@ -5,7 +5,7 @@
 #
 
 AC_PREREQ(2.59)
-AC_INIT(elektra, 0.5.0.7, yl@itioweb.com)
+AC_INIT(elektra, 0.5.0.7, avi@unix.sh)
 AC_CONFIG_SRCDIR(src/libelektra/libkdb.c)
 AM_INIT_AUTOMAKE
 AC_CONFIG_HEADER([config.h])
@@ -48,23 +48,23 @@ AC_CONFIG_SUBDIRS(libltdl)
 # Check needed programs for generate doc
 
 # xsltproc
-AC_PATH_PROG(xsltproc, xsltproc, "no")
-if test $xsltproc!="no"; then
-	# xslproc was found, check for stylesheet
-	AC_CHECK_FILE([/usr/share/sgml/docbook/xsl-stylesheets/manpages/docbook.xsl],
-		      [[dbroot="/usr/share/sgml/docbook/xsl-stylesheets/"]],
-		      AC_MSG_ERROR([Can't find DocBook stylesheets]))
-	AC_SUBST(dbroot)
-fi
-AM_CONDITIONAL(HAVE_XSLTPROC, test $xsltproc!="no")
+#AC_PATH_PROG(xsltproc, xsltproc, "no")
+#if test $xsltproc!="no"; then
+#	# xslproc was found, check for stylesheet
+#	AC_CHECK_FILE([/usr/share/sgml/docbook/xsl-stylesheets/manpages/docbook.xsl],
+#		      [[dbroot="/usr/share/sgml/docbook/xsl-stylesheets/"]],
+#		      AC_MSG_ERROR([Can't find DocBook stylesheets]))
+#	AC_SUBST(dbroot)
+# fi
+# AM_CONDITIONAL(HAVE_XSLTPROC, test $xsltproc!="no")
 
 # man2html
-AC_PATH_PROG(man2html, man2html, "no")
-AM_CONDITIONAL(HAVE_MAN2HTML, test $man2html!="no")
+# AC_PATH_PROG(man2html, man2html, "no")
+# AM_CONDITIONAL(HAVE_MAN2HTML, test $man2html!="no")
 
 # Doxygen
-AC_PATH_PROG(doxygen, doxygen, "no")
-AM_CONDITIONAL(HAVE_DOXYGEN, test $doxygen!="no")
+# AC_PATH_PROG(doxygen, doxygen, "no")
+# AM_CONDITIONAL(HAVE_DOXYGEN, test $doxygen!="no")
 
 #
 # Checks for libraries.
@@ -128,8 +128,8 @@ AC_OUTPUT([src/Makefile
 
 	   src/include/Makefile
 
-   	   doc/Makefile
-
+	   example/Makefile
+	   
 	   elektra.pc
 	   ])
 
