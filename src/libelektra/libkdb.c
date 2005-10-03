@@ -31,7 +31,7 @@ $LastChangedBy: aviram $
 
 #include <stdlib.h>
 #include <stdarg.h>
-#include <dlfcn.h>
+#include <ltdl.h>
 #include <unistd.h>
 #include <errno.h>
 #include <stdio.h>
