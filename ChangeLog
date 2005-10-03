@@ -1,3 +1,9 @@
+* Sun Oct 02 2005 Avi Alkalay <avi@unix.sh> 0.5.0.5
+- Some final fixes for the complete libkdb.so -> libelektra.so renaming
+- Removed a bug in filesys.c::keyFromStat() regarding reuse of folder key struct
+- Changed some Makefiles to handle the new Homepage/ directory
+- Fixed Makefile regarding the convert-* scripts
+
 * Mon Jul 25 2005 Avi Alkalay <avi@unix.sh> 0.5.0.4
 - libkdb*.[so|a] renamed to libelektra*.[so|a] to avoid conflicts with Kerberos v4
 - Documentation updated to fit

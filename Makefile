@@ -127,10 +127,10 @@ install: all
 		CONFDIR=${CONFDIR} INCDIR=${INCDIR} $@); \
 	done
 	cp scripts/elektraenv ${DESTDIR}${CONFDIR}/profile.d/elektraenv.sh
-	chmod a+x example/*-convert
+	chmod a+x scripts/convert-*
 	cp elektra.pc ${DESTDIR}${ULIBDIR}/pkgconfig/elektra.pc
 	cp LICENSE ${DESTDIR}${DOCDIR}/${NAME}
 	cp ChangeLog ${DESTDIR}${DOCDIR}/${NAME}
-	cp example/*-convert example/*.xml ${DESTDIR}${DOCDIR}/${NAME}
+	cp scripts/convert-* example/*.xml ${DESTDIR}${DOCDIR}/${NAME}
 	cp example/*.c ${DESTDIR}${DOCDIR}/${NAME}-devel/examples/
 	-LD_LIBRARY_PATH='${DESTDIR}${LIBDIR}':"$$LD_LIBRARY_PATH" [ `id -u` -eq "0" ] && kdb set system/sw/kdb/current/schemapath '${DESTDIR}${SGMLDIR}/elektra-${DTDVERSION}/elektra.xsd'
