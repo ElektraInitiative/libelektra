@@ -197,7 +197,7 @@ xsltproc = @xsltproc@
 kdb_SOURCES = kdb.c ../include/kdb.h
 kdb_LDFLAGS = -L../libelektra
 kdb_LDADD = -lelektra $(LIBLTDL)
-INCLUDES = -I../include
+INCLUDES = -I../include $(LTDLINCL)
 all: all-am
 
 .SUFFIXES:
