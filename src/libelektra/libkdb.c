@@ -86,7 +86,7 @@ extern int errno;
 
 
 struct _KDBBackend {
-	void *dlHandle;
+	lt_dlhandle dlHandle;
 	
 	char *name;
 	
@@ -221,7 +221,7 @@ bash# KDB_BACKEND=apache kdb import apacheconf.xml
  * @ingroup kdb
  */
 int kdbOpenBackend(char *backendName) {
-	lt_dlhandle *dlhandle=0;
+	lt_dlhandle dlhandle=0;
 	char backendlib[300];
 	KDBBackendFactory kdbBackendNew=0;
 	int rc=0;
