@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Id: Makefile.am 303 2005-10-03 13:32:32Z aviram $
+# $Id: Makefile.am 309 2005-10-03 19:18:18Z ylecaillez $
 # $LastChangedBy: aviram $
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -94,6 +94,8 @@ HAVE_GCONF_FALSE = @HAVE_GCONF_FALSE@
 HAVE_GCONF_TRUE = @HAVE_GCONF_TRUE@
 HAVE_MAN2HTML_FALSE = @HAVE_MAN2HTML_FALSE@
 HAVE_MAN2HTML_TRUE = @HAVE_MAN2HTML_TRUE@
+HAVE_STYLESHEET_FALSE = @HAVE_STYLESHEET_FALSE@
+HAVE_STYLESHEET_TRUE = @HAVE_STYLESHEET_TRUE@
 HAVE_XML_FALSE = @HAVE_XML_FALSE@
 HAVE_XML_TRUE = @HAVE_XML_TRUE@
 HAVE_XSLTPROC_FALSE = @HAVE_XSLTPROC_FALSE@
@@ -180,10 +182,10 @@ subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 xsltproc = @xsltproc@
-EXTRA_DIST = kdb.1.xml elektra.7.xml elektra.5.xml author.xml bestpract.xml rgexample.xml rgcmd.xml storage.xml overview.xml
-man1_MANS = kdb.1
-man5_MANS = elektra.5
-man7_MANS = elektra.7
+@HAVE_STYLESHEET_TRUE@@HAVE_XSLTPROC_TRUE@EXTRA_DIST = kdb.1.xml elektra.7.xml elektra.5.xml author.xml bestpract.xml rgexample.xml rgcmd.xml storage.xml overview.xml
+@HAVE_STYLESHEET_TRUE@@HAVE_XSLTPROC_TRUE@man1_MANS = kdb.1
+@HAVE_STYLESHEET_TRUE@@HAVE_XSLTPROC_TRUE@man5_MANS = elektra.5
+@HAVE_STYLESHEET_TRUE@@HAVE_XSLTPROC_TRUE@man7_MANS = elektra.7
 all: all-am
 
 .SUFFIXES:
@@ -505,12 +507,12 @@ uninstall-man: uninstall-man1 uninstall-man5 uninstall-man7
 #	$(xsltproc) -o ${HTML_TITLE_LAYOUT:.tpl=.xsl} $(dbroot)/template/titlepage.xsl ${HTML_TITLE_LAYOUT}
 #	$(xsltproc) -o $@ ${HTML_TITLE_LAYOUT:.tpl=.xsl} $<
 
-all: documentation
+@HAVE_STYLESHEET_TRUE@@HAVE_XSLTPROC_TRUE@all: documentation
 
 # html doxygen
-documentation: docbookman 
+@HAVE_STYLESHEET_TRUE@@HAVE_XSLTPROC_TRUE@documentation: docbookman 
 
-docbookman: kdb.1 elektra.7 elektra.5
+@HAVE_STYLESHEET_TRUE@@HAVE_XSLTPROC_TRUE@docbookman: kdb.1 elektra.7 elektra.5
 
 #
 # Generate doxygen documentation
@@ -523,14 +525,14 @@ docbookman: kdb.1 elektra.7 elektra.5
 #
 # Build man documentation
 #
-kdb.1: kdb.1.xml author.xml bestpract.xml rgexample.xml rgcmd.xml
-	$(xsltproc) $(dbroot)/manpages/docbook.xsl $<
+@HAVE_STYLESHEET_TRUE@@HAVE_XSLTPROC_TRUE@kdb.1: kdb.1.xml author.xml bestpract.xml rgexample.xml rgcmd.xml
+@HAVE_STYLESHEET_TRUE@@HAVE_XSLTPROC_TRUE@	$(xsltproc) $(dbroot)/manpages/docbook.xsl $<
 
-elektra.7: elektra.7.xml author.xml overview.xml bestpract.xml rgexample.xml
-	$(xsltproc) $(dbroot)/manpages/docbook.xsl $<
+@HAVE_STYLESHEET_TRUE@@HAVE_XSLTPROC_TRUE@elektra.7: elektra.7.xml author.xml overview.xml bestpract.xml rgexample.xml
+@HAVE_STYLESHEET_TRUE@@HAVE_XSLTPROC_TRUE@	$(xsltproc) $(dbroot)/manpages/docbook.xsl $<
 
-elektra.5: elektra.5.xml author.xml storage.xml
-	$(xsltproc) $(dbroot)/manpages/docbook.xsl $<
+@HAVE_STYLESHEET_TRUE@@HAVE_XSLTPROC_TRUE@elektra.5: elektra.5.xml author.xml storage.xml
+@HAVE_STYLESHEET_TRUE@@HAVE_XSLTPROC_TRUE@	$(xsltproc) $(dbroot)/manpages/docbook.xsl $<
 
 #
 # Build HTML documentation

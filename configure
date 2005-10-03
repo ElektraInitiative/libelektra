@@ -466,7 +466,7 @@ ac_includes_default="\
 #endif"
 
 ac_subdirs_all="$ac_subdirs_all libltdl"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar default_backend LTDLINCL LIBLTDL CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE LN_S build build_cpu build_vendor build_os host host_cpu host_vendor host_os EGREP ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CPP CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL PKG_CONFIG ac_pt_PKG_CONFIG subdirs xsltproc dbroot HAVE_XSLTPROC_TRUE HAVE_XSLTPROC_FALSE man2html HAVE_MAN2HTML_TRUE HAVE_MAN2HTML_FALSE doxygen HAVE_DOXYGEN_TRUE HAVE_DOXYGEN_FALSE XML2_CONFIG XML_CPPFLAGS XML_LIBS HAVE_XML_TRUE HAVE_XML_FALSE HAVE_DB_TRUE HAVE_DB_FALSE gconf_CFLAGS gconf_LIBS HAVE_GCONF_TRUE HAVE_GCONF_FALSE LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar default_backend LTDLINCL LIBLTDL CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE LN_S build build_cpu build_vendor build_os host host_cpu host_vendor host_os EGREP ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CPP CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL PKG_CONFIG ac_pt_PKG_CONFIG subdirs xsltproc dbroot HAVE_XSLTPROC_TRUE HAVE_XSLTPROC_FALSE HAVE_STYLESHEET_TRUE HAVE_STYLESHEET_FALSE man2html HAVE_MAN2HTML_TRUE HAVE_MAN2HTML_FALSE doxygen HAVE_DOXYGEN_TRUE HAVE_DOXYGEN_FALSE XML2_CONFIG XML_CPPFLAGS XML_LIBS HAVE_XML_TRUE HAVE_XML_FALSE HAVE_DB_TRUE HAVE_DB_FALSE gconf_CFLAGS gconf_LIBS HAVE_GCONF_TRUE HAVE_GCONF_FALSE LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -19902,21 +19902,29 @@ echo "${ECHO_T}$ac_cv_file__usr_share_sgml_docbook_xsl_stylesheets_manpages_docb
 if test $ac_cv_file__usr_share_sgml_docbook_xsl_stylesheets_manpages_docbook_xsl = yes; then
   dbroot="/usr/share/sgml/docbook/xsl-stylesheets/"
 else
-  { { echo "$as_me:$LINENO: error: Can't find DocBook stylesheets" >&5
-echo "$as_me: error: Can't find DocBook stylesheets" >&2;}
-   { (exit 1); exit 1; }; }
+  dbroot="no"
 fi
 
 
 fi
 
 
-if test $xsltproc!="no"; then
+if test x$xsltproc != xno; then
   HAVE_XSLTPROC_TRUE=
   HAVE_XSLTPROC_FALSE='#'
 else
   HAVE_XSLTPROC_TRUE='#'
   HAVE_XSLTPROC_FALSE=
+fi
+
+
+
+if test x$dbroot != xno; then
+  HAVE_STYLESHEET_TRUE=
+  HAVE_STYLESHEET_FALSE='#'
+else
+  HAVE_STYLESHEET_TRUE='#'
+  HAVE_STYLESHEET_FALSE=
 fi
 
 
@@ -19963,7 +19971,7 @@ fi
 
 
 
-if test $man2html!="no"; then
+if test x$man2html != xno; then
   HAVE_MAN2HTML_TRUE=
   HAVE_MAN2HTML_FALSE='#'
 else
@@ -20015,7 +20023,7 @@ fi
 
 
 
-if test $doxygen!="no"; then
+if test x$doxygen != xno; then
   HAVE_DOXYGEN_TRUE=
   HAVE_DOXYGEN_FALSE='#'
 else
@@ -21874,6 +21882,13 @@ echo "$as_me: error: conditional \"HAVE_XSLTPROC\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
+if test -z "${HAVE_STYLESHEET_TRUE}" && test -z "${HAVE_STYLESHEET_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"HAVE_STYLESHEET\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"HAVE_STYLESHEET\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
 if test -z "${HAVE_MAN2HTML_TRUE}" && test -z "${HAVE_MAN2HTML_FALSE}"; then
   { { echo "$as_me:$LINENO: error: conditional \"HAVE_MAN2HTML\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
@@ -22532,6 +22547,8 @@ s,@xsltproc@,$xsltproc,;t t
 s,@dbroot@,$dbroot,;t t
 s,@HAVE_XSLTPROC_TRUE@,$HAVE_XSLTPROC_TRUE,;t t
 s,@HAVE_XSLTPROC_FALSE@,$HAVE_XSLTPROC_FALSE,;t t
+s,@HAVE_STYLESHEET_TRUE@,$HAVE_STYLESHEET_TRUE,;t t
+s,@HAVE_STYLESHEET_FALSE@,$HAVE_STYLESHEET_FALSE,;t t
 s,@man2html@,$man2html,;t t
 s,@HAVE_MAN2HTML_TRUE@,$HAVE_MAN2HTML_TRUE,;t t
 s,@HAVE_MAN2HTML_FALSE@,$HAVE_MAN2HTML_FALSE,;t t

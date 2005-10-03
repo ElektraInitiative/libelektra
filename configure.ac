@@ -54,18 +54,19 @@ if test $xsltproc!="no"; then
 	# xslproc was found, check for stylesheet
 	AC_CHECK_FILE([/usr/share/sgml/docbook/xsl-stylesheets/manpages/docbook.xsl],
 		      [[dbroot="/usr/share/sgml/docbook/xsl-stylesheets/"]],
-		      AC_MSG_ERROR([Can't find DocBook stylesheets]))
+		      [[dbroot="no"]])
 	AC_SUBST(dbroot)
 fi
-AM_CONDITIONAL(HAVE_XSLTPROC, test $xsltproc!="no")
+AM_CONDITIONAL(HAVE_XSLTPROC, test x$xsltproc != xno)
+AM_CONDITIONAL(HAVE_STYLESHEET, test x$dbroot != xno)
 
 # man2html
 AC_PATH_PROG(man2html, man2html, "no")
-AM_CONDITIONAL(HAVE_MAN2HTML, test $man2html!="no")
+AM_CONDITIONAL(HAVE_MAN2HTML, test x$man2html != xno)
 
 # Doxygen
 AC_PATH_PROG(doxygen, doxygen, "no")
-AM_CONDITIONAL(HAVE_DOXYGEN, test $doxygen!="no")
+AM_CONDITIONAL(HAVE_DOXYGEN, test x$doxygen != xno)
 
 #
 # Checks for libraries.

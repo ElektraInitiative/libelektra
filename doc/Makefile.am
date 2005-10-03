@@ -1,6 +1,9 @@
 # $Id$
 # $LastChangedBy: aviram $
 
+if HAVE_XSLTPROC
+if HAVE_STYLESHEET
+
 EXTRA_DIST=kdb.1.xml elektra.7.xml elektra.5.xml author.xml bestpract.xml rgexample.xml rgcmd.xml storage.xml overview.xml
 
 man1_MANS = kdb.1
@@ -74,3 +77,6 @@ elektra.5: elektra.5.xml author.xml storage.xml
 #	$(man2html) -r < elektra-api/man/man3/key.3 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > key.3.html
 #	$(man2html) -r < elektra-api/man/man3/keyset.3 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > keyset.3.html
 #	mv howto.html index.html
+
+endif
+endif
