@@ -20169,7 +20169,7 @@ rm -f conftest.err conftest.$ac_objext \
 
 
 
-if "test x$have_xml=xyes"; then
+if test x$have_xml = xyes; then
   HAVE_XML_TRUE=
   HAVE_XML_FALSE='#'
 else
@@ -20251,7 +20251,7 @@ fi
 
 
 
-if test "x$have_db=xyes"; then
+if test x$have_db = xyes; then
   HAVE_DB_TRUE=
   HAVE_DB_FALSE='#'
 else
@@ -20312,7 +20312,7 @@ echo "${ECHO_T}yes" >&6
 fi
 
 
-if "test x$have_gconf=xyes"; then
+if test x$have_gconf = xyes; then
   HAVE_GCONF_TRUE=
   HAVE_GCONF_FALSE='#'
 else

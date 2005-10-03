@@ -72,15 +72,15 @@ AC_CONFIG_SUBDIRS(libltdl)
 
 # Check for libxml (Allow compilation of libelektratools)
 AM_PATH_XML2(, [have_xml="yes"], [have_xml="no"])
-AM_CONDITIONAL(HAVE_XML, "test x$have_xml=xyes")
+AM_CONDITIONAL(HAVE_XML, test x$have_xml = xyes)
 
 # Check for libdb (Allow compilation of libelektra-berkeley.so)
 AC_CHECK_LIB(db, db_create, [have_db="yes"], [have_db="no"])
-AM_CONDITIONAL(HAVE_DB, test "x$have_db=xyes")
+AM_CONDITIONAL(HAVE_DB, test x$have_db = xyes)
 
 # Check for libGconf (Allow compilation of libelektra-gconf.so)
 PKG_CHECK_MODULES(gconf, gconf-2.0, [have_gconf="yes"], [have_gconf="no"])
-AM_CONDITIONAL(HAVE_GCONF, "test x$have_gconf=xyes")
+AM_CONDITIONAL(HAVE_GCONF, test x$have_gconf = xyes)
 
 #
 # Checks for header files.
