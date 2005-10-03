@@ -1,5 +1,5 @@
-# $Id$
-# $LastChangedBy$
+# $Id: Makefile 251 2005-07-28 19:38:47Z rayman $
+# $LastChangedBy: rayman $
 
 # This is a Makefile for the template backend.
 # You probably will have to change these 2 next vars to match your sources.

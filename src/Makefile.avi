@@ -1,6 +1,6 @@
 
-# $Id$
-# $LastChangedBy$
+# $Id: Makefile 256 2005-09-26 18:35:38Z mraab $
+# $LastChangedBy: mraab $
 
 NAME=elektra
 LIBNAME=libelektra
