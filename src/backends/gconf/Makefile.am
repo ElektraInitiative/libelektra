@@ -1,3 +1,6 @@
+
+# $Id$
+
 #
 # Compile libelektra-gconf only if GConf was found
 #

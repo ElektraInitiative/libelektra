@@ -1,3 +1,6 @@
+
+# $Id$
+
 # bin_PROGRAMS = localeinfo
 # localeinfo_SOURCES = localeinfo.c
 

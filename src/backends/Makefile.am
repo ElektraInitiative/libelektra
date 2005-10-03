@@ -1,3 +1,6 @@
+
+# $Id$
+
 SUBDIRS = berkeleydb filesys fstab ini gconf template
 
 install-exec-hook:

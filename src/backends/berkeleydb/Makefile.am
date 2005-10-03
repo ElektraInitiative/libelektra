@@ -1,3 +1,6 @@
+
+# $Id$
+
 #
 # Compile libelektra-berkeleydb only if libdb was found
 #

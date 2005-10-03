@@ -1,3 +1,4 @@
+# $Id$
 
 if HAVE_XML
 lib_LTLIBRARIES = libelektratools.la
