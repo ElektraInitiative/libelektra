@@ -73,7 +73,7 @@ dist: distclean elektra.spec
 	PACK=${NAME}-$$PACK;\
 	cd ..;\
 	ln -s $$DIR $$PACK;\
-	tar --exclude .svn -czf $$PACK.tar.gz $$PACK/*;\
+	tar --exclude .svn --exclude Homepage -czf $$PACK.tar.gz $$PACK/*;\
 	rm -f $$PACK
 
 
