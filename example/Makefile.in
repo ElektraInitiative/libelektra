@@ -38,7 +38,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-noinst_bin_PROGRAMS = example$(EXEEXT) application$(EXEEXT) \
+noinst_PROGRAMS = example$(EXEEXT) application$(EXEEXT) \
 	binary$(EXEEXT) keyNewExample$(EXEEXT) lookup$(EXEEXT)
 subdir = example
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
@@ -49,9 +49,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
-am__installdirs = "$(DESTDIR)$(noinst_bindir)"
-noinst_binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
-PROGRAMS = $(noinst_bin_PROGRAMS)
+PROGRAMS = $(noinst_PROGRAMS)
 am_application_OBJECTS = application.$(OBJEXT)
 application_OBJECTS = $(am_application_OBJECTS)
 application_DEPENDENCIES =
@@ -198,7 +196,6 @@ sharedstatedir = @sharedstatedir@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-noinst_bindir = .
 example_SOURCES = example.c
 example_LDFLAGS = -L../src/libelektra
 example_LDADD = -lelektra
@@ -248,30 +245,9 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-install-noinst_binPROGRAMS: $(noinst_bin_PROGRAMS)
-	@$(NORMAL_INSTALL)
-	test -z "$(noinst_bindir)" || $(mkdir_p) "$(DESTDIR)$(noinst_bindir)"
-	@list='$(noinst_bin_PROGRAMS)'; for p in $$list; do \
-	  p1=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
-	  if test -f $$p \
-	     || test -f $$p1 \
-	  ; then \
-	    f=`echo "$$p1" | sed 's,^.*/,,;$(transform);s/$$/$(EXEEXT)/'`; \
-	   echo " $(INSTALL_PROGRAM_ENV) $(LIBTOOL) --mode=install $(noinst_binPROGRAMS_INSTALL) '$$p' '$(DESTDIR)$(noinst_bindir)/$$f'"; \
-	   $(INSTALL_PROGRAM_ENV) $(LIBTOOL) --mode=install $(noinst_binPROGRAMS_INSTALL) "$$p" "$(DESTDIR)$(noinst_bindir)/$$f" || exit 1; \
-	  else :; fi; \
-	done
 
-uninstall-noinst_binPROGRAMS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(noinst_bin_PROGRAMS)'; for p in $$list; do \
-	  f=`echo "$$p" | sed 's,^.*/,,;s/$(EXEEXT)$$//;$(transform);s/$$/$(EXEEXT)/'`; \
-	  echo " rm -f '$(DESTDIR)$(noinst_bindir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(noinst_bindir)/$$f"; \
-	done
-
-clean-noinst_binPROGRAMS:
-	@list='$(noinst_bin_PROGRAMS)'; for p in $$list; do \
+clean-noinstPROGRAMS:
+	@list='$(noinst_PROGRAMS)'; for p in $$list; do \
 	  f=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
 	  echo " rm -f $$p $$f"; \
 	  rm -f $$p $$f ; \
@@ -414,9 +390,6 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(PROGRAMS)
 installdirs:
-	for dir in "$(DESTDIR)$(noinst_bindir)"; do \
-	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
-	done
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -443,7 +416,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libtool clean-noinst_binPROGRAMS \
+clean-am: clean-generic clean-libtool clean-noinstPROGRAMS \
 	mostlyclean-am
 
 distclean: distclean-am
@@ -462,7 +435,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-noinst_binPROGRAMS
+install-data-am:
 
 install-exec-am:
 
@@ -490,20 +463,19 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-info-am uninstall-noinst_binPROGRAMS
+uninstall-am: uninstall-info-am
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-libtool clean-noinst_binPROGRAMS ctags distclean \
+	clean-libtool clean-noinstPROGRAMS ctags distclean \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
 	install install-am install-data install-data-am install-exec \
 	install-exec-am install-info install-info-am install-man \
-	install-noinst_binPROGRAMS install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags uninstall uninstall-am uninstall-info-am \
-	uninstall-noinst_binPROGRAMS
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	pdf pdf-am ps ps-am tags uninstall uninstall-am \
+	uninstall-info-am
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

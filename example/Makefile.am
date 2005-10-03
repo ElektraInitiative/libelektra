@@ -1,5 +1,4 @@
-noinst_bin_PROGRAMS = example application binary keyNewExample lookup
-noinst_bindir = .
+noinst_PROGRAMS = example application binary keyNewExample lookup
 example_SOURCES = example.c
 example_LDFLAGS = -L../src/libelektra
 example_LDADD = -lelektra
