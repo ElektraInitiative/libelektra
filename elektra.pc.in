@@ -1,11 +1,11 @@
-prefix=_UDIR_
-exec_prefix=${prefix}
-libdir=_LIBDIR_
-includedir=${prefix}/include
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
 
-Name: elektra
+Name: @PACKAGE@
 Description: A key/value pair database to store software configurations
-Version: _VERSION_
-Libs: -L${libdir} -lelektra
-Cflags: -I${includedir}
+Version: @VERSION@
+Libs: -L@libdir@ -lelektra
+Cflags: -I@includedir@
 
