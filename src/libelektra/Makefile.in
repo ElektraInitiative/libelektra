@@ -58,7 +58,7 @@ libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 libelektra_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
-am_libelektra_la_OBJECTS = libkdb.lo key.lo
+am_libelektra_la_OBJECTS = libkdb.lo key.lo keyset.lo
 libelektra_la_OBJECTS = $(am_libelektra_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -200,7 +200,7 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 xsltproc = @xsltproc@
 lib_LTLIBRARIES = libelektra.la
-libelektra_la_SOURCES = libkdb.c key.c ../include/kdb.h ../include/kdbbackend.h ../include/kdbprivate.h
+libelektra_la_SOURCES = libkdb.c key.c keyset.c ../include/kdb.h ../include/kdbbackend.h ../include/kdbprivate.h
 libelektra_la_LDFLAGS = -version-info 1:0:0 
 libelektra_la_LIBADD = $(LIBLTDL)
 INCLUDES = -I../include
@@ -274,6 +274,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/key.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/keyset.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkdb.Plo@am__quote@
 
 .c.o:
