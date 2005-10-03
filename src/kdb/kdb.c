@@ -38,7 +38,7 @@ $LastChangedBy: aviram $
 #include <grp.h>
 #include <pwd.h>
 #include <ctype.h>
-#include <dlfcn.h>
+#include <ltdl.h>
 #include <assert.h>
 
 
@@ -1207,16 +1207,16 @@ int commandHelp() {
 
 
 int loadToolsLib(void) {
-	void *dlhandle=0;
+	lt_dlhandle dlhandle=0;
 	
-	dlhandle=dlopen("libelektratools.so",RTLD_LAZY);
+	dlhandle=lt_dlopen("libelektratools.so",RTLD_LAZY);
 	if (dlhandle == 0) {
 		fprintf(stderr, "kdb: %s\n",dlerror());
 		return 1;
 	}
 	
-	ksFromXMLfile=dlsym(dlhandle,"ksFromXMLfile");
-	ksFromXML=dlsym(dlhandle,"ksFromXML");
+	ksFromXMLfile=lt_dlsym(dlhandle,"ksFromXMLfile");
+	ksFromXML=lt_dlsym(dlhandle,"ksFromXML");
 	
 	return 0;
 }
