@@ -10,8 +10,8 @@
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
-/* Define to 1 if you have the `kdb' library (-lkdb). */
-#undef HAVE_LIBKDB
+/* Define to 1 if you have the `elektra' library (-lelektra). */
+#undef HAVE_LIBELEKTRA
 
 /* Define to 1 if your system has a GNU libc compatible `malloc' function, and
    to 0 otherwise. */

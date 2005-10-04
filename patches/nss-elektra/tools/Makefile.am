@@ -1,5 +1,5 @@
 # Svn stuff
-# $Id: Makefile.am 40 2004-11-26 23:25:09Z rayman $
+# $Id$
 # $LastChangedBy: rayman $
 
 #not sure what the hell I need CPP flags for since there is no cpp needed?
@@ -15,4 +15,4 @@ EXTRA_DIST = addtestuser.sh
 tools_PROGRAMS = $(TOOLS)
 toolsdir = @sbindir@
 passwdconvert_SOURCES = passwdconvert.c
-passwdconvert_LDFLAGS = -lkdb
+passwdconvert_LDFLAGS = -lelektra

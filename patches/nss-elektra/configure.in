@@ -99,7 +99,7 @@ ELEKTRA_CFLAGS="$libelektra_include"
 ELEKTRA_LIBS="$libelektra_libs"
 LIBS="$ELEKTRA_LIBS"
 # Checks for libraries.
-AC_CHECK_LIB(kdb,kdbOpen,,AC_MSG_ERROR(No elektra support found))
+AC_CHECK_LIB(elektra,kdbOpen,,AC_MSG_ERROR(No elektra support found))
 
 CPPFLAGS="$CPPFLAGS $ELEKTRA_CFLAGS"
 AC_SUBST(ELEKTRA_CFLAGS)
