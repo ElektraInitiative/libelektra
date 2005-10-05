@@ -731,40 +731,97 @@ ssize_t kdbGetKeys (char * keyFileName, char * keyRoot, KeySet * returned)
  */
 int IniWriteKey (Key * keySet, long pos)
 {
+	fprintf (stderr, "IniWriteKey\n");
 	return 0;
 }
 
 
-/**
- * Implementation for kdbGetKeyChildKeys() method.
- *
- * @see kdbGetKeyChildKeys() for expected behavior.
- * @ingroup backend
- */
-ssize_t kdbGetKeyChildKeys_ini(const Key * key, KeySet *returned, unsigned long options) {
-	char pathName [MAX_PATH_LENGTH];
+int IniReadFile (char * pathName, KeySet * returned, unsigned long options)
+{
 	char fileFullName [MAX_PATH_LENGTH];
 	char * keyName;
 	size_t keyLength;
 	char * keyRoot;
 	size_t keyRootLength;
-	int ret;
-	DIR * dir;
 	struct dirent * filename;
+	int ret;
 
-	ret = IniGetName (key, pathName);
+	fprintf (stderr, "IniReadfile\n");
+
+	keyLength = keyGetNameSize (key);
+	keyRootLength= keyLength + strlen (filename->d_name) + 1;
+	keyRoot = malloc (keyRootLength);
+	keyName = malloc (keyLength);
+	keyGetName (key, keyName, keyGetNameSize (key));
+	strcat (keyRoot, keyName);
+	strcat (keyRoot, "/");
+
+	// this step is the only one needed here (prev not)
+	strcat (keyRoot, filename->d_name);
+
+	fileFullName[0] = 0;	// delete old Name
+	strncat (fileFullName, pathName, MAX_PATH_LENGTH);
+	strncat (fileFullName, "/", MAX_PATH_LENGTH);
+	strncat (fileFullName, filename->d_name, MAX_PATH_LENGTH);
+	fprintf (stderr, "Call kdbGetKeys(fileFullName: %s, keyRoot: %s,returned)\n", 
+		fileFullName, keyRoot);
+	kdbGetKeys (fileFullName, keyRoot, returned);
 	
-	if (ret == -1) {
-		fprintf (stderr, "Error, could not get FileName\n");
-		return -1;
+	free (keyRoot);
+	free (keyName);
+}
+
+int IniChooseFile(char * pathName, KeySet * returned, unsigned long options)
+{
+	DIR * dir;
+	char fileFullName [MAX_PATH_LENGTH];
+	char * keyName;
+	size_t keyLength;
+	char * keyRoot;
+	size_t keyRootLength;
+	struct dirent * filename;
+	Key * key;
+	struct stat buf;
+	
+	stat (pathName, &buf);
+
+	fprintf (stderr, "IniChooseFile, pathName: %s\n", pathName);
+	
+	if (S_ISDIR(buf.st_mode))
+	{
+		printf ("	next recursive step\n");
+		return IniReadDir (orig, pathName, returned, options);
 	}
 
-	fprintf (stderr, "Pathname: %s, Keyname: %s\n", pathName, keyName);
+	if (S_ISREG (buf.st_mode))
+	{
+		printf ("	will read file\n");
+		return IniReadFile (orig, pathName, returned, options);
+	}
 
-	//TODO: it might be a file/section!
+	fprintf (stderr, "Not a directory or file!");
+	return -1;
+}
+
+/**
+ * Reads all Keys of a directory.
+ * is recursive!*/
+int IniReadDir(char * pathName, KeySet * returned, unsigned long options)
+{
+	DIR * dir;
+	char fileFullName [MAX_PATH_LENGTH];
+	char * keyName;
+	size_t keyLength;
+	char * keyRoot;
+	size_t keyRootLength;
+	struct dirent * filename;
+	Key * key;
+	struct stat * buf;
+	
+	fprintf (stderr, "IniReadDir\n");
 	dir = opendir (pathName);
 	if (dir == NULL) {
-		fprintf (stderr, "Could not open directory %s", pathName);
+		fprintf (stderr, "Could not open directory %s\n", pathName);
 		return -1;
 	}
 	
@@ -776,33 +833,33 @@ ssize_t kdbGetKeyChildKeys_ini(const Key * key, KeySet *returned, unsigned long 
 		
 		if (filename->d_name[0] == '.' && !(options & KDB_O_INACTIVE))
 			continue;
-	
-		keyLength = keyGetNameSize (key);
-		keyRootLength= keyLength + strlen (filename->d_name) + 1;
-		keyRoot = malloc (keyRootLength);
-		keyName = malloc (keyLength);
-		keyGetName (key, keyName, keyGetNameSize (key));
-		strcat (keyRoot, keyName);
-		strcat (keyRoot, "/");
-		strcat (keyRoot, filename->d_name);
-
-		fileFullName[0] = 0;	// delete old Name
-		strncat (fileFullName, pathName, MAX_PATH_LENGTH);
-		strncat (fileFullName, "/", MAX_PATH_LENGTH);
-		strncat (fileFullName, filename->d_name, MAX_PATH_LENGTH);
-		fprintf (stderr, "Call kdbGetKeys(fileFullName: %s, keyRoot: %s,returned)\n", 
-			fileFullName, keyRoot);
-		kdbGetKeys (fileFullName, keyRoot, returned);
 		
-		free (keyRoot);
-		free (keyName);
+		IniChooseFile (orig, filename->d_name, returned, options);
 	}
 
 	closedir (dir);
 
 	free (keyName);
+}
 
-	fprintf (stderr, "Leaving (ret: %d)\n", returned->size);
+/**
+ * Implementation for kdbGetKeyChildKeys() method.
+ *
+ * @see kdbGetKeyChildKeys() for expected behavior.
+ * @ingroup backend
+ */
+ssize_t kdbGetKeyChildKeys_ini(const Key * key, KeySet *returned, unsigned long options) {
+	char pathName [MAX_PATH_LENGTH];
+	int ret;
+
+	fprintf (stderr, "kdbGetKeyChildKeys_ini, pathName: %s\n", pathName);
+	
+	ret = IniGetName (key, pathName);
+	
+	fprintf (stderr, "Call IniChooseFile(pathName: %s)\n", 
+		pathName);
+
+	IniChooseFile (pathName, returned, options);
 	
 	return returned->size; /* success */
 }
@@ -967,7 +1024,8 @@ int kdbRemoveKey_ini(const Key *key) {
  * @ingroup backend
  */
 int kdbSetKeys_ini(KeySet *ks) {
-	fprintf (stderr, "Set many Keys at once\n");
+	//TODO performance increase for kdbSetKeys
+	fprintf (stderr, "Set many Keys at once\n");	
 	return 0;
 }
 
