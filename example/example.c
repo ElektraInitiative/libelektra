@@ -16,6 +16,9 @@ void getKey();
 void setNullKey();
 void setAnotherKey();
 
+#define CHILD_KEY_ROOT "user/"
+#define KEY_ROOT "user/test/another/key"
+
 void printKey (Key * k)
 {
 	size_t s;
@@ -138,7 +141,7 @@ void getChildKeys ()
 	
 	/* Get all value keys for this application */
 	set = ksNew();
-	root = keyNew ("user/test/file", KEY_SWITCH_END);
+	root = keyNew (CHILD_KEY_ROOT, KEY_SWITCH_END);
 	ret = kdbGetKeyChildKeys (root, set, 0); // should be renamed to kdbGetKeys
 
 	if (ret >= 0)
@@ -157,7 +160,7 @@ void getChildKeys ()
 void getKey ()
 {
 	Key * k;
-	k = keyNew("user/test/file/key", KEY_SWITCH_END);
+	k = keyNew(KEY_ROOT, KEY_SWITCH_END);
 
 	if (kdbGetKey (k) >= 0) {
 		fprintf (stderr, "got key\n");
@@ -176,7 +179,7 @@ void getKey ()
 void setNullKey ()
 {
 	Key * k;
-	k = keyNew("user/test/file/key", KEY_SWITCH_END);
+	k = keyNew(KEY_ROOT, KEY_SWITCH_END);
 	
 	fprintf (stderr, "Write same key back\n");
 	if (kdbSetKey (k) >= 0) {
@@ -195,7 +198,7 @@ void setNullKey ()
 void setAnotherKey ()
 {
 	Key * k;
-	k = keyNew("user/test/another/key", KEY_SWITCH_END);
+	k = keyNew(KEY_ROOT, KEY_SWITCH_END);
 	
 	keySetString (k, "norei");
 	keySetComment(k, "commi");
