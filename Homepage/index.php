@@ -50,7 +50,6 @@
 	<a name="top"></a>
 	<div class="mybody">
 <? show_file()?><br/>
-	<a class="mytop" href="#top" title="Go to top">TOP</a>
 	</div>
 	</td>
 </tr>
