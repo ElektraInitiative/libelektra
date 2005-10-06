@@ -24,7 +24,6 @@
  *   key1=value1;comment
  *
  * TODO:
- *   recursive getting of files and folders
  *   create new files and folders
  *   allow subkeys setting/getting
  *   make \n\t engine
@@ -334,25 +333,22 @@ int shrink_file (long where, long space)
 }
 
 /**
- * Get the filename for the Key forKey.
- * The filename has 2 parts:
+ * Get the basename for the Key forKey.
  *
- * /etc/kdb/system/path/to/key
- *
- * /etc/kdb/system is the path of the namespace.
+ * This might be:
+ * /etc/kdb
+ * /home/markus/.kdb
+ * 
  * There are 2 possibilites. It may be KEY_NS_SYSTEM
  * or KEY_NS_USER. When the key of a user is asked
  * for, then environment will be asked what USER is
  * logged on.
  *
- * Don't use that function, use
  * @see IniGetFileName
- * TODO: make IniGetName a function to
- *  get the File, root and keyname (with NULL pointers possible)
  * 
  * @ingroup ini
  */
-int IniGetName (const Key * forKey, char * filename)
+size_t IniGetBaseName (const Key * forKey, char * basename)
 {
 	size_t length;
 	int namesize;
@@ -361,8 +357,8 @@ int IniGetName (const Key * forKey, char * filename)
         switch (keyGetNamespace(forKey)) {
                 case KEY_NS_SYSTEM: {
                         /* Prepare to use the 'system/ *' database */
-                        strncpy(filename,KDB_DB_SYSTEM,MAX_PATH_LENGTH);
-                        length=strlen(filename);
+                        strncpy(basename,KDB_DB_SYSTEM,MAX_PATH_LENGTH);
+                        length=strlen(basename);
                         break;
                 }
                 case KEY_NS_USER: {
@@ -373,7 +369,7 @@ int IniGetName (const Key * forKey, char * filename)
                         else user=getpwnam(getenv("USER"));
 
                         if (!user) return 0; /* propagate errno */
-                        length=snprintf(filename,MAX_PATH_LENGTH,"%s/%s",user->pw_dir,KDB_DB_USER);
+                        length=snprintf(basename,MAX_PATH_LENGTH,"%s/%s",user->pw_dir,KDB_DB_USER);
                         break;
                 }
                 default: {
@@ -382,6 +378,25 @@ int IniGetName (const Key * forKey, char * filename)
                 }
         }
 	
+	return length;
+}
+
+/**
+ * Returns the filename from the Key forKey
+ * 
+ * @param filename: MAX_PATH_LENGTH size char*
+ * @param keyname: MAX_PATH_LENGTH size char*
+ * 
+ * @ingroup ini
+ */
+size_t IniGetFileName (Key * forKey, char * filename)
+{
+	size_t length;
+	size_t namesize;
+	char * name;
+
+	length = IniGetBaseName (forKey, filename);
+
         filename[length]='/'; length++; // now the Keyname follows
 
 	namesize = keyGetNameSize (forKey);
@@ -395,34 +410,7 @@ int IniGetName (const Key * forKey, char * filename)
 	strncpy (filename + length, name, namesize);
 	length += namesize;
 	free (name);
-	
-	return length;
-}
 
-/**
- * Splits the IniGetName into two parts.
- *
- * @param forKey: This key contains the name.
- * @param filename: MAX_PATH_LENGTH size char*
- * @param keyname: MAX_PATH_LENGTH size char*
- *  if keyname is NULL, the whole path will be in filename
- * 
- * @ingroup ini
- */
-int IniGetFileName (const Key * forKey, char * filename, char * keyname)
-{
-	int length;
-	char * end;
-
-	length = IniGetName (forKey, filename);
-		
-	if (keyname != NULL)
-	{
-		end = strrchr (filename, '/');	// dirname
-		*end = 0;
-		strncpy (keyname, end+1, MAX_PATH_LENGTH);
-	}
-	
 	return length;
 }
 
@@ -617,7 +605,6 @@ int IniGetKey (Key * key, char * root)
  */
 int kdbGetKey_ini(Key *key) {
 	char keyFileName [MAX_PATH_LENGTH];
-	char keyName [MAX_PATH_LENGTH];
 	
 	int pos;
 	int keySize;
@@ -627,7 +614,7 @@ int kdbGetKey_ini(Key *key) {
 	
 	fprintf (stderr, "kdbGetKey_ini() entered\n");
 	
-	pos = IniGetFileName(key, keyFileName, keyName);
+	pos = IniGetFileName(key, keyFileName);
 	
 	keySize = keyGetNameSize (key);
 	keyFullName = malloc (keySize+1);
@@ -645,7 +632,7 @@ int kdbGetKey_ini(Key *key) {
 		fprintf (stderr, "Could not receive filename");
 		return -1;
 	}
-	fprintf (stderr, "Get Key %s [%d] in File: %s\n", keyName, keySize, keyFileName);
+	fprintf (stderr, "Get Key [%d] in File: %s\n", keySize, keyFileName);
 
 	open_file (keyFileName, O_RDONLY);
 	
@@ -733,50 +720,54 @@ int IniWriteKey (Key * keySet, long pos)
 }
 
 
-int IniReadFile (char * pathName, Key * key, KeySet * returned, unsigned long options)
+int IniReadFile (Key * key, KeySet * returned, unsigned long options)
 {
-	char * keyName;
+	char filename [MAX_PATH_LENGTH];
+	char * keyname;
 	size_t keyLength;
-	char * keyRoot;
-	size_t keyRootLength;
 	int ret;
 
 	fprintf (stderr, "IniReadfile\n");
+	
+	IniGetFileName(key, filename);
 
 	keyLength = keyGetNameSize (key);
-	keyRootLength= keyLength + strlen (pathName) + 1;
-	keyRoot = malloc (keyRootLength);
-	keyName = malloc (keyLength);
-	keyGetName (key, keyName, keyGetNameSize (key));
-	strcat (keyRoot, keyName);
+	keyname = malloc (keyLength);
+	keyGetName (key, keyname, keyGetNameSize (key));
 
-	fprintf (stderr, "Call kdbGetKeys(fileFullName: %s, keyRoot: %s,returned)\n", 
-		fileFullName, keyRoot);
-	kdbGetKeys (pathName, keyRoot, returned);
+	fprintf (stderr, "Call kdbGetKeys(filename: %s, keyRoot: %s,returned)\n", 
+		filename, keyname);
+	kdbGetKeys (filename, keyname, returned);
 	
-	free (keyRoot);
-	free (keyName);
+	fprintf (stderr, "after kdbGetKeys\n");
+	if (keyLength >0) free (keyname);
+	fprintf (stderr, "after free\n");
+
+	return 0;
 }
 
 /**
  * Reads all Keys of a directory.
  * is recursive!*/
-int IniReadDir(char * pathName, Key * key, KeySet * returned, unsigned long options)
+int IniReadDir(Key * key, KeySet * returned, unsigned long options)
 {
+	char pathName [MAX_PATH_LENGTH];
+	char keyname [MAX_PATH_LENGTH];
+	char keypath [MAX_PATH_LENGTH];
 	DIR * dir;
-	char fileFullName [MAX_PATH_LENGTH];
-	size_t keyLength;
-	char * keyRoot;
-	size_t keyRootLength;
+	char * p;
 	struct dirent * filename;
-	struct stat * buf;
+	int ret;
 	
 	fprintf (stderr, "IniReadDir\n");
+	IniGetFileName (key, pathName);
 	dir = opendir (pathName);
 	if (dir == NULL) {
 		fprintf (stderr, "Could not open directory %s\n", pathName);
 		return -1;
 	}
+	
+	keyGetName (key, keypath, MAX_PATH_LENGTH);
 	
 	while ((filename = readdir (dir)))
 	{
@@ -786,23 +777,29 @@ int IniReadDir(char * pathName, Key * key, KeySet * returned, unsigned long opti
 		
 		if (filename->d_name[0] == '.' && !(options & KDB_O_INACTIVE))
 			continue;
+
+		fprintf (stderr, "Next entry filename: %s\n", filename->d_name);
+		strncpy(keyname, keypath, MAX_PATH_LENGTH);
+		strcat(keyname, filename->d_name);
+		keySetName (key, keyname);
 		
-		IniGetFileName (key, fileFullName, NULL);
-		strcat(fileFullName, filename->d_name);
-		keySetName (key, fileFullName);
-		IniChooseFile (key, returned, options);
+		fprintf (stderr, "New keyname: %s\n", keyname);
+		ret = IniChooseFile (key, returned, options);
 	}
 
 	closedir (dir);
 
+	return ret;
 }
 
 int IniChooseFile(Key * key, KeySet * returned, unsigned long options)
 {
 	struct stat buf;
 	char filename [MAX_PATH_LENGTH];
+	char * keyname;
+	size_t keylength;
 	
-	IniGetFileName(key, filename, NULL);
+	IniGetFileName(key, filename);
 	
 	stat (filename, &buf);
 	//TODO fill stat info into the key
@@ -812,13 +809,27 @@ int IniChooseFile(Key * key, KeySet * returned, unsigned long options)
 	if (S_ISDIR(buf.st_mode))
 	{
 		printf ("	next recursive step\n");
-		return IniReadDir (filename, key, returned, options);
+		if (filename[strlen(filename)-1] != '/')
+		{
+			keylength = keyGetNameSize(key);
+			keyname = malloc (keylength + 2);
+			keyGetName (key, keyname, keylength);
+			keyname[keylength-1] = '/';
+			keyname[keylength] = '\0';
+			keySetName (key, keyname);
+			fprintf (stderr, "add /: %s\n", keyname);
+			free (keyname);
+		}
+			
+		return IniReadDir (key, returned, options);
+		printf("	return\n");
 	}
 
 	if (S_ISREG (buf.st_mode))
 	{
 		printf ("	will read file\n");
-		return IniReadFile (filename, key, returned, options);
+		return IniReadFile (key, returned, options);
+		printf("	return\n");
 	}
 
 	fprintf (stderr, "Not a directory or file!");
@@ -831,9 +842,15 @@ int IniChooseFile(Key * key, KeySet * returned, unsigned long options)
  * @see kdbGetKeyChildKeys() for expected behavior.
  * @ingroup ini
  */
-ssize_t kdbGetKeyChildKeys_ini(const Key * key, KeySet *returned, unsigned long options) {
-	
+ssize_t kdbGetKeyChildKeys_ini(const Key * key, KeySet *returned, unsigned long options)
+{
+	char t [MAX_PATH_LENGTH];
+	IniGetFileName(key, t);
+	fprintf (stderr, "IniGetFileName: %s\n",	t);
+	IniGetBaseName(key, t);
+	fprintf (stderr, "IniGetBaseName: %s\n",	t);
 	//Immediately call IniChooseFile
+
 	return IniChooseFile (key, returned, options);
 }
 
@@ -846,7 +863,6 @@ ssize_t kdbGetKeyChildKeys_ini(const Key * key, KeySet *returned, unsigned long 
  */
 int kdbSetKey_ini(Key *key) {
 	char keyFileName [MAX_PATH_LENGTH];
-	char keyName [MAX_PATH_LENGTH];
 	
 	int pos;
 	int keySize;
@@ -864,7 +880,7 @@ int kdbSetKey_ini(Key *key) {
 	
 	fprintf (stderr, "kdbGetKey_ini() entered\n");
 	
-	pos = IniGetFileName(key, keyFileName, keyName);
+	pos = IniGetFileName(key, keyFileName);
 	
 	keySize = keyGetNameSize (key);
 	keyFullName = malloc (keySize+1);
@@ -882,7 +898,7 @@ int kdbSetKey_ini(Key *key) {
 		fprintf (stderr, "Could not receive filename");
 		return -1;
 	}
-	fprintf (stderr, "Set Key %s [%d] in File: %s\n", keyName, keySize, keyFileName);
+	fprintf (stderr, "Set Key [%d] in File: %s\n",keySize, keyFileName);
 
 	open_file (keyFileName, O_RDWR);
 	
@@ -891,6 +907,7 @@ int kdbSetKey_ini(Key *key) {
 		if (strcmp (key->key, keyFullName) == 0) {	// right Key found
 			//TODO: use keySetName (key, keyFullName);
 			//or DONT EVEN SET, because key->key and keyFullName is the same
+			// AND get this stuff to the generic IniSetKey
 			fprintf (stderr, "Key found\n");
 			fprintf(stderr, "Name: (%s), Value: (%s), Comment: (%s)\n",
 				keyStealName (setKey), (char *) keyStealValue(setKey), 
