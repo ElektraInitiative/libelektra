@@ -2,6 +2,7 @@
             ini.c  -  Backend for ini-style like files
                              -------------------
     begin                : 01.03.2005
+    updated              : 06.10.2005
     copyright            : (C) 2005 by Markus Raab
     email                : debian@markus-raab.org
  ***************************************************************************/
@@ -23,13 +24,15 @@
  *   key1=value1;comment
  *
  * TODO:
+ *   recursive getting of files and folders
  *   create new files and folders
- *   Filelock does not work over NFS. (use fcntl instead of flock)
+ *   allow subkeys setting/getting
  *   make \n\t engine
  *   setting errno properly
  *   remove debugging features
  *
  * EXTRA:
+ *   Filelock does not work over NFS. (use fcntl instead of flock)
  *   include statement (like linking)
  *   monitor/stat files (in which the keys are)
  *   rename/remove keys features
@@ -53,8 +56,6 @@
 
 #define BACKENDNAME "ini"
 
-
-
 /**Some systems have even longer pathnames */
 #ifdef PATH_MAX
 #define MAX_PATH_LENGTH PATH_MAX
@@ -73,65 +74,9 @@
 
 
 /**Global variables*/
+/**This filedeskriptor holds the current open file*/
 FILE * fc;
 int fd;
-
-
-/**
- * @defgroup backend Elektra framework for pluggable backends
- * @brief The tactics to create pluggable backends to libelektra.so
- *
- * Since version 0.4.9, Elektra can dynamically load different key storage
- * backends. Fast jump to kdbBackendExport() to see an example of a backend
- * implementation.
- * 
- * The methods of class KeyDB that are backend dependent are kdbOpen(),
- * kdbClose(), kdbGetKey(), kdbSetKey(), kdbStatKey(),
- * kdbGetKeyChildKeys(), kdbRemove(), kdbRename(). So a backend must
- * reimplement these methods.
- * 
- * And methods that have a builtin default high-level inefficient
- * implementation are kdbSetKeys(), kdbMonitorKey(), kdbMonitorKeys(). So
- * it is suggested to reimplement them too, to make them more efficient.
- *
- * The other KeyDB methods are higher level. They use the above methods to
- * do their job, and generally don't have to be reimplemented for a
- * different backend.
- * 
- * The backend must implement a method with name kdbBackendFactory() and no
- * parameters, that is responsible of exporting the implementations of 
- * libelektra.so backend dependent methods.
- * 
- * The backend implementation must:
- * @code
-#include <kdb.h>
-#include <kdbbackend.h>
- * @endcode
- * 
- * <b>Better than that, a skeleton of a backend implementation is provided inside
- * Elektra development package or source code tree, and should be used as a
- * base for the implementation.</b>
- * 
- * An elektrified program will use the backend defined by environment variable
- * @e $KDB_BACKEND, The backend library is dynamically loaded when the program
- * calls kdbOpen(), unless if the program is security/authentication/setuid
- * related, in which it probably uses the more secure kdbOpenDefault() which
- * completely ignores the @e $KDB_BACKEND environment and will use the
- * @c "default" named backend defined by the sysadmin. Look at
- * @c /lib/libelektra-default.so link to see the default backend for your
- * system.
- * 
- * Elektra source code or development package provides a skeleton and Makefile
- * to implement a backend, and we'll document this skeleton here.
- * 
- * A backend is defined by a single name, for example @c BACKENDNAME, that
- * causes libelektra.so look for its library as @c libelektra-BACKENDNAME.so.
- * 
- * Elektra source code tree includes several backend implementations
- * (http://germane-software.com/repositories/elektra/trunk/src/backends)
- * that can also be used as a reference.
- */
-
 
 /**Reallocate Storage in a save way
  * @code
@@ -141,8 +86,12 @@ if (srealloc ((void **) & buffer, new_length) < 0) {
 	free (buffer);	// free the buffer
 	exit (1);
 }
+ * @param void ** buffer is a pointer to a malloc
+ * @param size is the new size for the memory
  * @return -1 on failure
- * 0 on success*/
+ * @return 0 on success
+ * @ingroup ini
+ */
 int srealloc (void ** buffer, size_t size)
 {
 	void * ptr;
@@ -161,16 +110,15 @@ int srealloc (void ** buffer, size_t size)
 
 /**
  * Initialize the backend.
- * This is the first method kdbOpenBackend() calls after dynamically loading
- * the backend library.
  *
- * @return 0 on success, anything else otherwise.
- * @see kdbOpenBackend()
- * @see kdbOpen()
- * @ingroup backend
+ * It does not do anything.
+ * Apps anyway must call it, to make sure
+ * to be compatibel to other backends.
+ * 
+ * @return 0 on success
+ * @ingroup ini
  */
 int kdbOpen_ini() {
-	fprintf (stderr, "Open Backend ini\n");
 	return 0;
 }
 
@@ -178,20 +126,16 @@ int kdbOpen_ini() {
 
 
 /**
- * All finalization logic of the backend should go here.
+ * Closes the backend.
  * 
- * Called prior to unloading the backend dynamic module. Should ensure that no
- * functions or static/global variables from the module will ever be accessed again.
- * Should free any memory that the backend no longer needs.
- * After this call, libelektra.so will unload the backend library, so this is
- * the point to shutdown any affairs with the storage.
- *
- * @return 0 on success, anything else otherwise.
- * @see kdbClose()
- * @ingroup backend
+ * It does not do anything.
+ * Apps anyway must call it, to make sure
+ * to be compatibel to other backends.
+ * 
+ * @return 0 on success
+ * @ingroup ini
  */
 int kdbClose_ini() {
-	fprintf (stderr, "Close Backend ini\n");
 	return 0; /* success */
 }
 
@@ -200,9 +144,9 @@ int kdbClose_ini() {
 /**
  * Implementation for kdbStatKey() method.
  * 
- * @see kdbStatKey() for expected behavior.
+ * Trys to stat the file.
  *
- * @ingroup backend
+ * @ingroup ini
  */
 int kdbStatKey_ini(Key *key) {
 	//TODO
@@ -215,7 +159,7 @@ int kdbStatKey_ini(Key *key) {
  * Opens a file filename.
  * The mode might be O_RDONLY or O_RDWR.
  * @return 0 on success, -1 on failure
- * @ingroup backend*/
+ * @ingroup ini*/
 int open_file (char * filename, int mode)
 {
 	char buffer [2] = "\0\0";
@@ -361,7 +305,7 @@ int shrink_file (long where, long space)
  * for, then environment will be asked what USER is
  * logged on.
  * 
- * @ingroup backend
+ * @ingroup ini
  */
 int IniGetName (const Key * forKey, char * filename)
 {
@@ -413,7 +357,7 @@ int IniGetName (const Key * forKey, char * filename)
 /**
  * Splits the IniGetName into two parts.
  * 
- * @ingroup backend
+ * @ingroup ini
  */
 int IniGetFileName (const Key * forKey, char * filename, char * keyname)
 {
@@ -445,7 +389,7 @@ int count = 0;
  *
  * It does not check the Name of the Key
  * 
- * @ingroup backend
+ * @ingroup ini
  */
 int IniGetKey (Key * key, char * root)
 {
@@ -620,7 +564,7 @@ int IniGetKey (Key * key, char * root)
  * Implementation for kdbGetKey() method.
  *
  * @see kdbGetKey() for expected behavior.
- * @ingroup backend
+ * @ingroup ini
  */
 int kdbGetKey_ini(Key *key) {
 	char keyFileName [MAX_PATH_LENGTH];
@@ -695,7 +639,7 @@ int kdbGetKey_ini(Key *key) {
 /**
  * Get out all the keys of a file
  * 
- * @ingroup backend
+ * @ingroup ini
  */
 ssize_t kdbGetKeys (char * keyFileName, char * keyRoot, KeySet * returned)
 {
@@ -727,7 +671,7 @@ ssize_t kdbGetKeys (char * keyFileName, char * keyRoot, KeySet * returned)
  *
  * @ret Returnes 0 on success.
  * 
- * @ingroup backend
+ * @ingroup ini
  */
 int IniWriteKey (Key * keySet, long pos)
 {
@@ -846,7 +790,7 @@ int IniReadDir(char * pathName, KeySet * returned, unsigned long options)
  * Implementation for kdbGetKeyChildKeys() method.
  *
  * @see kdbGetKeyChildKeys() for expected behavior.
- * @ingroup backend
+ * @ingroup ini
  */
 ssize_t kdbGetKeyChildKeys_ini(const Key * key, KeySet *returned, unsigned long options) {
 	char pathName [MAX_PATH_LENGTH];
@@ -869,7 +813,7 @@ ssize_t kdbGetKeyChildKeys_ini(const Key * key, KeySet *returned, unsigned long 
  * Implementation for kdbSetKey() method.
  *
  * @see kdbSetKey() for expected behavior.
- * @ingroup backend
+ * @ingroup ini
  */
 int kdbSetKey_ini(Key *key) {
 	char keyFileName [MAX_PATH_LENGTH];
@@ -991,7 +935,7 @@ int kdbSetKey_ini(Key *key) {
  * Implementation for kdbRename() method.
  *
  * @see kdbRename() for expected behavior.
- * @ingroup backend
+ * @ingroup ini
  */
 int kdbRename_ini(Key *key, const char *newName) {
 	fprintf (stderr, "Give Key a new Name\n");
@@ -1002,7 +946,7 @@ int kdbRename_ini(Key *key, const char *newName) {
  * Implementation for kdbRemoveKey() method.
  *
  * @see kdbRemove() for expected behavior.
- * @ingroup backend
+ * @ingroup ini
  */
 int kdbRemoveKey_ini(const Key *key) {
 	fprintf (stderr, "Remove Key from Database\n");
@@ -1021,7 +965,7 @@ int kdbRemoveKey_ini(const Key *key) {
  * backend with kdbBackendExport(), using kdbSetKeys_default().
  * 
  * @see kdbSetKeys() for expected behavior.
- * @ingroup backend
+ * @ingroup ini
  */
 int kdbSetKeys_ini(KeySet *ks) {
 	//TODO performance increase for kdbSetKeys
@@ -1036,7 +980,7 @@ int kdbSetKeys_ini(KeySet *ks) {
  * key inside @p interests.
  *
  * @see kdbMonitorKeys() for expected behavior.
- * @ingroup backend
+ * @ingroup ini
  */
 u_int32_t kdbMonitorKeys_ini(KeySet *interests, u_int32_t diffMask,
 		unsigned long iterations, unsigned sleep) {
@@ -1053,7 +997,7 @@ u_int32_t kdbMonitorKeys_ini(KeySet *interests, u_int32_t diffMask,
  * @p interest.
  *
  * @see kdbMonitorKey() for expected behavior.
- * @ingroup backend
+ * @ingroup ini
  */
 u_int32_t kdbMonitorKey_ini(Key *interest, u_int32_t diffMask,
 		unsigned long iterations, unsigned sleep) {
@@ -1075,7 +1019,7 @@ u_int32_t kdbMonitorKey_ini(Key *interest, u_int32_t diffMask,
  * @return whatever kdbBackendExport() returns
  * @see kdbBackendExport() for an example
  * @see kdbOpenBackend()
- * @ingroup backend
+ * @ingroup ini
  */
 KDBBackend *kdbBackendFactory(void) {
 	return kdbBackendExport(BACKENDNAME,
