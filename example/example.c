@@ -219,10 +219,10 @@ int main(int argc, char **argv) {
 	kdbOpen();
 	fprintf(stderr, "after kdbOpen\n");
 
-	setAnotherKey();
+	getChildKeys();
+	// setAnotherKey();
 	// setNullKey();
 	// getKey();
-	// getChildKeys();
 	// useKeySet();
 	
 	/* Close the Key database */
