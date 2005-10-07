@@ -219,6 +219,9 @@ size_t strblen(const char *s) {
  * 
  * The simplest way to call it is with no tags, only a key name. See example
  * bellow.
+ *
+ * keyNew() allocates memory for a key object and then calls keyInit(). After
+ * that it processes the given argument list.
  * 
  * The Key attribute tags are the following:
  * - KeySwitch::KEY_SWITCH_TYPE \n
@@ -2195,24 +2198,23 @@ Key *keyNext(Key *key) {
 
 
 /**
- * Clone a key.
+ * Duplicate memory of keys.
  *
+ * Both keys have to be initialized with keyInit(). If you have set any
+ * dynamic allocated memory for dest, make sure that you keyClose() it.
+ * 
  * All private attributes of the source key will be copied, including its
  * context on a KeySet, and nothing will be shared between both keys.
- * keyClose() will be used on @p dest key before the operation, and internal
- * buffers will be automatically allocated on @p dest.
  *
- * @param source the source key
- * @param dest the new copy of the key
+ *
+ * @param source has to be a initializised Key
+ * @param dest will be the new copy of the Key
  * @return 0 on success
  * @see keyClose(), keyInit()
  * @ingroup key
  */
 int keyDup(const Key *source, Key *dest) {
-
-	/* clear everything first */
-	keyClose(dest);
-
+	
 	/* Copy the struct data, including the "next" pointer */
 	*dest=*source;
 
