@@ -55,6 +55,8 @@
 
 #define BACKENDNAME "ini"
 
+#warning "Backend is not full featured"
+
 /**Some systems have even longer pathnames */
 #ifdef PATH_MAX
 #define MAX_PATH_LENGTH PATH_MAX
@@ -76,6 +78,14 @@
 #define STATE_VALUE 2
 #define STATE_COMMENT 4
 #define STATE_END 8
+
+/**Some more key types needed for ini
+ * FILE ... is a real file on the system
+ * DIR ... is a real directory
+ * SUBDIR ... is a subdirectoy within a file*/
+#define KEY_TYPE_FILE 4
+#define KEY_TYPE_DIR 8
+#define KEY_TYPE_SUBDIR 16
 
 /**Global variables*/
 
@@ -141,24 +151,6 @@ int kdbOpen_ini() {
  * @ingroup ini
  */
 int kdbClose_ini() {
-	return 0; /* success */
-}
-
-
-
-/**
- * Implementation for kdbStatKey() method.
- * 
- * Trys to stat the file and fill the key
- * with information about that. keys inside
- * a file get the stat information of their
- * file.
- *
- * @ingroup ini
- */
-int kdbStatKey_ini(Key *key) {
-	//TODO
-	fprintf (stderr, "Stat key\n");
 	return 0; /* success */
 }
 
@@ -383,6 +375,12 @@ size_t IniGetBaseName (const Key * forKey, char * basename)
 
 /**
  * Returns the filename from the Key forKey
+ *
+ * The name returned is normally not correct, because
+ * it may have subdirs and it has the keyname in it.
+ *
+ * @see IniSearchFileName
+ * will cut of the end until it has found a file.
  * 
  * @param filename: MAX_PATH_LENGTH size char*
  * @param keyname: MAX_PATH_LENGTH size char*
@@ -410,6 +408,47 @@ size_t IniGetFileName (Key * forKey, char * filename)
 	strncpy (filename + length, name, namesize);
 	length += namesize;
 	free (name);
+
+	return length;
+}
+
+
+/**
+ * Returns a filename from the Key which can be opened for forKey
+ *
+ * The name returned should be correct, because
+ * it removes subdirs and the keyname.
+ *
+ * It even tests with kdbStatKey if the File exists.
+ * So be prepaired that stat information is filled
+ * within the key.
+ *
+ * @see IniSearchFileName
+ * will cut of the end until it has found a file.
+ * 
+ * @param filename: MAX_PATH_LENGTH size char*
+ * @param keyname: MAX_PATH_LENGTH size char*
+ * 
+ * @ingroup ini
+ */
+size_t IniSearchFileName (Key * forKey, char * filename)
+{
+	size_t length;
+	u_int8_t info = 0;
+	char * end;
+
+	length = IniGetFileName (forKey, filename);
+	
+	do {
+		end = strrchr (filename, '/');
+		if (end == NULL) {
+			fprintf (stderr, "Could not find any file\n");
+			return -1;
+		}
+		*end= '\0';
+		IniStatFile (forKey, filename);
+		info = keyGetType (forKey);
+	} while (!(info & KEY_TYPE_FILE));
 
 	return length;
 }
@@ -614,7 +653,7 @@ int kdbGetKey_ini(Key *key) {
 	
 	fprintf (stderr, "kdbGetKey_ini() entered\n");
 	
-	pos = IniGetFileName(key, keyFileName);
+	pos = IniSearchFileName(key, keyFileName);
 	
 	keySize = keyGetNameSize (key);
 	keyFullName = malloc (keySize+1);
@@ -706,20 +745,13 @@ ssize_t kdbGetKeys (char * keyFileName, char * keyRoot, KeySet * returned)
 }
 
 /**
- * Writes out a key into file on pos.
- * keySet is the key which should be written there
+ * Reads the contents of the whole file which Key
+ * points to.
  *
- * @ret Returnes 0 on success.
- * 
+ * The Keys will be added in the Keyset.
+ *
  * @ingroup ini
  */
-int IniWriteKey (Key * keySet, long pos)
-{
-	fprintf (stderr, "IniWriteKey\n");
-	return 0;
-}
-
-
 int IniReadFile (Key * key, KeySet * returned, unsigned long options)
 {
 	char filename [MAX_PATH_LENGTH];
@@ -748,7 +780,12 @@ int IniReadFile (Key * key, KeySet * returned, unsigned long options)
 
 /**
  * Reads all Keys of a directory.
- * is recursive!*/
+ *
+ * For every key the mapper IniChooseFile
+ * will be called.
+ * 
+ * @ingroup ini
+ * */
 int IniReadDir(Key * key, KeySet * returned, unsigned long options)
 {
 	char pathName [MAX_PATH_LENGTH];
@@ -792,6 +829,16 @@ int IniReadDir(Key * key, KeySet * returned, unsigned long options)
 	return ret;
 }
 
+/**
+ * This mapper chooses between the different
+ * styles of files to start the correct function.
+ *
+ * For files it starts IniReadFile
+ * For directorys it starts IniReadDir
+ * TODO: Links, Subdirs
+ *
+ * @ingroup ini
+ * */
 int IniChooseFile(Key * key, KeySet * returned, unsigned long options)
 {
 	struct stat buf;
@@ -840,19 +887,79 @@ int IniChooseFile(Key * key, KeySet * returned, unsigned long options)
  * Implementation for kdbGetKeyChildKeys() method.
  *
  * @see kdbGetKeyChildKeys() for expected behavior.
+ * 
  * @ingroup ini
  */
 ssize_t kdbGetKeyChildKeys_ini(const Key * key, KeySet *returned, unsigned long options)
 {
 	char t [MAX_PATH_LENGTH];
-	IniGetFileName(key, t);
+	Key * write;
+	keyDup (key, write);
+	
+	IniGetFileName(write, t);
 	fprintf (stderr, "IniGetFileName: %s\n",	t);
-	IniGetBaseName(key, t);
+	IniGetBaseName(write, t);
 	fprintf (stderr, "IniGetBaseName: %s\n",	t);
 	//Immediately call IniChooseFile
 
-	return IniChooseFile (key, returned, options);
+	return IniChooseFile (write, returned, options);
 }
+
+/**
+ * Writes out a key into file on pos.
+ * keySet is the key which should be written there
+ *
+ * @ret Returnes 0 on success.
+ * 
+ * @ingroup ini
+ */
+int IniWriteKey (Key * setKey, long oldpos)
+{
+	long newpos;
+	char * end;
+	long needed_size;
+
+	fprintf (stderr, "IniWriteKey\n");
+	// use setkey to set the key to wished values
+	newpos = ftell (fc);
+	end = strrchr (keyStealName (setKey),'/')+1;
+	needed_size = strlen (end) +// =
+		keyGetDataSize (setKey) +	// ;
+		keyGetCommentSize (setKey) + 1;	// \n
+	if (newpos - oldpos > needed_size)
+	{
+		fprintf (stderr, "Shrinking File with %ld bytes\n",
+				newpos - oldpos - needed_size);
+		shrink_file (oldpos, newpos - oldpos -needed_size);
+	} else if (newpos - oldpos < needed_size) {
+		fprintf (stderr, "Enlarge File with %ld bytes\n",
+				needed_size - (newpos - oldpos));
+		enlarge_file (newpos, needed_size - (newpos - oldpos));
+	}
+	
+	fprintf(stderr, "Writing key to disc (pos: %ld|%ld|%d) ...\n",
+		oldpos, newpos, needed_size);
+	fseek (fc, oldpos, SEEK_SET);
+	
+	fwrite (end, strlen(end), 1, fc);
+	fwrite ("=", 1,1,fc);
+	if (keyStealValue (setKey) != NULL)
+		fwrite (keyStealValue (setKey), keyGetValueSize(setKey)-1, 1, fc);
+	fwrite (";", 1,1,fc);
+	if (keyStealComment (setKey) != NULL)
+		fwrite (keyStealComment (setKey), keyGetCommentSize(setKey)-1, 1, fc);
+	fwrite ("\n", 1,1,fc);
+
+	newpos = ftell (fc);
+	fprintf (stderr, "Real endpos: %ld\n", newpos);
+
+	fprintf (stderr, "key: %s, value: %s, comment: %s\n", 
+		setKey->key, (char *) setKey->data, setKey->comment);
+
+			
+	return 0;
+}
+
 
 
 /**
@@ -861,7 +968,7 @@ ssize_t kdbGetKeyChildKeys_ini(const Key * key, KeySet *returned, unsigned long 
  * @see kdbSetKey() for expected behavior.
  * @ingroup ini
  */
-int kdbSetKey_ini(Key *key) {
+int kdbSetKey_ini(Key *origkey) {
 	char keyFileName [MAX_PATH_LENGTH];
 	
 	int pos;
@@ -871,16 +978,18 @@ int kdbSetKey_ini(Key *key) {
 	char * end;
 
 	Key * setKey;
+	Key * key;
+
 	long oldpos, newpos;
 	int needed_size;
 
 	setKey = keyNew (KEY_SWITCH_END);
-	keyDup (key, setKey);	// clone key
-
+	keyDup (origkey, setKey); // for writing
+	keyDup (origkey, key);	// for searching
 	
-	fprintf (stderr, "kdbGetKey_ini() entered\n");
+	pos = IniSearchFileName(key, keyFileName);
 	
-	pos = IniGetFileName(key, keyFileName);
+	fprintf (stderr, "kdbSetKey_ini(%s) entered\n", keyFileName);
 	
 	keySize = keyGetNameSize (key);
 	keyFullName = malloc (keySize+1);
@@ -900,59 +1009,22 @@ int kdbSetKey_ini(Key *key) {
 	}
 	fprintf (stderr, "Set Key [%d] in File: %s\n",keySize, keyFileName);
 
-	open_file (keyFileName, O_RDWR);
+	if (open_file (keyFileName, O_RDWR) < 0) return -1;
 	
 	while ((pos=IniGetKey (key, keyRoot)) == 0)
 	{
-		if (strcmp (key->key, keyFullName) == 0) {	// right Key found
-			//TODO: use keySetName (key, keyFullName);
-			//or DONT EVEN SET, because key->key and keyFullName is the same
-			// AND get this stuff to the generic IniSetKey
+		if (strcmp (key->key, keyFullName) == 0) 
+		{	// right Key found
 			fprintf (stderr, "Key found\n");
 			fprintf(stderr, "Name: (%s), Value: (%s), Comment: (%s)\n",
-				keyStealName (setKey), (char *) keyStealValue(setKey), 
+				keyStealName (setKey), (char *) keyStealValue(setKey),
 				(char *) keyStealComment (setKey));
+			//switch to next key
 			if (key->key) free(key->key);
 			key->key = malloc (keySize+1);
 			strncpy (key->key, keyFullName, keySize);
 
-			// use setkey to set the key to wished values
-			newpos = ftell (fc);
-			end = strrchr (keyStealName (setKey),'/')+1;
-			needed_size = strlen (end) +// =
-				keyGetDataSize (setKey) +	// ;
-				keyGetCommentSize (setKey) + 1;	// \n
-			if (newpos - oldpos > needed_size)
-			{
-				fprintf (stderr, "Shrinking File with %ld bytes\n",
-						newpos - oldpos - needed_size);
-				shrink_file (oldpos, newpos - oldpos -needed_size);
-			} else if (newpos - oldpos < needed_size) {
-				fprintf (stderr, "Enlarge File with %ld bytes\n",
-						needed_size - (newpos - oldpos));
-				enlarge_file (newpos, needed_size - (newpos - oldpos));
-			}
-			
-			fprintf(stderr, "Writing key to disc (pos: %ld|%ld|%d) ...\n",
-				oldpos, newpos, needed_size);
-			fseek (fc, oldpos, SEEK_SET);
-			
-			fwrite (end, strlen(end), 1, fc);
-			fwrite ("=", 1,1,fc);
-			if (keyStealValue (setKey) != NULL)
-				fwrite (keyStealValue (setKey), keyGetValueSize(setKey)-1, 1, fc);
-			fwrite (";", 1,1,fc);
-			if (keyStealComment (setKey) != NULL)
-				fwrite (keyStealComment (setKey), keyGetCommentSize(setKey)-1, 1, fc);
-			fwrite ("\n", 1,1,fc);
-
-			newpos = ftell (fc);
-			fprintf (stderr, "Real endpos: %ld\n", newpos);
-	
-			fprintf (stderr, "key: %s, value: %s, comment: %s\n", 
-				setKey->key, (char *) setKey->data, setKey->comment);
-		
-			
+			IniWriteKey(setKey, oldpos);
 			pos = 1;
 			break;
 		}
@@ -966,8 +1038,6 @@ int kdbSetKey_ini(Key *key) {
 		pos = 0;
 	}
 	
-	// ftruncate file
-
 	close_file ();
 	
 	free (keyFullName);
@@ -1000,6 +1070,61 @@ int kdbRemoveKey_ini(const Key *key) {
 }
 
 
+
+
+/**
+ * IniStatKey stats the filename filename and write
+ * the information in the key.
+ *
+ * So its possible to stat the real filename, without
+ * changing the keyname (which is normally another
+ * name then the filename).
+ *
+ * @param filename will be stated
+ * @param key will get the information about filename
+ *
+ * @return 0 on success, -1 otherwise
+ * 
+ * @ingroup ini
+ */
+int IniStatFile (Key * key, char * filename)
+{	
+	struct stat buf;
+	stat (filename, &buf);
+	
+	keySetAccess(key,buf.st_mode);
+        keySetUID(key,buf.st_uid);
+        keySetGID(key,buf.st_gid);
+        if (S_ISDIR(buf.st_mode)) keySetType(key,KEY_TYPE_DIR);
+        else if (S_ISREG (buf.st_mode)) keySetType(key, KEY_TYPE_FILE);
+        else if (S_ISLNK (buf.st_mode)) keySetType(key, KEY_TYPE_LINK);
+        key->atime=buf.st_atime;
+        key->mtime=buf.st_mtime;
+        key->ctime=buf.st_ctime;
+        key->recordSize=buf.st_size;
+
+	return 0;
+}
+
+/**
+ * Implementation for kdbStatKey() method.
+ * 
+ * Trys to stat the file and fill the key
+ * with information about that. keys inside
+ * a file get the stat information of their
+ * file.
+ *
+ * @ingroup ini
+ */
+int kdbStatKey_ini(Key *key) {
+	char filename [MAX_PATH_LENGTH];
+	
+	IniGetFileName(key, filename);
+	IniStatFile (key, filename);
+	
+	fprintf (stderr, "kdbStatKey, filename: %s\n", filename);
+	return 0; /* success */
+}
 
 
 
