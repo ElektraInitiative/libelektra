@@ -55,7 +55,6 @@
 
 #define BACKENDNAME "ini"
 
-#warning "Backend is not full featured"
 
 /**Some systems have even longer pathnames */
 #ifdef PATH_MAX
@@ -977,15 +976,21 @@ int kdbSetKey_ini(Key *origkey) {
 	char * keyRoot;
 	char * end;
 
-	Key * setKey;
-	Key * key;
+	Key psetKey;
+	Key pkey;
+	Key * setKey = &psetKey;
+	Key * key = &pkey;
 
 	long oldpos, newpos;
 	int needed_size;
 
-	setKey = keyNew (KEY_SWITCH_END);
+	keyInit (setKey);
+	keyInit (key);
+	fprintf (stderr, "before dup");
 	keyDup (origkey, setKey); // for writing
+	fprintf (stderr, "during dup");
 	keyDup (origkey, key);	// for searching
+	fprintf (stderr, "after dup");
 	
 	pos = IniSearchFileName(key, keyFileName);
 	
@@ -1208,3 +1213,6 @@ KDBBackend *kdbBackendFactory(void) {
 		KDB_BE_SETKEYS,        &kdbSetKeys_default,
 		KDB_BE_END);
 }
+
+#warning "Backend is not full featured"
+
