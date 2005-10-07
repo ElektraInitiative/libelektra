@@ -253,7 +253,7 @@ size_t strblen(const char *s) {
  *   Check with keyGetFlag(), and @p errno. You will have to kdbOpen()
  *   before using keyNew() with this tag.
  * - KeySwitch::KEY_SWITCH_END \n
- *   Must be the last parameter passed to keyNew(). It is allways
+ *   Must be the last parameter passed to keyNew(). It is always
  *   required, unless the @p keyName is NULL too.
  *   
  * @par Example:
@@ -468,7 +468,7 @@ int keyIsInitialized(const Key *key) {
  * If not defined (the second form) current user is calculated and used
  * as default.
  * 
- * You should allways follow the guidelines for key tree structure creation at
+ * You should always follow the guidelines for key tree structure creation at
  * @ref rules.
  *
  * A private copy of the key name will be stored, and the @p newName
@@ -2746,7 +2746,7 @@ size_t keyGetSerializedSize(Key *key) {
  * The flag has no semantics to the library, only to your application.
  *
  * @see keyGetFlag(), keyClearFlag()
- * @return allways 0
+ * @return always 0
  * @ingroup keymeta
  */
 int keySetFlag(Key *key) {
@@ -2768,7 +2768,7 @@ int keySetFlag(Key *key) {
  * The flag has no semantics to the library, only to your application.
  *
  * @see keyGetFlag(), keySetFlag()
- * @return allways 0
+ * @return always 0
  * @ingroup keymeta
  */
 int keyClearFlag(Key *key) {
@@ -2808,9 +2808,10 @@ int keyGetFlag(const Key *key) {
  
  
 /**
- * Initializes a previously allocated Key object.
+ * Allocates internal Memory for a Key.
  *
- * This function should not be used, use keyNew() instead.
+ * This function should not be used by backends or
+ * applications, use keyNew() instead.
  *
  * keyInit sets the key to a clear state. It uses
  * memset to clear the memory. The type of the key
@@ -2824,9 +2825,22 @@ int keyGetFlag(const Key *key) {
 key=(Key *)malloc(sizeof(Key));
 if (!key) return 0;
 keyInit(key);
+// Key can be used here
+keyClose(key);
+free(key);
  * endcode
- * @see keyNew(), keyDel(), keyClose()
- * @return allways 0;
+ *
+ * @par shorter
+ * code
+Key key;
+keyInit(&key);
+// Key can be used here
+keyClose(&key);
+ * 
+ * @see keyClose() to free the memory allocated within that function.
+ * @see keyNew() and keyDel() for construction and destruction of Keys
+ * 
+ * @return always 0;
  * @ingroup key
  */
 int keyInit(Key *key) {
@@ -2850,23 +2864,28 @@ int keyInit(Key *key) {
 /**
  * Finishes the usage of a Key object.
  *
+ * The key must be KeyInit() before any attempt to close it.
+ * 
  * Frees all internally allocated memory, and leave the Key object
  * ready to be keyInit()ed to reuse, or deallocated.
+ *
+ * All internal states of the key will be NULL. After this
+ * process there is no information inside the key.
  * 
- * @see keyInit() for usage example
- * @see keyNew() and keyDel() as a more practicall approach for Key
- * 	construction and destruction
+ * @see keyInit() how to allocate internal memory
+ * @see keyNew() and keyDel() for construction and destruction of Keys
+ * 
  * @ingroup key
- * @return allways 0;
+ * @return always 0;
  */
 int keyClose(Key *key) {
 	/* if (!key) return errno=KDB_RET_NULLKEY;
 	if (!keyIsInitialized(key)) return 0; */
 
-	free(key->key);
-	free(key->data);
-	free(key->comment);
-	free(key->userDomain);
+	if (key->key) free(key->key);
+	if (key->data) free(key->data);
+	if (key->comment) free(key->comment);
+	if (key->userDomain) free(key->userDomain);
 	memset(key,0,sizeof(Key));
 	return 0;
 }
