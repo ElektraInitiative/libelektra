@@ -55,8 +55,6 @@ void useKeySet()
 	    
 	ksToStream(ks,stdout,KDB_O_XMLHEADERS);
 	
-	printKeySet(ks);
-	    
 	ksDel(ks);
 }	
 

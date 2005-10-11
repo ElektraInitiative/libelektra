@@ -1,4 +1,4 @@
-noinst_PROGRAMS = backend key application binary keyNewExample lookup
+noinst_PROGRAMS = key application binary keyNewExample lookup
 
 key_SOURCES = key.c
 key_LDFLAGS = -L../src/libelektra

@@ -158,7 +158,7 @@ subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 xsltproc = @xsltproc@
-noinst_PROGRAMS = backend key application binary keyNewExample lookup
+noinst_PROGRAMS = key application binary keyNewExample lookup
 
 key_SOURCES = key.c
 key_LDFLAGS = -L../src/libelektra
@@ -190,16 +190,13 @@ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
-noinst_PROGRAMS = backend$(EXEEXT) key$(EXEEXT) application$(EXEEXT) \
-	binary$(EXEEXT) keyNewExample$(EXEEXT) lookup$(EXEEXT)
+noinst_PROGRAMS = key$(EXEEXT) application$(EXEEXT) binary$(EXEEXT) \
+	keyNewExample$(EXEEXT) lookup$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
 
 am_application_OBJECTS = application.$(OBJEXT)
 application_OBJECTS = $(am_application_OBJECTS)
 application_DEPENDENCIES =
-am_backend_OBJECTS = backend.$(OBJEXT)
-backend_OBJECTS = $(am_backend_OBJECTS)
-backend_DEPENDENCIES =
 am_binary_OBJECTS = binary.$(OBJEXT)
 binary_OBJECTS = $(am_binary_OBJECTS)
 binary_DEPENDENCIES =
@@ -216,8 +213,7 @@ lookup_DEPENDENCIES =
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/application.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/backend.Po ./$(DEPDIR)/binary.Po \
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/application.Po ./$(DEPDIR)/binary.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/key.Po ./$(DEPDIR)/keyNewExample.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/lookup.Po
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
@@ -227,11 +223,10 @@ LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-DIST_SOURCES = $(application_SOURCES) $(backend_SOURCES) \
-	$(binary_SOURCES) $(key_SOURCES) $(keyNewExample_SOURCES) \
-	$(lookup_SOURCES)
+DIST_SOURCES = $(application_SOURCES) $(binary_SOURCES) $(key_SOURCES) \
+	$(keyNewExample_SOURCES) $(lookup_SOURCES)
 DIST_COMMON = $(srcdir)/Makefile.in Makefile.am
-SOURCES = $(application_SOURCES) $(backend_SOURCES) $(binary_SOURCES) $(key_SOURCES) $(keyNewExample_SOURCES) $(lookup_SOURCES)
+SOURCES = $(application_SOURCES) $(binary_SOURCES) $(key_SOURCES) $(keyNewExample_SOURCES) $(lookup_SOURCES)
 
 all: all-am
 
@@ -252,9 +247,6 @@ clean-noinstPROGRAMS:
 application$(EXEEXT): $(application_OBJECTS) $(application_DEPENDENCIES) 
 	@rm -f application$(EXEEXT)
 	$(LINK) $(application_LDFLAGS) $(application_OBJECTS) $(application_LDADD) $(LIBS)
-backend$(EXEEXT): $(backend_OBJECTS) $(backend_DEPENDENCIES) 
-	@rm -f backend$(EXEEXT)
-	$(LINK) $(backend_LDFLAGS) $(backend_OBJECTS) $(backend_LDADD) $(LIBS)
 binary$(EXEEXT): $(binary_OBJECTS) $(binary_DEPENDENCIES) 
 	@rm -f binary$(EXEEXT)
 	$(LINK) $(binary_LDFLAGS) $(binary_OBJECTS) $(binary_LDADD) $(LIBS)
@@ -275,7 +267,6 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/application.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/backend.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/binary.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/key.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/keyNewExample.Po@am__quote@
