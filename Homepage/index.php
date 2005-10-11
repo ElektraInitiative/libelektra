@@ -28,7 +28,6 @@
 		<img src="/logo.jpg" border="0" alt="Logo" /></a>
 	</div>
 	<div id="bloc_liens_conteneur">
-	<div id="bloc_liens_header">HOME</div>
 	<div id="navcontainer">
 	<ul>
 <? generate_menu()?>
@@ -39,8 +38,6 @@
 <div id="centre">
 	<a name="top"></a>
 <? show_file()?>
-	</div>
-	
 
 	<div id="mytop">
 		<a  href="#top" title="Go to top">TOP</a>
