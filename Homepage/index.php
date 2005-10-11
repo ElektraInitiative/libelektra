@@ -25,7 +25,7 @@
 <div id="conteneur">
 	<div id="header">
 		<a href="http://www.libelektra.org">
-		<img src="/logo.jpg" border="0"/></a>
+		<img src="/logo.jpg" border="0" alt="Logo" /></a>
 	</div>
 	<div id="bloc_liens_conteneur">
 	<div id="bloc_liens_header">HOME</div>
@@ -37,7 +37,7 @@
 </div>
 
 <div id="centre">
-	<a name="top">
+	<a name="top"></a>
 <? show_file()?>
 	</div>
 	
