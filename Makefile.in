@@ -174,8 +174,8 @@ RECURSIVE_TARGETS = info-recursive dvi-recursive pdf-recursive \
 	check-recursive installcheck-recursive
 DIST_COMMON = README $(srcdir)/Makefile.in $(srcdir)/configure AUTHORS \
 	COPYING ChangeLog INSTALL Makefile.am NEWS TODO aclocal.m4 \
-	compile config.guess config.h.in config.sub configure \
-	configure.ac depcomp elektra.pc.in install-sh ltmain.sh missing \
+	compile config.guess config.h.in config.sub configure.ac \
+	depcomp elektra.pc.in install-sh ltmain.sh missing \
 	mkinstalldirs
 DIST_SUBDIRS = $(SUBDIRS)
 all: config.h
