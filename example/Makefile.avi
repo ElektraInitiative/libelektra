@@ -1,6 +1,0 @@
-backend:backend.c
-	cc -g -L/lib -lelektra -o backend backend.c
-
-clean:
-	rm -f example application binary keyNewExample lookup
-

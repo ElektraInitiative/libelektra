@@ -20,6 +20,9 @@ autoconf
 # Bootstraping libltdl
 echo "BOOTSTRAPING LIBLTDL"
 cd libltdl
+echo "LIBTOOLIZE"
+libtoolize
+
 echo "ACLOCAL"
 aclocal
 
