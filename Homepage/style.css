@@ -104,7 +104,7 @@ div.toc {
 	font-family: Verdana, Helvetica, Lucida, Arial;
 	font-size: 11px;
 	text-align: justify;
-	margin-top: 50pt;
+	/* margin-top: 50pt; */
 	margin-bottom: 0pt;
 	margin-left: 30pt;
 	margin-right: 30pt;
