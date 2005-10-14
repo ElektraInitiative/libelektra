@@ -428,7 +428,7 @@ function generate_menu ()
 				format_dir ($prevdir) , '</a></li>' , "\n";
 			}
 
-			if ($pathname != ".") echo '		<li class="mysmaller"><ul>' . "\n";
+			if ($pathname != ".") echo '		<div id="mysmaller"><ul>' . "\n";
 			foreach ($dirs as $dir) {
 				echo '			<li class="';
 				if (($fileselected == "images.html" && $filename == $dir) ||
@@ -443,7 +443,7 @@ function generate_menu ()
 			if ($pathname == ".") continue;	// in root keine Dateien anzeigen
 			
 			foreach ($files as $file) show_file_name ($file, $fileselected);
-			echo '		</ul></li>' . "\n";
+			echo '		</ul></div>' . "\n";
 		}
 	}
 } //ende function generate_menu
