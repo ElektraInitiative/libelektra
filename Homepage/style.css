@@ -259,7 +259,7 @@ hr {
 }
 
 ul li {
-	list-style-image: url(images/img_arrow.png);
+	list-style-image: url(pic/img_arrow.png);
 }
 
 /*Textstrukturierung*/
@@ -395,8 +395,8 @@ a:hover {
 
 .mysmaller {
 	text-align: left;
-	margin-left: 15px;
-	margin-bottom: 15px;
+	margin-left: 5px;
+	margin-bottom: 5px;
 	font-family: verdana, arial, helvetica, sans-serif;
 	font-size: 0.8em;
 	list-style-type: none;
@@ -538,7 +538,7 @@ body{
 
 #header{
 	height: 100px;
-	background-image:url(images/header_repeat.jpg);
+	background-image:url(pic/header_repeat.jpg);
 	background-repeat:repeat-x
 }
 
@@ -550,7 +550,7 @@ body{
 #centre {
 	margin-left: 180px;
 	min-height:380px;
-	background-image:url(images/fond_bloc_text.gif); 
+	background-image:url(pic/fond_bloc_text.gif); 
 	background-position:left top;
 	background-repeat:no-repeat;
 	padding-top:15px;padding-left:35px;
@@ -625,7 +625,7 @@ a:hover{
 	font-family:Arial,Helvetica,sans-serif;
 	font-size:11px;color:#333; 
 	padding-left:18px; padding-top:7px; 
-	background-image:url(images/arrow.gif); 
+	background-image:url(pic/arrow.gif); 
 	background-position:left; 
 	background-repeat:no-repeat
 }
@@ -642,7 +642,7 @@ a:hover{
 	font-family:Arial, Helvetica, sans-serif;
 	font-size:11px;
 	display: block;color: #666; 
-	background-image:url(images/mv_repeat_h.gif); 
+	background-image:url(pic/mv_repeat_h.gif); 
 	background-repeat:repeat-x;
 	width:138px;
 	padding: .3em .5em;
@@ -659,8 +659,8 @@ a:hover{
 }
 
 #mysmaller ul{
-	margin-left: 15px;
-	padding-left: 15px;
+	margin-left: 5px;
+	padding-left: 5px;
 	list-style-type: none;
 }
 
@@ -668,14 +668,14 @@ a:hover{
 
 
 #navcontainer a:hover{
-	background-image:url(images/mv_repeat_h_on.gif);
+	background-image:url(pic/mv_repeat_h_on.gif);
 	background-repeat:repeat-x;color: #333;
 }
 
 #pied {
 	clear:both;
 	height: 60px;
-	background-image:url(images/footer.jpg); background-repeat:repeat-x; 
+	background-image:url(pic/footer.jpg); background-repeat:repeat-x; 
 	padding-top:8px:
 }
 
@@ -698,7 +698,7 @@ a:hover{
 	background-color:white;
 	border-bottom:1px dotted #ccc;
 	border-top:1px dotted #ccc;text-align:left; 
-	background-image:url(images/top.gif); 
+	background-image:url(pic/top.gif); 
 	background-repeat:no-repeat; 
 	background-position:left
 }
