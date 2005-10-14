@@ -15,9 +15,12 @@ void getChildKeys ();
 void getKey();
 void setNullKey();
 void setAnotherKey();
+void setNewKey();
+void delNewKey();
 
 #define CHILD_KEY_ROOT "user/test/another"
 #define KEY_ROOT "user/test/another/key"
+#define NEW_KEY "user/test/new/key"
 
 void printKey (Key * k)
 {
@@ -162,6 +165,37 @@ void setAnotherKey ()
 	keyDel (k);
 }
 
+/**This sets a valid key with a string and comment*/
+void setNewKey ()
+{
+	Key * k;
+	k = keyNew(NEW_KEY, KEY_SWITCH_END);
+	
+	keySetString (k, "whatta");
+	keySetComment(k, "commant");
+	
+	if (kdbSetKey (k) >= 0) {
+		fprintf (stderr, "key set\n");
+	} else {
+		fprintf (stderr, "Error in kdbSetKey, errno: %d\n", errno);
+		exit (0);
+	}
+	
+	printKey (k);
+
+	keyDel (k);
+}
+
+/**This removes the NEW_KEY*/
+void delNewKey ()
+{
+	Key * k;
+	k = keyNew(NEW_KEY, KEY_SWITCH_END);
+	
+	kdbRemoveKey (k);
+	
+	keyDel (k);
+}
 
 int main(int argc, char **argv) {
 	fprintf(stderr, "start app\n");
@@ -169,12 +203,12 @@ int main(int argc, char **argv) {
 	kdbOpen();
 	fprintf(stderr, "after kdbOpen\n");
 
-	// getChildKeys();
-	setNullKey();
-	setAnotherKey();
-	getKey();
-	//TODO: split backend testing and api testing!
-	// useKeySet();
+//	setKey();
+//	setNullKey();
+//	setAnotherKey();
+//	getKey();
+//	delNewKey();
+	setNewKey();
 	
 	/* Close the Key database */
 	kdbClose();
