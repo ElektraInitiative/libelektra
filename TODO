@@ -1,22 +1,18 @@
-Update the website and style for better browsing experience
-using CDATA only when needed in xml output
-mark useless functions as depreciated
-get PATH_MAX with pathconf (3)
+next release
+	mark useless functions as depreciated
+	local/(any folder)
+	doc(/usr/share/doc/kdb) hierachys
+	Statical build testing
+	write really good tutorial!
 
-local/(any folder), doc(/usr/share/doc/kdb) hierachys
-
-autoconf/make
-	libltdl3-dev: usr/include/ltdl.h
-
+finish
+	Berkeley DB backend
+	ini backend
+	Testing Framework
 
 improvements
 	Add methods for a better notification API, instead of monitoring
 	Write specifications for configuration trees (see /specs).
-	Statical build
-
-finish
-	Finish the Berkeley DB backend
-	Finish libini backend
 
 patches
 	Write a patch/backend for KConfigXT.
@@ -26,6 +22,7 @@ patches
 bindings
 	Perl
 	php (kontact: Kai-Uwe Behrmann <ku.b@gmx.de>)
+	phyton (kontact: Patrick Sabin <patrick.sabin@gmx.at>)
 
 backends
 	sql
@@ -34,7 +31,6 @@ backends
 wishlist
 	Syslog logging
 	escaping engine for xml (<>&) and ini (=;) stuff
-	write really good tutorial!
 
 security
 	check for leaks
@@ -46,12 +42,14 @@ contact
 
 porting
 	solaris
-	win32 (first mingw)
+	bsd
+	win32 (first with mingw)
 
 publish
 	freedesktop.org
 	gnu
 	newsgroups of unix programming
+	slashdot article
 
 completely new features (dont't expect them to be here soon)
 
