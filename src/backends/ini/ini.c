@@ -189,7 +189,7 @@ int open_file (char * filename, int mode)
 		return -1;
 	}
 
-	fd = open (filename, mode);
+	fd = open (filename, mode | O_CREAT);
 	if (fd == -1) {
 		fprintf (stderr, "Unable to open file\n");
 		return -1;
@@ -986,13 +986,18 @@ int kdbSetKey_ini(Key *origkey) {
 
 	keyInit (setKey);
 	keyInit (key);
-	fprintf (stderr, "before dup");
 	keyDup (origkey, setKey); // for writing
-	fprintf (stderr, "during dup");
 	keyDup (origkey, key);	// for searching
-	fprintf (stderr, "after dup");
 	
 	pos = IniSearchFileName(key, keyFileName);
+
+	if (pos == -1) // no such file exists
+	{
+		pos = IniGetFileName (key, keyFileName);
+		end = strrchr(keyFileName, '/');
+		*end = 0;
+		fprintf (stderr, "Can't find file, will create %s\n", keyFileName);
+	}
 	
 	fprintf (stderr, "kdbSetKey_ini(%s) entered\n", keyFileName);
 	
@@ -1035,10 +1040,12 @@ int kdbSetKey_ini(Key *origkey) {
 		}
 		oldpos = ftell (fc);
 	}
-	if (pos != 1) {	// key not found, leave it, so that app won't sigfault
-		errno = KDB_RET_NOKEY;
-		pos = -1;
+	if (pos != 1) {	// key not found, add to the end
 		fprintf (stderr, "Key not found!\n");
+		fseek (fc, 0, SEEK_END);
+		oldpos = ftell;
+		IniWriteKey (setKey, oldpos);
+		pos = 0;
 	} else if (pos == 1) { // key found, everything went ok!
 		pos = 0;
 	}
