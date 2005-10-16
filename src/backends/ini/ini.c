@@ -189,14 +189,27 @@ int open_file (char * filename, int mode)
 		return -1;
 	}
 
-	fd = open (filename, mode | O_CREAT);
+	fd = open (filename, mode);
 	if (fd == -1) {
-		fprintf (stderr, "Unable to open file\n");
-		return -1;
+		fprintf (stderr, "Will create new file\n");
+		fd = open (filename, mode | O_CREAT);
+		if (fd == -1)
+		{
+			fprintf (stderr, "Unable to open file\n");
+			perror ("Reason: ");
+			return -1;
+		}
+		ret = fchmod (fd, 0644);	// TODO: permissions!
+		if (ret == -1)
+		{
+			fprintf (stderr, "Unable to chmod file\n");
+			perror ("Reason: ");
+		}
 	}
 	
 	if (flock (fd, LOCK_EX) == -1) {
 		fprintf (stderr, "Unable to lock file\n");
+		perror ("Reason: ");
 		ret = -1;
 	}
 		
@@ -204,6 +217,7 @@ int open_file (char * filename, int mode)
 	fc = fdopen (fd,buffer);
 	if (fc == NULL) {
 		fprintf (stderr, "fdopen() failed\n");
+		perror ("Reason: ");
 		ret -2;
 	}
 	return ret;
@@ -439,6 +453,7 @@ size_t IniSearchFileName (Key * forKey, char * filename)
 	length = IniGetFileName (forKey, filename);
 	
 	do {
+		// fprintf (stderr, "Search %s\n", filename);
 		end = strrchr (filename, '/');
 		if (end == NULL) {
 			fprintf (stderr, "Could not find any file\n");
@@ -975,6 +990,7 @@ int kdbSetKey_ini(Key *origkey) {
 	char * keyFullName;
 	char * keyRoot;
 	char * end;
+	char * fil;
 
 	Key psetKey;
 	Key pkey;
@@ -983,6 +999,8 @@ int kdbSetKey_ini(Key *origkey) {
 
 	long oldpos, newpos;
 	int needed_size;
+	
+	fprintf (stderr, "kdbSetKey_ini(%s) entered\n", keyFileName);
 
 	keyInit (setKey);
 	keyInit (key);
@@ -993,13 +1011,28 @@ int kdbSetKey_ini(Key *origkey) {
 
 	if (pos == -1) // no such file exists
 	{
+		// fprintf (stderr, "SearchFileName failed\n");
 		pos = IniGetFileName (key, keyFileName);
-		end = strrchr(keyFileName, '/');
+		end = strrchr(keyFileName, '/'); // key abschneiden
 		*end = 0;
-		fprintf (stderr, "Can't find file, will create %s\n", keyFileName);
+		fil = strrchr(keyFileName, '/'); // das hier wird file sein
+		end = keyFileName +1;	// fange suche nach dir an
+		while (1) {
+			end = strchr(end+1, '/');
+			// fprintf (stderr, "file: %s, end: %s\n", keyFileName, end);
+			if (end == NULL) break;
+			* end = '\0';
+			// fprintf (stderr, "Create Folder %s\n", keyFileName);
+			if (mkdir (keyFileName, 0777) == -1)
+			{
+				fprintf (stderr, "Could not create Folder %s\n", keyFileName);
+				perror ("Reason: ");
+			}
+			* end = '/';			
+		}
+		// fprintf (stderr, "Can't find file, will create %s\n", keyFileName);
 	}
 	
-	fprintf (stderr, "kdbSetKey_ini(%s) entered\n", keyFileName);
 	
 	keySize = keyGetNameSize (key);
 	keyFullName = malloc (keySize+1);
@@ -1107,7 +1140,11 @@ int IniStatFile (Key * key, char * filename)
 	keySetAccess(key,buf.st_mode);
         keySetUID(key,buf.st_uid);
         keySetGID(key,buf.st_gid);
-        if (S_ISDIR(buf.st_mode)) keySetType(key,KEY_TYPE_DIR);
+        if (S_ISDIR(buf.st_mode))
+	{
+		keySetType(key,KEY_TYPE_DIR);
+		fprintf (stderr, "Keytype set to DIR\n");
+	}
         else if (S_ISREG (buf.st_mode)) keySetType(key, KEY_TYPE_FILE);
         else if (S_ISLNK (buf.st_mode)) keySetType(key, KEY_TYPE_LINK);
         key->atime=buf.st_atime;
