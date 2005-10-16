@@ -50,7 +50,7 @@ AC_CONFIG_SUBDIRS(libltdl)
 
 # xsltproc
 AC_PATH_PROG(xsltproc, xsltproc, "no")
-if test $xsltproc!="no"; then
+if test x$xsltproc != xno; then
 	# xslproc was found, check for stylesheet
 	AC_CHECK_FILE([/usr/share/sgml/docbook/xsl-stylesheets/manpages/docbook.xsl],
 		      [[dbroot="/usr/share/sgml/docbook/xsl-stylesheets/"]],
