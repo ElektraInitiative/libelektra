@@ -1,5 +1,5 @@
 Name:          elektra
-Version:       _VERSION_
+Version:       @VERSION@
 %define myRelease 1
 %define vepoch 1
 Release:       0.fdr.%{vepoch}.%{myRelease}

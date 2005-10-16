@@ -6,7 +6,7 @@
 # $Id$
 
 AC_PREREQ(2.59)
-AC_INIT(elektra, 0.5.0.7, avi@unix.sh)
+AC_INIT(elektra, 0.5.1, avi@unix.sh)
 AC_CONFIG_SRCDIR(src/libelektra/libkdb.c)
 AM_INIT_AUTOMAKE
 AC_CONFIG_HEADER([config.h])
@@ -133,8 +133,9 @@ AC_OUTPUT([src/Makefile
 	   example/Makefile
 
 	   doc/Makefile
-	  
-	   
+	    
 	   elektra.pc
+
+	   elektra.spec
 	   ])
 
