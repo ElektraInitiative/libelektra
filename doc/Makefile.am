@@ -1,14 +1,15 @@
 # $Id$
 # $LastChangedBy: aviram $
 
-if HAVE_XSLTPROC
-if HAVE_STYLESHEET
-
-EXTRA_DIST=kdb.1.xml elektra.7.xml elektra.5.xml author.xml bestpract.xml rgexample.xml rgcmd.xml storage.xml overview.xml
 
 man1_MANS = kdb.1
 man5_MANS = elektra.5
 man7_MANS = elektra.7
+
+EXTRA_DIST=kdb.1.xml elektra.7.xml elektra.5.xml author.xml bestpract.xml rgexample.xml rgcmd.xml storage.xml overview.xml $(man1_MANS) $(man5_MANS) $(man7_MANS)
+
+if HAVE_XSLTPROC
+if HAVE_STYLESHEET
 
 # Layout and confiruations to generate HTML for the web site
 # HTML_TITLE_LAYOUT=html-titlepage-layout.tpl

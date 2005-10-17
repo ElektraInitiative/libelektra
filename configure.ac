@@ -19,6 +19,13 @@ AC_ARG_WITH(backend,
 	     [[default_backend=filesys]]
 	     )
 
+# Select docbook.xsl
+#AC_ARG_WITH(docbook-xsl,
+#	    [AC_HELP_STRING(--with-docbook-xsl=<path to docbook.xsl>,
+#	     [Set path to docbook.xsl used for generate manpage.])],
+#	     [[default_docbook-xsl=$withval]],
+#	     [[default_docbook-xsl=
+
 # Be typo friendly, check if this backend really exist 
 AC_CHECK_FILE([src/backends/$default_backend/$default_backend.c],
 	      AC_SUBST(default_backend),
