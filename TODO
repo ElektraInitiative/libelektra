@@ -1,3 +1,16 @@
+
+
+THE NEW NOTIFICATION API SHOULD BE:
+void kdbRegisterCallback(KeySet *interests, u_int32_t diffMask,
+    KdbCallback *cb, void *userdata);
+
+void kdbUnregisterCallback(KeySet *interests, u_int32_t diffMask,
+    KdbCallback *cb, void *userdata);
+
+void kdbDeliverEvents(long iterations, int sleep);
+
+
+
 next release
 	mark useless functions as depreciated
 	local/(any folder)
@@ -52,16 +65,6 @@ publish
 	slashdot article
 
 completely new features (dont't expect them to be here soon)
-
-
-THE NEW NOTIFICATION API SHOULD BE:
-void kdbRegisterCallback(KeySet *interests, u_int32_t diffMask,
-    KdbCallback *cb, void *userdata);
-
-void kdbUnregisterCallback(KeySet *interests, u_int32_t diffMask,
-    KdbCallback *cb, void *userdata);
-
-void kdbDeliverEvents(long iterations, int sleep);
 
 
 libcomment
