@@ -1,0 +1,301 @@
+.\" ** You probably do not want to edit this file directly **
+.\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
+.\" Instead of manually editing it, you probably should edit the DocBook XML
+.\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
+.TH "KDB" "1" "March 2004" "Elektra Initiative" ""
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
+kdb \- Elektra key database command line administration tool
+.SH "SYNOPSIS"
+.HP 8
+\fBkdb get\fR [\fB\-dlr\fR] key/name
+.HP 8
+\fBkdb set\fR [\fB\-t\fR\ \fBtype\fR] [\fB\-c\fR\ \fB"A\ comment\ about\ this\ key"\fR] [\fB\-m\fR\ \fBmode\fR] [\fB\-u\fR\ \fBuid\fR] [\fB\-g\fR\ \fBgid\fR] key/name "the\ value"
+.HP 8
+\fBkdb set\fR [\fB\-t\fR\ \fBtype\fR] [\fB\-m\fR\ \fBmode\fR] [\fB\-c\fR\ \fB"A\ comment"\fR] key/name \-\- "the\ value"
+.HP 8
+\fBkdb set\fR [\fB\-t\fR\ \fBtype\fR] [\fB\-b\fR\ \fBfile\fR] key/name
+.HP 7
+\fBkdb ls\fR [\fB\-lRfv\fR] [key/dir\ |\ key/name]
+.HP 7
+\fBkdb ls\fR [\fB\-lRfvx\fR] [key/dir\ |\ key/name] > keys.xml
+.HP 9
+\fBkdb edit\fR [\fB\-R\fR] [key/dir\ |\ key/name]
+.HP 7
+\fBkdb rm\fR key/name
+.HP 7
+\fBkdb mv\fR key/src key/dest
+.HP 7
+\fBkdb ln\fR key/src key/dest
+.HP 11
+\fBkdb export\fR [\fB\-f\fR] system/some/tree.root > [file.xml]
+.HP 11
+\fBkdb import\fR < file.xml
+.HP 11
+\fBkdb import\fR file.xml
+.HP 12
+\fBkdb monitor\fR some/key/name
+Description.PP
+The
+\fBkdb\fR
+command provide ways to manipulate the Elektra keys database (see
+\fBelektra\fR(7)) keys.
+.PP
+The subcommands implemented are very similar to regular UNIX commands like
+\fBls\fR, and
+\fBrm\fR, specially in their output and options.
+Subcommands.TP
+\fBget\fR
+Get the value from the specified key. Accepts options:
+\fB\-d\fR,
+\fB\-l\fR,
+\fB\-f\fR,
+\fB\-s\fR
+.TP
+\fBset\fR
+Set the value to the specified key. Accepts options:
+\fB\-c\fR,
+\fB\-t\fR,
+\fB\-m\fR,
+\fB\-b\fR
+.TP
+\fBls\fR
+As the
+\fBls\fR(1)
+command, list key names for the specified key, or children keys, if specified a folder key. The
+\fB\-v\fR
+argument will make it show also the values of each key. The
+\fB\-d\fR
+(descriptive) will make it show the comment, key name and its value, as you are watching a plain text file. Accepts options:
+\fB\-x\fR,
+\fB\-d\fR,
+\fB\-l\fR,
+\fB\-f\fR,
+\fB\-v\fR,
+\fB\-R\fR
+.TP
+\fBln\fR
+Creates a key that is a symbolic links to another key.
+.TP
+\fBmv\fR
+Move, or renames a key. Currently it can't move keys across different filesystems.
+.TP
+\fBrm\fR
+As the
+\fBrm\fR(1)
+command, removes the key specified.
+.TP
+\fBedit\fR
+A very powerfull subcommand that lets you edit an XML representation of the keys. The parameters it accepts is usually a parent key, so its child keys will be gathered. Can be used with the
+\fB\-R\fR
+flag to work recursively. The editor used is the one set in the
+\fB$EDITOR\fR
+environment variable, or
+\fBvi\fR. After editing the keys,
+\fBkdb edit\fR
+will analyze them and commit only the changed keys, remove the keys removed, and add the keys added.
+.TP
+\fBexport\fR, \fBsave\fR
+Export a subtree of keys to XML. If no subtree is defined right after the
+\fBexport\fR
+command,
+\fIsystem\fR
+and current
+\fIuser\fR
+trees will be exported. Output is written to standard output. The output encoding will allways be UTF\-8, regardeless of your system encoding. UTF\-8 is the most universal charset you can get when exchanging data between multiple systems. Accepts
+\fB\-f\fR.
+.TP
+\fBimport\fR, \fBload\fR
+Import an XML representation of keys and save it to the keys database. If no filename is passed right after the
+\fBimport\fR
+command, standard input is used.
+.TP
+\fBmonitor\fR, \fBmon\fR
+Monitor a key for some value change. It will block your command line until a change in the key value is detected, then return its new value.
+Options.TP
+\fB\-R\fR
+Causes to work recursively. In
+\fBls\fR, will list recursively.
+.TP
+\fB\-x\fR
+Makes
+\fBls\fR
+output an XML representation of the keys, instead of an
+\fBls\fR\-compatible output.
+.TP
+\fB\-l\fR
+Causes to display long results. With
+\fBls\fR, will generate lists similar to
+\fBls \-l\fR. With
+\fBget\fR, will show also the key name.
+.TP
+\fB\-a\fR
+Causes
+\fBls\fR
+to display also inactive keys. Generate lists similar to
+\fBls \-a\fR. Inactive keys are keys which basename begins with a '.' (dot). An example of inactive key:
+\fIsystem/sw/XFree/current/Monitor/.Monitor1\fR
+.TP
+\fB\-f\fR
+Causes to work with full key names. A full key name makes sense only on
+\fIuser/*\fR
+keys, and differentiate from the regular key names in specifying the owner user. If the current user is
+\fIsomeuser\fR, the
+\fIuser/some/key\fR
+full name is
+\fIuser:someuser/some/key\fR. Makes effect in
+\fBls\fR,
+\fBexport\fR
+and
+\fBget\fR
+subcommands.
+.TP
+\fB\-d\fR
+Causes
+\fBget\fR
+to work descriptivelly. When requesting a key it will show the comment, key name and its value in a fancy format
+.TP
+\fB\-s\fR
+Causes
+\fBget\fR
+to be more friendly to Shell scripts. For example, when requesting
+\fIuser/env/env2/PATH\fR, the output will be PATH="the value", that is, only the basename of the key will be showed and the value will be surrounded by ' " '.
+.TP
+\fB\-t type\fR
+When
+\fBset\fRting a key's value, you can specify the type with this switch. Currently accepted types are
+\fBstring\fR
+for plain text,
+\fBbin\fR
+for binary as\-is values,
+\fBdir\fR
+to create folder keys and
+\fBlink\fR
+to create symbolic links between keys. Plain text are always stored as
+\fBUTF\-8\fR(7)
+in Elektra, regardeless of your current encoding (\fB$LANG\fR). If you want to force a value to be stored without the
+\fBUTF\-8\fR(7)
+encoding (a bad idea), you can set it as binary. Binary values should be avoided, because they are black boxes for system administrators.
+.TP
+\fB\-b filename\fR
+Set the key value as the content of file
+\fIfilename\fR. This option is more usefull when setting binary keys.
+.TP
+\fB\-m mode\fR
+For the
+\fBset\fR
+command. Will set the key access permission to
+\fBmode\fR, which must be an octal number as for
+\fBchmod\fR(1).
+.TP
+\fB\-u uid\fR
+Create the key with
+\fBuid\fR
+user ID. It can be a user name or a uid number.
+.TP
+\fB\-g gid\fR
+Create the key with
+\fBgid\fR
+group ID. It can be a group name or a gid number
+.TP
+\fB\-c comment\fR
+When
+\fBset\fRting keys, you can use this argument to set a descriptive comment for it. This comment is exactly as a comment in a plain text configuration file. The comment is stored as
+\fBUTF\-8\fR(7)
+regardeless of your current encoding (\fB$LANG\fR).
+.TP
+\fB\-v\fR
+With the
+\fBls\fR
+subcommand, will make it show also the value stored in the key.
+.TP
+\fB\-\-\fR
+With the
+\fBset\fR
+subcommand, everything after it will be considered the value, even text with dashes (\-).
+Best Practices When Creating Keys.PP
+When using Elektra to store your application's configuration and state, please keep in mind the following rules:
+.TP 3
+\(bu
+You are not allowed to create keys right under
+\fIsystem\fR
+or
+\fIuser\fR.
+.TP
+\(bu
+You are not allowed to create folder keys right under
+\fIsystem\fR
+or
+\fIuser\fR. They are reserved for very essential OS subsystems.
+.TP
+\(bu
+The keys for your application, called say
+\fIMyApp\fR, should be created under
+\fIsystem/sw/MyApp\fR
+and/or
+\fIuser/sw/MyApp\fR.
+.TP
+\(bu
+It is suggested to make your application look for default keys under
+\fIsystem/sw/MyApp/current\fR
+and/or
+\fIuser/sw/MyApp/current\fR. This way, from a sysadmin perspective, it will be possible to copy the
+\fIsystem/sw/MyApp/current\fR
+tree to something like
+\fIsystem/sw/MyApp/old\fR, and keep system clean and organized.
+.SH "ENVIRONMENT"
+.PP
+\fBKDB_ROOT\fR
+if defined, prepends it to key names.
+.PP
+\fBKDB_BACKEND\fR
+defines the name of another backend plugin library to use
+ExamplesSetting Keys.PP
+bash$\fBkdb set \-c "My first key" user/example/key "Some nice value"\fR
+.PP
+bash$\fBkdb set user:luciana/example/key \-\- "Some \- nice \- value with dashes"\fR
+.PP
+bash#\fBKDB_ROOT=user:http/sw/httpd kdb set \-u nobody \-g http key "Some value"\fR
+.PP
+bash$\fBkdb set \-b image.png \-t bin user/example/binaryKey\fR
+.PP
+bash$\fBkdb set \-b file.txt user/example/regularKey\fR
+.PP
+bash#\fBkdb set \-t link system/sw/XFree/current system/sw/XFree/handmade\fR
+Getting Keys.PP
+bash$\fBKDB_ROOT=user/example kdb get key\fR
+.PP
+bash$\fBKDB_BACKEND=gconf kdb get user/sw/gnome\-terminal/global/active_encodings\fR
+Listing.PP
+bash$\fBkdb ls \-laR user:valeria\fR
+.PP
+bash$\fBkdb ls \-lR system/sw/xorg/current\fR
+.PP
+bash$\fBKDB_ROOT=system/sw kdb ls \-lR xorg\fR
+.PP
+bash$\fBKDB_BACKEND=fstab kdb ls \-Rv system/filesystems\fR
+Miscelaneous.PP
+bash#\fBkdb ln system/sw/xorg/handmade system/sw/xorg/current\fR
+.PP
+bash#\fBkdb mv system/sw/xorg/current system/sw/xorg/old\fR
+.PP
+bash#\fBkdb rm system/inittab/rc4\fR
+.PP
+bash$\fBKDB_BACKEND=gconf kdb rm user/gconfKey\fR
+XML Import and Export.PP
+bash#\fBkdb export user/sw/app | sed \-e 's|/app/|/app2/|g' | kdb import\fR
+.PP
+bash#\fBKDB_ROOT=system/sw kdb export myapp > myappconf.xml\fR
+.PP
+bash#\fBkdb import myappconf.xml\fR
+.PP
+bash$\fBKDB_BACKEND=gconf kdb export user/sw\fR
+.SH "SEE ALSO"
+.PP
+\fBelektra\fR(7),
+\fBelektra\fR(5)
+.SH "AUTHOR"
+Avi Alkalay <avi at unix.sh>. 

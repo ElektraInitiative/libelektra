@@ -1,0 +1,132 @@
+.\" ** You probably do not want to edit this file directly **
+.\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
+.\" Instead of manually editing it, you probably should edit the DocBook XML
+.\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
+.TH "ELEKTRA" "5" "March 2004" "Elektra Initiative" ""
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
+elektra \- A framework to store configuration atoms hierarchically
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+\fBNote\fR
+.PP
+This section is provided for the sake of the openness of Elektra. You should not access the Elektra's key files directly. You should use the API or the
+\fBkdb\fR(1)
+command for that.
+Elektra Key Storage Strategy.PP
+Elektra implements a very simple way to store the key\-value pairs. The value (and some metainfo) for each key is stored in a single file. The key name (and some of its context) is sufficient to find the file name that stores the value.
+.PP
+The
+\fIsystem/*\fR
+keys are stored under
+\fI/etc/kdb/\fR, and the
+\fIuser/*\fR
+keys can be found under each user's
+\fI$HOME/.kdb/\fR.
+.PP
+Here are some examples of key names, and where Elektra goes to look for them in the disk.
+.TP
+\fIsystem/sw/XFree86/screen0/driver\fR
+Maps to:
+\fI/etc/kdb/system/sw/XFree86/screen0/driver\fR
+.TP
+\fIuser/env/PATH\fR
+Maps to:
+\fI~$USER/.kdb/user/env/PATH\fR
+.TP
+\fIuser:luciana/env/PATH\fR
+Maps to:
+\fI~luciana/.kdb/user/env/PATH\fR
+.TP
+\fIsystem/mime.types/some.mime\fR
+Maps to:
+\fI/etc/kdb/system/mime.types/some.mime\fR
+.PP
+Some may think that one file per key will consume many filesystem i\-nodes. Actually, when not using Reiser4 filesystem, it may consume some more disk space, and it may also be not so efficient than reading one single text file, as KConfig does. But Elektra's nature lets applications load their keys on demand; so it is possible to avoid the read\-all\-use\-some approach. Writing updated keys back to disk is also more robust, because unchanged keys won't be touched, different from a single file approach, that must be entirelly rewritten.
+.PP
+Besides that, big applications (like Mozilla, Konqueror, KDE, Gnome) key gathering time is a very small part of what they have to do to start up. And the benefits of an homogeneous key database to the entire system are much bigger then these issues. Think about a common integration between everything, flexibility, security granularity and openness.
+XML, Storage Backends and Elektra.PP
+This document you are just reading was written in DocBook XML. XML is a wonderfull technology, but brings no value to this software. Two main goals of the Elektra Project are to be lightweight, and to be accessible by early boot stage programs like
+\fB/sbin/init\fR
+and the
+\fI/etc/rc.d\fR
+scripts.
+.PP
+XML parsing libraries are memory eaters, not so fast as we can expect, and they are usualy located under
+\fI/usr/lib\fR, which may be unavailable to these early boot stage needs.
+.PP
+Some discussions asked for a sort of plugin architecture to let user decide the format to store keys content. Well, the info that goes into the key file is not big deal as you'll see, and sometimes, too many options is bad business, and not the path for the Elektra Project.
+.PP
+So no XML, no plugin architecture, no sophistication. Lets keep it simple and generic. A very straight forward text based file format was defined to store a single key value.
+Key Files Format.PP
+Inside Elektra key database, each key is a file, and every file is a key. So most of the key's metainformation are actually its file attributes, as you can see in a regular
+\fBls\fR(1)
+command output.
+.PP
+So what needs to be stored inside the key file is the data type (binary or text), key comment and the actual data. The format of each key file is:
+.sp
+.nf
+File Format Version
+Data Type
+As many lines of
+comments as we want (UTF\-8 encoded)
+<DATA>
+The data encoded as text
+		
+.fi
+.PP
+So if we set the key
+\fIsystem/hw/eth0/driver\fR
+as type
+\fBString\fR
+and value "\fI3com\fR", and comment "\fIThe driver for my network interface\fR", we'll find the file
+\fI/etc/kdb/system/hw/eth0/driver\fR
+containing:
+.sp
+.nf
+RG002
+40
+The driver for my network interface
+<DATA>
+3com
+		
+.fi
+.PP
+Other example: setting
+\fIuser/tmp/proprietary\fR
+as
+\fBBinary\fR, and value "\fIA groovy data I want to hide\fR", and comment "\fIStay away from here\fR", you'll get in
+\fI~$USER/.kdb/user/tmp/proprietary\fR
+the following:
+.sp
+.nf
+RG002
+20
+Stay away from here
+<DATA>
+41206772 6f6f7679 20646174 61204920 77616e74 20746f20 68696465
+		
+.fi
+.PP
+The current data types are:
+.TP
+Between 20 and 39
+Binary value. The data will be encoded into a text format. Today only type 20 is used, and means a raw stream of bytes with no special semantics to Elektra. The other values are reserved for future use; being treated still as binary values but possibly with some semantics to Elektra or a higher level application.
+.TP
+40 up to 254
+Text, UTF\-8 encoded. Values higher then 40 are reserved for future or application specific implementations of more abstract data types, like time/date, color, font, etc. But always represented as pure text that can be edited in any text editor like
+\fBvi\fR(1).
+.PP
+Types between 0 and 19 are used only internaly in the API, and will never appear into a key file. They are used to define meta keys as directory, link, etc.
+.SH "SEE ALSO"
+.PP
+\fBkdb\fR(1),
+\fBelektra\fR(7)
+.SH "AUTHOR"
+Avi Alkalay <avi at unix.sh>. 
