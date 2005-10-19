@@ -140,7 +140,9 @@ AC_OUTPUT([src/Makefile
 	   example/Makefile
 
 	   doc/Makefile
-	    
+	   
+	   scripts/Makefile
+	   
 	   elektra.pc
 
 	   elektra.spec
