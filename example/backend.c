@@ -15,12 +15,14 @@ void getChildKeys ();
 void getKey();
 void setNullKey();
 void setAnotherKey();
+void setDirKey();
 void setNewKey();
 void delNewKey();
 
 #define CHILD_KEY_ROOT "user/test/another"
 #define KEY_ROOT "user/test/another/key"
 #define NEW_KEY "user/test/new/key"
+#define DIR_KEY "user/test/dir/file/key"
 
 void printKey (Key * k)
 {
@@ -165,6 +167,27 @@ void setAnotherKey ()
 	keyDel (k);
 }
 
+/**This sets a key where generation of new dir is required*/
+void setDirKey ()
+{
+	Key * k;
+	k = keyNew(DIR_KEY, KEY_SWITCH_END);
+	
+	keySetString (k, "hey");
+	keySetComment(k, "whatsnew");
+	
+	if (kdbSetKey (k) >= 0) {
+		fprintf (stderr, "key set\n");
+	} else {
+		fprintf (stderr, "Error in kdbSetKey, errno: %d\n", errno);
+		exit (0);
+	}
+	
+	printKey (k);
+
+	keyDel (k);
+}
+
 /**This sets a valid key with a string and comment*/
 void setNewKey ()
 {
@@ -208,7 +231,8 @@ int main(int argc, char **argv) {
 //	setAnotherKey();
 //	getKey();
 //	delNewKey();
-	setNewKey();
+//	setNewKey();
+	setDirKey();
 	
 	/* Close the Key database */
 	kdbClose();
