@@ -142,6 +142,9 @@ AC_OUTPUT([src/Makefile
 	   doc/Makefile
 	   
 	   scripts/Makefile
+
+	   xmldtd/Makefile
+	   xmlschema/Makefile
 	   
 	   elektra.pc
 
