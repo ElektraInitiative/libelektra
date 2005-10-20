@@ -1208,7 +1208,9 @@ int commandHelp() {
 
 int loadToolsLib(void) {
 	lt_dlhandle dlhandle=0;
-	
+
+	lt_dlinit();
+
 	dlhandle=lt_dlopen("libelektratools.so");
 	if (dlhandle == 0) {
 		fprintf(stderr, "kdb: %s\n",dlerror());
