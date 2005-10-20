@@ -20,11 +20,13 @@ AC_ARG_WITH(backend,
 	     )
 
 # Select docbook.xsl
-#AC_ARG_WITH(docbook-xsl,
-#	    [AC_HELP_STRING(--with-docbook-xsl=<path to docbook.xsl>,
-#	     [Set path to docbook.xsl used for generate manpage.])],
-#	     [[default_docbook-xsl=$withval]],
-#	     [[default_docbook-xsl=
+AC_ARG_WITH(docbook,
+	    [AC_HELP_STRING(--with-docbook-xsl=<path to docbook.xsl>,
+	     [Set path to docbook.xsl used for generate manpage.])],
+	     [[default_docbook=$withval]],
+	     [[default_docbook=/usr/share/sgml/docbook/xsl-stylesheets/]]
+	     )
+AC_SUBST(default_docbook)
 
 # Be typo friendly, check if this backend really exist 
 AC_CHECK_FILE([src/backends/$default_backend/$default_backend.c],
@@ -57,13 +59,13 @@ AC_CONFIG_SUBDIRS(libltdl)
 
 # xsltproc
 AC_PATH_PROG(xsltproc, xsltproc, "no")
-if test x$xsltproc != xno; then
+if test x$default_docbook != xno; then
 	# xslproc was found, check for stylesheet
-	AC_CHECK_FILE([/usr/share/sgml/docbook/xsl-stylesheets/manpages/docbook.xsl],
-		      [[dbroot="/usr/share/sgml/docbook/xsl-stylesheets/"]],
+	AC_CHECK_FILE([$default_docbook],
+		      [[dbroot=$default_docbook]],
 		      [[dbroot="no"]])
 	AC_SUBST(dbroot)
-fi
+fi 
 AM_CONDITIONAL(HAVE_XSLTPROC, test x$xsltproc != xno)
 AM_CONDITIONAL(HAVE_STYLESHEET, test x$dbroot != xno)
 
