@@ -3,36 +3,36 @@
 # Bootstraping Elektra
 echo "BOOTSTRAPING ELEKTRA"
 echo "LIBTOOLIZE"
-libtoolize --force
+libtoolize
 
 echo "ACLOCAL"
-aclocal --force
+aclocal
 
 echo "AUTOHEADER"
-autoheader --force
+autoheader
 
 echo "AUTOMAKE"
-automake --add-missing --force
+automake --add-missing
 
 echo "AUTOCONF"
-autoconf --force
+autoconf
 
 # Bootstraping libltdl
 echo "BOOTSTRAPING LIBLTDL"
 cd libltdl
 echo "LIBTOOLIZE"
-libtoolize --force
+libtoolize
 
 echo "ACLOCAL"
-aclocal --force
+aclocal
 
 echo "AUTOHEADER"
-autoheader --force
+autoheader
 
 echo "AUTOMAKE"
-automake --add-missing --force
+automake --add-missing
 
 echo "AUTOCONF"
-autoconf --force
+autoconf
 
 cd ..
