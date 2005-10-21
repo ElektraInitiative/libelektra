@@ -6,7 +6,7 @@ Release:       0.fdr.%{vepoch}.%{myRelease}
 Source:        http://aleron.dl.sourceforge.net/sourceforge/elektra/%{name}-%{version}.tar.gz
 Group:         System Environment/Libraries
 License:       BSD
-URL:           http://elektra.sourceforge.net
+URL:           http://www.libelektra.org
 BuildRoot:     %{_tmppath}/%{name}-%{version}-build
 BuildRequires: doxygen docbook-style-xsl db4-devel GConf2-devel libxml2-devel automake autoconf libtool /usr/bin/xsltproc
 Summary:       A key/value pair database to store software configurations
@@ -17,14 +17,14 @@ Summary:       A key/value pair database to store software configurations
 %define _sysconfdir /etc
 
 %description
-The Elektra Project provides a framework to store generic configuration data
-in an hierarchical key-value pair database, instead of a human-readable only
-text file.
-
-This way any software can read/save his configuration using a consistent API.
-Also, applications can be aware of other applications configurations,
-leveraging easy application integration.
-
+Elektra provides a universal and secure framework to store configuration
+parameters in a hierarchical key-value pair mechanism, instead of each
+program using its own text configuration files. This allows any program
+to read and save its configuration with a consistent API, and allows
+them to be aware of other applications' configurations, permitting
+easy application integration. While architecturally similar to other OS
+registries, Elektra does not have most of the problems found in those
+implementations.
 
 %package devel
 Summary:      Include files and API documentation for Elektra Project
@@ -32,25 +32,16 @@ Group:        Development/System
 Requires:     elektra = %{version}-%{release}
 
 %description devel
-The Elektra Project provides a framework to store generic configuration data
-in an hierarchical key-value pair database, instead of a human-readable only
-text file.
+Elektra provides a universal and secure framework to store configuration
+parameters in a hierarchical key-value pair mechanism, instead of each
+program using its own text configuration files. This allows any program
+to read and save its configuration with a consistent API, and allows
+them to be aware of other applications' configurations, permitting
+easy application integration. While architecturally similar to other OS
+registries, Elektra does not have most of the problems found in those
+implementations.
 
-This way any software can read/save his configuration using a consistent API.
-Also, applications can be aware of other applications configurations,
-leveraging easy application integration.
-
-This package contains the include files and API manual pages to use the Elektra
-API in C.
-
-It also provides the framework to create storage backends to libelektra.so
-
-
-
-
-
-
-
+This Package contains devel parts.
 
 
 %package backend-gconf
@@ -60,19 +51,17 @@ Requires:     elektra
 
 
 %description backend-gconf
-The Elektra Project provides a framework to store generic configuration data
-in an hierarchical key-value pair database, instead of a human-readable only
-text file.
-
-This way any software can read/save his configuration using a consistent API.
-Also, applications can be aware of other applications configurations,
-leveraging easy application integration.
+Elektra provides a universal and secure framework to store configuration
+parameters in a hierarchical key-value pair mechanism, instead of each
+program using its own text configuration files. This allows any program
+to read and save its configuration with a consistent API, and allows
+them to be aware of other applications' configurations, permitting
+easy application integration. While architecturally similar to other OS
+registries, Elektra does not have most of the problems found in those
+implementations.
 
 This package contains a GConf backend for Elektra, to let Elektra use a GConf
 daemon to store its keys.
-
-
-
 
 
 %package backend-berkeleydb
@@ -82,13 +71,14 @@ Requires:     elektra
 
 
 %description backend-berkeleydb
-The Elektra Project provides a framework to store generic configuration data
-in an hierarchical key-value pair database, instead of a human-readable only
-text file.
-
-This way any software can read/save his configuration using a consistent API.
-Also, applications can be aware of other applications configurations,
-leveraging easy application integration.
+Elektra provides a universal and secure framework to store configuration
+parameters in a hierarchical key-value pair mechanism, instead of each
+program using its own text configuration files. This allows any program
+to read and save its configuration with a consistent API, and allows
+them to be aware of other applications' configurations, permitting
+easy application integration. While architecturally similar to other OS
+registries, Elektra does not have most of the problems found in those
+implementations.
 
 This package contains a Berkeley DB backend for Elektra, to let Elektra use
 Berkeley DB databases to store its keys.
