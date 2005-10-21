@@ -16,7 +16,7 @@ AC_ARG_WITH(ulibdir,
 	    [AC_HELP_STRING(--with-ulibdir=<path to lib>,
 	     [Set the path for usr lib.])],
 	     [[ulibdir=$withval]],
-	     [[ulibdir='${exec_prefix}/usr/lib']]
+	     [[ulibdir='${prefix}/lib']]
 	     )
 AC_SUBST(ulibdir)
 
