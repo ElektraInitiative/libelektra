@@ -447,7 +447,7 @@ size_t IniGetFileName (Key * forKey, char * filename)
 size_t IniSearchFileName (Key * forKey, char * filename)
 {
 	size_t length;
-	u_int8_t info = 0;
+	uint8_t info = 0;
 	char * end;
 
 	length = IniGetFileName (forKey, filename);
@@ -1202,7 +1202,7 @@ int kdbSetKeys_ini(KeySet *ks) {
  * @see kdbMonitorKeys() for expected behavior.
  * @ingroup ini
  */
-u_int32_t kdbMonitorKeys_ini(KeySet *interests, u_int32_t diffMask,
+uint32_t kdbMonitorKeys_ini(KeySet *interests, uint32_t diffMask,
 		unsigned long iterations, unsigned sleep) {
 	fprintf (stderr, "Monitor many Keys at once\n");
 	return 0;
@@ -1219,7 +1219,7 @@ u_int32_t kdbMonitorKeys_ini(KeySet *interests, u_int32_t diffMask,
  * @see kdbMonitorKey() for expected behavior.
  * @ingroup ini
  */
-u_int32_t kdbMonitorKey_ini(Key *interest, u_int32_t diffMask,
+uint32_t kdbMonitorKey_ini(Key *interest, uint32_t diffMask,
 		unsigned long iterations, unsigned sleep) {
 	fprintf (stderr, "Monitor a key\n");
 	return 0;
