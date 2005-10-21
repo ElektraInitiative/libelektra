@@ -11,6 +11,15 @@ AC_CONFIG_SRCDIR(src/libelektra/libkdb.c)
 AM_INIT_AUTOMAKE
 AC_CONFIG_HEADER([config.h])
 
+# set usr/lib path
+AC_ARG_WITH(ulibdir,
+	    [AC_HELP_STRING(--with-ulibdir=<path to lib>,
+	     [Set the path for usr lib.])],
+	     [[ulibdir=$withval]],
+	     [[ulibdir='${exec_prefix}/usr/lib']]
+	     )
+AC_SUBST(ulibdir)
+
 # Default backend selection (Set to 'filesys' as default)
 AC_ARG_WITH(backend,
 	    [AC_HELP_STRING(--with-default-backend=<backend>,
