@@ -392,7 +392,7 @@ void listSingleKey(Key *key) {
 	if (argFullName) keyGetFullName(key,p,sizeof(buffer)-(p-buffer));
 	else keyGetName(key,p,sizeof(buffer)-(p-buffer));
 	if (argValue && (keyGetValueSize(key)>0)) {
-		u_int8_t ktype;
+		uint8_t ktype;
 
 		p+=strlen(p);
 		*p='='; p++;
@@ -812,7 +812,7 @@ int commandGet() {
 	char *buffer;
 	char *p;
 	size_t size,cs=0;
-	u_int8_t keyType;
+	uint8_t keyType;
 
 	if (!argKeyName) {
 		fprintf(stderr,"kdb get: No key name\n");
@@ -1153,7 +1153,7 @@ int commandExport() {
  */
 int commandMonitor() {
 	Key *toMonitor;
-	u_int32_t diff;
+	uint32_t diff;
 	
 	toMonitor=keyNew(argKeyName,KEY_SWITCH_NEEDSYNC,KEY_SWITCH_END);
 	
