@@ -38,6 +38,7 @@ $LastChangedBy: aviram $
 #include <errno.h>
 #include <stdio.h>
 #include <regex.h> 
+#include <inttypes.h>
 
 #define RG_KEY_DELIM            '/'
 
