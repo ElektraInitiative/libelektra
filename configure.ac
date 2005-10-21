@@ -119,7 +119,7 @@ AM_CONDITIONAL(HAVE_GCONF, test x$have_gconf = xyes)
 # Checks for header files.
 #
 AC_HEADER_STDC
-AC_CHECK_HEADERS([langinfo.h locale.h stdlib.h string.h strings.h unistd.h])
+AC_CHECK_HEADERS([langinfo.h locale.h mntent.h stdlib.h string.h strings.h unistd.h])
 
 #
 # Checks for typedefs, structures, and compiler characteristics.
