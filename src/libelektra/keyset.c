@@ -342,10 +342,10 @@ regfree(&regex);        // don't forget to free resources
 
  * @endcode
  */
-u_int32_t ksLookupRE(KeySet *ks, u_int32_t where,
+uint32_t ksLookupRE(KeySet *ks, uint32_t where,
 		const regex_t *regexp, unsigned long options) {
 	regmatch_t offsets;
-	u_int32_t match=0;
+	uint32_t match=0;
 	Key *init, *walker;
 	char *parentName=0;
 	size_t walkerNameSize=0,parentNameSize=0;
@@ -775,7 +775,7 @@ int ksCompare(KeySet *ks1, KeySet *ks2, KeySet *removed) {
 		flagRemoved=1;
 		
 		for (ks2Cursor=ks2->start; ks2Cursor; ks2Cursor=ks2Cursor->next) {
-			u_int32_t flags=keyCompare(ks1Cursor,ks2Cursor);
+			uint32_t flags=keyCompare(ks1Cursor,ks2Cursor);
 			
 			if (!(flags & (KEY_SWITCH_NAME | KEY_SWITCH_DOMAIN))) {
 				/* Comparing fullname-equal keys */

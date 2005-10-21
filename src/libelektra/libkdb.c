@@ -120,8 +120,8 @@ struct _KDBBackend {
 	kdbMonitorKeysPtr kdbMonitorKeys;
 	/*
 	int (*kdbSetKeys)(KeySet *);
-	u_int32_t (*kdbMonitorKey)(Key *, u_int32_t,unsigned long, unsigned);
-	u_int32_t (*kdbMonitorKeys)(KeySet *, u_int32_t,unsigned long, unsigned);
+	uint32_t (*kdbMonitorKey)(Key *, uint32_t,unsigned long, unsigned);
+	uint32_t (*kdbMonitorKeys)(KeySet *, uint32_t,unsigned long, unsigned);
 	*/
 };
 
@@ -475,7 +475,7 @@ ssize_t encode(void *unencoded, size_t size, char *returned) {
 	int currentInLine=0;
 
 	while ((readCursor-unencoded)<size) {
-		sprintf(writeCursor,"%02x",*(u_int8_t *)readCursor);
+		sprintf(writeCursor,"%02x",*(uint8_t *)readCursor);
 		readCursor++;
 		writeCursor+=2;
 		currentInBlock++;
@@ -1078,7 +1078,7 @@ while (1) {
 	Key *changed=0;
 	char keyName[300];
 	char keyData[300];
-	u_int32_t diff;
+	uint32_t diff;
 
 	// block until any change in key value or comment . . .
 	diff=kdbMonitorKeys(myConfigs,
@@ -1109,10 +1109,10 @@ ksDel(myConfigs);
  * @ingroup kdb
  *
  */
-u_int32_t kdbMonitorKeys(KeySet *interests, u_int32_t diffMask,
+uint32_t kdbMonitorKeys(KeySet *interests, uint32_t diffMask,
 		unsigned long iterations, unsigned sleep) {
 	
-	u_int32_t rc=0;
+	uint32_t rc=0;
 	
 	if (backend && backend->kdbMonitorKeys)
 		rc=backend->kdbMonitorKeys(interests,diffMask,iterations,sleep);
@@ -1132,10 +1132,10 @@ u_int32_t kdbMonitorKeys(KeySet *interests, u_int32_t diffMask,
  *
  * @ingroup backend
  */
-u_int32_t kdbMonitorKeys_default(KeySet *interests, u_int32_t diffMask,
+uint32_t kdbMonitorKeys_default(KeySet *interests, uint32_t diffMask,
 		unsigned long iterations, unsigned sleep) {
 	Key *start,*current;
-	u_int32_t diff;
+	uint32_t diff;
 	int infinitum=0;
 
 	if (!interests || !interests->size) return 0;
@@ -1202,7 +1202,7 @@ u_int32_t kdbMonitorKeys_default(KeySet *interests, u_int32_t diffMask,
  * @ingroup kdb
  *
  */
-u_int32_t kdbMonitorKey(Key *interest, u_int32_t diffMask,
+uint32_t kdbMonitorKey(Key *interest, uint32_t diffMask,
 		unsigned long iterations, unsigned sleep) {
 	
 	int rc=0;
@@ -1227,11 +1227,11 @@ u_int32_t kdbMonitorKey(Key *interest, u_int32_t diffMask,
  *
  * @ingroup backend
  */
-u_int32_t kdbMonitorKey_default(Key *interest, u_int32_t diffMask,
+uint32_t kdbMonitorKey_default(Key *interest, uint32_t diffMask,
 		unsigned long iterations, unsigned sleep) {
 	Key *tested;
 	int rc;
-	u_int32_t diff;
+	uint32_t diff;
 	int infinitum=0;
 
 	/* consistency */
@@ -1357,7 +1357,7 @@ KDBBackend *kdbBackendFactory(void) {
 KDBBackend *kdbBackendExport(const char *backendName, ...) {
 	va_list va;
 	KDBBackend *returned;
-	u_int32_t method=0;
+	uint32_t method=0;
 
 	if (backendName == 0) return 0;
 	
@@ -1371,7 +1371,7 @@ KDBBackend *kdbBackendExport(const char *backendName, ...) {
 	
 	va_start(va,backendName);
 
-	while ((method=va_arg(va,u_int32_t))) {
+	while ((method=va_arg(va,uint32_t))) {
 		switch (method) {
 			case KDB_BE_OPEN:
 				returned->kdbOpen=va_arg(va,kdbOpenPtr);

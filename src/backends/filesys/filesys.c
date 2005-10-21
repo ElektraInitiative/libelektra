@@ -121,6 +121,7 @@ int kdbGetKey_filesys(Key *key) {
 	int fd;
 	size_t pos;
 	u_int32_t semiflag;
+	FILE *input;
 
 	pos=kdbGetFilename(key,keyFileName,sizeof(keyFileName));
 	if (!pos) return -1; /* something is wrong */
@@ -130,8 +131,6 @@ int kdbGetKey_filesys(Key *key) {
 	fstat(fd,&keyFileNameInfo);
 	keyFromStat(key,&keyFileNameInfo);
 	if (!keyIsDir(key)) {
-		FILE *input;
-
 		input=fdopen(fd,"r");
 		if (keyFileUnserialize(key,input)) {
 			fclose(input);
@@ -167,7 +166,7 @@ int kdbSetKey_filesys(Key *key) {
 	if (stat(keyFileName,&stated))
 		if (errno==ENOENT) {
 			/* check if parent dir already exists */
-			last=rindex(keyFileName,'/');
+			last=rindex(keyFileName,(int)'/');
 			strncpy(folderMaker,keyFileName,last-keyFileName);
 			folderMaker[last-keyFileName]=0;
 			if (stat(folderMaker,&stated)) {

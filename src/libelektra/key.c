@@ -324,9 +324,9 @@ kdbClose();
 Key *keyNew(const char *keyName, ...) {
 	va_list va;
 	Key *key;
-	u_int32_t action=0;
-	u_int8_t keyType=KEY_TYPE_UNDEFINED;
-	u_int8_t keyTypeBinary=0; /* a boolean shortcut */
+	uint32_t action=0;
+	uint8_t keyType=KEY_TYPE_UNDEFINED;
+	uint8_t keyTypeBinary=0; /* a boolean shortcut */
 	size_t valueSize=0;
 	
 	key=(Key *)malloc(sizeof(Key));
@@ -344,7 +344,7 @@ Key *keyNew(const char *keyName, ...) {
 		
 		va_start(va,keyName);
 		
-		action=va_arg(va,u_int32_t);
+		action=va_arg(va,uint32_t);
 		while (action) {
 			switch (action) {
 				case KEY_SWITCH_TYPE:
@@ -352,7 +352,7 @@ Key *keyNew(const char *keyName, ...) {
 					 * following this action */
 					
 					/* First is the type */
-					keyType=(u_int8_t)va_arg(va,unsigned int);
+					keyType=(uint8_t)va_arg(va,unsigned int);
 					
 					keyTypeBinary=(KEY_TYPE_BINARY <= keyType &&
 						keyType < KEY_TYPE_STRING);
@@ -402,7 +402,7 @@ Key *keyNew(const char *keyName, ...) {
 						key->flags|=KEY_SWITCH_FLAG; /* same as keySetFlag(key) */
 				} break;
 			}
-			action=va_arg(va,u_int32_t);
+			action=va_arg(va,uint32_t);
 		}
 		va_end(va);
 	}
@@ -1735,7 +1735,7 @@ int keyNeedsSync(const Key *key) {
  * @ingroup keyvalue
  *
  */
-u_int8_t keyGetType(const Key *key) {
+uint8_t keyGetType(const Key *key) {
 	/* if (!key || !keyIsInitialized(key)) {
 		errno=KDB_RET_UNINITIALIZED;
 		return KEY_TYPE_UNDEFINED;
@@ -1801,8 +1801,8 @@ kdbGetKey(color2);
 kdbClose();
 
 // Get the key types, which should be our user-defined KEY_TYPE_COLOR
-u_int8_t tcolor1=keyGetType(color1);
-u_int8_t tcolor2=keyGetType(color2);
+uint8_t tcolor1=keyGetType(color1);
+uint8_t tcolor2=keyGetType(color2);
 
 keyDel(color1);
 keyDel(color2);
@@ -1814,7 +1814,7 @@ keyDel(color2);
  * @ingroup keyvalue
  *
  */
-u_int8_t keySetType(Key *key,u_int8_t newType) {
+uint8_t keySetType(Key *key,uint8_t newType) {
 	mode_t dirSwitch=0111;
 
 	/* if (!key) {
@@ -2432,8 +2432,8 @@ time_t keyGetCTime(const Key *key) {
 KeySet *ks=ksNew();
 Key *base;
 Key *current;
-u_int32_t match;
-u_int32_t interests;
+uint32_t match;
+uint32_t interests;
 
 
 kdbGetChildKeys(ks,"usr/sw/MyApp",KDB_O_RECURSIVE);
@@ -2478,8 +2478,8 @@ ksDel(ks);
  * @endcode
  * 
  */
-u_int32_t keyCompare(const Key *key1, const Key *key2) {
-	u_int32_t ret=0;
+uint32_t keyCompare(const Key *key1, const Key *key2) {
+	uint32_t ret=0;
 
 
 	/* Compare these numeric properties */
@@ -2852,8 +2852,9 @@ int keyInit(Key *key) {
 	key->type=KEY_TYPE_UNDEFINED;
 	key->uid=getuid();
 	key->gid=getgid();
-	key->access=umask(0); umask(key->access);
-	key->access=DEFFILEMODE & ~key->access;
+	key->access=umask(0); 
+	umask(key->access);
+	/* key->access=DEFFILEMODE & ~key->access;*/
 
 	key->flags = KEY_SWITCH_INITIALIZED;
 

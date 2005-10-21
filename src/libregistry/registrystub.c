@@ -117,13 +117,13 @@ int registrySetKeys(KeySet *ks) {
 	return kdbSetKeys(ks);
 }
 
-u_int32_t registryMonitorKey(Key *interest, u_int32_t diffMask,
+uint32_t registryMonitorKey(Key *interest, uint32_t diffMask,
 	unsigned long iterations, unsigned usleep) {
 	return kdbMonitorKey(interest, diffMask, iterations, usleep);
 }
 
 
-u_int32_t registryMonitorKeys(KeySet *interests, u_int32_t diffMask,
+uint32_t registryMonitorKeys(KeySet *interests, uint32_t diffMask,
 	unsigned long iterations, unsigned sleep) {
 	return kdbMonitorKeys(interests, diffMask,iterations, sleep);
 }
