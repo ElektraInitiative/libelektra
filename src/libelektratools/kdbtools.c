@@ -23,14 +23,14 @@ $LastChangedBy: aviram $
 
 */
 
-
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include <libxml/xmlreader.h>
 #include <libxml/xmlschemas.h>
 
-#ifndef KDB_SCHEMA_PATH
-#define KDB_SCHEMA_PATH       "/usr/share/sgml/elektra-0.1.1/elektra.xsd"
-#endif
+// #define KDB_SCHEMA_PATH       DATADIR KDB_SCHEMA_REL_PATH
 #define KDB_SCHEMA_PATH_KEY   "system/sw/kdb/current/schemapath"
 
 
@@ -79,6 +79,8 @@ int processKeyNode(KeySet *ks, char *context, xmlTextReaderPtr reader) {
 	xmlChar *privateContext=0;
 	Key *newKey=0;
 	int appended=0;
+
+	printf("%s", KDB_SCHEMA_PATH);
 	
 	nodeName=xmlTextReaderName(reader);
 	if (!strcmp(nodeName,"key")) {

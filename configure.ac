@@ -11,7 +11,9 @@ AC_CONFIG_SRCDIR(src/libelektra/libkdb.c)
 AM_INIT_AUTOMAKE
 AC_CONFIG_HEADER([config.h])
 
-# set usr/lib path
+# set some custom path 
+
+# usr/lib path
 AC_ARG_WITH(ulibdir,
 	    [AC_HELP_STRING(--with-ulibdir=<path to lib>,
 	     [Set the path for usr lib.])],
@@ -19,6 +21,16 @@ AC_ARG_WITH(ulibdir,
 	     [[ulibdir='${prefix}/lib']]
 	     )
 AC_SUBST(ulibdir)
+
+# sgml/elektra-0.1.1
+AC_ARG_WITH(kdbschema,
+	    [AC_HELP_STRING(--with-kdbschemadir=<relative path to kdb schema>,
+	     [Set the path for elektra.xsd.])],
+	     [[kdbschemadir=$withval]],
+	     [[kdbschemadir='/sgml/elektra-0.1.1']]
+	     )
+AC_DEFINE_UNQUOTED([KDB_SCHEMA_PATH], DATADIR "${kdbschemadir}", path for elektra.xsd)
+
 
 # Default backend selection (Set to 'filesys' as default)
 AC_ARG_WITH(backend,
@@ -36,6 +48,7 @@ AC_ARG_WITH(docbook,
 	     [[default_docbook=/usr/share/sgml/docbook/xsl-stylesheets/]]
 	     )
 AC_SUBST(default_docbook)
+
 
 # Be typo friendly, check if this backend really exist 
 AC_CHECK_FILE([src/backends/$default_backend/$default_backend.c],
@@ -123,6 +136,7 @@ AC_FUNC_MALLOC
 AC_FUNC_MEMCMP
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([memset nl_langinfo setenv setlocale strcasecmp strchr strrchr strtol])
+
 
 #
 # Output
