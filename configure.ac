@@ -104,7 +104,7 @@ AM_CONDITIONAL(HAVE_DOXYGEN, test x$doxygen != xno)
 #
 
 # Check for icon
-AM_ICONV_LINK()
+AM_ICONV()
 
 # Check for libxml (Allow compilation of libelektratools)
 AM_PATH_XML2(, [have_xml="yes"], [have_xml="no"])
