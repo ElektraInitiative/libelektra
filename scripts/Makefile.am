@@ -1,3 +1,3 @@
-elektraenvdir = $(prefix)/etc/profile.d
+elektraenvdir = $(sysconfdir)/profile.d
 elektraenv_DATA = elektraenv
 

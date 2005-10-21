@@ -1,7 +1,6 @@
 # $Id$
 # $LastChangedBy: aviram $
 
-mandir = $(prefix)/usr/share/man
 man1_MANS = kdb.1
 man5_MANS = elektra.5
 man7_MANS = elektra.7
