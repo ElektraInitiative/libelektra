@@ -63,9 +63,9 @@ typedef KDBBackend *(*KDBBackendFactory)(void);
 
 /* Let the backend be aware of default implementations we provide */
 int kdbSetKeys_default(KeySet *ks);
-u_int32_t kdbMonitorKeys_default(KeySet *interests, u_int32_t diffMask,
+uint32_t kdbMonitorKeys_default(KeySet *interests, uint32_t diffMask,
 		unsigned long iterations, unsigned sleep);
-u_int32_t kdbMonitorKey_default(Key *interest, u_int32_t diffMask,
+uint32_t kdbMonitorKey_default(Key *interest, uint32_t diffMask,
 		unsigned long iterations, unsigned sleep);
 
 

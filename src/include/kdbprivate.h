@@ -56,8 +56,8 @@ typedef int (*kdbRenamePtr)(Key *, const char *);
 typedef int (*kdbRemoveKeyPtr)(const Key *);
 typedef int (*kdbGetChildKeysPtr)(const Key *, KeySet *, unsigned long);
 typedef int (*kdbSetKeysPtr)(KeySet *);
-typedef u_int32_t (*kdbMonitorKeyPtr)(Key *, u_int32_t,unsigned long, unsigned);
-typedef u_int32_t (*kdbMonitorKeysPtr)(KeySet *, u_int32_t,unsigned long, unsigned);
+typedef uint32_t (*kdbMonitorKeyPtr)(Key *, uint32_t,unsigned long, unsigned);
+typedef uint32_t (*kdbMonitorKeysPtr)(KeySet *, uint32_t,unsigned long, unsigned);
 
 
 
@@ -81,7 +81,7 @@ struct _Key {
 	 * Type of the value, from #KeyType.
 	 * @see keyGetType(), keySetType(), keyIsBin()
 	 */ 
-	u_int8_t       type;
+	uint8_t       type;
 	 
 	/**
 	 * System UID of this key.
@@ -136,7 +136,7 @@ struct _Key {
 	 * Some control and internal flags.
 	 * @see keySetFlag(), keyGetFlag()
 	 */ 
-	u_int32_t      flags;
+	uint32_t      flags;
 	 
 	/**
 	 * The name of the key.

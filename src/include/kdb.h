@@ -348,9 +348,9 @@ ssize_t kdbGetRootKeys(KeySet *returned);
 
 int kdbSetKeys(KeySet *ks);
 
-u_int32_t kdbMonitorKey(Key *interest, u_int32_t diffMask,
+uint32_t kdbMonitorKey(Key *interest, uint32_t diffMask,
 	unsigned long iterations, unsigned usleep);
-u_int32_t kdbMonitorKeys(KeySet *interests, u_int32_t diffMask,
+uint32_t kdbMonitorKeys(KeySet *interests, uint32_t diffMask,
 	unsigned long iterations, unsigned sleep);
 
 
@@ -379,8 +379,8 @@ int keySerialize(const Key *key,void *buffer, size_t maxSize);
 int keyUnserialize(Key *key,const void *buffer);
 size_t keyGetSerializedSize(const Key *key);
 
-u_int8_t keyGetType(const Key *key);
-u_int8_t keySetType(Key *key,u_int8_t type);
+uint8_t keyGetType(const Key *key);
+uint8_t keySetType(Key *key,uint8_t type);
 
 int keySetFlag(Key *key);
 int keyClearFlag(Key *key);
@@ -467,7 +467,7 @@ int keyIsBin(const Key *key);
 
 Key *keyNext(Key *key);
 
-u_int32_t keyCompare(const Key *key1, const Key *key2);
+uint32_t keyCompare(const Key *key1, const Key *key2);
 
 ssize_t keyToStream(const Key *key, FILE* stream, unsigned long options);
 
@@ -502,7 +502,7 @@ Key *ksLookupByName(KeySet *ks, const char *name,unsigned long options);
 Key *ksLookupByValue(KeySet *ks, const char *value,unsigned long options);
 Key *ksLookupByBinaryValue(KeySet *ks, void *value, size_t size,
 	unsigned long options);
-u_int32_t ksLookupRE(KeySet *ks, u_int32_t where,
+uint32_t ksLookupRE(KeySet *ks, uint32_t where,
 	const regex_t *regexp, unsigned long options);
 
 int ksRewind(KeySet *ks);
