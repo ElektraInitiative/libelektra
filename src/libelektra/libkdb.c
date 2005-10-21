@@ -92,23 +92,37 @@ struct _KDBBackend {
 	
 	/* These are the must-have methods */
 	
-	int (*kdbOpen)();
-	int (*kdbClose)();
+	kdbOpenPtr kdbOpen;
+	kdbClosePtr kdbClose;
+	/*int (*kdbOpen)();
+	int (*kdbClose)();*/
 	
+	kdbGetKeyPtr kdbGetKey;
+	kdbSetKeyPtr kdbSetKey;
+	kdbStatKeyPtr kdbStatKey;
+	kdbRenamePtr kdbRename;
+	kdbRemoveKeyPtr kdbRemoveKey;
+	kdbGetChildKeysPtr kdbGetKeyChildKeys;
+	/*
 	int (*kdbGetKey)(Key *);
 	int (*kdbSetKey)(Key *);
 	int (*kdbStatKey)(Key *);
 	int (*kdbRename)(Key *, const char *);
 	int (*kdbRemoveKey)(const Key *);
-	int (*kdbGetKeyChildKeys)(const Key *, KeySet *, unsigned long);
+	int (*kdbGetKeyChildKeys)(const Key *, KeySet *, unsigned long);*/
 
 	
 	
 	/* These are the optional methods */
 	
+	kdbSetKeysPtr kdbSetKeys;
+	kdbMonitorKeyPtr kdbMonitorKey;
+	kdbMonitorKeysPtr kdbMonitorKeys;
+	/*
 	int (*kdbSetKeys)(KeySet *);
 	u_int32_t (*kdbMonitorKey)(Key *, u_int32_t,unsigned long, unsigned);
 	u_int32_t (*kdbMonitorKeys)(KeySet *, u_int32_t,unsigned long, unsigned);
+	*/
 };
 
 
@@ -1360,40 +1374,40 @@ KDBBackend *kdbBackendExport(const char *backendName, ...) {
 	while ((method=va_arg(va,u_int32_t))) {
 		switch (method) {
 			case KDB_BE_OPEN:
-				returned->kdbOpen=va_arg(va,int (*)());
+				returned->kdbOpen=va_arg(va,kdbOpenPtr);
 				break;
 			case KDB_BE_CLOSE:
-				returned->kdbClose=va_arg(va,int (*)());
+				returned->kdbClose=va_arg(va,kdbClosePtr);
 				break;
 			case KDB_BE_STATKEY:
-				returned->kdbStatKey=va_arg(va,int (*)(Key *));
+				returned->kdbStatKey=va_arg(va,kdbStatKeyPtr);
 				break;
 			case KDB_BE_GETKEY:
-				returned->kdbGetKey=va_arg(va,int (*)(Key *));
+				returned->kdbGetKey=va_arg(va,kdbGetKeyPtr);
 				break;
 			case KDB_BE_SETKEY:
-				returned->kdbSetKey=va_arg(va,int (*)(Key *));
+				returned->kdbSetKey=va_arg(va,kdbSetKeyPtr);
 				break;
 			case KDB_BE_RENAME:
-				returned->kdbRename=va_arg(va,int (*)(Key *, const char *));
+				returned->kdbRename=va_arg(va,kdbRenamePtr);
 				break;
 			case KDB_BE_REMOVEKEY:
-				returned->kdbRemoveKey=va_arg(va,int (*)(const Key *));
+				returned->kdbRemoveKey=va_arg(va,kdbRemoveKeyPtr);
 				break;
 			case KDB_BE_GETCHILD:
 				returned->kdbGetKeyChildKeys=
-					va_arg(va,int (*)(const Key *, KeySet *, unsigned long));
+					va_arg(va,kdbGetChildKeysPtr);
 				break;
 			case KDB_BE_SETKEYS:
-				returned->kdbSetKeys=va_arg(va,int (*)(KeySet *));
+				returned->kdbSetKeys=va_arg(va,kdbSetKeysPtr);
 				break;
 			case KDB_BE_MONITORKEY:
 				returned->kdbMonitorKey=
-					va_arg(va,u_int32_t (*)(Key *, u_int32_t,unsigned long, unsigned));
+					va_arg(va,kdbMonitorKeyPtr);
 				break;
 			case KDB_BE_MONITORKEYS:
 				returned->kdbMonitorKeys=
-					va_arg(va,u_int32_t (*)(KeySet *, u_int32_t,unsigned long, unsigned));
+					va_arg(va,kdbMonitorKeysPtr);
 				break;
 		}
 	}

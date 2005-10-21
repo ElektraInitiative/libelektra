@@ -46,6 +46,18 @@ $LastChangedBy: aviram $
 
 
 
+/* These define the type for pointers to all the kdb functions */
+typedef int (*kdbOpenPtr)();
+typedef int (*kdbClosePtr)();
+typedef int (*kdbStatKeyPtr)(Key *);
+typedef int (*kdbGetKeyPtr)(Key *);
+typedef int (*kdbSetKeyPtr)(Key *);
+typedef int (*kdbRenamePtr)(Key *, const char *);
+typedef int (*kdbRemoveKeyPtr)(const Key *);
+typedef int (*kdbGetChildKeysPtr)(const Key *, KeySet *, unsigned long);
+typedef int (*kdbSetKeysPtr)(KeySet *);
+typedef u_int32_t (*kdbMonitorKeyPtr)(Key *, u_int32_t,unsigned long, unsigned);
+typedef u_int32_t (*kdbMonitorKeysPtr)(KeySet *, u_int32_t,unsigned long, unsigned);
 
 
 
