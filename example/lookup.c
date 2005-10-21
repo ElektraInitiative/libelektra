@@ -4,7 +4,7 @@
 int main(int argc,char **argv) {
 	KeySet *ks;
 	Key *key=0;
-	u_int32_t where,match;
+	uint32_t where,match;
 	regex_t regex;
 	
 	ks=ksNew();
