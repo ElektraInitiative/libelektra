@@ -1,33 +1,107 @@
-What about this !? :)
+Where to Find Elektra
 =====================
-First pass of autotooliz of libelektra.
 
-Should be nice to have different configure script
-for backends. This will allow to check specific
-dependency on each backends. Moreover, perhaps
-could be cool to externalize backends and have
-one package for each ?
+Elektra stable source code as tarballs can be found at:
 
-Libltdl for (hope) cross-platform is bundled with
-libelektra and so, add no dependency.
+  http://sourceforge.net/project/showfiles.php?group_id=117521
 
-Installation
-============
+Elektra Subversion repository with unstable source code can be checked
+out with these commands:
 
-		./configure --prefix=/your/folder \
-				--with-default-backend=filesys
+  bash:~$ cd src
+  bash:~/src$ svn co http://germane-software.com/repositories/elektra/trunk elektra
+  bash:~/src$ cd elektra
+  bash:~/src/elektra$ # files are here
 
-		make install
 
-	Will install libelektra, kdb and all backends in your folder.
+
+Building and Installation
+=========================
+
+You should allways prefer building Elektra from its source RPM as:
+
+	$ rpmbuild --rebuild elektra-VERSION.src.rpm
+
+If you can't afford that, you should use the distributed tarball.
+Do not use the fresh files from the Subversion repository, since they use to
+be quite unstable.
+
+If you still want to use the old tarball, this is the correct
+way to do it, following the Filesystem Hierarchy Standard:
+
+	$ ./configure \
+		--prefix=/usr \
+		--exec-prefix=/ \
+		--mandir=/usr/share/man \
+		--sysconfdir=/etc \
+		--with-docbook=/usr/share/sgml/docbook/xsl-stylesheets
+
+	$ make all
+	# make install
+
+You can also call the last as:
+
+	# make DESTDIR=/some/directory install
+
+The "--with-docbook" switch should point to Norman Walsh's DocBook XSL
+stylesheets on your system.
+
+For any further information, check the RPM spec file.
+
+
+
+
+Notes for Packagers
+===================
+
+Elektra should be divided in 2 packages: "elektra" and "elektra-devel".
+
+The "elektra" package sugested files:
+   /bin/kdb
+   /etc/profile.d/elektraenv.sh
+   /lib/libelektra.so*
+   /lib/libelektratools.so*
+   /lib/libelektra-*.so      (backends)
+   /usr/lib/libelektra-*.so  (other backends)
+   /lib/libregistry.so   (backwards compatibility: will be removed in future)
+   /usr/share/doc/elektra
+   /usr/share/doc/elektra/fstab-convert
+   /usr/share/doc/elektra/hosts-convert
+   /usr/share/doc/elektra/hwconfKudzu-convert
+   /usr/share/doc/elektra/inittab-convert
+   /usr/share/doc/elektra/network-convert
+   /usr/share/doc/elektra/users-convert
+   /usr/share/doc/elektra/xfree-convert
+   /usr/share/man/man1/kdb.1.gz
+   /usr/share/man/man5/elektra.5.gz
+   /usr/share/man/man7/elektra.7.gz
+   /usr/share/sgml/elektra-0.1.1
+   /usr/share/sgml/elektra-0.1.1/catalog
+   /usr/share/sgml/elektra-0.1.1/elektra.dtd
+   /usr/share/sgml/elektra-0.1.1/elektra.xsd
+
+
+The "elektra-devel" package sugested files:
+   /usr/include/kdb.h          (main include)
+   /usr/include/kdbtools.h     (higher level functions)
+   /usr/include/kdbbackend.h   (backend development)
+   /usr/include/kdbprivate.h   (used by kdbbackend.h)
+   /usr/lib/libelektra.a
+   /usr/share/doc/elektra-devel
+   /usr/share/doc/elektra-devel/backend-template/*  (backend development examples)
+   /usr/share/doc/elektra-devel/elektra-api/*  (Doxygen API documentation)
+   /usr/share/doc/elektra-devel/examples/*     (Many examples in C language)
+   /usr/share/man/man3/kdb*.3.gz       (Manpages for the kdb*() methods)
+   /usr/share/man/man3/key*.3.gz       (Manpages for the key*() methods)
+   /usr/share/man/man3/ks*.3.gz        (Manpages for the ks*() methods)
+
 
 Bug
 ===
 
-	- Default backend is not symlinked at installation
-	I done something in src/backends/Makefile.am for that
-	but that's don't work :-p. I'll see that later.
-	For now, don't forget to ln -s ;)
+	- No Doxygen yet
+	- No packageconfig yet
+
 
 Still TODO
 ==========
@@ -39,6 +113,15 @@ Still TODO
 	- Install includes file in include (include/elektra ?)
 	- ... Probably other thing but its 2:11 and i'm a bit
 	tired ;)
+
+Should be nice to have different configure script
+for backends. This will allow to check specific
+dependency on each backends. Moreover, perhaps
+could be cool to externalize backends and have
+one package for each ?
+
+Libltdl for (hope) cross-platform is bundled with
+libelektra and so, add no dependency.
 
 Hope you'll be happy to found a configure script ;).
 (Below, generic installation instructions)
