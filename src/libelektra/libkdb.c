@@ -94,8 +94,6 @@ struct _KDBBackend {
 	
 	kdbOpenPtr kdbOpen;
 	kdbClosePtr kdbClose;
-	/*int (*kdbOpen)();
-	int (*kdbClose)();*/
 	
 	kdbGetKeyPtr kdbGetKey;
 	kdbSetKeyPtr kdbSetKey;
@@ -103,14 +101,6 @@ struct _KDBBackend {
 	kdbRenamePtr kdbRename;
 	kdbRemoveKeyPtr kdbRemoveKey;
 	kdbGetChildKeysPtr kdbGetKeyChildKeys;
-	/*
-	int (*kdbGetKey)(Key *);
-	int (*kdbSetKey)(Key *);
-	int (*kdbStatKey)(Key *);
-	int (*kdbRename)(Key *, const char *);
-	int (*kdbRemoveKey)(const Key *);
-	int (*kdbGetKeyChildKeys)(const Key *, KeySet *, unsigned long);*/
-
 	
 	
 	/* These are the optional methods */
@@ -118,11 +108,6 @@ struct _KDBBackend {
 	kdbSetKeysPtr kdbSetKeys;
 	kdbMonitorKeyPtr kdbMonitorKey;
 	kdbMonitorKeysPtr kdbMonitorKeys;
-	/*
-	int (*kdbSetKeys)(KeySet *);
-	uint32_t (*kdbMonitorKey)(Key *, uint32_t,unsigned long, unsigned);
-	uint32_t (*kdbMonitorKeys)(KeySet *, uint32_t,unsigned long, unsigned);
-	*/
 };
 
 
@@ -880,8 +865,13 @@ int kdbGetKey(Key *key) {
 int kdbSetKeys(KeySet *ks) {
 	int rc=0;
 	
-	if (backend && backend->kdbSetKeys)
-		rc=backend->kdbSetKeys(ks);
+	if (backend) {
+		if(backend->kdbSetKeys)
+			rc=backend->kdbSetKeys(ks);
+	  else 
+			/* If backend doesn't provide kdbSetKeys, use the default */
+			rc=kdbSetKeys_default(ks);	
+	}
 	else {
 		errno=KDB_RET_NOSYS;
 		return -1;
@@ -1114,8 +1104,13 @@ uint32_t kdbMonitorKeys(KeySet *interests, uint32_t diffMask,
 	
 	uint32_t rc=0;
 	
-	if (backend && backend->kdbMonitorKeys)
-		rc=backend->kdbMonitorKeys(interests,diffMask,iterations,sleep);
+	if (backend) {
+		if(backend->kdbMonitorKeys) 
+			rc=backend->kdbMonitorKeys(interests,diffMask,iterations,sleep);
+		else 
+			/* If backend doesn't provide kdbMonitorKeys, then use the default */
+			rc = kdbMonitorKeys_default(interests,diffMask,iterations,sleep);
+	}
 	else {
 		errno=KDB_RET_NOSYS;
 		return 0;
@@ -1207,8 +1202,12 @@ uint32_t kdbMonitorKey(Key *interest, uint32_t diffMask,
 	
 	int rc=0;
 	
-	if (backend && backend->kdbMonitorKey)
-		rc=backend->kdbMonitorKey(interest,diffMask,iterations,sleep);
+	if (backend) {
+		if(backend->kdbMonitorKey)
+		  rc=backend->kdbMonitorKey(interest,diffMask,iterations,sleep);
+		else
+			rc=kdbMonitorKey_default(interest,diffMask,iterations,sleep);
+	}
 	else {
 		errno=KDB_RET_NOSYS;
 		return 0;
