@@ -96,9 +96,9 @@ fi
 ./configure \
      --prefix=/usr \
      --exec-prefix=/ \
-     --mandir=/usr/share \
+     --mandir=/usr/share/man \
      --sysconfdir=/etc \
-     --with-docbook=/usr/share/sgml/docbook/xsl-stylesheets/manpages/docbook.xsl
+     --with-docbook=/usr/share/sgml/docbook/xsl-stylesheets
 
 make all
 
@@ -119,9 +119,12 @@ rm -rf $RPM_BUILD_ROOT
 make DESTDIR=$RPM_BUILD_ROOT install
 
 rm $RPM_BUILD_ROOT/lib/libelektra-*.a
+rm $RPM_BUILD_ROOT/lib/libregistry*.a
 mv $RPM_BUILD_ROOT/lib/libelektra.a $RPM_BUILD_ROOT/usr/lib
  
-rm $RPM_BUILD_ROOT/lib/libelektra-*.a
+rm $RPM_BUILD_ROOT/usr/lib/libelektra-*.a
+rm $RPM_BUILD_ROOT/lib/*.la
+rm $RPM_BUILD_ROOT/usr/lib/*.la
  
 #gmake  %{?_smp_mflags} \
 #	DESTDIR=$RPM_BUILD_ROOT \
@@ -161,6 +164,7 @@ kdb set system/sw/kdb/current/schemapath "%{_datadir}/sgml/elektra-%{DTDVERSION}
 %files
 %defattr(-,root,root,0755)
 /lib/*elektra.so*
+/lib/*registry.so*
 /lib/*elektra-filesys.so*
 /lib/*elektra-default.so*
 /lib/*elektra-fstab.so*
@@ -168,7 +172,7 @@ kdb set system/sw/kdb/current/schemapath "%{_datadir}/sgml/elektra-%{DTDVERSION}
 %{_libdir}/*elektratools.so*
 /bin/*
 %{_sysconfdir}/profile.d/*
-%doc %{_docdir}/%{name}
+#%doc %{_docdir}/%{name}
 %doc %{_mandir}/man1/*
 %doc %{_mandir}/man7/*
 %doc %{_mandir}/man5/*
@@ -188,7 +192,7 @@ kdb set system/sw/kdb/current/schemapath "%{_datadir}/sgml/elektra-%{DTDVERSION}
 
 %files backend-gconf
 %defattr(-,root,root,0755)
-/lib/*gconf.so*
+%{_libdir}/*gconf.so*
 
 %files backend-berkeleydb
 %defattr(-,root,root,0755)
