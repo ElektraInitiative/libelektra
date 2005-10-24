@@ -11,7 +11,7 @@ BuildRoot:     %{_tmppath}/%{name}-%{version}-build
 BuildRequires: doxygen docbook-style-xsl db4-devel GConf2-devel libxml2-devel automake autoconf libtool /usr/bin/xsltproc
 Summary:       A key/value pair database to store software configurations
 
-%define DTDVERSION _DTDVERSION_
+%define DTDVERSION 0.1.1
 
 # A buggy version of rpmbuild
 %define _sysconfdir /etc
@@ -83,7 +83,6 @@ implementations.
 This package contains a Berkeley DB backend for Elektra, to let Elektra use
 Berkeley DB databases to store its keys.
 
-%debug_package
 
 %prep
 %setup
