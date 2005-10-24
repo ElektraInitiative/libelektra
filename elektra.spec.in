@@ -94,29 +94,46 @@ if [ "$numprocs" = "0" ]; then
 	numprocs=1
 fi
 
-gmake OPTIMIZATIONS="$RPM_OPT_FLAGS" \
-	%{?_smp_mflags} \
-	UBINDIR=%{_bindir} \
-	ULIBDIR=%{_libdir} \
-	CONFDIR=%{_sysconfdir} \
-	INCDIR=%{_includedir} \
-	DOCDIR=%{_docdir} \
-	MANDIR=%{_mandir} \
-	SGMLDIR=%{_datadir}/sgml \
-	all
+./configure \
+     --prefix=/usr \
+     --exec-prefix=/ \
+     --mandir=/usr/share \
+     --sysconfdir=/etc \
+     --with-docbook=/usr/share/sgml/docbook/xsl-stylesheets/manpages/docbook.xsl
+
+make all
+
+#gmake OPTIMIZATIONS="$RPM_OPT_FLAGS" \
+#	%{?_smp_mflags} \
+#	UBINDIR=%{_bindir} \
+#	ULIBDIR=%{_libdir} \
+#	CONFDIR=%{_sysconfdir} \
+#	INCDIR=%{_includedir} \
+#	DOCDIR=%{_docdir} \
+#	MANDIR=%{_mandir} \
+#	SGMLDIR=%{_datadir}/sgml \
+#	all
 
 %install
 rm -rf $RPM_BUILD_ROOT
-gmake  %{?_smp_mflags} \
-	DESTDIR=$RPM_BUILD_ROOT \
-	UBINDIR=%{_bindir} \
-	ULIBDIR=%{_libdir} \
-	CONFDIR=%{_sysconfdir} \
-	INCDIR=%{_includedir} \
-	DOCDIR=%{_docdir} \
-	MANDIR=%{_mandir} \
-	SGMLDIR=%{_datadir}/sgml \
-	install
+
+make DESTDIR=$RPM_BUILD_ROOT install
+
+rm $RPM_BUILD_ROOT/lib/libelektra-*.a
+mv $RPM_BUILD_ROOT/lib/libelektra.a $RPM_BUILD_ROOT/usr/lib
+ 
+rm $RPM_BUILD_ROOT/lib/libelektra-*.a
+ 
+#gmake  %{?_smp_mflags} \
+#	DESTDIR=$RPM_BUILD_ROOT \
+#	UBINDIR=%{_bindir} \
+#	ULIBDIR=%{_libdir} \
+#	CONFDIR=%{_sysconfdir} \
+#	INCDIR=%{_includedir} \
+#	DOCDIR=%{_docdir} \
+#	MANDIR=%{_mandir} \
+#	SGMLDIR=%{_datadir}/sgml \
+#	install
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -164,9 +181,9 @@ kdb set system/sw/kdb/current/schemapath "%{_datadir}/sgml/elektra-%{DTDVERSION}
 %defattr(-,root,root,0755)
 %{_includedir}/*
 %{_libdir}/*.a
-%{_libdir}/pkgconfig/*
-%doc %{_docdir}/%{name}-devel
-%doc %{_mandir}/man3/*
+#%{_libdir}/pkgconfig/*
+#%doc %{_docdir}/%{name}-devel
+#%doc %{_mandir}/man3/*
 
 
 
