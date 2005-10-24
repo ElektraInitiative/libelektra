@@ -165,7 +165,7 @@ AC_OUTPUT([src/Makefile
 
 	   src/include/Makefile
 
-	   example/Makefile
+	   examples/Makefile
 
 	   doc/Makefile
 	   
