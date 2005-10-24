@@ -19,7 +19,7 @@
 /* Subversion stuff
 
 $Id$
-$LastChangedBy$
+$LastChangedBy: mraab $
 
 */
 
