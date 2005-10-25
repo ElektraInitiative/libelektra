@@ -18,7 +18,7 @@
 
 /* Subversion stuff
 
-$Id: libkdb.c 252 2005-07-30 11:58:10Z aviram $
+$Id$
 $LastChangedBy: aviram $
 
 */
@@ -27,7 +27,7 @@ $LastChangedBy: aviram $
 #include "kdb.h"
 #include "kdbbackend.h"
 #include "kdbprivate.h"
-
+#include "config.h"
 
 #include <stdlib.h>
 #include <stdarg.h>
@@ -246,7 +246,7 @@ int kdbOpenBackend(char *backendName) {
 		return 1; /* error */
 	}
 	
-	kdbBackendNew=lt_dlsym(dlhandle,"kdbBackendFactory");
+	kdbBackendNew=(KDBBackendFactory)lt_dlsym(dlhandle,"kdbBackendFactory");
 	if (kdbBackendNew == 0) {
 		fprintf(stderr, "libelektra: \"%s\" backend: %s\n",backendName,lt_dlerror());
 		errno=KDB_RET_NOSYS;
@@ -410,7 +410,7 @@ int UTF8Engine(int direction, char **string, size_t *inputOutputByteSize) {
 	readCursor=*string;
 	writeCursor=converted;
 	if (iconv(converter,
-			&readCursor,inputOutputByteSize,
+			(ICONV_CONST char **)&readCursor,inputOutputByteSize,
 			&writeCursor,&bufferSize) == (size_t)(-1)) {
 		free(converted);
 		iconv_close(converter);
@@ -452,32 +452,32 @@ int UTF8Engine(int direction, char **string, size_t *inputOutputByteSize) {
  * @ingroup backend
  */
 ssize_t encode(void *unencoded, size_t size, char *returned) {
-	void *readCursor=unencoded;
-	void *writeCursor=returned;
+	char *readCursor=unencoded;
+	char *writeCursor=returned;
 	int blockStep=4; /* 4 bytes per block */
 	int lineStep=8*blockStep; /* 8 blocks per line */
 	int currentInBlock=0;
 	int currentInLine=0;
 
-	while ((readCursor-unencoded)<size) {
-		sprintf(writeCursor,"%02x",*(uint8_t *)readCursor);
+	while ((readCursor-(char *)unencoded)<size) {
+		sprintf(writeCursor,"%02x",*readCursor);
 		readCursor++;
 		writeCursor+=2;
 		currentInBlock++;
 		currentInLine++;
 		if (currentInLine==lineStep) {
-			*(char *)writeCursor='\n'; writeCursor++;
+			*writeCursor='\n'; writeCursor++;
 			currentInLine=0;
 			currentInBlock=0;
 		}
 		if (currentInBlock==blockStep) {
-			*(char *)writeCursor=' '; writeCursor++;
+			*writeCursor=' '; writeCursor++;
 			currentInBlock=0;
 		}
 	}
-	*(char *)writeCursor='\n';
-	*(char *)++writeCursor=0;
-	return (writeCursor)-(void *)returned;
+	*writeCursor='\n';
+	*++writeCursor=0;
+	return writeCursor-returned;
 }
 
 
@@ -567,10 +567,14 @@ for (c=0; c<3; c++) {
  * @ingroup kdb
  */
 int kdbGetValueByParent(const char *parentName, const char *baseName, char *returned, size_t maxSize) {
-	char name[strblen(parentName)+strblen(baseName)];
+	char *name;
+	int retval=0;
+	name = (char *)malloc(sizeof(char)*(strblen(parentName)+strblen(baseName)));
 
 	sprintf(name,"%s/%s",parentName,baseName);
-	return kdbGetValue(name,returned,maxSize);
+	retval = kdbGetValue(name,returned,maxSize);
+	free(name);
+	return retval;
 }
 
 
@@ -586,10 +590,14 @@ int kdbGetValueByParent(const char *parentName, const char *baseName, char *retu
  * @ingroup kdb
  */
 int kdbSetValueByParent(const char *parentName, const char *baseName, const char *value) {
-	char name[strblen(parentName)+strblen(baseName)];
+	char *name;
+	int retval=0;
+	name = (char *)malloc(sizeof(char)*(strblen(parentName)+strblen(baseName)));
 
 	sprintf(name,"%s/%s",parentName,baseName);
-	return kdbSetValue(name,value);
+	retval = kdbSetValue(name,value);
+	free(name);
+	return retval;
 }
 
 
@@ -609,11 +617,12 @@ int kdbSetValueByParent(const char *parentName, const char *baseName, const char
  * @ingroup kdb
  */
 int kdbGetKeyByParent(const char *parentName, const char *baseName, Key *returned) {
-	char name[strblen(parentName)+strblen(baseName)];
+	char *name;
+	name = (char *)malloc(sizeof(char) * (strblen(parentName)+strblen(baseName)));
 
-	sprintf(name,"%s/%s",parentName,baseName);
+	sprintf(name,"%s/%s",parentName,baseName);	
 	keySetName(returned,name);
-
+  free(name);
 	return kdbGetKey(returned);
 }
 
@@ -627,14 +636,15 @@ int kdbGetKeyByParent(const char *parentName, const char *baseName, Key *returne
  */
 int kdbGetKeyByParentKey(const Key *parent, const char *baseName, Key *returned) {
 	size_t size=keyGetFullNameSize(parent);
-	char name[size+strblen(baseName)];
+	char *name;
+	name = (char *)malloc(sizeof(char) * (size+strblen(baseName)));
 
 	keyGetFullName(parent,name,size);
 	name[size-1]='/';
 	strcpy((char *)(name+size),baseName);
 
 	keySetName(returned,name);
-
+  free(name);
 	return kdbGetKey(returned);
 }
 
