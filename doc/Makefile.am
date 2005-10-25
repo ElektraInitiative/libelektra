@@ -3,6 +3,11 @@
 
 EXTRA_DIST=kdb.1.xml elektra.7.xml elektra.5.xml author.xml bestpract.xml rgexample.xml rgcmd.xml storage.xml overview.xml $(man1_MANS) $(man5_MANS) $(man7_MANS)
 
+# Dependencies for Doxygen documentation
+DOXYSOURCES=../src/libelektra/libkdb.c ../src/kdb/kdb.c ../src/libelektratools/kdbtools.c ../src/include/kdb.h ../src/include/kdbbackend.h ../src/include/kdbprivate.h ../src/libelektra/key.c ../src/backends/template/template.c ../src/Doxyfile
+
+man3_MANS =
+
 if HAVE_XSLTPROC
 if HAVE_STYLESHEET
 
@@ -10,12 +15,24 @@ man1_MANS = kdb.1
 man5_MANS = elektra.5
 man7_MANS = elektra.7
 
+#
+## Build man documentation
+#
+kdb.1: kdb.1.xml author.xml bestpract.xml rgexample.xml rgcmd.xml
+	$(xsltproc) $(dbroot)/manpages/docbook.xsl $<
+	
+elektra.7: elektra.7.xml author.xml overview.xml bestpract.xml rgexample.xml
+	$(xsltproc) $(dbroot)/manpages/docbook.xsl $<
+	
+elektra.5: elektra.5.xml author.xml storage.xml
+	$(xsltproc) $(dbroot)/manpages/docbook.xsl $<
+	
+endif
+endif
+
 # Layout and confiruations to generate HTML for the web site
 # HTML_TITLE_LAYOUT=html-titlepage-layout.tpl
 # HTML_PARAMS=html-params.xsl
-
-# Dependencies for Doxygen documentation
-# DOXYSOURCES=../src/libelektra/libkdb.c ../src/kdb/kdb.c ../src/libelektratools/kdbtools.c ../src/include/kdb.h ../src/include/kdbbackend.h ../src/include/kdbprivate.h ../src/libelektra/key.c ../src/backends/template/template.c ../src/Doxyfile
 
 # PATCHSOURCES=patches/xorg/README.xorg.Elektra.txt patches/sysvinit/README.sysvinit.Elektra.txt
 
@@ -29,34 +46,52 @@ man7_MANS = elektra.7
 #	$(xsltproc) -o $@ ${HTML_TITLE_LAYOUT:.tpl=.xsl} $<
 
 
-all: documentation
+# all: documentation
 
 # html doxygen
-documentation: docbookman 
-
-docbookman: kdb.1 elektra.7 elektra.5
+# documentation: docbookman doxygen 
+# docbookman: kdb.1 elektra.7 elektra.5
 	
+if HAVE_DOXYGEN
+apimandir = $(docdir)/man/man3
+apihtmldir = $(docdir)/html
+doc_DATA = elektra-api
 
 #
 # Generate doxygen documentation
 # This generate man for API too (see src/Doxyfile)
 #
-#doxygen: $(DOXYSOURCES)
-#	@echo "Making Doxygen..."
-#	cd ../src/; $(doxygen)
 
-#
-# Build man documentation
-#
-kdb.1: kdb.1.xml author.xml bestpract.xml rgexample.xml rgcmd.xml
-	$(xsltproc) $(dbroot)/manpages/docbook.xsl $<
+elektra-api: $(DOXYSOURCES)
+	@echo "Making Doxygen..."
+	cd ../src/; $(doxygen)
 
-elektra.7: elektra.7.xml author.xml overview.xml bestpract.xml rgexample.xml
-	$(xsltproc) $(dbroot)/manpages/docbook.xsl $<
+install-docDATA: $(doc_DATA)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(apihtmldir)
+	@list=`find elektra-api/html/`; for p in $$list; do \
+	if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	f="`echo $$p | sed -e 's|^.*/||'`"; \
+	  echo " $(docDATA_INSTALL) $$d$$p $(DESTDIR)$(apihtmldir)/$$f"; \
+	  $(docDATA_INSTALL) $$d$$p $(DESTDIR)$(apihtmldir)/$$f; \
+	 done
 
-elektra.5: elektra.5.xml author.xml storage.xml
-	$(xsltproc) $(dbroot)/manpages/docbook.xsl $<
+	$(mkinstalldirs) $(DESTDIR)$(apimandir)
+	@list=`find elektra-api/man/man3`; for p in $$list; do \
+	if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	f="`echo $$p | sed -e 's|^.*/||'`"; \
+	  echo " $(docDATA_INSTALL) $$d$$p $(DESTDIR)$(apimandir)/$$f"; \
+	  $(docDATA_INSTALL) $$d$$p $(DESTDIR)$(apimandir)/$$f; \
+	done
 
+	$(mkinstalldirs) $(DESTDIR)$(man3dir)
+	@list=`find elektra-api/ -name "k[db,ey,s]*.3"` ; for p in $$list; do \
+	if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	f="`echo $$p | sed -e 's|^.*/||'`"; \
+	  echo " $(docDATA_INSTALL) $$d$$p $(DESTDIR)$(man3dir)/$$f"; \
+	  $(docDATA_INSTALL) $$d$$p $(DESTDIR)$(man3dir)/$$f; \
+	done
+endif
 #
 # Build HTML documentation
 #
@@ -78,5 +113,3 @@ elektra.5: elektra.5.xml author.xml storage.xml
 #	$(man2html) -r < elektra-api/man/man3/keyset.3 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > keyset.3.html
 #	mv howto.html index.html
 
-endif
-endif

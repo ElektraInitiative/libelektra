@@ -22,6 +22,15 @@ AC_ARG_WITH(ulibdir,
 	     )
 AC_SUBST(ulibdir)
 
+# /usr/share/doc path
+AC_ARG_WITH(docdir,
+	    [AC_HELP_STRING(--with-docdir=<path to lib>,
+	     [Set the path for documentation.])],
+	     [[docdir=$withval]],
+	     [[docdir='${datadir}/doc/elektra-api']]
+	     )
+AC_SUBST(docdir)
+
 # sgml/elektra-0.1.1
 AC_ARG_WITH(kdbschema,
 	    [AC_HELP_STRING(--with-kdbschemadir=<relative path to kdb schema>,
