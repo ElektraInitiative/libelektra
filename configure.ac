@@ -82,9 +82,14 @@ AC_CONFIG_SUBDIRS(libltdl)
 # xsltproc
 AC_PATH_PROG(xsltproc, xsltproc, "no")
 # Check if have style-sheet too
-AC_CHECK_FILE([$default_docbook],
-	      [[dbroot=$default_docbook]],
-	      [[dbroot="no"]])
+if test "x$default_docbook" != "xno"; then
+	AC_CHECK_FILE([$default_docbook],
+		      [[dbroot=$default_docbook]],
+		      [[dbroot="no"]])
+else
+	dbroot="no"
+fi
+
 AC_SUBST(dbroot)
 AM_CONDITIONAL(HAVE_XSLTPROC, test x$xsltproc != xno)
 AM_CONDITIONAL(HAVE_STYLESHEET, test x$dbroot != xno)
@@ -159,7 +164,6 @@ AC_OUTPUT([src/Makefile
 	   src/backends/fstab/Makefile
 	   src/backends/ini/Makefile
 	   src/backends/gconf/Makefile
-	   src/backends/daemon/Makefile
 	   src/backends/template/Makefile
 
 	   src/include/Makefile
