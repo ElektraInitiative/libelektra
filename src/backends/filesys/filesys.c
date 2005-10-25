@@ -318,10 +318,12 @@ int kdbRemoveKey_filesys(const Key *key) {
 
 ssize_t kdbGetKeyChildKeys_filesys(const Key *parentKey, KeySet *returned, unsigned long options) {
 	size_t parentNameSize=keyGetFullNameSize(parentKey);
-	char realParentName[parentNameSize];
+	char *realParentName;
 	DIR *parentDir;
 	char buffer[MAX_PATH_LENGTH];
 	struct dirent *entry;
+
+  realParentName = (char *)malloc(sizeof(char) *parentNameSize);
 
 	/*
 		- Convert parent key name into a real filename
@@ -333,8 +335,10 @@ ssize_t kdbGetKeyChildKeys_filesys(const Key *parentKey, KeySet *returned, unsig
 
 	/* Check if Key is not a directory or doesn't exist.
 	 * Propagate errno */
-	if (!parentDir) return -1;
-
+	if (!parentDir) {
+		free(realParentName);
+		return -1;
+	}
 	keyGetFullName(parentKey,realParentName,parentNameSize);
 
 	while ((entry=readdir(parentDir))) {
@@ -359,12 +363,14 @@ ssize_t kdbGetKeyChildKeys_filesys(const Key *parentKey, KeySet *returned, unsig
 		}
 		if (UTF8Engine(UTF8_FROM,&transformedName,&keyNameSize)) {
 			free(transformedName);
+			free(realParentName);
 			closedir(parentDir);
 			return -1;  /* propagate errno */
 		}
 
 		/* Copy the entire transformed key name to our final buffer */
 		sprintf(buffer,"%s/%s",realParentName,transformedName);
+		free(realParentName);
 		free(transformedName); /* don't need it anymore */
 
 		keyEntry=keyNew(buffer,KEY_SWITCH_END);
@@ -805,7 +811,7 @@ size_t keyCalcRelativeFileName(const Key *key,char *relativeFileName,size_t maxS
 		errno=KDB_RET_NOKEY;
 		return 0;
 	}
-
+/*
 // 	cursor=key->key;
 // 	while (*cursor) {
 // 		if (pos+1 > maxSize) {
@@ -828,7 +834,7 @@ size_t keyCalcRelativeFileName(const Key *key,char *relativeFileName,size_t maxS
 // 	}
 // 	relativeFileName[pos]=0;
 // 	pos++;
-
+*/
 	if (kdbNeedsUTF8Conversion()) {
 		char *converted;
 		size_t size;
@@ -838,7 +844,7 @@ size_t keyCalcRelativeFileName(const Key *key,char *relativeFileName,size_t maxS
 		converted=malloc(size);
 		keyGetName(key,converted,size);
 
-// 		memcpy(converted,relativeFileName,convertedSize);
+/* 		memcpy(converted,relativeFileName,convertedSize); */
 
 		if (UTF8Engine(UTF8_TO,&converted,&size)) {
 			free(converted);
