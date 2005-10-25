@@ -1,4 +1,9 @@
-noinst_PROGRAMS = backend application binary keyNewExample lookup
+elekexampledir = $(develdocdir)/examples
+                                                                                                                             
+EXTRA_DIST = backend.c application.c binary.c keyNewExample.c lookup.c
+elekexample_DATA = backend.c application.c binary.c keyNewExample.c lookup.c
+
+elekexample_PROGRAMS = backend application binary keyNewExample lookup
 
 backend_SOURCES = backend.c
 backend_LDFLAGS = -L../src/libelektra

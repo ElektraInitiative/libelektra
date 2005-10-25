@@ -53,9 +53,9 @@ endif
 # docbookman: kdb.1 elektra.7 elektra.5
 	
 if HAVE_DOXYGEN
-apimandir = $(docdir)/man/man3
-apihtmldir = $(docdir)/html
-doc_DATA = elektra-api
+apimandir = $(develdocdir)/man/man3
+apihtmldir = $(develdocdir)/html
+develdoc_DATA = elektra-api
 
 #
 # Generate doxygen documentation
@@ -66,30 +66,30 @@ elektra-api: $(DOXYSOURCES)
 	@echo "Making Doxygen..."
 	cd ../src/; $(doxygen)
 
-install-docDATA: $(doc_DATA)
+install-develdocDATA: $(api_DATA)
 	@$(NORMAL_INSTALL)
 	$(mkinstalldirs) $(DESTDIR)$(apihtmldir)
 	@list=`find elektra-api/html/`; for p in $$list; do \
 	if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
 	f="`echo $$p | sed -e 's|^.*/||'`"; \
-	  echo " $(docDATA_INSTALL) $$d$$p $(DESTDIR)$(apihtmldir)/$$f"; \
-	  $(docDATA_INSTALL) $$d$$p $(DESTDIR)$(apihtmldir)/$$f; \
+	  echo " $(develdocDATA_INSTALL) $$d$$p $(DESTDIR)$(apihtmldir)/$$f"; \
+	  $(develdocDATA_INSTALL) $$d$$p $(DESTDIR)$(apihtmldir)/$$f; \
 	 done
 
 	$(mkinstalldirs) $(DESTDIR)$(apimandir)
 	@list=`find elektra-api/man/man3`; for p in $$list; do \
 	if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
 	f="`echo $$p | sed -e 's|^.*/||'`"; \
-	  echo " $(docDATA_INSTALL) $$d$$p $(DESTDIR)$(apimandir)/$$f"; \
-	  $(docDATA_INSTALL) $$d$$p $(DESTDIR)$(apimandir)/$$f; \
+	  echo " $(develdocDATA_INSTALL) $$d$$p $(DESTDIR)$(apimandir)/$$f"; \
+	  $(develdocDATA_INSTALL) $$d$$p $(DESTDIR)$(apimandir)/$$f; \
 	done
 
 	$(mkinstalldirs) $(DESTDIR)$(man3dir)
 	@list=`find elektra-api/ -name "k[db,ey,s]*.3"` ; for p in $$list; do \
 	if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
 	f="`echo $$p | sed -e 's|^.*/||'`"; \
-	  echo " $(docDATA_INSTALL) $$d$$p $(DESTDIR)$(man3dir)/$$f"; \
-	  $(docDATA_INSTALL) $$d$$p $(DESTDIR)$(man3dir)/$$f; \
+	  echo " $(develdocDATA_INSTALL) $$d$$p $(DESTDIR)$(man3dir)/$$f"; \
+	  $(develdocDATA_INSTALL) $$d$$p $(DESTDIR)$(man3dir)/$$f; \
 	done
 endif
 #

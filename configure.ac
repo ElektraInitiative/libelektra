@@ -24,12 +24,21 @@ AC_SUBST(ulibdir)
 
 # /usr/share/doc path
 AC_ARG_WITH(docdir,
-	    [AC_HELP_STRING(--with-docdir=<path to lib>,
+	    [AC_HELP_STRING(--with-docdir=<path where doc will be installed>,
 	     [Set the path for documentation.])],
 	     [[docdir=$withval]],
-	     [[docdir='${datadir}/doc/elektra-api']]
+	     [[docdir='${datadir}/doc/elektra']]
 	     )
 AC_SUBST(docdir)
+
+# /usr/share/doc/elektra-api
+AC_ARG_WITH(develdocdir,
+	    [AC_HELP_STRING(--with-develdocdir=<path where elektra-api doc will be installed>,
+	     [Set the path for elektra api documentation.])],
+	     [[develdocdir=$withval]],
+	     [[develdocdir='${datadir}/doc/elektra-devel']]
+	     )
+AC_SUBST(develdocdir)
 
 # sgml/elektra-0.1.1
 AC_ARG_WITH(kdbschema,

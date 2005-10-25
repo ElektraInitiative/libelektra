@@ -1,6 +1,8 @@
+elektemplatedir = $(develdocdir)/backend-template/
 
 # $Id$
 EXTRA_DIST = template.c README
+elektemplate_DATA = template.c README
 
 # inoinst_lib_LTLIBRARIES = libelektra-template.la
 # libelektra_template_la_SOURCES = template.c ../../include/kdb.h ../../include/kdbbackend.h
