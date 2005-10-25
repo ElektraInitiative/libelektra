@@ -15,7 +15,7 @@
 
 /* Subversion stuff
 
-$Id: key.c 275 2005-10-02 16:11:07Z aviram $
+$Id$
 $LastChangedBy: aviram $
 
 */

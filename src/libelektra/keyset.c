@@ -15,7 +15,7 @@
 
 /* Subversion stuff
 
-$Id: keyset.c 279 2005-10-03 02:45:59Z aviram $
+$Id$
 $LastChangedBy: aviram $
 
 */
@@ -921,11 +921,13 @@ int keyCompareByName(const void *p1, const void *p2) {
  * @param ks KeySet to be sorted
  */
 void ksSort(KeySet *ks) {
-	Key *keys[ks->size];
+	Key **keys;
 	Key *cursor;
 	size_t c=0;
 
 	if (ks->size) {
+		keys = (Key **)malloc(sizeof(Key *)*ks->size);
+
 		for (cursor=ks->start; cursor; cursor=cursor->next, c++)
 			keys[c]=cursor;
 
@@ -938,6 +940,7 @@ void ksSort(KeySet *ks) {
 		}
 		cursor->next=0;
 		ks->end=cursor;
+		free(keys);
 	}
 }
 
