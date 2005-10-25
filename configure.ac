@@ -81,13 +81,11 @@ AC_CONFIG_SUBDIRS(libltdl)
 
 # xsltproc
 AC_PATH_PROG(xsltproc, xsltproc, "no")
-if test x$default_docbook != xno; then
-	# xslproc was found, check for stylesheet
-	AC_CHECK_FILE([$default_docbook],
-		      [[dbroot=$default_docbook]],
-		      [[dbroot="no"]])
-	AC_SUBST(dbroot)
-fi 
+# Check if have style-sheet too
+AC_CHECK_FILE([$default_docbook],
+	      [[dbroot=$default_docbook]],
+	      [[dbroot="no"]])
+AC_SUBST(dbroot)
 AM_CONDITIONAL(HAVE_XSLTPROC, test x$xsltproc != xno)
 AM_CONDITIONAL(HAVE_STYLESHEET, test x$dbroot != xno)
 
