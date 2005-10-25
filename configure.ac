@@ -9,7 +9,7 @@ AC_PREREQ(2.59)
 AC_INIT(elektra, 0.5.1, http://bugs.libelektra.org)
 AC_CONFIG_SRCDIR(src/libelektra/libkdb.c)
 AM_INIT_AUTOMAKE
-AC_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADER([src/include/config.h])
 
 # set some custom path 
 
@@ -122,7 +122,7 @@ AM_CONDITIONAL(HAVE_GCONF, test x$have_gconf = xyes)
 # Checks for header files.
 #
 AC_HEADER_STDC
-AC_CHECK_HEADERS([langinfo.h locale.h mntent.h stdlib.h string.h strings.h unistd.h])
+AC_CHECK_HEADERS([langinfo.h locale.h mntent.h stdlib.h string.h strings.h unistd.h regex.h])
 
 #
 # Checks for typedefs, structures, and compiler characteristics.
