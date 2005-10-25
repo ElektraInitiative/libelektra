@@ -42,7 +42,7 @@ AC_ARG_WITH(backend,
 
 # Select docbook.xsl
 AC_ARG_WITH(docbook,
-	    [AC_HELP_STRING(--with-docbook-xsl=<path to docbook.xsl>,
+	    [AC_HELP_STRING(--with-docbook=<path to docbook.xsl>,
 	     [Set path to docbook.xsl used for generate manpage.])],
 	     [[default_docbook=$withval]],
 	     [[default_docbook=/usr/share/sgml/docbook/xsl-stylesheets/]]
@@ -161,6 +161,7 @@ AC_OUTPUT([src/Makefile
 	   src/backends/fstab/Makefile
 	   src/backends/ini/Makefile
 	   src/backends/gconf/Makefile
+	   src/backends/daemon/Makefile
 	   src/backends/template/Makefile
 
 	   src/include/Makefile
