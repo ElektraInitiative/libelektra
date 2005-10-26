@@ -173,7 +173,7 @@ kdb set system/sw/kdb/current/schemapath "%{_datadir}/sgml/elektra-%{DTDVERSION}
 %{_libdir}/*elektratools.so*
 /bin/*
 %{_sysconfdir}/profile.d/*
-#%doc %{_docdir}/%{name}
+%doc %{_docdir}/%{name}
 %doc %{_mandir}/man1/*
 %doc %{_mandir}/man7/*
 %doc %{_mandir}/man5/*

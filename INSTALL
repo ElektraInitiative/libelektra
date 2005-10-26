@@ -22,9 +22,17 @@ You should allways prefer building Elektra from its source RPM as:
 
 	$ rpmbuild --rebuild elektra-VERSION.src.rpm
 
+or:
+
+	$ rpmbuild -ta elektra-VERSION.tar.gz
+
+
+
+
+General Building and Installation Instructions
+==============================================
+
 If you can't afford that, you should use the distributed tarball.
-Do not use the fresh files from the Subversion repository, since they use to
-be quite unstable.
 
 If you still want to use the old tarball, this is the correct
 way to do it, following the Filesystem Hierarchy Standard:
@@ -53,6 +61,29 @@ stylesheets on your system. Some common places:
 
 For any further information, check the RPM spec file.
 
+
+Building RPMs from the Subversion Repository
+============================================
+
+Do not use the fresh files from the Subversion repository, since they use to
+be quite unstable. But if you know what you are doing, do this:
+
+  bash:~$ cd src
+  bash:~/src$ svn co http://germane-software.com/repositories/elektra/trunk elektra
+  bash:~/src$ cd elektra
+  bash:~/src/elektra$ ./bootstrap.sh
+  bash:~/src/elektra$ ./configure \
+		--prefix=/usr \
+		--exec-prefix=/ \
+		--mandir=/usr/share/man \
+		--sysconfdir=/etc \
+		--disable-xmltest \
+		--with-docbook=/usr/share/sgml/docbook/xsl-stylesheets
+
+  bash:~/src/elektra$ make dist
+  bash:~/src/elektra$ rpmbuild -ta elektra-VERSION.tar.gz
+
+Then RPMs will appear under your RPM building tree.
 
 
 
