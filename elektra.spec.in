@@ -98,6 +98,7 @@ fi
      --exec-prefix=/ \
      --mandir=/usr/share/man \
      --sysconfdir=/etc \
+     --disable-xmltest \
      --with-docbook=/usr/share/sgml/docbook/xsl-stylesheets
 
 make all
