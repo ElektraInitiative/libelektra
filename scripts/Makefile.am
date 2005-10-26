@@ -1,3 +1,5 @@
+# $Id
+
 elektraenvdir = $(sysconfdir)/profile.d
 elekscriptdir = $(docdir)/scripts
 
