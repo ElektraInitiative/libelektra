@@ -1,5 +1,4 @@
 # $Id$
-# $LastChangedBy: aviram $
 
 EXTRA_DIST=kdb.1.xml elektra.7.xml elektra.5.xml author.xml bestpract.xml rgexample.xml rgcmd.xml storage.xml overview.xml $(man1_MANS) $(man5_MANS) $(man7_MANS)
 
