@@ -54,7 +54,7 @@ endif
 	
 if HAVE_DOXYGEN
 apimandir = $(develdocdir)/man/man3
-apihtmldir = $(develdocdir)/html
+apihtmldir = $(develdocdir)/api-html
 develdoc_DATA = elektra-api
 
 #
@@ -76,13 +76,13 @@ install-develdocDATA: $(api_DATA)
 	  $(develdocDATA_INSTALL) $$d$$p $(DESTDIR)$(apihtmldir)/$$f; \
 	 done
 
-	$(mkinstalldirs) $(DESTDIR)$(apimandir)
-	@list=`find elektra-api/man/man3`; for p in $$list; do \
-	if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	f="`echo $$p | sed -e 's|^.*/||'`"; \
-	  echo " $(develdocDATA_INSTALL) $$d$$p $(DESTDIR)$(apimandir)/$$f"; \
-	  $(develdocDATA_INSTALL) $$d$$p $(DESTDIR)$(apimandir)/$$f; \
-	done
+#	$(mkinstalldirs) $(DESTDIR)$(apimandir)
+#	@list=`find elektra-api/man/man3`; for p in $$list; do \
+#	if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+#	f="`echo $$p | sed -e 's|^.*/||'`"; \
+#	  echo " $(develdocDATA_INSTALL) $$d$$p $(DESTDIR)$(apimandir)/$$f"; \
+#	  $(develdocDATA_INSTALL) $$d$$p $(DESTDIR)$(apimandir)/$$f; \
+#	done
 
 	$(mkinstalldirs) $(DESTDIR)$(man3dir)
 	@list=`find elektra-api/ -name "k[db,ey,s]*.3"` ; for p in $$list; do \

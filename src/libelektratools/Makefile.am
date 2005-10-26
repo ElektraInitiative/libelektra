@@ -6,6 +6,6 @@ libelektratools_la_SOURCES = kdbtools.c ../include/kdbtools.h ../include/kdbpriv
 libelektratools_la_CPPFLAGS = -DDATADIR=\"@datadir@\"
 libelektratools_la_LDFLAGS = -version-info 1:0:0
 libelektratools_la_LIBADD = $(XML_LIBS)
-INCLUDES = -I../include $(XML_CFLAGS)
+INCLUDES = -I../include $(XML_CPPFLAGS)
 
 endif

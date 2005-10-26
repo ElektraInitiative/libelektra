@@ -8,7 +8,7 @@ Group:         System Environment/Libraries
 License:       BSD
 URL:           http://www.libelektra.org
 BuildRoot:     %{_tmppath}/%{name}-%{version}-build
-BuildRequires: doxygen docbook-style-xsl db4-devel GConf2-devel libxml2-devel automake autoconf libtool /usr/bin/xsltproc
+BuildRequires: doxygen docbook-style-xsl db4-devel GConf2-devel libxml2-devel gettext-devel automake autoconf libtool /usr/bin/xsltproc
 Summary:       A key/value pair database to store software configurations
 
 %define DTDVERSION 0.1.1
@@ -186,8 +186,8 @@ kdb set system/sw/kdb/current/schemapath "%{_datadir}/sgml/elektra-%{DTDVERSION}
 %{_includedir}/*
 %{_libdir}/*.a
 #%{_libdir}/pkgconfig/*
-#%doc %{_docdir}/%{name}-devel
-#%doc %{_mandir}/man3/*
+%doc %{_docdir}/%{name}-devel
+%doc %{_mandir}/man3/*
 
 
 
