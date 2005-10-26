@@ -6,6 +6,6 @@ EXTRA_DIST = benchmark-createtree convert-hosts convert-inittab convert-users el
 	     elektraenv.sh
 
 elektraenv_DATA = elektraenv.sh
-elekscript_DATA = benchmark-createtree convert-hosts convert-inittab convert-users elektraenv \
+elekscript_DATA = benchmark-createtree convert-hosts convert-inittab convert-users elektraenv.sh \
        		  convert-fstab convert-hwconfKudzu convert-network convert-xfree update-backend
 
