@@ -1,6 +1,12 @@
 # $Id$
 
-EXTRA_DIST=kdb.1.xml elektra.7.xml elektra.5.xml author.xml bestpract.xml rgexample.xml rgcmd.xml storage.xml overview.xml $(man1_MANS) $(man5_MANS) $(man7_MANS)
+EXTRA_DIST=kdb.1.xml elektra.7.xml elektra.5.xml
+EXTRA_DIST+=author.xml bestpract.xml rgexample.xml rgcmd.xml storage.xml overview.xml apiexample.xml api.xml compared.xml garbage.xml html-params.xsl html-titlepage-layout.tpl society.xml storage.xml UPLOAD
+EXTRA_DIST+=docbook.css doxygen.css
+EXTRA_DIST+=elektra.sxi
+EXTRA_DIST+=$(man1_MANS) $(man5_MANS) $(man7_MANS)
+
+SUBDIRS=images
 
 # Dependencies for Doxygen documentation
 DOXYSOURCES=../src/libelektra/libkdb.c ../src/kdb/kdb.c ../src/libelektratools/kdbtools.c ../src/include/kdb.h ../src/include/kdbbackend.h ../src/include/kdbprivate.h ../src/libelektra/key.c ../src/backends/template/template.c ../src/Doxyfile

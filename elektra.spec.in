@@ -138,8 +138,8 @@ rm $RPM_BUILD_ROOT/usr/lib/*.la
 #	SGMLDIR=%{_datadir}/sgml \
 #	install
 
-%clean
-rm -rf $RPM_BUILD_ROOT
+#%clean
+#rm -rf $RPM_BUILD_ROOT
 #rm -rf $RPM_BUILD_DIR/%{name}
 
 

@@ -27,6 +27,9 @@ or:
 	$ rpmbuild -ta elektra-VERSION.tar.gz
 
 
+The default RPM specifications that come with the source were written to 
+meet the Filesystem Hierarchy Standards.
+
 
 
 General Building and Installation Instructions
