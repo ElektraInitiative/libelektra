@@ -3,7 +3,7 @@
 # Bootstraping Elektra
 echo "BOOTSTRAPING ELEKTRA"
 echo "LIBTOOLIZE"
-libtoolize
+libtoolize --ltdl
 
 echo "ACLOCAL"
 aclocal
