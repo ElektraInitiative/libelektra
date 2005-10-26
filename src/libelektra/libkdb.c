@@ -45,8 +45,11 @@ $LastChangedBy: aviram $
 
 extern int errno;
 
-
-
+/* Needed if bootstrapping/compiling on a system that lacks 
+ * the iconv.m4 autoconf macro */
+#ifndef ICONV_CONST
+#define ICONV_CONST
+#endif
 
 /**
  * @defgroup kdb KeyDB :: Class Methods
@@ -409,8 +412,10 @@ int UTF8Engine(int direction, char **string, size_t *inputOutputByteSize) {
 
 	readCursor=*string;
 	writeCursor=converted;
+	/* On some systems and with libiconv arg1 is const char **. 
+	 * ICONV_CONST is defined by configure if the system needs this */
 	if (iconv(converter,
-			&readCursor,inputOutputByteSize,
+			(ICONV_CONST char **)&readCursor,inputOutputByteSize,
 			&writeCursor,&bufferSize) == (size_t)(-1)) {
 		free(converted);
 		iconv_close(converter);
