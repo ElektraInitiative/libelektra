@@ -45,7 +45,11 @@ You can also call the last as:
 	# make DESTDIR=/some/directory install
 
 The "--with-docbook" switch should point to Norman Walsh's DocBook XSL
-stylesheets on your system.
+stylesheets on your system. Some common places:
+
+/usr/share/xml/docbook/stylesheet/nwalsh/ (Debian)
+/usr/share/sgml/docbook/xsl-stylesheets (Red Hat, the default)
+
 
 For any further information, check the RPM spec file.
 
