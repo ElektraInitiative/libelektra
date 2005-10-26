@@ -18,21 +18,21 @@ echo "AUTOCONF"
 autoconf
 
 # Bootstraping libltdl
-echo "BOOTSTRAPING LIBLTDL"
-cd libltdl
-echo "LIBTOOLIZE"
-libtoolize
+# echo "BOOTSTRAPING LIBLTDL"
+# cd libltdl
+# echo "LIBTOOLIZE"
+# libtoolize
 
-echo "ACLOCAL"
-aclocal
+# echo "ACLOCAL"
+# aclocal
 
-echo "AUTOHEADER"
-autoheader
+# echo "AUTOHEADER"
+# autoheader
 
-echo "AUTOMAKE"
-automake --add-missing
+# echo "AUTOMAKE"
+# automake --add-missing
 
-echo "AUTOCONF"
-autoconf
+# echo "AUTOCONF"
+# autoconf
 
-cd ..
+# cd ..
