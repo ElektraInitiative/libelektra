@@ -16,8 +16,7 @@
 
 /* Subversion stuff
 
-$Id: kdbbackend.h 200 2005-03-21 21:54:41Z aviram $
-$LastChangedBy: aviram $
+$Id$
 
 */
 
