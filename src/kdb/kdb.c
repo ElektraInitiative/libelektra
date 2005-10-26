@@ -16,7 +16,7 @@
 
 /* Subversion stuff
 
-$Id: kdb.c 252 2005-07-30 11:58:10Z aviram $
+$Id$
 $LastChangedBy: aviram $
 
 */
@@ -72,7 +72,7 @@ int (*ksFromXML)(KeySet *ks,int fd);
  * @{
  */
 
-
+int commandHelp();
 
 char *argComment=0;
 char *argFile=0;
@@ -100,107 +100,127 @@ int parseCommandLine(int argc, char *argv[]) {
 	char sargType[ARGSIZE],argUser[ARGSIZE],argGroup[ARGSIZE];
 	char sargMode[ARGSIZE],sargCommand[ARGSIZE];
 	char * keyEnv;
-	size_t keyEnvLength=0, keyOptLength=0;
+	size_t keyEnvLength=0, keyOptLength=0, keyOldLength;
 
 	int opt;
 
-	int test;
-
 	*sargType=*argUser=*argGroup=*sargCommand=*sargMode=0;
 
-	while ((opt=getopt(argc,argv,"-t:c:u:g:m:b:raflvRdxsi"))!=-1) {
-		switch (opt) {
-			case 't':
-				strncpy(sargType,optarg,ARGSIZE);
-				break;
-			case 'c':
-				argComment=realloc(argComment,strlen(optarg)+1);
-				assert(argComment!=NULL);
-				strcpy(argComment,optarg);
-				break;
-			case 'b':
-				argFile=realloc(argFile,strlen(optarg)+1);
-				assert(argFile!=NULL);
-				strcpy(argFile,optarg);
-				break;
-			case 'u':
-				strncpy(argUser,optarg,ARGSIZE);
-				break;
-			case 'g':
-				strncpy(argGroup,optarg,ARGSIZE);
-				break;
-			case 'm':
-				strncpy(sargMode,optarg,ARGSIZE);
-				break;
-			case 'R':
-				argRecursive=KDB_O_RECURSIVE;
-				break;
-			case 'l':
-				argLong=1;
-				break;
-			case 'v':
-				argValue=1;
-				break;
-			case 'd':
-				argDescriptive=1;
-				argLong=1;
-				break;
-			case 'a':
-				argAll=1;
-				break;
-			case 's':
-				argShell=1;
-				break;
-			case 'f':
-				argFullName=1;
-				break;
-			case 'n':
-				argSort=0;
-				break;
-			case 'i':
-				argShow=0;
-				break;
-			case 'x':
-				argXML=1;
-				break;
-			case 1: { /* handle non '-x' args */
-				test=optind;
-				if (*sargCommand==0) { /* parse sub-command */
-					strncpy(sargCommand,optarg,ARGSIZE);
-				} else if (!argKeyName) { /* parse key name */
-					keyEnv = getenv ("KDB_ROOT");
-					if (keyEnv) keyEnvLength += strblen (keyEnv);
-					else keyEnvLength = 0;
-					keyOptLength = strblen (optarg);
-					argKeyName=realloc(argKeyName,
-						keyEnvLength + keyOptLength + 1);
-					assert(argKeyName!=NULL);
-					if (keyEnv) strncpy (argKeyName, keyEnv,   keyEnvLength);
-					strncpy(argKeyName + keyEnvLength, optarg, keyOptLength);
-				} else if (!argData) { /* parse value */
-					argData=realloc(argData,strblen(optarg)+1);
-					assert(argData!=NULL);
-					strcpy(argData,optarg);
-				}
-				break;
-			}
+	while ((opt=getopt(argc,argv,"ab:c:dfg:hilm:nrRst:u:vx"))!=-1)
+	{
+		if (opt == EOF)
+			break;
+		switch (opt)
+		{
+		case 'a':
+			argAll=1;
+			break;
+		case 'b':
+			argFile=realloc(argFile,strlen(optarg)+1);
+			assert(argFile!=NULL);
+			strcpy(argFile,optarg);
+			break;
+		case 'c':
+			argComment=realloc(argComment,strlen(optarg)+1);
+			assert(argComment!=NULL);
+			strcpy(argComment,optarg);
+			break;
+		case 'd':
+			argDescriptive=1;
+			argLong=1;
+			break;
+		case 'f':
+			argFullName=1;
+			break;
+		case 'g':
+			strncpy(argGroup,optarg,ARGSIZE);
+			break;
+		case 'h':
+			commandHelp();
+			break;
+		case 'i':
+			argShow=0;
+			break;
+		case 'l':
+			argLong=1;
+			break;
+		case 'm':
+			strncpy(sargMode,optarg,ARGSIZE);
+			break;
+		case 'n':
+			argSort=0;
+			break;
+		case 'R':
+		case 'r':
+			argRecursive=KDB_O_RECURSIVE;
+			break;
+		case 's':
+			argShell=1;
+			break;
+		case 't':
+			strncpy(sargType,optarg,ARGSIZE);
+			break;
+		case 'u':
+			strncpy(argUser,optarg,ARGSIZE);
+			break;
+		case 'v':
+			argValue=1;
+			break;
+		case 'x':
+			argXML=1;
+			break;
+		default:
+			fprintf(stderr, "Unknown error (%d %c) in parsing arguments\n",
+					opt,opt);
+			break;
 		}
 	}
-	test=optind;
 
-	/* Now check if we have the '--' argument, and get all its values */
-	if (!strcmp(argv[optind-1],"--") && optind<argc) {
-		int wordind=optind;
-		size_t valueLength=0;
-
-		while (wordind<argc) valueLength+=strlen(argv[wordind++])+1;
-		argData=realloc(argData,valueLength);
-		assert(argData!=NULL);
-		strcpy(argData,argv[optind++]);
-		/* very ugly */
-		while (optind<argc) sprintf(argData,"%s %s",argData,argv[optind++]);
+	if (optind < argc) /*parse command*/
+	{
+		strncpy(sargCommand,argv[optind],ARGSIZE);
+		optind ++;
+	} else {
+		fprintf (stderr, "No command given\n");
+		exit (1);
+	}
+		
+	if (optind < argc) /*parse key name*/
+	{
+		/**Use KDB_ROOT as prefix in key name*/
+		keyEnv = getenv ("KDB_ROOT");
+		if (keyEnv) keyEnvLength = strblen (keyEnv);
+		else keyEnvLength = 0;
+		keyOptLength = strblen (argv[optind]);
+		argKeyName=realloc(argKeyName,
+			keyEnvLength + keyOptLength + 1);
+		assert(argKeyName!=NULL);
+		if (keyEnv) strncpy (argKeyName, keyEnv,   keyEnvLength);
+		strncpy(argKeyName + keyEnvLength, argv[optind], keyOptLength);
+		if (keyEnv) *(argKeyName+keyEnvLength-1) = '/';
+		optind ++;
 	}
 
+	keyOptLength = 0;
+	keyOldLength = 0;
+	while (optind < argc) /* parse value (rest of arguments) */
+	{
+		keyOptLength += strblen(argv[optind]);
+		argData=realloc(argData,keyOptLength + 1);
+		assert(argData!=NULL);
+		if (keyOldLength > 0) *(argData+keyOldLength-1) = ' ';
+		strcpy(argData+keyOldLength, argv[optind]);
+		optind ++;
+		keyOldLength = keyOptLength;
+	}
+	
+	/* see if parsing worked:
+	fprintf (stderr, "command: %s\n", sargCommand);
+	fprintf (stderr, "key name: %s\n", argKeyName);
+	fprintf (stderr, "value: %s\n", argData);
+	exit (0);
+	*/
+		
 	/* End of command line argument reading. Now parse and finalize */
 
 	/* Check parsed command */
@@ -888,6 +908,130 @@ int commandGet() {
 
 
 
+/**
+ * Prints out help to the kdb (1) command.
+ *TODO: should be same as man page
+ * help2man?
+ * --help does not work
+ *
+ * @par Example:
+ * @code
+ * bash$ kdb help
+ * bash$ kdb -h
+ * @endcode
+ */
+int commandHelp() {
+	printf("Usage: kdb [OPTION] <command> <key> [value ...]\n");
+	printf("Use kdb to manipulate the Key Database.\n");
+	printf("\n");
+
+	printf("ARGUMENTS\n");
+	printf("Commands are explained with kdb -h command (Implemented soon)\n");
+	printf("<key> is the name of the key. It can be prefixed\n");
+	printf(" with environment KDB_ROOT. The slash between will\n");
+	printf("be inserted.\n");
+	printf("[value ...] hold the value which should be set\n");
+	printf("\n");
+	
+	printf("EXAMPLES:\n");
+	printf(" kdb get [-dlr] key/name\n");
+	printf(" kdb set [-t type] [-c \"A comment about this key\"] [-m mode] [-u uid]\n");
+	printf("         [-g gid] key/name \"the value\"\n");
+	printf(" kdb set [-t type] [-m mode] [-c \"A comment\"] key/name -- \"the value\"\n");
+	printf(" kdb set [-t type] [-b file] key/name\n");
+	printf(" kdb ls [-lRfv] [key/dir | key/name]\n");
+	printf(" kdb ls [-lRfvx] [key/dir | key/name] > keys.xml\n");
+	printf(" kdb edit [-R] [key/dir | key/name]\n");
+	printf(" kdb rm key/name\n");
+	printf(" kdb mv key/src key/dest\n");
+	printf(" kdb ln key/src key/dest\n");
+	printf(" kdb export system/some/tree.root > file.xml\n");
+	printf(" kdb import < file.xml\n");
+	printf(" kdb import file.xml\n");
+	printf(" kdb monitor some/key/name\n");
+	printf(" export KDB_ROOT=\"user/test/dir\"\n");
+	printf(" kdb get file/key ... will expand to user/test/dir/file/key\n");
+	printf("\n");
+	
+	printf("SUBCOMMANDS\n");
+	printf("get\n");
+	printf(" Get the value from the specified key. Accepts options: -d, -l, -f, -s \n");
+	printf("\n");
+	printf("set\n");
+	printf(" Set the value to the specified key. Accepts options: -c, -t, -m, -b \n");
+	printf("\n");
+	printf("ls\n");
+	printf(" As the ls(1) command, list key names for the specified key, or children keys, if specified a folder key. The -v argument will make it show also the values of each key. The -d (descriptive) will make it show the comment, key name and its value, as you are watching a plain text file. Accepts options: -x, -d, -l, -f, -v, -R \n");
+	printf("\n");
+	printf("ln\n");
+	printf(" Creates a key that is a symbolic links to another key. \n");
+	printf("\n");
+	printf("mv\n");
+	printf(" Move, or renames a key. Currently it can't move keys across different filesystems. \n");
+	printf("\n");
+	printf("rm\n");
+	printf(" As the rm(1) command, removes the key specified. \n");
+	printf("\n");
+	printf("edit\n");
+	printf(" A very powerfull subcommand that lets you edit an XML representation of the keys. The parameters it accepts is usually a parent key, so its child keys will be gathered. Can be used with the -R flag to work recursively. The editor used is the one set in the $EDITOR environment variable, or vi. After editing the keys, kdb edit will analyze them and commit only the changed keys, remove the keys removed, and add the keys added. \n");
+	printf("\n");
+	printf("export, save, \n");
+	printf("Export a subtree of keys to XML. If no subtree is defined right after the export command, system and current user trees will be exported. Output is written to standard output. The output encoding will allways be UTF-8, regardeless of your system encoding. UTF-8 is the most universal charset you can get when exchanging data between multiple systems. Accepts -f. \n");
+	printf("\n");
+	printf("import, load, \n");
+	printf("Import an XML representation of keys and save it to the keys database. If no filename is passed right after the import command, standard input is used. \n");
+	printf("\n");
+	printf("monitor, mon, \n");
+	printf("Monitor a key for some value change. It will block your command line until a change in the key value is detected, then return its new value. Options \n");
+	printf("-R\n");
+	printf(" Causes to work recursively. In ls, will list recursively. \n");
+	printf("\n");
+	printf("-x\n");
+	printf(" Makes ls output an XML representation of the keys, instead of an ls-compatible output. \n");
+	printf("\n");
+	printf("-l\n");
+	printf(" Causes to display long results. With ls, will generate lists similar to ls -l. With get, will show also the key name. \n");
+	printf("\n");
+	printf("-a\n");
+	printf(" Causes ls to display also inactive keys. Generate lists similar to ls -a. Inactive keys are keys which basename begins with a '.' (dot). An example of inactive key: system/sw/XFree/current/Monitor/.Monitor1 \n");
+	printf("\n");
+	printf("-f\n");
+	printf(" Causes to work with full key names. A full key name makes sense only on user/* keys, and differentiate from the regular key names in specifying the owner user. If the current user is someuser, the user/some/key full name is user:someuser/some/key. Makes effect in ls, export and get subcommands. \n");
+	printf("\n");
+	printf("-d\n");
+	printf(" Causes get to work descriptivelly. When requesting a key it will show the comment, key name and its value in a fancy format \n");
+	printf("\n");
+	printf("-s\n");
+	printf(" Causes get to be more friendly to Shell scripts. For example, when requesting user/env/env2/PATH, the output will be PATH=\"the value\", that is, only the basename of the key will be showed and the value will be surrounded by  \".\n");
+	printf("\n");
+	printf("-t type\n");
+	printf(" When setting a key's value, you can specify the type with this switch. Currently accepted types are string for plain text, bin for binary as-is values, dir to create folder keys and link to create symbolic links between keys. Plain text are always stored as UTF-8(7) in Elektra, regardeless of your current encoding ($LANG). If you want to force a value to be stored without the UTF-8(7) encoding (a bad idea), you can set it as binary. Binary values should be avoided, because they are black boxes for system administrators. \n");
+	printf("\n");
+	printf("-b filename\n");
+	printf(" Set the key value as the content of file filename. This option is more usefull when setting binary keys. \n");
+	printf("\n");
+	printf("-m mode\n");
+	printf(" For the set command. Will set the key access permission to mode, which must be an octal number as for chmod(1). \n");
+	printf("\n");
+	printf("-u uid\n");
+	printf(" Create the key with uid user ID. It can be a user name or a uid number. \n");
+	printf("\n");
+	printf("-g gid\n");
+	printf(" Create the key with gid group ID. It can be a group name or a gid number \n");
+	printf("\n");
+	printf("-c comment\n");
+	printf(" When setting keys, you can use this argument to set a descriptive comment for it. This comment is exactly as a comment in a plain text configuration file. The comment is stored as UTF-8(7) regardeless of your current encoding ($LANG). \n");
+	printf("\n");
+	printf("-v\n");
+	printf(" With the ls subcommand, will make it show also the value stored in the key. \n");
+	printf("\n");
+	printf("--\n");
+	printf(" With the set subcommand, everything after it will be considered the value, even text with dashes (-). Best Practices When Creating Keys\n");
+	printf("\n");
+	exit (0);
+}
+
+
 
 
 
@@ -1175,37 +1319,6 @@ int commandMonitor() {
 }
 
 
-/**
- * Prints on stderr some brief examples on how to use kdb command.
- *
- * @par Example:
- * @code
- * bash$ kdb help
- * @endcode
- */
-int commandHelp() {
-	fprintf(stderr,"Use kdb to manipulate the Key Database. Examples:\n\n");
-	fprintf(stderr," kdb get [-dlr] key/name\n");
-	fprintf(stderr," kdb set [-t type] [-c \"A comment about this key\"] [-m mode] [-u uid]\n");
-	fprintf(stderr,"         [-g gid] key/name \"the value\"\n");
-	fprintf(stderr," kdb set [-t type] [-m mode] [-c \"A comment\"] key/name -- \"the value\"\n");
-	fprintf(stderr," kdb set [-t type] [-b file] key/name\n");
-	fprintf(stderr," kdb ls [-lRfv] [key/dir | key/name]\n");
-	fprintf(stderr," kdb ls [-lRfvx] [key/dir | key/name] > keys.xml\n");
-	fprintf(stderr," kdb edit [-R] [key/dir | key/name]\n");
-	fprintf(stderr," kdb rm key/name\n");
-	fprintf(stderr," kdb mv key/src key/dest\n");
-	fprintf(stderr," kdb ln key/src key/dest\n");
-	fprintf(stderr," kdb export system/some/tree.root > file.xml\n");
-	fprintf(stderr," kdb import < file.xml\n");
-	fprintf(stderr," kdb import file.xml\n");
-	fprintf(stderr," kdb monitor some/key/name\n\n");
-	fprintf(stderr,"For additional info see kdb(1).\n");
-	
-	return 0;
-}
-
-
 int loadToolsLib(void) {
 	lt_dlhandle dlhandle=0;
 
@@ -1240,10 +1353,15 @@ int doCommand(int command) {
 	return 0;
 }
 
+void cleanup()
+{
+	kdbClose();
+}
 
 int main(int argc, char **argv) {
 	int command=0;
 	int ret=0;
+
 
 	if (loadToolsLib())
 		fprintf(stderr,"kdb: XML importing and editing disabled\n");
@@ -1251,10 +1369,11 @@ int main(int argc, char **argv) {
 	command=parseCommandLine(argc,argv);
 
 	kdbOpen();
-	ret=doCommand(command);
-	kdbClose();
+	atexit(cleanup); /**Make sure kdbClose will be used*/
 
-	return ret;
+	ret=doCommand(command);
+
+	exit(ret);
 }
 
 /**
