@@ -30,6 +30,8 @@
 ## Avi Alkalay <avi at unix dot sh>
 ## April 2004
 ##
+## $Id
+##
 
 
 if [ -z "$KDB" ]; then
