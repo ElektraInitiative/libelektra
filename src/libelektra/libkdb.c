@@ -410,7 +410,7 @@ int UTF8Engine(int direction, char **string, size_t *inputOutputByteSize) {
 	readCursor=*string;
 	writeCursor=converted;
 	if (iconv(converter,
-			(ICONV_CONST char **)&readCursor,inputOutputByteSize,
+			&readCursor,inputOutputByteSize,
 			&writeCursor,&bufferSize) == (size_t)(-1)) {
 		free(converted);
 		iconv_close(converter);

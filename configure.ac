@@ -128,7 +128,8 @@ AM_CONDITIONAL(HAVE_DOXYGEN, test x$doxygen != xno)
 AM_ICONV()
 
 # Check for libxml (Allow compilation of libelektratools)
-AM_PATH_XML2(, [have_xml="yes"], [have_xml="no"])
+#AM_PATH_XML2(, [have_xml="yes"], [have_xml="no"])
+AC_CHECK_MODULES(, libxml-2.0, [have_xml="yes"], [have_xml="no"])
 AM_CONDITIONAL(HAVE_XML, test x$have_xml = xyes)
 
 # Check for libdb (Allow compilation of libelektra-berkeley.so)
