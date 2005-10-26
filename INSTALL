@@ -157,13 +157,10 @@ one package for each ?
 Libltdl for (hope) cross-platform is bundled with
 libelektra and so, add no dependency.
 
-Hope you'll be happy to found a configure script ;).
 (Below, generic installation instructions)
 
 
-	Greets, 
-	- Yannick <yl@itioweb.com>.	
-
+$Id
 
 
 

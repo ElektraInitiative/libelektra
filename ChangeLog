@@ -1,3 +1,8 @@
+* Wed Oct 26 2005 Avi Alkalay <avi@unix.sh> 0.5.1
+- Migrated to autotools, and updated documentation for that
+- Changed some help stuff on kdb command
+- Included libltdl for cross-platform compatibility
+
 * Sun Oct 02 2005 Avi Alkalay <avi@unix.sh> 0.5.0.5
 - Some final fixes for the complete libkdb.so -> libelektra.so renaming
 - Removed a bug in filesys.c::keyFromStat() regarding reuse of folder key struct

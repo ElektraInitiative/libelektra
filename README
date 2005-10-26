@@ -1,0 +1,30 @@
+ABOUT
+=====
+
+Elektra provides a universal and secure framework to store configuration
+parameters in a hierarchical key-value pair mechanism, instead of each program
+using its own text configuration files. This allows any program to read and
+save its configuration with a consistent API, and allows them to be aware of
+other applications' configurations, permitting easy application integration.
+While architecturally similar to other OS registries, Elektra does not have
+most of the problems found in those implementations.
+
+
+DOWNLOAD
+========
+
+Elektra stable source code as tarballs can be found at:
+
+  http://sourceforge.net/project/showfiles.php?group_id=117521
+
+Elektra Subversion repository with unstable source code can be checked
+out with these commands:
+
+  bash:~$ cd src
+  bash:~/src$ svn co http://germane-software.com/repositories/elektra/trunk elektra
+  bash:~/src$ cd elektra
+  bash:~/src/elektra$ # files are here
+
+
+
+$Id
