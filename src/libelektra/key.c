@@ -2854,7 +2854,7 @@ int keyInit(Key *key) {
 	key->gid=getgid();
 	key->access=umask(0); 
 	umask(key->access);
-	/* key->access=DEFFILEMODE & ~key->access;*/
+	key->access=DEFFILEMODE & ~key->access;
 
 	key->flags = KEY_SWITCH_INITIALIZED;
 

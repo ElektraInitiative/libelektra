@@ -16,7 +16,7 @@
 
 /* Subversion stuff
 
-$Id: kdbprivate.h 200 2005-03-21 21:54:41Z aviram $
+$Id$
 $LastChangedBy: aviram $
 
 */
@@ -38,6 +38,10 @@ $LastChangedBy: aviram $
 #define USER_NAME_SIZE 100
 #endif
 
+
+#ifndef DEFFILEMODE
+#define DEFFILEMODE 0666
+#endif
 
 
 
