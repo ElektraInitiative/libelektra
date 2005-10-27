@@ -189,6 +189,7 @@ AC_OUTPUT([src/Makefile
 	   examples/Makefile
 
 	   doc/Makefile
+	   doc/images/Makefile
 	   
 	   scripts/Makefile
 
