@@ -138,8 +138,8 @@ rm $RPM_BUILD_ROOT/usr/lib/*.la
 #	SGMLDIR=%{_datadir}/sgml \
 #	install
 
-#%clean
-#rm -rf $RPM_BUILD_ROOT
+%clean
+rm -rf $RPM_BUILD_ROOT
 #rm -rf $RPM_BUILD_DIR/%{name}
 
 
@@ -185,7 +185,7 @@ kdb set system/sw/kdb/current/schemapath "%{_datadir}/sgml/elektra-%{DTDVERSION}
 %defattr(-,root,root,0755)
 %{_includedir}/*
 %{_libdir}/*.a
-#%{_libdir}/pkgconfig/*
+%{_libdir}/pkgconfig/*
 %doc %{_docdir}/%{name}-devel
 %doc %{_mandir}/man3/*
 

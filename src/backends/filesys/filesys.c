@@ -30,7 +30,6 @@
 /* Subversion stuff
 
 $Id$
-$LastChangedBy: mraab $
 
 */
 
@@ -318,12 +317,12 @@ int kdbRemoveKey_filesys(const Key *key) {
 
 ssize_t kdbGetKeyChildKeys_filesys(const Key *parentKey, KeySet *returned, unsigned long options) {
 	size_t parentNameSize=keyGetFullNameSize(parentKey);
-	char *realParentName;
+	char *realParentName=0;
 	DIR *parentDir;
 	char buffer[MAX_PATH_LENGTH];
 	struct dirent *entry;
 
-  realParentName = (char *)malloc(sizeof(char) *parentNameSize);
+	realParentName = (char *)malloc(sizeof(char) *parentNameSize);
 
 	/*
 		- Convert parent key name into a real filename
@@ -370,8 +369,7 @@ ssize_t kdbGetKeyChildKeys_filesys(const Key *parentKey, KeySet *returned, unsig
 
 		/* Copy the entire transformed key name to our final buffer */
 		sprintf(buffer,"%s/%s",realParentName,transformedName);
-		free(realParentName);
-		free(transformedName); /* don't need it anymore */
+		free(transformedName); transformedName=0; /* don't need it anymore */
 
 		keyEntry=keyNew(buffer,KEY_SWITCH_END);
 
@@ -412,6 +410,8 @@ ssize_t kdbGetKeyChildKeys_filesys(const Key *parentKey, KeySet *returned, unsig
 	} /* while(readdir) */
 	
 	closedir(parentDir);
+
+	free(realParentName);
 
 	if ((options & (KDB_O_SORT)) && (returned->size > 1))
 		ksSort(returned);
