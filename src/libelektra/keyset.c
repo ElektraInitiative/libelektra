@@ -920,12 +920,12 @@ int keyCompareByName(const void *p1, const void *p2) {
  * @param ks KeySet to be sorted
  */
 void ksSort(KeySet *ks) {
-	Key **keys;
+	Key **keys = NULL;
 	Key *cursor;
 	size_t c=0;
 
 	if (ks->size) {
-		keys = (Key **)malloc(sizeof(Key *)*ks->size);
+		keys = (Key **)calloc(ks->size, sizeof(Key *));
 
 		for (cursor=ks->start; cursor; cursor=cursor->next, c++)
 			keys[c]=cursor;
