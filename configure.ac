@@ -181,7 +181,7 @@ AC_CHECK_FUNCS([memset nl_langinfo setenv setlocale strcasecmp strchr strrchr st
 #
 # Output
 #
-AC_CONFIG_FILES([Makefile po/Makefile.in m4/Makefile ])
+AC_CONFIG_FILES([Makefile])
 AC_OUTPUT([src/Makefile
 	   
 	   src/libelektra/Makefile
