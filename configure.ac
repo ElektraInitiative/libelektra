@@ -11,6 +11,22 @@ AC_CONFIG_SRCDIR(src/libelektra/libkdb.c)
 AM_INIT_AUTOMAKE
 AC_CONFIG_HEADER([src/include/config.h])
 
+# Debuging version ?
+# CFLAGS="${CFLAGS=}"
+dnl this macro is used to get the arguments supplied
+dnl to the configure script (./configure --enable-debug)
+dnl Check if we have enable debug support.
+AC_MSG_CHECKING(whether to enable debugging)
+AC_ARG_ENABLE(debug, [  --enable-debug turn on debugging
+	      [default="no"]],enable_debug="yes", enable_debug="no")
+dnl Yes, shell scripts can be used
+if test "x$enable_debug" = "xyes"; then
+	CFLAGS="-g -ggdb -DDEBUG"
+	AC_MSG_RESULT(yes)
+else
+	AC_MSG_RESULT(no)
+fi
+
 # set some custom path 
 
 # usr/lib path
@@ -165,7 +181,7 @@ AC_CHECK_FUNCS([memset nl_langinfo setenv setlocale strcasecmp strchr strrchr st
 #
 # Output
 #
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile po/Makefile.in m4/Makefile ])
 AC_OUTPUT([src/Makefile
 	   
 	   src/libelektra/Makefile
