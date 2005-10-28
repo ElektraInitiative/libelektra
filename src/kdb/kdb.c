@@ -181,22 +181,16 @@ int parseCommandLine(int argc, char *argv[]) {
 		strncpy(sargCommand,argv[optind],ARGSIZE);
 		optind ++;
 	} else {
-		if (argHelp)
-		{
-			commandHelp();
-			exit(0);
-		} else {
-			fprintf (stderr, "No command given\n");
-			exit (1);
-		}
+		commandHelp();
+		exit(0);
 	}
 		
+	/**Use KDB_ROOT as prefix in key name*/
+	keyEnv = getenv ("KDB_ROOT");
+	if (keyEnv) keyEnvLength = strblen (keyEnv);
+	else keyEnvLength = 0;
 	if (optind < argc) /*parse key name*/
 	{
-		/**Use KDB_ROOT as prefix in key name*/
-		keyEnv = getenv ("KDB_ROOT");
-		if (keyEnv) keyEnvLength = strblen (keyEnv);
-		else keyEnvLength = 0;
 		keyOptLength = strblen (argv[optind]);
 		argKeyName=realloc(argKeyName,
 			keyEnvLength + keyOptLength + 1);
@@ -205,7 +199,12 @@ int parseCommandLine(int argc, char *argv[]) {
 		strncpy(argKeyName + keyEnvLength, argv[optind], keyOptLength);
 		if (keyEnv) *(argKeyName+keyEnvLength-1) = '/';
 		optind ++;
+	} else {
+		argKeyName=realloc(argKeyName, keyEnvLength + 1);
+		assert(argKeyName!=NULL);
+		if (keyEnv) strncpy (argKeyName, keyEnv, keyEnvLength);
 	}
+		
 
 	keyOptLength = 0;
 	keyOldLength = 0;
