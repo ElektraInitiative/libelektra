@@ -149,7 +149,7 @@ dnl Check if the user wants to disable iconv support and
 dnl hence disable any charset conversions.
 dnl It is disabled with --disable-iconv
 AC_MSG_CHECKING(whether to disable iconv usage)
-AC_ARG_ENABLE(iconv, [  --disable-iconv turns off iconv
+AC_ARG_ENABLE(iconv, [  --disable-iconv turns off automatic UTF-8 conversions
         [default="no"]],disable_iconv="yes", disable_iconv="no")
 if test "x$disable_iconv" = "xyes"; then
   AC_MSG_RESULT(yes)

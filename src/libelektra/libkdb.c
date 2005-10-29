@@ -368,17 +368,18 @@ ssize_t unencode(char *encoded,void *returned) {
 
 /**
  * Checks if UTF-8 conversion is needed in current context.
+ * if nl_langinfo() is not available, no conversion is ever needed.
+ * If iconv usage is disabled there is no need to check if we need to convert.
+ * Furthermore, some systems have nl_langinfo(), but lacks ability to get
+ * CODESET through it.
+ * Look at the comments by the UTF8Engine() function for more information.
  *
  * @return 0 if not needed, anything else if needed
  * @ingroup backend
  */
 int kdbNeedsUTF8Conversion() {
-/* if nl_langinfo is not available, no conversion is ever needed. 
- * If iconv usage is disabled there is no need to check if we need to convert.
- * Furthermore, some systems have nl_langinfo, but lacks ability to get CODESET through it
- * Look at the comments by the UTF8Engine() function for more information*/
 #if defined(HAVE_NL_LANGINFO) && defined(HAVE_ICONV) && defined(CODESET)
-  return strcmp(nl_langinfo(CODESET),"UTF-8");
+	return strcmp(nl_langinfo(CODESET),"UTF-8");
 #else
 	return 0;	  
 #endif
@@ -394,6 +395,10 @@ int kdbNeedsUTF8Conversion() {
  * to and from universal UTF-8 strings, when storing key names, values and
  * comments.
  *
+ * If iconv() or nl_langinfo() is not available on your system, or if iconv()
+ * usage is disabled (--disable-iconv on build time) simply return 0
+ * immediately.
+ *
  * @param direction must be @c UTF8_TO (convert from current non-UTF-8 to
  * 	UTF-8) or @c UTF8_FROM (convert from UTF-8 to current non-UTF-8)
  * @param string before the call: the string to be converted; after the call:
@@ -406,12 +411,9 @@ int kdbNeedsUTF8Conversion() {
  *
  */
 int UTF8Engine(int direction, char **string, size_t *inputOutputByteSize) {
-/* If iconv or nl_langinfo is not available or if iconv usage is disabled
- * simply return 0 immediately */
- 
-/* Current solution is not very complete. 
+/* Current solution is not very complete.
  * Iconv might well be available when a usable nl_langinfo is not.
- * In this case we it should be possible to determine charset through other means 
+ * In this case we it should be possible to determine charset through other means
  * See http://www.cl.cam.ac.uk/~mgk25/unicode.html#activate for more info on a possible solution */
  
 #if defined(HAVE_ICONV_H) && defined(HAVE_NL_LANGINFO) && defined(CODESET)
