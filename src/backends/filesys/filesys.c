@@ -317,7 +317,7 @@ int kdbRemoveKey_filesys(const Key *key) {
 
 ssize_t kdbGetKeyChildKeys_filesys(const Key *parentKey, KeySet *returned, unsigned long options) {
 	size_t parentNameSize=keyGetFullNameSize(parentKey);
-	char *realParentName=0;
+	char *realParentName=NULL;
 	DIR *parentDir;
 	char buffer[MAX_PATH_LENGTH];
 	struct dirent *entry;

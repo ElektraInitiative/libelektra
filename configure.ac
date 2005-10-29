@@ -6,6 +6,7 @@
 # $Id$
 
 AC_PREREQ(2.59)
+AC_REVISION($Revision$)
 AC_INIT(elektra, 0.5.2, http://bugs.libelektra.org)
 AC_CONFIG_SRCDIR(src/libelektra/libkdb.c)
 AM_INIT_AUTOMAKE
@@ -15,9 +16,9 @@ AC_CONFIG_HEADER([src/include/config.h])
 # CFLAGS="${CFLAGS=}"
 dnl this macro is used to get the arguments supplied
 dnl to the configure script (./configure --enable-debug)
-dnl Check if we have enable debug support.
+dnl Check if we have enabled debug support.
 AC_MSG_CHECKING(whether to enable debugging)
-AC_ARG_ENABLE(debug, [  --enable-debug turn on debugging
+AC_ARG_ENABLE(debug, [  --enable-debug turns on debugging
 	      [default="no"]],enable_debug="yes", enable_debug="no")
 dnl Yes, shell scripts can be used
 if test "x$enable_debug" = "xyes"; then
@@ -140,9 +141,23 @@ AM_CONDITIONAL(HAVE_DOXYGEN, test x$doxygen != xno)
 # Checks for libraries.
 #
 
-# Check for icon
-AM_ICONV()
-
+# Check for iconv
+# If iconv usage is disabled there is no need to check for iconv.
+# This also avoids linking against libiconv, 
+# if the system requires this for a working iconv function.
+dnl Check if the user wants to disable iconv support and 
+dnl hence disable any charset conversions.
+dnl It is disabled with --disable-iconv
+AC_MSG_CHECKING(whether to disable iconv usage)
+AC_ARG_ENABLE(iconv, [  --disable-iconv turns off iconv
+        [default="no"]],disable_iconv="yes", disable_iconv="no")
+if test "x$disable_iconv" = "xyes"; then
+  AC_MSG_RESULT(yes)
+else
+  AC_MSG_RESULT(no)
+	AM_ICONV()
+fi
+              
 # Check for libxml (Allow compilation of libelektratools)
 AM_PATH_XML2(, [have_xml="yes"], [have_xml="no"])
 AM_CONDITIONAL(HAVE_XML, test x$have_xml = xyes)

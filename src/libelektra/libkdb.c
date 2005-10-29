@@ -26,7 +26,9 @@ $Id$
 #include "kdb.h"
 #include "kdbbackend.h"
 #include "kdbprivate.h"
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
 
 #include <stdlib.h>
 #include <stdarg.h>
@@ -34,9 +36,15 @@ $Id$
 #include <unistd.h>
 #include <errno.h>
 #include <stdio.h>
+#ifdef HAVE_ICONV
 #include <iconv.h>
+#endif
+#ifdef HAVE_LOCALE_H
 #include <locale.h>
+#endif
+#ifdef HAVE_LANGINFO_H
 #include <langinfo.h>
+#endif
 #include <ctype.h>
 #include <string.h>
 
@@ -365,7 +373,15 @@ ssize_t unencode(char *encoded,void *returned) {
  * @ingroup backend
  */
 int kdbNeedsUTF8Conversion() {
-	return strcmp(nl_langinfo(CODESET),"UTF-8");
+/* if nl_langinfo is not available, no conversion is ever needed. 
+ * If iconv usage is disabled there is no need to check if we need to convert.
+ * Furthermore, some systems have nl_langinfo, but lacks ability to get CODESET through it
+ * Look at the comments by the UTF8Engine() function for more information*/
+#if defined(HAVE_NL_LANGINFO) && defined(HAVE_ICONV) && defined(CODESET)
+  return strcmp(nl_langinfo(CODESET),"UTF-8");
+#else
+	return 0;	  
+#endif
 }
 
 
@@ -390,12 +406,21 @@ int kdbNeedsUTF8Conversion() {
  *
  */
 int UTF8Engine(int direction, char **string, size_t *inputOutputByteSize) {
+/* If iconv or nl_langinfo is not available or if iconv usage is disabled
+ * simply return 0 immediately */
+ 
+/* Current solution is not very complete. 
+ * Iconv might well be available when a usable nl_langinfo is not.
+ * In this case we it should be possible to determine charset through other means 
+ * See http://www.cl.cam.ac.uk/~mgk25/unicode.html#activate for more info on a possible solution */
+ 
+#if defined(HAVE_ICONV_H) && defined(HAVE_NL_LANGINFO) && defined(CODESET)
 	char *currentCharset=0;
 	char *converted=0;
 	char *readCursor, *writeCursor;
 	size_t bufferSize;
 	iconv_t converter;
-
+	
 	if (kdbNeedsUTF8Conversion()) currentCharset=nl_langinfo(CODESET);
 	else return 0;
 
@@ -411,7 +436,7 @@ int UTF8Engine(int direction, char **string, size_t *inputOutputByteSize) {
 
 	readCursor=*string;
 	writeCursor=converted;
-	/* On some systems and with libiconv arg1 is const char **. 
+	/* On some systems and with libiconv, arg1 is const char **. 
 	 * ICONV_CONST is defined by configure if the system needs this */
 	if (iconv(converter,
 			(ICONV_CONST char **)&readCursor,inputOutputByteSize,
@@ -435,7 +460,7 @@ int UTF8Engine(int direction, char **string, size_t *inputOutputByteSize) {
 	free(converted);
 	/* release the conversor engine */
 	iconv_close(converter);
-
+#endif
 	return 0;
 }
 
