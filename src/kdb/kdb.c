@@ -199,7 +199,7 @@ int parseCommandLine(int argc, char *argv[]) {
 		strncpy(argKeyName + keyEnvLength, argv[optind], keyOptLength);
 		if (keyEnv) *(argKeyName+keyEnvLength-1) = '/';
 		optind ++;
-	} else {
+	} else if (keyEnv) {
 		argKeyName=realloc(argKeyName, keyEnvLength + 1);
 		assert(argKeyName!=NULL);
 		if (keyEnv) strncpy (argKeyName, keyEnv, keyEnvLength);
@@ -488,6 +488,17 @@ int commandMove() {
 	size_t size=0;
 	int rc;
 	
+	/* Consistency */
+	if (!argKeyName) {
+		fprintf(stderr,"kdb mv: No target specified\n");
+		return -1;
+	}
+
+	if (!argData) {
+		fprintf(stderr,"kdb mv: \'%s\': No destination specified\n",argKeyName);
+		return -1;
+	}
+	
 	key=keyNew(argKeyName,KEY_SWITCH_END);
 	size=keyGetNameSize(key);
 	
@@ -657,7 +668,7 @@ int commandLink() {
 	}
 
 	if (!argData) {
-		fprintf(stderr,"kdb ln: \'%s\': No destination specified",argKeyName);
+		fprintf(stderr,"kdb ln: \'%s\': No destination specified\n",argKeyName);
 		return -1;
 	}
 
@@ -704,6 +715,11 @@ int commandLink() {
 int commandList() {
 	KeySet *ks; /* this is the container for all keys we'll collect bellow */
 	ssize_t ret;
+	if (!argKeyName) {
+		fprintf(stderr,"kdb ls: No key name\n");
+		return -1;
+	}
+
 
 	ks=ksNew();
 
