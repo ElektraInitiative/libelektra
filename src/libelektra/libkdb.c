@@ -238,7 +238,9 @@ int kdbOpenBackend(char *backendName) {
 	backend=0;
 	
 	/* load the environment and make us aware of codeset conversions */
+	#ifdef HAVE_SETLOCALE
 	setlocale(LC_ALL,"");
+	#endif
 	
 	/* init */
 	if ( (rc = lt_dlinit()) ) {
