@@ -23,7 +23,9 @@ $Id$
 
 
 
-
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 #include "kdb.h"
 
 #include <sys/types.h>
@@ -353,6 +355,9 @@ void listAccess(Key *key,char *readable) {
 void listTime(time_t when,char *readable) {
 	time_t current_time=time(0);
 	char buf[400];
+	#ifndef HAVE_CTIME_R
+	char *ctimep = NULL;
+	#endif
 	time_t six_months_ago;
 	int recent;
 
@@ -366,8 +371,12 @@ void listTime(time_t when,char *readable) {
 	   integer constant to avoid floating point hassles.  */
 	six_months_ago = current_time - 31556952 / 2;
 	recent = (six_months_ago <= when) && (when <= current_time);
-
+	#ifdef HAVE_CTIME_R
 	ctime_r(&when,buf); /* buf will become "Wed Jun 30 21:49:08 1993\n" */
+	#else
+	ctimep = ctime(&when);
+	strncpy(buf, ctimep, sizeof(buf));
+	#endif
 	memcpy(readable,buf+4,7); /* take only month and day */
 	if (recent) {
 		memcpy(readable,buf+4,12);
@@ -1484,7 +1493,7 @@ int loadToolsLib(void) {
 
 	dlhandle=lt_dlopen("libelektratools.so");
 	if (dlhandle == 0) {
-		fprintf(stderr, "kdb: %s\n",dlerror());
+		fprintf(stderr, "kdb: %s\n",lt_dlerror());
 		return 1;
 	}
 	

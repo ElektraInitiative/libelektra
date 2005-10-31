@@ -18,10 +18,15 @@
 $Id$
 
 */
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include <stdio.h>
 #include <stdarg.h>
+#ifdef HAVE_STRINGS_H
 #include <strings.h>
+#endif
 #include <string.h>
 #include <stdlib.h>
 #include <sys/stat.h>
@@ -30,7 +35,10 @@ $Id$
 #include <sys/types.h>
 #include <pwd.h>
 #include <grp.h>
+
+#ifdef HAVE_LANGINFO_H
 #include <langinfo.h>
+#endif
 
 #include "kdb.h"
 #include "kdbprivate.h"
