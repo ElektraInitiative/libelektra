@@ -22,18 +22,19 @@ $Id$
 
 */
 
-
-#include "kdb.h"
-#include "kdbbackend.h"
-#include "kdbprivate.h"
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+#include "kdb.h"
+#include "kdbbackend.h"
+#include "kdbprivate.h"
 
 #include <stdlib.h>
 #include <stdarg.h>
 #include <ltdl.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #include <errno.h>
 #include <stdio.h>
 #ifdef HAVE_ICONV

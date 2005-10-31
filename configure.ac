@@ -86,10 +86,14 @@ AC_SUBST(default_docbook)
 
 
 # Be typo friendly, check if this backend really exist 
+# This test is needed because we can't check for existance 
+# of files when cross-compiling and hence just assume they exist.
+# Note that this test could probably also be used in the docbook checking part.
+if test "x$cross_compiling" != "xyes"; then
 AC_CHECK_FILE([src/backends/$default_backend/$default_backend.c],
 	      AC_SUBST(default_backend),
 	      AC_MSG_ERROR([Can't find backend $default_backend]))
-
+fi
 #
 # ltdl Stuff
 #
