@@ -306,8 +306,8 @@ typedef struct _KeySet    KeySet;
  * @ingroup kdb
  */
 typedef struct _KDBInfo {
-	char *version;			/*!< Version of the library */
-	char *backendName;		/*!< Name of backend being or that will be used */
+	char version [6];	/*!< Version of the library: x.y.z with NULL at end */
+	char backendName[10];	/*!< Name of backend being or that will be used */
 	uint8_t backendIsOpen;  /*!< 1 if backend was already open with kdbOpen(), 0 otherwise */
 } KDBInfo;
 

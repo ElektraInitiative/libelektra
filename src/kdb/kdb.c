@@ -1349,6 +1349,7 @@ int commandEdit() {
 int commandInfo() {
 	KDBInfo libraryInfo;
 	char textInfo[200];
+	strncpy (libraryInfo.version, VERSION , 6);
 
 	kdbGetInfo(&libraryInfo);
 	kdbInfoToString(&libraryInfo, textInfo);

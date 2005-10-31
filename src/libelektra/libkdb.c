@@ -1480,29 +1480,41 @@ printf("The library version I'm using is %s\n",info.version);
 
  * @endcode
  *
- * @return 0 on sucess, -1 if @p info is NULL
+ * @return 0 on sucess, -1 if @p info is NULL, -2 if incompatible app version
  *
  * @see kdbInfoToString(), kdbFreeInfo(), commandInfo()
  * @ingroup kdb
  */
 int kdbGetInfo(KDBInfo *buf) {
+	char appversion[6];
+	char * ptr;
+	
 	if (!buf) {
 		return -1;
 	}
 
+	strncpy (appversion, buf->version, 6);
+
+	if (appversion[2] != '5') {
+		//TODO: this is of course not incompatible, just proof of concept
+		//IDEA: when adding new Info fields check version
+		fprintf (stderr, "Using wrong version of libelektra\n");
+		return -2;
+	}
 
 	memset(buf,0,sizeof(struct _KDBInfo));
 
 #ifdef HAVE_CONFIG_H
-	buf->version=VERSION;
+	strncpy (buf->version, VERSION, 6);
 #endif
 
 	if (backend) {
-		buf->backendName=backend->name;
+		strncpy (buf->backendName,backend->name,10);
 		buf->backendIsOpen=1;
 	} else {
-		buf->backendName=getenv("KDB_BACKEND");
-		if (!buf->backendName) buf->backendName="default";
+		ptr=getenv("KDB_BACKEND");
+		if (ptr) strncpy (buf->backendName,ptr, 10);
+		else strcpy (buf->backendName,"default");
 
 		buf->backendIsOpen=0;
 	}
@@ -1516,6 +1528,7 @@ int kdbGetInfo(KDBInfo *buf) {
  *
  * It is your responsability to allocate and free the @p string buffer.
  * Currently, a good size for a buffer is 200 bytes.
+ * It is assured that it won't take more then 51+9+5.
  *
  * @par Example:
  * @code

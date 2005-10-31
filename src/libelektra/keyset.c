@@ -889,7 +889,7 @@ ssize_t ksToStream(const KeySet *ks, FILE* stream, unsigned long options) {
 	Key *key=0;
 	char *codeset;
 	/* If nl_langinfo or the CODESET info isn't available we default to UTF-8 
-	 * This might not be a very good default, but I'm not sure how else to do it 
+	 * This might not be a very good default, but I'm not sure how else to do it*/
 #if defined(HAVE_NL_LANGINFO) && defined(CODESET)
 	codeset = nl_langinfo(CODESET);
 #else
