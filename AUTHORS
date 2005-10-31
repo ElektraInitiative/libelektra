@@ -1,6 +1,29 @@
-Avi Alkalay <avi@unix.sh>: Concept, architecture, development, manuals, website
-Pier Luigi Fiorini <pierluigi.fiorini@mockup.org>: pkg-config file
-Rèi <remipouak@yahoo.fr>: XML schema
-Markus Raab: Debian packaging, easycpp bindings, ini backend
-Yannick Lecaillez: <yl@itioweb.com>: Adaptation for using autotools & libtool
-Jens Andersen <jens.andersen@gmail.com>: nss-elektra and development
+Avi Alkalay <avi@unix.sh>
+Concept, architecture, development, manuals, website
+Devel/Test on: redhat.ia32, fedora.ia32, redhat.ppc, redhat.s390, aix.ppc
+
+
+Markus Raab
+Debian packaging, easycpp bindings, ini backend
+Devel/Test on:
+
+
+Yannick Lecaillez <yl@itioweb.com>
+Adaptation for using autotools & libtool
+Devel/Test on:
+
+
+Jens Andersen <jens.andersen@gmail.com>
+nss-elektra and development
+Devel/Test on:
+
+
+Pier Luigi Fiorini <pierluigi.fiorini@mockup.org>
+pkg-config file
+Devel/Test on:
+
+
+Rèmi <remipouak@yahoo.fr>
+XML schema
+Devel/Test on:
+

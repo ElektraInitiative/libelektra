@@ -297,6 +297,21 @@ typedef struct _Key       Key;
 typedef struct _KeySet    KeySet;
 
 
+/**
+ * Object returned by kdbGetInfo() containing some informations about the
+ * Elektra library being used.
+ * 
+ * @see kdbGetInfo(), kdbFreeInfo(), kdbInfoToString()
+ * @see commandInfo() of the 'kdb info' command to see it in action
+ * @ingroup kdb
+ */
+typedef struct _KDBInfo {
+	char *version;			/*!< Version of the library */
+	char *backendName;		/*!< Name of backend being or that will be used */
+	uint8_t backendIsOpen;  /*!< 1 if backend was already open with kdbOpen(), 0 otherwise */
+} KDBInfo;
+
+
 
 
 #ifdef __cplusplus
@@ -352,8 +367,9 @@ uint32_t kdbMonitorKey(Key *interest, uint32_t diffMask,
 uint32_t kdbMonitorKeys(KeySet *interests, uint32_t diffMask,
 	unsigned long iterations, unsigned sleep);
 
-
-
+KDBInfo *kdbGetInfo(void);
+void kdbFreeInfo(KDBInfo *kdbinfo);
+int kdbInfoToString(KDBInfo *info,char *string);
 
 
 

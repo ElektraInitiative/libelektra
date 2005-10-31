@@ -51,6 +51,7 @@ $Id$
 #define CMD_SAVE      8
 #define CMD_MONITOR   9
 #define CMD_MOVE      10
+#define CMD_INFO      25
 #define CMD_HELP      30
 
 #define ARGSIZE      30
@@ -70,8 +71,6 @@ int (*ksFromXML)(KeySet *ks,int fd);
  * @defgroup libexample  The kdb Command Source Code: Example of Full Library Utilization
  * @{
  */
-
-int commandHelp();
 
 char *argComment=0;
 char *argFile=0;
@@ -94,6 +93,10 @@ int argXML=0;
 int argHelp=0;
 mode_t argMode=0;
 int argType=KEY_TYPE_UNDEFINED;
+
+
+
+int commandHelp();
 
 
 int parseCommandLine(int argc, char *argv[]) {
@@ -243,6 +246,7 @@ int parseCommandLine(int argc, char *argv[]) {
 	else if (!strcmp(sargCommand,"mon")) argCommand=CMD_MONITOR;
 	else if (!strcmp(sargCommand,"monitor")) argCommand=CMD_MONITOR;
 	else if (!strcmp(sargCommand,"mv")) argCommand=CMD_MOVE;
+	else if (!strcmp(sargCommand,"info")) argCommand=CMD_INFO;
 	else if (!strcmp(sargCommand,"help")) argCommand=CMD_HELP;
 	else {
 		fprintf(stderr,"kdb: Invalid subcommand.\n");
@@ -942,7 +946,7 @@ int commandGet() {
  * @endcode
  */
 int commandHelp() {
-	printf("Usage: kdb [OPTION] <command> <key> [value ...]\n");
+	printf("Usage: kdb [OPTION] <command> [<key> [value ...]]\n");
 	printf("Use kdb to manipulate the Key Database.\n");
 	printf("\n");
 
@@ -956,7 +960,7 @@ int commandHelp() {
 	printf("[value ...] hold the value which should be set\n");
 	printf("\n");
 	
-	printf("SUBCOMMANDS\n");
+	printf("COMMANDS\n");
 	printf(" kdb get [-dlr] key/name\n");
 	printf(" kdb set [-t type] [-c \"A comment about this key\"] [-m mode] [-u uid]\n");
 	printf("         [-g gid] key/name \"the value\"\n");
@@ -972,6 +976,7 @@ int commandHelp() {
 	printf(" kdb import < file.xml\n");
 	printf(" kdb import file.xml\n");
 	printf(" kdb monitor some/key/name\n");
+	printf(" kdb info\n");
 	printf("\n");
 }
 
@@ -1112,34 +1117,34 @@ void commandListHelp ()
 void commandLinkHelp ()
 {
 	printf("ln\n");
-	printf(" Creates a key that is a symbolic links to another key. \n");
+	printf("Creates a key that is a symbolic links to another key. \n");
 	printf("\n");
 }
 
 void commandMoveHelp()
 {
 	printf("mv\n");
-	printf(" Move, or renames a key. Currently it can't move keys across different filesystems. \n");
+	printf("Move, or renames a key. Currently it can't move keys across different filesystems.\n");
 	printf("\n");
 }
 
 void commandRemoveHelp()
 {
 	printf("rm\n");
-	printf(" As the rm(1) command, removes the key specified. \n");
+	printf("As the rm(1) command, removes the key specified. \n");
 	printf("\n");
 }
 
 void commandEditHelp()
 {
 	printf("edit\n");
-	printf(" A very powerfull subcommand that lets you edit an XML representation of the keys. The parameters it accepts is usually a parent key, so its child keys will be gathered. Can be used with the -R flag to work recursively. The editor used is the one set in the $EDITOR environment variable, or vi. After editing the keys, kdb edit will analyze them and commit only the changed keys, remove the keys removed, and add the keys added. \n");
+	printf("A very powerfull subcommand that lets you edit an XML representation of the keys. The parameters it accepts is usually a parent key, so its child keys will be gathered. Can be used with the -R flag to work recursively. The editor used is the one set in the $EDITOR environment variable, or vi. After editing the keys, kdb edit will analyze them and commit only the changed keys, remove the keys removed, and add the keys added. \n");
 	printf("\n");
 }
 
 void commandExportHelp()
 {
-	printf("export, save, \n");
+	printf("export, save \n");
 	printf("Export a subtree of keys to XML. If no subtree is defined right after the export command, system and current user trees will be exported. Output is written to standard output. The output encoding will allways be UTF-8, regardeless of your system encoding. UTF-8 is the most universal charset you can get when exchanging data between multiple systems. Accepts -f. \n");
 	printf("\n");
 	optionf();	
@@ -1147,8 +1152,15 @@ void commandExportHelp()
 
 void commandImportHelp()
 {
-	printf("import, load, \n");
+	printf("import, load \n");
 	printf("Import an XML representation of keys and save it to the keys database. If no filename is passed right after the import command, standard input is used. \n");
+	printf("\n");
+}
+
+void commandInfoHelp()
+{
+	printf("info\n");
+	printf("Displays some information about the Elektra library being used, version, backends, etc.\n");
 	printf("\n");
 }
 
@@ -1314,12 +1326,37 @@ int commandEdit() {
 }
 
 
+/**
+ * Business logic behind the 'kdb info' command.
+ * Displays some information about the Elektra library, version, backend, etc.
+ *
+ * @par Example:
+ * @code
+ * bash$ kdb info
+ * @endcode
+ * 
+ * @see kdbGetInfo(), kdbInfoToString(), kdbFreeInfo()
+ */
+int commandInfo() {
+	KDBInfo *libraryInfo;
+	char textInfo[200];
+
+	libraryInfo=kdbGetInfo();
+
+	kdbInfoToString(libraryInfo,textInfo);
+	kdbFreeInfo(libraryInfo);
+
+	printf(textInfo);
+	printf("\n");
+
+	return 0;
+}
 
 
 /**
  * Business logic behind the 'kdb import' command.
  * Import an XML file (or standard input) into the key database.
- * This is usefull to import full programs keys, or restore backups.
+ * This is usefull to import full application's keys, or restore backups.
  *
  * @par Example:
  * @code
@@ -1472,6 +1509,7 @@ int doCommand(int command) {
 		case CMD_SAVE:            return commandExport();
 		case CMD_MONITOR:         return commandMonitor();
 		case CMD_MOVE:            return commandMove();
+		case CMD_INFO:            return commandInfo();
 		case CMD_HELP:            return commandHelp();
 	}
 	return 0;
@@ -1489,6 +1527,7 @@ int helpCommand(int command) {
 		case CMD_SAVE:            commandExportHelp(); break;
 		case CMD_MONITOR:         commandMonitorHelp(); break;
 		case CMD_MOVE:            commandMoveHelp(); break;
+		case CMD_INFO:            commandInfoHelp(); break;
 	}
 	exit (0);
 }

@@ -1,3 +1,8 @@
+* Wed Oct 26 2005 Avi Alkalay <avi@unix.sh> 0.5.2
+- Cross platform handling (when possible) for UTF-8 conversions with iconv()
+- More detailed error messages on kdb command
+- New kdbGetInfo() and friends for library info gathering
+
 * Wed Oct 26 2005 Avi Alkalay <avi@unix.sh> 0.5.1
 - Migrated to autotools, and updated documentation for that
 - Changed some help stuff on kdb command

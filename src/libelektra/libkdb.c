@@ -95,6 +95,7 @@ extern int errno;
 
 
 
+
 struct _KDBBackend {
 	lt_dlhandle dlHandle;
 	
@@ -1458,6 +1459,109 @@ KDBBackend *kdbBackendExport(const char *backendName, ...) {
 	return returned;
 }
 
+/**
+ * Returns a structure of information about the internals
+ * of the library.
+ *
+ * Currently, the returned object has the following members:
+ *
+ * - @p version: the version for the Elektra library
+ * - @p backendName: the name of the storage backend that is or will be used
+ * - @p backendIsOpen: whether the backend was already opened with kdbOpen()
+ *
+ * After use, the returned object must be freed with a call to kdbFreeInfo().
+ *
+ * @par Example:
+ * @code
+KDBInfo *info=0;
+
+info=kdbGetInfo();
+printf("The library version I'm using is %s\n",info->version);
+
+kdbFreeInfo(info);
+ * @endcode
+ *
+ * @see kdbInfoToString(), kdbFreeInfo(), commandInfo()
+ * @ingroup kdb
+ */
+KDBInfo *kdbGetInfo(void) {
+	KDBInfo *info=0;
+
+	info=malloc(sizeof(struct _KDBInfo));
+	memset(info,0,sizeof(struct _KDBInfo));
+
+	info->version=VERSION;
+
+	if (backend) {
+		info->backendName=backend->name;
+		info->backendIsOpen=1;
+	} else {
+		info->backendName=getenv("KDB_BACKEND");
+		if (!info->backendName) info->backendName="default";
+
+		info->backendIsOpen=0;
+	}
+
+	return info;
+}
+
+
+
+/**
+ * Frees the object returned by kdbGetInfo().
+ * This method is provided so the programmer doesn't need to learn about the
+ * storage internals of the KDBInfo structure.
+ *
+ * @param info the structure returned by kdbGetInfo()
+ * @see kdbGetInfo(), kdbInfoToString(), commandInfo()
+ * @ingroup kdb
+ *
+ */
+void kdbFreeInfo(KDBInfo *info) {
+	free(info);
+	info=0;
+}
+
+
+/**
+ * Convenience method to provide a human readable text for what kdbGetInfo()
+ * returns.
+ *
+ * It is your responsability to allocate and free the @p string buffer.
+ * Currently, a good size for a buffer is 200 bytes.
+ *
+ * @par Example:
+ * @code
+KDBInfo *info=0;
+char buffer[200];
+
+info=kdbGetInfo();
+kdbInfoToString(info,buffer);
+printf("Follows some information about Elektra:\n");
+printf(buffer);
+printf("\n");
+
+kdbFreeInfo(info);
+ * @endcode
+ * @param info the object returned by kdbGetInfo()
+ * @param string a pre-allocated buffer to fill with human readable information
+ * @return 0 on success, -1 if @p info is NULL
+ * @see kdbGetInfo(), kdbFreeInfo(), commandInfo()
+ * @ingroup kdb
+ */
+int kdbInfoToString(KDBInfo *info,char *string) {
+	if (!info) {
+		strcpy(string,"No info");
+		return -1;
+	}
+
+	sprintf(string,"Elektra version: %s\nBackend name: %s\nBackend open: %s",
+		info->version,
+		info->backendName,
+		info->backendIsOpen?"yes":"no");
+
+	return 0;
+}
 
 /**
  * @mainpage The Elektra API
