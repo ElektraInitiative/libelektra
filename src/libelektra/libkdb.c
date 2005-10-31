@@ -1461,7 +1461,7 @@ KDBBackend *kdbBackendExport(const char *backendName, ...) {
 
 /**
  * Returns a structure of information about the internals
- * of the library.
+ * of the library and the backend used.
  *
  * Currently, the returned object has the following members:
  *
@@ -1473,55 +1473,42 @@ KDBBackend *kdbBackendExport(const char *backendName, ...) {
  *
  * @par Example:
  * @code
-KDBInfo *info=0;
+struct KDBInfo info;
 
-info=kdbGetInfo();
-printf("The library version I'm using is %s\n",info->version);
+kdbGetInfo(&info);
+printf("The library version I'm using is %s\n",info.version);
 
-kdbFreeInfo(info);
  * @endcode
+ *
+ * @return 0 on sucess, -1 if @p info is NULL
  *
  * @see kdbInfoToString(), kdbFreeInfo(), commandInfo()
  * @ingroup kdb
  */
-KDBInfo *kdbGetInfo(void) {
-	KDBInfo *info=0;
-
-	info=malloc(sizeof(struct _KDBInfo));
-	memset(info,0,sizeof(struct _KDBInfo));
-
-	info->version=VERSION;
-
-	if (backend) {
-		info->backendName=backend->name;
-		info->backendIsOpen=1;
-	} else {
-		info->backendName=getenv("KDB_BACKEND");
-		if (!info->backendName) info->backendName="default";
-
-		info->backendIsOpen=0;
+int kdbGetInfo(KDBInfo *buf) {
+	if (!buf) {
+		return -1;
 	}
 
-	return info;
+
+	memset(buf,0,sizeof(struct _KDBInfo));
+
+#ifdef HAVE_CONFIG_H
+	buf->version=VERSION;
+#endif
+
+	if (backend) {
+		buf->backendName=backend->name;
+		buf->backendIsOpen=1;
+	} else {
+		buf->backendName=getenv("KDB_BACKEND");
+		if (!buf->backendName) buf->backendName="default";
+
+		buf->backendIsOpen=0;
+	}
+
+	return 0;
 }
-
-
-
-/**
- * Frees the object returned by kdbGetInfo().
- * This method is provided so the programmer doesn't need to learn about the
- * storage internals of the KDBInfo structure.
- *
- * @param info the structure returned by kdbGetInfo()
- * @see kdbGetInfo(), kdbInfoToString(), commandInfo()
- * @ingroup kdb
- *
- */
-void kdbFreeInfo(KDBInfo *info) {
-	free(info);
-	info=0;
-}
-
 
 /**
  * Convenience method to provide a human readable text for what kdbGetInfo()

@@ -20,7 +20,7 @@ void setNewKey();
 void delNewKey();
 
 #define CHILD_KEY_ROOT "user/test/another"
-#define KEY_ROOT "user/test/another/key"
+#define KEY_ROOT "user/sys/key"
 #define NEW_KEY "user/test/new/key"
 #define DIR_KEY "user/test/dir/file/key"
 
@@ -226,13 +226,12 @@ int main(int argc, char **argv) {
 	kdbOpen();
 	fprintf(stderr, "after kdbOpen\n");
 
-//	setKey();
-//	setNullKey();
-//	setAnotherKey();
 //	getKey();
 //	delNewKey();
+//	setNullKey();
+	setAnotherKey();
 //	setNewKey();
-	setDirKey();
+//	setDirKey();
 	
 	/* Close the Key database */
 	kdbClose();

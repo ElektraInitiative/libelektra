@@ -367,8 +367,7 @@ uint32_t kdbMonitorKey(Key *interest, uint32_t diffMask,
 uint32_t kdbMonitorKeys(KeySet *interests, uint32_t diffMask,
 	unsigned long iterations, unsigned sleep);
 
-KDBInfo *kdbGetInfo(void);
-void kdbFreeInfo(KDBInfo *kdbinfo);
+int kdbGetInfo(KDBInfo * info);
 int kdbInfoToString(KDBInfo *info,char *string);
 
 

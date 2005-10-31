@@ -1338,16 +1338,13 @@ int commandEdit() {
  * @see kdbGetInfo(), kdbInfoToString(), kdbFreeInfo()
  */
 int commandInfo() {
-	KDBInfo *libraryInfo;
+	KDBInfo libraryInfo;
 	char textInfo[200];
 
-	libraryInfo=kdbGetInfo();
+	kdbGetInfo(&libraryInfo);
+	kdbInfoToString(&libraryInfo, textInfo);
 
-	kdbInfoToString(libraryInfo,textInfo);
-	kdbFreeInfo(libraryInfo);
-
-	printf(textInfo);
-	printf("\n");
+	printf("%s\n", textInfo);
 
 	return 0;
 }
