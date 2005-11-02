@@ -26,7 +26,7 @@ $Id$
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
-#include <strings.h>
+/* #include <strings.h> */
 #include <string.h>
 #ifdef HAVE_LANGINFO_H
 #include <langinfo.h>
