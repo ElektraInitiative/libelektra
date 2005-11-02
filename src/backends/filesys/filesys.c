@@ -165,7 +165,7 @@ int kdbSetKey_filesys(Key *key) {
 	if (stat(keyFileName,&stated))
 		if (errno==ENOENT) {
 			/* check if parent dir already exists */
-			last=rindex(keyFileName,(int)'/');
+			last=strrchr(keyFileName,(int)'/');
 			strncpy(folderMaker,keyFileName,last-keyFileName);
 			folderMaker[last-keyFileName]=0;
 			if (stat(folderMaker,&stated)) {
@@ -177,15 +177,15 @@ int kdbSetKey_filesys(Key *key) {
 				parentMode=((S_IRWXU | S_IRWXG | S_IRWXO) & (~ umaskValue)) |
 					S_IWUSR | S_IXUSR;  /* from coreutils::mkdir.c */
 				
-				last   =rindex(keyFileName,'/');
-				cursor = index(keyFileName,'/'); cursor++; /* skip first occurence */
+				last   =strrchr(keyFileName,'/');
+				cursor = strchr(keyFileName,'/'); cursor++; /* skip first occurence */
 				if (!last || !cursor) { /* bizarre key name */
 					errno=KDB_RET_INVALIDKEY;
 					return -1;
 				}
-				for (cursor=index(cursor,'/');
+				for (cursor=strchr(cursor,'/');
 						cursor && (cursor <= last);
-						cursor=index(cursor,'/')) {
+						cursor=strchr(cursor,'/')) {
 					strncpy(folderMaker,keyFileName,cursor-keyFileName);
 					folderMaker[cursor-keyFileName]=0;
 					if (mkdir(folderMaker,parentMode)<0 && errno!=EEXIST)

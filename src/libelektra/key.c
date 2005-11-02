@@ -54,7 +54,7 @@ $Id$
  * @ingroup backend
  */
 size_t strblen(const char *s) {
-	char *found=index(s,0);
+	char *found=strchr(s,0);
 	if (found) return found-s+1;
 	return 0;
 }
@@ -705,7 +705,7 @@ ssize_t keySetBaseName(Key *key, const char *baseName) {
 	char *end;
         char *p;
 	
-	end=rindex(key->key,'/');
+	end=strrchr(key->key,'/');
 	
 	if (end) {
 		newSize+=end-key->key;

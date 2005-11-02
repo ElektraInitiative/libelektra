@@ -89,7 +89,7 @@ Key *gEntryToKey(const GConfEntry *gentry) {
 	c1=(char *)gconf_entry_get_key(gentry);
 	if (!strcmp("/apps",c1) || !strncmp("/apps/",c1,strlen("/apps/"))) {
 		/* convert "/apps/" to "user/sw/" */
-		c1=index(c1+1,'/');
+		c1=strchr(c1+1,'/');
 		keyAddBaseName(new,"sw");
 	}
 	keyAddBaseName(new,(const char *)c1);
@@ -247,10 +247,10 @@ GConfEntry *keyToGEntry(const Key *key) {
 		case KEY_GCONFTYPE_LIST_STRING:
 			gval=gconf_value_new(GCONF_VALUE_LIST);
 			
-			end=rindex(key->data,']');
+			end=strrchr(key->data,']');
 			
 			previous=key->data+1; // jump '['
-			while ((cursor=index(previous,','))) {
+			while ((cursor=strchr(previous,','))) {
 				strncpy(element,previous,cursor-previous);
 				element[cursor-previous]=0;
 				

@@ -112,7 +112,7 @@ ssize_t kdbGetKeyChildKeys_fstab(const Key *parentKey, KeySet *returned,
 			char *curr=fstabEntry->mnt_dir;
 			fsname[0]=0;
 			
-			while((slash=index(curr,'/'))) {
+			while((slash=strchr(curr,'/'))) {
 				if (slash==curr) {
 					curr++;
 					continue;
