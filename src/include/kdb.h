@@ -299,16 +299,21 @@ typedef struct _KeySet    KeySet;
 
 /**
  * Object returned by kdbGetInfo() containing some informations about the
- * Elektra library being used.
- * 
+ * Elektra library and backend being used.
+ *
+ * You should not allocate or deallocate memory for each of these members.
+ * This is a library responsability.
+ *
  * @see kdbGetInfo(), kdbFreeInfo(), kdbInfoToString()
  * @see commandInfo() of the 'kdb info' command to see it in action
  * @ingroup kdb
  */
 typedef struct _KDBInfo {
-	char version [6];	/*!< Version of the library: x.y.z with NULL at end */
-	char backendName[10];	/*!< Name of backend being or that will be used */
-	uint8_t backendIsOpen;  /*!< 1 if backend was already open with kdbOpen(), 0 otherwise */
+	/* all members are pointers because we'll point only to pre-allocated
+	   or static strings. We won't allocate nothing for each member. */
+	char *version;			/*!< Version of the library*/
+	char *backendName;		/*!< Name of backend being or that will be used */
+	uint8_t backendIsOpen;	/*!< 1 if backend was already open with kdbOpen(), 0 otherwise */
 } KDBInfo;
 
 
@@ -367,8 +372,9 @@ uint32_t kdbMonitorKey(Key *interest, uint32_t diffMask,
 uint32_t kdbMonitorKeys(KeySet *interests, uint32_t diffMask,
 	unsigned long iterations, unsigned sleep);
 
-int kdbGetInfo(KDBInfo * info);
-int kdbInfoToString(KDBInfo *info,char *string);
+KDBInfo *kdbGetInfo(void);
+void kdbFreeInfo(KDBInfo *info);
+int kdbInfoToString(KDBInfo *info,char *string,size_t maxSize);
 
 
 

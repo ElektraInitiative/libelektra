@@ -22,6 +22,7 @@ $Id$
 
 */
 
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -1474,62 +1475,65 @@ KDBBackend *kdbBackendExport(const char *backendName, ...) {
  *
  * @par Example:
  * @code
-struct KDBInfo info;
+KDBInfo *info=0;
 
-kdbGetInfo(&info);
-printf("The library version I'm using is %s\n",info.version);
+info=kdbGetInfo();
+printf("The library version I'm using is %s\n",info->version);
 
+kdbFreeInfo(info);
  * @endcode
  *
  * @return 0 on sucess, -1 if @p info is NULL, -2 if incompatible app version
- *
  * @see kdbInfoToString(), kdbFreeInfo(), commandInfo()
  * @ingroup kdb
  */
-int kdbGetInfo(KDBInfo *buf) {
-	char appversion[6];
-	char * ptr;
-	
-	if (!buf) {
-		return -1;
-	}
+KDBInfo *kdbGetInfo(void) {
+	KDBInfo *info=0;
 
-	strncpy (appversion, buf->version, 6);
-
-	if (appversion[2] != '5') {
-		//TODO: this is of course not incompatible, just proof of concept
-		//IDEA: when adding new Info fields check version
-		fprintf (stderr, "Using wrong version of libelektra\n");
-		return -2;
-	}
-
-	memset(buf,0,sizeof(struct _KDBInfo));
+	info=malloc(sizeof(struct _KDBInfo));
+	memset(info,0,sizeof(struct _KDBInfo));
 
 #ifdef HAVE_CONFIG_H
-	strncpy (buf->version, VERSION, 6);
+	info->version=VERSION;
 #endif
 
 	if (backend) {
-		strncpy (buf->backendName,backend->name,10);
-		buf->backendIsOpen=1;
+		info->backendName=backend->name;
+		info->backendIsOpen=1;
 	} else {
-		ptr=getenv("KDB_BACKEND");
-		if (ptr) strncpy (buf->backendName,ptr, 10);
-		else strcpy (buf->backendName,"default");
+		info->backendName=getenv("KDB_BACKEND");
+		if (!info->backendName) info->backendName="default";
 
-		buf->backendIsOpen=0;
+		info->backendIsOpen=0;
 	}
 
-	return 0;
+	return info;
 }
+
+
+
+/**
+ * Frees the object returned by kdbGetInfo().
+ * This method is provided so the programmer doesn't need to learn about the
+ * storage internals of the KDBInfo structure.
+ *
+ * @param info the structure returned by kdbGetInfo()
+ * @see kdbGetInfo(), kdbInfoToString(), commandInfo()
+ * @ingroup kdb
+ *
+ */
+void kdbFreeInfo(KDBInfo *info) {
+	free(info);
+	info=0;
+}
+
 
 /**
  * Convenience method to provide a human readable text for what kdbGetInfo()
  * returns.
  *
  * It is your responsability to allocate and free the @p string buffer.
- * Currently, a good size for a buffer is 200 bytes.
- * It is assured that it won't take more then 51+9+5.
+ * Currently, 200 bytes is a good size for a buffer.
  *
  * @par Example:
  * @code
@@ -1537,7 +1541,7 @@ KDBInfo *info=0;
 char buffer[200];
 
 info=kdbGetInfo();
-kdbInfoToString(info,buffer);
+kdbInfoToString(info,buffer,sizeof(buffer));
 printf("Follows some information about Elektra:\n");
 printf(buffer);
 printf("\n");
@@ -1546,17 +1550,19 @@ kdbFreeInfo(info);
  * @endcode
  * @param info the object returned by kdbGetInfo()
  * @param string a pre-allocated buffer to fill with human readable information
+ * @param maxSize the size of the string buffer, to avoid memory problems
  * @return 0 on success, -1 if @p info is NULL
  * @see kdbGetInfo(), kdbFreeInfo(), commandInfo()
  * @ingroup kdb
  */
-int kdbInfoToString(KDBInfo *info,char *string) {
+int kdbInfoToString(KDBInfo *info,char *string,size_t maxSize) {
 	if (!info) {
-		strcpy(string,"No info");
+		strncpy(string,"No info",maxSize);
 		return -1;
 	}
 
-	sprintf(string,"Elektra version: %s\nBackend name: %s\nBackend open: %s",
+	snprintf(string,maxSize,
+		"Elektra version: %s\nBackend name: %s\nBackend open: %s",
 		info->version,
 		info->backendName,
 		info->backendIsOpen?"yes":"no");
