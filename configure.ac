@@ -8,6 +8,7 @@
 AC_PREREQ(2.59)
 AC_REVISION($Revision$)
 AC_INIT(elektra, 0.5.2, http://bugs.libelektra.org)
+AC_CANONICAL_SYSTEM
 AC_CONFIG_SRCDIR(src/libelektra/libkdb.c)
 AM_INIT_AUTOMAKE
 AC_CONFIG_HEADER([src/include/config.h])
