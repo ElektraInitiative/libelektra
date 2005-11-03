@@ -208,23 +208,23 @@ enum KDBErr {
 
 	/* Errors related to bad key names or keys not found */
 	KDB_RET_NOTFOUND=ENOENT,      /*!< Key was not found */
-	KDB_RET_INVALIDKEY=EAFNOSUPPORT, /*!< Key name is not @p 'system/something'
+	KDB_RET_INVALIDKEY=ESRCH, /*!< Key name is not @p 'system/something'
 	                                      or @p 'user/something...' */
 
 	/* Errors related to empty internal key properties */
-	KDB_RET_NOKEY=EBADMSG,        /*!< Key has no name */
-	KDB_RET_NODATA=ENOMSG,        /*!< Key has no data */
-	KDB_RET_NODESC=EIDRM,         /*!< Key has no comment/description */
+	KDB_RET_NOKEY=ENXIO,        /*!< Key has no name */
+	KDB_RET_NODATA=ENODEV,        /*!< Key has no data */
+	KDB_RET_NODESC=ENOTDIR,         /*!< Key has no comment/description */
 	KDB_RET_NODOMAIN=EDOM,        /*!< Key has no user domain set */
 	KDB_RET_NOGROUP=ECHILD,       /*!< Key has no group */
-	KDB_RET_NOTIME=EMULTIHOP,     /*!< Key has no access time set */
+	KDB_RET_NOTIME=ENOTTY,     /*!< Key has no access time set */
 
 
 	/* Errors related to permissions, no memory or failed internal operations */
 	KDB_RET_NOCRED=EACCES,        /*!< No credentials to access resource */
 	KDB_RET_TRUNC=ENOBUFS,        /*!< Buffer was too small */
 	KDB_RET_NOMEM=ENOMEM,         /*!< Out of memory */
-	KDB_RET_TYPEMISMATCH=EILSEQ,  /*!< Failed to convert key data due to
+	KDB_RET_TYPEMISMATCH=EBADF,  /*!< Failed to convert key data due to
 	                                   data type */
 
 	/* Errors related to backend access or opening */
