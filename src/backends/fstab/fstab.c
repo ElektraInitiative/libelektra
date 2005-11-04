@@ -227,7 +227,7 @@ ssize_t kdbGetKeyChildKeys_fstab(const Key *parentKey, KeySet *returned,
  */
 int kdbSetKeys_fstab(KeySet *ks) {
 	regex_t regex;
-	u_int32_t match=0;
+	uint32_t match=0;
 	struct mntent fstabEntry;
 	Key *key=0;
 	

@@ -29,8 +29,8 @@ public:
 
 	Key * dup(std::string source);
 
-	u_int8_t getType(std::string key);
-	void setType(std::string key,u_int8_t type);
+	uint8_t getType(std::string key);
+	void setType(std::string key,uint8_t type);
 
 	void setFlag(std::string key);
 	void clearFlag(std::string key);

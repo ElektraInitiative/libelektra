@@ -113,9 +113,9 @@ DBContainer *dbs=0;
 
 
 /* This BDB callback is not being used yet */
-u_int32_t compare_prefix(DB *dbp, const DBT *a, const DBT *b) {
+uint32_t compare_prefix(DB *dbp, const DBT *a, const DBT *b) {
 	size_t cnt, len;
-	u_int8_t *p1, *p2;
+	uint8_t *p1, *p2;
 
 	cnt = 1;
 	len = a->size > b->size ? b->size : a->size;
@@ -622,7 +622,7 @@ int kdbClose_bdb() {
 
 
 
-int kdbGetKeyWithOptions(Key *key, u_int32_t options) {
+int kdbGetKeyWithOptions(Key *key, uint32_t options) {
 	DBTree *dbctx;
 	DBT dbkey,data;
 	int ret;
@@ -768,7 +768,7 @@ int kdbSetKey_bdb(Key *key) {
 			/* We don't have this key yet.
 			   Check if we have a parent and its permissions. */
 			Key *parent=0;
-			u_int32_t parentNameSize;
+			uint32_t parentNameSize;
 			char *parentName;
 
 			parentNameSize=keyGetParentNameSize(key)+1;
