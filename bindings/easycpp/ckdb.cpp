@@ -179,13 +179,13 @@ Key* ckdb::dup(std::string key)
 }
 
 /**Returns the type of the Key*/
-u_int8_t ckdb::getType(std::string key)
+uint8_t ckdb::getType(std::string key)
 {
 	return keyGetType (getKey (key));
 }
 
 /**Sets the type of the Key*/
-void ckdb::setType(std::string key,u_int8_t type)
+void ckdb::setType(std::string key,uint8_t type)
 {
 	keySetType (getKey (key), type);
 }
