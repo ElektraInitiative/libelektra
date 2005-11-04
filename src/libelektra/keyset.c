@@ -347,6 +347,7 @@ regfree(&regex);        // don't forget to free resources
 
  * @endcode
  */
+#ifdef HAVE_REGEX_H
 uint32_t ksLookupRE(KeySet *ks, uint32_t where,
 		const regex_t *regexp, unsigned long options) {
 	regmatch_t offsets;
@@ -406,7 +407,7 @@ uint32_t ksLookupRE(KeySet *ks, uint32_t where,
 	
 	return 0;
 }
-
+#endif
 
 
 /**

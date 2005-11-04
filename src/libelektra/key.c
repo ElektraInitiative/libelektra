@@ -33,8 +33,12 @@ $Id$
 #include <errno.h>
 #include <unistd.h>
 #include <sys/types.h>
+#ifdef HAVE_PWD_H
 #include <pwd.h>
+#endif
+#ifdef HAVE_GRP_H
 #include <grp.h>
+#endif
 
 #ifdef HAVE_LANGINFO_H
 #include <langinfo.h>

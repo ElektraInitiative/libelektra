@@ -18,7 +18,7 @@
 
 /* Subversion stuff
 
-$Id: kdbtools.c 218 2005-04-23 21:48:53Z aviram $
+$Id$
 $LastChangedBy: aviram $
 
 */
@@ -41,8 +41,12 @@ $LastChangedBy: aviram $
 
 #include <ctype.h>
 #include <string.h>
+#ifdef HAVE_GRP_H
 #include <grp.h>
+#endif
+#ifdef HAVE_PWD_H
 #include <pwd.h>
+#endif
 #include <unistd.h>
 #include <stdlib.h>
 
@@ -84,7 +88,7 @@ int processKeyNode(KeySet *ks, char *context, xmlTextReaderPtr reader) {
 	
 	nodeName=xmlTextReaderName(reader);
 	if (!strcmp(nodeName,"key")) {
-		u_int8_t type=KEY_TYPE_STRING; /* default type */
+		uint8_t type=KEY_TYPE_STRING; /* default type */
 		int end=0;
 		
 		newKey=keyNew(0);
@@ -137,7 +141,7 @@ int processKeyNode(KeySet *ks, char *context, xmlTextReaderPtr reader) {
 		xmlFree(buffer); buffer=0;
 
 
-
+#ifdef HAVE_PWD_H
 		/* Parse UID */
 		buffer=xmlTextReaderGetAttribute(reader,"uid");
 		if (buffer) {
@@ -152,8 +156,9 @@ int processKeyNode(KeySet *ks, char *context, xmlTextReaderPtr reader) {
 			}
 			xmlFree(buffer); buffer=0;
 		}
+#endif
 
-		
+#ifdef HAVE_GRP_H		
 		/* Parse GID */
 		buffer=xmlTextReaderGetAttribute(reader,"gid");
 		if (buffer) {
@@ -168,7 +173,7 @@ int processKeyNode(KeySet *ks, char *context, xmlTextReaderPtr reader) {
 			}
 			xmlFree(buffer); buffer=0;
 		}
-
+#endif
 
 		/* Parse permissions */
 		buffer=xmlTextReaderGetAttribute(reader,"mode");

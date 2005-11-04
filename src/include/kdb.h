@@ -24,7 +24,6 @@ $Id$
 #define KDB_H
 
 
-
 /*
  * @defgroup general Elektra General definitions
  * @brief Some global definitions when using the Elektra API
@@ -222,7 +221,7 @@ enum KDBErr {
 
 	/* Errors related to permissions, no memory or failed internal operations */
 	KDB_RET_NOCRED=EACCES,        /*!< No credentials to access resource */
-	KDB_RET_TRUNC=ENOBUFS,        /*!< Buffer was too small */
+	KDB_RET_TRUNC=ERANGE,        /*!< Buffer was too small */
 	KDB_RET_NOMEM=ENOMEM,         /*!< Out of memory */
 	KDB_RET_TYPEMISMATCH=EBADF,  /*!< Failed to convert key data due to
 	                                   data type */
@@ -524,7 +523,7 @@ Key *ksLookupByBinaryValue(KeySet *ks, void *value, size_t size,
 	unsigned long options);
 uint32_t ksLookupRE(KeySet *ks, uint32_t where,
 	const regex_t *regexp, unsigned long options);
-
+	
 int ksRewind(KeySet *ks);
 Key *ksNext(KeySet *ks);
 Key *ksCurrent(const KeySet *ks);

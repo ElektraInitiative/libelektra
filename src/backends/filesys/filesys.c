@@ -34,6 +34,9 @@ $Id$
 */
 
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include <kdb.h>
 #include <kdbbackend.h>
@@ -44,7 +47,9 @@ $Id$
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#ifdef HAVE_PWD_H
 #include <pwd.h>
+#endif
 #include <assert.h>
 
 #define BACKENDNAME "filesys"
@@ -88,7 +93,7 @@ int kdbStatKey_filesys(Key *key) {
 	char keyFileName[MAX_PATH_LENGTH];
 	struct stat keyFileNameInfo;
 	size_t pos;
-	u_int32_t semiflag;
+	uint32_t semiflag;
 
 	pos=kdbGetFilename(key,keyFileName,sizeof(keyFileName));
 	if (!pos) return -1; /* something is wrong */
@@ -119,7 +124,7 @@ int kdbGetKey_filesys(Key *key) {
 	struct stat keyFileNameInfo;
 	int fd;
 	size_t pos;
-	u_int32_t semiflag;
+	uint32_t semiflag;
 	FILE *input;
 
 	pos=kdbGetFilename(key,keyFileName,sizeof(keyFileName));
@@ -156,7 +161,7 @@ int kdbSetKey_filesys(Key *key) {
 	int fd;
 	FILE *output=0;
 	size_t pos;
-	u_int32_t semiflag;
+	uint32_t semiflag;
 	struct stat stated;
 
 	pos=kdbGetFilename(key,keyFileName,sizeof(keyFileName));
@@ -437,7 +442,7 @@ ssize_t kdbGetKeyChildKeys_filesys(const Key *parentKey, KeySet *returned, unsig
  * @ingroup internals
  *
  */
-int handleOldKeyFileVersion(Key *key,FILE *input,u_int16_t nversion) {
+int handleOldKeyFileVersion(Key *key,FILE *input,uint16_t nversion) {
 	char generalBuffer[BUFFER_SIZE];
 	size_t currentBufferSize;
 
@@ -528,7 +533,7 @@ int handleOldKeyFileVersion(Key *key,FILE *input,u_int16_t nversion) {
 			/* This is what changed from version 1 to
 			   version 2 format: key type numbers */
 			{
-				u_int8_t oldVersion=atoi(type);
+				uint8_t oldVersion=atoi(type);
 				switch (oldVersion) {
 					case 1: keySetType(key,KEY_TYPE_BINARY); break;
 					case 2: keySetType(key,KEY_TYPE_STRING); break;
@@ -585,7 +590,7 @@ int keyFileUnserialize(Key *key,FILE *input) {
 	size_t currentBufferSize;
 
 	char version[10];
-	u_int16_t nversion=0;
+	uint16_t nversion=0;
 	char type[5];
 	char *data=0;
 	size_t dataSize=0;
@@ -922,6 +927,9 @@ size_t kdbGetFilename(const Key *forKey,char *returned,size_t maxSize) {
 			length=strlen(returned);
 			break;
 		}
+		/* If we lack a usable concept of users we simply let the default handle it 
+		 * and hence disable the entire user/ hiarchy. */
+		#ifdef HAVE_PWD_H
 		case KEY_NS_USER: {
 			/* Prepare to use the 'user:????/ *' database */
 			struct passwd *user=0;
@@ -932,7 +940,11 @@ size_t kdbGetFilename(const Key *forKey,char *returned,size_t maxSize) {
 			if (!user) return 0; /* propagate errno */
 			length=snprintf(returned,maxSize,"%s/%s",user->pw_dir,KDB_DB_USER);
 			break;
+		  /* Need to find userdir in a different way */
+			return 0;
 		}
+		#endif
+
 		default: {
 			errno=KDB_RET_INVALIDKEY;
 			return 0;

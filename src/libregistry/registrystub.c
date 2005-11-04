@@ -27,11 +27,13 @@
 
 /* Subversion stuff
 
-$Id: registrystub.c 166 2005-01-23 16:42:24Z aviram $
+$Id$
 $LastChangedBy: aviram $
 
 */
-
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include "kdb.h"
 

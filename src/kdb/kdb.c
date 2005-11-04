@@ -36,8 +36,12 @@ $Id$
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
+#ifdef HAVE_GRP_H
 #include <grp.h>
+#endif
+#ifdef HAVE_PWD_H
 #include <pwd.h>
+#endif
 #include <ctype.h>
 #include <ltdl.h>
 #include <assert.h>

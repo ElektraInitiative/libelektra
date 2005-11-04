@@ -16,7 +16,9 @@ TODO: Not well tested yet.
 
 
 **********************************************************/
-
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include <stdio.h>
 #include <kdb.h>
