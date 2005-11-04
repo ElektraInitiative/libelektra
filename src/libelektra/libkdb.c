@@ -50,15 +50,14 @@ $Id$
 #include <ctype.h>
 #include <string.h>
 
-
+/* usleep doesn't exist on win32, so we sleep x/1000 seconds instead.
+ * Of course this will only work well when sleeptime is 1000 or above. 
+ * This is  *TEMPORARY* solution  */
+#ifdef HAVE_WIN32
+#define usleep(x) sleep(x/1000)
+#endif
 
 extern int errno;
-
-/* Needed if bootstrapping/compiling on a system that lacks 
- * the iconv.m4 autoconf macro */
-#ifndef ICONV_CONST
-#define ICONV_CONST
-#endif
 
 /**
  * @defgroup kdb KeyDB :: Class Methods
@@ -1174,7 +1173,7 @@ uint32_t kdbMonitorKeys(KeySet *interests, uint32_t diffMask,
  * @ingroup backend
  */
 uint32_t kdbMonitorKeys_default(KeySet *interests, uint32_t diffMask,
-		unsigned long iterations, unsigned sleep) {
+		unsigned long iterations, unsigned sleeptime) {
 	Key *start,*current;
 	uint32_t diff;
 	int infinitum=0;
@@ -1182,7 +1181,7 @@ uint32_t kdbMonitorKeys_default(KeySet *interests, uint32_t diffMask,
 	if (!interests || !interests->size) return 0;
 
 	/* Unacceptable 0 usecs sleep. Defaults to 1 second */
-	if (!sleep) sleep=1000;
+	if (!sleeptime) sleeptime=1000;
 
 	if (!iterations) infinitum=1;
 	else infinitum=0;
@@ -1197,7 +1196,7 @@ uint32_t kdbMonitorKeys_default(KeySet *interests, uint32_t diffMask,
 		} while (current!=start);
 
 		/* Test if some iterations left . . . */
-		if (infinitum || iterations) usleep(sleep);
+		if (infinitum || iterations) usleep(sleeptime);
 	}
 	return 0;
 }
@@ -1273,7 +1272,7 @@ uint32_t kdbMonitorKey(Key *interest, uint32_t diffMask,
  * @ingroup backend
  */
 uint32_t kdbMonitorKey_default(Key *interest, uint32_t diffMask,
-		unsigned long iterations, unsigned sleep) {
+		unsigned long iterations, unsigned sleeptime) {
 	Key *tested;
 	int rc;
 	uint32_t diff;
@@ -1283,7 +1282,7 @@ uint32_t kdbMonitorKey_default(Key *interest, uint32_t diffMask,
 	if (!interest || !keyGetNameSize(interest)) return 0;
 
 	/* Unacceptable 0 usecs sleep. Defaults to 1 second */
-	if (!sleep) sleep=1000;
+	if (!sleeptime) sleeptime=1000;
 
 	if (!iterations) infinitum=1;
 	else infinitum=0;
@@ -1318,7 +1317,7 @@ uint32_t kdbMonitorKey_default(Key *interest, uint32_t diffMask,
 			return diff;
 		}
 		/* Test if some iterations left . . . */
-		if (infinitum || iterations) usleep(sleep);
+		if (infinitum || iterations) usleep(sleeptime);
 	}
 	
 	keyDel(tested);

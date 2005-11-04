@@ -47,7 +47,6 @@ $Id$
 #include "kdb.h"
 #include "kdbprivate.h"
 
-
 /**
  * Calculates the lenght in bytes of a string.
  * 
@@ -1622,8 +1621,13 @@ ssize_t keyGetLink(const Key *key, char *returnedTarget, size_t maxSize) {
 int keyIsLink(const Key *key) {
 	/* if (!key) return 0;
 	if (!keyIsInitialized(key)) return 0; */
-
-	return (S_ISLNK(key->access) || (key->type==KEY_TYPE_LINK));
+	/* If S_ISLNK doesn't exist, links most likely doesn't exist either,
+	 * but we leave it possible through KEY_TYPE_LINK */
+	#if defined(S_ISLNK)
+		return (S_ISLNK(key->access) || (key->type==KEY_TYPE_LINK));
+	#else
+				return (key->type==KEY_TYPE_LINK);
+	#endif
 }
 
 
@@ -2497,8 +2501,13 @@ uint32_t keyCompare(const Key *key1, const Key *key2) {
 	if (key1->uid != key2->uid)                    ret|=KEY_SWITCH_UID;
 	if (key1->gid != key2->gid)                    ret|=KEY_SWITCH_GID;
 	if (key1->type != key2->type)                  ret|=KEY_SWITCH_TYPE;
+#if defined(S_IRWXU) && defined(S_IRWXG) && defined(S_IRWXO)
 	if ((key1->access & (S_IRWXU|S_IRWXG|S_IRWXO)) !=
 		(key2->access & (S_IRWXU|S_IRWXG|S_IRWXO))) ret|=KEY_SWITCH_MODE;
+#else
+	if ((key1->access) !=
+		(key2->access)) ret|=KEY_SWITCH_MODE;
+#endif
 
 	/* Compare these string properties.
 	   A lot of decisions because strcmp can't handle NULL pointers */
@@ -2624,7 +2633,7 @@ ssize_t keyToStream(const Key *key, FILE* stream, unsigned long options) {
 		else written+=fprintf(stream,"type=\"%d\"", key->type);
 	}
 
-
+#ifdef HAVE_PWD_H
 	if (keyIsUser(key)) {
 		struct passwd *domainPwd=0;
 		int uidMatch,gidMatch;
@@ -2670,9 +2679,13 @@ ssize_t keyToStream(const Key *key, FILE* stream, unsigned long options) {
 		if (grp) written+=fprintf(stream," gid=\"%s\"",grp->gr_name);
 		else  written+=fprintf(stream,   " gid=\"%d\"",key->gid);
 	}
-
+#endif
 	written+=fprintf(stream," mode=\"0%o\">",
+#if defined(S_IRWXU) && defined(S_IRWXG) && defined(S_IRWXO)
 		key->access & (S_IRWXU|S_IRWXG|S_IRWXO));
+#else
+    key->access);
+#endif
 
 
 
@@ -2861,8 +2874,11 @@ int keyInit(Key *key) {
 
 	memset(key,0,sizeof(Key));
 	key->type=KEY_TYPE_UNDEFINED;
+	/* If we lack the getuid() and getgid() functions we leave uid and gid at 0 */
+	#if defined(HAVE_GETUID) && defined(HAVE_GETGID)
 	key->uid=getuid();
 	key->gid=getgid();
+	#endif
 	key->access=umask(0); 
 	umask(key->access);
 	key->access=DEFFILEMODE & ~key->access;

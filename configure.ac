@@ -9,6 +9,7 @@ AC_PREREQ(2.59)
 AC_REVISION($Revision$)
 AC_INIT(elektra, 0.5.2, http://bugs.libelektra.org)
 AC_CANONICAL_SYSTEM
+AC_LIBTOOL_WIN32_DLL
 AC_CONFIG_SRCDIR(src/libelektra/libkdb.c)
 AM_INIT_AUTOMAKE
 AC_CONFIG_HEADER([src/include/config.h])
@@ -95,6 +96,14 @@ AC_CHECK_FILE([src/backends/$default_backend/$default_backend.c],
 	      AC_SUBST(default_backend),
 	      AC_MSG_ERROR([Can't find backend $default_backend]))
 fi
+
+#Check whether we are compiling for win32 
+case $host_os in
+mingw* | pw32*)
+  # If compiling for windows we need HAVE_WIN32 defined
+	AC_DEFINE(HAVE_WIN32, 1, [Define if you are compiling for win32])	
+esac
+
 #
 # ltdl Stuff
 #
@@ -192,10 +201,10 @@ AC_TYPE_SIZE_T
 #
 # Checks for library functions.
 #
-AC_FUNC_MALLOC
-AC_FUNC_MEMCMP
-AC_FUNC_REALLOC
-AC_CHECK_FUNCS([memset nl_langinfo setenv setlocale strcasecmp strchr strrchr index rindex strtol ctime_r])
+#AC_FUNC_MALLOC
+#AC_FUNC_MEMCMP
+#AC_FUNC_REALLOC
+AC_CHECK_FUNCS([memset nl_langinfo setenv setlocale strcasecmp strchr strrchr index rindex strtol ctime_r getuid getgid])
 
 
 #

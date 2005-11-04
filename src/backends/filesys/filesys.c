@@ -179,8 +179,13 @@ int kdbSetKey_filesys(Key *key) {
 				mode_t umaskValue=umask(0);
 				
 				umask(umaskValue);
+				#if defined(S_IRWXU) && defined(S_IRWXG) && defined(S_IRWXO)
 				parentMode=((S_IRWXU | S_IRWXG | S_IRWXO) & (~ umaskValue)) |
 					S_IWUSR | S_IXUSR;  /* from coreutils::mkdir.c */
+				#else
+				parentMode=(~ umaskValue) |
+					S_IWUSR | S_IXUSR;  /* from coreutils::mkdir.c */
+				#endif
 				
 				last   =strrchr(keyFileName,'/');
 				cursor = strchr(keyFileName,'/'); cursor++; /* skip first occurence */
@@ -193,8 +198,17 @@ int kdbSetKey_filesys(Key *key) {
 						cursor=strchr(cursor,'/')) {
 					strncpy(folderMaker,keyFileName,cursor-keyFileName);
 					folderMaker[cursor-keyFileName]=0;
+					#ifdef HAVE_WIN32
+					if (mkdir(folderMaker)<0 && errno!=EEXIST)
+					#else
 					if (mkdir(folderMaker,parentMode)<0 && errno!=EEXIST)
+					#endif
 						return -1;       /* propagate errno */
+					/* Since mkdir on win32 can't set a mode for us we need to do it manually */
+					#ifdef HAVE_WIN32
+					if(chmod(folderMaker, parentMode) < 0)
+						return -1;
+					#endif
 					cursor++;
 				}
 			}
@@ -250,8 +264,17 @@ int kdbSetKey_filesys(Key *key) {
 
 		return rc; /* propagate errno */
 	} else if (keyIsDir(key)) {
-		if (mkdir(keyFileName,key->access)<0 &&
-				errno!=EEXIST) return -1;
+		#ifdef HAVE_WIN32
+		if (mkdir(keyFileName)<0 && errno!=EEXIST)
+		#else
+		if (mkdir(keyFileName,key->access)<0 && errno!=EEXIST)
+		#endif
+			return -1;       /* propagate errno */
+		/* Since mkdir on win32 can't set a mode for us we need to do it manually */
+		#ifdef HAVE_WIN32
+		if(chmod(keyFileName, key->access) < 0)
+			return -1;
+		#endif
 	} else {
 		/* Try to open key file with its full file name */
 		/* TODO: Make it more "transactional" without truncating */
