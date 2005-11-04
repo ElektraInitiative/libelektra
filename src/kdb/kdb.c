@@ -45,7 +45,10 @@ $Id$
 #include <ctype.h>
 #include <ltdl.h>
 #include <assert.h>
-
+/* We need fcntl.h for open and related constants used in our definition of mkstemp */
+#ifdef HAVE_WIN32
+#include <fcntl.h>
+#endif
 
 #define CMD_GET       1
 #define CMD_SET       2
@@ -62,6 +65,10 @@ $Id$
 
 #define ARGSIZE      30
 
+
+#ifdef HAVE_WIN32
+#define mkstemp(m) open(mktemp(m), O_RDWR)
+#endif
 
 /* we are cheating . . . */
 ssize_t unencode(char *encoded, void *returned);
@@ -277,7 +284,7 @@ int parseCommandLine(int argc, char *argv[]) {
 		argType=KEY_TYPE_STRING;
 	}
 
-
+#ifdef HAVE_PWD_H
 	/* Parse UID */
 	if (*argUser) {
 		if (isdigit(*argUser)) {
@@ -294,8 +301,8 @@ int parseCommandLine(int argc, char *argv[]) {
 			}
 		}
 	}
-
-
+#endif
+#ifdef HAVE_GRP_H
 	/* Parse GID */
 	if (*argGroup) {
 		if (isdigit(*argGroup)) {
@@ -312,7 +319,7 @@ int parseCommandLine(int argc, char *argv[]) {
 			}
 		}
 	}
-
+#endif
 
 
 	/* Parse permissions */
@@ -334,12 +341,17 @@ void listAccess(Key *key,char *readable) {
 	mode_t mode=keyGetAccess(key);
 
 	if (S_ISDIR(mode)) readable[0]='d';
+	#ifdef S_ISLNK
 	else if (S_ISLNK(mode)) readable[0]='l';
+	#endif
 	else readable[0]='-';
 
 	readable[1] = mode & S_IRUSR ? 'r' : '-';
 	readable[2] = mode & S_IWUSR ? 'w' : '-';
 	readable[3] = mode & S_IXUSR ? 'x' : '-';
+	#ifdef HAVE_WIN32
+	readable[4] = 0;
+	#else
 	readable[4] = mode & S_IRGRP ? 'r' : '-';
 	readable[5] = mode & S_IWGRP ? 'w' : '-';
 	readable[6] = mode & S_IXGRP ? 'x' : '-';
@@ -347,6 +359,7 @@ void listAccess(Key *key,char *readable) {
 	readable[8] = mode & S_IWOTH ? 'w' : '-';
 	readable[9] = mode & S_IXOTH ? 'x' : '-';
 	readable[10]= 0;
+	#endif
 }
 
 
@@ -412,18 +425,19 @@ void listSingleKey(Key *key) {
 		*p=' '; p++;
 		*p=' '; p++;
 		*p=' '; p++;
-
+#ifdef HAVE_PWD_H
 		pwd=getpwuid(keyGetUID(key));
 		strcpy(p,pwd->pw_name);
 		p+=strlen(p);
 		*p=' '; p++;
 		*p=' '; p++;
-
+#endif
+#ifdef HAVE_GRP_H
 		grp=getgrgid(keyGetGID(key));
 		strcpy(p,grp->gr_name);
 		p+=strlen(p);
 		*p=' '; p++;
-
+#endif
 		sprintf(p,"%*d ",5,keyGetRecordSize(key));
 		p+=strlen(p);
 
@@ -1443,7 +1457,8 @@ int commandExport() {
 	/* argFullName=1; */
 
 	/* force a superuniversal modern charset: UTF-8 */
-	setenv("LANG","en_US.UTF-8",1);
+	/*setenv("LANG","en_US.UTF-8",1);*/
+	putenv("LANG=en_US.UTF-8");
 	
 	/* reopen key database to forced charset to take effect */
 	kdbClose();
