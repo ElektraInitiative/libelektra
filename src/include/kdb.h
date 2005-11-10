@@ -160,7 +160,7 @@ enum KeySwitch {
 /*
  * Deprecated flag names, here for legacy compatibility.
  * Will be removed in the future.
- * Use KeySwitches instead.
+ * Use KeySwitches above instead.
  */
 enum KeyFlags {                                       /* _DEPRECATED_ */
 	KEY_FLAG_HASTYPE      = KEY_SWITCH_TYPE,          /* _DEPRECATED_ */
@@ -246,26 +246,29 @@ enum KDBOptions {
 	KDB_O_DIR=1<<1,          /*!< Include dir keys in result. */
 	KDB_O_DIRONLY=1<<2,      /*!< Retrieve only directory keys. */
 	KDB_O_NOEMPTY=1<<3,      /* unused ???? */
-	KDB_O_STATONLY=1<<4,     /*!< Only stat key, instead of getting entirelly. */
+	KDB_O_STATONLY=1<<4,     /*!< Only stat key, instead of getting entirelly.*/
 	KDB_O_INACTIVE=1<<5,     /*!< Do not ignore inactive keys (that name begins
 	                              with .). */
 	KDB_O_SORT=1<<6,         /*!< Sort keys. */
 	KDB_O_NFOLLOWLINK=1<<7,  /*!< Do not follow symlinks. */
 
-/* XML exporting options for keyToStrem() */
-	KDB_O_CONDENSED=1<<8,    /*!< Compressed XML, not usefull for human eyes. */
-	KDB_O_NUMBERS=1<<9,      /*!< Use numbers intead of user and group names. */
+/* XML exporting options for keyToStrem() and ksToStream() */
+	KDB_O_CONDENSED=1<<8,    /*!< Compressed XML, not usefull for human eyes.*/
+	KDB_O_NUMBERS=1<<9,      /*!< Use numbers intead of user and group names.*/
 	KDB_O_XMLHEADERS=1<<10,  /*!< Show also the XML header of the document. */
 	KDB_O_FULLNAME=1<<11,    /*!< Export @p user keys using full name
 	                              (e.g. user:username/some/key). */
 	KDB_O_FULLUGID=1<<12,    /*!< Don't supress obvious key UID,
 	                              GID, and user domain. Affects
 	                              only @p user keys. */
-	
+	KDB_O_HIER=1<<13,        /*!< Export to the new hierarchical XML
+                                  representation using key basename.
+                                  See ksToStream(). */
+
 /* Options used by ksLookupRE() methods */
 	KDB_O_NOCASE=1<<15,      /*!< Ignore case in ksLookup*() methods */
-	KDB_O_NOSPANPARENT=1<<16, /*!< Don't continue search if end of current
-	                              folder reached, in ksLookupRE() */
+	KDB_O_NOSPANPARENT=1<<16,/*!< Don't continue search if end of current
+                                  folder reached, in ksLookupRE() */
 
 /* Obsolete/renamed options */
 	KDB_O_NOVALUE=KDB_O_DIRONLY
@@ -489,6 +492,8 @@ Key *keyNext(Key *key);
 uint32_t keyCompare(const Key *key1, const Key *key2);
 
 ssize_t keyToStream(const Key *key, FILE* stream, unsigned long options);
+ssize_t keyToStreamBasename(const Key *key, FILE* stream,
+	const char *parent, const size_t parentSize, unsigned long options);
 
 
 /**************************************

@@ -18,6 +18,7 @@
 $Id$
 
 */
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -119,9 +120,9 @@ size_t strblen(const char *s) {
  *
  *
  *
- */ 
- 
- 
+ */
+
+
 /**
  * @defgroup keyvalue Key :: Value Manipulation Methods
  * @brief Methods to do various operations on Key values.
@@ -152,7 +153,7 @@ size_t strblen(const char *s) {
  *
  */
 
- 
+
 /**
  * @defgroup keymeta Key :: Meta Info Manipulation Methods
  * @brief Methods to do various operations on Key metainfo
@@ -181,10 +182,10 @@ size_t strblen(const char *s) {
  *
  * With the access mode you can choose if a user, group
  * or the world can access your key. See man 2 chmod.
- * 
+ *
  */
 
- 
+
 /**
  * @defgroup keytest Key :: Methods for Making Tests
  * @brief Methods to do various tests on Keys
@@ -197,7 +198,7 @@ size_t strblen(const char *s) {
  *
  */
 
- 
+
 /**
  * @defgroup keymisc Key :: Miscelaneous
  * @brief Methods to do various things
@@ -210,9 +211,9 @@ size_t strblen(const char *s) {
  *
  */
 
- 
- 
-   
+
+
+
 /**
  * A practical way to fully create a Key object in one step.
  * This function tries to mimic the C++ way for constructors.
@@ -243,7 +244,7 @@ size_t strblen(const char *s) {
  *   KeySwitch::KEY_SWITCH_VALUE, otherwise KeyType::KEY_TYPE_STRING is
  *   assumed.
  * - KeySwitch::KEY_SWITCH_VALUE \n
- *   Next parameter is a pointer to the value that will be set to the key.
+ *   Next parameter is a pointer to the value that will be set to the key
  *   If no KeySwitch::KEY_SWITCH_TYPE was used before,
  *   KeySwitch::KEY_TYPE_STRING is assumed.
  * - KeySwitch::KEY_SWITCH_UID, @p KeySwitch::KEY_SWITCH_GID \n
@@ -268,7 +269,7 @@ size_t strblen(const char *s) {
  * - KeySwitch::KEY_SWITCH_END \n
  *   Must be the last parameter passed to keyNew(). It is always
  *   required, unless the @p keyName is NULL too.
- *   
+ *
  * @par Example:
  * @code
 KeySet *ks=ksNew();
@@ -480,7 +481,7 @@ int keyIsInitialized(const Key *key) {
  * know in which user folder to save the key. A user domain is a user name.
  * If not defined (the second form) current user is calculated and used
  * as default.
- * 
+ *
  * You should always follow the guidelines for key tree structure creation at
  * @ref rules.
  *
@@ -620,7 +621,7 @@ ssize_t keySetName(Key *key, const char *newName) {
 		return -1;
 }
 
- 
+
 
 /**
  * Adds @p baseName to the current key name.
@@ -706,7 +707,7 @@ ssize_t keyAddBaseName(Key *key,const char *baseName) {
 ssize_t keySetBaseName(Key *key, const char *baseName) {
 	size_t newSize=strblen(baseName);
 	char *end;
-        char *p;
+	char *p;
 	
 	end=strrchr(key->key,'/');
 	
@@ -714,10 +715,10 @@ ssize_t keySetBaseName(Key *key, const char *baseName) {
 		newSize+=end-key->key;
 		end[1]=0;
 		p=realloc(key->key,newSize);
-                if (NULL == p) {
-                        errno=KDB_RET_NOMEM;
-                	return -1;
-                }
+		if (NULL == p) {
+			errno=KDB_RET_NOMEM;
+			return -1;
+		}
 		key->key=p;
 		strcat(key->key,baseName);
 		return newSize;
@@ -1531,7 +1532,7 @@ while(current=ksNext(ks)) {
 	}
 }
  * @endcode
- * 
+ *
  * @param key the key object to work with
  * @see keyGetValueSize(), keyGetString(), keyGetBinary(), keyGetLink()
  * @ingroup keyvalue
@@ -2583,22 +2584,65 @@ uint32_t keyCompare(const Key *key1, const Key *key2) {
  * @ingroup keymisc
  */
 ssize_t keyToStream(const Key *key, FILE* stream, unsigned long options) {
+	return keyToStreamBasename(key,stream,0,0,options);
+}
+
+
+
+
+
+/**
+ * Same as keyToStream() but tries to strip @c parentSize bytes from
+ * @c key name if it matches @c parent .
+ *
+ * Taking the example from keyToStream(), if @c parent contains
+ * "system/sw/XFree", the generated string is of the form:
+ * @verbatim
+	<key basename="Monitor/Monitor0/Name"
+		type="string" uid="root" gid="root" mode="0660">
+
+		<value>Samsung TFT panel</value>
+		<comment>My monitor</comment>
+	</key>@endverbatim
+ *
+ * This method is used when ksToStream() is called with
+ * KDBOption::KDB_O_HIER option.
+ *
+ * @param parentSize the maximum size of @c parent that will be used.
+ *        If 0, the entire @c parent will be used.
+ * @return number of bytes written to output
+ * @ingroup keymisc
+ */
+ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
+		const size_t parentSize, unsigned long options) {
 	ssize_t written=0;
 	char buffer[800];
 	struct passwd *pwd=0;
 	struct group *grp=0;
 
 
-	/* if (!key || !keyIsInitialized(key) // || !key->key * / ) {
-		errno=KDB_RET_UNINITIALIZED;
-		return 0;
-	} */
-
 	/* Write key name */
-	if (options & KDB_O_FULLNAME) {
-		keyGetFullName(key,buffer,sizeof(buffer));
-		written+=fprintf(stream,"<key name=\"%s\"", buffer);
-	} else written+=fprintf(stream,"<key name=\"%s\"", key->key);
+	if (parent) {
+		/* some logic to see if we should print only the relative basename */
+		int found;
+		size_t skip=parentSize ? parentSize : strblen(parent)-1;
+
+		found=memcmp(parent,key->key,skip);
+		if (found == 0) {
+			while (*(key->key+skip) == RG_KEY_DELIM) ++skip;
+
+			if (*(key->key+skip) != 0) /* we don't want a null basename */
+				written+=fprintf(stream,"<key basename=\"%s\"",
+					key->key+skip);
+		}
+	}
+
+	if (written == 0) { /* no "<key basename=..." was written so far */
+		if (options & KDB_O_FULLNAME) {
+			keyGetFullName(key,buffer,sizeof(buffer));
+			written+=fprintf(stream,"<key name=\"%s\"", buffer);
+		} else written+=fprintf(stream,"<key name=\"%s\"", key->key);
+	}
 
 
 	if (options & KDB_O_CONDENSED) written+=fprintf(stream," ");
@@ -2738,9 +2782,6 @@ ssize_t keyToStream(const Key *key, FILE* stream, unsigned long options) {
 
 	return written;
 }
-
-
-
 
 
 /*

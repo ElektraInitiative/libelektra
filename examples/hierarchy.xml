@@ -14,7 +14,6 @@
 	Subversion stuff.
 	
 	$Id$
-	$LastChangedBy: aviram $
 	
  -->
 
@@ -28,20 +27,20 @@
 	<!-- The wrapping keyset is not really necessary. The key element
 		 can be a root key -->
 	
-	<key basename="dir1">
-		<key basename="xyz">
+	<key basename="dir1"> <!-- complete name is user/tmp/dir1 -->
+		<key basename="xyz"> <!-- complete name is user/tmp/dir1/xyz -->
 			<value>abc</value>
 			<comment>comment1</comment>
 		</key>
-		<key basename="abc">
+		<key basename="abc"> <!-- complete name is user/tmp/dir1/abc -->
 			<value>xyz</value>
 			<comment>comment1</comment>
 		</key>
-		<key basename="dir2">
-			<key basename="def">
+		<key basename="dir2"> <!-- complete name is user/tmp/dir1/dir2 -->
+			<key basename="def"> <!-- complete name is user/tmp/dir1/dir2/def -->
 				<value>cecece</value>
 			</key>
-			<key basename="uvw">
+			<key basename="uvw"> <!-- complete name is user/tmp/dir1/dir2/uvw -->
 				<value>tatata</value>
 			</key>
 		</key>
