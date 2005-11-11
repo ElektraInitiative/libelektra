@@ -77,14 +77,15 @@ $LastChangedBy: aviram $
  * 
  * This function is completelly dependent on libxml.
  */
-int processKeyNode(KeySet *ks, char *context, xmlTextReaderPtr reader) {
+int processKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
 	xmlChar *nodeName=0;
 	xmlChar *buffer=0;
 	xmlChar *privateContext=0;
+	/* xmlChar *fullContext=0; */
 	Key *newKey=0;
 	int appended=0;
 
-	printf("%s", KDB_SCHEMA_PATH);
+	/* printf("%s", KDB_SCHEMA_PATH); */
 	
 	nodeName=xmlTextReaderName(reader);
 	if (!strcmp(nodeName,"key")) {
@@ -158,7 +159,7 @@ int processKeyNode(KeySet *ks, char *context, xmlTextReaderPtr reader) {
 		}
 #endif
 
-#ifdef HAVE_GRP_H		
+#ifdef HAVE_GRP_H
 		/* Parse GID */
 		buffer=xmlTextReaderGetAttribute(reader,"gid");
 		if (buffer) {
@@ -177,7 +178,7 @@ int processKeyNode(KeySet *ks, char *context, xmlTextReaderPtr reader) {
 
 		/* Parse permissions */
 		buffer=xmlTextReaderGetAttribute(reader,"mode");
-		if (buffer) keySetAccess(newKey,strtol(buffer,0,8));
+		if (buffer) keySetAccess(newKey,strtol(buffer,0,0));
 		xmlFree(buffer); buffer=0;
 
 
@@ -233,6 +234,8 @@ int processKeyNode(KeySet *ks, char *context, xmlTextReaderPtr reader) {
 			}
 			xmlFree(buffer); buffer=0;
 		}
+
+/*		printf("%s: %o\n",newKey->key,keyGetAccess(newKey)); */
 		if (privateContext) xmlFree(privateContext);
 	}
 
@@ -243,29 +246,40 @@ int processKeyNode(KeySet *ks, char *context, xmlTextReaderPtr reader) {
 
 
 
-int processKeySetNode(KeySet *ks, char *context, xmlTextReaderPtr reader) {
+int processKeySetNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
 	xmlChar *nodeName=0;
 	xmlChar *privateContext=0;
+	xmlChar fullContext[800]="";
 	
 	nodeName=xmlTextReaderName(reader);
 	if (!strcmp(nodeName,"keyset")) {
 		int end=0;
-		
+
 		privateContext=xmlTextReaderGetAttribute(reader,"parent");
-		
+		if (context && privateContext) {
+			xmlStrPrintf(fullContext,sizeof(fullContext),"%s/%s",
+				context,privateContext);
+
+			printf("\nCurrent parent is %s\n",fullContext);
+		}
+
 		/* Parse everything else */
 		while (!end) {
 			xmlFree(nodeName); nodeName=0;
 			xmlTextReaderRead(reader);
 			nodeName=xmlTextReaderName(reader);
-			
+
 			if (!strcmp(nodeName,"key")) {
-				if (privateContext) processKeyNode(ks,privateContext,reader);
+				if (privateContext) processKeyNode(ks,*fullContext?fullContext:privateContext,reader);
 				else processKeyNode(ks,context,reader);
 			} else if (!strcmp(nodeName,"keyset")) {
+				/* A <keyset> can have nested <keyset>s */
 				if (xmlTextReaderNodeType(reader)==15)
-					 /* found a </keyset> */
+					/* found a </keyset> */
 					end=1;
+				else if (privateContext)
+					processKeySetNode(ks, *fullContext?fullContext:privateContext, reader);
+				else processKeySetNode(ks, context, reader);
 			}
 		}
 	}
@@ -287,6 +301,7 @@ int ksFromXMLReader(KeySet *ks,xmlTextReaderPtr reader) {
 
 	ret = xmlTextReaderRead(reader); /* go to first node */
 	while (ret == 1) {
+		/* walk node per node until the end of the stream */
 		nodeName=xmlTextReaderName(reader);
 		
 		if (!strcmp(nodeName,"key"))
@@ -357,12 +372,16 @@ int isValidXML(xmlDocPtr doc,char *schemaPath) {
 /**
  * Given an XML @p filename, open it, validate schema, process nodes,
  * convert and save it in the @p ks KeySet.
+ * 
+ * Currently, the XML file can have many root <keyset> and <key> nodes.
+ * They will all be reduced to simple keys returned in @p ks.
+ * 
  * @ingroup tools
  */
 int ksFromXMLfile(KeySet *ks,char *filename) {
 	xmlTextReaderPtr reader;
 	xmlDocPtr doc;
-	int ret;
+	int ret=0;
 	char schemaPath[513];
 
 	doc = xmlParseFile(filename);
@@ -370,7 +389,7 @@ int ksFromXMLfile(KeySet *ks,char *filename) {
 	
 	/* Open the kdb to get the xml schema path */
 	schemaPath[0]=0;
-	ret=kdbGetValue(KDB_SCHEMA_PATH_KEY,schemaPath,sizeof(schemaPath));
+	// ret=kdbGetValue(KDB_SCHEMA_PATH_KEY,schemaPath,sizeof(schemaPath));
 
 //	if (ret==0) ret = isValidXML(filename,schemaPath);
 //	else ret = isValidXML(filename,KDB_SCHEMA_PATH); /* fallback to builtin */
