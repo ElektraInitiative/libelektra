@@ -10,8 +10,8 @@ $Id$
 
 <!--
 
-This is a specification-by-example for a systenm's network key hierarchy.
-It covers the functionality currently provided by files:
+This is a specification-by-example key hierarchy for a system's network configuration.
+It covers the functionality currently provided by these files:
 
   /etc/hosts
   /etc/resolv.conf
