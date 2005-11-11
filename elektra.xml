@@ -4,7 +4,7 @@
   <project>
     <project_id>45092</project_id>
     <date_added>2004-02-25 12:43:19</date_added>
-    <date_updated>2005-04-29 13:54:45</date_updated>
+    <date_updated>2005-10-19 04:42:14</date_updated>
     <projectname_short>elektra</projectname_short>
     <projectname_full>Elektra Project</projectname_full>
     <desc_short>A key-value pair framework for storing configurations.</desc_short>
@@ -20,16 +20,16 @@ integration. While architecturally similar to
 other OS registries, Elektra does not have most of
 the problems found in those implementations.
 </desc_full>
-    <vitality_score>322.92</vitality_score>
+    <vitality_score>733.70</vitality_score>
     <vitality_percent>0.17</vitality_percent>
-    <vitality_rank>1450</vitality_rank>
-    <popularity_score>1666.42</popularity_score>
-    <popularity_percent>3.20</popularity_percent>
-    <popularity_rank>1120</popularity_rank>
-    <rating>7.08</rating>
-    <rating_count>12</rating_count>
-    <rating_rank>299</rating_rank>
-    <subscriptions>83</subscriptions>
+    <vitality_rank>868</vitality_rank>
+    <popularity_score>1782.95</popularity_score>
+    <popularity_percent>3.23</popularity_percent>
+    <popularity_rank>1132</popularity_rank>
+    <rating>6.94</rating>
+    <rating_count>13</rating_count>
+    <rating_rank>322</rating_rank>
+    <subscriptions>85</subscriptions>
     <branch_name>Default</branch_name>
     <url_project_page>http://freshmeat.net/projects/elektra/</url_project_page>
     <url_homepage>http://freshmeat.net/redir/elektra/48188/url_homepage/</url_homepage>
@@ -37,8 +37,8 @@ the problems found in those implementations.
     <url_bz2></url_bz2>
     <url_zip></url_zip>
     <url_changelog></url_changelog>
-    <url_rpm>http://freshmeat.net/redir/elektra/48188/url_rpm/</url_rpm>
-    <url_deb>http://freshmeat.net/redir/elektra/48188/url_deb/</url_deb>
+    <url_rpm></url_rpm>
+    <url_deb></url_deb>
     <url_osx></url_osx>
     <url_bittorrent></url_bittorrent>
     <url_bsdport></url_bsdport>
@@ -46,15 +46,15 @@ the problems found in those implementations.
     <url_jar></url_jar>
     <url_purchase></url_purchase>
     <url_cvs>http://freshmeat.net/redir/elektra/48188/url_cvs/</url_cvs>
-    <url_bugtracker></url_bugtracker>
+    <url_bugtracker>http://freshmeat.net/redir/elektra/48188/url_bugtracker/</url_bugtracker>
     <url_list>http://freshmeat.net/redir/elektra/48188/url_list/</url_list>
     <url_mirror></url_mirror>
     <url_demo></url_demo>
     <license>BSD License (revised)</license>
     <latest_release>
-      <latest_release_version>0.5</latest_release_version>
-      <latest_release_id>194866</latest_release_id>
-      <latest_release_date>2005-04-29 13:54:45</latest_release_date>
+      <latest_release_version>0.5.1</latest_release_version>
+      <latest_release_id>209675</latest_release_id>
+      <latest_release_date>2005-10-19 04:42:13</latest_release_date>
     </latest_release>
     <screenshot_thumb>http://download.freshmeat.net/screenshots/45092_thumb.png</screenshot_thumb>
     <authors>
