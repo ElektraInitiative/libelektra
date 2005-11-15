@@ -397,9 +397,9 @@ int keyIsInitialized(const Key *key);
 int keyNeedsSync(const Key *key);
 int keyDup(const Key *source,Key *dest);
 
-int keySerialize(const Key *key,void *buffer, size_t maxSize);
-int keyUnserialize(Key *key,const void *buffer);
-size_t keyGetSerializedSize(const Key *key);
+/* int keySerialize(const Key *key,void *buffer, size_t maxSize);
+int keyUnserialize(Key *key,const void *buffer); */
+size_t keyGetSerializedSize(const Key *key); 
 
 uint8_t keyGetType(const Key *key);
 uint8_t keySetType(Key *key,uint8_t type);
