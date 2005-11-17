@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+Subversion stuff
+
+$Id$
+
+-->
+
+<!--
+
+The purpose of this specification-by-example is to help programs find information about the system they will run on.
+This is particulary useful for installation programs, when they must take decision about where to put files they'll install, since each OS have slight differences about their filesystem organization, etc.
+
+This is a very simple structure, and here follows the signature for a Red Hat Enterprise Linux 4 update 2 (Nanant):
+
+system/signature
+  provider     = Red Hat
+  os           = Linux
+  type         = redhat
+  edition      = AS
+  version      = 4
+  update       = 2
+  architecture = ia32
+  readable     = Red Hat Enterprise Linux 4 AS update 2 (Nanant)
+  releasename  = Nanant
+  url          = http://www.redhat.com/
+
+
+
+
+A Novell Linux Desktop would have this signature:
+
+system/signature
+  provider     = Novell
+  os           = Linux
+  type         = suse
+  edition      = NLD
+  version      = 10
+  update       = 0
+  architecture = ia32
+  readable     = Novell Linux Desktop
+  url          = http://www.novell.com/
+
+
+
+A Fedora 4 system for Opteron processos would be:
+
+system/signature
+  provider     = Fedora
+  os           = Linux
+  type         = redhat
+  version      = 4
+  architecture = x86_64
+  readable     = Fedora Core 4
+  url          = http://fedora.redhat.com/
+
+
+
+
+
+-->
+
+
+<keyset xmlns="http://elektra.sourceforge.net"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://elektra.sourceforge.net elektra.xsd"
+
+        parent="user/spec/system/signature">
+
+
+	<key basename="provider">
+		<value>Red Hat</value>
+		<comment>The company or organization that provides this operating system.</comment>
+		<comment>Common values would be SuSE, Debian, CetnOS, Microsoft, etc.</comment>
+	</key>
+
+
+
+
+
+
+	<key basename="os">
+		<value>Linux</value>
+		<comment>The simple name of this OS. Could be "OpenBSD", "Windows", etc</comment>
+	</key>
+
+
+
+
+
+
+	<key basename="type">
+		<value>redhat</value>
+		<comment>A name for whom the system looks like.</comment>
+		<comment>This is the most important key since it provides the hint about the filesystem layout, packaging naming conventions, etc</comment>
+		<comment>Could be "redhat" for RHEL, CentOS, Fedora, Mandriva, Whitebox, Scientific Linux, etc.</comment>
+		<comment>"debian" for Debian, Ubuntu, KUbuntu and all Debian-derived distro's</comment>
+		<comment>"BSD" for all *BSD systems</comment>
+		<comment>"suse" for SLES, OpenSuSE and Novell Linux Desktop</comment>
+		<comment>Or "slackware", "aix", "solaris" etc for other systems</comment>
+	</key>
+
+
+
+
+
+
+	<key basename="readable">
+		<value>Red Hat Enterprise Linux 4 AS</value>
+		<comment>A nice human readable system name.</comment>
+	</key>
+
+
+
+
+
+
+	<key basename="releasename">
+		<value>Nanant</value>
+		<comment>An internal name that providers use to give to their products.</comment>
+		<comment>Could be "Potato" for Debian, "Vista" for Windows, etc.</comment>
+	</key>
+
+
+
+
+
+
+	<key basename="edition">
+		<value>AS</value>
+		<comment>The edition of this OS. Common values are "Home Edition", "ES", "WS", Professional, etc</comment>
+	</key>
+
+
+
+
+
+
+
+
+	<key basename="version">
+		<value>4</value>
+		<comment>The version of this OS.</comment>
+		<comment>Could be "95" or "2000" for popular Windows versions, "7.3" for old Red Hat versions, etc.</comment>
+	</key>
+
+
+
+
+
+
+
+
+
+	<key basename="update">
+		<value>2</value>
+		<comment>The update or patch level of a system. Could be "SP3" for Windows systems, etc.</comment>
+	</key>
+
+
+
+
+
+
+
+
+
+	<key basename="architecture">
+		<value>ia32</value>
+		<comment>The platform this OS is installed on. Popular names are "x86_64", "ppc", "s390", "s390x", "sparc", "ia64".</comment>
+	</key>
+
+
+
+
+	<key basename="url">
+		<value>http://www.redhat.com</value>
+		<comment>Some URL the provider wants to be published.</comment>
+	</key>
+
+</keyset>

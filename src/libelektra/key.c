@@ -627,10 +627,8 @@ ssize_t keySetName(Key *key, const char *newName) {
  * Adds @p baseName to the current key name.
  *
  * Assumes that @p key is a directory. @p baseName is appended to it.
- * The function adds @c '/' if needed while concatenating. This means it does not
- * matter whether the current path has a trailing '/' or not. If there is
- * none, it becomes appended.
- * 
+ * The function adds @c '/' if needed while concatenating.
+ *
  * So if @p key has name @c "system/dir1/dir2" and this method is called with
  * @p baseName @c "mykey", the resulting key will have name
  * @c "system/dir1/dir2/mykey".

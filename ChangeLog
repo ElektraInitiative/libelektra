@@ -2,6 +2,10 @@
 - Cross platform handling (when possible) for UTF-8 conversions with iconv()
 - More detailed error messages on kdb command
 - New kdbGetInfo() and friends for library info gathering
+- Better XML import for nested <key>s
+- Multiple <comment>s allowed in one <key> on XML
+- Pretty complete network configuration tree layout specification
+- Pretty good system signature tree layout specification
 
 * Wed Oct 26 2005 Avi Alkalay <avi@unix.sh> 0.5.1
 - Migrated to autotools, and updated documentation for that
