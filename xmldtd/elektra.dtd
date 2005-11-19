@@ -31,32 +31,34 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 The doctype with FPI for this DTD is:
 
-<!DOCTYPE keyset PUBLIC "-//Avi Alkalay//DTD Elektra 0.1.0//EN"
-                   "http://elektra.sf.net/dtd/elektra.dtd">
+<!DOCTYPE keyset PUBLIC "-//Avi Alkalay//DTD Elektra 0.2//EN"
+                   "http://www.libelektra.org/dtd/elektra.dtd">
 
 -->
 
 
 <!--
   $Id$
-  $LastChangedBy$
 -->
 
-<!ELEMENT keyset (key*)>
+<!ELEMENT keyset (key*,keyset*)>
 
 
 
-<!ELEMENT key (value?,comment?)>
+<!ELEMENT key (value?,comment*)>
 <!ATTLIST key
-	id       ID                                   #IMPLIED
-	name     CDATA                                #REQUIRED
-	type     (string | binary | directory | link | undefined) "string"
-	uid      CDATA                                #IMPLIED
-	gid      CDATA                                #IMPLIED
-	mode     CDATA                                #IMPLIED
-	atime    CDATA                                #IMPLIED
-	ctime    CDATA                                #IMPLIED
-	mtime    CDATA                                #IMPLIED
+	id          ID                                   #IMPLIED
+	name        CDATA                                #REQUIRED
+	basename    CDATA                                #IMPLIED
+	parent      CDATA                                #IMPLIED
+	type        (string | binary | directory | link | undefined) "string"
+	uid         CDATA                                #IMPLIED
+	gid         CDATA                                #IMPLIED
+	mode        CDATA                                #IMPLIED
+	atime       CDATA                                #IMPLIED
+	ctime       CDATA                                #IMPLIED
+	mtime       CDATA                                #IMPLIED
+	shortvalue  CDATA                                #IMPLIED
 >
 
 

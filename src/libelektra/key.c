@@ -2618,7 +2618,6 @@ ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
 	struct passwd *pwd=0;
 	struct group *grp=0;
 
-
 	/* Write key name */
 	if (parent) {
 		/* some logic to see if we should print only the relative basename */
@@ -2694,7 +2693,7 @@ ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
 		
 			if (grp && !(options & KDB_O_NUMBERS))
 				written+=fprintf(stream," gid=\"%s\"",grp->gr_name);
-			else  written+=fprintf(stream,   " gid=\"%d\"",key->gid);
+			else written+=fprintf(stream," gid=\"%d\"",key->gid);
 		} else {
 			if (!uidMatch) {
 				if (pwd && !(options & KDB_O_NUMBERS))
@@ -2722,45 +2721,83 @@ ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
 		else  written+=fprintf(stream,   " gid=\"%d\"",key->gid);
 	}
 #endif
-	written+=fprintf(stream," mode=\"0%o\">",
+	written+=fprintf(stream," mode=\"0%o\"",
 #if defined(S_IRWXU) && defined(S_IRWXG) && defined(S_IRWXO)
 		key->access & (S_IRWXU|S_IRWXG|S_IRWXO));
 #else
-    key->access);
+		key->access);
 #endif
 
 
+	if (!key->data && !key->comment) { /* no data AND no comment */
+		written+=fprintf(stream,"/>");
+		if (!(options & KDB_O_CONDENSED))
+			written+=fprintf(stream,"\n\n\n\n\n\n");
+		
+		return written; /* end of <key/> */
+	} else {
+		if (key->data) {
+			if ((key->dataSize <= 16) &&
+					key->type >= KEY_TYPE_STRING &&
+					!strchr(key->data,'\n')) {
 
-	if (!(options & KDB_O_CONDENSED) && (key->data || key->comment))
-		written+=fprintf(stream,"\n\n     ");
+				/* we'll use a "value" attribute instead of a <value> node,
+				   for readability, so the cut size will be 16, which is
+				   the maximum size of an IPv4 address */
 
-	if (key->data) {
-		written+=fprintf(stream,"<value>");
-		fflush(stream);
-		if (key->type >= KEY_TYPE_STRING || key->type < KEY_TYPE_BINARY) {
-			written+=fprintf(stream,"<![CDATA[");
-			fflush(stream);
+				if (options & KDB_O_CONDENSED) written+=fprintf(stream," ");
+				else written+=fprintf(stream,"\n     ");
+				
+				written+=fprintf(stream,"value=\"%s\"",key->data);
+				
+				if (key->comment) written+=fprintf(stream,">\n");
+				else {
+					written+=fprintf(stream,"/>");
+					if (!(options & KDB_O_CONDENSED))
+						written+=fprintf(stream,"\n\n\n\n\n\n");
+				
+					return written;
+				}
+			} else { /* value is bigger than 16 bytes: deserves own <value> */
+				written+=fprintf(stream,">");
+				if (!(options & KDB_O_CONDENSED)) written+=fprintf(stream,"\n\n     ");
+				
+				written+=fprintf(stream,"<value>");
+				if (key->type >= KEY_TYPE_STRING || key->type < KEY_TYPE_BINARY) {
+					written+=fprintf(stream,"<![CDATA[");
+					fflush(stream);
+					/* must chop ending \0 */
+					written+=write(fileno(stream),key->data,key->dataSize-1);
+					written+=fprintf(stream,"]]>");
+				} else {
+					/* Binary values */
+					char *encoded=malloc(3*key->dataSize);
+					size_t encodedSize;
+
+					written+=fprintf(stream,"\n");
+					encodedSize=encode(key->data,key->dataSize,encoded);
+					fflush(stream);
+					written+=write(fileno(stream),encoded,encodedSize);
+					free(encoded);
+					written+=fprintf(stream,"\n");
+				}
+				/* fflush(stream); */
+				written+=fprintf(stream,"</value>");
+			}
+		} else { /* we have no data */
+			if (key->comment) {
+				written+=fprintf(stream,">");
+				if (!(options & KDB_O_CONDENSED))
+					written+=fprintf(stream,"\n");
+			} else {
+				written+=fprintf(stream,"/>");
+				if (!(options & KDB_O_CONDENSED))
+					written+=fprintf(stream,"\n\n\n\n\n\n");
 			
-			/* must chop ending \0 */
-			written+=write(fileno(stream),key->data,key->dataSize-1);
-			written+=fprintf(stream,"]]>");
-		} else {
-			/* Binary values */
-			char *encoded=malloc(3*key->dataSize);
-			size_t encodedSize;
-
-			written+=fprintf(stream,"\n");
-			fflush(stream);
-			encodedSize=encode(key->data,key->dataSize,encoded);
-			written+=write(fileno(stream),encoded,encodedSize);
-			fflush(stream);
-			free(encoded);
-			written+=fprintf(stream,"\n");
+				return written;
+			}
 		}
-		fflush(stream);
-		written+=fprintf(stream,"</value>");
 	}
-
 
 	if (!(options & KDB_O_CONDENSED)) {
 		written+=fprintf(stream,"\n");

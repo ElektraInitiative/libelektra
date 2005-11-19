@@ -121,6 +121,15 @@ int processKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
 			xmlFree(privateContext); privateContext=0;
 			xmlFree(buffer); buffer=0;
 		}
+
+
+		/* test for a short value attribute, instead of <value> bellow */
+		buffer=xmlTextReaderGetAttribute(reader,"value");
+		if (buffer) {
+			keySetRaw(newKey,buffer,strblen(buffer));
+			xmlFree(buffer); buffer=0;
+		}
+
 		
 		buffer=xmlTextReaderGetAttribute(reader,"type");
 		if (buffer) {

@@ -5,12 +5,11 @@
 
 <!--
   $Id$
-  $LastChangedBy$
 -->
 
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	xmlns="http://elektra.sourceforge.net"
-	targetNamespace="http://elektra.sourceforge.net"
+	xmlns="http://www.libelektra.org"
+	targetNamespace="http://www.libelektra.org"
 	elementFormDefault="qualified">
 	
 	<xsd:element name="key"            type="Key_type"/>
@@ -34,6 +33,12 @@
 		<xsd:attribute name="basename" type="xsd:string"   use="optional">
 			<xsd:annotation>
 				<xsd:documentation>A basename can't appear in the same entry that has an absolute name. If basename appears together, name wins. Absolute name = parent + basename.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		
+		<xsd:attribute name="value" type="xsd:string"   use="optional">
+			<xsd:annotation>
+				<xsd:documentation>Short values can be put as an attribute in the key element, to improve readability. But, if a value element appears latter, it wins over the attribute.</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
 		
@@ -70,6 +75,7 @@
 		
 		<xsd:sequence>
 			<xsd:element name="key"        maxOccurs="unbounded"/>
+			<xsd:element name="keyset"     maxOccurs="unbounded"/>
 		</xsd:sequence>
 	
 	</xsd:complexType>
