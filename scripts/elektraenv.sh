@@ -40,10 +40,11 @@ fi
 
 FILE="/tmp/elektraenv${RANDOM}${RANDOM}"
 
-#set -vx
 
 readEnvTree() {
-	keysAvailable=0
+	local keysAvailable=0
+	local stage=0
+	local key
 
 	for stage in 1 2 3; do
 		echo "# Stage $stage"
@@ -73,6 +74,8 @@ readEnvTree() {
 ##  Main block
 ##
 
+# set -vx
+
 readEnvTree system/env > $FILE
 (echo; echo; echo) >> $FILE
 readEnvTree user:$USER/env >> $FILE
@@ -82,3 +85,9 @@ readEnvTree user:$USER/env >> $FILE
 
 # Remove it
 [ -f $FILE ] && rm -f $FILE
+
+# Clean temporary environment
+unset readEnvTree
+unset FILE
+unset KDB
+
