@@ -1,6 +1,7 @@
 elekexampledir = $(develdocdir)/examples
                                                                                                                              
-EXTRA_DIST = backend.c application.c binary.c keyNewExample.c lookup.c
+EXTRA_DIST = backend.c application.c binary.c keyNewExample.c lookup.c example.c hierarchy.xml keyset.xml
+
 elekexample_DATA = backend.c application.c binary.c keyNewExample.c lookup.c
 
 elekexample_PROGRAMS = backend application binary keyNewExample lookup

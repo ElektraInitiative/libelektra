@@ -6,7 +6,7 @@ EXTRA_DIST+=docbook.css doxygen.css
 EXTRA_DIST+=elektra.sxi
 EXTRA_DIST+=$(man1_MANS) $(man5_MANS) $(man7_MANS)
 
-SUBDIRS=images
+SUBDIRS=images specs
 
 # Dependencies for Doxygen documentation
 DOXYSOURCES=../src/libelektra/libkdb.c ../src/kdb/kdb.c ../src/libelektratools/kdbtools.c ../src/include/kdb.h ../src/include/kdbbackend.h ../src/include/kdbprivate.h ../src/libelektra/key.c ../src/backends/template/template.c ../src/Doxyfile

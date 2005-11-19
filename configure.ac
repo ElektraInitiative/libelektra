@@ -235,6 +235,7 @@ AC_OUTPUT([src/Makefile
 
 	   doc/Makefile
 	   doc/images/Makefile
+	   doc/specs/Makefile
 	   
 	   scripts/Makefile
 
