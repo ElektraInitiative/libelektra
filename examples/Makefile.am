@@ -1,3 +1,5 @@
+# $Id$
+
 elekexampledir = $(develdocdir)/examples
                                                                                                                              
 EXTRA_DIST = backend.c application.c binary.c keyNewExample.c lookup.c example.c hierarchy.xml keyset.xml
