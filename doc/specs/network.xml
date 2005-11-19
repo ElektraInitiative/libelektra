@@ -107,7 +107,7 @@ Avi Alkalay, 2005-11-11
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://elektra.sourceforge.net elektra.xsd"
 
-        parent="user/spec/system/network">
+        parent="system/network">
 
 
 	<key basename="profile">

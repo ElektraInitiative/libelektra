@@ -67,7 +67,7 @@ system/signature
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://elektra.sourceforge.net elektra.xsd"
 
-        parent="user/spec/system/signature">
+        parent="system/signature">
 
 
 	<key basename="provider">
