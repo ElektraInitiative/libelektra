@@ -52,13 +52,13 @@
 
 		<xsd:sequence>
 			<xsd:element name="value"      minOccurs="0"/>
-			<xsd:element name="comment"    minOccurs="0">
+			<xsd:element name="comment"    minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
 					<xsd:documentation>This is CDATA, but I think it could be a xsd:string</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
 
-			<xsd:element name="key"        maxOccurs="unbounded"/>
+			<xsd:element name="key"        minOccurs="0" maxOccurs="unbounded"/>
 		</xsd:sequence>
 
 	</xsd:complexType>
@@ -74,8 +74,8 @@
 		</xsd:attribute>
 		
 		<xsd:sequence>
-			<xsd:element name="key"        maxOccurs="unbounded"/>
-			<xsd:element name="keyset"     maxOccurs="unbounded"/>
+			<xsd:element name="key"        minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="keyset"     minOccurs="0" maxOccurs="unbounded"/>
 		</xsd:sequence>
 	
 	</xsd:complexType>

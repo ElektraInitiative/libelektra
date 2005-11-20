@@ -96,16 +96,15 @@ This XML file can be imported with a 'kdb import' command.
 Change the "parent" attribute on the first <keyset> to import
 it to a test tree.
 
-Avi Alkalay, 2005-11-11
+Avi Alkalay, Nov 2005
 <avi at unix dot sh>
 
 -->
 
 
-
-<keyset xmlns="http://elektra.sourceforge.net"
+<keyset xmlns="http://www.libelektra.org"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://elektra.sourceforge.net elektra.xsd"
+        xsi:schemaLocation="http://www.libelektra.org elektra.xsd"
 
         parent="system/network">
 
