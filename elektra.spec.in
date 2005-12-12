@@ -1,6 +1,6 @@
 Name:          elektra
 Version:       @VERSION@
-%define myRelease 1
+%define myRelease 2
 %define vepoch 1
 Release:       0.fdr.%{vepoch}.%{myRelease}
 Source:        http://aleron.dl.sourceforge.net/sourceforge/elektra/%{name}-%{version}.tar.gz
@@ -83,6 +83,7 @@ implementations.
 This package contains a Berkeley DB backend for Elektra, to let Elektra use
 Berkeley DB databases to store its keys.
 
+%debug_package
 
 %prep
 %setup

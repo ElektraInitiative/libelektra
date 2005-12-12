@@ -36,19 +36,19 @@ endif
 endif
 
 # Layout and confiruations to generate HTML for the web site
-# HTML_TITLE_LAYOUT=html-titlepage-layout.tpl
-# HTML_PARAMS=html-params.xsl
+HTML_TITLE_LAYOUT=html-titlepage-layout.tpl
+HTML_PARAMS=html-params.xsl
 
-# PATCHSOURCES=patches/xorg/README.xorg.Elektra.txt patches/sysvinit/README.sysvinit.Elektra.txt
+PATCHSOURCES=patches/xorg/README.xorg.Elektra.txt patches/sysvinit/README.sysvinit.Elektra.txt
 
-#SUFFIXES: .xml .html .pdf .ps .rtf .xsl .fo .tpl
+SUFFIXES: .xml .html .pdf .ps .rtf .xsl .fo .tpl
 
 #
 # TARGETS
 #
-#.xml.html:
-#	$(xsltproc) -o ${HTML_TITLE_LAYOUT:.tpl=.xsl} $(dbroot)/template/titlepage.xsl ${HTML_TITLE_LAYOUT}
-#	$(xsltproc) -o $@ ${HTML_TITLE_LAYOUT:.tpl=.xsl} $<
+.xml.html:
+	$(xsltproc) -o ${HTML_TITLE_LAYOUT:.tpl=.xsl} $(dbroot)/template/titlepage.xsl ${HTML_TITLE_LAYOUT}
+	$(xsltproc) -o $@ ${HTML_TITLE_LAYOUT:.tpl=.xsl} $<
 
 
 # all: documentation
@@ -97,24 +97,28 @@ install-develdocDATA: $(api_DATA)
 	  $(develdocDATA_INSTALL) $$d$$p $(DESTDIR)$(man3dir)/$$f; \
 	done
 endif
+
+
+
+
 #
 # Build HTML documentation
 #
 
-# example.c:
-#	LN_S ../example/example.c .
+example.c:
+	$(LN_S) ../examples/example.c .
 
-# csource.xml: example.c
-#	(echo "<programlisting><![CDATA["; cat  example.c; echo "]]></programlisting>") > csource.xml
+csource.xml: example.c
+	(echo "<programlisting><![CDATA["; cat  example.c; echo "]]></programlisting>") > csource.xml
 
-# howto.html: howto.xml elektra.7.xml author.xml garbage.xml overview.xml bestpract.xml rgexample.xml rgcmd.xml storage.xml csource.xml api.xml society.xml
+howto.html: howto.xml elektra.7.xml author.xml garbage.xml overview.xml bestpract.xml rgexample.xml rgcmd.xml storage.xml csource.xml api.xml society.xml
 
-# html: howto.html doxygen patchdoc
-#	$(man2html) -r < kdb.1 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > kdb.1.html
-#	$(man2html) -r < elektra.7 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > elektra.7.html
-#	$(man2html) -r < elektra.5 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > elektra.5.html
-#	$(man2html) -r < elektra-api/man/man3/kdb.3 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > kdb.3.html
-#	$(man2html) -r < elektra-api/man/man3/key.3 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > key.3.html
-#	$(man2html) -r < elektra-api/man/man3/keyset.3 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > keyset.3.html
-#	mv howto.html index.html
+html: howto.html
+	$(man2html) -r < kdb.1 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > kdb.1.html
+	$(man2html) -r < elektra.7 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > elektra.7.html
+	$(man2html) -r < elektra.5 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > elektra.5.html
+	$(man2html) -r < elektra-api/man/man3/kdb.3 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > kdb.3.html
+	$(man2html) -r < elektra-api/man/man3/key.3 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > key.3.html
+	$(man2html) -r < elektra-api/man/man3/keyset.3 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > keyset.3.html
+	mv howto.html index.html
 
