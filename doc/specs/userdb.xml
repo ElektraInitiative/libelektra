@@ -2,43 +2,45 @@
 
 <!--
 	 
-	 Subversion stuff
+	Subversion stuff
 	 
-	 $Id$
+	$Id$
 	 
 	 -->
 
 <!--
 	 
-	 This specification-by-example defines a key tree layout for users, groups and password.
+	This specification-by-example defines a key tree layout for users, groups and password.
 	 
-	 Its purpose is similar to the Unix well-known files:
+	Its purpose is similar to the Unix well-known files:
 	 
 	 /etc/passwd
 	 /etc/group
 	 /etc/shadow
 	 
-	 It defines 2 trees, system/users and system/groups
-	 All keys must be owned by root with RO permissions to others, exept for the
-	 password keys which should be readable only to root.
+	It defines 2 trees, system/users and system/groups
+	All keys must be owned by root with RO permissions to others, exept for the
+	password keys which should be readable only to root.
 	 
-	 In this example we'll define the 'jdoe' user and 'root' keys.
+	In this example we'll define the 'jdoe' user and 'root' keys.
 	 
-	 Avi Alkalay
-	 <avi at unix.sh>
-		 Nov 2005
-		 
+	Avi Alkalay
+	<avi at unix.sh>
+	Nov 2005
+
 -->
 
 
 
 <keyset xmlns="http://www.libelektra.org"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.libelektra.org elektra.xsd">
+        xsi:schemaLocation="http://www.libelektra.org elektra.xsd"
+
+        parent="system">
 
 
 
-	<key parent="system/users/jdoe">
+	<key basename="users/jdoe">
 		<!-- The 'jdoe' record -->
 
 		<!-- Real name -->
@@ -70,7 +72,7 @@
 
 	
 	<!-- The group which jdoe is member of -->
-	<key parent="system/groups/guests">
+	<key basename="groups/guests">
 		<key basename="gid" value="800"/>
 		<key basename="members" value="jdoe,miriam,ana"/>
 	</key>
@@ -85,7 +87,7 @@
 
 	<!-- The 'root' record -->
 	
-	<key parent="system/users/root">
+	<key basename="users/root">
 		<key basename="gecos" value="root"/>
 		<key basename="uid" value="0"/>
 		<key basename="gid" value="0"/>
@@ -102,7 +104,7 @@
 	</key>
 
 
-	<key parent="system/groups/root">
+	<key basename="groups/root">
 		<key basename="gid" value="0"/>
 		<key basename="members" value="root"/>
 	</key>
@@ -110,7 +112,7 @@
 
 
 	<!-- Just another group that has root as a member -->
-	<key parent="system/groups/sys">
+	<key basename="groups/sys">
 		<key basename="gid" value="3"/>
 		<key basename="members" value="root,bin,adm"/>
 	</key>
