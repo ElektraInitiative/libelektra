@@ -1,5 +1,6 @@
 * Sun Dec 11 2005 Avi Alkalay <avi@unix.sh> 0.5.3
 - Added specification for system's user, group and password
+- Added specification for system initialization
 
 * Sat Dec 03 2005 Avi Alkalay <avi@unix.sh> 0.5.2
 - Cross platform handling (when possible) for UTF-8 conversions with iconv()
