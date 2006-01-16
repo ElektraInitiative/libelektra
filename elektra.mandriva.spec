@@ -100,9 +100,11 @@ Berkeley DB databases to store its keys.
 %install
 rm -rf $RPM_BUILD_ROOT
 %makeinstall
+rm $RPM_BUILD_ROOT/lib/libelektra-*.a
+rm $RPM_BUILD_ROOT/lib/libregistry*.a
+mv $RPM_BUILD_ROOT/lib/libelektra.a $RPM_BUILD_ROOT/usr/lib
 rm $RPM_BUILD_ROOT/lib/*.la
 rm $RPM_BUILD_ROOT/usr/lib/*.la
-
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -149,10 +151,7 @@ kdb set system/sw/kdb/current/schemapath "%{_datadir}/sgml/elektra-%{DTDVERSION}
 %files devel
 %defattr(-,root,root,0755)
 %{_includedir}/*
-%{_libdir}/*.a
 /usr/lib/*.a
-
-# These will be soonly generated
 /usr/lib/pkgconfig/*
 %doc %{_docdir}/%{name}-devel
 %doc %{_mandir}/man3/*
