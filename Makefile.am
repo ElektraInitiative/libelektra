@@ -1,7 +1,7 @@
 # $Id
 
 SUBDIRS = libltdl src examples doc scripts xmldtd xmlschema
-EXTRA_DIST=elektra.pc elektra.spec elektra.xml 
+EXTRA_DIST=elektra.pc elektra.spec elektra.mandriva.spec elektra.xml 
 
 pkgconfigdir = $(ulibdir)/pkgconfig
 pkgconfig_DATA = elektra.pc
