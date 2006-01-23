@@ -1,6 +1,6 @@
 %define name    elektra 
 %define version 0.5.0.5 
-%define release %mkrel 1 
+%define release %mkrel 2 
 
 Name:          %{name}
 Version:       %{version}
@@ -105,13 +105,10 @@ rm $RPM_BUILD_ROOT/lib/libregistry*.a
 mv $RPM_BUILD_ROOT/lib/libelektra.a $RPM_BUILD_ROOT/usr/lib
 rm $RPM_BUILD_ROOT/lib/*.la
 rm $RPM_BUILD_ROOT/usr/lib/*.la
+ln -s ../../lib/libelektra.so $RPM_BUILD_ROOT/usr/lib
 
 %clean
 rm -rf $RPM_BUILD_ROOT
-#rm -rf $RPM_BUILD_DIR/%{name}
-
-
-
 
 %post
 /sbin/ldconfig
@@ -139,6 +136,7 @@ kdb set system/sw/kdb/current/schemapath "%{_datadir}/sgml/elektra-%{DTDVERSION}
 %{_libdir}/*elektra-fstab.so*
 %{_libdir}/*elektra-ini.so*
 %{_prefix}/%{_libdir}/*elektratools.so*
+%{_prefix}/%{_libdir}/*elektra.so*
 /bin/*
 %{_sysconfdir}/profile.d/*
 %doc %{_docdir}/%{name}
@@ -168,3 +166,5 @@ kdb set system/sw/kdb/current/schemapath "%{_datadir}/sgml/elektra-%{DTDVERSION}
 
 
 %changelog
+* Mon Jan 23 2006 Yannick Lecaillez <yl@itioweb.com>
+- Add symbolink link of /liblibelektra.so to /usr/lib
