@@ -56,15 +56,15 @@ enum KDBBackendMethod {
 extern "C" {
 #endif
 
-KDBBackend *kdbBackendExport(const char *backendName, ...);
+ELEKTRA_API KDBBackend *kdbBackendExport(const char *backendName, ...);
 
 typedef KDBBackend *(*KDBBackendFactory)(void);
 
 /* Let the backend be aware of default implementations we provide */
-int kdbSetKeys_default(KeySet *ks);
-uint32_t kdbMonitorKeys_default(KeySet *interests, uint32_t diffMask,
+ELEKTRA_API int kdbSetKeys_default(KeySet *ks);
+ELEKTRA_API uint32_t kdbMonitorKeys_default(KeySet *interests, uint32_t diffMask,
 		unsigned long iterations, unsigned sleep);
-uint32_t kdbMonitorKey_default(Key *interest, uint32_t diffMask,
+ELEKTRA_API uint32_t kdbMonitorKey_default(Key *interest, uint32_t diffMask,
 		unsigned long iterations, unsigned sleep);
 
 

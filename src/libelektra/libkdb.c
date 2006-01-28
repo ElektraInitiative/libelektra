@@ -32,7 +32,20 @@ $Id$
 
 #include <stdlib.h>
 #include <stdarg.h>
+#if !defined(WIN32)
 #include <ltdl.h>
+#endif
+
+/* Due to problems with the win32 version of libltdl, we just use the windows functions directly */
+#ifdef WIN32
+  #define lt_dlhandle HMODULE
+  #define lt_dlinit() 1
+  #define lt_dlopen LoadLibrary
+  #define lt_dlclose FreeLibrary
+  #define lt_dlsym GetProcAddress
+  #define lt_dlerror() NULL
+#endif
+
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -53,11 +66,11 @@ $Id$
 /* usleep doesn't exist on win32, so we sleep x/1000 seconds instead.
  * Of course this will only work well when sleeptime is 1000 or above. 
  * This is  *TEMPORARY* solution  */
-#ifdef HAVE_WIN32
-#define usleep(x) sleep(x/1000)
+#ifdef WIN32
+#define usleep(x) Sleep(x)
 #endif
 
-extern int errno;
+//extern int errno;
 
 /**
  * @defgroup kdb KeyDB :: Class Methods

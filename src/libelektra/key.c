@@ -32,7 +32,12 @@ $Id$
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <errno.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
+#ifdef WIN32
+#include <io.h>
+#endif
 #include <sys/types.h>
 #ifdef HAVE_PWD_H
 #include <pwd.h>
@@ -1644,7 +1649,11 @@ int keyIsDir(const Key *key) {
 	/* if (!key) return 0;
 	if (!keyIsInitialized(key)) return 0; */
 
+#if !defined(WIN32)
 	return (S_ISDIR(key->access) || (key->type==KEY_TYPE_DIR));
+#else
+  return key->type==KEY_TYPE_DIR;
+#endif
 }
 
 

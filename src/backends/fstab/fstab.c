@@ -31,8 +31,9 @@ $Id$
 
 */
 
-
-
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 #include <kdb.h>
 #include <kdbbackend.h>
 #include <mntent.h>
@@ -42,7 +43,9 @@ $Id$
 #include <unistd.h>
 #include <dirent.h>
 #include <fcntl.h>
-
+#ifdef HAVE_REGEX_H
+#include <regex.h>
+#endif
 #define BACKENDNAME "fstab"
 #define ROOT        "system/filesystems"
 
