@@ -401,7 +401,7 @@ function generate_menu ()
 
 	} else {	// andere Ebene
 		echo '		<li class="file_folder"> <a href="/' .
-		dirname($pathname) . '">Zur&uuml;ck</a></li>', "\n";
+		dirname($pathname) . '/">Zur&uuml;ck</a></li>', "\n";
 	}
 	
 	/**********************************************************
@@ -415,7 +415,7 @@ function generate_menu ()
 		if (strcmp($prevdir, $pathname))
 		{
 			echo '		<li class="file_folder"> <a href="/' , 
-			$prevdir , '">' , 
+			$prevdir , '/">' , 
 			format_dir ($prevdir) , '</a></li>' , "\n";
 		} else {
 			if ($prevdir !=".")
@@ -424,7 +424,7 @@ function generate_menu ()
 				if ($fileselected == "index.html") echo "file_selected";
 				else echo "file_folder";	// gerade nicht ausgewählt
 				echo '"> <a href="/' , 
-				$prevdir , '">' , 
+				$prevdir , '"/>' , 
 				format_dir ($prevdir) , '</a></li>' , "\n";
 			}
 
