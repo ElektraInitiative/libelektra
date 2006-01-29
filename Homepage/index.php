@@ -339,7 +339,7 @@ function generate_menu ()
 			$entry = $pathname . "/" . $entry;
 		if (is_dir($entry)) 
 		{
-			$dirs[] = $entry;
+			$dirs[] = $entry."/";
 		} else
 		{
 			$add=true;
