@@ -1,6 +1,6 @@
 %define name    elektra 
-%define version 0.5.0.5 
-%define release %mkrel 2 
+%define version 0.5.3
+%define release %mkrel 3 
 
 Name:          %{name}
 Version:       %{version}
@@ -13,7 +13,7 @@ BuildRoot:     %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 BuildRequires: doxygen docbook-style-xsl db4-devel libGConf2-devel libxml2-devel automake autoconf libtool libxslt-proc
 Summary:       A key/value pair database to store software configurations
 
-%define DTDVERSION _DTDVERSION_
+%define DTDVERSION 0.1.1
 
 %description
 The Elektra Project provides a framework to store generic configuration data
@@ -166,5 +166,8 @@ kdb set system/sw/kdb/current/schemapath "%{_datadir}/sgml/elektra-%{DTDVERSION}
 
 
 %changelog
+* Sun Jan 29 2006 Yannick Lecaillez <yl@itioweb.com>
+- Hard code DTD_VERSION 
+
 * Mon Jan 23 2006 Yannick Lecaillez <yl@itioweb.com>
 - Add symbolink link of /liblibelektra.so to /usr/lib
