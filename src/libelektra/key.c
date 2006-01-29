@@ -1352,7 +1352,7 @@ ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize) {
 
 /**
  * Returns a pointer to the real internal key name where the basename starts.
- * 
+ *
  * This is a much more efficient version of keyGetBaseName() and you should
  * use it if you are responsible enough to not mess up things.
  * @param key the object to obtain the basename from
@@ -1362,7 +1362,7 @@ ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize) {
 char *keyStealBaseName(const Key *key) {
 	char *end=strrchr(key->key,RG_KEY_DELIM);
 	
-	if (end) return end++;
+	if (++end) return end;
 	else return 0;
 }
 

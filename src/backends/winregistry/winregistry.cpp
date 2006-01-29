@@ -1,5 +1,5 @@
 // winregistry.cpp : Defines the entry point for the DLL application.
-//
+// $Id$
 
 #include "winregistry.h"
 #include <windows.h>

@@ -29,6 +29,10 @@ or:
 
 The default RPM specifications that come with the source were written to 
 meet the Filesystem Hierarchy Standards.
+Packaging methodology used are similar to those of Fedora, Red Hat and CentOS.
+
+A Mandriva spec file can be found inside the source code, and also Debian
+packaging script and info.
 
 
 
