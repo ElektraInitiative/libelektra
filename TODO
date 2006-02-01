@@ -1,75 +1,51 @@
-For bugs and enhancements go to http://bugs.libelektra.org
-For visions and drafts go to http://wiki.libelektra.org
+#For bugs and enhancements go to http://bugs.libelektra.org
+#For visions and drafts go to http://wiki.libelektra.org
 
-
-THE NEW NOTIFICATION API SHOULD BE:
-void kdbRegisterCallback(KeySet *interests, u_int32_t diffMask,
-    KdbCallback *cb, void *userdata);
-
-void kdbUnregisterCallback(KeySet *interests, u_int32_t diffMask,
-    KdbCallback *cb, void *userdata);
-
-void kdbDeliverEvents(long iterations, int sleep);
-
-
-
-next release
+next: release
+	compile with -ansi -pedantic
+	define clearly errno values for kdb* calls
 	mark useless functions as depreciated
-	local/(any folder)
-	doc(/usr/share/doc/kdb) hierachys
+	update docu for backend writer/kdb* user
+	kdbPrintError, kdbStrError: output of errors
 	Statical build testing
-	write really good tutorial!
 
-finish
-	Berkeley DB backend
-	ini backend
+backends:
+	Berkeley DB
+	ini
 	Testing Framework
 
-improvements
-	Add methods for a better notification API, instead of monitoring
-	Write specifications for configuration trees (see /specs).
-
-patches
+patches:
 	Write a patch/backend for KConfigXT.
 	Update the X.org patch for the last API modifications
 	Write a daemon backend (maybe based on HTTP, CGI and XML)
 
-bindings
+bindings:
 	Perl
 	php (kontact: Kai-Uwe Behrmann <ku.b@gmx.de>)
 	phyton (kontact: Patrick Sabin <patrick.sabin@gmx.at>)
 
-backends
-	sql
-	lexx parsing
-
-wishlist
-	Syslog logging
-	escaping engine for xml (<>&) and ini (=;) stuff
-
-security
+security:
 	check for leaks
 	improve remalloc
 	scripts for performance and stability testing
 
-contact
+contact:
 	xml: uni-xml (texasjdl@yahoo.com)
 
-porting
+porting:
 	solaris
 	bsd
-	win32 (first with mingw)
+	win32 (mingw, visual c++)
 
-publish
+publish:
 	freedesktop.org
 	gnu
 	newsgroups of unix programming
 	slashdot article
 
-completely new features (dont't expect them to be here soon)
+#completely new features (dont't expect them to be here soon)
 
-
-libcomment
+libcomment:
 	multilanguage comments
 	type of key (list, int, bool,...)
 	validator of key (what is valid?)
@@ -82,3 +58,17 @@ libcomment
 		not especially specified
 
 
+notification: new notification api
+	void kdbRegisterCallback(KeySet *interests, u_int32_t diffMask,
+		KdbCallback *cb, void *userdata);
+	void kdbUnregisterCallback(KeySet *interests, u_int32_t diffMask,
+		KdbCallback *cb, void *userdata);
+	void kdbDeliverEvents(long iterations, int sleep);
+
+hierachie: add new folders next to system/ and user/
+	local/(any folder)
+	doc(/usr/share/doc/kdb) hierachys
+
+backends:
+	sql
+	lexx parsing
