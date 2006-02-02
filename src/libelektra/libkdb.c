@@ -70,7 +70,7 @@ $Id$
 #define usleep(x) Sleep(x)
 #endif
 
-//extern int errno;
+/*extern int errno;*/
 
 /**
  * @defgroup kdb KeyDB :: Class Methods
@@ -147,9 +147,10 @@ KDBBackend *backend;
  * environment var @e $KDB_BACKEND. If the environment is not set
  * the @e default backend will be opened.
  *
- * You should allways call this method before retrieving or commiting any
- * keys to the database. Otherwise, consequences are unpredictable. And
- * after using the key database, you should not forget to kdbClose().
+ * You must always call this method before retrieving or commiting any
+ * keys to the database. In the end of the program,
+ * after using the key database, you must not forget to kdbClose().
+ * You can use the atexit () handler for it.
  *
  * This is the best way to have affairs with the key database, unless
  * the program is concerned about security and authentication (e.g. su,
@@ -157,14 +158,17 @@ KDBBackend *backend;
  * is used by the kdb command.
  *
  * Currently you can have only one backend (and key database session)
- * initialized at a certain time. 
+ * initialized at a certain time.
  *
  * To simply manipulate Key or KeySet objects without having to retrieve them
  * from the storage, you don't need to open the key database before with any
  * of the kdbOpen*() methods.
  *
- * @see kdbOpenDefault(), kdbOpenBackend(), kdbClose()
- * @return 0 on success or whatever is returned by kdbOpenBackend()
+ * @see kdbOpenBackend(), kdbOpenDefault(), kdbClose()
+ * @return 0 on success
+ * @return -1 on failure
+ * @errno is not set on failure up to now, because there is no backend
+ *  using kdbOpen.
  * @ingroup kdb
  */
 int kdbOpen() {
@@ -189,7 +193,10 @@ int kdbOpen() {
  * is found in /lib/libelektra-default.so
  *
  * @see kdbOpen(), kdbOpenBackend(), kdbClose()
- * @return 0 on success or whatever is returned by kdbOpenBackend()
+ * @return 0 on success
+ * @return -1 on failure
+ * @errno is not set on failure up to now, because there is no backend
+ *  using kdbOpen.
  * @ingroup kdb
  */
 int kdbOpenDefault() {
@@ -208,11 +215,15 @@ int kdbOpenDefault() {
  * 
  * @param backendName used to define the module filename as
  * 	libelektra-@p "backendName".so
- * @return 0 on success. On failure, @c errno is set to KDBErr::KDB_RET_NOSYS
- * 	and 1 if backend library could not be opened, 2 if backend doesn't have
- * 	the essential "kdbBackendFactory" initialization symbol, 3 if backend
- * 	failed to export its methods, 4 if backend does not provide a kdbOpen()
- * 	implementation, or anything else that the backend's kdbOpen implementation (see kdbOpen_backend()) returns.
+ * @return 0 on success. 
+ * @return -1 on failure
+ * @errno is set to 
+ * 	KDBErr::KDB_RET_NOSYS if backend library could not be opened
+ *  	KDBErr::KDB_RET_NOBACKEND if backend doesn't have the essential
+ *  		"kdbBackendFactory" initialization symbol
+ *  	KDBErr::KDB_RET_NOEXPORTS if backend failed to export its methods
+ *  	KDBErr::KDB_RET_NOKDBOPEN if backend does not provide a kdbOpen()
+ * 		implementation
  * @see kdbOpen()
  * @par Example of copying keys from one backend to another
  * @code
@@ -701,26 +712,32 @@ int kdbGetKeyByParentKey(const Key *parent, const char *baseName, Key *returned)
 
 
 /**
- * Retrieve a number of inter-related keys in one shot.
- * This is one of the most practicall methods of the library.
- * Returns a KeySet with all retrieved keys. So if your application keys
- * live bellow @p system/sw/myApp, you'll use this method to get them all.
- *
- * Option can be any of the following, ORed:
+ * Retrieve a number of keys at once.
+ * This is one of the most practical methods of the library. And because
+ * of storing the keys in the efficient @KeySet afterward, its very
+ * recommended to use it.
+ * 
+ * The existing KeySet (you must initializise it with @ksNew)
+ * will have all retrieved keys appended afterwards.
+ * 
+ * In default behaviour it will fully retrieve all keys in the
+ * specified directory, but not folder and inactive keys. The
+ * output is in a backend specific order.
+ * 
+ * Option can be any of the following:
  * - @p KDBOptions::KDB_O_RECURSIVE \n
- *   Retrieve also the keys under the child keys, recursively.
- *   The kdb(1) ls command, with switch -R uses this option.
+ *   Retrieve also the keys inside the folder keys inside the specified
+ *   directory, recursively.
  * - @p KDBOptions::KDB_O_DIR \n
- *   By default, folder keys will not be returned because they don't have
- *   values and exist only to define hierarchy. Use this option if you need
- *   them to be included in the returned KeySet.
+ *   Include folders in the returned KeySet.
  * - @p KDBOptions::KDB_O_DIRONLY \n
- *   Include in @p returned only the directory keys. The resulting KeySet
- *   will be only the skeleton of the tree.
+ *   Include in @p returned only the directory keys. The resulting 
+ *   KeySet will be only the skeleton of the tree. This option must be
+ *   set together with KDB_O_DIR.
  * - @p KDBOptions::KDB_O_STATONLY \n
- *   Only stat(2) the keys; do not retrieve the value, comment and key data
- *   type. The resulting keys will be empty and usefull only for
- *   informational purposes. The kdb(1) ls command, without the -v switch
+ *   Only stat the keys. That means that it is free to the backend to
+ *   retrieve the value, comment and key data type. The resulting keys
+ *   may be empty and are only useful for meta info data requests.
  *   uses this option.
  * - @p KDBOptions::KDB_O_INACTIVE \n
  *   Will make it not ignore inactive keys. So @p returned will be filled also
