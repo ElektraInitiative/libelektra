@@ -1649,7 +1649,7 @@ int keyIsDir(const Key *key) {
 	/* if (!key) return 0;
 	if (!keyIsInitialized(key)) return 0; */
 
-#if !defined(WIN32)
+#if defined(S_ISDIR)
 	return (S_ISDIR(key->access) || (key->type==KEY_TYPE_DIR));
 #else
   return key->type==KEY_TYPE_DIR;
