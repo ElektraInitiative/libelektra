@@ -482,6 +482,7 @@ function generate_news($folder)
 	$dir = dir("$folder");
 	while ($entry = $dir->read()) {	
 		if (	$entry == '.'||
+			$entry == '.svn' ||
 			$entry == '..' ||
 			$entry == "news.html")
 			continue;
@@ -519,6 +520,7 @@ function generate_images($folder)
 	while ($entry = $dir->read()) {	
 		if (	$entry == '.'||
 			$entry == '..' ||
+			$entry == '.svn' ||
 			$entry == "images.html")
 			continue;
 		$fullpath="$folder/$entry";
