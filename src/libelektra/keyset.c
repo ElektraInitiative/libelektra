@@ -346,9 +346,9 @@ regfree(&regex);        // don't forget to free resources
 
  * @endcode
  */
-#ifdef HAVE_REGEX_H
 uint32_t ksLookupRE(KeySet *ks, uint32_t where,
 		const regex_t *regexp, unsigned long options) {
+#ifdef HAVE_REGEX_H
 	regmatch_t offsets;
 	uint32_t match=0;
 	Key *init, *walker;
@@ -403,10 +403,9 @@ uint32_t ksLookupRE(KeySet *ks, uint32_t where,
 	
 	if (parentName) free(parentName);
 	ks->cursor=init;
-	
+#endif	
 	return 0;
 }
-#endif
 
 
 /**
