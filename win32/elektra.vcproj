@@ -68,6 +68,7 @@
 				Name="VCLinkerTool"
 				OutputFile="$(OutDir)/elektra.dll"
 				LinkIncremental="1"
+				ModuleDefinitionFile="elektra.def"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/elektra.pdb"
 				SubSystem="2"
@@ -144,6 +145,7 @@
 				Name="VCLinkerTool"
 				OutputFile="$(OutDir)/elektra.dll"
 				LinkIncremental="1"
+				ModuleDefinitionFile="elektra.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -187,6 +189,10 @@
 			>
 			<File
 				RelativePath=".\elektra.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\elektra.def"
 				>
 			</File>
 			<File
