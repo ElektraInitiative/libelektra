@@ -32,14 +32,6 @@ $Id$
 
 /* Windows specific stuff */
 #ifdef WIN32
-#ifdef ELEKTRA_EXPORTS
-  #ifndef WIN32_LEAN_AND_MEAN
-    #define WIN32_LEAN_AND_MEAN /* Only defined if exporting, to allow applications to decide themselves if they want it */
-  #endif
-  #define ELEKTRA_API __declspec(dllexport)
-#else
-  #define ELEKTRA_API __declspec(dllimport)
-#endif
 #include <windows.h>
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
@@ -48,22 +40,21 @@ typedef unsigned int uint32_t;
 #define strcasecmp stricmp
 #define snprintf _snprintf
 #else
-#define ELEKTRA_API
-#endif
-
-#if !defined(WIN32)
 /* The following file doesn't exist on windows so we need to avoid including it */
 #include <inttypes.h>
-#endif 
+#endif
 
 #include <sys/types.h>
 #include <errno.h>
 #include <stdio.h>
+
 /*#define NO_REGEX_H*/ /* Uncomment to disable regex */
 /* Makes it possible to compile elektra without regex. 
  * For now this has to be defined manually. */
 #ifndef NO_REGEX_H
 #include <regex.h>
+#else
+#define regex_t void
 #endif 
 
 #define RG_KEY_DELIM            '/'
@@ -360,51 +351,52 @@ KeyDB methods
 
 ***************************************/
 
-ELEKTRA_API int kdbOpen();
-ELEKTRA_API int kdbOpenDefault();
-ELEKTRA_API int kdbOpenBackend(char *backendName);
-ELEKTRA_API int kdbClose();
+int kdbOpen();
+int kdbOpenDefault();
+int kdbOpenBackend(char *backendName);
+int kdbClose();
 
-ELEKTRA_API int kdbGetValue(const char *keyname, char *returned,size_t maxSize);
-ELEKTRA_API int kdbGetKeyByParent(const char *parentName, const char *baseName, Key *returned);
-ELEKTRA_API int kdbGetKeyByParentKey(const Key *parent, const char *baseName, Key *returned);
-ELEKTRA_API int kdbGetValueByParent(const char *parentName, const char *baseName, char *returned,
+int kdbGetValue(const char *keyname, char *returned,size_t maxSize);
+int kdbGetKeyByParent(const char *parentName, const char *baseName, Key *returned);
+int kdbGetKeyByParentKey(const Key *parent, const char *baseName, Key *returned);
+int kdbGetValueByParent(const char *parentName, const char *baseName, char *returned,
 	size_t maxSize);
 
-ELEKTRA_API int kdbSetValue(const char *keyname, const char *value);
-ELEKTRA_API int kdbSetValueByParent(const char *parentName, const char *baseName, const char *value);
+int kdbSetValue(const char *keyname, const char *value);
+int kdbSetValueByParent(const char *parentName, const char *baseName, const char *value);
 
-ELEKTRA_API int kdbRename(Key *key, const char *newName);
-ELEKTRA_API int kdbRemove(const char *keyName);
-ELEKTRA_API int kdbRemoveKey(const Key *key);
-ELEKTRA_API int kdbLink(const char *oldPath, const char *newKeyName);
+int kdbRename(Key *key, const char *newName);
+int kdbRemove(const char *keyName);
+int kdbRemoveKey(const Key *key);
+int kdbLink(const char *oldPath, const char *newKeyName);
 
-ELEKTRA_API int kdbGetKeyByParent(const char *parentName, const char *baseName, Key *returned);
-ELEKTRA_API int kdbGetKeyByParentKey(const Key *parent, const char *basename, Key *returned);
-ELEKTRA_API int kdbGetValueByParent(const char *parentName, const char *baseName, char *returned,
+int kdbGetKeyByParent(const char *parentName, const char *baseName, Key *returned);
+int kdbGetKeyByParentKey(const Key *parent, const char *basename, Key *returned);
+int kdbGetValueByParent(const char *parentName, const char *baseName, char *returned,
 	size_t maxSize);
 
-ELEKTRA_API int kdbGetComment(const char *keyname, char *returned, size_t maxSize);
-ELEKTRA_API size_t kdbSetComment(const char *keyname, const char *comment);
+/* These two functions lack an implementation so there's no reason to have them defined! */
+/*int kdbGetComment(const char *keyname, char *returned, size_t maxSize);
+size_t kdbSetComment(const char *keyname, const char *comment);*/
 
-ELEKTRA_API int kdbStatKey(Key *key);
-ELEKTRA_API int kdbGetKey(Key *key);
-ELEKTRA_API int kdbSetKey(Key *key);
+int kdbStatKey(Key *key);
+int kdbGetKey(Key *key);
+int kdbSetKey(Key *key);
 
-ELEKTRA_API ssize_t kdbGetKeyChildKeys(const Key *parentName, KeySet *returned, unsigned long options);
-ELEKTRA_API ssize_t kdbGetChildKeys(const char *parentName, KeySet *returned, unsigned long options);
-ELEKTRA_API ssize_t kdbGetRootKeys(KeySet *returned);
+ssize_t kdbGetKeyChildKeys(const Key *parentName, KeySet *returned, unsigned long options);
+ssize_t kdbGetChildKeys(const char *parentName, KeySet *returned, unsigned long options);
+ssize_t kdbGetRootKeys(KeySet *returned);
 
-ELEKTRA_API int kdbSetKeys(KeySet *ks);
+int kdbSetKeys(KeySet *ks);
 
-ELEKTRA_API uint32_t kdbMonitorKey(Key *interest, uint32_t diffMask,
+uint32_t kdbMonitorKey(Key *interest, uint32_t diffMask,
 	unsigned long iterations, unsigned usleep);
-ELEKTRA_API uint32_t kdbMonitorKeys(KeySet *interests, uint32_t diffMask,
+uint32_t kdbMonitorKeys(KeySet *interests, uint32_t diffMask,
 	unsigned long iterations, unsigned sleep);
 
-ELEKTRA_API KDBInfo *kdbGetInfo(void);
-ELEKTRA_API void kdbFreeInfo(KDBInfo *info);
-ELEKTRA_API int kdbInfoToString(KDBInfo *info,char *string,size_t maxSize);
+KDBInfo *kdbGetInfo(void);
+void kdbFreeInfo(KDBInfo *info);
+int kdbInfoToString(KDBInfo *info,char *string,size_t maxSize);
 
 
 
@@ -414,113 +406,113 @@ Key methods
 
 ***************************************/
 
-ELEKTRA_API int keyInit(Key *key);
-ELEKTRA_API int keyClose(Key *key);
+int keyInit(Key *key);
+int keyClose(Key *key);
 
-ELEKTRA_API Key *keyNew(const char *keyName, ...);
-ELEKTRA_API int keyDel(Key *key);
+Key *keyNew(const char *keyName, ...);
+int keyDel(Key *key);
 #define keyFree(x) keyDel(x)
 
-ELEKTRA_API int keyIsInitialized(const Key *key);
-ELEKTRA_API int keyNeedsSync(const Key *key);
-ELEKTRA_API int keyDup(const Key *source,Key *dest);
+int keyIsInitialized(const Key *key);
+int keyNeedsSync(const Key *key);
+int keyDup(const Key *source,Key *dest);
 
 /* int keySerialize(const Key *key,void *buffer, size_t maxSize);
-int keyUnserialize(Key *key,const void *buffer); */
-ELEKTRA_API size_t keyGetSerializedSize(const Key *key); 
+int keyUnserialize(Key *key,const void *buffer); 
+size_t keyGetSerializedSize(const Key *key); */
 
-ELEKTRA_API uint8_t keyGetType(const Key *key);
-ELEKTRA_API uint8_t keySetType(Key *key,uint8_t type);
+uint8_t keyGetType(const Key *key);
+uint8_t keySetType(Key *key,uint8_t type);
 
-ELEKTRA_API int keySetFlag(Key *key);
-ELEKTRA_API int keyClearFlag(Key *key);
-ELEKTRA_API int keyGetFlag(const Key *key);
+int keySetFlag(Key *key);
+int keyClearFlag(Key *key);
+int keyGetFlag(const Key *key);
 
-ELEKTRA_API ssize_t keyGetRecordSize(const Key *key);
-ELEKTRA_API ssize_t keyGetNameSize(const Key *key);
-ELEKTRA_API ssize_t keyGetFullNameSize(const Key *key);
+ssize_t keyGetRecordSize(const Key *key);
+ssize_t keyGetNameSize(const Key *key);
+ssize_t keyGetFullNameSize(const Key *key);
 
-ELEKTRA_API ssize_t keyGetName(const Key *key, char *returnedName, size_t maxSize);
-ELEKTRA_API char *keyStealName(const Key *key);
-ELEKTRA_API ssize_t keySetName(Key *key, const char *newName);
+ssize_t keyGetName(const Key *key, char *returnedName, size_t maxSize);
+char *keyStealName(const Key *key);
+ssize_t keySetName(Key *key, const char *newName);
 
-ELEKTRA_API ssize_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize);
-ELEKTRA_API ssize_t keyGetRootName(const Key *key, char *returned, size_t maxSize);
-ELEKTRA_API ssize_t keyGetFullRootName(const Key *key, char *returned, size_t maxSize);
+ssize_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize);
+ssize_t keyGetRootName(const Key *key, char *returned, size_t maxSize);
+ssize_t keyGetFullRootName(const Key *key, char *returned, size_t maxSize);
 
-ELEKTRA_API ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize);
-ELEKTRA_API char *keyStealBaseName(const Key *key);
-ELEKTRA_API ssize_t keyNameGetBaseNameSize(const char *keyName);
-ELEKTRA_API ssize_t keyGetBaseNameSize(const Key *key);
-ELEKTRA_API ssize_t keyAddBaseName(Key *key,const char *baseName);
-ELEKTRA_API ssize_t keySetBaseName(Key *key,const char *baseName);
+ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize);
+char *keyStealBaseName(const Key *key);
+ssize_t keyNameGetBaseNameSize(const char *keyName);
+ssize_t keyGetBaseNameSize(const Key *key);
+ssize_t keyAddBaseName(Key *key,const char *baseName);
+ssize_t keySetBaseName(Key *key,const char *baseName);
 
-ELEKTRA_API ssize_t keyGetParentName(const Key *key, char *returned, size_t maxSize);
-ELEKTRA_API ssize_t keyGetParentNameSize(const Key *key);
+ssize_t keyGetParentName(const Key *key, char *returned, size_t maxSize);
+ssize_t keyGetParentNameSize(const Key *key);
 
-ELEKTRA_API ssize_t keyNameGetRootNameSize(const char *keyName);
-ELEKTRA_API ssize_t keyGetRootNameSize(const Key *key);
-ELEKTRA_API ssize_t keyGetFullRootNameSize(const Key *key);
-
-
-ELEKTRA_API ssize_t keyGetCommentSize(const Key *key);
-ELEKTRA_API ssize_t keyGetComment(const Key *key, char *returnedDesc, size_t maxSize);
-ELEKTRA_API char *keyStealComment(const Key *key);
-ELEKTRA_API ssize_t keySetComment(Key *key, const char *newDesc);
-
-ELEKTRA_API uid_t keyGetUID(const Key *key);
-ELEKTRA_API int keySetUID(Key *key, uid_t uid);
-
-ELEKTRA_API gid_t keyGetGID(const Key *key);
-ELEKTRA_API int keySetGID(Key *key, gid_t gid);
-
-ELEKTRA_API mode_t keyGetAccess(const Key *key);
-ELEKTRA_API int keySetAccess(Key *key, mode_t mode);
-
-ELEKTRA_API ssize_t keyGetOwnerSize(const Key *key);
-ELEKTRA_API ssize_t keyGetOwner(const Key *key, char *returned, size_t maxSize);
-ELEKTRA_API char *keyStealOwner(const Key *key);
-ELEKTRA_API ssize_t keySetOwner(Key *key, const char *userDomain);
+ssize_t keyNameGetRootNameSize(const char *keyName);
+ssize_t keyGetRootNameSize(const Key *key);
+ssize_t keyGetFullRootNameSize(const Key *key);
 
 
-ELEKTRA_API ssize_t keyGetValueSize(const Key *key);
-ELEKTRA_API ssize_t keyGetDataSize(const Key *key);
+ssize_t keyGetCommentSize(const Key *key);
+ssize_t keyGetComment(const Key *key, char *returnedDesc, size_t maxSize);
+char *keyStealComment(const Key *key);
+ssize_t keySetComment(Key *key, const char *newDesc);
 
-ELEKTRA_API ssize_t keyGetString(const Key *key, char *returnedString, size_t maxSize);
-ELEKTRA_API ssize_t keySetString(Key *key, const char *newString);
-ELEKTRA_API void *keyStealValue(const Key *key);
+uid_t keyGetUID(const Key *key);
+int keySetUID(Key *key, uid_t uid);
 
-ELEKTRA_API ssize_t keyGetBinary(const Key *key, void *returnedBinary, size_t maxSize);
-ELEKTRA_API ssize_t keySetBinary(Key *key, const void *newBinary, size_t dataSize);
+gid_t keyGetGID(const Key *key);
+int keySetGID(Key *key, gid_t gid);
 
-ELEKTRA_API ssize_t keySetRaw(Key *key, const void *newBinary, size_t dataSize);
+mode_t keyGetAccess(const Key *key);
+int keySetAccess(Key *key, mode_t mode);
 
-ELEKTRA_API ssize_t keyGetLink(const Key *key, char *returnedTarget, size_t maxSize);
-ELEKTRA_API ssize_t keySetLink(Key *key, const char *target);
+ssize_t keyGetOwnerSize(const Key *key);
+ssize_t keyGetOwner(const Key *key, char *returned, size_t maxSize);
+char *keyStealOwner(const Key *key);
+ssize_t keySetOwner(Key *key, const char *userDomain);
 
-ELEKTRA_API time_t keyGetMTime(const Key *key);
-ELEKTRA_API time_t keyGetATime(const Key *key);
-ELEKTRA_API time_t keyGetCTime(const Key *key);
 
-ELEKTRA_API int keyIsSystem(const Key *key);
-ELEKTRA_API int keyNameIsSystem(const char *keyName);
+ssize_t keyGetValueSize(const Key *key);
+ssize_t keyGetDataSize(const Key *key);
 
-ELEKTRA_API int keyIsUser(const Key *key);
-ELEKTRA_API int keyNameIsUser(const char *keyName);
+ssize_t keyGetString(const Key *key, char *returnedString, size_t maxSize);
+ssize_t keySetString(Key *key, const char *newString);
+void *keyStealValue(const Key *key);
 
-ELEKTRA_API int keyGetNamespace(const Key *key);
-ELEKTRA_API int keyNameGetNamespace(const char *keyName);
+ssize_t keyGetBinary(const Key *key, void *returnedBinary, size_t maxSize);
+ssize_t keySetBinary(Key *key, const void *newBinary, size_t dataSize);
 
-ELEKTRA_API int keyIsDir(const Key *key);
-ELEKTRA_API int keyIsLink(const Key *key);
-ELEKTRA_API int keyIsBin(const Key *key);
+ssize_t keySetRaw(Key *key, const void *newBinary, size_t dataSize);
 
-ELEKTRA_API Key *keyNext(Key *key);
+ssize_t keyGetLink(const Key *key, char *returnedTarget, size_t maxSize);
+ssize_t keySetLink(Key *key, const char *target);
 
-ELEKTRA_API uint32_t keyCompare(const Key *key1, const Key *key2);
+time_t keyGetMTime(const Key *key);
+time_t keyGetATime(const Key *key);
+time_t keyGetCTime(const Key *key);
 
-ELEKTRA_API ssize_t keyToStream(const Key *key, FILE* stream, unsigned long options);
-ELEKTRA_API ssize_t keyToStreamBasename(const Key *key, FILE* stream,
+int keyIsSystem(const Key *key);
+int keyNameIsSystem(const char *keyName);
+
+int keyIsUser(const Key *key);
+int keyNameIsUser(const char *keyName);
+
+int keyGetNamespace(const Key *key);
+int keyNameGetNamespace(const char *keyName);
+
+int keyIsDir(const Key *key);
+int keyIsLink(const Key *key);
+int keyIsBin(const Key *key);
+
+Key *keyNext(Key *key);
+
+uint32_t keyCompare(const Key *key1, const Key *key2);
+
+ssize_t keyToStream(const Key *key, FILE* stream, unsigned long options);
+ssize_t keyToStreamBasename(const Key *key, FILE* stream,
 	const char *parent, const size_t parentSize, unsigned long options);
 
 
@@ -530,39 +522,39 @@ KeySet methods
 
 ***************************************/
 
-ELEKTRA_API KeySet *ksNew();
-ELEKTRA_API int ksDel(KeySet *ks);
+KeySet *ksNew();
+int ksDel(KeySet *ks);
 #define ksFree(x) ksDel(x)
 
-ELEKTRA_API int ksInit(KeySet *ks);
-ELEKTRA_API int ksClose(KeySet *ks);
-ELEKTRA_API ssize_t ksGetSize(KeySet *ks);
+int ksInit(KeySet *ks);
+int ksClose(KeySet *ks);
+ssize_t ksGetSize(KeySet *ks);
 
-ELEKTRA_API ssize_t ksInsert(KeySet *ks, Key *toInsert);
-ELEKTRA_API ssize_t ksAppend(KeySet *ks, Key *toAppend);
-ELEKTRA_API Key *ksPop(KeySet *ks);
-ELEKTRA_API Key *ksPopLast(KeySet *ks);
+ssize_t ksInsert(KeySet *ks, Key *toInsert);
+ssize_t ksAppend(KeySet *ks, Key *toAppend);
+Key *ksPop(KeySet *ks);
+Key *ksPopLast(KeySet *ks);
 
-ELEKTRA_API ssize_t ksInsertKeys(KeySet *ks, KeySet *toInsert);
-ELEKTRA_API ssize_t ksAppendKeys(KeySet *ks, KeySet *toAppend);
+ssize_t ksInsertKeys(KeySet *ks, KeySet *toInsert);
+ssize_t ksAppendKeys(KeySet *ks, KeySet *toAppend);
 
-ELEKTRA_API ssize_t ksToStream(const KeySet *ks, FILE* stream, unsigned long options);
-ELEKTRA_API int ksCompare(KeySet *ks1, KeySet *ks2, KeySet *removed);
-ELEKTRA_API void ksSort(KeySet *ks);
+ssize_t ksToStream(const KeySet *ks, FILE* stream, unsigned long options);
+int ksCompare(KeySet *ks1, KeySet *ks2, KeySet *removed);
+void ksSort(KeySet *ks);
 
-ELEKTRA_API Key *ksLookupByName(KeySet *ks, const char *name,unsigned long options);
-ELEKTRA_API Key *ksLookupByValue(KeySet *ks, const char *value,unsigned long options);
-ELEKTRA_API Key *ksLookupByBinaryValue(KeySet *ks, void *value, size_t size,
+Key *ksLookupByName(KeySet *ks, const char *name,unsigned long options);
+Key *ksLookupByValue(KeySet *ks, const char *value,unsigned long options);
+Key *ksLookupByBinaryValue(KeySet *ks, void *value, size_t size,
 	unsigned long options);
-ELEKTRA_API uint32_t ksLookupRE(KeySet *ks, uint32_t where,
+uint32_t ksLookupRE(KeySet *ks, uint32_t where,
 	const regex_t *regexp, unsigned long options);
 	
-ELEKTRA_API int ksRewind(KeySet *ks);
-ELEKTRA_API Key *ksNext(KeySet *ks);
-ELEKTRA_API Key *ksCurrent(const KeySet *ks);
+int ksRewind(KeySet *ks);
+Key *ksNext(KeySet *ks);
+Key *ksCurrent(const KeySet *ks);
 
-ELEKTRA_API Key *ksHead(KeySet *ks);
-ELEKTRA_API Key *ksTail(KeySet *ks);
+Key *ksHead(KeySet *ks);
+Key *ksTail(KeySet *ks);
 
 
 /* Key *ksLookupByName(KeySet *ks,char *keyName); */
@@ -578,7 +570,7 @@ Helpers
 ***************************************/
 
 
-ELEKTRA_API size_t strblen(const char *s);
+size_t strblen(const char *s);
 
 #ifdef __cplusplus
 }
