@@ -323,7 +323,8 @@ KDBBackend *kdbBackendFactory(void) {
 		KDB_BE_GETCHILD,       &kdbGetKeyChildKeys_backend,
 		KDB_BE_MONITORKEY,     &kdbMonitorKey_backend,
 		KDB_BE_MONITORKEYS,    &kdbMonitorKeys_backend,
-		/* set to default implementation: */
-		KDB_BE_SETKEYS,        &kdbSetKeys_default,
+		/* set to default implementation: 
+		 * Don't set default. */
+/*		KDB_BE_SETKEYS,        &kdbSetKeys_default,*/
 		KDB_BE_END);
 }

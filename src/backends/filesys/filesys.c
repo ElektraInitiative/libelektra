@@ -993,9 +993,10 @@ KDBBackend *kdbBackendFactory(void) {
 		KDB_BE_REMOVEKEY,    &kdbRemoveKey_filesys,
 		KDB_BE_GETCHILD,     &kdbGetKeyChildKeys_filesys,
 		
-		/* Explicitly set to default methods: */
-		KDB_BE_SETKEYS,      &kdbSetKeys_default,
+		/* Explicitly set to default methods: 
+		 * We shouldn't explicitly set defaults. This is handled inside the core of elektra much better */
+/*		KDB_BE_SETKEYS,      &kdbSetKeys_default,
 		KDB_BE_MONITORKEY,   &kdbMonitorKey_default,
-		KDB_BE_MONITORKEYS,  &kdbMonitorKeys_default,
+		KDB_BE_MONITORKEYS,  &kdbMonitorKeys_default,*/
 		KDB_BE_END);
 }

@@ -1057,9 +1057,10 @@ KDBBackend *kdbBackendFactory(void) {
 		KDB_BE_RENAME,         &kdbRename_backend,
 		KDB_BE_REMOVEKEY,      &kdbRemoveKey_backend, */
 		KDB_BE_GETCHILD,       &kdbGetKeyChildKeys_bdb,
-		/* set to default implementation: */
-		KDB_BE_MONITORKEY,     &kdbMonitorKey_default,
+		/* set to default implementation: 
+		 * Again, don't set explicitly. See filesys for more info*/
+/*		KDB_BE_MONITORKEY,     &kdbMonitorKey_default,
 		KDB_BE_MONITORKEYS,    &kdbMonitorKeys_default,
-		KDB_BE_SETKEYS,        &kdbSetKeys_default,
+		KDB_BE_SETKEYS,        &kdbSetKeys_default,*/
 		KDB_BE_END);
 }
