@@ -1623,15 +1623,11 @@ ssize_t keyGetLink(const Key *key, char *returnedTarget, size_t maxSize) {
  * @ingroup keytest
  */
 int keyIsLink(const Key *key) {
+  /* Shouldn't we completely get rid of the following two lines? -Jens */
 	/* if (!key) return 0;
 	if (!keyIsInitialized(key)) return 0; */
-	/* If S_ISLNK doesn't exist, links most likely doesn't exist either,
-	 * but we leave it possible through KEY_TYPE_LINK */
-	#if defined(S_ISLNK)
-		return (S_ISLNK(key->access) || (key->type==KEY_TYPE_LINK));
-	#else
-				return (key->type==KEY_TYPE_LINK);
-	#endif
+
+	return (key->type==KEY_TYPE_LINK);
 }
 
 
@@ -1649,11 +1645,7 @@ int keyIsDir(const Key *key) {
 	/* if (!key) return 0;
 	if (!keyIsInitialized(key)) return 0; */
 
-#if defined(S_ISDIR)
-	return (S_ISDIR(key->access) || (key->type==KEY_TYPE_DIR));
-#else
   return key->type==KEY_TYPE_DIR;
-#endif
 }
 
 
