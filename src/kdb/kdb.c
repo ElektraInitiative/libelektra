@@ -50,6 +50,8 @@ $Id$
 #include <fcntl.h>
 #endif
 
+#include "kdbLibLoader.h"
+
 #define CMD_GET       1
 #define CMD_SET       2
 #define CMD_REMOVE    3
@@ -1506,18 +1508,20 @@ int commandMonitor() {
 
 
 int loadToolsLib(void) {
-	lt_dlhandle dlhandle=0;
+	kdbLibHandle dlhandle=0;
 
-	lt_dlinit();
+	return 1;
+	
+	kdbLibInit();
 
-	dlhandle=lt_dlopen("libelektratools.so");
+	dlhandle=kdbLibLoad("libelektratools");
 	if (dlhandle == 0) {
 		fprintf(stderr, "kdb: %s\n",lt_dlerror());
 		return 1;
 	}
 	
-	ksFromXMLfile=lt_dlsym(dlhandle,"ksFromXMLfile");
-	ksFromXML=lt_dlsym(dlhandle,"ksFromXML");
+	ksFromXMLfile=kdbLibSym(dlhandle,"ksFromXMLfile");
+	ksFromXML=kdbLibSym(dlhandle,"ksFromXML");
 	
 	return 0;
 }

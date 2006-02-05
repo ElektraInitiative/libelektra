@@ -23,7 +23,7 @@ typedef struct {
 
 #ifdef __STATIC
 
-#define kdbLibInit() 1
+#define kdbLibInit() 0
 
 typedef kdblib_symbol* kdbLibHandle;
 
