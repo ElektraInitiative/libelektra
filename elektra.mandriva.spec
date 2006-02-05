@@ -1,5 +1,5 @@
 %define name    elektra 
-%define version 0.5.4
+%define version 0.5.5
 %define release %mkrel 1 
 
 Name:          %{name}
@@ -102,6 +102,7 @@ rm -rf $RPM_BUILD_ROOT
 %makeinstall
 rm $RPM_BUILD_ROOT/lib/libelektra-*.a
 rm $RPM_BUILD_ROOT/lib/libregistry*.a
+rm $RPM_BUILD_ROOT/lib/libloader-*
 mv $RPM_BUILD_ROOT/lib/libelektra.a $RPM_BUILD_ROOT/usr/lib
 rm $RPM_BUILD_ROOT/lib/*.la
 rm $RPM_BUILD_ROOT/usr/lib/*.la
