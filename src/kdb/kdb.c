@@ -428,17 +428,29 @@ void listSingleKey(Key *key) {
 		*p=' '; p++;
 		*p=' '; p++;
 #ifdef HAVE_PWD_H
-		pwd=getpwuid(keyGetUID(key));
-		strcpy(p,pwd->pw_name);
-		p+=strlen(p);
-		*p=' '; p++;
-		*p=' '; p++;
+		if ( (pwd=getpwuid(keyGetUID(key))) != NULL ) {
+			strcpy(p,pwd->pw_name);
+			p+=strlen(p);
+			*p=' '; p++;
+			*p=' '; p++;
+		} else {
+			strcpy(p, "<unknown>");
+			p+=strlen(p);
+			*p=' '; p++;
+			*p=' '; p++;
+		}
 #endif
 #ifdef HAVE_GRP_H
-		grp=getgrgid(keyGetGID(key));
-		strcpy(p,grp->gr_name);
-		p+=strlen(p);
-		*p=' '; p++;
+		if ( (grp=getgrgid(keyGetGID(key))) != NULL ) {
+			strcpy(p,grp->gr_name);
+			p+=strlen(p);
+			*p=' '; p++;
+		} else {
+			strcpy(p, "<unknow>");
+			p+=strlen(p);
+			*p=' '; p++;
+			*p=' '; p++;
+		}
 #endif
 		sprintf(p,"%*d ",5,keyGetRecordSize(key));
 		p+=strlen(p);
