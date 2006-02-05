@@ -19,11 +19,9 @@ kdbLibHandle kdbLibLoad(const char *module)
 	while ( current->name != NULL ) {
 		/* Skip symbols, we're searching for
 		 * the module name */
-		fprintf(stderr, "search for %s found %s\n", module, current->name);
 		if ( current->function == NULL && strcmp(current->name, module) == 0 ) {
 			/* Go to the first symbol for this file */
 			current++;
-			fprintf(stderr, "FOUND !\n");
 			return current;
 		}
 
@@ -37,11 +35,9 @@ void *kdbLibSym(kdbLibHandle handle, const char *symbol)
 {
 	kdblib_symbol	*current;
 
-	fprintf(stderr, "kdbLibSym()\n");
 	current = handle;
 	/* For each symbol about this module */
 	while ( current->function != NULL ) {
-		fprintf(stderr, "sarch = %s, found = %s\n", symbol, current->name);
 		if ( strcmp(current->name, symbol) == 0 )
 			return current->function;
 
