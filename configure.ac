@@ -105,26 +105,26 @@ mingw* | pw32*)
 esac
 
 #
-# ltdl Stuff
-#
-dnl building of the convenience library
-dnl and set LIBLTDL accordingly
-AC_LIBLTDL_CONVENIENCE
-dnl Substitute LTDLINCL and LIBLTDL in the Makefiles
-AC_SUBST(LTDLINCL)
-AC_SUBST(LIBLTDL)
-dnl Check for dlopen support
-AC_LIBTOOL_DLOPEN
-
-#
 # Checks for needed programs.
 #
 AC_PROG_CC
 AC_PROG_LN_S
-AC_LIBTOOL_DLOPEN
-AC_PROG_LIBTOOL
+
+# Don't use libltdl stuff for WIN32
+case $host_os in
+	pw32* | mingw*)
+		;;
+	*)
+		AC_LIBLTDL_CONVENIENCE
+		dnl Substitute LTDLINCL and LIBLTDL in the Makefiles
+		AC_SUBST(LTDLINCL)
+		AC_SUBST(LIBLTDL)
+		AC_LIBTOOL_DLOPEN
+		AC_CONFIG_SUBDIRS(libltdl)
+		;;
+esac
 PKG_PROG_PKG_CONFIG
-AC_CONFIG_SUBDIRS(libltdl)
+AC_PROG_LIBTOOL
 
 # Check needed programs for generate doc
 
@@ -212,6 +212,8 @@ AC_CHECK_FUNCS([memset nl_langinfo setenv setlocale strcasecmp strchr strrchr in
 #
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT([src/Makefile
+
+	   src/libloader/Makefile
 	   
 	   src/libelektra/Makefile
 	   
