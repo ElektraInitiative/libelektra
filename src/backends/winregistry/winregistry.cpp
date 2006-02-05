@@ -224,7 +224,8 @@ int kdbSetKey_winregistry(Key *key) {
 		errno = mapError(err);
 		return -1;
 	}
-	if((err = RegDeleteValue(desiredKey, keyName)) != ERROR_SUCCESS)
+	/* TODO: NOT DELETE VALUE HERE!!! */
+	if((err = RegSet(?)Value(desiredKey, keyName)) != ERROR_SUCCESS)
 	{
 		errno = mapError(err);
 		RegCloseKey(desiredKey);
@@ -344,7 +345,7 @@ uint32_t kdbMonitorKey_winregistry(Key *interest, uint32_t diffMask,
 	return 0;
 }
 
-KDBBackend *kdbBackendFactory(void) {
+KDBEXPORT(winregistry) {
 	return kdbBackendExport(BACKENDNAME,
 		KDB_BE_OPEN,           &kdbOpen_winregistry,
 		KDB_BE_CLOSE,          &kdbClose_winregistry,
