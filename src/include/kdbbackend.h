@@ -26,7 +26,18 @@ $Id$
 #include <kdb.h>
 #include <kdbprivate.h>
 
-
+#ifdef __STATIC
+        #define KDBEXPORT(module, code)                                 \
+	KDBBackend *libelektra_##module##_LTX_kdbBackendFactory(void) { \
+		code                                                    \
+	}
+#else
+        #define KDBEXPORT(module, code)        	\
+	KDBBackend *kdbBackendFactory(void)     \
+        {                                       \
+		code                            \
+	}
+#endif
 
 typedef struct _KDBBackend KDBBackend;
 
