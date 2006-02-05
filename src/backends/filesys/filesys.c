@@ -983,7 +983,7 @@ size_t kdbGetFilename(const Key *forKey,char *returned,size_t maxSize) {
 
 
 
-KDBBackend *kdbBackendFactory(void) {
+KDBEXPORT(filesys, 
 	return kdbBackendExport(BACKENDNAME,
 		KDB_BE_OPEN,         &kdbOpen_filesys,
 		KDB_BE_CLOSE,        &kdbClose_filesys,
@@ -1000,4 +1000,4 @@ KDBBackend *kdbBackendFactory(void) {
 		KDB_BE_MONITORKEY,   &kdbMonitorKey_default,
 		KDB_BE_MONITORKEYS,  &kdbMonitorKeys_default,*/
 		KDB_BE_END);
-}
+	)
