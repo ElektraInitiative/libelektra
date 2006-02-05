@@ -279,9 +279,10 @@ int kdbSetKey_filesys(Key *key) {
 		/* Try to open key file with its full file name */
 		/* TODO: Make it more "transactional" without truncating */
 		fd=open(keyFileName,O_CREAT | O_RDWR | O_TRUNC, key->access);
-		/* TODO: lock file here */
 		if (fd==-1) return -1;
+		/* TODO: lock file here */
 		if (getuid() == 0) fchown(fd,key->uid,key->gid);
+		if (getuid() == key->uid || getgid() == key->gid) fchmod(fd,key->access);
 		if (!(output=fdopen(fd,"w+"))) return -1;
 		if (keyFileSerialize(key,output)) {
 			fclose(output);

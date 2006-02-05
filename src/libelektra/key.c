@@ -2847,6 +2847,8 @@ size_t keyGetSerializedSize(Key *key) {
  * Set a general flag in the Key.
  *
  * The flag has no semantics to the library, only to your application.
+ * It is just a simple marker that you may use to put the key on a special
+ * state that makes sense to your application.
  *
  * @see keyGetFlag(), keyClearFlag()
  * @return always 0
@@ -2869,6 +2871,8 @@ int keySetFlag(Key *key) {
  * Clear the general flag in the Key
  *
  * The flag has no semantics to the library, only to your application.
+ * It is just a simple marker that you may use to put the key on a special
+ * state that makes sense to your application.
  *
  * @see keyGetFlag(), keySetFlag()
  * @return always 0
@@ -2891,6 +2895,8 @@ int keyClearFlag(Key *key) {
  * Get the flag from the Key.
  *
  * The flag has no semantics to the library, only to your application.
+ * It is just a simple marker that you may use to put the key on a special
+ * state that makes sense to your application.
  *
  * @see keySetFlag(), keyClearFlag()
  * @see keyNew() with KeySwitch::KEY_SWITCH_NEEDSYNC
@@ -2908,38 +2914,38 @@ int keyGetFlag(const Key *key) {
 
 
 
- 
- 
+
+
 /**
- * Allocates internal Memory for a Key.
+ * Initializes the Key object with some default values.
  *
  * This function should not be used by backends or
  * applications, use keyNew() instead.
  *
- * keyInit sets the key to a clear state. It uses
+ * keyInit() sets the key to a clear state. It uses
  * memset to clear the memory. The type of the key
- * is KEY_TYPE_UNDEFINED afterwards.
+ * is KeyType::KEY_TYPE_UNDEFINED afterwards.
  *
  * uid, gid and access masks are set with the current
  * values of your system.
  *
- * @par example
- * code
-key=(Key *)malloc(sizeof(Key));
-if (!key) return 0;
-keyInit(key);
-// Key can be used here
-keyClose(key);
-free(key);
- * endcode
+ * keyNew() and keyDel() are better ways to deal with initialization
+ * than keyInit() and keyClose()
  *
- * @par shorter
- * code
-Key key;
-keyInit(&key);
-// Key can be used here
-keyClose(&key);
- * 
+ * @par Example
+ * @code
+Key *key=keyNew("system/some/name");
+...
+// Use the key
+...
+keyClose(key);
+keyInit(key);
+...
+// Reuse the key
+...
+keyDel(key);
+ * @endcode
+ *
  * @see keyClose() to free the memory allocated within that function.
  * @see keyNew() and keyDel() for construction and destruction of Keys
  * 
@@ -2971,17 +2977,20 @@ int keyInit(Key *key) {
 /**
  * Finishes the usage of a Key object.
  *
- * The key must be KeyInit() before any attempt to close it.
- * 
- * Frees all internally allocated memory, and leave the Key object
- * ready to be keyInit()ed to reuse, or deallocated.
+ * The key must be keyInit() before any attempt to close it.
+ *
+ * Frees all internally allocated memory like value, comment, and leave the
+ * Key object ready to be keyInit()ed to reuse, or deallocated.
  *
  * All internal states of the key will be NULL. After this
  * process there is no information inside the key.
  * 
- * @see keyInit() how to allocate internal memory
+ * keyNew() and keyDel() are better ways to deal with initialization
+ * than keyInit() and keyClose()
+ *
+ * @see keyInit() how to allocate internal memory and an example
  * @see keyNew() and keyDel() for construction and destruction of Keys
- * 
+ *
  * @ingroup key
  * @return always 0;
  */

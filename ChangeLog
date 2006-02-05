@@ -1,5 +1,6 @@
 * Sun Jan 29 2006 Avi Alkalay <avi@unix.sh> 0.5.4
 - Fixed a pointer positioning bug in keyStealBaseName()
+- The filesys backend now correctly sets key permissions
 
 * Sat Jan 28 2006 Avi Alkalay <avi@unix.sh> 0.5.3
 - Added specification for system's user, group and password
