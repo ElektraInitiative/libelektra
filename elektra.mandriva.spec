@@ -1,6 +1,6 @@
 %define name    elektra 
-%define version 0.5.3
-%define release %mkrel 3 
+%define version 0.5.4
+%define release %mkrel 1 
 
 Name:          %{name}
 Version:       %{version}
@@ -166,6 +166,10 @@ kdb set system/sw/kdb/current/schemapath "%{_datadir}/sgml/elektra-%{DTDVERSION}
 
 
 %changelog
+* Sun Feb 5 2006 Yannick Lecaillez <yl@itioweb.com>
+- Updated with the new libelektra static lib containing
+  filesys & ini backend
+
 * Sun Jan 29 2006 Yannick Lecaillez <yl@itioweb.com>
 - Hard code DTD_VERSION 
 
