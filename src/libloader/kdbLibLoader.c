@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include "config.h"
-#include <ltdl.h>
 #include "kdb.h"
 #include "kdbbackend.h"
 #include "kdbLibLoader.h"
@@ -57,20 +56,25 @@ int kdbLibClose(kdbLibHandle handle)
 /* Windows dynamic case */
 dbLibHandle kdbLibLoad(const char *module)
 {
+  char *modulename = malloc((sizeof(char)*strlen(module))+sizeof(".dll"));
+  dbLibHandle handle;
+  strcpy(modulename, module);
+  strcat(modulename, ".dll");
+  handle = LoadLibrary(modulename);
+  free(modulename);
+  return handle;
 }
 
 void *kdbLibSym(kdbLibHandle handle, const char *symbol)
 {
+  return GetProcAddress(handle, symbol);
 }
 
 int kdbLibClose(kdbLibHandle handle)
 {
+  return FreeLibrary(handle);
 }
 
-const char *kdbLibError()
-{
-
-}
 #else
 /* Generic case using libltdl */
 int kdbLibInit(void)
@@ -97,11 +101,6 @@ void *kdbLibSym(kdbLibHandle handle, const char *symbol)
 int kdbLibClose(kdbLibHandle handle)
 {
   return lt_dlclose(handle);
-}
-
-const char *kdbLibError()
-{
-  return lt_dlerror();
 }
 
 #endif
