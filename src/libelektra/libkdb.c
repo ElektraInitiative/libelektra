@@ -32,19 +32,7 @@ $Id$
 
 #include <stdlib.h>
 #include <stdarg.h>
-#if !defined(WIN32)
-#include <ltdl.h>
-#endif
-
-/* Due to problems with the win32 version of libltdl, we just use the windows functions directly */
-#ifdef WIN32
-  #define lt_dlhandle HMODULE
-  #define lt_dlinit() 1
-  #define lt_dlopen LoadLibrary
-  #define lt_dlclose FreeLibrary
-  #define lt_dlsym GetProcAddress
-  #define lt_dlerror() NULL
-#endif
+#include "kdbLibLoader.h"
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -110,8 +98,8 @@ $Id$
 
 
 
-struct _KDBBackend {
-	lt_dlhandle dlHandle;
+struct KDBBackend {
+	kdbLibHandle dlHandle;
 	
 	char *name;
 	
@@ -176,7 +164,7 @@ int kdbOpen() {
 	
 	backendName=getenv("KDB_BACKEND");
 	if (backendName) return kdbOpenBackend(backendName);
-	else return kdbOpenBackend("default");
+	else return kdbOpenBackend(DEFAULT_BACKEND);
 }
 
 
@@ -200,7 +188,7 @@ int kdbOpen() {
  * @ingroup kdb
  */
 int kdbOpenDefault() {
-	return kdbOpenBackend("default");
+	return kdbOpenBackend(DEFAULT_BACKEND);
 }
 
 
@@ -256,7 +244,7 @@ bash# KDB_BACKEND=apache kdb import apacheconf.xml
  * @ingroup kdb
  */
 int kdbOpenBackend(char *backendName) {
-	lt_dlhandle dlhandle=0;
+	kdbLibHandle dlhandle=0;
 	char backendlib[300];
 	KDBBackendFactory kdbBackendNew=0;
 	int rc=0;
@@ -269,24 +257,20 @@ int kdbOpenBackend(char *backendName) {
 	#endif
 	
 	/* init */
-	if ( (rc = lt_dlinit()) ) {
-		fprintf(stderr, "lt_dlinit() error %d\n", rc);
+	if ( (rc = kdbLibInit()) ) {
 		errno=KDB_RET_NOSYS;
 		return 1; /* error */
 	}	
 	
-	sprintf(backendlib,"libelektra-%s.so",backendName);
-	dlhandle=lt_dlopen(backendlib);
+	sprintf(backendlib,"libelektra-%s",backendName);
+	dlhandle=kdbLibOpen(backendlib);
 	if (dlhandle == 0) {
-		fprintf(stderr, "libelektra: Could not open \"%s\" backend: %s\n",
-			backendName,lt_dlerror());
 		errno=KDB_RET_NOSYS;
 		return 1; /* error */
 	}
 	
-	kdbBackendNew=(KDBBackendFactory)lt_dlsym(dlhandle,"kdbBackendFactory");
+	kdbBackendNew=(KDBBackendFactory)kdbLibSym(dlhandle,"kdbBackendFactory");
 	if (kdbBackendNew == 0) {
-		fprintf(stderr, "libelektra: \"%s\" backend: %s\n",backendName,lt_dlerror());
 		errno=KDB_RET_NOSYS;
 		return 2; /* error */
 	}
@@ -337,7 +321,7 @@ int kdbClose() {
 	
 	if (rc == 0) {
 		if (backend->name) free(backend->name);
-		lt_dlclose(backend->dlHandle);
+		kdbLibClose(backend->dlHandle);
 		free(backend); backend=0;
 	}
 	
