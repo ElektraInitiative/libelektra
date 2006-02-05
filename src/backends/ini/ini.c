@@ -1241,7 +1241,8 @@ uint32_t kdbMonitorKey_ini(Key *interest, uint32_t diffMask,
  * @see kdbOpenBackend()
  * @ingroup ini
  */
-KDBEXPORT(ini,
+KDBEXPORT(ini)
+{
 	return kdbBackendExport(BACKENDNAME,
 		KDB_BE_OPEN,           &kdbOpen_ini,
 		KDB_BE_CLOSE,          &kdbClose_ini,
@@ -1258,7 +1259,6 @@ KDBEXPORT(ini,
 		
 /*		KDB_BE_SETKEYS,        &kdbSetKeys_default,*/
 		KDB_BE_END);
-	)
-
+}
 #warning "Backend is not full featured"
 
