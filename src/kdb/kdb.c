@@ -1510,13 +1510,10 @@ int commandMonitor() {
 int loadToolsLib(void) {
 	kdbLibHandle dlhandle=0;
 
-	return 1;
-	
 	kdbLibInit();
 
 	dlhandle=kdbLibLoad("libelektratools");
 	if (dlhandle == 0) {
-		fprintf(stderr, "kdb: %s\n",lt_dlerror());
 		return 1;
 	}
 	
