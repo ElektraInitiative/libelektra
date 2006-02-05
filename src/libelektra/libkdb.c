@@ -98,7 +98,7 @@ $Id$
 
 
 
-struct KDBBackend {
+struct _KDBBackend {
 	kdbLibHandle dlHandle;
 	
 	char *name;
@@ -263,7 +263,7 @@ int kdbOpenBackend(char *backendName) {
 	}	
 	
 	sprintf(backendlib,"libelektra-%s",backendName);
-	dlhandle=kdbLibOpen(backendlib);
+	dlhandle=kdbLibLoad(backendlib);
 	if (dlhandle == 0) {
 		errno=KDB_RET_NOSYS;
 		return 1; /* error */
