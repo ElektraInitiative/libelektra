@@ -4,6 +4,6 @@
 # bin_PROGRAMS = localeinfo
 # localeinfo_SOURCES = localeinfo.c
 
-SUBDIRS = libelektra libelektratools libregistry kdb backends include
+SUBDIRS = libloader backends libelektra libelektratools libregistry kdb include
 EXTRA_DIST = Doxyfile
 
