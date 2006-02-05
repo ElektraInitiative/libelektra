@@ -2,7 +2,7 @@
 # $Id$
 
 lib_LIBRARIES = libelektra.a
-libelektra_a_SOURCES = libkdb.c key.c keyset.c \
+libelektra_a_SOURCES = libkdb.c key.c keyset.c backend_symbols.c \
 		       ../include/kdb.h \
 		       ../include/kdbbackend.h \
 		       ../include/kdbprivate.h \
