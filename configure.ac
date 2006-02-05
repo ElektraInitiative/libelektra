@@ -104,6 +104,9 @@ mingw* | pw32*)
 	AC_DEFINE(HAVE_WIN32, 1, [Define if you are compiling for win32])	
 esac
 
+# Disable libtool static lib
+AC_DISABLE_STATIC
+
 #
 # Checks for needed programs.
 #
