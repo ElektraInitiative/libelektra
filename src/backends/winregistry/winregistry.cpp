@@ -345,7 +345,7 @@ uint32_t kdbMonitorKey_winregistry(Key *interest, uint32_t diffMask,
 	return 0;
 }
 
-KDBEXPORT(winregistry) {
+KDBEXPORT(BACKENDNAME) {
 	return kdbBackendExport(BACKENDNAME,
 		KDB_BE_OPEN,           &kdbOpen_winregistry,
 		KDB_BE_CLOSE,          &kdbClose_winregistry,

@@ -29,14 +29,14 @@ size_t getSID(char *username, char *sid, int size);
 #ifdef __cplusplus
 extern "C" {
 #endif
-WINREGISTRY_API int kdbOpen_winregistry();
-WINREGISTRY_API int kdbClose_winregistry();
-WINREGISTRY_API int kdbStatKey_winregistry(Key *key);
-WINREGISTRY_API int kdbGetKey_winregistry(Key *key);
-WINREGISTRY_API int kdbSetKey_winregistry(Key *key);
-WINREGISTRY_API int kdbRename_winregistry(Key *key, const char *newName);
-WINREGISTRY_API int kdbRemoveKey_winregistry(const Key *key);
-WINREGISTRY_API ssize_t kdbGetKeyChildKeys_winregistry(const Key *parentKey, KeySet *returned, unsigned long options);
+int kdbOpen_winregistry();
+int kdbClose_winregistry();
+int kdbStatKey_winregistry(Key *key);
+int kdbGetKey_winregistry(Key *key);
+int kdbSetKey_winregistry(Key *key);
+int kdbRename_winregistry(Key *key, const char *newName);
+int kdbRemoveKey_winregistry(const Key *key);
+ssize_t kdbGetKeyChildKeys_winregistry(const Key *parentKey, KeySet *returned, unsigned long options);
 
 /* While the windows registry does provide a far more efficient implementation of these, it's fine to live without them for now */
 /*int kdbSetKeys_winregistry(KeySet *ks);
@@ -58,7 +58,7 @@ uint32_t kdbMonitorKey_winregistry(Key *interest, uint32_t diffMask, unsigned lo
  * @see kdbOpenBackend()
  * @ingroup backend
  */
-WINREGISTRY_API KDBBackend *kdbBackendFactory(void);
+WINREGISTRY_API KDBEXPORT(BACKENDNAME);
 
 #ifdef __cplusplus
 }

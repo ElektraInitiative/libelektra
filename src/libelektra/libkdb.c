@@ -51,9 +51,7 @@ $Id$
 #include <ctype.h>
 #include <string.h>
 
-/* usleep doesn't exist on win32, so we sleep x/1000 seconds instead.
- * Of course this will only work well when sleeptime is 1000 or above. 
- * This is  *TEMPORARY* solution  */
+/* usleep doesn't exist on win32, so we use Sleep() */
 #ifdef WIN32
 #define usleep(x) Sleep(x)
 #endif
