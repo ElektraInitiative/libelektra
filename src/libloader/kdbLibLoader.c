@@ -1,3 +1,5 @@
+/* $Id$ */
+
 #include <stdio.h>
 #include "config.h"
 #include "kdb.h"

@@ -1,3 +1,5 @@
+# $Id$
+
 lib_LIBRARIES = libloader-static.a
 libloader_static_a_SOURCES = kdbLibLoader.c ../include/kdbLibLoader.h
 libloader_static_a_CFLAGS = -D__STATIC

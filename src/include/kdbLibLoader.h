@@ -1,3 +1,5 @@
+/* $Id$ */
+
 #ifndef KDBLIBLOADER_H
 #define KDBLIBLOADER_H
 

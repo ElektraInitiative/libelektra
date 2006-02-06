@@ -1,3 +1,6 @@
+
+/* $Id$ */
+
 #include "kdbbackend.h"
 #include "kdbLibLoader.h"
 
