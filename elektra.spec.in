@@ -125,7 +125,7 @@ rm $RPM_BUILD_ROOT/lib/libregistry*.a
 rm $RPM_BUILD_ROOT/lib/libloader-*
 mv $RPM_BUILD_ROOT/lib/libelektra.a $RPM_BUILD_ROOT/usr/lib
  
-rm $RPM_BUILD_ROOT/usr/lib/libelektra-*.a
+#rm $RPM_BUILD_ROOT/usr/lib/libelektra-*.a
 rm $RPM_BUILD_ROOT/lib/*.la
 rm $RPM_BUILD_ROOT/usr/lib/*.la
  
