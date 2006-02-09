@@ -330,15 +330,20 @@ int kdbClose() {
 
 
 /**
- * Unencodes a buffer of hexadecimal values. This is a helper function.
+ * Unencodes a buffer of ASCII hexadecimal values into a byte stream.
  *
  * The allowed format for the hexadecimal values is just
  * a stream of pairs of plain hex-digits, all together or
  * space-separated.
+ * 
+ * The @c returned data won't be bigger than half the size of the
+ * source @c encoded data.
+ *
  * @param encoded the source of ASCII hexadecimal digits.
- * @param returned the destination for the unencoded data.
+ * @param returned preallocated destination for the unencoded data.
  * @return the amount of bytes unencoded, or a negative value and @c errno
  * 	is set to KDB_RET_TYPEMISMATCH
+ * @see encode()
  * @ingroup backend
  */
 ssize_t unencode(char *encoded,void *returned) {
@@ -479,15 +484,19 @@ int UTF8Engine(int direction, char **string, size_t *inputOutputByteSize) {
 
 
 /**
- * Encodes a buffer of data onto hexadecimal ASCII. This is a helper function.
+ * Encodes a buffer of data onto hexadecimal ASCII.
  *
  * The resulting data is made up of pairs of ASCII hex-digits,
  * space- and newline-separated. This is the counterpart of
  * unencode().
  *
+ * The @c returned must allocated prior you call this function and won't
+ * be bigger than 3 times the size of the source @c unencoded.
+ * 
+ *
  * @param unencoded the source buffer.
  * @param size the size of the source buffer in bytes.
- * @param returned the destination for the ASCII-encoded data.
+ * @param returned the preallocated destination for the ASCII-encoded data.
  * @return the amount of bytes used in the resulting encoded buffer.
  * @see unencode()
  * @ingroup backend
