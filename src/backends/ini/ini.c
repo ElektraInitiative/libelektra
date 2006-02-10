@@ -729,7 +729,7 @@ fileerror:
  * @ingroup ini
  */
 int kdbRemoveKey_ini(const Key *key) {
-	return IniSetKey (key, SETKEY_DELETE);
+	/*return IniSetKey (key, SETKEY_DELETE);*/
 }
 
 /**
@@ -739,9 +739,9 @@ int kdbRemoveKey_ini(const Key *key) {
  * @ingroup ini
  */
 int kdbRename_ini(Key *key, const char *newName) {
-	IniSetKey (key, SETKEY_DELETE);
+	/*IniSetKey (key, SETKEY_DELETE);
 	keySetName (key, newName);
-	IniSetKey (key, SETKEY_SET);
+	IniSetKey (key, SETKEY_SET);*/
 	return 0; /* success */
 }
 
