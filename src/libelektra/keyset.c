@@ -964,7 +964,7 @@ ssize_t ksToStream(const KeySet *ks, FILE* stream, unsigned long options) {
 
 		for (key=ks->start; key; key=key->next)
 			written+=keyToStreamBasename(key,stream,smalest->key,0,options);
-	} else {
+	} else { // No KDB_O_HIER
 		written+=fprintf(stream,">\n\n\n");
 		for (key=ks->start; key; key=key->next)
 			written+=keyToStream(key,stream,options);

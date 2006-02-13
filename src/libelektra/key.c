@@ -2536,9 +2536,10 @@ uint32_t keyCompare(const Key *key1, const Key *key2) {
 	ret|=(key1->flags ^ key2->flags) & (KEY_SWITCH_FLAG | KEY_SWITCH_NEEDSYNC);
 	
 	/* Compare data */
-	if (memcmp(key1->data,key2->data,
+	if (key1->dataSize != key2->dataSize)          ret|=KEY_SWITCH_VALUE;
+	else if (memcmp(key1->data,key2->data,
 			(key1->dataSize<=key2->dataSize?key1->dataSize:key2->dataSize)))
-		ret|=KEY_SWITCH_VALUE;
+		                                            ret|=KEY_SWITCH_VALUE;
 
 	return ret;
 }

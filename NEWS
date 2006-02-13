@@ -1,6 +1,12 @@
-* Sun Dec 11 2005 Avi Alkalay <avi@unix.sh> 0.5.3
+* Sun Jan 29 2006 Avi Alkalay <avi@unix.sh> 0.5.6
+- Fixed a pointer positioning bug in keyStealBaseName()
+- The filesys backend now correctly sets key permissions
+- Fixed correct value comparation on keyCompare()
+
+* Sat Jan 28 2006 Avi Alkalay <avi@unix.sh> 0.5.3
 - Added specification for system's user, group and password
 - Added specification for system initialization
+- Fixed bug related to setting real binary keys
 
 * Sat Dec 03 2005 Avi Alkalay <avi@unix.sh> 0.5.2
 - Cross platform handling (when possible) for UTF-8 conversions with iconv()
@@ -12,7 +18,6 @@
 - Pretty good system signature tree layout specification
 - Tree layout specification for environment vars and shell aliases
 - Tree layout specification for a filesystem mount table
-
 
 * Wed Oct 26 2005 Avi Alkalay <avi@unix.sh> 0.5.1
 - Migrated to autotools, and updated documentation for that
