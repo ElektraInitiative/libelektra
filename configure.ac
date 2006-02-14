@@ -77,6 +77,13 @@ AC_ARG_WITH(backend,
 	     [[default_backend=filesys]]
 	     )
 
+# Enable compilation of experimental things (unfinished
+# backends at this time)
+AC_ARG_ENABLE(experimental,
+	      [AC_HELP_STRING(--enable-experimental, [Specify to compile or not experimental parts (could cause compilation failure)])],
+	      [experimental=yes])
+AM_CONDITIONAL(EXPERIMENTAL, test x$experimental = xyes)
+
 # Select docbook.xsl
 AC_ARG_WITH(docbook,
 	    [AC_HELP_STRING(--with-docbook=<path to docbook.xsl>,
