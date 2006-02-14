@@ -4,11 +4,12 @@ testdir = $(develdocdir)/src/backends/ini/
 
 lib_LIBRARIES = libelektra-ini.a
 libelektra_ini_a_SOURCES = ini.c helpers.c parser.c ../../include/kdb.h ../../include/kdbbackend.h
-libelektra_ini_a_CFLAGS = -D__STATIC
+libelektra_ini_a_CFLAGS = -D__STATIC -ansi -pedantic
 
 lib_LTLIBRARIES = libelektra-ini.la
 libelektra_ini_la_SOURCES = ini.c helpers.c parser.c ../../include/kdb.h ../../include/kdbbackend.h 
 libelektra_ini_la_LDFLAGS = -version-info 1:0:0 -module
+libelektra_ini_la_CFLAGS = -ansi -pedantic
 INCLUDES = -I../../include
 
 EXTRA_DIST = test.c

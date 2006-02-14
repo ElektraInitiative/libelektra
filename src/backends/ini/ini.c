@@ -497,7 +497,7 @@ int IniSetKeys (KeySet * origKeys)
 			write_key(setKey, oldpos);
 
 			if ((keyCompare (key, origKey) & KEY_SWITCH_NAME) == 0)
-				pos = 1; //Start Key found, good!
+				pos = 1; /*Start Key found, good!*/
 		}
 		oldpos = ftell (fc);
 	}
@@ -507,8 +507,8 @@ int IniSetKeys (KeySet * origKeys)
 #endif
 		fseek (fc, 0, SEEK_END);
 		oldpos = ftell(fc);
-		//TODO: write key here if not found
-		// write_key(setKey, oldpos);
+		/*TODO: write key here if not found
+		 * write_key(setKey, oldpos);*/
 		pos = 0;
 	} else if (pos == 1) { /* key found, everything went ok!*/
 		pos = 0;
