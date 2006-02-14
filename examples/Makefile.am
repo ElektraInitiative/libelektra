@@ -6,7 +6,7 @@ EXTRA_DIST = test.c application.c binary.c keyNewExample.c lookup.c example.c hi
 
 elekexample_DATA = test.c application.c binary.c keyNewExample.c lookup.c
 
-elekexample_PROGRAMS = test application binary keyNewExample lookup hello cascading
+elekexample_PROGRAMS = test application binary keyNewExample lookup cascading
 
 test_SOURCES = test.c
 test_LDFLAGS = -L../src/libelektra
@@ -27,10 +27,6 @@ keyNewExample_LDADD = -lelektra
 lookup_SOURCES = lookup.c
 lookup_LDFLAGS = -L../src/libelektra
 lookup_LDADD = -lelektra
-
-hello_SOURCES = hello.c
-hello_LDFLAGS = -L../src/libelektra
-hello_LDADD = -lelektra
 
 cascading_SOURCES = cascading.c
 cascading_LDFLAGS = -L../src/libelektra

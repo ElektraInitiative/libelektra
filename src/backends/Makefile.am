@@ -1,7 +1,7 @@
 
 # $Id$
 
-SUBDIRS = berkeleydb filesys fstab ini gconf template
+SUBDIRS = berkeleydb filesys fstab gconf template # ini
 
 install-exec-hook:
 	cd $(DESTDIR)$(libdir) && \

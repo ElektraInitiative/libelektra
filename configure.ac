@@ -230,7 +230,6 @@ AC_OUTPUT([src/Makefile
 	   src/backends/berkeleydb/Makefile
 	   src/backends/filesys/Makefile
 	   src/backends/fstab/Makefile
-	   src/backends/ini/Makefile
 	   src/backends/gconf/Makefile
 	   src/backends/template/Makefile
 

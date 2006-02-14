@@ -83,7 +83,8 @@ implementations.
 This package contains a Berkeley DB backend for Elektra, to let Elektra use
 Berkeley DB databases to store its keys.
 
-%debug_package
+# Uncomment and joint the '%' char to 'debug_package' if you want to build debug RPMs
+# % debug_package
 
 %prep
 %setup
@@ -171,7 +172,7 @@ kdb set system/sw/kdb/current/schemapath "%{_datadir}/sgml/elektra-%{DTDVERSION}
 /lib/*elektra-filesys.so*
 /lib/*elektra-default.so*
 /lib/*elektra-fstab.so*
-/lib/*elektra-ini.so*
+#/lib/*elektra-ini.so*
 %{_libdir}/*elektratools.so*
 /bin/*
 %{_sysconfdir}/profile.d/*

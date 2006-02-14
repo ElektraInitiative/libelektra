@@ -10,7 +10,6 @@ libelektra_a_SOURCES = libkdb.c key.c keyset.c backend_symbols.c \
 libelektra_a_CFLAGS = -D__STATIC -DDEFAULT_BACKEND=\"@default_backend@\"
 libelektra_a_LIBADD =  ../libloader/libloader_static_a-kdbLibLoader.o \
 		       ../backends/filesys/libelektra_filesys_a-filesys.o \
-		       ../backends/ini/libelektra_ini_a-ini.o \
 		       $(LIBICONV)
 
 lib_LTLIBRARIES = libelektra.la
