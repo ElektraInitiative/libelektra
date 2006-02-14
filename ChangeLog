@@ -1,4 +1,8 @@
-* Sun Jan 29 2006 Avi Alkalay <avi@unix.sh> 0.5.6
+* Tue Feb 14 2006 Avi Alkalay <avi@unix.sh> 0.5.7
+- Old libregistry and examples are not being compiled anymore
+- The ini backend is disabled due to compilation problems
+
+* Sun Feb 12 2006 Avi Alkalay <avi@unix.sh> 0.5.6
 - Fixed a pointer positioning bug in keyStealBaseName()
 - The filesys backend now correctly sets key permissions
 - Fixed correct value comparation on keyCompare()
