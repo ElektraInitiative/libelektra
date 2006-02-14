@@ -1843,12 +1843,13 @@ uint8_t keySetType(Key *key,uint8_t newType) {
 			key->type=KEY_TYPE_DIR;
 			dirSwitch=umask(0); umask(dirSwitch);
 			dirSwitch=0111 & ~dirSwitch;
-			key->access|=dirSwitch | S_IFDIR;
+			key->access|=dirSwitch | 0040000; /*S_IFDIR (is directory)*/
 			keySetRaw(key,0,0); /* remove data */
 			break;
 		default:
 			key->type=newType;
-			key->access &= ~(S_IFDIR | dirSwitch);
+			key->access &= ~(0040000 | dirSwitch);
+			/*remove bits directory and dirSwitch*/
 			key->flags |= KEY_SWITCH_NEEDSYNC;
 	}
 	return key->type;
