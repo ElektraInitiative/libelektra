@@ -212,6 +212,22 @@ Key *ksTail(KeySet *ks) {
  * (also accessible by ksCurrent()), and a pointer to the Key is returned.
  * If not found, @p ks internal cursor will not move, and a NULL pointer is
  * returned.
+ *
+ * Cascading is done if the first character is a /. This leads to ignoring
+ * the prefix like system/ and user/.
+ * @code
+        if (kdbGetChildKeys("user/myapp", myConfig, 0 ) == -1)
+                BailOut ("Could not get Keys");
+
+        if (kdbGetChildKeys("system/myapp", myConfig, 0 ) == -1)
+                BailOut ("Could not get Keys");
+
+        if ((myKey = ksLookupByName (myConfig, "/myapp/key", 0)) == NULL)
+                BailOut ("Could not Lookup Key");
+ * @endcode
+ * This is the way multi user Programs should get there configuration and
+ * search after the values. It is guaranteed that more namespaces can be
+ * added easily and that all values can be set by admin and user.
  * 
  * The @p ksLookup*() set of methods are designed to let you work with
  * entirely pre-loaded KeySets, so instead of kdbGetKey(), key by key, the
@@ -233,6 +249,7 @@ Key *ksLookupByName(KeySet *ks, const char *name, unsigned long options) {
 	Key *current=0;
 	size_t nameSize;
 	size_t currentNameSize;
+	char * keyname;
 
 	nameSize=strblen(name);
 
@@ -241,13 +258,25 @@ Key *ksLookupByName(KeySet *ks, const char *name, unsigned long options) {
 	while ((current=ksNext(ks))) {
 		if (current->key == name) return current; /* for NULLs */
 
+
+		/**This "optimization" makes comparing keys double when equals
 		currentNameSize=current->key?strblen(current->key):0;
-		if (currentNameSize != nameSize) continue;
+		if (currentNameSize != nameSize) continue;*/
+
+		if (name [0] == '/') {	/*Cascading search*/
+			keyname = strchr(current->key, '/');
+		} else {
+			keyname = keyStealName (current);
+		}
+
+#ifdef VERBOSE
+		fprintf (stderr, "Compare %s with %s\n", keyname, name);
+#endif
 
 		if ((current->key && name)) {
 			if ((options & KDB_O_NOCASE) &&
-				!strcasecmp(current->key,name)) return current;
-			else if (!strcmp(current->key,name)) return current;
+				!strcasecmp(keyname,name)) return current;
+			else if (!strcmp(keyname,name)) return current;
 		}
 	}
 
