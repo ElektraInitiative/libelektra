@@ -1026,6 +1026,9 @@ int kdbRename(Key *key, const char *newName) {
 
 /**
  * Remove a key from the backend storage.
+ * The @c key object will not be freed. It is your responsability
+ * to keyDel() it after kdbRemoveKey().
+ *
  * This method is not recursive.
  *
  * @param key the key to be removed

@@ -227,7 +227,7 @@ int kdbRename_backend(Key *key, const char *newName) {
 /**
  * Implementation for kdbRemoveKey() method.
  *
- * @see kdbRemove() for expected behavior.
+ * @see kdbRemoveKey() for expected behavior.
  * @ingroup backend
  */
 int kdbRemoveKey_backend(const Key *key) {
