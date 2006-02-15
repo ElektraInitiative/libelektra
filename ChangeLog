@@ -1,6 +1,8 @@
 * Tue Feb 14 2006 Avi Alkalay <avi@unix.sh> 0.5.7
 - Old libregistry and examples are not being compiled anymore
 - The ini backend is disabled due to compilation problems
+- BerkeleyDB and GConf backend are set as experimental, and removed from main build
+- Improved documentation for kdbRemoveKey()
 
 * Sun Feb 12 2006 Avi Alkalay <avi@unix.sh> 0.5.6
 - Fixed a pointer positioning bug in keyStealBaseName()
