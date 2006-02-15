@@ -56,10 +56,10 @@ int kdbLibClose(kdbLibHandle handle)
 #else
 #ifdef WIN32
 /* Windows dynamic case */
-dbLibHandle kdbLibLoad(const char *module)
+kdbLibHandle kdbLibLoad(const char *module)
 {
   char *modulename = malloc((sizeof(char)*strlen(module))+sizeof(".dll"));
-  dbLibHandle handle;
+  kdbLibHandle handle;
   strcpy(modulename, module);
   strcat(modulename, ".dll");
   handle = LoadLibrary(modulename);
