@@ -37,7 +37,7 @@ typedef kdblib_symbol* kdbLibHandle;
 #ifdef WIN32
 /* Windows case, non static */
 #include <windows.h>
-#define kdbLibInit() 1
+#define kdbLibInit() 0
 typedef HMODULE kdbLibHandle;
 #else
 /* Default case */
