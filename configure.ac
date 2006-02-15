@@ -24,7 +24,7 @@ AC_ARG_ENABLE(debug, [  --enable-debug turns on debugging
 	      [default="no"]],enable_debug="yes", enable_debug="no")
 dnl Yes, shell scripts can be used
 if test "x$enable_debug" = "xyes"; then
-	CFLAGS="-g -ggdb -DDEBUG"
+	CFLAGS="-g -ggdb -DDEBUG -O0"
 	AC_MSG_RESULT(yes)
 else
 	AC_MSG_RESULT(no)
