@@ -10,4 +10,4 @@ INCLUDES = -I../include $(LTDLINCL)
 
 kdb_static_SOURCES = kdb.c ../include/kdb.h
 kdb_static_CFLAGS = -D__STATIC -Wall
-kdb_static_LDADD = ../libelektra/libelektra.a ../libloader/libloader_static_a-kdbLibLoader.o
+kdb_static_LDADD = ../libelektra/libelektra.a 
