@@ -1,0 +1,11 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@ulibdir@
+includedir=@includedir@
+
+Name: @PACKAGE@
+Description: High level elektra functions (XML import/export)
+Version: @VERSION@
+Libs: -L@ulibdir@ -lelektratools
+Cflags: -I@includedir@
+
