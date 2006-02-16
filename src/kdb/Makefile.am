@@ -4,7 +4,7 @@
 bin_PROGRAMS = kdb kdb_static
 kdb_SOURCES = kdb.c ../include/kdb.h
 kdb_LDFLAGS = -L../libelektra
-kdb_LDADD = ../libloader/kdbLibLoader.lo -lelektra $(LIBLTDL)
+kdb_LDADD = -lelektra $(LIBLTDL)
 kdb_CFLAGS = -Wall
 INCLUDES = -I../include $(LTDLINCL)
 
