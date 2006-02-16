@@ -36,7 +36,7 @@ extern "C" {
 #endif
 
 
-int ksFromXMLfile(KeySet *ks,char *filename);
+int ksFromXMLfile(KeySet *ks,const char *filename);
 int ksFromXML(KeySet *ks,int fd);
 
 

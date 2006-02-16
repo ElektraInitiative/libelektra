@@ -17,7 +17,9 @@ genLevel() {
 	# Generate local keys
 	local k=0
 	while [ $k -lt $KEYS ]; do
-		kdb set -c "${RANDOM}${RANDOM}" \
+		type=`expr $RANDOM$RANDOM % 255`
+		[ $type -lt 20 ] && type=20;
+		kdb set -t $type -c "${RANDOM}${RANDOM}" \
 			"$myRoot/${RANDOM}${RANDOM}" \
 			"${RANDOM}${RANDOM}"
 

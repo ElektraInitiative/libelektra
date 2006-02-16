@@ -506,6 +506,7 @@ int keyNameGetNamespace(const char *keyName);
 int keyIsDir(const Key *key);
 int keyIsLink(const Key *key);
 int keyIsBin(const Key *key);
+int keyIsString(const Key *key);
 
 Key *keyNext(Key *key);
 

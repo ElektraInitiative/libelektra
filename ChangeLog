@@ -1,8 +1,14 @@
-* Tue Feb 14 2006 Avi Alkalay <avi@unix.sh> 0.5.7
+* Tue Feb 16 2006 Avi Alkalay <avi@unix.sh> 0.5.7
 - Old libregistry and examples are not being compiled anymore
 - The ini backend is disabled due to compilation problems
 - BerkeleyDB and GConf backend are set as experimental, and removed from main build
 - Improved documentation for kdbRemoveKey()
+- Created keyIsString() method
+- Corrected link handling on src/backends/filesys/filesys.c::keyFromStat()
+- Benchmark script now sets random key types
+- ksFromXMLfile() now receives a (const char *) instead of (char *) as filename parameter
+- Doxygen is generated with a browsing tree pane
+- Created elektratools.pc for pkg-config
 
 * Sun Feb 12 2006 Avi Alkalay <avi@unix.sh> 0.5.6
 - Fixed a pointer positioning bug in keyStealBaseName()

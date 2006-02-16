@@ -422,7 +422,7 @@ int isValidXML(xmlDocPtr doc,char *schemaPath) {
  * 
  * @ingroup tools
  */
-int ksFromXMLfile(KeySet *ks,char *filename) {
+int ksFromXMLfile(KeySet *ks,const char *filename) {
 	xmlTextReaderPtr reader;
 	xmlDocPtr doc;
 	int ret=0;

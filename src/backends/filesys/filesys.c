@@ -920,8 +920,13 @@ int keyFromStat(Key *key,struct stat *stat) {
 	keySetAccess(key,stat->st_mode);
 	keySetUID(key,stat->st_uid);
 	keySetGID(key,stat->st_gid);
+	
 	if (S_ISDIR(stat->st_mode)) keySetType(key,KEY_TYPE_DIR);
 	else keySetType(key,key->type & (~KEY_TYPE_DIR)); /* remove the DIR flag */
+	
+	if (S_ISLNK(stat->st_mode)) keySetType(key,KEY_TYPE_LINK);
+	else keySetType(key,key->type & (~KEY_TYPE_LINK)); /* remove the LINK flag */
+	
 	key->atime=stat->st_atime;
 	key->mtime=stat->st_mtime;
 	key->ctime=stat->st_ctime;

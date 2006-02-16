@@ -1665,6 +1665,22 @@ int keyIsBin(const Key *key) {
 }
 
 
+/**
+ * Check if a key is of some string type
+ *
+ * @return 1 if type >= @link KeyType::KEY_TYPE_STRING KEY_TYPE_STRING @endlink, 0 otherwise
+ * @see keyGetString(), keySetString()
+ * @ingroup keytest
+ */
+int keyIsString(const Key *key) {
+	/* if (!key) return 0;
+	if (!keyIsInitialized(key)) return 0; */
+
+	return (key->type >= KEY_TYPE_STRING);
+}
+
+
+
 
 /**
  * Get the binary or string value of @p key.

@@ -255,6 +255,7 @@ AC_OUTPUT([src/Makefile
 	   xmlschema/Makefile
 	   
 	   elektra.pc
+	   elektratools.pc
 
 	   elektra.spec
 	   ])

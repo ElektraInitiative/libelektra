@@ -1,10 +1,10 @@
 # $Id
 
 SUBDIRS = libltdl src examples doc scripts xmldtd xmlschema
-EXTRA_DIST=elektra.pc elektra.spec elektra.mandriva.spec elektra.xml 
+EXTRA_DIST=elektra.pc elektratools.pc elektra.spec elektra.mandriva.spec elektra.xml 
 
 pkgconfigdir = $(ulibdir)/pkgconfig
-pkgconfig_DATA = elektra.pc
+pkgconfig_DATA = elektra.pc elektratools.pc
 
 RPMARCH=`rpmbuild --showrc | awk '/^build arch/ {print $$4}'`
 
