@@ -1,4 +1,4 @@
-# $Id
+# $Id$
 
 SUBDIRS = libltdl src examples doc scripts xmldtd xmlschema
 EXTRA_DIST=elektra.pc elektratools.pc elektra.spec elektra.mandriva.spec elektra.xml 
