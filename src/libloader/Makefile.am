@@ -8,5 +8,4 @@ libloader_static_a_CFLAGS = -D__STATIC -Wall
 lib_LTLIBRARIES = libloader-dynamic.la
 libloader_dynamic_la_SOURCES = kdbLibLoader.c ../include/kdbLibLoader.h
 libloader_static_la_CFLAGS = -Wall
-
-
+INCLUDES = $(LTDLINCL)
