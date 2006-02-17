@@ -1,15 +1,18 @@
 Avi Alkalay <avi@unix.sh>
-Concept, architecture, development, manuals, website
+Concept, architecture, development, manuals, previous website
+Backends: berkleydb, filesys
 Devel/Test on: redhat.ia32, fedora.ia32, redhat.ppc, redhat.s390, aix.ppc
 
 
-Markus Raab
-Debian packaging, easycpp bindings, ini backend
-Devel/Test on:
+Markus Raab <registry@markus-raab.org>
+Debian packaging, website, documentation, tutorial
+Backends: ini
+Binding: easycpp
+Devel/Test on: Debian Sarge, Freebsd, Sun OS 4.0, AIX TRu64 Unix
 
 
 Yannick Lecaillez <yl@itioweb.com>
-Adaptation for using autotools & libtool
+Adaptation for using autotools & libtool, website, wiki, bugtracking
 Devel/Test on:
 
 

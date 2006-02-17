@@ -1,6 +1,13 @@
+* Fri Feb 17 2006 Markus Raab 0.5.7
+- ksLookupByValue now supports cascading
+- Ini Backend is marked experimental
+- Big updates in Ini Backend:
+- posix and parser specific parts seperated
+- support for binary values containing \0 and \n
+- changed to more performantic kdbSetKeys (very buggy)
+
 * Tue Feb 16 2006 Avi Alkalay <avi@unix.sh> 0.5.7
 - Old libregistry and examples are not being compiled anymore
-- The ini backend is disabled due to compilation problems
 - BerkeleyDB and GConf backend are set as experimental, and removed from main build
 - Improved documentation for kdbRemoveKey()
 - Created keyIsString() method
