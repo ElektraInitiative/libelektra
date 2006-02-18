@@ -109,9 +109,15 @@ example.c:
 	$(LN_S) ../examples/example.c .
 
 csource.xml: example.c
-	(echo "<programlisting><![CDATA["; cat  example.c; echo "]]></programlisting>") > csource.xml
+	(echo "<programlisting><![CDATA["; cat $<; echo "]]></programlisting>") > $@
 
-howto.html: howto.xml elektra.7.xml author.xml garbage.xml overview.xml bestpract.xml rgexample.xml rgcmd.xml storage.xml csource.xml api.xml society.xml
+xorgpatch.xml: patches/xorg/README.xorg.Elektra.txt
+	(echo "<screen><![CDATA["; cat  $<; echo "]]></screen>") > $@
+
+initpatch.xml: patches/sysvinit/README.sysvinit.Elektra.txt
+	(echo "<screen><![CDATA["; cat  $<; echo "]]></screen>") > $@
+
+howto.html: howto.xml elektra.7.xml author.xml garbage.xml overview.xml bestpract.xml rgexample.xml rgcmd.xml storage.xml api.xml society.xml compared.xml api.xml apiexample.xml xorgpatch.xml initpatch.xml csource.xml
 
 html: howto.html
 	$(man2html) -r < kdb.1 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > kdb.1.html

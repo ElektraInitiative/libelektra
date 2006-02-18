@@ -1,38 +1,74 @@
 <!--
-$Id: $
-$LastChangedBy: $
+$Id$
 -->
 
 	<section id="compared"><title>Elektra Project and Other Registry-like Software</title>
-		<para>Known problems of other implementations are cited here.</para>
-		<orderedlist>
-			<listitem><simpara><command>Other implementations are a single point of failure; if something makes them fail, they become unavailable system-wide</command>. Elektra is not a service. It can be seen as a mapper from the key's namespace to its physical location on the disk. If a key gets corrupted, it will not affect other keys, neither other users/programs accessing Elektra.</simpara></listitem>
-			<listitem><simpara><command>Very small applications must open their database to get values</command>. Elektra will only open very small files when requested; one file per key.</simpara></listitem>
-			<listitem><simpara><command>An application that uses the registry must scan many keys to find the one it is looking for</command>. Elektra uses the fastest scan engine available: the file system. There is nothing to scan; given a key name, it is mapped to its corresponding file, and then opened.</simpara></listitem>
-			<listitem><simpara><command>A system administrator must use special tools to edit values in that blackbox registry implementation</command>. Elektra provides a command line tool, <citerefentry><refentrytitle>kdb</refentrytitle><manvolnum>1</manvolnum></citerefentry>, to edit it consistently. But a system administrator can also use a text editor or system's tools (<command>chmod</command>, <command>mv</command>, <command>cp</command>, <command>vi</command>) to modify Elektra's key-value pair database.</simpara></listitem>
-		</orderedlist>
-		<para>Compared to Gnome's GConf, Elektra is not a daemon, and is much lighter. GConf uses XML documents as backends, stored in user's home directory. XML based software are memory eaters. GConf seems not to be preoccupied with access permissions, making it a good solution only for personal use in desktop (high level) systems. Also it is heavily Gnome dependent as we can see from the libraries it uses:</para>
-		<screen>$ ldd /usr/bin/gconfd-1
-    libgconf-1.so.1 => /usr/lib/libgconf-1.so.1 (0x4375b000)
-    liboaf.so.0 => /usr/lib/liboaf.so.0 (0x4373f000)
-    libORBitCosNaming.so.0 => /usr/lib/libORBitCosNaming.so.0 (0x00cfd000)
-    libORBit.so.0 => /usr/lib/libORBit.so.0 (0x00ca9000)
-    libIIOP.so.0 => /usr/lib/libIIOP.so.0 (0x43735000)
-    libORBitutil.so.0 => /usr/lib/libORBitutil.so.0 (0x00ce9000)
-    libm.so.6 => /lib/tls/libm.so.6 (0x00b50000)
-    libgmodule-1.2.so.0 => /usr/lib/libgmodule-1.2.so.0 (0x00d58000)
-    libglib-1.2.so.0 => /usr/lib/libglib-1.2.so.0 (0x00d31000)
-    libdl.so.2 => /lib/libdl.so.2 (0x00b74000)
-    libc.so.6 => /lib/tls/libc.so.6 (0x00a15000)
-    libpopt.so.0 => /usr/lib/libpopt.so.0 (0x001ff000)
-    libwrap.so.0 => /usr/lib/libwrap.so.0 (0x4387c000)
-    /lib/ld-linux.so.2 => /lib/ld-linux.so.2 (0x009fd000)
-    libnsl.so.1 => /lib/libnsl.so.1 (0x4f727000)
-		</screen>
-		<para>This is useless for an early boot stage program (<filename>/usr/lib</filename> may be still unmounted), and for a very small OS installation that won't require desktop features, like a router, small firewall, or any other appliance. On the other hand, the Elektra database access library is very slim with a minimum of dependencies:</para>
-		<screen>$ ldd /lib/libelektra.so
-    libc.so.6 => /lib/tls/libc.so.6 (0x00111000)
-    /lib/ld-linux.so.2 => /lib/ld-linux.so.2 (0x009fd000)
-		</screen>
-	</section>
+		<para>In the last years, many hierarchical configuration systems appeared, and all of them have the same goal: avoid configuration code rewriting, integration between applications, and separation of configuration parameters from their mother software, so then other software can use same configurations.</para>
+		<para>Here we will compare some of them with Elektra.</para>
+		
+		<section id="compare.windows"><title>Windows Registry</title>
+			<para>The biggest problem with the Windows Registry is that it is Windows-specific and proprietary in design, API, and key naming conventions.</para>
+			<para>Cross platform applications can't afford to use the winregistry API because there is nothing similar in other systems.</para>
+			<para>Hopefully, Elektra will change that:</para>
+			<orderedlist>
+				<listitem><simpara>Elektra is highly portable, and there are developers porting and testing Elektra on Windows.</simpara></listitem>
+				<listitem><simpara>There is a winreg Elektra backend (that works as a wrapper for the Windows Registry), so a cross platform program can use Elektra API, which maps Windows Registry's keys to a more cross platform namespace.</simpara></listitem>
+			</orderedlist>
+			<para><graphic srccredit="crossplat" fileref="images/crossplat.png" label="Elektra cross platform status" align="center"/></para>
+		</section>
+		
+		<section id="compare.gconf"><title>GConf</title>
+			<para>The "G" comes from Gnome, which makes GConf part of the Gnome project. Some GConf characteristics:</para>
+			<orderedlist>
+				<listitem><simpara>Architected, designed and written for desktop applications only. Its developers have whishlists to make it system global, but a lot in the essential design will have to change, making it practically a new system, and the redesign did not started yet.</simpara></listitem>
+				<listitem><simpara>GConf's namespaces were not architected for global use.</simpara></listitem>
+				<listitem><simpara>GConf is a daemon, so if one day it will be system global, it will represent a single point of failure.</simpara></listitem>
+				<listitem><simpara>GConf storage backend are XML files, which are big, take long time and system resources to parse or update.</simpara></listitem>
+				<listitem><simpara>GConf seems to be not preocupied with access permissions, making it again a good solution only for single user desktop applications.</simpara></listitem>
+				<listitem><para>GConf is a high level software with many library dependencies, perfect for high level desktop frameworks, but its dependencies are unacceptable for low level early boot stage programs like <filename>/sbin/init</filename>. GConf's dependencies look like this:</para>
+					<screen>$ ldd /usr/lib/libgconf-2.so
+    libgobject-2.0.so.0 => /usr/lib/libgobject-2.0.so.0 (0x0024b000)
+    libORBit-2.so.0 => /usr/lib/libORBit-2.so.0 (0x03dc7000)
+    libm.so.6 => /lib/tls/libm.so.6 (0x00b66000)
+    libgmodule-2.0.so.0 => /usr/lib/libgmodule-2.0.so.0 (0x00dda000)
+    libdl.so.2 => /lib/libdl.so.2 (0x00b8b000)
+    libgthread-2.0.so.0 => /usr/lib/libgthread-2.0.so.0 (0x0099d000)
+    libglib-2.0.so.0 => /usr/lib/libglib-2.0.so.0 (0x00101000)
+    libpthread.so.0 => /lib/tls/libpthread.so.0 (0x00c7c000)
+    libc.so.6 => /lib/tls/libc.so.6 (0x00a3a000)
+    libpopt.so.0 => /usr/lib/libpopt.so.0 (0x0077b000)
+    /lib/ld-linux.so.2 (0x00a21000)</screen>
+				<para>This is useless for an early boot stage program (<filename>/usr/lib</filename> may be still unmounted), and for a very small OS installation that won't require desktop features, like a router, small firewall, or any other appliance. On the other hand, a program that wants to use Elektra will only link to libelektra.so which has a minimum of natural dependencies:</para>
+				<screen>$ ldd /lib/libelektra.so
+    libc.so.6 => /lib/tls/libc.so.6
+    /lib/ld-linux.so.2 => /lib/ld-linux.so.2</screen>
+				</listitem>
+				<listitem><simpara>All Gnome programs use GConf, which makes them already integrated in the configuration level.</simpara></listitem>
+				<listitem><simpara>In the Gnome context, Elektra fits well as a GConf backend, this way no program needs to be modified. With an additional Elektra backend for KDE's KConfig-XT, this integration will span a single framework, and we'll see KDE programs using Gnome's configurations and vice-versa.</simpara></listitem>
+			</orderedlist>
+			
+			<para>Compared to GConf, Elektra is not a daemon, was designed from the begining for global system usage, is lightweight, is concerned about security and avoids any dependencies.</para>
+		</section>
+		
+		<section id="compare.dconf"><title>D-Conf</title>
+			<para>D-Conf generated a long discussion on FreeDesktop.org's XDG mailling list. Its objective is to standarize configuration across desktop frameworks like Gnome and KDE, so no focus is being devoted to global non-desktop system configurations.</para>
+			<para>It was very difficult to find the D-Conf website (not found in the end), and seems that all is available is that XDG discussion, and a wiki page containing analisys of what is required, and development directions.</para>
+			<para>Conclusion: D-Conf is vaporware.</para>
+		</section>
+		
+		<section id="compare.other"><title>Other</title>
+			<bridgehead id="compare.uniconf">UniConf</bridgehead>
+			<para>UniConf started as configuration library and daemon to be used in some specific programs. It claims to be very flexible, capable of having backends and frontends, as any configuration library can have.</para>
+			<para>Its drawbacks are, as in GConf, some dependencies, and a plus (or minus): it was developed in C++ which makes it also dependent on higher level libraries, and require client programs and programmers to be written in C++, unless they get a pure C frontend.</para>
+			<para>Some UniConf developers started to write a UniConf backend for Elektra, which means that you'll be able to use Elektra's simple API and tools, and UniConf will be responsible for all low level I/O.</para>
+			<para>Elektra and UniConf can live together in an entirely Elektrified world, leveraging UniConf flexibility as a storage backend.</para>
+		
+			<bridgehead id="compare.config4gnu">Config 4 GNU</bridgehead>
+			<para>Looks like this is a dead project, since nobody talks about it for long time. Last website update was in 2004.</para>
+			<para>Very ambitious, this project claimed they will write many backends, one for each configuration file available, and after that, some can access say Samba's configurations normalized through their API and tools, what they didn't realized is that to write many different config file parsers (compilers) and keep tracking their changes, is way more difficult than to write patches for each software.</para>
+		
+			<bridgehead id="compare.hiveconf">Hiveconf</bridgehead>
+			<para>This is a dead project. It is a Python library that accesses ini-style configuration files.</para>
+		</section>
 
+	</section>
