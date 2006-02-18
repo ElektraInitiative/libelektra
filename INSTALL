@@ -6,7 +6,7 @@ Elektra stable source code as tarballs can be found at:
   http://sourceforge.net/project/showfiles.php?group_id=117521
 
 Elektra Subversion repository with unstable source code can be checked
-out with these commands:
+out with these commands and requires at least automake 1.7 and autoconf 2.59:
 
   bash:~$ cd src
   bash:~/src$ svn co http://germane-software.com/repositories/elektra/trunk elektra
@@ -18,7 +18,7 @@ out with these commands:
 Building and Installation
 =========================
 
-You should allways prefer building Elektra from its source RPM as:
+You should always prefer building Elektra from its source RPM as:
 
 	$ rpmbuild --rebuild elektra-VERSION.src.rpm
 
@@ -72,8 +72,9 @@ For any further information, check the RPM spec file.
 Building RPMs from the Subversion Repository
 ============================================
 
-Do not use the fresh files from the Subversion repository, since they use to
-be quite unstable. But if you know what you are doing, do this:
+Do not use the fresh files from the Subversion repository, since they might
+be quite unstable. Doing this requires at least automake 1.7 and autoconf 2.59.
+If you know what you are doing, do this:
 
   bash:~$ cd src
   bash:~/src$ svn co http://germane-software.com/repositories/elektra/trunk elektra
