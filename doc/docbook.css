@@ -225,6 +225,11 @@
 		color: #298952;
 	}
 
+	.type {
+		color: #29AA52;
+		font-weight: bold;
+	}
+
 	p {
 		font-family: Verdana, Helvetica, Lucida, Arial;
 		font-size: 11px;
@@ -233,6 +238,7 @@
 
 	.filename, .envar, tt {
 		font-family: lucidatypewriter, lucida console, courier, tahoma;
+		font-weight: bold;
 		/*	font-size: 10px; */
 	}
 

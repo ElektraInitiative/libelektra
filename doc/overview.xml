@@ -1,14 +1,7 @@
 <!--
-$Id:$
-$LastChangedBy:$
+$Id$
 -->
-	<section id="overview"><title>Overview of the Elektra Project</title>
-		<para>The Elektra Project provides an alternative back-end for text configuration files.</para>
-		<para>Instead of each program to have its own text configuration files, with a variety of formats, Elektra tries to provide a universal, hierarchical, fast and consistent namespace and infrastructure to access configuration parameters through a key-value pair mechanism. This way any software can read/save its configuration/state using a consistent API.</para>
-		<para>Being a common infrastructure, it also lets other softwares be aware of this application configurations, leveraging easy software integration.</para>
-		<para>It is designed to be lightweight, with no dependencies, ready to be used also by early boot stage programs.</para>
-		<para>Using Elektra, configuration file's syntax and handling will not be a rework for each software.</para>
-		<para>Elektra lets system administrators control security in a much fine grained way. With the current flat file paradigm it is impossible to control permissions and access times on each <filename>/etc/passwd</filename> or <filename>/etc/shadow</filename> atoms. Elektra lets you do that because each information atom stored in it (key) has a unique name (key name) and access properties. See <ulink url="http://namesys.com/v4/v4.html#etc_passwd">Hans Reiser (creator of ReiserFS) comments about it</ulink>.</para>
+
 		<section id="libarchitecture"><title>Library Linkage Architecture</title>
 			<para>The Elektra library (<filename>libelektra.so</filename>) has 2 layers: public methods and backend access, according to the following architecture (these pictures were taken from the <ulink url="elektra.sxi">Elektra presentation</ulink>):</para>
 			<para><graphic srccredit="genericarch" fileref="images/genericarch.png" label="generic architecture" align="center"/></para>
@@ -43,7 +36,7 @@ $LastChangedBy:$
 				<listitem><para>It doesn't know a thing about the semantics of each data it stores.</para></listitem>
 			</itemizedlist>
 		</section>
-	</section>
+
 	
 	<section id="namespace"><title>Namespaces and Key Names</title>
 		<para>All keys are organized in a hierarchical tree with 2 Namespaces (subtrees) as showed by the picture:</para>

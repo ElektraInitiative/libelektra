@@ -1,6 +1,13 @@
 <?xml version="1.0"?>
+
+
+<!--
+	$Id$
+-->
+
+
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN" "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
-	<!ENTITY overview SYSTEM "overview.xml">
+	<!-- <!ENTITY overview SYSTEM "overview.xml"> -->
 	<!ENTITY bestpract SYSTEM "bestpract.xml">
 	<!ENTITY garbage SYSTEM "garbage.xml">
 	<!ENTITY storage SYSTEM "storage.xml">
@@ -14,11 +21,6 @@
 	<!ENTITY compared SYSTEM "compared.xml">
 ]>
 
-
-<!--
-$Id$
-$LastChangedBy$
--->
 
 <article>
 
@@ -427,35 +429,149 @@ $LastChangedBy$
 
 	</articleinfo>
 
-	<section id="links"><title>Getting The Elektra Software</title>
-		<para>Elektra was formerly named Linux Registry, so many links will still take you to "Linux Registry" named pages. They'll change over time.</para>
-		<para>The Elektra Initiative software and info can be found at <ulink url="http://elektra.sf.net/">elektra.sf.net</ulink> and (in all) the following places:
+<!--
+Sections should be disposed this way:
+
++ About
+	- Overview (with presentation)
+	- Why Linux Needs to be Elektrified
+	- What is Elektra and what is not
+- Download
+	. Source and RPMs
+	. kdbedit source and RPMs
++ Architecture
+	. Browse the presentation
+	. Namespace and Key Names
+	. Key Value and Metadata
+	. Security Model
+	. Best Practices
+	. Adoption by Legacy Apps
+	- Library Linkage
+- Developer Resources
+	. API Doxygen for browsing and download
+	. Online man pages
+	. Fast tutorial
++ Elektra and Other Config Systems
+	- GConf
+	- UniConf
+	- DConf
+	- Config4GNU
+	- Hiveconf
++ Patches
+	- X.org
+	- init
+	- nss
+	- mount
+-->
+	
+	<section id="about"><title>About Elektra</title>
+		<section id="overview"><title>Overview of the Elektra Initiative</title>
+			<para>Elektra is a universal hierarchical configuration store, similar to (<link linkend="compared">but better then</link>) GConf and the Windows Registry. It allows programs to read and save their configurations with a consistent API, and allows them to be aware of other applications' configurations, leveraging easy application integration.</para>
+			<para>While architecturally similar to other OS registries, Elektra does not have most of the problems found in those implementations. Elektra includes a library, an API, plus commandline and GUI tools for administration tasks.</para>
+			<para>It is designed to be lightweight, with no dependencies, ready to be used also by early boot stage programs.</para>
+			<para>Using Elektra, configuration file's syntax and handling will not be a rework for each software.</para>
+			
+			<para>For a fast graphical overview of Elektra, check our <ulink url="elektra.sxi">OpenOffice.org presentation</ulink>. Also browsable (without animations) in an <ulink url="presentation/elektra.html">HTML-exported version.</ulink></para>
+		</section>
+		
+		<section id="needs"><title>Why Linux Needs to be Elektrified</title>
+			
+			<para>Today's GNU/Linux systems (or other UNIX) are a sum of independent components collected in a bazar. Each of them already have a working, but selfish configuration system. Please read this section thinking about a system as a whole, not a sum of many parts.</para>
+			
+			<para>The Elektra Initiative tries to upgrade a '1+1=2' system into a '1*1=1' one.</para>
+			
+			<para>Look into <filename>/etc/fstab</filename> file. Now look into <filename>/etc/modules.conf</filename>, <filename>/etc/passwd</filename>, <filename>/etc/ssh/sshd_config</filename>, <filename>/etc/httpd/conf/httpd.conf</filename>. I see here two terrible problems:</para>
+			<orderedlist numeration="arabic">
+				<listitem><para>They don't have a common file format.</para></listitem>
+				<listitem><para>Their location in the filesystem may be different from Linux distribution to distribution.</para></listitem>
+			</orderedlist>
+			
+			<para>These 2 issues leverages other problems:</para>
+			
+			<orderedlist numeration="arabic">
+				<listitem><para>When two different softwares want to integrate themselves, it is programatically very hard to read, understand and correctly change its partner's configuration file. Think about installing a third-party video driver in XFree86, a new Apache plug-in, etc, and letting this new piece of software do the integration automatically, instead of the sysadmin <command>vi</command> the configuration file, understand and change it in the right way. So basic software integration is a pain today for ISVs (Independent Software Vendors).</para></listitem>
+				<listitem><para>A software developer must waste a lot of time to write the plumbing code for configuration file parsing etc. It is completelly out of his scope to write code to interoperate with other software's configurations files.</para></listitem>
+				<listitem><para>Different distributions tend to place different software configuration in different places with different formats. A regular SuSE system administrator, for example, will be lost when asked to work in a Debian or Slackware system. Think about the most primitive example: network configuration parameters. Each distro has its own approach.</para></listitem>
+				<listitem><para>A system administrator must know all these formats.</para></listitem>
+				<listitem><para>There is no way to know today what was changed in a specific configuration file. If <filename>/etc/shadow</filename> file time changes, there is no way to know if the change was related to nobody's or root's record.</para></listitem>
+				<listitem><para>High-level system administration GUIs (webmin, redhat-config-*, SuSE's YAST, etc) are just a dream today. They can never track successfully all the changes that happens in the format of the configuration files of such a rich diversity of Open Source software (<filename>httpd.conf</filename>, <filename>smb.conf</filename>, <filename>modules.conf</filename>, <filename>fstab</filename>, etc, etc, etc). The approach of some of them is to keep the configuration ideas in a private database and regenerate the specific configuration file whenever a change happens in this database. Welcome to the inconsistency nightmare.</para></listitem>
+			</orderedlist>
+			
+			<para>Other OSes solved this problem by centralizing their configurations, and creating a framework to access them. Configurations then are no more represented by 'configuration files', but by <emphasis>key-value pairs</emphasis> organized in a structured tree commited to some naming convetions.</para>
+			<para>To achieve multi-vendor/provider consistent software integration, and ease of administration across heterogeneous Linux distributions,  Linux needs a key-value pair mechanism to store its configurations.</para>
+			
+		</section>
+		
+		<section id="facts"><title>True Facts About Elektra</title>
 			<itemizedlist>
-				<listitem><simpara><ulink url="http://sourceforge.net/project/showfiles.php?group_id=117521">C source and RPMs</ulink> from <ulink url="http://sourceforge.net/projects/elektra">sourceforge.net</ulink></simpara></listitem>
-				<listitem><simpara><ulink url="http://www.germane-software.com/repositories/elektra/trunk/">Subversion repository</ulink>, thanks to Sean Russel</simpara></listitem>
-				<listitem><simpara><ulink url="http://tlr.pirack.com/LinuxRegistry">Wiki space</ulink>, made available by Daniel Lambea</simpara></listitem>
-				<listitem><simpara><ulink url="http://freshmeat.net/projects/elektra/">Freshmeat project page</ulink></simpara></listitem>
-				<listitem><simpara><ulink url="http://www.advogato.org/proj/Linux Registry/">Advogato project page</ulink></simpara></listitem>
-				<listitem><simpara><ulink url="http://www.orkut.com/Community.aspx?cmm=89174">Orkut Community</ulink></simpara></listitem>
-				<listitem><simpara>Many Elektra developers use to get together in the <ulink url="irc://irc.freenode.net/elektra">#elektra channel of the irc.freenode.net IRC server</ulink></simpara></listitem>
-				<!-- ML admin: https://lists.sourceforge.net/lists/admin/registry-list -->
+				<listitem><para>It is much more an agreement then a piece of software. Relation is 99% to 1%.</para></listitem>
+				<listitem><para>It is a simple and consistent API to help software developers programatically store and retrieve global and user-specific configuration parameters.</para></listitem>
+				<listitem><para>All key-value pairs are stored in clear-text files, UTF-8 encoded. All old charsets are also supported, with automatic transparent conversion to and from UTF-8.</para></listitem>
+				<listitem><para>API supports change notifications and multiple backends.</para></listitem>
+				<listitem><para>It provides a unique namespace for all values. Anywhere, anytime, any program can preciselly access keys by their names. Security restrictions may obviously apply.</para></listitem>
+				<listitem><para>It is designed to be secure and lightweight, to let even early boot-stage programs like <command>/sbin/init</command> to use it, instead of <filename>/etc/inittab</filename> file.</para></listitem>
+				<listitem><para>It is designed to be easy to administrate with regular command line tools like <command>cat</command>, <command>vi</command>, <command>cp</command>, <command>ls</command>, <command>ln</command>. Its storage is 100% open.</para></listitem>
+				<listitem><para>It tries to set distribution-independent naming standards to store things like hardware configuration, networking, user's session configuration, system's mime-types, parameters for kernel modules, etc, that are generally stored under <filename>/etc</filename >.</para></listitem>
+				<listitem><para>It requires existing software to be changed to use its API. This will substitute hundreds of configuration-text-file parsing code, into clear Elektra's API key-value access methods.</para></listitem>
+				<listitem><para>It is POSIX compliant. If it doesn't compile and run easily on some POSIX system, it should be easily modified to do so.</para></listitem>
+			</itemizedlist>
+			<bridgehead id="nofact">Elektra Is Not</bridgehead>
+			<itemizedlist>
+				<listitem><para>Is NOT something that accesses SQL/relational databases.</para ></listitem>
+				<listitem><para>Is NOT an OS service that can become unavailable and make system unusable. It is just a library to access files according to a namespace.</para ></listitem >
+				<listitem><para>Is NOT an alternative to network information systems like LDAP or NIS. These are still required for networked environments.</para ></listitem >
+				<listitem><para>Is NOT a Webmin-like or other GUI tool to be used by end users.</para ></listitem >
+				<listitem><para>Is NOT an additional software layer to edit/generate existing configuration files.</para></listitem>
+				<listitem><para>Is NOT a "configuration system", because one can't be created by simply writing some code. A configuration system is an ecosystem, and the Elektra Project tries to help build one.</para></listitem>
+				<listitem><para>It doesn't know a thing about the semantics of each data it stores.</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+	
+	<section id="download"><title>Download and Links</title>
+		<para>The Elektra Initiative was formerly named Linux Registry, so many links will still take you to "Linux Registry" named pages. They'll change over time.</para>
+		<para>The software and info related to the Elektra Initiative can be found at <ulink url="http://www.libelektra.org/">libelektra.org</ulink> and (in all) the following places:
+			<itemizedlist>
+				<listitem><simpara><ulink url="http://sourceforge.net/project/showfiles.php?group_id=117521">Download C source and RPMs</ulink> from <ulink url="http://sourceforge.net/projects/elektra">sourceforge.net</ulink></simpara></listitem>
+				
+				<listitem><simpara>Fill bugs at <ulink url="http://bugs.libelektra.org">bugs.libelektra.org</ulink></simpara></listitem>
+				
+				<listitem><simpara><ulink url="http://www.germane-software.com/repositories/elektra">Subversion repository</ulink> (see bellow), thanks to Sean Russel</simpara></listitem>
+				
+				<listitem><simpara>The <ulink url="http://sourceforge.net/project/showfiles.php?group_id=117521">kdbedit</ulink> GUI tool for easy key database administration, also on <ulink url="http://www.germane-software.com/repositories/elektra/kdbedit">Subversion repo</ulink>.</simpara></listitem>
+				
 				<listitem><simpara><ulink url="https://lists.sourceforge.net/lists/listinfo/registry-list">Subscribe to general discussions list</ulink> or <ulink url="http://sourceforge.net/mailarchive/forum.php?forum=registry-list">see the list archives</ulink></simpara></listitem>
+				<!-- ML admin: https://lists.sourceforge.net/lists/admin/registry-list -->
+				
+				<listitem><simpara>Many Elektra developers use to get together in the <ulink url="irc://irc.freenode.net/elektra">#elektra channel of irc.freenode.net</ulink></simpara></listitem>
+				
+				<listitem><simpara><ulink url="http://wiki.libelektra.org">Wiki space</ulink></simpara></listitem>
+				
+				<listitem><simpara><ulink url="elektra.sxi">OpenOffice.org Impress file</ulink> [<ulink url="presentation/elektra.html">HTML</ulink>] ready to be delivered in events. There is also a <ulink url="elektra_de.sxi">german translation</ulink> by Markus Raab.</simpara></listitem>
+				
+				<listitem><simpara><ulink url="http://freshmeat.net/projects/elektra/">Freshmeat project page</ulink></simpara></listitem>
+				
+				<listitem><simpara><ulink url="http://www.advogato.org/proj/Linux Registry/">Advogato project page</ulink></simpara></listitem>
+				
+				<listitem><simpara><ulink url="http://www.orkut.com/Community.aspx?cmm=89174">Orkut Community</ulink></simpara></listitem>
 			</itemizedlist>
 		</para>
-		<para>There is an <ulink url="elektra.sxi">OpenOffice.org presentation</ulink> [<ulink url="presentation/elektra.html">HTML without animations</ulink>] that anybody can deliver in community events, to help create awareness about the Elektra Initiative. There is also a <ulink url="elektra_de.sxi">german translation</ulink> by Markus Raab.</para>
 		<para>To get the last snapshot from Subversion do the following:
 			<screen><prompt>bash:~$</prompt> <command>cd src</command>
 <prompt>bash:~/src$</prompt> <command>svn co http://germane-software.com/repositories/elektra/trunk elektra</command>
 <prompt>bash:~/src$</prompt> <command>cd elektra</command>
 <prompt>bash:~/src/elektra$</prompt> <command># files are here</command>
 			</screen>
+		</para>
 
-</para>
 
 		<para>Elektra has a <ulink url="http://www.opensource.org/licenses/bsd-license.php">BSD</ulink> license.</para>
 		<para>
 			<ulink url="http://sourceforge.net/projects/elektra"><graphic srccredit="SourceForge.net" fileref="http://sourceforge.net/sflogo.php?group_id=99628&amp;type=5" label="SourceForge.net Logo" align="center"/></ulink><ulink url="http://freshmeat.net/projects/elektra/"><graphic srccredit="freashmeat.net" fileref="images/link_button_1.gif" label="Freshmeat.net Logo" align="center"/></ulink>
 		</para>
+		
+		
+		
 		<section id="man"><title>Online Manual Pages and API Documentation</title>
 			<para>Elektra man pages can be accessed online:</para>
 			<orderedlist>
@@ -501,44 +617,227 @@ $LastChangedBy$
 
 	</section>
 
-	<section id="needs"><title>Why Linux Needs to be Elektrified</title>
-
-		<para>Today's GNU/Linux systems (or other UNIX) are a sum of independent components collected in a bazar. Each of them already have a working, but selfish configuration system. Please read this section thinking about a system as a whole, not a sum of many parts.</para>
-
-		<para>The Elektra Initiative tries to upgrade a '1+1=2' system into a '1*1=1' one.</para>
-
-		<para>Look into <filename>/etc/fstab</filename> file. Now look into <filename>/etc/modules.conf</filename>, <filename>/etc/passwd</filename>, <filename>/etc/ssh/sshd_config</filename>, <filename>/etc/httpd/conf/httpd.conf</filename>. I see here two terrible problems:</para>
-		<orderedlist numeration="arabic">
-			<listitem><para>They don't have a common file format.</para></listitem>
-			<listitem><para>Their location in the filesystem may be different from Linux distribution to distribution.</para></listitem>
-		</orderedlist>
+	<section id="architecture"><title>Architecture</title>
+		<para>For a fast graphical overview of Elektra, see our <ulink url="elektra.sxi">OpenOffice.org presentation</ulink>. Also browsable (without animations) in an <ulink url="presentation/elektra.html">HTML-exported version.</ulink></para>
 		
-		<para>These 2 issues leverages other problems:</para>
+		<section id="namespace"><title>Namespaces and Key Names</title>
+			<para>All keys are organized in a hierarchical tree with 2 Namespaces (subtrees) as showed by the picture:</para>
+			<para><graphic srccredit="roots" fileref="images/roots.png" label="roots" align="center"/></para>
+			<variablelist>
+				<varlistentry><term><type>system</type></term>
+					<listitem><para>Contains all subsystems and global application keys/configuration. Equivalent to files under <filename>/etc</filename> directory.</para></listitem>
+				</varlistentry>
+				<varlistentry><term><type>user</type></term>
+					<listitem><para>The current user's keys. Equivalent to the dotfiles in a user's <envar>$HOME</envar> directory. These keys are phisically stored under the owner user home directory. The many <filename>user:</filename><replaceable>username</replaceable> in the picture shows the full name of those trees. Read about user domains bellow for more.</para></listitem>
+				</varlistentry>
+			</variablelist>
+			
+			<bridgehead id="userdomains">User Domains</bridgehead>
+			<para>Different from the <filename>system</filename> namespace, the <filename>user</filename> namespace is dynamic. For example, the key <filename>user/env/PATH</filename> may have completely different values for users <replaceable>luciana</replaceable> and <replaceable>valeria</replaceable>. In this example, if <replaceable>valeria</replaceable> wants to access this key at <replaceable>luciana</replaceable>'s space, it should refer to <filename>user:luciana/env/PATH</filename>. Access permissions apply.</para>
+			<para>User domains were implemented also to address situations when different user names (<envar>$USER</envar>) have same UID. So a user key is stored in his home directory based on the user name, not the UID.</para>
+			
+			
+			<bridgehead id="inactivekey">Inactive Keys</bridgehead>
+			<para>A great thing about text configuration files is that some configuration items can be there as an example, but inactive or commented. Elektra provides a very simple way to simulate this behavior: if the key name begins with a dot (.), it is considered inactive or commented. In real world applications, the Elektra API will ignore these keys by default, but the keys are still accessible if the developer wants to.</para>
+			<para>These are some keys that have inactive subtrees:</para>
+			<itemizedlist>
+				<listitem><simpara><filename>system/sw/XFree/InputDevice/.Mouse3/Driver</filename>: All keys under <filename>.Mouse3/*</filename> subtree won't be read by default.</simpara></listitem>
+				<listitem><simpara><filename>user:valeria/env/env2/.PATH</filename>: The <envar>$PATH</envar> environment variable <emphasis>won't</emphasis> be set when <replaceable>valeria</replaceable> login.</simpara></listitem>
+				<listitem><simpara><filename>system/users/.louis/uid</filename>: The entire <filename>.louis/*</filename> subtree is inactive. This is the same as commenting the user entry from a configuration file.</simpara></listitem>
+			</itemizedlist>
+			<para>See bellow more examples of inactive keys.</para>
+		</section>
 		
-		<orderedlist numeration="arabic">
-			<listitem><para>When two different softwares want to integrate themselves, it is programatically very hard to read, understand and correctly change its partner's configuration file. Think about installing a third-party video driver in XFree86, a new Apache plug-in, etc, and letting this new piece of software do the integration automatically, instead of the sysadmin <command>vi</command> the configuration file, understand and change it in the right way. So basic software integration is a pain today for ISVs (Independent Software Vendors).</para></listitem>
-			<listitem><para>A software developer must waste a lot of time to write the plumbing code for configuration file parsing etc. It is completelly out of his scope to write code to interoperate with other software's configurations files.</para></listitem>
-			<listitem><para>Different distributions tend to place different software configuration in different places with different formats. A regular SuSE system administrator, for example, will be lost when asked to work in a Debian or Slackware system. Think about the most primitive example: network configuration parameters. Each distro has its own approach.</para></listitem>
-			<listitem><para>A system administrator must know all these formats.</para></listitem>
-			<listitem><para>There is no way to know today what was changed in a specific configuration file. If <filename>/etc/shadow</filename> file time changes, there is no way to know if the change was related to nobody's or root's record.</para></listitem>
-			<listitem><para>High-level system administration GUIs (webmin, redhat-config-*, SuSE's YAST, etc) are just a dream today. They can never track successfully all the changes that happens in the format of the configuration files of such a rich diversity of Open Source software (<filename>httpd.conf</filename>, <filename>smb.conf</filename>, <filename>modules.conf</filename>, <filename>fstab</filename>, etc, etc, etc). The approach of some of them is to keep the configuration ideas in a private database and regenerate the specific configuration file whenever a change happens in this database. Welcome to the inconsistency nightmare.</para></listitem>
-		</orderedlist>
-	
-		<para>Other OSes solved this problem by centralizing their configurations, and creating a framework to access them. Configurations then are no more represented by 'configuration files', but by <emphasis>key-value pairs</emphasis> organized in a structured tree commited to some naming convetions.</para>
-		<para>To achieve multi-vendor/provider consistent software integration, and ease of administration across heterogeneous Linux distributions,  Linux needs a key-value pair mechanism to store its configurations.</para>
-	
-	</section>
+		<section id="valuemeta"><title>Key's Value and Metadata</title>
+			<para>There are only two types of values that can be stored:</para>
+			<variablelist>
+				<varlistentry><term><inlinegraphic fileref="images/txt.png"/><type>Text</type> or <type>String</type></term>
+					<listitem><para>Handled as pure text. Regardeless of the charset being used, these values are always stored as <emphasis>UTF-8</emphasis>. This ensures very strong internationalization and migration capabilities, while keeping simplicity.</para></listitem>
+				</varlistentry>
+				<varlistentry><term><inlinegraphic fileref="images/binary.png"/><type>Binary</type></term>
+					<listitem><para>A stream of bytes, not necessarily text. It is recommended that you avoid using binary values because UNIX system administrators tend to consider them as unmanageable blackboxes. Anyway, the value will be encoded into pure text format based on hexadecimal digits, for openness and ease of administration. This data type should also be avoided because it is less efficient.</para></listitem>
+				</varlistentry>
+				<varlistentry><term><inlinegraphic fileref="images/supertxt.png"/><type>Extended Text</type> or <type>Extended String</type></term>
+					<listitem><para>Handled exactly as the String type. The internal number for the String type above is 40, and Extended Strings can have internal numbers between 41 and 255. This way, users may define their own types but still having Elektra handle it correctly for them.</para></listitem>
+				</varlistentry>
+				<varlistentry><term><inlinegraphic fileref="images/superbinary.png"/><type>Extended Binary</type></term>
+					<listitem><para>Handled exactly as the Binary type. The internal number for the Binary type above is 20, and Extended Binaries can have internal numbers between 21 and 39. This way, users may define their own types but still having Elektra handle it correctly for them.</para></listitem>
+				</varlistentry>
+				<varlistentry><term><inlinegraphic fileref="images/folder.png"/><type>Folder</type></term>
+					<listitem><para>It can't store a value, but, as a directory in a filesystem, it serves as a way to group correlated keys.</para></listitem>
+				</varlistentry>
+				<varlistentry><term><inlinegraphic fileref="images/link.png"/><type>Link</type></term>
+					<listitem><para>It is a link to another key. They work as symbolic links in the filesystem: when trying to access them, you will actually access the key they point to. The API also provides ways to access these special keys without dereferencing them.</para></listitem>
+				</varlistentry>
+			</variablelist>
+			
+			<para>There are very good reasons why types like <type>Integer</type>, <type>Time</type>, <type>Font</type>, <type>List</type>, etc were not implemented: Elektra was designed to be usefull for any type of program, so having more specific data types implicates in the definition of value limits, separators in the storage format, etc, that may be good for some application and bad for other.</para>
+			
+			<para>An application that needs special value types can use the Extended types described above, and handle the semantics for itself. Frameworks like KDE or Gnome may define global types as <type>Font</type>, <type>Colour</type>, etc.</para>
+		
+			<bridgehead id="metadata" renderas="sect3">Key Meta Data</bridgehead>
+			<para>Besides the key name and the value, each key has other attributes:</para>
+			<variablelist>
+				<varlistentry><term><type>Owner's User and Group</type></term>
+					<listitem><para>This is a system's UID and GID equal to the ones found in regular files' attributes.</para></listitem>
+				</varlistentry>
+				<varlistentry><term><type>Access Permissions</type></term>
+					<listitem><para>Filesystem-like access permissions for user, group and others.</para></listitem>
+				</varlistentry>
+				<varlistentry><term><type>Modification, Access and Stat Times</type></term>
+					<listitem><para>Last time a key was modified, readed and stated (listed), respectively.</para></listitem>
+				</varlistentry>
+				<varlistentry><term><type>Key Comment</type></term>
+					<listitem><para>Pretty much as a configuration file comment. Not intended to be used in GUI applications, because it isn't internationalizable.</para></listitem>
+				</varlistentry>
+			</variablelist>
+		</section>
+		
+		<section id="security"><title>Security Model</title>
+			<para>Elektra lets system administrators control security in a much fine grained way. With the current text file paradigm it is impossible to control permissions and access times on each <filename>/etc/passwd</filename> or <filename>/etc/shadow</filename> atoms. Elektra lets you do that because each information atom stored in it (key) has a unique name (key name) and access rights. See <ulink url="http://namesys.com/v4/v4.html#etc_passwd">Hans Reiser (creator of ReiserFS) comments about it</ulink>.</para>
 
-	&overview;
-	
-	&bestpract;
+			<para>To show the security model in action, this screen shows the <command>kdb</command> command listing keys and their attributes related to user <varname>nobody</varname>.</para>
+			<screen><prompt>bash$</prompt> <command>kdb ls -Rlv system/users/nobody</command>
+-rw-r--r--   root  root    17 Mar 31 09:07 system/users/nobody/uid=99
+-rw-r--r--   root  root    17 Mar 31 09:07 system/users/nobody/gid=99
+-rw-r--r--   root  root    21 Mar 31 09:07 system/users/nobody/gecos=Nobody
+-rw-r--r--   root  root    16 Mar 31 09:07 system/users/nobody/home=/
+-rw-r--r--   root  root    28 Mar 31 09:07 system/users/nobody/shell=/sbin/nologin
+-rw-------   root  root    16 Mar 31 09:07 system/users/nobody/password
+-rw-------   root  root    16 Mar 31 09:07 system/users/nobody/passwdChangeBefore
+-rw-------   root  root    20 Mar 31 09:07 system/users/nobody/passwdChangeAfter
+-rw-------   root  root    16 Mar 31 09:07 system/users/nobody/passwdWarnBefore
+-rw-------   root  root    15 Mar 31 09:07 system/users/nobody/passwdDisableAfter
+-rw-------   root  root    15 Mar 31 09:07 system/users/nobody/passwdDisabledSince
+-rw-------   root  root    15 Mar 31 09:07 system/users/nobody/passwdReserved
+			</screen>
+			<para>We ran the <command>kdb</command> command without super-user credentials, asking for long (<option>-l</option>), recursive (<option>-R</option>) listing, and to show each key value (<option>-v</option>). But (since we are) regular user, we don't have permission to see the values of the <filename>system/users/nobody/passwd*</filename> fields.</para>
+			
+			<para>The users database files were elektrified to key-value pairs using the <command>users-convert</command> script included with the distribution.</para>
+		</section>
+		
+		<section id="keyexamples"><title>Screenshots and Key Examples</title>
+			<para>We took some screenshots to show key and value exapmples and their disposition in the key tree.</para>
+			
+			<bridgehead id="userdb">User Database, Elektrified</bridgehead>
+			<para>The Elektra keys of the combined <filename>/etc/passwd</filename> and <filename>/etc/shadow</filename> entry for user 'apache' would look like:</para>
+			<para><graphic srccredit="users" fileref="images/kdbedit-users.png" label="a user entry" align="center"/></para>
+			<para>As you can see, keys like <filename>system/users/apache/shadowPassword</filename> are unaccessible to the regular users that was browsing the keys with kdbedit, while keys like <filename>system/users/apache/gecos</filename> are perfectly readable.</para>
+			
+			
+			<bridgehead id="init">Init Table, Elektrified</bridgehead>
+			<para>The entry in <filename>/etc/inittab</filename> that is responsible for starting X11 would look:</para>
+			<para><graphic srccredit="init" fileref="images/kdbedit-init.png" label="a init entry" align="center"/></para>
+			
+			<para>The users database files and <filename>/etc/inittab</filename> were Elektrified to key-value pairs using the <command>users-convert</command> and <command>inittab-convert</command> scripts included with the distribution.</para>
+			
+			<bridgehead id="syssignature">System Signature, Elektrified</bridgehead>
+			<para>It is very handy for the system's signature to be a set of keys. This way any application can be aware were it is being installed and take decisions acordingly. This is how a Red Hat system signature should be:</para>
+			<para><graphic srccredit="signature" fileref="images/kdbedit-signature.png" label="system signature" align="center"/></para>
+			<para>Here again some special keys are not accessible for this regular user. In this case, the SSH host identities. This example also shows that related configuration information that today stays in different files and directories, in this case the hostname, host identity keys and version of OS, when migrated to Elektra can stay together under a single <filename>system/signature</filename>.</para>
+			
+			<bridgehead id="kudzu">Hardware Status, Elektrified</bridgehead>
+			<para>This tree was generated by the <command>convert-hwconfKudzu</command> program that converts the <filename>/etc/sysconfig/hwconf</filename> file into Elektra's keys. In this example, we see that it detected a connected mouse. The keys under <filename>system/hw/byClass/MOUSE/GenericMousePS2psaux</filename> have all hardware properties detected by <command>kudzu</command>. There is also a <filename>system/hw/byBus</filename> tree that contains symbolic links to the <filename>byClass</filename> tree, to facilitate key access.</para>
+			<graphic srccredit="system/hw" fileref="images/kdbedit-hw.png" label="system/hw view" align="center"/>
+		
+			<bridgehead id="filesystems">Filesystems Table, Elektrified</bridgehead>
+			<para><command>fstab-convert</command> created this <filename>system/filesystems</filename> tree showed here, based on <filename>/etc/fstab</filename>. A unique identifier was calculated for each filesystem, and a key name generated. <filename>system/filesystems/mntwork</filename> is in evidence, showing the <filename>/mnt/work</filename> filesystem. Bellow, we can see standard key names for this filesystem properties. An example is <filename>system/filesystems/mntwork/mpoint</filename> that contains the value <emphasis>/mnt/work</emphasis>, or <filename>system/filesystems/mntwork/type</filename> that contains <emphasis>vfat</emphasis>.</para>
+			<graphic srccredit="system/filesystems" fileref="images/kdbedit-fstab.png" label="system/filesystems view" align="center"/>
 
-	&garbage;
-	
-	<section id="adoption"><title>Adoption by Legacy System Software</title>
-		<para>The benefits of Elektra will be felt only when configurations like those under <filename>/etc</filename> will move into it. It is expected that this will take time, but awareness should be raised in the community to speed the process.</para>
-		<para>Experienced Unix sysadmins seem (and were expected to be) sceptical about a key-value database on Linux, even when the Elektra Initiative tries to address other OSes registry's problems (centralization, security, consistency). But it is a truly required OS component from a good architecture perspective, and it can solve most of the Linux software integration issues, when adopted.</para>
-		<para>Elektra is expected to be adopted by developers of high-level software applications. Then by some Linux distribution specific admin tools, like redhat-config-network, then finally by main OS programs and libraries, like <command>/sbin/init</command>, PAM, <command>/bin/mount</command>, etc.</para>
+			
+			<bridgehead id="userenv">User Environment, Elektrified</bridgehead>
+			<para>The environment variables I want set, when I log in, with their full key name:</para>
+			<itemizedlist>
+				<listitem><simpara><filename>user:aviram/env/env1/JAVA_HOME</filename>: /usr/lib/jvm/java-1.4.1-ibm-1.4.1.0/jre</simpara></listitem>
+				<listitem><simpara><filename>user:aviram/env/env2/PATH</filename>: $PATH:~/bin:$JAVA_HOME/bin</simpara></listitem>
+				<listitem><simpara><filename>user:aviram/env/env2/PS1</filename>: \h:\w\$ </simpara></listitem>
+				<listitem><simpara><filename>user:aviram/env/env3/EDITOR</filename>: vi</simpara></listitem>
+			</itemizedlist>
+			
+			
+			<bridgehead id="xorg">X.Org Configurations, Elektrified</bridgehead>
+			<para>An example of an elektrified <filename>/etc/X11/xorg.conf</filename> or <filename>/etc/X11/XF86Config</filename>:</para>
+			<itemizedlist>
+				<listitem><simpara><filename>system/sw/xorg/current/Layouts/Default Layout/Inputs/Keyboard0/CoreKeyboard</filename>:</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Layouts/Default Layout/Inputs/Mouse0/CorePointer</filename>:</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Layouts/Default Layout/Screens/Screen0/Absolute.x</filename>: 0</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Layouts/Default Layout/Screens/Screen0/Absolute.y</filename>: 0</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Layouts/Default Layout/Screens/Screen0/ScreenNumber</filename>: 0</simpara></listitem>
+				
+				<listitem><simpara><filename>system/sw/xorg/current/Files/FontPath</filename>: unix/:7100</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Files/RgbPath</filename>: /usr/X11R6/lib/X11/rgb</simpara></listitem>
+				
+				<listitem><simpara><filename>system/sw/xorg/current/Devices/Videocard0/BoardName</filename>: Intel 740 (generic)</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Devices/Videocard0/Driver</filename>: i740</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Devices/Videocard0/VendorName</filename>: Videocard vendor</simpara></listitem>
+				
+				<listitem><simpara><filename>system/sw/xorg/current/InputDevices/Keyboard0/Driver</filename>: keyboard</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/InputDevices/Keyboard0/Options/XkbLayout</filename>: us_intl</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/InputDevices/Keyboard0/Options/XkbModel</filename>: pc105</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/InputDevices/Mouse0/Driver</filename>: mouse</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/InputDevices/Mouse0/Options/Device</filename>: /dev/input/mice</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/InputDevices/Mouse0/Options/Emulate3Buttons</filename>: yes</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/InputDevices/Mouse0/Options/Protocol</filename>: IMPS/2</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/InputDevices/Mouse0/Options/ZAxisMapping</filename>: 4 5</simpara></listitem>
+				
+				<listitem><simpara><filename>system/sw/xorg/current/Monitors/Monitor0/DisplaySize.height</filename>: 230</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Monitors/Monitor0/DisplaySize.width</filename>: 300</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Monitors/Monitor0/HorizSync</filename>: 30.0 - 61.0</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Monitors/Monitor0/ModelName</filename>: SyncMaster</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Monitors/Monitor0/Options/dpms</filename>:</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Monitors/Monitor0/VendorName</filename>: Monitor Vendor</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Monitors/Monitor0/VertRefresh</filename>: 56.0 - 75.0</simpara></listitem>
+				
+				<listitem><simpara><filename>system/sw/xorg/current/Monitors/.Monitor1/HorizSync</filename>: 30.0 - 61.0</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Monitors/.Monitor1/ModelName</filename>: Impression</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Monitors/.Monitor1/Options/dpms</filename>:</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Monitors/.Monitor1/VendorName</filename>: Monitor Vendor</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Monitors/.Monitor1/VertRefresh</filename>: 56.0 - 75.0</simpara></listitem>
+				
+				<listitem><simpara><filename>system/sw/xorg/current/Screens/Screen0/DefaultDepth</filename>: 16</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Screens/Screen0/Device</filename>: Videocard0</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Screens/Screen0/Displays/00/Depth</filename>: 16</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Screens/Screen0/Displays/00/Modes</filename>: 1024x768,800x600,640x480</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Screens/Screen0/Displays/00/Viewport.x</filename>:  0</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Screens/Screen0/Displays/00/Viewport.y</filename>:  0</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Screens/Screen0/Monitor</filename>:  Monitor0</simpara></listitem>
+				
+				<listitem><simpara><filename>system/sw/xorg/current/Modules/dbe</filename>: </simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Modules/dri</filename>: </simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Modules/extmod</filename>: </simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Modules/fbdevhw</filename>: </simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Modules/freetype</filename>: </simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Modules/glx</filename>: </simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Modules/record</filename>: </simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/Modules/type1</filename>:</simpara></listitem>
+				
+				<listitem><simpara><filename>system/sw/xorg/current/DRI/Group</filename>: 0</simpara></listitem>
+				<listitem><simpara><filename>system/sw/xorg/current/DRI/Mode</filename>: 0666</simpara></listitem>
+			</itemizedlist>
+			<para>Pay attention that the keys bellow <filename>system/sw/xorg/current/Monitor/.Monitor1</filename> are inactive because we have <filename>.Monitor1</filename> as their parent. So unless special options are used when calling the API, these keys will not be retrieved from the database.</para>
+			<para>Throughout our site you will see other examples of key names.</para>
+		</section>
+
+		<section id="libarchitecture"><title>Library Linkage Architecture</title>
+			<para>The Elektra library (<filename>libelektra.so</filename>) has 2 layers: public methods and backend access, according to the following architecture (these pictures were taken from the <ulink url="elektra.sxi">Elektra presentation</ulink>):</para>
+			<para><graphic srccredit="genericarch" fileref="images/genericarch.png" label="generic architecture" align="center"/></para>
+			<para>When using local backends such as the filesys backend, all key access happens in the actual process space as bellow:</para>
+			<para><graphic srccredit="localbacks" fileref="images/localbacks.png" label="local backends" align="center"/></para>
+			<para>A remote daemon backend is also possible as noted bellow:</para>
+			<para><graphic srccredit="daemonback" fileref="images/daemonback.png" label="daemon backend" align="center"/></para>
+		</section>
+		
+		&bestpract;
+		
+		&garbage;
+		
+		<section id="adoption"><title>Adoption by Legacy System Software</title>
+			<para>The benefits of Elektra will be felt only when configurations like those under <filename>/etc</filename> will move into it. It is expected that this will take time, but awareness should be raised in the community to speed the process.</para>
+			<para>Experienced Unix sysadmins seem (and were expected to be) sceptical about a key-value database on Linux, even when the Elektra Initiative tries to address other OSes registry's problems (centralization, security, consistency). But it is a truly required OS component from a good architecture perspective, and it can solve most of the Linux software integration issues, when adopted.</para>
+			<para>Elektra is expected to be adopted by developers of high-level software applications. Then by some Linux distribution specific admin tools, like redhat-config-network or YaST, then finally by main OS programs and libraries, like <command>/sbin/init</command>, PAM, <command>/bin/mount</command>, etc.</para>
+			
+			<para>Check the patches we are already writing.</para>
+		</section>
 	</section>
 
 	&society;
@@ -547,21 +846,8 @@ $LastChangedBy$
 
 	<section id="screenshots"><title>Virtual Screenshots</title>
 		<para>Elektra alone can't produce screenshots, because it is just a library/API as we saw above, but since everybody loves them, let's use some visual effects to show some of Elektra's concepts.</para>
-		<section id="system.hw"><title>Hardware Status, Elektrified</title>
-			<para>This tree was generated by the <command>hwconfKudzu-convert</command> program that converts the <filename>/etc/sysconfig/hwconf</filename> file into Elektra's keys. In this example, we see that it detected a connected mouse. The keys under <filename>system/hw/byClass/MOUSE/GenericMousePS2psaux</filename> have all hardware properties detected by <command>kudzu</command>. There is also a <filename>system/hw/byBus</filename> tree that contains symbolic links to the <filename>byClass</filename> tree, to facilitate key access.</para>
-			<graphic srccredit="system/hw" fileref="images/hw.png" label="system/hw view" align="center"/>
-		</section>
-
-		<section id="system.filesystems"><title>Filesystems Table, Elektrified</title>
-			<para><command>fstab-convert</command> created this <filename>system/filesystems</filename> tree showed here, based on <filename>/etc/fstab</filename>. A unique identifier was calculated for each filesystem, and a key name generated. <filename>system/filesystems/mntwork</filename> is in evidence, showing the <filename>/mnt/work</filename> filesystem. Bellow, we can see standard key names for this filesystem properties. An example is <filename>system/filesystems/mntwork/mpoint</filename> that contains the value <emphasis>/mnt/work</emphasis>, or <filename>system/filesystems/mntwork/type</filename> that contains <emphasis>ext2</emphasis>.</para>
-			<graphic srccredit="system/filesystems" fileref="images/fstab.png" label="system/filesystems view" align="center"/>
-		</section>
-
-		<section id="xfree"><title>X.Org Configurations Elektrified</title>
-			<para>All higher level software keys are located under <filename>system/sw</filename>, as showed above for XFree86 configuration. Pay attention to how easy it is to access and change XFree configuration, without any <filename>/etc/X11/XF86Config</filename> parsing effort, when using Elektra. XFree will look for its keys under <filename>system/sw/XFree/current</filename> which is a symbolic link to <filename>system/sw/XFree/handmade</filename>. This is an example on how the high level usage of symbolic links into the key database provides a lot of flexibility.</para>
-			<graphic srccredit="system/sw/XFree" fileref="images/xfree.png" label="system/sw/XFree view" align="center"/>
-		</section>
 		
+
 		<section id="edit"><title>Easily Editing Elektra Keys</title>
 			<para>The <command>kdb edit</command> command provides an easy way to edit a group of keys using your prefered editor. It will dump the selected keys into an XML representation, and run the editor to let the user edit them. After user modifications, it will update, remove or include the keys based on the modified XML file. This real screenshot shows me using <command>kate</command> to modify the XFree configuration keys related to the monitor. If I didn't force it with the <envar>EDITOR</envar> environment, <command>vi</command> would be used.</para>
 			<graphic srccredit="kdb edit" fileref="images/kdbedit.png" label="kdb edit command" align="center"/>
@@ -616,7 +902,7 @@ $LastChangedBy$
 	
 	&api;
 	
-	<appendix id="about"><title>About this Document</title>
+	<appendix id="appendixabout"><title>About this Document</title>
 		<para>This document must be distributed under the terms of <ulink url="http://www.gnu.org/licenses/fdl.html">GNU Free Documentation License</ulink>.</para>
 		<para>This document was written in DocBook XML format, and is a wrapper for Elektra's man pages with some addons.</para>
 		<para>Copyright 2004, Avi Alkalay.</para>
