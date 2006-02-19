@@ -877,6 +877,63 @@ int ksCompare(KeySet *ks1, KeySet *ks2, KeySet *removed) {
 
 
 
+/**
+ * Unfinished...
+ * Returns the parent in common that all keys bellong to.
+ * So if we have this keyset:
+ *
+ *   system/sw/xorg/Monitors/Monitor1/vrefresh
+ *   system/sw/xorg/Monitors/Monitor1/hrefresh
+ *   system/sw/xorg/Devices/Device1/driver
+ *   system/sw/xorg/Devices/Device1/mode
+ *
+ * The common parent is system/sw/xorg
+ * This method will work correctly only on sorted KeySets.
+ *
+ */
+ssize_t ksGetCommonParent(KeySet *ks,char *returnedCommonParent,size_t maxSize) {
+	ssize_t parentSize=0;
+	Key *current=0;
+
+	if (keyGetNameSize(ks->start) > maxSize) {
+		errno=KDB_RET_TRUNC;
+		returnedCommonParent[0]=0;
+		return -1;
+	}
+
+	strcpy(returnedCommonParent,ks->start->key);
+	parentSize=strblen(returnedCommonParent);
+
+	while (*returnedCommonParent) {
+		current=ks->start->next;
+		while (current) {
+			/* Test if a key desn't match */
+			if (memcmp(returnedCommonParent,current->key,parentSize-1)) break;
+			current=current->next;
+		}
+		if (current) {
+			/* some key failed to be a child */
+			/* parent will be the parent of current parent... */
+			char *delim=0;
+
+			if (delim=strrchr(returnedCommonParent,RG_KEY_DELIM)) {
+				*delim=0;
+				parentSize=strblen(returnedCommonParent);
+			} else {
+				*returnedCommonParent=0;
+				parentSize=0;
+			}
+		} else {
+			/* All keys matched (current==0) */
+			/* We have our common parent to return in commonParent */
+			return parentSize;
+		}
+	}
+	return parentSize; /* if reached, will be zero */
+}
+
+
+
 
 /**
  * Writes to @p stream an XML version of the @p ks object.
@@ -981,7 +1038,11 @@ ssize_t ksToStream(const KeySet *ks, FILE* stream, unsigned long options) {
 				ssmalest=strblen(smalest->key);
 			}
 		}
+	/*	
+		char commonParent[500];
 
+		ksGetCommonParentName(ks,commonParent,sizeof(commonParent));
+	*/
 		if (keyIsUser(smalest) && (options & KDB_O_FULLNAME)) {
 			char buffer[800];
 			keyGetFullName(smalest,buffer,sizeof(buffer));

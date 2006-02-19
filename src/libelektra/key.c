@@ -1177,7 +1177,7 @@ ssize_t keyGetFullRootName(const Key *key, char *returned, size_t maxSize) {
 
 /**
  * Get the number of bytes needed to store this key's parent name without
- * the ending NULL.
+ * user domain, and without the ending NULL.
  * 
  * @see keyGetParentName() for example
  * @ingroup keyname
@@ -2215,7 +2215,7 @@ ssize_t keyGetRecordSize(const Key *key) {
 
 /**
  * Return a pointer to the next key, if @p key is member of a KeySet.
- * Different from ksNext(), this call does not affect the KeySet internal cursor.
+ * Different from ksNext(), this call does not affect the @link ksCurrent() KeySet internal cursor @endlink.
  * @ingroup keymisc
  */
 Key *keyNext(Key *key) {

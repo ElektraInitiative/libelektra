@@ -1678,7 +1678,8 @@ int kdbInfoToString(KDBInfo *info,char *string,size_t maxSize) {
  *   - @link ksNext() Work with @endlink its @link ksCurrent() internal
  *     cursor @endlink
  *   - @link ksCompare() Compare entire KeySets @endlink
- *   - @link ksToStream() Export KeySets to an XML representation @endlink
+ *   - @link ksFromXMLfile() Import @endlink and
+ *     @link ksToStream() Export KeySets @endlink to an XML representation
  *   - See @ref keyset "class documentation" for more
  *
  *
@@ -1706,11 +1707,6 @@ int kdbInfoToString(KDBInfo *info,char *string,size_t maxSize) {
  *   They are reserved for very essential OS subsystems.
  * - The keys for your application, called say @e MyApp, should be created under
  *   @p system/sw/MyApp and/or @p user/sw/MyApp.
- * - It is suggested to make your application look for default keys under
- *   @p system/sw/MyApp/current and/or @p user/sw/MyApp/current. This way, from
- *   a sysadmin perspective, it will be possible to copy the
- *   @p system/sw/MyApp/current tree to something like @p system/sw/MyApp/old,
- *   and keep system clean and organized.
  *
  *
  */

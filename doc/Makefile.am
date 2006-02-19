@@ -9,7 +9,18 @@ EXTRA_DIST+=$(man1_MANS) $(man5_MANS) $(man7_MANS)
 SUBDIRS=images specs
 
 # Dependencies for Doxygen documentation
-DOXYSOURCES=../src/libelektra/libkdb.c ../src/kdb/kdb.c ../src/libelektratools/kdbtools.c ../src/include/kdb.h ../src/include/kdbbackend.h ../src/include/kdbprivate.h ../src/libelektra/key.c ../src/backends/template/template.c ../src/Doxyfile
+# main...
+DOXYSOURCES=../src/libelektra/libkdb.c ../src/include/kdb.h ../src/libelektra/key.c ../src/libelektra/keyset.c ../src/Doxyfile
+
+# tools...
+DOXYSOURCES+=../src/libelektratools/kdbtools.c
+
+# kdb command...
+DOXYSOURCES+=../src/kdb/kdb.c
+
+# backend stuff...
+DOXYSOURCES+= ../src/include/kdbbackend.h ../src/include/kdbprivate.h ../src/backends/template/template.c
+
 
 man3_MANS =
 
@@ -66,6 +77,9 @@ develdoc_DATA = elektra-api
 # Generate doxygen documentation
 # This generate man for API too (see src/Doxyfile)
 #
+
+elektra-api.tar.gz: elektra-api
+	tar -zcf elektra-api.tar.gz elektra-api/html
 
 elektra-api: $(DOXYSOURCES)
 	@echo "Making Doxygen..."
