@@ -86,8 +86,12 @@ elektra-api: $(DOXYSOURCES)
 	cd ../src/; $(doxygen)
 
 clean:
-	rm -f csource.xml
-	rm -rf elektra-api
+	-rm -f csource.xml
+	-rm -rf elektra-api
+	-rm -f elektra-api.tar.gz
+	-rm howto.html index.html
+	-rm kdb.1 elektra.5 elektra.7
+	-rm html-titlepage-layout.xsl
 
 install-develdocDATA: $(api_DATA)
 	@$(NORMAL_INSTALL)
