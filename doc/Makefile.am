@@ -85,6 +85,10 @@ elektra-api: $(DOXYSOURCES)
 	@echo "Making Doxygen..."
 	cd ../src/; $(doxygen)
 
+clean:
+	rm -f csource.xml
+	rm -rf elektra-api
+
 install-develdocDATA: $(api_DATA)
 	@$(NORMAL_INSTALL)
 	$(mkinstalldirs) $(DESTDIR)$(apihtmldir)
