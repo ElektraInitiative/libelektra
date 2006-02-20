@@ -19,6 +19,7 @@ $Id$
 
 */
 
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -2767,7 +2768,7 @@ ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
 				if (options & KDB_O_CONDENSED) written+=fprintf(stream," ");
 				else written+=fprintf(stream,"\n     ");
 				
-				written+=fprintf(stream,"value=\"%s\"",key->data);
+				written+=fprintf(stream,"value=\"%s\"",(char *)key->data);
 				
 				if (key->comment) written+=fprintf(stream,">\n");
 				else {
@@ -2910,7 +2911,7 @@ int keyClearFlag(Key *key) {
 
 
 /**
- * Get the flag from the Key.
+ * Get the general flag from the Key.
  *
  * The flag has no semantics to the library, only to your application.
  * It is just a simple marker that you may use to put the key on a special

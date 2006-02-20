@@ -540,6 +540,7 @@ ssize_t ksInsertKeys(KeySet *ks, KeySet *toInsert);
 ssize_t ksAppendKeys(KeySet *ks, KeySet *toAppend);
 
 ssize_t ksToStream(const KeySet *ks, FILE* stream, unsigned long options);
+ssize_t ksGetCommonParentName(const KeySet *ks,char *returnedCommonParent,const size_t maxSize);
 int ksCompare(KeySet *ks1, KeySet *ks2, KeySet *removed);
 void ksSort(KeySet *ks);
 

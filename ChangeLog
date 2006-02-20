@@ -1,3 +1,14 @@
+* Sun Feb 19 2006 Avi Alkalay <avi@unix.sh> 0.5.8
+- Added the ksGetCommonParentName() method to help in XML exporting
+- Fixed a bug in filesys.c::kdbStatKey_filesys() related to link keys
+- Immproved some API documentations
+- ksToStream() now correctly handles KDB_O_HIER flag, for nicer XML exports
+- Some casts included to silent compiler warnings
+- Added some screenshots to the documentation
+- DocBook documentation is being reorganized and improved to soon become part of the site
+- Reorganized #includes
+- Updated the presentation
+
 * Fri Feb 17 2006 Markus Raab 0.5.7
 - ksLookupByValue now supports cascading
 - Ini Backend is marked experimental

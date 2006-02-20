@@ -104,7 +104,7 @@ int kdbStatKey_filesys(Key *key) {
 	if (keyIsLink(key) && key->recordSize) {
 		key->data=malloc(key->recordSize+1); /* Add 1 byte for ending 0 */
 
-		readlink(keyFileName,key->data,key->recordSize);
+		key->dataSize=readlink(keyFileName,key->data,key->recordSize);
 		((char *)key->data)[key->recordSize]=0; /* null terminate it */
 	}
 
@@ -832,14 +832,14 @@ int keyFileSerialize(Key *key, FILE *output) {
  * @ingroup internals
  */
 size_t keyCalcRelativeFileName(const Key *key,char *relativeFileName,size_t maxSize) {
-	if (!key || !keyIsInitialized(key)) {
+/*	 if (!key || !keyIsInitialized(key)) {
 		errno=KDB_RET_UNINITIALIZED;
 		return 0;
 	}
 	if (!key->key) {
 		errno=KDB_RET_NOKEY;
 		return 0;
-	}
+	} */
 /*
 // 	cursor=key->key;
 // 	while (*cursor) {
@@ -912,10 +912,10 @@ size_t keyCalcRelativeFileName(const Key *key,char *relativeFileName,size_t maxS
  * @ingroup internals
  */
 int keyFromStat(Key *key,struct stat *stat) {
-	if (!key) {
+/*	if (!key) {
 		errno=KDB_RET_NULLKEY;
 		return -1;
-	}
+}*/
 
 	keySetAccess(key,stat->st_mode);
 	keySetUID(key,stat->st_uid);
@@ -1001,7 +1001,8 @@ KDBEXPORT(filesys)
 		KDB_BE_GETCHILD,     &kdbGetKeyChildKeys_filesys,
 		
 		/* Explicitly set to default methods: 
-		 * We shouldn't explicitly set defaults. This is handled inside the core of elektra much better */
+		 * We shouldn't explicitly set defaults. This is handled
+		 *  inside the core of elektra much better */
 /*		KDB_BE_SETKEYS,      &kdbSetKeys_default,
 		KDB_BE_MONITORKEY,   &kdbMonitorKey_default,
 		KDB_BE_MONITORKEYS,  &kdbMonitorKeys_default,*/

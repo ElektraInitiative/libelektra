@@ -760,11 +760,6 @@ int commandLink() {
 int commandList() {
 	KeySet *ks; /* this is the container for all keys we'll collect bellow */
 	ssize_t ret;
-	if (!argKeyName) {
-		fprintf(stderr,"kdb ls: No key name\n");
-		return -1;
-	}
-
 
 	ks=ksNew();
 
@@ -849,7 +844,7 @@ int commandList() {
 	if (argShow) {
 		size_t listSize=ksGetSize(ks);
 		
-		if (argXML) ksToStream(ks,stdout,KDB_O_XMLHEADERS |
+		if (argXML) ksToStream(ks,stdout,KDB_O_XMLHEADERS | KDB_O_HIER |
 			(argFullName?(KDB_O_FULLNAME | KDB_O_FULLUGID):0));
 		else {
 			if (listSize == 1) listSingleKey(ksHead(ks));
@@ -1019,6 +1014,8 @@ int commandHelp() {
 	printf(" kdb monitor some/key/name\n");
 	printf(" kdb info\n");
 	printf("\n");
+	
+	return 0;
 }
 
 void optionr()

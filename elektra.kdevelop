@@ -6,41 +6,40 @@
     <version>$VERSION$</version>
     <projectmanagement>KDevCustomProject</projectmanagement>
     <primarylanguage>C</primarylanguage>
-    <ignoreparts>
-      <part>CvsService</part>
-    </ignoreparts>
+    <ignoreparts/>
     <projectdirectory>.</projectdirectory>
     <absoluteprojectpath>false</absoluteprojectpath>
-    <description/>
+    <description></description>
     <secondaryLanguages>
       <language>Bash</language>
     </secondaryLanguages>
   </general>
   <kdevcustomproject>
     <run>
-      <mainprogram>/home/aviram/src/elektra/src/kdb</mainprogram>
+      <mainprogram>/home/aviram/src/elektra/src/kdb/kdb_static</mainprogram>
       <directoryradio>custom</directoryradio>
       <customdirectory>/home/aviram/src/elektra/src/</customdirectory>
-      <programargs>import ../example/hierarchy.xml</programargs>
+      <programargs>export -R user/tmp</programargs>
       <terminal>false</terminal>
       <autocompile>true</autocompile>
       <envvars/>
     </run>
     <build>
       <buildtool>make</buildtool>
-      <builddir/>
+      <builddir></builddir>
     </build>
     <make>
       <abortonerror>false</abortonerror>
       <numberofjobs>1</numberofjobs>
       <dontact>false</dontact>
-      <makebin/>
+      <makebin></makebin>
       <selectedenvironment>default</selectedenvironment>
       <environments>
         <default/>
       </environments>
       <prio>0</prio>
-      <makeoptions/>
+      <makeoptions></makeoptions>
+      <defaulttarget></defaulttarget>
     </make>
     <general>
       <activedir>doc</activedir>
@@ -48,12 +47,12 @@
   </kdevcustomproject>
   <kdevdebugger>
     <general>
-      <dbgshell/>
-      <programargs/>
-      <gdbpath/>
-      <configGdbScript/>
-      <runShellScript/>
-      <runGdbScript/>
+      <dbgshell></dbgshell>
+      <programargs>export -R user/tmp</programargs>
+      <gdbpath></gdbpath>
+      <configGdbScript></configGdbScript>
+      <runShellScript></runShellScript>
+      <runGdbScript></runGdbScript>
       <breakonloadinglibs>true</breakonloadinglibs>
       <separatetty>false</separatetty>
       <floatingtoolbar>false</floatingtoolbar>
@@ -145,6 +144,14 @@
       <headerCompletionDelay>250</headerCompletionDelay>
     </codecompletion>
     <references/>
+    <creategettersetter>
+      <prefixGet></prefixGet>
+      <prefixSet>set</prefixSet>
+      <prefixVariable>m_,_</prefixVariable>
+      <parameterName>theValue</parameterName>
+      <inlineGet>true</inlineGet>
+      <inlineSet>true</inlineSet>
+    </creategettersetter>
   </kdevcppsupport>
   <kdevfileview>
     <groups>

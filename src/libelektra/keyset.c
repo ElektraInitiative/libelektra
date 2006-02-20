@@ -98,7 +98,8 @@ int ksDel(KeySet *ks) {
 
 
 /**
- * Return the number of keys contained by @p ks.
+ * Return the number of keys that @p ks contains.
+ * @see ksNew(), ksDel()
  */
 ssize_t ksGetSize(KeySet *ks) {
 	return ks->size;
@@ -877,63 +878,6 @@ int ksCompare(KeySet *ks1, KeySet *ks2, KeySet *removed) {
 
 
 
-/**
- * Unfinished...
- * Returns the parent in common that all keys bellong to.
- * So if we have this keyset:
- *
- *   system/sw/xorg/Monitors/Monitor1/vrefresh
- *   system/sw/xorg/Monitors/Monitor1/hrefresh
- *   system/sw/xorg/Devices/Device1/driver
- *   system/sw/xorg/Devices/Device1/mode
- *
- * The common parent is system/sw/xorg
- * This method will work correctly only on sorted KeySets.
- *
- */
-ssize_t ksGetCommonParent(KeySet *ks,char *returnedCommonParent,size_t maxSize) {
-	ssize_t parentSize=0;
-	Key *current=0;
-
-	if (keyGetNameSize(ks->start) > maxSize) {
-		errno=KDB_RET_TRUNC;
-		returnedCommonParent[0]=0;
-		return -1;
-	}
-
-	strcpy(returnedCommonParent,ks->start->key);
-	parentSize=strblen(returnedCommonParent);
-
-	while (*returnedCommonParent) {
-		current=ks->start->next;
-		while (current) {
-			/* Test if a key desn't match */
-			if (memcmp(returnedCommonParent,current->key,parentSize-1)) break;
-			current=current->next;
-		}
-		if (current) {
-			/* some key failed to be a child */
-			/* parent will be the parent of current parent... */
-			char *delim=0;
-
-			if (delim=strrchr(returnedCommonParent,RG_KEY_DELIM)) {
-				*delim=0;
-				parentSize=strblen(returnedCommonParent);
-			} else {
-				*returnedCommonParent=0;
-				parentSize=0;
-			}
-		} else {
-			/* All keys matched (current==0) */
-			/* We have our common parent to return in commonParent */
-			return parentSize;
-		}
-	}
-	return parentSize; /* if reached, will be zero */
-}
-
-
-
 
 /**
  * Writes to @p stream an XML version of the @p ks object.
@@ -1023,6 +967,7 @@ ssize_t ksToStream(const KeySet *ks, FILE* stream, unsigned long options) {
 	} else written+=fprintf(stream,"<keyset");
 
 	if (options & KDB_O_HIER) {
+		/*
 		Key *smalest=0;
 		size_t ssmalest=0;
 
@@ -1038,22 +983,34 @@ ssize_t ksToStream(const KeySet *ks, FILE* stream, unsigned long options) {
 				ssmalest=strblen(smalest->key);
 			}
 		}
-	/*	
-		char commonParent[500];
+	*/
+		
+		char commonParent[800];
 
 		ksGetCommonParentName(ks,commonParent,sizeof(commonParent));
-	*/
+	
+		if (commonParent[0]) {
+			written+=fprintf(stream,"\n\n        parent=\"%s\">\n\n\n",
+				commonParent);
+			for (key=ks->start; key; key=key->next)
+				written+=keyToStreamBasename(key,stream,commonParent,0,options);
+		} else {
+			written+=fprintf(stream,">\n\n\n");
+			for (key=ks->start; key; key=key->next)
+				written+=keyToStream(key,stream,options);
+		}
+		
+	/*
 		if (keyIsUser(smalest) && (options & KDB_O_FULLNAME)) {
 			char buffer[800];
 			keyGetFullName(smalest,buffer,sizeof(buffer));
 			written+=fprintf(stream,"\n\n        parent=\"%s\"",buffer);
 		} else
 			written+=fprintf(stream,"\n\n        parent=\"%s\"",smalest->key);
-
+	
+		
 		written+=fprintf(stream,">\n\n\n");
-
-		for (key=ks->start; key; key=key->next)
-			written+=keyToStreamBasename(key,stream,smalest->key,0,options);
+	*/
 	} else { /* No KDB_O_HIER*/
 		written+=fprintf(stream,">\n\n\n");
 		for (key=ks->start; key; key=key->next)
@@ -1063,6 +1020,85 @@ ssize_t ksToStream(const KeySet *ks, FILE* stream, unsigned long options) {
 	written+=fprintf(stream,"</keyset>\n");
 	return written;
 }
+
+
+
+
+/**
+ * Calculates the common parent to all keys.
+ *
+ * Given the @p ks KeySet, calculates the parent name for all the keys.
+ * So if @p ks contains this keys:
+ *
+ * @code
+ *   system/sw/xorg/Monitors/Monitor1/vrefresh
+ *   system/sw/xorg/Monitors/Monitor1/hrefresh
+ *   system/sw/xorg/Devices/Device1/driver
+ *   system/sw/xorg/Devices/Device1/mode
+ * @endcode
+ *
+ * The common parent is @file system/sw/xorg .
+ *
+ * On the other hand, if we have this KeySet:
+ *
+ * @code
+ *   system/some/thing
+ *   system/other/thing
+ *   user/unique/thing
+ * @endcode
+ *
+ * No common parent is possible, so @p returnedCommonParent will contain nothing.
+ *
+ * This method will work correctly only on @link ksSort() sorted KeySets @endlink.
+ *
+ * @param returnedCommonParent a pre-allocated buffer that will receive the common parent, if found
+ * @param maxSize size of the pre-allocated @p returnedCommonParent buffer
+ * @return size in bytes of the parent name, or 0 if there is no common parent,
+ * 	or a negative number to indicate an error, then @p errno must be checked.
+ *
+ */
+ssize_t ksGetCommonParentName(const KeySet *ks,char *returnedCommonParent,const size_t maxSize) {
+	ssize_t parentSize=0;
+	Key *current=0;
+
+	if (keyGetNameSize(ks->start) > maxSize) {
+		errno=KDB_RET_TRUNC;
+		returnedCommonParent[0]=0;
+		return -1;
+	}
+
+	strcpy(returnedCommonParent,ks->start->key);
+	parentSize=strblen(returnedCommonParent);
+
+	while (*returnedCommonParent) {
+		current=ks->start->next;
+		while (current) {
+			/* Test if a key desn't match */
+			if (memcmp(returnedCommonParent,current->key,parentSize-1)) break;
+			current=current->next;
+		}
+		if (current) {
+			/* some key failed to be a child */
+			/* parent will be the parent of current parent... */
+			char *delim=0;
+
+			if ((delim=strrchr(returnedCommonParent,RG_KEY_DELIM))) {
+				*delim=0;
+				parentSize=strblen(returnedCommonParent);
+			} else {
+				*returnedCommonParent=0;
+				parentSize=0;
+			}
+		} else {
+			/* All keys matched (current==0) */
+			/* We have our common parent to return in commonParent */
+			return parentSize;
+		}
+	}
+	return parentSize; /* if reached, will be zero */
+}
+
+
 
 
 
@@ -1111,7 +1147,7 @@ void ksSort(KeySet *ks) {
 
 /**
  * KeySet object initializer.
- * 
+ *
  * You should always use ksNew() instead of ksInit().
  *
  * Every KeySet object that will be used must be initialized first, to setup

@@ -21,19 +21,12 @@
 $Id$
 
 */
-
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
-#include "kdb.h"
-#include "kdbbackend.h"
-#include "kdbprivate.h"
 
 #include <stdlib.h>
 #include <stdarg.h>
-#include "kdbLibLoader.h"
-
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -50,6 +43,12 @@ $Id$
 #endif
 #include <ctype.h>
 #include <string.h>
+
+
+#include "kdb.h"
+#include "kdbbackend.h"
+#include "kdbprivate.h"
+#include "kdbLibLoader.h"
 
 /* usleep doesn't exist on win32, so we use Sleep() */
 #ifdef WIN32
