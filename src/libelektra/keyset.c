@@ -821,7 +821,10 @@ int ksCompare(KeySet *ks1, KeySet *ks2, KeySet *removed) {
 				if (ks2->end==ks2Cursor) ks2->end=ks2PrevCursor;
 				ks2->size--;
 					
-				if (flags) {
+				/* Now check if we still can find differences between keys, but
+				 * we are not interested in the NEEDSYNC flag: he allone is not
+				 * enough to determine a key as different */
+				if (flags & ~KEY_SWITCH_NEEDSYNC) {
 					/* keys are different. Transfer to ks1. */
 					
 					/* Put in ks1 */

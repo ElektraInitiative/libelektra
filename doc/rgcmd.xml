@@ -1,14 +1,13 @@
 
 <!--
 $Id$
-$LastChangedBy$
 -->
-	<section id="rgdesc"><title>Description</title>
+	<section id="kdbdesc"><title>Description</title>
 		<para>The <command>kdb</command> command provide ways to manipulate the Elektra keys database (see <citerefentry><refentrytitle>elektra</refentrytitle><manvolnum>7</manvolnum></citerefentry>) keys.</para>
 		<para>The subcommands implemented are very similar to regular UNIX commands like <command>ls</command>, and <command>rm</command>, specially in their output and options.</para>
 	</section>
 
-	<section id="rgsubc"><title>Subcommands</title>
+	<section id="kdbsubc"><title>Subcommands</title>
 		<variablelist>
 			<varlistentry><term><command>get</command></term>
 				<listitem><para>Get the value from the specified key. Accepts options: <option>-d</option>, <option>-l</option>, <option>-f</option>, <option>-s</option></para></listitem>
@@ -52,7 +51,7 @@ $LastChangedBy$
 		</variablelist>
 	</section>
 
-	<section id="rgopt"><title>Options</title>
+	<section id="kdbopt"><title>Options</title>
 		<variablelist>
 			<varlistentry><term><option>-R</option></term>
 				<listitem><para>Causes to work recursively. In <command>ls</command>, will list recursively.</para></listitem>

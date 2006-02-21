@@ -466,7 +466,8 @@ Sections should be disposed this way:
 	- mount
 -->
 	
-	<section id="about"><title>About Elektra</title>
+	<section id="about"><?dbhtml filename="index.html"?>
+		<title>About Elektra</title>
 		<section id="overview"><title>Overview of the Elektra Initiative</title>
 			<para>Elektra is a universal hierarchical configuration store, similar to (<link linkend="compared">but better then</link>) GConf and the Windows Registry. It allows programs to read and save their configurations with a consistent API, and allows them to be aware of other applications' configurations, leveraging easy application integration.</para>
 			<para>While architecturally similar to other OS registries, Elektra does not have most of the problems found in those implementations. Elektra includes a library, an API, plus commandline and GUI tools for administration tasks.</para>
@@ -535,7 +536,8 @@ Sections should be disposed this way:
 		</section>
 	</section>
 	
-	<section id="download"><title>Download and Links</title>
+	<section id="download">
+		<title>Download and Links</title>
 		<para>The Elektra Initiative was formerly named Linux Registry, so many links will still take you to "Linux Registry" named pages. They'll change over time.</para>
 		<para>The software and info related to the Elektra Initiative can be found at <ulink url="http://www.libelektra.org/">libelektra.org</ulink> and (in all) the following places:
 			<itemizedlist>
@@ -584,7 +586,8 @@ Sections should be disposed this way:
 			<para>All people working on that can be found on the <ulink url="https://lists.sourceforge.net/lists/listinfo/registry-list">Elektra mailling list</ulink>.</para>
 		</section>
 
-	<section id="architecture"><title>Architecture</title>
+	<section id="architecture">
+		<title>Architecture</title>
 		<para>For a fast graphical overview of Elektra, see our <ulink url="elektra.sxi">OpenOffice.org presentation</ulink>. Also browsable (without animations) in an <ulink url="presentation/elektra.html">HTML-exported version.</ulink></para>
 		
 		<section id="namespace"><title>Namespaces and Key Names</title>
@@ -706,7 +709,8 @@ Sections should be disposed this way:
 		
 	</section>
 
-	<section id="keyexamples"><title>Screenshots and Key Examples</title>
+	<section id="keyexamples">
+		<title>Screenshots and Key Examples</title>
 		<para>We took some screenshots to show key and value exapmples and their disposition in the key tree.</para>
 		
 		<bridgehead id="syssignature">System Signature, Elektrified</bridgehead>
@@ -805,35 +809,70 @@ Sections should be disposed this way:
 		</itemizedlist>
 		<para>Pay attention that the keys bellow <filename>system/sw/xorg/current/Monitor/.Monitor1</filename> are inactive because we have <filename>.Monitor1</filename> as their parent. So unless special options are used when calling the API, these keys will not be retrieved from the database.</para>
 		<para>Throughout our site you will see other examples of key names.</para>
-		
-		<bridgehead id="edit">Easily Editing Elektra Keys</bridgehead>
-		<para>The <command>kdb edit</command> command provides an easy way to edit a group of keys using your prefered editor. It will dump the selected keys into an XML representation, and run the editor to let the user edit them. After user modifications, it will update, remove or include the keys based on the modified XML file. This real screenshot shows me using <command>kate</command> to modify the XFree configuration keys related to the monitor. If I didn't force it with the <envar>$EDITOR</envar> environment, <command>vi</command> would be used.</para>
-		<graphic srccredit="kdb edit" fileref="images/kdb-edit.png" label="kdb edit command" align="center"/>
-		
-		<para>But the de-facto administration tool is kdbedit, showed with many screenshots above.</para>
 	</section>
 
-	<section id="developer"><title>Developer Resources</title>
-		<para>Elektra provides a full and carefully documented API that gets installed with the <link linkend="download">elektra-devel RPM</link>. You can also <ulink url="elektra-api.tar.gz">download</ulink> it now or <ulink url="elektra-api/html/index.html">browse the documentation online</ulink>.</para>
+	<section id="developer">
+		<title>Developer Resources</title>
+		<section id="documentation"><title>Documentation</title>
+			<para>Elektra provides a full and carefully documented API that gets installed with the <link linkend="download">elektra-devel RPM</link>. You can also <ulink url="elektra-api.tar.gz">download</ulink> it now or <ulink url="elektra-api/html/index.html">browse the documentation online</ulink>.</para>
 
-		<para>Elektra man pages can be accessed online:</para>
-		<orderedlist>
-			<listitem><simpara><ulink url="man/kdb.1.html">kdb.1</ulink>: The <command>kdb</command> command man page. Describes the usage of the command used to administer Elektra's key database.</simpara></listitem>
+			<para>Elektra man pages can be accessed online:</para>
+			<orderedlist>
+				<listitem><simpara><ulink url="man/kdb.1.html">kdb.1</ulink>: The <command>kdb</command> command man page. Describes the usage of the command used to administer Elektra's key database.</simpara></listitem>
 			
-			<listitem><simpara><ulink url="elektra.7.html">elektra.7</ulink>: Discussion about what is the Elektra Initiative etc.</simpara></listitem>
+				<listitem><simpara><ulink url="elektra.7.html">elektra.7</ulink>: Discussion about what is the Elektra Initiative etc.</simpara></listitem>
 			
-			<listitem><simpara><ulink url="elektra.5.html">elektra.5</ulink>: Elektra internals.</simpara></listitem>
+				<listitem><simpara><ulink url="elektra.5.html">elektra.5</ulink>: Elektra internals.</simpara></listitem>
 			
-			<listitem><simpara><ulink url="kdb.3.html">kdb.3</ulink>: C API documentation for the KeyDB class. <ulink url="elektra-api/html/group__kdb.html">Browse the doxygen</ulink> instead.</simpara></listitem>
+				<listitem><simpara><ulink url="kdb.3.html">kdb.3</ulink>: C API documentation for the KeyDB class. <ulink url="elektra-api/html/group__kdb.html">Browse the doxygen</ulink> instead.</simpara></listitem>
 
-			<listitem><simpara><ulink url="key.3.html">key.3</ulink>: C API documentation for the Key class. <ulink url="elektra-api/html/group__key.html">Browse the doxygen</ulink> instead.</simpara></listitem>
+				<listitem><simpara><ulink url="key.3.html">key.3</ulink>: C API documentation for the Key class. <ulink url="elektra-api/html/group__key.html">Browse the doxygen</ulink> instead.</simpara></listitem>
 			
-			<listitem><simpara><ulink url="keyset.3.html">keyset.3</ulink>: C API documentation for the KeySet class. <ulink url="elektra-api/html/group__keyset.html">Browse the doxygen</ulink> instead.</simpara></listitem>
-		</orderedlist>
+				<listitem><simpara><ulink url="keyset.3.html">keyset.3</ulink>: C API documentation for the KeySet class. <ulink url="elektra-api/html/group__keyset.html">Browse the doxygen</ulink> instead.</simpara></listitem>
+			</orderedlist>
+		</section>
 		&api;
 	</section>
 	
-	<section id="ecosystem"><title>Patches and Other</title>
+	<section id="sysadmin">
+		<title>Sysadmin Resources</title>
+		<section id="kdbcmd"><title>The <command>kdb</command> Command</title>
+			&rgcmd;
+			&rgexample;
+			<bridgehead id="edit">Easily Editing Elektra Keys</bridgehead>
+			<para>The <command>kdb edit</command> command provides an easy way to edit a group of keys using your prefered editor. It will dump the selected keys into an XML representation, and run the editor to let the user edit them. After user modifications, it will update, remove or include the keys based on the modified XML file. This real screenshot shows me using <command>kate</command> to modify the XFree configuration keys related to the monitor. If I didn't force it with the <envar>$EDITOR</envar> environment, <command>vi</command> would be used.</para>
+			<graphic srccredit="kdb edit" fileref="images/kdb-edit.png" label="kdb edit command" align="center"/>
+			<para>But the de-facto administration tool is <command>kdbedit</command>.</para>
+		</section>
+		
+		<section id="kdbedit"><title>The <command>kdbedit</command> Tool</title>
+			<para>The <command>kdbedit</command> tool is a graphical administration tool for Elektra. Its functionality is very similar to the <command>kdb</command>, is intuitive and simple to use.</para>
+			<para>Currently you can use <command>kdbedit</command> to:</para>
+			<itemizedlist>
+				<listitem><simpara>Browse the key tree</simpara></listitem>
+				<listitem><simpara>Create and delete keys and trees</simpara></listitem>
+				<listitem><simpara>Edit every aspect of a key</simpara></listitem>
+				<listitem><simpara>Export keys or entire trees to an XML file (backup)</simpara></listitem>
+				<listitem><simpara>Import entire keysets from an XML file (restore)</simpara></listitem>
+			</itemizedlist>
+			<para><command>kdbedit</command> can be downloaded from our <link linkend="download">download center</link>.</para>
+			
+			<bridgehead id="kdbeditshots">Screenshots</bridgehead>
+			<para>Many <command>kdbedit</command> screenshots are available on <xref linkend="keyexamples"/>. Here are a few more.</para>
+			<figure><title><command>kdbedit</command> exporting a keyset</title>
+				<graphic srccredit="kdbedit-export" fileref="images/kdbedit-export.png" label="kdbedit exporting a keyset" align="center"/>
+			</figure>
+			<figure><title><command>kdbedit</command> editing a key</title>
+				<graphic srccredit="kdbedit-prop1" fileref="images/kdbedit-prop1.png" label="kdbedit editing a key" align="center"/>
+			</figure>
+			<figure><title><command>kdbedit</command> editing key permissions</title>
+				<graphic srccredit="kdbedit-prop2" fileref="images/kdbedit-prop2.png" label="kdbedit editing key permissions" align="center"/>
+			</figure>
+		</section>
+	</section>
+	
+	<section id="ecosystem">
+		<title>Patches and Other</title>
 		<para>The objective of the Elektra Initiative is to help create a pervasive, ubiquitous configuration system. This is an entire ecosystem, much more than a piece of code. This section lists the work of some people that joined the initiative and are helping to build this ecosystem.</para>
 		
 		<section id="patchxorg"><title>X.org Patch</title>
@@ -877,52 +916,43 @@ Sections should be disposed this way:
 		&storage;
 	</section-->
 
-	&society;
-	
-
-	
-	<section id="help"><title>Wanna Help The Elektra Initiative ?</title>
-		<para>We need a lot of help. The main software library is ready to be used, but we really need it to be used, so then in can become a standard.</para>
-		<section id="help-patch"><title>Software Patches</title>
-			<orderedlist>
-				<listitem><simpara>We need patches for Modprobe, Samba, Apache, PAM etc to use Elektra, instead of <filename>/etc/modules.conf</filename>, <filename>/etc/smb.conf</filename>, <filename>/etc/httpd/httpd.conf</filename>, etc.</simpara></listitem>
-				<listitem><simpara>Patches for system initialization scripts to use Elektra instead of <filename>/etc/sysconfig/network-scripts/*, /etc/sysconfig/*</filename> files.</simpara></listitem>
-			</orderedlist>
-		</section>
-
-		<section id="help-awareness"><title>Marketing and Awareness</title>
-			<para>We need more participation in community events making presentations and advocating. There is an <ulink url="elektra.sxi">OpenOffice presentation entirelly commented</ulink> that can be used. So if you have strong communication skills, think about making an Elektra presentation in an event close to your town.</para>
-		</section>
-
-		<section id="help-port"><title>Porting and Backends</title>
-			<orderedlist>
-				<listitem><simpara>Elektra needs platform specific storage backends to be written. For Linux, BSD and Unix, the current backend is fine. For Windows, a Registry storage backend is needed.</simpara></listitem>
-				<listitem><simpara>Elektra needs to be ported, mainteined and packaged in other platforms. Windows, BSD, Mac, other Unix.</simpara></listitem>
-				<listitem><simpara>Elektra binary packages and their maintainers are need for Slackware, Debian, SuSE Linux, Mandrake, etc. I provide Fedora/Red Hat RPMs.</simpara></listitem>
-			</orderedlist>
-		</section>
-
-		<section id="help-perf"><title>Performance Improvements</title>
-			<para>Speed up reading and writing of keys is needed.</para>
-		</section>
-
-		<section id="help-bindings"><title>Language Bindings</title>
-			<orderedlist>
-				<listitem><simpara>Perl</simpara></listitem>
-				<listitem><simpara>C++ with real classes</simpara></listitem>
-				<listitem><simpara>Better Java support</simpara></listitem>
-			</orderedlist>
+	<section id="misc">
+		<title>Miscelaneous</title>
+		&society;
+		
+		<section id="help"><title>Wanna Help The Elektra Initiative ?</title>
+			<para>We need a lot of help. The main software library is ready to be used, but we really need it to be used, so then in can become a standard.</para>
+			<section id="help-patch"><title>Software Patches</title>
+				<orderedlist>
+					<listitem><simpara>We need patches for Modprobe, Samba, Apache, PAM etc to use Elektra, instead of <filename>/etc/modules.conf</filename>, <filename>/etc/smb.conf</filename>, <filename>/etc/httpd/httpd.conf</filename>, etc.</simpara></listitem>
+					<listitem><simpara>Patches for system initialization scripts to use Elektra instead of <filename>/etc/sysconfig/network-scripts/*, /etc/sysconfig/*</filename> files.</simpara></listitem>
+				</orderedlist>
+			</section>
+			
+			<section id="help-awareness"><title>Marketing and Awareness</title>
+				<para>We need more participation in community events making presentations and advocating. There is an <ulink url="elektra.sxi">OpenOffice presentation entirelly commented</ulink> that can be used. So if you have strong communication skills, think about making an Elektra presentation in an event close to your town.</para>
+			</section>
+			
+			<section id="help-port"><title>Porting and Backends</title>
+				<orderedlist>
+					<listitem><simpara>Elektra needs platform specific storage backends to be written. For Linux, BSD and Unix, the current backend is fine. For Windows, a Registry storage backend is needed.</simpara></listitem>
+					<listitem><simpara>Elektra needs to be ported, mainteined and packaged in other platforms. Windows, BSD, Mac, other Unix.</simpara></listitem>
+					<listitem><simpara>Elektra binary packages and their maintainers are need for Slackware, Debian, SuSE Linux, Mandrake, etc. I provide Fedora/Red Hat RPMs.</simpara></listitem>
+				</orderedlist>
+			</section>
+			
+			<section id="help-perf"><title>Performance Improvements</title>
+				<para>Speed up reading and writing of keys is needed.</para>
+			</section>
+			
+			<section id="help-bindings"><title>Language Bindings</title>
+				<orderedlist>
+					<listitem><simpara>Perl</simpara></listitem>
+					<listitem><simpara>C++ with real classes</simpara></listitem>
+					<listitem><simpara>Better Java support</simpara></listitem>
+				</orderedlist>
+			</section>
 		</section>
 	</section>
-	
-	<section id="rgcmd"><title>The <command>kdb</command> Command</title>
-		&rgcmd;
-		&rgexample;
-	</section>
-	
-	<appendix id="appendixabout"><title>About this Document</title>
-		<para>This document must be distributed under the terms of <ulink url="http://www.gnu.org/licenses/fdl.html">GNU Free Documentation License</ulink>.</para>
-		<para>This document was written in DocBook XML format, and is a wrapper for Elektra's man pages with some addons.</para>
-		<para>Copyright 2004, Avi Alkalay.</para>
-	</appendix>
+
 </article>

@@ -2,11 +2,12 @@
 $Id$
 -->
 
-	<section id="compared"><title>Elektra Project and Other Registry-like Software</title>
+	<section id="compared">
+		<title>Elektra and Other Registry-like Softwares</title>
 		<para>In the last years, many hierarchical configuration systems appeared, and all of them have the same goal: avoid configuration code rewriting, integration between applications, and separation of configuration parameters from their mother software, so then other software can use same configurations.</para>
 		<para>Here we will compare some of them with Elektra.</para>
 		
-		<section id="compare.windows"><title>Windows Registry</title>
+		<section id="compare.winreg"><title>Windows Registry</title>
 			<para>The biggest problem with the Windows Registry is that it is Windows-specific and proprietary in design, API, and key naming conventions.</para>
 			<para>Cross platform applications can't afford to use the winregistry API because there is nothing similar in other systems.</para>
 			<para>Hopefully, Elektra will change that:</para>
@@ -56,7 +57,7 @@ $Id$
 			<para>Conclusion: D-Conf is vaporware.</para>
 		</section>
 		
-		<section id="compare.other"><title>Other</title>
+		<section id="compare.other"><title>LDAP and Other</title>
 			<bridgehead id="compare.uniconf">UniConf</bridgehead>
 			<para>UniConf started as configuration library and daemon to be used in some specific programs. It claims to be very flexible, capable of having backends and frontends, as any configuration library can have.</para>
 			<para>Its drawbacks are, as in GConf, some dependencies, and a plus (or minus): it was developed in C++ which makes it also dependent on higher level libraries, and require client programs and programmers to be written in C++, unless they get a pure C frontend.</para>

@@ -16,13 +16,15 @@
   </general>
   <kdevcustomproject>
     <run>
-      <mainprogram>/home/aviram/src/elektra/src/kdb/kdb_static</mainprogram>
+      <mainprogram>/home/aviram/src/elektra/src/kdb/.libs/kdb</mainprogram>
       <directoryradio>custom</directoryradio>
       <customdirectory>/home/aviram/src/elektra/src/</customdirectory>
-      <programargs>export -R user/tmp</programargs>
+      <programargs>edit -R system/filesystems</programargs>
       <terminal>false</terminal>
       <autocompile>true</autocompile>
-      <envvars/>
+      <envvars>
+        <envvar value="kate" name="EDITOR" />
+      </envvars>
     </run>
     <build>
       <buildtool>make</buildtool>
@@ -48,7 +50,7 @@
   <kdevdebugger>
     <general>
       <dbgshell></dbgshell>
-      <programargs>export -R user/tmp</programargs>
+      <programargs>edit -R system/filesystems</programargs>
       <gdbpath></gdbpath>
       <configGdbScript></configGdbScript>
       <runShellScript></runShellScript>
@@ -152,6 +154,11 @@
       <inlineGet>true</inlineGet>
       <inlineSet>true</inlineSet>
     </creategettersetter>
+    <qt>
+      <used>false</used>
+      <version>3</version>
+      <root>/usr/lib/qt-3.3</root>
+    </qt>
   </kdevcppsupport>
   <kdevfileview>
     <groups>

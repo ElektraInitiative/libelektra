@@ -112,7 +112,6 @@ int kdbStatKey_filesys(Key *key) {
 	semiflag=KEY_SWITCH_NEEDSYNC;
 	semiflag=~semiflag;
 	key->flags &= semiflag;
-	key->flags |= KEY_SWITCH_ACTIVE; /* obsolete.... */
 
 	return 0;
 }

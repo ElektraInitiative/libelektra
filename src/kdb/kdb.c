@@ -1280,41 +1280,35 @@ int commandEdit() {
 
 	xmlfile=fdopen(mkstemp(filename),"rw+");
 
-	ksToStream(ks,xmlfile,KDB_O_XMLHEADERS | 
-		(argFullName?(KDB_O_FULLNAME | KDB_O_FULLUGID):0));
+	ksToStream(ks,xmlfile,KDB_O_XMLHEADERS | KDB_O_HIER |
+		KDB_O_FULLNAME | KDB_O_FULLUGID);
 	fclose(xmlfile);
 
-	do 
-		{
-	/* execute the editor and wait for it to finish */
-	sprintf(command,"[ -z \"$EDITOR\" ] && EDITOR=vi; $EDITOR %s",filename);
-	system(command);
+	do {
+		/* execute the editor and wait for it to finish */
+		sprintf(command,"[ -z \"$EDITOR\" ] && EDITOR=vi; $EDITOR %s",filename);
+		system(command);
 
-	toRemove=ksNew();
-	ksEdited=ksNew();
+		toRemove=ksNew();
+		ksEdited=ksNew();
 
-	/* ksFromXML is not a library function.
-	 * It is implemented in and for this program only.
-	 * It is pretty reusable code, though.
-	 */
-	 ret=ksFromXMLfile(ksEdited,filename);
-	if (ret!=0)
-		{
-		printf("kdb cannot import this file, because it is not valid !\n");
-		strcpy(choice,"");
-		while (choice[0]!='E' && choice[0]!='C')
-			{
-			printf("Do you want to edit it again or to cancel ? (E/C) : ");
-			fgets(choice,4, stdin );
+		/* ksFromXML is not a library function.
+		 * It is implemented in and for this program only.
+		 * It is pretty reusable code, though.
+		 */
+		ret=ksFromXMLfile(ksEdited,filename);
+		if (ret!=0) {
+			printf("kdb cannot import this file, because it is not valid !\n");
+			strcpy(choice,"");
+			while (choice[0]!='E' && choice[0]!='C') {
+				printf("Do you want to edit it again or to cancel ? (E/C) : ");
+				fgets(choice,4, stdin );
 			}
 		}
-	}
-	while (ret!=0 && choice[0]=='E');
+	} while (ret!=0 && choice[0]=='E');
 	remove(filename);
 	
-	if (ret==0)
-		{
-
+	if (ret==0) {
 		ksCompare(ks,ksEdited,toRemove);
 	
 		/* Discard ksEdited because there is nothing else here

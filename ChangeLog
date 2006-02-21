@@ -1,6 +1,9 @@
 * Sun Feb 19 2006 Avi Alkalay <avi@unix.sh> 0.5.8
 - Added the ksGetCommonParentName() method to help in XML exporting
 - Fixed a bug in filesys.c::kdbStatKey_filesys() related to link keys
+- Fixed a  very stupid bug in key.c::keyCompare()
+- Make 'kdb edit' more robust in terms of completeness when exporting to XML
+- Removed a bug on keyset.c::ksCompare() related to the NEEDSYNC flag
 - Immproved some API documentations
 - ksToStream() now correctly handles KDB_O_HIER flag, for nicer XML exports
 - Some casts included to silent compiler warnings
@@ -8,6 +11,7 @@
 - DocBook documentation is being reorganized and improved to soon become part of the site
 - Reorganized #includes
 - Updated the presentation
+- Updated screenshot for 'kdb edit' command
 
 * Fri Feb 17 2006 Markus Raab 0.5.7
 - ksLookupByValue now supports cascading

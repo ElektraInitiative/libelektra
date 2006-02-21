@@ -86,12 +86,17 @@ elektra-api: $(DOXYSOURCES)
 	cd ../src/; $(doxygen)
 
 clean:
-	-rm -f csource.xml
-	-rm -rf elektra-api
-	-rm -f elektra-api.tar.gz
+	-rm csource.xml
+	-rm example.c
 	-rm howto.html index.html
 	-rm kdb.1 elektra.5 elektra.7
 	-rm html-titlepage-layout.xsl
+	-rm xorgpatch.xml
+	-rm initpatch.xml
+	-rm elektra-api.tar.gz
+	-rm -rf elektra-api
+	-rm -rf libelektra.org
+
 
 install-develdocDATA: $(api_DATA)
 	@$(NORMAL_INSTALL)
@@ -140,6 +145,13 @@ initpatch.xml: patches/sysvinit/README.sysvinit.Elektra.txt
 	(echo "<screen><![CDATA["; cat  $<; echo "]]></screen>") > $@
 
 howto.html: howto.xml elektra.7.xml author.xml garbage.xml overview.xml bestpract.xml rgexample.xml rgcmd.xml storage.xml api.xml society.xml compared.xml api.xml apiexample.xml xorgpatch.xml initpatch.xml csource.xml
+
+libelektra.org: howto.xml elektra.7.xml author.xml garbage.xml overview.xml bestpract.xml rgexample.xml rgcmd.xml storage.xml api.xml society.xml compared.xml api.xml apiexample.xml xorgpatch.xml initpatch.xml csource.xml
+	$(xsltproc) -o ${HTML_TITLE_LAYOUT:.tpl=.xsl} $(dbroot)/template/titlepage.xsl ${HTML_TITLE_LAYOUT}
+	$(xsltproc) -o $@ ${HTML_TITLE_LAYOUT:.tpl=.xsl} $<
+	cp docbook.css $@
+	mkdir $@/images/
+	cp -r images/*png images/*gif $@/images
 
 html: howto.html
 	$(man2html) -r < kdb.1 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > kdb.1.html

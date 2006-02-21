@@ -2531,33 +2531,31 @@ uint32_t keyCompare(const Key *key1, const Key *key2) {
 	   A lot of decisions because strcmp can't handle NULL pointers */
 	if (key1->key && key2->key) {
 		if (strcmp(key1->key,key2->key))            ret|=KEY_SWITCH_NAME;
-	} else {
-		if (key1->key)                              ret|=KEY_SWITCH_NAME;
-		else if (key2->key)                         ret|=KEY_SWITCH_NAME;
-	}
+	} else
+		if (key1->key || key2->key)                 ret|=KEY_SWITCH_NAME;
 
 	if (key1->comment && key2->comment) {
 		if (strcmp(key1->comment,key2->comment))    ret|=KEY_SWITCH_COMMENT;
-	} else {
-		if (key1->comment)                          ret|=KEY_SWITCH_COMMENT;
-		else if (key2->comment)                     ret|=KEY_SWITCH_COMMENT;
-	}
+	} else
+		if (key1->comment || key2->comment)         ret|=KEY_SWITCH_COMMENT;
 
 	if (key1->userDomain && key2->userDomain) {
 		if (strcmp(key1->userDomain,key2->userDomain)) ret|=KEY_SWITCH_DOMAIN;
-	} else {
-		if (key1->userDomain)                       ret|=KEY_SWITCH_DOMAIN;
-		else if (key2->comment)                     ret|=KEY_SWITCH_DOMAIN;
-	}
+	} else
+		if (key1->userDomain || key2->userDomain)      ret|=KEY_SWITCH_DOMAIN;
 
-	/* compare and select some flags */
-	ret|=(key1->flags ^ key2->flags) & (KEY_SWITCH_FLAG | KEY_SWITCH_NEEDSYNC);
+	/* select and compare some flags */
+	ret|=
+		/* put in evidence the differences only */
+		(key1->flags ^ key2->flags) &
+		/* and compare with what we need */
+		(KEY_SWITCH_FLAG | KEY_SWITCH_NEEDSYNC);
 	
 	/* Compare data */
 	if (key1->dataSize != key2->dataSize)          ret|=KEY_SWITCH_VALUE;
 	else if (memcmp(key1->data,key2->data,
 			(key1->dataSize<=key2->dataSize?key1->dataSize:key2->dataSize)))
-		                                            ret|=KEY_SWITCH_VALUE;
+	                                               ret|=KEY_SWITCH_VALUE;
 
 	return ret;
 }

@@ -5,12 +5,14 @@
 		xmlns="http://www.w3.org/TR/xhtml1/transitional"
 		exclude-result-prefixes="#default">
 
-	<xsl:import href="/usr/share/sgml/docbook/xsl-stylesheets/xhtml/docbook.xsl"/>
+	<xsl:import href="/usr/share/sgml/docbook/xsl-stylesheets/xhtml/chunk.xsl"/>
 	<!--xsl:import href="_DBSTYLESHEET_"/-->
 
-	<xsl:output indent="yes" encoding="UTF-8"/>
+	<xsl:output method="html" indent="no" encoding="UTF-8"/>
 
-	<xsl:param name="chunk.section.depth" select="1"/>
+	<xsl:param name="base.dir" select="'libelektra.org/'"/>
+	
+	<xsl:param name="chunk.section.depth" select="'1'"/>
 	<xsl:param name="chunker.output.method" select="'html'"/>
 
 	<xsl:param name="html.stylesheet" select="'docbook.css'"/>
@@ -21,8 +23,8 @@
 	<xsl:param name="callout.graphics.extension" select="'.gif'"/>
 	<xsl:param name="callouts.extension" select="'0'"/>
 
-	<xsl:param name="section.autolabel" select="'1'"/>
-	<xsl:param name="appendix.autolabel" select="'1'"/>
+	<xsl:param name="section.autolabel" select="'0'"/>
+	<xsl:param name="appendix.autolabel" select="'0'"/>
 
 	<xsl:param name="shade.verbatim" select="'0'"/>
 
