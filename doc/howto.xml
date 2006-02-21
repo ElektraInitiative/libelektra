@@ -31,9 +31,21 @@
 
 		&author;
 
-		<pubdate>2005-07-25</pubdate>
+		<pubdate>2006-02-21</pubdate>
 
 		<revhistory>
+			<revision>
+				<revnumber>2006-02-21</revnumber>
+				<date>21 Feb 2006</date>
+				<authorinitials>avi</authorinitials>
+				<revdescription>
+					<itemizedlist>
+						<listitem><simpara>Complete restructuration</simpara></listitem>
+						<listitem><simpara>Completed the comparation sections</simpara></listitem>
+						<listitem><simpara>Much more graphics and screenshots from presentation and from kdbedit</simpara></listitem>
+					</itemizedlist>
+				</revdescription>
+			</revision>
 			<revision>
 				<revnumber>2005-07-25</revnumber>
 				<date>27 Jul 2005</date>
@@ -474,7 +486,7 @@ Sections should be disposed this way:
 			<para>It is designed to be lightweight, with no dependencies, ready to be used also by early boot stage programs.</para>
 			<para>Using Elektra, configuration file's syntax and handling will not be a rework for each software.</para>
 			
-			<para>For a fast graphical overview of Elektra, check our <ulink url="elektra.sxi">OpenOffice.org presentation</ulink>. Also browsable (without animations) in an <ulink url="presentation/elektra.html">HTML-exported version.</ulink></para>
+			<para>For a fast graphical overview of Elektra, check our <ulink url="elektra.sxi">OpenOffice.org presentation</ulink>. Also browsable (without animations) in an <ulink url="presentation/">HTML-exported version.</ulink></para>
 		</section>
 		
 		<section id="needs"><title>Why Linux Needs to be Elektrified</title>
@@ -558,7 +570,7 @@ Sections should be disposed this way:
 				
 				<listitem><simpara><ulink url="http://wiki.libelektra.org">Wiki space</ulink></simpara></listitem>
 				
-				<listitem><simpara><ulink url="elektra.sxi">OpenOffice.org Impress file</ulink> [<ulink url="presentation/elektra.html">HTML</ulink>] ready to be delivered in events. There is also a <ulink url="elektra_de.sxi">german translation</ulink> by Markus Raab.</simpara></listitem>
+				<listitem><simpara><ulink url="elektra.sxi">OpenOffice.org Impress file</ulink> [<ulink url="presentation/">HTML</ulink>] ready to be delivered in events. There is also a <ulink url="elektra_de.sxi">german translation</ulink> by Markus Raab.</simpara></listitem>
 				
 				<listitem><simpara><ulink url="http://freshmeat.net/projects/elektra/">Freshmeat project page</ulink></simpara></listitem>
 				
@@ -588,7 +600,7 @@ Sections should be disposed this way:
 
 	<section id="architecture">
 		<title>Architecture</title>
-		<para>For a fast graphical overview of Elektra, see our <ulink url="elektra.sxi">OpenOffice.org presentation</ulink>. Also browsable (without animations) in an <ulink url="presentation/elektra.html">HTML-exported version.</ulink></para>
+		<para>For a fast graphical overview of Elektra, see our <ulink url="elektra.sxi">OpenOffice.org presentation</ulink>. Also browsable (without animations) in an <ulink url="presentation/">HTML-exported version.</ulink></para>
 		
 		<section id="namespace"><title>Namespaces and Key Names</title>
 			<para>All keys are organized in a hierarchical tree with 2 Namespaces (subtrees) as showed by the picture:</para>
@@ -818,7 +830,7 @@ Sections should be disposed this way:
 
 			<para>Elektra man pages can be accessed online:</para>
 			<orderedlist>
-				<listitem><simpara><ulink url="man/kdb.1.html">kdb.1</ulink>: The <command>kdb</command> command man page. Describes the usage of the command used to administer Elektra's key database.</simpara></listitem>
+				<listitem><simpara><ulink url="kdb.1.html">kdb.1</ulink>: The <command>kdb</command> command man page. Describes the usage of the command used to administer Elektra's key database.</simpara></listitem>
 			
 				<listitem><simpara><ulink url="elektra.7.html">elektra.7</ulink>: Discussion about what is the Elektra Initiative etc.</simpara></listitem>
 			
@@ -886,24 +898,14 @@ Sections should be disposed this way:
 		</section>
 		
 		
-		<section id="ecotools"><title>Tools and Software Patches</title>
+		<section id="ecotools"><title>Tools, Bindings, etc</title>
 			<itemizedlist>
-				<listitem><simpara><ulink url="http://www.livejournal.com/users/gregorburger/">Regedit GUI to edit the key database</ulink>, using the QT library, by Gregor Burger. There is a <ulink url="http://developer.berlios.de/projects/tlr-regedit/">Berlios entry</ulink> with Subversion repository, and <ulink url="http://sourceforge.net/project/showfiles.php?group_id=117521">RPM packages available</ulink>.</simpara></listitem>
-				<listitem><simpara><ulink url="http://sourceforge.net/project/showfiles.php?group_id=117521">Elektrified <emphasis>X.org</emphasis></ulink> [see <ulink url="patches/xorg/README.xorg.Elektra.html">README</ulink>] to use a key database instead of <filename>xorg.conf</filename> file.</simpara></listitem>
-				<listitem><simpara><ulink url="http://sourceforge.net/project/showfiles.php?group_id=117521">Elektrified <filename>/sbin/init</filename> and Fedora Core 2 RPMs</ulink> [see <ulink url="patches/sysvinit/README.sysvinit.Elektra.html">README</ulink>] for the <ulink url="ftp://ftp.cistron.nl/pub/people/miquels/sysvinit/">original sysvinit package from Miquel van Smoorenburg</ulink>.</simpara></listitem>
-				<listitem><simpara><ulink url="http://nss-registry.skumler.net">Users and Groups Name System Module for GLibC</ulink>, by Jens Andersen. This is a module that can be activated by the name system switch mechanism (<filename>/etc/nsswitch.conf</filename>) to let users and groups databases be Elektrified, instead of <filename>/etc/{passwd|shadow|groups}</filename>.</simpara></listitem>
-				<listitem>Daniel Lambea and Israel Bethencourt are writing patches for basic system tools, and will have soon a full Elektrified Linux distribution.</listitem>
-			</itemizedlist>
-		</section>
-		
-		<section id="ecobind"><title>Language Bindings and Packages</title>
-			<itemizedlist>
+				<listitem><simpara>Users and Groups Name System Module for GLibC, by Jens Andersen. This is a module that can be activated by the name system switch mechanism (<filename>/etc/nsswitch.conf</filename>) to let users and groups databases be Elektrified, instead of <filename>/etc/{passwd|shadow|groups}</filename>. <ulink url="http://germane-software.com/repositories/elektra/trunk/patches/nss-elektra/">Check it out from source repository</ulink>.</simpara></listitem>
 				<listitem><simpara><ulink url="http://www.germane-software.com/software/Libraries/registry">Ruby bindings</ulink>, by Sean Russel. If you are writing code in Ruby, and need an easy way to store/retrieve configuration/state data, this is for you.</simpara></listitem>
 				<listitem><simpara><ulink url="http://acm.cs.uwec.edu/~lemkesr/">Python bindings</ulink>, by Scott Lemke.</simpara></listitem>
 				<listitem><simpara><ulink url="http://www.deadpixi.com/software/">Lua bindings</ulink>, by Rob King<!-- jking@deadpixi.com -->. Check also its <ulink url="http://www.deadpixi.com/software/ElektraLua/README">README</ulink> file.</simpara></listitem>
 				
 				<listitem><simpara><ulink url="http://sourceforge.net/projects/jreg">JRegistry</ulink>, by Alexopoulos Charalampos, are Java bindings for the Elektra API, and apparently a GUI for Elektra administration.</simpara></listitem>
-				<listitem><simpara><ulink url="http://sourceforge.net/project/showfiles.php?group_id=117521">Fedora Core RPM packages</ulink></simpara></listitem>
 				<listitem><simpara><ulink url="http://bugs.gentoo.org/show_bug.cgi?id=63417">Gentoo ebuild</ulink>, by Martin Holzhauer <!-- wood-worker@gmx.net --></simpara></listitem>
 				<listitem><simpara><ulink url="http://xentac.net/tur/tags/punkrockguy318/">Arch Linux PKGBUILD</ulink>, by Lukas Sabota, <!-- punkrockguy318@comcast.net --> and also the Arch Linux <ulink url="ftp://ftp.archlinux.org/tur/punkrockguy318/">binary packages</ulink>.</simpara></listitem>
 			</itemizedlist>

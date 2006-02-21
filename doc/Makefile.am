@@ -27,9 +27,33 @@ man3_MANS =
 if HAVE_XSLTPROC
 if HAVE_STYLESHEET
 
+
+
+SUFFIXES: .xml .html .pdf .ps .rtf .xsl .fo .tpl
+
+#
+# TARGETS
+#
+.xml.html:
+	$(xsltproc) -o ${HTML_TITLE_LAYOUT:.tpl=.xsl} $(dbroot)/template/titlepage.xsl ${HTML_TITLE_LAYOUT}
+	$(xsltproc) -o $@ ${HTML_TITLE_LAYOUT:.tpl=.xsl} $<
+
+
+
 man1_MANS = kdb.1
 man5_MANS = elektra.5
 man7_MANS = elektra.7
+
+all_MANS = ${man1_MANS} ${man5_MANS} ${man7_MANS}
+
+
+# Layout and confiruations to generate HTML for the web site
+HTML_TITLE_LAYOUT=html-titlepage-layout.tpl
+HTML_PARAMS=html-params.xsl
+
+PATCHSOURCES=patches/xorg/README.xorg.Elektra.txt patches/sysvinit/README.sysvinit.Elektra.txt
+
+
 
 #
 ## Build man documentation
@@ -42,24 +66,63 @@ elektra.7: elektra.7.xml author.xml overview.xml bestpract.xml rgexample.xml
 	
 elektra.5: elektra.5.xml author.xml storage.xml
 	$(xsltproc) $(dbroot)/manpages/docbook.xsl $<
-	
-endif
-endif
 
-# Layout and confiruations to generate HTML for the web site
-HTML_TITLE_LAYOUT=html-titlepage-layout.tpl
-HTML_PARAMS=html-params.xsl
 
-PATCHSOURCES=patches/xorg/README.xorg.Elektra.txt patches/sysvinit/README.sysvinit.Elektra.txt
 
-SUFFIXES: .xml .html .pdf .ps .rtf .xsl .fo .tpl
 
 #
-# TARGETS
+# Build HTML documentation
 #
-.xml.html:
+
+example.c:
+	$(LN_S) ../examples/example.c .
+
+csource.xml: example.c
+	(echo "<programlisting><![CDATA["; cat $<; echo "]]></programlisting>") > $@
+
+xorgpatch.xml: patches/xorg/README.xorg.Elektra.txt
+	(echo "<screen><![CDATA["; cat  $<; echo "]]></screen>") > $@
+
+initpatch.xml: patches/sysvinit/README.sysvinit.Elektra.txt
+	(echo "<screen><![CDATA["; cat  $<; echo "]]></screen>") > $@
+
+
+
+
+howto.html: howto.xml elektra.7.xml author.xml garbage.xml overview.xml bestpract.xml rgexample.xml rgcmd.xml storage.xml api.xml society.xml compared.xml api.xml apiexample.xml xorgpatch.xml initpatch.xml csource.xml
+
+
+
+
+
+libelektra.org: howto.xml elektra.7.xml author.xml garbage.xml overview.xml bestpract.xml rgexample.xml rgcmd.xml storage.xml api.xml society.xml compared.xml api.xml apiexample.xml xorgpatch.xml initpatch.xml csource.xml elektra-api.tar.gz htmlman
 	$(xsltproc) -o ${HTML_TITLE_LAYOUT:.tpl=.xsl} $(dbroot)/template/titlepage.xsl ${HTML_TITLE_LAYOUT}
-	$(xsltproc) -o $@ ${HTML_TITLE_LAYOUT:.tpl=.xsl} $<
+	$(xsltproc) -stringparam base.dir $@/ ${HTML_TITLE_LAYOUT:.tpl=.xsl} $<
+	-cp docbook.css $@
+	-mkdir $@/images/
+	-cp -r images/*png images/*gif $@/images
+	-find elektra-api/html | cpio -pdvm $@
+	-cp elektra-api.tar.gz $@
+	-cp kdb.1.html elektra.7.html elektra.5.html kdb.3.html key.3.html keyset.3.html $@
+
+
+
+
+
+htmlman: elektra-api ${all_MANS}
+	$(man2html) -r < kdb.1 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > kdb.1.html
+	$(man2html) -r < elektra.7 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > elektra.7.html
+	$(man2html) -r < elektra.5 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > elektra.5.html
+	$(man2html) -r < elektra-api/man/man3/kdb.3 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > kdb.3.html
+	$(man2html) -r < elektra-api/man/man3/key.3 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > key.3.html
+	$(man2html) -r < elektra-api/man/man3/keyset.3 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > keyset.3.html
+
+
+
+
+endif
+endif
+
 
 
 # all: documentation
@@ -88,7 +151,6 @@ elektra-api: $(DOXYSOURCES)
 clean:
 	-rm csource.xml
 	-rm example.c
-	-rm howto.html index.html
 	-rm kdb.1 elektra.5 elektra.7
 	-rm html-titlepage-layout.xsl
 	-rm xorgpatch.xml
@@ -128,37 +190,4 @@ endif
 
 
 
-#
-# Build HTML documentation
-#
-
-example.c:
-	$(LN_S) ../examples/example.c .
-
-csource.xml: example.c
-	(echo "<programlisting><![CDATA["; cat $<; echo "]]></programlisting>") > $@
-
-xorgpatch.xml: patches/xorg/README.xorg.Elektra.txt
-	(echo "<screen><![CDATA["; cat  $<; echo "]]></screen>") > $@
-
-initpatch.xml: patches/sysvinit/README.sysvinit.Elektra.txt
-	(echo "<screen><![CDATA["; cat  $<; echo "]]></screen>") > $@
-
-howto.html: howto.xml elektra.7.xml author.xml garbage.xml overview.xml bestpract.xml rgexample.xml rgcmd.xml storage.xml api.xml society.xml compared.xml api.xml apiexample.xml xorgpatch.xml initpatch.xml csource.xml
-
-libelektra.org: howto.xml elektra.7.xml author.xml garbage.xml overview.xml bestpract.xml rgexample.xml rgcmd.xml storage.xml api.xml society.xml compared.xml api.xml apiexample.xml xorgpatch.xml initpatch.xml csource.xml
-	$(xsltproc) -o ${HTML_TITLE_LAYOUT:.tpl=.xsl} $(dbroot)/template/titlepage.xsl ${HTML_TITLE_LAYOUT}
-	$(xsltproc) -o $@ ${HTML_TITLE_LAYOUT:.tpl=.xsl} $<
-	cp docbook.css $@
-	mkdir $@/images/
-	cp -r images/*png images/*gif $@/images
-
-html: howto.html
-	$(man2html) -r < kdb.1 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > kdb.1.html
-	$(man2html) -r < elektra.7 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > elektra.7.html
-	$(man2html) -r < elektra.5 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > elektra.5.html
-	$(man2html) -r < elektra-api/man/man3/kdb.3 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > kdb.3.html
-	$(man2html) -r < elektra-api/man/man3/key.3 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > key.3.html
-	$(man2html) -r < elektra-api/man/man3/keyset.3 | sed -e 's|Content-type: text/html||; s|\"\.\.\/man.\/|\"|g; s|\"\.\.\/|\"|g;' > keyset.3.html
-	mv howto.html index.html
 

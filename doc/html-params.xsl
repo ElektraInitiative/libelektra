@@ -10,8 +10,6 @@
 
 	<xsl:output method="html" indent="no" encoding="UTF-8"/>
 
-	<xsl:param name="base.dir" select="'libelektra.org/'"/>
-	
 	<xsl:param name="chunk.section.depth" select="'1'"/>
 	<xsl:param name="chunker.output.method" select="'html'"/>
 
@@ -25,6 +23,8 @@
 
 	<xsl:param name="section.autolabel" select="'0'"/>
 	<xsl:param name="appendix.autolabel" select="'0'"/>
+
+	<xsl:param name="suppress.navigation">1</xsl:param>
 
 	<xsl:param name="shade.verbatim" select="'0'"/>
 
