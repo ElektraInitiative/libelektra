@@ -67,6 +67,8 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+EXPERIMENTAL_FALSE = @EXPERIMENTAL_FALSE@
+EXPERIMENTAL_TRUE = @EXPERIMENTAL_TRUE@
 F77 = @F77@
 FFLAGS = @FFLAGS@
 HAVE_DB_FALSE = @HAVE_DB_FALSE@
@@ -183,21 +185,22 @@ libproto_la_LDFLAGS = -version-info 1:0:0
 lib_LTLIBRARIES = libelektra-daemon2.la
 libelektra_daemon2_la_SOURCES = daemon2.c 
 libelektra_daemon2_la_LDFLAGS = -version-info 1:0:0 -module
-libelektra_daemon2_la_LIBADD = libproto.la
+libelektra_daemon2_la_LIBADD = -lproto
 
 bin_PROGRAMS = elektra-daemon
-elektra_daemon_SOURCES = daemon-test.c 
-elektra_daemon_LDADD = libproto.la ../../libelektra/libelektra.la
+elektra_daemon_SOURCES = daemon-test.c
+elektra_daemon_LDFLAGS = -L../../libelektra/
+elektra_daemon_LDADD = -lproto -lelektra
 
 INCLUDES = -I../../include
-subdir = src/backends/daemon2
+subdir = src/backends/daemon
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/src/include/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(lib_LTLIBRARIES) $(noinst_LTLIBRARIES)
 
-libelektra_daemon2_la_DEPENDENCIES = libproto.la
+libelektra_daemon2_la_DEPENDENCIES =
 am_libelektra_daemon2_la_OBJECTS = daemon2.lo
 libelektra_daemon2_la_OBJECTS = $(am_libelektra_daemon2_la_OBJECTS)
 libproto_la_LIBADD =
@@ -209,8 +212,7 @@ PROGRAMS = $(bin_PROGRAMS)
 
 am_elektra_daemon_OBJECTS = daemon-test.$(OBJEXT)
 elektra_daemon_OBJECTS = $(am_elektra_daemon_OBJECTS)
-elektra_daemon_DEPENDENCIES = libproto.la ../../libelektra/libelektra.la
-elektra_daemon_LDFLAGS =
+elektra_daemon_DEPENDENCIES =
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -237,7 +239,7 @@ all: all-am
 .SUFFIXES: .c .lo .o .obj
 $(srcdir)/Makefile.in:  Makefile.am  $(top_srcdir)/configure.ac $(ACLOCAL_M4)
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  src/backends/daemon2/Makefile
+	  $(AUTOMAKE) --gnu  src/backends/daemon/Makefile
 Makefile:  $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)
 libLTLIBRARIES_INSTALL = $(INSTALL)
