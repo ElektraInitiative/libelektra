@@ -240,6 +240,7 @@ AC_OUTPUT([src/Makefile
 	   src/backends/gconf/Makefile
 	   src/backends/template/Makefile
 	   src/backends/ini/Makefile
+	   src/backends/daemon/Makefile
 
 	   src/include/Makefile
 
