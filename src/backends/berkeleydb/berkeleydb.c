@@ -23,10 +23,6 @@ $Id$
 */
 
 
-
-#include <kdb.h>
-#include <kdbbackend.h>
-#include <db.h>
 #include <string.h>
 #include <sys/types.h>
 #include <pwd.h>
@@ -36,6 +32,10 @@ $Id$
 #include <stdlib.h>
 #include <dirent.h>
 #include <unistd.h>
+
+#include <kdb.h>
+#include <kdbbackend.h>
+#include <db.h>
 
 #define BACKENDNAME "berkeleydb"
 
@@ -73,7 +73,7 @@ typedef struct {
 /**
  *  Each DBTree contains all info needed to access an Elektra
  *  root tree.
- *  
+ *
  *  Example of root trees:
  *  system/ *        {isSystem=1,userDomain=0,...}
  *  user/ *          {isSystem=0,userDomain=$USER,...}
@@ -561,7 +561,7 @@ DBTree *getDBForKey(const Key *key) {
 			} while (current && current!=dbs->cursor);
 	}
 	
-	/* If we reached this point, the DB for our key is not it our container.
+	/* If we reached this point, the DB for our key is not in our container.
 	 * Open it and include in the container. */
 
 	newDB=dbTreeNew(key);
@@ -907,7 +907,7 @@ ssize_t kdbGetKeyChildKeys_bdb(const Key *parentKey, KeySet *returned, unsigned 
 	memset(&keyName,0,sizeof(keyName));
 	keyToBDB((const Key *)parentKey,&parent,&keyData);
 	
-	ret=cursor->c_get(cursor,&parent,&keyData,DB_SET);
+	ret=cursor->c_get(cursor,&parent,&keyData,DB_NEXT);
 	
 	if (ret==DB_NOTFOUND) {
 		free(parent.data);
@@ -1015,7 +1015,7 @@ ssize_t kdbGetKeyChildKeys_bdb(const Key *parentKey, KeySet *returned, unsigned 
 				else keyDel(retrievedKey);
 		} else if (options & KDB_O_DIRONLY) keyDel(retrievedKey);
 			else ksAppend(returned,retrievedKey);
-    
+
 		ret=joincurs->c_get(joincurs,&keyName,&keyData,0);
 	} while (ret != DB_NOTFOUND);
 	

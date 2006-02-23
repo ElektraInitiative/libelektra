@@ -19,11 +19,12 @@
       <mainprogram>/home/aviram/src/elektra/src/kdb/.libs/kdb</mainprogram>
       <directoryradio>custom</directoryradio>
       <customdirectory>/home/aviram/src/elektra/src/</customdirectory>
-      <programargs>edit -R system/filesystems</programargs>
+      <programargs></programargs>
       <terminal>false</terminal>
       <autocompile>true</autocompile>
       <envvars>
         <envvar value="kate" name="EDITOR" />
+        <envvar value="berkeleydb" name="KDB_BACKEND" />
       </envvars>
     </run>
     <build>
@@ -50,7 +51,7 @@
   <kdevdebugger>
     <general>
       <dbgshell></dbgshell>
-      <programargs>edit -R system/filesystems</programargs>
+      <programargs>ls -R user</programargs>
       <gdbpath></gdbpath>
       <configGdbScript></configGdbScript>
       <runShellScript></runShellScript>

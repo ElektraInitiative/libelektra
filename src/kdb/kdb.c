@@ -1561,8 +1561,7 @@ int helpCommand(int command) {
 	exit (0);
 }
 
-void cleanup()
-{
+void cleanup() {
 	kdbClose();
 }
 
