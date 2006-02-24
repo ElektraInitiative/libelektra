@@ -5,6 +5,8 @@
 # Compile libelektra-berkeleydb only if libdb was found
 #
 
+CFLAGS=-g -O2
+
 if HAVE_DB
 lib_LTLIBRARIES = libelektra-berkeleydb.la
 libelektra_berkeleydb_la_SOURCES = berkeleydb.c ../../include/kdb.h ../../include/kdbbackend.h 

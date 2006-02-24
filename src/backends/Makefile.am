@@ -1,7 +1,7 @@
 
 # $Id$
 
-SUBDIRS = filesys fstab
+SUBDIRS = filesys fstab 
 
 if EXPERIMENTAL
 SUBDIRS += berkeleydb gconf template ini daemon

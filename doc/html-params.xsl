@@ -8,7 +8,7 @@
 	<xsl:import href="/usr/share/sgml/docbook/xsl-stylesheets/xhtml/chunk.xsl"/>
 	<!--xsl:import href="_DBSTYLESHEET_"/-->
 
-	<xsl:output method="html" indent="no" encoding="UTF-8"/>
+	<xsl:output method="html" indent="yes" encoding="UTF-8"/>
 
 	<xsl:param name="chunk.section.depth" select="'1'"/>
 	<xsl:param name="chunker.output.method" select="'html'"/>

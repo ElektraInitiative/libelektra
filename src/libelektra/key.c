@@ -549,8 +549,8 @@ ssize_t keySetName(Key *key, const char *newName) {
 			if (*(newName+userLength)==':') {
 				/* handle "user:*" */
 				if (userDomainLength > 0) {
-                                        p=realloc(key->userDomain,userDomainLength+1);
-                                        if (NULL==p) goto error_mem;
+					p=realloc(key->userDomain,userDomainLength+1);
+					if (NULL==p) goto error_mem;
 					key->userDomain=p;
 					strncpy(key->userDomain,newName+userLength+1,userDomainLength);
 					key->userDomain[userDomainLength]=0;
@@ -569,8 +569,9 @@ ssize_t keySetName(Key *key, const char *newName) {
 			keyNameSize+=userLength;
 		}
 
-		p=realloc(key->key,keyNameSize);
+		p=malloc(keyNameSize);
 		if (NULL==p) goto error_mem;
+		if (key->key) free(key->key);
 		key->key=p;
 
 		/* here key->key must have a correct size allocated buffer */
@@ -580,15 +581,16 @@ ssize_t keySetName(Key *key, const char *newName) {
 		strncpy(key->key+userLength,newName+rootLength,length-rootLength);
 		key->key[keyNameSize-1]=0;
 
+
 		if (!key->userDomain) {
 			size_t bsize=strblen(getenv("USER"));
 
-			if (!bsize) {}
-			else {
-				key->userDomain=malloc(bsize);
+			if (bsize) {
+				key->userDomain=realloc(key->userDomain,bsize);
 				strncpy(key->userDomain,getenv("USER"),bsize);
-			}
+			} else { /* TODO: handle "can't find $USER envar" */ }
 		}
+
 		key->flags |= KEY_SWITCH_ISUSER;
 		key->flags &= ~KEY_SWITCH_ISSYSTEM;
 	} else if (!strncmp("system",newName,systemLength<length?systemLength:length)) {
@@ -1947,12 +1949,6 @@ ssize_t keySetRaw(Key *key, const void *newBinary, size_t dataSize) {
 ssize_t keySetOwner(Key *key, const char *userDomain) {
 	ssize_t size;
 
-	/* if (!key) {
-		errno=KDB_RET_UNINITIALIZED; // KDB_RET_NULLKEY
-		return -1;
-	}
-	if (!keyIsInitialized(key)) keyInit(key); */
-	
 	if (userDomain == 0) {
 		if (key->userDomain) {
 			free(key->userDomain);
@@ -2970,8 +2966,6 @@ keyDel(key);
  * @ingroup key
  */
 int keyInit(Key *key) {
-	/* if (!key) return errno=KDB_RET_NULLKEY; */
-
 	memset(key,0,sizeof(Key));
 	key->type=KEY_TYPE_UNDEFINED;
 	/* If we lack the getuid() and getgid() functions we leave uid and gid at 0 */
@@ -2979,7 +2973,7 @@ int keyInit(Key *key) {
 	key->uid=getuid();
 	key->gid=getgid();
 	#endif
-	key->access=umask(0); 
+	key->access=umask(0);
 	umask(key->access);
 	key->access=DEFFILEMODE & ~key->access;
 

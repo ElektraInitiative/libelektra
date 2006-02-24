@@ -242,21 +242,23 @@ int keyFromBDB(Key *key, const DBT *dbkey, const DBT *dbdata) {
 		+ sizeof(key->dataSize);
 	
 	keyClose(key);
-	memset(key,0,sizeof(key));
+	memset(key,0,sizeof(Key));
 	
 	/* Set all metainfo */
-	memcpy(key,          /* destination */
+	memcpy(key,        /* destination */
 		dbdata->data,    /* source */
 		metaInfoSize);   /* size */
 	
 	key->flags = KEY_SWITCH_INITIALIZED;
 
-	keySetName(key,dbkey->data);
-	
 	/* Set comment */
 	if (key->commentSize)
 		keySetComment(key,dbdata->data+metaInfoSize);
 	
+	/* userDomain must be set outside this function,
+	 * someplace more aware of the context */
+	keySetName(key,dbkey->data);
+
 	/* Set value. Key type came from the metaInfo importing above. */
 	keySetRaw(key,dbdata->data+metaInfoSize+key->commentSize,key->dataSize);
 	
@@ -267,9 +269,6 @@ int keyFromBDB(Key *key, const DBT *dbkey, const DBT *dbdata) {
 		UTF8Engine(UTF8_FROM,&key->comment,&key->commentSize);
 		if (!keyIsBin(key)) UTF8Engine(UTF8_FROM,(char **)&key->data,&key->dataSize);
 	}
-	
-	/* userDomain must be set outside this function,
-	 * someplace more aware of the context */
 	
 	/* since we just got the key from the storage structure, it is synced. */
 	key->flags &= ~KEY_SWITCH_NEEDSYNC;
@@ -891,35 +890,25 @@ ssize_t kdbGetKeyChildKeys_bdb(const Key *parentKey, KeySet *returned, unsigned 
 	uid_t user=getuid();
 	gid_t group=getgid();
 	int8_t canRead=0; /* wether we have permissions to go ahead */
-	int ret;
+	int ret=0;
 	
 	/* Get/create the DB for the parent key */
 	db=getDBForKey(parentKey);
 
-	if (db == 0) { /* handle error */}
+	if (db == 0) { /* TODO: handle error */}
 
 
-	
-	/* Create a private cursor to not mess up threads
-	 * TODO: Check if BDB has some option to avoid this */
-	ret = db->db.parentIndex->cursor(db->db.parentIndex, NULL, &cursor, 0);
+	retrievedKey=keyNew(KEY_SWITCH_END);
+	keyDup(parentKey,retrievedKey);
+	ret=kdbGetKeyWithOptions(retrievedKey,KDB_O_STATONLY);
 
-	memset(&keyName,0,sizeof(keyName));
-	keyToBDB((const Key *)parentKey,&parent,&keyData);
-	
-	ret=cursor->c_get(cursor,&parent,&keyData,DB_NEXT);
-	
-	if (ret==DB_NOTFOUND) {
-		free(parent.data);
-		cursor->c_close(cursor);
+	if (ret==KDB_RET_NOTFOUND) {
+		keyDel(retrievedKey);
 		errno=KDB_RET_NOTFOUND;
 		return -1;
 	}
 
 	/* Check parent permissions from DB */
-	retrievedKey=keyNew(KEY_SWITCH_END);
-	keyFromBDB(retrievedKey,&parent,&keyData);
-	free(parent.data); free(keyData.data);
 	if (retrievedKey->uid == user)
 		canRead = retrievedKey->access & (S_IRUSR | S_IXUSR);
 	else if (retrievedKey->gid == group)
@@ -928,16 +917,33 @@ ssize_t kdbGetKeyChildKeys_bdb(const Key *parentKey, KeySet *returned, unsigned 
 	
 	keyDel(retrievedKey);
 	
-	if (!canRead) {
-		cursor->c_close(cursor);
-		return errno=KDB_RET_NOCRED;
-	}
-	
-	carray[0]=cursor;
-	carray[1]=0;
+	if (!canRead) return errno=KDB_RET_NOCRED;
 
-	ret=db->db.keyValuePairs->join(db->db.keyValuePairs,carray,&joincurs,0);
-	if (ret<0) db->db.keyValuePairs->err(db->db.keyValuePairs,ret,"%s");
+	
+	/* Create a private cursor to not mess up threads
+	 * TODO: Check if BDB has some option to avoid this */
+	ret = db->db.parentIndex->cursor(db->db.parentIndex, NULL, &cursor, 0);
+
+	memset(&keyData,0,sizeof(keyData));
+	memset(&parent,0,sizeof(parent));
+	keyToBDB((const Key *)parentKey,&parent,&keyData);
+	memset(&keyName,0,sizeof(keyName));
+	free(keyData.data); memset(&keyData,0,sizeof(keyData));
+	
+	while (0==(ret=cursor->c_pget(cursor,&parent,&keyName,&keyData,DB_NEXT))) {
+		retrievedKey=keyNew(KEY_SWITCH_END);
+		keyFromBDB(retrievedKey,&keyName,&keyData);
+		free(keyName.data); free(keyData.data);
+		ksAppend(returned,retrievedKey);
+
+		memset(&keyName,0,sizeof(keyName));
+		memset(&keyData,0,sizeof(keyData));
+	}
+
+	if ((options & (KDB_O_SORT)) && (returned->size > 1))
+		ksSort(returned);
+	
+	return ksGetSize(returned);
 	
 	memset(&keyData,0,sizeof(keyData));
 	ret=joincurs->c_get(joincurs,&keyName,&keyData,0);

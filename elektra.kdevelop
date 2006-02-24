@@ -25,6 +25,7 @@
       <envvars>
         <envvar value="kate" name="EDITOR" />
         <envvar value="berkeleydb" name="KDB_BACKEND" />
+        <envvar value="1" name="MALLOC_CHECK_" />
       </envvars>
     </run>
     <build>
