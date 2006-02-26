@@ -702,38 +702,38 @@ int kdbGetKeyByParentKey(const Key *parent, const char *baseName, Key *returned)
 
 
 /**
- * Retrieve a number of keys at once.
- * This is one of the most practical methods of the library. And because
- * of storing the keys in the efficient @KeySet afterward, its very
- * recommended to use it.
+ * Retrieve a number of inter-related keys at once.
+ * This is one of the most practical methods of the library, and you should
+ * use it to retrieve in one shot all keys needed by your application.
+ *
+ * The @p returned KeySet must be initialized or may already contain some 
+ * keys (in this case, the new retrieved keys will be simply appended).
  * 
- * The existing KeySet (you must initializise it with @ksNew)
- * will have all retrieved keys appended afterwards.
+ * In default behaviour (@p options = 0) it will fully retrieve all keys
+ * under the @p parentKey folder, except folders (and their children) and
+ * inactive keys.
  * 
- * In default behaviour it will fully retrieve all keys in the
- * specified directory, but not folder and inactive keys. The
- * output is in a backend specific order.
- * 
- * Option can be any of the following:
+ * The @p option is an array of the following ORed flags:
  * - @p KDBOptions::KDB_O_RECURSIVE \n
- *   Retrieve also the keys inside the folder keys inside the specified
- *   directory, recursively.
+ *   Retrieve also the keys under the folder keys, under the specified
+ *   @p parentKey, recursively.
  * - @p KDBOptions::KDB_O_DIR \n
- *   Include folders in the returned KeySet.
+ *   Also include folders in the @p returned KeySet, otherwise only value
+ *   keys will be retrieved.
  * - @p KDBOptions::KDB_O_DIRONLY \n
- *   Include in @p returned only the directory keys. The resulting 
+ *   Put in @p returned only the folder keys. The resulting 
  *   KeySet will be only the skeleton of the tree. This option must be
- *   set together with KDB_O_DIR.
+ *   ORed together with KDB_O_DIR.
  * - @p KDBOptions::KDB_O_STATONLY \n
- *   Only stat the keys. That means that it is free to the backend to
- *   retrieve the value, comment and key data type. The resulting keys
- *   may be empty and are only useful for meta info data requests.
- *   uses this option.
+ *   Only stat the keys. It means that key value, comment and data type will
+ *   not be retrieved. The resulting keys will contain only meta info such
+ *   as user and group IDs, owner, access permissions and modification times.
  * - @p KDBOptions::KDB_O_INACTIVE \n
- *   Will make it not ignore inactive keys. So @p returned will be filled also
- *   with inactive keys. See elektra(7) to understand how inactive keys work.
+ *   Will make it not ignore inactive keys, so @p returned will contain also
+ *   inactive keys. Inactive keys are those that have names
+ *   begining with '.' (dot).
  * - @p KDBOptions::KDB_O_SORT \n
- *   Will sort keys alphabetically by their names.
+ *   Causes @p returned to be ksSort()ed.
  *
  * @par Example:
  * @code

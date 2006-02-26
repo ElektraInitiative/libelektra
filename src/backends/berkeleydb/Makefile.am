@@ -5,7 +5,7 @@
 # Compile libelektra-berkeleydb only if libdb was found
 #
 
-CFLAGS=-g -O2
+AM_CFLAGS=-g
 
 if HAVE_DB
 lib_LTLIBRARIES = libelektra-berkeleydb.la

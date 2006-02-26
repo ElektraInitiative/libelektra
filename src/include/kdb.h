@@ -264,7 +264,7 @@ enum KDBOptions {
 	KDB_O_RECURSIVE=1,       /*!< Act recursively. */
 	KDB_O_DIR=1<<1,          /*!< Include dir keys in result. */
 	KDB_O_DIRONLY=1<<2,      /*!< Retrieve only directory keys. */
-	KDB_O_NOEMPTY=1<<3,      /* unused ???? */
+	KDB_O_NOEMPTY=1<<3,      /* unused. */
 	KDB_O_STATONLY=1<<4,     /*!< Only stat key, instead of getting entirelly.*/
 	KDB_O_INACTIVE=1<<5,     /*!< Do not ignore inactive keys (that name begins
 	                              with .). */

@@ -4,7 +4,7 @@
 SUBDIRS = filesys fstab 
 
 if EXPERIMENTAL
-SUBDIRS += berkeleydb gconf template ini daemon
+SUBDIRS +=gconf template ini daemon berkeleydb
 endif
 
 install-exec-hook:

@@ -133,7 +133,13 @@ uint32_t compare_prefix(DB *dbp, const DBT *a, const DBT *b) {
 
 
 
-
+/**
+ * Serialize a Key struct into DBT structs, one for key name,
+ * another for the rest.
+ * Memory will be allocated for DBT.data part, so it is caller
+ * responsability to deallocate that latter.
+ * 
+ */
 int keyToBDB(const Key *key, DBT *dbkey, DBT *dbdata) {
 	void *serialized;
 	size_t metaInfoSize;
@@ -226,7 +232,6 @@ int keyToBDB(const Key *key, DBT *dbkey, DBT *dbdata) {
 
 
 
-
 int keyFromBDB(Key *key, const DBT *dbkey, const DBT *dbdata) {
 	size_t metaInfoSize;
 	
@@ -242,7 +247,6 @@ int keyFromBDB(Key *key, const DBT *dbkey, const DBT *dbdata) {
 		+ sizeof(key->dataSize);
 	
 	keyClose(key);
-	memset(key,0,sizeof(Key));
 	
 	/* Set all metainfo */
 	memcpy(key,        /* destination */
@@ -586,7 +590,9 @@ DBTree *getDBForKey(const Key *key) {
 
 
 
-
+/*************************************************
+ * Interface Implementation
+ *************************************************/
 
 
 
@@ -638,7 +644,7 @@ int kdbGetKeyWithOptions(Key *key, uint32_t options) {
 	memset(&data,0,sizeof(DBT));
 	dbkey.size=dbkey.ulen=strblen(key->key);
 	dbkey.data=key->key;
-	dbkey.flags=data.flags=DB_DBT_REALLOC;
+	data.flags=DB_DBT_REALLOC;
 
 	ret = dbctx->db.keyValuePairs->get(dbctx->db.keyValuePairs,
 		NULL, &dbkey, &data, 0);
@@ -649,6 +655,9 @@ int kdbGetKeyWithOptions(Key *key, uint32_t options) {
 			
 			dbkey.data=0;
 			free(data.data); data.data=0;
+			
+			/* End of BDB specific code in this method */
+			
 			
 			/* Check permissions. */
 			if (keyGetUID(&buffer) == user)
@@ -698,6 +707,9 @@ int kdbGetKeyWithOptions(Key *key, uint32_t options) {
 	
 	return KDB_RET_OK; /* success */
 }
+
+
+
 
 
 int kdbGetKey_bdb(Key *key) {
@@ -884,9 +896,10 @@ int kdbRemoveKey_backend(const Key *key) {
  */
 ssize_t kdbGetKeyChildKeys_bdb(const Key *parentKey, KeySet *returned, unsigned long options) {
 	DBTree *db=0;
-	DBC *cursor=0,*joincurs=0,*carray[2];
+	DBC *cursor=0;
 	DBT parent,keyName,keyData;
-	Key *retrievedKey;
+	Key *currentParent, *retrievedKey;
+	KeySet folders;
 	uid_t user=getuid();
 	gid_t group=getgid();
 	int8_t canRead=0; /* wether we have permissions to go ahead */
@@ -897,138 +910,138 @@ ssize_t kdbGetKeyChildKeys_bdb(const Key *parentKey, KeySet *returned, unsigned 
 
 	if (db == 0) { /* TODO: handle error */}
 
-
-	retrievedKey=keyNew(KEY_SWITCH_END);
-	keyDup(parentKey,retrievedKey);
-	ret=kdbGetKeyWithOptions(retrievedKey,KDB_O_STATONLY);
+	currentParent=keyNew(KEY_SWITCH_END);
+	keyDup(parentKey,currentParent);
+	ret=kdbGetKeyWithOptions(currentParent,KDB_O_STATONLY);
 
 	if (ret==KDB_RET_NOTFOUND) {
-		keyDel(retrievedKey);
+		keyDel(currentParent);
 		errno=KDB_RET_NOTFOUND;
 		return -1;
 	}
 
-	/* Check parent permissions from DB */
-	if (retrievedKey->uid == user)
-		canRead = retrievedKey->access & (S_IRUSR | S_IXUSR);
-	else if (retrievedKey->gid == group)
-		canRead = retrievedKey->access & (S_IRGRP | S_IXGRP);
-	else canRead = retrievedKey->access & (S_IROTH | S_IXOTH);
+	/* Check master parent permissions from DB */
+	if (currentParent->uid == user)
+		canRead = currentParent->access & (S_IRUSR | S_IXUSR);
+	else if (currentParent->gid == group)
+		canRead = currentParent->access & (S_IRGRP | S_IXGRP);
+	else canRead = currentParent->access & (S_IROTH | S_IXOTH);
 	
-	keyDel(retrievedKey);
+	keyDel(currentParent);
 	
 	if (!canRead) return errno=KDB_RET_NOCRED;
 
-	
-	/* Create a private cursor to not mess up threads
-	 * TODO: Check if BDB has some option to avoid this */
+	/* initialize the KeySet that will hold the fetched folders */
+	ksInit(&folders);
 	ret = db->db.parentIndex->cursor(db->db.parentIndex, NULL, &cursor, 0);
-
-	memset(&keyData,0,sizeof(keyData));
-	memset(&parent,0,sizeof(parent));
-	keyToBDB((const Key *)parentKey,&parent,&keyData);
-	memset(&keyName,0,sizeof(keyName));
-	free(keyData.data); memset(&keyData,0,sizeof(keyData));
 	
-	while (0==(ret=cursor->c_pget(cursor,&parent,&keyName,&keyData,DB_NEXT))) {
-		retrievedKey=keyNew(KEY_SWITCH_END);
-		keyFromBDB(retrievedKey,&keyName,&keyData);
-		free(keyName.data); free(keyData.data);
-		ksAppend(returned,retrievedKey);
-
-		memset(&keyName,0,sizeof(keyName));
-		memset(&keyData,0,sizeof(keyData));
-	}
-
-	if ((options & (KDB_O_SORT)) && (returned->size > 1))
-		ksSort(returned);
+	currentParent=(Key *)parentKey;
 	
-	return ksGetSize(returned);
-	
-	memset(&keyData,0,sizeof(keyData));
-	ret=joincurs->c_get(joincurs,&keyName,&keyData,0);
-	
-	/* Now start retrieving all child keys */
+	/*
+	 * Each loop pass reads all keys from a single folder, without recursion.
+	 * Recursion is provided by multiple passes on this loop
+	 */
 	do {
-		/* Check if is inactive before doing higher level operations */
-		if (*(char *)keyName.data=='.' && !(options & KDB_O_INACTIVE)) {
-			/* fetch next */
-			ret=joincurs->c_get(joincurs,&keyName,&keyData,0);
-			continue;
-		}
+		memset(&parent,0,sizeof(parent));
+		memset(&keyData,0,sizeof(keyData));
+		/* Memory will be allocated now for the DBTs.... */
+		keyToBDB((const Key *)currentParent,&parent,&keyData);
+	
+		/* ....but we only care about (DBT)parent now. */
+		free(keyData.data); memset(&keyData,0,sizeof(keyData));
+		memset(&keyName,0,sizeof(keyName));
+		/* Let BDB allocate memory for next key name and data */
+		keyName.flags=keyData.flags=DB_DBT_REALLOC;
 		
-		retrievedKey=keyNew(KEY_SWITCH_END);
-		keyFromBDB(retrievedKey,&keyName,&keyData);
 		
-		/* check permissions for this key */
-		if (!(options & KDB_O_STATONLY)) {
-			canRead=0;
-			if (retrievedKey->uid == user)
-				canRead = retrievedKey->access & S_IRUSR;
-			else if (retrievedKey->gid == group)
-				canRead = retrievedKey->access & S_IRGRP;
-			else canRead = retrievedKey->access & S_IROTH;
-		}
+		/* Now start retrieving all child keys */
+		while (0==(ret=cursor->c_pget(cursor,&parent,&keyName,&keyData,DB_NEXT))) {
 		
-		if (!canRead) {
-			keyDel(retrievedKey);
-			ret=joincurs->c_get(joincurs,&keyName,&keyData,0);
-			continue;
-		}
+			/* Check if is inactive before doing higher level operations */
+			if (*(char *)keyName.data=='.' && !(options & KDB_O_INACTIVE)) {
+				free(keyName.data); free(keyData.data);
+				memset(&keyName,0,sizeof(keyName));
+				memset(&keyData,0,sizeof(keyData));
+				keyName.flags=keyData.flags=DB_DBT_REALLOC;
 		
-		if (!keyIsLink(retrievedKey) && (options & KDB_O_STATONLY))
-			keySetRaw(retrievedKey,0,0);
-		if (keyIsLink(retrievedKey) && !(options & KDB_O_NFOLLOWLINK)) {
+				/* fetch next */
+				continue;
+			}
+		
+			retrievedKey=keyNew(KEY_SWITCH_END);
+			keyFromBDB(retrievedKey,&keyName,&keyData);
+		
+			free(keyName.data); free(keyData.data);
+			memset(&keyName,0,sizeof(keyName));
+			memset(&keyData,0,sizeof(keyData));
+			keyName.flags=keyData.flags=DB_DBT_REALLOC;
+		
+			/* End of BDB specific code, ready for next c_pget() */
+		
+			/* check permissions for this key */
+			if (!(options & KDB_O_STATONLY)) {
+				canRead=0;
+				if (retrievedKey->uid == user) {
+					canRead = retrievedKey->access & S_IRUSR;
+				} else if (retrievedKey->gid == group) {
+					canRead = retrievedKey->access & S_IRGRP;
+				} else canRead = retrievedKey->access & S_IROTH;
+			}
+		
+			if (!canRead) {
+				keyDel(retrievedKey);
+				continue;
+			}
+		
+			if (!keyIsLink(retrievedKey) && (options & KDB_O_STATONLY))
+				keySetRaw(retrievedKey,0,0);
+			
+			if (keyIsLink(retrievedKey) && !(options & KDB_O_NFOLLOWLINK)) {
 			/* If we have a link and user did not specify KDB_O_NFOLLOWLINK,
 			 * he want to dereference the link */
-			Key target;
+				Key target;
 			
-			keyInit(&target);
-			keySetName(&target,retrievedKey->data);
+				keyInit(&target);
+				keySetName(&target,retrievedKey->data);
 
-			if (kdbGetKeyWithOptions(&target, options) == KDB_RET_NOTFOUND) {
-				/* Invalid link target, so don't include in keyset */
+				if (kdbGetKeyWithOptions(&target, options) == KDB_RET_NOTFOUND) {
+					/* Invalid link target, so don't include in keyset */
 				
-				keyClose(&target);
+					keyClose(&target);
 				
-				/* fetch next */
-				ret=joincurs->c_get(joincurs,&keyName,&keyData,0);
-				errno=KDB_RET_NOTFOUND;
-				continue;
-			} else {
-				keyDup(&target,retrievedKey);
-				keyClose(&target);
+					errno=KDB_RET_NOTFOUND;
+					/* fetch next */
+					continue;
+				} else {
+					keyDup(&target,retrievedKey);
+					keyClose(&target);
+				}
 			}
-		}
 		
-		if (keyIsDir(retrievedKey)) {
-			if (options & KDB_O_RECURSIVE) {
-				KeySet *children=ksNew();
-
-				/* Act recursively, without sorting. Sort in the end, once */
-				kdbGetKeyChildKeys_bdb(retrievedKey,children,
-					~(KDB_O_SORT) & options);
-
-				/* Insert the current directory key in the returned list
-				 * before its children */
-				if (options & KDB_O_DIR) ksAppend(returned,retrievedKey);
-				else keyDel(retrievedKey);
-
-				/* Insert the children */
-				ksAppendKeys(returned,children);
-				ksDel(children);
-			} else if (options & KDB_O_DIR) ksAppend(returned,retrievedKey);
-				else keyDel(retrievedKey);
-		} else if (options & KDB_O_DIRONLY) keyDel(retrievedKey);
-			else ksAppend(returned,retrievedKey);
-
-		ret=joincurs->c_get(joincurs,&keyName,&keyData,0);
-	} while (ret != DB_NOTFOUND);
+			if (keyIsDir(retrievedKey)) {
+				if (options & KDB_O_RECURSIVE) {
+					ksAppend(&folders,retrievedKey);
+				} else if (options & KDB_O_DIR) {
+					ksAppend(returned,retrievedKey);
+				} else keyDel(retrievedKey); /* discard */
+			} else if (options & KDB_O_DIRONLY) {
+				/* If key isn't a dir, and user only wants dirs... */
+				keyDel(retrievedKey);
+				retrievedKey=0;
+			} else ksAppend(returned, retrievedKey);
+		}
+	} while ((currentParent=ksNext(&folders)));
+	
+	/* At this point we have all keys we want. Make final adjustments. */
+	
+	if (options & KDB_O_DIR)
+		ksInsertKeys(returned,&folders);
+	
+	ksClose(&folders);
 	
 	if ((options & (KDB_O_SORT)) && (returned->size > 1))
 		ksSort(returned);
 	
-	joincurs->c_close(joincurs);
 	cursor->c_close(cursor);
 	
 	return returned->size;

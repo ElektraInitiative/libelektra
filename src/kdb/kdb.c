@@ -760,7 +760,21 @@ int commandLink() {
 int commandList() {
 	KeySet *ks; /* this is the container for all keys we'll collect bellow */
 	ssize_t ret;
+	unsigned long options=0;
 
+	/* Build our option set */
+	
+	if (argSort)                options |= KDB_O_SORT;
+	if (argRecursive)           options |= KDB_O_RECURSIVE;
+	if (argAll)                 options |= KDB_O_INACTIVE;
+	if (!argValue)              options |= KDB_O_STATONLY;
+	
+	/* these options make sense only to ksToStream() */
+	if (argFullName)            options |= KDB_O_FULLNAME | KDB_O_FULLUGID;
+	/* ksToStream() defaults */ options |= KDB_O_XMLHEADERS | KDB_O_HIER;
+	
+	/* plus our defaults */     options |= KDB_O_DIR | KDB_O_NFOLLOWLINK;
+	
 	ks=ksNew();
 
 	if (!argKeyName) {
@@ -779,13 +793,7 @@ int commandList() {
 				 */
 				KeySet *thisRoot=ksNew();
 				
-				if (argValue) ret=kdbGetKeyChildKeys(walker,thisRoot,
-					(argSort?KDB_O_SORT:0) | (argRecursive?KDB_O_RECURSIVE:0) |
-					KDB_O_DIR | (argAll?KDB_O_INACTIVE:0) | KDB_O_NFOLLOWLINK);
-				else ret=kdbGetKeyChildKeys(walker,thisRoot,
-					(argSort?KDB_O_SORT:0) | KDB_O_STATONLY |
-					(argRecursive?KDB_O_RECURSIVE:0) | KDB_O_DIR |
-					(argAll?KDB_O_INACTIVE:0) | KDB_O_NFOLLOWLINK);
+				ret=kdbGetKeyChildKeys(walker,thisRoot,options);
 				
 				/* A hack to transfer a key from a keyset to another.
 				 * Don't do this at home.
@@ -799,13 +807,7 @@ int commandList() {
 	} else {
 		/* User gave us a specific key to start with */
 
-		if (argValue) ret=kdbGetChildKeys(argKeyName,ks,
-			(argSort?KDB_O_SORT:0) | (argRecursive?KDB_O_RECURSIVE:0) |
-			KDB_O_DIR | (argAll?KDB_O_INACTIVE:0) | KDB_O_NFOLLOWLINK);
-		else ret=kdbGetChildKeys(argKeyName,ks,
-			(argSort?KDB_O_SORT:0) | KDB_O_STATONLY |
-			(argRecursive?KDB_O_RECURSIVE:0) | KDB_O_DIR |
-			(argAll?KDB_O_INACTIVE:0) | KDB_O_NFOLLOWLINK);
+		ret=kdbGetChildKeys(argKeyName,ks,options);
 	
 		if (ret<0) {
 			/* We got an error. Check if it is because its not a folder key */
@@ -844,8 +846,7 @@ int commandList() {
 	if (argShow) {
 		size_t listSize=ksGetSize(ks);
 		
-		if (argXML) ksToStream(ks,stdout,KDB_O_XMLHEADERS | KDB_O_HIER |
-			(argFullName?(KDB_O_FULLNAME | KDB_O_FULLUGID):0));
+		if (argXML) ksToStream(ks,stdout,options);
 		else {
 			if (listSize == 1) listSingleKey(ksHead(ks));
 			else if (listSize > 1) {

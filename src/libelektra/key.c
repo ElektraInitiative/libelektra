@@ -508,13 +508,8 @@ ssize_t keySetName(Key *key, const char *newName) {
 	size_t rootLength, userLength, systemLength, userDomainLength;
 	size_t keyNameSize=1; /* equal to length plus a space for \0 */
 	char *p;
-
-/*
-	if (!key) {
-		errno=KDB_RET_UNINITIALIZED;
-		return 0;
-	}
-	if (!keyIsInitialized(key)) keyInit(key); */ /* commented for stupidity */
+	/* Cursor are used to clean multiple consecutive '/' */
+	size_t readCursor,writeCursor;
 
 	/* handle null new key name, removing the old key */
 	if (!newName || !(length=strblen(newName)-1)) {
@@ -578,8 +573,28 @@ ssize_t keySetName(Key *key, const char *newName) {
 		if (!key->key) return -1;
 
 		strcpy(key->key,"user");
+		
+		/* next piece of code exist to remove extra '/' in key names */
+		readCursor=writeCursor=0;
+		while((newName+rootLength)[readCursor]) {
+			if ((newName+rootLength)[readCursor] == RG_KEY_DELIM)
+				while ((newName+rootLength)[readCursor+1] == RG_KEY_DELIM)
+					/* skip all repeating '/' */
+					readCursor++;
+			
+			(key->key+userLength)[writeCursor]=
+				(newName+rootLength)[readCursor];
+			
+			readCursor++;
+			writeCursor++;
+		}
+		/* Finalize the string */
+		(key->key+userLength)[writeCursor]=0;
+	
+		/* obsolete
 		strncpy(key->key+userLength,newName+rootLength,length-rootLength);
 		key->key[keyNameSize-1]=0;
+		*/
 
 
 		if (!key->userDomain) {
@@ -609,8 +624,24 @@ ssize_t keySetName(Key *key, const char *newName) {
 		/* here key->key must have a correct size allocated buffer */
 		if (!key->key) return -1;
 
-		strncpy(key->key,newName,length);
-		key->key[keyNameSize-1]=0;
+		
+		/* next piece of code exist to remove extra '/' in key names */
+		readCursor=writeCursor=0;
+		while(newName[readCursor]) {
+			if (newName[readCursor] == RG_KEY_DELIM)
+				while (newName[readCursor+1] == RG_KEY_DELIM)
+					/* skip all repeating '/' */
+					readCursor++;
+			
+			key->key[writeCursor]=newName[readCursor];
+			
+			readCursor++;
+			writeCursor++;
+		}
+		/* Finalize the string */
+		key->key[writeCursor]=0;
+		
+		
 		
 		key->flags |= KEY_SWITCH_ISSYSTEM;
 		key->flags &= ~KEY_SWITCH_ISUSER;

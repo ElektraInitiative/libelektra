@@ -13,6 +13,7 @@
     <secondaryLanguages>
       <language>Bash</language>
     </secondaryLanguages>
+    <versioncontrol>kdevsubversion</versioncontrol>
   </general>
   <kdevcustomproject>
     <run>
@@ -25,7 +26,6 @@
       <envvars>
         <envvar value="kate" name="EDITOR" />
         <envvar value="berkeleydb" name="KDB_BACKEND" />
-        <envvar value="1" name="MALLOC_CHECK_" />
       </envvars>
     </run>
     <build>
@@ -52,7 +52,7 @@
   <kdevdebugger>
     <general>
       <dbgshell></dbgshell>
-      <programargs>ls -R user</programargs>
+      <programargs>ls -Rv user</programargs>
       <gdbpath></gdbpath>
       <configGdbScript></configGdbScript>
       <runShellScript></runShellScript>
@@ -170,12 +170,13 @@
     <tree>
       <hidepatterns>*.o,*.lo,CVS</hidepatterns>
       <hidenonprojectfiles>false</hidenonprojectfiles>
+      <showvcsfields>false</showvcsfields>
     </tree>
   </kdevfileview>
   <kdevdocumentation>
     <projectdoc>
-      <docsystem/>
-      <docurl/>
+      <docsystem>Doxygen Documentation Collection</docsystem>
+      <docurl>doc/elektra-api/html/index.html</docurl>
       <usermanualurl/>
     </projectdoc>
   </kdevdocumentation>
@@ -203,4 +204,8 @@
     <appskde>false</appskde>
     <url/>
   </dist>
+  <ctagspart>
+    <customArguments/>
+    <customTagfilePath/>
+  </ctagspart>
 </kdevelop>
