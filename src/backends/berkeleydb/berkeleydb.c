@@ -902,7 +902,7 @@ ssize_t kdbGetKeyChildKeys_bdb(const Key *parentKey, KeySet *returned, unsigned 
 	KeySet folders;
 	uid_t user=getuid();
 	gid_t group=getgid();
-	int8_t canRead=0; /* wether we have permissions to go ahead */
+	mode_t canRead=0; /* wether we have permissions to go ahead */
 	int ret=0;
 	
 	/* Get/create the DB for the parent key */
@@ -958,14 +958,23 @@ ssize_t kdbGetKeyChildKeys_bdb(const Key *parentKey, KeySet *returned, unsigned 
 		while (0==(ret=cursor->c_pget(cursor,&parent,&keyName,&keyData,DB_NEXT))) {
 		
 			/* Check if is inactive before doing higher level operations */
-			if (*(char *)keyName.data=='.' && !(options & KDB_O_INACTIVE)) {
-				free(keyName.data); free(keyData.data);
-				memset(&keyName,0,sizeof(keyName));
-				memset(&keyData,0,sizeof(keyData));
-				keyName.flags=keyData.flags=DB_DBT_REALLOC;
+			if (!(options & KDB_O_INACTIVE)) {
+				char *sep;
+				
+				/* If we don't want inactive keys, check if its inactive */
+				sep=strrchr((char *)keyName.data,RG_KEY_DELIM);
+				if (sep && sep[1] == '.') {
+					/* This is an inactive key, and we don't want it */
+					/* Ignore this key, free all, and continue */
+					
+					free(keyName.data); free(keyData.data);
+					memset(&keyName,0,sizeof(keyName));
+					memset(&keyData,0,sizeof(keyData));
+					keyName.flags=keyData.flags=DB_DBT_REALLOC;
 		
-				/* fetch next */
-				continue;
+					/* fetch next */
+					continue;
+				}
 			}
 		
 			retrievedKey=keyNew(KEY_SWITCH_END);
@@ -979,13 +988,18 @@ ssize_t kdbGetKeyChildKeys_bdb(const Key *parentKey, KeySet *returned, unsigned 
 			/* End of BDB specific code, ready for next c_pget() */
 		
 			/* check permissions for this key */
-			if (!(options & KDB_O_STATONLY)) {
+			canRead=0;
+			if (options & KDB_O_STATONLY) {
+				if (!keyIsLink(retrievedKey)) keySetRaw(retrievedKey,0,0);
+				canRead=1;
+			} else {
+				/* If caller wants the value, comment, etc... */
 				canRead=0;
 				if (retrievedKey->uid == user) {
-					canRead = retrievedKey->access & S_IRUSR;
+					canRead = (retrievedKey->access & S_IRUSR);
 				} else if (retrievedKey->gid == group) {
-					canRead = retrievedKey->access & S_IRGRP;
-				} else canRead = retrievedKey->access & S_IROTH;
+					canRead = (retrievedKey->access & S_IRGRP);
+				} else canRead = (retrievedKey->access & S_IROTH);
 			}
 		
 			if (!canRead) {
@@ -993,12 +1007,10 @@ ssize_t kdbGetKeyChildKeys_bdb(const Key *parentKey, KeySet *returned, unsigned 
 				continue;
 			}
 		
-			if (!keyIsLink(retrievedKey) && (options & KDB_O_STATONLY))
-				keySetRaw(retrievedKey,0,0);
 			
 			if (keyIsLink(retrievedKey) && !(options & KDB_O_NFOLLOWLINK)) {
 			/* If we have a link and user did not specify KDB_O_NFOLLOWLINK,
-			 * he want to dereference the link */
+			 * means he wants to dereference the link */
 				Key target;
 			
 				keyInit(&target);
