@@ -9,6 +9,7 @@
 - Added kdbprivate.h::KDB_METAINFO_SIZE(Key *key) macro, usefull for backends
 - Make 'kdb edit' more robust in terms of completeness when exporting to XML
 - Much improved and working berkeleydb backend. Going towards a high-quality backend
+- Updated scripts/benchmark-createtree to output nice XML
 - Reorganized #includes
 - Improved some API documentations
 - Included some casts to get rid of compiler warnings

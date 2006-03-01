@@ -1,10 +1,10 @@
 
 # $Id$
 
-SUBDIRS = filesys fstab berkeleydb
+SUBDIRS = filesys fstab 
 
 if EXPERIMENTAL
-SUBDIRS +=gconf template ini daemon 
+SUBDIRS += berkeleydb gconf template ini daemon 
 endif
 
 install-exec-hook:
