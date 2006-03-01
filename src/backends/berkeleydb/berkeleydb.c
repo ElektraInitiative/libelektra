@@ -111,28 +111,6 @@ DBContainer *dbs=0;
 
 
 
-/* This BDB callback is not being used yet */
-uint32_t compare_prefix(DB *dbp, const DBT *a, const DBT *b) {
-	size_t cnt, len;
-	uint8_t *p1, *p2;
-
-	cnt = 1;
-	len = a->size > b->size ? b->size : a->size;
-	for (p1 = a->data, p2 = b->data; len--; ++p1, ++p2, ++cnt)
-		if (*p1 != *p2) return (cnt);
-	/*
-	 * They match up to the smaller of the two sizes.
-	 * Collate the longer after the shorter.
-	 */
-	if (a->size < b->size)
-		return (a->size + 1);
-	if (b->size < a->size)
-		return (b->size + 1);
-	return (b->size);
-}
-
-
-
 /**
  * Serialize a Key struct into DBT structs, one for key name,
  * another for the rest.
@@ -160,63 +138,61 @@ int keyToBDB(const Key *key, DBT *dbkey, DBT *dbdata) {
 			UTF8Engine(UTF8_TO,&convertedName,&sizeName);
 		} else convertedName=key->key;
 
-		if (!keyIsBin(key)) {
-			convertedValue=malloc(sizeValue);
-			memcpy(convertedValue,key->data,sizeValue);
-			UTF8Engine(UTF8_TO,&convertedValue,&sizeValue);
-		} else convertedValue=key->data;
+		if (dbdata) {
+			if (!keyIsBin(key)) {
+				convertedValue=malloc(sizeValue);
+				memcpy(convertedValue,key->data,sizeValue);
+				UTF8Engine(UTF8_TO,&convertedValue,&sizeValue);
+			} else convertedValue=key->data;
 		 
-		if (key->comment) {
-			convertedComment=malloc(sizeComment);
-			memcpy(convertedComment,key->comment,sizeComment);
-			UTF8Engine(UTF8_TO,&convertedComment,&sizeComment);
-		} else convertedComment=key->comment;
+			if (key->comment) {
+				convertedComment=malloc(sizeComment);
+				memcpy(convertedComment,key->comment,sizeComment);
+				UTF8Engine(UTF8_TO,&convertedComment,&sizeComment);
+			} else convertedComment=key->comment;
+		}
 	}
 	
-	memset(dbkey, 0, sizeof(DBT));
-	memset(dbdata, 0, sizeof(DBT));
+	if (dbdata) {
+		memset(dbdata, 0, sizeof(DBT));
 
-	metaInfoSize=
-		  sizeof(key->type)
-		+ sizeof(key->uid)
-		+ sizeof(key->gid)
-		+ sizeof(key->access)
-		+ sizeof(key->atime)
-		+ sizeof(key->mtime)
-		+ sizeof(key->ctime)
-		+ sizeof(key->commentSize)
-		+ sizeof(key->dataSize);
+		metaInfoSize = KEY_METAINFO_SIZE(key);
+		
+		dbdata->size = metaInfoSize + sizeValue + sizeComment;
+		serialized = malloc(dbdata->size);
+		memset(serialized,0,dbdata->size);
 
-	
-	dbdata->size = metaInfoSize + sizeValue + sizeComment;
-	serialized = malloc(dbdata->size);
+		/* First part: the metainfo */
+		memcpy(serialized,key,metaInfoSize);
+		/* *((Key *)serialized)=*key; */
 
-	/* First part: the metainfo */
-	memcpy(serialized,key,metaInfoSize);
-
-	/* Second part: the comment */
-	memcpy(serialized+metaInfoSize,convertedComment,sizeComment);
-	/* adjust comment size from UTF-8 conversion */
-	if (key->commentSize!=sizeComment)
-		memcpy(serialized+metaInfoSize-
-			sizeof(key->commentSize)-sizeof(key->dataSize),
-			&sizeComment,sizeof(sizeComment));
+		/* Second part: the comment */
+		memcpy(serialized+metaInfoSize,convertedComment,sizeComment);
+		/* adjust comment size from UTF-8 conversion */
+		if (key->commentSize!=sizeComment)
+			memcpy(serialized+metaInfoSize-
+				sizeof(key->commentSize)-sizeof(key->dataSize),
+				&sizeComment,sizeof(sizeComment));
 	
 	
 		
-	/* Third part: the value */
-	memcpy(serialized+metaInfoSize+sizeComment,convertedValue,sizeValue);
-	/* adjust value size from UTF-8 conversion */
-	if (key->dataSize!=sizeValue)
-		memcpy(serialized+metaInfoSize-sizeof(key->dataSize),
-			&sizeValue,sizeof(sizeValue));
+		/* Third part: the value */
+		memcpy(serialized+metaInfoSize+sizeComment,convertedValue,sizeValue);
+		/* adjust value size from UTF-8 conversion */
+		if (key->dataSize!=sizeValue)
+			memcpy(serialized+metaInfoSize-sizeof(key->dataSize),
+				&sizeValue,sizeof(sizeValue));
 	
-	dbdata->data=serialized;
+		dbdata->data=serialized;
+		
+		if (utf8Conversion) {
+			free(convertedComment);
+			free(convertedValue);
+		}
+	}
 	
+	memset(dbkey, 0, sizeof(DBT));
 	if (utf8Conversion) {
-		free(convertedComment);
-		free(convertedValue);
-
 		dbkey->size=sizeName;
 		dbkey->data=convertedName;
 	} else {
@@ -235,18 +211,9 @@ int keyToBDB(const Key *key, DBT *dbkey, DBT *dbdata) {
 int keyFromBDB(Key *key, const DBT *dbkey, const DBT *dbdata) {
 	size_t metaInfoSize;
 	
-	metaInfoSize=
-		  sizeof(key->type)
-		+ sizeof(key->uid)
-		+ sizeof(key->gid)
-		+ sizeof(key->access)
-		+ sizeof(key->atime)
-		+ sizeof(key->mtime)
-		+ sizeof(key->ctime)
-		+ sizeof(key->commentSize)
-		+ sizeof(key->dataSize);
-	
 	keyClose(key);
+	
+	metaInfoSize = KEY_METAINFO_SIZE(key);
 	
 	/* Set all metainfo */
 	memcpy(key,        /* destination */
@@ -451,13 +418,17 @@ DBTree *dbTreeNew(const Key *forKey) {
 	}
 
 	ret=newDB->db.keyValuePairs->open(newDB->db.keyValuePairs,NULL,keys,
-		NULL, DB_BTREE, DB_CREATE | DB_EXCL  | DB_THREAD, 0);
+		NULL, DB_BTREE, DB_CREATE | DB_EXCL | DB_THREAD, 0);
 	if (ret == EEXIST || ret == EACCES) {
 		/* DB already exist. Only open it */
 		ret=newDB->db.keyValuePairs->open(newDB->db.keyValuePairs,NULL, keys,
 			NULL, DB_BTREE, DB_THREAD, 0);
+		if (ret == EACCES)
+			ret=newDB->db.keyValuePairs->open(newDB->db.keyValuePairs,NULL,
+				keys, NULL, DB_BTREE, DB_THREAD | DB_RDONLY, 0);
 	} else newlyCreated=1;
 
+	
 	if (ret) {
 		newDB->db.keyValuePairs->err(newDB->db.keyValuePairs,
 			ret, "%s", keys);
@@ -486,8 +457,17 @@ DBTree *dbTreeNew(const Key *forKey) {
 	if (ret != 0) fprintf(stderr, "set_flags: %s: %d\n",hier,ret);
 	
 	ret = newDB->db.parentIndex->open(newDB->db.parentIndex,
-		NULL, hier, NULL, DB_BTREE, DB_CREATE | DB_THREAD, 0);
-	if (ret != 0) {
+		NULL, hier, NULL, DB_BTREE, DB_CREATE | DB_EXCL | DB_THREAD, 0);
+	if (ret == EEXIST || ret == EACCES) {
+		/* DB already exist. Only open it */
+		ret=newDB->db.parentIndex->open(newDB->db.parentIndex,NULL, hier,
+			NULL, DB_BTREE, DB_THREAD, 0);
+		if (ret == EACCES)
+			ret=newDB->db.parentIndex->open(newDB->db.parentIndex,NULL,
+				hier, NULL, DB_BTREE, DB_THREAD | DB_RDONLY, 0);
+	}
+	
+	if (ret) {
 		newDB->db.parentIndex->err(newDB->db.parentIndex, ret, "%s", hier);
 		dbTreeDel(newDB); 
 		errno=KDB_RET_EBACKEND;
@@ -919,6 +899,13 @@ ssize_t kdbGetKeyChildKeys_bdb(const Key *parentKey, KeySet *returned, unsigned 
 		errno=KDB_RET_NOTFOUND;
 		return -1;
 	}
+	
+	if (currentParent->type != KEY_TYPE_DIR) {
+		/* TODO: dereference link keys */
+		keyDel(currentParent);
+		errno=ENOTDIR;
+		return -1;
+	}
 
 	/* Check master parent permissions from DB */
 	if (currentParent->uid == user)
@@ -944,18 +931,27 @@ ssize_t kdbGetKeyChildKeys_bdb(const Key *parentKey, KeySet *returned, unsigned 
 	do {
 		memset(&parent,0,sizeof(parent));
 		memset(&keyData,0,sizeof(keyData));
-		/* Memory will be allocated now for the DBTs.... */
-		keyToBDB((const Key *)currentParent,&parent,&keyData);
-	
-		/* ....but we only care about (DBT)parent now. */
-		free(keyData.data); memset(&keyData,0,sizeof(keyData));
 		memset(&keyName,0,sizeof(keyName));
+		
+		/* Memory will be allocated now for the DBTs.... */
+		keyToBDB((const Key *)currentParent,&parent,0);
+	
 		/* Let BDB allocate memory for next key name and data */
 		keyName.flags=keyData.flags=DB_DBT_REALLOC;
 		
+		ret=cursor->c_pget(cursor,&parent,&keyName,&keyData,DB_SET);
+		
+		if (ret == DB_NOTFOUND) {
+			/* We are probably in a root key, that
+			 * doesn't have an entry in the index. */
+			free(parent.data);
+			free(keyName.data);
+			free(keyData.data);
+			return KDB_RET_NOTFOUND;
+		}
 		
 		/* Now start retrieving all child keys */
-		while (0==(ret=cursor->c_pget(cursor,&parent,&keyName,&keyData,DB_NEXT))) {
+		do {
 		
 			/* Check if is inactive before doing higher level operations */
 			if (!(options & KDB_O_INACTIVE)) {
@@ -1041,7 +1037,7 @@ ssize_t kdbGetKeyChildKeys_bdb(const Key *parentKey, KeySet *returned, unsigned 
 				keyDel(retrievedKey);
 				retrievedKey=0;
 			} else ksAppend(returned, retrievedKey);
-		}
+		} while (0==(ret=cursor->c_pget(cursor,&parent,&keyName,&keyData,DB_NEXT_DUP)));
 	} while ((currentParent=ksNext(&folders)));
 	
 	/* At this point we have all keys we want. Make final adjustments. */

@@ -508,8 +508,9 @@ ssize_t keySetName(Key *key, const char *newName) {
 	size_t rootLength, userLength, systemLength, userDomainLength;
 	size_t keyNameSize=1; /* equal to length plus a space for \0 */
 	char *p;
-	/* Cursor are used to clean multiple consecutive '/' */
+	/* Cursors are used to clean multiple consecutive '/' */
 	size_t readCursor,writeCursor;
+	char *cursor;
 
 	/* handle null new key name, removing the old key */
 	if (!newName || !(length=strblen(newName)-1)) {
@@ -523,9 +524,8 @@ ssize_t keySetName(Key *key, const char *newName) {
 	}
 
 	/* Remove trailing  '/' if caller passed some */
-	while (length && newName[length]==RG_KEY_DELIM) {
+	while (length && (RG_KEY_DELIM==newName[length-1]))
 		length--;
-	}
 
 	rootLength=keyNameGetRootNameSize(newName);
 	if (!rootLength) {
@@ -576,14 +576,17 @@ ssize_t keySetName(Key *key, const char *newName) {
 		
 		/* next piece of code exist to remove extra '/' in key names */
 		readCursor=writeCursor=0;
-		while((newName+rootLength)[readCursor]) {
-			if ((newName+rootLength)[readCursor] == RG_KEY_DELIM)
-				while ((newName+rootLength)[readCursor+1] == RG_KEY_DELIM)
-					/* skip all repeating '/' */
+		cursor=(char *)((unsigned)newName+rootLength);
+		while(cursor[readCursor]) {
+			if (cursor[readCursor] == RG_KEY_DELIM)
+				while (cursor[readCursor+1] == RG_KEY_DELIM ||
+						cursor[readCursor+1] == 0) {
+					/* skip all repeating '/' and an ending '/' */
 					readCursor++;
+					if (cursor[readCursor] == 0) break;
+				}
 			
-			(key->key+userLength)[writeCursor]=
-				(newName+rootLength)[readCursor];
+			(key->key+userLength)[writeCursor]=cursor[readCursor];
 			
 			readCursor++;
 			writeCursor++;

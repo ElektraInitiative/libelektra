@@ -52,7 +52,7 @@
   <kdevdebugger>
     <general>
       <dbgshell></dbgshell>
-      <programargs>ls -Rv user</programargs>
+      <programargs>ls -R user////</programargs>
       <gdbpath></gdbpath>
       <configGdbScript></configGdbScript>
       <runShellScript></runShellScript>

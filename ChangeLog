@@ -4,8 +4,11 @@
 - keySetName() now removes repeated '/' when setting key names
 - Fixed a bug in filesys.c::kdbStatKey_filesys() related to link keys
 - Fixed a very stupid bug in key.c::keyCompare()
+- Added logic to key.c::keySetName() to remove extra '/' anywhere on key name
 - Fixed a bug on keyset.c::ksCompare() related to the NEEDSYNC flag
+- Added kdbprivate.h::KDB_METAINFO_SIZE(Key *key) macro, usefull for backends
 - Make 'kdb edit' more robust in terms of completeness when exporting to XML
+- Much improved and working berkeleydb backend. Going towards a high-quality backend
 - Reorganized #includes
 - Improved some API documentations
 - Included some casts to get rid of compiler warnings

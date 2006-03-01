@@ -103,7 +103,7 @@ struct _Key {
 	 * @see keyGetAccess(), keySetAccess()
 	 */ 
 	mode_t         access;
-	   
+	 
 	/**
 	 * Time for last access (stat).
 	 * @see keyGetATime()
@@ -168,8 +168,17 @@ struct _Key {
 };
 
 
-
-
+/**
+ * Macro to calculates the real size in bytes of the metainfo of the Key struct.
+ * The metainfo part of the struct is composed by _Key::type, _Key::uid,
+ * _Key::gid, _Key::access, _Key::atime, _Key::mtime, _Key::ctime,
+ * _Key::commentSize, _Key::dataSize.
+ * 
+ * This macro is usefull in Key serialization and de-serialization methods
+ * of your backend.
+ * @ingroup backend
+ */
+#define KEY_METAINFO_SIZE(k) ((unsigned int)&(k->recordSize) - (unsigned int)k)
 
 
 
@@ -192,7 +201,6 @@ struct _KeySet {
 	struct _Key * cursor;  /**< Internal cursor */
 	size_t        size;    /**< Number of keys contained in the KeySet */
 };
-
 
 
 
