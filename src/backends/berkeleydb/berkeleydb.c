@@ -261,7 +261,7 @@ int parentIndexCallback(DB *db, const DBT *rkey, const DBT *rdata, DBT *pkey) {
 
 	memset(pkey, 0, sizeof(DBT));
 
-	parentNameSize=strblen(rkey->data)-baseNameSize;
+	parentNameSize=rkey->size-baseNameSize;
 	parentPrivateCopy=malloc(parentNameSize);
 
 	if (parentPrivateCopy) {
@@ -606,6 +606,71 @@ int kdbClose_bdb() {
 
 
 
+/**
+ * Implementation for kdbRemoveKey() method.
+ *
+ * @see kdbRemove() for expected behavior.
+ * @ingroup backend
+ */
+int kdbRemoveKey_bdb(const Key *key) {
+	DBTree *dbctx;
+	DBT dbkey,data;
+	int ret;
+	uid_t user=getuid();
+	gid_t group=getgid();
+	int canWrite=0;
+	Key *cast=0;
+	
+	dbctx=getDBForKey(key);
+	if (!dbctx) return 1; /* propagate errno from getDBForKey() */
+	
+	/* First check if we have write permission to the key */
+	memset(&dbkey,0,sizeof(DBT));
+	memset(&data,0,sizeof(DBT));
+	dbkey.size=dbkey.ulen=strblen(key->key);
+	dbkey.data=key->key;
+	data.flags=DB_DBT_REALLOC;
+	
+	ret = dbctx->db.keyValuePairs->get(dbctx->db.keyValuePairs,
+		NULL, &dbkey, &data, 0);
+		
+	if (ret == DB_NOTFOUND) return errno=KDB_RET_NOTFOUND;
+	
+	if (ret == 0) {
+		cast=(Key *)data.data;
+		
+		/* Check parent permissions to write bellow it. */
+		if (cast->uid == user)
+			canWrite = cast->access & S_IWUSR;
+		else if (cast->gid == group)
+			canWrite = cast->access & S_IWGRP;
+		else canWrite= cast->access & S_IWOTH;
+	}
+	
+	free(data.data);
+	
+	if (! canWrite) return errno=KDB_RET_NOCRED;
+
+	/* Ok, so we can delete the key */
+	
+	ret=dbctx->db.keyValuePairs->del(dbctx->db.keyValuePairs,
+		NULL, &dbkey, 0);
+	
+	switch (ret) {
+		case 0:
+			return ret; /* success */
+			break;
+		case EACCES:
+			return errno=KDB_RET_NOCRED;
+			break;
+		default:
+			dbctx->db.keyValuePairs->err(dbctx->db.keyValuePairs, ret, "DB->del");
+	}
+	
+	return ret;
+}
+
+
 int kdbGetKeyWithOptions(Key *key, uint32_t options) {
 	DBTree *dbctx;
 	DBT dbkey,data;
@@ -657,10 +722,6 @@ int kdbGetKeyWithOptions(Key *key, uint32_t options) {
 			break;
 	}
 
-	// stat:= !link ? limpa
-	// !nf:= !link ? get()
-	// stat & nf:= !link ? limpa
-	
 	isLink=keyIsLink(&buffer);
 	
 	if (canRead) {
@@ -735,30 +796,35 @@ int kdbSetKey_bdb(Key *key) {
 		
 	switch (ret) {
 		case 0: { /* Key found and retrieved. Check permissions */
-			Key buffer;
+			Key *cast;
 			
+			/*
 			keyInit(&buffer);
 			keyFromBDB(&buffer,&dbkey,&data);
 			keySetOwner(&buffer,dbctx->userDomain);
+			*/
 			
+			cast=(Key *)data.data;
+			
+			/* Check parent permissions to write bellow it. */
+			if (cast->uid == user)
+				canWrite = cast->access & S_IWUSR;
+			else if (cast->gid == group)
+				canWrite = cast->access & S_IWGRP;
+			else canWrite= cast->access & S_IWOTH;
+			
+			/* cleanup */
 			dbkey.data=0;
 			free(data.data); data.data=0;
 
-			/* Check parent permissions to write bellow it. */
-			if (buffer.uid == user)
-				canWrite = buffer.access & S_IWUSR;
-			else if (buffer.gid == group)
-				canWrite = buffer.access & S_IWGRP;
-			else canWrite= buffer.access & S_IWOTH;
-			
-			keyClose(&buffer);
+			/* keyClose(&buffer); */
 			break;
 		}
 		case DB_NOTFOUND: {
 			/* We don't have this key yet.
 			   Check if we have a parent and its permissions. */
 			Key *parent=0;
-			uint32_t parentNameSize;
+			size_t parentNameSize;
 			char *parentName;
 
 			parentNameSize=keyGetParentNameSize(key)+1;
@@ -778,24 +844,52 @@ int kdbSetKey_bdb(Key *key) {
 				/* No, we don't have a parent. Create dirs recursivelly */
 				
 				/* umask etc will be the defaults for current user */
-				parent=keyNew(parentName,
-					KEY_SWITCH_TYPE,KEY_TYPE_DIR,
-					KEY_SWITCH_END);
-				free(parentName);
+				parent=keyNew(KEY_SWITCH_END);
 				
-				if (kdbSetKey_bdb(parent))
+				keySetType(parent,KEY_TYPE_DIR);
+				
+				/* Next block exist just to not call 
+				 * keySetName(), a very expensive method.
+				 * This is a not-recomended hack. */
+				parent->key=parentName;
+				parent->flags |= key->flags & 
+					(KEY_SWITCH_ISSYSTEM | KEY_SWITCH_ISUSER);
+				parent->userDomain=key->userDomain;
+				
+				/* free(parentName); */
+				
+				if (kdbSetKey_bdb(parent)) {
 					/* If some error happened in this recursive call.
 					 * Propagate errno.
 					 */
+					
+					/* disassociate our hack for deletion */
+					parent->userDomain=0;
+					
+					/* parentName will be free()d here too */
+					keyDel(parent);
+					
 					return 1;
+				}
+				
+				/* disassociate our hack for latter deletion */
+				parent->userDomain=0;
+				
+				/* data.data enters and quits this block empty */
 			} else {
 				/* Yes, we have a parent already. */
-				parent=keyNew(0);
+				/*parent=keyNew(0);
 				keyFromBDB(parent,&dbkey,&data);
 				keySetOwner(parent,dbctx->userDomain);
 				
-				free(parentName);
 				free(data.data);
+				*/
+				
+				/* we don't need it anymore */
+				free(parentName);
+				
+				/* we are only interested in some metainfo, so just cast it */
+				parent=(Key *)data.data;
 			}
 
 			/* Check parent permissions to write bellow it. */
@@ -805,10 +899,14 @@ int kdbSetKey_bdb(Key *key) {
 				canWrite = parent->access & S_IWGRP;
 			else canWrite= parent->access & S_IWOTH;
 			
-			keyDel(parent);
+			if (data.data) free(data.data);
+			
+			if (parent == (Key *)data.data) parent = 0;
+			else if (parent) keyDel(parent);
+			
 			break;
-		}
-	}
+		} /* case DB_NOTFOUND */
+	} /* switch */
 
 	if (! canWrite) return errno=KDB_RET_NOCRED;
 
@@ -832,9 +930,10 @@ int kdbSetKey_bdb(Key *key) {
 	/* Mark the key as synced */
 	key->flags &= ~KEY_SWITCH_NEEDSYNC;
 
+	/*
 	dbctx->db.keyValuePairs->sync(dbctx->db.keyValuePairs,0);
 	dbctx->db.parentIndex->sync(dbctx->db.parentIndex,0);
-	
+	*/
 	return 0; /* success */
 }
 
@@ -851,19 +950,6 @@ int kdbRename_backend(Key *key, const char *newName) {
 	return 0; /* success */
 }
 
-
-
-
-/**
- * Implementation for kdbRemoveKey() method.
- *
- * @see kdbRemove() for expected behavior.
- * @ingroup backend
- */
-int kdbRemoveKey_backend(const Key *key) {
-	/* remove a key from the database */
-	return 0;  /* success */
-}
 
 
 
@@ -1080,13 +1166,13 @@ KDBBackend *kdbBackendFactory(void) {
 		KDB_BE_CLOSE,          &kdbClose_bdb,
 		KDB_BE_GETKEY,         &kdbGetKey_bdb,
 		KDB_BE_SETKEY,         &kdbSetKey_bdb,
-/*		KDB_BE_STATKEY,        &kdbStatKey_bdb,
-		KDB_BE_RENAME,         &kdbRename_backend,
-		KDB_BE_REMOVEKEY,      &kdbRemoveKey_backend, */
+		KDB_BE_STATKEY,        &kdbStatKey_bdb,
+		KDB_BE_REMOVEKEY,      &kdbRemoveKey_bdb,
 		KDB_BE_GETCHILD,       &kdbGetKeyChildKeys_bdb,
 		/* set to default implementation: 
 		 * Again, don't set explicitly. See filesys for more info*/
-/*		KDB_BE_MONITORKEY,     &kdbMonitorKey_default,
+/*		KDB_BE_RENAME,         &kdbRename_backend,
+		KDB_BE_MONITORKEY,     &kdbMonitorKey_default,
 		KDB_BE_MONITORKEYS,    &kdbMonitorKeys_default,
 		KDB_BE_SETKEYS,        &kdbSetKeys_default,*/
 		KDB_BE_END);
