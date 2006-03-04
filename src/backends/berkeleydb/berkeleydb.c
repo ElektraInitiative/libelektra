@@ -42,6 +42,9 @@ $Id$
 #define DB_DIR_USER   ".kdb-berkeleydb"
 #define DB_DIR_SYSTEM "/etc/kdb-berkeleydb"
 
+#define DB_KEYVALUE      "keyvaluepairs"
+#define DB_PARENTINDEX   "parentindex"
+
 #define DB_FILE_KEYVALUE   "keyvalue.db"
 #define DB_FILE_PARENTS    "parents.idx"
 
@@ -360,8 +363,8 @@ DBTree *dbTreeNew(const Key *forKey) {
 	int newlyCreated; /* True if this is a new database */
 
 	char dbDir[MAX_PATH_LENGTH];
-	char hier[MAX_PATH_LENGTH];
-	char keys[MAX_PATH_LENGTH];
+	char parentsFile[MAX_PATH_LENGTH];
+	char keyvalueFile[MAX_PATH_LENGTH];
 	struct passwd *user=0;
 
 	struct stat dbDirInfo;
@@ -396,8 +399,8 @@ DBTree *dbTreeNew(const Key *forKey) {
 		}
 	}
 
-	sprintf(keys,"%s/%s",dbDir,DB_FILE_KEYVALUE);
-	sprintf(hier,"%s/%s",dbDir,DB_FILE_PARENTS);
+	sprintf(keyvalueFile,"%s/%s",dbDir,DB_FILE_KEYVALUE);
+	sprintf(parentsFile,"%s/%s",dbDir,DB_FILE_PARENTS);
 
 	newDB=malloc(sizeof(DBTree));
 	memset(newDB,0,sizeof(DBTree));
@@ -411,27 +414,27 @@ DBTree *dbTreeNew(const Key *forKey) {
 	 * The main database. The one you can find the real key-value pairs
 	 *****************/
 	if ((ret = db_create(&newDB->db.keyValuePairs, NULL, 0)) != 0) {
-		fprintf(stderr, "db_create: %s: %s\n", keys, db_strerror(ret));
+		fprintf(stderr, "db_create: %s: %s\n", DB_KEYVALUE, db_strerror(ret));
 		free(newDB);
 		errno=KDB_RET_EBACKEND;
 		return 0;
 	}
 
-	ret=newDB->db.keyValuePairs->open(newDB->db.keyValuePairs,NULL,keys,
-		NULL, DB_BTREE, DB_CREATE | DB_EXCL | DB_THREAD, 0);
+	ret=newDB->db.keyValuePairs->open(newDB->db.keyValuePairs,NULL,keyvalueFile,
+		DB_KEYVALUE, DB_BTREE, DB_CREATE | DB_EXCL | DB_THREAD, 0);
 	if (ret == EEXIST || ret == EACCES) {
 		/* DB already exist. Only open it */
-		ret=newDB->db.keyValuePairs->open(newDB->db.keyValuePairs,NULL, keys,
-			NULL, DB_BTREE, DB_THREAD, 0);
+		ret=newDB->db.keyValuePairs->open(newDB->db.keyValuePairs,NULL, keyvalueFile,
+			DB_KEYVALUE, DB_BTREE, DB_THREAD, 0);
 		if (ret == EACCES)
 			ret=newDB->db.keyValuePairs->open(newDB->db.keyValuePairs,NULL,
-				keys, NULL, DB_BTREE, DB_THREAD | DB_RDONLY, 0);
+				keyvalueFile, DB_KEYVALUE, DB_BTREE, DB_THREAD | DB_RDONLY, 0);
 	} else newlyCreated=1;
 
 	
 	if (ret) {
 		newDB->db.keyValuePairs->err(newDB->db.keyValuePairs,
-			ret, "%s", keys);
+			ret, "%s", DB_KEYVALUE);
 		dbTreeDel(newDB);
 		errno=KDB_RET_EBACKEND;
 		return 0;
@@ -446,7 +449,7 @@ DBTree *dbTreeNew(const Key *forKey) {
 	 *****************/
 	ret=db_create(&newDB->db.parentIndex, NULL, 0);
 	if (ret != 0) {
-		fprintf(stderr, "db_create: %s: %s\n", hier, db_strerror(ret));
+		fprintf(stderr, "db_create: %s: %s\n", DB_PARENTINDEX, db_strerror(ret));
 		dbTreeDel(newDB);
 		errno=KDB_RET_EBACKEND;
 		return 0;
@@ -454,21 +457,21 @@ DBTree *dbTreeNew(const Key *forKey) {
 	
 	ret = newDB->db.parentIndex->set_flags(newDB->db.parentIndex,
 		DB_DUP | DB_DUPSORT);
-	if (ret != 0) fprintf(stderr, "set_flags: %s: %d\n",hier,ret);
+	if (ret != 0) fprintf(stderr, "set_flags: %s: %d\n",DB_PARENTINDEX,ret);
 	
 	ret = newDB->db.parentIndex->open(newDB->db.parentIndex,
-		NULL, hier, NULL, DB_BTREE, DB_CREATE | DB_EXCL | DB_THREAD, 0);
+		NULL, parentsFile, DB_PARENTINDEX, DB_BTREE, DB_CREATE | DB_EXCL | DB_THREAD, 0);
 	if (ret == EEXIST || ret == EACCES) {
 		/* DB already exist. Only open it */
-		ret=newDB->db.parentIndex->open(newDB->db.parentIndex,NULL, hier,
-			NULL, DB_BTREE, DB_THREAD, 0);
+		ret=newDB->db.parentIndex->open(newDB->db.parentIndex,NULL, parentsFile,
+			DB_PARENTINDEX, DB_BTREE, DB_THREAD, 0);
 		if (ret == EACCES)
 			ret=newDB->db.parentIndex->open(newDB->db.parentIndex,NULL,
-				hier, NULL, DB_BTREE, DB_THREAD | DB_RDONLY, 0);
+				parentsFile, DB_PARENTINDEX, DB_BTREE, DB_THREAD | DB_RDONLY, 0);
 	}
 	
 	if (ret) {
-		newDB->db.parentIndex->err(newDB->db.parentIndex, ret, "%s", hier);
+		newDB->db.parentIndex->err(newDB->db.parentIndex, ret, "%s", DB_PARENTINDEX);
 		dbTreeDel(newDB); 
 		errno=KDB_RET_EBACKEND;
 		return 0;
@@ -477,7 +480,7 @@ DBTree *dbTreeNew(const Key *forKey) {
 	ret = newDB->db.keyValuePairs->associate(newDB->db.keyValuePairs, NULL,
 		newDB->db.parentIndex, parentIndexCallback, DB_DBT_APPMALLOC);
 	if (ret != 0) {
-		fprintf(stderr, "error: %s: %d\n",hier,ret);
+		fprintf(stderr, "error: %s: %d\n",DB_PARENTINDEX,ret);
 		dbTreeDel(newDB);
 		errno=KDB_RET_EBACKEND;
 		return 0;
@@ -494,8 +497,8 @@ DBTree *dbTreeNew(const Key *forKey) {
 	/* Set file permissions for the DB files */
 	if (newlyCreated) {
 		if (user) {
-			chown(hier,  user->pw_uid,user->pw_gid);
-			chown(keys,  user->pw_uid,user->pw_gid);
+			chown(keyvalueFile,  user->pw_uid,user->pw_gid);
+			chown(parentsFile,  user->pw_uid,user->pw_gid);
 		}
 		dbTreeInit(newDB); /* populate */
 	}

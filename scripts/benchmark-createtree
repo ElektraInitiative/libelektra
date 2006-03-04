@@ -3,9 +3,9 @@
 # $Id$
 
 ROOT="user/bench"
-LEVELS=5
-DIRS=6
-KEYS=7
+LEVELS=3
+DIRS=4
+KEYS=2
 
 genLevel() {
 	local level=$1
