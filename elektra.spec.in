@@ -64,24 +64,24 @@ This Package contains devel parts.
 #daemon to store its keys.
 
 
-#%package backend-berkeleydb
-#Summary:      Include files and API documentation for Elektra Project
-#Group:        System Environment/Libraries
-#Requires:     elektra
+%package backend-berkeleydb
+Summary:      Include files and API documentation for Elektra Project
+Group:        System Environment/Libraries
+Requires:     elektra
 
 
-#%description backend-berkeleydb
-#Elektra provides a universal and secure framework to store configuration
-#parameters in a hierarchical key-value pair mechanism, instead of each
-#program using its own text configuration files. This allows any program
-#to read and save its configuration with a consistent API, and allows
-#them to be aware of other applications' configurations, permitting
-#easy application integration. While architecturally similar to other OS
-#registries, Elektra does not have most of the problems found in those
-#implementations.
+%description backend-berkeleydb
+Elektra provides a universal and secure framework to store configuration
+parameters in a hierarchical key-value pair mechanism, instead of each
+program using its own text configuration files. This allows any program
+to read and save its configuration with a consistent API, and allows
+them to be aware of other applications' configurations, permitting
+easy application integration. While architecturally similar to other OS
+registries, Elektra does not have most of the problems found in those
+implementations.
 
-#This package contains a Berkeley DB backend for Elektra, to let Elektra use
-#Berkeley DB databases to store its keys.
+This package contains a Berkeley DB backend for Elektra, to let Elektra use
+Berkeley DB databases to store its keys.
 
 # Uncomment and joint the '%' char to 'debug_package' if you want to build debug RPMs
 %debug_package
@@ -197,9 +197,9 @@ kdb set system/sw/kdb/current/schemapath "%{_datadir}/sgml/elektra-%{DTDVERSION}
 #%defattr(-,root,root,0755)
 #%{_libdir}/*gconf.so*
 
-#%files backend-berkeleydb
-#%defattr(-,root,root,0755)
-#/lib/*berkeleydb.so*
+%files backend-berkeleydb
+%defattr(-,root,root,0755)
+/lib/*berkeleydb.so*
 
 
 
