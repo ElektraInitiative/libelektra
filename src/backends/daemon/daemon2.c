@@ -160,9 +160,9 @@ int connectToDaemon(const char *sockFname)
 int kdbOpen_daemon()
 {
 	extern	int	socketfd;
-		Message	*request;
-		Message	reply;
-		ssize_t	ret;
+	Message	*request;
+	Message	reply;
+	ssize_t	ret;
 
 	printf("kdbOpen()\n");
 		
@@ -181,7 +181,7 @@ int kdbOpen_daemon()
 	//
 	// kdbOpen()
 	//
-		        
+	
 	/* Prepare request */
 	request = messageNewRequest(KDB_BE_OPEN, DATATYPE_LAST);
         if ( request == NULL ) {
@@ -230,9 +230,9 @@ int kdbOpen_daemon()
 int kdbClose_daemon()
 {
 	extern	int	socketfd;
-		Message	*request;
-       		Message	reply;
-		int	ret;
+	Message	*request;
+	Message	reply;
+	int	ret;
 
 	printf("kdbClose() %d\n", socketfd);
 		
@@ -705,7 +705,6 @@ KDBBackend *kdbBackendFactory(void) {
 		KDB_BE_RENAME,         &kdbRename_daemon,
 		KDB_BE_REMOVEKEY,      &kdbRemoveKey_daemon,
 		KDB_BE_GETCHILD,       &kdbGetKeyChildKeys_daemon,
-		/* set to default implementation: */
 		KDB_BE_MONITORKEY,     &kdbMonitorKey_daemon,
 		KDB_BE_MONITORKEYS,    &kdbMonitorKeys_daemon,
 		KDB_BE_SETKEYS,        &kdbSetKeys_daemon,

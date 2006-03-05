@@ -60,6 +60,47 @@ $Id$
 
 
 
+/**
+ * Our DB layout uses 2 simple tables:
+ * 
+ * - keyValuePairs: table key is key name, and data is a serialization of
+ *   key's metadata, value and comment.
+ * 
+ * - parentIndex: a secondary index, to make folder searches possible, so
+ *   it contains the parent key name as the table key and some DB internal
+ *   data to point to keyValuePais table primary key-data pairs.
+ * 
+ * So if we have the following Elektra keys:
+ * 
+ *	user/sw/app1/key1
+ *	user/sw/app1/key2
+ *	user/sw/app1/dir1/
+ *	user/sw/app1/dir1/key1
+ *	user/sw/app1/dir1/key2
+ * 
+ * The keyValuePairs table will contain:
+ * 
+ *	user/sw/app1/key1      | metadata, value, comment
+ *	user/sw/app1/key2      | metadata, value, comment
+ *	user/sw/app1/dir1      | metadata
+ *	user/sw/app1/dir1/key1 | metadata, value, comment
+ *	user/sw/app1/dir1/key2 | metadata, value, comment
+ *	
+ * And parentIndex table will contain:
+ * 
+ *	user/sw/app1      | (BDB internal pointer to key1 on primary table)
+ *	user/sw/app1      | (BDB internal pointer to key2 on primary table)
+ *	user/sw/app1      | (BDB internal pointer to dir1 on primary table)
+ *	user/sw/app1/dir1 | (BDB internal pointer to dir1/key1 on primary table)
+ *	user/sw/app1/dir1 | (BDB internal pointer to dir1/key2 on primary table)
+ * 
+ * The parentIndex table is written and managed automatically by Berkeley DB
+ * DB->associate() method, with the help of our parentIndexCallback().
+ * 
+ */
+
+
+
 
 /**
  *  A container for the Berkeley DBs related to the same DBTree.
@@ -210,7 +251,11 @@ int keyToBDB(const Key *key, DBT *dbkey, DBT *dbdata) {
 
 
 
-
+/**
+ * The oposite of keyToBDB.
+ * Will take 2 DBTs (one for key name, other for data) and convert them
+ * into a Key structure.
+ */
 int keyFromBDB(Key *key, const DBT *dbkey, const DBT *dbdata) {
 	size_t metaInfoSize;
 	
@@ -254,7 +299,12 @@ int keyFromBDB(Key *key, const DBT *dbkey, const DBT *dbdata) {
 
 
 
-
+/**
+ * Calculates the secondary index for a key.
+ * In our DB layout, the secondary index is simply the parent of the key.
+ * This method is called everytime DB->get, DB->put etc BDB methods
+ * are called.
+ */
 int parentIndexCallback(DB *db, const DBT *rkey, const DBT *rdata, DBT *pkey) {
 	size_t baseNameSize,parentNameSize;
 	char *parentPrivateCopy=0;
@@ -285,7 +335,10 @@ int parentIndexCallback(DB *db, const DBT *rkey, const DBT *rdata, DBT *pkey) {
 
 
 
-
+/**
+ * Closes databases, frees internal memory and destroys the
+ * DBTree data structure. It is the oposite of dbTreeNew().
+ */
 int dbTreeDel(DBTree *dbtree) {
 	if (dbtree->userDomain) free(dbtree->userDomain);
 	if (dbtree->db.keyValuePairs)
@@ -356,6 +409,14 @@ int dbTreeInit(DBTree *newDB) {
  * If it doesn't exist, try to create it.
  * The returned new DBTree must be included in the static single
  * DBContainer by the caller.
+ * The returned DBTree must be deleted later with dbTreeDel().
+ * 
+ * The DB location on the filesystem is something like this:
+ * 
+ * if (keyIsUser(forKey))
+ *	~{keyGetOwner(forKey)}/.kdb-berkeleydb/{dbfiles}
+ * else
+ *	/etc/kdb-berkeleydb/{dbfiles}
  */
 DBTree *dbTreeNew(const Key *forKey) {
 	DBTree *newDB;
@@ -517,6 +578,7 @@ DBTree *dbTreeNew(const Key *forKey) {
  * Return the DB suitable for the key.
  * Lookup in the list of opened DBs (DBContainer). If not found, tries to
  * open it with dbTreeNew().
+ * Key name and user domain will be used to find the correct database.
  */
 DBTree *getDBForKey(const Key *key) {
 	DBTree *current,*newDB;

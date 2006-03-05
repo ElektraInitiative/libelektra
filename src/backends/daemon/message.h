@@ -6,12 +6,12 @@ typedef enum {
 
 /* Struct Message */
 typedef struct {
-	MessageType	type;		
+	MessageType       type;
 	
-	unsigned int	procId;		/* Procedure ID			*/
+	unsigned int      procId; /* Procedure ID */
 	
-	int		nbArgs;		/* # args			*/
-	Argument	**args;		/* Argument / return parameter	*/
+	int               nbArgs; /* # args */
+	Argument          **args; /* Argument / return parameter */
 } Message;
 
 const Argument *messageStealArgByIndex(const Message *msg, int index);

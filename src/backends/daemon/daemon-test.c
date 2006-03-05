@@ -201,7 +201,7 @@ int checkMessage(Message *msg, ...)
 		printf("<NULL>");
 		return -1;
 	}
-                                                                                                                             
+
         if ( msg->type != MESSAGE_REQUEST ) {
 		printf("Not a request");
 		return -1;
