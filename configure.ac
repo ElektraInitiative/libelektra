@@ -33,11 +33,12 @@ fi
 # set some custom path 
 
 # usr/lib path
+echo "LIBDIR=$libdir"
 AC_ARG_WITH(ulibdir,
 	    [AC_HELP_STRING(--with-ulibdir=<path to lib>,
 	     [Set the path for usr lib.])],
 	     [[ulibdir=$withval]],
-	     [[ulibdir='${prefix}/lib']]
+	     [[ulibdir='${prefix}/'`basename $libdir`]]
 	     )
 AC_SUBST(ulibdir)
 

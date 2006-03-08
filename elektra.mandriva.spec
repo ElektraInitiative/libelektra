@@ -1,5 +1,5 @@
 %define name    elektra 
-%define version 0.5.5
+%define version 0.5.10
 %define release %mkrel 1 
 
 Name:          %{name}
@@ -10,7 +10,7 @@ Group:         System Environment/Libraries
 License:       BSD
 URL:           http://elektra.sourceforge.net
 BuildRoot:     %{_tmppath}/%{name}-%{version}-%{release}-buildroot
-BuildRequires: doxygen docbook-style-xsl db4-devel libGConf2-devel libxml2-devel automake autoconf libtool libxslt-proc
+BuildRequires: doxygen docbook-style-xsl db4-devel libGConf1-devel libxml2-devel automake autoconf libtool libxslt-proc
 Summary:       A key/value pair database to store software configurations
 
 %define DTDVERSION 0.1.1
@@ -86,27 +86,23 @@ Berkeley DB databases to store its keys.
 %setup
 
 %build
-# ./configure --build=i586-mandriva-linux-gnu --prefix=/usr --exec-prefix=/usr --bindir=/usr/bin --sbindir=/usr/sbin --sysconfdir=/etc --datadir=/usr/share --includedir=/usr/include --libdir=/usr/lib --libexecdir=/usr/lib --localstatedir=/var/lib --sharedstatedir=/usr/com --mandir=/usr/share/man --infodir=/usr/share/info --x-includes=/usr/X11R6/include --x-libraries=/usr/X11R6/lib
 %define _prefix /usr
 %define _exec_prefix /
 %define _sysconfdir /etc
 %define _includedir /usr/include
 %define _mandir /usr/share/man
 %configure2_5x
-# ./configure i586-mandriva-linux-gnu --prefix=/usr --exec-prefix=/ --sysconfdir=/etc --includedir=/usr/include --mandir=/usr/share/man
 %make
-# make DESTDIR=$RPM_BUILD_ROOT
 
 %install
 rm -rf $RPM_BUILD_ROOT
 %makeinstall
-rm $RPM_BUILD_ROOT/lib/libelektra-*.a
-rm $RPM_BUILD_ROOT/lib/libregistry*.a
-rm $RPM_BUILD_ROOT/lib/libloader-*
-mv $RPM_BUILD_ROOT/lib/libelektra.a $RPM_BUILD_ROOT/usr/lib
-rm $RPM_BUILD_ROOT/lib/*.la
-rm $RPM_BUILD_ROOT/usr/lib/*.la
-ln -s ../../lib/libelektra.so $RPM_BUILD_ROOT/usr/lib
+rm $RPM_BUILD_ROOT%{_libdir}/libelektra-*.a
+rm $RPM_BUILD_ROOT%{_libdir}/libloader-*
+mv $RPM_BUILD_ROOT%{_libdir}/libelektra.a $RPM_BUILD_ROOT%{_prefix}%{_libdir}
+rm $RPM_BUILD_ROOT%{_libdir}/*.la
+rm $RPM_BUILD_ROOT%{_prefix}/%{_libdir}/*.la
+ln -s ../..%{_libdir}/libelektra.so $RPM_BUILD_ROOT%{_prefix}%{_libdir}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -131,11 +127,11 @@ kdb set system/sw/kdb/current/schemapath "%{_datadir}/sgml/elektra-%{DTDVERSION}
 %files
 %defattr(-,root,root,0755)
 %{_libdir}/*elektra.so*
-%{_libdir}/*registry.so*
+# %{_libdir}/*registry.so*
 %{_libdir}/*elektra-filesys.so*
 %{_libdir}/*elektra-default.so*
 %{_libdir}/*elektra-fstab.so*
-%{_libdir}/*elektra-ini.so*
+# %{_libdir}/*elektra-ini.so*
 %{_prefix}/%{_libdir}/*elektratools.so*
 %{_prefix}/%{_libdir}/*elektra.so*
 /bin/*
@@ -150,20 +146,18 @@ kdb set system/sw/kdb/current/schemapath "%{_datadir}/sgml/elektra-%{DTDVERSION}
 %files devel
 %defattr(-,root,root,0755)
 %{_includedir}/*
-/usr/lib/*.a
-/usr/lib/pkgconfig/*
+%{_prefix}/%{_libdir}/*.a
+%{_prefix}/%{_libdir}/pkgconfig/*
 %doc %{_docdir}/%{name}-devel
 %doc %{_mandir}/man3/*
 
-
-
-%files backend-gconf
-%defattr(-,root,root,0755)
-/usr/lib/*gconf.so*
+# %files backend-gconf
+# %defattr(-,root,root,0755)
+# %{_prefix}/%{_libdir}/*gconf.so*
 
 %files backend-berkeleydb
 %defattr(-,root,root,0755)
-/lib/*berkeleydb.so*
+%{_libdir}/*berkeleydb.so*
 
 
 %changelog

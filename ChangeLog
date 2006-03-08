@@ -1,3 +1,8 @@
+* Web Mar 08 2006 Yannick Lecaillez <yl@itioweb.com> 0.5.10
+- Fix in configure.ac to allow installation into lib64
+- Fix bug in keySetName caused segfault on x86_64
+- Updated Mandriva spec file for allow x86_64 RPMs build
+
 * Sun Mar 03 2006 Avi Alkalay <avi@unix.sh> 0.5.10
 
 * Sun Mar 03 2006 Avi Alkalay <avi@unix.sh> 0.5.9
