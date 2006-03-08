@@ -576,7 +576,7 @@ ssize_t keySetName(Key *key, const char *newName) {
 		
 		/* next piece of code exist to remove extra '/' in key names */
 		readCursor=writeCursor=0;
-		cursor=(char *)((unsigned)newName+rootLength);
+		cursor=(char *)(newName+((unsigned) rootLength));
 		while(cursor[readCursor]) {
 			if (cursor[readCursor] == RG_KEY_DELIM)
 				while (cursor[readCursor+1] == RG_KEY_DELIM ||
