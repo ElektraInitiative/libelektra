@@ -84,7 +84,7 @@ This package contains a Berkeley DB backend for Elektra, to let Elektra use
 Berkeley DB databases to store its keys.
 
 # Uncomment and joint the '%' char to 'debug_package' if you want to build debug RPMs
-%debug_package
+# % debug_package
 
 %prep
 %setup

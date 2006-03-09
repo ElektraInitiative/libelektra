@@ -3,8 +3,6 @@
 - Fix bug in keySetName caused segfault on x86_64
 - Updated Mandriva spec file for allow x86_64 RPMs build
 
-* Sun Mar 03 2006 Avi Alkalay <avi@unix.sh> 0.5.10
-
 * Sun Mar 03 2006 Avi Alkalay <avi@unix.sh> 0.5.9
 - Added the ksGetCommonParentName() method to help in XML exporting
 - ksToStream() now correctly handles KDB_O_HIER flag, for nicer XML exports
