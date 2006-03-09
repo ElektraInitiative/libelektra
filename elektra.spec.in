@@ -122,7 +122,6 @@ rm -rf $RPM_BUILD_ROOT
 make DESTDIR=$RPM_BUILD_ROOT install
 
 rm $RPM_BUILD_ROOT/lib/libelektra-*.a
-rm $RPM_BUILD_ROOT/lib/libloader-*
 mv $RPM_BUILD_ROOT/lib/libelektra.a $RPM_BUILD_ROOT/usr/lib
  
 #rm $RPM_BUILD_ROOT/usr/lib/libelektra-*.a

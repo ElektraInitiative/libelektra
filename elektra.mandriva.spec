@@ -98,7 +98,6 @@ Berkeley DB databases to store its keys.
 rm -rf $RPM_BUILD_ROOT
 %makeinstall
 rm $RPM_BUILD_ROOT%{_libdir}/libelektra-*.a
-rm $RPM_BUILD_ROOT%{_libdir}/libloader-*
 mv $RPM_BUILD_ROOT%{_libdir}/libelektra.a $RPM_BUILD_ROOT%{_prefix}%{_libdir}
 rm $RPM_BUILD_ROOT%{_libdir}/*.la
 rm $RPM_BUILD_ROOT%{_prefix}/%{_libdir}/*.la
