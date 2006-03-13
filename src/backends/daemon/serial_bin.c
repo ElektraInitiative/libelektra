@@ -1,3 +1,27 @@
+/***************************************************************************
+                serial_bin.c  -  Low level objects serialization etc
+                             -------------------
+    begin                : Sun Mar 12 2006
+    copyright            : (C) 2006 by Yannick Lecaillez, Avi Alkalay
+    email                : avi@unix.sh
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the BSD License (revised).                      *
+ *                                                                         *
+ ***************************************************************************/
+
+
+/* Subversion stuff
+
+$Id$
+
+*/
+
+
+
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>

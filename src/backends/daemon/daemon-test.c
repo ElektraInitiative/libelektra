@@ -1,5 +1,5 @@
 /***************************************************************************
-            daemon.c  -  Backends which communication with Elektra Daemon
+                   kdbd.c  -  The server for the daemon backend
                              -------------------
     begin                : Mon Dec 26 2004
     copyright            : (C) 2005 by Yannick Lecaillez
@@ -13,17 +13,26 @@
  *                                                                         *
  ***************************************************************************/
 
+
+/* Subversion stuff
+
+$Id: protocol.h 671 2006-03-13 00:03:58Z aviram $
+
+*/
+
+
 #include <stdarg.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 
+#include "kdb.h"
+#include "kdbbackend.h"
+
 #include "datatype.h"
 #include "argument.h"
 #include "message.h"
 
-#include "kdb.h"
-#include "kdbbackend.h"
 
 #define BACKENDNAME "daemon"
 

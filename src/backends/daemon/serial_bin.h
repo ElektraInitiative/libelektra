@@ -1,3 +1,30 @@
+/***************************************************************************
+                serial_bin.h  -  Low level objects serialization etc
+                             -------------------
+    begin                : Sun Mar 12 2006
+    copyright            : (C) 2006 by Yannick Lecaillez, Avi Alkalay
+    email                : avi@unix.sh
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the BSD License (revised).                      *
+ *                                                                         *
+ ***************************************************************************/
+
+
+/* Subversion stuff
+
+$Id$
+
+*/
+
+
+#ifndef SERIALBIN_H
+#define SERIALBIN_H
+
+
 size_t keySerializeGetSize(const Key *key);
 size_t keySetSerializeGetSize(KeySet *ks);
 size_t messageSerializeGetSize(const Message *msg);
@@ -15,3 +42,4 @@ ssize_t messageUnserialize(const void *data, Message *returned);
 ssize_t argumentSerialize(const Argument *arg, void *data, size_t dataSize);
 ssize_t argumentUnserialize(const void *data, Argument *returned);
 
+#endif /* SERIALBIN_H */
