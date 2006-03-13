@@ -1,5 +1,5 @@
 /***************************************************************************
-            daemon.c  -  Backends which communication with Elektra Daemon
+            daemon.c  -  Backend that makes RPCs to a kdb daemon
                              -------------------
     begin                : Mon Dec 26 2004
     copyright            : (C) 2005 by Yannick Lecaillez
@@ -13,20 +13,29 @@
  *                                                                         *
  ***************************************************************************/
 
+/* Subversion stuff
+
+$Id$
+
+*/
+
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <inttypes.h>
 
-#include "datatype.h"
-#include "argument.h"
-#include "message.h"
-
-#include "protocol.h"
-
 #include "kdb.h"
 #include "kdbbackend.h"
 
+
+
+/* Backend specific includes */
+
+#include "datatype.h"
+#include "protocol.h"
+#include "argument.h"
+#include "message.h"
 
 
 
@@ -50,61 +59,6 @@
 
 int socketfd = -1;
 struct sockaddr_un sockserver;
-
-/**
- * @defgroup backend Elektra framework for pluggable backends
- * @brief The tactics to create pluggable backends to libelektra.so
- *
- * Since version 0.4.9, Elektra can dynamically load different key storage
- * backends. Fast jump to kdbBackendExport() to see an example of a backend
- * implementation.
- * 
- * The methods of class KeyDB that are backend dependent are kdbOpen(),
- * kdbClose(), kdbGetKey(), kdbSetKey(), kdbStatKey(),
- * kdbGetKeyChildKeys(), kdbRemove(), kdbRename(). So a backend must
- * reimplement these methods.
- * 
- * And methods that have a builtin default high-level inefficient
- * implementation are kdbSetKeys(), kdbMonitorKey(), kdbMonitorKeys(). So
- * it is suggested to reimplement them too, to make them more efficient.
- *
- * The other KeyDB methods are higher level. They use the above methods to
- * do their job, and generally don't have to be reimplemented for a
- * different backend.
- * 
- * The backend must implement a method with name kdbBackendFactory() and no
- * parameters, that is responsible of exporting the implementations of 
- * libelektra.so backend dependent methods.
- * 
- * The backend implementation must:
- * @code
-#include <kdb.h>
-#include <kdbbackend.h>
- * @endcode
- * 
- * <b>Better than that, a skeleton of a backend implementation is provided inside
- * Elektra development package or source code tree, and should be used as a
- * base for the implementation.</b>
- * 
- * An elektrified program will use the backend defined by environment variable
- * @e $KDB_BACKEND, The backend library is dynamically loaded when the program
- * calls kdbOpen(), unless if the program is security/authentication/setuid
- * related, in which it probably uses the more secure kdbOpenDefault() which
- * completely ignores the @e $KDB_BACKEND environment and will use the
- * @c "default" named backend defined by the sysadmin. Look at
- * @c /lib/libelektra-default.so link to see the default backend for your
- * system.
- * 
- * Elektra source code or development package provides a skeleton and Makefile
- * to implement a backend, and we'll document this skeleton here.
- * 
- * A backend is defined by a single name, for example @c BACKENDNAME, that
- * causes libelektra.so look for its library as @c libelektra-BACKENDNAME.so.
- * 
- * Elektra source code tree includes several backend implementations
- * (http://germane-software.com/repositories/elektra/trunk/src/backends)
- * that can also be used as a reference.
- */
 
 
 
