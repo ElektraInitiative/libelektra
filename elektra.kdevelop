@@ -9,7 +9,7 @@
     <ignoreparts/>
     <projectdirectory>.</projectdirectory>
     <absoluteprojectpath>false</absoluteprojectpath>
-    <description/>
+    <description></description>
     <secondaryLanguages>
       <language>Bash</language>
     </secondaryLanguages>
@@ -17,10 +17,10 @@
   </general>
   <kdevcustomproject>
     <run>
-      <mainprogram>/home/aviram/src/elektra/src/kdb/.libs/kdb</mainprogram>
+      <mainprogram>/home/aviram/src/elektra/src/backends/daemon/.libs/kdbd</mainprogram>
       <directoryradio>custom</directoryradio>
-      <customdirectory>/home/aviram/src/elektra/src/</customdirectory>
-      <programargs/>
+      <customdirectory>/home/aviram/src/elektra/src/backends/daemon/</customdirectory>
+      <programargs></programargs>
       <terminal>false</terminal>
       <autocompile>true</autocompile>
       <envvars>
@@ -30,20 +30,20 @@
     </run>
     <build>
       <buildtool>make</buildtool>
-      <builddir/>
+      <builddir></builddir>
     </build>
     <make>
       <abortonerror>false</abortonerror>
       <numberofjobs>1</numberofjobs>
       <dontact>false</dontact>
-      <makebin/>
+      <makebin></makebin>
       <selectedenvironment>default</selectedenvironment>
       <environments>
         <default/>
       </environments>
       <prio>0</prio>
-      <makeoptions/>
-      <defaulttarget/>
+      <makeoptions></makeoptions>
+      <defaulttarget></defaulttarget>
     </make>
     <general>
       <activedir>doc</activedir>
@@ -51,12 +51,12 @@
   </kdevcustomproject>
   <kdevdebugger>
     <general>
-      <dbgshell/>
+      <dbgshell></dbgshell>
       <programargs>set user/tmp/test test1</programargs>
-      <gdbpath/>
-      <configGdbScript/>
-      <runShellScript/>
-      <runGdbScript/>
+      <gdbpath></gdbpath>
+      <configGdbScript></configGdbScript>
+      <runShellScript></runShellScript>
+      <runGdbScript></runGdbScript>
       <breakonloadinglibs>true</breakonloadinglibs>
       <separatetty>false</separatetty>
       <floatingtoolbar>false</floatingtoolbar>
@@ -149,7 +149,7 @@
     </codecompletion>
     <references/>
     <creategettersetter>
-      <prefixGet/>
+      <prefixGet></prefixGet>
       <prefixSet>set</prefixSet>
       <prefixVariable>m_,_</prefixVariable>
       <parameterName>theValue</parameterName>

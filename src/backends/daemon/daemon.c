@@ -71,22 +71,19 @@ int connectToDaemon(const char *sockFname)
 	if ( socketfd != -1 )
 		return 0;
 	
-	//
-        // Open socket
-	// 
+	/* Open socket */
 	socketfd = socket(AF_UNIX, SOCK_STREAM, 0);
 	if ( socketfd == -1 ) {
 		perror("connectToDaemon");
 		return 1;
 	}
 
-	//
-	// Connect
-	//
+	/* Connect */
 	sockserver.sun_family = AF_UNIX;
 	strcpy(sockserver.sun_path, SOCKET_NAME);
 	ret = connect(socketfd, (struct sockaddr *) &sockserver,
-		       	sizeof(sockserver.sun_family) + strlen(sockserver.sun_path));
+		sizeof(sockserver.sun_family) + strlen(sockserver.sun_path));
+	
 	if ( ret ) {
 		perror("connectToDaemon");
 		return 1;
@@ -111,8 +108,7 @@ int connectToDaemon(const char *sockFname)
  * @see kdbOpen()
  * @ingroup backend
  */
-int kdbOpen_daemon()
-{
+int kdbOpen_daemon() {
 	extern	int	socketfd;
 	Message	*request;
 	Message	reply;
@@ -151,7 +147,10 @@ int kdbOpen_daemon()
 		return 1;
 	}
 
-        /* Wait for a reply for 5 secondes */
+	/* Wait for a reply for 5 secondes */
+	ret = protocolReadMessage(socketfd,&reply);
+	
+	
 #ifdef TOTO
 	messageInit(&reply);
 	if ( protocolReadMessage(&reply, REPLY_TIMEOUT) == -1 )
@@ -300,7 +299,7 @@ int kdbGetKey_daemon(Key *key)
 		return -1;
 
 	if ( messageGetArgumentValue(reply, 1, DATATYPE_KEY, key) == -1 )
-                return -1;
+		return -1;
 	
 	return ret;
 }
@@ -319,10 +318,10 @@ int kdbGetKey_daemon(Key *key)
  */
 int kdbSetKey_daemon(Key *key)
 {
-	extern	int	socketfd;
-		Message         *request;
-        	Message         reply;
-		int             ret;
+	extern int socketfd;
+	Message *request;
+	Message reply;
+	int ret;
 
 	printf("kdbSetKey()\n");
 		

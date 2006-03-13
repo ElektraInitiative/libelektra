@@ -16,7 +16,7 @@
 
 /* Subversion stuff
 
-$Id: protocol.h 671 2006-03-13 00:03:58Z aviram $
+$Id$
 
 */
 
@@ -55,7 +55,7 @@ $Id: protocol.h 671 2006-03-13 00:03:58Z aviram $
 int	sock_serv;
 
 int checkMessage	(Message *msg, ...);
-	
+
 
 int initSocket(const char *sockPath)
 {
@@ -81,16 +81,21 @@ int initSocket(const char *sockPath)
 }
 
 
-int main()
-{
-	extern	int		sock_serv;
-	struct	sockaddr_un	cli_addr;
-	struct	ucred		credentials;
-		Message		*msg, *reply;
-		void		*data;
-		size_t		dataLen;
-		socklen_t	len;
-		int		con_socket;
+int kdbOpen_daemon(void *context) {
+	/* 1. really open a local backend */
+	/* 2. reply success or failure to the client */
+}
+
+
+int main(int argc, char **argv) {
+	extern int sock_serv;
+	struct sockaddr_un cli_addr;
+	struct ucred credentials;
+	Message *msg, *reply;
+	void *data;
+	size_t dataLen;
+	socklen_t len;
+	int con_socket;
 
 
 	/* Do some Init ... */
@@ -123,7 +128,7 @@ int main()
 		printf("Accepted connection from PID=%d UID=%d GID=%d\n", credentials.pid, credentials.uid, credentials.gid);
 
 		/*
-		 *  Read clients request 
+		 *  Read clients request
 		 */
 		for(;;) {
 			msg = messageNew();
@@ -199,8 +204,7 @@ int main()
 	close(con_socket);
 }
 
-int checkMessage(Message *msg, ...)
-{
+int checkMessage(Message *msg, ...) {
 	va_list		va;
 	DataType	waitedType;
 	int		args;
