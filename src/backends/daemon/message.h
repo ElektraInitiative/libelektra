@@ -30,6 +30,7 @@ $Id$
 #ifndef MESSAGE_H
 #define MESSAGE_H
 
+#include "argument.h"
 
 /* Message type */
 typedef enum {

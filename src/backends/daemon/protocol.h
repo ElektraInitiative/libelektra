@@ -28,6 +28,8 @@ $Id$
 #ifndef PROTOCOL_H
 #define PROTOCOL_H
 
+#include "message.h"
+
 typedef struct {
 	uint32_t  magic;
 	int16_t   version;
