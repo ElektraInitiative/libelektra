@@ -201,14 +201,13 @@ int kdbOpenDefault() {
  * @param backendName used to define the module filename as
  * 	libelektra-@p "backendName".so
  * @return 0 on success.
- * @return -1 on failure
- * @errno is set to 
- * 	KDBErr::KDB_RET_NOSYS if backend library could not be opened
- * 	KDBErr::KDB_RET_NOBACKEND if backend doesn't have the essential
- * 		"kdbBackendFactory" initialization symbol
- * 	KDBErr::KDB_RET_NOEXPORTS if backend failed to export its methods
- * 	KDBErr::KDB_RET_NOKDBOPEN if backend does not provide a kdbOpen()
- * 		implementation
+ * @return -1 on failure and @c errno is set to 
+ * 	- KDBErr::KDB_RET_EBACKEND if backend library could not be opened
+ * 	- KDBErr::KDB_RET_NOSYS if backend library doesn't provide the @n 
+ * 	  essential "kdbBackendFactory" initialization symbol
+ * 	- KDBErr::KDB_RET_NOSYS if backend failed to export its methods
+ * 	- KDBErr::KDB_RET_NOSYS if backend does not provide a kdbOpen()
+ * 	  implementation
  * @see kdbOpen()
  * @par Example of copying keys from one backend to another
  * @code
@@ -241,6 +240,7 @@ bash# KDB_BACKEND=apache kdb import apacheconf.xml
  * @ingroup kdb
  */
 int kdbOpenBackend(char *backendName) {
+	/* TODO: review error codes on errno */
 	kdbLibHandle dlhandle=0;
 	char backendlib[300];
 	KDBBackendFactory kdbBackendNew=0;
@@ -262,7 +262,7 @@ int kdbOpenBackend(char *backendName) {
 	sprintf(backendlib,"libelektra-%s",backendName);
 	dlhandle=kdbLibLoad(backendlib);
 	if (dlhandle == 0) {
-		errno=KDB_RET_NOSYS;
+		errno=KDB_RET_EBACKEND;
 		return -1; /* error */
 	}
 	

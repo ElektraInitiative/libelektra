@@ -231,23 +231,23 @@ enum KDBErr {
 
 	/* Errors related to empty internal key properties */
 	KDB_RET_NOKEY=ENXIO,        /*!< Key has no name */
-	KDB_RET_NODATA=ENODEV,        /*!< Key has no data */
-	KDB_RET_NODESC=ENOTDIR,         /*!< Key has no comment/description */
-	KDB_RET_NODOMAIN=EDOM,        /*!< Key has no user domain set */
-	KDB_RET_NOGROUP=ECHILD,       /*!< Key has no group */
-	KDB_RET_NOTIME=ENOTTY,     /*!< Key has no access time set */
+	KDB_RET_NODATA=ENODEV,      /*!< Key has no data */
+	KDB_RET_NODESC=ENOTDIR,     /*!< Key has no comment/description */
+	KDB_RET_NODOMAIN=EDOM,      /*!< Key has no user domain set */
+	KDB_RET_NOGROUP=ECHILD,     /*!< Key has no group */
+	KDB_RET_NOTIME=ENOTTY,      /*!< Key has no access time set */
 
 
 	/* Errors related to permissions, no memory or failed internal operations */
-	KDB_RET_NOCRED=EACCES,        /*!< No credentials to access resource */
+	KDB_RET_NOCRED=EACCES,       /*!< No credentials to access resource */
 	KDB_RET_TRUNC=ERANGE,        /*!< Buffer was too small */
-	KDB_RET_NOMEM=ENOMEM,         /*!< Out of memory */
+	KDB_RET_NOMEM=ENOMEM,        /*!< Out of memory */
 	KDB_RET_TYPEMISMATCH=EBADF,  /*!< Failed to convert key data due to
 	                                   data type */
 
 	/* Errors related to backend access or opening */
-	KDB_RET_NOSYS=ENOSYS,         /*!< Backend method not implemented */
-	KDB_RET_EBACKEND=EIO          /*!< Error opening backend */
+	KDB_RET_NOSYS=ENOSYS,        /*!< Backend method not implemented */
+	KDB_RET_EBACKEND=EIO         /*!< Error opening backend */
 };
 
 

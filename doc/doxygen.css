@@ -1,5 +1,5 @@
 
-// $Id
+// $Id$
 
 H1 {
 	text-align: center;
@@ -8,26 +8,32 @@ H1 {
 	font-size: 28px;
 	color: #ff6600;
 }
+
 H2 {
 	font-family: Verdana, Bitstream Vera Sans, Helvetica, sans-serif;
 	font-weight: bold;
 	font-size: 22px;
 	color: #ff6600;
 }
+
 H3 {
 	font-size: 18px;
 	color: #ff9933;
 }
+
 CAPTION { font-weight: bold }
+
 CODE {
 	font-weight: bold;
 }
+
 DIV.qindex { width: 100%;
              background-color: #eeeeff;
              border: 4px solid #eeeeff;
              text-align: center;
              margin-bottom: 2px
 }
+
 A.qindex { text-decoration: none; font-weight: bold; color: #0000ee }
 A.qindex:visited { text-decoration: none; font-weight: bold; color: #0000ee }
 A.qindex:hover { text-decoration: none; background-color: #ddddff }
@@ -42,11 +48,14 @@ A.elRef { font-weight: bold }
 A.code { text-decoration: none; font-weight: normal; color: #4444ee }
 A.codeRef { font-weight: normal; color: #4444ee }
 A:hover { text-decoration: none; background-color: #f2f2ff }
+
 DL.el { margin-left: -1cm }
+
 DL {
 	font-family: Verdana, Bitstream Vera Sans, Helvetica, sans-serif;
 	font-size: 11px;
 }
+
 DIV.fragment {
 	width: 98%;
 	border: 1px solid #CCCCCC;
@@ -54,25 +63,47 @@ DIV.fragment {
 	padding-left: 4px;
 	margin: 4px;
 }
-DIV.ah { background-color: black; font-weight: bold; color: #ffffff; margin-bottom: 3px; margin-top: 3px }
+
+DIV.ah {
+	background-color: black;
+	font-weight: bold;
+	color: #ffffff;
+	margin-bottom: 3px;
+	margin-top: 3px
+}
+
 TD.md {
 	color: #ff6600;
 	font-family: Tahoma, Bitstream Vera Sans, Helvetica, sans-serif;
 	font-size: 18px;
 	font-weight: bold;
 }
+
 TD.mdname1 {
 	font-weight: bold;
 	font-size: 18px;
 	color: #ff6600;
 }
+
 TD.mdname {
 	font-weight: bold;
 	font-size: 18px;
 	color: #ff6600;
 }
-DIV.groupHeader { margin-left: 16px; margin-top: 12px; margin-bottom: 6px; font-weight: bold }
-DIV.groupText { margin-left: 16px; font-style: italic; font-size: smaller }
+
+DIV.groupHeader {
+	margin-left: 16px;
+	margin-top: 12px;
+	margin-bottom: 6px;
+	font-weight: bold
+}
+
+DIV.groupText {
+	margin-left: 16px;
+	font-style: italic;
+	font-size: smaller
+}
+
 BODY {
 	font-family: Verdana, Bitstream Vera Sans, Helvetica, sans-serif;
 	font-size: 11px;
@@ -81,21 +112,25 @@ BODY {
 	margin-right: 20px;
 	margin-left: 20px;
 }
+
 P {
 	font-family: Verdana, Bitstream Vera Sans, Helvetica, sans-serif;
 	font-size: 11px;
 }
+
 EM {
 	font-family: Tahoma, Bitstream Vera Sans, Helvetica, sans-serif;
 	color: #ff6600;
 	font-style: normal;
 	text-decoration: underline;
 }
+
 TD {
 	font-family: Verdana, Bitstream Vera Sans, Helvetica, sans-serif;
 	font-size: 11px;
 }
-TD.indexkey { 
+
+TD.indexkey {
    background-color: #eeeeff; 
    font-weight: bold; 
    padding-right  : 10px; 
@@ -107,6 +142,7 @@ TD.indexkey {
    margin-top     : 2px; 
    margin-bottom  : 2px  
 }
+
 TD.indexvalue { 
    background-color: #eeeeff; 
    font-style: italic; 
@@ -119,19 +155,29 @@ TD.indexvalue {
    margin-top     : 2px; 
    margin-bottom  : 2px  
 }
+
 TR.memlist {
    background-color: #f0f0f0; 
 }
+
 P.formulaDsp { text-align: center; }
 IMG.formulaDsp { }
 IMG.formulaInl { vertical-align: middle; }
+
 SPAN.keyword       { color: #008000 }
+
 SPAN.keywordtype   { color: #604020 }
+
 SPAN.keywordflow   { color: #e08000 }
+
 SPAN.comment       { color: #800000 }
+
 SPAN.preprocessor  { color: #806020 }
+
 SPAN.stringliteral { color: #002080 }
+
 SPAN.charliteral   { color: #008080 }
+
 .mdTable {
 	margin-top:0pt;
 	margin-bottom:0pt ! important;
@@ -140,9 +186,11 @@ SPAN.charliteral   { color: #008080 }
 	border-width: 4pt;
 	border-color: #6565FF;
 }
+
 .mdRow {
 	padding: 8px 20px;
 }
+
 .mdescLeft {
 	font-size: smaller;
 	font-family: Tahoma, Bitstream Vera Sans, Helvetica, sans-serif;
@@ -154,6 +202,7 @@ SPAN.charliteral   { color: #008080 }
 	border-left: 1px none #E0E0E0;
 	margin: 0px;
 }
+
 .mdescRight {
 	font-family: Tahoma, Bitstream Vera Sans, Helvetica, sans-serif;
 	background-color: #FAFAFA;
@@ -166,6 +215,7 @@ SPAN.charliteral   { color: #008080 }
 	padding-bottom: 0px;
 	padding-right: 8px;
 }
+
 .memItemLeft {
 	padding: 1px 0px 0px 8px;
 	margin: 4px;
@@ -185,6 +235,7 @@ SPAN.charliteral   { color: #008080 }
 	font-family: Tahoma, Bitstream Vera Sans, Helvetica, sans-serif;
 	font-size: 11px;
 }
+
 .memItemRight {
 	padding: 1px 0px 0px 8px;
 	margin: 4px;
@@ -204,17 +255,24 @@ SPAN.charliteral   { color: #008080 }
 	font-family: Tahoma, Bitstream Vera Sans, Helvetica, sans-serif;
 	font-size: 11px;
 }
-.search     { color: #0000ee;
-              font-weight: bold;
+
+.search     {
+	color: #0000ee;
+	font-weight: bold;
 }
+
 FORM.search {
-              margin-bottom: 0px;
-              margin-top: 0px;
+	margin-bottom: 0px;
+	margin-top: 0px;
 }
-INPUT.search { font-size: 75%;
-               color: #000080;
-               font-weight: normal;
-               background-color: #eeeeff;
+
+INPUT.search {
+	font-size: 75%;
+	color: #000080;
+	font-weight: normal;
+	background-color: #eeeeff;
 }
-TD.tiny      { font-size: 75%;
+
+TD.tiny      {
+	font-size: 75%;
 }

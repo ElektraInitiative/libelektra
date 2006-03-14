@@ -1,9 +1,13 @@
-* Web Mar 08 2006 Yannick Lecaillez <yl@itioweb.com> 0.5.10
+* Web Mar 14 2006 Yannick Lecaillez <yl@itioweb.com> 0.5.10
 - Fix in configure.ac to allow installation into lib64
 - Fix bug in keySetName caused segfault on x86_64
 - Updated Mandriva spec file for allow x86_64 RPMs build
 - Updated old Xorg & SysVinit patches for current API
 - Removed installation of libloader (its a convenient lib)
+- Updated some doxy cosmetics
+- Updated kdbOpenBackend() documentation and error codes
+- Updated ksLookupByName() documentation to include more about the  method behavior
+- Organizing the daemon backend
 
 * Sun Mar 03 2006 Avi Alkalay <avi@unix.sh> 0.5.9
 - Added the ksGetCommonParentName() method to help in XML exporting
