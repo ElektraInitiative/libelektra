@@ -254,6 +254,7 @@ Key *ksTail(KeySet *ks) {
 Key *ksLookupByName(KeySet *ks, const char *name, unsigned long options) {
 	Key *init=0;
 	Key *current=0;
+	Key *end=0;
 	size_t nameSize;
 	size_t currentNameSize;
 	char * keyname;
@@ -261,11 +262,25 @@ Key *ksLookupByName(KeySet *ks, const char *name, unsigned long options) {
 	nameSize=strblen(name);
 
 	init=ks->cursor;
+	if ( (init == NULL) || (init == ks->start) ) {
+		/* We start from the begining of the list,
+		 * to loop is useless.
+		 */
+		options &= options & ~KDB_O_LOOP;
+	}
 
-	while ((current=ksNext(ks))) {
+	while ( ((current=ksNext(ks)) != end) || (options & KDB_O_LOOP) ) {
+		if (current == NULL) {
+			/* Bottom of list reached
+			 * retry lookup from start to cursor */
+			ksRewind(ks);
+			end=init;
+			options &= options & ~KDB_O_LOOP;
+			continue;
+		}
+			
 		if (current->key == name) return current; /* for NULLs */
-
-
+		
 		/**This "optimization" makes comparing keys double when equals
 		currentNameSize=current->key?strblen(current->key):0;
 		if (currentNameSize != nameSize) continue;*/
@@ -387,14 +402,23 @@ uint32_t ksLookupRE(KeySet *ks, uint32_t where,
 #ifdef HAVE_REGEX_H
 	regmatch_t offsets;
 	uint32_t match=0;
-	Key *init, *walker;
+	Key *init, *walker, *end;
 	char *parentName=0;
 	size_t walkerNameSize=0,parentNameSize=0;
 	
+	end=NULL;
 	init=ks->cursor;
-	if (!init)
+	if (!init) {
 		/* I don't have a parent to match. Ignore this option. */
 		options &= options & ~KDB_O_NOSPANPARENT;
+	}
+
+	if ( (init == NULL) || (init == ks->start) ) {
+		/* We start from the begining of the list.
+		 * Loop is useless.
+		 */
+		options &= options & ~KDB_O_LOOP;
+	}
 	
 	if (options & KDB_O_NOSPANPARENT) {
 		/* User wants siblings. Prepare context. */
@@ -403,7 +427,16 @@ uint32_t ksLookupRE(KeySet *ks, uint32_t where,
 		keyGetParentName(init,parentName,parentNameSize);
 	}
 	
-	while ((walker=ksNext(ks))) {
+	while ( (walker=ksNext(ks)) != end || (options & KDB_O_LOOP) ) {
+		if ( walker == NULL ) {
+			/* Bottom of list reached
+			 * retry lookup from start to cursor */
+			ksRewind(ks);
+			end=init;
+			options &= options & ~KDB_O_LOOP;
+			continue;
+		}
+		
 		walkerNameSize=keyGetNameSize(walker);
 		
 		if (options & KDB_O_NOSPANPARENT) {
