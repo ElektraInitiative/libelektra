@@ -207,7 +207,13 @@ Key *ksTail(KeySet *ks) {
 
 /**
  * Look for a Key contained in @p ks that matches @p name, starting from
- * ks' ksNext() position.
+ * @p ks' ksNext() position.
+ *
+ * The lookup process stops if the end of @p ks is reached. The idea behind
+ * it is that your keyset processing logic consider a sorted KeySet and
+ * process it in a alphabetical order. So your logic should first lookup
+ * key aaa, then bbb, then ccc. This way you avoid going back to a position
+ * in an already processed point.
  * 
  * If found, @p ks internal cursor will be positioned in the matched key
  * (also accessible by ksCurrent()), and a pointer to the Key is returned.
