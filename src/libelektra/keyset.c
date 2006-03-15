@@ -214,6 +214,9 @@ Key *ksTail(KeySet *ks) {
  * process it in a alphabetical order. So your logic should first lookup
  * key aaa, then bbb, then ccc. This way you avoid going back to a position
  * in an already processed point.
+ *
+ * This behavior changes if KDB_O_LOOP option is used: if @p ks end is reached
+ * start over from the begining until the current key is reached.
  * 
  * If found, @p ks internal cursor will be positioned in the matched key
  * (also accessible by ksCurrent()), and a pointer to the Key is returned.
@@ -246,6 +249,9 @@ Key *ksTail(KeySet *ks) {
  * @param options some @p KDB_O_* option bits. Currently suported:
  * 	- @p KDB_O_NOCASE @n
  * 	  Lookup ignoring case.
+ *      - @p KDB_O_LOOP @n
+ *        Do not be satisfied if reached the end of keyset without finding a
+ *        a key that matches, and start over from the begining until ksCurrent()
  * @return pointer to the Key found, 0 otherwise
  * @see ksLookupRE() for powerfull regular expressions based lookups
  * @see keyCompare() for very powerfull Key lookups in KeySets
@@ -263,9 +269,7 @@ Key *ksLookupByName(KeySet *ks, const char *name, unsigned long options) {
 
 	init=ks->cursor;
 	if ( (init == NULL) || (init == ks->start) ) {
-		/* We start from the begining of the list,
-		 * to loop is useless.
-		 */
+		/* Avoid looping if are already in the begining of the keyset */
 		options &= options & ~KDB_O_LOOP;
 	}
 
@@ -325,6 +329,9 @@ Key *ksLookupByName(KeySet *ks, const char *name, unsigned long options) {
  *   the KeySet (ksCurrent()==NULL), this option is ignored. @p ks must be
  *   ksSort()ed (or kdbGetChildKeys() with @link KDBOption::KDB_O_SORT
  *   KDB_O_SORT @endlink) for this to work.
+ * - @p KDB_O_LOOP @n
+ *   Do not be satisfied if reached the end of keyset without finding a
+ *   a key that matches, and start over from the begining until ksCurrent()
  * 
  * @return some of @p KEY_SWITCH_NAME, @p KEY_SWITCH_VALUE,
  * 	@p KEY_SWITCH_OWNER, @p KEY_SWITCH_COMMENT switches ORed to
@@ -414,9 +421,7 @@ uint32_t ksLookupRE(KeySet *ks, uint32_t where,
 	}
 
 	if ( (init == NULL) || (init == ks->start) ) {
-		/* We start from the begining of the list.
-		 * Loop is useless.
-		 */
+		/* Avoid looping if are already in the begining of the keyset */
 		options &= options & ~KDB_O_LOOP;
 	}
 	
