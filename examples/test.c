@@ -15,17 +15,17 @@
 
 #define ROOT_KEY "user/test"
 
-#define NUL_KEY "user/test/nul/key"
+#define NUL_KEY ROOT_KEY "/nul"
 
-#define NEW_KEY "user/test/new/key"
+#define NEW_KEY ROOT_KEY "/new"
 #define NEW_VAL "value"
 #define NEW_COM "comme"
 
-#define ANO_KEY "user/test/new/ano"
+#define ANO_KEY ROOT_KEY "/ano"
 #define ANO_VAL "ano=th;va\nl\0ue"
 #define ANO_COM "com=en;tt\nh\0hi"
 
-#define DIR_KEY "user/test/dir"
+#define DIR_KEY ROOT_KEY "/dir"
 
 #define TEST_OK 0
 #define TEST_FAIL 1
@@ -70,7 +70,7 @@ Key * newDirKey ()
 /*Printing Functions for information/errors*/
 void bailOut (const char * msg);
 void headerOut (const char * msg);
-void testOut (uint32_t mask, const char * msg);
+void testOut (Key * orig, Key * read, const char * msg);
 
 /*These are the only functions not using
  * the above printing functions. They are
@@ -93,40 +93,52 @@ void delKeys();
 /**Prints header for failures*/
 void bailOut (const char * msg)
 {
-	fprintf (stderr, "********      E R R O R      ******** %s\n", msg);
+	fprintf (stderr, "******** %29s ********\n", msg);
 	//TODO:
 	// kdbPrintError (msg);
-	perror (msg);
-	fprintf (stderr, "********      E R R O R      ******** %s\n", msg);
-	/**failures are not critical*/
+	// perror (msg);
 	// exit (0);
 }
 
 /**Prints header for what is done now*/
 void headerOut (const char * msg)
 {
-	fprintf (stderr, "-------- %19s --------\n", msg);
+	fprintf (stderr, "-------- %29s --------\n", msg);
 }
 
-void testOut (uint32_t failed, const char * msg)
+void testOut (Key * orig, Key * read, const char * keyname)
 {
+	uint32_t failed;
+	
 	fprintf (stderr, "Test ");
+	keyCompare (orig, read);
 	if (failed) fprintf (stderr, "failed");
 	else fprintf (stderr, "suceeded");
-	fprintf (stderr, ": %s\n", msg);
+	fprintf (stderr, " of : %s\n", keyname);
+	if (!failed) return;
 	if ((failed & KEY_SWITCH_TYPE) == 0) 
-	{fprintf (stderr, "%s differs\n", KEY_SWITCH_TYPE);}
-	if ((failed & KEY_SWITCH_NAME) == 0) {fprintf (stderr, "%s differs\n", KEY_SWITCH_NAME);}
-	if ((failed & KEY_SWITCH_VALUE) == 0) {fprintf (stderr, "%s differs\n", KEY_SWITCH_VALUE);}
-	if ((failed & KEY_SWITCH_OWNER) == 0) {fprintf (stderr, "%s differs\n", KEY_SWITCH_OWNER);}
-	if ((failed & KEY_SWITCH_COMMENT) == 0) {fprintf (stderr, "%s differs\n", KEY_SWITCH_COMMENT);}
-	if ((failed & KEY_SWITCH_UID) == 0) {fprintf (stderr, "%s differs\n", KEY_SWITCH_UID);}
-	if ((failed & KEY_SWITCH_GID) == 0) {fprintf (stderr, "%s differs\n", KEY_SWITCH_GID);}
-	if ((failed & KEY_SWITCH_MODE) == 0) {fprintf (stderr, "%s differs\n", KEY_SWITCH_MODE);}
-	if ((failed & KEY_SWITCH_NEEDSYNC) == 0) {fprintf (stderr, "%s differs\n", KEY_SWITCH_NEEDSYNC);}
-	if ((failed & KEY_SWITCH_FLAG) == 0) {fprintf (stderr, "%s differs\n", KEY_SWITCH_FLAG);}
+		fprintf (stderr, "type differs\n");
+	if ((failed & KEY_SWITCH_NAME) == 0)
+		fprintf (stderr, "name differs\n");
+	if ((failed & KEY_SWITCH_VALUE) == 0)
+		fprintf (stderr, "value differs\n");
+	if ((failed & KEY_SWITCH_OWNER) == 0)
+		fprintf (stderr, "owner differs\n");
+	if ((failed & KEY_SWITCH_COMMENT) == 0)
+		fprintf (stderr, "comment differs\n");
+	if ((failed & KEY_SWITCH_UID) == 0)
+		fprintf (stderr, "uid differs\n");
+	if ((failed & KEY_SWITCH_GID) == 0)
+		fprintf (stderr, "gid differs\n");
+	if ((failed & KEY_SWITCH_MODE) == 0)
+		fprintf (stderr, "mode differs\n");
+	if ((failed & KEY_SWITCH_NEEDSYNC) == 0)
+		fprintf (stderr, "needsync differs\n");
+	if ((failed & KEY_SWITCH_FLAG) == 0)
+		fprintf (stderr, "flag differs\n");
+
+	keyDel (orig);
 }
-	
 
 void printKey (Key * k)
 {
@@ -179,6 +191,7 @@ void getKeys ()
 	int ret;
 	Key * root;
 	KeySet * set;
+	Key * t;
 
 	Key *parentKey;
         ssize_t rc;
@@ -187,9 +200,27 @@ void getKeys ()
 	/* Get all value keys for this application */
 	headerOut ("getChildKeys");
 	set = ksNew();
-	if (kdbGetChildKeys (ROOT_KEY, set, 0) == -1)
+	if (kdbGetChildKeys (ROOT_KEY, set, KDB_O_RECURSIVE | KDB_O_DIR) == -1)
 		bailOut("kdbGetChildKeys");
-	//TODO testing functions...
+
+	t = ksLookupByName (set, NUL_KEY, 0);
+	if (t) testOut (newNulKey(), t, NUL_KEY);
+	else bailOut ("Did not find nulkey");
+	
+	ksRewind(set);
+	t = ksLookupByName (set, NEW_KEY, 0);
+	if (t) testOut (newNewKey(), t, NEW_KEY);
+	else bailOut ("Did not find newkey");
+	
+	ksRewind(set);
+	t = ksLookupByName (set, ANO_KEY, 0);
+	if (t) testOut (newAnoKey(), t, ANO_KEY);
+	else bailOut ("Did not find anokey");
+	
+	ksRewind(set);
+	t = ksLookupByName (set, DIR_KEY, 0);
+	if (t) testOut (newDirKey(), t, DIR_KEY);
+	else bailOut ("Did not find dirkey");
 		
 	ksDel (set);
 }
@@ -200,27 +231,39 @@ void getKey ()
 	Key * k;
 
 	headerOut ("getKey");
+
+	k = keyNew(NUL_KEY, KEY_SWITCH_END);
+	if (kdbGetKey (k) == -1) bailOut ("newkey kdbGetKey");
+	else testOut (newNulKey(), k, NUL_KEY); 
+	keyDel (k);
+	
 	k = keyNew(NEW_KEY, KEY_SWITCH_END);
 	if (kdbGetKey (k) == -1) bailOut ("newkey kdbGetKey");
-	else testOut (keyCompare (newNewKey(),k), "newkey compare");
+	else testOut (newNewKey(), k, NEW_KEY); 
+	keyDel (k);
 	
-	/*k = keyNew(ANO_KEY, KEY_SWITCH_END);
+	k = keyNew(ANO_KEY, KEY_SWITCH_END);
 	if (kdbGetKey (k) == -1) bailOut ("kdbGetKey");
-	else testOut (keyCompare (newAnoKey(),k), "anokey compare");
-	keyDel (k);*/
+	else testOut (newAnoKey(), k, ANO_KEY); 
+	keyDel (k);
+	
+	k = keyNew(DIR_KEY, KEY_SWITCH_END);
+	if (kdbGetKey (k) == -1) bailOut ("kdbGetKey");
+	else testOut (newDirKey(), k, DIR_KEY); 
+	keyDel (k);
 }
 
 void setKey ()
 {
 	Key * k;
-/*	k = newNulKey();
+	k = newNulKey();
 	if (kdbSetKey (k) == -1) bailOut ("Error in kdbSetKeys");
 	keyDel (k);
-*/	
+	
 	k = newNewKey();
 	if (kdbSetKey (k) == -1) bailOut ("Error in kdbSetKeys");
 	keyDel (k);
-/*	
+	
 	k = newAnoKey();
 	if (kdbSetKey (k) == -1) bailOut ("Error in kdbSetKeys");
 	keyDel (k);
@@ -228,7 +271,6 @@ void setKey ()
 	k = newDirKey();
 	if (kdbSetKey (k) == -1) bailOut ("Error in kdbSetKeys");
 	keyDel (k);
-*/	
 }
 
 void setKeys ()
@@ -249,12 +291,6 @@ void delKeys ()
 {
 	headerOut ("Will remove all keys now");
 
-	//TODO: Ini backend remove key does not work, manual:
-	remove ("/home/markus/.kdb/user/test/nul");
-	remove ("/home/markus/.kdb/user/test/new");
-	rmdir  ("/home/markus/.kdb/user/test/dir");
-	return;
-	
 	Key * k;
 	k = keyNew(NUL_KEY, KEY_SWITCH_END);
 	if (kdbRemoveKey (k) == -1) bailOut ("Error Remove Nul Key");
@@ -272,35 +308,32 @@ void delKeys ()
 }
 
 int main(int argc, char **argv) {
-	/* Open the kdb */
 	kdbOpen();
 
 	headerOut ("start tests");
 	
-	/**First delete all keys*/
-	delKeys();
-	
-
-	/**Now test with single set and get function*/
+	headerOut ("single set, single get");
 	setKey();
 	getKey();	
 	delKeys();
 
-	/**Now set them at once, get them one after another*/
-/*	setKeys ();
+	headerOut ("multiple set, single get");
+	setKeys ();
 	getKey ();
 	delKeys();
-*/
-	/**Now set them at once and get them recursively*/
-/*	setKeys ();
+	
+	headerOut ("single set, multiple get");
+	setKey();
+	getKeys();	
+	delKeys();
+
+	headerOut ("multiple set, multiple get");
+	setKeys ();
 	getKeys ();
-*/
-	/**Clean the mess up*/
 	delKeys ();
 	
 	headerOut ("finished tests");
 	
-	/* Close the Key database */
 	kdbClose();
 	return 0;
 }
