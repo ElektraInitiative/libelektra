@@ -5,6 +5,7 @@
 - Updated old Xorg & SysVinit patches for current API
 - Removed installation of libloader (its a convenient lib)
 - Added KDB_O_LOOP option to ksLookupByName & ksLookupRE
+- Fixed bug in keySetName which caused faulty write when key name have trailing '/'
 
 * Sun Mar 03 2006 Avi Alkalay <avi@unix.sh> 0.5.9
 - Added the ksGetCommonParentName() method to help in XML exporting

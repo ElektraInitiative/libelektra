@@ -578,18 +578,21 @@ ssize_t keySetName(Key *key, const char *newName) {
 		readCursor=writeCursor=0;
 		cursor=(char *)(newName+((unsigned) rootLength));
 		while(cursor[readCursor]) {
-			if (cursor[readCursor] == RG_KEY_DELIM)
-				while (cursor[readCursor+1] == RG_KEY_DELIM ||
-						cursor[readCursor+1] == 0) {
-					/* skip all repeating '/' and an ending '/' */
+
+			if ( cursor[readCursor] == RG_KEY_DELIM ) {
+				if ( cursor[readCursor+1] == RG_KEY_DELIM || cursor[readCursor+1] == 0 ) {
+					/* Skip any redundant '/' and the ending '/' */
 					readCursor++;
-					if (cursor[readCursor] == 0) break;
-				}
+					continue;
+				} 
+			}
+				
+			if ( cursor[readCursor] ) {	
+				(key->key+userLength)[writeCursor]=cursor[readCursor];
 			
-			(key->key+userLength)[writeCursor]=cursor[readCursor];
-			
-			readCursor++;
-			writeCursor++;
+				readCursor++;
+				writeCursor++;
+			}
 		}
 		/* Finalize the string */
 		(key->key+userLength)[writeCursor]=0;

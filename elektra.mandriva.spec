@@ -1,6 +1,6 @@
 %define name    elektra 
 %define version 0.5.10
-%define release %mkrel 1 
+%define release %mkrel 2 
 
 Name:          %{name}
 Version:       %{version}
@@ -91,7 +91,7 @@ Berkeley DB databases to store its keys.
 %define _sysconfdir /etc
 %define _includedir /usr/include
 %define _mandir /usr/share/man
-%configure2_5x
+%configure2_5x --enable-debug
 %make
 
 %install
