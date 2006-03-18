@@ -177,7 +177,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/common/xf86Config.c xc/programs/X
 diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xserver/hw/xfree86/parser/elektra.c
 --- xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c	1970-01-01 01:00:00.000000000 +0100
 +++ xc/programs/Xserver/hw/xfree86/parser/elektra.c	2006-03-18 14:00:40.000000000 +0100
-@@ -0,0 +1,3623 @@
+@@ -0,0 +1,3620 @@
 +/* $Id$ */
 +
 +
@@ -3349,8 +3349,6 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +	while ((layout=ksNext(layouts))) {
 +		parsePrologue (XF86ConfLayoutPtr, XF86ConfLayoutRec) 
 +
-+		printf("%s\n", keyStealName(layout)); 
-+			
 +		/* Calculate Identifier */
 +		size=keyGetBaseNameSize(layout);
 +		ptr->lay_identifier=xf86confmalloc(size);
@@ -3473,7 +3471,6 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +		
 +		/* Get used input devices */
 +		snprintf(buffer, bufSize, "%s/Inputs/", keyStealName(layout));
-+		printf("BUFFER=%s\n", buffer); 
 +
 +		inputs = ksNew();
 +		kdbGetChildKeys(buffer,inputs,KDB_O_DIR);
