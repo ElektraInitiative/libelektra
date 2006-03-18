@@ -234,11 +234,19 @@ size_t strblen(const char *s) {
  * pass as parameters. Tags are represented as the #KeySwitch values,
  * and tell keyNew() which Key attribute comes next.
  * 
- * The simplest way to call it is with no tags, only a key name. See example
- * bellow.
+ * The simplest and minimum way to use it is with no tags, only a key name:
+ * @code
+Key *nullKey,*emptyNamedKey;
+
+// Create a key that has no name, is completely empty, but is initialized
+nullKey=keyNew(KEY_SWITCH_END);
+
+// Create and initialize a key with a name and nothing else
+emptyNamedKey=keyNew("user/some/example",KEY_SWITCH_END);
+ * @endcode
  *
  * keyNew() allocates memory for a key object and then calls keyInit(). After
- * that it processes the given argument list.
+ * that, it processes the given argument list.
  * 
  * The Key attribute tags are the following:
  * - KeySwitch::KEY_SWITCH_TYPE \n
