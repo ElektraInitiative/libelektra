@@ -2488,12 +2488,32 @@ time_t keyGetCTime(const Key *key) {
  * @link KeySwitch::KEY_SWITCH_NEEDSYNC KEY_SWITCH_NEEDSYNC @endlink and
  * @link KeySwitch::KEY_SWITCH_FLAG KEY_SWITCH_FLAG @endlink.
  *
+ * @par A very simple example would be
+ * @code
+Key *key1, *key;
+uint32_t changes;
+
+// omited key1 and key2 initialization and manipulation
+
+changes=keyCompare(key1,key2);
+
+if (changes == 0) printf("key1 and key2 are identicall\n");
+
+if (changes & KEY_SWITCH_VALUE)
+	printf("key1 and key2 have different values\n");
+ 
+if (changes & KEY_SWITCH_UID)
+	printf("key1 and key2 have different UID\n");
+ 
+ *
+ * @endcode
+ *
  * @return a bit array poiting the differences
  * @see ksCompare() for examples and more detailed description
  * @see #KeySwitch
+ * @ingroup keytest
  * 
  * @par Example of very powerfull specific Key lookup in a KeySet:
- * @ingroup keytest
  * @code
 KeySet *ks=ksNew();
 Key *base;
