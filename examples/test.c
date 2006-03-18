@@ -2,6 +2,7 @@
 #include "config.h"
 #endif
 #include <kdb.h>
+#include <stdlib.h>
 
 /**test.c
  * This is comprehensive Test for the
@@ -108,33 +109,41 @@ void headerOut (const char * msg)
 
 void testOut (Key * orig, Key * read, const char * keyname)
 {
-	uint32_t failed;
+	uint32_t failed=0;
 	
 	fprintf (stderr, "Test ");
-	keyCompare (orig, read);
+	failed=keyCompare (orig, read);
 	if (failed) fprintf (stderr, "failed");
 	else fprintf (stderr, "suceeded");
-	fprintf (stderr, " of : %s\n", keyname);
+	fprintf (stderr, " for : %s\n", keyname);
 	if (!failed) return;
-	if ((failed & KEY_SWITCH_TYPE) == 0) 
-		fprintf (stderr, "type differs\n");
-	if ((failed & KEY_SWITCH_NAME) == 0)
-		fprintf (stderr, "name differs\n");
-	if ((failed & KEY_SWITCH_VALUE) == 0)
-		fprintf (stderr, "value differs\n");
-	if ((failed & KEY_SWITCH_OWNER) == 0)
-		fprintf (stderr, "owner differs\n");
-	if ((failed & KEY_SWITCH_COMMENT) == 0)
-		fprintf (stderr, "comment differs\n");
-	if ((failed & KEY_SWITCH_UID) == 0)
-		fprintf (stderr, "uid differs\n");
-	if ((failed & KEY_SWITCH_GID) == 0)
-		fprintf (stderr, "gid differs\n");
-	if ((failed & KEY_SWITCH_MODE) == 0)
-		fprintf (stderr, "mode differs\n");
-	if ((failed & KEY_SWITCH_NEEDSYNC) == 0)
+	if (failed & KEY_SWITCH_TYPE) 
+		fprintf (stderr, "type differs: is %d, was %d\n",
+			keyGetType(read),keyGetType(orig));
+	if (failed & KEY_SWITCH_NAME)
+		fprintf (stderr, "name differs: is \"%s\", was \"%s\"\n",
+			keyStealName(read),keyStealName(orig));
+	if (failed & KEY_SWITCH_VALUE)
+		fprintf (stderr, "value differs: is \"%s\", was \"%s\"\n",
+			keyStealValue(read),keyStealValue(orig));
+	if (failed & KEY_SWITCH_OWNER)
+		fprintf (stderr, "owner differs: is \"%s\", was \"%s\"\n",
+			keyStealOwner(read),keyStealOwner(orig));
+	if (failed & KEY_SWITCH_COMMENT)
+		fprintf (stderr, "comment differs: is \"%s\", was \"%s\"\n",
+			keyStealComment(read),keyStealComment(orig));
+	if (failed & KEY_SWITCH_UID)
+		fprintf (stderr, "uid differs: is \"%d\", was \"%d\"\n",
+			keyGetUID(read),keyGetUID(orig));
+	if (failed & KEY_SWITCH_GID)
+		fprintf (stderr, "gid differs: is \"%d\", was \"%d\"\n",
+			keyGetGID(read),keyGetGID(orig));
+	if (failed & KEY_SWITCH_MODE)
+		fprintf (stderr, "mode differs: is \"0%o\", was \"0%o\"\n",
+			keyGetAccess(read),keyGetAccess(orig));
+	if (failed & KEY_SWITCH_NEEDSYNC)
 		fprintf (stderr, "needsync differs\n");
-	if ((failed & KEY_SWITCH_FLAG) == 0)
+	if (failed & KEY_SWITCH_FLAG)
 		fprintf (stderr, "flag differs\n");
 
 	keyDel (orig);
@@ -166,9 +175,9 @@ void printKey (Key * k)
 	if (com == NULL) {bailOut ("malloc error");}
 	keyGetComment (k, com, c);
 	
-	printf ("Name[%d,%d]: %s\t", n, strlen(nam)+1, nam);
-	printf ("String[%d,%d]: %s\t", s, strlen(str)+1, str);
-	printf ("Kommentar[%d,%d]: %s\n", c, strlen(com)+1, com);
+	printf ("Name[%d,%d]: %s\t", n, strblen(nam), nam);
+	printf ("String[%d,%d]: %s\t", s, strblen(str), str);
+	printf ("Kommentar[%d,%d]: %s\n", c, strblen(com), com);
 
 	free (nam);
 	free (str);
