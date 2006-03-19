@@ -176,8 +176,8 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/common/xf86Config.c xc/programs/X
      /*
 diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xserver/hw/xfree86/parser/elektra.c
 --- xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c	1970-01-01 01:00:00.000000000 +0100
-+++ xc/programs/Xserver/hw/xfree86/parser/elektra.c	2006-03-18 14:00:40.000000000 +0100
-@@ -0,0 +1,3620 @@
++++ xc/programs/Xserver/hw/xfree86/parser/elektra.c	2006-03-19 09:40:51.000000000 +0100
+@@ -0,0 +1,3631 @@
 +/* $Id$ */
 +
 +
@@ -375,9 +375,14 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +				KEY_SWITCH_VALUE, ptr->file_modulepath,
 +				KEY_SWITCH_END);
 +
-+		keySetName(key,buffer);
-+		keySetString(key,ptr->file_modulepath);
-+
++		ksAppend(ks,key);
++	} else {
++		/* No module path provided, set to the default one */
++		snprintf(buffer, bsize, "%s/Files/ModulePath", root);
++		key = keyNew(buffer,
++				KEY_SWITCH_VALUE, MODULE_DIR,
++				KEY_SWITCH_END);
++		
 +		ksAppend(ks,key);
 +	}
 +
@@ -499,16 +504,18 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +
 +	if (!list)
 +		return;
-+
-+	bsize = strlen(root) + 100;
++	
++	bsize = strlen(root) + 50;
 +	buffer = xf86confmalloc(bsize);
 +	while (list) {
++		printf("xf86addOptions(%s/%s, %s)\n", root, list->opt_name, list->opt_val);
++		
 +		snprintf(buffer, bsize, "%s/%s", root, list->opt_name);
 +
 +		key = keyNew(buffer,
 +				KEY_SWITCH_COMMENT, list->opt_comment,
 +				KEY_SWITCH_END);
-+
++		
 +		if (list->opt_val) keySetString(key,list->opt_val);
 +		/* else keySetString(key,"1"); */
 +
@@ -3230,7 +3237,11 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +										
 +					keySetString(modPath, buffer);
 +				} else {
-+					/* ModulePath exist, add this module path */
++					/* ModulePath exist, add this module path 
++					 * TODO: Since search inside ModulePath is recursive,
++					 * we should not add the path if this one is contained
++					 * in a more global path yet
++					 */
 +					char *oldPath, *newPath;
 +					
 +					oldPath = keyStealValue(modPath);
@@ -3865,7 +3876,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.h xc/programs/Xser
 +
 diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/Imakefile xc/programs/Xserver/hw/xfree86/parser/Imakefile
 --- xc.orig/programs/Xserver/hw/xfree86/parser/Imakefile	2006-03-11 18:15:38.000000000 +0100
-+++ xc/programs/Xserver/hw/xfree86/parser/Imakefile	2006-03-11 16:09:00.000000000 +0100
++++ xc/programs/Xserver/hw/xfree86/parser/Imakefile	2006-03-19 09:41:00.000000000 +0100
 @@ -16,7 +16,12 @@
  DBMALLOCDEFINE=-DDBMALLOC
  #endif
@@ -3892,7 +3903,13 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/Imakefile xc/programs/Xser
  CONFIG_DEFINES = -DXCONFIGDIR=\"$(XCONFIGDIR)\" \
  		 -DXCONFIGFILE=\"$(XCONFIGFILE)\" \
  		 -DXVERSION="$(XVERS)"
-@@ -48,6 +58,10 @@
+@@ -44,10 +54,15 @@
+ #define IncludeSharedObjectInNormalLib
+ 
+ #include <Library.tmpl>
+-
++#ifdefined(UseElektra)
++SpecialCObjectRule(elektra,NullParameter,$(CONFIG_DEFINES) -DMODULE_DIR=\"$(MODULEDIR)\" $(EXT_DEFINES) $(PICFLAGS))
  SpecialCObjectRule(scan,NullParameter,$(CONFIG_DEFINES) $(MODULEDEFINES) $(EXT_DEFINES) $(PICFLAGS))
  
  NormalProgramTarget(cpconfig,cpconfig.o $(OBJS),NullParameter,$(LOCAL_LIBRARIES),NullParameter)
