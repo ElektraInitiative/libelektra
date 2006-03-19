@@ -500,7 +500,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +	if (!list)
 +		return;
 +
-+	bsize = strlen(root) + 1 + strlen(list->opt_name) + 1;
++	bsize = strlen(root) + 100;
 +	buffer = xf86confmalloc(bsize);
 +	while (list) {
 +		snprintf(buffer, bsize, "%s/%s", root, list->opt_name);
