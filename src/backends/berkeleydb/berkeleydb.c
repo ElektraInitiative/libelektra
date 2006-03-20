@@ -123,7 +123,7 @@ typedef struct {
  *  user:luciana/ *  {isSystem=0,userDomain=luciana,...}
  *  user:denise/ *   {isSystem=0,userDomain=denise,...}
  *  user:tatiana/ *  {isSystem=0,userDomain=tatiana,...}
- *  
+ *
  */
 typedef struct _DBTree {
 	/* if isSystem==0 and userDomain==0, this DB is for the current user */
@@ -148,9 +148,9 @@ typedef struct {
 } DBContainer;
 
 
-
+/*
 DBContainer *dbs=0;
-
+*/
 
 
 
@@ -579,7 +579,7 @@ DBTree *dbTreeNew(const Key *forKey) {
  * open it with dbTreeNew().
  * Key name and user domain will be used to find the correct database.
  */
-DBTree *getDBForKey(const Key *key) {
+DBTree *getDBForKey(DBContainer *dbs, const Key *key) {
 	DBTree *current,*newDB;
 	char rootName[100];
 	rootName[0]=0; /* just to be sure... */
@@ -646,8 +646,13 @@ int kdbOpen_bdb(KDBHandle *handle) {
 	/* Create only the DB container.
 	 * DBs will be allocated on demand
 	 */
+	DBContainer *dbs;
+	
 	dbs=malloc(sizeof(DBContainer));
 	memset(dbs,0,sizeof(DBContainer));
+	
+	kdbhSetBackendData(*handle,dbs);
+	
 	return 0;
 }
 
@@ -655,6 +660,10 @@ int kdbOpen_bdb(KDBHandle *handle) {
 
 
 int kdbClose_bdb(KDBHandle *handle) {
+	DBContainer *dbs;
+	
+	dbs=kdbhGetBackendData(*handle);
+	
 	if (dbs) {
 		while (dbs->first) {
 			dbs->cursor=dbs->first;
@@ -677,6 +686,7 @@ int kdbClose_bdb(KDBHandle *handle) {
  * @ingroup backend
  */
 int kdbRemoveKey_bdb(KDBHandle handle, const Key *key) {
+	DBContainer *dbs;
 	DBTree *dbctx;
 	DBT dbkey,data;
 	int ret;
@@ -685,7 +695,9 @@ int kdbRemoveKey_bdb(KDBHandle handle, const Key *key) {
 	int canWrite=0;
 	Key *cast=0;
 	
-	dbctx=getDBForKey(key);
+	dbs=kdbhGetBackendData(handle);
+	
+	dbctx=getDBForKey(dbs,key);
 	if (!dbctx) return 1; /* propagate errno from getDBForKey() */
 	
 	/* First check if we have write permission to the key */
@@ -736,6 +748,7 @@ int kdbRemoveKey_bdb(KDBHandle handle, const Key *key) {
 
 
 int kdbGetKeyWithOptions(KDBHandle handle, Key *key, uint32_t options) {
+	DBContainer *dbs;
 	DBTree *dbctx;
 	DBT dbkey,data;
 	int ret;
@@ -745,7 +758,9 @@ int kdbGetKeyWithOptions(KDBHandle handle, Key *key, uint32_t options) {
 	int isLink=0;
 	Key buffer;
 
-	dbctx=getDBForKey(key);
+	dbs=kdbhGetBackendData(handle);
+	
+	dbctx=getDBForKey(dbs,key);
 	if (!dbctx) return 1; /* propagate errno from getDBForKey() */
 
 	keyInit(&buffer);
@@ -844,7 +859,7 @@ int kdbSetKey_bdb(KDBHandle handle, Key *key) {
 	gid_t group=getgid();
 	int canWrite=0;
 
-	dbctx=getDBForKey(key);
+	dbctx=getDBForKey(kdbhGetBackendData(handle),key);
 	if (!dbctx) return 1; /* propagate errno from getDBForKey() */
 
 	/* Check access permissions.
@@ -1038,7 +1053,7 @@ ssize_t kdbGetKeyChildKeys_bdb(KDBHandle handle, const Key *parentKey,
 	int ret=0;
 	
 	/* Get/create the DB for the parent key */
-	db=getDBForKey(parentKey);
+	db=getDBForKey(kdbhGetBackendData(handle),parentKey);
 
 	if (db == 0) { /* TODO: handle error */}
 
