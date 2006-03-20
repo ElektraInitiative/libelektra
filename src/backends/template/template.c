@@ -1,5 +1,5 @@
 /***************************************************************************
-            temaple.c  -  Skeleton of backends to access the Key Database
+            template.c  -  Skeleton of backends to access the Key Database
                              -------------------
     begin                : Mon Dec 26 2004
     copyright            : (C) 2004 by Avi Alkalay
@@ -28,13 +28,11 @@
 /* Subversion stuff
 
 $Id$
-$LastChangedBy: mraab $
 
 */
 
 
 
-#include <kdb.h>
 #include <kdbbackend.h>
 
 
@@ -82,7 +80,6 @@ $LastChangedBy: mraab $
  * 
  * The backend implementation must:
  * @code
-#include <kdb.h>
 #include <kdbbackend.h>
  * @endcode
  * 
@@ -130,7 +127,7 @@ $LastChangedBy: mraab $
  * @see kdbOpen()
  * @ingroup backend
  */
-int kdbOpen_backend() {
+int kdbOpen_backend(KDBHandle *handle) {
 	/* backend initialization logic */
 	return 0;
 }
@@ -151,7 +148,7 @@ int kdbOpen_backend() {
  * @see kdbClose()
  * @ingroup backend
  */
-int kdbClose_backend() {
+int kdbClose_backend(KDBHandle *handle) {
 	/* free all backend resources and shut it down */
 	return 0; /* success */
 }
@@ -168,7 +165,7 @@ int kdbClose_backend() {
  * @see kdbStatKey() for expected behavior.
  * @ingroup backend
  */
-int kdbStatKey_backend(Key *key) {
+int kdbStatKey_backend(KDBHandle handle, Key *key) {
 	/* get the most possible key metainfo */
 	return 0; /* success */
 }
@@ -184,7 +181,7 @@ int kdbStatKey_backend(Key *key) {
  * @see kdbGetKey() for expected behavior.
  * @ingroup backend
  */
-int kdbGetKey_backend(Key *key) {
+int kdbGetKey_backend(KDBHandle handle, Key *key) {
 	/* fully gets a key */
 	return 0; /* success */
 }
@@ -203,7 +200,7 @@ int kdbGetKey_backend(Key *key) {
  * @see kdbSetKey() for expected behavior.
  * @ingroup backend
  */
-int kdbSetKey_backend(Key *key) {
+int kdbSetKey_backend(KDBHandle handle, Key *key) {
 	/* fully sets a key */
 	return 0; /* success */
 }
@@ -216,7 +213,7 @@ int kdbSetKey_backend(Key *key) {
  * @see kdbRename() for expected behavior.
  * @ingroup backend
  */
-int kdbRename_backend(Key *key, const char *newName) {
+int kdbRename_backend(KDBHandle handle, Key *key, const char *newName) {
 	/* rename a key to another name */
 	return 0; /* success */
 }
@@ -230,7 +227,7 @@ int kdbRename_backend(Key *key, const char *newName) {
  * @see kdbRemoveKey() for expected behavior.
  * @ingroup backend
  */
-int kdbRemoveKey_backend(const Key *key) {
+int kdbRemoveKey_backend(KDBHandle handle, const Key *key) {
 	/* remove a key from the database */
 	return 0;  /* success */
 }
@@ -244,7 +241,7 @@ int kdbRemoveKey_backend(const Key *key) {
  * @see kdbGetKeyChildKeys() for expected behavior.
  * @ingroup backend
  */
-ssize_t kdbGetKeyChildKeys_backend(const Key *parentKey, KeySet *returned, unsigned long options) {
+ssize_t kdbGetKeyChildKeys_backend(KDBHandle handle, const Key *parentKey, KeySet *returned, unsigned long options) {
 	/* retrieve multiple hierarchical keys */
 	return returned->size; /* success */
 }
@@ -260,7 +257,7 @@ ssize_t kdbGetKeyChildKeys_backend(const Key *parentKey, KeySet *returned, unsig
  * @see kdbSetKeys() for expected behavior.
  * @ingroup backend
  */
-int kdbSetKeys_backend(KeySet *ks) {
+int kdbSetKeys_backend(KDBHandle handle, KeySet *ks) {
 	/* set many keys */
 	return 0;
 }
@@ -274,7 +271,7 @@ int kdbSetKeys_backend(KeySet *ks) {
  * @see kdbMonitorKeys() for expected behavior.
  * @ingroup backend
  */
-uint32_t kdbMonitorKeys_backend(KeySet *interests, uint32_t diffMask,
+uint32_t kdbMonitorKeys_backend(KDBHandle handle, KeySet *interests, uint32_t diffMask,
 		unsigned long iterations, unsigned sleep) {
 	return 0;
 }
@@ -290,7 +287,7 @@ uint32_t kdbMonitorKeys_backend(KeySet *interests, uint32_t diffMask,
  * @see kdbMonitorKey() for expected behavior.
  * @ingroup backend
  */
-uint32_t kdbMonitorKey_backend(Key *interest, uint32_t diffMask,
+uint32_t kdbMonitorKey_backend(KDBHandle handle, Key *interest, uint32_t diffMask,
 		unsigned long iterations, unsigned sleep) {
 	return 0;
 }

@@ -51,7 +51,6 @@ BOOL APIENTRY DllMain( HANDLE hModule,
  * 
  * The backend implementation must:
  * @code
-#include <kdb.h>
 #include <kdbbackend.h>
  * @endcode
  * 
@@ -99,7 +98,7 @@ BOOL APIENTRY DllMain( HANDLE hModule,
  * @see kdbOpen()
  * @ingroup backend
  */
-int kdbOpen_winregistry() {
+int kdbOpen_winregistry(KDBHandle *handle) {
 	/* backend initialization logic */
 	return 0;
 }
@@ -120,7 +119,7 @@ int kdbOpen_winregistry() {
  * @see kdbClose()
  * @ingroup backend
  */
-int kdbClose_winregistry() {
+int kdbClose_winregistry(KDBHandle *handle) {
 	/* free all backend resources and shut it down */
 	return 0; /* success */
 }
@@ -137,7 +136,7 @@ int kdbClose_winregistry() {
  * @see kdbStatKey() for expected behavior.
  * @ingroup backend
  */
-int kdbStatKey_winregistry(Key *key) {
+int kdbStatKey_winregistry(KDBHandle handle, Key *key) {
 	/* get the most possible key metainfo */
 	return 0; /* success */
 }
@@ -153,7 +152,7 @@ int kdbStatKey_winregistry(Key *key) {
  * @see kdbGetKey() for expected behavior.
  * @ingroup backend
  */
-int kdbGetKey_winregistry(Key *key) {
+int kdbGetKey_winregistry(KDBHandle handle, Key *key) {
 	/* fully gets a key */
 	HKEY rootKey = {0};
 	HKEY desiredKey = {0};
@@ -206,7 +205,7 @@ int kdbGetKey_winregistry(Key *key) {
  * @see kdbSetKey() for expected behavior.
  * @ingroup backend
  */
-int kdbSetKey_winregistry(Key *key) {
+int kdbSetKey_winregistry(KDBHandle handle, Key *key) {
 	/* fully sets a key */
 	HKEY rootKey = {0};
 	HKEY desiredKey = {0};
@@ -243,7 +242,7 @@ int kdbSetKey_winregistry(Key *key) {
  * @see kdbRename() for expected behavior.
  * @ingroup backend
  */
-int kdbRename_winregistry(Key *key, const char *newName) {
+int kdbRename_winregistry(KDBHandle handle, Key *key, const char *newName) {
 	/* rename a key to another name */
 	return 0; /* success */
 }
@@ -257,7 +256,7 @@ int kdbRename_winregistry(Key *key, const char *newName) {
  * @see kdbRemove() for expected behavior.
  * @ingroup backend
  */
-int kdbRemoveKey_winregistry(const Key *key) {
+int kdbRemoveKey_winregistry(KDBHandle handle, const Key *key) {
 	/* remove a key from the database */
 	HKEY rootKey = {0};
 	HKEY desiredKey = {0};
@@ -294,7 +293,7 @@ int kdbRemoveKey_winregistry(const Key *key) {
  * @see kdbGetKeyChildKeys() for expected behavior.
  * @ingroup backend
  */
-ssize_t kdbGetKeyChildKeys_winregistry(const Key *parentKey, KeySet *returned, unsigned long options) {
+ssize_t kdbGetKeyChildKeys_winregistry(KDBHandle handle, const Key *parentKey, KeySet *returned, unsigned long options) {
 	/* retrieve multiple hierarchical keys */
 	return (ssize_t)returned->size; /* success */
 }
@@ -310,7 +309,7 @@ ssize_t kdbGetKeyChildKeys_winregistry(const Key *parentKey, KeySet *returned, u
  * @see kdbSetKeys() for expected behavior.
  * @ingroup backend
  */
-int kdbSetKeys_winregistry(KeySet *ks) {
+int kdbSetKeys_winregistry(KDBHandle handle, KeySet *ks) {
 	/* set many keys */
 	return 0;
 }
@@ -324,7 +323,7 @@ int kdbSetKeys_winregistry(KeySet *ks) {
  * @see kdbMonitorKeys() for expected behavior.
  * @ingroup backend
  */
-uint32_t kdbMonitorKeys_winregistry(KeySet *interests, uint32_t diffMask,
+uint32_t kdbMonitorKeys_winregistry(KDBHandle handle, KeySet *interests, uint32_t diffMask,
 		unsigned long iterations, unsigned sleep) {
 	return 0;
 }
@@ -340,7 +339,7 @@ uint32_t kdbMonitorKeys_winregistry(KeySet *interests, uint32_t diffMask,
  * @see kdbMonitorKey() for expected behavior.
  * @ingroup backend
  */
-uint32_t kdbMonitorKey_winregistry(Key *interest, uint32_t diffMask,
+uint32_t kdbMonitorKey_winregistry(KDBHandle handle, Key *interest, uint32_t diffMask,
 		unsigned long iterations, unsigned sleep) {
 	return 0;
 }

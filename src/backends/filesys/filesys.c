@@ -1,5 +1,5 @@
 /***************************************************************************
-            filesys.c  -  Methods for accessing the Key Database
+            filesys.c  -  A filesystem backend implementation for Elektra
                              -------------------
     begin                : Mon Dec 25 2004
     copyright            : (C) 2004 by Avi Alkalay
@@ -18,7 +18,7 @@
 /***************************************************************************
  *                                                                         *
  *   This is the implementation of a filesystem backend for the            *
- *   Elektra Project. Each Key is a file in the filesystem.                *
+ *   Elektra. Each Key is a file in the filesystem.                        *
  *   It is as secure as filesystem security. It is as reliable             *
  *   as filesystem. It uses only standards C calls, which makes it         *
  *   usable by very low level or early boot stage software, like           *
@@ -38,19 +38,19 @@ $Id$
 #include "config.h"
 #endif
 
-#include <kdb.h>
-#include <kdbbackend.h>
-
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <dirent.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <assert.h>
+
 #ifdef HAVE_PWD_H
 #include <pwd.h>
 #endif
-#include <assert.h>
+
+#include <kdbbackend.h>
 
 #define BACKENDNAME "filesys"
 
@@ -74,7 +74,7 @@ int keyFromStat(Key *key,struct stat *stat);
 
 
 
-int kdbOpen_filesys() {
+int kdbOpen_filesys(KDBHandle *handle) {
 	/* backend initialization logic */
 	return 0;
 }
@@ -82,14 +82,14 @@ int kdbOpen_filesys() {
 
 
 
-int kdbClose_filesys() {
+int kdbClose_filesys(KDBHandle *handle) {
 	/* free all backend resources and shutdown */
 	return 0;
 }
 
 
 
-int kdbStatKey_filesys(Key *key) {
+int kdbStatKey_filesys(KDBHandle handle, Key *key) {
 	char keyFileName[MAX_PATH_LENGTH];
 	struct stat keyFileNameInfo;
 	size_t pos;
@@ -118,7 +118,7 @@ int kdbStatKey_filesys(Key *key) {
 
 
 
-int kdbGetKey_filesys(Key *key) {
+int kdbGetKey_filesys(KDBHandle handle, Key *key) {
 	char keyFileName[500];
 	struct stat keyFileNameInfo;
 	int fd;
@@ -153,7 +153,7 @@ int kdbGetKey_filesys(Key *key) {
 
 
 
-int kdbSetKey_filesys(Key *key) {
+int kdbSetKey_filesys(KDBHandle handle, Key *key) {
 	char keyFileName[MAX_PATH_LENGTH];
 	char folderMaker[MAX_PATH_LENGTH];
 	char *cursor, *last;
@@ -301,7 +301,7 @@ int kdbSetKey_filesys(Key *key) {
 
 
 
-int kdbRename_filesys(Key *key, const char *newName) {
+int kdbRename_filesys(KDBHandle handle, Key *key, const char *newName) {
 	char oldFileName[MAX_PATH_LENGTH];
 	char newFileName[MAX_PATH_LENGTH];
 	Key *newKey;
@@ -330,7 +330,7 @@ int kdbRename_filesys(Key *key, const char *newName) {
 
 
 
-int kdbRemoveKey_filesys(const Key *key) {
+int kdbRemoveKey_filesys(KDBHandle handle, const Key *key) {
 	char fileName[MAX_PATH_LENGTH];
 	off_t rc;
 
@@ -343,7 +343,8 @@ int kdbRemoveKey_filesys(const Key *key) {
 
 
 
-ssize_t kdbGetKeyChildKeys_filesys(const Key *parentKey, KeySet *returned, unsigned long options) {
+ssize_t kdbGetKeyChildKeys_filesys(KDBHandle handle, const Key *parentKey,
+		KeySet *returned, unsigned long options) {
 	size_t parentNameSize=keyGetFullNameSize(parentKey);
 	char *realParentName=NULL;
 	DIR *parentDir;
@@ -403,14 +404,15 @@ ssize_t kdbGetKeyChildKeys_filesys(const Key *parentKey, KeySet *returned, unsig
 
 
 		/* TODO: inefficient code in next block */
-		if (options & KDB_O_STATONLY) kdbStatKey_filesys(keyEntry);
+		if (options & KDB_O_STATONLY) kdbStatKey_filesys(handle,keyEntry);
 		else if (options & KDB_O_NFOLLOWLINK) {
-			kdbStatKey_filesys(keyEntry);
-			if (!keyIsLink(keyEntry)) kdbGetKey_filesys(keyEntry);
+			kdbStatKey_filesys(handle,keyEntry);
+			if (!keyIsLink(keyEntry)) kdbGetKey_filesys(handle,keyEntry);
 		} else {
-			int rc=kdbGetKey_filesys(keyEntry);
+			int rc=kdbGetKey_filesys(handle,keyEntry);
 			/* If this is a permission problem, at least stat the key */
-			if (rc && errno==KDB_RET_NOCRED) kdbStatKey_filesys(keyEntry);
+			if (rc && errno==KDB_RET_NOCRED)
+				kdbStatKey_filesys(handle,keyEntry);
 		}
 
 
@@ -420,7 +422,7 @@ ssize_t kdbGetKeyChildKeys_filesys(const Key *parentKey, KeySet *returned, unsig
 
 				children=ksNew();
 				/* Act recursively, without sorting. Sort in the end, once */
-				kdbGetKeyChildKeys_filesys(keyEntry,children,
+				kdbGetKeyChildKeys_filesys(handle,keyEntry,children,
 					~(KDB_O_SORT) & options);
 
 				/* Insert the current directory key in the returned list
@@ -911,11 +913,6 @@ size_t keyCalcRelativeFileName(const Key *key,char *relativeFileName,size_t maxS
  * @ingroup internals
  */
 int keyFromStat(Key *key,struct stat *stat) {
-/*	if (!key) {
-		errno=KDB_RET_NULLKEY;
-		return -1;
-}*/
-
 	keySetAccess(key,stat->st_mode);
 	keySetUID(key,stat->st_uid);
 	keySetGID(key,stat->st_gid);

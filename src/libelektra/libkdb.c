@@ -1,5 +1,5 @@
 /***************************************************************************
-            localkdb.c  -  Methods for accessing the Key Database
+            libkdb.c  -  Interfaces for accessing the Key Database
                              -------------------
     begin                : Mon Dec 29 2003
     copyright            : (C) 2003 by Avi Alkalay
@@ -21,6 +21,61 @@
 $Id$
 
 */
+
+
+/**
+ * @defgroup kdb KeyDB :: Class Methods
+ * @brief General methods to access the Key database.
+ *
+ * To use them:
+ * @code
+ * #include <kdb.h>
+ * @endcode
+ *
+ * The kdb*() class of methods are used to access the storage, to get and set
+ * @link key Keys @endlink or @link keyset KeySets @endlink.
+ *
+ * They use some backend implementation to know the details about how to access
+ * the storage. Currently we have this backends:
+ * - @c berkeleydb: the keys are stored in a Berkeley DB database, providing
+ *   very small footprint, speed, and other advantages.
+ * - @c filesys: the key hierarchy and data are saved as plain text files in 
+ *   the filesystem.
+ * - @c fstab: a reference backend used to interpret the @c /etc/fstab file as
+ *   a set of keys under @c system/filesystems .
+ * - @c gconf: makes Elektra use the GConf daemon to access keys. Only the
+ *   @c user/ tree is available since GConf is not system wide.
+ *
+ * Backends are phisically a library with name @c /lib/libelektra-{NAME}.so .
+ *
+ * In general usage, the @c default backend will be used, which is a pointer to
+ * some other backend. Your program can use a different backend simply by
+ * setting the @e KDB_BACKEND environment variable. Or, if you know what you
+ * are doing, you can hardcode it in your code and use the explicit
+ * kdbOpenBackend() method to use one.
+ *
+ * When @link backend writing a new backend @endlink, these are the methods
+ * you'll have to reimplement:
+ * kdbOpen(), kdbClose(), kdbGetKey(), kdbSetKey(), kdbStatKey(),
+ * kdbGetKeyChildKeys(), kdbRemove(), kdbRename().
+ *
+ * And methods that are suggested to reimplement (but not needed) if you want
+ * them to get the benefits of your new backend: kdbSetKeys(),
+ * kdbMonitorKey(), kdbMonitorKeys().
+ *
+ * The other methods are higher level. They use the above methods to do their
+ * job, and generally don't have to be reimplemented for a different backend.
+ *
+ * Language binding writers should follow the same rules:
+ * - You should relay completelly on the backend-dependent methods
+ * - You may use or reimplement the second set of methods
+ * - You should completelly reimplement in your language the higher
+ *   lever methods
+ */
+
+
+
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -45,9 +100,8 @@ $Id$
 #include <string.h>
 
 
-#include "kdb.h"
+/* kdbbackend.h will include kdb.h and kdbprivate.h */
 #include "kdbbackend.h"
-#include "kdbprivate.h"
 #include "kdbLibLoader.h"
 
 /* usleep doesn't exist on win32, so we use Sleep() */
@@ -57,50 +111,19 @@ $Id$
 
 /*extern int errno;*/
 
-/**
- * @defgroup kdb KeyDB :: Class Methods
- * @brief General methods to access the Key database.
- *
- * To use them:
- * @code
-#include <kdb.h>
- * @endcode
- *
- * This is the class that accesses the storage backend. When @link backend writing a new
- * backend @endlink, these are the methods you'll have to reimplement:
- * kdbOpen(), kdbClose(), kdbGetKey(), kdbSetKey(), kdbStatKey(),
- * kdbGetKeyChildKeys(), kdbRemove(), kdbRename().
- *
- * And methods that are suggested to reimplement (but not needed) if you want
- * them to get the benefits of your new backend: kdbSetKeys(),
- * kdbMonitorKey(), kdbMonitorKeys().
- *
- * The other methods are higher level. They use the above methods to do their
- * job, and generally don't have to be reimplemented for a different backend.
- *
- * Language binding writers should follow the same rules:
- * - You should relay completelly on the backend-dependent methods
- * - You may use or reimplement the second set of methods
- * - You should completelly reimplement in your language the higher
- *   lever methods
- */
-
-
-/*
- * @defgroup internals Elektra internals
- * @brief These methods are not to be used by your application.
- *
- */
-
-
 
 
 struct _KDBBackend {
+	/* dynamic libloader data */
 	kdbLibHandle dlHandle;
 	
+	/* backend name */
 	char *name;
 	
-	/* These are the must-have methods */
+	/* backend specific data to carry along kdb*() calls */
+	void *backendData;
+	
+	/* These are the interfaces that must be implemented */
 	
 	kdbOpenPtr kdbOpen;
 	kdbClosePtr kdbClose;
@@ -123,9 +146,6 @@ struct _KDBBackend {
 
 
 
-KDBBackend *backend;
-
-
 
 /**
  * Opens the session with the Key database, using a backend defined by
@@ -140,28 +160,28 @@ KDBBackend *backend;
  * This is the best way to have affairs with the key database, unless
  * the program is concerned about security and authentication (e.g. su,
  * login, telnetd, etc), in which kdbOpenDefault() should be used. kdbOpen()
- * is used by the kdb command.
+ * is used by the @c kdb command.
  *
- * Currently you can have only one backend (and key database session)
- * initialized at a certain time.
+ * The @p handle parameter will be initialized with an environment, and it
+ * should be passed along on any kdb*() method your application calls.
  *
- * To simply manipulate Key or KeySet objects without having to retrieve them
- * from the storage, you don't need to open the key database before with any
- * of the kdbOpen*() methods.
+ * You don't need to use any of the kdbOpen*() methods if you only want to
+ * manipulate plain in-memory Key or KeySet objects without any affairs with
+ * the backend key database,
  *
+ * @param handle the key database handler to initialize
  * @see kdbOpenBackend(), kdbOpenDefault(), kdbClose()
  * @return 0 on success
- * @return -1 on failure
- * @errno is not set on failure up to now, because there is no backend
+ * @return -1 on failure and @c errno is propagated from kdbOpenBackend()
  *  using kdbOpen.
  * @ingroup kdb
  */
-int kdbOpen() {
+int kdbOpen(KDBHandle *handle) {
 	char *backendName=0;
 	
 	backendName=getenv("KDB_BACKEND");
-	if (backendName) return kdbOpenBackend(backendName);
-	else return kdbOpenBackend(DEFAULT_BACKEND);
+	if (backendName) return kdbOpenBackend(handle,backendName);
+	else return kdbOpenBackend(handle,DEFAULT_BACKEND);
 }
 
 
@@ -177,6 +197,10 @@ int kdbOpen() {
  * The @e default backend use to be a symlink to the real backend, and
  * is found in /lib/libelektra-default.so
  *
+ * The @p handle parameter will be initialized with an environment, and it
+ * should be passed along on any kdb*() method your application calls.
+ *
+ * @param handle the key database handler to initialize
  * @see kdbOpen(), kdbOpenBackend(), kdbClose()
  * @return 0 on success
  * @return -1 on failure
@@ -184,8 +208,8 @@ int kdbOpen() {
  *  using kdbOpen.
  * @ingroup kdb
  */
-int kdbOpenDefault() {
-	return kdbOpenBackend(DEFAULT_BACKEND);
+int kdbOpenDefault(KDBHandle *handle) {
+	return kdbOpenBackend(handle,DEFAULT_BACKEND);
 }
 
 
@@ -198,12 +222,16 @@ int kdbOpenDefault() {
  * After dynamic loading, the backend will be initialized with its
  * implementation of kdbOpen().
  * 
+ * The @p handle parameter will be initialized with an environment, and it
+ * should be passed along on any kdb*() method your application calls.
+ *
+ * @param handle the key database handler to initialize
  * @param backendName used to define the module filename as
  * 	libelektra-@p "backendName".so
  * @return 0 on success.
  * @return -1 on failure and @c errno is set to 
  * 	- KDBErr::KDB_RET_EBACKEND if backend library could not be opened
- * 	- KDBErr::KDB_RET_NOSYS if backend library doesn't provide the @n 
+ * 	- KDBErr::KDB_RET_NOSYS if backend library doesn't provide the
  * 	  essential "kdbBackendFactory" initialization symbol
  * 	- KDBErr::KDB_RET_NOSYS if backend failed to export its methods
  * 	- KDBErr::KDB_RET_NOSYS if backend does not provide a kdbOpen()
@@ -212,23 +240,24 @@ int kdbOpenDefault() {
  * @par Example of copying keys from one backend to another
  * @code
 KeySet *ks=ksNew();
+KDBHandle handle;
 
-kdbOpen(); // open default backend
-kdbGetChildKeys("system/sw/httpd",ks, 
+kdbOpen(&handle); // open default backend
+kdbGetChildKeys(handle,"system/sw/httpd",ks, 
 	KDB_O_NFOLLOWLINK |  // we want real links, not their targets
 	KDB_O_INACTIVE |     // even commented (inactive) keys
 	KDB_O_DIR |          // even pure directory keys
 	KDB_O_RECURSIVE |    // all of this recursivelly
 	KDB_O_SORT);         // sort all
-kdbClose();
+kdbClose(&handle);
 
-kdbOpenBackend("apache");
+kdbOpenBackend(&handle,"apache");
 
 // The hipotethical libelektra-apache.so backend implementation for kdbSetKeys()
 // simply interprets the passed KeySet and generates an old style
 // equivalent /etc/httpd/httpd.conf file.
-kdbSetKeys(ks);
-kdbClose();
+kdbSetKeys(handle,ks);
+kdbClose(&handle);
 
 ksDel(ks);
  * @endcode
@@ -239,14 +268,15 @@ bash# KDB_BACKEND=apache kdb import apacheconf.xml
  * @endcode
  * @ingroup kdb
  */
-int kdbOpenBackend(char *backendName) {
+int kdbOpenBackend(KDBHandle *handle, char *backendName) {
 	/* TODO: review error codes on errno */
 	kdbLibHandle dlhandle=0;
 	char backendlib[300];
-	KDBBackendFactory kdbBackendNew=0;
+	KDBBackendFactory kdbBackendFactory=0;
+	KDBBackend *backend=0;
 	int rc=0;
 	
-	backend=0;
+	*handle=0;
 	
 	/* load the environment and make us aware of codeset conversions */
 	#ifdef HAVE_SETLOCALE
@@ -266,14 +296,16 @@ int kdbOpenBackend(char *backendName) {
 		return -1; /* error */
 	}
 	
-	kdbBackendNew=(KDBBackendFactory)kdbLibSym(dlhandle,"kdbBackendFactory");
-	if (kdbBackendNew == 0) {
+	/* load the "kdbBackendFactory" symbol from backend */
+	kdbBackendFactory=(KDBBackendFactory)kdbLibSym(dlhandle,
+		"kdbBackendFactory");
+	if (kdbBackendFactory == 0) {
 		errno=KDB_RET_NOSYS;
 		return -1; /* error */
 	}
 	
-	backend=(*kdbBackendNew)();
-	if (backend == 0) {
+	*handle=(*kdbBackendFactory)();
+	if ((*handle) == 0) {
 		fprintf(stderr,"libelektra: Can't initialize \"%s\" backend\n",
 			backendName);
 		errno=KDB_RET_NOSYS;
@@ -281,10 +313,10 @@ int kdbOpenBackend(char *backendName) {
 	}
 
 	/* save the handle for future use */
-	backend->dlHandle=dlhandle;
+	(*handle)->dlHandle=dlhandle;
 	
 	/* let the backend initialize itself */
-	if (backend->kdbOpen) rc=backend->kdbOpen();
+	if ((*handle)->kdbOpen) rc=(*handle)->kdbOpen(handle);
 	else {
 		errno=KDB_RET_NOSYS;
 		rc=-1;
@@ -301,25 +333,31 @@ int kdbOpenBackend(char *backendName) {
  * database. You can manipulate Key and KeySet objects after kdbClose().
  *
  * This is the counterpart of kdbOpen().
+ *
+ * The @p handle parameter will be finalized and all resources associated to it
+ * will be freed. After a kdbClose(), this @p handle can't be used anymore,
+ * unless it gets initialized again with another call to kdbOpen().
+ *
+ * @param handle the key database handler to initialize
  * @see kdbOpen()
  * @return 0 on success, anything else on failure, and @c errno is set.
  * 	If the backend implementation of kdbOpen can't be found, @c errno is
  * 	set to KDBErr::KDB_RET_NOSYS.
  * @ingroup kdb
  */
-int kdbClose() {
+int kdbClose(KDBHandle *handle) {
 	int rc=0;
 	
-	if (backend && backend->kdbClose) rc=backend->kdbClose();
+	if (*handle && (*handle)->kdbClose) rc=(*handle)->kdbClose(handle);
 	else {
 		errno=KDB_RET_NOSYS;
 		return -1;
 	}
 	
 	if (rc == 0) {
-		if (backend->name) free(backend->name);
-		kdbLibClose(backend->dlHandle);
-		free(backend); backend=0;
+		if ((*handle)->name) free((*handle)->name);
+		kdbLibClose((*handle)->dlHandle);
+		free(*handle); *handle=0;
 	}
 	
 	return rc;
@@ -546,12 +584,13 @@ ssize_t encode(void *unencoded, size_t size, char *returned) {
  * @ingroup kdb
  *
  */
-int kdbGetValue(const char *keyname, char *returned,size_t maxSize) {
+int kdbGetValue(KDBHandle handle,const char *keyname,
+		char *returned,size_t maxSize) {
 	Key *key;
 	int rc=0;
 
 	key=keyNew(keyname,KEY_SWITCH_END);
-	rc=kdbGetKey(key);
+	rc=kdbGetKey(handle, key);
 	if (rc == 0) keyGetString(key,returned,maxSize);
 	else rc=errno; /* store errno before a possible change */
 	keyDel(key);
@@ -574,15 +613,15 @@ int kdbGetValue(const char *keyname, char *returned,size_t maxSize) {
  * @see kdbGetValue(), keySetString(), kdbSetKey()
  * @ingroup kdb
  */
-int kdbSetValue(const char *keyname, const char *value) {
+int kdbSetValue(KDBHandle handle, const char *keyname, const char *value) {
 	Key *key;
 	int rc;
 
 /* TODO: check key type first */
 	key=keyNew(keyname,KEY_SWITCH_END);
-	rc=kdbGetKey(key);
+	rc=kdbGetKey(handle,key);
 	keySetString(key,value);
-	rc=kdbSetKey(key);
+	rc=kdbSetKey(handle,key);
 	keyDel(key);
 	return rc;
 }
@@ -601,7 +640,7 @@ char buffer[150];   // a big buffer
 int c;
 
 for (c=0; c<3; c++) {
-	kdbGetValueByParent(parent,keys[c],buffer,sizeof(buffer));
+	kdbGetValueByParent(handle,parent,keys[c],buffer,sizeof(buffer));
 	// Do something with buffer....
 }
 
@@ -615,13 +654,13 @@ for (c=0; c<3; c++) {
  * @see kdbGetKeyByParent()
  * @ingroup kdb
  */
-int kdbGetValueByParent(const char *parentName, const char *baseName, char *returned, size_t maxSize) {
+int kdbGetValueByParent(KDBHandle handle, const char *parentName, const char *baseName, char *returned, size_t maxSize) {
 	char *name;
 	int retval=0;
 	name = (char *)malloc(sizeof(char)*(strblen(parentName)+strblen(baseName)));
 
 	sprintf(name,"%s/%s",parentName,baseName);
-	retval = kdbGetValue(name,returned,maxSize);
+	retval = kdbGetValue(handle,name,returned,maxSize);
 	free(name);
 	return retval;
 }
@@ -638,13 +677,13 @@ int kdbGetValueByParent(const char *parentName, const char *baseName, char *retu
  * @Return whatever is returned by kdbSetValue()
  * @ingroup kdb
  */
-int kdbSetValueByParent(const char *parentName, const char *baseName, const char *value) {
+int kdbSetValueByParent(KDBHandle handle, const char *parentName, const char *baseName, const char *value) {
 	char *name;
 	int retval=0;
 	name = (char *)malloc(sizeof(char)*(strblen(parentName)+strblen(baseName)));
 
 	sprintf(name,"%s/%s",parentName,baseName);
-	retval = kdbSetValue(name,value);
+	retval = kdbSetValue(handle,name,value);
 	free(name);
 	return retval;
 }
@@ -665,14 +704,14 @@ int kdbSetValueByParent(const char *parentName, const char *baseName, const char
  * @see kdbGetKey(), kdbGetValueByParent(), kdbGetKeyByParentKey()
  * @ingroup kdb
  */
-int kdbGetKeyByParent(const char *parentName, const char *baseName, Key *returned) {
+int kdbGetKeyByParent(KDBHandle handle, const char *parentName, const char *baseName, Key *returned) {
 	char *name;
 	name = (char *)malloc(sizeof(char) * (strblen(parentName)+strblen(baseName)));
 
 	sprintf(name,"%s/%s",parentName,baseName);	
 	keySetName(returned,name);
-  free(name);
-	return kdbGetKey(returned);
+	free(name);
+	return kdbGetKey(handle,returned);
 }
 
 
@@ -683,7 +722,7 @@ int kdbGetKeyByParent(const char *parentName, const char *baseName, Key *returne
  * @return 0 on success, or what kdbGetKey() returns, and @c errno is set
  * @ingroup kdb
  */
-int kdbGetKeyByParentKey(const Key *parent, const char *baseName, Key *returned) {
+int kdbGetKeyByParentKey(KDBHandle handle, const Key *parent, const char *baseName, Key *returned) {
 	size_t size=keyGetFullNameSize(parent);
 	char *name;
 	name = (char *)malloc(sizeof(char) * (size+strblen(baseName)));
@@ -693,8 +732,8 @@ int kdbGetKeyByParentKey(const Key *parent, const char *baseName, Key *returned)
 	strcpy((char *)(name+size),baseName);
 
 	keySetName(returned,name);
-  free(name);
-	return kdbGetKey(returned);
+	free(name);
+	return kdbGetKey(handle,returned);
 }
 
 
@@ -738,16 +777,17 @@ int kdbGetKeyByParentKey(const Key *parent, const char *baseName, Key *returned)
  * @par Example:
  * @code
 char errormsg[300];
+KDBHandle handle;
 KeySet *myConfig;
 Key *key;
 
 key=keyNew("system/sw/MyApp",KEY_SWITCH_END);
 myConfig=ksNew();
 
-kdbOpen();
-rc=kdbGetKeyChildKeys(key, myConfig, KDB_O_RECURSIVE);
+kdbOpen(&handle);
+rc=kdbGetKeyChildKeys(handle,key, myConfig, KDB_O_RECURSIVE);
 keyDel(key); // free this resource.... we'll use it later
-kdbClose();
+kdbClose(&handle);
 
 // Check and handle propagated error
 if (rc) switch (errno) {
@@ -789,10 +829,11 @@ while (key) {
  * @ingroup kdb
  *
  */
-ssize_t kdbGetKeyChildKeys(const Key *parentKey, KeySet *returned, unsigned long options) {
+ssize_t kdbGetKeyChildKeys(KDBHandle handle, const Key *parentKey,
+		KeySet *returned, unsigned long options) {
 	
-	if (backend && backend->kdbGetKeyChildKeys)
-		return backend->kdbGetKeyChildKeys(parentKey,returned,options);
+	if (handle && handle->kdbGetKeyChildKeys)
+		return handle->kdbGetKeyChildKeys(handle,parentKey,returned,options);
 	else {
 		errno=KDB_RET_NOSYS;
 		return -1;
@@ -806,12 +847,12 @@ ssize_t kdbGetKeyChildKeys(const Key *parentKey, KeySet *returned, unsigned long
  * convenience.
  * @ingroup kdb
  */
-ssize_t kdbGetChildKeys(const char *parentName, KeySet *returned, unsigned long options) {
+ssize_t kdbGetChildKeys(KDBHandle handle, const char *parentName, KeySet *returned, unsigned long options) {
 	Key *parentKey;
 	ssize_t rc;
 	
 	parentKey=keyNew(parentName,KEY_SWITCH_END);
-	rc=kdbGetKeyChildKeys(parentKey,returned,options);
+	rc=kdbGetKeyChildKeys(handle,parentKey,returned,options);
 	
 	keyDel(parentKey);
 	
@@ -831,16 +872,18 @@ ssize_t kdbGetChildKeys(const char *parentName, KeySet *returned, unsigned long 
  * @ingroup kdb
  *
  */
-ssize_t kdbGetRootKeys(KeySet *returned) {
+ssize_t kdbGetRootKeys(KDBHandle handle, KeySet *returned) {
 	Key *system=0,*user=0;
 
-	user=keyNew("user",KEY_SWITCH_NEEDSYNC,KEY_SWITCH_END);
+	user=keyNew("user",KEY_SWITCH_NEEDSYNC,handle,
+		KEY_SWITCH_END);
 	if (user->flags & KEY_SWITCH_FLAG) {
 		keyDel(user);
 		user=0;
 	} else ksInsert(returned,user);
 
-	system=keyNew("system",KEY_SWITCH_NEEDSYNC,KEY_SWITCH_END);
+	system=keyNew("system",KEY_SWITCH_NEEDSYNC,handle,
+		KEY_SWITCH_END);
 	if (system->flags & KEY_SWITCH_FLAG) {
 		keyDel(system);
 		system=0;
@@ -869,11 +912,11 @@ ssize_t kdbGetRootKeys(KeySet *returned) {
  * @return 0 on success, -1 otherwise
  * @ingroup kdb
  */
-int kdbStatKey(Key *key) {
+int kdbStatKey(KDBHandle handle, Key *key) {
 	int rc=0;
 	
-	if (backend && backend->kdbStatKey)
-		rc=backend->kdbStatKey(key);
+	if (handle && handle->kdbStatKey)
+		rc=handle->kdbStatKey(handle,key);
 	else {
 		errno=KDB_RET_NOSYS;
 		return -1;
@@ -893,11 +936,11 @@ int kdbStatKey(Key *key) {
  * @see commandGet() code in kdb command for usage example
  * @ingroup kdb
  */
-int kdbGetKey(Key *key) {
+int kdbGetKey(KDBHandle handle, Key *key) {
 	int rc=0;
 	
-	if (backend && backend->kdbGetKey)
-		rc=backend->kdbGetKey(key);
+	if (handle && handle->kdbGetKey)
+		rc=handle->kdbGetKey(handle,key);
 	else {
 		errno=KDB_RET_NOSYS;
 		return -1;
@@ -927,15 +970,15 @@ int kdbGetKey(Key *key) {
  *       handling example
  * @ingroup kdb
  */
-int kdbSetKeys(KeySet *ks) {
+int kdbSetKeys(KDBHandle handle, KeySet *ks) {
 	int rc=0;
 	
-	if (backend) {
-		if(backend->kdbSetKeys)
-			rc=backend->kdbSetKeys(ks);
+	if (handle) {
+		if(handle->kdbSetKeys)
+			rc=handle->kdbSetKeys(handle,ks);
 	  else 
 			/* If backend doesn't provide kdbSetKeys, use the default */
-			rc=kdbSetKeys_default(ks);	
+			rc=kdbSetKeys_default(handle,ks);
 	}
 	else {
 		errno=KDB_RET_NOSYS;
@@ -957,14 +1000,14 @@ int kdbSetKeys(KeySet *ks) {
  *
  * @ingroup backend
  */
-int kdbSetKeys_default(KeySet *ks) {
+int kdbSetKeys_default(KDBHandle handle, KeySet *ks) {
 	Key *current=ksCurrent(ks);
 	int ret;
 
 	if (!current) current=ksNext(ks);
 	while (current) {
 		if (keyNeedsSync(current))
-			if ((ret=kdbSetKey(current))) /* check error */
+			if ((ret=kdbSetKey(handle,current))) /* check error */
 				return ret;
 		
 		current=ksNext(ks);
@@ -983,11 +1026,11 @@ int kdbSetKeys_default(KeySet *ks) {
  * @return 0 on success, or other value and @c errno is set
  * @ingroup kdb
  */
-int kdbSetKey(Key *key) {
+int kdbSetKey(KDBHandle handle, Key *key) {
 	int rc=0;
 	
-	if (backend && backend->kdbSetKey)
-		rc=backend->kdbSetKey(key);
+	if (handle && handle->kdbSetKey)
+		rc=handle->kdbSetKey(handle,key);
 	else {
 		errno=KDB_RET_NOSYS;
 		return -1;
@@ -1008,11 +1051,11 @@ int kdbSetKey(Key *key) {
  * 	implementation on failure, and @c errno is propagated
  * @ingroup kdb
  */
-int kdbRename(Key *key, const char *newName) {
+int kdbRename(KDBHandle handle, Key *key, const char *newName) {
 	int rc=0;
 	
-	if (backend && backend->kdbRename)
-		rc=backend->kdbRename(key,newName);
+	if (handle && handle->kdbRename)
+		rc=handle->kdbRename(handle,key,newName);
 	else {
 		errno=KDB_RET_NOSYS;
 		return -1;
@@ -1036,11 +1079,11 @@ int kdbRename(Key *key, const char *newName) {
  * @see commandRemove(), and ksCompare() code in kdb command for usage example
  * @ingroup kdb
  */
-int kdbRemoveKey(const Key *key) {
+int kdbRemoveKey(KDBHandle handle, const Key *key) {
 	int rc=0;
 	
-	if (backend && backend->kdbRemoveKey)
-		rc=backend->kdbRemoveKey(key);
+	if (handle && handle->kdbRemoveKey)
+		rc=handle->kdbRemoveKey(handle,key);
 	else {
 		errno=KDB_RET_NOSYS;
 		return -1;
@@ -1061,7 +1104,7 @@ int kdbRemoveKey(const Key *key) {
  * @see commandRemove() code in kdb command for usage example
  * @ingroup kdb
  */
-int kdbRemove(const char *keyName) {
+int kdbRemove(KDBHandle handle, const char *keyName) {
 	int rc=0;
 	Key *key=0;
 	
@@ -1069,10 +1112,10 @@ int kdbRemove(const char *keyName) {
 	rc=keySetName(key,keyName);
 	if (rc == 0) {
 		keyDel(key);
-		return -1; /* error */
+		return -1; /* propagate errno */
 	}
 	
-	rc=kdbRemoveKey(key);
+	rc=kdbRemoveKey(handle,key);
 	keyDel(key);
 	
 	return rc;
@@ -1093,14 +1136,14 @@ int kdbRemove(const char *keyName) {
  * @see commandSet() code in kdb command for usage example
  * @ingroup kdb
  */
-int kdbLink(const char *oldPath, const char *newKeyName) {
+int kdbLink(KDBHandle handle, const char *oldPath, const char *newKeyName) {
 	Key *key;
 	int rc;
 
 	key=keyNew(newKeyName,KEY_SWITCH_END);
 	keySetLink(key,oldPath);
 
-	rc=kdbSetKey(key);
+	rc=kdbSetKey(handle,key);
 	keyDel(key);
 
 	return rc;
@@ -1125,8 +1168,10 @@ int kdbLink(const char *oldPath, const char *newKeyName) {
  * @code
 KeySet *myConfigs;
 
+// key db initialization omitted
+
 myConfigs=ksNew();
-kdbGetChildKeys("system/sw/MyApp",myConfigs,KDB_O_RECURSIVE | KDB_O_SORT);
+kdbGetChildKeys(handle,"system/sw/MyApp",myConfigs,KDB_O_RECURSIVE | KDB_O_SORT);
 
 // use the keys . . . .
 
@@ -1139,7 +1184,7 @@ while (1) {
 	uint32_t diff;
 
 	// block until any change in key value or comment . . .
-	diff=kdbMonitorKeys(myConfigs,
+	diff=kdbMonitorKeys(handle,myConfigs,
 		KEY_SWITCH_VALUE | KEY_SWITCH_COMMENT,
 		0,0); // ad-infinitum
 
@@ -1167,17 +1212,19 @@ ksDel(myConfigs);
  * @ingroup kdb
  *
  */
-uint32_t kdbMonitorKeys(KeySet *interests, uint32_t diffMask,
+uint32_t kdbMonitorKeys(KDBHandle handle, KeySet *interests, uint32_t diffMask,
 		unsigned long iterations, unsigned sleep) {
 	
 	uint32_t rc=0;
 	
-	if (backend) {
-		if(backend->kdbMonitorKeys) 
-			rc=backend->kdbMonitorKeys(interests,diffMask,iterations,sleep);
+	if (handle) {
+		if(handle->kdbMonitorKeys) 
+			rc=handle->kdbMonitorKeys(handle,interests,diffMask,iterations,
+				sleep);
 		else 
-			/* If backend doesn't provide kdbMonitorKeys, then use the default */
-			rc = kdbMonitorKeys_default(interests,diffMask,iterations,sleep);
+			/* If backend doesn't provide kdbMonitorKeys, then use the default*/
+			rc = kdbMonitorKeys_default(handle,interests,diffMask,iterations,
+				sleep);
 	}
 	else {
 		errno=KDB_RET_NOSYS;
@@ -1195,8 +1242,8 @@ uint32_t kdbMonitorKeys(KeySet *interests, uint32_t diffMask,
  *
  * @ingroup backend
  */
-uint32_t kdbMonitorKeys_default(KeySet *interests, uint32_t diffMask,
-		unsigned long iterations, unsigned sleeptime) {
+uint32_t kdbMonitorKeys_default(KDBHandle handle, KeySet *interests,
+		uint32_t diffMask, unsigned long iterations, unsigned sleeptime) {
 	Key *start,*current;
 	uint32_t diff;
 	int infinitum=0;
@@ -1213,7 +1260,7 @@ uint32_t kdbMonitorKeys_default(KeySet *interests, uint32_t diffMask,
 
 	while (infinitum || --iterations) {
 		do {
-			diff=kdbMonitorKey(current,diffMask,1,0);
+			diff=kdbMonitorKey(handle,current,diffMask,1,0);
 			if (diff) return diff;
 			current=ksNext(interests);
 		} while (current!=start);
@@ -1265,16 +1312,16 @@ uint32_t kdbMonitorKeys_default(KeySet *interests, uint32_t diffMask,
  * @ingroup kdb
  *
  */
-uint32_t kdbMonitorKey(Key *interest, uint32_t diffMask,
+uint32_t kdbMonitorKey(KDBHandle handle, Key *interest, uint32_t diffMask,
 		unsigned long iterations, unsigned sleep) {
 	
 	int rc=0;
 	
-	if (backend) {
-		if(backend->kdbMonitorKey)
-		  rc=backend->kdbMonitorKey(interest,diffMask,iterations,sleep);
+	if (handle) {
+		if(handle->kdbMonitorKey)
+		  rc=handle->kdbMonitorKey(handle,interest,diffMask,iterations,sleep);
 		else
-			rc=kdbMonitorKey_default(interest,diffMask,iterations,sleep);
+			rc=kdbMonitorKey_default(handle,interest,diffMask,iterations,sleep);
 	}
 	else {
 		errno=KDB_RET_NOSYS;
@@ -1294,8 +1341,8 @@ uint32_t kdbMonitorKey(Key *interest, uint32_t diffMask,
  *
  * @ingroup backend
  */
-uint32_t kdbMonitorKey_default(Key *interest, uint32_t diffMask,
-		unsigned long iterations, unsigned sleeptime) {
+uint32_t kdbMonitorKey_default(KDBHandle handle, Key *interest,
+		uint32_t diffMask, unsigned long iterations, unsigned sleeptime) {
 	Key *tested;
 	int rc;
 	uint32_t diff;
@@ -1315,7 +1362,7 @@ uint32_t kdbMonitorKey_default(Key *interest, uint32_t diffMask,
 	keyDup(interest,tested);
 
 	while (infinitum || --iterations) {
-		rc=kdbGetKey(tested);
+		rc=kdbGetKey(handle,tested);
 		if (rc) {
 			/* check what type of problem happened.... */
 			switch (errno) {
@@ -1381,16 +1428,15 @@ uint32_t kdbMonitorKey_default(Key *interest, uint32_t diffMask,
 // $ kdb ls -Rv
 //
 
-#include <kdb.h>
 #include <kdbbackend.h>
 
 #define BACKENDNAME "my_elektra_backend_implementation"
 
 
-int kdbOpen_backend() {...}
-int kdbClose_backend() {...}
-int kdbGetKey_backend(Key *key) {...}
-int kdbSetKey_backend(Key *key) {...}
+int kdbOpen_backend(KDBHandle *handle) {...}
+int kdbClose_backend(KDBHandle *handle) {...}
+int kdbGetKey_backend(KDBHandle handle, Key *key) {...}
+int kdbSetKey_backend(KDBHandle handle, Key *key) {...}
 
 ... etc implementations of other methods ...
 
@@ -1499,7 +1545,9 @@ KDBBackend *kdbBackendExport(const char *backendName, ...) {
  * @code
 KDBInfo *info=0;
 
-info=kdbGetInfo();
+// key dababase initialization omitted
+
+info=kdbGetInfo(handle);
 printf("The library version I'm using is %s\n",info->version);
 
 kdbFreeInfo(info);
@@ -1509,7 +1557,7 @@ kdbFreeInfo(info);
  * @see kdbInfoToString(), kdbFreeInfo(), commandInfo()
  * @ingroup kdb
  */
-KDBInfo *kdbGetInfo(void) {
+KDBInfo *kdbGetInfo(KDBHandle handle) {
 	KDBInfo *info=0;
 
 	info=malloc(sizeof(struct _KDBInfo));
@@ -1519,8 +1567,8 @@ KDBInfo *kdbGetInfo(void) {
 	info->version=VERSION;
 #endif
 
-	if (backend) {
-		info->backendName=backend->name;
+	if (handle) {
+		info->backendName=handle->name;
 		info->backendIsOpen=1;
 	} else {
 		info->backendName=getenv("KDB_BACKEND");
@@ -1550,6 +1598,91 @@ void kdbFreeInfo(KDBInfo *info) {
 }
 
 
+
+/**
+ * Set some backend-specific @p data in the @p handle.
+ *
+ * This is useful when your backend have a backend-global context or
+ * environment.
+ *
+ * @param data a pointer to general data specific to a backend implementation.
+ * @see kdbhGetBackendData()
+ * @ingroup backend
+ */
+int kdbhSetBackendData(KDBHandle handle, void *data) {
+	handle->backendData = data;
+	return 0;
+}
+
+
+/**
+ * Get the previously set backend-specific @p data from the @p handle.
+ *
+ * This is useful when your backend have a backend-global context or
+ * environment.
+ * 
+ * This method will probably be called everytime one of your kdb*()
+ * implementations is called. And if you change something inside the data, you
+ * don't have to kdbhSetBackendData() again, bacause you are manipulating your
+ * data, and not a copy of it.
+ *
+ * @par Example:
+ * @code
+struct MyBackendData {
+ int context1;
+ int context2;
+};
+
+int kdbOpen_mybackend(KDBHandle *handle) {
+	struct MyBackendData *context;
+
+	context=malloc(sizeof(struct MyBackendData));
+ 
+	// a random initialization...
+	context->context1=1;
+	context->context2=2;
+
+	kdbhSetBackendData(*handle,context);
+
+	return 0;
+}
+
+int kdbGetKey_maybackend(KDBHandle handle) {
+	struct MyBackendData *context;
+
+	context=kdbhGetBackendData(handle);
+
+	// No do something with the context
+	. . .
+
+	return 0;
+}
+ * @endcode
+ *
+ * On the kdbClose() implementation of your backend, you must remember to
+ * free all resources associated to your data. 
+ *
+ * @par Example of kdbClose() implementation that correctly cleans the context:
+ * @code
+int kdbClose_mybackend(KDBHandle &handle) {
+	struct MyBackendData *context;
+
+	context=kdbhGetBackendData(handle);
+	free(context);
+
+	return 0;
+}
+ * @endcode
+ * @return a pointer to the data previously set be kdbhSetBackendData()
+ * @ingroup backend
+ */
+void *kdbhGetBackendData(KDBHandle handle) {
+	return handle->backendData;
+}
+
+
+
+
 /**
  * Convenience method to provide a human readable text for what kdbGetInfo()
  * returns.
@@ -1562,7 +1695,9 @@ void kdbFreeInfo(KDBInfo *info) {
 KDBInfo *info=0;
 char buffer[200];
 
-info=kdbGetInfo();
+// key dababase initialization omitted
+
+info=kdbGetInfo(handle);
 kdbInfoToString(info,buffer,sizeof(buffer));
 printf("Follows some information about Elektra:\n");
 printf(buffer);

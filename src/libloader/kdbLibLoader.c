@@ -1,4 +1,26 @@
-/* $Id$ */
+/***************************************************************************
+            kdbLibLoader.c  -  Portable lib loading stuff
+                             -------------------
+    begin                : Sun Mar 19 2006
+    copyright            : (C) 2004 by Avi Alkalay
+    email                : avi@unix.sh
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the BSD License (revised).                      *
+ *                                                                         *
+ ***************************************************************************/
+
+
+/* Subversion stuff
+
+$Id$
+
+*/
+
+
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -6,7 +28,6 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "kdb.h"
 #include "kdbbackend.h"
 #include "kdbLibLoader.h"
 
@@ -32,7 +53,7 @@ kdbLibHandle kdbLibLoad(const char *module)
 
 		current++;
 	}
-      
+
 	return NULL;
 }
 

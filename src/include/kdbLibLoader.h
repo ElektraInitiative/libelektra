@@ -3,12 +3,12 @@
 #ifndef KDBLIBLOADER_H
 #define KDBLIBLOADER_H
 
-#include "kdbbackend.h"
+/* #include "kdbbackend.h" */
 
 /* Struct which contain export symbols
  *  Format :
  *  --------
- *  
+ *
  *  filename, NULL
  *  symbol1, &func1,
  *  symbol2, &func2,

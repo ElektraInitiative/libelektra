@@ -27,7 +27,7 @@
  * @return 0 on success
  * @ingroup ini
  */
-int kdbOpen_ini() {
+int kdbOpen_ini(KDBHandle *handle) {
 	return 0;
 }
 
@@ -44,7 +44,7 @@ int kdbOpen_ini() {
  * @return 0 on success
  * @ingroup ini
  */
-int kdbClose_ini() {
+int kdbClose_ini(KDBHandle *handle) {
 	return 0; /* success */
 }
 
@@ -99,7 +99,7 @@ size_t IniSearchFileName (Key * forKey, char * filename)
  * @see kdbGetKey() for expected behavior.
  * @ingroup ini
  */
-int kdbGetKey_ini(Key *key) {
+int kdbGetKey_ini(KDBHandle handle, Key *key) {
 	char keyFileName [MAX_PATH_LENGTH];
 	
 	int pos;
@@ -198,7 +198,7 @@ int kdbGetKey_ini(Key *key) {
  * 
  * @ingroup ini
  */
-ssize_t kdbGetKeys (char * keyFileName, char * keyRoot, KeySet * returned)
+ssize_t kdbGetKeys (KDBHandle handle, char * keyFileName, char * keyRoot, KeySet * returned)
 {
 	Key * key;
 	int pos;
@@ -388,7 +388,7 @@ int IniChooseFile(Key * key, KeySet * returned, unsigned long options)
  * 
  * @ingroup ini
  */
-ssize_t kdbGetKeyChildKeys_ini(const Key * key, KeySet *returned, unsigned long options)
+ssize_t kdbGetKeyChildKeys_ini(KDBHandle handle, const Key * key, KeySet *returned, unsigned long options)
 {
 	char t [MAX_PATH_LENGTH];
 	Key * write;
@@ -545,7 +545,7 @@ fileerror:
  * @see kdbSetKey() for expected behavior.
  * @ingroup ini
  */
-int kdbSetKey_ini(Key *origkey) {
+int kdbSetKey_ini(KDBHandle handle, Key *origkey) {
 	int rc;
 	KeySet * ks = ksNew ();
 	
@@ -571,7 +571,7 @@ int kdbSetKey_ini(Key *origkey) {
  * @see kdbSetKeys() for expected behavior.
  * @ingroup ini
  */
-int kdbSetKeys_ini(KeySet *ks) {
+int kdbSetKeys_ini(KDBHandle handle, KeySet *ks) {
 	int rc;
 	do {
 		rc = IniSetKeys (ks);
@@ -728,7 +728,7 @@ fileerror:
  * @see kdbRemove() for expected behavior.
  * @ingroup ini
  */
-int kdbRemoveKey_ini(const Key *key) {
+int kdbRemoveKey_ini(KDBHandle handle, const Key *key) {
 	/*return IniSetKey (key, SETKEY_DELETE);*/
 }
 
@@ -738,7 +738,7 @@ int kdbRemoveKey_ini(const Key *key) {
  * @see kdbRename() for expected behavior.
  * @ingroup ini
  */
-int kdbRename_ini(Key *key, const char *newName) {
+int kdbRename_ini(KDBHandle handle, Key *key, const char *newName) {
 	/*IniSetKey (key, SETKEY_DELETE);
 	keySetName (key, newName);
 	IniSetKey (key, SETKEY_SET);*/
@@ -756,7 +756,7 @@ int kdbRename_ini(Key *key, const char *newName) {
  *
  * @ingroup ini
  */
-int kdbStatKey_ini(Key *key) {
+int kdbStatKey_ini(KDBHandle handle, Key *key) {
 	char filename [MAX_PATH_LENGTH];
 	
 	file_name(key, filename);
@@ -778,7 +778,7 @@ int kdbStatKey_ini(Key *key) {
  * @see kdbMonitorKeys() for expected behavior.
  * @ingroup ini
  */
-uint32_t kdbMonitorKeys_ini(KeySet *interests, uint32_t diffMask,
+uint32_t kdbMonitorKeys_ini(KDBHandle handle, KeySet *interests, uint32_t diffMask,
 		unsigned long iterations, unsigned sleep) {
 	fprintf (stderr, "Optional method not implemented\n");
 	return 0;
@@ -794,7 +794,7 @@ uint32_t kdbMonitorKeys_ini(KeySet *interests, uint32_t diffMask,
  * @see kdbMonitorKey() for expected behavior.
  * @ingroup ini
  */
-uint32_t kdbMonitorKey_ini(Key *interest, uint32_t diffMask,
+uint32_t kdbMonitorKey_ini(KDBHandle handle, Key *interest, uint32_t diffMask,
 		unsigned long iterations, unsigned sleep) {
 	fprintf (stderr, "Optional method not implemented\n");
 	return 0;

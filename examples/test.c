@@ -1,8 +1,9 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
-#include <kdb.h>
+
 #include <stdlib.h>
+#include <kdb.h>
 
 /**test.c
  * This is comprehensive Test for the

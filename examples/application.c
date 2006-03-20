@@ -27,17 +27,11 @@ TODO: Not well tested yet.
 
 
 /* Read config keys for this application */
-int readConfig(KeySet *myConfig) {
+int readConfig(KDBHandle handle, KeySet *myConfig) {
 	int rc;
 
-	/* Open the kdb */
-	kdbOpen();
-	
 	/* Get all value keys for this application */
-	rc=kdbGetChildKeys(MY_APP_ROOT, myConfig, KDB_O_RECURSIVE);
-	
-	/* Close the Key database */
-	kdbClose();
+	rc=kdbGetChildKeys(handle,MY_APP_ROOT, myConfig, KDB_O_RECURSIVE);
 	
 	return rc;
 }
@@ -72,19 +66,20 @@ void changeConfig(KeySet *myConfig) {
 
 
 /* Save the modified keys */
-int saveConfig(KeySet *myConfig) {
-	kdbOpen();
-	kdbSetKeys(myConfig);
-	kdbClose();
+int saveConfig(KDBHandle handle, KeySet *myConfig) {
+	kdbSetKeys(handle,myConfig);
 }
 
 
 
 int main(int argc, char **argv) {
 	KeySet *myConfig=ksNew();
+	KDBHandle handle=0;
+	
+	kdbOpen(&handle);
 	
 	/* Get configuration values, and just continue if there is no error */
-	if (readConfig(myConfig)) {
+	if (readConfig(handle,myConfig)) {
 		perror("Couldn't get my configuration. Reason");
 		exit(1);
 	} else {
@@ -92,7 +87,9 @@ int main(int argc, char **argv) {
 	}
 		
 	changeConfig(myConfig);
-	saveConfig(myConfig);
+	saveConfig(handle,myConfig);
+	
+	kdbClose(&handle);
 	
 	/* Free all keys and resources in the key set */
 	ksDel(myConfig);

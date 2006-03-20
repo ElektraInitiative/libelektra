@@ -40,7 +40,8 @@ typedef unsigned int uint32_t;
 #define strcasecmp stricmp
 #define snprintf _snprintf
 #else
-/* The following file doesn't exist on windows so we need to avoid including it */
+/* The following file doesn't exist on windows so we need to
+ * avoid including it */
 #include <inttypes.h>
 #endif
 
@@ -62,7 +63,7 @@ typedef unsigned int uint32_t;
 
 /* When FORMAT_VERSION changes, FORMAT must change also. */
 #define RG_KEY_FORMAT_VERSION   2
-#define RG_KEY_FORMAT           "RG002"
+#define RG_KEY_FORMAT           "RG00" RG_KEY_FORMAT_VERSION
 
 
 /**
@@ -319,6 +320,10 @@ Parent name = "user:some.user/My Environment"
 typedef struct _Key       Key;
 typedef struct _KeySet    KeySet;
 
+#ifndef KDBBACKEND_H
+/* If we are not in a backend implementation context... */
+typedef void *            KDBHandle;
+#endif
 
 /**
  * Object returned by kdbGetInfo() containing some informations about the
@@ -334,9 +339,11 @@ typedef struct _KeySet    KeySet;
 typedef struct _KDBInfo {
 	/* all members are pointers because we'll point only to pre-allocated
 	   or static strings. We won't allocate nothing for each member. */
-	char *version;			/*!< Version of the library*/
-	char *backendName;		/*!< Name of backend being or that will be used */
-	uint8_t backendIsOpen;	/*!< 1 if backend was already open with kdbOpen(), 0 otherwise */
+	char *version;             /*!< Version of the library*/
+	char *backendName;         /*!< Name of backend being or
+	                                that will be used */
+	uint8_t backendIsOpen;     /*!< 1 if backend was already open
+	                                with kdbOpen(), 0 otherwise */
 } KDBInfo;
 
 
@@ -353,50 +360,55 @@ KeyDB methods
 
 ***************************************/
 
-int kdbOpen();
-int kdbOpenDefault();
-int kdbOpenBackend(char *backendName);
-int kdbClose();
+int kdbOpen(KDBHandle *handle);
+int kdbOpenDefault(KDBHandle *handle);
+int kdbOpenBackend(KDBHandle *handle, char *backendName);
+int kdbClose(KDBHandle *handle);
 
-int kdbGetValue(const char *keyname, char *returned,size_t maxSize);
-int kdbGetKeyByParent(const char *parentName, const char *baseName, Key *returned);
-int kdbGetKeyByParentKey(const Key *parent, const char *baseName, Key *returned);
-int kdbGetValueByParent(const char *parentName, const char *baseName, char *returned,
+int kdbGetValue(KDBHandle handle, const char *keyname, char *returned,
 	size_t maxSize);
+int kdbGetKeyByParent(KDBHandle handle, const char *parentName,
+	const char *baseName, Key *returned);
+int kdbGetKeyByParentKey(KDBHandle handle, const Key *parent,
+	const char *baseName, Key *returned);
+int kdbGetValueByParent(KDBHandle handle, const char *parentName,
+	const char *baseName, char *returned, size_t maxSize);
 
-int kdbSetValue(const char *keyname, const char *value);
-int kdbSetValueByParent(const char *parentName, const char *baseName, const char *value);
+int kdbSetValue(KDBHandle handle, const char *keyname, const char *value);
+int kdbSetValueByParent(KDBHandle handle, const char *parentName,
+	const char *baseName, const char *value);
 
-int kdbRename(Key *key, const char *newName);
-int kdbRemove(const char *keyName);
-int kdbRemoveKey(const Key *key);
-int kdbLink(const char *oldPath, const char *newKeyName);
+int kdbRename(KDBHandle handle, Key *key, const char *newName);
+int kdbRemove(KDBHandle handle, const char *keyName);
+int kdbRemoveKey(KDBHandle handle, const Key *key);
+int kdbLink(KDBHandle handle, const char *oldPath, const char *newKeyName);
 
-int kdbGetKeyByParent(const char *parentName, const char *baseName, Key *returned);
-int kdbGetKeyByParentKey(const Key *parent, const char *basename, Key *returned);
-int kdbGetValueByParent(const char *parentName, const char *baseName, char *returned,
-	size_t maxSize);
+int kdbGetKeyByParent(KDBHandle handle, const char *parentName,
+	const char *baseName, Key *returned);
+int kdbGetKeyByParentKey(KDBHandle handle, const Key *parent,
+	const char *basename, Key *returned);
+int kdbGetValueByParent(KDBHandle handle, const char *parentName,
+	const char *baseName, char *returned, size_t maxSize);
 
-/* These two functions lack an implementation so there's no reason to have them defined! */
-/*int kdbGetComment(const char *keyname, char *returned, size_t maxSize);
-size_t kdbSetComment(const char *keyname, const char *comment);*/
 
-int kdbStatKey(Key *key);
-int kdbGetKey(Key *key);
-int kdbSetKey(Key *key);
+int kdbStatKey(KDBHandle handle, Key *key);
+int kdbGetKey(KDBHandle handle, Key *key);
+int kdbSetKey(KDBHandle handle, Key *key);
 
-ssize_t kdbGetKeyChildKeys(const Key *parentName, KeySet *returned, unsigned long options);
-ssize_t kdbGetChildKeys(const char *parentName, KeySet *returned, unsigned long options);
-ssize_t kdbGetRootKeys(KeySet *returned);
+ssize_t kdbGetKeyChildKeys(KDBHandle handle, const Key *parentName,
+	KeySet *returned, unsigned long options);
+ssize_t kdbGetChildKeys(KDBHandle handle, const char *parentName,
+	KeySet *returned, unsigned long options);
+ssize_t kdbGetRootKeys(KDBHandle handle, KeySet *returned);
 
-int kdbSetKeys(KeySet *ks);
+int kdbSetKeys(KDBHandle handle, KeySet *ks);
 
-uint32_t kdbMonitorKey(Key *interest, uint32_t diffMask,
+uint32_t kdbMonitorKey(KDBHandle handle, Key *interest, uint32_t diffMask,
 	unsigned long iterations, unsigned usleep);
-uint32_t kdbMonitorKeys(KeySet *interests, uint32_t diffMask,
+uint32_t kdbMonitorKeys(KDBHandle handle, KeySet *interests, uint32_t diffMask,
 	unsigned long iterations, unsigned sleep);
 
-KDBInfo *kdbGetInfo(void);
+KDBInfo *kdbGetInfo(KDBHandle handle);
 void kdbFreeInfo(KDBInfo *info);
 int kdbInfoToString(KDBInfo *info,char *string,size_t maxSize);
 
@@ -542,7 +554,8 @@ ssize_t ksInsertKeys(KeySet *ks, KeySet *toInsert);
 ssize_t ksAppendKeys(KeySet *ks, KeySet *toAppend);
 
 ssize_t ksToStream(const KeySet *ks, FILE* stream, unsigned long options);
-ssize_t ksGetCommonParentName(const KeySet *ks,char *returnedCommonParent,const size_t maxSize);
+ssize_t ksGetCommonParentName(const KeySet *ks,char *returnedCommonParent,
+	const size_t maxSize);
 int ksCompare(KeySet *ks1, KeySet *ks2, KeySet *removed);
 void ksSort(KeySet *ks);
 

@@ -21,7 +21,7 @@ endif
 lib_LTLIBRARIES = libelektra.la
 libelektra_la_SOURCES = libkdb.c key.c keyset.c ../include/kdb.h ../include/kdbbackend.h ../include/kdbprivate.h
 libelektra_la_CFLAGS = -DDEFAULT_BACKEND=\"default\" -ansi -pedantic -Wall
-libelektra_la_LDFLAGS = -version-info 1:0:0
+libelektra_la_LDFLAGS = -version-info 2:0:0
 libelektra_la_LIBADD = $(LIBLTDL) $(LIBICONV) ../libloader/kdbLibLoader.lo
 
 

@@ -272,7 +272,7 @@ emptyNamedKey=keyNew("user/some/example",KEY_SWITCH_END);
  * - KeySwitch::KEY_SWITCH_COMMENT \n
  *   Next parameter is a comment. See keySetComment().
  * - KeySwitch::KEY_SWITCH_NEEDSYNC \n
- *   Needs no extra parameter. Makes keyNew() retrieve the Key from the
+ *   Next parameter is a KDBHandle. Makes keyNew() retrieve the Key from the
  *   backend with kdbGetKey(). In the same keyNew() call you can use this
  *   tag in conjunction with any other, which will make keyNew() modify
  *   only some attributes of the retrieved key, and return it for you.
@@ -296,7 +296,7 @@ ksAppend(ks,keyNew("user/sw",              // a simple key
 	KEY_SWITCH_END));                      // no more args
 	
 ksAppend(ks,keyNew("system/sw",
-	KEY_SWITCH_NEEDSYNC,                   // a key retrieved from storage
+	KEY_SWITCH_NEEDSYNC, handle,           // a key retrieved from storage
 	KEY_SWITCH_END));                      // end of args               
 	
 ksAppend(ks,keyNew("user/tmp/ex1",
@@ -323,11 +323,11 @@ ksAppend(ks,keyNew("user/tmp/ex4",
 	KEY_SWITCH_END));                      // end of args
 	
 ksAppend(ks,keyNew("user/env/alias/ls",    // a key we know we have
-	KEY_SWITCH_NEEDSYNC,                   // retrieve from storage
+	KEY_SWITCH_NEEDSYNC, handle,           // retrieve from storage
 	KEY_SWITCH_END));                      // do nothing more
 	
 ksAppend(ks,keyNew("user/env/alias/ls",    // same key
-	KEY_SWITCH_NEEDSYNC,                   // retrieve from storage
+	KEY_SWITCH_NEEDSYNC, handle,           // retrieve from storage
 	KEY_SWITCH_DOMAIN,"root",              // set new owner (not uid) as root
 	KEY_SWITCH_COMMENT,"new comment",      // set new comment
 	KEY_SWITCH_END));                      // end of args
@@ -419,7 +419,7 @@ Key *keyNew(const char *keyName, ...) {
 					break;
 				case KEY_SWITCH_NEEDSYNC: {
 					int rc=0;
-					rc=kdbGetKey(key);
+					rc=kdbGetKey(va_arg(va,KDBHandle),key);
 					if (rc)
 						/* Flag the key to indicate an error in
 						 * kdbGetKey(). Propagated errno will indicate

@@ -50,17 +50,23 @@ $Id$
 
 
 /* These define the type for pointers to all the kdb functions */
-typedef int (*kdbOpenPtr)();
-typedef int (*kdbClosePtr)();
-typedef int (*kdbStatKeyPtr)(Key *);
-typedef int (*kdbGetKeyPtr)(Key *);
-typedef int (*kdbSetKeyPtr)(Key *);
-typedef int (*kdbRenamePtr)(Key *, const char *);
-typedef int (*kdbRemoveKeyPtr)(const Key *);
-typedef int (*kdbGetChildKeysPtr)(const Key *, KeySet *, unsigned long);
-typedef int (*kdbSetKeysPtr)(KeySet *);
-typedef uint32_t (*kdbMonitorKeyPtr)(Key *, uint32_t,unsigned long, unsigned);
-typedef uint32_t (*kdbMonitorKeysPtr)(KeySet *, uint32_t,unsigned long, unsigned);
+typedef int      (*kdbOpenPtr)(KDBHandle *);
+typedef int      (*kdbClosePtr)(KDBHandle *);
+typedef int      (*kdbStatKeyPtr)(KDBHandle, Key *);
+typedef int      (*kdbGetKeyPtr)(KDBHandle, Key *);
+typedef int      (*kdbSetKeyPtr)(KDBHandle, Key *);
+typedef int      (*kdbRenamePtr)(KDBHandle, Key *, const char *);
+typedef int      (*kdbRemoveKeyPtr)(KDBHandle, const Key *);
+typedef int      (*kdbGetChildKeysPtr)(KDBHandle, const Key *, KeySet *,
+                 unsigned long);
+
+typedef int      (*kdbSetKeysPtr)(KDBHandle, KeySet *);
+
+typedef uint32_t (*kdbMonitorKeyPtr)(KDBHandle, Key *, uint32_t,
+                 unsigned long, unsigned);
+
+typedef uint32_t (*kdbMonitorKeysPtr)(KDBHandle, KeySet *, uint32_t,
+                 unsigned long, unsigned);
 
 
 

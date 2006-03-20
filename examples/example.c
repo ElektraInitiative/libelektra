@@ -1,6 +1,7 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+
 #include <kdb.h>
 
 /**example.c
@@ -14,10 +15,10 @@
 void printKey (Key * k);
 void printKeySet (KeySet * set);
 void useKeySet();
-void getChildKeys ();
-void getKey();
-void setNullKey();
-void setAnotherKey();
+void getChildKeys(KDBHandle handle);
+void getKey(KDBHandle handle);
+void setNullKey(KDBHandle handle);
+void setAnotherKey(KDBHandle handle);
 
 #define CHILD_KEY_ROOT "user/"
 #define KEY_ROOT "user/test/another/key"
@@ -72,7 +73,7 @@ void printKeySet (KeySet * set)
 	}
 }
 
-void useKeySet()
+void useKeySet(KDBHandle handle)
 {
 	KeySet *ks=ksNew();
 
@@ -82,7 +83,7 @@ void useKeySet()
 	    KEY_SWITCH_END));                      // no more args
 	    
 	ksAppend(ks,keyNew("system/sw",
-	    KEY_SWITCH_NEEDSYNC,                   // a key retrieved from storage
+	    KEY_SWITCH_NEEDSYNC, handle,           // a key retrieved from storage
 	    KEY_SWITCH_END));                      // end of args               
 	    
 	ksAppend(ks,keyNew("user/tmp/ex1",
@@ -109,11 +110,11 @@ void useKeySet()
 	    KEY_SWITCH_END));                      // end of args*/
 	    
 	ksAppend(ks,keyNew("user/env/alias/ls",    // a key we know we have
-	    KEY_SWITCH_NEEDSYNC,                   // retrieve from storage
+	    KEY_SWITCH_NEEDSYNC, handle,           // retrieve from storage
 	    KEY_SWITCH_END));                      // do nothing more
 	    
 	ksAppend(ks,keyNew("user/env/alias/ls",    // same key
-	    KEY_SWITCH_NEEDSYNC,                   // retrieve from storage
+	    KEY_SWITCH_NEEDSYNC, handle,           // retrieve from storage
 	    KEY_SWITCH_DOMAIN,"root",              // set new owner (not uid) as root
 	    KEY_SWITCH_COMMENT,"new comment",      // set new comment
 	    KEY_SWITCH_END));                      // end of args
@@ -125,8 +126,7 @@ void useKeySet()
 	ksDel(ks);
 }	
 
-void getChildKeys ()
-{
+void getChildKeys (KDBHandle handle) {
 	int ret;
 	Key * root;
 	KeySet * set;
@@ -145,7 +145,7 @@ void getChildKeys ()
 	/* Get all value keys for this application */
 	set = ksNew();
 	root = keyNew (CHILD_KEY_ROOT, KEY_SWITCH_END);
-	ret = kdbGetKeyChildKeys (root, set, 0); // should be renamed to kdbGetKeys
+	ret = kdbGetKeyChildKeys (handle,root, set, 0); // should be renamed to kdbGetKeys
 
 	if (ret >= 0)
 	{
@@ -160,12 +160,12 @@ void getChildKeys ()
 	ksDel (set);
 }
 
-void getKey ()
+void getKey (KDBHandle handle)
 {
 	Key * k;
 	k = keyNew(KEY_ROOT, KEY_SWITCH_END);
 
-	if (kdbGetKey (k) >= 0) {
+	if (kdbGetKey (handle,k) >= 0) {
 		fprintf (stderr, "got key\n");
 	} else {
 		fprintf (stderr, "Error in kdbGetKey, errno: %d\n", errno);
@@ -179,13 +179,12 @@ void getKey ()
 
 /**This function sets a new made Key with keyNew.
  * This must not sigfault*/
-void setNullKey ()
-{
+void setNullKey (KDBHandle handle) {
 	Key * k;
 	k = keyNew(KEY_ROOT, KEY_SWITCH_END);
 	
 	fprintf (stderr, "Write same key back\n");
-	if (kdbSetKey (k) >= 0) {
+	if (kdbSetKey (handle,k) >= 0) {
 		fprintf (stderr, "key set\n");
 	} else {
 		fprintf (stderr, "Error in kdbSetKey, errno: %d\n", errno);
@@ -198,15 +197,14 @@ void setNullKey ()
 }
 
 /**This sets a valid key with a string and comment*/
-void setAnotherKey ()
-{
+void setAnotherKey (KDBHandle handle) {
 	Key * k;
 	k = keyNew(KEY_ROOT, KEY_SWITCH_END);
 	
 	keySetString (k, "norei");
 	keySetComment(k, "commi");
 	
-	if (kdbSetKey (k) >= 0) {
+	if (kdbSetKey (handle,k) >= 0) {
 		fprintf (stderr, "key set\n");
 	} else {
 		fprintf (stderr, "Error in kdbSetKey, errno: %d\n", errno);
@@ -220,19 +218,22 @@ void setAnotherKey ()
 
 
 int main(int argc, char **argv) {
+	KDBHandle handle;
+	
 	fprintf(stderr, "start app\n");
+	
 	/* Open the kdb */
-	kdbOpen();
+	kdbOpen(&handle);
 	fprintf(stderr, "after kdbOpen\n");
 
-	getChildKeys();
+	getChildKeys(handle);
 	// setAnotherKey();
 	// setNullKey();
 	// getKey();
 	// useKeySet();
 	
 	/* Close the Key database */
-	kdbClose();
+	kdbClose(&handle);
 	return 0;
 }
 

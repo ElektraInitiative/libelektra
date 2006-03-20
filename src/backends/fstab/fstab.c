@@ -1,5 +1,5 @@
 /***************************************************************************
-            temaple.c  -  Skeleton of backends to access the Key Database
+            fstab.c  -  Skeleton of backends to access the Key Database
                              -------------------
     begin                : Mon Dec 26 2004
     copyright            : (C) 2004 by Avi Alkalay
@@ -12,8 +12,6 @@
  *   it under the terms of the BSD License (revised).                      *
  *                                                                         *
  ***************************************************************************/
-
-
 
 /***************************************************************************
  *                                                                         *
@@ -34,8 +32,7 @@ $Id$
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
-#include <kdb.h>
-#include <kdbbackend.h>
+
 #include <mntent.h>
 #include <string.h>
 #include <stdio.h>
@@ -43,9 +40,13 @@ $Id$
 #include <unistd.h>
 #include <dirent.h>
 #include <fcntl.h>
+
 #ifdef HAVE_REGEX_H
 #include <regex.h>
 #endif
+
+#include <kdbbackend.h>
+
 #define BACKENDNAME "fstab"
 #define ROOT        "system/filesystems"
 
@@ -63,7 +64,7 @@ $Id$
 
 
 
-int kdbOpen_fstab() {
+int kdbOpen_fstab(KDBHandle *handle) {
 	/* backend initialization logic */
 	return 0;
 }
@@ -71,20 +72,20 @@ int kdbOpen_fstab() {
 
 
 
-int kdbClose_fstab() {
+int kdbClose_fstab(KDBHandle *handle) {
 	/* free all backend resources and shutdown */
 	return 0; /* success */
 }
 
-int kdbGetKey_fstab(Key *key) {
+int kdbGetKey_fstab(KDBHandle handle, Key *key) {
 	if (!keyIsSystem(key)) return 1;
 	errno=KDB_RET_NOSYS;
 	return 0;
 }
 
 
-ssize_t kdbGetKeyChildKeys_fstab(const Key *parentKey, KeySet *returned,
-		unsigned long options) {
+ssize_t kdbGetKeyChildKeys_fstab(KDBHandle handle, const Key *parentKey,
+		KeySet *returned, unsigned long options) {
 	FILE *fstab=0;
 	struct mntent *fstabEntry;
 	unsigned swapIndex=0;
@@ -227,7 +228,7 @@ ssize_t kdbGetKeyChildKeys_fstab(const Key *parentKey, KeySet *returned,
  * @see kdbSetKeys() for expected behavior.
  * @ingroup backend
  */
-int kdbSetKeys_fstab(KeySet *ks) {
+int kdbSetKeys_fstab(KDBHandle handle, KeySet *ks) {
 	regex_t regex;
 	uint32_t match=0;
 	struct mntent fstabEntry;

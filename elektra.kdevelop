@@ -17,15 +17,15 @@
   </general>
   <kdevcustomproject>
     <run>
-      <mainprogram>/home/aviram/src/elektra/src/backends/daemon/.libs/kdbd</mainprogram>
-      <directoryradio>custom</directoryradio>
+      <mainprogram>src/kdb/.libs/kdb</mainprogram>
+      <directoryradio>executable</directoryradio>
       <customdirectory>/home/aviram/src/elektra/src/backends/daemon/</customdirectory>
       <programargs></programargs>
       <terminal>false</terminal>
       <autocompile>true</autocompile>
       <envvars>
         <envvar value="kate" name="EDITOR" />
-        <envvar value="berkeleydb" name="KDB_BACKEND" />
+        <envvar value="filesys" name="KDB_BACKEND" />
       </envvars>
     </run>
     <build>
@@ -52,7 +52,7 @@
   <kdevdebugger>
     <general>
       <dbgshell></dbgshell>
-      <programargs>set user/tmp/test test1</programargs>
+      <programargs>export system/filesystems/sys</programargs>
       <gdbpath></gdbpath>
       <configGdbScript></configGdbScript>
       <runShellScript></runShellScript>
@@ -62,7 +62,7 @@
       <floatingtoolbar>false</floatingtoolbar>
     </general>
     <display>
-      <staticmembers>false</staticmembers>
+      <staticmembers>true</staticmembers>
       <demanglenames>true</demanglenames>
       <outputradix>10</outputradix>
     </display>

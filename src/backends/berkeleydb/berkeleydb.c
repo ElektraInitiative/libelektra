@@ -32,10 +32,9 @@ $Id$
 #include <stdlib.h>
 #include <dirent.h>
 #include <unistd.h>
-
-#include <kdb.h>
-#include <kdbbackend.h>
 #include <db.h>
+
+#include <kdbbackend.h>
 
 #define BACKENDNAME "berkeleydb"
 
@@ -643,7 +642,7 @@ DBTree *getDBForKey(const Key *key) {
 
 
 
-int kdbOpen_bdb() {
+int kdbOpen_bdb(KDBHandle *handle) {
 	/* Create only the DB container.
 	 * DBs will be allocated on demand
 	 */
@@ -655,7 +654,7 @@ int kdbOpen_bdb() {
 
 
 
-int kdbClose_bdb() {
+int kdbClose_bdb(KDBHandle *handle) {
 	if (dbs) {
 		while (dbs->first) {
 			dbs->cursor=dbs->first;
@@ -677,7 +676,7 @@ int kdbClose_bdb() {
  * @see kdbRemove() for expected behavior.
  * @ingroup backend
  */
-int kdbRemoveKey_bdb(const Key *key) {
+int kdbRemoveKey_bdb(KDBHandle handle, const Key *key) {
 	DBTree *dbctx;
 	DBT dbkey,data;
 	int ret;
@@ -736,7 +735,7 @@ int kdbRemoveKey_bdb(const Key *key) {
 }
 
 
-int kdbGetKeyWithOptions(Key *key, uint32_t options) {
+int kdbGetKeyWithOptions(KDBHandle handle, Key *key, uint32_t options) {
 	DBTree *dbctx;
 	DBT dbkey,data;
 	int ret;
@@ -800,7 +799,8 @@ int kdbGetKeyWithOptions(Key *key, uint32_t options) {
 			keyInit(&target);
 			keySetName(&target,buffer.data);
 
-			if (kdbGetKeyWithOptions(&target, options) == KDB_RET_NOTFOUND) {
+			if (kdbGetKeyWithOptions(handle,&target, options) ==
+					KDB_RET_NOTFOUND) {
 				keyClose(&target);
 				keyClose(&buffer);
 				return errno=KDB_RET_NOTFOUND;
@@ -818,14 +818,14 @@ int kdbGetKeyWithOptions(Key *key, uint32_t options) {
 
 
 
-int kdbGetKey_bdb(Key *key) {
-	return kdbGetKeyWithOptions(key,0);
+int kdbGetKey_bdb(KDBHandle handle, Key *key) {
+	return kdbGetKeyWithOptions(handle,key,0);
 }
 
 
 
-int kdbStatKey_bdb(Key *key) {
-	return kdbGetKeyWithOptions(key,KDB_O_NFOLLOWLINK | KDB_O_STATONLY);
+int kdbStatKey_bdb(KDBHandle handle, Key *key) {
+	return kdbGetKeyWithOptions(handle,key,KDB_O_NFOLLOWLINK | KDB_O_STATONLY);
 }
 
 
@@ -836,7 +836,7 @@ int kdbStatKey_bdb(Key *key) {
  * @see kdbSetKey() for expected behavior.
  * @ingroup backend
  */
-int kdbSetKey_bdb(Key *key) {
+int kdbSetKey_bdb(KDBHandle handle, Key *key) {
 	DBTree *dbctx;
 	DBT dbkey,data;
 	int ret;
@@ -923,7 +923,7 @@ int kdbSetKey_bdb(Key *key) {
 				
 				/* free(parentName); */
 				
-				if (kdbSetKey_bdb(parent)) {
+				if (kdbSetKey_bdb(handle,parent)) {
 					/* If some error happened in this recursive call.
 					 * Propagate errno.
 					 */
@@ -1010,7 +1010,7 @@ int kdbSetKey_bdb(Key *key) {
  * @see kdbRename() for expected behavior.
  * @ingroup backend
  */
-int kdbRename_backend(Key *key, const char *newName) {
+int kdbRename_backend(KDBHandle handle, Key *key, const char *newName) {
 	/* rename a key to another name */
 	return 0; /* success */
 }
@@ -1025,7 +1025,8 @@ int kdbRename_backend(Key *key, const char *newName) {
  * @see kdbGetKeyChildKeys() for expected behavior.
  * @ingroup backend
  */
-ssize_t kdbGetKeyChildKeys_bdb(const Key *parentKey, KeySet *returned, unsigned long options) {
+ssize_t kdbGetKeyChildKeys_bdb(KDBHandle handle, const Key *parentKey,
+		KeySet *returned, unsigned long options) {
 	DBTree *db=0;
 	DBC *cursor=0;
 	DBT parent,keyName,keyData;
@@ -1043,7 +1044,7 @@ ssize_t kdbGetKeyChildKeys_bdb(const Key *parentKey, KeySet *returned, unsigned 
 
 	currentParent=keyNew(KEY_SWITCH_END);
 	keyDup(parentKey,currentParent);
-	ret=kdbGetKeyWithOptions(currentParent,KDB_O_STATONLY);
+	ret=kdbGetKeyWithOptions(handle,currentParent,KDB_O_STATONLY);
 
 	if (ret==KDB_RET_NOTFOUND) {
 		keyDel(currentParent);
@@ -1163,7 +1164,8 @@ ssize_t kdbGetKeyChildKeys_bdb(const Key *parentKey, KeySet *returned, unsigned 
 				keyInit(&target);
 				keySetName(&target,retrievedKey->data);
 
-				if (kdbGetKeyWithOptions(&target, options) == KDB_RET_NOTFOUND) {
+				if (kdbGetKeyWithOptions(handle,&target, options) ==
+						KDB_RET_NOTFOUND) {
 					/* Invalid link target, so don't include in keyset */
 				
 					keyClose(&target);

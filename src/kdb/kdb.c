@@ -26,7 +26,6 @@ $Id$
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
-#include "kdb.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -50,6 +49,7 @@ $Id$
 #include <fcntl.h>
 #endif
 
+#include "kdb.h"
 #include "kdbLibLoader.h"
 
 #define CMD_GET       1
@@ -108,7 +108,6 @@ int argXML=0;
 int argHelp=0;
 mode_t argMode=0;
 int argType=KEY_TYPE_UNDEFINED;
-
 
 
 int commandHelp();
@@ -497,13 +496,13 @@ void listSingleKey(Key *key) {
  * @see kdbRemove()
  * @param argKeyName name of the key that will be removed
  */
-int commandRemove() {
+int commandRemove(KDBHandle handle) {
 	if (!argKeyName) {
 		fprintf(stderr,"kdb rm: No key name\n");
 		return -1;
 	}
 
-	if (kdbRemove(argKeyName)) {
+	if (kdbRemove(handle,argKeyName)) {
 		char error[300];
 		
 		sprintf(error,"kdb rm: \'%s\'",argKeyName);
@@ -528,7 +527,7 @@ int commandRemove() {
  * @param argKeyName name of the source key
  * @param argData name of the target key
  */
-int commandMove() {
+int commandMove(KDBHandle handle) {
 	Key *key;
 	size_t size=0;
 	int rc;
@@ -557,7 +556,7 @@ int commandMove() {
 		return 1;
 	}
 	
-	rc=kdbRename(key,argData);
+	rc=kdbRename(handle,key,argData);
 	if (rc != 0) {
 		/* Handle a non-zero rc, with same behavior of Unix mv command */
 		switch (errno) {
@@ -591,7 +590,7 @@ int commandMove() {
  * @param argFile a filename to use as the input for the value
  * @see kdbSetKey()
  */
-int commandSet() {
+int commandSet(KDBHandle handle) {
 	Key *key;
 	int ret;
 	char error[200];
@@ -605,7 +604,7 @@ int commandSet() {
 	}
 
 	key=keyNew(argKeyName,KEY_SWITCH_END);
-	ret=kdbGetKey(key);
+	ret=kdbGetKey(handle,key);
 	if (ret == 0) { /* Key already exists. Good. */
 		/* Use existed key type if user didn't give us one */
 		if (argType==KEY_TYPE_UNDEFINED) argType=keyGetType(key);
@@ -675,7 +674,7 @@ int commandSet() {
 	}
 
 
-	ret=kdbSetKey(key);
+	ret=kdbSetKey(handle,key);
 	if (ret) {
 		sprintf(error,"kdb set: \'%s\'",argKeyName);
 		perror(error);
@@ -703,7 +702,7 @@ int commandSet() {
  * @param argData name of the link key to be created
  * @see kdbLink(), keySetType()
  */
-int commandLink() {
+int commandLink(KDBHandle handle) {
 	int rc;
 
 	/* Consistency */
@@ -717,7 +716,7 @@ int commandLink() {
 		return -1;
 	}
 
-	if ((rc=kdbLink(argKeyName,argData))) {
+	if ((rc=kdbLink(handle,argKeyName,argData))) {
 		perror("kdb ln");
 	}
 
@@ -757,7 +756,7 @@ int commandLink() {
  * @see kdbGetRootKeys(), kdbGetKeyChildKeys(), keyToStream(), ksToStream()
  * @see commandExport() for the 'kdb export' command
  */
-int commandList() {
+int commandList(KDBHandle handle) {
 	KeySet *ks; /* this is the container for all keys we'll collect bellow */
 	ssize_t ret;
 	unsigned long options=0;
@@ -782,7 +781,7 @@ int commandList() {
 		/* User don't want a specific key, so list the root keys */
 
 		roots=ksNew();
-		kdbGetRootKeys(roots);
+		kdbGetRootKeys(handle,roots);
 
 		if (argRecursive) {
 			Key *walker=0;
@@ -793,7 +792,7 @@ int commandList() {
 				 */
 				KeySet *thisRoot=ksNew();
 				
-				ret=kdbGetKeyChildKeys(walker,thisRoot,options);
+				ret=kdbGetKeyChildKeys(handle,walker,thisRoot,options);
 				
 				/* A hack to transfer a key from a keyset to another.
 				 * Don't do this at home.
@@ -807,7 +806,7 @@ int commandList() {
 	} else {
 		/* User gave us a specific key to start with */
 
-		ret=kdbGetChildKeys(argKeyName,ks,options);
+		ret=kdbGetChildKeys(handle,argKeyName,ks,options);
 	
 		if (ret<0) {
 			/* We got an error. Check if it is because its not a folder key */
@@ -815,8 +814,8 @@ int commandList() {
 				/* We still have a chance, since there is something there */
 				Key *key=keyNew(argKeyName,KEY_SWITCH_END);
 				
-				if (argValue) ret=kdbGetKey(key);
-				else ret=kdbStatKey(key);
+				if (argValue) ret=kdbGetKey(handle,key);
+				else ret=kdbStatKey(handle,key);
 				
 				if (ret == 0) ksAppend(ks,key);
 				else {
@@ -888,7 +887,7 @@ int commandList() {
  * @see kdbGetKey(), kdbGetBaseName(), keyGetComment(), keyGetString()
  *
  */
-int commandGet() {
+int commandGet(KDBHandle handle) {
 	int ret;
 	Key *key;
 	char *buffer;
@@ -903,7 +902,7 @@ int commandGet() {
 
 	key=keyNew(argKeyName,KEY_SWITCH_END);
 	
-	ret=kdbGetKey(key);
+	ret=kdbGetKey(handle,key);
 
 	if (ret) {
 		char error[200];
@@ -1239,7 +1238,7 @@ void commandMonitorHelp()
  * @see keyCompare(), ksCompare(), kdbGetChildKeys(), kdbSetKeys(),
  * 	ksToStream(), kdbRemoveKey()
  */
-int commandEdit() {
+int commandEdit(KDBHandle handle) {
 	KeySet *ks;
 	KeySet *ksEdited;
 	KeySet *toRemove;
@@ -1254,13 +1253,13 @@ int commandEdit() {
 	
 	ks=ksNew();
 
-	kdbGetChildKeys(argKeyName,ks, KDB_O_SORT | KDB_O_NFOLLOWLINK |
+	kdbGetChildKeys(handle,argKeyName,ks, KDB_O_SORT | KDB_O_NFOLLOWLINK |
 		(argAll?KDB_O_INACTIVE:0) | (argRecursive?KDB_O_RECURSIVE:0));
 
 	if (! ksGetSize(ks)) {
 		/* Maybe the user parameter is not a parent key, but a single key */
 		current=keyNew(argKeyName,KEY_SWITCH_END);
-		if (kdbGetKey(current)) {
+		if (kdbGetKey(handle,current)) {
 			/* Failed. Cleanup */
 			keyDel(current);
 			current=0;
@@ -1318,7 +1317,7 @@ int commandEdit() {
 		
 		/* Commit changed keys */
 		ksRewind(ks);
-		while ((ret=kdbSetKeys(ks))) {
+		while ((ret=kdbSetKeys(handle,ks))) {
 			/* We got an error. Warn user. */
 			Key *problem;
 			char error[500];
@@ -1342,7 +1341,7 @@ int commandEdit() {
 			char keyName[800];
 	
 			keyGetFullName(current,keyName,sizeof(keyName));
-			ret=kdbRemove(keyName);
+			ret=kdbRemove(handle,keyName);
 			if (ret != 0) {
 				char error[850];
 				
@@ -1370,11 +1369,11 @@ int commandEdit() {
  * 
  * @see kdbGetInfo(), kdbInfoToString(), kdbFreeInfo()
  */
-int commandInfo() {
+int commandInfo(KDBHandle handle) {
 	KDBInfo *libraryInfo;
 	char textInfo[200];
 
-	libraryInfo=kdbGetInfo();
+	libraryInfo=kdbGetInfo(handle);
 	kdbInfoToString(libraryInfo, textInfo, sizeof(textInfo));
 
 	printf("%s\n", textInfo);
@@ -1396,7 +1395,7 @@ int commandInfo() {
  * 
  * @see kdbSetKeys(), commandExport()
  */
-int commandImport() {
+int commandImport(KDBHandle handle) {
 	KeySet *ks;
 	int ret;
 
@@ -1410,7 +1409,7 @@ int commandImport() {
 	else ksFromXML(ks,fileno(stdin) /* more elegant then just '0' */);
 
 	ksRewind(ks);
-	while ((ret=kdbSetKeys(ks))) {
+	while ((ret=kdbSetKeys(handle,ks))) {
 		/* We got an error. Warn user. */
 		Key *problem;
 		char error[500]="";
@@ -1449,7 +1448,7 @@ int commandImport() {
  * @see commandList(), commandImport()
  *
  */
-int commandExport() {
+int commandExport(KDBHandle *handle) {
 
 	/* Equivalent to 'kdb ls -xRv
 	   So lets mimic and reuse code */
@@ -1467,10 +1466,10 @@ int commandExport() {
 	putenv("LANG=en_US.UTF-8");
 	
 	/* reopen key database to forced charset to take effect */
-	kdbClose();
-	kdbOpen();
+	kdbClose(handle);
+	kdbOpen(handle);
 
-	return commandList();
+	return commandList(*handle);
 }
 
 
@@ -1487,13 +1486,13 @@ int commandExport() {
  *
  * @see kdbMonitorKey(), kdbMonitorKeys()
  */
-int commandMonitor() {
+int commandMonitor(KDBHandle handle) {
 	Key *toMonitor;
 	uint32_t diff;
 	
-	toMonitor=keyNew(argKeyName,KEY_SWITCH_NEEDSYNC,KEY_SWITCH_END);
+	toMonitor=keyNew(argKeyName,KEY_SWITCH_NEEDSYNC,handle,KEY_SWITCH_END);
 	
-	diff=kdbMonitorKey(
+	diff=kdbMonitorKey(handle,
 		toMonitor,           /* key to monitor */
 		KEY_SWITCH_VALUE,    /* key info we are interested in */
 		0,                   /* how many times to poll. 0 = ad-infinitum */
@@ -1527,20 +1526,20 @@ int loadToolsLib(void) {
 	return 0;
 }
 
-int doCommand(int command) {
+int doCommand(int command, KDBHandle *handle) {
 	switch (command) {
-		case CMD_SET:             return commandSet();
-		case CMD_LIST:            return commandList();
-		case CMD_LINK:            return commandLink();
-		case CMD_GET:             return commandGet();
-		case CMD_REMOVE:          return commandRemove();
-		case CMD_EDIT:            return commandEdit();
-		case CMD_LOAD:            return commandImport();
-		case CMD_SAVE:            return commandExport();
-		case CMD_MONITOR:         return commandMonitor();
-		case CMD_MOVE:            return commandMove();
-		case CMD_INFO:            return commandInfo();
-		case CMD_HELP:            return commandHelp();
+		case CMD_SET:             return commandSet(*handle);
+		case CMD_LIST:            return commandList(*handle);
+		case CMD_LINK:            return commandLink(*handle);
+		case CMD_GET:             return commandGet(*handle);
+		case CMD_REMOVE:          return commandRemove(*handle);
+		case CMD_EDIT:            return commandEdit(*handle);
+		case CMD_LOAD:            return commandImport(*handle);
+		case CMD_SAVE:            return commandExport(handle);
+		case CMD_MONITOR:         return commandMonitor(*handle);
+		case CMD_MOVE:            return commandMove(*handle);
+		case CMD_INFO:            return commandInfo(*handle);
+		case CMD_HELP:            return commandHelp(*handle);
 	}
 	return 0;
 }
@@ -1562,11 +1561,16 @@ int helpCommand(int command) {
 	exit (0);
 }
 
+/*
+
 void cleanup() {
 	kdbClose();
 }
 
+*/
+
 int main(int argc, char **argv) {
+	KDBHandle handle=0;
 	int command=0;
 	int ret=0;
 
@@ -1574,15 +1578,23 @@ int main(int argc, char **argv) {
 	if (loadToolsLib())
 		fprintf(stderr,"kdb: XML importing and editing disabled\n");
 	
+	/* Parse the command line */
 	command=parseCommandLine(argc,argv);
 
+	/* Check if user only wants some help */
 	if (argHelp) helpCommand(command);
 
-	kdbOpen();
-	atexit(cleanup); /**Make sure kdbClose will be used*/
+	/* Make sure kdbClose() will be used */
+	/*	atexit(cleanup); */
+	
+	/* Open key database */
+	kdbOpen(&handle);
 
-	ret=doCommand(command);
+	/* Execute command with parameters from command line */
+	ret=doCommand(command,&handle);
 
+	kdbClose(&handle);
+	
 	exit(ret);
 }
 

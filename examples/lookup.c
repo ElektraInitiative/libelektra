@@ -1,20 +1,22 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
-#include <kdb.h>
+
 #include <stdio.h>
+#include <kdb.h>
 
 int main(int argc,char **argv) {
 	KeySet *ks;
 	Key *key=0;
+	KDBHandle handle;
 	uint32_t where,match;
 	regex_t regex;
 	
 	ks=ksNew();
 	
-	kdbOpen();
-	kdbGetChildKeys("system/sw/xorg",ks,KDB_O_RECURSIVE|KDB_O_SORT);
-	kdbClose();
+	kdbOpen(&handle);
+	kdbGetChildKeys(handle,"system/sw/xorg",ks,KDB_O_RECURSIVE|KDB_O_SORT);
+	kdbClose(&handle);
 	
 	ksRewind(ks);
 	key=ksLookupByName(ks,"system/sw/xorg/current/screens/screen0/displays/00/depth",

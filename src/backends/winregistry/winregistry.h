@@ -29,12 +29,12 @@ size_t getSID(char *username, char *sid, int size);
 #ifdef __cplusplus
 extern "C" {
 #endif
-int kdbOpen_winregistry();
-int kdbClose_winregistry();
-int kdbStatKey_winregistry(Key *key);
-int kdbGetKey_winregistry(Key *key);
-int kdbSetKey_winregistry(Key *key);
-int kdbRename_winregistry(Key *key, const char *newName);
+int kdbOpen_winregistry(KDBHandle *handle);
+int kdbClose_winregistry(KDBHandle *handle);
+int kdbStatKey_winregistry(KDBHandle handle, Key *key);
+int kdbGetKey_winregistry(KDBHandle handle, Key *key);
+int kdbSetKey_winregistry(KDBHandle handle, Key *key);
+int kdbRename_winregistry(KDBHandle handle, Key *key, const char *newName);
 int kdbRemoveKey_winregistry(const Key *key);
 ssize_t kdbGetKeyChildKeys_winregistry(const Key *parentKey, KeySet *returned, unsigned long options);
 

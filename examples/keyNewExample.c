@@ -5,16 +5,16 @@
 
 int main() {
 	KeySet *ks=ksNew();
+	KDBHandle handle;
 	
-	
-	kdbOpen();
+	kdbOpen(&handle);
 	
 	ksAppend(ks,keyNew("user/sw",KEY_SWITCH_END));  /* a simple key */
 	
 	ksAppend(ks,keyNew(0));     /* an empty key */
 	
 	ksAppend(ks,keyNew("system/sw",
-		KEY_SWITCH_NEEDSYNC,         /* a key we'll retrieve from storage */
+		KEY_SWITCH_NEEDSYNC, handle,        /* a key we'll retrieve from storage */
 		KEY_SWITCH_END));
 		
 	ksAppend(ks,keyNew("user/tmp/ex1",
@@ -46,11 +46,11 @@ int main() {
 		KEY_SWITCH_END));                    /* end of args */
 	
 	ksAppend(ks,keyNew("user/env/alias/ls",  /* a key we know we have */
-		KEY_SWITCH_NEEDSYNC,                 /* retrieve from storage */
-		KEY_SWITCH_END));                                 /* do nothing more */
+		KEY_SWITCH_NEEDSYNC, handle,         /* retrieve from storage */
+		KEY_SWITCH_END));                    /* do nothing more */
 	
 	ksAppend(ks,keyNew("user/env/alias/ls",  /* same key, to compare in output */
-		KEY_SWITCH_NEEDSYNC,                 /* retrieve from storage */
+		KEY_SWITCH_NEEDSYNC, handle,         /* retrieve from storage */
 		KEY_SWITCH_DOMAIN,"root",            /* set new owner (not uid) as root */
 		KEY_SWITCH_COMMENT,"new comment",    /* set new comment */
 		KEY_SWITCH_END));                    /* end of args */
@@ -59,7 +59,7 @@ int main() {
 	
 	ksDel(ks);
 	
-	return kdbClose();
+	return kdbClose(&handle);
 	
 }
 

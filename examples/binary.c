@@ -1,6 +1,7 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+
 #include <kdb.h>
 #include <stdio.h>
 
@@ -17,17 +18,18 @@
 int main(void) {
 	int i=25;
 	Key *key=keyNew("user/tmp/bin",KEY_SWITCH_END);
+	KDBHandle handle;
 	
-	kdbOpen();
+	kdbOpen(&handle);
 	
 	keySetBinary(key,&i,sizeof(i));
-	kdbSetKey(key);
+	kdbSetKey(handle,key);
 	
 	printf("Size of the value in bytes: %d\n",sizeof(i));
 	
 	keyDel(key);
 	
-	kdbClose();
+	kdbClose(&handle);
 	
 	return 0;
 }

@@ -23,6 +23,8 @@ $Id$
 #ifndef KDBBACKEND_H
 #define KDBBACKEND_H
 
+typedef struct _KDBBackend *    KDBHandle;
+
 #include <kdb.h>
 #include <kdbprivate.h>
 
@@ -65,12 +67,16 @@ KDBBackend *kdbBackendExport(const char *backendName, ...);
 typedef KDBBackend *(*KDBBackendFactory)(void);
 
 /* Let the backend be aware of default implementations we provide */
-int kdbSetKeys_default(KeySet *ks);
-uint32_t kdbMonitorKeys_default(KeySet *interests, uint32_t diffMask,
-		unsigned long iterations, unsigned sleep);
-uint32_t kdbMonitorKey_default(Key *interest, uint32_t diffMask,
-		unsigned long iterations, unsigned sleep);
+int kdbSetKeys_default(KDBHandle handle, KeySet *ks);
+uint32_t kdbMonitorKeys_default(KDBHandle handle, KeySet *interests,
+		uint32_t diffMask, unsigned long iterations, unsigned sleep);
+uint32_t kdbMonitorKey_default(KDBHandle handle, Key *interest,
+		uint32_t diffMask, unsigned long iterations, unsigned sleep);
 
+
+/* Some handle manipulation methods */
+int kdbhSetBackendData(KDBHandle handle, void *data);
+void *kdbhGetBackendData(KDBHandle handle);
 
 #ifdef __cplusplus
 }

@@ -37,13 +37,11 @@
  *
  ***************************************************************************/
 
-#include <kdb.h>
-#include <kdbbackend.h>
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
+#include <kdbbackend.h>
 
 #define BACKENDNAME "ini"
 
