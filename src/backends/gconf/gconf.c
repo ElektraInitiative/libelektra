@@ -20,13 +20,11 @@
 /* Subversion stuff
 
 $Id$
-$LastChangedBy: aviram $
 
 */
 
 
 
-#include <kdb.h>
 #include <kdbbackend.h>
 #include <stdlib.h>
 #include <string.h>
