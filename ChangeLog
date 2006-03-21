@@ -1,13 +1,15 @@
-* Web Mar 20 2006 Yannick Lecaillez <yl@itioweb.com> 0.6
+* Web Mar 20 2006 Yannick and Avi <yl@itioweb.com> 0.6
+- Handlerized all kdb*() methods. This is a radical API change thowards a thread-safe API.
+- Changed all backends to work with this change
+- Included kdbh*() methods for better backend manipulation, thowards the possibility of having remote backends
+- Included kdb*Error() methods as suggested by Markus
+- Added KDB_O_LOOP option to ksLookupByName & ksLookupRE
+- Fixed bug in keySetName which caused faulty write when key name have trailing '/'
 - Fixed bug in configure.ac to allow installation into lib64
 - Fixed bug in keySetName caused segfault on x86_64
 - Updated Mandriva spec file for allow x86_64 RPMs build
 - Updated old Xorg & SysVinit patches for current API
 - Removed installation of libloader (its a convenient lib)
-- Added KDB_O_LOOP option to ksLookupByName & ksLookupRE
-- Fixed bug in keySetName which caused faulty write when key name have trailing '/'
-- Handlerized all kdb*() methods. This is a radical API change thowards a thread-safe API.
-- Changed all backends to work with this change
 
 * Sun Mar 03 2006 Avi Alkalay <avi@unix.sh> 0.5.9
 - Added the ksGetCommonParentName() method to help in XML exporting
