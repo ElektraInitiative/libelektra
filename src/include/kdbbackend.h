@@ -77,6 +77,10 @@ uint32_t kdbMonitorKey_default(KDBHandle handle, Key *interest,
 /* Some handle manipulation methods */
 int kdbhSetBackendData(KDBHandle handle, void *data);
 void *kdbhGetBackendData(KDBHandle handle);
+uid_t kdbhGetUID(KDBHandle handle);
+gid_t kdbhGetGID(KDBHandle handle);
+mode_t kdbhGetUMask(KDBHandle handle);
+char *kdbhGetUserName(KDBHandle handle);
 
 #ifdef __cplusplus
 }

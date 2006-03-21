@@ -690,8 +690,8 @@ int kdbRemoveKey_bdb(KDBHandle handle, const Key *key) {
 	DBTree *dbctx;
 	DBT dbkey,data;
 	int ret;
-	uid_t user=getuid();
-	gid_t group=getgid();
+	uid_t user=kdbhGetUID(handle);
+	gid_t group=kdbhGetGID(handle);
 	int canWrite=0;
 	Key *cast=0;
 	
@@ -752,8 +752,8 @@ int kdbGetKeyWithOptions(KDBHandle handle, Key *key, uint32_t options) {
 	DBTree *dbctx;
 	DBT dbkey,data;
 	int ret;
-	uid_t user=getuid();
-	gid_t group=getgid();
+	uid_t user=kdbhGetUID(handle);
+	gid_t group=kdbhGetGID(handle);
 	int canRead=0;
 	int isLink=0;
 	Key buffer;
@@ -855,8 +855,8 @@ int kdbSetKey_bdb(KDBHandle handle, Key *key) {
 	DBTree *dbctx;
 	DBT dbkey,data;
 	int ret;
-	uid_t user=getuid();
-	gid_t group=getgid();
+	uid_t user=kdbhGetUID(handle);
+	gid_t group=kdbhGetGID(handle);
 	int canWrite=0;
 
 	dbctx=getDBForKey(kdbhGetBackendData(handle),key);
@@ -923,8 +923,13 @@ int kdbSetKey_bdb(KDBHandle handle, Key *key) {
 			if (ret == DB_NOTFOUND) {
 				/* No, we don't have a parent. Create dirs recursivelly */
 				
-				/* umask etc will be the defaults for current user */
 				parent=keyNew(KEY_SWITCH_END);
+				
+				/* explicitly set these attributes from the handle cause we
+				 * could be running under a daemon context */
+				keySetUID(parent,user);
+				keySetGID(parent,group);
+				keySetAccess(parent,kdbhGetUMask(handle));
 				
 				keySetType(parent,KEY_TYPE_DIR);
 				
@@ -1047,8 +1052,8 @@ ssize_t kdbGetKeyChildKeys_bdb(KDBHandle handle, const Key *parentKey,
 	DBT parent,keyName,keyData;
 	Key *currentParent, *retrievedKey;
 	KeySet folders;
-	uid_t user=getuid();
-	gid_t group=getgid();
+	uid_t user=kdbhGetUID(handle);
+	gid_t group=kdbhGetGID(handle);
 	mode_t canRead=0; /* wether we have permissions to go ahead */
 	int ret=0;
 	

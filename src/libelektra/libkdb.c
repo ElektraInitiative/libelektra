@@ -82,22 +82,27 @@ $Id$
 
 #include <stdlib.h>
 #include <stdarg.h>
+#include <ctype.h>
+#include <string.h>
+#include <errno.h>
+#include <stdio.h>
+#include <pthread.h>
+
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#include <errno.h>
-#include <stdio.h>
+
 #ifdef HAVE_ICONV
 #include <iconv.h>
 #endif
+
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
 #endif
+
 #ifdef HAVE_LANGINFO_H
 #include <langinfo.h>
 #endif
-#include <ctype.h>
-#include <string.h>
 
 
 /* kdbbackend.h will include kdb.h and kdbprivate.h */
@@ -109,19 +114,24 @@ $Id$
 #define usleep(x) Sleep(x)
 #endif
 
-/*extern int errno;*/
 
 
 
 struct _KDBBackend {
-	/* dynamic libloader data */
-	kdbLibHandle dlHandle;
+	/* environment for which this backend was opened */
+	pid_t pid;
+	pthread_t tid;
+	uid_t uid;
+	gid_t gid;
+	mode_t umask;
+	char *userName;
+	
+	/* backend specific data to carry along on kdb*() calls */
+	void *backendData;
 	
 	/* backend name */
 	char *name;
 	
-	/* backend specific data to carry along kdb*() calls */
-	void *backendData;
 	
 	/* These are the interfaces that must be implemented */
 	
@@ -141,6 +151,9 @@ struct _KDBBackend {
 	kdbSetKeysPtr kdbSetKeys;
 	kdbMonitorKeyPtr kdbMonitorKey;
 	kdbMonitorKeysPtr kdbMonitorKeys;
+	
+	/* dynamic libloader data */
+	kdbLibHandle dlHandle;
 };
 
 
@@ -312,8 +325,14 @@ int kdbOpenBackend(KDBHandle *handle, char *backendName) {
 		return -1; /* error */
 	}
 
-	/* save the handle for future use */
+	/* save the libloader handle for future use */
 	(*handle)->dlHandle=dlhandle;
+	
+	/* Give some context to the handle in the case backend is remote */
+	(*handle)->pid=getpid();
+	(*handle)->uid=getuid();
+	(*handle)->gid=getgid();
+	(*handle)->umask=umask(0); umask((*handle)->umask);
 	
 	/* let the backend initialize itself */
 	if ((*handle)->kdbOpen) rc=(*handle)->kdbOpen(handle);
@@ -1680,8 +1699,55 @@ void *kdbhGetBackendData(KDBHandle handle) {
 	return handle->backendData;
 }
 
+/**
+ * @return the proccess ID of the client application using the @p handle
+ * @ingroup backend
+ */
+pid_t kdbhGetPID(KDBHandle handle) {
+	return handle->pid;
+}
+
+/**
+ * @return the thread ID of the client application using the @p handle
+ * @ingroup backend
+ */
+pthread_t kdbhGetTID(KDBHandle handle) {
+	return handle->tid;
+}
 
 
+/**
+ * @return the user ID of the client application using the @p handle
+ * @ingroup backend
+ */
+uid_t kdbhGetUID(KDBHandle handle) {
+	return handle->uid;
+}
+
+/**
+ * @return the group ID of the client application using the @p handle
+ * @ingroup backend
+ */
+gid_t kdbhGetGID(KDBHandle handle) {
+	return handle->gid;
+}
+
+/**
+ * @return the default umask() of the client application using the @p handle
+ * @ingroup backend
+ */
+mode_t kdbhGetUMask(KDBHandle handle) {
+	return handle->umask;
+}
+
+/**
+ * @return the user name of the client application using the @p handle.
+ *         Remember that on some systems many different user names can have same UID.
+ * @ingroup backend
+ */
+char *kdbhGetUserName(KDBHandle handle) {
+	return handle->userName;
+}
 
 /**
  * Convenience method to provide a human readable text for what kdbGetInfo()
