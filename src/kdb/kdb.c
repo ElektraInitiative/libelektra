@@ -506,7 +506,7 @@ int commandRemove(KDBHandle handle) {
 		char error[300];
 		
 		sprintf(error,"kdb rm: \'%s\'",argKeyName);
-		perror(error);
+		kdbPrintError(error);
 		return -1;
 	}
 	return 0;
@@ -550,7 +550,7 @@ int commandMove(KDBHandle handle) {
 		char error[100];
 		
 		sprintf(error,"kdb mv: \'%s\'", argKeyName);
-		perror(error);
+		kdbPrintError(error);
 		
 		keyDel(key);
 		return 1;
@@ -611,7 +611,7 @@ int commandSet(KDBHandle handle) {
 	} else if (errno!=KDB_RET_NOTFOUND) {
 		/* Handle errors different from NOTFOUND */
 		sprintf(error,"kdb set: %s",argKeyName);
-		perror(error);
+		kdbPrintError(error);
 	}
 
 	/* Set or overwrite everything else... */
@@ -632,7 +632,7 @@ int commandSet(KDBHandle handle) {
 		
 		if (!f) {
 			sprintf(error,"kdb set: \'%s\'",argFile);
-			perror(error);
+			kdbPrintError(error);
  			return -1;
 		}
 		while (! end) {
@@ -677,7 +677,7 @@ int commandSet(KDBHandle handle) {
 	ret=kdbSetKey(handle,key);
 	if (ret) {
 		sprintf(error,"kdb set: \'%s\'",argKeyName);
-		perror(error);
+		kdbPrintError(error);
 	}
 	
 	keyDel(key);
@@ -717,7 +717,7 @@ int commandLink(KDBHandle handle) {
 	}
 
 	if ((rc=kdbLink(handle,argKeyName,argData))) {
-		perror("kdb ln");
+		kdbPrintError("kdb ln");
 	}
 
 	return rc;
@@ -826,7 +826,7 @@ int commandList(KDBHandle handle) {
 					ksDel(ks);
 					
 					sprintf(error,"kdb ls: %s",argKeyName);
-					perror(error);
+					kdbPrintError(error);
 					return ret;
 				}
 				
@@ -836,7 +836,7 @@ int commandList(KDBHandle handle) {
 				ksDel(ks);
 
 				sprintf(error,"kdb ls: %s",argKeyName);
-				perror(error);
+				kdbPrintError(error);
 				return ret;
 			}
 		}
@@ -909,7 +909,7 @@ int commandGet(KDBHandle handle) {
 
 		keyDel(key);
 		sprintf(error,"kdb get: %s",argKeyName);
-		perror(error);
+		kdbPrintError(error);
 		return ret;
 	}
 	size=keyGetValueSize(key);
@@ -1326,7 +1326,7 @@ int commandEdit(KDBHandle handle) {
 			problem=ksCurrent(ks);
 			if (problem) keyGetFullName(problem,keyname,sizeof(keyname));
 			sprintf(error,"kdb edit: while setting/updating %s", keyname);
-			perror(error);
+			kdbPrintError(error);
 			
 			/* And try to set keys again starting from the next key,
 			* unless we reached the end of the KeySet */
@@ -1346,7 +1346,7 @@ int commandEdit(KDBHandle handle) {
 				char error[850];
 				
 				sprintf(error,"kdb edit: while removing %s",keyName);
-				perror(error);
+				kdbPrintError(error);
 			}
 		}
 	
@@ -1418,7 +1418,7 @@ int commandImport(KDBHandle handle) {
 		problem=ksCurrent(ks);
 		if (problem) keyGetFullName(problem,keyname,sizeof(keyname));
 		sprintf(error,"kdb import: while importing %s", keyname);
-		perror(error);
+		kdbPrintError(error);
 		
 		/* And try to set keys again starting from the next key,
 		 *  unless we reached the end of KeySet */

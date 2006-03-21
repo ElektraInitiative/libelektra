@@ -413,6 +413,18 @@ void kdbFreeInfo(KDBInfo *info);
 int kdbInfoToString(KDBInfo *info,char *string,size_t maxSize);
 
 
+/**************************************
+
+Error manipulation methods
+
+***************************************/
+
+
+char *kdbStrError(int errnum);
+int kdbPrintError(char * msg);
+
+
+
 
 /**************************************
 
@@ -573,9 +585,6 @@ Key *ksCurrent(const KeySet *ks);
 Key *ksHead(KeySet *ks);
 Key *ksTail(KeySet *ks);
 
-
-/* Key *ksLookupByName(KeySet *ks,char *keyName); */
-/* Key *ksLookupByRegex(KeySet *ks,regex_t *regex); */
 
 
 
