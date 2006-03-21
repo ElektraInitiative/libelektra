@@ -421,7 +421,7 @@ Error manipulation methods
 
 
 char *kdbStrError(int errnum);
-int kdbPrintError(char * msg);
+int kdbPrintError(const char * msg);
 
 
 

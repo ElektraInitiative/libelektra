@@ -67,7 +67,7 @@ char *kdbStrError(int errnum) {
  * @see kdbStrError()
  * @ingroup kdb
  */
-int kdbPrintError(char * msg) {
+int kdbPrintError(const char * msg) {
 	fprintf (stderr, "%s: %s\n", msg, kdbStrError(errno));
 	return 0;
 }
