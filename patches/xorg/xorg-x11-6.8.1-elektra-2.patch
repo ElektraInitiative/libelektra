@@ -110,7 +110,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/common/xf86Config.c xc/programs/X
  	filename = xf86openConfigFile(searchpath, xf86ConfigFile, PROJECTROOT);
  	if (filename) {
  	    xf86MsgVerb(from, 0, "Using config file: \"%s\"\n", filename);
-@@ -2611,7 +2665,52 @@
+@@ -2611,7 +2665,54 @@
  	    xf86ErrorFVerb(0, "\n");
  	    return CONFIG_NOFILE;
  	}
@@ -119,6 +119,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/common/xf86Config.c xc/programs/X
 +
 +	{
 +		if ( !ignoreElektra ) {
++			KDBHandle	handle;
 +	 		KeySet *ks;
 + 			char *rootkey="system/sw/xorg/current";
 +			int ret;
@@ -141,9 +142,9 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/common/xf86Config.c xc/programs/X
 +					"Setting key/value pairs under: \"%s\"\n", rootkey);
 +		
 +			/* Really commit to the Key database */
-+			kdbOpen();
++			kdbOpen(&handle);
 +			ksRewind(ks);
-+			ret=kdbSetKeys(ks);
++			ret=kdbSetKeys(handle, ks);
 +			if (ret != 0) {
 +				Key *problem;
 +	 			char keyname[300]="";
@@ -153,6 +154,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/common/xf86Config.c xc/programs/X
 +				xf86ErrorFVerb(0, "Error while setting key \"%s\"\n", keyname);
 +			}
 +			ksClose(ks);
++			kdbClose(&handle);
 +		}
 +	}
 +   	} /* if (xf86configptr) */
@@ -177,7 +179,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/common/xf86Config.c xc/programs/X
 diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xserver/hw/xfree86/parser/elektra.c
 --- xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c	1970-01-01 01:00:00.000000000 +0100
 +++ xc/programs/Xserver/hw/xfree86/parser/elektra.c	2006-03-19 09:40:51.000000000 +0100
-@@ -0,0 +1,3631 @@
+@@ -0,0 +1,3632 @@
 +/* $Id$ */
 +
 +
@@ -261,7 +263,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 + *
 + */
 +XF86ConfFilesPtr
-+xf86getFiles (const char *rootKey)
++xf86getFiles (KDBHandle handle, const char *rootKey)
 +{
 +	KeySet	*settings;
 +	Key *key;
@@ -277,7 +279,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +
 +	snprintf(buffer, size, "%s/Files", rootKey);
 +	settings = ksNew();
-+	kdbGetChildKeys(buffer, settings, 0); 
++	kdbGetChildKeys(handle, buffer, settings, 0); 
 +		
 +	/* Get the FontPath */
 +	snprintf(buffer, size, "%s/Files/FontPath", rootKey);
@@ -546,7 +548,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 + *
 + */
 +XF86ConfFlagsPtr
-+xf86getFlags (const char *rootKey)
++xf86getFlags (KDBHandle handle, const char *rootKey)
 +{
 +	KeySet *optionKeys;
 +	char *serverFlagsRoot;
@@ -559,7 +561,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +	snprintf(serverFlagsRoot, bsize, "%s/ServerFlags", rootKey);	
 +
 +	optionKeys = ksNew();
-+	kdbGetChildKeys(serverFlagsRoot,optionKeys,KDB_O_SORT);
++	kdbGetChildKeys(handle, serverFlagsRoot,optionKeys,KDB_O_SORT);
 +	if (ksGetSize(optionKeys))
 +		options=ksToOptions(optionKeys);
 +	ksDel(optionKeys);
@@ -628,7 +630,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 + *
 + */
 +XF86ConfInputPtr
-+xf86getInput (const char *rootKey)
++xf86getInput (KDBHandle handle, const char *rootKey)
 +{
 +	KeySet *inputDevs;
 +	Key *current;
@@ -647,7 +649,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +	 * There should be only folders right under InputDevices/.
 +	 * So we are interested only in the skeleton.
 +	 */
-+	kdbGetChildKeys(localRootKey, inputDevs,
++	kdbGetChildKeys(handle, localRootKey, inputDevs,
 +		KDB_O_DIR | KDB_O_NOVALUE | KDB_O_SORT);
 +
 +	xf86conffree(localRootKey);
@@ -672,7 +674,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +
 +		/* Get the driver */
 +		driver = keyNew(KEY_SWITCH_END);
-+		ret=kdbGetKeyByParentKey(current,"Driver",driver);
++		ret=kdbGetKeyByParentKey(handle, current,"Driver",driver);
 +		if (ret == 0) {
 +			dataSize=keyGetDataSize(driver);
 +			inputdev->inp_driver=xf86confmalloc(dataSize);
@@ -692,7 +694,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +		strncat(options,"/Options", dataSize-1);
 +
 +		optionKeys = ksNew();
-+		kdbGetChildKeys(options,optionKeys,KDB_O_SORT);
++		kdbGetChildKeys(handle, options,optionKeys,KDB_O_SORT);
 +		if (ksGetSize(optionKeys))
 +			inputdev->inp_option_lst=ksToOptions(optionKeys);
 +		xf86conffree (options);
@@ -769,7 +771,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 + */
 +
 +XF86ConfDevicePtr
-+xf86getDevice (const char *rootKey)
++xf86getDevice (KDBHandle handle, const char *rootKey)
 +{
 +	KeySet *devices;
 +	Key *current;
@@ -787,7 +789,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +	 * There should be only folders right under Devices/.
 +	 * So we are interested only in the skeleton.
 +	 */
-+	kdbGetChildKeys(localRootKey, devices,
++	kdbGetChildKeys(handle, localRootKey, devices,
 +		KDB_O_DIR | KDB_O_NOVALUE | KDB_O_SORT);
 +	xf86conffree(localRootKey);
 +
@@ -820,7 +822,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +		 * Fetch settings for this Device
 +		 */
 +		deviceSettings=ksNew();
-+		kdbGetKeyChildKeys(current, deviceSettings, 0);
++		kdbGetKeyChildKeys(handle, current, deviceSettings, 0);
 +
 +		/* Get Vendor */
 +		snprintf(buffer, bufSize, "%s/VendorName", keyStealName(current));
@@ -986,7 +988,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +		snprintf(buffer, bufSize, "%s/Options", keyStealName(current));
 +
 +		optionKeys = ksNew();
-+		kdbGetChildKeys(buffer,optionKeys,KDB_O_SORT);
++		kdbGetChildKeys(handle, buffer,optionKeys,KDB_O_SORT);
 +		if (ksGetSize(optionKeys))
 +			device->dev_option_lst=ksToOptions(optionKeys);
 +		ksDel(optionKeys);
@@ -1246,7 +1248,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 + *
 + */
 +XF86ConfModeLinePtr
-+ksToModes(KeySet *ks)
++ksToModes(KDBHandle handle, KeySet *ks)
 +{
 +	Key *key;
 +	char *buffer;
@@ -1276,7 +1278,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +		 * Fetch ModeLine settings
 +		 */
 +		settings = ksNew();
-+		kdbGetKeyChildKeys(key, settings, 0);
++		kdbGetKeyChildKeys(handle, key, settings, 0);
 +			
 +		/* Get DotClock */
 +		snprintf(buffer, size, "%s/DotClock", keyStealName(key));
@@ -1444,7 +1446,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 + *
 + */
 +XF86ConfModesPtr
-+xf86getModes (const char *rootKey)
++xf86getModes (KDBHandle handle, const char *rootKey)
 +{
 +	XF86ConfModesPtr modes=NULL; /* we'll return this */
 +	KeySet *ksModes;
@@ -1457,7 +1459,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +	ksModes = ksNew();
 +	snprintf(modesRoot, bufSize, "%s/Modes", rootKey);
 +
-+	kdbGetChildKeys(modesRoot,ksModes,
++	kdbGetChildKeys(handle, modesRoot,ksModes,
 +		KDB_O_DIR | KDB_O_NOVALUE | KDB_O_SORT);
 +
 +	while ((kMode=ksNext(ksModes))) {
@@ -1476,7 +1478,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +
 +		/* Get the real modelines below it */
 +		keyGetName(kMode,modesRoot, bufSize);
-+		kdbGetChildKeys(modesRoot,realModes,
++		kdbGetChildKeys(handle, modesRoot,realModes,
 +			KDB_O_DIR | KDB_O_NOVALUE | KDB_O_SORT);
 +
 +		if (ksGetSize(realModes)) {
@@ -1743,7 +1745,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 + *
 + */
 +XF86ConfMonitorPtr
-+xf86getMonitor (const char *rootKey)
++xf86getMonitor (KDBHandle handle, const char *rootKey)
 +{
 +	KeySet *monitors;
 +	Key *current;
@@ -1764,7 +1766,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +	 * There should be only folders right under Monitors/.
 +	 * So we are interested only in the skeleton.
 +	 */
-+	kdbGetChildKeys(localRootKey, monitors,
++	kdbGetChildKeys(handle, localRootKey, monitors,
 +		KDB_O_DIR | KDB_O_NOVALUE | KDB_O_SORT);
 +	xf86conffree(localRootKey);
 +
@@ -1789,7 +1791,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +		if (monitor->mon_identifier)
 +			keyGetBaseName(current,monitor->mon_identifier,identSize);
 +		settings = ksNew();
-+		kdbGetChildKeys(keyStealName(current), settings, 0);
++		kdbGetChildKeys(handle, keyStealName(current), settings, 0);
 +		
 +		/* Get Vendor */
 +		snprintf(buffer, size, "%s/VendorName", keyStealName(current));
@@ -1994,7 +1996,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +		snprintf(buffer, size, "%s/Modes", keyStealName(current));
 +		
 +		ksInit(settings);
-+		kdbGetChildKeys(buffer,settings,
++		kdbGetChildKeys(handle, buffer,settings,
 +			KDB_O_DIR | KDB_O_NOVALUE | KDB_O_SORT);
 +		if (ksGetSize(settings))
 +			monitor->mon_modeline_lst=ksToModes(settings);
@@ -2004,7 +2006,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +		snprintf(buffer, size, "%s/Options", keyStealName(current));
 +
 +		ksInit(settings);
-+		kdbGetChildKeys(buffer,settings,KDB_O_SORT);
++		kdbGetChildKeys(handle, buffer,settings,KDB_O_SORT);
 +		if (ksGetSize(settings))
 +			monitor->mon_option_lst=ksToOptions(settings);
 +
@@ -2214,7 +2216,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 + *
 + */
 +XF86ConfDRIPtr
-+xf86getDRI (const char *rootKey)
++xf86getDRI (KDBHandle handle, const char *rootKey)
 +{
 +	KeySet *settings;
 +	Key *key;
@@ -2234,7 +2236,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +	snprintf(parent, bufSize, "%s/DRI", rootKey);
 +
 +	settings = ksNew();
-+	kdbGetChildKeys(parent, settings, 0);
++	kdbGetChildKeys(handle, parent, settings, 0);
 +
 +	snprintf(buffer, bufSize, "%s/Group", parent);
 +	if ( (key = ksLookupByName(settings, buffer, KDB_O_LOOP)) ) {
@@ -2411,7 +2413,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 + *
 + */
 +XF86ConfDisplayPtr
-+ksToDisplays(KeySet *ks)
++ksToDisplays(KDBHandle handle, KeySet *ks)
 +{
 +	Key *key;
 +	XF86ConfDisplayPtr ptr;
@@ -2442,7 +2444,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +		buffer = xf86confmalloc((size = 100));
 +				
 +		settings = ksNew();
-+		kdbGetKeyChildKeys(key, settings, 0);
++		kdbGetKeyChildKeys(handle, key, settings, 0);
 +		
 +		/* Get Viewport.x */
 +		snprintf(buffer, size, "%s/Viewport.x", keyStealName(key));
@@ -2578,7 +2580,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +		strncat(options,"/Options", dataSize-1);
 +			
 +		optionKeys = ksNew();
-+		kdbGetChildKeys(options,optionKeys,KDB_O_SORT);
++		kdbGetChildKeys(handle, options,optionKeys,KDB_O_SORT);
 +		if (ksGetSize(optionKeys))
 +			ptr->disp_option_lst=ksToOptions(optionKeys);
 +		xf86conffree (options);
@@ -2608,7 +2610,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 + *
 + */
 +XF86ConfScreenPtr
-+xf86getScreen (const char *rootKey)
++xf86getScreen (KDBHandle handle, const char *rootKey)
 +{
 +	XF86ConfScreenPtr ptr=NULL; /* we'll return this */
 +	KeySet *screens;
@@ -2622,7 +2624,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +	strncpy(screensRoot,rootKey, size-1);
 +	strncat(screensRoot,"/Screens", size-1);
 +
-+	kdbGetChildKeys(screensRoot,screens,
++	kdbGetChildKeys(handle, screensRoot,screens,
 +		KDB_O_DIR | KDB_O_NOVALUE | KDB_O_SORT);
 +	xf86conffree(screensRoot);
 +
@@ -2647,7 +2649,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +		keyGetBaseName(key,screen->scrn_identifier,dataSize);
 +		
 +		settings = ksNew();
-+		kdbGetKeyChildKeys(key, settings, 0);
++		kdbGetKeyChildKeys(handle, key, settings, 0);
 +				
 +		/* Get Driver (obsolete) */
 +		snprintf(buffer, size, "%s/Driver", keyStealName(key));
@@ -2734,7 +2736,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +		strncat(options,"/Displays", dataSize-1);
 +		
 +		optionKeys = ksNew();
-+		kdbGetChildKeys(options,optionKeys,KDB_O_SORT | KDB_O_DIR);
++		kdbGetChildKeys(handle, options,optionKeys,KDB_O_SORT | KDB_O_DIR);
 +		if (ksGetSize(optionKeys))
 +			screen->scrn_display_lst=ksToDisplays(optionKeys);
 +		xf86conffree (options);
@@ -2747,7 +2749,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +		strncat(options,"/Options", dataSize-1);
 +		
 +		ksInit(optionKeys);
-+		kdbGetChildKeys(options,optionKeys,KDB_O_SORT);
++		kdbGetChildKeys(handle, options,optionKeys,KDB_O_SORT);
 +		if (ksGetSize(optionKeys))
 +			screen->scrn_option_lst=ksToOptions(optionKeys);
 +		xf86conffree (options);
@@ -3080,7 +3082,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 + *
 + */
 +XF86ConfModulePtr
-+xf86getModules (const char *rootKey)
++xf86getModules (KDBHandle handle, const char *rootKey)
 +{
 +	KeySet *ksModules;
 +	Key *key;
@@ -3101,7 +3103,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +	/* Look for the Load modules */
 +        /* Look for the modules to be loaded and their options */
 +	ksModules = ksNew();
-+	kdbGetChildKeys(localRootKey,ksModules,KDB_O_NOVALUE | KDB_O_DIR);
++	kdbGetChildKeys(handle, localRootKey,ksModules,KDB_O_NOVALUE | KDB_O_DIR);
 +	
 + 	if (ksGetSize(ksModules)) {
 + 		ksRewind(ksModules);
@@ -3118,7 +3120,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			
 +			optionKeys = ksNew();
 + 			keyGetName(key,localRootKey,sizeof(localRootKey));
-+ 			kdbGetChildKeys(localRootKey,optionKeys,KDB_O_SORT);
++ 			kdbGetChildKeys(handle, localRootKey,optionKeys,KDB_O_SORT);
 + 			if (ksGetSize(optionKeys))
 + 				lptr->load_opt=ksToOptions(optionKeys);
 + 			ksDel(optionKeys);
@@ -3131,7 +3133,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +
 +	/* Look for the (undocumented) LoadDriver modules */
 +	loadDriver = keyNew(KEY_SWITCH_END);
-+	ret=kdbGetKeyByParent(localRootKey,"LoadDrivers",loadDriver);
++	ret=kdbGetKeyByParent(handle, localRootKey,"LoadDrivers",loadDriver);
 +	snprintf(buffer, size, "%s/LoadDivers", localRootKey);
 +	if ( ret == 0 ) {
 +		char *cursor, *cursorEnd;
@@ -3238,15 +3240,15 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +					keySetString(modPath, buffer);
 +				} else {
 +					/* ModulePath exist, add this module path 
-+					 * TODO: Since search inside ModulePath is recursive,
-+					 * we should not add the path if this one is contained
-+					 * in a more global path yet
++					 * We put this path at the begining
++					 * since a module with the same name could exist
++					 * in the standard path.
 +					 */
 +					char *oldPath, *newPath;
 +					
 +					oldPath = keyStealValue(modPath);
 +					newPath = xf86confmalloc(strlen(oldPath) + 1 + strlen(buffer) + 1);
-+					sprintf(newPath, "%s,%s", oldPath, buffer);
++					sprintf(newPath, "%s,%s", buffer, oldPath);
 +					keySetString(modPath, newPath);
 +					xf86conffree(newPath);
 +				}
@@ -3338,7 +3340,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 + *
 + */
 +XF86ConfLayoutPtr
-+xf86getLayout (const char *rootKey)
++xf86getLayout (KDBHandle handle, const char *rootKey)
 +{
 +	XF86ConfLayoutPtr lay=NULL; /* we'll return this */
 +	KeySet *layouts;
@@ -3355,7 +3357,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +	snprintf(buffer, bufSize, "%s/Layouts", rootKey);	 
 +
 +	layouts = ksNew();
-+	kdbGetChildKeys(buffer,layouts, KDB_O_DIR);
++	kdbGetChildKeys(handle, buffer,layouts, KDB_O_DIR);
 +	ksRewind(layouts);
 +	while ((layout=ksNext(layouts))) {
 +		parsePrologue (XF86ConfLayoutPtr, XF86ConfLayoutRec) 
@@ -3369,7 +3371,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +		snprintf(buffer, bufSize, "%s/Screens", keyStealName(layout)); 
 +		
 +		screens = ksNew();
-+		kdbGetChildKeys(buffer,screens, KDB_O_DIR);
++		kdbGetChildKeys(handle, buffer,screens, KDB_O_DIR);
 +		ksRewind(screens);
 +		while ((key=ksNext(screens))) { 
 +			XF86ConfAdjacencyPtr aptr;
@@ -3391,7 +3393,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			keyGetBaseName(key,aptr->adj_screen_str,size);
 +			
 +			screenParameters = ksNew();
-+			kdbGetKeyChildKeys(key, screenParameters, KDB_O_DIR);
++			kdbGetKeyChildKeys(handle, key, screenParameters, KDB_O_DIR);
 +			ksRewind(screenParameters); 
 +	
 +				
@@ -3484,7 +3486,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +		snprintf(buffer, bufSize, "%s/Inputs/", keyStealName(layout));
 +
 +		inputs = ksNew();
-+		kdbGetChildKeys(buffer,inputs,KDB_O_DIR);
++		kdbGetChildKeys(handle, buffer,inputs,KDB_O_DIR);
 +		ksRewind(inputs);
 +		
 +		while ((key=ksNext(inputs))) {
@@ -3506,7 +3508,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			strncat(dev,iptr->iref_inputdev_str, sizeof(dev)-1);
 +
 +			iopts = ksNew();
-+			kdbGetChildKeys(dev,iopts,KDB_O_SORT);
++			kdbGetChildKeys(handle, dev,iopts,KDB_O_SORT);
 +			if (ksGetSize(iopts))
 +				iptr->iref_option_lst=ksToOptions(iopts);
 +			ksDel(iopts); 
@@ -3520,7 +3522,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +		snprintf(buffer, bufSize, "%s/Options", keyStealName(layout));
 +
 +		options = ksNew();
-+		kdbGetChildKeys(buffer,options,KDB_O_SORT);
++		kdbGetChildKeys(handle, buffer,options,KDB_O_SORT);
 +		if (ksGetSize(options))
 +			ptr->lay_option_lst=ksToOptions(options);
 +		ksDel(options); 
@@ -3722,10 +3724,11 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +XF86ConfigPtr
 +xf86getConfigKeys (const char *rootKey)
 +{
++	KDBHandle handle;
 +	XF86ConfigPtr ptr = NULL;
 +	Key *kroot;
 +	
-+	kdbOpen();
++	kdbOpen(&handle);
 +
 +	if ((ptr = xf86confcalloc(1, sizeof(XF86ConfigRec))) == NULL)	
 +	{
@@ -3735,35 +3738,35 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +
 +	/* First check if root key is there to avoid tons of key fetching */
 +	kroot = keyNew(rootKey, KEY_SWITCH_END);
-+	if (kdbStatKey(kroot) == 0) {
++	if (kdbStatKey(handle, kroot) == 0) {
 +
 +		/* assemble sub-structures */
-+		ptr->conf_files = xf86getFiles (rootKey);
++		ptr->conf_files = xf86getFiles (handle, rootKey);
 +	
-+ 		ptr->conf_flags = xf86getFlags (rootKey);  
++ 		ptr->conf_flags = xf86getFlags (handle rootKey);  
 +	
 +		/* keyboard, mouse and generic input */
-+		ptr->conf_input_lst = xf86getInput (rootKey);
++		ptr->conf_input_lst = xf86getInput (handle, rootKey);
 +	
-+		ptr->conf_device_lst = xf86getDevice (rootKey);
++		ptr->conf_device_lst = xf86getDevice (handle, rootKey);
 +	
-+		ptr->conf_monitor_lst = xf86getMonitor (rootKey);
++		ptr->conf_monitor_lst = xf86getMonitor (handle, rootKey);
 +	
-+		ptr->conf_modes_lst = xf86getModes (rootKey);
++		ptr->conf_modes_lst = xf86getModes (handle, rootKey);
 +	
-+		ptr->conf_screen_lst = xf86getScreen (rootKey);
++		ptr->conf_screen_lst = xf86getScreen (handle, rootKey);
 +	
-+		ptr->conf_modules = xf86getModules (rootKey);  
++		ptr->conf_modules = xf86getModules (handle, rootKey);  
 +	
-+		ptr->conf_layout_lst = xf86getLayout (rootKey); 
++		ptr->conf_layout_lst = xf86getLayout (handle, rootKey); 
 +		/*ptr->conf_vendor_lst = xf86getVendor (rootKey);*/
 +	
-+		ptr->conf_dri = xf86getDRI (rootKey); 
++		ptr->conf_dri = xf86getDRI (handle, rootKey); 
 +		/*ptr->conf_videoadaptor_lst = xf86getVideo (rootKey);*/
 +	}
 +	
 +	keyDel(kroot);
-+	kdbClose();
++	kdbClose(&handle);
 +
 +	/* validate and return */
 +	if (xf86validateConfig (ptr))
@@ -4135,7 +4138,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/README.Elektra xc/programs
 diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/xelektrify.c xc/programs/Xserver/hw/xfree86/parser/xelektrify.c
 --- xc.orig/programs/Xserver/hw/xfree86/parser/xelektrify.c	1970-01-01 01:00:00.000000000 +0100
 +++ xc/programs/Xserver/hw/xfree86/parser/xelektrify.c	2006-03-11 16:09:00.000000000 +0100
-@@ -0,0 +1,307 @@
+@@ -0,0 +1,308 @@
 +/* $XFree86: xc/programs/Xserver/hw/xfree86/parser/cpconfig.c,v 1.6 2000/10/20 14:59:03 alanh Exp $ */
 +/* 
 + * 
@@ -4262,6 +4265,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/xelektrify.c xc/programs/X
 +
 +int
 +convert(int direction,char *xc,char *rk) {
++	KDBHandle handle;
 +	const char *filename;
 +	XF86ConfigPtr conf;
 +	KeySet *ks=0;
@@ -4299,10 +4303,10 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/xelektrify.c xc/programs/X
 +			int ret; 
 +			
 +			/* Really commit to the Key database */
-+			kdbOpen();
++			kdbOpen(&handle);
 +			fprintf(stderr,"Writing X.org configuration keys to %s\n",rootkey);
 +			ksRewind(ks);
-+			ret=kdbSetKeys(ks);
++			ret=kdbSetKeys(handle, ks);
 +			if (ret != 0) {
 +				Key *problem;
 +				char error[500];
@@ -4313,7 +4317,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/xelektrify.c xc/programs/X
 +				sprintf(error,"Error when commiting %s",keyname);
 +				perror(error);
 +			}
-+			kdbClose();
++			kdbClose(&handle);
 +			ksClose(ks);
 +		}
 +		
