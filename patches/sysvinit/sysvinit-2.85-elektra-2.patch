@@ -79,7 +79,7 @@ diff -Naur sysvinit-2.86.orig/README.sysvinit.Elektra.txt sysvinit-2.86/README.s
 +   After compiling you can check it and see these results:
 +
 +      bash$ ldd ./init
-+        libkdb.so => /lib/libkdb.so (0xb75d8000)
++        libelektra.so => /lib/libelektra.so (0xb75d8000)
 +        libc.so.6 => /lib/tls/libc.so.6 (0xb749f000)
 +        /lib/ld-linux.so.2 => /lib/ld-linux.so.2 (0xb75eb000)
 +
@@ -136,7 +136,7 @@ diff -Naur sysvinit-2.86.orig/src/init.c sysvinit-2.86/src/init.c
  #ifdef __i386__
  #  if (__GLIBC__ >= 2)
       /* GNU libc 2.x */
-@@ -1135,6 +1139,46 @@
+@@ -1135,6 +1139,47 @@
    INITDBG(L_VB, "Reading inittab");
  #endif
  
@@ -144,6 +144,7 @@ diff -Naur sysvinit-2.86.orig/src/init.c sysvinit-2.86/src/init.c
 +  int useinittab=0;
 +  char sequence[500]; /* a big enough buffer */
 +  char *seqcursor=sequence;
++  KDBHandle handle;
 +
 +  /* we really need it all zeroed to make get_part() work correctly */
 +  memset(sequence,0,sizeof(sequence));
@@ -155,7 +156,7 @@ diff -Naur sysvinit-2.86.orig/src/init.c sysvinit-2.86/src/init.c
 +  /*
 +   *   Start affairs with Key database
 +   */
-+  kdbOpen();
++  kdbOpen(&handle);
 +
 +  /*
 +   * Since the key database is not sequential
@@ -163,7 +164,7 @@ diff -Naur sysvinit-2.86.orig/src/init.c sysvinit-2.86/src/init.c
 +   * to follow, and it can be found in
 +   * the 'system/init/sequence' key, so retrieve it first.
 +   */
-+  kdbGetValueByParent(INITKEYS,"sequence",sequence,sizeof(sequence));
++  kdbGetValueByParent(handle, INITKEYS,"sequence",sequence,sizeof(sequence));
 +
 +  if (*sequence==0) {
 +       log(L_VB, "No init sequence found in %s/sequence key",INITKEYS);
@@ -172,7 +173,7 @@ diff -Naur sysvinit-2.86.orig/src/init.c sysvinit-2.86/src/init.c
 +        * so default to old /etc/inittab
 +        */
 +       useinittab=1; /* was 0 by default */
-+       kdbClose(); /* will not use the Keys database anymore */
++       kdbClose(&handle); /* will not use the Keys database anymore */
 +  }
 +
 +  if (useinittab)
@@ -218,16 +219,16 @@ diff -Naur sysvinit-2.86.orig/src/init.c sysvinit-2.86/src/init.c
 +                * order, and feed the buf buffer for the original program
 +                * business logic to parse
 +                */
-+               kdbGetValueByParent(entrykeyname,"runlevels",
++               kdbGetValueByParent(handle, entrykeyname,"runlevels",
 +               bufcursor,sizeof(buf)-(bufcursor-buf));
 +               strcat(buf,separator);
 +               bufcursor=buf+strlen(buf);
 +
-+               kdbGetValueByParent(entrykeyname,"action",
++               kdbGetValueByParent(handle, entrykeyname,"action",
 +                       bufcursor,sizeof(buf)-(bufcursor-buf));
 +               strcat(buf,separator);
 +               bufcursor=buf+strlen(buf);
-+	       kdbGetValueByParent(entrykeyname,"process",
++	       kdbGetValueByParent(handle, entrykeyname,"process",
 +               bufcursor,sizeof(buf)-(bufcursor-buf));
 +
 +               strcat(buf,"\n"); /* original parser bellow needs this */
@@ -281,7 +282,7 @@ diff -Naur sysvinit-2.86.orig/src/init.c sysvinit-2.86/src/init.c
     *	We're done.
     */
 +#ifdef ELEKTRA
-+  if (!useinittab) kdbClose();
++  if (!useinittab) kdbClose(&handle);
 +  else
 +#endif /* ELEKTRA */
 +	  
