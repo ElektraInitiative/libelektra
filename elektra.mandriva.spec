@@ -1,6 +1,6 @@
 %define name    elektra 
-%define version 0.5.10
-%define release %mkrel 2 
+%define version 0.6.0
+%define release %mkrel 1 
 
 Name:          %{name}
 Version:       %{version}
