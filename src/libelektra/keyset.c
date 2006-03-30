@@ -215,9 +215,9 @@ Key *ksTail(KeySet *ks) {
  * key aaa, then bbb, then ccc. This way you avoid going back to a position
  * in an already processed point.
  *
- * This behavior changes if KDB_O_LOOP option is used: if @p ks end is reached
- * start over from the begining until the current key is reached.
- * 
+ * This behavior changes if @p KDB_O_ALL option is used: all the KeySet is
+ * searched, and if not found, stops in current key.
+ *
  * If found, @p ks internal cursor will be positioned in the matched key
  * (also accessible by ksCurrent()), and a pointer to the Key is returned.
  * If not found, @p ks internal cursor will not move, and a NULL pointer is
@@ -249,9 +249,9 @@ Key *ksTail(KeySet *ks) {
  * @param options some @p KDB_O_* option bits. Currently suported:
  * 	- @p KDB_O_NOCASE @n
  * 	  Lookup ignoring case.
- *      - @p KDB_O_LOOP @n
- *        Do not be satisfied if reached the end of keyset without finding a
- *        a key that matches, and start over from the begining until ksCurrent()
+ * 	- @p KDB_O_ALL @n
+ * 	  Do not be satisfied if reached the end of keyset without finding a
+ * 	  a key that matches, and start over from the begining until ksCurrent()
  * @return pointer to the Key found, 0 otherwise
  * @see ksLookupRE() for powerfull regular expressions based lookups
  * @see keyCompare() for very powerfull Key lookups in KeySets
@@ -270,16 +270,16 @@ Key *ksLookupByName(KeySet *ks, const char *name, unsigned long options) {
 	init=ks->cursor;
 	if ( (init == NULL) || (init == ks->start) ) {
 		/* Avoid looping if are already in the begining of the keyset */
-		options &= options & ~KDB_O_LOOP;
+		options &= options & ~KDB_O_ALL;
 	}
 
-	while ( ((current=ksNext(ks)) != end) || (options & KDB_O_LOOP) ) {
+	while ( ((current=ksNext(ks)) != end) || (options & KDB_O_ALL) ) {
 		if (current == NULL) {
 			/* Bottom of list reached
 			 * retry lookup from start to cursor */
 			ksRewind(ks);
 			end=init;
-			options &= options & ~KDB_O_LOOP;
+			options &= options & ~KDB_O_ALL;
 			continue;
 		}
 			
@@ -320,22 +320,22 @@ Key *ksLookupByName(KeySet *ks, const char *name, unsigned long options) {
  * 
  * @param ks the KeySet to lookup into
  * @param where any of @p KEY_SWITCH_NAME, @p KEY_SWITCH_VALUE,
- * 	@p KEY_SWITCH_OWNER, @p KEY_SWITCH_COMMENT ORed.
+ *        @p KEY_SWITCH_OWNER, @p KEY_SWITCH_COMMENT ORed.
  * @param regexp a regcomp(3) pre-compiled regular expression
  * @param options some @p KDB_O_* ORed options to change lookup behavior.
- * 	Currently supported options:
- * - @p KDB_O_NOSPANPARENT @n
- *   Lookup only keys under ksCurrent()'s parent. If we are in the begining of
- *   the KeySet (ksCurrent()==NULL), this option is ignored. @p ks must be
- *   ksSort()ed (or kdbGetChildKeys() with @link KDBOption::KDB_O_SORT
- *   KDB_O_SORT @endlink) for this to work.
- * - @p KDB_O_LOOP @n
- *   Do not be satisfied if reached the end of keyset without finding a
- *   a key that matches, and start over from the begining until ksCurrent()
+ *        Currently supported options:
+ *        - @p KDB_O_NOSPANPARENT @n
+ *          Lookup only keys under ksCurrent()'s parent. If we are in the
+ *          begining of the KeySet (ksCurrent()==NULL), this option is
+ *          ignored. @p ks must be ksSort()ed (or kdbGetChildKeys() with
+ *          @link KDBOption::KDB_O_SORT KDB_O_SORT @endlink) for this to work.
+ *        - @p KDB_O_ALL @n
+ *          Do not be satisfied if reached the end of keyset without finding a
+ *          a key that matches, and start over from the begining until ksCurrent()
  * 
  * @return some of @p KEY_SWITCH_NAME, @p KEY_SWITCH_VALUE,
- * 	@p KEY_SWITCH_OWNER, @p KEY_SWITCH_COMMENT switches ORed to
- * 	indicate @p where the @p regex matched.
+ *         @p KEY_SWITCH_OWNER, @p KEY_SWITCH_COMMENT switches ORed to
+ *         indicate @p where the @p regex matched.
  * 
  * @see ksLookupByName(), ksLookupByValue(), keyCompare() for other types of
  * 	lookups.
@@ -422,7 +422,7 @@ uint32_t ksLookupRE(KeySet *ks, uint32_t where,
 
 	if ( (init == NULL) || (init == ks->start) ) {
 		/* Avoid looping if are already in the begining of the keyset */
-		options &= options & ~KDB_O_LOOP;
+		options &= options & ~KDB_O_ALL;
 	}
 	
 	if (options & KDB_O_NOSPANPARENT) {
@@ -432,13 +432,13 @@ uint32_t ksLookupRE(KeySet *ks, uint32_t where,
 		keyGetParentName(init,parentName,parentNameSize);
 	}
 	
-	while ( (walker=ksNext(ks)) != end || (options & KDB_O_LOOP) ) {
+	while ( (walker=ksNext(ks)) != end || (options & KDB_O_ALL) ) {
 		if ( walker == NULL ) {
 			/* Bottom of list reached
 			 * retry lookup from start to cursor */
 			ksRewind(ks);
 			end=init;
-			options &= options & ~KDB_O_LOOP;
+			options &= options & ~KDB_O_ALL;
 			continue;
 		}
 		

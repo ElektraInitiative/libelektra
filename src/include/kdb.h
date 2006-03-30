@@ -282,18 +282,20 @@ enum KDBOptions {
 	                              GID, and user domain. Affects
 	                              only @p user keys. */
 	KDB_O_HIER=1<<13,        /*!< Export to the new hierarchical XML
-                                  representation using key basename.
-                                  See ksToStream(). */
+	                              representation using key basename.
+	                              See ksToStream(). */
 
 /* Options used by ksLookupRE() methods */
 	KDB_O_NOCASE=1<<15,      /*!< Ignore case in ksLookup*() methods */
 	KDB_O_NOSPANPARENT=1<<16,/*!< Don't continue search if end of current
-                                  folder reached, in ksLookupRE() */
-	KDB_O_LOOP=1<<17,	 /*!< Restart search, in ksLookup*() from start to
-				   cursor when cursor to end failed */
+	                              folder reached, in ksLookupRE() */
+	KDB_O_ALL=1<<17,         /*!< Restart search, in ksLookup*() from
+	                              start -> cursor when cursor -> end
+	                              failed */
 
 /* Obsolete/renamed options */
-	KDB_O_NOVALUE=KDB_O_DIRONLY
+	KDB_O_NOVALUE  = KDB_O_DIRONLY,
+	KDB_O_LOOP     = KDB_O_ALL
 
 };
 
