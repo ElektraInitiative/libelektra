@@ -8,20 +8,21 @@ void BailOut (char * msg) {
 }
 
 int main() {
+	KDBHandle h;
 	KeySet * myConfig = ksNew();
 	Key    * myKey;
 	char   * myValue;
 
 	/* Open the Key Database */
-	if (kdbOpen() == -1)
+	if (kdbOpen(&h) == -1)
 		BailOut ("Could not open Key Database");
 	
 	/* Get myapps keyset */
-	if (kdbGetChildKeys("user/myapp", myConfig, 0 ) == -1)
+	if (kdbGetChildKeys(h, "user/myapp", myConfig, 0 ) == -1)
 		BailOut ("Could not get Keys");
 	
 	/* Get myapps keyset */
-	if (kdbGetChildKeys("system/myapp", myConfig, 0 ) == -1)
+	if (kdbGetChildKeys(h, "system/myapp", myConfig, 0 ) == -1)
 		BailOut ("Could not get Keys");
 
 	/* Find the key in the keyset */
@@ -35,7 +36,7 @@ int main() {
 	/* Actually print the key */
 	printf ("%s\n", myValue);
 	/* Close the Key database */
-	kdbClose();
+	kdbClose(&h);
 	ksClose(myConfig);
 }
 
