@@ -26,7 +26,6 @@ $Id$
 #include <sys/socket.h>
 #include <sys/un.h>
 
-#include "kdb.h"
 #include "kdbbackend.h"
 
 #include "datatype.h"

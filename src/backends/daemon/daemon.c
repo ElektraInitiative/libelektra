@@ -25,7 +25,6 @@ $Id$
 #include <sys/un.h>
 #include <inttypes.h>
 
-#include "kdb.h"
 #include "kdbbackend.h"
 
 
