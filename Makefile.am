@@ -18,4 +18,3 @@ rpm: dist
 	@echo "============================================================"
 	@echo "Finished - the packages are in rpmdir/RPMS and rpmdir/SRPMS!"
 
-
