@@ -5,14 +5,12 @@ Source:        http://aleron.dl.sourceforge.net/sourceforge/elektra/%{name}-%{ve
 Group:         System Environment/Libraries
 License:       BSD
 URL:           http://www.libelektra.org
+Requires:      libxml2
 BuildRoot:     %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildRequires: doxygen docbook-style-xsl db4-devel GConf2-devel libxml2-devel gettext-devel automake autoconf libtool /usr/bin/xsltproc
+BuildRequires: doxygen docbook-style-xsl db4-devel GConf2-devel libxml2-devel gettext-devel automake autoconf libtool libxslt
 Summary:       A key/value pair database to store software configurations
 
 %define DTDVERSION 0.1.1
-
-# A buggy version of rpmbuild
-%define _sysconfdir /etc
 
 %description
 Elektra provides a universal and secure framework to store configuration
@@ -46,7 +44,7 @@ static libraries.
 #%package backend-gconf
 #Summary:      A GConf backend for Elektra
 #Group:        System Environment/Libraries
-#Requires:     elektra
+#Requires:     elektra GConf2
 
 
 #%description backend-gconf
@@ -66,7 +64,7 @@ static libraries.
 %package backend-berkeleydb
 Summary:      Include files and API documentation for Elektra Project
 Group:        System Environment/Libraries
-Requires:     elektra
+Requires:     elektra db4
 
 
 %description backend-berkeleydb
@@ -83,7 +81,7 @@ This package contains a Berkeley DB backend for Elektra, to let Elektra use
 Berkeley DB databases to store its keys.
 
 # Uncomment and joint the '%' char to 'debug_package' if you want to build debug RPMs
-%debug_package
+# % debug_package
 
 %prep
 %setup
@@ -97,23 +95,13 @@ fi
 ./configure \
      --prefix=/usr \
      --exec-prefix=/ \
-     --mandir=/usr/share/man \
-     --sysconfdir=/etc \
+     --mandir=%{_mandir} \
+     --sysconfdir=%{_sysconfdir} \
      --disable-xmltest \
      --with-docbook=/usr/share/sgml/docbook/xsl-stylesheets
 
 make all
 
-#gmake OPTIMIZATIONS="$RPM_OPT_FLAGS" \
-#	%{?_smp_mflags} \
-#	UBINDIR=%{_bindir} \
-#	ULIBDIR=%{_libdir} \
-#	CONFDIR=%{_sysconfdir} \
-#	INCDIR=%{_includedir} \
-#	DOCDIR=%{_docdir} \
-#	MANDIR=%{_mandir} \
-#	SGMLDIR=%{_datadir}/sgml \
-#	all
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -127,20 +115,10 @@ mv $RPM_BUILD_ROOT/lib/libelektra.a $RPM_BUILD_ROOT/usr/lib
 rm $RPM_BUILD_ROOT/lib/*.la
 rm $RPM_BUILD_ROOT/usr/lib/*.la
  
-#gmake  %{?_smp_mflags} \
-#	DESTDIR=$RPM_BUILD_ROOT \
-#	UBINDIR=%{_bindir} \
-#	ULIBDIR=%{_libdir} \
-#	CONFDIR=%{_sysconfdir} \
-#	INCDIR=%{_includedir} \
-#	DOCDIR=%{_docdir} \
-#	MANDIR=%{_mandir} \
-#	SGMLDIR=%{_datadir}/sgml \
-#	install
 
 %clean
 #rm -rf $RPM_BUILD_ROOT
-#rm -rf $RPM_BUILD_DIR/%{name}
+rm -rf $RPM_BUILD_DIR/%{name}
 
 
 

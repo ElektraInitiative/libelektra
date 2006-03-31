@@ -1,4 +1,8 @@
-* Web Mar 30 2006 Yannick and Avi <yl@itioweb.com> 0.6
+* Fri Mar 31 2006 Avi Alkalay <avi@unix.sh> 0.6.1
+- Updated presentation with some desktop related charts
+- Converted to Open Document Format::Presentation
+
+* Thu Mar 30 2006 Yannick and Avi <yl@itioweb.com> 0.6
 - Handlerized all kdb*() methods. This is a radical API change thowards a thread-safe API.
 - Changed all backends to work with this change
 - Included kdbh*() methods for better backend manipulation, thowards the possibility of having remote backends
