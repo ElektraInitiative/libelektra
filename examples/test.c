@@ -15,6 +15,8 @@
  * the results are ok and print that.
  */
 
+KDBHandle handle;
+
 #define ROOT_KEY "user/test"
 
 #define NUL_KEY ROOT_KEY "/nul"
@@ -97,7 +99,7 @@ void bailOut (const char * msg)
 {
 	fprintf (stderr, "******** %29s ********\n", msg);
 	//TODO:
-	// kdbPrintError (msg);
+	kdbPrintError (msg);
 	// perror (msg);
 	// exit (0);
 }
@@ -210,7 +212,7 @@ void getKeys ()
 	/* Get all value keys for this application */
 	headerOut ("getChildKeys");
 	set = ksNew();
-	if (kdbGetChildKeys (ROOT_KEY, set, KDB_O_RECURSIVE | KDB_O_DIR) == -1)
+	if (kdbGetChildKeys (handle, ROOT_KEY, set, KDB_O_RECURSIVE | KDB_O_DIR) == -1)
 		bailOut("kdbGetChildKeys");
 
 	t = ksLookupByName (set, NUL_KEY, 0);
@@ -243,22 +245,22 @@ void getKey ()
 	headerOut ("getKey");
 
 	k = keyNew(NUL_KEY, KEY_SWITCH_END);
-	if (kdbGetKey (k) == -1) bailOut ("newkey kdbGetKey");
+	if (kdbGetKey (handle, k) == -1) bailOut ("newkey kdbGetKey");
 	else testOut (newNulKey(), k, NUL_KEY); 
 	keyDel (k);
 	
 	k = keyNew(NEW_KEY, KEY_SWITCH_END);
-	if (kdbGetKey (k) == -1) bailOut ("newkey kdbGetKey");
+	if (kdbGetKey (handle, k) == -1) bailOut ("newkey kdbGetKey");
 	else testOut (newNewKey(), k, NEW_KEY); 
 	keyDel (k);
 	
 	k = keyNew(ANO_KEY, KEY_SWITCH_END);
-	if (kdbGetKey (k) == -1) bailOut ("kdbGetKey");
+	if (kdbGetKey (handle, k) == -1) bailOut ("kdbGetKey");
 	else testOut (newAnoKey(), k, ANO_KEY); 
 	keyDel (k);
 	
 	k = keyNew(DIR_KEY, KEY_SWITCH_END);
-	if (kdbGetKey (k) == -1) bailOut ("kdbGetKey");
+	if (kdbGetKey (handle, k) == -1) bailOut ("kdbGetKey");
 	else testOut (newDirKey(), k, DIR_KEY); 
 	keyDel (k);
 }
@@ -267,19 +269,19 @@ void setKey ()
 {
 	Key * k;
 	k = newNulKey();
-	if (kdbSetKey (k) == -1) bailOut ("Error in kdbSetKeys");
+	if (kdbSetKey (handle, k) == -1) bailOut ("Error in kdbSetKeys");
 	keyDel (k);
 	
 	k = newNewKey();
-	if (kdbSetKey (k) == -1) bailOut ("Error in kdbSetKeys");
+	if (kdbSetKey (handle, k) == -1) bailOut ("Error in kdbSetKeys");
 	keyDel (k);
 	
 	k = newAnoKey();
-	if (kdbSetKey (k) == -1) bailOut ("Error in kdbSetKeys");
+	if (kdbSetKey (handle, k) == -1) bailOut ("Error in kdbSetKeys");
 	keyDel (k);
 	
 	k = newDirKey();
-	if (kdbSetKey (k) == -1) bailOut ("Error in kdbSetKeys");
+	if (kdbSetKey (handle, k) == -1) bailOut ("Error in kdbSetKeys");
 	keyDel (k);
 }
 
@@ -291,7 +293,7 @@ void setKeys ()
 	ksAppend (ks, newAnoKey());
 	ksAppend (ks, newDirKey());
 	
-	if (kdbSetKeys (ks) == -1) bailOut ("Error in kdbSetKeys");
+	if (kdbSetKeys (handle, ks) == -1) bailOut ("Error in kdbSetKeys");
 	ksDel (ks);
 }
 
@@ -303,22 +305,22 @@ void delKeys ()
 
 	Key * k;
 	k = keyNew(NUL_KEY, KEY_SWITCH_END);
-	if (kdbRemoveKey (k) == -1) bailOut ("Error Remove Nul Key");
+	if (kdbRemoveKey (handle, k) == -1) bailOut ("Error Remove Nul Key");
 	keyDel (k);
 	k = keyNew(NEW_KEY, KEY_SWITCH_END);
-	if (kdbRemoveKey (k) == -1) bailOut ("Error Remove New Key");
+	if (kdbRemoveKey (handle, k) == -1) bailOut ("Error Remove New Key");
 	keyDel (k);
 	k = keyNew(ANO_KEY, KEY_SWITCH_END);
-	if (kdbRemoveKey (k) == -1) bailOut ("Error Remove Ano Key");
+	if (kdbRemoveKey (handle, k) == -1) bailOut ("Error Remove Ano Key");
 	keyDel (k);
 	k = keyNew(DIR_KEY, KEY_SWITCH_END);
-	if (kdbRemoveKey (k) == -1) bailOut ("Error Remove Dir Key");
+	if (kdbRemoveKey (handle, k) == -1) bailOut ("Error Remove Dir Key");
 	keyDel (k);
 	
 }
 
 int main(int argc, char **argv) {
-	kdbOpen();
+	kdbOpen(&handle);
 
 	headerOut ("start tests");
 	
@@ -344,7 +346,7 @@ int main(int argc, char **argv) {
 	
 	headerOut ("finished tests");
 	
-	kdbClose();
+	kdbClose(&handle);
 	return 0;
 }
 
