@@ -22,6 +22,7 @@
 #include <pwd.h>
 #include <fcntl.h>
 #include <dirent.h>
+#include <stdio.h>
 
 #include <sys/stat.h>
 #include <sys/file.h>
@@ -132,7 +133,7 @@ int open_file (char * filename, char mode)
 	if (fc == NULL) {
 		fprintf (stderr, "fdopen() failed\n");
 		perror ("Reason: ");
-		ret -2;
+		ret = -2;
 	}
 	return ret;
 }
@@ -308,8 +309,6 @@ int shrink_file (long where, long space)
 size_t base_name (const Key * forKey, char * basename)
 {
 	size_t length;
-	int namesize;
-	char * name;
 
         switch (keyGetNamespace(forKey)) {
                 case KEY_NS_SYSTEM: {

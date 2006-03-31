@@ -242,12 +242,11 @@ ssize_t kdbGetKeys (KDBHandle handle, char * keyFileName, char * keyRoot, KeySet
  *
  * @ingroup ini
  */
-int IniReadFile (Key * key, KeySet * returned, unsigned long options)
+int IniReadFile (KDBHandle handle, Key * key, KeySet * returned, unsigned long options)
 {
 	char filename [MAX_PATH_LENGTH];
 	char * keyname;
 	size_t keyLength;
-	int ret;
 
 #ifdef DEBUG
 	fprintf (stderr, "IniReadfile\n");
@@ -263,12 +262,63 @@ int IniReadFile (Key * key, KeySet * returned, unsigned long options)
 	fprintf (stderr, "Call kdbGetKeys(filename: %s, keyRoot: %s,returned)\n", 
 		filename, keyname);
 #endif
-	kdbGetKeys (filename, keyname, returned);
+	kdbGetKeys (handle, filename, keyname, returned);
 	
 	if (keyLength >0) free (keyname);
 
 	return 0;
 }
+
+/**
+ * This mapper chooses between the different
+ * styles of files to start the correct function.
+ *
+ * For files it starts IniReadFile
+ * For directorys it starts IniReadDir
+ * TODO: Links, Subdirs
+ *
+ * @ingroup ini
+ * */
+int IniChooseFile(KDBHandle handle, Key * key, KeySet * returned, unsigned long options)
+{
+	char filename [MAX_PATH_LENGTH];
+	char * keyname;
+	size_t keylength;
+	
+	file_name(key, filename);
+	stat_file (key, filename);
+
+#ifdef DEBUG
+	fprintf (stderr, "IniChooseFile, pathName: %s\n", filename);
+#endif
+	
+	if (keyGetType (key) == KEY_TYPE_DIR)
+	{
+		if (filename[strlen(filename)-1] != '/')
+		{
+			keylength = keyGetNameSize(key);
+			keyname = malloc (keylength + 2);
+			keyGetName (key, keyname, keylength);
+			keyname[keylength-1] = '/';
+			keyname[keylength] = '\0';
+			keySetName (key, keyname);
+			free (keyname);
+		}
+			
+		return IniReadDir (handle, key, returned, options);
+	}
+
+	if (keyGetType (key) == KEY_TYPE_FILE)
+	{
+		return IniReadFile (handle, key, returned, options);
+	}
+
+#ifdef DEBUG
+	fprintf (stderr, "Not a directory or file!");
+#endif
+	return -1;
+}
+
 
 /**
  * Reads all Keys of a directory.
@@ -278,14 +328,13 @@ int IniReadFile (Key * key, KeySet * returned, unsigned long options)
  * 
  * @ingroup ini
  * */
-int IniReadDir(Key * key, KeySet * returned, unsigned long options)
+int IniReadDir(KDBHandle handle, Key * key, KeySet * returned, unsigned long options)
 {
 	char pathName [MAX_PATH_LENGTH];
 	char keyname [MAX_PATH_LENGTH];
 	char keypath [MAX_PATH_LENGTH];
 	char filename [MAX_PATH_LENGTH];
 	void * dir;
-	char * p;
 	int ret;
 
 #ifdef DEBUG
@@ -319,7 +368,7 @@ int IniReadDir(Key * key, KeySet * returned, unsigned long options)
 #ifdef DEBUG
 		fprintf (stderr, "New keyname: %s\n", keyname);
 #endif
-		ret = IniChooseFile (key, returned, options);
+		ret = IniChooseFile (handle, key, returned, options);
 	}
 
 	if (close_dir (dir))
@@ -331,55 +380,7 @@ int IniReadDir(Key * key, KeySet * returned, unsigned long options)
 	return ret;
 }
 
-/**
- * This mapper chooses between the different
- * styles of files to start the correct function.
- *
- * For files it starts IniReadFile
- * For directorys it starts IniReadDir
- * TODO: Links, Subdirs
- *
- * @ingroup ini
- * */
-int IniChooseFile(Key * key, KeySet * returned, unsigned long options)
-{
-	char filename [MAX_PATH_LENGTH];
-	char * keyname;
-	size_t keylength;
-	
-	file_name(key, filename);
-	stat_file (key, filename);
 
-#ifdef DEBUG
-	fprintf (stderr, "IniChooseFile, pathName: %s\n", filename);
-#endif
-	
-	if (keyGetType (key) == KEY_TYPE_DIR)
-	{
-		if (filename[strlen(filename)-1] != '/')
-		{
-			keylength = keyGetNameSize(key);
-			keyname = malloc (keylength + 2);
-			keyGetName (key, keyname, keylength);
-			keyname[keylength-1] = '/';
-			keyname[keylength] = '\0';
-			keySetName (key, keyname);
-			free (keyname);
-		}
-			
-		return IniReadDir (key, returned, options);
-	}
-
-	if (keyGetType (key) == KEY_TYPE_FILE)
-	{
-		return IniReadFile (key, returned, options);
-	}
-
-#ifdef DEBUG
-	fprintf (stderr, "Not a directory or file!");
-#endif
-	return -1;
-}
 
 /**
  * Implementation for kdbGetKeyChildKeys() method.
@@ -402,7 +403,7 @@ ssize_t kdbGetKeyChildKeys_ini(KDBHandle handle, const Key * key, KeySet *return
 	/**Immediately call IniChooseFile (will work recursively)*/
 #endif
 
-	return IniChooseFile (write, returned, options);
+	return IniChooseFile (handle, write, returned, options);
 }
 
 /**Walks through a file and Lookups if the found key is in the
@@ -428,7 +429,6 @@ int IniSetKeys (KeySet * origKeys)
 	char * keyFullName = NULL;
 	char * keyRoot = NULL;
 	char * end;
-	char * fil;
 
 	Key * origKey;
 	Key * setKey;	
@@ -604,7 +604,6 @@ int IniRemoveKey (Key * origkey, int op)
 	char * keyFullName = NULL;
 	char * keyRoot = NULL;
 	char * end;
-	char * fil;
 
 	Key psetKey;
 	Key pkey;
@@ -730,6 +729,7 @@ fileerror:
  */
 int kdbRemoveKey_ini(KDBHandle handle, const Key *key) {
 	/*return IniSetKey (key, SETKEY_DELETE);*/
+	return 0;
 }
 
 /**

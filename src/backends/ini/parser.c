@@ -379,7 +379,6 @@ memerror:
 int make_key (Key * key, char * root, char * buffer_key, char * buffer_value, char * buffer_comment)
 {
 	char * buffer_name = NULL;
-	char filename [MAX_PATH_LENGTH];
 
 	fprintf (stderr, "make_key ()\n");
 	if ((buffer_name = malloc (strlen(buffer_key) + strlen(root) + 2)) == NULL)
@@ -414,9 +413,6 @@ int make_key (Key * key, char * root, char * buffer_key, char * buffer_value, ch
 	
 	key->flags &= ~KEY_SWITCH_NEEDSYNC; /* remove sync flag*/
 	
-	/*file_name(key, filename);
-	stat_file (key, filename);*/ /**Fill in stat info*/
-
 	free (buffer_name);
 	
 	fprintf (stderr, "leave make_key ()\n");

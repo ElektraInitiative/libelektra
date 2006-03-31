@@ -45,6 +45,10 @@
 
 #define BACKENDNAME "ini"
 
+int IniReadDir(KDBHandle handle, Key * key, KeySet * returned, unsigned long options);
+int IniChooseFile(KDBHandle handle, Key * key, KeySet * returned, unsigned long options);
+int IniReadFile (KDBHandle handle, Key * key, KeySet * returned, unsigned long options);
+
 /**Helper functions*/
 int srealloc (void ** buffer, size_t size);
 int open_file (char * filename, char mode);
