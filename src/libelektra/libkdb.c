@@ -41,18 +41,21 @@ $Id$
  *   very small footprint, speed, and other advantages.
  * - @c filesys: the key hierarchy and data are saved as plain text files in 
  *   the filesystem.
+ * - @c ini: the key hierarchy are saved into configuration files.
+ *   @see http://www.libelektra.org/Ini
  * - @c fstab: a reference backend used to interpret the @c /etc/fstab file as
  *   a set of keys under @c system/filesystems .
  * - @c gconf: makes Elektra use the GConf daemon to access keys. Only the
  *   @c user/ tree is available since GConf is not system wide.
  *
- * Backends are phisically a library with name @c /lib/libelektra-{NAME}.so .
+ * Backends are physically a library named @c /lib/libelektra-{NAME}.so .
  *
  * In general usage, the @c default backend will be used, which is a pointer to
  * some other backend. Your program can use a different backend simply by
  * setting the @e KDB_BACKEND environment variable. Or, if you know what you
  * are doing, you can hardcode it in your code and use the explicit
- * kdbOpenBackend() method to use one.
+ * kdbOpenBackend() method to use one. These options should really not used,
+ * thus you destroy the global namespace with that.
  *
  * When @link backend writing a new backend @endlink, these are the methods
  * you'll have to reimplement:
@@ -64,13 +67,16 @@ $Id$
  * kdbMonitorKey(), kdbMonitorKeys().
  *
  * The other methods are higher level. They use the above methods to do their
- * job, and generally don't have to be reimplemented for a different backend.
+ * job, and don't have to be reimplemented for a different backend.
  *
  * Language binding writers should follow the same rules:
- * - You should relay completelly on the backend-dependent methods
- * - You may use or reimplement the second set of methods
- * - You should completelly reimplement in your language the higher
- *   lever methods
+ * - You must relay completely on the backend-dependent methods.
+ * - You may use or reimplement the second set of methods.
+ * - You should completely reimplement in your language the higher
+ *   lever methods.
+ * - Many methods are just for comfort in C. These methods are marked
+ *   and need not to be implemented if the binding language has e.g. string
+ *   operators which can do the operation easily.
  */
 
 
@@ -349,7 +355,9 @@ int kdbOpenBackend(KDBHandle *handle, char *backendName) {
  * Closes the session with the Key database.
  *
  * You should call this method when you finished your affairs with the key
- * database. You can manipulate Key and KeySet objects after kdbClose().
+ * database. You can manipulate Key and KeySet objects also after kdbClose().
+ * You must not use any kdb* call afterwards. You can implement kdbClose()
+ * in the atexit() handler.
  *
  * This is the counterpart of kdbOpen().
  *
@@ -359,7 +367,8 @@ int kdbOpenBackend(KDBHandle *handle, char *backendName) {
  *
  * @param handle the key database handler to initialize
  * @see kdbOpen()
- * @return 0 on success, anything else on failure, and @c errno is set.
+ * @return 0 on success
+ * @return -1 on failure, and @c errno is set.
  * 	If the backend implementation of kdbOpen can't be found, @c errno is
  * 	set to KDBErr::KDB_RET_NOSYS.
  * @ingroup kdb
@@ -397,7 +406,8 @@ int kdbClose(KDBHandle *handle) {
  *
  * @param encoded the source of ASCII hexadecimal digits.
  * @param returned preallocated destination for the unencoded data.
- * @return the amount of bytes unencoded, or a negative value and @c errno
+ * @return the amount of bytes unencoded
+ * @return -1 on failure and @c errno
  * 	is set to KDB_RET_TYPEMISMATCH
  * @see encode()
  * @ingroup backend
@@ -445,7 +455,8 @@ ssize_t unencode(char *encoded,void *returned) {
  * CODESET through it.
  * Look at the comments by the UTF8Engine() function for more information.
  *
- * @return 0 if not needed, anything else if needed
+ * @return 0 if not needed
+ * @return anything else if needed
  * @ingroup backend
  */
 int kdbNeedsUTF8Conversion() {
@@ -477,7 +488,8 @@ int kdbNeedsUTF8Conversion() {
  * @param inputOutputByteSize before the call: the size of the string including
  * 	leading NULL; after the call: the size of the converted string including
  * 	leading NULL
- * @return 0 on success, -1 otherwise and @c errno is propagated
+ * @return 0 on success
+ * @return -1 on failure and @c errno is propagated
  * @ingroup backend
  *
  */
@@ -593,12 +605,13 @@ ssize_t encode(void *unencoded, size_t size, char *returned) {
 /**
  * A high-level method to get a key value, by key name.
  * This method is valid only for string keys.
- * You should use other methods to get non-string keys.
+ * You have to use other methods to get non-string keys.
  *
  * @param keyname the name of the key to receive the value
  * @param returned a buffer to put the key value
  * @param maxSize the size of the buffer
- * @return 0 on success, or other value in case of error, and @c errno is set
+ * @return 0 on success
+ * @return -1 on failure and @c errno is propagated
  * @see kdbSetValue(), kdbGetKey(), kdbGetValueByParent(), keyGetString()
  * @ingroup kdb
  *
@@ -628,7 +641,9 @@ int kdbGetValue(KDBHandle handle,const char *keyname,
  *
  * @param keyname the name of the key to receive the value
  * @param value the value to be set
- * @return 0 on success, other value otherwise, and @c errno is set
+ * @return 0 on success
+ * @return -1 on failure and @c errno is propagated
+ * 	KDB_RET_TYPEMISMATCH if key is a directory
  * @see kdbGetValue(), keySetString(), kdbSetKey()
  * @ingroup kdb
  */
@@ -636,10 +651,16 @@ int kdbSetValue(KDBHandle handle, const char *keyname, const char *value) {
 	Key *key;
 	int rc;
 
-/* TODO: check key type first */
 	key=keyNew(keyname,KEY_SWITCH_END);
 	rc=kdbGetKey(handle,key);
-	keySetString(key,value);
+	if (! keyIsDir (key))
+	{
+		keySetString(key,value);
+	} else {
+		errno = KDB_RET_TYPEMISMATCH;
+		keyDel(key);
+		return -1;
+	}
 	rc=kdbSetKey(handle,key);
 	keyDel(key);
 	return rc;
@@ -648,7 +669,7 @@ int kdbSetValue(KDBHandle handle, const char *keyname, const char *value) {
 
 
 /**
- * Fills the @p returned buffer with the value of a key, which name
+ * Fill up the @p returned buffer with the value of a key, which name
  * is the concatenation of @p parentName and @p baseName.
  *
  * @par Example:
@@ -669,8 +690,10 @@ for (c=0; c<3; c++) {
  * @param baseName the name of the child key
  * @param returned pre-allocated buffer to be filled with key value
  * @param maxSize size of the \p returned buffer
- * @return whathever is returned by kdbGetValue()
+ * @return 0 on success
+ * @return -1 on failure and @c errno is propagated
  * @see kdbGetKeyByParent()
+ * @ingroup helper
  * @ingroup kdb
  */
 int kdbGetValueByParent(KDBHandle handle, const char *parentName, const char *baseName, char *returned, size_t maxSize) {
@@ -693,7 +716,8 @@ int kdbGetValueByParent(KDBHandle handle, const char *parentName, const char *ba
  * @param parentName the name of the parent key
  * @param baseName the name of the child key
  * @param value the value to set
- * @Return whatever is returned by kdbSetValue()
+ * @return 0 on success
+ * @return -1 on failure and @c errno is propagated
  * @ingroup kdb
  */
 int kdbSetValueByParent(KDBHandle handle, const char *parentName, const char *baseName, const char *value) {
@@ -719,7 +743,8 @@ int kdbSetValueByParent(KDBHandle handle, const char *parentName, const char *ba
  * @param parentName parent key name
  * @param baseName leaf or child name
  * @param returned a pointer to an initialized key to be filled
- * @return 0 on success, or what kdbGetKey() returns, and @c errno is set
+ * @return 0 on success
+ * @return -1 on failure and @c errno is propagated
  * @see kdbGetKey(), kdbGetValueByParent(), kdbGetKeyByParentKey()
  * @ingroup kdb
  */
@@ -764,7 +789,7 @@ int kdbGetKeyByParentKey(KDBHandle handle, const Key *parent, const char *baseNa
  * This is one of the most practical methods of the library, and you should
  * use it to retrieve in one shot all keys needed by your application.
  *
- * The @p returned KeySet must be initialized or may already contain some 
+ * The @p returned KeySet must be initialized or may already contain some
  * keys (in this case, the new retrieved keys will be simply appended).
  * 
  * In default behaviour (@p options = 0) it will fully retrieve all keys
@@ -843,8 +868,8 @@ while (key) {
  * @see commandList() code in kdb command for usage example
  * @see commandEdit() code in kdb command for usage example
  * @see commandExport() code in kdb command for usage example
- * @return number of keys contained by @p returned, or a negative value on
- * 	error and @c errno is set
+ * @return number of keys contained by @p returned
+ * @return -1 on failure and @c errno is propagated
  * @ingroup kdb
  *
  */
@@ -862,8 +887,15 @@ ssize_t kdbGetKeyChildKeys(KDBHandle handle, const Key *parentKey,
 
 
 /**
- * This method is similar and calls kdbGetKeyChildKeys(). It is provided for
- * convenience.
+ * This method is similar and calls kdbGetKeyChildKeys().
+ * It is provided for convenience.
+ * 
+ * Instead of passing the parentName with a key it directly
+ * uses a string.
+ * 
+ * @return 0 on success
+ * @return -1 on failure and @c errno is propagated
+ * @see kdbGetKeyChildKeys()
  * @ingroup kdb
  */
 ssize_t kdbGetChildKeys(KDBHandle handle, const char *parentName, KeySet *returned, unsigned long options) {
@@ -881,11 +913,16 @@ ssize_t kdbGetChildKeys(KDBHandle handle, const char *parentName, KeySet *return
 
 
 /**
+ *
+ * @depreciated (reason: its trivial) get user and system keys better yourself
+ * 
  * Returns a KeySet with all root keys currently recognized and present
  * on the system. Currently, the @p system and current user's @p user keys
  * are returned.
+ *
  * @param returned the initialized KeySet to be filled
  * @return the number of root keys found
+ * @return -1 on failure and @c errno is propagated
  * @see #KeyNamespace
  * @see commandList() code in kdb command for usage example
  * @ingroup kdb
@@ -914,10 +951,8 @@ ssize_t kdbGetRootKeys(KDBHandle handle, KeySet *returned) {
 
 
 /**
- * Taps the key only for its meta-info from the backend storage.
- * 
- * The bahavior may change from backend to backend. In the filesystem
- * backend, it will make only a stat(2) on the key.
+ * Stats the key only for its meta-info from the backend storage.
+ * The key may not hold value and comment after using kdbStatKey().
  * 
  * A key of type KEY_TYPE_LINK will have its target address loaded in the
  * @p key structure, which can be accessed later using keyStealValue() or
@@ -925,10 +960,12 @@ ssize_t kdbGetRootKeys(KDBHandle handle, KeySet *returned) {
  * without dereferencing it (in contrast to kdbGetKey(), where the link is
  * dereferenced).
  *
- * Info like comments and key data type are not retrieved.
+ * Info like comments and key data type may not be retrieved if backend
+ * supports a way not to get them.
  *
  * @param key an initialized Key pointer to be filled.
- * @return 0 on success, -1 otherwise
+ * @return 0 on success
+ * @return -1 on failure and @c errno is propagated
  * @ingroup kdb
  */
 int kdbStatKey(KDBHandle handle, Key *key) {
@@ -948,10 +985,13 @@ int kdbStatKey(KDBHandle handle, Key *key) {
 
 /**
  * Fully retrieves the passed @p key from the backend storage.
+ *
+ * The backend will try to get the key, identified through its
+ * name.
  * 
  * @param key a pointer to a Key that has a name set
- * @return 0 on success, or other value and @c errno is set
- * @see kdbSetKey()
+ * @return 0 on success
+ * @return -1 on failure and @c errno is propagated
  * @see commandGet() code in kdb command for usage example
  * @ingroup kdb
  */
@@ -973,14 +1013,13 @@ int kdbGetKey(KDBHandle handle, Key *key) {
 /**
  * Commits the @p ks KeySet to the backend storage, starting from @p ks's
  * current position until its end. This is why it is suggested that you call
- * ksRewind() on @p ks beffore calling this method.
+ * ksRewind() on @p ks before calling this method.
+ * 
  * Each key is checked with keyNeedsSync() before being actually commited. So
  * only changed keys are updated.
  *
- * If some error occurs, kdbSetKeys() stops and returns whatever kdbSetKey()
- * returned. The KeySet internal cursor is left on the key that generated
- * the error (so you may check it latter with ksCurrent()). The internal 
- * kdbSetKey() also sets @c errno in case of error.
+ * If some error occurs, kdbSetKeys() will stop. In this situation the KeySet
+ * internal cursor is left on the key that generated the error.
  *
  * @par Example of how this method must be used:
  * @code
@@ -1006,7 +1045,8 @@ while ((ret=kdbSetKeys(handle,ks))) {
 }
  * @endcode
  * @param ks a KeySet full of changed keys
- * @return 0 on success, or whatever kdbSetKey() returns
+ * @return 0 on success
+ * @return -1 on failure and @c errno is propagated
  * @see kdbSetKey(), keyNeedsSync(), ksNext(), ksCurrent()
  * @see commandEdit(), commandImport() code in kdb command for usage and error
  *       handling example
@@ -1033,12 +1073,17 @@ int kdbSetKeys(KDBHandle handle, KeySet *ks) {
 
 
 /**
- * A high level, probably inefficient implementation for the kdbSetKeys()
+ * A probably inefficient implementation for the kdbSetKeys()
  * method. If a backend doesn't want to reimplement this method, this
  * implementation can be used, in which kdbSetKey() will be called for
  * each Key object contained in @p ks.
  *
+ * If some error occurs, kdbSetKeys_default() will stop. In this situation the KeySet
+ * internal cursor is left on the key that generated the error.
+ *
  * @see kdbSetKeys(), kdbSetKeys_backend()
+ * @return 0 on success
+ * @return -1 on failure and @c errno is propagated
  *
  * @ingroup backend
  */
@@ -1065,7 +1110,8 @@ int kdbSetKeys_default(KDBHandle handle, KeySet *ks) {
  *
  * @see kdbGetKey(), kdbSetKeys()
  * @see commandSet() code in kdb command for usage example
- * @return 0 on success, or other value and @c errno is set
+ * @return 0 on success
+ * @return -1 on failure and @c errno is propagated
  * @ingroup kdb
  */
 int kdbSetKey(KDBHandle handle, Key *key) {
@@ -1087,10 +1133,17 @@ int kdbSetKey(KDBHandle handle, Key *key) {
 /**
  * Rename a key in the backend storage.
  *
+ * key must be a fully retrieved key. If you want another
+ * name its not enough to kdbSetKey() it again (old key
+ * would stay, you could remove it with kdbRemoveKey though).
+ * 
+ * kdbRename() can do it for you, maybe with a more efficient
+ * method then described above.
+ *
  * @param key the key to be renamed
  * @param newName the new key name
- * @return 0 on success, or whathever is returned by the backend
- * 	implementation on failure, and @c errno is propagated
+ * @return 0 on success
+ * @return -1 on failure and @c errno is propagated
  * @ingroup kdb
  */
 int kdbRename(KDBHandle handle, Key *key, const char *newName) {
@@ -1110,14 +1163,15 @@ int kdbRename(KDBHandle handle, Key *key, const char *newName) {
 
 /**
  * Remove a key from the backend storage.
+ * 
  * The @c key object will not be freed. It is your responsability
  * to keyDel() it after kdbRemoveKey().
  *
  * This method is not recursive.
  *
  * @param key the key to be removed
- * @return 0 on success, or whathever is returned by the backend
- * 	implementation on failure, and @c errno is propagated
+ * @return 0 on success
+ * @return -1 on failure and @c errno is propagated
  * @see commandRemove(), and ksCompare() code in kdb command for usage example
  * @ingroup kdb
  */
@@ -1138,11 +1192,12 @@ int kdbRemoveKey(KDBHandle handle, const Key *key) {
 
 /**
  * Remove a key by its name from the backend storage.
+ * 
  * This is a convenience to kdbRemoveKey().
  *
  * @param keyName the name of the key to be removed
- * @return 0 on success, or whathever is returned by kdbRemoveKey(),
- * 	and @c errno is propagated
+ * @return 0 on success
+ * @return -1 on failure and @c errno is propagated
  * @see commandRemove() code in kdb command for usage example
  * @ingroup kdb
  */
@@ -1251,6 +1306,8 @@ ksDel(myConfigs);
  *
  * @see kdbMonitorKey(), ksCurrent(), ksRewind(), ksNext(), #KeySwitch
  * @see commandMonitor() code in kdb command for usage example
+ * @return diff mask on success
+ * @return -1 on failure and @c errno is propagated
  * @ingroup kdb
  *
  */
@@ -1282,6 +1339,8 @@ uint32_t kdbMonitorKeys(KDBHandle handle, KeySet *interests, uint32_t diffMask,
  * method. If a backend doesn't want to reimplement this method, this
  * implementation can be used.
  *
+ * @return diff mask on success 
+ * @return -1 on failure and @c errno is propagated
  * @ingroup backend
  */
 uint32_t kdbMonitorKeys_default(KDBHandle handle, KeySet *interests,
@@ -1347,6 +1406,8 @@ uint32_t kdbMonitorKeys_default(KDBHandle handle, KeySet *interests,
  * @param sleep time to sleep, in microseconds, between iterations.
  * 	0 defaults to 1 second.
  * @return the ORed @p KEY_SWITCH_* flags of what changed
+ * @return 0 on success
+ * @return -1 on failure and @c errno is propagated
  * @see #KeySwitch
  * @see keyCompare()
  * @see kdbMonitorKeys() to monitor KeySets, and for a code example
@@ -1825,7 +1886,7 @@ int kdbInfoToString(KDBInfo *info,char *string,size_t maxSize) {
  * providing an hierarchical namespace to store configuration keys and
  * their values, an API to access/modify them, and command line tools.
  *
- * Everything about the initiative can be found at http://elektra.sf.net
+ * Everything about the initiative can be found at http://www.libelektra.org
  *
  * @section using Using the Elektra Library
  *
@@ -1854,7 +1915,7 @@ int kdbInfoToString(KDBInfo *info,char *string,size_t maxSize) {
  *
  * @section classes Elektra API
  *
- * The API was written in pure C because Elektra was designed to be usefull
+ * The API was written in pure C because Elektra was designed to be useful
  * even for the most basic system programs, which are all made in C. Also,
  * being C, bindings to other languages can appear, as we already have for
  * Python, Ruby, etc.
