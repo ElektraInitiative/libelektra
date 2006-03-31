@@ -982,6 +982,29 @@ int kdbGetKey(KDBHandle handle, Key *key) {
  * the error (so you may check it latter with ksCurrent()). The internal 
  * kdbSetKey() also sets @c errno in case of error.
  *
+ * @par Example of how this method must be used:
+ * @code
+KeySet *ks;  // the KeySet I want to set
+
+// ommited... fill ks with some keys
+
+ksRewind(ks);
+while ((ret=kdbSetKeys(handle,ks))) {
+	// We got an error. Warn user.
+	Key *problem;
+	char error[500]="";
+	char keyname[300]="";
+
+	problem=ksCurrent(ks);
+	if (problem) keyGetFullName(problem,keyname,sizeof(keyname));
+	sprintf(error,"kdb import: while importing %s", keyname);
+	kdbPrintError(error);
+        
+	// And try to set keys again starting from the next key,
+	// unless we reached the end of KeySet
+	if (ksNext(ks) == 0) break;
+}
+ * @endcode
  * @param ks a KeySet full of changed keys
  * @return 0 on success, or whatever kdbSetKey() returns
  * @see kdbSetKey(), keyNeedsSync(), ksNext(), ksCurrent()

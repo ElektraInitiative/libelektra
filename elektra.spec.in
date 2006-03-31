@@ -5,7 +5,7 @@ Source:        http://aleron.dl.sourceforge.net/sourceforge/elektra/%{name}-%{ve
 Group:         System Environment/Libraries
 License:       BSD
 URL:           http://www.libelektra.org
-BuildRoot:     $RPM_BUILD_ROOT
+BuildRoot:     %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires: doxygen docbook-style-xsl db4-devel GConf2-devel libxml2-devel gettext-devel automake autoconf libtool /usr/bin/xsltproc
 Summary:       A key/value pair database to store software configurations
 
@@ -39,7 +39,8 @@ easy application integration. While architecturally similar to other OS
 registries, Elektra does not have most of the problems found in those
 implementations.
 
-This Package contains devel parts.
+This Package contains development specific things as include files and
+static libraries.
 
 
 #%package backend-gconf
@@ -138,7 +139,7 @@ rm $RPM_BUILD_ROOT/usr/lib/*.la
 #	install
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+#rm -rf $RPM_BUILD_ROOT
 #rm -rf $RPM_BUILD_DIR/%{name}
 
 
