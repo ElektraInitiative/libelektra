@@ -1484,7 +1484,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +		if (ksGetSize(realModes)) {
 +			ptr->mon_modeline_lst=(XF86ConfModeLinePtr)
 +				xf86addListItem ((glp) ptr->mon_modeline_lst,
-+					(glp) ksToModes(realModes));
++					(glp) ksToModes(handle, realModes));
 +		}
 +
 +		ksDel(realModes);
@@ -1999,7 +1999,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +		kdbGetChildKeys(handle, buffer,settings,
 +			KDB_O_DIR | KDB_O_NOVALUE | KDB_O_SORT);
 +		if (ksGetSize(settings))
-+			monitor->mon_modeline_lst=ksToModes(settings);
++			monitor->mon_modeline_lst=ksToModes(handle, settings);
 +		ksClose(settings);
 +
 +		/* Now get this monitor's options */
@@ -2738,7 +2738,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +		optionKeys = ksNew();
 +		kdbGetChildKeys(handle, options,optionKeys,KDB_O_SORT | KDB_O_DIR);
 +		if (ksGetSize(optionKeys))
-+			screen->scrn_display_lst=ksToDisplays(optionKeys);
++			screen->scrn_display_lst=ksToDisplays(handle, optionKeys);
 +		xf86conffree (options);
 +		ksClose(optionKeys);
 +		
@@ -3743,7 +3743,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +		/* assemble sub-structures */
 +		ptr->conf_files = xf86getFiles (handle, rootKey);
 +	
-+ 		ptr->conf_flags = xf86getFlags (handle rootKey);  
++ 		ptr->conf_flags = xf86getFlags (handle, rootKey);  
 +	
 +		/* keyboard, mouse and generic input */
 +		ptr->conf_input_lst = xf86getInput (handle, rootKey);
