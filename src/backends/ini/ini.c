@@ -432,7 +432,7 @@ int IniSetKeys (KeySet * origKeys)
 
 	Key * origKey;
 	Key * setKey;	
-	Key * key = keyNew(KEY_SWITCH_END);
+	Key * key = keyNew (KEY_SWITCH_END);
 
 	long oldpos;
 	
