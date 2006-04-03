@@ -16,6 +16,8 @@
  */
 
 KDBHandle handle;
+int failures;
+int tests;
 
 #define ROOT_KEY "user/test"
 
@@ -115,11 +117,13 @@ void testOut (Key * orig, Key * read, const char * keyname)
 	uint32_t failed=0;
 	
 	fprintf (stderr, "Test ");
+	tests ++;
 	failed=keyCompare (orig, read);
-	if (failed) fprintf (stderr, "failed");
-	else fprintf (stderr, "suceeded");
-	fprintf (stderr, " for : %s\n", keyname);
-	if (!failed) return;
+	if (failed | ~KEY_SWITCH_NEEDSYNC)
+	{
+		fprintf (stderr, "suceeded for : %s\n", keyname);
+		return;
+	} else fprintf (stderr, "failed for : %s\n", keyname);
 	if (failed & KEY_SWITCH_TYPE) 
 		fprintf (stderr, "type differs: is %d, was %d\n",
 			keyGetType(read),keyGetType(orig));
@@ -144,12 +148,21 @@ void testOut (Key * orig, Key * read, const char * keyname)
 	if (failed & KEY_SWITCH_MODE)
 		fprintf (stderr, "mode differs: is \"0%o\", was \"0%o\"\n",
 			keyGetAccess(read),keyGetAccess(orig));
-	if (failed & KEY_SWITCH_NEEDSYNC)
-		fprintf (stderr, "needsync differs\n");
 	if (failed & KEY_SWITCH_FLAG)
 		fprintf (stderr, "flag differs\n");
 
 	keyDel (orig);
+}
+
+void statisticsOut ()
+{
+	printf ("\n******************************\n");
+	printf (" %d    tests total\n", tests);
+	printf ("-%d    tests passed\n", tests-failures);
+	printf ("-----\n");
+	printf (" %d    tests failed", failures);
+	if (failures != 0) printf ("  (%d %%)", tests/failures*100);
+	printf ("\n******************************\n");
 }
 
 void printKey (Key * k)
@@ -347,6 +360,9 @@ int main(int argc, char **argv) {
 	headerOut ("finished tests");
 	
 	kdbClose(&handle);
+
+	statisticsOut();
+	
 	return 0;
 }
 
