@@ -12,7 +12,7 @@ int main()
 	ksInsert (ks, key);
 
         ksRewind (ks);
-        origKey = ksCurrent (ks); // origKey is NULL, why?
+        origKey = ksNext (ks); // origKey is NULL, why?
         keyDup (origKey, key);	// this crashes
 }
 
