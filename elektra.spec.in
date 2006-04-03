@@ -7,7 +7,7 @@ License:       BSD
 URL:           http://www.libelektra.org
 Requires:      libxml2
 BuildRoot:     %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildRequires: doxygen docbook-style-xsl db4-devel GConf2-devel libxml2-devel gettext-devel automake autoconf libtool libxslt
+BuildRequires: doxygen docbook-style-xsl db4-devel libxml2-devel gettext-devel automake autoconf libtool libxslt #GConf2-devel
 Summary:       A key/value pair database to store software configurations
 
 %define DTDVERSION 0.1.1
