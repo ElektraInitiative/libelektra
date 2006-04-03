@@ -38,13 +38,20 @@ $Id$
  * @defgroup keyset KeySet :: Class Methods
  * @brief Methods to manipulate KeySets.
  * A KeySet is a linked list to group a number of Keys.
- * Key Sets have an @link ksCurrent() internal cursor @endlink to help
+ * KeySets have an @link ksCurrent() internal cursor @endlink to help
  * in the Key navigation.
  *
  * These are the methods to make various manipulations in the objects of class KeySet.
  * Methods for @link ksSort() sorting @endlink, @link ksAppendKeys() merging
  * @endlink, @link ksCompare() comparing @endlink, and @link ksNext() internal
  * cursor manipulation @endlink are provided.
+ *
+ * KeySet has a fundamental meaning inside elektra. It makes it possible
+ * to get and store many keys at once inside the database. In addition to
+ * that the class can be used as high level datastructure in applications.
+ * With ksLookupByName it is possible to fetch easily specific keys
+ * out of the list of keys.
+ * 
  * To use them:
  * @code
 #include <kdb.h>
@@ -57,11 +64,13 @@ $Id$
 /**
  * Allocate, initialize and return a new KeySet object.
  * Objects created with ksNew() must be destroyed with ksDel().
+ *
+ * Use this function if you want to create a new KeySet.
  * 
  * Due to ABI compatibility, the @p KeySet structure is only declared in kdb.h,
  * and not defined. So you can only declare @p pointers to @p KeySets in your
- * program, and allocate and free memory for them with ksNew() and ksDel()
- * respectively.
+ * program.
+ * 
  * See http://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html#AEN135
  *
  * @see ksDel()
@@ -80,11 +89,10 @@ KeySet *ksNew() {
  *
  * Cleans all internal dynamic attributes, keyDel() all contained Keys,
  * and free()s the release the KeySet object memory (that was previously
- * allocated by ksNew()). There is the @p ksFree() macro if you prefer this
- * method name.
+ * allocated by ksNew()).
  *
  * @see ksNew(), ksClose()
- * @return whatever is returned by ksClose()
+ * @return always 0
  */
 int ksDel(KeySet *ks) {
 	int rc;
@@ -98,16 +106,12 @@ int ksDel(KeySet *ks) {
 
 
 /**
- * Return the number of keys that @p ks contains.
+ * @return the number of keys that @p ks contains.
  * @see ksNew(), ksDel()
  */
 ssize_t ksGetSize(KeySet *ks) {
 	return ks->size;
 }
-
-
-
-
 
 
 
@@ -119,10 +123,18 @@ ssize_t ksGetSize(KeySet *ks) {
 
 /**
  * Resets a KeySet internal cursor.
- * Use it to set the cursor to the begining of the KeySet
+ * 
+ * Use it to set the cursor to the beginning of the KeySet.
+ * ksCurrent() will then always return NULL afterwards. So
+ * you want to ksNext() first.
  *
- * @return allways 0
- * @see ksNext(), ksCurrent(), kdbMonitorKeys() for an example
+ * @code
+ ksRewind (ks);
+ while (key = keyNext (ks)) {}
+ * @endcode
+ * 
+ * @return always 0
+ * @see ksNext(), kdbMonitorKeys() for an example
  *
  */
 int ksRewind(KeySet *ks) {
@@ -134,11 +146,13 @@ int ksRewind(KeySet *ks) {
 
 /**
  * Returns the next Key in a KeySet.
+ * 
  * KeySets have an internal cursor that can be reset with ksRewind(). Every
  * time ksNext() is called the cursor is incremented and the new current Key
  * is returned.
+ * 
  * You'll get a NULL pointer if the end of KeySet was reached. After that,
- * if ksNext() is called again, it will set the cursor to the begining of
+ * if ksNext() is called again, it will set the cursor to the beginning of
  * the KeySet and the first key is returned.
  *
  * @return the new current Key
@@ -157,6 +171,9 @@ Key *ksNext(KeySet *ks) {
 /**
  * Return the current Key
  *
+ * The pointer is NULL if you reached the end or after
+ * ksRewind().
+ *
  * @return pointer to the Key pointed by @p ks's cursor
  * @see ksNext(), ksRewind()
  * @see kdbMonitorKeys() for a usage example
@@ -168,7 +185,7 @@ Key *ksCurrent(const KeySet *ks) {
 
 
 /**
- * Return the first key in the KeySet, whithout changing the KeySet's
+ * Return the first key in the KeySet, without changing the KeySet's
  * internal cursor.
  * 
  * @see ksTail(), ksCurrent(), ksNext()
@@ -181,7 +198,7 @@ Key *ksHead(KeySet *ks) {
 
 
 /**
- * Return the last key in the KeySet, whithout changing the KeySet's
+ * Return the last key in the KeySet, without changing the KeySet's
  * internal cursor.
  * 
  * @see ksHead(), ksCurrent(), ksNext()
@@ -209,6 +226,12 @@ Key *ksTail(KeySet *ks) {
  * Look for a Key contained in @p ks that matches @p name, starting from
  * @p ks' ksNext() position.
  *
+ * The @p ksLookup*() set of methods are designed to let you work with
+ * entirely pre-loaded KeySets, so instead of kdbGetKey(), key by key, the
+ * idea is to fully kdbGetChildKeys() for your application root key (which is
+ * more performatic), and process it all at once with @p ksLookup*().
+ *
+ *
  * The lookup process stops if the end of @p ks is reached. The idea behind
  * it is that your keyset processing logic consider a sorted KeySet and
  * process it in a alphabetical order. So your logic should first lookup
@@ -216,7 +239,7 @@ Key *ksTail(KeySet *ks) {
  * in an already processed point.
  *
  * This behavior changes if @p KDB_O_ALL option is used: all the KeySet is
- * searched, and if not found, stops in current key.
+ * searched, and if not found, it will stop with the current key.
  *
  * If found, @p ks internal cursor will be positioned in the matched key
  * (also accessible by ksCurrent()), and a pointer to the Key is returned.
@@ -235,15 +258,11 @@ Key *ksTail(KeySet *ks) {
         if ((myKey = ksLookupByName (myConfig, "/myapp/key", 0)) == NULL)
                 BailOut ("Could not Lookup Key");
  * @endcode
+ * 
  * This is the way multi user Programs should get there configuration and
  * search after the values. It is guaranteed that more namespaces can be
  * added easily and that all values can be set by admin and user.
  * 
- * The @p ksLookup*() set of methods are designed to let you work with
- * entirely pre-loaded KeySets, so instead of kdbGetKey(), key by key, the
- * idea is to fully kdbGetChildKeys() for your application root key (which is
- * more performatic), and process it all at once with @p ksLookup*().
- *
  * @param ks where to look for
  * @param name key name you are looking for
  * @param options some @p KDB_O_* option bits. Currently suported:
@@ -525,6 +544,7 @@ Key *ksLookupByValue(KeySet *ks, const char *value, unsigned long options) {
 		
 		if (size != current->dataSize) continue;
 		
+		/**TODO: Use macro instead*/
 		if (KEY_TYPE_BINARY<= current->type && current->type < KEY_TYPE_STRING)
 			continue;
 		
@@ -547,10 +567,10 @@ Key *ksLookupByValue(KeySet *ks, const char *value, unsigned long options) {
  * Lookup for a Key contained in @p ks KeySet that matches the binary @p value,
  * starting from ks' ksNext() position.
  * 
- * If found, @p ks internal cursor will be positioned in the matched key
- * (also accessible by ksCurrent()), and a pointer to the Key is returned.
- * If not found, @p ks internal cursor won't move, and a NULL pointer is
- * returned.
+ * If found, @p ks internal cursor will be positioned in the matched key.
+ * That means it is also accessible by ksCurrent(). A pointer to the Key
+ * is returned. If not found, @p ks internal cursor won't move, and a 
+ * NULL pointer is returned.
  * 
  * @param ks where to look for
  * @param value the value which owner key you want to find
@@ -572,7 +592,8 @@ Key *ksLookupByBinaryValue(KeySet *ks, void *value, size_t size,
 		if (current->data == value) return current;
 		
 		if (size != current->dataSize) continue;
-		
+	
+		/**TODO: use macro to check if dir!*/
 		if ((current->data && value) && 
 				!memcmp(current->data,value,size)) return current;
 	}
@@ -595,9 +616,10 @@ Key *ksLookupByBinaryValue(KeySet *ks, void *value, size_t size,
 
  
 /**
- * Insert a new Key in the begining of the KeySet. A reference to the key will
+ * Insert a new Key in the beginning of the KeySet. A reference to the key will
  * be stored, and not a copy of the key. So a future ksClose() or ksDel() on
  * @p ks will keyDel() the @p toInsert object.
+ * 
  * The KeySet internal cursor is not moved.
  *
  * Do not ksInsert() Keys that are already members of other KeySets.
@@ -782,6 +804,8 @@ ssize_t ksAppendKeys(KeySet *ks, KeySet *toAppend) {
 
 /**
  * Compare 2 KeySets.
+ *
+ * This is a c-helper function, you need not implement it in a binding.
  *  
  * This method behavior is the following:
  * - A key (by full name) that is present on @p ks1 and @p ks2, and has
@@ -1074,6 +1098,8 @@ ssize_t ksToStream(const KeySet *ks, FILE* stream, unsigned long options) {
 /**
  * Calculates the common parent to all keys.
  *
+ * This is a c-helper function, you need not implement it in bindings.
+ *
  * Given the @p ks KeySet, calculates the parent name for all the keys.
  * So if @p ks contains this keys:
  *
@@ -1221,7 +1247,7 @@ int ksInit(KeySet *ks) {
  * 
  * @see keyDel(), ksInit(), keyClose()
  * @see ksAppend() for details on how keys are inserted in KeySets
- * @return allways 0
+ * @return always 0
  */
 int ksClose(KeySet *ks) {
 	if (ks->size) {
