@@ -17,6 +17,5 @@ EXTRA_DIST = test.c
 test_PROGRAMS = test
 
 test_SOURCES = test.c
-test_LDFLAGS = -L. -L../../libelektra
 test_LDADD = -lelektra -lelektra-ini
 

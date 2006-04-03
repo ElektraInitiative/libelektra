@@ -441,7 +441,7 @@ int IniSetKeys (KeySet * origKeys)
 #endif
 
 	ksRewind (origKeys);
-	origKey = ksCurrent (origKeys); /* Open file for this key*/
+	origKey = ksNext (origKeys); /* Open file for this key*/
 	keyDup (origKey, key);	/* for searching*/
 	
 	pos = IniSearchFileName(key, keyFileName);
