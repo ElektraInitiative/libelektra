@@ -2549,7 +2549,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +		if ( (subKey = ksLookupByName(settings, buffer, KDB_O_LOOP)) ) {
 +			char *cursor,*cursorEnd;
 +
-+			keyGetString(subKey,buffer,sizeof(buffer));
++			keyGetString(subKey,buffer,size);
 +
 +			cursor=buffer;
 +			do {
