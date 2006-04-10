@@ -12,7 +12,7 @@ elekexample_DATA = test.c application.c binary.c keyNewExample.c lookup.c
 #
 
 if EXPERIMENTAL
-elekexample_PROGRAMS = test application binary keyNewExample lookup cascading keyset
+elekexample_PROGRAMS = test application binary keyNewExample lookup cascading keyset hello
 
 test_SOURCES = test.c
 test_LDADD = -lelektra
@@ -34,6 +34,9 @@ cascading_LDADD = -lelektra
 
 keyset_SOURCES = keyset.c
 keyset_LDADD = -lelektra
+
+hello_SOURCES = hello.c
+hello_LDADD = -lelektra
 endif
 
 
