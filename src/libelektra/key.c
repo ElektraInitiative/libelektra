@@ -138,7 +138,7 @@ size_t strblen(const char *s) {
  * text. Use keyGetString() for that.
  * You can save any Unicode Symbols and Elektra will
  * take care that you get the same back, independent of
- * your current Environment.
+ * your current environment.
  *
  * In some situations this idea fails. When you need exactly
  * the same value back without any interpretation of the
@@ -148,7 +148,7 @@ size_t strblen(const char *s) {
  * should use keyGetString(). To do so, you might use strtod()
  * strtol() and then atol() or atof() to convert back.
  * 
- * A key may also be just a Link. Here you will also find
+ * A key may also be just a link. Here you will also find
  * the manipulation methods for keyGetLink().
  * 
  * To use them:
@@ -1008,6 +1008,7 @@ int keyIsSystem(const Key *key) {
  * Check whether a key name is under the @p user namespace or not
  *
  * @return 1 if string begins with @p user, 0 otherwise
+ * @deprecated compare keyName with user
  * @param keyName the name of a key
  * @see keyIsSystem(), keyIsUser(), keyNameIsSystem()
  * @ingroup keyname
@@ -1627,6 +1628,7 @@ ssize_t keySetLink(Key *key, const char *target) {
  * @param returnedTarget a pre-allocated buffer to store the target
  * @param maxSize the size in bytes of the @p returnedTarget buffer
  * @param key the link key
+ * @deprecated link system not perfect that way
  * @return the size in bytes of the copied target string
  * @ingroup keyvalue
  *
@@ -1769,7 +1771,6 @@ ssize_t keyGetBinary(const Key *key, void *returnedValue, size_t maxSize) {
  * The @c filesys backend, when used through a kdbSetKey(), will make the
  * value be encoded into a human readable hex-digit text format.
  *
- * UNIX sysadmins don't like to deal with binary sand box data.
  * Consider using a string key instead.
  *
  * @param key the object on which to set the value
