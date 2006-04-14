@@ -837,19 +837,20 @@ kdbClose(&handle);
 if (rc) switch (errno) {
 	case KDB_RET_INVALIDKEY:
 		sprintf(errormsg,"Something invalid");
-		perror(errormsg); // use system error messages
+		kdbPrintError(errormsg);
 		break;
 	case KDB_RET_NOTFOUND:
 		fprintf(stderr,"Key not found"); // custom error message
 		break;
 	default:
 		sprintf(errormsg,"My application");
-		perror(errormsg); // use system error messages
+		kdbPrintError(errormsg);
 		break;
 }
 
 ksRewind(myConfig); // go to begining of KeySet
 key=ksNext(myConfig);
+
 while (key) {
 	// do something with each key . . .
 
@@ -860,7 +861,7 @@ while (key) {
  * @param parentKey parent key
  * @param returned the (pre-initialized) KeySet returned with all keys found
  * @param options ORed options to control approaches
- * @see #KDBOptions
+ * @see #KDBOptions, #KDBErr
  * @see kdbGetChildKeys() for a convenience method
  * @see ksLookupByName(), ksLookupRE(), ksLookupByValue() for powerfull
  * 	lookups after the KeySet was retrieved
@@ -868,8 +869,9 @@ while (key) {
  * @see commandList() code in kdb command for usage example
  * @see commandEdit() code in kdb command for usage example
  * @see commandExport() code in kdb command for usage example
- * @return number of keys contained by @p returned
- * @return -1 on failure and @c errno is propagated
+ * @return number of keys contained by @p returned or -1 on failure, @c errno
+ *    is propagated and can be KDBErr::KDB_RET_INVALIDKEY,
+ *    KDBErr::KDB_RET_NOTFOUND
  * @ingroup kdb
  *
  */

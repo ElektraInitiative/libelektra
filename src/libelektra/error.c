@@ -65,6 +65,7 @@ char *kdbStrError(int errnum) {
 /**
  * Prints an error message related to @c errno on standard error, prefixed by @p msg.
  * @see kdbStrError()
+ * @see example on kdbGetKeyChildKeys()
  * @ingroup kdb
  */
 int kdbPrintError(const char * msg) {
