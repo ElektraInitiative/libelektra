@@ -871,7 +871,7 @@ while (key) {
  * @see commandExport() code in kdb command for usage example
  * @return number of keys contained by @p returned or -1 on failure, @c errno
  *    is propagated and can be KDBErr::KDB_RET_INVALIDKEY,
- *    KDBErr::KDB_RET_NOTFOUND
+ *    KDBErr::KDB_RET_NOTFOUND, KDBErr::KDB_RET_NOSYS
  * @ingroup kdb
  *
  */
@@ -896,7 +896,7 @@ ssize_t kdbGetKeyChildKeys(KDBHandle handle, const Key *parentKey,
  * uses a string.
  * 
  * @return 0 on success
- * @return -1 on failure and @c errno is propagated
+ * @return -1 on failure and @c errno is propagated from kdbGetKeyChildKeys()
  * @see kdbGetKeyChildKeys()
  * @ingroup kdb
  */
@@ -915,9 +915,6 @@ ssize_t kdbGetChildKeys(KDBHandle handle, const char *parentName, KeySet *return
 
 
 /**
- *
- * @depreciated (reason: its trivial) get user and system keys better yourself
- * 
  * Returns a KeySet with all root keys currently recognized and present
  * on the system. Currently, the @p system and current user's @p user keys
  * are returned.
@@ -956,11 +953,11 @@ ssize_t kdbGetRootKeys(KDBHandle handle, KeySet *returned) {
  * Stats the key only for its meta-info from the backend storage.
  * The key may not hold value and comment after using kdbStatKey().
  * 
- * A key of type KEY_TYPE_LINK will have its target address loaded in the
+ * A key of type KeyType::KEY_TYPE_LINK will have its target address loaded in the
  * @p key structure, which can be accessed later using keyStealValue() or
  * keyGetString(). This is the only way to know the target of a link key
  * without dereferencing it (in contrast to kdbGetKey(), where the link is
- * dereferenced).
+ * followed).
  *
  * Info like comments and key data type may not be retrieved if backend
  * supports a way not to get them.

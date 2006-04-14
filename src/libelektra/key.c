@@ -746,25 +746,37 @@ ssize_t keyAddBaseName(Key *key,const char *baseName) {
  * All text after the last @c '/' in the @p key keyname is erased and
  * @p baseName is appended.
  *
- * So if @p key has name @c "system/dir1/dir2/mykey" and this method is
- * called with @p baseName @c "herkey", the resulting key will have name
- * @c "system/dir1/dir2/herkey".
+ * So lets suppose @p key has name @c "system/dir1/dir2/key1". If @p baseName
+ * is @c "key2", the resulting key name will be @c "system/dir1/dir2/key2".
+ * If @p baseName is empty or NULL, the resulting key name will
+ * be @c "system/dir1/dir2".
  *
- * @return the size in bytes of the new key name
+ * @return the size in bytes of the new key name or -1 on error, and
+ *    @c errno is set to KDBErr::KDB_RET_NOMEM
  * @see keyAddBaseName()
  * @ingroup keyname
  * 
  */
 ssize_t keySetBaseName(Key *key, const char *baseName) {
-	size_t newSize=strblen(baseName);
+	size_t newSize=0;
 	char *end;
 	char *p;
+
+	if (baseName) newSize=strblen(baseName);
 	
-	end=strrchr(key->key,'/');
+	/* reverse search for our name delimiter ('/') */
+	end=strrchr(key->key,RG_KEY_DELIM);
 	
 	if (end) {
-		newSize+=end-key->key;
-		end[1]=0;
+		if (newSize > 1)
+			end[1]=0;
+		else {
+			/* baseName is empty or NULL, so simply remove the basename */
+			end[0]=0;
+			return end - key->key + 1;
+		}
+		
+		newSize += end - key->key;
 		p=realloc(key->key,newSize);
 		if (NULL == p) {
 			errno=KDB_RET_NOMEM;
