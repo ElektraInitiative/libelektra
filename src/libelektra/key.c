@@ -1008,16 +1008,12 @@ int keyIsSystem(const Key *key) {
  * Check whether a key name is under the @p user namespace or not
  *
  * @return 1 if string begins with @p user, 0 otherwise
- * @deprecated compare keyName with user
  * @param keyName the name of a key
  * @see keyIsSystem(), keyIsUser(), keyNameIsSystem()
  * @ingroup keyname
  *
  */
 int keyNameIsUser(const char *keyName) {
-	/* if (!keyName) return 0;
-	if (!strlen(keyName)) return 0; */
-
 	if (!strncmp("user",keyName,sizeof("user")-1)) return 1;
 	return 0;
 }

@@ -7,7 +7,23 @@ License:       BSD
 URL:           http://www.libelektra.org
 Requires:      libxml2
 BuildRoot:     %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildRequires: doxygen docbook-style-xsl db4-devel libxml2-devel gettext-devel automake autoconf libtool libxslt #GConf2-devel
+BuildRequires: doxygen db4-devel libxml2-devel gettext-devel automake autoconf libtool docbook-style-xsl libxslt
+
+# Requires section:
+# libxml2: used only by kdbtools library, to import keys from XML
+# 
+# BuildRequires section:
+# doxygen: to build the API documentation
+# libxslt, docbook-style-xsl: to build man pages from docbook with xsltproc program
+# db4-devel: for the Berkeley DB backend
+# libxml2-devel: for the kdbtools library build
+# gettext-devel: for the autoconf ICONV macro only
+# automake, autoconf: for the build system
+# libtool: not sure
+# GConf2-devel: for the testing GConf2 backend for Elektra
+
+
+
 Summary:       A key/value pair database to store software configurations
 
 %define DTDVERSION 0.1.1
@@ -45,6 +61,7 @@ static libraries.
 #Summary:      A GConf backend for Elektra
 #Group:        System Environment/Libraries
 #Requires:     elektra GConf2
+#add this in the main RPM description: BuildRequires: GConf2-devel
 
 
 #%description backend-gconf
