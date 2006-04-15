@@ -409,11 +409,16 @@ ssize_t kdbGetKeyChildKeys_ini(KDBHandle handle, const Key * key, KeySet *return
 /**Walks through a file and Lookups if the found key is in the
  * given Keyset. When found it overwrites the key.
  *
+ * It will write afterwards all other keys fitting in the same
+ * file. The others will remain in the keyset.
+ *
  * When not found it writes out the keys before the sectionend.
  * This can be:
  * 
  * setting keys new keys will introduce new folders and files
  * as needed.
+ *
+ * At least one key will be written!
  * 
  * @return 0 on success
  * @return -1 on failure
@@ -452,7 +457,7 @@ int IniSetKeys (KeySet * origKeys)
 
 	if (pos == -1) /* no such file exists*/
 	{
-		file_name (key, keyFileName);
+		file_name(key,keyFileName);
 		create_dir(keyFileName);	
 	}
 	
@@ -469,7 +474,7 @@ int IniSetKeys (KeySet * origKeys)
 	*end = '/';	/*revert keyname*/
 
 #ifdef DEBUG
-	fprintf (stderr, "keyRoot: %s\n", keyRoot);
+	fprintf (stderr, "keyRoot: %s, keyName: %s\n", keyRoot, keyFullName);
 	fprintf (stderr, "Set Key [%d] in File: %s\n",keySize, keyFileName);
 #endif
 
@@ -520,6 +525,10 @@ int IniSetKeys (KeySet * origKeys)
 	free (keyRoot);
 	
 	keyClose (key);
+
+#ifdef DEBUG
+	fprintf (stderr, "leaving IniSetKeys()\n");
+#endif
 	
 	return pos; /* success */
 
@@ -572,153 +581,12 @@ int kdbSetKey_ini(KDBHandle handle, Key *origkey) {
  * @ingroup ini
  */
 int kdbSetKeys_ini(KDBHandle handle, KeySet *ks) {
-	int rc;
-	do {
-		rc = IniSetKeys (ks);
-	} while (rc < 1);
-	
-	return rc;
+	return IniSetKeys (ks);
 }
 
 
 #define SETKEY_SET 0
 #define SETKEY_DELETE 1
-
-
-/**Finds and remove a key.
- * 
- * Removeing keys may remove folders and files.
- *
- * Files will be removed when all keys are deleted and then it there is a
- * request to remove the DIR which refers to the file.
- *
- * Folders will be removed when all keys inside it are deleted and
- * there is a request to remove the DIR which refers the folder.
- * */
-int IniRemoveKey (Key * origkey, int op)
-{
-	char keyFileName [MAX_PATH_LENGTH];
-	
-	int pos;
-	int keySize;
-	char * keyFullName = NULL;
-	char * keyRoot = NULL;
-	char * end;
-
-	Key psetKey;
-	Key pkey;
-	Key * setKey = &psetKey;
-	Key * key = &pkey;
-
-	long oldpos;
-	
-#ifdef DEBUG
-	fprintf (stderr, "IniRemoveKey() entered\n");
-#endif
-
-	keyInit (setKey);
-	keyInit (key);
-	keyDup (origkey, setKey); /* for writing*/
-	keyDup (origkey, key);	/* for searching*/
-	
-	pos = IniSearchFileName(key, keyFileName);
-
-#ifdef DEBUG
-	fprintf (stderr, "after SearchFileName ...\n");
-#endif
-
-	if (pos == -1) /* no such file exists*/
-	{
-		file_name (key, keyFileName);
-		create_dir(keyFileName);	
-	}
-	
-	keySize = keyGetNameSize (key);
-	keyFullName = malloc (keySize+1);
-	if (keyFullName == NULL) goto memerror;
-	keyGetName(key, keyFullName, keySize);
-	
-	end = strrchr (keyFullName, '/');	/* dirname*/
-	*end = 0;
-	keyRoot = malloc (strlen (keyFullName));
-	if (keyRoot == NULL) goto memerror;
-	strcpy (keyRoot, keyFullName);
-	*end = '/';
-
-#ifdef DEBUG
-	fprintf (stderr, "keyRoot: %s\n", keyRoot);
-	fprintf (stderr, "Set Key [%d] in File: %s\n",keySize, keyFileName);
-#endif
-
-	if (open_file (keyFileName, O_RDWR) == -1)
-	{
-#ifdef DEBUG
-		fprintf (stderr, "Could not open file %s\n", keyFileName);
-#endif
-		errno = KDB_RET_NOTFOUND;
-		goto fileerror;
-	}
-	
-	while ((pos=read_key (key, keyRoot)) == 0)
-	{
-		if (strcmp (key->key, keyFullName) == 0) 
-		{	/* right Key found*/
-#ifdef DEBUG
-			fprintf (stderr, "Key found\n");
-			fprintf(stderr, "Name: (%s), Value: (%s), Comment: (%s)\n",
-				keyStealName (setKey), (char *) keyStealValue(setKey),
-				(char *) keyStealComment (setKey));
-#endif
-			/*switch to next key*/
-			if (key->key) free(key->key);
-			key->key = malloc (keySize+1);
-			strncpy (key->key, keyFullName, keySize);
-
-			if (op == SETKEY_SET)
-			{
-				write_key(setKey, oldpos);
-			} else {
-				remove_key (setKey, oldpos);
-			}
-			pos = 1;
-			break;
-		}
-		oldpos = ftell (fc);
-	}
-	if (pos != 1) {	/* key not found, add to the end*/
-#ifdef DEBUG
-		fprintf (stderr, "Key not found!\n");
-#endif
-		fseek (fc, 0, SEEK_END);
-		oldpos = ftell(fc);
-		write_key(setKey, oldpos);
-		pos = 0;
-	} else if (pos == 1) { /* key found, everything went ok!*/
-		pos = 0;
-	}
-	
-	close_file ();
-	
-	free (keyFullName);
-	free (keyRoot);
-	
-	return pos; /* success */
-memerror:
-	errno=KDB_RET_NOMEM;
-	close_file ();
-#ifdef DEBUG
-	fprintf (stderr, "Memory Error\n");
-#endif
-fileerror:
-	
-	free (keyFullName);
-	free (keyRoot);
-	
-	keyClose (setKey);
-	keyClose (key);
-	
-	return -1;
-}
 
 
 /**
@@ -728,7 +596,7 @@ fileerror:
  * @ingroup ini
  */
 int kdbRemoveKey_ini(KDBHandle handle, const Key *key) {
-	/*return IniSetKey (key, SETKEY_DELETE);*/
+	/**TODO: Remove kdbRemoveKeys from API, use kdbSetKeys instead*/
 	return 0;
 }
 

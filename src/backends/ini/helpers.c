@@ -17,12 +17,15 @@
 
 #include <ini.h>
 
+#define _POSIX_SOURCE 1
+
 /**POSIX include files*/
 #include <unistd.h>
 #include <pwd.h>
 #include <fcntl.h>
 #include <dirent.h>
 #include <stdio.h>
+#include <string.h>
 
 #include <sys/stat.h>
 #include <sys/file.h>

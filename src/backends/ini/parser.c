@@ -380,7 +380,6 @@ int make_key (Key * key, char * root, char * buffer_key, char * buffer_value, ch
 {
 	char * buffer_name = NULL;
 
-	fprintf (stderr, "make_key ()\n");
 	if ((buffer_name = malloc (strlen(buffer_key) + strlen(root) + 2)) == NULL)
 		return -1;
 	
@@ -415,7 +414,6 @@ int make_key (Key * key, char * root, char * buffer_key, char * buffer_value, ch
 	
 	free (buffer_name);
 	
-	fprintf (stderr, "leave make_key ()\n");
 	return 0;	
 }
 
@@ -438,7 +436,7 @@ int write_key (Key * setKey, long oldpos)
 	char * comment;
 
 #ifdef DEBUG
-	fprintf (stderr, "write_key (Key, pos: %d)\n", oldpos);
+	fprintf (stderr, "write_key (Key, pos: %ld)\n", oldpos);
 #endif
 	/** use setkey to set the key to wished values*/
 	newpos = ftell (fc);
@@ -459,7 +457,7 @@ int write_key (Key * setKey, long oldpos)
 	}
 	
 #ifdef DEBUG
-	fprintf(stderr, "Writing key to disc (pos: %ld|%ld|%d) ...\n",
+	fprintf(stderr, "Writing key to disc (pos: %ld|%ld|%ld) ...\n",
 		oldpos, newpos, needed_size);
 #endif
 	fseek (fc, oldpos, SEEK_SET);
@@ -504,7 +502,7 @@ int remove_key (Key * setKey, long oldpos)
 	comment = keyStealComment (setKey);
 	
 #ifdef DEBUG
-	fprintf (stderr, "remove_key (Key, pos)\n", oldpos);
+	fprintf (stderr, "remove_key (Key, pos)\n");
 #endif
 	/** use setkey to set the key to wished values*/
 	newpos = ftell (fc);
@@ -517,7 +515,7 @@ int remove_key (Key * setKey, long oldpos)
 	shrink_file (oldpos, newpos - oldpos - delete_size);
 	
 #ifdef DEBUG
-	fprintf(stderr, "Deleting key on disc (pos: %ld|%ld|%d) ...\n",
+	fprintf(stderr, "Deleting key on disc (pos: %ld|%ld|%ld) ...\n",
 		oldpos, newpos, delete_size);
 #endif
 	return 0;
