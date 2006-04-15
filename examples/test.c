@@ -342,7 +342,7 @@ int main(int argc, char **argv) {
 	getKey();	
 	delKeys();
 
-	headerOut ("multiple set, single get");
+/*	headerOut ("multiple set, single get");
 	setKeys ();
 	getKey ();
 	delKeys();
@@ -355,7 +355,7 @@ int main(int argc, char **argv) {
 	headerOut ("multiple set, multiple get");
 	setKeys ();
 	getKeys ();
-	delKeys ();
+	delKeys ();*/
 	
 	headerOut ("finished tests");
 	
