@@ -22,14 +22,16 @@ int tests;
 #define ROOT_KEY "user/test"
 
 #define NUL_KEY ROOT_KEY "/nul"
+#define NUL_VAL ""
+#define NUL_COM ""
 
 #define NEW_KEY ROOT_KEY "/new"
 #define NEW_VAL "value"
 #define NEW_COM "comme"
 
 #define ANO_KEY ROOT_KEY "/ano"
-#define ANO_VAL "ano=th;va\nl\0ue"
-#define ANO_COM "com=en;tt\nh\0hi"
+#define ANO_VAL "ano=th;va\nlue"
+#define ANO_COM "com=en;tt\nhhi"
 
 #define DIR_KEY ROOT_KEY "/dir"
 
@@ -43,7 +45,10 @@ int tests;
 Key * newNulKey ()
 {
 	return
-	keyNew (NUL_KEY, KEY_SWITCH_END);
+	keyNew (NUL_KEY,
+		KEY_SWITCH_VALUE, NUL_VAL,
+		KEY_SWITCH_COMMENT, NUL_COM,
+		KEY_SWITCH_END);
 }
 
 Key * newNewKey ()
@@ -119,11 +124,14 @@ void testOut (Key * orig, Key * read, const char * keyname)
 	fprintf (stderr, "Test ");
 	tests ++;
 	failed=keyCompare (orig, read);
-	if (failed | ~KEY_SWITCH_NEEDSYNC)
+	if (failed == KEY_SWITCH_NEEDSYNC)
 	{
-		fprintf (stderr, "suceeded for : %s\n", keyname);
-		return;
-	} else fprintf (stderr, "failed for : %s\n", keyname);
+		fprintf (stderr, "succeded for : %s\n", keyname);
+		// return;
+	} else {
+		fprintf (stderr, "failed for : %s\n", keyname);
+		failures ++;
+	}
 	if (failed & KEY_SWITCH_TYPE) 
 		fprintf (stderr, "type differs: is %d, was %d\n",
 			keyGetType(read),keyGetType(orig));
@@ -161,7 +169,7 @@ void statisticsOut ()
 	printf ("-%d    tests passed\n", tests-failures);
 	printf ("-----\n");
 	printf (" %d    tests failed", failures);
-	if (failures != 0) printf ("  (%d %%)", tests/failures*100);
+	if (failures != 0) printf ("  (%3.2f %%)", ((double)failures/(double)tests)*100.0);
 	printf ("\n******************************\n");
 }
 
@@ -251,7 +259,7 @@ void getKeys ()
 }
 
 
-void getKey ()
+void getKey()
 {
 	Key * k;
 
@@ -342,7 +350,7 @@ int main(int argc, char **argv) {
 	getKey();	
 	delKeys();
 
-/*	headerOut ("multiple set, single get");
+	headerOut ("multiple set, single get");
 	setKeys ();
 	getKey ();
 	delKeys();
@@ -355,7 +363,7 @@ int main(int argc, char **argv) {
 	headerOut ("multiple set, multiple get");
 	setKeys ();
 	getKeys ();
-	delKeys ();*/
+	delKeys ();
 	
 	headerOut ("finished tests");
 	
