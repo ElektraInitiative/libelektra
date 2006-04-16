@@ -62,6 +62,8 @@ int main() {
 	
 	keyAddBaseName(key,"ex7");
 	
+	keySetBaseName(key,"///ex8///");
+	
 	ksAppend(ks,key);
 	
 	ksToStream(ks,stdout,KDB_O_XMLHEADERS);
