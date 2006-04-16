@@ -1,14 +1,12 @@
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+#include <stdio.h>
 #include <kdb.h>
 
 int main() {
 	KeySet *ks=ksNew();
+	Key *key=0;
 	KDBHandle handle;
 	
 	kdbOpen(&handle);
-	
 	ksAppend(ks,keyNew("user/sw",KEY_SWITCH_END));  /* a simple key */
 	
 	ksAppend(ks,keyNew(0));     /* an empty key */
@@ -16,7 +14,7 @@ int main() {
 	ksAppend(ks,keyNew("system/sw",
 		KEY_SWITCH_NEEDSYNC, handle,        /* a key we'll retrieve from storage */
 		KEY_SWITCH_END));
-		
+	
 	ksAppend(ks,keyNew("user/tmp/ex1",
 		KEY_SWITCH_VALUE,"some data",        /* with a simple value */
 		KEY_SWITCH_END));                    /* end of args */
@@ -33,9 +31,9 @@ int main() {
 		KEY_SWITCH_END));                                 /* end of args */
 	
 	ksAppend(ks,keyNew("user/tmp/ex4",
-		KEY_SWITCH_TYPE,KEY_TYPE_BINARY,7,   /* type and value size */
+		KEY_SWITCH_TYPE,KEY_TYPE_BINARY,     /* type and value size */
 		KEY_SWITCH_COMMENT,"value is truncated",
-		KEY_SWITCH_VALUE,"some data",        /* value that will be truncated */
+		KEY_SWITCH_VALUE,"some data",7,      /* value that will be truncated to 7 bytes */
 		KEY_SWITCH_UID,0,                    /* root uid */
 		KEY_SWITCH_END));                    /* end of args */
 	
@@ -55,12 +53,22 @@ int main() {
 		KEY_SWITCH_COMMENT,"new comment",    /* set new comment */
 		KEY_SWITCH_END));                    /* end of args */
 	
+	key=keyNew("user/tmp////",
+		KEY_SWITCH_TYPE, KEY_TYPE_STRING,
+		KEY_SWITCH_END);
+	
+	/* we are providing a lot of '/' to see it being removed */
+	keyAddBaseName(key,"////ex6////");
+	
+	keyAddBaseName(key,"ex7");
+	
+	ksAppend(ks,key);
+	
 	ksToStream(ks,stdout,KDB_O_XMLHEADERS);
 	
 	ksDel(ks);
 	
 	return kdbClose(&handle);
-	
 }
 
 

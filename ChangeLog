@@ -1,6 +1,7 @@
 * Fri Mar 31 2006 Avi Alkalay <avi@unix.sh> 0.6.1-3
 - Updated presentation with some desktop related charts
 - Converted to Open Document Format::Presentation
+- Fixed a bug in keyAddBasename() related to multiple '/' cleanup
 - Fixed many build details
 - Fixed many spec details to meet Fedora Extras requirements and standards
 

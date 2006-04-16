@@ -1,6 +1,6 @@
 Name:          elektra
 Version:       @VERSION@
-Release:       3
+Release:       4
 Source:        http://prdownloads.sourceforge.net/elektra/%{name}-%{version}.tar.gz
 Group:         System Environment/Libraries
 License:       BSD

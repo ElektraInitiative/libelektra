@@ -250,17 +250,16 @@ emptyNamedKey=keyNew("user/some/example",KEY_SWITCH_END);
  * 
  * The Key attribute tags are the following:
  * - KeySwitch::KEY_SWITCH_TYPE \n
- *   This tag requires 1 or 2 more parameters. The first is obviously the
- *   type. If the type is KeySwitch::KEY_TYPE_BINARY or any other binary-like
- *   user-defined type (see keySetType()), a second parameter is needed and
- *   is the size in bytes (size_t) of the data passed on the subsequent
- *   KeySwitch::KEY_SWITCH_VALUE parameter. You must use this tag before
- *   KeySwitch::KEY_SWITCH_VALUE, otherwise KeyType::KEY_TYPE_STRING is
- *   assumed.
+ *   Next parameter is a type of the value from #KeyType or a custom type.
+ *   You must use this tag before KeySwitch::KEY_SWITCH_VALUE, otherwise
+ *   KeyType::KEY_TYPE_STRING is assumed.
  * - KeySwitch::KEY_SWITCH_VALUE \n
  *   Next parameter is a pointer to the value that will be set to the key
  *   If no KeySwitch::KEY_SWITCH_TYPE was used before,
- *   KeySwitch::KEY_TYPE_STRING is assumed.
+ *   KeySwitch::KEY_TYPE_STRING is assumed. If KEY_SWITCH_TYPE was previously
+ *   passed with a KEY_TYPE_BINARY or any other custom binary type (see
+ *   keySetType()) as parameter, one parameter is needed to define the binary
+ *   value size. See the example bellow.
  * - KeySwitch::KEY_SWITCH_UID, @p KeySwitch::KEY_SWITCH_GID \n
  *   Next parameter is taken as the UID (uid_t) or GID (gid_t) that will
  *   be defined on the key. See keySetUID() and keySetGID().
@@ -315,10 +314,10 @@ ksAppend(ks,keyNew("user/tmp/ex3",
 	KEY_SWITCH_END));                      // end of args
 	
 ksAppend(ks,keyNew("user/tmp/ex4",
-	KEY_SWITCH_TYPE,KEY_TYPE_BINARY,7,     // key type and value size (because it is binary)
-	KEY_SWITCH_DOMAIN,"root",              // owner (not uid) is root
-	KEY_SWITCH_VALUE,"some data",          // value that will be truncated
+	KEY_SWITCH_TYPE,KEY_TYPE_BINARY,       // key type and value size (because it is binary)
+	KEY_SWITCH_VALUE,"some data",7,        // value that will be truncated in 7 bytes
 	KEY_SWITCH_COMMENT,"value is truncated",
+	KEY_SWITCH_DOMAIN,"root",              // owner (not uid) is root
 	KEY_SWITCH_UID,0,                      // root uid
 	KEY_SWITCH_END));                      // end of args
 	
@@ -396,9 +395,10 @@ Key *keyNew(const char *keyName, ...) {
 						 * above keySetString override */
 						keySetType(key,keyType);
 					} else {
-						/* Binary val: we need first the size of the value */
+						/* Binary val: we need first the value then the size */
+						void *value=va_arg(va,void *);
 						valueSize=va_arg(va,size_t);
-						keySetRaw(key,va_arg(va,void *),valueSize);
+						keySetRaw(key,value,valueSize);
 					}
 
 					break;
@@ -532,6 +532,7 @@ ssize_t keySetName(Key *key, const char *newName) {
 	}
 
 	/* Remove trailing  '/' if caller passed some */
+	/* TODO: handle escaping with '\' */
 	while (length && (RG_KEY_DELIM==newName[length-1]))
 		length--;
 
@@ -704,6 +705,8 @@ ssize_t keyAddBaseName(Key *key,const char *baseName) {
 	
 	if (newSize == 0) return nameSize;
 	
+	/* At this point, newSize has size of the baseName string +1, for NULL */
+	
 	if (key->key) {
 		/* Remove trailing '/' in keyname if caller passed some */
 		while (nameSize-2 && key->key[nameSize-1] == RG_KEY_DELIM &&
@@ -720,11 +723,11 @@ ssize_t keyAddBaseName(Key *key,const char *baseName) {
 			newSize--;
 		}
 		
+		/* At this point, newSize has the size of the baseName +1 */
+		
 		/* Remove all '/' in the end of baseName */
-		while (newSize-2 && realBasename[newSize-1] == RG_KEY_DELIM &&
-				realBasename[newSize-2] == RG_KEY_DELIM) {
+		while (newSize-2 && realBasename[newSize-2] == RG_KEY_DELIM)
 			newSize--;
-		}
 		
 		/* Now we know the final key size */
 		newSize += nameSize;
@@ -738,7 +741,8 @@ ssize_t keyAddBaseName(Key *key,const char *baseName) {
 		if (key->key[nameSize-1] != RG_KEY_DELIM && *realBasename)
 			strcat(key->key,"/");
 		
-		strncat(key->key,realBasename,newSize-nameSize);
+		strncat(key->key,realBasename,newSize-nameSize-1);
+		key->key[newSize-1]=0;
 		
 	} else return keySetName(key,baseName);
 	
