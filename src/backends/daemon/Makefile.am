@@ -8,7 +8,7 @@ libproto_la_LDFLAGS = -version-info 1:0:0
 
 lib_LTLIBRARIES = libelektra-daemon.la
 libelektra_daemon_la_SOURCES = daemon.c
-libelektra_daemon_la_LDFLAGS = -version-info 1:0:0 -module
+libelektra_daemon_la_LDFLAGS = -avoid-version -module
 libelektra_daemon_la_LIBADD = libproto.la
 
 bin_PROGRAMS = kdbd

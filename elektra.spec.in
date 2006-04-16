@@ -1,17 +1,17 @@
 Name:          elektra
 Version:       @VERSION@
-Release:       1
-Source:        http://aleron.dl.sourceforge.net/sourceforge/elektra/%{name}-%{version}.tar.gz
+Release:       3
+Source:        http://prdownloads.sourceforge.net/elektra/%{name}-%{version}.tar.gz
 Group:         System Environment/Libraries
 License:       BSD
 URL:           http://www.libelektra.org
-Requires:      libxml2
+# Requires:      libxml2
 BuildRoot:     %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildRequires: doxygen db4-devel libxml2-devel gettext-devel automake autoconf libtool docbook-style-xsl libxslt
+BuildRequires: doxygen db4-devel libxml2-devel docbook-style-xsl libxslt
 
 # Requires section:
-# libxml2: used only by kdbtools library, to import keys from XML
-# 
+# libxml2: used only by libkdbtools, to import keys from XML
+#
 # BuildRequires section:
 # doxygen: to build the API documentation
 # libxslt, docbook-style-xsl: to build man pages from docbook with xsltproc program
@@ -23,10 +23,9 @@ BuildRequires: doxygen db4-devel libxml2-devel gettext-devel automake autoconf l
 # GConf2-devel: for the testing GConf2 backend for Elektra
 
 
-
 Summary:       A key/value pair database to store software configurations
 
-%define DTDVERSION 0.1.1
+
 
 %description
 Elektra provides a universal and secure framework to store configuration
@@ -39,28 +38,22 @@ registries, Elektra does not have most of the problems found in those
 implementations.
 
 %package devel
-Summary:      Include files and API documentation for Elektra Project
+Summary:      Include files and API documentation to build elektrified programs
 Group:        Development/System
 Requires:     elektra = %{version}-%{release}
 
 %description devel
 Elektra provides a universal and secure framework to store configuration
-parameters in a hierarchical key-value pair mechanism, instead of each
-program using its own text configuration files. This allows any program
-to read and save its configuration with a consistent API, and allows
-them to be aware of other applications' configurations, permitting
-easy application integration. While architecturally similar to other OS
-registries, Elektra does not have most of the problems found in those
-implementations.
+parameters in a hierarchical key-value pair tree.
 
-This Package contains development specific things as include files and
-static libraries.
+This package contains development specific things as include files and
+static libraries to create elektrified programs.
 
 
 #%package backend-gconf
 #Summary:      A GConf backend for Elektra
 #Group:        System Environment/Libraries
-#Requires:     elektra GConf2
+#Requires:     elektra
 #add this in the main RPM description: BuildRequires: GConf2-devel
 
 
@@ -79,45 +72,38 @@ static libraries.
 
 
 %package backend-berkeleydb
-Summary:      Include files and API documentation for Elektra Project
+Summary:      Elektra backend that stores key/value pairs in berkeley DB databases
 Group:        System Environment/Libraries
-Requires:     elektra db4
+Requires:     elektra
 
 
 %description backend-berkeleydb
 Elektra provides a universal and secure framework to store configuration
-parameters in a hierarchical key-value pair mechanism, instead of each
-program using its own text configuration files. This allows any program
-to read and save its configuration with a consistent API, and allows
-them to be aware of other applications' configurations, permitting
-easy application integration. While architecturally similar to other OS
-registries, Elektra does not have most of the problems found in those
-implementations.
+parameters in a hierarchical key-value pair tree.
 
 This package contains a Berkeley DB backend for Elektra, to let Elektra use
 Berkeley DB databases to store its keys.
 
-# Uncomment and joint the '%' char to 'debug_package' if you want to build debug RPMs
+# Uncomment and join the '%' char to 'debug_package' if you want to build debug RPMs
 # % debug_package
 
 %prep
 %setup
 %build
-# Setup for parallel builds
-numprocs=`egrep -c ^cpu[0-9]+ /proc/stat || :`
-if [ "$numprocs" = "0" ]; then
-	numprocs=1
-fi
 
-./configure \
-     --prefix=/usr \
+# $CFLAGS=$RPM_OPT_FLAGS ./configure \
+
+%configure \
+     --prefix=%{_prefix} \
      --exec-prefix=/ \
+     --bindir=/bin \
+     --libdir=/%{_lib} \
      --mandir=%{_mandir} \
      --sysconfdir=%{_sysconfdir} \
      --disable-xmltest \
-     --with-docbook=/usr/share/sgml/docbook/xsl-stylesheets
+     --with-docbook=%{_datadir}/sgml/docbook/xsl-stylesheets
 
-make all
+make %{?_smp_mflags} all
 
 
 %install
@@ -125,17 +111,17 @@ rm -rf $RPM_BUILD_ROOT
 
 make DESTDIR=$RPM_BUILD_ROOT install
 
-rm $RPM_BUILD_ROOT/lib/libelektra-*.a
-mv $RPM_BUILD_ROOT/lib/libelektra.a $RPM_BUILD_ROOT/usr/lib
+rm $RPM_BUILD_ROOT/%{_lib}/libelektra-*.a
+mv $RPM_BUILD_ROOT/%{_lib}/libelektra.a $RPM_BUILD_ROOT/%{_libdir}
  
 #rm $RPM_BUILD_ROOT/usr/lib/libelektra-*.a
-rm $RPM_BUILD_ROOT/lib/*.la
-rm $RPM_BUILD_ROOT/usr/lib/*.la
+rm $RPM_BUILD_ROOT/%{_lib}/*.la
+rm $RPM_BUILD_ROOT/%{_libdir}/*.la
  
 
 %clean
-#rm -rf $RPM_BUILD_ROOT
-rm -rf $RPM_BUILD_DIR/%{name}
+rm -rf $RPM_BUILD_ROOT
+#rm -rf $RPM_BUILD_DIR/%{name}
 
 
 
@@ -143,14 +129,15 @@ rm -rf $RPM_BUILD_DIR/%{name}
 %post
 /sbin/ldconfig
 # Backwards compatibility, from the Linux Registry days
-if [ -d /etc/registry -a ! -d /etc/kdb ]; then
-	mv /etc/registry /etc/kdb
-	ln -s kdb /etc/registry
-fi
+#if [ -d /etc/registry -a ! -d /etc/kdb ]; then
+#	$MOVE /etc/registry /etc/kdb
+#	$LINK -s kdb /etc/registry
+#fi
 
 # Create basic key structure for apps
 kdb set -t dir system/sw
-kdb set system/sw/kdb/current/schemapath "%{_datadir}/sgml/elektra-%{DTDVERSION}/elektra.xsd"
+kdb set system/sw/kdb/schemapath "%{_datadir}/sgml/elektra-0.1.1/elektra.xsd"
+
 
 
 %postun -p /sbin/ldconfig
@@ -158,41 +145,40 @@ kdb set system/sw/kdb/current/schemapath "%{_datadir}/sgml/elektra-%{DTDVERSION}
 
 
 %files
-%defattr(-,root,root,0755)
-/lib/*elektra.so*
-#/lib/*registry.so*
-/lib/*elektra-filesys.so*
-/lib/*elektra-default.so*
-/lib/*elektra-fstab.so*
-#/lib/*elektra-ini.so*
-%{_libdir}/*elektratools.so*
+%defattr(-,root,root,-)
 /bin/*
+/%{_lib}/*elektra.so*
+/%{_lib}/*elektra-filesys.so*
+/%{_lib}/*elektra-default.so*
+/%{_lib}/*elektra-fstab.so*
+#/%{_lib}/*elektra-ini.so*
+%{_libdir}/*elektratools.so*
 %{_sysconfdir}/profile.d/*
 %doc %{_docdir}/%{name}
-%doc %{_mandir}/man1/*
-%doc %{_mandir}/man7/*
-%doc %{_mandir}/man5/*
+%{_mandir}/man1/*
+%{_mandir}/man7/*
+%{_mandir}/man5/*
 %{_datadir}/sgml/*
-
+%doc AUTHORS COPYING ChangeLog README
 
 
 %files devel
-%defattr(-,root,root,0755)
+%defattr(-,root,root,-)
 %{_includedir}/*
 %{_libdir}/*.a
 %{_libdir}/pkgconfig/*
 %doc %{_docdir}/%{name}-devel
-%doc %{_mandir}/man3/*
+%{_mandir}/man3/*
 
 
 
 #%files backend-gconf
-#%defattr(-,root,root,0755)
+#%defattr(-,root,root,-)
 #%{_libdir}/*gconf.so*
 
 %files backend-berkeleydb
-%defattr(-,root,root,0755)
-/lib/*berkeleydb.so*
+%defattr(-,root,root,-)
+/%{_lib}/*berkeleydb.so*
 
 
 

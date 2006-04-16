@@ -695,31 +695,39 @@ ssize_t keyAddBaseName(Key *key,const char *baseName) {
 	size_t nameSize=0;
 	size_t newSize=0;
 	int ndelim=0;
+	char *realBasename;
 	char *p;
 
-	if (key->key) nameSize=strblen(key->key)-1;
+	if (key->key) nameSize=strblen(key->key) - 1;
 	if (baseName) newSize=strblen(baseName);
 	else return nameSize;
 	
-	if (newSize==0) return nameSize;
+	if (newSize == 0) return nameSize;
 	
 	if (key->key) {
-		/* Remove trailing '/' if caller passed some */
-		while (nameSize-2 && key->key[nameSize-1]==RG_KEY_DELIM &&
-		       key->key[nameSize-2]!=RG_KEY_DELIM) {
+		/* Remove trailing '/' in keyname if caller passed some */
+		while (nameSize-2 && key->key[nameSize-1] == RG_KEY_DELIM &&
+				key->key[nameSize-2] == RG_KEY_DELIM) {
 			key->key[--nameSize]=0;
 		}
 		
 		if (key->key[nameSize-1] != RG_KEY_DELIM) nameSize++;
 		
 		/* Remove all '/' in the begining of baseName */
-		while (baseName[ndelim] && baseName[ndelim] == RG_KEY_DELIM) {
+		realBasename=baseName;
+		while (*realBasename && *realBasename == RG_KEY_DELIM) {
+			realBasename++;
 			newSize--;
-			ndelim++;
+		}
+		
+		/* Remove all '/' in the end of baseName */
+		while (newSize-2 && realBasename[newSize-1] == RG_KEY_DELIM &&
+				realBasename[newSize-2] == RG_KEY_DELIM) {
+			newSize--;
 		}
 		
 		/* Now we know the final key size */
-		newSize+=nameSize;
+		newSize += nameSize;
 		p=realloc(key->key,newSize);
 		if (NULL == p) {
 			errno=KDB_RET_NOMEM;
@@ -727,10 +735,10 @@ ssize_t keyAddBaseName(Key *key,const char *baseName) {
 		}
 		key->key=p;
 
-		if (key->key[nameSize-1] != RG_KEY_DELIM && baseName[ndelim])
+		if (key->key[nameSize-1] != RG_KEY_DELIM && *realBasename)
 			strcat(key->key,"/");
 		
-		strcat(key->key,baseName+ndelim);
+		strncat(key->key,realBasename,newSize-nameSize);
 		
 	} else return keySetName(key,baseName);
 	

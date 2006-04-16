@@ -1,4 +1,65 @@
-* Sun Jan 29 2006 Avi Alkalay <avi@unix.sh> 0.5.6
+* Fri Mar 31 2006 Avi Alkalay <avi@unix.sh> 0.6.1
+- Updated presentation with some desktop related charts
+- Converted to Open Document Format::Presentation
+
+* Thu Mar 30 2006 Yannick and Avi <yl@itioweb.com> 0.6
+- Handlerized all kdb*() methods. This is a radical API change thowards a thread-safe API.
+- Changed all backends to work with this change
+- Included kdbh*() methods for better backend manipulation, thowards the possibility of having remote backends
+- Included kdb*Error() methods as suggested by Markus
+- Added KDB_O_ALL option to ksLookupByName & ksLookupRE
+- Fixed bug in keySetName which caused faulty write when key name have trailing '/'
+- Fixed bug in configure.ac to allow installation into lib64
+- Fixed bug in keySetName caused segfault on x86_64
+- Updated Mandriva spec file to allow x86_64 RPMs build
+- Updated old Xorg & SysVinit patches for current API
+- Removed installation of libloader (its a convenient lib)
+
+* Sun Mar 03 2006 Avi Alkalay <avi@unix.sh> 0.5.9
+- Added the ksGetCommonParentName() method to help in XML exporting
+- ksToStream() now correctly handles KDB_O_HIER flag, for nicer XML exports
+- keySetName() now removes repeated '/' when setting key names
+- Fixed a bug in filesys.c::kdbStatKey_filesys() related to link keys
+- Fixed a very stupid bug in key.c::keyCompare()
+- Added logic to key.c::keySetName() to remove extra '/' anywhere on key name
+- Fixed a bug on keyset.c::ksCompare() related to the NEEDSYNC flag
+- Added kdbprivate.h::KDB_METAINFO_SIZE(Key *key) macro, usefull for backends
+- Make 'kdb edit' more robust in terms of completeness when exporting to XML
+- Much improved and working berkeleydb backend. Going towards a high-quality backend.
+- BDB backend moved out from EXPERIMENTAL backends, to the mainstream, cause it is usable.
+- Updated scripts/benchmark-createtree to output nice XML
+- Reorganized #includes
+- Improved some API documentations
+- Included some casts to get rid of compiler warnings
+- Added some screenshots to the documentation
+- DocBook documentation is being reorganized and improved to soon become part of the site
+- Updated the presentation
+- Updated screenshot for 'kdb edit' command
+- Updated some doxy cosmetics
+- Updated kdbOpenBackend() documentation and error codes
+- Updated ksLookupByName() documentation to include more about the method behavior
+- Organizing the daemon backend
+
+* Fri Feb 17 2006 Markus Raab 0.5.7
+- ksLookupByValue now supports cascading
+- Ini Backend is marked experimental
+- Big updates in Ini Backend:
+- posix and parser specific parts seperated
+- support for binary values containing \0 and \n
+- changed to more performantic kdbSetKeys (very buggy)
+
+* Tue Feb 16 2006 Avi Alkalay <avi@unix.sh> 0.5.7
+- Old libregistry and examples are not being compiled anymore
+- BerkeleyDB and GConf backend are set as experimental, and removed from main build
+- Improved documentation for kdbRemoveKey()
+- Created keyIsString() method
+- Corrected link handling on src/backends/filesys/filesys.c::keyFromStat()
+- Benchmark script now sets random key types
+- ksFromXMLfile() now receives a (const char *) instead of (char *) as filename parameter
+- Doxygen is generated with a browsing tree pane
+- Created elektratools.pc for pkg-config
+
+* Sun Feb 12 2006 Avi Alkalay <avi@unix.sh> 0.5.6
 - Fixed a pointer positioning bug in keyStealBaseName()
 - The filesys backend now correctly sets key permissions
 - Fixed correct value comparation on keyCompare()
