@@ -26,23 +26,34 @@ $Id$
 
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
+#include <stdlib.h>
+#include <errno.h>
+
 #ifdef HAVE_STRINGS_H
 #include <strings.h>
 #endif
-#include <string.h>
-#include <stdlib.h>
+
+#ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
-#include <errno.h>
+#endif
+
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+
 #ifdef WIN32
 #include <io.h>
 #endif
+
+#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
+#endif
+
 #ifdef HAVE_PWD_H
 #include <pwd.h>
 #endif
+
 #ifdef HAVE_GRP_H
 #include <grp.h>
 #endif
@@ -695,7 +706,6 @@ ssize_t keySetName(Key *key, const char *newName) {
 ssize_t keyAddBaseName(Key *key,const char *baseName) {
 	size_t nameSize=0;
 	size_t newSize=0;
-	int ndelim=0;
 	char *realBasename;
 	char *p;
 
@@ -717,7 +727,7 @@ ssize_t keyAddBaseName(Key *key,const char *baseName) {
 		if (key->key[nameSize-1] != RG_KEY_DELIM) nameSize++;
 		
 		/* Remove all '/' in the begining of baseName */
-		realBasename=baseName;
+		realBasename=(char *)baseName;
 		while (*realBasename && *realBasename == RG_KEY_DELIM) {
 			realBasename++;
 			newSize--;

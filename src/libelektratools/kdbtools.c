@@ -19,7 +19,6 @@
 /* Subversion stuff
 
 $Id$
-$LastChangedBy: aviram $
 
 */
 
@@ -81,7 +80,6 @@ int processKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
 	xmlChar *nodeName=0;
 	xmlChar *buffer=0;
 	xmlChar *privateContext=0;
-	xmlChar fullContext[800]="";
 	Key *newKey=0;
 	int appended=0;
 

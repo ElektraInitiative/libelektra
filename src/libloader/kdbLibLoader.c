@@ -39,8 +39,7 @@ extern kdblib_symbol kdb_exported_syms[];
 kdbLibHandle kdbLibLoad(const char *module)
 {
 	kdblib_symbol	*current;
-	kdbLibHandle handle;
-		
+	
 	current = kdb_exported_syms;
 	while ( current->name != NULL ) {
 		/* Skip symbols, we're searching for

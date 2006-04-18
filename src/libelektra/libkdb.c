@@ -95,6 +95,7 @@ $Id$
 #include <pthread.h>
 
 #ifdef HAVE_UNISTD_H
+#define _XOPEN_SOURCE 500
 #include <unistd.h>
 #endif
 
@@ -109,6 +110,15 @@ $Id$
 #ifdef HAVE_LANGINFO_H
 #include <langinfo.h>
 #endif
+
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+
+#ifdef HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
+
 
 
 /* kdbbackend.h will include kdb.h and kdbprivate.h */
@@ -292,7 +302,6 @@ int kdbOpenBackend(KDBHandle *handle, char *backendName) {
 	kdbLibHandle dlhandle=0;
 	char backendlib[300];
 	KDBBackendFactory kdbBackendFactory=0;
-	KDBBackend *backend=0;
 	int rc=0;
 	
 	*handle=0;

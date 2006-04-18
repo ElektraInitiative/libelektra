@@ -281,7 +281,6 @@ Key *ksLookupByName(KeySet *ks, const char *name, unsigned long options) {
 	Key *current=0;
 	Key *end=0;
 	size_t nameSize;
-	size_t currentNameSize;
 	char * keyname;
 
 	nameSize=strblen(name);
