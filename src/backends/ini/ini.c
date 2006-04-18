@@ -406,11 +406,20 @@ ssize_t kdbGetKeyChildKeys_ini(KDBHandle handle, const Key * key, KeySet *return
 	return IniChooseFile (handle, write, returned, options);
 }
 
-/**Walks through a file and Lookups if the found key is in the
- * given Keyset. When found it overwrites the key.
+/**Walks through a file and lookups if the first key of a keyset is in the
+ * given Keyset. When found it overwrites the key. It also checks if any
+ * of the other keys can be written in that file under that context. If
+ * not, the keys will remain in the Keyset.
  *
- * It will write afterwards all other keys fitting in the same
- * file. The others will remain in the keyset.
+ * So, the KeySet will be empty after complete successful writing. At
+ * least one key is guranteed to be written when it was successful.
+ * 
+ * The whole idea behind that concept is, that open/close and searching
+ * within a file is complete minimized. The disadvantage is, that a
+ * fast ksLookupKey is required, because every readed key will be compared
+ * with all keys in keyset (its not implemented in elektra right now,
+ * so it will consume linear more time, but only in memory, not on
+ * harddisc).
  *
  * When not found it writes out the keys before the sectionend.
  * This can be:
@@ -420,8 +429,8 @@ ssize_t kdbGetKeyChildKeys_ini(KDBHandle handle, const Key * key, KeySet *return
  *
  * At least one key will be written!
  * 
- * @return 0 on success
- * @return -1 on failure
+ * @return >=0 on success
+ * @return -1 on failure (Keyset may be changed then!)
  * @return #nr when #nr keys could not written to file
  *
  * */
@@ -435,8 +444,8 @@ int IniSetKeys (KeySet * origKeys)
 	char * keyRoot = NULL;
 	char * end;
 
-	Key * origKey;
-	Key * setKey;	
+	Key * origKey;	/*First key which will introduce opening file*/
+	Key * setKey;	/*Used for getting the keys which may be set*/
 	Key * key = keyNew (KEY_SWITCH_END);
 
 	long oldpos;
@@ -467,11 +476,11 @@ int IniSetKeys (KeySet * origKeys)
 	keyGetName(key, keyFullName, keySize);
 	
 	end = strrchr (keyFullName, '/');	/* dirname*/
-	*end = 0;
+	if (end) *end = 0;
 	keyRoot = malloc (strlen (keyFullName));
 	if (keyRoot == NULL) goto memerror;
 	strcpy (keyRoot, keyFullName);
-	*end = '/';	/*revert keyname*/
+	if (end) *end = '/';	/*revert keyname*/
 
 #ifdef DEBUG
 	fprintf (stderr, "keyRoot: %s, keyName: %s\n", keyRoot, keyFullName);
@@ -524,7 +533,7 @@ int IniSetKeys (KeySet * origKeys)
 	free (keyFullName);
 	free (keyRoot);
 	
-	keyClose (key);
+	keyDel (key);
 
 #ifdef DEBUG
 	fprintf (stderr, "leaving IniSetKeys()\n");
@@ -543,7 +552,7 @@ fileerror:
 	free (keyFullName);
 	free (keyRoot);
 	
-	keyClose (key);
+	keyDel (key);
 	
 	return -1;
 }
@@ -581,6 +590,8 @@ int kdbSetKey_ini(KDBHandle handle, Key *origkey) {
  * @ingroup ini
  */
 int kdbSetKeys_ini(KDBHandle handle, KeySet *ks) {
+
+	/**TODO must be in a loop*/
 	return IniSetKeys (ks);
 }
 
