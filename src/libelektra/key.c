@@ -877,7 +877,8 @@ ssize_t keySetBaseName(Key *key, const char *baseName) {
 /**
  * Bytes needed to store the key name without user domain.
  *
- * @return number of bytes needed to store key name without user domain
+ * @return number of bytes needed, including ending NULL, to store key name
+ * 	without user domain
  * @see keyGetName(), keyGetFullNameSize()
  * @ingroup keyname
  */
