@@ -86,7 +86,7 @@ int processKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
 	/* printf("%s", KDB_SCHEMA_PATH); */
 	
 	nodeName=xmlTextReaderName(reader);
-	if (!strcmp(nodeName,"key")) {
+	if (!strcmp((char *)nodeName,"key")) {
 		uint8_t type=KEY_TYPE_STRING; /* default type */
 		int end=0;
 		
@@ -101,7 +101,7 @@ int processKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
 		   - a "parent" plus "basename" attributes, both added to current context
 		   - only a "parent", added to current context
 		*/
-		buffer=xmlTextReaderGetAttribute(reader,"name");
+		buffer=xmlTextReaderGetAttribute(reader,(const xmlChar *)"name");
 		if (buffer) {
 			/* set absolute name */
 			keySetName(newKey,(char *)buffer);
@@ -109,12 +109,12 @@ int processKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
 		} else {
 			/* logic for relative name calculation */
 			
-			privateContext=xmlTextReaderGetAttribute(reader,"parent");
-			buffer=xmlTextReaderGetAttribute(reader,"basename");
+			privateContext=xmlTextReaderGetAttribute(reader,(const xmlChar *)"parent");
+			buffer=xmlTextReaderGetAttribute(reader,(const xmlChar *)"basename");
 
 			if (context) keySetName(newKey,context);
-			if (privateContext) keyAddBaseName(newKey, privateContext);
-			if (buffer) keyAddBaseName(newKey,buffer);
+			if (privateContext) keyAddBaseName(newKey, (char *)privateContext);
+			if (buffer) keyAddBaseName(newKey,(char *)buffer);
 
 			xmlFree(privateContext); privateContext=0;
 			xmlFree(buffer); buffer=0;
@@ -122,29 +122,29 @@ int processKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
 
 
 		/* test for a short value attribute, instead of <value> bellow */
-		buffer=xmlTextReaderGetAttribute(reader,"value");
+		buffer=xmlTextReaderGetAttribute(reader,(const xmlChar *)"value");
 		if (buffer) {
-			keySetRaw(newKey,buffer,strblen(buffer));
+			keySetRaw(newKey,buffer,strblen((char *)buffer));
 			xmlFree(buffer); buffer=0;
 		}
 
 		
-		buffer=xmlTextReaderGetAttribute(reader,"type");
+		buffer=xmlTextReaderGetAttribute(reader,(const xmlChar *)"type");
 		if (buffer) {
-			if (!strcmp(buffer,"string"))
+			if (!strcmp((char *)buffer,"string"))
 				type=KEY_TYPE_STRING;
-			else if (!strcmp(buffer,"link"))
+			else if (!strcmp((char *)buffer,"link"))
 				type=KEY_TYPE_LINK;
-			else if (!strcmp(buffer,"directory"))
+			else if (!strcmp((char *)buffer,"directory"))
 				type=KEY_TYPE_DIR;
-			else if (!strcmp(buffer,"binary"))
+			else if (!strcmp((char *)buffer,"binary"))
 				type=KEY_TYPE_BINARY;
-			else if (!strcmp(buffer,"undefined"))
+			else if (!strcmp((char *)buffer,"undefined"))
 				type=KEY_TYPE_UNDEFINED;
 			else { /* special user-defined value types */
 				void *converter=0;
 
-				type=strtol(buffer,(char **)&converter,10);
+				type=strtol((char *)buffer,(char **)&converter,10);
 				if ((void *)buffer==converter)
 					/* in case of error, fallback to default type again */
 					type=KEY_TYPE_STRING;
@@ -158,13 +158,13 @@ int processKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
 
 #ifdef HAVE_PWD_H
 		/* Parse UID */
-		buffer=xmlTextReaderGetAttribute(reader,"uid");
+		buffer=xmlTextReaderGetAttribute(reader,(const xmlChar *)"uid");
 		if (buffer) {
 			if (isdigit(*buffer))
-				keySetUID(newKey,atoi(buffer));
+				keySetUID(newKey,atoi((char *)buffer));
 			else {
 				struct passwd *pwd;
-				pwd=getpwnam(buffer);
+				pwd=getpwnam((char *)buffer);
 				if (pwd) keySetUID(newKey,pwd->pw_uid);
 				else fprintf(stderr,"kdb: Ignoring invalid user %s.\n",
 						buffer);
@@ -175,13 +175,13 @@ int processKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
 
 #ifdef HAVE_GRP_H
 		/* Parse GID */
-		buffer=xmlTextReaderGetAttribute(reader,"gid");
+		buffer=xmlTextReaderGetAttribute(reader,(const xmlChar *)"gid");
 		if (buffer) {
 			if (isdigit(*buffer)) {
-				keySetGID(newKey,atoi(buffer));
+				keySetGID(newKey,atoi((char *)buffer));
 			} else {
 				struct group *grp;
-				grp=getgrnam(buffer);
+				grp=getgrnam((char *)buffer);
 				if (grp) keySetGID(newKey,grp->gr_gid);
 				else fprintf(stderr,"kdb: Ignoring invalid group %s.\n",
 						buffer);
@@ -191,8 +191,8 @@ int processKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
 #endif
 
 		/* Parse permissions */
-		buffer=xmlTextReaderGetAttribute(reader,"mode");
-		if (buffer) keySetAccess(newKey,strtol(buffer,0,0));
+		buffer=xmlTextReaderGetAttribute(reader,(const xmlChar *)"mode");
+		if (buffer) keySetAccess(newKey,strtol((char *)buffer,0,0));
 		xmlFree(buffer); buffer=0;
 
 		if (xmlTextReaderIsEmptyElement(reader)) {
@@ -211,7 +211,7 @@ int processKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
 			xmlTextReaderRead(reader);
 			nodeName=xmlTextReaderName(reader);
 
-			if (!strcmp(nodeName,"value")) {
+			if (!strcmp((char *)nodeName,"value")) {
 				if (xmlTextReaderIsEmptyElement(reader) ||
 					xmlTextReaderNodeType(reader)==15) continue;
 					
@@ -223,15 +223,15 @@ int processKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
 						char *unencoded=0;
 						size_t unencodedSize;
 						
-						unencodedSize=strblen(buffer)/2;
+						unencodedSize=strblen((char *)buffer)/2;
 						unencoded=malloc(unencodedSize);
-						unencodedSize=unencode(buffer,unencoded);
+						unencodedSize=unencode((char *)buffer,unencoded);
 						if (!unencodedSize) return -1;
 							keySetRaw(newKey,unencoded,unencodedSize);
 						free(unencoded);
-					} else keySetRaw(newKey,buffer,strblen(buffer));
+					} else keySetRaw(newKey,buffer,strblen((char *)buffer));
 				}
-			} else if (!strcmp(nodeName,"comment")) {
+			} else if (!strcmp((char *)nodeName,"comment")) {
 				ssize_t commentSize=0;
 				
 				if (xmlTextReaderIsEmptyElement(reader) ||
@@ -249,14 +249,14 @@ int processKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
 						keyGetComment(newKey,tmpComment,commentSize);
 
 						strcat(tmpComment,"\n");
-						strcat(tmpComment,buffer);
+						strcat(tmpComment,(char *)buffer);
 
 						keySetComment(newKey,tmpComment);
 
 						free(tmpComment); tmpComment=0;
 					}
-				} else keySetComment(newKey,buffer);
-			} else if (!strcmp(nodeName,"key")) {
+				} else keySetComment(newKey,(char *)buffer);
+			} else if (!strcmp((char *)nodeName,"key")) {
 				/* Here we found </key> or a sub <key>.
 				   So include current key in the KeySet. */
 				if (newKey && !appended) {
@@ -294,13 +294,13 @@ int processKeySetNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) 
 	xmlChar fullContext[800]="";
 	
 	nodeName=xmlTextReaderName(reader);
-	if (!strcmp(nodeName,"keyset")) {
+	if (!strcmp((char *)nodeName,"keyset")) {
 		int end=0;
 
-		privateContext=xmlTextReaderGetAttribute(reader,"parent");
+		privateContext=xmlTextReaderGetAttribute(reader,(const xmlChar *)"parent");
 		if (context && privateContext) {
-			xmlStrPrintf(fullContext,sizeof(fullContext),"%s/%s",
-				context,privateContext);
+			xmlStrPrintf(fullContext,sizeof(fullContext),
+				(const xmlChar *)"%s/%s", context,privateContext);
 
 			/* printf("\nCurrent parent is %s\n",fullContext); */
 		}
@@ -311,16 +311,16 @@ int processKeySetNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) 
 			xmlTextReaderRead(reader);
 			nodeName=xmlTextReaderName(reader);
 
-			if (!strcmp(nodeName,"key")) {
-				if (privateContext) processKeyNode(ks,*fullContext?fullContext:privateContext,reader);
+			if (!strcmp((char *)nodeName,"key")) {
+				if (privateContext) processKeyNode(ks,(char *)(*fullContext?fullContext:privateContext),reader);
 				else processKeyNode(ks,context,reader);
-			} else if (!strcmp(nodeName,"keyset")) {
+			} else if (!strcmp((char *)nodeName,"keyset")) {
 				/* A <keyset> can have nested <keyset>s */
 				if (xmlTextReaderNodeType(reader)==15)
 					/* found a </keyset> */
 					end=1;
 				else if (privateContext)
-					processKeySetNode(ks, *fullContext?fullContext:privateContext, reader);
+					processKeySetNode(ks, (char *)(*fullContext?fullContext:privateContext), reader);
 				else processKeySetNode(ks, context, reader);
 			}
 		}
@@ -346,9 +346,9 @@ int ksFromXMLReader(KeySet *ks,xmlTextReaderPtr reader) {
 		/* walk node per node until the end of the stream */
 		nodeName=xmlTextReaderName(reader);
 		
-		if (!strcmp(nodeName,"key"))
+		if (!strcmp((char *)nodeName,"key"))
 			processKeyNode(ks, 0, reader);
-		else if (!strcmp(nodeName,"keyset"))
+		else if (!strcmp((char *)nodeName,"keyset"))
 			processKeySetNode(ks, 0, reader);
 		
 		ret = xmlTextReaderRead(reader);

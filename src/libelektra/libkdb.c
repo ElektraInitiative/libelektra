@@ -86,16 +86,7 @@ $Id$
 #include "config.h"
 #endif
 
-#include <stdlib.h>
-#include <stdarg.h>
-#include <ctype.h>
-#include <string.h>
-#include <errno.h>
-#include <stdio.h>
-#include <pthread.h>
-
 #ifdef HAVE_UNISTD_H
-#define _XOPEN_SOURCE 500
 #include <unistd.h>
 #endif
 
@@ -119,6 +110,14 @@ $Id$
 #include <sys/stat.h>
 #endif
 
+
+#include <stdlib.h>
+#include <stdarg.h>
+#include <ctype.h>
+#include <string.h>
+#include <errno.h>
+#include <stdio.h>
+#include <pthread.h>
 
 
 /* kdbbackend.h will include kdb.h and kdbprivate.h */

@@ -234,6 +234,8 @@ int kdbSetKeys_fstab(KDBHandle handle, KeySet *ks) {
 	struct mntent fstabEntry;
 	Key *key=0;
 	
+	memset(&fstabEntry,0,sizeof(struct mntent));
+	
 	while (1) {
 		/* lookup for the first entire filesystem keys */
 		regcomp(&regex,"system/filesystems/[^/]*$",REG_NOSUB);

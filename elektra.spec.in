@@ -1,6 +1,6 @@
 Name:          elektra
 Version:       @VERSION@
-Release:       4
+Release:       5
 Source:        http://prdownloads.sourceforge.net/elektra/%{name}-%{version}.tar.gz
 Group:         System Environment/Libraries
 License:       BSD
@@ -88,18 +88,14 @@ Berkeley DB databases to store its keys.
 # % debug_package
 
 %prep
-%setup
+%setup -q
 %build
-
-# $CFLAGS=$RPM_OPT_FLAGS ./configure \
 
 %configure \
      --prefix=%{_prefix} \
      --exec-prefix=/ \
      --bindir=/bin \
      --libdir=/%{_lib} \
-     --mandir=%{_mandir} \
-     --sysconfdir=%{_sysconfdir} \
      --disable-xmltest \
      --with-docbook=%{_datadir}/sgml/docbook/xsl-stylesheets
 

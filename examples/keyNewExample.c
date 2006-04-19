@@ -53,7 +53,7 @@ int main() {
 		KEY_SWITCH_COMMENT,"new comment",    /* set new comment */
 		KEY_SWITCH_END));                    /* end of args */
 	
-	key=keyNew("user/tmp////",
+	key=keyNew("user////tmp///",
 		KEY_SWITCH_TYPE, KEY_TYPE_STRING,
 		KEY_SWITCH_END);
 	
@@ -63,6 +63,10 @@ int main() {
 	keyAddBaseName(key,"ex7");
 	
 	keySetBaseName(key,"///ex8///");
+	
+	keySetBaseName(key,"///ex9///ex10///ex\\/11///");
+	
+	keySetBaseName(key,"ex12///");
 	
 	ksAppend(ks,key);
 	
