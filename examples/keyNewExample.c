@@ -28,7 +28,7 @@ int main() {
 		KEY_SWITCH_TYPE,KEY_TYPE_LINK,       /* only type */
 		KEY_SWITCH_VALUE,"system/mtp/x",     /* link destination */
 		KEY_SWITCH_MODE,0654,                /* weird permissions */
-		KEY_SWITCH_END));                                 /* end of args */
+		KEY_SWITCH_END));                    /* end of args */
 	
 	ksAppend(ks,keyNew("user/tmp/ex4",
 		KEY_SWITCH_TYPE,KEY_TYPE_BINARY,     /* type and value size */
@@ -53,11 +53,17 @@ int main() {
 		KEY_SWITCH_COMMENT,"new comment",    /* set new comment */
 		KEY_SWITCH_END));                    /* end of args */
 	
-	key=keyNew("user/shit//",
+	key=keyNew("user/test//",
 		KEY_SWITCH_TYPE, KEY_TYPE_STRING,
 		KEY_SWITCH_END);
 	
 	/* we are providing a lot of '/' to see it being removed */
+	keySetName(key,"system");
+	keySetName(key,"user");
+	keySetName(key,"user:aviram");
+	keySetName(key,"user///abc//////def///");
+	keySetName(key,"user:root///aaa//////bbb///");
+	
 	keyAddBaseName(key,"tmp");
 	
 	keyAddBaseName(key,"////ex6///exx7///");
@@ -74,7 +80,7 @@ int main() {
 	
 	ksAppend(ks,key);
 	
-	ksToStream(ks,stdout,KDB_O_XMLHEADERS);
+	ksToStream(ks,stdout,KDB_O_XMLHEADERS | KDB_O_FULLNAME);
 	
 	ksDel(ks);
 	

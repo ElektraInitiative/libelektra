@@ -992,6 +992,9 @@ int ksCompare(KeySet *ks1, KeySet *ks2, KeySet *removed) {
  * @param options accepted #KDBOptions ORed:
  * - @p KDBOptions::KDB_O_NUMBERS \n
  *   Do not convert UID and GID into user and group names.
+ * - @p KDBOptions::KDB_O_FULLNAME \n
+ *   The @c user keys are exported with their full names (including
+ *   user domains)
  * - @p KDBOptions::KDB_O_CONDENSED \n
  *   Less human readable, more condensed output.
  * - @p KDBOptions::KDB_O_XMLHEADERS \n

@@ -285,7 +285,7 @@ emptyNamedKey=keyNew("user/some/example",KEY_SWITCH_END);
  *   Next parameter is a KDBHandle. Makes keyNew() retrieve the Key from the
  *   backend with kdbGetKey(). In the same keyNew() call you can use this
  *   tag in conjunction with any other, which will make keyNew() modify
- *   only some attributes of the retrieved key, and return it for you.
+ *   only some attributes after retrieving the key, and return it to you.
  *   Order of parameters do matter. If the internal call to kdbGetKey()
  *   failed, you'll still have a valid, but flaged, key.
  *   Check with keyGetFlag(), and @p errno. You will have to kdbOpen()
@@ -554,7 +554,149 @@ char *keyNameFetchSingleBase(const char *name, size_t *size) {
  * @see keyGetName(), keyGetFullName(), keyStealName()
  * @ingroup keyname
  */
+
 ssize_t keySetName(Key *key, const char *newName) {
+	size_t length;
+	size_t rootLength, userLength, systemLength, userDomainLength;
+	size_t keyNameSize=1; /* equal to length plus room for \0 */
+	char *p=0;
+	size_t size=0;
+	
+	/* handle null new key name, removing the old key */
+	if (!newName || !(length=strblen(newName)-1)) {
+		if (key->key) {
+			free(key->key);
+			key->key=0;
+		}
+		key->flags &= ~(KEY_SWITCH_NAME | KEY_SWITCH_NEEDSYNC |
+				KEY_SWITCH_ISSYSTEM | KEY_SWITCH_ISUSER);
+		return 0;
+	}
+
+	/* Remove trailing '/' if caller passed some */
+	/* TODO: handle escaping with '\' */
+	/*while (length && (RG_KEY_DELIM==newName[length-1]))
+	length--;*/
+
+	rootLength=keyNameGetRootNameSize(newName);
+	if (!rootLength) {
+		errno=KDB_RET_INVALIDKEY;
+		return -1;
+	}
+	userLength=sizeof("user")-1;
+	systemLength=sizeof("system")-1;
+	userDomainLength=rootLength-userLength-1;
+	if (userDomainLength<0) userDomainLength=0;
+
+	if (keyNameIsUser(newName)) {
+		/* handle "user*" */
+		if (length > userLength) {
+			/* handle "user?*" */
+			if (*(newName+userLength)==':') {
+				/* handle "user:*" */
+				if (userDomainLength > 0) {
+					p=realloc(key->userDomain,userDomainLength+1);
+					if (NULL==p) goto error_mem;
+					key->userDomain=p;
+					strncpy(key->userDomain,newName+userLength+1,userDomainLength);
+					key->userDomain[userDomainLength]=0;
+				}
+				keyNameSize+=length-userDomainLength-1;  /* -1 is for the ':' */
+			} else if (*(newName+userLength)!=RG_KEY_DELIM) {
+				/* handle when != "user/ *" */
+				errno=KDB_RET_INVALIDKEY;
+				return -1;
+			} else {
+				/* handle regular "user/ *" */
+				keyNameSize+=length;
+			}
+		} else {
+			/* handle "user" */
+			keyNameSize+=userLength;
+		}
+		
+		if (!key->userDomain) {
+			size_t bsize=strblen(getenv("USER"));
+
+			if (bsize) {
+				key->userDomain=realloc(key->userDomain,bsize);
+				strncpy(key->userDomain,getenv("USER"),bsize);
+			} else { /* TODO: handle "can't find $USER envar" */ }
+		}
+
+		rootLength  = userLength;
+		key->flags |= KEY_SWITCH_ISUSER;
+		key->flags &= ~KEY_SWITCH_ISSYSTEM;
+	} else if (keyNameIsSystem(newName)) {
+		/* handle "system*" */
+		if (length > systemLength && *(newName+systemLength)!=RG_KEY_DELIM) {
+			/* handle when != "system/ *" */
+			errno=KDB_RET_INVALIDKEY;
+			return -1;
+		}
+		keyNameSize+=length;
+		
+		rootLength  = systemLength;
+		key->flags |= KEY_SWITCH_ISSYSTEM;
+		key->flags &= ~KEY_SWITCH_ISUSER;
+	} else {
+		/* Given newName is neither "system" or "user" */
+		errno=KDB_RET_INVALIDKEY;
+		return -1;
+	}
+	
+	/*
+	   At this point:
+	   - key->key has no memory (re)allocated yet
+	   - keyNameSize has number of bytes that will be allocated for key name
+	     with already removed user domain (in case of newName contained
+	     a domain)
+	   - key->userDomain is already set if newName is "user*"
+	   - rootLength is sizeof("user")-1 or sizeof("system")-1
+	*/
+
+	/* Allocate memory for key->key */
+	p=malloc(keyNameSize);
+	if (NULL==p) goto error_mem;
+	if (key->key) free(key->key);
+	key->key=p;
+
+	/* here key->key must have a correct size allocated buffer */
+	if (!key->key) return -1;
+
+	/* copy the root of newName to final destiny */
+	strncpy(key->key,newName,rootLength);
+	
+	/* skip the root */
+	p=(char *)newName;
+	size=0;
+	p=keyNameFetchSingleBase(p+size,&size);
+	
+	/* iterate over each single folder name removing repeated '/' and escaping when needed */
+	keyNameSize=rootLength;
+	while (*(p=keyNameFetchSingleBase(p+size,&size))) {
+		/* Add a '/' to the end of key name */
+		key->key[keyNameSize]=RG_KEY_DELIM;
+		keyNameSize++;
+		
+		/* carefully append basenames */
+		memcpy(key->key+keyNameSize,p,size);
+		keyNameSize+=size;
+	}
+	key->key[keyNameSize]=0; /* finalize string */
+
+	key->flags |= KEY_SWITCH_NAME | KEY_SWITCH_NEEDSYNC;
+	
+	return keyNameSize+1;
+
+	error_mem:
+		errno=KDB_RET_NOMEM;
+		return -1;
+}
+
+
+
+ssize_t old_keySetName(Key *key, const char *newName) {
 	size_t length;
 	size_t rootLength, userLength, systemLength, userDomainLength;
 	size_t keyNameSize=1; /* equal to length plus a space for \0 */
@@ -739,7 +881,6 @@ ssize_t keyAddBaseName(Key *key,const char *baseName) {
 	size_t nameSize=0;
 	size_t newSize=0;
 	size_t size=0;
-	char *realBasename;
 	char *p;
 
 	if (key->key) nameSize=strblen(key->key);
@@ -2549,6 +2690,9 @@ uint32_t keyCompare(const Key *key1, const Key *key2) {
  *   Do not convert UID and GID into user and group names
  * - @p KDBOptions::KDB_O_CONDENSED \n
  *   Less human readable, more condensed output
+ * - @p KDBOptions::KDB_O_FULLNAME \n
+ *   The @c user keys are exported with their full names (including
+ *   user domains)
  *
  * @see ksToStream()
  * @return number of bytes written to output
