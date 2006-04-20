@@ -53,20 +53,24 @@ int main() {
 		KEY_SWITCH_COMMENT,"new comment",    /* set new comment */
 		KEY_SWITCH_END));                    /* end of args */
 	
-	key=keyNew("user////tmp///",
+	key=keyNew("user/shit//",
 		KEY_SWITCH_TYPE, KEY_TYPE_STRING,
 		KEY_SWITCH_END);
 	
 	/* we are providing a lot of '/' to see it being removed */
-	keyAddBaseName(key,"////ex6////");
+	keyAddBaseName(key,"tmp");
 	
-	keyAddBaseName(key,"ex7");
+	keyAddBaseName(key,"////ex6///exx7///");
 	
-	keySetBaseName(key,"///ex8///");
+	keySetBaseName(key,"ex8");
 	
-	keySetBaseName(key,"///ex9///ex10///ex\\/11///");
+	keySetBaseName(key,"ex9");
 	
-	keySetBaseName(key,"ex12///");
+	keyAddBaseName(key,"///exxx9///ex10///ex\\/11///");
+	
+	keySetBaseName(key,"ex12");
+	
+	keySetBaseName(key,"ex13///");
 	
 	ksAppend(ks,key);
 	

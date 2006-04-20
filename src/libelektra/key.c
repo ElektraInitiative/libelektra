@@ -522,7 +522,7 @@ char *keyNameFetchSingleBase(const char *name, size_t *size) {
 	if (end) --cursor;
 	
 	*size=cursor;
-	return real[cursor]? real : 0;
+	return real;
 }
 
 
@@ -545,9 +545,9 @@ char *keyNameFetchSingleBase(const char *name, size_t *size) {
  * A private copy of the key name will be stored, and the @p newName
  * parameter can be freed after this call.
  *
- * @return size in bytes of this new key name, or 0 if @p newName is empty,
- * 	or if @p newName is invalid, in which case @c errno is set to
- * 	KDBErrr::KDB_RET_INVALIDKEY.
+ * @return size in bytes of this new key name including ending NULL, or 0
+ * 	if @p newName is empty, or if @p newName is invalid, in which
+ * 	case @c errno is set to KDBErrr::KDB_RET_INVALIDKEY.
  * @param key the key object
  * @param newName the new key name
  * @see keyNew(), keySetOwner()
@@ -730,7 +730,7 @@ ssize_t keySetName(Key *key, const char *newName) {
  * @p baseName @c "mykey", the resulting key will have name
  * @c "system/dir1/dir2/mykey".
  *
- * @return the size in bytes of the new key name
+ * @return the size in bytes of the new key name including the ending NULL
  * @see keySetBaseName()
  * @ingroup keyname
  * 
@@ -738,57 +738,44 @@ ssize_t keySetName(Key *key, const char *newName) {
 ssize_t keyAddBaseName(Key *key,const char *baseName) {
 	size_t nameSize=0;
 	size_t newSize=0;
+	size_t size=0;
 	char *realBasename;
 	char *p;
 
-	if (key->key) nameSize=strblen(key->key) - 1;
+	if (key->key) nameSize=strblen(key->key);
 	if (baseName) newSize=strblen(baseName);
 	else return nameSize;
 	
-	if (newSize == 0) return nameSize;
+	/* At this point, newSize has size of the baseName string, +1 for NULL */
 	
-	/* At this point, newSize has size of the baseName string +1, for NULL */
+	if (newSize <= 1)
+		/* baseName is empty of NULL, so we are done */
+		return nameSize;
 	
 	if (key->key) {
-		/* Remove trailing '/' in keyname if caller passed some */
-		while (nameSize-2 && key->key[nameSize-1] == RG_KEY_DELIM &&
-				key->key[nameSize-2] == RG_KEY_DELIM) {
-			key->key[--nameSize]=0;
-		}
-		
-		if (key->key[nameSize-1] != RG_KEY_DELIM) nameSize++;
-		
-		/* Remove all '/' in the begining of baseName */
-		realBasename=(char *)baseName;
-		while (*realBasename && *realBasename == RG_KEY_DELIM) {
-			realBasename++;
-			newSize--;
-		}
-		
-		/* At this point, newSize has the size of the baseName +1 */
-		
-		/* Remove all '/' in the end of baseName */
-		while (newSize-2 && realBasename[newSize-2] == RG_KEY_DELIM)
-			newSize--;
-		
-		/* Now we know the final key size */
-		newSize += nameSize;
-		p=realloc(key->key,newSize);
+		p=realloc(key->key,newSize+nameSize-1);
 		if (NULL == p) {
 			errno=KDB_RET_NOMEM;
 			return -1;
 		}
+		
 		key->key=p;
-
-		if (key->key[nameSize-1] != RG_KEY_DELIM && *realBasename)
-			strcat(key->key,"/");
 		
-		strncat(key->key,realBasename,newSize-nameSize-1);
-		key->key[newSize-1]=0;
+		/* Start appending basenames */
+		p=(char *)baseName;
+		nameSize--;
+		while (*(p=keyNameFetchSingleBase(p+size,&size))) {
+			/* Add a '/' to the end of key name */
+			key->key[nameSize]=RG_KEY_DELIM;
+			nameSize++;
 		
+			/* carefully append basenames */
+			memcpy(key->key+nameSize,p,size);
+			nameSize+=size;
+		}
+		key->key[nameSize]=0; /* finalize string */
+		return nameSize+1;
 	} else return keySetName(key,baseName);
-	
-	return newSize;
 }
 
 
@@ -818,46 +805,45 @@ ssize_t keySetBaseName(Key *key, const char *baseName) {
 	size_t parentSize=0;
 	size_t oldSize=0;
 
-	/* Fetch last parent */
-	p=key->key;
-	while ((p=keyNameFetchSingleBase(p+size,&size))!=0) {
-		prevParent=p;
-		parentSize=size;
-	}
-
-	parentSize += prevParent-key->key;
-	oldSize=strblen(key->key);
-	
-	/* For a key like "abc/def/ghi/jkl" parentSize now has size 11 which
-	   is number of bytes from 'a' to 'i' */
-	
 	if (baseName) newSize=strblen(baseName);
 	
-	/* reverse search for our name delimiter ('/') */
-	/* end=strrchr(key->key,RG_KEY_DELIM); */
+	/* Consume entire parent name */
+	p=key->key;
+	while (*(p=keyNameFetchSingleBase(p+size,&size)))
+		prevParent=p;
+
+	if (prevParent && prevParent!=key->key) {
+		/* For a key like "abc/def/ghi/jkl" prevParent is now pointing
+		   to the 'j'. Move it to previous char, which is probably '/'. */
+		--prevParent;
 	
-	/* Eliminate old "/basename" */
-	key->key[parentSize]=0;
+		oldSize=strblen(key->key);
+		parentSize = prevParent-key->key;
 	
-	/* baseName is empty or NULL, so we are done */
-	if (newSize <= 1) return parentSize+1;
+		/* For a key like "abc/def/ghi/jkl" parentSize now has size 11 which
+		   is number of bytes from 'a' to 'i' */
 	
-	if (prevParent) {
-		if (oldSize < (newSize += parentSize + 1))
+		/* Strip old "/basename" */
+		key->key[parentSize]=0;
+	
+		/* baseName is empty or NULL, so we are done */
+		if (newSize <= 1) return parentSize+1;
+		
+		/* Check if we need to extend memory allocated for key->key */
+		if (oldSize < (newSize += parentSize + 1)) {
 			p=realloc(key->key,newSize);
-		else p=key->key;
+			if (NULL == p) {
+				errno=KDB_RET_NOMEM;
+				return -1;
+			}
 		
-		if (NULL == p) {
-			errno=KDB_RET_NOMEM;
-			return -1;
+			key->key=p;
 		}
-		
-		key->key=p;
 		
 		/* Start appending basenames */
 		size=0;
 		p=(char *)baseName;
-		while ((p=keyNameFetchSingleBase(p+size,&size))!=0) {
+		while (*(p=keyNameFetchSingleBase(p+size,&size))) {
 			/* Add a '/' to the end of key name */
 			key->key[parentSize]=RG_KEY_DELIM;
 			parentSize++;
@@ -867,7 +853,7 @@ ssize_t keySetBaseName(Key *key, const char *baseName) {
 			parentSize+=size;
 		}
 		key->key[parentSize]=0; /* finalize string */
-		return parentSize;
+		return parentSize+1;
 	} else return keySetName(key,baseName);
 }
 
