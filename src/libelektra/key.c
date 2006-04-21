@@ -494,9 +494,53 @@ int keyIsInitialized(const Key *key) {
  *******************************************/
 
 
+/**
+ * Returns one level of the key name.
+ *
+ * This method is used to skip repeating '/' and to find escaping chars.
+ * Given @p keyName, this method returns a pointer to the next name level
+ * found and changes @p size to the number of bytes on this level name.
+ *
+ * This method is used by keySetName() and others to cleanup parameters
+ * before being accepted in the Key object.
+ *
+ * @code
+// Lets define a key name with a lot of repeating '/' and escaped '/'
+char *keyName="user////abc/def\/ghi////jkl///";
+char *p;
+size_t size=0;
+int level=0;
+char buffer[20];
 
-char *keyNameFetchSingleBase(const char *name, size_t *size) {
-	char *real=(char *)name;
+p=keyName;
+while (*(p=keyNameGetOneLevel(p+size,&size)!=0) {
+	level++;
+
+	// copy what we found to a buffer, so we can NULL-terminate it
+	strncpy(buffer,p,size);
+	buffer[size]=0;
+
+	printf("Level %d name: \"%s\"\n",level,buffer);
+}
+ * @endcode
+ *
+ * The above example will produce the following output:
+ *
+ * @code
+Level 1 name: user
+Level 2 name: abc
+Level 3 name: def\/ghi
+Level 4 name: jkl
+ * @endcode
+ *
+ * @param keyName the string that will be searched
+ * @param size the number of bytes of level name found in @p keyName until
+ * 	the next delimiter ('/')
+ * @return a pointer to the first char of the next level name
+ * @ingroup internals
+ */
+char *keyNameGetOneLevel(const char *keyName, size_t *size) {
+	char *real=(char *)keyName;
 	size_t cursor=0;
 	int escapeNext=0;
 	int end=0;
@@ -573,12 +617,7 @@ ssize_t keySetName(Key *key, const char *newName) {
 		return 0;
 	}
 
-	/* Remove trailing '/' if caller passed some */
-	/* TODO: handle escaping with '\' */
-	/*while (length && (RG_KEY_DELIM==newName[length-1]))
-	length--;*/
-
-	rootLength=keyNameGetRootNameSize(newName);
+	rootLength=keyNameGetFullRootNameSize(newName)-1;
 	if (!rootLength) {
 		errno=KDB_RET_INVALIDKEY;
 		return -1;
@@ -670,11 +709,11 @@ ssize_t keySetName(Key *key, const char *newName) {
 	/* skip the root */
 	p=(char *)newName;
 	size=0;
-	p=keyNameFetchSingleBase(p+size,&size);
+	p=keyNameGetOneLevel(p+size,&size);
 	
 	/* iterate over each single folder name removing repeated '/' and escaping when needed */
 	keyNameSize=rootLength;
-	while (*(p=keyNameFetchSingleBase(p+size,&size))) {
+	while (*(p=keyNameGetOneLevel(p+size,&size))) {
 		/* Add a '/' to the end of key name */
 		key->key[keyNameSize]=RG_KEY_DELIM;
 		keyNameSize++;
@@ -694,171 +733,6 @@ ssize_t keySetName(Key *key, const char *newName) {
 		return -1;
 }
 
-
-
-ssize_t old_keySetName(Key *key, const char *newName) {
-	size_t length;
-	size_t rootLength, userLength, systemLength, userDomainLength;
-	size_t keyNameSize=1; /* equal to length plus a space for \0 */
-	char *p;
-	/* Cursors are used to clean multiple consecutive '/' */
-	size_t readCursor,writeCursor;
-	char *cursor;
-
-	/* handle null new key name, removing the old key */
-	if (!newName || !(length=strblen(newName)-1)) {
-		if (key->key) {
-			free(key->key);
-			key->key=0;
-		}
-		key->flags &= ~(KEY_SWITCH_NAME | KEY_SWITCH_NEEDSYNC |
-		                KEY_SWITCH_ISSYSTEM | KEY_SWITCH_ISUSER);
-		return 0;
-	}
-
-	/* Remove trailing '/' if caller passed some */
-	/* TODO: handle escaping with '\' */
-	while (length && (RG_KEY_DELIM==newName[length-1]))
-		length--;
-
-	rootLength=keyNameGetRootNameSize(newName);
-	if (!rootLength) {
-		errno=KDB_RET_INVALIDKEY;
-		return -1;
-	}
-	userLength=sizeof("user")-1;
-	systemLength=sizeof("system")-1;
-	userDomainLength=rootLength-userLength-1;
-	if (userDomainLength<0) userDomainLength=0;
-
-	if (!strncmp("user",newName,userLength<length?userLength:length)) {
-		/* handle "user*" */
-		if (length > userLength) {
-			/* handle "user?*" */
-			if (*(newName+userLength)==':') {
-				/* handle "user:*" */
-				if (userDomainLength > 0) {
-					p=realloc(key->userDomain,userDomainLength+1);
-					if (NULL==p) goto error_mem;
-					key->userDomain=p;
-					strncpy(key->userDomain,newName+userLength+1,userDomainLength);
-					key->userDomain[userDomainLength]=0;
-				}
-				keyNameSize+=length-userDomainLength-1;  /* -1 is for the ':' */
-			} else if (*(newName+userLength)!=RG_KEY_DELIM) {
-				/* handle when != "user/ *" */
-				errno=KDB_RET_INVALIDKEY;
-				return -1;
-			} else {
-				/* handle regular "user/ *" */
-				keyNameSize+=length;
-			}
-		} else {
-			/* handle "user" */
-			keyNameSize+=userLength;
-		}
-
-		p=malloc(keyNameSize);
-		if (NULL==p) goto error_mem;
-		if (key->key) free(key->key);
-		key->key=p;
-
-		/* here key->key must have a correct size allocated buffer */
-		if (!key->key) return -1;
-
-		strcpy(key->key,"user");
-		
-		/* next piece of code exist to remove extra '/' in key names */
-		readCursor=writeCursor=0;
-		cursor=(char *)(newName+((unsigned) rootLength));
-		while(cursor[readCursor]) {
-
-			if ( cursor[readCursor] == RG_KEY_DELIM ) {
-				if ( cursor[readCursor+1] == RG_KEY_DELIM || cursor[readCursor+1] == 0 ) {
-					/* Skip any redundant '/' and the ending '/' */
-					readCursor++;
-					continue;
-				}
-			}
-				
-			if ( cursor[readCursor] ) {	
-				(key->key+userLength)[writeCursor]=cursor[readCursor];
-			
-				readCursor++;
-				writeCursor++;
-			}
-		}
-		/* Finalize the string */
-		(key->key+userLength)[writeCursor]=0;
-	
-		/* obsolete
-		strncpy(key->key+userLength,newName+rootLength,length-rootLength);
-		key->key[keyNameSize-1]=0;
-		*/
-
-
-		if (!key->userDomain) {
-			size_t bsize=strblen(getenv("USER"));
-
-			if (bsize) {
-				key->userDomain=realloc(key->userDomain,bsize);
-				strncpy(key->userDomain,getenv("USER"),bsize);
-			} else { /* TODO: handle "can't find $USER envar" */ }
-		}
-
-		key->flags |= KEY_SWITCH_ISUSER;
-		key->flags &= ~KEY_SWITCH_ISSYSTEM;
-	} else if (!strncmp("system",newName,systemLength<length?systemLength:length)) {
-		/* handle "system*" */
-		if (length > systemLength && *(newName+systemLength)!=RG_KEY_DELIM) {
-			/* handle when != "system/ *" */
-			errno=KDB_RET_INVALIDKEY;
-			return -1;
-		}
-		keyNameSize+=length;
-		p=realloc(key->key,keyNameSize);
-		if (NULL==p) goto error_mem;
-		key->key=p;
-
-
-		/* here key->key must have a correct size allocated buffer */
-		if (!key->key) return -1;
-
-		
-		/* next piece of code exist to remove extra '/' in key names */
-		readCursor=writeCursor=0;
-		while(newName[readCursor]) {
-			if (newName[readCursor] == RG_KEY_DELIM)
-				while (newName[readCursor+1] == RG_KEY_DELIM)
-					/* skip all repeating '/' */
-					readCursor++;
-			
-			key->key[writeCursor]=newName[readCursor];
-			
-			readCursor++;
-			writeCursor++;
-		}
-		/* Finalize the string */
-		key->key[writeCursor]=0;
-		
-		
-		
-		key->flags |= KEY_SWITCH_ISSYSTEM;
-		key->flags &= ~KEY_SWITCH_ISUSER;
-	} else {
-		/* Passed name is neither "system" or "user" */
-		errno=KDB_RET_INVALIDKEY;
-		return -1;
-	}
-
-	key->flags |= KEY_SWITCH_NAME | KEY_SWITCH_NEEDSYNC;
-
-	return keyNameSize;
-
-	error_mem:
-		errno=KDB_RET_NOMEM;
-		return -1;
-}
 
 
 
@@ -905,7 +779,7 @@ ssize_t keyAddBaseName(Key *key,const char *baseName) {
 		/* Start appending basenames */
 		p=(char *)baseName;
 		nameSize--;
-		while (*(p=keyNameFetchSingleBase(p+size,&size))) {
+		while (*(p=keyNameGetOneLevel(p+size,&size))) {
 			/* Add a '/' to the end of key name */
 			key->key[nameSize]=RG_KEY_DELIM;
 			nameSize++;
@@ -950,7 +824,7 @@ ssize_t keySetBaseName(Key *key, const char *baseName) {
 	
 	/* Consume entire parent name */
 	p=key->key;
-	while (*(p=keyNameFetchSingleBase(p+size,&size)))
+	while (*(p=keyNameGetOneLevel(p+size,&size)))
 		prevParent=p;
 
 	if (prevParent && prevParent!=key->key) {
@@ -984,7 +858,7 @@ ssize_t keySetBaseName(Key *key, const char *baseName) {
 		/* Start appending basenames */
 		size=0;
 		p=(char *)baseName;
-		while (*(p=keyNameFetchSingleBase(p+size,&size))) {
+		while (*(p=keyNameGetOneLevel(p+size,&size))) {
 			/* Add a '/' to the end of key name */
 			key->key[parentSize]=RG_KEY_DELIM;
 			parentSize++;
@@ -1067,7 +941,7 @@ char *keyStealName(const Key *key) {
 
 
 /**
- * Bytes needed to store the key name including user domain.
+ * Bytes needed to store the key name including user domain and ending NULL.
  *
  * @return number of bytes needed to store key name including user domain
  * @see keyGetFullName(), keyGetNameSize()
@@ -1080,9 +954,15 @@ ssize_t keyGetFullNameSize(const Key *key) {
 
 	returnedSize=strblen(key->key);
 
-	if (!strncmp("user",key->key,sizeof("user")-1) && key->userDomain)
+	if (keyNameIsUser(key->key) && key->userDomain)
 		returnedSize+=strblen(key->userDomain);
 
+	/*
+	   After 2 strblen() calls looks like we counted one more NULL.
+	   But we need this byte count because a full key name has an
+	   additional ':' char.
+	*/
+	
 	return returnedSize;
 }
 
@@ -1117,7 +997,7 @@ ssize_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize) {
 	}
 
 	cursor=returnedName;
-	if (!strncmp("user",key->key,userSize)) {
+	if (keyIsUser(key)) {
 		strncpy(cursor,key->key,userSize);
 		cursor+=userSize;
 		if (key->userDomain) {
@@ -1238,12 +1118,12 @@ int keyIsUser(const Key *key) {
  *
  * Possible root key names are @p system, @p user or @p "user:someuser" .
  *
- * @return number of bytes needed without ending NULL
+ * @return number of bytes needed with ending NULL
  * @param keyName the name of the key
- * @see keyGetRootNameSize()
+ * @see keyGetFullRootNameSize()
  * @ingroup keyname
  */
-ssize_t keyNameGetRootNameSize(const char *keyName) {
+ssize_t keyNameGetFullRootNameSize(const char *keyName) {
 	char *end;
 	int length=strlen(keyName);
 
@@ -1263,7 +1143,7 @@ ssize_t keyNameGetRootNameSize(const char *keyName) {
 	if (!end) /* Reached end of string. Root is entire key. */
 		end = (char *)keyName + length;
 
-	return end-keyName;
+	return end-keyName+1;
 }
 
 
@@ -1274,14 +1154,15 @@ ssize_t keyNameGetRootNameSize(const char *keyName) {
  * Possible root key names are @p system or @p user .
  * This method does not consider the user domain in @p user:username keys.
  *
- * @return number of bytes needed without the ending NULL
+ * @return number of bytes needed with the ending NULL
  * @see keyGetFullRootNameSize(), keyNameGetRootNameSize()
  * @ingroup keyname
  */
 ssize_t keyGetRootNameSize(const Key *key) {
 	if (!key->key) return 0;
 
-	return keyNameGetRootNameSize(key->key);
+	if (keyIsUser(key)) return sizeof("user");
+	else return sizeof("system");
 }
 
 
@@ -1299,7 +1180,7 @@ ssize_t keyGetRootNameSize(const Key *key) {
  * @param key the key to extract root from
  * @param returned a pre-allocated buffer to store the rootname
  * @param maxSize size of the @p returned buffer
- * @return number of bytes needed without ending NULL
+ * @return number of bytes needed with ending NULL
  * @see keyNameGetRootNameSize(), keyGetRootNameSize(), keyGetFullRootName()
  * @ingroup keyname
  */
@@ -1319,9 +1200,59 @@ ssize_t keyGetRootName(const Key *key, char *returned, size_t maxSize) {
 	if (maxSize < size) {
 		errno=KDB_RET_TRUNC;
 		return -1;
-	} else strncpy(returned,key->key,size);
+	} else strncpy(returned,key->key,size-1);
+	returned[size-1]=0; /* null terminate it */
 	return size;
 }
+
+
+
+
+
+
+/**
+ * Gets number of bytes needed to store root name of a key name without
+ * user domain.
+ *
+ * Some examples:
+ * - root of @p system/some/key is @p system
+ * - root of @p user:denise/some/key is @p user
+ * - root of @p user/env/env1 is @p user
+ *
+ * @param keyName the name of the key
+ * @return number of bytes needed with ending NULL or -1 if @p keyName is
+ * 	not a valid name and @c errno is set to KDBErr::KDB_RET_INVALIDKEY
+ * @see keyGetRootNameSize()
+ * @ingroup keyname
+ */
+ssize_t keyNameGetRootNameSize(const char *keyName) {
+	int length=strlen(keyName);
+
+	if (!length) return 0;
+
+	/*
+		Possible situations:
+	user
+	user/
+	user/blabla
+	user:someuser
+	user:someuser/
+	user:someuser/key/name
+	system
+	system/
+	system/blabla
+	(empty)
+	*/
+	
+	if (keyNameIsUser(keyName)) return sizeof("user");
+	else if (keyNameIsSystem(keyName)) return sizeof("system");
+	else {
+		errno=KDB_RET_INVALIDKEY;
+		return -1;
+	}
+}
+
+
 
 
 
@@ -1332,7 +1263,7 @@ ssize_t keyGetRootName(const Key *key, char *returned, size_t maxSize) {
  * In contrast to keyGetRootNameSize(), this method considers the user
  * domain part, and you should prefer this one.
  *
- * @return number of bytes needed without ending NULL
+ * @return number of bytes needed with ending NULL
  * @see keyNameGetRootNameSize(), keyGetRootNameSize()
  * @ingroup keyname
  */
@@ -1342,13 +1273,15 @@ ssize_t keyGetFullRootNameSize(const Key *key) {
 	if (keyIsUser(key)) {
 		if (key->userDomain) size=strblen(key->userDomain);
 		else size=strblen(getenv("USER"));
+		
+		return size+sizeof("user");
+	} else {
+		return keyNameGetRootNameSize(key->key);
 	}
-
-	return size+keyNameGetRootNameSize(key->key);
 }
 
 
-/** 
+/**
  * Copy to @p returned the full root name of the key.
  *
  * Some examples:
@@ -1361,13 +1294,13 @@ ssize_t keyGetFullRootNameSize(const Key *key) {
  * @param key the key to extract root from
  * @param returned a pre-allocated buffer to store the rootname
  * @param maxSize size of the @p returned buffer
- * @return number of bytes written to @p returned without ending NULL
+ * @return number of bytes written to @p returned including ending NULL
  * @see keyGetFullRootNameSize(), keyGetRootName()
  * @ingroup keyname
  */
 ssize_t keyGetFullRootName(const Key *key, char *returned, size_t maxSize) {
 	size_t size;
-	size_t userSize;
+	size_t rootSize;
 	char *cursor;
 
 	if (!key->key) {
@@ -1385,15 +1318,17 @@ ssize_t keyGetFullRootName(const Key *key, char *returned, size_t maxSize) {
 		return -1;
 	}
 	
-	userSize = keyGetRootNameSize(key);
-	strncpy(returned,key->key, userSize); /* copy "user" or "system" */
+	rootSize = keyGetRootNameSize(key)-1;
+	strncpy(returned,key->key, rootSize); /* copy "user" or "system" */
 	if (keyIsUser(key)) {
-		cursor = returned + userSize;
+		cursor = returned + rootSize;
 		*cursor = ':'; cursor++;
 		if (key->userDomain)
-			strncpy (cursor, key->userDomain, size - userSize);
+			strncpy (cursor, key->userDomain, size - rootSize);
 		else
-			strncpy (cursor, getenv("USER"),  size - userSize);
+			strncpy (cursor, getenv("USER"),  size - rootSize);
+	} else {
+		returned[rootSize]=0;
 	}
 
 	return size;
@@ -1406,13 +1341,15 @@ ssize_t keyGetFullRootName(const Key *key, char *returned, size_t maxSize) {
 
 /**
  * Get the number of bytes needed to store this key's parent name without
- * user domain, and without the ending NULL.
+ * user domain, and with the ending NULL.
  * 
  * @see keyGetParentName() for example
  * @ingroup keyname
  */
 ssize_t keyGetParentNameSize(const Key *key) {
-	char *parentNameEnd;
+	char *parentNameEnd=0;
+	char *p;
+	size_t size;
 
 	if (!key->key) {
 		errno=KDB_RET_NOKEY;
@@ -1421,34 +1358,38 @@ ssize_t keyGetParentNameSize(const Key *key) {
 
 	/*
 		user   (size=0)
-		user/parent/base
-		user/parent/base/ (size=sizeof("user/parent"))
+		user/parent/base       (size=sizeof("user/parent"))
+		user/parent/base/      (size=sizeof("user/parent"))
+		user/parent/base\/name (size=sizeof("user/parent"))
 	*/
 
-	parentNameEnd=strrchr(key->key,RG_KEY_DELIM);
+	/* initialize */
+	p=key->key;
+	size=0;
+	
+	/* iterate over level names */
+	while (*(p=keyNameGetOneLevel(p+size,&size))) parentNameEnd=p;
+	
+	/* handle NULL or root key ("user" or "system") */
+	if (!parentNameEnd || parentNameEnd==key->key) return 0;
 
-	if (!parentNameEnd || parentNameEnd==key->key) {
-		/* handle NULL or /something */
-		return 0;
-	}
-
-	/* handle system/parent/base/ */
-	if ((parentNameEnd-key->key) == (strblen(key->key)-2)) {
-		parentNameEnd--;
-		while (*parentNameEnd!=RG_KEY_DELIM) parentNameEnd--;
-	}
-
+	/* at this point, parentNameEnd points to the first char of the basename */
+	/* example: it points to the 'b' of "user/key/basename" */
+	
+	/* the delta is the size we want */
 	return parentNameEnd - key->key;
 }
 
 
 
 /**
- * Copy this key's parent name into a pre-allocated buffer.
+ * Copy this key's parent name (without user domain) into a pre-allocated
+ * buffer.
  *
  * @see keyGetParentNameSize()
  * @param returnedParent pre-allocated buffer to copy parent name to
  * @param maxSize number of bytes pre-allocated
+ * @return number of bytes copied including ending NULL
  * @par Example:
  * @code
 Key *key=keyNew("system/parent/base",KEY_SWITCH_END);
@@ -1456,8 +1397,8 @@ char *parentName;
 size_t parentSize;
 
 parentSize=keyGetParentNameSize(key);
-parentName=malloc(parentSize+1);
-keyGetParentName(key,parentName,parentSize+1);
+parentName=malloc(parentSize);
+keyGetParentName(key,parentName,parentSize);
  * @endcode
  * @ingroup keyname
  */
@@ -1466,12 +1407,12 @@ ssize_t keyGetParentName(const Key *key, char *returnedParent, size_t maxSize) {
 
 	parentSize=keyGetParentNameSize(key);
 
-	if (parentSize+1 > maxSize) {
+	if (parentSize > maxSize) {
 		errno=KDB_RET_TRUNC;
 		return 0;
 	} else strncpy(returnedParent,key->key,parentSize);
 
-	returnedParent[parentSize]=0; /* ending NULL */
+	returnedParent[parentSize-1]=0; /* ending NULL */
 	
 	return parentSize;
 }
@@ -1482,25 +1423,34 @@ ssize_t keyGetParentName(const Key *key, char *returnedParent, size_t maxSize) {
 
 
 /**
- * Calculates number of bytes needed to store a basename of a key name.
+ * Calculates number of bytes needed to store a basename of a key name
+ * including the ending NULL.
+ *
  * Key names that have only root names (e.g. @c "system" or @c "user"
  * or @c "user:domain" ) does not have basenames, thus the function will
  * return 0 bytes.
  *
  * Basenames are denoted as:
- * - @p system/some/thing/basename
- * - @p user:domain/some/thing/basename
+ * - @c system/some/thing/basename -> @c basename
+ * - @c user:domain/some/thing/base\/name -> @c base\/name
  *
- * @return number of bytes needed without ending NULL
+ * @return size in bytes of basename including ending NULL
  * @see keyGetBaseNameSize()
  * @ingroup keyname
  */
 ssize_t keyNameGetBaseNameSize(const char *keyName) {
-	char *end;
-
-	end=strrchr(keyName,RG_KEY_DELIM);
-	if (end) return keyName+strblen(keyName)-1-end;
-	else return 0;
+	char *p=(char *)keyName;
+	char *base=0;
+	size_t size=0;
+	size_t baseSize=0;
+	
+	while (*(p=keyNameGetOneLevel(p+size,&size))) {
+		base=p;
+		baseSize=size;
+	}
+	
+	if (base == keyName) return 0;
+	else return baseSize+1;
 }
 
 
@@ -1512,10 +1462,10 @@ ssize_t keyNameGetBaseNameSize(const char *keyName) {
  * return 0 bytes.
  *
  * Basenames are denoted as:
- * - @c system/some/thing/basename
- * - @c user:domain/some/thing/basename
+ * - @c system/some/thing/basename -> @c basename
+ * - @c user:domain/some/thing/base\/name > @c base\/name
  *
- * @return number of bytes needed without ending NULL
+ * @return size in bytes of @p key's basename including ending NULL
  * @see keyNameGetBaseNameSize()
  * @ingroup keyname
  */
@@ -1528,37 +1478,41 @@ ssize_t keyGetBaseNameSize(const Key *key) {
 
 
 /**
- * Calculate the basename of a key name and put it in @p returned.
+ * Calculate the basename of a key name and put it in @p returned finalizing
+ * the string with NULL.
  *
  * Some examples:
- * - basename of @p system/some/keyname is @p keyname
- * - basename of @p "user/tmp/some key" is @p "some key"
+ * - basename of @c system/some/keyname is @c keyname
+ * - basename of @c "user/tmp/some key" is @c "some key"
  *
  * @param key the key to extract basename from
  * @param returned a pre-allocated buffer to store the basename
  * @param maxSize size of the @p returned buffer
- * @return number of bytes copied to @p returned, or 0 and @p errno is set
+ * @return number of bytes copied to @p returned, or 0 and @c errno is set
  * @see keyStealBaseName(), keyGetBaseNameSize()
  * @ingroup keyname
  */
 ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize) {
-	ssize_t size;
-	size_t keySize;
+	size_t size=0;
+	char *p=key->key;
+	char *baseName;
+	size_t baseSize=0;
 
-	if (!(size=keyGetBaseNameSize(key))) {
-		errno=KDB_RET_NOKEY;
-		return 0;
+	while (*(p=keyNameGetOneLevel(p+size,&size))) {
+		baseName=p;
+		baseSize=size+1;
 	}
+	
+	if (!baseName || baseName==key->key) return 0;
 
-	keySize=strblen(key->key);
-
-	if (maxSize < size) {
-		strncpy(returned,key->key+keySize-size,maxSize);
+	if (maxSize < baseSize) {
+		strncpy(returned,baseName,maxSize);
 		errno=KDB_RET_TRUNC;
-		return size;
-	} else strncpy(returned,key->key+keySize-size,size);
-
-	return size;
+		return maxSize;
+	} else {
+		strncpy(returned,baseName,baseSize);
+		return baseSize;
+	}
 }
 
 
@@ -1572,9 +1526,13 @@ ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize) {
  * @ingroup keyname
  */
 char *keyStealBaseName(const Key *key) {
-	char *end=strrchr(key->key,RG_KEY_DELIM);
+	char *p=key->key;
+	char *base=0;
+	size_t size=0;
 	
-	if (++end) return end;
+	while (*(p=keyNameGetOneLevel(p+size,&size))) base=p;
+	
+	if (base != key->key) return base;
 	else return 0;
 }
 

@@ -67,7 +67,7 @@ int main()
 	printf("------------------------\n");
 
 	for(i = 0 ; tstKeyName[i].testName != NULL ; i++) {
-		printf("Test %d: %s\n", i+1, tstKeyName[i].testName);
+		printf("Test %d: %s: %s\n", i+1, tstKeyName[i].testName,tstKeyName[i].keyName);
 
 		key = keyNew(tstKeyName[i].keyName, KEY_SWITCH_END);
 		
@@ -85,10 +85,10 @@ int main()
 
 		/* keyGetFullRootNameSize */
 		size = keyGetFullRootNameSize(key);
-		success = (size == strlen(tstKeyName[i].expectedFRootName));
+		success = (size == strblen(tstKeyName[i].expectedFRootName));
 		printf("\tCheck keyGetFullRootNameSize(): %s\n", (success ? "OK" : "** FAILED **"));
 		if ( !success )
-			printf("\t\tGot \"%d\", expecting \"%d\"\n", size, strlen(tstKeyName[i].expectedFRootName));
+			printf("\t\tGot \"%d\", expecting \"%d\"\n", size, strblen(tstKeyName[i].expectedFRootName));
 		
 		/* keyGetFullRootName */
 		size = keyGetFullRootNameSize(key);
@@ -102,10 +102,10 @@ int main()
 
 		/* keyGetParentNameSize */
 		size = keyGetParentNameSize(key);
-		success = (size == strlen(tstKeyName[i].expectedParentName));
+		success = (size == strblen(tstKeyName[i].expectedParentName));
 		printf("\tCheck keyGetParentNameSize(): %s\n", (success ? "OK": "** FAILED **"));
 		if ( !success )
-			printf("\t\tGot \"%d\", expecting \"%d\"\n", size, strlen(tstKeyName[i].expectedParentName));
+			printf("\t\tGot \"%d\", expecting \"%d\"\n", size, strblen(tstKeyName[i].expectedParentName));
 
 		/* keyGetParentName */
 		size = keyGetParentNameSize(key)+1;
@@ -119,10 +119,10 @@ int main()
 
 		/* keyGetBaseNameSize */
 		size = keyGetBaseNameSize(key);
-		success = (size == strlen(tstKeyName[i].expectedBaseName));
+		success = (size == strblen(tstKeyName[i].expectedBaseName));
 		printf("\tCheck keyGetBaseNameSize(): %s\n", (success ? "OK" : "** FAILED **"));
 		if ( !success )
-			printf("\t\tGot \"%d\", expecting \"%d\"\n", size, strlen(tstKeyName[i].expectedBaseName));
+			printf("\t\tGot \"%d\", expecting \"%d\"\n", size, strblen(tstKeyName[i].expectedBaseName));
 
 		/* keyGetBaseName */
 		size = keyGetBaseNameSize(key)+1;

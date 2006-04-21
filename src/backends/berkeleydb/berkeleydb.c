@@ -308,7 +308,7 @@ int parentIndexCallback(DB *db, const DBT *rkey, const DBT *rdata, DBT *pkey) {
 	size_t baseNameSize,parentNameSize;
 	char *parentPrivateCopy=0;
 
-	baseNameSize=keyNameGetBaseNameSize(rkey->data);
+	baseNameSize=keyNameGetBaseNameSize(rkey->data)-1;
 	if (baseNameSize == 0) return DB_DONOTINDEX;
 
 	memset(pkey, 0, sizeof(DBT));
@@ -907,7 +907,7 @@ int kdbSetKey_bdb(KDBHandle handle, Key *key) {
 			size_t parentNameSize;
 			char *parentName;
 
-			parentNameSize=keyGetParentNameSize(key)+1;
+			parentNameSize=keyGetParentNameSize(key);
 			parentName=malloc(parentNameSize);
 			keyGetParentName(key,parentName,parentNameSize);
 			

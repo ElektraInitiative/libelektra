@@ -480,8 +480,9 @@ ssize_t keyGetParentNameSize(const Key *key);
 
 ssize_t keyNameGetRootNameSize(const char *keyName);
 ssize_t keyGetRootNameSize(const Key *key);
-ssize_t keyGetFullRootNameSize(const Key *key);
 
+ssize_t keyNameGetFullRootNameSize(const char *keyName);
+ssize_t keyGetFullRootNameSize(const Key *key);
 
 ssize_t keyGetCommentSize(const Key *key);
 ssize_t keyGetComment(const Key *key, char *returnedDesc, size_t maxSize);

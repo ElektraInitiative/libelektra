@@ -464,11 +464,11 @@ uint32_t ksLookupRE(KeySet *ks, uint32_t where,
 		
 		if (options & KDB_O_NOSPANPARENT) {
 			/* User wants siblings. Check if walker is a sibling of init. */
-			if (walkerNameSize < parentNameSize)
-				/* we're out of out scope, so abort */
+			if (walkerNameSize < parentNameSize-1)
+				/* we're out of our scope, so abort */
 				break;
 			
-			if (memcmp(parentName,walker->key,parentNameSize))
+			if (memcmp(parentName,walker->key,parentNameSize-1))
 				/* walker has a different parent, so abort */
 				break;
 		}
@@ -495,7 +495,7 @@ uint32_t ksLookupRE(KeySet *ks, uint32_t where,
 	
 	if (parentName) free(parentName);
 	ks->cursor=init;
-#endif	
+#endif
 	return 0;
 }
 

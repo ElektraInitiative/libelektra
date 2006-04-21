@@ -1,6 +1,6 @@
 Name:          elektra
 Version:       @VERSION@
-Release:       15
+Release:       24
 Source:        http://prdownloads.sourceforge.net/elektra/%{name}-%{version}.tar.gz
 Group:         System Environment/Libraries
 License:       BSD
@@ -91,7 +91,8 @@ Berkeley DB databases to store its keys.
 %setup -q
 %build
 
-#CFLAGS=-gstabs \
+#CFLAGS="-g -O0" \
+
 
 %configure \
      --prefix=%{_prefix} \
