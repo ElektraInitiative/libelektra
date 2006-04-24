@@ -140,7 +140,7 @@ struct _Key {
 	 */ 
 	size_t         dataSize;
 	size_t         recordSize;  /**< dataSize + commentSize + some control */
-	 
+	
 	/**
 	 * Some control and internal flags.
 	 * @see keySetFlag(), keyGetFlag()

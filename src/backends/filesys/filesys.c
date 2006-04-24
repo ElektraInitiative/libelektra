@@ -314,13 +314,19 @@ int kdbRename_filesys(KDBHandle handle, Key *key, const char *newName) {
 		return -1;
 	}
 	
+	newKey->userDomain=key->userDomain;
+	
 	rc=kdbGetFilename(key,oldFileName,sizeof(oldFileName));
 	if (rc == 0) {
+		/* undo hack */
+		newKey->userDomain=0;
 		keyDel(newKey);
 		return -1;
 	}
 	
 	rc=kdbGetFilename(newKey,newFileName,sizeof(newFileName));
+	/* undo hack */
+	newKey->userDomain=0;
 	keyDel(newKey); /* won't need it anymore */
 	if (rc == 0) return -1;
 	
@@ -401,7 +407,7 @@ ssize_t kdbGetKeyChildKeys_filesys(KDBHandle handle, const Key *parentKey,
 		free(transformedName); transformedName=0; /* don't need it anymore */
 
 		keyEntry=keyNew(buffer,KEY_SWITCH_END);
-
+		keySetOwner(keyEntry,kdbhGetUserName(handle));
 
 		/* TODO: inefficient code in next block */
 		if (options & KDB_O_STATONLY) kdbStatKey_filesys(handle,keyEntry);

@@ -837,7 +837,7 @@ while ((ret=kdbSetKeys(handle,ks))) {
 	if (problem) keyGetFullName(problem,keyname,sizeof(keyname));
 	sprintf(error,"kdb import: while importing %s", keyname);
 	kdbPrintError(error);
-        
+
 	// And try to set keys again starting from the next key,
 	// unless we reached the end of KeySet
 	if (ksNext(ks) == 0) break;
@@ -857,7 +857,7 @@ int kdbSetKeys(KDBHandle handle, KeySet *ks) {
 	if (handle) {
 		if(handle->kdbSetKeys)
 			rc=handle->kdbSetKeys(handle,ks);
-	  else 
+		else
 			/* If backend doesn't provide kdbSetKeys, use the default */
 			rc=kdbSetKeys_default(handle,ks);
 	}

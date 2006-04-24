@@ -246,22 +246,22 @@ int parseCommandLine(int argc, char *argv[]) {
 	/* End of command line argument reading. Now parse and finalize */
 
 	/* Check parsed command */
-	if (!strcmp(sargCommand,"ls")) argCommand=CMD_LIST;
-	else if (!strcmp(sargCommand,"set")) argCommand=CMD_SET;
-	else if (!strcmp(sargCommand,"get")) argCommand=CMD_GET;
-	else if (!strcmp(sargCommand,"ln")) argCommand=CMD_LINK;
-	else if (!strcmp(sargCommand,"rm")) argCommand=CMD_REMOVE;
-	else if (!strcmp(sargCommand,"vi")) argCommand=CMD_EDIT;
-	else if (!strcmp(sargCommand,"edit")) argCommand=CMD_EDIT;
-	else if (!strcmp(sargCommand,"load")) argCommand=CMD_LOAD;
-	else if (!strcmp(sargCommand,"import")) argCommand=CMD_LOAD;
-	else if (!strcmp(sargCommand,"save")) argCommand=CMD_SAVE;
-	else if (!strcmp(sargCommand,"export")) argCommand=CMD_SAVE;
-	else if (!strcmp(sargCommand,"mon")) argCommand=CMD_MONITOR;
+	if (!strcmp(sargCommand,"ls"))           argCommand=CMD_LIST;
+	else if (!strcmp(sargCommand,"set"))     argCommand=CMD_SET;
+	else if (!strcmp(sargCommand,"get"))     argCommand=CMD_GET;
+	else if (!strcmp(sargCommand,"ln"))      argCommand=CMD_LINK;
+	else if (!strcmp(sargCommand,"rm"))      argCommand=CMD_REMOVE;
+	else if (!strcmp(sargCommand,"vi"))      argCommand=CMD_EDIT;
+	else if (!strcmp(sargCommand,"edit"))    argCommand=CMD_EDIT;
+	else if (!strcmp(sargCommand,"load"))    argCommand=CMD_LOAD;
+	else if (!strcmp(sargCommand,"import"))  argCommand=CMD_LOAD;
+	else if (!strcmp(sargCommand,"save"))    argCommand=CMD_SAVE;
+	else if (!strcmp(sargCommand,"export"))  argCommand=CMD_SAVE;
+	else if (!strcmp(sargCommand,"mon"))     argCommand=CMD_MONITOR;
 	else if (!strcmp(sargCommand,"monitor")) argCommand=CMD_MONITOR;
-	else if (!strcmp(sargCommand,"mv")) argCommand=CMD_MOVE;
-	else if (!strcmp(sargCommand,"info")) argCommand=CMD_INFO;
-	else if (!strcmp(sargCommand,"help")) argCommand=CMD_HELP;
+	else if (!strcmp(sargCommand,"mv"))      argCommand=CMD_MOVE;
+	else if (!strcmp(sargCommand,"info"))    argCommand=CMD_INFO;
+	else if (!strcmp(sargCommand,"help"))    argCommand=CMD_HELP;
 	else {
 		fprintf(stderr,"kdb: Invalid subcommand.\n");
 		exit(1);
@@ -656,9 +656,12 @@ int commandSet(KDBHandle handle) {
 	/* Set key value . . . */
 	if (argType == KEY_TYPE_UNDEFINED)
 		keySetString(key,argData); /* the most common here */
-	else if (argType == KEY_TYPE_DIR)
-		keySetType(key,KEY_TYPE_DIR);
-	else if (argType == KEY_TYPE_LINK)
+	else if (argType == KEY_TYPE_DIR) {
+		mode_t mask=umask(0);
+		umask(mask);
+		
+		keySetDir(key,mask);
+	} else if (argType == KEY_TYPE_LINK)
 		keySetLink(key,argData);
 	else if (argData) { /* Handle special type values . . . */
 	
@@ -1424,6 +1427,8 @@ int commandImport(KDBHandle handle) {
 		 *  unless we reached the end of KeySet */
 		if (ksNext(ks) == 0) break;
 	}
+	
+	ksDel(ks);
 	
 	return ret;
 }

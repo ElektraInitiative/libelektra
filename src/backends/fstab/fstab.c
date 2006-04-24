@@ -37,12 +37,15 @@ $Id$
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <dirent.h>
 #include <fcntl.h>
 
 #ifdef HAVE_REGEX_H
 #include <regex.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
 #endif
 
 #include <kdbbackend.h>
@@ -115,7 +118,7 @@ ssize_t kdbGetKeyChildKeys_fstab(KDBHandle handle, const Key *parentKey,
 			char *curr=fstabEntry->mnt_dir;
 			fsname[0]=0;
 			
-			while((slash=strchr(curr,'/'))) {
+			while((slash=strchr(curr,RG_KEY_DELIM))) {
 				if (slash==curr) {
 					curr++;
 					continue;
@@ -131,11 +134,11 @@ ssize_t kdbGetKeyChildKeys_fstab(KDBHandle handle, const Key *parentKey,
 		sprintf(fsKeyName,"%s/%s",ROOT,fsname);
 		if (options & KDB_O_DIR || options & KDB_O_NOVALUE) {
 			ksAppend(returned,key=keyNew(fsKeyName,
-				KEY_SWITCH_TYPE,KEY_TYPE_DIR,
 				KEY_SWITCH_COMMENT,"Filesystem pseudo-name",
 				KEY_SWITCH_UID,0,
 				KEY_SWITCH_GID,0,
 				KEY_SWITCH_END));
+			keySetDir(key,kdbhGetUMask(handle));
 			key->flags &= ~KEY_SWITCH_NEEDSYNC;
 		}
 			

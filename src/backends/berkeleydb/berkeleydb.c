@@ -155,11 +155,12 @@ DBContainer *dbs=0;
 
 
 /**
- * Serialize a Key struct into DBT structs, one for key name,
- * another for the rest.
+ * Serialize a Key struct into DBT structs, one for key name
+ * (including ending NULL), another for the rest.
+ *
  * Memory will be allocated for DBT.data part, so it is caller
  * responsability to deallocate that latter.
- * 
+ *
  */
 int keyToBDB(const Key *key, DBT *dbkey, DBT *dbdata) {
 	void *serialized;
@@ -267,6 +268,8 @@ int keyFromBDB(Key *key, const DBT *dbkey, const DBT *dbdata) {
 		dbdata->data,    /* source */
 		metaInfoSize);   /* size */
 	
+	key->recordSize=dbdata->size;
+	
 	key->flags = KEY_SWITCH_INITIALIZED;
 
 	/* Set comment */
@@ -285,10 +288,11 @@ int keyFromBDB(Key *key, const DBT *dbkey, const DBT *dbdata) {
 		
 		UTF8Engine(UTF8_FROM,&key->key,&size);
 		UTF8Engine(UTF8_FROM,&key->comment,&key->commentSize);
-		if (!keyIsBin(key)) UTF8Engine(UTF8_FROM,(char **)&key->data,&key->dataSize);
+		if (!keyIsBin(key))
+			UTF8Engine(UTF8_FROM,(char **)&key->data, &key->dataSize);
 	}
 	
-	/* since we just got the key from the storage structure, it is synced. */
+	/* since we just got the key from the storage, it is synced. */
 	key->flags &= ~KEY_SWITCH_NEEDSYNC;
 
 	return 0;
@@ -308,8 +312,10 @@ int parentIndexCallback(DB *db, const DBT *rkey, const DBT *rdata, DBT *pkey) {
 	size_t baseNameSize,parentNameSize;
 	char *parentPrivateCopy=0;
 
-	baseNameSize=keyNameGetBaseNameSize(rkey->data)-1;
-	if (baseNameSize == 0) return DB_DONOTINDEX;
+	baseNameSize=keyNameGetBaseNameSize(rkey->data);
+	if (baseNameSize == 0)
+		/* this is a root or empty key */
+		return DB_DONOTINDEX;
 
 	memset(pkey, 0, sizeof(DBT));
 
@@ -357,9 +363,10 @@ int dbTreeDel(DBTree *dbtree) {
  * Given a created, opened and empty DBTree, initialize its root key.
  * This is usually called by dbTreeNew().
  */
-int dbTreeInit(DBTree *newDB) {
+int dbTreeInit(KDBHandle handle,DBTree *newDB) {
 	Key *root=0;
 	int ret;
+	mode_t mask;
 	DBT dbkey,data;
 
 	
@@ -367,7 +374,6 @@ int dbTreeInit(DBTree *newDB) {
 		root=keyNew("system",
 			KEY_SWITCH_UID,0,
 			KEY_SWITCH_GID,0,
-			KEY_SWITCH_TYPE,KEY_TYPE_DIR,
 			KEY_SWITCH_END);
 	} else {
 		struct passwd *userOwner;
@@ -377,6 +383,9 @@ int dbTreeInit(DBTree *newDB) {
 			KEY_SWITCH_END);
 	}
 
+	mask=umask(0); umask(mask);
+	keySetDir(root,mask);
+	
 	root->atime=root->mtime=root->ctime=time(0); /* set current time */
 
 	keyToBDB(root,&dbkey,&data);
@@ -417,7 +426,7 @@ int dbTreeInit(DBTree *newDB) {
  * else
  *	/etc/kdb-berkeleydb/{dbfiles}
  */
-DBTree *dbTreeNew(const Key *forKey) {
+DBTree *dbTreeNew(KDBHandle handle,const Key *forKey) {
 	DBTree *newDB;
 	int ret;
 	int newlyCreated; /* True if this is a new database */
@@ -447,7 +456,7 @@ DBTree *dbTreeNew(const Key *forKey) {
 		/* Directory does not exist. create it */
 		int ret;
 		
-		printf("Going to create dir %s\n",dbDir);
+		fprintf(stderr,"Going to create dir %s\n",dbDir);
 		ret=mkdir(dbDir,DEFFILEMODE | S_IXUSR);
 		if (ret) return 0; /* propagate errno */
 	} else {
@@ -560,7 +569,7 @@ DBTree *dbTreeNew(const Key *forKey) {
 			chown(keyvalueFile,  user->pw_uid,user->pw_gid);
 			chown(parentsFile,  user->pw_uid,user->pw_gid);
 		}
-		dbTreeInit(newDB); /* populate */
+		dbTreeInit(handle,newDB); /* populate */
 	}
 	return newDB;
 }
@@ -579,7 +588,8 @@ DBTree *dbTreeNew(const Key *forKey) {
  * open it with dbTreeNew().
  * Key name and user domain will be used to find the correct database.
  */
-DBTree *getDBForKey(DBContainer *dbs, const Key *key) {
+DBTree *getDBForKey(KDBHandle handle, const Key *key) {
+	DBContainer *dbs=kdbhGetBackendData(handle);
 	DBTree *current,*newDB;
 	char rootName[100];
 	rootName[0]=0; /* just to be sure... */
@@ -611,7 +621,7 @@ DBTree *getDBForKey(DBContainer *dbs, const Key *key) {
 	/* If we reached this point, the DB for our key is not in our container.
 	 * Open it and include in the container. */
 
-	newDB=dbTreeNew(key);
+	newDB=dbTreeNew(handle,key);
 	if (newDB) {
 		/* Put the new DB right after the container's current DB (cursor).
 		 * And set the cursor to be the new DB. */
@@ -697,7 +707,7 @@ int kdbRemoveKey_bdb(KDBHandle handle, const Key *key) {
 	
 	dbs=kdbhGetBackendData(handle);
 	
-	dbctx=getDBForKey(dbs,key);
+	dbctx=getDBForKey(handle,key);
 	if (!dbctx) return 1; /* propagate errno from getDBForKey() */
 	
 	/* First check if we have write permission to the key */
@@ -760,7 +770,7 @@ int kdbGetKeyWithOptions(KDBHandle handle, Key *key, uint32_t options) {
 
 	dbs=kdbhGetBackendData(handle);
 	
-	dbctx=getDBForKey(dbs,key);
+	dbctx=getDBForKey(handle,key);
 	if (!dbctx) return 1; /* propagate errno from getDBForKey() */
 
 	keyInit(&buffer);
@@ -859,7 +869,7 @@ int kdbSetKey_bdb(KDBHandle handle, Key *key) {
 	gid_t group=kdbhGetGID(handle);
 	int canWrite=0;
 
-	dbctx=getDBForKey(kdbhGetBackendData(handle),key);
+	dbctx=getDBForKey(handle,key);
 	if (!dbctx) return 1; /* propagate errno from getDBForKey() */
 
 	/* Check access permissions.
@@ -877,12 +887,6 @@ int kdbSetKey_bdb(KDBHandle handle, Key *key) {
 	switch (ret) {
 		case 0: { /* Key found and retrieved. Check permissions */
 			Key *cast;
-			
-			/*
-			keyInit(&buffer);
-			keyFromBDB(&buffer,&dbkey,&data);
-			keySetOwner(&buffer,dbctx->userDomain);
-			*/
 			
 			cast=(Key *)data.data;
 			
@@ -929,9 +933,7 @@ int kdbSetKey_bdb(KDBHandle handle, Key *key) {
 				 * could be running under a daemon context */
 				keySetUID(parent,user);
 				keySetGID(parent,group);
-				keySetAccess(parent,kdbhGetUMask(handle));
-				
-				keySetType(parent,KEY_TYPE_DIR);
+				keySetDir(parent,kdbhGetUMask(handle));
 				
 				/* Next block exist just to not call 
 				 * keySetName(), a very expensive method.
@@ -1058,7 +1060,7 @@ ssize_t kdbGetKeyChildKeys_bdb(KDBHandle handle, const Key *parentKey,
 	int ret=0;
 	
 	/* Get/create the DB for the parent key */
-	db=getDBForKey(kdbhGetBackendData(handle),parentKey);
+	db=getDBForKey(handle,parentKey);
 
 	if (db == 0) { /* TODO: handle error */}
 
@@ -1092,6 +1094,8 @@ ssize_t kdbGetKeyChildKeys_bdb(KDBHandle handle, const Key *parentKey,
 
 	/* initialize the KeySet that will hold the fetched folders */
 	ksInit(&folders);
+	
+	/* initialize a cursor to walk through each key under a folder */
 	ret = db->db.parentIndex->cursor(db->db.parentIndex, NULL, &cursor, 0);
 	
 	currentParent=(Key *)parentKey;
@@ -1111,25 +1115,29 @@ ssize_t kdbGetKeyChildKeys_bdb(KDBHandle handle, const Key *parentKey,
 		/* Let BDB allocate memory for next key name and data */
 		keyName.flags=keyData.flags=DB_DBT_REALLOC;
 		
+		/* position the cursor in the first key of "parent" folder
+		   and retrieve it */
 		ret=cursor->c_pget(cursor,&parent,&keyName,&keyData,DB_SET);
 		
 		if (ret == DB_NOTFOUND) {
 			/* We are probably in a root key, that
-			 * doesn't have an entry in the index. */
+			 * doesn't have any subentry in the index. */
 			free(parent.data);
 			free(keyName.data);
 			free(keyData.data);
-			return KDB_RET_NOTFOUND;
+			break;
+			/*return KDB_RET_NOTFOUND; */
 		}
 		
 		/* Now start retrieving all child keys */
-		do {
+		do { /* next cursor move is in the ending "while" */
 		
 			/* Check if is inactive before doing higher level operations */
 			if (!(options & KDB_O_INACTIVE)) {
 				char *sep;
 				
 				/* If we don't want inactive keys, check if its inactive */
+				/* TODO: handle escaping */
 				sep=strrchr((char *)keyName.data,RG_KEY_DELIM);
 				if (sep && sep[1] == '.') {
 					/* This is an inactive key, and we don't want it */

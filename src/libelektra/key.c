@@ -277,6 +277,11 @@ emptyNamedKey=keyNew("user/some/example",KEY_SWITCH_END);
  * - KeySwitch::KEY_SWITCH_MODE \n
  *   Next parameter is taken as access permissions (mode_t) to the key.
  *   See keySetAccess().
+ * - KeySwitch::KEY_SWITCH_UMODE \n
+ *   Next parameter is taken as user's umask, and will be used to calculate
+ *   and set key's access permissions. If used after KEY_TYPE_DIR
+ *   with KEY_SWITCH_TYPE, keySetDir() will be used. See keySetAccess(). Do
+ *   not use this switch with KEY_SWITCH_MODE.
  * - KeySwitch::KEY_SWITCH_DOMAIN \n
  *   Next parameter is the user domain. See keySetOwner().
  * - KeySwitch::KEY_SWITCH_COMMENT \n
@@ -421,6 +426,12 @@ Key *keyNew(const char *keyName, ...) {
 					break;
 				case KEY_SWITCH_MODE:
 					keySetAccess(key,va_arg(va,mode_t));
+					break;
+				case KEY_SWITCH_UMODE:
+					if (key->type == KEY_TYPE_DIR)
+						keySetDir(key,va_arg(va,mode_t));
+					else
+						keySetUAccess(key,va_arg(va,mode_t));
 					break;
 				case KEY_SWITCH_DOMAIN:
 					keySetOwner(key,va_arg(va,char *));
@@ -624,8 +635,9 @@ ssize_t keySetName(Key *key, const char *newName) {
 	}
 	userLength=sizeof("user")-1;
 	systemLength=sizeof("system")-1;
-	userDomainLength=rootLength-userLength-1;
-	if (userDomainLength<0) userDomainLength=0;
+	userDomainLength=rootLength-userLength;
+	
+	if (userDomainLength>0) --userDomainLength;
 
 	if (keyNameIsUser(newName)) {
 		/* handle "user*" */
@@ -749,13 +761,13 @@ ssize_t keySetName(Key *key, const char *newName) {
  * @return the size in bytes of the new key name including the ending NULL
  * @see keySetBaseName()
  * @ingroup keyname
- * 
+ *
  */
 ssize_t keyAddBaseName(Key *key,const char *baseName) {
 	size_t nameSize=0;
 	size_t newSize=0;
 	size_t size=0;
-	char *p;
+	char *p=0;
 
 	if (key->key) nameSize=strblen(key->key);
 	if (baseName) newSize=strblen(baseName);
@@ -764,16 +776,18 @@ ssize_t keyAddBaseName(Key *key,const char *baseName) {
 	/* At this point, newSize has size of the baseName string, +1 for NULL */
 	
 	if (newSize <= 1)
-		/* baseName is empty of NULL, so we are done */
+		/* baseName is empty or NULL, so we are done */
 		return nameSize;
 	
 	if (key->key) {
-		p=realloc(key->key,newSize+nameSize-1);
+		p=realloc(key->key,newSize+nameSize);
 		if (NULL == p) {
 			errno=KDB_RET_NOMEM;
 			return -1;
 		}
 		
+		/*strcpy(p,key->key);
+		free(key->key); key->key=0;*/
 		key->key=p;
 		
 		/* Start appending basenames */
@@ -1912,15 +1926,12 @@ uint8_t keyGetType(const Key *key) {
 
 /**
  * Force a key type. See the #KeyType documentation to
- * understand the concepts behind Elektra key's value types. 
+ * understand the concepts behind Elektra key's value types.
  *
  * This method is usually not needed, unless you are working with more
  * semantic value types, or want to force a specific value type for a key.
  * It is not usually needed because the data type is automatically set
  * when setting the key value.
- *
- * The KeyType::KEY_TYPE_DIR is the only type that has no value, so when
- * using this method to set to this type, the key value will be freed.
  *
  * @par Example:
  * @code
@@ -1972,7 +1983,16 @@ keyDel(color1);
 keyDel(color2);
  * @endcode
  *
+ * The KeyType::KEY_TYPE_DIR is the only type that has no value, so when
+ * using this method to set to this type, the key value will be freed.
+ *
+ * When using KeyType::KEY_TYPE_DIR, this method will not set access
+ * permissions to the key. You'll have to set it manually after
+ * keySetType(), calling keySetAccess() with appropriate permissions.
+ * Or use the keySetDir().
+ * 
  * @see keyGetType()
+ * @see keySetDir()
  * @see #KeyType
  * @return the new type
  * @ingroup keyvalue
@@ -1992,12 +2012,46 @@ uint8_t keySetType(Key *key,uint8_t newType) {
 		default:
 			key->type=newType;
 			key->access &= ~(0040000 | dirSwitch);
-			/*remove bits directory and dirSwitch*/
+			/*remove directory bits and dirSwitch*/
 			key->flags |= KEY_SWITCH_NEEDSYNC;
 	}
 	return key->type;
 }
 
+
+/**
+ * Force a key type to be KEY_TYPE_DIR and set permissions.
+ *
+ * This method is provided as a convenience to avoid separate calls
+ * of keySetType() and keySetAccess() and the complexities of
+ * calculating permissions from umask().
+ *
+ * @par This method should be used this way:
+ * @code
+Key *key=keyNew(KEY_SWITCH_END);
+mode_t mask=umask(0);
+
+// restore backup
+umask(mask);
+
+// set directory permissions based on my umask
+keySetDir(key,mask);
+ * @endcode
+ * 
+ * @param key the key to set type and permissions
+ * @param customUmask the umask of current session
+ * @return the key new type, which is KEY_TYPE_DIR
+ * @ingroup keyvalue
+ */
+uint8_t keySetDir(Key *key, mode_t customUmask) {
+	mode_t dirSwitch=0111;
+	
+	key->type=KEY_TYPE_DIR;
+	key->access|=(dirSwitch & ~customUmask) | 0040000; /*S_IFDIR*/
+	keySetRaw(key,0,0); /* remove data */
+	
+	return key->type;
+}
 
 
 /**
@@ -2025,7 +2079,7 @@ ssize_t keySetRaw(Key *key, const void *newBinary, size_t dataSize) {
 
 	key->dataSize=dataSize;
 	if (key->data) {
-		char *p;
+		char *p=0;
 		p=realloc(key->data,key->dataSize);
 		if (NULL==p) return -1;
 		key->data=p;
@@ -2077,7 +2131,7 @@ ssize_t keySetOwner(Key *key, const char *userDomain) {
 
 	if ((size=strblen(userDomain)) > 0) {
 		if (key->userDomain) {
-			char *p;
+			char *p=0;
 			p=realloc(key->userDomain,size);
 			if (NULL==p) {
 				errno=KDB_RET_NOMEM;
@@ -2198,7 +2252,7 @@ ssize_t keySetComment(Key *key, const char *newComment) {
 
 	if (newComment && (size=strblen(newComment)) > 0) {
 		if (key->flags & KEY_SWITCH_COMMENT) {
-			char *p;
+			char *p=0;
 			p=realloc(key->comment,size);
 			if (NULL==p) {
 				errno=KDB_RET_NOMEM;
@@ -2429,6 +2483,9 @@ mode_t keyGetAccess(const Key *key) {
 
 /**
  * Set the key filesystem-like access permissions.
+ * 
+ * Use this method before calling keySetDir().
+ * 
  * @param key the key to set access permissions
  * @param mode the access permissions as for chmod(2)
  * @see keyGetAccess()
@@ -2440,6 +2497,28 @@ int keySetAccess(Key *key, mode_t mode) {
 
 	return 0;
 }
+
+
+
+
+/**
+ * Set the key filesystem-like access permissions based on umask.
+ * 
+ * Use this method before calling keySetDir().
+ * 
+ * @param key the key to set access permissions
+ * @param umask the umask for file/key creation as returned by umask(3)
+ * @see keyGetAccess()
+ * @ingroup keymeta
+ */
+int keySetUAccess(Key *key, mode_t umask) {
+	key->access=DEFFILEMODE & ~umask;
+
+	key->flags |= KEY_SWITCH_MODE | KEY_SWITCH_NEEDSYNC;
+
+	return 0;
+}
+
 
 
 
@@ -3012,16 +3091,21 @@ keyDel(key);
  * @ingroup key
  */
 int keyInit(Key *key) {
+	mode_t localUmask;
+	
 	memset(key,0,sizeof(Key));
 	key->type=KEY_TYPE_UNDEFINED;
+	
 	/* If we lack the getuid() and getgid() functions we leave uid and gid at 0 */
 	#if defined(HAVE_GETUID) && defined(HAVE_GETGID)
 	key->uid=getuid();
 	key->gid=getgid();
 	#endif
-	key->access=umask(0);
-	umask(key->access);
-	key->access=DEFFILEMODE & ~key->access;
+	
+	/* by default do this, but backends should take care to carefully set
+	   access permissions based on their handle */
+	localUmask=umask(0); umask(localUmask);
+	keySetUAccess(key,localUmask);
 
 	key->flags = KEY_SWITCH_INITIALIZED;
 

@@ -47,8 +47,10 @@ way to do it, following the Filesystem Hierarchy Standard:
 	$ ./configure \
 		--prefix=/usr \
 		--exec-prefix=/ \
-		--mandir=/usr/share/man \
 		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--with-docdir=%{_docdir}/elektra \
+      --with-develdocdir=%{_docdir}/elektra-devel \
 		--disable-xmltest \
 		--with-docbook=/usr/share/sgml/docbook/xsl-stylesheets
 
@@ -83,8 +85,10 @@ If you know what you are doing, do this:
   bash:~/src/elektra$ ./configure \
 		--prefix=/usr \
 		--exec-prefix=/ \
-		--mandir=/usr/share/man \
 		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--with-docdir=/usr/share/doc/elektra \
+      --with-develdocdir=/usr/share/doc/elektra-devel \
 		--disable-xmltest \
 		--with-docbook=/usr/share/sgml/docbook/xsl-stylesheets
 
@@ -104,11 +108,11 @@ The "elektra" package sugested files:
    /bin/kdb
    /etc/profile.d/elektraenv.sh
    /lib/libelektra.so*
-   /lib/libelektratools.so*
    /lib/libelektra-*.so      (backends)
+   /usr/lib/libelektratools.so* (XML importing methods)
    /usr/lib/libelektra-*.so  (other backends)
    /lib/libregistry.so   (backwards compatibility: will be removed in future)
-   /usr/share/doc/elektra
+   /usr/share/doc/elektra/
    /usr/share/doc/elektra/fstab-convert
    /usr/share/doc/elektra/hosts-convert
    /usr/share/doc/elektra/hwconfKudzu-convert
@@ -133,7 +137,7 @@ The "elektra-devel" package sugested files:
    /usr/lib/libelektra.a
    /usr/share/doc/elektra-devel
    /usr/share/doc/elektra-devel/backend-template/*  (backend development examples)
-   /usr/share/doc/elektra-devel/elektra-api/*  (Doxygen API documentation)
+   /usr/share/doc/elektra-devel/api-html/*     (Doxygen API documentation)
    /usr/share/doc/elektra-devel/examples/*     (Many examples in C language)
    /usr/share/man/man3/kdb*.3.gz       (Manpages for the kdb*() methods)
    /usr/share/man/man3/key*.3.gz       (Manpages for the key*() methods)

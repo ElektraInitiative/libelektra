@@ -26,28 +26,33 @@ $Id$
 #include <config.h>
 #endif
 
+#include <ctype.h>
+#include <string.h>
+
+#ifdef HAVE_GRP_H
+#include <grp.h>
+#endif
+
+#ifdef HAVE_PWD_H
+#include <pwd.h>
+#endif
+
+#include <unistd.h>
+#include <stdlib.h>
+
+#ifdef HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
+
 #include <libxml/xmlreader.h>
 #include <libxml/xmlschemas.h>
-
-// #define KDB_SCHEMA_PATH       DATADIR KDB_SCHEMA_REL_PATH
-#define KDB_SCHEMA_PATH_KEY   "system/sw/kdb/current/schemapath"
-
-
 
 #include "kdbtools.h"
 #include "kdbprivate.h"
 #include "kdb.h"
 
-#include <ctype.h>
-#include <string.h>
-#ifdef HAVE_GRP_H
-#include <grp.h>
-#endif
-#ifdef HAVE_PWD_H
-#include <pwd.h>
-#endif
-#include <unistd.h>
-#include <stdlib.h>
+/* #define KDB_SCHEMA_PATH       DATADIR KDB_SCHEMA_REL_PATH */
+#define KDB_SCHEMA_PATH_KEY   "system/sw/kdb/current/schemapath"
 
 
 
@@ -76,7 +81,7 @@ $Id$
  * 
  * This function is completelly dependent on libxml.
  */
-int processKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
+int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
 	xmlChar *nodeName=0;
 	xmlChar *buffer=0;
 	xmlChar *privateContext=0;
@@ -109,8 +114,10 @@ int processKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
 		} else {
 			/* logic for relative name calculation */
 			
-			privateContext=xmlTextReaderGetAttribute(reader,(const xmlChar *)"parent");
-			buffer=xmlTextReaderGetAttribute(reader,(const xmlChar *)"basename");
+			privateContext=xmlTextReaderGetAttribute(reader,
+				(const xmlChar *)"parent");
+			buffer=xmlTextReaderGetAttribute(reader,
+				(const xmlChar *)"basename");
 
 			if (context) keySetName(newKey,context);
 			if (privateContext) keyAddBaseName(newKey, (char *)privateContext);
@@ -128,7 +135,58 @@ int processKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
 			xmlFree(buffer); buffer=0;
 		}
 
-		
+
+#ifdef HAVE_PWD_H
+		/* Parse UID */
+		buffer=xmlTextReaderGetAttribute(reader,(const xmlChar *)"uid");
+		if (buffer) {
+			if (isdigit(*buffer))
+				keySetUID(newKey,atoi((char *)buffer));
+			else {
+				struct passwd *pwd;
+				pwd=getpwnam((char *)buffer);
+				if (pwd) keySetUID(newKey,pwd->pw_uid);
+				else fprintf(stderr,"%s: Ignoring invalid user %s.\n",
+						newKey->key, buffer);
+			}
+			xmlFree(buffer); buffer=0;
+		}
+#endif
+
+#ifdef HAVE_GRP_H
+		/* Parse GID */
+		buffer=xmlTextReaderGetAttribute(reader,(const xmlChar *)"gid");
+		if (buffer) {
+			if (isdigit(*buffer)) {
+				keySetGID(newKey,atoi((char *)buffer));
+			} else {
+				struct group *grp;
+				grp=getgrnam((char *)buffer);
+				if (grp) keySetGID(newKey,grp->gr_gid);
+				else fprintf(stderr,"%s: Ignoring invalid group %s.\n",
+						newKey->key, buffer);
+			}
+			xmlFree(buffer); buffer=0;
+		}
+#endif
+
+		/* Parse permissions */
+		buffer=xmlTextReaderGetAttribute(reader,(const xmlChar *)"mode");
+		if (buffer) keySetAccess(newKey,strtol((char *)buffer,0,0));
+		xmlFree(buffer); buffer=0;
+
+
+
+		if (xmlTextReaderIsEmptyElement(reader)) {
+			/* we have a <key ..../> element */
+			if (newKey && !appended) {
+				ksAppend(ks,newKey);
+				appended=1;
+				end=1;
+			}
+		}
+
+
 		buffer=xmlTextReaderGetAttribute(reader,(const xmlChar *)"type");
 		if (buffer) {
 			if (!strcmp((char *)buffer,"string"))
@@ -150,60 +208,15 @@ int processKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
 					type=KEY_TYPE_STRING;
 			}
 		}
-
-		keySetType(newKey,type);
-
 		xmlFree(buffer); buffer=0;
 
 
-#ifdef HAVE_PWD_H
-		/* Parse UID */
-		buffer=xmlTextReaderGetAttribute(reader,(const xmlChar *)"uid");
-		if (buffer) {
-			if (isdigit(*buffer))
-				keySetUID(newKey,atoi((char *)buffer));
-			else {
-				struct passwd *pwd;
-				pwd=getpwnam((char *)buffer);
-				if (pwd) keySetUID(newKey,pwd->pw_uid);
-				else fprintf(stderr,"kdb: Ignoring invalid user %s.\n",
-						buffer);
-			}
-			xmlFree(buffer); buffer=0;
-		}
-#endif
+		if (type == KEY_TYPE_DIR) {
+			mode_t mask=umask(0);
+			umask(mask);
+			keySetDir(newKey,mask);
+		} else keySetType(newKey,type);
 
-#ifdef HAVE_GRP_H
-		/* Parse GID */
-		buffer=xmlTextReaderGetAttribute(reader,(const xmlChar *)"gid");
-		if (buffer) {
-			if (isdigit(*buffer)) {
-				keySetGID(newKey,atoi((char *)buffer));
-			} else {
-				struct group *grp;
-				grp=getgrnam((char *)buffer);
-				if (grp) keySetGID(newKey,grp->gr_gid);
-				else fprintf(stderr,"kdb: Ignoring invalid group %s.\n",
-						buffer);
-			}
-			xmlFree(buffer); buffer=0;
-		}
-#endif
-
-		/* Parse permissions */
-		buffer=xmlTextReaderGetAttribute(reader,(const xmlChar *)"mode");
-		if (buffer) keySetAccess(newKey,strtol((char *)buffer,0,0));
-		xmlFree(buffer); buffer=0;
-
-		if (xmlTextReaderIsEmptyElement(reader)) {
-			/* we have a <key ..../> element */
-			if (newKey && !appended) {
-				ksAppend(ks,newKey);
-				appended=1;
-				end=1;
-				/* printf("key appended: %s\n",newKey->key); */
-			}
-		}
 
 		/* Parse everything else */
 		while (!end) {
@@ -217,6 +230,7 @@ int processKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
 					
 				xmlTextReaderRead(reader);
 				buffer=xmlTextReaderValue(reader);
+				
 				if (buffer) {
 					/* Key's value type was already set above */
 					if (KEY_TYPE_BINARY <= type && type < KEY_TYPE_STRING) {
@@ -269,9 +283,12 @@ int processKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
 					end=1;
 				else {
 					/* found a sub <key> */
-					keySetType(newKey,KEY_TYPE_DIR);
+					mode_t mask=umask(0);
+					umask(mask);
+					
+					keySetDir(newKey,mask);
 					/* prepare the context (parent) */
-					processKeyNode(ks,newKey->key,reader);
+					consumeKeyNode(ks,newKey->key,reader);
 				}
 			}
 			xmlFree(buffer); buffer=0;
@@ -288,7 +305,7 @@ int processKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
 
 
 
-int processKeySetNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
+int consumeKeySetNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
 	xmlChar *nodeName=0;
 	xmlChar *privateContext=0;
 	xmlChar fullContext[800]="";
@@ -300,9 +317,7 @@ int processKeySetNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) 
 		privateContext=xmlTextReaderGetAttribute(reader,(const xmlChar *)"parent");
 		if (context && privateContext) {
 			xmlStrPrintf(fullContext,sizeof(fullContext),
-				(const xmlChar *)"%s/%s", context,privateContext);
-
-			/* printf("\nCurrent parent is %s\n",fullContext); */
+				(const xmlChar *)"%s/%s", context, privateContext);
 		}
 
 		/* Parse everything else */
@@ -312,18 +327,19 @@ int processKeySetNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) 
 			nodeName=xmlTextReaderName(reader);
 
 			if (!strcmp((char *)nodeName,"key")) {
-				if (privateContext) processKeyNode(ks,(char *)(*fullContext?fullContext:privateContext),reader);
-				else processKeyNode(ks,context,reader);
+				if (privateContext) consumeKeyNode(ks,(char *)(*fullContext?fullContext:privateContext),reader);
+				else consumeKeyNode(ks,context,reader);
 			} else if (!strcmp((char *)nodeName,"keyset")) {
 				/* A <keyset> can have nested <keyset>s */
 				if (xmlTextReaderNodeType(reader)==15)
 					/* found a </keyset> */
 					end=1;
 				else if (privateContext)
-					processKeySetNode(ks, (char *)(*fullContext?fullContext:privateContext), reader);
-				else processKeySetNode(ks, context, reader);
+					consumeKeySetNode(ks, (char *)(*fullContext?fullContext:privateContext), reader);
+				else consumeKeySetNode(ks, context, reader);
 			}
 		}
+		if (privateContext) xmlFree(privateContext),privateContext=0;
 	}
 	return 0;
 }
@@ -347,9 +363,9 @@ int ksFromXMLReader(KeySet *ks,xmlTextReaderPtr reader) {
 		nodeName=xmlTextReaderName(reader);
 		
 		if (!strcmp((char *)nodeName,"key"))
-			processKeyNode(ks, 0, reader);
+			consumeKeyNode(ks, 0, reader);
 		else if (!strcmp((char *)nodeName,"keyset"))
-			processKeySetNode(ks, 0, reader);
+			consumeKeySetNode(ks, 0, reader);
 		
 		ret = xmlTextReaderRead(reader);
 	}

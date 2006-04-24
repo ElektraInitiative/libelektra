@@ -155,17 +155,26 @@ enum KeySwitch {
 	KEY_SWITCH_TYPE=1,          /*!< Flag for the key type */
 	KEY_SWITCH_NAME=1<<1,       /*!< Flag for the key name */
 	KEY_SWITCH_VALUE=1<<2,      /*!< Flag for the key data */
+	/* do not use 1<<3 see INITMASK */
+	/* do not use 1<<4 see INITMASK */
 	KEY_SWITCH_OWNER=1<<5,      /*!< Flag for the key user domain */
 	KEY_SWITCH_DOMAIN=KEY_SWITCH_OWNER, /*!< An alias */
 	KEY_SWITCH_COMMENT=1<<6,    /*!< Flag for the key comment */
 	KEY_SWITCH_UID=1<<7,        /*!< Flag for the key UID */
 	KEY_SWITCH_GID=1<<8,        /*!< Flag for the key GID */
+	/* do not use 1<<9 see INITMASK */
 	KEY_SWITCH_MODE=1<<10,      /*!< Flag for the key permissions */
 	KEY_SWITCH_TIME=1<<11,      /*!< Flag for the key change time */
 	KEY_SWITCH_NEEDSYNC=1<<12,  /*!< Flags that key needs syncronization */
+	/* do not use 1<<13 see INITMASK */
 	KEY_SWITCH_ACTIVE=1<<14,    /* ****deprecated**** */
+	KEY_SWITCH_UMODE=1<<15,     /*!< Flag for key permissions based on umask */
+	/* do not use 1<<18 see INITMASK */
+	/* do not use 1<<22 see INITMASK */
 	KEY_SWITCH_ISSYSTEM=1<<23,  /*!< Flag to denote a @c "system" key */
 	KEY_SWITCH_ISUSER=1<<24,    /*!< Flag to denote a @c "user" key */
+	/* do not use 1<<27 see INITMASK */
+	/* do not use 1<<28 see INITMASK */
 	KEY_SWITCH_FLAG=1<<31,      /*!< General purpose flag that has semantics
 	                                 only to your app */
 	KEY_SWITCH_END=0,           /*!< Used as a parameter terminator to
@@ -451,6 +460,7 @@ size_t keyGetSerializedSize(const Key *key); */
 
 uint8_t keyGetType(const Key *key);
 uint8_t keySetType(Key *key,uint8_t type);
+uint8_t keySetDir(Key *key,mode_t customUmask);
 
 int keySetFlag(Key *key);
 int keyClearFlag(Key *key);
@@ -497,6 +507,7 @@ int keySetGID(Key *key, gid_t gid);
 
 mode_t keyGetAccess(const Key *key);
 int keySetAccess(Key *key, mode_t mode);
+int keySetUAccess(Key *key, mode_t umask);
 
 ssize_t keyGetOwnerSize(const Key *key);
 ssize_t keyGetOwner(const Key *key, char *returned, size_t maxSize);

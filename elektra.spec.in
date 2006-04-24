@@ -1,6 +1,6 @@
 Name:          elektra
 Version:       @VERSION@
-Release:       24
+Release:       27
 Source:        http://prdownloads.sourceforge.net/elektra/%{name}-%{version}.tar.gz
 Group:         System Environment/Libraries
 License:       BSD
@@ -93,12 +93,13 @@ Berkeley DB databases to store its keys.
 
 #CFLAGS="-g -O0" \
 
-
 %configure \
      --prefix=%{_prefix} \
      --exec-prefix=/ \
      --bindir=/bin \
      --libdir=/%{_lib} \
+     --with-docdir=%{_defaultdocdir}/elektra-%{version} \
+     --with-develdocdir=%{_defaultdocdir}/elektra-devel-%{version} \
      --disable-xmltest \
      --with-docbook=%{_datadir}/sgml/docbook/xsl-stylesheets
 
@@ -121,6 +122,7 @@ mv $RPM_BUILD_ROOT/%{_lib}/libelektra.a $RPM_BUILD_ROOT/%{_libdir}
 rm $RPM_BUILD_ROOT/%{_lib}/*.la
 rm $RPM_BUILD_ROOT/%{_libdir}/*.la
  
+cp AUTHORS COPYING ChangeLog README INSTALL $RPM_BUILD_ROOT/%{_defaultdocdir}/%{name}-%{version}/
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -157,12 +159,12 @@ kdb set system/sw/kdb/schemapath "%{_datadir}/sgml/elektra-0.1.1/elektra.xsd"
 #/%{_lib}/*elektra-ini.so*
 %{_libdir}/*elektratools.so*
 %{_sysconfdir}/profile.d/*
-%doc %{_docdir}/%{name}
+%doc %{_defaultdocdir}/%{name}-%{version}
 %{_mandir}/man1/*
 %{_mandir}/man7/*
 %{_mandir}/man5/*
 %{_datadir}/sgml/*
-%doc AUTHORS COPYING ChangeLog README
+#%doc AUTHORS COPYING ChangeLog README
 
 
 %files devel
@@ -170,7 +172,7 @@ kdb set system/sw/kdb/schemapath "%{_datadir}/sgml/elektra-0.1.1/elektra.xsd"
 %{_includedir}/*
 %{_libdir}/*.a
 %{_libdir}/pkgconfig/*
-%doc %{_docdir}/%{name}-devel
+%doc %{_defaultdocdir}/%{name}-devel-%{version}
 %{_mandir}/man3/*
 
 
