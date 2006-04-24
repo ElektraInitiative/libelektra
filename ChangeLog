@@ -6,6 +6,7 @@
 - Added KEY_SWITCH_UMODE to keyNew()
 - Few backends cleanup to make them more suitable to work under daemon context
 - Removed all memory problems with Valgrind
+- Library version changed to 2.0.1
 - Fixed many build details
 - Fixed many spec details to meet Fedora Extras requirements and standards
 - Updated presentation with some desktop related charts
