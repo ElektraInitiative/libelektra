@@ -53,6 +53,8 @@ $Id$
 #include <kdbbackend.h>
 
 #define BACKENDNAME "filesys"
+#define PATH_SEPARATOR '/'
+#define ESCAPE_CHAR '\\'
 
 /**Some systems have even longer pathnames*/
 #ifdef PATH_MAX
@@ -70,6 +72,7 @@ int keyFileUnserialize(Key *key,FILE *input);
 size_t kdbGetFilename(const Key *forKey,char *returned,size_t maxSize);
 int keyFileSerialize(Key *key, FILE *output);
 int keyFromStat(Key *key,struct stat *stat);
+int relativeFileNameToKeyName(const char *string, char *buffer, int bufSize);
 
 
 
@@ -119,7 +122,7 @@ int kdbStatKey_filesys(KDBHandle handle, Key *key) {
 
 
 int kdbGetKey_filesys(KDBHandle handle, Key *key) {
-	char keyFileName[500];
+	char keyFileName[MAX_PATH_LENGTH];
 	struct stat keyFileNameInfo;
 	int fd;
 	size_t pos;
@@ -164,6 +167,7 @@ int kdbSetKey_filesys(KDBHandle handle, Key *key) {
 	struct stat stated;
 
 	pos=kdbGetFilename(key,keyFileName,sizeof(keyFileName));
+	fprintf(stderr, "fName = %s\n", keyFileName);
 	if (!pos) return -1; /* Something is wrong. Propagate errno. */
 
 	if (stat(keyFileName,&stated))
@@ -378,6 +382,7 @@ ssize_t kdbGetKeyChildKeys_filesys(KDBHandle handle, const Key *parentKey,
 	while ((entry=readdir(parentDir))) {
 		Key *keyEntry;
 		char *transformedName=0;
+		char *keyName;
 		size_t keyNameSize=0;
 
 		/* Ignore '.' and '..' directory entries */
@@ -402,8 +407,12 @@ ssize_t kdbGetKeyChildKeys_filesys(KDBHandle handle, const Key *parentKey,
 			return -1;  /* propagate errno */
 		}
 
+		/* Translate from filename -> keyname */
+		keyName = (char *) malloc(keyNameSize*3);
+		relativeFileNameToKeyName(transformedName, keyName, keyNameSize*3);
+
 		/* Copy the entire transformed key name to our final buffer */
-		sprintf(buffer,"%s/%s",realParentName,transformedName);
+		sprintf(buffer,"%s/%s",realParentName,keyName);
 		free(transformedName); transformedName=0; /* don't need it anymore */
 
 		keyEntry=keyNew(buffer,KEY_SWITCH_END);
@@ -828,6 +837,228 @@ int keyFileSerialize(Key *key, FILE *output) {
 	return 0;
 }
 
+/**
+ * Char encoding
+ * 
+ * Encode '/', '\', '%', '+', ' ' char following
+ * RFC 2396 or copy char untouched if different.
+ *
+ * @param c Char to encode
+ * @param buffer string wich will contain encoded char
+ * @param bufSize Size of the buffer
+ * @return: Size of the encoded string if success or -1
+ * if error  * (then buffer is untouched)
+ * @ingroup internals
+ * @see decodeChar
+ *
+ * NOTE: No '\0' is added at the end of buffer.
+ * 
+ */
+int encodeChar(char c, char *buffer, size_t bufSize)
+{
+	
+	
+	switch(c) {
+		case '%':
+			if ( bufSize >= (3*sizeof(char)) ) {
+				memcpy(buffer, "%25", sizeof("%25"));
+				return (3*sizeof(char));
+			}
+			return -1;
+			
+		case '+':
+			if ( bufSize >= (3*sizeof(char)) ) {
+				memcpy(buffer, "%2B", sizeof("%2B"));
+				return (3*sizeof(char));
+			}
+			return -1;
+			
+		case ' ':
+			if ( bufSize >= 1*sizeof(char) ) {
+				*(buffer) = '+';
+				return (1*sizeof(char));
+			}
+			return -1;
+			
+		case '/':
+			if ( bufSize >= (3*sizeof(char)) ) {
+				memcpy(buffer, "%2F", sizeof("%2F"));
+				return (3*sizeof(char));
+			}
+			return -1;
+			
+		case '\\':
+			if ( bufSize >= (3*sizeof(char)) ) {
+				memcpy(buffer, "%5C", sizeof("%5C"));
+				return (3*sizeof(char));
+			}
+			return -1;
+			
+		default:
+			if ( bufSize >= (1*sizeof(char)) ) {
+				*(buffer++) = c;
+				return (1*sizeof(char));
+			}
+			return -1;
+	}
+	
+	return 0;
+}
+
+/**
+ * Char decoding
+ * 
+ * Decode one char from %25, %2B, %2F, %2C following
+ * RFC 2396 or copy char untouched if different.
+ * 
+ * @param from String containing sequence to decode
+ * @param into Decoded char
+ * @return: Positive size of byte read from "from" for decoding
+ * the sequence if sucess or -1 if error (into untouched)
+ * @ingroup internals
+ * @see encodeChar
+ * 
+ * NOTE: No '\0' is added at the end of buffer.
+ * 
+ */
+int decodeChar(const char *from, char *into)
+{
+	switch(*from) {
+		case '%':
+			if ( strlen(from) >= (3*sizeof(char)) ) {
+				switch(*(from+2)) {
+					case '5':       *into = '%';    break;
+					case 'B':       *into = '+';    break;
+					case 'F':       *into = '/';    break;
+					case 'C':       *into = '\\';   break;
+							
+					default:
+						return -1;
+				}
+				
+				return (3*sizeof(char));
+			}
+			return -1;
+			
+		case '+':
+			*into = ' ';
+			return (1*sizeof(char));
+			
+		default:
+			*into = *from;
+			return (1*sizeof(char));
+	}
+	
+	return 0;
+}
+
+/**
+ * Translate a relative file name to a key name
+ * applying decoding.
+ *
+ * @param string Filename
+ * @param buffer decoded keyName
+ * @param bufSize Size of buffer
+ * @return 0 on success, -1 on failure (
+ * buffer is always '\0' terminated)
+ * @ingroup internals
+ * @see keyNameToRelativeFileName
+ * 
+ */
+int relativeFileNameToKeyName(const char *string, char *buffer, int bufSize)
+{
+	char decoded;
+	int j;
+	
+	while ( *(string) != '\0' && bufSize > sizeof(char) ) {
+		
+		if ( *string == PATH_SEPARATOR ) {
+			/* Translate PATH_SEPARATOR into KEY_DELIM */
+			*(buffer++) = RG_KEY_DELIM;
+			bufSize -= sizeof(char);
+			string++;
+		} else {
+			/* Decode char */
+			if ( (j = decodeChar(string, &decoded)) != -1 ) {
+				string += j;
+				*(buffer++) = decoded;
+				bufSize -= sizeof(char);
+			} else {
+				*(buffer) = '\0';
+				return -1;
+			}
+		}
+	}
+
+	*buffer = '\0';
+
+	return 0;
+}
+
+/**
+ * Translate a key name to a relative file name
+ * applying encoding.
+ *
+ * @param string Keyname
+ * @param buffer encoded filename
+ * @param bufSize Size of buffer
+ * @return Number of byte written in buffer on success,
+ * -1 on failure (buffer is always '\0' terminated)
+ * @ingroup internals
+ * @see keyNameToRelativeFileName
+ *
+ **/
+int keyNameToRelativeFileName(const char *string, char *buffer, size_t bufSize)
+{
+	char *tmp = buffer;
+	size_t	written;
+	int     j;
+	
+	written = 0;
+	while ( (*string != '\0') && bufSize > sizeof(char) ) {
+		
+		if ( *string == ESCAPE_CHAR && *(string+1) == RG_KEY_DELIM ) {
+			/* Key delimiter escaped, encode these two (escape + delim) */
+			if ( (j = encodeChar(*(string++), buffer, bufSize)) != -1 ) {
+				bufSize -= j*sizeof(char);
+				buffer += j;
+				written += j*sizeof(char);
+			} else {
+				return -1;
+			}
+			
+			if ( (j = encodeChar(*(string++), buffer, bufSize)) != -1 ) {
+				bufSize -= j*sizeof(char);
+				written += j*sizeof(char);
+				buffer += j;
+			} else {
+				return -1;
+			}
+			
+		} else if ( *string == RG_KEY_DELIM ) {
+			/* Replace unescaped KEY_DELIM to PATH_SEPARATOR */
+			*(buffer++) = PATH_SEPARATOR;
+			bufSize -= sizeof(char);
+			written += sizeof(char);
+			string++;
+			
+		} else {
+			/* Encode ... */
+			if ( (j = encodeChar(*(string++), buffer, bufSize)) != -1 ) {
+				bufSize -= j*sizeof(char);
+				written += j*sizeof(char);
+				buffer += j;
+			} else {
+				return -1;
+			}
+		}
+	}
+	*buffer = '\0';
+
+	return written;
+}
+
+
 
 /**
  * This is a helper to kdbGetFilename()
@@ -839,6 +1070,8 @@ int keyFileSerialize(Key *key, FILE *output) {
  * @ingroup internals
  */
 size_t keyCalcRelativeFileName(const Key *key,char *relativeFileName,size_t maxSize) {
+	size_t ret;
+
 /*	 if (!key || !keyIsInitialized(key)) {
 		errno=KDB_RET_UNINITIALIZED;
 		return 0;
@@ -847,46 +1080,27 @@ size_t keyCalcRelativeFileName(const Key *key,char *relativeFileName,size_t maxS
 		errno=KDB_RET_NOKEY;
 		return 0;
 	} */
-/*
-// 	cursor=key->key;
-// 	while (*cursor) {
-// 		if (pos+1 > maxSize) {
-// 			errno=E2BIG;
-// 			return -1;
-// 		}
-// 		switch (*cursor) {
-// 			case '\\':
-// 				cursor++;
-// 				relativeFileName[pos]=*cursor;
-// 				break;
-// 			case '.':
-// 				relativeFileName[pos]='/';
-// 				break;
-// 			default:
-// 				relativeFileName[pos]=*cursor;
-// 		}
-// 		cursor++;
-// 		pos++;
-// 	}
-// 	relativeFileName[pos]=0;
-// 	pos++;
-*/
+
 	if (kdbNeedsUTF8Conversion()) {
 		char *converted;
 		size_t size;
 
 		if (!(size=keyGetNameSize(key))) return 0;
 
-		converted=malloc(size);
-		keyGetName(key,converted,size);
+		converted = (char *) malloc(MAX_PATH_LENGTH);
+		fprintf(stderr, "before: %s\n", keyStealName(key));
+                size = keyNameToRelativeFileName(keyStealName(key), converted, MAX_PATH_LENGTH);
+		fprintf(stderr, "after: %s\n", converted);
 
 /* 		memcpy(converted,relativeFileName,convertedSize); */
+
+		fprintf(stderr, "SIZE = %ld\n", size);
 
 		if (UTF8Engine(UTF8_TO,&converted,&size)) {
 			free(converted);
 			return 0;
 		}
-
+		
 		if (size>maxSize) {
 			free(converted);
 			errno=E2BIG;
@@ -894,10 +1108,13 @@ size_t keyCalcRelativeFileName(const Key *key,char *relativeFileName,size_t maxS
 		}
 
 		memcpy(relativeFileName,converted,size);
+		fprintf(stderr, "relative = %ld/%ld\n", strblen(converted), size);
 		free(converted);
 
 		return size;
-	} else return keyGetName(key,relativeFileName,maxSize);
+	} else {
+		return keyNameToRelativeFileName(keyStealName(key), relativeFileName, maxSize);
+	}
 
 	return 0;
 }
@@ -984,6 +1201,7 @@ size_t kdbGetFilename(const Key *forKey,char *returned,size_t maxSize) {
 
 	returned[length]='/'; length++;
 	length+=keyCalcRelativeFileName(forKey,returned+length,maxSize-length);
+	fprintf(stderr, "to %s\n", returned);
 
 	return length;
 }
