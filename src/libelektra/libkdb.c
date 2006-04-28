@@ -1,5 +1,5 @@
 /***************************************************************************
-            libkdb.c  -  Interfaces for accessing the Key Database
+            libkdb_helpers.c  -  High level functions for accessing the Key Database
                              -------------------
     begin                : Mon Dec 29 2003
     copyright            : (C) 2003 by Avi Alkalay
@@ -21,7 +21,6 @@
 $Id$
 
 */
-
 
 /**
  * @defgroup kdb KeyDB :: Class Methods
@@ -66,9 +65,6 @@ $Id$
  * them to get the benefits of your new backend: kdbSetKeys(),
  * kdbMonitorKey(), kdbMonitorKeys().
  *
- * The other methods are higher level. They use the above methods to do their
- * job, and don't have to be reimplemented for a different backend.
- *
  * Language binding writers should follow the same rules:
  * - You must relay completely on the backend-dependent methods.
  * - You may use or reimplement the second set of methods.
@@ -78,7 +74,6 @@ $Id$
  *   and need not to be implemented if the binding language has e.g. string
  *   operators which can do the operation easily.
  */
-
 
 
 
@@ -123,12 +118,12 @@ $Id$
 /* kdbbackend.h will include kdb.h and kdbprivate.h */
 #include "kdbbackend.h"
 #include "kdbLibLoader.h"
+#include "kdbprivate.h"
 
 /* usleep doesn't exist on win32, so we use Sleep() */
 #ifdef WIN32
 #define usleep(x) Sleep(x)
 #endif
-
 
 
 
@@ -170,6 +165,7 @@ struct _KDBBackend {
 	/* dynamic libloader data */
 	kdbLibHandle dlHandle;
 };
+
 
 
 
@@ -402,186 +398,6 @@ int kdbClose(KDBHandle *handle) {
 
 
 
-/**
- * A high-level method to get a key value, by key name.
- * This method is valid only for string keys.
- * You have to use other methods to get non-string keys.
- *
- * @param keyname the name of the key to receive the value
- * @param returned a buffer to put the key value
- * @param maxSize the size of the buffer
- * @return 0 on success
- * @return -1 on failure and @c errno is propagated
- * @see kdbSetValue(), kdbGetKey(), kdbGetValueByParent(), keyGetString()
- * @ingroup kdb
- *
- */
-int kdbGetValue(KDBHandle handle,const char *keyname,
-		char *returned,size_t maxSize) {
-	Key *key;
-	int rc=0;
-
-	key=keyNew(keyname,KEY_SWITCH_END);
-	rc=kdbGetKey(handle, key);
-	if (rc == 0) keyGetString(key,returned,maxSize);
-	else rc=errno; /* store errno before a possible change */
-	keyDel(key);
-	errno=rc;
-	return rc;
-}
-
-
-
-/**
- * A high-level method to set a value to a key, by key name.
- * It will obviously check if key exists first, and keep its metadata.
- * So you'll not loose the precious key comment.
- *
- * This will set a text key. So if the key was previously a binary, etc key, it will be retyped as text.
- *
- * @param keyname the name of the key to receive the value
- * @param value the value to be set
- * @return 0 on success
- * @return -1 on failure and @c errno is propagated
- * 	KDB_RET_TYPEMISMATCH if key is a directory
- * @see kdbGetValue(), keySetString(), kdbSetKey()
- * @ingroup kdb
- */
-int kdbSetValue(KDBHandle handle, const char *keyname, const char *value) {
-	Key *key;
-	int rc;
-
-	key=keyNew(keyname,KEY_SWITCH_END);
-	rc=kdbGetKey(handle,key);
-	if (! keyIsDir (key))
-	{
-		keySetString(key,value);
-	} else {
-		errno = KDB_RET_TYPEMISMATCH;
-		keyDel(key);
-		return -1;
-	}
-	rc=kdbSetKey(handle,key);
-	keyDel(key);
-	return rc;
-}
-
-
-
-/**
- * Fill up the @p returned buffer with the value of a key, which name
- * is the concatenation of @p parentName and @p baseName.
- *
- * @par Example:
- * @code
-char *parent="user/sw/MyApp";
-char *keys[]={"key1","key2","key3"};
-char buffer[150];   // a big buffer
-int c;
-
-for (c=0; c<3; c++) {
-	kdbGetValueByParent(handle,parent,keys[c],buffer,sizeof(buffer));
-	// Do something with buffer....
-}
-
- * @endcode
- *
- * @param parentName the name of the parent key
- * @param baseName the name of the child key
- * @param returned pre-allocated buffer to be filled with key value
- * @param maxSize size of the \p returned buffer
- * @return 0 on success
- * @return -1 on failure and @c errno is propagated
- * @see kdbGetKeyByParent()
- * @ingroup helper
- * @ingroup kdb
- */
-int kdbGetValueByParent(KDBHandle handle, const char *parentName, const char *baseName, char *returned, size_t maxSize) {
-	char *name;
-	int retval=0;
-	name = (char *)malloc(sizeof(char)*(strblen(parentName)+strblen(baseName)));
-
-	sprintf(name,"%s/%s",parentName,baseName);
-	retval = kdbGetValue(handle,name,returned,maxSize);
-	free(name);
-	return retval;
-}
-
-
-
-/**
- * Sets the provided @p value to the key whose name is the concatenation of
- * @p parentName and @p baseName.
- *
- * @param parentName the name of the parent key
- * @param baseName the name of the child key
- * @param value the value to set
- * @return 0 on success
- * @return -1 on failure and @c errno is propagated
- * @ingroup kdb
- */
-int kdbSetValueByParent(KDBHandle handle, const char *parentName, const char *baseName, const char *value) {
-	char *name;
-	int retval=0;
-	name = (char *)malloc(sizeof(char)*(strblen(parentName)+strblen(baseName)));
-
-	sprintf(name,"%s/%s",parentName,baseName);
-	retval = kdbSetValue(handle,name,value);
-	free(name);
-	return retval;
-}
-
-
-
-/**
- * Given a parent key name plus a basename, returns the key.
- *
- * So here you'll provide something like
- * - @p system/sw/myApp plus @p key1 to get @p system/sw/myApp/key1
- * - @p user/sw/MyApp plus @p dir1/key2 to get @p user/sw/MyApp/dir1/key2
- *
- * @param parentName parent key name
- * @param baseName leaf or child name
- * @param returned a pointer to an initialized key to be filled
- * @return 0 on success
- * @return -1 on failure and @c errno is propagated
- * @see kdbGetKey(), kdbGetValueByParent(), kdbGetKeyByParentKey()
- * @ingroup kdb
- */
-int kdbGetKeyByParent(KDBHandle handle, const char *parentName, const char *baseName, Key *returned) {
-	char *name;
-	name = (char *)malloc(sizeof(char) * (strblen(parentName)+strblen(baseName)));
-
-	sprintf(name,"%s/%s",parentName,baseName);	
-	keySetName(returned,name);
-	free(name);
-	return kdbGetKey(handle,returned);
-}
-
-
-/**
- * Similar to previous, provided for convenience.
- * @param parent pointer to the parent key
- * @see kdbGetKey(), kdbGetKeyByParent(), kdbGetValueByParent()
- * @return 0 on success, or what kdbGetKey() returns, and @c errno is set
- * @ingroup kdb
- */
-int kdbGetKeyByParentKey(KDBHandle handle, const Key *parent, const char *baseName, Key *returned) {
-	size_t size=keyGetFullNameSize(parent);
-	char *name;
-	name = (char *)malloc(sizeof(char) * (size+strblen(baseName)));
-
-	keyGetFullName(parent,name,size);
-	name[size-1]='/';
-	strcpy((char *)(name+size),baseName);
-
-	keySetName(returned,name);
-	free(name);
-	return kdbGetKey(handle,returned);
-}
-
-
-
 
 
 /**
@@ -684,67 +500,6 @@ ssize_t kdbGetKeyChildKeys(KDBHandle handle, const Key *parentKey,
 		errno=KDB_RET_NOSYS;
 		return -1;
 	}
-}
-
-
-
-/**
- * This method is similar and calls kdbGetKeyChildKeys().
- * It is provided for convenience.
- * 
- * Instead of passing the parentName with a key it directly
- * uses a string.
- * 
- * @return 0 on success
- * @return -1 on failure and @c errno is propagated from kdbGetKeyChildKeys()
- * @see kdbGetKeyChildKeys()
- * @ingroup kdb
- */
-ssize_t kdbGetChildKeys(KDBHandle handle, const char *parentName, KeySet *returned, unsigned long options) {
-	Key *parentKey;
-	ssize_t rc;
-	
-	parentKey=keyNew(parentName,KEY_SWITCH_END);
-	rc=kdbGetKeyChildKeys(handle,parentKey,returned,options);
-	
-	keyDel(parentKey);
-	
-	return rc;
-}
-
-
-
-/**
- * Returns a KeySet with all root keys currently recognized and present
- * on the system. Currently, the @p system and current user's @p user keys
- * are returned.
- *
- * @param returned the initialized KeySet to be filled
- * @return the number of root keys found
- * @return -1 on failure and @c errno is propagated
- * @see #KeyNamespace
- * @see commandList() code in kdb command for usage example
- * @ingroup kdb
- *
- */
-ssize_t kdbGetRootKeys(KDBHandle handle, KeySet *returned) {
-	Key *system=0,*user=0;
-
-	user=keyNew("user",KEY_SWITCH_NEEDSYNC,handle,
-		KEY_SWITCH_END);
-	if (user->flags & KEY_SWITCH_FLAG) {
-		keyDel(user);
-		user=0;
-	} else ksInsert(returned,user);
-
-	system=keyNew("system",KEY_SWITCH_NEEDSYNC,handle,
-		KEY_SWITCH_END);
-	if (system->flags & KEY_SWITCH_FLAG) {
-		keyDel(system);
-		system=0;
-	} else ksInsert(returned,system);
-
-	return returned->size;
 }
 
 
@@ -871,38 +626,6 @@ int kdbSetKeys(KDBHandle handle, KeySet *ks) {
 
 
 
-/**
- * A probably inefficient implementation for the kdbSetKeys()
- * method. If a backend doesn't want to reimplement this method, this
- * implementation can be used, in which kdbSetKey() will be called for
- * each Key object contained in @p ks.
- *
- * If some error occurs, kdbSetKeys_default() will stop. In this situation the KeySet
- * internal cursor is left on the key that generated the error.
- *
- * @see kdbSetKeys(), kdbSetKeys_backend()
- * @return 0 on success
- * @return -1 on failure and @c errno is propagated
- *
- * @ingroup backend
- */
-int kdbSetKeys_default(KDBHandle handle, KeySet *ks) {
-	Key *current=ksCurrent(ks);
-	int ret;
-
-	if (!current) current=ksNext(ks);
-	while (current) {
-		if (keyNeedsSync(current))
-			if ((ret=kdbSetKey(handle,current))) /* check error */
-				return ret;
-		
-		current=ksNext(ks);
-	}
-
-	return 0;
-}
-
-
 
 /**
  * Sets @p key in the backend storage.
@@ -986,37 +709,6 @@ int kdbRemoveKey(KDBHandle handle, const Key *key) {
 	
 	return rc;
 }
-
-
-
-/**
- * Remove a key by its name from the backend storage.
- * 
- * This is a convenience to kdbRemoveKey().
- *
- * @param keyName the name of the key to be removed
- * @return 0 on success
- * @return -1 on failure and @c errno is propagated
- * @see commandRemove() code in kdb command for usage example
- * @ingroup kdb
- */
-int kdbRemove(KDBHandle handle, const char *keyName) {
-	int rc=0;
-	Key *key=0;
-	
-	key=keyNew(KEY_SWITCH_END);
-	rc=keySetName(key,keyName);
-	if (rc == 0) {
-		keyDel(key);
-		return -1; /* propagate errno */
-	}
-	
-	rc=kdbRemoveKey(handle,key);
-	keyDel(key);
-	
-	return rc;
-}
-
 
 
 
@@ -1237,201 +929,6 @@ uint32_t kdbMonitorKey(KDBHandle handle, Key *interest, uint32_t diffMask,
 
 
 /**
- * A high level, probably inefficient, implementation for the kdbMonitorKey()
- * method. If a backend doesn't want to reimplement this method, this
- * implementation can be used.
- *
- * @ingroup backend
- */
-uint32_t kdbMonitorKey_default(KDBHandle handle, Key *interest,
-		uint32_t diffMask, unsigned long iterations, unsigned sleeptime) {
-	Key *tested;
-	int rc;
-	uint32_t diff;
-	int infinitum=0;
-
-	/* consistency */
-	if (!interest || !keyGetNameSize(interest)) return 0;
-
-	/* Unacceptable 0 usecs sleep. Defaults to 1 second */
-	if (!sleeptime) sleeptime=1000;
-
-	if (!iterations) infinitum=1;
-	else infinitum=0;
-
-	/* Work with a copy of the key */
-	tested=keyNew(0);
-	keyDup(interest,tested);
-
-	while (infinitum || --iterations) {
-		rc=kdbGetKey(handle,tested);
-		if (rc) {
-			/* check what type of problem happened.... */
-			switch (errno) {
-				case KDB_RET_NOCRED:
-					keyDel(tested);
-					return KEY_SWITCH_NEEDSYNC;
-				case KDB_RET_NOTFOUND:
-					keyDel(tested);
-					return KEY_SWITCH_FLAG;
-			}
-		}
-		
-		diff=keyCompare(tested,interest);
-		
-		if (diff & diffMask) {
-			/* If differences interests us, return it, otherwise cycle again.
-			 * We don't loose the original key context in a KeySet because
-			 * we worked with a copy of the key.
-			 */
-			keyDup(tested,interest);
-			keyDel(tested);
-			return diff;
-		}
-		/* Test if some iterations left . . . */
-		if (infinitum || iterations) usleep(sleeptime);
-	}
-	
-	keyDel(tested);
-
-	return 0;
-}
-
-
-
-/**
- * This function must be called by a backend's kdbBackendFactory() to
- * define the backend's methods that will be exported. Its job is to
- * organize a libelektra.so's table of virtual methods with pointers to backend
- * dependent methods.
- * 
- * The order and number of arguments are flexible (as keyNew()) to let
- * libelektra.so evolve without breaking its ABI compatibility with backends.
- * So for each method a backend must export, there is a flag defined by
- * #KDBBackendMethod. Each flag tells kdbBackendExport() which method comes
- * next. A backend can have no implementation for a few methods that have
- * default inefficient high-level implementations -- kdbSetKeys(),
- * kdbMonitorKey(), kdbMonitorKeys() -- and to use these defaults, simply
- * don't pass anything to kdbBackendExport() about them.
- * 
- * The last parameter must be @c KDB_BE_END .
- * 
- * @par Example of a complete backend:
- * @code
-//
-// This is my implementation for an Elektra backend storage.
-//
-// To compile it:
-// $ cc -fpic -o myback.o -c myback.c
-// $ cc -shared -fpic -o libelektra-myback.so myback.o
-// 
-// To use it:
-// $ export KDB_BACKEND=myback
-// $ kdb ls -Rv
-//
-
-#include <kdbbackend.h>
-
-#define BACKENDNAME "my_elektra_backend_implementation"
-
-
-int kdbOpen_backend(KDBHandle *handle) {...}
-int kdbClose_backend(KDBHandle *handle) {...}
-int kdbGetKey_backend(KDBHandle handle, Key *key) {...}
-int kdbSetKey_backend(KDBHandle handle, Key *key) {...}
-
-... etc implementations of other methods ...
-
-
-
-KDBBackend *kdbBackendFactory(void) {
-	return kdbBackendExport(BACKENDNAME,
-		KDB_BE_OPEN,          &kdbOpen_backend,
-		KDB_BE_CLOSE,         &kdbClose_backend,
-		KDB_BE_GETKEY,        &kdbGetKey_backend,
-		KDB_BE_SETKEY,        &kdbSetKey_backend,
-		KDB_BE_STATKEY,       &kdbStatKey_backend,
-		KDB_BE_RENAME,        &kdbRename_backend,
-		KDB_BE_REMOVEKEY,     &kdbRemoveKey_backend,
-		KDB_BE_GETCHILD,      &kdbGetKeyChildKeys_backend,
-		KDB_BE_SETKEYS,       &kdbSetKeys_backend,
-		KDB_BE_MONITORKEY,    &kdbMonitorKey_backend,
-		KDB_BE_MONITORKEYS,   &kdbMonitorKeys_backend,
-		KDB_BE_END);
-}
- * @endcode
- *
- * In the example, the *_backend() methods can have other random names,
- * since you'll correctly pass them later to kdbBackendExport().
- * 
- * @param backendName a simple name for this backend
- * @return an object that contains all backend informations needed by
- * 	libelektra.so
- * @ingroup backend
- */
-KDBBackend *kdbBackendExport(const char *backendName, ...) {
-	va_list va;
-	KDBBackend *returned;
-	uint32_t method=0;
-
-	if (backendName == 0) return 0;
-	
-	returned=malloc(sizeof(KDBBackend));
-	memset(returned,0,sizeof(KDBBackend));
-	
-	returned->name=(char *)malloc(strblen(backendName));
-	strcpy(returned->name,backendName);
-	
-	/* Start processing parameters */
-	
-	va_start(va,backendName);
-
-	while ((method=va_arg(va,uint32_t))) {
-		switch (method) {
-			case KDB_BE_OPEN:
-				returned->kdbOpen=va_arg(va,kdbOpenPtr);
-				break;
-			case KDB_BE_CLOSE:
-				returned->kdbClose=va_arg(va,kdbClosePtr);
-				break;
-			case KDB_BE_STATKEY:
-				returned->kdbStatKey=va_arg(va,kdbStatKeyPtr);
-				break;
-			case KDB_BE_GETKEY:
-				returned->kdbGetKey=va_arg(va,kdbGetKeyPtr);
-				break;
-			case KDB_BE_SETKEY:
-				returned->kdbSetKey=va_arg(va,kdbSetKeyPtr);
-				break;
-			case KDB_BE_RENAME:
-				returned->kdbRename=va_arg(va,kdbRenamePtr);
-				break;
-			case KDB_BE_REMOVEKEY:
-				returned->kdbRemoveKey=va_arg(va,kdbRemoveKeyPtr);
-				break;
-			case KDB_BE_GETCHILD:
-				returned->kdbGetKeyChildKeys=
-					va_arg(va,kdbGetChildKeysPtr);
-				break;
-			case KDB_BE_SETKEYS:
-				returned->kdbSetKeys=va_arg(va,kdbSetKeysPtr);
-				break;
-			case KDB_BE_MONITORKEY:
-				returned->kdbMonitorKey=
-					va_arg(va,kdbMonitorKeyPtr);
-				break;
-			case KDB_BE_MONITORKEYS:
-				returned->kdbMonitorKeys=
-					va_arg(va,kdbMonitorKeysPtr);
-				break;
-		}
-	}
-	va_end(va);
-	
-	return returned;
-}
-
-/**
  * Returns a structure of information about the internals
  * of the library and the backend used.
  *
@@ -1498,6 +995,8 @@ void kdbFreeInfo(KDBInfo *info) {
 	free(info);
 	info=0;
 }
+
+
 
 
 
@@ -1676,128 +1175,138 @@ int kdbInfoToString(KDBInfo *info,char *string,size_t maxSize) {
 	return 0;
 }
 
+
+
 /**
- * @mainpage The Elektra API
- *
- * @section overview Elektra Initiative Overview
- *
- * Elektra is an initiative to unify Linux/Unix configurations. It does that
- * providing an hierarchical namespace to store configuration keys and
- * their values, an API to access/modify them, and command line tools.
- *
- * Everything about the initiative can be found at http://www.libelektra.org
- *
- * @section using Using the Elektra Library
- *
- * A C or C++ source file that wants to use Elektra should include:
+ * This function must be called by a backend's kdbBackendFactory() to
+ * define the backend's methods that will be exported. Its job is to
+ * organize a libelektra.so's table of virtual methods with pointers to backend
+ * dependent methods.
+ * 
+ * The order and number of arguments are flexible (as keyNew()) to let
+ * libelektra.so evolve without breaking its ABI compatibility with backends.
+ * So for each method a backend must export, there is a flag defined by
+ * #KDBBackendMethod. Each flag tells kdbBackendExport() which method comes
+ * next. A backend can have no implementation for a few methods that have
+ * default inefficient high-level implementations -- kdbSetKeys(),
+ * kdbMonitorKey(), kdbMonitorKeys() -- and to use these defaults, simply
+ * don't pass anything to kdbBackendExport() about them.
+ * 
+ * The last parameter must be @c KDB_BE_END .
+ * 
+ * @par Example of a complete backend:
  * @code
- * #include <kdb.h>
+//
+// This is my implementation for an Elektra backend storage.
+//
+// To compile it:
+// $ cc -fpic -o myback.o -c myback.c
+// $ cc -shared -fpic -o libelektra-myback.so myback.o
+// 
+// To use it:
+// $ export KDB_BACKEND=myback
+// $ kdb ls -Rv
+//
+
+#include <kdbbackend.h>
+
+#define BACKENDNAME "my_elektra_backend_implementation"
+
+
+int kdbOpen_backend(KDBHandle *handle) {...}
+int kdbClose_backend(KDBHandle *handle) {...}
+int kdbGetKey_backend(KDBHandle handle, Key *key) {...}
+int kdbSetKey_backend(KDBHandle handle, Key *key) {...}
+
+... etc implementations of other methods ...
+
+
+
+KDBBackend *kdbBackendFactory(void) {
+	return kdbBackendExport(BACKENDNAME,
+		KDB_BE_OPEN,          &kdbOpen_backend,
+		KDB_BE_CLOSE,         &kdbClose_backend,
+		KDB_BE_GETKEY,        &kdbGetKey_backend,
+		KDB_BE_SETKEY,        &kdbSetKey_backend,
+		KDB_BE_STATKEY,       &kdbStatKey_backend,
+		KDB_BE_RENAME,        &kdbRename_backend,
+		KDB_BE_REMOVEKEY,     &kdbRemoveKey_backend,
+		KDB_BE_GETCHILD,      &kdbGetKeyChildKeys_backend,
+		KDB_BE_SETKEYS,       &kdbSetKeys_backend,
+		KDB_BE_MONITORKEY,    &kdbMonitorKey_backend,
+		KDB_BE_MONITORKEYS,   &kdbMonitorKeys_backend,
+		KDB_BE_END);
+}
  * @endcode
  *
- * There is also a library that provides some
- * @ref tools "optional XML manipulation methods called KDB Tools", and to use
- * it you should include:
- * @code
- * #include <kdbtools.h>
- * @endcode
- *
- * To link an executable with the Elektra library, the correct way is to
- * use the @c pkg-config tool:
- * @code
- * bash$ cc `pkg-config --libs elektra` -o myapp myapp.c
- * @endcode
- *
- * Or, if you don't have @c pkg-config:
- * @code
- * bash$ cc -L /lib -lelektra -o myapp myapp.c
- * @endcode
- *
- * @section classes Elektra API
- *
- * The API was written in pure C because Elektra was designed to be useful
- * even for the most basic system programs, which are all made in C. Also,
- * being C, bindings to other languages can appear, as we already have for
- * Python, Ruby, etc.
- *
- * The API follows an Object Oriented design, and there are only 3 classes
- * as shown by the figure:
- *
- * @image html classes.png "Elektra Classes"
- *
- * Some general things you can do with each class are:
- *
- * @subsection KeyDB KeyDB
- *   - @link kdbGetKey() Retrieve @endlink and @link kdbSetKey() commit
- *     @endlink Keys and @link kdbSetKeys() KeySets @endlink,
- *     @link kdbGetKeyChildKeys() recursively @endlink or not
- *   - Retrieve and commit individual @link kdbGetValue() Key value @endlink, by
- *     absolute name or @link kdbGetValueByParent() relative to parent @endlink
- *   - Monitor and notify changes in @link kdbMonitorKey() Keys @endlink and
- *     @link kdbMonitorKeys() KeySets @endlink
- *   - Create and delete regular, folder or symbolic link Keys
- *   - See @ref kdb "class documentation" for more
- *
- * @subsection Key Key
- *   - Get and Set key properties like @link keySetName() name @endlink,
- *     root and @link keySetBaseName() base name @endlink,
- *     @link keySetString() value @endlink, @link keySetType() type @endlink,
- *     @link keyGetAccess() permissions @endlink,
- *     @link keyGetMTime() changed time @endlink,
- *     @link keyGetComment() comment @endlink, etc
- *   - @link keyCompare() Make powerfull comparations of all key properties
- *     with other keys @endlink
- *   - @link keyNeedsSync() Test if changed @endlink, if it is a
- *     @link keyIsUser() @p user/ @endlink or @link keyIsSystem() @p system/
- *     @endlink key, etc
- *   - @link keySetFlag() Flag it @endlink and @link keyGetFlag() test if key
- *     has a flag @endlink
- *   - @link keyToStream() Export Keys to an XML representation @endlink
- *   - See @ref key "class documentation" for more
- *
- * @subsection KeySet KeySet
- *   - Linked list of Key objects
- *   - @link ksInsert() Insert @endlink and @link ksAppend() append @endlink
- *     entire @link ksInsertKeys() KeySets @endlink or Keys
- *   - @link ksNext() Work with @endlink its @link ksCurrent() internal
- *     cursor @endlink
- *   - @link ksCompare() Compare entire KeySets @endlink
- *   - @link ksFromXMLfile() Import @endlink and
- *     @link ksToStream() Export KeySets @endlink to an XML representation
- *   - See @ref keyset "class documentation" for more
- *
- *
- * @section keynames Key Names and Namespaces
- *
- * There are 2 trees of keys: @c system and @c user
- *
- * @subsection systemtree The "system" Subtree
- *
- * It is provided to store system-wide configuration keys, that is,
- * configurations that daemons and system services will use.
- *
- * @subsection usertree The "user" Subtree
- *
- * Used to store user-specific configurations, like the personal settings
- * of a user to certains programs
- *
- *
- * @section rules Rules for Key Names
- *
- * When using Elektra to store your application's configuration and state,
- * please keep in mind the following rules:
- * - You are not allowed to create keys right under @p system or @p user.
- * - You are not allowed to create folder keys right under @p system or @p user.
- *   They are reserved for very essential OS subsystems.
- * - The keys for your application, called say @e MyApp, should be created under
- *   @p system/sw/MyApp and/or @p user/sw/MyApp.
- *
- *
+ * In the example, the *_backend() methods can have other random names,
+ * since you'll correctly pass them later to kdbBackendExport().
+ * 
+ * @param backendName a simple name for this backend
+ * @return an object that contains all backend informations needed by
+ * 	libelektra.so
+ * @ingroup backend
  */
+KDBBackend *kdbBackendExport(const char *backendName, ...) {
+	va_list va;
+	KDBBackend *returned;
+	uint32_t method=0;
 
+	if (backendName == 0) return 0;
+	
+	returned=malloc(sizeof(KDBBackend));
+	memset(returned,0,sizeof(KDBBackend));
+	
+	returned->name=(char *)malloc(strblen(backendName));
+	strcpy(returned->name,backendName);
+	
+	/* Start processing parameters */
+	
+	va_start(va,backendName);
 
-
-
-
-
+	while ((method=va_arg(va,uint32_t))) {
+		switch (method) {
+			case KDB_BE_OPEN:
+				returned->kdbOpen=va_arg(va,kdbOpenPtr);
+				break;
+			case KDB_BE_CLOSE:
+				returned->kdbClose=va_arg(va,kdbClosePtr);
+				break;
+			case KDB_BE_STATKEY:
+				returned->kdbStatKey=va_arg(va,kdbStatKeyPtr);
+				break;
+			case KDB_BE_GETKEY:
+				returned->kdbGetKey=va_arg(va,kdbGetKeyPtr);
+				break;
+			case KDB_BE_SETKEY:
+				returned->kdbSetKey=va_arg(va,kdbSetKeyPtr);
+				break;
+			case KDB_BE_RENAME:
+				returned->kdbRename=va_arg(va,kdbRenamePtr);
+				break;
+			case KDB_BE_REMOVEKEY:
+				returned->kdbRemoveKey=va_arg(va,kdbRemoveKeyPtr);
+				break;
+			case KDB_BE_GETCHILD:
+				returned->kdbGetKeyChildKeys=
+					va_arg(va,kdbGetChildKeysPtr);
+				break;
+			case KDB_BE_SETKEYS:
+				returned->kdbSetKeys=va_arg(va,kdbSetKeysPtr);
+				break;
+			case KDB_BE_MONITORKEY:
+				returned->kdbMonitorKey=
+					va_arg(va,kdbMonitorKeyPtr);
+				break;
+			case KDB_BE_MONITORKEYS:
+				returned->kdbMonitorKeys=
+					va_arg(va,kdbMonitorKeysPtr);
+				break;
+		}
+	}
+	va_end(va);
+	
+	return returned;
+}
 
 

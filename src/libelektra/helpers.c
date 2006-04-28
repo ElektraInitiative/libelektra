@@ -27,14 +27,6 @@ $Id: libkdb.c 736 2006-04-14 15:31:44Z aviram $
 #include "config.h"
 #endif
 
-#include <stdlib.h>
-#include <stdarg.h>
-#include <ctype.h>
-#include <string.h>
-#include <errno.h>
-#include <stdio.h>
-#include <pthread.h>
-
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -50,6 +42,23 @@ $Id: libkdb.c 736 2006-04-14 15:31:44Z aviram $
 #ifdef HAVE_LANGINFO_H
 #include <langinfo.h>
 #endif
+
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+
+#ifdef HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
+
+
+#include <stdlib.h>
+#include <stdarg.h>
+#include <ctype.h>
+#include <string.h>
+#include <errno.h>
+#include <stdio.h>
+#include <pthread.h>
 
 
 /* kdbbackend.h will include kdb.h and kdbprivate.h */
@@ -265,5 +274,105 @@ ssize_t encode(void *unencoded, size_t size, char *returned) {
 	*writeCursor='\n';
 	*++writeCursor=0;
 	return writeCursor-returned;
+}
+
+
+
+
+
+/**
+ * A probably inefficient implementation for the kdbSetKeys()
+ * method. If a backend doesn't want to reimplement this method, this
+ * implementation can be used, in which kdbSetKey() will be called for
+ * each Key object contained in @p ks.
+ *
+ * If some error occurs, kdbSetKeys_default() will stop. In this situation the KeySet
+ * internal cursor is left on the key that generated the error.
+ *
+ * @see kdbSetKeys(), kdbSetKeys_backend()
+ * @return 0 on success
+ * @return -1 on failure and @c errno is propagated
+ *
+ * @ingroup backend
+ */
+int kdbSetKeys_default(KDBHandle handle, KeySet *ks) {
+	Key *current=ksCurrent(ks);
+	int ret;
+
+	if (!current) current=ksNext(ks);
+	while (current) {
+		if (keyNeedsSync(current))
+			if ((ret=kdbSetKey(handle,current))) /* check error */
+				return ret;
+		
+		current=ksNext(ks);
+	}
+
+	return 0;
+}
+
+
+
+
+
+/**
+ * A high level, probably inefficient, implementation for the kdbMonitorKey()
+ * method. If a backend doesn't want to reimplement this method, this
+ * implementation can be used.
+ *
+ * @ingroup backend
+ */
+uint32_t kdbMonitorKey_default(KDBHandle handle, Key *interest,
+		uint32_t diffMask, unsigned long iterations, unsigned sleeptime) {
+	Key *tested;
+	int rc;
+	uint32_t diff;
+	int infinitum=0;
+
+	/* consistency */
+	if (!interest || !keyGetNameSize(interest)) return 0;
+
+	/* Unacceptable 0 usecs sleep. Defaults to 1 second */
+	if (!sleeptime) sleeptime=1000;
+
+	if (!iterations) infinitum=1;
+	else infinitum=0;
+
+	/* Work with a copy of the key */
+	tested=keyNew(0);
+	keyDup(interest,tested);
+
+	while (infinitum || --iterations) {
+		rc=kdbGetKey(handle,tested);
+		if (rc) {
+			/* check what type of problem happened.... */
+			switch (errno) {
+				case KDB_RET_NOCRED:
+					keyDel(tested);
+					return KEY_SWITCH_NEEDSYNC;
+				case KDB_RET_NOTFOUND:
+					keyDel(tested);
+					return KEY_SWITCH_FLAG;
+			}
+		}
+		
+		diff=keyCompare(tested,interest);
+		
+		if (diff & diffMask) {
+			/* If differences interests us, return it, otherwise cycle again.
+			 * We don't loose the original key context in a KeySet because
+			 * we worked with a copy of the key.
+			 */
+			keyDup(tested,interest);
+			keyDel(tested);
+			return diff;
+		}
+		/* Test if some iterations left . . . */
+		if (infinitum || iterations) usleep(sleeptime);
+	}
+	
+	keyDel(tested);
+
+	return 0;
 }
 

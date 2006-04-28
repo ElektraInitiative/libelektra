@@ -22,8 +22,8 @@ int tests;
 #define ROOT_KEY "user/test"
 
 #define NUL_KEY ROOT_KEY "/nul"
-#define NUL_VAL ""
-#define NUL_COM ""
+#define NUL_VAL "s"
+#define NUL_COM "s"
 
 #define NEW_KEY ROOT_KEY "/new"
 #define NEW_VAL "value"
