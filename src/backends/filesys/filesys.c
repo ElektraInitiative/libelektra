@@ -167,7 +167,7 @@ int kdbSetKey_filesys(KDBHandle handle, Key *key) {
 	struct stat stated;
 
 	pos=kdbGetFilename(key,keyFileName,sizeof(keyFileName));
-	fprintf(stderr, "fName = %s\n", keyFileName);
+	fprintf(stderr, "kdbSetKey(%s) -> %s\n", keyStealName(key), keyFileName);
 	if (!pos) return -1; /* Something is wrong. Propagate errno. */
 
 	if (stat(keyFileName,&stated))
@@ -1013,7 +1013,7 @@ int keyNameToRelativeFileName(const char *string, char *buffer, size_t bufSize)
 	char *tmp = buffer;
 	size_t	written;
 	int     j;
-	
+
 	written = 0;
 	while ( (*string != '\0') && bufSize > sizeof(char) ) {
 		
@@ -1054,6 +1054,7 @@ int keyNameToRelativeFileName(const char *string, char *buffer, size_t bufSize)
 		}
 	}
 	*buffer = '\0';
+	written++;
 
 	return written;
 }
@@ -1088,13 +1089,9 @@ size_t keyCalcRelativeFileName(const Key *key,char *relativeFileName,size_t maxS
 		if (!(size=keyGetNameSize(key))) return 0;
 
 		converted = (char *) malloc(MAX_PATH_LENGTH);
-		fprintf(stderr, "before: %s\n", keyStealName(key));
                 size = keyNameToRelativeFileName(keyStealName(key), converted, MAX_PATH_LENGTH);
-		fprintf(stderr, "after: %s\n", converted);
 
 /* 		memcpy(converted,relativeFileName,convertedSize); */
-
-		fprintf(stderr, "SIZE = %ld\n", size);
 
 		if (UTF8Engine(UTF8_TO,&converted,&size)) {
 			free(converted);
@@ -1108,7 +1105,6 @@ size_t keyCalcRelativeFileName(const Key *key,char *relativeFileName,size_t maxS
 		}
 
 		memcpy(relativeFileName,converted,size);
-		fprintf(stderr, "relative = %ld/%ld\n", strblen(converted), size);
 		free(converted);
 
 		return size;
@@ -1168,6 +1164,8 @@ int keyFromStat(Key *key,struct stat *stat) {
 size_t kdbGetFilename(const Key *forKey,char *returned,size_t maxSize) {
 	size_t length=0;
 
+	fprintf(stderr, "kdbGetFilename(%s)\n", keyStealName(forKey));
+	
 	switch (keyGetNamespace(forKey)) {
 		case KEY_NS_SYSTEM: {
 			/* Prepare to use the 'system/ *' database */
@@ -1201,7 +1199,8 @@ size_t kdbGetFilename(const Key *forKey,char *returned,size_t maxSize) {
 
 	returned[length]='/'; length++;
 	length+=keyCalcRelativeFileName(forKey,returned+length,maxSize-length);
-	fprintf(stderr, "to %s\n", returned);
+
+	fprintf(stderr, "\t-> %s\n", returned);
 
 	return length;
 }
