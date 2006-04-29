@@ -167,7 +167,6 @@ int kdbSetKey_filesys(KDBHandle handle, Key *key) {
 	struct stat stated;
 
 	pos=kdbGetFilename(key,keyFileName,sizeof(keyFileName));
-	fprintf(stderr, "kdbSetKey(%s) -> %s\n", keyStealName(key), keyFileName);
 	if (!pos) return -1; /* Something is wrong. Propagate errno. */
 
 	if (stat(keyFileName,&stated))
@@ -1164,8 +1163,6 @@ int keyFromStat(Key *key,struct stat *stat) {
 size_t kdbGetFilename(const Key *forKey,char *returned,size_t maxSize) {
 	size_t length=0;
 
-	fprintf(stderr, "kdbGetFilename(%s)\n", keyStealName(forKey));
-	
 	switch (keyGetNamespace(forKey)) {
 		case KEY_NS_SYSTEM: {
 			/* Prepare to use the 'system/ *' database */
@@ -1199,8 +1196,6 @@ size_t kdbGetFilename(const Key *forKey,char *returned,size_t maxSize) {
 
 	returned[length]='/'; length++;
 	length+=keyCalcRelativeFileName(forKey,returned+length,maxSize-length);
-
-	fprintf(stderr, "\t-> %s\n", returned);
 
 	return length;
 }
