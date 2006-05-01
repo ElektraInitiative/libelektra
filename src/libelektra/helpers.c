@@ -51,6 +51,19 @@ $Id: libkdb.c 736 2006-04-14 15:31:44Z aviram $
 #include <sys/stat.h>
 #endif
 
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+
+#ifdef HAVE_FCNTL_H
+#include <fcntl.h>
+#endif
+
+#ifdef HAVE_STDIO_H
+#include <stdio.h>
+#endif
+
+
 
 #include <stdlib.h>
 #include <stdarg.h>
@@ -68,6 +81,48 @@ $Id: libkdb.c 736 2006-04-14 15:31:44Z aviram $
 /* usleep doesn't exist on win32, so we use Sleep() */
 #ifdef WIN32
 #define usleep(x) Sleep(x)
+#endif
+
+#ifdef HAVE_FCNTL_H
+/**
+ * Locks file.
+ * 
+ * @param fd is a valid filedescriptor
+ * @return 0 on success
+ * @return -1 on failure and errno is set (fcntl)
+ * @see encode()
+ * @ingroup backend
+ */
+int lock (int fd)
+{
+	struct flock l;
+	l.l_type = F_WRLCK; /*Do exclusive Lock*/
+	l.l_start= 0;	/*Start at begin*/
+	l.l_whence = SEEK_SET;
+	l.l_len = 0;	/*Do it with whole file*/
+	return fcntl (fd, F_SETLKW, &l);
+}
+#endif
+
+#ifdef HAVE_FCNTL_H
+/**
+ * Unlocks file.
+ * 
+ * @param fd is a valid filedescriptor
+ * @return 0 on success
+ * @return -1 on failure and errno is set (fcntl)
+ * @see encode()
+ * @ingroup backend
+ */
+int unlock (int fd)
+{
+	struct flock l;
+	l.l_type = F_UNLCK; /*Give Lock away*/
+	l.l_start= 0;	/*Start at begin*/
+	l.l_whence = SEEK_SET;
+	l.l_len = 0;	/*Do it with whole file*/
+	return fcntl (fd, F_SETLKW, &l);
+}
 #endif
 
 
