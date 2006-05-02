@@ -667,7 +667,13 @@ ssize_t keySetName(Key *key, const char *newName) {
 		}
 		
 		if (!key->userDomain) {
-			size_t bsize=strblen(getenv("USER"));
+			char *envVar;
+			size_t bsize;
+
+			envVar = getenv("USER");
+			bsize = 0;
+			if ( envVar )
+				bsize=strblen(envVar);
 
 			if (bsize) {
 				key->userDomain=realloc(key->userDomain,bsize);
