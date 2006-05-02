@@ -1177,8 +1177,10 @@ size_t kdbGetFilename(const Key *forKey,char *returned,size_t maxSize) {
 			/* Prepare to use the 'user:????/ *' database */
 			struct passwd *user=0;
 
-			if (forKey->userDomain) user=getpwnam(forKey->userDomain);
-			else user=getpwnam(getenv("USER"));
+			if (forKey->userDomain)
+				user=getpwnam(forKey->userDomain);
+			else if ( getenv("USER") )
+				user=getpwnam(getenv("USER"));
 			
 			if (!user) return 0; /* propagate errno */
 			length=snprintf(returned,maxSize,"%s/%s",user->pw_dir,KDB_DB_USER);
