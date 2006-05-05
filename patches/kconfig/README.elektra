@@ -1,0 +1,210 @@
+ELEKTRIFIED KCONFIG FOR KDE 3.x :
+---------------------------------
+
+  WARNING: This is early stage patch. Please don't use it unless you
+  know what you do.
+
+I) Introduction :
+-----------------
+
+   Elektra will act, most of the times, as the configuration backend for
+the entire KDE system. No, not everything is in elektra : when application
+load their configuration from a non KDE standard directory, the "old" INI
+backend will be used (see III -a). A solution could be to write a file to
+key mapper but, IMHO, this will add complexity for few results : these
+applications have to respect the KDE framework for good integration.
+
+  Configuration isn't imported "in the fly". The reason for that is about
+credentials. KDE system-wide configuration files reside in /etc/kde (perhaps
+/usr/share/config on your system) and are accessible by root only. And i
+didn't want to impose to run KDE as root for key importation each time a
+new configuration file have to be imported. So these have to be imported
+before starting an elektrified KConfig.
+
+II) Apply patch :
+-----------------
+
+   This patch was done using latest KDE source code : kdelibs-3.5.2.
+I didn't tested it since my version is kdelibs-3.4 (i didn't found
+kdelibs-3.4 tar.bz2 source code :-/).
+
+   Decompress kdelibs-3.xxx.tar.bz2
+
+	./configure --without-arts
+	cd dcop make all
+	cd ../kdefx && make all
+	cd ../libltdl && make all
+	cd ../kdecore && make all
+
+	cp /usr/lib/libkdecore.so.x.x.x /usr/lib/libkdecore.so.x.x.x.orig
+
+	!! Exit KDE & KDM !!
+	and then:
+
+	cp kdelibs/kdecore/.libs/libkdecore.so.x.x.x /usr/lib
+
+
+III) Configuration import :
+---------------------------
+
+   At this time configuration import is done by a small PHP script. This
+script act in three times :
+
+		
+	1) Make a list of directories containing KDE configuration stuff
+		- Fetch KDE configuration directory layout from kde-config
+		- Fetch home directories for each user of the system.
+
+	2) For each file of these directories, parse them and fetch key name
+	   and key value
+
+	3) Create a "kdb" command line for key importation.
+
+   So, for import entire KDE configuration to elektra, you have to run as root:
+
+	[root@tower ~]./kde2elektra.php | sh -e
+
+   If you want check things, you could redirect stuff to a file
+
+	[root@tower ~]./kde2elektra.php > key_import
+
+   Now, you can just run KDE, cross-fingers, then open kdbedit ! =]
+
+
+IV) Some notes about what was done :
+------------------------------------
+
+
+IV - a) KDE file to key mapping :
+---------------------------------
+
+   Everything in KConfig rely on the fact that configuration are
+stored in configuration file. Moreover, that rely that one
+configuration (i.e: kwrite) are stored in one file (i.e: kwriterc).
+	
+   Happily, when application use KConfig, they doesn't have to provide
+absolute path for load their config. Rather than that, they provide
+relative file's name and a resource type : "config". And most of these
+application (yes, most ... i saw some exception :-/) use KConfig like that.
+This resource type design some path where to lookup for the configuration
+file. For example, on my system its :
+
+	[yl@tower kdecore]$ kde-config --path config
+	/home/yl/.kde/share/config/:/etc/kde/
+
+File is searched firstly from /etc/kde then from /home/yl/.kde/share/config/.
+The file which reside in /etc/kde give default values while file residing
+in home directory give user specific values.
+
+So, actually, the file to key mapping is done quite easily :
+
+	Map /etc/kde -> system/sw/kde
+	Map ~/.kde/share/config -> user/sw/kde
+
+This mapping is actually hardcoded in source file. Perhaps this should have to
+be changed (see TODO)
+
+   When KConfig receive an absolute file name, KConfig will simply ignore elektra
+and use the "old" INI backend. This allow smooth migration in the wait of a better
+world.
+
+IV - b) KConfigBackEnd re-designed :
+------------------------------------
+
+   KConfigBackEnd is the abstract class for implement new concrete backend. The original
+KDE version define two pure virtual methods which need to be implemented by the concrete
+backend :
+
+	parseConfigFiles() -> Read configuration from the current configuration file
+	sync() -> Write configuration to the current configuration file
+
+while providing default and non-overridable implementation for methods :
+
+	changeFileName() -> Change current configuration file
+	checkConfigFilesWritable() -> Check if current configuration file is writable
+	lockFile() -> Lock configuration file
+
+With this design, elektra backend couldn't work cause of the "changeFileName()" method.
+Since elektra backend can't work on absolute file name, that mean we have to be able
+to change concrete backend dependly of the file name and resource type :
+
+	- filename is relative AND resource is "config" -> elektra backend
+	- absolute filename OR resource is NOT "config" -> ini backend
+
+Moreover, methods like checkConfigFilesWritable() need to be reimplemented by elektra backend
+since we aren't no more working on file.
+
+   The new KConfigBackEnd is an instanciable class which act as a wrapper for parser (that's
+the new name for backend).
+
+	KConfigBackend {
+		private:
+			[...]
+			KConfigParser	*mParser;
+			[...]
+
+		public:
+			[...]
+			void changeFileName(const QString &_fileName,
+		                                    const char * _resType,
+		                                    bool _useKDEGlobals);
+			lockFile(bool bGlobal)
+			parseConfigFiles()
+			sync(bool bMerge)
+			bool checkConfigFilesWritable(bool warnUser)
+			[...]
+	}
+
+mParser is assigned in changeFileName (choose between KConfigINIParser & KConfigElektraParser)
+lockFile(), parseConfigFiles(), sync(), checkConfigFilesWritable() wrap functions of the same
+name inside the Parser. Example :
+
+	lockFile(bool bGlobal)
+	{
+		if ( mParser )
+			return mParser->lockFile(bGlobal);
+
+		return 0;
+	}
+
+This way, API isn't modified and backend could be changed on the fly after the KConfig object creation.
+
+V) TODO :
+---------
+	
+	* KSimpleConfig always send absolute filename to KConfigBackEnd. And thus, elektra isn't used even
+	  if KSimpleConfig was called with a relative file name. I have to check that.
+
+	* All KDE stuff is done in <root>/sw/kde namespace and i think its good like that. For allowing
+	  KDE application to fetch i.e Xorg configuration, i thought about adding an "elektra" resource
+	  type in complement of the current "config" one. This way, we'll be able to use:
+		conf = new KConfig("system/sw/xorg/current", "elektra");
+
+	* Test key flags (like "kiosk", deleted, expanded). Code is mostly here for support these.
+	  and locale things.
+
+	* KDE group name allow '/' in their name. Currently these '/' are escaped and then you could have
+	  key name like:
+		
+		<root>/ksslcalist/\/O=VeriSign, Inc.\/OU=VeriSign Trust Network\/OU=Terms of use at <FOLLOW NEXT LINE>
+		https:\/\/www.verisign.com\/RPA (c)00\/CN=Class 1 Public Primary OCSP Responder
+
+	 Perhaps this could be interesting to allow folder creation and then have:
+		
+		+ <root>/ksslcalist/\/O=VeriSign, Inc.
+                |---+ OU=VeriSign Trust Network
+                    |--+ OU=Terms of use at https:\/\/www.verisign.com
+
+	* Allow KDE configuration scheme which are using more than two directory level
+	 (system wide /etc/kde and user specific ~/.kde/share/config)
+
+	* Remove the hard-coded <root>/sw/kde namespace
+
+	* Lots of clean-up & test ...
+
+
+For Elektra Initiative,
+Yannick Lecaillez.
+<sizon5@gmail.com>
+
+05-May-2006.
