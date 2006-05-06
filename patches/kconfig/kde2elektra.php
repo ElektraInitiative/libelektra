@@ -52,7 +52,7 @@ function convert($file, $rootKey)
 		$keyVal = substr($line, $sep+1);
 	
 		$kName = str_replace("\"", "\\\"", "$rootKey$currentGroup/$keyName");
-		$kName = str_replace("$", "\\$", $kName);
+//		$kName = str_replace("$", "\\$", $kName);
 		
 		if ( $keyVal ) {
 //			$keyVal = str_replace("\"", "\\\"", $keyVal);
