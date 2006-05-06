@@ -59,12 +59,13 @@ function convert($file, $rootKey)
 			$keyVal = str_replace("$", "\\$", $keyVal);
 			
 			
-			echo "kdb set -u ".$stat["uid"]." -g ".$stat["gid"]." -m ".decoct($stat["mode"] & 0777)." -- \"$kName\" \"".str_replace("\"", "\\\"", $keyVal)."\"\n";
-
+//			echo "kdb set -u ".$stat["uid"]." -g ".$stat["gid"]." -m ".decoct($stat["mode"] & 0777)." -- \"$kName\" \"".str_replace("\"", "\\\"", $keyVal)."\"\n";
+			echo "<key uid=\"".$stat["uid"]."\" gid=\"".$stat["gid"]."\" mode=\"".decoct($stat["mode"] & 0777)."\" name=\"$kName\"><value>".str_replace("\"", "\\\"", $keyVal)."</value></key>\n";
 			
 			
 		} else {
-			echo "kdb set -u ".$stat["uid"]." -g ".$stat["gid"]." -m ".decoct($stat["mode"] & 0777)." -- \"$kName\"\n";
+//			echo "kdb set -u ".$stat["uid"]." -g ".$stat["gid"]." -m ".decoct($stat["mode"] & 0777)." -- \"$kName\"\n";
+			echo "<key uid=\"".$stat["uid"]."\" gid=\"".$stat["gid"]."\" mode=\"".decoct($stat["mode"] & 0777)."\" name=\"$kName\"/>\n";
 		}
 	}
 
