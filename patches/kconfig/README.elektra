@@ -4,6 +4,8 @@ ELEKTRIFIED KCONFIG FOR KDE 3.x :
   WARNING: This is early stage patch. Please don't use it unless you
   know what you do.
 
+  And if you do, please drop me a note about your experience (bug reports).
+
 I) Introduction :
 -----------------
 
@@ -25,10 +27,17 @@ II) Apply patch :
 -----------------
 
    This patch was done using latest KDE source code : kdelibs-3.5.2.
-I didn't tested it since my version is kdelibs-3.4 (i didn't found
-kdelibs-3.4 tar.bz2 source code :-/).
 
-   Decompress kdelibs-3.xxx.tar.bz2
+   Decompress kdelibs-3.5.2.tar.bz2
+	tar -xjvf kdelibs-3.5.2.tar.bz2
+
+   Applying patch:
+	cd kdelibs-3.5.2
+	patch -p1 < /home/yl/elektra/kconfig-elektra.patch
+
+   Compiling:
+	Since re-compile all the kdelibs can take hours, here a short path
+   which build only dependency and libkdecore :
 
 	./configure --without-arts
 	cd dcop make all
@@ -36,8 +45,10 @@ kdelibs-3.4 tar.bz2 source code :-/).
 	cd ../libltdl && make all
 	cd ../kdecore && make all
 
+   Backup your old kdelib:
 	cp /usr/lib/libkdecore.so.x.x.x /usr/lib/libkdecore.so.x.x.x.orig
 
+   Install patched one:
 	!! Exit KDE & KDM !!
 	and then:
 
@@ -175,11 +186,6 @@ V) TODO :
 	* KSimpleConfig always send absolute filename to KConfigBackEnd. And thus, elektra isn't used even
 	  if KSimpleConfig was called with a relative file name. I have to check that.
 
-	* All KDE stuff is done in <root>/sw/kde namespace and i think its good like that. For allowing
-	  KDE application to fetch i.e Xorg configuration, i thought about adding an "elektra" resource
-	  type in complement of the current "config" one. This way, we'll be able to use:
-		conf = new KConfig("system/sw/xorg/current", "elektra");
-
 	* Test key flags (like "kiosk", deleted, expanded). Code is mostly here for support these.
 	  and locale things.
 
@@ -195,12 +201,30 @@ V) TODO :
                 |---+ OU=VeriSign Trust Network
                     |--+ OU=Terms of use at https:\/\/www.verisign.com
 
-	* Allow KDE configuration scheme which are using more than two directory level
-	 (system wide /etc/kde and user specific ~/.kde/share/config)
-
-	* Remove the hard-coded <root>/sw/kde namespace
-
 	* Lots of clean-up & test ...
+
+        * Take time to rewrite this doc nicely, including theses changes from 8 May 2006:
+		- New enhanced kconfig-patch
+			- Keys root aren't hardly coded anymore. You can set it
+			  using $ELEKTRA_CONFIG_DIR & $ELEKTRA_CONFIG_HOME env var (exactly
+			  like $KDEDIR $KDEHOMESDIR).  note: i'm not sure about these names,
+			  that need check.
+
+			- You can add cascading level using a key inside kdeglobals:
+				kdeglobals/Directories/key_config-elektra = system/sw/kde-addon
+			  Its like kde standard stuff (dir_config = /etc/kde-addon)
+
+			- You can retrieve any elektrified software configuration using
+
+				KConfig *cfg = new KConfig("system/sw/xorg/current", "config-elektra");
+
+VI) History
+-----------
+
+  05 May 2006: First version of patch & README
+  08 May 2006: Added some amelioration to the patch (kstandarddirs, access to
+               to elektra global namespace). README report these changes (need rewrite these
+               nicely).
 
 
 For Elektra Initiative,
