@@ -6,7 +6,7 @@ EXTRA_DIST+=docbook.css doxygen.css
 EXTRA_DIST+=elektra.odp
 EXTRA_DIST+=$(man1_MANS) $(man5_MANS) $(man7_MANS)
 
-SUBDIRS=images specs
+SUBDIRS=images standards
 
 # Dependencies for Doxygen documentation
 # main...

@@ -82,7 +82,7 @@ AC_ARG_WITH(backend,
 # backends at this time)
 AC_ARG_ENABLE(experimental,
 	      [AC_HELP_STRING(--enable-experimental, [Specify to compile or not experimental parts (could cause compilation failure)])],
-	      [experimental=yes])
+	      [experimental=no])
 AM_CONDITIONAL(EXPERIMENTAL, test x$experimental = xyes)
 
 # Select docbook.xsl
@@ -253,7 +253,7 @@ AC_OUTPUT([src/Makefile
 
 	   doc/Makefile
 	   doc/images/Makefile
-	   doc/specs/Makefile
+	   doc/standards/Makefile
 	   
 	   scripts/Makefile
 

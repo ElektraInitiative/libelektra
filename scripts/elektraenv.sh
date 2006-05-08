@@ -38,7 +38,7 @@ if [ -z "$KDB" ]; then
 	KDB=kdb
 fi
 
-FILE="/tmp/elektraenv${RANDOM}${RANDOM}"
+FILE="`mktemp -t elektraenv.XXXXXXXXX`"
 
 
 readEnvTree() {

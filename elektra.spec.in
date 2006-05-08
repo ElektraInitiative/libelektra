@@ -1,6 +1,6 @@
 Name:          elektra
 Version:       @VERSION@
-Release:       27
+Release:       30
 Source:        http://prdownloads.sourceforge.net/elektra/%{name}-%{version}.tar.gz
 Group:         System Environment/Libraries
 License:       BSD
@@ -122,7 +122,18 @@ mv $RPM_BUILD_ROOT/%{_lib}/libelektra.a $RPM_BUILD_ROOT/%{_libdir}
 rm $RPM_BUILD_ROOT/%{_lib}/*.la
 rm $RPM_BUILD_ROOT/%{_libdir}/*.la
  
-cp AUTHORS COPYING ChangeLog README INSTALL $RPM_BUILD_ROOT/%{_defaultdocdir}/%{name}-%{version}/
+#cp AUTHORS COPYING ChangeLog README INSTALL $RPM_BUILD_ROOT/%{_defaultdocdir}/%{name}-%{version}/
+
+# Remove documentation installed, to let RPM package it allone
+rm -rf $RPM_BUILD_ROOT/%{_defaultdocdir}
+rm -rf scripts/Makefile*
+rm -rf examples/Makefile*
+rm -rf examples/.deps
+rm -rf doc/standards/Makefile*
+mv doc/elektra-api/html doc/elektra-api/api-html
+
+
+
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -159,12 +170,12 @@ kdb set system/sw/kdb/schemapath "%{_datadir}/sgml/elektra-0.1.1/elektra.xsd"
 #/%{_lib}/*elektra-ini.so*
 %{_libdir}/*elektratools.so*
 %{_sysconfdir}/profile.d/*
-%doc %{_defaultdocdir}/%{name}-%{version}
+%doc AUTHORS COPYING ChangeLog README INSTALL
+%doc scripts doc/standards
 %{_mandir}/man1/*
 %{_mandir}/man7/*
 %{_mandir}/man5/*
 %{_datadir}/sgml/*
-#%doc AUTHORS COPYING ChangeLog README
 
 
 %files devel
@@ -172,7 +183,8 @@ kdb set system/sw/kdb/schemapath "%{_datadir}/sgml/elektra-0.1.1/elektra.xsd"
 %{_includedir}/*
 %{_libdir}/*.a
 %{_libdir}/pkgconfig/*
-%doc %{_defaultdocdir}/%{name}-devel-%{version}
+%doc AUTHORS COPYING ChangeLog README INSTALL
+%doc examples doc/elektra-api/api-html
 %{_mandir}/man3/*
 
 

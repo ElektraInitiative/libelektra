@@ -391,7 +391,7 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories
 # with spaces.
 
-INPUT                  = libelektra/libkdb.c libelektra/error.c libelektra/key.c libelektra/keyset.c libelektratools/kdbtools.c include/kdb.h kdb/kdb.c include/kdbprivate.h include/kdbbackend.h backends/template
+INPUT                  = libelektra/libkdb.c libelektra/libkdb_helpers.c libelektra/helpers.c libelektra/error.c libelektra/key.c libelektra/keyset.c libelektratools/kdbtools.c include/kdb.h kdb/kdb.c include/kdbprivate.h include/kdbbackend.h backends/template
 
 # If the value of the INPUT tag contains directories, you can use the
 # FILE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp
