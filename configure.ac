@@ -243,6 +243,9 @@ AC_OUTPUT([src/Makefile
 	   src/backends/template/Makefile
 	   src/backends/ini/Makefile
 	   src/backends/daemon/Makefile
+	   
+	   src/bindings/Makefile
+	   src/bindings/cpp/Makefile
 
 	   src/include/Makefile
 
