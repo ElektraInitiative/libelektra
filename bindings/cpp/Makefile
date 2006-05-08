@@ -40,7 +40,7 @@ $(TARGET):  $(OBJECTS)
 	$(LINK) $(LIBS) -o $(TARGET) $(OBJECTS) $(OBJMOC) $(LIBS) $(OBJCOMP)
 
 clean:
-	rm -f $(OBJECTS)
+	rm -f $(OBJECTS) cpp
 
 
 ####### Compile
