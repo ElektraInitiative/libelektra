@@ -339,10 +339,11 @@ int kdbOpenBackend(KDBHandle *handle, char *backendName) {
 	(*handle)->dlHandle=dlhandle;
 	
 	/* Give some context to the handle in the case backend is remote */
-	(*handle)->pid=getpid();
-	(*handle)->uid=getuid();
-	(*handle)->gid=getgid();
-	(*handle)->umask=umask(0); umask((*handle)->umask);
+	(*handle)->pid      = getpid();
+	(*handle)->uid      = getuid();
+	(*handle)->gid      = getgid();
+	(*handle)->userName = getenv("USER");
+	(*handle)->umask    = umask(0); umask((*handle)->umask);
 	
 	/* let the backend initialize itself */
 	if ((*handle)->kdbOpen) rc=(*handle)->kdbOpen(handle);

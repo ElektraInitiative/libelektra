@@ -677,7 +677,7 @@ ssize_t keySetName(Key *key, const char *newName) {
 
 			if (bsize) {
 				key->userDomain=realloc(key->userDomain,bsize);
-				strncpy(key->userDomain,getenv("USER"),bsize);
+				strncpy(key->userDomain,envVar,bsize);
 			} else { /* TODO: handle "can't find $USER envar" */ }
 		}
 
