@@ -556,6 +556,8 @@ ssize_t keyToStream(const Key *key, FILE* stream, unsigned long options);
 ssize_t keyToStreamBasename(const Key *key, FILE* stream,
 	const char *parent, const size_t parentSize, unsigned long options);
 
+void *keySerialize(Key *key);
+Key *keyUnserialize(void *serialized);
 
 /**************************************
 

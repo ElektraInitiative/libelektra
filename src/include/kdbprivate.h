@@ -115,11 +115,11 @@ struct _Key {
 	 * @see keyGetATime()
 	 */ 
 	time_t         atime;
-	   
+
 	/**
 	 * Time for last modification.
 	 * @see keyGetMTime()
-	 */ 
+	 */
 	time_t         mtime;
 	 
 	/**
@@ -164,7 +164,7 @@ struct _Key {
 	 * @see keySetComment(), keyGetComment()
 	 */ 
 	char *         userDomain;
-	 
+	
 	/**
 	 * The user that owns the key.
 	 * @see keySetString(), keyGetString()
@@ -189,8 +189,8 @@ struct _Key {
 
 
 /**
- * The private KeySet struct.
- * 
+ * The private KeySet structure.
+ *
  * Its internal private attributes should not be accessed directly by regular
  * programs. Use the @ref keyset "KeySet access methods" instead.
  * Only a backend writer needs to have access to the private attributes of the

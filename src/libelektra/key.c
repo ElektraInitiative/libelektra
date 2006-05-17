@@ -3150,3 +3150,76 @@ int keyClose(Key *key) {
 	return 0;
 }
 
+
+/**
+ * Return a block of memory with the entire key serialized, including
+ * metainfo, value, comment and full name.
+ * Deallocate it with a simple free().
+ *
+ * @see keyUnserialize()
+ * @ingroup key
+ */
+void *keySerialize(Key *key) {
+	size_t metaInfoSize=0;
+	size_t fullNameSize=0;
+	void *serilized=0;
+	int isUser=0;
+	
+	fullNameSize=keyGetFullNameSize(key);
+	
+	metaInfoSize = KEY_METAINFO_SIZE(key);
+	
+	key->recordSize=metaInfoSize + key->dataSize + key->commentSize + fullNameSize;
+	serialized=malloc(key->recordSize);
+	memset(serialized,0,key->recordSize);
+	
+	/* First part: the metainfo */
+	memcpy(serialized,key,metaInfoSize);
+	
+	/* Second part: the comment */
+	memcpy(serialized+metaInfoSize,key->comment,key->commentSize);
+	
+	/* Third part: the value */
+	memcpy(serialized+metaInfoSize+key->commentSize,key->data,key->dataSize);
+	
+	/* Fourth part: the full key name */
+	keyGetFullName(key,
+		serialized+metaInfoSize+key->commentSize+key->dataSize,
+		fullNameSize);
+	
+	return serialized;
+}
+
+/**
+ * Given a membory block created by keySerialize(), unserialize it into
+ * a Key structure and return it
+ *
+ * The @p serialized can be freed after this call, because memory will be
+ * allocated for all elements of the new key;
+ *
+ * @see keySerialize()
+ * @ingroup key
+ */
+Key *keyUnserialize(void *serialized) {
+	Key *key=0;
+	size_t metaInfoSize=0;
+	
+	if (!block) return 0;
+	
+	key=keyNew(KEY_SWITCH_LAST);
+	
+	/* First part: the metainfo */
+	metaInfoSize = KEY_METAINFO_SIZE(key);
+	memcpy(key,block,metaInfoSize);
+	
+	/* Second part: the comment */
+	memcpy(key->comment,serialized+metaInfoSize,key->commentSize);
+	
+	/* Third part: the value */
+	memcpy(key->data,serialized+metaInfoSize+key->commentSize,key->dataSize);
+	
+	/* Fourth part: the full key name */
+	keySetName(key, serialized+metaInfoSize+key->commentSize+key->dataSize);
+	
+	return key;
+}
