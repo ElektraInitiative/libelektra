@@ -86,7 +86,7 @@ $Id: libkdb.c 736 2006-04-14 15:31:44Z aviram $
 #ifdef HAVE_FCNTL_H
 /**
  * Locks file.
- * 
+ *
  * @param fd is a valid filedescriptor
  * @return 0 on success
  * @return -1 on failure and errno is set (fcntl)
@@ -102,12 +102,11 @@ int lock (int fd)
 	l.l_len = 0;	/*Do it with whole file*/
 	return fcntl (fd, F_SETLKW, &l);
 }
-#endif
 
-#ifdef HAVE_FCNTL_H
+
 /**
  * Unlocks file.
- * 
+ *
  * @param fd is a valid filedescriptor
  * @return 0 on success
  * @return -1 on failure and errno is set (fcntl)
@@ -196,7 +195,7 @@ int kdbNeedsUTF8Conversion() {
 #if defined(HAVE_NL_LANGINFO) && defined(HAVE_ICONV) && defined(CODESET)
 	return strcmp(nl_langinfo(CODESET),"UTF-8");
 #else
-	return 0;	  
+	return 0;
 #endif
 }
 
@@ -232,7 +231,7 @@ int UTF8Engine(int direction, char **string, size_t *inputOutputByteSize) {
  * In this case we it should be possible to determine charset through other means
  * See http://www.cl.cam.ac.uk/~mgk25/unicode.html#activate for more info on a possible solution */
  
-#if defined(HAVE_ICONV_H) && defined(HAVE_NL_LANGINFO) && defined(CODESET)
+#if defined(HAVE_ICONV) && defined(HAVE_NL_LANGINFO) && defined(CODESET)
 	char *currentCharset=0;
 	char *converted=0;
 	char *readCursor, *writeCursor;

@@ -1088,7 +1088,8 @@ size_t keyCalcRelativeFileName(const Key *key,char *relativeFileName,size_t maxS
 		if (!(size=keyGetNameSize(key))) return 0;
 
 		converted = (char *) malloc(MAX_PATH_LENGTH);
-                size = keyNameToRelativeFileName(keyStealName(key), converted, MAX_PATH_LENGTH);
+		size = keyNameToRelativeFileName(keyStealName(key), converted,
+			MAX_PATH_LENGTH);
 
 /* 		memcpy(converted,relativeFileName,convertedSize); */
 

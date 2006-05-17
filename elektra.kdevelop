@@ -51,7 +51,7 @@
   <kdevdebugger>
     <general>
       <dbgshell></dbgshell>
-      <programargs>export -R user</programargs>
+      <programargs>import /tmp/x</programargs>
       <gdbpath></gdbpath>
       <configGdbScript></configGdbScript>
       <runShellScript></runShellScript>

@@ -1469,6 +1469,7 @@ int commandExport(KDBHandle *handle) {
 	/* force a superuniversal modern charset: UTF-8 */
 	/*setenv("LANG","en_US.UTF-8",1);*/
 	putenv("LANG=en_US.UTF-8");
+	/*setlocale(LC_CTYPE, "UTF-8");*/
 	
 	/* reopen key database to forced charset to take effect */
 	kdbClose(handle);

@@ -177,12 +177,12 @@ AC_MSG_CHECKING(whether to disable iconv usage)
 AC_ARG_ENABLE(iconv, [  --disable-iconv turns off automatic UTF-8 conversions
         [default="no"]],disable_iconv="yes", disable_iconv="no")
 if test "x$disable_iconv" = "xyes"; then
-  AC_MSG_RESULT(yes)
+	AC_MSG_RESULT(yes)
 else
-  AC_MSG_RESULT(no)
+	AC_MSG_RESULT(no)
 	AM_ICONV()
 fi
-              
+
 # Check for libxml (Allow compilation of libelektratools)
 AM_PATH_XML2(, [have_xml="yes"], [have_xml="no"])
 AM_CONDITIONAL(HAVE_XML, test x$have_xml = xyes)
@@ -226,15 +226,15 @@ AC_CONFIG_FILES([elektra.spec], [cat ChangeLog >> elektra.spec])
 AC_OUTPUT([src/Makefile
 
 	   src/libloader/Makefile
-	   
+
 	   src/libelektra/Makefile
-	   
+
 	   src/libelektratools/Makefile
-	   
+
 	   src/libregistry/Makefile
-	   
+
 	   src/kdb/Makefile
-	   
+
 	   src/backends/Makefile
 	   src/backends/berkeleydb/Makefile
 	   src/backends/filesys/Makefile
@@ -243,7 +243,7 @@ AC_OUTPUT([src/Makefile
 	   src/backends/template/Makefile
 	   src/backends/ini/Makefile
 	   src/backends/daemon/Makefile
-	   
+
 	   src/bindings/Makefile
 	   src/bindings/cpp/Makefile
 
@@ -254,12 +254,12 @@ AC_OUTPUT([src/Makefile
 	   doc/Makefile
 	   doc/images/Makefile
 	   doc/standards/Makefile
-	   
+
 	   scripts/Makefile
 
 	   xmldtd/Makefile
 	   xmlschema/Makefile
-	   
+
 	   elektra.pc
 	   elektratools.pc
 	   ])
