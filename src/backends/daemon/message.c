@@ -66,12 +66,11 @@ Message *messageNew()
  *
  * @return new Message
  */
-Message *messageNewRequest(int procedure, ...)
-{
-	va_list		va;
-	DataType	type;
-	Message		*msg;
-	Argument	*arg;
+Message *messageNewRequest(int procedure, ...) {
+	va_list     va;
+	DataType    type;
+	Message     *msg;
+	Argument    *arg;
 
 	printf("messageNewReques(%d);\n");
 	
@@ -109,6 +108,10 @@ Message *messageNewRequest(int procedure, ...)
 	return msg;	
 }
 
+
+
+
+
 int messageInit(Message *msg)
 {
 	assert(msg != NULL);
@@ -117,6 +120,9 @@ int messageInit(Message *msg)
 	
 	return 0;
 }
+
+
+
 
 
 /**
@@ -165,6 +171,10 @@ int messageAddArgument(Message *msg, Argument *argument)
 	return 0;
 }
 
+
+
+
+
 /**
  * Get the Argument from a message
  *
@@ -173,8 +183,7 @@ int messageAddArgument(Message *msg, Argument *argument)
  *
  * @return Argument or NULL if not found
  */
-const Argument *messageStealArgByIndex(const Message *msg, int index)
-{
+const Argument *messageStealArgByIndex(const Message *msg, int index) {
 	assert(msg != NULL);
 
 	if ( index < msg->nbArgs )
@@ -182,6 +191,9 @@ const Argument *messageStealArgByIndex(const Message *msg, int index)
 
 	return NULL;
 }
+
+
+
 
 /**
  * Finish the usage of a Message
@@ -206,6 +218,9 @@ int messageClose(Message *msg)
 
 	return 0;
 }
+
+
+
 
 int messageDel(Message *msg)
 {

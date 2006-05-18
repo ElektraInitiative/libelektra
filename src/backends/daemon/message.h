@@ -32,11 +32,16 @@ $Id$
 
 #include "argument.h"
 
+
+
 /* Message type */
 typedef enum {
 	MESSAGE_REQUEST,
 	MESSAGE_REPLY
 } MessageType;
+
+
+
 
 /* Struct Message */
 typedef struct {
@@ -47,6 +52,9 @@ typedef struct {
 	int               nbArgs; /* # args */
 	Argument          **args; /* Argument / return parameter */
 } Message;
+
+
+
 
 const Argument *messageStealArgByIndex(const Message *msg, int index);
 Message *messageNew();

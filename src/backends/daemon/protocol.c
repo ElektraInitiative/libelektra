@@ -39,14 +39,18 @@ $Id$
 #include "protocol.h"
 
 /* Magic: Magic number for protocol header. Elektra written like l33t ;-) */
-#define	PROTO_MAGIC	0x0E1E374A
-#define	PROTO_VERSION	1
+#define PROTO_MAGIC     0x0E1E374A
+#define PROTO_VERSION   1
 
 static ssize_t	protocolSendData        	(int fd, void *data, size_t dataLen);
 static ssize_t	protocolReadData        	(int fd, void *data, const ProtocolHeader *header);
 static ssize_t	protocolReadDataHeader  	(int fd, ProtocolHeader *header);
 static size_t	protocolHeaderGetDataSize	(const ProtocolHeader *header);
 static int	protocolCheckHeader		(const ProtocolHeader *header);
+
+
+
+
 
 
 ssize_t protocolReadMessage(int fd, Message *msg)
@@ -81,6 +85,16 @@ ssize_t protocolReadMessage(int fd, Message *msg)
 	return ret;
 }
 
+
+
+
+
+
+
+
+
+
+
 ssize_t protocolSendMessage(int fd, const Message *msg)
 {
 	ssize_t ret;
@@ -105,6 +119,18 @@ ssize_t protocolSendMessage(int fd, const Message *msg)
 	
 	return ret;
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 static ssize_t protocolSendData(int fd, void *data, size_t dataLen)
@@ -132,6 +158,16 @@ static ssize_t protocolSendData(int fd, void *data, size_t dataLen)
 	return ret;
 }
 
+
+
+
+
+
+
+
+
+
+
 static ssize_t protocolReadData(int fd, void *data, const ProtocolHeader *header)
 {
 	ssize_t	ret;
@@ -141,6 +177,14 @@ static ssize_t protocolReadData(int fd, void *data, const ProtocolHeader *header
 
 	return  read(fd, data, header->dataLen);
 }
+
+
+
+
+
+
+
+
 
 static ssize_t protocolReadDataHeader(int fd, ProtocolHeader *header)
 {
@@ -157,12 +201,25 @@ static ssize_t protocolReadDataHeader(int fd, ProtocolHeader *header)
 	return ret;
 }
 
+
+
+
+
+
+
 static size_t protocolHeaderGetDataSize(const ProtocolHeader *header)
 {
 	assert(header != NULL);
 	
 	return header->dataLen;
 }
+
+
+
+
+
+
+
 
 static int protocolCheckHeader(const ProtocolHeader *header)
 {
