@@ -3162,7 +3162,7 @@ int keyClose(Key *key) {
 void *keySerialize(Key *key) {
 	size_t metaInfoSize=0;
 	size_t fullNameSize=0;
-	void *serilized=0;
+	void *serialized=0;
 	int isUser=0;
 	
 	fullNameSize=keyGetFullNameSize(key);
@@ -3204,13 +3204,13 @@ Key *keyUnserialize(void *serialized) {
 	Key *key=0;
 	size_t metaInfoSize=0;
 	
-	if (!block) return 0;
+	if (!serialized) return 0;
 	
-	key=keyNew(KEY_SWITCH_LAST);
+	key=keyNew(KEY_SWITCH_END);
 	
 	/* First part: the metainfo */
 	metaInfoSize = KEY_METAINFO_SIZE(key);
-	memcpy(key,block,metaInfoSize);
+	memcpy(key,serialized,metaInfoSize);
 	
 	/* Second part: the comment */
 	memcpy(key->comment,serialized+metaInfoSize,key->commentSize);
