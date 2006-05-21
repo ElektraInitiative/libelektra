@@ -1,275 +1,93 @@
-diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigbackend.cpp kdelibs-3.5.2/kdecore/kconfigbackend.cpp
---- kdelibs-3.5.2.orig/kdecore/kconfigbackend.cpp	2005-10-10 17:06:02.000000000 +0200
-+++ kdelibs-3.5.2/kdecore/kconfigbackend.cpp	2006-05-08 19:08:43.000000000 +0200
-@@ -15,8 +15,12 @@
- 
-   You should have received a copy of the GNU Library General Public License
-   along with this library; see the file COPYING.LIB.  If not, write to
--  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
--  Boston, MA 02110-1301, USA.
+diff -Naur kdelibs-3.5.2.orig/kdecore/elektra.h kdelibs-3.5.2/kdecore/elektra.h
+--- kdelibs-3.5.2.orig/kdecore/elektra.h	1970-01-01 01:00:00.000000000 +0100
++++ kdelibs-3.5.2/kdecore/elektra.h	2006-05-21 12:52:27.000000000 +0200
+@@ -0,0 +1,8 @@
++#ifndef _ELEKTRA_DEFAULT_
++
++// Define elektra defaults prefix
++
++#define ELEKTRA_ROOT_PATH "system/sw"
++#define ELEKTRA_USER_PATH "user/sw"
++
++#endif
+diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigbackend_wrapper.cpp kdelibs-3.5.2/kdecore/kconfigbackend_wrapper.cpp
+--- kdelibs-3.5.2.orig/kdecore/kconfigbackend_wrapper.cpp	1970-01-01 01:00:00.000000000 +0100
++++ kdelibs-3.5.2/kdecore/kconfigbackend_wrapper.cpp	2006-05-21 12:49:30.000000000 +0200
+@@ -0,0 +1,185 @@
++/*
++  This file is part of the KDE libraries
++  Copyright (c) 1999 Preston Brown <pbrown@kde.org>
++  Copyright (c) 1997-1999 Matthias Kalle Dalheimer <kalle@kde.org>
++
++  This library is free software; you can redistribute it and/or
++  modify it under the terms of the GNU Library General Public
++  License as published by the Free Software Foundation; either
++  version 2 of the License, or (at your option) any later version.
++
++  This library is distributed in the hope that it will be useful,
++  but WITHOUT ANY WARRANTY; without even the implied warranty of
++  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++  Library General Public License for more details.
++
++  You should have received a copy of the GNU Library General Public License
++  along with this library; see the file COPYING.LIB.  If not, write to
 +  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 +  Boston, MA 02111-1307, USA.
 +
-+  Yannick Lecaillez - <yl@itioweb.com>
-+  Elektra support added. KConfigBackEnd act now as a wrapper for
-+  configuration parser.
- */
- 
- #include <config.h>
-@@ -40,6 +44,8 @@
- #include <qtextstream.h>
- 
- #include "kconfigbackend.h"
++  Elektra patch by Yannick Lecaillez <sizon5@gmail.com>
++*/
++
++#include <config.h>
++
++#include <unistd.h>
++#include <ctype.h>
++#ifdef HAVE_SYS_MMAN_H
++#include <sys/mman.h>
++#endif
++#include <sys/types.h>
++#ifdef HAVE_SYS_STAT_H
++#include <sys/stat.h>
++#endif
++#include <fcntl.h>
++#include <signal.h>
++#include <setjmp.h>
++
++#include <qdir.h>
++#include <qfileinfo.h>
++#include <qtextcodec.h>
++#include <qtextstream.h>
++
++#include "kconfigbackend_wrapper.h"
 +#include "kconfigparser.h"
 +#include "kconfigparserfactory.h"
- #include "kconfigbase.h"
- #include <kapplication.h>
- #include <kglobal.h>
-@@ -50,1066 +56,135 @@
- #include <kurl.h>
- #include <kde_file.h>
- 
--extern bool checkAccess(const QString& pathname, int mode);
--/* translate escaped escape sequences to their actual values. */
--static QCString printableToString(const char *str, int l)
--{
--  // Strip leading white-space.
--  while((l>0) &&
--        ((*str == ' ') || (*str == '\t') || (*str == '\r')))
--  {
--     str++; l--;
--  }
--
--  // Strip trailing white-space.
--  while((l>0) &&
--        ((str[l-1] == ' ') || (str[l-1] == '\t') || (str[l-1] == '\r')))
--  {
--     l--;
--  }
--
--  QCString result(l + 1);
--  char *r = result.data();
--
--  for(int i = 0; i < l;i++, str++)
--  {
--     if (*str == '\\')
--     {
--        i++, str++;
--        if (i >= l) // End of line. (Line ends with single slash)
--        {
--           *r++ = '\\';
--           break;
--        }
--        switch(*str)
--        {
--           case 's':
--              *r++ = ' ';
--              break;
--           case 't':
--              *r++ = '\t';
--              break;
--           case 'n':
--              *r++ = '\n';
--              break;
--           case 'r':
--              *r++ = '\r';
--              break;
--           case '\\':
--              *r++ = '\\';
--              break;
--           default:
--              *r++ = '\\';
--              *r++ = *str;
--        }
--     }
--     else
--     {
--        *r++ = *str;
--     }
--  }
--  result.truncate(r-result.data());
--  return result;
--}
--
--static QCString stringToPrintable(const QCString& str){
--  QCString result(str.length()*2); // Maximum 2x as long as source string
--  register char *r = result.data();
--  register char *s = str.data();
--
--  if (!s) return QCString("");
--
--  // Escape leading space
--  if (*s == ' ')
--  {
--     *r++ = '\\'; *r++ = 's';
--     s++;
--  }
--
--  if (*s)
--  {
--   while(*s)
--   {
--    if (*s == '\n')
--    {
--      *r++ = '\\'; *r++ = 'n';
--    }
--    else if (*s == '\t')
--    {
--      *r++ = '\\'; *r++ = 't';
--    }
--    else if (*s == '\r')
--    {
--      *r++ = '\\'; *r++ = 'r';
--    }
--    else if (*s == '\\')
--    {
--      *r++ = '\\'; *r++ = '\\';
--    }
--    else
--    {
--      *r++ = *s;
--    }
--    s++;
--   }
--   // Escape trailing space
--   if (*(r-1) == ' ')
--   {
--      *(r-1) = '\\'; *r++ = 's';
--   }
--  }
--
--  result.truncate(r - result.data());
--  return result;
--}
++#include "kconfigbase.h"
++#include <kapplication.h>
++#include <kglobal.h>
++#include <kprocess.h>
++#include <klocale.h>
++#include <kstandarddirs.h>
++#include <ksavefile.h>
++#include <kurl.h>
++#include <kde_file.h>
++
 +#include <kdb.h>
- 
--static QCString decodeGroup(const char*s, int l)
--{
--  QCString result(l);
--  register char *r = result.data();
++
 +class KConfigParser;
- 
--  l--; // Correct for trailing \0
--  while(l)
--  {
--    if ((*s == '[') && (l > 1))
--    {
--       if ((*(s+1) == '['))
--       {
--          l--;
--          s++;
--       }
--    }
--    if ((*s == ']') && (l > 1))
--    {
--       if ((*(s+1) == ']'))
--       {
--          l--;
--          s++;
--       }
--    }
--    *r++ = *s++;
--    l--;
--  }
--  result.truncate(r - result.data());
--  return result;
--}
--
--static QCString encodeGroup(const QCString &str)
++
 +KConfigBackEnd::KConfigBackEnd(KConfigBase *_config,
 +			       const QString &_fileName,
 +			       const char * _resType,
 +			       bool _useKDEGlobals)
 +  : pConfig(_config), mFileMode(-1)
- {
--  int l = str.length();
--  QCString result(l*2+1);
--  register char *r = result.data();
--  register char *s = str.data();
--  while(l)
--  {
--    if ((*s == '[') || (*s == ']'))
--       *r++ = *s;
--    *r++ = *s++;
--    l--;
--  }
--  result.truncate(r - result.data());
--  return result;
++{
 +   mParser = NULL;
 +   changeFileName(_fileName, _resType, _useKDEGlobals);
- }
- 
--class KConfigBackEnd::KConfigBackEndPrivate
--{
--public:
--   QDateTime localLastModified;
--   uint      localLastSize;
--   KLockFile::Ptr localLockFile;
--   KLockFile::Ptr globalLockFile;
--};
--
- void KConfigBackEnd::changeFileName(const QString &_fileName,
-                                     const char * _resType,
-                                     bool _useKDEGlobals)
- {
--   mfileName = _fileName;
--   resType = _resType;
--   useKDEGlobals = _useKDEGlobals;
--   if (mfileName.isEmpty())
--      mLocalFileName = QString::null;
--   else if (!QDir::isRelativePath(mfileName))
--      mLocalFileName = mfileName;
--   else
--      mLocalFileName = KGlobal::dirs()->saveLocation(resType) + mfileName;
--
--   if (useKDEGlobals)
--      mGlobalFileName = KGlobal::dirs()->saveLocation("config") +
--	      QString::fromLatin1("kdeglobals");
--   else
--      mGlobalFileName = QString::null;
--
--   d->localLastModified = QDateTime();
--   d->localLastSize = 0;
--   d->localLockFile = 0;
--   d->globalLockFile = 0;
--}
- 
--KLockFile::Ptr KConfigBackEnd::lockFile(bool bGlobal)
--{
--   if (bGlobal)
--   {
--      if (d->globalLockFile)
--         return d->globalLockFile;
--      
--      if (!mGlobalFileName.isEmpty())
--      {
--         d->globalLockFile = new KLockFile(mGlobalFileName+".lock");
--         return d->globalLockFile;
--      }
--   }
--   else
--   {
--      if (d->localLockFile)
--         return d->localLockFile;
--      
--      if (!mLocalFileName.isEmpty())
--      {
--         d->localLockFile = new KLockFile(mLocalFileName+".lock");
--         return d->localLockFile;
--      }
--   }
--   return 0;
--}
-+	FILE *fp;
- 
--KConfigBackEnd::KConfigBackEnd(KConfigBase *_config,
--			       const QString &_fileName,
--			       const char * _resType,
--			       bool _useKDEGlobals)
--  : pConfig(_config), bFileImmutable(false), mConfigState(KConfigBase::NoAccess), mFileMode(-1)
--{
--   d = new KConfigBackEndPrivate;
--   changeFileName(_fileName, _resType, _useKDEGlobals);
++}
++
++void KConfigBackEnd::changeFileName(const QString &_fileName,
++                                    const char * _resType,
++                                    bool _useKDEGlobals)
++{
 +	if ( mParser ) {
 +		delete mParser;
 +		mParser = NULL;
@@ -278,1177 +96,336 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigbackend.cpp kdelibs-3.5.2/kdecore/k
 +	mParser = KConfigParserFactory::create(pConfig, _fileName, _resType, _useKDEGlobals);
 +	mParser->setFileImmutable(false);
 +	mParser->setConfigState(KConfigBase::NoAccess);
- }
- 
--KConfigBackEnd::~KConfigBackEnd()
++}
++
 +KConfigBase::ConfigState KConfigBackEnd::getConfigState()
- {
--   delete d;
++{
 +	if ( mParser )
 +		return mParser->getConfigState();
 +
 +	return KConfigBase::NoAccess;
- }
- 
--void KConfigBackEnd::setFileWriteMode(int mode)
++}
++
 +void KConfigBackEnd::setConfigState(KConfigBase::ConfigState state)
- {
--  mFileMode = mode;
++{
 +	if ( mParser )
 +		return mParser->setConfigState(state);
- }
- 
--bool KConfigINIBackEnd::parseConfigFiles()
++}
++
 +QString KConfigBackEnd::fileName()
- {
--  // Check if we can write to the local file.
--  mConfigState = KConfigBase::ReadOnly;
--  if (!mLocalFileName.isEmpty() && !pConfig->isReadOnly())
--  {
--     if (checkAccess(mLocalFileName, W_OK))
--     {
--        mConfigState = KConfigBase::ReadWrite;
--     }
--     else
--     {
--        // Create the containing dir, maybe it wasn't there
--        KURL path;
--        path.setPath(mLocalFileName);
--        QString dir=path.directory();
--        KStandardDirs::makeDir(dir);
--
--        if (checkAccess(mLocalFileName, W_OK))
--        {
--           mConfigState = KConfigBase::ReadWrite;
--        }
--     }
--     QFileInfo info(mLocalFileName);
--     d->localLastModified = info.lastModified();
--     d->localLastSize = info.size();
--  }
--
--  // Parse all desired files from the least to the most specific.
--  bFileImmutable = false;
--
--  // Parse the general config files
--  if (useKDEGlobals) {
--    QStringList kdercs = KGlobal::dirs()->
--      findAllResources("config", QString::fromLatin1("kdeglobals"));
--
--#ifdef Q_WS_WIN
--    QString etc_kderc = QFile::decodeName( QCString(getenv("WINDIR")) + "\\kderc" );
--#else
--    QString etc_kderc = QString::fromLatin1("/etc/kderc");
--#endif
--
--    if (checkAccess(etc_kderc, R_OK))
--      kdercs += etc_kderc;
++{
 +	if ( mParser )
 +		return mParser->fileName();
- 
--    kdercs += KGlobal::dirs()->
--      findAllResources("config", QString::fromLatin1("system.kdeglobals"));
--
--    QStringList::ConstIterator it;
++
 +	return "";
 +}
- 
--    for (it = kdercs.fromLast(); it != kdercs.end(); --it) {
--
--      QFile aConfigFile( *it );
--      if (!aConfigFile.open( IO_ReadOnly ))
--	   continue;
--      parseSingleConfigFile( aConfigFile, 0L, true, (*it != mGlobalFileName) );
--      aConfigFile.close();
--      if (bFileImmutable)
--         break;
--    }
--  }
--
--  bool bReadFile = !mfileName.isEmpty();
--  while(bReadFile) {
--    bReadFile = false;
--    QString bootLanguage;
--    if (useKDEGlobals && localeString.isEmpty() && !KGlobal::_locale) {
--       // Boot strap language
--       bootLanguage = KLocale::_initLanguage(pConfig);
--       setLocaleString(bootLanguage.utf8());
--    }
--
--    bFileImmutable = false;
--    QStringList list;
--    if ( !QDir::isRelativePath(mfileName) )
--       list << mfileName;
--    else
--       list = KGlobal::dirs()->findAllResources(resType, mfileName);
--
--    QStringList::ConstIterator it;
--
--    for (it = list.fromLast(); it != list.end(); --it) {
--
--      QFile aConfigFile( *it );
--      // we can already be sure that this file exists
--      bool bIsLocal = (*it == mLocalFileName);
--      if (aConfigFile.open( IO_ReadOnly )) {
--         parseSingleConfigFile( aConfigFile, 0L, false, !bIsLocal );
--         aConfigFile.close();
--         if (bFileImmutable)
--            break;
--      }
--    }
--    if (KGlobal::dirs()->isRestrictedResource(resType, mfileName))
--       bFileImmutable = true;
--    QString currentLanguage;
--    if (!bootLanguage.isEmpty())
--    {
--       currentLanguage = KLocale::_initLanguage(pConfig);
--       // If the file changed the language, we need to read the file again
--       // with the new language setting.
--       if (bootLanguage != currentLanguage)
--       {
--          bReadFile = true;
--          setLocaleString(currentLanguage.utf8());
--       }
--    }
--  }
--  if (bFileImmutable)
--     mConfigState = KConfigBase::ReadOnly;
++
 +KLockFile::Ptr KConfigBackEnd::lockFile(bool bGlobal)
 +{
 +	if ( mParser )
 +		return mParser->lockFile(bGlobal);
- 
--  return true;
++
 +	return 0;
- }
- 
--#ifdef HAVE_MMAP
--#ifdef SIGBUS
--static sigjmp_buf mmap_jmpbuf;
--struct sigaction mmap_old_sigact;
--
--extern "C" {
--   static void mmap_sigbus_handler(int)
--   {
--      siglongjmp (mmap_jmpbuf, 1);
--   }
++}
++
 +void KConfigBackEnd::setLocaleString(const QCString &_localeString)
 +{
 +	if ( mParser )
 +		mParser->setLocaleString(_localeString);
- }
--#endif
--#endif
- 
--extern bool kde_kiosk_exception;
- 
--void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
--					      KEntryMap *pWriteBackMap,
--					      bool bGlobal, bool bDefault)
--{
--   const char *s; // May get clobbered by sigsetjump, but we don't use them afterwards.
--   const char *eof; // May get clobbered by sigsetjump, but we don't use them afterwards.
--   QByteArray data;
--
--   if (!rFile.isOpen()) // come back, if you have real work for us ;->
--      return;
--
--   //using kdDebug() here leads to an infinite loop
--   //remove this for the release, aleXXX
--   //qWarning("Parsing %s, global = %s default = %s",
--   //           rFile.name().latin1(), bGlobal ? "true" : "false", bDefault ? "true" : "false");
--
--   QCString aCurrentGroup("<default>");
--
--   unsigned int ll = localeString.length();
--
--#ifdef HAVE_MMAP
--   static volatile const char *map;
--   map = ( const char* ) mmap(0, rFile.size(), PROT_READ, MAP_PRIVATE,
--                                          rFile.handle(), 0);
--
--   if ( map != MAP_FAILED )
--   {
--      s = (const char*) map;
--      eof = s + rFile.size();
--
--#ifdef SIGBUS
--      struct sigaction act;
--      act.sa_handler = mmap_sigbus_handler;
--      sigemptyset( &act.sa_mask );
--#ifdef SA_ONESHOT
--      act.sa_flags = SA_ONESHOT;
--#else
--      act.sa_flags = SA_RESETHAND;
--#endif      
--      sigaction( SIGBUS, &act, &mmap_old_sigact );
--
--      if (sigsetjmp (mmap_jmpbuf, 1))
--      {
--qWarning("SIGBUS while reading %s", rFile.name().latin1());
--         munmap(( char* )map, rFile.size());
--         sigaction (SIGBUS, &mmap_old_sigact, 0);
--         return;
--      }
--#endif
--   }
--   else
--#endif
--   {
--      rFile.at(0);
--      data = rFile.readAll();
--      s = data.data();
--      eof = s + data.size();
--   }
- 
--   bool fileOptionImmutable = false;
--   bool groupOptionImmutable = false;
--   bool groupSkip = false;
--
--   int line = 0;
--   for(; s < eof; s++)
--   {
--      line++;
--
--      while((s < eof) && isspace(*s) && (*s != '\n'))
--         s++; //skip leading whitespace, shouldn't happen too often
--
--      //skip empty lines, lines starting with #
--      if ((s < eof) && ((*s == '\n') || (*s == '#')))
--      {
--    sktoeol:	//skip till end-of-line
--         while ((s < eof) && (*s != '\n'))
--            s++;
--         continue; // Empty or comment or no keyword
--      }
--      const char *startLine = s;
--
--      if (*s == '[')  //group
--      {
--         // In a group [[ and ]] have a special meaning
--         while ((s < eof) && (*s != '\n')) 
--         {
--            if (*s == ']')
--            {
--               if ((s+1 < eof) && (*(s+1) == ']'))
--                  s++; // Skip "]]"
--               else
--                  break;
--            }
--
--            s++; // Search till end of group
--         }
--         const char *e = s;
--         while ((s < eof) && (*s != '\n')) s++; // Search till end of line / end of file
--         if ((e >= eof) || (*e != ']'))
--         {
--            fprintf(stderr, "Invalid group header at %s:%d\n", rFile.name().latin1(), line);
--            continue;
--         }
--         // group found; get the group name by taking everything in
--         // between the brackets
--         if ((e-startLine == 3) &&
--             (startLine[1] == '$') &&
--             (startLine[2] == 'i'))
--         {
--            if (!kde_kiosk_exception)
--               fileOptionImmutable = true;
--            continue;
--         }
--
--         aCurrentGroup = decodeGroup(startLine + 1, e - startLine);
--         //cout<<"found group ["<<aCurrentGroup<<"]"<<endl;
--
--         // Backwards compatibility
--         if (aCurrentGroup == "KDE Desktop Entry")
--            aCurrentGroup = "Desktop Entry";
--
--         groupOptionImmutable = fileOptionImmutable;
--
--         e++;
--         if ((e+2 < eof) && (*e++ == '[') && (*e++ == '$')) // Option follows
--         {
--            if ((*e == 'i') && !kde_kiosk_exception)
--            {
--               groupOptionImmutable = true;
--            }
--         }
--
--         KEntryKey groupKey(aCurrentGroup, 0);
--         KEntry entry = pConfig->lookupData(groupKey);
--         groupSkip = entry.bImmutable;
--
--         if (groupSkip && !bDefault)
--            continue;
--
--         entry.bImmutable |= groupOptionImmutable;
--         pConfig->putData(groupKey, entry, false);
--
--         if (pWriteBackMap)
--         {
--            // add the special group key indicator
--            (*pWriteBackMap)[groupKey] = entry;
--         }
--
--         continue;
--      }
--      if (groupSkip && !bDefault)
--        goto sktoeol; // Skip entry
--
--      bool optionImmutable = groupOptionImmutable;
--      bool optionDeleted = false;
--      bool optionExpand = false;
--      const char *endOfKey = 0, *locale = 0, *elocale = 0;
--      for (; (s < eof) && (*s != '\n'); s++)
--      {
--         if (*s == '=') //find the equal sign
--         {
--	    if (!endOfKey)
--        	endOfKey = s;
--            goto haveeq;
--	 }
--	 if (*s == '[') //find the locale or options.
--	 {
--            const char *option;
--            const char *eoption;
--	    endOfKey = s;
--	    option = ++s;
--	    for (;; s++)
--	    {
--		if ((s >= eof) || (*s == '\n') || (*s == '=')) {
--		    fprintf(stderr, "Invalid entry (missing ']') at %s:%d\n", rFile.name().latin1(), line);
--		    goto sktoeol;
--		}
--		if (*s == ']')
--		    break;
--	    }
--	    eoption = s;
--            if (*option != '$')
--            {
--              // Locale
--              if (locale) {
--		fprintf(stderr, "Invalid entry (second locale!?) at %s:%d\n", rFile.name().latin1(), line);
--		goto sktoeol;
--              }
--              locale = option;
--              elocale = eoption;
--            }
--            else
--            {
--              // Option
--              while (option < eoption)
--              {
--                 option++;
--                 if ((*option == 'i') && !kde_kiosk_exception)
--                    optionImmutable = true;
--                 else if (*option == 'e')
--                    optionExpand = true;
--                 else if (*option == 'd')
--                 {
--                    optionDeleted = true;
--                    goto haveeq;
--                 }
--		 else if (*option == ']')
--		    break;
--              }
--            }
--         }
--      }
--      fprintf(stderr, "Invalid entry (missing '=') at %s:%d\n", rFile.name().latin1(), line);
--      continue;
--
--   haveeq:
--      for (endOfKey--; ; endOfKey--)
--      {
--	 if (endOfKey < startLine)
--	 {
--	   fprintf(stderr, "Invalid entry (empty key) at %s:%d\n", rFile.name().latin1(), line);
--	   goto sktoeol;
--	 }
--	 if (!isspace(*endOfKey))
--	    break;
--      }
--
--      const char *st = ++s;
--      while ((s < eof) && (*s != '\n')) s++; // Search till end of line / end of file
--
--      if (locale) {
--          unsigned int cl = static_cast<unsigned int>(elocale - locale);
--          if ((ll != cl) || memcmp(locale, localeString.data(), ll))
--          {
--              // backward compatibility. C == en_US
--              if ( cl != 1 || ll != 5 || *locale != 'C' || memcmp(localeString.data(), "en_US", 5)) {
--                  //cout<<"mismatched locale '"<<QCString(locale, elocale-locale +1)<<"'"<<endl;
--                  // We can ignore this one
--                  if (!pWriteBackMap)
--                      continue; // We just ignore it
--                  // We just store it as is to be able to write it back later.
--                  endOfKey = elocale;
--                  locale = 0;
--              }
--          }
--      }
--
--      // insert the key/value line
--      QCString key(startLine, endOfKey - startLine + 2);
--      QCString val = printableToString(st, s - st);
--      //qDebug("found key '%s' with value '%s'", key.data(), val.data());
--
--      KEntryKey aEntryKey(aCurrentGroup, key);
--      aEntryKey.bLocal = (locale != 0);
--      aEntryKey.bDefault = bDefault;
--
--      KEntry aEntry;
--      aEntry.mValue = val;
--      aEntry.bGlobal = bGlobal;
--      aEntry.bImmutable = optionImmutable;
--      aEntry.bDeleted = optionDeleted;
--      aEntry.bExpand = optionExpand;
--      aEntry.bNLS = (locale != 0);
--
--      if (pWriteBackMap) {
--         // don't insert into the config object but into the temporary
--         // scratchpad map
--         pWriteBackMap->insert(aEntryKey, aEntry);
--      } else {
--         // directly insert value into config object
--         // no need to specify localization; if the key we just
--         // retrieved was localized already, no need to localize it again.
--         pConfig->putData(aEntryKey, aEntry, false);
--      }
--   }
--   if (fileOptionImmutable)
--      bFileImmutable = true;
++}
++
++
++
 +bool KConfigBackEnd::parseConfigFiles()
 +{
 +	if ( mParser )
 +		return mParser->parseConfigFiles();
- 
--#ifdef HAVE_MMAP
--   if (map)
--   {
--      munmap(( char* )map, rFile.size());
--#ifdef SIGBUS
--      sigaction (SIGBUS, &mmap_old_sigact, 0);
--#endif
--   }
--#endif
++
 +	return false;
- }
- 
--
--void KConfigINIBackEnd::sync(bool bMerge)
++}
++
 +void KConfigBackEnd::sync(bool bMerge)
- {
--  // write-sync is only necessary if there are dirty entries
--  if (!pConfig->isDirty())
--    return;
--
--  bool bEntriesLeft = true;
--
--  // find out the file to write to (most specific writable file)
--  // try local app-specific file first
--
--  if (!mfileName.isEmpty()) {
--    // Create the containing dir if needed
--    if ((resType!="config") && !QDir::isRelativePath(mLocalFileName))
--    {
--       KURL path;
--       path.setPath(mLocalFileName);
--       QString dir=path.directory();
--       KStandardDirs::makeDir(dir);
--    }
--
--    // Can we allow the write? We can, if the program
--    // doesn't run SUID. But if it runs SUID, we must
--    // check if the user would be allowed to write if
--    // it wasn't SUID.
--    if (checkAccess(mLocalFileName, W_OK)) {
--      // File is writable
--      KLockFile::Ptr lf;
--
--      bool mergeLocalFile = bMerge;
--      // Check if the file has been updated since.
--      if (mergeLocalFile)
--      {
--         lf = lockFile(false); // Lock file for local file
--         if (lf && lf->isLocked())
--            lf = 0; // Already locked, we don't need to lock/unlock again
--
--         if (lf) 
--         {
--            lf->lock( KLockFile::LockForce );
--            // But what if the locking failed? Ignore it for now...
--         }
--         
--         QFileInfo info(mLocalFileName);
--         if ((d->localLastSize == info.size()) &&
--             (d->localLastModified == info.lastModified()))
--         {
--            // Not changed, don't merge.
--            mergeLocalFile = false;
--         }
--         else
--         {
--            // Changed...
--            d->localLastModified = QDateTime();
--            d->localLastSize = 0;
--         }
--      }
--
--      bEntriesLeft = writeConfigFile( mLocalFileName, false, mergeLocalFile );
--      
--      // Only if we didn't have to merge anything can we use our in-memory state
--      // the next time around. Otherwise the config-file may contain entries
--      // that are different from our in-memory state which means we will have to 
--      // do a merge from then on. 
--      // We do not automatically update the in-memory state with the on-disk 
--      // state when writing the config to disk. We only do so when 
--      // KCOnfig::reparseConfiguration() is called.
--      // For KDE 4.0 we may wish to reconsider that.
--      if (!mergeLocalFile)
--      {
--         QFileInfo info(mLocalFileName);
--         d->localLastModified = info.lastModified();
--         d->localLastSize = info.size();
--      }
--      if (lf) lf->unlock();
--    }
--  }
--
--  // only write out entries to the kdeglobals file if there are any
--  // entries marked global (indicated by bEntriesLeft) and
--  // the useKDEGlobals flag is set.
--  if (bEntriesLeft && useKDEGlobals) {
--
--    // can we allow the write? (see above)
--    if (checkAccess ( mGlobalFileName, W_OK )) {
--      KLockFile::Ptr lf = lockFile(true); // Lock file for global file
--      if (lf && lf->isLocked())
--         lf = 0; // Already locked, we don't need to lock/unlock again
--
--      if (lf) 
--      {
--         lf->lock( KLockFile::LockForce );
--         // But what if the locking failed? Ignore it for now...
--      }
--      writeConfigFile( mGlobalFileName, true, bMerge ); // Always merge
--      if (lf) lf->unlock();
--    }
--  }
--
++{
 +	if ( mParser )
 +		mParser->sync(bMerge);
- }
- 
--static void writeEntries(FILE *pStream, const KEntryMap& entryMap, bool defaultGroup, bool &firstEntry, const QCString &localeString)
++}
++
 +void KConfigBackEnd::setFileWriteMode(int mode)
- {
--  // now write out all other groups.
--  QCString currentGroup;
--  for (KEntryMapConstIterator aIt = entryMap.begin();
--       aIt != entryMap.end(); ++aIt)
--  {
--     const KEntryKey &key = aIt.key();
--
--     // Either proces the default group or all others
--     if ((key.mGroup != "<default>") == defaultGroup)
--        continue; // Skip
--
--     // Skip default values and group headers.
--     if ((key.bDefault) || key.mKey.isEmpty())
--        continue; // Skip
--
--     const KEntry &currentEntry = *aIt;
--
--     KEntryMapConstIterator aTestIt = aIt;
--     ++aTestIt;
--     bool hasDefault = (aTestIt != entryMap.end());
--     if (hasDefault)
--     {
--        const KEntryKey &defaultKey = aTestIt.key();
--        if ((!defaultKey.bDefault) ||
--            (defaultKey.mKey != key.mKey) ||
--            (defaultKey.mGroup != key.mGroup) ||
--            (defaultKey.bLocal != key.bLocal))
--           hasDefault = false;
--     }
--
--
--     if (hasDefault)
--     {
--        // Entry had a default value
--        if ((currentEntry.mValue == (*aTestIt).mValue) &&
--            (currentEntry.bDeleted == (*aTestIt).bDeleted))
--           continue; // Same as default, don't write.
--     }
--     else
--     {
--        // Entry had no default value.
--        if (currentEntry.bDeleted)
--           continue; // Don't write deleted entries if there is no default.
--     }
--
--     if (!defaultGroup && (currentGroup != key.mGroup)) {
--	if (!firstEntry)
--	    fprintf(pStream, "\n");
--	currentGroup = key.mGroup;
--	fprintf(pStream, "[%s]\n", encodeGroup(currentGroup).data());
--     }
--
--     firstEntry = false;
--     // it is data for a group
--     fputs(key.mKey.data(), pStream); // Key
--
--     if ( currentEntry.bNLS )
--     {
--        fputc('[', pStream);
--        fputs(localeString.data(), pStream);
--        fputc(']', pStream);
--     }
--
--     if (currentEntry.bDeleted)
--     {
--        fputs("[$d]\n", pStream); // Deleted
--     }
--     else
--     {
--        if (currentEntry.bImmutable || currentEntry.bExpand)
--        {
--           fputc('[', pStream);
--           fputc('$', pStream);
--           if (currentEntry.bImmutable)
--              fputc('i', pStream);
--           if (currentEntry.bExpand)
--              fputc('e', pStream);
--
--           fputc(']', pStream);
--        }
--        fputc('=', pStream);
--        fputs(stringToPrintable(currentEntry.mValue).data(), pStream);
--        fputc('\n', pStream);
--     }
--  } // for loop
++{
 +  mFileMode = mode;
- }
- 
--bool KConfigINIBackEnd::getEntryMap(KEntryMap &aTempMap, bool bGlobal,
--                                    QFile *mergeFile)
--{
--  bool bEntriesLeft = false;
--  bFileImmutable = false;
++}
++
 +void KConfigBackEnd::virtual_hook( int, void* )
 +{ /*BASE::virtual_hook( id, data );*/ }
- 
--  // Read entries from disk
--  if (mergeFile && mergeFile->open(IO_ReadOnly))
--  {
--     // fill the temporary structure with entries from the file
--     parseSingleConfigFile(*mergeFile, &aTempMap, bGlobal, false );
--
--     if (bFileImmutable) // File has become immutable on disk
--        return bEntriesLeft;
--  }
--
--  KEntryMap aMap = pConfig->internalEntryMap();
--
--  // augment this structure with the dirty entries from the config object
--  for (KEntryMapIterator aIt = aMap.begin();
--       aIt != aMap.end(); ++aIt)
--  {
--    const KEntry &currentEntry = *aIt;
--    if(aIt.key().bDefault)
--    {
--       aTempMap.replace(aIt.key(), currentEntry);
--       continue;
--    }
--
--    if (mergeFile && !currentEntry.bDirty)
--       continue;
--
--    // only write back entries that have the same
--    // "globality" as the file
--    if (currentEntry.bGlobal != bGlobal)
--    {
--       // wrong "globality" - might have to be saved later
--       bEntriesLeft = true;
--       continue;
--    }
--
--    // put this entry from the config object into the
--    // temporary map, possibly replacing an existing entry
--    KEntryMapIterator aIt2 = aTempMap.find(aIt.key());
--    if (aIt2 != aTempMap.end() && (*aIt2).bImmutable)
--       continue; // Bail out if the on-disk entry is immutable
++
 +bool KConfigBackEnd::checkConfigFilesWritable(bool warnUser)
 +{
- 
--    aTempMap.insert(aIt.key(), currentEntry, true);
--  } // loop
++
 +	if ( mParser )
 +		return mParser->checkConfigFilesWritable(warnUser);
- 
--  return bEntriesLeft;
++
 +	return false;
- }
- 
--/* antlarr: KDE 4.0:  make the first parameter "const QString &" */
--bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
--					bool bMerge)
++}
++
 +const char* KConfigBackEnd::resource()
- {
--  // is the config object read-only?
--  if (pConfig->isReadOnly())
--    return true; // pretend we wrote it
--
--  KEntryMap aTempMap;
--  QFile *mergeFile = (bMerge ? new QFile(filename) : 0);
--  bool bEntriesLeft = getEntryMap(aTempMap, bGlobal, mergeFile);
--  delete mergeFile;
--  if (bFileImmutable)
--    return true; // pretend we wrote it
--
--  // OK now the temporary map should be full of ALL entries.
--  // write it out to disk.
--
--  // Check if file exists:
--  int fileMode = -1;
--  bool createNew = true;
--
--  KDE_struct_stat buf;
--  if (KDE_stat(QFile::encodeName(filename), &buf) == 0)
--  {
--     if (buf.st_uid == getuid())
--     {
--        // Preserve file mode if file exists and is owned by user.
--        fileMode = buf.st_mode & 0777;
--     }
--     else
--     {
--        // File is not owned by user:
--        // Don't create new file but write to existing file instead.
--        createNew = false;
--     }
--  }
--
--  KSaveFile *pConfigFile = 0;
--  FILE *pStream = 0;
--
--  if (createNew)
--  {
--     pConfigFile = new KSaveFile( filename, 0600 );
--
--     if (pConfigFile->status() != 0)
--     {
--        delete pConfigFile;
--        return bEntriesLeft;
--     }
--
--     if (!bGlobal && (fileMode == -1))
--        fileMode = mFileMode;
--
--     if (fileMode != -1)
--     {
--        fchmod(pConfigFile->handle(), fileMode);
--     }
--
--     pStream = pConfigFile->fstream();
--  }
--  else
--  {
--     // Open existing file.
--     // We use open() to ensure that we call without O_CREAT.
--     int fd = KDE_open( QFile::encodeName(filename), O_WRONLY | O_TRUNC );
--     if (fd < 0)
--     {
--        return bEntriesLeft;
--     }
--     pStream = KDE_fdopen( fd, "w");
--     if (!pStream)
--     {
--        close(fd);
--        return bEntriesLeft;
--     }
--  }
--
--  writeEntries(pStream, aTempMap);
--
--  if (pConfigFile)
--  {
--     bool bEmptyFile = (ftell(pStream) == 0);
--     if ( bEmptyFile && ((fileMode == -1) || (fileMode == 0600)) )
--     {
--        // File is empty and doesn't have special permissions: delete it.
--        ::unlink(QFile::encodeName(filename));
--        pConfigFile->abort();
--     }
--     else
--     {
--        // Normal case: Close the file
--        pConfigFile->close();
--     }
--     delete pConfigFile;
--  }
--  else
--  {
--     fclose(pStream);
--  }
++{
 +	if ( mParser )
 +		return mParser->resource();
- 
--  return bEntriesLeft;
++
 +	return NULL;
- }
- 
--void KConfigINIBackEnd::writeEntries(FILE *pStream, const KEntryMap &aTempMap)
++}
++
 +bool KConfigBackEnd::isFileImmutable()
- {
--  bool firstEntry = true;
++{
 +	if ( mParser )
 +		return mParser->isFileImmutable();
- 
--  // Write default group
--  ::writeEntries(pStream, aTempMap, true, firstEntry, localeString);
--
--  // Write all other groups
--  ::writeEntries(pStream, aTempMap, false, firstEntry, localeString);
++
 +	return false;
- }
- 
--void KConfigBackEnd::virtual_hook( int, void* )
--{ /*BASE::virtual_hook( id, data );*/ }
++}
++
 +bool KConfigBackEnd::isUseKDEGlobals()
 +{
 +	if ( mParser )
 +		return mParser->isUseKDEGlobals();
- 
--void KConfigINIBackEnd::virtual_hook( int id, void* data )
--{ KConfigBackEnd::virtual_hook( id, data ); }
++
 +	return false;
 +}
- 
--bool KConfigBackEnd::checkConfigFilesWritable(bool warnUser)
++
 +KConfigBackEnd::~KConfigBackEnd()
- {
--  // WARNING: Do NOT use the event loop as it may not exist at this time.
--  bool allWritable = true;
--  QString errorMsg;
--  if ( !mLocalFileName.isEmpty() && !bFileImmutable && !checkAccess(mLocalFileName,W_OK) )
--  {
--    errorMsg = i18n("Will not save configuration.\n");
--    allWritable = false;
--    errorMsg += i18n("Configuration file \"%1\" not writable.\n").arg(mLocalFileName);
--  }
--  // We do not have an immutability flag for kdeglobals. However, making kdeglobals mutable while making
--  // the local config file immutable is senseless.
--  if ( !mGlobalFileName.isEmpty() && useKDEGlobals && !bFileImmutable && !checkAccess(mGlobalFileName,W_OK) )
--  {
--    if ( errorMsg.isEmpty() )
--      errorMsg = i18n("Will not save configuration.\n");
--    errorMsg += i18n("Configuration file \"%1\" not writable.\n").arg(mGlobalFileName);
--    allWritable = false;
--  }
--
--  if (warnUser && !allWritable)
--  {
--    // Note: We don't ask the user if we should not ask this question again because we can't save the answer.
--    errorMsg += i18n("Please contact your system administrator.");
--    QString cmdToExec = KStandardDirs::findExe(QString("kdialog"));
--    KApplication *app = kapp;
--    if (!cmdToExec.isEmpty() && app)
--    {
--      KProcess lprocess;
--      lprocess << cmdToExec << "--title" << app->instanceName() << "--msgbox" << errorMsg.local8Bit();
--      lprocess.start( KProcess::Block );
--    }
--  }
--  return allWritable;
++{
 +   if ( mParser ) {
 +	delete mParser;
 +	mParser = NULL;
 +   }
- }
++}
 +
-diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigbackend.h kdelibs-3.5.2/kdecore/kconfigbackend.h
---- kdelibs-3.5.2.orig/kdecore/kconfigbackend.h	2005-10-10 17:06:03.000000000 +0200
-+++ kdelibs-3.5.2/kdecore/kconfigbackend.h	2006-05-08 19:37:46.000000000 +0200
-@@ -15,20 +15,22 @@
- 
-    You should have received a copy of the GNU Library General Public License
-    along with this library; see the file COPYING.LIB.  If not, write to
--   the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
--   Boston, MA 02110-1301, USA.
+diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigbackend_wrapper.h kdelibs-3.5.2/kdecore/kconfigbackend_wrapper.h
+--- kdelibs-3.5.2.orig/kdecore/kconfigbackend_wrapper.h	1970-01-01 01:00:00.000000000 +0100
++++ kdelibs-3.5.2/kdecore/kconfigbackend_wrapper.h	2006-05-21 12:43:20.000000000 +0200
+@@ -0,0 +1,176 @@
++/*
++   This file is part of the KDE libraries
++   Copyright (c) 1999 Preston Brown <pbrown@kde.org>
++   Portions copyright (c) 1997 Matthias Kalle Dalheimer <kalle@kde.org>
++
++   This library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Library General Public
++   License as published by the Free Software Foundation; either
++   version 2 of the License, or (at your option) any later version.
++
++   This library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Library General Public License for more details.
++
++   You should have received a copy of the GNU Library General Public License
++   along with this library; see the file COPYING.LIB.  If not, write to
 +   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 +   Boston, MA 02111-1307, USA.
- */
- 
- #ifndef _KCONFIGBACKEND_H
- #define _KCONFIGBACKEND_H
- 
++
++   Elektra patch by Yannick Lecaillez <sizon5@gmail.com>
++*/
++
++#ifndef _KCONFIGBACKEND_H
++#define _KCONFIGBACKEND_H
++
 +#include "kconfig.h"
- #include "kconfigdata.h"
- #include <kconfigbase.h>
- #include <klockfile.h>
++#include "kconfigdata.h"
++#include <kconfigbase.h>
++#include <klockfile.h>
 +#include "kconfigparser.h"
- #include "kdelibs_export.h"
- 
--class QFile;
--class KConfigBackEndPrivate;
++#include "kdelibs_export.h"
++
 +// class QFile;
 +// class KConfigBackEndPrivate;
- 
- /**
-  * Abstract base class for KDE configuration file loading/saving.
-@@ -48,6 +50,8 @@
- {
-   friend class KConfig;
-   friend class KSharedConfig;
-+  friend class KConfigParser;
 +
- public:
-   /**
-    * Constructs a configuration back end.
-@@ -78,7 +82,7 @@
-    *
-    * @returns Whether or not parsing was successful.
-    */
--  virtual bool parseConfigFiles() = 0;
++/**
++ * "New" KConfigBackEnd class.
++ * This class is no more an abstract but a wrapper. Its call
++ * KConfigParserFactory for get the KConfigParser object responsible
++ * of configuration loading/saving for a specific couple of filename
++ * and resource type.
++ * The only "usefull" method is changeFileName(), other are wrapper
++ * to the associated KConfigParser.
++ *
++ * @author Yannick Lecaillez <sizon5@gmail.com>
++ *
++ * @short KDE Configuration file loading/saving abstract base class
++ */
++class KDECORE_EXPORT KConfigBackEnd
++{
++  friend class KConfig;
++  friend class KSharedConfig;
++  friend class KConfigParser;
++public:
++  /**
++   * Constructs a configuration back end.
++   *
++   * @param _config Specifies the configuration object which values
++   *        will be passed to as they are read, or from where values
++   *        to be written to will be obtained from.
++   * @param _fileName The name of the file in which config
++   *        data is stored.  All registered configuration directories
++   *        will be looked in in order of decreasing relevance.
++   * @param _resType the resource type of the fileName specified, _if_
++   *        it is not an absolute path (otherwise this parameter is ignored).
++   * @param _useKDEGlobals If true, the user's system-wide kdeglobals file
++   *        will be imported into the config object.  If false, only
++   *        the filename specified will be dealt with.
++   */
++  KConfigBackEnd(KConfigBase *_config, const QString &_fileName,
++		 const char * _resType, bool _useKDEGlobals);
++
++  /**
++   * Destructs the configuration backend.
++   */
++  virtual ~KConfigBackEnd();
++
++  /**
++   * Parses all configuration files for a configuration object.  This
++   * method must be reimplemented by the derived classes.
++   *
++   * @returns Whether or not parsing was successful.
++   */
 +  bool parseConfigFiles();
- 
-   /**
-    * Writes configuration data to file(s).  This method must be
-@@ -89,7 +93,7 @@
-    *        data is read off the disk and merged.  If false, the on-disk
-    *        file is removed and only in-memory data is written out.
-    */
--  virtual void sync(bool bMerge = true) = 0;
++
++  /**
++   * Writes configuration data to file(s).  This method must be
++   * reimplemented by the derived classes.
++   *
++   * @param bMerge Specifies whether the old config file already
++   *        on disk should be merged in with the data in memory.  If true,
++   *        data is read off the disk and merged.  If false, the on-disk
++   *        file is removed and only in-memory data is written out.
++   */
 +  void sync(bool bMerge = true);
- 
-   /**
-    * Changes the filenames associated with this back end.  You should
-@@ -103,33 +107,28 @@
-    */
-   void changeFileName(const QString &_fileName, const char * _resType,
- 		      bool _useKDEGlobals);
++
++  /**
++   * Changes the filenames associated with this back end.  You should
++   * probably reparse your config info after doing this.
++   *
++   * @param _fileName the new filename to use
++   * @param _resType the resource type of the fileName specified, _if_
++   *        it is not an absolute path (otherwise this parameter is ignored).
++   * @param _useKDEGlobals specifies whether or not to also parse the
++   *        global KDE configuration files.
++   */
++  void changeFileName(const QString &_fileName, const char * _resType,
++		      bool _useKDEGlobals);
 +  QString fileName();
- 
-   /**
-    * Returns the state of the app-config object.
-    *
-    * @see KConfig::getConfigState
-    */
--  virtual KConfigBase::ConfigState getConfigState() const
--    { return mConfigState; }
--
--  /**
--   * Returns the filename as passed to the constructor.
--   * @return the filename as passed to the constructor.
--   */
--  QString fileName() const { return mfileName; }
++
++  /**
++   * Returns the state of the app-config object.
++   *
++   * @see KConfig::getConfigState
++   */
 +   KConfigBase::ConfigState getConfigState();
 +   void setConfigState(KConfigBase::ConfigState state);
- 
-   /**
-    * Returns the resource type as passed to the constructor.
-    * @return the resource type as passed to the constructor.
-    */
--  const char * resource() const { return resType; }
++
++  /**
++   * Returns the resource type as passed to the constructor.
++   * @return the resource type as passed to the constructor.
++   */
 +  const char * resource();
- 
-   /**
-    * Set the locale string that defines the current language.
-    * @param _localeString the identifier of the language
-    * @see KLocale
-    */
--  void setLocaleString(const QCString &_localeString) { localeString = _localeString; }
++
++  /**
++   * Set the locale string that defines the current language.
++   * @param _localeString the identifier of the language
++   * @see KLocale
++   */
 +  void setLocaleString(const QCString &_localeString);
- 
-   /**
-    * Set the file mode for newly created files.
-@@ -137,6 +136,9 @@
-    */
-   void setFileWriteMode(int mode);
- 
++
++  /**
++   * Set the file mode for newly created files.
++   * @param mode the filemode (as in chmod)
++   */
++  void setFileWriteMode(int mode);
++
 +  bool isFileImmutable();
 +  bool isUseKDEGlobals();
 +
-   /**
-    * Check whether the config files are writable.
-    * @param warnUser Warn the user if the configuration files are not writable.
-@@ -153,141 +155,22 @@
-   KLockFile::Ptr lockFile( bool bGlobal = false );
- 
- #ifdef KDE_NO_COMPAT
--private:
-+// private:
- #endif
-   /**
--   * @deprecated Use fileName() instead
-+   * @deprecated Use @see fileName() instead
-    */
--  KDE_DEPRECATED QString filename() const { return mfileName; }
-+  // KDE_DEPRECATED QString filename() const { return mfileName; }
- 
- protected:
-   KConfigBase *pConfig;
--
--  QString mfileName;
--  QCString resType;
--  bool useKDEGlobals : 1;
--  bool bFileImmutable : 1;
--  QCString localeString;
--  QString mLocalFileName;
--  QString mGlobalFileName;
--  KConfigBase::ConfigState mConfigState;
-+  KConfigParser *mParser;
-   int mFileMode;
- 
- protected:
-   virtual void virtual_hook( int id, void* data );
--protected:
--  class KConfigBackEndPrivate;
--  KConfigBackEndPrivate *d;
--};
--
--
--/**
-- * Class for KDE INI-style configuration file loading/saving.
-- *
-- * @author Preston Brown <pbrown@kde.org>,
-- *         Matthias Kalle Dalheimer <kalle@kde.org>
-- */
--class KDECORE_EXPORT KConfigINIBackEnd : public KConfigBackEnd
--{
--
--public:
--  /**
--   * Constructs an ini-style configuration back end.
--   *
--   * @param _config Specifies the configuration object which values
--   *        will be passed to as they are read, or from where values
--   *        to be written to will be obtained from.
--   * @param _fileName The name of the file in which config
--   *        data is stored.  All registered configuration directories
--   *        will be looked in in order of decreasing relevance.
--   * @param _resType the resource type of the fileName specified, _if_
--   *        it is not an absolute path (otherwise this parameter is ignored).
--   * @param _useKDEGlobals If true, the user's system-wide kdeglobals file
--   *        will be imported into the config object.  If false, only
--   *        the filename specified will be dealt with.
--   */
--  KConfigINIBackEnd(KConfigBase *_config, const QString &_fileName,
--		    const char * _resType, bool _useKDEGlobals = true)
--    : KConfigBackEnd(_config, _fileName, _resType, _useKDEGlobals) {}
- 
--  /**
--   * Destructs the configuration backend.
--   */
--  virtual ~KConfigINIBackEnd() {};
--
--  /**
--   * Parses all INI-style configuration files for a config object.
--   *
--   * @returns Whether or not parsing was successful.
--   */
--  bool parseConfigFiles();
--
--  /**
--   * Writes configuration data to file(s).
--   * @param bMerge Specifies whether the old config file already
--   *        on disk should be merged in with the data in memory.  If true,
--   *        data is read off the disk and merged.  If false, the on-disk
--   *        file is removed and only in-memory data is written out.
--   */
--  virtual void sync(bool bMerge = true);
--
--protected:
--  /**
--   * Parses one configuration file.
--   *
--   * @param rFile The configuration file to parse
--   * @param pWriteBackMap If specified, points to a KEntryMap where
--   *        the data read from the file should be stored, instead of
--   *        inserting them directly into the configuration object.
--   *        Use this area as a "scratchpad" when you need to know what is
--   *        on disk but don't want to effect the configuration object.
--   * @param bGlobal Specifies whether entries should be marked as
--   *        belonging to the global KDE configuration file rather
--   *        than the application-specific KDE configuration file(s).
--   * @param bDefault Specifies whether entries should be marked as
--   *        being default values.
--   */
--  void parseSingleConfigFile(QFile& rFile, KEntryMap *pWriteBackMap = 0L,
--			     bool bGlobal = false, bool bDefault = false);
--
--  /**
--   * Writes configuration file back.
--   *
--   * @param filename The name of the file to write.
--   * @param bGlobal Specifies whether to write only entries which
--   *        are marked as belonging to the global KDE config file.
--   *        If this is false, it skips those entries.
--   * @param bMerge Specifies whether the old config file already
--   *        on disk should be merged in with the data in memory.  If true,
--   *        data is read off the disk and merged.  If false, the on-disk
--   *        file is removed and only in-memory data is written out.
--   * @return Whether some entries are left to be written to other
--   *         files.
--   */
--  bool writeConfigFile(QString filename, bool bGlobal = false, bool bMerge = true);
--
--  /** Get the entry map.
--   *
--   * @param map the entries will be stored in this object.
--   * @param bGlobal Specifies whether to get only entries which
--   *        are marked as belonging to the global KDE config file.
--   *        If this is false, it skips those entries.
--   * @param mergeFile if not null, the dirty entries for this file will
--   * be merged.
--   *
--   * @return Whether there will be some entries left for writing to other
--   * files.
--   */
--  bool getEntryMap(KEntryMap &map, bool bGlobal, QFile *mergeFile);
--
--  /** Write the entries in @e aTempMap to the file stream.*/
--  void writeEntries(FILE *pStream, const KEntryMap &aTempMap);
--
--protected:
--  virtual void virtual_hook( int id, void* data );
--private:
--  class KConfigINIBackEndPrivate;
--  KConfigINIBackEndPrivate *not_d;
- };
- 
++  /**
++   * Check whether the config files are writable.
++   * @param warnUser Warn the user if the configuration files are not writable.
++   * @return Indicates that all of the configuration files used are writable.
++   * @since 3.2
++   */
++  bool checkConfigFilesWritable(bool warnUser);
 +
- #endif
++  /**
++   * Returns a lock file object for the configuration file
++   * @param bGlobal If true, returns a lock file object for kdeglobals
++   * @since 3.3
++   */
++  KLockFile::Ptr lockFile( bool bGlobal = false );
++
++#ifdef KDE_NO_COMPAT
++// private:
++#endif
++  /**
++   * @deprecated Use @see fileName() instead
++   */
++  // KDE_DEPRECATED QString filename() const { return mfileName; }
++
++protected:
++  KConfigBase *pConfig;
++  KConfigParser *mParser;
++  int mFileMode;
++
++protected:
++  virtual void virtual_hook( int id, void* data );
++
++};
++
++
++#endif
+diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigbase.cpp kdelibs-3.5.2/kdecore/kconfigbase.cpp
+--- kdelibs-3.5.2.orig/kdecore/kconfigbase.cpp	2005-11-08 23:39:22.000000000 +0100
++++ kdelibs-3.5.2/kdecore/kconfigbase.cpp	2006-05-21 13:00:23.000000000 +0200
+@@ -33,7 +33,7 @@
+ #include <kcharsets.h>
+ 
+ #include "kconfigbase.h"
+-#include "kconfigbackend.h"
++#include "kconfigbackend_wrapper.h"
+ #include "kdebug.h"
+ #include "kstandarddirs.h"
+ #include "kstringhandler.h"
 diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigbase.h kdelibs-3.5.2/kdecore/kconfigbase.h
 --- kdelibs-3.5.2.orig/kdecore/kconfigbase.h	2006-03-17 11:19:05.000000000 +0100
-+++ kdelibs-3.5.2/kdecore/kconfigbase.h	2006-05-08 19:39:05.000000000 +0200
-@@ -72,7 +72,9 @@
++++ kdelibs-3.5.2/kdecore/kconfigbase.h	2006-05-21 13:07:40.000000000 +0200
+@@ -72,7 +72,8 @@
    Q_OBJECT
  
    friend class KConfigBackEnd;
 -  friend class KConfigINIBackEnd;
-+  friend class KConfigParser;
-+  friend class KConfigINIParser;
 +  friend class KConfigElektraParser;
++  friend class KConfigINIParser;
    friend class KConfigGroup;
  
  public:
 diff -Naur kdelibs-3.5.2.orig/kdecore/kconfig.cpp kdelibs-3.5.2/kdecore/kconfig.cpp
 --- kdelibs-3.5.2.orig/kdecore/kconfig.cpp	2005-10-10 17:06:02.000000000 +0200
-+++ kdelibs-3.5.2/kdecore/kconfig.cpp	2006-05-08 23:12:54.000000000 +0200
++++ kdelibs-3.5.2/kdecore/kconfig.cpp	2006-05-21 12:52:40.000000000 +0200
 @@ -17,6 +17,8 @@
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 +
-+  Patch for elektra by Yannick Lecaillez - <sizon5@gmail.com>
++  Elektra patch by Yannick Lecaillez <sizon5@gmail.com>
  */
  
  // $Id$
-@@ -49,16 +51,8 @@
+@@ -33,7 +35,7 @@
+ #include <qfileinfo.h>
+ 
+ #include <kapplication.h>
+-#include "kconfigbackend.h"
++#include "kconfigbackend_wrapper.h"
+ 
+ #include "kconfig.h"
+ #include "kglobal.h"
+@@ -49,16 +51,12 @@
    // set the object's read-only status.
    setReadOnly(bReadOnly);
  
@@ -1459,23 +436,31 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfig.cpp kdelibs-3.5.2/kdecore/kconfig.
 -						      fileName,
 -                                                      resType,
 -						      bUseKderc);
- 
+-
 -  // set the object's back end pointer to this new backend
 -  backEnd = aBackEnd;
++  // elektra patch:
++  // KConfigBackEnd act now as a wrapper for configuration
++  // parser (KConfigParser). This allow to change parser dynamicly
++  // in function of the filename/resource.
++  // see KConfigBackend changeFileName for more details.
 +  backEnd = new KConfigBackEnd(this, fileName, resType, bUseKderc);
  
    // read initial information off disk
    reparseConfiguration();
-@@ -279,7 +273,7 @@
+@@ -279,9 +277,8 @@
  
  KLockFile::Ptr KConfig::lockFile(bool bGlobal)
  {
 -  KConfigINIBackEnd *aBackEnd = dynamic_cast<KConfigINIBackEnd*>(backEnd);
-+  KConfigBackEnd *aBackEnd = dynamic_cast<KConfigBackEnd*>(backEnd);
-   if (!aBackEnd) return 0;
-   return aBackEnd->lockFile(bGlobal);
+-  if (!aBackEnd) return 0;
+-  return aBackEnd->lockFile(bGlobal);
++  if (backEnd) return 0;
++  return backEnd->lockFile(bGlobal);
  }
-@@ -307,7 +301,7 @@
+ 
+ void KConfig::checkUpdate(const QString &id, const QString &updateFile)
+@@ -307,7 +304,7 @@
    config->backEnd->changeFileName(file, "config", false);
    config->setReadOnly(false);
    config->bFileImmutable = false;
@@ -1484,7 +469,7 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfig.cpp kdelibs-3.5.2/kdecore/kconfig.
  
    QStringList groups = groupList();
    for(QStringList::ConstIterator it = groups.begin();
-@@ -339,8 +333,8 @@
+@@ -339,8 +336,8 @@
           it != s_list->end(); ++it)
       {
          if ((*it)->backEnd->fileName() == fileName &&
@@ -1497,8 +482,8 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfig.cpp kdelibs-3.5.2/kdecore/kconfig.
    }
 diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigelektraparser.cpp kdelibs-3.5.2/kdecore/kconfigelektraparser.cpp
 --- kdelibs-3.5.2.orig/kdecore/kconfigelektraparser.cpp	1970-01-01 01:00:00.000000000 +0100
-+++ kdelibs-3.5.2/kdecore/kconfigelektraparser.cpp	2006-05-08 23:04:27.000000000 +0200
-@@ -0,0 +1,756 @@
++++ kdelibs-3.5.2/kdecore/kconfigelektraparser.cpp	2006-05-21 15:34:55.000000000 +0200
+@@ -0,0 +1,772 @@
 +/*
 +	KConfigElektraParser
 +	Yannick Lecaillez - <sizon5@gmail.com>
@@ -1510,37 +495,52 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigelektraparser.cpp kdelibs-3.5.2/kde
 +
 +#include <stdlib.h>
 +#include <unistd.h>
-+#include <kdb.h>
++#include <ctype.h>
++#ifdef HAVE_SYS_MMAN_H
++#include <sys/mman.h>
++#endif
 +#include <sys/types.h>
 +#ifdef HAVE_SYS_STAT_H
 +#include <sys/stat.h>
 +#endif
++#include <fcntl.h>
++#include <signal.h>
++#include <setjmp.h>
 +
-+#include <kapplication.h>
-+#include <kglobal.h>
-+#include <klocale.h>
-+#include <kstandarddirs.h>
-+#include <kprocess.h>
++#include <qdir.h>
++#include <qfileinfo.h>
++#include <qtextcodec.h>
++#include <qtextstream.h>
 +
-+// #include "kconfigdata.h"
-+// #include "kconfigbase.h"
 +#include "kconfigparser.h"
 +#include "kconfigelektraparser.h"
++#include "kconfigbase.h"
++#include <kapplication.h>
++#include <kglobal.h>
++#include <kprocess.h>
++#include <klocale.h>
++#include <kstandarddirs.h>
++#include <ksavefile.h>
++#include <kurl.h>
++#include <kde_file.h>
++
++#include <kdb.h>
 +
 +bool checkKeyAccess(const QString &keyName, int mode);
 +
-+KConfigElektraParser::KConfigElektraParser(KConfigBase *config, const QString &fileName, const char *resType, bool useKDEGlobals) : KConfigParser(config, fileName, "config-elektra", useKDEGlobals)
++KConfigElektraParser::KConfigElektraParser(KConfigBase *_config, const QString &_fileName, const char *_resType, bool _useKDEGlobals) 
++	: KConfigParser(_config, _fileName, _resType, _useKDEGlobals)
 +{
-+	if (fileName.isEmpty())
++	if (_fileName.isEmpty())
 +		mLocalKeyRoot = QString::null;
-+	else if ( isAbsoluteKeyName(fileName) )
-+		mLocalKeyRoot = fileName;
++	else if ( isAbsoluteKeyName(_fileName) )
++		mLocalKeyRoot = _fileName;
 +	else {
-+		mLocalKeyRoot = KGlobal::dirs()->saveLocation(resType) + mfileName;
++		mLocalKeyRoot = KGlobal::dirs()->saveLocation(_resType) + mfileName;
 +	}
 +
 +	if (useKDEGlobals)
-+		mGlobalKeyRoot = KGlobal::dirs()->saveLocation("config-elektra") + QString::fromLatin1("kdeglobals");
++		mGlobalKeyRoot = KGlobal::dirs()->saveLocation(_resType) + QString::fromLatin1("kdeglobals");
 +	else
 +		mGlobalKeyRoot = QString::null;
 +}
@@ -1576,13 +576,13 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigelektraparser.cpp kdelibs-3.5.2/kde
 +
 +	// Parse the general config files
 +	if (useKDEGlobals) {
-+		QStringList kdercs = KGlobal::dirs()-> findAllResources("config-elektra", QString::fromLatin1("kdeglobals"));		
++		QStringList kdercs = KGlobal::dirs()-> findAllResources(resType, QString::fromLatin1("kdeglobals"));		
 +		QString etc_kderc = QString::fromLatin1("system/sw/kde/kderc");
 +		
 +		if (checkKeyAccess(etc_kderc, R_OK))
 +			kdercs += etc_kderc;
 +
-+		kdercs += KGlobal::dirs()-> findAllResources("config-elektra", QString::fromLatin1("system.kdeglobals"));
++		kdercs += KGlobal::dirs()-> findAllResources(resType, QString::fromLatin1("system.kdeglobals"));
 +
 +		QStringList::ConstIterator it;
 +		for (it = kdercs.fromLast(); it != kdercs.end(); --it) {
@@ -1846,7 +846,7 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigelektraparser.cpp kdelibs-3.5.2/kde
 +	keysToStore = ksNew();
 +
 +	// now write out all other groups.
-+	QCString currentGroup;
++	QCString currentGroup, currentKey;
 +	for (KEntryMapConstIterator aIt = entryMap.begin(); aIt != entryMap.end(); ++aIt) {
 +		const KEntryKey &key = aIt.key();
 +		const KEntry &currentEntry = *aIt;
@@ -1894,7 +894,8 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigelektraparser.cpp kdelibs-3.5.2/kde
 +	
 +		firstEntry = false;
 +		// it is data for a group
-+		keyName += key.mKey;	// key;
++		currentKey = key.mKey;
++		keyName += currentKey.replace("/", "\\/");	// key;
 +	
 +		if ( currentEntry.bNLS ) {
 +			keyName += "[";
@@ -1917,9 +918,9 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigelektraparser.cpp kdelibs-3.5.2/kde
 +			keyName += "]";
 +		}
 +		toStore = keyNew(keyName.latin1(),
-+				KEY_SWITCH_VALUE, (const char *) currentEntry.mValue,
++				KEY_SWITCH_VALUE, (const char*) currentEntry.mValue,
 +				KEY_SWITCH_END);
-+
++		
 +		ksAppend(keysToStore, toStore);
 +	} // for loop
 +	
@@ -2257,8 +1258,8 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigelektraparser.cpp kdelibs-3.5.2/kde
 +}	
 diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigelektraparser.h kdelibs-3.5.2/kdecore/kconfigelektraparser.h
 --- kdelibs-3.5.2.orig/kdecore/kconfigelektraparser.h	1970-01-01 01:00:00.000000000 +0100
-+++ kdelibs-3.5.2/kdecore/kconfigelektraparser.h	2006-05-08 22:53:42.000000000 +0200
-@@ -0,0 +1,48 @@
++++ kdelibs-3.5.2/kdecore/kconfigelektraparser.h	2006-05-21 13:08:36.000000000 +0200
+@@ -0,0 +1,49 @@
 +/*
 +	KConfigElektraParser
 +	Yannick Lecaillez - <sizon5@gmail.com>
@@ -2275,7 +1276,8 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigelektraparser.h kdelibs-3.5.2/kdeco
 +#include <klockfile.h>
 +#include "kdelibs_export.h"
 +
-+class QFileInfo;
++#include <qdir.h>
++#include <qfileinfo.h>
 +
 +class KDECORE_EXPORT KConfigElektraParser : public KConfigParser
 +{
@@ -2309,8 +1311,8 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigelektraparser.h kdelibs-3.5.2/kdeco
 +#endif
 diff -Naur kdelibs-3.5.2.orig/kdecore/kconfiginiparser.cpp kdelibs-3.5.2/kdecore/kconfiginiparser.cpp
 --- kdelibs-3.5.2.orig/kdecore/kconfiginiparser.cpp	1970-01-01 01:00:00.000000000 +0100
-+++ kdelibs-3.5.2/kdecore/kconfiginiparser.cpp	2006-05-08 23:01:19.000000000 +0200
-@@ -0,0 +1,1057 @@
++++ kdelibs-3.5.2/kdecore/kconfiginiparser.cpp	2006-05-21 13:06:22.000000000 +0200
+@@ -0,0 +1,1055 @@
 +/*
 +	KConfigINIParser
 +	
@@ -2323,7 +1325,6 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfiginiparser.cpp kdelibs-3.5.2/kdecore
 +	Copyright (c) 1999 Preston Brown <pbrown@kde.org>
 +	Copyright (c) 1997-1999 Matthias Kalle Dalheimer <kalle@kde.org>
 +*/
-+
 +
 +#include <config.h>
 +
@@ -2339,12 +1340,14 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfiginiparser.cpp kdelibs-3.5.2/kdecore
 +#include <fcntl.h>
 +#include <signal.h>
 +#include <setjmp.h>
-+ 
++
 +#include <qdir.h>
 +#include <qfileinfo.h>
 +#include <qtextcodec.h>
 +#include <qtextstream.h>
-+ 
++
++#include "kconfigparser.h"
++#include "kconfiginiparser.h"
 +#include "kconfigbase.h"
 +#include <kapplication.h>
 +#include <kglobal.h>
@@ -2354,9 +1357,6 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfiginiparser.cpp kdelibs-3.5.2/kdecore
 +#include <ksavefile.h>
 +#include <kurl.h>
 +#include <kde_file.h>
-+
-+#include "kconfigparser.h"
-+#include "kconfiginiparser.h"
 +
 +extern bool checkAccess(const QString& pathname, int mode);
 +/* translate escaped escape sequences to their actual values. */
@@ -3370,7 +2370,7 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfiginiparser.cpp kdelibs-3.5.2/kdecore
 +}	
 diff -Naur kdelibs-3.5.2.orig/kdecore/kconfiginiparser.h kdelibs-3.5.2/kdecore/kconfiginiparser.h
 --- kdelibs-3.5.2.orig/kdecore/kconfiginiparser.h	1970-01-01 01:00:00.000000000 +0100
-+++ kdelibs-3.5.2/kdecore/kconfiginiparser.h	2006-05-08 22:55:50.000000000 +0200
++++ kdelibs-3.5.2/kdecore/kconfiginiparser.h	2006-05-21 13:05:24.000000000 +0200
 @@ -0,0 +1,53 @@
 +/*
 +	KConfigINIParser
@@ -3395,7 +2395,7 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfiginiparser.h kdelibs-3.5.2/kdecore/k
 +#include "kdelibs_export.h"
 +
 +class QFile;
-+class QDir;
++
 +
 +class KDECORE_EXPORT KConfigINIParser : public KConfigParser
 +{
@@ -3427,14 +2427,28 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfiginiparser.h kdelibs-3.5.2/kdecore/k
 +#endif
 diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigparser.cpp kdelibs-3.5.2/kdecore/kconfigparser.cpp
 --- kdelibs-3.5.2.orig/kdecore/kconfigparser.cpp	1970-01-01 01:00:00.000000000 +0100
-+++ kdelibs-3.5.2/kdecore/kconfigparser.cpp	2006-05-08 19:09:03.000000000 +0200
-@@ -0,0 +1,54 @@
++++ kdelibs-3.5.2/kdecore/kconfigparser.cpp	2006-05-21 13:01:04.000000000 +0200
+@@ -0,0 +1,68 @@
 +/*
-+	KConfigParser
-+	Yannick Lecaillez - <sizon5@gmail.com>
-+
-+	Abstract class for configuration parser.
-+*/
++ *  This file is part of the KDE libraries
++ *  Copyright (c) 2006 Yannick Lecaillez <sizon5@gmail.com>
++ *
++ *  This library is free software; you can redistribute it and/or
++ *  modify it under the terms of the GNU Library General Public
++ *  License as published by the Free Software Foundation; either
++ *  version 2 of the License, or (at your option) any later version.
++ *
++ *  This library is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ *  Library General Public License for more details.
++ *
++ * You should have received a copy of the GNU Library General Public License
++ * along with this library; see the file COPYING.LIB.  If not, write to
++ * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
++ * Boston, MA 02111-1307, USA.
++ *
++ */
 +
 +#include <config.h>
 +
@@ -3456,7 +2470,7 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigparser.cpp kdelibs-3.5.2/kdecore/kc
 +#include <qtextcodec.h>
 +#include <qtextstream.h>
 +
-+#include "kconfigbackend.h"
++#include "kconfigbackend_wrapper.h"
 +#include "kconfigparser.h"
 +#include "kconfigparserfactory.h"
 +#include "kconfigbase.h"
@@ -3485,8 +2499,8 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigparser.cpp kdelibs-3.5.2/kdecore/kc
 +void KConfigParser::setLocaleString(const QCString locale) { localeString = locale; }
 diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigparserfactory.cpp kdelibs-3.5.2/kdecore/kconfigparserfactory.cpp
 --- kdelibs-3.5.2.orig/kdecore/kconfigparserfactory.cpp	1970-01-01 01:00:00.000000000 +0100
-+++ kdelibs-3.5.2/kdecore/kconfigparserfactory.cpp	2006-05-08 22:54:52.000000000 +0200
-@@ -0,0 +1,29 @@
++++ kdelibs-3.5.2/kdecore/kconfigparserfactory.cpp	2006-05-21 12:37:54.000000000 +0200
+@@ -0,0 +1,38 @@
 +/*
 +	KConfigParserFactory
 +	
@@ -3497,7 +2511,6 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigparserfactory.cpp kdelibs-3.5.2/kde
 +*/
 +
 +#include <config.h>
-+#include <qdir.h>
 +
 +#include "kconfigparser.h"
 +#include "kconfiginiparser.h"
@@ -3505,12 +2518,22 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigparserfactory.cpp kdelibs-3.5.2/kde
 +#include "kconfigparserfactory.h"
 +#include "kconfigbase.h"
 +
-+
 +KConfigParser *KConfigParserFactory::create(KConfigBase *_config, const QString &_fileName, const char * _resType, bool _useKDEGlobals)
 +{
-+	if ( (strcmp(_resType, "config-elektra") == 0) ||
++	
++	if ( (strcmp(_resType, "elektra-config") == 0) ||
 +		(strcmp(_resType, "config") == 0) && (_fileName.isEmpty() || QDir::isRelativePath(_fileName))) {
-+		return new KConfigElektraParser(_config, _fileName, "config-elektra", _useKDEGlobals);
++		return new KConfigElektraParser(_config, _fileName, "elektra-config", _useKDEGlobals);
++		
++/*	} else if ( (strcmp(_resType, "servicetypes") == 0) && (_fileName.isEmpty() || QDir::isRelativePath(_fileName))) {
++		return new KConfigElektraParser(_config, _fileName, "elektra-servicetypes", _useKDEGlobals);
++		
++	} else if ( (strcmp(_resType, "services") == 0) && (_fileName.isEmpty() || QDir::isRelativePath(_fileName))) {
++		return new KConfigElektraParser(_config, _fileName, "elektra-services", _useKDEGlobals);
++
++	} else if ( (strcmp(_resType, "apps") == 0) && (_fileName.isEmpty() || QDir::isRelativePath(_fileName))) {
++		return new KConfigElektraParser(_config, _fileName, "elektra-apps", _useKDEGlobals); */
++		
 +	} else { 
 +		return new KConfigINIParser(_config, _fileName, _resType, _useKDEGlobals);
 +	}
@@ -3518,15 +2541,26 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigparserfactory.cpp kdelibs-3.5.2/kde
 +
 diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigparserfactory.h kdelibs-3.5.2/kdecore/kconfigparserfactory.h
 --- kdelibs-3.5.2.orig/kdecore/kconfigparserfactory.h	1970-01-01 01:00:00.000000000 +0100
-+++ kdelibs-3.5.2/kdecore/kconfigparserfactory.h	2006-05-08 22:54:18.000000000 +0200
-@@ -0,0 +1,27 @@
++++ kdelibs-3.5.2/kdecore/kconfigparserfactory.h	2006-05-21 12:37:57.000000000 +0200
+@@ -0,0 +1,52 @@
 +/*
-+	KConfigParserFactory
-+	
-+	Yannick Lecaillez - <sizon5@gmail.com>
++   This file is part of the KDE libraries
++   Copyright (c) 2006 Yannick Lecaillez <sizon5@gmail.com>
 +
-+	Return a newly created parser depending of
-+	file to parse.
++   This library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Library General Public
++   License as published by the Free Software Foundation; either
++   version 2 of the License, or (at your option) any later version.
++
++   This library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Library General Public License for more details.
++
++   You should have received a copy of the GNU Library General Public License
++   along with this library; see the file COPYING.LIB.  If not, write to
++   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
++   Boston, MA 02111-1307, USA.
 +*/
 +
 +#ifndef _KCONFIGPARSERFACTORY_H
@@ -3538,25 +2572,53 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigparserfactory.h kdelibs-3.5.2/kdeco
 +#include "kconfigparserfactory.h"
 +#include "kconfigbase.h"
 +
-+class QDir;
-+
++/**
++ * Determinate and create KConfigParser object responsible
++ * of configuration loading/saving for the specified
++ * filename and resource type.
++ *
++ * @author Yannick Lecaillez - <sizon5@gmail.com>
++ *
++ * @short Configuration file parser selector
++ */
 +class KDECORE_EXPORT KConfigParserFactory {
 +	public:
 +
++		/**
++		 * Create a new KConfigParser associated to a specific
++		 * filename/resource type couple
++		 *
++		 * @returns A newly allocated KConfigParser
++		 * @see KConfigParser
++		 */
 +		static KConfigParser *KConfigParserFactory::create(KConfigBase *_config, const QString &_fileName, const char * _resType, bool _useKDEGlobals);
 +};
 +
 +#endif
 diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigparser.h kdelibs-3.5.2/kdecore/kconfigparser.h
 --- kdelibs-3.5.2.orig/kdecore/kconfigparser.h	1970-01-01 01:00:00.000000000 +0100
-+++ kdelibs-3.5.2/kdecore/kconfigparser.h	2006-05-08 19:09:03.000000000 +0200
-@@ -0,0 +1,59 @@
++++ kdelibs-3.5.2/kdecore/kconfigparser.h	2006-05-21 12:37:57.000000000 +0200
+@@ -0,0 +1,155 @@
 +/*
-+	KConfigParser
-+	Yannick Lecaillez - <sizon5@gmail.com>
-+
-+	Abstract class for configuration parser.
-+*/
++ *  This file is part of the KDE libraries
++ *  Copyright (c) 2006 Yannick Lecaillez <sizon5@gmail.com>
++ *
++ *  This library is free software; you can redistribute it and/or
++ *  modify it under the terms of the GNU Library General Public
++ *  License as published by the Free Software Foundation; either
++ *  version 2 of the License, or (at your option) any later version.
++ *
++ *  This library is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ *  Library General Public License for more details.
++ *
++ * You should have received a copy of the GNU Library General Public License
++ * along with this library; see the file COPYING.LIB.  If not, write to
++ * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
++ * Boston, MA 02111-1307, USA.
++ *
++ */
 +
 +#ifndef _KCONFIGPARSER_H
 +#define _KCONFIGPARSER_H
@@ -3567,22 +2629,77 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigparser.h kdelibs-3.5.2/kdecore/kcon
 +#include <klockfile.h>
 +#include "kdelibs_export.h"
 +
-+
++/**
++ * Abstract base class for KDE configuration file loading/saving.
++ *
++ * This class forms the base for all classes that implement some
++ * manner of loading/saving to configuration files.  It is an
++ * abstract base class, meaning that you cannot directly instantiate
++ * objects of this class. 
++ *
++ * This class is heavily insprired from "old" KConfigBackEnd originaly
++ * written  by Preston Brown <pbrown@kde.org> and Matthias Kalle Dalheimer
++ * <kalle@kde.org>. Main change is now Parser are allowed to define
++ * their own method for locking, configuration writable check.
++ * Configuration resource/filename can't be changed during object life
++ * (see kconfigparserfactory), this allow to usage of specific parser depending
++ * of resource and/or filename. These change was made for elektra backend
++ * but could be usefull for other KConfig Backend which doesn't rely on 
++ * file.
++ *
++ * @author Yannick Lecaillez <sizon5@gmail.com>
++ *
++ * @short KDE Configuration file loading/saving abstract base class
++ *
++ * @see KConfigParserFactory
++ */
 +class KDECORE_EXPORT KConfigParser {
 +	public:
++		/**
++		 * Constructs a configuration back end.
++		 *
++		 * @param _config Specifies the configuration object which values
++		 *        will be passed to as they are read, or from where values
++		 *        to be written to will be obtained from.
++		 * @param _fileName The name of the file in which config
++		 *        data is stored.  All registered configuration directories
++		 *        will be looked in in order of decreasing relevance.
++		 * @param _resType the resource type of the fileName specified, _if_
++		 *        it is not an absolute path (otherwise this parameter is ignored).
++		 * @param _useKDEGlobals If true, the user's system-wide kdeglobals file
++		 *        will be imported into the config object.  If false, only
++		 *        the filename specified will be dealt with.
++		 */
 +		KConfigParser(KConfigBase *_config, 
 +				const QString &_fileName,
 +				const char *_resType,
 +				bool _useKDEGlobals);
 +
++		/**
++		 * Set the locale string that defines the current language.
++		 * @param _localeString the identifier of the language
++		 * @see KLocale
++		 */
 +		void setLocateString(const QCString &_localeString) { localeString = _localeString; }
 +		
++		/**
++		 * Returns the state of the app-config object.
++		 *
++		 * @see KConfig::getConfigState
++		 */
 +		KConfigBase::ConfigState getConfigState() const
 +		 { return mConfigState; }
 +		void setConfigState (KConfigBase::ConfigState state);
 +
-+
++		/**
++		 * Return fileName as passed to the constructor
++		 */
 +		QString fileName();
++
++		/**
++		 * Returns the resource type as passed to the constructor.
++		 * @return the resource type as passed to the constructor.
++		 */
 +		const char *resource();
 +		void setFileImmutable(bool immutable);
 +		bool isFileImmutable();
@@ -3591,12 +2708,39 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigparser.h kdelibs-3.5.2/kdecore/kcon
 +		
 +		void setLocaleString(const QCString locale);
 +
-+
++		/**
++		 * Parses all configuration files for a configuration object.  This
++		 * method must be reimplemented by the derived classes.
++		 *
++		 * @returns Whether or not parsing was successful.
++		 */
 +		virtual bool parseConfigFiles() = 0;
-+		virtual void sync(bool bMerge) = 0;
-+		virtual KLockFile::Ptr lockFile(bool bGlobal) = 0;
-+		virtual bool checkConfigFilesWritable(bool warnUser) = 0;
 +
++		/**
++		 * Writes configuration data to file(s).  This method must be
++		 * reimplemented by the derived classes.
++		 *
++		 * @param bMerge Specifies whether the old config file already
++		 * on disk should be merged in with the data in memory. If true,
++		 * data is read off the disk and merged. If false, the on-disk
++		 * file is removed and only in-memory data is written out.
++		 */
++		virtual void sync(bool bMerge) = 0;
++
++		/**
++		 * Returns a lock file object for the configuration file
++		 * @param bGlobal If true, returns a lock file object for kdeglobals
++		 * @since 3.3
++		 */
++		virtual KLockFile::Ptr lockFile(bool bGlobal) = 0;
++
++		/**
++		 * Check whether the config files are writable.
++		 * @param warnUser Warn the user if the configuration files are not writable.
++		 * @return Indicates that all of the configuration files used are writable.
++		 * @since 3.2
++		 */
++		virtual bool checkConfigFilesWritable(bool warnUser) = 0;
 +
 +	protected:
 +		KConfigBase *pConfig;
@@ -3610,76 +2754,106 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigparser.h kdelibs-3.5.2/kdecore/kcon
 +};
 +
 +#endif
+diff -Naur kdelibs-3.5.2.orig/kdecore/kdesktopfile.cpp kdelibs-3.5.2/kdecore/kdesktopfile.cpp
+--- kdelibs-3.5.2.orig/kdecore/kdesktopfile.cpp	2005-10-10 17:06:03.000000000 +0200
++++ kdelibs-3.5.2/kdecore/kdesktopfile.cpp	2006-05-21 13:00:45.000000000 +0200
+@@ -30,7 +30,7 @@
+ 
+ #include <kdebug.h>
+ #include "kurl.h"
+-#include "kconfigbackend.h"
++#include "kconfigbackend_wrapper.h"
+ #include "kapplication.h"
+ #include "kstandarddirs.h"
+ #include "kmountpoint.h"
+diff -Naur kdelibs-3.5.2.orig/kdecore/ksimpleconfig.cpp kdelibs-3.5.2/kdecore/ksimpleconfig.cpp
+--- kdelibs-3.5.2.orig/kdecore/ksimpleconfig.cpp	2005-10-10 17:06:02.000000000 +0200
++++ kdelibs-3.5.2/kdecore/ksimpleconfig.cpp	2006-05-21 15:31:15.000000000 +0200
+@@ -33,7 +33,7 @@
+ 
+ #include "kglobal.h"
+ #include "kstandarddirs.h"
+-#include "kconfigbackend.h"
++#include "kconfigbackend_wrapper.h"
+ 
+ #include "ksimpleconfig.h"
+ 
+@@ -44,7 +44,7 @@
+   // for KSimpleConfig an absolute filename is guaranteed
+   if (!fileName.isNull() && QDir::isRelativePath(fileName)) {
+      backEnd->changeFileName( KGlobal::dirs()->
+-	saveLocation("config", QString::null, !bReadOnly)+fileName, "config", false);
++	saveLocation("elektra-config", QString::null, !bReadOnly)+fileName, "elektra-config", false);
+   } else {
+      backEnd->changeFileName(fileName, "config", false);
+   }
 diff -Naur kdelibs-3.5.2.orig/kdecore/kstandarddirs.cpp kdelibs-3.5.2/kdecore/kstandarddirs.cpp
 --- kdelibs-3.5.2.orig/kdecore/kstandarddirs.cpp	2005-10-10 17:06:02.000000000 +0200
-+++ kdelibs-3.5.2/kdecore/kstandarddirs.cpp	2006-05-08 23:12:41.000000000 +0200
-@@ -24,6 +24,10 @@
-  * Generated:	Thu Mar  5 16:05:28 EST 1998
-  */
- 
-+/*
-+ * Patch for elektra by Yannick Lecaillez - <sizon5@gmail.com>
-+ */
++++ kdelibs-3.5.2/kdecore/kstandarddirs.cpp	2006-05-21 12:59:18.000000000 +0200
+@@ -16,6 +16,8 @@
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+    Boston, MA 02110-1301, USA.
 +
- #include "config.h"
++   Elektra patch by Yannick Lecaillez <sizon5@gmail.com>
+ */
  
- #include <stdlib.h>
-@@ -46,6 +50,8 @@
- #include <qstring.h>
- #include <qstringlist.h>
+ /*
+@@ -56,6 +58,9 @@
+ #include "kstaticdeleter.h"
+ #include <kde_file.h>
  
++#include "elektra.h"
 +#include <kdb.h>
 +
- #include "kstandarddirs.h"
- #include "kconfig.h"
- #include "kdebug.h"
-@@ -73,6 +79,7 @@
+ template class QDict<QStringList>;
+ 
+ class KStandardDirs::KStandardDirsPrivate
+@@ -73,6 +78,8 @@
     QAsciiDict<bool> restrictions;
     QStringList xdgdata_prefixes;
     QStringList xdgconf_prefixes;
-+   QStringList elektraconf_prefixes;
++
++   QStringList elektra_prefixes;
  };
  
  // Singleton, with data shared by all kstandarddirs instances.
-@@ -100,7 +107,9 @@
+@@ -97,6 +104,7 @@
+ static const char* const types[] = {"html", "icon", "apps", "sound",
+ 			      "data", "locale", "services", "mime",
+ 			      "servicetypes", "config", "exe",
++			      "elektra-config",
  			      "wallpaper", "lib", "pixmap", "templates",
  			      "module", "qtplugins",
  			      "xdgdata-apps", "xdgdata-dirs", "xdgconf-menu",
--			      "kcfg", "emoticons", 0 };
-+			      "kcfg", "emoticons",
-+			      "config-elektra",
-+				0 };
- 
- static int tokenize( QStringList& token, const QString& str,
- 		const QString& delim );
-@@ -237,6 +246,26 @@
+@@ -237,6 +245,26 @@
      }
  }
  
-+void KStandardDirs::addElektraConfigPrefix(const QString& _dir)
++void KStandardDirs::addElektraPrefix(const QString& _dir)
 +{
-+    addElektraConfigPrefix(_dir, false);
++	addElektraPrefix(_dir, false);
 +}
 +
-+void KStandardDirs::addElektraConfigPrefix(const QString& _dir, bool priority)
++void KStandardDirs::addElektraPrefix(const QString& _dir, bool priority)
 +{
-+    if (_dir.isEmpty())
-+	return;
++	if (_dir.isEmpty())
++		return;
 +
-+    QString dir = _dir;
-+    if (dir.at(dir.length() - 1) != '/')
-+	dir += '/';
++	QString dir = _dir;
++	if (dir.at(dir.length() - 1) != '/')
++		dir += '/';
 +
-+    if (!d->elektraconf_prefixes.contains(dir)) {
-+	priorityAdd(d->elektraconf_prefixes, dir, priority);
-+	dircache.clear();
-+    }
++	if (!d->elektra_prefixes.contains(dir)) {
++		priorityAdd(d->elektra_prefixes, dir, priority);
++		dircache.clear();
++	}
 +}
 +
  QString KStandardDirs::kfsstnd_prefixes()
  {
     return prefixes.join(QChar(KPATH_SEPARATOR));
-@@ -539,6 +568,82 @@
+@@ -539,6 +567,150 @@
    }
  }
  
@@ -3759,13 +2933,6 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kstandarddirs.cpp kdelibs-3.5.2/kdecore/ks
 +  }
 +}
 +
- static void lookupPrefix(const QString& prefix, const QString& relpath,
-                          const QString& relPart,
- 			 const QRegExp &regexp,
-@@ -615,6 +720,74 @@
-     }
- }
- 
 +static void lookupKeyPrefix(const QString& prefix, const QString& relpath,
 +                         const QString& relPart,
 +			 const QRegExp &regexp,
@@ -3834,15 +3001,14 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kstandarddirs.cpp kdelibs-3.5.2/kdecore/ks
 +    }
 +}
 +
- QStringList
- KStandardDirs::findAllResources( const char *type,
- 			         const QString& filter,
-@@ -661,11 +834,21 @@
+ static void lookupPrefix(const QString& prefix, const QString& relpath,
+                          const QString& relPart,
+ 			 const QRegExp &regexp,
+@@ -661,6 +833,16 @@
  
      QRegExp regExp(filterFile, true, true);
  
--    for (QStringList::ConstIterator it = candidates.begin();
-+    if ( strcmp(type, "config-elektra") == 0 ) {
++    if ( strncmp(type, "elektra-", 8) == 0 ) {
 +	for (QStringList::ConstIterator it = candidates.begin();
 +        	 it != candidates.end(); it++)
 +    	{
@@ -3851,40 +3017,29 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kstandarddirs.cpp kdelibs-3.5.2/kdecore/ks
 +    	}
 +	
 +    } else {
-+	for (QStringList::ConstIterator it = candidates.begin();
++
+     for (QStringList::ConstIterator it = candidates.begin();
           it != candidates.end(); ++it)
--    {
--        lookupPrefix(*it, filterPath, "", regExp, list,
--                     relList, recursive, unique);
-+	{
-+        	lookupPrefix(*it, filterPath, "", regExp, list,
-+                	     relList, recursive, unique);
-+    	}
+     {
+@@ -668,6 +850,8 @@
+                      relList, recursive, unique);
      }
  
++    }
++
      return list;
-@@ -817,39 +1000,86 @@
+ }
+ 
+@@ -817,9 +1001,38 @@
                  prefixList = &(d->xdgdata_prefixes);
              else if (strncmp(type, "xdgconf-", 8) == 0)
                  prefixList = &(d->xdgconf_prefixes);
-+            else if ( strcmp(type, "config-elektra") == 0 )
-+                prefixList = &(d->elektraconf_prefixes);
++            else if (strncmp(type, "elektra-", 8) == 0)
++                prefixList = &(d->elektra_prefixes);
              else
                  prefixList = &prefixes;
  
--            for (QStringList::ConstIterator pit = prefixList->begin();
--                 pit != prefixList->end();
--                 ++pit)
--            {
--                for (QStringList::ConstIterator it = dirs->begin();
--                     it != dirs->end(); ++it) {
--                    QString path = realPath(*pit + *it);
--                    testdir.setPath(path);
--                    if (local && restrictionActive)
--                       continue;
--                    if ((local || testdir.exists()) && !candidates->contains(path))
--                        candidates->append(path);
-+            if ( strcmp(type, "config-elektra") == 0 ) {
++            if ( strncmp(type, "elektra-", 8) == 0 ) {
 +		KDBHandle handle;
 +		Key *key;
 +		int rc;
@@ -3908,33 +3063,22 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kstandarddirs.cpp kdelibs-3.5.2/kdecore/ks
 +		}
 +
 +		kdbClose(&handle);
++		
 + 	    } else {
-+                for (QStringList::ConstIterator pit = prefixList->begin();
-+                     pit != prefixList->end();
-+                     ++pit)
-+                {
-+                    for (QStringList::ConstIterator it = dirs->begin();
-+                         it != dirs->end(); ++it) {
-+                        QString path = realPath(*pit + *it);
-+                        testdir.setPath(path);
-+                        if (local && restrictionActive)
-+                           continue;
-+                        if ((local || testdir.exists()) && !candidates->contains(path))
-+                            candidates->append(path);
-+                    }
-+                    local = false;
++
+             for (QStringList::ConstIterator pit = prefixList->begin();
+                  pit != prefixList->end();
+                  ++pit)
+@@ -835,9 +1048,31 @@
                  }
--                local = false;
+                 local = false;
              }
++
++            }
          }
          dirs = absolutes.find(type);
          if (dirs)
--            for (QStringList::ConstIterator it = dirs->begin();
--                 it != dirs->end(); ++it)
--            {
--                testdir.setPath(*it);
--                if (testdir.exists())
-+            if ( strcmp(type, "config-elektra") == 0 ) {
++            if ( strncmp(type, "elektra-", 8) == 0 ) {
 +		KDBHandle handle;
 +		Key *key;
 +		kdbOpen(&handle);		
@@ -3951,190 +3095,263 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kstandarddirs.cpp kdelibs-3.5.2/kdecore/ks
 +	        }
 +
 +		kdbClose(&handle);
++
 +	    } else {
-+                for (QStringList::ConstIterator it = dirs->begin();
-+                     it != dirs->end(); ++it)
-                 {
--                    QString filename = realPath(*it);
--                    if (!candidates->contains(filename))
--                        candidates->append(filename);
-+                    testdir.setPath(*it);
-+                    if (testdir.exists())
-+                    {
-+                        QString filename = realPath(*it);
-+                        if (!candidates->contains(filename))
-+                            candidates->append(filename);
-+                    }
++
+             for (QStringList::ConstIterator it = dirs->begin();
+                  it != dirs->end(); ++it)
+             {
+@@ -849,6 +1084,8 @@
+                         candidates->append(filename);
                  }
              }
--        dircache.insert(type, candidates);
-+            dircache.insert(type, candidates);
++ 
++            }
+         dircache.insert(type, candidates);
      }
  
- #if 0
-@@ -1025,6 +1255,8 @@
+@@ -1025,6 +1262,8 @@
  	return "share/icons/";
      if (!strcmp(type, "config"))
  	return "share/config/";
-+    if (!strcmp(type, "config-elektra"))
-+	return "kde/";
++    if (!strcmp(type, "elektra-config"))
++	return "kde/current/config/";
      if (!strcmp(type, "pixmap"))
  	return "share/pixmaps/";
      if (!strcmp(type, "apps"))
-@@ -1094,6 +1326,8 @@
+@@ -1094,6 +1333,8 @@
               pPath = new QString(realPath(localxdgdatadir() + dirs->last()));
            else if (strncmp(type, "xdgconf-", 8) == 0)
               pPath = new QString(realPath(localxdgconfdir() + dirs->last()));
-+          else if (strcmp(type, "config-elektra") == 0)
-+	     return QString(localelektraconfdir() + dirs->last());
++          else if ( strncmp(type, "elektra-", 8) == 0 )
++             pPath = new QString(localelektrakey() + dirs->last());
            else
               pPath = new QString(realPath(localkdedir() + dirs->last()));
         }
-@@ -1411,6 +1645,32 @@
+@@ -1107,6 +1348,37 @@
+        savelocations.insert(type, pPath);
+     }
+     QString fullPath = *pPath + (pPath->endsWith("/") ? "" : "/") + suffix;
++    if ( strncmp(type, "elektra-", 8) == 0 ) {
++        KDBHandle handle;
++	int rc;
++	Key *key;
++
++	key = keyNew(fullPath.latin1(), KEY_SWITCH_END);
++
++	kdbOpen(&handle);
++	rc = kdbStatKey(handle, key);
++	if ( rc || !keyIsDir(key) ) {
++	    if (!create) {
++#ifndef NDEBUG
++		    kdDebug() << QString("save location %s doesn't exist").arg(fullPath) << endl;
++#endif
++		    keyDel(key);
++		    kdbClose(&handle);
++		    return fullPath;
++	    }
++	    keySetType(key, KEY_TYPE_DIR);
++	    keySetAccess(key, 0700);
++	    if ( kdbSetKey(handle, key) ) {
++		    keyDel(key);
++		    kdbClose(&handle);
++		    return fullPath;
++	    }
++	    dircache.remove(type);
++	}
++	keyDel(key);   
++	kdbClose(&handle);	
++		   
++    } else {
+ 
+     KDE_struct_stat st;
+     if (KDE_stat(QFile::encodeName(fullPath), &st) != 0 || !(S_ISDIR(st.st_mode))) {
+@@ -1121,6 +1393,8 @@
+ 	}
+         dircache.remove(type);
+     }
++
++    }
+     if (!fullPath.endsWith("/"))
+ 	    fullPath += "/";
+     return fullPath;
+@@ -1411,6 +1685,32 @@
      }
      // end XDG_DATA_XXX
  
-+    // begin ELEKTRA_CONFIG
-+    QStringList elektrakeyList;
-+    QString elektrakeys = readEnvPath("ELEKTRA_CONFIG_DIRS");
-+    if (!elektrakeys.isEmpty()) {
-+	tokenize(elektrakeyList, elektrakeys, QChar(KPATH_SEPARATOR));
-+    } else {
-+	elektrakeyList.clear();
-+	elektrakeyList.append("system/sw/");
++    // begin KDEKEYS (elektra support)
++    QStringList kdekeyList;
++    QString kdekeys = readEnvPath("KDEKEYS");
++    if (!kdekeys.isEmpty()) {
++	tokenize(kdekeyList, kdekeys, QChar(KPATH_SEPARATOR));
 +    }
++    kdekeyList.append(ELEKTRA_ROOT_PATH);
 +	
-+    QString localElektraDir = readEnvPath("ELEKTRA_CONFIG_HOME");
++    // We treat root differently to prevent a "su" shell messing up the
++    // file permissions in the user's home directory.
++    QString localElektraDir = readEnvPath(getuid() ? "KDEKEYHOME" : "KDEKEYROOTHOME");
 +    if (!localElektraDir.isEmpty()) {
 +	// TODO: add escaping support !
 +	if (localElektraDir[localElektraDir.length()-1] != '/') {
 +		localElektraDir += '/';
 +	}
 +    } else {
-+	localElektraDir = "user/sw/";
++	localElektraDir = ELEKTRA_USER_PATH;
 +    }
-+	
-+    addElektraConfigPrefix(localElektraDir);
-+    for (QStringList::ConstIterator it = elektrakeyList.begin(); it != elektrakeyList.end(); it++) {
-+	QString dir = *it;
-+	addElektraConfigPrefix(dir);	
++    addElektraPrefix(localElektraDir);
++    
++    for (QStringList::ConstIterator it = kdekeyList.begin(); it != kdekeyList.end(); it++) {
++        QString dir = *it;
++	addElektraPrefix(dir);	
 +    }
-+    // end ELEKTRA_CONFIG
++    // end KDEKEYS (elektra support)
  
      uint index = 0;
      while (types[index] != 0) {
-@@ -1504,6 +1764,7 @@
+@@ -1504,6 +1804,7 @@
      // save the numbers of config directories. If this changes,
      // we will return true to give KConfig a chance to reparse
      uint configdirs = resourceDirs("config").count();
-+    uint elektrakeys = resourceDirs("config-elektra").count();
++    uint elektrakeys = resourceDirs("elektra-config").count();
  
      // Remember original group
      QString oldGroup = config->group();
-@@ -1573,6 +1834,20 @@
+@@ -1573,9 +1874,33 @@
                  addXdgDataPrefix(dir+"/share", priority);
              }
  
-+            // Check elektra specific prefixes
-+            QStringList keyList =  config->readListEntry("key_prefixes");
-+	    for (QStringList::ConstIterator kit = keyList.begin(); kit != keyList.end(); kit++) {
-+                addElektraConfigPrefix(*kit+"/kde", priority);
++            list =  config->readListEntry("key_prefixes");
++            for (QStringList::ConstIterator it = list.begin(); it != list.end(); it++) {
++                addElektraPrefix(*it, priority);
 +            }
 +
 +            // Get entry for additional elektra key directories
-+            QString addKeyRoots = config->readEntry("key_config-elektra");
-+            QStringList keys = QStringList::split(',', addKeyRoots);
-+            QStringList::Iterator kIt(keys.begin());
-+            for (; kIt != keys.end(); ++kIt) {
-+		addResourceDir("config-elektra", *kIt, priority);
-+            }
++            QMap<QString, QString> entries = config->entryMap(group);
++	    for (QMap<QString, QString>::ConstIterator it2 = entries.begin();
++			    it2 != entries.end(); it2++)
++	    {
++		    QString key = it2.key();
++		    if (key.startsWith("key_")) {
++			    // generate directory list, there may be more than 1.
++			    
++			    QStringList dirs = QStringList::split(',', *it2);
++			    QStringList::Iterator sIt(dirs.begin());
++
++			    QString resType = key.mid(4, key.length());
++			    for (; sIt != dirs.end(); ++sIt) {
++				    addResourceDir(resType.latin1(), *sIt, priority);
++			    }
++		    }
++	    }
 +
              // iterating over all entries in the group Directories
              // to find entries that start with dir_$type
-             QMap<QString, QString> entries = config->entryMap(group);
-@@ -1621,7 +1896,7 @@
+-            QMap<QString, QString> entries = config->entryMap(group);
++            entries = config->entryMap(group);
+             for (QMap<QString, QString>::ConstIterator it2 = entries.begin();
+                  it2 != entries.end(); it2++)
+             {
+@@ -1621,7 +1946,7 @@
      config->setGroup(oldGroup);
  
      // check if the number of config dirs changed
 -    bool configDirsChanged = (resourceDirs("config").count() != configdirs);
-+    bool configDirsChanged = ( (resourceDirs("config").count() != configdirs) || (resourceDirs("config-elektra").count() != elektrakeys) );
++    bool configDirsChanged = ( (resourceDirs("config").count() != configdirs) || resourceDirs("elektra-config").count() != elektrakeys);
      // If the config dirs changed, we check kiosk restrictions again.
      d->checkRestrictions = configDirsChanged;
      // return true if the number of config dirs changed: reparse config file
-@@ -1646,6 +1921,11 @@
+@@ -1646,6 +1971,10 @@
      return d->xdgconf_prefixes.first();
  }
  
-+QString KStandardDirs::localelektraconfdir() const
++QString KStandardDirs::localelektrakey() const
 +{
-+    // Return the prefix to use for saving
-+    return d->elektraconf_prefixes.first();
++    return d->elektra_prefixes.first();
 +}
  
  // just to make code more readable without macros
  QString locate( const char *type,
 diff -Naur kdelibs-3.5.2.orig/kdecore/kstandarddirs.h kdelibs-3.5.2/kdecore/kstandarddirs.h
 --- kdelibs-3.5.2.orig/kdecore/kstandarddirs.h	2005-10-10 17:06:03.000000000 +0200
-+++ kdelibs-3.5.2/kdecore/kstandarddirs.h	2006-05-08 19:17:00.000000000 +0200
-@@ -165,6 +165,15 @@
++++ kdelibs-3.5.2/kdecore/kstandarddirs.h	2006-05-21 12:56:34.000000000 +0200
+@@ -18,6 +18,8 @@
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
++
++  Elektra patch by Yannick Lecaillez <sizon5@gmail.com>
+ */
+ 
+ #ifndef SSK_KSTDDIRS_H
+@@ -165,6 +167,15 @@
  	void addXdgDataPrefix( const QString& dir );
  
  	/**
-+	 * Adds another search keys root to front of the ELEKTRA_CONFIG_XXX list
++	 * Adds another search key to front of the KDE_ELEKTRA_XXX list
 +	 * of prefixes.
-+	 * This prefix is only used for "config-elektra" resource.
++	 * This prefix is only used for resource "elektra-config"
 +	 *
-+	 * @param dir The key root directory to append relative paths to
++	 * @param key The key name to append relative paths to.
 +	 */
-+	void addElektraConfigPrefix( const QString& dir );
-+
++	void addElektraPrefix(const QString& key);
++	
 +	/**
  	 * Adds suffixes for types.
  	 *
  	 * You may add as many as you need, but it is advised that there
-@@ -577,6 +586,12 @@
+@@ -509,6 +520,7 @@
+ 	 * @li html - share/doc/HTML
+ 	 * @li icon - share/icon
+ 	 * @li config - share/config
++	 * @li elektra-config - kde/current/config
+ 	 * @li pixmap - share/pixmaps
+ 	 * @li apps - share/applnk
+ 	 * @li sound - share/sounds
+@@ -577,6 +589,12 @@
  	QString localxdgconfdir() const;
  
  	/**
-+	 * @return $ELEKTRA_CONFIG_HOME
++	 * @return $KDEKEYS
 +	 * See also http://www.freedesktop.org/standards/basedir/draft/basedir-spec/basedir-spec.html
 +	 */
-+	QString localelektraconfdir() const;
-+
++	QString localelektrakey() const;
++	
 +	/**
  	 * Checks for existence and accessability of a file or directory.
  	 * Faster than creating a QFileInfo first.
  	 * @param fullPath the path to check. IMPORTANT: must end with a slash if expected to be a directory
-@@ -635,6 +650,7 @@
+@@ -635,6 +653,7 @@
  	void addPrefix( const QString& dir, bool priority );
  	void addXdgConfigPrefix( const QString& dir, bool priority );
  	void addXdgDataPrefix( const QString& dir, bool priority );
-+	void addElektraConfigPrefix( const QString& dir, bool priority );
++	void addElektraPrefix( const QString& dir, bool priority);
  
  	// If priority is true, the directory is added before any other,
  	// otherwise after
 diff -Naur kdelibs-3.5.2.orig/kdecore/Makefile.am kdelibs-3.5.2/kdecore/Makefile.am
 --- kdelibs-3.5.2.orig/kdecore/Makefile.am	2005-10-10 17:06:02.000000000 +0200
-+++ kdelibs-3.5.2/kdecore/Makefile.am	2006-05-08 19:37:21.000000000 +0200
-@@ -37,6 +37,8 @@
- lib_LIBRARIES = libkdefakes_nonpic.a
- 
++++ kdelibs-3.5.2/kdecore/Makefile.am	2006-05-21 15:30:10.000000000 +0200
+@@ -39,7 +39,8 @@
  include_HEADERS = kconfig.h kconfigskeleton.h \
-+	kconfigparser.h kconfigparserfactory.h \
-+	kconfiginiparser.h kconfigelektraparser.h \
  	kconfigdata.h ksimpleconfig.h kconfigdialogmanager.h \
  	kconfigbase.h kdesktopfile.h kurl.h ksock.h kaboutdata.h \
- 	kcmdlineargs.h kconfigbackend.h kapp.h kapplication.h kuniqueapp.h \
-@@ -85,6 +87,8 @@
+-	kcmdlineargs.h kconfigbackend.h kapp.h kapplication.h kuniqueapp.h \
++	kcmdlineargs.h kconfigbackend_wrapper.h kapp.h kapplication.h kuniqueapp.h \
++	kconfigparser.h kconfigparserfactory.h kconfiginiparser.h kconfigelektraparser.h elektra.h \
+ 	kuniqueapplication.h kcharsets.h kdeversion.h kpty.h kprocess.h \
+ 	kprocctrl.h klocale.h kicontheme.h kiconloader.h kdebug.h \
+ 	kwinmodule.h kwin.h krootprop.h kshortcut.h kkeynative.h kaccel.h \
+@@ -85,7 +86,8 @@
  
  libkdecore_la_SOURCES = libintl.cpp kapplication.cpp \
  	kdebug.cpp netwm.cpp kconfigbase.cpp kconfig.cpp  ksimpleconfig.cpp \
-+	kconfigparser.cpp kconfigparserfactory.cpp \
-+	kconfiginiparser.cpp kconfigelektraparser.cpp \
- 	kconfigbackend.cpp kmanagerselection.cpp kdesktopfile.cpp \
+-	kconfigbackend.cpp kmanagerselection.cpp kdesktopfile.cpp \
++	kconfigbackend_wrapper.cpp kmanagerselection.cpp kdesktopfile.cpp \
++	kconfigparser.cpp kconfigparserfactory.cpp kconfigelektraparser.cpp kconfiginiparser.cpp \
  	kstandarddirs.cpp ksock.cpp kpty.cpp kprocess.cpp kprocctrl.cpp \
  	klocale.cpp krfcdate.cpp kiconeffect.cpp kicontheme.cpp \
-@@ -116,7 +120,7 @@
+ 	kiconloader.cpp kwin.cpp kwinmodule.cpp krootprop.cpp kcharsets.cpp \
+@@ -116,7 +118,7 @@
  	kqiodevicegzip_p.cpp ktimezones.cpp
  
  libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(KDE_RPATH) $(KDE_MT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 6:0:2 -no-undefined

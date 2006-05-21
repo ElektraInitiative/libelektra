@@ -151,9 +151,9 @@ function getKdePath($homes)
 $users = getHomesDir();
 $kdeConf = getKdePath($users["home"]);
 
-convertDir($kdeConf["system"], "system/sw/kde/");
+convertDir($kdeConf["system"], "system/sw/kde/current/config/");
 for($i = 0 ; $i<count($kdeConf["user"]) ; $i++) {
-	convertDir($kdeConf["user"][$i], "user:".$users["user"][$i]."/sw/kde/");
+	convertDir($kdeConf["user"][$i], "user:".$users["user"][$i]."/sw/kde/current/config/");
 }
 
 /* $infile = $argv[1];
