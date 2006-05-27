@@ -83,7 +83,7 @@ size_t strblen(const char *s) {
 
 
 /**
- * @defgroup key Key :: Basic Methods
+ * @defgroup keybase Key :: Basic Methods
  * @brief Key construction and initialization methods.
  *
  * To use them:
@@ -358,7 +358,7 @@ kdbClose();
  * @see keyDel()
  * @return a pointer to a new allocated and initialized Key object,
  * 	or NULL if an invalid @p keyName was passed (see keySetName()).
- * @ingroup key
+ * @ingroup keybase
  * 
  */
 Key *keyNew(const char *keyName, ...) {
@@ -468,7 +468,7 @@ Key *keyNew(const char *keyName, ...) {
  * 
  * @see keyNew()
  * @return whatever is returned by keyClose()
- * @ingroup key
+ * @ingroup keybase
  *
  */ 
 int keyDel(Key *key) {
@@ -1515,7 +1515,7 @@ ssize_t keyGetBaseNameSize(const Key *key) {
 ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize) {
 	size_t size=0;
 	char *p=key->key;
-	char *baseName;
+	char *baseName=0;
 	size_t baseSize=0;
 
 	while (*(p=keyNameGetOneLevel(p+size,&size))) {
@@ -2386,7 +2386,7 @@ Key *keyNext(Key *key) {
  * @param dest will be the new copy of the Key
  * @return 0 on success
  * @see keyClose(), keyInit()
- * @ingroup key
+ * @ingroup keybase
  */
 int keyDup(const Key *source, Key *dest) {
 	
@@ -3094,7 +3094,7 @@ keyDel(key);
  * @see keyNew() and keyDel() for construction and destruction of Keys
  * 
  * @return always 0;
- * @ingroup key
+ * @ingroup keybase
  */
 int keyInit(Key *key) {
 	mode_t localUmask;
@@ -3138,7 +3138,7 @@ int keyInit(Key *key) {
  * @see keyInit() how to allocate internal memory and an example
  * @see keyNew() and keyDel() for construction and destruction of Keys
  *
- * @ingroup key
+ * @ingroup keybase
  * @return always 0;
  */
 int keyClose(Key *key) {
@@ -3157,13 +3157,12 @@ int keyClose(Key *key) {
  * Deallocate it with a simple free().
  *
  * @see keyUnserialize()
- * @ingroup key
+ * @ingroup keybase
  */
 void *keySerialize(Key *key) {
 	size_t metaInfoSize=0;
 	size_t fullNameSize=0;
 	void *serialized=0;
-	int isUser=0;
 	
 	fullNameSize=keyGetFullNameSize(key);
 	
@@ -3177,14 +3176,15 @@ void *keySerialize(Key *key) {
 	memcpy(serialized,key,metaInfoSize);
 	
 	/* Second part: the comment */
-	memcpy(serialized+metaInfoSize,key->comment,key->commentSize);
+	memcpy((char *)(serialized)+metaInfoSize,key->comment,key->commentSize);
 	
 	/* Third part: the value */
-	memcpy(serialized+metaInfoSize+key->commentSize,key->data,key->dataSize);
+	memcpy((char *)(serialized)+metaInfoSize+key->commentSize,key->data,
+		key->dataSize);
 	
 	/* Fourth part: the full key name */
 	keyGetFullName(key,
-		serialized+metaInfoSize+key->commentSize+key->dataSize,
+		(char *)(serialized)+metaInfoSize+key->commentSize+key->dataSize,
 		fullNameSize);
 	
 	return serialized;
@@ -3198,9 +3198,9 @@ void *keySerialize(Key *key) {
  * allocated for all elements of the new key;
  *
  * @see keySerialize()
- * @ingroup key
+ * @ingroup keybase
  */
-Key *keyUnserialize(void *serialized) {
+Key *keyUnserialize(const void *serialized) {
 	Key *key=0;
 	size_t metaInfoSize=0;
 	
@@ -3213,13 +3213,15 @@ Key *keyUnserialize(void *serialized) {
 	memcpy(key,serialized,metaInfoSize);
 	
 	/* Second part: the comment */
-	memcpy(key->comment,serialized+metaInfoSize,key->commentSize);
+	memcpy(key->comment,(char *)(serialized)+metaInfoSize,key->commentSize);
 	
 	/* Third part: the value */
-	memcpy(key->data,serialized+metaInfoSize+key->commentSize,key->dataSize);
+	memcpy(key->data,(char *)(serialized)+metaInfoSize+key->commentSize,
+		key->dataSize);
 	
 	/* Fourth part: the full key name */
-	keySetName(key, serialized+metaInfoSize+key->commentSize+key->dataSize);
+	keySetName(key,
+		(char *)(serialized)+metaInfoSize+key->commentSize+key->dataSize);
 	
 	return key;
 }

@@ -115,14 +115,31 @@ rm -rf $RPM_BUILD_ROOT
 
 make DESTDIR=$RPM_BUILD_ROOT install
 
+# Remove libtool junk
+rm $RPM_BUILD_ROOT/bin/kdb_static
+
+# Remove unneeded .a files for backends
 rm $RPM_BUILD_ROOT/%{_lib}/libelektra-*.a
+
+# Move .a files to -devel package
 mv $RPM_BUILD_ROOT/%{_lib}/libelektra.a $RPM_BUILD_ROOT/%{_libdir}
- 
+
+# Prepare devel files
+cp $RPM_BUILD_ROOT/%{_lib}/libelektra.so $RPM_BUILD_ROOT/%{_libdir}/
+rm $RPM_BUILD_ROOT/%{_lib}/libelektra.so
+
+# Same for libelektratools
+cp $RPM_BUILD_ROOT/%{_libdir}/libelektratools.so $RPM_BUILD_ROOT/%{_libdir}/libelektratools.so1
+rm $RPM_BUILD_ROOT/%{_libdir}/libelektratools.so
+mv $RPM_BUILD_ROOT/%{_libdir}/libelektratools.so1 $RPM_BUILD_ROOT/%{_libdir}/libelektratools.so
+
+# Remove old .la files
 #rm $RPM_BUILD_ROOT/usr/lib/libelektra-*.a
 rm $RPM_BUILD_ROOT/%{_lib}/*.la
 rm $RPM_BUILD_ROOT/%{_libdir}/*.la
- 
-#cp AUTHORS COPYING ChangeLog README INSTALL $RPM_BUILD_ROOT/%{_defaultdocdir}/%{name}-%{version}/
+
+# Remove a file that conflicts with other packages
+rm $RPM_BUILD_ROOT/%{_mandir}/man3/key.3*
 
 # Remove documentation installed, to let RPM package it allone
 rm -rf $RPM_BUILD_ROOT/%{_defaultdocdir}
@@ -168,7 +185,7 @@ kdb set system/sw/kdb/schemapath "%{_datadir}/sgml/elektra-0.1.1/elektra.xsd"
 /%{_lib}/*elektra-default.so*
 /%{_lib}/*elektra-fstab.so*
 #/%{_lib}/*elektra-ini.so*
-%{_libdir}/*elektratools.so*
+%{_libdir}/*elektratools.so.*
 %{_sysconfdir}/profile.d/*
 %doc AUTHORS COPYING ChangeLog README INSTALL
 %doc scripts doc/standards
@@ -182,8 +199,9 @@ kdb set system/sw/kdb/schemapath "%{_datadir}/sgml/elektra-0.1.1/elektra.xsd"
 %defattr(-,root,root,-)
 %{_includedir}/*
 %{_libdir}/*.a
+%{_libdir}/libelektra.so
+%{_libdir}/libelektratools.so
 %{_libdir}/pkgconfig/*
-%doc AUTHORS COPYING ChangeLog README INSTALL
 %doc examples doc/elektra-api/api-html
 %{_mandir}/man3/*
 
@@ -200,3 +218,6 @@ kdb set system/sw/kdb/schemapath "%{_datadir}/sgml/elektra-0.1.1/elektra.xsd"
 
 
 %changelog
+* Fri May 26 2006 Avi Alkalay <avi@unix.sh> 0.6.1-31
+- First packaging for Fedora Extras
+

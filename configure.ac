@@ -222,7 +222,7 @@ AC_CHECK_FUNCS([memset nl_langinfo setenv setlocale strcasecmp strchr strrchr in
 # Output
 #
 AC_CONFIG_FILES([Makefile])
-AC_CONFIG_FILES([elektra.spec], [cat ChangeLog >> elektra.spec])
+AC_CONFIG_FILES([elektra.spec])
 AC_OUTPUT([src/Makefile
 
 	   src/libloader/Makefile

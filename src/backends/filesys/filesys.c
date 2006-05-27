@@ -1009,7 +1009,6 @@ int relativeFileNameToKeyName(const char *string, char *buffer, int bufSize)
  **/
 int keyNameToRelativeFileName(const char *string, char *buffer, size_t bufSize)
 {
-	char *tmp = buffer;
 	size_t	written;
 	int     j;
 
@@ -1070,8 +1069,6 @@ int keyNameToRelativeFileName(const char *string, char *buffer, size_t bufSize)
  * @ingroup internals
  */
 size_t keyCalcRelativeFileName(const Key *key,char *relativeFileName,size_t maxSize) {
-	size_t ret;
-
 /*	 if (!key || !keyIsInitialized(key)) {
 		errno=KDB_RET_UNINITIALIZED;
 		return 0;
