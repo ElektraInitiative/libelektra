@@ -39,29 +39,31 @@ typedef unsigned int uint32_t;
 #define ssize_t int
 #define strcasecmp stricmp
 #define snprintf _snprintf
-#else
+
+#else /* WIN32 */
 /* The following file doesn't exist on windows so we need to
  * avoid including it */
 #include <inttypes.h>
-#endif
+
+#endif /* WIN32 */
 
 #include <sys/types.h>
 #include <errno.h>
 #include <stdio.h>
 
 /*#define NO_REGEX_H*/ /* Uncomment to disable regex */
-/* Makes it possible to compile elektra without regex. 
+/* Makes it possible to compile elektra without regex.
  * For now this has to be defined manually. */
 #ifndef NO_REGEX_H
 #include <regex.h>
 #else
 #define regex_t void
-#endif 
+#endif
 
 #define RG_KEY_DELIM            '/'
 
 
-/* When FORMAT_VERSION changes, FORMAT must change also. */
+/* When FORMAT_VERSION changes, FORMAT must change too. */
 #define RG_KEY_FORMAT_VERSION   2
 #define RG_KEY_FORMAT           "RG00" RG_KEY_FORMAT_VERSION
 

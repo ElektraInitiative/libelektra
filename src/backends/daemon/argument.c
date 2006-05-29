@@ -30,9 +30,10 @@ $Id$
 #include "datatype.h"
 #include "argument.h"
 
-Argument *argumentNew()
-{
-	Argument	*new;
+
+
+Argument *argumentNew() {
+	Argument *new;
 
 	new = (Argument *) malloc(sizeof(Argument));
 	argumentInit(new);
@@ -40,44 +41,34 @@ Argument *argumentNew()
 	return new;
 }
 
-int argumentInit(Argument *arg)
-{
+
+
+int argumentInit(Argument *arg) {
 	memset(arg, 0, sizeof(Argument));
 
 	return 0;
 }
 
-int argumentSetValue(Argument *arg, DataType type, const void *value)
-{
+
+
+int argumentSetValue(Argument *arg, DataType type, const void *value) {
 	assert(arg != NULL);
 
+	/* No need to work with private copy of value here */
+	
 	switch ( type ) {
 		case DATATYPE_STRING:
-			arg->data.string = malloc(strlen((const char *) value) + 1);
-			if ( arg->data.string == NULL )
-				return -1;
-			strcpy(arg->data.string, (const char *) value);
-			printf("argumentSetValue(STRING, %s)\n", value);
+			arg->data.string = (char *) value;
+			printf("argumentSetValue(STRING, %s)\n", (char *)value);
 			break;
 		case DATATYPE_INTEGER:
-			arg->data.integer = (int) value;
-			printf("argumentSetVAlue(INTEGER, %d)\n", (int) value);
+			arg->data.integer = *(int *) value;
+			printf("argumentSetVAlue(INTEGER, %d)\n", *(int *) value);
 			break;
 		case DATATYPE_KEY:
-			arg->data.complexData = malloc(sizeof(Key));
-			if ( arg->data.complexData == NULL ) {
-				printf("DATATYPE_KEY failed\n");
-				return -1;
-			}
-			memcpy(arg->data.complexData, value, sizeof(Key));
-			printf("argumentSetValue(KEY, <KEYSTRUCT>)\n");
-			break;
 		case DATATYPE_KEYSET:
-			arg->data.complexData = malloc(sizeof(KeySet));
-			if ( arg->data.complexData == NULL )
-				return -1;
-			memcpy(arg->data.complexData, value, sizeof(KeySet));
-			printf("argumentSetValue(KEYSET, <KEYSETSTRUCT>)\n");
+			arg->data.complexData = value;
+			printf("argumentSetValue(KEY, <COMPLEX>)\n");
 			break;
 		default:
 			printf("UNKNOW TYPE %d\n", type);
@@ -89,26 +80,32 @@ int argumentSetValue(Argument *arg, DataType type, const void *value)
 	return 0;
 }
 
-int argumentClose(Argument *arg)
-{
+
+
+int argumentClose(Argument *arg) {
 	assert(arg != NULL);
 
 	printf("argumentClose\n");
 	
-	switch(arg->type) {
-		case DATATYPE_STRING:
-		case DATATYPE_KEY:
-		case DATATYPE_KEYSET:
-			printf("free complex\n");
-			free(arg->data.complexData);
-			printf("freed complex\n");
-			break;
+	if (arg->data.integer) {
+		switch(arg->type) {
+			case DATATYPE_STRING:
+				free(arg->data.complexData);
+				break;
+			case DATATYPE_KEY:
+				keyDel(arg->data.complexData);
+				break;
+			case DATATYPE_KEYSET:
+				ksDel(arg->data.complexData);
+				break;
+		}
 	}
 	memset(arg, 0, sizeof(Argument));
 }
 
-int argumentDel(Argument *arg)
-{
+
+
+int argumentDel(Argument *arg) {
 	assert(arg != NULL);
 	
 	printf("argumentDel\n");

@@ -61,8 +61,7 @@ struct sockaddr_un sockserver;
 
 
 
-int connectToDaemon(const char *sockFname)
-{
+int connectToDaemon(const char *sockFname) {
 	extern int socketfd;
 		int	ret;
 

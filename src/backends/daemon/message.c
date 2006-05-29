@@ -39,13 +39,15 @@ $Id$
 #include "argument.h"
 #include "message.h"
 
+
+
+
 /**
  * Create a new message
  *
  * @return A newly allocated Message
  */
-Message *messageNew()
-{
+Message *messageNew() {
 	Message	*new;
 
 	new = (Message *) malloc(sizeof(Message));
@@ -55,6 +57,10 @@ Message *messageNew()
 
 	return new;
 }
+
+
+
+
 
 /**
  * Create a new request
@@ -112,8 +118,7 @@ Message *messageNewRequest(int procedure, ...) {
 
 
 
-int messageInit(Message *msg)
-{
+int messageInit(Message *msg) {
 	assert(msg != NULL);
 	
 	memset(msg, 0, sizeof(Message));
@@ -132,8 +137,7 @@ int messageInit(Message *msg)
  * 
  * @return Procedure ID
  */
-int messageGetProcedureId(const Message *msg)
-{
+int messageGetProcedureId(const Message *msg) {
 	assert(msg != NULL);
 
 	return msg->procId;
@@ -147,8 +151,7 @@ int messageGetProcedureId(const Message *msg)
  *
  * @return 0 on success / -1 on error
  */
-int messageAddArgument(Message *msg, Argument *argument)
-{
+int messageAddArgument(Message *msg, Argument *argument) {
 	Argument	*new;
 	Argument	**newArgs;
 
@@ -200,8 +203,7 @@ const Argument *messageStealArgByIndex(const Message *msg, int index) {
  *
  * Free all arguments 
  */
-int messageClose(Message *msg)
-{
+int messageClose(Message *msg) {
 	int	i;
 
 	assert(msg != NULL);
@@ -222,8 +224,7 @@ int messageClose(Message *msg)
 
 
 
-int messageDel(Message *msg)
-{
+int messageDel(Message *msg) {
 	assert(msg != NULL);
 	printf("messageDel(%ld)\n", msg->procId);
 	

@@ -3168,7 +3168,8 @@ void *keySerialize(Key *key) {
 	
 	metaInfoSize = KEY_METAINFO_SIZE(key);
 	
-	key->recordSize=metaInfoSize + key->dataSize + key->commentSize + fullNameSize;
+	key->recordSize=metaInfoSize + key->dataSize + key->commentSize
+		+ fullNameSize;
 	serialized=malloc(key->recordSize);
 	memset(serialized,0,key->recordSize);
 	
@@ -3176,11 +3177,12 @@ void *keySerialize(Key *key) {
 	memcpy(serialized,key,metaInfoSize);
 	
 	/* Second part: the comment */
-	memcpy((char *)(serialized)+metaInfoSize,key->comment,key->commentSize);
+	if (key->comment) memcpy((char *)(serialized)+metaInfoSize,
+			key->comment,key->commentSize);
 	
 	/* Third part: the value */
-	memcpy((char *)(serialized)+metaInfoSize+key->commentSize,key->data,
-		key->dataSize);
+	if (key->data) memcpy((char *)(serialized)+metaInfoSize+key->commentSize,
+			key->data,key->dataSize);
 	
 	/* Fourth part: the full key name */
 	keyGetFullName(key,
@@ -3213,11 +3215,20 @@ Key *keyUnserialize(const void *serialized) {
 	memcpy(key,serialized,metaInfoSize);
 	
 	/* Second part: the comment */
-	memcpy(key->comment,(char *)(serialized)+metaInfoSize,key->commentSize);
+	if (key->commentSize) {
+		key->comment=malloc(key->commentSize);
+		memcpy(key->comment,
+			(char *)(serialized)+metaInfoSize,
+			key->commentSize);
+	}
 	
 	/* Third part: the value */
-	memcpy(key->data,(char *)(serialized)+metaInfoSize+key->commentSize,
-		key->dataSize);
+	if (key->dataSize) {
+		key->data=malloc(key->dataSize);
+		memcpy(key->data,
+			(char *)(serialized)+metaInfoSize+key->commentSize,
+			key->dataSize);
+	}
 	
 	/* Fourth part: the full key name */
 	keySetName(key,

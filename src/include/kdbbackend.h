@@ -25,21 +25,25 @@ $Id$
 
 typedef struct _KDBBackend *    KDBHandle;
 
+#include <pthread.h>
 #include <kdb.h>
 #include <kdbprivate.h>
 
 #ifdef __STATIC
         #define KDBEXPORT(module) KDBBackend *libelektra_##module##_LTX_kdbBackendFactory(void)	
 #else
-        #define KDBEXPORT(module) KDBBackend *kdbBackendFactory(void) 
+        #define KDBEXPORT(module) KDBBackend *kdbBackendFactory(void)
 #endif
 
 typedef struct _KDBBackend KDBBackend;
 
 
+
+
+
 /**
  * Switches to denote the backend methods. Used in calls to kdbBackendExport().
- * 
+ *
  * @ingroup backend
  */
 enum KDBBackendMethod {
@@ -75,12 +79,26 @@ uint32_t kdbMonitorKey_default(KDBHandle handle, Key *interest,
 
 
 /* Some handle manipulation methods */
-int kdbhSetBackendData(KDBHandle handle, void *data);
+void *kdbhSetBackendData(KDBHandle handle, void *data);
 void *kdbhGetBackendData(KDBHandle handle);
-uid_t kdbhGetUID(KDBHandle handle);
-gid_t kdbhGetGID(KDBHandle handle);
-mode_t kdbhGetUMask(KDBHandle handle);
-char *kdbhGetUserName(KDBHandle handle);
+
+pid_t kdbhGetPID(const KDBHandle handle);
+pid_t kdbhSetPID(KDBHandle handle,pid_t pid);
+
+pthread_t kdbhGetTID(const KDBHandle handle);
+pthread_t kdbhSetTID(KDBHandle handle,pthread_t tid);
+
+uid_t kdbhGetUID(const KDBHandle handle);
+uid_t kdbhSetUID(KDBHandle handle,uid_t uid);
+
+gid_t kdbhGetGID(const KDBHandle handle);
+gid_t kdbhSetGID(KDBHandle handle,gid_t gid);
+
+mode_t kdbhGetUMask(const KDBHandle handle);
+mode_t kdbhSetUMask(KDBHandle handle,mode_t umask);
+
+char *kdbhGetUserName(const KDBHandle handle);
+char *kdbhSetUserName(KDBHandle handle,char *userName);
 
 #ifdef __cplusplus
 }

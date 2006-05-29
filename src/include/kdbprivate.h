@@ -89,31 +89,31 @@ struct _Key {
 	/**
 	 * Type of the value, from #KeyType.
 	 * @see keyGetType(), keySetType(), keyIsBin()
-	 */ 
+	 */
 	uint8_t       type;
-	 
+	
 	/**
 	 * System UID of this key.
 	 * @see keyGetUID(), keySetUID()
-	 */ 
+	 */
 	uid_t          uid;
-	 
+	
 	/**
 	 * System GID of this key.
 	 * @see keyGetGID(), keySetGID()
-	 */ 
+	 */
 	uid_t          gid;
-	 
+	
 	/**
 	 * File-like access control
 	 * @see keyGetAccess(), keySetAccess()
-	 */ 
+	 */
 	mode_t         access;
-	 
+	
 	/**
 	 * Time for last access (stat).
 	 * @see keyGetATime()
-	 */ 
+	 */
 	time_t         atime;
 
 	/**
@@ -121,54 +121,54 @@ struct _Key {
 	 * @see keyGetMTime()
 	 */
 	time_t         mtime;
-	 
+	
 	/**
 	 * Time for last change (meta info)
 	 * @see keyGetCTime()
-	 */ 
+	 */
 	time_t         ctime;
-	 
+	
 	/**
 	 * Size of the comment of description string, including ending NULL.
 	 * @see keyGetCommentSize(), keySetComment(), keyGetComment()
-	 */ 
+	 */
 	size_t         commentSize;
-	 
+	
 	/**
 	 * Size of the value, in bytes, including ending NULL.
 	 * @see keyGetCommentSize(), keySetComment(), keyGetComment()
-	 */ 
+	 */
 	size_t         dataSize;
 	size_t         recordSize;  /**< dataSize + commentSize + some control */
 	
 	/**
 	 * Some control and internal flags.
 	 * @see keySetFlag(), keyGetFlag()
-	 */ 
+	 */
 	uint32_t      flags;
-	 
+	
 	/**
 	 * The name of the key.
 	 * @see keySetName(), keyGetName()
-	 */ 
+	 */
 	char *         key;
-	 
+	
 	/**
 	 * A comment about the key.
 	 * @see keySetComment(), keyGetComment()
-	 */ 
+	 */
 	char *         comment;
-	 
+	
 	/**
 	 * The user that owns the key.
 	 * @see keySetComment(), keyGetComment()
-	 */ 
+	 */
 	char *         userDomain;
 	
 	/**
 	 * The user that owns the key.
 	 * @see keySetString(), keyGetString()
-	 */ 
+	 */
 	void *         data;        /**< The value, which is a NULL terminated string or binary */
 	struct _Key *  next;        /**< Link to the next object in a KeySet context */
 };
@@ -179,7 +179,7 @@ struct _Key {
  * The metainfo part of the struct is composed by _Key::type, _Key::uid,
  * _Key::gid, _Key::access, _Key::atime, _Key::mtime, _Key::ctime,
  * _Key::commentSize, _Key::dataSize.
- * 
+ *
  * This macro is usefull in Key serialization and de-serialization methods
  * of your backend.
  * @ingroup backend

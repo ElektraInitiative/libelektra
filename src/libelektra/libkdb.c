@@ -1011,9 +1011,8 @@ void kdbFreeInfo(KDBInfo *info) {
  * @see kdbhGetBackendData()
  * @ingroup backend
  */
-int kdbhSetBackendData(KDBHandle handle, void *data) {
-	handle->backendData = data;
-	return 0;
+void *kdbhSetBackendData(KDBHandle handle, void *data) {
+	return handle->backendData = data;
 }
 
 
@@ -1078,7 +1077,7 @@ int kdbClose_mybackend(KDBHandle &handle) {
  * @return a pointer to the data previously set be kdbhSetBackendData()
  * @ingroup backend
  */
-void *kdbhGetBackendData(KDBHandle handle) {
+void *kdbhGetBackendData(const KDBHandle handle) {
 	return handle->backendData;
 }
 
@@ -1086,16 +1085,34 @@ void *kdbhGetBackendData(KDBHandle handle) {
  * @return the proccess ID of the client application using the @p handle
  * @ingroup backend
  */
-pid_t kdbhGetPID(KDBHandle handle) {
+pid_t kdbhGetPID(const KDBHandle handle) {
 	return handle->pid;
+}
+
+/**
+ * Set @p handle's internal pid to @p pid.
+ * @return the proccess ID of the client application using the @p handle
+ * @ingroup backend
+ */
+pid_t kdbhSetPID(KDBHandle handle,pid_t pid) {
+	return handle->pid=pid;
 }
 
 /**
  * @return the thread ID of the client application using the @p handle
  * @ingroup backend
  */
-pthread_t kdbhGetTID(KDBHandle handle) {
+pthread_t kdbhGetTID(const KDBHandle handle) {
 	return handle->tid;
+}
+
+/**
+ * Set @p handle's internal tid to @p tid.
+ * @return the thread ID of the client application using the @p handle
+ * @ingroup backend
+ */
+pthread_t kdbhSetTID(KDBHandle handle,pthread_t tid) {
+	return handle->tid=tid;
 }
 
 
@@ -1103,24 +1120,51 @@ pthread_t kdbhGetTID(KDBHandle handle) {
  * @return the user ID of the client application using the @p handle
  * @ingroup backend
  */
-uid_t kdbhGetUID(KDBHandle handle) {
+uid_t kdbhGetUID(const KDBHandle handle) {
 	return handle->uid;
+}
+
+/**
+ * Set @p handle's internal uid to @p uid.
+ * @return the user ID of the client application using the @p handle
+ * @ingroup backend
+ */
+uid_t kdbhSetUID(KDBHandle handle,uid_t uid) {
+	return handle->uid=uid;
 }
 
 /**
  * @return the group ID of the client application using the @p handle
  * @ingroup backend
  */
-gid_t kdbhGetGID(KDBHandle handle) {
+gid_t kdbhGetGID(const KDBHandle handle) {
 	return handle->gid;
+}
+
+/**
+ * Set @p handle's internal gid to @p gid.
+ * @return the group ID of the client application using the @p handle
+ * @ingroup backend
+ */
+gid_t kdbhSetGID(KDBHandle handle,gid_t gid) {
+	return handle->gid=gid;
 }
 
 /**
  * @return the default umask() of the client application using the @p handle
  * @ingroup backend
  */
-mode_t kdbhGetUMask(KDBHandle handle) {
+mode_t kdbhGetUMask(const KDBHandle handle) {
 	return handle->umask;
+}
+
+/**
+ * Set @p handle's internal umask to @p umask.
+ * @return the default umask() of the client application using the @p handle
+ * @ingroup backend
+ */
+mode_t kdbhSetUMask(KDBHandle handle,mode_t umask) {
+	return handle->umask=umask;
 }
 
 /**
@@ -1128,8 +1172,18 @@ mode_t kdbhGetUMask(KDBHandle handle) {
  *         Remember that on some systems many different user names can have same UID.
  * @ingroup backend
  */
-char *kdbhGetUserName(KDBHandle handle) {
+char *kdbhGetUserName(const KDBHandle handle) {
 	return handle->userName;
+}
+
+/**
+ * Set @p handle's internal user name to @p userName.
+ * @return the user name of the client application using the @p handle.
+ *         Remember that on some systems many different user names can have same UID.
+ * @ingroup backend
+ */
+char *kdbhSetUserName(KDBHandle handle,char *userName) {
+	return handle->userName=userName;
 }
 
 /**

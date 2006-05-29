@@ -35,8 +35,7 @@ $Id$
 
 #include "serial_bin.h"
 
-size_t messageSerializeGetSize(const Message *msg)
-{
+size_t messageSerializeGetSize(const Message *msg) {
 	const	Argument	*arg;
 		size_t		size;
 		int		i;
@@ -54,8 +53,7 @@ size_t messageSerializeGetSize(const Message *msg)
 	return size;
 }
 
-ssize_t messageSerialize(const Message *msg, void *data, size_t dataLen)
-{
+ssize_t messageSerialize(const Message *msg, void *data, size_t dataLen) {
 	ssize_t	ret;
 	size_t	size, rest, offset;
 	int	i;
@@ -90,16 +88,17 @@ ssize_t messageSerialize(const Message *msg, void *data, size_t dataLen)
 	return offset;
 }
 
-ssize_t messageUnserialize(const void *data, Message *msg)
-{
-	Argument	*arg;
-	int		i, nbArgs;
-	ssize_t		ret;
-	size_t		size;
-	size_t		offset = 0;
+
+
+ssize_t messageUnserialize(const void *data, Message *msg) {
+	Argument *arg;
+	int      i, nbArgs;
+	ssize_t  ret;
+	size_t   size;
+	size_t   offset = 0;
 	
 	printf("messageUnserialize()\n");
-		
+	
 	/* Unserialize message */
 	size = sizeof(Message);
 	memcpy(msg, data, size);
@@ -140,8 +139,7 @@ ssize_t messageUnserialize(const void *data, Message *msg)
 }
 
 
-size_t argumentSerializeGetSize(const Argument *arg)
-{
+size_t argumentSerializeGetSize(const Argument *arg) {
 	size_t	size;
 	
 	assert(arg != NULL);
@@ -164,8 +162,7 @@ size_t argumentSerializeGetSize(const Argument *arg)
 	return size;
 }
 
-ssize_t argumentSerialize(const Argument *arg, void *data, size_t dataLen)
-{
+ssize_t argumentSerialize(const Argument *arg, void *data, size_t dataLen) {
 	size_t	offset, rest;
 	ssize_t	size;
 	
@@ -223,12 +220,16 @@ ssize_t argumentSerialize(const Argument *arg, void *data, size_t dataLen)
 	return offset;
 }
 
-ssize_t argumentUnserialize(const void *data, Argument *arg)
-{
-	size_t	size;
-	size_t	offset = 0;
-	Key	*key;
-	KeySet	*ks;
+
+
+
+
+
+ssize_t argumentUnserialize(const void *data, Argument *arg) {
+	size_t  size=0;
+	size_t  offset = 0;
+	Key     *key=0;
+	KeySet  *ks=0;
 	
 	assert(data != NULL);
 	assert(arg != NULL);
@@ -236,14 +237,19 @@ ssize_t argumentUnserialize(const void *data, Argument *arg)
 	printf("argumentUnserialize()\n");
 	
 	/* Unserialize argument struct */
-	size = sizeof(Argument);
-	memcpy(arg, data, size);
+	memcpy(&(arg->type),data,size=sizeof(DataType));
 	offset += size;
 
 	/* Unserialize complex data */
 	switch(arg->type) {
+		case DATATYPE_INTEGER:
+			size = sizeof(int);
+			arg->data.integer=*(int *)(data+offset);
+			offset+=size;
+			break;
+
 		case DATATYPE_STRING:
-			size = strlen(arg->data.string) + 1;
+			size = strblen(data+offset);
 			arg->data.string = (char *) malloc(size);
 			if ( arg->data.string == NULL )
 				return -1;
@@ -253,9 +259,8 @@ ssize_t argumentUnserialize(const void *data, Argument *arg)
 			
 		case DATATYPE_KEY:
 			key = keyNew(KEY_SWITCH_END);
-			keyInit(key);
 			size = keyUnserialize(data + offset, key);
-			if ( size == -1 ) 
+			if ( size == -1 )
 				return -1;
 			arg->data.complexData = key;
 			offset += size;
@@ -281,8 +286,7 @@ ssize_t argumentUnserialize(const void *data, Argument *arg)
  *
  * @see keySerialize(), keyUnserialize()
  */
-size_t keySerializeGetSize(const Key *key)
-{
+size_t keySerializeGetSize(const Key *key) {
 	size_t	size;
 	
 	printf("keySerializeGetSize()\n");
@@ -318,8 +322,7 @@ size_t keySerializeGetSize(const Key *key)
  *
  * @see keySetBinSerialize(), keySetBinUnserialize()
  */
-size_t keySetSerializeGetSize(KeySet *ks)
-{
+size_t keySetSerializeGetSize(KeySet *ks) {
 	size_t	size, ret;
 	Key	*init;
 	Key	*current;
@@ -360,8 +363,7 @@ size_t keySetSerializeGetSize(KeySet *ks)
  *
  * @see keyUnserialize()
  */
-ssize_t keySerialize(const Key *key, void *data, size_t dataSize)
-{
+ssize_t keySerialize(const Key *key, void *data, size_t dataSize) {
 	size_t	size, copied, rest;
 
 	printf("keySerialize()\n");
@@ -451,8 +453,7 @@ ssize_t keySerialize(const Key *key, void *data, size_t dataSize)
  *
  * @return # bytes read from data for unserialize key (-1 if error) 
  */ 
-ssize_t keyUnserialize(const void *data, Key *key)
-{
+ssize_t keyUnserialize(const void *data, Key *key) {
 	const	char	*tmp;
 		size_t	offset;
 		size_t	size;
@@ -561,8 +562,7 @@ ssize_t keyUnserialize(const void *data, Key *key)
  * @return #bytes read from data for unserialize the keyset
  * 
  */
-ssize_t keySetUnserialize(const void *data, KeySet *returned)
-{
+ssize_t keySetUnserialize(const void *data, KeySet *returned) {
 	Key	**tab;
 	size_t	offset, count, ret, cursor;
 	Key	*current;
@@ -636,8 +636,7 @@ ssize_t keySetUnserialize(const void *data, KeySet *returned)
  *
  * @see keySetBinSerializeGetSize(), keySetBinUnserialize()
  */
-ssize_t keySetSerialize(KeySet *ks, void *data, size_t dataLen)
-{
+ssize_t keySetSerialize(KeySet *ks, void *data, size_t dataLen) {
 	Key	*init;
 	Key	*current;
 	size_t	offset, rest, ret;
