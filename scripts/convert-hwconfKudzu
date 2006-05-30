@@ -10,7 +10,7 @@
 ## be sequential because sequence may change. It can't be only the
 ## description of device, because you may have 2 identical devices.
 ##
-## It will generate 2 trees faster searches:
+## It will generate 2 trees for faster searches:
 ##    system/hw/byClass    and
 ##    system/hw/byBus
 ## The entries in the second tree are links to the first.
