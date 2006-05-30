@@ -35,16 +35,16 @@ cat /etc/fstab | while read dev mpoint type options dumpfreq passno; do
 	test $dev || continue
 
 	case "$mpoint" in 
-	"none")
-		num=$(( $num + 1 ))
-		fsname="$type$num"
-		;;
-	'/')
-		fsname="roofs"
-		;;
-	*)
-		fsname=`echo $mpoint | sed -e 's^/^^g'`
-		;;
+		"none")
+			num=$(( $num + 1 ))
+			fsname="$type$num"
+			;;
+		'/')
+			fsname="roofs"
+			;;
+		*)
+			fsname=`echo $mpoint | sed -e 's^/^^g'`
+			;;
 	esac
 
 	
