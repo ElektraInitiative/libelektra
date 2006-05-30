@@ -17,7 +17,7 @@
   </general>
   <kdevcustomproject>
     <run>
-      <mainprogram>src/backends/daemon/.libs/kdbd</mainprogram>
+      <mainprogram>src/backends/daemon/test</mainprogram>
       <directoryradio>executable</directoryradio>
       <customdirectory>/home/aviram/src/elektra/src/backends/daemon/</customdirectory>
       <programargs></programargs>
@@ -25,7 +25,6 @@
       <autocompile>true</autocompile>
       <envvars>
         <envvar value="kate" name="EDITOR" />
-        <envvar value="daemon" name="KDB_BACKEND" />
       </envvars>
     </run>
     <build>

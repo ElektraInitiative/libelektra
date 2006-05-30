@@ -94,14 +94,16 @@ Berkeley DB databases to store its keys.
 #CFLAGS="-g -O0" \
 
 %configure \
-     --prefix=%{_prefix} \
-     --exec-prefix=/ \
      --bindir=/bin \
      --libdir=/%{_lib} \
      --with-docdir=%{_defaultdocdir}/elektra-%{version} \
      --with-develdocdir=%{_defaultdocdir}/elektra-devel-%{version} \
      --disable-xmltest \
      --with-docbook=%{_datadir}/sgml/docbook/xsl-stylesheets
+
+#     --prefix=%{_prefix} \
+#     --exec-prefix=/ \
+
 
 # Add these options if using a plain ./configure instead of RPM's % configure macro
 # --sysconfdir=%{_sysconfdir} \
@@ -125,13 +127,15 @@ rm $RPM_BUILD_ROOT/%{_lib}/libelektra-*.a
 mv $RPM_BUILD_ROOT/%{_lib}/libelektra.a $RPM_BUILD_ROOT/%{_libdir}
 
 # Prepare devel files
-cp $RPM_BUILD_ROOT/%{_lib}/libelektra.so $RPM_BUILD_ROOT/%{_libdir}/
+#mv $RPM_BUILD_ROOT/%{_lib}/libelektra.so $RPM_BUILD_ROOT/%{_libdir}/
 rm $RPM_BUILD_ROOT/%{_lib}/libelektra.so
+ln -sf ../../%{_lib}/libelektra.so.2 $RPM_BUILD_ROOT/%{_libdir}/libelektra.so
+#rm $RPM_BUILD_ROOT/%{_lib}/libelektra.so
 
 # Same for libelektratools
-cp $RPM_BUILD_ROOT/%{_libdir}/libelektratools.so $RPM_BUILD_ROOT/%{_libdir}/libelektratools.so1
-rm $RPM_BUILD_ROOT/%{_libdir}/libelektratools.so
-mv $RPM_BUILD_ROOT/%{_libdir}/libelektratools.so1 $RPM_BUILD_ROOT/%{_libdir}/libelektratools.so
+#cp $RPM_BUILD_ROOT/%{_libdir}/libelektratools.so $RPM_BUILD_ROOT/%{_libdir}/libelektratools.so1
+#rm $RPM_BUILD_ROOT/%{_libdir}/libelektratools.so
+#mv $RPM_BUILD_ROOT/%{_libdir}/libelektratools.so1 $RPM_BUILD_ROOT/%{_libdir}/libelektratools.so
 
 # Remove old .la files
 #rm $RPM_BUILD_ROOT/usr/lib/libelektra-*.a
@@ -141,7 +145,7 @@ rm $RPM_BUILD_ROOT/%{_libdir}/*.la
 # Remove a file that conflicts with other packages
 rm $RPM_BUILD_ROOT/%{_mandir}/man3/key.3*
 
-# Remove documentation installed, to let RPM package it allone
+# Remove documentation from 'make install', to let RPM package it allone
 rm -rf $RPM_BUILD_ROOT/%{_defaultdocdir}
 rm -rf scripts/Makefile*
 rm -rf examples/Makefile*

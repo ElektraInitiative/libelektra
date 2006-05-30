@@ -1,7 +1,7 @@
 Where to Find Elektra
 =====================
 
-Elektra stable source code as tarballs can be found at:
+Elektra stable source code as tarballs and source-RPMs can be found at:
 
   http://sourceforge.net/project/showfiles.php?group_id=117521
 
@@ -27,13 +27,15 @@ or:
 	$ rpmbuild -ta elektra-VERSION.tar.gz
 
 
-The default RPM specifications that come with the source were written to 
+The default RPM specifications that come with the source were written to
 meet the Filesystem Hierarchy Standards.
 Packaging methodology used are similar to those of Fedora, Red Hat and CentOS.
 
-A Mandriva spec file can be found inside the source code, and also Debian
-packaging script and info.
+A Mandriva spec file can be found inside the source code, and also (old
+unmaintained) Debian packaging scripts and info.
 
+More building info can be found in the elektra.spec.in RPM
+construction file.
 
 
 General Building and Installation Instructions
@@ -45,14 +47,19 @@ If you still want to use the old tarball, this is the correct
 way to do it, following the Filesystem Hierarchy Standard:
 
 	$ ./configure \
+		--bindir=/bin \
+		--libdir=/lib \
+		--sysconfdir=/etc \
+		--disable-xmltest \
+		--mandir=/usr/share/man \
+		--with-docdir=/usr/share/doc/elektra \
+		--with-develdocdir=/usr/share/doc/elektra-devel \
+		--with-docbook=/usr/share/sgml/docbook/xsl-stylesheets
+
+Try with these options too:
 		--prefix=/usr \
 		--exec-prefix=/ \
-		--sysconfdir=/etc \
-		--mandir=/usr/share/man \
-		--with-docdir=%{_docdir}/elektra \
-      --with-develdocdir=%{_docdir}/elektra-devel \
-		--disable-xmltest \
-		--with-docbook=/usr/share/sgml/docbook/xsl-stylesheets
+
 
 	$ make all
 	# make install
@@ -68,7 +75,7 @@ stylesheets on your system. Some common places:
 /usr/share/sgml/docbook/xsl-stylesheets (Red Hat, the default)
 
 
-For any further information, check the RPM spec file.
+For any further information, check the RPM spec file elektra.spec.in.
 
 
 Building RPMs from the Subversion Repository
@@ -83,12 +90,12 @@ If you know what you are doing, do this:
   bash:~/src$ cd elektra
   bash:~/src/elektra$ ./bootstrap.sh
   bash:~/src/elektra$ ./configure \
-		--prefix=/usr \
-		--exec-prefix=/ \
+		--bindir=/bin \
+		--libdir=/lib \
 		--sysconfdir=/etc \
 		--mandir=/usr/share/man \
 		--with-docdir=/usr/share/doc/elektra \
-      --with-develdocdir=/usr/share/doc/elektra-devel \
+		--with-develdocdir=/usr/share/doc/elektra-devel \
 		--disable-xmltest \
 		--with-docbook=/usr/share/sgml/docbook/xsl-stylesheets
 
@@ -96,7 +103,11 @@ If you know what you are doing, do this:
   bash:~/src/elektra$ rpmbuild -ta elektra-VERSION.tar.gz
 
 Then RPMs will appear under your RPM building tree.
+Try also to do this right after ./configure:
 
+  bash:~/src/elektra$ make rpm
+
+RPMs will be generated under ~/src/elektra/rpmdir
 
 
 Notes for Packagers
@@ -111,7 +122,6 @@ The "elektra" package sugested files:
    /lib/libelektra-*.so      (backends)
    /usr/lib/libelektratools.so* (XML importing methods)
    /usr/lib/libelektra-*.so  (other backends)
-   /lib/libregistry.so   (backwards compatibility: will be removed in future)
    /usr/share/doc/elektra/
    /usr/share/doc/elektra/fstab-convert
    /usr/share/doc/elektra/hosts-convert
@@ -144,9 +154,6 @@ The "elektra-devel" package sugested files:
    /usr/share/man/man3/ks*.3.gz        (Manpages for the ks*() methods)
 
 
-Bug
-===
-
 
 
 Still TODO
@@ -154,11 +161,9 @@ Still TODO
 
 	- Include documentation in package
 	- Build documentation with xsltproc
-	and Doxygen (These tools are currently
-	checked for existance in the configure script).
+	  and Doxygen (These tools are currently
+	  checked for existance in the configure script).
 	- Install includes file in include (include/elektra ?)
-	- ... Probably other thing but its 2:11 and i'm a bit
-	tired ;)
 
 Should be nice to have different configure script
 for backends. This will allow to check specific
@@ -172,7 +177,7 @@ libelektra and so, add no dependency.
 (Below, generic installation instructions)
 
 
-$Id
+$Id$
 
 
 

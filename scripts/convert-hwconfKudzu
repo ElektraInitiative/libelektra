@@ -1,4 +1,4 @@
-#####!/usr/bin/perl  # to avoid perl dependencies on RPM
+#!/usr/bin/perl
 
 ########################################################################
 ##
