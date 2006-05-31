@@ -132,11 +132,6 @@ rm $RPM_BUILD_ROOT/%{_lib}/libelektra.so
 ln -sf ../../%{_lib}/libelektra.so.2 $RPM_BUILD_ROOT/%{_libdir}/libelektra.so
 #rm $RPM_BUILD_ROOT/%{_lib}/libelektra.so
 
-# Same for libelektratools
-#cp $RPM_BUILD_ROOT/%{_libdir}/libelektratools.so $RPM_BUILD_ROOT/%{_libdir}/libelektratools.so1
-#rm $RPM_BUILD_ROOT/%{_libdir}/libelektratools.so
-#mv $RPM_BUILD_ROOT/%{_libdir}/libelektratools.so1 $RPM_BUILD_ROOT/%{_libdir}/libelektratools.so
-
 # Remove old .la files
 #rm $RPM_BUILD_ROOT/usr/lib/libelektra-*.a
 rm $RPM_BUILD_ROOT/%{_lib}/*.la
