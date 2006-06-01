@@ -1,5 +1,7 @@
 # $Id$
 
+AM_CPPFLAGS = -DBACKEND_LIBDIR="\"$(backenddir):$(ulibdir)\""
+
 noinst_LIBRARIES = libloader-static.a
 libloader_static_a_SOURCES = kdbLibLoader.c ../include/kdbLibLoader.h
 libloader_static_a_CFLAGS = -D__STATIC -Wall

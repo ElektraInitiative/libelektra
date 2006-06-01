@@ -1,6 +1,6 @@
 Name:          elektra
 Version:       @VERSION@
-Release:       32
+Release:       33
 Source:        http://prdownloads.sourceforge.net/elektra/%{name}-%{version}.tar.gz
 Group:         System Environment/Libraries
 License:       BSD
@@ -40,7 +40,7 @@ implementations.
 %package devel
 Summary:      Include files and API documentation to build elektrified programs
 Group:        Development/System
-Requires:     elektra = %{version}-%{release}
+Requires:     pkgconfig elektra = %{version}-%{release}
 
 %description devel
 Elektra provides a universal and secure framework to store configuration
@@ -135,6 +135,7 @@ ln -sf ../../%{_lib}/libelektra.so.2 $RPM_BUILD_ROOT/%{_libdir}/libelektra.so
 # Remove old .la files
 #rm $RPM_BUILD_ROOT/usr/lib/libelektra-*.a
 rm $RPM_BUILD_ROOT/%{_lib}/*.la
+rm $RPM_BUILD_ROOT/%{_lib}/elektra/*.la
 rm $RPM_BUILD_ROOT/%{_libdir}/*.la
 
 # Remove a file that conflicts with other packages
@@ -180,10 +181,11 @@ kdb set system/sw/kdb/schemapath "%{_datadir}/sgml/elektra-0.1.1/elektra.xsd"
 %defattr(-,root,root,-)
 /bin/*
 /%{_lib}/*elektra.so*
-/%{_lib}/*elektra-filesys.so*
-/%{_lib}/*elektra-default.so*
-/%{_lib}/*elektra-fstab.so*
-#/%{_lib}/*elektra-ini.so*
+%dir /%{_lib}/elektra
+/%{_lib}/elektra/*elektra-filesys.so*
+/%{_lib}/elektra/*elektra-default.so*
+/%{_lib}/elektra/*elektra-fstab.so*
+#/%{_lib}/elektra/*elektra-ini.so*
 %{_libdir}/*elektratools.so.*
 %{_sysconfdir}/profile.d/*
 %doc AUTHORS COPYING ChangeLog README INSTALL
@@ -208,15 +210,17 @@ kdb set system/sw/kdb/schemapath "%{_datadir}/sgml/elektra-0.1.1/elektra.xsd"
 
 #%files backend-gconf
 #%defattr(-,root,root,-)
-#%{_libdir}/*gconf.so*
+#%{_libdir}/elektra/*gconf.so*
 
 %files backend-berkeleydb
 %defattr(-,root,root,-)
-/%{_lib}/*berkeleydb.so*
+/%{_lib}/elektra/*berkeleydb.so*
 
 
 
 %changelog
+* Thu Jun 01 2006 Avi Alkalay <avi@unix.sh> 0.6.1-33
+- Moved backends to /lib/elektra/ subdir
 * Fri May 26 2006 Avi Alkalay <avi@unix.sh> 0.6.1-32
 - First packaging for Fedora Extras
 

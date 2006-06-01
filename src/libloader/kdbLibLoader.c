@@ -105,7 +105,11 @@ int kdbLibClose(kdbLibHandle handle)
 /* Generic case using libltdl */
 int kdbLibInit(void)
 {
-  return lt_dlinit();
+  int init_errors = 0;
+  init_errors = lt_dlinit();
+  if (init_errors)
+    return init_errors;
+  return lt_dlsetsearchpath(BACKEND_LIBDIR);
 }
 
 kdbLibHandle kdbLibLoad(const char *module)
