@@ -10,7 +10,7 @@ AC_REVISION($Revision$)
 AC_INIT(elektra, 0.6.1, http://bugs.libelektra.org)
 AC_CANONICAL_SYSTEM
 AC_LIBTOOL_WIN32_DLL
-AC_CONFIG_SRCDIR(src/libelektra/libkdb.c)
+AC_CONFIG_SRCDIR(src/libelektra/kdb.c)
 AM_INIT_AUTOMAKE
 AC_CONFIG_HEADER([src/include/config.h])
 

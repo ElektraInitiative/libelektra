@@ -1,4 +1,6 @@
-* Wed May 08 2006 Avi and Yannick <yl@itioweb.com> 0.6.1-3
+* Wed Jun 01 2006 Avi and Yannick <yl@itioweb.com> 0.6.1-33
+- Renamed some sorces on src/libelektra/
+- Backends installation directory moved to /lib/elektra/
 - Adding testing suite for key's name (examples/tstkeyname.c)
 - Adding escaping support for filesys backend (filesys/filesys.c)
 - Fixed segfault when USER env. variable isn't set (libelektra/key.c, filesys/filesys.c)

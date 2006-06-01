@@ -2,7 +2,8 @@
 # $Id$
 
 lib_LIBRARIES = libelektra.a
-libelektra_a_SOURCES = libkdb.c error.c key.c keyset.c libkdb_helpers.c helpers.c backend_symbols.c\
+libelektra_a_SOURCES = kdb.c error.c key.c keyset.c kdbhighlevel.c backendhelpers.c \
+		backend_symbols.c\
 		../include/kdb.h \
 		../include/kdbbackend.h \
 		../include/kdbprivate.h \
@@ -20,7 +21,7 @@ libelektra_a_LIBADD += ../backends/ini/libelektra_ini_a-ini.o \
 endif
 
 lib_LTLIBRARIES = libelektra.la
-libelektra_la_SOURCES = libkdb.c error.c key.c keyset.c libkdb_helpers.c helpers.c \
+libelektra_la_SOURCES = kdb.c error.c key.c keyset.c kdbhighlevel.c backendhelpers.c \
 		../include/kdb.h \
 		../include/kdbbackend.h \
 		../include/kdbprivate.h

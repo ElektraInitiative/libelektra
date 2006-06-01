@@ -10,7 +10,7 @@ SUBDIRS=images standards
 
 # Dependencies for Doxygen documentation
 # main...
-DOXYSOURCES=../src/libelektra/libkdb.c ../src/include/kdb.h ../src/libelektra/key.c ../src/libelektra/keyset.c ../src/Doxyfile
+DOXYSOURCES=../src/libelektra/kdb.c ../src/include/kdb.h ../src/libelektra/key.c ../src/libelektra/keyset.c ../src/libelektra/kdbhighlevel.c ../src/libelektra/backendhelpers.c ../src/Doxyfile
 
 # tools...
 DOXYSOURCES+=../src/libelektratools/kdbtools.c
