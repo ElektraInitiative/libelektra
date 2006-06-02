@@ -1,6 +1,6 @@
 Name:          elektra
 Version:       @VERSION@
-Release:       33
+Release:       1
 Source:        http://prdownloads.sourceforge.net/elektra/%{name}-%{version}.tar.gz
 Group:         System Environment/Libraries
 License:       BSD
@@ -219,8 +219,7 @@ kdb set system/sw/kdb/schemapath "%{_datadir}/sgml/elektra-0.1.1/elektra.xsd"
 
 
 %changelog
-* Thu Jun 01 2006 Avi Alkalay <avi@unix.sh> 0.6.1-33
-- Moved backends to /lib/elektra/ subdir
-* Fri May 26 2006 Avi Alkalay <avi@unix.sh> 0.6.1-32
+* Thu Jun 02 2006 Avi Alkalay <avi@unix.sh> 0.6.2
 - First packaging for Fedora Extras
+- Moved backends to /lib/elektra/ subdir
 

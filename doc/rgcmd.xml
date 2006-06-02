@@ -3,7 +3,7 @@
 $Id$
 -->
 	<section id="kdbdesc"><title>Description</title>
-		<para>The <command>kdb</command> command provide ways to manipulate the Elektra keys database (see <citerefentry><refentrytitle>elektra</refentrytitle><manvolnum>7</manvolnum></citerefentry>) keys.</para>
+		<para>The <command>kdb</command> command provide ways to manipulate the Elektra keys database.</para>
 		<para>The subcommands implemented are very similar to regular UNIX commands like <command>ls</command>, and <command>rm</command>, specially in their output and options.</para>
 	</section>
 
@@ -34,7 +34,7 @@ $Id$
 			</varlistentry>
 
 			<varlistentry><term><command>edit</command></term>
-				<listitem><para>A very powerfull subcommand that lets you edit an XML representation of the keys. The parameters it accepts is usually a parent key, so its child keys will be gathered. Can be used with the <option>-R</option> flag to work recursively. The editor used is the one set in the <envar>$EDITOR</envar> environment variable, or <command>vi</command>. After editing the keys, <command>kdb edit</command> will analyze them and commit only the changed keys, remove the keys removed, and add the keys added.</para></listitem>
+				<listitem><para>A very powerfull subcommand that lets you edit an XML representation of the keys. The parameters it accepts is usually a parent key, so its child keys will be gathered. Can be used with the <option>-R</option> flag to work recursively. The editor used is the one set in the <envar>$EDITOR</envar> environment variable, or <command>vi</command>. After editing the keys, <command>kdb edit</command> will analyze them and commit only the changed keys, remove the keys removed, and add the keys added. This command is only available when <filename>/usr/lib/libelektratools.so</filename> is available.</para></listitem>
 			</varlistentry>
 
 			<varlistentry><term><command>export</command></term><term><command>save</command></term>
@@ -42,7 +42,7 @@ $Id$
 			</varlistentry>
 
 			<varlistentry><term><command>import</command></term><term><command>load</command></term>
-				<listitem><para>Import an XML representation of keys and save it to the keys database. If no filename is passed right after the <command>import</command> command, standard input is used.</para></listitem>
+				<listitem><para>Import an XML representation of keys and save it to the keys database. If no filename is passed right after the <command>import</command> command, standard input is used. This command is only available when <filename>/usr/lib/libelektratools.so</filename> is available.</para></listitem>
 			</varlistentry>
 
 			<varlistentry><term><command>monitor</command></term><term><command>mon</command></term>

@@ -3,7 +3,7 @@
 EXTRA_DIST=kdb.1.xml elektra.7.xml elektra.5.xml
 EXTRA_DIST+=author.xml bestpract.xml rgexample.xml rgcmd.xml storage.xml overview.xml apiexample.xml api.xml compared.xml garbage.xml html-params.xsl html-titlepage-layout.tpl society.xml storage.xml UPLOAD
 EXTRA_DIST+=docbook.css doxygen.css
-EXTRA_DIST+=elektra.odp
+#EXTRA_DIST+=elektra.odp
 EXTRA_DIST+=$(man1_MANS) $(man5_MANS) $(man7_MANS)
 
 SUBDIRS=images standards
