@@ -479,12 +479,22 @@ void listSingleKey(Key *key) {
 	puts(buffer);
 }
 
-
-
-
-
-
-
+/*
+ * Helper for the 'kdb ls' command
+ *
+ */
+void listAllKeys (KeySet * ks)
+{
+	size_t listSize=ksGetSize(ks);
+	Key *walker;
+		
+	if (listSize == 1) listSingleKey(ksHead(ks));
+	else if (listSize > 1) {
+		ksRewind(ks);
+		while ((walker=ksNext(ks)))
+			listSingleKey(walker);
+	}
+}
 
 /**
  * The business logic behind 'kdb rm' command
@@ -761,8 +771,11 @@ int commandLink(KDBHandle handle) {
  */
 int commandList(KDBHandle handle) {
 	KeySet *ks; /* this is the container for all keys we'll collect bellow */
+	KeySet *tmp;
 	ssize_t ret;
 	unsigned long options=0;
+	char * buffer;
+	Key *walker=0;
 
 	/* Build our option set */
 	
@@ -779,17 +792,15 @@ int commandList(KDBHandle handle) {
 	
 	ks=ksNew();
 
-	if (!argKeyName) {
-		KeySet *roots;
+	if (!argKeyName || strcmp (argKeyName, "/") == 0) {
 		/* User don't want a specific key, so list the root keys */
 
-		roots=ksNew();
-		kdbGetRootKeys(handle,roots);
+		tmp=ksNew();
+		kdbGetRootKeys(handle,tmp);
 
 		if (argRecursive) {
-			Key *walker=0;
 			
-			while ((walker=ksPop(roots))) {
+			while ((walker=ksPop(tmp))) {
 				/* walk root by root, retrieve entire subtree
 				 * and append it to ks
 				 */
@@ -804,12 +815,33 @@ int commandList(KDBHandle handle) {
 				ksAppendKeys(ks,thisRoot);
 				ksDel(thisRoot); /* we don't need the container anymore */
 			}
-		} else ksAppendKeys(ks,roots);
-		ksDel(roots);
+		} else ksAppendKeys(ks,tmp);
+		ksDel(tmp);
 	} else {
 		/* User gave us a specific key to start with */
+	
+		if (argKeyName[0] == '/')
+		{
+			buffer = malloc (strlen (argKeyName)+sizeof("system\0"));
+			
+			tmp = ksNew (); //tmp workaround bug bec of filesys
+			strcpy (buffer, "system\0");
+			ret=kdbGetChildKeys(handle,strcat (buffer, argKeyName),tmp,options);
+			/*listAllKeys (tmp);*/
+			ksAppendKeys (ks,tmp);
+			ksDel (tmp);
+		
+			tmp = ksNew ();
+			strcpy (buffer, "user\0");
+			ret=kdbGetChildKeys(handle,strcat (buffer, argKeyName),tmp,options);
+			/*listAllKeys (tmp);*/
+			ksAppendKeys (ks,tmp);
+			ksDel (tmp);
 
-		ret=kdbGetChildKeys(handle,argKeyName,ks,options);
+			free (buffer);
+		} else {	
+			ret=kdbGetChildKeys(handle,argKeyName,ks,options);
+		}
 	
 		if (ret<0) {
 			/* We got an error. Check if it is because its not a folder key */
@@ -817,7 +849,10 @@ int commandList(KDBHandle handle) {
 				/* We still have a chance, since there is something there */
 				Key *key=keyNew(argKeyName,KEY_SWITCH_END);
 				
-				if (argValue) ret=kdbGetKey(handle,key);
+				if (argValue)
+				{ /*TODO: cascading*/
+					ret=kdbGetKey(handle,key);
+				}
 				else ret=kdbStatKey(handle,key);
 				
 				if (ret == 0) ksAppend(ks,key);
@@ -846,22 +881,11 @@ int commandList(KDBHandle handle) {
 	}
 
 	if (argShow) {
-		size_t listSize=ksGetSize(ks);
-		
 		if (argXML) ksToStream(ks,stdout,options);
-		else {
-			if (listSize == 1) listSingleKey(ksHead(ks));
-			else if (listSize > 1) {
-				Key *walker;
-			
-				ksRewind(ks);
-				while ((walker=ksNext(ks)))
-					listSingleKey(walker);
-			}
-		}
+		else listAllKeys(ks);
 	}
 
-	ksClose(ks);
+	ksDel(ks);
 	return 0;
 }
 
@@ -892,8 +916,8 @@ int commandList(KDBHandle handle) {
  */
 int commandGet(KDBHandle handle) {
 	int ret;
-	Key *key;
-	char *buffer; // used two times
+	Key *key = 0;
+	char *buffer = 0; // used two times
 	char *p;
 	size_t size,cs=0;
 	uint8_t keyType;
@@ -945,7 +969,7 @@ done:
 	}
 
 
-	free (buffer);
+	if (buffer) free (buffer);
 	p=buffer=malloc(size);
 
 
