@@ -742,7 +742,7 @@ int commandLink(KDBHandle handle) {
 /**
  * The business logic behind 'kdb ls' command.
  * @param argKeyName key name to be listed
- * @param argRecursive whether to act recursivelly (-R)
+ * @param argRecursive whether to act recursively (-R)
  * @param argValue whether to show key values or not (-v)
  * @param argAll whether to list also inactive keys (-a)
  * @param argXML whether to create XML output (-x)
@@ -893,28 +893,44 @@ int commandList(KDBHandle handle) {
 int commandGet(KDBHandle handle) {
 	int ret;
 	Key *key;
-	char *buffer;
+	char *buffer; // used two times
 	char *p;
 	size_t size,cs=0;
 	uint8_t keyType;
+	char error[200];
+
 
 	if (!argKeyName) {
 		fprintf(stderr,"kdb get: No key name\n");
+		fprintf(stderr,"run kdb get -h for more info\n");
 		return -1;
 	}
-
-	key=keyNew(argKeyName,KEY_SWITCH_END);
 	
-	ret=kdbGetKey(handle,key);
+	key=keyNew(argKeyName,KEY_SWITCH_END);
+
+	if (argKeyName[0] == '/')
+	{
+		buffer = malloc (strlen (argKeyName)+sizeof("system\0"));
+		
+		strcpy (buffer, "user\0");
+		keySetName(key, strcat (buffer, argKeyName));
+		ret=kdbGetKey(handle,key);
+		if (ret == 0) goto done;
+		
+		strcpy (buffer, "system\0");
+		keySetName(key, strcat (buffer, argKeyName));
+		ret=kdbGetKey(handle,key);
+		if (ret == 0) goto done;
+	} else {	
+		ret=kdbGetKey(handle,key);
+	}
 
 	if (ret) {
-		char error[200];
-
-		keyDel(key);
 		sprintf(error,"kdb get: %s",argKeyName);
 		kdbPrintError(error);
-		return ret;
+		goto cleanup;
 	}
+done:
 	size=keyGetValueSize(key);
 	if (argDescriptive) {
 		cs=keyGetCommentSize(key);
@@ -929,6 +945,7 @@ int commandGet(KDBHandle handle) {
 	}
 
 
+	free (buffer);
 	p=buffer=malloc(size);
 
 
@@ -960,11 +977,13 @@ int commandGet(KDBHandle handle) {
 	if (keyIsBin(key)) fwrite(buffer,size,1,stdout);
 	else printf("%s\n",buffer);
 
+	ret = 0;
 
+cleanup:
 	free(buffer);
 	keyDel(key);
 
-	return 0;
+	return ret;
 }
 
 
@@ -1000,7 +1019,7 @@ int commandHelp() {
 	printf("\n");
 	
 	printf("COMMANDS\n");
-	printf(" kdb get [-dlr] key/name\n");
+	printf(" kdb get [-dlfs] key/name\n");
 	printf(" kdb set [-t type] [-c \"A comment about this key\"] [-m mode] [-u uid]\n");
 	printf("         [-g gid] key/name \"the value\"\n");
 	printf(" kdb set [-t type] [-m mode] [-c \"A comment\"] key/name -- \"the value\"\n");
@@ -1126,9 +1145,9 @@ void commandGetHelp ()
 	printf(" Get the value from the specified key. Accepts options: -d, -l, -f, -s \n");
 	printf("\n");
 	optiond();
-	optionl();	
-	optionf();	
-	options();	
+	optionl();
+	optionf();
+	options();
 }
 
 void commandSetHelp ()

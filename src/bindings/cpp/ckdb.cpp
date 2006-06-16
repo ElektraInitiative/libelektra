@@ -1,8 +1,5 @@
 #include <ckdb.h>
 
-//TODO: increase Buffer Size
-#define BUFFER_SIZE 5
-
 /**Constructs a class ckdb. 
  * Read reads all values of root and stores them into a hash.
  * User and System focus is done automatically.

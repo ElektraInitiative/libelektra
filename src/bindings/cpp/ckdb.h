@@ -9,10 +9,13 @@ extern "C"
 #include <kdb.h>
 }
 
-#define Key _Key
+/*TODO: increase Buffer Size
+ * This buffer is used to give a first try in copying the
+ * name/value and so forth. If it is enough, not malloc
+ * is required!*/
+#define BUFFER_SIZE 5
 
-/**ckdb is a class for very easy c++ access to elektra.
- * It trys to be fully-feature and remain lean.*/
+/**ckdb provides a class for c++ access to kdb.*/
 class ckdb
 {
 public:

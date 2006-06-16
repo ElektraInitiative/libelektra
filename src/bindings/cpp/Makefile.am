@@ -3,7 +3,7 @@
 testdir = $(develdocdir)/src/bindings/cpp/
 
 lib_LTLIBRARIES = libelektra-cpp.la
-libelektra_cpp_la_SOURCES = ckdb.cpp ../../include/kdb.h
+libelektra_cpp_la_SOURCES = ckdb.cpp ckey.cpp ckdb.h ckey.h ../../include/kdb.h
 libelektra_cpp_la_LDFLAGS = -avoid-version -module
 libelektra_cpp_la_LIBADD = -lelektra
 libelektra_cpp_la_CFLAGS = -DDEBUG

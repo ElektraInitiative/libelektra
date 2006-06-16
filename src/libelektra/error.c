@@ -38,7 +38,7 @@ $Id$
 char *kdbStrError(int errnum) {
 	switch (errnum) {
 		case KDB_RET_INVALIDKEY:
-			return "Key name not under 'system' or 'user'";
+			return "Invalid Key";
 		case KDB_RET_NOKEY:
 			return "Key has no name";
 		case KDB_RET_NODATA:
