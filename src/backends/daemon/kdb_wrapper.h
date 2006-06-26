@@ -1,14 +1,14 @@
+#include "message.h"
 
-void *wrapper_kdbOpen(void *request);
-void *wrapper_kdbClose(void *request);
-void *wrapper_kdbStatKey(void *request);
-void *wrapper_kdbGetKey(void *request);
-
-/* int wrapper_kdbSetKey(int nbArgs, Argument *args[], Message *reply);
-int wrapper_kdbSetKeys(int nbArgs, Argument *args[], Message *reply);
-int wrapper_kdbRename(int nbArgs, Argument *args[], Message *reply);
-int wrapper_kdbRemoveKey(int nbArgs, Argument *args[], Message *reply); */
-void *wrapper_kdbGetChild(void *request);
-/* int wrapper_kdbMonitorKey(int nbArgs, Argument *args[], Message *reply);
-int wrapper_kdbMonitorKeys(int nbArgs, Argument *args[], Message *reply); */
+Message *wrapper_kdbOpen(Message *request);
+Message *wrapper_kdbClose(Message *request);
+Message *wrapper_kdbStatKey(Message *request);
+Message *wrapper_kdbGetKey(Message *request);
+Message *wrapper_kdbSetKey(Message *request);
+Message *wrapper_kdbSetKeys(Message *request);
+Message *wrapper_kdbRename(Message *request);
+Message *wrapper_kdbRemoveKey(Message *request); 
+Message *wrapper_kdbGetChild(Message *request);
+Message *wrapper_kdbMonitorKey(Message *request);
+Message *wrapper_kdbMonitorKeys(Message *request); 
 
