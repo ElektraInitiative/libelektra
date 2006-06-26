@@ -43,38 +43,17 @@ static Message *processRequest(Message *request)
 	
 	procedure = messageGetProcedure(request);
 	switch(procedure) {
-		case KDB_BE_OPEN:
-			fprintf(stderr, "kdbOpen()\n");
-			return wrapper_kdbOpen(request);
-        	case KDB_BE_CLOSE:	
-			fprintf(stderr, "kdbClose()\n");
-			return wrapper_kdbClose(request);
-        	case KDB_BE_STATKEY:
-/*			ret = wrapper_kdbStatKey(request, t);
-			break;  */
-        	case KDB_BE_GETKEY:	
-			fprintf(stderr, "kdbGetKey()\n");
-			return wrapper_kdbGetKey(request);
-/*        	case KDB_BE_SETKEY:
-			ret = wrapper_kdbSetKey(msg->nbArgs, msg->args, reply);
-			break;
-        	case KDB_BE_SETKEYS:
-			ret = wrapper_kdbSetKeys(msg->nbArgs, msg->args, reply);
-			break;
-        	case KDB_BE_RENAME:
-			ret = wrapper_kdbRename(msg->nbArgs, msg->args, reply);
-			break;
-        	case KDB_BE_REMOVEKEY:
-			ret = wrapper_kdbRemoveKey(msg->nbArgs, msg->args, reply);
-			break; */
+		case KDB_BE_OPEN:	return wrapper_kdbOpen(request);
+        	case KDB_BE_CLOSE:	return wrapper_kdbClose(request);
+        	case KDB_BE_STATKEY:	return wrapper_kdbStatKey(request);
+        	case KDB_BE_GETKEY:	return wrapper_kdbGetKey(request);
+        	case KDB_BE_SETKEY:	return wrapper_kdbSetKey(request);
+        	case KDB_BE_SETKEYS:	return wrapper_kdbSetKeys(request);
+        	case KDB_BE_RENAME:	return wrapper_kdbRename(request);
+        	case KDB_BE_REMOVEKEY:	return wrapper_kdbRemoveKey(request);
         	case KDB_BE_GETCHILD:	return wrapper_kdbGetChild(request);
-/*        	case KDB_BE_MONITORKEY:
-			ret = wrapper_kdbMonitorKey(msg->nbArgs, msg->args, reply);
-			break;
-        	case KDB_BE_MONITORKEYS:
-			ret = wrapper_kdbMonitorKeys(msg->nbArgs, msg->args, reply);
-			break; */
-			
+        	case KDB_BE_MONITORKEY:	return wrapper_kdbMonitorKey(request);
+        	case KDB_BE_MONITORKEYS:	return wrapper_kdbMonitorKeys(request);
 		default:
 			return NULL;
 	}

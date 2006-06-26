@@ -2,7 +2,7 @@ A quick How to test :
 ----------------------
 
 Install this stuff somewhere
-./configure --prefix=/home/<you>/build/elektra-test
+./configure --prefix=/home/<you>/build/elektra-test --enable-experimental
 make install
 
 On one term:
