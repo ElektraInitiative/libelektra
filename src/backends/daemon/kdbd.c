@@ -28,9 +28,9 @@ $Id: kdbd.c 788 2006-05-29 16:30:00Z aviram $
 
 #define	HANDLE_PREALLOC	5
 
-static Message *processRequest(Message *request);
+static Message *processRequest(Message *request, uid_t remoteeuid, gid_t remoteegid);
 
-static Message *processRequest(Message *request)
+static Message *processRequest(Message *request, uid_t remoteeuid, gid_t remoteegid)
 {
 	int	msgType, procedure;
 	int	ret;
@@ -43,7 +43,7 @@ static Message *processRequest(Message *request)
 	
 	procedure = messageGetProcedure(request);
 	switch(procedure) {
-		case KDB_BE_OPEN:	return wrapper_kdbOpen(request);
+		case KDB_BE_OPEN:	return wrapper_kdbOpen(request, remoteeuid, remoteegid);
         	case KDB_BE_CLOSE:	return wrapper_kdbClose(request);
         	case KDB_BE_STATKEY:	return wrapper_kdbStatKey(request);
         	case KDB_BE_GETKEY:	return wrapper_kdbGetKey(request);
@@ -64,22 +64,22 @@ static Message *processRequest(Message *request)
 int kdbd(int t)
 {
 	Message	*request, *reply;
-	uid_t	remoteeuid;
-	gid_t	remoteegid;
+	uid_t   remoteeuid;
+	gid_t   remoteegid;
 	int	closed;
 	
 	if ( ipc_eid(t, &remoteeuid, &remoteegid) == -1 ) {
 		fprintf(stderr, "Can't get eUID & eGID\n");
 		return 1;
 	}
-
+	
 	closed = 0;
 	while ( !closed ) {
 		request = protocolReadMessage(t);
 		closed = (messageGetProcedure(request) == KDB_BE_CLOSE);
 		fprintf(stderr, "Closed = %d\n");
 		
-		reply = processRequest(request);
+		reply = processRequest(request, remoteeuid, remoteegid);
 		messageDel(request);
 		
 		protocolSendMessage(t, reply);

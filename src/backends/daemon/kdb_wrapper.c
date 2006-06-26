@@ -22,6 +22,8 @@ $Id: kdbd.c 788 2006-05-29 16:30:00Z aviram $
 
 
 #include <stdlib.h> /* malloc */
+#include <sys/types.h>
+
 #include "kdbbackend.h"
 
 #include "datatype.h"
@@ -91,7 +93,7 @@ static KDBHandle *getHandle(int kdbdHandle)
 	return handles[kdbdHandle];
 }
 
-Message *wrapper_kdbOpen(Message *request)
+Message *wrapper_kdbOpen(Message *request, uid_t euid, gid_t egid)
 {
 	KDBHandle	*handle;
 	int		kdbdHandle;
@@ -110,6 +112,9 @@ Message *wrapper_kdbOpen(Message *request)
 	}
 
 	kdbOpen(handle);
+	kdbhSetUID(*handle, euid);
+	kdbhSetGID(*handle, egid);
+	
 	kdbdHandle = storeHandle(handle);
 	if ( kdbdHandle == -1 ) {
 		kdbClose(handle);
@@ -237,7 +242,7 @@ Message *wrapper_kdbSetKey(void *request)
 	}
 	
 	if ( (handle = getHandle(kdbdHandle)) ) {
-		ret = kdbGetKey(*handle, key);
+		ret = kdbSetKey(*handle, key);
 	} else  {
 		keyDel(key);
 		return NULL;

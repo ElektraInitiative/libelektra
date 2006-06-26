@@ -1,6 +1,6 @@
 #include "message.h"
 
-Message *wrapper_kdbOpen(Message *request);
+Message *wrapper_kdbOpen(Message *request, uid_t remoteeuid, gid_t remoteegid);
 Message *wrapper_kdbClose(Message *request);
 Message *wrapper_kdbStatKey(Message *request);
 Message *wrapper_kdbGetKey(Message *request);
