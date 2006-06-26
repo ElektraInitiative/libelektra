@@ -1,5 +1,5 @@
 /***************************************************************************
-                datatype.h  -  Defines argument datatypes
+                serial_bin.c  -  Low level objects serialization etc
                              -------------------
     begin                : Sun Mar 12 2006
     copyright            : (C) 2006 by Yannick Lecaillez, Avi Alkalay
@@ -13,28 +13,12 @@
  *                                                                         *
  ***************************************************************************/
 
-/* Subversion stuff
 
-$Id: datatype.h 673 2006-03-13 00:28:19Z aviram $
+ssize_t serialInt_getSize(const void *pInt);
+ssize_t serialInt_serialize(const void *pInt, void *pBuffer);
+ssize_t serialInt_unserialize(const void *pBuffer, void *pInt);
 
-*/
+ssize_t serialUlong_getSize(const void *pInt);
+ssize_t serialUlong_serialize(const void *pInt, void *pBuffer);
+ssize_t serialUlong_unserialize(const void *pBuffer, void *pInt);
 
-
-#ifndef DATATYPE_H
-#define DATATYPE_H
-
-
-typedef enum {
-	DATATYPE_UNKNOW = 1,
-	DATATYPE_INTEGER,
-	DATATYPE_ULONG,			/* unsigned long */
-	DATATYPE_STRING,
-	DATATYPE_KEY,			/* Complex data */
-	DATATYPE_KEYSET,
-	DATATYPE_MESSAGE,
-
-	DATATYPE_LAST			/* Must be the last */
-} DataType;
-
-
-#endif /* DATATYPE_H */

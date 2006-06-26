@@ -15,10 +15,11 @@
 
 /* Subversion stuff
 
-$Id$
+$Id: daemon.c 788 2006-05-29 16:30:00Z aviram $
 
 */
 
+#include <stdlib.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -33,9 +34,10 @@ $Id$
 
 #include "datatype.h"
 #include "protocol.h"
-#include "argument.h"
 #include "message.h"
 
+#include "ipc.h"
+#include "sig.h"
 
 
 #define BACKENDNAME "daemon"
@@ -56,39 +58,10 @@ $Id$
 #define MAX_PATH_LENGTH 4096
 #endif
 
-int socketfd = -1;
-struct sockaddr_un sockserver;
-
-
-
-int connectToDaemon(const char *sockFname) {
-	extern int socketfd;
-		int	ret;
-
-	/* Connected yet */
-	if ( socketfd != -1 )
-		return 0;
-	
-	/* Open socket */
-	socketfd = socket(AF_UNIX, SOCK_STREAM, 0);
-	if ( socketfd == -1 ) {
-		perror("connectToDaemon");
-		return 1;
-	}
-
-	/* Connect */
-	sockserver.sun_family = AF_UNIX;
-	strcpy(sockserver.sun_path, SOCKET_NAME);
-	ret = connect(socketfd, (struct sockaddr *) &sockserver,
-		sizeof(sockserver.sun_family) + strlen(sockserver.sun_path));
-	
-	if ( ret ) {
-		perror("connectToDaemon");
-		return 1;
-	}
-
-	return 0;
-}
+typedef struct {
+	int	socketfd;
+	int	kdbdHandle;
+} DaemonBackendData;
 
 /**
  * Initialize the backend.
@@ -106,59 +79,76 @@ int connectToDaemon(const char *sockFname) {
  * @see kdbOpen()
  * @ingroup backend
  */
-int kdbOpen_daemon() {
-	extern	int	socketfd;
-	Message	*request;
-	Message	reply;
-	ssize_t	ret;
+int kdbOpen_daemon(KDBHandle *handle) {
+	DaemonBackendData	*data;
+	Message *request, *reply;
+	int ret;
 
-	printf("kdbOpen()\n");
-		
-	//
-	// Establish connection
-	//
-	if ( connectToDaemon(SOCKET_NAME) )
+	data = (DaemonBackendData *) malloc(sizeof(DaemonBackendData));
+	if ( data == NULL )
 		return 1;
+	memset(data, 0, sizeof(DaemonBackendData));
 	
-	//
-	// TODO: Handshake
-	//
-	// if ( connectionHandshake() )
-	//	return 1;
+	sig_ignore(sig_pipe);
 	
-	//
-	// kdbOpen()
-	//
+	data->socketfd = ipc_stream();
+	if ( data->socketfd == -1 ) {
+		perror("libelektra-daemon");
+		free(data);
+		return 1;
+	}
+	if ( ipc_connect(data->socketfd, SOCKET_NAME) == -1 ) {
+		perror("libelektra-daemon");
+		close(data->socketfd);
+		free(data);
+		return 1;
+	}
+	ndelay_off(data->socketfd);
 	
 	/* Prepare request */
-	request = messageNewRequest(KDB_BE_OPEN, DATATYPE_LAST);
-        if ( request == NULL ) {
-		fprintf(stderr, "error new request\n");
+	request = messageNew(MESSAGE_REQUEST, KDB_BE_OPEN, DATATYPE_LAST);
+	if ( request == NULL ) {
+		fprintf(stderr, "Error building request\n");
+		close(data->socketfd);
+		free(data);
+		messageDel(request);
 		return 1;
 	}
 		
 	/* Send request */
-	ret = protocolSendMessage(socketfd, request);
-	messageDel(request);
-	if ( ret == -1 ) {
-	//	printf(stderr, "error send message\n");
+	if ( protocolSendMessage(data->socketfd, request) == -1 ) {
+		fprintf(stderr, "Error sending message\n");
+		close(data->socketfd);
+		free(data);
+		messageDel(request);
 		return 1;
 	}
+	messageDel(request);
 
 	/* Wait for a reply for 5 secondes */
-	ret = protocolReadMessage(socketfd,&reply);
-	
-	
-#ifdef TOTO
-	messageInit(&reply);
-	if ( protocolReadMessage(&reply, REPLY_TIMEOUT) == -1 )
+	reply = protocolReadMessage(data->socketfd);
+	if ( reply == NULL ) {
+		fprintf(stderr, "Error reading message\n");
+		close(data->socketfd);
+		messageDel(reply);
+		free(data);
 		return 1;
+	}
 	
 	/* Get reply value */
-	if ( messageGetArgumentValue(reply, 0, DATATYPE_INTEGER, &ret) == -1 )
+	if ( messageExtractArgs(reply, DATATYPE_INTEGER, &ret, DATATYPE_LAST) ) {
+		fprintf(stderr, "Error extracting args\n");
+		close(data->socketfd);
+		messageDel(reply);
+		free(data);
 		return 1;
-#endif
+	} 
+	messageDel(reply);
 	
+	data->kdbdHandle = ret;
+
+	kdbhSetBackendData(*handle, data);
+
 	return 0;
 }
 
@@ -178,37 +168,56 @@ int kdbOpen_daemon() {
  * @see kdbClose()
  * @ingroup backend
  */
-int kdbClose_daemon()
+int kdbClose_daemon(KDBHandle *handle)
 {
-	extern	int	socketfd;
-	Message	*request;
-	Message	reply;
-	int	ret;
+	DaemonBackendData *data;
+	Message	*request, *reply;
+	int	ret = 0;
 
-	printf("kdbClose() %d\n", socketfd);
-		
+	data = (DaemonBackendData *) kdbhGetBackendData(*handle);
+	if ( data == NULL )
+		return 0;
+	
 	/* Prepare request */
-	request = messageNewRequest(KDB_BE_CLOSE, DATATYPE_LAST);
-	if ( request == NULL )
-		return 1;
+	request = messageNew(MESSAGE_REQUEST, KDB_BE_CLOSE,
+				DATATYPE_INTEGER, &data->kdbdHandle,
+				DATATYPE_LAST);
 	
 	/* Send request */
-	ret = protocolSendMessage(socketfd, request);
+	ret = protocolSendMessage(data->socketfd, request);
 	messageDel(request);
-	if ( ret )
+	if ( ret ) {
+		kdbhSetBackendData(*handle, NULL);
+		close(data->socketfd); 
+		free(data);
 		return 1;
+	}
 	
 	/* Wait for a reply for 5 secondes */
-	messageInit(&reply);
-	if ( readMessage(&reply, REPLY_TIMEOUT) == -1 )
+	reply = protocolReadMessage(data->socketfd);
+	if ( reply == NULL ) {
+		kdbhSetBackendData(*handle, NULL);
+		close(data->socketfd);
+		free(data);
+		messageDel(reply);
 		return -1;
+	}
 	
 	/* Get reply value */
-	if ( messageGetArgumentValue(reply, 0, DATATYPE_INTEGER, &ret) == -1 )
+	if ( messageExtractArgs(reply, DATATYPE_INTEGER, &ret, DATATYPE_LAST) == -1 ) {
+		kdbhSetBackendData(*handle, NULL);
+		close(data->socketfd);
+		free(data);
+		messageDel(reply);
 		return -1;
+	} 
+	messageDel(reply);
+
+	kdbhSetBackendData(*handle, NULL);
+	close(data->socketfd);
+	free(data);
 	
-	close(socketfd);
-	return 0; /* success */
+	return ret;
 }
 
 /**
@@ -221,35 +230,46 @@ int kdbClose_daemon()
  * @see kdbStatKey() for expected behavior.
  * @ingroup backend
  */
-int kdbStatKey_daemon(Key *key) {
-	extern	int	socketfd;
-		Message		*request;
-		Message		reply;
-		int		ret;
-
-	printf("kdbStatKey()\n");
-		
+int kdbStatKey_daemon(KDBHandle handle, Key *key) {
+	DaemonBackendData *data;
+	Message *request, *reply;
+	int     ret;
+	
+	data = (DaemonBackendData *) kdbhGetBackendData(handle);
+	if ( data == NULL ) 
+		return 1;
+	
 	/* Prepare request */
-	request = messageNewRequest(KDB_BE_STATKEY,
-				DATATYPE_KEY, key,
-				DATATYPE_LAST); 
-	if ( request == NULL )
-		return 1;
+	request = messageNew(MESSAGE_REQUEST, KDB_BE_STATKEY,
+			DATATYPE_INTEGER, data->kdbdHandle,
+			DATATYPE_KEY, key,
+			DATATYPE_LAST);
 
-	/* Send request */	
-	ret = protocolSendMessage(socketfd, request);
+	/* Send request */
+        ret = protocolSendMessage(data->socketfd, request);
 	messageDel(request);
-	if ( ret ) 
+        if ( ret == -1 ) {
+		fprintf(stderr, "Error writing message\n");
 		return 1;
+	}
 
-	/* Wait for a reply for 5 secondes */
-	messageInit(&reply);
-	if ( readMessage(&reply, REPLY_TIMEOUT) == -1 ) 
+        /* Wait for a reply for 5 secondes */
+	reply = protocolReadMessage(data->socketfd);
+	if ( reply == NULL ) {
+		fprintf(stderr, "Error reading message\n");
 		return -1;
-
-	/* Get reply value */
-	if ( messageGetArgumentValue(reply, 0, DATATYPE_INTEGER, &ret) == -1 ) 
+	}
+	
+	/* Get result */
+	if ( messageExtractArgs(reply,
+				DATATYPE_INTEGER, &ret,
+				DATATYPE_KEY, key,
+				DATATYPE_LAST) ) {
+		fprintf(stderr, "Error extracting ARGS\n");
+		messageDel(reply);
 		return -1;
+	}
+	messageDel(reply);
 		
 	return ret;
 }
@@ -265,39 +285,48 @@ int kdbStatKey_daemon(Key *key) {
  * @see kdbGetKey() for expected behavior.
  * @ingroup backend
  */
-int kdbGetKey_daemon(Key *key)
+int kdbGetKey_daemon(KDBHandle handle, Key *key)
 {
-	extern	int	socketfd;
-		Message         *request;
-        	Message         reply;
-		int             ret;
+	DaemonBackendData	*data;
+	Message         *request, *reply;
+	int             ret;
 
-	printf("kdbGetKey()\n");
-		
+	data = (DaemonBackendData *) kdbhGetBackendData(handle);
+	if ( data == NULL ) 
+		return 1;
+	
 	/* Prepare request */
-	request = messageNewRequest(KDB_BE_GETKEY,
+	request = messageNew(MESSAGE_REQUEST, KDB_BE_GETKEY,
+			DATATYPE_INTEGER, &data->kdbdHandle,
 			DATATYPE_KEY, key,
 			DATATYPE_LAST);
-	if ( request == NULL )
-		return 1;
 	
 	/* Send request */
-	ret = protocolSendMessage(socketfd, request);
+	ret = protocolSendMessage(data->socketfd, request);
 	messageDel(request);
-	if ( ret )
+	if ( ret == -1 ) {
+		fprintf(stderr, "Error writing message\n");
 		return 1;
+	}
 	
 	/* Wait for a reply for 5 secondes */
-	messageInit(&reply);
-	if ( readMessage(&reply, REPLY_TIMEOUT) == -1 )
+	reply = protocolReadMessage(data->socketfd);
+	if ( reply == NULL ) {
+		fprintf(stderr, "Error reading message\n");
+		messageDel(reply);
 		return -1;
+	}
 	
 	/* Get result */
-	if ( messageGetArgumentValue(reply, 0, DATATYPE_INTEGER, &ret) == -1 )
+	if ( messageExtractArgs(reply,
+				DATATYPE_INTEGER, &ret,
+				DATATYPE_KEY, key,
+				DATATYPE_LAST) ) {
+		fprintf(stderr, "Error extracting ARGS\n");
+		messageDel(reply);
 		return -1;
-
-	if ( messageGetArgumentValue(reply, 1, DATATYPE_KEY, key) == -1 )
-		return -1;
+	}
+	messageDel(reply);
 	
 	return ret;
 }
@@ -314,37 +343,49 @@ int kdbGetKey_daemon(Key *key)
  * @see kdbSetKey() for expected behavior.
  * @ingroup backend
  */
-int kdbSetKey_daemon(Key *key)
+int kdbSetKey_daemon(KDBHandle handle, Key *key)
 {
-	extern int socketfd;
-	Message *request;
-	Message reply;
+	DaemonBackendData *data;
+	Message *request, *reply;
 	int ret;
-
-	printf("kdbSetKey()\n");
-		
-	/* Prepare request */
-	request = messageNewRequest(KDB_BE_SETKEY,
-			DATATYPE_KEY, key,
-			DATATYPE_LAST);
-	if ( request == NULL )
-		return 1;
-	
-	/* Send request */
-	ret = protocolSendMessage(socketfd, request);
-	messageDel(request);
-	if ( ret )
-		return 1;
-	
-	/* Wait for a reply for 5 secondes */
-	messageInit(&reply);
-	if ( readMessage(&reply, REPLY_TIMEOUT) == -1 )
-		return -1;
-	
-	/* Get reply value */
-	if ( messageGetArgumentValue(reply, 0, DATATYPE_INTEGER, &ret) == -1 )
-		return -1;
-	
+       
+       data = (DaemonBackendData *) kdbhGetBackendData(handle);
+       if ( data == NULL )
+	       return 1;
+       
+       /* Prepare request */
+       request = messageNew(MESSAGE_REQUEST, KDB_BE_SETKEY,
+		       DATATYPE_INTEGER, &data->kdbdHandle,
+		       DATATYPE_KEY, key,
+		       DATATYPE_LAST);
+       
+       /* Send request */
+       ret = protocolSendMessage(data->socketfd, request);
+       messageDel(request);
+       if ( ret == -1 ) {
+	       fprintf(stderr, "Error writing message\n");
+	       return 1;
+       }
+       
+       /* Wait for a reply for 5 secondes */
+       reply = protocolReadMessage(data->socketfd);
+       if ( reply == NULL ) {
+	       fprintf(stderr, "Error reading message\n");
+	       messageDel(reply);
+	       return -1;
+       }
+       
+       /* Get result */
+       if ( messageExtractArgs(reply,
+			       DATATYPE_INTEGER, &ret,
+			       DATATYPE_KEY, key,
+			       DATATYPE_LAST) ) {
+	       fprintf(stderr, "Error extracting ARGS\n");
+	       messageDel(reply);
+	       return -1;
+       }
+       	messageDel(reply);
+       
 	return ret;	
 }
 
@@ -356,39 +397,51 @@ int kdbSetKey_daemon(Key *key)
  * @see kdbRename() for expected behavior.
  * @ingroup backend
  */
-int kdbRename_daemon(Key *key, const char *newName)
+int kdbRename_daemon(KDBHandle handle, Key *key, const char *newName)
 {
-	extern	int	socketfd;
-		Message	*request;
-		Message	reply;
-		int	ret;
-
-	printf("kdbRename()\n");
-		
-	/* Prepare request */
-	request = messageNewRequest(KDB_BE_RENAME,
+	DaemonBackendData *data;
+	Message *request, *reply;
+	int ret;
+	
+ 	data = (DaemonBackendData *) kdbhGetBackendData(handle);
+ 	if ( data == NULL )
+		return 1;
+	
+ 	/* Prepare request */
+ 	request = messageNew(MESSAGE_REQUEST, KDB_BE_RENAME,
+			DATATYPE_INTEGER, &data->kdbdHandle,
 			DATATYPE_KEY, key,
 			DATATYPE_STRING, newName,
 			DATATYPE_LAST);
-	if ( request == NULL )
+	
+ 	/* Send request */
+ 	ret = protocolSendMessage(data->socketfd, request);
+ 	messageDel(request);
+ 	if ( ret == -1 ) {
+		fprintf(stderr, "Error writing message\n");
 		return 1;
+	}
 	
-	/* Send request */
-	ret = protocolSendMessage(socketfd, request);
-	messageDel(request);
-	if ( ret )
-		return 1;
-	
-	/* Wait for a reply for 5 secondes */
-	messageInit(&reply);
-	if ( readMessage(&reply, REPLY_TIMEOUT) == -1 )
+ 	/* Wait for a reply for 5 secondes */
+ 	reply = protocolReadMessage(data->socketfd);
+	if ( reply == NULL ) {
+		fprintf(stderr, "Error reading message\n");
+		messageDel(reply);
 		return -1;
+	}
 	
-	/* Get reply value */
-	if ( messageGetArgumentValue(reply, 0, DATATYPE_INTEGER, &ret) == -1 )
+ 	/* Get result */
+ 	if ( messageExtractArgs(reply,
+				DATATYPE_INTEGER, &ret,
+				DATATYPE_KEY, key,
+				DATATYPE_LAST) ) {
+		fprintf(stderr, "Error extracting ARGS\n");
+		messageDel(reply);
 		return -1;
-	
-	return ret;
+	}
+	messageDel(reply);
+
+        return ret;	
 }
 
 
@@ -400,42 +453,51 @@ int kdbRename_daemon(Key *key, const char *newName)
  * @see kdbRemove() for expected behavior.
  * @ingroup backend
  */
-int kdbRemoveKey_daemon(const Key *key)
+int kdbRemoveKey_daemon(KDBHandle handle, const Key *key)
 {
-	extern	int	socketfd;
-		Message         *request;
-		Message         reply;
-		int             ret;
 	
-	printf("kdbRemoveKey()\n");
-		
+	DaemonBackendData *data;
+	Message *request, *reply;
+	int ret;
+	
+	data = (DaemonBackendData *) kdbhGetBackendData(handle);
+	if ( data == NULL )
+		return 1;
+	
 	/* Prepare request */
-	request = messageNewRequest(KDB_BE_REMOVEKEY,
+	request = messageNew(MESSAGE_REQUEST, KDB_BE_REMOVEKEY,
+			DATATYPE_INTEGER, &data->kdbdHandle,
 			DATATYPE_KEY, key,
 			DATATYPE_LAST);
-	if ( request == NULL )
-		return 1;
 	
 	/* Send request */
-	ret = protocolSendMessage(socketfd, request);
+	ret = protocolSendMessage(data->socketfd, request);
 	messageDel(request);
-	if ( ret )
+	if ( ret == -1 ) {
+		fprintf(stderr, "Error writing message\n");
 		return 1;
+	}
 	
 	/* Wait for a reply for 5 secondes */
-	messageInit(&reply);
-	if ( readMessage(&reply, REPLY_TIMEOUT) == -1 )
+	reply = protocolReadMessage(data->socketfd);
+	if ( reply == NULL ) {
+		fprintf(stderr, "Error reading message\n");
+		messageDel(reply);
 		return -1;
+	}
 	
-	/* Get reply value */
-	if ( messageGetArgumentValue(reply, 0, DATATYPE_INTEGER, &ret) == -1 )
+	/* Get result */
+	if ( messageExtractArgs(reply,
+				DATATYPE_INTEGER, &ret,
+				DATATYPE_LAST) ) {
+		fprintf(stderr, "Error extracting ARGS\n");
+		messageDel(reply);
 		return -1;
+	}
+	messageDel(reply);
 	
 	return ret;
 }
-
-
-
 
 /**
  * Implementation for kdbGetKeyChildKeys() method.
@@ -443,45 +505,50 @@ int kdbRemoveKey_daemon(const Key *key)
  * @see kdbGetKeyChildKeys() for expected behavior.
  * @ingroup backend
  */
-ssize_t kdbGetKeyChildKeys_daemon(const Key *parentKey, KeySet *returned, unsigned long options) 
+ssize_t kdbGetKeyChildKeys_daemon(KDBHandle handle, const Key *parentKey, KeySet *returned, unsigned long options) 
 {
-	extern	int	socketfd;
-		Message         *request;
-		Message         reply;
-		int             ret;
+	DaemonBackendData       *data;
+	Message         *request, *reply;
+	int             ret;
 	
-	printf("kdbGetKeyChildKeys()\n");
-		
+	data = (DaemonBackendData *) kdbhGetBackendData(handle);
+	if ( data == NULL )
+		return 1;
+	
 	/* Prepare request */
-	printf("\t ->");
-	request = messageNewRequest(KDB_BE_GETCHILD,
+	request = messageNew(MESSAGE_REQUEST, KDB_BE_GETCHILD,
+			DATATYPE_INTEGER, &data->kdbdHandle,
 			DATATYPE_KEY, parentKey,
-			DATATYPE_INTEGER, options,
+			DATATYPE_ULONG, &options,
 			DATATYPE_LAST);
-	if ( request == NULL )
-		return 1;
-
+	
 	/* Send request */
-	printf("\t ->");
-	ret = protocolSendMessage(socketfd, request);
-	printf("\t ->");
+	ret = protocolSendMessage(data->socketfd, request);
 	messageDel(request);
-	if ( ret )
+	if ( ret == -1 ) {
+		fprintf(stderr, "Error writing message\n");
 		return 1;
+	}
 	
 	/* Wait for a reply for 5 secondes */
-		
-	/* messageInit(&reply);
-	if ( readMessage(&reply, REPLY_TIMEOUT) == -1 )
-		return -1; */
+	reply = protocolReadMessage(data->socketfd);
+	if ( reply == NULL ) {
+		fprintf(stderr, "Error reading message\n");
+		messageDel(reply);
+		return -1;
+	}
 	
-	/* Get reply value 
-	if ( messageGetArgumentValue(reply, 0, DATATYPE_INTEGER, &ret) == -1 )
+	/* Get result */
+	if ( messageExtractArgs(reply,
+				DATATYPE_INTEGER, &ret,
+				DATATYPE_KEYSET, returned,
+				DATATYPE_LAST) ) {
+		fprintf(stderr, "Error extracting ARGS\n");
+		messageDel(reply);
 		return -1;
+	}
+	messageDel(reply);
 
-	if ( messageGetArgumentValue(reply, 1, DATATYPE_KEYSET, returned) == -1 )
-		return -1;
-	*/
 	return ret;
 }
 
@@ -496,40 +563,50 @@ ssize_t kdbGetKeyChildKeys_daemon(const Key *parentKey, KeySet *returned, unsign
  * @see kdbSetKeys() for expected behavior.
  * @ingroup backend
  */
-int kdbSetKeys_daemon(KeySet *ks) 
+int kdbSetKeys_daemon(KDBHandle handle, KeySet *ks) 
 {
-	extern	int	socketfd;
-		Message         *request;
-		Message         reply;
-		Argument        *arg;
-		int             ret;
-
-	printf("kdbSetKeys()\n");
-		
+	DaemonBackendData       *data;
+	Message         *request, *reply;
+	int             ret;
+	
+	data = (DaemonBackendData *) kdbhGetBackendData(handle);
+	if ( data == NULL )
+		return 1;
+	
 	/* Prepare request */
-	request = messageNewRequest(KDB_BE_SETKEYS,
+	request = messageNew(MESSAGE_REQUEST, KDB_BE_SETKEYS,
+			DATATYPE_INTEGER, &data->kdbdHandle,
 			DATATYPE_KEYSET, ks,
 			DATATYPE_LAST);
-
-	if ( request == NULL )
-		return 1;
-	
 	/* Send request */
-	ret = protocolSendMessage(socketfd, request);
+	ret = protocolSendMessage(data->socketfd, request);
 	messageDel(request);
-	if ( ret )
+	if ( ret == -1 ) {
+		fprintf(stderr, "Error writing message\n");
 		return 1;
+	}
 	
 	/* Wait for a reply for 5 secondes */
-	messageInit(&reply);
-	if ( readMessage(&reply, REPLY_TIMEOUT) == -1 )
+	reply = protocolReadMessage(data->socketfd);
+	if ( reply == NULL ) {
+		fprintf(stderr, "Error reading message\n");
+		messageDel(reply);
 		return -1;
+	}
 	
-	/* Get reply value */
-	if ( messageGetArgumentValue(reply, 0, DATATYPE_INTEGER, &ret) == -1 )
+	/* Get result */
+	if ( messageExtractArgs(reply,
+				DATATYPE_INTEGER, &ret,
+				DATATYPE_KEYSET, ks,
+				DATATYPE_LAST) ) {
+		fprintf(stderr, "Error extracting ARGS\n");
+		messageDel(reply);
 		return -1;
+	}
+	messageDel(reply);
 	
 	return ret;
+	
 }
 
 
@@ -541,43 +618,55 @@ int kdbSetKeys_daemon(KeySet *ks)
  * @see kdbMonitorKeys() for expected behavior.
  * @ingroup backend
  */
-u_int32_t kdbMonitorKeys_daemon(KeySet *interests, u_int32_t diffMask,
+u_int32_t kdbMonitorKeys_daemon(KDBHandle handle, KeySet *interests, u_int32_t diffMask,
 		unsigned long iterations, unsigned sleep)
 {
-	extern	int	socketfd;
-		Message         *request;
-		Message         reply;
-		Argument        *arg;
-		int             ret;
-
-	printf("kdbMonitorKeys()\n");
-		
-	/* Prepare request */
-	request = messageNewRequest(KDB_BE_MONITORKEYS,
-			DATATYPE_KEYSET, interests,
-			DATATYPE_INTEGER, diffMask,
-			DATATYPE_INTEGER, iterations,
-			DATATYPE_INTEGER, sleep,
-			DATATYPE_LAST);
-	if ( request == NULL )
+	DaemonBackendData       *data;
+	Message         *request, *reply;
+	unsigned long	monitorRet;
+	int             ret;
+	
+	data = (DaemonBackendData *) kdbhGetBackendData(handle);
+	if ( data == NULL )
 		return 1;
+	
+	/* Prepare request */
+	request = messageNew(MESSAGE_REQUEST, KDB_BE_MONITORKEYS,
+			DATATYPE_INTEGER, &data->kdbdHandle,
+			DATATYPE_KEYSET, interests,
+			DATATYPE_ULONG, &diffMask,
+			DATATYPE_ULONG, &iterations,
+			DATATYPE_ULONG, &sleep,
+			DATATYPE_LAST);
 	
 	/* Send request */
-	ret = protocolSendMessage(socketfd, request);
+	ret = protocolSendMessage(data->socketfd, request);
 	messageDel(request);
-	if ( ret )
+	if ( ret == -1 ) {
+		fprintf(stderr, "Error writing message\n");
 		return 1;
+	}
 	
 	/* Wait for a reply for 5 secondes */
-	messageInit(&reply);
-	if ( readMessage(&reply, REPLY_TIMEOUT) == -1 )
+	reply = protocolReadMessage(data->socketfd);
+	if ( reply == NULL ) {
+		fprintf(stderr, "Error reading message\n");
+		messageDel(reply);
 		return -1;
+	}
 	
-	/* Get reply value */
-	if ( messageGetArgumentValue(reply, 0, DATATYPE_INTEGER, &ret) == -1 )
+	/* Get result */
+	if ( messageExtractArgs(reply,
+				DATATYPE_ULONG, &monitorRet,
+				DATATYPE_KEYSET, interests,
+				DATATYPE_LAST) ) {
+		fprintf(stderr, "Error extracting ARGS\n");
+		messageDel(reply);
 		return -1;
+	}
+	messageDel(reply);
 	
-	return ret;
+	return monitorRet;
 }
 
 
@@ -591,43 +680,55 @@ u_int32_t kdbMonitorKeys_daemon(KeySet *interests, u_int32_t diffMask,
  * @see kdbMonitorKey() for expected behavior.
  * @ingroup backend
  */
-u_int32_t kdbMonitorKey_daemon(Key *interest, u_int32_t diffMask,
+u_int32_t kdbMonitorKey_daemon(KDBHandle handle, Key *interest, u_int32_t diffMask,
 		unsigned long iterations, unsigned sleep) 
 {
-	extern	int	socketfd;
-		Message         *request;
-       	 	Message         reply;
-		Argument        *arg;
-		int             ret;
+        DaemonBackendData       *data;
+	Message         *request, *reply;
+	unsigned long   monitorRet;
+	int             ret;
 	
-	printf("kdbMonitorKey()\n");
-		
-	/* Prepare request */
-	request = messageNewRequest(KDB_BE_MONITORKEY,
-			DATATYPE_KEY, 		interest,
-			DATATYPE_INTEGER,	diffMask,
-			DATATYPE_INTEGER,	iterations,
-			DATATYPE_INTEGER,	sleep,
-			DATATYPE_LAST);
-	if ( request == NULL )
+	data = (DaemonBackendData *) kdbhGetBackendData(handle);
+	if ( data == NULL )
 		return 1;
+	
+	/* Prepare request */
+	request = messageNew(MESSAGE_REQUEST, KDB_BE_MONITORKEY,
+			DATATYPE_INTEGER, &data->kdbdHandle,
+			DATATYPE_KEY, interest,
+			DATATYPE_ULONG, &diffMask,
+			DATATYPE_ULONG, &iterations,
+			DATATYPE_ULONG, &sleep,
+			DATATYPE_LAST);
 	
 	/* Send request */
-	ret = protocolSendMessage(socketfd, request);
+	ret = protocolSendMessage(data->socketfd, request);
 	messageDel(request);
-	if ( ret )
+	if ( ret == -1 ) {
+		fprintf(stderr, "Error writing message\n");
 		return 1;
+	}
 	
 	/* Wait for a reply for 5 secondes */
-	messageInit(&reply);
-	if ( readMessage(&reply, REPLY_TIMEOUT) == -1 )
+	reply = protocolReadMessage(data->socketfd);
+	if ( reply == NULL ) {
+		fprintf(stderr, "Error reading message\n");
+		messageDel(reply);
 		return -1;
+	}
 	
-	/* Get reply value */
-	if ( messageGetArgumentValue(reply, 0, DATATYPE_INTEGER, &ret) == -1 )
+	/* Get result */
+	if ( messageExtractArgs(reply,
+				DATATYPE_ULONG, &monitorRet,
+				DATATYPE_KEY, interest,
+				DATATYPE_LAST) ) {
+		fprintf(stderr, "Error extracting ARGS\n");
+		messageDel(reply);
 		return -1;
+	}
+	messageDel(reply);
 	
-	return ret;
+	return monitorRet;
 }
 
 
@@ -646,7 +747,8 @@ u_int32_t kdbMonitorKey_daemon(Key *interest, u_int32_t diffMask,
  * @see kdbOpenBackend()
  * @ingroup backend
  */
-KDBBackend *kdbBackendFactory(void) {
+KDBEXPORT(daemon)
+{
 	return kdbBackendExport(BACKENDNAME,
 		KDB_BE_OPEN,           &kdbOpen_daemon,
 		KDB_BE_CLOSE,          &kdbClose_daemon,

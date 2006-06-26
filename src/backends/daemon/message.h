@@ -1,5 +1,5 @@
 /***************************************************************************
-                message.h  -  Interface for a messages
+                message.c  -  Class for a protocol messages
                              -------------------
     begin                : Sun Mar 12 2006
     copyright            : (C) 2006 by Yannick Lecaillez, Avi Alkalay
@@ -23,47 +23,39 @@
 
 /* Subversion stuff
 
-$Id$
+$Id: message.c 788 2006-05-29 16:30:00Z aviram $
 
 */
 
-#ifndef MESSAGE_H
-#define MESSAGE_H
+#ifndef __MESSAGE__
+#define __MESSAGE__
 
-#include "argument.h"
+#include "datatype.h"
 
+#define MSG_MAX_ARGS	8
 
-
-/* Message type */
 typedef enum {
 	MESSAGE_REQUEST,
 	MESSAGE_REPLY
 } MessageType;
 
-
-
-
-/* Struct Message */
 typedef struct {
-	MessageType       type;
-	
-	unsigned int      procId; /* Procedure ID */
-	
-	int               nbArgs; /* # args */
-	Argument          **args; /* Argument / return parameter */
+	MessageType	type;
+	int		procId;
+	int		nbArgs;
+	DataType	args[MSG_MAX_ARGS];
+
+	size_t		size;
+
+	/* In memory, this struct is followed by
+	 * the serialized arguments. "size" reflect that. */
 } Message;
 
+Message *messageNew(MessageType msgType, int procedure, ...);
+MessageType messageGetType(const Message *msg);
+int messageGetProcedure(const Message *msg);
+int messageGetNbArgs(const Message *msg);
+int messageExtractArgs(const Message *msg, ...);
+void messageDel(Message *msg);
 
-
-
-const Argument *messageStealArgByIndex(const Message *msg, int index);
-Message *messageNew();
-Message *messageNewRequest(int procedure, ...);
-int messageInit(Message *msg);
-int messageGetProcedureId(const Message *msg);
-int messageAddArgument(Message *msg, Argument *argument);
-const Argument *messageStealArgByIndex(const Message *msg, int index);
-int messageClose(Message *msg);
-int messageDel(Message *msg);
-
-#endif /* MESSAGE_H */
+#endif /* __MESSAGE__ */

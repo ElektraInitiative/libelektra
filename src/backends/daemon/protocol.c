@@ -23,206 +23,104 @@
 
 /* Subversion stuff
 
-$Id$
+$Id: protocol.c 788 2006-05-29 16:30:00Z aviram $
 
 */
 
 
 #include <assert.h>
+
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdio.h>
 #include <stdlib.h>
-#include <inttypes.h>
+#include <stdarg.h>
+#include <string.h>
 
 #include "datatype.h"
-#include "argument.h"
 #include "message.h"
 
 #include "protocol.h"
 
 /* Magic: Magic number for protocol header. Elektra written like l33t ;-) */
-#define PROTO_MAGIC     0x0E1E374A
+#define PROTO_MAGIC     0x0E1E374AL
 #define PROTO_VERSION   1
 
-static ssize_t protocolSendData            (int fd, void *data, size_t dataLen);
-static ssize_t protocolReadData            (int fd, void *data, const ProtocolHeader *header);
-static ssize_t protocolReadDataHeader      (int fd, ProtocolHeader *header);
-static size_t  protocolHeaderGetDataSize   (const ProtocolHeader *header);
 static int     protocolCheckHeader         (const ProtocolHeader *header);
 
 
-
-
-
-
-ssize_t protocolReadMessage(int fd, Message *msg) {
-	void            *data;
+Message *protocolReadMessage(int fd)
+{
+	Message		*msg;
+	ProtocolHeader	header;
 	size_t          ret;
-	ProtocolHeader  header;
-	
-	assert(msg != NULL);
 	
 	/* read header */
-	if ( protocolReadDataHeader(fd, &header) == -1 )
-		return -1;
-	ret = protocolHeaderGetDataSize(&header);
-	if ( (data = malloc(ret)) == NULL )
-		return -1;
-	
+	memset(&header, 0, sizeof(header));
+	if ( (ret = read(fd, &header, sizeof(header))) == -1 ) {
+		perror("protocolReadMessage");
+		return NULL;
+	}
+	if ( protocolCheckHeader(&header) ) {
+		fprintf(stderr, "protocolReadMessage(): Incorrect header\n");
+		return NULL;
+	}
+
 	/* read message */
-	if ( (ret = protocolReadData(fd, data, &header)) == -1 ) {
-		free(data);
-		return -1;
+	msg = (Message *) malloc(header.dataLen);
+	if ( msg == NULL ) {
+		perror("protocolReadMessage");
+		return NULL;
+	}
+	fprintf(stderr, "protocolReadMessage: %ld read\n", header.dataLen);
+	if ( (ret = read(fd, msg, header.dataLen)) == -1 ) {
+		perror("protocolReadMessage");
+		return NULL;
 	}
 	
-	/* Unserialize */
-	if ( messageUnserialize(data, msg) == -1 ) {
-		free(data);
-		return -1;
-	}
-	
-	free(data);
-	
-	return ret;
+	return msg;
 }
 
-
-
-
-
-
-
-
-
-
-
-ssize_t protocolSendMessage(int fd, const Message *msg) {
+int protocolSendMessage(int fd, const Message *message)
+{
+	ProtocolHeader header;
 	ssize_t ret;
-	size_t  len;
-	void    *data;
-		
-	assert(msg != NULL);
+
+	assert(message != NULL);
 	
-	/* Message serialization */
-	len = messageSerializeGetSize(msg);
-	if ( (data = malloc(len)) == NULL )
-		return -1;
-	
-	if ( (ret = messageSerialize(msg, data, len)) == -1 ) {
-		free(data);
+	/* Send header */
+	memset(&header, 0, sizeof(header));
+	header.magic    = PROTO_MAGIC;
+	header.version  = PROTO_VERSION;
+	header.dataLen  = message->size;
+	if ( (ret = write(fd, &header, sizeof(header))) == -1 ) {
+		perror("protocolSendMessage");
 		return -1;
 	}
 	
 	/* Send message */
-	ret = protocolSendData(fd, data, len);
-	free(data);
+	if ( (ret = write(fd, message, message->size)) == -1 ) {
+		perror("protocolSendMessage");
+		return -1;
+	}
 	
-	return ret;
+	return 0;
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-static ssize_t protocolSendData(int fd, void *data, size_t dataLen) {
-	ProtocolHeader	header;
-	ssize_t		ret, read;
-	
-	assert(data != NULL);
-
-	header.magic	= PROTO_MAGIC;
-	header.version	= PROTO_VERSION;
-	header.dataLen	= dataLen;
-
-	read = 0;
-	
-	if ( (ret = write(fd, &header, sizeof(header))) == -1 )
-		return -1;
-	read += ret;
-	
-	
-	if ( (ret = write(fd, data, dataLen)) == -1 )
-		return -1;
-	read += ret;
-
-	return ret;
-}
-
-
-
-
-
-
-
-
-
-
-
-static ssize_t protocolReadData(int fd, void *data, const ProtocolHeader *header) {
-	ssize_t	ret;
-	
-	assert(data != NULL);
+static int protocolCheckHeader(const ProtocolHeader *header)
+{
 	assert(header != NULL);
 
-	return  read(fd, data, header->dataLen);
-}
-
-
-
-
-
-
-
-
-
-static ssize_t protocolReadDataHeader(int fd, ProtocolHeader *header) {
-	ssize_t	ret;
-	
-	assert(header != NULL);
-
-	if ( (ret = read(fd, header, sizeof(ProtocolHeader))) == -1 )
+	if ( header->magic != PROTO_MAGIC ) {
+		fprintf(stderr, "potocolCheckHeader: Header should be %lx and its %lx\n", PROTO_MAGIC, header->magic);
 		return -1;
+	}
 
-	if ( protocolCheckHeader(header) == -1 )
+	if ( header->version < PROTO_VERSION ) {
+		fprintf(stderr, "protocolCheckHeader: Protocol version should be %d and its %d\n", PROTO_VERSION, header->version);
 		return -1;
-
-	return ret;
-}
-
-
-
-
-
-
-
-static size_t protocolHeaderGetDataSize(const ProtocolHeader *header) {
-	assert(header != NULL);
-	
-	return header->dataLen;
-}
-
-
-
-
-
-
-
-
-static int protocolCheckHeader(const ProtocolHeader *header) {
-	assert(header != NULL);
-
-	if ( header->magic != PROTO_MAGIC )
-		return -1;
-
-	if ( header->version < PROTO_VERSION )
-		return -1;
+	}	
 
 	return 0;
 }

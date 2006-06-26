@@ -1,9 +1,8 @@
 
-# $Id$
+# $Id: Makefile.am 796 2006-06-01 21:44:44Z aviram $
 
 noinst_LTLIBRARIES = libproto.la
-libproto_la_SOURCES = argument.c message.c serial_bin.c protocol.c
-libproto_la_LDFLAGS = -version-info 1:0:0
+libproto_la_SOURCES = message.c protocol.c ipc.c sig.c serial.c serial_int.c serial_string.c serial_key.c serial_keyset.c
 
 
 backend_LTLIBRARIES = libelektra-daemon.la
@@ -12,7 +11,7 @@ libelektra_daemon_la_LDFLAGS = -avoid-version -module
 libelektra_daemon_la_LIBADD = libproto.la
 
 bin_PROGRAMS = kdbd
-kdbd_SOURCES = kdbd.c
+kdbd_SOURCES = main.c kdbd.c kdb_wrapper.c
 kdbd_LDFLAGS = -L../../libelektra/
 kdbd_LDADD = libproto.la -lelektra
 

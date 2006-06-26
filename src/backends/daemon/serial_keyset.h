@@ -1,5 +1,5 @@
 /***************************************************************************
-                argument.h  -  Class to encapsulte message arguments
+                serial_bin.c  -  Low level objects serialization etc
                              -------------------
     begin                : Sun Mar 12 2006
     copyright            : (C) 2006 by Yannick Lecaillez, Avi Alkalay
@@ -13,35 +13,15 @@
  *                                                                         *
  ***************************************************************************/
 
+
 /* Subversion stuff
 
-$Id$
+$Id: serial_bin.c 788 2006-05-29 16:30:00Z aviram $
 
 */
 
 
-#ifndef ARGUMENT_H
-#define ARGUMENT_H
 
-
-#include "datatype.h"
-
-
-/* Struct which store an RPC Argument */
-typedef struct {
-	DataType type;	/* Type of this args (see ArgType)	*/
-	
-	union {
-		void    *complexData;	/* Complex data (struct) */
-		char    *string;	/* String data */
-		int     integer;	/* integer data */
-	} data;
-} Argument;
-
-Argument *argumentNew();
-int argumentInit(Argument *arg);
-int argumentSetValue(Argument *arg, DataType type, const void *value);
-int argumentClose(Argument *arg);
-int argumentDel(Argument *arg);
-
-#endif /* ARGUMENT_H */
+ssize_t serialKeySet_getSize(const void *pKeySet);
+ssize_t serialKeySet_unserialize(const void *pBuffer, void *pKeySet);
+ssize_t serialKeySet_serialize(const void *pKeySet, void *pBuffer);

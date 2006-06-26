@@ -21,7 +21,7 @@
 
 /* Subversion stuff
 
-$Id$
+$Id: protocol.h 673 2006-03-13 00:28:19Z aviram $
 
 */
 
@@ -31,13 +31,13 @@ $Id$
 #include "message.h"
 
 typedef struct {
-	uint32_t  magic;
-	int16_t   version;
+	unsigned long  magic;
+	unsigned int   version;
 
 	size_t    dataLen;
 } ProtocolHeader;
 
-ssize_t protocolSendMessage(int fd, const Message *msg);
-ssize_t protocolReadMessage(int fd, Message *msg);
+int protocolSendMessage(int fd, const Message *msg);
+Message *protocolReadMessage(int fd);
 
 #endif /* PROTOCOL_H */

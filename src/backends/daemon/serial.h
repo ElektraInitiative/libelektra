@@ -1,9 +1,9 @@
 /***************************************************************************
-                datatype.h  -  Defines argument datatypes
-                             -------------------
+                serial.c  -  Abstraction of serialization
+                             -----------------------------
     begin                : Sun Mar 12 2006
     copyright            : (C) 2006 by Yannick Lecaillez, Avi Alkalay
-    email                : avi@unix.sh
+    email                : sizon5@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -13,28 +13,21 @@
  *                                                                         *
  ***************************************************************************/
 
-/* Subversion stuff
 
-$Id: datatype.h 673 2006-03-13 00:28:19Z aviram $
+#ifndef __SERIAL__
+#define __SERIAL__
 
-*/
+#include <stdlib.h>
+#include "datatype.h"
 
+typedef struct {
+	ssize_t (*getSizeOfSerialized)(const void *data);
+	ssize_t (*serialize)(const void *data, void *into);
+	ssize_t (*unserialize)(const void *data, void *into);
+} SerializerFunc;
 
-#ifndef DATATYPE_H
-#define DATATYPE_H
+ssize_t serializeGetSize(DataType type, void *val);
+ssize_t serialize(DataType type, const void *pType, void *pBuffer);
+ssize_t unserialize(DataType type, const void *pBuffer, void *pType); 
 
-
-typedef enum {
-	DATATYPE_UNKNOW = 1,
-	DATATYPE_INTEGER,
-	DATATYPE_ULONG,			/* unsigned long */
-	DATATYPE_STRING,
-	DATATYPE_KEY,			/* Complex data */
-	DATATYPE_KEYSET,
-	DATATYPE_MESSAGE,
-
-	DATATYPE_LAST			/* Must be the last */
-} DataType;
-
-
-#endif /* DATATYPE_H */
+#endif
