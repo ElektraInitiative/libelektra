@@ -1,0 +1,24 @@
+A quick How to test :
+----------------------
+
+Install this stuff somewhere
+./configure --prefix=/home/<you>/build/elektra-test
+make install
+
+On one term:
+export KDB_BACKEND=filesys
+export LD_LIBRARY_PATH=/home/<you>/build/elektra-test/lib
+/home/<you>/build/elektra-test/bin/kdbd
+
+On other term:
+export KDB_BACKEND=daemon
+export LD_LIBRARY_PATH=/home/<you>/build/elektra-test/lib
+/home/<you>/build/elektra-test/bin/kdb ls system
+
+Have fun :-)
+Yannick Lecaillez.
+
+P.S : I'll write a better README with details about implementation
+and a TODO list when daemon will be totaly finished. Until that, feel
+free to contact me on #elektra on Freenode or my mail <sizon5@gmail.com>.
+
