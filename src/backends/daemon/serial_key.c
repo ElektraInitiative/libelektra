@@ -72,7 +72,6 @@ ssize_t serialKey_serialize(const void *pKey, void *pBuffer)
 
 	/* Serialize metadata */
 	size = sizeof(Key);
-	fprintf(stderr, "\tserialKey_serialzeSize = %ld\n", size);
 	memcpy(buf, key, size);
 	buf += size;
 

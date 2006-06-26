@@ -72,7 +72,6 @@ Message *protocolReadMessage(int fd)
 		perror("protocolReadMessage");
 		return NULL;
 	}
-	fprintf(stderr, "protocolReadMessage: %ld read\n", header.dataLen);
 	if ( (ret = read(fd, msg, header.dataLen)) == -1 ) {
 		perror("protocolReadMessage");
 		return NULL;

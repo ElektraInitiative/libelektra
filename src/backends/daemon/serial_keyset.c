@@ -43,7 +43,6 @@ ssize_t serialKeySet_getSize(const void *pKeySet)
 	
 	ks = (const KeySet *) pKeySet;
 	size = sizeof(ks->size);
-	fprintf(stderr, "serialKeySet_getSize: %ld\n", ks->size);
 	current = ks->start;
 	while ( current != NULL ) {
 		ret = serialKey_getSize((const void *) current);
@@ -73,7 +72,6 @@ ssize_t serialKeySet_unserialize(const void *pBuffer, void *pKeySet)
 	/* Read size of the keySet */
 	memcpy(&size, buf, sizeof(size));
 	buf += sizeof(size);
-	fprintf(stderr, "Unserialize %ld keys.\n", size);
 
 	/* Read the key inside the keyset */
 	count = 0;
@@ -90,7 +88,6 @@ ssize_t serialKeySet_unserialize(const void *pBuffer, void *pKeySet)
 		buf += ret;
 
 		/* Add the key into the keyset */
-		fprintf(stderr, "%ld extracted\n", count);
 		count = ksAppend(ks, current);
 	}
 	

@@ -76,8 +76,8 @@ int kdbd(int t)
 	closed = 0;
 	while ( !closed ) {
 		request = protocolReadMessage(t);
+		fprintf(stderr, "Receive procedure %d\n", messageGetProcedure(request));
 		closed = (messageGetProcedure(request) == KDB_BE_CLOSE);
-		fprintf(stderr, "Closed = %d\n");
 		
 		reply = processRequest(request, remoteeuid, remoteegid);
 		messageDel(request);
@@ -86,8 +86,6 @@ int kdbd(int t)
 		messageDel(reply);
 	}
 
-	fprintf(stderr, "Child exited\n");
-	
 	return 0;
 }
 

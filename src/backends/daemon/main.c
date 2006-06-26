@@ -63,9 +63,8 @@ void sigchld()
 {
 	int wstat;
 	int pid;
-	fprintf(stderr, "SIGCHILD\n");	
 	while ((pid = wait_nohang(&wstat)) > 0) {
-		fprintf(stdout, "kdbd: end %d status %d", pid, wstat);
+		fprintf(stdout, "kdbd: end %d status %d\n", pid, wstat);
 		if (numchildren) --numchildren; printstatus();
 	}
 }
@@ -103,7 +102,7 @@ int main(int argc, char **argv)
 		perror(argv[0]);
 		return 1;
 	}
-	ndelay_off(s); 
+	ndelay_off(s);
 	printstatus();
 
 	for(;;) {
@@ -113,8 +112,11 @@ int main(int argc, char **argv)
 		t = ipc_accept(s,remotepath,sizeof(remotepath),&trunc);
 		sig_block(sig_child); 
 
-		if (t == -1) continue;
-		++numchildren; printstatus();
+		if (t == -1) {
+			perror("kdbd");
+		}
+		++numchildren;
+		printstatus();
 
 		switch(fork()) {
 			case 0:
@@ -123,7 +125,8 @@ int main(int argc, char **argv)
 				sig_uncatch(sig_child);
 				sig_unblock(sig_child);
 				sig_uncatch(sig_term);
-				sig_uncatch(sig_pipe); 
+				sig_uncatch(sig_pipe);
+			        return 0;	
 				break;
 				
 			case -1:
@@ -131,9 +134,7 @@ int main(int argc, char **argv)
 				--numchildren; printstatus();
 		}
 
-		fprintf(stderr, "Closing ...\n");
 		close(t);
-		fprintf(stderr, "Closed ...\n");
 	}
 }
 

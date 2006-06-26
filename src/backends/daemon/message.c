@@ -64,7 +64,6 @@ Message *messageNew(MessageType msgType, int procedure, ...)
 			va_end(va);
 			return NULL;
 		}
-		fprintf(stderr, "\t\nSize for arg %d tpye %d: %ld\n", nbArgs, type, serializedSize);
 		size += serializedSize;
 		nbArgs++;
 		

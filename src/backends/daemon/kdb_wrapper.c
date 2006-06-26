@@ -236,12 +236,13 @@ Message *wrapper_kdbSetKey(void *request)
 			DATATYPE_LAST);
 	
 	if ( ret ) {
-		fprintf(stderr, "wrapper_kdbGetKey(): wrong args\n");
+		fprintf(stderr, "wrapper_kdbSetKey(): wrong args\n");
 		keyDel(key);
 		return NULL;
 	}
 	
 	if ( (handle = getHandle(kdbdHandle)) ) {
+		fprintf(stderr, "kdbSetKey(%s)\n", keyStealName(key));
 		ret = kdbSetKey(*handle, key);
 	} else  {
 		keyDel(key);
@@ -332,7 +333,6 @@ Message *wrapper_kdbRemoveKey(Message *request)
 			DATATYPE_LAST);
 	
 	if ( ret ) {
-		fprintf(stderr, "wrapper_kdbGetKey(): wrong args\n");
 		keyDel(key);
 		return NULL;
 	}
@@ -362,7 +362,6 @@ Message *wrapper_kdbGetChild(Message *request)
 	unsigned long	options;
 	Message		*reply;
 	
-	fprintf(stderr, "kdbGetChild()\n");	
 	parentKey = keyNew(KEY_SWITCH_END);
 	ret = messageExtractArgs(request,
 			DATATYPE_INTEGER, &kdbdHandle,
@@ -375,7 +374,6 @@ Message *wrapper_kdbGetChild(Message *request)
 		
 	} else if ( (handle = getHandle(kdbdHandle)) ) {
 		ks = ksNew();
-		fprintf(stderr, "kdbGetChild(%s)\n", keyStealName(parentKey));
 		ret = kdbGetKeyChildKeys(*handle, parentKey, ks, options);
 
 		reply = messageNew(MESSAGE_REPLY, KDB_BE_GETCHILD,
