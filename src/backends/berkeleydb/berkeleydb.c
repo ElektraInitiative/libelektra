@@ -380,6 +380,8 @@ int dbTreeInit(KDBHandle handle,DBTree *newDB) {
 		userOwner=getpwnam(newDB->userDomain);
 		root=keyNew("user",
 			KEY_SWITCH_TYPE,KEY_TYPE_DIR,
+			KEY_SWITCH_UID, kdbhGetUID(handle),
+			KEY_SWITCH_GID, kdbhGetGID(handle),
 			KEY_SWITCH_END);
 	}
 
