@@ -61,6 +61,7 @@ Message *messageNew(MessageType msgType, int procedure, ...)
 	while ( (type != DATATYPE_LAST) && (nbArgs < MSG_MAX_ARGS) ) {
 		serializedSize = serializeGetSize(type, va_arg(va, void *));
 		if ( serializedSize == -1 ) {
+			fprintf(stderr, "SerializedGetSize = -1 for args %d of type %d !\n", nbArgs, type);
 			va_end(va);
 			return NULL;
 		}

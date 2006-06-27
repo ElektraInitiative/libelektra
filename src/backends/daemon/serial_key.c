@@ -121,6 +121,7 @@ ssize_t serialKey_unserialize(const void *pBuffer, void *pKey)
 	/* Save current key char pointer 
 	 * since these one will be overrided. */
 	memcpy(&save, key, sizeof(Key));
+	memset(key, 0, sizeof(Key));
 	
 	/* Unserialize key struct */
 	size = sizeof(Key);

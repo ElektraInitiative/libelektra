@@ -215,7 +215,7 @@ int kdbClose_daemon(KDBHandle *handle)
 	messageDel(reply);
 
 	kdbhSetBackendData(*handle, NULL);
-	close(data->socketfd);
+//	close(data->socketfd);
 	free(data);
 	
 	return ret;

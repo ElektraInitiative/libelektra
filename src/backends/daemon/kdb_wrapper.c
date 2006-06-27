@@ -297,34 +297,35 @@ Message *wrapper_kdbSetKeys(void *request)
 	int             error, ret, kdbdHandle;
 	Message         *reply;
 	
+	reply = NULL;
 	error = 0;
 	ks = ksNew();
 	ret = messageExtractArgs(request, 
 			DATATYPE_INTEGER, &kdbdHandle,
 			DATATYPE_KEYSET, ks,
 			DATATYPE_LAST);
+	
 	if ( ret == -1 ) {
 		fprintf(stderr, "wrapper_kdbSetKeys(): wrong args\n");
-		ksDel(ks);
-		return NULL;
-	}
-
-	if ( (handle = getHandle(kdbdHandle)) ) {
+		
+	} else if ( (handle = getHandle(kdbdHandle)) ) {
 		ret = kdbSetKeys(*handle, ks);
 		error = errno;
-	} else  {
+		reply = messageNew(MESSAGE_REPLY, KDB_BE_SETKEYS,
+				DATATYPE_INTEGER, &ret,
+				DATATYPE_INTEGER, &error,
+				DATATYPE_KEYSET, ks,
+				DATATYPE_LAST);
+		if ( reply == NULL ) {
+			fprintf(stderr, "Error while creating reply !\n");
+		}
+		
+	} else {
 		fprintf(stderr, "wrapper_kdbSetKeys(): Can't find handle !\n");
-		ksDel(ks);
-		return NULL;
 	}
 
-	reply = messageNew(MESSAGE_REPLY, KDB_BE_SETKEYS,
-			DATATYPE_INTEGER, &ret,
-			DATATYPE_INTEGER, &error,
-			DATATYPE_KEYSET, ks,
-			DATATYPE_LAST);
 	ksDel(ks);
-	
+
 	return reply;
 }
 
@@ -394,7 +395,6 @@ Message *wrapper_kdbRemoveKey(Message *request)
 			DATATYPE_INTEGER, &ret,
 			DATATYPE_INTEGER, &error,
 			DATATYPE_LAST);
-	keyDel(key);
 	
 	return reply;
 }

@@ -42,7 +42,7 @@ char remotepath[512];
 
 void printstatus(void)
 {
-	fprintf(stdout, "kdbd: status: %d/%d", numchildren, limit);
+	fprintf(stdout, "kdbd: status: %d/%d\n", numchildren, limit);
 }
 
 int wait_nohang(int *wstat)

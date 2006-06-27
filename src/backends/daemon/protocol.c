@@ -30,6 +30,7 @@ $Id: protocol.c 788 2006-05-29 16:30:00Z aviram $
 
 #include <assert.h>
 
+#include <errno.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -52,8 +53,10 @@ static int     protocolCheckHeader         (const ProtocolHeader *header);
 Message *protocolReadMessage(int fd)
 {
 	Message		*msg;
+	char		*buf;
 	ProtocolHeader	header;
-	size_t          ret;
+	size_t		toRead;
+	ssize_t          ret;
 	
 	/* read header */
 	memset(&header, 0, sizeof(header));
@@ -72,17 +75,27 @@ Message *protocolReadMessage(int fd)
 		perror("protocolReadMessage");
 		return NULL;
 	}
-	if ( (ret = read(fd, msg, header.dataLen)) == -1 ) {
-		perror("protocolReadMessage");
-		return NULL;
-	}
 	
+	buf = (char *) msg;
+	toRead = header.dataLen;
+	while ( toRead > 0 ) {
+		if ( (ret = read(fd, buf, toRead)) == -1 ) {
+			perror("protocolReadMessage");
+			return NULL;
+		}
+
+		toRead -= ret;
+		buf += ret;
+	}
+
 	return msg;
 }
 
 int protocolSendMessage(int fd, const Message *message)
 {
 	ProtocolHeader header;
+	const char	*buf;
+	size_t	toWrite;
 	ssize_t ret;
 
 	assert(message != NULL);
@@ -98,9 +111,16 @@ int protocolSendMessage(int fd, const Message *message)
 	}
 	
 	/* Send message */
-	if ( (ret = write(fd, message, message->size)) == -1 ) {
-		perror("protocolSendMessage");
-		return -1;
+	toWrite = message->size;
+	buf = (const char *) message;
+	while ( toWrite > 0 ) {
+		if ( (ret = write(fd, buf, message->size)) == -1 ) {
+			perror("protocolSendMessage");
+			return -1;
+		}
+
+		toWrite -= ret;
+		buf += ret;
 	}
 	
 	return 0;
