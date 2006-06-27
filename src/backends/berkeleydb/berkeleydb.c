@@ -165,7 +165,7 @@ DBContainer *dbs=0;
 int keyToBDB(const Key *key, DBT *dbkey, DBT *dbdata) {
 	void *serialized;
 	size_t metaInfoSize;
-	int utf8Conversion=0;
+	int utf8Conversion=0, utf8CommentConverted=0, utf8ValueConverted = 0;
 	char *convertedName=key->key;
 	size_t sizeName=strblen(key->key);
 	char *convertedValue=key->data;
@@ -187,15 +187,17 @@ int keyToBDB(const Key *key, DBT *dbkey, DBT *dbdata) {
 				convertedValue=malloc(sizeValue);
 				memcpy(convertedValue,key->data,sizeValue);
 				UTF8Engine(UTF8_TO,&convertedValue,&sizeValue);
+				utf8ValueConverted = 1;
 			} else convertedValue=key->data;
 		 
 			if (key->comment) {
 				convertedComment=malloc(sizeComment);
 				memcpy(convertedComment,key->comment,sizeComment);
 				UTF8Engine(UTF8_TO,&convertedComment,&sizeComment);
+				utf8CommentConverted = 1;
 			} else convertedComment=key->comment;
 		}
-	}
+	} 
 	
 	if (dbdata) {
 		memset(dbdata, 0, sizeof(DBT));
@@ -217,22 +219,20 @@ int keyToBDB(const Key *key, DBT *dbkey, DBT *dbdata) {
 			memcpy(serialized+metaInfoSize-
 				sizeof(key->commentSize)-sizeof(key->dataSize),
 				&sizeComment,sizeof(sizeComment));
-	
-	
 		
 		/* Third part: the value */
 		memcpy(serialized+metaInfoSize+sizeComment,convertedValue,sizeValue);
 		/* adjust value size from UTF-8 conversion */
-		if (key->dataSize!=sizeValue)
+		if (key->dataSize!=sizeValue) 
 			memcpy(serialized+metaInfoSize-sizeof(key->dataSize),
 				&sizeValue,sizeof(sizeValue));
 	
 		dbdata->data=serialized;
 		
-		if (utf8Conversion) {
+		if (utf8CommentConverted )
 			free(convertedComment);
+		if ( utf8ValueConverted )
 			free(convertedValue);
-		}
 	}
 	
 	memset(dbkey, 0, sizeof(DBT));
