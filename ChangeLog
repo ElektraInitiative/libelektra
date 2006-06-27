@@ -4,7 +4,8 @@
 - Fix Berkeleydb backend : 
 	- Check if an UTF8 convertion is done before free memory 
 	(before, there was case where keyToDBD freed Comment and/or Value key pointers.)
-	- Chown user's kdb-berkeleydb dir
+	- Chown user's kdb-berkeleydb dir.
+	- Set correct UID/GID for initial creation of the "user" key.
 - Fix key.c : Set KEY_SWITCH_DOMAIN flags into keySetName()
 
 * 16.06.2006 Markus Raab
