@@ -25,11 +25,9 @@ $Id: kdbd.c 788 2006-05-29 16:30:00Z aviram $
 #include "message.h"
 #include "kdb_wrapper.h"
 
-#define	HANDLE_PREALLOC	5
+static Message *processRequest(Message *request, KDBHandle *handle, uid_t remoteeuid, gid_t remoteegid);
 
-static Message *processRequest(Message *request, uid_t remoteeuid, gid_t remoteegid);
-
-static Message *processRequest(Message *request, uid_t remoteeuid, gid_t remoteegid)
+static Message *processRequest(Message *request, KDBHandle *handle, uid_t remoteeuid, gid_t remoteegid)
 {
 	Message	*reply;
 	int	msgType, procedure;
@@ -44,47 +42,47 @@ static Message *processRequest(Message *request, uid_t remoteeuid, gid_t remotee
 	procedure = messageGetProcedure(request);
 	switch(procedure) {
 		case KDB_BE_OPEN:
-			reply = wrapper_kdbOpen(request, remoteeuid, remoteegid);
+			reply = wrapper_kdbOpen(handle, request, remoteeuid, remoteegid);
 			break;
 			
         	case KDB_BE_CLOSE:
-			reply = wrapper_kdbClose(request);
+			reply = wrapper_kdbClose(handle, request);
 			break;
 			
         	case KDB_BE_STATKEY:
-			reply = wrapper_kdbStatKey(request);
+			reply = wrapper_kdbStatKey(*handle, request);
 			break;
 			
         	case KDB_BE_GETKEY:
-			reply = wrapper_kdbGetKey(request);
+			reply = wrapper_kdbGetKey(*handle, request);
 			break;
 			
         	case KDB_BE_SETKEY:
-			reply = wrapper_kdbSetKey(request);
+			reply = wrapper_kdbSetKey(*handle, request);
 			break;
 			
         	case KDB_BE_SETKEYS:
-			reply = wrapper_kdbSetKeys(request);
+			reply = wrapper_kdbSetKeys(*handle, request);
 			break;
 			
         	case KDB_BE_RENAME:
-			reply = wrapper_kdbRename(request);
+			reply = wrapper_kdbRename(*handle, request);
 			break;
 			
         	case KDB_BE_REMOVEKEY:
-			reply = wrapper_kdbRemoveKey(request);
+			reply = wrapper_kdbRemoveKey(*handle, request);
 			break;
 			
         	case KDB_BE_GETCHILD:
-			reply = wrapper_kdbGetChild(request);
+			reply = wrapper_kdbGetChild(*handle, request);
 			break;
 			
         	case KDB_BE_MONITORKEY:
-			reply = wrapper_kdbMonitorKey(request);
+			reply = wrapper_kdbMonitorKey(*handle, request);
 			break;
 			
         	case KDB_BE_MONITORKEYS:
-			reply = wrapper_kdbMonitorKeys(request);
+			reply = wrapper_kdbMonitorKeys(*handle, request);
 			break;
 			
 		default:
@@ -93,6 +91,7 @@ static Message *processRequest(Message *request, uid_t remoteeuid, gid_t remotee
 
 	if ( reply == NULL ) {
 		/* Internat error from wrapper */
+		fprintf(stderr, "Internal error\n");
 		reply = messageNew(MESSAGE_REPLY, INTERNAL_ERROR,
 					DATATYPE_INTEGER, &errno,
 					DATATYPE_LAST);
@@ -103,31 +102,50 @@ static Message *processRequest(Message *request, uid_t remoteeuid, gid_t remotee
 	return reply;
 }
 
-int kdbd(int t)
+int kdbd(int *t)
 {
-	Message	*request, *reply;
-	uid_t   remoteeuid;
-	gid_t   remoteegid;
-	int	closed;
+	KDBHandle	handle;
+	Message		*request, *reply;
+	uid_t   	remoteeuid;
+	gid_t   	remoteegid;
+	int		closed;
 	
-	if ( ipc_eid(t, &remoteeuid, &remoteegid) == -1 ) {
+	if ( ipc_eid(*t, &remoteeuid, &remoteegid) == -1 ) {
 		fprintf(stderr, "Can't get eUID & eGID\n");
 		return 1;
 	}
 	
+	fprintf(stderr, "Hi sir. Know i'm here, please give me some works\n");
 	closed = 0;
 	while ( !closed ) {
-		request = protocolReadMessage(t);
+		request = protocolReadMessage(*t);
+		if ( request == NULL ) {
+			if ( errno == EPIPE ) {
+				/* Client closed the connection */
+				fprintf(stderr, "Argh Sir ! client disconnected unexpectedly. I quit\n");
+				close(*t);
+				pthread_exit(1);
+			} else {	
+				/* They are probably some usefull errno
+				 * to check here ...
+				 */
+			
+				perror("kdbd");
+				continue;
+			}
+		}
 		closed = (messageGetProcedure(request) == KDB_BE_CLOSE);
 		
-		
-		reply = processRequest(request, remoteeuid, remoteegid);
+		reply = processRequest(request, &handle, remoteeuid, remoteegid);
 		messageDel(request);
-		
-		protocolSendMessage(t, reply);
+
+		protocolSendMessage(*t, reply);
 		messageDel(reply);
 	}
 
+	fprintf(stderr, "Thanks for used me sir. Good bye ! :)\n");
+	close(*t);
+	
 	return 0;
 }
 

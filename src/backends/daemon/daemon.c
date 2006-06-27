@@ -61,7 +61,6 @@ $Id: daemon.c 788 2006-05-29 16:30:00Z aviram $
 
 typedef struct {
 	int	socketfd;
-	int	kdbdHandle;
 } DaemonBackendData;
 
 /**
@@ -157,11 +156,9 @@ int kdbOpen_daemon(KDBHandle *handle) {
 	} 
 	messageDel(reply);
 	
-	data->kdbdHandle = ret;
-
 	kdbhSetBackendData(*handle, data);
 
-	return 0;
+	return ret;
 }
 
 
@@ -192,7 +189,6 @@ int kdbClose_daemon(KDBHandle *handle)
 	
 	/* Prepare request */
 	request = messageNew(MESSAGE_REQUEST, KDB_BE_CLOSE,
-				DATATYPE_INTEGER, &data->kdbdHandle,
 				DATATYPE_LAST);
 	if ( request == NULL ) {
 		perror("kdbClose_daemon");
@@ -240,7 +236,7 @@ int kdbClose_daemon(KDBHandle *handle)
 	messageDel(reply);
 
 	kdbhSetBackendData(*handle, NULL);
-//	close(data->socketfd);
+	close(data->socketfd);
 	free(data);
 	
 	return ret;
@@ -267,7 +263,6 @@ int kdbStatKey_daemon(KDBHandle handle, Key *key) {
 	
 	/* Prepare request */
 	request = messageNew(MESSAGE_REQUEST, KDB_BE_STATKEY,
-			DATATYPE_INTEGER, &data->kdbdHandle,
 			DATATYPE_KEY, key,
 			DATATYPE_LAST);
 	if ( request == NULL ) {
@@ -337,7 +332,6 @@ int kdbGetKey_daemon(KDBHandle handle, Key *key)
 	
 	/* Prepare request */
 	request = messageNew(MESSAGE_REQUEST, KDB_BE_GETKEY,
-			DATATYPE_INTEGER, &data->kdbdHandle,
 			DATATYPE_KEY, key,
 			DATATYPE_LAST);
 	if ( request == NULL ) {
@@ -410,7 +404,6 @@ int kdbSetKey_daemon(KDBHandle handle, Key *key)
        
        /* Prepare request */
        request = messageNew(MESSAGE_REQUEST, KDB_BE_SETKEY,
-		       DATATYPE_INTEGER, &data->kdbdHandle,
 		       DATATYPE_KEY, key,
 		       DATATYPE_LAST);
        if ( request == NULL ) {
@@ -477,7 +470,6 @@ int kdbRename_daemon(KDBHandle handle, Key *key, const char *newName)
 	
  	/* Prepare request */
  	request = messageNew(MESSAGE_REQUEST, KDB_BE_RENAME,
-			DATATYPE_INTEGER, &data->kdbdHandle,
 			DATATYPE_KEY, key,
 			DATATYPE_STRING, newName,
 			DATATYPE_LAST);
@@ -547,7 +539,6 @@ int kdbRemoveKey_daemon(KDBHandle handle, const Key *key)
 	
 	/* Prepare request */
 	request = messageNew(MESSAGE_REQUEST, KDB_BE_REMOVEKEY,
-			DATATYPE_INTEGER, &data->kdbdHandle,
 			DATATYPE_KEY, key,
 			DATATYPE_LAST);
 	if ( request == NULL ) {
@@ -611,7 +602,6 @@ ssize_t kdbGetKeyChildKeys_daemon(KDBHandle handle, const Key *parentKey, KeySet
 	
 	/* Prepare request */
 	request = messageNew(MESSAGE_REQUEST, KDB_BE_GETCHILD,
-			DATATYPE_INTEGER, &data->kdbdHandle,
 			DATATYPE_KEY, parentKey,
 			DATATYPE_ULONG, &options,
 			DATATYPE_LAST);
@@ -645,6 +635,7 @@ ssize_t kdbGetKeyChildKeys_daemon(KDBHandle handle, const Key *parentKey, KeySet
 	}
 	
 	/* Get result */
+	fprintf(stderr, "EXTRACT ARGS !\n");
 	if ( messageExtractArgs(reply,
 				DATATYPE_INTEGER, &ret,
 				DATATYPE_INTEGER, &errno,
@@ -682,7 +673,6 @@ int kdbSetKeys_daemon(KDBHandle handle, KeySet *ks)
 	
 	/* Prepare request */
 	request = messageNew(MESSAGE_REQUEST, KDB_BE_SETKEYS,
-			DATATYPE_INTEGER, &data->kdbdHandle,
 			DATATYPE_KEYSET, ks,
 			DATATYPE_LAST);
 	if ( request == NULL ) {
@@ -753,7 +743,6 @@ u_int32_t kdbMonitorKeys_daemon(KDBHandle handle, KeySet *interests, u_int32_t d
 	
 	/* Prepare request */
 	request = messageNew(MESSAGE_REQUEST, KDB_BE_MONITORKEYS,
-			DATATYPE_INTEGER, &data->kdbdHandle,
 			DATATYPE_KEYSET, interests,
 			DATATYPE_ULONG, &diffMask,
 			DATATYPE_ULONG, &iterations,
@@ -828,7 +817,6 @@ u_int32_t kdbMonitorKey_daemon(KDBHandle handle, Key *interest, u_int32_t diffMa
 	
 	/* Prepare request */
 	request = messageNew(MESSAGE_REQUEST, KDB_BE_MONITORKEY,
-			DATATYPE_INTEGER, &data->kdbdHandle,
 			DATATYPE_KEY, interest,
 			DATATYPE_ULONG, &diffMask,
 			DATATYPE_ULONG, &iterations,

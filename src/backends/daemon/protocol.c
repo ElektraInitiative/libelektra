@@ -60,22 +60,30 @@ Message *protocolReadMessage(int fd)
 	
 	/* read header */
 	memset(&header, 0, sizeof(header));
-	if ( (ret = read(fd, &header, sizeof(header))) == -1 )
+	if ( (ret = read(fd, &header, sizeof(header))) == -1 ) {
+		perror("protocolReadMessage");
 		return NULL;
-	if ( protocolCheckHeader(&header) ) 
+	}
+	
+	if ( protocolCheckHeader(&header) ) { 
+		perror("protocolCheckHeader");
 		return NULL;
+	}
 
 	/* read message */
 	msg = (Message *) malloc(header.dataLen);
 	if ( msg == NULL ) {
+		perror("malloc");
 		return NULL;
 	}
 	
 	buf = (char *) msg;
 	toRead = header.dataLen;
 	while ( toRead > 0 ) {
-		if ( (ret = read(fd, buf, toRead)) == -1 ) 
+		if ( (ret = read(fd, buf, toRead)) == -1 ) {
+			perror("protocolReadMessage");
 			return NULL;
+		}
 
 		toRead -= ret;
 		buf += ret;
@@ -98,15 +106,19 @@ int protocolSendMessage(int fd, const Message *message)
 	header.magic    = PROTO_MAGIC;
 	header.version  = PROTO_VERSION;
 	header.dataLen  = message->size;
-	if ( (ret = write(fd, &header, sizeof(header))) == -1 ) 
+	if ( (ret = write(fd, &header, sizeof(header))) == -1 ) {
+   		perror("protocolSendMessage");	
 		return -1;
+	}
 	
 	/* Send message */
 	toWrite = message->size;
 	buf = (const char *) message;
 	while ( toWrite > 0 ) {
-		if ( (ret = write(fd, buf, message->size)) == -1 ) 
+		if ( (ret = write(fd, buf, message->size)) == -1 ) {
+			perror("protocolSendMessage");
 			return -1;
+		}
 
 		toWrite -= ret;
 		buf += ret;
@@ -121,7 +133,8 @@ static int protocolCheckHeader(const ProtocolHeader *header)
 	assert(header != NULL);
 
 	if ( header->magic != PROTO_MAGIC ) {
-		errno = EBADF;
+		fprintf(stderr, "protocolCheckHeader: Got %lx expected %lx", header->magic, PROTO_MAGIC);
+		errno = EINVAL;
 		return -1;
 	}
 

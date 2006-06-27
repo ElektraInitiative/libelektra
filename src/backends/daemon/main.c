@@ -23,12 +23,16 @@ $Id: kdbd.c 788 2006-05-29 16:30:00Z aviram $
 #include <stdio.h>
 #include <unistd.h>
 
+#include <pthread.h>
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
 
 #include "sig.h"
 #include "ipc.h"
+#include "kdbd.h"
+
 
 #ifndef SOCKET_NAME
 #define SOCKET_NAME "/tmp/elektra.sock"
@@ -75,6 +79,7 @@ int main(int argc, char **argv)
 	mode_t	m;
 	int	t, s;
 	int	trunc;
+	pthread_t thread;
 
 	sig_block(sig_child);
       	sig_catch(sig_child,sigchld);
@@ -103,38 +108,16 @@ int main(int argc, char **argv)
 		return 1;
 	}
 	ndelay_off(s);
-	printstatus();
 
 	for(;;) {
-		while (numchildren >= limit) sig_pause();
-		sig_unblock(sig_child);
-
 		t = ipc_accept(s,remotepath,sizeof(remotepath),&trunc);
-		sig_block(sig_child); 
 
 		if (t == -1) {
 			perror("kdbd");
-		}
-		++numchildren;
-		printstatus();
-
-		switch(fork()) {
-			case 0:
-				close(s);
-				kdbd(t);
-				sig_uncatch(sig_child);
-				sig_unblock(sig_child);
-				sig_uncatch(sig_term);
-				sig_uncatch(sig_pipe);
-			        return 0;	
-				break;
-				
-			case -1:
-				perror("kdbd");
-				--numchildren; printstatus();
+			continue;
 		}
 
-		close(t);
+		pthread_create(&thread, NULL, kdbd, &t);
 	}
 }
 
