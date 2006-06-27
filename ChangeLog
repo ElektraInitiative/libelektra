@@ -1,3 +1,9 @@
+* Jun 27 2006 Yannick Lecaillez <sizon5@gmail.com>
+- New kdbd daemon !
+- Fix UTF8Engine : Check for a null size string
+- Fix Berkeleydb backend : Check if an UTF8 convertion is done before free memory
+(before, there is case where keyToDBD freed Comment and/or Value key pointers.)
+
 * 16.06.2006 Markus Raab
 - added cascading features to kdb
 - kdb ls / and kdb ls /path is possible
