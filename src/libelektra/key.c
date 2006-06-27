@@ -650,7 +650,8 @@ ssize_t keySetName(Key *key, const char *newName) {
 					if (NULL==p) goto error_mem;
 					key->userDomain=p;
 					strncpy(key->userDomain,newName+userLength+1,userDomainLength);
-					key->userDomain[userDomainLength]=0;
+					key->userDomain[userDomainLength]=0; 
+					key->flags |= KEY_SWITCH_DOMAIN;
 				}
 				keyNameSize+=length-userDomainLength-1;  /* -1 is for the ':' */
 			} else if (*(newName+userLength)!=RG_KEY_DELIM) {
@@ -668,17 +669,14 @@ ssize_t keySetName(Key *key, const char *newName) {
 		
 		if (!key->userDomain) {
 			char *envVar;
-			size_t bsize;
 
 			envVar = getenv("USER");
-			bsize = 0;
-			if ( envVar )
-				bsize=strblen(envVar);
-
-			if (bsize) {
-				key->userDomain=realloc(key->userDomain,bsize);
-				strncpy(key->userDomain,envVar,bsize);
-			} else { /* TODO: handle "can't find $USER envar" */ }
+			if ( envVar ) {
+				keySetOwner(key, envVar);
+			} else {
+			       	/* TODO: handle "can't find $USER envar" */
+				keySetOwner(key, NULL);
+		       	}
 		}
 
 		rootLength  = userLength;
@@ -2132,6 +2130,7 @@ ssize_t keySetOwner(Key *key, const char *userDomain) {
 			free(key->userDomain);
 			key->userDomain=0;
 		}
+		key->flags &= ~KEY_SWITCH_DOMAIN;
 		return 0;
 	}
 
