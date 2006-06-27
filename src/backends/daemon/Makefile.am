@@ -13,7 +13,7 @@ libelektra_daemon_la_LIBADD = libproto.la
 bin_PROGRAMS = kdbd
 kdbd_SOURCES = main.c kdbd.c kdb_wrapper.c
 kdbd_LDFLAGS = -L../../libelektra/
-kdbd_LDADD = libproto.la -lelektra
+kdbd_LDADD = libproto.la -lelektra -lpthread
 
 INCLUDES = -I../../include
 
