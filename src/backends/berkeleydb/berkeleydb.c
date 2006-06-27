@@ -459,6 +459,7 @@ DBTree *dbTreeNew(KDBHandle handle,const Key *forKey) {
 		fprintf(stderr,"Going to create dir %s\n",dbDir);
 		ret=mkdir(dbDir,DEFFILEMODE | S_IXUSR);
 		if (ret) return 0; /* propagate errno */
+		chown(dbDir,  user->pw_uid,user->pw_gid);
 	} else {
 		/* Something exist there. Check it first */
 		if (!S_ISDIR(dbDirInfo.st_mode)) {
