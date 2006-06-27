@@ -19,6 +19,7 @@ $Id: daemon.c 788 2006-05-29 16:30:00Z aviram $
 
 */
 
+#include <errno.h>
 #include <stdlib.h>
 
 #include <sys/types.h>
@@ -136,7 +137,7 @@ int kdbOpen_daemon(KDBHandle *handle) {
 	}
 	
 	/* Get reply value */
-	if ( messageExtractArgs(reply, DATATYPE_INTEGER, &ret, DATATYPE_LAST) ) {
+	if ( messageExtractArgs(reply, DATATYPE_INTEGER, &ret, DATATYPE_INTEGER, &errno, DATATYPE_LAST) ) {
 		fprintf(stderr, "Error extracting args\n");
 		close(data->socketfd);
 		messageDel(reply);
@@ -204,7 +205,7 @@ int kdbClose_daemon(KDBHandle *handle)
 	}
 	
 	/* Get reply value */
-	if ( messageExtractArgs(reply, DATATYPE_INTEGER, &ret, DATATYPE_LAST) == -1 ) {
+	if ( messageExtractArgs(reply, DATATYPE_INTEGER, &ret, DATATYPE_INTEGER, &errno, DATATYPE_LAST) == -1 ) {
 		kdbhSetBackendData(*handle, NULL);
 		close(data->socketfd);
 		free(data);
@@ -241,7 +242,7 @@ int kdbStatKey_daemon(KDBHandle handle, Key *key) {
 	
 	/* Prepare request */
 	request = messageNew(MESSAGE_REQUEST, KDB_BE_STATKEY,
-			DATATYPE_INTEGER, data->kdbdHandle,
+			DATATYPE_INTEGER, &data->kdbdHandle,
 			DATATYPE_KEY, key,
 			DATATYPE_LAST);
 
@@ -263,6 +264,7 @@ int kdbStatKey_daemon(KDBHandle handle, Key *key) {
 	/* Get result */
 	if ( messageExtractArgs(reply,
 				DATATYPE_INTEGER, &ret,
+				DATATYPE_INTEGER, &errno,
 				DATATYPE_KEY, key,
 				DATATYPE_LAST) ) {
 		fprintf(stderr, "Error extracting ARGS\n");
@@ -320,6 +322,7 @@ int kdbGetKey_daemon(KDBHandle handle, Key *key)
 	/* Get result */
 	if ( messageExtractArgs(reply,
 				DATATYPE_INTEGER, &ret,
+				DATATYPE_INTEGER, &errno,
 				DATATYPE_KEY, key,
 				DATATYPE_LAST) ) {
 		fprintf(stderr, "Error extracting ARGS\n");
@@ -352,6 +355,8 @@ int kdbSetKey_daemon(KDBHandle handle, Key *key)
        data = (DaemonBackendData *) kdbhGetBackendData(handle);
        if ( data == NULL )
 	       return 1;
+      
+	fprintf(stderr, "kdbSetKey(%s:%s)\n", keyStealOwner(key), keyStealName(key));
        
        /* Prepare request */
        request = messageNew(MESSAGE_REQUEST, KDB_BE_SETKEY,
@@ -378,6 +383,7 @@ int kdbSetKey_daemon(KDBHandle handle, Key *key)
        /* Get result */
        if ( messageExtractArgs(reply,
 			       DATATYPE_INTEGER, &ret,
+			       DATATYPE_INTEGER, &errno,
 			       DATATYPE_KEY, key,
 			       DATATYPE_LAST) ) {
 	       fprintf(stderr, "Error extracting ARGS\n");
@@ -433,6 +439,7 @@ int kdbRename_daemon(KDBHandle handle, Key *key, const char *newName)
  	/* Get result */
  	if ( messageExtractArgs(reply,
 				DATATYPE_INTEGER, &ret,
+				DATATYPE_INTEGER, &errno,
 				DATATYPE_KEY, key,
 				DATATYPE_LAST) ) {
 		fprintf(stderr, "Error extracting ARGS\n");
@@ -489,6 +496,7 @@ int kdbRemoveKey_daemon(KDBHandle handle, const Key *key)
 	/* Get result */
 	if ( messageExtractArgs(reply,
 				DATATYPE_INTEGER, &ret,
+				DATATYPE_INTEGER, &errno,
 				DATATYPE_LAST) ) {
 		fprintf(stderr, "Error extracting ARGS\n");
 		messageDel(reply);
@@ -541,6 +549,7 @@ ssize_t kdbGetKeyChildKeys_daemon(KDBHandle handle, const Key *parentKey, KeySet
 	/* Get result */
 	if ( messageExtractArgs(reply,
 				DATATYPE_INTEGER, &ret,
+				DATATYPE_INTEGER, &errno,
 				DATATYPE_KEYSET, returned,
 				DATATYPE_LAST) ) {
 		fprintf(stderr, "Error extracting ARGS\n");
@@ -597,6 +606,7 @@ int kdbSetKeys_daemon(KDBHandle handle, KeySet *ks)
 	/* Get result */
 	if ( messageExtractArgs(reply,
 				DATATYPE_INTEGER, &ret,
+				DATATYPE_INTEGER, &errno,
 				DATATYPE_KEYSET, ks,
 				DATATYPE_LAST) ) {
 		fprintf(stderr, "Error extracting ARGS\n");
@@ -658,6 +668,7 @@ u_int32_t kdbMonitorKeys_daemon(KDBHandle handle, KeySet *interests, u_int32_t d
 	/* Get result */
 	if ( messageExtractArgs(reply,
 				DATATYPE_ULONG, &monitorRet,
+				DATATYPE_INTEGER, &errno,
 				DATATYPE_KEYSET, interests,
 				DATATYPE_LAST) ) {
 		fprintf(stderr, "Error extracting ARGS\n");
@@ -720,6 +731,7 @@ u_int32_t kdbMonitorKey_daemon(KDBHandle handle, Key *interest, u_int32_t diffMa
 	/* Get result */
 	if ( messageExtractArgs(reply,
 				DATATYPE_ULONG, &monitorRet,
+				DATATYPE_INTEGER, &errno,
 				DATATYPE_KEY, interest,
 				DATATYPE_LAST) ) {
 		fprintf(stderr, "Error extracting ARGS\n");

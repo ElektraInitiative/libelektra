@@ -23,6 +23,7 @@ $Id: kdbd.c 788 2006-05-29 16:30:00Z aviram $
 
 #include <stdlib.h> /* malloc */
 #include <sys/types.h>
+#include <pwd.h>
 
 #include "kdbbackend.h"
 
@@ -96,10 +97,13 @@ static KDBHandle *getHandle(int kdbdHandle)
 Message *wrapper_kdbOpen(Message *request, uid_t euid, gid_t egid)
 {
 	KDBHandle	*handle;
-	int		kdbdHandle;
+	struct	passwd	*user;
+//	char		*userName;
+	int		error, kdbdHandle;
 	Message		*reply;
 	
 	/* Sanity check */
+	error = 0;
 	if ( messageGetNbArgs(request) != 0 ) {
 		fprintf(stderr, "wrapper_kdbOpen(): too much args\n");
 		return NULL;
@@ -112,8 +116,22 @@ Message *wrapper_kdbOpen(Message *request, uid_t euid, gid_t egid)
 	}
 
 	kdbOpen(handle);
+	error = errno;
+/*	if ( (user = getpwuid(euid)) == NULL ) {
+		perror("wrapper_kdbOpen");
+		free(handle);
+		return NULL;
+	}
+	if ( (userName = malloc(strblen(user->pw_name))) == NULL ) {
+		perror("wrapper_kdbOpen");
+		free(handle);
+		return NULL;
+	}
+	memcpy(userName, user->pw_name, strblen(user->pw_name));
+	kdbhSetUserName(*handle, userName); */
 	kdbhSetUID(*handle, euid);
 	kdbhSetGID(*handle, egid);
+	
 	
 	kdbdHandle = storeHandle(handle);
 	if ( kdbdHandle == -1 ) {
@@ -123,6 +141,7 @@ Message *wrapper_kdbOpen(Message *request, uid_t euid, gid_t egid)
 
 	reply = messageNew(MESSAGE_REPLY, KDB_BE_OPEN, 
 			DATATYPE_INTEGER, &kdbdHandle,
+			DATATYPE_INTEGER, &error,
 			DATATYPE_LAST);
 
 	return reply;	
@@ -131,9 +150,10 @@ Message *wrapper_kdbOpen(Message *request, uid_t euid, gid_t egid)
 Message *wrapper_kdbClose(Message *request)
 {
 	KDBHandle	*handle;
-	int		kdbdHandle, ret;
+	int		error, kdbdHandle, ret;
 	Message		*reply;
 
+	error = 0;
 	ret = messageExtractArgs(request, 
 			DATATYPE_INTEGER, &kdbdHandle,
 			DATATYPE_LAST);
@@ -141,13 +161,16 @@ Message *wrapper_kdbClose(Message *request)
 	if ( ret )
 		return NULL;
 
-	if ( (handle = getHandle(kdbdHandle)) )
+	if ( (handle = getHandle(kdbdHandle)) ) {
 		ret = kdbClose(handle);
-	else
+		error = errno;
+	} else
 		return NULL;
 
 	reply = messageNew(MESSAGE_REPLY, KDB_BE_CLOSE,
-			DATATYPE_INTEGER, &ret, DATATYPE_LAST);
+			DATATYPE_INTEGER, &ret, 
+			DATATYPE_INTEGER, &error,
+			DATATYPE_LAST);
 
 	return reply;
 }
@@ -156,9 +179,10 @@ Message *wrapper_kdbStatKey(Message *request)
 {
 	KDBHandle       *handle;
 	Key		*key;
-	int             ret, kdbdHandle;
+	int             error, ret, kdbdHandle;
 	Message		*reply;
 	
+	error = 0;
 	key = keyNew(KEY_SWITCH_END);
 	ret = messageExtractArgs(request,
 			DATATYPE_INTEGER, &kdbdHandle,
@@ -173,13 +197,15 @@ Message *wrapper_kdbStatKey(Message *request)
 	
 	if ( (handle = getHandle(kdbdHandle)) ) {
 		ret = kdbStatKey(*handle, key);
+		error = errno;
 	} else {
 		keyDel(key);
 		return NULL;
 	}
 	
 	reply = messageNew(MESSAGE_REPLY, KDB_BE_STATKEY,
-			DATATYPE_INTEGER, ret,
+			DATATYPE_INTEGER, &ret,
+			DATATYPE_INTEGER, &error,
 			DATATYPE_KEY, key,
 			DATATYPE_LAST);
 	keyDel(key);
@@ -191,9 +217,10 @@ Message *wrapper_kdbGetKey(Message *request)
 {
 	KDBHandle       *handle;
 	Key		*key;
-	int		ret, kdbdHandle;
+	int		error, ret, kdbdHandle;
 	Message		*reply;
 
+	error = 0;
 	key = keyNew(KEY_SWITCH_END);
 	ret = messageExtractArgs(request,
 				DATATYPE_INTEGER, &kdbdHandle,
@@ -208,6 +235,7 @@ Message *wrapper_kdbGetKey(Message *request)
 	
 	if ( (handle = getHandle(kdbdHandle)) ) {
 		ret = kdbGetKey(*handle, key);
+		error = errno;
 	} else  {
 		keyDel(key);
 		return NULL;
@@ -215,6 +243,7 @@ Message *wrapper_kdbGetKey(Message *request)
 
 	reply = messageNew(MESSAGE_REPLY, KDB_BE_GETKEY,
 			DATATYPE_INTEGER, &ret,
+			DATATYPE_INTEGER, &error,
 			DATATYPE_KEY, key,
 			DATATYPE_LAST);
 	keyDel(key);
@@ -226,9 +255,10 @@ Message *wrapper_kdbSetKey(void *request)
 {
 	KDBHandle       *handle;
 	Key             *key;
-	int             ret, kdbdHandle;
+	int             error, ret, kdbdHandle;
 	Message         *reply;
 	
+	error = 0;
 	key = keyNew(KEY_SWITCH_END);
 	ret = messageExtractArgs(request,
 			DATATYPE_INTEGER, &kdbdHandle,
@@ -242,8 +272,9 @@ Message *wrapper_kdbSetKey(void *request)
 	}
 	
 	if ( (handle = getHandle(kdbdHandle)) ) {
-		fprintf(stderr, "kdbSetKey(%s)\n", keyStealName(key));
+		fprintf(stderr, "kdbSetKey(%s:%s)\n", keyStealOwner(key), keyStealName(key));
 		ret = kdbSetKey(*handle, key);
+		error = errno;
 	} else  {
 		keyDel(key);
 		return NULL;
@@ -251,6 +282,7 @@ Message *wrapper_kdbSetKey(void *request)
 	
 	reply = messageNew(MESSAGE_REPLY, KDB_BE_SETKEY,
 			DATATYPE_INTEGER, &ret,
+			DATATYPE_INTEGER, &error,
 			DATATYPE_KEY, key,
 			DATATYPE_LAST);
 	keyDel(key);
@@ -262,24 +294,33 @@ Message *wrapper_kdbSetKeys(void *request)
 {
 	KDBHandle       *handle;
 	KeySet		*ks;
-	int             ret, kdbdHandle;
+	int             error, ret, kdbdHandle;
 	Message         *reply;
 	
+	error = 0;
 	ks = ksNew();
 	ret = messageExtractArgs(request, 
 			DATATYPE_INTEGER, &kdbdHandle,
 			DATATYPE_KEYSET, ks,
 			DATATYPE_LAST);
+	if ( ret == -1 ) {
+		fprintf(stderr, "wrapper_kdbSetKeys(): wrong args\n");
+		ksDel(ks);
+		return NULL;
+	}
 
 	if ( (handle = getHandle(kdbdHandle)) ) {
 		ret = kdbSetKeys(*handle, ks);
+		error = errno;
 	} else  {
+		fprintf(stderr, "wrapper_kdbSetKeys(): Can't find handle !\n");
 		ksDel(ks);
 		return NULL;
 	}
 
 	reply = messageNew(MESSAGE_REPLY, KDB_BE_SETKEYS,
 			DATATYPE_INTEGER, &ret,
+			DATATYPE_INTEGER, &error,
 			DATATYPE_KEYSET, ks,
 			DATATYPE_LAST);
 	ksDel(ks);
@@ -292,9 +333,10 @@ Message *wrapper_kdbRename(void *request)
 	KDBHandle       *handle;
 	Key             *key;
 	char		*newKeyName;
-	int             ret, kdbdHandle;
+	int             error, ret, kdbdHandle;
 	Message         *reply;
-	
+
+	error = 0;	
 	key = keyNew(KEY_SWITCH_END);
 	ret = messageExtractArgs(request,
 			DATATYPE_INTEGER, &kdbdHandle,
@@ -304,6 +346,7 @@ Message *wrapper_kdbRename(void *request)
 
 	if ( (handle = getHandle(kdbdHandle)) ) {
 		ret = kdbRename(*handle, key, newKeyName);
+		error = errno;
 		free(newKeyName);
 	} else  {
 		keyDel(key);
@@ -313,6 +356,7 @@ Message *wrapper_kdbRename(void *request)
 
 	reply = messageNew(MESSAGE_REPLY, KDB_BE_RENAME,
 			DATATYPE_INTEGER, &ret,
+			DATATYPE_INTEGER, &error,
 			DATATYPE_LAST);
 	keyDel(key);
 
@@ -323,7 +367,7 @@ Message *wrapper_kdbRemoveKey(Message *request)
 {
 	KDBHandle       *handle;
 	Key             *key;
-	int             ret, kdbdHandle;
+	int             error, ret, kdbdHandle;
 	Message         *reply;
 	
 	key = keyNew(KEY_SWITCH_END);
@@ -339,6 +383,7 @@ Message *wrapper_kdbRemoveKey(Message *request)
 	
 	if ( (handle = getHandle(kdbdHandle)) ) {
 		ret = kdbRemoveKey(*handle, key);
+		error = errno;
 		keyDel(key);
 	} else  {
 		keyDel(key);
@@ -347,6 +392,7 @@ Message *wrapper_kdbRemoveKey(Message *request)
 	
 	reply = messageNew(MESSAGE_REPLY, KDB_BE_REMOVEKEY,
 			DATATYPE_INTEGER, &ret,
+			DATATYPE_INTEGER, &error,
 			DATATYPE_LAST);
 	keyDel(key);
 	
@@ -358,10 +404,11 @@ Message *wrapper_kdbGetChild(Message *request)
 	KDBHandle       *handle;
 	Key             *parentKey;
 	KeySet		*ks;
-	int             ret, kdbdHandle;
+	int             error, ret, kdbdHandle;
 	unsigned long	options;
 	Message		*reply;
 	
+	error = 0;
 	parentKey = keyNew(KEY_SWITCH_END);
 	ret = messageExtractArgs(request,
 			DATATYPE_INTEGER, &kdbdHandle,
@@ -375,9 +422,11 @@ Message *wrapper_kdbGetChild(Message *request)
 	} else if ( (handle = getHandle(kdbdHandle)) ) {
 		ks = ksNew();
 		ret = kdbGetKeyChildKeys(*handle, parentKey, ks, options);
+		error = errno;
 
 		reply = messageNew(MESSAGE_REPLY, KDB_BE_GETCHILD,
 				DATATYPE_INTEGER, &ret,
+				DATATYPE_INTEGER, &error,
 				DATATYPE_KEYSET, ks,
 				DATATYPE_LAST);
 		ksDel(ks);
@@ -393,10 +442,11 @@ Message *wrapper_kdbMonitorKey(Message *request)
 {
 	KDBHandle       *handle;
 	Key		*key;
-	int             kdbdHandle;
+	int             error, kdbdHandle;
 	unsigned long   diffMask, iterations, sleep, ret;
 	Message         *reply;
 	
+	error = 0;
 	key = keyNew(KEY_SWITCH_END);
 	ret = messageExtractArgs(request,
 			DATATYPE_INTEGER, &kdbdHandle,
@@ -411,9 +461,11 @@ Message *wrapper_kdbMonitorKey(Message *request)
 		
 	} else if ( (handle = getHandle(kdbdHandle)) ) {
 		ret = kdbMonitorKey(*handle, key, diffMask, iterations, sleep);
+		error = errno;
 		
 		reply = messageNew(MESSAGE_REPLY, KDB_BE_MONITORKEY,
 				DATATYPE_ULONG, &ret,
+				DATATYPE_INTEGER, &error,
 				DATATYPE_KEY, key,
 				DATATYPE_LAST);
 	} else {
@@ -429,10 +481,11 @@ Message *wrapper_kdbMonitorKeys(Message *request)
 {
 	KDBHandle	*handle;
 	KeySet		*ks;
-	int             kdbdHandle;
+	int             kdbdHandle, error;
 	unsigned long	diffMask, iterations, sleep, ret;
 	Message         *reply;
 	
+	error = 0;
 	ks = ksNew();
 	ret = messageExtractArgs(request,
 			DATATYPE_INTEGER, &kdbdHandle,
@@ -447,9 +500,11 @@ Message *wrapper_kdbMonitorKeys(Message *request)
 		
 	} else if ( (handle = getHandle(kdbdHandle)) ) {
 		ret = kdbMonitorKeys(*handle, ks, diffMask, iterations, sleep);
+		error = errno;
 		
 		reply = messageNew(MESSAGE_REPLY, KDB_BE_MONITORKEYS,
 				DATATYPE_ULONG, &ret,
+				DATATYPE_INTEGER, &error,
 				DATATYPE_KEYSET, ks,
 				DATATYPE_LAST);
 	} else {

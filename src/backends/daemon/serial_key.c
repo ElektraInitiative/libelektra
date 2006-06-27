@@ -49,7 +49,7 @@ ssize_t serialKey_getSize(const void *pKey)
 		size += keyGetNameSize(key);
         if ( key->flags & KEY_SWITCH_COMMENT )
 		size += keyGetCommentSize(key);
-	if ( key->flags & KEY_SWITCH_OWNER )
+	if ( key->flags & KEY_SWITCH_DOMAIN )
 		size += keyGetOwnerSize(key);
 	if ( key->flags & KEY_SWITCH_VALUE )
 		size += keyGetValueSize(key);
@@ -75,6 +75,13 @@ ssize_t serialKey_serialize(const void *pKey, void *pBuffer)
 	memcpy(buf, key, size);
 	buf += size;
 
+	/* Serialize key owner */
+	if ( key->flags & KEY_SWITCH_DOMAIN ) {
+		size = keyGetOwnerSize(key);
+		memcpy(buf, keyStealOwner(key), size);
+		buf += size;
+	}
+	
 	/* Serialize key name */
 	if ( key->flags & KEY_SWITCH_NAME ) {
 		size = keyGetNameSize(key);
@@ -89,13 +96,6 @@ ssize_t serialKey_serialize(const void *pKey, void *pBuffer)
 		buf += size;
 	}
 
-	/* Serialize key owner */
-	if ( key->flags & KEY_SWITCH_OWNER ) {
-		size = keyGetOwnerSize(key);
-		memcpy(buf, keyStealOwner(key), size);
-		buf += size;
-	}
-	
 	/* Serialize key value */
 	if ( key->flags & KEY_SWITCH_VALUE ) {
 		size = keyGetValueSize(key);
@@ -133,6 +133,13 @@ ssize_t serialKey_unserialize(const void *pBuffer, void *pKey)
 	key->userDomain = keyStealOwner(&save);
 	key->data = keyStealValue(&save);
 
+	/* Unserialize userDomain */
+	if ( key->flags & KEY_SWITCH_DOMAIN ) {
+		size = keySetOwner(key, buf);
+		buf += size;
+	}
+		
+	
 	/* Unserialize keyname */
 	if ( key->flags & KEY_SWITCH_NAME ) {
 		size = keySetName(key, buf);
@@ -142,12 +149,6 @@ ssize_t serialKey_unserialize(const void *pBuffer, void *pKey)
 	/* Unserialize comment */
 	if ( key->flags & KEY_SWITCH_COMMENT ) {
 		size = keySetComment(key, buf);
-		buf += size;
-	}
-
-	/* Unserialize userDomain */
-	if ( key->flags & KEY_SWITCH_OWNER ) {
-		size = keySetOwner(key, buf);
 		buf += size;
 	}
 
