@@ -39,6 +39,8 @@ typedef enum {
 	MESSAGE_REPLY
 } MessageType;
 
+#define INTERNAL_ERROR  1<<15
+
 typedef struct {
 	MessageType	type;
 	int		procId;

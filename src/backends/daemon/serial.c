@@ -1,9 +1,8 @@
 /***************************************************************************
                 serial_bin.c  -  Low level objects serialization etc
                              -------------------
-    begin                : Sun Mar 12 2006
     copyright            : (C) 2006 by Yannick Lecaillez, Avi Alkalay
-    email                : avi@unix.sh
+    email                : sizon5@gmail.com, avi@unix.sh
  ***************************************************************************/
 
 /***************************************************************************
@@ -54,8 +53,10 @@ static SerializerFunc serializer[] = {
 
 ssize_t serializeGetSize(DataType type, void *val)
 {
-	if ( type <= DATATYPE_UNKNOW || type >= DATATYPE_LAST )
+	if ( type <= DATATYPE_UNKNOW || type >= DATATYPE_LAST ) {
+		errno = ERANGE;
 		return -1;
+	}
 
 	return serializer[type].getSizeOfSerialized(val);
 }
@@ -63,16 +64,20 @@ ssize_t serializeGetSize(DataType type, void *val)
 
 ssize_t serialize(DataType type, const void *pType, void *pBuffer)
 {
-	if ( type <= DATATYPE_UNKNOW || type >= DATATYPE_LAST )
+	if ( type <= DATATYPE_UNKNOW || type >= DATATYPE_LAST ) {
+		errno = ERANGE;
 		return -1;
+	}
 	
 	return serializer[type].serialize(pType, pBuffer);
 }
 
 ssize_t unserialize(DataType type, const void *pBuffer, void *pType) 
 {
-	if ( type <= DATATYPE_UNKNOW || type >= DATATYPE_LAST )
+	if ( type <= DATATYPE_UNKNOW || type >= DATATYPE_LAST ) {
+		errno = ERANGE;
 		return -1;
+	}
 	
 	return serializer[type].unserialize(pBuffer, pType);
 }

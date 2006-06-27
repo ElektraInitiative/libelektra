@@ -3,7 +3,7 @@
                              -------------------
     begin                : Sun Mar 12 2006
     copyright            : (C) 2006 by Yannick Lecaillez, Avi Alkalay
-    email                : avi@unix.sh
+    email                : sizon5@gmail.com, avi@unix.sh
  ***************************************************************************/
 
 /***************************************************************************
@@ -21,7 +21,7 @@ $Id: serial_bin.c 788 2006-05-29 16:30:00Z aviram $
 */
 
 
-
+#include <errno.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -38,6 +38,8 @@ ssize_t serialString_serialize(const void *pChar, void *pBuffer)
 	len = serialString_getSize(pChar);
 	if ( len != -1 )
 		memcpy(pBuffer, pChar, len);
+	else
+		errno = EBADF;
 
 	return len;
 }
@@ -51,7 +53,8 @@ ssize_t serialString_unserialize(const void *pBuffer, void *ppChar)
 	if ( len != -1 ) {
 		*dest = (char *) malloc(len);
 		memcpy(*dest, pBuffer, len);
-	}
+	} else
+		errno = EBADF;
 
 	return len;
 }

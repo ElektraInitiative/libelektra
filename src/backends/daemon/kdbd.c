@@ -1,9 +1,8 @@
 /***************************************************************************
                    kdbd.c  -  The server for the daemon backend
                              -------------------
-    begin                : Mon Dec 26 2004
-    copyright            : (C) 2005 by Yannick Lecaillez
-    email                : yl@itioweb.com
+    copyright            : (C) 2006 by Yannick Lecaille
+    email                : sizon5@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -32,6 +31,7 @@ static Message *processRequest(Message *request, uid_t remoteeuid, gid_t remotee
 
 static Message *processRequest(Message *request, uid_t remoteeuid, gid_t remoteegid)
 {
+	Message	*reply;
 	int	msgType, procedure;
 	int	ret;
 
@@ -43,22 +43,64 @@ static Message *processRequest(Message *request, uid_t remoteeuid, gid_t remotee
 	
 	procedure = messageGetProcedure(request);
 	switch(procedure) {
-		case KDB_BE_OPEN:	return wrapper_kdbOpen(request, remoteeuid, remoteegid);
-        	case KDB_BE_CLOSE:	return wrapper_kdbClose(request);
-        	case KDB_BE_STATKEY:	return wrapper_kdbStatKey(request);
-        	case KDB_BE_GETKEY:	return wrapper_kdbGetKey(request);
-        	case KDB_BE_SETKEY:	return wrapper_kdbSetKey(request);
-        	case KDB_BE_SETKEYS:	return wrapper_kdbSetKeys(request);
-        	case KDB_BE_RENAME:	return wrapper_kdbRename(request);
-        	case KDB_BE_REMOVEKEY:	return wrapper_kdbRemoveKey(request);
-        	case KDB_BE_GETCHILD:	return wrapper_kdbGetChild(request);
-        	case KDB_BE_MONITORKEY:	return wrapper_kdbMonitorKey(request);
-        	case KDB_BE_MONITORKEYS:	return wrapper_kdbMonitorKeys(request);
+		case KDB_BE_OPEN:
+			reply = wrapper_kdbOpen(request, remoteeuid, remoteegid);
+			break;
+			
+        	case KDB_BE_CLOSE:
+			reply = wrapper_kdbClose(request);
+			break;
+			
+        	case KDB_BE_STATKEY:
+			reply = wrapper_kdbStatKey(request);
+			break;
+			
+        	case KDB_BE_GETKEY:
+			reply = wrapper_kdbGetKey(request);
+			break;
+			
+        	case KDB_BE_SETKEY:
+			reply = wrapper_kdbSetKey(request);
+			break;
+			
+        	case KDB_BE_SETKEYS:
+			reply = wrapper_kdbSetKeys(request);
+			break;
+			
+        	case KDB_BE_RENAME:
+			reply = wrapper_kdbRename(request);
+			break;
+			
+        	case KDB_BE_REMOVEKEY:
+			reply = wrapper_kdbRemoveKey(request);
+			break;
+			
+        	case KDB_BE_GETCHILD:
+			reply = wrapper_kdbGetChild(request);
+			break;
+			
+        	case KDB_BE_MONITORKEY:
+			reply = wrapper_kdbMonitorKey(request);
+			break;
+			
+        	case KDB_BE_MONITORKEYS:
+			reply = wrapper_kdbMonitorKeys(request);
+			break;
+			
 		default:
-			return NULL;
+			reply = NULL;
 	}
 
-	return NULL;
+	if ( reply == NULL ) {
+		/* Internat error from wrapper */
+		reply = messageNew(MESSAGE_REPLY, INTERNAL_ERROR,
+					DATATYPE_INTEGER, &errno,
+					DATATYPE_LAST);
+		if ( reply == NULL )
+			fprintf(stderr, "An internal error caused a fatal error. Client will be confused :-(.\n"); 
+	}
+	
+	return reply;
 }
 
 int kdbd(int t)
@@ -77,6 +119,7 @@ int kdbd(int t)
 	while ( !closed ) {
 		request = protocolReadMessage(t);
 		closed = (messageGetProcedure(request) == KDB_BE_CLOSE);
+		
 		
 		reply = processRequest(request, remoteeuid, remoteegid);
 		messageDel(request);

@@ -29,6 +29,7 @@ $Id: message.c 788 2006-05-29 16:30:00Z aviram $
 
 
 #include <assert.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -73,16 +74,14 @@ Message *messageNew(MessageType msgType, int procedure, ...)
 	va_end(va);
 	
 	if ( nbArgs == MSG_MAX_ARGS ) {
-		fprintf(stderr, "messageNew(): Too much args\n");
+		errno = ERANGE; 
 		return NULL;
 	}
 
 	/* Allocate some memory */
 	msg = (Message *) malloc(size);
-	if ( msg == NULL ) {
-		perror("messageNew");
+	if ( msg == NULL ) 
 		return NULL;
-	}
 		
 	/* Fill message struct */
 	memset(msg, 0, size);
@@ -159,8 +158,8 @@ int messageExtractArgs(const Message *msg, ...)
 	type = va_arg(va, DataType);
 	while ( (type != DATATYPE_LAST) && (args < MSG_MAX_ARGS) ) {
 		if ( msg->args[args] != type ) {
-			fprintf(stderr, "messageExtract: Type mismatch for args %d. Got %d, expecting %d\n", args, msg->args[args], type);
 			va_end(va);
+			errno = EBADF;
 			return -1;
 		}
 		
@@ -176,6 +175,11 @@ int messageExtractArgs(const Message *msg, ...)
 		type = va_arg(va, DataType);
 	}
 	va_end(va);
+
+	if ( args == MSG_MAX_ARGS ) {
+		errno = ERANGE;
+		return -1;
+	}
 
 	return 0;
 }

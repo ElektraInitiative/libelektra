@@ -3,7 +3,7 @@
                              -------------------
     begin                : Sun Mar 12 2006
     copyright            : (C) 2006 by Yannick Lecaillez, Avi Alkalay
-    email                : avi@unix.sh
+    email                : sizon5@gmail.com, avi@unix.sh
  ***************************************************************************/
 
 /***************************************************************************
@@ -60,29 +60,22 @@ Message *protocolReadMessage(int fd)
 	
 	/* read header */
 	memset(&header, 0, sizeof(header));
-	if ( (ret = read(fd, &header, sizeof(header))) == -1 ) {
-		perror("protocolReadMessage");
+	if ( (ret = read(fd, &header, sizeof(header))) == -1 )
 		return NULL;
-	}
-	if ( protocolCheckHeader(&header) ) {
-		fprintf(stderr, "protocolReadMessage(): Incorrect header\n");
+	if ( protocolCheckHeader(&header) ) 
 		return NULL;
-	}
 
 	/* read message */
 	msg = (Message *) malloc(header.dataLen);
 	if ( msg == NULL ) {
-		perror("protocolReadMessage");
 		return NULL;
 	}
 	
 	buf = (char *) msg;
 	toRead = header.dataLen;
 	while ( toRead > 0 ) {
-		if ( (ret = read(fd, buf, toRead)) == -1 ) {
-			perror("protocolReadMessage");
+		if ( (ret = read(fd, buf, toRead)) == -1 ) 
 			return NULL;
-		}
 
 		toRead -= ret;
 		buf += ret;
@@ -105,19 +98,15 @@ int protocolSendMessage(int fd, const Message *message)
 	header.magic    = PROTO_MAGIC;
 	header.version  = PROTO_VERSION;
 	header.dataLen  = message->size;
-	if ( (ret = write(fd, &header, sizeof(header))) == -1 ) {
-		perror("protocolSendMessage");
+	if ( (ret = write(fd, &header, sizeof(header))) == -1 ) 
 		return -1;
-	}
 	
 	/* Send message */
 	toWrite = message->size;
 	buf = (const char *) message;
 	while ( toWrite > 0 ) {
-		if ( (ret = write(fd, buf, message->size)) == -1 ) {
-			perror("protocolSendMessage");
+		if ( (ret = write(fd, buf, message->size)) == -1 ) 
 			return -1;
-		}
 
 		toWrite -= ret;
 		buf += ret;
@@ -132,12 +121,12 @@ static int protocolCheckHeader(const ProtocolHeader *header)
 	assert(header != NULL);
 
 	if ( header->magic != PROTO_MAGIC ) {
-		fprintf(stderr, "potocolCheckHeader: Header should be %lx and its %lx\n", PROTO_MAGIC, header->magic);
+		errno = EBADF;
 		return -1;
 	}
 
 	if ( header->version < PROTO_VERSION ) {
-		fprintf(stderr, "protocolCheckHeader: Protocol version should be %d and its %d\n", PROTO_VERSION, header->version);
+		errno = EINVAL;
 		return -1;
 	}	
 

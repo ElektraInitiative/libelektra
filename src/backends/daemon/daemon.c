@@ -135,6 +135,17 @@ int kdbOpen_daemon(KDBHandle *handle) {
 		free(data);
 		return 1;
 	}
+
+	/* Check for Internal error */
+	if ( messageGetProcedure(reply) == INTERNAL_ERROR ) {
+		messageExtractArgs(reply, DATATYPE_INTEGER, &ret);
+		fprintf(stderr, "An error occured in kdbd: %d.\n", ret);
+		close(data->socketfd);
+		messageDel(reply);
+		free(data);
+		return 1;
+	}
+		
 	
 	/* Get reply value */
 	if ( messageExtractArgs(reply, DATATYPE_INTEGER, &ret, DATATYPE_INTEGER, &errno, DATATYPE_LAST) ) {
@@ -183,6 +194,10 @@ int kdbClose_daemon(KDBHandle *handle)
 	request = messageNew(MESSAGE_REQUEST, KDB_BE_CLOSE,
 				DATATYPE_INTEGER, &data->kdbdHandle,
 				DATATYPE_LAST);
+	if ( request == NULL ) {
+		perror("kdbClose_daemon");
+		return 1;
+	}
 	
 	/* Send request */
 	ret = protocolSendMessage(data->socketfd, request);
@@ -202,6 +217,16 @@ int kdbClose_daemon(KDBHandle *handle)
 		free(data);
 		messageDel(reply);
 		return -1;
+	}
+
+	/* Check for Internal error */
+	if ( messageGetProcedure(reply) == INTERNAL_ERROR ) {
+		messageExtractArgs(reply, DATATYPE_INTEGER, &ret);
+		fprintf(stderr, "An error occured in kdbd: %d.\n", ret);
+		close(data->socketfd);
+		messageDel(reply);
+		free(data);
+		return 1;
 	}
 	
 	/* Get reply value */
@@ -238,20 +263,25 @@ int kdbStatKey_daemon(KDBHandle handle, Key *key) {
 	
 	data = (DaemonBackendData *) kdbhGetBackendData(handle);
 	if ( data == NULL ) 
-		return 1;
+		return -1;
 	
 	/* Prepare request */
 	request = messageNew(MESSAGE_REQUEST, KDB_BE_STATKEY,
 			DATATYPE_INTEGER, &data->kdbdHandle,
 			DATATYPE_KEY, key,
 			DATATYPE_LAST);
+	if ( request == NULL ) {
+		perror("kdbStatKey_daemon");
+		return -1;
+	}
+		
 
 	/* Send request */
         ret = protocolSendMessage(data->socketfd, request);
 	messageDel(request);
         if ( ret == -1 ) {
 		fprintf(stderr, "Error writing message\n");
-		return 1;
+		return -1;
 	}
 
         /* Wait for a reply for 5 secondes */
@@ -259,6 +289,14 @@ int kdbStatKey_daemon(KDBHandle handle, Key *key) {
 	if ( reply == NULL ) {
 		fprintf(stderr, "Error reading message\n");
 		return -1;
+	}
+
+	/* Check for Internal error */
+	if ( messageGetProcedure(reply) == INTERNAL_ERROR ) {
+		messageExtractArgs(reply, DATATYPE_INTEGER, &ret);
+		fprintf(stderr, "An error occured in kdbd: %d.\n", ret);
+		messageDel(reply);
+		return 1;
 	}
 	
 	/* Get result */
@@ -269,7 +307,7 @@ int kdbStatKey_daemon(KDBHandle handle, Key *key) {
 				DATATYPE_LAST) ) {
 		fprintf(stderr, "Error extracting ARGS\n");
 		messageDel(reply);
-		return -1;
+		return 1;
 	}
 	messageDel(reply);
 		
@@ -302,6 +340,10 @@ int kdbGetKey_daemon(KDBHandle handle, Key *key)
 			DATATYPE_INTEGER, &data->kdbdHandle,
 			DATATYPE_KEY, key,
 			DATATYPE_LAST);
+	if ( request == NULL ) {
+		perror("kdbGetKey_daemon");
+		return -1;
+	}
 	
 	/* Send request */
 	ret = protocolSendMessage(data->socketfd, request);
@@ -317,6 +359,14 @@ int kdbGetKey_daemon(KDBHandle handle, Key *key)
 		fprintf(stderr, "Error reading message\n");
 		messageDel(reply);
 		return -1;
+	}
+
+	/* Check for Internal error */
+	if ( messageGetProcedure(reply) == INTERNAL_ERROR ) {
+		messageExtractArgs(reply, DATATYPE_INTEGER, &ret);
+		fprintf(stderr, "An error occured in kdbd: %d.\n", ret);
+		messageDel(reply);
+		return 1;
 	}
 	
 	/* Get result */
@@ -363,6 +413,10 @@ int kdbSetKey_daemon(KDBHandle handle, Key *key)
 		       DATATYPE_INTEGER, &data->kdbdHandle,
 		       DATATYPE_KEY, key,
 		       DATATYPE_LAST);
+       if ( request == NULL ) {
+	       perror("kdbSetKey_daemon");
+	       return -1;
+       }
        
        /* Send request */
        ret = protocolSendMessage(data->socketfd, request);
@@ -378,6 +432,14 @@ int kdbSetKey_daemon(KDBHandle handle, Key *key)
 	       fprintf(stderr, "Error reading message\n");
 	       messageDel(reply);
 	       return -1;
+       }
+
+       /* Check for Internal error */
+       if ( messageGetProcedure(reply) == INTERNAL_ERROR ) {
+	       messageExtractArgs(reply, DATATYPE_INTEGER, &ret);
+	       fprintf(stderr, "An error occured in kdbd: %d.\n", ret);
+	       messageDel(reply);
+	       return 1;
        }
        
        /* Get result */
@@ -419,6 +481,10 @@ int kdbRename_daemon(KDBHandle handle, Key *key, const char *newName)
 			DATATYPE_KEY, key,
 			DATATYPE_STRING, newName,
 			DATATYPE_LAST);
+	if ( request == NULL ) {
+		perror("kdbRename_daemon");
+		return -1;
+	}
 	
  	/* Send request */
  	ret = protocolSendMessage(data->socketfd, request);
@@ -434,6 +500,14 @@ int kdbRename_daemon(KDBHandle handle, Key *key, const char *newName)
 		fprintf(stderr, "Error reading message\n");
 		messageDel(reply);
 		return -1;
+	}
+
+	/* Check for Internal error */
+	if ( messageGetProcedure(reply) == INTERNAL_ERROR ) {
+		messageExtractArgs(reply, DATATYPE_INTEGER, &ret);
+		fprintf(stderr, "An error occured in kdbd: %d.\n", ret);
+		messageDel(reply);
+		return 1;
 	}
 	
  	/* Get result */
@@ -476,6 +550,10 @@ int kdbRemoveKey_daemon(KDBHandle handle, const Key *key)
 			DATATYPE_INTEGER, &data->kdbdHandle,
 			DATATYPE_KEY, key,
 			DATATYPE_LAST);
+	if ( request == NULL ) {
+		perror("kdbRemoveKey_daemon");
+		return 1;
+	}
 	
 	/* Send request */
 	ret = protocolSendMessage(data->socketfd, request);
@@ -491,6 +569,14 @@ int kdbRemoveKey_daemon(KDBHandle handle, const Key *key)
 		fprintf(stderr, "Error reading message\n");
 		messageDel(reply);
 		return -1;
+	}
+
+	/* Check for Internal error */
+	if ( messageGetProcedure(reply) == INTERNAL_ERROR ) {
+		messageExtractArgs(reply, DATATYPE_INTEGER, &ret);
+		fprintf(stderr, "An error occured in kdbd: %d.\n", ret);
+		messageDel(reply);
+		return 1;
 	}
 	
 	/* Get result */
@@ -529,6 +615,10 @@ ssize_t kdbGetKeyChildKeys_daemon(KDBHandle handle, const Key *parentKey, KeySet
 			DATATYPE_KEY, parentKey,
 			DATATYPE_ULONG, &options,
 			DATATYPE_LAST);
+	if ( request == NULL ) {
+		perror("kdbGetKeyChildKeys_daemon");
+		return -1;
+	}
 	
 	/* Send request */
 	ret = protocolSendMessage(data->socketfd, request);
@@ -544,6 +634,14 @@ ssize_t kdbGetKeyChildKeys_daemon(KDBHandle handle, const Key *parentKey, KeySet
 		fprintf(stderr, "Error reading message\n");
 		messageDel(reply);
 		return -1;
+	}
+
+	/* Check for Internal error */
+	if ( messageGetProcedure(reply) == INTERNAL_ERROR ) {
+		messageExtractArgs(reply, DATATYPE_INTEGER, &ret);
+		fprintf(stderr, "An error occured in kdbd: %d.\n", ret);
+		messageDel(reply);
+		return 1;
 	}
 	
 	/* Get result */
@@ -587,6 +685,11 @@ int kdbSetKeys_daemon(KDBHandle handle, KeySet *ks)
 			DATATYPE_INTEGER, &data->kdbdHandle,
 			DATATYPE_KEYSET, ks,
 			DATATYPE_LAST);
+	if ( request == NULL ) {
+		perror("kdbSetKeys_daemon");
+		return -1;
+	}
+	
 	/* Send request */
 	ret = protocolSendMessage(data->socketfd, request);
 	messageDel(request);
@@ -601,6 +704,14 @@ int kdbSetKeys_daemon(KDBHandle handle, KeySet *ks)
 		fprintf(stderr, "Error reading message\n");
 		messageDel(reply);
 		return -1;
+	}
+
+	/* Check for Internal error */
+	if ( messageGetProcedure(reply) == INTERNAL_ERROR ) {
+		messageExtractArgs(reply, DATATYPE_INTEGER, &ret);
+		fprintf(stderr, "An error occured in kdbd: %d.\n", ret);
+		messageDel(reply);
+		return 1;
 	}
 	
 	/* Get result */
@@ -648,6 +759,10 @@ u_int32_t kdbMonitorKeys_daemon(KDBHandle handle, KeySet *interests, u_int32_t d
 			DATATYPE_ULONG, &iterations,
 			DATATYPE_ULONG, &sleep,
 			DATATYPE_LAST);
+	if ( request == NULL ) {
+		perror("kdbMonitorKeys_daemon");
+		return 1;
+	}
 	
 	/* Send request */
 	ret = protocolSendMessage(data->socketfd, request);
@@ -663,6 +778,14 @@ u_int32_t kdbMonitorKeys_daemon(KDBHandle handle, KeySet *interests, u_int32_t d
 		fprintf(stderr, "Error reading message\n");
 		messageDel(reply);
 		return -1;
+	}
+
+	/* Check for Internal error */
+	if ( messageGetProcedure(reply) == INTERNAL_ERROR ) {
+		messageExtractArgs(reply, DATATYPE_INTEGER, &ret);
+		fprintf(stderr, "An error occured in kdbd: %d.\n", ret);
+		messageDel(reply);
+		return 1;
 	}
 	
 	/* Get result */
@@ -711,6 +834,10 @@ u_int32_t kdbMonitorKey_daemon(KDBHandle handle, Key *interest, u_int32_t diffMa
 			DATATYPE_ULONG, &iterations,
 			DATATYPE_ULONG, &sleep,
 			DATATYPE_LAST);
+	if ( request == NULL ) {
+		perror("kdbMonitorKey_daemon");
+		return 1;
+	}
 	
 	/* Send request */
 	ret = protocolSendMessage(data->socketfd, request);
@@ -726,6 +853,14 @@ u_int32_t kdbMonitorKey_daemon(KDBHandle handle, Key *interest, u_int32_t diffMa
 		fprintf(stderr, "Error reading message\n");
 		messageDel(reply);
 		return -1;
+	}
+
+	/* Check for Internal error */
+	if ( messageGetProcedure(reply) == INTERNAL_ERROR ) {
+		messageExtractArgs(reply, DATATYPE_INTEGER, &ret);
+		fprintf(stderr, "An error occured in kdbd: %d.\n", ret);
+		messageDel(reply);
+		return 1;
 	}
 	
 	/* Get result */

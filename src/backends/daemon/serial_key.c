@@ -3,7 +3,7 @@
                              -------------------
     begin                : Sun Mar 12 2006
     copyright            : (C) 2006 by Yannick Lecaillez, Avi Alkalay
-    email                : avi@unix.sh
+    email                : sizon5@gmail.com, avi@unix.sh
  ***************************************************************************/
 
 /***************************************************************************
@@ -41,8 +41,10 @@ ssize_t serialKey_getSize(const void *pKey)
 
 	key = (const Key *) pKey;
 		
-	if ( !keyIsInitialized(key) ) 
+	if ( !keyIsInitialized(key) ) {
+		errno = EINVAL;
 		return -1;
+	}
 
 	size  = sizeof(Key);
 	if ( key->flags & KEY_SWITCH_NAME )
@@ -66,6 +68,7 @@ ssize_t serialKey_serialize(const void *pKey, void *pBuffer)
 	key = (const Key *) pKey;
 	
 	if ( !keyIsInitialized(key) ) {
+		errno = EINVAL;
 		return -1;
 	}
 	buf = (char *) pBuffer;		
@@ -113,8 +116,10 @@ ssize_t serialKey_unserialize(const void *pBuffer, void *pKey)
 		size_t	size;
 
 	key = (Key *) pKey;
-	if ( !keyIsInitialized(key) ) 
+	if ( !keyIsInitialized(key) ) {
+		errno = EINVAL;
 		return -1;
+	}
 
 	buf = (const char *) pBuffer;
 
