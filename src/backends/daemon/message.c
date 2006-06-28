@@ -42,7 +42,59 @@ $Id: message.c 788 2006-05-29 16:30:00Z aviram $
 #include "kdb.h"
 #include "kdbprivate.h"
 
+/**
+ * @defgroup message Message
+ * @brief Encapsulate procedure call for IPC between libelektra-daemon and kdbd
+ *
+ * To use it:
+ * @code
+ * #include "message.h"
+ * @endcode
+ *
+ * Message is a flat struct (i.e: without pointer) which encapsulate a
+ * procedure with arguments. Its the basis class for elektra daemon IPC.
+ * a Message pointer contain the Message struct and the eventual serialized
+ * arguments. Here a in memory schematic representation:
+ * @code
+ * #|MESSAGE STRUCT|ARG0-SERIALIZED|ARGN-SERIALIZED|#
+ * @endcode
+ * 
+ * where # is the boundaries of the memory space allocated for the Message.
+ * Message depends of serializer.
+ *
+ * Refer to @link protocol Protocol@endlink for sending/receiving message.
+ * 
+ */
 
+/**
+ * Message constructor.
+ *
+ * Create a new message with associated arguments.
+ * Message is a serialized procedure and arguments targeted to be
+ * send throught a medium.
+ * Arguments are copied, so you could free these after using messageNew
+ *
+ * @code
+ * Message *msg
+ *
+ * // Create a request containing key and integer as arguments
+ * msg = messageNew(MESSAGE_REQUEST, 1, DATATYPE_KEY, key,
+ *                                      DATATYPE_INTEGER, &myInt,
+ *                                      DATATYPE_LAST);
+ * @endcode
+ *
+ * @param msgType Message type (request, reply, internal error)
+ * @param procedure Procedure ID
+ * 
+ * @see DataType
+ * @see MessageType
+ * @see messageExtractArgs()
+ * @see messageDel()
+ * @return newly allocated Message (must be freed with messageDel()) or NULL if error occured
+ * 		
+ * @ingroup message
+ *
+ */
 Message *messageNew(MessageType msgType, int procedure, ...)
 {
 	DataType	type;
@@ -114,6 +166,15 @@ Message *messageNew(MessageType msgType, int procedure, ...)
 	return msg;
 }
 
+/**
+ * Get type of a message
+ *
+ * @param msg Message
+ * @return Type of the message
+ *
+ * @see MessageType
+ * @ingroup message
+ */
 MessageType messageGetType(const Message *msg)
 {
 	assert(msg != NULL);
@@ -121,6 +182,13 @@ MessageType messageGetType(const Message *msg)
 	return msg->type;
 }
 
+/**
+ * Get procedure of a message
+ *
+ * @param msg Message
+ * @return Type of the message
+ * @ingroup message
+ */
 int messageGetProcedure(const Message *msg)
 {
 	assert(msg != NULL);
@@ -128,6 +196,13 @@ int messageGetProcedure(const Message *msg)
 	return msg->procId;
 }
 
+/**
+ * Get number of arguments contained in a message
+ *
+ * @param msg Message
+ * @return # of args
+ * @ingroup message
+ */
 int messageGetNbArgs(const Message *msg)
 {
 	assert(msg != NULL);
@@ -135,8 +210,25 @@ int messageGetNbArgs(const Message *msg)
 	return msg->nbArgs;
 }
 
-/*
- * Extract args from a message
+/**
+ * Extract arguments from a message
+ * This methods extract arguments contained from a message
+ * into the suite of arguments passed to this method
+ *
+ * @code
+ * int ret
+ *  
+ * ret = messageExtractArgs(msg, DATATYPE_KEY, key,
+ *                               DATATYPE_INTEGER, &myInt,
+ *                               DATATYPE_LAST);
+ * @endcode
+ *
+ * @param msg Message
+ * @return 0 if Ok, -1 on error.
+ * 
+ * @see messageNew()
+ * @see DataType
+ * @ingroup message
  */
 int messageExtractArgs(const Message *msg, ...)
 {
@@ -184,6 +276,16 @@ int messageExtractArgs(const Message *msg, ...)
 	return 0;
 }
 
+/**
+ * Delete a message
+ * Free all memory took by this message.
+ * This doesn't free arguments passed when message was created.
+ *
+ * @param msg Message to delete
+ *
+ * @see messageNew()
+ * @ingroup message
+ */
 void messageDel(Message *msg)
 {
 	free(msg);
