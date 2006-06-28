@@ -13,7 +13,6 @@
  ***************************************************************************/
 
 int threadCreate(int socketfd, void *(*start_routine)(void *));
-int threadExit(int threadHandle, void *retVal);
 int threadGetSocket(int threadHandle);
 pthread_t threadGetId(int threadHandle);
- 	
+void threadExit(void *pIntThreadHandle);

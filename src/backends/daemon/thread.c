@@ -37,7 +37,6 @@ static int threadListAdd(ThreadContext *thread);
 static ThreadContext *threadListGet(int threadHandle);
 static int threadListRemove(int threadHandle);
 
-
 /*
  * Create a new ThreadContext and launch the thread
  * Launched thread must call threadExit(handle) at end.
@@ -60,7 +59,6 @@ int threadCreate(int socketfd, void *(*start_routine)(void *))
 		free(new);
 		return -1;
 	}
-	fprintf(stderr, "Thread %d launched.\n", new->thread);
 		
 	return new->handle;
 }
@@ -86,25 +84,29 @@ pthread_t threadGetId(int threadHandle)
 }
 
 /*
- * Remove ThreadContext and exit the current thread
- * Must be called by the thread exiting only !
+ * Remove ThreadContext on thread exit
+ * This functions shoudln't be called by hand !
  */
-int threadExit(int threadHandle, void *retVal)
+void threadExit(void *pIntThreadHandle)
 {
 	ThreadContext	*thread;
+	int	threadHandle;
+
+	threadHandle = *((int *) pIntThreadHandle);
 	
-	if ( (thread = threadListGet(threadHandle)) == NULL )
-		return -1;
+	if ( (thread = threadListGet(threadHandle)) == NULL ) {
+		fprintf(stderr, "threadExit(): Thread's handle %d doesn't exist.\n", threadHandle);
+		return;
+	}
 	
-	if ( threadListRemove(threadHandle) == -1 )
-		return -1;
+	if ( threadListRemove(threadHandle) == -1 ) {
+		fprintf(stderr, "threadExit(): Unable to remove thread's handle %d.\n", threadHandle);
+		return;
+	}
 
 	close(thread->socketFd);
-	fprintf(stderr, "Thread %d exited.\n", thread->thread);
 	free(thread);
-	pthread_exit(retVal);
-
-	return 0;
+	fprintf(stderr, "Thread %d (handle=%d) freed.\n", pthread_self(), threadHandle);
 }
 
 

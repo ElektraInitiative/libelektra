@@ -28,7 +28,7 @@ $Id: daemon.c 788 2006-05-29 16:30:00Z aviram $
 #include <inttypes.h>
 
 #include "kdbbackend.h"
-
+#include "kdbprivate.h"
 
 
 /* Backend specific includes */
@@ -252,7 +252,9 @@ int kdbClose_daemon(KDBHandle *handle)
  * @see kdbStatKey() for expected behavior.
  * @ingroup backend
  */
-int kdbStatKey_daemon(KDBHandle handle, Key *key) {
+int kdbStatKey_daemon(KDBHandle handle, Key *key) 
+{
+	Key	*workKey, copy;
 	DaemonBackendData *data;
 	Message *request, *reply;
 	int     ret;
@@ -261,7 +263,6 @@ int kdbStatKey_daemon(KDBHandle handle, Key *key) {
 	if ( data == NULL ) 
 		return -1;
 	
-	/* Prepare request */
 	request = messageNew(MESSAGE_REQUEST, KDB_BE_STATKEY,
 			DATATYPE_KEY, key,
 			DATATYPE_LAST);
@@ -291,7 +292,7 @@ int kdbStatKey_daemon(KDBHandle handle, Key *key) {
 		messageExtractArgs(reply, DATATYPE_INTEGER, &ret);
 		fprintf(stderr, "An error occured in kdbd: %d.\n", ret);
 		messageDel(reply);
-		return 1;
+		return -1;
 	}
 	
 	/* Get result */
@@ -305,7 +306,7 @@ int kdbStatKey_daemon(KDBHandle handle, Key *key) {
 		return 1;
 	}
 	messageDel(reply);
-		
+
 	return ret;
 }
 
@@ -360,7 +361,7 @@ int kdbGetKey_daemon(KDBHandle handle, Key *key)
 		messageExtractArgs(reply, DATATYPE_INTEGER, &ret);
 		fprintf(stderr, "An error occured in kdbd: %d.\n", ret);
 		messageDel(reply);
-		return 1;
+		return -1;
 	}
 	
 	/* Get result */
@@ -374,7 +375,7 @@ int kdbGetKey_daemon(KDBHandle handle, Key *key)
 		return -1;
 	}
 	messageDel(reply);
-	
+
 	return ret;
 }
 
@@ -396,57 +397,57 @@ int kdbSetKey_daemon(KDBHandle handle, Key *key)
 	Message *request, *reply;
 	int ret;
        
-       data = (DaemonBackendData *) kdbhGetBackendData(handle);
-       if ( data == NULL )
-	       return 1;
+	data = (DaemonBackendData *) kdbhGetBackendData(handle);
+ 	if ( data == NULL )
+ 		return 1;
       
 	fprintf(stderr, "kdbSetKey(%s:%s)\n", keyStealOwner(key), keyStealName(key));
        
-       /* Prepare request */
-       request = messageNew(MESSAGE_REQUEST, KDB_BE_SETKEY,
-		       DATATYPE_KEY, key,
-		       DATATYPE_LAST);
-       if ( request == NULL ) {
-	       perror("kdbSetKey_daemon");
-	       return -1;
-       }
-       
-       /* Send request */
-       ret = protocolSendMessage(data->socketfd, request);
-       messageDel(request);
-       if ( ret == -1 ) {
-	       fprintf(stderr, "Error writing message\n");
-	       return 1;
-       }
-       
-       /* Wait for a reply for 5 secondes */
-       reply = protocolReadMessage(data->socketfd);
-       if ( reply == NULL ) {
-	       fprintf(stderr, "Error reading message\n");
-	       messageDel(reply);
-	       return -1;
-       }
-
-       /* Check for Internal error */
-       if ( messageGetProcedure(reply) == INTERNAL_ERROR ) {
-	       messageExtractArgs(reply, DATATYPE_INTEGER, &ret);
-	       fprintf(stderr, "An error occured in kdbd: %d.\n", ret);
-	       messageDel(reply);
-	       return 1;
-       }
-       
-       /* Get result */
-       if ( messageExtractArgs(reply,
-			       DATATYPE_INTEGER, &ret,
-			       DATATYPE_INTEGER, &errno,
-			       DATATYPE_KEY, key,
-			       DATATYPE_LAST) ) {
-	       fprintf(stderr, "Error extracting ARGS\n");
-	       messageDel(reply);
-	       return -1;
-       }
-       	messageDel(reply);
-       
+	/* Prepare request */
+	request = messageNew(MESSAGE_REQUEST, KDB_BE_SETKEY,
+			DATATYPE_KEY, key,
+ 			DATATYPE_LAST);
+	if ( request == NULL ) {
+ 		perror("kdbSetKey_daemon");
+ 		return -1;
+ 	}
+ 	
+ 	/* Send request */
+ 	ret = protocolSendMessage(data->socketfd, request);
+ 	messageDel(request);
+ 	if ( ret == -1 ) {
+ 		fprintf(stderr, "Error writing message\n");
+ 		return 1;
+ 	}
+ 	
+ 	/* Wait for a reply for 5 secondes */
+ 	reply = protocolReadMessage(data->socketfd);
+ 	if ( reply == NULL ) {
+ 		fprintf(stderr, "Error reading message\n");
+ 		messageDel(reply);
+ 		return -1;
+ 	}
+	
+ 	/* Check for Internal error */
+ 	if ( messageGetProcedure(reply) == INTERNAL_ERROR ) {
+ 		messageExtractArgs(reply, DATATYPE_INTEGER, &ret);
+ 		fprintf(stderr, "An error occured in kdbd: %d.\n", ret);
+ 		messageDel(reply);
+ 		return 1;
+ 	}
+  	
+ 	/* Get result */
+ 	if ( messageExtractArgs(reply,
+ 				DATATYPE_INTEGER, &ret,
+ 				DATATYPE_INTEGER, &errno,
+ 				DATATYPE_KEY, key,
+ 				DATATYPE_LAST) ) {
+ 		fprintf(stderr, "Error extracting ARGS\n");
+ 		messageDel(reply);
+ 		return -1;
+ 	}
+	messageDel(reply);
+ 	
 	return ret;	
 }
 
@@ -528,7 +529,7 @@ int kdbRename_daemon(KDBHandle handle, Key *key, const char *newName)
  */
 int kdbRemoveKey_daemon(KDBHandle handle, const Key *key)
 {
-	
+	Key	copy;
 	DaemonBackendData *data;
 	Message *request, *reply;
 	int ret;
@@ -538,9 +539,15 @@ int kdbRemoveKey_daemon(KDBHandle handle, const Key *key)
 		return 1;
 	
 	/* Prepare request */
+	keyInit(&copy);
+	if ( keyDup(key, &copy) ) {
+		keyClose(&copy);
+		return -1;
+	}
 	request = messageNew(MESSAGE_REQUEST, KDB_BE_REMOVEKEY,
-			DATATYPE_KEY, key,
+			DATATYPE_KEY, &copy,
 			DATATYPE_LAST);
+	keyClose(&copy);
 	if ( request == NULL ) {
 		perror("kdbRemoveKey_daemon");
 		return 1;
@@ -592,6 +599,7 @@ int kdbRemoveKey_daemon(KDBHandle handle, const Key *key)
  */
 ssize_t kdbGetKeyChildKeys_daemon(KDBHandle handle, const Key *parentKey, KeySet *returned, unsigned long options) 
 {
+	Key	copy;
 	DaemonBackendData       *data;
 	Message         *request, *reply;
 	int             ret;
@@ -601,10 +609,16 @@ ssize_t kdbGetKeyChildKeys_daemon(KDBHandle handle, const Key *parentKey, KeySet
 		return 1;
 	
 	/* Prepare request */
+	keyInit(&copy);
+	if ( keyDup(parentKey, &copy) ) {
+		keyClose(&copy);
+		return -1;
+	}
 	request = messageNew(MESSAGE_REQUEST, KDB_BE_GETCHILD,
-			DATATYPE_KEY, parentKey,
+			DATATYPE_KEY, &copy,
 			DATATYPE_ULONG, &options,
 			DATATYPE_LAST);
+	keyClose(&copy);
 	if ( request == NULL ) {
 		perror("kdbGetKeyChildKeys_daemon");
 		return -1;
@@ -635,7 +649,6 @@ ssize_t kdbGetKeyChildKeys_daemon(KDBHandle handle, const Key *parentKey, KeySet
 	}
 	
 	/* Get result */
-	fprintf(stderr, "EXTRACT ARGS !\n");
 	if ( messageExtractArgs(reply,
 				DATATYPE_INTEGER, &ret,
 				DATATYPE_INTEGER, &errno,
@@ -715,9 +728,8 @@ int kdbSetKeys_daemon(KDBHandle handle, KeySet *ks)
 		return -1;
 	}
 	messageDel(reply);
-	
+
 	return ret;
-	
 }
 
 
@@ -788,7 +800,7 @@ u_int32_t kdbMonitorKeys_daemon(KDBHandle handle, KeySet *interests, u_int32_t d
 		return -1;
 	}
 	messageDel(reply);
-	
+
 	return monitorRet;
 }
 
@@ -862,7 +874,7 @@ u_int32_t kdbMonitorKey_daemon(KDBHandle handle, Key *interest, u_int32_t diffMa
 		return -1;
 	}
 	messageDel(reply);
-	
+
 	return monitorRet;
 }
 

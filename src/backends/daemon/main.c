@@ -82,6 +82,9 @@ int main(int argc, char **argv)
 	int	trunc;
 	pthread_t thread;
 
+	/* force a superuniversal modern charset: UTF-8 */
+	putenv("LANG=en_US.UTF-8");
+	
 	sig_block(sig_child);
       	sig_catch(sig_child,sigchld);
     	sig_catch(sig_term,sigterm);
@@ -110,13 +113,13 @@ int main(int argc, char **argv)
 	}
 	ndelay_off(s);
 
-	for(;;) {
+	for(;;) { 
 		t = ipc_accept(s,remotepath,sizeof(remotepath),&trunc);
 
 		if (t == -1) {
 			perror("kdbd");
 			continue;
-		}
+		} 
 
 		threadCreate(t, kdbd);
 	}

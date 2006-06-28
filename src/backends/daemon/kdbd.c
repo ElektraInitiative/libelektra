@@ -24,6 +24,7 @@ $Id: kdbd.c 788 2006-05-29 16:30:00Z aviram $
 #include "protocol.h"
 #include "message.h"
 #include "kdb_wrapper.h"
+#include "thread.h"
 
 static Message *processRequest(Message *request, KDBHandle *handle, uid_t remoteeuid, gid_t remoteegid);
 
@@ -109,31 +110,36 @@ int kdbd(void *pIntThreadHandle)
 	Message		*request, *reply;
 	uid_t   	remoteeuid;
 	gid_t   	remoteegid;
+	uid_t		remotegid;
 	int		closed;
+
+	pthread_cleanup_push(threadExit, pIntThreadHandle);
 	
 	threadHandle = *((int *) pIntThreadHandle);
+	
 	if ( (socketFd = threadGetSocket(threadHandle)) == -1 ) {
 		fprintf(stderr, "Can't get socket :-(\n");
 		return 1;
-	}
+	} 
 
-	if ( ipc_eid(socketFd, &remoteeuid, &remoteegid) == -1 ) {
-		fprintf(stderr, "Can't get eUID & eGID\n");
+	if ( ipc_eid(socketFd, &remoteeuid, &remoteegid, &remotegid) == -1 ) {
+		perror("kdbd");
 		return 1;
 	}
-	
+	fprintf(stderr, "Thread %d launched. I'll manage process PID %d (euid=%d/egid=%d)\n", pthread_self(), remotegid, remoteeuid, remoteegid);
+			
 	closed = 0;
 	while ( !closed ) {
 		request = protocolReadMessage(socketFd);
 		if ( request == NULL ) {
 			if ( errno == EPIPE ) {
 				/* Client closed the connection */
-				threadExit(threadHandle, NULL);
+				messageDel(request);
+				return 1;
 			} else {	
 				/* They are probably some usefull errno
 				 * to check here ...
 				 */
-			
 				perror("kdbd");
 				continue;
 			}
@@ -147,7 +153,7 @@ int kdbd(void *pIntThreadHandle)
 		messageDel(reply);
 	}
 
-	threadExit(threadHandle, NULL);
+	pthread_cleanup_pop(1);
 	
 	return 0;
 }

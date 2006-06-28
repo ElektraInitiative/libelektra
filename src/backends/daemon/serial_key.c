@@ -3,7 +3,7 @@
                              -------------------
     begin                : Sun Mar 12 2006
     copyright            : (C) 2006 by Yannick Lecaillez, Avi Alkalay
-    email                : sizon5@gmail.com, avi@unix.sh
+    email                : avi@unix.sh
  ***************************************************************************/
 
 /***************************************************************************
@@ -32,6 +32,7 @@ $Id: serial_bin.c 788 2006-05-29 16:30:00Z aviram $
 #include "datatype.h"
 #include "message.h"
 
+#include "serial_string.h"
 #include "serial_key.h"
 
 ssize_t serialKey_getSize(const void *pKey)
@@ -41,21 +42,24 @@ ssize_t serialKey_getSize(const void *pKey)
 
 	key = (const Key *) pKey;
 		
-	if ( !keyIsInitialized(key) ) {
-		errno = EINVAL;
+	if ( !keyIsInitialized(key) ) 
 		return -1;
+
+	size = sizeof(Key);
+	
+	if ( key->flags & KEY_SWITCH_NAME )
+		size += serialString_getSize(keyStealName(key));
+        if ( key->flags & KEY_SWITCH_COMMENT )
+		size += serialString_getSize(keyStealComment(key));
+	if ( key->flags & KEY_SWITCH_OWNER )
+		size += serialString_getSize(keyStealOwner(key));
+	if ( key->flags & KEY_SWITCH_VALUE ) {
+		if ( keyIsString(key) )
+			size += serialString_getSize(keyStealValue(key));
+		else
+			size += keyGetValueSize(key);
 	}
 
-	size  = sizeof(Key);
-	if ( key->flags & KEY_SWITCH_NAME )
-		size += keyGetNameSize(key);
-        if ( key->flags & KEY_SWITCH_COMMENT )
-		size += keyGetCommentSize(key);
-	if ( key->flags & KEY_SWITCH_DOMAIN )
-		size += keyGetOwnerSize(key);
-	if ( key->flags & KEY_SWITCH_VALUE )
-		size += keyGetValueSize(key);
-	
 	return size;
 }
 
@@ -64,11 +68,11 @@ ssize_t serialKey_serialize(const void *pKey, void *pBuffer)
 	const Key *key;
 	size_t	size;
 	char	*buf;
+	int	convert;
 
 	key = (const Key *) pKey;
 	
 	if ( !keyIsInitialized(key) ) {
-		errno = EINVAL;
 		return -1;
 	}
 	buf = (char *) pBuffer;		
@@ -78,32 +82,44 @@ ssize_t serialKey_serialize(const void *pKey, void *pBuffer)
 	memcpy(buf, key, size);
 	buf += size;
 
-	/* Serialize key owner */
-	if ( key->flags & KEY_SWITCH_DOMAIN ) {
-		size = keyGetOwnerSize(key);
-		memcpy(buf, keyStealOwner(key), size);
-		buf += size;
-	}
+	convert = kdbNeedsUTF8Conversion();
 	
 	/* Serialize key name */
 	if ( key->flags & KEY_SWITCH_NAME ) {
-		size = keyGetNameSize(key);
-		memcpy(buf, keyStealName(key), size);
+		size = serialString_serialize(keyStealName(key), buf);	
+		if ( size == -1 )
+			return -1;
 		buf += size;
 	}
 
 	/* Serialize key comment */
 	if ( key->flags & KEY_SWITCH_COMMENT ) {
-		size = keyGetCommentSize(key);
-		memcpy(buf, keyStealComment(key), size);
+		size = serialString_serialize(keyStealComment(key), buf);
+		if ( size == -1 )
+			return -1;
 		buf += size;
 	}
 
+	/* Serialize key owner */
+	if ( key->flags & KEY_SWITCH_OWNER ) {
+		size = serialString_serialize(keyStealOwner(key), buf);
+		if ( size == -1 )
+			return -1;
+		buf += size; 
+	}
+	
 	/* Serialize key value */
 	if ( key->flags & KEY_SWITCH_VALUE ) {
-		size = keyGetValueSize(key);
-		memcpy(buf, keyStealValue(key), size);
-		buf += size;
+		if ( keyIsString(key) ) {
+			size = serialString_serialize(keyStealValue(key), buf);
+			if ( size == -1 )
+				return -1;
+			buf += size;
+		} else {
+			size = keyGetValueSize(key);
+			memcpy(buf, keyStealValue(key), size);
+			buf += size;
+		}
 	}
 
 	return (buf - ((char *) pBuffer));
@@ -116,17 +132,14 @@ ssize_t serialKey_unserialize(const void *pBuffer, void *pKey)
 		size_t	size;
 
 	key = (Key *) pKey;
-	if ( !keyIsInitialized(key) ) {
-		errno = EINVAL;
+	if ( !keyIsInitialized(key) ) 
 		return -1;
-	}
 
 	buf = (const char *) pBuffer;
 
 	/* Save current key char pointer 
 	 * since these one will be overrided. */
 	memcpy(&save, key, sizeof(Key));
-	memset(key, 0, sizeof(Key));
 	
 	/* Unserialize key struct */
 	size = sizeof(Key);
@@ -139,29 +152,46 @@ ssize_t serialKey_unserialize(const void *pBuffer, void *pKey)
 	key->userDomain = keyStealOwner(&save);
 	key->data = keyStealValue(&save);
 
-	/* Unserialize userDomain */
-	if ( key->flags & KEY_SWITCH_DOMAIN ) {
-		size = keySetOwner(key, buf);
-		buf += size;
-	}
-		
-	
 	/* Unserialize keyname */
 	if ( key->flags & KEY_SWITCH_NAME ) {
-		size = keySetName(key, buf);
+		free(key->key);
+		size = serialString_unserialize(buf, &key->key);
+		if ( size == -1 )
+			return -1;
 		buf += size;
 	}
 
 	/* Unserialize comment */
 	if ( key->flags & KEY_SWITCH_COMMENT ) {
-		size = keySetComment(key, buf);
+		free(key->comment);
+		size = serialString_unserialize(buf, &key->comment);
+		if ( size == -1 )
+			return -1;
+		key->commentSize = size;
 		buf += size;
+	}
+
+	/* Unserialize userDomain */
+	if ( key->flags & KEY_SWITCH_OWNER ) {
+		free(key->userDomain);
+		size = serialString_unserialize(buf, &key->userDomain);
+		if ( size == -1 )
+			return -1;
+		buf += size; 
 	}
 
 	/* Unserialize data */
 	if ( key->flags & KEY_SWITCH_VALUE ) {
-		size = keySetRaw(key, buf, key->dataSize);
-		buf += size;
+		if ( keyIsString(key) ) {
+			free(key->data);
+			size = serialString_unserialize(buf, &key->data);
+			if ( size == -1 )
+				return -1;
+			key->dataSize = size;
+		} else {
+			size = keySetRaw(key, buf, key->dataSize);
+			buf += size;
+		}
 	}
 
 	return (buf - ((char *) pBuffer));

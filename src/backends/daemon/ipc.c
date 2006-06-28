@@ -131,21 +131,23 @@ int ndelay_off(int fd)
 	return fcntl(fd,F_SETFL,fcntl(fd,F_GETFL,0) & ~O_NONBLOCK);
 }
 
-int ipc_eid(int s,int *u,int *g)
+int ipc_eid(int s,int *u,int *g,int *p)
 {
 	uid_t dummyu;
 	gid_t dummyg;
+	pid_t dummyp;
 	
-	if (getpeereid(s,&dummyu,&dummyg) == -1) 
+	if (getpeereid(s,&dummyu,&dummyg,&dummyp) == -1) 
 		return -1;
 	
 	*u = dummyu;
 	*g = dummyg;
+	*p = dummyp;
 	
 	return 0;
 }
 
-int getpeereid(int s,uid_t *u,gid_t *g)
+int getpeereid(int s,uid_t *u,gid_t *g,pid_t *p)
 {
 	struct ucred dummy = {0};
 	int len = sizeof(dummy);
@@ -154,6 +156,7 @@ int getpeereid(int s,uid_t *u,gid_t *g)
 		return -1;
 	*u = dummy.uid;
 	*g = dummy.gid;
+	*p = dummy.pid;
 
 	return 0;
 }

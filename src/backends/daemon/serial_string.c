@@ -3,7 +3,7 @@
                              -------------------
     begin                : Sun Mar 12 2006
     copyright            : (C) 2006 by Yannick Lecaillez, Avi Alkalay
-    email                : sizon5@gmail.com, avi@unix.sh
+    email                : avi@unix.sh
  ***************************************************************************/
 
 /***************************************************************************
@@ -20,41 +20,102 @@ $Id: serial_bin.c 788 2006-05-29 16:30:00Z aviram $
 
 */
 
+#include "config.h"
 
-#include <errno.h>
 #include <stdlib.h>
 #include <string.h>
+#include <langinfo.h>
+#include <iconv.h>
+
+#include "kdbbackend.h"
+
+/* Daemon works in UTF-8. So, conversion is done
+ * only when we're called from a non-UTF8 client */
 
 ssize_t serialString_getSize(const void *pChar)
 {
-	return strblen(pChar);
+	size_t size;
+
+	size = strblen(pChar);
+	if ( kdbNeedsUTF8Conversion() ) 
+		size = size * 4;
+
+	return size;	
 }
 
 
 ssize_t serialString_serialize(const void *pChar, void *pBuffer)
 {
+	char	*currentCharset, *writeCursor;
+	const char *readCursor;
+	iconv_t	converter;
+	char	*tmp;
+	size_t	bufferSize;
+	size_t	size;
 	ssize_t	len;
 
-	len = serialString_getSize(pChar);
-	if ( len != -1 )
-		memcpy(pBuffer, pChar, len);
-	else
-		errno = EBADF;
+	if ( kdbNeedsUTF8Conversion() ) {
+		currentCharset=nl_langinfo(CODESET);
+		converter = iconv_open("UTF-8",currentCharset);
+
+		size = strblen(pChar);
+		bufferSize = size * 4;
+
+		readCursor = (const char *) pChar;
+		writeCursor = (char *) pBuffer;
+		
+		if ( iconv(converter, (ICONV_CONST char **) &readCursor, &size, &writeCursor, &bufferSize) == (iconv_t)(-1) ) {
+			iconv_close(converter);
+			return -1;
+		}
+		iconv_close(converter);
+		
+		len = writeCursor - ((char *) pBuffer);
+	} else {
+		len = serialString_getSize(pChar);
+		if ( len != -1 ) {
+			memcpy(pBuffer, pChar, len);
+		}
+	}
 
 	return len;
 }
 
 ssize_t serialString_unserialize(const void *pBuffer, void *ppChar) 
 {
+	char    *currentCharset, *writeCursor;
+	const char	*readCursor;
+	iconv_t converter;
 	char	**dest;
+	size_t	bufferSize;
+	size_t	size;
 	ssize_t	len;
 
-	len = strblen(ppChar);
-	if ( len != -1 ) {
-		*dest = (char *) malloc(len);
-		memcpy(*dest, pBuffer, len);
-	} else
-		errno = EBADF;
+	dest = (char **) ppChar;
+	if ( kdbNeedsUTF8Conversion() ) {
+		currentCharset=nl_langinfo(CODESET);
+		converter = iconv_open(currentCharset, "UTF-8");
+		
+		size = strblen(pBuffer);
+		bufferSize = size * 4;
+		*dest = (char *) malloc(bufferSize);
+		readCursor = (const char *) pBuffer;
+		writeCursor = (char *) *dest;
+		
+		if ( iconv(converter, (ICONV_CONST char **) &readCursor, &size, &writeCursor, &bufferSize) == (iconv_t)(-1) ) {
+			iconv_close(converter);
+			return -1;
+		}
+		iconv_close(converter);
+
+		len = writeCursor - ((char *) *dest);	
+	} else {
+		len = strblen(pBuffer);
+		if ( len != -1 ) {
+			*dest = (char *) malloc(len);
+			memcpy(*dest, pBuffer, len);
+		}
+	}
 
 	return len;
 }
