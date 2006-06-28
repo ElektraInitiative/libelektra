@@ -102,29 +102,33 @@ static Message *processRequest(Message *request, KDBHandle *handle, uid_t remote
 	return reply;
 }
 
-int kdbd(int *t)
+int kdbd(void *pIntThreadHandle)
 {
 	KDBHandle	handle;
+	int		threadHandle, socketFd;
 	Message		*request, *reply;
 	uid_t   	remoteeuid;
 	gid_t   	remoteegid;
 	int		closed;
 	
-	if ( ipc_eid(*t, &remoteeuid, &remoteegid) == -1 ) {
+	threadHandle = *((int *) pIntThreadHandle);
+	if ( (socketFd = threadGetSocket(threadHandle)) == -1 ) {
+		fprintf(stderr, "Can't get socket :-(\n");
+		return 1;
+	}
+
+	if ( ipc_eid(socketFd, &remoteeuid, &remoteegid) == -1 ) {
 		fprintf(stderr, "Can't get eUID & eGID\n");
 		return 1;
 	}
 	
-	fprintf(stderr, "Hi sir. Know i'm here, please give me some works\n");
 	closed = 0;
 	while ( !closed ) {
-		request = protocolReadMessage(*t);
+		request = protocolReadMessage(socketFd);
 		if ( request == NULL ) {
 			if ( errno == EPIPE ) {
 				/* Client closed the connection */
-				fprintf(stderr, "Argh Sir ! client disconnected unexpectedly. I quit\n");
-				close(*t);
-				pthread_exit(1);
+				threadExit(threadHandle, NULL);
 			} else {	
 				/* They are probably some usefull errno
 				 * to check here ...
@@ -139,12 +143,11 @@ int kdbd(int *t)
 		reply = processRequest(request, &handle, remoteeuid, remoteegid);
 		messageDel(request);
 
-		protocolSendMessage(*t, reply);
+		protocolSendMessage(socketFd, reply);
 		messageDel(reply);
 	}
 
-	fprintf(stderr, "Thanks for used me sir. Good bye ! :)\n");
-	close(*t);
+	threadExit(threadHandle, NULL);
 	
 	return 0;
 }

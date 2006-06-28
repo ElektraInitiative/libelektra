@@ -31,6 +31,7 @@ $Id: kdbd.c 788 2006-05-29 16:30:00Z aviram $
 
 #include "sig.h"
 #include "ipc.h"
+#include "thread.h"
 #include "kdbd.h"
 
 
@@ -117,7 +118,7 @@ int main(int argc, char **argv)
 			continue;
 		}
 
-		pthread_create(&thread, NULL, kdbd, &t);
+		threadCreate(t, kdbd);
 	}
 }
 

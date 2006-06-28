@@ -11,7 +11,7 @@ libelektra_daemon_la_LDFLAGS = -avoid-version -module
 libelektra_daemon_la_LIBADD = libproto.la
 
 bin_PROGRAMS = kdbd
-kdbd_SOURCES = main.c kdbd.c kdb_wrapper.c
+kdbd_SOURCES = main.c kdbd.c kdb_wrapper.c thread.c
 kdbd_LDFLAGS = -L../../libelektra/
 kdbd_LDADD = libproto.la -lelektra -lpthread
 
