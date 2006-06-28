@@ -124,6 +124,7 @@ Message *protocolReadMessage(int fd)
  * @return 0 if OK, -1 otherwise
  *
  * @see protocolReadMessage()
+ * @ingroup protocol
  */
 int protocolSendMessage(int fd, const Message *message)
 {

@@ -51,6 +51,33 @@ static SerializerFunc serializer[] = {
 	{ serialKeySet_getSize, serialKeySet_serialize, serialKeySet_unserialize }
 };
 
+/**
+ * @defgroup serializer Serializer
+ * @brief Serializer provide methods for serialize/unserialize data of several DataType
+ *
+ * Serializer is used by @link message Message@endlink module for arguments
+ * serialization/unserialization.
+ * 
+ * These functions are wrapper to specific methods depending of the DataType of data
+ * they're working on. Each DataType have its own function set for do the real work.
+ *
+ */
+
+/**
+ * Get size of a serialized arguments
+ *
+ * This function compute the size needed for store
+ * the serialized form of an argument of type "type"
+ * and of value "val"
+ *
+ * @param type Type of the argument
+ * @param val Value of the argument
+ *
+ * @return Size of the serialized or -1 if error
+ *
+ * @see DataType
+ * @ingroup serializer
+ */
 ssize_t serializeGetSize(DataType type, void *val)
 {
 	if ( type <= DATATYPE_UNKNOW || type >= DATATYPE_LAST ) {
@@ -62,6 +89,20 @@ ssize_t serializeGetSize(DataType type, void *val)
 }
 
 
+/**
+ * Serialize argument
+ *
+ * Serialize an argument into a buffer
+ 
+ * @param type Type of the argument to serialize
+ * @param pType Pointer to the argument
+ * @param pBuffer Buffer which will receive serialized version
+ *
+ * @return Size of the serialized or -1 if error
+ *
+ * @see unserialize()
+ * @ingroup serializer
+ */
 ssize_t serialize(DataType type, const void *pType, void *pBuffer)
 {
 	if ( type <= DATATYPE_UNKNOW || type >= DATATYPE_LAST ) {
@@ -72,6 +113,24 @@ ssize_t serialize(DataType type, const void *pType, void *pBuffer)
 	return serializer[type].serialize(pType, pBuffer);
 }
 
+
+/**
+ * Unserialize argument
+ *
+ * Unserialize data from a buffer to "rebuild" argument
+ *
+ * @param type Type of the argument to unserialize
+ * @param pBuffer Buffer containing serialized version of argument
+ * @param pType Pointer to the unserialized argument
+ * *WARNING*: If argument's type have a flexible size (not like a 
+ * struct containing pointer but like a string) passed pType should
+ * be a **pType. Unserialized will then allocate needed memory for this
+ * type. You'll have to freed this one
+ *
+ * @return Size of the serialized or -1 if error
+ * @see serialize()
+ * @ingroup serializer
+ */
 ssize_t unserialize(DataType type, const void *pBuffer, void *pType) 
 {
 	if ( type <= DATATYPE_UNKNOW || type >= DATATYPE_LAST ) {
