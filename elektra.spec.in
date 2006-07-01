@@ -95,6 +95,7 @@ Berkeley DB databases to store its keys.
 
 %configure \
      --bindir=/bin \
+     --sbindir=/sbin \
      --libdir=/%{_lib} \
      --with-docdir=%{_defaultdocdir}/elektra-%{version} \
      --with-develdocdir=%{_defaultdocdir}/elektra-devel-%{version} \
@@ -180,8 +181,10 @@ kdb set system/sw/kdb/schemapath "%{_datadir}/sgml/elektra-0.1.1/elektra.xsd"
 %files
 %defattr(-,root,root,-)
 /bin/*
+/sbin/*
 /%{_lib}/*elektra.so*
 %dir /%{_lib}/elektra
+/%{_lib}/elektra/*elektra-daemon.so*
 /%{_lib}/elektra/*elektra-filesys.so*
 /%{_lib}/elektra/*elektra-default.so*
 /%{_lib}/elektra/*elektra-fstab.so*
