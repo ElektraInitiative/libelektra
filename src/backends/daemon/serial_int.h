@@ -13,6 +13,12 @@
  *                                                                         *
  ***************************************************************************/
 
+/* Subversion stuff
+
+$Id$
+
+*/
+
 
 ssize_t serialInt_getSize(const void *pInt);
 ssize_t serialInt_serialize(const void *pInt, void *pBuffer);
