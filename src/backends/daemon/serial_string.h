@@ -1,5 +1,5 @@
 /***************************************************************************
-                serial_bin.c  -  Low level objects serialization etc
+                serial_string.h  -  Low level objects serialization etc
                              -------------------
     begin                : Sun Mar 12 2006
     copyright            : (C) 2006 by Yannick Lecaillez, Avi Alkalay
@@ -16,7 +16,7 @@
 
 /* Subversion stuff
 
-$Id: serial_bin.c 788 2006-05-29 16:30:00Z aviram $
+$Id$
 
 */
 

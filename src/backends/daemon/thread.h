@@ -1,5 +1,5 @@
 /***************************************************************************
-                   thread.c  -  Thread Managment
+                   thread.h  -  Thread Managment
                         -------------------
     copyright            : (C) 2006 by Yannick Lecaillez
     email                : sizon5@gmail.com

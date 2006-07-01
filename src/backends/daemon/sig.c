@@ -1,3 +1,24 @@
+/***************************************************************************
+                   sig.c  - Handle signals
+                             -------------------
+    copyright            : (C) 2006 by Yannick Lecaillez
+    email                : sizon5@gmail.com
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the BSD License (revised).                      *
+ *                                                                         *
+ ***************************************************************************/
+
+
+/* Subversion stuff
+
+$Id$
+
+*/
+
 #include <signal.h>
 #include "sig.h"
 

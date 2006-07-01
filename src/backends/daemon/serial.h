@@ -1,5 +1,5 @@
 /***************************************************************************
-                serial.c  -  Abstraction of serialization
+                serial.h  -  Abstraction of serialization
                              -----------------------------
     begin                : Sun Mar 12 2006
     copyright            : (C) 2006 by Yannick Lecaillez, Avi Alkalay

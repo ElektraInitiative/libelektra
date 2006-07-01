@@ -1,5 +1,5 @@
 /***************************************************************************
-                serial_bin.c  -  Low level objects serialization etc
+                serial_int.c  -  Low level objects serialization etc
                              -------------------
     begin                : Sun Mar 12 2006
     copyright            : (C) 2006 by Yannick Lecaillez, Avi Alkalay

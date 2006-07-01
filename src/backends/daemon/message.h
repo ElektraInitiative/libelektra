@@ -1,5 +1,5 @@
 /***************************************************************************
-                message.c  -  Class for a protocol messages
+                message.h  -  Class for a protocol messages
                              -------------------
     begin                : Sun Mar 12 2006
     copyright            : (C) 2006 by Yannick Lecaillez, Avi Alkalay
@@ -23,7 +23,7 @@
 
 /* Subversion stuff
 
-$Id: message.c 788 2006-05-29 16:30:00Z aviram $
+$Id$
 
 */
 

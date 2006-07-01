@@ -1,3 +1,24 @@
+/***************************************************************************
+                   sig.h  - Signal processing
+                             -------------------
+    copyright            : (C) 2006 by Yannick Lecaillez
+    email                : sizon5@gmail.com
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the BSD License (revised).                      *
+ *                                                                         *
+ ***************************************************************************/
+
+
+/* Subversion stuff
+
+$Id$
+
+*/
+
 extern int sig_alarm;
 extern int sig_child;
 extern int sig_cont;

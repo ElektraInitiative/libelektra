@@ -1,3 +1,24 @@
+/***************************************************************************
+                   kdb_wrapper.c  -  The server for the daemon backend
+                             -------------------
+    copyright            : (C) 2006 by Yannick Lecaillez
+    email                : sizon5@gmail.com
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the BSD License (revised).                      *
+ *                                                                         *
+ ***************************************************************************/
+
+
+/* Subversion stuff
+
+$Id$
+
+*/
+
 #include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>

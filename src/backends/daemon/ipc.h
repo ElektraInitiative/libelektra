@@ -1,3 +1,24 @@
+/***************************************************************************
+                   ipc.h  -  Interprocess communication methods
+                             -------------------
+    copyright            : (C) 2006 by Yannick Lecaillez
+    email                : sizon5@gmail.com
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the BSD License (revised).                      *
+ *                                                                         *
+ ***************************************************************************/
+
+
+/* Subversion stuff
+
+$Id$
+
+*/
+
 int ipc_connect(int s,const char *p);
 int ipc_stream(void);
 int ipc_bind(int s,const char *p);
