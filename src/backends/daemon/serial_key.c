@@ -16,7 +16,7 @@
 
 /* Subversion stuff
 
-$Id: serial_bin.c 788 2006-05-29 16:30:00Z aviram $
+$Id$
 
 */
 
@@ -185,13 +185,15 @@ ssize_t serialKey_unserialize(const void *pBuffer, void *pKey)
 		if ( keyIsString(key) ) {
 			free(key->data);
 			size = serialString_unserialize(buf, &key->data);
-			if ( size == -1 )
-				return -1;
-			key->dataSize = size;
 		} else {
 			size = keySetRaw(key, buf, key->dataSize);
-			buf += size;
 		}
+
+		if ( size == -1 )
+			return -1;
+
+		key->dataSize = size;
+		buf += size;
 	}
 
 	return (buf - ((char *) pBuffer));

@@ -1,7 +1,7 @@
 /***************************************************************************
                    kdbd.c  -  The server for the daemon backend
                              -------------------
-    copyright            : (C) 2006 by Yannick Lecaille
+    copyright            : (C) 2006 by Yannick Lecaillez
     email                : sizon5@gmail.com
  ***************************************************************************/
 
@@ -15,7 +15,7 @@
 
 /* Subversion stuff
 
-$Id: kdbd.c 788 2006-05-29 16:30:00Z aviram $
+$Id$
 
 */
 
