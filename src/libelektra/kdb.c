@@ -1,5 +1,5 @@
 /***************************************************************************
-            libkdb_helpers.c  -  High level functions for accessing the Key Database
+            kdb.c  -  High level functions for accessing the Key Database
                              -------------------
     begin                : Mon Dec 29 2003
     copyright            : (C) 2003 by Avi Alkalay
@@ -112,13 +112,12 @@ $Id$
 #include <string.h>
 #include <errno.h>
 #include <stdio.h>
-#include <pthread.h>
 
 
 /* kdbbackend.h will include kdb.h and kdbprivate.h */
 #include "kdbbackend.h"
-#include "kdbLibLoader.h"
 #include "kdbprivate.h"
+#include "kdbLibLoader.h"
 
 /* usleep doesn't exist on win32, so we use Sleep() */
 #ifdef WIN32
@@ -165,8 +164,6 @@ struct _KDBBackend {
 	/* dynamic libloader data */
 	kdbLibHandle dlHandle;
 };
-
-
 
 
 
@@ -1184,6 +1181,24 @@ char *kdbhGetUserName(const KDBHandle handle) {
  */
 char *kdbhSetUserName(KDBHandle handle,char *userName) {
 	return handle->userName=userName;
+}
+
+/**
+ * Set @p handle's internal backend name to @p backendName.
+ * This method should not be used by regular applications.
+ * @return @p backendName after being set in @p handle.
+ * @ingroup backend
+ */
+char *kdbhSetBackendName(KDBHandle handle,char *backendName) {
+	return handle->name=backendName;
+}
+
+/**
+ * @return The backend name set in @p handle.
+ * @ingroup backend
+ */
+char *kdbhGetBackendName(KDBHandle handle) {
+	return handle->name;
 }
 
 /**

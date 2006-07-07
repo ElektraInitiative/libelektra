@@ -15,7 +15,7 @@
 
 /* Subversion stuff
 
-$Id: daemon.c 788 2006-05-29 16:30:00Z aviram $
+$Id$
 
 */
 
@@ -144,7 +144,6 @@ int kdbOpen_daemon(KDBHandle *handle) {
 		free(data);
 		return 1;
 	}
-		
 	
 	/* Get reply value */
 	if ( messageExtractArgs(reply, DATATYPE_INTEGER, &ret, DATATYPE_INTEGER, &errno, DATATYPE_LAST) ) {
@@ -153,7 +152,22 @@ int kdbOpen_daemon(KDBHandle *handle) {
 		messageDel(reply);
 		free(data);
 		return 1;
-	} 
+	}
+	
+	/* Instrument the handle to modify the backend name */
+	/*
+	name=kdbhGetBackendName(handle);
+	// name will point to "daemon" here, but we don't need it anymore.
+	free(name);
+	// get the backend name being used by the daemon from the reply...
+	// ...
+	name=malloc(SIZE);
+	sprintf(name,"daemon+%s",daemon_real_backend);
+	// set the new name:
+	kdbhSetBackendName(handle,name);
+	// at this point, the new backend name will be something like "daemon+berkeleydb"
+	*/
+	
 	messageDel(reply);
 	
 	kdbhSetBackendData(*handle, data);

@@ -4,7 +4,7 @@
 
 ROOT="user/bench"
 LEVELS=3
-DIRS=4
+DIRS=5
 KEYS=2
 
 genLevel() {

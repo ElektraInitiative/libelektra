@@ -1,5 +1,5 @@
 
-# $Id: Makefile.am 796 2006-06-01 21:44:44Z aviram $
+# $Id$
 
 noinst_LTLIBRARIES = libproto.la
 libproto_la_SOURCES = message.h message.c protocol.h protocol.c ipc.h ipc.c sig.h sig.c serial.h serial.c serial_int.h serial_int.c serial_string.h serial_string.c serial_key.h serial_key.c serial_keyset.h serial_keyset.c datatype.h

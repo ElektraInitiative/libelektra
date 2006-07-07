@@ -110,7 +110,7 @@ int kdbd(void *pIntThreadHandle)
 	Message		*request, *reply;
 	uid_t   	remoteeuid;
 	gid_t   	remoteegid;
-	uid_t		remotegid;
+	pid_t		remotepid;
 	int		closed;
 
 	pthread_cleanup_push(threadExit, pIntThreadHandle);
@@ -122,12 +122,12 @@ int kdbd(void *pIntThreadHandle)
 		return 1;
 	} 
 
-	if ( ipc_eid(socketFd, &remoteeuid, &remoteegid, &remotegid) == -1 ) {
+	if ( ipc_eid(socketFd, &remoteeuid, &remoteegid, &remotepid) == -1 ) {
 		perror("kdbd");
 		return 1;
 	}
-	fprintf(stderr, "Thread %d launched. I'll manage process PID %d (euid=%d/egid=%d)\n", pthread_self(), remotegid, remoteeuid, remoteegid);
-			
+	fprintf(stderr, "Thread %d launched to serve PID %d (euid=%d/egid=%d)\n", pthread_self(), remotepid, remoteeuid, remoteegid);
+
 	closed = 0;
 	while ( !closed ) {
 		request = protocolReadMessage(socketFd);
@@ -136,11 +136,11 @@ int kdbd(void *pIntThreadHandle)
 				/* Client closed the connection */
 				messageDel(request);
 				return 1;
-			} else {	
+			} else {
 				/* They are probably some usefull errno
 				 * to check here ...
 				 */
-				perror("kdbd");
+				kdbPrintError("kdbd");
 				continue;
 			}
 		}

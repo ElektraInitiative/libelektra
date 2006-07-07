@@ -15,7 +15,7 @@
 
 /* Subversion stuff
 
-$Id: datatype.h 673 2006-03-13 00:28:19Z aviram $
+$Id$
 
 */
 

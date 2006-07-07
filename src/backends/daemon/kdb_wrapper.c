@@ -15,7 +15,7 @@
 
 /* Subversion stuff
 
-$Id: kdbd.c 788 2006-05-29 16:30:00Z aviram $
+$Id$
 
 */
 
@@ -43,12 +43,13 @@ Message *wrapper_kdbOpen(KDBHandle *handle, Message *request, uid_t euid, gid_t 
 		return NULL;
 	}
 
-	ret = kdbOpen(handle);
+	/* Opens the default backend for daemon */
+	ret = kdbOpenBackend(handle,"ddefault");
 	error = errno;
 	kdbhSetUID(*handle, euid);
 	kdbhSetGID(*handle, egid);
 
-	reply = messageNew(MESSAGE_REPLY, KDB_BE_OPEN, 
+	reply = messageNew(MESSAGE_REPLY, KDB_BE_OPEN,
 			DATATYPE_INTEGER, &ret,
 			DATATYPE_INTEGER, &error,
 			DATATYPE_LAST);

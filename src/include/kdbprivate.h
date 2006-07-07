@@ -48,7 +48,6 @@ $Id$
 #define UTF8_FROM 0
 
 
-
 /* These define the type for pointers to all the kdb functions */
 typedef int      (*kdbOpenPtr)(KDBHandle *);
 typedef int      (*kdbClosePtr)(KDBHandle *);
@@ -207,6 +206,9 @@ struct _KeySet {
 	struct _Key * cursor;  /**< Internal cursor */
 	size_t        size;    /**< Number of keys contained in the KeySet */
 };
+
+
+
 
 
 

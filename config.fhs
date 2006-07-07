@@ -1,0 +1,24 @@
+#!/bin/sh
+
+#
+# This script calls ./configure with an optimal configuration for FHS
+#
+
+./configure \
+	--bindir=/bin \
+	--sbindir=/sbin \
+	--libdir=/lib \
+	--mandir=/usr/share/man \
+	--localstatedir=/var \
+	--sysconfdir=/etc \
+	--prefix=/usr \
+	--exec-prefix=/usr \
+	--program-prefix= \
+	--datadir=/usr/share \
+	--includedir=/usr/include \
+	--libexecdir=/usr/libexec \
+	--infodir=/usr/share/info \
+	--disable-xmltest \
+	--with-docbook=/usr/share/sgml/docbook/xsl-stylesheets \
+	--with-docdir=/usr/share/doc/elektra-0.6.3 \
+	--with-develdocdir=/usr/share/doc/elektra-devel-0.6.3 

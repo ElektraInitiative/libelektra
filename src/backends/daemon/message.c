@@ -23,7 +23,7 @@
 
 /* Subversion stuff
 
-$Id: message.c 788 2006-05-29 16:30:00Z aviram $
+$Id$
 
 */
 

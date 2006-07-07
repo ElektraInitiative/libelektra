@@ -87,6 +87,14 @@ AC_ARG_WITH(backend,
 	     [[default_backend=filesys]]
 	     )
 
+# Default daemon backend selection (Set to 'berkeleydb' as default)
+AC_ARG_WITH(dbackend,
+	    [AC_HELP_STRING(--with-default-dbackend=<daemon backend>,
+	     [Set the default backend for the kdbd daemon to use.])],
+	     [[default_dbackend=$withval]],
+	     [[default_dbackend=berkeleydb]]
+	     )
+
 # Enable compilation of experimental things (unfinished
 # backends at this time)
 AC_ARG_ENABLE(experimental,
@@ -104,8 +112,8 @@ AC_ARG_WITH(docbook,
 AC_SUBST(default_docbook)
 
 
-# Be typo friendly, check if this backend really exist 
-# This test is needed because we can't check for existance 
+# Be typo friendly, check if this backend really exist
+# This test is needed because we can't check for existance
 # of files when cross-compiling and hence just assume they exist.
 # Note that this test could probably also be used in the docbook checking part.
 if test "x$cross_compiling" != "xyes"; then
@@ -114,7 +122,7 @@ AC_CHECK_FILE([src/backends/$default_backend/$default_backend.c],
 	      AC_MSG_ERROR([Can't find backend $default_backend]))
 fi
 
-#Check whether we are compiling for win32 
+#Check whether we are compiling for win32
 case $host_os in
 mingw* | pw32*)
   # If compiling for windows we need HAVE_WIN32 defined

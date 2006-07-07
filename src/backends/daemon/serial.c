@@ -15,7 +15,7 @@
 
 /* Subversion stuff
 
-$Id: serial_bin.c 788 2006-05-29 16:30:00Z aviram $
+$Id$
 
 */
 

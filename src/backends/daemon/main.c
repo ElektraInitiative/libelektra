@@ -16,12 +16,13 @@
 
 /* Subversion stuff
 
-$Id: kdbd.c 788 2006-05-29 16:30:00Z aviram $
+$Id$
 
 */
 
 #include <stdio.h>
 #include <unistd.h>
+#include <stdlib.h> /* for exit() */
 
 #include <pthread.h>
 
@@ -86,9 +87,9 @@ int main(int argc, char **argv)
 	putenv("LANG=en_US.UTF-8");
 	
 	sig_block(sig_child);
-      	sig_catch(sig_child,sigchld);
-    	sig_catch(sig_term,sigterm);
-  	sig_ignore(sig_pipe);
+	sig_catch(sig_child,sigchld);
+	sig_catch(sig_term,sigterm);
+	sig_ignore(sig_pipe);
 
 	s = ipc_stream();
 	if ( s == -1 ) {
@@ -113,7 +114,7 @@ int main(int argc, char **argv)
 	}
 	ndelay_off(s);
 
-	for(;;) { 
+	for(;;) {
 		t = ipc_accept(s,remotepath,sizeof(remotepath),&trunc);
 
 		if (t == -1) {
