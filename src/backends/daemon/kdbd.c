@@ -140,6 +140,7 @@ int kdbd(void *pIntThreadHandle)
 				/* They are probably some usefull errno
 				 * to check here ...
 				 */
+				fprintf(stderr, "POUET POUET\n");
 				kdbPrintError("kdbd");
 				continue;
 			}

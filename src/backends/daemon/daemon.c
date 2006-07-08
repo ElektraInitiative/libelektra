@@ -178,7 +178,6 @@ int kdbOpen_daemon(KDBHandle *handle) {
 	tmp=malloc(strlen(BACKENDNAME) + 1 + strblen(real_backend));
 	sprintf(tmp,BACKENDNAME"+%s",real_backend);
 	kdbhSetBackendName(*handle, tmp);
-	fprintf(stderr, "setBackendName=%s\n", tmp);
 	free(real_backend);
 	
 	messageDel(reply);
