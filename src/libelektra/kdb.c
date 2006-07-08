@@ -385,8 +385,9 @@ int kdbClose(KDBHandle *handle) {
 	}
 	
 	if (rc == 0) {
-		if ((*handle)->name) free((*handle)->name);
 		kdbLibClose((*handle)->dlHandle);
+		free((*handle)->name);
+		free((*handle)->userName);
 		free(*handle); *handle=0;
 	}
 	
