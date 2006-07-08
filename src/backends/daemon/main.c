@@ -86,10 +86,10 @@ int main(int argc, char **argv)
 	/* force a superuniversal modern charset: UTF-8 */
 	putenv("LANG=en_US.UTF-8");
 	
-	sig_block(sig_child);
+/*	sig_block(sig_child);
 	sig_catch(sig_child,sigchld);
 	sig_catch(sig_term,sigterm);
-	sig_ignore(sig_pipe);
+	sig_ignore(sig_pipe); */
 
 	s = ipc_stream();
 	if ( s == -1 ) {

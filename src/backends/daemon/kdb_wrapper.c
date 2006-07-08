@@ -32,26 +32,44 @@ $Id$
 Message *wrapper_kdbOpen(KDBHandle *handle, Message *request, uid_t euid, gid_t egid)
 {
 	struct	passwd	*user;
-//	char		*userName;
+	char		*userName;
+	char		*real_backend;
+	unsigned long	umask;
 	int		ret, error;
 	Message		*reply;
 	
 	/* Sanity check */
 	error = 0;
-	if ( messageGetNbArgs(request) != 0 ) {
-		fprintf(stderr, "BAD POUET\n");
+	if ( messageGetNbArgs(request) != 1 ) {
+		fprintf(stderr, "kdbOpen(): Invalid number of args.\n");
 		return NULL;
 	}
 
 	/* Opens the default backend for daemon */
-	ret = kdbOpenBackend(handle,"ddefault");
+	real_backend = "ddefault";
+	ret = kdbOpenBackend(handle, real_backend);
 	error = errno;
+	if ( messageExtractArgs(request, 
+				DATATYPE_STRING, &userName,
+				DATATYPE_ULONG, &umask,
+				DATATYPE_LAST) ) {
+		fprintf(stderr, "Error extracting args\n");
+		return NULL;
+	}
+
 	kdbhSetUID(*handle, euid);
 	kdbhSetGID(*handle, egid);
-
+	kdbhSetUserName(*handle, userName);
+	kdbhSetUMask(*handle, umask);
+	kdbhSetPID(*handle, getpid());
+	kdbhSetTID(*handle, pthread_self());
+	
+	free(userName);
+	
 	reply = messageNew(MESSAGE_REPLY, KDB_BE_OPEN,
 			DATATYPE_INTEGER, &ret,
 			DATATYPE_INTEGER, &error,
+			DATATYPE_STRING, real_backend,
 			DATATYPE_LAST);
 	if ( reply == NULL ) {
 		fprintf(stderr, "Nul answer\n");
