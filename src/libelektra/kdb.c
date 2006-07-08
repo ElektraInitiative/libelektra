@@ -339,7 +339,7 @@ int kdbOpenBackend(KDBHandle *handle, char *backendName) {
 	(*handle)->pid      = getpid();
 	(*handle)->uid      = getuid();
 	(*handle)->gid      = getgid();
-	(*handle)->userName = getenv("USER");
+	kdbhSetUserName(*handle, getenv("USER"));
 	(*handle)->umask    = umask(0); umask((*handle)->umask);
 	
 	/* let the backend initialize itself */
@@ -1180,7 +1180,22 @@ char *kdbhGetUserName(const KDBHandle handle) {
  * @ingroup backend
  */
 char *kdbhSetUserName(KDBHandle handle,char *userName) {
-	return handle->userName=userName;
+        char *tmp;
+	size_t size;
+	
+	if ( userName ) {
+		size = strblen(userName);
+		tmp = realloc(handle->userName, size);
+		if ( tmp ) {
+			handle->userName = tmp;
+			memcpy(handle->userName, userName, size);
+		}
+	} else {
+		free(handle->userName);
+		handle->userName = NULL;
+	}
+	
+	return handle->userName;
 }
 
 /**
@@ -1190,7 +1205,22 @@ char *kdbhSetUserName(KDBHandle handle,char *userName) {
  * @ingroup backend
  */
 char *kdbhSetBackendName(KDBHandle handle,char *backendName) {
-	return handle->name=backendName;
+	char *tmp;
+	size_t size;
+	
+	if ( backendName ) {
+		size = strblen(backendName);
+		tmp = realloc(handle->name, size);
+		if ( tmp ) {
+			handle->name = tmp;
+			memcpy(handle->name, backendName, size);
+		}
+	} else {
+		free(handle->name);
+		handle->name = NULL;
+	}
+			
+	return handle->name;
 }
 
 /**
@@ -1323,7 +1353,7 @@ KDBBackend *kdbBackendExport(const char *backendName, ...) {
 	uint32_t method=0;
 
 	if (backendName == 0) return 0;
-	
+
 	returned=malloc(sizeof(KDBBackend));
 	memset(returned,0,sizeof(KDBBackend));
 	
