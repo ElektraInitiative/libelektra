@@ -40,7 +40,7 @@ Message *wrapper_kdbOpen(KDBHandle *handle, Message *request, uid_t euid, gid_t 
 	
 	/* Sanity check */
 	error = 0;
-	if ( messageGetNbArgs(request) != 1 ) {
+	if ( messageGetNbArgs(request) != 2 ) {
 		fprintf(stderr, "kdbOpen(): Invalid number of args.\n");
 		return NULL;
 	}
@@ -60,7 +60,7 @@ Message *wrapper_kdbOpen(KDBHandle *handle, Message *request, uid_t euid, gid_t 
 	kdbhSetUID(*handle, euid);
 	kdbhSetGID(*handle, egid);
 	kdbhSetUserName(*handle, userName);
-	kdbhSetUMask(*handle, umask);
+	kdbhSetUMask(*handle, (mode_t) umask);
 	kdbhSetPID(*handle, getpid());
 	kdbhSetTID(*handle, pthread_self());
 	

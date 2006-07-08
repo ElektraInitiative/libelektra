@@ -113,6 +113,7 @@ static Message *callDaemon(int socketfd, Message *request)
 int kdbOpen_daemon(KDBHandle *handle) {
 	DaemonBackendData	*data;
 	Message *request, *reply;
+	unsigned long umask;
 	char	*real_backend,*tmp;
 	int ret;
 
@@ -138,9 +139,10 @@ int kdbOpen_daemon(KDBHandle *handle) {
 	ndelay_off(data->socketfd);
 
 	/* Prepare request */
+	umask = kdbhGetUMask(*handle);
 	request = messageNew(MESSAGE_REQUEST, KDB_BE_OPEN, 
 					DATATYPE_STRING, kdbhGetUserName(*handle),
-					DATATYPE_ULONG, kdbhGetUMask(*handle),
+					DATATYPE_ULONG, &umask,
 					DATATYPE_LAST);
 	if ( request == NULL ) {
 		fprintf(stderr, "Error building request\n");
