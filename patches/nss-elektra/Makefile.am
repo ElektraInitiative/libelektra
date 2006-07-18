@@ -1,5 +1,5 @@
 # Svn stuff
-# $Id: Makefile.am 37 2004-06-12 12:23:33Z rayman $
+# $Id$
 # $LastChangedBy: rayman $
 
 #again, why cpp flags when we don't use cpp?

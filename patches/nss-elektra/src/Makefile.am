@@ -1,5 +1,5 @@
 # Svn Stuff
-# $Id: Makefile.am 40 2004-11-26 23:25:09Z rayman $
+# $Id$
 # $LastChangedBy: rayman $
 
 #Version of package
