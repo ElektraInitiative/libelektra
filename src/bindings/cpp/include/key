@@ -1,5 +1,5 @@
-#ifndef CKEY_H
-#define CKEY_H
+#ifndef CPP_KEY_H
+#define CPP_KEY_H
 
 #include <string>
 #include <stdint.h>
@@ -15,9 +15,12 @@ class Key
 {
 public:
 	Key ();
-	// Key (const char name, ...);
-	// varg
+	Key (const char * name, ...);
+	Key (ckdb::Key *k);
 	~Key ();
+	
+	ckdb::Key * getKey () { return key; }
+	void setKey (ckdb::Key * k) { key = k; }
 	
 	uint8_t getType();
 	void setType(uint8_t type);
@@ -28,6 +31,8 @@ public:
 
 	std::string getName();
 	std::string getFullName();
+
+	void setName (const std::string & name);
 
 	size_t getCommentSize();
 	std::string getComment();
@@ -117,9 +122,6 @@ public:
 
 	size_t toStream(FILE* stream, unsigned long options);
 	// ostream!
-protected:
-	ckdb::Key * getKey () { return key; }
-	void setKey (ckdb::Key * k) { key = k; }
 private:
 	ckdb::Key * key; // holds elektra key struct
 };

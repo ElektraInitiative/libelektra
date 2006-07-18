@@ -1,7 +1,9 @@
-#ifndef CKDB_H
-#define CKDB_H
+#ifndef CPP_KDB_H
+#define CPP_KDB_H
 
 #include <string>
+#include <key>
+#include <keyset>
 
 namespace ckdb {
 #include <kdb.h>
@@ -23,11 +25,12 @@ public:
 	Kdb ();
 	~Kdb ();
 	
-	Key getKey (const std::string name);
-	void setKey (const std::string key, Key & toSet);
+	Key & getKey (Key & toGet);
+	//TODO: make toSet const
+	void setKey (Key & toSet);
 
-	KeySet getKeys (const std::string name);
-	void setKeys (const std::string name, KeySet & toSet);
+	const KeySet & getKeys (KeySet & toGet, const std::string name);
+	const void setKeys (KeySet & toSet, const std::string name);
 	
 	/*std::string & get (std::string key);
 	void set (std::string key, std::string value);*/

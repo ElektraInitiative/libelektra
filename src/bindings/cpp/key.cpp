@@ -1,20 +1,39 @@
-#include <ckey.h>
+#include <key>
+#include <iostream>
+
+#include <cstdarg>
 
 namespace kdb {
 
 Key::Key ()
 {
-	//key = ckdb::ckdb::keyNew ("");
+	key = ckdb::keyNew ("user/noname");
+	std::cout << "key constr no name" << std::endl;
 }
 
-/*Key::Key (const char * str, ...)
-{}*/
+Key::Key (ckdb::Key * k)
+{
+	// if (k == 0) std:cout << "dont do that" << std::endl;
+	key = k;
+	std::cout << "key constr given key" << std::endl;
+}
+
+Key::Key (const char * str, ...)
+{
+	va_list liste;
+	
+	va_start (liste, str);
+	key = ckdb::keyNew (str, liste);
+	va_end (liste);
+	std::cout << "key constr given name" << std::endl;
+}
 
 /**The destructor automatically commit a write.*/
 Key::~Key ()
 {
 	// Destruct
 	// kdbClose(&handle);
+	keyDel (key);
 }
 
 
@@ -79,6 +98,11 @@ std::string Key::getFullName()
 	str = field;
 	delete (field);
 	return str;
+}
+
+void Key::setName (const std::string & name)
+{
+	ckdb::keySetName (getKey(), name.c_str());
 }
 
 /**Returns the size of the comment*/

@@ -1,0 +1,28 @@
+#ifndef CPP_KEYSET_H
+#define CPP_KEYSET_H
+
+#include <string>
+#include <stdint.h>
+
+namespace ckdb {	
+#include <kdb.h>
+}
+
+namespace kdb {
+
+/**Key represents an elektra key.*/
+class KeySet
+{
+public:
+	KeySet ();
+	// Key (const char name, ...);
+	// varg
+	~KeySet ();
+private:
+	ckdb::KeySet * ks; // holds elektra keyset struct
+};
+
+} // end of namespace kdb
+
+#endif
+
