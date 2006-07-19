@@ -7,6 +7,12 @@ using namespace kdb;
 
 Kdb config;
 
+void getKeys()
+{
+	KeySet test;
+	config.getKeys (test, "user/test"); // read in test key hierachy
+}
+
 void getKey()
 {
 	Key test;
@@ -26,7 +32,8 @@ void setKey()
 
 int main()
 {
-	getKey();
-	setKey();
+	//getKey();
+	//setKey();
+	getKeys();
 	return 0;
 }

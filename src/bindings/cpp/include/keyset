@@ -15,9 +15,11 @@ class KeySet
 {
 public:
 	KeySet ();
-	// Key (const char name, ...);
-	// varg
 	~KeySet ();
+
+	ckdb::KeySet * getKeySet () { return ks; }
+	void setKeySet (ckdb::KeySet * k) { ks = k; }
+	
 private:
 	ckdb::KeySet * ks; // holds elektra keyset struct
 };

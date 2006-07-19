@@ -35,11 +35,19 @@ void Kdb::setKey (Key & toSet)
 	ckdb::kdbSetKey(handle, toSet.getKey());
 }
 
-/*KeySet & Kdb::getKeys (KeySet & k, const std::string name)
-{}
+KeySet & Kdb::getKeys (KeySet & k, const std::string name, int options)
+{
+	ckdb::KeySet * ckeyset = k.getKeySet();
+	ckdb::kdbGetChildKeys (handle, name.c_str(), ckeyset, options);
+	k.setKeySet(ckeyset);
+	return k;
+}
 
-void Kdb::setKeys (const std::string name, KeySet & toSet)
-{}*/
+
+void Kdb::setKeys (KeySet & toSet)
+{
+	ckdb::kdbSetKeys(handle, toSet.getKeySet());
+}
 
 } // end of namespace kdb
 

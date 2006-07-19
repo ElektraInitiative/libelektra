@@ -4,17 +4,13 @@ namespace kdb {
 
 KeySet::KeySet ()
 {
-	//key = ckdb::ckdb::keyNew ("");
+	ks = ckdb::ksNew ();
 }
-
-/*Key::Key (const char * str, ...)
-{}*/
 
 /**The destructor automatically commit a write.*/
 KeySet::~KeySet ()
 {
-	// Destruct
-	// kdbClose(&handle);
+	ksDel (ks);
 }
 
 } // end of KeySet

@@ -29,8 +29,8 @@ public:
 	//TODO: make toSet const
 	void setKey (Key & toSet);
 
-	const KeySet & getKeys (KeySet & toGet, const std::string name);
-	const void setKeys (KeySet & toSet, const std::string name);
+	KeySet & getKeys (KeySet & toGet, const std::string name, int options = 0);
+	void setKeys (KeySet & toSet);
 	
 	/*std::string & get (std::string key);
 	void set (std::string key, std::string value);*/
