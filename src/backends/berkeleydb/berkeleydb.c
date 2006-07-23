@@ -432,7 +432,8 @@ DBTree *dbTreeNew(KDBHandle handle,const Key *forKey) {
 	DBTree *newDB;
 	int ret;
 	int newlyCreated; /* True if this is a new database */
-
+	uid_t uid;
+	gid_t gid;
 	char dbDir[MAX_PATH_LENGTH];
 	char parentsFile[MAX_PATH_LENGTH];
 	char keyvalueFile[MAX_PATH_LENGTH];
@@ -448,10 +449,14 @@ DBTree *dbTreeNew(KDBHandle handle,const Key *forKey) {
 	if (keyIsSystem(forKey)) {
 		/* Prepare to open the 'system/ *' database */
 		strcpy(dbDir,DB_DIR_SYSTEM);
+		uid = 0;
+		gid = 0;
 	} else if (keyIsUser(forKey)) {
 		/* Prepare to open the 'user:????.*' database */
 		user=getpwnam(forKey->userDomain);
 		sprintf(dbDir,"%s/%s",user->pw_dir,DB_DIR_USER);
+		uid = user->pw_uid;
+		gid = user->pw_gid;
 	}
 
 	if (stat(dbDir,&dbDirInfo)) {
@@ -461,7 +466,7 @@ DBTree *dbTreeNew(KDBHandle handle,const Key *forKey) {
 		fprintf(stderr,"Going to create dir %s\n",dbDir);
 		ret=mkdir(dbDir,DEFFILEMODE | S_IXUSR);
 		if (ret) return 0; /* propagate errno */
-		chown(dbDir,  user->pw_uid,user->pw_gid);
+		chown(dbDir,  uid, gid);
 	} else {
 		/* Something exist there. Check it first */
 		if (!S_ISDIR(dbDirInfo.st_mode)) {
@@ -491,7 +496,6 @@ DBTree *dbTreeNew(KDBHandle handle,const Key *forKey) {
 		errno=KDB_RET_EBACKEND;
 		return 0;
 	}
-
 	ret=newDB->db.keyValuePairs->open(newDB->db.keyValuePairs,NULL,keyvalueFile,
 		DB_KEYVALUE, DB_BTREE, DB_CREATE | DB_EXCL | DB_THREAD, 0);
 	if (ret == EEXIST || ret == EACCES) {
@@ -835,7 +839,6 @@ int kdbGetKeyWithOptions(KDBHandle handle, Key *key, uint32_t options) {
 			}
 		}
 	}
-	
 	keyDup(&buffer,key);
 	keyClose(&buffer);
 	
@@ -1120,7 +1123,11 @@ ssize_t kdbGetKeyChildKeys_bdb(KDBHandle handle, const Key *parentKey,
 		
 		/* position the cursor in the first key of "parent" folder
 		   and retrieve it */
-		ret=cursor->c_pget(cursor,&parent,&keyName,&keyData,DB_SET);
+		ret=cursor->c_pget(cursor,
+				&parent,
+				&keyName,
+				&keyData,
+				DB_SET);
 		
 		if (ret == DB_NOTFOUND) {
 			/* We are probably in a root key, that
