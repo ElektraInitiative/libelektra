@@ -238,7 +238,7 @@ int UTF8Engine(int direction, char **string, size_t *inputOutputByteSize) {
 	size_t bufferSize;
 	iconv_t converter;
 	
-	if (kdbNeedsUTF8Conversion()) currentCharset=nl_langinfo(CODESET);
+	if (kdbNeedsUTF8Conversion() && *inputOutputByteSize) currentCharset=nl_langinfo(CODESET);
 	else return 0;
 
 	if (direction==UTF8_TO) converter=iconv_open("UTF-8",currentCharset);
