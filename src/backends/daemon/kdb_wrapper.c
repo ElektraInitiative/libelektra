@@ -105,7 +105,7 @@ Message *wrapper_kdbStatKey(KDBHandle handle, Message *request)
 	
 	keyInit(&key);
 	if ( messageExtractArgs(request,
-			DATATYPE_KEY, key,
+			DATATYPE_KEY, &key,
 			DATATYPE_LAST) ) {
 		keyClose(&key);
 		return NULL;
@@ -170,6 +170,8 @@ Message *wrapper_kdbSetKey(KDBHandle handle, void *request)
 		keyClose(&key);
 		return NULL;
 	}
+
+	fprintf(stderr, "kdbSetKey(user:%s/%s)", keyStealOwner(&key), keyStealName(&key));
 	
 	ret = kdbSetKey(handle, &key);
 	error = errno;
