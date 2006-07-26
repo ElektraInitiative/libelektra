@@ -146,19 +146,18 @@ elektra-api.tar.gz: elektra-api
 
 elektra-api: $(DOXYSOURCES)
 	@echo "Making Doxygen..."
-	cd ../src/; $(doxygen)
+	cd ../src/; srcdir=$(top_srcdir)/src $(doxygen) $(top_srcdir)/src/Doxyfile
 
-clean:
-	-rm csource.xml
-	-rm example.c
-	-rm kdb.1 elektra.5 elektra.7
-	-rm html-titlepage-layout.xsl
-	-rm xorgpatch.xml
-	-rm initpatch.xml
-	-rm elektra-api.tar.gz
+CLEANFILES = csource.xml \
+	example.c \
+	kdb.1 elektra.5 elektra.7 \
+	html-titlepage-layout.xsl \
+	xorgpatch.xml initpatch.xml \
+	elektra-api.tar.gz
+
+clean-local:
 	-rm -rf elektra-api
 	-rm -rf libelektra.org
-
 
 install-develdocDATA: $(api_DATA)
 	@$(NORMAL_INSTALL)
@@ -185,6 +184,23 @@ install-develdocDATA: $(api_DATA)
 	  echo " $(develdocDATA_INSTALL) $$d$$p $(DESTDIR)$(man3dir)/$$f"; \
 	  $(develdocDATA_INSTALL) $$d$$p $(DESTDIR)$(man3dir)/$$f; \
 	done
+
+uninstall-develdocDATA:
+	-list=`find elektra-api/html/`; for p in $$list; do \
+	f="`echo $$p | sed -e 's|^.*/||'`"; \
+	  echo "rm -f $(DESTDIR)$(apihtmldir)/$$f"; \
+	  rm -f $(DESTDIR)$(apihtmldir)/$$f; \
+	 done
+	-rmdir $(DESTDIR)$(apihtmldir)
+
+	-list=`find elektra-api/ -name "k[db,ey,s]*.3"` ; for p in $$list; do \
+	f="`echo $$p | sed -e 's|^.*/||'`"; \
+	  echo "rm -f $(DESTDIR)$(man3dir)/$$f"; \
+	  rm -f $(DESTDIR)$(man3dir)/$$f; \
+	done
+	-rmdir $(DESTDIR)$(man3dir)
+	
+
 endif
 
 

@@ -432,8 +432,8 @@ DBTree *dbTreeNew(KDBHandle handle,const Key *forKey) {
 	DBTree *newDB;
 	int ret;
 	int newlyCreated; /* True if this is a new database */
-	uid_t uid;
-	gid_t gid;
+	uid_t uid=0;
+	gid_t gid=0;
 	char dbDir[MAX_PATH_LENGTH];
 	char parentsFile[MAX_PATH_LENGTH];
 	char keyvalueFile[MAX_PATH_LENGTH];
@@ -453,6 +453,7 @@ DBTree *dbTreeNew(KDBHandle handle,const Key *forKey) {
 		gid = 0;
 	} else if (keyIsUser(forKey)) {
 		/* Prepare to open the 'user:????.*' database */
+		/* TODO: user should be calculated from handle */
 		user=getpwnam(forKey->userDomain);
 		sprintf(dbDir,"%s/%s",user->pw_dir,DB_DIR_USER);
 		uid = user->pw_uid;

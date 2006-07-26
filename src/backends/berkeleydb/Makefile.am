@@ -11,5 +11,5 @@ libelektra_berkeleydb_la_SOURCES = berkeleydb.c ../../include/kdb.h ../../includ
 libelektra_berkeleydb_la_LDFLAGS = -avoid-version  -module
 libelektra_berkeleydb_la_LIBADD = -ldb
 libelektra_berkeleydb_la_CFLAGS = -Wall
-INCLUDES = -I../../include
+AM_CPPFLAGS = -I$(top_srcdir)/src/include
 endif

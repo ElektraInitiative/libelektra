@@ -161,9 +161,9 @@ int kdbOpen_daemon(KDBHandle *handle) {
 	
 	if ( messageExtractArgs(reply, 
 				DATATYPE_INTEGER, &ret,
-			       	DATATYPE_INTEGER, &errno,
+				DATATYPE_INTEGER, &errno,
 				DATATYPE_STRING, &real_backend,
-			       	DATATYPE_LAST) ) {
+				DATATYPE_LAST) ) {
 		fprintf(stderr, "Error extracting args\n");
 		close(data->socketfd);
 		messageDel(reply);

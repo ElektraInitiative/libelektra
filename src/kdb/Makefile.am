@@ -6,7 +6,7 @@ kdb_SOURCES = kdb.c help.c ../include/kdb.h
 kdb_LDFLAGS = -L../libelektra
 kdb_LDADD = -lelektra $(LIBLTDL)
 kdb_CFLAGS = -Wall
-INCLUDES = -I../include $(LTDLINCL)
+AM_CPPFLAGS = -I$(top_srcdir)/src/include $(LTDLINCL)
 
 kdb_static_SOURCES = kdb.c help.c ../include/kdb.h
 kdb_static_CFLAGS = -D__STATIC -Wall

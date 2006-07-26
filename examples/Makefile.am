@@ -15,30 +15,30 @@ if EXPERIMENTAL
 elekexample_PROGRAMS = test application binary keyNewExample lookup cascading keyset hello
 
 test_SOURCES = test.c
-test_LDADD = -lelektra
+test_LDADD = ../src/libelektra/libelektra.la
 
 application_SOURCES = application.c
-application_LDADD = -lelektra
+application_LDADD = ../src/libelektra/libelektra.la
 
 binary_SOURCES = binary.c
-binary_LDADD = -lelektra
+binary_LDADD = ../src/libelektra/libelektra.la
 
 keyNewExample_SOURCES = keyNewExample.c
-keyNewExample_LDADD = -lelektra
+keyNewExample_LDADD = ../src/libelektra/libelektra.la
 
 lookup_SOURCES = lookup.c
-lookup_LDADD = -lelektra
+lookup_LDADD = ../src/libelektra/libelektra.la
 
 cascading_SOURCES = cascading.c
-cascading_LDADD = -lelektra
+cascading_LDADD = ../src/libelektra/libelektra.la
 
 keyset_SOURCES = keyset.c
-keyset_LDADD = -lelektra
+keyset_LDADD = ../src/libelektra/libelektra.la
 
 hello_SOURCES = hello.c
-hello_LDADD = -lelektra
+hello_LDADD = ../src/libelektra/libelektra.la
 endif
 
 
-INCLUDES = -I../src/include
+AM_CPPFLAGS = -I$(top_srcdir)/src/include
 

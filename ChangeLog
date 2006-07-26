@@ -1,4 +1,4 @@
-* Jun 27 2006 Yannick Lecaillez <sizon5@gmail.com>
+* Jun 27 2006 Yannick Lecaillez <sizon5@gmail.com> 0.6.3
 - New kdbd daemon !
 - Fix UTF8Engine : Check for a null size string
 - Fix Berkeleydb backend :
@@ -7,13 +7,31 @@
 	- Chown user's kdb-berkeleydb dir.
 	- Set correct UID/GID for initial creation of the "user" key.
 - Fix key.c : Set KEY_SWITCH_DOMAIN flags into keySetName()
-
-
-* 16.06.2006 Markus Raab
+-    By Markus Raab 06/06/2006:
 - added cascading features to kdb
 - kdb ls / and kdb ls /path is possible
 - kdb get /path/to/key gets user or system key
 - Moved help functions of the 'kdb command' to src/kdb/help.c
+-    By Avi Alkalay 26/07/2006:
+- Added -s option to 'kdb ls' to make it more scripts friendly
+- Separated the descriptive help functions of kdb program to help.c
+-    By Patrice Dumas <pertusus@free.fr> (applyied by Avi 26/07/2006):
+- arrange doxygen for out-of-source build
+- add some source files for experimental backends and bindings
+- clean up the clean target in doc/Makefile.am, add an uninstall target
+- don't test for default_backend presence in ./configure since it breaks out of source builds
+- really use the --enable-experimental value
+- libproto.la, backends and tests depends on ../../libelektra/libelektra.la
+- use ../../libelektra/libelektra.la instead of -lelektra to link against in-source library
+- add a link for libelektratools in /usr/lib/elektra
+- build files required by static libelektra before libelektra, and libelektra before the backends
+- use check_ for tests
+- put high level backends in /usr/lib/elektra
+- use .$(OBJEXT) instead of .o
+- honor default_backend for static libelektra dependencies
+- add AC_SUBST(default_dbackend)
+
+
 
 * Wed Jun 02 2006 Avi and Yannick <yl@itioweb.com> 0.6.2
 - Renamed some sorces on src/libelektra/

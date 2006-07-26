@@ -1,6 +1,6 @@
 Name:          elektra
 Version:       @VERSION@
-Release:       3
+Release:       4
 Source:        http://prdownloads.sourceforge.net/elektra/%{name}-%{version}.tar.gz
 Group:         System Environment/Libraries
 License:       BSD
@@ -191,6 +191,7 @@ kdb set system/sw/kdb/schemapath "%{_datadir}/sgml/elektra-0.1.1/elektra.xsd"
 /%{_lib}/elektra/*elektra-fstab.so*
 #/%{_lib}/elektra/*elektra-ini.so*
 %{_libdir}/*elektratools.so.*
+%{_libdir}/elektra/*elektratools.so
 %{_sysconfdir}/profile.d/*
 %doc AUTHORS COPYING ChangeLog README INSTALL
 %doc scripts doc/standards

@@ -8,12 +8,11 @@ libproto_la_SOURCES = message.h message.c protocol.h protocol.c ipc.h ipc.c sig.
 backend_LTLIBRARIES = libelektra-daemon.la
 libelektra_daemon_la_SOURCES = daemon.c
 libelektra_daemon_la_LDFLAGS = -avoid-version -module
-libelektra_daemon_la_LIBADD = libproto.la
+libelektra_daemon_la_LIBADD = libproto.la ../../libelektra/libelektra.la
 
 sbin_PROGRAMS = kdbd
 kdbd_SOURCES = main.c kdbd.h kdbd.c kdb_wrapper.h kdb_wrapper.c thread.h thread.c
-kdbd_LDFLAGS = -L../../libelektra/
 kdbd_LDADD = libproto.la ../../libelektra/libelektra.la -lpthread
 
-INCLUDES = -I../../include -I.
+AM_CPPFLAGS = -I$(top_srcdir)/src/include
 

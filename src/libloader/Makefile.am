@@ -1,6 +1,7 @@
 # $Id$
 
-AM_CPPFLAGS = -DBACKEND_LIBDIR="\"$(backenddir):$(ulibdir)\""
+AM_CPPFLAGS = -I$(top_srcdir)/src/include $(LTDLINCL)\
+  -DBACKEND_LIBDIR="\"$(backenddir):$(hlvlbackenddir)\""
 
 noinst_LIBRARIES = libloader-static.a
 libloader_static_a_SOURCES = kdbLibLoader.c ../include/kdbLibLoader.h
@@ -10,4 +11,3 @@ libloader_static_a_CFLAGS = -D__STATIC -Wall
 noinst_LTLIBRARIES = libloader-dynamic.la
 libloader_dynamic_la_SOURCES = kdbLibLoader.c ../include/kdbLibLoader.h
 libloader_static_la_CFLAGS = -Wall
-INCLUDES = $(LTDLINCL)
