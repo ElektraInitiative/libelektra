@@ -18,7 +18,7 @@ $Id$
 			</varlistentry>
 
 			<varlistentry><term><command>ls</command></term>
-				<listitem><para>As the <citerefentry><refentrytitle>ls</refentrytitle><manvolnum>1</manvolnum></citerefentry> command, list key names for the specified key, or children keys, if specified a folder key. The <option>-v</option> argument will make it show also the values of each key. The <option>-d</option> (descriptive) will make it show the comment, key name and its value, as you are watching a plain text file. Accepts options: <option>-x</option>, <option>-d</option>, <option>-l</option>, <option>-f</option>, <option>-v</option>, <option>-R</option></para></listitem>
+				<listitem><para>As the <citerefentry><refentrytitle>ls</refentrytitle><manvolnum>1</manvolnum></citerefentry> command, list key names for the specified key, or children keys, if specified a folder key. The <option>-v</option> argument will make it show also the values of each key. The <option>-d</option> (descriptive) will make it show the comment, key name and its value, as you are watching a plain text file. Accepts options: <option>-x</option>, <option>-d</option>, <option>-l</option>, <option>-f</option>, <option>-v</option>, <option>-R</option>, <option>-s</option></para></listitem>
 			</varlistentry>
 
 			<varlistentry><term><command>ln</command></term>
@@ -78,7 +78,7 @@ $Id$
 			</varlistentry>
 			
 			<varlistentry><term><option>-s</option></term>
-				<listitem><para>Causes <command>get</command> to be more friendly to Shell scripts. For example, when requesting <filename>user/env/env2/PATH</filename>, the output will be PATH="the value", that is, only the basename of the key will be showed and the value will be surrounded by ' " '.</para></listitem>
+				<listitem><para>Causes <command>get</command> and <command>ls</command> to be more friendly to Shell scripts. For example, when requesting <filename>user/env/env2/PATH</filename>, the output will be PATH="the value", that is, only the basename of the key will be showed and the value will be surrounded by ' " '.</para></listitem>
 			</varlistentry>
 			
 			<varlistentry><term><option>-t type</option></term>

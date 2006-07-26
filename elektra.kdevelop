@@ -17,10 +17,10 @@
   </general>
   <kdevcustomproject>
     <run>
-      <mainprogram>src/backends/daemon/test</mainprogram>
+      <mainprogram>src/kdb/.libs/kdb</mainprogram>
       <directoryradio>executable</directoryradio>
       <customdirectory>/home/aviram/src/elektra/src/backends/daemon/</customdirectory>
-      <programargs/>
+      <programargs>ls -svR user/env</programargs>
       <terminal>false</terminal>
       <autocompile>true</autocompile>
       <envvars>
@@ -51,7 +51,7 @@
   <kdevdebugger>
     <general>
       <dbgshell/>
-      <programargs/>
+      <programargs>ls -svR user/env</programargs>
       <gdbpath/>
       <configGdbScript/>
       <runShellScript/>

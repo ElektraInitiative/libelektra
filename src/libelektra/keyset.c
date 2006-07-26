@@ -27,12 +27,26 @@ $Id$
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
+#include <strings.h>
 #ifdef HAVE_LANGINFO_H
 #include <langinfo.h>
 #endif
 
 #include "kdb.h"
 #include "kdbprivate.h"
+
+
+
+/* Used as a callback by the qsort() function */
+int keyCompareByName(const void *p1, const void *p2) {
+	Key *key1=*(Key **)p1;
+	Key *key2=*(Key **)p2;
+
+	return strcmp(key1->key, key2->key);
+}
+
+
+
 
 /**
  * @defgroup keyset KeySet :: Class Methods
@@ -106,6 +120,7 @@ int ksDel(KeySet *ks) {
 
 
 /**
+ * Return the number of keys that @p ks contains.
  * @return the number of keys that @p ks contains.
  * @see ksNew(), ksDel()
  */
@@ -287,31 +302,29 @@ Key *ksLookupByName(KeySet *ks, const char *name, unsigned long options) {
 
 	init=ks->cursor;
 	if ( (init == NULL) || (init == ks->start) ) {
-		/* Avoid looping if are already in the begining of the keyset */
+		/* Avoid looping if already in the begining of the keyset */
 		options &= options & ~KDB_O_ALL;
 	}
 
 	while ( ((current=ksNext(ks)) != end) || (options & KDB_O_ALL) ) {
 		if (current == NULL) {
-			/* Bottom of list reached
-			 * retry lookup from start to cursor */
+			/* End of list reached.
+			 * Retry lookup from start to cursor */
 			ksRewind(ks);
 			end=init;
 			options &= options & ~KDB_O_ALL;
 			continue;
 		}
-			
+		
 		if (current->key == name) return current; /* for NULLs */
 		
-		/**This "optimization" makes comparing keys double when equals
+		/* This "optimization" makes comparing keys double when equals
 		currentNameSize=current->key?strblen(current->key):0;
-		if (currentNameSize != nameSize) continue;*/
+		if (currentNameSize != nameSize) continue; */
 
-		if (name [0] == '/') {	/*Cascading search*/
+		if (name [0] == '/') /* Cascading search */
 			keyname = strchr(current->key, '/');
-		} else {
-			keyname = keyStealName (current);
-		}
+		else keyname = keyStealName (current);
 
 #ifdef VERBOSE
 		fprintf (stderr, "Compare %s with %s\n", keyname, name);
@@ -1098,7 +1111,7 @@ ssize_t ksToStream(const KeySet *ks, FILE* stream, unsigned long options) {
 
 
 /**
- * Calculates the common parent to all keys.
+ * Calculates the common parent to all keys in @p ks.
  *
  * This is a c-helper function, you need not implement it in bindings.
  *
@@ -1112,7 +1125,7 @@ ssize_t ksToStream(const KeySet *ks, FILE* stream, unsigned long options) {
  *   system/sw/xorg/Devices/Device1/mode
  * @endcode
  *
- * The common parent is @file system/sw/xorg .
+ * The common parent is @p system/sw/xorg .
  *
  * On the other hand, if we have this KeySet:
  *
@@ -1126,11 +1139,11 @@ ssize_t ksToStream(const KeySet *ks, FILE* stream, unsigned long options) {
  *
  * This method will work correctly only on @link ksSort() sorted KeySets @endlink.
  *
- * @param returnedCommonParent a pre-allocated buffer that will receive the common parent, if found
+ * @param returnedCommonParent a pre-allocated buffer that will receive the
+ *        common parent, if found
  * @param maxSize size of the pre-allocated @p returnedCommonParent buffer
  * @return size in bytes of the parent name, or 0 if there is no common parent,
- * 	or a negative number to indicate an error, then @p errno must be checked.
- *
+ *         or a negative number to indicate an error, then @p errno must be checked.
  */
 ssize_t ksGetCommonParentName(const KeySet *ks,char *returnedCommonParent,const size_t maxSize) {
 	ssize_t parentSize=0;
@@ -1175,15 +1188,6 @@ ssize_t ksGetCommonParentName(const KeySet *ks,char *returnedCommonParent,const 
 
 
 
-
-
-/* Used as a callback by the qsort() function */
-int keyCompareByName(const void *p1, const void *p2) {
-	Key *key1=*(Key **)p1;
-	Key *key2=*(Key **)p2;
-
-	return strcmp(key1->key, key2->key);
-}
 
 
 /**

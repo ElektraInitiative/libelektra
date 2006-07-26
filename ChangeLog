@@ -1,17 +1,19 @@
 * Jun 27 2006 Yannick Lecaillez <sizon5@gmail.com>
 - New kdbd daemon !
 - Fix UTF8Engine : Check for a null size string
-- Fix Berkeleydb backend : 
-	- Check if an UTF8 convertion is done before free memory 
+- Fix Berkeleydb backend :
+	- Check if an UTF8 convertion is done before free memory
 	(before, there was case where keyToDBD freed Comment and/or Value key pointers.)
 	- Chown user's kdb-berkeleydb dir.
 	- Set correct UID/GID for initial creation of the "user" key.
 - Fix key.c : Set KEY_SWITCH_DOMAIN flags into keySetName()
 
+
 * 16.06.2006 Markus Raab
 - added cascading features to kdb
 - kdb ls / and kdb ls /path is possible
 - kdb get /path/to/key gets user or system key
+- Moved help functions of the 'kdb command' to src/kdb/help.c
 
 * Wed Jun 02 2006 Avi and Yannick <yl@itioweb.com> 0.6.2
 - Renamed some sorces on src/libelektra/

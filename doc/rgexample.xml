@@ -12,7 +12,8 @@ $LastChangedBy$
 			<para><prompt>bash# </prompt><command>kdb set -t link system/sw/XFree/current system/sw/XFree/handmade</command></para>
 		</section>
 		<section id="exget"><title>Getting Keys</title>
-			<para><prompt>bash$ </prompt><command>KDB_ROOT=user/example kdb get key</command></para>
+			<para><prompt>bash$ </prompt><command>KDB_ROOT=user/example kdb get some/key/name</command></para>
+			<para><prompt>bash$ </prompt><command>eval `kdb get -s user/env/env1/PS1`</command></para>
 			<para><prompt>bash$ </prompt><command>KDB_BACKEND=gconf kdb get user/sw/gnome-terminal/global/active_encodings</command></para>
 		</section>
 		<section id="exls"><title>Listing</title>
@@ -20,6 +21,7 @@ $LastChangedBy$
 			<para><prompt>bash$ </prompt><command>kdb ls -lR system/sw/xorg/current</command></para>
 			<para><prompt>bash$ </prompt><command>KDB_ROOT=system/sw kdb ls -lR xorg</command></para>
 			<para><prompt>bash$ </prompt><command>KDB_BACKEND=fstab kdb ls -Rv system/filesystems</command></para>
+			<para><prompt>bash$ </prompt><command>eval `kdb ls -Rvs user/env/env2`</command></para>
 		</section>
 		<section id="exmisc"><title>Miscelaneous</title>
 			<para><prompt>bash# </prompt><command>kdb ln system/sw/xorg/handmade system/sw/xorg/current</command></para>

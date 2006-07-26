@@ -26,16 +26,14 @@ $Id$
 	</refnamediv>
 
 	<refsynopsisdiv>
-		<cmdsynopsis>
-			<command>kdb get</command>
+		<cmdsynopsis><command>kdb get</command>
 			<arg choice="opt">
 				<option>-dlr</option>
 			</arg>
 			<arg choice="plain">key/name</arg>
 		</cmdsynopsis>
 		
-		<cmdsynopsis>
-			<command>kdb set</command>
+		<cmdsynopsis><command>kdb set</command>
 			<arg choice="opt">
 				<option>-t</option>
 				<option>type</option>
@@ -60,8 +58,7 @@ $Id$
 			<arg choice="plain">"the value"</arg>
 		</cmdsynopsis>
 		
-		<cmdsynopsis>
-			<command>kdb set</command>
+		<cmdsynopsis><command>kdb set</command>
 			<arg choice="opt">
 				<option>-t</option>
 				<option>type</option>
@@ -79,8 +76,7 @@ $Id$
 			<arg choice="plain">"the value"</arg>
 		</cmdsynopsis>
 		
-		<cmdsynopsis>
-			<command>kdb set</command>
+		<cmdsynopsis><command>kdb set</command>
 			<arg choice="opt">
 				<option>-t</option>
 				<option>type</option>
@@ -92,16 +88,14 @@ $Id$
 			<arg choice="plain">key/name</arg>
 		</cmdsynopsis>
 		
-		<cmdsynopsis>
-			<command>kdb ls</command>
+		<cmdsynopsis><command>kdb ls</command>
 			<arg choice="opt">
-				<option>-lRfv</option>
+				<option>-lRfvs</option>
 			</arg>
 			<arg choice="opt">key/dir | key/name</arg>
 		</cmdsynopsis>
 		
-		<cmdsynopsis>
-			<command>kdb ls</command>
+		<cmdsynopsis><command>kdb ls</command>
 			<arg choice="opt">
 				<option>-lRfvx</option>
 			</arg>
@@ -110,32 +104,28 @@ $Id$
 			<arg choice="plain">keys.xml</arg>
 		</cmdsynopsis>
 		
-		<cmdsynopsis>
-			<command>kdb edit</command>
+		<cmdsynopsis><command>kdb edit</command>
 			<arg choice="opt">
 				<option>-R</option>
 			</arg>
 			<arg choice="opt">key/dir | key/name</arg>
 		</cmdsynopsis>
 		
-		<cmdsynopsis>
-			<command>kdb rm</command>
+		<cmdsynopsis><command>kdb rm</command>
 			<arg choice="plain">key/name</arg>
 		</cmdsynopsis>
 		
-		<cmdsynopsis>
-			<command>kdb mv</command>
+		<cmdsynopsis><command>kdb mv</command>
 			<arg choice="plain">key/src</arg>
 			<arg choice="plain">key/dest</arg>
 		</cmdsynopsis>
 		
-		<cmdsynopsis>
-			<command>kdb ln</command>
+		<cmdsynopsis><command>kdb ln</command>
 			<arg choice="plain">key/src</arg>
 			<arg choice="plain">key/dest</arg>
 		</cmdsynopsis>
-		<cmdsynopsis>
-			<command>kdb export</command>
+
+		<cmdsynopsis><command>kdb export</command>
 			<arg choice="opt">
 				<option>-f</option>
 			</arg>
@@ -143,19 +133,17 @@ $Id$
 			<arg choice="plain">&#062;</arg>
 			<arg choic="plain">file.xml</arg>
 		</cmdsynopsis>
-		<cmdsynopsis>
-			<command>kdb import</command>
+
+		<cmdsynopsis><command>kdb import</command>
 			<arg choice="plain">&#060;</arg>
 			<arg choice="plain">file.xml</arg>
 		</cmdsynopsis>
 		
-		<cmdsynopsis>
-			<command>kdb import</command>
+		<cmdsynopsis><command>kdb import</command>
 			<arg choice="plain">file.xml</arg>
 		</cmdsynopsis>
 		
-		<cmdsynopsis>
-			<command>kdb monitor</command>
+		<cmdsynopsis><command>kdb monitor</command>
 			<arg choice="plain">some/key/name</arg>
 		</cmdsynopsis>
 	</refsynopsisdiv>
