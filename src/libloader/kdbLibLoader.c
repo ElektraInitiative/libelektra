@@ -31,7 +31,7 @@ $Id$
 #include "kdbbackend.h"
 #include "kdbLibLoader.h"
 
-#ifdef __STATIC
+#ifdef ELEKTRA_STATIC
 /* Static case */
 
 extern kdblib_symbol kdb_exported_syms[];

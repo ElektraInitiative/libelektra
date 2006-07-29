@@ -8,7 +8,7 @@ libelektra_a_SOURCES = kdb.c error.c key.c keyset.c kdbhighlevel.c backendhelper
 		../include/kdbbackend.h \
 		../include/kdbprivate.h \
 		../include/kdbLibLoader.h
-libelektra_a_CFLAGS = -D__STATIC -DDEFAULT_BACKEND=\"$(default_backend)\" -ansi -pedantic -Wall
+libelektra_a_CFLAGS = -DELEKTRA_STATIC -DDEFAULT_BACKEND=\"$(default_backend)\" -ansi -pedantic -Wall
 libelektra_a_LIBADD =  ../libloader/libloader_static_a-kdbLibLoader.$(OBJEXT) \
 		../backends/$(default_backend)/libelektra_$(default_backend)_a-$(default_backend).$(OBJEXT) \
 		$(LIBICONV)

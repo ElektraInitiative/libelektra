@@ -30,6 +30,8 @@
 - use .$(OBJEXT) instead of .o
 - honor default_backend for static libelektra dependencies
 - add AC_SUBST(default_dbackend)
+-    By Patrice Dumas <pertusus@free.fr> 29/07/2006
+- replace __STATIC by ELEKTRA_STATIC
 
 
 

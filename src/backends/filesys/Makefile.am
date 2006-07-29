@@ -3,7 +3,7 @@
 
 lib_LIBRARIES = libelektra-filesys.a
 libelektra_filesys_a_SOURCES = filesys.c ../../include/kdb.h ../../include/kdbbackend.h
-libelektra_filesys_a_CFLAGS = -D__STATIC -Wall
+libelektra_filesys_a_CFLAGS = -DELEKTRA_STATIC -Wall
 libelektra_filesys_a_LIBADD = ../../libelektra/libelektra.la
 
 

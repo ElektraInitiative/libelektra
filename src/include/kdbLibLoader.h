@@ -23,7 +23,7 @@ typedef struct {
 } kdblib_symbol;
 
 
-#ifdef __STATIC
+#ifdef ELEKTRA_STATIC
 
 #define kdbLibInit() 0
 

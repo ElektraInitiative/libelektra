@@ -4,7 +4,7 @@
 #include "kdbbackend.h"
 #include "kdbLibLoader.h"
 
-#ifdef __STATIC
+#ifdef ELEKTRA_STATIC
 
 /* Make the compiler happy */
 extern int libelektra_filesys_LTX_kdbBackendFactory;
