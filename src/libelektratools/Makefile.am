@@ -13,7 +13,7 @@ libelektratools_la_CPPFLAGS = -DDATADIR=\"@datadir@\" -Wall \
   -I$(top_srcdir)/src/include $(XML_CPPFLAGS) $(XML_CFLAGS)
 ELEKTRATOOLS_CURRENT = 1
 libelektratools_la_LDFLAGS = -version-info $(ELEKTRATOOLS_CURRENT):0:0
-libelektratools_la_LIBADD = $(XML_LIBS)
+libelektratools_la_LIBADD = ../libelektra/libelektra.la $(XML_LIBS)
 
 install-exec-hook:
 	test -z "$(hlvlbackenddir)" || $(mkdir_p) "$(DESTDIR)$(hlvlbackenddir)"
