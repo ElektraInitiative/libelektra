@@ -26,7 +26,7 @@ using namespace std;
 #include <kconfig.h>
 #include <kstandarddirs.h>
 
-#include "kdb.h"
+#include <kdb.h>
 
 int kde2elektra(const QString &absFname, const QString &baseDir)
 {
@@ -39,6 +39,8 @@ int kde2elektra(const QString &absFname, const QString &baseDir)
 	user = baseDir.startsWith(getenv("HOME"));
 
 	ks = ksNew();
+
+	cout << "Importing \"" + absFname+ "\" ..." << endl;
 	
 	KConfig c(absFname);
 	QStringList groups = c.groupList();
@@ -70,9 +72,9 @@ int kde2elektra(const QString &absFname, const QString &baseDir)
 			QString kName(groupName + "/" + keyName);
 
 			if ( user )
-				kName.prepend("user/sw/kde/current/kde/config/" + relName + "/");
+				kName.prepend("user/sw/kde/current/config/" + relName + "/");
 			else
-				kName.prepend("system/sw/kde/current/kde/config/" + relName + "/");
+				kName.prepend("system/sw/kde/current/config/" + relName + "/");
 			
 			Key *key;
 			
@@ -115,14 +117,13 @@ int convertDir(const QString &dirName, const QString &baseDir)
 		if ( (*at) == "." || (*at) == ".." )
 			continue;
 		QString fName(dir.absFilePath((*at), false));
-//		fName = dirName;
-//		fName.append((*at));
 		
 		QFileInfo info(fName);
 		if ( info.isDir() )
 			convertDir(fName, baseDir);
 
-		kde2elektra(fName, baseDir);
+		if ( fName.endsWith("rc") )
+			kde2elektra(fName, baseDir);
 	}
 
 	return 0;
@@ -140,19 +141,42 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
-	if ( getuid() ) {
+	/* Notice */
+	cout << "kde2elektra" << endl;
+	cout << "This program will import your KDE configuration" << endl;
+	cout << "into elektra key database." << endl;
+	cout << "system wide configuration will be imported into system/sw/kde/current/config" << endl;
+	cout << "user specific configuration will be imported into user/sw/kde/current/config" << endl;
+	
+	cout << "You have to run this program several times :" << endl;
+	cout << "  * One time as root for import system wide kde configuration" << endl;
+	cout << "    and the root specific kde configuration" << endl;
+	cout << "  * One time as user for import user's specific kde configuration" << endl << endl;
+
+	KDBHandle handle;
+	KDBInfo *info;
+	char buf[1024];
+	
+	cout << "Informations about your current elektra installation :" << endl;
+	kdbOpen(&handle);
+	info = kdbGetInfo(handle);
+	kdbInfoToString(info,buf,sizeof(buf));
+	cout << buf << endl;
+	kdbClose(&handle);
+	cout << endl << endl;
+	
+	if ( getuid() == 0 ) {
 		cout << "You're root, importing system wide config." << endl;
 		cout << "Re-run me after that as user for importing user specific config (if not done yet)." << endl;
 		convertDir(configDir.last(), configDir.last());
 		cout << "Importing root specific config ..." << endl;
 		convertDir(configDir.first(), configDir.first());
 	} else {
-		cout << "You're user, importing user specific config." << endl;
-		cout << "Re-run me after that as root for importing system wide config (if not done yet)." << endl;
+		cout << "kde2elektra will import your specific KDE configuration." << endl;
 		convertDir(configDir.first(), configDir.first());
+		return 1;
 	}
 
 	return 0;	
-//	kdDebug() << "config dir is " << configDir << endl;
 }	
 	    
