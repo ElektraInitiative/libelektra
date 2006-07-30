@@ -19,12 +19,14 @@ $Id$
 
 */
 
+#include <pthread.h>
 #include "kdbbackend.h"
 
 #include "protocol.h"
 #include "message.h"
 #include "kdb_wrapper.h"
 #include "thread.h"
+#include "ipc.h"
 
 static Message *processRequest(Message *request, KDBHandle *handle, uid_t remoteeuid, gid_t remoteegid);
 
@@ -126,7 +128,7 @@ int kdbd(void *pIntThreadHandle)
 		perror("kdbd");
 		return 1;
 	}
-	fprintf(stderr, "Thread %d launched to serve PID %d (euid=%d/egid=%d)\n", pthread_self(), remotepid, remoteeuid, remoteegid);
+	fprintf(stderr, "Thread %ld launched to serve PID %d (euid=%d/egid=%d)\n", pthread_self(), remotepid, remoteeuid, remoteegid);
 
 	closed = 0;
 	while ( !closed ) {

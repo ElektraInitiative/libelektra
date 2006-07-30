@@ -18,6 +18,13 @@ $Id$
 
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -112,7 +119,7 @@ void threadExit(void *pIntThreadHandle)
 
 	close(thread->socketFd);
 	free(thread);
-	fprintf(stderr, "Thread %d (handle=%d) freed.\n", pthread_self(), threadHandle);
+	fprintf(stderr, "Thread %ld (handle=%d) freed.\n", pthread_self(), threadHandle);
 }
 
 

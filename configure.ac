@@ -230,6 +230,19 @@ AM_CONDITIONAL(HAVE_GCONF, [test x$have_gconf = xyes])
 AC_HEADER_STDC
 AC_CHECK_HEADERS([langinfo.h locale.h mntent.h stdlib.h string.h strings.h unistd.h regex.h pwd.h grp.h])
 
+# inspired from daemontools
+AC_CHECK_HEADERS([signal.h],[
+   AC_TRY_LINK([#include <signal.h>],
+[  
+sigset_t ss;
+ 
+sigemptyset(&ss);
+sigaddset(&ss,SIGCHLD);
+sigprocmask(SIG_SETMASK,&ss,(sigset_t *) 0);
+],
+     [AC_DEFINE([HASSIGPROCMASK],[],[POSIX signal available])])
+])
+
 #
 # Checks for typedefs, structures, and compiler characteristics.
 #

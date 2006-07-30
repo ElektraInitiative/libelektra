@@ -317,7 +317,8 @@ int kdbOpenBackend(KDBHandle *handle, char *backendName) {
 	}
 	
 	/* load the "kdbBackendFactory" symbol from backend */
-	kdbBackendFactory=(KDBBackendFactory)kdbLibSym(dlhandle,
+	/*kdbBackendFactory=(KDBBackendFactory)kdbLibSym(dlhandle,*/
+	*(void **)(&kdbBackendFactory)=kdbLibSym(dlhandle,
 		"kdbBackendFactory");
 	if (kdbBackendFactory == 0) {
 		errno=KDB_RET_NOSYS;

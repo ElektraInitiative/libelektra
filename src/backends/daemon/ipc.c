@@ -72,7 +72,7 @@ int ipc_accept(int s,char *p,int l,int *trunc)
 {
 	int fd;
 	struct sockaddr_un sa;
-	int dummy = sizeof sa;
+	size_t dummy = sizeof sa;
 	
 	memset(&sa, 0, sizeof(sa));
 	fd = accept(s,(struct sockaddr *) &sa,&dummy);
@@ -97,7 +97,7 @@ int ipc_accept(int s,char *p,int l,int *trunc)
 int ipc_local(int s,char *p,int l,int *trunc)
 {
 	struct sockaddr_un sa;
-	int dummy = sizeof sa;
+	size_t dummy = sizeof sa;
 	
 	memset(&sa, 0, sizeof(sa));
 	if (getsockname(s,(struct sockaddr *) &sa,&dummy) == -1) return -1;
@@ -152,7 +152,7 @@ int ndelay_off(int fd)
 	return fcntl(fd,F_SETFL,fcntl(fd,F_GETFL,0) & ~O_NONBLOCK);
 }
 
-int ipc_eid(int s,int *u,int *g,int *p)
+int ipc_eid(int s,uid_t *u,gid_t *g, pid_t*p)
 {
 	uid_t dummyu;
 	gid_t dummyg;
@@ -171,7 +171,7 @@ int ipc_eid(int s,int *u,int *g,int *p)
 int getpeereid(int s,uid_t *u,gid_t *g,pid_t *p)
 {
 	struct ucred dummy = {0};
-	int len = sizeof(dummy);
+	size_t len = sizeof(dummy);
 	
 	if (getsockopt(s,SOL_SOCKET,SO_PEERCRED,&dummy,&len) == -1)
 		return -1;

@@ -2880,10 +2880,12 @@ ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
 		else  written+=fprintf(stream,   " gid=\"%d\"",key->gid);
 	}
 #endif
-	written+=fprintf(stream," mode=\"0%o\"",
+
 #if defined(S_IRWXU) && defined(S_IRWXG) && defined(S_IRWXO)
+	written+=fprintf(stream," mode=\"0%o\"",
 		key->access & (S_IRWXU|S_IRWXG|S_IRWXO));
 #else
+	written+=fprintf(stream," mode=\"0%o\"",
 		key->access);
 #endif
 

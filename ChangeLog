@@ -32,6 +32,8 @@
 - add AC_SUBST(default_dbackend)
 -    By Patrice Dumas <pertusus@free.fr> 29/07/2006
 - replace __STATIC by ELEKTRA_STATIC
+-    By Patrice Dumas <pertusus@free.fr> 30/07/2006
+- fix many compilation warnings
 
 
 

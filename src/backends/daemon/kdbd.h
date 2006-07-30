@@ -21,5 +21,5 @@ $Id$
 */
 
 
-int kdbd(int *t);
+void *kdbd(void *t);
 

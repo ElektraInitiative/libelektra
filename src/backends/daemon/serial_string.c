@@ -64,7 +64,7 @@ ssize_t serialString_serialize(const void *pChar, void *pBuffer)
 		readCursor = (const char *) pChar;
 		writeCursor = (char *) pBuffer;
 		
-		if ( iconv(converter, (ICONV_CONST char **) &readCursor, &size, &writeCursor, &bufferSize) == (iconv_t)(-1) ) {
+		if ( iconv(converter, (ICONV_CONST char **) &readCursor, &size, &writeCursor, &bufferSize) == (size_t)(-1) ) {
 			iconv_close(converter);
 			return -1;
 		}
@@ -102,7 +102,7 @@ ssize_t serialString_unserialize(const void *pBuffer, void *ppChar)
 		readCursor = (const char *) pBuffer;
 		writeCursor = (char *) *dest;
 		
-		if ( iconv(converter, (ICONV_CONST char **) &readCursor, &size, &writeCursor, &bufferSize) == (iconv_t)(-1) ) {
+		if ( iconv(converter, (ICONV_CONST char **) &readCursor, &size, &writeCursor, &bufferSize) == (size_t)(-1) ) {
 			iconv_close(converter);
 			return -1;
 		}
