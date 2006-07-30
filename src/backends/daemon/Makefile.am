@@ -14,5 +14,5 @@ sbin_PROGRAMS = kdbd
 kdbd_SOURCES = main.c kdbd.h kdbd.c kdb_wrapper.h kdb_wrapper.c thread.h thread.c
 kdbd_LDADD = libproto.la ../../libelektra/libelektra.la -lpthread
 
-AM_CPPFLAGS = -I$(top_srcdir)/src/include
+AM_CPPFLAGS = -I$(top_srcdir)/src/include -Wall
 

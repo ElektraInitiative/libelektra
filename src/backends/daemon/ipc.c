@@ -19,13 +19,20 @@ $Id$
 
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #include <errno.h>
 #include <fcntl.h>
-#include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
+#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
+#endif
 
 #include "ipc.h"
 
@@ -72,7 +79,7 @@ int ipc_accept(int s,char *p,int l,int *trunc)
 {
 	int fd;
 	struct sockaddr_un sa;
-	size_t dummy = sizeof sa;
+	socklen_t dummy = sizeof sa;
 	
 	memset(&sa, 0, sizeof(sa));
 	fd = accept(s,(struct sockaddr *) &sa,&dummy);
@@ -97,7 +104,7 @@ int ipc_accept(int s,char *p,int l,int *trunc)
 int ipc_local(int s,char *p,int l,int *trunc)
 {
 	struct sockaddr_un sa;
-	size_t dummy = sizeof sa;
+	socklen_t dummy = sizeof sa;
 	
 	memset(&sa, 0, sizeof(sa));
 	if (getsockname(s,(struct sockaddr *) &sa,&dummy) == -1) return -1;
@@ -171,7 +178,7 @@ int ipc_eid(int s,uid_t *u,gid_t *g, pid_t*p)
 int getpeereid(int s,uid_t *u,gid_t *g,pid_t *p)
 {
 	struct ucred dummy = {0};
-	size_t len = sizeof(dummy);
+	socklen_t len = sizeof(dummy);
 	
 	if (getsockopt(s,SOL_SOCKET,SO_PEERCRED,&dummy,&len) == -1)
 		return -1;

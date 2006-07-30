@@ -27,9 +27,15 @@ $Id$
 #include <unistd.h>
 #endif
 
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h> /* malloc */
+#endif
+#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
+#endif
+#ifdef HAVE_PWD_H
 #include <pwd.h>
+#endif
 
 #include "kdbbackend.h"
 
@@ -38,7 +44,6 @@ $Id$
 
 Message *wrapper_kdbOpen(KDBHandle *handle, Message *request, uid_t euid, gid_t egid)
 {
-	struct	passwd	*user;
 	char		*userName;
 	char		*real_backend;
 	unsigned long	umask;

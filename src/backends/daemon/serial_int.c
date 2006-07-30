@@ -20,11 +20,18 @@ $Id$
 
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include <assert.h>
 
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
+#endif
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
 
 
 ssize_t serialInt_getSize(const void *pInt)

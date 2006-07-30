@@ -18,17 +18,20 @@ $Id$
 
 */
 
-#ifdef HAVE_CONFIG_H
+#if HAVE_CONFIG_H
 #include "config.h"
 #endif
 
-#ifdef HAVE_UNISTD_H
+#include <stdio.h>
+#if HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-
-#include <stdio.h>
+#if HAVE_STDLIB_H
 #include <stdlib.h>
+#endif
+#if HAVE_STRING_H
 #include <string.h>
+#endif
 #include <pthread.h>
 
 #include "thread.h"

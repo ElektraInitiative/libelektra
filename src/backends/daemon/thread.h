@@ -18,7 +18,7 @@ $Id$
 
 */
 
-int threadCreate(int socketfd, void *(*start_routine)(void *));
+int threadCreate(int socketfd, void * (*start_routine)(void *));
 int threadGetSocket(int threadHandle);
 pthread_t threadGetId(int threadHandle);
 void threadExit(void *pIntThreadHandle);

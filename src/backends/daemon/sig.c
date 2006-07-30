@@ -38,7 +38,7 @@ void (*sig_ignorehandler)() = SIG_IGN;
 
 void sig_block(int sig)
 {
-#ifdef HASSIGPROCMASK
+#ifdef HAVE_SIGPROCMASK
 	sigset_t ss;
 	sigemptyset(&ss);
 	sigaddset(&ss,sig);
@@ -50,7 +50,7 @@ void sig_block(int sig)
 
 void sig_unblock(int sig)
 {
-#ifdef HASSIGPROCMASK
+#ifdef HAVE_SIGPROCMASK
 	sigset_t ss;
 	sigemptyset(&ss);
 	sigaddset(&ss,sig);
@@ -62,7 +62,7 @@ void sig_unblock(int sig)
 
 void sig_blocknone(void)
 {
-#ifdef HASSIGPROCMASK
+#ifdef HAVE_SIGPROCMASK
 	sigset_t ss;
 	sigemptyset(&ss);
 	sigprocmask(SIG_SETMASK,&ss,(sigset_t *) 0);
@@ -73,7 +73,7 @@ void sig_blocknone(void)
 
 void sig_catch(int sig,void (*f)())
 {
-#ifdef HASSIGACTION
+#ifdef HAVE_SIGACTION
 	struct sigaction sa;
 	sa.sa_handler = f;
 	sa.sa_flags = 0;
@@ -86,7 +86,7 @@ void sig_catch(int sig,void (*f)())
 
 void sig_pause(void)
 {
-#ifdef HASSIGPROCMASK
+#ifdef HAVE_SIGPROCMASK
 	sigset_t ss;
 	sigemptyset(&ss);
 	sigsuspend(&ss);

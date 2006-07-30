@@ -20,13 +20,24 @@ $Id$
 
 */
 
+#if HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+
 #include <stdio.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h> /* for exit() */
+#endif
 
 #include <pthread.h>
 
+#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
+#endif
 #include <sys/stat.h>
 #include <sys/wait.h>
 
@@ -81,7 +92,6 @@ int main(int argc, char **argv)
 	mode_t	m;
 	int	t, s;
 	int	trunc;
-	pthread_t thread;
 
 	/* force a superuniversal modern charset: UTF-8 */
 	putenv("LANG=en_US.UTF-8");

@@ -19,14 +19,17 @@ $Id$
 
 */
 
-#include <pthread.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "kdbbackend.h"
 
 #include "protocol.h"
 #include "message.h"
 #include "kdb_wrapper.h"
-#include "thread.h"
 #include "ipc.h"
+#include "thread.h"
 
 static Message *processRequest(Message *request, KDBHandle *handle, uid_t remoteeuid, gid_t remoteegid);
 
@@ -34,11 +37,10 @@ static Message *processRequest(Message *request, KDBHandle *handle, uid_t remote
 {
 	Message	*reply;
 	int	msgType, procedure;
-	int	ret;
 
 	msgType = messageGetType(request);
 	if ( msgType != MESSAGE_REQUEST ) {
-		fprintf(stderr, "processRequest(): Received a non-request message %d.\n", procedure);
+		fprintf(stderr, "processRequest(): Received a non-request message.\n");
 		return NULL;
 	}
 	

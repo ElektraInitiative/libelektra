@@ -19,13 +19,30 @@ $Id$
 
 */
 
-#include <errno.h>
-#include <stdlib.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <assert.h>
+#include <errno.h>
+
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
+#endif
+
 #include <sys/socket.h>
 #include <sys/un.h>
+
+#ifdef HAVE_INTTYPES_H
 #include <inttypes.h>
+#endif
 
 #include "kdbbackend.h"
 #include "kdbprivate.h"
@@ -121,7 +138,7 @@ int kdbOpen_daemon(KDBHandle *handle) {
 	if ( data == NULL )
 		return 1;
 	memset(data, 0, sizeof(DaemonBackendData));
-	
+
 	sig_ignore(sig_pipe);
 	
 	data->socketfd = ipc_stream();
@@ -172,8 +189,6 @@ int kdbOpen_daemon(KDBHandle *handle) {
 		return 1;
 	}
 	
-	/* Instrument the handle to modify the backend name */
-	free(kdbhGetBackendName(*handle));
 	/* Get the backend name being used by the daemon from the reply... */
 	tmp=malloc(strlen(BACKENDNAME) + 1 + strblen(real_backend));
 	sprintf(tmp,BACKENDNAME"+%s",real_backend);
@@ -258,7 +273,6 @@ int kdbClose_daemon(KDBHandle *handle)
  */
 int kdbStatKey_daemon(KDBHandle handle, Key *key) 
 {
-	Key	*workKey, copy;
 	DaemonBackendData *data;
 	Message *request, *reply;
 	int     ret;
@@ -619,7 +633,6 @@ u_int32_t kdbMonitorKeys_daemon(KDBHandle handle, KeySet *interests, u_int32_t d
 	DaemonBackendData       *data;
 	Message         *request, *reply;
 	unsigned long	monitorRet;
-	int             ret;
 	
 	data = (DaemonBackendData *) kdbhGetBackendData(handle);
 	if ( data == NULL )
@@ -674,7 +687,6 @@ u_int32_t kdbMonitorKey_daemon(KDBHandle handle, Key *interest, u_int32_t diffMa
         DaemonBackendData       *data;
 	Message         *request, *reply;
 	unsigned long   monitorRet;
-	int             ret;
 	
 	data = (DaemonBackendData *) kdbhGetBackendData(handle);
 	if ( data == NULL )

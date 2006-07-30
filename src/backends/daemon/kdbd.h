@@ -21,5 +21,5 @@ $Id$
 */
 
 
-void *kdbd(void *t);
+void *kdbd(void *pIntThreadHandle);
 

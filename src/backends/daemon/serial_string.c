@@ -20,11 +20,19 @@ $Id$
 
 */
 
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
 
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
+#endif
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
+#ifdef HAVE_LANGINFO_H
 #include <langinfo.h>
+#endif
 #include <iconv.h>
 
 #include "kdbbackend.h"
@@ -49,7 +57,6 @@ ssize_t serialString_serialize(const void *pChar, void *pBuffer)
 	char	*currentCharset, *writeCursor;
 	const char *readCursor;
 	iconv_t	converter;
-	char	*tmp;
 	size_t	bufferSize;
 	size_t	size;
 	ssize_t	len;
@@ -64,7 +71,7 @@ ssize_t serialString_serialize(const void *pChar, void *pBuffer)
 		readCursor = (const char *) pChar;
 		writeCursor = (char *) pBuffer;
 		
-		if ( iconv(converter, (ICONV_CONST char **) &readCursor, &size, &writeCursor, &bufferSize) == (size_t)(-1) ) {
+		if ( iconv(converter, (ICONV_CONST char **) &readCursor, &size, &writeCursor, &bufferSize) == (iconv_t)(-1) ) {
 			iconv_close(converter);
 			return -1;
 		}
@@ -102,7 +109,7 @@ ssize_t serialString_unserialize(const void *pBuffer, void *ppChar)
 		readCursor = (const char *) pBuffer;
 		writeCursor = (char *) *dest;
 		
-		if ( iconv(converter, (ICONV_CONST char **) &readCursor, &size, &writeCursor, &bufferSize) == (size_t)(-1) ) {
+		if ( iconv(converter, (ICONV_CONST char **) &readCursor, &size, &writeCursor, &bufferSize) == (iconv_t)(-1) ) {
 			iconv_close(converter);
 			return -1;
 		}
