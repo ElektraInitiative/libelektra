@@ -257,7 +257,7 @@ AC_TYPE_SIZE_T
 #AC_FUNC_MALLOC
 #AC_FUNC_MEMCMP
 #AC_FUNC_REALLOC
-AC_CHECK_FUNCS([memset nl_langinfo setenv setlocale strcasecmp strchr strrchr index rindex strtol ctime_r getuid getgid])
+AC_CHECK_FUNCS([memset nl_langinfo setenv setlocale strcasecmp strchr strrchr index rindex strtol ctime_r getuid getgid sigprocmask sigaction])
 
 
 #
