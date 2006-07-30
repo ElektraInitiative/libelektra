@@ -100,8 +100,8 @@ mode_t kdbhSetUMask(KDBHandle handle,mode_t umask);
 char *kdbhGetUserName(const KDBHandle handle);
 char *kdbhSetUserName(KDBHandle handle,char *userName);
 
-char *kdbhGetBckendName(const KDBHandle handle);
-char *kdbhSetBckendName(KDBHandle handle,char *backendName);
+char *kdbhGetBackendName(const KDBHandle handle);
+char *kdbhSetBackendName(KDBHandle handle,char *backendName);
 
 #ifdef __cplusplus
 }
