@@ -319,5 +319,7 @@ AC_OUTPUT([src/Makefile
 
 	   src/backends/exportobjects.sh
 	   src/backends/exportsymbols.sh
+
+	   tests/Makefile
 	   ])
 
