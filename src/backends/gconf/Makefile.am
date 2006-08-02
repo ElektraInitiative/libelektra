@@ -13,4 +13,7 @@ libelektra_gconf_la_SOURCES = gconf.c
 libelektra_gconf_la_CFLAGS = $(gconf_CFLAGS)
 libelektra_gconf_la_LDFLAGS = -avoid-version -module 
 libelektra_gconf_la_LIBADD = $(LIBLTDL) $(gconf_LIBS) ../../libelektra/libelektra.la
+
+../../libelektra/libelektra.la:
+	cd ../../libelektra/ && make libelektra.la
 endif

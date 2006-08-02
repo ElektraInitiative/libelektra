@@ -309,10 +309,7 @@ int kdbSetKeys_fstab(KDBHandle handle, KeySet *ks) {
 	return 0;
 }
 
-
-
-
-KDBBackend *kdbBackendFactory(void) {
+KDBEXPORT(fstab) {
 	return kdbBackendExport(BACKENDNAME,
 		KDB_BE_OPEN,           &kdbOpen_fstab,
 		KDB_BE_CLOSE,          &kdbClose_fstab,

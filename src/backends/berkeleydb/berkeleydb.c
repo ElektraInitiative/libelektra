@@ -1266,7 +1266,7 @@ ssize_t kdbGetKeyChildKeys_bdb(KDBHandle handle, const Key *parentKey,
  * @see kdbOpenBackend()
  * @ingroup backend
  */
-KDBBackend *kdbBackendFactory(void) {
+KDBEXPORT(berkeleydb) {
 	return kdbBackendExport(BACKENDNAME,
 		KDB_BE_OPEN,           &kdbOpen_bdb,
 		KDB_BE_CLOSE,          &kdbClose_bdb,

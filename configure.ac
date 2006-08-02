@@ -1,7 +1,7 @@
 #
 # Autoconf script for Elektra
 # 
-# Yannick Lecaillez <yl@itioweb.com>
+# Yannick Lecaillez <sizon5@gmail.com>
 #
 # $Id$
 
@@ -155,6 +155,7 @@ AC_DISABLE_STATIC
 #
 AC_PROG_CC
 AC_PROG_LN_S
+AC_CHECK_PROG(NM, nm, nm, nm-is-missing)
 
 # add -Wall if compiler is gcc and the CFLAGS variable is empty
 if test $elektra_empty_CFLAGS = yes -a "x$CC" = xgcc; then
@@ -315,5 +316,8 @@ AC_OUTPUT([src/Makefile
 
 	   elektra.pc
 	   elektratools.pc
+
+	   src/backends/exportobjects.sh
+	   src/backends/exportsymbols.sh
 	   ])
 

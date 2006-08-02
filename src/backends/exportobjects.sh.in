@@ -1,0 +1,19 @@
+#!/bin/sh -x
+
+# exportobjects.sh
+# ----------------
+#
+# Export the list of all backend's objects files
+# to be included in the static version libelektra
+#
+# (c) 2006 Yannick Lecaillez
+
+echo -n '' > objects
+
+for dir in "$@"
+do
+	echo "Get objects files for $dir ..."
+	@AR@ t $dir/libelektra-$dir.a | @AWK@ -v "dir=`pwd`/$dir" '{printf "%s/%s ", dir,$$0}' >> objects
+done
+echo "" >> objects
+	

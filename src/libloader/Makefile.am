@@ -9,3 +9,8 @@ libloader_static_a_CFLAGS = -DELEKTRA_STATIC
 
 noinst_LTLIBRARIES = libloader-dynamic.la
 libloader_dynamic_la_SOURCES = kdbLibLoader.c ../include/kdbLibLoader.h
+libloader_dynamic_la_LIBADD = $(LIBLTDL)
+libloader_dynamic_la_DEPENDENCIES = $(LIBLTDL)
+
+$(LIBLTDL):
+	cd `dirname $(LIBLTDL)` && make `basename $(LIBLTDL)`
