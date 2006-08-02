@@ -14,6 +14,12 @@ AC_CONFIG_SRCDIR(src/libelektra/kdb.c)
 AM_INIT_AUTOMAKE
 AC_CONFIG_HEADER([src/include/config.h])
 
+elektra_empty_CFLAGS=no
+if test "x$CFLAGS" = "x"; then
+	elektra_empty_CFLAGS=yes
+fi
+AC_MSG_NOTICE([Empty CFLAGS: $elektra_empty_CFLAGS])
+
 # Debuging version ?
 # CFLAGS="${CFLAGS=}"
 dnl this macro is used to get the arguments supplied
@@ -149,6 +155,11 @@ AC_DISABLE_STATIC
 #
 AC_PROG_CC
 AC_PROG_LN_S
+
+# add -Wall if compiler is gcc and the CFLAGS variable is empty
+if test $elektra_empty_CFLAGS = yes -a "x$CC" = xgcc; then
+	CFLAGS="$CFLAGS -Wall"
+fi
 
 # Don't use libltdl stuff for WIN32
 case $host_os in

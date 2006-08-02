@@ -1,6 +1,8 @@
 
 # $Id$
 
+AM_CPPFLAGS = -I$(top_srcdir)/src/include $(LTDLINCL)
+
 lib_LIBRARIES = libelektra.a
 libelektra_a_SOURCES = kdb.c error.c key.c keyset.c kdbhighlevel.c backendhelpers.c \
 		backend_symbols.c\
@@ -8,7 +10,7 @@ libelektra_a_SOURCES = kdb.c error.c key.c keyset.c kdbhighlevel.c backendhelper
 		../include/kdbbackend.h \
 		../include/kdbprivate.h \
 		../include/kdbLibLoader.h
-libelektra_a_CFLAGS = -DELEKTRA_STATIC -DDEFAULT_BACKEND=\"$(default_backend)\" -ansi -pedantic -Wall
+libelektra_a_CFLAGS = -DELEKTRA_STATIC -DDEFAULT_BACKEND=\"$(default_backend)\"
 libelektra_a_LIBADD =  ../libloader/libloader_static_a-kdbLibLoader.$(OBJEXT) \
 		../backends/$(default_backend)/libelektra_$(default_backend)_a-$(default_backend).$(OBJEXT) \
 		$(LIBICONV)
@@ -25,8 +27,6 @@ libelektra_la_SOURCES = kdb.c error.c key.c keyset.c kdbhighlevel.c backendhelpe
 		../include/kdb.h \
 		../include/kdbbackend.h \
 		../include/kdbprivate.h
-libelektra_la_CFLAGS = -DDEFAULT_BACKEND=\"default\" -ansi -pedantic -Wall
+libelektra_la_CFLAGS = -DDEFAULT_BACKEND=\"default\"
 libelektra_la_LDFLAGS = -version-info 2:1:0
 libelektra_la_LIBADD = $(LIBLTDL) $(LIBICONV) ../libloader/kdbLibLoader.lo
-
-AM_CPPFLAGS = -I$(top_srcdir)/src/include $(LTDLINCL)

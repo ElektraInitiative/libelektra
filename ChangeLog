@@ -34,6 +34,9 @@
 - replace __STATIC by ELEKTRA_STATIC
 -    By Patrice Dumas <pertusus@free.fr> 30/07/2006
 - fix many compilation warnings
+-    By Patrice Dumas <pertusus@free.fr> 02/08/2006
+- remove -Wall (and -pedantic -ansi) from Makefile.am
+- add -Wall in configure.ac if CFLAGS is empty and compiler is gcc
 
 
 

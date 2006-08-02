@@ -1,18 +1,18 @@
 # $Id$
 
 testdir = $(develdocdir)/src/backends/ini/
+AM_CPPFLAGS = -I$(top_srcdir)/src/include -DDEBUG -D_POSIX_SOURCE -D_BSD_SOURCE
 
 lib_LIBRARIES = libelektra-ini.a
 libelektra_ini_a_SOURCES = ini.c helpers.c parser.c ini.h ../../include/kdb.h ../../include/kdbbackend.h
-libelektra_ini_a_CFLAGS = -DDEBUG -D_POSIX_SOURCE -D_BSD_SOURCE -DELEKTRA_STATIC -ansi -pedantic -Wall
+libelektra_ini_a_CFLAGS = -DELEKTRA_STATIC
+
 libelektra_ini_a_LIBADD = ../../libelektra/libelektra.la
 
 backend_LTLIBRARIES = libelektra-ini.la
 libelektra_ini_la_SOURCES = ini.c helpers.c parser.c ini.h ../../include/kdb.h ../../include/kdbbackend.h 
 libelektra_ini_la_LDFLAGS = -avoid-version -module
-libelektra_ini_la_CFLAGS = -DDEBUG -D_POSIX_SOURCE -D_BSD_SOURCE -ansi -pedantic -Wall
 libelektra_ini_la_LIBADD = ../../libelektra/libelektra.la
-AM_CPPFLAGS = -I$(top_srcdir)/src/include
 
 #EXTRA_DIST = test.c
 

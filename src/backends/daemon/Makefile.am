@@ -1,6 +1,8 @@
 
 # $Id$
 
+AM_CPPFLAGS = -I$(top_srcdir)/src/include
+
 noinst_LTLIBRARIES = libproto.la
 libproto_la_SOURCES = message.h message.c protocol.h protocol.c ipc.h ipc.c sig.h sig.c serial.h serial.c serial_int.h serial_int.c serial_string.h serial_string.c serial_key.h serial_key.c serial_keyset.h serial_keyset.c datatype.h
 
@@ -13,6 +15,4 @@ libelektra_daemon_la_LIBADD = libproto.la ../../libelektra/libelektra.la
 sbin_PROGRAMS = kdbd
 kdbd_SOURCES = main.c kdbd.h kdbd.c kdb_wrapper.h kdb_wrapper.c thread.h thread.c
 kdbd_LDADD = libproto.la ../../libelektra/libelektra.la -lpthread
-
-AM_CPPFLAGS = -I$(top_srcdir)/src/include -Wall
 
