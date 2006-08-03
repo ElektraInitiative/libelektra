@@ -2,6 +2,8 @@ TESTS = test_key test_kdb
 
 noinst_PROGRAMS = test_key test_kdb
 
+EXTRA_DIST = keyset.xml
+
 test_key_SOURCES = test_key.c
 test_key_LDADD = @privatelibs@ ../src/libelektra/libelektra.a 
 
