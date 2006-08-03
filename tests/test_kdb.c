@@ -138,7 +138,7 @@ void test_backend(char *backendName)
 		 * Try to remove DIR key. Key type DIR shouldn't be removed
 		 * since kdbRemove() isn't recursive */
 		if ( keyIsDir(key) ) {
-			succeed_if( kdbRemove(handle, key), "kdbRemove failed : Allowed deletion of a non-empty directory.");
+			succeed_if( kdbRemoveKey(handle, key), "kdbRemove failed : Allowed deletion of a non-empty directory.");
 		}
 				
 		keyDel(key);
