@@ -41,7 +41,7 @@ do
 	if [ -r $lib ]; then
 		fname=`basename $lib .a`
 		echo -e "\t{\"$fname\", NULL}," >> exported_symbols.c
-		sym=`@NM@ -B $lib | @EGREP@ "_LTX_" | @GAWK@ '{print $3}'`
+		sym=`@NM@ -B $lib | @EGREP@ "_LTX_" | @AWK@ '{print $3}'`
 		for symbol in $sym
 		do
 			func=`echo $symbol | sed 's/^\(.*\)\(_LTX_\)\(.*\)$/\3/'`
