@@ -19,8 +19,10 @@ echo '
 
 for dir in "$@"
 do
-	echo "Exporting symbols for $dir ..."
-	echo "extern int libelektra_"$dir"_LTX_kdbBackendFactory;" >> backend_symbols.c
+	if [ -r $dir/libelektra-$dir.a ]; then
+		echo "Exporting symbols for $dir ..."
+		echo "extern int libelektra_"$dir"_LTX_kdbBackendFactory;" >> backend_symbols.c
+	fi
 done
 
 echo '
@@ -30,9 +32,11 @@ kdblib_symbol kdb_exported_syms[] =
 
 for dir in "$@"
 do
-	echo -e "\t{\"libelektra-$dir\", NULL}," >> backend_symbols.c
-	sym=`@NM@ -B $dir/libelektra-$dir.a | @EGREP@ "_LTX_" | @AWK@ '{print $3}'`
-	echo -e "\t{\"kdbBackendFactory\", &$sym },\n" >> backend_symbols.c
+	if [ -r $dir/libelektra-$dir.a ]; then
+		echo -e "\t{\"libelektra-$dir\", NULL}," >> backend_symbols.c
+		sym=`@NM@ -B $dir/libelektra-$dir.a | @EGREP@ "_LTX_" | @AWK@ '{print $3}'`
+		echo -e "\t{\"kdbBackendFactory\", &$sym },\n" >> backend_symbols.c
+	fi
 done
 echo -e "\t{ NULL, NULL }" >> backend_symbols.c
 echo "};" >> backend_symbols.c
