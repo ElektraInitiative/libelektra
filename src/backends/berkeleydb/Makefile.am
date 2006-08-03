@@ -10,7 +10,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/src/include
 
 noinst_LIBRARIES = libelektra-berkeleydb.a
 libelektra_berkeleydb_a_SOURCES = berkeleydb.c ../../include/kdb.h ../../include/kdbbackend.h
-libelektra_berkeleydb_a_CFLAGS = -Wall -DELEKTRA_STATIC
+libelektra_berkeleydb_a_CFLAGS = -DELEKTRA_STATIC
 
 backend_LTLIBRARIES = libelektra-berkeleydb.la
 libelektra_berkeleydb_la_SOURCES = berkeleydb.c ../../include/kdb.h ../../include/kdbbackend.h 

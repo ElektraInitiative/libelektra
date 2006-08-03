@@ -7,19 +7,19 @@
 
 if HAVE_XML
 
+AM_CPPFLAGS = -DDATADIR=\"$(datadir)\" \
+ -I$(top_srcdir)/src/include $(XML_CPPFLAGS) $(XML_CFLAGS)
+
 ELEKTRATOOLS_CURRENT = 1
 
+ektratools_sources = kdbtools.c ../include/kdbtools.h ../include/kdbprivate.h ../include/kdb.h
+
 ulib_LIBRARIES = libelektratools.a
-libelektratools_a_SOURCES = kdbtools.c ../include/kdbtools.h ../include/kdbprivate.h ../include/kdb.h
-libelektratools_a_CFLAGS = -DDATADIR=\"@datadir@\" \
-			      -I$(top_srcdir)/src/include $(XML_CPPFLAGS) $(XML_CFLAGS) \
-			      -DELEKTRA_STATIC
-# libelektratools_a_LIBADD = $(XML_LIBS)
+libelektratools_a_SOURCES = $(ektratools_sources)
+libelektratools_a_CFLAGS = -DELEKTRA_STATIC
 
 ulib_LTLIBRARIES = libelektratools.la
-libelektratools_la_SOURCES = kdbtools.c ../include/kdbtools.h ../include/kdbprivate.h ../include/kdb.h
-libelektratools_la_CFLAGS = -DDATADIR=\"@datadir@\" \
-  -I$(top_srcdir)/src/include $(XML_CPPFLAGS) $(XML_CFLAGS)
+libelektratools_la_SOURCES = $(ektratools_sources)
 
 libelektratools_la_LDFLAGS = -version-info $(ELEKTRATOOLS_CURRENT):0:0
 libelektratools_la_LIBADD = ../libelektra/libelektra.la $(XML_LIBS)
