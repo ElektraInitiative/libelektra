@@ -75,7 +75,6 @@ void test_backend(char *backendName)
 	KeySet		*ks;
 	Key     	*cur, *key, *key2;
 	char		buf[1024];
-	int		ret;
 	
 	printf("Testing elektra-%s backend.\n", backendName);
 
@@ -150,8 +149,6 @@ void test_backend(char *backendName)
 
 int main()
 {
-	KDBHandle	handle;
-	char	buf[1024];
 	int	i;
 	
 	printf("ELEKTRA BACKENDS TESTS\n");
