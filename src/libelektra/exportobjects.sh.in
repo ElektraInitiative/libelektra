@@ -10,12 +10,15 @@
 
 echo -n '' > objects
 
-for dir in "$@"
+for lib in "$@"
 do
-	if [ -r $dir/libelektra-$dir.a ]; then
-		echo "Get objects files for $dir ..."
-		@AR@ t $dir/libelektra-$dir.a | @AWK@ -v "dir=`pwd`/$dir" '{printf "%s/%s ", dir,$$0}' >> objects
+	if [ -r $lib ]; then
+		echo "Get objects files for $lib ..."
+		@AR@ t $lib | @AWK@ -v "dir=`dirname $lib`" '{printf "%s/%s ", dir,$$0}' >> objects
+	else
+		echo "SKIPED: $lib doesn't exist."
 	fi
 done
+
 echo "" >> objects
 	

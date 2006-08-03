@@ -1,10 +1,13 @@
-TESTS = test_key
+TESTS = test_key test_kdb
 
-noinst_PROGRAMS = test_key
+noinst_PROGRAMS = test_key test_kdb
 
 test_key_SOURCES = test_key.c
-test_key_LDADD = ../src/libelektra/libelektra.la
+test_key_LDADD = @privatelibs@ ../src/libelektra/libelektra.a 
 
-../src/libelektra/libelektra.la:
-	cd ../src/libelektra && make libelektra.la
+test_kdb_SOURCES = test_kdb.c
+test_kdb_LDADD = @privatelibs@ ../src/libelektra/libelektra.a
+
+../src/libelektra/libelektra.a:
+	cd ../src/libelektra && make libelektra.a
 

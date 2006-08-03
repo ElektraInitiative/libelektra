@@ -5,15 +5,14 @@ AM_CPPFLAGS = -I$(top_srcdir)/src/include $(LTDLINCL)
 
 lib_LIBRARIES = libelektra.a
 libelektra_a_SOURCES = kdb.c error.c key.c keyset.c kdbhighlevel.c backendhelpers.c \
-		../backends/backend_symbols.c\
+		exported_symbols.c\
 		../include/kdb.h \
 		../include/kdbbackend.h \
 		../include/kdbprivate.h \
 		../include/kdbLibLoader.h
 libelektra_a_CFLAGS = -DELEKTRA_STATIC -DDEFAULT_BACKEND=\"$(default_backend)\"
-libelektra_a_LIBADD =  ../libloader/libloader_static_a-kdbLibLoader.$(OBJEXT)
-libelektra_a_LIBADD += `cat ../backends/objects`
-libelektra_a_DEPENDENCIES = ../backends/objects ../libloader/libloader-static.a
+libelektra_a_LIBADD = `cat objects`
+libelektra_a_DEPENDENCIES = objects
 
 if EXPERIMENTAL
 libelektra_a_CFLAGS += -DEXPERIMENTAL
@@ -37,8 +36,24 @@ libelektra_la_LIBADD = $(LIBICONV) ../libloader/libloader-dynamic.la
 ../libloader/libloader-dynamic.la:
 	cd ../libloader && $(MAKE) libloader-dynamic.la
 	
-../backends/backend_symbols.c:
-	cd ../backends && $(MAKE) symbols
+../libelektratools/libelektratools.a:
+	cd ../libelektratools && $(MAKE) libelektratools.a
 	
-../backends/objects:
-	cd ../backends && $(MAKE) objects
+all_backends:
+	cd ../backends && $(MAKE) all
+	
+objects: ../libloader/libloader-static.a all_backends ../libelektratools/libelektratools.a
+	@list='$(backends)'; for backend in $$list; do \
+	  bck_list=$$bck_list" ../backends/$$backend/libelektra-$$backend.a "; \
+	done; \
+	$(SHELL) exportobjects.sh ../libloader/libloader-static.a $$bck_list ../libelektratools/libelektratools.a
+
+exported_symbols.c: all_backends ../libelektratools/libelektratools.a
+	@list='$(backends)'; for backend in $$list; do \
+	  bck_list=$$bck_list" ../backends/$$backend/libelektra-$$backend.a"; \
+	done; \
+	$(SHELL) exportsymbols.sh $$bck_list ../libelektratools/libelektratools.a
+
+clean-local:
+	-rm -f objects
+	-rm -f exported_symbols.c

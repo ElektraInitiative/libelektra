@@ -8,6 +8,9 @@
 if HAVE_GCONF
 AM_CPPFLAGS = -I$(top_srcdir)/src/include
 
+libelektra_gconf_a_SOURCES = gconf.c
+libelektra_gconf_a_CFLAGS = $(gconf_CFLAGS) -DELEKTRA_STATIC
+
 hlvlbackend_LTLIBRARIES = libelektra-gconf.la
 libelektra_gconf_la_SOURCES = gconf.c 
 libelektra_gconf_la_CFLAGS = $(gconf_CFLAGS)

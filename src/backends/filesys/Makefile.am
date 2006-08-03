@@ -3,7 +3,7 @@
 
 AM_CPPFLAGS = -I$(top_srcdir)/src/include
 
-lib_LIBRARIES = libelektra-filesys.a
+noinst_LIBRARIES = libelektra-filesys.a
 libelektra_filesys_a_SOURCES = filesys.c ../../include/kdb.h ../../include/kdbbackend.h
 libelektra_filesys_a_CFLAGS = -DELEKTRA_STATIC
 

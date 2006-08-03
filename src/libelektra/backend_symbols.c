@@ -26,3 +26,13 @@ kdblib_symbol kdb_exported_syms[] =
 
 #endif
 
+	{"libelektra-filesys", NULL},
+	{"libelektra-fstab", NULL},
+	{"libelektra-daemon", NULL},
+	{"libelektra-berkeleydb", NULL},
+	{"libelektratools", NULL},
+	{"libelektra-filesys", NULL},
+	{"libelektra-fstab", NULL},
+	{"libelektra-daemon", NULL},
+	{"libelektra-berkeleydb", NULL},
+	{"libelektratools", NULL},

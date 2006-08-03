@@ -54,6 +54,10 @@ $Id$
 /* #define KDB_SCHEMA_PATH       DATADIR KDB_SCHEMA_REL_PATH */
 #define KDB_SCHEMA_PATH_KEY   "system/sw/kdb/current/schemapath"
 
+#ifdef ELEKTRA_STATIC
+#define ksFromXMLfile libelektratools_LTX_ksFromXMLfile
+#define ksFromXML libelektratools_LTX_ksFromXML
+#endif
 
 
 /**

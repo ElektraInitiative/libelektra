@@ -7,5 +7,6 @@ Name: @PACKAGE@
 Description: A key/value pair database to store software configurations
 Version: @VERSION@
 Libs: -L@libdir@ -lelektra
+Libs.private: -lelektra @privatelibs@
 Cflags: -I@includedir@
 

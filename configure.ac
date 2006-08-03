@@ -224,17 +224,35 @@ else
 	AM_ICONV()
 fi
 
+backends="filesys fstab daemon"
+privatelibs=""
+
 # Check for libxml (Allow compilation of libelektratools)
 AM_PATH_XML2(, [have_xml="yes"], [have_xml="no"])
 AM_CONDITIONAL(HAVE_XML, [test x$have_xml = xyes])
+if test "x$have_xml" = "xyes"; then
+	privatelibs=$privatelibs" -lxml2"
+fi
 
 # Check for libdb (Allow compilation of libelektra-berkeley.so)
 AC_CHECK_LIB(db, db_create, [have_db="yes"], [have_db="no"])
 AM_CONDITIONAL(HAVE_DB, [test x$have_db = xyes])
+if test "x$have_db" = "xyes"; then
+	backends=$backends" berkeleydb"
+	privatelibs=$privatelibs" -ldb"
+fi
+
 
 # Check for libGconf (Allow compilation of libelektra-gconf.so)
 PKG_CHECK_MODULES(gconf, gconf-2.0, [have_gconf="yes"], [have_gconf="no"])
 AM_CONDITIONAL(HAVE_GCONF, [test x$have_gconf = xyes])
+if test "x$have_gconf" = "xyes"; then
+	backends=$backends" gconf"
+	privatelibs=$privatelibs" -lgconf-2"
+fi
+
+AC_SUBST(backends)
+AC_SUBST(privatelibs)
 
 #
 # Checks for header files.
@@ -282,6 +300,8 @@ AC_OUTPUT([src/Makefile
 	   src/libloader/Makefile
 
 	   src/libelektra/Makefile
+	   src/libelektra/exportobjects.sh
+	   src/libelektra/exportsymbols.sh
 
 	   src/libelektratools/Makefile
 
@@ -317,9 +337,20 @@ AC_OUTPUT([src/Makefile
 	   elektra.pc
 	   elektratools.pc
 
-	   src/backends/exportobjects.sh
-	   src/backends/exportsymbols.sh
-
 	   tests/Makefile
 	   ])
+
+echo "--------------------------------"
+echo " libelektra                     "
+echo "--------------------------------"
+echo ""
+echo "Compile backends: $backends"
+echo -n "Compile libelektratools: "
+if test x$have_xml = "xyes"; then
+	echo "yes"
+else
+	echo "no"
+fi
+echo ""
+echo "type: make && make install"
 

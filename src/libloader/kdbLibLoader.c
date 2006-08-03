@@ -36,6 +36,11 @@ $Id$
 
 extern kdblib_symbol kdb_exported_syms[];
 
+int kdbLibInit(void)
+{
+	return 0;
+}
+
 kdbLibHandle kdbLibLoad(const char *module)
 {
 	kdblib_symbol	*current;
@@ -80,6 +85,12 @@ int kdbLibClose(kdbLibHandle handle)
 #else
 #ifdef WIN32
 /* Windows dynamic case */
+
+int kdbLibInit(void)
+{
+  return 0;
+}
+
 kdbLibHandle kdbLibLoad(const char *module)
 {
   char *modulename = malloc((sizeof(char)*strlen(module))+sizeof(".dll"));
@@ -109,7 +120,7 @@ int kdbLibInit(void)
   init_errors = lt_dlinit();
   if (init_errors)
     return init_errors;
-  return lt_dlsetsearchpath(BACKEND_LIBDIR);
+  return lt_dladdsearchdir(BACKEND_LIBDIR);
 }
 
 kdbLibHandle kdbLibLoad(const char *module)

@@ -7,16 +7,6 @@ if EXPERIMENTAL
 SUBDIRS += gconf ini template
 endif
 
-objects: all
-	$(SHELL) exportobjects.sh $(SUBDIRS)
-
-symbols: all
-	$(SHELL) exportsymbols.sh $(SUBDIRS)
-
-clean-local:
-	-rm -f objects
-	-rm -f backend_symbols.c
-
 install-exec-hook:
 	cd $(DESTDIR)$(backenddir) && \
 	test -e libelektra-default.so || \

@@ -25,8 +25,6 @@ typedef struct {
 
 #ifdef ELEKTRA_STATIC
 
-#define kdbLibInit() 0
-
 typedef kdblib_symbol* kdbLibHandle;
 
 
@@ -37,7 +35,6 @@ typedef kdblib_symbol* kdbLibHandle;
 #ifdef WIN32
 /* Windows case, non static */
 #include <windows.h>
-#define kdbLibInit() 0
 typedef HMODULE kdbLibHandle;
 #else
 /* Default case */
@@ -48,6 +45,7 @@ typedef lt_dlhandle kdbLibHandle;
 #endif
 
 /* Functions */
+int kdbLibInit(void);
 kdbLibHandle kdbLibLoad(const char *backendName);
 void *kdbLibSym(kdbLibHandle handle, const char *symbol);
 int kdbLibClose(kdbLibHandle handle);
