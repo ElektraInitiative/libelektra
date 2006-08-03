@@ -1,4 +1,4 @@
-* Jun 27 2006 Yannick Lecaillez <sizon5@gmail.com> 0.6.3
+-    By Yannick Lecaillez <sizon5@gmail.com> 27/06/2006
 - New kdbd daemon !
 - Fix UTF8Engine : Check for a null size string
 - Fix Berkeleydb backend :
@@ -7,6 +7,14 @@
 	- Chown user's kdb-berkeleydb dir.
 	- Set correct UID/GID for initial creation of the "user" key.
 - Fix key.c : Set KEY_SWITCH_DOMAIN flags into keySetName()
+-    By Yannick Lecaillez <sizon5@gmail.com> 03/08/2006
+- Fix backends/daemon compilation warnings
+- Add a testing suite for key struct and backends
+- Enhance elektra static library generation (exportobjects.sh and
+exportsymbols.sh)
+- Add section 'libs.private' into elektra.pc for static compilation
+- Enhance build dependency
+- Add a resume text in the end of configure script
 -    By Markus Raab 06/06/2006:
 - added cascading features to kdb
 - kdb ls / and kdb ls /path is possible
