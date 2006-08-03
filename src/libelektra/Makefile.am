@@ -32,13 +32,13 @@ libelektra_la_LDFLAGS = -version-info 2:1:0
 libelektra_la_LIBADD = $(LIBICONV) ../libloader/libloader-dynamic.la
 
 ../libloader/libloader-static.a:
-	cd ../libloader && make libloader-static.a
+	cd ../libloader && $(MAKE) libloader-static.a
 
 ../libloader/libloader-dynamic.la:
-	cd ../libloader && make libloader-dynamic.la
+	cd ../libloader && $(MAKE) libloader-dynamic.la
 	
 ../backends/backend_symbols.c:
-	cd ../backends && make symbols
+	cd ../backends && $(MAKE) symbols
 	
 ../backends/objects:
-	cd ../backends && make objects
+	cd ../backends && $(MAKE) objects

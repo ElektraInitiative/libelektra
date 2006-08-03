@@ -23,7 +23,7 @@ kdbd_SOURCES = main.c kdbd.h kdbd.c kdb_wrapper.h kdb_wrapper.c thread.h thread.
 kdbd_LDADD = libproto.la ../../libelektra/libelektra.la -lpthread
 
 ../../libelektra/libelektra.la:
-	cd ../../libelektra/ && make libelektra.la
+	cd ../../libelektra/ && $(MAKE) libelektra.la
 
 
 

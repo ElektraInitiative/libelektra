@@ -18,5 +18,5 @@ libelektra_berkeleydb_la_LDFLAGS = -avoid-version  -module
 libelektra_berkeleydb_la_LIBADD = ../../libelektra/libelektra.la -ldb
 
 ../../libelektra/libelektra.la:
-	cd ../../libelektra/ && make libelektra.la
+	cd ../../libelektra/ && $(MAKE) libelektra.la
 endif

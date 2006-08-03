@@ -14,4 +14,4 @@ libelektra_filesys_la_LDFLAGS = -avoid-version  -module
 libelektra_filesys_la_LIBADD = ../../libelektra/libelektra.la
 
 ../../libelektra/libelektra.la:
-	cd ../../libelektra/ && make libelektra.la
+	cd ../../libelektra/ && $(MAKE) libelektra.la

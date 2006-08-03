@@ -13,4 +13,4 @@ libloader_dynamic_la_LIBADD = $(LIBLTDL)
 libloader_dynamic_la_DEPENDENCIES = $(LIBLTDL)
 
 $(LIBLTDL):
-	cd `dirname $(LIBLTDL)` && make `basename $(LIBLTDL)`
+	cd `dirname $(LIBLTDL)` && $(MAKE) `basename $(LIBLTDL)`

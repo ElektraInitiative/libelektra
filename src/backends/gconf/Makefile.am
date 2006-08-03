@@ -15,5 +15,5 @@ libelektra_gconf_la_LDFLAGS = -avoid-version -module
 libelektra_gconf_la_LIBADD = $(LIBLTDL) $(gconf_LIBS) ../../libelektra/libelektra.la
 
 ../../libelektra/libelektra.la:
-	cd ../../libelektra/ && make libelektra.la
+	cd ../../libelektra/ && $(MAKE) libelektra.la
 endif

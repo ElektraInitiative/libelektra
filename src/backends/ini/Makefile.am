@@ -22,5 +22,5 @@ test_SOURCES = test.c
 test_LDADD = ../../libelektra/libelektra.la libelektra-ini.a
 
 ../../libelektra/libelektra.la:
-	cd ../../libelektra/ && make libelektra.la
+	cd ../../libelektra/ && $(MAKE) libelektra.la
 
