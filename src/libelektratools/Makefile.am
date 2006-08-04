@@ -14,7 +14,7 @@ ELEKTRATOOLS_CURRENT = 1
 
 ektratools_sources = kdbtools.c ../include/kdbtools.h ../include/kdbprivate.h ../include/kdb.h
 
-ulib_LIBRARIES = libelektratools.a
+noinst_LIBRARIES = libelektratools.a
 libelektratools_a_SOURCES = $(ektratools_sources)
 libelektratools_a_CFLAGS = -DELEKTRA_STATIC
 
