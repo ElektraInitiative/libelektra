@@ -30,6 +30,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <libgen.h>
 
 #include <ltdl.h>
 #include <kdb.h>
@@ -94,7 +95,9 @@ void test_backend(char *backendName)
 	KDBHandle	handle;
 	KeySet		*ks;
 	Key     	*cur, *key, *key2;
-	char		buf[1024];
+	int		ret, exist;
+	char		buf[1024], root[1024];
+	char		tmpname[L_tmpnam];
 	
 	printf("Testing elektra-%s backend.\n", backendName);
 
@@ -104,8 +107,27 @@ void test_backend(char *backendName)
 		return;
 	}
 	
-	succeed_if( kdbOpenBackend(&handle, backendName) == 0, "kdbOpen() failed.");
-
+	succeed_if( (ret = kdbOpenBackend(&handle, backendName)) == 0, "kdbOpen() failed.");
+	if ( ret ) {
+		/* Can't continue test if backend can't be opened ... */
+		return;
+	}
+			
+	/* Create a root key name to prepend to all key
+	 * this permis previous test to not interfere
+	 * with this one.
+	 */
+	exist = 1;
+        while ( exist ) {
+		tmpnam(tmpname);
+		snprintf(root, sizeof(root), "user/elektra-tests/%s", basename(tmpname));
+		key = keyNew(root, KEY_SWITCH_END);
+		exist = (kdbStatKey(handle, key) == 0);
+		keyDel(key);
+	}
+	printf("\tkey root = %s\n", root);
+	
+	
 	/* Testing key import 
 	 *   - Import key one by one to 
 	 *   - Fetch the same key from backend
@@ -116,11 +138,13 @@ void test_backend(char *backendName)
 		key = keyNew(KEY_SWITCH_END);
 		key2 = keyNew(KEY_SWITCH_END);
 		
+		snprintf(buf, sizeof(buf), "%s/%s", root, keyStealName(cur));
+		keySetName(cur, buf);
+		
 		/* Import a key to the backend. Then fetch the same 
 		 * key from the backend. Compare these two */
 		keyInit(key);
 		keySetName(key, keyStealName(cur));
-		
 		succeed_if( kdbSetKey(handle, cur) == 0, "kdbSetKey failed.");
 		succeed_if( kdbGetKey(handle, key) == 0, "kdbGetKey failed.");
 		succeed_if( keyCompare( cur, key) == 0, "keyCompare failed : Differences between key stored/key readed");
