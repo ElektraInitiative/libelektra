@@ -117,7 +117,7 @@ int delete_keysRecurse(KDBHandle handle, const char *root)
 
 	/* Fetch all directory keys */
 	ksInit(ks);
-	if ( kdbGetKeyChildKeys(handle, key, ks, KDB_O_DIRONLY | KDB_O_SORT | KDB_O_INACTIVE) == -1 ) {
+	if ( kdbGetKeyChildKeys(handle, key, ks, KDB_O_DIRONLY | KDB_O_DIR | KDB_O_SORT | KDB_O_INACTIVE) == -1 ) {
 		ksDel(ks);
 		keyDel(key);
 		return 1;
@@ -257,6 +257,8 @@ void test_backend(char *backendName)
 	
 	succeed_if( delete_keysRecurse(handle, root) == 0, "delete_keysRecurse failed.");
 	
+#if 0
+	
 	/*
 	 * Here we'll test functions which act on KeySet
 	 */
@@ -285,6 +287,7 @@ void test_backend(char *backendName)
 	ksDel(ks2);
 	
 	succeed_if( delete_keysRecurse(handle, root) == 0, "delete_keysRecurse failed.");
+#endif
 
 	kdbClose(&handle);
 	
