@@ -58,25 +58,29 @@ Message *wrapper_kdbOpen(KDBHandle *handle, Message *request, uid_t euid, gid_t 
 	}
 
 	/* Opens the default backend for daemon */
-	real_backend = "ddefault";
+	real_backend = DEFAULT_DBACKEND;
 	ret = kdbOpenBackend(handle, real_backend);
 	error = errno;
-	if ( messageExtractArgs(request, 
-				DATATYPE_STRING, &userName,
-				DATATYPE_ULONG, &umask,
-				DATATYPE_LAST) ) {
-		fprintf(stderr, "Error extracting args\n");
-		return NULL;
-	}
 
-	kdbhSetUID(*handle, euid);
-	kdbhSetGID(*handle, egid);
-	kdbhSetUserName(*handle, userName);
-	kdbhSetUMask(*handle, (mode_t) umask);
-	kdbhSetPID(*handle, getpid());
-	kdbhSetTID(*handle, pthread_self());
+	/* Get daemon context ... */
+	if ( ret == 0 ) {
+		if ( messageExtractArgs(request, 
+					DATATYPE_STRING, &userName,
+					DATATYPE_ULONG, &umask,
+					DATATYPE_LAST) ) {
+			fprintf(stderr, "Error extracting args\n");
+			return NULL;
+		}
+
+		kdbhSetUID(*handle, euid);
+		kdbhSetGID(*handle, egid);
+		kdbhSetUserName(*handle, userName);
+		kdbhSetUMask(*handle, (mode_t) umask);
+		kdbhSetPID(*handle, getpid());
+		kdbhSetTID(*handle, pthread_self());
 	
-	free(userName);
+		free(userName);
+	}
 	
 	reply = messageNew(MESSAGE_REPLY, KDB_BE_OPEN,
 			DATATYPE_INTEGER, &ret,
@@ -183,8 +187,6 @@ Message *wrapper_kdbSetKey(KDBHandle handle, void *request)
 		return NULL;
 	}
 
-	fprintf(stderr, "kdbSetKey(user:%s/%s)", keyStealOwner(&key), keyStealName(&key));
-	
 	ret = kdbSetKey(handle, &key);
 	error = errno;
 	
@@ -247,12 +249,13 @@ Message *wrapper_kdbRename(KDBHandle handle, void *request)
 	ret = kdbRename(handle, &key, newKeyName);
 	error = errno;
 	free(newKeyName);
-	keyClose(&key);
 
 	reply = messageNew(MESSAGE_REPLY, KDB_BE_RENAME,
 			DATATYPE_INTEGER, &ret,
 			DATATYPE_INTEGER, &error,
+			DATATYPE_KEY, &key,
 			DATATYPE_LAST);
+	keyClose(&key);
 
 	return reply;
 }

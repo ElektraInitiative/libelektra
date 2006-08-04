@@ -37,7 +37,10 @@
 #include "kdbLibLoader.h"
 
 // List of backends to test
-char *backend[] = { "filesys", "berkeleydb", NULL };
+char *backend[] = { "filesys", 
+			"berkeleydb", 
+			"daemon",
+			NULL };
 
 int nbError = 0;
 int nbTest = 0;

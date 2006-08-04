@@ -381,8 +381,6 @@ int kdbSetKey_daemon(KDBHandle handle, Key *key)
  	if ( data == NULL )
  		return 1;
       
-	fprintf(stderr, "kdbSetKey(%s:%s)\n", keyStealOwner(key), keyStealName(key));
-       
 	/* Prepare request */
 	request = messageNew(MESSAGE_REQUEST, KDB_BE_SETKEY,
 			DATATYPE_KEY, key,

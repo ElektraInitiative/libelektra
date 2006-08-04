@@ -136,16 +136,16 @@ int kdbd(void *pIntThreadHandle)
 	while ( !closed ) {
 		request = protocolReadMessage(socketFd);
 		if ( request == NULL ) {
-			if ( errno == EPIPE ) {
-				/* Client closed the connection */
+			kdbPrintError("kdbd");
+			if ( (errno == EPIPE) || (errno == EINVAL) ) {
+				/* Client closed the connection or
+				 * malformed request */
 				messageDel(request);
 				return 1;
 			} else {
 				/* They are probably some usefull errno
 				 * to check here ...
 				 */
-				fprintf(stderr, "POUET POUET\n");
-				kdbPrintError("kdbd");
 				continue;
 			}
 		}

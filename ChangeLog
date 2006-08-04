@@ -15,6 +15,13 @@ exportsymbols.sh)
 - Add section 'libs.private' into elektra.pc for static compilation
 - Enhance build dependency
 - Add a resume text in the end of configure script
+-    By Yannick Lecaillez <sizon5@gmail.com> 04/08/2006
+- Add default implementation of kdbRename()
+- Removed some debugging output from kdbd
+- Add a static version of kdbd
+- fixed kdbRename() in kdbd/libelektra-daemon
+- Prepend a non-existing keyroot for test_kdb to not interfere with previously
+runned tests
 -    By Markus Raab 06/06/2006:
 - added cascading features to kdb
 - kdb ls / and kdb ls /path is possible
