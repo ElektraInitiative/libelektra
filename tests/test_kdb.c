@@ -1,3 +1,20 @@
+/***************************************************************************
+ *          test_kdb.c  -  Backend test suite
+ *                -------------------
+ *  begin                : Thu Aug 03 2006
+ *  copyright            : (C) 2006 by Yannick Lecaillez
+ *  email                : sizon5@gmail.com
+ ****************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the BSD License (revised).                      *
+ *                                                                         *
+ ***************************************************************************/
+
+
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -133,14 +150,15 @@ void test_backend(char *backendName)
 		succeed_if( kdbStatKey(handle, key2) == 0, "kdbRename failed : kdbStatKey on the renamed key failed.");
 		keyClose(key2);
 
-		/* Test kdbRemove()
+		/* Test kdbRemoveKey()
 		 * Try to remove DIR key. Key type DIR shouldn't be removed
-		 * since kdbRemove() isn't recursive */
+		 * since kdbRemoveKey() isn't recursive */
 		if ( keyIsDir(key) ) {
-			succeed_if( kdbRemoveKey(handle, key), "kdbRemove failed : Allowed deletion of a non-empty directory.");
+			succeed_if( kdbRemoveKey(handle, key), "kdbRemoveKey failed : Allowed deletion of a non-empty directory.");
 		}
 				
 		keyDel(key);
+		keyDel(key2);
 	}
 
 	kdbClose(&handle);
