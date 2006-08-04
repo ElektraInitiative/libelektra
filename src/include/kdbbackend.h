@@ -72,6 +72,7 @@ typedef KDBBackend *(*KDBBackendFactory)(void);
 
 /* Let the backend be aware of default implementations we provide */
 int kdbSetKeys_default(KDBHandle handle, KeySet *ks);
+int kdbRename_default(KDBHandle handle, Key *key, const char *newName);
 uint32_t kdbMonitorKeys_default(KDBHandle handle, KeySet *interests,
 		uint32_t diffMask, unsigned long iterations, unsigned sleep);
 uint32_t kdbMonitorKey_default(KDBHandle handle, Key *interest,

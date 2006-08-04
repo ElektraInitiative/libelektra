@@ -1034,21 +1034,6 @@ int kdbSetKey_bdb(KDBHandle handle, Key *key) {
 
 
 /**
- * Implementation for kdbRename() method.
- *
- * @see kdbRename() for expected behavior.
- * @ingroup backend
- */
-int kdbRename_backend(KDBHandle handle, Key *key, const char *newName) {
-	/* rename a key to another name */
-	return 0; /* success */
-}
-
-
-
-
-
-/**
  * Implementation for kdbGetKeyChildKeys() method.
  *
  * @see kdbGetKeyChildKeys() for expected behavior.

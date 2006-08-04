@@ -331,8 +331,48 @@ ssize_t encode(void *unencoded, size_t size, char *returned) {
 }
 
 
+/**
+ * An inefficient implementation for the kdbRename() method.
+ * If backend doesn't want to reimplement this method, this
+ * implementation can be used, in which kdbSetKey()/kdbRemoveKey()
+ * will be called for the key.
+ *
+ * @see kdbRename() for expected behavior.
+ * @return 0 on success
+ * @return -1 on failure and @c errno is propagated
+ * @ingroup backend
+ */
+int kdbRename_default(KDBHandle handle, Key *key, const char *newName)
+{
+	Key	*newKey;
 
+	if ( (newKey = keyNew(KEY_SWITCH_END)) == NULL )
+		return -1;
+	
+	if ( keyDup(key, newKey) ) {
+		keyDel(newKey);
+		return -1;
+	}
+	
+	if ( keySetName(newKey, newName) ) {
+		/* Create the new key */
+		if ( kdbSetKey(handle, newKey) ) {
+			keyDel(newKey);
+			return -1;
+		}
+		keyDel(newKey);
+		
+		/* Remove the old one ... */
+		if ( kdbRemoveKey(handle, key) ) 
+			return -1;
 
+		return 0;
+	} else {
+		/* newName isn't valid or empty */
+		keyDel(newKey);
+		return -1;	
+	}
+}
 
 /**
  * A probably inefficient implementation for the kdbSetKeys()

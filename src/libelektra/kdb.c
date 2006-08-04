@@ -671,9 +671,13 @@ int kdbSetKey(KDBHandle handle, Key *key) {
 int kdbRename(KDBHandle handle, Key *key, const char *newName) {
 	int rc=0;
 	
-	if (handle && handle->kdbRename)
-		rc=handle->kdbRename(handle,key,newName);
-	else {
+	if (handle) {
+		if ( handle->kdbRename )
+			rc=handle->kdbRename(handle,key,newName);
+		else
+			rc=kdbRename_default(handle, key, newName);
+			
+	} else {
 		errno=KDB_RET_NOSYS;
 		return -1;
 	}
