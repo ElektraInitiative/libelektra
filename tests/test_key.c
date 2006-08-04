@@ -1,6 +1,29 @@
+/***************************************************************************
+ *          test_key.c  -  Key struct test suite
+ *                  -------------------
+ *  begin                : Thu Aug 03 2006
+ *  copyright            : (C) 2006 by Yannick Lecaillez
+ *  email                : sizon5@gmail.com
+ ****************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the BSD License (revised).                      *
+ *                                                                         *
+ ***************************************************************************/
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdio.h>
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
+#endif
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
 
 #include <kdb.h>
 
