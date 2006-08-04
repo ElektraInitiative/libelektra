@@ -81,6 +81,9 @@ int loadToolsLib(void) {
 	}
 	
 	ksFromXMLfile=kdbLibSym(dlhandle,"ksFromXMLfile");
+	if ( ksFromXMLfile == NULL ) {
+		return 1;
+	}
 	
 	return 0;
 }
@@ -129,7 +132,7 @@ void test_backend(char *backendName)
 		keyInit(key2);
 		keySetName(key2, keyStealName(cur));
 		
-		succeed_if( kdbStatKey(handle, key2) == 0, "kdbStatKey failed.");
+		succeed_if( kdbStatKey(handle, key2) == 0, "kdbStatKey failed. Key probably not found.");
 		succeed_if( (keyGetUID(key2) == keyGetUID(key)), "kdbStatKey failed : different UID.");
 		succeed_if( (keyGetGID(key2) == keyGetGID(key)), "kdbStatKey failed : different GID.");
 		succeed_if( (keyGetAccess(key2) == keyGetAccess(key)), "kdbStatKey failed : different Access.");
