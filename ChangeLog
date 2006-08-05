@@ -23,6 +23,7 @@ exportsymbols.sh)
 -    By Yannick Lecaillez <sizon5@gmail.com> 05/08/2006
 - fixed keyFileSerialize() in filesys.c : When binary source data
 - fixed kdbGetKeyWithOptions() in berkeleydb.c : key->next was reset, key lost position in the keyset.
+- fix keySetRaw() in key.c: When data is NULL or size = 0, key's data was cleaned but key->dataSize wasn't set to 0
 was 1 byte long, write to non-allocated address occured.
 -    By Markus Raab 06/06/2006:
 - added cascading features to kdb
