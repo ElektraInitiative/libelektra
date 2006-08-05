@@ -42,13 +42,14 @@ char *backend[] = { "filesys",
 			"daemon",
 			NULL };
 
+const char *currentTestCase;
 int nbError = 0;
 int nbTest = 0;
 
 int (*ksFromXMLfile)(KeySet *ks,const char *filename);
 	
 
-void succeed_if(int test, const char *failedMessage)
+int succeed_if(int test, const char *failedMessage)
 {
 	extern int nbError;
 	extern int nbTest;
@@ -57,7 +58,19 @@ void succeed_if(int test, const char *failedMessage)
 	
 	if ( !test ) {
 		nbError++;
-		printf("Test failed in %s: %s\n", __FILE__, failedMessage);
+		printf("\t\t**FAILED** %s: %s\n", currentTestCase, failedMessage);
+		
+		return 1;
+	}
+
+	return 0;
+}
+
+void exit_if_fail(int test, const char *failedMessage)
+{
+	if ( !test ) {
+		printf("%s\n", failedMessage);
+		exit(nbError);
 	}
 }
 
@@ -117,14 +130,13 @@ int delete_keysRecurse(KDBHandle handle, const char *root)
 
 	/* Fetch all directory keys */
 	ksInit(ks);
-	if ( kdbGetKeyChildKeys(handle, key, ks, KDB_O_DIRONLY | KDB_O_DIR | KDB_O_SORT | KDB_O_INACTIVE) == -1 ) {
+	if ( kdbGetKeyChildKeys(handle, key, ks, KDB_O_RECURSIVE | KDB_O_DIRONLY | KDB_O_DIR | KDB_O_SORT | KDB_O_INACTIVE) == -1 ) {
 		ksDel(ks);
 		keyDel(key);
 		return 1;
 	}
 
 	/* Delete these ... */
-	ksRewind(ks);
 	while ( (cur = ksPopLast(ks)) != NULL ) {
 		if ( kdbRemoveKey(handle, cur) )
 			ret = 1;
@@ -134,6 +146,137 @@ int delete_keysRecurse(KDBHandle handle, const char *root)
 	
 	return ret;
 }
+
+/* Test kdbGetKey()/kdbSetKey()
+ * ----------------------------
+ *
+ * kdbSetKey the supplied key. Then kdbGetKey it
+ * Compare these two.
+ *
+ * NOTE: The tested key isn't kdbRemoved().
+ *
+ * return 0 if succeed, otherwise number of errors
+ */
+int testcase_kdbSetKeyAndkdbGetKey(KDBHandle handle, Key *key)
+{
+	Key	*tmp;
+	int	err;
+	
+	currentTestCase = __FUNCTION__;
+
+	tmp = keyNew(keyStealName(key), KEY_SWITCH_END);
+	err = succeed_if( kdbSetKey(handle, key) == 0, "kdbSetKey failed.");
+	if ( !err ) {
+		err += succeed_if( kdbGetKey(handle, tmp) == 0, "kdbGetKey failed.");
+		err += succeed_if( keyCompare(tmp, key) == 0, "keyCompare failed : Differences between key stored/key readed");
+	}
+
+	keyDel(tmp);
+
+	return err;
+}
+
+/* Test kdbStatKey()
+ * -----------------
+ *  
+ * kdbGetKey() then kdbStatKey() the supplied key. 
+ * Compare the "STATed" version agaisnt the getted version.
+ *
+ * NOTE: The tested key must exist.
+ * 
+ * return 0 if succeed, otherwise number of errors
+ */
+int testcase_kdbStatKey(KDBHandle handle, Key *key)
+{
+	Key	*tmp;
+	int	err;
+
+	currentTestCase = __FUNCTION__;
+
+	tmp = keyNew(keyStealName(key), KEY_SWITCH_END);
+
+	err = succeed_if( kdbGetKey(handle, key) == 0, "kdbGetKey failed.");
+	if ( !err ) {
+		err += succeed_if( kdbStatKey(handle, tmp) == 0, "kdbStatKey failed.");
+		err += succeed_if( (keyGetUID(tmp) == keyGetUID(key)), "kdbStatKey returned wrong UID.");
+		err += succeed_if( (keyGetGID(tmp) == keyGetGID(key)), "kdbStatKey returned wrong GID.");
+		err += succeed_if( (keyGetAccess(tmp) == keyGetAccess(key)), "kdbStatKey returned wrong Access.");
+		err += succeed_if( (keyGetATime(tmp) == keyGetATime(key)), "kdbStatKey returned wrong access time.");
+		err += succeed_if( (keyGetMTime(tmp) == keyGetMTime(key)), "kdbStatKey returned wrong modification time.");
+		err += succeed_if( (keyGetCTime(tmp) == keyGetCTime(key)), "kdbStatKey returned wrong last change time.");
+	}
+
+	keyDel(tmp);
+	
+	return err;
+}
+
+/* Test kdbRename()
+ * ----------------
+ *
+ * Rename the tested key to <keyname>-renamed.
+ * Then check if <keyname> is removed & <keyname>-renamed
+ * exists.
+ *
+ * NOTE: The tested key must exist.
+ * At the end, the key is renamed to its original name
+ * 
+ * return 0 if suceed, otherwise number of errors
+ */
+int testcase_kdbRename(KDBHandle handle, Key *key)
+{
+	Key	*tmp;
+	char	buf[1024];
+	int	err;
+	
+	currentTestCase = __FUNCTION__;
+	
+	snprintf(buf, sizeof(buf), "%s-renamed", keyStealName(key));
+	tmp = keyNew(buf, KEY_SWITCH_END);
+
+	err = succeed_if( kdbRename(handle, key, buf) == 0, "kdbRename failed.");
+	if ( !err ) {
+		err += succeed_if( kdbStatKey(handle, tmp) == 0, "kdbStatKey on the renamed key failed.");
+		err += succeed_if( kdbStatKey(handle, key) == -1, "kdbStatKey succeed. The old renamed key is still existing.");
+		err += succeed_if( kdbRename(handle, tmp, keyStealName(key)) == 0, "kdbRename failed. Can't reverse to the original name.");
+	}
+	
+	keyDel(tmp);
+
+	return err;
+}
+
+/* Test kdbLink()
+ * --------------
+ *
+ * Create a link from tested key to <keyname>-linked
+ */
+int testcase_kdbLink(KDBHandle handle, Key *key)
+{
+	Key	*tmp;
+	char	buf[1024];
+	int	err;
+	
+	currentTestCase = __FUNCTION__;
+	
+	snprintf(buf, sizeof(buf), "%s-linked", keyStealName(key));
+	tmp = keyNew(buf, KEY_SWITCH_END);
+	
+	err = succeed_if( kdbLink(handle, keyStealName(key), buf) == 0, "kdbLink failed.");
+	if ( !err ) {
+		err += succeed_if( kdbStatKey(handle, tmp) == 0, "kdbStatKey failed on link key");
+		err += succeed_if( strcmp(keyStealValue(tmp), keyStealName(key)) == 0, "kdbLink link target isn't set correctly.");
+		err += succeed_if( kdbGetKey(handle, key) == 0, "kdbGetKey failed on source key");
+		err += succeed_if( kdbGetKey(handle, tmp) == 0, "kdbGetKey failed on link key");
+		err += succeed_if( keyCompare(key, tmp) == 0, "kdbLink kdbGetKey(link)/kdbGetKey(link-target) not equal.");
+		err += succeed_if( kdbRemoveKey(handle, tmp) == 0, "kdbRemoveKey failed on link key");
+	}
+
+	keyDel(tmp);
+	
+	return err;
+}
+
 
 void test_backend(char *backendName)
 {
@@ -146,18 +289,9 @@ void test_backend(char *backendName)
 	int		counter;
 	
 	printf("Testing elektra-%s backend.\n", backendName);
+	printf("----------------------------------------\n\n");
 
-	ks = ksNew();
-	if ( ksFromXMLfile(ks, "keyset.xml") ) {
-		perror("ksFromXMLfile");
-		return;
-	}
-	
-	succeed_if( (ret = kdbOpenBackend(&handle, backendName)) == 0, "kdbOpen() failed.");
-	if ( ret ) {
-		/* Can't continue test if backend can't be opened ... */
-		return;
-	}
+	exit_if_fail( kdbOpenBackend(&handle, backendName) == 0, "kdbOpen() failed.");
 			
 	/* Create a root key name to prepend to all key
 	 * this permis previous test to not interfere
@@ -171,12 +305,15 @@ void test_backend(char *backendName)
 		exist = (kdbStatKey(handle, key) == 0);
 		keyDel(key);
 	}
-	printf("\tkey root = %s\n", root);
+	printf("Making tests into = %s\n\n", root);
 	
 	
-	/* 
-	 * Here we'll test functions which act on Key 
-	 */
+	/* ============================================= 
+	 * Here we're testing functions which act on Key
+	 * ============================================= */
+
+	ks = ksNew();
+	exit_if_fail( ksFromXMLfile(ks, "key.xml") == 0, "ksFromXMLfile(key.xml) failed.");
 	counter = 0;
 	ksRewind(ks);
 	while ( (cur = ksNext(ks)) ) {
@@ -186,73 +323,15 @@ void test_backend(char *backendName)
 		/* Prepend key root */	
 		snprintf(buf, sizeof(buf), "%s/%s", root, keyStealName(cur));
 		keySetName(cur, buf);
-		
-		/* Test kdbGetKey()/kdbSetKey() 
-		 * ----------------------------
-		 *  
-		 * Import a key to the backend. Fetch the same key from the backend.
-		 * Compare key stored/key fetched.
-		 * The fetched key will be used as basis for other tests.
-		 */
-		keyInit(key);
-		keySetName(key, keyStealName(cur));
-		succeed_if( kdbSetKey(handle, cur) == 0, "kdbSetKey failed.");
-		succeed_if( kdbGetKey(handle, key) == 0, "kdbGetKey failed.");
-		succeed_if( keyCompare( cur, key) == 0, "keyCompare failed : Differences between key stored/key readed");
-
-		/* Test kdbStatKey() 
-		 * -----------------
-		 *  
-		 * Stat the key previously stored. Compare stat infotmation
-		 * from the "stated" key against the previously fetched one.
-		 * */
-		keyInit(key2);
-		keySetName(key2, keyStealName(cur));
-		
-		succeed_if( kdbStatKey(handle, key2) == 0, "kdbStatKey failed. Key probably not found.");
-		succeed_if( (keyGetUID(key2) == keyGetUID(key)), "kdbStatKey failed : different UID.");
-		succeed_if( (keyGetGID(key2) == keyGetGID(key)), "kdbStatKey failed : different GID.");
-		succeed_if( (keyGetAccess(key2) == keyGetAccess(key)), "kdbStatKey failed : different Access.");
-		succeed_if( (keyGetATime(key2) == keyGetATime(key)), "kdbStatKey failed : different access time.");
-		succeed_if( (keyGetMTime(key2) == keyGetMTime(key)), "kdbStatKey failed : different modification time.");
-		succeed_if( (keyGetCTime(key2) == keyGetCTime(key)), "kdbStatKey failed : different last change time.");
-		keyClose(key2);
-
-		/* Test kdbRename()
-		 * ----------------
-		 *  
-		 * Rename the prefiously stored key ro <keyname>-renamed.
-		 * Stat the renamed key for check if existing
-		 */
-		snprintf(buf, sizeof(buf), "%s-renamed", keyStealName(key));
-		keyInit(key2);
-		keySetName(key2, buf);
-		
-		succeed_if( kdbRename(handle, key, buf) == 0, "kdbRename failed.");
-		succeed_if( kdbStatKey(handle, key2) == 0, "kdbRename failed : kdbStatKey on the renamed key failed.");
-		keySetName(cur, buf);
-		keySetName(key, buf);
-		keyClose(key2);
-
-		/* Test kdbLink()
-		 * --------------
-		 *  
-		 * Link the previously stored key to root/link-<counter>
-		 */
-		snprintf(buf, sizeof(buf), "%s/link-%d", root, counter++);
-		keyInit(key2);
-		keySetName(key2, buf);
 	
-		succeed_if( kdbLink(handle, keyStealName(key), buf) == 0, "kdbLink failed.");
-		succeed_if( kdbStatKey(handle, key2) == 0, "kdbStatKey failed on link key");
-		succeed_if( strcmp(keyStealValue(key2), keyStealName(key)) == 0, "kdbLink link target isn't set correctly.");
-		succeed_if( kdbGetKey(handle, key2) == 0, "kdbGetKey failed on link key");
-		succeed_if( keyCompare(key, key2) == 0, "kdbLink kdbGetKey(link)/kdbGetKey(link-target) not equal.");
-		succeed_if( kdbRemoveKey(handle, key2) == 0, "kdbRemoveKey failed on link key");
-		keyClose(key2);
-				
-		keyDel(key);
-		keyDel(key2);
+		printf("\tTesting %s\n", keyStealComment(cur));
+		
+		testcase_kdbSetKeyAndkdbGetKey(handle, cur);
+		testcase_kdbStatKey(handle, cur);
+		testcase_kdbRename(handle, cur);
+		testcase_kdbLink(handle, cur);
+
+		printf("\n");
 	}
 	
 	succeed_if( delete_keysRecurse(handle, root) == 0, "delete_keysRecurse failed.");
@@ -296,9 +375,11 @@ void test_backend(char *backendName)
 int main()
 {
 	int	i;
-	
-	printf("ELEKTRA BACKENDS TESTS\n");
-	printf("----------------------\n\n");
+
+	printf("\n");
+	printf("========================================\n");	
+	printf("ELEKTRA BACKENDS TEST SUITE\n");
+	printf("========================================\n\n");
 
 	if ( loadToolsLib() ) {
 		printf("Unable to load elektratools\n");
