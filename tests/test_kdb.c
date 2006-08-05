@@ -185,6 +185,8 @@ int testcase_kdbSetKeyAndkdbGetKey(KDBHandle handle, Key *key)
 	Key	*tmp;
 	int	err;
 	int	ignoreFlags;
+
+	printf("\t* testing kdbSetKey()/kdbGetKey()\n");
 	
 	currentTestCase = __FUNCTION__;
 
@@ -218,6 +220,8 @@ int testcase_kdbStatKey(KDBHandle handle, Key *key)
 	Key	*tmp;
 	int	err;
 
+	printf("\t* testing kdbStatKey()\n");
+	
 	currentTestCase = __FUNCTION__;
 
 	tmp = keyNew(keyStealName(key), KEY_SWITCH_END);
@@ -255,6 +259,8 @@ int testcase_kdbRename(KDBHandle handle, Key *key)
 	Key	*tmp;
 	char	buf[1024];
 	int	err;
+
+	printf("\t* testing kdbRename()\n");
 	
 	currentTestCase = __FUNCTION__;
 	
@@ -284,7 +290,8 @@ int testcase_kdbLink(KDBHandle handle, Key *key)
 	char	buf[1024];
 	int	ret, err;
 	int	ignoreFlags;
-	
+
+	printf("\t* testing kdbLink()\n");
 	currentTestCase = __FUNCTION__;
 
 	/* Ignore comparison of name and type since
@@ -359,7 +366,7 @@ void test_backend(char *backendName)
 		keySetName(cur, buf);
 
 		/* Make tests ... */	
-		printf("\tTesting %s\n", keyStealComment(cur));
+		printf("Testing %s\n", keyStealComment(cur));
 		
 		testcase_kdbSetKeyAndkdbGetKey(handle, cur);
 		testcase_kdbStatKey(handle, cur);
