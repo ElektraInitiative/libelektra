@@ -309,6 +309,9 @@ ssize_t encode(void *unencoded, size_t size, char *returned) {
 	int currentInBlock=0;
 	int currentInLine=0;
 
+	if ( size == 0 )
+		return 0;
+	
 	while ((readCursor-(char *)unencoded)<size) {
 		sprintf(writeCursor,"%02x",*(unsigned char *)readCursor);
 		readCursor++;
