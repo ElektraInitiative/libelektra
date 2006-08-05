@@ -18,20 +18,21 @@ libelektra_daemon_la_SOURCES = daemon.c
 libelektra_daemon_la_LDFLAGS = -avoid-version -module
 libelektra_daemon_la_LIBADD = ../../libelektra/libelektra.la libproto.la
 
-sbin_PROGRAMS = kdbd kdbd_static
+sbin_PROGRAMS = kdbd
+# kdbd_static
 kdbd_SOURCES = main.c kdbd.h kdbd.c kdb_wrapper.h kdb_wrapper.c thread.h thread.c
 kdbd_CFLAGS = -DDEFAULT_DBACKEND=\"ddefault\"
 kdbd_LDADD = libproto.la ../../libelektra/libelektra.la -lpthread
 
-kdbd_static_SOURCES = main.c kdbd.g kdbd.c kdb_wrapper.h kdb_wrapper.c thread.h thread.c
-kdbd_static_CFLAGS = -DELEKTRA_STATIC -DDEFAULT_DBACKEND=\"$(default_dbackend)\"
-kdbd_static_LDADD = @privatelibs@ libproto.la ../../libelektra/libelektra.a -lpthread
+# kdbd_static_SOURCES = main.c kdbd.g kdbd.c kdb_wrapper.h kdb_wrapper.c thread.h thread.c
+# kdbd_static_CFLAGS = -DELEKTRA_STATIC -DDEFAULT_DBACKEND=\"$(default_dbackend)\"
+# kdbd_static_LDADD = @privatelibs@ libproto.la ../../libelektra/libelektra.a -lpthread
 
 ../../libelektra/libelektra.la:
 	cd ../../libelektra/ && $(MAKE) libelektra.la
 
-../../libelektra/libelektra.a:
-	cd ../../libelektra/ && $(MAKE) libelektra.a
+# ../../libelektra/libelektra.a:
+#	cd ../../libelektra/ && $(MAKE) libelektra.a
 
 
 
