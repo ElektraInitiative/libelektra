@@ -14,7 +14,7 @@ libelektra_a_SOURCES = $(elektra_sources) \
 		../include/kdbLibLoader.h
 libelektra_a_CFLAGS = -DELEKTRA_STATIC -DDEFAULT_BACKEND=\"$(default_backend)\"
 libelektra_a_LIBADD = `cat objects`
-libelektra_a_DEPENDENCIES = objects
+BUILT_SOURCES = exported_symbols.c
 
 if EXPERIMENTAL
 libelektra_a_CFLAGS += -DEXPERIMENTAL
@@ -41,7 +41,7 @@ libelektra_la_LIBADD = $(LIBICONV) ../libloader/libloader-dynamic.la
 all_backends:
 	cd ../backends && $(MAKE) all
 	
-objects: ../libloader/libloader-static.a all_backends ../libelektratools/libelektratools.a
+`cat objects`: ../libloader/libloader-static.a all_backends ../libelektratools/libelektratools.a
 	@list='$(backends)'; for backend in $$list; do \
 	  bck_list=$$bck_list" ../backends/$$backend/libelektra-$$backend.a "; \
 	done; \
