@@ -258,7 +258,7 @@ int keyToBDB(const Key *key, DBT *dbkey, DBT *dbdata) {
  */
 int keyFromBDB(Key *key, const DBT *dbkey, const DBT *dbdata) {
 	size_t metaInfoSize;
-	
+
 	keyClose(key);
 	
 	metaInfoSize = KEY_METAINFO_SIZE(key);
@@ -267,7 +267,6 @@ int keyFromBDB(Key *key, const DBT *dbkey, const DBT *dbdata) {
 	memcpy(key,        /* destination */
 		dbdata->data,    /* source */
 		metaInfoSize);   /* size */
-	
 	key->recordSize=dbdata->size;
 	
 	key->flags = KEY_SWITCH_INITIALIZED;
@@ -794,6 +793,9 @@ int kdbGetKeyWithOptions(KDBHandle handle, Key *key, uint32_t options) {
 	switch (ret) {
 		case 0: { /* Key found and retrieved. Check permissions */
 			keyFromBDB(&buffer,&dbkey,&data);
+
+			/* Keep key position in its keyset */
+			buffer.next = key->next;
 			
 			dbkey.data=0;
 			free(data.data); data.data=0;

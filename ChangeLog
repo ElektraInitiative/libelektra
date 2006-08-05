@@ -22,6 +22,7 @@ exportsymbols.sh)
 - fixed kdbRename() in kdbd/libelektra-daemon
 -    By Yannick Lecaillez <sizon5@gmail.com> 05/08/2006
 - fixed keyFileSerialize() in filesys.c : When binary source data
+- fixed kdbGetKeyWithOptions() in berkeleydb.c : key->next was reset, key lost position in the keyset.
 was 1 byte long, write to non-allocated address occured.
 -    By Markus Raab 06/06/2006:
 - added cascading features to kdb
