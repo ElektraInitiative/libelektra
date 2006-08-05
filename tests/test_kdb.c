@@ -236,8 +236,8 @@ int testcase_kdbRename(KDBHandle handle, Key *key)
 
 	err = succeed_if( kdbRename(handle, key, buf) == 0, "kdbRename failed.");
 	if ( !err ) {
-		err += succeed_if( kdbStatKey(handle, tmp) == 0, "kdbStatKey on the renamed key failed.");
-		err += succeed_if( kdbStatKey(handle, key) == -1, "kdbStatKey succeed. The old renamed key is still existing.");
+		err += succeed_if( kdbGetKey(handle, tmp) == 0, "kdbGetKey on the renamed key failed.");
+		err += succeed_if( kdbStatKey(handle, key) , "kdbStatKey succeed. The old renamed key is still existing.");
 		err += succeed_if( kdbRename(handle, tmp, keyStealName(key)) == 0, "kdbRename failed. Can't reverse to the original name.");
 	}
 	
