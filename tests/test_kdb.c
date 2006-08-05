@@ -147,6 +147,29 @@ int delete_keysRecurse(KDBHandle handle, const char *root)
 	return ret;
 }
 
+int test_keyCompare(Key *key1, Key *key2, unsigned int ignoreFlags)
+{
+	int	ret;
+	int	err = 0;
+
+	ret = keyCompare(key1, key2);
+	if ( (ret & ignoreFlags) != ret ) {
+		succeed_if(0, "Differences between keys :");
+		if ( !(ignoreFlags & KEY_SWITCH_TYPE) )	err += succeed_if ( (ret & KEY_SWITCH_TYPE) == 0, "\t* Key type isn't same");
+		if ( !(ignoreFlags & KEY_SWITCH_NAME) )	err += succeed_if ( (ret & KEY_SWITCH_NAME) == 0, "\t*Key name isn't same");
+		if ( !(ignoreFlags & KEY_SWITCH_VALUE) )err += succeed_if ( (ret & KEY_SWITCH_VALUE) == 0, "\t*Key value isn't same");
+		if ( !(ignoreFlags & KEY_SWITCH_OWNER) )err += succeed_if ( (ret & KEY_SWITCH_OWNER) == 0, "\t*Key owner isn't same");
+		if ( !(ignoreFlags & KEY_SWITCH_COMMENT) ) err += succeed_if ( (ret & KEY_SWITCH_COMMENT) == 0, "\t*Key comment isn't same");
+		if ( !(ignoreFlags & KEY_SWITCH_UID) ) err += succeed_if ( (ret & KEY_SWITCH_UID) == 0, "\t*Key UID isn't name");
+		if ( !(ignoreFlags & KEY_SWITCH_GID) ) err += succeed_if ( (ret & KEY_SWITCH_GID) == 0, "\t*Key GID isn't name");
+		if ( !(ignoreFlags & KEY_SWITCH_MODE) ) err += succeed_if ( (ret & KEY_SWITCH_MODE) == 0, "\t*Key mode isn't name");
+		if ( !(ignoreFlags & KEY_SWITCH_NEEDSYNC) ) err += succeed_if ( (ret & KEY_SWITCH_NEEDSYNC) == 0, "\t*Key NEESYNC isn't name");
+		if ( !(ignoreFlags & KEY_SWITCH_FLAG) ) err += succeed_if ( (ret & KEY_SWITCH_FLAG) == 0, "\t*Key FLAG isn't name");
+	}
+
+	return err;
+}
+
 /* Test kdbGetKey()/kdbSetKey()
  * ----------------------------
  *
@@ -161,14 +184,18 @@ int testcase_kdbSetKeyAndkdbGetKey(KDBHandle handle, Key *key)
 {
 	Key	*tmp;
 	int	err;
+	int	ignoreFlags;
 	
 	currentTestCase = __FUNCTION__;
 
+	// Ignore difference on key value if key is a directory
+	ignoreFlags = (keyIsDir(key)) ? (KEY_SWITCH_VALUE) : (0);
+	
 	tmp = keyNew(keyStealName(key), KEY_SWITCH_END);
 	err = succeed_if( kdbSetKey(handle, key) == 0, "kdbSetKey failed.");
 	if ( !err ) {
 		err += succeed_if( kdbGetKey(handle, tmp) == 0, "kdbGetKey failed.");
-		err += succeed_if( keyCompare(tmp, key) == 0, "keyCompare failed : Differences between key stored/key readed");
+		err += test_keyCompare(tmp, key, ignoreFlags);
 	}
 
 	keyDel(tmp);
@@ -255,10 +282,20 @@ int testcase_kdbLink(KDBHandle handle, Key *key)
 {
 	Key	*tmp;
 	char	buf[1024];
-	int	err;
+	int	ret, err;
+	int	ignoreFlags;
 	
 	currentTestCase = __FUNCTION__;
+
+	/* Ignore comparison of name and type since
+	 * the link source could have different name and type. */
+	ignoreFlags = KEY_SWITCH_NAME;
+	ignoreFlags |= KEY_SWITCH_TYPE;
 	
+	/* Ignore comparison of value for directory key */
+	ignoreFlags |= (keyIsDir(key) ? (KEY_SWITCH_VALUE) : (0));
+	
+		
 	snprintf(buf, sizeof(buf), "%s-linked", keyStealName(key));
 	tmp = keyNew(buf, KEY_SWITCH_END);
 	
@@ -268,7 +305,7 @@ int testcase_kdbLink(KDBHandle handle, Key *key)
 		err += succeed_if( strcmp(keyStealValue(tmp), keyStealName(key)) == 0, "kdbLink link target isn't set correctly.");
 		err += succeed_if( kdbGetKey(handle, key) == 0, "kdbGetKey failed on source key");
 		err += succeed_if( kdbGetKey(handle, tmp) == 0, "kdbGetKey failed on link key");
-		err += succeed_if( keyCompare(key, tmp) == 0, "kdbLink kdbGetKey(link)/kdbGetKey(link-target) not equal.");
+		err += test_keyCompare(key, tmp, ignoreFlags);
 		err += succeed_if( kdbRemoveKey(handle, tmp) == 0, "kdbRemoveKey failed on link key");
 	}
 
