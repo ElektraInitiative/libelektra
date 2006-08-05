@@ -20,8 +20,9 @@ exportsymbols.sh)
 - Removed some debugging output from kdbd
 - Add a static version of kdbd
 - fixed kdbRename() in kdbd/libelektra-daemon
-- Prepend a non-existing keyroot for test_kdb to not interfere with previously
-runned tests
+-    By Yannick Lecaillez <sizon5@gmail.com> 05/08/2006
+- fixed keyFileSerialize() in filesys.c : When binary source data
+was 1 byte long, write to non-allocated address occured.
 -    By Markus Raab 06/06/2006:
 - added cascading features to kdb
 - kdb ls / and kdb ls /path is possible

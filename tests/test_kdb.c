@@ -317,13 +317,11 @@ void test_backend(char *backendName)
 	counter = 0;
 	ksRewind(ks);
 	while ( (cur = ksNext(ks)) ) {
-		key = keyNew(KEY_SWITCH_END);
-		key2 = keyNew(KEY_SWITCH_END);
-		
 		/* Prepend key root */	
 		snprintf(buf, sizeof(buf), "%s/%s", root, keyStealName(cur));
 		keySetName(cur, buf);
-	
+
+		/* Make tests ... */	
 		printf("\tTesting %s\n", keyStealComment(cur));
 		
 		testcase_kdbSetKeyAndkdbGetKey(handle, cur);
@@ -335,6 +333,9 @@ void test_backend(char *backendName)
 	}
 	
 	succeed_if( delete_keysRecurse(handle, root) == 0, "delete_keysRecurse failed.");
+	ksDel(ks);
+
+	
 	
 #if 0
 	
