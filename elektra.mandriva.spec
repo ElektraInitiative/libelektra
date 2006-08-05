@@ -1,16 +1,16 @@
 %define name    elektra 
-%define version 0.6
+%define version 0.6.3
 %define release %mkrel 1 
 
 Name:          %{name}
 Version:       %{version}
 Release:       %{release}
-Source:        http://aleron.dl.sourceforge.net/sourceforge/elektra/%{name}-%{version}.tar.gz
+Source:        http://aleron.dl.sourceforge.net/sourceforge/elektra/%{name}-%{version}.tar.bz2
 Group:         System Environment/Libraries
 License:       BSD
 URL:           http://elektra.sourceforge.net
 BuildRoot:     %{_tmppath}/%{name}-%{version}-%{release}-buildroot
-BuildRequires: doxygen docbook-style-xsl db4-devel libGConf1-devel libxml2-devel automake autoconf libtool libxslt-proc
+BuildRequires: doxygen docbook-style-xsl db4-devel libGConf1-devel libxml2-devel libtool libxslt-proc
 Summary:       A key/value pair database to store software configurations
 
 %define DTDVERSION 0.1.1
@@ -86,22 +86,42 @@ Berkeley DB databases to store its keys.
 %setup
 
 %build
-%define _prefix /usr
-%define _exec_prefix /
-%define _sysconfdir /etc
-%define _includedir /usr/include
-%define _mandir /usr/share/man
-%configure2_5x --enable-debug
+%configure \
+     --bindir=/bin \
+     --sbindir=/sbin \
+     --libdir=/%{_lib} \
+     --with-docdir=%{_defaultdocdir}/elektra-%{version} \
+     --with-develdocdir=%{_defaultdocdir}/elektra-devel-%{version} \
+     --disable-xmltest \
+     --with-docbook=%{_datadir}/sgml/docbook/xsl-stylesheets
 %make
 
 %install
 rm -rf $RPM_BUILD_ROOT
-%makeinstall
-rm $RPM_BUILD_ROOT%{_libdir}/libelektra-*.a
-mv $RPM_BUILD_ROOT%{_libdir}/libelektra.a $RPM_BUILD_ROOT%{_prefix}%{_libdir}
-rm $RPM_BUILD_ROOT%{_libdir}/*.la
-rm $RPM_BUILD_ROOT%{_prefix}/%{_libdir}/*.la
-ln -s ../..%{_libdir}/libelektra.so $RPM_BUILD_ROOT%{_prefix}%{_libdir}
+make DESTDIR=$RPM_BUILD_ROOT install
+# Move .a files to -devel package
+mv $RPM_BUILD_ROOT/%{_lib}/libelektra.a $RPM_BUILD_ROOT/%{_libdir}
+
+# Prepare devel files
+rm $RPM_BUILD_ROOT/%{_lib}/libelektra.so
+ln -sf ../../%{_lib}/libelektra.so.2 $RPM_BUILD_ROOT/%{_libdir}/libelektra.so
+
+# Remove old .la files
+#rm $RPM_BUILD_ROOT/usr/lib/libelektra-*.a
+rm $RPM_BUILD_ROOT/%{_lib}/*.la
+rm $RPM_BUILD_ROOT/%{_lib}/elektra/*.la
+rm $RPM_BUILD_ROOT/%{_libdir}/*.la
+
+# Remove a file that conflicts with other packages
+rm $RPM_BUILD_ROOT/%{_mandir}/man3/key.3*
+
+# Remove documentation from 'make install', to let RPM package it allone
+rm -rf $RPM_BUILD_ROOT/%{_defaultdocdir}
+rm -rf scripts/Makefile*
+rm -rf examples/Makefile*
+rm -rf examples/.deps
+rm -rf doc/standards/Makefile*
+mv doc/elektra-api/html doc/elektra-api/api-html
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -109,14 +129,14 @@ rm -rf $RPM_BUILD_ROOT
 %post
 /sbin/ldconfig
 # Backwards compatibility, from the Linux Registry days
-if [ -d /etc/registry -a ! -d /etc/kdb ]; then
-	mv /etc/registry /etc/kdb
-	ln -s kdb /etc/registry
-fi
+# if [ -d /etc/registry -a ! -d /etc/kdb ]; then
+#	mv /etc/registry /etc/kdb
+#	ln -s kdb /etc/registry
+# fi
 
 # Create basic key structure for apps
 kdb set -t dir system/sw
-kdb set system/sw/kdb/current/schemapath "%{_datadir}/sgml/elektra-%{DTDVERSION}/elektra.xsd"
+kdb set system/sw/kdb/current/schemapath "%{_datadir}/sgml/elektra-0.1.1/elektra.xsd"
 
 
 %postun -p /sbin/ldconfig
@@ -124,31 +144,36 @@ kdb set system/sw/kdb/current/schemapath "%{_datadir}/sgml/elektra-%{DTDVERSION}
 
 
 %files
-%defattr(-,root,root,0755)
-%{_libdir}/*elektra.so*
-# %{_libdir}/*registry.so*
-%{_libdir}/*elektra-filesys.so*
-%{_libdir}/*elektra-default.so*
-%{_libdir}/*elektra-fstab.so*
-# %{_libdir}/*elektra-ini.so*
-%{_prefix}/%{_libdir}/*elektratools.so*
-%{_prefix}/%{_libdir}/*elektra.so*
+%defattr(-,root,root,-)
 /bin/*
+/sbin/*
+/%{_lib}/*elektra.so*
+%dir /%{_lib}/elektra
+/%{_lib}/elektra/*elektra-daemon.so*
+/%{_lib}/elektra/*elektra-filesys.so*
+/%{_lib}/elektra/*elektra-default.so*
+/%{_lib}/elektra/*elektra-ddefault.so*
+/%{_lib}/elektra/*elektra-fstab.so*
+#/%{_lib}/elektra/*elektra-ini.so*
+%{_libdir}/*elektratools.so.*
+%{_libdir}/elektra/*elektratools.so
 %{_sysconfdir}/profile.d/*
-%doc %{_docdir}/%{name}
-%doc %{_mandir}/man1/*
-%doc %{_mandir}/man7/*
-%doc %{_mandir}/man5/*
+%doc AUTHORS COPYING ChangeLog README INSTALL
+%doc scripts doc/standards
+%{_mandir}/man1/*
+%{_mandir}/man7/*
+%{_mandir}/man5/*
 %{_datadir}/sgml/*
 
-
 %files devel
-%defattr(-,root,root,0755)
+%defattr(-,root,root,-)
 %{_includedir}/*
-%{_prefix}/%{_libdir}/*.a
-%{_prefix}/%{_libdir}/pkgconfig/*
-%doc %{_docdir}/%{name}-devel
-%doc %{_mandir}/man3/*
+%{_libdir}/*.a
+%{_libdir}/libelektra.so
+%{_libdir}/libelektratools.so
+%{_libdir}/pkgconfig/*
+%doc examples doc/elektra-api/api-html
+%{_mandir}/man3/*
 
 # %files backend-gconf
 # %defattr(-,root,root,0755)
@@ -156,16 +181,9 @@ kdb set system/sw/kdb/current/schemapath "%{_datadir}/sgml/elektra-%{DTDVERSION}
 
 %files backend-berkeleydb
 %defattr(-,root,root,0755)
-%{_libdir}/*berkeleydb.so*
+/%{_lib}/elektra/*berkeleydb.so*
 
 
 %changelog
-* Sun Feb 5 2006 Yannick Lecaillez <yl@itioweb.com>
-- Updated with the new libelektra static lib containing
-  filesys & ini backend
-
-* Sun Jan 29 2006 Yannick Lecaillez <yl@itioweb.com>
-- Hard code DTD_VERSION 
-
-* Mon Jan 23 2006 Yannick Lecaillez <yl@itioweb.com>
-- Add symbolink link of /liblibelektra.so to /usr/lib
+* Sat Aug 6 2006 Yannick Lecaillez <sizon5@gmail.com> 0.6.3
+- Adapted to Mandriva from the spec for Fedora made by Avi Alkalay
