@@ -825,7 +825,7 @@ int keyFileSerialize(Key *key, FILE *output) {
 			} else fputs(key->data,output);
 		} else {
 			/* Binary values */
-			char *encoded=malloc(3*dataSize);
+			char *encoded=malloc(3*dataSize+1);
 			size_t encodedSize;
 
 			encodedSize=encode(key->data,dataSize,encoded);
