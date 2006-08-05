@@ -2076,6 +2076,7 @@ ssize_t keySetRaw(Key *key, const void *newBinary, size_t dataSize) {
 			free(key->data);
 			key->data=0;
 		}
+		key->dataSize = 0;
 		key->flags &= ~(KEY_SWITCH_VALUE);
 		key->flags |= KEY_SWITCH_NEEDSYNC;
 		return 0;
