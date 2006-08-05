@@ -39,7 +39,7 @@ genLevel() {
 		# Generate sublevels
 		local d=0
 		while [ $d -lt $DIRS ]; do
-			echo "$pad<key type=\"dir\" basename=\"dir-$level-$d\">"
+			echo "$pad<key type=\"directory\" basename=\"dir-$level-$d\">"
 			keyCounter=`expr $keyCounter + 1`
 			genLevel `expr $level + 1` "${RANDOM}${RANDOM}"
 			echo "$pad</key>"
