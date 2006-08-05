@@ -291,8 +291,8 @@ int UTF8Engine(int direction, char **string, size_t *inputOutputByteSize) {
  * unencode().
  *
  * The @c returned must allocated prior you call this function and won't
- * be bigger than 3 times the size of the source @c unencoded.
- * 
+ * be bigger than 3 times the size of the source @c unencoded + 1 byte.
+ *
  *
  * @param unencoded the source buffer.
  * @param size the size of the source buffer in bytes.
