@@ -56,7 +56,15 @@ was 1 byte long, write to non-allocated address occured.
 - remove -Wall (and -pedantic -ansi) from Makefile.am
 - add -Wall in configure.ac if CFLAGS is empty and compiler is gcc
 - change make to $(MAKE)
-
+-    By Patrice Dumas <pertusus@free.fr> 13/08/2006
+- fixes for compatibility with sunos 5.8 (solaris 2.8, solaris 8)
+- use LIBICONV in link commands
+- compile fstab backend conditionally on having glibc-like getmntent 
+and friends
+- compile daemon conditionally on having struct ucred defined
+- changes in the nm and amk call to accomodate for solaris 8
+- always use install_sh since install -c needs a directory arg on 
+solaris 8 (an autoconf bug?)
 
 * Wed Jun 02 2006 Avi and Yannick <yl@itioweb.com> 0.6.2
 - Renamed some sorces on src/libelektra/

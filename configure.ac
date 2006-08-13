@@ -224,7 +224,7 @@ else
 	AM_ICONV()
 fi
 
-backends="filesys fstab daemon"
+backends="filesys"
 privatelibs=""
 
 # Check for libxml (Allow compilation of libelektratools)
@@ -251,16 +251,65 @@ if test "x$have_gconf" = "xyes"; then
 	privatelibs=$privatelibs" -lgconf-2"
 fi
 
-AC_SUBST(backends)
 AC_SUBST(privatelibs)
 
 #
 # Checks for header files.
 #
 AC_HEADER_STDC
-AC_CHECK_HEADERS([langinfo.h locale.h mntent.h stdlib.h string.h strings.h unistd.h regex.h pwd.h grp.h])
+AC_CHECK_HEADERS([langinfo.h locale.h stdlib.h string.h strings.h unistd.h regex.h pwd.h grp.h])
 
-# inspired from daemontools
+elektra_glibc_mntent=no
+AC_CHECK_HEADERS([mntent.h],[
+   AC_TRY_LINK([#include <stdio.h>
+#include <mntent.h> ],
+[
+struct mntent *m;
+FILE *f;
+char *fsname, *dir, *type, *opts;
+int freq, passno;
+f=setmntent("/etc/fstab", "r");
+m=getmntent(f);
+fsname=m->mnt_fsname;
+dir=m->mnt_dir;
+type=m->mnt_type;
+opts=m->mnt_opts;
+freq=m->mnt_freq;
+passno=m->mnt_passno;
+],
+dnl not used
+   [ AC_DEFINE(GETMNTENT_GLIBC, 1, 
+     [Define this if mntent follows glibc conventions])
+   elektra_glibc_mntent=yes],
+   []
+)])
+
+
+AC_MSG_CHECKING([if mntent follows the glibc conventions])
+if test x$elektra_glibc_mntent = xyes; then
+   backends=$backends" fstab"
+   AC_MSG_RESULT(yes)
+else
+   AC_MSG_RESULT(no)
+fi
+   
+AM_CONDITIONAL(HAVE_GLIBC_MNTENT, [test x$elektra_glibc_mntent = xyes])
+
+# daemon depends on struct ucred in ipc.c
+elektra_ucred=no
+AC_CHECK_MEMBERS([struct ucred.pid],
+  [
+    elektra_ucred=yes
+    backends=$backends" daemon"
+  ],
+  [],
+  [#include <sys/socket.h>])
+AM_CONDITIONAL(HAVE_UCRED, [test x$elektra_ucred = xyes])
+
+    
+AC_SUBST(backends)
+
+# inspired from daemontools. Currently not used.
 AC_CHECK_HEADERS([signal.h],[
    AC_TRY_LINK([#include <signal.h>],
 [  
@@ -281,6 +330,31 @@ AC_TYPE_UID_T
 AC_TYPE_MODE_T
 AC_TYPE_SIZE_T
 
+# taken from ircd
+AC_CHECK_TYPE([u_int32_t], [],
+[
+	AC_CHECK_TYPE([uint32_t],
+	[
+		AC_DEFINE(u_int32_t, [uint32_t], [If system does not define u_int32_t, define a reasonable substitute.])
+	],
+	[
+		AC_MSG_WARN([system has no u_int32_t or uint32_t, default to unsigned long int])
+		AC_DEFINE(u_int32_t, [unsigned long int], [If system does not define u_int32_t, define to unsigned long int here.])
+	])
+])
+
+AC_CHECK_TYPE([u_int8_t], [],
+[
+	AC_CHECK_TYPE([uint8_t],
+	[
+		AC_DEFINE(u_int8_t, [uint8_t], [If system does not define u_int8_t, define a reasonable substitute.])
+	],
+	[
+		AC_MSG_WARN([system has no u_int8_t or uint8_t, default to unsigned char])
+		AC_DEFINE(u_int8_t, [unsigned char], [If system does not define u_int8_t, define to unsigned char here.])
+	])
+])
+
 #
 # Checks for library functions.
 #
@@ -289,6 +363,8 @@ AC_TYPE_SIZE_T
 #AC_FUNC_REALLOC
 AC_CHECK_FUNCS([memset nl_langinfo setenv setlocale strcasecmp strchr strrchr index rindex strtol ctime_r getuid getgid sigprocmask sigaction])
 
+INSTALL='\$(install_sh)'
+AC_SUBST(INSTALL)
 
 #
 # Output

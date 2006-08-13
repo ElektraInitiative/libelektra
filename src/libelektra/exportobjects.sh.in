@@ -14,7 +14,7 @@ for lib in "$@"
 do
 	if [ -r $lib ]; then
 		echo "Get objects files for $lib ..."
-		@AR@ t $lib | @AWK@ -v "dir=`dirname $lib`" '{printf "%s/%s ", dir,$$0}' >> objects
+		@AR@ t $lib | @AWK@ -v "dir=`dirname $lib`" '{printf "%s/%s ", dir,$0}' >> objects
 	else
 		echo "SKIPED: $lib doesn't exist."
 	fi

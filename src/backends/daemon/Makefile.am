@@ -22,7 +22,7 @@ sbin_PROGRAMS = kdbd
 # kdbd_static
 kdbd_SOURCES = main.c kdbd.h kdbd.c kdb_wrapper.h kdb_wrapper.c thread.h thread.c
 kdbd_CFLAGS = -DDEFAULT_DBACKEND=\"ddefault\"
-kdbd_LDADD = libproto.la ../../libelektra/libelektra.la -lpthread
+kdbd_LDADD = libproto.la ../../libelektra/libelektra.la -lpthread $(LIBICONV)
 
 # kdbd_static_SOURCES = main.c kdbd.g kdbd.c kdb_wrapper.h kdb_wrapper.c thread.h thread.c
 # kdbd_static_CFLAGS = -DELEKTRA_STATIC -DDEFAULT_DBACKEND=\"$(default_dbackend)\"

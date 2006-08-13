@@ -1,10 +1,18 @@
 
 # $Id$
 
-SUBDIRS = filesys fstab berkeleydb daemon
+SUBDIRS = filesys berkeleydb 
 
 if EXPERIMENTAL
 SUBDIRS += gconf ini template
+endif
+
+if HAVE_GLIBC_MNTENT
+SUBDIRS += fstab
+endif
+
+if HAVE_UCRED
+SUBDIRS += daemon
 endif
 
 install-exec-hook:
