@@ -9,4 +9,4 @@ kdb_LDADD = ../libelektra/libelektra.la $(LIBLTDL) $(LIBICONV)
 
 kdb_static_SOURCES = kdb.c help.c ../include/kdb.h
 kdb_static_CFLAGS = -DELEKTRA_STATIC
-kdb_static_LDADD = $(privatelibs) ../libelektra/libelektra.a
+kdb_static_LDADD = $(privatelibs) ../libelektra/libelektra.a $(LIBICONV)

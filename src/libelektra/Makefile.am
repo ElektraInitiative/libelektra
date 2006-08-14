@@ -3,15 +3,17 @@
 
 AM_CPPFLAGS = -I$(top_srcdir)/src/include $(LTDLINCL)
 
-elektra_sources = kdb.c error.c key.c keyset.c kdbhighlevel.c backendhelpers.c \
-		../include/kdb.h \
-		../include/kdbbackend.h \
-		../include/kdbprivate.h
+elektra_sources = kdb.c error.c key.c keyset.c kdbhighlevel.c backendhelpers.c
+
+elektra_dependencies = ../include/kdbprivate.h \
+	../include/kdb.h \
+	../include/kdbbackend.h
 
 lib_LIBRARIES = libelektra.a
 libelektra_a_SOURCES = $(elektra_sources) \
 		exported_symbols.c \
 		../include/kdbLibLoader.h
+libelektra_a_DEPENDENCIES = $(elektra_dependencies) objects
 libelektra_a_CFLAGS = -DELEKTRA_STATIC -DDEFAULT_BACKEND=\"$(default_backend)\"
 libelektra_a_LIBADD = `cat objects`
 BUILT_SOURCES = exported_symbols.c
@@ -24,6 +26,7 @@ endif
 
 lib_LTLIBRARIES = libelektra.la
 libelektra_la_SOURCES = $(elektra_sources)
+libelektra_la_DEPENDENCIES = $(elektra_dependencies)
 libelektra_la_CFLAGS = -DDEFAULT_BACKEND=\"default\"
 libelektra_la_LDFLAGS = -version-info 2:1:0
 libelektra_la_LIBADD = $(LIBICONV) ../libloader/libloader-dynamic.la
@@ -42,7 +45,7 @@ EXTRA_DIST = exportsymbols.sh
 all_backends:
 	cd ../backends && $(MAKE) all
 	
-`cat objects`: ../libloader/libloader-static.a all_backends ../libelektratools/libelektratools.a
+objects: ../libloader/libloader-static.a all_backends ../libelektratools/libelektratools.a
 	@list='$(backends)'; for backend in $$list; do \
 	  bck_list=$$bck_list" ../backends/$$backend/libelektra-$$backend.a "; \
 	done; \

@@ -24,7 +24,7 @@ $Id$
 #define KDBPRIVATE_H
 
 /* Elektra data directories */
-#define KDB_DB_SYSTEM            "/etc/kdb"
+#define KDB_DB_SYSTEM            "@KDB_DB_SYSTEM@"
 #define KDB_DB_USER              ".kdb"   /* $HOME/.kdb */
 
 

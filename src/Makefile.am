@@ -16,7 +16,7 @@ if EXPERIMENTAL
 	)
 endif
 
-std_subdirs = libloader libelektra backends libregistry kdb include bindings
+std_subdirs = include libloader libelektra backends libregistry kdb bindings
 
 DIST_SUBDIRS = $(std_subdirs) libelektratools
 SUBDIRS = . $(std_subdirs) $(elektratools)
