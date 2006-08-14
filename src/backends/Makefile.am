@@ -1,19 +1,20 @@
 
 # $Id$
 
-SUBDIRS = filesys berkeleydb 
+DIST_SUBDIRS = filesys berkeleydb gconf ini template fstab daemon
+SUBDIRS = $(backends)
 
-if EXPERIMENTAL
-SUBDIRS += gconf ini template
-endif
+#if EXPERIMENTAL
+#SUBDIRS += gconf ini template
+#endif
 
-if HAVE_GLIBC_MNTENT
-SUBDIRS += fstab
-endif
+#if HAVE_GLIBC_MNTENT
+#SUBDIRS += fstab
+#endif
 
-if HAVE_UCRED
-SUBDIRS += daemon
-endif
+#if HAVE_UCRED
+#SUBDIRS += daemon
+#endif
 
 install-exec-hook:
 	cd $(DESTDIR)$(backenddir) && \

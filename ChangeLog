@@ -65,6 +65,12 @@ and friends
 - changes in the nm and amk call to accomodate for solaris 8
 - always use install_sh since install -c needs a directory arg on 
 solaris 8 (an autoconf bug?)
+-    By Patrice Dumas <pertusus@free.fr> 14/08/2006
+- determine which backends are compiled in and if libelektratools
+is compiled or not in ./configure, an substitute correct value
+in SUBDIR (idea of Yannick)
+- rewrite exportsymbols.sh to only use backend names to recreate
+exported_symbols.c
 
 * Wed Jun 02 2006 Avi and Yannick <yl@itioweb.com> 0.6.2
 - Renamed some sorces on src/libelektra/

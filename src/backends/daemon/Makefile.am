@@ -3,7 +3,6 @@
 
 AM_CPPFLAGS = -I$(top_srcdir)/src/include
 
-
 noinst_LIBRARIES = libelektra-daemon.a 
 noinst_LTLIBRARIES = libproto.la
 

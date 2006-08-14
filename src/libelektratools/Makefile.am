@@ -5,7 +5,7 @@
 # path in XML_CFLAGS rather than XML_CPPFLAGS
 # -- Yannick
 
-if HAVE_XML
+#if HAVE_XML
 
 AM_CPPFLAGS = -DDATADIR=\"$(datadir)\" \
  -I$(top_srcdir)/src/include $(XML_CPPFLAGS) $(XML_CFLAGS)
@@ -29,4 +29,4 @@ install-exec-hook:
 	cd $(DESTDIR)$(hlvlbackenddir) && \
 	test -e libelektratools.so || \
 	$(LN_S) $(ulibdir)/libelektratools.so.$(ELEKTRATOOLS_CURRENT) libelektratools.so
-endif
+#endif

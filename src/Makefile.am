@@ -16,6 +16,9 @@ if EXPERIMENTAL
 	)
 endif
 
-SUBDIRS = . libloader libelektra backends libelektratools libregistry kdb include bindings
+std_subdirs = libloader libelektra backends libregistry kdb include bindings
+
+DIST_SUBDIRS = $(std_subdirs) libelektratools
+SUBDIRS = . $(std_subdirs) $(elektratools)
 EXTRA_DIST = Doxyfile
 

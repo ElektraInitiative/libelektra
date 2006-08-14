@@ -5,9 +5,10 @@
 # Compile libelektra-gconf only if GConf was found
 #
 
-if HAVE_GCONF
+#if HAVE_GCONF
 AM_CPPFLAGS = -I$(top_srcdir)/src/include
 
+noinst_LIBRARIES = libelektra-gconf.a
 libelektra_gconf_a_SOURCES = gconf.c
 libelektra_gconf_a_CFLAGS = $(gconf_CFLAGS) -DELEKTRA_STATIC
 
@@ -19,4 +20,4 @@ libelektra_gconf_la_LIBADD = $(LIBLTDL) $(gconf_LIBS) ../../libelektra/libelektr
 
 ../../libelektra/libelektra.la:
 	cd ../../libelektra/ && $(MAKE) libelektra.la
-endif
+#endif

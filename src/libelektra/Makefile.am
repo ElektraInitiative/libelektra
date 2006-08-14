@@ -17,7 +17,6 @@ libelektra_a_LIBADD = `cat objects`
 BUILT_SOURCES = exported_symbols.c
 
 if EXPERIMENTAL
-libelektra_a_CFLAGS += -DEXPERIMENTAL
 libelektra_a_LIBADD += ../backends/ini/libelektra_ini_a-ini.$(OBJEXT) \
                        ../backends/ini/libelektra_ini_a-helpers.$(OBJEXT) \
 		       ../backends/ini/libelektra_ini_a-parser.$(OBJEXT)
@@ -28,6 +27,8 @@ libelektra_la_SOURCES = $(elektra_sources)
 libelektra_la_CFLAGS = -DDEFAULT_BACKEND=\"default\"
 libelektra_la_LDFLAGS = -version-info 2:1:0
 libelektra_la_LIBADD = $(LIBICONV) ../libloader/libloader-dynamic.la
+
+EXTRA_DIST = exportsymbols.sh
 
 ../libloader/libloader-static.a:
 	cd ../libloader && $(MAKE) libloader-static.a
@@ -47,12 +48,14 @@ all_backends:
 	done; \
 	$(SHELL) exportobjects.sh ../libloader/libloader-static.a $$bck_list ../libelektratools/libelektratools.a
 
-exported_symbols.c: all_backends ../libelektratools/libelektratools.a
-	@list='$(backends)'; for backend in $$list; do \
-	  bck_list=$$bck_list" ../backends/$$backend/libelektra-$$backend.a"; \
-	done; \
-	$(SHELL) exportsymbols.sh $$bck_list ../libelektratools/libelektratools.a
+exported_symbols.c: ../../config.status
+	$(SHELL) $(srcdir)/exportsymbols.sh $(backends) $(elektratools)
 
+#exported_symbols.c: all_backends ../libelektratools/libelektratools.a
+#	@list='$(backends)'; for backend in $$list; do \
+#	  bck_list=$$bck_list" ../backends/$$backend/libelektra-$$backend.a"; \
+#	done; \
+#	$(SHELL) exportsymbols.sh $$bck_list ../libelektratools/libelektratools.a
 clean-local:
 	-rm -f objects
 	-rm -f exported_symbols.c

@@ -115,9 +115,10 @@ AC_SUBST(default_dbackend)
 # backends at this time)
 AC_ARG_ENABLE(experimental,
 	      [AC_HELP_STRING(--enable-experimental, [Specify to compile or not experimental parts (could cause compilation failure)])],
-	      [experimental=$enableval],
-	      [experimental=no])
-AM_CONDITIONAL(EXPERIMENTAL, [test x$experimental = xyes])
+	      [elektra_experimental=$enableval],
+	      [elektra_experimental=no])
+# for the c++ binding
+AM_CONDITIONAL(EXPERIMENTAL, [test x$elektra_experimental = xyes])
 
 # Select docbook.xsl
 AC_ARG_WITH(docbook,
@@ -228,15 +229,18 @@ backends="filesys"
 privatelibs=""
 
 # Check for libxml (Allow compilation of libelektratools)
-AM_PATH_XML2(, [have_xml="yes"], [have_xml="no"])
-AM_CONDITIONAL(HAVE_XML, [test x$have_xml = xyes])
-if test "x$have_xml" = "xyes"; then
+AM_PATH_XML2(, [elektra_have_xml="yes"], [elektra_have_xml="no"])
+dnl AM_CONDITIONAL(HAVE_XML, [test x$elektra_have_xml = xyes])
+if test "x$elektra_have_xml" = "xyes"; then
+	elektratools=libelektratools
 	privatelibs=$privatelibs" -lxml2"
 fi
 
+AC_SUBST(elektratools)
+
 # Check for libdb (Allow compilation of libelektra-berkeley.so)
 AC_CHECK_LIB(db, db_create, [have_db="yes"], [have_db="no"])
-AM_CONDITIONAL(HAVE_DB, [test x$have_db = xyes])
+dnl AM_CONDITIONAL(HAVE_DB, [test x$have_db = xyes])
 if test "x$have_db" = "xyes"; then
 	backends=$backends" berkeleydb"
 	privatelibs=$privatelibs" -ldb"
@@ -244,11 +248,16 @@ fi
 
 
 # Check for libGconf (Allow compilation of libelektra-gconf.so)
-PKG_CHECK_MODULES(gconf, gconf-2.0, [have_gconf="yes"], [have_gconf="no"])
-AM_CONDITIONAL(HAVE_GCONF, [test x$have_gconf = xyes])
-if test "x$have_gconf" = "xyes"; then
+PKG_CHECK_MODULES(gconf, gconf-2.0, [elektra_have_gconf="yes"], [elektra_have_gconf="no"])
+dnl AM_CONDITIONAL(HAVE_GCONF, [test x$elektra_have_gconf = xyes])
+if test "x$elektra_have_gconf" = "xyes" -a "x$elektra_experimental" = 'yes'; 
+then
 	backends=$backends" gconf"
 	privatelibs=$privatelibs" -lgconf-2"
+fi
+
+if test "x$elektra_experimental" = 'yes'; then
+	backends=$backends" ini template"
 fi
 
 AC_SUBST(privatelibs)
@@ -377,7 +386,6 @@ AC_OUTPUT([src/Makefile
 
 	   src/libelektra/Makefile
 	   src/libelektra/exportobjects.sh
-	   src/libelektra/exportsymbols.sh
 
 	   src/libelektratools/Makefile
 
@@ -422,7 +430,7 @@ echo "--------------------------------"
 echo ""
 echo "Compile backends: $backends"
 echo -n "Compile libelektratools: "
-if test x$have_xml = "xyes"; then
+if test x$elektra_have_xml = "xyes"; then
 	echo "yes"
 else
 	echo "no"

@@ -5,7 +5,7 @@
 # Compile libelektra-berkeleydb only if libdb was found
 #
 
-if HAVE_DB
+#if HAVE_DB
 AM_CPPFLAGS = -I$(top_srcdir)/src/include
 
 noinst_LIBRARIES = libelektra-berkeleydb.a
@@ -19,4 +19,4 @@ libelektra_berkeleydb_la_LIBADD = ../../libelektra/libelektra.la -ldb
 
 ../../libelektra/libelektra.la:
 	cd ../../libelektra/ && $(MAKE) libelektra.la
-endif
+#endif
