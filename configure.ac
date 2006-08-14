@@ -240,7 +240,7 @@ AC_SUBST(elektratools)
 
 elektra_have_db=no
 # Check for libdb (Allow compilation of libelektra-berkeley.so)
-AC_CHECH_HEADERS([db.h],[
+AC_CHECK_HEADERS([db.h],[
   AC_CHECK_LIB([db], [db_create], [elektra_have_db="yes"])
 ])
 dnl AM_CONDITIONAL(HAVE_DB, [test x$elektra_have_db = xyes])

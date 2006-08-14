@@ -7,6 +7,7 @@
 #AM_CFLAGS=-g -O2
 
 all-local:
+	(cd include && $(MAKE) all)
 	(cd backends/$(default_backend) && $(MAKE) $(AM_MAKEFLAGS) libelektra_$(default_backend)_a-$(default_backend).$(OBJEXT))
 if EXPERIMENTAL
 	(cd backends/ini && $(MAKE) $(AM_MAKEFLAGS) \
