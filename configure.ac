@@ -238,6 +238,16 @@ fi
 
 AC_SUBST(elektratools)
 
+AC_CHECK_TYPE([u_int], [],
+[
+	AC_DEFINE(u_int, [unsigned int], [If system does not define u_int, define a reasonable substitute.])
+])
+
+AC_CHECK_TYPE([u_long], [],
+[
+	AC_DEFINE(u_long, [unsigned long], [If system does not define u_long, define a reasonable substitute.])
+])
+
 elektra_have_db=no
 # Check for libdb (Allow compilation of libelektra-berkeley.so)
 AC_CHECK_HEADERS([db.h],[
@@ -324,15 +334,27 @@ AC_SUBST(backends)
 # inspired from daemontools. Currently not used.
 AC_CHECK_HEADERS([signal.h],[
    AC_TRY_LINK([#include <signal.h>],
-[  
+[
 sigset_t ss;
  
 sigemptyset(&ss);
 sigaddset(&ss,SIGCHLD);
 sigprocmask(SIG_SETMASK,&ss,(sigset_t *) 0);
 ],
-     [AC_DEFINE([HASSIGPROCMASK],[],[POSIX signal available])])
+    [AC_DEFINE([HASSIGPROCMASK],[],[POSIX signal available])])
+    AC_TRY_LINK([#include <signal.h>],
+[
+int sig;
+struct sigaction sa;;
+sa.sa_handler = f;
+sa.sa_flags = 0;
+sigemptyset(&sa.sa_mask);
+sigaction(sig,&sa,(struct sigaction *) 0); 
+],
+    [AC_DEFINE([HASSIGACTION],[],[sigaction available])])
 ])
+
+
 
 #
 # Checks for typedefs, structures, and compiler characteristics.
@@ -367,6 +389,27 @@ AC_CHECK_TYPE([u_int8_t], [],
 	])
 ])
 
+AC_CHECK_TYPE(ssize_t, [], 
+[
+	AC_DEFINE(ssize_t, int, [Type of sizes or error indications.])
+])
+
+AC_MSG_CHECKING([For a working getopt])
+AC_TRY_LINK([#include <unistd.h>],
+[
+int opt;
+char** myargv;
+opt=getopt(1,myargv,"a");
+if (optind == 2) {opt = 3;};
+],
+[
+AC_DEFINE([HASGETOPT],[],[Working getopt])
+AC_MSG_RESULT(yes)
+],
+[
+AC_MSG_RESULT(no)
+])
+
 #
 # Checks for library functions.
 #
@@ -374,6 +417,8 @@ AC_CHECK_TYPE([u_int8_t], [],
 #AC_FUNC_MEMCMP
 #AC_FUNC_REALLOC
 AC_CHECK_FUNCS([memset nl_langinfo setenv setlocale strcasecmp strchr strrchr index rindex strtol ctime_r getuid getgid sigprocmask sigaction])
+
+
 
 INSTALL='\$(install_sh)'
 AC_SUBST(INSTALL)

@@ -32,6 +32,9 @@ $Id$
 #ifdef HAVE_STRING_H
 #include <string.h>
 #endif
+#if HAVE_UNISTD_H
+#include <unistd.h>
+#endif
 
 
 ssize_t serialInt_getSize(const void *pInt)

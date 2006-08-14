@@ -20,9 +20,16 @@ $Id$
 */
 
 
-#ifndef __SERIAL__
-#define __SERIAL__
+#ifndef DAEMON_SERIAL_H
+#define DAEMON_SERIAL_H
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
 #include <stdlib.h>
 #include "datatype.h"
 

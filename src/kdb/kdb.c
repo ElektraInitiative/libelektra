@@ -20,11 +20,12 @@ $Id$
 
 */
 
-
-
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
+
+#ifndef HASGETOPT
+#include "BSDgetopt.h"
 #endif
 
 #include <sys/types.h>
