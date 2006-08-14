@@ -238,10 +238,13 @@ fi
 
 AC_SUBST(elektratools)
 
+elektra_have_db=no
 # Check for libdb (Allow compilation of libelektra-berkeley.so)
-AC_CHECK_LIB(db, db_create, [have_db="yes"], [have_db="no"])
-dnl AM_CONDITIONAL(HAVE_DB, [test x$have_db = xyes])
-if test "x$have_db" = "xyes"; then
+AC_CHECH_HEADERS([db.h],[
+  AC_CHECK_LIB([db], [db_create], [elektra_have_db="yes"])
+])
+dnl AM_CONDITIONAL(HAVE_DB, [test x$elektra_have_db = xyes])
+if test "x$elektra_have_db" = "xyes"; then
 	backends=$backends" berkeleydb"
 	privatelibs=$privatelibs" -ldb"
 fi
