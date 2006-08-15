@@ -1,5 +1,7 @@
 # $Id$
 
+ACLOCAL_AMFLAGS = -I m4
+
 SUBDIRS = libltdl src examples doc scripts xmldtd xmlschema tests
 EXTRA_DIST=elektra.pc elektratools.pc elektra.spec elektra.mandriva.spec elektra.xml 
 

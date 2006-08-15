@@ -20,6 +20,9 @@ if test "x$CFLAGS" = "x"; then
 fi
 AC_MSG_NOTICE([Empty CFLAGS: $elektra_empty_CFLAGS])
 
+dnl select POSIX extensions, usefull on solaris, for example
+gl_USE_SYSTEM_EXTENSIONS
+
 # Debuging version ?
 # CFLAGS="${CFLAGS=}"
 dnl this macro is used to get the arguments supplied

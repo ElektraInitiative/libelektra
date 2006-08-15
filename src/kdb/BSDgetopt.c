@@ -33,7 +33,7 @@
 #include "config.h"
 #endif
 
-#if !defined(HASGETOPT) || !defined(HAVE_GETOPT_OPTRESET)
+#ifndef HASGETOPT
 
 #include "BSDgetopt.h"
 
@@ -41,8 +41,6 @@
 static char *rcsid = "$OpenBSD: getopt.c,v 1.5 2003/06/02 20:18:37 millert Exp $";
 #endif /* LIBC_SCCS and not lint */
 
-	BSDopterr = 1;		/* if error message should be printed */
-	BSDoptind = 1;		/* index into parent argv vector */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -51,6 +49,8 @@ static char *rcsid = "$OpenBSD: getopt.c,v 1.5 2003/06/02 20:18:37 millert Exp $
 #define	BADARG	(int)':'
 #define	EMSG	""
 
+	BSDopterr = 1;		/* if error message should be printed */
+	BSDoptind = 1;		/* index into parent argv vector */
 /*
  * getopt --
  *	Parse argc/argv argument vector.
@@ -121,4 +121,4 @@ BSDgetopt(nargc, nargv, ostr)
 	return (BSDoptopt);			/* dump back option letter */
 }
 
-#endif /* !defined(HAVE_GETOPT) || !defined(HAVE_OPTRESET) */
+#endif 

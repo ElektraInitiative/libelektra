@@ -75,6 +75,11 @@ exported_symbols.c
 but instead honor sysconfdir
 - Fixes to have -std=c99 proceed until the end
 - Detect a working getopt, and if not found use getopt from openssh
+-    By Patrice Dumas <pertusus@free.fr> 15/08/2006
+- add a m4 directory for autoconf macros
+- use an autoconf macro from gnulib to set POSIX exensions on various 
+systems
+- fix in BSDgetopt
 
 * Wed Jun 02 2006 Avi and Yannick <yl@itioweb.com> 0.6.2
 - Renamed some sorces on src/libelektra/

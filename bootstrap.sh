@@ -6,7 +6,7 @@ echo "LIBTOOLIZE"
 libtoolize --ltdl --copy
 
 echo "ACLOCAL"
-aclocal
+aclocal -I m4
 
 echo "AUTOHEADER"
 autoheader
