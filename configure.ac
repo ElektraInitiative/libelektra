@@ -118,13 +118,7 @@ AC_SUBST(default_dbackend)
 # backends at this time)
 AC_ARG_ENABLE(experimental,
 	      [AC_HELP_STRING(--enable-experimental, [Specify to compile or not experimental parts (could cause compilation failure)])],
-	      [
-		if test "x$enableval" = 'x'; then
-			elektra_experimental='yes'
-		else
-			elektra_experimental=$enableval
-		fi
-	      ],
+	      [elektra_experimental=$enableval],
 	      [elektra_experimental=no])
 # for the c++ binding
 AM_CONDITIONAL(EXPERIMENTAL, [test x$elektra_experimental = xyes])
@@ -272,14 +266,14 @@ fi
 # Check for libGconf (Allow compilation of libelektra-gconf.so)
 PKG_CHECK_MODULES(gconf, gconf-2.0, [elektra_have_gconf="yes"], [elektra_have_gconf="no"])
 dnl AM_CONDITIONAL(HAVE_GCONF, [test x$elektra_have_gconf = xyes])
-if test "x$elektra_have_gconf" = "xyes" -a "x$elektra_experimental" = 'yes'; 
+if test "x$elektra_have_gconf" = "xyes" -a "x$elektra_experimental" = 'xyes'; 
 then
 	backends=$backends" gconf"
 	privatelibs=$privatelibs" -lgconf-2"
 fi
 
-if test "x$elektra_experimental" = 'yes'; then
-	backends=$backends" ini template"
+if test "x$elektra_experimental" = 'xyes'; then
+	backends=$backends" ini"
 fi
 
 AC_SUBST(privatelibs)

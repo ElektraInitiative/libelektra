@@ -140,7 +140,7 @@ void testOut (Key * orig, Key * read, const char * keyname)
 			keyStealName(read),keyStealName(orig));
 	if (failed & KEY_SWITCH_VALUE)
 		fprintf (stderr, "value differs: is \"%s\", was \"%s\"\n",
-			keyStealValue(read),keyStealValue(orig));
+			(char *) keyStealValue(read), (char *) keyStealValue(orig));
 	if (failed & KEY_SWITCH_OWNER)
 		fprintf (stderr, "owner differs: is \"%s\", was \"%s\"\n",
 			keyStealOwner(read),keyStealOwner(orig));
@@ -221,13 +221,14 @@ void printKeys (KeySet * set)
 
 void getKeys ()
 {
-	int ret;
-	Key * root;
-	KeySet * set;
 	Key * t;
+	KeySet * set;
 
+	/* int ret;
+	Key * root;
 	Key *parentKey;
-        ssize_t rc;
+        ssize_t rc; */
+
 	set = ksNew();
 
 	/* Get all value keys for this application */

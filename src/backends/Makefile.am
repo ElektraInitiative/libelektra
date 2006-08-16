@@ -2,7 +2,7 @@
 # $Id$
 
 DIST_SUBDIRS = filesys berkeleydb gconf ini template fstab daemon
-SUBDIRS = $(backends)
+SUBDIRS = $(backends) template
 
 #if EXPERIMENTAL
 #SUBDIRS += gconf ini template

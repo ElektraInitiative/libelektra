@@ -21,6 +21,8 @@ TODO: Not well tested yet.
 #endif
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <kdb.h>
 
 #define MY_APP_ROOT   "system/sw/MyApp/current"
@@ -67,7 +69,7 @@ void changeConfig(KeySet *myConfig) {
 
 /* Save the modified keys */
 int saveConfig(KDBHandle handle, KeySet *myConfig) {
-	kdbSetKeys(handle,myConfig);
+	return kdbSetKeys(handle,myConfig);
 }
 
 

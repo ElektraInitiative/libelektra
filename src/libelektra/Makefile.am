@@ -18,20 +18,23 @@ libelektra_a_CFLAGS = -DELEKTRA_STATIC -DDEFAULT_BACKEND=\"$(default_backend)\"
 libelektra_a_LIBADD = `cat objects`
 BUILT_SOURCES = exported_symbols.c
 
-if EXPERIMENTAL
-libelektra_a_LIBADD += ../backends/ini/libelektra_ini_a-ini.$(OBJEXT) \
-                       ../backends/ini/libelektra_ini_a-helpers.$(OBJEXT) \
-		       ../backends/ini/libelektra_ini_a-parser.$(OBJEXT)
-endif
+#if EXPERIMENTAL
+#libelektra_a_LIBADD += ../backends/ini/libelektra_ini_a-ini.$(OBJEXT) \
+#                       ../backends/ini/libelektra_ini_a-helpers.$(OBJEXT) \
+#		       ../backends/ini/libelektra_ini_a-parser.$(OBJEXT)
+#endif
 
 lib_LTLIBRARIES = libelektra.la
 libelektra_la_SOURCES = $(elektra_sources)
-libelektra_la_DEPENDENCIES = $(elektra_dependencies)
+libelektra_la_DEPENDENCIES = $(elektra_dependencies) ../libloader/libloader-dynamic.la
 libelektra_la_CFLAGS = -DDEFAULT_BACKEND=\"default\"
 libelektra_la_LDFLAGS = -version-info 2:1:0
-libelektra_la_LIBADD = $(LIBICONV) ../libloader/libloader-dynamic.la
+libelektra_la_LIBADD = ../libloader/libloader-dynamic.la $(LIBICONV)
 
 EXTRA_DIST = exportsymbols.sh
+
+../include/kdbprivate.h:
+	cd ../include && $(MAKE) kdbprivate.h
 
 ../libloader/libloader-static.a:
 	cd ../libloader && $(MAKE) libloader-static.a

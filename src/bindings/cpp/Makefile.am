@@ -1,7 +1,7 @@
 # $Id: Makefile.am 741 2006-04-16 10:54:57Z aviram $
 
-testdir = $(develdocdir)/src/bindings/cpp/
-AM_CPPFLAGS = -I$(top_srcdir)/src/include
+#testdir = $(develdocdir)/src/bindings/cpp/
+AM_CPPFLAGS = -I$(top_srcdir)/src/include -I$(srcdir)/include
 
 #include_HEADERS = ckdb.h
 

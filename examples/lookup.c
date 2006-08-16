@@ -34,13 +34,13 @@ int main(int argc,char **argv) {
 	printf("*************** Value matching\n\n");
 	
 	ksRewind(ks);
-	while (key=ksLookupByValue(ks,"24",0)) {
+	while ((key=ksLookupByValue(ks,"24",0))) {
 		/* show all keys which value="24" */
 		keyToStream(key,stdout,0);
 	}
 	
 	ksRewind(ks);
-	while (key=ksLookupByValue(ks,"0",0)) {
+	while ((key=ksLookupByValue(ks,"0",0))) {
 		/* show all keys which value="0" */
 		keyToStream(key,stdout,0);
 	}

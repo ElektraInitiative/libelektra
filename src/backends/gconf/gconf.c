@@ -509,7 +509,8 @@ int kdbRename_gconf(Key *key, const char *newName) {
 
 
 
-KDBBackend *kdbBackendFactory(void) {
+KDBEXPORT(gconf)
+{
 	return kdbBackendExport(BACKENDNAME,
 		KDB_BE_OPEN,           &kdbOpen_gconf,
 		KDB_BE_CLOSE,          &kdbClose_gconf,

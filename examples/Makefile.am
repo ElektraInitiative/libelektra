@@ -1,10 +1,12 @@
 # $Id$
 
+AM_CPPFLAGS = -I$(top_srcdir)/src/include
+
 elekexampledir = $(develdocdir)/examples
                                                                                                                              
 EXTRA_DIST = test.c application.c binary.c keyNewExample.c lookup.c example.c hierarchy.xml keyset.xml
 
-elekexample_DATA = test.c application.c binary.c keyNewExample.c lookup.c
+#elekexample_DATA = test.c application.c binary.c keyNewExample.c lookup.c
 
 #
 # Examples will only compile if you enable experimental
@@ -39,6 +41,4 @@ hello_SOURCES = hello.c
 hello_LDADD = ../src/libelektra/libelektra.la
 endif
 
-
-AM_CPPFLAGS = -I$(top_srcdir)/src/include
 
