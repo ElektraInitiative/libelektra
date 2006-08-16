@@ -33,9 +33,9 @@
 #include "config.h"
 #endif
 
-#ifndef HASGETOPT
-
 #include "BSDgetopt.h"
+
+#ifndef HASGETOPT
 
 #if defined(LIBC_SCCS) && !defined(lint)
 static char *rcsid = "$OpenBSD: getopt.c,v 1.5 2003/06/02 20:18:37 millert Exp $";
@@ -49,8 +49,8 @@ static char *rcsid = "$OpenBSD: getopt.c,v 1.5 2003/06/02 20:18:37 millert Exp $
 #define	BADARG	(int)':'
 #define	EMSG	""
 
-	BSDopterr = 1;		/* if error message should be printed */
-	BSDoptind = 1;		/* index into parent argv vector */
+int BSDopterr = 1;		/* if error message should be printed */
+int BSDoptind = 1;		/* index into parent argv vector */
 /*
  * getopt --
  *	Parse argc/argv argument vector.

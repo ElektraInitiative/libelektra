@@ -80,6 +80,9 @@ but instead honor sysconfdir
 - use an autoconf macro from gnulib to set POSIX exensions on various 
 systems
 - fix in BSDgetopt
+-    By Patrice Dumas <pertusus@free.fr> 16/08/2006
+- don't set _GNU_SOURCE in the default case, plus minor fixes
+
 
 * Wed Jun 02 2006 Avi and Yannick <yl@itioweb.com> 0.6.2
 - Renamed some sorces on src/libelektra/

@@ -118,7 +118,13 @@ AC_SUBST(default_dbackend)
 # backends at this time)
 AC_ARG_ENABLE(experimental,
 	      [AC_HELP_STRING(--enable-experimental, [Specify to compile or not experimental parts (could cause compilation failure)])],
-	      [elektra_experimental=$enableval],
+	      [
+		if test "x$enableval" = 'x'; then
+			elektra_experimental='yes'
+		else
+			elektra_experimental=$enableval
+		fi
+	      ],
 	      [elektra_experimental=no])
 # for the c++ binding
 AM_CONDITIONAL(EXPERIMENTAL, [test x$elektra_experimental = xyes])
