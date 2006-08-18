@@ -85,6 +85,8 @@ systems
 - fixes for experimental features
 -    By Patrice Dumas <pertusus@free.fr> 18/08/2006
 - have static libelektra depend only on backends static libraries
+- call AC_GNU_SOURCE if CFLAGS is empty
+- add -std=c99 -pedantic to CFLAGS if CFLAGS is empty
 
 
 * Wed Jun 02 2006 Avi and Yannick <yl@itioweb.com> 0.6.2

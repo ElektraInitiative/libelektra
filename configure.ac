@@ -16,6 +16,7 @@ AC_CONFIG_HEADER([src/include/config.h])
 
 elektra_empty_CFLAGS=no
 if test "x$CFLAGS" = "x"; then
+	AC_GNU_SOURCE
 	elektra_empty_CFLAGS=yes
 fi
 AC_MSG_NOTICE([Empty CFLAGS: $elektra_empty_CFLAGS])
@@ -163,7 +164,7 @@ AC_CHECK_PROG(NM, nm, nm, nm-is-missing)
 
 # add -Wall if compiler is gcc and the CFLAGS variable is empty
 if test $elektra_empty_CFLAGS = yes -a "x$CC" = xgcc; then
-	CFLAGS="$CFLAGS -Wall"
+	CFLAGS="$CFLAGS -Wall -std=c99 -pedantic"
 fi
 
 # Don't use libltdl stuff for WIN32
