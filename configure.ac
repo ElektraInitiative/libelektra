@@ -329,12 +329,17 @@ AC_CHECK_MEMBERS([struct ucred.pid],
   ],
   [],
   [#include <sys/socket.h>])
-AM_CONDITIONAL(HAVE_UCRED, [test x$elektra_ucred = xyes])
+dnl AM_CONDITIONAL(HAVE_UCRED, [test x$elektra_ucred = xyes])
 
-    
+backend_static_libs=
+for elektra_tmp_backend in $backends; do
+	backend_static_libs="$backend_static_libs ../backends/$elektra_tmp_backend/libelektra-${elektra_tmp_backend}.a"
+done
+
 AC_SUBST(backends)
+AC_SUBST(backend_static_libs)
 
-# inspired from daemontools. Currently not used.
+# inspired from daemontools
 AC_CHECK_HEADERS([signal.h],[
    AC_TRY_LINK([#include <signal.h>],
 [
@@ -356,7 +361,6 @@ sigaction(sig,&sa,(struct sigaction *) 0);
 ],
     [AC_DEFINE([HASSIGACTION],[],[sigaction available])])
 ])
-
 
 
 #

@@ -45,14 +45,37 @@ EXTRA_DIST = exportsymbols.sh
 ../libelektratools/libelektratools.a:
 	cd ../libelektratools && $(MAKE) libelektratools.a
 	
-all_backends:
-	cd ../backends && $(MAKE) all
-	
-objects: ../libloader/libloader-static.a all_backends ../libelektratools/libelektratools.a
-	@list='$(backends)'; for backend in $$list; do \
-	  bck_list=$$bck_list" ../backends/$$backend/libelektra-$$backend.a "; \
-	done; \
-	$(SHELL) exportobjects.sh ../libloader/libloader-static.a $$bck_list ../libelektratools/libelektratools.a
+#all_backends:
+#	cd ../backends && $(MAKE) all
+
+../backends/filesys/libelektra-filesys.a:
+	cd ../backends/filesys && $(MAKE) libelektra-filesys.a
+
+../backends/ini/libelektra-ini.a:
+	cd ../backends/ini && $(MAKE) libelektra-ini.a
+
+../backends/fstab/libelektra-fstab.a:
+	cd ../backends/fstab && $(MAKE) libelektra-fstab.a
+
+../backends/daemon/libelektra-daemon.a:
+	cd ../backends/daemon && $(MAKE) libelektra-daemon.a
+
+../backends/berkeleydb/libelektra-berkeleydb.a:
+	cd ../backends/berkeleydb && $(MAKE) libelektra-berkeleydb.a
+
+../backends/gconf/libelektra-gconf.a:
+	cd ../backends/gconf && $(MAKE) libelektra-gconf.a
+
+#objects: ../libloader/libloader-static.a all_backends ../libelektratools/libelektratools.a
+#	@list='$(backends)'; for backend in $$list; do \
+#	  bck_list=$$bck_list" ../backends/$$backend/libelektra-$$backend.a "; \
+#	done; \
+#	$(SHELL) exportobjects.sh ../libloader/libloader-static.a $$bck_list ../libelektratools/libelektratools.a
+
+object_deps = ../libloader/libloader-static.a $(backend_static_libs) ../libelektratools/libelektratools.a
+
+objects: $(object_deps)
+	$(SHELL) exportobjects.sh $(object_deps)
 
 exported_symbols.c: ../../config.status
 	$(SHELL) $(srcdir)/exportsymbols.sh $(backends) $(elektratools)

@@ -83,6 +83,8 @@ systems
 -    By Patrice Dumas <pertusus@free.fr> 16/08/2006
 - don't set _GNU_SOURCE in the default case, plus minor fixes
 - fixes for experimental features
+-    By Patrice Dumas <pertusus@free.fr> 18/08/2006
+- have static libelektra depend only on backends static libraries
 
 
 * Wed Jun 02 2006 Avi and Yannick <yl@itioweb.com> 0.6.2
