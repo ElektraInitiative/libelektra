@@ -12,14 +12,14 @@ AM_CPPFLAGS = -DDATADIR=\"$(datadir)\" \
 
 ELEKTRATOOLS_CURRENT = 1
 
-ektratools_sources = kdbtools.c ../include/kdbtools.h ../include/kdbprivate.h ../include/kdb.h
+electratools_sources = kdbtools.c ../include/kdbtools.h ../include/kdbprivate.h ../include/kdb.h
 
 noinst_LIBRARIES = libelektratools.a
-libelektratools_a_SOURCES = $(ektratools_sources)
+libelektratools_a_SOURCES = $(electratools_sources)
 libelektratools_a_CFLAGS = -DELEKTRA_STATIC
 
 ulib_LTLIBRARIES = libelektratools.la
-libelektratools_la_SOURCES = $(ektratools_sources)
+libelektratools_la_SOURCES = $(electratools_sources)
 
 libelektratools_la_LDFLAGS = -version-info $(ELEKTRATOOLS_CURRENT):0:0
 libelektratools_la_LIBADD = ../libelektra/libelektra.la $(XML_LIBS)
