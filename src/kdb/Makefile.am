@@ -14,4 +14,4 @@ kdb_static_CFLAGS = -DELEKTRA_STATIC
 kdb_static_LDADD = $(privatelibs) ../libelektra/libelektra.a $(LIBICONV)
 
 ../libelektra/libelektra.a:
-	cd ../libelektra && $(MAKEà libelektra.a
+	cd ../libelektra && $(MAKE) libelektra.a
