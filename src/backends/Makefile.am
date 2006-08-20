@@ -18,9 +18,9 @@ SUBDIRS = $(backends) template
 
 install-exec-hook:
 	cd $(DESTDIR)$(backenddir) && \
-	test -e libelektra-default.so || \
+	test -L libelektra-default.so || \
 	$(LN_S) libelektra-@default_backend@.so libelektra-default.so
 	cd $(DESTDIR)$(backenddir) && \
-	test -e libelektra-ddefault.so || \
+	test -L libelektra-ddefault.so || \
 	$(LN_S) libelektra-@default_dbackend@.so libelektra-ddefault.so
 
