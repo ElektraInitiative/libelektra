@@ -1416,4 +1416,110 @@ KDBBackend *kdbBackendExport(const char *backendName, ...) {
 	return returned;
 }
 
-
+/**
+ * Resolve key name
+ *
+ * This function resolve all key link contained in the path
+ * of the supplied key and give the real name.
+ * 
+ * @param handle KDBHandle
+ * @param key Key to resolve
+ * @param resolvedKeyName Pointer where the full resolved name will be set
+ * remember to free it.
+ *
+ * @return 0 if succeed, -1 otherwise
+ *
+ */
+static int kdbResolveKey(KDBHandle handle, const Key *key, char **resolvedKeyName)
+{
+	Key     *resolvedKey;
+	char    *kName, *tmp, *ptr;
+	size_t  size;
+	int     ret;
+	
+	resolvedKey = keyNew(KEY_SWITCH_END);
+	if ( resolvedKey == NULL ) {
+		return -1;
+	}
+	
+	size = keyGetFullNameSize(key);
+	kName = (char *) malloc(size);
+	tmp = (char *) malloc(size);
+	if ( (kName == NULL) || (tmp == NULL) ) {
+		keyDel(resolvedKey);
+		free(tmp);
+		free(kName);
+		return -1;
+	}
+	if ( keyGetFullName(key, tmp, size) == -1 ) {
+		keyDel(resolvedKey);
+		free(tmp);
+		free(kName);
+		return -1;
+	}
+	
+	size = 0;
+	ptr = tmp;
+	while ( *(ptr = keyNameGetOneLevel(ptr+size, &size)) != 0 ) {
+		strncpy(kName, ptr, size);
+		kName[size] = '\0';
+		
+		if ( keyAddBaseName(resolvedKey, kName) == -1 ) {
+			/* Probably not enought memory ... */
+			keyDel(resolvedKey);
+			free(tmp);
+			free(kName);
+			return -1;
+		}
+		
+		/* Resolve key link .. */
+		for(;;) {
+			ret = kdbStatKey(handle, resolvedKey);
+			if ( (ret == 0) && !keyIsLink(resolvedKey) ) {
+				/* Key isn't a link, stop resolution. */
+				break;
+				
+			} else if ( (ret == -1) && (errno == KDB_RET_NOTFOUND) ) {
+				/* Key isn't existing. Stop resolution */
+				break;
+				
+			} else if ( ret == -1 ) {
+				/* kdbStatKey() failed because of an internal
+				 * error or access denied. Propagate errno. */
+				keyDel(resolvedKey);
+				free(tmp);
+				free(kName);
+				return -1;
+			}
+			
+			/* Key is a link. Target key is contained in the value
+			 * of the stated key */
+			ret = keySetName(resolvedKey, keyStealValue(resolvedKey));
+			if ( ret == 0 ) {
+				/* Target key's name isn't valid. Propagate errno.
+				 * (NULL target isn't valid too) */
+				keyDel(resolvedKey);
+				free(tmp);
+				free(kName);
+				return -1;
+			}
+			
+			/* Perhaps the resolved key is a key link too, so iterate
+			 * now ... */
+		}
+	}
+	free(tmp);
+	free(kName);
+	
+	size = keyGetFullNameSize(resolvedKey);
+	*resolvedKeyName = (char *) malloc(size);
+	if ( *resolvedKeyName == NULL ) {
+		keyDel(resolvedKey);
+		return -1;
+	}
+	
+	keyGetFullName(resolvedKey, *resolvedKeyName, size);
+	keyDel(resolvedKey);
+	
+	return 0;
+}
