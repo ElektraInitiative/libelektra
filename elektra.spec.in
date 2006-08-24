@@ -122,7 +122,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 rm $RPM_BUILD_ROOT/bin/kdb_static
 
 # Remove unneeded .a files for backends
-rm $RPM_BUILD_ROOT/%{_lib}/libelektra-*.a
+#rm $RPM_BUILD_ROOT/%{_lib}/libelektra-*.a
 
 # Move .a files to -devel package
 mv $RPM_BUILD_ROOT/%{_lib}/libelektra.a $RPM_BUILD_ROOT/%{_libdir}
