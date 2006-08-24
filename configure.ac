@@ -197,8 +197,7 @@ else
 fi
 
 AC_SUBST(dbroot)
-AM_CONDITIONAL(HAVE_XSLTPROC, test x$xsltproc != xno)
-AM_CONDITIONAL(HAVE_STYLESHEET, test x$dbroot != xno)
+AM_CONDITIONAL(HAVE_XSL, test x$xsltproc != xno -a x$dbroot != xno)
 
 # man2html
 AC_PATH_PROG(man2html, man2html, "no")

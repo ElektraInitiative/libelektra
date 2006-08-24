@@ -89,6 +89,12 @@ systems
 - add -std=c99 -pedantic to CFLAGS if CFLAGS is empty
 -    By Patrice Dumas <pertusus@free.fr> 24/08/2006
 - build examples as part of make check
+- fix doc to build out of source
+- distribute doc files that requires special tools
+- use $(transform) when installing man pages
+- condition man2html build on man2html being detected
+- put doc generic targets out of conditionalized sections
+- clean a bit doc dependencies, avoid redundancy, try to be more portable
 
 
 * Wed Jun 02 2006 Avi and Yannick <yl@itioweb.com> 0.6.2
