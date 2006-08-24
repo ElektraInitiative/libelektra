@@ -10,16 +10,16 @@ SUBDIRS=images standards
 
 # Dependencies for Doxygen documentation
 # main...
-DOXYSOURCES=../src/libelektra/kdb.c ../src/include/kdb.h ../src/libelektra/key.c ../src/libelektra/keyset.c ../src/libelektra/kdbhighlevel.c ../src/libelektra/backendhelpers.c ../src/Doxyfile
+DOXYSOURCES=$(srcdir)/../src/libelektra/kdb.c $(srcdir)/../src/include/kdb.h $(srcdir)/../src/libelektra/key.c $(srcdir)/../src/libelektra/keyset.c $(srcdir)/../src/libelektra/kdbhighlevel.c $(srcdir)/../src/libelektra/backendhelpers.c $(srcdir)/../src/Doxyfile
 
 # tools...
-DOXYSOURCES+=../src/libelektratools/kdbtools.c
+DOXYSOURCES+=$(srcdir)/../src/libelektratools/kdbtools.c
 
 # kdb command...
-DOXYSOURCES+=../src/kdb/kdb.c
+DOXYSOURCES+=$(srcdir)/../src/kdb/kdb.c
 
 # backend stuff...
-DOXYSOURCES+= ../src/include/kdbbackend.h ../src/include/kdbprivate.h ../src/backends/template/template.c
+DOXYSOURCES+= $(srcdir)/../src/include/kdbbackend.h ../src/include/kdbprivate.h $(srcdir)/../src/backends/template/template.c
 
 
 man3_MANS =

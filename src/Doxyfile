@@ -391,7 +391,7 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories
 # with spaces.
 
-INPUT                  = $(srcdir)/libelektra/kdb.c $(srcdir)/libelektra/kdbhighlevel.c $(srcdir)/libelektra/backendhelpers.c $(srcdir)/libelektra/error.c $(srcdir)/libelektra/key.c $(srcdir)/libelektra/keyset.c $(srcdir)/libelektratools/kdbtools.c $(srcdir)/include/kdb.h $(srcdir)/kdb/kdb.c $(srcdir)/include/kdbprivate.h $(srcdir)/include/kdbbackend.h $(srcdir)/backends/template
+INPUT                  = $(srcdir)/libelektra/kdb.c $(srcdir)/libelektra/kdbhighlevel.c $(srcdir)/libelektra/backendhelpers.c $(srcdir)/libelektra/error.c $(srcdir)/libelektra/key.c $(srcdir)/libelektra/keyset.c $(srcdir)/libelektratools/kdbtools.c $(srcdir)/include/kdb.h $(srcdir)/kdb/kdb.c include/kdbprivate.h $(srcdir)/include/kdbbackend.h $(srcdir)/backends/template
 
 # If the value of the INPUT tag contains directories, you can use the
 # FILE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp
@@ -569,7 +569,7 @@ HTML_FOOTER            =
 # the style sheet file to the HTML output directory, so don't put your own
 # stylesheet in the HTML output directory as well, or it will be erased!
 
-HTML_STYLESHEET        = ../doc/doxygen.css
+HTML_STYLESHEET        = $(srcdir)/../doc/doxygen.css
 
 # If the HTML_ALIGN_MEMBERS tag is set to YES, the members of classes,
 # files or namespaces will be aligned in HTML using tables. If set to
