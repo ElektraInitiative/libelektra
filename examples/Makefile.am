@@ -9,12 +9,10 @@ EXTRA_DIST = test.c application.c binary.c keyNewExample.c lookup.c example.c hi
 #elekexample_DATA = test.c application.c binary.c keyNewExample.c lookup.c
 
 #
-# Examples will only compile if you enable experimental
-# you can also remove the if EXPERIMENAL and endif and `make` again
-#
+# Examples will only compile with make check
+# 
 
-if EXPERIMENTAL
-elekexample_PROGRAMS = test application binary keyNewExample lookup cascading keyset hello
+check_PROGRAMS = test application binary keyNewExample lookup cascading keyset hello
 
 test_SOURCES = test.c
 test_LDADD = ../src/libelektra/libelektra.la
@@ -39,6 +37,3 @@ keyset_LDADD = ../src/libelektra/libelektra.la
 
 hello_SOURCES = hello.c
 hello_LDADD = ../src/libelektra/libelektra.la
-endif
-
-

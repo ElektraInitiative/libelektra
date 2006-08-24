@@ -87,6 +87,8 @@ systems
 - have static libelektra depend only on backends static libraries
 - call AC_GNU_SOURCE if CFLAGS is empty
 - add -std=c99 -pedantic to CFLAGS if CFLAGS is empty
+-    By Patrice Dumas <pertusus@free.fr> 24/08/2006
+- build examples as part of make check
 
 
 * Wed Jun 02 2006 Avi and Yannick <yl@itioweb.com> 0.6.2
