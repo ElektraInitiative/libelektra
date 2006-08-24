@@ -44,6 +44,7 @@
 #include <kdbbackend.h>
 
 #define BACKENDNAME "ini"
+#define VERSION "0.1.1"
 
 int IniReadDir(KDBHandle handle, Key * key, KeySet * returned, unsigned long options);
 int IniChooseFile(KDBHandle handle, Key * key, KeySet * returned, unsigned long options);

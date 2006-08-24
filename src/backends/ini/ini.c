@@ -28,6 +28,9 @@
  * @ingroup ini
  */
 int kdbOpen_ini(KDBHandle *handle) {
+#ifdef DEBUG
+	fprintf (stderr, "opened ini backend " VERSION "\n");
+#endif
 	return 0;
 }
 
@@ -45,6 +48,9 @@ int kdbOpen_ini(KDBHandle *handle) {
  * @ingroup ini
  */
 int kdbClose_ini(KDBHandle *handle) {
+#ifdef DEBUG
+	fprintf (stderr, "closed ini backend\n");
+#endif
 	return 0; /* success */
 }
 
