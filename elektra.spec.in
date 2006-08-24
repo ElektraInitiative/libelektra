@@ -1,6 +1,8 @@
+%define tempdocdir %{_prefix}/elektra
+
 Name:          elektra
 Version:       @VERSION@
-Release:       5
+Release:       1
 Source:        http://prdownloads.sourceforge.net/elektra/%{name}-%{version}.tar.gz
 Group:         System Environment/Libraries
 License:       BSD
@@ -97,9 +99,8 @@ Berkeley DB databases to store its keys.
      --bindir=/bin \
      --sbindir=/sbin \
      --libdir=/%{_lib} \
-     --with-docdir=%{_defaultdocdir}/elektra-%{version} \
-     --with-develdocdir=%{_defaultdocdir}/elektra-devel-%{version} \
-     --disable-xmltest \
+     --with-docdir=%{tempdocdir}/elektra-%{version} \
+     --with-develdocdir=%{tempdocdir}/elektra-devel-%{version} \
      --with-docbook=%{_datadir}/sgml/docbook/xsl-stylesheets
 
 #     --prefix=%{_prefix} \
@@ -118,32 +119,29 @@ rm -rf $RPM_BUILD_ROOT
 
 make DESTDIR=$RPM_BUILD_ROOT install
 
-# Remove libtool junk
+# Remove statically linked kdb
 rm $RPM_BUILD_ROOT/bin/kdb_static
 
-# Remove unneeded .a files for backends
-#rm $RPM_BUILD_ROOT/%{_lib}/libelektra-*.a
-
 # Move .a files to -devel package
-mv $RPM_BUILD_ROOT/%{_lib}/libelektra.a $RPM_BUILD_ROOT/%{_libdir}
+mv $RPM_BUILD_ROOT/%{_lib}/libelektra.a $RPM_BUILD_ROOT%{_libdir}
 
 # Prepare devel files
-#mv $RPM_BUILD_ROOT/%{_lib}/libelektra.so $RPM_BUILD_ROOT/%{_libdir}/
+#mv $RPM_BUILD_ROOT/%{_lib}/libelektra.so $RPM_BUILD_ROOT%{_libdir}/
 rm $RPM_BUILD_ROOT/%{_lib}/libelektra.so
-ln -sf ../../%{_lib}/libelektra.so.2 $RPM_BUILD_ROOT/%{_libdir}/libelektra.so
+ln -sf ../../%{_lib}/libelektra.so.2 $RPM_BUILD_ROOT%{_libdir}/libelektra.so
 #rm $RPM_BUILD_ROOT/%{_lib}/libelektra.so
 
-# Remove old .la files
+# Remove .la files
 #rm $RPM_BUILD_ROOT/usr/lib/libelektra-*.a
 rm $RPM_BUILD_ROOT/%{_lib}/*.la
 rm $RPM_BUILD_ROOT/%{_lib}/elektra/*.la
-rm $RPM_BUILD_ROOT/%{_libdir}/*.la
+rm $RPM_BUILD_ROOT%{_libdir}/*.la
 
 # Remove a file that conflicts with other packages
-rm $RPM_BUILD_ROOT/%{_mandir}/man3/key.3*
+rm $RPM_BUILD_ROOT%{_mandir}/man3/key.3*
 
-# Remove documentation from 'make install', to let RPM package it allone
-rm -rf $RPM_BUILD_ROOT/%{_defaultdocdir}
+# Remove documentation from 'make install', to let RPM package it alone
+rm -rf $RPM_BUILD_ROOT%{tempdocdir}
 rm -rf scripts/Makefile*
 rm -rf examples/Makefile*
 rm -rf examples/.deps
@@ -164,8 +162,8 @@ rm -rf $RPM_BUILD_ROOT
 /sbin/ldconfig
 # Backwards compatibility, from the Linux Registry days
 #if [ -d /etc/registry -a ! -d /etc/kdb ]; then
-#	$MOVE /etc/registry /etc/kdb
-#	$LINK -s kdb /etc/registry
+#   $MOVE /etc/registry /etc/kdb
+#   $LINK -s kdb /etc/registry
 #fi
 
 # Create basic key structure for apps
@@ -224,7 +222,6 @@ kdb set system/sw/kdb/schemapath "%{_datadir}/sgml/elektra-0.1.1/elektra.xsd"
 
 
 %changelog
-* Thu Jun 02 2006 Avi Alkalay <avi@unix.sh> 0.6.2
-- First packaging for Fedora Extras
-- Moved backends to /lib/elektra/ subdir
+* Thu Jun 02 2006 Avi Alkalay <avi@unix.sh> @VERSION@-1
+- Initial packaging
 
