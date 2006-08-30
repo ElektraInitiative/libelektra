@@ -31,7 +31,7 @@ man5_MANS = elektra.5
 man7_MANS = elektra.7
 
 
-# xml built from source files
+# 3 xml files built from source files. Not used for now
 csource.xml: $(srcdir)/../examples/example.c
 	(echo "<programlisting><![CDATA["; cat $<; echo "]]></programlisting>") > csource.xml
 
@@ -42,18 +42,9 @@ initpatch.xml: patches/sysvinit/README.sysvinit.Elektra.txt
 	(echo "<screen><![CDATA["; cat  $<; echo "]]></screen>") > initpatch.xml
 
 
-
-
 if HAVE_XSL
 
 SUFFIXES: .xml .html .pdf .ps .rtf .xsl .fo .tpl
-
-# howto.html dependencies and target (unused)
-.xml.html:
-	$(xsltproc) -path . -o $@ ${HTML_TITLE_LAYOUT_XSL} $<
-
-howto.html: howto.xml elektra.7.xml author.xml garbage.xml overview.xml bestpract.xml rgexample.xml rgcmd.xml storage.xml api.xml society.xml compared.xml api.xml apiexample.xml xorgpatch.xml initpatch.xml csource.xml ${HTML_TITLE_LAYOUT_XSL}
-
 #
 ## Build man documentation
 #
@@ -70,8 +61,14 @@ elektra.5: elektra.5.xml author.xml storage.xml
 
 
 #
-# Build HTML documentation
+# HTML and doc targets for the previous web site. Obsolete, unused for now
 #
+
+# howto.html dependencies and target (unused)
+.xml.html:
+	$(xsltproc) -path . -o $@ ${HTML_TITLE_LAYOUT_XSL} $<
+
+howto.html: howto.xml elektra.7.xml author.xml garbage.xml overview.xml bestpract.xml rgexample.xml rgcmd.xml storage.xml api.xml society.xml compared.xml api.xml apiexample.xml xorgpatch.xml initpatch.xml csource.xml ${HTML_TITLE_LAYOUT_XSL}
 
 # Layout and configurations to generate HTML for the web site
 HTML_TITLE_LAYOUT_XSL=html-titlepage-layout.xsl
@@ -108,7 +105,7 @@ elektra.5: elektra.5.xml author.xml storage.xml
 
 endif
 
-# html generated from man pages
+# html generated from man pages.
 if HAVE_MAN2HTML
 man_html = kdb.1.html elektra.7.html elektra.5.html kdb.3.html key.3.html keyset.3.html
 
