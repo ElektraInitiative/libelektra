@@ -1,6 +1,8 @@
 * Thu Sep 07 2006 Avi Alkalay <avi@unix.sh> 0.6.4
 - Fixed a key ownership bug on BDB::keyFromBDB() when running together with the daemon
 - kdbhGetBackendName() now returns correct daemon backend name
+- The daemon now calls setuid() for correct access permissions
+- kdbd now installs with mode u+s with RPM
 - Closing version 0.6.4
 
 * Thu 24 Aug 2006 Patrice Dumas <pertusus@free.fr>

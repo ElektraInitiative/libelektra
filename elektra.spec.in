@@ -2,7 +2,7 @@
 
 Name:          elektra
 Version:       @VERSION@
-Release:       7
+Release:       8
 Source:        http://prdownloads.sourceforge.net/elektra/%{name}-%{version}.tar.gz
 Group:         System Environment/Libraries
 License:       BSD
@@ -179,7 +179,7 @@ kdb set system/sw/kdb/schemapath "%{_datadir}/sgml/elektra-0.1.1/elektra.xsd"
 %files
 %defattr(-,root,root,-)
 /bin/*
-/sbin/*
+%attr(4755,root,root) /sbin/kdbd
 /%{_lib}/*elektra.so*
 %dir /%{_lib}/elektra
 /%{_lib}/elektra/*elektra-daemon.so*
@@ -222,6 +222,8 @@ kdb set system/sw/kdb/schemapath "%{_datadir}/sgml/elektra-0.1.1/elektra.xsd"
 
 
 %changelog
-* Thu Jun 02 2006 Avi Alkalay <avi@unix.sh> @VERSION@-1
+* Thu Sep 07 2006 Avi Alkalay <avi@unix.sh> 0.6.4-1
+- Version update
+* Thu Jun 02 2006 Avi Alkalay <avi@unix.sh> 0.6.2-1
 - Initial packaging
 
