@@ -9,7 +9,7 @@
     <ignoreparts/>
     <projectdirectory>.</projectdirectory>
     <absoluteprojectpath>false</absoluteprojectpath>
-    <description/>
+    <description></description>
     <secondaryLanguages>
       <language>Bash</language>
     </secondaryLanguages>
@@ -20,29 +20,30 @@
       <mainprogram>src/kdb/.libs/kdb</mainprogram>
       <directoryradio>executable</directoryradio>
       <customdirectory>/home/aviram/src/elektra/src/backends/daemon/</customdirectory>
-      <programargs>ls -svR user/env</programargs>
+      <programargs>ls -R</programargs>
       <terminal>false</terminal>
       <autocompile>true</autocompile>
       <envvars>
         <envvar value="kate" name="EDITOR" />
+        <envvar value="daemon" name="KDB_BACKEND" />
       </envvars>
     </run>
     <build>
       <buildtool>make</buildtool>
-      <builddir/>
+      <builddir></builddir>
     </build>
     <make>
       <abortonerror>false</abortonerror>
       <numberofjobs>1</numberofjobs>
       <dontact>false</dontact>
-      <makebin/>
+      <makebin></makebin>
       <selectedenvironment>default</selectedenvironment>
       <environments>
         <default/>
       </environments>
       <prio>0</prio>
-      <makeoptions/>
-      <defaulttarget/>
+      <makeoptions></makeoptions>
+      <defaulttarget></defaulttarget>
     </make>
     <general>
       <activedir>doc</activedir>
@@ -50,12 +51,12 @@
   </kdevcustomproject>
   <kdevdebugger>
     <general>
-      <dbgshell/>
-      <programargs>ls -svR user/env</programargs>
-      <gdbpath/>
-      <configGdbScript/>
-      <runShellScript/>
-      <runGdbScript/>
+      <dbgshell></dbgshell>
+      <programargs>ls -R</programargs>
+      <gdbpath></gdbpath>
+      <configGdbScript></configGdbScript>
+      <runShellScript></runShellScript>
+      <runGdbScript></runGdbScript>
       <breakonloadinglibs>true</breakonloadinglibs>
       <separatetty>false</separatetty>
       <floatingtoolbar>false</floatingtoolbar>
@@ -148,7 +149,7 @@
     </codecompletion>
     <references/>
     <creategettersetter>
-      <prefixGet/>
+      <prefixGet></prefixGet>
       <prefixSet>set</prefixSet>
       <prefixVariable>m_,_</prefixVariable>
       <parameterName>theValue</parameterName>

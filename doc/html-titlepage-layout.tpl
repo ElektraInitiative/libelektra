@@ -3,7 +3,7 @@
 	base-stylesheet="html-params.xsl">
 
 	<t:titlepage element="article" wrapper="div" class="titlepage">
-		<t:titlepage-content side='recto'>
+		<t:titlepage-content side="recto">
 			<title predicate="[1]"/>
 			<pubdate/>
 
@@ -26,7 +26,7 @@
 
 		</t:titlepage-content>
 		
-		<t:titlepage-content side='verso'/>
+		<t:titlepage-content side="verso"/>
  
 	</t:titlepage>
 </t:templates>

@@ -548,7 +548,7 @@ Level 4 name: jkl
  * @param size the number of bytes of level name found in @p keyName until
  * 	the next delimiter ('/')
  * @return a pointer to the first char of the next level name
- * @ingroup internals
+ * @ingroup keyname
  */
 char *keyNameGetOneLevel(const char *keyName, size_t *size) {
 	char *real=(char *)keyName;

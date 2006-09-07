@@ -487,6 +487,7 @@ ssize_t keyGetBaseNameSize(const Key *key);
 ssize_t keyAddBaseName(Key *key,const char *baseName);
 ssize_t keySetBaseName(Key *key,const char *baseName);
 
+char *keyNameGetOneLevel(const char *keyName, size_t *size);
 ssize_t keyGetParentName(const Key *key, char *returned, size_t maxSize);
 ssize_t keyGetParentNameSize(const Key *key);
 

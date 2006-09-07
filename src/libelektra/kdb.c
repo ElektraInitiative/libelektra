@@ -1417,11 +1417,11 @@ KDBBackend *kdbBackendExport(const char *backendName, ...) {
 }
 
 /**
- * Resolve key name
+ * Resolve key name.
  *
  * This function resolve all key link contained in the path
  * of the supplied key and give the real name.
- * 
+ *
  * @param handle KDBHandle
  * @param key Key to resolve
  * @param resolvedKeyName Pointer where the full resolved name will be set
@@ -1430,17 +1430,14 @@ KDBBackend *kdbBackendExport(const char *backendName, ...) {
  * @return 0 if succeed, -1 otherwise
  *
  */
-static int kdbResolveKey(KDBHandle handle, const Key *key, char **resolvedKeyName)
-{
+static int kdbResolveKey(KDBHandle handle, const Key *key, char **resolvedKeyName) {
 	Key     *resolvedKey;
 	char    *kName, *tmp, *ptr;
 	size_t  size;
 	int     ret;
 	
 	resolvedKey = keyNew(KEY_SWITCH_END);
-	if ( resolvedKey == NULL ) {
-		return -1;
-	}
+	if ( resolvedKey == NULL ) return -1;
 	
 	size = keyGetFullNameSize(key);
 	kName = (char *) malloc(size);
@@ -1451,6 +1448,7 @@ static int kdbResolveKey(KDBHandle handle, const Key *key, char **resolvedKeyNam
 		free(kName);
 		return -1;
 	}
+	
 	if ( keyGetFullName(key, tmp, size) == -1 ) {
 		keyDel(resolvedKey);
 		free(tmp);
