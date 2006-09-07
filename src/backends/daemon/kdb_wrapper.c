@@ -44,11 +44,11 @@ $Id$
 
 Message *wrapper_kdbOpen(KDBHandle *handle, Message *request, uid_t euid, gid_t egid)
 {
-	char		*userName;
-	char		*real_backend;
-	unsigned long	umask;
-	int		ret, error;
-	Message		*reply;
+	char             *userName;
+	char             *real_backend;
+	unsigned long    umask;
+	int              ret, error;
+	Message          *reply;
 	
 	/* Sanity check */
 	error = 0;
@@ -82,6 +82,7 @@ Message *wrapper_kdbOpen(KDBHandle *handle, Message *request, uid_t euid, gid_t 
 		free(userName);
 	}
 	
+	real_backend = kdbhGetBackendName(*handle);
 	reply = messageNew(MESSAGE_REPLY, KDB_BE_OPEN,
 			DATATYPE_INTEGER, &ret,
 			DATATYPE_INTEGER, &error,
@@ -96,8 +97,8 @@ Message *wrapper_kdbOpen(KDBHandle *handle, Message *request, uid_t euid, gid_t 
 
 Message *wrapper_kdbClose(KDBHandle *handle, Message *request)
 {
-	int		error, ret;
-	Message		*reply;
+	int       error, ret;
+	Message   *reply;
 
 	error = 0;
 	if ( messageGetNbArgs(request) != 0 )

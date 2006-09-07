@@ -1,39 +1,81 @@
--    By Yannick Lecaillez <sizon5@gmail.com> 27/06/2006
-- New kdbd daemon !
-- Fix UTF8Engine : Check for a null size string
-- Fix Berkeleydb backend :
-	- Check if an UTF8 convertion is done before free memory
-	(before, there was case where keyToDBD freed Comment and/or Value key pointers.)
-	- Chown user's kdb-berkeleydb dir.
-	- Set correct UID/GID for initial creation of the "user" key.
-- Fix key.c : Set KEY_SWITCH_DOMAIN flags into keySetName()
--    By Yannick Lecaillez <sizon5@gmail.com> 03/08/2006
-- Fix backends/daemon compilation warnings
-- Add a testing suite for key struct and backends
-- Enhance elektra static library generation (exportobjects.sh and
-exportsymbols.sh)
-- Add section 'libs.private' into elektra.pc for static compilation
-- Enhance build dependency
-- Add a resume text in the end of configure script
--    By Yannick Lecaillez <sizon5@gmail.com> 04/08/2006
+* Thu Sep 07 2006 Avi Alkalay <avi@unix.sh> 0.6.4
+- Fixed a key ownership bug on BDB::keyFromBDB() when running together with the daemon
+- kdbhGetBackendName() now returns correct daemon backend name
+- Closing version 0.6.4
+
+* Thu 24 Aug 2006 Patrice Dumas <pertusus@free.fr>
+- build examples as part of make check
+- fix doc to build out of source
+- distribute doc files that requires special tools
+- use $(transform) when installing man pages
+- condition man2html build on man2html being detected
+- put doc generic targets out of conditionalized sections
+- clean a bit doc dependencies, avoid redundancy, try to be more portable
+
+* Fri 18 Aug 2006 Patrice Dumas <pertusus@free.fr>
+- have static libelektra depend only on backends static libraries
+- call AC_GNU_SOURCE if CFLAGS is empty
+- add -std=c99 -pedantic to CFLAGS if CFLAGS is empty
+
+* Wed 16 Aug 2006 Patrice Dumas <pertusus@free.fr>
+- don't set _GNU_SOURCE in the default case, plus minor fixes
+- fixes for experimental features
+
+* Tue 15 Aug 2006 Patrice Dumas <pertusus@free.fr>
+- add a m4 directory for autoconf macros
+- use an autoconf macro from gnulib to set POSIX exensions on various systems
+- fix in BSDgetopt
+
+* Mon 14 Aug 2006 Patrice Dumas <pertusus@free.fr>
+- determine which backends are compiled in and if libelektratools is compiled or not in ./configure, an substitute correct value in SUBDIR (idea of Yannick)
+- rewrite exportsymbols.sh to only use backend names to recreate exported_symbols.c
+- autogenerate kdbprivate.h in order to avoid hardcoding /etc/kdb, but instead honor sysconfdir
+- Fixes to have -std=c99 proceed until the end
+- Detect a working getopt, and if not found use getopt from openssh
+
+* Sun 13 Aug 2006 Patrice Dumas <pertusus@free.fr>
+- fixes for compatibility with sunos 5.8 (solaris 2.8, solaris 8)
+- use LIBICONV in link commands
+- compile fstab backend conditionally on having glibc-like getmntent and friends
+- compile daemon conditionally on having struct ucred defined
+- changes in the nm and amk call to accomodate for solaris 8
+- always use install_sh since install -c needs a directory arg on solaris 8 (an autoconf bug?)
+
+* Sat 5 Jun 2006 Yannick Lecaillez <sizon5@gmail.com>
+- fixed keyFileSerialize() in filesys.c : When binary source data
+- fixed kdbGetKeyWithOptions() in berkeleydb.c : key->next was reset, key lost position in the keyset.
+- fix keySetRaw() in key.c: When data is NULL or size = 0, key's data was cleaned but key->dataSize wasn't set to 0 was 1 byte long, write to non-allocated address occured.
+
+* Fri 4 Jun 2006 Yannick Lecaillez <sizon5@gmail.com>
 - Add default implementation of kdbRename()
 - Removed some debugging output from kdbd
 - Add a static version of kdbd
 - fixed kdbRename() in kdbd/libelektra-daemon
--    By Yannick Lecaillez <sizon5@gmail.com> 05/08/2006
-- fixed keyFileSerialize() in filesys.c : When binary source data
-- fixed kdbGetKeyWithOptions() in berkeleydb.c : key->next was reset, key lost position in the keyset.
-- fix keySetRaw() in key.c: When data is NULL or size = 0, key's data was cleaned but key->dataSize wasn't set to 0
-was 1 byte long, write to non-allocated address occured.
--    By Markus Raab 06/06/2006:
-- added cascading features to kdb
-- kdb ls / and kdb ls /path is possible
-- kdb get /path/to/key gets user or system key
-- Moved help functions of the 'kdb command' to src/kdb/help.c
--    By Avi Alkalay 26/07/2006:
+
+* Thu 3 Jun 2006 Yannick Lecaillez <sizon5@gmail.com>
+- Fix backends/daemon compilation warnings
+- Add a testing suite for key struct and backends
+- Enhance elektra static library generation (exportobjects.sh and exportsymbols.sh)
+- Add section 'libs.private' into elektra.pc for static compilation
+- Enhance build dependency
+- Add a resume text in the end of configure script
+
+* Wed 2 Aug 2006 Patrice Dumas <pertusus@free.fr>
+- remove -Wall (and -pedantic -ansi) from Makefile.am
+- add -Wall in configure.ac if CFLAGS is empty and compiler is gcc
+- change make to $(MAKE)
+
+* Sun 30 Jul 2006 Patrice Dumas <pertusus@free.fr>
+- fix many compilation warnings
+
+* Sat 29 Jul 2006 Patrice Dumas <pertusus@free.fr>
+- replace __STATIC by ELEKTRA_STATIC
+
+* Wed 26 Jul 2006 Avi Alkalay <avi@unix.sh>
 - Added -s option to 'kdb ls' to make it more scripts friendly
 - Separated the descriptive help functions of kdb program to help.c
--    By Patrice Dumas <pertusus@free.fr> (applyied by Avi 26/07/2006):
+
+* Wed 26 Jul 2006 Patrice Dumas (applyied by Avi) <pertusus@free.fr>
 - arrange doxygen for out-of-source build
 - add some source files for experimental backends and bindings
 - clean up the clean target in doc/Makefile.am, add an uninstall target
@@ -48,56 +90,24 @@ was 1 byte long, write to non-allocated address occured.
 - use .$(OBJEXT) instead of .o
 - honor default_backend for static libelektra dependencies
 - add AC_SUBST(default_dbackend)
--    By Patrice Dumas <pertusus@free.fr> 29/07/2006
-- replace __STATIC by ELEKTRA_STATIC
--    By Patrice Dumas <pertusus@free.fr> 30/07/2006
-- fix many compilation warnings
--    By Patrice Dumas <pertusus@free.fr> 02/08/2006
-- remove -Wall (and -pedantic -ansi) from Makefile.am
-- add -Wall in configure.ac if CFLAGS is empty and compiler is gcc
-- change make to $(MAKE)
--    By Patrice Dumas <pertusus@free.fr> 13/08/2006
-- fixes for compatibility with sunos 5.8 (solaris 2.8, solaris 8)
-- use LIBICONV in link commands
-- compile fstab backend conditionally on having glibc-like getmntent 
-and friends
-- compile daemon conditionally on having struct ucred defined
-- changes in the nm and amk call to accomodate for solaris 8
-- always use install_sh since install -c needs a directory arg on 
-solaris 8 (an autoconf bug?)
--    By Patrice Dumas <pertusus@free.fr> 14/08/2006
-- determine which backends are compiled in and if libelektratools
-is compiled or not in ./configure, an substitute correct value
-in SUBDIR (idea of Yannick)
-- rewrite exportsymbols.sh to only use backend names to recreate
-exported_symbols.c
-- autogenerate kdbprivate.h in order to avoid hardcoding /etc/kdb,
-but instead honor sysconfdir
-- Fixes to have -std=c99 proceed until the end
-- Detect a working getopt, and if not found use getopt from openssh
--    By Patrice Dumas <pertusus@free.fr> 15/08/2006
-- add a m4 directory for autoconf macros
-- use an autoconf macro from gnulib to set POSIX exensions on various 
-systems
-- fix in BSDgetopt
--    By Patrice Dumas <pertusus@free.fr> 16/08/2006
-- don't set _GNU_SOURCE in the default case, plus minor fixes
-- fixes for experimental features
--    By Patrice Dumas <pertusus@free.fr> 18/08/2006
-- have static libelektra depend only on backends static libraries
-- call AC_GNU_SOURCE if CFLAGS is empty
-- add -std=c99 -pedantic to CFLAGS if CFLAGS is empty
--    By Patrice Dumas <pertusus@free.fr> 24/08/2006
-- build examples as part of make check
-- fix doc to build out of source
-- distribute doc files that requires special tools
-- use $(transform) when installing man pages
-- condition man2html build on man2html being detected
-- put doc generic targets out of conditionalized sections
-- clean a bit doc dependencies, avoid redundancy, try to be more portable
 
+* Tue 27 Jun 2006 Yannick Lecaillez <sizon5@gmail.com>
+- New kdbd daemon !
+- Fix UTF8Engine : Check for a null size string
+- Fix Berkeleydb backend :
+- - Check if an UTF8 convertion is done before free memory
+-   (before, there was case where keyToDBD freed Comment and/or Value key pointers.)
+- - Chown user's kdb-berkeleydb dir.
+- - Set correct UID/GID for initial creation of the "user" key.
+- Fix key.c : Set KEY_SWITCH_DOMAIN flags into keySetName()
 
-* Wed Jun 02 2006 Avi and Yannick <yl@itioweb.com> 0.6.2
+* Wed Jun 06 2006 Markus Raab 0.6.3
+- added cascading features to kdb
+- kdb ls / and kdb ls /path is possible
+- kdb get /path/to/key gets user or system key
+- Moved help functions of the 'kdb command' to src/kdb/help.c
+
+* Fri Jun 02 2006 Avi and Yannick <yl@itioweb.com> 0.6.2
 - Renamed some sorces on src/libelektra/
 - Backends installation directory moved to /lib/elektra/
 - Adding testing suite for key's name (examples/tstkeyname.c)

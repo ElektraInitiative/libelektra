@@ -1187,7 +1187,7 @@ char *kdbhGetUserName(const KDBHandle handle) {
  * @ingroup backend
  */
 char *kdbhSetUserName(KDBHandle handle,char *userName) {
-        char *tmp;
+	char *tmp;
 	size_t size;
 	
 	if ( userName ) {

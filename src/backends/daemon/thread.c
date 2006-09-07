@@ -70,12 +70,17 @@ int threadCreate(int socketfd, void *(*start_routine)(void *))
 	if ( (new->handle = threadListAdd(new)) == -1 )
 		return -1;
 	
+	/* Execution options (only one should be used):
+	   1. Multithreaded: */
 	if ( pthread_create(&new->thread, NULL, start_routine, (void *) &new->handle) ) {
 		threadListRemove(new->handle);
 		free(new);
 		return -1;
 	}
-		
+
+	/* 2. Single thread, for debugging purposes: */	
+	/* kdbd(&new->handle); */
+
 	return new->handle;
 }
 

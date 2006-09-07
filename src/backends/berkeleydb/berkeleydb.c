@@ -447,7 +447,7 @@ DBTree *dbTreeNew(KDBHandle handle,const Key *forKey) {
 	/***********
 	 * Calculate path and filenames for the DB files.
 	 ***********/
-	  
+
 	if (keyIsSystem(forKey)) {
 		/* Prepare to open the 'system/ *' database */
 		strcpy(dbDir,DB_DIR_SYSTEM);
@@ -796,6 +796,7 @@ int kdbGetKeyWithOptions(KDBHandle handle, Key *key, uint32_t options) {
 	switch (ret) {
 		case 0: { /* Key found and retrieved. Check permissions */
 			keyFromBDB(&buffer,&dbkey,&data);
+			if (buffer.userDomain) keySetOwner(&buffer,dbctx->userDomain);
 
 			/* Keep key position in its keyset */
 			buffer.next = key->next;
@@ -1156,6 +1157,7 @@ ssize_t kdbGetKeyChildKeys_bdb(KDBHandle handle, const Key *parentKey,
 		
 			retrievedKey=keyNew(KEY_SWITCH_END);
 			keyFromBDB(retrievedKey,&keyName,&keyData);
+			if (retrievedKey->userDomain) keySetOwner(retrievedKey,db->userDomain);
 		
 			free(keyName.data); free(keyData.data);
 			memset(&keyName,0,sizeof(keyName));
