@@ -1,6 +1,6 @@
 Avi Alkalay <avi@unix.sh>
 Concept, architecture, development, manuals, previous website
-Backends: berkleydb, filesys
+Backends: berkleydb, filesys, fstab
 Devel/Test on: redhat.ia32, fedora.ia32, redhat.ppc, redhat.s390, aix.ppc
 
 
@@ -29,6 +29,7 @@ Devel/Test on:
 Rèmi <remipouak@yahoo.fr>
 XML schema
 Devel/Test on:
+
 
 Studio-HB <contact@studio-hb.com>
 Elektra logo, website design.

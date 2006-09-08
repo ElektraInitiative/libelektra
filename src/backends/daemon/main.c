@@ -125,7 +125,7 @@ int main(int argc, char **argv)
 	ndelay_off(s);
 
 	setuid(0);
-	fprintf(stderr,"uid=%d, euid=%d\n",getuid(),geteuid());
+	/* fprintf(stderr,"uid=%d, euid=%d\n",getuid(),geteuid()); */
 	
 	for(;;) {
 		t = ipc_accept(s,remotepath,sizeof(remotepath),&trunc);
