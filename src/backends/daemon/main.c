@@ -93,6 +93,11 @@ int main(int argc, char **argv)
 	int	t, s;
 	int	trunc;
 
+	/* Uncomment setuid() call if the demon executable file is +s */
+	/* setuid(0); */
+	
+	if (fork()) exit(0);
+	
 	/* force a superuniversal modern charset: UTF-8 */
 	putenv("LANG=en_US.UTF-8");
 	
@@ -124,7 +129,6 @@ int main(int argc, char **argv)
 	}
 	ndelay_off(s);
 
-	setuid(0);
 	/* fprintf(stderr,"uid=%d, euid=%d\n",getuid(),geteuid()); */
 	
 	for(;;) {
