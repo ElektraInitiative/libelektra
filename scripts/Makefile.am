@@ -8,5 +8,5 @@ dist_elektraenv_SCRIPTS = elektraenv.sh
 dist_elektrainit_SCRIPTS = kdbd
 dist_elekscript_DATA = benchmark-createtree convert-hosts convert-inittab \
   convert-users convert-fstab convert-hwconfKudzu convert-network \
-  convert-xfree update-backend init.kdbd
+  convert-xfree update-backend kdbd
 

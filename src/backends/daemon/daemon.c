@@ -63,7 +63,7 @@ $Id$
 #define REPLY_TIMEOUT	5
 
 #ifndef SOCKET_NAME
-#define SOCKET_NAME	"/tmp/elektra.sock"
+#define SOCKET_NAME "/var/run/kdbd/elektra.sock"
 #endif
 
 /**Some systems have even longer pathnames */

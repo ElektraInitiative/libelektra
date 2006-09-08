@@ -48,7 +48,7 @@ $Id$
 
 
 #ifndef SOCKET_NAME
-#define SOCKET_NAME "/tmp/elektra.sock"
+#define SOCKET_NAME "/var/run/kdbd/elektra.sock"
 #endif
 
 
@@ -92,11 +92,23 @@ int main(int argc, char **argv)
 	mode_t	m;
 	int	t, s;
 	int	trunc;
+	pid_t pid;
 
 	/* Uncomment setuid() call if the demon executable file is +s */
 	/* setuid(0); */
 	
-	if (fork()) exit(0);
+	if (pid=fork()) {
+		/* The parent. */
+		/* Log child pid and quit. */
+		
+		FILE *pidf;
+		
+		pidf=fopen("/var/run/kdbd/kdbd.pid","w");
+		fprintf(pidf,"%d",pid);
+		fclose(pidf);
+		
+		exit(0);
+	}
 	
 	/* force a superuniversal modern charset: UTF-8 */
 	putenv("LANG=en_US.UTF-8");

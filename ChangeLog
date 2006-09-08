@@ -1,3 +1,9 @@
+* Fri Sep 08 2006 Avi Alkalay <avi@unix.sh>
+- Removed setuid() and +s from kdbd
+- Changed daemon socket file to /var/run/kdbd/elektra.sock
+- Created an init script for the daemon
+- Updated spec for changes
+
 * Thu Sep 07 2006 Avi Alkalay <avi@unix.sh> 0.6.4
 - Fixed a key ownership bug on BDB::keyFromBDB() when running together with the daemon
 - kdbhGetBackendName() now returns correct daemon backend name

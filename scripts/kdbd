@@ -70,7 +70,7 @@ stop () {
 		# nscd won't be able to remove these if it is running as
 		# a non-privileged user
 		rm -f /var/run/kdbd/$prog.pid
-		rm -f /var/run/kdbd/socket
+		rm -f /var/run/kdbd/elektra.sock
 		success $"$prog shutdown"
 	else
 		failure $"$prog shutdown"

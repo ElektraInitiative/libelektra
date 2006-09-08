@@ -2,7 +2,7 @@
 
 Name:          elektra
 Version:       @VERSION@
-Release:       1
+Release:       3
 Source:        http://prdownloads.sourceforge.net/elektra/%{name}-%{version}.tar.gz
 Group:         System Environment/Libraries
 License:       BSD
@@ -166,10 +166,17 @@ rm -rf $RPM_BUILD_ROOT
 #   $LINK -s kdb /etc/registry
 #fi
 
+# Make the daemon startable
+chkconfig --add kdbd
+
 # Create basic key structure for apps
 kdb set -t dir system/sw
 kdb set system/sw/kdb/schemapath "%{_datadir}/sgml/elektra-0.1.1/elektra.xsd"
 
+
+%preun
+# Remove the daemon from init tasks
+chkconfig --del kdbd
 
 
 %postun -p /sbin/ldconfig
@@ -179,7 +186,8 @@ kdb set system/sw/kdb/schemapath "%{_datadir}/sgml/elektra-0.1.1/elektra.xsd"
 %files
 %defattr(-,root,root,-)
 /bin/*
-%attr(4755,root,root) /sbin/kdbd
+#%attr(4755,root,root) /sbin/kdbd
+/sbin/kdbd
 /%{_lib}/*elektra.so*
 %dir /%{_lib}/elektra
 /%{_lib}/elektra/*elektra-daemon.so*
@@ -191,6 +199,7 @@ kdb set system/sw/kdb/schemapath "%{_datadir}/sgml/elektra-0.1.1/elektra.xsd"
 %{_libdir}/*elektratools.so.*
 %{_libdir}/elektra/*elektratools.so
 %{_sysconfdir}/profile.d/*
+%{_sysconfdir}/init.d/*
 %doc AUTHORS COPYING ChangeLog README INSTALL
 %doc scripts doc/standards
 %{_mandir}/man1/*
