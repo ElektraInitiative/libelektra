@@ -622,7 +622,8 @@ DBTree *getDBForKey(KDBHandle handle, const Key *key) {
 				current=current->next;
 				if (!current) current=dbs->first;
 			} while (current && current!=dbs->cursor);
-		else if (keyIsUser(key))
+		else if (keyIsUser(key)) {
+			/* If key is a user key, it can't have an empty userDomain */
 			if (key->userDomain == 0) return 0;
 			do {
 				if (!current->isSystem && !strcmp(key->userDomain,current->userDomain))
@@ -631,6 +632,7 @@ DBTree *getDBForKey(KDBHandle handle, const Key *key) {
 				current=current->next;
 				if (!current) current=dbs->first;
 			} while (current && current!=dbs->cursor);
+		}
 	}
 	
 	/* If we reached this point, the DB for our key is not in our container.

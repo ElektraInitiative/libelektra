@@ -2,7 +2,7 @@
 
 Name:          elektra
 Version:       @VERSION@
-Release:       5
+Release:       7
 Source:        http://prdownloads.sourceforge.net/elektra/%{name}-%{version}.tar.gz
 Group:         System Environment/Libraries
 License:       BSD
@@ -167,7 +167,7 @@ rm -rf $RPM_BUILD_ROOT
 #fi
 
 # Make the daemon startable
-chkconfig --add kdbd
+# chkconfig --add kdbd
 
 # Create basic key structure for apps
 kdb set -t dir system/sw
@@ -176,7 +176,7 @@ kdb set system/sw/kdb/schemapath "%{_datadir}/sgml/elektra-0.1.1/elektra.xsd"
 
 %preun
 # Remove the daemon from init tasks
-chkconfig --del kdbd
+# chkconfig --del kdbd
 
 
 %postun -p /sbin/ldconfig

@@ -73,6 +73,8 @@ int wait_nohang(int *wstat)
 
 void sigterm()
 {
+	unlink(SOCKET_NAME);
+	unlink("/var/run/kdbd/kdbd.pid");
 	exit(0);
 }
 

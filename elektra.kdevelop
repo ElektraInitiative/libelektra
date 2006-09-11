@@ -25,6 +25,7 @@
       <autocompile>true</autocompile>
       <envvars>
         <envvar value="kate" name="EDITOR" />
+        <envvar value="berkeleydb" name="KDB_BACKEND" />
       </envvars>
     </run>
     <build>
