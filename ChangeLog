@@ -1,8 +1,9 @@
-* Fri Sep 08 2006 Avi Alkalay <avi@unix.sh>
+* Fri Sep 11 2006 Avi Alkalay <avi@unix.sh>
 - Removed setuid() and +s from kdbd
 - Changed daemon socket file to /var/run/kdbd/elektra.sock
 - Created an init script for the daemon
 - Updated spec for changes
+- The daemon now creates and removes pid and sock files in/from standard dirs (/var/run/kdbd)
 
 * Thu Sep 07 2006 Avi Alkalay <avi@unix.sh> 0.6.4
 - Fixed a key ownership bug on BDB::keyFromBDB() when running together with the daemon
