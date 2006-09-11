@@ -258,6 +258,10 @@ int keyToBDB(const Key *key, DBT *dbkey, DBT *dbdata) {
  * The oposite of keyToBDB.
  * Will take 2 DBTs (one for key name, other for data) and convert them
  * into a Key structure.
+ * 
+ * WARNING: key->userDomain must be set outside keyFromBDB(). Someplace more
+ * aware of the context. So everywhere keyFromBDB is called, a call
+ * to keySetOwner() should apper right after it.
  */
 int keyFromBDB(Key *key, const DBT *dbkey, const DBT *dbdata) {
 	size_t metaInfoSize;
@@ -619,6 +623,7 @@ DBTree *getDBForKey(KDBHandle handle, const Key *key) {
 				if (!current) current=dbs->first;
 			} while (current && current!=dbs->cursor);
 		else if (keyIsUser(key))
+			if (key->userDomain == 0) return 0;
 			do {
 				if (!current->isSystem && !strcmp(key->userDomain,current->userDomain))
 					return dbs->cursor=current;
@@ -796,7 +801,7 @@ int kdbGetKeyWithOptions(KDBHandle handle, Key *key, uint32_t options) {
 	switch (ret) {
 		case 0: { /* Key found and retrieved. Check permissions */
 			keyFromBDB(&buffer,&dbkey,&data);
-			if (buffer.userDomain) keySetOwner(&buffer,dbctx->userDomain);
+			if (keyIsUser(&buffer)) keySetOwner(&buffer,dbctx->userDomain);
 
 			/* Keep key position in its keyset */
 			buffer.next = key->next;
@@ -1060,7 +1065,14 @@ ssize_t kdbGetKeyChildKeys_bdb(KDBHandle handle, const Key *parentKey,
 	/* Get/create the DB for the parent key */
 	db=getDBForKey(handle,parentKey);
 
-	if (db == 0) { /* TODO: handle error */}
+	if (db == 0) {
+		/* Bizarre sitution when a DB (existing or newly creted) can't be
+		   associted with the passed key. This is unacceptable and trated as
+		   as INVALID, because all DBs are calculated from key name.
+		*/
+		errno=KDB_RET_INVALIDKEY;
+		return -1;
+	}
 
 	currentParent=keyNew(KEY_SWITCH_END);
 	keyDup(parentKey,currentParent);
@@ -1157,7 +1169,7 @@ ssize_t kdbGetKeyChildKeys_bdb(KDBHandle handle, const Key *parentKey,
 		
 			retrievedKey=keyNew(KEY_SWITCH_END);
 			keyFromBDB(retrievedKey,&keyName,&keyData);
-			if (retrievedKey->userDomain) keySetOwner(retrievedKey,db->userDomain);
+			if (keyIsUser(retrievedKey)) keySetOwner(retrievedKey,db->userDomain);
 		
 			free(keyName.data); free(keyData.data);
 			memset(&keyName,0,sizeof(keyName));

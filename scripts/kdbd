@@ -53,8 +53,8 @@ start () {
 #    [ -d /var/db/nscd ] || mkdir /var/db/nscd
 #    secure=""
 	echo -n $"Starting $prog: "
-#	daemon $KDBD_PATH/$prog     # $secure $KDBD_OPTIONS
-	daemon --check $prog $prog --pidfile=$pidfile
+	daemon $KDBD_PATH/$prog     # $secure $KDBD_OPTIONS
+#	daemon --check $prog $prog --pidfile=$pidfile
 	RETVAL=$?
 	echo
 	[ $RETVAL -eq 0 ] && touch /var/lock/subsys/kdbd
