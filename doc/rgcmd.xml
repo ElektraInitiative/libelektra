@@ -14,7 +14,7 @@ $Id$
 			</varlistentry>
 
 			<varlistentry><term><command>set</command></term>
-				<listitem><para>Set the value to the specified key. Accepts options: <option>-c</option>, <option>-t</option>, <option>-m</option>, <option>-b</option></para></listitem>
+				<listitem><para>Set the value to the specified key. Accepts options: <option>-c</option>, <option>-t</option>, <option>-d</option>, <option>-m</option>, <option>-b</option></para></listitem>
 			</varlistentry>
 
 			<varlistentry><term><command>ls</command></term>
@@ -74,7 +74,8 @@ $Id$
 			</varlistentry>
 
 			<varlistentry><term><option>-d</option></term>
-				<listitem><para>Causes <command>get</command> to work descriptivelly. When requesting a key it will show the comment, key name and its value in a fancy format</para></listitem>
+				<listitem><para>Causes <command>get</command> to work descriptivelly. When requesting a key it will show the comment, key name and its value in a fancy format.</para></listitem>
+				<listitem><para>Causes <command>set</command> to mark the key as a directory key.</para></listitem>
 			</varlistentry>
 			
 			<varlistentry><term><option>-s</option></term>

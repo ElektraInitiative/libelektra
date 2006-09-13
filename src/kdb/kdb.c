@@ -106,6 +106,7 @@ int argFullName=0;
 int argShow=1;
 int argShell=0;
 int argXML=0;
+int argDir=0;
 int argHelp=0;
 mode_t argMode=0;
 int argType=KEY_TYPE_UNDEFINED;
@@ -148,6 +149,7 @@ int parseCommandLine(int argc, char *argv[]) {
 		case 'd':
 			argDescriptive=1;
 			argLong=1;
+			argDir=1;
 			break;
 		case 'f':
 			argFullName=1;
@@ -276,7 +278,7 @@ int parseCommandLine(int argc, char *argv[]) {
 		if      (!strcmp(sargType,"string")) argType=KEY_TYPE_STRING;
 		else if (!strcmp(sargType,"bin"))    argType=KEY_TYPE_BINARY;
 		else if (!strcmp(sargType,"binary")) argType=KEY_TYPE_BINARY;
-		else if (!strcmp(sargType,"dir"))    argType=KEY_TYPE_DIR;
+		else if (!strcmp(sargType,"dir"))    argDir=1; /* bkwrds compatibility */
 		else if (!strcmp(sargType,"link"))   argType=KEY_TYPE_LINK;
 		else {
 			argType=strtol(sargType,0,10);
@@ -683,6 +685,11 @@ int commandSet(KDBHandle handle) {
 	if (argUID) keySetUID(key,*argUID);
 	if (argGID) keySetGID(key,*argGID);
 	if (argMode) keySetAccess(key,argMode);
+	if (argDir) {
+		mode_t mask=umask(0);
+		umask(mask);
+		keySetDir(key,mask);
+	}
 
 	if (argComment) keySetComment(key,argComment);
 	
@@ -720,12 +727,7 @@ int commandSet(KDBHandle handle) {
 	/* Set key value . . . */
 	if (argType == KEY_TYPE_UNDEFINED)
 		keySetString(key,argData); /* the most common here */
-	else if (argType == KEY_TYPE_DIR) {
-		mode_t mask=umask(0);
-		umask(mask);
-		
-		keySetDir(key,mask);
-	} else if (argType == KEY_TYPE_LINK)
+	else if (argType == KEY_TYPE_LINK)
 		keySetLink(key,argData);
 	else if (argData) { /* Handle special type values . . . */
 	

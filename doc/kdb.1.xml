@@ -39,6 +39,9 @@ $Id$
 				<option>type</option>
 			</arg>
 			<arg choice="opt">
+				<option>-d</option>
+			</arg>
+			<arg choice="opt">
 				<option>-c</option>
 				<option>"A comment about this key"</option>
 			</arg>
