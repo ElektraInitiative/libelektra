@@ -312,7 +312,7 @@ ksAppend(ks,keyNew("user/sw",              // a simple key
 	
 ksAppend(ks,keyNew("system/sw",
 	KEY_SWITCH_NEEDSYNC, handle,           // a key retrieved from storage
-	KEY_SWITCH_END));                      // end of args               
+	KEY_SWITCH_END));                      // end of args
 	
 ksAppend(ks,keyNew("user/tmp/ex1",
 	KEY_SWITCH_VALUE,"some data",          // with a simple value
@@ -330,15 +330,24 @@ ksAppend(ks,keyNew("user/tmp/ex3",
 	KEY_SWITCH_END));                      // end of args
 	
 ksAppend(ks,keyNew("user/tmp/ex4",
-	KEY_SWITCH_TYPE,KEY_TYPE_BINARY,       // key type and value size (because it is binary)
+	KEY_SWITCH_TYPE,KEY_TYPE_BINARY,       // key type
 	KEY_SWITCH_VALUE,"some data",7,        // value that will be truncated in 7 bytes
 	KEY_SWITCH_COMMENT,"value is truncated",
 	KEY_SWITCH_DOMAIN,"root",              // owner (not uid) is root
 	KEY_SWITCH_UID,0,                      // root uid
 	KEY_SWITCH_END));                      // end of args
-	
+
+ksAppend(ks,keyNew("user/tmp/ex5",
+	KEY_SWITCH_TYPE,KEY_TYPE_DIR,          // dir key with...
+	KEY_SWITCH_TYPE,KEY_TYPE_BINARY,       // ...a binary value
+	KEY_SWITCH_VALUE,"some data",7,        // value that will be truncated in 7 bytes
+	KEY_SWITCH_COMMENT,"value is truncated",
+	KEY_SWITCH_DOMAIN,"root",              // owner (not uid) is root
+	KEY_SWITCH_UID,0,                      // root uid
+	KEY_SWITCH_END));                      // end of args
+
 ksAppend(ks,keyNew("user/env/alias/ls",    // a key we know we have
-	KEY_SWITCH_NEEDSYNC, handle,           // retrieve from storage
+	KEY_SWITCH_NEEDSYNC, handle,           // retrieve from storage, passing the KDB handle
 	KEY_SWITCH_END));                      // do nothing more
 	
 ksAppend(ks,keyNew("user/env/alias/ls",    // same key
@@ -394,11 +403,18 @@ Key *keyNew(const char *keyName, ...) {
 					/* First is the type */
 					keyType=(uint8_t)va_arg(va,unsigned int);
 					
-					keyTypeBinary=(KEY_TYPE_BINARY <= keyType &&
-						keyType < KEY_TYPE_STRING);
+					if (keyType == KEY_TYPE_DIR) {
+						mode_t mask=umask(0);
+						
+						umask(mask);
+						keySetDir(key,mask);
+						keyType=KEY_TYPE_UNDEFINED;
+					} else {
+						keyTypeBinary=(KEY_TYPE_BINARY <= keyType &&
+							keyType < KEY_TYPE_STRING);
 					
-					keySetType(key,keyType);
-					
+						keySetType(key,keyType);
+					}
 					break;
 				case KEY_SWITCH_VALUE:
 					if (keyType == KEY_TYPE_UNDEFINED)
@@ -428,7 +444,7 @@ Key *keyNew(const char *keyName, ...) {
 					keySetAccess(key,va_arg(va,mode_t));
 					break;
 				case KEY_SWITCH_UMODE:
-					if (key->type == KEY_TYPE_DIR)
+					if (keyIsDir(key))
 						keySetDir(key,va_arg(va,mode_t));
 					else
 						keySetUAccess(key,va_arg(va,mode_t));
@@ -1987,14 +2003,11 @@ keyDel(color1);
 keyDel(color2);
  * @endcode
  *
- * The KeyType::KEY_TYPE_DIR is the only type that has no value, so when
- * using this method to set to this type, the key value will be freed.
- *
  * When using KeyType::KEY_TYPE_DIR, this method will not set access
  * permissions to the key. You'll have to set it manually after
  * keySetType(), calling keySetAccess() with appropriate permissions.
  * Or use the keySetDir().
- * 
+ *
  * @see keyGetType()
  * @see keySetDir()
  * @see #KeyType
@@ -2003,22 +2016,19 @@ keyDel(color2);
  *
  */
 uint8_t keySetType(Key *key,uint8_t newType) {
-	mode_t dirSwitch=0111;
+	mode_t mask=0;
 
 	switch (newType) {
 		case KEY_TYPE_DIR:
-			key->type=KEY_TYPE_DIR;
-			dirSwitch=umask(0); umask(dirSwitch);
-			dirSwitch=0111 & ~dirSwitch;
-			key->access|=dirSwitch | 0040000; /*S_IFDIR (is directory)*/
-			keySetRaw(key,0,0); /* remove data */
+			mask=umask(0); umask(mask);
+			keySetDir(key,mask);
 			break;
 		default:
 			key->type=newType;
-			key->access &= ~(0040000 | dirSwitch);
+			/* key->access &= ~(0040000 | dirSwitch); */
 			/*remove directory bits and dirSwitch*/
-			key->flags |= KEY_SWITCH_NEEDSYNC;
 	}
+	key->flags |= KEY_SWITCH_NEEDSYNC;
 	return key->type;
 }
 
@@ -2044,17 +2054,21 @@ keySetDir(key,mask);
  * 
  * @param key the key to set type and permissions
  * @param customUmask the umask of current session
- * @return the key new type, which is KEY_TYPE_DIR
+ * @return always KEY_TYPE_DIR
+ * @see keySetUAccess()
+ * @see keySetType()
  * @ingroup keyvalue
  */
 uint8_t keySetDir(Key *key, mode_t customUmask) {
 	mode_t dirSwitch=0111;
 	
-	key->type=KEY_TYPE_DIR;
+	/* key->type=KEY_TYPE_DIR; */
 	key->access|=(dirSwitch & ~customUmask) | 0040000; /*S_IFDIR*/
-	keySetRaw(key,0,0); /* remove data */
+	/* keySetRaw(key,0,0); remove data */
 	
-	return key->type;
+	key->flags |= KEY_SWITCH_NEEDSYNC;
+	
+	return KEY_TYPE_DIR;
 }
 
 
@@ -2349,66 +2363,9 @@ char *keyStealComment(const Key *key) {
 
 
 
-
-
-ssize_t keyGetRecordSize(const Key *key) {
-	return key->recordSize;
-}
-
-
-/**
- * Return a pointer to the next key, if @p key is member of a KeySet.
- * Different from ksNext(), this call does not affect the @link ksCurrent() KeySet internal cursor @endlink.
- * @ingroup keymisc
- */
-Key *keyNext(Key *key) {
-	return key->next;
-}
-
-
-
-
-
-
-
-
-/**
- * Duplicate memory of keys.
- *
- * Both keys have to be initialized with keyInit(). If you have set any
- * dynamic allocated memory for dest, make sure that you keyClose() it.
- * 
- * All private attributes of the source key will be copied, including its
- * context on a KeySet, and nothing will be shared between both keys.
- *
- *
- * @param source has to be a initializised Key
- * @param dest will be the new copy of the Key
- * @return 0 on success
- * @see keyClose(), keyInit()
- * @ingroup keybase
- */
-int keyDup(const Key *source, Key *dest) {
-	
-	/* Copy the struct data, including the "next" pointer */
-	*dest=*source;
-
-	/* prepare to set dynamic properties */
-	dest->key=
-	dest->comment=
-	dest->userDomain=
-	dest->data=0;
-
-	/* Set properties that need memory allocation */
-	keySetName(dest,source->key);
-	keySetComment(dest,source->comment);
-	keySetOwner(dest,source->userDomain);
-	keySetRaw(dest,source->data,source->dataSize);
-
-	dest->flags=source->flags;
-
-	return 0;
-}
+/*********************************************
+ *    UID, GID and ACL bits methods          *
+ *********************************************/
 
 
 
@@ -2507,11 +2464,12 @@ int keySetAccess(Key *key, mode_t mode) {
 
 
 
+
 /**
  * Set the key filesystem-like access permissions based on umask.
- * 
+ *
  * Use this method before calling keySetDir().
- * 
+ *
  * @param key the key to set access permissions
  * @param umask the umask for file/key creation as returned by umask(3)
  * @see keyGetAccess()
@@ -2526,6 +2484,11 @@ int keySetUAccess(Key *key, mode_t umask) {
 }
 
 
+
+
+/*********************************************
+ *    Access times methods                   *
+ *********************************************/
 
 
 /**
@@ -2555,6 +2518,80 @@ time_t keyGetATime(const Key *key) {
 time_t keyGetCTime(const Key *key) {
 	return key->ctime;
 }
+
+
+
+
+
+
+/*********************************************
+ *    Other methods                          *
+ *********************************************/
+
+
+
+ssize_t keyGetRecordSize(const Key *key) {
+	return key->recordSize;
+}
+
+
+/**
+ * Return a pointer to the next key, if @p key is member of a KeySet.
+ * Different from ksNext(), this call does not affect the @link ksCurrent() KeySet internal cursor @endlink.
+ * @ingroup keymisc
+ */
+Key *keyNext(Key *key) {
+	return key->next;
+}
+
+
+
+
+
+
+
+
+/**
+ * Duplicate a key in memory.
+ *
+ * Both keys have to be initialized with keyInit(). If you have set any
+ * dynamic allocated memory for @p dest, make sure that you keyClose() it before keyDup().
+ *
+ * All private attributes of the @p source key will be copied, including its
+ * context on a KeySet, and nothing will be shared between both keys.
+ *
+ * Memory will be allocated as needed for dynamic properties as value, comment, etc.
+ *
+ * @param source has to be an initializised source Key
+ * @param dest will be the new copy of the Key
+ * @return 0 on success
+ * @see keyClose(), keyInit()
+ * @ingroup keybase
+ */
+int keyDup(const Key *source, Key *dest) {
+
+	/* Copy the struct data, including the "next" pointer */
+	*dest=*source;
+
+	/* prepare to set dynamic properties */
+	dest->key=
+			dest->comment=
+			dest->userDomain=
+			dest->data=0;
+
+	/* TODO: handle errors, mostly due to memory allocation */
+	/* Set properties that need memory allocation */
+	keySetName(dest,source->key);
+	keySetOwner(dest,source->userDomain);
+	keySetComment(dest,source->comment);
+	keySetRaw(dest,source->data,source->dataSize);
+
+	dest->flags=source->flags | KEY_SWITCH_NEEDSYNC;
+	
+	return 0;
+}
+
+
 
 
 
@@ -2704,12 +2741,17 @@ uint32_t keyCompare(const Key *key1, const Key *key2) {
 
 
 
+/*********************************************
+ *    Textual XML methods                    *
+ *********************************************/
+
+
 /**
  * Prints an XML representation of the key.
  *
  * String generated is of the form:
  * @verbatim
-	<key name="system/sw/XFree/Monitor/Monitor0/Name"
+	<key name="system/sw/xorg/Monitor/Monitor0/Name"
 		type="string" uid="root" gid="root" mode="0660">
 
 		<value>Samsung TFT panel</value>
@@ -2719,14 +2761,13 @@ uint32_t keyCompare(const Key *key1, const Key *key2) {
 
 
  * @verbatim
-	<key parent="system/sw/XFree/Monitor/Monitor0" basename="Name"
+	<key parent="system/sw/xorg/Monitor/Monitor0" basename="Name"
 		type="string" uid="root" gid="root" mode="0660">
 
 		<value>Samsung TFT panel</value>
 		<comment>My monitor</comment>
 	</key>@endverbatim
  *
- * Accepted options that can be ORed:
  * @param stream where to write output: a file or stdout
  * @param options Some #KDBOptions ORed:
  * - @p KDBOptions::KDB_O_NUMBERS \n
@@ -2734,7 +2775,7 @@ uint32_t keyCompare(const Key *key1, const Key *key2) {
  * - @p KDBOptions::KDB_O_CONDENSED \n
  *   Less human readable, more condensed output
  * - @p KDBOptions::KDB_O_FULLNAME \n
- *   The @c user keys are exported with their full names (including
+ *   The @p user keys are exported with their full names (including
  *   user domains)
  *
  * @see ksToStream()
@@ -2750,11 +2791,11 @@ ssize_t keyToStream(const Key *key, FILE* stream, unsigned long options) {
 
 
 /**
- * Same as keyToStream() but tries to strip @c parentSize bytes from
- * @c key name if it matches @c parent .
+ * Same as keyToStream() but tries to strip @p parentSize bytes from
+ * @p key name if it matches @p parent .
  *
- * Taking the example from keyToStream(), if @c parent contains
- * "system/sw/XFree", the generated string is of the form:
+ * Taking the example from keyToStream(), if @p parent is
+ * @c "system/sw/xorg", the generated string is of the form:
  * @verbatim
 	<key basename="Monitor/Monitor0/Name"
 		type="string" uid="root" gid="root" mode="0660">
@@ -2763,11 +2804,27 @@ ssize_t keyToStream(const Key *key, FILE* stream, unsigned long options) {
 		<comment>My monitor</comment>
 	</key>@endverbatim
  *
+ * It usefull to produce more human readable XML output of a key when
+ * it is being represented in a context that defines the parent key name.
+ * For example:
+ *
+ * @verbatim
+	<keyset parent="user/sw">
+		<key basename="kdbedit"..../>
+		<key basename="phototools"..../>
+		<key basename="myapp"..../>
+	</keyset>@endverbatim
+ *
+ * In the bove example, each @p @<key@> entry was generated by a call to 
+ * keyToStreamBasename() having @c "user/sw" as @p parent .
+ * 
  * This method is used when ksToStream() is called with
  * KDBOption::KDB_O_HIER option.
  *
- * @param parentSize the maximum size of @c parent that will be used.
- *        If 0, the entire @c parent will be used.
+ * @param parentSize the maximum size of @p parent that will be used.
+ *        If 0, the entire @p parent will be used.
+ * @param parent the string (or part of it, defined by @p parentSize ) that
+ *        will be used to strip from the key name.
  * @return number of bytes written to output
  * @ingroup keymisc
  */
@@ -2823,15 +2880,18 @@ ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
 			case KEY_TYPE_LINK:
 				strcpy(buffer,"link");
 				break;
-			case KEY_TYPE_DIR:
+		/*	case KEY_TYPE_DIR:
 				strcpy(buffer,"directory");
-				break;
+				break; */
 			case KEY_TYPE_UNDEFINED:
 				strcpy(buffer,"undefined");
 				break;
 		}
 		if (buffer[0]) written+=fprintf(stream,"type=\"%s\"", buffer);
 		else written+=fprintf(stream,"type=\"%d\"", key->type);
+		
+		written+=fprintf(stream," ");
+		if (keyIsDir(key)) written+=fprintf(stream,"isdir=\"yes\"");
 	}
 
 #ifdef HAVE_PWD_H
@@ -3003,6 +3063,12 @@ size_t keyGetSerializedSize(Key *key) {
 
 
 
+/*********************************************
+ *    Flag manipulation methods              *
+ *********************************************/
+
+
+
 
 /**
  * Set a general flag in the Key.
@@ -3060,6 +3126,11 @@ int keyGetFlag(const Key *key) {
 
 
 
+
+
+/*********************************************************************
+ *    Key instance construction and destruction methods              *
+ *********************************************************************/
 
 
 /**
@@ -3159,7 +3230,7 @@ int keyClose(Key *key) {
  * Deallocate it with a simple free().
  *
  * @see keyUnserialize()
- * @ingroup keybase
+ * @ingroup keymisc
  */
 void *keySerialize(Key *key) {
 	size_t metaInfoSize=0;
@@ -3202,7 +3273,7 @@ void *keySerialize(Key *key) {
  * allocated for all elements of the new key;
  *
  * @see keySerialize()
- * @ingroup keybase
+ * @ingroup keymisc
  */
 Key *keyUnserialize(const void *serialized) {
 	Key *key=0;

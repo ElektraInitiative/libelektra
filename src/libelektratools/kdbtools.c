@@ -79,11 +79,15 @@ $Id$
 /*
  * Processes the current <key> node from reader, converting from XML
  * to a Key object, and ksAppend() it to ks.
- * 
+ *
  * See keyToStream() for an example of a <key> node.
- * 
- * 
+ *
  * This function is completelly dependent on libxml.
+ * 
+ * @param ks where to put the resulting reded key
+ * @param context a prent key name, so a full name can be calculated
+ *        if the XML node for the current key only provides a basename
+ * @param reader where to read from
  */
 int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
 	xmlChar *nodeName=0;
@@ -97,6 +101,7 @@ int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
 	nodeName=xmlTextReaderName(reader);
 	if (!strcmp((char *)nodeName,"key")) {
 		uint8_t type=KEY_TYPE_STRING; /* default type */
+		uint8_t isdir=0;
 		int end=0;
 		
 		newKey=keyNew(0);
@@ -106,9 +111,9 @@ int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
 
 		/* a <key> must have one of the following:
 		   - a "name" attribute, used as an absolute name overriding the context
-		   - a "basename" attribute, that will be added to the current context
-		   - a "parent" plus "basename" attributes, both added to current context
-		   - only a "parent", added to current context
+		   - a "basename" attribute, that will be appended to the current context
+		   - a "parent" plus "basename" attributes, both appended to current context
+		   - only a "parent", appended to current context
 		*/
 		buffer=xmlTextReaderGetAttribute(reader,(const xmlChar *)"name");
 		if (buffer) {
@@ -198,12 +203,12 @@ int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
 			else if (!strcmp((char *)buffer,"link"))
 				type=KEY_TYPE_LINK;
 			else if (!strcmp((char *)buffer,"directory"))
-				type=KEY_TYPE_DIR;
+				isdir=1; /* backwards compatibility */
 			else if (!strcmp((char *)buffer,"binary"))
 				type=KEY_TYPE_BINARY;
 			else if (!strcmp((char *)buffer,"undefined"))
 				type=KEY_TYPE_UNDEFINED;
-			else { /* special user-defined value types */
+			else { /* special numerical user-defined value types */
 				void *converter=0;
 
 				type=strtol((char *)buffer,(char **)&converter,10);
@@ -214,12 +219,23 @@ int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
 		}
 		xmlFree(buffer); buffer=0;
 
+		/* If "isdir" appears, everything different from "0", "false" or "no"
+		marks it as a dir key */
+		buffer=xmlTextReaderGetAttribute(reader,(const xmlChar *)"isdir");
+		if (buffer) isdir=! (strcmp((char *)buffer,"0") &&
+			                 strcmp((char *)buffer,"false") &&
+		                     strcmp((char *)buffer,"no"));
+		
+		xmlFree(buffer); buffer=0;
 
-		if (type == KEY_TYPE_DIR) {
+
+		if (isdir) {
 			mode_t mask=umask(0);
 			umask(mask);
 			keySetDir(newKey,mask);
-		} else keySetType(newKey,type);
+		}
+		
+		keySetType(newKey,type);
 
 
 		/* Parse everything else */
@@ -287,10 +303,13 @@ int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
 					end=1;
 				else {
 					/* found a sub <key> */
-					mode_t mask=umask(0);
-					umask(mask);
+					if (! keyIsDir(newKey)) {
+						/* Mark current key as a directory key */
+						mode_t mask=umask(0);
+						umask(mask);
 					
-					keySetDir(newKey,mask);
+						keySetDir(newKey,mask);
+					}
 					/* prepare the context (parent) */
 					consumeKeyNode(ks,newKey->key,reader);
 				}
@@ -434,10 +453,10 @@ int isValidXML(xmlDocPtr doc,char *schemaPath) {
 /**
  * Given an XML @p filename, open it, validate schema, process nodes,
  * convert and save it in the @p ks KeySet.
- * 
- * Currently, the XML file can have many root <keyset> and <key> nodes.
+ *
+ * Currently, the XML file can have many root @c @<keyset@> and @c @<key@> nodes.
  * They will all be reduced to simple keys returned in @p ks.
- * 
+ *
  * @ingroup tools
  */
 int ksFromXMLfile(KeySet *ks,const char *filename) {

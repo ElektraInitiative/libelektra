@@ -375,7 +375,7 @@ int dbTreeInit(KDBHandle handle,DBTree *newDB) {
 	mode_t mask;
 	DBT dbkey,data;
 
-	
+	/* TODO: review security bits issues on daemon mode */
 	if (newDB->isSystem) {
 		root=keyNew("system",
 			KEY_SWITCH_UID,0,
@@ -385,9 +385,10 @@ int dbTreeInit(KDBHandle handle,DBTree *newDB) {
 		struct passwd *userOwner;
 		userOwner=getpwnam(newDB->userDomain);
 		root=keyNew("user",
-			KEY_SWITCH_TYPE,KEY_TYPE_DIR,
-			KEY_SWITCH_UID, kdbhGetUID(handle),
-			KEY_SWITCH_GID, kdbhGetGID(handle),
+			KEY_SWITCH_UMODE, kdbhGetUMask(handle),
+			KEY_SWITCH_UID,   kdbhGetUID(handle),
+			KEY_SWITCH_GID,   kdbhGetGID(handle),
+			KEY_SWITCH_TYPE,  KEY_TYPE_DIR,
 			KEY_SWITCH_END);
 	}
 
@@ -1086,7 +1087,7 @@ ssize_t kdbGetKeyChildKeys_bdb(KDBHandle handle, const Key *parentKey,
 		return -1;
 	}
 	
-	if (currentParent->type != KEY_TYPE_DIR) {
+	if (! keyIsDir(currentParent)) {
 		/* TODO: dereference link keys */
 		keyDel(currentParent);
 		errno=ENOTDIR;
