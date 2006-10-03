@@ -4,7 +4,7 @@
 # This script calls ./configure with an optimal configuration for FHS
 #
 
-./configure \
+CFLAGS="-g -O0" ./configure \
 	--bindir=/bin \
 	--sbindir=/sbin \
 	--libdir=/lib \

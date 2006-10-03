@@ -1829,7 +1829,8 @@ int keyIsLink(const Key *key) {
  * @ingroup keytest
  */
 int keyIsDir(const Key *key) {
-  return key->type==KEY_TYPE_DIR;
+	return (key->access & 0040000); /*S_IFDIR*/
+	/* return key->type==KEY_TYPE_DIR; */
 }
 
 

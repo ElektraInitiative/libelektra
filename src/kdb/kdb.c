@@ -657,8 +657,8 @@ int commandMove(KDBHandle handle) {
  * @see kdbSetKey()
  */
 int commandSet(KDBHandle handle) {
-	Key *key;
-	int ret;
+	Key *key=0;
+	int ret=0;
 	char error[200];
 	size_t offset=0;
 
@@ -711,9 +711,16 @@ int commandSet(KDBHandle handle) {
 			ssize_t r;
 			
 			r=read(fileno(f),buffer,sizeof(buffer));
-			if (r == 0) {
-				r=lseek(fileno(f),0,SEEK_END)-offset;
-				end=1;
+			switch (r) {
+				case 0:
+					r=lseek(fileno(f),0,SEEK_END)-offset;
+					end=1;
+					break;
+				case -1:
+					/* those bizarre errors */
+					fprintf(stderr,"kdb set: \'%s\': problem reading file\n",argFile);
+					fclose(f);
+					return -1;
 			}
 			argData=realloc(argData,offset+r);
 			assert(argData!=NULL);

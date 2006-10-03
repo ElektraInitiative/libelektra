@@ -415,7 +415,9 @@ ssize_t kdbGetKeyChildKeys_filesys(KDBHandle handle, const Key *parentKey,
 		free(transformedName); transformedName=0; /* don't need it anymore */
 
 		keyEntry=keyNew(buffer,KEY_SWITCH_END);
-		keySetOwner(keyEntry,kdbhGetUserName(handle));
+		/* Copy key domain from parent key */
+		keySetOwner(keyEntry,parentKey->userDomain);
+		/* keySetOwner(keyEntry,kdbhGetUserName(handle)); */
 
 		/* TODO: inefficient code in next block */
 		if (options & KDB_O_STATONLY) kdbStatKey_filesys(handle,keyEntry);
