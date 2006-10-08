@@ -6,11 +6,11 @@
 # $Id$
 
 AC_PREREQ(2.59)
-AC_REVISION($Revision$)
+AC_REVISION([$Revision$])
 AC_INIT(elektra, 0.6.5, http://bugs.libelektra.org)
 AC_CANONICAL_SYSTEM
 AC_LIBTOOL_WIN32_DLL
-AC_CONFIG_SRCDIR(src/libelektra/kdb.c)
+AC_CONFIG_SRCDIR([src/libelektra/kdb.c])
 AM_INIT_AUTOMAKE
 AC_CONFIG_HEADER([src/include/config.h])
 
@@ -45,80 +45,80 @@ fi
 # usr/lib path
 echo "LIBDIR=$libdir"
 AC_ARG_WITH(ulibdir,
-	    [AC_HELP_STRING(--with-ulibdir=<path to lib>,
+	    [AC_HELP_STRING([--with-ulibdir=<path to lib>],
 	     [Set the path for usr lib.])],
-	     [[ulibdir=$withval]],
-	     [[ulibdir='${prefix}/'`basename $libdir`]]
+	     [ulibdir=$withval],
+	     [ulibdir='${prefix}/'`basename $libdir`]
 	     )
 AC_SUBST(ulibdir)
 
 # backend dlopended libraries path
 AC_ARG_WITH(backenddir,
-	    [AC_HELP_STRING(--with-backenddir=<path where backend libraries are>,
+	    [AC_HELP_STRING([--with-backenddir=<path where backend libraries are>],
 	     [Set the path for backend libraries.])],
-	     [[backenddir=$withval]],
-	     [[backenddir='${libdir}/elektra']]
+	     [backenddir=$withval],
+	     [backenddir='${libdir}/elektra']
 	     )
 AC_SUBST(backenddir)
 
 # high level backend dlopended libraries path
 AC_ARG_WITH(hlvlbackenddir,
-	    [AC_HELP_STRING(--with-hlvl-backenddir=<path where high level backend libraries are>,
+	    [AC_HELP_STRING([--with-hlvl-backenddir=<path where high level backend libraries are>],
 	     [Set the path for high level backend libraries.])],
-	     [[hlvlbackenddir=$withval]],
-	     [[hlvlbackenddir='${ulibdir}/elektra']]
+	     [hlvlbackenddir=$withval],
+	     [hlvlbackenddir='${ulibdir}/elektra']
 	     )
 AC_SUBST(hlvlbackenddir)
 
 # /usr/share/doc path
 AC_ARG_WITH(docdir,
-	    [AC_HELP_STRING(--with-docdir=<path where doc will be installed>,
+	    [AC_HELP_STRING([--with-docdir=<path where doc will be installed>],
 	     [Set the path for documentation.])],
-	     [[docdir=$withval]],
-	     [[docdir='${datadir}/doc/elektra']]
+	     [docdir=$withval],
+	     [docdir='${datadir}/doc/elektra']
 	     )
 AC_SUBST(docdir)
 
 # /usr/share/doc/elektra-api
 AC_ARG_WITH(develdocdir,
-	    [AC_HELP_STRING(--with-develdocdir=<path where elektra-api doc will be installed>,
+	    [AC_HELP_STRING([--with-develdocdir=<path where elektra-api doc will be installed>],
 	     [Set the path for elektra api documentation.])],
-	     [[develdocdir=$withval]],
-	     [[develdocdir='${datadir}/doc/elektra-devel']]
+	     [develdocdir=$withval],
+	     [develdocdir='${datadir}/doc/elektra-devel']
 	     )
 AC_SUBST(develdocdir)
 
 # sgml/elektra-0.1.1
 AC_ARG_WITH(kdbschema,
-	    [AC_HELP_STRING(--with-kdbschemadir=<relative path to kdb schema>,
+	    [AC_HELP_STRING([--with-kdbschemadir=<relative path to kdb schema>],
 	     [Set the path for elektra.xsd.])],
-	     [[kdbschemadir=$withval]],
-	     [[kdbschemadir='/sgml/elektra-0.1.1']]
+	     [kdbschemadir=$withval],
+	     [kdbschemadir='/sgml/elektra-0.1.1']
 	     )
 AC_DEFINE_UNQUOTED([KDB_SCHEMA_PATH], DATADIR "${kdbschemadir}", path for elektra.xsd)
 
 
 # Default backend selection (Set to 'filesys' as default)
 AC_ARG_WITH(backend,
-	    [AC_HELP_STRING(--with-default-backend=<backend>,
+	    [AC_HELP_STRING([--with-default-backend=<backend>],
 	     [Set backend elektra will be linked to.])],
-	     [[default_backend=$withval]],
-	     [[default_backend=filesys]]
+	     [default_backend=$withval],
+	     [default_backend=filesys]
 	     )
 
 # Default daemon backend selection (Set to 'berkeleydb' as default)
 AC_ARG_WITH(dbackend,
-	    [AC_HELP_STRING(--with-default-dbackend=<daemon backend>,
+	    [AC_HELP_STRING([--with-default-dbackend=<daemon backend>],
 	     [Set the default backend for the kdbd daemon to use.])],
-	     [[default_dbackend=$withval]],
-	     [[default_dbackend=berkeleydb]]
+	     [default_dbackend=$withval],
+	     [default_dbackend=berkeleydb]
 	     )
 AC_SUBST(default_dbackend)
 
 # Enable compilation of experimental things (unfinished
 # backends at this time)
 AC_ARG_ENABLE(experimental,
-	      [AC_HELP_STRING(--enable-experimental, [Specify to compile or not experimental parts (could cause compilation failure)])],
+	      [AC_HELP_STRING([--enable-experimental], [Specify to compile or not experimental parts (could cause compilation failure)])],
 	      [elektra_experimental=$enableval],
 	      [elektra_experimental=no])
 # for the c++ binding
@@ -126,10 +126,10 @@ AM_CONDITIONAL(EXPERIMENTAL, [test x$elektra_experimental = xyes])
 
 # Select docbook.xsl
 AC_ARG_WITH(docbook,
-	    [AC_HELP_STRING(--with-docbook=<path to docbook.xsl>,
+	    [AC_HELP_STRING([--with-docbook=<path to docbook.xsl>],
 	     [Set path to docbook.xsl used for generate manpage.])],
-	     [[default_docbook=$withval]],
-	     [[default_docbook=/usr/share/sgml/docbook/xsl-stylesheets/]]
+	     [default_docbook=$withval],
+	     [default_docbook=/usr/share/sgml/docbook/xsl-stylesheets/]
 	     )
 AC_SUBST(default_docbook)
 
@@ -190,8 +190,8 @@ AC_PATH_PROG(xsltproc, xsltproc, "no")
 # Check if have style-sheet too
 if test "x$default_docbook" != "xno"; then
 	AC_CHECK_FILE([$default_docbook],
-		      [[dbroot=$default_docbook]],
-		      [[dbroot="no"]])
+		      [dbroot=$default_docbook],
+		      [dbroot="no"])
 else
 	dbroot="no"
 fi
@@ -218,9 +218,14 @@ AM_CONDITIONAL(HAVE_DOXYGEN, test x$doxygen != xno)
 dnl Check if the user wants to disable iconv support and 
 dnl hence disable any charset conversions.
 dnl It is disabled with --disable-iconv
-AC_MSG_CHECKING(whether to disable iconv usage)
-AC_ARG_ENABLE(iconv, [  --disable-iconv turns off automatic UTF-8 conversions
-        [default="no"]],disable_iconv="yes", disable_iconv="no")
+AC_ARG_ENABLE(iconv, 
+	    [AC_HELP_STRING([--disable-iconv],
+	     [turns off automatic UTF-8 conversions.])],
+	     [disable_iconv="yes"],
+	     [disable_iconv="no"]
+	     )
+
+AC_MSG_CHECKING([whether to disable iconv usage])
 if test "x$disable_iconv" = "xyes"; then
 	AC_MSG_RESULT(yes)
 else
@@ -241,6 +246,7 @@ fi
 
 AC_SUBST(elektratools)
 
+# u_int is used in db.h and may not be set with some flags combinations
 AC_CHECK_TYPE([u_int], [],
 [
 	AC_DEFINE(u_int, [unsigned int], [If system does not define u_int, define a reasonable substitute.])
@@ -302,7 +308,7 @@ opts=m->mnt_opts;
 freq=m->mnt_freq;
 passno=m->mnt_passno;
 ],
-dnl not used
+dnl DEFINE is not used in the code
    [ AC_DEFINE(GETMNTENT_GLIBC, 1, 
      [Define this if mntent follows glibc conventions])
    elektra_glibc_mntent=yes],
@@ -410,12 +416,10 @@ opt=getopt(1,myargv,"a");
 if (optind == 2) {opt = 3;};
 ],
 [
-AC_DEFINE([HASGETOPT],[],[Working getopt])
-AC_MSG_RESULT(yes)
+  AC_DEFINE([HASGETOPT],[],[Working getopt])
+  AC_MSG_RESULT(yes)
 ],
-[
-AC_MSG_RESULT(no)
-])
+[AC_MSG_RESULT(no)])
 
 #
 # Checks for library functions.
@@ -426,7 +430,7 @@ AC_MSG_RESULT(no)
 AC_CHECK_FUNCS([memset nl_langinfo setenv setlocale strcasecmp strchr strrchr index rindex strtol ctime_r getuid getgid sigprocmask sigaction])
 
 
-
+dnl workaround an incompatible install on solaris
 INSTALL='\$(install_sh)'
 AC_SUBST(INSTALL)
 
