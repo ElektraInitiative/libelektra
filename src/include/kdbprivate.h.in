@@ -1,6 +1,6 @@
 /***************************************************************************
-      kdbprivate.h  -  Private stuff for the kdb implementation
-                             -------------------
+      kdbprivate.h  -  Private classes definition
+                           -------------------
     begin                : Mon Apr 12 2004
     copyright            : (C) 2004 by Avi Alkalay
     email                : avi@unix.sh
@@ -69,11 +69,11 @@ typedef uint32_t (*kdbMonitorKeysPtr)(KDBHandle, KeySet *, uint32_t,
 
 
 
- 
- 
+
+
 /**
  * The private Key struct.
- * 
+ *
  * Its internal private attributes should not be accessed directly by regular
  * programs. Use the @ref key "Key access methods" instead.
  * Only a backend writer needs to have access to the private attributes of the
@@ -81,7 +81,7 @@ typedef uint32_t (*kdbMonitorKeysPtr)(KDBHandle, KeySet *, uint32_t,
  * @code
 typedef struct _Key Key;
  * @endcode
- * 
+ *
  * @ingroup backend
  */
 struct _Key {
@@ -90,25 +90,25 @@ struct _Key {
 	 * @see keyGetType(), keySetType(), keyIsBin()
 	 */
 	uint8_t       type;
-	
+
 	/**
 	 * System UID of this key.
 	 * @see keyGetUID(), keySetUID()
 	 */
 	uid_t          uid;
-	
+
 	/**
 	 * System GID of this key.
 	 * @see keyGetGID(), keySetGID()
 	 */
 	uid_t          gid;
-	
+
 	/**
 	 * File-like access control
 	 * @see keyGetAccess(), keySetAccess()
 	 */
 	mode_t         access;
-	
+
 	/**
 	 * Time for last access (stat).
 	 * @see keyGetATime()
@@ -120,50 +120,50 @@ struct _Key {
 	 * @see keyGetMTime()
 	 */
 	time_t         mtime;
-	
+
 	/**
 	 * Time for last change (meta info)
 	 * @see keyGetCTime()
 	 */
 	time_t         ctime;
-	
+
 	/**
 	 * Size of the comment of description string, including ending NULL.
 	 * @see keyGetCommentSize(), keySetComment(), keyGetComment()
 	 */
 	size_t         commentSize;
-	
+
 	/**
 	 * Size of the value, in bytes, including ending NULL.
 	 * @see keyGetCommentSize(), keySetComment(), keyGetComment()
 	 */
 	size_t         dataSize;
 	size_t         recordSize;  /**< dataSize + commentSize + some control */
-	
+
 	/**
 	 * Some control and internal flags.
 	 * @see keySetFlag(), keyGetFlag()
 	 */
 	uint32_t      flags;
-	
+
 	/**
 	 * The name of the key.
 	 * @see keySetName(), keyGetName()
 	 */
 	char *         key;
-	
+
 	/**
 	 * A comment about the key.
 	 * @see keySetComment(), keyGetComment()
 	 */
 	char *         comment;
-	
+
 	/**
 	 * The user that owns the key.
 	 * @see keySetComment(), keyGetComment()
 	 */
 	char *         userDomain;
-	
+
 	/**
 	 * The user that owns the key.
 	 * @see keySetString(), keyGetString()
@@ -197,7 +197,7 @@ struct _Key {
  * @code
 typedef struct _KeySet KeySet;
  * @endcode
- * 
+ *
  * @ingroup backend
  */
 struct _KeySet {

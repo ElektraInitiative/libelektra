@@ -45,13 +45,13 @@
       <defaulttarget></defaulttarget>
     </make>
     <general>
-      <activedir>doc</activedir>
+      <activedir/>
     </general>
   </kdevcustomproject>
   <kdevdebugger>
     <general>
       <dbgshell></dbgshell>
-      <programargs>set -t bin -b /usr/share/lib/kdbedit/icons/txt.png system/sw/kdbedit/icons/superstring</programargs>
+      <programargs>ln user/env/env1/PS1 user/tmp/xyz</programargs>
       <gdbpath></gdbpath>
       <configGdbScript></configGdbScript>
       <runShellScript></runShellScript>

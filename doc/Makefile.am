@@ -52,10 +52,10 @@ all_mans = $(man1_MANS) $(man5_MANS) $(man7_MANS)
 
 kdb.1: kdb.1.xml author.xml bestpract.xml rgexample.xml rgcmd.xml
 	$(xsltproc) $(dbroot)/manpages/docbook.xsl $<
-	
+
 elektra.7: elektra.7.xml author.xml overview.xml bestpract.xml rgexample.xml
 	$(xsltproc) $(dbroot)/manpages/docbook.xsl $<
-	
+
 elektra.5: elektra.5.xml author.xml storage.xml
 	$(xsltproc) $(dbroot)/manpages/docbook.xsl $<
 
@@ -72,7 +72,8 @@ howto.html: howto.xml elektra.7.xml author.xml garbage.xml overview.xml bestprac
 
 # Layout and configurations to generate HTML for the web site
 HTML_TITLE_LAYOUT_XSL=html-titlepage-layout.xsl
-HTML_TITLE_LAYOUT=html-titlepage-layout.tpl
+#HTML_TITLE_LAYOUT=html-titlepage-layout.tpl
+HTML_TITLE_LAYOUT=html-params.xsl
 
 $(HTML_TITLE_LAYOUT_XSL): $(HTML_TITLE_LAYOUT)
 	-$(xsltproc) -o ${HTML_TITLE_LAYOUT_XSL} $(dbroot)/template/titlepage.xsl $(srcdir)/${HTML_TITLE_LAYOUT}
@@ -95,10 +96,10 @@ else
 # or after a modification of the xml sources.
 kdb.1: kdb.1.xml author.xml bestpract.xml rgexample.xml rgcmd.xml
 	touch $<
-	
+
 elektra.7: elektra.7.xml author.xml overview.xml bestpract.xml rgexample.xml
 	touch $<
-	
+
 elektra.5: elektra.5.xml author.xml storage.xml
 	touch $<
 
@@ -147,9 +148,9 @@ endif
 # all: documentation
 
 # html doxygen
-# documentation: docbookman doxygen 
+# documentation: docbookman doxygen
 # docbookman: kdb.1 elektra.7 elektra.5
-	
+
 develdoc_DATA = elektra-api
 apihtmldir = $(develdocdir)/api-html
 
@@ -188,10 +189,10 @@ CLEANFILES = csource.xml \
 	elektra-api.tar.gz
 
 MAINTAINERCLEANFILES = howto.html \
-	kdb.1 elektra.5 elektra.7 
+	kdb.1 elektra.5 elektra.7
 
-# putting in EXTRA_DIST doesn't work, since in that case it may be 
-# copied from srcdir and also from the current dir, leading to an error 
+# putting in EXTRA_DIST doesn't work, since in that case it may be
+# copied from srcdir and also from the current dir, leading to an error
 dist-hook:
 	if test -d elektra-api/html; \
 	  then cp -pR elektra-api $(distdir); \

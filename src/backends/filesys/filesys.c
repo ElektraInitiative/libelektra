@@ -62,7 +62,7 @@ $Id$
 /**This value is garanteed on any Posixsystem*/
 #elif __USE_POSIX
 #define MAX_PATH_LENGTH _POSIX_PATH_MAX
-#else 
+#else
 #define MAX_PATH_LENGTH 4096
 #endif
 
@@ -155,151 +155,224 @@ int kdbGetKey_filesys(KDBHandle handle, Key *key) {
 }
 
 
+int keyToFile(KDBHandle handle, Key *key, char *keyFileName) {
+	int fd=0;
+	FILE *output=0;
+
+	/* Try to open key file with its full file name */
+	/* TODO: Make it more "transactional" without truncating */
+	fd=open(keyFileName,O_CREAT | O_RDWR | O_TRUNC, key->access);
+	if (fd==-1) return -1;
+	/* TODO: lock file here */
+
+	/* Set permissions */
+	if (kdbhGetUID(handle) == 0) fchown(fd,key->uid,key->gid);
+	if (kdbhGetGID(handle) == key->uid || kdbhGetGID(handle) == key->gid)
+		fchmod(fd,key->access);
+
+
+	/* Write file content */
+	if (!(output=fdopen(fd,"w+"))) return -1;
+	if (keyFileSerialize(key,output)) {
+		fclose(output);
+		return -1;
+	}
+	/* TODO: unlock file here */
+	fclose(output);
+
+	return 0;
+}
+
 
 int kdbSetKey_filesys(KDBHandle handle, Key *key) {
 	char keyFileName[MAX_PATH_LENGTH];
-	char folderMaker[MAX_PATH_LENGTH];
-	char *cursor, *last;
-	int fd;
-	FILE *output=0;
-	size_t pos;
-	uint32_t semiflag;
+	char genericBuffer[MAX_PATH_LENGTH];
+	char *cursor=0, *last=0;
+	size_t pos=0;
+	uint32_t semiflag=0;
 	struct stat stated;
+	int rc=0;
+	int exists=0;
 
 	pos=kdbGetFilename(key,keyFileName,sizeof(keyFileName));
 	if (!pos) return -1; /* Something is wrong. Propagate errno. */
 
-	if (stat(keyFileName,&stated))
-		if (errno==ENOENT) {
-			/* check if parent dir already exists */
-			last=strrchr(keyFileName,(int)'/');
-			strncpy(folderMaker,keyFileName,last-keyFileName);
-			folderMaker[last-keyFileName]=0;
-			if (stat(folderMaker,&stated)) {
-				/* create all path recursively until before our basename */
-				mode_t parentMode;
-				mode_t umaskValue=umask(0);
-				
-				umask(umaskValue);
-				#if defined(S_IRWXU) && defined(S_IRWXG) && defined(S_IRWXO)
-				parentMode=((S_IRWXU | S_IRWXG | S_IRWXO) & (~ umaskValue)) |
-					S_IWUSR | S_IXUSR;  /* from coreutils::mkdir.c */
-				#else
-				parentMode=(~ umaskValue) |
-					S_IWUSR | S_IXUSR;  /* from coreutils::mkdir.c */
-				#endif
-				
-				last   =strrchr(keyFileName,'/');
-				cursor = strchr(keyFileName,'/'); cursor++; /* skip first occurence */
-				if (!last || !cursor) { /* bizarre key name */
-					errno=KDB_RET_INVALIDKEY;
-					return -1;
-				}
-				for (cursor=strchr(cursor,'/');
-						cursor && (cursor <= last);
-						cursor=strchr(cursor,'/')) {
-					strncpy(folderMaker,keyFileName,cursor-keyFileName);
-					folderMaker[cursor-keyFileName]=0;
-					#ifdef HAVE_WIN32
-					if (mkdir(folderMaker)<0 && errno!=EEXIST)
-					#else
-					if (mkdir(folderMaker,parentMode)<0 && errno!=EEXIST)
-					#endif
-						return -1;       /* propagate errno */
-					/* Since mkdir on win32 can't set a mode for us we need to do it manually */
-					#ifdef HAVE_WIN32
-					if(chmod(folderMaker, parentMode) < 0)
-						return -1;
-					#endif
-					cursor++;
-				}
+	exists = ! stat(keyFileName,&stated);
+
+	if (! exists && errno!=ENOENT) return -1; /* propagate errno */
+
+	if (! exists) {
+		/* Entry does not exist in the filesystem. */
+		/* It is our job to create it. */
+		/* Now this block will take care to check or create
+		   entire file path to key */
+
+		/* check if parent dir already exists */
+		last=strrchr(keyFileName,(int)'/');
+		strncpy(genericBuffer,keyFileName,last-keyFileName);
+		genericBuffer[last-keyFileName]=0;
+		if (stat(genericBuffer,&stated)) {
+			/* create all path recursively until before our basename */
+			mode_t parentMode;
+			mode_t umaskValue=kdbhGetUMask(handle);
+
+#if defined(S_IRWXU) && defined(S_IRWXG) && defined(S_IRWXO)
+			parentMode=((S_IRWXU | S_IRWXG | S_IRWXO) & (~ umaskValue)) |
+				S_IWUSR | S_IXUSR;  /* from coreutils::mkdir.c */
+#else
+			/* TODO: check this piece of code */
+			parentMode=(~ umaskValue) |
+				S_IWUSR | S_IXUSR;  /* from coreutils::mkdir.c */
+#endif
+
+			last   =  strrchr(keyFileName,'/');
+			cursor =   strchr(keyFileName,'/'); cursor++; /* skip first occurence */
+			if (!last || !cursor) { /* bizarre key name */
+				errno=KDB_RET_INVALIDKEY;
+				return -1;
 			}
-		} else return -1; /* propagate errno */
-	else { /* A file or dir or link is already there. Lets check details */
-		/* TODO: Check for existing link */
-		if ( S_ISDIR(stated.st_mode) && !keyIsDir(key)) {
-			errno=EISDIR;
-			return -1;
-		}
-		if (!S_ISDIR(stated.st_mode) &&  keyIsDir(key)) {
-			errno=ENOTDIR;
-			return -1;
-		}
-	}
 
-	/* Enough of checking. Real write now, with a bit of other checks :-) */
+			/* The deep dir maker loop */
+			for (cursor=strchr(cursor,'/');
+							 cursor && (cursor <= last);
+							 cursor=strchr(cursor,'/')) {
 
-	if (keyIsLink(key)) {
-		char targetName[MAX_PATH_LENGTH];
-		Key target;
-		int rc;
+				strncpy(genericBuffer,keyFileName,cursor-keyFileName);
+				genericBuffer[cursor-keyFileName]=0;
 
-		/*
-			If targetName starts with:
-			- "system" | "user" | any future root name: Convert to a FS path,
-			  and symlink it
-			- other: It is an absolute FS path, or relative inside-kdb
-			  namespace path, and symlink it
-		*/
+#ifdef HAVE_WIN32
+				if (mkdir(genericBuffer)<0 && errno!=EEXIST)
+					return -1; /* propagate errno */
+				/* Since mkdir on win32 can't set a mode for us we need to do it manually */
+				if(chmod(genericBuffer, parentMode) < 0)
+					return -1;
+#else
+				if (mkdir(genericBuffer,parentMode)<0 && errno!=EEXIST)
+					return -1;
+#endif
+				cursor++;
+			} /* END OF: dir maker loop */
+		} /* END OF: parent is not there */
+	} /* END OF: !exists (or, preparation for key creation) */
 
-		keyInit(&target);
 
-		/* Setting the name will let us know if this is a valid keyname */
-		if (keySetName(&target,key->data)) {
-			/* target has a valid key name */
-			kdbGetFilename(&target,targetName,sizeof(targetName));
-			keyClose(&target);
-		} else if (errno==KDB_RET_INVALIDKEY) {
-			/* Is an invalid key name. So treat it as a regular file */
-			strncpy(targetName,key->data,sizeof(targetName));
-			keyClose(&target); /* get rid of invalid stuff */
-		} else {
-			keyClose(&target); /* get rid of invalid stuff */
-			return -1; /* propagate errno from keySetName() */
+	if (keyIsDir(key)) {
+		if ( exists && !S_ISDIR(stated.st_mode) ) {
+			/* New key is dir, but file there is not */
+			/* Remove the file */
+			rc=unlink(keyFileName);
+			if (rc && errno!=ENOENT) return -1;
 		}
 
-
-		/* Now, targetName has the real destination of our link */
-
-		/* TODO: handle null targetName */
-		rc=symlink(targetName,keyFileName);
-
-		return rc; /* propagate errno */
-	} else if (keyIsDir(key)) {
-		#ifdef HAVE_WIN32
+#ifdef HAVE_WIN32
 		if (mkdir(keyFileName)<0 && errno!=EEXIST)
-		#else
-		if (mkdir(keyFileName,key->access)<0 && errno!=EEXIST)
-		#endif
-			return -1;       /* propagate errno */
+			return -1; /* propagate errno */
 		/* Since mkdir on win32 can't set a mode for us we need to do it manually */
-		#ifdef HAVE_WIN32
-		if(chmod(keyFileName, key->access) < 0)
+		if (chmod(keyFileName, key->access)<0) return -1;
+#else
+		if (mkdir(keyFileName,key->access)<0 && errno!=EEXIST)
 			return -1;
-		#endif
-	} else {
-		/* Try to open key file with its full file name */
-		/* TODO: Make it more "transactional" without truncating */
-		fd=open(keyFileName,O_CREAT | O_RDWR | O_TRUNC, key->access);
-		if (fd==-1) return -1;
-		/* TODO: lock file here */
-		if (getuid() == 0) fchown(fd,key->uid,key->gid);
-		if (getuid() == key->uid || getgid() == key->gid) fchmod(fd,key->access);
-		if (!(output=fdopen(fd,"w+"))) return -1;
-		if (keyFileSerialize(key,output)) {
-			fclose(output);
-			return -1;
+#endif
+
+		/* Dir permissions... */
+		if (getuid() == 0 || kdbhGetUID(handle) == 0)
+			chown(keyFileName,key->uid,key->gid);
+		if (getuid() == 0 ||
+					 (kdbhGetUID(handle) == key->uid ||
+					 kdbhGetGID(handle) == key->gid))
+			chmod(keyFileName,key->access);
+
+		/* Value and Comment... */
+		if (key->data || key->comment) {
+			/* Append a filename for key data and comment */
+			strcat(keyFileName,"/%%dirdata");
+			rc=keyToFile(handle,key,keyFileName);
 		}
-		/* TODO: unlock file here */
-		fclose(output);
+	} else { /* key is not dir */
+		if ( exists && S_ISDIR(stated.st_mode) ) {
+			/* but inode there is a dir */
+			DIR *dir=0;
+			int hasChild=0;
+			struct dirent *entry=0;
+
+			/* Check if it has child keys */
+			dir=opendir(keyFileName);
+			while ((entry=readdir(dir)) || ! hasChild) {
+				/* Ignore '.' and '..' directory entries */
+				if (!strcmp(entry->d_name,".") ||
+								 !strcmp(entry->d_name,"..") ||
+								 !strcmp(entry->d_name,"%%dirdata"))
+					continue;
+				else hasChild=1;
+			}
+			closedir(dir);
+
+			if (hasChild) {
+				/* Dir contains files, so can't un-dir it */
+				errno=ENOTEMPTY;
+				return -1;
+			}
+
+			/* We'll have to transform it to a non-dir key, so... */
+			/* Remove the directory file if any */
+			sprintf(genericBuffer,"%s/%%dirdata",keyFileName);
+			rc=unlink(genericBuffer);
+			if (rc && errno!=ENOENT) return -1;
+
+			/* Remove the dir */
+			rc=rmdir(keyFileName);
+			if (rc) return -1;
+		}
+
+		if (keyIsLink(key)) {
+			char targetName[MAX_PATH_LENGTH];
+			Key target;
+			int rc;
+
+				/*
+					If targetName starts with:
+			- "system" | "user" | any future root name: Convert to a FS path,
+			and symlink it
+			- other: It is an absolute FS path, or relative inside-kdb
+			namespace path, and symlink it
+				*/
+
+			keyInit(&target);
+
+			/* Setting the name will let us know if this is a valid keyname */
+			if (keySetName(&target,key->data)) {
+				/* target has a valid key name */
+				kdbGetFilename(&target,targetName,sizeof(targetName));
+				keyClose(&target);
+			} else if (errno==KDB_RET_INVALIDKEY) {
+				/* Is an invalid key name. So treat it as a regular file */
+				strncpy(targetName,key->data,sizeof(targetName));
+				keyClose(&target); /* get rid of invalid stuff */
+			} else {
+				keyClose(&target); /* get rid of invalid stuff */
+				return -1; /* propagate errno from keySetName() */
+			}
+
+
+			/* Now, targetName has the real destination of our link */
+
+			/* TODO: handle null targetName */
+			rc=symlink(targetName,keyFileName);
+		} /* END OF: key is link */
+
+		else
+			/* Its a plain key, so simply write to disk */
+			rc=keyToFile(handle,key,keyFileName);
+	} /* END OF: key is not dir */
+
+	if (rc == 0) {
+		/* Remove the NEEDSYNC flag */
+		semiflag=KEY_SWITCH_NEEDSYNC;
+		semiflag=~semiflag;
+		key->flags &= semiflag;
 	}
 
-	/* Remove the NEEDSYNC flag */
-	semiflag=KEY_SWITCH_NEEDSYNC;
-	semiflag=~semiflag;
-	key->flags &= semiflag;
-
-	return 0;
+	return rc;
 }
 
 
@@ -309,16 +382,16 @@ int kdbRename_filesys(KDBHandle handle, Key *key, const char *newName) {
 	char newFileName[MAX_PATH_LENGTH];
 	Key *newKey;
 	int rc;
-	
+
 	newKey=keyNew(0);
 	rc=keySetName(newKey,newName);
 	if (rc == 0) {
 		keyDel(newKey);
 		return -1;
 	}
-	
+
 	newKey->userDomain=key->userDomain;
-	
+
 	rc=kdbGetFilename(key,oldFileName,sizeof(oldFileName));
 	if (rc == 0) {
 		/* undo hack */
@@ -326,13 +399,13 @@ int kdbRename_filesys(KDBHandle handle, Key *key, const char *newName) {
 		keyDel(newKey);
 		return -1;
 	}
-	
+
 	rc=kdbGetFilename(newKey,newFileName,sizeof(newFileName));
 	/* undo hack */
 	newKey->userDomain=0;
 	keyDel(newKey); /* won't need it anymore */
 	if (rc == 0) return -1;
-	
+
 	return rename(oldFileName,newFileName);
 }
 
@@ -454,7 +527,7 @@ ssize_t kdbGetKeyChildKeys_filesys(KDBHandle handle, const Key *parentKey,
 		} else if (options & KDB_O_DIRONLY) keyDel(keyEntry);
 			else ksAppend(returned,keyEntry);
 	} /* while(readdir) */
-	
+
 	closedir(parentDir);
 
 	free(realParentName);
@@ -768,7 +841,7 @@ int keyFileUnserialize(Key *key,FILE *input) {
 /**
  * Writes the serialized form of the given key onto a file.
  *
- * This is the counterpart of <i>keyFileUnserialize()</i>.
+ * This is the counterpart of keyFileUnserialize().
  * @param key the key we want to serialize.
  * @param output the opened file to be written.
  * @return 0 on success.
@@ -840,7 +913,7 @@ int keyFileSerialize(Key *key, FILE *output) {
 
 /**
  * Char encoding
- * 
+ *
  * Encode '/', '\', '%', '+', ' ' char following
  * RFC 2396 or copy char untouched if different.
  *
@@ -853,12 +926,9 @@ int keyFileSerialize(Key *key, FILE *output) {
  * @see decodeChar
  *
  * NOTE: No '\0' is added at the end of buffer.
- * 
+ *
  */
-int encodeChar(char c, char *buffer, size_t bufSize)
-{
-	
-	
+int encodeChar(char c, char *buffer, size_t bufSize) {
 	switch(c) {
 		case '%':
 			if ( bufSize >= (3*sizeof(char)) ) {
@@ -866,35 +936,35 @@ int encodeChar(char c, char *buffer, size_t bufSize)
 				return (3*sizeof(char));
 			}
 			return -1;
-			
+
 		case '+':
 			if ( bufSize >= (3*sizeof(char)) ) {
 				memcpy(buffer, "%2B", sizeof("%2B"));
 				return (3*sizeof(char));
 			}
 			return -1;
-			
+
 		case ' ':
 			if ( bufSize >= 1*sizeof(char) ) {
 				*(buffer) = '+';
 				return (1*sizeof(char));
 			}
 			return -1;
-			
+
 		case '/':
 			if ( bufSize >= (3*sizeof(char)) ) {
 				memcpy(buffer, "%2F", sizeof("%2F"));
 				return (3*sizeof(char));
 			}
 			return -1;
-			
+
 		case '\\':
 			if ( bufSize >= (3*sizeof(char)) ) {
 				memcpy(buffer, "%5C", sizeof("%5C"));
 				return (3*sizeof(char));
 			}
 			return -1;
-			
+
 		default:
 			if ( bufSize >= (1*sizeof(char)) ) {
 				*(buffer++) = c;
@@ -902,25 +972,25 @@ int encodeChar(char c, char *buffer, size_t bufSize)
 			}
 			return -1;
 	}
-	
+
 	return 0;
 }
 
 /**
  * Char decoding
- * 
+ *
  * Decode one char from %25, %2B, %2F, %2C following
  * RFC 2396 or copy char untouched if different.
- * 
+ *
  * @param from String containing sequence to decode
  * @param into Decoded char
  * @return: Positive size of byte read from "from" for decoding
  * the sequence if sucess or -1 if error (into untouched)
  * @ingroup internals
  * @see encodeChar
- * 
+ *
  * NOTE: No '\0' is added at the end of buffer.
- * 
+ *
  */
 int decodeChar(const char *from, char *into)
 {
@@ -932,24 +1002,24 @@ int decodeChar(const char *from, char *into)
 					case 'B':       *into = '+';    break;
 					case 'F':       *into = '/';    break;
 					case 'C':       *into = '\\';   break;
-							
+
 					default:
 						return -1;
 				}
-				
+
 				return (3*sizeof(char));
 			}
 			return -1;
-			
+
 		case '+':
 			*into = ' ';
 			return (1*sizeof(char));
-			
+
 		default:
 			*into = *from;
 			return (1*sizeof(char));
 	}
-	
+
 	return 0;
 }
 
@@ -964,15 +1034,15 @@ int decodeChar(const char *from, char *into)
  * buffer is always '\0' terminated)
  * @ingroup internals
  * @see keyNameToRelativeFileName
- * 
+ *
  */
 int relativeFileNameToKeyName(const char *string, char *buffer, int bufSize)
 {
 	char decoded;
 	int j;
-	
+
 	while ( *(string) != '\0' && bufSize > sizeof(char) ) {
-		
+
 		if ( *string == PATH_SEPARATOR ) {
 			/* Translate PATH_SEPARATOR into KEY_DELIM */
 			*(buffer++) = RG_KEY_DELIM;
@@ -1016,7 +1086,7 @@ int keyNameToRelativeFileName(const char *string, char *buffer, size_t bufSize)
 
 	written = 0;
 	while ( (*string != '\0') && bufSize > sizeof(char) ) {
-		
+
 		if ( *string == ESCAPE_CHAR && *(string+1) == RG_KEY_DELIM ) {
 			/* Key delimiter escaped, encode these two (escape + delim) */
 			if ( (j = encodeChar(*(string++), buffer, bufSize)) != -1 ) {
@@ -1026,7 +1096,7 @@ int keyNameToRelativeFileName(const char *string, char *buffer, size_t bufSize)
 			} else {
 				return -1;
 			}
-			
+
 			if ( (j = encodeChar(*(string++), buffer, bufSize)) != -1 ) {
 				bufSize -= j*sizeof(char);
 				written += j*sizeof(char);
@@ -1034,14 +1104,14 @@ int keyNameToRelativeFileName(const char *string, char *buffer, size_t bufSize)
 			} else {
 				return -1;
 			}
-			
+
 		} else if ( *string == RG_KEY_DELIM ) {
 			/* Replace unescaped KEY_DELIM to PATH_SEPARATOR */
 			*(buffer++) = PATH_SEPARATOR;
 			bufSize -= sizeof(char);
 			written += sizeof(char);
 			string++;
-			
+
 		} else {
 			/* Encode ... */
 			if ( (j = encodeChar(*(string++), buffer, bufSize)) != -1 ) {
@@ -1096,7 +1166,7 @@ size_t keyCalcRelativeFileName(const Key *key,char *relativeFileName,size_t maxS
 			free(converted);
 			return 0;
 		}
-		
+
 		if (size>maxSize) {
 			free(converted);
 			errno=E2BIG;
@@ -1134,14 +1204,14 @@ int keyFromStat(Key *key,struct stat *stat) {
 	keySetAccess(key,stat->st_mode);
 	keySetUID(key,stat->st_uid);
 	keySetGID(key,stat->st_gid);
-	
+
 	if (! keyIsDir(key))
 		/* TODO: review */
 		keySetType(key,key->type & (~KEY_TYPE_DIR)); /* remove the DIR flag */
-	
+
 	if (S_ISLNK(stat->st_mode)) keySetType(key,KEY_TYPE_LINK);
 	else keySetType(key,key->type & (~KEY_TYPE_LINK)); /* remove the LINK flag */
-	
+
 	key->atime=stat->st_atime;
 	key->mtime=stat->st_mtime;
 	key->ctime=stat->st_ctime;
@@ -1171,7 +1241,7 @@ size_t kdbGetFilename(const Key *forKey,char *returned,size_t maxSize) {
 			length=strlen(returned);
 			break;
 		}
-		/* If we lack a usable concept of users we simply let the default handle it 
+		/* If we lack a usable concept of users we simply let the default handle it
 		 * and hence disable the entire user/ hiarchy. */
 		#ifdef HAVE_PWD_H
 		case KEY_NS_USER: {
@@ -1182,7 +1252,7 @@ size_t kdbGetFilename(const Key *forKey,char *returned,size_t maxSize) {
 				user=getpwnam(forKey->userDomain);
 			else if ( getenv("USER") )
 				user=getpwnam(getenv("USER"));
-			
+
 			if (!user) return 0; /* propagate errno */
 			length=snprintf(returned,maxSize,"%s/%s",user->pw_dir,KDB_DB_USER);
 			break;
@@ -1206,7 +1276,7 @@ size_t kdbGetFilename(const Key *forKey,char *returned,size_t maxSize) {
 
 
 KDBEXPORT(filesys)
-{	
+{
 	return kdbBackendExport(BACKENDNAME,
 		KDB_BE_OPEN,         &kdbOpen_filesys,
 		KDB_BE_CLOSE,        &kdbClose_filesys,
@@ -1216,8 +1286,8 @@ KDBEXPORT(filesys)
 		KDB_BE_RENAME,       &kdbRename_filesys,
 		KDB_BE_REMOVEKEY,    &kdbRemoveKey_filesys,
 		KDB_BE_GETCHILD,     &kdbGetKeyChildKeys_filesys,
-		
-		/* Explicitly set to default methods: 
+
+		/* Explicitly set to default methods:
 		 * We shouldn't explicitly set defaults. This is handled
 		 *  inside the core of elektra much better */
 /*		KDB_BE_SETKEYS,      &kdbSetKeys_default,

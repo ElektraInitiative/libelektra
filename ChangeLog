@@ -1,3 +1,7 @@
+* Mon Oct 23 2006 Avi Alkalay <avi@unix.sh>
+- API started to change to support dir keys with value
+- Initial support in filesys backend, mainly on kdbSetKey_filesys()
+
 * Sun Oct  8 2006 Patrice Dumas <pertusus@free.fr>
 - fix under and over quoting in configure.ac
 
@@ -422,7 +426,7 @@
 - New "Society of Softwares" section in documentation
 - Improved CSS of the HTML documentation
 
-	
+
 * Thu Apr 13 2004 Avi Alkalay <avi@unix.sh> 0.2.2
 - Implemented -u and -g in rg command to set Key UID and GID.
 - Included RG_O_SORT option for registyrGetChildKeys, to returned a KeySet sorted by key name.

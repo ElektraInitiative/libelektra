@@ -2,9 +2,9 @@
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	base-stylesheet="html-params.xsl">
 
-	<t:titlepage element="article" wrapper="div" class="titlepage">
-		<t:titlepage-content side="recto">
-			<title predicate="[1]"/>
+	<t:titlepage t:element="article" t:wrapper="div" class="titlepage">
+		<t:titlepage-content t:side="recto">
+			<title t:predicate="[1]"/>
 			<pubdate/>
 
 			<authorgroup>
@@ -26,7 +26,7 @@
 
 		</t:titlepage-content>
 		
-		<t:titlepage-content side="verso"/>
+		<t:titlepage-content t:side="verso"/>
  
 	</t:titlepage>
 </t:templates>
