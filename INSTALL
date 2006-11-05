@@ -43,26 +43,57 @@ General Building and Installation Instructions
 
 If you can't afford that, you should use the distributed tarball.
 
-If you still want to use the old tarball, this is the correct
+Precondition:
+Make sure you have a compiler, xml2 (for kdb tool) and xsl (see later)
+installed. ./configure will help you that you don't forget something
+essential.
+
+If you still want to use the tarball, this is the correct
 way to do it, following the Filesystem Hierarchy Standard:
 
 	$ ./configure \
-		--bindir=/bin \
-		--libdir=/lib \
-		--sysconfdir=/etc \
-		--disable-xmltest \
-		--mandir=/usr/share/man \
-		--with-docdir=/usr/share/doc/elektra \
-		--with-develdocdir=/usr/share/doc/elektra-devel \
-		--with-docbook=/usr/share/sgml/docbook/xsl-stylesheets
-
-Try with these options too:
-		--prefix=/usr \
-		--exec-prefix=/ \
+	--bindir=/bin \
+	--libdir=/lib \
+	--sysconfdir=/etc \
+	--disable-xmltest \
+	--mandir=/usr/share/man \
+	--with-docdir=/usr/share/doc/elektra \
+	--with-develdocdir=/usr/share/doc/elektra-devel \
 
 
-	$ make all
-	# make install
+The shorter version of it is:
+	--prefix=/usr \
+	--exec-prefix=/ \
+
+If you rather prefer /usr/lib and /usr/bin, you can use:
+	--exec-prefix=/usr \
+(or leave it out to be done implict by --prefix)
+	
+If you rather prefer your homedirectory, do something like:
+	--prefix=/home/markus \
+then the files will go to /home/markus/bin, /home/markus/lib asf.
+
+
+for redhat installations try:
+	--with-docbook=/usr/share/sgml/docbook/xsl-stylesheets \
+
+for debian installations try:
+	--with-docbook=/usr/share/xml/docbook/stylesheet/nwalsh \
+with package docbook-xsl installed.
+
+
+If you want debug symbols and a debug output analysis, you can try:
+	--enable-debug \
+
+If you want to test latest backends, bindings and features, try:
+	--enable-experimental \
+(WARNING! may break, crash or even not compile!)
+
+
+	$ make 
+
+to install everything:
+	# sudo make install
 
 You can also call the last as:
 
@@ -152,27 +183,6 @@ The "elektra-devel" package sugested files:
    /usr/share/man/man3/kdb*.3.gz       (Manpages for the kdb*() methods)
    /usr/share/man/man3/key*.3.gz       (Manpages for the key*() methods)
    /usr/share/man/man3/ks*.3.gz        (Manpages for the ks*() methods)
-
-
-
-
-Still TODO
-==========
-
-	- Include documentation in package
-	- Build documentation with xsltproc
-	  and Doxygen (These tools are currently
-	  checked for existance in the configure script).
-	- Install includes file in include (include/elektra ?)
-
-Should be nice to have different configure script
-for backends. This will allow to check specific
-dependency on each backends. Moreover, perhaps
-could be cool to externalize backends and have
-one package for each ?
-
-Libltdl for (hope) cross-platform is bundled with
-libelektra and so, add no dependency.
 
 (Below, generic installation instructions)
 
