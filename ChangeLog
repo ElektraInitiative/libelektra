@@ -1,3 +1,7 @@
+* Tue Nov 21 2006 Avi Alkalay <avi@unix.sh>
+- Moved other specs to a subdir, to not interfere with default RPM build
+- Certified to build on ia64
+
 * Mon Oct 23 2006 Avi Alkalay <avi@unix.sh>
 - API started to change to support dir keys with value
 - Initial support in filesys backend, mainly on kdbSetKey_filesys()
