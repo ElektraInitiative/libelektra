@@ -468,6 +468,8 @@ AC_OUTPUT([src/Makefile
 
 	   examples/Makefile
 
+	   rpmspecs/Makefile
+
 	   doc/Makefile
 	   doc/images/Makefile
 	   doc/standards/Makefile

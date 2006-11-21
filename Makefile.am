@@ -2,8 +2,8 @@
 
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = libltdl src examples doc scripts xmldtd xmlschema tests
-EXTRA_DIST=elektra.pc elektratools.pc elektra.spec elektra.mandriva.spec elektra.xml 
+SUBDIRS = libltdl src examples doc scripts xmldtd xmlschema tests rpmspecs
+EXTRA_DIST=elektra.pc elektratools.pc elektra.spec elektra.xml 
 
 pkgconfigdir = $(ulibdir)/pkgconfig
 pkgconfig_DATA = elektra.pc elektratools.pc
