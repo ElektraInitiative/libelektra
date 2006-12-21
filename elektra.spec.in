@@ -2,7 +2,7 @@
 
 Name:          elektra
 Version:       @VERSION@
-Release:       9
+Release:       1
 Source:        http://prdownloads.sourceforge.net/elektra/%{name}-%{version}.tar.gz
 Group:         System Environment/Libraries
 License:       BSD
@@ -87,7 +87,7 @@ This package contains a Berkeley DB backend for Elektra, to let Elektra use
 Berkeley DB databases to store its keys.
 
 # Uncomment and join the '%' char to 'debug_package' if you want to build debug RPMs
-# % debug_package
+%debug_package
 
 %prep
 %setup -q

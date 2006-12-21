@@ -67,6 +67,9 @@ $Id$
 #endif
 
 
+char *DIR_FILENAME="%%dirdata";
+
+
 /* These are some helpers we'll define bellow */
 int keyFileUnserialize(Key *key,FILE *input);
 size_t kdbGetFilename(const Key *forKey,char *returned,size_t maxSize);
@@ -111,6 +114,17 @@ int kdbStatKey_filesys(KDBHandle handle, Key *key) {
 		((char *)key->data)[key->recordSize]=0; /* null terminate it */
 	}
 
+	if (keyIsDir(key)) {
+		/* check if there is a directory data file */
+		strcat(keyFileName,"/");
+		strcat(keyFileName,DIR_FILENAME);
+
+		if (lstat(keyFileName,&keyFileNameInfo)) {
+			keyFromStat(key,&keyFileNameInfo);
+			keySetDir(key,keyFileNameInfo.st_mode);
+		}
+	}
+
 	/* Remove the NEEDSYNC flag */
 	semiflag=KEY_SWITCH_NEEDSYNC;
 	semiflag=~semiflag;
@@ -136,7 +150,27 @@ int kdbGetKey_filesys(KDBHandle handle, Key *key) {
 	/* TODO: lock at this point */
 	fstat(fd,&keyFileNameInfo);
 	keyFromStat(key,&keyFileNameInfo);
-	if (!keyIsDir(key)) {
+
+	if (keyIsDir(key)) {
+		close(fd);
+		strcat(keyFileName,"/");
+		strcat(keyFileName,DIR_FILENAME);
+		if ((fd=open(keyFileName,O_RDONLY))!=-1) {
+			/* there is a directory data file there */
+			/* TODO: lock at this point */
+			fstat(fd,&keyFileNameInfo);
+			keyFromStat(key,&keyFileNameInfo);
+			keySetDir(key,keyFileNameInfo.st_mode);
+
+			input=fdopen(fd,"r");
+			if (keyFileUnserialize(key,input)) {
+				fclose(input);
+				return -1;
+			}
+			/* TODO: unlock at this point */
+			fclose(input);
+		}
+	} else {
 		input=fdopen(fd,"r");
 		if (keyFileUnserialize(key,input)) {
 			fclose(input);
@@ -144,7 +178,7 @@ int kdbGetKey_filesys(KDBHandle handle, Key *key) {
 		}
 		/* TODO: unlock at this point */
 		fclose(input);
-	} else close(fd);
+	}
 
 	/* Remove the NEEDSYNC flag */
 	semiflag=KEY_SWITCH_NEEDSYNC;
@@ -278,14 +312,15 @@ int kdbSetKey_filesys(KDBHandle handle, Key *key) {
 		if (getuid() == 0 || kdbhGetUID(handle) == 0)
 			chown(keyFileName,key->uid,key->gid);
 		if (getuid() == 0 ||
-					 (kdbhGetUID(handle) == key->uid ||
-					 kdbhGetGID(handle) == key->gid))
+					(kdbhGetUID(handle) == key->uid ||
+					kdbhGetGID(handle) == key->gid))
 			chmod(keyFileName,key->access);
 
 		/* Value and Comment... */
 		if (key->data || key->comment) {
 			/* Append a filename for key data and comment */
-			strcat(keyFileName,"/%%dirdata");
+			strcat(keyFileName,"/");
+			strcat(keyFileName,DIR_FILENAME);
 			rc=keyToFile(handle,key,keyFileName);
 		}
 	} else { /* key is not dir */
@@ -297,11 +332,11 @@ int kdbSetKey_filesys(KDBHandle handle, Key *key) {
 
 			/* Check if it has child keys */
 			dir=opendir(keyFileName);
-			while ((entry=readdir(dir)) || ! hasChild) {
+			while ( !hasChild && (entry=readdir(dir)) ) {
 				/* Ignore '.' and '..' directory entries */
 				if (!strcmp(entry->d_name,".") ||
 								 !strcmp(entry->d_name,"..") ||
-								 !strcmp(entry->d_name,"%%dirdata"))
+								 !strcmp(entry->d_name,DIR_FILENAME))
 					continue;
 				else hasChild=1;
 			}
@@ -315,7 +350,7 @@ int kdbSetKey_filesys(KDBHandle handle, Key *key) {
 
 			/* We'll have to transform it to a non-dir key, so... */
 			/* Remove the directory file if any */
-			sprintf(genericBuffer,"%s/%%dirdata",keyFileName);
+			sprintf(genericBuffer,"%s/%s",keyFileName,DIR_FILENAME);
 			rc=unlink(genericBuffer);
 			if (rc && errno!=ENOENT) return -1;
 
@@ -330,11 +365,11 @@ int kdbSetKey_filesys(KDBHandle handle, Key *key) {
 			int rc;
 
 				/*
-					If targetName starts with:
+			If targetName starts with:
 			- "system" | "user" | any future root name: Convert to a FS path,
-			and symlink it
+			and symlink it.
 			- other: It is an absolute FS path, or relative inside-kdb
-			namespace path, and symlink it
+			namespace path, and symlink it.
 				*/
 
 			keyInit(&target);
@@ -415,9 +450,47 @@ int kdbRename_filesys(KDBHandle handle, Key *key, const char *newName) {
 int kdbRemoveKey_filesys(KDBHandle handle, const Key *key) {
 	char fileName[MAX_PATH_LENGTH];
 	off_t rc;
+	struct stat stated;
 
 	rc=kdbGetFilename(key,fileName,sizeof(fileName));
 	if (!rc) return -1;
+
+	if (stat(fileName,&stated)) return -1;
+
+	if ( S_ISDIR(stated.st_mode) ) {
+		/* inode there is a dir */
+		DIR *dir=0;
+		int hasChild=0;
+		int hasDataEntry=0;
+		char dataFileName[MAX_PATH_LENGTH];
+		struct dirent *entry=0;
+
+		/* Check if it has child keys */
+		dir=opendir(fileName);
+		while ( !hasChild && (entry=readdir(dir)) ) {
+			/* Ignore DIR_FILENAME, '.' and '..' directory entries */
+			if (!strcmp(entry->d_name,".") ||
+							!strcmp(entry->d_name,"..") ||
+							(hasDataEntry=!strcmp(entry->d_name,DIR_FILENAME)))
+				continue;
+			else hasChild=1;
+		}
+		closedir(dir);
+
+		if (hasChild) {
+			/* Dir contains files, so can't un-dir it */
+			errno=ENOTEMPTY;
+			return -1;
+		}
+
+		if (hasDataEntry) {
+			/* We'll have to transform it to a non-dir key, so... */
+			/* Remove the directory file if any */
+			sprintf(dataFileName,"%s/%s",fileName,DIR_FILENAME);
+			rc=remove(dataFileName);
+			if (rc && errno!=ENOENT) return -1;
+		}
+	}
 
 	return remove(fileName);
 }
@@ -449,6 +522,7 @@ ssize_t kdbGetKeyChildKeys_filesys(KDBHandle handle, const Key *parentKey,
 		free(realParentName);
 		return -1;
 	}
+
 	keyGetFullName(parentKey,realParentName,parentNameSize);
 
 	while ((entry=readdir(parentDir))) {
@@ -458,7 +532,11 @@ ssize_t kdbGetKeyChildKeys_filesys(KDBHandle handle, const Key *parentKey,
 		size_t keyNameSize=0;
 
 		/* Ignore '.' and '..' directory entries */
-		if (!strcmp(entry->d_name,".") || !strcmp(entry->d_name,".."))
+		if (!strcmp(entry->d_name,".") ||
+				!strcmp(entry->d_name,"..") ||
+				/* Ignore also the dir data file.
+					This is the job of the caller, and not ours. */
+				!strcmp(entry->d_name,DIR_FILENAME))
 			continue;
 
 		/* If key name starts with '.', and don't want INACTIVE keys, ignore it */

@@ -346,9 +346,9 @@ int parseCommandLine(int argc, char *argv[]) {
 void listAccess(Key *key,char *readable) {
 	mode_t mode=keyGetAccess(key);
 
-	if (S_ISDIR(mode)) readable[0]='d';
+	if (keyIsDir(key)) readable[0]='d';
 	#ifdef S_ISLNK
-	else if (S_ISLNK(mode)) readable[0]='l';
+	else if (keyIsLink(key)) readable[0]='l';
 	#endif
 	else readable[0]='-';
 

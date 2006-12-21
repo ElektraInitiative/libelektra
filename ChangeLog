@@ -1,3 +1,10 @@
+* Wed Dec 20 2006 Avi Alkalay <avi@unix.sh>
+- Filesys backend now fully supports dir keys with value
+- BerkeleyDB backend certified to work with values for dir keys
+- BerkeleyDB now correctly and safelly removes (or not) keys
+- Updated kdb.c::listAccess() to use keyIsDir() and keyIsLink()
+- Updated doxygen.css from doxygen 1.4.7
+
 * Tue Nov 21 2006 Avi Alkalay <avi@unix.sh>
 - Moved other specs to a subdir, to not interfere with default RPM build
 - Certified to build on ia64

@@ -70,7 +70,7 @@ $Id$
  * 
  * - parentIndex: a secondary index, to make folder searches possible, so
  *   it contains the parent key name as the table key and some DB internal
- *   data to point to keyValuePais table primary key-data pairs.
+ *   data to point to keyValuePairs table primary key-data pairs.
  * 
  * So if we have the following Elektra keys:
  * 
@@ -84,7 +84,7 @@ $Id$
  * 
  *	user/sw/app1/key1      | metadata, value, comment
  *	user/sw/app1/key2      | metadata, value, comment
- *	user/sw/app1/dir1      | metadata
+ *	user/sw/app1/dir1      | metadata, value, comment
  *	user/sw/app1/dir1/key1 | metadata, value, comment
  *	user/sw/app1/dir1/key2 | metadata, value, comment
  *	
@@ -96,7 +96,7 @@ $Id$
  *	user/sw/app1/dir1 | (BDB internal pointer to dir1/key1 on primary table)
  *	user/sw/app1/dir1 | (BDB internal pointer to dir1/key2 on primary table)
  * 
- * The parentIndex table is written and managed automatically by Berkeley DB
+ * The parentIndex table is written and managed automatically by Berkeley DB's
  * DB->associate() method, with the help of our parentIndexCallback().
  * 
  */
@@ -108,7 +108,7 @@ $Id$
  *  A container for the Berkeley DBs related to the same DBTree.
  */
 typedef struct {
-	DB *parentIndex;   /* maps folders to the keys they contain */
+	DB *parentIndex;   /* maps folder names to the keys they contain */
 	DB *keyValuePairs; /* maps keynames to their values + metainfo */
 } DBInternals;
 
@@ -710,7 +710,7 @@ int kdbClose_bdb(KDBHandle *handle) {
 /**
  * Implementation for kdbRemoveKey() method.
  *
- * @see kdbRemove() for expected behavior.
+ * @see kdbRemoveKey() for expected behavior.
  * @ingroup backend
  */
 int kdbRemoveKey_bdb(KDBHandle handle, const Key *key) {
@@ -721,6 +721,7 @@ int kdbRemoveKey_bdb(KDBHandle handle, const Key *key) {
 	uid_t user=kdbhGetUID(handle);
 	gid_t group=kdbhGetGID(handle);
 	int canWrite=0;
+	int hasChild=0;
 	Key *cast=0;
 	
 	dbs=kdbhGetBackendData(handle);
@@ -735,14 +736,17 @@ int kdbRemoveKey_bdb(KDBHandle handle, const Key *key) {
 	dbkey.data=key->key;
 	data.flags=DB_DBT_REALLOC;
 	
+
+	/* Check if key exists on the database */
 	ret = dbctx->db.keyValuePairs->get(dbctx->db.keyValuePairs,
 		NULL, &dbkey, &data, 0);
 		
 	if (ret == DB_NOTFOUND) return errno=KDB_RET_NOTFOUND;
 	
 	if (ret == 0) {
+		/* DB entry for key found */
 		cast=(Key *)data.data;
-		
+
 		/* Check parent permissions to write bellow it. */
 		if (cast->uid == user)
 			canWrite = cast->access & S_IWUSR;
@@ -751,12 +755,29 @@ int kdbRemoveKey_bdb(KDBHandle handle, const Key *key) {
 		else canWrite= cast->access & S_IWOTH;
 	}
 	
-	free(data.data);
+
+
+	if ( canWrite && (ret == 0)) {
+		/* Check if key is a dir and have children */
+		
+		if (keyIsDir(cast) /* safe, because it looks only on metadata */) {
+			if (data.data) free(data.data), data.data=0;
+			ret = dbctx->db.parentIndex->get(dbctx->db.parentIndex,
+				NULL, &dbkey, &data, 0);
+
+			if (ret == 0) hasChild=1;
+			else if (ret == DB_NOTFOUND) hasChild=0;
+		}
+	}
+
+
+	if (data.data) free(data.data),data.data=0;
 	
 	if (! canWrite) return errno=KDB_RET_NOCRED;
+	if (hasChild) return errno=ENOTEMPTY;
+
 
 	/* Ok, so we can delete the key */
-	
 	ret=dbctx->db.keyValuePairs->del(dbctx->db.keyValuePairs,
 		NULL, &dbkey, 0);
 	

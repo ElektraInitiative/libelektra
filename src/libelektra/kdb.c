@@ -413,6 +413,8 @@ int kdbClose(KDBHandle *handle) {
  * under the @p parentKey folder, except folders (and their children) and
  * inactive keys.
  * 
+ * The parent key per se will not be retrieved. This is the job of the caller.
+ * 
  * The @p option is an array of the following ORed flags:
  * - @p KDBOptions::KDB_O_RECURSIVE \n
  *   Retrieve also the keys under the folder keys, under the specified
