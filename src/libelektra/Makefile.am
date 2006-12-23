@@ -28,7 +28,7 @@ lib_LTLIBRARIES = libelektra.la
 libelektra_la_SOURCES = $(elektra_sources)
 libelektra_la_DEPENDENCIES = $(elektra_dependencies) ../libloader/libloader-dynamic.la
 libelektra_la_CFLAGS = -DDEFAULT_BACKEND=\"default\"
-libelektra_la_LDFLAGS = -version-info 2:1:0
+libelektra_la_LDFLAGS = -version-info 2:2:0
 libelektra_la_LIBADD = ../libloader/libloader-dynamic.la $(LIBICONV)
 
 EXTRA_DIST = exportsymbols.sh

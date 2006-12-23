@@ -678,6 +678,8 @@ int commandSet(KDBHandle handle) {
 		/* Handle errors different from NOTFOUND */
 		sprintf(error,"kdb set: %s",argKeyName);
 		kdbPrintError(error);
+
+		return -1;
 	}
 
 	/* Set or overwrite everything else... */

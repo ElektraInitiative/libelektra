@@ -146,7 +146,11 @@ int kdbGetKey_filesys(KDBHandle handle, Key *key) {
 	pos=kdbGetFilename(key,keyFileName,sizeof(keyFileName));
 	if (!pos) return -1; /* something is wrong */
 
-	if ((fd=open(keyFileName,O_RDONLY))==-1) return -1;
+	if ((fd=open(keyFileName,O_RDONLY))==-1) {
+		if (errno==ENOTDIR) errno=KDB_RET_NOTFOUND;
+		return -1;
+	}
+
 	/* TODO: lock at this point */
 	fstat(fd,&keyFileNameInfo);
 	keyFromStat(key,&keyFileNameInfo);
@@ -233,7 +237,8 @@ int kdbSetKey_filesys(KDBHandle handle, Key *key) {
 
 	exists = ! stat(keyFileName,&stated);
 
-	if (! exists && errno!=ENOENT) return -1; /* propagate errno */
+	if (! exists && errno!=ENOENT && errno!=ENOTDIR)
+		return -1; /* propagate errno */
 
 	if (! exists) {
 		/* Entry does not exist in the filesystem. */
@@ -245,7 +250,9 @@ int kdbSetKey_filesys(KDBHandle handle, Key *key) {
 		last=strrchr(keyFileName,(int)'/');
 		strncpy(genericBuffer,keyFileName,last-keyFileName);
 		genericBuffer[last-keyFileName]=0;
-		if (stat(genericBuffer,&stated)) {
+
+		/* first test existence of imediate parent */
+		if (stat(genericBuffer,&stated) || !S_ISDIR(stated.st_mode)) {
 			/* create all path recursively until before our basename */
 			mode_t parentMode;
 			mode_t umaskValue=kdbhGetUMask(handle);
@@ -268,22 +275,55 @@ int kdbSetKey_filesys(KDBHandle handle, Key *key) {
 
 			/* The deep dir maker loop */
 			for (cursor=strchr(cursor,'/');
-							 cursor && (cursor <= last);
-							 cursor=strchr(cursor,'/')) {
+							cursor && (cursor <= last);
+							cursor=strchr(cursor,'/')) {
 
 				strncpy(genericBuffer,keyFileName,cursor-keyFileName);
 				genericBuffer[cursor-keyFileName]=0;
 
 #ifdef HAVE_WIN32
-				if (mkdir(genericBuffer)<0 && errno!=EEXIST)
-					return -1; /* propagate errno */
+				if (mkdir(genericBuffer)<0) {
+#else
+				if (mkdir(genericBuffer,parentMode)<0) {
+#endif
+					if (errno==EEXIST) {
+						/* There is something there already. Check. */
+						stat(genericBuffer,&stated);
+
+						if (!S_ISDIR(stated.st_mode)) {
+							/* Trying to create a dir on something that is not. */
+							/* Convert into a dir in a very low level way. */
+							char tempName[MAX_PATH_LENGTH];
+							char finalName[MAX_PATH_LENGTH];
+
+							sprintf(tempName,"%s.%d",genericBuffer,rand());
+
+							if (rename(genericBuffer,tempName)<0) return -1;
+
+							/* Now tries to create the dir again */
+#ifdef HAVE_WIN32
+							if (mkdir(genericBuffer)<0) {
+#else
+							if (mkdir(genericBuffer,parentMode)<0) {
+#endif
+								/* Rollback on failure */
+								rename(tempName,genericBuffer);
+								return -1;
+							}
+
+							sprintf(finalName,"%s/%s",genericBuffer,DIR_FILENAME);
+
+							if (rename(tempName,finalName)<0) return -1;
+						} /* Regular key converted into a dir key. */
+					} else return -1; /* propagate errno */
+				}
+
+#ifdef HAVE_WIN32
 				/* Since mkdir on win32 can't set a mode for us we need to do it manually */
 				if(chmod(genericBuffer, parentMode) < 0)
 					return -1;
-#else
-				if (mkdir(genericBuffer,parentMode)<0 && errno!=EEXIST)
-					return -1;
 #endif
+
 				cursor++;
 			} /* END OF: dir maker loop */
 		} /* END OF: parent is not there */

@@ -200,7 +200,7 @@ int keyToBDB(const Key *key, DBT *dbkey, DBT *dbdata) {
 				utf8CommentConverted = 1;
 			} else convertedComment=key->comment;
 		}
-	} 
+	}
 	
 	if (dbdata) {
 		memset(dbdata, 0, sizeof(DBT));
@@ -950,8 +950,8 @@ int kdbSetKey_bdb(KDBHandle handle, Key *key) {
 			/* We don't have this key yet.
 			   Check if we have a parent and its permissions. */
 			Key *parent=0;
-			size_t parentNameSize;
-			char *parentName;
+			size_t parentNameSize=0;
+			char *parentName=0;
 
 			parentNameSize=keyGetParentNameSize(key);
 			parentName=malloc(parentNameSize);
@@ -977,36 +977,38 @@ int kdbSetKey_bdb(KDBHandle handle, Key *key) {
 				keySetGID(parent,group);
 				keySetDir(parent,kdbhGetUMask(handle));
 				
-				/* Next block exist just to not call 
+				/* Next block exist just to not call
 				 * keySetName(), a very expensive method.
 				 * This is a not-recomended hack. */
 				parent->key=parentName;
-				parent->flags |= key->flags & 
+				parent->flags |= key->flags &
 					(KEY_SWITCH_ISSYSTEM | KEY_SWITCH_ISUSER);
 				parent->userDomain=key->userDomain;
 				
 				/* free(parentName); */
 				
-				if (kdbSetKey_bdb(handle,parent)) {
-					/* If some error happened in this recursive call.
-					 * Propagate errno.
+				if (kdbSetKey(handle,parent)) {
+					/* If some error happened in this recursive call,
+					 * propagate errno.
 					 */
 					
-					/* disassociate our hack for deletion */
+					/* disassociate our hack for safe deletion */
 					parent->userDomain=0;
 					
 					/* parentName will be free()d here too */
 					keyDel(parent);
+					parentName=0; /* just to mark it empty */
 					
-					return 1;
+					return -1;
 				}
 				
-				/* disassociate our hack for latter deletion */
+				/* disassociate our hack for later deletion */
 				parent->userDomain=0;
 				
 				/* data.data enters and quits this block empty */
 			} else {
 				/* Yes, we have a parent already. */
+
 				/*parent=keyNew(0);
 				keyFromBDB(parent,&dbkey,&data);
 				keySetOwner(parent,dbctx->userDomain);
@@ -1015,26 +1017,61 @@ int kdbSetKey_bdb(KDBHandle handle, Key *key) {
 				*/
 				
 				/* we don't need it anymore */
-				free(parentName);
+				/* free(parentName);
+				parentName=0; */
 				
 				/* we are only interested in some metainfo, so just cast it */
 				parent=(Key *)data.data;
 			}
 
-			/* Check parent permissions to write bellow it. */
+			/* Check if parent provides write permissions. */
 			if (parent->uid == user)
 				canWrite = parent->access & S_IWUSR;
 			else if (parent->gid == group)
 				canWrite = parent->access & S_IWGRP;
 			else canWrite= parent->access & S_IWOTH;
 			
+			/* Check if parent is a dir, or convert it into one */
+			if (canWrite && !S_ISDIR(parent->access)) {
+
+				/* Convert the parent into a dir key */
+				parent->access|=(0111 & ~parent->access) | 0040000; /*S_IFDIR*/
+				parent->mtime=parent->atime=time(0);
+
+				/* Rewrite only the metainfo part of the key data */
+				data.doff  = 0;
+				data.dlen  = KEY_METAINFO_SIZE(parent);
+				data.flags = DB_DBT_PARTIAL;
+
+				if ((ret = dbctx->db.keyValuePairs->put(dbctx->db.keyValuePairs,
+						NULL, &dbkey, &data, 0)) != 0) {
+					dbctx->db.keyValuePairs->err(dbctx->db.keyValuePairs, ret,
+						"DB->put");
+		
+					free(dbkey.data); dbkey.data=0; /* same as parentName */
+					free(data.data); data.data=0;
+
+					errno=KDB_RET_NOCRED; /* probably this is the error */
+					return -1;
+				}
+			}
+
+			free(parentName); /* same as dbkey.data */
+			parentName=0;
+
 			if (data.data) free(data.data);
 			
-			if (parent == (Key *)data.data) parent = 0;
-			else if (parent) keyDel(parent);
+			if (parent == (Key *)data.data)
+				/* Case 1: parent is a cast of an existing retrieved key */
+				parent = 0;
+			else if (parent) {
+				/* Case 2: parent is a newly created key */
+				parent->key=0; /* disassociate with freed parentName */
+				keyDel(parent);
+			}
 			
 			break;
-		} /* case DB_NOTFOUND */
+		} /* case key not found */
 	} /* switch */
 
 	if (! canWrite) return errno=KDB_RET_NOCRED;

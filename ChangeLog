@@ -1,3 +1,9 @@
+* Sat Dec 23 2006 Avi Alkalay <avi@unix.sh>
+- Existing non-dir keys are automatically converted into keys if keys are
+  created under them. On filesys and berkeleydb.
+- Updated kdbSetKey() documentation/specification to reflect.
+- Updated error numbers in kdb.h to not conflict with other existing numbers.
+
 * Wed Dec 20 2006 Avi Alkalay <avi@unix.sh>
 - Filesys backend now fully supports dir keys with value
 - BerkeleyDB backend certified to work with values for dir keys

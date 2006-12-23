@@ -224,8 +224,7 @@ int kdbOpen(KDBHandle *handle) {
  * @param handle the key database handler to initialize
  * @see kdbOpen(), kdbOpenBackend(), kdbClose()
  * @return 0 on success
- * @return -1 on failure
- * @errno is not set on failure up to now, because there is no backend
+ * @return -1 on failure and @errno is set
  *  using kdbOpen.
  * @ingroup kdb
  */
@@ -632,6 +631,9 @@ int kdbSetKeys(KDBHandle handle, KeySet *ks) {
 
 /**
  * Sets @p key in the backend storage.
+ * Directory keys will be created recursivelly if needed.
+ * In case a path component is found in the storage as a regular non-dir key,
+ * it will be converted into a dir key if possible.
  *
  * @see kdbGetKey(), kdbSetKeys()
  * @see commandSet() code in kdb command for usage example
