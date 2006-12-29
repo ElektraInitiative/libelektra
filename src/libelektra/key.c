@@ -292,7 +292,7 @@ emptyNamedKey=keyNew("user/some/example",KEY_SWITCH_END);
  *   tag in conjunction with any other, which will make keyNew() modify
  *   only some attributes after retrieving the key, and return it to you.
  *   Order of parameters do matter. If the internal call to kdbGetKey()
- *   failed, you'll still have a valid, but flaged, key.
+ *   failed, you'll still have a valid, but flagged, key.
  *   Check with keyGetFlag(), and @p errno. You will have to kdbOpen()
  *   before using keyNew() with this tag.
  * - KeySwitch::KEY_SWITCH_END \n
