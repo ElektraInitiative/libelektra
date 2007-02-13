@@ -86,7 +86,7 @@ typedef unsigned int uint32_t;
  * as a binary value, will not make Unicode handling and will save it
  * hex-encoded.
  *
- * @ingroup key
+ * @ingroup keybase
  * @see keyGetType()
  * @see keySetType() for an example of how to define custom types
  */
@@ -110,7 +110,7 @@ enum KeyType {
 
 /**
  * Elektra currently supported Key namespaces.
- * @ingroup key
+ * @ingroup keybase
  * @see kdbGetRootKeys(), keyGetNamespace(), keyNameGetNamespace()
  */
 enum KeyNamespace {
@@ -147,7 +147,7 @@ The key flags bit array. The '.' means whatever:
 /**
  * Switches to denote the various Key attributes in methods throughout
  * this library.
- * @ingroup key
+ * @ingroup keybase
  * @see keyNew()
  * @see keyCompare()
  * @see kdbMonitorKey(), kdbMonitorKeys(), the diffMask parameter

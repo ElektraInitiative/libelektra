@@ -1,3 +1,6 @@
+* Mon Feb 06 2007 Avi Alkalay <avi@unix.sh>
+- Fixed doxy group "key" to "keybase", and many documentation pieces reapeared.
+
 * Sat Dec 23 2006 Avi Alkalay <avi@unix.sh>
 - Existing non-dir keys are automatically converted into keys if keys are
   created under them. On filesys and berkeleydb.
