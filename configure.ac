@@ -7,7 +7,7 @@
 
 AC_PREREQ(2.59)
 AC_REVISION([$Revision$])
-AC_INIT(elektra, 0.6.8, http://bugs.libelektra.org)
+AC_INIT(elektra, 0.6.9, http://bugs.libelektra.org)
 AC_CANONICAL_SYSTEM
 AC_LIBTOOL_WIN32_DLL
 AC_CONFIG_SRCDIR([src/libelektra/kdb.c])
