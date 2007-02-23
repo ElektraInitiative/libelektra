@@ -1,3 +1,9 @@
+elektra (0.6.8-1) unstable; urgency=low
+
+  * Initial release (Closes: #311371)
+
+ -- Joan Valduvieco Llopart <joan@laigu.net>  Wed, 14 Feb 2007 12:55:40 +0100
+
 elektra (0.5) unstable; urgency=low
 
   * Split to bin and dev packages.
