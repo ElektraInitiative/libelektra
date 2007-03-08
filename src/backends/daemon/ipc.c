@@ -26,6 +26,8 @@ $Id$
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+#include <stdio.h>
+#include <string.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/socket.h>
@@ -43,7 +45,10 @@ int ipc_stream(void)
 	int s;
 	
 	s = socket(AF_UNIX,SOCK_STREAM,0);
-	if (s == -1) return -1;
+	if (s == -1) {
+		fprintf(stderr, "socket failed: %s\n", strerror(errno));
+		return -1;
+	}
 	if (ndelay_on(s) == -1) { close(s); return -1; }
 	return s;
 }
@@ -52,17 +57,22 @@ static int ipc_bindit(int s,const char *p,int del)
 {
 	struct sockaddr_un sa;
 	unsigned int l;
+	int bind_return;
 	
 	l = strlen(p);
 	if (l > IPCPATH_MAX) {
 		errno = EISDIR;
+		fprintf (stderr, "Socket name too long: %s\n", strerror(errno));
 		return -1;
 	}
 	memset(&sa, 0, sizeof(sa));
 	sa.sun_family = AF_UNIX;
 	memcpy(sa.sun_path, p, l);
 	if (del) unlink(sa.sun_path);
-	return bind(s,(struct sockaddr *) &sa,sizeof sa);
+	bind_return = bind(s,(struct sockaddr *) &sa,sizeof sa);
+	if (bind_return < 0)
+		fprintf (stderr, "bind failed: %s\n", strerror(errno));
+	return bind_return;
 }
 
 int ipc_bind(int s,const char *p)
@@ -83,7 +93,10 @@ int ipc_accept(int s,char *p,int l,int *trunc)
 	
 	memset(&sa, 0, sizeof(sa));
 	fd = accept(s,(struct sockaddr *) &sa,&dummy);
-	if (fd == -1) return -1;
+	if (fd == -1) {
+		fprintf(stderr, "Accept on local socket failed: %s\n", strerror(errno));
+		 return -1;
+	}
 	
 	memset(sa.sun_path, 0, dummy);
 	
@@ -107,7 +120,10 @@ int ipc_local(int s,char *p,int l,int *trunc)
 	socklen_t dummy = sizeof sa;
 	
 	memset(&sa, 0, sizeof(sa));
-	if (getsockname(s,(struct sockaddr *) &sa,&dummy) == -1) return -1;
+	if (getsockname(s,(struct sockaddr *) &sa,&dummy) == -1) {
+		fprintf(stderr, "getsockname failed: %s\n", strerror(errno));
+		return -1;
+	}
 
 	memset(sa.sun_path, 0, dummy);	
 	
@@ -141,17 +157,23 @@ int ipc_connect(int s,const char *p)
 	if (connect(s,(struct sockaddr *) &sa,sizeof sa) == -1) return -1;
 	
 	if (ndelay_off(s) == -1) return -1;
-		return 0;
+	return 0;
 }
 
 int ipc_listen(int s,int backlog)
 {
-	return listen(s,backlog);
+	int listen_value = listen(s,backlog);
+	if (listen_value < 0)
+		fprintf(stderr, "listen failed: %s\n", strerror(errno));
+	return listen_value;
 }
 
 int ndelay_on(int fd)
 {
-	  return fcntl(fd,F_SETFL,fcntl(fd,F_GETFL,0) | O_NONBLOCK);
+	int fcntl_return = fcntl(fd,F_SETFL,fcntl(fd,F_GETFL,0) | O_NONBLOCK);
+	if (fcntl_return < 0) 
+		fprintf(stderr, "fcntl failed: %s\n", strerror(errno));
+	return fcntl_return;
 }
 
 int ndelay_off(int fd)

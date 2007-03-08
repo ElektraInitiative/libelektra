@@ -33,6 +33,9 @@ $Id$
 #include <stdlib.h> /* for exit() */
 #endif
 
+#include <errno.h>
+#include <string.h>
+
 #include <pthread.h>
 
 #ifdef HAVE_SYS_TYPES_H
@@ -99,13 +102,16 @@ int main(int argc, char **argv)
 	/* Uncomment setuid() call if the demon executable file is +s */
 	/* setuid(0); */
 	
-	if (pid=fork()) {
+	if ((pid=fork())) {
 		/* The parent. */
 		/* Log child pid and quit. */
 		
 		FILE *pidf;
 		
-		pidf=fopen("/var/run/kdbd/kdbd.pid","w");
+		if ((pidf=fopen("/var/run/kdbd/kdbd.pid","w")) == NULL) {
+			fprintf(stderr, "Error opening pid file: %s\n", strerror(errno));
+			exit(1);
+		}
 		fprintf(pidf,"%d",pid);
 		fclose(pidf);
 		
@@ -122,23 +128,23 @@ int main(int argc, char **argv)
 
 	s = ipc_stream();
 	if ( s == -1 ) {
-		perror(argv[0]);
+		/* perror(argv[0]); */
 		return 1;
 	}
 	
 	m = umask(0);
 	if ( ipc_bind_reuse(s, SOCKET_NAME) == -1 ) {
-		perror(argv[0]);
+		/* perror(argv[0]); */
 		return 1;
 	}
 	umask(m);
 
 	if ( ipc_local(s, 0, 0, &trunc) == -1 ) {
-		perror(argv[0]);
+		/* perror(argv[0]); */
 		return 1;
 	}
 	if (ipc_listen(s, 20) == -1) {
-		perror(argv[0]);
+		/* perror(argv[0]); */
 		return 1;
 	}
 	ndelay_off(s);
@@ -149,7 +155,7 @@ int main(int argc, char **argv)
 		t = ipc_accept(s,remotepath,sizeof(remotepath),&trunc);
 
 		if (t == -1) {
-			perror("kdbd");
+			/* perror("kdbd");*/
 			continue;
 		}
 
