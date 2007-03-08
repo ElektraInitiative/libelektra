@@ -62,9 +62,18 @@ $Id$
 
 #define REPLY_TIMEOUT	5
 
-#ifndef SOCKET_NAME
-#define SOCKET_NAME "/var/run/kdbd/elektra.sock"
+#ifndef LOCALSTATEDIR
+#define LOCALSTATEDIR "/var"
 #endif
+
+#ifndef KDBD_NAME
+#define KDBD_NAME "kdbd"
+#endif
+
+#ifndef SOCKET_NAME
+#define SOCKET_NAME LOCALSTATEDIR "/run/" KDBD_NAME "/elektra.sock"
+#endif
+
 
 /**Some systems have even longer pathnames */
 #ifdef PATH_MAX

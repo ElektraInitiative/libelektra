@@ -49,11 +49,21 @@ $Id$
 #include "thread.h"
 #include "kdbd.h"
 
-
-#ifndef SOCKET_NAME
-#define SOCKET_NAME "/var/run/kdbd/elektra.sock"
+#ifndef LOCALSTATEDIR
+#define LOCALSTATEDIR "/var"
 #endif
 
+#ifndef KDBD_NAME
+#define KDBD_NAME "kdbd"
+#endif
+
+#ifndef SOCKET_NAME
+#define SOCKET_NAME LOCALSTATEDIR "/run/" KDBD_NAME "/elektra.sock"
+#endif
+
+#ifndef PID_NAME
+#define PID_NAME LOCALSTATEDIR "/run/" KDBD_NAME "/" KDBD_NAME ".pid"
+#endif
 
 int numchildren = 0;
 int limit = 20;
@@ -77,7 +87,7 @@ int wait_nohang(int *wstat)
 void sigterm()
 {
 	unlink(SOCKET_NAME);
-	unlink("/var/run/kdbd/kdbd.pid");
+	unlink(PID_NAME);
 	exit(0);
 }
 
@@ -108,8 +118,8 @@ int main(int argc, char **argv)
 		
 		FILE *pidf;
 		
-		if ((pidf=fopen("/var/run/kdbd/kdbd.pid","w")) == NULL) {
-			fprintf(stderr, "Error opening pid file: %s\n", strerror(errno));
+		if ((pidf=fopen(PID_NAME,"w")) == NULL) {
+			fprintf(stderr, "Error opening pid file %s: %s\n", PID_NAME, strerror(errno));
 			exit(1);
 		}
 		fprintf(pidf,"%d",pid);

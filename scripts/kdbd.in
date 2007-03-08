@@ -10,7 +10,7 @@
 #               Though not recomended, an elektrified program can access a
 #               key database without this daemon. But different permissions
 #               calculations will be performed.
-# processname: /sbin/kdbd
+# processname: @sbindir@/@kdbdname@
 # config: 
 # config: 
 #
@@ -33,14 +33,14 @@
 #
 
 
-KDBD_PATH=/sbin
+KDBD_PATH=@sbindir@
 RETVAL=0
-prog=kdbd
-pidfile=/var/run/kdbd/$prog.pid
+prog=@kdbdname@
+pidfile=@localstatedir@/run/$prog/$prog.pid
 
 # Sanity checks.
 #[ -f /etc/nscd.conf ] || exit 0
-[ -x $KDBD_PATH/kdbd ] || exit 0
+[ -x $KDBD_PATH/$prog ] || exit 0
 
 # Source function library.
 . /etc/init.d/functions
@@ -49,7 +49,7 @@ pidfile=/var/run/kdbd/$prog.pid
 #[ -r /etc/sysconfig/nscd ] && . /etc/sysconfig/nscd
 
 start () {
-	[ -d /var/run/$prog ] || mkdir /var/run/$prog
+	[ -d @localstatedir@/run/$prog ] || mkdir @localstatedir@/run/$prog
 #    [ -d /var/db/nscd ] || mkdir /var/db/nscd
 #    secure=""
 	echo -n $"Starting $prog: "
@@ -57,7 +57,7 @@ start () {
 #	daemon --check $prog $prog --pidfile=$pidfile
 	RETVAL=$?
 	echo
-	[ $RETVAL -eq 0 ] && touch /var/lock/subsys/kdbd
+	[ $RETVAL -eq 0 ] && touch /var/lock/subsys/$prog
 	return $RETVAL
 }
 
@@ -86,7 +86,7 @@ case "$1" in
 	RETVAL=$?
 	;;
     status)
-	status kdbd
+	status $prog
 	RETVAL=$?
 	;;
 	restart)
@@ -99,7 +99,7 @@ case "$1" in
 	;;
 	force-reload | reload)
 	echo -n $"Reloading $prog: "
-	killproc /usr/sbin/$prog -HUP
+	killproc $KDBD_PATH/$prog -HUP
 	RETVAL=$?
 	echo
 	;;

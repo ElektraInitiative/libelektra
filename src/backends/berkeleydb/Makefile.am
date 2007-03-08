@@ -6,7 +6,7 @@
 #
 
 #if HAVE_DB
-AM_CPPFLAGS = -I$(top_srcdir)/src/include
+AM_CPPFLAGS = -I$(top_srcdir)/src/include -DSYSCONFDIR="\"$(sysconfdir)\""
 
 noinst_LIBRARIES = libelektra-berkeleydb.a
 libelektra_berkeleydb_a_SOURCES = berkeleydb.c ../../include/kdb.h ../../include/kdbbackend.h

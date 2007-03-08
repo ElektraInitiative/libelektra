@@ -42,7 +42,7 @@ echo "AUTOHEADER"
 autoheader
 
 echo "AUTOMAKE"
-automake --add-missing
+automake --add-missing -c
 
 echo "AUTOCONF"
 autoconf
@@ -59,7 +59,7 @@ echo "AUTOHEADER"
 autoheader
 
 echo "AUTOMAKE"
-automake --add-missing
+automake --add-missing -c
 
 echo "AUTOCONF"
 autoconf

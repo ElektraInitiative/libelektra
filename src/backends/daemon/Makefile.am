@@ -1,7 +1,7 @@
 
 # $Id$
 
-AM_CPPFLAGS = -I$(top_srcdir)/src/include
+AM_CPPFLAGS = -I$(top_srcdir)/src/include -DLOCALSTATEDIR="\"$(localstatedir)\"" -DKDBD_NAME='"'`echo kdbd | sed 's|^.*/||;$(transform)'`'"'
 
 noinst_LIBRARIES = libelektra-daemon.a 
 noinst_LTLIBRARIES = libproto.la

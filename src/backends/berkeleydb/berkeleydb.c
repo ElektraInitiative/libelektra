@@ -42,7 +42,12 @@ $Id$
 #define BACKENDNAME "berkeleydb"
 
 #define DB_DIR_USER   ".kdb-berkeleydb"
-#define DB_DIR_SYSTEM "/etc/kdb-berkeleydb"
+
+#ifndef SYSCONFDIR
+#define SYSCONFDIR "/etc"
+#endif
+
+#define DB_DIR_SYSTEM SYSCONFDIR "/kdb-berkeleydb"
 
 #define DB_KEYVALUE      "keyvaluepairs"
 #define DB_PARENTINDEX   "parentindex"

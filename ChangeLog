@@ -1,4 +1,8 @@
 * Thu Mar  8 2007 Patrice Dumas <pertusus@free.fr>
+- don't hardcode paths or program name in kdbd executables and scripts.
+- copy files automake need.
+
+* Thu Mar  8 2007 Patrice Dumas <pertusus@free.fr>
 - src/backends/main.c, src/backends/ipc.c: better error checking and
   error reporting.
 
