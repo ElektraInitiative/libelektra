@@ -1,3 +1,6 @@
+* Fri Mar 16 2007 Avi Alkalay <avi@unix.sh>
+- filesys.c::kdbGetFilename() was accessing $USER instead of getting this value from KDBHandle.
+
 * Sun Mar 11 2007 Avi Alkalay <avi@unix.sh>
 - Applied nostart patch from Patrice
 - Adapted Patrice spec file to be the main spec file
