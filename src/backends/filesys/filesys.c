@@ -72,7 +72,7 @@ char *DIR_FILENAME="%%dirdata";
 
 /* These are some helpers we'll define bellow */
 int keyFileUnserialize(Key *key,FILE *input);
-size_t kdbGetFilename(const Key *forKey,char *returned,size_t maxSize);
+size_t kdbGetFilename(const KDBHandle handle,const Key *forKey,char *returned,size_t maxSize);
 int keyFileSerialize(Key *key, FILE *output);
 int keyFromStat(Key *key,struct stat *stat);
 int relativeFileNameToKeyName(const char *string, char *buffer, int bufSize);
@@ -101,7 +101,7 @@ int kdbStatKey_filesys(KDBHandle handle, Key *key) {
 	size_t pos;
 	uint32_t semiflag;
 
-	pos=kdbGetFilename(key,keyFileName,sizeof(keyFileName));
+	pos=kdbGetFilename(handle,key,keyFileName,sizeof(keyFileName));
 	if (!pos) return -1; /* something is wrong */
 
 	if (lstat(keyFileName,&keyFileNameInfo)) return -1;
@@ -143,7 +143,7 @@ int kdbGetKey_filesys(KDBHandle handle, Key *key) {
 	uint32_t semiflag;
 	FILE *input;
 
-	pos=kdbGetFilename(key,keyFileName,sizeof(keyFileName));
+	pos=kdbGetFilename(handle,key,keyFileName,sizeof(keyFileName));
 	if (!pos) return -1; /* something is wrong */
 
 	if ((fd=open(keyFileName,O_RDONLY))==-1) {
@@ -232,7 +232,7 @@ int kdbSetKey_filesys(KDBHandle handle, Key *key) {
 	int rc=0;
 	int exists=0;
 
-	pos=kdbGetFilename(key,keyFileName,sizeof(keyFileName));
+	pos=kdbGetFilename(handle,key,keyFileName,sizeof(keyFileName));
 	if (!pos) return -1; /* Something is wrong. Propagate errno. */
 
 	exists = ! stat(keyFileName,&stated);
@@ -417,7 +417,7 @@ int kdbSetKey_filesys(KDBHandle handle, Key *key) {
 			/* Setting the name will let us know if this is a valid keyname */
 			if (keySetName(&target,key->data)) {
 				/* target has a valid key name */
-				kdbGetFilename(&target,targetName,sizeof(targetName));
+				kdbGetFilename(handle,&target,targetName,sizeof(targetName));
 				keyClose(&target);
 			} else if (errno==KDB_RET_INVALIDKEY) {
 				/* Is an invalid key name. So treat it as a regular file */
@@ -467,7 +467,7 @@ int kdbRename_filesys(KDBHandle handle, Key *key, const char *newName) {
 
 	newKey->userDomain=key->userDomain;
 
-	rc=kdbGetFilename(key,oldFileName,sizeof(oldFileName));
+	rc=kdbGetFilename(handle,key,oldFileName,sizeof(oldFileName));
 	if (rc == 0) {
 		/* undo hack */
 		newKey->userDomain=0;
@@ -475,7 +475,7 @@ int kdbRename_filesys(KDBHandle handle, Key *key, const char *newName) {
 		return -1;
 	}
 
-	rc=kdbGetFilename(newKey,newFileName,sizeof(newFileName));
+	rc=kdbGetFilename(handle,newKey,newFileName,sizeof(newFileName));
 	/* undo hack */
 	newKey->userDomain=0;
 	keyDel(newKey); /* won't need it anymore */
@@ -492,7 +492,7 @@ int kdbRemoveKey_filesys(KDBHandle handle, const Key *key) {
 	off_t rc;
 	struct stat stated;
 
-	rc=kdbGetFilename(key,fileName,sizeof(fileName));
+	rc=kdbGetFilename(handle,key,fileName,sizeof(fileName));
 	if (!rc) return -1;
 
 	if (stat(fileName,&stated)) return -1;
@@ -553,7 +553,7 @@ ssize_t kdbGetKeyChildKeys_filesys(KDBHandle handle, const Key *parentKey,
 		- Check if it is a directory. Open it
 		- Browse, read and include in the KeySet
 	*/
-	kdbGetFilename(parentKey,buffer,sizeof(buffer));
+	kdbGetFilename(handle,parentKey,buffer,sizeof(buffer));
 	parentDir=opendir(buffer);
 
 	/* Check if Key is not a directory or doesn't exist.
@@ -1349,7 +1349,7 @@ int keyFromStat(Key *key,struct stat *stat) {
  * @return number of bytes written to the buffer, or 0 on error
  * @ingroup internals
  */
-size_t kdbGetFilename(const Key *forKey,char *returned,size_t maxSize) {
+size_t kdbGetFilename(const KDBHandle handle,const Key *forKey,char *returned,size_t maxSize) {
 	size_t length=0;
 
 	switch (keyGetNamespace(forKey)) {
@@ -1368,8 +1368,8 @@ size_t kdbGetFilename(const Key *forKey,char *returned,size_t maxSize) {
 
 			if (forKey->userDomain)
 				user=getpwnam(forKey->userDomain);
-			else if ( getenv("USER") )
-				user=getpwnam(getenv("USER"));
+			else if (kdbhGetUserName(handle))
+				user=getpwnam(kdbhGetUserName(handle));
 
 			if (!user) return 0; /* propagate errno */
 			length=snprintf(returned,maxSize,"%s/%s",user->pw_dir,KDB_DB_USER);

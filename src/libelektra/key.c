@@ -1518,6 +1518,7 @@ ssize_t keyGetBaseNameSize(const Key *key) {
  * Some examples:
  * - basename of @c system/some/keyname is @c keyname
  * - basename of @c "user/tmp/some key" is @c "some key"
+ * - basename of @c user or @c system (pure root keys) is @c NULL
  *
  * @param key the key to extract basename from
  * @param returned a pre-allocated buffer to store the basename

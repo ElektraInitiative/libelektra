@@ -1,30 +1,30 @@
 #!/bin/bash
 #
-# kdbd:   Starts the Elektra Key Database Daemon
+# @kdbdname@:   Starts the Elektra Key Database Daemon
 #
-# chkconfig: 12345 00 99
-# description:  This is the overall daemon needed to correctly access Elektra
-#               key databases on backends like BerkeleyDB.
-#               The daemon will use the backend pointed
-#               by /lib/elektra/libelektra-ddefault.so.
-#               Though not recomended, an elektrified program can access a
-#               key database without this daemon. But different permissions
+# chkconfig: - 00 99
+# description:  This is the overall daemon needed to correctly access Elektra \
+#               key databases on backends like BerkeleyDB. \
+#               The daemon will use the backend pointed \
+#               by /lib/elektra/libelektra-ddefault.so. \
+#               Though not recomended, an elektrified program can access a \
+#               key database without this daemon. But different permissions \
 #               calculations will be performed.
 # processname: @sbindir@/@kdbdname@
-# config: 
-# config: 
+# pidfile: @localstatedir@/run/@kdbdname@/@kdbdname@.pid
+# config:
 #
 ### BEGIN INIT INFO
-# Provides: kdbd
+# Provides: @kdbdname@
 # Required-Start: 
-# Default-Stop: 0 6
+# Default-Stop: 0 1 6
 # Short-Description: Starts the Elektra Key Database access daemon
-# Description:  This is the overall daemon needed to correctly access Elektra
-#               key databases on backends like BerkeleyDB.
-#               The daemon will use the backend pointed
-#               by /lib/elektra/libelektra-ddefault.so.
-#               Though not recomended, an elektrified program can access a
-#               key database without this daemon. But different permissions
+# Description:  This is the overall daemon needed to correctly access Elektra \
+#               key databases on backends like BerkeleyDB. \
+#               The daemon will use the backend pointed \
+#               by /lib/elektra/libelektra-ddefault.so. \
+#               Though not recomended, an elektrified program can access a \
+#               key database without this daemon. But different permissions \
 #               calculations will be performed.
 ### END INIT INFO
 #
@@ -49,7 +49,7 @@ pidfile=@localstatedir@/run/$prog/$prog.pid
 #[ -r /etc/sysconfig/nscd ] && . /etc/sysconfig/nscd
 
 start () {
-	[ -d @localstatedir@/run/$prog ] || mkdir @localstatedir@/run/$prog
+#	[ -d @localstatedir@/run/$prog ] || mkdir @localstatedir@/run/$prog
 #    [ -d /var/db/nscd ] || mkdir /var/db/nscd
 #    secure=""
 	echo -n $"Starting $prog: "

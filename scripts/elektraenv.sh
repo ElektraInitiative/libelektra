@@ -1,5 +1,3 @@
-#!/bin/sh
-
 ###########################################################################
 ##
 ## This is a /etc/profile.d script to set user environment and aliases
