@@ -43,8 +43,13 @@
 
 #include <kdbbackend.h>
 
-#define BACKENDNAME "ini"
+// this is debug and verbose code!
+// redirect stderr or wait for stable release (summer 06 hopefully)
+#define DEBUG
+#define VERBOSE
 #define VERSION "0.1.1"
+
+#define BACKENDNAME "ini"
 
 int IniReadDir(KDBHandle handle, Key * key, KeySet * returned, unsigned long options);
 int IniChooseFile(KDBHandle handle, Key * key, KeySet * returned, unsigned long options);

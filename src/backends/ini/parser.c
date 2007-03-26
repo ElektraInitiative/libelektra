@@ -283,7 +283,11 @@ int read_key (Key * key, char * root)
 #endif
 		rc = parse_buffer (&buffer[i]);
 		if (rc == CHAR_OK) continue;
-		else if (rc == CHAR_SEC) break;
+		else if (rc == CHAR_SEC)
+		{
+			//TODO: VERBOSE
+			fprintf (stderr, "Now in section %s\n", buffer[i]);
+		}
 		else if (rc == CHAR_ERR) {
 #ifdef DEBUG
 			fprintf (stderr, "Error reading char\n");

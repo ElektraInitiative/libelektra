@@ -17,7 +17,7 @@ int main ()
 
 int key_info()
 {
-	Key * new = keyNew ("user/file/mykey");
+	Key * new = keyNew ("user/file/m");
 	kdbGetKey (handle, new);
 	printf ("%s", keyStealValue (new));
 }
