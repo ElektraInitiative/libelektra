@@ -21,6 +21,11 @@ nss-elektra, development and porting.
 Devel/Test on:
 
 
+Patrick Sabin <patricksabin@gmx.at>
+Python Backend
+Devel/Test on: Debian Testing
+
+
 Pier Luigi Fiorini <pierluigi.fiorini@mockup.org>
 pkg-config file
 Devel/Test on:
