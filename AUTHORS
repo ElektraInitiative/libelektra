@@ -4,10 +4,10 @@ Backends: berkleydb, filesys, fstab
 Devel/Test on: redhat.ia32, fedora.ia32, redhat.ppc, redhat.s390, aix.ppc
 
 
-Markus Raab <registry@markus-raab.org>
-Debian packaging, website, documentation, tutorial
+Markus Raab <elektra@markus-raab.org>
+unstable development, previous website, documentation, tutorial
 Backends: ini
-Binding: easycpp
+Binding: cpp
 Devel/Test on: Debian Sarge, Freebsd, Sun OS 4.0, AIX TRu64 Unix
 
 
@@ -22,7 +22,8 @@ Devel/Test on:
 
 
 Patrick Sabin <patricksabin@gmx.at>
-Python Backend
+unstable development, Python kdb
+Bindings: python
 Devel/Test on: Debian Testing
 
 
