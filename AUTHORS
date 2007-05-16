@@ -8,7 +8,7 @@ Markus Raab <elektra@markus-raab.org>
 unstable development, previous website, documentation, tutorial
 Backends: ini
 Binding: cpp
-Devel/Test on: Debian Sarge, Freebsd, Sun OS 4.0, AIX TRu64 Unix
+Devel/Test on: Debian Etch, Freebsd, Sun OS 4.0, AIX TRu64 Unix
 
 
 Yannick Lecaillez <yl@itioweb.com>
