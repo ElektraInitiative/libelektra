@@ -1,4 +1,7 @@
-<keyset parent="user/elektra-tests">
+<keyset xmlns="http://www.libelektra.org"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.libelektra.org elektra.xsd"
+	parent="user/elektra-tests">
 	<key type="string" basename="PerfectStringKey" value="PerfectValue"><comment>String key with standard name</comment></key>
 	<key type="string" basename="Ug.\/lyStr\/\/in.g \/Key\/" value="With a string value"><comment>string key with ugly name</comment></key>
 	

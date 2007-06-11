@@ -24,9 +24,9 @@
  -->
   
   
-<keyset xmlns="http://elektra.sourceforge.net"
+<keyset xmlns="http://www.libelektra.org"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://elektra.sourceforge.net elektra.xsd">
+        xsi:schemaLocation="http://www.libelektra.org elektra.xsd">
 
 
 <key name="user/tmp/binaryKey"
@@ -74,7 +74,7 @@
 62696e61 72792d73 656d616e 74696320 76616c75 65
 
 </value>
-     <comment><![CDATA[User defined, semanticfull binary types are between KEY_TYPE_BINARY (>=20) and KEY_TYPE_STRING (<40)]]></comment>
+     <comment><![CDATA[User defined, semanticful binary types are between KEY_TYPE_BINARY (>=20) and KEY_TYPE_STRING (<40)]]></comment>
 </key>
 
 
@@ -92,7 +92,7 @@
 		"a semanticfull value"
   -->
   
-     <value><![CDATA[a semanticfull value]]></value>
+     <value><![CDATA[a semanticful value]]></value>
 </key>
 
 

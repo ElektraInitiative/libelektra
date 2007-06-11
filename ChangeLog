@@ -1,3 +1,8 @@
+* Mon Jun 11 2007 Markus Raab <elektra@markus-raab.org>
+- Resolve Bug 0000027, change sequence in elektra.xsd
+- Fix Namespace Issues in .xml Files
+- Fix Spelling, type "dir" and similar validation errors
+
 * Fri Mar 16 2007 Avi Alkalay <avi@unix.sh>
 - filesys.c::kdbGetFilename() was accessing $USER instead of getting this value from KDBHandle.
 
