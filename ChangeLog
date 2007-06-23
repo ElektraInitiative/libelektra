@@ -1,4 +1,5 @@
 * Mon Jun 11 2007 Markus Raab <elektra@markus-raab.org>
+- Relaxed DTD a lot to let it apply, but not very useful anymore.
 - Resolve Bug 0000027, change sequence in elektra.xsd
 - Fix Namespace Issues in .xml Files
 - Fix Spelling, type "dir" and similar validation errors

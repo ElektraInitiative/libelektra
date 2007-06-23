@@ -36,29 +36,34 @@ The doctype with FPI for this DTD is:
 
 -->
 
-
-<!--
-  $Id$
--->
-
-<!ELEMENT keyset (key*,keyset*)>
+<!ELEMENT keyset (keyset|key)*>
+<!ATTLIST keyset
+	parent	CDATA					#IMPLIED
+	xsi:schemaLocation CDATA			#IMPLIED
+	xmlns CDATA					#IMPLIED
+	xmlns:xsi CDATA					#IMPLIED
+>
 
 
 
 <!ELEMENT key (value?,comment*)>
+<!-- The unique name of the key must be given. -->
+<!-- Gives a unique representation of the key if you need
+the hierachy. Useful together with parent. -->
+<!-- TODO: should be a number -->
 <!ATTLIST key
+	name        CDATA                                #IMPLIED
+	value       CDATA				 #IMPLIED
+	basename    CDATA				 #IMPLIED
 	id          ID                                   #IMPLIED
-	name        CDATA                                #REQUIRED
-	basename    CDATA                                #IMPLIED
 	parent      CDATA                                #IMPLIED
-	type        (string | binary | directory | link | undefined) "string"
+	type        (string | binary | link | undefined) "string"
 	uid         CDATA                                #IMPLIED
 	gid         CDATA                                #IMPLIED
 	mode        CDATA                                #IMPLIED
 	atime       CDATA                                #IMPLIED
 	ctime       CDATA                                #IMPLIED
 	mtime       CDATA                                #IMPLIED
-	shortvalue  CDATA                                #IMPLIED
 >
 
 

@@ -14,7 +14,7 @@ The purpose of this specification-by-example is to define a standard way for sys
 It is important because today there is no safe way for somebody (a program) to know exactly on which
 OS (platform, version, update level, edition) it is running.
 
-This is particulary useful for installation programs, when they must take decision about where to put files they'll
+This is particularly useful for installation programs, when they must take decision about where to put files they'll
 install, since each OS have slight differences about their filesystem organization, etc.
 
 Its purpose is similar to the files installed by redhat-release or SuSE-release packages, but better:
