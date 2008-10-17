@@ -54,14 +54,14 @@ ssize_t serialKey_getSize(const void *pKey)
 	size = sizeof(Key);
 	
 	if ( key->flags & KEY_SWITCH_NAME )
-		size += serialString_getSize(keyStealName(key));
+		size += serialString_getSize(keyName(key));
         if ( key->flags & KEY_SWITCH_COMMENT )
-		size += serialString_getSize(keyStealComment(key));
+		size += serialString_getSize(keyComment(key));
 	if ( key->flags & KEY_SWITCH_OWNER )
-		size += serialString_getSize(keyStealOwner(key));
+		size += serialString_getSize(keyOwner(key));
 	if ( key->flags & KEY_SWITCH_VALUE ) {
 		if ( keyIsString(key) )
-			size += serialString_getSize(keyStealValue(key));
+			size += serialString_getSize(keyValue(key));
 		else
 			size += keyGetValueSize(key);
 	}
@@ -88,11 +88,11 @@ ssize_t serialKey_serialize(const void *pKey, void *pBuffer)
 	memcpy(buf, key, size);
 	buf += size;
 
-	convert = kdbNeedsUTF8Conversion();
+	convert = kdbbNeedsUTF8Conversion();
 	
 	/* Serialize key name */
 	if ( key->flags & KEY_SWITCH_NAME ) {
-		size = serialString_serialize(keyStealName(key), buf);	
+		size = serialString_serialize(keyName(key), buf);	
 		if ( size == -1 )
 			return -1;
 		buf += size;
@@ -100,7 +100,7 @@ ssize_t serialKey_serialize(const void *pKey, void *pBuffer)
 
 	/* Serialize key comment */
 	if ( key->flags & KEY_SWITCH_COMMENT ) {
-		size = serialString_serialize(keyStealComment(key), buf);
+		size = serialString_serialize(keyComment(key), buf);
 		if ( size == -1 )
 			return -1;
 		buf += size;
@@ -108,7 +108,7 @@ ssize_t serialKey_serialize(const void *pKey, void *pBuffer)
 
 	/* Serialize key owner */
 	if ( key->flags & KEY_SWITCH_OWNER ) {
-		size = serialString_serialize(keyStealOwner(key), buf);
+		size = serialString_serialize(keyOwner(key), buf);
 		if ( size == -1 )
 			return -1;
 		buf += size; 
@@ -117,13 +117,13 @@ ssize_t serialKey_serialize(const void *pKey, void *pBuffer)
 	/* Serialize key value */
 	if ( key->flags & KEY_SWITCH_VALUE ) {
 		if ( keyIsString(key) ) {
-			size = serialString_serialize(keyStealValue(key), buf);
+			size = serialString_serialize(keyValue(key), buf);
 			if ( size == -1 )
 				return -1;
 			buf += size;
 		} else {
 			size = keyGetValueSize(key);
-			memcpy(buf, keyStealValue(key), size);
+			memcpy(buf, keyValue(key), size);
 			buf += size;
 		}
 	}
@@ -153,10 +153,10 @@ ssize_t serialKey_unserialize(const void *pBuffer, void *pKey)
 	buf += size;
 
 	/* Restore original key pointer */
-	key->key = keyStealName(&save);
-	key->comment = keyStealComment(&save);
-	key->userDomain = keyStealOwner(&save);
-	key->data = keyStealValue(&save);
+	key->key = keyName(&save);
+	key->comment = keyComment(&save);
+	key->userDomain = keyOwner(&save);
+	key->data = keyValue(&save);
 
 	/* Unserialize keyname */
 	if ( key->flags & KEY_SWITCH_NAME ) {

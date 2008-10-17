@@ -5,134 +5,196 @@
 
 namespace kdb {
 
-Key::Key ()
+Key::Key (const char * str, va_list ap)
 {
-	key = ckdb::keyNew ("user/noname");
-	std::cout << "key constr no name" << std::endl;
-}
+	key = ckdb::keyVNew (str, ap);
 
-Key::Key (ckdb::Key * k)
-{
-	// if (k == 0) std:cout << "dont do that" << std::endl;
-	key = k;
-	std::cout << "key constr given key" << std::endl;
+	operator++();
 }
 
 Key::Key (const char * str, ...)
 {
-	va_list liste;
-	
-	va_start (liste, str);
-	key = ckdb::keyNew (str, liste);
-	va_end (liste);
-	std::cout << "key constr given name" << std::endl;
+	va_list ap;
+
+	va_start(ap, str);
+	key = ckdb::keyVNew (str, ap);
+	va_end(ap);
+
+	operator++();
 }
 
-/**The destructor automatically commit a write.*/
-Key::~Key ()
+Key::Key (const std::string str, ...)
 {
-	// Destruct
-	// kdbClose(&handle);
-	keyDel (key);
+	va_list ap;
+
+	va_start(ap, str);
+	key = ckdb::keyVNew (str.c_str(), ap);
+	va_end(ap);
+
+	operator++();
 }
 
+Key& Key::operator= (ckdb::Key *k)
+{
+	if (key != k)
+	{
+		del();
+		key = k;
+		operator++();
+	}
+	return *this;
+}
+
+Key& Key::operator= (const Key &k)
+{
+	if (this != &k)
+	{
+		del();
+		key = k.key;
+		operator++();
+	}
+	return *this;
+}
+
+Key& Key::operator= (const std::string &name)
+{
+	ckdb::keySetName(getKey(), name.c_str());
+	return *this;
+}
+
+Key& Key::operator+= (const std::string &name)
+{
+	ckdb::keyAddBaseName(getKey(), name.c_str());
+	return *this;
+}
+
+Key& Key::operator-= (const std::string &name)
+{
+	ckdb::keySetBaseName(getKey(), name.c_str());
+	return *this;
+}
+
+Key& Key::operator= (const char *name)
+{
+	ckdb::keySetName(getKey(), name);
+	return *this;
+}
+
+Key& Key::operator+= (const char *name)
+{
+	ckdb::keyAddBaseName(getKey(), name);
+	return *this;
+}
+
+Key& Key::operator-= (const char *name)
+{
+	ckdb::keySetBaseName(getKey(), name);
+	return *this;
+}
 
 /**Returns the type of the Key*/
-uint8_t Key::getType()
+type_t Key::getType() const
 {
 	return ckdb::keyGetType (key);
 }
 
 /**Sets the type of the Key*/
-void Key::setType(uint8_t type)
+void Key::setType(type_t type)
 {
 	ckdb::keySetType (getKey(), type);
 }
 
-/**Sets a user specific flag to the key*/
-void Key::setFlag()
+size_t Key::getNameSize() const
 {
-	ckdb::keySetFlag (getKey());
+	return ckdb::keyGetNameSize (getKey());
 }
 
-/**Clears a user specific flag from the key*/
-void Key::clearFlag()
+std::string Key::getName() const
 {
-	ckdb::keyClearFlag (getKey());
+	return std::string (ckdb::keyName(key));
 }
 
-/**Returns a user specific flag from the key*/
-int Key::getFlag()
+const char* Key::name() const
 {
-	return ckdb::keyGetFlag (getKey());
+	return ckdb::keyName(getKey());
+}
+
+size_t Key::getBaseNameSize() const
+{
+	return ckdb::keyGetBaseNameSize (getKey());
+}
+
+std::string Key::getBaseName() const
+{
+	return std::string (ckdb::keyBaseName(key));
 }
 
 
-/**Returns the Name of the Key.
- * This will be user/$root/$key, where $root
- * is the root given to the constructor and
- * $key is the Parameter key*/
-std::string Key::getName()
+const char* Key::baseName() const
 {
-	size_t csize = ckdb::keyGetNameSize (getKey());
-	std::string str;
-	char * field = new char [csize];
-
-	ckdb::keyGetName (getKey(), field, csize);
-	str = field;
-	delete (field);
-	return str;
+	return ckdb::keyBaseName(getKey());
 }
 
-/**Returns the full Name of the key.
- * This will be user:domain/$root/$key, where
- * $root is the root given to the constructor
- * and $key is the Parameter key.*/
-std::string Key::getFullName()
+
+/**Sets a name for a key.
+ * Throws kdb::KeyInvalidName when the name is not valid*/
+void Key::setName (const std::string &name)
+{
+	if (ckdb::keySetName (getKey(), name.c_str()) == -1)
+		throw KeyInvalidName();
+}
+
+/**Sets a base name for a key.
+ * Throws kdb::KeyInvalidName when the name is not valid*/
+void Key::setBaseName (const std::string &name)
+{
+	if (ckdb::keySetBaseName (getKey(), name.c_str()) == -1)
+		throw KeyInvalidName();
+}
+
+size_t Key::getFullNameSize() const
+{
+	return ckdb::keyGetFullNameSize (getKey());
+}
+
+std::string Key::getFullName() const
 {
 	size_t csize = ckdb::keyGetFullNameSize (getKey());
-	std::string str;	
+	std::string str;
 	char * field = new char [csize];
 
 	ckdb::keyGetFullName (getKey(), field, csize);
 	str = field;
-	delete (field);
+	delete [] field;
 	return str;
 }
 
-void Key::setName (const std::string & name)
+/**Returns the comment for the key.*/
+std::string Key::getComment() const
 {
-	ckdb::keySetName (getKey(), name.c_str());
+	return std::string(ckdb::keyComment(key));
+}
+
+const char* Key::comment() const
+{
+	return ckdb::keyComment (key);
 }
 
 /**Returns the size of the comment*/
-size_t Key::getCommentSize()
+size_t Key::getCommentSize() const
 {
 	return ckdb::keyGetCommentSize (key);
 }
 
-/**Returns the comment for the key.*/
-std::string Key::getComment()
-{
-	size_t csize = ckdb::keyGetCommentSize (getKey());
-	std::string str;	
-	char * field = new char [csize];
-
-	ckdb::keyGetComment (getKey(), field, csize);
-	str = field;
-	delete (field);
-	return str;
-}
-
 /**Sets a comment for the specified key.*/
-void Key::setComment(std::string comment)
+void Key::setComment(const std::string &comment)
 {
 	ckdb::keySetComment (getKey(), comment.c_str());
 }
 
 /**Returns the UID of the the key. It always
  * returs the current UID*/
-uid_t Key::getUID()
+uid_t Key::getUID() const
 {
 	return ckdb::keyGetUID (getKey());
 }
@@ -145,7 +207,7 @@ void Key::setUID(uid_t uid)
 }
 
 /**Gets the Groupid from a specific key.*/
-gid_t Key::getGID()
+gid_t Key::getGID() const
 {
 	return ckdb::keyGetGID (getKey());
 }
@@ -157,65 +219,73 @@ void Key::setGID(gid_t gid)
 	ckdb::keySetGID (getKey(), gid);
 }
 
-/**Returns the Accessmode of a key.
+/**Returns the Mode of a key.
  * It is based on 4 Octets: special, user, group and other
  * The first bit is execute (not used for kdb)
- * The second bit is write access.
- * The third bit is read access.
+ * The second bit is write mode.
+ * The third bit is read mode.
  * See more in chmod (2).
  * An easier description may be in chmod (1), but
  * the +-rwx method is not supported.*/
-mode_t Key::getAccess()
+mode_t Key::getMode() const
 {
-	return ckdb::keyGetAccess(getKey());
+	return ckdb::keyGetMode(getKey());
 }
 
-/**Sets the Accessmode of a key. For more info see
- * getAccess (std::string ).*/
-void Key::setAccess(mode_t mode)
+/**Sets the Mode of a key. For more info see
+ * getMode (std::string ).*/
+void Key::setMode(mode_t mode)
 {
-	ckdb::keySetAccess (getKey(),mode);
+	ckdb::keySetMode (getKey(),mode);
 }
 
 /**Returns the Owner of the Key. It will always return
  * the current user.*/
-std::string Key::getOwner()
+std::string Key::getOwner() const
 {
-	size_t csize =  ckdb::keyGetOwnerSize (getKey());
-	std::string str;	
-	char * field = new char [csize];
+	return std::string (ckdb::keyOwner(key));
+}
 
-	ckdb::keyGetOwner (getKey(), field, csize);
-	str = field;
-	delete (field);
-	return str;
+const char* Key::owner() const
+{
+	return ckdb::keyOwner(key);
+}
+
+size_t Key::getOwnerSize() const
+{
+	return ckdb::keyGetOwnerSize(key);
 }
 
 /**Sets the Owner of the Key. It will fail, because
  * you are not root.*/
-void Key::setOwner(std::string userDomain)
+void Key::setOwner(const std::string &owner)
 {
-	ckdb::keySetOwner(getKey(), userDomain.c_str());
+	ckdb::keySetOwner(getKey(), owner.c_str());
+}
+
+const void*Key::value() const
+{
+	return ckdb::keyValue (key);
 }
 
 /**Returns the DataSize of the Binary or String. It is used
  * for the internal malloc().*/
-size_t Key::getDataSize()
+size_t Key::getValueSize() const
 {
-	return ckdb::keyGetDataSize (key);
+	return ckdb::keyGetValueSize (key);
 }
 
 /**Returns the string directly from the key. It should be
  * the same as get().*/
-std::string Key::getString()
+std::string Key::getString() const
 {
-	size_t csize =  ckdb::keyGetDataSize (getKey());
+	size_t csize =  ckdb::keyGetValueSize (getKey());
 	std::string str;	
 	char * field = new char [csize];
 
 	ckdb::keyGetString (getKey(), field, csize);
 	str = field;
-	delete (field);
+	delete [] field;
 	return str;
 }
 
@@ -227,7 +297,7 @@ void Key::setString(std::string newString)
 
 /**Returns the binary Value of the key. It will not be encoded
  * or decoded.*/
-size_t Key::getBinary(void *returnedBinary, size_t maxSize)
+size_t Key::getBinary(void *returnedBinary, size_t maxSize) const
 {
 	return ckdb::keyGetBinary (getKey(), returnedBinary, maxSize);
 }
@@ -239,240 +309,148 @@ size_t Key::setBinary(const void *newBinary, size_t dataSize)
 	return s;
 }
 
-
-bool Key::getBool ()
+void Key::setDir ()
 {
-	bool b;
-	getBinary (&b, sizeof (bool));
-	return b;
+	ckdb::keySetDir (key);
 }
 
-void Key::setBool (bool b)
+void Key::setMTime (time_t time)
 {
-	setBinary (&b, sizeof (bool));
+	ckdb::keySetMTime (key, time);
 }
 
-
-char Key::getChar ()
+void Key::setATime (time_t time)
 {
-	char b;
-	getBinary (&b, sizeof (char));
-	return b;
+	ckdb::keySetATime (key, time);
 }
 
-void Key::setChar (char c)
+void Key::setCTime (time_t time)
 {
-	setBinary (&c, sizeof (char));
-}
-
-unsigned char Key::getUnsignedChar ()
-{
-	unsigned char b;
-	getBinary (&b, sizeof (unsigned char));
-	return b;
-}
-
-void Key::setUnsignedChar (unsigned char uc)
-{
-	setBinary (&uc, sizeof (unsigned char));
-}
-
-wchar_t Key::getWChar_t ()
-{
-	wchar_t b;
-	getBinary (&b, sizeof (wchar_t));
-	return b;
-}
-
-void Key::setWChar_t (wchar_t wc)
-{
-	setBinary (&wc, sizeof (wchar_t));
-}
-
-
-int Key::getInt ()
-{
-	int b;
-	getBinary (&b, sizeof (int));
-	return b;
-}
-
-void Key::setInt (int i)
-{
-	setBinary (&i, sizeof (int));
-}
-
-unsigned int Key::getUnsignedInt ()
-{
-	unsigned int  b;
-	getBinary (&b, sizeof (unsigned int ));
-	return b;
-}
-
-void Key::setUnsignedInt (unsigned int ui)
-{
-	setBinary (&ui, sizeof ( unsigned int));
-}
-
-short Key::getShort ()
-{
-	short b;
-	getBinary (&b, sizeof (short));
-	return b;
-}
-
-void Key::setShort (short s)
-{
-	setBinary (&s, sizeof (short));
-}
-
-unsigned short Key::getUnsignedShort ()
-{
-	unsigned short b;
-	getBinary (&b, sizeof (unsigned short));
-	return b;
-}
-
-void Key::setUnsignedShort (unsigned short us)
-{
-	setBinary (&us, sizeof (unsigned short));
-}
-
-long Key::getLong ()
-{
-	long b;
-	getBinary (&b, sizeof (long));
-	return b;
-}
-
-void Key::setLong (long l)
-{
-	setBinary (&l, sizeof (long));
-}
-
-unsigned long Key::getUnsignedLong ()
-{
-	unsigned long b;
-	getBinary (&b, sizeof (unsigned long));
-	return b;
-}
-
-void Key::setUnsignedLong (unsigned long ul)
-{
-	setBinary (&ul, sizeof (unsigned long));
-}
-
-
-#if defined __GNUC__ && defined __USE_GNU
-long long Key::getLongLong ()
-{
-	long long b;
-	getBinary (&b, sizeof (long long));
-	return b;
-}
-
-void Key::setLongLong (long long ll)
-{
-	setBinary (&ll, sizeof (long long));
-}
-
-unsigned long long Key::getUnsignedLongLong ()
-{
-	unsigned long long b;
-	getBinary (&b, sizeof (unsigned long long));
-	return b;
-}
-
-void Key::setUnsignedLongLong (unsigned long long ull)
-{
-	setBinary (&ull, sizeof (unsigned long long));
-}
-
-#endif
-
-float Key::getFloat ()
-{
-	float b;
-	getBinary (&b, sizeof (float));
-	return b;
-}
-
-void Key::setFloat (float f)
-{
-	setBinary (&f, sizeof (float));
-}
-
-double Key::getDouble ()
-{
-	double b;
-	getBinary (&b, sizeof (double));
-	return b;
-}
-
-void Key::setDouble (double d)
-{
-	setBinary (&d, sizeof (double));
-}
-
-long double Key::getLongDouble ()
-{
-	long double b;
-	getBinary (&b, sizeof (long double));
-	return b;
-}
-
-void Key::setLongDouble (long double ld)
-{
-	setBinary (&ld, sizeof (long double));
+	ckdb::keySetCTime (key, time);
 }
 
 /**Returns the time the Key was modified*/
-time_t Key::getMTime()
+time_t Key::getMTime() const
 {
 	return ckdb::keyGetMTime(key);
 }
 
 /**Returns the last access time.*/
-time_t Key::getATime()
+time_t Key::getATime() const
 {
 	return ckdb::keyGetATime(key);
 }
 
 /**Returns when the Key last was changed.*/
-time_t Key::getCTime()
+time_t Key::getCTime() const
 {
 	return ckdb::keyGetCTime(key);
 }
 
-int Key::isSystem()
+bool Key::isSystem() const
 {
 	return ckdb::keyIsSystem(key);
 }
 
-int Key::isUser()
+bool Key::isUser() const
 {
 	return ckdb::keyIsUser(key);
 }
 
-
-int Key::getNamespace()
+size_t Key::getReference() const
 {
-	return ckdb::keyGetNamespace(key);
+	return ckdb::keyGetRef(key);
 }
 
-int Key::isDir()
+bool Key::isDir() const
 {
 	return ckdb::keyIsDir(key);
 }
 
-int Key::isLink()
+bool Key::isString() const
 {
-	return ckdb::keyIsLink(key);
+	return ckdb::keyIsString(key);
 }
 
-size_t Key::toStream(FILE* stream, unsigned long options = ckdb::KDB_O_XMLHEADERS)
+bool Key::isBinary() const
+{
+	return ckdb::keyIsBinary(key);
+}
+
+bool Key::isInactive () const
+{
+	return ckdb::keyIsInactive (key);
+}
+
+bool Key::isBelow(const Key & k) const
+{
+	return ckdb::keyIsBelow(key, k.getKey());
+}
+
+bool Key::isDirectBelow(const Key & k) const
+{
+	return ckdb::keyIsDirectBelow(key, k.getKey());
+}
+
+bool Key::needSync() const
+{
+	return ckdb::keyNeedSync(key);
+}
+
+bool Key::needRemove() const
+{
+	return ckdb::keyNeedRemove(key);
+}
+
+bool Key::needStat() const
+{
+	return ckdb::keyNeedStat(key);
+}
+
+void Key::remove()
+{
+	ckdb::keyRemove (key);
+}
+
+void Key::stat()
+{
+	ckdb::keyStat (key);
+}
+
+/*
+ssize_t Key::toStream(FILE* stream, unsigned long options) const
 {
 	return ckdb::keyToStream (getKey(), stream, options);
+}
+
+ssize_t Key::output(FILE* stream, unsigned long options) const
+{
+	return ckdb::keyOutput (getKey(), stream, options);
+}
+
+ssize_t Key::generate(FILE* stream, unsigned long options) const
+{
+	return ckdb::keyGenerate(getKey(), stream, options);
+}
+*/
+
+std::ostream & operator << (std::ostream & os, const Key &k)
+{
+	os << "Name: " << k.getName() 
+	   << " Value: " << k.getString() 
+	   << " Comment: " << k.getComment()
+	   << " Domain: " << (k.isUser() ? "user" : "system");
+	return os;
+}
+
+std::istream & operator >> (std::istream & is, Key &k)
+{
+	std::string name, value, comment;
+	is >> name >> value >> comment;
+	k.setName(name);
+	k.set<std::string>(value);
+	k.setComment(comment);
+	return is;
 }
 
 } // end of namespace kdb

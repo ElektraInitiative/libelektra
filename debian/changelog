@@ -1,8 +1,10 @@
-elektra (0.6.8-1) unstable; urgency=low
+elektra (0.7.0a1-1) unstable; urgency=low
 
-  * Initial release (Closes: #311371)
+  * New upstream version.
+  * Repackaged using CDBS.
+  * Removed menu file, as it makes little sense for kdb(1).
 
- -- Joan Valduvieco Llopart <joan@laigu.net>  Wed, 14 Feb 2007 12:55:40 +0100
+ -- Andreas Rottmann <rotty@debian.org>  Thu, 22 Mar 2007 13:32:59 +0100
 
 elektra (0.5) unstable; urgency=low
 

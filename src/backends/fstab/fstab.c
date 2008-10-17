@@ -1,9 +1,9 @@
 /***************************************************************************
-            fstab.c  -  Skeleton of backends to access the Key Database
+            fstab.c  -  Access the /etc/fstab file
                              -------------------
     begin                : Mon Dec 26 2004
-    copyright            : (C) 2004 by Avi Alkalay
-    email                : avi@unix.sh
+    copyright            : (C) 2004 by Markus Raab
+    email                : elektra@markus-raab.org
  ***************************************************************************/
 
 /***************************************************************************
@@ -16,93 +16,119 @@
 /***************************************************************************
  *                                                                         *
  *   This is a backend that takes /etc/fstab file as its backend storage.  *
- *   The kdbGetKeyChildKeys() method will parse /etc/fstab and generate a  *
- *   valid key tree. The kdbSetKeys() method will take a KeySet with valid *
+ *   The kdbGet() method will parse /etc/fstab and generate a              *
+ *   valid key tree. The kdbSet() method will take a KeySet with valid     *
  *   filesystem keys and print an equivalent regular fstab in stdout.      *
  *                                                                         *
  ***************************************************************************/
 
+#include <fstab.h>
 
-/* Subversion stuff
+int kdbOpen_fstab(KDB *handle)
+{
+	KDBCap * cap = kdbhGetCapability(handle);
+	const void *f;
+	KeySet *ks;
+	Key *k;
 
-$Id$
+	cap->onlyFullGet=1;
+	cap->noStat=1;
 
-*/
+	cap->onlyRemoveAll=1;
+	cap->onlyAddKeys=1;
+	cap->onlyFullSet=1;
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+	cap->noComment=1;
+	cap->noUID=1;
+	cap->noGID=1;
+	cap->noMode=1;
+	cap->noATime=1;
+	cap->noMTime=1;
+	cap->noCTime=1;
+	cap->noRemove=1;
+	cap->noMount=1;
+	cap->noBinary=1;
+	cap->noTypes=1;
+	cap->noError=1;
 
-#include <mntent.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <dirent.h>
-#include <fcntl.h>
+	cap->noLock = 1;
+	cap->noThread = 1;
 
-#ifdef HAVE_REGEX_H
-#include <regex.h>
-#endif
-
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-
-#include <kdbbackend.h>
-
-#define BACKENDNAME "fstab"
-#define ROOT        "system/filesystems"
-
-
-
-/**Some systems have even longer pathnames*/
-#ifdef PATH_MAX
-#define MAX_PATH_LENGTH PATH_MAX
-/**This value is garanteed on any Posixsystem*/
-#elif __USE_POSIX
-#define MAX_PATH_LENGTH _POSIX_PATH_MAX
-#else 
-#define MAX_PATH_LENGTH 4096
-#endif
-
-
-
-int kdbOpen_fstab(KDBHandle *handle) {
+	ks = kdbhGetConfig (handle);
+	ksRewind (ks);
+	while ((k = ksNext (ks)) != 0)
+	{
+		f = keyName (k);
+		if (f) f = strrchr (f, '/');
+		if (f && strcmp (f, "/path") == 0) {
+			void *data=malloc(keyGetValueSize(k));
+			keyGetString (k, data, keyGetValueSize(k));
+			kdbhSetBackendData (handle, data);
+		}
+	}
+	if (!kdbhGetBackendData (handle)) kdbhSetBackendData (handle, kdbiStrDup (FSTAB_PATH));
 	/* backend initialization logic */
+#if DEBUG && VERBOSE
+	printf ("open fstab backend with %s\n", kdbhGetBackendData (handle));
+#endif
 	return 0;
 }
 
 
 
 
-int kdbClose_fstab(KDBHandle *handle) {
+int kdbClose_fstab(KDB *handle)
+{
 	/* free all backend resources and shutdown */
+	free(kdbhGetBackendData(handle));
+#if DEBUG && VERBOSE
+	printf ("close fstab backend\n");
+#endif
 	return 0; /* success */
 }
 
-int kdbGetKey_fstab(KDBHandle handle, Key *key) {
-	if (!keyIsSystem(key)) return 1;
-	errno=KDB_RET_NOSYS;
-	return 0;
-}
+#define MAX_NUMBER_SIZE 10
 
-
-ssize_t kdbGetKeyChildKeys_fstab(KDBHandle handle, const Key *parentKey,
-		KeySet *returned, unsigned long options) {
+ssize_t kdbGet_fstab(KDB *handle, KeySet *returned, const Key *parentKey)
+{
+	int errnosave = errno;
+	ssize_t nr_keys = 0;
+#ifndef __APPLE__
+	Key *key;
+	Key *dir;
 	FILE *fstab=0;
 	struct mntent *fstabEntry;
-	unsigned swapIndex=0;
+	char fsname[MAX_PATH_LENGTH];
+	char buffer[MAX_NUMBER_SIZE];
+	const char *mountpointname = keyName(kdbhGetMountpoint(handle));
+	const char *parentname = keyName(parentKey);
+
+#if DEBUG && VERBOSE
+	printf ("get fstab %s, point: %s\n", keyName(parentKey), mountpointname);
+#endif
+
+	if (strcmp (mountpointname, parentname)) return 0;
+
+	ksClear (returned);
+	key = keyDup (parentKey);
+	keySetDir(key);
+	ksAppendKey(returned, key);
+	nr_keys ++;
+	key->flags &= ~KEY_FLAG_SYNC;
+
+	fstab=setmntent(kdbhGetBackendData(handle), "r");
+	if (fstab == 0)
+	{
+		/* propagate errno */
+		errno = errnosave;
+		return -1;
+	}
 	
-	if (strcmp(parentKey->key,ROOT)) return -1;
-	
-	fstab=setmntent("/etc/fstab", "r");
-	if (fstab == 0) return -1; /* propagate errno */
-	
-	while ((fstabEntry=getmntent(fstab))) {
-		char fsname[MAX_PATH_LENGTH];
-		char fsKeyName[MAX_PATH_LENGTH];
-		Key *key=0;
-		
+	while ((fstabEntry=getmntent(fstab)))
+	{
+		unsigned int swapIndex=0;
+		nr_keys += 7;
+
 		/* Some logic to define the filesystem name when it is not
 		 * so obvious */
 		if (!strcmp(fstabEntry->mnt_type,"swap")) {
@@ -118,7 +144,7 @@ ssize_t kdbGetKeyChildKeys_fstab(KDBHandle handle, const Key *parentKey,
 			char *curr=fstabEntry->mnt_dir;
 			fsname[0]=0;
 			
-			while((slash=strchr(curr,RG_KEY_DELIM))) {
+			while((slash=strchr(curr,PATH_SEPARATOR))) {
 				if (slash==curr) {
 					curr++;
 					continue;
@@ -131,189 +157,174 @@ ssize_t kdbGetKeyChildKeys_fstab(KDBHandle handle, const Key *parentKey,
 		}
 		
 		/* Include only the filesystem pseudo-names */
-		sprintf(fsKeyName,"%s/%s",ROOT,fsname);
-		if (options & KDB_O_DIR || options & KDB_O_NOVALUE) {
-			ksAppend(returned,key=keyNew(fsKeyName,
-				KEY_SWITCH_COMMENT,"Filesystem pseudo-name",
-				KEY_SWITCH_UID,0,
-				KEY_SWITCH_GID,0,
-				KEY_SWITCH_END));
-			keySetDir(key,kdbhGetUMask(handle));
-			key->flags &= ~KEY_SWITCH_NEEDSYNC;
-		}
-			
-		
-		/* Include filesystems infos */
-		if (options & KDB_O_RECURSIVE) {
-			char buffer[MAX_PATH_LENGTH];
-			
-			sprintf(buffer,"%s/%s",fsKeyName,"device");
-			ksAppend(returned, key=keyNew(buffer,
-				KEY_SWITCH_VALUE,fstabEntry->mnt_fsname,
-				KEY_SWITCH_COMMENT,"Device or Label",
-				KEY_SWITCH_UID,0,
-				KEY_SWITCH_GID,0,
-				KEY_SWITCH_END));
-			key->flags &= ~KEY_SWITCH_NEEDSYNC;
+		dir = keyDup (parentKey);
+		keyAddBaseName(dir, fsname);
+		keySetString(dir,"");
+		keySetComment(dir,"");
+		keySetMode(dir, 0664); /* TODO stat */
+		keySetComment (dir, "Filesystem pseudo-name");
+		ksAppendKey(returned,dir);
 
-			
-			sprintf(buffer,"%s/%s",fsKeyName,"mpoint");
-			ksAppend(returned, key=keyNew(buffer,
-				KEY_SWITCH_VALUE,fstabEntry->mnt_dir,
-				KEY_SWITCH_COMMENT,"Moint point",
-				KEY_SWITCH_UID,0,
-				KEY_SWITCH_GID,0,
-				KEY_SWITCH_END));
-			key->flags &= ~KEY_SWITCH_NEEDSYNC;
+		key = keyDup (dir);
+		keyAddBaseName(key, "device");
+		keySetString (key, fstabEntry->mnt_fsname);
+		keySetComment (key, "Device or Label");
+		ksAppendKey(returned, key);
+		key->flags &= ~KEY_FLAG_SYNC;
 
-			
-			sprintf(buffer,"%s/%s",fsKeyName,"type");
-			ksAppend(returned, key=keyNew(buffer,
-				KEY_SWITCH_VALUE,fstabEntry->mnt_type,
-				KEY_SWITCH_COMMENT,"Filesystem type. See fs(5)",
-				KEY_SWITCH_UID,0,
-				KEY_SWITCH_GID,0,
-				KEY_SWITCH_END));
-			key->flags &= ~KEY_SWITCH_NEEDSYNC;
-			
-			
-			sprintf(buffer,"%s/%s",fsKeyName,"options");
-			ksAppend(returned, key=keyNew(buffer,
-				KEY_SWITCH_VALUE,fstabEntry->mnt_opts,
-				KEY_SWITCH_COMMENT,"Filesystem specific options. See mount(8)",
-				KEY_SWITCH_UID,0,
-				KEY_SWITCH_GID,0,
-				KEY_SWITCH_END));
-			key->flags &= ~KEY_SWITCH_NEEDSYNC;
-			
-			
-			sprintf(buffer,"%d",fstabEntry->mnt_freq);
-			key=keyNew(ROOT,
-				KEY_SWITCH_VALUE,buffer,
-				KEY_SWITCH_COMMENT,"Dump frequency in days",
-				KEY_SWITCH_UID,0,
-				KEY_SWITCH_GID,0,
-				KEY_SWITCH_END);
-			sprintf(buffer,"%s/%s",fsKeyName,"dumpfreq");
-			keySetName(key,buffer);
-			key->flags &= ~KEY_SWITCH_NEEDSYNC;
-			ksAppend(returned, key);
-			
-			
-			sprintf(buffer,"%d",fstabEntry->mnt_passno);
-			key=keyNew(ROOT,
-				KEY_SWITCH_VALUE,buffer,
-				KEY_SWITCH_COMMENT,"Pass number on parallel fsck",
-				KEY_SWITCH_UID,0,
-				KEY_SWITCH_GID,0,
-				KEY_SWITCH_END);
-			sprintf(buffer,"%s/%s",fsKeyName,"passno");
-			keySetName(key,buffer);
-			key->flags &= ~KEY_SWITCH_NEEDSYNC;
-			ksAppend(returned, key);
-		}
+		key = keyDup (dir);
+		keyAddBaseName(key, "mpoint");
+		keySetString (key, fstabEntry->mnt_dir);
+		keySetComment (key, "Mount point");
+		ksAppendKey(returned, key);
+		key->flags &= ~KEY_FLAG_SYNC;
+
+		key = keyDup (dir);
+		keyAddBaseName(key, "type");
+		keySetString (key, fstabEntry->mnt_type);
+		keySetComment (key, "Filesystem type.");
+		ksAppendKey(returned, key);
+		key->flags &= ~KEY_FLAG_SYNC;
+
+		key = keyDup (dir);
+		keyAddBaseName(key, "options");
+		keySetString (key, fstabEntry->mnt_opts);
+		keySetComment (key, "Filesystem specific options");
+		ksAppendKey(returned, key);
+		key->flags &= ~KEY_FLAG_SYNC;
+
+		key = keyDup (dir);
+		keyAddBaseName(key, "dumpfreq");
+		snprintf(buffer, MAX_NUMBER_SIZE, "%d",fstabEntry->mnt_freq);
+		keySetString (key, buffer);
+		keySetComment (key, "Dump frequency in days");
+		ksAppendKey(returned, key);
+		key->flags &= ~KEY_FLAG_SYNC;
+
+		key = keyDup (dir);
+		keyAddBaseName(key, "passno");
+		snprintf(buffer, MAX_NUMBER_SIZE, "%d",fstabEntry->mnt_passno);
+		keySetString (key, buffer);
+		keySetComment (key, "Pass number on parallel fsck");
+		ksAppendKey(returned, key);
+		key->flags &= ~KEY_FLAG_SYNC;
+
+		keySetDir (dir);
+		dir->flags &= ~KEY_FLAG_SYNC;
 	}
 	
 	endmntent(fstab);
 	
-	if ((options & (KDB_O_SORT)) && (returned->size > 1))
-		ksSort(returned);
-
-	return returned->size; /* success */
+#endif
+	errno = errnosave;
+	return nr_keys;
 }
 
 
-/**
- * The implementation of this method is optional.
- * The builtin inefficient implementation will use kdbSetKey() for each
- * key inside @p ks.
- *
- * @see kdbSetKeys() for expected behavior.
- * @ingroup backend
- */
-int kdbSetKeys_fstab(KDBHandle handle, KeySet *ks) {
-	regex_t regex;
-	uint32_t match=0;
-	struct mntent fstabEntry;
+ssize_t kdbSet_fstab(KDB *handle, KeySet *ks, const Key *parentKey)
+{
+	int ret = 1;
+	int errnosave = errno;
+#ifndef __APPLE__
+	FILE *fstab=0;
 	Key *key=0;
-	
+	char *basename = 0;
+	const void *rootname = 0;
+	struct mntent fstabEntry;
+	const char *mountpointname = keyName(kdbhGetMountpoint(handle));
+	const char *parentname = keyName(parentKey);
+
+#if DEBUG && VERBOSE
+	printf ("set fstab %s, point: %s\n", keyName(parentKey), mountpointname);
+#endif
+
+	if (strcmp (mountpointname, parentname)) return 0;
+
+	ksRewind (ks);
+	if ((key = ksNext (ks)) != 0 && keyNeedRemove (key))
+	{
+		unlink(kdbhGetBackendData(handle));
+		return ret;
+	} /*skip parent key*/
+
+	fstab=setmntent(kdbhGetBackendData(handle), "w");
 	memset(&fstabEntry,0,sizeof(struct mntent));
-	
-	while (1) {
-		/* lookup for the first entire filesystem keys */
-		regcomp(&regex,"system/filesystems/[^/]*$",REG_NOSUB);
-		match=ksLookupRE(ks,KEY_SWITCH_NAME,&regex,0);
-		regfree(&regex);
-	
-		if (match == 0) return 0;
-	
-		/* ksNext(ks); */
-		regcomp(&regex,"system/filesystems/[^/]*/device$",REG_ICASE | REG_NOSUB);
-		match=ksLookupRE(ks,KEY_SWITCH_NAME,&regex,KDB_O_NOSPANPARENT);
-		if (match) {
-			key=ksCurrent(ks);
-			fstabEntry.mnt_fsname=(char *)key->data;
+
+	while ((key = ksNext (ks)) != 0)
+	{
+		ret ++;
+		basename=strrchr(keyName(key), '/')+1;
+#if DEBUG && VERBOSE
+		printf ("key: %s %s\n", keyName(key), basename);
+#endif
+		if (!strcmp (basename, "device"))
+		{
+			fstabEntry.mnt_fsname=(char *)keyValue(key);
+		} else if (!strcmp (basename, "mpoint")) {
+			fstabEntry.mnt_dir=(char *)keyValue(key);
+		} else if (!strcmp (basename, "type")) {
+			fstabEntry.mnt_type=(char *)keyValue(key);
+		} else if (!strcmp (basename, "options")) {
+			fstabEntry.mnt_opts=(char *)keyValue(key);
+		} else if (!strcmp (basename, "dumpfreq")) {
+			fstabEntry.mnt_freq=atoi((char *)keyValue(key));
+		} else if (!strcmp (basename, "passno")) {
+			fstabEntry.mnt_passno=atoi((char *)keyValue(key));
+		} else { // new rootname
+			if (!rootname)
+			{
+				rootname = keyValue(key);
+			} else {
+				rootname = keyValue(key);
+#if DEBUG && VERBOSE
+				fprintf(stdout, "first: %s   %s   %s   %s   %d %d\n",
+					fstabEntry.mnt_fsname,
+					fstabEntry.mnt_dir,
+					fstabEntry.mnt_type,
+					fstabEntry.mnt_opts,
+					fstabEntry.mnt_freq,
+					fstabEntry.mnt_passno);
+#endif
+				addmntent(fstab, &fstabEntry);
+				memset(&fstabEntry,0,sizeof(struct mntent));
+			}
 		}
-		regfree(&regex);
-	
-		regcomp(&regex,"system/filesystems/[^/]*/dumpfreq$",REG_ICASE | REG_NOSUB);
-		match=ksLookupRE(ks,KEY_SWITCH_NAME,&regex,KDB_O_NOSPANPARENT);
-		if (match) {
-			key=ksCurrent(ks);
-			fstabEntry.mnt_freq=atoi((char *)key->data);
-		}
-		regfree(&regex);
-	
-		regcomp(&regex,"system/filesystems/[^/]*/mpoint$",REG_ICASE | REG_NOSUB);
-		match=ksLookupRE(ks,KEY_SWITCH_NAME,&regex,KDB_O_NOSPANPARENT);
-		if (match) {
-			key=ksCurrent(ks);
-			fstabEntry.mnt_dir=(char *)key->data;
-		}
-		regfree(&regex);
-	
-		regcomp(&regex,"system/filesystems/[^/]*/options$",REG_ICASE | REG_NOSUB);
-		match=ksLookupRE(ks,KEY_SWITCH_NAME,&regex,KDB_O_NOSPANPARENT);
-		if (match) {
-			key=ksCurrent(ks);
-			fstabEntry.mnt_opts=(char *)key->data;
-		}
-		regfree(&regex);
-	
-		regcomp(&regex,"system/filesystems/[^/]*/passno$",REG_ICASE | REG_NOSUB);
-		match=ksLookupRE(ks,KEY_SWITCH_NAME,&regex,KDB_O_NOSPANPARENT);
-		if (match) {
-			key=ksCurrent(ks);
-			fstabEntry.mnt_passno=atoi((char *)key->data);
-		}
-		regfree(&regex);
-	
-		regcomp(&regex,"system/filesystems/[^/]*/type$",REG_ICASE | REG_NOSUB);
-		match=ksLookupRE(ks,KEY_SWITCH_NAME,&regex,KDB_O_NOSPANPARENT);
-		if (match) {
-			key=ksCurrent(ks);
-			fstabEntry.mnt_type=(char *)key->data;
-		}
-		regfree(&regex);
-	
-	
-		printf("%s   %s   %s   %s   %d %d\n",
+	}
+
+	if (rootname)
+	{
+#if DEBUG && VERBOSE
+		fprintf(stdout, "last: %s   %s   %s   %s   %d %d\n",
 			fstabEntry.mnt_fsname,
 			fstabEntry.mnt_dir,
 			fstabEntry.mnt_type,
 			fstabEntry.mnt_opts,
 			fstabEntry.mnt_freq,
 			fstabEntry.mnt_passno);
+#endif
+		addmntent(fstab, &fstabEntry);
 	}
-
-	return 0;
+	
+	endmntent(fstab);
+#endif
+	errno = errnosave;
+	return ret;
 }
+
 
 KDBEXPORT(fstab) {
 	return kdbBackendExport(BACKENDNAME,
 		KDB_BE_OPEN,           &kdbOpen_fstab,
 		KDB_BE_CLOSE,          &kdbClose_fstab,
-		KDB_BE_GETCHILD,       &kdbGetKeyChildKeys_fstab,
-		KDB_BE_SETKEYS,        &kdbSetKeys_fstab,
+		KDB_BE_GET,            &kdbGet_fstab,
+		KDB_BE_SET,            &kdbSet_fstab,
+		KDB_BE_VERSION,        BACKENDVERSION,
+		KDB_BE_AUTHOR,	"Markus Raab <elektra@markus-raab.org>",
+		KDB_BE_LICENCE,	"BSD",
+		KDB_BE_DESCRIPTION,
+			"Reads and writes /etc/fstab content",
 		KDB_BE_END);
+			
 }
+
+

@@ -17,41 +17,81 @@
 
 #include <ini.h>
 
-/**
- * Initialize the backend.
- *
- * It does not do anything.
- * Apps anyway must call it, to make sure
- * to be compatibel to other backends.
- * 
- * @return 0 on success
- * @ingroup ini
- */
-int kdbOpen_ini(KDBHandle *handle) {
-#ifdef DEBUG
-	fprintf (stderr, "opened ini backend " VERSION "\n");
-#endif
+
+int kdbOpen_ini(KDB *handle)
+{
+	KDBCap *cap = kdbhGetCapability (handle);
+
+	cap->onlyFullGet=1;
+	cap->noStat=1;
+
+	cap->onlyRemoveAll=1;
+
+	cap->onlyFullSet=1;
+	cap->onlyAddKeys=1;
+
+	cap->onlySystem=1;
+	cap->onlyUser=1;
+
+	cap->noOwner=1;
+	cap->noValue=1;
+	cap->noComment=1;
+	cap->noUID=1;
+	cap->noGID=1;
+	cap->noMode=1;
+	cap->noDir=1;
+	cap->noATime=1;
+	cap->noMTime=1;
+	cap->noCTime=1;
+	cap->noRemove=1;
+	cap->noMount=1;
+	cap->noBinary=1;
+	cap->noString=1;
+	cap->noTypes=1;
+	cap->noError=1;
+
+	cap->noLock=1;
+	cap->noThread=1;
+
+	kdbhSetBackendData (handle, malloc (sizeof (backendData)));
+
+	/* backend initialization logic */
+
 	return 0;
 }
 
+int kdbClose_ini(KDB *handle)
+{
+	free (kdbhGetBackendData (handle));
 
+	/* free all backend resources and shut it down */
 
-
-/**
- * Closes the backend.
- * 
- * It does not do anything.
- * Apps anyway must call it, to make sure
- * to be compatibel to other backends.
- * 
- * @return 0 on success
- * @ingroup ini
- */
-int kdbClose_ini(KDBHandle *handle) {
-#ifdef DEBUG
-	fprintf (stderr, "closed ini backend\n");
-#endif
 	return 0; /* success */
+}
+
+ssize_t kdbGet_ini(KDB *handle, KeySet *returned, const Key *parentKey)
+{
+	int rc = 0;
+	char t [MAX_PATH_LENGTH];
+	Key * write = keyDup (parentKey);
+	
+#if DEBUG
+	file_name(write, t);
+	fprintf (stderr, "file_name: %s\n",	t);
+	base_name(write, t);
+	fprintf (stderr, "base_name: %s\n",	t);
+#endif
+
+	/**Immediately call IniChooseFile (will work recursively)*/
+	rc = IniChooseFile (handle, write, returned, 0);
+	keyDel (write);
+
+	return rc;
+}
+
+ssize_t kdbSet_ini(KDB *handle, KeySet *ks, const Key *parentKey)
+{
+	return IniSetKeys (handle, ks);
 }
 
 
@@ -71,7 +111,7 @@ int kdbClose_ini(KDBHandle *handle) {
  * 
  * @ingroup ini
  */
-size_t IniSearchFileName (Key * forKey, char * filename)
+size_t IniSearchFileName (KDB *handle, Key * forKey, char * filename)
 {
 	size_t length;
 	uint8_t info = 0;
@@ -80,12 +120,12 @@ size_t IniSearchFileName (Key * forKey, char * filename)
 	length = file_name (forKey, filename);
 	
 	do {
-#ifdef DEBUG
+#if DEBUG
 		fprintf (stderr, "Search %s\n", filename);
 #endif
 		end = strrchr (filename, '/');
 		if (end == NULL) {
-#ifdef DEBUG
+#if DEBUG
 			fprintf (stderr, "Could not find any file\n");
 #endif
 			return -1;
@@ -100,102 +140,6 @@ size_t IniSearchFileName (Key * forKey, char * filename)
 
 
 /**
- * Implementation for kdbGetKey() method.
- *
- * @see kdbGetKey() for expected behavior.
- * @ingroup ini
- */
-int kdbGetKey_ini(KDBHandle handle, Key *key) {
-	char keyFileName [MAX_PATH_LENGTH];
-	
-	int pos;
-	int keySize;
-	char * keyFullName;
-	char * keyRoot;
-	char * end;
-	
-#ifdef DEBUG	
-	fprintf (stderr, "kdbGetKey_ini() entered\n");
-#endif
-	
-	pos = IniSearchFileName(key, keyFileName);
-	
-	keySize = keyGetNameSize (key);
-	keyFullName = malloc (keySize+1);
-	keyGetName(key, keyFullName, keySize);
-	
-	end = strrchr (keyFullName, '/');	/* dirname*/
-	*end = 0;
-	keyRoot = malloc (strlen (keyFullName));
-	strcpy (keyRoot, keyFullName);
-	*end = '/';
-	
-#ifdef DEBUG
-	fprintf (stderr, "keyRoot: %s\n", keyRoot);
-#endif
-	
-	if (! pos) {
-		fprintf (stderr, "Could not receive filename");
-		return -1;
-	}
-
-#ifdef DEBUG
-	fprintf (stderr, "Get Key [%d] in File: %s\n", keySize, keyFileName);
-#endif
-
-	if (open_file (keyFileName, O_RDONLY) == -1)
-	{
-#ifdef DEBUG
-		fprintf (stderr, "Could not open file %s\n", keyFileName);
-#endif
-		errno = KDB_RET_NOTFOUND;
-		return -1;
-	}
-	
-	while ((pos=read_key (key, keyRoot)) == 0)
-	{
-#ifdef DEBUG
-		fprintf (stderr, "Compare: %s with %s\n", key->key, keyFullName);
-#endif
-		if (strcmp (key->key, keyFullName) == 0) {	/* right Key found*/
-#ifdef DEBUG
-			fprintf (stderr, "Key found\n");
-#endif
-			/*Useless setting of keyname again
-			if (key->key) free(key->key);
-			key->key = malloc (keySize+1);
-			strncpy (key->key, keyFullName, keySize);*/
-
-#ifdef DEBUG
-			fprintf (stderr, "<KEY>%s<DATA>%s<COMMENT>%s\n", 
-				key->key, (char *) key->data, key->comment);
-#endif
-		
-			
-			pos = 1;
-			break;
-		}
-	}
-	if (pos != 1) {	/* key not found, leave it, so that app won't sigfault*/
-		errno = KDB_RET_NOKEY;
-		pos = -1;
-#ifdef DEBUG
-		fprintf (stderr, "Key not found!\n");
-#endif
-	} else if (pos == 1) { /* key found, everything went ok!*/
-		pos = 0;
-	}
-	
-	close_file ();
-	
-	free (keyFullName);
-	free (keyRoot);
-	
-	return pos; /* success */
-}
-
-
-/**
  * Get out all the keys of a file
  * 
  * @param keyFileName: Name of the file
@@ -204,38 +148,38 @@ int kdbGetKey_ini(KDBHandle handle, Key *key) {
  * 
  * @ingroup ini
  */
-ssize_t kdbGetKeys (KDBHandle handle, char * keyFileName, char * keyRoot, KeySet * returned)
+ssize_t IniGetKeys (KDB *handle, char * keyFileName, char * keyRoot, KeySet * returned)
 {
 	Key * key;
 	int pos;
 
-	if (open_file (keyFileName, O_RDONLY) == -1)
+	if (open_file (handle, keyFileName, O_RDONLY) == -1)
 	{
-#ifdef DEBUG
+#if DEBUG
 		fprintf (stderr, "Could not open file %s\n", keyFileName);
 #endif
-		errno = KDB_RET_NOTFOUND;
+		/*errno = KDB_ERR_NOTFOUND;*/
 		return -1;
 	}
 	
-	key = keyNew (KEY_SWITCH_END);
+	key = keyNew(0);
 
-#ifdef DEBUG
+#if DEBUG
 	fprintf (stderr, "Call read_key(%s)\n", keyRoot);
 #endif
-	while ((pos=read_key (key, keyRoot)) == 0)
+	while ((pos=read_key (handle, key, keyRoot)) == 0)
 	{
-#ifdef DEBUG
+#if DEBUG
 		fprintf (stderr, "Append key\n");
 #endif
-		ksAppend (returned,key);
+		ksAppendKey(returned,key);
 
-		key = keyNew (KEY_SWITCH_END);
+		key = keyNew(0);
 	}
 	
 	keyDel (key); /* delete the not used key left*/
 
-	close_file();
+	close_file(handle);
 	
 	return 0; /* success */
 }
@@ -248,13 +192,13 @@ ssize_t kdbGetKeys (KDBHandle handle, char * keyFileName, char * keyRoot, KeySet
  *
  * @ingroup ini
  */
-int IniReadFile (KDBHandle handle, Key * key, KeySet * returned, unsigned long options)
+int IniReadFile (KDB *handle, Key * key, KeySet * returned, unsigned long options)
 {
 	char filename [MAX_PATH_LENGTH];
 	char * keyname;
 	size_t keyLength;
 
-#ifdef DEBUG
+#if DEBUG
 	fprintf (stderr, "IniReadfile\n");
 #endif
 	
@@ -264,11 +208,11 @@ int IniReadFile (KDBHandle handle, Key * key, KeySet * returned, unsigned long o
 	keyname = malloc (keyLength);
 	keyGetName (key, keyname, keyGetNameSize (key));
 
-#ifdef DEBUG
-	fprintf (stderr, "Call kdbGetKeys(filename: %s, keyRoot: %s,returned)\n", 
+#if DEBUG
+	fprintf (stderr, "Call IniGetKeys(filename: %s, keyRoot: %s,returned)\n", 
 		filename, keyname);
 #endif
-	kdbGetKeys (handle, filename, keyname, returned);
+	IniGetKeys (handle, filename, keyname, returned);
 	
 	if (keyLength >0) free (keyname);
 
@@ -281,11 +225,10 @@ int IniReadFile (KDBHandle handle, Key * key, KeySet * returned, unsigned long o
  *
  * For files it starts IniReadFile
  * For directorys it starts IniReadDir
- * TODO: Links, Subdirs
  *
  * @ingroup ini
  * */
-int IniChooseFile(KDBHandle handle, Key * key, KeySet * returned, unsigned long options)
+int IniChooseFile(KDB *handle, Key * key, KeySet * returned, unsigned long options)
 {
 	char filename [MAX_PATH_LENGTH];
 	char * keyname;
@@ -294,7 +237,7 @@ int IniChooseFile(KDBHandle handle, Key * key, KeySet * returned, unsigned long 
 	file_name(key, filename);
 	stat_file (key, filename);
 
-#ifdef DEBUG
+#if DEBUG
 	fprintf (stderr, "IniChooseFile, pathName: %s\n", filename);
 #endif
 	
@@ -319,7 +262,7 @@ int IniChooseFile(KDBHandle handle, Key * key, KeySet * returned, unsigned long 
 		return IniReadFile (handle, key, returned, options);
 	}
 
-#ifdef DEBUG
+#if DEBUG
 	fprintf (stderr, "Not a directory or file!");
 #endif
 	return -1;
@@ -334,7 +277,7 @@ int IniChooseFile(KDBHandle handle, Key * key, KeySet * returned, unsigned long 
  * 
  * @ingroup ini
  * */
-int IniReadDir(KDBHandle handle, Key * key, KeySet * returned, unsigned long options)
+int IniReadDir(KDB *handle, Key * key, KeySet * returned, unsigned long options)
 {
 	char pathName [MAX_PATH_LENGTH];
 	char keyname [MAX_PATH_LENGTH];
@@ -343,7 +286,7 @@ int IniReadDir(KDBHandle handle, Key * key, KeySet * returned, unsigned long opt
 	void * dir;
 	int ret;
 
-#ifdef DEBUG
+#if DEBUG
 	fprintf (stderr, "IniReadDir\n");
 #endif
 	file_name (key, pathName);
@@ -364,14 +307,14 @@ int IniReadDir(KDBHandle handle, Key * key, KeySet * returned, unsigned long opt
 		if (filename[0] == '.' && !(options & KDB_O_INACTIVE))
 			continue;
 
-#ifdef DEBUG
+#if DEBUG
 		fprintf (stderr, "Next entry filename: %s\n", filename);
 #endif
 		strncpy(keyname, keypath, MAX_PATH_LENGTH);
 		strcat(keyname, filename);
 		keySetName (key, keyname);
 
-#ifdef DEBUG
+#if DEBUG
 		fprintf (stderr, "New keyname: %s\n", keyname);
 #endif
 		ret = IniChooseFile (handle, key, returned, options);
@@ -387,30 +330,6 @@ int IniReadDir(KDBHandle handle, Key * key, KeySet * returned, unsigned long opt
 }
 
 
-
-/**
- * Implementation for kdbGetKeyChildKeys() method.
- *
- * @see kdbGetKeyChildKeys() for expected behavior.
- * 
- * @ingroup ini
- */
-ssize_t kdbGetKeyChildKeys_ini(KDBHandle handle, const Key * key, KeySet *returned, unsigned long options)
-{
-	char t [MAX_PATH_LENGTH];
-	Key * write;
-	keyDup (key, write);
-	
-#ifdef DEBUG
-	file_name(write, t);
-	fprintf (stderr, "file_name: %s\n",	t);
-	base_name(write, t);
-	fprintf (stderr, "base_name: %s\n",	t);
-	/**Immediately call IniChooseFile (will work recursively)*/
-#endif
-
-	return IniChooseFile (handle, write, returned, options);
-}
 
 /**Walks through a file and lookups if the first key of a keyset is in the
  * given Keyset. When found it overwrites the key. It also checks if any
@@ -440,7 +359,7 @@ ssize_t kdbGetKeyChildKeys_ini(KDBHandle handle, const Key * key, KeySet *return
  * @return #nr when #nr keys could not written to file
  *
  * */
-int IniSetKeys (KeySet * origKeys)
+int IniSetKeys (KDB *handle, KeySet * origKeys)
 {
 	char keyFileName [MAX_PATH_LENGTH];
 	
@@ -452,21 +371,21 @@ int IniSetKeys (KeySet * origKeys)
 
 	Key * origKey;	/*First key which will introduce opening file*/
 	Key * setKey;	/*Used for getting the keys which may be set*/
-	Key * key = keyNew (KEY_SWITCH_END);
+	Key * key = keyNew(0);
 
 	long oldpos;
 	
-#ifdef DEBUG
+#if DEBUG
 	fprintf (stderr, "IniSetKeys() entered\n");
 #endif
 
 	ksRewind (origKeys);
 	origKey = ksNext (origKeys); /* Open file for this key*/
-	keyDup (origKey, key);	/* for searching*/
+	key = keyDup (origKey);	/* for searching*/
 	
-	pos = IniSearchFileName(key, keyFileName);
+	pos = IniSearchFileName(handle, key, keyFileName);
 
-#ifdef DEBUG
+#if DEBUG
 	fprintf (stderr, "after SearchFileName ...\n");
 #endif
 
@@ -488,45 +407,45 @@ int IniSetKeys (KeySet * origKeys)
 	strcpy (keyRoot, keyFullName);
 	if (end) *end = '/';	/*revert keyname*/
 
-#ifdef DEBUG
+#if DEBUG
 	fprintf (stderr, "keyRoot: %s, keyName: %s\n", keyRoot, keyFullName);
 	fprintf (stderr, "Set Key [%d] in File: %s\n",keySize, keyFileName);
 #endif
 
-	if (open_file (keyFileName, O_RDWR) == -1)
+	if (open_file (handle, keyFileName, O_RDWR) == -1)
 	{
-#ifdef DEBUG
+#if DEBUG
 		fprintf (stderr, "Could not open file %s\n", keyFileName);
 #endif
-		ksInsert (origKeys, origKey);
-		errno = KDB_RET_NOTFOUND;
+		ksAppendKey(origKeys, origKey);
+		/*errno = KDB_ERR_NOTFOUND;*/
 		goto fileerror;
 	}
 	
-	while ((pos=read_key (key, keyRoot)) == 0)
+	while ((pos=read_key (handle, key, keyRoot)) == 0)
 	{
 		if ((setKey = ksLookupByName (origKeys, key->key, 0)) != NULL) 
 		{	/* right Key found*/
-#ifdef DEBUG
+#if DEBUG
 			fprintf (stderr, "Key found\n");
 			fprintf(stderr, "Name: (%s), Value: (%s), Comment: (%s)\n",
-				keyStealName (setKey), (char *) keyStealValue(setKey),
-				(char *) keyStealComment (setKey));
+				keyName (setKey), (char *) keyValue(setKey),
+				(char *) keyComment (setKey));
 #endif
 			
-			write_key(setKey, oldpos);
+			write_key(handle, setKey, oldpos);
 
-			if ((keyCompare (key, origKey) & KEY_SWITCH_NAME) == 0)
+			if ((keyCompare (key, origKey) & KEY_NAME) == 0)
 				pos = 1; /*Start Key found, good!*/
 		}
-		oldpos = ftell (fc);
+		oldpos = ftell (FILEPTR);
 	}
 	if (pos != 1) {	/* key not found, add to the end*/
-#ifdef DEBUG
+#if DEBUG
 		fprintf (stderr, "Key not found!\n");
 #endif
-		fseek (fc, 0, SEEK_END);
-		oldpos = ftell(fc);
+		fseek (FILEPTR, 0, SEEK_END);
+		oldpos = ftell(FILEPTR);
 		/*TODO: write key here if not found
 		 * write_key(setKey, oldpos);*/
 		pos = 0;
@@ -534,23 +453,23 @@ int IniSetKeys (KeySet * origKeys)
 		pos = 0;
 	}
 	
-	close_file ();
+	close_file (handle);
 	
 	free (keyFullName);
 	free (keyRoot);
 	
 	keyDel (key);
 
-#ifdef DEBUG
+#if DEBUG
 	fprintf (stderr, "leaving IniSetKeys()\n");
 #endif
 	
 	return pos; /* success */
 
 memerror:
-	errno=KDB_RET_NOMEM;
-	close_file ();
-#ifdef DEBUG
+	/*errno=KDB_ERR_NOMEM;*/
+	close_file (handle);
+#if DEBUG
 	fprintf (stderr, "Memory Error\n");
 #endif
 fileerror:
@@ -563,157 +482,17 @@ fileerror:
 	return -1;
 }
 
-/**
- * Implementation for kdbSetKey() method.
- *
- * @see kdbSetKey() for expected behavior.
- * @ingroup ini
- */
-int kdbSetKey_ini(KDBHandle handle, Key *origkey) {
-	int rc;
-	KeySet * ks = ksNew ();
-	
-	ksInsert (ks, origkey);
-	
-	rc = IniSetKeys (ks);
-
-	ksDel (ks);
-	return rc;
-}
-
-
-
-
-
-/**
- * Implementation for kdbSetKeys() method.
- * 
- * The implementation of this method is optional, and a builtin, probablly 
- * inefficient implementation can be explicitly used when exporting the
- * backend with kdbBackendExport(), using kdbSetKeys_default().
- * 
- * @see kdbSetKeys() for expected behavior.
- * @ingroup ini
- */
-int kdbSetKeys_ini(KDBHandle handle, KeySet *ks) {
-
-	/**TODO must be in a loop*/
-	return IniSetKeys (ks);
-}
-
-
-#define SETKEY_SET 0
-#define SETKEY_DELETE 1
-
-
-/**
- * Implementation for kdbRemoveKey() method.
- *
- * @see kdbRemove() for expected behavior.
- * @ingroup ini
- */
-int kdbRemoveKey_ini(KDBHandle handle, const Key *key) {
-	/**TODO: Remove kdbRemoveKeys from API, use kdbSetKeys instead*/
-	return 0;
-}
-
-/**
- * Implementation for kdbRename() method.
- *
- * @see kdbRename() for expected behavior.
- * @ingroup ini
- */
-int kdbRename_ini(KDBHandle handle, Key *key, const char *newName) {
-	/*IniSetKey (key, SETKEY_DELETE);
-	keySetName (key, newName);
-	IniSetKey (key, SETKEY_SET);*/
-	return 0; /* success */
-}
-
-
-/**
- * Implementation for kdbStatKey() method.
- * 
- * Trys to stat the file and fill the key
- * with information about that. keys inside
- * a file get the stat information of their
- * file.
- *
- * @ingroup ini
- */
-int kdbStatKey_ini(KDBHandle handle, Key *key) {
-	char filename [MAX_PATH_LENGTH];
-	
-	file_name(key, filename);
-	stat_file (key, filename);
-
-#ifdef DEBUG
-	fprintf (stderr, "kdbStatKey, filename: %s\n", filename);
-#endif
-	return 0; /* success */
-}
-
-
-
-/**
- * The implementation of this method is optional.
- * The builtin inefficient implementation will use kdbGetKey() for each
- * key inside @p interests.
- *
- * @see kdbMonitorKeys() for expected behavior.
- * @ingroup ini
- */
-uint32_t kdbMonitorKeys_ini(KDBHandle handle, KeySet *interests, uint32_t diffMask,
-		unsigned long iterations, unsigned sleep) {
-	fprintf (stderr, "Optional method not implemented\n");
-	return 0;
-}
-
-
-/**
- *
- * The implementation of this method is optional.
- * The builtin inefficient implementation will use kdbGetKey() for
- * @p interest.
- *
- * @see kdbMonitorKey() for expected behavior.
- * @ingroup ini
- */
-uint32_t kdbMonitorKey_ini(KDBHandle handle, Key *interest, uint32_t diffMask,
-		unsigned long iterations, unsigned sleep) {
-	fprintf (stderr, "Optional method not implemented\n");
-	return 0;
-}
-
-
-/**
- * All KeyDB methods implemented by the backend can have random names, except
- * kdbBackendFactory(). This is the single symbol that will be looked up
- * when loading the backend, and the first method of the backend
- * implementation that will be called.
- * 
- * Its purpose is to "publish" the exported methods for libelektra.so. The
- * implementation inside the provided skeleton is usually enough: simply
- * call kdbBackendExport() with all methods that must be exported.
- * 
- * @return whatever kdbBackendExport() returns
- * @see kdbBackendExport() for an example
- * @see kdbOpenBackend()
- * @ingroup ini
- */
 KDBEXPORT(ini)
 {
 	return kdbBackendExport(BACKENDNAME,
-		KDB_BE_OPEN,           &kdbOpen_ini,
-		KDB_BE_CLOSE,          &kdbClose_ini,
-		KDB_BE_GETKEY,         &kdbGetKey_ini,
-		KDB_BE_SETKEY,         &kdbSetKey_ini,
-		KDB_BE_STATKEY,        &kdbStatKey_ini,
-		KDB_BE_RENAME,         &kdbRename_ini,
-		KDB_BE_REMOVEKEY,      &kdbRemoveKey_ini,
-		KDB_BE_GETCHILD,       &kdbGetKeyChildKeys_ini,
-		KDB_BE_MONITORKEY,     &kdbMonitorKey_ini,
-		KDB_BE_MONITORKEYS,    &kdbMonitorKeys_ini,
-		KDB_BE_SETKEYS,        &kdbSetKeys_ini,
+		KDB_BE_OPEN,	&kdbOpen_ini,
+		KDB_BE_CLOSE,	&kdbClose_ini,
+		KDB_BE_GET,	&kdbGet_ini,
+		KDB_BE_SET,	&kdbSet_ini,
+		KDB_BE_VERSION,        BACKENDVERSION,
+		KDB_BE_AUTHOR,	"Markus Raab <elektra@libelektra.org>",
+		KDB_BE_LICENCE,	"BSD",
+		KDB_BE_DESCRIPTION, "Key/Value Pairs are stored in files in following scheme: key1=value1;comment",
 		KDB_BE_END);
 }
+

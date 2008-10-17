@@ -1,0 +1,10 @@
+<keyset parent="user/elektra-tests">
+	<key type="string" basename="PerfectStringKey" value="PerfectValue"><comment>String key with standard name</comment></key>
+	<key type="string" basename="Ug.\/lyStr\/\/in.g \/Key\/" value="With a string value"><comment>string key with ugly name</comment></key>
+	
+	<key type="directory" basename="PerfectDirectoryKey" value=""><comment>Directory key with standard name (Is directory could have comment ?)</comment></key>
+	<key type="directory" basename="Ug.\/ly Dir\/\/ect.ory. \/Key\/"><comment>Directory with ugly name</comment></key>
+       
+	<key type="binary" basename="PerfectBinaryKey" value=""><comment>Binary key</comment></key>
+	<key type="binary" basename="Ug.\/ly Bin\/\/a.ry. \/Key\/"><comment>Binary key with ugly name</comment></key>
+</keyset>

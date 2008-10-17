@@ -1,5 +1,5 @@
 /***************************************************************************
-            libkdb.c  -  Interfaces for accessing the Key Database
+         kdbhighlevel.c  -  Highlevel interface for accessing the Key Database
                              -------------------
     begin                : Mon Dec 29 2003
     copyright            : (C) 2003 by Avi Alkalay
@@ -15,18 +15,8 @@
 
 
 
-
-/* Subversion stuff
-
-$Id: libkdb.c 752 2006-04-24 12:55:12Z aviram $
-
-*/
-
-
-
-
 /**
- * @defgroup kdbhelpers KeyDB :: High Level methods
+ * @defgroup kdbhighlevel KDB :: High Level methods
  * @brief High level methods to access the Key database.
  *
  * To use them:
@@ -34,14 +24,21 @@ $Id: libkdb.c 752 2006-04-24 12:55:12Z aviram $
  * #include <kdb.h>
  * @endcode
  *
- * These methods are higher level. They use the above methods to do their
+ * These methods are higher level. They use kdbOpen(), kdbClose(),
+ * kdbGet() and kdbSet() methods to do their
  * job, and don't have to be reimplemented for a different backend.
+ *
+ * These functions avoid limitations through not implemented capabilities.
+ * This will of course cost some effort, so read through the description
+ * carefully and decide if it is appropriate for your problem.
  *
  * Binding writers don't have to implement these functions, use features
  * of the binding language instead. But you can use these functions as
  * ideas what high level methods may be useful.
  *
- * 
+ * Don't use writing single keys in a loop, prefer always writing out
+ * a keyset!
+ *
  */
 
 
@@ -49,49 +46,243 @@ $Id: libkdb.c 752 2006-04-24 12:55:12Z aviram $
 #include "config.h"
 #endif
 
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-
-#ifdef HAVE_ICONV
-#include <iconv.h>
+#if DEBUG && HAVE_STDIO_H
+#include <stdio.h>
 #endif
 
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
 #endif
 
-#ifdef HAVE_LANGINFO_H
-#include <langinfo.h>
-#endif
-
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-
-#ifdef HAVE_SYS_STAT_H
-#include <sys/stat.h>
-#endif
-
-
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
-#include <stdarg.h>
-#include <ctype.h>
-#include <string.h>
-#include <errno.h>
-#include <stdio.h>
-#include <pthread.h>
-
-
-/* kdbbackend.h will include kdb.h and kdbprivate.h */
-#include "kdbbackend.h"
-#include "kdbLibLoader.h"
-
-/* usleep doesn't exist on win32, so we use Sleep() */
-#ifdef WIN32
-#define usleep(x) Sleep(x)
 #endif
 
+#ifdef HAVE_STDARG_H
+#include <stdarg.h>
+#endif
+
+#ifdef HAVE_CTYPE_H
+#include <ctype.h>
+#endif
+
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
+
+#include "kdbbackend.h"
+
+
+
+static ssize_t kdbGetHelper(KDB *handle, KeySet *returned, Key *key,
+	unsigned long options)
+
+{
+	Key *dir = keyNew(keyName(key), KEY_END);
+	KDBCap * cap = kdbGetCapability(handle, key);
+	Key *mp;
+	Key *current;
+	KeySet *keys;
+	ssize_t ret;
+
+	/* Check where the mountpoint is */
+	if (kdbcGetonlyFullGet(cap))
+	{
+		mp = kdbGetMountpoint(handle, key);
+		if (mp && strlen(keyName(mp)) > 1)
+		{
+			keySetName (dir, keyName(mp));
+		} else {
+			keySetBaseName (dir, ""); /* delete basename */
+		}
+	} else {
+		keySetBaseName (dir, ""); /* delete basename */
+	}
+
+	if (strlen(keyName(dir)) <= 2) /* copy root (user, system) */
+	{
+		keySetName (dir, keyName(key));
+	}
+
+#if DEBUG && VERBOSE
+	printf ("using %s\n", keyName(dir));
+#endif
+
+	/* We are ready, get the keys
+	 * Without recursion it does not make sense because we stepped
+	 * one level higher */
+	keys = ksNew(0);
+	ret=kdbGet (handle, keys, dir, options & ~KDB_O_NORECURSIVE);
+
+	/* Now filter the keys */
+	ksRewind (keys);
+	while ((current = ksNext(keys)) != 0)
+	{
+		const char * namekey = keyName(key);
+		const char * namecur = keyName(current);
+		if ( (strcmp (namekey, namecur) == 0) ||
+		   ( (options & KDB_O_NORECURSIVE) && keyIsDirectBelow(key, current)) ||
+		   (!(options & KDB_O_NORECURSIVE) && keyIsBelow(key, current)))
+		{
+			ksAppendKey(returned, current);
+		}
+	}
+
+	ksDel (keys);
+	keyDel (dir);
+
+	return ret;
+}
+
+
+/**
+ * Fully retrieves the passed @p key from the backend storage.
+ *
+ * The backend will try to get the key, identified through its
+ * name.
+ *
+ * It uses kdbGet() for retrieving the key and copies the found data
+ * to dest.
+ *
+ * While kdbGetKey() is perfect for a simple get of a specific key,
+ * kdbGet() and kdbGetByName() gives you more control over the
+ * keyset.
+ *
+ * @param handle contains internal information of @link kdbOpen() opened @endlink key database
+ * @param dest a pointer to a Key that has a name set
+ * @return 0 on success
+ * @return -1 on failure
+ * @return -1 on NULL pointer
+ * @see kdbSetKey() to set a single key
+ * @see commandGet() code in kdb command for usage example
+ * @see kdbGet() and kdbGetByName() to have more control over keyset and options
+ * @ingroup kdbhighlevel
+ */
+int kdbGetKey(KDB *handle, Key * dest)
+{
+	Key * source;
+	KeySet *ks = 0;
+	ssize_t ret;
+
+	if (!handle || !dest) return -1;
+
+	ks = ksNew(0);
+
+	ret = kdbGetHelper (handle, ks, dest, KDB_O_INACTIVE);
+
+	if (ret == -1)
+	{
+		ksDel (ks);
+		/*errno = KDB_ERR_NOTFOUND;*/
+		return -1;
+	}
+
+	source = ksLookup (ks, dest, 0);
+
+	if (!source)
+	{
+		ksDel (ks);
+		/*errno = KDB_ERR_NOTFOUND;*/
+		return -1;
+	}
+
+	if (keyCopy(dest, source) == -1)
+	{
+		ksDel (ks);
+		return -1;
+	}
+
+	ksDel (ks);
+	return 0;
+}
+
+
+
+
+/**
+ * Sets @p key in the backend storage.
+ *
+ * While kdbSetKey() is perfect for a simple get of a specific key,
+ * kdbGet() and kdbGetByName() gives you more control over the
+ * keyset.
+ *
+ *
+ * @param handle contains internal information of @link kdbOpen() opened @endlink key database
+ * @param key Key to set
+ * @return 0 on success
+ * @return -1 on failure
+ * @return -1 on NULL pointer
+ * @see kdbGetKey() to get a single key
+ * @see kdbSet() for more control over keyset and options
+ * @see commandSet() code in kdb command for usage example
+ * @ingroup kdbhighlevel
+ */
+int kdbSetKey(KDB * handle, const Key *key)
+{
+	int rc=0;
+	Key *dest=0;
+	Key *parent=0;
+	Key *mp = 0;
+	Key *dir = 0;
+	KeySet *ks = 0;
+	KDBCap * cap = 0;
+
+	if (!handle || !key) return -1;
+
+	cap = kdbGetCapability(handle, key);
+	ks = ksNew(0);
+	dir = keyNew(keyName(key), KEY_END);
+	mp = keyDup (kdbGetMountpoint(handle, key));
+
+
+	if (kdbcGetonlyFullSet(cap))
+	{
+		if (mp && strlen(keyName(mp)) > 1)
+		{
+			keySetName (dir, keyName(mp));
+		} else {
+			keySetBaseName (dir, ""); /* delete basename */
+		}
+
+		if (strlen(keyName(dir)) <= 2) /* copy root (user, system) */
+		{
+			keySetName (dir, keyName(key));
+		}
+
+#if DEBUG && VERBOSE
+		printf ("kdbGetKey using %s\n", keyName(dir));
+#endif
+
+		kdbGet (handle, ks, dir, KDB_O_NORECURSIVE | KDB_O_INACTIVE);
+
+		dest = ksLookupByName (ks, keyName(key), 0);
+
+		if (!dest)
+		{
+			parent = keyDup (key);
+			keySetBaseName(parent, "");
+			dest = ksLookupByName (ks, keyName(parent), 0);
+			keyDel (parent);
+			if (dest) keySetDir (dest);
+			else {
+				ksDel (ks);
+				keyDel (dir);
+				keyDel (mp);
+				/*errno = KDB_ERR_NOTFOUND;*/
+				return -1; /* no parent found */
+			}
+			ksAppendKey(ks, keyDup (key));
+		} else keyCopy(dest, key);
+	} else ksAppendKey(ks, keyDup (key));
+
+	rc = kdbSet(handle, ks, mp, 0);
+	ksDel (ks);
+	keyDel (dir);
+	keyDel (mp);
+
+	if (rc >= 0) return 0;
+	return -1;
+}
 
 
 
@@ -99,29 +290,69 @@ $Id: libkdb.c 752 2006-04-24 12:55:12Z aviram $
 
 /**
  * A high-level method to get a key value, by key name.
- * This method is valid only for string keys.
- * You have to use other methods to get non-string keys.
  *
+ * This method gets a backend from any backend with kdbGetKey() and
+ * extracts the string and store it into returned. It only works with
+ * string keys.
+ *
+ * This method gives you the direct relation between a keyname and
+ * the value, without any kdb specific structures. Use it when
+ * you just want some values out of the kdb namespace.
+ *
+ * You need to know the maximum string length of the object. That
+ * could be the case when you e.g. save a path which is limited
+ * with MAX_PATH.
+ *
+ * @code
+KDB *handle = kdbOpen();
+char buffer [MAX_PATH];
+
+if (kdbGetString(handle, "user/key/to/get/pathname", buffer, sizeof(buffer)) == -1)
+{
+	// handle error cases
+} else {
+	printf ("The keys value is %s\n", buffer);
+}
+kdbClose(handle);
+ * @endcode
+ *
+ * @param handle contains internal information of @link kdbOpen() opened @endlink key database
  * @param keyname the name of the key to receive the value
  * @param returned a buffer to put the key value
  * @param maxSize the size of the buffer
  * @return 0 on success
- * @return -1 on failure and @c errno is propagated
- * @see kdbSetValue(), kdbGetKey(), kdbGetValueByParent(), keyGetString()
- * @ingroup kdbhelpers
+ * @return -1 on failure
+ * @return -1 on NULL pointers
+ * @return -1 if maxSize is 0 or larger than SSIZE_MAX
+ * @see kdbSetString() and kdbRemove() to set and remove a string
+ * @see kdbGetKey(), keySetKey() to work with Keys
+ * @see kdbGet() and kdbGetByName() for full access to internal datastructures
+ * @ingroup kdbhighlevel
  *
  */
-int kdbGetValue(KDBHandle handle,const char *keyname,
-		char *returned,size_t maxSize) {
-	Key *key;
-	int rc=0;
+int kdbGetString(KDB * handle,const char *keyname,
+		char *returned,size_t maxSize)
+{
+	Key *key = 0;
+	int rc = 0;
 
-	key=keyNew(keyname,KEY_SWITCH_END);
+	if (!handle || !keyname || !returned) return -1;
+	if (!maxSize) return -1;
+	if (maxSize > SSIZE_MAX) return -1;
+
+	key=keyNew(0);
+	if (!key) return -1;
+	rc=keySetName(key,keyname);
+	if (rc == -1)
+	{
+		keyDel (key);
+		return -1;
+	}
+
 	rc=kdbGetKey(handle, key);
-	if (rc == 0) keyGetString(key,returned,maxSize);
-	else rc=errno; /* store errno before a possible change */
+	if (rc == 0) rc = keyGetString(key,returned,maxSize);
+
 	keyDel(key);
-	errno=rc;
 	return rc;
 }
 
@@ -129,357 +360,194 @@ int kdbGetValue(KDBHandle handle,const char *keyname,
 
 /**
  * A high-level method to set a value to a key, by key name.
- * It will obviously check if key exists first, and keep its metadata.
- * So you'll not loose the precious key comment.
  *
- * This will set a text key. So if the key was previously a binary, etc key, it will be retyped as text.
+ * It will check if key exists first, and keep its metadata.
+ * So you'll not loose the previous key comment.
  *
+ * This will set a text key. So if the key was previously a binary
+ * it will be retyped as string.
+ *
+ * @param handle contains internal information of @link kdbOpen() opened @endlink key database
  * @param keyname the name of the key to receive the value
  * @param value the value to be set
  * @return 0 on success
- * @return -1 on failure and @c errno is propagated
- * 	KDB_RET_TYPEMISMATCH if key is a directory
- * @see kdbGetValue(), keySetString(), kdbSetKey()
- * @ingroup kdbhelpers
+ * @return -1 on NULL pointers
+ * @return -1 on failure
+ * @see kdbGetString(), keySetString(), kdbSetKey()
+ * @ingroup kdbhighlevel
  */
-int kdbSetValue(KDBHandle handle, const char *keyname, const char *value) {
-	Key *key;
-	int rc;
+int kdbSetString(KDB * handle, const char *keyname, const char *value)
+{
+	Key *key = 0;
+	int rc = 0;
 
-	key=keyNew(keyname,KEY_SWITCH_END);
-	rc=kdbGetKey(handle,key);
-	if (! keyIsDir (key))
+	if (!handle || !keyname || !value) return -1;
+
+	key=keyNew(0);
+	if (!key) return -1;
+	rc=keySetName(key,keyname);
+	if (rc == -1)
 	{
-		keySetString(key,value);
-	} else {
-		errno = KDB_RET_TYPEMISMATCH;
-		keyDel(key);
+		keyDel (key);
 		return -1;
 	}
+
+	kdbGetKey(handle,key);
+	keySetString(key,value);
 	rc=kdbSetKey(handle,key);
 	keyDel(key);
 	return rc;
 }
 
 
-
-/**
- * Fill up the @p returned buffer with the value of a key, which name
- * is the concatenation of @p parentName and @p baseName.
- *
- * @par Example:
- * @code
-char *parent="user/sw/MyApp";
-char *keys[]={"key1","key2","key3"};
-char buffer[150];   // a big buffer
-int c;
-
-for (c=0; c<3; c++) {
-	kdbGetValueByParent(handle,parent,keys[c],buffer,sizeof(buffer));
-	// Do something with buffer....
-}
-
- * @endcode
- *
- * @param parentName the name of the parent key
- * @param baseName the name of the child key
- * @param returned pre-allocated buffer to be filled with key value
- * @param maxSize size of the \p returned buffer
- * @return 0 on success
- * @return -1 on failure and @c errno is propagated
- * @see kdbGetKeyByParent()
- * @ingroup kdbhelpers
- */
-int kdbGetValueByParent(KDBHandle handle, const char *parentName, const char *baseName, char *returned, size_t maxSize) {
-	char *name;
-	int retval=0;
-	name = (char *)malloc(sizeof(char)*(strblen(parentName)+strblen(baseName)));
-
-	sprintf(name,"%s/%s",parentName,baseName);
-	retval = kdbGetValue(handle,name,returned,maxSize);
-	free(name);
-	return retval;
-}
-
-
-
-/**
- * Sets the provided @p value to the key whose name is the concatenation of
- * @p parentName and @p baseName.
- *
- * @param parentName the name of the parent key
- * @param baseName the name of the child key
- * @param value the value to set
- * @return 0 on success
- * @return -1 on failure and @c errno is propagated
- * @ingroup kdbhelpers
- */
-int kdbSetValueByParent(KDBHandle handle, const char *parentName, const char *baseName, const char *value) {
-	char *name;
-	int retval=0;
-	name = (char *)malloc(sizeof(char)*(strblen(parentName)+strblen(baseName)));
-
-	sprintf(name,"%s/%s",parentName,baseName);
-	retval = kdbSetValue(handle,name,value);
-	free(name);
-	return retval;
-}
-
-
-
-/**
- * Given a parent key name plus a basename, returns the key.
- *
- * So here you'll provide something like
- * - @p system/sw/myApp plus @p key1 to get @p system/sw/myApp/key1
- * - @p user/sw/MyApp plus @p dir1/key2 to get @p user/sw/MyApp/dir1/key2
- *
- * @param parentName parent key name
- * @param baseName leaf or child name
- * @param returned a pointer to an initialized key to be filled
- * @return 0 on success
- * @return -1 on failure and @c errno is propagated
- * @see kdbGetKey(), kdbGetValueByParent(), kdbGetKeyByParentKey()
- * @ingroup kdbhelpers
- */
-int kdbGetKeyByParent(KDBHandle handle, const char *parentName, const char *baseName, Key *returned) {
-	char *name;
-	name = (char *)malloc(sizeof(char) * (strblen(parentName)+strblen(baseName)));
-
-	sprintf(name,"%s/%s",parentName,baseName);	
-	keySetName(returned,name);
-	free(name);
-	return kdbGetKey(handle,returned);
-}
-
-
-/**
- * Similar to previous, provided for convenience.
- * @param parent pointer to the parent key
- * @see kdbGetKey(), kdbGetKeyByParent(), kdbGetValueByParent()
- * @return 0 on success, or what kdbGetKey() returns, and @c errno is set
- * @ingroup kdbhelpers
- */
-int kdbGetKeyByParentKey(KDBHandle handle, const Key *parent, const char *baseName, Key *returned) {
-	size_t size=keyGetFullNameSize(parent);
-	char *name;
-	name = (char *)malloc(sizeof(char) * (size+strblen(baseName)));
-
-	keyGetFullName(parent,name,size);
-	name[size-1]='/';
-	strcpy((char *)(name+size),baseName);
-
-	keySetName(returned,name);
-	free(name);
-	return kdbGetKey(handle,returned);
-}
-
-
-/**
- * This method is similar and calls kdbGetKeyChildKeys().
- * It is provided for convenience.
- * 
- * Instead of passing the parentName with a key it directly
- * uses a string.
- * 
- * @return 0 on success
- * @return -1 on failure and @c errno is propagated from kdbGetKeyChildKeys()
- * @see kdbGetKeyChildKeys()
- * @ingroup kdbhelpers
- */
-ssize_t kdbGetChildKeys(KDBHandle handle, const char *parentName, KeySet *returned, unsigned long options) {
-	/*TODO: make this a non helper, but kdbGetKeyChildKeys a helper*/
-	Key *parentKey;
-	ssize_t rc;
-	
-	parentKey=keyNew(parentName,KEY_SWITCH_END);
-	rc=kdbGetKeyChildKeys(handle,parentKey,returned,options);
-	
-	keyDel(parentKey);
-	
-	return rc;
-}
-
-
-
-/**
- * Returns a KeySet with all root keys currently recognized and present
- * on the system. Currently, the @p system and current user's @p user keys
- * are returned.
- *
- * @param returned the initialized KeySet to be filled
- * @return the number of root keys found
- * @return -1 on failure and @c errno is propagated
- * @see #KeyNamespace
- * @see commandList() code in kdb command for usage example
- * @ingroup kdbhelpers
- *
- */
-ssize_t kdbGetRootKeys(KDBHandle handle, KeySet *returned) {
-	Key *system=0,*user=0;
-
-	user=keyNew("user",KEY_SWITCH_NEEDSYNC,handle,
-		KEY_SWITCH_END);
-	if (user->flags & KEY_SWITCH_FLAG) {
-		keyDel(user);
-		user=0;
-	} else ksInsert(returned,user);
-
-	system=keyNew("system",KEY_SWITCH_NEEDSYNC,handle,
-		KEY_SWITCH_END);
-	if (system->flags & KEY_SWITCH_FLAG) {
-		keyDel(system);
-		system=0;
-	} else ksInsert(returned,system);
-
-	return returned->size;
-}
-
-
 /**
  * Remove a key by its name from the backend storage.
- * 
- * This is a convenience to kdbRemoveKey().
  *
- * @param keyName the name of the key to be removed
+ * With kdbSetString() its only possible to set a key with an empty
+ * string. To really remove a key in a highlevel way you can use
+ * this method.
+ *
+ * @param handle contains internal information of @link kdbOpen() opened @endlink key database
+ * @param keyname the name of the key to be removed
  * @return 0 on success
- * @return -1 on failure and @c errno is propagated
+ * @return -1 on failure
+ * @return -1 on NULL pointers
+ * @see together with kdbSetString() and kdbGetString() a highlevel interface for kdb
  * @see commandRemove() code in kdb command for usage example
- * @ingroup kdbhelpers
+ * @ingroup kdbhighlevel
  */
-int kdbRemove(KDBHandle handle, const char *keyName) {
-	/*TODO: make this a non helper, but kdbGetKeyChildKeys a helper*/
+int kdbRemove(KDB *handle, const char *keyname)
+{
 	int rc=0;
 	Key *key=0;
-	
-	key=keyNew(KEY_SWITCH_END);
-	rc=keySetName(key,keyName);
-	if (rc == 0) {
+
+	if (!handle || !keyname) return -1;
+
+	key=keyNew(0);
+	if (!key) return -1;
+	rc=keySetName(key,keyname);
+	if (rc == -1)
+	{
 		keyDel(key);
-		return -1; /* propagate errno */
+		return -1;
 	}
-	
-	rc=kdbRemoveKey(handle,key);
+
+	keyRemove (key);
+	rc=kdbSetKey(handle,key);
 	keyDel(key);
-	
+
 	return rc;
 }
 
+
+
 /**
- * @mainpage The Elektra API
+ * This method is similar kdbGet() but the path is given
+ * by a string.
  *
- * @section overview Elektra Initiative Overview
+ * When it is not possible to make a key out of that string
+ * -1 is returned .
  *
- * Elektra is an initiative to unify Linux/Unix configurations. It does that
- * providing an hierarchical namespace to store configuration keys and
- * their values, an API to access/modify them, and command line tools.
+ * When parentName starts with / cascading will be used and both
+ * keys from user and system will be fetched.
  *
- * Everything about the initiative can be found at http://www.libelektra.org
+ * A typically app with about 3000 keys may have this line:
  *
- * @section using Using the Elektra Library
+ *@code
+KDB *handle = kdbOpen();
+KeySet *myConfig = (4096, KS_END);
+ssize_t ret = kdbGetByName (handle, myConfig, "/sw/app/current", 0);
+
+// check ret and work with keyset myConfig
+
+ksDel (myConfig);
+kdbClose (handle);
+ *@endcode
  *
- * A C or C++ source file that wants to use Elektra should include:
- * @code
- * #include <kdb.h>
- * @endcode
+ * myConfig will be loaded with keys from system/sw/app/current but
+ * also user/sw/app/current.
  *
- * There is also a library that provides some
- * @ref tools "optional XML manipulation methods called KDB Tools", and to use
- * it you should include:
- * @code
- * #include <kdbtools.h>
- * @endcode
+ * When one of these kdbGet() fails -1 will be returned, but the other
+ * kdbGet() will be tried too.
  *
- * To link an executable with the Elektra library, the correct way is to
- * use the @c pkg-config tool:
- * @code
- * bash$ cc `pkg-config --libs elektra` -o myapp myapp.c
- * @endcode
- *
- * Or, if you don't have @c pkg-config:
- * @code
- * bash$ cc -L /lib -lelektra -o myapp myapp.c
- * @endcode
- *
- * @section classes Elektra API
- *
- * The API was written in pure C because Elektra was designed to be useful
- * even for the most basic system programs, which are all made in C. Also,
- * being C, bindings to other languages can appear, as we already have for
- * Python, Ruby, etc.
- *
- * The API follows an Object Oriented design, and there are only 3 classes
- * as shown by the figure:
- *
- * @image html classes.png "Elektra Classes"
- *
- * Some general things you can do with each class are:
- *
- * @subsection KeyDB KeyDB
- *   - @link kdbGetKey() Retrieve @endlink and @link kdbSetKey() commit
- *     @endlink Keys and @link kdbSetKeys() KeySets @endlink,
- *     @link kdbGetKeyChildKeys() recursively @endlink or not
- *   - Retrieve and commit individual @link kdbGetValue() Key value @endlink, by
- *     absolute name or @link kdbGetValueByParent() relative to parent @endlink
- *   - Monitor and notify changes in @link kdbMonitorKey() Keys @endlink and
- *     @link kdbMonitorKeys() KeySets @endlink
- *   - Create and delete regular, folder or symbolic link Keys
- *   - See @ref kdb "class documentation" for more
- *
- * @subsection Key Key
- *   - Get and Set key properties like @link keySetName() name @endlink,
- *     root and @link keySetBaseName() base name @endlink,
- *     @link keySetString() value @endlink, @link keySetType() type @endlink,
- *     @link keyGetAccess() permissions @endlink,
- *     @link keyGetMTime() changed time @endlink,
- *     @link keyGetComment() comment @endlink, etc
- *   - @link keyCompare() Make powerfull comparations of all key properties
- *     with other keys @endlink
- *   - @link keyNeedsSync() Test if changed @endlink, if it is a
- *     @link keyIsUser() @p user/ @endlink or @link keyIsSystem() @p system/
- *     @endlink key, etc
- *   - @link keySetFlag() Flag it @endlink and @link keyGetFlag() test if key
- *     has a flag @endlink
- *   - @link keyToStream() Export Keys to an XML representation @endlink
- *   - See @ref key "class documentation" for more
- *
- * @subsection KeySet KeySet
- *   - Linked list of Key objects
- *   - @link ksInsert() Insert @endlink and @link ksAppend() append @endlink
- *     entire @link ksInsertKeys() KeySets @endlink or Keys
- *   - @link ksNext() Work with @endlink its @link ksCurrent() internal
- *     cursor @endlink
- *   - @link ksCompare() Compare entire KeySets @endlink
- *   - @link ksFromXMLfile() Import @endlink and
- *     @link ksToStream() Export KeySets @endlink to an XML representation
- *   - See @ref keyset "class documentation" for more
- *
- *
- * @section keynames Key Names and Namespaces
- *
- * There are 2 trees of keys: @c system and @c user
- *
- * @subsection systemtree The "system" Subtree
- *
- * It is provided to store system-wide configuration keys, that is,
- * configurations that daemons and system services will use.
- *
- * @subsection usertree The "user" Subtree
- *
- * Used to store user-specific configurations, like the personal settings
- * of a user to certains programs
- *
- *
- * @section rules Rules for Key Names
- *
- * When using Elektra to store your application's configuration and state,
- * please keep in mind the following rules:
- * - You are not allowed to create keys right under @p system or @p user.
- * - You are not allowed to create folder keys right under @p system or @p user.
- *   They are reserved for very essential OS subsystems.
- * - The keys for your application, called say @e MyApp, should be created under
- *   @p system/sw/MyApp and/or @p user/sw/MyApp.
- *
- *
+ * @param handle contains internal information of @link kdbOpen() opened @endlink key database
+ * @param name the name where to get the keys below
+ * @param returned the (pre-initialized) KeySet returned with all keys found
+ * @param options ORed options to control approaches
+ *   Unlike to kdbGet() is KDB_O_POP set per default.
+ * @return number of keys contained by @p returned
+ * @return -1 on failure
+ * @return -1 when @p name is no valid key
+ * @return -1 on NULL pointer
+ * @see kdbGet()
+ * @ingroup kdbhighlevel
  */
+ssize_t kdbGetByName(KDB *handle, KeySet *returned, const char *name,
+		option_t options)
+{
+	Key *parentKey;
+	ssize_t ret, ret2;
+	char *newname;
+
+	if (!handle || !returned || !name) return -1;
+
+	if (name[0] == '/')
+	{
+		newname = kdbiMalloc (strlen (name) + sizeof ("system") + 1);
+		if (!newname)
+		{
+			/*errno = KDB_ERR_NOMEM;*/
+			return -1;
+		}
+		strncpy (newname+2, "user", 4);
+		strcpy  (newname+6, name);
+		parentKey = keyNew (newname+2, KEY_END);
+		ret = kdbGetHelper(handle, returned, parentKey, options & ~KDB_O_DEL);
+		keyDel (parentKey);
+
+		strncpy (newname, "system",6);
+		parentKey = keyNew (newname, KEY_END);
+		ret2 = kdbGetHelper(handle, returned, parentKey, options & ~KDB_O_DEL);
+		keyDel (parentKey);
+
+		kdbiFree (newname);
+		if (ret == -1 || ret2 == -1) return -1;
+		else return returned->size;
+	} else {
+		parentKey=keyNew(name,KEY_END);
+		if (parentKey == 0)
+		{
+			/*errno = KDB_ERR_NOKEY;*/
+			return -1;
+		}
+		ret = kdbGet(handle, returned,(Key *) parentKey, (options & ~KDB_O_DEL) | KDB_O_POP);
+		keyDel(parentKey);
+		if (ret == -1) return -1;
+		else return returned->size;
+	}
+}
+
+
+
+/*
+ * Stats the key only for its meta-info from the backend storage.
+ *
+ * The key may not hold value and comment after using kdbStatKey().
+ *
+ * Info like comments and key data type will not be retrieved.
+ *
+ * @param handle contains internal information of @link kdbOpen() opened @endlink key database
+ * @param key an initialized Key pointer to be filled.
+ * @return 0 on success
+ * @return -1 on failure
+ * @ingroup kdbhighlevel
+ */
+int kdbStatKey(KDB *handle, Key *key)
+{
+	if (!handle || !key) return -1;
+
+	keyStat(key);
+	return kdbGetKey (handle, key);
+}
+
 

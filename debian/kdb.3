@@ -1,17 +1,17 @@
-.TH "KeyDB Class Methods" 3 "18 Oct 2004" "Elektra Project" \" -*- nroff -*-
+.TH "KDB Class Methods" 3 "18 Oct 2004" "Elektra Project" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
-KeyDB Class Methods \- General methods to access the Key database. 
+KDB Class Methods \- General methods to access the Key database. 
 More...
 .SS "Enumerations"
 
 .in +1c
 .ti -1c
-.RI "enum \fBKDBErr\fP { \fBKDB_RET_OK\fP = 0, \fBKDB_RET_NULLKEY\fP = EINVAL, \fBKDB_RET_UNINITIALIZED\fP = EINVAL, \fBKDB_RET_NOKEY\fP = ENOMSG, \fBKDB_RET_NODATA\fP = ENOMSG, \fBKDB_RET_NOGROUP\fP = ENOMSG, \fBKDB_RET_NODESC\fP = ENOMSG, \fBKDB_RET_NODOMAIN\fP = ENOMSG, \fBKDB_RET_NOCRED\fP = EACCES, \fBKDB_RET_NOTIME\fP = ENOMSG, \fBKDB_RET_TRUNC\fP = ENOBUFS, \fBKDB_RET_TYPEMISMATCH\fP = EILSEQ, \fBKDB_RET_INVALIDKEY\fP = EAFNOSUPPORT, \fBKDB_RET_NOTFOUND\fP = ENOENT }"
+.RI "enum \fBKDBErr\fP { \fBKDB_ERR_OK\fP = 0, \fBKDB_ERR_NULLKEY\fP = EINVAL, \fBKDB_ERR_UNINITIALIZED\fP = EINVAL, \fBKDB_ERR_NOKEY\fP = ENOMSG, \fBKDB_ERR_NODATA\fP = ENOMSG, \fBKDB_ERR_NOGROUP\fP = ENOMSG, \fBKDB_ERR_NODESC\fP = ENOMSG, \fBKDB_ERR_NODOMAIN\fP = ENOMSG, \fBKDB_ERR_NOCRED\fP = EACCES, \fBKDB_ERR_NOTIME\fP = ENOMSG, \fBKDB_ERR_TRUNC\fP = ENOBUFS, \fBKDB_ERR_TYPEMISMATCH\fP = EILSEQ, \fBKDB_ERR_INVALIDKEY\fP = EAFNOSUPPORT, \fBKDB_ERR_NOTFOUND\fP = ENOENT }"
 .br
 .ti -1c
-.RI "enum \fBKDBOptions\fP { \fBKDB_O_RECURSIVE\fP = 1, \fBKDB_O_DIR\fP = 1<<1, \fBKDB_O_NOVALUE\fP = 1<<2, \fBKDB_O_STATONLY\fP = 1<<4, \fBKDB_O_INACTIVE\fP = 1<<5, \fBKDB_O_SORT\fP = 1<<6, \fBKDB_O_NFOLLOWLINK\fP = 1<<7, \fBKDB_O_CONDENSED\fP = 1<<8, \fBKDB_O_NUMBERS\fP = 1<<9, \fBKDB_O_XMLHEADERS\fP = 1<<10 }"
+.RI "enum \fBoption_t\fP { \fBKDB_O_RECURSIVE\fP = 1, \fBKDB_O_DIR\fP = 1<<1, \fBKDB_O_NOVALUE\fP = 1<<2, \fBKDB_O_STATONLY\fP = 1<<4, \fBKDB_O_INACTIVE\fP = 1<<5, \fBKDB_O_SORT\fP = 1<<6, \fBKDB_O_NFOLLOWLINK\fP = 1<<7, \fBKDB_O_CONDENSED\fP = 1<<8, \fBKDB_O_NUMBERS\fP = 1<<9, \fBKDB_O_XMLHEADERS\fP = 1<<10 }"
 .br
 .in -1c
 .SS "Functions"
@@ -105,50 +105,50 @@ A very robust program should check errno after each API call.
 \fBEnumeration values:\fP
 .in +1c
 .TP
-\fB\fI\fIKDB_RET_OK\fP \fP\fP
+\fB\fI\fIKDB_ERR_OK\fP \fP\fP
 No error 
 .TP
-\fB\fI\fIKDB_RET_NULLKEY\fP \fP\fP
+\fB\fI\fIKDB_ERR_NULLKEY\fP \fP\fP
 Invalid Key object 
 .TP
-\fB\fI\fIKDB_RET_UNINITIALIZED\fP \fP\fP
+\fB\fI\fIKDB_ERR_UNINITIALIZED\fP \fP\fP
 Object not initilized 
 .TP
-\fB\fI\fIKDB_RET_NOKEY\fP \fP\fP
+\fB\fI\fIKDB_ERR_NOKEY\fP \fP\fP
 Key has no name 
 .TP
-\fB\fI\fIKDB_RET_NODATA\fP \fP\fP
+\fB\fI\fIKDB_ERR_NODATA\fP \fP\fP
 Key has no data 
 .TP
-\fB\fI\fIKDB_RET_NOGROUP\fP \fP\fP
+\fB\fI\fIKDB_ERR_NOGROUP\fP \fP\fP
 Key has no group 
 .TP
-\fB\fI\fIKDB_RET_NODESC\fP \fP\fP
+\fB\fI\fIKDB_ERR_NODESC\fP \fP\fP
 Key has no comment/description 
 .TP
-\fB\fI\fIKDB_RET_NODOMAIN\fP \fP\fP
+\fB\fI\fIKDB_ERR_NODOMAIN\fP \fP\fP
 Key has no user domain set 
 .TP
-\fB\fI\fIKDB_RET_NOCRED\fP \fP\fP
+\fB\fI\fIKDB_ERR_NOCRED\fP \fP\fP
 No credentials to access resource 
 .TP
-\fB\fI\fIKDB_RET_NOTIME\fP \fP\fP
+\fB\fI\fIKDB_ERR_NOTIME\fP \fP\fP
 Key has no access time set 
 .TP
-\fB\fI\fIKDB_RET_TRUNC\fP \fP\fP
+\fB\fI\fIKDB_ERR_TRUNC\fP \fP\fP
 Buffer was too small 
 .TP
-\fB\fI\fIKDB_RET_TYPEMISMATCH\fP \fP\fP
+\fB\fI\fIKDB_ERR_TYPEMISMATCH\fP \fP\fP
 Failed to convert key data due to data type 
 .TP
-\fB\fI\fIKDB_RET_INVALIDKEY\fP \fP\fP
+\fB\fI\fIKDB_ERR_INVALIDKEY\fP \fP\fP
 Key name is no 'system/' or 'user/' 
 .TP
-\fB\fI\fIKDB_RET_NOTFOUND\fP \fP\fP
+\fB\fI\fIKDB_ERR_NOTFOUND\fP \fP\fP
 Key was not found 
 .PP
 Definition at line 167 of file kdb.h.
-.SS "enum KDBOptions"
+.SS "enum option_t"
 .PP
 Options to change the default behavior of some methods.
 .PP
@@ -251,10 +251,10 @@ kdbClose();
 
 // Check and handle propagated error
 if (rc) switch (errno) {
-    case KDB_RET_INVALIDKEY:
+    case KDB_ERR_INVALIDKEY:
         frptinf(stderr,'Invalid key name');
         break;
-    case KDB_RET_NOTFOUND:
+    case KDB_ERR_NOTFOUND:
         frptinf(stderr,'Key not found');
         break;
 }
@@ -281,7 +281,7 @@ ORed options to control approaches
 .PP
 \fBSee also: \fP
 .in +1c
-\fBKDBOptions\fP , \fBcommandList\fP() code in KeyDB Class Methods command for usage example , \fBcommandEdit\fP() code in KeyDB Class Methods command for usage example , \fBcommandExport\fP() code in KeyDB Class Methods command for usage example 
+\fBoption_t\fP , \fBcommandList\fP() code in KDB Class Methods command for usage example , \fBcommandEdit\fP() code in KDB Class Methods command for usage example , \fBcommandExport\fP() code in KDB Class Methods command for usage example 
 .PP
 \fBReturns: \fP
 .in +1c
@@ -304,7 +304,7 @@ a pointer to a Key that has a name set
 .PP
 \fBSee also: \fP
 .in +1c
-\fBkdbSetKey\fP() , \fBcommandGet\fP() code in KeyDB Class Methods command for usage example 
+\fBkdbSetKey\fP() , \fBcommandGet\fP() code in KDB Class Methods command for usage example 
 .PP
 Definition at line 1302 of file localkdb.c.
 .SS "int kdbGetKeyByParent (const char * parentName, const char * baseName, Key * returned)"
@@ -373,7 +373,7 @@ the initialized KeySet to be filled
 .PP
 \fBSee also: \fP
 .in +1c
-\fBKeyNamespace\fP , \fBcommandList\fP() code in KeyDB Class Methods command for usage example 
+\fBKeyNamespace\fP , \fBcommandList\fP() code in KDB Class Methods command for usage example 
 .PP
 Definition at line 1224 of file localkdb.c.
 .SS "int kdbGetValue (const char * keyname, char * returned, size_t maxSize)"
@@ -464,7 +464,7 @@ whathever is returned by \fBkdbSetKey\fP(), and \fCerrno\fP is set
 .PP
 \fBSee also: \fP
 .in +1c
-\fBcommandLink\fP() code in KeyDB Class Methods command for usage example , \fBcommandSet\fP() code in KeyDB Class Methods command for usage example 
+\fBcommandLink\fP() code in KDB Class Methods command for usage example , \fBcommandSet\fP() code in KDB Class Methods command for usage example 
 .PP
 Definition at line 1535 of file localkdb.c.
 .SS "u_int32_t kdbMonitorKey (Key * interest, u_int32_t diffMask, unsigned long iterations, unsigned sleep)"
@@ -508,7 +508,7 @@ the ORed \fCKEY_FLAG_*\fP flags of what changed
 .PP
 \fBSee also: \fP
 .in +1c
-\fBKeyFlags\fP , \fBkeyCompare\fP() , \fBkdbMonitorKeys\fP() to monitor KeySets, and for a code example , \fBcommandMonitor\fP() code in KeyDB Class Methods command for usage example 
+\fBKeyFlags\fP , \fBkeyCompare\fP() , \fBkdbMonitorKeys\fP() to monitor KeySets, and for a code example , \fBcommandMonitor\fP() code in KDB Class Methods command for usage example 
 .PP
 Definition at line 1683 of file localkdb.c.
 .SS "u_int32_t kdbMonitorKeys (KeySet * interests, u_int32_t diffMask, unsigned long iterations, unsigned sleep)"
@@ -562,7 +562,7 @@ while (1) {
 .fi
 \fBSee also: \fP
 .in +1c
-\fBkdbMonitorKey\fP() , \fBksCurrent\fP() , \fBksRewind\fP() , \fBksNext\fP() , \fBKeyFlags\fP , \fBcommandMonitor\fP() code in KeyDB Class Methods command for usage example 
+\fBkdbMonitorKey\fP() , \fBksCurrent\fP() , \fBksRewind\fP() , \fBksNext\fP() , \fBKeyFlags\fP , \fBcommandMonitor\fP() code in KDB Class Methods command for usage example 
 .PP
 Definition at line 1613 of file localkdb.c.
 .SS "int kdbOpen ()"
@@ -594,7 +594,7 @@ whathever is returned by remove(), and \fCerrno\fP is propagated
 .PP
 \fBSee also: \fP
 .in +1c
-\fBcommandRemove\fP() code in KeyDB Class Methods command for usage example 
+\fBcommandRemove\fP() code in KDB Class Methods command for usage example 
 .PP
 Definition at line 1505 of file localkdb.c.
 .SS "int kdbSetKey (Key * key)"
@@ -603,7 +603,7 @@ Commits a key to the backend storage. If failed (see return), the \fCerrno\fP gl
 .PP
 \fBSee also: \fP
 .in +1c
-\fBkdbGetKey\fP() , \fBkdbSetKeys\fP() , \fBcommandSet\fP() code in KeyDB Class Methods command for usage example 
+\fBkdbGetKey\fP() , \fBkdbSetKeys\fP() , \fBcommandSet\fP() code in KDB Class Methods command for usage example 
 .PP
 \fBReturns: \fP
 .in +1c
@@ -612,7 +612,7 @@ Commits a key to the backend storage. If failed (see return), the \fCerrno\fP gl
 Definition at line 1374 of file localkdb.c.
 .SS "int kdbSetKeys (KeySet * ks)"
 .PP
-Commits an entire KeySet to the backend storage. Each key is checked with \fBkeyNeedsSync\fP() before being actually commited. So only changed keys are updated.
+Commits an entire KeySet to the backend storage. Each key is checked with \fBkeyNeedSync\fP() before being actually commited. So only changed keys are updated.
 .PP
 Parameters: \fP
 .in +1c
@@ -626,7 +626,7 @@ a KeySet full of changed keys
 .PP
 \fBSee also: \fP
 .in +1c
-\fBkdbSetKey\fP() , \fBcommandEdit\fP() code in KeyDB Class Methods command for usage example , commandLoad() code in KeyDB Class Methods command for usage example 
+\fBkdbSetKey\fP() , \fBcommandEdit\fP() code in KDB Class Methods command for usage example , commandLoad() code in KDB Class Methods command for usage example 
 .PP
 Definition at line 1350 of file localkdb.c.
 .SS "int kdbSetValue (const char * keyname, const char * value)"

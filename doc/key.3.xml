@@ -95,7 +95,7 @@ $LastChangedBy$
 			</funcprototype>
 			
 			<funcprototype>
-				<funcdef><type>int </type><function>keyNeedsSync</function></funcdef>
+				<funcdef><type>int </type><function>keyNeedSync</function></funcdef>
 				<paramdef><type>Key *</type><parameter>key</parameter></paramdef>
 			</funcprototype>
 			
@@ -291,7 +291,7 @@ $LastChangedBy$
 			</funcprototype>
 
 			<funcprototype>
-				<funcdef><type>size_t </type><function>ksAppendKeys</function></funcdef>
+				<funcdef><type>size_t </type><function>ksAppend</function></funcdef>
 				<paramdef><type>KeySet *</type><parameter>ks</parameter></paramdef>
 				<paramdef><type>KeySet *</type><parameter>toAppend</parameter></paramdef>
 			</funcprototype>
@@ -325,7 +325,7 @@ $LastChangedBy$
 	
 
 	<section id="keyMethodDescription"><title>Description for Key Class Methods</title>
-		<para>These are the methods used to access and change every aspect of the Linux Registry's <type>Key</type> and <type>KeySet</type> objects. Changes made to keys with these methods happens in memory and will not be reflected into the Registry's database until you call <function>registrySetKey</function>. <function>keyNeedsSync</function> can tell you whether <parameter>key</parameter> has changed and is ready to be written.</para>
+		<para>These are the methods used to access and change every aspect of the Linux Registry's <type>Key</type> and <type>KeySet</type> objects. Changes made to keys with these methods happens in memory and will not be reflected into the Registry's database until you call <function>registrySetKey</function>. <function>keyNeedSync</function> can tell you whether <parameter>key</parameter> has changed and is ready to be written.</para>
 		<para><type>Key</type> objects can be generated as a result to the call of <function>registryGetKey</function>, <function>registryGetChildKeys</function> or filled up by hand and then set by calling <function>registrySetKey</function>.</para>
 		<para>Before any operation on a <type>Key</type>, the object must be initialized with <function>keyInit</function>. <function>keyClose</function> is used to free all internally allocated resources related to <parameter>key</parameter> object, and must be called whenever you finished using <parameter>key</parameter>. <function>keyIsInitialized</function> returns non-zero if it can find the necessary conditions of an initialized key, and it is almost 100% trusty.</para>
 		
@@ -352,7 +352,7 @@ $LastChangedBy$
 		
 		<para><function>keyGetOwner</function> and <function>keySetOwner</function> can be used to get and set user domain of a <filename>user:userDomain/*</filename> key. It has no effect on <filename>system/*</filename> keys. The user domain defaults to <envar>$USER</envar>, and may not be related to UID because it may happen that some wants to set a key in <parameter>userDomain</parameter>'s database with a different UID. The differentiation between UIDs and user domains is usefull also in situations we have different user names with same UID.</para>
 		
-		<para>Key data getting and setting can be done by <function>keyGetString</function>, <function>keySetString</function>, <function>keyGetBinary</function>, <function>keySetBinary</function>. These methods will automatically set the data type with <function>keySetType</function>. The data is copied into <parameter>returnedString</parameter> and <parameter>returnedBinary</parameter> if there is some data or <parameter>maxSize</parameter> has a good size. In the case of <function>keyGetString</function>, if there is no data, <parameter>returnedString[0]</parameter> is set to 0. They return the number of bytes copied or 0 if an error occurs, in which case <varname>errno</varname> is set. For zero-bytes data, <varname>errno</varname> is set to <varname>RG_KEY_RET_NODATA</varname> or <varname>ENODATA</varname>. <function>keyGetDataSize</function> returns the bytes needed to store the <parameter>key</parameter> data, including the ending \0, for string keys.</para>
+		<para>Key data getting and setting can be done by <function>keyGetString</function>, <function>keySetString</function>, <function>keyGetBinary</function>, <function>keySetBinary</function>. These methods will automatically set the data type with <function>keySetType</function>. The data is copied into <parameter>returnedString</parameter> and <parameter>returnedBinary</parameter> if there is some data or <parameter>maxSize</parameter> has a good size. In the case of <function>keyGetString</function>, if there is no data, <parameter>returnedString[0]</parameter> is set to 0. They return the number of bytes copied or 0 if an error occurs, in which case <varname>errno</varname> is set. For zero-bytes data, <varname>errno</varname> is set to <varname>RG_KEY_ERR_NODATA</varname> or <varname>ENODATA</varname>. <function>keyGetDataSize</function> returns the bytes needed to store the <parameter>key</parameter> data, including the ending \0, for string keys.</para>
 		
 		<para><function>keyGetLink</function> and <function>keySetLink</function> will define <parameter>key</parameter> as type <parameter>RG_KEY_TYPE_LINK</parameter> and get/set the destination as <parameter>returnedTarget</parameter>/<parameter>target</parameter>, respectively.</para>
 		
@@ -379,7 +379,7 @@ $LastChangedBy$
 		
 		<para><function>ksRewind</function> and <function>ksNext</function> methods manipulate the <type>KeySet</type> internal cursor, rewinding to the begining of the <type>KeySet</type>, or returning a pointer to the next <type>Key</type>. The returned <type>Key</type> should not be used in another <type>KeySet</type>, to not let the first loose its pointers. If you need to do that, create a copy of the key with <function>keyDup()</function> first, then use the copy.</para>
 		
-		<para><function>ksInsertKeys</function> and <function>ksAppendKeys</function> act in the same way but on entire <type>KeySet</type>s. They return the number of total keys, or 0 in case of failure. The second <type>KeySet</type> will become empty after return.</para>
+		<para><function>ksInsertKeys</function> and <function>ksAppend</function> act in the same way but on entire <type>KeySet</type>s. They return the number of total keys, or 0 in case of failure. The second <type>KeySet</type> will become empty after return.</para>
 
 		<para><function>ksToStream</function> will write to <parameter>stream</parameter> an XML representation of <parameter>ks</parameter>. <parameter>options</parameter> control its behavior and currently understands:</para>
 		 

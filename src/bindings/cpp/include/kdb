@@ -5,39 +5,38 @@
 #include <key>
 #include <keyset>
 
-namespace ckdb {
 #include <kdb.h>
-}
 
 
 namespace kdb {
 
-class Key;
-class KeySet;
+class KDBException : public std::exception
+{
+	const char* what() {return "KDB Exception";}
+};
 
-
-/**
- * ckdb provides a singleton class for c++ access to kdb.
- * */
-class Kdb
+class KDB
 {
 public:
-	Kdb ();
-	~Kdb ();
-	
-	Key & getKey (Key & toGet);
-	//TODO: make toSet const
-	void setKey (Key & toSet);
+	KDB ();
+	~KDB ();
 
-	KeySet & getKeys (KeySet & toGet, const std::string name, int options = 0);
-	void setKeys (KeySet & toSet);
-	
-	/*std::string & get (std::string key);
-	void set (std::string key, std::string value);*/
-	
+	size_t get (KeySet & returned, const Key &parentKey, option_t options = KDB_O_NONE);
+	size_t get (KeySet & returned, const std::string &parentName, option_t options = KDB_O_NONE);
+	size_t get (KeySet & returned, const char * parentName, option_t options = KDB_O_NONE);
+
+	size_t set (KeySet & returned, const Key &parentKey, option_t options = KDB_O_NONE);
+
+	void get (Key & toGet);
+	void set (const Key & toSet);
+
+	void getString (const std::string &keyname, std::string value, size_t maxSize);
+	void setString (const std::string &keyname, const std::string &value);
+	void remove (const std::string &keyname);
+
 protected:
-	/**You may use the KDBHandle in an inherited class*/
-	ckdb::KDBHandle handle;
+	/**You may use the KDB in an inherited class*/
+	ckdb::KDB* handle;
 };
 
 } // end of namespace kdb

@@ -2,24 +2,84 @@
 #define CPP_KEYSET_H
 
 #include <string>
-#include <stdint.h>
 
-namespace ckdb {	
 #include <kdb.h>
-}
+#include <key>
 
 namespace kdb {
+
+class KeySetException : public std::exception
+{
+	const char* what() {return "Key Exception";}
+};
+
+class KeySetOutOfRange : public KeySetException
+{
+	const char* what() {return "Out of range in KeySet";}
+};
+
+class KeySetNotFound : public KeySetException
+{
+	const char* what() {return "Could not find Key in KeySet";}
+};
 
 /**Key represents an elektra key.*/
 class KeySet
 {
 public:
-	KeySet ();
+	KeySet () :ks (ckdb::ksNew(0)) {}
+	KeySet (ckdb::KeySet *k) :ks(k) {}
+	KeySet (const KeySet &other);
+	KeySet (size_t alloc, va_list ap);
+	KeySet (size_t alloc, ...);
 	~KeySet ();
 
-	ckdb::KeySet * getKeySet () { return ks; }
+	ckdb::KeySet * getKeySet () const { return ks; }
 	void setKeySet (ckdb::KeySet * k) { ks = k; }
-	
+
+	ckdb::KeySet* dup () const { return ckdb::ksDup(ks); }
+
+	void copy (const KeySet &other) { ckdb::ksCopy(ks,other.ks); }
+	void clear () { ckdb::ksCopy(ks,0); }
+
+	void sort();
+
+	size_t size () const;
+
+	size_t append (const Key &toAppend);
+	size_t append (const KeySet &toAppend);
+
+	Key pop();
+
+	void rewind () const;
+	Key next();
+	Key current() const;
+
+	Key head() const;
+	Key tail() const;
+
+	void setCursor(cursor_t cursor);
+	cursor_t getCursor() const;
+
+	Key lookup (const Key &k, const option_t options = KDB_O_NONE) const;
+	Key lookup (const std::string &name, const option_t options = KDB_O_NONE) const;
+	Key lookup (const char *name, const option_t options = KDB_O_NONE) const;
+
+	/*
+	ssize_t toStream(FILE* stream = stdout, option_t options = (option_t)0) const;
+	ssize_t output(FILE* stream = stdout, option_t options = 0) const;
+	ssize_t generate(FILE* stream = stdout, option_t options = 0) const;
+	*/
+
+	friend std::ostream & operator << (std::ostream & os, const KeySet &d);
+	friend std::istream & operator >> (std::istream & os, KeySet &d);
+
+private:
+	/*
+	KeySet (KeySet &k) :ks (k.ks) { }
+	KeySet (const KeySet &k) :ks (k.ks) { }
+	*/
+
 private:
 	ckdb::KeySet * ks; // holds elektra keyset struct
 };

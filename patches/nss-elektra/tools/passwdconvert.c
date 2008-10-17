@@ -255,7 +255,7 @@ if(mode == -1)
 /* Special Access permissions */
 	key = keyNew(keyname, 
 		KEY_SWITCH_VALUE, value,
-		KEY_SWITCH_MODE, mode,
+		KEY_SWITCH_ACCESS, mode,
 		KEY_SWITCH_END);
 	kdbSetKey(key);
 	keyDel(key);
@@ -356,7 +356,7 @@ return (ret == 0);
 
 void debugprint(const char *format, ...)
 {
-#ifdef DEBUG
+#if DEBUG
 va_list args;
 
 va_start(args, format);

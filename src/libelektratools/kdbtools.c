@@ -26,59 +26,43 @@ $Id$
 #include <config.h>
 #endif
 
-#include <ctype.h>
+#ifdef HAVE_STRING_H
 #include <string.h>
-
-#ifdef HAVE_GRP_H
-#include <grp.h>
 #endif
 
-#ifdef HAVE_PWD_H
-#include <pwd.h>
-#endif
-
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
+
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
+#endif
 
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
 
+#ifdef HAVE_ERRNO_H
+#include <errno.h>
+#endif
+
 #include <libxml/xmlreader.h>
 #include <libxml/xmlschemas.h>
 
-#include "kdbtools.h"
-#include "kdbprivate.h"
-#include "kdb.h"
-
-/* #define KDB_SCHEMA_PATH       DATADIR KDB_SCHEMA_REL_PATH */
-#define KDB_SCHEMA_PATH_KEY   "system/sw/kdb/current/schemapath"
+#include <kdbtools.h>
+#include <kdbbackend.h>
 
 #ifdef ELEKTRA_STATIC
+
 #define ksFromXMLfile libelektratools_LTX_ksFromXMLfile
 #define ksFromXML libelektratools_LTX_ksFromXML
-#endif
 
-
-/**
- * @defgroup tools KDB Tools :: Library with some high-level functions
- * @brief General methods mainly for XML manipulation.
- *
- * To use them:
- * @code
-#include <kdbtools.h>
- * @endcode
- *
- * Here are some functions that are in a separate library because they
- * depend on non-basic libraries as libxml. Use the kdbtools library if your
- * program won't be installed in /bin, or is not essential in early boot
- * stages.
- */
+#endif /* ELEKTRA_STATIC */
 
 
 /*
  * Processes the current <key> node from reader, converting from XML
- * to a Key object, and ksAppend() it to ks.
+ * to a Key object, and ksAppendKey() it to ks.
  *
  * See keyToStream() for an example of a <key> node.
  *
@@ -89,8 +73,10 @@ $Id$
  *        if the XML node for the current key only provides a basename
  * @param reader where to read from
  */
-int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
+static int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr reader)
+{
 	xmlChar *nodeName=0;
+	xmlChar *keyNodeName=0;
 	xmlChar *buffer=0;
 	xmlChar *privateContext=0;
 	Key *newKey=0;
@@ -98,16 +84,13 @@ int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
 
 	/* printf("%s", KDB_SCHEMA_PATH); */
 	
-	nodeName=xmlTextReaderName(reader);
-	if (!strcmp((char *)nodeName,"key")) {
-		uint8_t type=KEY_TYPE_STRING; /* default type */
-		uint8_t isdir=0;
+	keyNodeName=xmlTextReaderName(reader);
+	if (!strcmp((char *)keyNodeName,"key")) {
+		type_t type=KEY_TYPE_STRING; /* default type */
+		mode_t isdir=0;
 		int end=0;
 		
 		newKey=keyNew(0);
-
-		xmlFree(nodeName); nodeName=0;
-
 
 		/* a <key> must have one of the following:
 		   - a "name" attribute, used as an absolute name overriding the context
@@ -140,56 +123,51 @@ int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
 		/* test for a short value attribute, instead of <value> bellow */
 		buffer=xmlTextReaderGetAttribute(reader,(const xmlChar *)"value");
 		if (buffer) {
-			keySetRaw(newKey,buffer,strblen((char *)buffer));
+			keySetRaw(newKey,buffer,kdbiStrLen((char *)buffer));
 			xmlFree(buffer); buffer=0;
 		}
 
-
-#ifdef HAVE_PWD_H
 		/* Parse UID */
 		buffer=xmlTextReaderGetAttribute(reader,(const xmlChar *)"uid");
 		if (buffer) {
-			if (isdigit(*buffer))
-				keySetUID(newKey,atoi((char *)buffer));
-			else {
-				struct passwd *pwd;
-				pwd=getpwnam((char *)buffer);
-				if (pwd) keySetUID(newKey,pwd->pw_uid);
-				else fprintf(stderr,"%s: Ignoring invalid user %s.\n",
-						newKey->key, buffer);
+			int errsave = errno;
+			char * endptr;
+			long int uid = strtol ((const char *)buffer, &endptr, 10);
+			errno = errsave;
+			if (endptr != '\0' && *endptr == '\0')
+			{
+				keySetUID(newKey,uid);
 			}
 			xmlFree(buffer); buffer=0;
 		}
-#endif
 
-#ifdef HAVE_GRP_H
 		/* Parse GID */
 		buffer=xmlTextReaderGetAttribute(reader,(const xmlChar *)"gid");
 		if (buffer) {
-			if (isdigit(*buffer)) {
-				keySetGID(newKey,atoi((char *)buffer));
-			} else {
-				struct group *grp;
-				grp=getgrnam((char *)buffer);
-				if (grp) keySetGID(newKey,grp->gr_gid);
-				else fprintf(stderr,"%s: Ignoring invalid group %s.\n",
-						newKey->key, buffer);
+			int errsave = errno;
+			char * endptr;
+			long int gid = strtol ((const char *)buffer, &endptr, 10);
+			errno = errsave;
+			if (endptr != '\0' && *endptr == '\0')
+			{
+				keySetGID(newKey,gid);
 			}
 			xmlFree(buffer); buffer=0;
 		}
-#endif
 
-		/* Parse permissions */
+		/* Parse mode permissions */
 		buffer=xmlTextReaderGetAttribute(reader,(const xmlChar *)"mode");
-		if (buffer) keySetAccess(newKey,strtol((char *)buffer,0,0));
-		xmlFree(buffer); buffer=0;
+		int errsave = errno;
+		if (buffer) keySetMode(newKey,strtol((char *)buffer,0,0));
+		errno = errsave;
+		xmlFree(buffer);
 
 
 
 		if (xmlTextReaderIsEmptyElement(reader)) {
 			/* we have a <key ..../> element */
 			if (newKey && !appended) {
-				ksAppend(ks,newKey);
+				ksAppendKey(ks,newKey);
 				appended=1;
 				end=1;
 			}
@@ -200,10 +178,8 @@ int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
 		if (buffer) {
 			if (!strcmp((char *)buffer,"string"))
 				type=KEY_TYPE_STRING;
-			else if (!strcmp((char *)buffer,"link"))
-				type=KEY_TYPE_LINK;
 			else if (!strcmp((char *)buffer,"directory"))
-				isdir=1; /* backwards compatibility */
+				isdir=1;
 			else if (!strcmp((char *)buffer,"binary"))
 				type=KEY_TYPE_BINARY;
 			else if (!strcmp((char *)buffer,"undefined"))
@@ -213,68 +189,74 @@ int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
 
 				type=strtol((char *)buffer,(char **)&converter,10);
 				if ((void *)buffer==converter)
-					/* in case of error, fallback to default type again */
-					type=KEY_TYPE_STRING;
+					/* in case of error, fallback to undefined type again */
+					type=KEY_TYPE_UNDEFINED;
 			}
 		}
-		xmlFree(buffer); buffer=0;
+		xmlFree(buffer);
 
 		/* If "isdir" appears, everything different from "0", "false" or "no"
 		marks it as a dir key */
 		buffer=xmlTextReaderGetAttribute(reader,(const xmlChar *)"isdir");
-		if (buffer) isdir=! (strcmp((char *)buffer,"0") &&
-			                 strcmp((char *)buffer,"false") &&
-		                     strcmp((char *)buffer,"no"));
-		
-		xmlFree(buffer); buffer=0;
-
-
-		if (isdir) {
-			mode_t mask=umask(0);
-			umask(mask);
-			keySetDir(newKey,mask);
+		if (!isdir && buffer)
+		{
+			if (	strcmp((char *)buffer,"0") &&
+				strcmp((char *)buffer,"false") &&
+				strcmp((char *)buffer,"no"))
+				isdir = 1;
+			else	isdir = 0;
 		}
-		
-		keySetType(newKey,type);
+		xmlFree(buffer);
 
+		if (isdir) keySetDir(newKey);
+		keySetType(newKey,type);
 
 		/* Parse everything else */
 		while (!end) {
-			xmlFree(nodeName); nodeName=0;
 			xmlTextReaderRead(reader);
 			nodeName=xmlTextReaderName(reader);
 
 			if (!strcmp((char *)nodeName,"value")) {
 				if (xmlTextReaderIsEmptyElement(reader) ||
-					xmlTextReaderNodeType(reader)==15) continue;
+					xmlTextReaderNodeType(reader)==15)
+				{
+					xmlFree (nodeName);
+					continue;
+				}
 					
 				xmlTextReaderRead(reader);
 				buffer=xmlTextReaderValue(reader);
 				
 				if (buffer) {
 					/* Key's value type was already set above */
-					if (KEY_TYPE_BINARY <= type && type < KEY_TYPE_STRING) {
+					if (keyIsBinary(newKey)) {
 						char *unencoded=0;
 						size_t unencodedSize;
 						
-						unencodedSize=strblen((char *)buffer)/2;
+						unencodedSize=kdbiStrLen((char *)buffer)/2;
 						unencoded=malloc(unencodedSize);
-						unencodedSize=unencode((char *)buffer,unencoded);
+						unencodedSize=kdbbDecode((char *)buffer,unencoded);
 						if (!unencodedSize) return -1;
 							keySetRaw(newKey,unencoded,unencodedSize);
 						free(unencoded);
-					} else keySetRaw(newKey,buffer,strblen((char *)buffer));
+					} else keySetRaw(newKey,buffer,kdbiStrLen((char *)buffer));
 				}
+				xmlFree(buffer);
 			} else if (!strcmp((char *)nodeName,"comment")) {
 				ssize_t commentSize=0;
 				
 				if (xmlTextReaderIsEmptyElement(reader) ||
-					xmlTextReaderNodeType(reader)==15) continue;
+					xmlTextReaderNodeType(reader)==15)
+				{
+					xmlFree (nodeName);
+					continue;
+				}
 					
 				xmlTextReaderRead(reader);
 				buffer=xmlTextReaderValue(reader);
 				
-				if ((commentSize=keyGetCommentSize(newKey)) > 0) {
+				if ((commentSize=keyGetCommentSize(newKey)) > 1) {
+					/*Multiple line comment*/
 					char *tmpComment=0;
 					tmpComment=malloc(commentSize+
 						xmlStrlen(buffer)*sizeof(xmlChar)+1);
@@ -290,11 +272,12 @@ int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
 						free(tmpComment); tmpComment=0;
 					}
 				} else keySetComment(newKey,(char *)buffer);
+				xmlFree(buffer);
 			} else if (!strcmp((char *)nodeName,"key")) {
 				/* Here we found </key> or a sub <key>.
 				   So include current key in the KeySet. */
 				if (newKey && !appended) {
-					ksAppend(ks,newKey);
+					ksAppendKey(ks,newKey);
 					appended=1;
 				}
 				
@@ -304,37 +287,42 @@ int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
 				else {
 					/* found a sub <key> */
 					if (! keyIsDir(newKey)) {
-						/* Mark current key as a directory key */
-						mode_t mask=umask(0);
-						umask(mask);
-					
-						keySetDir(newKey,mask);
+						keySetDir(newKey);
 					}
 					/* prepare the context (parent) */
 					consumeKeyNode(ks,newKey->key,reader);
 				}
 			}
-			xmlFree(buffer); buffer=0;
+
+			xmlFree (nodeName);
 		}
 
-/*		printf("%s: %o\n",newKey->key,keyGetAccess(newKey)); */
 		if (privateContext) xmlFree(privateContext);
+
+		/* seems like we forgot the key, lets delete it */
+		if (newKey && !appended) {
+			keyDel (newKey);
+			appended=1;
+		}
 	}
 
-	if (nodeName) xmlFree(nodeName),nodeName=0;
+	xmlFree(keyNodeName);
+	
 	return 0;
 }
 
 
 
 
-int consumeKeySetNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) {
+static int consumeKeySetNode(KeySet *ks, const char *context, xmlTextReaderPtr reader)
+{
 	xmlChar *nodeName=0;
+	xmlChar *keySetNodeName=0;
 	xmlChar *privateContext=0;
 	xmlChar fullContext[800]="";
 	
-	nodeName=xmlTextReaderName(reader);
-	if (!strcmp((char *)nodeName,"keyset")) {
+	keySetNodeName=xmlTextReaderName(reader);
+	if (!strcmp((char *)keySetNodeName,"keyset")) {
 		int end=0;
 
 		privateContext=xmlTextReaderGetAttribute(reader,(const xmlChar *)"parent");
@@ -345,7 +333,6 @@ int consumeKeySetNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) 
 
 		/* Parse everything else */
 		while (!end) {
-			xmlFree(nodeName); nodeName=0;
 			xmlTextReaderRead(reader);
 			nodeName=xmlTextReaderName(reader);
 
@@ -361,9 +348,11 @@ int consumeKeySetNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) 
 					consumeKeySetNode(ks, (char *)(*fullContext?fullContext:privateContext), reader);
 				else consumeKeySetNode(ks, context, reader);
 			}
+			xmlFree(nodeName);
 		}
 		if (privateContext) xmlFree(privateContext),privateContext=0;
 	}
+	xmlFree (keySetNodeName);
 	return 0;
 }
 
@@ -376,7 +365,8 @@ int consumeKeySetNode(KeySet *ks, const char *context, xmlTextReaderPtr reader) 
  *
  * This function is completelly dependent on libxml.
  */
-int ksFromXMLReader(KeySet *ks,xmlTextReaderPtr reader) {
+static int ksFromXMLReader(KeySet *ks,xmlTextReaderPtr reader)
+{
 	int ret;
 	xmlChar *nodeName=0;
 
@@ -391,16 +381,18 @@ int ksFromXMLReader(KeySet *ks,xmlTextReaderPtr reader) {
 			consumeKeySetNode(ks, 0, reader);
 		
 		ret = xmlTextReaderRead(reader);
+
+		xmlFree (nodeName);
 	}
-	xmlFreeTextReader(reader);
+	
 	if (ret) fprintf(stderr,"kdb: Failed to parse XML input\n");
 
 	return ret;
 }
 
-
-
-int isValidXML(xmlDocPtr doc,char *schemaPath) {
+/*
+static int isValidXML(xmlDocPtr doc,char *schemaPath)
+{
 	xmlSchemaPtr wxschemas = NULL;
 	xmlSchemaValidCtxtPtr ctxt;
 	xmlSchemaParserCtxtPtr ctxt2=NULL;
@@ -426,7 +418,6 @@ int isValidXML(xmlDocPtr doc,char *schemaPath) {
 		return 1;
 	}
 	
-	/* try to validate the doc against the xml schema */
 	ctxt = xmlSchemaNewValidCtxt(wxschemas);
 	xmlSchemaSetValidErrors(ctxt,
 		(xmlSchemaValidityErrorFunc) fprintf,
@@ -447,6 +438,7 @@ int isValidXML(xmlDocPtr doc,char *schemaPath) {
 
 	return ret;
 }
+*/
 
 
 
@@ -457,26 +449,30 @@ int isValidXML(xmlDocPtr doc,char *schemaPath) {
  * Currently, the XML file can have many root @c @<keyset@> and @c @<key@> nodes.
  * They will all be reduced to simple keys returned in @p ks.
  *
- * @ingroup tools
+ * To check if the xml file is valid (best before you read from it):
+ * @code
+#include 
+char schemaPath[513];
+schemaPath[0]=0;
+ret=kdbGetString(handle, KDB_SCHEMA_PATH_KEY,schemaPath,sizeof(schemaPath));
+
+if (ret==0) ret = isValidXML(filename,schemaPath);
+else ret = isValidXML(filename,KDB_SCHEMA_PATH); 
+ * @endcode
+ *
+ * @param ks the keyset
+ * @param filename the file to parse
+ * @ingroup stream
  */
-int ksFromXMLfile(KeySet *ks,const char *filename) {
+int ksFromXMLfile(KeySet *ks,const char *filename)
+{
 	xmlTextReaderPtr reader;
 	xmlDocPtr doc;
 	int ret=0;
-	char schemaPath[513];
 
 	doc = xmlParseFile(filename);
 	if (doc==NULL) return 1;
-	
-	/* Open the kdb to get the xml schema path */
-	schemaPath[0]=0;
-	// ret=kdbGetValue(KDB_SCHEMA_PATH_KEY,schemaPath,sizeof(schemaPath));
 
-//	if (ret==0) ret = isValidXML(filename,schemaPath);
-//	else ret = isValidXML(filename,KDB_SCHEMA_PATH); /* fallback to builtin */
-
-	
-	/* if the validation was successful */
 	if (!ret) {
 		reader=xmlReaderWalker(doc);
 		if (reader) ret=ksFromXMLReader(ks,reader);
@@ -484,8 +480,11 @@ int ksFromXMLfile(KeySet *ks,const char *filename) {
 			perror("kdb");
 			return 1;
 		}
+		xmlFreeTextReader (reader);
 	}
 	xmlFreeDoc(doc);
+
+	xmlCleanupParser();
 	return ret;
 }
 
@@ -493,17 +492,23 @@ int ksFromXMLfile(KeySet *ks,const char *filename) {
 
 
 
-/* FIXME: not working when fd is stdin */
 /**
+ * FIXME: not working when fd is stdin
  * Given a file descriptor (that can be @p stdin) for an XML file, validate
  * schema, process nodes, convert and save it in the @p ks KeySet.
- * @ingroup tools
+ *
+ * @param ks keyset
+ * @param fd Filedeskriptor?? should be FILE*
+ * @ingroup stream
  */
-int ksFromXML(KeySet *ks,int fd) {
+int ksFromXML(KeySet *ks, int fd)
+{
 	/* Start of support for old XML library (no xmlReaderForFd()) */
 	char filename[]="/var/tmp/kdbeditXXXXXX";
 	FILE *xmlfile=0;
-	xmlfile=fdopen(mkstemp(filename),"rw+");
+
+	/* xmlfile=fopen(tmpnam("/var/tmp/kdbedit"),"rw+"); */
+	xmlfile = tmpfile();
 	while (! feof(xmlfile)) {
 		char buffer[1000];
 		ssize_t readed, writen;
@@ -516,7 +521,7 @@ int ksFromXML(KeySet *ks,int fd) {
 			return 1;
 		}
 
-		writen=write(fileno(xmlfile),buffer,readed);
+		writen=fwrite(buffer,sizeof(char),readed,xmlfile);
 		if (writen<0) {
 			perror("kdb");
 			fclose(xmlfile);
@@ -526,7 +531,6 @@ int ksFromXML(KeySet *ks,int fd) {
 	}
 	fclose(xmlfile);
 	return ksFromXMLfile(ks,filename);
-	/* end of support */
 
 	/* This code requires a newer version of XML library, not present in all
 	   Linux/BSD/Unix distros. Don't use it yet.
@@ -543,10 +547,4 @@ int ksFromXML(KeySet *ks,int fd) {
 	return ret;
 	// end of newer code */
 }
-
-
-
-
-
-
 

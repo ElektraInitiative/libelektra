@@ -653,7 +653,7 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigelektraparser.cpp kdelibs-3.5.2/kde
 +	
 +void KConfigElektraParser::parseKeysFrom(QString keyName, KEntryMap *pWriteBackMap, bool bGlobal, bool bDefault)
 +{
-+	KDBHandle	kdbHandle;
++	KDB	kdbHandle;
 +	KeySet		*groups;
 +	Key		*key;
 +	bool		mainImmutable = false;
@@ -921,11 +921,11 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigelektraparser.cpp kdelibs-3.5.2/kde
 +				KEY_SWITCH_VALUE, (const char*) currentEntry.mValue,
 +				KEY_SWITCH_END);
 +		
-+		ksAppend(keysToStore, toStore);
++		ksAppendKey(keysToStore, toStore);
 +	} // for loop
 +	
 +	if ( ksGetSize(keysToStore) ) {
-+		KDBHandle handle;
++		KDB handle;
 +
 +		kdbOpen(&handle);
 +		kdbSetKeys(handle, keysToStore);
@@ -936,7 +936,7 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigelektraparser.cpp kdelibs-3.5.2/kde
 +	
 +bool KConfigElektraParser::getEntryMap(KEntryMap &aTempMap, bool bGlobal, QString mergeKeys)
 +{
-+	KDBHandle handle;
++	KDB handle;
 +	bool bEntriesLeft = false;
 +	bFileImmutable = false;
 +
@@ -1013,7 +1013,7 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigelektraparser.cpp kdelibs-3.5.2/kde
 +/* antlarr: KDE 4.0:  make the first parameter "const QString &" */
 +bool KConfigElektraParser::writeConfigKeys(QString &keyRoot, bool bGlobal, bool bMerge)
 +{
-+	KDBHandle handle;
++	KDB handle;
 +	
 +	// is the config object read-only?
 +	if (pConfig->isReadOnly()) {
@@ -1051,7 +1051,7 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigelektraparser.cpp kdelibs-3.5.2/kde
 +
 +		kRoot = keyNew(keyRoot.latin1(),
 +				KEY_SWITCH_TYPE, KEY_TYPE_DIR,
-+				KEY_SWITCH_MODE, 0700,
++				KEY_SWITCH_ACCESS, 0700,
 +				KEY_SWITCH_END);
 +
 +		if ( kdbSetKey(handle, kRoot) != 0 ) {
@@ -1133,7 +1133,7 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigelektraparser.cpp kdelibs-3.5.2/kde
 +
 +bool keyAccess(const QString &keyName, int mode)
 +{
-+	KDBHandle	handle;
++	KDB	handle;
 +	Key		*key;
 +	mode_t		keyMode;
 +	uid_t		euid, keyUid;
@@ -2864,7 +2864,7 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kstandarddirs.cpp kdelibs-3.5.2/kdecore/ks
 +			    bool recursive, bool unique)
 +{
 +  QString pattern = regexp.pattern();
-+  KDBHandle handle;
++  KDB handle;
 +  KeySet *ks;
 +  Key *cur;
 +
@@ -2964,7 +2964,7 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kstandarddirs.cpp kdelibs-3.5.2/kdecore/ks
 +      return;
 +
 +    if (path.contains('*') || path.contains('?')) {
-+	KDBHandle handle;
++	KDB handle;
 +	KeySet	*ks;
 +	Key *cur;
 +
@@ -3040,7 +3040,7 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kstandarddirs.cpp kdelibs-3.5.2/kdecore/ks
                  prefixList = &prefixes;
  
 +            if ( strncmp(type, "elektra-", 8) == 0 ) {
-+		KDBHandle handle;
++		KDB handle;
 +		Key *key;
 +		int rc;
 +		kdbOpen(&handle);
@@ -3079,7 +3079,7 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kstandarddirs.cpp kdelibs-3.5.2/kdecore/ks
          dirs = absolutes.find(type);
          if (dirs)
 +            if ( strncmp(type, "elektra-", 8) == 0 ) {
-+		KDBHandle handle;
++		KDB handle;
 +		Key *key;
 +		kdbOpen(&handle);		
 +
@@ -3133,7 +3133,7 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kstandarddirs.cpp kdelibs-3.5.2/kdecore/ks
      }
      QString fullPath = *pPath + (pPath->endsWith("/") ? "" : "/") + suffix;
 +    if ( strncmp(type, "elektra-", 8) == 0 ) {
-+        KDBHandle handle;
++        KDB handle;
 +	int rc;
 +	Key *key;
 +

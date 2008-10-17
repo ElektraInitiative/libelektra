@@ -1,74 +1,148 @@
 #For bugs and enhancements go to http://bugs.libelektra.org
-#For visions and drafts go to http://wiki.libelektra.org
+#For visions and drafts go to http://www.libelektra.org
+#For possible extensions in future, see FUTURE
 
-next: release
-	compile with -ansi -pedantic
-	define clearly errno values for kdb* calls
-	mark useless functions as depreciated
-	update docu for backend writer/kdb* user
-	kdbPrintError, kdbStrError: output of errors
+backends:
+	using libraries:
+		nickel
+		libconfig
+		eet
+	using keysets:
+		bind
+		memory
+	update old backends:
+		berkleydb
+		ini
+		winregistry
+		uniconf
+
+bindings: using swig
+	cpp
+	python
+	scheme
+	java
+
+bugs:
+	bug squashing
+	fix open bugs of http://bugs.libelektra.org
+
+documentation:
+	update all parts of docu to 0.7.0
+	update homepage to 0.7.0 related informatin
+	update Tutorial to 0.7.0 kdbGet()
+
+bsd licence:
+	check for documentation, homepage, modules,...
+
+kdb rewrite: [partial blocker]
+	kdb-ls alike commands
+	rm -r
+	cp -r
+	mv -r
+	ls pretty format
+	preload (mount, config backends)
+	generate
+	meta-info get/set
+	info about backends
+	add capabilities support in kdb tool
+	export xml validation
+
+integration: in other software
+	make autoconf snippet
+	shell-script (like in oyranos)
+
+extend:
+	re-add other backends (berkleydb, gconf)
+	build and test without gconf,... installed
+	ksToStream in stream.c
+	Reintroduce and test Regular Expressions in keyset.c
+	ksCompare in keyset.c
+	mount user/elektra hierarchy
+
+reliably code:
+	error states in kdbSet
+	mode checks 0-7
+	error codes
+
+dynamic memory management:
+	improve realloc, use srealloc
+	don't use sprintf, asprintf, strdup, strndup
+	use only own functions where available
+	use different compilers, libc too
+
+packaging:
+	build with minimal system
+	debian packages
+	fedora packages
+
+all exported methods of elektra need to be:
+	useful in current state
+	well documented in behavior
+	having test cases for behavior
+	behavior not overlapping with another function
+	well documented error cases, return and errno values
+	having test cases for error cases
+	otherwise fix or mark it obsolete
+
+version:
+	tag everything with 0.7.0
+	get version with macro
+	get version at runtime
+	check exported symbols
+	use symbol table
+
+#portability
+
+bugs::
+	mntent.h fix for macosx
+	dont use libltdl under linux
+
+portability:
+	cross compilation
+	bsd, aix,...
+	glibc functions away
+
+portability:
+	Build on different platforms
 	Statical build testing
+	build and test without iconv, libxml2
 
-backends:
-	Berkeley DB
-	ini
-	Testing Framework
+compilers:
+	diet-gcc
+	intel cc
 
-patches:
-	Write a patch/backend for KConfigXT.
-	Update the X.org patch for the last API modifications
-	Write a daemon backend (maybe based on HTTP, CGI and XML)
+#testing
 
-bindings:
-	Perl
-	php (kontact: Kai-Uwe Behrmann <ku.b@gmx.de>)
-	phyton (kontact: Patrick Sabin <patrick.sabin@gmx.at>)
+testing coverage:
+	-fprofile-arcs
+	-ftest-coverage
+	reasoning which parts are tested
 
-security:
-	check for leaks
-	improve remalloc
+advanced testing:
+	get and set a real big amount of keys
+	multithreading testing
+
+#performance
+
+general:
 	scripts for performance and stability testing
-
-contact:
-	xml: uni-xml (texasjdl@yahoo.com)
-
-porting:
-	solaris
-	bsd
-	win32 (mingw, visual c++)
-
-publish:
-	freedesktop.org
-	gnu
-	newsgroups of unix programming
-	slashdot article
-
-#completely new features (dont't expect them to be here soon)
-
-libcomment:
-	multilanguage comments
-	type of key (list, int, bool,...)
-	validator of key (what is valid?)
-	important? (-20 for optional 20 for must have)
-	regexpr for keysets
-	version of key (full.major.minor)
-	user comments
-	without any field it will be taken as
-		comment for every language,
-		not especially specified
+	testing optimizations (-O2)
+	profile the code and fix optimization leaks
 
 
-notification: new notification api
-	void kdbRegisterCallback(KeySet *interests, u_int32_t diffMask,
-		KdbCallback *cb, void *userdata);
-	void kdbUnregisterCallback(KeySet *interests, u_int32_t diffMask,
-		KdbCallback *cb, void *userdata);
-	void kdbDeliverEvents(long iterations, int sleep);
+profiler:
+	search for slow parts
 
-hierachie: add new folders next to system/ and user/
-	local/(any folder)
-	doc(/usr/share/doc/kdb) hierachys
+malloc trace:
+	reduce mallocs
 
-backends:
-	sql
-	lexx parsing
+benchmarks:
+	are large keysets handled?
+
+keySet:
+	make statistics how many keys typical applications need
+	be efficient for typical needs
+
+integer overflows: sizes must not exceed SSIZE_MAX
+check for null pointers and return -1
+

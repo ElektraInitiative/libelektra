@@ -1,47 +1,771 @@
-* Mon Jun 11 2007 Markus Raab <elektra@markus-raab.org>
-- Relaxed DTD a lot to let it apply, but not very useful anymore.
-- Resolve Bug 0000027, change sequence in elektra.xsd
-- Fix Namespace Issues in .xml Files
-- Fix Spelling, type "dir" and similar validation errors
+* Tue 16 Oct 2008
+- ksCopy
+- ksNeedSort removed from public header
+- ksNeedsSort renamed
+- ksDup
+- ksClear removed from public header
+- ksSort: example, docu
+- ksGetSize
+- ksAppendKey, ksAppend
+- ksPop
+- ksHead, ksTail
+- ksGetCursor, ksSetCursor
+- ksLookup
+- removed ksLookupByString, ksLookupByBinary
+- ksNew
+- errno away from keyset
+- kdbOpen, kdbClose
+- kdbGet
+- stdio.h and errno.h away from kdbos.h
+- kdbGetByName
+- kdbGetKey, kdbSetKey
+- removed kdbStatKey (trivial)
+- kdbGetString, kdbSetString, kdbRemove
 
-* Fri Mar 16 2007 Avi Alkalay <avi@unix.sh>
-- filesys.c::kdbGetFilename() was accessing $USER instead of getting this value from KDBHandle.
+* Wed 15 Oct 2008
+- keyName, keyBaseName and keyOwner return 0 on 0 pointer
+- keyOwner, keyGetOwnerSize, keyGetOwner
+- keySetOwner
+- keyValue, keyGetValueSize
+- keyGetString, keySetString, keySetRaw(removed)
+- keyGetBinary, keySetBinary
+- comments
+- keyNew
+- errno bei key*.c weg
+- errno in backend docu weg
+- DESIGN document updated
+- keyName, keyBaseName, keyOwner, keyValue, keyComment synced
+- test cases for binary data
 
-* Sun Mar 11 2007 Avi Alkalay <avi@unix.sh>
-- Applied nostart patch from Patrice
-- Adapted Patrice spec file to be the main spec file
-- Spec: defined fedoraextras conditional to control traditional or Fedora Extras targeted build
+* Tue 14 Oct 2008
+- keySetDir, keyGetMode, keySetMode
+- enum types are now integer types
+- hide enum for flags: keyflag_t keyswitch_t
+- keyGetType, keySetType
+- ATime, MTime, CTime
+- keyName
+- keyGetName
+- keySetName
+- keyFullName
+- keyBaseName
+- keyAddBaseName, keySetBaseName
 
-* Fri Mar  9 2007 Avi Alkalay <avi@unix.sh>
-- Releasing version 0.6.10, to be accepted in Fedora Extras
+* Mon 13 Oct 2008
+- keyStat, keyRemove
+- remove SYNC flag when removing key
+- keyNeedsStat, keyNeedsSync, keyNeedsRemove
+- keyNeedsStat, keyNeedsSync, keyNeedsRemove renamed to
+  keyNeedStat, keyNeedSync, keyNeedRemove
+- keyIsSystem, keyIsUser
+- keyIsBelow, keyIsDirectBelow
+- keyIsInactive
+- keyIsDir, keyIsBinary, keyIsString
+- @errors renamed to @err
+- keyGetUID, keySetUID, keyGetGID, keySetGID
+- keyGetType, keySetType
 
-* Thu Mar  8 2007 Patrice Dumas <pertusus@free.fr>
-- don't hardcode paths or program name in kdbd executables and scripts.
-- copy files automake need.
+* Sat 11 Oct 2008
+- Versioning for backends
+- check all functions again:
+- keyDup
+- keyCopy: removed keyClear, keySetName(,0)
+- keyDel, keyIncRef, keyDecRef, keyGetRef: example
 
-* Thu Mar  8 2007 Patrice Dumas <pertusus@free.fr>
-- src/backends/main.c, src/backends/ipc.c: better error checking and
-  error reporting.
+* Wed 08 Oct 2008
+- print_info outputs limits, constants and sizeof of elektra types
+- examples now compile
+- added iterate example
+- BUG: segfault on xml import/export (reason: closed library too early)
+- xml is again default mode for exporting
+- always export recursive
+- run test_script
+- add xml tests in scripts
+- validate -cmp files
+- now use type_t for types
+- eliminate [u]int8,16,32_t
+- eliminate kdbStrError
+- make examples more iso c
+- remove keyCompare and ksGetCommonParentName
 
-* Mon Feb 06 2007 Avi Alkalay <avi@unix.sh>
-- Fixed doxy group "key" to "keybase", and many documentation pieces reapeared.
+* Thu 07 Oct 2008
+- Copy autoconf files instead of linking
+- exportsymbols.sh now generate more ansi conforming code
+- libloader: extern in header and more strict function prototype
+- fstab.h added, better declarations
+- passwd.h better declarations
+- template.h better declarations
+- dont use (), use (void)
+- small fixes in headers
+- libelektratools
+- make not exported functions static
+- uid, gid at one place
+- header cleanup
+- compile with icc -Wall
+- dont use multiple function calls as parameters
+- keyIsBelowOrSame static
+- some casting
+- dont define DEBUG by flag, use config.h
+- define VERBOSE (as 0)
+- only use valgrind when available
+- check for stdio.h
+- some things I broke with icc transition
+- valgrind should now check correctly
+- kdbOpen(void) does not accept arguments anymore
+- source environment for zsh works
+- removed some TODOs
+- remove some spaces in kdb.h
+- kdbos.h cleanup: POSIX and WIN32 part
+- KeyCursor renamed to cursor_t
+- use the enum option_t instead of unsigned long
+- KDBOptions renamed to option_t
 
-* Sat Dec 23 2006 Avi Alkalay <avi@unix.sh>
-- Existing non-dir keys are automatically converted into keys if keys are
-  created under them. On filesys and berkeleydb.
-- Updated kdbSetKey() documentation/specification to reflect.
-- Updated error numbers in kdb.h to not conflict with other existing numbers.
+* Thu 02 Oct 2008
+- svn version for latest test
+- ELEKTRA_VERSION_API in configure.ac
+- check funcs of testing suite
+- search path
+- Docu about search path
+- libdir, ulibdir added in search path
+- hlvlbackenddir used for libelektratools
+- typedef corrected
 
-* Wed Dec 20 2006 Avi Alkalay <avi@unix.sh>
-- Filesys backend now fully supports dir keys with value
-- BerkeleyDB backend certified to work with values for dir keys
-- BerkeleyDB now correctly and safelly removes (or not) keys
-- Updated kdb.c::listAccess() to use keyIsDir() and keyIsLink()
-- Updated doxygen.css from doxygen 1.4.7
+* Wed 01 Oct 2008
+- BUG 37: uid/gid mismatch
+- kdbSetKey use const as second parameter
+- don use name elektra in kdb.h
+- some updates to KDB in cpp binding
+- Mac Port
+- dont use -n or -e for echo
+- dont use symbols starting with _
 
-* Tue Nov 21 2006 Avi Alkalay <avi@unix.sh>
-- Moved other specs to a subdir, to not interfere with default RPM build
-- Certified to build on ia64
+* Mon 29 Sep 2008
+- add canonical target
+- remove AC_LIBTOOL_WIN32_DLL
+- using libtool support from sox
+- use INCLUDES for -I include and INCLTDL
+- dont cd to LIBLTDL, it could be -lltdl (on grml 1.1 second install)
+- check HAVE_LIBLTDL header
+- dont use ENOKEY (not posix) use EFAULT instead
+
+* Fri 26 Sep 2008
+- xsltproc works again
+- don't prefix slash at end of docbook path
+- check the files and not the path
+- cleaned up capability (will use other api later on)
+- dont provide mount API
+- exclude most of kdbc* functions (not needed)
+- capability removed from documentation
+- add get (ByName) in c++ binding
+- remove subsections in main page
+- rename keyName to keyname in parameter
+- give trivial kdbRemoveKey away
+- regroup kdb*
+- renaming of libhelper files
+- module section naming
+- use singular
+- KeyDB renamed to KDB
+- changed pictures
+- KDBHandle renamed to KDB
+- kdbGetByName now handles mountpoints correctly
+(and deserves to be in highlevel)
+- preload now directly uses /etc/hosts and /etc/fstab for system
+- but continues to use /tmp for user
+- kdbGetHelper now used by kdbGetKey and kdbGetByName
+- hosts comments
+- use bigger buffer
+- be more safe on buffer limits
+- add comments in hosts.xml
+- write examples and update tutorial
+- kdbGetKey should set errno to KDB_ERR_NOTFOUND
+- versions fixed, provide kdbStrVersion
+- use rm -f instead of -rm
+- remove keyName functions and keyNext (why was that there?)
+- the great renaming: bringing key in its modules
+- bringing keyset in correct order
+- ksAppendKeys renamed to ksAppend (last plural eliminated)
+- ksAppend renamed to ksAppendKey
+- issues on numbers fixed
+- all numbers may return -1
+- removed print_splitted
+
+* Thu 25 Sep 2008
+- KDB_O_NORECURSIVE now only gives back keys direct below keys
+- fix a bug in compare_keyset (it removed value/comments on request)
+- merge details of kdbSet and kdbGet together
+- doxygen updated (to 1.5.6)
+- document parameters
+- UID, GID docu update
+- make keyIsDir more clearly
+- removed kdbGetRootKeys
+- removed kdbSetKeys and kdbGetKeys (plural)
+- removed kdbGetChildKeys (has swapped parameters)
+- introduce kdbGetByName with cascading (replaced kdbGetChildKeys)
+- fixed name bugs in ksLookup()
+- remove user code of kdb-tool which implemented the same
+- 32 bit issues
+- make clean more robust
+- kdb info prints where key is located
+
+* Wed 24 Sep 2008
+- introduce libhelper
+for system dependent but backend independent functions
+- source and folders in CODING document
+- helpers is not a backend anymore
+- remove kdbc properties
+- check for failed opendir (may fail because of permissions)
+- place readlock in hosts after check if open failed
+- use const char for kdbc* char properties
+- give correct uid, gid so that keys can be compared
+- use DEBUG && VERBOSE to be only verbose when debugging is enabled
+- rename access to mode
+- make uninstall install runs fine again
+- --help prints default locations
+- check for sed
+- remove hook for libelektratools
+- provide uninstall hook for default backend
+- will now use "default" backend rather then "filesys" as default
+
+
+* Tue 23 Sep 2008
+- add backend helpers
+- use c++98 std for c++
+- add dependency to filesys and preload
+- kdbbackendhelpers.c disappeared
+(libelektra should now be clean ansi build, see next commit)
+- now compiles without warnings (but not ansi flags)
+- core and cpp binding compile with ansi flags
+- all parts should have DBG and OPT cflags
+- added time.h header
+- remove kdbi* functions out of kdb-tool
+- ifndef TIME_H should be ifdef!
+- bring ks and key streaming functions in other order
+- header files rewriting, always HAVE_FILE_H ifdef around
+- implement kdbiStrCaseCmp
+- ctype for islower
+- move APPROXIMATE_NR_OF_BACKENDS to header
+- delete langinfo.h, sys/* dependencies
+- removed kdbPrintError
+- core can only print something when DEBUG is enabled
+- changed examples and kdb-tool a bit to work without kdbPrintError
+- remove unistd.h header files
+- errnosaver added for filesys, hosts and fstab
+- dont fill up uid, gid and username properties
+- dont fill up uid and gid in keyInit
+- text for keyCompare reformated
+- dont link against helper library
+
+
+* Mon 22 Sep 2008
+- autoconf setup revisited
+- group together similar setup items
+- define DEBUG in config.h
+- define the conditional DEBUG
+(should always be set together and not confuse)
+- DESIGN document updates
+- some more code examples
+- rename keyGetReference to keyGetRef
+- don't use KEY_NEW as first parameter, use 0
+
+* Son 21 Sep 2008
+- added REGEXP and explanation how to use
+- regenerate error codes
+- leave comments of sections in error codes
+- add url for bug reports
+- clear returned so that updating keyset works
+
+* Fri 19 Sep 2008
+- disable iconv conversations by default
+- Use correct help strings for debug
+- don't check iconv header file, fork and signal
+- add tests for code conversations
+- Filesys will now return -1 on UTF8Engine errors
+- added tests for UTF8 needed and conversation
+- added more docu to UTF8 engine about the problem
+
+* Thu 18 Sep 2008
+- remove dependency from pthread.h
+- dont store pid and tid in kdbhandle
+- locking was disabled
+- check for more headers, funcs
+- dont fail if no locking in hosts
+- use KDB_ERR_NOLOCK
+- make distcheck works
+- leak: delete append keyset in filesys in error condition
+- use init() for every testcase
+- fail without error when backends are not available
+- srcdir file now works with empty environment
+- delete own malloc for tests
+- dont use own setenv declaration (fails when its in header)
+- dont leave files behind
+- cleanup in error condition in test_kdb
+- some more cleanup
+
+* Tue 16 Sep 2008
+- functional example
+- remove ksForEach and ksFilter out of elektra (too easy to implement)
+- delete keyset in test_kdb
+- ksPop behaves more sane
+- keyDel is much more safer (hard to do it wrong now)
+- remove functional from example
+- decrement is now something else then delete (cpp binding)
+- keyIncRef and keyDecRef introduced (keyInc renamed)
+- links will not make it into 0.7.0
+
+* Mon 15 Sep 2008
+- kdb -R implemented
+- passwd no segfault when it cant open file
+- REMOVEONLY works
+- missing sort before kdbSet_backend()
+- document kdbGet() options much better
+- filesys now only stat and do not open file
+- propagate KDB_O_NOSTAT to parentKey
+- add testcases for nostat and statonly
+- better always duplicate parentKey
+- done that in fstab (rewrite get)
+- clear returned before appending appended
+- filesys now handles stat and lock
+- filesys optimization: not appending to returned
+- now remove with KDB_O_REMOVEONLY
+- use init() in test_kdb
+- only remove value/comment when backend supports kdbcGetnoStat
+
+* Fri 12 Sep 2008
+- preserving of comments in /etc/hosts now work
+- wrote new append_comment function to catch comment and empty lines
+- wrote find_comment to deduce correct length (sscanf could not do that)
+- write init() function for tests (clearenv + loadToolsLib)
+- remove Link keys
+(not working anyway, not fitting to access logic and not tested...)
+- remove *parent functions
+(real C programmers know how to concat strings)
+- renamed enums
+- BUG: changed KEY_VALUE flag? in keyNew
+- BUG: keyCompare returned KEY_FLAG_SYNC
+- give away the nasty keyCompare code
+- test keyCompare
+- renamed warn_if to warn_if_fail
+- lock/unlock in hosts
+- kdbbLock functions set errno themselves
+- making hosts backend much faster
+
+* Thu 11 Sep 2008
+- The final libelektratools release for 0.7
+(more work will be investigated after release)
+- libelektratools and kdb-tool is not part of the official 0.7 release
+- remove streaming of cpp binding
+- add enum for streaming into kdbtools.h
+- DYN_LINK macro for weak dependency (not shown in ldd)
+- add -G -O options in kdb-tool to generate c code and output per line
+- move ksLookupRE and ksCompare to libelektratools (commented out)
+- asprintf removed (not ansi)
+one step closer to use only kdbi* memory management
+- command export now also exports root key
+
+* Wed 10 Sep 2008
+- Don't track .gdb_history files
+- document only full get
+- always add the parentKey in filesys
+- watch out that all keys clear their KEY_FLAG_SYNC flag
+- note, every modification resets the sync flag
+- reorganize kdb options
+- rename KDB_O_IGNORESYNC to KDB_O_SYNC
+- rename KDB_O_DELPARENT to KDB_O_DEL
+- rename KDB_O_POPPARENT to KDB_O_POP
+- write nomeclature in kdbmain.c
+- delete not used options
+- reorganize test_kdb (create_root_key and create_conf)
+- Test cases reorganized
+- use setenv
+- create_root_key now creates for a specific backend
+- create_conf for a specific file
+- #ifdef all headers, 
+- remove warings
+- xml cleanup: #ifdefs in includes
+- memory leak in ksToStream
+- remove grp and pwd dependency
+- remove non-ansi dependence (isdigit, mkstemp, write)
+- give code example how to check if xml is valid
+- test uid, gid and access
+
+* Tue 09 Sep 2008
+- delete ksPop()ed keys
+- doxygen: sort by group names
+- update mainpage
+- make sections in kdbGet() and overview of backends
+- update and explain conditions more detailed
+- add an example for kdbGet_backend
+- add option_t::KDB_O_NOSTAT in docu
+- define groups for backendhelpers, backendhandle
+- add section cascading
+- stat logic changed, STAT remains after key was stated
+- SYNC will be deleted for every key synced in backend
+- use POP for returned keyset
+- Introduced more error codes to be used by backends
+- explain how to properly update the keyset
+- give some more links @see in documentation
+- BUG: ksAppendKeys may be one byte to small
+
+* Mon 08 Sep 2008
+- Reset the update kdbGet mechanism
+- add keyCopy and keyClear
+- fix docu for keyDel
+- add testcase for keyCopy, keyClear
+- some warnings less
+- BUG: keySetName(k,"system*") did not reset owner
+- add ksCopy, ksClear
+- make keyset more robust (memory errors)
+- warnings in test cases
+- Introduced KDB_O_POP
+- BUG: ksSetCursor on rewinded keyset
+- make sections in docu for ksLookup
+- test cases for lookup with pop
+
+
+* Fri 05 Sep 2008
+- KDB_O_WITHOWNER was wrong in docu of ksLookup
+- extend and test example application
+- add keyIsDirectBelow() for direct relation ship (parent to son)
+- update ksLookup Docu (KDB_O_WITHREMOVE?)
+- BUG: ksLookup() did not sort!
+- updating of a keyset now works
+- functional programming: ksForEach, ksFilter added
+
+
+* Thu 04 Sep 2008
+- write documentation about ENVIRONMENT
+- KDB_USER now can override USER
+- make sure that proper owner is written (+ testcases)
+- don't add owner in keyGet* methods
+- KDB_DIR let you specify the exact user-configuration directory
+- preload where prints the path where your configuration lies
+- document errors for kdbbGetFullFilename
+- added KDB_ERR_TOOLONG for a string too long which cant be trunced
+- added KDB_ERR_CONVERT for utf8 convert errors
+- BUG: incorrect return values (-1) for keyIsUser and keyIsSystem lead
+to keyGetNamespace failure, kdbbGetFullFilename was affected
+- BUG: handle situation correctly where buffer does not fit filename
+- BUG: dont remove escaped slashes
+- simplify kdbGetFilesys a lot by using kdbbGetFullKeyName
+- kdbbFilenameToKeyName handle too long string correctly
+- test cases for encoding
+- Locking of files in filesys implemented
+NOTE: thus only a single key is locked it only prevents from shredded files
+- keys in kdbGet will now be updated when already in returned
+
+
+* Tue 02 Sep 2008
+- introduced internal kdbi* functions in internals.c
+- renamed strblen to kdbiStrLen
+- introduced kdbiMalloc, kdbiFree, kdbiStrDup
+- renamed srealloc to kdbiRealloc
+- enhanced backendhelpers and renamed to kdbb* functions
+- renamed kdbbLock and kdbbUnlock
+- renamed kdbbEncode and kdbbDecode
+- renamed kdbbEncodeChar and kdbbDecodeChar
+- all functions are defined in kdbbackend.h
+- added test for backendhelpers
+- added test for internals (with small multichar seq test)
+- distinguish between PATH_SEPARATOR and KEY_SEPARATOR
+- added MAX_KEY_LENGTH to say explicit that the length of
+the key name is limited for filesys
+- KDB_KEY_MOUNTPOINTS holds keyname for mountpoint database
+(system/elektra/mountpoints)
+- KDB_KEY_USERS holds keyname for user database (system/users)
+- the *_LEN makros give their sizeof value
+- introduced makro variables for KDB_DB_HOME (fallback where /home resides)
+- keys for user/ hierarchy may have different locations on disk now, see
+kdbbGetFullFilename
+- memory leak in passwd backend + fclose was missing
+- renamed kdbbKeyNameToRelativeFilename and kdbbKeyCalcRelativeFilename
+and return -1 on failure
+- preload now return error codes if it worked
+
+* Mon 12 May 2008
+- updated documentation of kdbGet_backend and kdbSet_backend
+- use post, invariant and pre conditions to document
+- introduce @err tag to describe how errno is propagated
+- add example path to include files in documentation from there
+- Use @since tag for pluggable backend description
+- updated kdbSet and kdbGet documentation:
+-   Errors, Post, Pre cond, Return values
+- Explain return value in @return value
+- rewind keyset
+- basic implementation of kdb class in cpp binding
+- add keyRemove and keyStat in keymeta
+
+* Thu 08 May 2008
+- enabling and disabling of backends now work
+- ini compiles again
+- mntent.h fix
+- berkleydb compiles fine but does not link
+- added enabling and disabling of bindings
+- cpp binding keyset finished except iterator
+
+* Thu 24 Apr 2008
+- Key support Reference Pointer Semantics
+- Some Basic Functions for Keyset (non-functional)
+- Some Basic Tests for Keyset
+- ksLookup (KeySet, Key,..) added to docu
+- sed changed for macosx compatibility
+- 0.7.0rc3 announcement
+
+* Mon 21 Apr 2008
+- kdb::KeySet output, generate,..
+- added test_keyset.cpp
+- fixed signature ssize_t ksToStream
+- changed signature keyDel()
+- added keyInc() (increment Reference)
+- keyDel() also before appending (always after ksPop()!)
+- updated documentation for ksPop(), ksCurrent(), ksNext()...
+- Streaming got its own Module in documentation (group keystream)
+
+* Sun 20 Apr 2008
+- also set CXXFlags
+- namespace directly in kdb.h for c++
+- Key for cpp binding now complete with lots of tests
+- use const
+- casting between kdb::Key and ckdb::Key for KeySets
+- copy constructors
+- adding keyVNew and ksVNew to pass va_list and use it in c++ binding
+
+* Tue 15 Apr 2008
+- Don't output error for positive kdbSet return value
+- xml pretty printing
+- fix wrong parent at end in ksToStream
+- string is default type for xml without type=""
+- fix extra_dist some missing files
+- Add version macros
+- remove , at end of enumeration lists
+
+* Sat 22 Mar 2008
+- kdbSetKey highlevel now works with capabilities
+- kdbSet docu
+- make parentkeys to work in kdbSet
+- splitting keys now works in n*b instead of n^2*b and preservers order
+- split keysets in kdbprivate.h, test it in test_split.c
+- 0.7.0rc2 announcement
+
+* Thu 26 Feb 2008
+- Cleanup options
+- Initialized mask removed in keyswitch
+- Changed indentation to tabs
+- Lookup and Stream have their own options
+- don't make uid gid depended on who exports it
+- some newlines removed
+- keyOutput: only output what is desired
+- Adding comparing files in Testcase
+- ksLookup* set cursor (ksCurrent) correctly
+- ksCurrent set correctly after failed kdbSet()
+
+* Sat 09 Feb 2008 Markus Raab
+- atime, mtime, ctime document + set functions (kdb.h)
+- document kdb*_backend functions
+- document kdb functions
+- make capabilities obligatory
+- add authors, licence in capabilites
+- capabilities workaround in kdbGetKey and kdb get
+- make mountpoint when mounting a backend with preload
+- passwd does not need to declare onlyFullGet
+- add kdbGetCapability and kdbGetMountpoint in namespace kdb
+- rename kdbGetValue, kdbSetValue, kdbSetValueByParent and kdbSetValueByParent
+to kdbGetString, kdbSetString, kdbSetStringByParent and kdbSetStringByParent
+- keyValue unchanged because it is related to value, that means string, binary
+or any other type
+- keyGetValueSize also unchanged because of above reason
+- writing tests for it in test_mount
+- check return value kdbGet and kdbSet of -1 if you want to check error
+
+
+* Thu 06 Dec 2007 Markus Raab
+- Renaming of header files
+- kdbMount now takes a key mountpoint, which has as value the backend
+- KDBHandle is now like Key and KeySet a private structure with public typedef
+- KDBBackend is now gone and #define KDBHandle to void too
+- helpers are now in kdbprivate.h
+- kdbbackend.h now will do include everything for backends
+- kdb.h should do include everything needed for extern programs
+- Documentation for KDBHandle
+- TODO update
+- added capability methods
+- document kdbMount, kdbUnmount
+- don't rely on private structures in tests.h
+- fix make dist
+- 0.7.0rc1 announcement
+
+
+* Wed 05 Dec 2007 Markus Raab
+- KDB_ERR_NODOMAIN renamed to KDB_ERR_NOOWNER
+- KDB_O_NOSORT renamed back to KDB_O_SORT
+- ksLookup KDB_O_NOALL introduced
+- ksNeedSort() and ksGetAlloc() introduced
+- lookup: owner strcmp more efficient and also sorted that way
+- BUG: ksGetCommonParentKeyName works even if nothing found
+- dont ksDup in ksGetCommonParentKeyName
+- size_t used for keysets (we also want large keysets)
+- resize keyset down to KEYSET_SIZE
+- remove kdbGetBackendName and kdbGetMountpoint
+- kdbhGetMountpoint is a key: name is point, value is backend
+- allocation testing
+- kdbMount, kdbUnmount to kdb.c
+- use kdbOpenBackend and kdbCloseBackend as only place to open/close backends
+- OpenMapper, CloseMapper are function pointers to open and close a backend
+
+
+* Wed 21 Nov 2007 Markus Raab, Patrick Sabin
+- BUG: keyIsLink broken fixed
+- BUG: when there is no comment, value filesys won't store type fixed
+- BUG: keyAdd/SetBasename do realloc something wrong and do not set nameSize
+- rewrite serialization
+- keyCompose: serialize a key without any malloc
+- added keyGenerate and ksGenerate
+- use FILE *stream for Output/Generate
+
+* Wed 19 Nov 2007 Markus Raab
+- Capabilites added
+- Backends can now represent what they support
+
+* Sun 11 Nov 2007 Markus Raab
+- Make test cases run again
+- Find memory leaks
+- Naming conventions
+- Parameter discarding of qualifiers
+- Header conventions
+- File headings
+- Variable names + delete unneeded variables
+- make all tests pass again
+- make fstab compile again
+
+
+* Wed 07 Nov 2007 Markus Raab
+- Code Coverage Tests included
+- With --enable-gcov you enable building of code coverage
+- Use it to see what lines of code are covered by tests
+
+* Tue 06 Nov 2007 Patrick Sabin
+- introduced Trie for lookup of mountpoints
+- dynamic mounting with kdbMount and kdbUmount
+- test cases for trie
+- trie resides in KDBHandle
+- kdbLibMounting.h introduced
+- kdbos.h introduced
+- ksLookup only search in not removed keys
+
+* Fri 02 Nov 2007
+- Remove next Pointer in Key
+- Use Array in Keyset
+- Introduce new style ksNew
+- ksDup introduced
+- some const identifiers introduced for keyset
+- InsertKey(s) is history
+- Cursor functions added for keyset
+- next, start and end pointer removed
+- reference for keys: keysets will only delete keys when they
+	have the only copy of it
+- ksToStream, ksCompare, ksLookupRE mailfunc, commented out
+
+* Wed 24 Oct 2007
+- Reintroduce kdbGet recursive code
+- Now delete keys when not needed
+- kdbGetKeys needs KDB_O_INACTIVE to get a single key
+- When pop a key, ks->next is now 0
+- Makros in tests now {embraced}
+- to see if a function failed, take the difference of nbError
+
+* Wed 17 Oct 2007
+- use old type system
+- getset tests
+- access types tests
+- KEY_SWITCH_MODE renamed to KEY_SWITCH_ACCESS
+- Introduce ksStart to replace ksRewind
+
+* Thu 04 Oct 2007
+- valgrind support for tests added
+- keySet/Get String/Comment for NULL changed
+- keyGetValue/CommentSize returns 1 to have appropriate space to malloc 1 byte
+- xml tests commented out, problem with change above
+- userDomain (?) renamed to owner
+- updated documentation of _Key
+- recordSize deleted
+- benchmarks added: threads, large
+- keyDir: Use executable bits to mark directories
+- filesys cleanup: don't support old key-style and remove pointless functions
+- valgrind integrated for tests and benchmarks
+- KEY_SWITCH_DOMAIN -> KEY_SWITCH_OWNER
+	
+* Sun 23 Sep 2007
+- kdbHandle and KDBEXPORT only insist of 4 functions (open, close, get, set)
+- kdbHighLevel only require kdbGet and kdbSet, but considered broken
+- kdbLibSym returns kdbLibFunc, which is a pointer to a function, not data
+- added -debug compiler options
+- removed warnings all over the code
+- keyvalue cleanup, same meanings and documentation of errno
+
+* Mon 03 Sep 2007 Markus Raab <elektra@markus-raab.org> and Patrick Sabin
+- kdbSet restructure: only kdbSetKeys communicate with backend
+- _KDBInfo added
+- kdbcapability.c added, old KDBInfo is there
+- kdbResolveKey is in backendhelpers.c
+- kdbprivate.h need not to be included if kdbbackend.h is
+- docu for highlevel functions too
+- doxygen fixes
+- BUG: recordSize, not address of operator (resolved)
+- Sort KEY_FLAG_REMOVE correctly
+- KEY_FLAG_STAT first hit
+- BUG: next pointer was missed in kdbSetKey (resolved)
+- BUG: access not correct for stat key
+- ksPopLast removed because it needs iterating over all keys
+
+
+* August 2007 Markus Raab <elektra@markus-raab.org> and Patrick Sabin
+- Doxygen warnings/error away for cleaner documentation
+- Writing exhaustive backend tests: xml, kdb
+- keyIsInactive added, testcases for inactive keys
+- .. and . are handled correctly in keySetName
+- Trailing slashes at system and user are handled correctly
+- some kdb (1) tests added
+- keyNeedsRemove added
+- keyRename test cases
+- sorting now considers if marked for remove [more testing needed]
+- tests.c now have the code from tests.h
+- ksSort testcase added
+- keyNew supports KEY_SWITCH_REMOVE
+- bug in keyNeedsSync and keyNeedsRemove, not 1 returned
+- prefix with 0 in date (-d, -l options)
+
+
+* July 2007 Markus Raab <elektra@markus-raab.org>
+- xml test update
+- xml files validate
+- validate .xml files in tests
+- updated xmlschema documentation
+- schema marked as unstable
+- schema licence bsd
+
+* May 2007 Markus Raab <elektra@markus-raab.org>
+- kdbKeyChildKeys in backend contains no sort, filter and recursive logic
+- Getting Code stable to begin implementing
+
+* March 2007 Markus Raab <elektra@markus-raab.org>
+- Start support multiple backends
+- using git-svn
+- TODO updated
+- get out binary presentations
+- kdb doc return value ChildKeys update
+- added XML tests
+- get some common code to tests.h
+
+* Dezember 2006 Markus Raab <elektra@markus-raab.org>
+- unstable fork
+- using darcs
+- c++ compatible includes
+- amc_time documentation updates
+- keyDup now really duplicates a key.
+- Give Link, Rename and Remove away
+- Remove monitor functions
+- Support removing with setting type to KDB_TYPE_REMOVE
+- Support atomic SetKeys
+- Give kdbOpenDefault, kdbOpenBackend away
+- Change all function to use KDBHandle *
 
 * Mon Oct 23 2006 Avi Alkalay <avi@unix.sh>
 - API started to change to support dir keys with value
@@ -291,7 +1015,7 @@
 
 * Tue Mar 20 2005 Avi Alkalay <avi@unix.sh> 0.5
 - An almost ready Berkeley DB backend
-- Key, KeySet and KeyDB classes earned robusteness through the implementation of a new backend
+- Key, KeySet and KDB classes earned robusteness through the implementation of a new backend
 - All size_t-returning functions now return ssize_t, so a -1 can be checked for errors
 - kdbGetChildKeys() method and similars now return the number of keys retrieved instead of 0
 - The import/export XML file can have nested keys, a real tree of hierarchical keys

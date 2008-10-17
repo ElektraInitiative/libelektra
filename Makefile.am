@@ -1,12 +1,10 @@
-# $Id$
-
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = libltdl src examples doc scripts xmldtd xmlschema tests rpmspecs
-EXTRA_DIST=elektra.pc elektratools.pc elektra.spec elektra.xml 
+SUBDIRS = libltdl src doc benchmarks examples scripts xmlschema tests
+EXTRA_DIST=elektra.pc elektratools.pc elektracpp.pc elektra.spec elektra.mandriva.spec elektra.xml
 
 pkgconfigdir = $(ulibdir)/pkgconfig
-pkgconfig_DATA = elektra.pc elektratools.pc
+pkgconfig_DATA = elektra.pc elektratools.pc elektracpp.pc
 
 RPMARCH=`rpmbuild --showrc | awk '/^build arch/ {print $$4}'`
 

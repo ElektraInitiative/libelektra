@@ -24,16 +24,10 @@
  *   key1=value1;comment
  *
  * TODO:
- *   KDB_RET_NOMEM bei malloc errors
- *   rename/remove keys features
  *   allow subkeys setting/getting
  *   setting existing keys again
- *   all features of kdbGetKeys (KDB_DIR, KDB_DIRONLY)
- *   include statement to open another file in other key kontext
- *  
- * pending:
  *   setting errno properly (update doc, how it should be)
- *   monitor files (in which the keys are) ? better API
+ *   KDB_ERR_NOMEM bei malloc errors
  *
  ***************************************************************************/
 
@@ -43,27 +37,40 @@
 
 #include <kdbbackend.h>
 
-// this is debug and verbose code!
-// redirect stderr or wait for stable release (summer 06 hopefully)
-#define DEBUG
-#define VERBOSE
-#define VERSION "0.1.1"
-
 #define BACKENDNAME "ini"
+#define BACKENDVERSION "0.1.2"
 
-int IniReadDir(KDBHandle handle, Key * key, KeySet * returned, unsigned long options);
-int IniChooseFile(KDBHandle handle, Key * key, KeySet * returned, unsigned long options);
-int IniReadFile (KDBHandle handle, Key * key, KeySet * returned, unsigned long options);
+struct _backendData
+{
+	int fd;
+	FILE *fc;
+};
+
+typedef struct _backendData backendData;
+
+#define FILEDES ((((backendData*)kdbhGetBackendData (handle))->fd))
+#define FILEPTR ((((backendData*)kdbhGetBackendData (handle))->fc))
+
+int IniReadDir(KDB *handle, Key * key, KeySet * returned, unsigned long options);
+int IniChooseFile(KDB *handle, Key * key, KeySet * returned, unsigned long options);
+int IniReadFile (KDB *handle, Key * key, KeySet * returned, unsigned long options);
+int IniSetKeys (KDB *handle, KeySet * origKeys);
 
 /**Helper functions*/
-int srealloc (void ** buffer, size_t size);
-int open_file (char * filename, char mode);
-int close_file (void);
+int open_file (KDB *handle, char * filename, char mode);
+int close_file (KDB *handle);
+int enlarge_file (KDB *handle, long where, long space);
+int shrink_file (KDB *handle, long where, long space);
+int read_key (KDB *handle, Key * key, char * root);
+int write_key (KDB *handle, Key * key, long oldpos);
+int remove_key (KDB *handle, Key * key, long oldpos);
+
+int kdbiRealloc (void ** buffer, size_t size);
+
 int stat_file (Key * forKey, char * filename);
-int enlarge_file (long where, long space);
-int shrink_file (long where, long space);
 size_t base_name (const Key * forKey, char * basename);
 size_t file_name (const Key * forKey, char * basename);
+
 void * open_dir (char * pathname);
 int create_dir (char * filename);
 int read_dir (void * dir, char * filename);
@@ -74,10 +81,7 @@ int parse_buffer (char * c);
 int convert_engine (char * c);
 int convert_strlen (char * p, int size);
 int convert_stream (char * buffer, int size, FILE * stream);
-int read_key (Key * key, char * root);
 int make_key (Key * key, char * root, char * buffer_key, char * buffer_value, char * buffer_comment);
-int write_key (Key * key, long oldpos);
-int remove_key (Key * key, long oldpos);
 
 /**Some systems have even longer pathnames */
 #ifdef PATH_MAX
@@ -107,11 +111,6 @@ int remove_key (Key * key, long oldpos);
 #define KEY_TYPE_FILE 4
 #define KEY_TYPE_DIR 8
 #define KEY_TYPE_SUBDIR 16
-
-/**Global variables*/
-
-/**This filedeskriptor hold the current open file*/
-FILE * fc;
 
 #define O_RDONLY 'r'
 #define O_RDWR 'w'

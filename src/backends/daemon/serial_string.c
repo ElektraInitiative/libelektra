@@ -44,8 +44,8 @@ ssize_t serialString_getSize(const void *pChar)
 {
 	size_t size;
 
-	size = strblen(pChar);
-	if ( kdbNeedsUTF8Conversion() ) 
+	size = kdbiStrLen(pChar);
+	if ( kdbbNeedsUTF8Conversion() ) 
 		size = size * 4;
 
 	return size;	
@@ -61,11 +61,11 @@ ssize_t serialString_serialize(const void *pChar, void *pBuffer)
 	size_t	size;
 	ssize_t	len;
 
-	if ( kdbNeedsUTF8Conversion() ) {
+	if ( kdbbNeedsUTF8Conversion() ) {
 		currentCharset=nl_langinfo(CODESET);
 		converter = iconv_open("UTF-8",currentCharset);
 
-		size = strblen(pChar);
+		size = kdbiStrLen(pChar);
 		bufferSize = size * 4;
 
 		readCursor = (const char *) pChar;
@@ -99,11 +99,11 @@ ssize_t serialString_unserialize(const void *pBuffer, void *ppChar)
 	ssize_t	len;
 
 	dest = (char **) ppChar;
-	if ( kdbNeedsUTF8Conversion() ) {
+	if ( kdbbNeedsUTF8Conversion() ) {
 		currentCharset=nl_langinfo(CODESET);
 		converter = iconv_open(currentCharset, "UTF-8");
 		
-		size = strblen(pBuffer);
+		size = kdbiStrLen(pBuffer);
 		bufferSize = size * 4;
 		*dest = (char *) malloc(bufferSize);
 		readCursor = (const char *) pBuffer;
@@ -117,7 +117,7 @@ ssize_t serialString_unserialize(const void *pBuffer, void *ppChar)
 
 		len = writeCursor - ((char *) *dest);	
 	} else {
-		len = strblen(pBuffer);
+		len = kdbiStrLen(pBuffer);
 		if ( len != -1 ) {
 			*dest = (char *) malloc(len);
 			memcpy(*dest, pBuffer, len);

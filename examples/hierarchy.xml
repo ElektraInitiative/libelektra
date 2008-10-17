@@ -18,10 +18,11 @@
  -->
 
 
-<keyset xmlns="http://www.libelektra.org"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.libelektra.org elektra.xsd"
-	parent="user/tmp">
+<keyset xmlns="http://elektra.sourceforge.net"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://elektra.sourceforge.net elektra.xsd"
+
+		parent="user/tmp">
 
 	<!-- The wrapping keyset is not really necessary. The key element
 		 can be a root key -->

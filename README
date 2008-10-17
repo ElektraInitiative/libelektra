@@ -17,14 +17,17 @@ Elektra stable source code as tarballs can be found at:
 
   http://sourceforge.net/project/showfiles.php?group_id=117521
 
-Elektra Subversion repository with unstable source code can be checked
+Elektra Subversion repository with the latest stable source code can be checked
 out with these commands:
 
   bash:~$ cd src
-  bash:~/src$ svn co http://germane-software.com/repositories/elektra/trunk elektra
+  bash:~/src$ svn co https://svn.libelektra.org/svn/elektra/trunk elektra
   bash:~/src$ cd elektra
   bash:~/src/elektra$ # files are here
 
 
+INSTALL
+=======
 
-$Id$
+See the INSTALL document for informations how to install the software.
+

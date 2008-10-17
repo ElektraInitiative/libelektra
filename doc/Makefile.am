@@ -11,36 +11,16 @@ SUBDIRS=images standards
 
 # Dependencies for Doxygen documentation
 # main...
-DOXYSOURCES=$(srcdir)/../src/libelektra/kdb.c $(srcdir)/../src/include/kdb.h $(srcdir)/../src/libelektra/key.c $(srcdir)/../src/libelektra/keyset.c $(srcdir)/../src/libelektra/kdbhighlevel.c $(srcdir)/../src/libelektra/backendhelpers.c $(srcdir)/../src/Doxyfile
+DOXYSOURCES=$(srcdir)/../src/libelektra/*.c $(srcdir)/../src/include/*.h $(srcdir)/../src/Doxyfile
 
 # tools...
 DOXYSOURCES+=$(srcdir)/../src/libelektratools/kdbtools.c
 
 # kdb command...
-DOXYSOURCES+=$(srcdir)/../src/kdb/kdb.c
+DOXYSOURCES+=$(srcdir)/../src/kdb/kdb-tool.c
 
 # backend stuff...
-DOXYSOURCES+= $(srcdir)/../src/include/kdbbackend.h ../src/include/kdbprivate.h $(srcdir)/../src/backends/template/template.c
-
-
-man3_MANS =
-# man pages are installed in any case, but not distributed if they
-# annot be built
-man1_MANS = kdb.1
-man5_MANS = elektra.5
-man7_MANS = elektra.7
-
-
-# 3 xml files built from source files. Not used for now
-csource.xml: $(srcdir)/../examples/example.c
-	(echo "<programlisting><![CDATA["; cat $<; echo "]]></programlisting>") > csource.xml
-
-xorgpatch.xml: patches/xorg/README.xorg.Elektra.txt
-	(echo "<screen><![CDATA["; cat  $<; echo "]]></screen>") > xorgpatch.xml
-
-initpatch.xml: patches/sysvinit/README.sysvinit.Elektra.txt
-	(echo "<screen><![CDATA["; cat  $<; echo "]]></screen>") > initpatch.xml
-
+DOXYSOURCES+=$(srcdir)/../src/backends/doc/backend.c
 
 if HAVE_XSL
 
@@ -48,6 +28,13 @@ SUFFIXES: .xml .html .pdf .ps .rtf .xsl .fo .tpl
 #
 ## Build man documentation
 #
+man3_MANS =
+# man pages are installed in any case, but not distributed if they
+# annot be built
+man1_MANS = kdb.1
+man5_MANS = elektra.5
+man7_MANS = elektra.7
+
 all_mans = $(man1_MANS) $(man5_MANS) $(man7_MANS)
 
 kdb.1: kdb.1.xml author.xml bestpract.xml rgexample.xml rgcmd.xml
@@ -167,8 +154,8 @@ elektra-api: $(DOXYSOURCES)
 	cd ../src/; srcdir=$(top_srcdir)/src $(doxygen) $(top_srcdir)/src/Doxyfile
 
 clean-local:
-	-rm -rf elektra-api
-	-rm -rf libelektra.org
+	rm -rf elektra-api
+	rm -rf libelektra.org
 
 
 else
@@ -178,7 +165,7 @@ elektra-api:
 	mkdir elektra-api
 
 clean-local:
-	rmdir elektra-api
+	rm -rf elektra-api
 
 endif
 
@@ -219,7 +206,7 @@ uninstall-develdocDATA:
 	-if test -d elektra-api/html/; then api_d=elektra-api/html/; \
 	  else api_d=$(srcdir)/elektra-api/html/; \
 	fi; \
-	list=`find elektra-api/html/`; for p in $$list; do \
+	list=`find "$$api_d"`; for p in $$list; do \
 	f="`echo $$p | sed -e 's|^.*/||'`"; \
 	  echo "rm -f $(DESTDIR)$(apihtmldir)/$$f"; \
 	  rm -f $(DESTDIR)$(apihtmldir)/$$f; \

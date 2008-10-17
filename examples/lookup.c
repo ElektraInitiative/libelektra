@@ -1,64 +1,26 @@
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include <stdio.h>
 #include <kdb.h>
 
 int main(int argc,char **argv) {
 	KeySet *ks;
 	Key *key=0;
-	KDBHandle handle;
-	uint32_t where,match;
-	regex_t regex;
-	
-	ks=ksNew();
-	
-	kdbOpen(&handle);
-	kdbGetChildKeys(handle,"system/sw/xorg",ks,KDB_O_RECURSIVE|KDB_O_SORT);
-	kdbClose(&handle);
-	
+	KDB *handle = kdbOpen();
+
+	ks=ksNew(0);
+
+	kdbGetByName(handle,ks,"system/sw/xorg",0);
+	kdbClose(handle);
+
 	ksRewind(ks);
 	key=ksLookupByName(ks,"system/sw/xorg/current/screens/screen0/displays/00/depth",
 		KDB_O_NOCASE);
-	
+
 	printf("*************** Name matching\n\n");
 	if (key) {
-		keyToStream(key,stdout,0);
+		/* keyToStream(key,stdout,0); */
 		
 		key=ksCurrent(ks);
 		
-		keyToStream(key,stdout,0); /* should be the same */
+		/* keyToStream(key,stdout,0);  should be the same */
 	}
-	
-	printf("*************** Value matching\n\n");
-	
-	ksRewind(ks);
-	while ((key=ksLookupByValue(ks,"24",0))) {
-		/* show all keys which value="24" */
-		keyToStream(key,stdout,0);
-	}
-	
-	ksRewind(ks);
-	while ((key=ksLookupByValue(ks,"0",0))) {
-		/* show all keys which value="0" */
-		keyToStream(key,stdout,0);
-	}
-
-	
-	printf("*************** Regex matching\n\n");
-	
-	regcomp(&regex,".*/InputDevices/.*/Options/.*",0);
-	where=KEY_SWITCH_NAME;
-	
-	ksRewind(ks);
-	do {
-		match=ksLookupRE(ks,where,&regex,KDB_O_NOSPANPARENT);
-		if (match) {
-			key=ksCurrent(ks);
-			keyToStream(key,stdout,0);
-		}
-	} while (match);
-	
-	regfree(&regex);
 }

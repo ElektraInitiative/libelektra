@@ -119,7 +119,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/common/xf86Config.c xc/programs/X
 +
 +	{
 +		if ( !ignoreElektra ) {
-+			KDBHandle	handle;
++			KDB	handle;
 +	 		KeySet *ks;
 + 			char *rootkey="system/sw/xorg/current";
 +			int ret;
@@ -263,7 +263,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 + *
 + */
 +XF86ConfFilesPtr
-+xf86getFiles (KDBHandle handle, const char *rootKey)
++xf86getFiles (KDB handle, const char *rootKey)
 +{
 +	KeySet	*settings;
 +	Key *key;
@@ -330,7 +330,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +
 +	xf86conffree(buffer);
 +	
-+#ifdef DEBUG
++#if DEBUG
 +	printf ("File keys grabed\n");
 +#endif
 +
@@ -359,7 +359,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +				KEY_SWITCH_VALUE, ptr->file_logfile,
 +				KEY_SWITCH_END);
 +
-+		ksAppend(ks,key);
++		ksAppendKey(ks,key);
 +	}
 +
 +	if (ptr->file_rgbpath) {
@@ -368,7 +368,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +				KEY_SWITCH_VALUE, ptr->file_rgbpath,
 +				KEY_SWITCH_END);
 +
-+		ksAppend(ks,key);
++		ksAppendKey(ks,key);
 +	}
 +
 +	if (ptr->file_modulepath) {
@@ -377,7 +377,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +				KEY_SWITCH_VALUE, ptr->file_modulepath,
 +				KEY_SWITCH_END);
 +
-+		ksAppend(ks,key);
++		ksAppendKey(ks,key);
 +	} else {
 +		/* No module path provided, set to the default one */
 +		snprintf(buffer, bsize, "%s/Files/ModulePath", root);
@@ -385,7 +385,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +				KEY_SWITCH_VALUE, MODULE_DIR,
 +				KEY_SWITCH_END);
 +		
-+		ksAppend(ks,key);
++		ksAppendKey(ks,key);
 +	}
 +
 +	if (ptr->file_inputdevs) {
@@ -394,7 +394,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +				KEY_SWITCH_VALUE, ptr->file_inputdevs,
 +				KEY_SWITCH_END);
 +
-+		ksAppend(ks,key);
++		ksAppendKey(ks,key);
 +	}
 +
 +	if (ptr->file_fontpath) {
@@ -403,7 +403,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +				KEY_SWITCH_VALUE, ptr->file_fontpath,
 +				KEY_SWITCH_END);
 +
-+		ksAppend(ks,key);
++		ksAppendKey(ks,key);
 +	}
 +
 +	xf86conffree(buffer);
@@ -523,7 +523,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +
 +		list = list->list.next;
 +
-+		ksAppend(ks,key);
++		ksAppendKey(ks,key);
 +	}
 +	xf86conffree(buffer);
 +}
@@ -548,7 +548,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 + *
 + */
 +XF86ConfFlagsPtr
-+xf86getFlags (KDBHandle handle, const char *rootKey)
++xf86getFlags (KDB handle, const char *rootKey)
 +{
 +	KeySet *optionKeys;
 +	char *serverFlagsRoot;
@@ -572,7 +572,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +		ptr->flg_option_lst=options;
 +	}
 +
-+#ifdef DEBUG
++#if DEBUG
 +	printf ("Flags keys grabed\n");
 +#endif
 +
@@ -630,7 +630,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 + *
 + */
 +XF86ConfInputPtr
-+xf86getInput (KDBHandle handle, const char *rootKey)
++xf86getInput (KDB handle, const char *rootKey)
 +{
 +	KeySet *inputDevs;
 +	Key *current;
@@ -708,7 +708,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +
 +	ksDel(inputDevs);
 +
-+#ifdef DEBUG
++#if DEBUG
 +	printf ("InputDevice keys grabed\n");
 +#endif
 +
@@ -737,7 +737,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			KEY_SWITCH_VALUE, ptr->inp_driver,
 +			KEY_SWITCH_COMMENT, ptr->inp_comment,
 +			KEY_SWITCH_END);
-+		ksAppend(ks,key);
++		ksAppendKey(ks,key);
 +
 +		snprintf(buffer, bsize, "%s/InputDevices/%s/Options",root,ptr->inp_identifier);
 +		xf86addOptions(ks,buffer,ptr->inp_option_lst);
@@ -771,7 +771,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 + */
 +
 +XF86ConfDevicePtr
-+xf86getDevice (KDBHandle handle, const char *rootKey)
++xf86getDevice (KDB handle, const char *rootKey)
 +{
 +	KeySet *devices;
 +	Key *current;
@@ -1003,7 +1003,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +	ksDel(devices);
 +
 +
-+#ifdef DEBUG
++#if DEBUG
 +	printf ("Device keys grabed\n");
 +#endif
 +
@@ -1039,7 +1039,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer,
 +					KEY_SWITCH_VALUE, ptr->dev_driver,
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if (ptr->dev_vendor) {
@@ -1047,7 +1047,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer,
 +					KEY_SWITCH_VALUE, ptr->dev_vendor,
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +
@@ -1056,7 +1056,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer,
 +					KEY_SWITCH_VALUE, ptr->dev_board,
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if (ptr->dev_chipset) {
@@ -1064,7 +1064,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer,
 +					KEY_SWITCH_VALUE, ptr->dev_chipset,
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if (ptr->dev_card) {
@@ -1072,7 +1072,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer,
 +					KEY_SWITCH_VALUE, ptr->dev_card,
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if (ptr->dev_ramdac) {
@@ -1080,7 +1080,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer,
 +					KEY_SWITCH_VALUE, ptr->dev_ramdac,
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if (ptr->dev_dacSpeeds[0] > 0 ) {
@@ -1099,7 +1099,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer, 
 +					KEY_SWITCH_VALUE, value,
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if (ptr->dev_videoram) {
@@ -1108,7 +1108,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer,
 +					KEY_SWITCH_VALUE, value,
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if (ptr->dev_bios_base) {
@@ -1117,7 +1117,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer,
 +					KEY_SWITCH_VALUE, value,
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if (ptr->dev_mem_base) {
@@ -1126,7 +1126,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer,
 +					KEY_SWITCH_VALUE, value,
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if (ptr->dev_io_base) {
@@ -1134,7 +1134,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			snprintf(value, bufSize, "0x%lx",ptr->dev_io_base);
 +			key = keyNew(buffer,
 +					KEY_SWITCH_VALUE, value,										                                        KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if (ptr->dev_clockchip) {
@@ -1142,7 +1142,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer, 
 +					KEY_SWITCH_VALUE, ptr->dev_clockchip,
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if (ptr->dev_chipid != -1) {
@@ -1151,7 +1151,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer,
 +					KEY_SWITCH_VALUE, value,
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if (ptr->dev_chiprev != -1) {
@@ -1160,7 +1160,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer,
 +					KEY_SWITCH_VALUE, value,
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if (ptr->dev_clocks > 0 ) {
@@ -1177,7 +1177,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer,
 +					KEY_SWITCH_VALUE, value,
 +					KEY_SWITCH_END);
-+			ksAppend(ks, key);
++			ksAppendKey(ks, key);
 +		}
 +
 +		if (ptr->dev_textclockfreq) {
@@ -1186,7 +1186,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer,
 +					KEY_SWITCH_VALUE, value,
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +
@@ -1195,7 +1195,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer,
 +					KEY_SWITCH_VALUE, ptr->dev_busid,
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if (ptr->dev_screen > 0) {
@@ -1204,7 +1204,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer,
 +					KEY_SWITCH_VALUE, value,
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if (ptr->dev_irq >= 0) {
@@ -1213,7 +1213,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer,
 +					KEY_SWITCH_VALUE, value,
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		snprintf(buffer, bufSize, "%s/Options",devroot);
@@ -1248,7 +1248,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 + *
 + */
 +XF86ConfModeLinePtr
-+ksToModes(KDBHandle handle, KeySet *ks)
++ksToModes(KDB handle, KeySet *ks)
 +{
 +	Key *key;
 +	char *buffer;
@@ -1431,7 +1431,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +
 +	xf86conffree(buffer);
 +	
-+#ifdef DEBUG
++#if DEBUG
 +	printf ("Mode keys grabed\n");
 +#endif
 +	return modes;
@@ -1446,7 +1446,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 + *
 + */
 +XF86ConfModesPtr
-+xf86getModes (KDBHandle handle, const char *rootKey)
++xf86getModes (KDB handle, const char *rootKey)
 +{
 +	XF86ConfModesPtr modes=NULL; /* we'll return this */
 +	KeySet *ksModes;
@@ -1530,63 +1530,63 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +		key = keyNew(buffer, 
 +				KEY_SWITCH_VALUE, value,
 +				KEY_SWITCH_END);
-+		ksAppend(ks,key);
++		ksAppendKey(ks,key);
 +
 +		snprintf(buffer, size, "%s/HTimings.hdisp",moderoot);
 +		snprintf(value, size, "%d", mlptr->ml_hdisplay);
 +		key = keyNew(buffer, 
 +				KEY_SWITCH_VALUE, value,
 +				KEY_SWITCH_END);
-+		ksAppend(ks,key);
++		ksAppendKey(ks,key);
 +		
 +		snprintf(buffer, size, "%s/HTimings.hsyncstart",moderoot);
 +		snprintf(value, size, "%d", mlptr->ml_hsyncstart);
 +		key = keyNew(buffer, 
 +				KEY_SWITCH_VALUE, value,
 +				KEY_SWITCH_END);
-+		ksAppend(ks,key);
++		ksAppendKey(ks,key);
 +		
 +		snprintf(buffer, size, "%s/HTimings.hsyncend",moderoot);
 +		snprintf(value, size, "%d", mlptr->ml_hsyncend);
 +		key = keyNew(buffer, 
 +				KEY_SWITCH_VALUE, value,
 +				KEY_SWITCH_END);
-+		ksAppend(ks,key);
++		ksAppendKey(ks,key);
 +		
 +		snprintf(buffer, size, "%s/HTimings.htotal",moderoot);
 +		snprintf(value, size, "%d", mlptr->ml_htotal);
 +		key = keyNew(buffer, 
 +				KEY_SWITCH_VALUE, value,
 +				KEY_SWITCH_END);
-+		ksAppend(ks,key);
++		ksAppendKey(ks,key);
 +		
 +		snprintf(buffer, size, "%s/VTimings.vdisp",moderoot);
 +		snprintf(value, size, "%d", mlptr->ml_vdisplay);
 +		key = keyNew(buffer, 
 +				KEY_SWITCH_VALUE, value,
 +				KEY_SWITCH_END);
-+		ksAppend(ks,key);
++		ksAppendKey(ks,key);
 +
 +		snprintf(buffer, size, "%s/VTimings.vsyncstart",moderoot);
 +		snprintf(value, size, "%d", mlptr->ml_vsyncstart);
 +		key = keyNew(buffer, 
 +				KEY_SWITCH_VALUE, value,
 +				KEY_SWITCH_END);
-+		ksAppend(ks,key);
++		ksAppendKey(ks,key);
 +		
 +		snprintf(buffer, size, "%s/VTimings.vsyncend",moderoot);
 +		snprintf(value, size, "%d", mlptr->ml_vsyncend);
 +		key = keyNew(buffer, 
 +				KEY_SWITCH_VALUE, value,
 +				KEY_SWITCH_END);
-+		ksAppend(ks,key);
++		ksAppendKey(ks,key);
 +			
 +		snprintf(buffer, size, "%s/VTimings.vtotal",moderoot);
 +		snprintf(value, size, "%d", mlptr->ml_vtotal);
 +		key = keyNew(buffer, 
 +				KEY_SWITCH_VALUE, value,
 +				KEY_SWITCH_END);
-+		ksAppend(ks,key);
++		ksAppendKey(ks,key);
 +			
 +			
 +		if (mlptr->ml_flags & XF86CONF_PHSYNC) {
@@ -1594,7 +1594,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer, 
 +					KEY_SWITCH_VALUE,	"1",
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if (mlptr->ml_flags & XF86CONF_NHSYNC) {
@@ -1602,7 +1602,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer,
 +					KEY_SWITCH_VALUE,       "-1",
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if (mlptr->ml_flags & XF86CONF_PVSYNC) {
@@ -1610,7 +1610,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer,
 +					KEY_SWITCH_VALUE,       "1",
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if (mlptr->ml_flags & XF86CONF_NVSYNC) {
@@ -1618,7 +1618,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer,
 +					KEY_SWITCH_VALUE,       "-1",
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if (mlptr->ml_flags & XF86CONF_INTERLACE) {
@@ -1626,7 +1626,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer,
 +					KEY_SWITCH_VALUE,       "1",
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if (mlptr->ml_flags & XF86CONF_CSYNC) {
@@ -1634,7 +1634,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer,
 +					KEY_SWITCH_VALUE,       "1",
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if (mlptr->ml_flags & XF86CONF_PCSYNC) {
@@ -1642,7 +1642,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer,
 +					KEY_SWITCH_VALUE,       "1",
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if (mlptr->ml_flags & XF86CONF_NCSYNC) {
@@ -1650,7 +1650,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer,
 +					KEY_SWITCH_VALUE,       "-1",
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if (mlptr->ml_flags & XF86CONF_DBLSCAN) {
@@ -1658,7 +1658,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer,
 +					KEY_SWITCH_VALUE,       "1",
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if (mlptr->ml_flags & XF86CONF_HSKEW) {
@@ -1667,7 +1667,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer, 
 +				KEY_SWITCH_VALUE, value,
 +				KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if (mlptr->ml_flags & XF86CONF_BCAST) {
@@ -1675,7 +1675,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer,
 +					KEY_SWITCH_VALUE,       "1",
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if (mlptr->ml_flags & XF86CONF_VSCAN) {
@@ -1683,7 +1683,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer,
 +					KEY_SWITCH_VALUE,       "1",
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +	} /* end "for" loop: mode processing */
 +
@@ -1745,7 +1745,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 + *
 + */
 +XF86ConfMonitorPtr
-+xf86getMonitor (KDBHandle handle, const char *rootKey)
++xf86getMonitor (KDB handle, const char *rootKey)
 +{
 +	KeySet *monitors;
 +	Key *current;
@@ -2021,7 +2021,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +	ksDel(monitors);
 +	xf86conffree(buffer);
 +
-+#ifdef DEBUG
++#if DEBUG
 +	printf ("Monitor keys grabed\n");
 +#endif
 +
@@ -2059,7 +2059,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer,
 +					KEY_SWITCH_VALUE, ptr->mon_vendor,
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if (ptr->mon_modelname) {
@@ -2067,7 +2067,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer,
 +					KEY_SWITCH_VALUE, ptr->mon_modelname,
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if ((mptr = ptr->mon_modes_sect_lst)) {
@@ -2084,7 +2084,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			keySetString(key,buffer);
 +			keySetComment(key,
 +				"A comma separated list of modes, without spaces");
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +			
 +		if (ptr->mon_width) {
@@ -2093,14 +2093,14 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer, 
 +					KEY_SWITCH_VALUE, value,
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +			
 +			snprintf(buffer, size, "%s/DisplaySize.height",devroot);
 +			snprintf(value, size, "%d",ptr->mon_height);
 +			key = keyNew(buffer, 
 +					KEY_SWITCH_VALUE, value,
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if (ptr->mon_n_hsync > 0) {
@@ -2124,7 +2124,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +					KEY_SWITCH_VALUE, value,
 +					KEY_SWITCH_COMMENT, "Ex: 30.0-61.0, 70-83.2",
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if (ptr->mon_n_vrefresh > 0) {
@@ -2147,7 +2147,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +					KEY_SWITCH_VALUE, value,
 +					KEY_SWITCH_COMMENT, "Ex: 30.0-61.0, 70-83.2",
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if (ptr->mon_gamma_red) {
@@ -2158,28 +2158,28 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +				key = keyNew(buffer, 
 +					KEY_SWITCH_VALUE, value,
 +					KEY_SWITCH_END);
-+				ksAppend(ks,key);
++				ksAppendKey(ks,key);
 +			} else {
 +				snprintf(buffer, size, "%s/Gamma.red",devroot);
 +				snprintf(value, size, "%.4g",ptr->mon_gamma_red);
 +				key = keyNew(buffer, 
 +					KEY_SWITCH_VALUE, value,
 +					KEY_SWITCH_END);
-+				ksAppend(ks,key);
++				ksAppendKey(ks,key);
 +				
 +				snprintf(buffer, size, "%s/Gamma.green",devroot);
 +				snprintf(value, size, "%.4g",ptr->mon_gamma_green);
 +				key = keyNew(buffer, 
 +					KEY_SWITCH_VALUE, value,
 +					KEY_SWITCH_END);
-+				ksAppend(ks,key);
++				ksAppendKey(ks,key);
 +				
 +				snprintf(buffer, size, "%s/%s",devroot,"Gamma.blue");
 +				snprintf(value, size, "%.4g",ptr->mon_gamma_blue);
 +				key = keyNew(buffer, 
 +					KEY_SWITCH_VALUE, value,
 +					KEY_SWITCH_END);
-+				ksAppend(ks,key);
++				ksAppendKey(ks,key);
 +			}
 +		}
 +		
@@ -2216,7 +2216,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 + *
 + */
 +XF86ConfDRIPtr
-+xf86getDRI (KDBHandle handle, const char *rootKey)
++xf86getDRI (KDB handle, const char *rootKey)
 +{
 +	KeySet *settings;
 +	Key *key;
@@ -2304,7 +2304,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +		ptr=NULL;
 +	}
 +	
-+#ifdef DEBUG
++#if DEBUG
 +	ErrorF("DRI keys grabed\n");
 +#endif
 +
@@ -2342,14 +2342,14 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +		key = keyNew(buffer, 
 +				KEY_SWITCH_VALUE, ptr->dri_group_name,
 +				KEY_SWITCH_END);
-+		ksAppend(ks,key);
++		ksAppendKey(ks,key);
 +	} else if (ptr->dri_group >= 0) {
 +		snprintf(buffer, size, "%s/DRI/Group",root);
 +		snprintf(value, size, "%d", ptr->dri_group);
 +		key = keyNew(buffer, 
 +				KEY_SWITCH_VALUE, value,
 +				KEY_SWITCH_END);
-+		ksAppend(ks,key);
++		ksAppendKey(ks,key);
 +	}
 +
 +	if (ptr->dri_mode) {
@@ -2358,7 +2358,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +		key = keyNew(buffer,
 +				KEY_SWITCH_VALUE, value,
 +				KEY_SWITCH_END);		
-+		ksAppend(ks,key);
++		ksAppendKey(ks,key);
 +	}
 +
 +	if ( (bufs = ptr->dri_buffers_lst) ) {
@@ -2382,7 +2382,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +		key = keyNew(buffer,
 +				KEY_SWITCH_VALUE, value,
 +				KEY_SWITCH_END);
-+		ksAppend(ks,key);
++		ksAppendKey(ks,key);
 +	}
 +
 +	xf86conffree(value);
@@ -2413,7 +2413,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 + *
 + */
 +XF86ConfDisplayPtr
-+ksToDisplays(KDBHandle handle, KeySet *ks)
++ksToDisplays(KDB handle, KeySet *ks)
 +{
 +	Key *key;
 +	XF86ConfDisplayPtr ptr;
@@ -2595,7 +2595,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +		xf86conffree(buffer);
 +
 +	}
-+#ifdef DEBUG
++#if DEBUG
 +	printf ("Display subsection keys grabed\n");
 +#endif
 +
@@ -2610,7 +2610,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 + *
 + */
 +XF86ConfScreenPtr
-+xf86getScreen (KDBHandle handle, const char *rootKey)
++xf86getScreen (KDB handle, const char *rootKey)
 +{
 +	XF86ConfScreenPtr ptr=NULL; /* we'll return this */
 +	KeySet *screens;
@@ -2766,7 +2766,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +
 +	ksDel(screens);
 +
-+#ifdef DEBUG
++#if DEBUG
 +	printf ("Screen keys grabed\n");
 +#endif
 +
@@ -2815,7 +2815,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer,
 +     					KEY_SWITCH_VALUE, ptr->scrn_obso_driver,					
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if (ptr->scrn_device_str) {
@@ -2823,7 +2823,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer,
 +					KEY_SWITCH_VALUE, ptr->scrn_device_str,
 +					KEY_SWITCH_END);			
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if (ptr->scrn_monitor_str) {
@@ -2831,7 +2831,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer,
 +					KEY_SWITCH_VALUE, ptr->scrn_monitor_str,
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if (ptr->scrn_defaultdepth) {
@@ -2840,7 +2840,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer,
 +					KEY_SWITCH_VALUE, value,
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if (ptr->scrn_defaultbpp) {
@@ -2849,7 +2849,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer,
 +					KEY_SWITCH_VALUE, value,
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		if (ptr->scrn_defaultfbbpp) {
@@ -2858,7 +2858,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer,
 +					KEY_SWITCH_VALUE, value,
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +		}
 +
 +		snprintf(buffer, size, "%s/Options",screenroot);
@@ -2885,7 +2885,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer, 
 +					KEY_SWITCH_VALUE, superbuffer,
 +					KEY_SWITCH_END);
-+			ksAppend(ks,key);
++			ksAppendKey(ks,key);
 +
 +			xf86conffree(superbuffer);
 +		}
@@ -2909,14 +2909,14 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +				key = keyNew(buffer,
 +						KEY_SWITCH_VALUE, value,
 +						KEY_SWITCH_END);
-+				ksAppend(ks,key);
++				ksAppendKey(ks,key);
 +
 +				snprintf(buffer, size, "%s/Viewport.y",disproot);
 +				snprintf(value, size, "%d",dptr->disp_frameY0);
 +				key = keyNew(buffer,
 +						KEY_SWITCH_VALUE, value,
 +						KEY_SWITCH_END);
-+				ksAppend(ks,key);
++				ksAppendKey(ks,key);
 +			}
 +			if (dptr->disp_virtualX != 0 || dptr->disp_virtualY != 0)
 +			{
@@ -2925,14 +2925,14 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +				key = keyNew(buffer,
 +						KEY_SWITCH_VALUE, value,
 +						KEY_SWITCH_END);
-+				ksAppend(ks,key);
++				ksAppendKey(ks,key);
 +
 +				snprintf(buffer, size, "%s/Virtual.y",disproot);
 +				snprintf(value, size, "%d",dptr->disp_virtualY);
 +				key = keyNew(buffer,
 +						KEY_SWITCH_VALUE, value,
 +						KEY_SWITCH_END);
-+				ksAppend(ks,key);
++				ksAppendKey(ks,key);
 +			}
 +			if (dptr->disp_depth)
 +			{
@@ -2941,7 +2941,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +				key = keyNew(buffer,
 +						KEY_SWITCH_VALUE, value,
 +						KEY_SWITCH_END);
-+				ksAppend(ks,key);
++				ksAppendKey(ks,key);
 +			}
 +			if (dptr->disp_bpp)
 +			{
@@ -2950,7 +2950,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +				key = keyNew(buffer,
 +						KEY_SWITCH_VALUE, value,
 +						KEY_SWITCH_END);
-+				ksAppend(ks,key);
++				ksAppendKey(ks,key);
 +			}
 +			if (dptr->disp_visual)
 +			{
@@ -2958,7 +2958,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +				key = keyNew(buffer,
 +						KEY_SWITCH_VALUE, dptr->disp_visual,
 +						KEY_SWITCH_END);
-+				ksAppend(ks,key);
++				ksAppendKey(ks,key);
 +			}
 +			if (dptr->disp_weight.red != 0)
 +			{
@@ -2967,21 +2967,21 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +				key = keyNew(buffer,
 +						KEY_SWITCH_VALUE, value,
 +						KEY_SWITCH_END);
-+				ksAppend(ks,key);
++				ksAppendKey(ks,key);
 +
 +				snprintf(buffer, size, "%s/Weight.green",disproot);
 +				snprintf(value, size, "%d",dptr->disp_weight.green);
 +				key = keyNew(buffer,
 +						KEY_SWITCH_VALUE, value,
 +						KEY_SWITCH_END);
-+				ksAppend(ks,key);
++				ksAppendKey(ks,key);
 +
 +				snprintf(buffer, size, "%s/Weight.blue",disproot);
 +				snprintf(buffer, size, "%d",dptr->disp_weight.blue);
 +				key = keyNew(buffer,
 +						KEY_SWITCH_VALUE, value,
 +						KEY_SWITCH_END);
-+				ksAppend(ks,key);
++				ksAppendKey(ks,key);
 +			}
 +			if (dptr->disp_black.red != -1)
 +			{
@@ -2990,21 +2990,21 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +				key = keyNew(buffer,
 +						KEY_SWITCH_VALUE, value,
 +						KEY_SWITCH_END);
-+				ksAppend(ks,key);
++				ksAppendKey(ks,key);
 +
 +				snprintf(buffer, size, "%s/Black.green",disproot);
 +				snprintf(value, size, "0x%04x",dptr->disp_black.green);
 +				key = keyNew(buffer,
 +						KEY_SWITCH_VALUE, value,
 +						KEY_SWITCH_END);
-+				ksAppend(ks,key);
++				ksAppendKey(ks,key);
 +
 +				snprintf(buffer, size, "%s/Black.blue",disproot);
 +				snprintf(value, size, "0x%04x",dptr->disp_black.blue);
 +				key = keyNew(buffer,
 +						KEY_SWITCH_VALUE, value,
 +						KEY_SWITCH_END);
-+				ksAppend(ks,key);
++				ksAppendKey(ks,key);
 +			}
 +			if (dptr->disp_white.red != -1)
 +			{
@@ -3013,21 +3013,21 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +				key = keyNew(buffer,
 +						KEY_SWITCH_VALUE, value,
 +						KEY_SWITCH_END);
-+				ksAppend(ks,key);
++				ksAppendKey(ks,key);
 +
 +				snprintf(buffer, size, "%s/White.green",disproot);
 +				snprintf(value, size, "0x%04x",dptr->disp_white.green);
 +				key = keyNew(buffer,
 +						KEY_SWITCH_VALUE, value,
 +						KEY_SWITCH_END);
-+				ksAppend(ks,key);
++				ksAppendKey(ks,key);
 +
 +				snprintf(buffer, size, "%s/White.blue",disproot);
 +				snprintf(value, size, "0x%04x",dptr->disp_white.blue);
 +				key = keyNew(buffer,
 +						KEY_SWITCH_VALUE, value,
 +						KEY_SWITCH_END);
-+				ksAppend(ks,key);
++				ksAppendKey(ks,key);
 +			}
 +			if (dptr->disp_mode_lst)
 +			{
@@ -3043,7 +3043,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +						KEY_SWITCH_VALUE, value,
 +						KEY_SWITCH_END);
 +
-+				ksAppend(ks,key);
++				ksAppendKey(ks,key);
 +			}
 +
 +			xf86addOptions(ks,disproot,dptr->disp_option_lst);
@@ -3082,7 +3082,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 + *
 + */
 +XF86ConfModulePtr
-+xf86getModules (KDBHandle handle, const char *rootKey)
++xf86getModules (KDB handle, const char *rootKey)
 +{
 +	KeySet *ksModules;
 +	Key *key;
@@ -3164,7 +3164,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +	xf86conffree(buffer);
 +	xf86conffree(localRootKey);
 +	
-+#ifdef DEBUG
++#if DEBUG
 +	printf ("Module keys grabed\n");
 +#endif
 +
@@ -3235,7 +3235,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +					modPath = keyNew(keyName,
 +							KEY_SWITCH_VALUE, buffer,
 +							KEY_SWITCH_END);
-+					ksAppend(ks, modPath);
++					ksAppendKey(ks, modPath);
 +										
 +					keySetString(modPath, buffer);
 +				} else {
@@ -3262,7 +3262,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +			key = keyNew(buffer,
 +					KEY_SWITCH_TYPE, KEY_TYPE_DIR,
 +    					KEY_SWITCH_END);
-+  			ksAppend(ks,key);
++  			ksAppendKey(ks,key);
 +
 +			if( lptr->load_opt) {
 + 				xf86addOptions(ks,buffer,lptr->load_opt);
@@ -3297,7 +3297,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +		key = keyNew(buffer, 
 +				KEY_SWITCH_VALUE, loaddrivers,
 +				KEY_SWITCH_END);
-+		ksAppend(ks,key);
++		ksAppendKey(ks,key);
 +	}
 +
 +	xf86conffree(modroot);
@@ -3340,7 +3340,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 + *
 + */
 +XF86ConfLayoutPtr
-+xf86getLayout (KDBHandle handle, const char *rootKey)
++xf86getLayout (KDB handle, const char *rootKey)
 +{
 +	XF86ConfLayoutPtr lay=NULL; /* we'll return this */
 +	KeySet *layouts;
@@ -3533,7 +3533,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +	ksDel(layouts);
 +	xf86conffree(buffer); 
 +
-+#ifdef DEBUG
++#if DEBUG
 +	printf ("Server Layouts grabed\n");
 +#endif
 +
@@ -3585,7 +3585,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +				key = keyNew(buffer,
 +						KEY_SWITCH_VALUE, value,
 +						KEY_SWITCH_END);
-+				ksAppend(ks,key);
++				ksAppendKey(ks,key);
 +			}
 +
 +			switch(aptr->adj_where)
@@ -3603,14 +3603,14 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +					key = keyNew(buffer,
 +							KEY_SWITCH_VALUE, value,
 +							KEY_SWITCH_END);
-+					ksAppend(ks,key);
++					ksAppendKey(ks,key);
 +
 +					snprintf(buffer, size, "%s/Absolute.y",screenroot);
 +					snprintf(value, size, "%d",aptr->adj_y);
 +					key = keyNew(buffer,
 +							KEY_SWITCH_VALUE, value,
 +							KEY_SWITCH_END);
-+					ksAppend(ks,key);
++					ksAppendKey(ks,key);
 +				}
 +				break;
 +			case CONF_ADJ_RIGHTOF:
@@ -3619,7 +3619,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +				key = keyNew(buffer,
 +						KEY_SWITCH_VALUE, value,
 +						KEY_SWITCH_END);
-+				ksAppend(ks,key);
++				ksAppendKey(ks,key);
 +				break;
 +			case CONF_ADJ_LEFTOF:
 +				snprintf(buffer, size, "%s/LeftOf",screenroot);
@@ -3627,7 +3627,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +				key = keyNew(buffer,
 +						KEY_SWITCH_VALUE, value,
 +						KEY_SWITCH_END);
-+				ksAppend(ks,key);
++				ksAppendKey(ks,key);
 +				break;
 +			case CONF_ADJ_ABOVE:
 +				snprintf(buffer, size, "%s/Above",screenroot);
@@ -3635,7 +3635,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +				key = keyNew(buffer,
 +						KEY_SWITCH_VALUE, value,
 +						KEY_SWITCH_END);
-+				ksAppend(ks,key);
++				ksAppendKey(ks,key);
 +				break;
 +			case CONF_ADJ_BELOW:
 +				snprintf(buffer, size, "%s/Below",screenroot);
@@ -3643,7 +3643,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +				key = keyNew(buffer,
 +						KEY_SWITCH_VALUE, value,
 +						KEY_SWITCH_END);
-+				ksAppend(ks,key);
++				ksAppendKey(ks,key);
 +				break;
 +			case CONF_ADJ_RELATIVE:
 +				snprintf(buffer, size, "%s/Relative",screenroot);
@@ -3651,21 +3651,21 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +				key = keyNew(buffer,
 +						KEY_SWITCH_VALUE, value,
 +						KEY_SWITCH_END);
-+				ksAppend(ks,key);
++				ksAppendKey(ks,key);
 +
 +				snprintf(buffer, size, "%s/Relative.x",screenroot);
 +				snprintf(value, size, "%d",aptr->adj_x);
 +				key = keyNew(buffer,
 +						KEY_SWITCH_VALUE, value,
 +						KEY_SWITCH_END);
-+				ksAppend(ks,key);
++				ksAppendKey(ks,key);
 +
 +				snprintf(buffer, size, "%s/Relative.y",screenroot);
 +				snprintf(value, size,"%d",aptr->adj_y);
 +				key = keyNew(buffer,
 +						KEY_SWITCH_VALUE, value,
 +						KEY_SWITCH_END);
-+				ksAppend(ks,key);
++				ksAppendKey(ks,key);
 +
 +				break;
 +			}
@@ -3724,7 +3724,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/elektra.c xc/programs/Xser
 +XF86ConfigPtr
 +xf86getConfigKeys (const char *rootKey)
 +{
-+	KDBHandle handle;
++	KDB handle;
 +	XF86ConfigPtr ptr = NULL;
 +	Key *kroot;
 +	
@@ -4265,7 +4265,7 @@ diff -Naur xc.orig/programs/Xserver/hw/xfree86/parser/xelektrify.c xc/programs/X
 +
 +int
 +convert(int direction,char *xc,char *rk) {
-+	KDBHandle handle;
++	KDB handle;
 +	const char *filename;
 +	XF86ConfigPtr conf;
 +	KeySet *ks=0;

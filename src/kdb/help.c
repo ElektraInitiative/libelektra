@@ -13,49 +13,11 @@
  *                                                                         *
  ***************************************************************************/
 
-
-/* Subversion stuff
-
-$Id: kdb.c 802 2006-06-16 09:34:46Z mraab $
-
-*/
-
-
-
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
-#include <stdlib.h>
-#include <stdio.h>
-
-#define CMD_GET       1
-#define CMD_SET       2
-#define CMD_REMOVE    3
-#define CMD_LIST      4
-#define CMD_LINK      5
-#define CMD_EDIT      6
-#define CMD_LOAD      7
-#define CMD_SAVE      8
-#define CMD_MONITOR   9
-#define CMD_MOVE      10
-#define CMD_INFO      25
-#define CMD_HELP      30
-
-
-
-/**
- * @defgroup libexample  The kdb Command Source Code: Example of Full Library Utilization
- * @{
- */
-
+#include <kdb-tool.h>
 
 
 /**
  * Prints out help to the kdb (1) command.
- *TODO: should be same as man page
- * help2man?
  * --help does not work
  *
  * @par Example:
@@ -67,6 +29,9 @@ $Id: kdb.c 802 2006-06-16 09:34:46Z mraab $
 int commandHelp() {
 	printf("Usage: kdb [OPTION] <command> [<key> [value ...]]\n");
 	printf("Use kdb to manipulate the Key Database.\n");
+	printf("\n");
+
+	printf("libelektra " VERSION " is used\n");
 	printf("\n");
 
 	printf("ARGUMENTS\n");
@@ -145,7 +110,13 @@ void options() {
 
 void optiont() {
 	printf("-t type\n");
-	printf(" When setting a key's value, you can specify the type with this switch. Currently accepted types are string for plain text, bin for binary as-is values, dir to create folder keys and link to create symbolic links between keys. Plain text are always stored as UTF-8(7) in Elektra, regardeless of your current encoding ($LANG). If you want to force a value to be stored without the UTF-8(7) encoding (a bad idea), you can set it as binary. Binary values should be avoided, because they are black boxes for system administrators. \n");
+	printf("When setting a key's value, you can specify the type with this switch.\n");
+	printf("Currently accepted types are:\n");
+	printf("  string for plain text\n");
+	printf("  binary for binary as-is values, should be avoided\n");
+	printf("  link to create symbolic links between keys\n");
+	printf("  dir to create folder keys, is obsolete now, every key can contain subkeys\n");
+	printf("Plain text are always stored as UTF-8(7) in Elektra, regardeless of your current encoding ($LANG). Binary values should be avoided, because they are black boxes for system administrators. \n");
 	printf("\n");
 }
 
@@ -157,7 +128,7 @@ void optionb() {
 
 void optionm() {
 	printf("-m mode\n");
-	printf(" For the set command. Will set the key access permission to mode, which must be an octal number as for chmod(1). \n");
+	printf(" For the set command. Will set the key mode permission to mode, which must be an octal number as for chmod(1). \n");
 	printf("\n");
 }
 
@@ -243,7 +214,7 @@ void commandEditHelp() {
 
 void commandExportHelp() {
 	printf("export, save \n");
-	printf("Export a subtree of keys to XML. If no subtree is defined right after the export command, system and current user trees will be exported. Output is written to standard output. The output encoding will allways be UTF-8, regardeless of your system encoding. UTF-8 is the most universal charset you can get when exchanging data between multiple systems. Accepts -f. \n");
+	printf("Export a subtree of keys to XML. If no subtree is defined right after the export command, system and current user trees will be exported. Output is written to standard output. The output encoding will always be UTF-8, regardeless of your system encoding. UTF-8 is the most universal charset you can get when exchanging data between multiple systems. Accepts -f. \n");
 	printf("\n");
 	optionf();	
 }

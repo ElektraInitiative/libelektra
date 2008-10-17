@@ -7,6 +7,28 @@
 	targetNamespace="http://www.libelektra.org"
 	attributeFormDefault="unqualified"
 	elementFormDefault="qualified">
+
+	<xsd:annotation>
+		<xsd:documentation>
+		This elektra schema lets you validate your Elektra XML Application.
+		This is the unstable version, please refer to elektra stable.
+		It validates against anything with a valid key and keyset skeleton,
+		arbitrary attributes and elements are accepted.
+
+		The targetNamespace is "http://www.libelektra.org".
+		To use the schema and the namespace, make sure that the root element
+		keyset has the following attributes:
+		xmlns="http://www.libelektra.org"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.libelektra.org elektra.xsd"
+
+		Neither the elements (by using default namespace xmlns=) nor the attributes
+		(because of attributeFormDefault="unqualified" here)
+		needs to be qualifed then.
+
+		The stylesheet comes like the rest of Elektra-Project in BSD Licence.
+		</xsd:documentation>
+	</xsd:annotation>
 	
 	<xsd:element name="keyset"         type="KeySet_type"/>
 
@@ -18,21 +40,19 @@
 	
 		<xsd:attribute name="parent"   type="xsd:string"   use="optional">
 			<xsd:annotation>
-				<xsd:documentation>A parent indicates a directory key name that contains the keys under this KeySet. But, if some key happens to have an absolute name and is inside a keyset element, its absolute name wins.</xsd:documentation>
+				<xsd:documentation>
+				A parent indicates a directory key name that contains the keys
+				under this KeySet. But, if some key happens to have an absolute
+				name and is inside a keyset element, its absolute name wins.
+				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
 	</xsd:complexType>
 
-	<xsd:element name="key"            type="Key_type"/>
-	
 	<xsd:complexType name="Key_type">
 		<xsd:sequence>
-			<xsd:element name="value"      minOccurs="0"/>
-			<xsd:element name="comment"    minOccurs="0" maxOccurs="unbounded">
-				<xsd:annotation>
-					<xsd:documentation>This is CDATA, but I think it could be a xsd:string</xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
+			<xsd:element name="value"      type="xsd:string" minOccurs="0"/>
+			<xsd:element name="comment"    type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
 
 			<xsd:element name="key"        minOccurs="0" maxOccurs="unbounded"/>
 		</xsd:sequence>
@@ -40,25 +60,37 @@
 		<xsd:attribute name="id"       type="xsd:ID"       use="optional"/>
 		<xsd:attribute name="name"     type="xsd:string"   use="optional">
 			<xsd:annotation>
-				<xsd:documentation>A key must have a name (absolute) or a basename (relative). If both appear, the absolute name wins.</xsd:documentation>
+				<xsd:documentation>
+				A key must have a name (absolute) or a basename (relative). If both appear,
+				the absolute name wins.
+				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
 		
 		<xsd:attribute name="parent"   type="xsd:string"   use="optional">
 			<xsd:annotation>
-				<xsd:documentation>A parent can't appear in the same entry that has an absolute name. If parent appears together, name wins.</xsd:documentation>
+				<xsd:documentation>
+				A parent can't appear in the same entry that has an absolute name.
+				If parent appears together, name wins.
+				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
 		
 		<xsd:attribute name="basename" type="xsd:string"   use="optional">
 			<xsd:annotation>
-				<xsd:documentation>A basename can't appear in the same entry that has an absolute name. If basename appears together, name wins. Absolute name = parent + basename.</xsd:documentation>
+				<xsd:documentation>
+				A basename can't appear in the same entry that has an absolute name.
+				If basename appears together, name wins. Absolute name = parent + basename.
+				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
 		
 		<xsd:attribute name="value" type="xsd:string"   use="optional">
 			<xsd:annotation>
-				<xsd:documentation>Short values can be put as an attribute in the key element, to improve readability. But, if a value element appears latter, it wins over the attribute.</xsd:documentation>
+				<xsd:documentation>
+				Short values can be put as an attribute in the key element, to improve
+				readability. But, if a value element appears latter, it wins over the attribute.
+				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
 		

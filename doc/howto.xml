@@ -836,7 +836,7 @@ Sections should be disposed this way:
 			
 				<listitem><simpara><ulink url="elektra.5.html">elektra.5</ulink>: Elektra internals.</simpara></listitem>
 			
-				<listitem><simpara><ulink url="kdb.3.html">kdb.3</ulink>: C API documentation for the KeyDB class. <ulink url="elektra-api/html/group__kdb.html">Browse the doxygen</ulink> instead.</simpara></listitem>
+				<listitem><simpara><ulink url="kdb.3.html">kdb.3</ulink>: C API documentation for the KDB class. <ulink url="elektra-api/html/group__kdb.html">Browse the doxygen</ulink> instead.</simpara></listitem>
 
 				<listitem><simpara><ulink url="key.3.html">key.3</ulink>: C API documentation for the Key class. <ulink url="elektra-api/html/group__key.html">Browse the doxygen</ulink> instead.</simpara></listitem>
 			

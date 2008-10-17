@@ -1,40 +1,18 @@
 LIBRARY	"elektra"
 EXPORTS
   kdbOpen
-  kdbOpenDefault
-  kdbOpenBackend
   kdbClose
-  kdbGetValue
-  kdbGetKeyByParent
-  kdbGetKeyByParentKey
-  kdbGetValueByParent
-  kdbSetValue
-  kdbSetValueByParent
+  kdbGetString
+  kdbSetString
   kdbRename
   kdbRemove
   kdbRemoveKey
-  kdbLink
-  kdbGetKeyByParent
-  kdbGetKeyByParentKey
-  kdbGetValueByParent
   kdbStatKey
   kdbGetKey
   kdbSetKey
-  kdbGetKeyChildKeys
-  kdbGetChildKeys
-  kdbGetRootKeys
-  kdbSetKeys
-  kdbMonitorKey
-  kdbMonitorKeys
-  kdbGetInfo
-  kdbFreeInfo
-  kdbInfoToString
-  keyInit
-  keyClose
   keyNew
   keyDel
-  keyIsInitialized
-  keyNeedsSync
+  keyNeedSync
   keyDup
   keyGetType
   keySetType
@@ -69,8 +47,8 @@ EXPORTS
   keySetUID
   keyGetGID
   keySetGID
-  keyGetAccess
-  keySetAccess
+  keyGetMode
+  keySetMode
   keyGetOwnerSize
   keyGetOwner
   keyStealOwner
@@ -109,23 +87,18 @@ EXPORTS
   ksInsert
   ksAppend
   ksPop
-  ksPopLast
   ksInsertKeys
-  ksAppendKeys
+  ksAppend
   ksToStream
   ksCompare
   ksSort
+  ksLookup
   ksLookupByName
-  ksLookupByValue
-  ksLookupByBinaryValue
-  ksLookupRE
+  ksLookupByString
+  ksLookupByBinary
   ksRewind
   ksNext
   ksCurrent
   ksHead
   ksTail
-  strblen
   kdbBackendExport
-  kdbSetKeys_default
-  kdbMonitorKey_default
-  kdbMonitorKeys_default

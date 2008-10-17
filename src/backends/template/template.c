@@ -19,309 +19,100 @@
  *                                                                         *
  *   This is the skeleton of the methods you'll have to implement in order *
  *   to provide libelektra.so a valid backend.                             *
- *   Simple fill the empty _backend functions with your code and you are   *
+ *   Simple fill the empty _template functions with your code and you are   *
  *   ready to go.                                                          *
  *                                                                         *
  ***************************************************************************/
 
 
-/* Subversion stuff
+#include <template.h>
 
-$Id$
+int kdbOpen_template(KDB *handle)
+{
+	int errnosave = errno;
+	KDBCap *cap = kdbhGetCapability (handle);
 
-*/
+	cap->onlyFullGet=1;
+	cap->noStat=1;
 
+	cap->onlyRemoveAll=1;
 
+	cap->onlyFullSet=1;
+	cap->onlyAddKeys=1;
 
-#include <kdbbackend.h>
+	cap->onlySystem=1;
+	cap->onlyUser=1;
 
+	cap->noOwner=1;
+	cap->noValue=1;
+	cap->noComment=1;
+	cap->noUID=1;
+	cap->noGID=1;
+	cap->noMode=1;
+	cap->noDir=1;
+	cap->noATime=1;
+	cap->noMTime=1;
+	cap->noCTime=1;
+	cap->noRemove=1;
+	cap->noLink=1;
+	cap->noMount=1;
+	cap->noBinary=1;
+	cap->noString=1;
+	cap->noTypes=1;
+	cap->noError=1;
 
-#define BACKENDNAME "my_backend"
+	cap->noLock=1;
+	cap->noThread=1;
 
-
-
-/**Some systems have even longer pathnames */
-#ifdef PATH_MAX
-#define MAX_PATH_LENGTH PATH_MAX
-/**This value is garanteed on any Posix system */
-#elif __USE_POSIX
-#define MAX_PATH_LENGTH _POSIX_PATH_MAX
-#else 
-#define MAX_PATH_LENGTH 4096
-#endif
-
-
-
-
-/**
- * @defgroup backend Elektra framework for pluggable backends
- * @brief The tactics to create pluggable backends to libelektra.so
- *
- * Since version 0.4.9, Elektra can dynamically load different key storage
- * backends. Fast jump to kdbBackendExport() to see an example of a backend
- * implementation.
- * 
- * The methods of class KeyDB that are backend dependent are kdbOpen(),
- * kdbClose(), kdbGetKey(), kdbSetKey(), kdbStatKey(),
- * kdbGetKeyChildKeys(), kdbRemove(), kdbRename(). So a backend must
- * reimplement these methods.
- * 
- * And methods that have a builtin default high-level inefficient
- * implementation are kdbSetKeys(), kdbMonitorKey(), kdbMonitorKeys(). So
- * it is suggested to reimplement them too, to make them more efficient.
- *
- * The other KeyDB methods are higher level. They use the above methods to
- * do their job, and generally don't have to be reimplemented for a
- * different backend.
- * 
- * The backend must implement a method with name kdbBackendFactory() and no
- * parameters, that is responsible of exporting the implementations of 
- * libelektra.so backend dependent methods.
- * 
- * The backend implementation must:
- * @code
-#include <kdbbackend.h>
- * @endcode
- * 
- * <b>Better than that, a skeleton of a backend implementation is provided inside
- * Elektra development package or source code tree, and should be used as a
- * base for the implementation.</b>
- * 
- * An elektrified program will use the backend defined by environment variable
- * @e $KDB_BACKEND, The backend library is dynamically loaded when the program
- * calls kdbOpen(), unless if the program is security/authentication/setuid
- * related, in which it probably uses the more secure kdbOpenDefault() which
- * completely ignores the @e $KDB_BACKEND environment and will use the
- * @c "default" named backend defined by the sysadmin. Look at
- * @c /lib/libelektra-default.so link to see the default backend for your
- * system.
- * 
- * Elektra source code or development package provides a skeleton and Makefile
- * to implement a backend, and we'll document this skeleton here.
- * 
- * A backend is defined by a single name, for example @c BACKENDNAME, that
- * causes libelektra.so look for its library as @c libelektra-BACKENDNAME.so.
- * 
- * Elektra source code tree includes several backend implementations
- * (http://germane-software.com/repositories/elektra/trunk/src/backends)
- * that can also be used as a reference.
- */
-
-
-
-
-
-/**
- * Initialize the backend.
- * This is the first method kdbOpenBackend() calls after dynamically loading
- * the backend library.
- *
- * This method is responsible of:
- * - backend's specific configuration gathering
- * - all backend's internal structs initialization
- * - initial setup of all I/O details such as opening a file, connecting to a
- *   database, etc
- *
- * @return 0 on success, anything else otherwise.
- * @see kdbOpenBackend()
- * @see kdbOpen()
- * @ingroup backend
- */
-int kdbOpen_backend(KDBHandle *handle) {
 	/* backend initialization logic */
+
+	errno = errnosave;
 	return 0;
 }
 
-
-
-
-/**
- * All finalization logic of the backend should go here.
- * 
- * Called prior to unloading the backend dynamic module. Should ensure that no
- * functions or static/global variables from the module will ever be accessed again.
- * Should free any memory that the backend no longer needs.
- * After this call, libelektra.so will unload the backend library, so this is
- * the point to shutdown any affairs with the storage.
- *
- * @return 0 on success, anything else otherwise.
- * @see kdbClose()
- * @ingroup backend
- */
-int kdbClose_backend(KDBHandle *handle) {
+int kdbClose_template(KDB *handle)
+{
+	int errnosave = errno;
 	/* free all backend resources and shut it down */
+
+	errno = errnosave;
 	return 0; /* success */
 }
 
+ssize_t kdbGet_template(KDB *handle, KeySet *returned, const Key *parentKey)
+{
+	ssize_t nr_keys = 0;
+	int errnosave = errno;
 
+	/* get all keys below parentKey and count them with nr_keys */
 
-/**
- * Implementation for kdbStatKey() method.
- *
- * This method is responsible of:
- * - make necessary I/O to retrieve @p key->name's metadata
- * - fill the @p key struct with its metadata
- *
- * @see kdbStatKey() for expected behavior.
- * @ingroup backend
- */
-int kdbStatKey_backend(KDBHandle handle, Key *key) {
-	/* get the most possible key metainfo */
-	return 0; /* success */
+	errno = errnosave;
+	return nr_keys; /* success */
 }
 
+ssize_t kdbSet_template(KDB *handle, KeySet *returned, const Key *parentKey)
+{
+	ssize_t nr_keys = 0;
+	int errnosave = errno;
 
-/**
- * Implementation for kdbGetKey() method.
- *
- * This method is responsible of:
- * - make necessary I/O to retrieve all @p key->name's value and metadata
- * - fill the @p key struct with its value and metadata
- *
- * @see kdbGetKey() for expected behavior.
- * @ingroup backend
- */
-int kdbGetKey_backend(KDBHandle handle, Key *key) {
-	/* fully gets a key */
-	return 0; /* success */
+	/* set all keys below parentKey and count them with nr_keys */
+
+	errno = errnosave;
+	return nr_keys;
 }
 
-
-
-/**
- * Implementation for kdbSetKey() method.
- *
- * This method is responsible of:
- * - check the existence of @p key->name on persistent storage
- * - prepare the backend to receive a new or updated key
- * - use value and metadata from @p key to store them in the backend storage
- * - fill the @p key struct with its value and metadata
- *
- * @see kdbSetKey() for expected behavior.
- * @ingroup backend
- */
-int kdbSetKey_backend(KDBHandle handle, Key *key) {
-	/* fully sets a key */
-	return 0; /* success */
-}
-
-
-
-/**
- * Implementation for kdbRename() method.
- *
- * @see kdbRename() for expected behavior.
- * @ingroup backend
- */
-int kdbRename_backend(KDBHandle handle, Key *key, const char *newName) {
-	/* rename a key to another name */
-	return 0; /* success */
-}
-
-
-
-
-/**
- * Implementation for kdbRemoveKey() method.
- *
- * @see kdbRemoveKey() for expected behavior.
- * @ingroup backend
- */
-int kdbRemoveKey_backend(KDBHandle handle, const Key *key) {
-	/* remove a key from the database */
-	return 0;  /* success */
-}
-
-
-
-
-/**
- * Implementation for kdbGetKeyChildKeys() method.
- *
- * @see kdbGetKeyChildKeys() for expected behavior.
- * @ingroup backend
- */
-ssize_t kdbGetKeyChildKeys_backend(KDBHandle handle, const Key *parentKey, KeySet *returned, unsigned long options) {
-	/* retrieve multiple hierarchical keys */
-	return returned->size; /* success */
-}
-
-
-/**
- * Implementation for kdbSetKeys() method.
- * 
- * The implementation of this method is optional, and a builtin, probablly 
- * inefficient implementation can be explicitly used when exporting the
- * backend with kdbBackendExport(), using kdbSetKeys_default().
- * 
- * @see kdbSetKeys() for expected behavior.
- * @ingroup backend
- */
-int kdbSetKeys_backend(KDBHandle handle, KeySet *ks) {
-	/* set many keys */
-	return 0;
-}
-
-
-/**
- * The implementation of this method is optional.
- * The builtin inefficient implementation will use kdbGetKey() for each
- * key inside @p interests.
- *
- * @see kdbMonitorKeys() for expected behavior.
- * @ingroup backend
- */
-uint32_t kdbMonitorKeys_backend(KDBHandle handle, KeySet *interests, uint32_t diffMask,
-		unsigned long iterations, unsigned sleep) {
-	return 0;
-}
-
-
-
-/**
- *
- * The implementation of this method is optional.
- * The builtin inefficient implementation will use kdbGetKey() for
- * @p interest.
- *
- * @see kdbMonitorKey() for expected behavior.
- * @ingroup backend
- */
-uint32_t kdbMonitorKey_backend(KDBHandle handle, Key *interest, uint32_t diffMask,
-		unsigned long iterations, unsigned sleep) {
-	return 0;
-}
-
-
-/**
- * All KeyDB methods implemented by the backend can have random names, except
- * kdbBackendFactory(). This is the single symbol that will be looked up
- * when loading the backend, and the first method of the backend
- * implementation that will be called.
- * 
- * Its purpose is to "publish" the exported methods for libelektra.so. The
- * implementation inside the provided skeleton is usually enough: simply
- * call kdbBackendExport() with all methods that must be exported.
- * 
- * @return whatever kdbBackendExport() returns
- * @see kdbBackendExport() for an example
- * @see kdbOpenBackend()
- * @ingroup backend
- */
-KDBBackend *kdbBackendFactory(void) {
+KDBEXPORT(template)
+{
 	return kdbBackendExport(BACKENDNAME,
-		KDB_BE_OPEN,           &kdbOpen_backend,
-		KDB_BE_CLOSE,          &kdbClose_backend,
-		KDB_BE_GETKEY,         &kdbGetKey_backend,
-		KDB_BE_SETKEY,         &kdbSetKey_backend,
-		KDB_BE_STATKEY,        &kdbStatKey_backend,
-		KDB_BE_RENAME,         &kdbRename_backend,
-		KDB_BE_REMOVEKEY,      &kdbRemoveKey_backend,
-		KDB_BE_GETCHILD,       &kdbGetKeyChildKeys_backend,
-		KDB_BE_MONITORKEY,     &kdbMonitorKey_backend,
-		KDB_BE_MONITORKEYS,    &kdbMonitorKeys_backend,
-		/* set to default implementation: 
-		 * Don't set default. */
-/*		KDB_BE_SETKEYS,        &kdbSetKeys_default,*/
+		KDB_BE_OPEN,	&kdbOpen_template,
+		KDB_BE_CLOSE,	&kdbClose_template,
+		KDB_BE_GET,	&kdbGet_template,
+		KDB_BE_SET,	&kdbSet_template,
+		KDB_BE_VERSION,        BACKENDVERSION,
+		KDB_BE_AUTHOR,	"Full Name <email@libelektra.org>",
+		KDB_BE_LICENCE,	"BSD",
+		KDB_BE_DESCRIPTION,
+			"Add description here",
 		KDB_BE_END);
 }
+

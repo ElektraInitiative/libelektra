@@ -1,0 +1,226 @@
+/***************************************************************************
+ *          test_kdb.c  -  Backend test suite
+ *                -------------------
+ *  begin                : Thu Aug 03 2006
+ *  copyright            : (C) 2006 by Yannick Lecaillez
+ *  email                : sizon5@gmail.com
+ ****************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the BSD License (revised).                      *
+ *                                                                         *
+ ***************************************************************************/
+
+
+#include <tests.h>
+
+void test_readwrite()
+{
+	KeySet		*ks;
+	FILE *fout;
+
+	printf("Testing Read and write xml\n");
+
+	fout = fopen (srcdir_file("key-gen.xml"), "w");
+	ks = ksNew(0);
+	exit_if_fail( ksFromXMLfile(ks, srcdir_file("key.xml")) == 0, "ksFromXMLfile(key.xml) failed.");
+	ksToStream (ks, fout, KDB_O_HEADER);
+	fclose (fout);
+
+	compare_files (srcdir_file("key.xml"));
+	unlink (srcdir_file("key-gen.xml"));
+
+	ksDel (ks);
+}
+
+void test_readwrite_hier()
+{
+	KeySet		*ks;
+	FILE *fout;
+
+	printf("Testing Read and write xml\n");
+
+	fout = fopen (srcdir_file("key-gen.xml"), "w");
+	ks = ksNew(0);
+	exit_if_fail( ksFromXMLfile(ks, srcdir_file("key.xml")) == 0, "ksFromXMLfile(key.xml) failed.");
+	ksToStream (ks, fout, KDB_O_HIER | KDB_O_HEADER);
+	fclose (fout);
+
+	compare_files (srcdir_file("key.xml"));
+	unlink (srcdir_file("key-gen.xml"));
+
+	ksDel (ks);
+}
+
+
+void test_key()
+{
+	KeySet		*ks;
+	Key     	*cur;
+	int		counter;
+
+	printf("Testing Key from xml\n");
+
+	ks = ksNew(0);
+	exit_if_fail( ksFromXMLfile(ks, srcdir_file("key.xml")) == 0, "ksFromXMLfile(key.xml) failed.");
+	counter = 0;
+	ksRewind(ks);
+	while ( (cur = ksNext(ks)) ) {
+		counter ++;
+		/* Prepend key root */	
+		//snprintf(buf, sizeof(buf), "%s/%s", root, keyName(cur));
+		//keySetName(cur, buf);
+
+		/* Make tests ... */	
+		// printf ("counter: %d - %s\n", counter, (char*)keyValue(cur));
+		switch (counter)
+		{
+		case 1: succeed_if(strcmp (keyValue(cur), "StringValue") == 0, "value not correct");
+			succeed_if(strcmp (keyComment(cur), "String key with\nstandard name") == 0, "comment not correct");
+			succeed_if(keyIsInactive (cur) == 0, "key is active");
+			succeed_if(keyIsString(cur) == 1, "key is not string");
+			succeed_if(keyGetUID(cur) == 20, "could not get uid value");
+			break;
+		case 2: succeed_if(strcmp (keyValue(cur), "DirectoryValue") == 0, "value not correct");
+			succeed_if(strcmp (keyComment(cur), "Directory key with standard name") == 0, "comment not correct");
+			succeed_if(keyIsInactive (cur) == 0, "key is active");
+			succeed_if(keyIsString(cur) == 1, "key is not string");
+			break;
+		case 3: succeed_if(strcmp (keyValue(cur), "BinaryValue") == 0, "value not correct");
+			succeed_if(strcmp (keyComment(cur), "Binary key with standard name") == 0, "comment not correct");
+			succeed_if(keyIsInactive (cur) == 0, "key is active");
+			succeed_if(keyIsBinary(cur) == 1, "key is not binary");
+			succeed_if(keyGetGID(cur) == 40, "could not get gid value");
+			break;
+		case 4: succeed_if(strcmp (keyValue(cur), "StringValue") == 0, "value not correct");
+			succeed_if(strcmp (keyComment(cur), "String key with hidden name") == 0, "comment not correct");
+			succeed_if(keyIsInactive (cur) == 1, "key is inactive");
+			succeed_if(keyIsString(cur) == 1, "key is not string");
+			succeed_if(keyGetUID(cur) == 0, "could not get uid value");
+			succeed_if(keyGetGID(cur) == 20, "could not get gid value");
+			break;
+		case 5: succeed_if(strcmp (keyValue(cur), "DirectoryValue") == 0, "value not correct");
+			succeed_if(strcmp (keyComment(cur), "Directory key with hidden name") == 0, "comment not correct");
+			succeed_if(keyIsInactive (cur) == 1, "key is inactive");
+			succeed_if(keyIsString(cur) == 1, "key is not string");
+			break;
+		case 6: succeed_if(strcmp (keyValue(cur), "BinaryValue") == 0, "value not correct");
+			succeed_if(strcmp (keyComment(cur), "Binary key with hidden name") == 0, "comment not correct");
+			succeed_if(keyIsInactive (cur) == 1, "key is inactive");
+			succeed_if(keyIsBinary(cur) == 1, "key is not binary");
+			succeed_if(keyGetType(cur) == 30, "not correct type");
+			succeed_if(keyGetMode(cur) == 0440, "could not get mode");
+			break;
+		        // <key type="string" basename="Ug.ly:St@ri€n.g Key" value="With a string value"><comment>string key with ugly name</comment></key>
+		case 7: succeed_if(strcmp (keyValue(cur), "With a string value") == 0, "value not correct");
+			succeed_if(strcmp (keyComment(cur), "string key with ugly name") == 0, "comment not correct");
+			succeed_if(keyIsInactive (cur) == 0, "key is active");
+			succeed_if(keyIsString(cur) == 1, "key is not string");
+			break;
+		        // <key type="directory" basename="Ug.ly:Dir@ect€ory Key"><comment>Directory with ugly name</comment></key>
+		case 8: succeed_if(strcmp (keyValue(cur), "") == 0, "value not correct");
+			succeed_if(strcmp (keyComment(cur), "Directory with ugly name") == 0, "comment not correct");
+			succeed_if(keyIsInactive (cur) == 0, "key is active");
+			succeed_if(keyIsString(cur) == 1, "key is not string");
+			break;
+		        // <key type="binary" basename="Ug.ly:Bin@a€ry Key"><comment>Binary key with ugly name</comment></key>
+		case 9: succeed_if(keyValue(cur) == 0, "value not correct");
+			succeed_if(strcmp (keyComment(cur), "Binary key with ugly name") == 0, "comment not correct");
+			succeed_if(keyIsInactive (cur) == 0, "key is active");
+			succeed_if(keyIsBinary(cur) == 1, "key is not binary");
+			succeed_if(keyGetMode(cur) == 230, "could not get mode");
+			break;
+
+		}
+	}
+	
+	ksDel(ks);
+}
+
+void test_keyset()
+{
+	KeySet		*ks;
+	Key     	*cur;
+	int		counter;
+
+	printf("Testing KeySet from xml\n");
+
+	ks = ksNew(0);
+	exit_if_fail( ksFromXMLfile(ks, srcdir_file("keyset.xml")) == 0, "ksFromXMLfile(key.xml) failed.");
+	counter = 0;
+	ksRewind(ks);
+	while ( (cur = ksNext(ks)) ) {
+		counter ++;
+
+		/* Make tests ... */	
+		// printf ("counter: %d - %s\n", counter, keyName(cur));
+		switch (counter) {
+			// <key type="43" basename="0-27042916" value="0 216905227"><comment>2551516588474823843</comment></key>
+		case 1:	succeed_if (strcmp (keyName(cur),"user/tests/filesys/0-27042916") == 0,"name of first key not correct");
+			succeed_if (strcmp (keyValue(cur),"0 216905227") == 0,"value of first key not correct");
+			succeed_if (strcmp (keyComment(cur),"2551516588474823843") == 0,"comment of first key not correct");
+			succeed_if (keyGetType(cur) == 43, "wrong key type found");
+			break;
+			// <key type="253" basename="1-2449524622" value="1 1679328197"><comment>3246436893195629244</comment></key>
+		case 2:	succeed_if (strcmp (keyName(cur),"user/tests/filesys/1-2449524622") == 0,"name of 2. key not correct");
+			succeed_if (strcmp (keyValue(cur),"1 1679328197") == 0,"value of 2. key not correct");
+			succeed_if (strcmp (keyComment(cur),"3246436893195629244") == 0,"comment of 2. key not correct");
+			succeed_if (keyGetType(cur) == 253, "wrong key type found");
+			break;
+			// <key type="string" basename="dir-1-0">
+		case 3:	succeed_if (strcmp (keyName(cur),"user/tests/filesys/dir-1-0") == 0,"name of 3. key not correct");
+			succeed_if (keyIsDir (cur), "Is not directory, but should be");
+			succeed_if (keyGetType(cur) == KEY_TYPE_STRING, "wrong key type found");
+			break;
+			// <key type="114" basename="0-294164813" value="0 216245011"><comment>18454108762891828026</comment></key>
+		case 4:	succeed_if (strcmp (keyName(cur),"user/tests/filesys/dir-1-0/0-294164813") == 0,"name of 4. key not correct");
+			succeed_if (strcmp (keyValue(cur),"0 216245011") == 0,"value of 4. key not correct");
+			succeed_if (strcmp (keyComment(cur),"18454108762891828026") == 0,"comment of 4. key not correct");
+			succeed_if (keyGetType(cur) == 114, "wrong key type found");
+			break;
+			// <key type="135" basename="1-1479930365" value="1 2732423037"><comment>24597295372375238</comment></key>
+		case 5:	succeed_if (strcmp (keyName(cur),"user/tests/filesys/dir-1-0/1-1479930365") == 0,"name of 4. key not correct");
+			succeed_if (strcmp (keyValue(cur),"1 2732423037") == 0,"value of 4. key not correct");
+			succeed_if (strcmp (keyComment(cur),"24597295372375238") == 0,"comment of 4. key not correct");
+			succeed_if (keyGetType(cur) == 135, "wrong key type found");
+			break;
+			// <key type="string" basename="dir-2-0">
+		case 6:	succeed_if (strcmp (keyName(cur),"user/tests/filesys/dir-1-0/dir-2-0") == 0,"name of 3. key not correct");
+			succeed_if (keyIsDir (cur), "Is not directory, but should be");
+			succeed_if (keyGetType(cur) == KEY_TYPE_STRING, "wrong key type found");
+			break;
+			// <key type="144" basename="0-215571059" value="0 264857705"><comment>2188631490667217086</comment></key>
+		case 7:	succeed_if (strcmp (keyName(cur),"user/tests/filesys/dir-1-0/dir-2-0/0-215571059") == 0,"name of 4. key not correct");
+			succeed_if (strcmp (keyValue(cur),"0 264857705") == 0,"value of 4. key not correct");
+			succeed_if (strcmp (keyComment(cur),"2188631490667217086") == 0,"comment of 4. key not correct");
+			succeed_if (keyGetType(cur) == 144, "wrong key type found");
+			break;
+		}
+	}
+	
+	ksDel(ks);
+}
+
+
+int main()
+{
+	printf("\n");
+	printf("ELEKTRA BACKENDS TEST SUITE\n");
+	printf("========================================\n\n");
+
+	init ();
+
+	test_key();
+	test_keyset();
+
+	/*
+	test_readwrite();
+	test_readwrite_hier();
+	*/
+
+	printf("\ntest_xml RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	
+	return nbError;
+}

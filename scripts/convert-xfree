@@ -22,11 +22,13 @@
 
 
 [ -z "$RG" ] && RG="kdb"
-[ -z "$ROOT" ] && ROOT="system/sw/XFree/handmade"
+[ -z "$ROOT" ] && ROOT="system/sw/xorg"
 
 
 
-
+echo "$RG set $ROOT"
+echo "$RG set $ROOT/Device"
+echo "$RG set $ROOT/Device/Videocard0"
 echo "$RG set $ROOT/Device/Videocard0/BoardName      'ATI Radeon Mobility 7500'"
 echo "$RG set $ROOT/Device/Videocard0/Driver         'radeon'"
 echo "$RG set $ROOT/Device/Videocard0/VendorName     'ATI/IBM'"

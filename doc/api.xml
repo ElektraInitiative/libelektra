@@ -6,7 +6,7 @@ $Id$
 	<graphic srccredit="classes" fileref="images/classes.png" label="the classes" align="center"/>
 	<para>The classes are:</para>
 	<variablelist>
-		<varlistentry><term><type>KeyDB</type></term>
+		<varlistentry><term><type>KDB</type></term>
 			<listitem><simpara>A class of static methods only. You can't instantiate an object of this class. All the business logic for retrieving and commiting key data to physical media is owned by this class. Example methods are <function>kdbSetKey</function>, <function>kdbGetKey</function>, <function>kdbGetValue</function>, <function>kdbGetChildKeys</function>, etc. This last is one of the most powerfull, returning a <type>KeySet</type> containing all child keys of a folder key, with the option to retrieve them recursively, sorted, dereferencing links, etc.</simpara></listitem>
 		</varlistentry>
 		<varlistentry><term><type>Key</type></term>

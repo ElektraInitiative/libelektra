@@ -40,31 +40,16 @@ $Id$
 #include <kdbbackend.h>
 
 #define BACKENDNAME "berkeleydb"
+#define BACKENDVERSION "0.5.5"
 
 #define DB_DIR_USER   ".kdb-berkeleydb"
-
-#ifndef SYSCONFDIR
-#define SYSCONFDIR "/etc"
-#endif
-
-#define DB_DIR_SYSTEM SYSCONFDIR "/kdb-berkeleydb"
+#define DB_DIR_SYSTEM "/etc/kdb-berkeleydb"
 
 #define DB_KEYVALUE      "keyvaluepairs"
 #define DB_PARENTINDEX   "parentindex"
 
 #define DB_FILE_KEYVALUE   "keyvalue.db"
 #define DB_FILE_PARENTS    "parents.idx"
-
-/**Some systems have even longer pathnames */
-#ifdef PATH_MAX
-#define MAX_PATH_LENGTH PATH_MAX
-/**This value is garanteed on any Posix system */
-#elif __USE_POSIX
-#define MAX_PATH_LENGTH _POSIX_PATH_MAX
-#else 
-#define MAX_PATH_LENGTH 4096
-#endif
-
 
 
 /**
@@ -75,7 +60,7 @@ $Id$
  * 
  * - parentIndex: a secondary index, to make folder searches possible, so
  *   it contains the parent key name as the table key and some DB internal
- *   data to point to keyValuePairs table primary key-data pairs.
+ *   data to point to keyValuePais table primary key-data pairs.
  * 
  * So if we have the following Elektra keys:
  * 
@@ -89,7 +74,7 @@ $Id$
  * 
  *	user/sw/app1/key1      | metadata, value, comment
  *	user/sw/app1/key2      | metadata, value, comment
- *	user/sw/app1/dir1      | metadata, value, comment
+ *	user/sw/app1/dir1      | metadata
  *	user/sw/app1/dir1/key1 | metadata, value, comment
  *	user/sw/app1/dir1/key2 | metadata, value, comment
  *	
@@ -101,7 +86,7 @@ $Id$
  *	user/sw/app1/dir1 | (BDB internal pointer to dir1/key1 on primary table)
  *	user/sw/app1/dir1 | (BDB internal pointer to dir1/key2 on primary table)
  * 
- * The parentIndex table is written and managed automatically by Berkeley DB's
+ * The parentIndex table is written and managed automatically by Berkeley DB
  * DB->associate() method, with the help of our parentIndexCallback().
  * 
  */
@@ -113,7 +98,7 @@ $Id$
  *  A container for the Berkeley DBs related to the same DBTree.
  */
 typedef struct {
-	DB *parentIndex;   /* maps folder names to the keys they contain */
+	DB *parentIndex;   /* maps folders to the keys they contain */
 	DB *keyValuePairs; /* maps keynames to their values + metainfo */
 } DBInternals;
 
@@ -126,24 +111,20 @@ typedef struct {
  *  root tree.
  *
  *  Example of root trees:
- *  system/ *        {isSystem=1,userDomain=0,...}
- *  user/ *          {isSystem=0,userDomain=$USER,...}
- *  user:luciana/ *  {isSystem=0,userDomain=luciana,...}
- *  user:denise/ *   {isSystem=0,userDomain=denise,...}
- *  user:tatiana/ *  {isSystem=0,userDomain=tatiana,...}
+ *  system/ *        {isSystem=1,owner=0,...}
+ *  user/ *          {isSystem=0,owner=$USER,...}
+ *  user:luciana/ *  {isSystem=0,owner=luciana,...}
+ *  user:denise/ *   {isSystem=0,owner=denise,...}
+ *  user:tatiana/ *  {isSystem=0,owner=tatiana,...}
  *
  */
 typedef struct _DBTree {
-	/* if isSystem==0 and userDomain==0, this DB is for the current user */
+	/* if isSystem==0 and owner==0, this DB is for the current user */
 	int isSystem;
-	char *userDomain;
+	char *owner;
 	DBInternals db;
 	struct _DBTree *next;
 } DBTree;
-
-
-
-
 
 
 /**
@@ -155,10 +136,6 @@ typedef struct {
 	DBTree *first;     /* databases */
 } DBContainer;
 
-
-/*
-DBContainer *dbs=0;
-*/
 
 
 
@@ -175,7 +152,7 @@ int keyToBDB(const Key *key, DBT *dbkey, DBT *dbdata) {
 	size_t metaInfoSize;
 	int utf8Conversion=0, utf8CommentConverted=0, utf8ValueConverted = 0;
 	char *convertedName=key->key;
-	size_t sizeName=strblen(key->key);
+	size_t sizeName=kdbiStrLen(key->key);
 	char *convertedValue=key->data;
 	size_t sizeValue=key->dataSize;
 	char *convertedComment=key->comment;
@@ -183,29 +160,29 @@ int keyToBDB(const Key *key, DBT *dbkey, DBT *dbdata) {
 
 
 	/* First convert all to UTF-8 */
-	if ((utf8Conversion=kdbNeedsUTF8Conversion())) {
+	if ((utf8Conversion=kdbbNeedsUTF8Conversion())) {
 		if (key->key) {
 			convertedName=malloc(sizeName);
 			memcpy(convertedName,key->key,sizeName);
-			UTF8Engine(UTF8_TO,&convertedName,&sizeName);
+			kdbbUTF8Engine(UTF8_TO,&convertedName,&sizeName);
 		} else convertedName=key->key;
 
 		if (dbdata) {
-			if (!keyIsBin(key)) {
+			if (!keyIsBinary(key)) {
 				convertedValue=malloc(sizeValue);
 				memcpy(convertedValue,key->data,sizeValue);
-				UTF8Engine(UTF8_TO,&convertedValue,&sizeValue);
+				kdbbUTF8Engine(UTF8_TO,&convertedValue,&sizeValue);
 				utf8ValueConverted = 1;
 			} else convertedValue=key->data;
 		 
 			if (key->comment) {
 				convertedComment=malloc(sizeComment);
 				memcpy(convertedComment,key->comment,sizeComment);
-				UTF8Engine(UTF8_TO,&convertedComment,&sizeComment);
+				kdbbUTF8Engine(UTF8_TO,&convertedComment,&sizeComment);
 				utf8CommentConverted = 1;
 			} else convertedComment=key->comment;
 		}
-	}
+	} 
 	
 	if (dbdata) {
 		memset(dbdata, 0, sizeof(DBT));
@@ -248,7 +225,7 @@ int keyToBDB(const Key *key, DBT *dbkey, DBT *dbdata) {
 		dbkey->size=sizeName;
 		dbkey->data=convertedName;
 	} else {
-		dbkey->size=strblen(key->key);
+		dbkey->size=kdbiStrLen(key->key);
 		dbkey->data=malloc(dbkey->size);
 		strcpy(dbkey->data,key->key);
 	}
@@ -264,7 +241,7 @@ int keyToBDB(const Key *key, DBT *dbkey, DBT *dbdata) {
  * Will take 2 DBTs (one for key name, other for data) and convert them
  * into a Key structure.
  * 
- * WARNING: key->userDomain must be set outside keyFromBDB(). Someplace more
+ * WARNING: key->owner must be set outside keyFromBDB(). Someplace more
  * aware of the context. So everywhere keyFromBDB is called, a call
  * to keySetOwner() should apper right after it.
  */
@@ -279,32 +256,30 @@ int keyFromBDB(Key *key, const DBT *dbkey, const DBT *dbdata) {
 	memcpy(key,        /* destination */
 		dbdata->data,    /* source */
 		metaInfoSize);   /* size */
-	key->recordSize=dbdata->size;
-	
-	key->flags = KEY_SWITCH_INITIALIZED;
+	key->dataSize=dbdata->size;
 
 	/* Set comment */
 	if (key->commentSize)
 		keySetComment(key,dbdata->data+metaInfoSize);
 	
-	/* userDomain must be set outside this function,
+	/* owner must be set outside this function,
 	 * someplace more aware of the context */
 	keySetName(key,dbkey->data);
 
 	/* Set value. Key type came from the metaInfo importing above. */
 	keySetRaw(key,dbdata->data+metaInfoSize+key->commentSize,key->dataSize);
 	
-	if (kdbNeedsUTF8Conversion()) {
-		size_t size=strblen(key->key);
+	if (kdbbNeedsUTF8Conversion()) {
+		size_t size=kdbiStrLen(key->key);
 		
-		UTF8Engine(UTF8_FROM,&key->key,&size);
-		UTF8Engine(UTF8_FROM,&key->comment,&key->commentSize);
-		if (!keyIsBin(key))
-			UTF8Engine(UTF8_FROM,(char **)&key->data, &key->dataSize);
+		kdbbUTF8Engine(UTF8_FROM,&key->key,&size);
+		kdbbUTF8Engine(UTF8_FROM,&key->comment,&key->commentSize);
+		if (!keyIsBinary(key))
+			kdbbUTF8Engine(UTF8_FROM,(char **)&key->data, &key->dataSize);
 	}
 	
 	/* since we just got the key from the storage, it is synced. */
-	key->flags &= ~KEY_SWITCH_NEEDSYNC;
+	key->flags &= ~KEY_FLAG_SYNC;
 
 	return 0;
 }
@@ -356,7 +331,7 @@ int parentIndexCallback(DB *db, const DBT *rkey, const DBT *rdata, DBT *pkey) {
  * DBTree data structure. It is the oposite of dbTreeNew().
  */
 int dbTreeDel(DBTree *dbtree) {
-	if (dbtree->userDomain) free(dbtree->userDomain);
+	if (dbtree->owner) free(dbtree->owner);
 	if (dbtree->db.keyValuePairs)
 		dbtree->db.keyValuePairs->close(dbtree->db.keyValuePairs,0);
 	if (dbtree->db.parentIndex)
@@ -374,32 +349,29 @@ int dbTreeDel(DBTree *dbtree) {
  * Given a created, opened and empty DBTree, initialize its root key.
  * This is usually called by dbTreeNew().
  */
-int dbTreeInit(KDBHandle handle,DBTree *newDB) {
+int dbTreeInit(KDB *handle,DBTree *newDB) {
 	Key *root=0;
 	int ret;
-	mode_t mask;
 	DBT dbkey,data;
 
 	/* TODO: review security bits issues on daemon mode */
 	if (newDB->isSystem) {
 		root=keyNew("system",
-			KEY_SWITCH_UID,0,
-			KEY_SWITCH_GID,0,
-			KEY_SWITCH_END);
+			KEY_UID,0,
+			KEY_GID,0,
+			KEY_END);
 	} else {
 		struct passwd *userOwner;
-		userOwner=getpwnam(newDB->userDomain);
+		userOwner=getpwnam(newDB->owner);
 		root=keyNew("user",
-			KEY_SWITCH_UMODE, kdbhGetUMask(handle),
-			KEY_SWITCH_UID,   kdbhGetUID(handle),
-			KEY_SWITCH_GID,   kdbhGetGID(handle),
-			KEY_SWITCH_TYPE,  KEY_TYPE_DIR,
-			KEY_SWITCH_END);
+			KEY_UID,   kdbhGetUID(handle),
+			KEY_GID,   kdbhGetGID(handle),
+			KEY_DIR,
+			KEY_END);
 	}
 
-	mask=umask(0); umask(mask);
-	keySetDir(root,mask);
-	
+	keySetDir(root);
+
 	root->atime=root->mtime=root->ctime=time(0); /* set current time */
 
 	keyToBDB(root,&dbkey,&data);
@@ -418,7 +390,7 @@ int dbTreeInit(KDBHandle handle,DBTree *newDB) {
 
 	newDB->db.keyValuePairs->sync(newDB->db.keyValuePairs,0);
 
-	return KDB_RET_OK;
+	return KDB_ERR_OK;
 }
 
 
@@ -440,7 +412,7 @@ int dbTreeInit(KDBHandle handle,DBTree *newDB) {
  * else
  *	/etc/kdb-berkeleydb/{dbfiles}
  */
-DBTree *dbTreeNew(KDBHandle handle,const Key *forKey) {
+DBTree *dbTreeNew(KDB *handle,const Key *forKey) {
 	DBTree *newDB;
 	int ret;
 	int newlyCreated; /* True if this is a new database */
@@ -466,7 +438,7 @@ DBTree *dbTreeNew(KDBHandle handle,const Key *forKey) {
 	} else if (keyIsUser(forKey)) {
 		/* Prepare to open the 'user:????.*' database */
 		/* TODO: user should be calculated from handle */
-		user=getpwnam(forKey->userDomain);
+		user=getpwnam(forKey->owner);
 		sprintf(dbDir,"%s/%s",user->pw_dir,DB_DIR_USER);
 		uid = user->pw_uid;
 		gid = user->pw_gid;
@@ -506,7 +478,7 @@ DBTree *dbTreeNew(KDBHandle handle,const Key *forKey) {
 	if ((ret = db_create(&newDB->db.keyValuePairs, NULL, 0)) != 0) {
 		fprintf(stderr, "db_create: %s: %s\n", DB_KEYVALUE, db_strerror(ret));
 		free(newDB);
-		errno=KDB_RET_EBACKEND;
+		errno=KDB_ERR_EBACKEND;
 		return 0;
 	}
 	ret=newDB->db.keyValuePairs->open(newDB->db.keyValuePairs,NULL,keyvalueFile,
@@ -525,7 +497,7 @@ DBTree *dbTreeNew(KDBHandle handle,const Key *forKey) {
 		newDB->db.keyValuePairs->err(newDB->db.keyValuePairs,
 			ret, "%s", DB_KEYVALUE);
 		dbTreeDel(newDB);
-		errno=KDB_RET_EBACKEND;
+		errno=KDB_ERR_EBACKEND;
 		return 0;
 	}
 
@@ -540,7 +512,7 @@ DBTree *dbTreeNew(KDBHandle handle,const Key *forKey) {
 	if (ret != 0) {
 		fprintf(stderr, "db_create: %s: %s\n", DB_PARENTINDEX, db_strerror(ret));
 		dbTreeDel(newDB);
-		errno=KDB_RET_EBACKEND;
+		errno=KDB_ERR_EBACKEND;
 		return 0;
 	}
 	
@@ -562,7 +534,7 @@ DBTree *dbTreeNew(KDBHandle handle,const Key *forKey) {
 	if (ret) {
 		newDB->db.parentIndex->err(newDB->db.parentIndex, ret, "%s", DB_PARENTINDEX);
 		dbTreeDel(newDB); 
-		errno=KDB_RET_EBACKEND;
+		errno=KDB_ERR_EBACKEND;
 		return 0;
 	}
 	
@@ -571,7 +543,7 @@ DBTree *dbTreeNew(KDBHandle handle,const Key *forKey) {
 	if (ret != 0) {
 		fprintf(stderr, "error: %s: %d\n",DB_PARENTINDEX,ret);
 		dbTreeDel(newDB);
-		errno=KDB_RET_EBACKEND;
+		errno=KDB_ERR_EBACKEND;
 		return 0;
 	}
 
@@ -579,8 +551,8 @@ DBTree *dbTreeNew(KDBHandle handle,const Key *forKey) {
 
 
 	if (!newDB->isSystem) {
-		newDB->userDomain=malloc(strblen(forKey->userDomain));
-		strcpy(newDB->userDomain,forKey->userDomain);
+		newDB->owner=malloc(kdbiStrLen(forKey->owner));
+		strcpy(newDB->owner,forKey->owner);
 	}
 
 	/* Set file permissions for the DB files */
@@ -608,7 +580,7 @@ DBTree *dbTreeNew(KDBHandle handle,const Key *forKey) {
  * open it with dbTreeNew().
  * Key name and user domain will be used to find the correct database.
  */
-DBTree *getDBForKey(KDBHandle handle, const Key *key) {
+DBTree *getDBForKey(KDB *handle, const Key *key) {
 	DBContainer *dbs=kdbhGetBackendData(handle);
 	DBTree *current,*newDB;
 	char rootName[100];
@@ -629,10 +601,10 @@ DBTree *getDBForKey(KDBHandle handle, const Key *key) {
 				if (!current) current=dbs->first;
 			} while (current && current!=dbs->cursor);
 		else if (keyIsUser(key)) {
-			/* If key is a user key, it can't have an empty userDomain */
-			if (key->userDomain == 0) return 0;
+			/* If key is a user key, it can't have an empty owner */
+			if (key->owner == 0) return 0;
 			do {
-				if (!current->isSystem && !strcmp(key->userDomain,current->userDomain))
+				if (!current->isSystem && !strcmp(key->owner,current->owner))
 					return dbs->cursor=current;
 				
 				current=current->next;
@@ -675,39 +647,6 @@ DBTree *getDBForKey(KDBHandle handle, const Key *key) {
 
 
 
-int kdbOpen_bdb(KDBHandle *handle) {
-	/* Create only the DB container.
-	 * DBs will be allocated on demand
-	 */
-	DBContainer *dbs;
-	
-	dbs=malloc(sizeof(DBContainer));
-	memset(dbs,0,sizeof(DBContainer));
-	
-	kdbhSetBackendData(*handle,dbs);
-	
-	return 0;
-}
-
-
-
-
-int kdbClose_bdb(KDBHandle *handle) {
-	DBContainer *dbs;
-	
-	dbs=kdbhGetBackendData(*handle);
-	
-	if (dbs) {
-		while (dbs->first) {
-			dbs->cursor=dbs->first;
-			dbs->first=dbs->cursor->next;
-
-			dbTreeDel(dbs->cursor);
-		}
-		free(dbs); dbs=0;
-	}
-	return 0; /* success */
-}
 
 
 
@@ -715,10 +654,10 @@ int kdbClose_bdb(KDBHandle *handle) {
 /**
  * Implementation for kdbRemoveKey() method.
  *
- * @see kdbRemoveKey() for expected behavior.
+ * @see kdbRemove() for expected behavior.
  * @ingroup backend
  */
-int kdbRemoveKey_bdb(KDBHandle handle, const Key *key) {
+int kdbRemoveKey_bdb(KDB *handle, const Key *key) {
 	DBContainer *dbs;
 	DBTree *dbctx;
 	DBT dbkey,data;
@@ -726,7 +665,6 @@ int kdbRemoveKey_bdb(KDBHandle handle, const Key *key) {
 	uid_t user=kdbhGetUID(handle);
 	gid_t group=kdbhGetGID(handle);
 	int canWrite=0;
-	int hasChild=0;
 	Key *cast=0;
 	
 	dbs=kdbhGetBackendData(handle);
@@ -737,52 +675,32 @@ int kdbRemoveKey_bdb(KDBHandle handle, const Key *key) {
 	/* First check if we have write permission to the key */
 	memset(&dbkey,0,sizeof(DBT));
 	memset(&data,0,sizeof(DBT));
-	dbkey.size=dbkey.ulen=strblen(key->key);
+	dbkey.size=dbkey.ulen=kdbiStrLen(key->key);
 	dbkey.data=key->key;
 	data.flags=DB_DBT_REALLOC;
 	
-
-	/* Check if key exists on the database */
 	ret = dbctx->db.keyValuePairs->get(dbctx->db.keyValuePairs,
 		NULL, &dbkey, &data, 0);
 		
-	if (ret == DB_NOTFOUND) return errno=KDB_RET_NOTFOUND;
+	if (ret == DB_NOTFOUND) return errno=KDB_ERR_NOTFOUND;
 	
 	if (ret == 0) {
-		/* DB entry for key found */
 		cast=(Key *)data.data;
-
+		
 		/* Check parent permissions to write bellow it. */
 		if (cast->uid == user)
-			canWrite = cast->access & S_IWUSR;
+			canWrite = cast->mode & S_IWUSR;
 		else if (cast->gid == group)
-			canWrite = cast->access & S_IWGRP;
-		else canWrite= cast->access & S_IWOTH;
+			canWrite = cast->mode & S_IWGRP;
+		else canWrite= cast->mode & S_IWOTH;
 	}
 	
-
-
-	if ( canWrite && (ret == 0)) {
-		/* Check if key is a dir and have children */
-		
-		if (keyIsDir(cast) /* safe, because it looks only on metadata */) {
-			if (data.data) free(data.data), data.data=0;
-			ret = dbctx->db.parentIndex->get(dbctx->db.parentIndex,
-				NULL, &dbkey, &data, 0);
-
-			if (ret == 0) hasChild=1;
-			else if (ret == DB_NOTFOUND) hasChild=0;
-		}
-	}
-
-
-	if (data.data) free(data.data),data.data=0;
+	free(data.data);
 	
-	if (! canWrite) return errno=KDB_RET_NOCRED;
-	if (hasChild) return errno=ENOTEMPTY;
-
+	if (! canWrite) return errno=KDB_ERR_NOCRED;
 
 	/* Ok, so we can delete the key */
+	
 	ret=dbctx->db.keyValuePairs->del(dbctx->db.keyValuePairs,
 		NULL, &dbkey, 0);
 	
@@ -791,7 +709,7 @@ int kdbRemoveKey_bdb(KDBHandle handle, const Key *key) {
 			return ret; /* success */
 			break;
 		case EACCES:
-			return errno=KDB_RET_NOCRED;
+			return errno=KDB_ERR_NOCRED;
 			break;
 		default:
 			dbctx->db.keyValuePairs->err(dbctx->db.keyValuePairs, ret, "DB->del");
@@ -801,7 +719,7 @@ int kdbRemoveKey_bdb(KDBHandle handle, const Key *key) {
 }
 
 
-int kdbGetKeyWithOptions(KDBHandle handle, Key *key, uint32_t options) {
+int kdbGetKeyWithOptions(KDB *handle, Key *key, uint32_t options) {
 	DBContainer *dbs;
 	DBTree *dbctx;
 	DBT dbkey,data;
@@ -810,17 +728,17 @@ int kdbGetKeyWithOptions(KDBHandle handle, Key *key, uint32_t options) {
 	gid_t group=kdbhGetGID(handle);
 	int canRead=0;
 	int isLink=0;
-	Key buffer;
+	Key *buffer = keyNew(0);;
 
 	dbs=kdbhGetBackendData(handle);
 	
 	dbctx=getDBForKey(handle,key);
 	if (!dbctx) return 1; /* propagate errno from getDBForKey() */
 
-	keyInit(&buffer);
+	keyInit(buffer);
 	memset(&dbkey,0,sizeof(DBT));
 	memset(&data,0,sizeof(DBT));
-	dbkey.size=dbkey.ulen=strblen(key->key);
+	dbkey.size=dbkey.ulen=kdbiStrLen(key->key);
 	dbkey.data=key->key;
 	data.flags=DB_DBT_REALLOC;
 
@@ -829,12 +747,9 @@ int kdbGetKeyWithOptions(KDBHandle handle, Key *key, uint32_t options) {
 		
 	switch (ret) {
 		case 0: { /* Key found and retrieved. Check permissions */
-			keyFromBDB(&buffer,&dbkey,&data);
-			if (keyIsUser(&buffer)) keySetOwner(&buffer,dbctx->userDomain);
+			keyFromBDB(buffer,&dbkey,&data);
+			if (keyIsUser(buffer)) keySetOwner(buffer,dbctx->owner);
 
-			/* Keep key position in its keyset */
-			buffer.next = key->next;
-			
 			dbkey.data=0;
 			free(data.data); data.data=0;
 			
@@ -842,62 +757,64 @@ int kdbGetKeyWithOptions(KDBHandle handle, Key *key, uint32_t options) {
 			
 			
 			/* Check permissions. */
-			if (keyGetUID(&buffer) == user)
-				canRead = keyGetAccess(&buffer) & S_IRUSR;
-			else if (keyGetGID(&buffer) == group)
-				canRead = keyGetAccess(&buffer) & S_IRGRP;
-			else canRead = keyGetAccess(&buffer) & S_IROTH;
+			if (keyGetUID(buffer) == user)
+				canRead = keyGetMode(buffer) & S_IRUSR;
+			else if (keyGetGID(buffer) == group)
+				canRead = keyGetMode(buffer) & S_IRGRP;
+			else canRead = keyGetMode(buffer) & S_IROTH;
 
 			if (!canRead) {
-				keyClose(&buffer);
-				return errno=KDB_RET_NOCRED;
+				keyClose(buffer);
+				return errno=KDB_ERR_NOCRED;
 			}
 			break;
 		}
 		case DB_NOTFOUND:
-			return errno=KDB_RET_NOTFOUND;
+			return errno=KDB_ERR_NOTFOUND;
 			break;
 	}
 
-	isLink=keyIsLink(&buffer);
+	isLink=keyIsLink(buffer);
 	
 	if (canRead) {
+		/* TODO: check if ok?
 		if (!isLink && (options & KDB_O_STATONLY))
-			keySetRaw(&buffer,0,0);
+			keySetRaw(buffer,0,0);
+		*/
 		if (isLink && !(options & KDB_O_NFOLLOWLINK)) {
 			/* If we have a link and user did not specify KDB_O_NFOLLOWLINK,
 			 * he want to dereference the link */
-			Key target;
+			Key *target = keyNew(0);
 			
-			keyInit(&target);
-			keySetName(&target,buffer.data);
+			keyInit(target);
+			keySetName(target,buffer->data);
 
-			if (kdbGetKeyWithOptions(handle,&target, options) ==
-					KDB_RET_NOTFOUND) {
-				keyClose(&target);
-				keyClose(&buffer);
-				return errno=KDB_RET_NOTFOUND;
+			if (kdbGetKeyWithOptions(handle,target, options) ==
+					KDB_ERR_NOTFOUND) {
+				keyDel(target);
+				keyDel(buffer);
+				return errno=KDB_ERR_NOTFOUND;
 			}
 		}
 	}
-	keyDup(&buffer,key);
-	keyClose(&buffer);
+	key = keyDup(buffer);
+	keyDel(buffer);
 	
-	return KDB_RET_OK; /* success */
+	return KDB_ERR_OK; /* success */
 }
 
 
 
 
 
-int kdbGetKey_bdb(KDBHandle handle, Key *key) {
+int kdbGetKey_bdb(KDB *handle, Key *key) {
 	return kdbGetKeyWithOptions(handle,key,0);
 }
 
 
 
-int kdbStatKey_bdb(KDBHandle handle, Key *key) {
-	return kdbGetKeyWithOptions(handle,key,KDB_O_NFOLLOWLINK | KDB_O_STATONLY);
+int kdbStatKey_bdb(KDB *handle, Key *key) {
+	return kdbGetKeyWithOptions(handle,key,0);
 }
 
 
@@ -908,7 +825,7 @@ int kdbStatKey_bdb(KDBHandle handle, Key *key) {
  * @see kdbSetKey() for expected behavior.
  * @ingroup backend
  */
-int kdbSetKey_bdb(KDBHandle handle, Key *key) {
+int kdbSetKey_bdb(KDB *handle, Key *key) {
 	DBTree *dbctx;
 	DBT dbkey,data;
 	int ret;
@@ -919,12 +836,12 @@ int kdbSetKey_bdb(KDBHandle handle, Key *key) {
 	dbctx=getDBForKey(handle,key);
 	if (!dbctx) return 1; /* propagate errno from getDBForKey() */
 
-	/* Check access permissions.
+	/* Check mode permissions.
 	   Check if this client can commit this key to the database */
 
 	memset(&dbkey,0,sizeof(DBT));
 	memset(&data,0,sizeof(DBT));
-	dbkey.size=dbkey.ulen=strblen(key->key);
+	dbkey.size=dbkey.ulen=kdbiStrLen(key->key);
 	dbkey.data=key->key;
 	dbkey.flags=data.flags=DB_DBT_REALLOC;
 
@@ -939,10 +856,10 @@ int kdbSetKey_bdb(KDBHandle handle, Key *key) {
 			
 			/* Check parent permissions to write bellow it. */
 			if (cast->uid == user)
-				canWrite = cast->access & S_IWUSR;
+				canWrite = cast->mode & S_IWUSR;
 			else if (cast->gid == group)
-				canWrite = cast->access & S_IWGRP;
-			else canWrite= cast->access & S_IWOTH;
+				canWrite = cast->mode & S_IWGRP;
+			else canWrite= cast->mode & S_IWOTH;
 			
 			/* cleanup */
 			dbkey.data=0;
@@ -955,8 +872,8 @@ int kdbSetKey_bdb(KDBHandle handle, Key *key) {
 			/* We don't have this key yet.
 			   Check if we have a parent and its permissions. */
 			Key *parent=0;
-			size_t parentNameSize=0;
-			char *parentName=0;
+			size_t parentNameSize;
+			char *parentName;
 
 			parentNameSize=keyGetParentNameSize(key);
 			parentName=malloc(parentNameSize);
@@ -974,112 +891,73 @@ int kdbSetKey_bdb(KDBHandle handle, Key *key) {
 			if (ret == DB_NOTFOUND) {
 				/* No, we don't have a parent. Create dirs recursivelly */
 				
-				parent=keyNew(KEY_SWITCH_END);
+				parent=keyNew(0);
 				
 				/* explicitly set these attributes from the handle cause we
 				 * could be running under a daemon context */
 				keySetUID(parent,user);
 				keySetGID(parent,group);
-				keySetDir(parent,kdbhGetUMask(handle));
+				keySetDir(parent);
 				
-				/* Next block exist just to not call
+				/* Next block exist just to not call 
 				 * keySetName(), a very expensive method.
 				 * This is a not-recomended hack. */
 				parent->key=parentName;
-				parent->flags |= key->flags &
-					(KEY_SWITCH_ISSYSTEM | KEY_SWITCH_ISUSER);
-				parent->userDomain=key->userDomain;
+				parent->owner=key->owner;
 				
 				/* free(parentName); */
 				
-				if (kdbSetKey(handle,parent)) {
-					/* If some error happened in this recursive call,
-					 * propagate errno.
+				if (kdbSetKey_bdb(handle,parent)) {
+					/* If some error happened in this recursive call.
+					 * Propagate errno.
 					 */
 					
-					/* disassociate our hack for safe deletion */
-					parent->userDomain=0;
+					/* disassociate our hack for deletion */
+					parent->owner=0;
 					
 					/* parentName will be free()d here too */
 					keyDel(parent);
-					parentName=0; /* just to mark it empty */
 					
-					return -1;
+					return 1;
 				}
 				
-				/* disassociate our hack for later deletion */
-				parent->userDomain=0;
+				/* disassociate our hack for latter deletion */
+				parent->owner=0;
 				
 				/* data.data enters and quits this block empty */
 			} else {
 				/* Yes, we have a parent already. */
-
 				/*parent=keyNew(0);
 				keyFromBDB(parent,&dbkey,&data);
-				keySetOwner(parent,dbctx->userDomain);
+				keySetOwner(parent,dbctx->owner);
 				
 				free(data.data);
 				*/
 				
 				/* we don't need it anymore */
-				/* free(parentName);
-				parentName=0; */
+				free(parentName);
 				
 				/* we are only interested in some metainfo, so just cast it */
 				parent=(Key *)data.data;
 			}
 
-			/* Check if parent provides write permissions. */
+			/* Check parent permissions to write bellow it. */
 			if (parent->uid == user)
-				canWrite = parent->access & S_IWUSR;
+				canWrite = parent->mode & S_IWUSR;
 			else if (parent->gid == group)
-				canWrite = parent->access & S_IWGRP;
-			else canWrite= parent->access & S_IWOTH;
+				canWrite = parent->mode & S_IWGRP;
+			else canWrite= parent->mode & S_IWOTH;
 			
-			/* Check if parent is a dir, or convert it into one */
-			if (canWrite && !S_ISDIR(parent->access)) {
-
-				/* Convert the parent into a dir key */
-				parent->access|=(0111 & ~parent->access) | 0040000; /*S_IFDIR*/
-				parent->mtime=parent->atime=time(0);
-
-				/* Rewrite only the metainfo part of the key data */
-				data.doff  = 0;
-				data.dlen  = KEY_METAINFO_SIZE(parent);
-				data.flags = DB_DBT_PARTIAL;
-
-				if ((ret = dbctx->db.keyValuePairs->put(dbctx->db.keyValuePairs,
-						NULL, &dbkey, &data, 0)) != 0) {
-					dbctx->db.keyValuePairs->err(dbctx->db.keyValuePairs, ret,
-						"DB->put");
-		
-					free(dbkey.data); dbkey.data=0; /* same as parentName */
-					free(data.data); data.data=0;
-
-					errno=KDB_RET_NOCRED; /* probably this is the error */
-					return -1;
-				}
-			}
-
-			free(parentName); /* same as dbkey.data */
-			parentName=0;
-
 			if (data.data) free(data.data);
 			
-			if (parent == (Key *)data.data)
-				/* Case 1: parent is a cast of an existing retrieved key */
-				parent = 0;
-			else if (parent) {
-				/* Case 2: parent is a newly created key */
-				parent->key=0; /* disassociate with freed parentName */
-				keyDel(parent);
-			}
+			if (parent == (Key *)data.data) parent = 0;
+			else if (parent) keyDel(parent);
 			
 			break;
-		} /* case key not found */
+		} /* case DB_NOTFOUND */
 	} /* switch */
 
-	if (! canWrite) return errno=KDB_RET_NOCRED;
+	if (! canWrite) return errno=KDB_ERR_NOCRED;
 
 	key->mtime=key->atime=time(0); /* set current time into key */
 	keyToBDB(key,&dbkey,&data);
@@ -1091,7 +969,7 @@ int kdbSetKey_bdb(KDBHandle handle, Key *key) {
 		free(dbkey.data); dbkey.data=0;
 		free(data.data); data.data=0;
 
-		errno=KDB_RET_NOCRED; /* probably this is the error */
+		errno=KDB_ERR_NOCRED; /* probably this is the error */
 		return 1;
 	}
 
@@ -1099,7 +977,7 @@ int kdbSetKey_bdb(KDBHandle handle, Key *key) {
 	free(data.data); data.data=0;
 
 	/* Mark the key as synced */
-	key->flags &= ~KEY_SWITCH_NEEDSYNC;
+	key->flags &= ~KEY_FLAG_SYNC;
 
 	/*
 	dbctx->db.keyValuePairs->sync(dbctx->db.keyValuePairs,0);
@@ -1116,13 +994,13 @@ int kdbSetKey_bdb(KDBHandle handle, Key *key) {
  * @see kdbGetKeyChildKeys() for expected behavior.
  * @ingroup backend
  */
-ssize_t kdbGetKeyChildKeys_bdb(KDBHandle handle, const Key *parentKey,
+ssize_t kdbGetKeyChildKeys_bdb(KDB *handle, const Key *parentKey,
 		KeySet *returned, unsigned long options) {
 	DBTree *db=0;
 	DBC *cursor=0;
 	DBT parent,keyName,keyData;
 	Key *currentParent, *retrievedKey;
-	KeySet folders;
+	KeySet *folders;
 	uid_t user=kdbhGetUID(handle);
 	gid_t group=kdbhGetGID(handle);
 	mode_t canRead=0; /* wether we have permissions to go ahead */
@@ -1136,17 +1014,17 @@ ssize_t kdbGetKeyChildKeys_bdb(KDBHandle handle, const Key *parentKey,
 		   associted with the passed key. This is unacceptable and trated as
 		   as INVALID, because all DBs are calculated from key name.
 		*/
-		errno=KDB_RET_INVALIDKEY;
+		errno=KDB_ERR_INVALIDKEY;
 		return -1;
 	}
 
-	currentParent=keyNew(KEY_SWITCH_END);
-	keyDup(parentKey,currentParent);
-	ret=kdbGetKeyWithOptions(handle,currentParent,KDB_O_STATONLY);
+	currentParent=keyNew(0);
+	parentKey = keyDup(currentParent);
+	ret=kdbGetKeyWithOptions(handle,currentParent,0);
 
-	if (ret==KDB_RET_NOTFOUND) {
+	if (ret==KDB_ERR_NOTFOUND) {
 		keyDel(currentParent);
-		errno=KDB_RET_NOTFOUND;
+		errno=KDB_ERR_NOTFOUND;
 		return -1;
 	}
 	
@@ -1159,17 +1037,17 @@ ssize_t kdbGetKeyChildKeys_bdb(KDBHandle handle, const Key *parentKey,
 
 	/* Check master parent permissions from DB */
 	if (currentParent->uid == user)
-		canRead = currentParent->access & (S_IRUSR | S_IXUSR);
+		canRead = currentParent->mode & (S_IRUSR | S_IXUSR);
 	else if (currentParent->gid == group)
-		canRead = currentParent->access & (S_IRGRP | S_IXGRP);
-	else canRead = currentParent->access & (S_IROTH | S_IXOTH);
+		canRead = currentParent->mode & (S_IRGRP | S_IXGRP);
+	else canRead = currentParent->mode & (S_IROTH | S_IXOTH);
 	
 	keyDel(currentParent);
 	
-	if (!canRead) return errno=KDB_RET_NOCRED;
+	if (!canRead) return errno=KDB_ERR_NOCRED;
 
 	/* initialize the KeySet that will hold the fetched folders */
-	ksInit(&folders);
+	folders = ksNew(0);
 	
 	/* initialize a cursor to walk through each key under a folder */
 	ret = db->db.parentIndex->cursor(db->db.parentIndex, NULL, &cursor, 0);
@@ -1206,36 +1084,38 @@ ssize_t kdbGetKeyChildKeys_bdb(KDBHandle handle, const Key *parentKey,
 			free(keyName.data);
 			free(keyData.data);
 			break;
-			/*return KDB_RET_NOTFOUND; */
+			/*return KDB_ERR_NOTFOUND; */
 		}
 		
 		/* Now start retrieving all child keys */
 		do { /* next cursor move is in the ending "while" */
 		
 			/* Check if is inactive before doing higher level operations */
+			/*
 			if (!(options & KDB_O_INACTIVE)) {
 				char *sep;
 				
-				/* If we don't want inactive keys, check if its inactive */
-				/* TODO: handle escaping */
+				* If we don't want inactive keys, check if its inactive *
+				* TODO: handle escaping *
 				sep=strrchr((char *)keyName.data,RG_KEY_DELIM);
 				if (sep && sep[1] == '.') {
-					/* This is an inactive key, and we don't want it */
-					/* Ignore this key, free all, and continue */
+					* This is an inactive key, and we don't want it *
+					* Ignore this key, free all, and continue *
 					
 					free(keyName.data); free(keyData.data);
 					memset(&keyName,0,sizeof(keyName));
 					memset(&keyData,0,sizeof(keyData));
 					keyName.flags=keyData.flags=DB_DBT_REALLOC;
 		
-					/* fetch next */
+					* fetch next *
 					continue;
 				}
 			}
+			*/
 		
-			retrievedKey=keyNew(KEY_SWITCH_END);
+			retrievedKey=keyNew(0);
 			keyFromBDB(retrievedKey,&keyName,&keyData);
-			if (keyIsUser(retrievedKey)) keySetOwner(retrievedKey,db->userDomain);
+			if (keyIsUser(retrievedKey)) keySetOwner(retrievedKey,db->owner);
 		
 			free(keyName.data); free(keyData.data);
 			memset(&keyName,0,sizeof(keyName));
@@ -1246,18 +1126,20 @@ ssize_t kdbGetKeyChildKeys_bdb(KDBHandle handle, const Key *parentKey,
 		
 			/* check permissions for this key */
 			canRead=0;
+			/*
 			if (options & KDB_O_STATONLY) {
 				if (!keyIsLink(retrievedKey)) keySetRaw(retrievedKey,0,0);
 				canRead=1;
 			} else {
+			*/
 				/* If caller wants the value, comment, etc... */
 				canRead=0;
 				if (retrievedKey->uid == user) {
-					canRead = (retrievedKey->access & S_IRUSR);
+					canRead = (retrievedKey->mode & S_IRUSR);
 				} else if (retrievedKey->gid == group) {
-					canRead = (retrievedKey->access & S_IRGRP);
-				} else canRead = (retrievedKey->access & S_IROTH);
-			}
+					canRead = (retrievedKey->mode & S_IRGRP);
+				} else canRead = (retrievedKey->mode & S_IROTH);
+			/*}*/
 		
 			if (!canRead) {
 				keyDel(retrievedKey);
@@ -1268,49 +1150,55 @@ ssize_t kdbGetKeyChildKeys_bdb(KDBHandle handle, const Key *parentKey,
 			if (keyIsLink(retrievedKey) && !(options & KDB_O_NFOLLOWLINK)) {
 			/* If we have a link and user did not specify KDB_O_NFOLLOWLINK,
 			 * means he wants to dereference the link */
-				Key target;
+				Key *target = keyNew (0);
 			
-				keyInit(&target);
-				keySetName(&target,retrievedKey->data);
+				keySetName(target,retrievedKey->data);
 
-				if (kdbGetKeyWithOptions(handle,&target, options) ==
-						KDB_RET_NOTFOUND) {
+				if (kdbGetKeyWithOptions(handle,target, options) ==
+						KDB_ERR_NOTFOUND) {
 					/* Invalid link target, so don't include in keyset */
 				
-					keyClose(&target);
+					keyDel(target);
 				
-					errno=KDB_RET_NOTFOUND;
+					errno=KDB_ERR_NOTFOUND;
 					/* fetch next */
 					continue;
 				} else {
-					keyDup(&target,retrievedKey);
-					keyClose(&target);
+					target = keyDup(retrievedKey);
+					keyDel (target);
 				}
 			}
 		
+			/*
 			if (keyIsDir(retrievedKey)) {
 				if (options & KDB_O_RECURSIVE) {
-					ksAppend(&folders,retrievedKey);
+					ksAppendKey(folders,retrievedKey);
 				} else if (options & KDB_O_DIR) {
-					ksAppend(returned,retrievedKey);
-				} else keyDel(retrievedKey); /* discard */
+					ksAppendKey(returned,retrievedKey);
+				} else keyDel(retrievedKey);
 			} else if (options & KDB_O_DIRONLY) {
-				/* If key isn't a dir, and user only wants dirs... */
+				* If key isn't a dir, and user only wants dirs... *
 				keyDel(retrievedKey);
 				retrievedKey=0;
-			} else ksAppend(returned, retrievedKey);
+			} else
+			*/
+			ksAppendKey(returned, retrievedKey);
 		} while (0==(ret=cursor->c_pget(cursor,&parent,&keyName,&keyData,DB_NEXT_DUP)));
-	} while ((currentParent=ksNext(&folders)));
+	} while ((currentParent=ksNext(folders)));
 	
 	/* At this point we have all keys we want. Make final adjustments. */
 	
+	/*
 	if (options & KDB_O_DIR)
-		ksInsertKeys(returned,&folders);
+	*/
+		ksAppend(returned,folders);
 	
-	ksClose(&folders);
-	
+	ksDel(folders);
+
+	/*
 	if ((options & (KDB_O_SORT)) && (returned->size > 1))
 		ksSort(returned);
+	*/
 	
 	cursor->c_close(cursor);
 	
@@ -1318,38 +1206,120 @@ ssize_t kdbGetKeyChildKeys_bdb(KDBHandle handle, const Key *parentKey,
 }
 
 
+int kdbOpen_berkeleydb(KDB *handle) {
+	KDBCap *cap = kdbhGetCapability (handle);
+	/* Create only the DB container.
+	 * DBs will be allocated on demand
+	 */
+	DBContainer *dbs;
 
+	cap->onlyFullGet=1;
+	cap->noStat=1;
 
+	cap->onlyRemoveAll=1;
 
-/**
- * All KeyDB methods implemented by the backend can have random names, except
- * kdbBackendFactory(). This is the single symbol that will be looked up
- * when loading the backend, and the first method of the backend
- * implementation that will be called.
- * 
- * Its purpose is to "publish" the exported methods for libelektra.so. The
- * implementation inside the provided skeleton is usually enough: simply
- * call kdbBackendExport() with all methods that must be exported.
- * 
- * @return whatever kdbBackendExport() returns
- * @see kdbBackendExport() for an example
- * @see kdbOpenBackend()
- * @ingroup backend
- */
-KDBEXPORT(berkeleydb) {
+	cap->onlyFullSet=1;
+	cap->onlyAddKeys=1;
+
+	cap->onlySystem=1;
+	cap->onlyUser=1;
+
+	cap->noOwner=1;
+	cap->noValue=1;
+	cap->noComment=1;
+	cap->noUID=1;
+	cap->noGID=1;
+	cap->noMode=1;
+	cap->noDir=1;
+	cap->noATime=1;
+	cap->noMTime=1;
+	cap->noCTime=1;
+	cap->noRemove=1;
+	cap->noLink=1;
+	cap->noMount=1;
+	cap->noBinary=1;
+	cap->noString=1;
+	cap->noTypes=1;
+	cap->noError=1;
+
+	cap->noLock=1;
+	cap->noThread=1;
+
+	
+	dbs=malloc(sizeof(DBContainer));
+	memset(dbs,0,sizeof(DBContainer));
+	
+	kdbhSetBackendData(handle,dbs);
+	
+	return 0;
+}
+
+int kdbClose_berkeleydb(KDB *handle) {
+
+	/* free all backend resources and shut it down */
+	DBContainer *dbs;
+	
+	dbs=kdbhGetBackendData(handle);
+	
+	if (dbs) {
+		while (dbs->first) {
+			dbs->cursor=dbs->first;
+			dbs->first=dbs->cursor->next;
+
+			dbTreeDel(dbs->cursor);
+		}
+		free(dbs); dbs=0;
+	}
+
+	return 0; /* success */
+}
+
+ssize_t kdbGet_berkeleydb(KDB *handle, KeySet *returned, const Key *parentKey) {
+	ssize_t nr_keys = 0;
+
+	/* get all keys below parentKey and count them with nr_keys */
+	nr_keys = kdbGetKeyChildKeys_bdb(handle, parentKey, returned, 0);
+
+	return nr_keys; /* success */
+}
+
+ssize_t kdbSet_berkeleydb(KDB *handle, KeySet *returned, const Key *parentKey) {
+	ssize_t nr_keys = 0;
+	Key *current=ksCurrent(returned);
+
+	/* set all keys below parentKey and count them with nr_keys */
+
+	if (!current) current=ksNext(returned);
+	while (current) {
+		if (keyNeedRemove(current))
+		{
+			if (kdbRemoveKey_bdb (handle, current))
+				return -1;
+			// TODO: should key be removed?
+		}
+		else if (keyNeedSync(current))
+		{
+			if (kdbSetKey_bdb (handle,current)) /* check error */
+				return -1;
+		}
+		current=ksNext(returned);
+	}
+
+	return nr_keys;
+}
+
+KDBEXPORT(berkeleydb)
+{
 	return kdbBackendExport(BACKENDNAME,
-		KDB_BE_OPEN,           &kdbOpen_bdb,
-		KDB_BE_CLOSE,          &kdbClose_bdb,
-		KDB_BE_GETKEY,         &kdbGetKey_bdb,
-		KDB_BE_SETKEY,         &kdbSetKey_bdb,
-		KDB_BE_STATKEY,        &kdbStatKey_bdb,
-		KDB_BE_REMOVEKEY,      &kdbRemoveKey_bdb,
-		KDB_BE_GETCHILD,       &kdbGetKeyChildKeys_bdb,
-		/* set to default implementation: 
-		 * Again, don't set explicitly. See filesys for more info*/
-/*		KDB_BE_RENAME,         &kdbRename_backend,
-		KDB_BE_MONITORKEY,     &kdbMonitorKey_default,
-		KDB_BE_MONITORKEYS,    &kdbMonitorKeys_default,
-		KDB_BE_SETKEYS,        &kdbSetKeys_default,*/
+		KDB_BE_OPEN,	&kdbOpen_berkeleydb,
+		KDB_BE_CLOSE,	&kdbClose_berkeleydb,
+		KDB_BE_GET,	&kdbGet_berkeleydb,
+		KDB_BE_SET,	&kdbSet_berkeleydb,
+		KDB_BE_VERSION,        BACKENDVERSION,
+		KDB_BE_AUTHOR,	"Full Name <email@libelektra.org>",
+		KDB_BE_LICENCE,	"BSD",
+		KDB_BE_DESCRIPTION,
+			"Add description here",
 		KDB_BE_END);
 }
+

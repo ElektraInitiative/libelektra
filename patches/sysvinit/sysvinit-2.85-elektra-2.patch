@@ -144,7 +144,7 @@ diff -Naur sysvinit-2.86.orig/src/init.c sysvinit-2.86/src/init.c
 +  int useinittab=0;
 +  char sequence[500]; /* a big enough buffer */
 +  char *seqcursor=sequence;
-+  KDBHandle handle;
++  KDB handle;
 +
 +  /* we really need it all zeroed to make get_part() work correctly */
 +  memset(sequence,0,sizeof(sequence));

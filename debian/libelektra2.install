@@ -1,0 +1,3 @@
+usr/lib/libelektra.so.*
+usr/lib/elektra/libelektra-default.so
+usr/lib/elektra/libelektra-filesys.so

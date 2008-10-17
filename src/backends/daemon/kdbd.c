@@ -31,9 +31,9 @@ $Id$
 #include "ipc.h"
 #include "thread.h"
 
-static Message *processRequest(Message *request, KDBHandle *handle, uid_t remoteeuid, gid_t remoteegid);
+static Message *processRequest(Message *request, KDB *handle, uid_t remoteeuid, gid_t remoteegid);
 
-static Message *processRequest(Message *request, KDBHandle *handle, uid_t remoteeuid, gid_t remoteegid)
+static Message *processRequest(Message *request, KDB *handle, uid_t remoteeuid, gid_t remoteegid)
 {
 	Message	*reply;
 	int	msgType, procedure;
@@ -46,48 +46,32 @@ static Message *processRequest(Message *request, KDBHandle *handle, uid_t remote
 	
 	procedure = messageGetProcedure(request);
 	switch(procedure) {
-		case KDB_BE_OPEN:
+/*		case KDB_BE_OPEN:
 			reply = wrapper_kdbOpen(handle, request, remoteeuid, remoteegid);
 			break;
 			
         	case KDB_BE_CLOSE:
 			reply = wrapper_kdbClose(handle, request);
-			break;
+			break;*/
 			
         	case KDB_BE_STATKEY:
-			reply = wrapper_kdbStatKey(*handle, request);
+			reply = wrapper_kdbStatKey(handle, request);
 			break;
 			
         	case KDB_BE_GETKEY:
-			reply = wrapper_kdbGetKey(*handle, request);
+			reply = wrapper_kdbGetKey(handle, request);
 			break;
 			
         	case KDB_BE_SETKEY:
-			reply = wrapper_kdbSetKey(*handle, request);
+			reply = wrapper_kdbSetKey(handle, request);
 			break;
 			
         	case KDB_BE_SETKEYS:
-			reply = wrapper_kdbSetKeys(*handle, request);
-			break;
-			
-        	case KDB_BE_RENAME:
-			reply = wrapper_kdbRename(*handle, request);
-			break;
-			
-        	case KDB_BE_REMOVEKEY:
-			reply = wrapper_kdbRemoveKey(*handle, request);
+			reply = wrapper_kdbSetKeys(handle, request);
 			break;
 			
         	case KDB_BE_GETCHILD:
-			reply = wrapper_kdbGetChild(*handle, request);
-			break;
-			
-        	case KDB_BE_MONITORKEY:
-			reply = wrapper_kdbMonitorKey(*handle, request);
-			break;
-			
-        	case KDB_BE_MONITORKEYS:
-			reply = wrapper_kdbMonitorKeys(*handle, request);
+			reply = wrapper_kdbGetChild(handle, request);
 			break;
 			
 		default:
@@ -109,13 +93,15 @@ static Message *processRequest(Message *request, KDBHandle *handle, uid_t remote
 
 int kdbd(void *pIntThreadHandle)
 {
-	KDBHandle	handle;
+	KDB	*handle;
 	int		threadHandle, socketFd;
 	Message		*request, *reply;
 	uid_t   	remoteeuid;
 	gid_t   	remoteegid;
 	pid_t		remotepid;
 	int		closed;
+
+	handle = kdbOpen();
 
 	pthread_cleanup_push(threadExit, pIntThreadHandle);
 	
@@ -136,7 +122,6 @@ int kdbd(void *pIntThreadHandle)
 	while ( !closed ) {
 		request = protocolReadMessage(socketFd);
 		if ( request == NULL ) {
-			kdbPrintError("kdbd");
 			if ( (errno == EPIPE) || (errno == EINVAL) ) {
 				/* Client closed the connection or
 				 * malformed request */
@@ -159,6 +144,8 @@ int kdbd(void *pIntThreadHandle)
 	}
 
 	pthread_cleanup_pop(1);
+
+	kdbClose (handle);
 	
 	return 0;
 }

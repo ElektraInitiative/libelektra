@@ -13,7 +13,7 @@ $LastChangedBy: rayman $
 #define ELEKTRAUSER 0
 #define ELEKTRAGROUP 1
 
-#ifdef DEBUG
+#if DEBUG
 #define _D(a,f,...) _nss_elektra_log(a,f,__VA_ARGS__)
 #else
 #define _D(a,f,...)

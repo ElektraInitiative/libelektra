@@ -29,12 +29,12 @@ size_t getSID(char *username, char *sid, int size);
 #ifdef __cplusplus
 extern "C" {
 #endif
-int kdbOpen_winregistry(KDBHandle *handle);
-int kdbClose_winregistry(KDBHandle *handle);
-int kdbStatKey_winregistry(KDBHandle handle, Key *key);
-int kdbGetKey_winregistry(KDBHandle handle, Key *key);
-int kdbSetKey_winregistry(KDBHandle handle, Key *key);
-int kdbRename_winregistry(KDBHandle handle, Key *key, const char *newName);
+int kdbOpen_winregistry(KDB *handle);
+int kdbClose_winregistry(KDB *handle);
+int kdbStatKey_winregistry(KDB handle, Key *key);
+int kdbGetKey_winregistry(KDB handle, Key *key);
+int kdbSetKey_winregistry(KDB handle, Key *key);
+int kdbRename_winregistry(KDB handle, Key *key, const char *newName);
 int kdbRemoveKey_winregistry(const Key *key);
 ssize_t kdbGetKeyChildKeys_winregistry(const Key *parentKey, KeySet *returned, unsigned long options);
 
@@ -44,7 +44,7 @@ uint32_t kdbMonitorKeys_winregistry(KeySet *interests, uint32_t diffMask, unsign
 uint32_t kdbMonitorKey_winregistry(Key *interest, uint32_t diffMask, unsigned long iterations, unsigned sleep);*/
 
 /**
- * All KeyDB methods implemented by the backend can have random names, except
+ * All KDB methods implemented by the backend can have random names, except
  * kdbBackendFactory(). This is the single symbol that will be looked up
  * when loading the backend, and the first method of the backend
  * implementation that will be called.

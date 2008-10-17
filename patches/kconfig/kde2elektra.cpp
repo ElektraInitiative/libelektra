@@ -83,7 +83,7 @@ int kde2elektra(const QString &absFname, const QString &baseDir)
 					KEY_SWITCH_GID, info.groupId(),
 					KEY_SWITCH_VALUE, (const char *) entryIt.data().utf8(),
 					KEY_SWITCH_END);
-			ksAppend(ks, key);
+			ksAppendKey(ks, key);
 		}
 	}
 
@@ -95,7 +95,7 @@ int kde2elektra(const QString &absFname, const QString &baseDir)
 		exit(1);
 	}
 
-	KDBHandle	handle;
+	KDB	handle;
 	
 	kdbOpen(&handle);
 	kdbSetKeys(handle, ks);
@@ -153,7 +153,7 @@ int main(int argc, char **argv)
 	cout << "    and the root specific kde configuration" << endl;
 	cout << "  * One time as user for import user's specific kde configuration" << endl << endl;
 
-	KDBHandle handle;
+	KDB handle;
 	KDBInfo *info;
 	char buf[1024];
 	

@@ -1,0 +1,87 @@
+#For bugs and enhancements go to http://bugs.libelektra.org
+#For visions and drafts go to http://www.libelektra.org
+#For TODO in current stable, see TODO
+
+#some enhanced ideas (dont't expect them to be here soon)
+
+cryptography:
+	sign modules and check them when kdbOpen
+	encrypted keys backend
+
+distributed elektra
+	automatical synchronisation of nodes
+
+typed elektra
+	typing system with subtyping
+	dynamic type checking
+
+daemon:
+	mmap keys
+	distributed configuration
+	notification feature (see api above)
+
+ksToStream:
+	Streaming of all Backends (not only binary and xml)
+	xml backend
+	c-code streaming
+	shell-code streaming
+
+backends:
+	xfree
+	apache
+	kde-ini
+	gconf
+	xml
+	fstab
+	inittab
+	nvram
+	sql
+
+notification: new notification api
+	void kdbRegisterCallback(KeySet *interests, u_int32_t diffMask,
+		KdbCallback *cb, void *userdata);
+	void kdbUnregisterCallback(KeySet *interests, u_int32_t diffMask,
+		KdbCallback *cb, void *userdata);
+	void kdbDeliverEvents(long iterations, int sleep);
+
+
+libcomment:
+	multilanguage comments
+	type of key (list, int, bool,...)
+	validator of key (what is valid?)
+	important? (-20 for optional 20 for must have)
+	regexpr for keysets
+	version of key (full.major.minor)
+	user comments
+	without any field it will be taken as
+		comment for every language,
+		not especially specified
+
+
+hierarchy: sorted by priority
+	add new folders next to system/ and user/
+	support multiple hierachies (doc, local) by conf
+	memory (memory fallback)	
+	system/, local/, opt/(will be used if installed to /usr, /usr/local or /opt)
+	user/
+	current/ (configuration in the current working directory)
+	override/ (in memory override)
+	env for environment options overrides
+	cmd for commandline options overrides
+	doc(/usr/share/doc/kdb) hierachys, value -> comment
+	keyset: build up a hash with highest priority found
+
+uninstall:
+	let user find configuration of uninstalled software
+
+web2.0:
+	share elektra xml files
+	web frontent to kdb with xml/generate output/paste
+
+
+BackendCtl:
+	set and get options of backends
+	readonly
+	transactions
+	locking (performance)
+	filesys optimistic lock

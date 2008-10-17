@@ -2,51 +2,93 @@
 
 To compile this example:
 
-	$ cc `pkg-config --libs elektra` -o example example.c
-		or
-	$ cc -L/lib -lelektra -o example example.c
+	$ cc `pkg-config --libs elektra` `pkg-config --cflags elektra` -o application application.c
+		or static
+	$ cc -c `pkg-config --cflags elektra` application.c
 
-This should be a ready to use template to write an 
-full-elektra compatible application.
-
-It should be able to read and write a full Config in
-the system/ and user/ hierachy of the Application.
-
-TODO: Not well tested yet.
-
+This application shows how to read (resp. update) and save
+configuration using elektra.
 
 **********************************************************/
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
 
+#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include <kdb.h>
 
-#define MY_APP_ROOT   "system/sw/MyApp/current"
+#define MY_APP_ROOT   "/sw/MyApp/current"
+
+int generateConfig(KeySet *myConfig)
+{
+	ksAppendKey(myConfig, keyNew("user/sw/MyApp/current/dir1",
+			KEY_VALUE, "directory value",
+			KEY_COMMENT, "this is the first directory",
+			KEY_DIR, KEY_END));
+	ksAppendKey(myConfig, keyNew("user/sw/MyApp/current/dir1/key1",
+			KEY_VALUE, "the first application key",
+			KEY_COMMENT, "some useful comment",
+			KEY_DIR, KEY_END));
+	ksAppendKey(myConfig, keyNew("user/sw/MyApp/current/dir1/key2",
+			KEY_VALUE, "the second application key",
+			KEY_COMMENT, "some useful comment",
+			KEY_DIR, KEY_END));
+	ksAppendKey(myConfig, keyNew("user/sw/MyApp/current/dir1/key3",
+			KEY_VALUE, "the third application key",
+			KEY_COMMENT, "some useful comment",
+			KEY_DIR, KEY_END));
+	ksAppendKey(myConfig, keyNew("user/sw/MyApp/current/dir2",
+			KEY_VALUE, "directory value",
+			KEY_DIR, KEY_END));
+	ksAppendKey(myConfig, keyNew("user/sw/MyApp/current/dir3",
+			KEY_VALUE, "directory value",
+			KEY_DIR, KEY_END));
+	ksAppendKey(myConfig, keyNew("user/sw/MyApp/current/dir4",
+			KEY_VALUE, "directory value",
+			KEY_DIR, KEY_END));
+}
 
 
 /* Read config keys for this application */
-int readConfig(KDBHandle handle, KeySet *myConfig) {
-	int rc;
+int readConfig(KDB * handle, KeySet *myConfig)
+{
+	int rc = 0;
+	int size = 0;
 
 	/* Get all value keys for this application */
-	rc=kdbGetChildKeys(handle,MY_APP_ROOT, myConfig, KDB_O_RECURSIVE);
-	
-	return rc;
+	if (kdbGetByName(handle, myConfig, "system" MY_APP_ROOT, 0) == -1)
+	{
+		rc = -1;
+		perror("Couldn't get system configuration. Reason");
+	} else {
+		size = (int)ksGetSize(myConfig);
+		printf("Retrieved %d keys\n", size);
+	}
+
+	if (kdbGetByName(handle, myConfig,"user" MY_APP_ROOT,  0) == -1)
+	{
+		rc = -1;
+		perror("Couldn't get user configuration. Reason");
+	} else {
+		size = (int)ksGetSize(myConfig);
+		printf("Retrieved %d keys\n", size);
+	}
+
+	if (rc == -1) return -1;
+	return size;
 }
 
 
 /* Change some keys */
-void changeConfig(KeySet *myConfig) {
+void changeConfig(KeySet *myConfig)
+{
 	Key *current;
 	
 	ksRewind(myConfig);
 	while ((current=ksNext(myConfig))) {
-		char keyName[200];
-		char value[300];
+		char keyName[MAX_KEY_LENGTH];
+		char value[MAX_KEY_LENGTH];
 		
 		keyGetFullName(current,keyName,sizeof(keyName));
 		keyGetString(current,value,sizeof(value));
@@ -66,35 +108,96 @@ void changeConfig(KeySet *myConfig) {
 	}
 }
 
+/* Make keys empty */
+void emptyConfig(KeySet *myConfig)
+{
+	ksRewind(myConfig);
+	while (ksNext(myConfig))
+	{
+		keySetString(ksCurrent(myConfig), "");
+	}
+}
+
+
+/* Make keys empty */
+void printConfig(KeySet *myConfig)
+{
+	ksRewind(myConfig);
+	while (ksNext(myConfig))
+	{
+		printf ("Key %s, Value %s, Comment %s\n",
+			(char*)keyName(ksCurrent(myConfig)),
+			(char*)keyValue(ksCurrent(myConfig)),
+			(char*)keyComment(ksCurrent(myConfig)));
+	}
+}
+
+
 
 /* Save the modified keys */
-int saveConfig(KDBHandle handle, KeySet *myConfig) {
-	return kdbSetKeys(handle,myConfig);
+int saveConfig(KDB * handle, KeySet *myConfig)
+{
+	return kdbSet(handle,myConfig,0,0);
 }
 
 
+int main(int argc, char **argv)
+{
+	int command;
+	KeySet *myConfig=ksNew(0);
+	KDB * handle=kdbOpen();
 
-int main(int argc, char **argv) {
-	KeySet *myConfig=ksNew();
-	KDBHandle handle=0;
-	
-	kdbOpen(&handle);
-	
-	/* Get configuration values, and just continue if there is no error */
-	if (readConfig(handle,myConfig)) {
-		perror("Couldn't get my configuration. Reason");
-		exit(1);
-	} else {
-		printf("Retrieved %d keys\n",ksGetSize(myConfig));
+	printf ("Following commands are available:\n\n");
+	printf ("g ... generate new Configuration\n");
+	printf ("c ... change Configuration\n");
+	printf ("r ... read Configuration\n");
+	printf ("s ... save Configuration\n");
+	printf ("p ... print Configuration\n");
+	printf ("e ... empty Configuration\n");
+	printf ("d ... clear Configuration\n");
+
+	while (1)
+	{
+		/* Get configuration values, and just continue if there is no error */
+
+		command = fgetc (stdin);
+		if (command == 'q') break;
+		switch (command)
+		{
+			case 'g':
+				generateConfig(myConfig);
+				break;
+			case 'c':
+				changeConfig(myConfig);
+				break;
+			case 'r':
+				readConfig(handle, myConfig);
+				break;
+			case 's':
+				saveConfig(handle, myConfig);
+				break;
+			case 'p':
+				printConfig(myConfig);
+				break;
+			case 'e':
+				emptyConfig(myConfig);
+				break;
+			case 'd':
+				ksClear(myConfig);
+				break;
+			case '\n': case '\r': case '\f':
+				break;
+			default:
+				printf ("unkown command\n");
+				break;
+		}
 	}
-		
-	changeConfig(myConfig);
-	saveConfig(handle,myConfig);
-	
-	kdbClose(&handle);
-	
+
+	kdbClose(handle);
+
 	/* Free all keys and resources in the key set */
 	ksDel(myConfig);
-	
+
 	return 0;
 }
+

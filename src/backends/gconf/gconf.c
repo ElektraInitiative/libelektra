@@ -141,12 +141,12 @@ Key *gEntryToKey(const GConfEntry *gentry) {
 						break;
 					case GCONF_VALUE_INT:
 						keySetType(new,KEY_GCONFTYPE_LIST_INT);
-						sprintf(buffer+strblen(buffer)-1,"%d",
+						sprintf(buffer+kdbiStrLen(buffer)-1,"%d",
 							gconf_value_get_int(val));
 						break;
 					case GCONF_VALUE_FLOAT:
 						keySetType(new,KEY_GCONFTYPE_LIST_FLOAT);
-						sprintf(buffer+strblen(buffer)-1,"%g",
+						sprintf(buffer+kdbiStrLen(buffer)-1,"%g",
 							gconf_value_get_float(val));
 						break;
 					case GCONF_VALUE_BOOL:
@@ -164,7 +164,7 @@ Key *gEntryToKey(const GConfEntry *gentry) {
 			}
 			
 			strcat(buffer,"]");
-			keySetRaw(new,buffer,strblen(buffer));
+			keySetRaw(new,buffer,kdbiStrLen(buffer));
 			break;
 		/* TODO: car+cdr (pair). */
 	}
@@ -192,7 +192,7 @@ GConfEntry *keyToGEntry(const Key *key) {
 	if (!keyIsUser(key)) return 0;
 	
 	/* prepare key name */
-	if (strblen(key->key)<sizeof("user/")) {
+	if (kdbiStrLen(key->key)<sizeof("user/")) {
 		keyName=malloc(2);
 		strcpy(keyName,"/");
 	} else {
@@ -413,7 +413,7 @@ int kdbRemoveKey_gconf(const Key *key) {
 	gboolean rc=0;
 	
 	if (!key || !key->key) {
-		errno=KDB_RET_NULLKEY;
+		errno=KDB_ERR_NULLKEY;
 		return 1; /* errno is propagated */
 	}
 	
@@ -459,7 +459,7 @@ ssize_t kdbGetKeyChildKeys_gconf(const Key *parentKey, KeySet *returned, unsigne
 	gconf_entry_free(entry); entry=0;
 	
 	while (entries) {
-		ksAppend(returned,gEntryToKey((GConfEntry *)entries->data));
+		ksAppendKey(returned,gEntryToKey((GConfEntry *)entries->data));
 		
 		current=entries;
 		entries=g_slist_remove_link(entries,current);
@@ -478,10 +478,12 @@ ssize_t kdbGetKeyChildKeys_gconf(const Key *parentKey, KeySet *returned, unsigne
 		toAppend=gEntryToKey(&entry);
 		
 		keySetType(toAppend,KEY_TYPE_DIR);
-		ksAppend(returned,toAppend);
+		ksAppendKey(returned,toAppend);
 		
+		/*
 		if (options & KDB_O_RECURSIVE)
 			kdbGetKeyChildKeys_gconf(toAppend,returned,options & ~KDB_O_SORT);
+		*/
 		
 		current=dirs;
 		dirs=g_slist_remove_link(dirs,current);
@@ -490,7 +492,9 @@ ssize_t kdbGetKeyChildKeys_gconf(const Key *parentKey, KeySet *returned, unsigne
 		g_slist_free(current);
 	}
 	
+	/*
 	if (options & KDB_O_SORT) ksSort(returned);
+	*/
 	
 	return returned->size; /* success */
 }

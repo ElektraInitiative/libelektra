@@ -1,18 +1,32 @@
-# $Id: Makefile.am 741 2006-04-16 10:54:57Z aviram $
+INCLUDES = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/bindings/cpp/include
+AM_CXXFLAGS = $(CXXSTDFLAGS) $(CXXOPTFLAGS) $(CXXDBGFLAGS)
 
-#testdir = $(develdocdir)/src/bindings/cpp/
-AM_CPPFLAGS = -I$(top_srcdir)/src/include -I$(srcdir)/include
+SUBDIRS = tests
+DIST_SUBDIRS = tests
 
-#include_HEADERS = ckdb.h
+include_HEADERS = include/kdb include/key include/keyset
+
+dependencies = ../../include/kdb.h
+
+sources =  kdb.cpp key.cpp keyset.cpp include/kdb include/key include/keyset
+
+objects = kdb.o key.o keyset.o
+
+lib_LIBRARIES = libelektra-cpp.a
+libelektra_cpp_a_SOURCES = $(sources)
+libelektra_cpp_a_DEPENDENCIES =
+libelektra_cpp_a_CXXFLAGS = $(cxxflags)
+libelektra_cpp_a_CPPFLAGS = -DELEKTRA_STATIC $(cppflags)
+libelektra_cpp_a_LIBADD =
+BUILT_SOURCES =
 
 lib_LTLIBRARIES = libelektra-cpp.la
-libelektra_cpp_la_SOURCES = kdb.cpp key.cpp keyset.cpp include/kdb include/key include/keyset ../../include/kdb.h
-libelektra_cpp_la_LDFLAGS = -avoid-version -module
+libelektra_cpp_la_SOURCES = $(sources)
+libelektra_cpp_la_DEPENDENCIES =
+libelektra_cpp_la_CXXFLAGS = $(cxxflags)
+libelektra_cpp_la_CPPFLAGS = $(cppflags)
+libelektra_cpp_la_LDFLAGS = -version-info 0:0:0
 libelektra_cpp_la_LIBADD = ../../libelektra/libelektra.la
-libelektra_cpp_la_CFLAGS = -DDEBUG
 
-check_PROGRAMS = test
-
-test_SOURCES = test.cpp
-test_LDADD = libelektra-cpp.la ../../libelektra/libelektra.la
-
+clean-local:
+	rm -f *.gcno *.gcda *.gcno

@@ -44,10 +44,12 @@
 
 
 if [ -z "$KDB" ]; then
-	KDB=`which kdb`
+	export KDB=`echo =kdb`
 fi
 
-#TODO: performance do with $KDB ls -sv -p 'export ' /zsh/env
+echo "using $KDB as kdb commando"
+
+#exports environment into the zsh
 #s: short key name and make it shell like with quoting
 #v: give value
 #p: prefix this

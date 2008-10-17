@@ -30,7 +30,7 @@ More...
 .RI "int \fBkeyIsInitialized\fP (const Key *key)"
 .br
 .ti -1c
-.RI "int \fBkeyNeedsSync\fP (const Key *key)"
+.RI "int \fBkeyNeedSync\fP (const Key *key)"
 .br
 .ti -1c
 .RI "u_int8_t \fBkeyGetType\fP (const Key *key)"
@@ -837,7 +837,7 @@ number of bytes needed without the ending NULL
 Definition at line 1883 of file key.c.
 .SS "size_t keyGetString (const Key * key, char * returnedString, size_t maxSize)"
 .PP
-Get the value of a key as a string. If the value can't be represented as a text string (binary value), errno is set to KDB_RET_TYPEMISMATCH.
+Get the value of a key as a string. If the value can't be represented as a text string (binary value), errno is set to KDB_ERR_TYPEMISMATCH.
 .PP
 Parameters: \fP
 .in +1c
@@ -1082,7 +1082,7 @@ the name of a key
 \fBkeyIsSystem\fP() , \fBkeyIsUser\fP() , \fBkeyNameIsSystem\fP() 
 .PP
 Definition at line 1717 of file key.c.
-.SS "int keyNeedsSync (const Key * key)"
+.SS "int keyNeedSync (const Key * key)"
 .PP
 Test if an in-memory Key object was changed after retrieved from disk. All Key methods that change objects properties will set an internal flag, that is checked by this method.
 .PP
@@ -1411,7 +1411,7 @@ ORed of KDB_O_* options
 .PP
 \fBSee also: \fP
 .in +1c
-\fBksToStream\fP() , \fBKDBOptions\fP 
+\fBksToStream\fP() , \fBoption_t\fP 
 .PP
 \fBReturns: \fP
 .in +1c

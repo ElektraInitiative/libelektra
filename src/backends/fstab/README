@@ -1,2 +1,53 @@
-This is more like a sample backend. Not really usefull.
-It shows how to use a plain UNIX file as an Elektra backend.
+See http://www.libelektra.org/Fstab for current version
+
+Fstab is a implementation of a parser and generator of the /etc/fstab file.
+It can be used as a [[Backends|Backend]] for Elektra.
+
+== Storage ==
+
+The elektra representation will be:
+ pseudoname/device
+ pseudoname/mpoint
+ pseudoname/type
+ pseudoname/options
+ pseudoname/dumpfreq
+ pseudoname/passno
+
+for every column in the /etc/fstab file.
+
+The pseudoname can be any name for setting keys,
+the will be generated when getting keys, so don't
+expect the same name.
+
+the directory / will be called
+ rootfs
+
+all swap devices will be called
+ swapXX
+with a number from 00 on for XX
+
+else the mountpoint without / char will be used.
+
+
+== Capabilities ==
+
+setmntent is used and restrict the capabilities in many ways.
+At one point you can't use any comments, they will be generated
+automatically.
+
+At the other point there is the issue with the pseudonames,
+you can't rely on the pseudoname you have set.
+
+The biggest issue is that you can't change or delete existing
+entries. All entries you set will be appended to the other filesystems.
+
+So if you get the filesystems and change the type of the filesystem
+of the rootfs and set it again the resulting fstab will be like:
+ /dev/sda6       /               ext3>----   >----defaults,errors=remount-ro 0 1
+ /dev/sda6       /               jfs>----   >----defaults,errors=remount-ro 0 1
+
+which will be not like you desired!
+
+== Portability ==
+
+setmntent is used, so it is only conforming to BSD 4.3 and linux.

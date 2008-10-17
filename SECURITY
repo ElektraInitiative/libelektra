@@ -1,0 +1,18 @@
+Security related document
+=========================
+
+Security is a very important point in librarys. In most use
+cases there is nearly no point of danger in using elektra.
+But some a very security related, especially when you use
+a daemon or some kind of distributed configuration.
+
+Compiler Options
+================
+
+
+Memory Leaks
+============
+
+We use valgrind (--tool=memcheck) to make sure that elektra
+does not suffer memory leaks.
+

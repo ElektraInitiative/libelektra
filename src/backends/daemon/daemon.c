@@ -62,18 +62,9 @@ $Id$
 
 #define REPLY_TIMEOUT	5
 
-#ifndef LOCALSTATEDIR
-#define LOCALSTATEDIR "/var"
-#endif
-
-#ifndef KDBD_NAME
-#define KDBD_NAME "kdbd"
-#endif
-
 #ifndef SOCKET_NAME
-#define SOCKET_NAME LOCALSTATEDIR "/run/" KDBD_NAME "/elektra.sock"
+#define SOCKET_NAME "/var/run/kdbd/elektra.sock"
 #endif
-
 
 /**Some systems have even longer pathnames */
 #ifdef PATH_MAX
@@ -136,7 +127,7 @@ static Message *callDaemon(int socketfd, Message *request)
  * @see kdbOpen()
  * @ingroup backend
  */
-int kdbOpen_daemon(KDBHandle *handle) {
+int kdbOpen_daemon(KDB *handle) {
 	DaemonBackendData	*data;
 	Message *request, *reply;
 	unsigned long umask;
@@ -165,9 +156,9 @@ int kdbOpen_daemon(KDBHandle *handle) {
 	ndelay_off(data->socketfd);
 
 	/* Prepare request */
-	umask = kdbhGetUMask(*handle);
+	umask = kdbhGetUMask(handle);
 	request = messageNew(MESSAGE_REQUEST, KDB_BE_OPEN, 
-					DATATYPE_STRING, kdbhGetUserName(*handle),
+					DATATYPE_STRING, kdbhGetUserName(handle),
 					DATATYPE_ULONG, &umask,
 					DATATYPE_LAST);
 	if ( request == NULL ) {
@@ -199,14 +190,14 @@ int kdbOpen_daemon(KDBHandle *handle) {
 	}
 	
 	/* Get the backend name being used by the daemon from the reply... */
-	tmp=malloc(strlen(BACKENDNAME) + 1 + strblen(real_backend));
+	tmp=malloc(strlen(BACKENDNAME) + 1 + kdbiStrLen(real_backend));
 	sprintf(tmp,BACKENDNAME"+%s",real_backend);
-	kdbhSetBackendName(*handle, tmp);
+	kdbhSetBackendName(handle, tmp);
 	free(real_backend);
 	
 	messageDel(reply);
 	
-	kdbhSetBackendData(*handle, data);
+	kdbhSetBackendData(handle, data);
 
 	return ret;
 }
@@ -227,13 +218,13 @@ int kdbOpen_daemon(KDBHandle *handle) {
  * @see kdbClose()
  * @ingroup backend
  */
-int kdbClose_daemon(KDBHandle *handle)
+int kdbClose_daemon(KDB *handle)
 {
 	DaemonBackendData *data;
 	Message	*request, *reply;
 	int	ret = 0;
 
-	data = (DaemonBackendData *) kdbhGetBackendData(*handle);
+	data = (DaemonBackendData *) kdbhGetBackendData(handle);
 	if ( data == NULL )
 		return 0;
 	
@@ -247,7 +238,7 @@ int kdbClose_daemon(KDBHandle *handle)
 	
 	reply = callDaemon(data->socketfd, request);
 	if ( reply == NULL ) {
-		kdbhSetBackendData(*handle, NULL);
+		kdbhSetBackendData(handle, NULL);
 		close(data->socketfd); 
 		free(data);
 		return 1;
@@ -255,7 +246,7 @@ int kdbClose_daemon(KDBHandle *handle)
 	
 	/* Get reply value */
 	if ( messageExtractArgs(reply, DATATYPE_INTEGER, &ret, DATATYPE_INTEGER, &errno, DATATYPE_LAST) == -1 ) {
-		kdbhSetBackendData(*handle, NULL);
+		kdbhSetBackendData(handle, NULL);
 		close(data->socketfd);
 		free(data);
 		messageDel(reply);
@@ -263,7 +254,7 @@ int kdbClose_daemon(KDBHandle *handle)
 	} 
 	messageDel(reply);
 
-	kdbhSetBackendData(*handle, NULL);
+	kdbhSetBackendData(handle, NULL);
 	close(data->socketfd);
 	free(data);
 	
@@ -280,7 +271,7 @@ int kdbClose_daemon(KDBHandle *handle)
  * @see kdbStatKey() for expected behavior.
  * @ingroup backend
  */
-int kdbStatKey_daemon(KDBHandle handle, Key *key) 
+int kdbStatKey_daemon(KDB *handle, Key *key) 
 {
 	DaemonBackendData *data;
 	Message *request, *reply;
@@ -329,7 +320,7 @@ int kdbStatKey_daemon(KDBHandle handle, Key *key)
  * @see kdbGetKey() for expected behavior.
  * @ingroup backend
  */
-int kdbGetKey_daemon(KDBHandle handle, Key *key)
+int kdbGetKey_daemon(KDB *handle, Key *key)
 {
 	DaemonBackendData	*data;
 	Message         *request, *reply;
@@ -380,7 +371,7 @@ int kdbGetKey_daemon(KDBHandle handle, Key *key)
  * @see kdbSetKey() for expected behavior.
  * @ingroup backend
  */
-int kdbSetKey_daemon(KDBHandle handle, Key *key)
+int kdbSetKey_daemon(KDB *handle, Key *key)
 {
 	DaemonBackendData *data;
 	Message *request, *reply;
@@ -427,7 +418,7 @@ int kdbSetKey_daemon(KDBHandle handle, Key *key)
  * @see kdbRename() for expected behavior.
  * @ingroup backend
  */
-int kdbRename_daemon(KDBHandle handle, Key *key, const char *newName)
+int kdbRename_daemon(KDB *handle, Key *key, const char *newName)
 {
 	DaemonBackendData *data;
 	Message *request, *reply;
@@ -476,7 +467,7 @@ int kdbRename_daemon(KDBHandle handle, Key *key, const char *newName)
  * @see kdbRemove() for expected behavior.
  * @ingroup backend
  */
-int kdbRemoveKey_daemon(KDBHandle handle, const Key *key)
+int kdbRemoveKey_daemon(KDB *handle, const Key *key)
 {
 	Key	copy;
 	DaemonBackendData *data;
@@ -527,7 +518,7 @@ int kdbRemoveKey_daemon(KDBHandle handle, const Key *key)
  * @see kdbGetKeyChildKeys() for expected behavior.
  * @ingroup backend
  */
-ssize_t kdbGetKeyChildKeys_daemon(KDBHandle handle, const Key *parentKey, KeySet *returned, unsigned long options) 
+ssize_t kdbGetKeyChildKeys_daemon(KDB *handle, const Key *parentKey, KeySet *returned, unsigned long options) 
 {
 	Key	copy;
 	DaemonBackendData       *data;
@@ -586,7 +577,7 @@ ssize_t kdbGetKeyChildKeys_daemon(KDBHandle handle, const Key *parentKey, KeySet
  * @see kdbSetKeys() for expected behavior.
  * @ingroup backend
  */
-int kdbSetKeys_daemon(KDBHandle handle, KeySet *ks) 
+int kdbSetKeys_daemon(KDB *handle, KeySet *ks) 
 {
 	DaemonBackendData       *data;
 	Message         *request, *reply;
@@ -634,7 +625,7 @@ int kdbSetKeys_daemon(KDBHandle handle, KeySet *ks)
  * @see kdbMonitorKeys() for expected behavior.
  * @ingroup backend
  */
-u_int32_t kdbMonitorKeys_daemon(KDBHandle handle, KeySet *interests, u_int32_t diffMask,
+u_int32_t kdbMonitorKeys_daemon(KDB *handle, KeySet *interests, u_int32_t diffMask,
 		unsigned long iterations, unsigned sleep)
 {
 	DaemonBackendData       *data;
@@ -688,7 +679,7 @@ u_int32_t kdbMonitorKeys_daemon(KDBHandle handle, KeySet *interests, u_int32_t d
  * @see kdbMonitorKey() for expected behavior.
  * @ingroup backend
  */
-u_int32_t kdbMonitorKey_daemon(KDBHandle handle, Key *interest, u_int32_t diffMask,
+u_int32_t kdbMonitorKey_daemon(KDB *handle, Key *interest, u_int32_t diffMask,
 		unsigned long iterations, unsigned sleep) 
 {
         DaemonBackendData       *data;
@@ -730,7 +721,7 @@ u_int32_t kdbMonitorKey_daemon(KDBHandle handle, Key *interest, u_int32_t diffMa
 
 
 /**
- * All KeyDB methods implemented by the backend can have random names, except
+ * All KDB methods implemented by the backend can have random names, except
  * kdbBackendFactory(). This is the single symbol that will be looked up
  * when loading the backend, and the first method of the backend
  * implementation that will be called.

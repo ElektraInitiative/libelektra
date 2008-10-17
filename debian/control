@@ -1,78 +1,15 @@
 Source: elektra
-Section: base
-Priority: optional 
-Maintainer: Joan Valduvieco Llopart <joan@laigu.net>
-Build-Depends: debhelper (>= 5), autotools-dev, libxml2-dev, doxygen, xsltproc, docbook-xsl, libdb4.4-dev, libgconf2-dev
-Standards-Version: 3.7.2
-
-Package: libelektra
-Architecture: any
-Priority: optional
-Depends: ${shlibs:Depends}, ${misc:Depends}, libelektra-utils
-Description: A framework to get system and user values
- The objective of the Elektra Project is to help create a pervasive,
- ubiquitous configuration system. This is an entire ecosystem, much
- more than a piece of code. This section lists the work of some
- people that are helping to build it.
- This package contains elektra libraries and filesys backend.
-
-Package: libelektra-dev
-Architecture: any
-Priority: required
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: A framework to get system and user values
- The objective of the Elektra Project is to help create a pervasive,
- ubiquitous configuration system. This is an entire ecosystem, much
- more than a piece of code. This section lists the work of some
- people that are helping to build it.
- .
- This package contains the files needed to compile and link
- programs which use Elektra.
-
-Package: libelektra-utils
-Architecture: any
-Priority: required
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: Utils for managing elektra config 
- The objective of the Elektra Project is to help create a pervasive,
- ubiquitous configuration system. This is an entire ecosystem, much
- more than a piece of code. This section lists the work of some
- people that are helping to build it.
- .
- This package contains kdb program and manpages. 
-
-Package: libelektra-doc
-Architecture: all
-Description: Documentation for elektra library
- The objective of the Elektra Project is to help create a pervasive,
- ubiquitous configuration system. This is an entire ecosystem, much
- more than a piece of code. This section lists the work of some
- people that are helping to build it.
- .
- This package contains documentation on elektra API.
-
-Package: libelektra-berkeleydb
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: berkeleydb backend for elektra library
- The objective of the Elektra Project is to help create a pervasive,
- ubiquitous configuration system. This is an entire ecosystem, much
- more than a piece of code. This section lists the work of some
- people that are helping to build it.
- .
- This package contains berkeley DB backend
-Source: elektra
 Priority: required
 Maintainer: Simon Law <sfllaw@debian.org>
 Uploaders: Pier Luigi Fiorini <pierluigi.fiorini@mockup.org>
-Build-Depends: debhelper (>= 4.0.0), libxml2-dev, doxygen, xsltproc, docbook-xsl
-Standards-Version: 3.6.1
+Build-Depends: debhelper (>= 4.1.0), cdbs, libltdl3-dev, libxml2-dev, doxygen, xsltproc, docbook-xsl
+Standards-Version: 3.7.2
 Section: base
 
-Package: libkdb1-dev
+Package: libelektra-dev
 Section: libdevel
 Architecture: any
-Depends: libkdb1 (= ${Source-Version}), libc6-dev | libc-dev
+Depends: libelektra2 (= ${Source-Version}), libc6-dev
 Description: a framework to get system and user values
  The objective of the Elektra Project is to help create a pervasive, 
  ubiquitous configuration system. This is an entire ecosystem, much
@@ -82,25 +19,31 @@ Description: a framework to get system and user values
  This package contains the files needed to compile and link
  programs which use Elektra.
 
-Package: libkdb1
-Section: base
+Package: libelektra2
+Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Essential: yes
-Priority: required
+Depends: ${shlibs:Depends}
 Description: a framework to get system and user values
  The objective of the Elektra Project is to help create a pervasive, 
  ubiquitous configuration system. This is an entire ecosystem, much
  more than a piece of code. This section lists the work of some 
  people that are helping to build it.
 
-Package: libkdb1-bin
-Section: base
+Package: libelektratools1
+Section: libs
 Architecture: any
-Depends: libkdb1 (= ${Source-Version}), ${shlibs:Depends}
-Essential: yes
-Priority: required
-Description: binaries for libkdb1
+Depends: ${shlibs:Depends}
+Description: a framework to get system and user values
+ The objective of the Elektra Project is to help create a pervasive, 
+ ubiquitous configuration system. This is an entire ecosystem, much
+ more than a piece of code. This section lists the work of some 
+ people that are helping to build it.
+
+Package: libelektra-bin
+Section: admin
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: binaries for libelektra2
  The objective of the Elektra Project is to help create a pervasive, 
  ubiquitous configuration system. This is an entire ecosystem, much
  more than a piece of code. This section lists the work of some 

@@ -1,0 +1,151 @@
+STATISTICS
+
+This file contains the statistics of benchmarks.
+Feel free to add yours, sort by tested svn-id.
+Make sure to add Svn-Id (to know what version you
+tested or compared), NUM_DIR and NUM_KEY to know
+how large the keyset was.
+
+More information can always be helpful!
+
+==========================
+Tester: Markus Raab
+Date: 10.12.2007
+Svn-Id: 1271
+Backend: filesys
+NUM_DIR: 100
+NUM_KEY: 100
+Filesystem: jfs
+Comment: With mounting disabled
+
+    New large keyset:               24.393 Microseconds
+    Set large keyset:           15.271.011 Microseconds
+  Reset large keyset:               21.836 Microseconds
+    Get large keyset:              286.322 Microseconds
+  Reget large keyset:              284.643 Microseconds
+ delete large keyset:            7.971.315 Microseconds
+real 23.87
+user 0.31
+sys 0.58
+
+==========================
+Tester: Markus Raab
+Date: 10.12.2007
+Svn-Id: 1271
+Backend: filesys
+NUM_DIR: 100
+NUM_KEY: 100
+Filesystem: jfs
+Comment: With dynamic mounting of filesys
+
+    New large keyset:               26.690 Microseconds
+    Set large keyset:           11.437.211 Microseconds
+  Reset large keyset:               25.926 Microseconds
+    Get large keyset:              285.060 Microseconds
+  Reget large keyset:              286.434 Microseconds
+ delete large keyset:            8.216.233 Microseconds
+real 20.29
+user 0.34
+sys 0.60
+
+==========================
+Tester: Markus Raab
+Date: 02.12.2007
+Svn-Id: 1259
+Backend: Filesys
+NUM_DIR: 100 (not used!)
+NUM_KEY: 10.000
+Filesystem: jfs
+Comment:
+
+    New large keyset:               20.823 Microseconds
+    Set large keyset:           10.023.123 Microseconds
+  Reset large keyset:               21.641 Microseconds
+    Get large keyset:              294.388 Microseconds
+  Reget large keyset:              291.124 Microseconds
+ delete large keyset:            9.052.548 Microseconds
+
+==========================
+Tester: Markus Raab
+Date: 08.10.2007
+Svn-Id: 1170
+Backend: Filesys
+NUM_DIR: 100 (not used!)
+NUM_KEY: 10.000
+Filesystem: jfs
+Comment: Get in much less then a second -> very good!
+
+    New large keyset:                22222 Microseconds
+    Set large keyset:            20.074328 Microseconds
+  Reset large keyset:                  920 Microseconds
+    Get large keyset:               324815 Microseconds
+  Reget large keyset:               322185 Microseconds
+ delete large keyset:            34.995036 Microseconds
+
+==========================
+Tester: Markus Raab
+Date: 06.10.2007 
+Svn-Id: 1167
+Backend: Filesys
+NUM: dir[00-99]/key[00-99]
+Comment: first test, deleting did not work
+
+generate Keyset:	22292 Microseconds
+Set all keys:		12.243.421 Microseconds
+Get all keys:		3474 Microseconds
+Reset all keys:		1414 Microseconds
+
+==========================
+Tester: Markus Raab
+Date: 10.12.2007
+Svn-Id: 1093
+Backend: filesys
+NUM_DIR: 1
+NUM_KEY: 10000
+Filesystem: jfs
+Comment: With mounting not implemented, delete does not work
+
+    New large keyset:                28538 Microseconds
+    Set large keyset:             21283560 Microseconds
+  Reset large keyset:                  914 Microseconds
+    Get large keyset:                  209 Microseconds
+  Reget large keyset:                   98 Microseconds
+ delete large keyset:                    2 Microseconds
+real 21.31
+user 0.08
+sys 0.25
+
+==========================
+Tester: Markus Raab
+Date: 10.12.2007
+Svn-Id: 1093
+Backend: filesys
+NUM_DIR: 100
+NUM_KEY: 100
+Filesystem: jfs
+Comment: With mounting not implemented, delete does not work
+
+    New large keyset:                24429 Microseconds
+    Set large keyset:             14200937 Microseconds
+  Reset large keyset:                  843 Microseconds
+    Get large keyset:                 6333 Microseconds
+  Reget large keyset:                 6192 Microseconds
+ delete large keyset:                    2 Microseconds
+real 14.24
+user 0.05
+sys 0.24
+
+==========================
+Tester: Patrick Sabin
+Date: 10.12.2007
+Svn-Id: 1279
+Backend: filesys
+NUM_DIR: 100
+NUM_KEY: 100
+Filesystem: ext3
+    New large keyset:               185061 Microseconds
+    Set large keyset:              1511428 Microseconds
+  Reset large keyset:                    3 Microseconds
+    Get large keyset:              2512377 Microseconds
+  Reset large keyset:              2583858 Microseconds
+ delete large keyset:              1304930 Microseconds

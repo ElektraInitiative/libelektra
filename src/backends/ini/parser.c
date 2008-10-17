@@ -64,7 +64,7 @@ int state;
 int parse_buffer (char * p)
 {
 	char c = *p;
-#ifdef VERBOSE 
+#if DEBUG && VERBOSE 
 	fprintf (stderr, "Will parse %c with state %d\n", c, state);
 #endif
 	if (c == '\0')
@@ -165,7 +165,7 @@ int convert_engine (char * p)
 	else if (c=='#') *n = 'r';
 	else return 0;
 	*p = '\\';
-#ifdef VERBOSE
+#if DEBUG && VERBOSE
 	fprintf (stderr, "Handle %c to %c%c\n", c, *p, *n);
 #endif
 	return 0;
@@ -231,7 +231,7 @@ int convert_stream (char * buffer, int size, FILE * stream)
  * 
  * @ingroup ini
  */
-int read_key (Key * key, char * root)
+int read_key (KDB *handle, Key * key, char * root)
 {
 	char * buffer = NULL;
 	char * buffer_value = NULL;
@@ -251,9 +251,9 @@ int read_key (Key * key, char * root)
 	int c=0;	/* position of comment*/
 	
 	state= STATE_BEG;
-	if (fc == NULL)
+	if (FILEPTR == NULL)
 	{
-#ifdef DEBUG
+#if DEBUG
 		fprintf (stderr, "File not opend\n");
 #endif
 		return -1;
@@ -261,8 +261,8 @@ int read_key (Key * key, char * root)
 	
 	buffer = (char*) malloc (BUFFER_SIZE+1);
 	if (buffer == NULL) goto memerror;
-	if (fgets (buffer, BUFFER_SIZE,fc) == NULL) {
-#ifdef DEBUG
+	if (fgets (buffer, BUFFER_SIZE, FILEPTR) == NULL) {
+#if DEBUG
 		fprintf (stderr, "End of File\n");
 #endif
 		free (buffer);
@@ -278,24 +278,20 @@ int read_key (Key * key, char * root)
 	if (buffer_comment == NULL) goto memerror;
 	
 	for (i=0; i < string_length; i++) {
-#ifdef VERBOSE
+#if DEBUG && VERBOSE
 		fprintf (stderr, "Processing |%c|%d|\n", buffer[i], buffer[i]);
 #endif
 		rc = parse_buffer (&buffer[i]);
 		if (rc == CHAR_OK) continue;
-		else if (rc == CHAR_SEC)
-		{
-			//TODO: VERBOSE
-			fprintf (stderr, "Now in section %s\n", buffer[i]);
-		}
+		else if (rc == CHAR_SEC) break;
 		else if (rc == CHAR_ERR) {
-#ifdef DEBUG
+#if DEBUG
 			fprintf (stderr, "Error reading char\n");
 #endif
 			return -1;
 		}
 		else if (rc == CHAR_NEWLINE) { /* end of line found*/
-#ifdef VERBOSE
+#if DEBUG && VERBOSE
 			fprintf (stderr, "Found end of key (\\n)\n");
 #endif
 			break;
@@ -303,13 +299,13 @@ int read_key (Key * key, char * root)
 		else if (rc == CHAR_NULL ) {	/* anticipated end?*/
 			if (i==string_length-1) { /* no its not*/
 				string_length += BUFFER_SIZE;
-				if (srealloc ((void**) & buffer, string_length) < 0)
+				if (kdbiRealloc ((void**) & buffer, string_length) < 0)
 					goto memerror;
 				else fprintf (stderr, "Realloc ok buffer (%p, %d)\n", buffer, string_length);
 				fgets (buffer+string_length-BUFFER_SIZE,
-					BUFFER_SIZE,fc);
+					BUFFER_SIZE, FILEPTR);
 			} else {
-#ifdef DEBUG
+#if DEBUG
 				fprintf (stderr, "No Enter found in this line?\n");
 #endif
 				return -1;
@@ -321,7 +317,7 @@ int read_key (Key * key, char * root)
 			if (k == key_length-1)
 			{
 				key_length += BUFFER_SIZE;
-				if (srealloc ((void **) & buffer_key, key_length) < 0)
+				if (kdbiRealloc ((void **) & buffer_key, key_length) < 0)
 					goto memerror;
 				else fprintf (stderr, "Realloc ok key\n");
 			}
@@ -331,7 +327,7 @@ int read_key (Key * key, char * root)
 			if (v == value_length-1) 
 			{
 				value_length += BUFFER_SIZE;
-				if (srealloc ((void **) & buffer_value, value_length) < 0) 
+				if (kdbiRealloc ((void **) & buffer_value, value_length) < 0) 
 					goto memerror;
 				else fprintf (stderr, "Realloc ok value\n");
 			}
@@ -341,7 +337,7 @@ int read_key (Key * key, char * root)
 			if (c == comment_length-1)
 			{
 				comment_length += BUFFER_SIZE;
-				if (srealloc ((void **) & buffer_comment, comment_length) < 0)
+				if (kdbiRealloc ((void **) & buffer_comment, comment_length) < 0)
 					goto memerror;
 				else fprintf (stderr, "Realloc ok comment\n");
 			}
@@ -363,14 +359,14 @@ int read_key (Key * key, char * root)
 	return 0; /* success */
 
 memerror:
-#ifdef DEBUG
+#if DEBUG
 	fprintf (stderr, "Allocation error\n");
 #endif
 	free (buffer);
 	free (buffer_key);
 	free (buffer_value);
 	free (buffer_comment);
-	errno = KDB_RET_NOMEM;
+	/*errno = KDB_ERR_NOMEM;*/
 	return -1;
 }
 
@@ -393,7 +389,7 @@ int make_key (Key * key, char * root, char * buffer_key, char * buffer_value, ch
 	strcat (buffer_name, "/");
 	strcat (buffer_name, buffer_key);
 	if (keySetName (key, buffer_name) == 0)
-#ifdef DEBUG
+#if DEBUG
 		fprintf (stderr, "Unable to set name\n");
 	else	fprintf (stderr, "Name set to %s\n", buffer_name);
 #endif
@@ -402,23 +398,23 @@ int make_key (Key * key, char * root, char * buffer_key, char * buffer_value, ch
 	 * a very fancy libc bug, it crashes at another free()..*/
 	
 	if (keySetString (key, buffer_value) == 0)
-#ifdef DEBUG
+#if DEBUG
 		fprintf (stderr, "Unable to set value\n");
 	else 	fprintf (stderr, "Value set to %s\n", buffer_value);
 #endif
 	
 	;if (keySetComment (key, buffer_comment) == 0) /**Semikolon needed at begin*/
-#ifdef DEBUG
+#if DEBUG
 		fprintf (stderr, "Unable to set comment\n");
 	else 	fprintf (stderr, "Comment set to %s\n", buffer_comment);
 #endif
 	; /*WARNING semikolon needed*/
 	
-	key->flags &= ~KEY_SWITCH_NEEDSYNC; /* remove sync flag*/
+	key->flags &= ~KEY_FLAG_SYNC; /* remove sync flag*/
 	
 	free (buffer_name);
 	
-	return 0;	
+	return 0;
 }
 
 
@@ -430,7 +426,7 @@ int make_key (Key * key, char * root, char * buffer_key, char * buffer_value, ch
  * 
  * @ingroup ini
  */
-int write_key (Key * setKey, long oldpos)
+int write_key (KDB *handle, Key * setKey, long oldpos)
 {
 	long newpos;
 	long needed_size, sname, svalue, scomment; /**needed sizes*/
@@ -439,42 +435,42 @@ int write_key (Key * setKey, long oldpos)
 	char * value;
 	char * comment;
 
-#ifdef DEBUG
+#if DEBUG
 	fprintf (stderr, "write_key (Key, pos: %ld)\n", oldpos);
 #endif
 	/** use setkey to set the key to wished values*/
-	newpos = ftell (fc);
-	name = strrchr (keyStealName (setKey),'/')+1;
-	value = keyStealValue (setKey);
-	comment = keyStealComment (setKey);
-	
+	newpos = ftell (FILEPTR);
+	name = strrchr (keyName (setKey),'/')+1;
+	value = (char*)keyValue (setKey);
+	comment = (char*)keyComment (setKey);
+
 	sname = convert_strlen (name, strlen (name));
-	svalue = convert_strlen (value, keyGetDataSize (setKey));
+	svalue = convert_strlen (value, keyGetValueSize (setKey));
 	scomment = convert_strlen (comment, keyGetCommentSize (setKey));
 	needed_size = sname + svalue + scomment + 1; /* +\n */
 	
 	if (newpos - oldpos > needed_size)
 	{
-		shrink_file (oldpos, newpos - oldpos -needed_size);
+		shrink_file (handle, oldpos, newpos - oldpos -needed_size);
 	} else if (newpos - oldpos < needed_size) {
-		enlarge_file (newpos, needed_size - (newpos - oldpos));
+		enlarge_file (handle, newpos, needed_size - (newpos - oldpos));
 	}
 	
-#ifdef DEBUG
+#if DEBUG
 	fprintf(stderr, "Writing key to disc (pos: %ld|%ld|%ld) ...\n",
 		oldpos, newpos, needed_size);
 #endif
-	fseek (fc, oldpos, SEEK_SET);
+	fseek (FILEPTR, oldpos, SEEK_SET);
 	
-	convert_stream (name, sname, fc);
-	fwrite ("=", 1,1,fc);
-	convert_stream (value, svalue, fc);
-	fwrite (";", 1,1,fc);
-	convert_stream (comment, scomment, fc);
-	fwrite ("\n", 1,1,fc);
+	convert_stream (name, sname, FILEPTR);
+	fwrite ("=", 1,1,FILEPTR);
+	convert_stream (value, svalue, FILEPTR);
+	fwrite (";", 1,1,FILEPTR);
+	convert_stream (comment, scomment, FILEPTR);
+	fwrite ("\n", 1,1,FILEPTR);
 
-#ifdef DEBUG
-	newpos = ftell (fc);
+#if DEBUG
+	newpos = ftell (FILEPTR);
 	fprintf (stderr, "Real endpos: %ld\n", newpos);
 	fprintf (stderr, "key: %s, value: %s, comment: %s\n", 
 		setKey->key, (char *) setKey->data, setKey->comment);
@@ -493,7 +489,7 @@ int write_key (Key * setKey, long oldpos)
  * 
  * @ingroup ini
  */
-int remove_key (Key * setKey, long oldpos)
+int remove_key (KDB *handle, Key * setKey, long oldpos)
 {
 	long newpos;
 	long delete_size, sname, svalue, scomment; /**needed sizes*/
@@ -501,24 +497,24 @@ int remove_key (Key * setKey, long oldpos)
 	char * name;
 	char * value;
 	char * comment;
-	name = strrchr (keyStealName (setKey),'/')+1;
-	value = keyStealValue (setKey);
-	comment = keyStealComment (setKey);
+	name = strrchr (keyName (setKey),'/')+1;
+	value = (char*) keyValue (setKey);
+	comment = (char*) keyComment (setKey);
 	
-#ifdef DEBUG
+#if DEBUG
 	fprintf (stderr, "remove_key (Key, pos)\n");
 #endif
 	/** use setkey to set the key to wished values*/
-	newpos = ftell (fc);
+	newpos = ftell (FILEPTR);
 	
 	sname = convert_strlen (name, strlen (name));
-	svalue = convert_strlen (value, keyGetDataSize (setKey));
+	svalue = convert_strlen (value, keyGetValueSize (setKey));
 	scomment = convert_strlen (comment, keyGetCommentSize (setKey));
 	delete_size = sname + svalue + scomment + 1; /* +\n */
 	
-	shrink_file (oldpos, newpos - oldpos - delete_size);
+	shrink_file (handle, oldpos, newpos - oldpos - delete_size);
 	
-#ifdef DEBUG
+#if DEBUG
 	fprintf(stderr, "Deleting key on disc (pos: %ld|%ld|%ld) ...\n",
 		oldpos, newpos, delete_size);
 #endif

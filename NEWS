@@ -1,1 +1,357 @@
-See ChangeLog.
+0.7.0
+
+Finally it is done, the 0.7.0 API is finished.
+The API covers everything shown in kdb.h and all
+releases in 0.7.0 will be 100% ABI and API compatible
+supported for at least a year.
+
+Some bugs might break that rule, but there should not be
+left many anymore, because every method is at least checked
+twice and most have hundred of test cases.
+Please report any bugs you find to http://bugs.libelektra.org
+- portability and build bugs
+- mistakes, misspelling in documentation
+
+This is not valid for kdb-tools, there are lots of bugs
+remaining there and a rewrite would be very useful.
+
+For that reason there will be a separate release for
+kdb-tools, libelektratools and the backend interface.
+
+The stable APIs of libelektratools and the backend interface
+will be announced separately, but they will be part of 0.7.x.
+
+kdb-tool and kdbedit and so will also have separate
+releases, but because they are not a library there
+is no API or ABI issue there.
+
+Pages related to 0.7.0:
+http://www.libelektra.org/GetStartedMounting
+http://www.libelektra.org/Tutorial
+http://www.libelektra.org/API-Changes0.7
+http://www.libelektra.org/Changes0.7
+
+Marketing issues:
+- Freshmeat announcment
+- Sourceforge upload
+- API docu upload
+- forums
+- newsgroups
+- other mailinglists
+
+Download it from:
+http://www.markus-raab.org/ftp/elektra-0.7.0.tar.gz
+ftp://www.markus-raab.org/elektra-0.7.0.tar.gz
+
+
+
+
+
+
+
+---------------
+
+
+
+
+0.7.0rc5 The last release candidate before 0.7.0
+
+I am proud to present the finished  0.7.0 external API in
+kdb.h [0].
+
+A lot changed to 0.6.10 but the fundamentals are clearer then
+ever before: 3 Classes with their methods, a clear, easy and
+mature API. It is very hard to use it wrong but you get
+best results with very short code:
+
+http://www.libelektra.org/Tutorial
+
+Other parts are not finished, like libelektratools, the
+kdb-tool and the backend interface. They are not part of
+the official 0.7 release and get their own release later.
+
+The reasons to release within the next week are:
+ - The API is finished
+ - Oyranos needs a stable release from elektra
+ - the last release is long ago
+ - unstable has been much more stable than stable since some time
+ - there have been no commits to the stable branch since
+   unstable existed
+ - Elektra grows just too complex to wait for all parts to finish
+
+Now some highlights from one month of work from 333 ChangeLog
+lines:
+ - many many bugs were fixed
+ - the core completely compiles with -ansi -pedantic -std=c99
+ - all code compiles with -Wall -Werror
+ - the test-suite is now complete
+ - much cleaner infrastructure within the code
+ - many autoconf/automake issues fixed
+ - static, dynamic building, linking with defaults backends
+   everything works!
+ - many new options to stat and remove all keys and so on..
+ - environment variables and passwd database allow subtle
+   influence of where the user configuration resides
+ - kdb info now prints where configuration lies on hard disc
+
+
+
+
+---------------
+
+
+
+
+0.7.0rc4 - 12.05.2008
+I am proud to present the fourth release candidate of elektra
+0.7.0.
+
+It is now possible to enable and disable Backends and Bindings
+with configure switches. The documentation was improved.
+The c++ binding now basically works, see the tests for examples.
+Ini and Berkleydb backends now compile again.
+There were a lot of bug fixes, like mntent.h fix for Mac OS X.
+
+
+
+
+---------------
+
+
+
+
+0.7.0rc3 - 24.04.2008
+Call for 0.7 finish
+
+Unfortunately there is not much response about the 0.7 release
+candidates but there is still a lot to do to have a mature
+library worth to be announced as stable.
+
+Specifically there are following things to do and we really need
+help to achieve that faster than end of this year:
+
+There are now only 3 backends working well tested but undistinguished
+in handling error scenarios. At least 3 more Backends are needed
+also tested in real world applications. Favoured are existing but
+not ported backends like berkleydb, ini, winregistry and uniconf.
+
+Working bindings have a lot meaning in how complete and useful
+the API is. It would be preferable to have at least 3 bindings
+working with at least an example application like kdb-tool.
+They could be cpp, python and one open.
+
+A lot of bug squashing is left open. Please don't hesitate to open
+and fix more bugs on http://bugs.libelektra.org.
+
+Documentation is not yet completely updated to 0.7. Especially the
+homepage has a lot of outdated information, but also the API documentation
+needs another eye on it and the tutorial needs a rewrite.
+
+There might be some licencing issues in some parts of elektra,
+everything should be BSD, if you find something please open a bug.
+
+A partial blocker is the kdb-tool, where a rewrite would be nice but
+is not necessary for 0.7 (the library counts not the environment).
+
+Other things like portability are taken seriously but are not blockers,
+they can be fixed later too.
+
+What is really good working in elektra is the infrastructure like
+svn, homepage, bug tracking, many thanks to José Luis Tallón for
+that!
+
+Now some words about 0.7.0rc3:
+
+Version macros were added to have static information about
+the elektra version compiled against. There were many
+enhancements in the C++ Binding, the Key Class is now
+quite well complete.
+
+While writing the C++ binding I realized that there is need
+for keyInc() the opposite of keyDel() to increase the
+viability of a key object.
+
+keyVNew() and ksVNew() were added to make it possible to pass
+the va_list from the C++ binding.
+
+The blocker bug that libelektra assumes system/elektra/mountpoints
+to exist was solved, many thanks to Patrick Sabin. The tests
+now work without any preloading without memory leaks.
+
+And lots of bug fixes (Many thanks to Kai-Uwe Behrmann):
+- sed changed for macosx compatibility
+- fixed signature ssize_t ksToStream
+- also set CXXFlags
+- fix wrong parent at end in ksToStream
+- fix return value of successful kdb import
+- string is default type for xml without type=""
+- fix extra_dist some missing files
+- remove , at end of enumeration lists
+
+The svn id is unstable@1352:
+https://svn.libelektra.org/svn/elektra/unstable/
+
+The release candidate is available under:
+http://www.markus-raab.org/ftp/elektra-0.7.0rc3.tar.gz
+
+
+
+---------------
+
+
+
+0.7.0rc2 - 23.03.2008
+Second Release Candidate of unstable repository.
+
+We proudly present the second release candidate for Elektra 0.7.0. Many
+bugs were fixed, kdbGet() and kdbSet() is now really stable, useful and
+well documentated. test_kdb also tests hosts and fstab next to filesys
+with 6598 test cases.
+
+kdbSet() now supports a parent key to only set a part of the
+configuration passed by the keyset, allowing to e.g. save system and
+user configuration seperately. It only calls kdbSet_backend() when it
+is actually necessary. The splitting works much more efficient with n*b
+instead of n^2*b.
+
+The highlevel functions kdbGetKey() and kdbSetKey() now work well with
+Capabilities. This allows very easy changing of keys inside backends
+even with some lacking capabilities, see GetStartedMounting.
+
+Patrick Sabin and I wrote our bachelor thesis about mounting backends for
+configuration. It gives a detailed introduction in problem and choices
+and the actual implementation.
+See: doc/elektra.pdf doc/elektra.ps.gz
+
+
+
+
+
+---------------
+
+
+
+
+0.7.0rc1 - 06.12.2007
+First Release Candidate of unstable repository.
+= Large Changes =
+
+== Multiple Backends ==
+
+Elektra now supports multiple backends at once. That means every path
+like user/sw or system/filesystems can reside in a different backend.
+
+Use cases for backend mounting: 1. There are many configurationfiles lying
+on every system that can't be replaced for various reasons. These files
+can be fade in into the global elektra namespace without any notice by
+applications using these files. Backends for /etc/fstab, /etc/mtab and
+/etc/passwd exist right now.
+
+2. Users or administrators might get used by ordained files or syntax
+without wanting to change the whole configuration using elektra. The
+mounting technique allows them to choose.
+
+3. Specific programs may have very complex and large configuration. Binary
+files with index may give them a fairly better performance without
+missing the connection to the global namespace.
+
+4. Configuration provided by network or local daemons for notification
+and caching can't be used for every program. Configuration related to
+bootup or some system users need to be available without them, but should
+also be accessed by applications needing configuration from network.
+
+If you are not convinced - Its just about choice and you can go on using
+only one backend.
+
+See http://www.libelektra.org/Backends what is and might be possible.
+
+== kdbOpen(), kdbClose(), kdbGet() and kdbSet() ==
+
+These 4 core functions do now everything related to backend
+communication. All the other functions are build upon it. This makes
+backend writing much easier. Removing and Stat works by setting a flag
+in a key.
+
+KDB * is now a typedef for the _KDB structure and not a
+void* pointer.
+
+== Keyset ==
+
+Starting with ksNew you can give a hint how large the keyset may grow. You
+can also give a list of keys which should be added at startup.
+
+ksGenerate() makes use out of that and generates you a keyset in C-Code
+which you can use in your applications or for regression testing.
+
+The internal structure of keyset is now a growing (and shrinking)
+array. Keys may belong to multiple keysets now. The last ksDel() deletes
+the key automatically (reference counter).
+
+This implementation is a lot faster, the benchmark is for 0.7.0rc1 better
+then for 0.6.*, even though the mounting logic takes a bit of performance,
+but very little and something about zero when no backend is mounted.
+
+== Key ==
+
+The key now uses sizes for name, owner, value and comment. This allows a
+complete new technique of serializing: keyCompose(). With that you can
+serialize a key without a single malloc(). keySerialize() is rewritten
+for the new key struct too.
+
+== Access Types ==
+
+The directory is now marked by the executable flags. That means you can
+disallow other users or groups to list your keys.
+
+== Capabilites ==
+
+Some backends fullfill the whole specification of kdbGet_template() and
+kdbSet_template() and can be used by any program for any purpose. Other
+backends have principle limitations and do not fullfill the specification,
+but can do more than enough to be useful.
+
+To handle this problem we created a data structure describing what
+capabilites a backend does not have. With that technique you can use the
+testing framework from early steps developing the backend on. To do so,
+just declare your backend can do nothing and delete step by step while
+your backend evolves.
+
+== Testing framework ==
+
+There is now a large testing framework with 11 collections with up to
+8128 tests each. Most conditions of the whole sourcecode are checked,
+that means if you random change something in the code you have a good
+chance that a test case will fail.
+
+There are 2 new flags:
+ --enable-valgrind-tests
+   Allows you to enable valgrind for testing, a full list of memory
+   leaks is printed after every test.
+ --enable-gcov
+   Use it to see what lines of code are covered by tests.
+
+The testcases are without any memory leak (dozens of leaks are fixed,
+especially in xml code).
+
+
+0.6.10 - 10.03.2007 Elektra received some stability updated from Patrice
+Dumas.
+
+0.6.6 - 21.12.2006 support for directories with values and comments on
+filesys, berkeleydb and daemon backends.
+
+0.6.4 - 08.09.2006 Tons of improvements and standarizations to the build
+system from Patrice Dumas and Yannick.  Many improvements to the daemon
+backend from Yannick.  Several other bug fixes.  We are getting closer
+to a production daemon.
+
+
+0.6.2 - 02.06.2006 - Includes more robust key name handling and
+intelligent duplicate "/" removal - Escaping of "/" on key names is
+now supported - Better automatic UTF-8 conversions - More tunnings for
+better future daemon backend support - More robust berkeleydb backend -
+Backends are now installed on /lib/elektra/ - The build system was tunned
+to be included as a Fedora Extras package
+
+
+0.6.0 - 30.03.2006 Public release of the new API.  Check it out in SF.

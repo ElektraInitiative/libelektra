@@ -1,24 +1,25 @@
 Where to Find Elektra
 =====================
 
-Elektra stable source code as tarballs and source-RPMs can be found at:
+Elektra stable source code as tarballs can be found at:
 
   http://sourceforge.net/project/showfiles.php?group_id=117521
 
-Elektra Subversion repository with unstable source code can be checked
-out with these commands and requires at least automake 1.7 and autoconf 2.59:
+Elektra Subversion repository with the latest stable source code can be checked
+out with these commands:
 
   bash:~$ cd src
-  bash:~/src$ svn co http://germane-software.com/repositories/elektra/trunk elektra
+  bash:~/src$ svn co https://svn.libelektra.org/svn/elektra/trunk elektra
   bash:~/src$ cd elektra
   bash:~/src/elektra$ # files are here
 
 
+You should always prefer using Elektra in a packaged form from your
+distribution. Skip to the next chapter to learn how to compile from
+source.
 
-Building and Installation
-=========================
 
-You should always prefer building Elektra from its source RPM as:
+To build a rpm package yourself from its source RPM use:
 
 	$ rpmbuild --rebuild elektra-VERSION.src.rpm
 
@@ -29,33 +30,31 @@ or:
 
 The default RPM specifications that come with the source were written to
 meet the Filesystem Hierarchy Standards.
-Packaging methodology used are similar to those of Fedora, Red Hat and CentOS.
-
-A Mandriva spec file can be found inside the source code, and also (old
-unmaintained) Debian packaging scripts and info.
 
 More building info can be found in the elektra.spec.in RPM
 construction file.
 
 
-General Building and Installation Instructions
-==============================================
-
-If you can't afford that, you should use the distributed tarball.
+Building and Installation Instructions
+======================================
 
 Precondition:
 Make sure you have a compiler, xml2 (for kdb tool) and xsl (see later)
 installed. ./configure will help you that you don't forget something
 essential.
 
-If you still want to use the tarball, this is the correct
-way to do it, following the Filesystem Hierarchy Standard:
+For Debian it is enough to have build-essential.
+
+./configure --help will print you an exhausting list of all options
+available. These section only gives specific hints for elektra.
+To read generic instructions skip to Generic Installation Instructions.
+
+To meet the Filesystem Hierarchy Standard use:
 
 	$ ./configure \
 	--bindir=/bin \
 	--libdir=/lib \
 	--sysconfdir=/etc \
-	--disable-xmltest \
 	--mandir=/usr/share/man \
 	--with-docdir=/usr/share/doc/elektra \
 	--with-develdocdir=/usr/share/doc/elektra-devel \
@@ -82,6 +81,17 @@ for debian installations try:
 with package docbook-xsl installed.
 
 
+You can enable and disable backends with
+	--enable-<backend>
+and
+	--disable-<backend>
+
+You can enable and disable bindings with
+	--enable-<bindings>
+and
+	--disable-<bindings>
+
+
 If you want debug symbols and a debug output analysis, you can try:
 	--enable-debug \
 
@@ -99,42 +109,28 @@ You can also call the last as:
 
 	# make DESTDIR=/some/directory install
 
-The "--with-docbook" switch should point to Norman Walsh's DocBook XSL
-stylesheets on your system. Some common places:
-
-/usr/share/xml/docbook/stylesheet/nwalsh/ (Debian)
-/usr/share/sgml/docbook/xsl-stylesheets (Red Hat, the default)
-
-
-For any further information, check the RPM spec file elektra.spec.in.
 
 
 Building RPMs from the Subversion Repository
 ============================================
 
 Do not use the fresh files from the Subversion repository, since they might
-be quite unstable. Doing this requires at least automake 1.7 and autoconf 2.59.
-If you know what you are doing, do this:
+be quite unstable. Doing this requires exactly automake 1.9 and at least
+autoconf 2.59.
+
+If you know what you are doing (Note: read carefully about the configure
+options), do this:
 
   bash:~$ cd src
-  bash:~/src$ svn co http://germane-software.com/repositories/elektra/trunk elektra
+  bash:~/src$ svn co https://svn.libelektra.org/svn/elektra/trunk elektra
   bash:~/src$ cd elektra
   bash:~/src/elektra$ ./bootstrap.sh
-  bash:~/src/elektra$ ./configure \
-		--bindir=/bin \
-		--libdir=/lib \
-		--sysconfdir=/etc \
-		--mandir=/usr/share/man \
-		--with-docdir=/usr/share/doc/elektra \
-		--with-develdocdir=/usr/share/doc/elektra-devel \
-		--disable-xmltest \
-		--with-docbook=/usr/share/sgml/docbook/xsl-stylesheets
+  bash:~/src/elektra$ ./configure
+  bash:~/src/elektra$ make
+  bash:~/src/elektra$ sudo make install
 
-  bash:~/src/elektra$ make dist
-  bash:~/src/elektra$ rpmbuild -ta elektra-VERSION.tar.gz
 
-Then RPMs will appear under your RPM building tree.
-Try also to do this right after ./configure:
+To build a RPM package you can also to do this right after ./configure:
 
   bash:~/src/elektra$ make rpm
 
@@ -184,15 +180,46 @@ The "elektra-devel" package sugested files:
    /usr/share/man/man3/key*.3.gz       (Manpages for the key*() methods)
    /usr/share/man/man3/ks*.3.gz        (Manpages for the ks*() methods)
 
+
+Developer Infos
+===============
+
+The examples are only scripts which call the executables in .libs.
+To execute the examples with gdb, just run:
+libtool --mode=execute gdb
+
+
+Following configure options can be used for debugging:
+ --enable-debug
+   Enables all DEBUG clauses and prints much more information
+
+ --enable-experimental
+   Enables experimental code
+
+Testing environment
+
+Run "make check" in tests for a comprehensive test of all API functions.
+
+ --enable-valgrind-tests
+   Allows you to enable valgrind for testing, a full list of memory leaks
+   is printed after every test.
+
+
+ --enable-gcov
+   Use it to see what lines of code are covered by tests.
+
+
+You may want to use
+ --enable-iconv
+if you need keys and strings in utf8 in a multi language setup.
+
+Thus multi language computers normally have utf per default, this
+option is disabled.
+
 (Below, generic installation instructions)
 
-
-$Id$
-
-
-
-Installation Instructions
-*************************
+Generic Installation Instructions
+*********************************
 
 Copyright (C) 1994, 1995, 1996, 1999, 2000, 2001, 2002, 2004 Free
 Software Foundation, Inc.

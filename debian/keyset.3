@@ -35,7 +35,7 @@ More...
 .RI "size_t \fBksAppend\fP (KeySet *ks, Key *toAppend)"
 .br
 .ti -1c
-.RI "size_t \fBksAppendKeys\fP (KeySet *ks, KeySet *toAppend)"
+.RI "size_t \fBksAppend\fP (KeySet *ks, KeySet *toAppend)"
 .br
 .ti -1c
 .RI "int \fBksCompare\fP (KeySet *ks1, KeySet *ks2, KeySet *removed)"
@@ -57,7 +57,7 @@ Methods to manipulate KeySets. A KeySet is a linked list to group a number of Ke
  
 .SH "FUNCTION DOCUMENTATION"
 .PP 
-.SS "size_t ksAppend (KeySet * ks, Key * toAppend)"
+.SS "size_t ksAppendKey(KeySet * ks, Key * toAppend)"
 .PP
 Append a new Key to the end of the KeySet. You should not append Keys that are local variables to a KeySet, only dinamycally allocated ones, due to the future \fBksClose\fP() you'll call on the KeySet. The KeySet internal cursor is not moved.
 .PP
@@ -78,10 +78,10 @@ Key that will be appended to ks
 .PP
 \fBSee also: \fP
 .in +1c
-\fBksClose\fP() , \fBksInsert\fP() , \fBksInsertKeys\fP() , \fBksAppendKeys\fP() 
+\fBksClose\fP() , \fBksInsert\fP() , \fBksInsertKeys\fP() , \fBksAppend\fP() 
 .PP
 Definition at line 2408 of file key.c.
-.SS "size_t ksAppendKeys (KeySet * ks, KeySet * toAppend)"
+.SS "size_t ksAppend (KeySet * ks, KeySet * toAppend)"
 .PP
 Transfers an entire KeySet to the end of the KeySet.
 .PP
@@ -146,7 +146,7 @@ call \fBkdbSetKeys\fP() on \fCks1\fP to commit all changed keys
 .PP
 \fBSee also: \fP
 .in +1c
-\fBkeyCompare\fP() , \fBcommandEdit\fP() at the KeyDB Class Methods command 
+\fBkeyCompare\fP() , \fBcommandEdit\fP() at the KDB Class Methods command 
 .PP
 Parameters: \fP
 .in +1c
@@ -213,7 +213,7 @@ Key that will be inserted into ks
 .PP
 \fBSee also: \fP
 .in +1c
-\fBksAppend\fP() , \fBksInsertKeys\fP() , \fBksAppendKeys\fP() , \fBksClose\fP() 
+\fBksAppend\fP() , \fBksInsertKeys\fP() , \fBksAppend\fP() , \fBksClose\fP() 
 .PP
 Definition at line 2352 of file key.c.
 .SS "size_t ksInsertKeys (KeySet * ks, KeySet * toInsert)"
@@ -237,7 +237,7 @@ the KeySet that provides the keys that will be transfered
 .PP
 \fBSee also: \fP
 .in +1c
-\fBksAppend\fP() , \fBksInsert\fP() , \fBksAppendKeys\fP() 
+\fBksAppend\fP() , \fBksInsert\fP() , \fBksAppend\fP() 
 .PP
 Definition at line 2375 of file key.c.
 .SS "Key* ksNext (KeySet * ks)"
@@ -289,7 +289,7 @@ ORed of \fCKDB_O_*\fP options
 .PP
 \fBSee also: \fP
 .in +1c
-\fBkeyToStream\fP() , \fBKDBOptions\fP 
+\fBkeyToStream\fP() , \fBoption_t\fP 
 .PP
 \fBReturns: \fP
 .in +1c

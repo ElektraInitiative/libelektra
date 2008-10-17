@@ -94,7 +94,7 @@ ssize_t serialKeySet_unserialize(const void *pBuffer, void *pKeySet)
 		buf += ret;
 
 		/* Add the key into the keyset */
-		count = ksAppend(ks, current);
+		count = ksAppendKey(ks, current);
 	}
 	
 	return (buf - ((const char *) pBuffer));

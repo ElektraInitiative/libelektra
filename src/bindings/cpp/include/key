@@ -1,127 +1,168 @@
 #ifndef CPP_KEY_H
 #define CPP_KEY_H
 
+#include <sstream>
 #include <string>
-#include <stdint.h>
-
-namespace ckdb {	
 #include <kdb.h>
-}
 
 namespace kdb {
+
+class KeyException : public std::exception
+{
+	const char* what() {return "Key Exception";}
+};
+
+class KeyInvalidName : public KeyException
+{
+	const char* what() {return "Invalid Keyname";}
+};
 
 /**Key represents an elektra key.*/
 class Key
 {
 public:
-	Key ();
+	Key () :key (ckdb::keyNew (0)) { operator++(); }
+	Key (ckdb::Key *k) :key(k) { operator++(); }
+	Key (Key &k) :key (k.key) { operator++(); }
+	Key (const Key &k) :key (k.key) { operator++(); }
+	Key (const char * name, va_list ap);
 	Key (const char * name, ...);
-	Key (ckdb::Key *k);
-	~Key ();
-	
-	ckdb::Key * getKey () { return key; }
-	void setKey (ckdb::Key * k) { key = k; }
-	
-	uint8_t getType();
-	void setType(uint8_t type);
+	Key (const std::string name, ...);
 
-	void setFlag();
-	void clearFlag();
-	int getFlag();
+	void del () { operator --(); ckdb::keyDel(key); }
+	void copy (const Key &other) { ckdb::keyCopy(key,other.key); }
+	void clear () { ckdb::keyCopy(key,0); }
+	~Key () { del(); }
 
-	std::string getName();
-	std::string getFullName();
+	void operator ++(int) { operator++(); }
+	void operator ++() { ckdb::keyIncRef(key); }
 
-	void setName (const std::string & name);
+	void operator --(int) { operator--(); }
+	void operator --() { ckdb::keyDecRef(key); }
 
-	size_t getCommentSize();
-	std::string getComment();
-	void setComment(std::string comment);
+	bool operator ==(const Key &k) const { return key == k.key; }
 
-	uid_t getUID();
+	template <class T>
+	T get()
+	{
+		T x;
+		std::string str;
+		str = getString();
+		std::istringstream ist(str);
+		ist >> x;	// convert string to type
+		return x;
+	}
+
+	template <class T>
+	void set(T x)
+	{
+		std::string str;
+		std::ostringstream ost;
+		ost << x;	// convert type to string
+		setString (ost.str());
+	}
+
+	/*Passes out the pointer, maybe directly changing this object*/
+	ckdb::Key* getKey () const { return key; }
+	ckdb::Key* operator* () const { return key; }
+	ckdb::Key* dup () const { return ckdb::keyDup(getKey()); }
+
+	Key& operator= (ckdb::Key *k);
+	Key& operator= (const Key &k);
+
+	Key& operator=  (const std::string &name);
+	Key& operator+= (const std::string &name);
+	Key& operator-= (const std::string &name);
+
+	Key& operator=  (const char *name);
+	Key& operator+= (const char *name);
+	Key& operator-= (const char *name);
+
+	type_t getType() const;
+	void setType(type_t type = KEY_TYPE_STRING);
+
+	std::string getName() const;
+	const char* name() const;
+	size_t getNameSize() const;
+
+	std::string getBaseName() const;
+	const char* baseName() const;
+	size_t getBaseNameSize() const;
+
+	void setName (const std::string &name);
+	void setBaseName (const std::string &basename);
+
+	size_t getFullNameSize() const;
+	std::string getFullName() const;
+
+	std::string getComment() const;
+	const char* comment() const;
+	size_t getCommentSize() const;
+	void setComment(const std::string &comment);
+
+	uid_t getUID() const;
 	void setUID(uid_t uid);
 
-	gid_t getGID();
+	gid_t getGID() const;
 	void setGID(gid_t gid);
 
-	mode_t getAccess();
-	void setAccess(mode_t mode);
+	mode_t getMode() const;
+	void setMode(mode_t mode);
 
-	std::string getOwner();
-	void setOwner(const std::string userDomain);
+	std::string getOwner() const;
+	const char* owner() const;
+	size_t getOwnerSize() const;
+	void setOwner(const std::string &owner);
 
-	size_t getDataSize();
+	const void* value() const;
+	size_t getValueSize() const;
 
-	std::string getString();
+	std::string getString() const;
 	void setString(std::string newString);
 
-	size_t getBinary(void *returnedBinary, size_t maxSize);
+	size_t getBinary(void *returnedBinary, size_t maxSize) const;
 	size_t setBinary(const void *newBinary, size_t dataSize);
 
-	bool getBool ();
-	void setBool (bool b);
-	
-	char getChar ();
-	void setChar (char c);
-	
-	unsigned char getUnsignedChar ();
-	void setUnsignedChar (unsigned char uc);
+	void setDir ();
 
-	wchar_t getWChar_t ();
-	void setWChar_t (wchar_t wc);
+	void setMTime(time_t time);
+	void setATime(time_t time);
+	void setCTime(time_t time);
 
-	int getInt ();
-	void setInt (int i);
+	time_t getMTime() const;
+	time_t getATime() const;
+	time_t getCTime() const;
 
-	unsigned int getUnsignedInt ();
-	void setUnsignedInt (unsigned int ui);
+	bool isSystem() const;
+	bool isUser() const;
 
-	short getShort ();
-	void setShort (short s);
+	int getNamespace() const;
+	size_t getReference() const;
 
-	unsigned short getUnsignedShort ();
-	void setUnsignedShort (unsigned short us);
+	bool isDir() const;
+	bool isString() const;
+	bool isBinary() const;
 
-	long getLong ();
-	void setLong (long l);
+	bool isInactive() const;
+	bool isBelow(const Key &k) const;
+	bool isDirectBelow(const Key &k) const;
 
-	unsigned long getUnsignedLong ();
-	void setUnsignedLong (unsigned long ul);
+	bool needSync() const;
+	bool needRemove() const;
+	bool needStat() const;
 
-#if defined __GNUC__ && defined __USE_GNU
-	long long getLongLong ();
-	void setLongLong (long long ll);
+	void remove();
+	void stat();
 
-	unsigned long long getUnsignedLongLong ();
-	void setUnsignedLongLong (unsigned long long ull);
-#endif
-	
-	float getFloat ();
-	void setFloat (float f);
-	
-	double getDouble ();
-	void setDouble (double d);
+	/*
+	ssize_t toStream(FILE* stream = stdout, unsigned long options = 0) const;
+	ssize_t output(FILE* stream = stdout, unsigned long options = 0) const;
+	ssize_t generate(FILE* stream = stdout, unsigned long options = 0) const;
+	*/
 
-	long double getLongDouble ();
-	void setLongDouble (long double ld);
+	friend std::ostream & operator << (std::ostream & os, const Key &d);
+	friend std::istream & operator >> (std::istream & os, Key &d);
 
-	std::string getLink();
-	void setLink(std::string target);
-
-	time_t getMTime();
-	time_t getATime();
-	time_t getCTime();
-	
-	int isSystem();
-	int isUser();
-	
-	int getNamespace();
-	
-	int isDir();
-	int isLink();
-
-	size_t toStream(FILE* stream, unsigned long options);
-	// ostream!
 private:
 	ckdb::Key * key; // holds elektra key struct
 };

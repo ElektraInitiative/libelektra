@@ -346,9 +346,9 @@ int parseCommandLine(int argc, char *argv[]) {
 void listAccess(Key *key,char *readable) {
 	mode_t mode=keyGetAccess(key);
 
-	if (keyIsDir(key)) readable[0]='d';
+	if (S_ISDIR(mode)) readable[0]='d';
 	#ifdef S_ISLNK
-	else if (keyIsLink(key)) readable[0]='l';
+	else if (S_ISLNK(mode)) readable[0]='l';
 	#endif
 	else readable[0]='-';
 
@@ -678,8 +678,6 @@ int commandSet(KDBHandle handle) {
 		/* Handle errors different from NOTFOUND */
 		sprintf(error,"kdb set: %s",argKeyName);
 		kdbPrintError(error);
-
-		return -1;
 	}
 
 	/* Set or overwrite everything else... */

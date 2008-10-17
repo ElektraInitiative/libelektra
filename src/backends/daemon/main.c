@@ -33,9 +33,6 @@ $Id$
 #include <stdlib.h> /* for exit() */
 #endif
 
-#include <errno.h>
-#include <string.h>
-
 #include <pthread.h>
 
 #ifdef HAVE_SYS_TYPES_H
@@ -49,21 +46,11 @@ $Id$
 #include "thread.h"
 #include "kdbd.h"
 
-#ifndef LOCALSTATEDIR
-#define LOCALSTATEDIR "/var"
-#endif
-
-#ifndef KDBD_NAME
-#define KDBD_NAME "kdbd"
-#endif
 
 #ifndef SOCKET_NAME
-#define SOCKET_NAME LOCALSTATEDIR "/run/" KDBD_NAME "/elektra.sock"
+#define SOCKET_NAME "/var/run/kdbd/elektra.sock"
 #endif
 
-#ifndef PID_NAME
-#define PID_NAME LOCALSTATEDIR "/run/" KDBD_NAME "/" KDBD_NAME ".pid"
-#endif
 
 int numchildren = 0;
 int limit = 20;
@@ -87,7 +74,7 @@ int wait_nohang(int *wstat)
 void sigterm()
 {
 	unlink(SOCKET_NAME);
-	unlink(PID_NAME);
+	unlink("/var/run/kdbd/kdbd.pid");
 	exit(0);
 }
 
@@ -112,16 +99,13 @@ int main(int argc, char **argv)
 	/* Uncomment setuid() call if the demon executable file is +s */
 	/* setuid(0); */
 	
-	if ((pid=fork())) {
+	if (pid=fork()) {
 		/* The parent. */
 		/* Log child pid and quit. */
 		
 		FILE *pidf;
 		
-		if ((pidf=fopen(PID_NAME,"w")) == NULL) {
-			fprintf(stderr, "Error opening pid file %s: %s\n", PID_NAME, strerror(errno));
-			exit(1);
-		}
+		pidf=fopen("/var/run/kdbd/kdbd.pid","w");
 		fprintf(pidf,"%d",pid);
 		fclose(pidf);
 		
@@ -138,23 +122,23 @@ int main(int argc, char **argv)
 
 	s = ipc_stream();
 	if ( s == -1 ) {
-		/* perror(argv[0]); */
+		perror(argv[0]);
 		return 1;
 	}
 	
 	m = umask(0);
 	if ( ipc_bind_reuse(s, SOCKET_NAME) == -1 ) {
-		/* perror(argv[0]); */
+		perror(argv[0]);
 		return 1;
 	}
 	umask(m);
 
 	if ( ipc_local(s, 0, 0, &trunc) == -1 ) {
-		/* perror(argv[0]); */
+		perror(argv[0]);
 		return 1;
 	}
 	if (ipc_listen(s, 20) == -1) {
-		/* perror(argv[0]); */
+		perror(argv[0]);
 		return 1;
 	}
 	ndelay_off(s);
@@ -165,7 +149,7 @@ int main(int argc, char **argv)
 		t = ipc_accept(s,remotepath,sizeof(remotepath),&trunc);
 
 		if (t == -1) {
-			/* perror("kdbd");*/
+			perror("kdbd");
 			continue;
 		}
 

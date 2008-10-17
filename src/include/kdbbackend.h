@@ -13,31 +13,22 @@
  *                                                                         *
  ***************************************************************************/
 
+/*You have to include this file in order to write backends or for internal
+ *source files for elektra. You do not need this functions to use elektra!*/
 
-/* Subversion stuff
-
-$Id$
-
-*/
 
 #ifndef KDBBACKEND_H
 #define KDBBACKEND_H
 
-typedef struct _KDBBackend *    KDBHandle;
 
-#include <pthread.h>
 #include <kdb.h>
 #include <kdbprivate.h>
 
 #ifdef ELEKTRA_STATIC
-        #define KDBEXPORT(module) KDBBackend *libelektra_##module##_LTX_kdbBackendFactory(void)	
+        #define KDBEXPORT(module) KDB *libelektra_##module##_LTX_kdbBackendFactory(void)	
 #else
-        #define KDBEXPORT(module) KDBBackend *kdbBackendFactory(void)
+        #define KDBEXPORT(module) KDB *kdbBackendFactory(void)
 #endif
-
-typedef struct _KDBBackend KDBBackend;
-
-
 
 
 
@@ -46,70 +37,122 @@ typedef struct _KDBBackend KDBBackend;
  *
  * @ingroup backend
  */
-enum KDBBackendMethod {
-	KDB_BE_OPEN=1,               /*!< Next arg is backend for kdbOpen() */
-	KDB_BE_CLOSE=1<<1,           /*!< Next arg is backend for kdbClose() */
-	KDB_BE_STATKEY=1<<2,         /*!< Next arg is backend for kdbStatKey() */
-	KDB_BE_GETKEY=1<<3,          /*!< Next arg is backend for kdbGetKey() */
-	KDB_BE_SETKEY=1<<4,          /*!< Next arg is backend for kdbSetKey() */
-	KDB_BE_SETKEYS=1<<5,         /*!< Next arg is backend for kdbSetKeys() */
-	KDB_BE_RENAME=1<<6,          /*!< Next arg is backend for kdbRename() */
-	KDB_BE_REMOVEKEY=1<<7,       /*!< Next arg is backend for kdbRemoveKey() */
-	KDB_BE_GETCHILD=1<<8,        /*!< Next arg is backend for kdbGetKeyChildKeys() */
-	KDB_BE_MONITORKEY=1<<9,      /*!< Next arg is backend for kdbMonitorKey() */
-	KDB_BE_MONITORKEYS=1<<10,    /*!< Next arg is backend for kdbMonitorKeys() */
-	KDB_BE_END=0                 /*!< End of arguments */
-};
+typedef enum {
+	KDB_BE_OPEN=1,		/*!< Next arg is backend for kdbOpen() */
+	KDB_BE_CLOSE=1<<1,	/*!< Next arg is backend for kdbClose() */
+	KDB_BE_GET=1<<2,	/*!< Next arg is backend for kdbGet() */
+	KDB_BE_SET=1<<3,	/*!< Next arg is backend for kdbSet() */
+	KDB_BE_VERSION=1<<4,	/*!< Next arg is char * for Version */
+	KDB_BE_DESCRIPTION=1<<5,/*!< Next arg is char * for Description */
+	KDB_BE_AUTHOR=1<<6,	/*!< Next arg is char * for Author*/
+	KDB_BE_LICENCE=1<<7,	/*!< Next arg is char * for Licence*/
+	KDB_BE_END=0		/*!< End of arguments */
+} backend_t;
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-KDBBackend *kdbBackendExport(const char *backendName, ...);
+KDB *kdbBackendExport(const char *backendName, ...);
 
-typedef KDBBackend *(*KDBBackendFactory)(void);
+/* Mounting API */
+int kdbMount(KDB *handle, const Key *mountpoint, const KeySet *config);
+int kdbUnmount(KDB *handle, const Key *mountpoint);
+Key *kdbGetMountpoint(KDB *handle, const Key *where);
 
-/* Let the backend be aware of default implementations we provide */
-int kdbSetKeys_default(KDBHandle handle, KeySet *ks);
-int kdbRename_default(KDBHandle handle, Key *key, const char *newName);
-uint32_t kdbMonitorKeys_default(KDBHandle handle, KeySet *interests,
-		uint32_t diffMask, unsigned long iterations, unsigned sleep);
-uint32_t kdbMonitorKey_default(KDBHandle handle, Key *interest,
-		uint32_t diffMask, unsigned long iterations, unsigned sleep);
+/* Idea for new api...
+unsigned long kdbGetCapability(KDB *handle, const Key *where, unsigned long mask);
+const char *kdbGetString(KDB *handle, const Key *where, unsigned long which);
+*/
+
+/* Old capability API */
+KDBCap *kdbGetCapability(KDB *handle, const Key *where);
+int kdbhGetErrno(const KDB *handle);
+
+/* Some internal methods */
+int kdbiRealloc (void ** buffer, size_t size);
+void* kdbiMalloc (size_t size);
+void kdbiFree (void *ptr);
+char *kdbiStrDup (const char *s);
+size_t kdbiStrLen(const char *s);
+
+ssize_t kdbbEncode(void *kdbbDecoded, size_t size, char *returned);
+ssize_t kdbbDecode(char *kdbbEncoded,void *returned);
+
+int kdbbNeedsUTF8Conversion(void);
+int kdbbkdbbUTF8Engine(int direction, char **string, size_t *inputOutputByteSize);
+
+int kdbbEncodeChar(char c, char *buffer, size_t bufSize);
+int kdbbDecodeChar(const char *from, char *into);
+
+int kdbbFilenameToKeyName(const char *string, char *buffer, int bufSize);
+int kdbbKeyNameToRelativeFilename(const char *string, char *buffer, size_t bufSize);
+ssize_t kdbbKeyCalcRelativeFilename(const Key *key,char *relativeFilename,size_t maxSize);
+
+ssize_t kdbbGetFullKeyName (KDB *handle, const char *forFilename, const Key *parentKey, Key *returned);
+ssize_t kdbbGetFullFilename(KDB *handle, const Key *forKey,char *returned,size_t maxSize);
 
 
 /* Some handle manipulation methods */
-void *kdbhSetBackendData(KDBHandle handle, void *data);
-void *kdbhGetBackendData(KDBHandle handle);
+void *kdbhGetBackendData(const KDB *handle);
+void *kdbhSetBackendData(KDB *handle, void *data);
 
-pid_t kdbhGetPID(const KDBHandle handle);
-pid_t kdbhSetPID(KDBHandle handle,pid_t pid);
+KDBCap* kdbhSetCapability(KDB *handle, KDBCap *cap);
+KDBCap* kdbhGetCapability(const KDB *handle);
 
-pthread_t kdbhGetTID(const KDBHandle handle);
-pthread_t kdbhSetTID(KDBHandle handle,pthread_t tid);
+Trie *kdbhGetTrie(const KDB *handle);
+void kdbhSetTrie(KDB *handle, Trie *trie);
 
-uid_t kdbhGetUID(const KDBHandle handle);
-uid_t kdbhSetUID(KDBHandle handle,uid_t uid);
+const Key *kdbhGetMountpoint(KDB *handle);
+void kdbhSetMountpoint(KDB *handle, const Key* mountpoint);
 
-gid_t kdbhGetGID(const KDBHandle handle);
-gid_t kdbhSetGID(KDBHandle handle,gid_t gid);
+KeySet *kdbhGetConfig(KDB *handle);
 
-mode_t kdbhGetUMask(const KDBHandle handle);
-mode_t kdbhSetUMask(KDBHandle handle,mode_t umask);
+/* Capability methods */
+KDBCap *capNew (void);
+void capDel (KDBCap *cap);
 
-char *kdbhGetUserName(const KDBHandle handle);
-char *kdbhSetUserName(KDBHandle handle,char *userName);
+const char *kdbcGetName (const KDBCap *cap);
+const char *kdbcGetVersion (const KDBCap *cap);
+const char *kdbcGetDescription (const KDBCap *cap);
+const char *kdbcGetAuthor (const KDBCap *cap);
+const char *kdbcGetLicence (const KDBCap *cap);
 
-char *kdbhGetBackendName(const KDBHandle handle);
-char *kdbhSetBackendName(KDBHandle handle,char *backendName);
+/* too many functions, use flags */
+unsigned int kdbcGetonlyFullGet (const KDBCap *cap);
+unsigned int kdbcGetonlyFullSet (const KDBCap *cap);
+unsigned int kdbcGetonlyRemoveAll (const KDBCap *cap);
+unsigned int kdbcGetonlyAddKeys (const KDBCap *cap);
+unsigned int kdbcGetonlySystem (const KDBCap *cap);
+unsigned int kdbcGetonlyUser (const KDBCap *cap);
+unsigned int kdbcGetonlyFullSync (const KDBCap *cap);
+unsigned int kdbcGetnoOwner (const KDBCap *cap);
+unsigned int kdbcGetnoValue (const KDBCap *cap);
+unsigned int kdbcGetnoComment (const KDBCap *cap);
+unsigned int kdbcGetnoUID (const KDBCap *cap);
+unsigned int kdbcGetnoGID (const KDBCap *cap);
+unsigned int kdbcGetnoMode (const KDBCap *cap);
+unsigned int kdbcGetnoDir (const KDBCap *cap);
+unsigned int kdbcGetnoATime (const KDBCap *cap);
+unsigned int kdbcGetnoMTime (const KDBCap *cap);
+unsigned int kdbcGetnoCTime (const KDBCap *cap);
+unsigned int kdbcGetnoRemove (const KDBCap *cap);
+unsigned int kdbcGetnoStat (const KDBCap *cap);
+unsigned int kdbcGetnoMount (const KDBCap *cap);
+unsigned int kdbcGetnoBinary (const KDBCap *cap);
+unsigned int kdbcGetnoString (const KDBCap *cap);
+unsigned int kdbcGetnoTypes (const KDBCap *cap);
+unsigned int kdbcGetnoError (const KDBCap *cap);
+unsigned int kdbcGetnoLock (const KDBCap *cap);
+unsigned int kdbcGetnoThread (const KDBCap *cap);
+
+
 
 #ifdef __cplusplus
 }
 #endif
 
 
-
-
-
 #endif /* KDBBACKEND_H */
+

@@ -1,0 +1,18 @@
+Warning!
+This library is part of the stable libelektra 0.7.0 suite.
+Incompatible work on it is not prohibited, you are encouraged
+to do so.
+
+Note that in the static case, that is when the macro ELEKTRA_STATIC
+is set you need to rename all symbols to libelektratools_LTX_symbols.
+This must only take place in the source files, not in the header,
+otherwise the users symbols will be renamed too, leading to name
+clashes.
+
+In addition to that you must add all symbols in the exportsymbols.sh
+script, located at src/libelektra.
+
+When you do that, the same code of the user can compile easily to a
+static and dynamic variant. The static variant just "renames" the
+symbols, while the dynamic really loads the library and lookup the
+symbols.

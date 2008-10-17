@@ -1,0 +1,2 @@
+%s_^unsigned int \([a-zA-Z]*\):1\;\s*/\*\!< \([A-Za-z0-9,' ]*\.\) \*/$_/\*\*\2*/^Munsigned int kdbcGet\1 (KDBCap *cap)^M{^M^Ireturn cap->\1;^M}^M^M_
+'<,'>s%^\s*\([A-Z_]*\)=\=[0A-Z]*,\=\s*/\*\!< \([A-Za-z0-9 ]*\) \*/$%		case \1:			return "\2";%

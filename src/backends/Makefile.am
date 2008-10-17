@@ -1,20 +1,7 @@
+DIST_SUBDIRS = filesys berkeleydb daemon fstab passwd hosts gconf ini template
+SUBDIRS = @BACKENDS@
 
-# $Id$
-
-DIST_SUBDIRS = filesys berkeleydb gconf ini template fstab daemon
-SUBDIRS = $(backends) template
-
-#if EXPERIMENTAL
-#SUBDIRS += gconf ini template
-#endif
-
-#if HAVE_GLIBC_MNTENT
-#SUBDIRS += fstab
-#endif
-
-#if HAVE_UCRED
-#SUBDIRS += daemon
-#endif
+EXTRA_DIST = winregistry doc/backend.c
 
 install-exec-hook:
 	cd $(DESTDIR)$(backenddir) && \
@@ -23,4 +10,10 @@ install-exec-hook:
 	cd $(DESTDIR)$(backenddir) && \
 	test -L libelektra-ddefault.so || \
 	$(LN_S) libelektra-@default_dbackend@.so libelektra-ddefault.so
+
+uninstall-hook:
+	-cd $(DESTDIR)$(backenddir) && \
+	rm -f libelektra-default.so
+	-cd $(DESTDIR)$(backenddir) && \
+	rm -f libelektra-ddefault.so
 

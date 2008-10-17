@@ -26,44 +26,12 @@
 #include <dirent.h>
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
 
-#include <sys/stat.h>
+/*For flock*/
 #include <sys/file.h>
+#include <sys/stat.h>
 #include <sys/types.h>
-
-/**Posix style file descriptor*/
-int fd;
-
-/**Reallocate Storage in a save way
- * @code
-if (srealloc ((void **) & buffer, new_length) < 0) {
-	// here comes the failure handler
-	fprintf (stderr, "Reallocation error\n");
-	free (buffer);
-	//free the buffer
-	exit (1);
-}
- * @param void ** buffer is a pointer to a malloc
- * @param size is the new size for the memory
- * @return -1 on failure
- * @return 0 on success
- * @ingroup ini
- */
-int srealloc (void ** buffer, size_t size)
-{
-	void * ptr;
-	void * svr = *buffer;
-	ptr = realloc(*buffer, size);
-	if (ptr == NULL)
-	{
-		*buffer = svr;	/* restore old buffer*/
-		return -1;
-	} else {
-		*buffer = ptr;
-		return 0;
-	}
-}
-
 
 
 /**
@@ -81,15 +49,15 @@ int srealloc (void ** buffer, size_t size)
  * because there is also a file locking
  * done.
  * 
- * @return 0 on success, -1 on failure
+ * @return -1 on failure, 0 otherwise
  * @ingroup ini
  * */
-int open_file (char * filename, char mode)
+int open_file (KDB *handle, char * filename, char mode)
 {
 	char buffer [2] = "\0\0";
 	int ret = 0;
 	int posix_mode;
-	
+
 	if (mode == 'w')
 	{
 		buffer[0] = 'r';
@@ -105,19 +73,19 @@ int open_file (char * filename, char mode)
 		return -1;
 	}
 
-	fd = open (filename, posix_mode);
-	if (fd == -1) {
-#ifdef DEBUG
+	FILEDES = open (filename, posix_mode);
+	if (FILEDES == -1) {
+#if DEBUG
 		fprintf (stderr, "Will create new file\n");
 #endif
-		fd = open (filename, posix_mode | O_CREAT);
-		if (fd == -1)
+		FILEDES = open (filename, posix_mode | O_CREAT);
+		if (FILEDES == -1)
 		{
 			fprintf (stderr, "Unable to open file\n");
 			perror ("Reason: ");
 			return -1;
 		}
-		ret = fchmod (fd, 0644);	/* TODO: permissions!*/
+		ret = fchmod (FILEDES, 0644);	/* TODO: permissions!*/
 		if (ret == -1)
 		{
 			fprintf (stderr, "Unable to chmod file\n");
@@ -125,19 +93,19 @@ int open_file (char * filename, char mode)
 		}
 	}
 	
-	if (flock (fd, LOCK_EX) == -1) {
+	if (flock (FILEDES, LOCK_EX) == -1) {
 		fprintf (stderr, "Unable to lock file\n");
 		perror ("Reason: ");
 		ret = -1;
 	}
-		
-	
-	fc = (FILE *) fdopen (fd,buffer);
-	if (fc == NULL) {
+
+	FILEPTR = fdopen (FILEDES,buffer);
+	if (FILEPTR == NULL) {
 		fprintf (stderr, "fdopen() failed\n");
 		perror ("Reason: ");
-		ret = -2;
+		ret = -1;
 	}
+
 	return ret;
 }
 
@@ -146,20 +114,21 @@ int open_file (char * filename, char mode)
  * Close previous with open_file() opened file
  * @return 0 on success, -1 on failure
  */
-int close_file ()
+int close_file (KDB *handle)
 {
 	int ret = 0;
 	
-	if (flock (fd, LOCK_UN) == -1) {
+	if (flock (FILEDES, LOCK_UN) == -1) {
 		perror ("Unable to unlock file");
 		ret = -1;
 	}
 
-	ret = fclose (fc);
+	ret = fclose (FILEPTR);
 	if (ret != 0) {
 		perror ("Could not close file");
 		ret = -2;
 	}
+
 	return ret;
 }
 
@@ -179,20 +148,18 @@ int close_file ()
  * @ingroup ini
  */
 int stat_file (Key * key, char * filename)
-{	
+{
 	struct stat buf;
 	stat (filename, &buf);
-	
-	keySetAccess(key,buf.st_mode);
-        keySetUID(key,buf.st_uid);
-        keySetGID(key,buf.st_gid);
-        if 	(S_ISDIR (buf.st_mode))	keySetType(key, KEY_TYPE_DIR);
-        else if (S_ISREG (buf.st_mode)) keySetType(key, KEY_TYPE_FILE);
-        else if (S_ISLNK (buf.st_mode)) keySetType(key, KEY_TYPE_LINK);
-        key->atime=buf.st_atime;
-        key->mtime=buf.st_mtime;
-        key->ctime=buf.st_ctime;
-        key->recordSize=buf.st_size;
+
+	keySetMode(key,buf.st_mode);
+	keySetUID(key,buf.st_uid);
+	keySetGID(key,buf.st_gid);
+	if (S_ISDIR (buf.st_mode)) keySetDir(key);
+	if (S_ISREG (buf.st_mode)) keySetType(key, KEY_TYPE_FILE);
+	key->atime=buf.st_atime;
+	key->mtime=buf.st_mtime;
+	key->ctime=buf.st_ctime;
 
 	return 0;
 }
@@ -209,7 +176,7 @@ int stat_file (Key * key, char * filename)
  * @return 0 on success, -1 else
  * @ingroup ini
  */
-int enlarge_file (long where, long space)
+int enlarge_file (KDB *handle, long where, long space)
 {
 	char buffer [BUFFER_RDWR_SIZE+1];
 	size_t sread;
@@ -218,8 +185,8 @@ int enlarge_file (long where, long space)
 	int finished = 0;
 	long pos;
 
-	fseek (fc,0,SEEK_END); /* begin at end*/
-	pos = ftell (fc);
+	fseek (FILEPTR,0,SEEK_END); /* begin at end*/
+	pos = ftell (FILEPTR);
 	do {
 		pos -= BUFFER_RDWR_SIZE;
 		if (pos < where) {
@@ -227,17 +194,17 @@ int enlarge_file (long where, long space)
 			pos = where;
 			finished = 1;
 		}
-		fseek (fc, pos, SEEK_SET);
-		sread = fread (buffer,1,BUFFER_RDWR_SIZE-diff,fc);	/* read last peace*/
+		fseek (FILEPTR, pos, SEEK_SET);
+		sread = fread (buffer,1,BUFFER_RDWR_SIZE-diff,FILEPTR);	/* read last peace*/
 		buffer[sread] = 0;	/* mark end (not necessary)*/
 
-		fseek (fc,pos+space,SEEK_SET);	/* jump to writepos*/
+		fseek (FILEPTR,pos+space,SEEK_SET);	/* jump to writepos*/
 
-#ifdef DEBUG
-		printf ("buffer: %s, sread: %d\n", buffer, sread);
+#if DEBUG
+		printf ("buffer: %s, sread: %d\n", buffer, (int)sread);
 #endif
-		fwrite (buffer,1,sread,fc);
-		err = ferror (fc);
+		fwrite (buffer,1,sread,FILEPTR);
+		err = ferror (FILEPTR);
 		if (err != 0)
 		{
 			fprintf (stderr, "Error in stream\n");
@@ -259,27 +226,27 @@ int enlarge_file (long where, long space)
  * @return 0 on success, -1 on error
  * @ingroup ini
  */
-int shrink_file (long where, long space)
+int shrink_file (KDB *handle, long where, long space)
 {
 	char buffer [BUFFER_RDWR_SIZE+1];
 	size_t sread;
 	int err;
 	long pos;
 
-	fseek (fc,where, SEEK_SET);
-	pos = ftell (fc);
+	fseek (FILEPTR,where, SEEK_SET);
+	pos = ftell (FILEPTR);
 	
 	do {
-		fseek (fc,pos+space,SEEK_SET); /* jump to readposition*/
-		sread = fread (buffer,1,BUFFER_RDWR_SIZE,fc);	/* read a peace*/
+		fseek (FILEPTR,pos+space,SEEK_SET); /* jump to readposition*/
+		sread = fread (buffer,1,BUFFER_RDWR_SIZE,FILEPTR);	/* read a peace*/
 		buffer[sread] = 0;	/* mark end (not necessary)*/
 
-		fseek (fc,pos,SEEK_SET);	/* jump to writepos*/
-#ifdef DEBUG
-		printf ("buffer: %s, sread: %d\n", buffer, sread);
+		fseek (FILEPTR,pos,SEEK_SET);	/* jump to writepos*/
+#if DEBUG
+		printf ("buffer: %s, sread: %d\n", buffer, (int)sread);
 #endif
-		fwrite (buffer,1,sread,fc);
-		err = ferror (fc);
+		fwrite (buffer,1,sread,FILEPTR);
+		err = ferror (FILEPTR);
 		if (err != 0)
 		{
 			fprintf (stderr, "Error in stream\n");
@@ -288,8 +255,8 @@ int shrink_file (long where, long space)
 		pos += sread;
 	} while (sread == BUFFER_RDWR_SIZE);
 
-	ftruncate (fd,lseek(fd,0,SEEK_CUR));
-	
+	ftruncate (FILEDES,lseek(FILEDES,0,SEEK_CUR));
+
 	return 0;
 }
 
@@ -306,37 +273,56 @@ int shrink_file (long where, long space)
  * logged on.
  *
  * @see file_name
- * 
+ *
  * @ingroup ini
  */
 size_t base_name (const Key * forKey, char * basename)
 {
 	size_t length;
 
-        switch (keyGetNamespace(forKey)) {
-                case KEY_NS_SYSTEM: {
-                        /* Prepare to use the 'system/ *' database */
-                        strncpy(basename,KDB_DB_SYSTEM,MAX_PATH_LENGTH);
-                        length=strlen(basename);
-                        break;
-                }
-                case KEY_NS_USER: {
-                        /* Prepare to use the 'user:????/ *' database */
-                        struct passwd *user=0;
+	switch (keyGetNamespace(forKey)) {
+		case KEY_NS_SYSTEM: {
+			/* Prepare to use the 'system/ *' database */
+			strncpy(basename,KDB_DB_SYSTEM,MAX_PATH_LENGTH);
+			length=strlen(basename);
+			break;
+		}
+		/* If we lack a usable concept of users we simply let the default handle it
+		 * and hence disable the entire user/ hiarchy. */
+		case KEY_NS_USER: {
+			/*
+			 * TODO: Change to use elektra internal config.
+			 *       As fallback use getpwnam (libc bug makes valgrind cry)
+			 *       And as last solution use environment $HOME?
+			 *
+			 * Prepare to use the 'user:????/ *' database */
+			if (getenv("HOME"))
+			{
+				char * home = getenv("HOME");
+				length=snprintf(basename,MAX_PATH_LENGTH,"%s/%s",home,KDB_DB_USER);
+				break;
+			}
 
-                        if (forKey->userDomain) user=getpwnam(forKey->userDomain);
-                        else user=getpwnam(getenv("USER"));
+#ifdef HAVE_PWD_H
+			else if (forKey->owner)
+				user=getpwnam(forKey->owner);
+			else if ( getenv("USER") )
+				user=getpwnam(getenv("USER"));
 
-                        if (!user) return 0; /* propagate errno */
-                        length=snprintf(basename,MAX_PATH_LENGTH,"%s/%s",user->pw_dir,KDB_DB_USER);
-                        break;
-                }
-                default: {
-                        errno=KDB_RET_INVALIDKEY;
-                        return 0;
-                }
-        }
-	
+			if (!user) return 0; /* propagate errno */
+			length=snprintf(basename,MAX_PATH_LENGTH,"%s/%s",user->pw_dir,KDB_DB_USER);
+			break;
+#else
+			/*errno=KDB_ERR_INVALIDKEY;*/
+			return 0;
+#endif
+		}
+
+		default: {
+			/*errno=KDB_ERR_INVALIDKEY;*/
+			return 0;
+		}
+	}
 	return length;
 }
 
@@ -398,7 +384,7 @@ int create_dir (char * keyFileName)
 	char * end;
 	char * fil;
 
-#ifdef DEBUG
+#if DEBUG
 	fprintf (stderr, "will create_dir() for %s\n", keyFileName);
 #endif
 	end = strrchr(keyFileName, '/'); /* key abschneiden*/
@@ -409,14 +395,14 @@ int create_dir (char * keyFileName)
 		end = strchr(end+1, '/');
 		if (end == NULL) break;
 		* end = '\0';
-#ifdef DEBUG
+#if DEBUG
 		fprintf (stderr, "Create Folder %s\n", keyFileName);
 #endif
 		if (mkdir (keyFileName, 0777) == -1)
 		{
 			if (errno == EEXIST)
 			{
-#ifdef DEBUG
+#if DEBUG
 				/**TODO Check if it is dir. Make more robust with stat*/
 				fprintf (stderr, "Directory already exists\n");
 #endif

@@ -1,5 +1,5 @@
 /***************************************************************************
-            kdbLibLoader.c  -  Portable lib loading stuff
+            kdbloader.c  -  Dynamically loading backends
                              -------------------
     begin                : Sun Mar 19 2006
     copyright            : (C) 2004 by Avi Alkalay
@@ -14,27 +14,18 @@
  ***************************************************************************/
 
 
-/* Subversion stuff
-
-$Id$
-
-*/
-
-
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
-#include <stdio.h>
+#ifdef HAVE_STRING_H
 #include <string.h>
-#include "kdbbackend.h"
-#include "kdbLibLoader.h"
+#endif
+
+#include "kdbloader.h"
 
 #ifdef ELEKTRA_STATIC
 /* Static case */
-
-extern kdblib_symbol kdb_exported_syms[];
 
 int kdbLibInit(void)
 {
@@ -44,7 +35,6 @@ int kdbLibInit(void)
 kdbLibHandle kdbLibLoad(const char *module)
 {
 	kdblib_symbol	*current;
-	
 	current = kdb_exported_syms;
 	while ( current->name != NULL ) {
 		/* Skip symbols, we're searching for
@@ -61,7 +51,7 @@ kdbLibHandle kdbLibLoad(const char *module)
 	return NULL;
 }
 
-void *kdbLibSym(kdbLibHandle handle, const char *symbol)
+kdbLibFunc kdbLibSym(kdbLibHandle handle, const char *symbol)
 {
 	kdblib_symbol	*current;
 
@@ -102,7 +92,7 @@ kdbLibHandle kdbLibLoad(const char *module)
   return handle;
 }
 
-void *kdbLibSym(kdbLibHandle handle, const char *symbol)
+kdbLibFunc kdbLibSym(kdbLibHandle handle, const char *symbol)
 {
   return GetProcAddress(handle, symbol);
 }
@@ -126,17 +116,13 @@ int kdbLibInit(void)
 kdbLibHandle kdbLibLoad(const char *module)
 {
 	kdbLibHandle	handle;
-
 	handle = lt_dlopenext(module);
-	if ( handle == NULL )
-		fprintf(stderr, "kdbLibLoad : %s", lt_dlerror());
-
 	return handle;
 }
 
-void *kdbLibSym(kdbLibHandle handle, const char *symbol)
+kdbLibFunc kdbLibSym(kdbLibHandle handle, const char *symbol)
 {
-  return lt_dlsym(handle, symbol);
+  return (kdbLibFunc) lt_dlsym(handle, symbol);
 }
 
 int kdbLibClose(kdbLibHandle handle)
