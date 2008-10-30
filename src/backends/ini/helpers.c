@@ -278,52 +278,8 @@ int shrink_file (KDB *handle, long where, long space)
  */
 size_t base_name (const Key * forKey, char * basename)
 {
-	size_t length;
-
-	switch (keyGetNamespace(forKey)) {
-		case KEY_NS_SYSTEM: {
-			/* Prepare to use the 'system/ *' database */
-			strncpy(basename,KDB_DB_SYSTEM,MAX_PATH_LENGTH);
-			length=strlen(basename);
-			break;
-		}
-		/* If we lack a usable concept of users we simply let the default handle it
-		 * and hence disable the entire user/ hiarchy. */
-		case KEY_NS_USER: {
-			/*
-			 * TODO: Change to use elektra internal config.
-			 *       As fallback use getpwnam (libc bug makes valgrind cry)
-			 *       And as last solution use environment $HOME?
-			 *
-			 * Prepare to use the 'user:????/ *' database */
-			if (getenv("HOME"))
-			{
-				char * home = getenv("HOME");
-				length=snprintf(basename,MAX_PATH_LENGTH,"%s/%s",home,KDB_DB_USER);
-				break;
-			}
-
-#ifdef HAVE_PWD_H
-			else if (forKey->owner)
-				user=getpwnam(forKey->owner);
-			else if ( getenv("USER") )
-				user=getpwnam(getenv("USER"));
-
-			if (!user) return 0; /* propagate errno */
-			length=snprintf(basename,MAX_PATH_LENGTH,"%s/%s",user->pw_dir,KDB_DB_USER);
-			break;
-#else
-			/*errno=KDB_ERR_INVALIDKEY;*/
-			return 0;
-#endif
-		}
-
-		default: {
-			/*errno=KDB_ERR_INVALIDKEY;*/
-			return 0;
-		}
-	}
-	return length;
+	/*TODO: missing handle*/
+	kdbbGetFullFilename(0, forKey, basename, MAX_PATH_LENGTH);
 }
 
 /**
