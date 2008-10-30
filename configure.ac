@@ -59,7 +59,7 @@ esac
 # Disable libtool static lib
 #AC_DISABLE_STATIC
 
-
+AM_CONDITIONAL([ENABLE_STATIC],[test x$enable_static = xyes])
 
 
 
@@ -560,10 +560,12 @@ ALLOW_BACKEND(daemon, [test x$elektra_ucred = xyes], NO)
 
 AC_SUBST(BACKENDS)
 
-backend_static_libs=
-for backend in $BACKENDS; do
-	backend_static_libs="$backend_static_libs ../backends/${backend}/libelektra-${backend}.a"
-done
+if test x$enable_static = xyes; then
+	backend_static_libs=
+	for backend in $BACKENDS; do
+		backend_static_libs="$backend_static_libs ../backends/${backend}/libelektra-${backend}.a"
+	done
+fi
 
 AC_SUBST(privatelibs)
 AC_SUBST(backend_static_libs)
