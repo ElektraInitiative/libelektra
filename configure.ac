@@ -435,11 +435,19 @@ fi
 privatelibs=""
 
 # Check for libxml (Allow compilation of libelektratools)
-AM_PATH_XML2(, [elektra_have_xml="yes"], [elektra_have_xml="no"])
-AM_CONDITIONAL(HAVE_XML, [test x$elektra_have_xml = xyes])
-if test "x$elektra_have_xml" = "xyes"; then
+REQUIRES_LIBXML2="libxml2 >= 2.6.0"
+AC_SUBST(REQUIRES_LIBXML2)
+PKG_CHECK_MODULES([libxml2],
+      [${REQUIRES_LIBXML2}],
+      [HAVE_XML=yes],
+      [HAVE_XML=no]
+)
+AC_SUBST(libxml2_CFLAGS)
+AC_SUBST(libxml2_LIBS)
+AM_CONDITIONAL([HAVE_XML],[test "$HAVE_XML" = "yes"])
+if test $HAVE_XML; then
 	elektratools=libelektratools
-	privatelibs=$privatelibs" -lxml2"
+	privatelibs=$privatelibs"$libxml2_LIBS"
 fi
 
 AC_SUBST(elektratools)
