@@ -11,7 +11,7 @@ if VALGRINDTESTS
 TESTS_ENVIRONMENT = $(VALGRIND) --quiet --show-reachable=yes --leak-check=yes
 endif
 
-EXTRA_DIST = dbelow.c filesys.xml fstab.xml fstab-cmp.xml hosts.xml keyset.c keyset.xml key.xml key-cmp.xml others.c passwd.xml test_script.sh test_validate.sh test_script.sh tests.c tests.h
+EXTRA_DIST = dbelow.c filesys.xml fstab.xml fstab-cmp.xml hosts.xml keyset.c keyset.xml key.xml others.c passwd.xml test_script.sh test_validate.sh test_script.sh tests.c tests.h
 
 clean-local:
 	rm -rf .kdb

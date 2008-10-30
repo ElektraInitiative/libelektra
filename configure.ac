@@ -445,7 +445,7 @@ PKG_CHECK_MODULES([libxml2],
 AC_SUBST(libxml2_CFLAGS)
 AC_SUBST(libxml2_LIBS)
 AM_CONDITIONAL([HAVE_XML],[test "$elektra_have_xml" = "yes"])
-if test $elektra_have_xml; then
+if test x$elektra_have_xml = xyes; then
 	elektratools=libelektratools
 	privatelibs=$privatelibs "$libxml2_LIBS"
 fi
