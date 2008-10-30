@@ -439,15 +439,15 @@ REQUIRES_LIBXML2="libxml2 >= 2.6.0"
 AC_SUBST(REQUIRES_LIBXML2)
 PKG_CHECK_MODULES([libxml2],
       [${REQUIRES_LIBXML2}],
-      [HAVE_XML=yes],
-      [HAVE_XML=no]
+      [elektra_have_xml=yes],
+      [elektra_have_xml=no]
 )
 AC_SUBST(libxml2_CFLAGS)
 AC_SUBST(libxml2_LIBS)
-AM_CONDITIONAL([HAVE_XML],[test "$HAVE_XML" = "yes"])
-if test $HAVE_XML; then
+AM_CONDITIONAL([HAVE_XML],[test "$elektra_have_xml" = "yes"])
+if test $elektra_have_xml; then
 	elektratools=libelektratools
-	privatelibs=$privatelibs"$libxml2_LIBS"
+	privatelibs=$privatelibs "$libxml2_LIBS"
 fi
 
 AC_SUBST(elektratools)
