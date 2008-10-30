@@ -1,7 +1,7 @@
 # $Id$
 
 #testdir = $(develdocdir)/src/backends/ini/
-AM_CPPFLAGS = -I$(top_srcdir)/src/include -DDEBUG -D_POSIX_SOURCE -D_BSD_SOURCE
+AM_CPPFLAGS = -I$(top_srcdir)/src/include -D_POSIX_SOURCE -D_BSD_SOURCE
 
 ini_sources = ini.c helpers.c parser.c ini.h ../../include/kdb.h ../../include/kdbbackend.h
 noinst_LIBRARIES = libelektra-ini.a
