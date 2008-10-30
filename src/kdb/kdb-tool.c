@@ -728,12 +728,13 @@ int commandSet(KDB *handle) {
 	if (argUID) keySetUID(key,*argUID);
 	if (argGID) keySetGID(key,*argGID);
 	if (argMode) keySetMode(key,argMode);
-	if (argDir) {
-		keySetDir(key);
-	}
+
+	offset = strlen(argKeyName);
+	if (argDir || (offset>0 && argKeyName[offset-1] == '/')) keySetDir(key);
 
 	if (argComment) keySetComment(key,argComment);
-	
+
+	offset = 0;
 	if (argFile) {
 		FILE *f;
 		int end=0;
