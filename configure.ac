@@ -301,7 +301,7 @@ PKG_PROG_PKG_CONFIG
 # xsltproc
 AC_PATH_PROG(xsltproc, xsltproc, "no")
 # Check if have style-sheet too
-if test "x$default_docbook" != "xno"; then
+if test "x$default_docbook" != "xno" && test "x$cross_compiling" = "xno"; then
 	AC_CHECK_FILE([$default_docbook/manpages/docbook.xsl],
 		      [dbroot=$default_docbook],
 		      [dbroot="no"])
