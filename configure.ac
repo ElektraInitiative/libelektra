@@ -95,11 +95,11 @@ then
 	CXXFLAGS=`echo "$CFLAGS" | sed -e 's/-g[ ]*//g'`
 
 	dnl STD flags will only be included where no POSIX is required
-	CSTDFLAGS="-std=c99 -ansi -pedantic"
+	CSTDFLAGS="-std=c99 -ansi -pedantic -Wall -Wsign-compare -Wfloat-equal -Wformat-security"
 	COPTFLAGS="-O0"
 	CDBGFLAGS="-g -ggdb"
 
-	CXXSTDFLAGS="-std=c++98 -ansi -pedantic"
+	CXXSTDFLAGS="-std=c++98 -ansi -pedantic -Wall -Wsign-compare -Wfloat-equal -Wformat-security"
 	CXXOPTFLAGS="-O0"
 	CXXDBGFLAGS="-g -ggdb"
 
