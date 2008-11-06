@@ -1,6 +1,0 @@
-These registrystub Library will not be compiled by
-default. It may be removed in a later version.
-
-To have it compiled, you have to add --enable-experimental
-flag in configure.
-
