@@ -906,7 +906,7 @@ for (i=0; i< 10; i++) // limit to 10 tries
 ssize_t kdbSet (KDB *handle, KeySet *ks,
 	Key * parentKey, option_t options)
 {
-	int i;
+	size_t i;
 	int t=0;
 	KDB *h;
 	Key *errorKey;
@@ -1038,10 +1038,15 @@ KDB *kdbBackendExport(const char *backendName, ...) {
 			case KDB_BE_LICENCE:
 				returned->capability->licence=va_arg(va, char *);
 				break;
+			default:
+#if DEBUG
+				printf ("backend passed something unexpected");
+#endif
+			case KDB_BE_END:
+				va_end(va);
+				return returned;
 		}
 	}
-	va_end(va);
-	
 	return returned;
 }
 
