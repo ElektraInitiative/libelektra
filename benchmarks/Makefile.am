@@ -28,3 +28,5 @@ clean-local:
 	rm -rf .kdb
 	rm -f *.gcno *.gcda *.gcno
 
+MAINTAINERCLEANFILES = \
+	Makefile.in

@@ -19,3 +19,6 @@ libelektra_template_la_CFLAGS = $(COPTFLAGS) $(CDBGFLAGS)
 
 ../../libelektra/libelektra.la:
 	cd ../../libelektra/ && $(MAKE) libelektra.la
+
+MAINTAINERCLEANFILES = \
+	Makefile.in

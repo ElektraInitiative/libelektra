@@ -176,7 +176,8 @@ CLEANFILES = csource.xml \
 	elektra-api.tar.gz
 
 MAINTAINERCLEANFILES = howto.html \
-	kdb.1 elektra.5 elektra.7
+	kdb.1 elektra.5 elektra.7 \
+	Makefile.in
 
 # putting in EXTRA_DIST doesn't work, since in that case it may be
 # copied from srcdir and also from the current dir, leading to an error

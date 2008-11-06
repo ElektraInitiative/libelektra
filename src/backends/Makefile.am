@@ -17,3 +17,5 @@ uninstall-hook:
 	-cd $(DESTDIR)$(backenddir) && \
 	rm -f libelektra-ddefault.so
 
+MAINTAINERCLEANFILES = \
+	Makefile.in

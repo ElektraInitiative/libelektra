@@ -34,5 +34,7 @@ kdbd_LDADD = libproto.la ../../libelektra/libelektra.la -lpthread $(LIBICONV)
 # ../../libelektra/libelektra.a:
 #	cd ../../libelektra/ && $(MAKE) libelektra.a
 
+MAINTAINERCLEANFILES = \
+	Makefile.in
 
 

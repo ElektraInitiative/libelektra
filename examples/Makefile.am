@@ -52,3 +52,6 @@ getset_LDADD = ../src/libelektra/libelektra.la
 
 clean-local:
 	rm -f *.gcno *.gcda *.gcno
+
+MAINTAINERCLEANFILES = \
+	Makefile.in

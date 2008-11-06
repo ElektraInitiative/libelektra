@@ -25,3 +25,6 @@ endif
 
 clean-local:
 	rm -f *.gcno *.gcda *.gcno
+
+MAINTAINERCLEANFILES = \
+	Makefile.in

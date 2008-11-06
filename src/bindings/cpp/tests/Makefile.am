@@ -27,3 +27,6 @@ test_kdb_LDADD = $(privatelibs) ../libelektra-cpp.a ../../../libelektra/libelekt
 clean-local:
 	rm -rf .kdb
 	rm -f *.gcno *.gcda *.gcno
+
+MAINTAINERCLEANFILES = \
+	Makefile.in

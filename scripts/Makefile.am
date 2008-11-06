@@ -10,3 +10,5 @@ dist_elekscript_DATA = benchmark-createtree convert-hosts convert-inittab \
   convert-users convert-fstab convert-hwconfKudzu convert-network \
   convert-xfree update-backend kdbd
 
+MAINTAINERCLEANFILES = \
+	Makefile.in

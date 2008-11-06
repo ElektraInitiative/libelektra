@@ -16,3 +16,6 @@ tools_PROGRAMS = $(TOOLS)
 toolsdir = @sbindir@
 passwdconvert_SOURCES = passwdconvert.c
 passwdconvert_LDFLAGS = -lelektra
+
+MAINTAINERCLEANFILES = \
+	Makefile.in

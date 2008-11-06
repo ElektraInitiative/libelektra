@@ -21,3 +21,6 @@ libelektra_gconf_la_LIBADD = $(gconf_LIBS) ../../libelektra/libelektra.la
 ../../libelektra/libelektra.la:
 	cd ../../libelektra/ && $(MAKE) libelektra.la
 #endif
+
+MAINTAINERCLEANFILES = \
+	Makefile.in

@@ -4,3 +4,5 @@
 DIST_SUBDIRS = cpp python
 SUBDIRS = @BINDINGS@
 
+MAINTAINERCLEANFILES = \
+	Makefile.in

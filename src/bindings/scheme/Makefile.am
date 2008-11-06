@@ -19,3 +19,6 @@ update-worlds.stamp:
 
 clean-local:
 	rm -f *-grovel.{scm,c} *.stamp
+
+MAINTAINERCLEANFILES = \
+	Makefile.in

@@ -13,3 +13,6 @@ libhelper_dynamic_la_CFLAGS = $(COPTFLAGS) $(CDBGFLAGS)
 
 clean-local:
 	rm -f *.gcno *.gcda *.gcno
+
+MAINTAINERCLEANFILES = \
+	Makefile.in

@@ -16,3 +16,6 @@ clean-local:
 
 ../../libelektra/libelektra.la:
 	cd ../../libelektra/ && $(MAKE) libelektra.la
+
+MAINTAINERCLEANFILES = \
+	Makefile.in

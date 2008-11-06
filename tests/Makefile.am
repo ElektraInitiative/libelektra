@@ -66,3 +66,5 @@ print_info_LDADD = $(privatelibs) ../src/libelektra/libelektra.a
 ../src/libelektra/libelektra.a:
 	cd ../src/libelektra && $(MAKE) libelektra.a
 
+MAINTAINERCLEANFILES = \
+	Makefile.in

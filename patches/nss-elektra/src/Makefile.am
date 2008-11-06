@@ -24,3 +24,6 @@ noinst_HEADERS = lib.h passwd.h nss-elektra.h config.h nss-shadow.h group.h
 
 libnss_elektra_la_LDFLAGS = -module -version-info $(INTERFACE)
 libnss_elektra_la_LIBADD = @ELEKTRA_LIBS@ 
+
+MAINTAINERCLEANFILES = \
+	Makefile.in

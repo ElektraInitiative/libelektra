@@ -15,3 +15,7 @@ kdb.h: kdb.h.in ../../config.status
 	sed -e "s:[@]KDB_VERSION_MICRO[@]:$(KDB_VERSION_MICRO):" > kdb.h
 
 DISTCLEANFILES = kdbprivate.h kdb.h
+
+MAINTAINERCLEANFILES = \
+	Makefile.in \
+	config.h.in

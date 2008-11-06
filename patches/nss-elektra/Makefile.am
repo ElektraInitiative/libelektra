@@ -9,3 +9,5 @@ DEBUGPARMS = @DEBUGPARMS@
 
 SUBDIRS = tools src
 
+MAINTAINERCLEANFILES = \
+	Makefile.in

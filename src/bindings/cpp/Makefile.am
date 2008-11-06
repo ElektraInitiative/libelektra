@@ -30,3 +30,6 @@ libelektra_cpp_la_LIBADD = ../../libelektra/libelektra.la
 
 clean-local:
 	rm -f *.gcno *.gcda *.gcno
+
+MAINTAINERCLEANFILES = \
+	Makefile.in

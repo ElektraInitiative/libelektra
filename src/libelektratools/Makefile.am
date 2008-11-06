@@ -24,3 +24,5 @@ clean-local:
 
 endif
 
+MAINTAINERCLEANFILES = \
+	Makefile.in

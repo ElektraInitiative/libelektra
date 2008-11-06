@@ -106,3 +106,6 @@ clean-local:
 	rm -f objects
 	rm -f exported_symbols.c exported_symbols.h
 	rm -f *.gcno *.gcda *.gcno
+
+MAINTAINERCLEANFILES = \
+	Makefile.in
