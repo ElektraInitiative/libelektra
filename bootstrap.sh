@@ -1,27 +1,7 @@
 #!/bin/sh
+#this script bootstraps elektra
 
 set -e
-
-VERSION=1.10
-
-AUTOMAKE=`which automake-$VERSION`
-ACLOCAL=`which aclocal-$VERSION`
-
-die()
-{
-	echo $*
-	exit 1
-}
-
-#automake must be version $VERSION
-#make some tests for correct automake
-[ -f $AUTOMAKE ] || die could not find automake-$VERSION
-[ -f $ACLOCAL ] || die could not find aclocal-$VERSION
-$AUTOMAKE --version | grep $VERSION || die wrong automake
-$ACLOCAL --version | grep $VERSION || die wrong aclocal
-
-#this script bootstraps elektra
-echo "BOOTSTRAPPING ELEKTRA"
 
 #Testing if in correct directory
 test -f elektra.xml || exit 1
@@ -53,36 +33,37 @@ rm -f missing
 rm -f mkinstalldirs
 
 # Bootstrapping Elektra
-echo "LIBTOOLIZE"
+echo "BOOTSTRAPPING ELEKTRA"
+echo "libtoolize"
 libtoolize --ltdl --copy
 
-echo "ACLOCAL"
-$ACLOCAL -I m4
+echo "aclocal"
+aclocal -I m4
 
-echo "AUTOHEADER"
+echo "autoheader"
 autoheader
 
-echo "AUTOMAKE"
-$AUTOMAKE --add-missing --copy
+echo "automake"
+automake --add-missing --copy
 
-echo "AUTOCONF"
+echo "autoconf"
 autoconf
 
-# Bootstrapping libltdl
-echo "BOOTSTRAPPING LIBLTDL"
+# bootstrapping libltdl
+echo "bootstrapping libltdl"
 
 cd libltdl
 
-echo "ACLOCAL"
-$ACLOCAL
+echo "aclocal"
+aclocal
 
-echo "AUTOHEADER"
+echo "autoheader"
 autoheader
 
-echo "AUTOMAKE"
-$AUTOMAKE --add-missing --copy
+echo "automake"
+automake --add-missing --copy
 
-echo "AUTOCONF"
+echo "autoconf"
 autoconf
 
 cd ..

@@ -43,7 +43,7 @@ INSTALL='\$(install_sh)'
 AC_SUBST(INSTALL)
 
 AC_CONFIG_SRCDIR([src/libelektra/kdb.c])
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([1.9])
 AC_CONFIG_HEADER([src/include/config.h])
 
 dnl select POSIX extensions, useful on solaris, for example
