@@ -10,7 +10,7 @@ kdb_CFLAGS = $(COPTFLAGS) $(CDBGFLAGS)
 if ENABLE_STATIC
 # cant build statically when not having libxml
 if HAVE_XML
-bin_PROGRAMS = kdb_static
+bin_PROGRAMS += kdb_static
 kdb_static_SOURCES =  $(kdb_source)
 kdb_static_LDADD = $(privatelibs) ../libelektra/libelektra.la $(LIBICONV)
 kdb_static_CFLAGS = -DELEKTRA_STATIC $(COPTFLAGS) $(CDBGFLAGS)

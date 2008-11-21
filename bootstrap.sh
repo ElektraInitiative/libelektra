@@ -1,7 +1,11 @@
 #!/bin/sh
 
-AUTOMAKE=`which automake-1.9`
-ACLOCAL=`which aclocal-1.9`
+set -e
+
+VERSION=1.10
+
+AUTOMAKE=`which automake-$VERSION`
+ACLOCAL=`which aclocal-$VERSION`
 
 die()
 {
@@ -9,12 +13,12 @@ die()
 	exit 1
 }
 
-#automake must be version 1.9
+#automake must be version $VERSION
 #make some tests for correct automake
-[ -f $AUTOMAKE ] || die could not find automake-1.9
-[ -f $ACLOCAL ] || die could not find aclocal-1.9
-$AUTOMAKE --version | grep 1.9 || die wrong automake
-$ACLOCAL --version | grep 1.9 || die wrong aclocal
+[ -f $AUTOMAKE ] || die could not find automake-$VERSION
+[ -f $ACLOCAL ] || die could not find aclocal-$VERSION
+$AUTOMAKE --version | grep $VERSION || die wrong automake
+$ACLOCAL --version | grep $VERSION || die wrong aclocal
 
 #this script bootstraps elektra
 echo "BOOTSTRAPPING ELEKTRA"
@@ -76,9 +80,11 @@ echo "AUTOHEADER"
 autoheader
 
 echo "AUTOMAKE"
-$AUTOMAKE --add-missing
+$AUTOMAKE --add-missing --copy
 
 echo "AUTOCONF"
 autoconf
 
 cd ..
+
+echo "Finished, now use ./configure or read INSTALL"

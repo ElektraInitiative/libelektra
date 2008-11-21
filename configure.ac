@@ -420,17 +420,17 @@ AM_CONDITIONAL(HAVE_LIBLTDL, test x$using_libltdl = xyes)
 dnl Check if the user wants to enable iconv support and
 dnl hence enable charset conversions.
 dnl Default: dont enable it
-AC_MSG_CHECKING(whether to enable iconv)
-AC_ARG_ENABLE(iconv,
-		[AC_HELP_STRING([--enable-iconv],
-		[turns on automatic UTF-8 conversions. @<:@default=no@:>@])])
-
-if test "x$enable_iconv" = "xyes"; then
-	AC_MSG_RESULT(yes)
-	AM_ICONV()
-else
-	AC_MSG_RESULT(no)
-fi
+# AC_MSG_CHECKING(whether to enable iconv)
+# AC_ARG_ENABLE(iconv,
+# 		[AC_HELP_STRING([--enable-iconv],
+# 		[turns on automatic UTF-8 conversions. @<:@default=no@:>@])])
+#
+# if test "x$enable_iconv" = "xyes"; then
+# 	AC_MSG_RESULT(yes)
+# 	AM_ICONV()
+# else
+# 	AC_MSG_RESULT(no)
+# fi
 
 privatelibs=""
 
@@ -715,55 +715,57 @@ AC_CHECK_FUNCS([ftruncate getmntent gettimeofday memmove memset mkdir nl_langinf
 #
 # Output
 #
-AC_CONFIG_FILES([Makefile])
-AC_CONFIG_FILES([elektra.spec])
-AC_OUTPUT([src/Makefile
+AC_CONFIG_FILES([
+	Makefile
+	elektra.spec
+	src/Makefile
 
-	   src/libhelper/Makefile
-	   src/libloader/Makefile
+	src/libhelper/Makefile
+	src/libloader/Makefile
 
-	   src/libelektra/Makefile
-	   src/libelektra/exportobjects.sh
+	src/libelektra/Makefile
+	src/libelektra/exportobjects.sh
 
-	   src/libelektratools/Makefile
+	src/libelektratools/Makefile
 
-	   src/preload/Makefile
-	   src/kdb/Makefile
+	src/preload/Makefile
+	src/kdb/Makefile
 
-	   src/backends/Makefile
-	   src/backends/berkeleydb/Makefile
-	   src/backends/filesys/Makefile
-	   src/backends/fstab/Makefile
-	   src/backends/passwd/Makefile
-	   src/backends/hosts/Makefile
-	   src/backends/gconf/Makefile
-	   src/backends/template/Makefile
-	   src/backends/ini/Makefile
-	   src/backends/daemon/Makefile
+	src/backends/Makefile
+	src/backends/berkeleydb/Makefile
+	src/backends/filesys/Makefile
+	src/backends/fstab/Makefile
+	src/backends/passwd/Makefile
+	src/backends/hosts/Makefile
+	src/backends/gconf/Makefile
+	src/backends/template/Makefile
+	src/backends/ini/Makefile
+	src/backends/daemon/Makefile
 
-	   src/bindings/Makefile
-	   src/bindings/cpp/Makefile
-	   src/bindings/cpp/tests/Makefile
-	   src/bindings/python/Makefile
+	src/bindings/Makefile
+	src/bindings/cpp/Makefile
+	src/bindings/cpp/tests/Makefile
+	src/bindings/python/Makefile
 
-	   src/include/Makefile
+	src/include/Makefile
 
-	   doc/Makefile
-	   doc/images/Makefile
-	   doc/standards/Makefile
+	doc/Makefile
+	doc/images/Makefile
+	doc/standards/Makefile
 
-	   scripts/Makefile
+	scripts/Makefile
 
-	   xmlschema/Makefile
+	xmlschema/Makefile
 
-	   elektra.pc
-	   elektratools.pc
-	   elektracpp.pc
+	elektra.pc
+	elektratools.pc
+	elektracpp.pc
 
-	   benchmarks/Makefile
-	   examples/Makefile
-	   tests/Makefile
-	   ])
+	benchmarks/Makefile
+	examples/Makefile
+	tests/Makefile
+	])
+AC_OUTPUT
 
 echo "--------------------------------"
 echo " libelektra                     "
