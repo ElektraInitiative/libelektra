@@ -47,7 +47,7 @@ AM_INIT_AUTOMAKE
 AC_CONFIG_HEADER([src/include/config.h])
 
 dnl select POSIX extensions, useful on solaris, for example
-gl_USE_SYSTEM_EXTENSIONS
+AC_USE_SYSTEM_EXTENSIONS
 
 #Check whether we are compiling for win32
 case $host_os in
