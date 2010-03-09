@@ -3,7 +3,6 @@
 int nbError;
 int nbTest;
 
-int nbStreaming;
 uid_t nbUid;
 gid_t nbGid;
 
@@ -44,8 +43,6 @@ int init (void)
 	setenv("KDB_HOME",".",1);
 #endif
 
-	nbStreaming =  loadToolsLib();
-	warn_if_fail (nbStreaming == 0, "Unable to load elektratools, no stream testing will be done");
 	return 0;
 }
 
@@ -241,27 +238,6 @@ int compare_keyset (KeySet *ks, KeySet *ks2, int filter, KDBCap *cap)
 		else printf ("error comparing null key\n");
 	}
 	return err-nbError;
-}
-
-
-int loadToolsLib(void) {
-	kdbLibHandle dlhandle=0;
-
-	kdbLibInit();
-
-	dlhandle=kdbLibLoad("libelektratools");
-	if (dlhandle == 0) {
-		return 1;
-	}
-	
-	ksFromXMLfile=(KSFromXMLfile)kdbLibSym(dlhandle,"ksFromXMLfile");
-	ksFromXML=(KSFromXML)kdbLibSym(dlhandle,"ksFromXML");
-
-	ksToStream = (output) kdbLibSym (dlhandle, "ksToStream");
-	ksOutput   = (output) kdbLibSym (dlhandle, "ksOutput");
-	ksGenerate = (output) kdbLibSym (dlhandle, "ksGenerate");
-
-	return 0;
 }
 
 /* return file name in srcdir.

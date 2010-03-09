@@ -38,9 +38,6 @@
 #include <locale.h>
 #endif
 
-#define DYN_LINK
-#include <kdbtools.h>
-#include <kdbloader.h>
 #include <kdbbackend.h>
 
 #define KEY_ROOT "user/tests"
@@ -53,18 +50,11 @@
 
 extern int nbError;
 extern int nbTest;
-extern int nbStreaming;
+
 extern uid_t nbUid;
 extern gid_t nbGid;
 
 int init();
-
-KSFromXMLfile ksFromXMLfile;
-KSFromXML ksFromXML;
-
-output ksToStream;
-output ksOutput;
-output ksGenerate;
 
 #define warn_if_fail(x,y) {nbTest++; if (!(x)) { printf("%s:%d: warn in %s: %s\n", __FILE__, __LINE__, __FUNCTION__, y); }}
 #define succeed_if(x,y) {nbTest++; if (!(x)) { nbError++; printf("%s:%d: error in %s: %s\n", __FILE__, __LINE__, __FUNCTION__, y); }}
