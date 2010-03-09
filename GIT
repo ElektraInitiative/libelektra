@@ -1,0 +1,5 @@
+This git folder was imported initially with the command:
+git svn clone -T trunk -t tags -b unstable https://svn.libelektra.org/svn/elektra
+
+then every remote branch (git branch -a) was checked out using:
+git checkout -b $BRANCH $BRANCH
