@@ -1,14 +1,14 @@
-Avi Alkalay <avi@unix.sh>
-Concept, architecture, development, manuals, previous website
-Backends: berkleydb, filesys, fstab
-Devel/Test on: redhat.ia32, fedora.ia32, redhat.ppc, redhat.s390, aix.ppc
-
-
 Markus Raab <elektra@markus-raab.org>
-unstable development, previous website, documentation, tutorial
+development, website, documentation, tutorial
 Backends: ini
 Binding: cpp
 Devel/Test on: Debian Etch, Freebsd, Sun OS 4.0, AIX TRu64 Unix
+
+
+Avi Alkalay <avi@unix.sh>
+Initial concept&architecture, development, manuals, previous website
+Backends: berkleydb, filesys, fstab
+Devel/Test on: redhat.ia32, fedora.ia32, redhat.ppc, redhat.s390, aix.ppc
 
 
 Yannick Lecaillez <yl@itioweb.com>
