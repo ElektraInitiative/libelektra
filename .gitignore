@@ -104,7 +104,6 @@ ltmain.sh
 missing
 
 src/include/config.h
-src/include/config.h.in
 src/include/kdbprivate.h
 src/include/kdb.h
 src/include/stamp-h1
