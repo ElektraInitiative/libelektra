@@ -2,7 +2,6 @@ add_executable(exportsymbols exportsymbols.c)
 
 get_target_property(exportsymbols EXE_LOC LOCATION)
 
-set(BACKENDS a b c)
 
 add_custom_command(
 		OUTPUT ${PROJECT_BINARY_DIR}/exported_symbols.h

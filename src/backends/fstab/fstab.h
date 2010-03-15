@@ -29,9 +29,11 @@
 #include "config.h"
 #endif
 
-#ifdef GETMNTENT_GLIBC
+// without that the backend does not work at all
+// so it will be checked and backend will be disabled
+// if mntent is not available
 #include <mntent.h>
-#endif
+
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -39,10 +41,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <stdio.h>
-
-#ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#endif
 
 #include <kdbbackend.h>
 
@@ -56,11 +55,5 @@
 int kdbbWriteLock (FILE *f);
 int kdbbReadLock (FILE *f);
 int kdbbUnlock (FILE *f);
-
-int kdbOpen_fstab(KDB *handle);
-int kdbClose_fstab(KDB *handle);
-ssize_t kdbGet_fstab(KDB *handle, KeySet *ks, const Key *parentKey);
-ssize_t kdbSet_fstab(KDB *handle, KeySet *ks, const Key *parentKey);
-KDBEXPORT(fstab);
 
 #endif

@@ -13,6 +13,8 @@ set (PACKAGE_NAME "Elektra")
 set (PACKAGE_URL "http://www.libelektra.org/")
 set (PACKAGE_BUGREPORT "http://bugs.libelektra.org/")
 
+set (BACKENDS filesys hosts fstab)
+
 set (KDB_DB_SYSTEM "/etc")
 
 set (DEBUG "1")

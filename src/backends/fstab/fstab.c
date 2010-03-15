@@ -22,7 +22,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <fstab.h>
+#include "fstab.h"
 
 int kdbOpen_fstab(KDB *handle)
 {
@@ -93,7 +93,6 @@ ssize_t kdbGet_fstab(KDB *handle, KeySet *returned, const Key *parentKey)
 {
 	int errnosave = errno;
 	ssize_t nr_keys = 0;
-#ifndef __APPLE__
 	Key *key;
 	Key *dir;
 	FILE *fstab=0;
@@ -214,8 +213,7 @@ ssize_t kdbGet_fstab(KDB *handle, KeySet *returned, const Key *parentKey)
 	}
 	
 	endmntent(fstab);
-	
-#endif
+
 	errno = errnosave;
 	return nr_keys;
 }
@@ -225,7 +223,6 @@ ssize_t kdbSet_fstab(KDB *handle, KeySet *ks, const Key *parentKey)
 {
 	int ret = 1;
 	int errnosave = errno;
-#ifndef __APPLE__
 	FILE *fstab=0;
 	Key *key=0;
 	char *basename = 0;
@@ -306,7 +303,6 @@ ssize_t kdbSet_fstab(KDB *handle, KeySet *ks, const Key *parentKey)
 	}
 	
 	endmntent(fstab);
-#endif
 	errno = errnosave;
 	return ret;
 }
@@ -324,7 +320,6 @@ KDBEXPORT(fstab) {
 		KDB_BE_DESCRIPTION,
 			"Reads and writes /etc/fstab content",
 		KDB_BE_END);
-			
 }
 
 
