@@ -1,14 +1,17 @@
 configure_file (
-	config.h.in
-	config.h
+	"${PROJECT_SOURCE_DIR}/src/include/config.h.in"
+	"${PROJECT_BINARY_DIR}/src/include/config.h"
 	)
 
 configure_file (
-	kdb.h.in
-	kdb.h
+	"${PROJECT_SOURCE_DIR}/src/include/kdb.h.in"
+	"${PROJECT_BINARY_DIR}/src/include/kdb.h"
 	)
 
 configure_file (
-	kdbprivate.h.in
-	kdbprivate.h
+	"${PROJECT_SOURCE_DIR}/src/include/kdbprivate.h.in"
+	"${PROJECT_BINARY_DIR}/src/include/kdbprivate.h"
 	)
+
+#TODO: does nothing?
+include_directories("${PROJECT_BINARY_DIR}/src/include")

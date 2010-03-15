@@ -16,6 +16,9 @@ add_custom_command(
 		COMMAND ${EXE_LOC}
 		ARGS BACKENDS)
 
-file(GLOB src_files *.c ../include/*.h)
+file(GLOB SRC_FILES *.c)
+include_directories("${PROJECT_BINARY_DIR}/src/include")
 
-add_library(elektra ${src_files})
+add_library(elektra SHARED ${SRC_FILES})
+set_target_properties (elektra PROPERTIES
+		COMPILE_DEFINITIONS HAVE_CONFIG_H)

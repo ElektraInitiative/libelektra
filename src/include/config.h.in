@@ -1,13 +1,11 @@
-#define HAVE_CONFIG_H 1
-
-/* Define to 1 if the `closedir' function returns void instead of `int'. */
-/* #undef CLOSEDIR_VOID */
-
 /* disable debug output messages */
 #define DEBUG @DEBUG@
 
 /* disable verbose output messages */
 #define VERBOSE @VERBOSE@
+
+/* Define to 1 if the `closedir' function returns void instead of `int'. */
+/* #undef CLOSEDIR_VOID */
 
 /* Define this if mntent follows glibc conventions */
 #define GETMNTENT_GLIBC 1
