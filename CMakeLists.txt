@@ -2,6 +2,9 @@ cmake_minimum_required (VERSION 2.6)
 
 project (Elektra)
 
+enable_testing ()
+
+
 set (KDB_VERSION_MAJOR 0)
 set (KDB_VERSION_MINOR 8)
 set (KDB_VERSION_MICRO 0)
