@@ -5,19 +5,22 @@
 /* #undef CLOSEDIR_VOID */
 
 /* disable debug output messages */
-#define DEBUG 1
+#define DEBUG @DEBUG@
+
+/* disable verbose output messages */
+#define VERBOSE @VERBOSE@
 
 /* Define this if mntent follows glibc conventions */
 #define GETMNTENT_GLIBC 1
 
 /* Working getopt */
-#define HASGETOPT 
+#define HASGETOPT 1
 
 /* sigaction available */
 /* #undef HASSIGACTION */
 
 /* POSIX signal available */
-#define HASSIGPROCMASK 
+#define HASSIGPROCMASK 1
 
 /* Define to 1 if your system has a working `chown' function. */
 #define HAVE_CHOWN 1
@@ -30,9 +33,6 @@
 
 /* Define to 1 if you have the <ctype.h> header file. */
 #define HAVE_CTYPE_H 1
-
-/* Define to 1 if you have the <db.h> header file. */
-/* #undef HAVE_DB_H */
 
 /* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
    */
@@ -211,9 +211,6 @@
 /* Define to 1 if the system has the type `_Bool'. */
 #define HAVE__BOOL 1
 
-/* path for elektra.xsd */
-#define KDB_SCHEMA_PATH DATADIR "/sgml/elektra-0.7.0"
-
 /* Define to 1 if `lstat' dereferences a symlink specified with a trailing
    slash. */
 #define LSTAT_FOLLOWS_SLASHED_SYMLINK 1
@@ -222,22 +219,22 @@
 /* #undef NO_MINUS_C_MINUS_O */
 
 /* Name of package */
-#define PACKAGE "elektra"
+#define PACKAGE @PACKAGE_NAME@
 
 /* Define to the address where bug reports for this package should be sent. */
-#define PACKAGE_BUGREPORT "http://bugs.libelektra.org"
+#define PACKAGE_BUGREPORT @PACKAGE_BUGREPORT@
 
 /* Define to the full name of this package. */
-#define PACKAGE_NAME "elektra"
+#define PACKAGE_NAME @PACKAGE_NAME@
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "elektra 0.7.0"
+#define PACKAGE_STRING "@PACKAGE_NAME @KDB_VERSINON@"
 
 /* Define to the one symbol short name of this package. */
-#define PACKAGE_TARNAME "elektra"
+#define PACKAGE_TARNAME @PACKAGE_NAME@
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "0.7.0"
+#define PACKAGE_VERSION @KDB_VERSION@
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
@@ -245,11 +242,8 @@
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #define TIME_WITH_SYS_TIME 1
 
-/* disable verbose output messages */
-#define VERBOSE 0
-
 /* Version number of package */
-#define VERSION "0.7.0"
+#define VERSION @KDB_VERSION@
 
 /* Define to 1 if on MINIX. */
 /* #undef _MINIX */
