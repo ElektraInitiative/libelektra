@@ -21,3 +21,5 @@ include_directories("${PROJECT_BINARY_DIR}/src/include")
 add_library(elektra SHARED ${SRC_FILES})
 set_target_properties (elektra PROPERTIES
 		COMPILE_DEFINITIONS HAVE_CONFIG_H)
+
+install_targets (/lib elektra)

@@ -13,9 +13,13 @@ set (PACKAGE_NAME "Elektra")
 set (PACKAGE_URL "http://www.libelektra.org/")
 set (PACKAGE_BUGREPORT "http://bugs.libelektra.org/")
 
-set (BACKENDS filesys hosts fstab)
+#
+# CACHE
+#
 
-set (KDB_DB_SYSTEM "/etc")
+set (BACKENDS filesys hosts fstab CACHE STRING "Which backends to use?")
+
+set (KDB_DB_SYSTEM "/etc" CACHE PATH "Where should be the system configuration?")
 
 option (DEBUG_BUILD "Build with extra debug print messages.")
 if (DEBUG_BUILD)
@@ -31,6 +35,16 @@ else (VERBOSE_BUILD)
 	set (VERBOSE "0")
 endif (VERBOSE_BUILD)
 
-add_definitions (-DHAVE_CONFIG_H)
+set (PROJECT_CMAKE_DIR
+		"${CMAKE_INSTALL_PREFIX}/share/cmake-2.6/Modules"
+		CACHE PATH
+		"Where to install cmake files?"
+       )
+
+#
+# Now do the real work
+#
 
 add_subdirectory(src)
+add_subdirectory(cmake)
+
