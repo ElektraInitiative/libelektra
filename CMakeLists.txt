@@ -3,7 +3,7 @@ cmake_minimum_required (VERSION 2.6)
 project (Elektra)
 
 enable_testing ()
-
+include (Dart)
 
 set (KDB_VERSION_MAJOR 0)
 set (KDB_VERSION_MINOR 8)
@@ -43,6 +43,12 @@ set (PROJECT_CMAKE_DIR
 		CACHE PATH
 		"Where to install cmake files?"
        )
+
+set (MEMORYCHECK_COMMAND
+		/usr/bin/valgrind
+		CACHE FILEPATH
+		"Path to valgrind the memory checker"
+    )
 
 #
 # Now do the real work
