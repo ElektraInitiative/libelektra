@@ -1,28 +1,19 @@
-macro (copy_file filename)
-	execute_process (
-			COMMAND
-			${CMAKE_COMMAND} -E copy
-				"${CMAKE_CURRENT_SOURCE_DIR}/${filename}.h"
-				"${CMAKE_CURRENT_BINARY_DIR}/${filename}.h"
-		)
-endmacro (copy_file)
-
-copy_file (kdbbackend)
+#copy_file (kdbbackend)
 
 configure_file (
 	"${CMAKE_CURRENT_SOURCE_DIR}/kdb.h.in"
 	"${CMAKE_CURRENT_BINARY_DIR}/kdb.h"
 	)
 
-copy_file (kdbloader)
-copy_file (kdbos)
+#copy_file (kdbloader)
+#copy_file (kdbos)
 
 configure_file (
 	"${CMAKE_CURRENT_SOURCE_DIR}/kdbprivate.h.in"
 	"${CMAKE_CURRENT_BINARY_DIR}/kdbprivate.h"
 	)
 
-copy_file (kdbtools)
+#copy_file (kdbtools)
 
 configure_file (
 	"${CMAKE_CURRENT_SOURCE_DIR}/config.h.in"

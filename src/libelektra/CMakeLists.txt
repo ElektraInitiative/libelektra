@@ -15,19 +15,19 @@ add_custom_command (
 		COMMAND ${EXE_LOC}
 		ARGS BACKENDS)
 
+include(LibAddMacros)
+add_headers(HDR_FILES)
+
 file (GLOB SRC_FILES *.c)
-file (GLOB HDR_FILES ${PROJECT_BINARY_DIR}/src/include/*.h)
+list (APPEND SRC_FILES "../libhelper/internal.c")
 
-#libhelper
-set (SRC_FILES ${SRC_FILES} "../libhelper/internal.c")
-
-
-#libloader
-set (SRC_FILES ${SRC_FILES} "../libloader/dl.c")
 find_package (DL REQUIRED)
-
-include_directories (${DL_INCLUDE_DIRS})
-include_directories ("${PROJECT_BINARY_DIR}/src/include")
+if (DL_FOUND)
+	list (APPEND SRC_FILES "../libloader/dl.c")
+	include_directories (${DL_INCLUDE_DIRS})
+else (DL_FOUND)
+	message (ERROR "no dl found")
+endif (DL_FOUND)
 
 set (SOURCES ${SRC_FILES} ${HDR_FILES})
 

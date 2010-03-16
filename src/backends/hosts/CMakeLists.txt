@@ -1,4 +1,7 @@
-set (SOURCES hosts.c hosts.h)
+include(LibAddMacros)
 
-include_directories("${PROJECT_BINARY_DIR}/src/include")
+set (SOURCES hosts.h hosts.c)
+add_headers(SOURCES)
+
 add_library(elektra-hosts MODULE ${SOURCES})
+install_targets (/lib elektra-hosts)

@@ -42,9 +42,9 @@ typedef HMODULE kdbLibHandle;
 #  include <ltdl.h>
 typedef lt_dlhandle kdbLibHandle;
 
-# endif
-#endif
-#endif
+# endif /* Default case */
+#endif /* WIN32 */
+#endif /* 0 */
 
 /* Opaque pointer to any libhandle
 TODO: private, not linux only */
