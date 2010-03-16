@@ -1,17 +1,32 @@
-configure_file (
-	"${PROJECT_SOURCE_DIR}/src/include/kdb.h.in"
-	"${PROJECT_BINARY_DIR}/src/include/kdb.h"
-	)
+macro (copy_file filename)
+	execute_process (
+			COMMAND
+			${CMAKE_COMMAND} -E copy
+				"${CMAKE_CURRENT_SOURCE_DIR}/${filename}.h"
+				"${CMAKE_CURRENT_BINARY_DIR}/${filename}.h"
+		)
+endmacro (copy_file)
+
+copy_file (kdbbackend)
 
 configure_file (
-	"${PROJECT_SOURCE_DIR}/src/include/kdbprivate.h.in"
-	"${PROJECT_BINARY_DIR}/src/include/kdbprivate.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/kdb.h.in"
+	"${CMAKE_CURRENT_BINARY_DIR}/kdb.h"
 	)
+
+copy_file (kdbloader)
+copy_file (kdbos)
 
 configure_file (
-	"${PROJECT_SOURCE_DIR}/src/include/config.h.in"
-	"${PROJECT_BINARY_DIR}/src/include/config.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/kdbprivate.h.in"
+	"${CMAKE_CURRENT_BINARY_DIR}/kdbprivate.h"
 	)
 
+copy_file (kdbtools)
 
-install_files (/include .h kdb kdbos kdbprivate config)
+configure_file (
+	"${CMAKE_CURRENT_SOURCE_DIR}/config.h.in"
+	"${CMAKE_CURRENT_BINARY_DIR}/config.h"
+	)
+
+install_files (/include .h kdbbackend kdb kdbloader kdbos kdbprivate kdbtools config)
