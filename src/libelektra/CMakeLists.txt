@@ -1,15 +1,15 @@
-add_executable(exportsymbols exportsymbols.c)
+add_executable (exportsymbols exportsymbols.c)
 
-get_target_property(exportsymbols EXE_LOC LOCATION)
+get_target_property (exportsymbols EXE_LOC LOCATION)
 
 
-add_custom_command(
+add_custom_command (
 		OUTPUT ${PROJECT_BINARY_DIR}/exported_symbols.h
 		DEPENDS exportsymbols
 		COMMAND ${EXE_LOC}
 		ARGS BACKENDS)
 
-add_custom_command(
+add_custom_command (
 		OUTPUT ${PROJECT_BINARY_DIR}/exported_symbols.c
 		DEPENDS exportsymbols
 		COMMAND ${EXE_LOC}
@@ -32,5 +32,7 @@ add_library (elektra SHARED ${SRC_FILES})
 target_link_libraries (elektra ${DL_LIBRARIES})
 set_target_properties (elektra PROPERTIES
 		COMPILE_DEFINITIONS HAVE_CONFIG_H)
+set_target_properties (elektra PROPERTIES
+		VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION})
 
 install_targets (/lib elektra)
