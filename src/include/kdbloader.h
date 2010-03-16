@@ -3,6 +3,8 @@
 #ifndef KDBLIBLOADER_H
 #define KDBLIBLOADER_H
 
+
+#if 0
 #ifdef ELEKTRA_STATIC
 
 /* The static case
@@ -42,7 +44,11 @@ typedef lt_dlhandle kdbLibHandle;
 
 # endif
 #endif
+#endif
 
+/* Opaque pointer to any libhandle
+TODO: private, not linux only */
+typedef void* kdbLibHandle;
 
 /* General pointer to kdbLib Functions and pointer to kdbLibBackend function */
 typedef void (*kdbLibFunc)(void);
