@@ -21,8 +21,8 @@ set (KDB_VERSION_MAJORMINOR "${KDB_VERSION_MAJOR}.${KDB_VERSION_MINOR}")
 set (PROJECT_VERSION "${KDB_VERSION}")
 
 include (cmake/ElektraPackaging.cmake)
-
 include (cmake/ElektraCache.cmake)
+include (cmake/ElektraCompiling.cmake)
 
 add_subdirectory(src)
 add_subdirectory(tests)
