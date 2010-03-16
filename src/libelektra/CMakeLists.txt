@@ -16,6 +16,7 @@ add_custom_command (
 		ARGS BACKENDS)
 
 file (GLOB SRC_FILES *.c)
+file (GLOB HDR_FILES ${PROJECT_BINARY_DIR}/src/include/*.h)
 
 #libhelper
 set (SRC_FILES ${SRC_FILES} "../libhelper/internal.c")
@@ -28,7 +29,9 @@ find_package (DL REQUIRED)
 include_directories (${DL_INCLUDE_DIRS})
 include_directories ("${PROJECT_BINARY_DIR}/src/include")
 
-add_library (elektra SHARED ${SRC_FILES})
+set (SOURCES ${SRC_FILES} ${HDR_FILES})
+
+add_library (elektra SHARED ${SOURCES})
 target_link_libraries (elektra ${DL_LIBRARIES})
 set_target_properties (elektra PROPERTIES
 		COMPILE_DEFINITIONS HAVE_CONFIG_H)
