@@ -23,7 +23,6 @@ set (SRC_FILES ${SRC_FILES} "../libhelper/internal.c")
 
 #libloader
 set (SRC_FILES ${SRC_FILES} "../libloader/dl.c")
-set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 find_package (DL REQUIRED)
 
 include_directories (${DL_INCLUDE_DIRS})
