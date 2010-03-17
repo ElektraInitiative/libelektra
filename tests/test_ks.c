@@ -315,7 +315,7 @@ void test_ksResize()
 	ksDel (ks);
 
 	ks =
-#include "keyset.c"
+#include "data_keyset.c"
 
 	succeed_if(ksGetSize(ks) == 102, "Problem loading keyset with 102 keys");
 	succeed_if(ksGetAlloc(ks) == 128, "alloc size wrong");
@@ -1628,11 +1628,11 @@ void test_ksAppend()
 	printf ("Test appending keys\n");
 
 	KeySet *returned =
-#include "keyset.c"
+#include "data_keyset.c"
 	KeySet *testDirectBelow =
-#include "dbelow.c"
+#include "data_dbelow.c"
 	KeySet *testReturned =
-#include "others.c"
+#include "data_others.c"
 	Key *parentKey[2];
 	parentKey[0] = keyNew ("user/test/keyset", KEY_END);
 	parentKey[1] = keyNew ("user/test/keyset/dir1", KEY_END);
