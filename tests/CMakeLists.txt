@@ -25,7 +25,7 @@ add_headers (HDR_FILES)
 macro (do_test source)
 	set (SOURCES ${HDR_FILES} ${source}.c tests.c tests.h)
 	add_executable (${source} ${SOURCES})
-	target_link_libraries (${source} elektra)
+	target_link_libraries (${source} elektra elektratools)
 	set_target_properties (${source} PROPERTIES
 			COMPILE_DEFINITIONS HAVE_CONFIG_H)
 	add_test (${source}
@@ -37,5 +37,6 @@ endmacro (do_test)
 do_test (test_key)
 do_test (test_type)
 do_test (test_args)
+do_test (test_kdb)
 
 include_directories ("${PROJECT_SOURCE_DIR}/tests")
