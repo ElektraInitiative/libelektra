@@ -1,4 +1,24 @@
+## Elektra Test Suite
+#
+# This file is responsible for generating all tests
+# regarding elektra's core.
+#
+# Backends and Bindings specific tests might be in
+# their folders.
+#
+# To run all tests, simply type:
+#  make test
+#
+# To run specific tests, type:
+#  ctest -R name
+#
+# To run tests with valgrind, type:
+#  ctest -T memcheck
+#
+##
+
 include (LibAddMacros)
+
 #dont call add_headers in a loop
 add_headers (HDR_FILES)
 
