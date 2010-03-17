@@ -15,7 +15,7 @@ int clearenv();
 
 /**Does some useful startup.
  */
-int init (void)
+int init (int argc, char**argv)
 {
 	setlocale (LC_ALL, "");
 
@@ -24,10 +24,15 @@ int init (void)
 
 	if (getenv ("srcdir"))
 	{
-		strcpy (srcdir, getenv ("srcdir"));
+		strncpy (srcdir, getenv ("srcdir"), sizeof(srcdir));
 	} else {
-		strcpy (srcdir, ".");
-		warn_if_fail (0, "srcdir not set, will try current directory");
+		if (argc > 1)
+		{
+			strncpy (srcdir, argv[1], sizeof(srcdir));
+		} else {
+			strcpy (srcdir, ".");
+			warn_if_fail (0, "srcdir not set, will try current directory");
+		}
 	}
 #ifdef HAVE_CLEARENV
 	clearenv();

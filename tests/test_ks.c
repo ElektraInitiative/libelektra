@@ -2073,12 +2073,12 @@ void test_ksLookupPop()
 	
 }
 
-int main()
+int main(int argc, char** argv)
 {
 	printf("KEYSET       TESTS\n");
 	printf("==================\n\n");
 
-	init ();
+	init (argc, argv);
 
 	test_ksNew();
 	test_ksEmpty();

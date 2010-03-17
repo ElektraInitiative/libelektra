@@ -458,12 +458,12 @@ void test_backend(KDB * handle, Key * root, char *fileName, KeySet *conf)
 	ksDel (conf);
 }
 
-int main()
+int main(int argc, char** argv)
 {
 	printf("ELEKTRA BACKENDS TEST SUITE\n");
 	printf("========================================\n\n");
 
-	init ();
+	init (argc, argv);
 
 	KDB	*handle = kdbOpen();
 	exit_if_fail(handle, "kdbOpen() failed.");

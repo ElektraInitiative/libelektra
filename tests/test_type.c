@@ -64,12 +64,12 @@ void test_typeColor(void)
 	keyDel (k1);
 }
 
-int main()
+int main(int argc, char** argv)
 {
 	printf("KEY  TYPE  TESTS\n");
 	printf("==================\n\n");
 
-	init ();
+	init (argc, argv);
 	test_typeMax();
 	test_typeColor();
 

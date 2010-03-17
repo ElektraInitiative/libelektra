@@ -54,7 +54,7 @@ extern int nbTest;
 extern uid_t nbUid;
 extern gid_t nbGid;
 
-int init();
+int init(int argc, char** argv);
 
 #define warn_if_fail(x,y) {nbTest++; if (!(x)) { printf("%s:%d: warn in %s: %s\n", __FILE__, __LINE__, __FUNCTION__, y); }}
 #define succeed_if(x,y) {nbTest++; if (!(x)) { nbError++; printf("%s:%d: error in %s: %s\n", __FILE__, __LINE__, __FUNCTION__, y); }}

@@ -28,11 +28,14 @@ macro (do_test source)
 	target_link_libraries (${source} elektra)
 	set_target_properties (${source} PROPERTIES
 			COMPILE_DEFINITIONS HAVE_CONFIG_H)
-	add_test (${source} "${PROJECT_BINARY_DIR}/tests/${source}")
+	add_test (${source}
+			"${PROJECT_BINARY_DIR}/tests/${source}"
+			"${PROJECT_BINARY_DIR}/tests"
+			)
 endmacro (do_test)
-
 
 do_test (test_key)
 do_test (test_type)
+do_test (test_args)
 
 include_directories ("${PROJECT_SOURCE_DIR}/tests")

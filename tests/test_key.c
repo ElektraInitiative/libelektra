@@ -2222,12 +2222,12 @@ void test_keyNamespace()
 }
 
 
-int main()
+int main(int argc, char** argv)
 {
 	printf("KEY  STRUCT  TESTS\n");
 	printf("==================\n\n");
 
-	init ();
+	init (argc, argv);
 	test_keyComparing();
 	test_keyNewSystem();
 	test_keyNewUser();
