@@ -18,13 +18,40 @@ int creator (KeySet *large)
 	}
 }
 
-int deleter (KeySet *ks2)
+int marker (KeySet *ks2)
 {
 	Key * k;
 
 	ksRewind (ks2);
 	while ((k = ksNext(ks2)) != 0) keyRemove (k);
 	ksSort (ks2); ksRewind (ks2);
+
+	return 1;
+}
+
+void doNothing (Key *k)
+{}
+
+int iterator (KeySet *ks2)
+{
+	Key * k;
+
+	ksRewind (ks2);
+	while ((k = ksNext(ks2)) != 0) doNothing (k);
+
+	return 1;
+}
+
+int xiter (KeySet *ks2)
+{
+	Key * k;
+	int i;
+
+	for (i=0; i< 5000; i++)
+	{
+		ksRewind (ks2);
+		while ((k = ksNext(ks2)) != 0) doNothing (k);
+	}
 
 	return 1;
 }
@@ -45,7 +72,7 @@ int main()
 
 	succeed_if (creator (large), "could not create large keyset");
 	print_time ("New large keyset");
-	
+
 	succeed_if (kdbSet (h, large, root, 0) >= 0, "could not set large keyset");
 	print_time ("Set large keyset");
 
@@ -58,8 +85,14 @@ int main()
 	succeed_if (kdbGet (h, ks2, root, 0) >= 0, "could not get large keyset");
 	print_time ("Get large keyset");
 
-	succeed_if (deleter (ks2), "could not remove large keyset");
+	succeed_if (marker (ks2), "could not remove large keyset");
 	print_time ("Mark large keyset");
+
+	succeed_if (iterator (ks2), "could not iterate large keyset");
+	print_time ("Iterate large keyset");
+
+	succeed_if (xiter (ks2), "could not iterate large keyset");
+	print_time ("XIter large keyset");
 
 	succeed_if (kdbSet (h, ks2, root, 0) >= 0, "could not delete large keyset");
 	print_time ("Removed large keyset");

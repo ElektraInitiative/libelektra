@@ -10,6 +10,73 @@ More information can always be helpful!
 
 ==========================
 Tester: Markus Raab
+Date: Don Mär 18 16:54:34 CET 2010
+Git-Commit: statistics callgrind
+Backend: filesys
+NUM_DIR: 1000
+NUM_KEY: 1000
+Filesystem: jfs (laptop)
+CallgrindFile: callgrind.out.
+Comment: see below
+
+    New large keyset:            237407474 Microseconds
+[1]  + done       kcachegrind callgrind.out.17609
+large.c:76: error in main: could not set large keyset
+    Set large keyset:            163106688 Microseconds
+large.c:79: error in main: could not reset large keyset
+  Reset large keyset:                 3751 Microseconds
+    Get large keyset:            233179157 Microseconds
+    Get large keyset:            241514248 Microseconds
+   Mark large keyset:              9904187 Microseconds
+Iterate large keyset:               124461 Microseconds
+  XIter large keyset:            616583001 Microseconds
+Removed large keyset:            132056870 Microseconds
+
+==========================
+Tester: Markus Raab
+Date: Don Mär 18 11:01:12 CET 2010
+Git-Commit: statistics callgrind
+Backend: filesys
+NUM_DIR: 100
+NUM_KEY: 100
+Filesystem: jfs (laptop)
+CallgrindFile: callgrind.out.17749
+Comment: with valgrind --tool=callgrind
+	XIter is iterate 5000 times
+	Iterate*5000 would be 87980000
+
+    New large keyset:              2337689 Microseconds
+    Set large keyset:             25058513 Microseconds
+  Reset large keyset:                29608 Microseconds
+    Get large keyset:             38967364 Microseconds
+    Get large keyset:             37925059 Microseconds
+   Mark large keyset:              1073712 Microseconds
+Iterate large keyset:                17596 Microseconds
+  XIter large keyset:             85891292 Microseconds
+Removed large keyset:             19272848 Microseconds
+
+
+==========================
+Tester: Markus Raab
+Date: Don Mär 18 10:43:51 CET 2010
+Git-Commit: statistics callgrind
+Backend: filesys
+NUM_DIR: 100
+NUM_KEY: 100
+Filesystem: jfs (laptop)
+CallgrindFile: callgrind.out.17609
+Comment: with valgrind --tool=callgrind
+
+    New large keyset:              2311617 Microseconds
+    Set large keyset:             28377474 Microseconds
+  Reset large keyset:                65336 Microseconds
+    Get large keyset:             37691449 Microseconds
+    Get large keyset:             37389572 Microseconds
+   Mark large keyset:              1112111 Microseconds
+Removed large keyset:             19688062 Microseconds
+
+==========================
+Tester: Markus Raab
 Date: Don Mär 18 10:38:25 CET 2010
 Git-Commit: statistics revisited
 Backend: filesys
