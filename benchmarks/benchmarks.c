@@ -26,6 +26,8 @@ void print_time (char * msg)
 	gettimeofday (&start,0);
 }
 
+#if 0
+
 KeySet * create_keyset ()
 {
 	KeySet * set = ksNew(0);
@@ -100,3 +102,4 @@ void statistics (void)
 	}
 }
 
+#endif

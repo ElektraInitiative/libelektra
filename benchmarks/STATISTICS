@@ -10,6 +10,32 @@ More information can always be helpful!
 
 ==========================
 Tester: Markus Raab
+Date: Don Mär 18 10:38:25 CET 2010
+Git-Commit: statistics revisited
+Backend: filesys
+NUM_DIR: 100
+NUM_KEY: 100
+Filesystem: jfs (laptop)
+Comment: Above is first run
+
+    New large keyset:                69498 Microseconds
+    Set large keyset:              6688436 Microseconds
+  Reset large keyset:                 2930 Microseconds
+    Get large keyset:              1048066 Microseconds
+  Reset large keyset:               777802 Microseconds
+   Mark large keyset:                50441 Microseconds
+Removed large keyset:              2324313 Microseconds
+
+    New large keyset:                67881 Microseconds
+    Set large keyset:              4073005 Microseconds
+  Reset large keyset:                 2935 Microseconds
+    Get large keyset:               960414 Microseconds
+  Reset large keyset:               772313 Microseconds
+   Mark large keyset:                12132 Microseconds
+Removed large keyset:              2273506 Microseconds
+
+==========================
+Tester: Markus Raab
 Date: 10.12.2007
 Svn-Id: 1271
 Backend: filesys

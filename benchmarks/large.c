@@ -1,19 +1,10 @@
 #include <benchmarks.h>
 
-int main()
+int creator (KeySet *large)
 {
-	KDB * h = kdbOpen();
-	KeySet * large = ksNew(NUM_KEY*NUM_DIR+1, KS_END);
-	KeySet * ks1 = ksNew(NUM_KEY*NUM_DIR+1, KS_END);
-	KeySet * ks2 = ksNew(NUM_KEY*NUM_DIR+1, KS_END);
-	KeySet * conf= ksNew (0);
-	Key * root = keyNew (KEY_ROOT, KEY_VALUE, "filesys", KEY_END);
-	Key * k;
+	int i,j;
 	char name [KEY_NAME_LENGTH + 1];
 	char value [] = "data";
-	int i,j;
-
-	init_time ();
 
 	for (i=0; i< NUM_DIR; i++)
 	{
@@ -25,9 +16,34 @@ int main()
 			ksAppendKey(large, keyNew (name, KEY_VALUE, value, KEY_END));
 		}
 	}
+}
+
+int deleter (KeySet *ks2)
+{
+	Key * k;
+
+	ksRewind (ks2);
+	while ((k = ksNext(ks2)) != 0) keyRemove (k);
+	ksSort (ks2); ksRewind (ks2);
+
+	return 1;
+}
+
+int main()
+{
+	KDB * h = kdbOpen();
+	KeySet * large = ksNew(NUM_KEY*NUM_DIR+1, KS_END);
+	KeySet * ks1 = ksNew(NUM_KEY*NUM_DIR+1, KS_END);
+	KeySet * ks2 = ksNew(NUM_KEY*NUM_DIR+1, KS_END);
+	KeySet * conf= ksNew (0);
+	Key * root = keyNew (KEY_ROOT, KEY_VALUE, "filesys", KEY_END);
+
+	init_time ();
+
 
 	// kdbMount (h, root, conf);
 
+	succeed_if (creator (large), "could not create large keyset");
 	print_time ("New large keyset");
 	
 	succeed_if (kdbSet (h, large, root, 0) >= 0, "could not set large keyset");
@@ -39,19 +55,14 @@ int main()
 	succeed_if (kdbGet (h, ks1, root, 0) >= 0, "could not get large keyset");
 	print_time ("Get large keyset");
 	
-	succeed_if (kdbGet (h, ks2, root, 0) >= 0, "could not reset large keyset");
-	print_time ("Reset large keyset");
+	succeed_if (kdbGet (h, ks2, root, 0) >= 0, "could not get large keyset");
+	print_time ("Get large keyset");
 
-	ksRewind (ks2);
-	// output_keyset (ks2,0);
-	while ((k = ksNext(ks2)) != 0) keyRemove (k);
-	ksSort (ks2); ksRewind (ks2);
-	// output_keyset (ks2,0);
+	succeed_if (deleter (ks2), "could not remove large keyset");
+	print_time ("Mark large keyset");
+
 	succeed_if (kdbSet (h, ks2, root, 0) >= 0, "could not delete large keyset");
-
-	// kdbUnmount (h, root);
-
-	print_time ("delete large keyset");
+	print_time ("Removed large keyset");
 
 	keyDel (root);
 	ksDel (large);
