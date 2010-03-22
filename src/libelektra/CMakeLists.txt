@@ -48,7 +48,6 @@ set (SOURCES ${SRC_FILES} ${HDR_FILES})
 
 add_library (elektra SHARED ${SOURCES})
 
-#now link against all libraries which are needed
 get_property (elektra_LIBRARIES GLOBAL PROPERTY elektra_LIBRARIES)
 target_link_libraries (elektra ${elektra_LIBRARIES})
 
@@ -60,12 +59,12 @@ set_target_properties (elektra PROPERTIES
 install_targets (/lib elektra)
 
 #
-#Elektra static build with everything included
+#Elektra dynamic build with everything included
 #
 get_property (elektra-full_SRCS GLOBAL PROPERTY elektra-full_SRCS)
 list (APPEND SOURCES ${elektra-full_SRCS})
 
-add_library (elektra-full STATIC ${SOURCES})
+add_library (elektra-full SHARED ${SOURCES})
 
 get_property (elektra-full_LIBRARIES GLOBAL PROPERTY elektra-full_LIBRARIES)
 target_link_libraries (elektra-full ${elektra-full_LIBRARIES})
@@ -76,3 +75,17 @@ set_target_properties (elektra-full PROPERTIES
 		VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION})
 
 install_targets (/lib elektra-full)
+
+#
+#Elektra static build with everything included
+#
+add_library (elektra-static STATIC ${SOURCES})
+
+target_link_libraries (elektra-static ${elektra-full_LIBRARIES})
+
+set_target_properties (elektra-static PROPERTIES
+		COMPILE_DEFINITIONS "HAVE_CONFIG_H;ELEKTRA_STATIC")
+set_target_properties (elektra-static PROPERTIES
+		VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION})
+
+install_targets (/lib elektra-static)

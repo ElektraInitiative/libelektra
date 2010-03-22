@@ -26,7 +26,7 @@ macro (do_test source)
 	include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
 	set (SOURCES ${HDR_FILES} ${source}.c tests.c tests.h)
 	add_executable (${source} ${SOURCES})
-	target_link_libraries (${source} elektra-full elektratools-static)
+	target_link_libraries (${source} elektra-static elektratools-static)
 	set_target_properties (${source} PROPERTIES
 			COMPILE_DEFINITIONS HAVE_CONFIG_H)
 	add_test (${source}
