@@ -21,6 +21,10 @@ else (VERBOSE_BUILD)
 	set (VERBOSE "0")
 endif (VERBOSE_BUILD)
 
+option (SHARED_BUILD "Should the shared version of libelektra be build?" ON)
+option (FULL_BUILD "Should libelektra-full be build?" ON)
+option (STATIC_BUILD "Should libelektra-static be build?" ON)
+
 set (PROJECT_CMAKE_DIR
 		"${CMAKE_INSTALL_PREFIX}/share/cmake-2.6/Modules"
 		CACHE PATH

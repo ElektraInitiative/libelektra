@@ -44,74 +44,71 @@ list (REMOVE_ITEM SRC_FILES exportsymbols.c kdbmainpage.c)
 get_property (elektra_SRCS GLOBAL PROPERTY elektra_SRCS)
 list (APPEND SRC_FILES ${elektra_SRCS})
 
-
-#
-#Elektra dynamic build with modules
-#
 set (SOURCES ${SRC_FILES} ${HDR_FILES})
 
-get_property (elektra-shared_SRCS GLOBAL PROPERTY elektra-shared_SRCS)
-add_library (elektra SHARED ${SOURCES} ${elektra-shared_SRCS})
+if (SHARED_BUILD)
+	get_property (elektra-shared_SRCS GLOBAL PROPERTY elektra-shared_SRCS)
+	add_library (elektra SHARED ${SOURCES} ${elektra-shared_SRCS})
 
-get_property (elektra-shared_LIBRARIES GLOBAL PROPERTY elektra-shared_LIBRARIES)
-target_link_libraries (elektra ${elektra-shared_LIBRARIES})
+	get_property (elektra-shared_LIBRARIES GLOBAL PROPERTY elektra-shared_LIBRARIES)
+	target_link_libraries (elektra ${elektra-shared_LIBRARIES})
 
-get_property (elektra-shared_INCLUDES GLOBAL PROPERTY elektra-shared_INCLUDES)
-include_directories (${elektra-shared_INCLUDES})
+	get_property (elektra-shared_INCLUDES GLOBAL PROPERTY elektra-shared_INCLUDES)
+	include_directories (${elektra-shared_INCLUDES})
 
-set_target_properties (elektra PROPERTIES
-		COMPILE_DEFINITIONS HAVE_CONFIG_H)
-set_target_properties (elektra PROPERTIES
-		VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION})
-set_target_properties (elektra PROPERTIES CLEAN_DIRECT_OUTPUT 1)
+	set_target_properties (elektra PROPERTIES
+			COMPILE_DEFINITIONS HAVE_CONFIG_H)
+	set_target_properties (elektra PROPERTIES
+			VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION})
+	set_target_properties (elektra PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 
-install_targets (/lib elektra)
+	install_targets (/lib elektra)
+endif (SHARED_BUILD)
 
+if (FULL_BUILD OR STATIC_BUILD)
+	#for the next two builds, append some more sources
+	get_property (elektra-full_SRCS GLOBAL PROPERTY elektra-full_SRCS)
+	list (APPEND SOURCES ${elektra-full_SRCS})
+	list (APPEND SOURCES "${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.c")
 
-#for the next two builds, append some more sources
-get_property (elektra-full_SRCS GLOBAL PROPERTY elektra-full_SRCS)
-list (APPEND SOURCES ${elektra-full_SRCS})
-list (APPEND SOURCES "${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.c")
+	#and get all libraries to link against
+	get_property (elektra-full_LIBRARIES GLOBAL PROPERTY elektra-full_LIBRARIES)
 
-#and get all libraries to link against
-get_property (elektra-full_LIBRARIES GLOBAL PROPERTY elektra-full_LIBRARIES)
-
-# include the directories of all libraries for the static or
-# full-shared build
-get_property (elektra_INCLUDES GLOBAL PROPERTY elektra_INCLUDES)
-include_directories (${elektra_INCLUDES})
-
-
-#
-#Elektra dynamic build with everything included
-#
-add_library (elektra-full SHARED ${SOURCES})
-
-target_link_libraries (elektra-full ${elektra-full_LIBRARIES})
-
-set_target_properties (elektra-full PROPERTIES
-		COMPILE_DEFINITIONS "HAVE_CONFIG_H;ELEKTRA_STATIC")
-set_target_properties (elektra-full PROPERTIES
-		VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION})
-set_target_properties (elektra-full PROPERTIES CLEAN_DIRECT_OUTPUT 1)
-
-install_targets (/lib elektra-full)
+	# include the directories of all libraries for the static or
+	# full-shared build
+	get_property (elektra_INCLUDES GLOBAL PROPERTY elektra_INCLUDES)
+	include_directories (${elektra_INCLUDES})
+endif (FULL_BUILD OR STATIC_BUILD)
 
 
-#
-#Elektra static build with everything included
-#
-add_library (elektra-static STATIC ${SOURCES})
+if (FULL_BUILD)
+	add_library (elektra-full SHARED ${SOURCES})
 
-target_link_libraries (elektra-static ${elektra-full_LIBRARIES})
+	target_link_libraries (elektra-full ${elektra-full_LIBRARIES})
 
-set_target_properties (elektra-static PROPERTIES
-		COMPILE_DEFINITIONS "HAVE_CONFIG_H;ELEKTRA_STATIC")
-set_target_properties (elektra-static PROPERTIES
-		VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION})
-set_target_properties (elektra-static PROPERTIES CLEAN_DIRECT_OUTPUT 1)
+	set_target_properties (elektra-full PROPERTIES
+			COMPILE_DEFINITIONS "HAVE_CONFIG_H;ELEKTRA_STATIC")
+	set_target_properties (elektra-full PROPERTIES
+			VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION})
+	set_target_properties (elektra-full PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 
-install_targets (/lib elektra-static)
+	install_targets (/lib elektra-full)
+endif (FULL_BUILD)
+
+
+if (STATIC_BUILD)
+	add_library (elektra-static STATIC ${SOURCES})
+
+	target_link_libraries (elektra-static ${elektra-full_LIBRARIES})
+
+	set_target_properties (elektra-static PROPERTIES
+			COMPILE_DEFINITIONS "HAVE_CONFIG_H;ELEKTRA_STATIC")
+	set_target_properties (elektra-static PROPERTIES
+			VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION})
+	set_target_properties (elektra-static PROPERTIES CLEAN_DIRECT_OUTPUT 1)
+
+	install_targets (/lib elektra-static)
+endif (STATIC_BUILD)
 
 #if you want the same name for those 3 libraries, here is how to do it:
 #http://www.itk.org/Wiki/CMake_FAQ#How_do_I_make_my_shared_and_static_libraries_have_the_same_root_name.2C_but_different_suffixes.3F

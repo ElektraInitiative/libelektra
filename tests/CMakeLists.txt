@@ -27,8 +27,15 @@ macro (do_test source)
 	set (SOURCES ${HDR_FILES} ${source}.c tests.c tests.h)
 	add_executable (${source} ${SOURCES})
 
-	target_link_libraries (${source} elektra-full elektratools)
-	#target_link_libraries (${source} elektra-static elektratools-static elektra-static)
+	if (FULL_BUILD)
+		target_link_libraries (${source} elektra-full elektratools)
+	else (FULL_BUILD)
+		if (STATIC_BUILD)
+			target_link_libraries (${source} elektra-static elektratools-static elektra-static)
+		else (STATIC_BUILD)
+			message (FATAL_ERROR "Test cases should not be included if neither FULL_BUILD nor STATIC_BUILD is ON")
+		endif (STATIC_BUILD)
+	endif (FULL_BUILD)
 
 	set_target_properties (${source} PROPERTIES
 			COMPILE_DEFINITIONS HAVE_CONFIG_H)

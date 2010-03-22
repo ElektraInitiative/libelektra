@@ -30,6 +30,10 @@ include (cmake/ElektraCache.cmake)
 include (cmake/ElektraCompiling.cmake)
 
 add_subdirectory (src)
-add_subdirectory (tests)
 add_subdirectory (cmake)
 
+if (BUILD_TESTING)
+	if (FULL_BUILD OR STATIC_BUILD)
+		add_subdirectory (tests)
+	endif (FULL_BUILD OR STATIC_BUILD)
+endif (BUILD_TESTING)
