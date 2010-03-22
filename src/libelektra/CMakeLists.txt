@@ -14,8 +14,6 @@ add_executable (exportsymbols exportsymbols.c)
 
 get_target_property (EXE_LOC exportsymbols LOCATION)
 
-message ("is here: ${EXE_LOC}")
-
 add_custom_command (
 		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.h
 		DEPENDS exportsymbols
@@ -48,7 +46,8 @@ list (APPEND SRC_FILES ${elektra_SRCS})
 #
 set (SOURCES ${SRC_FILES} ${HDR_FILES})
 
-add_library (elektra SHARED ${SOURCES})
+get_property (elektra-shared_SRCS GLOBAL PROPERTY elektra-shared_SRCS)
+add_library (elektra SHARED ${SOURCES} ${elektra-shared_SRCS})
 
 get_property (elektra_LIBRARIES GLOBAL PROPERTY elektra_LIBRARIES)
 target_link_libraries (elektra ${elektra_LIBRARIES})

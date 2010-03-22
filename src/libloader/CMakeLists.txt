@@ -1,8 +1,10 @@
 include (LibAddMacros)
 
+add_sources (elektra-full "static.c")
+
 find_package (DL REQUIRED)
 if (DL_FOUND)
-	add_sources (elektra "dl.c")
+	add_sources (elektra-shared "dl.c")
 	add_includes (elektra ${DL_INCLUDE_DIRS})
 	add_libraries (elektra ${DL_LIBRARIES})
 else (DL_FOUND)
