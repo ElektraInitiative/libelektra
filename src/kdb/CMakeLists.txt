@@ -11,3 +11,11 @@ set (SOURCES ${SRC_FILES} ${HDR_FILES})
 add_executable (kdb ${SOURCES})
 
 target_link_libraries (kdb elektra)
+
+add_executable (kdb-full ${SOURCES})
+
+target_link_libraries (kdb-full elektra-full)
+
+add_executable (kdb-static ${SOURCES})
+
+target_link_libraries (kdb-static elektra-static)

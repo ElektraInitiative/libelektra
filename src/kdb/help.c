@@ -15,7 +15,8 @@
 
 #include <kdb-tool.h>
 
-#define QUOTE(x) #x
+#define QUOTE_(x) #x
+#define QUOTE(x) QUOTE_(x)
 
 /**
  * Prints out help to the kdb (1) command.
