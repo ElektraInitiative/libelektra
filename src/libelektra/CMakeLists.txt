@@ -112,3 +112,6 @@ set_target_properties (elektra-static PROPERTIES
 set_target_properties (elektra-static PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 
 install_targets (/lib elektra-static)
+
+#if you want the same name for those 3 libraries, here is how to do it:
+#http://www.itk.org/Wiki/CMake_FAQ#How_do_I_make_my_shared_and_static_libraries_have_the_same_root_name.2C_but_different_suffixes.3F
