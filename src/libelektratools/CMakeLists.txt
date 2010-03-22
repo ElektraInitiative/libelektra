@@ -16,3 +16,9 @@ set_target_properties (elektratools PROPERTIES
 		COMPILE_DEFINITIONS HAVE_CONFIG_H
 		)
 target_link_libraries (elektratools ${LIBXML2_LIBRARIES})
+
+add_library (elektratools-static STATIC ${SOURCES})
+set_target_properties (elektratools-static PROPERTIES
+		COMPILE_DEFINITIONS HAVE_CONFIG_H
+		)
+target_link_libraries (elektratools-static ${LIBXML2_LIBRARIES})
