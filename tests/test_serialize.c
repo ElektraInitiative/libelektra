@@ -142,12 +142,12 @@ void test_xml(char *file)
 	ksDel (ks);
 }
 
-int main()
+int main(int argc, char** argv)
 {
 	printf("SERIALIZE TESTS\n");
 	printf("==================\n\n");
 
-	init ();
+	init (argc, argv);
 
 	test_emptykey();
 	test_allkey();

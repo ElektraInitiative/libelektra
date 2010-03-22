@@ -16,6 +16,8 @@
 
 #include <tests.h>
 
+#include <kdbtools.h>
+
 void test_readwrite()
 {
 	KeySet		*ks;
@@ -204,13 +206,12 @@ void test_keyset()
 }
 
 
-int main()
+int main(int argc, char** argv)
 {
-	printf("\n");
 	printf("ELEKTRA BACKENDS TEST SUITE\n");
 	printf("========================================\n\n");
 
-	init ();
+	init (argc, argv);
 
 	test_key();
 	test_keyset();

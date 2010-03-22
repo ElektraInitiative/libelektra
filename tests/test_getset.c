@@ -680,15 +680,13 @@ void test_directory_highlevel_getset()
 	return;
 }
 
-int main()
+int main(int argc, char** argv)
 {
 	printf("\n\n");
 	printf("ELEKTRA SET/GET TEST SUITE\n");
 	printf("========================================\n\n");
 
-	exit_if_fail (loadToolsLib()==0, "Unable to load elektratools");
-
-	init ();
+	init (argc, argv);
 
 	test_simple_getset();
 	test_writeread();

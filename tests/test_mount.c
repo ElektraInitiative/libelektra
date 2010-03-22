@@ -414,12 +414,12 @@ void test_writefstab(const char * file)
 
 
 
-int main()
+int main(int argc, char** argv)
 {
 	printf("MOUNT       TESTS\n");
 	printf("==================\n\n");
 
-	init ();
+	init (argc, argv);
 
 	test_writehosts(".kdb/hosts_mount");
 	test_readhosts(".kdb/hosts_mount");

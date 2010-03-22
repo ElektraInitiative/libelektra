@@ -646,12 +646,12 @@ void test_mountparent()
 
 
 
-int main()
+int main(int argc, char** argv)
 {
 	printf("SPLIT       TESTS\n");
 	printf("==================\n\n");
 
-	init ();
+	init (argc, argv);
 
 	test_create();
 	test_emptysplit();

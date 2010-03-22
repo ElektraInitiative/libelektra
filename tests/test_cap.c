@@ -117,12 +117,12 @@ void test_hosts()
 	keyDel (key);
 }
 
-int main()
+int main(int argc, char** argv)
 {
 	printf("ELEKTRA CAPABILTIY TEST SUITE\n");
 	printf("========================================\n\n");
 
-	init ();
+	init (argc, argv);
 
 	test_system();
 	test_user();

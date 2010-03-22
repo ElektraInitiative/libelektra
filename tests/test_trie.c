@@ -94,12 +94,12 @@ void test_kdbTrie()
 	kdbClose (kdb);
 }
 
-int main()
+int main(int argc, char** argv)
 {
 	printf("TRIE       TESTS\n");
 	printf("==================\n\n");
 
-	init ();
+	init (argc, argv);
 
 	test_kdbTrie();
 

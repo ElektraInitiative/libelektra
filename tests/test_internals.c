@@ -49,20 +49,18 @@ int test_load_toolslib()
 {
 	KeySet		*ks = ksNew (0);
 
-	exit_if_fail (loadToolsLib()==0, "Unable to load elektratools");
 	exit_if_fail( ksFromXMLfile(ks, "key.xml") == 0, "ksFromXMLfile(key.xml) failed.");
-	ksGenerate (ks, stdout, KDB_O_HEADER);
 
 	ksDel (ks);
 	return 0;
 }
 
-int main()
+int main(int argc, char** argv)
 {
 	printf("INTERNALS    TESTS\n");
 	printf("==================\n\n");
 
-	init ();
+	init (argc, argv);
 
 	test_strlen();
 	// test_load_toolslib();

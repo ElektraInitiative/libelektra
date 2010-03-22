@@ -10,6 +10,7 @@
 #ignore all build directories of cmake
 build*
 
+.ctags
 .dotest
 
 *.gcno

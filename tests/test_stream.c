@@ -41,16 +41,16 @@ void test_keyoutput ()
 
 //	ksOutput (ks, fout, KEY_VALUE | KEY_COMMENT);
 //	ksOutput (ks, fout, KDB_O_SHOWMETA);
-	ksOutput (ks, fout, KDB_O_SHOWFLAGS);
+//	ksOutput (ks, fout, KDB_O_SHOWFLAGS);
 	ksDel (ks);
 }
 
-int main()
+int main(int argc, char** argv)
 {
 	printf("STREAM TESTS\n");
 	printf("==================\n\n");
 
-	init ();
+	init (argc, argv);
 
 	test_keyoutput();
 	printf("\ntest_stream RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);

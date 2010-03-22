@@ -2228,6 +2228,7 @@ int main(int argc, char** argv)
 	printf("==================\n\n");
 
 	init (argc, argv);
+
 	test_keyComparing();
 	test_keyNewSystem();
 	test_keyNewUser();
