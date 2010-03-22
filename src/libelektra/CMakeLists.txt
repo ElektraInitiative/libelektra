@@ -25,6 +25,7 @@ add_custom_command (
 		COMMAND ${EXE_LOC}
 		ARGS ${BACKENDS})
 
+
 # Include the shared header files of the elektra project
 include(LibAddMacros)
 add_headers(HDR_FILES)
@@ -49,8 +50,11 @@ set (SOURCES ${SRC_FILES} ${HDR_FILES})
 get_property (elektra-shared_SRCS GLOBAL PROPERTY elektra-shared_SRCS)
 add_library (elektra SHARED ${SOURCES} ${elektra-shared_SRCS})
 
-get_property (elektra_LIBRARIES GLOBAL PROPERTY elektra_LIBRARIES)
-target_link_libraries (elektra ${elektra_LIBRARIES})
+get_property (elektra-shared_LIBRARIES GLOBAL PROPERTY elektra-shared_LIBRARIES)
+target_link_libraries (elektra ${elektra-shared_LIBRARIES})
+
+get_property (elektra-shared_INCLUDES GLOBAL PROPERTY elektra-shared_INCLUDES)
+include_directories (${elektra-shared_INCLUDES})
 
 set_target_properties (elektra PROPERTIES
 		COMPILE_DEFINITIONS HAVE_CONFIG_H)
