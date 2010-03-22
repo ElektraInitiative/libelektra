@@ -39,5 +39,6 @@ do_test (test_key)
 do_test (test_type)
 do_test (test_args)
 do_test (test_ks)
+do_test (test_kdb)
 
 include_directories ("${PROJECT_SOURCE_DIR}/tests")

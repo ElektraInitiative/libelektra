@@ -12,7 +12,9 @@
 # Symbols of libelektratools will be treaded specially.
 add_executable (exportsymbols exportsymbols.c)
 
-get_target_property (exportsymbols EXE_LOC LOCATION)
+get_target_property (EXE_LOC exportsymbols LOCATION)
+
+message ("is here: ${EXE_LOC}")
 
 add_custom_command (
 		OUTPUT ${PROJECT_BINARY_DIR}/exported_symbols.h
@@ -58,15 +60,19 @@ set_target_properties (elektra PROPERTIES
 
 install_targets (/lib elektra)
 
+#for the next two builds, append some more sources
+get_property (elektra-full_SRCS GLOBAL PROPERTY elektra-full_SRCS)
+list (APPEND SOURCES ${elektra-full_SRCS})
+list (APPEND SOURCES "${PROJECT_BINARY_DIR}/exported_symbols.c" "${PROJECT_BINARY_DIR}/exported_symbols.h")
+
+#and get all libraries to link against
+get_property (elektra-full_LIBRARIES GLOBAL PROPERTY elektra-full_LIBRARIES)
+
 #
 #Elektra dynamic build with everything included
 #
-get_property (elektra-full_SRCS GLOBAL PROPERTY elektra-full_SRCS)
-list (APPEND SOURCES ${elektra-full_SRCS})
-
 add_library (elektra-full SHARED ${SOURCES})
 
-get_property (elektra-full_LIBRARIES GLOBAL PROPERTY elektra-full_LIBRARIES)
 target_link_libraries (elektra-full ${elektra-full_LIBRARIES})
 
 set_target_properties (elektra-full PROPERTIES
