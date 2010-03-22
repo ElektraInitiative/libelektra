@@ -8,20 +8,20 @@ file (GLOB SRC_FILES *.c)
 
 set (SOURCES ${SRC_FILES} ${HDR_FILES})
 
-if (SHARED_BUILD)
+if (BUILD_SHARED)
 	add_executable (kdb ${SOURCES})
 
 	target_link_libraries (kdb elektra)
-endif (SHARED_BUILD)
+endif (BUILD_SHARED)
 
-if (FULL_BUILD)
+if (BUILD_FULL)
 	add_executable (kdb-full ${SOURCES})
 
 	target_link_libraries (kdb-full elektra-full)
-endif (FULL_BUILD)
+endif (BUILD_FULL)
 
-if (STATIC_BUILD)
+if (BUILD_STATIC)
 	add_executable (kdb-static ${SOURCES})
 
 	target_link_libraries (kdb-static elektra-static)
-endif (STATIC_BUILD)
+endif (BUILD_STATIC)

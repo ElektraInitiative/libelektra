@@ -21,9 +21,9 @@ else (VERBOSE_BUILD)
 	set (VERBOSE "0")
 endif (VERBOSE_BUILD)
 
-option (SHARED_BUILD "Should the shared version of libelektra be build?" ON)
-option (FULL_BUILD "Should libelektra-full be build?" ON)
-option (STATIC_BUILD "Should libelektra-static be build?" ON)
+option (BUILD_SHARED "Build the shared version of elektra." ON)
+option (BUILD_FULL "Build the full version of elektra (shared with all selected backends included)." ON)
+option (BUILD_STATIC "Build the static version of elektra (all selected backends included)." ON)
 
 set (PROJECT_CMAKE_DIR
 		"${CMAKE_INSTALL_PREFIX}/share/cmake-2.6/Modules"

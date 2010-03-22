@@ -46,7 +46,7 @@ list (APPEND SRC_FILES ${elektra_SRCS})
 
 set (SOURCES ${SRC_FILES} ${HDR_FILES})
 
-if (SHARED_BUILD)
+if (BUILD_SHARED)
 	get_property (elektra-shared_SRCS GLOBAL PROPERTY elektra-shared_SRCS)
 	add_library (elektra SHARED ${SOURCES} ${elektra-shared_SRCS})
 
@@ -63,9 +63,9 @@ if (SHARED_BUILD)
 	set_target_properties (elektra PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 
 	install_targets (/lib elektra)
-endif (SHARED_BUILD)
+endif (BUILD_SHARED)
 
-if (FULL_BUILD OR STATIC_BUILD)
+if (BUILD_FULL OR BUILD_STATIC)
 	#for the next two builds, append some more sources
 	get_property (elektra-full_SRCS GLOBAL PROPERTY elektra-full_SRCS)
 	list (APPEND SOURCES ${elektra-full_SRCS})
@@ -78,10 +78,10 @@ if (FULL_BUILD OR STATIC_BUILD)
 	# full-shared build
 	get_property (elektra_INCLUDES GLOBAL PROPERTY elektra_INCLUDES)
 	include_directories (${elektra_INCLUDES})
-endif (FULL_BUILD OR STATIC_BUILD)
+endif (BUILD_FULL OR BUILD_STATIC)
 
 
-if (FULL_BUILD)
+if (BUILD_FULL)
 	add_library (elektra-full SHARED ${SOURCES})
 
 	target_link_libraries (elektra-full ${elektra-full_LIBRARIES})
@@ -93,10 +93,10 @@ if (FULL_BUILD)
 	set_target_properties (elektra-full PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 
 	install_targets (/lib elektra-full)
-endif (FULL_BUILD)
+endif (BUILD_FULL)
 
 
-if (STATIC_BUILD)
+if (BUILD_STATIC)
 	add_library (elektra-static STATIC ${SOURCES})
 
 	target_link_libraries (elektra-static ${elektra-full_LIBRARIES})
@@ -108,7 +108,7 @@ if (STATIC_BUILD)
 	set_target_properties (elektra-static PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 
 	install_targets (/lib elektra-static)
-endif (STATIC_BUILD)
+endif (BUILD_STATIC)
 
 #if you want the same name for those 3 libraries, here is how to do it:
 #http://www.itk.org/Wiki/CMake_FAQ#How_do_I_make_my_shared_and_static_libraries_have_the_same_root_name.2C_but_different_suffixes.3F
