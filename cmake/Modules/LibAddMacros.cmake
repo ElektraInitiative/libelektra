@@ -26,7 +26,40 @@ endmacro (add_headers)
 #
 #  ADD_SOURCES(<target> <source1> [<source2> ...])
 #
-function(add_sources target)
+# The target should add the sources using:
+#
+#get_property (elektra_SRCS GLOBAL PROPERTY elektra_SRCS)
+#list (APPEND SRC_FILES ${elektra_SRCS})
+#
+## descend into sub-directories
+#add_subdirectory(a)
+#add_subdirectory(b)
+#
+#get_property(super_SRCS GLOBAL PROPERTY super_SRCS)
+#
+#add_library(super STATIC ${super_SRCS})
+################
+#
+#a/CMakeLists.txt:
+##################
+#add_sources(super
+#  a1.f
+#  a2.f
+#  a3.f
+#  )
+##################
+#
+#b/CMakeLists.txt:
+##################
+#add_sources(super
+#  b1.f
+#  b2.f
+#  )
+##################
+#
+#Thank to Michael Wild
+#
+function (add_sources target)
 	# define the <target>_SRCS properties if necessary
 	get_property (prop_defined GLOBAL PROPERTY ${target}_SRCS DEFINED)
 	if (NOT prop_defined)
@@ -41,11 +74,63 @@ function(add_sources target)
 			get_filename_component (src "${src}" ABSOLUTE)
 		endif (NOT IS_ABSOLUTE "${src}")
 		list (APPEND SRCS "${src}")
-		message (added: ${src})
 	endforeach ()
 	# append to global property
 	set_property (GLOBAL APPEND PROPERTY "${target}_SRCS" "${SRCS}")
-endfunction(add_sources)
+endfunction (add_sources)
+
+#- Add includes for a target
+#
+#  ADD_INCLUDES (<target> <source1> [<source2> ...])
+#
+# The target should do:
+#
+#get_property (elektra_INCLUDES GLOBAL PROPERTY elektra_INCLUDES)
+#include_directories (${elektra_INCLUDES})
+#
+function (add_includes target)
+	# define the <target>_INCLUDES properties if necessary
+	get_property (prop_defined GLOBAL PROPERTY ${target}_INCLUDES DEFINED)
+	if (NOT prop_defined)
+		define_property (GLOBAL PROPERTY ${target}_INCLUDES
+			BRIEF_DOCS "Sources for the ${target} target"
+			FULL_DOCS "List of source files for the ${target} target")
+	endif (NOT prop_defined)
+	# create list of sources (absolute paths)
+	set (INCLUDES)
+	foreach (src ${ARGN})
+		list (APPEND INCLUDES "${src}")
+	endforeach ()
+	# append to global property
+	set_property (GLOBAL APPEND PROPERTY "${target}_INCLUDES" "${INCLUDES}")
+endfunction (add_includes)
+
+
+#- Add libraries for a target
+#
+#  ADD_LIBRARIES (<target> <source1> [<source2> ...])
+#
+# The target should do:
+#
+#get_property (elektra_LIBRARIES GLOBAL PROPERTY elektra_LIBRARIES)
+#target_link_libraries (elektra ${elektra_LIBRARIES})
+#
+function (add_libraries target)
+	# define the <target>_LIBRARIES properties if necessary
+	get_property (prop_defined GLOBAL PROPERTY ${target}_LIBRARIES DEFINED)
+	if (NOT prop_defined)
+		define_property (GLOBAL PROPERTY ${target}_LIBRARIES
+			BRIEF_DOCS "Sources for the ${target} target"
+			FULL_DOCS "List of source files for the ${target} target")
+	endif (NOT prop_defined)
+	# create list of sources (absolute paths)
+	set (LIBRARIES)
+	foreach (src ${ARGN})
+		list (APPEND LIBRARIES "${src}")
+	endforeach ()
+	# append to global property
+	set_property (GLOBAL APPEND PROPERTY "${target}_LIBRARIES" "${LIBRARIES}")
+endfunction (add_libraries)
 
 
 #- Wrapper of add_library to allow for static modules
@@ -61,6 +146,7 @@ endfunction(add_sources)
 # all of the sources.
 #
 #Thanks to Michael Wild <themiwi@gmail.com>
+#
 function(my_add_library name)
 	# parse arguments
 	set(next_is_static_name FALSE)
@@ -115,6 +201,7 @@ endfunction()
 # contributing sources to this static module.
 #
 #Thanks to Michael Wild <themiwi@gmail.com>
+#
 function(my_add_static_module name)
 	get_property(srcs GLOBAL PROPERTY
 			MY_STATIC_MODULES_${name}_SOURCES)

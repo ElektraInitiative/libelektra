@@ -1,42 +1,54 @@
+# For static inclusion of libraries we need a list
+# of symbols to make the static runtime linker work.
+#
+# For that there is the program exportsymbols which
+# generates the sourcefiles exported_symbols.h
+# and exported_symbols.c containing an array of
+# all symbols.
+#
+# The program needs a list of all backends as
+# argument.
+#
+# Symbols of libelektratools will be treaded specially.
 add_executable (exportsymbols exportsymbols.c)
 
 get_target_property (exportsymbols EXE_LOC LOCATION)
-
 
 add_custom_command (
 		OUTPUT ${PROJECT_BINARY_DIR}/exported_symbols.h
 		DEPENDS exportsymbols
 		COMMAND ${EXE_LOC}
-		ARGS BACKENDS)
-
+		ARGS ${BACKENDS})
 add_custom_command (
 		OUTPUT ${PROJECT_BINARY_DIR}/exported_symbols.c
 		DEPENDS exportsymbols
 		COMMAND ${EXE_LOC}
-		ARGS BACKENDS)
+		ARGS ${BACKENDS})
 
+# Include the shared header files of the elektra project
 include(LibAddMacros)
 add_headers(HDR_FILES)
 
+# include the directories of all libraries for the static or
+# full-shared build
+get_property (elektra_INCLUDES GLOBAL PROPERTY elektra_INCLUDES)
+include_directories (${elektra_INCLUDES})
+
+#now add all source files of this folder
 file (GLOB SRC_FILES *.c)
+
+#now add all source files of other folders
 get_property (elektra_SRCS GLOBAL PROPERTY elektra_SRCS)
-
-message ("elektra_SRCS is ${elektra_SRCS}")
-
 list (APPEND SRC_FILES ${elektra_SRCS})
-
-find_package (DL REQUIRED)
-if (DL_FOUND)
-	list (APPEND SRC_FILES "../libloader/dl.c")
-	include_directories (${DL_INCLUDE_DIRS})
-else (DL_FOUND)
-	message (ERROR "no dl found")
-endif (DL_FOUND)
 
 set (SOURCES ${SRC_FILES} ${HDR_FILES})
 
 add_library (elektra SHARED ${SOURCES})
-target_link_libraries (elektra ${DL_LIBRARIES})
+
+#now link against all libraries which are needed
+get_property (elektra_LIBRARIES GLOBAL PROPERTY elektra_LIBRARIES)
+target_link_libraries (elektra ${elektra_LIBRARIES})
+
 set_target_properties (elektra PROPERTIES
 		COMPILE_DEFINITIONS HAVE_CONFIG_H)
 set_target_properties (elektra PROPERTIES
