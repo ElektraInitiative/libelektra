@@ -35,6 +35,11 @@ macro (do_test source)
 			)
 endmacro (do_test)
 
+file (GLOB XML_FILES *.xml)
+foreach (file ${XML_FILES})
+	copy_file (${file} "${CMAKE_CURRENT_BINARY_DIR}")
+endforeach (file ${XML_FILES})
+
 do_test (test_key)
 do_test (test_type)
 do_test (test_args)

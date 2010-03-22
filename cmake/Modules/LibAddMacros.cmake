@@ -2,12 +2,12 @@
 #
 # copy_file name
 #
-macro (copy_file filename)
+macro (copy_file src dest)
 	execute_process (
 			COMMAND
 			${CMAKE_COMMAND} -E copy
-				"${CMAKE_CURRENT_SOURCE_DIR}/${filename}.h"
-				"${CMAKE_CURRENT_BINARY_DIR}/${filename}.h"
+				"${src}"
+				"${dest}"
 		)
 endmacro (copy_file)
 
@@ -111,7 +111,7 @@ function (add_sources target)
 			get_filename_component (src "${src}" ABSOLUTE)
 		endif (NOT IS_ABSOLUTE "${src}")
 		list (APPEND SRCS "${src}")
-	endforeach ()
+	endforeach (src ${ARGN})
 	# append to global property
 	set_property (GLOBAL APPEND PROPERTY "${target}_SRCS" "${SRCS}")
 endfunction (add_sources)
@@ -137,7 +137,7 @@ function (add_includes target)
 	set (INCLUDES)
 	foreach (src ${ARGN})
 		list (APPEND INCLUDES "${src}")
-	endforeach ()
+	endforeach (src ${ARGN})
 	# append to global property
 	set_property (GLOBAL APPEND PROPERTY "${target}_INCLUDES" "${INCLUDES}")
 endfunction (add_includes)
@@ -164,7 +164,7 @@ function (add_libraries target)
 	set (LIBRARIES)
 	foreach (src ${ARGN})
 		list (APPEND LIBRARIES "${src}")
-	endforeach ()
+	endforeach (src ${ARGN})
 	# append to global property
 	set_property (GLOBAL APPEND PROPERTY "${target}_LIBRARIES" "${LIBRARIES}")
 endfunction (add_libraries)
@@ -191,7 +191,7 @@ function(my_add_library name)
 	set(srcs)
 	set(lib_type)
 	set(exclude_from_all)
-	foreach(arg IN LISTS ARGN)
+	foreach (src ${ARGN})
 		if(arg STREQUAL STATIC_NAME)
 			set(next_is_static_name TRUE)
 		elseif(arg MATCHES "STATIC|SHARED|MODULE")
@@ -207,11 +207,11 @@ function(my_add_library name)
 			endif()
 			list(APPEND srcs "${arg}")
 		endif()
-	endforeach()
+	endforeach (src ${ARGN})
 	# require at least one source file
-	if(NOT srcs)
+	if (NOT srcs)
 		message(SEND_ERROR "At least one source file required")
-	endif()
+	endif (NOT srcs)
 	# if we have a STATIC_NAME, append the sources to the global property
 	if(static_name)
 		set(prop_name MY_STATIC_MODULES_${static_name}_SOURCES)
@@ -242,9 +242,9 @@ endfunction()
 function(my_add_static_module name)
 	get_property(srcs GLOBAL PROPERTY
 			MY_STATIC_MODULES_${name}_SOURCES)
-	if(not SRCS)
+	if (not SRCS)
 		message(SEND_ERROR "No sources defined for static module ${name}")
-	endif()
+	endif (not SRCS)
 	add_library(${name} STATIC ${srcs})
 endfunction()
 
