@@ -7,6 +7,8 @@ int main(int argc, char**argv)
 		"keyGenerate"};
 	int i,j;
 
+	/*Exit if no backend is given with error code, because
+	  argv[1] is used below*/
 	if (argc < 2) return 1;
 
 	FILE *f = fopen("exported_symbols.h", "w");
@@ -44,7 +46,7 @@ int main(int argc, char**argv)
 	{
 		if (!strcmp (argv[i], "libelektratools"))
 		{
-			for (j=0; j<sizeof(toolsfunc); ++j)
+			for (j=0; j<sizeof(toolsfunc)/20; ++j)
 			{
 				fprintf(f, "extern void libelektratools_LTX_%s (void);\n", toolsfunc[j]);
 			}
@@ -73,13 +75,13 @@ int main(int argc, char**argv)
 		if (!strcmp (argv[i], "libelektratools"))
 		{
 			fprintf(f, "\t{\"libelektratools\", 0},\n");
-			for (j=0; j<sizeof(toolsfunc); ++j)
+			for (j=0; j<sizeof(toolsfunc)/20; ++j)
 			{
-				fprintf(f, "\t{\"%s\", &libelektratools_%s_LTX_kdbBackendFactory},\n", toolsfunc[j], toolsfunc[j]);
+				fprintf(f, "\t{\"%s\", &libelektratools_LTX_%s},\n", toolsfunc[j], toolsfunc[j]);
 			}
 		} else {
 			printf ("Exporting symbols for %s ...\n", argv[i]);
-			fprintf(f, "\t{\"%s\", 0},\n", argv[i]);
+			fprintf(f, "\t{\"libelektra-%s\", 0},\n", argv[i]);
 			fprintf(f, "\t{\"kdbBackendFactory\", &libelektra_%s_LTX_kdbBackendFactory},\n", argv[i]);
 		}
 	}
