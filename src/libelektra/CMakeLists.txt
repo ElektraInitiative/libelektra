@@ -19,7 +19,11 @@ include(LibAddMacros)
 add_headers(HDR_FILES)
 
 file (GLOB SRC_FILES *.c)
-list (APPEND SRC_FILES "../libhelper/internal.c")
+get_property (elektra_SRCS GLOBAL PROPERTY elektra_SRCS)
+
+message ("elektra_SRCS is ${elektra_SRCS}")
+
+list (APPEND SRC_FILES ${elektra_SRCS})
 
 find_package (DL REQUIRED)
 if (DL_FOUND)

@@ -1,5 +1,7 @@
 add_subdirectory (include)
+add_subdirectory (libhelper)
 add_subdirectory (backends)
+
 add_subdirectory (libelektra)
 
 find_package (LibXml2 REQUIRED)

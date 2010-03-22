@@ -30,20 +30,21 @@ function(add_sources target)
 	# define the <target>_SRCS properties if necessary
 	get_property (prop_defined GLOBAL PROPERTY ${target}_SRCS DEFINED)
 	if (NOT prop_defined)
-	define_property (GLOBAL PROPERTY ${target}_SRCS
-		BRIEF_DOCS "Sources for the ${target} target"
-		FULL_DOCS "List of source files for the ${target} target")
+		define_property (GLOBAL PROPERTY ${target}_SRCS
+			BRIEF_DOCS "Sources for the ${target} target"
+			FULL_DOCS "List of source files for the ${target} target")
 	endif (NOT prop_defined)
 	# create list of sources (absolute paths)
-	set(SRCS)
-	foreach(src IN LISTS ARGN)
-	if(NOT IS_ABSOLUTE "${src}")
-		get_filename_component(src "${src}" ABSOLUTE)
-	endif(NOT IS_ABSOLUTE "${src}")
-	list(APPEND SRCS "${src}")
-	endforeach()
+	set (SRCS)
+	foreach (src ${ARGN})
+		if (NOT IS_ABSOLUTE "${src}")
+			get_filename_component (src "${src}" ABSOLUTE)
+		endif (NOT IS_ABSOLUTE "${src}")
+		list (APPEND SRCS "${src}")
+		message (added: ${src})
+	endforeach ()
 	# append to global property
-	set_property(GLOBAL APPEND PROPERTY "${target}_SRCS" "${SRCS}")
+	set_property (GLOBAL APPEND PROPERTY "${target}_SRCS" "${SRCS}")
 endfunction(add_sources)
 
 
