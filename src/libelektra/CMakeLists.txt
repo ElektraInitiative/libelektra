@@ -41,6 +41,9 @@ file (GLOB SRC_FILES *.c)
 get_property (elektra_SRCS GLOBAL PROPERTY elektra_SRCS)
 list (APPEND SRC_FILES ${elektra_SRCS})
 
+#
+#Elektra dynamic build with modules
+#
 set (SOURCES ${SRC_FILES} ${HDR_FILES})
 
 add_library (elektra SHARED ${SOURCES})
@@ -55,3 +58,21 @@ set_target_properties (elektra PROPERTIES
 		VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION})
 
 install_targets (/lib elektra)
+
+#
+#Elektra static build with everything included
+#
+get_property (elektra-full_SRCS GLOBAL PROPERTY elektra-full_SRCS)
+list (APPEND SOURCES ${elektra-full_SRCS})
+
+add_library (elektra-full STATIC ${SOURCES})
+
+get_property (elektra-full_LIBRARIES GLOBAL PROPERTY elektra-full_LIBRARIES)
+target_link_libraries (elektra-full ${elektra-full_LIBRARIES})
+
+set_target_properties (elektra-full PROPERTIES
+		COMPILE_DEFINITIONS "HAVE_CONFIG_H;ELEKTRA_STATIC")
+set_target_properties (elektra-full PROPERTIES
+		VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION})
+
+install_targets (/lib elektra-full)

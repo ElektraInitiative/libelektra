@@ -25,6 +25,7 @@ endmacro (copy_file)
 #
 # The added files will be always the same anyway. Example see in
 # tests/CMakeLists.txt
+#
 macro (add_headers HDR_FILES)
 	include_directories ("${PROJECT_BINARY_DIR}/src/include")
 	file (GLOB BIN_HDR_FILES ${PROJECT_BINARY_DIR}/src/include/*.h)
@@ -34,6 +35,21 @@ macro (add_headers HDR_FILES)
 	file (GLOB SRC_HDR_FILES ${PROJECT_SOURCE_DIR}/src/include/*.h)
 	list (APPEND HDR_FILES ${SRC_HDR_FILES})
 endmacro (add_headers)
+
+
+#- Removes a backend from the global cache
+#
+#  REMOVE_BACKEND (name reason)
+#
+# example:
+#remove_backend (fstab "mntent is missing")
+#
+macro (remove_backend name reason)
+	set (TMP ${BACKENDS})
+	message ("-- Exclude Backend ${name} because ${reason}")
+	list (REMOVE_ITEM TMP fstab)
+	set (BACKENDS ${TMP} CACHE STRING "Which backends to use?" FORCE)
+endmacro (remove_backend)
 
 
 #- Add sources for a target
