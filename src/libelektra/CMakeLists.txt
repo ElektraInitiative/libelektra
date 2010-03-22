@@ -17,12 +17,12 @@ get_target_property (EXE_LOC exportsymbols LOCATION)
 message ("is here: ${EXE_LOC}")
 
 add_custom_command (
-		OUTPUT ${PROJECT_BINARY_DIR}/exported_symbols.h
+		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.h
 		DEPENDS exportsymbols
 		COMMAND ${EXE_LOC}
 		ARGS ${BACKENDS})
 add_custom_command (
-		OUTPUT ${PROJECT_BINARY_DIR}/exported_symbols.c
+		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.c
 		DEPENDS exportsymbols
 		COMMAND ${EXE_LOC}
 		ARGS ${BACKENDS})
@@ -31,10 +31,9 @@ add_custom_command (
 include(LibAddMacros)
 add_headers(HDR_FILES)
 
-# include the directories of all libraries for the static or
-# full-shared build
-get_property (elektra_INCLUDES GLOBAL PROPERTY elektra_INCLUDES)
-include_directories (${elektra_INCLUDES})
+#include the current binary directory to get exported_symbols.h
+list (APPEND SOURCES "${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.h")
+include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
 #now add all source files of this folder
 file (GLOB SRC_FILES *.c)
@@ -42,6 +41,7 @@ file (GLOB SRC_FILES *.c)
 #now add all source files of other folders
 get_property (elektra_SRCS GLOBAL PROPERTY elektra_SRCS)
 list (APPEND SRC_FILES ${elektra_SRCS})
+
 
 #
 #Elektra dynamic build with modules
@@ -57,16 +57,24 @@ set_target_properties (elektra PROPERTIES
 		COMPILE_DEFINITIONS HAVE_CONFIG_H)
 set_target_properties (elektra PROPERTIES
 		VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION})
+set_target_properties (elektra PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 
 install_targets (/lib elektra)
+
 
 #for the next two builds, append some more sources
 get_property (elektra-full_SRCS GLOBAL PROPERTY elektra-full_SRCS)
 list (APPEND SOURCES ${elektra-full_SRCS})
-list (APPEND SOURCES "${PROJECT_BINARY_DIR}/exported_symbols.c" "${PROJECT_BINARY_DIR}/exported_symbols.h")
+list (APPEND SOURCES "${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.c")
 
 #and get all libraries to link against
 get_property (elektra-full_LIBRARIES GLOBAL PROPERTY elektra-full_LIBRARIES)
+
+# include the directories of all libraries for the static or
+# full-shared build
+get_property (elektra_INCLUDES GLOBAL PROPERTY elektra_INCLUDES)
+include_directories (${elektra_INCLUDES})
+
 
 #
 #Elektra dynamic build with everything included
@@ -79,8 +87,10 @@ set_target_properties (elektra-full PROPERTIES
 		COMPILE_DEFINITIONS "HAVE_CONFIG_H;ELEKTRA_STATIC")
 set_target_properties (elektra-full PROPERTIES
 		VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION})
+set_target_properties (elektra-full PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 
 install_targets (/lib elektra-full)
+
 
 #
 #Elektra static build with everything included
@@ -93,5 +103,6 @@ set_target_properties (elektra-static PROPERTIES
 		COMPILE_DEFINITIONS "HAVE_CONFIG_H;ELEKTRA_STATIC")
 set_target_properties (elektra-static PROPERTIES
 		VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION})
+set_target_properties (elektra-static PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 
 install_targets (/lib elektra-static)

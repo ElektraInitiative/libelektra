@@ -22,7 +22,7 @@ int main(int argc, char**argv)
 				fprintf(f, "extern void libelektratools_LTX_%s (void);\n", toolsfunc[j]);
 			}
 		} else {
-			fprintf(f, "extern void libelektra_%s_LTX_kdbBackendFactory (void);\n\n\n\n", argv[i]);
+			fprintf(f, "extern void libelektra_%s_LTX_kdbBackendFactory (void);\n", argv[i]);
 		}
 	}
 
@@ -37,7 +37,7 @@ int main(int argc, char**argv)
 
 	printf ("Exporting symbols for default...\n");
 	fprintf(f, "\t{\"libelektra-default\", 0},\n");
-	fprintf(f, "\t{\"AkdbBackendFactory\", &libelektra_%s_LTX_kdbBackendFactory},\n", argv[1]);
+	fprintf(f, "\t{\"kdbBackendFactory\", &libelektra_%s_LTX_kdbBackendFactory},\n", argv[1]);
 
 	for (i=1; i<argc; ++i)
 	{
@@ -50,6 +50,7 @@ int main(int argc, char**argv)
 			}
 		} else {
 			printf ("Exporting symbols for %s ...\n", argv[i]);
+			fprintf(f, "\t{\"%s\", 0},\n", argv[i]);
 			fprintf(f, "\t{\"kdbBackendFactory\", &libelektra_%s_LTX_kdbBackendFactory},\n", argv[i]);
 		}
 	}
