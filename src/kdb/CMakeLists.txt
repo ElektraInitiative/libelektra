@@ -12,16 +12,30 @@ if (BUILD_SHARED)
 	add_executable (kdb ${SOURCES})
 
 	target_link_libraries (kdb elektra)
+
+	install_targets (/bin kdb)
 endif (BUILD_SHARED)
 
 if (BUILD_FULL)
 	add_executable (kdb-full ${SOURCES})
 
-	target_link_libraries (kdb-full elektra-full)
+	if (BUILD_TOOLS)
+		target_link_libraries (kdb-full elektra-full elektratools)
+	else (BUILD_TOOLS)
+		target_link_libraries (kdb-full elektra-full)
+	endif (BUILD_TOOLS)
+
+	install_targets (/bin kdb-full)
 endif (BUILD_FULL)
 
 if (BUILD_STATIC)
 	add_executable (kdb-static ${SOURCES})
 
-	target_link_libraries (kdb-static elektra-static)
+	if (BUILD_TOOLS)
+		target_link_libraries (kdb-static elektra-static elektratools-static elektra-static)
+	else (BUILD_TOOLS)
+		target_link_libraries (kdb-static elektra-static)
+	endif (BUILD_TOOLS)
+
+	install_targets (/bin kdb-static)
 endif (BUILD_STATIC)
