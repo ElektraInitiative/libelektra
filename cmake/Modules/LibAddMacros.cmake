@@ -11,6 +11,20 @@ macro (copy_file filename)
 		)
 endmacro (copy_file)
 
+
+#- Adds all headerfiles of global include path to the given variable
+#
+#  ADD_HEADERS (variable)
+#
+# example:
+#add_headers (SOURCES)
+#SOURCES now contain the names of all global header files
+#
+# thus the necessary directories are also included within the macro
+# don't execute this within a loop.
+#
+# The added files will be always the same anyway. Example see in
+# tests/CMakeLists.txt
 macro (add_headers HDR_FILES)
 	include_directories ("${PROJECT_BINARY_DIR}/src/include")
 	file (GLOB BIN_HDR_FILES ${PROJECT_BINARY_DIR}/src/include/*.h)
@@ -24,7 +38,7 @@ endmacro (add_headers)
 
 #- Add sources for a target
 #
-#  ADD_SOURCES(<target> <source1> [<source2> ...])
+#  ADD_SOURCES (<target> <source1> [<source2> ...])
 #
 # The target should add the sources using:
 #
