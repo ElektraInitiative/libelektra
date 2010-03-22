@@ -89,6 +89,13 @@ endmacro (remove_backend)
 #
 #Thank to Michael Wild
 #
+#
+# elektra...        are the sources for all elektra targets
+# elektra-shared... are the additional sources
+#                   for elektra SHARED only (excludes elektra-full)
+# elektra-full...   are the additional sources for the versions
+#                   with all backends built-in (excludes elektra-shared)
+#
 function (add_sources target)
 	# define the <target>_SRCS properties if necessary
 	get_property (prop_defined GLOBAL PROPERTY ${target}_SRCS DEFINED)
