@@ -4,6 +4,7 @@
 
 int kdbLibInit(void)
 {
+	return 0;
 }
 
 kdbLibHandle kdbLibLoad(const char *module)

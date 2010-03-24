@@ -5,4 +5,4 @@ add_sources(elektra-full ${SOURCES})
 add_headers(SOURCES)
 
 add_library(elektra-filesys MODULE ${SOURCES})
-install_targets (/lib elektra-filesys)
+install (TARGETS elektra-filesys DESTINATION lib/elektra)

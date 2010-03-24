@@ -24,6 +24,18 @@ macro (create_symlink old new)
 		)
 endmacro (create_symlink)
 
+# Make a directory
+#
+# mkdir dir
+#
+macro (mkdir dir)
+	execute_process (
+			COMMAND
+			${CMAKE_COMMAND} -E make_directory
+				"${dir}"
+		)
+endmacro (mkdir)
+
 
 #- Adds all headerfiles of global include path to the given variable
 #
