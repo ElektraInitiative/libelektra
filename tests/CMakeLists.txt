@@ -15,6 +15,12 @@
 # To run tests with valgrind, type:
 #  ctest -T memcheck
 #
+# To run verbose (to see output and commands), type:
+#  ctest -V
+#
+# For example, to run keyset test with valgrind and verbose, type:
+#  ctest -V -T memcheck -R ks
+#
 ##
 
 include (LibAddMacros)
