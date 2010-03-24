@@ -6,4 +6,3 @@ add_headers(SOURCES)
 
 add_library(elektra-filesys MODULE ${SOURCES})
 install_targets (/lib elektra-filesys)
-remove_backend (filesys "mag net")
