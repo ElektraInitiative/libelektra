@@ -12,6 +12,19 @@ macro (copy_file src dest)
 endmacro (copy_file)
 
 
+# Create a symlink
+#create_symlink old new    - create a symbolic link new -> old
+#
+macro (create_symlink old new)
+	execute_process (
+			COMMAND
+			${CMAKE_COMMAND} -E create_symlink
+				"${old}"
+				"${new}"
+		)
+endmacro (create_symlink)
+
+
 #- Adds all headerfiles of global include path to the given variable
 #
 #  ADD_HEADERS (variable)
@@ -47,7 +60,7 @@ endmacro (add_headers)
 macro (remove_backend name reason)
 	set (TMP ${BACKENDS})
 	message ("-- Exclude Backend ${name} because ${reason}")
-	list (REMOVE_ITEM TMP fstab)
+	list (REMOVE_ITEM TMP ${name})
 	set (BACKENDS ${TMP} CACHE STRING "Which backends to use?" FORCE)
 endmacro (remove_backend)
 

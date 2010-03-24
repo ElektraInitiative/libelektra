@@ -4,6 +4,7 @@
 # Here the cache variables are set
 
 set (BACKENDS filesys hosts fstab CACHE STRING "Which backends to use?")
+set (BACKEND_DEFAULT filesys CACHE STRING "Which should be the default backend?")
 
 set (KDB_DB_SYSTEM "/etc" CACHE PATH "Where should be the system configuration?")
 
