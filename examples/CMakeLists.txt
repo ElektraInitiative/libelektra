@@ -1,6 +1,6 @@
 project (examples)
 
-find_package (elektra)
+#find_package (Elektra)
 
 if (ELEKTRA_FOUND)
 	include (${Elektra_USE_FILE})
