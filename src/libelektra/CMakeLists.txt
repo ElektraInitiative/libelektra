@@ -62,7 +62,7 @@ if (BUILD_SHARED)
 			VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION})
 	set_target_properties (elektra PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 
-	install_targets (/lib elektra)
+	install (TARGETS elektra DESTINATION lib)
 endif (BUILD_SHARED)
 
 if (BUILD_FULL OR BUILD_STATIC)
@@ -92,7 +92,7 @@ if (BUILD_FULL)
 			VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION})
 	set_target_properties (elektra-full PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 
-	install_targets (/lib elektra-full)
+	install (TARGETS elektra-full DESTINATION lib)
 endif (BUILD_FULL)
 
 
@@ -107,7 +107,7 @@ if (BUILD_STATIC)
 			VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION})
 	set_target_properties (elektra-static PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 
-	install_targets (/lib elektra-static)
+	install (TARGETS elektra-static DESTINATION lib)
 endif (BUILD_STATIC)
 
 #if you want the same name for those 3 libraries, here is how to do it:

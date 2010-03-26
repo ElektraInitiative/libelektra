@@ -13,7 +13,7 @@ if (BUILD_SHARED)
 
 	target_link_libraries (kdb elektra)
 
-	install_targets (/bin kdb)
+	install (TARGETS kdb DESTINATION bin)
 endif (BUILD_SHARED)
 
 if (BUILD_FULL)
@@ -25,7 +25,7 @@ if (BUILD_FULL)
 		target_link_libraries (kdb-full elektra-full)
 	endif (BUILD_TOOLS)
 
-	install_targets (/bin kdb-full)
+	install (TARGETS kdb-full DESTINATION bin)
 endif (BUILD_FULL)
 
 if (BUILD_STATIC)
@@ -37,5 +37,5 @@ if (BUILD_STATIC)
 		target_link_libraries (kdb-static elektra-static)
 	endif (BUILD_TOOLS)
 
-	install_targets (/bin kdb-static)
+	install (TARGETS kdb-static DESTINATION bin)
 endif (BUILD_STATIC)
