@@ -15,9 +15,6 @@
 
 #include <kdb-tool.h>
 
-#define QUOTE_(x) #x
-#define QUOTE(x) QUOTE_(x)
-
 /**
  * Prints out help to the kdb (1) command.
  * --help does not work
@@ -33,7 +30,7 @@ int commandHelp() {
 	printf("Use kdb to manipulate the Key Database.\n");
 	printf("\n");
 
-	printf("libelektra " QUOTE(KDB_VERSION) " is used\n");
+	printf("libelektra " KDB_VERSION " is used\n");
 	printf("\n");
 
 	printf("ARGUMENTS\n");
