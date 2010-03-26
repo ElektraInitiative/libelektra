@@ -23,5 +23,5 @@ if (BUILD_STATIC)
 	set_target_properties (elektratools-static PROPERTIES
 			COMPILE_DEFINITIONS HAVE_CONFIG_H
 			)
-	target_link_libraries (elektratools-static ${LIBXML2_LIBRARIES})
+	target_link_libraries (elektratools-static elektra-static ${LIBXML2_LIBRARIES})
 endif (BUILD_STATIC)
