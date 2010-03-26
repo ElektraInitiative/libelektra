@@ -15,3 +15,4 @@ if (BUILD_TOOLS)
 endif (BUILD_TOOLS)
 
 add_subdirectory (kdb)
+add_subdirectory (preload)

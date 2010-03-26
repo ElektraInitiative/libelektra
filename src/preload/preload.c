@@ -223,11 +223,13 @@ int preload_configuration(KDB *handle)
 			KEY_VALUE, "",
 			KEY_COMMENT, "Configuration for libelektratools.",
 			KEY_END),
+		/*
 		keyNew(	"system/elektra/xml/schemapath",
 			KEY_VALUE, KDB_SCHEMA_PATH,
 			KEY_COMMENT, "Schemapath to elektra xml-schema.\n"
 			"The schema is needed to validate xml files for in- and export.",
 			KEY_END),
+		*/
 		keyNew(	"system/elektra/mountpoints",
 			KEY_DIR,
 			KEY_VALUE, "",
