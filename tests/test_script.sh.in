@@ -6,10 +6,10 @@
 nbError=0
 nbTest=0
 
-if [ "z$srcdir" = 'z' ]; then
+if [ "z$1" = 'z' ]; then
   HOME=.
 else
-  HOME=$srcdir
+  HOME=$1
 fi
 export HOME
 
@@ -20,8 +20,6 @@ DIR="$HOME/.kdb/$ROOT"
 USER="`id -un`"
 GROUP="`id -gn`"
 DATE="`date \"+%b %d %H:%M\"`"
-
-export KDB_DIR=".@KDB_COMMAND@"
 
 #define succeed_if(x,y) nbTest++; if (!(x)) { nbError++; printf("%s:%d: error in %s: %s\n", __FILE__, __LINE__, __FUNCTION__, y);}
 #succeed if the previous command was successful
@@ -101,22 +99,22 @@ succeed_if "Directory yet existing after delete"
 # xml tests
 #############
 
-echo "testing xml importing and exporting"
-
-@KDB_COMMAND@ import fstab.xml
-succeed_if "importing fstab.xml failed"
-
-@KDB_COMMAND@ export user/tests/fstab > fstab-gen.xml
-succeed_if "exporting user/tests/fstab failed"
-
-diff fstab-gen.xml fstab-cmp.xml
-succeed_if "xml files are not the same"
-
-rm fstab-gen.xml
-succeed_if "could not rm key-gen.xml"
-
-@KDB_COMMAND@ rm -r user/tests/fstab
+#echo "testing xml importing and exporting"
+#
+#@KDB_COMMAND@ import fstab.xml
+#succeed_if "importing fstab.xml failed"
+#
+#@KDB_COMMAND@ export user/tests/fstab > fstab-gen.xml
+#succeed_if "exporting user/tests/fstab failed"
+#
+#diff fstab-gen.xml fstab-cmp.xml
+#succeed_if "xml files are not the same"
+#
+#rm fstab-gen.xml
+#succeed_if "could not rm key-gen.xml"
+#
+#@KDB_COMMAND@ rm -r user/tests/fstab
 
 echo test_script.sh RESULTS: $nbTest "test(s)" done $nbError "error(s)".
-#exit $nbError
+exit $nbError
 
