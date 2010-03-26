@@ -36,11 +36,7 @@ macro (do_test source)
 	if (BUILD_FULL)
 		target_link_libraries (${source} elektra-full elektratools)
 	else (BUILD_FULL)
-		if (BUILD_STATIC)
-			target_link_libraries (${source} elektra-static elektratools-static elektra-static)
-		else (BUILD_STATIC)
-			message (FATAL_ERROR "Test cases should not be included if neither BUILD_FULL nor BUILD_STATIC is ON")
-		endif (BUILD_STATIC)
+		target_link_libraries (${source} elektra-static elektratools-static elektra-static)
 	endif (BUILD_FULL)
 
 	set_target_properties (${source} PROPERTIES
@@ -61,5 +57,18 @@ foreach (file ${TESTS})
 	get_filename_component (name ${file} NAME_WE)
 	do_test (${name})
 endforeach (file ${TESTS})
+
+if (BUILD_FULL)
+	get_target_property (KDB_COMMAND kdb-full LOCATION)
+else (BUILD_FULL)
+	get_target_property (KDB_COMMAND kdb-static LOCATION)
+endif (BUILD_FULL)
+
+
+configure_file(
+		test_script.sh.in
+		"${PROJECT_BINARY_DIR}/tests/test_script.sh"
+	      )
+add_test (test_script "${PROJECT_BINARY_DIR}/tests/test_script.sh" "${PROJECT_BINARY_DIR}/tests")
 
 include_directories ("${PROJECT_SOURCE_DIR}/tests")
