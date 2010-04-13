@@ -13,7 +13,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <passwd.h>
+#include "passwd.h"
 
 int kdbOpen_passwd(KDB *handle)
 {

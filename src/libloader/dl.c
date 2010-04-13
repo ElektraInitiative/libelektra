@@ -1,3 +1,19 @@
+/**Loading modules under linux.
+
+  The name of the module will be libname.
+  A .so will be appended.
+  This file will be loaded.
+
+  The path were the plugins are located,
+  e.g. /usr/src/elektra
+  need to be added with LD_LIBRARY_PATH.
+
+  The reason is that only LD_LIBRARY_PATH
+  also loads libraries which are seen by
+  symlink only. That feature is needed for
+  libelektra-default.
+  */
+
 #include <dlfcn.h>
 
 #include "kdbloader.h"
