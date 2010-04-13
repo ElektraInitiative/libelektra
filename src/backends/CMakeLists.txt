@@ -7,7 +7,7 @@ list (FIND BACKENDS ${BACKEND_DEFAULT} output)
 if (output GREATER -1)
 	mkdir (${CMAKE_BINARY_DIR}/dist/lib/elektra)
 	create_symlink (
-			${CMAKE_BINARY_DIR}/dist/lib/elektra/libelektra-${BACKEND_DEFAULT}.so
+			libelektra-${BACKEND_DEFAULT}.so
 			${CMAKE_BINARY_DIR}/dist/lib/elektra/libelektra-default.so
 			)
 else (output GREATER -1)

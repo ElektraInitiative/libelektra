@@ -16,6 +16,7 @@ if (BUILD_SHARED OR BUILD_FULL)
 			COMPILE_DEFINITIONS HAVE_CONFIG_H
 			)
 	target_link_libraries (elektratools ${LIBXML2_LIBRARIES})
+	install (TARGETS elektratools DESTINATION lib)
 endif (BUILD_SHARED OR BUILD_FULL)
 
 if (BUILD_STATIC)
@@ -24,4 +25,5 @@ if (BUILD_STATIC)
 			COMPILE_DEFINITIONS HAVE_CONFIG_H
 			)
 	target_link_libraries (elektratools-static elektra-static ${LIBXML2_LIBRARIES})
+	install (TARGETS elektratools DESTINATION lib)
 endif (BUILD_STATIC)

@@ -2,6 +2,9 @@
 
 #include "kdbloader.h"
 
+#include <stdlib.h>
+#include <string.h>
+
 int kdbLibInit(void)
 {
 	return 0;
@@ -9,7 +12,14 @@ int kdbLibInit(void)
 
 kdbLibHandle kdbLibLoad(const char *module)
 {
-	return (kdbLibHandle) dlopen(module, RTLD_LAZY);
+	char *name = malloc (strlen(module) + sizeof (".so") + 1);
+	strcpy (name, module);
+	strcat (name, ".so");
+
+	kdbLibHandle ret = (kdbLibHandle) dlopen(name, RTLD_LAZY);
+
+	free (name);
+	return ret;
 }
 
 kdbLibFunc kdbLibSym(kdbLibHandle handle, const char *symbol)
