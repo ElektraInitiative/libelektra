@@ -300,6 +300,8 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 			keyDel (toSet);
 			return -1;
 		}
+
+		if (toSet->data) free (toSet->data);
 		toSet->data = metaStringDup;
 	} else {
 		/*The request is to remove the meta string.
