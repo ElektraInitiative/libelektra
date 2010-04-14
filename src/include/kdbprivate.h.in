@@ -600,6 +600,7 @@ int keyClose(Key *key);
 
 int ksInit(KeySet *ks);
 int ksClose(KeySet *ks);
+int ksClear(KeySet *ks);
 
 /** Test a bit. @see set_bit(), clear_bit() */
 #define test_bit(var,bit)            ((var) &   (bit))

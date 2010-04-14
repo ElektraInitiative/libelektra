@@ -103,11 +103,12 @@ const char *keyMeta(const Key *key, const char* metaName)
 	if (!key->meta) return 0;
 
 	search = keyNew (KEY_END);
-	search->key = metaName;
+	search->key = kdbiStrDup(metaName);
+
+	if (!search->key) return 0; /*Duplication did not work*/
 
 	ret = ksLookup(key->meta, search, 0);
 
-	search->key = 0;
 	keyDel (search);
 
 	if (!ret) return 0; // no such metaName
@@ -115,10 +116,30 @@ const char *keyMeta(const Key *key, const char* metaName)
 }
 
 ssize_t keyGetMetaSize(const Key *key, const char* metaName)
-{}
+{
+	return 0;
+}
 
 ssize_t keyGetMeta(const Key *key, const char* metaName,
 	char *returnedMetaString, size_t maxSize);
+
+/*TODO: What to allow?
+  currently allowed are: 0-9 A-Z [ \ ] _ a-z
+  */
+static ssize_t kdbiStrCheck (const char* str)
+{
+	ssize_t ret = 0;
+	while (*str != 0)
+	{
+		if (*str < '0' || *str >'z') return -1;
+		if (*str > '9' && *str < 'A') return -1;
+		if (*str == '^') return -1;
+		if (*str == '`') return -1;
+		++str;
+		++ret;
+	}
+	return ret;
+}
 
 /**Set a new Meta-Information.
  *
@@ -131,7 +152,10 @@ ssize_t keyGetMeta(const Key *key, const char* metaName,
  * It will modify a existing Pair of Meta-Information if the
  * the metaName was inserted already.
  *
- * @return -1 on error
+ *
+ *
+ * @return -1 on error if key or metaName is 0, out of memory
+ *         or names are not valid
  * @return 0 if the Meta-Information for metaName was removed
  * @return size (>0) of newMetaString if Meta-Information was
  *         successfully added
@@ -146,7 +170,11 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 	ssize_t size;
 
 	if (!key) return -1;
-	size = kdbiStrLen(newMetaString);
+	if (!metaName) return -1;
+	size = kdbiStrCheck (metaName);
+	if (size == -1) return -1;
+	size = kdbiStrCheck (newMetaString);
+	if (size == -1) return -1;
 
 	toSet = keyNew(KEY_END);
 	if (!toSet) return -1;
