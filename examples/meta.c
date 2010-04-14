@@ -28,6 +28,7 @@ int main()
 	keySetMeta(k, "hello", "goodbye");
 
 	printf ("Metadata hello now has the value %s\n", keyMeta(k, "hello"));
+	keyDel (k);
 
 	return 0;
 }
