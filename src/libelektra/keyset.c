@@ -718,8 +718,7 @@ int ksRewind(KeySet *ks)
  * is returned.
  *
  * You'll get a NULL pointer if the key after the end of the KeySet was reached.
- * It will set the cursor to the beginning of
- * the KeySet and the next time the first key is returned.
+ * On subsequent calls of ksNext it will still return the NULL pointer.
  *
  * The @p ks internal cursor will be changed, so it is not const.
  *
