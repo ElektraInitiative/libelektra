@@ -577,6 +577,7 @@ int keyClear(Key *key)
 	if (key->data) free(key->data);
 	if (key->comment) free(key->comment);
 	if (key->owner) free(key->owner);
+	if (key->meta) ksDel(key->meta);
 
 	memset(key,0,sizeof(Key));
 	keyInit (key);

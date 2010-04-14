@@ -466,7 +466,9 @@ ssize_t keySetBinary(Key *key, const void *newBinary, size_t dataSize)
  * @param key the key object to work with
  * @param newBinary array of bytes to set as the value
  * @param dataSize number bytes to use from newBinary, including the final NULL
- * @return The number of bytes actually set in internall buffer.
+ * @return The number of bytes actually set in internal buffer.
+ * @return 1 if it was a string which was deleted
+ * @return 0 if it was a binary which was deleted
  * @see keySetType(), keySetString(), keySetBinary()
  * @ingroup keyvalue
  */

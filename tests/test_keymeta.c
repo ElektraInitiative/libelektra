@@ -72,6 +72,19 @@ void test_basic()
 	keyDel (k);
 }
 
+void test_iterate()
+{
+	Key *key;
+
+	key = keyNew ("user/test", KEY_END);
+	exit_if_fail (key, "could not create new key");
+	succeed_if (keyRewind(key) == 0, "Could not rewind empty key");
+	succeed_if (keyNext(key) == 0, "Could get next meta name, even if it is empty");
+	succeed_if (keyCurrent(key) == 0, "Could get next meta value, even if it is empty");
+
+	keyDel (key);
+}
+
 
 int main(int argc, char** argv)
 {
@@ -80,6 +93,7 @@ int main(int argc, char** argv)
 
 	init (argc, argv);
 	test_basic();
+	test_iterate();
 
 
 	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
