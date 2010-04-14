@@ -129,6 +129,17 @@ ssize_t keyDecRef(Key *key);
 ssize_t keyGetRef(const Key *key);
 
 /* Meta Info */
+int keyRewind(Key *ks);
+const char *keyNext(Key *ks);
+const char *keyCurrent(const Key *ks);
+
+const char *keyMeta(const Key *key, const char* metaName);
+ssize_t keyGetMetaSize(const Key *key, const char* metaName);
+ssize_t keyGetMeta(const Key *key, const char* metaName,
+	char *returnedMetaString, size_t maxSize);
+ssize_t keySetMeta(Key *key, const char* metaName,
+	const char *newMetaString);
+
 int keyStat(Key *key);
 int keyRemove(Key *key);
 

@@ -76,6 +76,111 @@
 #include "kdbprivate.h"
 
 
+/**Returns the Value of a Meta-Information.
+ *
+ * This is a much more efficient version of keyGetMeta().
+ * But unlike with keyGetMeta you are not allowed to modify
+ * the resulting string.
+ *
+ * @code
+ * @endcode
+ *
+ * keyMeta() can be used to get the value of the current value,
+ * see iterator keyNext(), keyCurrent()
+ *
+ * @return 0 if the key or metaName is 0
+ * @return 0 if no such metaName is found
+ * @return value of Meta-Information if Meta-Information is found
+ * @see keyGetMetaSize(), keyGetMeta(), keySetMeta()
+ **/
+const char *keyMeta(const Key *key, const char* metaName)
+{
+	Key *ret;
+	Key *search;
+
+	if (!key) return 0;
+	if (!metaName) return 0;
+	if (!key->meta) return 0;
+
+	search = keyNew (KEY_END);
+	search->key = metaName;
+
+	ret = ksLookup(key->meta, search, 0);
+
+	search->key = 0;
+	keyDel (search);
+
+	if (!ret) return 0; // no such metaName
+	return keyValue(ret);
+}
+
+ssize_t keyGetMetaSize(const Key *key, const char* metaName)
+{}
+
+ssize_t keyGetMeta(const Key *key, const char* metaName,
+	char *returnedMetaString, size_t maxSize);
+
+/**Set a new Meta-Information.
+ *
+ * Will set a new Meta-Information pair consisting of
+ * metaName and newMetaString.
+ *
+ * Will add a new Pair for Meta-Information if metaName was
+ * not added up to now.
+ *
+ * @return -1 on error
+ * @return 0 if the Meta-Information for metaName was removed
+ * @return size (>0) of newMetaString if Meta-Information was
+ *         successfully added
+ **/
+ssize_t keySetMeta(Key *key, const char* metaName,
+	const char *newMetaString)
+{
+	Key *toSet;
+	char *metaNameDup;
+	char *metaStringDup;
+	ssize_t size;
+
+	if (!key) return -1;
+	size = kdbiStrLen(newMetaString);
+
+	toSet = keyNew(KEY_END);
+	if (!toSet) return -1;
+	metaNameDup = kdbiStrDup(metaName);
+	if (!metaNameDup)
+	{
+		keyDel (toSet);
+		return -1;
+	}
+	toSet->key = metaNameDup;
+
+	if (newMetaString && size > 1)
+	{
+		/*Add the meta information to the key*/
+		metaStringDup = kdbiStrDup(newMetaString);
+		if (!metaStringDup)
+		{
+			keyDel (toSet);
+			return -1;
+		}
+		toSet->data = metaStringDup;
+	}
+
+	if (!key->meta)
+	{
+		/*Create a new place for meta information.*/
+		key->meta = ksNew(0);
+		if (!key->meta)
+		{
+			keyDel (toSet);
+			return -1;
+		}
+	}
+
+	ksAppendKey (key->meta, toSet);
+	return size;
+}
+
 
 /**
  * Only stat a key instead of receiving value, comment and key type.

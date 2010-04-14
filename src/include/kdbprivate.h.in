@@ -286,6 +286,11 @@ struct _Key {
 	 * @see ksPop(), ksAppendKey(), ksAppend()
 	 */
 	size_t        ksReference;
+
+	/**
+	 * All the key's meta information.
+	 */
+	KeySet *      meta;
 };
 
 

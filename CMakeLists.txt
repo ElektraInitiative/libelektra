@@ -39,4 +39,5 @@ if (BUILD_TESTING AND BUILD_TOOLS)
 	endif (BUILD_FULL OR BUILD_STATIC)
 endif (BUILD_TESTING AND BUILD_TOOLS)
 
-add_subdirectory (examples EXCLUDE_FROM_ALL)
+add_subdirectory (examples)
+#add_subdirectory (examples EXCLUDE_FROM_ALL)
