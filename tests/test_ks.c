@@ -493,6 +493,30 @@ void test_ksIterate()
 	ksAppendKey(ks,keyNew("user/5", KEY_END));
 	succeed_if(ksGetSize(ks) == 5, "could not append 5 keys");
 
+	succeed_if (ksRewind(ks) == 0, "Could not rewind keyset");
+	succeed_if (ksRewind(ks) == 0, "Could not rewind keyset twice");
+
+	succeed_if (ksNext(ks) != 0, "Could not get first key");
+	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/1"), "This is not the first key");
+
+	succeed_if (ksNext(ks) != 0, "Could not get second key");
+	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/2"), "This is not the second key");
+
+	succeed_if (ksNext(ks) != 0, "Could not get third key");
+	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/3"), "This is not the third key");
+
+	succeed_if (ksNext(ks) != 0, "Could not get fourth key");
+	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/4"), "This is not the fourth key");
+
+	succeed_if (ksNext(ks) != 0, "Could not get fifth key");
+	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/5"), "This is not the fifth key");
+
+	succeed_if (ksNext(ks) == 0, "Could not iterate over last");
+	succeed_if (ksCurrent(ks) == 0, "This is not the beyond last key");
+
+	succeed_if (ksNext(ks) == 0, "Could not iterate over last (again)");
+	succeed_if (ksCurrent(ks) == 0, "This is not the beyond last key (again)");
+
 	key = ksPop(ks);
 	succeed_if(strcmp(keyName(key), "user/5") == 0, "1 key not on first place");
 	succeed_if (keyDel (key) == 0, "could not del popped key");
@@ -947,8 +971,6 @@ void test_ksLookup()
 	printf ("Test lookup\n");
 
 	int i,j;
-	Key *cur=0;
-	Key *found=0;
 	Key *k[1000];
 	KeySet *ks = ksNew (30,
 		k[0]=keyNew ("user/rem3", KEY_REMOVE, KEY_DIR, KEY_END),
@@ -1025,8 +1047,6 @@ void test_ksLookupByName()
 	printf ("Test lookup by name\n");
 
 	int i,j;
-	Key *cur=0;
-	Key *found=0;
 	char *name[1000];
 	Key *k[1000];
 	KeySet *ks = ksNew (30,
