@@ -110,8 +110,7 @@ int keyRewind(Key *key)
  * Name of Meta Information is returned.
  *
  * You'll get a NULL pointer if the meta information after the end of the Key was reached.
- * It will set the cursor to the beginning of
- * the Key's meta information and the next time the first meta information is returned.
+ * On subsequent calls of keyNext it will still return the NULL pointer.
  *
  * The @p key internal cursor will be changed, so it is not const.
  *
