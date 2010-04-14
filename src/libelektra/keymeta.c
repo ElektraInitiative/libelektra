@@ -128,10 +128,14 @@ ssize_t keyGetMeta(const Key *key, const char* metaName,
  * Will add a new Pair for Meta-Information if metaName was
  * not added up to now.
  *
+ * It will modify a existing Pair of Meta-Information if the
+ * the metaName was inserted already.
+ *
  * @return -1 on error
  * @return 0 if the Meta-Information for metaName was removed
  * @return size (>0) of newMetaString if Meta-Information was
  *         successfully added
+ * @see keyMeta(), keyGetMetaSize(), keyGetMeta()
  **/
 ssize_t keySetMeta(Key *key, const char* metaName,
 	const char *newMetaString)
@@ -146,6 +150,7 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 
 	toSet = keyNew(KEY_END);
 	if (!toSet) return -1;
+
 	metaNameDup = kdbiStrDup(metaName);
 	if (!metaNameDup)
 	{
@@ -153,6 +158,21 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 		return -1;
 	}
 	toSet->key = metaNameDup;
+
+	/*Lets have a look if the key is already inserted.*/
+	if (key->meta)
+	{
+		Key *ret;
+		ret = ksLookup(key->meta, toSet, KDB_O_POP);
+		/*TODO: Performance might get improved if the key is
+		  not popped, but handled directly here.*/
+		if (ret)
+		{
+			/*It is already there, so lets use existing one*/
+			keyDel (toSet);
+			toSet = ret;
+		}
+	}
 
 	if (newMetaString && size > 1)
 	{
