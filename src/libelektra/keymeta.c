@@ -75,8 +75,96 @@
 #include "kdb.h"
 #include "kdbprivate.h"
 
+/**Rewind the internal iterator to first meta data.
+ *
+ * Use it to set the cursor to the beginning of the Key Meta Infos.
+ * keyCurrent() will then always return NULL afterwards. So
+ * you want to keyNext() first.
+ *
+ * @code
+Key *key;
+const char *name;
 
-/**Returns the Value of a Meta-Information.
+keyRewind (key);
+while ((name = keyNext (key))!=0) {}
+ * @endcode
+ *
+ * @param key the key object to work with
+ * @return 0 on success
+ * @return -1 on NULL pointer
+ * @see keyNext(), keyCurrent()
+ * @see ksRewind() for pedant in iterator interface of KeySet
+ **/
+int keyRewind(Key *key)
+{
+	if (!key) return -1;
+	if (!key->meta) return 0;
+
+	return ksRewind(key->meta);
+}
+
+/** Iterate to the next meta information.
+ *
+ * Keys have an internal cursor that can be reset with keyRewind(). Every
+ * time keyNext() is called the cursor is incremented and the new current
+ * Name of Meta Information is returned.
+ *
+ * You'll get a NULL pointer if the meta information after the end of the Key was reached.
+ * It will set the cursor to the beginning of
+ * the Key's meta information and the next time the first meta information is returned.
+ *
+ * The @p key internal cursor will be changed, so it is not const.
+ *
+ * @note You must not delete or change the returned buffer,
+ *       use keySetMeta() if you want to delete/change it.
+ *
+ * @param key the key object to work with
+ * @return a buffer to the name of the key's meta info
+ * @return 0 when the end is reached
+ * @return 0 on NULL pointer
+  *
+  * @see ksNext() for pedant in iterator interface of KeySet
+  **/
+const char *keyNext(Key *key)
+{
+	Key *ret;
+	if (!key) return 0;
+	if (!key->meta) return 0;
+
+	ret = ksNext(key->meta);
+
+	if (!ret) return 0;
+	return keyName(ret);
+}
+
+/**Returns the Value of a Meta-Information which is current.
+ *
+ * The pointer is NULL if you reached the end or after
+ * ksRewind().
+ *
+ * @note You must not delete or change the returned buffer,
+ *    use keySetMeta() if you want to delete or change it.
+ *
+ * @param ks the keyset object to work with
+ * @return a buffer to the value pointed by @p key's cursor
+ * @return 0 on NULL pointer
+ * @see keyNext(), keyRewind()
+ *
+ * @see ksCurrent() for pedant in iterator interface of KeySet
+  **/
+const char *keyCurrent(const Key *key)
+{
+	Key *ret;
+	if (!key) return 0;
+	if (!key->meta) return 0;
+
+	ret = ksCurrent(key->meta);
+
+	if (!ret) return 0;
+	return keyValue(ret);
+}
+
+/**Returns the Value of a Meta-Information given by name.
  *
  * This is a much more efficient version of keyGetMeta().
  * But unlike with keyGetMeta you are not allowed to modify

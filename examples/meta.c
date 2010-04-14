@@ -5,6 +5,7 @@
 int main()
 {
 	Key *k;
+	const char *name;
 	k = keyNew("user/metakey", KEY_END);
 	keySetMeta(k, "hello", "hello_world");
 
@@ -28,6 +29,14 @@ int main()
 	keySetMeta(k, "hello", "goodbye");
 
 	printf ("Metadata hello now has the value %s\n", keyMeta(k, "hello"));
+
+	printf ("Now we will output all meta data of the key:\n");
+	keyRewind (k);
+	while ((name = keyNext (k))!=0)
+	{
+		printf ("%s=%s\n", name, keyCurrent(k));
+	}
+
 	keyDel (k);
 
 	return 0;
