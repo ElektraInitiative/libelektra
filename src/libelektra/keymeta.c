@@ -152,7 +152,7 @@ static ssize_t kdbiStrCheck (const char* str)
  * It will modify a existing Pair of Meta-Information if the
  * the metaName was inserted already.
  *
- *
+ * It will remove a meta information if newMetaString is 0.
  *
  * @return -1 on error if key or metaName is 0, out of memory
  *         or names are not valid
@@ -173,8 +173,11 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 	if (!metaName) return -1;
 	size = kdbiStrCheck (metaName);
 	if (size == -1) return -1;
-	size = kdbiStrCheck (newMetaString);
-	if (size == -1) return -1;
+	if (newMetaString)
+	{
+		size = kdbiStrCheck (newMetaString);
+		if (size == -1) return -1;
+	}
 
 	toSet = keyNew(KEY_END);
 	if (!toSet) return -1;
@@ -192,8 +195,6 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 	{
 		Key *ret;
 		ret = ksLookup(key->meta, toSet, KDB_O_POP);
-		/*TODO: Performance might get improved if the key is
-		  not popped, but handled directly here.*/
 		if (ret)
 		{
 			/*It is already there, so lets use existing one*/
@@ -202,7 +203,7 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 		}
 	}
 
-	if (newMetaString && size > 1)
+	if (newMetaString)
 	{
 		/*Add the meta information to the key*/
 		metaStringDup = kdbiStrDup(newMetaString);
@@ -212,6 +213,11 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 			return -1;
 		}
 		toSet->data = metaStringDup;
+	} else {
+		/*The request is to remove the meta string.
+		  So simply drop it.*/
+		keyDel (toSet);
+		return 0;
 	}
 
 	if (!key->meta)
