@@ -31,10 +31,10 @@ int main()
 	printf ("Metadata hello now has the value %s\n", keyMeta(k, "hello"));
 
 	printf ("Now we will output all meta data of the key:\n");
-	keyRewind (k);
-	while ((name = keyNext (k))!=0)
+	keyRewindMeta (k);
+	while ((name = keyNextMeta (k))!=0)
 	{
-		printf ("%s=%s\n", name, keyCurrent(k));
+		printf ("%s=%s\n", name, keyCurrentMeta(k));
 	}
 
 	keyDel (k);

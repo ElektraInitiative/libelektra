@@ -692,7 +692,7 @@ Key *ksPop(KeySet *ks)
  *
  * @code
 ksRewind (ks);
-while ((key = keyNext (ks))!=0) {}
+while ((key = keyNextMeta (ks))!=0) {}
  * @endcode
  *
  * @param ks the keyset object to work with
@@ -718,7 +718,7 @@ int ksRewind(KeySet *ks)
  * is returned.
  *
  * You'll get a NULL pointer if the key after the end of the KeySet was reached.
- * On subsequent calls of ksNext it will still return the NULL pointer.
+ * On subsequent calls of ksNext() it will still return the NULL pointer.
  *
  * The @p ks internal cursor will be changed, so it is not const.
  *
@@ -840,13 +840,13 @@ Key *ksTail(const KeySet *ks)
  * @code
 cursor_t jump;
 ksRewind (ks);
-while ((key = keyNext (ks))!=0)
+while ((key = keyNextMeta (ks))!=0)
 {
 	// now mark this key
 	jump = ksGetCursor(ks);
 
 	//code..
-	keyNext (ks); // now browse on
+	keyNextMeta (ks); // now browse on
 	// use ksCurrent(ks) to check the keys
 	//code..
 
@@ -916,7 +916,7 @@ cursor_t cursor;
 ..
 // key now in any position here
 cursor = ksGetCursor (ks);
-while ((key = keyNext (ks))!=0) {}
+while ((key = keyNextMeta (ks))!=0) {}
 ksSetCursor (ks, cursor); // reset state
 ksCurrent(ks); // in same position as before
  * @endcode

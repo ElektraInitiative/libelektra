@@ -78,24 +78,25 @@
 /**Rewind the internal iterator to first meta data.
  *
  * Use it to set the cursor to the beginning of the Key Meta Infos.
- * keyCurrent() will then always return NULL afterwards. So
- * you want to keyNext() first.
+ * keyCurrentMeta() will then always return NULL afterwards. So
+ * you want to keyNextMeta() first.
  *
  * @code
 Key *key;
 const char *name;
 
-keyRewind (key);
-while ((name = keyNext (key))!=0) {}
+keyRewindMeta (key);
+while ((name = keyNextMeta (key))!=0) {}
  * @endcode
  *
  * @param key the key object to work with
  * @return 0 on success
+ * @return 0 if there is no meta information for that key
  * @return -1 on NULL pointer
- * @see keyNext(), keyCurrent()
+ * @see keyNextMeta(), keyCurrentMeta()
  * @see ksRewind() for pedant in iterator interface of KeySet
  **/
-int keyRewind(Key *key)
+int keyRewindMeta(Key *key)
 {
 	if (!key) return -1;
 	if (!key->meta) return 0;
@@ -105,12 +106,12 @@ int keyRewind(Key *key)
 
 /** Iterate to the next meta information.
  *
- * Keys have an internal cursor that can be reset with keyRewind(). Every
- * time keyNext() is called the cursor is incremented and the new current
+ * Keys have an internal cursor that can be reset with keyRewindMeta(). Every
+ * time keyNextMeta() is called the cursor is incremented and the new current
  * Name of Meta Information is returned.
  *
  * You'll get a NULL pointer if the meta information after the end of the Key was reached.
- * On subsequent calls of keyNext it will still return the NULL pointer.
+ * On subsequent calls of keyNextMeta() it will still return the NULL pointer.
  *
  * The @p key internal cursor will be changed, so it is not const.
  *
@@ -124,7 +125,7 @@ int keyRewind(Key *key)
   *
   * @see ksNext() for pedant in iterator interface of KeySet
   **/
-const char *keyNext(Key *key)
+const char *keyNextMeta(Key *key)
 {
 	Key *ret;
 	if (!key) return 0;
@@ -147,11 +148,11 @@ const char *keyNext(Key *key)
  * @param ks the keyset object to work with
  * @return a buffer to the value pointed by @p key's cursor
  * @return 0 on NULL pointer
- * @see keyNext(), keyRewind()
+ * @see keyNextMeta(), keyRewindMeta()
  *
  * @see ksCurrent() for pedant in iterator interface of KeySet
   **/
-const char *keyCurrent(const Key *key)
+const char *keyCurrentMeta(const Key *key)
 {
 	Key *ret;
 	if (!key) return 0;
@@ -173,7 +174,7 @@ const char *keyCurrent(const Key *key)
  * @endcode
  *
  * keyMeta() can be used to get the value of the current value,
- * see iterator keyNext(), keyCurrent()
+ * see iterator keyNextMeta(), keyCurrentMeta()
  *
  * @return 0 if the key or metaName is 0
  * @return 0 if no such metaName is found

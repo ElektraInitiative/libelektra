@@ -78,23 +78,23 @@ void test_iterate()
 
 	key = keyNew ("user/test", KEY_END);
 	exit_if_fail (key, "could not create new key");
-	succeed_if (keyRewind(key) == 0, "Could not rewind empty key");
-	succeed_if (keyNext(key) == 0, "Could get next meta name, even if it is empty");
-	succeed_if (keyCurrent(key) == 0, "Could get next meta value, even if it is empty");
+	succeed_if (keyRewindMeta(key) == 0, "Could not rewind empty key");
+	succeed_if (keyNextMeta(key) == 0, "Could get next meta name, even if it is empty");
+	succeed_if (keyCurrentMeta(key) == 0, "Could get next meta value, even if it is empty");
 
 	keySetMeta (key, "meta1", "meta_value");
-	succeed_if (keyRewind(key) == 0, "Could not rewind key");
-	succeed_if (!strcmp(keyNext(key), "meta1"), "keyNext does not work at 1. iteration");
-	succeed_if (!strcmp(keyCurrent(key), "meta_value"), "keyCurrent does not work at 1. iteration");
+	succeed_if (keyRewindMeta(key) == 0, "Could not rewind key");
+	succeed_if (!strcmp(keyNextMeta(key), "meta1"), "keyNextMeta does not work at 1. iteration");
+	succeed_if (!strcmp(keyCurrentMeta(key), "meta_value"), "keyCurrentMeta does not work at 1. iteration");
 
-	succeed_if (keyNext(key) == 0, "Could get next meta name, even if it is empty at 2. iteration");
-	succeed_if (keyCurrent(key) == 0, "Could get next meta value, even if it is empty at 2. iteration");
+	succeed_if (keyNextMeta(key) == 0, "Could get next meta name, even if it is empty at 2. iteration");
+	succeed_if (keyCurrentMeta(key) == 0, "Could get next meta value, even if it is empty at 2. iteration");
 
-	succeed_if (!strcmp(keyNext(key), "meta1"), "keyNext does not work at 3. iteration");
-	succeed_if (!strcmp(keyCurrent(key), "meta_value"), "keyCurrent does not work at 3. iteration");
+	succeed_if (!strcmp(keyNextMeta(key), "meta1"), "keyNextMeta does not work at 3. iteration");
+	succeed_if (!strcmp(keyCurrentMeta(key), "meta_value"), "keyCurrentMeta does not work at 3. iteration");
 
-	succeed_if (keyNext(key) == 0, "Could get next meta name, even if it is empty at 4. iteration");
-	succeed_if (keyCurrent(key) == 0, "Could get next meta value, even if it is empty at 4. iteration");
+	succeed_if (keyNextMeta(key) == 0, "Could get next meta name, even if it is empty at 4. iteration");
+	succeed_if (keyCurrentMeta(key) == 0, "Could get next meta value, even if it is empty at 4. iteration");
 
 	keyDel (key);
 }
