@@ -29,47 +29,47 @@
 
 void test_basic()
 {
-	Key *k;
-	k = keyNew("user/metakey", KEY_END);
-	exit_if_fail (k, "could not create new key");
-	succeed_if (keyMeta(k, "hello") == 0, "hello was not set up to now");
+	Key *key;
+	key = keyNew("user/metakey", KEY_END);
+	exit_if_fail (key, "could not create new key");
+	succeed_if (keyMeta(key, "hello") == 0, "hello was not set up to now");
 
-	keySetMeta(k, "hello", "hello_world");
-	succeed_if (!strcmp(keyMeta(k, "hello"), "hello_world"),
+	keySetMeta(key, "hello", "hello_world");
+	succeed_if (!strcmp(keyMeta(key, "hello"), "hello_world"),
 			"could not receive previously set meta information");
 
-	keySetMeta(k, "mode", "0644");
-	keySetMeta(k, "time", "1271234264");
-	succeed_if (!strcmp(keyMeta(k, "hello"), "hello_world"),
+	keySetMeta(key, "mode", "0644");
+	keySetMeta(key, "time", "1271234264");
+	succeed_if (!strcmp(keyMeta(key, "hello"), "hello_world"),
 			"meta info changed unexpectly");
-	succeed_if (!strcmp(keyMeta(k, "mode"), "0644"), "mode not set correctly");
-	succeed_if (!strcmp(keyMeta(k, "time"), "1271234264"), "time not set correctly");
+	succeed_if (!strcmp(keyMeta(key, "mode"), "0644"), "mode not set correctly");
+	succeed_if (!strcmp(keyMeta(key, "time"), "1271234264"), "time not set correctly");
 
-	keySetMeta(k, "hello", "between");
-	succeed_if (!strcmp(keyMeta(k, "hello"), "between"),
+	keySetMeta(key, "hello", "between");
+	succeed_if (!strcmp(keyMeta(key, "hello"), "between"),
 			"could not set meta information again");
 
-	keySetMeta(k, "hello", 0);
-	succeed_if (keyMeta(k, "hello") == 0, "could not remove meta data");
+	keySetMeta(key, "hello", 0);
+	succeed_if (keyMeta(key, "hello") == 0, "could not remove meta data");
 
-	keySetMeta(k, "hello", "goodbye");
-	succeed_if (!strcmp(keyMeta(k, "hello"), "goodbye"),
+	keySetMeta(key, "hello", "goodbye");
+	succeed_if (!strcmp(keyMeta(key, "hello"), "goodbye"),
 			"could not set meta information again (2x)");
 
-	keySetMeta(k, "empty", "");
-	succeed_if (!strcmp(keyMeta(k, "empty"), ""), "Problem with empty meta string");
+	keySetMeta(key, "empty", "");
+	succeed_if (!strcmp(keyMeta(key, "empty"), ""), "Problem with empty meta string");
 
-	keySetMeta(k, "", "empty");
-	succeed_if (!strcmp(keyMeta(k, ""), "empty"), "Problem with empty name");
+	keySetMeta(key, "", "empty");
+	succeed_if (!strcmp(keyMeta(key, ""), "empty"), "Problem with empty name");
 
-	keySetMeta(k, "", "");
-	succeed_if (!strcmp(keyMeta(k, ""), ""), "Problem with empty name and string");
+	keySetMeta(key, "", "");
+	succeed_if (!strcmp(keyMeta(key, ""), ""), "Problem with empty name and string");
 
-	keySetMeta(k, "", 0);
-	succeed_if (keyMeta(k, "") == 0, "could not remove empty meta data");
+	keySetMeta(key, "", 0);
+	succeed_if (keyMeta(key, "") == 0, "could not remove empty meta data");
 
 
-	keyDel (k);
+	keyDel (key);
 }
 
 void test_iterate()
@@ -99,6 +99,102 @@ void test_iterate()
 	keyDel (key);
 }
 
+void test_size()
+{
+	Key *key;
+	char *buffer;
+
+	key = keyNew ("user/test", KEY_END);
+	exit_if_fail (key, "could not create new key");
+	succeed_if (keyMeta(key, "hello") == 0, "hello was not set up to now");
+	succeed_if (keyGetMetaSize (key, "hello") == 0,
+			"got wrong size for empty meta value");
+
+	keySetMeta(key, "hello", "hello_world");
+	succeed_if (!strcmp(keyMeta(key, "hello"), "hello_world"),
+			"could not receive previously set meta information");
+	succeed_if (keyGetMetaSize (key, "hello") == sizeof("hello_world"),
+			"got wrong size");
+
+	keySetMeta(key, "mode", "0644");
+	keySetMeta(key, "time", "1271234264");
+	succeed_if (!strcmp(keyMeta(key, "hello"), "hello_world"),
+			"meta info changed unexpectly");
+	succeed_if (!strcmp(keyMeta(key, "mode"), "0644"), "mode not set correctly");
+	succeed_if (keyGetMetaSize (key, "mode") == sizeof("0644"),
+			"got wrong size");
+	succeed_if (!strcmp(keyMeta(key, "time"), "1271234264"), "time not set correctly");
+	succeed_if (keyGetMetaSize (key, "time") == sizeof("1271234264"),
+			"got wrong size");
+
+	keySetMeta(key, "hello", "between");
+	succeed_if (!strcmp(keyMeta(key, "hello"), "between"),
+			"could not set meta information again");
+	succeed_if (keyGetMetaSize (key, "hello") == sizeof("between"),
+			"got wrong size");
+	buffer = calloc (1, keyGetMetaSize (key, "hello"));
+	succeed_if (keyGetMeta (key, "hello", buffer, keyGetMetaSize (key, "hello")) == keyGetMetaSize (key, "hello"),
+			"could not get meta");
+	succeed_if (!strcmp(buffer, "between"), "buffer was not set correctly");
+	free (buffer);
+
+
+	keySetMeta(key, "hello", 0);
+	succeed_if (keyMeta(key, "hello") == 0, "could not remove meta data");
+	succeed_if (keyGetMetaSize (key, "hello") == 0,
+			"got wrong size");
+
+	keySetMeta(key, "hello", "goodbye");
+	succeed_if (!strcmp(keyMeta(key, "hello"), "goodbye"),
+			"could not set meta information again (2x)");
+	succeed_if (keyGetMetaSize (key, "hello") == sizeof("goodbye"),
+			"got wrong size");
+	buffer = calloc (1, keyGetMetaSize (key, "hello"));
+	succeed_if (keyGetMeta (key, "hello", buffer, keyGetMetaSize (key, "hello")) == keyGetMetaSize (key, "hello"),
+			"could not get meta");
+	succeed_if (!strcmp(buffer, "goodbye"), "buffer was not set correctly");
+	free (buffer);
+
+	keySetMeta(key, "empty", "");
+	succeed_if (!strcmp(keyMeta(key, "empty"), ""), "Problem with empty meta string");
+	succeed_if (keyGetMetaSize (key, "empty") == sizeof(""),
+			"got wrong size");
+	buffer = calloc (1, keyGetMetaSize (key, "empty"));
+	succeed_if (keyGetMeta (key, "empty", buffer, keyGetMetaSize (key, "empty")) == keyGetMetaSize (key, "empty"),
+			"could not get meta");
+	succeed_if (!strcmp(buffer, ""), "buffer was not set correctly");
+	free (buffer);
+
+	keySetMeta(key, "", "empty");
+	succeed_if (!strcmp(keyMeta(key, ""), "empty"), "Problem with empty name");
+	succeed_if (keyGetMetaSize (key, "") == sizeof("empty"),
+			"got wrong size");
+	buffer = calloc (1, keyGetMetaSize (key, ""));
+	succeed_if (keyGetMeta (key, "", buffer, keyGetMetaSize (key, "")) == keyGetMetaSize (key, ""),
+			"could not get meta");
+	succeed_if (!strcmp(buffer, "empty"), "buffer was not set correctly");
+	free (buffer);
+
+	keySetMeta(key, "", "");
+	succeed_if (!strcmp(keyMeta(key, ""), ""), "Problem with empty name and string");
+	succeed_if (keyGetMetaSize (key, "") == sizeof(""),
+			"got wrong size");
+	buffer = calloc (1, keyGetMetaSize (key, ""));
+	succeed_if (keyGetMeta (key, "", buffer, keyGetMetaSize (key, "")) == keyGetMetaSize (key, ""),
+			"could not get meta");
+	succeed_if (!strcmp(buffer, ""), "buffer was not set correctly");
+	free (buffer);
+
+	keySetMeta(key, "", 0);
+	succeed_if (keyMeta(key, "") == 0, "could not remove empty meta data");
+	succeed_if (keyGetMetaSize (key, "") == 0,
+			"got wrong size");
+
+
+	keyDel (key);
+
+}
+
 
 int main(int argc, char** argv)
 {
@@ -108,6 +204,7 @@ int main(int argc, char** argv)
 	init (argc, argv);
 	test_basic();
 	test_iterate();
+	test_size();
 
 
 	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);

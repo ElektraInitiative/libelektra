@@ -376,7 +376,7 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 	}
 	toSet->key = metaNameDup;
 	toSet->keySize = metaNameSize;
-	toSet->type = KEY_TYPE_BINARY;
+	toSet->type = KEY_TYPE_STRING;
 
 	/*Lets have a look if the key is already inserted.*/
 	if (key->meta)
