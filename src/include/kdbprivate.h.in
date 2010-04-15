@@ -598,6 +598,7 @@ ssize_t kdbbGetFullFilename(KDB *handle, const Key *forKey,char *returned,size_t
 
 int keyInit(Key *key);
 int keyClose(Key *key);
+int keyClear(Key *key);
 
 int ksInit(KeySet *ks);
 int ksClose(KeySet *ks);

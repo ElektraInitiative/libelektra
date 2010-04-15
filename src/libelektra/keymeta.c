@@ -303,6 +303,8 @@ ssize_t keyGetMeta(const Key *key, const char* metaName,
 
 /* TODO: What to allow?
  * currently allowed are: 0-9 A-Z [ \ ] _ a-z
+ * + everything between 21 and 126 in ascii table
+ * because - was needed for uid
  *
  * Returns the size of the string with the terminating
  * 0.
@@ -315,10 +317,7 @@ static ssize_t kdbiStrCheck (const char* str)
 	ssize_t ret = 0;
 	while (*str != 0)
 	{
-		if (*str < '0' || *str >'z') return -1;
-		if (*str > '9' && *str < 'A') return -1;
-		if (*str == '^') return -1;
-		if (*str == '`') return -1;
+		if (*str < 21 || *str > 126) return -1;
 		++str;
 		++ret;
 	}
@@ -423,6 +422,7 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 	}
 
 	ksAppendKey (key->meta, toSet);
+	key->flags |= KEY_FLAG_SYNC;
 	return metaStringSize;
 }
 
@@ -494,6 +494,12 @@ int keyRemove(Key *key) {
  *********************************************/
 
 
+/**The maximum of how many characters an integer
+  needs as decimal number.*/
+#define MAX_LEN_INT 31
+#include <errno.h>
+
+
 
 /**
  * Get the user ID of a key.
@@ -506,20 +512,45 @@ int keyRemove(Key *key) {
  *
  * Although usually the same, the UID of a key is not related to its owner.
  *
- * A fresh key will have (uid_t)-1 also known as the user nobody.
- * It means that the key is not related to a user ID at the moment.
+ * A fresh key will have no UID.
  *
  * @param key the key object to work with
  * @return the system's UID of the key
- * @return (uid_t)-1 on NULL key or currently unknown ID
+ * @return (uid_t)-1 on NULL key
  * @see keyGetGID(), keySetUID(), keyGetOwner()
  * @ingroup keymeta
  */
 uid_t keyGetUID(const Key *key)
 {
+	const char *uid;
+	long int val;
+	char *endptr;
+	int errorval = errno;
+
 	if (!key) return (uid_t)-1;
 
-	return key->uid;
+	uid = keyMeta (key, "uid");
+	if (!uid) return (uid_t)-1;
+	if (*uid == '\0') return (uid_t)-1;
+
+	/*From now on we have to leave using cleanup*/
+	errno = 0;
+	val = strtol(uid, &endptr, 10);
+
+	/*Check for errors*/
+	if (errno) goto cleanup;
+
+	/*Check if nothing was found*/
+	if (endptr == uid) goto cleanup;
+
+	/*Check if the whole string was processed*/
+	if (*endptr != '\0') goto cleanup;
+
+	return val;
+cleanup:
+	/*First restore errno*/
+	errno = errorval;
+	return (uid_t)-1;
 }
 
 
@@ -532,16 +563,21 @@ uid_t keyGetUID(const Key *key)
  * @param key the key object to work with
  * @param uid the user ID to set
  * @return 0 on success
- * @return -1 on NULL key
+ * @return -1 on NULL key or conversion error
  * @see keySetGID(), keyGetUID(), keyGetOwner()
  * @ingroup keymeta
  */
 int keySetUID(Key *key, uid_t uid)
 {
+	char str[MAX_LEN_INT];
 	if (!key) return -1;
 
-	key->uid=uid;
-	key->flags |= KEY_FLAG_SYNC;
+	if (snprintf (str, MAX_LEN_INT-1, "%d", uid) < 0)
+	{
+		return -1;
+	}
+
+	keySetMeta(key, "uid", str);
 
 	return 0;
 }

@@ -407,7 +407,8 @@ Key* keyDup(const Key *source)
 	dest->key=
 	dest->comment=
 	dest->owner=
-	dest->data=0;
+	dest->data=
+	dest->meta=0;
 
 	dest->ksReference = 0;
 
@@ -415,6 +416,10 @@ Key* keyDup(const Key *source)
 	if (source->comment && keySetComment(dest,source->comment) == -1) goto memerror;
 	if (source->owner && keySetOwner(dest,source->owner) == -1) goto memerror;
 	if (source->data && keySetRaw(dest,source->data,source->dataSize) == -1) goto memerror;
+	if (source->meta)
+	{
+		dest->meta = ksDup (source->meta);
+	}
 	
 	return dest;
 memerror:

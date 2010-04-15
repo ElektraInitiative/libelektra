@@ -195,6 +195,80 @@ void test_size()
 
 }
 
+void test_uid()
+{
+	Key *key;
+
+	key = keyNew ("user/uid", KEY_UID, 100, KEY_END);
+	succeed_if (!strcmp(keyMeta (key, "uid"), "100"), "meta value for uid was not set correctly");
+	succeed_if (keyGetUID(key) == 100, "uid was not set correctly");
+
+	succeed_if (keySetUID(key, 101) == 0, "could not set uid");
+	succeed_if (!strcmp(keyMeta (key, "uid"), "101"), "meta value for uid was not set correctly");
+	succeed_if (keyGetUID(key) == 101, "uid was not set correctly");
+
+	succeed_if (keySetUID(key, 0) == 0, "could not set uid");
+	succeed_if (!strcmp(keyMeta (key, "uid"), "0"), "meta value for uid was not set correctly");
+	succeed_if (keyGetUID(key) == 0, "uid was not set correctly");
+
+	succeed_if (keySetUID(key, (uid_t)-1) == 0, "could not set uid");
+	warn_if_fail (!strcmp(keyMeta (key, "uid"), "-1"),
+			"this is for 64bit, other platforms might have other results here");
+	succeed_if (keyGetUID(key) == (uid_t)-1, "uid was not set correctly");
+
+	succeed_if (keySetMeta (key, "uid", "102") == sizeof("102"), "could not set meta");
+	succeed_if (!strcmp(keyMeta (key, "uid"), "102"), "meta value for uid was not set correctly");
+	succeed_if (keyGetUID(key) == 102, "uid was not set correctly");
+
+	succeed_if (keySetMeta (key, "uid", "x") == sizeof("x"), "could not set meta");
+	succeed_if (!strcmp(keyMeta (key, "uid"), "x"), "meta value for uid was not set correctly");
+	succeed_if (keyGetUID(key) == (uid_t)-1, "uid was not set correctly");
+
+	succeed_if (keySetMeta (key, "uid", "x1") == sizeof("x1"), "could not set meta");
+	succeed_if (!strcmp(keyMeta (key, "uid"), "x1"), "meta value for uid was not set correctly");
+	succeed_if (keyGetUID(key) == (uid_t)-1, "uid was not set correctly");
+
+	succeed_if (keySetMeta (key, "uid", "2000000") == sizeof("2000000"), "could not set large uid");
+	succeed_if (!strcmp(keyMeta (key, "uid"), "2000000"), "meta value for large uid was not set correctly");
+	succeed_if (keyGetUID(key) == 2000000, "large uid was not set correctly");
+
+	succeed_if (keySetMeta (key, "uid", "1x") == sizeof("1x"), "could not set meta");
+	succeed_if (!strcmp(keyMeta (key, "uid"), "1x"), "meta value for uid was not set correctly");
+	succeed_if (keyGetUID(key) == (uid_t)-1, "uid was not set correctly");
+
+	keyDel (key);
+
+	key = keyNew ("user/uid", KEY_END);
+	succeed_if (keyMeta (key, "uid") == 0, "got value, but uid was not set up to now");
+	succeed_if (keyGetUID(key) == (uid_t)-1, "got value, but uid was not set up to now");
+
+	keyDel (key);
+}
+
+void test_dup()
+{
+	Key *key;
+	Key *dup;
+
+	key = keyNew ("user/orig", KEY_END);
+	succeed_if (keySetMeta (key, "test", "some_meta_test") == sizeof("some_meta_test"),
+			"could not set meta");
+	succeed_if (!strcmp(keyMeta (key, "test"), "some_meta_test"), "could not set meta value");
+
+	dup = keyDup (key);
+	succeed_if (!strcmp(keyMeta (dup, "test"), "some_meta_test"),
+			"in duplicated key meta value was not copied");
+	succeed_if (keySetMeta (key, "test", "some_other_meta_test") == sizeof("some_other_meta_test"),
+			"could not set meta");
+	succeed_if (!strcmp(keyMeta (dup, "test"), "some_other_meta_test"),
+			"in duplicated key meta value was not changed");
+	succeed_if (!strcmp(keyMeta (key, "test"), "some_meta_test"),
+			"in original key the value has changed");
+	keyDel (dup);
+
+	keyDel (key);
+}
+
 
 int main(int argc, char** argv)
 {
@@ -205,6 +279,8 @@ int main(int argc, char** argv)
 	test_basic();
 	test_iterate();
 	test_size();
+	test_uid();
+	test_dup();
 
 
 	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
