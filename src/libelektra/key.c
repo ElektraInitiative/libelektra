@@ -503,12 +503,17 @@ int keyCopy (Key *dest, const Key *source)
 	dest->key=
 	dest->comment=
 	dest->owner=
-	dest->data=0;
+	dest->data=
+	dest->meta=0;
 
 	if (keySetName(dest,source->key) == -1) return -1;
 	if (keySetComment(dest,source->comment) == -1) return -1;
 	if (keySetOwner(dest,source->owner) == -1) return -1;
 	if (keySetRaw(dest,source->data,source->dataSize) == -1) return -1;
+	if (source->meta)
+	{
+		dest->meta = ksDup (source->meta);
+	}
 
 	return 1;
 }
