@@ -167,20 +167,50 @@ void kdbiFree (void *ptr)
  *
  * You need to free the memory yourself.
  *
+ * @note that size is determined at runtime.
+ *       So if you have a size information, don't use
+ *       that function.
+ *
  * @param s the null-terminated string to duplicate
  *
  * @ingroup internal
+ * @return 0 if out of memory, a pointer otherwise
+ * @pre s must be a c-string.
  * @see kdbiFree
  * @see kdbiStrLen
+ * @see kdbiStrNDup
  */
 char *kdbiStrDup (const char *s)
 {
 	void *tmp = 0;
-	if (s)
-	{
-		tmp = kdbiMalloc (kdbiStrLen(s));
-		if (tmp) strcpy (tmp, s);
-	}
+	size_t l = 0;
+
+	l = kdbiStrLen(s);
+	tmp = kdbiMalloc (l);
+	if (tmp) memcpy (tmp, s, l);
+
+	return tmp;
+}
+
+/**Copy buffer into new allocated memory.
+ *
+ * You need to free the memory yourself.
+ *
+ * This function also works with \0 characters
+ * in the buffer. The length is taken as given,
+ * it must be correct.
+ *
+ * @return 0 if out of memory, a pointer otherwise
+ * @param s must be a allocated buffer
+ * @param l the length of s
+ * @ingroup internal
+ */
+char *kdbiStrNDup (const char *s, size_t l)
+{
+	void *tmp = 0;
+
+	tmp = kdbiMalloc (l);
+	if (tmp) memcpy (tmp, s, l);
 
 	return tmp;
 }

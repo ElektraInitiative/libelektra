@@ -95,6 +95,7 @@ while ((name = keyNextMeta (key))!=0) {}
  * @return -1 on NULL pointer
  * @see keyNextMeta(), keyCurrentMeta()
  * @see ksRewind() for pedant in iterator interface of KeySet
+ * @ingroup keymeta
  **/
 int keyRewindMeta(Key *key)
 {
@@ -124,6 +125,7 @@ int keyRewindMeta(Key *key)
  * @return 0 on NULL pointer
   *
   * @see ksNext() for pedant in iterator interface of KeySet
+ * @ingroup keymeta
   **/
 const char *keyNextMeta(Key *key)
 {
@@ -151,6 +153,7 @@ const char *keyNextMeta(Key *key)
  * @see keyNextMeta(), keyRewindMeta()
  *
  * @see ksCurrent() for pedant in iterator interface of KeySet
+ * @ingroup keymeta
   **/
 const char *keyCurrentMeta(const Key *key)
 {
@@ -162,6 +165,30 @@ const char *keyCurrentMeta(const Key *key)
 
 	if (!ret) return 0;
 	return keyValue(ret);
+}
+
+/*Returns the key where a meta value is stored.
+  This should not passed to the user because it
+  is an implementation detail.*/
+static inline Key *keyMetaKey(const Key* key, const char* metaName)
+{
+	Key *ret;
+	Key *search;
+
+	if (!key) return 0;
+	if (!metaName) return 0;
+	if (!key->meta) return 0;
+
+	search = keyNew (KEY_END);
+	search->key = kdbiStrDup(metaName);
+
+	if (!search->key) return 0; /*Duplication did not work*/
+
+	ret = ksLookup(key->meta, search, 0);
+
+	keyDel (search);
+
+	return ret;
 }
 
 /**Returns the Value of a Meta-Information given by name.
@@ -180,39 +207,108 @@ const char *keyCurrentMeta(const Key *key)
  * @return 0 if no such metaName is found
  * @return value of Meta-Information if Meta-Information is found
  * @see keyGetMetaSize(), keyGetMeta(), keySetMeta()
+ * @ingroup keymeta
  **/
 const char *keyMeta(const Key *key, const char* metaName)
 {
-	Key *ret;
-	Key *search;
-
-	if (!key) return 0;
-	if (!metaName) return 0;
-	if (!key->meta) return 0;
-
-	search = keyNew (KEY_END);
-	search->key = kdbiStrDup(metaName);
-
-	if (!search->key) return 0; /*Duplication did not work*/
-
-	ret = ksLookup(key->meta, search, 0);
-
-	keyDel (search);
-
-	if (!ret) return 0; // no such metaName
+	Key *ret = keyMetaKey (key, metaName);
 	return keyValue(ret);
 }
 
+/**
+ * Returns the number of bytes needed to store the key meta value, including the
+ * NULL terminator.
+ *
+ * It returns the correct size.
+ *
+ * For an empty string you need one byte to store the ending NULL.
+ * For that reason 1 is returned. This is not true for binary data,
+ * so there might be returned 0 too.
+ *
+ * A binary key has no '\\0' termination. String types have it, so to there
+ * length will be added 1 to have enough space to store it.
+ *
+ * This method can be used with malloc() before keyGetString() or keyGetBinary()
+ * is called.
+ *
+ * @code
+char *buffer;
+buffer = malloc (keyGetValueSize (key));
+// use this buffer to store the value (binary or string)
+// pass keyGetValueSize (key) for maxSize
+ * @endcode
+ *
+ * @param key the key object to work with
+ * @return the number of bytes needed to store the key value
+ * @return 1 when there is no data and type is not binary
+ * @return 0 when there is no data and type is binary
+ * @return -1 on null pointer
+ * @see keyGetString(), keyGetBinary(), keyValue()
+ * @ingroup keymeta
+ */
 ssize_t keyGetMetaSize(const Key *key, const char* metaName)
 {
-	return 0;
+
+	Key *ret = keyMetaKey (key, metaName);
+	if (!ret) return 0;
+	return keyGetValueSize(ret);
 }
 
-ssize_t keyGetMeta(const Key *key, const char* metaName,
-	char *returnedMetaString, size_t maxSize);
+/**
+ * Get the value of a key as a string.
+ *
+ * When there is no value inside the string, 1 will
+ * be returned and the returnedString will be empty
+ * "" to avoid programming errors that old strings are
+ * shown to the user.
+ *
+ * For binary values see keyGetBinary() and keyIsBinary().
+ *
+ * @par Example:
+ * @code
+Key *key = keyNew ("user/keyname", KEY_END);
+char buffer[300];
 
-/*TODO: What to allow?
-  currently allowed are: 0-9 A-Z [ \ ] _ a-z
+if (keyGetString(key,buffer,sizeof(buffer)) == -1)
+{
+	// handle error
+} else {
+	printf ("buffer: %s\n", buffer);
+}
+ * @endcode
+ *
+ * @param key the object to gather the value from
+ * @param returnedString pre-allocated memory to store a copy of the key value
+ * @param maxSize number of bytes of allocated memory in @p returnedString
+ * @return the number of bytes actually copied to @p returnedString, including
+ * 	final NULL
+ * @return 1 if the string is empty
+ * @return -1 on NULL pointer
+ * @return -1 on type mismatch
+ * @return maxSize is 0, too small for string or is larger than SSIZE_MAX
+ * @see keyValue(), keyGetValueSize(), keySetString()
+ * @see keyGetBinary() for working with binary data
+ * @ingroup keymeta
+ */
+ssize_t keyGetMeta(const Key *key, const char* metaName,
+	char *returnedMetaString, size_t maxSize)
+{
+	Key *ret = keyMetaKey (key, metaName);
+	if (!ret)
+	{
+		return 0;
+	}
+	return keyGetString (ret, returnedMetaString, maxSize);
+}
+
+/* TODO: What to allow?
+ * currently allowed are: 0-9 A-Z [ \ ] _ a-z
+ *
+ * Returns the size of the string with the terminating
+ * 0.
+ *
+ * TODO, if decided to use, move to:
+ * @ingroup internal
   */
 static ssize_t kdbiStrCheck (const char* str)
 {
@@ -226,7 +322,7 @@ static ssize_t kdbiStrCheck (const char* str)
 		++str;
 		++ret;
 	}
-	return ret;
+	return ret+1;
 }
 
 /**Set a new Meta-Information.
@@ -242,6 +338,7 @@ static ssize_t kdbiStrCheck (const char* str)
  *
  * It will remove a meta information if newMetaString is 0.
  *
+ * @ingroup keymeta
  * @return -1 on error if key or metaName is 0, out of memory
  *         or names are not valid
  * @return 0 if the Meta-Information for metaName was removed
@@ -255,28 +352,31 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 	Key *toSet;
 	char *metaNameDup;
 	char *metaStringDup;
-	ssize_t size;
+	ssize_t metaNameSize;
+	ssize_t metaStringSize;
 
 	if (!key) return -1;
 	if (!metaName) return -1;
-	size = kdbiStrCheck (metaName);
-	if (size == -1) return -1;
+	metaNameSize = kdbiStrCheck (metaName);
+	if (metaNameSize == -1) return -1;
 	if (newMetaString)
 	{
-		size = kdbiStrCheck (newMetaString);
-		if (size == -1) return -1;
+		metaStringSize = kdbiStrCheck (newMetaString);
+		if (metaStringSize == -1) return -1;
 	}
 
 	toSet = keyNew(KEY_END);
 	if (!toSet) return -1;
 
-	metaNameDup = kdbiStrDup(metaName);
+	metaNameDup = kdbiStrNDup(metaName, metaNameSize);
 	if (!metaNameDup)
 	{
 		keyDel (toSet);
 		return -1;
 	}
 	toSet->key = metaNameDup;
+	toSet->keySize = metaNameSize;
+	toSet->type = KEY_TYPE_BINARY;
 
 	/*Lets have a look if the key is already inserted.*/
 	if (key->meta)
@@ -294,7 +394,7 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 	if (newMetaString)
 	{
 		/*Add the meta information to the key*/
-		metaStringDup = kdbiStrDup(newMetaString);
+		metaStringDup = kdbiStrNDup(newMetaString, metaStringSize);
 		if (!metaStringDup)
 		{
 			keyDel (toSet);
@@ -303,6 +403,7 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 
 		if (toSet->data) free (toSet->data);
 		toSet->data = metaStringDup;
+		toSet->dataSize = metaStringSize;
 	} else {
 		/*The request is to remove the meta string.
 		  So simply drop it.*/
@@ -322,7 +423,7 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 	}
 
 	ksAppendKey (key->meta, toSet);
-	return size;
+	return metaStringSize;
 }
 
 

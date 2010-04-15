@@ -90,8 +90,8 @@ void test_iterate()
 	succeed_if (keyNextMeta(key) == 0, "Could get next meta name, even if it is empty at 2. iteration");
 	succeed_if (keyCurrentMeta(key) == 0, "Could get next meta value, even if it is empty at 2. iteration");
 
-	succeed_if (!strcmp(keyNextMeta(key), "meta1"), "keyNextMeta does not work at 3. iteration");
-	succeed_if (!strcmp(keyCurrentMeta(key), "meta_value"), "keyCurrentMeta does not work at 3. iteration");
+	succeed_if (keyNextMeta(key) == 0, "Could get next meta name, even if it is empty at 3. iteration");
+	succeed_if (keyCurrentMeta(key) == 0, "Could get next meta value, even if it is empty at 3. iteration");
 
 	succeed_if (keyNextMeta(key) == 0, "Could get next meta name, even if it is empty at 4. iteration");
 	succeed_if (keyCurrentMeta(key) == 0, "Could get next meta value, even if it is empty at 4. iteration");

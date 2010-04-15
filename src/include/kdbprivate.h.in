@@ -578,6 +578,7 @@ size_t kdbiStrLen(const char *s);
 void *kdbiMalloc (size_t size);
 void  kdbiFree (void *ptr);
 char *kdbiStrDup (const char *s);
+char *kdbiStrNDup (const char *s, size_t l);
 int kdbiRealloc(void **buffer, size_t size);
 
 ssize_t kdbbEncode(void *kdbbDecoded, size_t size, char *returned);
