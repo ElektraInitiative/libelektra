@@ -199,18 +199,6 @@ struct _Key {
 	mode_t         mode;
 
 	/**
-	 * Time for last modification.
-	 * @see keyGetMTime()
-	 */
-	time_t         mtime;
-
-	/**
-	 * Time for last change (meta info)
-	 * @see keyGetCTime()
-	 */
-	time_t         ctime;
-
-	/**
 	 * A comment about the key.
 	 * @see keySetComment(), keyGetComment()
 	 */

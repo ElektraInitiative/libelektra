@@ -1781,7 +1781,7 @@ void test_keyTime()
 	succeed_if (keySetMTime(0,0) == -1, "null pointer check");
 	succeed_if (keySetCTime(0,0) == -1, "null pointer check");
 
-	succeed_if (keyGetATime(key) == (time_t)-1, "new initialized atime not 0");
+	succeed_if (keyGetATime(key) == 0, "new initialized atime not 0");
 	succeed_if (keyGetMTime(key) == 0, "new initialized mtime not 0");
 	succeed_if (keyGetCTime(key) == 0, "new initialized ctime not 0");
 

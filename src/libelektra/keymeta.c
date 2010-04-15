@@ -931,7 +931,7 @@ time_t keyGetATime(const Key *key)
 	if (!key) return (time_t)-1;
 
 	atime = keyMeta (key, "atime");
-	if (!atime) return (time_t)-1;
+	if (!atime) return 0;
 	if (*atime == '\0') return (time_t)-1;
 
 	/*From now on we have to leave using cleanup*/
@@ -975,7 +975,7 @@ int keySetATime(Key *key, time_t atime)
 	char str[MAX_LEN_INT];
 	if (!key) return -1;
 
-	if (snprintf (str, MAX_LEN_INT-1, "%d", atime) < 0)
+	if (snprintf (str, MAX_LEN_INT-1, "%lu", atime) < 0)
 	{
 		return -1;
 	}
@@ -1014,9 +1014,35 @@ int keySetATime(Key *key, time_t atime)
  */
 time_t keyGetMTime(const Key *key)
 {
+	const char *mtime;
+	long int val;
+	char *endptr;
+	int errorval = errno;
+
 	if (!key) return (time_t)-1;
 
-	return key->mtime;
+	mtime = keyMeta (key, "mtime");
+	if (!mtime) return 0;
+	if (*mtime == '\0') return (time_t)-1;
+
+	/*From now on we have to leave using cleanup*/
+	errno = 0;
+	val = strtol(mtime, &endptr, 10);
+
+	/*Check for errors*/
+	if (errno) goto cleanup;
+
+	/*Check if nothing was found*/
+	if (endptr == mtime) goto cleanup;
+
+	/*Check if the whole string was processed*/
+	if (*endptr != '\0') goto cleanup;
+
+	return val;
+cleanup:
+	/*First restore errno*/
+	errno = errorval;
+	return (time_t)-1;
 }
 
 /**
@@ -1030,9 +1056,16 @@ time_t keyGetMTime(const Key *key)
  */
 int keySetMTime(Key *key, time_t mtime)
 {
+	char str[MAX_LEN_INT];
 	if (!key) return -1;
 
-	key->mtime = mtime;
+	if (snprintf (str, MAX_LEN_INT-1, "%lu", mtime) < 0)
+	{
+		return -1;
+	}
+
+	keySetMeta(key, "mtime", str);
+
 	return 0;
 }
 
@@ -1063,9 +1096,35 @@ int keySetMTime(Key *key, time_t mtime)
  */
 time_t keyGetCTime(const Key *key)
 {
+	const char *ctime;
+	long int val;
+	char *endptr;
+	int errorval = errno;
+
 	if (!key) return (time_t)-1;
 
-	return key->ctime;
+	ctime = keyMeta (key, "ctime");
+	if (!ctime) return 0;
+	if (*ctime == '\0') return (time_t)-1;
+
+	/*From now on we have to leave using cleanup*/
+	errno = 0;
+	val = strtol(ctime, &endptr, 10);
+
+	/*Check for errors*/
+	if (errno) goto cleanup;
+
+	/*Check if nothing was found*/
+	if (endptr == ctime) goto cleanup;
+
+	/*Check if the whole string was processed*/
+	if (*endptr != '\0') goto cleanup;
+
+	return val;
+cleanup:
+	/*First restore errno*/
+	errno = errorval;
+	return (time_t)-1;
 }
 
 
@@ -1081,9 +1140,16 @@ time_t keyGetCTime(const Key *key)
  */
 int keySetCTime(Key *key, time_t ctime)
 {
+	char str[MAX_LEN_INT];
 	if (!key) return -1;
 
-	key->ctime = ctime;
+	if (snprintf (str, MAX_LEN_INT-1, "%lu", ctime) < 0)
+	{
+		return -1;
+	}
+
+	keySetMeta(key, "ctime", str);
+
 	return 0;
 }
 
