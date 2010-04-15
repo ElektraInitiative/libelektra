@@ -511,7 +511,7 @@ void test_keyName()
 	size_t	size;
 	char	*buf;
 	char	ret [1000];
-	int	i;
+	size_t	i;
 	char *getBack;
 	char testName[] = "user/name";
 	char testFullName[] = "user:max/name";
@@ -981,7 +981,7 @@ void test_keyValue()
 {
 	Key * key;
 	char	ret [1000];
-	int i;
+	size_t i;
 	char testString[] = "teststring";
 	char testBinary[] = "\0tes\1tbinary";
 	testBinary[sizeof(testBinary)] = 'T';
@@ -1150,7 +1150,6 @@ void test_keyBinary(void)
 	Key *key =0;
 	char ret [1000];
 	int i;
-	char c;
 	char binaryData[] = "\0binary \1\34data";
 	binaryData[sizeof(binaryData)] = 'T';
 
@@ -1285,7 +1284,7 @@ void test_keyComment()
 {
 	Key * key;
 	char	ret [1000];
-	int i;
+	size_t i;
 	char testComment [] = "testcomment";
 
 	printf("Test comment of key\n");
@@ -1699,7 +1698,7 @@ void test_keyCopy()
 
 void test_keyDir (void)
 {
-	int i;
+	mode_t i;
 	Key * key = keyNew ("user", KEY_END);
 
 	printf ("Test directory keys\n");
@@ -1774,15 +1773,15 @@ void test_keyTime()
 
 	printf ("Test key time\n");
 
-	succeed_if (keyGetATime(0) == (size_t)-1, "null pointer check");
-	succeed_if (keyGetMTime(0) == (size_t)-1, "null pointer check");
-	succeed_if (keyGetCTime(0) == (size_t)-1, "null pointer check");
+	succeed_if (keyGetATime(0) == (time_t)-1, "null pointer check");
+	succeed_if (keyGetMTime(0) == (time_t)-1, "null pointer check");
+	succeed_if (keyGetCTime(0) == (time_t)-1, "null pointer check");
 
 	succeed_if (keySetATime(0,0) == -1, "null pointer check");
 	succeed_if (keySetMTime(0,0) == -1, "null pointer check");
 	succeed_if (keySetCTime(0,0) == -1, "null pointer check");
 
-	succeed_if (keyGetATime(key) == 0, "new initialized atime not 0");
+	succeed_if (keyGetATime(key) == (time_t)-1, "new initialized atime not 0");
 	succeed_if (keyGetMTime(key) == 0, "new initialized mtime not 0");
 	succeed_if (keyGetCTime(key) == 0, "new initialized ctime not 0");
 
@@ -1915,13 +1914,13 @@ void test_keyMeta(void)
 	key = keyNew(0);
 	succeed_if(keyGetMode(key) == KEY_DEF_MODE, "new key does not have default mode");
 	succeed_if(keySetDir(key) == 0, "could not set dir");
-	succeed_if(keyGetMode(key) == KEY_DEF_MODE | KEY_DEF_DIR, "directory key");
+	succeed_if(keyGetMode(key) == (KEY_DEF_MODE | KEY_DEF_DIR), "directory key");
 	keyDel (key);
 
 	key = keyNew("user/dir", KEY_DIR, KEY_END);
-	succeed_if(keyGetMode(key) == KEY_DEF_MODE | KEY_DEF_DIR, "directory key");
+	succeed_if(keyGetMode(key) == (KEY_DEF_MODE | KEY_DEF_DIR), "directory key");
 	succeed_if(keySetDir(key) == 0, "could not set dir");
-	succeed_if(keyGetMode(key) == KEY_DEF_MODE | KEY_DEF_DIR, "directory key");
+	succeed_if(keyGetMode(key) == (KEY_DEF_MODE | KEY_DEF_DIR), "directory key");
 	keyDel (key);
 }
 

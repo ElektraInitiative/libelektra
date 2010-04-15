@@ -199,12 +199,6 @@ struct _Key {
 	mode_t         mode;
 
 	/**
-	 * Time for last access(stat).
-	 * @see keyGetATime()
-	 */
-	time_t         atime;
-
-	/**
 	 * Time for last modification.
 	 * @see keyGetMTime()
 	 */

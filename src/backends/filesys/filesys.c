@@ -754,9 +754,9 @@ int keyFromStat(Key *key,struct stat *stat) {
 	// remove directory bit
 	keySetMode(key,stat->st_mode & 0777);
 
-	key->atime=stat->st_atime;
-	key->mtime=stat->st_mtime;
-	key->ctime=stat->st_ctime;
+	keySetATime(key, stat->st_atime);
+	keySetMTime(key, stat->st_mtime);
+	keySetCTime(key, stat->st_ctime);
 	return 0;
 }
 

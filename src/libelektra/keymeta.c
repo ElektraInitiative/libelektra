@@ -923,9 +923,35 @@ int keySetType(Key *key, type_t newType)
  */
 time_t keyGetATime(const Key *key)
 {
+	const char *atime;
+	long int val;
+	char *endptr;
+	int errorval = errno;
+
 	if (!key) return (time_t)-1;
 
-	return key->atime;
+	atime = keyMeta (key, "atime");
+	if (!atime) return (time_t)-1;
+	if (*atime == '\0') return (time_t)-1;
+
+	/*From now on we have to leave using cleanup*/
+	errno = 0;
+	val = strtol(atime, &endptr, 10);
+
+	/*Check for errors*/
+	if (errno) goto cleanup;
+
+	/*Check if nothing was found*/
+	if (endptr == atime) goto cleanup;
+
+	/*Check if the whole string was processed*/
+	if (*endptr != '\0') goto cleanup;
+
+	return val;
+cleanup:
+	/*First restore errno*/
+	errno = errorval;
+	return (time_t)-1;
 }
 
 /**
@@ -946,9 +972,16 @@ time_t keyGetATime(const Key *key)
  */
 int keySetATime(Key *key, time_t atime)
 {
+	char str[MAX_LEN_INT];
 	if (!key) return -1;
 
-	key->atime = atime;
+	if (snprintf (str, MAX_LEN_INT-1, "%d", atime) < 0)
+	{
+		return -1;
+	}
+
+	keySetMeta(key, "atime", str);
+
 	return 0;
 }
 
