@@ -236,6 +236,10 @@ void test_uid()
 	succeed_if (!strcmp(keyMeta (key, "uid"), "1x"), "meta value for uid was not set correctly");
 	succeed_if (keyGetUID(key) == (uid_t)-1, "uid was not set correctly");
 
+	succeed_if (keySetMeta (key, "uid", "50x") == sizeof("50x"), "could not set meta");
+	succeed_if (!strcmp(keyMeta (key, "uid"), "50x"), "meta value for uid was not set correctly");
+	succeed_if (keyGetUID(key) == (uid_t)-1, "uid was not set correctly");
+
 	keyDel (key);
 
 	key = keyNew ("user/uid", KEY_END);
@@ -258,7 +262,7 @@ void test_dup()
 	dup = keyDup (key);
 	succeed_if (!strcmp(keyMeta (dup, "test"), "some_meta_test"),
 			"in duplicated key meta value was not copied");
-	succeed_if (keySetMeta (key, "test", "some_other_meta_test") == sizeof("some_other_meta_test"),
+	succeed_if (keySetMeta (dup, "test", "some_other_meta_test") == sizeof("some_other_meta_test"),
 			"could not set meta");
 	succeed_if (!strcmp(keyMeta (dup, "test"), "some_other_meta_test"),
 			"in duplicated key meta value was not changed");

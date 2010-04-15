@@ -384,9 +384,8 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 		ret = ksLookup(key->meta, toSet, KDB_O_POP);
 		if (ret)
 		{
-			/*It is already there, so lets use existing one*/
-			keyDel (toSet);
-			toSet = ret;
+			/*It was already there, so lets drop that one*/
+			keyDel (ret);
 		}
 	}
 
