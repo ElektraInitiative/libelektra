@@ -606,9 +606,35 @@ int keySetUID(Key *key, uid_t uid)
  */
 gid_t keyGetGID(const Key *key)
 {
+	const char *gid;
+	long int val;
+	char *endptr;
+	int errorval = errno;
+
 	if (!key) return (gid_t)-1;
 
-	return key->gid;
+	gid = keyMeta (key, "gid");
+	if (!gid) return (gid_t)-1;
+	if (*gid == '\0') return (gid_t)-1;
+
+	/*From now on we have to leave using cleanup*/
+	errno = 0;
+	val = strtol(gid, &endptr, 10);
+
+	/*Check for errors*/
+	if (errno) goto cleanup;
+
+	/*Check if nothing was found*/
+	if (endptr == gid) goto cleanup;
+
+	/*Check if the whole string was processed*/
+	if (*endptr != '\0') goto cleanup;
+
+	return val;
+cleanup:
+	/*First restore errno*/
+	errno = errorval;
+	return (gid_t)-1;
 }
 
 
@@ -627,10 +653,15 @@ gid_t keyGetGID(const Key *key)
  */
 int keySetGID(Key *key, gid_t gid)
 {
+	char str[MAX_LEN_INT];
 	if (!key) return -1;
 
-	key->gid=gid;
-	key->flags |= KEY_FLAG_SYNC;
+	if (snprintf (str, MAX_LEN_INT-1, "%d", gid) < 0)
+	{
+		return -1;
+	}
+
+	keySetMeta(key, "gid", str);
 
 	return 0;
 }

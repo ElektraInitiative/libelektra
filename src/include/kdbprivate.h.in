@@ -193,12 +193,6 @@ struct _Key {
 	type_t         type;
 
 	/**
-	 * System GID of this key.
-	 * @see keyGetGID(), keySetGID()
-	 */
-	gid_t          gid;
-
-	/**
 	 * File-like mode control
 	 * @see keyGetMode(), keySetMode()
 	 */
@@ -286,23 +280,6 @@ struct _Key {
 	 */
 	KeySet *      meta;
 };
-
-
-/**
- * Macro to calculates the real size in bytes of the metainfo of the Key struct.
- * The metainfo part of the struct is composed by _Key::type, _Key::uid,
- * _Key::gid, _Key::mode, _Key::atime, _Key::mtime, _Key::ctime,
- * _Key::commentSize, _Key::dataSize, _Key::keySize, _Key::ownerSize
- *
- * This macro is usefull in Key serialization and de-serialization methods
- * of your backend.
- *
- * @ingroup backend
- */
-#define KEY_METAINFO_SIZE(k) (sizeof (k->type) + sizeof (k->uid) + sizeof (k->gid) +\
-		sizeof (k->mode) + sizeof (k->atime) + sizeof (k->mtime) + sizeof (k->ctime) +\
-		sizeof (k->commentSize) + sizeof (k->dataSize) + sizeof (k->keySize) +\
-		sizeof (k->ownerSize) )
 
 
 

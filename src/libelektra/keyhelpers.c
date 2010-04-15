@@ -410,7 +410,7 @@ free (parentName);
  * @ingroup keyname
  */
 ssize_t keyGetParentName(const Key *key, char *returnedParent, size_t maxSize) {
-	ssize_t parentSize;
+	size_t parentSize;
 
 	parentSize=keyGetParentNameSize(key);
 
@@ -508,8 +508,6 @@ int keyInit(Key *key)
 	memset(key,0,sizeof(Key));
 
 	key->type = KEY_TYPE_UNDEFINED;
-
-	key->gid = (gid_t)-1;
 
 	key->mode = KEY_DEF_MODE;
 	return 0;
