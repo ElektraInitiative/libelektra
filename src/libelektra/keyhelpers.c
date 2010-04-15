@@ -509,7 +509,6 @@ int keyInit(Key *key)
 
 	key->type = KEY_TYPE_UNDEFINED;
 
-	key->uid = (uid_t)-1;
 	key->gid = (gid_t)-1;
 
 	key->mode = KEY_DEF_MODE;

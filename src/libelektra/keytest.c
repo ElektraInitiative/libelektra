@@ -488,10 +488,10 @@ keyswitch_t keyCompare(const Key *key1, const Key *key2)
 	ssize_t size2 = keyGetValueSize(key2);
 
 
-	if (key1->uid != key2->uid)        ret|=KEY_UID;
-	if (key1->gid != key2->gid)        ret|=KEY_GID;
-	if (key1->type != key2->type)      ret|=KEY_TYPE;
-	if ((key1->mode) != (key2->mode))  ret|=KEY_MODE;
+	if (keyGetUID(key1) != keyGetUID(key2))        ret|=KEY_UID;
+	if (keyGetGID(key1) != keyGetGID(key2))        ret|=KEY_GID;
+	if (keyGetType(key1)!= keyGetType(key2))      ret|=KEY_TYPE;
+	if (keyGetMode(key1)!= keyGetMode(key2))  ret|=KEY_MODE;
 	if (remove1 != remove2)            ret|=KEY_REMOVE;
 	if (strcmp(name1, name2))          ret|=KEY_NAME;
 	if (strcmp(comment1, comment2))    ret|=KEY_COMMENT;

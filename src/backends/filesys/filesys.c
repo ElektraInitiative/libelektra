@@ -267,7 +267,7 @@ int keyToFile(KDB *handle, Key *key, char *keyFilename) {
 
 	/* Set permissions, might fail without problems */
 	errnosave = errno;
-	fchown(fd,key->uid,key->gid);
+	fchown(fd,keyGetUID(key),keyGetGID(key));
 	fchmod(fd,key->mode);
 	errno = errnosave;
 
@@ -404,7 +404,7 @@ int kdbSetKey_filesys(KDB *handle, Key *key) {
 
 		/* Dir permissions... */
 		errnosave = errno;
-		chown(keyFilename,key->uid,key->gid);
+		chown(keyFilename,keyGetUID(key),keyGetGID(key));
 		chmod(keyFilename,key->mode);
 		errno = errnosave;
 

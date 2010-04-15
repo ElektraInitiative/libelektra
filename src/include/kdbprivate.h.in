@@ -193,12 +193,6 @@ struct _Key {
 	type_t         type;
 
 	/**
-	 * System UID of this key.
-	 * @see keyGetUID(), keySetUID()
-	 */
-	uid_t          uid;
-
-	/**
 	 * System GID of this key.
 	 * @see keyGetGID(), keySetGID()
 	 */
