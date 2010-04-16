@@ -349,6 +349,63 @@ void test_owner()
 	succeed_if (keyDel (key) == 0, "could not delete key with env");
 }
 
+void test_mode()
+{
+	Key *key;
+
+	key = keyNew ("user/mode", KEY_MODE, 0100, KEY_END);
+	succeed_if (!strcmp(keyMeta (key, "mode"), "100"), "meta value for mode was not set correctly");
+	succeed_if (keyGetMode(key) == 0100, "mode was not set correctly");
+
+	succeed_if (keySetMode(key, 0101) == 0, "could not set mode");
+	succeed_if (!strcmp(keyMeta (key, "mode"), "101"), "meta value for mode was not set correctly");
+	succeed_if (keyGetMode(key) == 0101, "mode was not set correctly");
+
+	succeed_if (keySetMode(key, 0) == 0, "could not set mode");
+	succeed_if (!strcmp(keyMeta (key, "mode"), "0"), "meta value for mode was not set correctly");
+	succeed_if (keyGetMode(key) == 0, "mode was not set correctly");
+
+	succeed_if (keySetMeta (key, "mode", "102") == sizeof("102"), "could not set meta");
+	succeed_if (!strcmp(keyMeta (key, "mode"), "102"), "meta value for mode was not set correctly");
+	succeed_if (keyGetMode(key) == 0102, "mode was not set correctly");
+
+	succeed_if (keySetMeta (key, "mode", "0103") == sizeof("0103"), "could not set meta");
+	succeed_if (!strcmp(keyMeta (key, "mode"), "0103"), "meta value for mode was not set correctly");
+	succeed_if (keyGetMode(key) == 0103, "mode was not set correctly with leading octal 0");
+
+	succeed_if (keySetMeta (key, "mode", "x") == sizeof("x"), "could not set meta");
+	succeed_if (!strcmp(keyMeta (key, "mode"), "x"), "meta value for mode was not set correctly");
+	succeed_if (keyGetMode(key) == KEY_DEF_MODE, "mode was not set correctly");
+
+	succeed_if (keySetMeta (key, "mode", "x1") == sizeof("x1"), "could not set meta");
+	succeed_if (!strcmp(keyMeta (key, "mode"), "x1"), "meta value for mode was not set correctly");
+	succeed_if (keyGetMode(key) == KEY_DEF_MODE, "mode was not set correctly");
+
+	succeed_if (keySetMeta (key, "mode", "2000000") == sizeof("2000000"), "could not set large mode");
+	succeed_if (!strcmp(keyMeta (key, "mode"), "2000000"), "meta value for large mode was not set correctly");
+	succeed_if (keyGetMode(key) == 02000000, "large mode was not set correctly");
+
+	succeed_if (keySetMeta (key, "mode", "1x") == sizeof("1x"), "could not set meta");
+	succeed_if (!strcmp(keyMeta (key, "mode"), "1x"), "meta value for mode was not set correctly");
+	succeed_if (keyGetMode(key) == KEY_DEF_MODE, "mode was not set correctly");
+
+	succeed_if (keySetMeta (key, "mode", "50x") == sizeof("50x"), "could not set meta");
+	succeed_if (!strcmp(keyMeta (key, "mode"), "50x"), "meta value for mode was not set correctly");
+	succeed_if (keyGetMode(key) == KEY_DEF_MODE, "mode was not set correctly");
+
+	keyDel (key);
+
+	key = keyNew ("user/mode", KEY_END);
+	succeed_if (keyMeta (key, "mode") == 0, "got value, but mode was not set up to now");
+	succeed_if (keyGetMode(key) == KEY_DEF_MODE, "KEY_DEF_MODE not default on new key");
+
+	succeed_if (keySetMeta (key, "mode", "") == sizeof(""), "could not set large mode");
+	succeed_if (!strcmp(keyMeta (key, "mode"), ""), "meta value for large mode was not set correctly");
+	succeed_if (keyGetMode(key) == KEY_DEF_MODE, "empty mode should also yield default");
+
+	keyDel (key);
+}
+
 
 int main(int argc, char** argv)
 {
@@ -363,6 +420,7 @@ int main(int argc, char** argv)
 	test_dup();
 	test_comment();
 	test_owner();
+	test_mode();
 
 
 	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);

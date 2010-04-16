@@ -507,7 +507,6 @@ int keyInit(Key *key)
 
 	key->type = KEY_TYPE_UNDEFINED;
 
-	key->mode = KEY_DEF_MODE;
 	return 0;
 }
 

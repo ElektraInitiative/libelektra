@@ -259,7 +259,7 @@ int keyToFile(KDB *handle, Key *key, char *keyFilename) {
 	int errnosave;
 
 	/* Open key file with its full file name */
-	fd=open(keyFilename,O_CREAT | O_RDWR | O_TRUNC, key->mode);
+	fd=open(keyFilename,O_CREAT | O_RDWR | O_TRUNC, keyGetMode(key));
 	if (fd==-1) return -1;
 	if (!(output=fdopen(fd,"w+"))) return -1;
 
@@ -268,7 +268,7 @@ int keyToFile(KDB *handle, Key *key, char *keyFilename) {
 	/* Set permissions, might fail without problems */
 	errnosave = errno;
 	fchown(fd,keyGetUID(key),keyGetGID(key));
-	fchmod(fd,key->mode);
+	fchmod(fd,keyGetMode(key));
 	errno = errnosave;
 
 
@@ -396,16 +396,16 @@ int kdbSetKey_filesys(KDB *handle, Key *key) {
 		if (mkdir(keyFilename)<0 && errno!=EEXIST)
 			return -1; /* propagate errno */
 		/* Since mkdir on win32 can't set a mode for us we need to do it manually */
-		if (chmod(keyFilename, key->mode)<0) return -1;
+		if (chmod(keyFilename, keyGetMode(key))<0) return -1;
 #else
-		if (mkdir(keyFilename,key->mode)<0 && errno!=EEXIST)
+		if (mkdir(keyFilename,keyGetMode(key))<0 && errno!=EEXIST)
 			return -1;
 #endif
 
 		/* Dir permissions... */
 		errnosave = errno;
 		chown(keyFilename,keyGetUID(key),keyGetGID(key));
-		chmod(keyFilename,key->mode);
+		chmod(keyFilename,keyGetMode(key));
 		errno = errnosave;
 
 		/* Save Value, Comment and Type... */

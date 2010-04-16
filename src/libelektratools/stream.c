@@ -253,7 +253,7 @@ ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
 		key->mode & (S_IRWXU|S_IRWXG|S_IRWXO));
 #else
 	written+=fprintf(stream," mode=\"0%o\"",
-		key->mode);
+		keyGetMode(key));
 #endif
 
 

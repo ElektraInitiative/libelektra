@@ -684,11 +684,13 @@ int keySetGID(Key *key, gid_t gid)
  */
 int keySetDir(Key *key)
 {
+	mode_t mode;
 	if (!key) return -1;
 
-	key->mode |= KEY_DEF_DIR;
-	key->flags |= KEY_FLAG_SYNC;
-	
+	mode = keyGetMode(key);
+	mode |= KEY_DEF_DIR;
+	keySetMode(key, mode);
+
 	return 0;
 }
 
@@ -706,15 +708,42 @@ int keySetDir(Key *key)
  *
  * @param key the key object to work with
  * @return mode permissions of the key
+ * @return KEY_DEF_MODE as defaults
  * @return (mode_t)-1 on NULL pointer
  * @see keySetMode()
  * @ingroup keymeta
  */
 mode_t keyGetMode(const Key *key)
 {
-	if (!key) return (mode_t) -1;
+	const char *mode;
+	long int val;
+	char *endptr;
+	int errorval = errno;
 
-	return key->mode;
+	if (!key) return (mode_t)-1;
+
+	mode = keyMeta (key, "mode");
+	if (!mode) return KEY_DEF_MODE;
+	if (*mode == '\0') return KEY_DEF_MODE;
+
+	/*From now on we have to leave using cleanup*/
+	errno = 0;
+	val = strtol(mode, &endptr, 8);
+
+	/*Check for errors*/
+	if (errno) goto cleanup;
+
+	/*Check if nothing was found*/
+	if (endptr == mode) goto cleanup;
+
+	/*Check if the whole string was processed*/
+	if (*endptr != '\0') goto cleanup;
+
+	return val;
+cleanup:
+	/*First restore errno*/
+	errno = errorval;
+	return KEY_DEF_MODE;
 }
 
 
@@ -787,10 +816,15 @@ mode_t keyGetMode(const Key *key)
  */
 int keySetMode(Key *key, mode_t mode)
 {
+	char str[MAX_LEN_INT];
 	if (!key) return -1;
 
-	key->mode=mode;
-	key->flags |= KEY_FLAG_SYNC;
+	if (snprintf (str, MAX_LEN_INT-1, "%o", mode) < 0)
+	{
+		return -1;
+	}
+
+	keySetMeta(key, "mode", str);
 
 	return 0;
 }

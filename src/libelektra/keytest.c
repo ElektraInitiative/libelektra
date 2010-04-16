@@ -326,9 +326,13 @@ int keyIsInactive (const Key *key)
  */
 int keyIsDir(const Key *key)
 {
+	mode_t mode;
+
 	if (!key) return -1;
 
-	return ((key->mode & KEY_DEF_DIR) != 0);
+	mode = keyGetMode(key);
+
+	return ((mode & KEY_DEF_DIR) != 0);
 }
 
 

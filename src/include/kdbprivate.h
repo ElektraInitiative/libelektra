@@ -193,12 +193,6 @@ struct _Key {
 	type_t         type;
 
 	/**
-	 * File-like mode control
-	 * @see keyGetMode(), keySetMode()
-	 */
-	mode_t         mode;
-
-	/**
 	 * The value, which is a NULL terminated string or binary.
 	 * @see keyGetString(), keyGetBinary(), keySetRaw() */
 	void *         data;

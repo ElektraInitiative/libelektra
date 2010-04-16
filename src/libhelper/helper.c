@@ -146,11 +146,16 @@ ssize_t kdbbEncode(void *kdbbDecoded, size_t size, char *returned)
 	int lineStep=8*blockStep; /* 8 blocks per line */
 	int currentInBlock=0;
 	int currentInLine=0;
+	ssize_t ssize;
+
+	if (size > SSIZE_MAX) return -1;
+	ssize = size;
 
 	if ( size == 0 )
 		return 0;
 	
-	while ((readCursor-(char *)kdbbDecoded)<size) {
+	while ((readCursor-(char *)kdbbDecoded)<ssize)
+	{
 		sprintf(writeCursor,"%02x",*(unsigned char *)readCursor);
 		readCursor++;
 		writeCursor+=2;

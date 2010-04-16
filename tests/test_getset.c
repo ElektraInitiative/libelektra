@@ -232,7 +232,7 @@ void test_mode()
 	KeySet *returned,*ks;
 	int key1_found;
 	int ret;
-	int mode, setMode;
+	mode_t mode, setMode;
 
 	printf("testing mode\n");
 	kdb=kdbOpen();
