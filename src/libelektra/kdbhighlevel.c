@@ -70,7 +70,7 @@
 #include <string.h>
 #endif
 
-#include "kdbbackend.h"
+#include "kdbinternal.h"
 
 
 

@@ -42,7 +42,7 @@
 #include <errno.h>
 #endif
 
-#include <kdbbackend.h>
+#include <kdbinternal.h>
 
 
 void free_splitted_keysets(Split *keysets)

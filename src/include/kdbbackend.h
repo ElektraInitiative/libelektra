@@ -22,7 +22,8 @@
 
 
 #include <kdb.h>
-#include <kdbprivate.h>
+#include <kdbcap.h>
+#include <kdbextension.h>
 
 #ifdef ELEKTRA_STATIC
         #define KDBEXPORT(module) KDB *libelektra_##module##_LTX_kdbBackendFactory(void)	
@@ -49,7 +50,6 @@ typedef enum {
 	KDB_BE_END=0		/*!< End of arguments */
 } backend_t;
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -65,10 +65,6 @@ Key *kdbGetMountpoint(KDB *handle, const Key *where);
 unsigned long kdbGetCapability(KDB *handle, const Key *where, unsigned long mask);
 const char *kdbGetString(KDB *handle, const Key *where, unsigned long which);
 */
-
-/* Old capability API */
-KDBCap *kdbGetCapability(KDB *handle, const Key *where);
-int kdbhGetErrno(const KDB *handle);
 
 /* Some internal methods */
 int kdbiRealloc (void ** buffer, size_t size);
@@ -98,54 +94,10 @@ ssize_t kdbbGetFullFilename(KDB *handle, const Key *forKey,char *returned,size_t
 void *kdbhGetBackendData(const KDB *handle);
 void *kdbhSetBackendData(KDB *handle, void *data);
 
-KDBCap* kdbhSetCapability(KDB *handle, KDBCap *cap);
-KDBCap* kdbhGetCapability(const KDB *handle);
-
-Trie *kdbhGetTrie(const KDB *handle);
-void kdbhSetTrie(KDB *handle, Trie *trie);
-
 const Key *kdbhGetMountpoint(KDB *handle);
 void kdbhSetMountpoint(KDB *handle, const Key* mountpoint);
 
 KeySet *kdbhGetConfig(KDB *handle);
-
-/* Capability methods */
-KDBCap *capNew (void);
-void capDel (KDBCap *cap);
-
-const char *kdbcGetName (const KDBCap *cap);
-const char *kdbcGetVersion (const KDBCap *cap);
-const char *kdbcGetDescription (const KDBCap *cap);
-const char *kdbcGetAuthor (const KDBCap *cap);
-const char *kdbcGetLicence (const KDBCap *cap);
-
-/* too many functions, use flags */
-unsigned int kdbcGetonlyFullGet (const KDBCap *cap);
-unsigned int kdbcGetonlyFullSet (const KDBCap *cap);
-unsigned int kdbcGetonlyRemoveAll (const KDBCap *cap);
-unsigned int kdbcGetonlyAddKeys (const KDBCap *cap);
-unsigned int kdbcGetonlySystem (const KDBCap *cap);
-unsigned int kdbcGetonlyUser (const KDBCap *cap);
-unsigned int kdbcGetonlyFullSync (const KDBCap *cap);
-unsigned int kdbcGetnoOwner (const KDBCap *cap);
-unsigned int kdbcGetnoValue (const KDBCap *cap);
-unsigned int kdbcGetnoComment (const KDBCap *cap);
-unsigned int kdbcGetnoUID (const KDBCap *cap);
-unsigned int kdbcGetnoGID (const KDBCap *cap);
-unsigned int kdbcGetnoMode (const KDBCap *cap);
-unsigned int kdbcGetnoDir (const KDBCap *cap);
-unsigned int kdbcGetnoATime (const KDBCap *cap);
-unsigned int kdbcGetnoMTime (const KDBCap *cap);
-unsigned int kdbcGetnoCTime (const KDBCap *cap);
-unsigned int kdbcGetnoRemove (const KDBCap *cap);
-unsigned int kdbcGetnoStat (const KDBCap *cap);
-unsigned int kdbcGetnoMount (const KDBCap *cap);
-unsigned int kdbcGetnoBinary (const KDBCap *cap);
-unsigned int kdbcGetnoString (const KDBCap *cap);
-unsigned int kdbcGetnoTypes (const KDBCap *cap);
-unsigned int kdbcGetnoError (const KDBCap *cap);
-unsigned int kdbcGetnoLock (const KDBCap *cap);
-unsigned int kdbcGetnoThread (const KDBCap *cap);
 
 
 

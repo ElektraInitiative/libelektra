@@ -49,6 +49,7 @@
 #include <kdbtools.h>
 #include <kdb.h>
 #include <kdbloader.h>
+#include <kdbextension.h>
 
 #define CMD_GET       1
 #define CMD_SET       2

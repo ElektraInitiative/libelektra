@@ -49,7 +49,7 @@
 #endif
 
 
-#include "kdbbackend.h"
+#include "kdbinternal.h"
 
 /**
  * Set some backend-specific @p data in the @p handle.

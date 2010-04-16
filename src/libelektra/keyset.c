@@ -90,7 +90,7 @@ ksDel (myConfig); // delete keyset and all keys appended
 #include <string.h>
 #endif
 
-#include "kdbbackend.h"
+#include "kdbinternal.h"
 
 
 

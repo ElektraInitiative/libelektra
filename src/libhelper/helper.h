@@ -53,7 +53,7 @@
 #include <stdlib.h>
 #endif
 
-#include <kdbbackend.h>
+#include <kdbinternal.h>
 
 #endif
 

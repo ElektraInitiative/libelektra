@@ -17,7 +17,7 @@
 #ifndef KDB_H
 #define KDB_H
 
-#include "kdbos.h"
+#include <kdbos.h>
 
 #define KDB_VERSION "@KDB_VERSION@"
 #define KDB_VERSION_MAJOR @KDB_VERSION_MAJOR@
@@ -122,6 +122,7 @@ Key *keyVNew(const char *keyname, va_list ap);
 Key *keyDup(const Key *source);
 int keyCopy(Key *dest, const Key *source);
 
+int keyClear(Key *key);
 int keyDel(Key *key);
 
 ssize_t keyIncRef(Key *key);
@@ -143,35 +144,10 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 int keyStat(Key *key);
 int keyRemove(Key *key);
 
-uid_t keyGetUID(const Key *key);
-int keySetUID(Key *key, uid_t uid);
-
-gid_t keyGetGID(const Key *key);
-int keySetGID(Key *key, gid_t gid);
-
-int keySetDir(Key *key);
-mode_t keyGetMode(const Key *key);
-int keySetMode(Key *key, mode_t mode);
-
-type_t keyGetType(const Key *key);
-int keySetType(Key *key, type_t type);
-
-time_t keyGetATime(const Key *key);
-int keySetATime(Key *key, time_t atime);
-
-time_t keyGetMTime(const Key *key);
-int keySetMTime(Key *key, time_t mtime);
-
-time_t keyGetCTime(const Key *key);
-int keySetCTime(Key *key, time_t ctime);
-
 /* Methods for Making Tests */
 int keyNeedStat(const Key *key);
 int keyNeedSync(const Key *key);
 int keyNeedRemove(const Key *key);
-
-int keyIsSystem(const Key *key);
-int keyIsUser(const Key *key);
 
 int keyIsBelow(const Key *key, const Key *check);
 int keyIsDirectBelow(const Key *key, const Key *check);
@@ -197,11 +173,6 @@ ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize);
 ssize_t keyAddBaseName(Key *key,const char *baseName);
 ssize_t keySetBaseName(Key *key,const char *baseName);
 
-const char *keyOwner(const Key *key);
-ssize_t keyGetOwnerSize(const Key *key);
-ssize_t keyGetOwner(const Key *key, char *returned, size_t maxSize);
-ssize_t keySetOwner(Key *key, const char *owner);
-
 /* Value Manipulation Methods */
 const void *keyValue(const Key *key);
 ssize_t keyGetValueSize(const Key *key);
@@ -211,11 +182,6 @@ ssize_t keySetString(Key *key, const char *newString);
 
 ssize_t keyGetBinary(const Key *key, void *returnedBinary, size_t maxSize);
 ssize_t keySetBinary(Key *key, const void *newBinary, size_t dataSize);
-
-const char *keyComment(const Key *key);
-ssize_t keyGetCommentSize(const Key *key);
-ssize_t keyGetComment(const Key *key, char *returnedDesc, size_t maxSize);
-ssize_t keySetComment(Key *key, const char *newDesc);
 
 
 
@@ -231,6 +197,7 @@ KeySet *ksVNew(size_t alloc, va_list ap);
 KeySet *ksDup(const KeySet * source);
 int ksCopy(KeySet *dest, const KeySet *source);
 
+int ksClear(KeySet *ks);
 int ksDel(KeySet *ks);
 
 void ksSort(KeySet *ks);

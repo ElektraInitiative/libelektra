@@ -28,6 +28,9 @@
 #include <errno.h>
 #include <stdio.h>
 
+/*TODO don't use private details*/
+#include <kdbprivate.h>
+
 
 #define BACKENDNAME "passwd"
 #define BACKENDVERSION "0.0.1"

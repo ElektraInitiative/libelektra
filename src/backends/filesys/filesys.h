@@ -44,6 +44,9 @@
 
 #include <kdbbackend.h>
 
+/* filesys is an hack and needs private information... */
+#include <kdbprivate.h>
+
 #define BACKENDNAME "filesys"
 #define BACKENDVERSION "0.2.1"
 

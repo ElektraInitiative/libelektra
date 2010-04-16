@@ -38,7 +38,7 @@
 #include <locale.h>
 #endif
 
-#include <kdbbackend.h>
+#include <kdbinternal.h>
 
 #define KEY_ROOT "user/tests"
 #define KEY_LENGTH 1024

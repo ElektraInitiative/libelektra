@@ -3,6 +3,9 @@
 #include <stdio.h>
 #include <errno.h>
 
+/*TODO dont use private details*/
+#include <kdbprivate.h>
+
 #define BACKENDNAME "hosts"
 #define BACKENDVERSION "0.0.2"
 

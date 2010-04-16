@@ -37,7 +37,7 @@
 #include <stdio.h>
 #endif
 
-#include "kdbbackend.h"
+#include "kdbinternal.h"
 
 static char *getEntryName(const char *path);
 static void* prefix_lookup(Trie *trie, const char *name);

@@ -40,7 +40,7 @@
 #endif
 
 #include <kdbtools.h>
-#include <kdbbackend.h>
+#include <kdbinternal.h>
 
 #ifdef ELEKTRA_STATIC
 

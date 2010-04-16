@@ -45,6 +45,9 @@
 
 #include <kdbbackend.h>
 
+/*TODO don't use private details*/
+#include <kdbprivate.h>
+
 #define BACKENDNAME "fstab"
 #define BACKENDVERSION "0.0.1"
 #define BACKENDDESCR "Parses files in a syntax like /etc/fstab"

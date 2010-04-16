@@ -98,7 +98,7 @@
 #include <stdio.h>
 #endif
 
-#include <kdbbackend.h>
+#include <kdbinternal.h>
 
 
 KDB* kdbOpenBackend(const char *backendname, const char *mountpoint, KeySet *config)
