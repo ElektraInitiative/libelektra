@@ -1307,7 +1307,7 @@ void test_keyComment()
 	succeed_if (key = keyNew(0), "could not create new key");
 	succeed_if (strcmp (keyComment(key), "") == 0, "Empty comment problem");
 	succeed_if (keyGetCommentSize(key) == 1, "Empty comment size problem");
-	succeed_if (keySetComment (key,"") == 0, "could not set comment");
+	succeed_if (keySetComment (key,"") == 1, "could not set comment");
 	succeed_if (strcmp (keyComment(key), "") == 0, "Empty comment problem");
 	succeed_if (keyGetCommentSize(key) == 1, "Empty comment size problem");
 	succeed_if (keyGetComment(key, ret, 0) == -1, "Could not get empty comment");

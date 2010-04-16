@@ -545,15 +545,18 @@ keyDel(key);
  */
 const char *keyComment(const Key *key)
 {
-	if (!key) return 0;
+	const char *comment;
 
-	if (!key->comment)
+	if (!key) return 0;
+	comment = keyMeta(key, "comment");
+
+	if (!comment)
 	{
 		/*errno=KDB_ERR_NOKEY;*/
 		return "";
 	}
 
-	return key->comment;
+	return comment;
 }
 
 
@@ -587,15 +590,18 @@ buffer = malloc (keyGetCommentSize (key));
  */
 ssize_t keyGetCommentSize(const Key *key)
 {
+	ssize_t size;
 	if (!key) return -1;
 
-	if (!key->comment)
+	size = keyGetMetaSize (key, "comment");
+
+	if (!size)
 	{
 		/*errno=KDB_ERR_NODESC;*/
 		return 1;
 	}
 
-	return key->commentSize;
+	return size;
 }
 
 
@@ -628,26 +634,30 @@ ssize_t keyGetCommentSize(const Key *key)
  */
 ssize_t keyGetComment(const Key *key, char *returnedComment, size_t maxSize)
 {
+	const char *comment;
+	size_t commentSize;
 	if (!key) return -1;
 
 	if (!maxSize) return -1;
 	if (!returnedComment) return -1;
 	if (maxSize > SSIZE_MAX) return -1;
 
+	comment = keyMeta(key, "comment");
+	commentSize = keyGetMetaSize(key, "comment");
 
-	if (!key->comment)
+	if (!comment)
 	{
 		/*errno=KDB_ERR_NODESC;*/
 		returnedComment[0]=0;
 		return 1;
 	}
 
-	strncpy(returnedComment,key->comment,maxSize);
-	if (maxSize < key->commentSize) {
+	strncpy(returnedComment,comment,maxSize);
+	if (maxSize < commentSize) {
 		/*errno=KDB_ERR_TRUNC;*/
 		return -1;
 	}
-	return key->commentSize;
+	return commentSize;
 }
 
 
@@ -663,46 +673,20 @@ ssize_t keyGetComment(const Key *key, char *returnedComment, size_t maxSize)
  * @param key the key object to work with
  * @param newComment the comment, that can be freed after this call.
  * @return the number of bytes actually saved including final NULL
- * @return 1 when the comment was freed
+ * @return 0 when the comment was freed (newComment NULL or empty string)
  * @return -1 on NULL pointer or memory problems
  * @see keyGetComment()
  * @ingroup keyvalue
  */
 ssize_t keySetComment(Key *key, const char *newComment)
 {
-	ssize_t size=0;
-
 	if (!key) return -1;
-
-	if (newComment && (size=kdbiStrLen(newComment)) > 1)
+	if (!newComment || *newComment==0)
 	{
-		if (key->comment) {
-			char *p=0;
-			p=realloc(key->comment,size);
-			if (NULL==p) {
-				key->commentSize = 0;
-				/*errno=KDB_ERR_NOMEM;*/
-				return -1;
-			}
-			key->comment=p;
-		} else {
-			key->comment=malloc(size);
-			if (!key->comment) {
-				key->commentSize = 0;
-				/*errno=KDB_ERR_NOMEM;*/
-				return -1;
-			}
-		}
-
-		strcpy(key->comment,newComment);
-		key->flags |= KEY_FLAG_SYNC;
-		key->commentSize=size;
-	} else if (key->comment) {
-		free(key->comment);
-		key->comment=0;
-		key->commentSize=1;
-		key->flags |= KEY_FLAG_SYNC;
+		keySetMeta (key, "comment", 0);
+		return 1;
 	}
-	return key->commentSize;
-}
 
+	keySetMeta (key, "comment", newComment);
+	return keyGetCommentSize (key);
+}

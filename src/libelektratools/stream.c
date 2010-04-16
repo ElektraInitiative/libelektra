@@ -257,7 +257,7 @@ ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
 #endif
 
 
-	if (!key->data && !key->comment) { /* no data AND no comment */
+	if (!key->data && !keyComment(key)) { /* no data AND no comment */
 		written+=fprintf(stream,"/>");
 		if (!(options & KDB_O_CONDENSED))
 			written+=fprintf(stream,"\n\n");
@@ -277,7 +277,7 @@ ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
 				
 				written+=fprintf(stream,"value=\"%s\"",(char *)key->data);
 				
-				if (key->comment) written+=fprintf(stream,">\n");
+				if (keyComment(key)) written+=fprintf(stream,">\n");
 				else {
 					written+=fprintf(stream,"/>");
 					if (!(options & KDB_O_CONDENSED))
@@ -312,7 +312,7 @@ ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
 				written+=fprintf(stream,"</value>");
 			}
 		} else { /* we have no data */
-			if (key->comment) {
+			if (keyComment(key)) {
 				written+=fprintf(stream,">");
 				if (!(options & KDB_O_CONDENSED))
 					written+=fprintf(stream,"\n");
@@ -328,11 +328,11 @@ ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
 
 	if (!(options & KDB_O_CONDENSED)) {
 		written+=fprintf(stream,"\n");
-		if (key->comment) written+=fprintf(stream,"     ");
+		if (keyComment(key)) written+=fprintf(stream,"     ");
 	}
 
-	if (key->comment) {
-		written+=fprintf(stream,"<comment><![CDATA[%s]]></comment>", key->comment);
+	if (keyComment(key)) {
+		written+=fprintf(stream,"<comment><![CDATA[%s]]></comment>", keyComment(key));
 		if (!(options & KDB_O_CONDENSED))
 			written+=fprintf(stream,"\n");
 	}

@@ -273,6 +273,43 @@ void test_dup()
 	keyDel (key);
 }
 
+void test_comment()
+{
+	Key *key;
+	char ret[10];
+
+	succeed_if (key = keyNew(0), "could not create new key");
+	succeed_if (strcmp (keyComment(key), "") == 0, "Empty comment problem");
+	succeed_if (keyGetCommentSize(key) == 1, "Empty comment size problem");
+	succeed_if (keyMeta(key, "comment") == 0, "No comment up to now");
+
+	succeed_if (keySetComment (key,0) == 1, "could not remove comment");
+	succeed_if (keyMeta(key, "comment") == 0, "There should be an no comment");
+	succeed_if (!strcmp (keyComment(key), ""), "Empty comment problem");
+	succeed_if (keyGetCommentSize(key) == 1, "Empty comment size problem");
+	succeed_if (keyGetComment(key, ret, 0) == -1, "Could not get empty comment");
+	succeed_if (keyGetComment(key, ret, 1) == 1, "Could not get empty comment");
+	succeed_if (ret[0] == 0, "keyGetComment did not return empty comment");
+
+	succeed_if (keySetComment (key,"") == 1, "could not remove comment");
+	succeed_if (keyMeta(key, "comment") == 0, "There should be an no comment");
+	succeed_if (!strcmp (keyComment(key), ""), "Empty comment problem");
+	succeed_if (keyGetCommentSize(key) == 1, "Empty comment size problem");
+	succeed_if (keyGetComment(key, ret, 0) == -1, "Could not get empty comment");
+	succeed_if (keyGetComment(key, ret, 1) == 1, "Could not get empty comment");
+	succeed_if (ret[0] == 0, "keyGetComment did not return empty comment");
+
+	succeed_if (keySetComment (key,"mycom") == sizeof("mycom"), "could not set comment");
+	succeed_if (!strcmp(keyMeta(key, "comment"), "mycom"), "There should be my comment");
+	succeed_if (!strcmp (keyComment(key), "mycom"), "My comment problem");
+	succeed_if (keyGetCommentSize(key) == sizeof("mycom"), "My comment size problem");
+	succeed_if (keyGetComment(key, ret, 0) == -1, "Could not get my comment");
+	succeed_if (keyGetComment(key, ret, 1) == -1, "Could not get my comment");
+	succeed_if (keyGetComment(key, ret, sizeof("mycom")) == sizeof("mycom"), "Could not get my comment");
+	succeed_if (!strcmp (ret, "mycom"), "keyGetComment did not return my comment");
+	succeed_if (keyDel (key) == 0, "could not delete key");
+}
+
 
 int main(int argc, char** argv)
 {
@@ -285,6 +322,7 @@ int main(int argc, char** argv)
 	test_size();
 	test_uid();
 	test_dup();
+	test_comment();
 
 
 	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);

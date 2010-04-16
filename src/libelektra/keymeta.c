@@ -240,16 +240,19 @@ buffer = malloc (keyGetValueSize (key));
  *
  * @param key the key object to work with
  * @return the number of bytes needed to store the key value
- * @return 1 when there is no data and type is not binary
- * @return 0 when there is no data and type is binary
+ * @return 1 when there is an empty meta value
+ * @return 0 when there is no meta value (deleted or never added)
  * @return -1 on null pointer
  * @see keyGetString(), keyGetBinary(), keyValue()
  * @ingroup keymeta
  */
 ssize_t keyGetMetaSize(const Key *key, const char* metaName)
 {
+	Key *ret;
 
-	Key *ret = keyMetaKey (key, metaName);
+	if (!key) return -1;
+
+	ret = keyMetaKey (key, metaName);
 	if (!ret) return 0;
 	return keyGetValueSize(ret);
 }
@@ -301,29 +304,6 @@ ssize_t keyGetMeta(const Key *key, const char* metaName,
 	return keyGetString (ret, returnedMetaString, maxSize);
 }
 
-/* TODO: What to allow?
- * currently allowed are: 0-9 A-Z [ \ ] _ a-z
- * + everything between 21 and 126 in ascii table
- * because - was needed for uid
- *
- * Returns the size of the string with the terminating
- * 0.
- *
- * TODO, if decided to use, move to:
- * @ingroup internal
-  */
-static ssize_t kdbiStrCheck (const char* str)
-{
-	ssize_t ret = 0;
-	while (*str != 0)
-	{
-		if (*str < 21 || *str > 126) return -1;
-		++str;
-		++ret;
-	}
-	return ret+1;
-}
-
 /**Set a new Meta-Information.
  *
  * Will set a new Meta-Information pair consisting of
@@ -356,11 +336,11 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 
 	if (!key) return -1;
 	if (!metaName) return -1;
-	metaNameSize = kdbiStrCheck (metaName);
+	metaNameSize = kdbiStrLen (metaName);
 	if (metaNameSize == -1) return -1;
 	if (newMetaString)
 	{
-		metaStringSize = kdbiStrCheck (newMetaString);
+		metaStringSize = kdbiStrLen (newMetaString);
 		if (metaStringSize == -1) return -1;
 	}
 

@@ -688,19 +688,19 @@ int keyFileSerialize(Key *key, FILE *output) {
 
 	fprintf(output,"RG%03d\n",RG_KEY_FORMAT_VERSION);
 	fprintf(output,"%d\n", keyGetType (key));
-	if (key->comment) {
+	if (keyComment(key)) {
 		if (kdbbNeedsUTF8Conversion()) {
-			size_t convertedCommentSize=key->commentSize;
+			size_t convertedCommentSize=keyGetCommentSize(key);
 			char *convertedComment=malloc(convertedCommentSize);
 
-			memcpy(convertedComment,key->comment,key->commentSize);
+			memcpy(convertedComment,keyComment(key),keyGetCommentSize(key));
 			if (kdbbUTF8Engine(UTF8_TO,&convertedComment,&convertedCommentSize)) {
 				free(convertedComment);
 				return -1;
 			}
 			fprintf(output,"%s\n",convertedComment);
 			free(convertedComment);
-		} else fprintf(output,"%s\n",key->comment);
+		} else fprintf(output,"%s\n",keyComment(key));
 	}
 
 	fputs("<DATA>\n",output);
