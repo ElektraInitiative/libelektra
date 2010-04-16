@@ -405,14 +405,12 @@ Key* keyDup(const Key *source)
 
 	/* prepare to set dynamic properties */
 	dest->key=
-	dest->owner=
 	dest->data=
 	dest->meta=0;
 
 	dest->ksReference = 0;
 
 	if (source->key && keySetName(dest,source->key) == -1) goto memerror;
-	if (source->owner && keySetOwner(dest,source->owner) == -1) goto memerror;
 	if (source->data && keySetRaw(dest,source->data,source->dataSize) == -1) goto memerror;
 	if (source->meta)
 	{
@@ -499,12 +497,10 @@ int keyCopy (Key *dest, const Key *source)
 
 	/* prepare to set dynamic properties */
 	dest->key=
-	dest->owner=
 	dest->data=
 	dest->meta=0;
 
 	if (keySetName(dest,source->key) == -1) return -1;
-	if (keySetOwner(dest,source->owner) == -1) return -1;
 	if (keySetRaw(dest,source->data,source->dataSize) == -1) return -1;
 	if (source->meta)
 	{
@@ -581,7 +577,6 @@ int keyClear(Key *key)
 {
 	if (key->key) free(key->key);
 	if (key->data) free(key->data);
-	if (key->owner) free(key->owner);
 	if (key->meta) ksDel(key->meta);
 
 	memset(key,0,sizeof(Key));

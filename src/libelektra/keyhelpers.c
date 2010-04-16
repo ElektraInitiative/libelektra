@@ -276,7 +276,7 @@ ssize_t keyGetFullRootNameSize(const Key *key) {
 	size_t size=0;
 
 	if (keyIsUser(key)) {
-		if (key->owner) size=kdbiStrLen(key->owner);
+		if (keyMeta(key, "owner")) size=keyGetMetaSize(key, "owner");
 		
 		return size+sizeof("user");
 	} else {
@@ -324,13 +324,11 @@ ssize_t keyGetFullRootName(const Key *key, char *returned, size_t maxSize) {
 	
 	rootSize = keyGetRootNameSize(key)-1;
 	strncpy(returned,key->key, rootSize); /* copy "user" or "system" */
-	if (keyIsUser(key)) {
+	if (keyIsUser(key) && keyMeta(key, "owner"))
+	{
 		cursor = returned + rootSize;
 		*cursor = ':'; cursor++;
-		if (key->owner)
-		{
-			strncpy (cursor, key->owner, size - rootSize - 1); /* -1 for : */
-		}
+		strncpy (cursor, keyMeta(key, "owner"), size - rootSize - 1); /* -1 for : */
 	} else {
 		returned[rootSize]=0;
 	}

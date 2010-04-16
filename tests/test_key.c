@@ -49,7 +49,7 @@ struct test tstKeyName[] =
 	{ "Normal user key", "user/key",
 		"user/key", 			/* keyName 	*/
 		"key", 				/* keyBaseName 	*/
-		"user:env1",			/* keyGetFullRootName 	*/ 
+		"user",				/* keyGetFullRootName 	*/ 
 		"user"				/* keyGetParentName	*/
 	
 	},
@@ -255,13 +255,9 @@ void test_keyNewUser()
 	Key *k3;
 
 	printf("Test user key creation\n");
-	
-#ifdef HAVE_SETENV
-	setenv ("USER","hugo",1);
-#else
-	putenv ("USER=hugo");
-#endif
+
 	key = keyNew ("user/test/test", KEY_END);
+	succeed_if (keySetOwner(key, "hugo") == sizeof("hugo"), "could not set owner");
 	succeed_if( strcmp(keyOwner(key), "hugo") == 0, "keyNew: owner not set correctly");
 	succeed_if( keyGetOwnerSize(key) == 5, "owner length not correct");
 	keyGetFullName (key, fullroot, MAX_PATH_LENGTH);
@@ -269,15 +265,12 @@ void test_keyNewUser()
 	/* printf ("%s, %s, %s\n", keyName(key), keyBaseName(key), fullroot); */
 	succeed_if(strcmp(keyName(key),"user/test/test") == 0, "Wrong keyname: keyName");
 	succeed_if(strcmp(keyBaseName(key),"test") == 0, "Wrong keyname: keyBaseName");
+	printf ("%s\n", fullroot);
 	succeed_if(strcmp(fullroot,"user:hugo/test/test") == 0, "Wrong keyname: keyGetFullName");
 	succeed_if(keyDel(key) == 0, "keyDel: Unable to delete key with name + owner");
 
-#ifdef HAVE_SETENV	
-	setenv ("KDB_USER","tommy",1);
-#else
-	putenv("KDB_USER=tommy");
-#endif
 	key = keyNew ("user/test/test", KEY_END);
+	succeed_if (keySetOwner(key, "tommy") == sizeof("tommy"), "could not set owner");
 	succeed_if( strcmp(keyOwner(key), "tommy") == 0, "keyNew: owner not set correctly");
 	succeed_if( keyGetOwnerSize(key) == 6, "owner length not correct");
 	keyGetFullName (key, fullroot, MAX_PATH_LENGTH);
@@ -899,23 +892,10 @@ void test_keyName()
 	succeed_if(strcmp(keyName(key), "user/validname\\/") == 0, "keyNew: Key's name setted incorrectly");
 	succeed_if(keyDel(key) == 0, "keyDel: Unable to delete key with name");
 
-#ifdef HAVE_CLEARENV
-	clearenv();
-#else
-	unsetenv("USER");
-	unsetenv("KDB_USER");
-#endif
-
-#ifdef HAVE_SETENV
-	setenv ("USER", "env1", 1);
-#else
-	putenv ("USER=env1");
-#endif
-
 	printf("Test key's name manipulation\n");
 	for(i = 0 ; tstKeyName[i].testName != NULL ; i++) {
 		key = keyNew(tstKeyName[i].keyName, KEY_END);
-		
+
 		/* keyName */
 		succeed_if( (strcmp(keyName(key), tstKeyName[i].expectedKeyName) == 0) , "keyName" );
 

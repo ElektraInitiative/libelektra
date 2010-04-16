@@ -310,6 +310,45 @@ void test_comment()
 	succeed_if (keyDel (key) == 0, "could not delete key");
 }
 
+void test_owner()
+{
+	Key *key;
+
+	succeed_if (key = keyNew(0), "could not create new key");
+	succeed_if (keyMeta(key, "owner") == 0, "owner set for empty key");
+	succeed_if (!strcmp(keyOwner(key), ""), "owner set for empty key");
+	succeed_if (keyDel (key) == 0, "could not delete key");
+
+	succeed_if (key = keyNew("system/key", KEY_END), "could not create new key");
+	succeed_if (keyMeta(key, "owner") == 0, "owner set for empty key");
+	succeed_if (!strcmp(keyOwner(key), ""), "owner set for empty key");
+	succeed_if (keyDel (key) == 0, "could not delete key");
+
+	succeed_if (key = keyNew("user/key", KEY_END), "could not create new key");
+	succeed_if (keyMeta(key, "owner") == 0, "owner set for empty key");
+	succeed_if (!strcmp(keyOwner(key), ""), "owner set for empty key");
+	succeed_if (keyDel (key) == 0, "could not delete key");
+
+	succeed_if (key = keyNew("user/key", KEY_END), "could not create new key");
+	succeed_if (keySetOwner(key,"markus") == sizeof("markus"), "could not set owner markus");
+	succeed_if (!strcmp(keyMeta(key, "owner"), "markus"), "no owner set for key");
+	succeed_if (!strcmp(keyOwner(key), "markus"), "no owner set for key");
+	succeed_if (keyDel (key) == 0, "could not delete key");
+
+
+	succeed_if (key = keyNew("user:markus/key", KEY_END), "could not create new key");
+	succeed_if (keySetOwner(key,"markus") == sizeof("markus"), "could not set owner markus");
+	succeed_if (!strcmp(keyMeta(key, "owner"), "markus"), "no owner set for key");
+	succeed_if (!strcmp(keyOwner(key), "markus"), "no owner set for key");
+	succeed_if (keyDel (key) == 0, "could not delete key");
+
+	setenv ("USER", "markus", 1);
+	succeed_if (key = keyNew("user/key", KEY_END), "could not create new key with env");
+	succeed_if (keyMeta(key, "owner") == 0, "owner set for empty key with env");
+	succeed_if (!strcmp(keyOwner(key), ""), "owner set for empty key with env");
+	succeed_if (keyDel (key) == 0, "could not delete key with env");
+}
+
 
 int main(int argc, char** argv)
 {
@@ -323,6 +362,7 @@ int main(int argc, char** argv)
 	test_uid();
 	test_dup();
 	test_comment();
+	test_owner();
 
 
 	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);

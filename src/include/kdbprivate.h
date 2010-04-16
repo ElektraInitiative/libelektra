@@ -222,18 +222,6 @@ struct _Key {
 	size_t         keySize;
 
 	/**
-	 * The user that owns the key.
-	 * @see keySetOwner(), keyGetOwner()
-	 */
-	char *         owner;
-
-	/**
-	 * Size of the owner, in bytes, including ending NULL.
-	 * @see keyGetCommentSize(), keySetComment(), keyGetComment()
-	 */
-	size_t         ownerSize;
-
-	/**
 	 * Some control and internal flags.
 	 */
 	keyflag_t      flags;
