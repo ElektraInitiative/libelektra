@@ -199,18 +199,6 @@ struct _Key {
 	mode_t         mode;
 
 	/**
-	 * A comment about the key.
-	 * @see keySetComment(), keyGetComment()
-	 */
-	char *         comment;
-
-	/**
-	 * Size of the comment of description string, including ending NULL.
-	 * @see keyGetCommentSize(), keySetComment(), keyGetComment()
-	 */
-	size_t         commentSize;
-
-	/**
 	 * The value, which is a NULL terminated string or binary.
 	 * @see keyGetString(), keyGetBinary(), keySetRaw() */
 	void *         data;
