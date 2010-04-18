@@ -1130,11 +1130,11 @@ void test_ksLookupName()
 	ksAppendKey(ks, keyNew("user/named/key",   KEY_VALUE, "myvalue", KEY_END));
 	ksAppendKey(ks, keyNew("system/named/key", KEY_VALUE, "syskey",  KEY_END));
 	ksAppendKey(ks, keyNew("system/sysonly/key", KEY_VALUE, "sysonlykey",  KEY_END));
-	ksAppendKey(ks, keyNew("user/named/bin", KEY_TYPE, KEY_TYPE_BINARY, KEY_SIZE, 10,
+	ksAppendKey(ks, keyNew("user/named/bin", KEY_BINARY, KEY_SIZE, 10,
 		KEY_VALUE, "binary\1\2data", KEY_END));
-	ksAppendKey(ks, keyNew("system/named/bin", KEY_TYPE, KEY_TYPE_BINARY, KEY_SIZE, 10,
+	ksAppendKey(ks, keyNew("system/named/bin", KEY_BINARY, KEY_SIZE, 10,
 		KEY_VALUE, "sys\1bin\2", KEY_END));
-	ksAppendKey(ks, keyNew("system/named/key", KEY_TYPE, KEY_TYPE_BINARY, KEY_SIZE, 10,
+	ksAppendKey(ks, keyNew("system/named/key", KEY_BINARY, KEY_SIZE, 10,
 		KEY_VALUE, "syskey", KEY_END));
 	succeed_if (ksGetSize(ks) == 8, "could not append all keys");
 
@@ -1461,11 +1461,11 @@ void test_ksLookupValue()
 	ksAppendKey(ks, keyNew("user/2",   KEY_VALUE, "myvalue", KEY_END));
 	ksAppendKey(ks, keyNew("user/3", KEY_VALUE, "syskey",  KEY_END));
 	
-	ksAppendKey(ks, keyNew("user/b1", KEY_TYPE, KEY_TYPE_BINARY, KEY_SIZE, 10,
+	ksAppendKey(ks, keyNew("user/b1", KEY_BINARY, KEY_SIZE, 10,
 		KEY_VALUE, "binary\1\2data", KEY_END));
-	ksAppendKey(ks, keyNew("user/b2", KEY_TYPE, KEY_TYPE_BINARY, KEY_SIZE, 10,
+	ksAppendKey(ks, keyNew("user/b2", KEY_BINARY, KEY_SIZE, 10,
 		KEY_VALUE, "sys\1bin\2", KEY_END));
-	ksAppendKey(ks, keyNew("user/b3", KEY_TYPE, KEY_TYPE_BINARY, KEY_SIZE, 10,
+	ksAppendKey(ks, keyNew("user/b3", KEY_BINARY, KEY_SIZE, 10,
 		KEY_VALUE, "sy\1\33\12\32skey", KEY_END));
 	succeed_if(ksGetSize(ks) == 6, "could not append keys");
 
@@ -1555,7 +1555,7 @@ void test_ksExample()
 		KEY_END));                      // end of args
 		
 	ksAppendKey(ks,keyNew("user/tmp/ex4",
-		KEY_TYPE,KEY_TYPE_BINARY,	// key type
+		KEY_BINARY,	// key type
 		KEY_SIZE,7,			// assume binary length 7
 		KEY_VALUE,"some data",		// value that will be truncated in 7 bytes
 		KEY_COMMENT,"value is truncated",
@@ -1564,7 +1564,7 @@ void test_ksExample()
 		KEY_END));			// end of args
 
 	ksAppendKey(ks,keyNew("user/tmp/ex5",
-		KEY_TYPE, KEY_TYPE_BINARY,	// binary value
+		KEY_BINARY,	// binary value
 		KEY_SIZE,7,
 		KEY_VALUE,"some data",		// value that will be truncated in 7 bytes
 		KEY_COMMENT,"value is truncated",
@@ -1939,11 +1939,11 @@ void test_ksLookupPop()
 	ksAppendKey(ks, keyNew("user/named/key",   KEY_VALUE, "myvalue", KEY_END));
 	ksAppendKey(ks, keyNew("system/named/key", KEY_VALUE, "syskey",  KEY_END));
 	ksAppendKey(ks, keyNew("system/sysonly/key", KEY_VALUE, "sysonlykey",  KEY_END));
-	ksAppendKey(ks, keyNew("user/named/bin", KEY_TYPE, KEY_TYPE_BINARY, KEY_SIZE, 10,
+	ksAppendKey(ks, keyNew("user/named/bin", KEY_BINARY, KEY_SIZE, 10,
 		KEY_VALUE, "binary\1\2data", KEY_END));
-	ksAppendKey(ks, keyNew("system/named/bin", KEY_TYPE, KEY_TYPE_BINARY, KEY_SIZE, 10,
+	ksAppendKey(ks, keyNew("system/named/bin", KEY_BINARY, KEY_SIZE, 10,
 		KEY_VALUE, "sys\1bin\2", KEY_END));
-	ksAppendKey(ks, keyNew("system/named/key", KEY_TYPE, KEY_TYPE_BINARY, KEY_SIZE, 10,
+	ksAppendKey(ks, keyNew("system/named/key", KEY_BINARY, KEY_SIZE, 10,
 		KEY_VALUE, "syskey", KEY_END));
 	succeed_if (ksGetSize(ks) == 8, "could not append all keys");
 

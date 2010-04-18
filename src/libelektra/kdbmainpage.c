@@ -94,7 +94,7 @@
  *
  * @link key Key @endlink
  *   - Get and Set key properties like @link keySetName() name @endlink,
- *     @link keySetString() value @endlink, @link keySetType() type @endlink,
+ *     @link keySetString() string @endlink or @link keySetBinary() binary @endlink values,
  *     @link keyGetMode() permissions @endlink,
  *     @link keyGetMTime() changed time @endlink and
  *     @link keyGetComment() comment @endlink

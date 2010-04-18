@@ -335,7 +335,7 @@ ssize_t keySetString(Key *key, const char *newStringValue)
 	if (!newStringValue || newStringValue[0] == '\0') ret=keySetRaw(key,0,0);
 	else ret=keySetRaw(key,newStringValue,kdbiStrLen(newStringValue));
 
-	if (!keyIsString(key)) keySetType(key, KEY_TYPE_STRING);
+	keySetMeta (key, "binary", 0);
 
 	return ret;
 }
@@ -420,15 +420,15 @@ ssize_t keyGetBinary(const Key *key, void *returnedBinary, size_t maxSize)
  * A private copy of @p newBinary will allocated and saved inside @p key,
  * so the parameter can be deallocated after the call.
  *
- * The @c filesys backend, when used through a kdbSetKey(), will make the
- * value be kdbbEncoded into a human readable hex-digit text format.
+ * Binary values might be encoded in another way then string values
+ * depending on the plugin.
  *
  * Consider using a string key instead.
  *
  * When newBinary is a NULL pointer the binary will be freed and 0 will
  * be returned.
  *
- * @note When the type of the key is already a binary type it won't be changed.
+ * @note When the key is already binary the meta data won't be changed.
  *
  * @param key the object on which to set the value
  * @param newBinary is a pointer to any binary data or NULL to free the previous set data
@@ -447,12 +447,14 @@ ssize_t keySetBinary(Key *key, const void *newBinary, size_t dataSize)
 	ssize_t ret=0;
 
 	if (!key) return -1;
+
 	if (!dataSize && newBinary) return -1;
 	if (dataSize > SSIZE_MAX) return -1;
 
 	ret = keySetRaw(key,newBinary,dataSize);
 
-	if (!keyIsBinary(key)) keySetType(key, KEY_TYPE_BINARY);
+	keySetMeta (key, "binary", "");
+
 
 	return ret;
 }

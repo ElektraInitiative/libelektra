@@ -187,12 +187,6 @@ typedef struct _Key Key;
  */
 struct _Key {
 	/**
-	 * Type of the value, from #type_t.
-	 * @see keyGetType(), keySetType(), keyIsBin()
-	 */
-	type_t         type;
-
-	/**
 	 * The value, which is a NULL terminated string or binary.
 	 * @see keyGetString(), keyGetBinary(), keySetRaw() */
 	void *         data;

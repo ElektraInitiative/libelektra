@@ -540,7 +540,6 @@ int keyOutput (const Key * k, FILE *stream, option_t options)
 
 
 	if (options & KDB_O_SHOWMETA) fprintf(stream," : ");
-	if (options & KEY_TYPE) fprintf(stream,"Type: %d : ", keyGetType (k));
 	if (options & KEY_UID) fprintf(stream,"UID: %d : ", (int)keyGetUID (k));
 	if (options & KEY_GID) fprintf(stream,"GID: %d : ", (int)keyGetGID (k));
 	if (options & KEY_MODE) fprintf(stream,"Mode: %o : ", (int)keyGetMode (k));
@@ -687,15 +686,6 @@ int keyGenerate(const Key * key, FILE *stream, option_t options)
 		fprintf(stream,"\n\t\t, KEY_COMMENT, \"%s\"", com);
 		free (com);
 	}
-
-	if (keyGetType(key) == KEY_TYPE_BINARY) fprintf(stream,"\n\t\t, KEY_TYPE, KEY_TYPE_BINARY");
-	else if (keyGetType(key) == KEY_TYPE_STRING) fprintf(stream,"\n\t\t, KEY_TYPE, KEY_TYPE_STRING");
-	else fprintf(stream,"\n\t\t, KEY_TYPE, %d", keyGetType(key));
-
-	// if (keyIsInactive(key)) fprintf(stream,"inactive");
-
-	// if (keyIsSystem(key)) fprintf(stream,"system");
-	// if (keyIsUser(key)) fprintf(stream,"user");
 
 	if (keyNeedRemove(key)) fprintf(stream, "\n\t\t, KEY_REMOVE");
 	if (keyNeedStat(key)) fprintf(stream, "\n\t\t, KEY_STAT");

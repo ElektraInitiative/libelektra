@@ -156,7 +156,6 @@ int stat_file (Key * key, char * filename)
 	keySetUID(key,buf.st_uid);
 	keySetGID(key,buf.st_gid);
 	if (S_ISDIR (buf.st_mode)) keySetDir(key);
-	if (S_ISREG (buf.st_mode)) keySetType(key, KEY_TYPE_FILE);
 	key->atime=buf.st_atime;
 	key->mtime=buf.st_mtime;
 	key->ctime=buf.st_ctime;

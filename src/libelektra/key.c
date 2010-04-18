@@ -28,7 +28,6 @@
  * Key properties are:
  * - @link keyname Key name @endlink
  * - @link keyvalue Key value @endlink
- * - @link keySetType() Data type @endlink
  * - @link keyGetComment() Key comment @endlink
  * - @link keyGetOwner() Key owner @endlink
  * - @link keymeta UID, GID and filesystem-like mode permissions @endlink
@@ -273,7 +272,6 @@ Key *keyNew(const char *keyName, ...) {
 Key *keyVNew (const char *keyName, va_list va)
 {
 	Key *key=0;
-	type_t type=0;
 	keyswitch_t action=0;
 	void * value=0;
 	ssize_t valueSize=-1;
@@ -288,12 +286,11 @@ Key *keyVNew (const char *keyName, va_list va)
 		action=va_arg(va, keyswitch_t);
 		while (action) {
 			switch (action) {
-				case KEY_TYPE:
-					type = (type_t) va_arg(va, type_t);
-					keySetType(key, type);
-					break;
 				case KEY_SIZE:
 					valueSize=va_arg(va, size_t);
+					break;
+				case KEY_BINARY:
+					keySetMeta (key, "binary", "");
 					break;
 				case KEY_VALUE:
 					value = va_arg(va, void *);

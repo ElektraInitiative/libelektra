@@ -151,12 +151,12 @@ int compare_key (Key *k1, Key *k2, KDBCap *cap)
 	int	err = nbError;
 
 	/* printf ("compare: "); keyOutput (k1, stdout); keyOutput (k2, stdout); printf ("\n"); */
+	// printf ("compare value %s with %s\n", keyValue(k1), keyValue(k2));
 	ret = keyCompare(k1, k2);
 
 	if (cap)
 	{
 		succeed_if ((ret & KEY_NAME) == 0 , "compare key: NAME not equal");
-		if (!kdbcGetnoTypes(cap))	succeed_if ((ret & KEY_TYPE) == 0 , "compare key: TYPE not equal");
 		if (!kdbcGetnoValue(cap))	succeed_if ((ret & KEY_VALUE) == 0 , "compare key: VALUE not equal");
 		if (!kdbcGetnoOwner(cap))	succeed_if ((ret & KEY_OWNER) == 0 , "compare key: OWNER not equal");
 		if (!kdbcGetnoComment(cap))	succeed_if ((ret & KEY_COMMENT) == 0 , "compare key: COMMENT not equal");
@@ -165,7 +165,6 @@ int compare_key (Key *k1, Key *k2, KDBCap *cap)
 		if (!kdbcGetnoMode(cap))	succeed_if ((ret & KEY_MODE ) == 0 , "compare key: MODE  not equal");
 	} else {
 		succeed_if ((ret & KEY_NAME) == 0 , "compare key: NAME not equal");
-		succeed_if ((ret & KEY_TYPE) == 0 , "compare key: TYPE not equal");
 		succeed_if ((ret & KEY_VALUE) == 0 , "compare key: VALUE not equal");
 		succeed_if ((ret & KEY_OWNER) == 0 , "compare key: OWNER not equal");
 		succeed_if ((ret & KEY_COMMENT) == 0 , "compare key: COMMENT not equal");
@@ -216,7 +215,7 @@ int compare_keyset (KeySet *ks, KeySet *ks2, int filter, KDBCap *cap)
 				dup = 1;
 				keySetRaw (key, NULL, 0);
 				keySetComment (key, NULL);
-				keySetType (key, KEY_TYPE_UNDEFINED);
+				keySetMeta (key, "binary", 0);
 			}
 		}
 		key2 = ksNext(ks2);

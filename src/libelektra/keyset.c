@@ -598,8 +598,8 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
 ssize_t ksAppend(KeySet *ks, const KeySet *toAppend)
 {
 	size_t oldSize = 0;
-	int i = 0;
-	int toAlloc = 0;
+	size_t i = 0;
+	size_t toAlloc = 0;
 
 	if (!ks) return -1;
 	if (!toAppend) return -1;

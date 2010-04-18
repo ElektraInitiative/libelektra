@@ -338,11 +338,7 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 	if (!metaName) return -1;
 	metaNameSize = kdbiStrLen (metaName);
 	if (metaNameSize == -1) return -1;
-	if (newMetaString)
-	{
-		metaStringSize = kdbiStrLen (newMetaString);
-		if (metaStringSize == -1) return -1;
-	}
+	if (newMetaString) metaStringSize = kdbiStrLen (newMetaString);
 
 	toSet = keyNew(KEY_END);
 	if (!toSet) return -1;
@@ -355,7 +351,6 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 	}
 	toSet->key = metaNameDup;
 	toSet->keySize = metaNameSize;
-	toSet->type = KEY_TYPE_STRING;
 
 	/*Lets have a look if the key is already inserted.*/
 	if (key->meta)
@@ -826,84 +821,6 @@ int keySetMode(Key *key, mode_t mode)
 
 	keySetMeta(key, "mode", str);
 
-	return 0;
-}
-
-
-
-/**
- * Returns the key data type.
- *
- * See #type_t for the type definition.
- *
- * @see keySetType()
- * @see keyIsBinary() and keyIsString()
- * @see keyIsDir() is not related to the type system
- * @param key key where to get the type.
- * @return the key type
- * @return KEY_TYPE_UNDEFINED on keys without type
- * @return -1 on NULL pointer
- * @ingroup keymeta
- *
- */
-type_t keyGetType(const Key *key)
-{
-	if (!key) return -1;
-
-	return key->type;
-}
-
-
-
-/**
- * Set a new key type.
- *
- * This method is usually not needed, unless you are working with more
- * semantic value types, or want to force a specific value type for a key.
- * It is not usually needed because the data type is automatically set
- * when setting the key value.
- *
- * See #type_t for the type defintion.
- *
- * @par Example:
- * @code
-// here we define the new type
-enum
-{
-	KEY_TYPE_COLOR=KEY_TYPE_STRING+4
-};
-// here we make a new key with the type
-Key *k1 = keyNew ("user/sw/oyranos/current/color1",
-	KEY_VALUE, "#4B52CA",
-	KEY_COMMENT, "a custom color",
-	KEY_TYPE, KEY_TYPE_COLOR,
-	KEY_END);
-// lets check if it is really correct type
-if (keyGetType(k1) == KEY_TYPE_COLOR) printf ("correct type");
- * @endcode
- *
- * When using type_t::KEY_TYPE_DIR, this method will not set mode
- * permissions to the key. You'll have to set it manually after
- * keySetType(), calling keySetMode() with appropriate permissions.
- * Or use the keySetDir().
- *
- * @see keyGetType()
- * @see keySetDir() to see that the directory concept is independent of types
- * @param key the key object to work with
- * @param newType contains the new type
- * @return 0 on sucess
- * @return -1 on NULL pointer and when newType >= KEY_TYPE_MAX
- * @ingroup keymeta
- *
- */
-int keySetType(Key *key, type_t newType)
-{
-	if (!key) return -1;
-
-	if (newType >= KEY_TYPE_MAX) return -1;
-
-	key->type=newType;
-	key->flags |= KEY_FLAG_SYNC;
 	return 0;
 }
 

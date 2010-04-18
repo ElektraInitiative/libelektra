@@ -406,6 +406,21 @@ void test_mode()
 	keyDel (key);
 }
 
+void test_type()
+{
+	Key *key;
+
+	succeed_if (key = keyNew(0), "could not create a new key");
+	succeed_if (keyMeta(key, "binary") == 0, "wrong type after key creation");
+	succeed_if (keySetString (key, "mystring") == sizeof("mystring"), "could not set string");
+	succeed_if (keyMeta(key, "binary") == 0, "wrong type after setting string");
+	succeed_if (keySetBinary (key, "mystring", sizeof("mystring")) == sizeof("mystring"),
+			"could not set binary");
+	succeed_if (keyMeta(key, "binary") != 0, "wrong type after setting string");
+
+	keyDel (key);
+}
+
 
 int main(int argc, char** argv)
 {
@@ -421,6 +436,7 @@ int main(int argc, char** argv)
 	test_comment();
 	test_owner();
 	test_mode();
+	test_type();
 
 
 	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);

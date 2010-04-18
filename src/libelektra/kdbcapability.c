@@ -412,7 +412,7 @@ unsigned int kdbcGetnoString (const KDBCap *cap)
 
 /*Typing of keys is not supported.
  *
- * @see keySetRaw() and keySetType()
+ * @see keySetRaw()
  * @ingroup capability
  **/
 unsigned int kdbcGetnoTypes (const KDBCap *cap)

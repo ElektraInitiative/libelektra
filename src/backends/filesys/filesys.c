@@ -630,7 +630,7 @@ int keyFileUnserialize(Key *key,FILE *input) {
 	/* Put in the Key object */
 	keySetComment(key,comment);
 	if (comment) free(comment);
-	keySetType(key,atoi(type));
+	if (atoi(type) == 20) keySetMeta (key, "binary", "");
 	if (!dataSize) {
 		keySetRaw(key,0,0);
 		return 0;
@@ -687,7 +687,8 @@ int keyFileSerialize(Key *key, FILE *output) {
 	*/
 
 	fprintf(output,"RG%03d\n",RG_KEY_FORMAT_VERSION);
-	fprintf(output,"%d\n", keyGetType (key));
+	if (keyIsBinary(key)) fprintf(output,"%d\n", 20);
+	else fprintf(output,"%d\n", 40);
 	if (keyComment(key)) {
 		if (kdbbNeedsUTF8Conversion()) {
 			size_t convertedCommentSize=keyGetCommentSize(key);

@@ -27,19 +27,12 @@
 #define KS_END ((Key*)0)
 
 enum {
-	KEY_TYPE_UNDEFINED=0,
-	KEY_TYPE_BINARY=20,
-	KEY_TYPE_STRING=40,
-	KEY_TYPE_MAX=256
-};
-
-enum {
 	KEY_END=0,
 	KEY_NAME=1,
 	KEY_VALUE=1<<1,
 	KEY_OWNER=1<<2,
 	KEY_COMMENT=1<<3,
-	KEY_TYPE=1<<4,
+	KEY_BINARY=1<<4,
 	KEY_UID=1<<5,
 	KEY_GID=1<<6,
 	KEY_MODE=1<<7,
@@ -154,7 +147,6 @@ int keyIsDirectBelow(const Key *key, const Key *check);
 
 int keyIsInactive(const Key *key);
 
-int keyIsDir(const Key *key);
 int keyIsBinary(const Key *key);
 int keyIsString(const Key *key);
 

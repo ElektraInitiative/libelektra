@@ -107,9 +107,8 @@ void test_keyComparing()
 	succeed_if(keyCompare(key1,key2) == 0, "the keys should not differ in owner");
 
 	keySetString (key1, "myvalue");
-	succeed_if(keyCompare(key1,key2) == (KEY_VALUE|KEY_TYPE), "the keys should differ in value and type");
-	keySetType (key2, KEY_TYPE_STRING);
-	succeed_if(keyCompare(key1,key2) == KEY_VALUE, "the keys should differ in value");
+	succeed_if(keyCompare(key1,key2) == (KEY_VALUE), "the keys should differ in value");
+
 	keySetString (key2, "myvalue");
 	succeed_if(keyCompare(key1,key2) == 0, "the keys should not differ in value");
 
@@ -132,11 +131,6 @@ void test_keyComparing()
 	succeed_if(keyCompare(key1,key2) == KEY_MODE, "the keys should differ in mode");
 	keySetMode (key2, 0222);
 	succeed_if(keyCompare(key1,key2) == 0, "the keys should not differ in mode");
-
-	keySetType (key1, 50);
-	succeed_if(keyCompare(key1,key2) == KEY_TYPE, "the keys should differ in type");
-	keySetType (key2, 50);
-	succeed_if(keyCompare(key1,key2) == 0, "the keys should not differ in type");
 
 	keyDel (key1);
 	keyDel (key2);
@@ -174,12 +168,11 @@ void test_keyNewSystem()
 	succeed_if(strcmp(keyName(key), "system/sw/test") == 0, "keyNew: Key's name setted incorrectly");
 	succeed_if(keyDel(key) == 0, "keyDel: Unable to delete key with name");
 	
-	// Key with name + value (default type must be KEY_TYPE_STRING)
+	// Key with name + value
 	key = keyNew("system/sw/test",
 			KEY_VALUE, "test",
 			KEY_END);
 	succeed_if(key != NULL, "keyNew: Unable to create a key with name + value of default type");
-	succeed_if(keyIsString(key), "keyNew: Default key value isn't set to KEY_TYPE_STRING");
 	succeed_if(strcmp(keyValue(key), "test") == 0, "keyNew: Value not set correctly");
 	succeed_if(keyDel(key) == 0, "keyDel: Unable to delete key with name + value");
 	
@@ -202,7 +195,7 @@ void test_keyNewSystem()
 	succeed_if(keyDel(key) == 0, "keyDel: Unable to delete key with name + mode");
 
 	key = keyNew("system/valid/there",
-			KEY_TYPE, KEY_TYPE_BINARY,
+			KEY_BINARY,
 			KEY_SIZE, sizeof(array),
 			KEY_VALUE, array,
 			KEY_END);
@@ -228,15 +221,15 @@ void test_keyNewSystem()
 	k2=keyNew("system/2",   KEY_VALUE, "myvalue", KEY_END);
 	k3=keyNew("system/3", KEY_VALUE, "syskey",  KEY_END);
 	succeed_if(k1 != NULL, "keyNew: Unable to create a key with name + value of default type");
-	succeed_if(keyIsString(k1), "keyNew: Default key value isn't set to KEY_TYPE_STRING");
+	succeed_if(keyIsString(k1), "keyNew: Default key value isn't set to string");
 	succeed_if(strcmp(keyValue(k1), "singlevalue") == 0, "keyNew: Value not set correctly");
 	
 	succeed_if(k2 != NULL, "keyNew: Unable to create a key with name + value of default type");
-	succeed_if(keyIsString(k2), "keyNew: Default key value isn't set to KEY_TYPE_STRING");
+	succeed_if(keyIsString(k2), "keyNew: Default key value isn't set to string");
 	succeed_if(strcmp(keyValue(k2), "myvalue") == 0, "keyNew: Value not set correctly");
 	
 	succeed_if(k3 != NULL, "keyNew: Unable to create a key with name + value of default type");
-	succeed_if(keyIsString(k3), "keyNew: Default key value isn't set to KEY_TYPE_STRING");
+	succeed_if(keyIsString(k3), "keyNew: Default key value isn't set to string");
 	succeed_if(strcmp(keyValue(k3), "syskey") == 0, "keyNew: Value not set correctly");
 
 	succeed_if(keyDel(k1) == 0, "keyDel: Unable to delete key with name + value");
@@ -290,7 +283,7 @@ void test_keyNewUser()
 	succeed_if(keyDel(key) == 0, "keyDel: Unable to delete key with name + owner");
 	
 	key = keyNew("user/valid/there",
-			KEY_TYPE, KEY_TYPE_BINARY,
+			KEY_BINARY,
 			KEY_SIZE, sizeof(array),
 			KEY_VALUE, array,
 			KEY_END);
@@ -322,15 +315,15 @@ void test_keyNewUser()
 	k2=keyNew("user/2",   KEY_VALUE, "myvalue", KEY_END);
 	k3=keyNew("user/3", KEY_VALUE, "syskey",  KEY_END);
 	succeed_if(k1 != NULL, "keyNew: Unable to create a key with name + value of default type");
-	succeed_if(keyIsString(k1), "keyNew: Default key value isn't set to KEY_TYPE_STRING");
+	succeed_if(keyIsString(k1), "keyNew: Default key value isn't set to string");
 	succeed_if(strcmp(keyValue(k1), "singlevalue") == 0, "keyNew: Value not set correctly");
 	
 	succeed_if(k2 != NULL, "keyNew: Unable to create a key with name + value of default type");
-	succeed_if(keyIsString(k2), "keyNew: Default key value isn't set to KEY_TYPE_STRING");
+	succeed_if(keyIsString(k2), "keyNew: Default key value isn't set to string");
 	succeed_if(strcmp(keyValue(k2), "myvalue") == 0, "keyNew: Value not set correctly");
 	
 	succeed_if(k3 != NULL, "keyNew: Unable to create a key with name + value of default type");
-	succeed_if(keyIsString(k3), "keyNew: Default key value isn't set to KEY_TYPE_STRING");
+	succeed_if(keyIsString(k3), "keyNew: Default key value isn't set to string");
 	succeed_if(strcmp(keyValue(k3), "syskey") == 0, "keyNew: Value not set correctly");
 
 	succeed_if(keyDel(k1) == 0, "keyDel: Unable to delete key with name + value");
@@ -462,40 +455,6 @@ void test_keyReference()
 	succeed_if (keyDecRef(key) == 0, "should stay at minimum");
 	keyDel (key);
 
-}
-
-void test_keyType()
-{
-	Key * key;
-	char array [] = "test";
-	int i;
-
-	printf("Test key type\n");
-
-	key = keyNew (KEY_END);
-
-	for (i=0; i<256; i++)
-	{
-		keySetType (key, i);
-		succeed_if (keyGetType (key) == (i), "could not change to dir type to something between 0 and 255");
-	}
-
-	keySetType (key, 0);
-	succeed_if (keyGetType (key) == 0, "could not unset type");
-
-	succeed_if (keySetString (key, array) == 5, "size not correct");
-	succeed_if (keyIsString (key), "could not change to string type");
-	succeed_if (keyGetValueSize (key) == sizeof (array), "size is not correct");
-
-	succeed_if (keySetBinary (key, array, 4) == 4, "size not correct");
-	succeed_if (keyIsBinary (key), "could not change to binary type");
-	succeed_if (keyGetValueSize (key) == sizeof (array)-1, "size is not correct");
-	
-	succeed_if (keySetString (key, array) == 5, "size not correct");
-	succeed_if (keyIsString (key), "could not change to string type");
-	succeed_if (keyGetValueSize (key) == sizeof (array), "size is not correct");
-
-	keyDel (key);
 }
 
 void test_keyName()
@@ -997,17 +956,13 @@ void test_keyValue()
 	succeed_if (key = keyNew(0), "could not create new key");
 	succeed_if (keySetString (key, "a long long string") == 19, "could not set string");
 	succeed_if (keyGetString (key, ret, 6) == -1, "string not truncated");
-	/*succeed_if (errno == KDB_ERR_TRUNC, "errno not set properly trunc");*/
 	succeed_if (keyGetBinary (key, ret, 999) == -1, "binary not mismatch");
-	/*succeed_if (errno == KDB_ERR_TYPEMISMATCH, "errno not set properly typemismatch");*/
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
 	succeed_if (key = keyNew(0), "could not create new key");
 	succeed_if (keySetBinary (key, "a long long binary", 19) == 19, "could not set string");
 	succeed_if (keyGetBinary (key, ret, 6) == -1, "binary not truncated");
-	/*succeed_if (errno == KDB_ERR_TRUNC, "errno not set properly trunc");*/
 	succeed_if (keyGetString (key, ret, 999) == -1, "string not mismatch");
-	/*succeed_if (errno == KDB_ERR_TYPEMISMATCH, "errno not set properly typemismatch");*/
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
 	succeed_if (key = keyNew(0), "could not create new key");
@@ -1136,14 +1091,13 @@ void test_keyBinary(void)
 	printf ("Test binary special cases\n");
 
 	key = keyNew ("user/binary",
-		KEY_TYPE, KEY_TYPE_BINARY+1,
+		KEY_BINARY,
 		KEY_SIZE, sizeof(binaryData),
 		KEY_VALUE, binaryData,
 		KEY_END);
 
 	succeed_if (keyIsBinary(key) == 1, "should be binary");
 	succeed_if (keyIsString(key) == 0, "should not be string");
-	succeed_if (keyGetType(key) == KEY_TYPE_BINARY+1, "forgot its type");
 	succeed_if (keyGetValueSize(key) == sizeof(binaryData), "size not correct");
 	succeed_if (memcmp(binaryData, keyValue(key), sizeof(binaryData)) == 0, "memcmp");
 	succeed_if (keyGetBinary(key, ret, 1000) == sizeof(binaryData), "could not get binary data");
@@ -1153,40 +1107,23 @@ void test_keyBinary(void)
 	keyDel (key);
 
 	key = keyNew(0);
-	keySetType (key, KEY_TYPE_BINARY+1);
 	keySetBinary (key, binaryData, sizeof(binaryData));
 
 	succeed_if (keyIsBinary(key) == 1, "should be binary");
 	succeed_if (keyIsString(key) == 0, "should not be string");
-	succeed_if (keyGetType(key) == KEY_TYPE_BINARY+1, "forgot its type");
 	succeed_if (keyGetValueSize(key) == sizeof(binaryData), "size not correct");
 	succeed_if (memcmp(binaryData, keyValue(key), sizeof(binaryData)) == 0, "memcmp");
 	succeed_if (keyGetBinary(key, ret, 1000) == sizeof(binaryData), "could not get binary data");
 	succeed_if (memcmp(binaryData, ret, sizeof(binaryData)) == 0, "memcmp");
-	succeed_if (keyGetString(key, ret, 1000) == -1, "should be type mismatch");
-
-	keyDel (key);
-
-	key = keyNew(0);
-	keySetType (key, KEY_TYPE_BINARY+1);
-
-	succeed_if (keyIsBinary(key) == 1, "should be binary");
-	succeed_if (keyIsString(key) == 0, "should not be string");
-	succeed_if (keyGetType(key) == KEY_TYPE_BINARY+1, "forgot its type");
-	succeed_if (keyGetValueSize(key) == 0, "size not correct");
-	succeed_if (keyValue(key) == 0, "should be null pointer");
-	succeed_if (keyGetBinary(key, ret, 1000) == 0, "should write nothing because of no data");
 	succeed_if (keyGetString(key, ret, 1000) == -1, "should be type mismatch");
 
 	keyDel (key);
 
 	key = keyNew(0);
 	keySetBinary(key, 0, 0);
-	keySetType (key, KEY_TYPE_BINARY+1);
 
 	succeed_if (keyIsBinary(key) == 1, "should be binary");
 	succeed_if (keyIsString(key) == 0, "should not be string");
-	succeed_if (keyGetType(key) == KEY_TYPE_BINARY+1, "forgot its type");
 	succeed_if (keyGetValueSize(key) == 0, "size not correct");
 	succeed_if (keyValue(key) == 0, "should be null pointer");
 	succeed_if (keyGetBinary(key, ret, 1000) == 0, "should write nothing because of no data");
@@ -1196,11 +1133,9 @@ void test_keyBinary(void)
 
 	key = keyNew(0);
 	keySetBinary(key, 0, 1);
-	keySetType (key, KEY_TYPE_BINARY+1);
 
 	succeed_if (keyIsBinary(key) == 1, "should be binary");
 	succeed_if (keyIsString(key) == 0, "should not be string");
-	succeed_if (keyGetType(key) == KEY_TYPE_BINARY+1, "forgot its type");
 	succeed_if (keyGetValueSize(key) == 0, "size not correct");
 	succeed_if (keyValue(key) == 0, "should be null pointer");
 	succeed_if (keyGetBinary(key, ret, 1000) == 0, "should write nothing because of no data");
@@ -1212,11 +1147,9 @@ void test_keyBinary(void)
 	keySetBinary(key, "", 1);
 	succeed_if (keySetBinary(key, 0, SIZE_MAX) == -1, "should do nothing and fail");
 	succeed_if (keySetBinary(key, 0, SSIZE_MAX) == 0, "should free data");
-	keySetType (key, KEY_TYPE_BINARY+1);
 
 	succeed_if (keyIsBinary(key) == 1, "should be binary");
 	succeed_if (keyIsString(key) == 0, "should not be string");
-	succeed_if (keyGetType(key) == KEY_TYPE_BINARY+1, "forgot its type");
 	succeed_if (keyGetValueSize(key) == 0, "size not correct");
 	succeed_if (keyValue(key) == 0, "should be null pointer");
 	succeed_if (keyGetBinary(key, ret, 1000) == 0, "should write nothing because of no data");
@@ -1226,11 +1159,9 @@ void test_keyBinary(void)
 
 	key = keyNew(0);
 	keySetBinary(key, "", 1);
-	keySetType (key, KEY_TYPE_BINARY+1);
 
 	succeed_if (keyIsBinary(key) == 1, "should be binary");
 	succeed_if (keyIsString(key) == 0, "should not be string");
-	succeed_if (keyGetType(key) == KEY_TYPE_BINARY+1, "forgot its type");
 	succeed_if (keyGetValueSize(key) == 1, "size not correct");
 	succeed_if (memcmp(binaryData, keyValue(key), 1) == 0, "memcmp");
 	succeed_if (keyGetBinary(key, ret, 1000) == 1, "could not get binary data");
@@ -1241,12 +1172,10 @@ void test_keyBinary(void)
 
 	key = keyNew(0);
 	i = 23;
-	keySetType (key, KEY_TYPE_BINARY+1);
 	keySetBinary (key, (void*)&i, sizeof(i));
 
 	succeed_if (keyIsBinary(key) == 1, "should be binary");
 	succeed_if (keyIsString(key) == 0, "should not be string");
-	succeed_if (keyGetType(key) == KEY_TYPE_BINARY+1, "forgot its type");
 	succeed_if (keyGetValueSize(key) == sizeof(i), "size not correct");
 	succeed_if (memcmp((void*)&i, keyValue(key), sizeof(i)) == 0, "memcmp");
 	succeed_if (keyGetBinary(key, ret, 1000) == sizeof(i), "could not get binary data");
@@ -1548,7 +1477,7 @@ void test_keyDup()
 
 	// Create test key
 	orig = keyNew("user:yl/foo/bar",
-			KEY_TYPE, KEY_TYPE_BINARY,
+			KEY_BINARY,
 			KEY_SIZE, 6,
 			KEY_VALUE, "foobar",
 			KEY_COMMENT, "mycomment", 
@@ -1576,7 +1505,7 @@ void test_keyDup()
 	succeed_if( keyGetUID(copy) == 123, "keyDup: key UID copy error");
 	succeed_if( keyGetGID(copy) == 456, "keyDup: key GID copy error");
 	succeed_if( keyGetMode(copy) == 0644, "keyDup: key mode copy error");
-	succeed_if( keyGetType(copy) & (KEY_TYPE_BINARY), "keyDup: key type copy error");
+	succeed_if (keyIsBinary(copy), "keyDup: key type copy error");
 
 	keyDel(copy);
 
@@ -1592,8 +1521,6 @@ void test_keyDup()
 	succeed_if ( strcmp(keyOwner(copy), "") == 0, "copy name should be empty");
 	succeed_if (keyGetOwnerSize(orig) == 1, "orig name size");
 	succeed_if (keyGetOwnerSize(copy) == 1, "copy name size");
-	succeed_if (keyGetType(orig) == KEY_TYPE_UNDEFINED, "orig key type");
-	succeed_if (keyGetType(copy) == KEY_TYPE_UNDEFINED, "copy key type");
 	succeed_if (keyGetATime(orig) == keyGetATime(copy), "ATime should be same");
 	succeed_if (keyGetCTime(orig) == keyGetCTime(copy), "CTime should be same");
 	succeed_if (keyGetMTime(orig) == keyGetMTime(copy), "MTime should be same");
@@ -1612,7 +1539,7 @@ void test_keyCopy()
 
 	// Create test key
 	orig = keyNew("user:yl/foo/bar",
-			KEY_TYPE, KEY_TYPE_BINARY,
+			KEY_BINARY,
 			KEY_SIZE, 6,
 			KEY_VALUE, "foobar",
 			KEY_COMMENT, "mycomment", 
@@ -1641,7 +1568,6 @@ void test_keyCopy()
 	succeed_if( keyGetUID(copy) == 123, "keyCopy: key UID copy error");
 	succeed_if( keyGetGID(copy) == 456, "keyCopy: key GID copy error");
 	succeed_if( keyGetMode(copy) == 0644, "keyCopy: key mode copy error");
-	succeed_if( keyGetType(copy) & (KEY_TYPE_BINARY), "keyCopy: key type copy error");
 
 	orig = keyNew(0);
 	succeed_if (keyCopy(copy, 0) == 0, "make the key copy fresh");
@@ -1664,8 +1590,6 @@ void test_keyCopy()
 	succeed_if ( strcmp(keyOwner(copy), "") == 0, "copy name should be empty");
 	succeed_if (keyGetOwnerSize(orig) == 1, "orig name size");
 	succeed_if (keyGetOwnerSize(copy) == 1, "copy name size");
-	succeed_if (keyGetType(orig) == KEY_TYPE_UNDEFINED, "orig key type");
-	succeed_if (keyGetType(copy) == KEY_TYPE_UNDEFINED, "copy key type");
 	succeed_if (keyGetATime(orig) == keyGetATime(copy), "ATime should be same");
 	succeed_if (keyGetCTime(orig) == keyGetCTime(copy), "CTime should be same");
 	succeed_if (keyGetMTime(orig) == keyGetMTime(copy), "MTime should be same");
@@ -2212,7 +2136,6 @@ int main(int argc, char** argv)
 	test_keyNewSystem();
 	test_keyNewUser();
 	test_keyReference();
-	test_keyType();
 	test_keyName();
 	test_keyValue();
 	test_keyBinary();

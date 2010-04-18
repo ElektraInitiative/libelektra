@@ -112,7 +112,6 @@ void test_key()
 			succeed_if(strcmp (keyComment(cur), "Binary key with hidden name") == 0, "comment not correct");
 			succeed_if(keyIsInactive (cur) == 1, "key is inactive");
 			succeed_if(keyIsBinary(cur) == 1, "key is not binary");
-			succeed_if(keyGetType(cur) == 30, "not correct type");
 			succeed_if(keyGetMode(cur) == 0440, "could not get mode");
 			break;
 		        // <key type="string" basename="Ug.ly:St@ri€n.g Key" value="With a string value"><comment>string key with ugly name</comment></key>
@@ -163,41 +162,34 @@ void test_keyset()
 		case 1:	succeed_if (strcmp (keyName(cur),"user/tests/filesys/0-27042916") == 0,"name of first key not correct");
 			succeed_if (strcmp (keyValue(cur),"0 216905227") == 0,"value of first key not correct");
 			succeed_if (strcmp (keyComment(cur),"2551516588474823843") == 0,"comment of first key not correct");
-			succeed_if (keyGetType(cur) == 43, "wrong key type found");
 			break;
 			// <key type="253" basename="1-2449524622" value="1 1679328197"><comment>3246436893195629244</comment></key>
 		case 2:	succeed_if (strcmp (keyName(cur),"user/tests/filesys/1-2449524622") == 0,"name of 2. key not correct");
 			succeed_if (strcmp (keyValue(cur),"1 1679328197") == 0,"value of 2. key not correct");
 			succeed_if (strcmp (keyComment(cur),"3246436893195629244") == 0,"comment of 2. key not correct");
-			succeed_if (keyGetType(cur) == 253, "wrong key type found");
 			break;
 			// <key type="string" basename="dir-1-0">
 		case 3:	succeed_if (strcmp (keyName(cur),"user/tests/filesys/dir-1-0") == 0,"name of 3. key not correct");
 			succeed_if (keyIsDir (cur), "Is not directory, but should be");
-			succeed_if (keyGetType(cur) == KEY_TYPE_STRING, "wrong key type found");
 			break;
 			// <key type="114" basename="0-294164813" value="0 216245011"><comment>18454108762891828026</comment></key>
 		case 4:	succeed_if (strcmp (keyName(cur),"user/tests/filesys/dir-1-0/0-294164813") == 0,"name of 4. key not correct");
 			succeed_if (strcmp (keyValue(cur),"0 216245011") == 0,"value of 4. key not correct");
 			succeed_if (strcmp (keyComment(cur),"18454108762891828026") == 0,"comment of 4. key not correct");
-			succeed_if (keyGetType(cur) == 114, "wrong key type found");
 			break;
 			// <key type="135" basename="1-1479930365" value="1 2732423037"><comment>24597295372375238</comment></key>
 		case 5:	succeed_if (strcmp (keyName(cur),"user/tests/filesys/dir-1-0/1-1479930365") == 0,"name of 4. key not correct");
 			succeed_if (strcmp (keyValue(cur),"1 2732423037") == 0,"value of 4. key not correct");
 			succeed_if (strcmp (keyComment(cur),"24597295372375238") == 0,"comment of 4. key not correct");
-			succeed_if (keyGetType(cur) == 135, "wrong key type found");
 			break;
 			// <key type="string" basename="dir-2-0">
 		case 6:	succeed_if (strcmp (keyName(cur),"user/tests/filesys/dir-1-0/dir-2-0") == 0,"name of 3. key not correct");
 			succeed_if (keyIsDir (cur), "Is not directory, but should be");
-			succeed_if (keyGetType(cur) == KEY_TYPE_STRING, "wrong key type found");
 			break;
 			// <key type="144" basename="0-215571059" value="0 264857705"><comment>2188631490667217086</comment></key>
 		case 7:	succeed_if (strcmp (keyName(cur),"user/tests/filesys/dir-1-0/dir-2-0/0-215571059") == 0,"name of 4. key not correct");
 			succeed_if (strcmp (keyValue(cur),"0 264857705") == 0,"value of 4. key not correct");
 			succeed_if (strcmp (keyComment(cur),"2188631490667217086") == 0,"comment of 4. key not correct");
-			succeed_if (keyGetType(cur) == 144, "wrong key type found");
 			break;
 		}
 	}

@@ -42,7 +42,7 @@ int argXML=0;
 int argDir=0;
 int argHelp=0;
 mode_t argMode=0;
-int argType=KEY_TYPE_UNDEFINED;
+int argBinary=0;
 
 
 /* We'll load this methods dynamically to avoid libxml dependencies */
@@ -227,18 +227,8 @@ int parseCommandLine(int argc, char *argv[]) {
 	/* Parse type */
 	if (*sargType!=0) {
 		/* TODO: use regex */
-		if      (!strcmp(sargType,"string")) argType=KEY_TYPE_STRING;
-		else if (!strcmp(sargType,"bin"))    argType=KEY_TYPE_BINARY;
-		else if (!strcmp(sargType,"binary")) argType=KEY_TYPE_BINARY;
-		else if (!strcmp(sargType,"dir"))    argDir=1; /* bkwrds compatibility */
-		else {
-			argType=strtol(sargType,0,10);
-			if (errno == ERANGE || errno == EINVAL)
-				/* handle undefined later */
-				argType=KEY_TYPE_UNDEFINED;
-		}
-	} else if (argCommand==CMD_SET) { /* We must have a type */
-		argType=KEY_TYPE_STRING;
+		if (!strcmp(sargType,"bin"))    argBinary=1;
+		else if (!strcmp(sargType,"binary")) argBinary=1;
 	}
 
 #ifdef HAVE_PWD_H
@@ -375,7 +365,6 @@ void listSingleKey(Key *key) {
 	char buffer[400];
 	char *p=buffer;
 	char *unknown = "<unknown>";
-	int unknown_length= strlen (unknown);
 	char *binary = "<binary>";
 	int binary_length = strlen (binary);
 	struct passwd *pwd;
@@ -690,7 +679,6 @@ int commandMove(KDB *handle) {
  *
  * @param argKeyName name of the key that will be set
  * @param argComment comment to be set to key (-c)
- * @param argType type of the key (-t)
  * @param argMode mode permissions that will be set to sey (-m)
  * @param argUID UID to be set to sey
  * @param argGID GID to be set to sey
@@ -718,10 +706,6 @@ int commandSet(KDB *handle) {
 		return -1;
 	}
 	ret=kdbGetKey(handle,key);
-	if (ret == 0) { /* Key already exists. Good. */
-		/* Use existed key type if user didn't give us one */
-		if (argType==KEY_TYPE_UNDEFINED) argType=keyGetType(key);
-	}
 
 	/* Set or overwrite everything else... */
 	
@@ -774,19 +758,12 @@ int commandSet(KDB *handle) {
 
 
 	/* Set key value . . . */
-	if (argType == KEY_TYPE_UNDEFINED)
-		keySetString(key,argData); /* the most common here */
-	else if (argData) { /* Handle special type values . . . */
-	
-		/* set raw data */
-		if (offset) keySetRaw(key,argData,offset);
-		else if (KEY_TYPE_BINARY <= argType && argType < KEY_TYPE_STRING)
-			 /* command-line-passed bin values have unwanted \0 in the end */
-			 keySetRaw(key,argData,strlen(argData));
-		else keySetRaw(key,argData,strlen(argData)+1);
-		
-		/* set type explicitly */
-		keySetType(key,argType);
+	if (argBinary)
+	{
+		/* command-line-passed bin values have unwanted \0 in the end */
+		keySetBinary (key, argData, offset);
+	} else {
+		keySetString (key, argData);
 	}
 
 
@@ -966,7 +943,6 @@ int commandGet(KDB *handle) {
 	char *buffer = 0; // used two times
 	char *p;
 	size_t size,cs=0;
-	type_t keyType;
 	char error[200];
 
 
@@ -1036,8 +1012,6 @@ done:
 		*--p='='; p++;
 	}
 	
-	keyType=keyGetType(key);
-
 	if (keyIsBinary(key)) p+=keyGetBinary(key,p,size-(p-buffer));
 	else p+=keyGetString(key,p,size-(p-buffer));
 	if (argShell) {

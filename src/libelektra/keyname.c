@@ -266,7 +266,6 @@ ssize_t keySetName(Key *key, const char *newName)
 			free(key->key);
 			key->key=0;
 		}
-		key->type = 0;
 		return 0;
 	}
 

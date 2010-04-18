@@ -86,8 +86,8 @@ static int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr read
 	
 	keyNodeName=xmlTextReaderName(reader);
 	if (!strcmp((char *)keyNodeName,"key")) {
-		type_t type=KEY_TYPE_STRING; /* default type */
 		mode_t isdir=0;
+		int isbin;
 		int end=0;
 		
 		newKey=keyNew(0);
@@ -173,25 +173,11 @@ static int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr read
 			}
 		}
 
-
 		buffer=xmlTextReaderGetAttribute(reader,(const xmlChar *)"type");
-		if (buffer) {
-			if (!strcmp((char *)buffer,"string"))
-				type=KEY_TYPE_STRING;
-			else if (!strcmp((char *)buffer,"directory"))
-				isdir=1;
-			else if (!strcmp((char *)buffer,"binary"))
-				type=KEY_TYPE_BINARY;
-			else if (!strcmp((char *)buffer,"undefined"))
-				type=KEY_TYPE_UNDEFINED;
-			else { /* special numerical user-defined value types */
-				void *converter=0;
-
-				type=strtol((char *)buffer,(char **)&converter,10);
-				if ((void *)buffer==converter)
-					/* in case of error, fallback to undefined type again */
-					type=KEY_TYPE_UNDEFINED;
-			}
+		if (buffer)
+		{
+			if (!strcmp((char *)buffer,"binary")) isbin = 1;
+			else if (!strcmp((char *)buffer,"bin")) isbin = 1;
 		}
 		xmlFree(buffer);
 
@@ -209,7 +195,7 @@ static int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr read
 		xmlFree(buffer);
 
 		if (isdir) keySetDir(newKey);
-		keySetType(newKey,type);
+		if (isbin) keySetMeta (newKey, "binary", "");
 
 		/* Parse everything else */
 		while (!end) {

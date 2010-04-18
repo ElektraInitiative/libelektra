@@ -30,8 +30,7 @@ int keySetDir(Key *key);
 mode_t keyGetMode(const Key *key);
 int keySetMode(Key *key, mode_t mode);
 
-type_t keyGetType(const Key *key);
-int keySetType(Key *key, type_t type);
+int keyIsDir(const Key *key);
 
 time_t keyGetATime(const Key *key);
 int keySetATime(Key *key, time_t atime);

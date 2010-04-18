@@ -339,8 +339,9 @@ int keyIsDir(const Key *key)
 /**
  * Check if a key is binary type.
  *
- * The function checks if the keytype is in the range between KEY_TYPE_BINARY and
- * less than excluding KEY_TYPE_STRING. Then it will be interpreted as binary.
+ * The function checks if the key is a binary. Opposed to string values binary
+ * values can have '\0' inside the value and may not be terminated by a null
+ * character. Their disadvantage is that you need to pass their size.
  *
  * Make sure to use this function and don't test the binary type another way to
  * ensure compatibility and to write less error prone programs.
@@ -348,7 +349,6 @@ int keyIsDir(const Key *key)
  * @return 1 if it is binary
  * @return 0 if it is not
  * @return -1 on NULL pointer
- * @see keySetType() for more information on types
  * @see keyGetBinary(), keySetBinary()
  * @param key the key to check
  * @ingroup keytest
@@ -357,15 +357,15 @@ int keyIsBinary(const Key *key)
 {
 	if (!key) return -1;
 
-	return (KEY_TYPE_BINARY <= key->type && key->type < KEY_TYPE_STRING);
+	return keyMeta(key, "binary") != 0;
 }
 
 
 /**
  * Check if a key is string type.
  *
- * The function checks if the keytype is larger or equal KEY_TYPE_STRING.
- * Then it will be considered as string type.
+ * String values are null terminated and are not allowed to have any '\0' characters
+ * inside the string.
  *
  * Make sure to use this function and don't test the string type another way to
  * ensure compatibility and to write less error prone programs.
@@ -373,7 +373,6 @@ int keyIsBinary(const Key *key)
  * @return 1 if it is string
  * @return 0 if it is not
  * @return -1 on NULL pointer
- * @see keySetType for more information on types
  * @see keyGetString(), keySetString()
  * @param key the key to check
  * @ingroup keytest
@@ -382,7 +381,7 @@ int keyIsString(const Key *key)
 {
 	if (!key) return -1;
 
-	return (key->type >= KEY_TYPE_STRING);
+	return keyMeta(key, "binary") == 0;
 }
 
 
@@ -494,7 +493,6 @@ keyswitch_t keyCompare(const Key *key1, const Key *key2)
 
 	if (keyGetUID(key1) != keyGetUID(key2))        ret|=KEY_UID;
 	if (keyGetGID(key1) != keyGetGID(key2))        ret|=KEY_GID;
-	if (keyGetType(key1)!= keyGetType(key2))      ret|=KEY_TYPE;
 	if (keyGetMode(key1)!= keyGetMode(key2))  ret|=KEY_MODE;
 	if (remove1 != remove2)            ret|=KEY_REMOVE;
 	if (strcmp(name1, name2))          ret|=KEY_NAME;

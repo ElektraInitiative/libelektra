@@ -251,11 +251,9 @@ KDBEXPORT(backend) {
  * kdbcGetnoBinary() or kdbcGetnoString(), if you don't support
  * both make sure to also declare kdbcGetnoValue().
  *
- * Using keySetRaw() does not set the type, be sure to use keySetType()
- * afterwards. This can be KEY_TYPE_STRING and KEY_TYPE_BINARY
- * or any other type in #type_t, leading
- * to same results as explained above, but also any other number
- * in the range of #type_t. Declare kdbcGetnoTypes() when your
+ * Using keySetRaw() does not set the type, be sure to set the
+ * meta data binary using keySetMeta(key, "binary", "")
+ * afterwards. Declare kdbcGetnoTypes() when your
  * backend does not support arbitrary types.
  *
  *

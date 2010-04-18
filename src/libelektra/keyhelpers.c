@@ -505,8 +505,6 @@ int keyInit(Key *key)
 {
 	memset(key,0,sizeof(Key));
 
-	key->type = KEY_TYPE_UNDEFINED;
-
 	return 0;
 }
 

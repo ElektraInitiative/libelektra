@@ -27,7 +27,6 @@
  * int      Integral Fast Type      INT_MIN, INT_MAX
  * uid_t    User identification     0,..
  * gid_t    Group identification    0,..
- * type_t   Typing information      -1,..
  * keyswitch_t For keyNew
  * option_t    For kdbGet, kdbSet and ksLookup*
  *
@@ -103,7 +102,6 @@
 typedef ssize_t cursor_t;
 
 /*Integer types*/
-typedef int type_t;
 typedef int keyswitch_t;
 typedef int option_t;
 
@@ -146,7 +144,6 @@ typedef int option_t;
 typedef ssize_t cursor_t;
 
 /*Integer types*/
-typedef int type_t;
 typedef int keyswitch_t;
 typedef int option_t;
 

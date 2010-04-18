@@ -3,50 +3,6 @@
  * to document them. */
 
 /**
- * Key type.
- *
- * The type number is a value between 0 and 255 defined in an unnamed enum.
- * Key type values grow from the semantically poor to the semantically rich.
- * The gaps between them is for user-defined types.
- *
- * If your application needs value types with more semantics, like @p Color,
- * @p Font, etc, you can still use it. You'll have to define a new type
- * number in the scope of your application, and set the type with
- * keySetType() or keyNew().
- *
- * @p KEY_TYPE_STRING <= type < @p KEY_TYPE_MAX will be treated as a string
- * (in the terms of Unicode handling and not allowing '\\0').
- * @see keyIsString()
- *
- * @p KEY_TYPE_BINARY <= type < @p KEY_TYPE_STRING will be handled
- * as a binary value and will not make any conversations.
- * @see keyIsBinary()
- *
- * The elektra projects will define more types in the future, so you might
- * participate at the process otherwise your types may be overlapping. For
- * these types the range from 100 to 200 is reserved.
- *
- * @ingroup key
- * @see keyGetType()
- * @see keySetType() for an example of how to define custom types
- */
-enum type_t
-{
-	KEY_TYPE_UNDEFINED=0,	/*!< Undefined key.
-		Data will not be considered. That means the value will
-		not be written out to disc and will be lost!*/
-	KEY_TYPE_BINARY=20,	/*!< Binary key.
-		This gap is for binary data types
-		that have some semantics that somebody
-		can invent in the future */
-	KEY_TYPE_STRING=40,	/*!< String key.
-		All types below this type are some type of strings.
-		They can be used for internal usage or a type system.*/
-	KEY_TYPE_MAX=256	/*!< This type does not exists,
-		use values below. */
-};
-
-/**
  * Switches to denote the various Key attributes in methods throughout
  * this library.
  *
@@ -68,7 +24,7 @@ enum keyswitch_t
 	KEY_VALUE=1<<1,		/*!< Flag for the key data */
 	KEY_OWNER=1<<2,		/*!< Flag for the key user domain */
 	KEY_COMMENT=1<<3,	/*!< Flag for the key comment */
-	KEY_TYPE=1<<4,		/*!< Flag for the key type */
+	KEY_BINARY=1<<4,	/*!< Flag if the key is binary */
 	KEY_UID=1<<5,		/*!< Flag for the key UID */
 	KEY_GID=1<<6,		/*!< Flag for the key GID */
 	KEY_MODE=1<<7,		/*!< Flag for the key permissions */

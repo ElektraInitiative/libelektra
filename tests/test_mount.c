@@ -33,72 +33,57 @@ KeySet *get_hosts ()
 	ksNew( 25 ,
 	keyNew ("user/tests/hosts"
 		, KEY_DIR
-		, KEY_TYPE, 0
 	, KEY_END),
 	keyNew ("user/tests/hosts/gateway.markus-raab.org"
 		, KEY_DIR
 		, KEY_VALUE, "192.168.0.1"
-		, KEY_TYPE, KEY_TYPE_STRING
 	, KEY_END),
 	keyNew ("user/tests/hosts/gateway.markus-raab.org/alias00"
 		, KEY_VALUE, "gateway"
-		, KEY_TYPE, KEY_TYPE_STRING
 	, KEY_END),
 	keyNew ("user/tests/hosts/gateway.markus-raab.org/alias01"
 		, KEY_VALUE, "gw"
-		, KEY_TYPE, KEY_TYPE_STRING
 	, KEY_END),
 	keyNew ("user/tests/hosts/home.markus-raab.org"
 		, KEY_DIR
 		, KEY_VALUE, "81.52.51.112"
 		, KEY_COMMENT, "comment"
-		, KEY_TYPE, KEY_TYPE_STRING
 	, KEY_END),
 	keyNew ("user/tests/hosts/home.markus-raab.org/alias00"
 		, KEY_VALUE, "home"
-		, KEY_TYPE, KEY_TYPE_STRING
 	, KEY_END),
 	keyNew ("user/tests/hosts/kirabyte.markus-raab.org"
 		, KEY_DIR
 		, KEY_VALUE, "192.168.0.5"
-		, KEY_TYPE, KEY_TYPE_STRING
 	, KEY_END),
 	keyNew ("user/tests/hosts/kirabyte.markus-raab.org/alias00"
 		, KEY_VALUE, "kirabyte"
-		, KEY_TYPE, KEY_TYPE_STRING
 	, KEY_END),
 	keyNew ("user/tests/hosts/kirabyte.markus-raab.org/alias01"
 		, KEY_VALUE, "kira"
-		, KEY_TYPE, KEY_TYPE_STRING
 	, KEY_END),
 	keyNew ("user/tests/hosts/kirabyte.markus-raab.org/alias02"
 		, KEY_VALUE, "k"
-		, KEY_TYPE, KEY_TYPE_STRING
 	, KEY_END),
 	keyNew ("user/tests/hosts/localhost"
 		, KEY_VALUE, "127.0.0.1"
 		, KEY_COMMENT, "will lose that comment"
-		, KEY_TYPE, KEY_TYPE_STRING
 	, KEY_END),
 	keyNew ("user/tests/hosts/markusbyte"
 		, KEY_DIR
 		, KEY_VALUE, "192.168.0.3"
 		, KEY_COMMENT, "this is my home"
-		, KEY_TYPE, KEY_TYPE_STRING
 	, KEY_END),
 	keyNew ("user/tests/hosts/markusbyte/alias00"
 		, KEY_VALUE, "markus"
-		, KEY_TYPE, KEY_TYPE_STRING
 	, KEY_END),
 	keyNew ("user/tests/hosts/printer"
 		, KEY_VALUE, "192.168.1.5"
 		, KEY_COMMENT, " thats for dynamic cups printing"
-		, KEY_TYPE, KEY_TYPE_STRING
 	, KEY_END),
 	keyNew ("user/tests/hosts/superbyte"
 		, KEY_VALUE, "192.168.0.2"
 		, KEY_COMMENT, " my server at home!"
-		, KEY_TYPE, KEY_TYPE_STRING
 	, KEY_END),KS_END);
 }
 
@@ -109,21 +94,17 @@ void test_failhosts(const char * file)
 	KeySet *ks = ksNew( 25 ,
 	keyNew ("user/tests/hosts"
 		, KEY_DIR
-		, KEY_TYPE, 0
 	, KEY_END),
 	keyNew ("user/tests/hosts/gateway.markus-raab.org"
 		, KEY_DIR
 		, KEY_VALUE, "192.168.0.1"
-		, KEY_TYPE, KEY_TYPE_STRING
 	, KEY_END),
 	keyNew ("user/tests/hosts/gateway.markus-raab.org/ERROR/DEEP"
 		, KEY_VALUE, "errorvalue"
-		, KEY_TYPE, KEY_TYPE_STRING
 	, KEY_END),
 	keyNew ("user/tests/hosts/superbyte"
 		, KEY_VALUE, "192.168.0.2"
 		, KEY_COMMENT, " my server at home!"
-		, KEY_TYPE, KEY_TYPE_STRING
 	, KEY_END),KS_END);
 	KDB *kdb = kdbOpen();
 	Key *mnt;
@@ -142,7 +123,6 @@ void test_failhosts(const char * file)
 	succeed_if (strcmp(keyValue(ksCurrent(ks)), "errorvalue") == 0, "value not equal");
 	succeed_if (!keyIsDir (ksCurrent(ks)), "key is a directory");
 	succeed_if (keyIsString (ksCurrent(ks)), "key is not a string");
-	succeed_if (keyGetType(ksCurrent(ks)) == KEY_TYPE_STRING, "key is not exactly a string");
 
 	ksDel (conf);
 	keyDel(mnt);
@@ -188,7 +168,6 @@ void test_readhosts(const char * file)
 	succeed_if (strcmp(keyValue(key), "192.168.0.1") == 0, "value not equal");
 	succeed_if (keyIsDir (key), "key is not a directory");
 	succeed_if (keyIsString (key), "key is not a string");
-	succeed_if (keyGetType(key) == KEY_TYPE_STRING, "key is not exactly a string");
 	keyDel (key);
 
 	key = keyNew ("user/tests/hosts/kirabyte.markus-raab.org/alias01", KEY_END);
@@ -197,7 +176,6 @@ void test_readhosts(const char * file)
 	succeed_if (strcmp(keyValue(key), "kira") == 0, "value not equal");
 	succeed_if (!keyIsDir (key), "key is a directory");
 	succeed_if (keyIsString (key), "key is not a string");
-	succeed_if (keyGetType(key) == KEY_TYPE_STRING, "key is not exactly a string");
 	keyDel (key);
 
 	key = keyNew ("user/tests/hosts/localhost", KEY_END);
@@ -207,7 +185,6 @@ void test_readhosts(const char * file)
 	succeed_if (strcmp(keyComment(key), "will lose that comment") == 0, "comment not equal");
 	succeed_if (!keyIsDir (key), "key is a directory");
 	succeed_if (keyIsString (key), "key is not a string");
-	succeed_if (keyGetType(key) == KEY_TYPE_STRING, "key is not exactly a string");
 	keyDel (key);
 
 	succeed_if (kdbGetString (kdb, "user/tests/hosts/localhost", buffer, BUFFER_SIZE) != -1, "could not get value");

@@ -39,7 +39,6 @@ int test_keyCompare(Key *key1, Key *key2, unsigned int ignoreFlags)
 
 	ret = keyCompare(key1, key2);
 	if ( (ret & ignoreFlags) != ret ) {
-		if ( !(ignoreFlags & KEY_TYPE) )	succeed_if ( (ret & KEY_TYPE) == 0,	"Key type isn't same");
 		if ( !(ignoreFlags & KEY_NAME) )	succeed_if ( (ret & KEY_NAME) == 0,	"Key name isn't same");
 		if ( !(ignoreFlags & KEY_VALUE))	succeed_if ( (ret & KEY_VALUE) == 0,	"Key value isn't same");
 		if ( !(ignoreFlags & KEY_OWNER))	succeed_if ( (ret & KEY_OWNER) == 0,	"Key owner isn't same");
