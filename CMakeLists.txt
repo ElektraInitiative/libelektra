@@ -48,3 +48,7 @@ endif (BUILD_TESTING AND BUILD_TOOLS)
 
 add_subdirectory (examples)
 #add_subdirectory (examples EXCLUDE_FROM_ALL)
+
+ADD_CUSTOM_TARGET(uninstall
+	"${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/ElektraUninstall.cmake")
+

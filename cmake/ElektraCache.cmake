@@ -8,7 +8,7 @@ set (BACKEND_DEFAULT filesys CACHE STRING "Which should be the default backend?"
 
 set (KDB_DB_SYSTEM "/etc" CACHE PATH "Where should be the system configuration?")
 
-option (WITH_DOC "Build the documentation (API, man pages)")
+option (WITH_DOC "Build the documentation (API, man pages)" ON)
 
 option (DEBUG_BUILD "Build with extra debug print messages.")
 if (DEBUG_BUILD)
@@ -34,7 +34,13 @@ set (PROJECT_CMAKE_DIR
 		"${CMAKE_INSTALL_PREFIX}/share/cmake-2.6/Modules"
 		CACHE PATH
 		"Where to install cmake files?"
-       )
+    )
+
+set (DOCUMENTATION_DESTINATION
+		"${CMAKE_INSTALL_PREFIX}/share/doc/${PROJECT_NAME}"
+		CACHE PATH
+		"Where to install documentation files?"
+    )
 
 set (MEMORYCHECK_COMMAND
 		/usr/bin/valgrind
