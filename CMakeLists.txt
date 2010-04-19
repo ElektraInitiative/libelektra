@@ -16,6 +16,9 @@ if (NOT CMAKE_BUILD_TYPE)
 	SET(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif (NOT CMAKE_BUILD_TYPE)
 
+set (DOMAIN libelektra.org)
+set (REVERSE_DOMAIN org.libelektra)
+
 set (KDB_VERSION_MAJOR 0)
 set (KDB_VERSION_MINOR 7)
 set (KDB_VERSION_MICRO 0)
@@ -32,6 +35,10 @@ include (cmake/ElektraCompiling.cmake)
 
 add_subdirectory (src)
 add_subdirectory (cmake)
+
+if (WITH_DOC)
+	add_subdirectory (doc)
+endif (WITH_DOC)
 
 if (BUILD_TESTING AND BUILD_TOOLS)
 	if (BUILD_FULL OR BUILD_STATIC)

@@ -8,6 +8,8 @@ set (BACKEND_DEFAULT filesys CACHE STRING "Which should be the default backend?"
 
 set (KDB_DB_SYSTEM "/etc" CACHE PATH "Where should be the system configuration?")
 
+option (WITH_DOC "Build the documentation (API, man pages)")
+
 option (DEBUG_BUILD "Build with extra debug print messages.")
 if (DEBUG_BUILD)
 	set (DEBUG "1")
