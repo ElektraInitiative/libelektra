@@ -182,6 +182,21 @@ private:
 	ckdb::Key * key; // holds elektra key struct
 };
 
+/*Example for an template specialisation.
+  Because mode_t is in fact an int, this would
+  also change all other int types.
+template<>
+inline mode_t Key::getMeta(const std::string &name)
+{
+	mode_t x;
+	std::string str;
+	str = std::string(ckdb::keyMeta(key, name.c_str()));
+	std::istringstream ist(str);
+	ist >> std::oct >> x;	// convert string to type
+	return x;
+}
+*/
+
 inline Key::Key (const char * str, va_list ap)
 {
 	key = ckdb::keyVNew (str, ap);

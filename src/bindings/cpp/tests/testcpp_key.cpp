@@ -1,5 +1,7 @@
 #include <tests.h>
 
+#include <stdexcept>
+
 void test_keynew()
 {
 	cout << "testing keynew" << endl;
@@ -264,7 +266,7 @@ void test_name()
 	succeed_if (!test.isDirectBelow (Key("user/dir/mykey/twodeeper/below", KEY_END)), "key is direct below");
 }
 
-void f(Key k)
+void f(Key)
 {
 	Key h ("user/infunction", KEY_END);
 }
@@ -328,27 +330,44 @@ void test_meta()
 
 	test.setUID(50);
 	succeed_if (test.getUID() == 50, "could not set UID");
-	cout << test.getMeta<uid_t>("uid") << endl;
+	succeed_if (test.getMeta<uid_t>("uid") == 50, "could not set UID");
 
 	test.setMeta<uid_t>("uid", 80);
-	cout << test.getMeta<uid_t>("uid") << endl;
+	succeed_if (test.getUID() == 80, "could not set UID");
+	succeed_if (test.getMeta<uid_t>("uid") == 80, "could not set UID");
 
 	test.setGID(50);
 	succeed_if (test.getGID() == 50, "could not set GID");
+	succeed_if (test.getMeta<gid_t>("gid") == 50, "could not set GID");
 
 	succeed_if (test.getMode() == 0664, "not correct default mode");
+	try {
+		test.getMeta<mode_t>("mode");
+		succeed_if (0, "failed, should raise exception");
+	} catch (std::logic_error const &e) {
+		succeed_if (1, "exception raised successfully");
+	}
 	test.setDir ();
 	succeed_if (test.isDir(), "is not dir");
 	succeed_if (test.getMode() == 0775, "not correct default mode for dir");
 
+	//octal problem for mode:
+	succeed_if (test.getMeta<mode_t>("mode") == 775, "not correct default mode for dir");
+
 	test.setMTime (200);
 	succeed_if (test.getMTime() == 200, "could not set MTime");
+	succeed_if (test.getMeta<time_t>("mtime") == 200, "could not set mtime");
 
 	test.setATime (200);
 	succeed_if (test.getATime() == 200, "could not set ATime");
+	succeed_if (test.getMeta<time_t>("atime") == 200, "could not set atime");
 
 	test.setCTime (200);
 	succeed_if (test.getCTime() == 200, "could not set CTime");
+	succeed_if (test.getMeta<time_t>("ctime") == 200, "could not set ctime");
+
+	test.setMeta<int>("myint", 333);
+	succeed_if (test.getMeta<int>("myint") == 333, "could not set other meta");
 }
 
 int main()
