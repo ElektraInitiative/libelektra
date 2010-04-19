@@ -84,6 +84,120 @@ private:
 	ckdb::KeySet * ks; // holds elektra keyset struct
 };
 
+inline KeySet::KeySet (size_t alloc, va_list ap)
+{
+	ks = ckdb::ksVNew (alloc, ap);
+}
+
+inline KeySet::KeySet (size_t alloc, ...)
+{
+	va_list va;
+
+	va_start (va, alloc);
+	ks = ckdb::ksVNew (alloc, va);
+	va_end (va);
+}
+
+inline KeySet::KeySet (const KeySet &other)
+{
+	ks = ckdb::ksNew(0);
+	ckdb::ksCopy(ks, other.ks);
+}
+
+inline KeySet::~KeySet ()
+{
+	ckdb::ksDel (ks);
+}
+
+inline size_t KeySet::size () const
+{
+	return ckdb::ksGetSize(ks);
+}
+
+inline void KeySet::rewind () const
+{
+	ckdb::ksRewind(ks);
+}
+
+
+inline void KeySet::setCursor(cursor_t cursor)
+{
+	ckdb::ksSetCursor(ks, cursor);
+}
+
+inline cursor_t KeySet::getCursor() const
+{
+	return ckdb::ksGetCursor(ks);
+}
+
+
+inline Key KeySet::next()
+{
+	ckdb::Key *k = ckdb::ksNext(ks);
+	if (k==0) throw KeySetOutOfRange();
+	return Key(k);
+}
+
+inline Key KeySet::current() const
+{
+	return Key(ckdb::ksCurrent(ks));
+}
+
+inline Key KeySet::head() const
+{
+	return Key(ckdb::ksHead(ks));
+}
+
+inline Key KeySet::tail() const
+{
+	return Key(ckdb::ksTail(ks));
+}
+
+inline Key KeySet::pop()
+{
+	ckdb::Key *k = ckdb::ksPop(ks);
+	if (k==0) throw KeySetOutOfRange();
+	Key key(k);
+	return key;
+}
+
+inline Key KeySet::lookup (const Key &key, const option_t options) const
+{
+	ckdb::Key *k = ckdb::ksLookup(ks, key.getKey(), options);
+	if (k==0) throw KeySetNotFound();
+	return Key(k);
+}
+
+inline Key KeySet::lookup (const std::string &name, const option_t options) const
+{
+	ckdb::Key *k = ckdb::ksLookupByName(ks, name.c_str(), options);
+	if (k==0) throw KeySetNotFound();
+	return Key(k);
+}
+
+inline Key KeySet::lookup (const char *name, const option_t options) const
+{
+	ckdb::Key *k = ckdb::ksLookupByName(ks, name, options);
+	if (k==0) throw KeySetNotFound();
+	return Key(k);
+}
+
+inline size_t KeySet::append (const Key &toAppend)
+{
+	return ckdb::ksAppendKey(ks, toAppend.getKey());
+}
+
+inline size_t KeySet::append (const KeySet &toAppend)
+{
+	return ckdb::ksAppend(ks, toAppend.getKeySet());
+}
+
+inline void KeySet::sort()
+{
+	ckdb::ksSort(ks);
+}
+
+
 } // end of namespace kdb
 
 #endif

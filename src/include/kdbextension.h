@@ -19,6 +19,11 @@
 #include <kdb.h>
 #include <kdbos.h>
 
+#ifdef __cplusplus
+namespace ckdb {
+extern "C" {
+#endif
+
 /* Conveniences Methods regarding Meta Info */
 uid_t keyGetUID(const Key *key);
 int keySetUID(Key *key, uid_t uid);
@@ -120,5 +125,10 @@ ssize_t ksGetCommonParentName(const KeySet *ks,char *returnedCommonParent,
 int ksNeedSort(const KeySet *ks);
 int ksResize(KeySet *ks, size_t size);
 size_t ksGetAlloc(const KeySet *ks);
+
+#ifdef __cplusplus
+}
+}
+#endif
 
 #endif

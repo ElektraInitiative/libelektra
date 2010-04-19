@@ -43,7 +43,7 @@ void test_keynew()
 	succeed_if(key3.getName() == "system/other/name/name", "key3 has wrong name");
 	succeed_if(key3.getBaseName() == "name", "wrong base name");
 
-	// Key with name + value (default type must be KEY_TYPE_STRING)
+	// Key with name + value
 	Key key4 ("system/sw/test",
 			KEY_VALUE, "test",
 			KEY_END);
@@ -76,12 +76,12 @@ void test_keynew()
 	succeed_if (!key7.isInactive(), "key should not be inactive");
 
 	Key key8 ("system/valid/there",
-			KEY_TYPE, KEY_TYPE_BINARY,
+			KEY_BINARY,
 			KEY_SIZE, sizeof(array),
 			KEY_VALUE, array,
 			KEY_END);
 	succeed_if(key8.getName() == "system/valid/there", "key8 has wrong name");
-	succeed_if(key8.isBinary (), "Could not set type to binary");
+	succeed_if(key8.isBinary (), "Key should be binary");
 	succeed_if(key8.getValueSize() == sizeof(array), "Value size not correct");
 	getBack = new char [key8.getValueSize()];
 	key8.getBinary(getBack, key8.getValueSize());

@@ -61,6 +61,16 @@ macro (add_headers HDR_FILES)
 	list (APPEND HDR_FILES ${SRC_HDR_FILES})
 endmacro (add_headers)
 
+macro (add_cppheaders HDR_FILES)
+	include_directories ("${PROJECT_BINARY_DIR}/src/bindings/cpp/include")
+	file (GLOB BIN_HDR_FILES ${PROJECT_BINARY_DIR}/src/bindings/cpp/include/*)
+	list (APPEND HDR_FILES ${BIN_HDR_FILES})
+
+	include_directories ("${PROJECT_SOURCE_DIR}/src/bindings/cpp/include")
+	file (GLOB SRC_HDR_FILES ${PROJECT_SOURCE_DIR}/src/bindings/cpp/include/*)
+	list (APPEND HDR_FILES ${SRC_HDR_FILES})
+endmacro (add_cppheaders)
+
 
 #- Removes a backend from the global cache
 #
