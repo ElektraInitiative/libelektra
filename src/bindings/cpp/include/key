@@ -94,6 +94,31 @@ public:
 	size_t getFullNameSize() const;
 	std::string getFullName() const;
 
+	template <class T>
+	T getMeta(const std::string &name)
+	{
+		T x;
+		std::string str;
+		str = std::string(ckdb::keyMeta(key, name.c_str()));
+		std::istringstream ist(str);
+		ist >> x;	// convert string to type
+		return x;
+	}
+
+	size_t getMetaSize(const std::string &name)
+	{
+		return ckdb::keyGetMetaSize(key, name.c_str());
+	}
+
+	template <class T>
+	void setMeta(const std::string &name, T x)
+	{
+		std::string str;
+		std::ostringstream ost;
+		ost << x;	// convert type to string
+		ckdb::keySetMeta(key, name.c_str(), ost.str().c_str());
+	}
+
 	std::string getComment() const;
 	const char* comment() const;
 	size_t getCommentSize() const;

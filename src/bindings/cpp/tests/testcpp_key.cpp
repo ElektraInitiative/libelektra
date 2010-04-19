@@ -264,32 +264,6 @@ void test_name()
 	succeed_if (!test.isDirectBelow (Key("user/dir/mykey/twodeeper/below", KEY_END)), "key is direct below");
 }
 
-void test_meta()
-{
-	cout << "testing metainfo" << endl;
-	Key test;
-
-	test.setUID(50);
-	succeed_if (test.getUID() == 50, "could not set UID");
-
-	test.setGID(50);
-	succeed_if (test.getGID() == 50, "could not set GID");
-
-	succeed_if (test.getMode() == 0664, "not correct default mode");
-	test.setDir ();
-	succeed_if (test.isDir(), "is not dir");
-	succeed_if (test.getMode() == 0775, "not correct default mode for dir");
-
-	test.setMTime (200);
-	succeed_if (test.getMTime() == 200, "could not set MTime");
-
-	test.setATime (200);
-	succeed_if (test.getATime() == 200, "could not set ATime");
-
-	test.setCTime (200);
-	succeed_if (test.getCTime() == 200, "could not set CTime");
-}
-
 void f(Key k)
 {
 	Key h ("user/infunction", KEY_END);
@@ -347,6 +321,35 @@ void test_dup()
 	succeed_if (dup0.getName() == "user/test", "dup key wrong name");
 }
 
+void test_meta()
+{
+	cout << "testing metainfo" << endl;
+	Key test;
+
+	test.setUID(50);
+	succeed_if (test.getUID() == 50, "could not set UID");
+	cout << test.getMeta<uid_t>("uid") << endl;
+
+	test.setMeta<uid_t>("uid", 80);
+	cout << test.getMeta<uid_t>("uid") << endl;
+
+	test.setGID(50);
+	succeed_if (test.getGID() == 50, "could not set GID");
+
+	succeed_if (test.getMode() == 0664, "not correct default mode");
+	test.setDir ();
+	succeed_if (test.isDir(), "is not dir");
+	succeed_if (test.getMode() == 0775, "not correct default mode for dir");
+
+	test.setMTime (200);
+	succeed_if (test.getMTime() == 200, "could not set MTime");
+
+	test.setATime (200);
+	succeed_if (test.getATime() == 200, "could not set ATime");
+
+	test.setCTime (200);
+	succeed_if (test.getCTime() == 200, "could not set CTime");
+}
 
 int main()
 {
@@ -363,9 +366,9 @@ int main()
 	test_name();
 	test_value();
 	test_exceptions();
-	test_meta();
 	test_dup();
 	test_ref();
+	test_meta();
 
 	cout << endl;
 	cout << "test_key RESULTS: " << nbTest << " test(s) done. " << nbError << " error(s)." << endl;
