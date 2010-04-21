@@ -434,7 +434,7 @@ memerror:
  * you can do so:
  *
  * @code
-int h (Key *k)
+void h (Key *k)
 {
 	// receive key c
 	keyCopy (k, c);
@@ -451,12 +451,46 @@ int h (Key *k)
  * you get a fresh dest key.
  *
  * @code
-int g (Key *k)
+void g (Key *k)
 {
 	keyCopy (k, 0);
 	// k is now an empty and fresh key
 }
  * @endcode
+ *
+ * The meta data will be duplicated for the destination
+ * key. So it will not take much additional space, even
+ * with lots of metadata.
+ *
+ * If you want to copy all metadata, but keep the old
+ * value you can use keyCopy() too.
+ *
+ * @code
+void j (Key *k)
+{
+	size_t size = keyGetValueSize (k);
+	char *value = malloc (size);
+	int bstring = keyIsString (k);
+
+	// receive key c
+	memcpy (value, keyValue(k), size);
+	keyCopy (k, c);
+	if (bstring) keySetString (k, value);
+	else keySetBinary (k, value, size);
+	free (value);
+	// the caller will see the changed key k
+	// with the metadata from c
+}
+ * @endcode
+ *
+ * @note Next to the value itself we also need to remember
+ *       if the value was string or binary. So in fact the
+ *       meta data of the resulting key k in that
+ *       example is not a complete
+ *       duplicate, because the meta data "binary" may
+ *       differ. Similar considerations might be necessary
+ *       for the type of the key and so on, depending on the
+ *       concrete situation.
  *
  * @param dest the key which will be written to
  * @param source the key which should be copied

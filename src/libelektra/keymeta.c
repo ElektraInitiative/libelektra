@@ -191,6 +191,84 @@ static inline Key *keyMetaKey(const Key* key, const char* metaName)
 	return ret;
 }
 
+/**Do a shallow copy of meta data from source to dest.
+  *
+  * The key dest will have the same meta data referred with
+  * metaName afterwards then source.
+  *
+  * For example the meta data type is copied into the
+  * Key k.
+  *
+  * @code
+void l(Key *k)
+{
+	// receive c
+	keyCopyMeta(k, c, "type");
+	// the caller will see the changed key k
+	// with the metadata "type" from c
+}
+  * @endcode
+  *
+  * @post keyMeta(source, metaName) eq keyMeta(dest, metaName)
+  *
+  * @return 1 if was successfully copied
+  * @return 0 if the meta data in dest was removed too
+  * @return -1 on null pointers (source or dest)
+  * @return -1 on memory problems
+  * @param dest the destination where the meta data should be copied too
+  * @param source the key where the meta data should be copied from
+  * @param metaName the name of the meta data which should be copied
+  */
+int keyCopyMeta(Key *dest, const Key *source, char *metaName)
+{
+	Key *ret;
+
+	if (!source) return -1;
+	if (!dest) return -1;
+
+	ret = keyMetaKey (source, metaName);
+
+	if (!ret)
+	{
+		/*Make sure that dest also does not have metaName*/
+		if (dest->meta)
+		{
+			Key *r;
+			r = ksLookup(dest->meta, ret, KDB_O_POP);
+			if (r)
+			{
+				/*It was already there, so lets drop that one*/
+				keyDel(r);
+			}
+		}
+		return 0;
+	}
+
+	/*Lets have a look if the key is already inserted.*/
+	if (dest->meta)
+	{
+		Key *r;
+		r = ksLookup(dest->meta, ret, KDB_O_POP);
+		if (r)
+		{
+			/*It was already there, so lets drop that one*/
+			keyDel(r);
+		}
+	} else {
+		/*Create a new place for meta information.*/
+		dest->meta = ksNew(0);
+		if (!dest->meta)
+		{
+			return -1;
+		}
+	}
+
+	// now we can simply append that key
+	ksAppendKey (dest->meta, ret);
+
+	return 1;
+}
+
 /**Returns the Value of a Meta-Information given by name.
  *
  * This is a much more efficient version of keyGetMeta().

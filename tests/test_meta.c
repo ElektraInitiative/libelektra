@@ -421,6 +421,90 @@ void test_type()
 	keyDel (key);
 }
 
+Key *c;
+
+void j (Key *k)
+{
+	size_t size = keyGetValueSize (k);
+	char *value = malloc (size);
+	int bstring = keyIsString (k);
+
+	// receive key c
+	memcpy (value, keyValue(k), size);
+	keyCopy (k, c);
+	if (bstring) keySetString (k, value);
+	else keySetBinary (k, value, size);
+	free (value);
+	// the caller will see the changed key k
+	// with the metadata from c
+}
+
+void l(Key *k)
+{
+	// receive c
+	keyCopyMeta(k, c, "type");
+	// the caller will see the changed key k
+	// with the metadata "type" from c
+}
+
+void test_examples()
+{
+	Key *key;
+	key = keyNew(0);
+	keySetMeta (key, "def", "abc");
+	keySetMeta (key, "nop", "cup");
+
+	c = keyNew(0);
+	keySetMeta (c, "xef", "ybc");
+	keySetMeta (c, "xop", "yup");
+
+	j(key);
+
+	succeed_if (!strcmp(keyMeta(key, "xef"), "ybc"), "did not copy meta");
+	succeed_if (!strcmp(keyMeta(key, "xop"), "yup"), "did not copy meta");
+	succeed_if (keyMeta(key, "def") == 0, "old meta data remained");
+	succeed_if (keyMeta(key, "nop") == 0, "old meta data remained");
+
+	keyDel (key);
+	keyDel (c);
+
+	key = keyNew(0);
+	keySetMeta (key, "def", "abc");
+	keySetMeta (key, "nop", "cup");
+
+	c = keyNew(0);
+	keySetMeta (c, "type", "boolean");
+	keySetMeta (c, "xop", "yup");
+
+	l (key);
+
+	succeed_if (!strcmp(keyMeta(key, "def"), "abc"), "old meta data should be unchanged");
+	succeed_if (!strcmp(keyMeta(key, "nop"), "cup"), "old meta data should be unchanged");
+	succeed_if (!strcmp(keyMeta(key, "type"), "boolean"), "the meta data was not copied");
+	succeed_if (keyMeta(key, "xop") == 0, "this meta data was not requested to be copied");
+
+	keyDel (key);
+	keyDel (c);
+}
+
+void test_copy()
+{
+	Key *key1;
+	Key *key2;
+
+	succeed_if (key1 = keyNew(0), "could not create key");
+	succeed_if (key2 = keyNew(0), "could not create key");
+
+	succeed_if (keySetMeta(key1, "mymeta", "a longer meta value") == sizeof("a longer meta value"),
+			"could not set meta value");
+	succeed_if (keyCopyMeta(key2, key1, "mymeta") == 1, "could not copy meta value");
+	succeed_if (!strcmp(keyMeta(key1, "mymeta"), "a longer meta value"), "old meta data should be unchanged");
+	succeed_if (!strcmp(keyMeta(key2, "mymeta"), "a longer meta value"), "old meta data should be unchanged");
+
+	keyDel (key1);
+	keyDel (key2);
+}
+
 
 int main(int argc, char** argv)
 {
@@ -437,6 +521,8 @@ int main(int argc, char** argv)
 	test_owner();
 	test_mode();
 	test_type();
+	test_examples();
+	test_copy();
 
 
 	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
