@@ -400,7 +400,7 @@ ssize_t keySetName(Key *key, const char *newName)
 
 	key->flags |= KEY_FLAG_SYNC;
 
-	key->keySize ++; /*for \0 ending*/
+	key->keySize ++; /*for \\0 ending*/
 	return key->keySize;
 
 error_mem:
@@ -887,7 +887,7 @@ ssize_t keyGetOwnerSize(const Key *key)
  * UIDs are related to mode controls of a key.
  *
  * @param key the object to work with
- * @param returned a pre-allocated space to store the owner
+ * @param returnedOwner a pre-allocated space to store the owner
  * @param maxSize maximum number of bytes that fit returned
  * @return number of bytes written to buffer
  * @return 1 if there is no owner
@@ -937,7 +937,7 @@ ssize_t keyGetOwner(const Key *key, char *returnedOwner, size_t maxSize)
  * the call.
  *
  * @param key the key object to work with
- * @param owner the owner (or user name)
+ * @param newOwner the string which describes the owner of the key
  * @return the number of bytes actually saved including final NULL
  * @return 1 when owner is freed (by setting 0 or "")
  * @return -1 on null pointer or memory problems

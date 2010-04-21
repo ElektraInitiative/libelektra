@@ -340,7 +340,7 @@ int keyIsDir(const Key *key)
  * Check if a key is binary type.
  *
  * The function checks if the key is a binary. Opposed to string values binary
- * values can have '\0' inside the value and may not be terminated by a null
+ * values can have '\\0' inside the value and may not be terminated by a null
  * character. Their disadvantage is that you need to pass their size.
  *
  * Make sure to use this function and don't test the binary type another way to
@@ -364,7 +364,7 @@ int keyIsBinary(const Key *key)
 /**
  * Check if a key is string type.
  *
- * String values are null terminated and are not allowed to have any '\0' characters
+ * String values are null terminated and are not allowed to have any '\\0' characters
  * inside the string.
  *
  * Make sure to use this function and don't test the string type another way to

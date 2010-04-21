@@ -196,7 +196,7 @@ char *kdbiStrDup (const char *s)
  *
  * You need to free the memory yourself.
  *
- * This function also works with \0 characters
+ * This function also works with \\0 characters
  * in the buffer. The length is taken as given,
  * it must be correct.
  *

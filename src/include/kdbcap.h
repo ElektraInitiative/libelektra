@@ -56,7 +56,7 @@ unsigned int kdbcGetnoThread (const KDBCap *cap);
  * The private Kdb Capability structure.
  *
  * Its internal private attributes should not be accessed directly by regular
- * programs. Use the @ref capability "KDBCapability access methods" instead.
+ * programs. Use the "KDBCapability access methods" instead.
  * Only a backend writer needs to have access to the private attributes of the
  * KeySet object which is defined as:
  * @code

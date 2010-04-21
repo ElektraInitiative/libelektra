@@ -26,26 +26,58 @@
  *
  * Next to \link keyname Name (key and owner) \endlink and 
  * \link keyvalue Value (data and comment) \endlink there
- * is the so called metainfo inside every key.
+ * is the so called meta information inside every key.
  *
- * Key metainfo insists of:
- * - UID, the user id
- * - GID, the group id 
- * - filesystem-like mode permissions (rwx)
- * - Mode, change and modification times
+ * Key meta information are an unlimited number of key/value
+ * pairs strongly related to a key. It main purpose is to
+ * give keys special semantics, so that plugins can treat
+ * them differently.
+ *
+ * File system information (see stat(2) for more information):
+ * - uid: the user id (positive number)
+ * - gid: the group id (positive number)
+ * - mode: filesystem-like mode permissions (positive octal number)
+ * - atime: When was the key accessed the last time.
+ * - mtime: When was the key modified the last time.
+ * - ctime: When the uid, gid or mode of a key changes.
+ * (times are represented through a positive number as unix timestamp)
  *
  * The comment can contain userdata which directly
- * belong to that key.
+ * belong to that key. The name of the meta information
+ * is "comment" for a general purpose comment about
+ * the key. Multi-Language comments are also supported
+ * by appending [LANG] to the name.
  *
- * Owner is the user that owns the key. It only
- * works for the user/ hierachy.
+ * Validators are regular expressions which are tested
+ * against the key value. The metakey "validator" can
+ * hold a regular expression which will be matched
+ * against.
  *
- * Every user and group of your System has a uniqe ID.
- * These values are used in the keys too. They are
- * very important for the mode. See man 2 chown.
+ * Types can be expressed with the meta information
+ * "type".
  *
- * With the mode mode you can choose if a user, group
- * or the world can mode your key. See man 2 chmod.
+ * The relevance of the key can be tagged with a value
+ * from -20 to 20. Negative numbers are the more important
+ * and must be present in order to start the program.
+ *
+ * A version of a key may be stored with "version".
+ * Its format is full.major.minor where all of these
+ * are integers.
+ *
+ * The order inside a persistent storage can be described
+ * with the tag "order" which contains a positive number.
+ *
+ * The meta key "app" describes to which application a
+ * key belongs. It can be used to remove keys from an
+ * application no longer installed.
+ *
+ * The meta key "path" describes where the key is physically
+ * stored.
+ *
+ * The "owner" is the user that owns the key. It only
+ * works for the user/ hierarchy. It rather says where
+ * the key is stored and says nothing about the
+ * filesystem properties.
  *
  */
 
@@ -123,8 +155,8 @@ int keyRewindMeta(Key *key)
  * @return a buffer to the name of the key's meta info
  * @return 0 when the end is reached
  * @return 0 on NULL pointer
-  *
-  * @see ksNext() for pedant in iterator interface of KeySet
+ *
+ * @see ksNext() for pedant in iterator interface of KeySet
  * @ingroup keymeta
   **/
 const char *keyNextMeta(Key *key)
@@ -147,14 +179,14 @@ const char *keyNextMeta(Key *key)
  * @note You must not delete or change the returned buffer,
  *    use keySetMeta() if you want to delete or change it.
  *
- * @param ks the keyset object to work with
+ * @param key the key object to work with
  * @return a buffer to the value pointed by @p key's cursor
  * @return 0 on NULL pointer
  * @see keyNextMeta(), keyRewindMeta()
  *
  * @see ksCurrent() for pedant in iterator interface of KeySet
  * @ingroup keymeta
-  **/
+ **/
 const char *keyCurrentMeta(const Key *key)
 {
 	Key *ret;
@@ -170,14 +202,14 @@ const char *keyCurrentMeta(const Key *key)
 #include "inline.c"
 
 /**Do a shallow copy of meta data from source to dest.
-  *
-  * The key dest will have the same meta data referred with
-  * metaName afterwards then source.
-  *
-  * For example the meta data type is copied into the
-  * Key k.
-  *
-  * @code
+ *
+ * The key dest will have the same meta data referred with
+ * metaName afterwards then source.
+ *
+ * For example the meta data type is copied into the
+ * Key k.
+ *
+ * @code
 void l(Key *k)
 {
 	// receive c
@@ -185,18 +217,18 @@ void l(Key *k)
 	// the caller will see the changed key k
 	// with the metadata "type" from c
 }
-  * @endcode
-  *
-  * The main purpose of this function is for plugins or
-  * applications which want to add the same meta data to
-  * n keys. When you do that with keySetMeta() it will
-  * take n times the memory for the key. This can be
-  * considerable amount of memory for many keys with
-  * some meta data for each.
-  *
-  * To avoid that problem you can use keyCopyMeta().
-  *
-  * @code
+ * @endcode
+ *
+ * The main purpose of this function is for plugins or
+ * applications which want to add the same meta data to
+ * n keys. When you do that with keySetMeta() it will
+ * take n times the memory for the key. This can be
+ * considerable amount of memory for many keys with
+ * some meta data for each.
+ *
+ * To avoid that problem you can use keyCopyMeta().
+ *
+ * @code
 void o(KeySet *ks)
 {
 	Key *current;
@@ -208,19 +240,20 @@ void o(KeySet *ks)
 	{
 		if (needs_shared_data(current)) keyCopyMeta(current, shared, "shared");
 	}
-
-  * @endcode
-  *
-  * @post keyMeta(source, metaName) eq keyMeta(dest, metaName)
-  *
-  * @return 1 if was successfully copied
-  * @return 0 if the meta data in dest was removed too
-  * @return -1 on null pointers (source or dest)
-  * @return -1 on memory problems
-  * @param dest the destination where the meta data should be copied too
-  * @param source the key where the meta data should be copied from
-  * @param metaName the name of the meta data which should be copied
-  */
+}
+ * @endcode
+ *
+ * @post keyMeta(source, metaName) eq keyMeta(dest, metaName)
+ *
+ * @return 1 if was successfully copied
+ * @return 0 if the meta data in dest was removed too
+ * @return -1 on null pointers (source or dest)
+ * @return -1 on memory problems
+ * @param dest the destination where the meta data should be copied too
+ * @param source the key where the meta data should be copied from
+ * @param metaName the name of the meta data which should be copied
+ * @ingroup keymeta
+ */
 int keyCopyMeta(Key *dest, const Key *source, char *metaName)
 {
 	Key *ret;
@@ -278,11 +311,20 @@ int keyCopyMeta(Key *dest, const Key *source, char *metaName)
  * the resulting string.
  *
  * @code
+int f(Key *k)
+{
+	if (!strcmp(keyMeta(k, "type"), "boolean"))
+	{
+		// the type of the key is boolean
+	}
+}
  * @endcode
  *
  * keyMeta() can be used to get the value of the current value,
  * see iterator keyNextMeta(), keyCurrentMeta()
  *
+ * @param key the key object to work with
+ * @param metaName the name of the meta information you want the value from
  * @return 0 if the key or metaName is 0
  * @return 0 if no such metaName is found
  * @return value of Meta-Information if Meta-Information is found
@@ -319,6 +361,8 @@ buffer = malloc (keyGetValueSize (key));
  * @endcode
  *
  * @param key the key object to work with
+ * @param metaName the name of the meta information of
+ *                 which value the size is requested
  * @return the number of bytes needed to store the key value
  * @return 1 when there is an empty meta value
  * @return 0 when there is no meta value (deleted or never added)
@@ -361,7 +405,9 @@ if (keyGetString(key,buffer,sizeof(buffer)) == -1)
  * @endcode
  *
  * @param key the object to gather the value from
- * @param returnedString pre-allocated memory to store a copy of the key value
+ * @param metaName the name of which meta information the value should be
+ *                 written into returnedMetaString
+ * @param returnedMetaString pre-allocated memory to store a copy of the key value
  * @param maxSize number of bytes of allocated memory in @p returnedString
  * @return the number of bytes actually copied to @p returnedString, including
  * 	final NULL
@@ -397,13 +443,17 @@ ssize_t keyGetMeta(const Key *key, const char* metaName,
  *
  * It will remove a meta information if newMetaString is 0.
  *
- * @ingroup keymeta
+ * @param key the key object to work with
+ * @param metaName the name of the meta information where you
+ *                 want to change the value
+ * @param newMetaString the new value for the meta information
  * @return -1 on error if key or metaName is 0, out of memory
  *         or names are not valid
  * @return 0 if the Meta-Information for metaName was removed
  * @return size (>0) of newMetaString if Meta-Information was
  *         successfully added
  * @see keyMeta(), keyGetMetaSize(), keyGetMeta()
+ * @ingroup keymeta
  **/
 ssize_t keySetMeta(Key *key, const char* metaName,
 	const char *newMetaString)
