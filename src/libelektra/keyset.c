@@ -692,7 +692,7 @@ Key *ksPop(KeySet *ks)
  *
  * @code
 ksRewind (ks);
-while ((key = keyNextMeta (ks))!=0) {}
+while ((key = ksNext (ks))!=0) {}
  * @endcode
  *
  * @param ks the keyset object to work with

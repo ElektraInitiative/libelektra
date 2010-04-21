@@ -487,10 +487,23 @@ void test_examples()
 	keyDel (c);
 }
 
+#include "../src/libelektra/inline.c"
+
 void test_copy()
 {
 	Key *key1;
 	Key *key2;
+
+	succeed_if (key1 = keyNew(0), "could not create key");
+	succeed_if (key2 = keyNew(0), "could not create key");
+
+	succeed_if (keyCopyMeta(key2, key1, "nonexist") == 0, "could not do nothing");
+
+	succeed_if (keyMeta(key2, "nonexist") == 0, "should not be there");
+
+	keyDel (key1);
+	keyDel (key2);
+
 
 	succeed_if (key1 = keyNew(0), "could not create key");
 	succeed_if (key2 = keyNew(0), "could not create key");
@@ -500,6 +513,39 @@ void test_copy()
 	succeed_if (keyCopyMeta(key2, key1, "mymeta") == 1, "could not copy meta value");
 	succeed_if (!strcmp(keyMeta(key1, "mymeta"), "a longer meta value"), "old meta data should be unchanged");
 	succeed_if (!strcmp(keyMeta(key2, "mymeta"), "a longer meta value"), "old meta data should be unchanged");
+	succeed_if (keyMetaKey(key1, "mymeta") == keyMetaKey(key2, "mymeta"), "reference to the same key");
+
+	succeed_if (keyCopyMeta(key1, key2, "mymeta") == 1, "did nothing in the end");
+	succeed_if (!strcmp(keyMeta(key1, "mymeta"), "a longer meta value"), "old meta data should be unchanged");
+	succeed_if (!strcmp(keyMeta(key2, "mymeta"), "a longer meta value"), "old meta data should be unchanged");
+	succeed_if (keyMetaKey(key1, "mymeta") == keyMetaKey(key2, "mymeta"), "reference to the same key");
+
+	keyDel (key1);
+	keyDel (key2);
+
+
+	succeed_if (key1 = keyNew(0), "could not create key");
+	succeed_if (key2 = keyNew(0), "could not create key");
+
+	succeed_if (keySetMeta(key1, "mymeta", "a longer meta value") == sizeof("a longer meta value"),
+			"could not set meta value");
+	succeed_if (keyCopyMeta(key2, key1, "mymeta") == 1, "could not copy meta value");
+	succeed_if (!strcmp(keyMeta(key1, "mymeta"), "a longer meta value"), "old meta data should be unchanged");
+	succeed_if (!strcmp(keyMeta(key2, "mymeta"), "a longer meta value"), "old meta data should be unchanged");
+	succeed_if (keyMetaKey(key1, "mymeta") == keyMetaKey(key2, "mymeta"), "reference to the same key");
+
+	succeed_if (keySetMeta(key1, "mymeta", "a longer meta value") == sizeof("a longer meta value"),
+			"could not set meta value");
+	succeed_if (!strcmp(keyMeta(key1, "mymeta"), "a longer meta value"), "old meta data should be unchanged");
+	succeed_if (!strcmp(keyMeta(key2, "mymeta"), "a longer meta value"), "old meta data should be unchanged");
+	succeed_if (keyMetaKey(key1, "mymeta") != keyMetaKey(key2, "mymeta"), "reference to another key");
+
+	succeed_if (keySetMeta(key1, "mymeta", "a longer meta value2") == sizeof("a longer meta value2"),
+			"could not set meta value2");
+	succeed_if (!strcmp(keyMeta(key1, "mymeta"), "a longer meta value2"), "old meta data should be unchanged");
+	succeed_if (!strcmp(keyMeta(key2, "mymeta"), "a longer meta value"), "old meta data should be unchanged");
+	succeed_if (keyMetaKey(key1, "mymeta") != keyMetaKey(key2, "mymeta"),
+			"reference to another key (with another value)");
 
 	keyDel (key1);
 	keyDel (key2);

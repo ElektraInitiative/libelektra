@@ -167,29 +167,7 @@ const char *keyCurrentMeta(const Key *key)
 	return keyValue(ret);
 }
 
-/*Returns the key where a meta value is stored.
-  This should not passed to the user because it
-  is an implementation detail.*/
-static inline Key *keyMetaKey(const Key* key, const char* metaName)
-{
-	Key *ret;
-	Key *search;
-
-	if (!key) return 0;
-	if (!metaName) return 0;
-	if (!key->meta) return 0;
-
-	search = keyNew (KEY_END);
-	search->key = kdbiStrDup(metaName);
-
-	if (!search->key) return 0; /*Duplication did not work*/
-
-	ret = ksLookup(key->meta, search, 0);
-
-	keyDel (search);
-
-	return ret;
-}
+#include "inline.c"
 
 /**Do a shallow copy of meta data from source to dest.
   *
@@ -207,6 +185,30 @@ void l(Key *k)
 	// the caller will see the changed key k
 	// with the metadata "type" from c
 }
+  * @endcode
+  *
+  * The main purpose of this function is for plugins or
+  * applications which want to add the same meta data to
+  * n keys. When you do that with keySetMeta() it will
+  * take n times the memory for the key. This can be
+  * considerable amount of memory for many keys with
+  * some meta data for each.
+  *
+  * To avoid that problem you can use keyCopyMeta().
+  *
+  * @code
+void o(KeySet *ks)
+{
+	Key *current;
+	Key *shared = keyNew (0);
+	keySetMeta(shared, "shared", "this meta data should be shared among many keys");
+
+	ksRewind(ks);
+	while ((current = ksNext(ks)) != 0)
+	{
+		if (needs_shared_data(current)) keyCopyMeta(current, shared, "shared");
+	}
+
   * @endcode
   *
   * @post keyMeta(source, metaName) eq keyMeta(dest, metaName)
