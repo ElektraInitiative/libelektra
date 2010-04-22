@@ -52,11 +52,11 @@ endmacro (mkdir)
 # tests/CMakeLists.txt
 #
 macro (add_headers HDR_FILES)
-	include_directories ("${PROJECT_BINARY_DIR}/src/include")
+	include_directories (BEFORE "${PROJECT_BINARY_DIR}/src/include")
 	file (GLOB BIN_HDR_FILES ${PROJECT_BINARY_DIR}/src/include/*.h)
 	list (APPEND HDR_FILES ${BIN_HDR_FILES})
 
-	include_directories ("${PROJECT_SOURCE_DIR}/src/include")
+	include_directories (AFTER "${PROJECT_SOURCE_DIR}/src/include")
 	file (GLOB SRC_HDR_FILES ${PROJECT_SOURCE_DIR}/src/include/*.h)
 	list (APPEND HDR_FILES ${SRC_HDR_FILES})
 endmacro (add_headers)

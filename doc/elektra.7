@@ -1,0 +1,625 @@
+.\"     Title: elektra
+.\"    Author: Avi Alkalay <avi at unix.sh>
+.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
+.\"      Date: March 2004
+.\"    Manual: 
+.\"    Source: Elektra Initiative
+.\"
+.TH "ELEKTRA" "7" "March 2004" "Elektra Initiative" ""
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
+elektra \- A framework to store configuration atoms hierarchically
+Library Linkage Architecture.PP
+The Elektra library (\fIlibelektra\&.so\fR) has 2 layers: public methods and backend access, according to the following architecture (these pictures were taken from the
+\fIElektra presentation\fR\&[1]):
+.PP
+.PP
+When using local backends such as the filesys backend, all key access happens in the actual process space as bellow:
+.PP
+.PP
+A remote daemon backend is also possible as noted bellow:
+.PP
+
+True Facts About Elektra
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'It is much more an agreement then a piece of software\&. Relation is 99% to 1%\&.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'It is a simple and consistent API to help software developers programatically store and retrieve global and user\-specific configuration parameters\&.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'All key\-value pairs are stored in clear\-text files, UTF\-8 encoded\&. All old charsets are also supported, with automatic transparent conversion to and from UTF\-8\&.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'API supports change notifications and multiple backends\&.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'It provides a unique namespace for all values\&. Anywhere, anytime, any program can preciselly access keys by their names\&. Security restrictions may obviously apply\&.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'It is designed to be secure and lightweight, to let even early boot\-stage programs like
+\fB/sbin/init\fR
+to use it, instead of
+\fI/etc/inittab\fR
+file\&.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'It is designed to be easy to administrate with regular command line tools like
+\fBcat\fR,
+\fBvi\fR,
+\fBcp\fR,
+\fBls\fR,
+\fBln\fR\&. Its storage is 100% open\&.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'It tries to set distribution\-independent naming standards to store things like hardware configuration, networking, user\'s session configuration, system\'s mime\-types, parameters for kernel modules, etc, that are generally stored under
+\fI/etc\fR\&.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'It requires existing software to be changed to use its API\&. This will substitute hundreds of configuration\-text\-file parsing code, into clear Elektra\'s API key\-value access methods\&.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'It is POSIX compliant\&. If it doesn\'t compile and run easily on some POSIX system, it should be easily modified to do so\&.
+.RE
+Elektra Is Not
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Is NOT something that accesses SQL/relational databases\&.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Is NOT an OS service that can become unavailable and make system unusable\&. It is just a library to access files according to a namespace\&.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Is NOT an alternative to network information systems like LDAP or NIS\&. These are still required for networked environments\&.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Is NOT a Webmin\-like or other GUI tool to be used by end users\&.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Is NOT an additional software layer to edit/generate existing configuration files\&.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Is NOT a "configuration system", because one can\'t be created by simply writing some code\&. A configuration system is an ecosystem, and the Elektra Project tries to help build one\&.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'It doesn\'t know a thing about the semantics of each data it stores\&.
+.RE
+Namespaces and Key Names.PP
+All keys are organized in a hierarchical tree with 2 Namespaces (subtrees) as showed by the picture:
+.PP
+.PP
+\fBsystem\fR
+.RS 4
+Contains all subsystems and global application keys/configuration\&. Equivalent to files under
+\fI/etc\fR
+directory\&.
+.RE
+.PP
+\fBuser\fR
+.RS 4
+The current user\'s keys\&. Equivalent to the dotfiles in a user\'s
+\fB$HOME\fR
+directory\&. These keys are phisically stored under the owner user home directory\&. The many
+\fIuser:\fR\fIusername\fR
+in the picture shows the full name of those trees\&. Read about user domains bellow for more\&.
+.RE
+User Domains.PP
+Different from the
+\fIsystem\fR
+namespace, the
+\fIuser\fR
+namespace is dynamic\&. For example, the key
+\fIuser/env/PATH\fR
+may have completely different values for users
+\fIluciana\fR
+and
+\fIvaleria\fR\&. In this example, if
+\fIvaleria\fR
+wants to access this key at
+\fIluciana\fR\'s space, it should refer to
+\fIuser:luciana/env/PATH\fR\&. Access permissions apply\&.
+.PP
+User domains were implemented also to address situations when different user names (\fB$USER\fR) have same UID\&. So a user key is stored in his home directory based on the user name, not the UID\&.
+Inactive Keys.PP
+A great thing about text configuration files is that some configuration items can be there as an example, but inactive or commented\&. Elektra provides a very simple way to simulate this behavior: if the key name begins with a dot (\&.), it is considered inactive or commented\&. In real world applications, the Elektra API will ignore these keys by default, but the keys are still accessible if the developer wants to\&.
+.PP
+These are some keys that have inactive subtrees:
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/XFree/InputDevice/\&.Mouse3/Driver\fR: All keys under
+\fI\&.Mouse3/*\fR
+subtree won\'t be read by default\&.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIuser:valeria/env/env2/\&.PATH\fR: The
+\fB$PATH\fR
+environment variable
+\fIwon\'t\fR
+be set when
+\fIvaleria\fR
+login\&.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/users/\&.louis/uid\fR: The entire
+\fI\&.louis/*\fR
+subtree is inactive\&. This is the same as commenting the user entry from a configuration file\&.
+.RE
+.PP
+See bellow more examples of inactive keys\&.
+Key Examples.PP
+Here are some valid key names, and their values:
+.PP
+The Elektra keys of the combined
+\fI/etc/passwd\fR
+and
+\fI/etc/shadow\fR
+entry for user \'nobody\' would look like:
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/users/nobody/uid\fR: 99
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/users/nobody/gid\fR: 99
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/users/nobody/gecos\fR: Nobody
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/users/nobody/home\fR: /
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/users/nobody/shell\fR: /sbin/nologin
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/users/nobody/password\fR: *
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/users/nobody/passwdChangeBefore\fR: 0
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/users/nobody/passwdChangeAfter\fR: 99999
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/users/nobody/passwdWarnBefore\fR: 7
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/users/nobody/passwdDisableAfter\fR:
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/users/nobody/passwdDisabledSince\fR:
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/users/nobody/passwdReserved\fR:
+.RE
+.PP
+The environment variables I want set, when I log in, with their full key name:
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIuser:aviram/env/env1/JAVA_HOME\fR: /usr/lib/jvm/java\-1\&.4\&.1\-ibm\-1\&.4\&.1\&.0/jre
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIuser:aviram/env/env2/PATH\fR: $PATH:~/bin:$JAVA_HOME/bin
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIuser:aviram/env/env2/PS1\fR: \eh:\ew\e$
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIuser:aviram/env/env3/PILOTRATE\fR: 57600
+.RE
+.PP
+The entry in
+\fI/etc/inittab\fR
+that is responsible for starting X11 would look:
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/init/x/runlevels\fR: 5
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/init/x/action\fR: respawn
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/init/x/process\fR: /etc/X11/prefdm \-nodaemon
+.RE
+.PP
+The users database files and
+\fI/etc/inittab\fR
+were Elektrified to key\-value pairs using the
+\fBusers\-convert\fR
+and
+\fBinittab\-convert\fR
+scripts included with the distribution\&.
+.PP
+An example of an elektrified
+\fI/etc/X11/xorg\&.conf\fR
+or
+\fI/etc/X11/XF86Config\fR:
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Layouts/Default Layout/Inputs/Keyboard0/CoreKeyboard\fR:
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Layouts/Default Layout/Inputs/Mouse0/CorePointer\fR:
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Layouts/Default Layout/Screens/Screen0/Absolute\&.x\fR: 0
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Layouts/Default Layout/Screens/Screen0/Absolute\&.y\fR: 0
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Layouts/Default Layout/Screens/Screen0/ScreenNumber\fR: 0
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Files/FontPath\fR: unix/:7100
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Files/RgbPath\fR: /usr/X11R6/lib/X11/rgb
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Devices/Videocard0/BoardName\fR: Intel 740 (generic)
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Devices/Videocard0/Driver\fR: i740
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Devices/Videocard0/VendorName\fR: Videocard vendor
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/InputDevices/Keyboard0/Driver\fR: keyboard
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/InputDevices/Keyboard0/Options/XkbLayout\fR: us_intl
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/InputDevices/Keyboard0/Options/XkbModel\fR: pc105
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/InputDevices/Mouse0/Driver\fR: mouse
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/InputDevices/Mouse0/Options/Device\fR: /dev/input/mice
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/InputDevices/Mouse0/Options/Emulate3Buttons\fR: yes
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/InputDevices/Mouse0/Options/Protocol\fR: IMPS/2
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/InputDevices/Mouse0/Options/ZAxisMapping\fR: 4 5
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Monitors/Monitor0/DisplaySize\&.height\fR: 230
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Monitors/Monitor0/DisplaySize\&.width\fR: 300
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Monitors/Monitor0/HorizSync\fR: 30\&.0 \- 61\&.0
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Monitors/Monitor0/ModelName\fR: SyncMaster
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Monitors/Monitor0/Options/dpms\fR:
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Monitors/Monitor0/VendorName\fR: Monitor Vendor
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Monitors/Monitor0/VertRefresh\fR: 56\&.0 \- 75\&.0
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Monitors/\&.Monitor1/HorizSync\fR: 30\&.0 \- 61\&.0
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Monitors/\&.Monitor1/ModelName\fR: Impression
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Monitors/\&.Monitor1/Options/dpms\fR:
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Monitors/\&.Monitor1/VendorName\fR: Monitor Vendor
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Monitors/\&.Monitor1/VertRefresh\fR: 56\&.0 \- 75\&.0
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Screens/Screen0/DefaultDepth\fR: 16
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Screens/Screen0/Device\fR: Videocard0
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Screens/Screen0/Displays/00/Depth\fR: 16
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Screens/Screen0/Displays/00/Modes\fR: 1024x768,800x600,640x480
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Screens/Screen0/Displays/00/Viewport\&.x\fR: 0
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Screens/Screen0/Displays/00/Viewport\&.y\fR: 0
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Screens/Screen0/Monitor\fR: Monitor0
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Modules/dbe\fR:
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Modules/dri\fR:
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Modules/extmod\fR:
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Modules/fbdevhw\fR:
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Modules/freetype\fR:
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Modules/glx\fR:
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Modules/record\fR:
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/Modules/type1\fR:
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/DRI/Group\fR: 0
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsystem/sw/xorg/current/DRI/Mode\fR: 0666
+.RE
+.PP
+Pay attention that the keys bellow
+\fIsystem/sw/XFree/current/Monitor/\&.Monitor1\fR
+are inactive because we have
+\fI\&.Monitor1\fR
+as their parent\&. So unless special options are used when calling the API, these keys will not be retrieved from the database\&.
+.PP
+Throughout this text you will see other examples of key names\&.
+Key Data Types.PP
+There are only two types of data that can be stored:
+.PP
+\fBText\fR
+.RS 4
+Handled as pure text\&. Regardeless of the charset being used, these values are always stored as UTF\-8\&. This ensures very strong internationalization and migration capabilities, while keeping simplicity\&. If you don\'t want the Elektra framework to convert your non\-ASCII text to UTF\-8 (not recomended), you should use the Binary data format\&.
+.RE
+.PP
+\fBBinary\fR
+.RS 4
+A stream of bytes, not necessarily text\&. It is recommended that you avoid using binary values because UNIX system administrators tend to consider them as unmanageable blackboxes\&. Anyway, the value will be encoded into pure text format based on hexadecimal digits, for openness and ease of administration\&. This data type should also be avoided because it is less efficient\&.
+.RE
+.PP
+There are very good reasons why types like
+\fBInteger\fR,
+\fBTime\fR,
+\fBFont\fR,
+\fBList\fR, etc were not implemented: Elektra was designed to be usefull for any type of program, so having more specific data types implicates in the definition of value limits, separators in the storage format, etc, that may be good for some application and bad for other\&. So the semantics of the data is handled by the application\&. A program or framework may define its own special data handling methods using these essential basic types\&. See the
+\fBkeyGetType()\fR
+and
+\fBkeySetType()\fR
+methods documentation in the
+\fBkdb\fR(3)
+man page to understand how to set keys with your own data types\&.
+.PP
+There are more two types of keys:
+.PP
+\fBDirectory\fR
+.RS 4
+It can\'t store a value, but, as a directory in a filesystem, it serves as a way to group correlated keys\&.
+.RE
+.PP
+\fBLink\fR
+.RS 4
+It is a link to another key\&. They work as symbolic links in the filesystem: when trying to access them, you will actually access the key they point to\&. The API also provides ways to access these special keys without dereferencing them\&.
+.RE
+Key Meta Data.PP
+Besides the key name and the value, each key has other attributes:
+.PP
+\fBOwner\'s User and Group\fR
+.RS 4
+This is a system\'s UID and GID equal to the ones found in regular files\' attributes\&.
+.RE
+.PP
+\fBAccess Permissions\fR
+.RS 4
+Filesystem\-like access permissions for user, group and others\&.
+.RE
+.PP
+\fBModification, Access and Stat Times\fR
+.RS 4
+Last time a key was modified, readed and stated (listed), respectively\&.
+.RE
+.PP
+\fBKey Comment\fR
+.RS 4
+Pretty much as a configuration file comment\&. Not intended to be used in GUI applications, because it isn\'t internationalizable\&.
+.RE
+Fine Grained Security Example.PP
+To show this metadata in action, this screen shows the
+\fBkdb\fR
+command listing keys and their attributes related to user
+\fInobody\fR\&.
+.sp
+.RS 4
+.nf
+bash$ \fBkdb ls \-Rlv system/users/nobody\fR
+\-rw\-r\-\-r\-\-   root  root    17 Mar 31 09:07 system/users/nobody/uid=99
+\-rw\-r\-\-r\-\-   root  root    17 Mar 31 09:07 system/users/nobody/gid=99
+\-rw\-r\-\-r\-\-   root  root    21 Mar 31 09:07 system/users/nobody/gecos=Nobody
+\-rw\-r\-\-r\-\-   root  root    16 Mar 31 09:07 system/users/nobody/home=/
+\-rw\-r\-\-r\-\-   root  root    28 Mar 31 09:07 system/users/nobody/shell=/sbin/nologin
+\-rw\-\-\-\-\-\-\-   root  root    16 Mar 31 09:07 system/users/nobody/password
+\-rw\-\-\-\-\-\-\-   root  root    16 Mar 31 09:07 system/users/nobody/passwdChangeBefore
+\-rw\-\-\-\-\-\-\-   root  root    20 Mar 31 09:07 system/users/nobody/passwdChangeAfter
+\-rw\-\-\-\-\-\-\-   root  root    16 Mar 31 09:07 system/users/nobody/passwdWarnBefore
+\-rw\-\-\-\-\-\-\-   root  root    15 Mar 31 09:07 system/users/nobody/passwdDisableAfter
+\-rw\-\-\-\-\-\-\-   root  root    15 Mar 31 09:07 system/users/nobody/passwdDisabledSince
+\-rw\-\-\-\-\-\-\-   root  root    15 Mar 31 09:07 system/users/nobody/passwdReserved
+			
+.fi
+.RE
+.PP
+We ran the
+\fBkdb\fR
+command without super\-user credentials, asking for long (\fB\-l\fR), recursive (\fB\-R\fR) listing, and to show each key value (\fB\-v\fR)\&. But (since we are) regular user, we don\'t have permission to see the values of the
+\fIsystem/users/nobody/passwd*\fR
+fields\&.
+.PP
+The users database files were elektrified to key\-value pairs using the
+\fBusers\-convert\fR
+script included with the distribution\&.
+ExamplesSetting Keys.PP
+bash$\fBkdb set \-c "My first key" user/example/key "Some nice value"\fR
+.PP
+bash$\fBkdb set user:luciana/example/key \-\- "Some \- nice \- value with dashes"\fR
+.PP
+bash#\fBKDB_ROOT=user:http/sw/httpd kdb set \-u nobody \-g http key "Some value"\fR
+.PP
+bash$\fBkdb set \-b image\&.png \-t bin user/example/binaryKey\fR
+.PP
+bash$\fBkdb set \-b file\&.txt user/example/regularKey\fR
+.PP
+bash#\fBkdb set \-t link system/sw/XFree/current system/sw/XFree/handmade\fR
+Getting Keys.PP
+bash$\fBKDB_ROOT=user/example kdb get some/key/name\fR
+.PP
+bash$\fBeval `kdb get \-s user/env/env1/PS1`\fR
+.PP
+bash$\fBKDB_BACKEND=gconf kdb get user/sw/gnome\-terminal/global/active_encodings\fR
+Listing.PP
+bash$\fBkdb ls \-laR user:valeria\fR
+.PP
+bash$\fBkdb ls \-lR system/sw/xorg/current\fR
+.PP
+bash$\fBKDB_ROOT=system/sw kdb ls \-lR xorg\fR
+.PP
+bash$\fBKDB_BACKEND=fstab kdb ls \-Rv system/filesystems\fR
+.PP
+bash$\fBeval `kdb ls \-Rvs user/env/env2`\fR
+Miscelaneous.PP
+bash#\fBkdb ln system/sw/xorg/handmade system/sw/xorg/current\fR
+.PP
+bash#\fBkdb mv system/sw/xorg/current system/sw/xorg/old\fR
+.PP
+bash#\fBkdb rm system/inittab/rc4\fR
+.PP
+bash$\fBKDB_BACKEND=gconf kdb rm user/gconfKey\fR
+XML Import and Export.PP
+bash#\fBkdb export user/sw/app | sed \-e \'s|/app/|/app2/|g\' | kdb import\fR
+.PP
+bash#\fBKDB_ROOT=system/sw kdb export myapp > myappconf\&.xml\fR
+.PP
+bash#\fBkdb import myappconf\&.xml\fR
+.PP
+bash$\fBKDB_BACKEND=gconf kdb export user/sw\fR
+.SH "SEE ALSO"
+.PP
+\fBkdb\fR(1),
+\fBelektra\fR(5)
+.SH "AUTHOR"
+.PP
+\fBAvi Alkalay\fR <\&avi at unix\&.sh\&>
+.br
+Linux Market Developer, Senior IT and Software Architect, IBM Linux Impact Team :: \fIibm\&.com/linux\fR
+.sp -1n
+.IP "" 4
+Author.
+.SH "COPYRIGHT"
+Copyright \(co 2004 Avi Alkalay
+.br
+.SH "NOTES"
+.IP " 1." 4
+Elektra presentation
+.RS 4
+\%elektra.sxi
+.RE
