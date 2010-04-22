@@ -1,11 +1,13 @@
 /***************************************************************************
-                kdb.h  -  Exported methods of the Library
+      kdb.h  -  Exported methods of the Library
                              -------------------
     begin                : Mon Dec 29 2003
     copyright            : (C) 2003 by Avi Alkalay
     copyright            : (C) 2008 by Markus Raab
     email                : avi@unix.sh, elektra@markus-raab.org
  ***************************************************************************/
+
+@DISCLAMER@
 
 /***************************************************************************
  *                                                                         *

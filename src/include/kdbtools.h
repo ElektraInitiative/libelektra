@@ -24,7 +24,7 @@ $Id$
 #define KDBTOOLS_H
 
 
-#include "kdb.h"
+#include <kdb.h>
 
 
 /**

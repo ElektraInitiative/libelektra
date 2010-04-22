@@ -1,5 +1,4 @@
 include(LibAddMacros)
-add_headers(HDR_FILES)
 
 set (SRC_FILES kdbtools.c stream.c)
 
@@ -9,6 +8,8 @@ set (SOURCES ${SRC_FILES} ${HDR_FILES})
 
 include_directories (${LIBXML2_INCLUDE_DIR})
 add_definitions (${LIBXML2_DEFINITIONS})
+
+add_headers(HDR_FILES)
 
 if (BUILD_SHARED OR BUILD_FULL)
 	add_library (elektratools SHARED ${SOURCES})

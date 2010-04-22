@@ -1,3 +1,21 @@
+/***************************************************************************
+      kdbconfig.h  -  Configuration of build system
+
+                           -------------------
+    begin                : Apr 22 2010
+    copyright            : (C) 2010 by Markus Raab
+    email                : elektra@markus-raab.org
+ ***************************************************************************/
+
+@DISCLAMER@
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the BSD License (revised).                      *
+ *                                                                         *
+ ***************************************************************************/
+
 /* disable debug output messages */
 #define DEBUG @DEBUG@
 
