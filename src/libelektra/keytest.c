@@ -295,11 +295,13 @@ int keyIsInactive (const Key *key)
 
 
 /**
- * Check if a key is directory key.
+ * Check if the mode for the key has access
+ * privileges.
  *
- * Folder keys may also have value and comment.
- * They are discern by having a executable bit
- * set.
+ * In the filesys backend a key represented through
+ * a file has the mode 664, but a key represented
+ * through a folder 775. keyIsDir() checks if all
+ * 3 executeable bits are set.
  *
  * If any executable bit is set it will be recognized
  * as a directory.
@@ -317,6 +319,9 @@ int keyIsInactive (const Key *key)
  *
  * Accessing does not mean that you can get any value or
  * comments below, see @ref mode for more information.
+ *
+ * @note currently mountpoints can only where keyIsDir()
+ *       is true (0.7.0) but this is likely to change.
  *
  * @param key the key object to work with
  * @return 1 if key is a directory, 0 otherwise

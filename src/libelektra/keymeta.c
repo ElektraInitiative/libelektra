@@ -260,6 +260,7 @@ int keyCopyMeta(Key *dest, const Key *source, char *metaName)
 
 	if (!source) return -1;
 	if (!dest) return -1;
+	if (dest->flags & KEY_FLAG_RO) return -1;
 
 	ret = keyMetaKey (source, metaName);
 
@@ -465,6 +466,7 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 	ssize_t metaStringSize;
 
 	if (!key) return -1;
+	if (key->flags & KEY_FLAG_RO) return -1;
 	if (!metaName) return -1;
 	metaNameSize = kdbiStrLen (metaName);
 	if (metaNameSize == -1) return -1;
@@ -525,6 +527,7 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 		}
 	}
 
+	toSet->flags |= KEY_FLAG_RO;
 	ksAppendKey (key->meta, toSet);
 	key->flags |= KEY_FLAG_SYNC;
 	return metaStringSize;

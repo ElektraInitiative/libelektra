@@ -253,6 +253,7 @@ ssize_t keySetName(Key *key, const char *newName)
 	size_t size=0;
 
 	if (!key) return -1;
+	if (key->flags & KEY_FLAG_RO) return -1;
 
 	if (key->key) free (key->key);
 	key->key = 0;

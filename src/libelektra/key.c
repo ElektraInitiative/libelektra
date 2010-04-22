@@ -328,6 +328,11 @@ Key *keyVNew (const char *keyName, va_list va)
 				case KEY_DIR:
 					keySetDir(key);
 					break;
+				case KEY_META:
+					value = va_arg (va,char *);
+					/*First parameter is name*/
+					keySetMeta (key, value, va_arg(va,char *));
+					break;
 				default:
 #if DEBUG
 					fprintf (stderr, "Unknown option in keyNew %ld\n", (long int)action);

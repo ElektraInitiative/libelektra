@@ -551,6 +551,77 @@ void test_copy()
 	keyDel (key2);
 }
 
+void test_ro()
+{
+	Key *key;
+
+	key = keyNew(KEY_END);
+	key->flags |= KEY_FLAG_RO;
+
+	succeed_if (keySetString(key, "a") == -1, "read only string, not allowed to set");
+	succeed_if (keySetBinary(key, "a", 2) == -1, "read only string, not allowed to set");
+	succeed_if (keySetName(key, "user") == -1, "read only string, not allowed to set");
+	succeed_if (keySetMeta(key, "meta", "value") == -1, "read only string, not allowed to set");
+
+	keyDel (key);
+
+	key = keyNew(KEY_END);
+	succeed_if (keySetMeta(key, "meta", "value") == sizeof("value"), "could not set meta");
+
+	// TODO check if RO
+	keyDel (key);
+}
+
+void test_new()
+{
+	Key *key;
+	key = keyNew ("user/test",
+		KEY_META, "hello", "hello_world",
+		KEY_META, "mode", "0644",
+		KEY_META, "time", "1271234264",
+		KEY_META, "empty", "",
+		KEY_META, "", "empty",
+		KEY_END);
+
+	succeed_if (!strcmp(keyMeta(key, "hello"), "hello_world"),
+			"could not receive previously set meta information");
+	succeed_if (!strcmp(keyMeta(key, "mode"), "0644"), "mode not set correctly");
+	succeed_if (!strcmp(keyMeta(key, "time"), "1271234264"), "time not set correctly");
+	succeed_if (!strcmp(keyMeta(key, "empty"), ""), "Problem with empty meta string");
+	succeed_if (!strcmp(keyMeta(key, ""), "empty"), "Problem with empty name");
+
+	keySetMeta(key, "", "full");
+	succeed_if (!strcmp(keyMeta(key, ""), "full"), "Problem with empty name");
+
+	keySetMeta(key, "", 0);
+	succeed_if (keyMeta(key, "") == 0, "could not remove empty meta data");
+
+	keyDel (key);
+
+	key = keyNew ("user/test",
+		KEY_META, "hello", "goodbye",
+		KEY_META, "mode", "0775",
+		KEY_META, "time", "1271939923",
+		KEY_META, "empty", "",
+		KEY_META, "", "",
+		KEY_END);
+
+	succeed_if (!strcmp(keyMeta(key, "hello"), "goodbye"),
+			"could not receive previously set meta information");
+	succeed_if (!strcmp(keyMeta(key, "mode"), "0775"), "mode not set correctly");
+	succeed_if (!strcmp(keyMeta(key, "time"), "1271939923"), "time not set correctly");
+	succeed_if (!strcmp(keyMeta(key, "empty"), ""), "Problem with empty meta string");
+	succeed_if (!strcmp(keyMeta(key, ""), ""), "Problem with empty name");
+
+	keySetMeta(key, "", "full");
+	succeed_if (!strcmp(keyMeta(key, ""), "full"), "Problem with empty name");
+
+	keySetMeta(key, "", 0);
+	succeed_if (keyMeta(key, "") == 0, "could not remove empty meta data");
+
+	keyDel (key);
+}
+
 
 int main(int argc, char** argv)
 {
@@ -569,6 +640,8 @@ int main(int argc, char** argv)
 	test_type();
 	test_examples();
 	test_copy();
+	test_ro();
+	test_new();
 
 
 	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);

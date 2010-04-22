@@ -42,7 +42,8 @@ enum {
 	KEY_SIZE=1<<11,
 	KEY_REMOVE=1<<12,
 	KEY_STAT=1<<13,
-	KEY_DIR=1<<14
+	KEY_DIR=1<<14,
+	KEY_META=1<<15
 };
 
 enum {

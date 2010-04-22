@@ -145,13 +145,16 @@ typedef int (*CloseMapper)(KDB *);
 typedef enum
 {
 	KEY_FLAG_SYNC=1,	/*!< Key need sync. (in/out)
-		If value, comment or metadata
+		If name, value or metadata
 		are changed this flag will be set, so that the backend will sync
 		the key to database.*/
 	KEY_FLAG_REMOVE=1<<1,	/*!< Key will be removed. (out)
 		The key is marked to be removed.*/
-	KEY_FLAG_STAT=1<<2	/*!< Only stat the key. (in)
+	KEY_FLAG_STAT=1<<2,	/*!< Only stat the key. (in)
 		don't get value and comment, if the backend supports it. */
+	KEY_FLAG_RO=1<<3	/*!< Key is read only and not allowed
+		to be changed. All attempts to change name, value,
+		or meta data will be ignored.*/
 } keyflag_t;
 
 
