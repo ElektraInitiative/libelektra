@@ -552,12 +552,14 @@ ssize_t ksGetSize(const KeySet *ks)
  * The reference counter of the key will be incremented, and
  * thus toAppend is not const.
  *
- * The KeySet internal cursor is not moved.
+ * If the keyname already existed, it will be replaced with
+ * the new key.
  *
- * Makes the keyset dirty, see ksSort().
+ * TODO:
+ * The KeySet internal cursor will stay at the same key.
  *
  * @return the size of the KeySet after insertion
- * @return -1 on NULL pointers
+ * @return -1 on NULL pointers or if the key has no name
  * @param ks KeySet that will receive the key
  * @param toAppend Key that will be appended to ks
  * @see ksInsert(), ksInsertKeys(), ksAppend(), keyNew(), ksDel()
@@ -566,16 +568,43 @@ ssize_t ksGetSize(const KeySet *ks)
  */
 ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
 {
+	Key * ret;
+	Key * cursor;
+	size_t current;
+
 	if (!ks) return -1;
 	if (!toAppend) return -1;
+	if (!toAppend->key)
+	{
+		// TODO ???
+		keyDel (toAppend);
+		return -1;
+	}
 
-	ks->flags |= KS_FLAG_DIRTY;
+	cursor = ks->cursor;
+	current = ks->current;
+
+	ret = ksLookup (ks, toAppend, 0);
+	if (ret)
+	{
+		/* Pop the key in the middle */
+		keyDecRef (ret);
+		keyDel (ret);
+		/* And use the other one instead */
+		ks->array[ks->current] = toAppend;
+		goto reset_cursor;
+	}
+
 	++ ks->size;
 	if (keyNeedRemove (toAppend)) ++ ks->rsize;
 	if (ks->size >= ks->alloc) ksResize (ks, ks->alloc * 2);
 	keyIncRef (toAppend);
 	ks->array[ks->size-1] = toAppend;
 	ks->array[ks->size] = 0;
+
+reset_cursor:
+	ks->cursor = cursor;
+	ks->current = current;
 	return ks->size;
 }
 
@@ -1549,6 +1578,10 @@ ssize_t ksGetCommonParentName(const KeySet *working,char *returnedCommonParent, 
 	Key *current=0;
 	cursor_t init;
 	KeySet *ks;
+	ssize_t sMaxSize;
+
+	if (maxSize > SSIZE_MAX) return -1;
+	sMaxSize = maxSize;
 
 	init = ksGetCursor (working);
 	ks = (KeySet *) working;
@@ -1557,7 +1590,7 @@ ssize_t ksGetCommonParentName(const KeySet *working,char *returnedCommonParent, 
 
 	ksRewind(ks);
 	current = ksNext(ks);
-	if (keyGetNameSize(current) > maxSize) {
+	if (keyGetNameSize(current) > sMaxSize) {
 		/*errno=KDB_ERR_TRUNC;*/
 		returnedCommonParent[0]=0;
 		return -1;
