@@ -555,11 +555,13 @@ ssize_t ksGetSize(const KeySet *ks)
  * If the keyname already existed, it will be replaced with
  * the new key.
  *
- * TODO:
  * The KeySet internal cursor will stay at the same key.
  *
+ * 
+ *
  * @return the size of the KeySet after insertion
- * @return -1 on NULL pointers or if the key has no name
+ * @return -1 on NULL pointers
+ * @return -1 if insertion failed, the key will be deleted then.
  * @param ks KeySet that will receive the key
  * @param toAppend Key that will be appended to ks
  * @see ksInsert(), ksInsertKeys(), ksAppend(), keyNew(), ksDel()
