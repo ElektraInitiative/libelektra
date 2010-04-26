@@ -570,9 +570,12 @@ ssize_t ksGetSize(const KeySet *ks)
  */
 ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
 {
-	Key * ret;
-	Key * cursor;
-	size_t current;
+	ssize_t left = 0;
+	ssize_t right = ks->size-1;
+	ssize_t middle = -1;
+	ssize_t insertpos = 0;
+	int cmpresult = 1;
+	int c=0;
 
 	if (!ks) return -1;
 	if (!toAppend) return -1;
@@ -583,30 +586,61 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
 		return -1;
 	}
 
-	cursor = ks->cursor;
-	current = ks->current;
-
-	ret = ksLookup (ks, toAppend, 0);
-	if (ret)
+	while(1)
 	{
-		/* Pop the key in the middle */
-		keyDecRef (ret);
-		keyDel (ret);
-		/* And use the other one instead */
-		ks->array[ks->current] = toAppend;
-		goto reset_cursor;
+		++c;
+		if (right < left)
+		{
+			/* Nothing was found */
+			break;
+		}
+		middle = left + ((right-left)/2);
+		cmpresult = strcmp(keyName(toAppend), keyName(ks->array[middle]));
+		if (cmpresult > 0)
+		{
+			insertpos = left = middle + 1;
+		} else if (cmpresult == 0)
+		{
+			/* We have found it */
+			break;
+		} else {
+			insertpos = middle;
+			right = middle - 1;
+		}
+		printf ("bsearch -- c: %d res: %d left: %zd middle: %zd right: %zd insertpos: %zd\n",
+				c, cmpresult, left, middle, right, insertpos);
 	}
 
-	++ ks->size;
-	if (keyNeedRemove (toAppend)) ++ ks->rsize;
-	if (ks->size >= ks->alloc) ksResize (ks, ks->alloc * 2);
-	keyIncRef (toAppend);
-	ks->array[ks->size-1] = toAppend;
-	ks->array[ks->size] = 0;
+	if (!cmpresult)
+	{
+		/* Seems like the key already exist. */
 
-reset_cursor:
-	ks->cursor = cursor;
-	ks->current = current;
+		/* Pop the key in the middle */
+		keyDecRef (ks->array[middle]);
+		keyDel (ks->array[middle]);
+		/* And use the other one instead */
+		ks->array[middle] = toAppend;
+	} else {
+		/* We want to append a new key
+		  in position middle */
+		++ ks->size;
+		if (keyNeedRemove (toAppend)) ++ ks->rsize;
+		if (ks->size >= ks->alloc) ksResize (ks, ks->alloc * 2);
+		keyIncRef (toAppend);
+
+		if (insertpos == (ssize_t)ks->size-1 || insertpos == -1)
+		{
+			/* Append it to the very end */
+			ks->array[ks->size-1] = toAppend;
+			ks->array[ks->size] = 0;
+		} else {
+			size_t n = ks->size-insertpos;
+			memmove(ks->array+insertpos+1, ks->array+insertpos, n*sizeof(struct _Key));
+			printf ("memmove -- ks->size: %zd insertpos: %zd n: %zd\n", ks->size, insertpos, n);
+			ks->array[insertpos] = toAppend;
+		}
+	}
+
 	return ks->size;
 }
 

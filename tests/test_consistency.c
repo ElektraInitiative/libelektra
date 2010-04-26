@@ -181,6 +181,74 @@ void test_ksHole()
 
 }
 
+void test_append()
+{
+	printf ("Test if keyset is sorted after appending\n");
+
+	Key *key;
+	Key *n;
+	KeySet *ks;
+
+	ks = ksNew(0);
+
+	succeed_if (ksAppendKey (ks, key=keyNew("system/sw/new", KEY_VALUE, "abc", KEY_END)) == 1, "could not append key");
+	succeed_if (ksGetSize (ks) == 1, "wrong size");
+	succeed_if (ks->array[0] == key, "key not on position 0");
+	succeed_if (ks->array[1] == 0, "array not null terminated");
+
+	succeed_if (ksAppendKey (ks, n=keyNew("system/sw/new", KEY_VALUE, "xyz1", KEY_END)) == 1, "could not append key");
+	succeed_if (ksGetSize (ks) == 1, "wrong size");
+	succeed_if (ks->array[0] == n, "n not on position 0");
+	succeed_if (ks->array[0] != key, "key is on position 0");
+	succeed_if (ks->array[1] == 0, "array not null terminated");
+
+	ksDel (ks);
+
+
+	ks = ksNew(0);
+
+	succeed_if (ksAppendKey (ks, key=keyNew("system/sw/new", KEY_VALUE, "abc", KEY_END)) == 1, "could not append key");
+	succeed_if (ksGetSize (ks) == 1, "wrong size");
+	succeed_if (ks->array[0] == key, "key not on position 0");
+	succeed_if (ks->array[1] == 0, "array not null terminated");
+
+	succeed_if (ksAppendKey (ks, n=keyNew("system/sw/new/sub1", KEY_VALUE, "xyz1", KEY_END)) == 2, "could not append key");
+	succeed_if (ksGetSize (ks) == 2, "wrong size");
+	succeed_if (ks->array[0] == key, "key not on position 0");
+	succeed_if (ks->array[1] == n, "new key not on position 1");
+	succeed_if (ks->array[2] == 0, "array not null terminated");
+
+	ksRewind(ks);
+	while ((key = ksNext(ks)) != 0)
+	{
+		printf ("%s\n", keyName(key));
+	}
+
+	ksDel (ks);
+
+
+	ks = ksNew(0);
+
+	succeed_if (ksAppendKey (ks, n=keyNew("system/sw/new/sub1", KEY_VALUE, "xyz1", KEY_END)) == 1, "could not append key");
+	succeed_if (ksGetSize (ks) == 1, "wrong size");
+	succeed_if (ks->array[0] == n, "key not on position 0");
+	succeed_if (ks->array[1] == 0, "array not null terminated");
+
+	succeed_if (ksAppendKey (ks, key=keyNew("system/sw/new", KEY_VALUE, "abc", KEY_END)) == 2, "could not append key");
+	succeed_if (ksGetSize (ks) == 2, "wrong size");
+	succeed_if (ks->array[0] == key, "key not on position 0");
+	succeed_if (ks->array[1] == n, "key not on position 1");
+	succeed_if (ks->array[2] == 0, "array not null terminated");
+
+	ksDel (ks);
+
+	/*
+	succeed_if (ksAppendKey (ks, keyNew("system/sw/new/sub2", KEY_VALUE, "xyz2", KEY_END)) == 3, "could not append key");
+
+	succeed_if (ksAppendKey (ks, keyNew("system/sw/new/sub1", KEY_VALUE, "xyz1", KEY_END)) == 3, "could not append key");
+	*/
+}
+
 
 int main(int argc, char** argv)
 {
@@ -189,14 +257,15 @@ int main(int argc, char** argv)
 
 	init (argc, argv);
 
-	test_ksNew();
-	test_ksDuplicate();
+	// test_ksNew();
+	// test_ksDuplicate();
 
 	// TODO Bugs
 	// test_ksLookupCase();
 	// test_ksLookupOwner();
+	// test_ksHole();
 
-	test_ksHole();
+	test_append();
 
 	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
