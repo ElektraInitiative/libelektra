@@ -10,7 +10,7 @@ AC_REVISION([$Revision$])
 
 m4_define(VERSION_MAJOR, [0])
 m4_define(VERSION_MINOR, [7])
-m4_define(VERSION_MICRO, [0])
+m4_define(VERSION_MICRO, [1])
 
 AC_INIT(elektra, VERSION_MAJOR.VERSION_MINOR.VERSION_MICRO, http://bugs.libelektra.org)
 
