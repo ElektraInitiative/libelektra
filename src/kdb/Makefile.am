@@ -11,7 +11,7 @@ kdb_LDADD = ../libelektra/libelektra.la $(LIBLTDL) $(LIBICONV)
 kdb_CFLAGS = $(COPTFLAGS) $(CDBGFLAGS)
 
 kdb_static_SOURCES =  $(kdb_source)
-kdb_static_LDADD = $(privatelibs) ../libelektra/libelektra.a $(LIBICONV)
+kdb_static_LDADD = ../libelektra/libelektra.a $(privatelibs) $(LIBICONV)
 kdb_static_CFLAGS = -DELEKTRA_STATIC $(COPTFLAGS) $(CDBGFLAGS)
 
 ../libelektra/libelektra.a:
