@@ -607,8 +607,10 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
 			insertpos = middle;
 			right = middle - 1;
 		}
+		/*
 		printf ("bsearch -- c: %d res: %d left: %zd middle: %zd right: %zd insertpos: %zd\n",
-				c, cmpresult, left, middle, right, insertpos);
+			c, cmpresult, left, middle, right, insertpos);
+		*/
 	}
 
 	if (!cmpresult)
@@ -635,8 +637,11 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
 			ks->array[ks->size] = 0;
 		} else {
 			size_t n = ks->size-insertpos;
-			memmove(ks->array+insertpos+1, ks->array+insertpos, n*sizeof(struct _Key));
-			printf ("memmove -- ks->size: %zd insertpos: %zd n: %zd\n", ks->size, insertpos, n);
+			memmove(ks->array+(insertpos+1), ks->array+insertpos, n*sizeof(struct Key*));
+			/*
+			printf ("memmove -- ks->size: %zd insertpos: %zd n: %zd\n",
+				ks->size, insertpos, n);
+			*/
 			ks->array[insertpos] = toAppend;
 		}
 	}
