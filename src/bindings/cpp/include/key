@@ -42,7 +42,10 @@ public:
 	void operator --(int) { operator--(); }
 	void operator --() { ckdb::keyDecRef(key); }
 
+	// TODO should compare name?
 	bool operator ==(const Key &k) const { return key == k.key; }
+
+	bool operator < (const Key& other) {return name() < other.name(); }
 
 	template <class T>
 	T get()

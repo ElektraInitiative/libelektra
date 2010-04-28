@@ -1,5 +1,8 @@
 #include <tests.h>
 
+#include <vector>
+#include <algorithm>
+
 void test_ksnew()
 {
 	cout << "testing keyset new" << endl;
@@ -218,6 +221,7 @@ void test_lookup()
 	} catch (KeySetNotFound) { }
 }
 
+
 void test_append()
 {
 	cout << "testing keyset append" << endl;
@@ -251,9 +255,35 @@ void test_append()
 		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
 		KS_END);
 
+	KeySet ks5;
+	std::vector<Key> v(3);
+	ks5.append(v[1]=Key("user/s/2", KEY_END));
+	ks5.append(v[0]=Key("user/s/1", KEY_END));
+	ks5.append(v[2]=Key("user/s/3", KEY_END));
+
+	ks5.rewind();
+	for (size_t i=0; i<ks5.size(); ++i)
+	{
+		succeed_if (ks5.next().name() == v[i].name(), "wrong order");
+	}
+
 	// ks1.toStream();
 	// ks2.toStream();
 	// ks3.toStream();
+}
+
+void test_per()
+{
+	cout << "testing keyset append with all permutations" << endl;
+
+	vector <Key>v;
+	v.push_back(Key("user/s/1", KEY_END));
+	v.push_back(Key("user/s/2", KEY_END));
+	v.push_back(Key("user/s/3", KEY_END));
+
+	do {
+		cout << v[0].name() << " " << v[1].name() << " " << v[2].name() << endl;
+	} while (next_permutation(v.begin(), v.end()));
 }
 
 
@@ -270,6 +300,7 @@ int main()
 	test_pop();
 	test_lookup();
 	test_append();
+	test_per();
 
 	cout << endl;
 	cout << "test_key RESULTS: " << nbTest << " test(s) done. " << nbError << " error(s)." << endl;
