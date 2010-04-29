@@ -276,14 +276,82 @@ void test_per()
 {
 	cout << "testing keyset append with all permutations" << endl;
 
-	vector <Key>v;
-	v.push_back(Key("user/s/1", KEY_END));
-	v.push_back(Key("user/s/2", KEY_END));
-	v.push_back(Key("user/s/3", KEY_END));
+	vector <Key> solution;
+	solution.push_back(Key("user/s/1", KEY_END));
+	solution.push_back(Key("user/s/2", KEY_END));
+	solution.push_back(Key("user/s/3", KEY_END));
+
+	vector <Key> permutation(solution);
 
 	do {
-		cout << v[0].name() << " " << v[1].name() << " " << v[2].name() << endl;
-	} while (next_permutation(v.begin(), v.end()));
+		KeySet ks;
+		ks.append(permutation[0]);
+		ks.append(permutation[1]);
+		ks.append(permutation[2]);
+		ks.rewind();
+		for (size_t i=0; i<ks.size(); ++i)
+		{
+			succeed_if (ks.next().name() == solution[i].name(), "wrong order");
+		}
+	} while (next_permutation(permutation.begin(), permutation.end()));
+
+	solution.push_back(Key("user/s/x", KEY_END));
+	permutation.push_back(solution[3]); // need a copy of same key, otherwise name is not the same string
+	sort(permutation.begin(), permutation.end());
+
+	do {
+		KeySet ks;
+		ks.append(permutation[0]);
+		ks.append(permutation[1]);
+		ks.append(permutation[2]);
+		ks.append(permutation[3]);
+		ks.rewind();
+		for (size_t i=0; i<ks.size(); ++i)
+		{
+			// note: char*==char* checks the identity! It needs to be the same reference
+			succeed_if (ks.next().name() == solution[i].name(), "wrong order");
+		}
+	} while (next_permutation(permutation.begin(), permutation.end()));
+
+	solution.push_back(Key("user/x/y", KEY_END));
+	permutation.push_back(solution[4]);
+	sort(permutation.begin(), permutation.end());
+
+	do {
+		KeySet ks;
+		ks.append(permutation[0]);
+		ks.append(permutation[1]);
+		ks.append(permutation[2]);
+		ks.append(permutation[3]);
+		ks.append(permutation[4]);
+		ks.rewind();
+		for (size_t i=0; i<ks.size(); ++i)
+		{
+			// note: char*==char* checks the identity! It needs to be the same reference
+			succeed_if (ks.next().name() == solution[i].name(), "wrong order");
+		}
+	} while (next_permutation(permutation.begin(), permutation.end()));
+
+	solution.push_back(Key("user/x/y/z", KEY_END));
+	permutation.push_back(solution[5]);
+	sort(permutation.begin(), permutation.end());
+
+	do {
+		KeySet ks;
+		ks.append(permutation[0]);
+		ks.append(permutation[1]);
+		ks.append(permutation[2]);
+		ks.append(permutation[3]);
+		ks.append(permutation[4]);
+		ks.append(permutation[5]);
+		ks.rewind();
+		for (size_t i=0; i<ks.size(); ++i)
+		{
+			// note: char*==char* checks the identity! It needs to be the same reference
+			succeed_if (ks.next().name() == solution[i].name(), "wrong order");
+		}
+	} while (next_permutation(permutation.begin(), permutation.end()));
+
 }
 
 

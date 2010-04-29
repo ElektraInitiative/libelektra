@@ -45,7 +45,7 @@ public:
 	// TODO should compare name?
 	bool operator ==(const Key &k) const { return key == k.key; }
 
-	bool operator < (const Key& other) {return name() < other.name(); }
+	bool operator < (const Key& other) const {return name() < other.name(); }
 
 	template <class T>
 	T get()
