@@ -420,10 +420,94 @@ static int keyCompareWithRemove(const void *p1, const void *p2) {
 		{
 			const char *owner1 = keyOwner(key1);
 			const char *owner2 = keyOwner(key2);
+			if (!owner1 && !owner2) return 0;
+			if (!owner1) return -1;
+			if (!owner2) return 1;
 			return strcmp(owner1, owner2);
 		}
 		else return ret;
 	}
+}
+
+
+/**Compare two keys.
+ *
+ * @return a number less than, equal to or greater than zero if
+ *    k1 is found, respectively, to be less than, to match, or
+ *    be greater than k2.
+ *
+ * The comparison is based on a strcmp of the keynames, and iff
+ * they match a strcmp of the owner will be used to distuingish.
+ * If even this matches the keys are found to be exactly the
+ * same and 0 is returned. These two keys can't be used in the same
+ * KeySet.
+ *
+ * keyCmp() defines the sorting order for a KeySet.
+ *
+ * The following 3 points are the rules for null values.
+ * They only take account when none of the preceding rules
+ * matched.
+ *
+ * - A null pointer will be found to be smaller than every other
+ * key. If both are null pointers, 0 is returned.
+ *
+ * - A null name will be found to be smaller than every other
+ * name. If both are null names, 0 is returned.
+ *
+ * - No owner will be found to be smaller then every other owner.
+ * If both don't have a owner, 0 is returned.
+ *
+ * @note the owner will only be used if the names are equal.
+ *
+ * Given any Keys k1 and k2 constructed with keyNew(), following
+ * equation hold true:
+ *
+ * @code
+// keyCmp(0,0) == 0
+// keyCmp(k1,0) ==  1
+// keyCmp(0,k2) == -1
+ * @endcode
+ *
+ * You can write similar equation for the other rules.
+ *
+ * Here are some more examples with equation:
+ * @code
+Key *k1 = keyNew("user/a", KEY_END);
+Key *k2 = keyNew("user/b", KEY_END);
+
+// keyCmp(k1,k2) < 0
+// keyCmp(k2,k1) > 0
+ * @endcode
+ *
+ * @code
+Key *k1 = keyNew("user/a", KEY_OWNER, "markus", KEY_END);
+Key *k2 = keyNew("user/a", KEY_OWNER, "max", KEY_END);
+
+// keyCmp(k1,k2) < 0
+// keyCmp(k2,k1) > 0
+ * @endcode
+ *
+ * @warning dont try to strcmp the keyName() yourself because
+ *      the used strcmp implementation is allowed to differ from
+ *      simple ascii comparison.
+ *
+ * @param k1 the first key object to compare with
+ * @param k2 the second key object to compare with
+ *
+ * @see ksAppendKey(), ksAppend() will compare keys when appending
+ * @see ksLookup() will compare keys during searching
+ */
+int keyCmp (const Key *k1, const Key *k2)
+{
+	if (!k1 && !k2) return 0;
+	if (!k1) return -1;
+	if (!k2) return 1;
+
+	if (!k1->key && !k2->key) return 0;
+	if (!k1->key) return -1;
+	if (!k2->key) return 1;
+
+	return keyCompareWithRemove(&k1, &k2);
 }
 
 

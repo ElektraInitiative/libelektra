@@ -388,6 +388,44 @@ void test_append()
 	keyDecRef (s3);  keyDel (s3);
 }
 
+void test_cmp()
+{
+	printf ("Compare two keys\n");
+
+	Key *k1 = keyNew(KEY_END);
+	Key *k2 = keyNew(KEY_END);
+
+	succeed_if (keyCmp(0,0) == 0, "null keys comparision");
+	succeed_if (keyCmp(k1,0) ==  1, "compare null key with key with no name");
+	succeed_if (keyCmp(0,k2) == -1, "compare null key with key with no name");
+
+	keySetName (k1, "user/a");
+	succeed_if (keyCmp(k2,k2) == 0, "null keys comparision");
+	succeed_if (keyCmp(k1,k2) ==  1, "compare key with no name with user/a");
+	succeed_if (keyCmp(k2,k1) == -1, "compare key with no name with user/a");
+
+	keySetName (k2, "user/a");
+	succeed_if (keyCmp(k1,k1) == 0, "compare the same key");
+	succeed_if (keyCmp(k1,k2) == 0, "compare the same key");
+	succeed_if (keyCmp(k2,k1) == 0, "compare the same key");
+
+	keySetOwner (k1, "markus");
+	succeed_if (keyCmp(k2,k2) == 0, "null owner comparision");
+	succeed_if (keyCmp(k1,k2) ==  1, "compare key with no owner with markus");
+	succeed_if (keyCmp(k2,k1) == -1, "compare key with no owner with markus");
+
+	keySetOwner (k2, "max");
+	succeed_if (keyCmp(k1,k2) < 0, "compare key with owner albert with markus");
+	succeed_if (keyCmp(k2,k1) > 0, "compare key with owner albert with markus");
+
+	keySetName (k2, "user/b");
+	succeed_if (keyCmp(k1,k2) < 0, "compare key with different names");
+	succeed_if (keyCmp(k2,k1) > 0, "compare key with different names");
+
+	keyDel (k1);
+	keyDel (k2);
+}
+
 
 int main(int argc, char** argv)
 {
@@ -405,6 +443,7 @@ int main(int argc, char** argv)
 	// test_ksHole();
 
 	test_append();
+	test_cmp();
 
 	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
