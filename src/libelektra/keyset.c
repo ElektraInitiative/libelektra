@@ -398,7 +398,7 @@ int ksNeedSort (const KeySet *ks)
 
 
 /* Used as a callback by the qsort() function */
-static int keyCompareWithRemove(const void *p1, const void *p2) {
+static int keyCmpInternal(const void *p1, const void *p2) {
 	Key *key1=*(Key **)p1;
 	Key *key2=*(Key **)p2;
 	const char *name1 = keyName(key1);
@@ -507,7 +507,7 @@ int keyCmp (const Key *k1, const Key *k2)
 	if (!k1->key) return -1;
 	if (!k2->key) return 1;
 
-	return keyCompareWithRemove(&k1, &k2);
+	return keyCmpInternal(&k1, &k2);
 }
 
 
@@ -599,7 +599,7 @@ void ksSort(KeySet *ks)
 	ks->flags = ~KS_FLAG_DIRTY & ks->flags;
 	if (! ks->size) return;
 
-	qsort(ks->array,ks->size,sizeof(Key *),keyCompareWithRemove);
+	qsort(ks->array,ks->size,sizeof(Key *),keyCmpInternal);
 }
 
 
@@ -665,7 +665,6 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
 	if (!toAppend) return -1;
 	if (!toAppend->key)
 	{
-		// TODO ???
 		keyDel (toAppend);
 		return -1;
 	}
@@ -679,7 +678,7 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
 			break;
 		}
 		middle = left + ((right-left)/2);
-		cmpresult = strcmp(keyName(toAppend), keyName(ks->array[middle]));
+		cmpresult = keyCmpInternal(&toAppend, &ks->array[middle]);
 		if (cmpresult > 0)
 		{
 			insertpos = left = middle + 1;
