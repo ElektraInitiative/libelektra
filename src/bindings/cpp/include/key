@@ -42,11 +42,6 @@ public:
 	void operator --(int) { operator--(); }
 	void operator --() { ckdb::keyDecRef(key); }
 
-	// TODO should compare name?
-	bool operator ==(const Key &k) const { return key == k.key; }
-
-	bool operator < (const Key& other) const {return name() < other.name(); }
-
 	template <class T>
 	T get()
 	{
@@ -82,6 +77,13 @@ public:
 	Key& operator=  (const char *name);
 	Key& operator+= (const char *name);
 	Key& operator-= (const char *name);
+
+	bool operator ==(const Key &k) const { return keyCmp(key, k.key) == 0; }
+	bool operator !=(const Key &k) const { return keyCmp(key, k.key) != 0; }
+	bool operator < (const Key& other) const {return keyCmp(key, other.key) < 0; }
+	bool operator <= (const Key& other) const {return keyCmp(key, other.key) <= 0; }
+	bool operator > (const Key& other) const {return keyCmp(key, other.key) > 0; }
+	bool operator >= (const Key& other) const {return keyCmp(key, other.key) >= 0; }
 
 	std::string getName() const;
 	const char* name() const;

@@ -94,7 +94,7 @@ void test_iterate()
 
 	KeySet ks3 (5,
 		*Key ("user/key3/1", KEY_END),
-		*Key ("user/key3/2", KEY_REMOVE, KEY_END),
+		*Key ("user/key3/2", KEY_END),
 		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
 		KS_END);
 
@@ -105,7 +105,6 @@ void test_iterate()
 	succeed_if (k1 == ks3.head(), "first key not head key");
 	Key k2 = ks3.next();
 	succeed_if (k2.getName() == "user/key3/2", "wrong keyname");
-	succeed_if (k2.needRemove(), "remove not set");
 	Key k3 = ks3.next();
 	succeed_if (k3.getName() == "user/key3/3", "wrong keyname");
 	succeed_if (k3.getString() == "value", "wrong value");
@@ -132,7 +131,7 @@ void test_cursor()
 
 	KeySet ks3 (5,
 		*Key ("user/key3/1", KEY_END),
-		*Key ("user/key3/2", KEY_REMOVE, KEY_END),
+		*Key ("user/key3/2", KEY_END),
 		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
 		KS_END);
 	cursor_t cursorTest;
@@ -156,7 +155,7 @@ void test_pop()
 
 	KeySet ks3 (5,
 		*Key ("user/key3/1", KEY_END),
-		*Key ("user/key3/2", KEY_REMOVE, KEY_END),
+		*Key ("user/key3/2", KEY_END),
 		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
 		KS_END);
 
@@ -167,7 +166,6 @@ void test_pop()
 	succeed_if (k3.getString() == "value", "wrong value");
 	Key k2 = ks3.pop();
 	succeed_if (k2.getName() == "user/key3/2", "wrong keyname");
-	succeed_if (k2.needRemove(), "remove not set");
 	Key k1 = ks3.pop();
 	succeed_if (k1.getName() == "user/key3/1", "wrong keyname");
 	try {
@@ -177,7 +175,7 @@ void test_pop()
 
 	KeySet ks4 (5,
 		*Key ("user/key3/1", KEY_END),
-		*Key ("user/key3/2", KEY_REMOVE, KEY_END),
+		*Key ("user/key3/2", KEY_END),
 		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
 		KS_END);
 
@@ -354,6 +352,160 @@ void test_per()
 
 }
 
+void test_appendowner()
+{
+	cout << "testing appending with owner" << endl;
+
+	KeySet ks;
+	std::vector<Key> v(3);
+	ks.append(v[1]=Key("user/s/1", KEY_OWNER, "markus", KEY_END));
+	ks.append(v[0]=Key("user/s/1", KEY_END));
+	ks.append(v[2]=Key("user/s/1", KEY_OWNER, "max", KEY_END));
+
+	ks.rewind();
+	for (size_t i=0; i<ks.size(); ++i)
+	{
+		succeed_if (ks.next().name() == v[i].name(), "wrong order");
+	}
+}
+
+void test_perowner()
+{
+	cout << "testing keyset append with owner with all permutations" << endl;
+
+	vector <Key> solution;
+	solution.push_back(Key("user/s", KEY_END));
+	solution.push_back(Key("user/s", KEY_OWNER, "albert", KEY_END));
+	solution.push_back(Key("user/s", KEY_OWNER, "barbara", KEY_END));
+
+	vector <Key> permutation(solution);
+
+	do {
+		KeySet ks;
+		ks.append(permutation[0]);
+		ks.append(permutation[1]);
+		ks.append(permutation[2]);
+		ks.rewind();
+		for (size_t i=0; i<ks.size(); ++i)
+		{
+			succeed_if (ks.next().name() == solution[i].name(), "wrong order");
+		}
+	} while (next_permutation(permutation.begin(), permutation.end()));
+
+	solution.push_back(Key("user/s", KEY_OWNER, "markus", KEY_END));
+	permutation.push_back(solution[3]); // need a copy of same key, otherwise name is not the same string
+	sort(permutation.begin(), permutation.end());
+
+	do {
+		KeySet ks;
+		ks.append(permutation[0]);
+		ks.append(permutation[1]);
+		ks.append(permutation[2]);
+		ks.append(permutation[3]);
+		ks.rewind();
+		for (size_t i=0; i<ks.size(); ++i)
+		{
+			// note: char*==char* checks the identity! It needs to be the same reference
+			succeed_if (ks.next().name() == solution[i].name(), "wrong order");
+		}
+	} while (next_permutation(permutation.begin(), permutation.end()));
+
+	solution.push_back(Key("user/s", KEY_OWNER, "max", KEY_END));
+	permutation.push_back(solution[4]);
+	sort(permutation.begin(), permutation.end());
+
+	do {
+		KeySet ks;
+		ks.append(permutation[0]);
+		ks.append(permutation[1]);
+		ks.append(permutation[2]);
+		ks.append(permutation[3]);
+		ks.append(permutation[4]);
+		ks.rewind();
+		for (size_t i=0; i<ks.size(); ++i)
+		{
+			// note: char*==char* checks the identity! It needs to be the same reference
+			succeed_if (ks.next().name() == solution[i].name(), "wrong order");
+		}
+	} while (next_permutation(permutation.begin(), permutation.end()));
+
+	solution.push_back(Key("user/s", KEY_OWNER, "patrick", KEY_END));
+	permutation.push_back(solution[5]);
+	sort(permutation.begin(), permutation.end());
+
+	do {
+		KeySet ks;
+		ks.append(permutation[0]);
+		ks.append(permutation[1]);
+		ks.append(permutation[2]);
+		ks.append(permutation[3]);
+		ks.append(permutation[4]);
+		ks.append(permutation[5]);
+		ks.rewind();
+		for (size_t i=0; i<ks.size(); ++i)
+		{
+			// note: char*==char* checks the identity! It needs to be the same reference
+			succeed_if (ks.next().name() == solution[i].name(), "wrong order");
+		}
+	} while (next_permutation(permutation.begin(), permutation.end()));
+
+}
+
+void test_cmp()
+{
+	cout << "testing comparison of keys" << endl;
+
+	Key ke1, ke2;
+
+	succeed_if (ke1 == ke2, "two empty keys are not the same?")
+	succeed_if (!(ke1 != ke2), "two empty keys are not the same?")
+
+	Key k1("user/a", KEY_END), k2("user/b", KEY_END);
+
+	succeed_if (ke1 < k1, "compare empty key with user/a")
+	succeed_if (ke1 <= k1, "compare empty key with user/a")
+	succeed_if (!(ke1 > k1), "compare empty key with user/a")
+	succeed_if (!(ke1 >= k1), "compare empty key with user/a")
+
+	succeed_if (ke1 < k2, "compare empty key with user/b")
+	succeed_if (ke1 <= k2, "compare empty key with user/b")
+	succeed_if (!(ke1 > k2), "compare empty key with user/b")
+	succeed_if (!(ke1 >= k2), "compare empty key with user/b")
+
+	succeed_if (k1 < k2, "compare key user/a with user/b")
+	succeed_if (k1 <= k2, "compare key user/a with user/b")
+	succeed_if (!(k1 > k2), "compare key user/a with user/b")
+	succeed_if (!(k1 >= k2), "compare key user/a with user/b")
+	succeed_if (k1 != k2, "compare key user/a with user/b")
+	succeed_if (!(k1 == k2), "compare key user/a with user/b")
+
+	Key ko1("user/a", KEY_OWNER, "markus", KEY_END), ko2("user/b", KEY_OWNER, "max", KEY_END);
+
+	succeed_if (ko1 > k1, "compare key with user/a")
+	succeed_if (ko1 >= k1, "compare key with user/a")
+	succeed_if (!(ko1 < k1), "compare key with user/a")
+	succeed_if (!(ko1 <= k1), "compare key with user/a")
+
+	succeed_if (ko2 > k2, "compare key with user/b")
+	succeed_if (ko2 >= k2, "compare key with user/b")
+	succeed_if (!(ko2 < k2), "compare key with user/b")
+	succeed_if (!(ko2 <= k2), "compare key with user/b")
+
+	Key ko ("user/a", KEY_OWNER, "max", KEY_END);
+
+	succeed_if (ko1 < ko, "compare key with user/b")
+	succeed_if (ko1 <= ko, "compare key with user/b")
+	succeed_if (!(ko1 > ko), "compare key with user/b")
+	succeed_if (!(ko1 >= ko), "compare key with user/b")
+
+	succeed_if (ko1 < ko2, "compare key user/a with     user/a owner max")
+	succeed_if (ko1 <= ko2, "compare key user/a with    user/a owner max")
+	succeed_if (!(ko1 > ko2), "compare key user/a with  user/a owner max")
+	succeed_if (!(ko1 >= ko2), "compare key user/a with user/a owner max")
+	succeed_if (ko1 != ko2, "compare key user/a with    user/a owner max")
+	succeed_if (!(ko1 == ko2), "compare key user/a with user/a owner max")
+}
+
 
 int main()
 {
@@ -369,6 +521,9 @@ int main()
 	test_lookup();
 	test_append();
 	test_per();
+	test_appendowner();
+	test_perowner();
+	test_cmp();
 
 	cout << endl;
 	cout << "test_key RESULTS: " << nbTest << " test(s) done. " << nbError << " error(s)." << endl;
