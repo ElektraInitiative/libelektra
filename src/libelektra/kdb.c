@@ -702,6 +702,7 @@ ssize_t kdbGet (KDB *handle, KeySet *returned,
 		return -1;
 	} else if (ret == 0)
 	{
+		if (options & KDB_O_DEL) keyDel (parentKey);
 		ksRewind (keys);
 		while ((current = ksNext(keys)) != 0) clear_bit (current->flags, KEY_FLAG_SYNC);
 		ksAppend (returned, keys);
