@@ -3,6 +3,11 @@
 #ifndef KDBCAP_H
 #define KDBCAP_H
 
+#ifdef __cplusplus
+namespace ckdb {
+extern "C" {
+#endif
+
 typedef struct _KDBCap	KDBCap;
 
 
@@ -50,6 +55,11 @@ unsigned int kdbcGetnoTypes (const KDBCap *cap);
 unsigned int kdbcGetnoError (const KDBCap *cap);
 unsigned int kdbcGetnoLock (const KDBCap *cap);
 unsigned int kdbcGetnoThread (const KDBCap *cap);
+
+#ifdef __cplusplus
+}
+}
+#endif
 
 
 /**

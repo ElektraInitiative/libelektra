@@ -31,6 +31,8 @@ endif (BUILD_FULL)
 if (BUILD_STATIC)
 	add_executable (kdb-static ${SOURCES})
 
+	set_target_properties (kdb-static PROPERTIES LINKER_LANGUAGE CXX)
+
 	if (BUILD_TOOLS)
 		target_link_libraries (kdb-static elektra-static elektratools-static elektra-static)
 	else (BUILD_TOOLS)

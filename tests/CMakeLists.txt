@@ -37,6 +37,7 @@ macro (do_test source)
 		target_link_libraries (${source} elektratools elektra-full)
 	else (BUILD_FULL)
 		target_link_libraries (${source} elektratools-static)
+		set_target_properties (preload-full PROPERTIES LINKER_LANGUAGE CXX)
 	endif (BUILD_FULL)
 
 	set_target_properties (${source} PROPERTIES

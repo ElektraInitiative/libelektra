@@ -51,6 +51,7 @@ typedef enum {
 } backend_t;
 
 #ifdef __cplusplus
+namespace ckdb {
 extern "C" {
 #endif
 
@@ -100,8 +101,8 @@ void kdbhSetMountpoint(KDB *handle, const Key* mountpoint);
 KeySet *kdbhGetConfig(KDB *handle);
 
 
-
 #ifdef __cplusplus
+}
 }
 #endif
 

@@ -92,6 +92,7 @@ if (BUILD_FULL)
 	set_target_properties (elektra-full PROPERTIES
 			VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION})
 	set_target_properties (elektra-full PROPERTIES CLEAN_DIRECT_OUTPUT 1)
+	set_target_properties (elektra-full PROPERTIES LINKER_LANGUAGE CXX)
 
 	install (TARGETS elektra-full DESTINATION lib)
 endif (BUILD_FULL)
@@ -107,6 +108,7 @@ if (BUILD_STATIC)
 	set_target_properties (elektra-static PROPERTIES
 			VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION})
 	set_target_properties (elektra-static PROPERTIES CLEAN_DIRECT_OUTPUT 1)
+	set_target_properties (elektra-static PROPERTIES LINKER_LANGUAGE CXX)
 
 	install (TARGETS elektra-static DESTINATION lib)
 endif (BUILD_STATIC)

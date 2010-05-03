@@ -17,6 +17,7 @@ endif (BUILD_FULL)
 
 if (BUILD_STATIC)
 	add_executable (preload-static ${SOURCES})
+	set_target_properties (preload-static PROPERTIES LINKER_LANGUAGE CXX)
 	target_link_libraries (preload-static elektra-static)
 	install (TARGETS preload-static DESTINATION bin)
 endif (BUILD_STATIC)
