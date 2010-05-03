@@ -390,6 +390,27 @@ void test_writefstab(const char * file)
 }
 
 
+void test_writedump(const char *file)
+{
+	KDB *kdb = kdbOpen();
+	Key *mnt;
+	KeySet *conf;
+	KeySet *ks = ksNew(0);
+
+
+	printf("Test mount dump\n");
+
+	succeed_if (kdbMount(kdb,mnt=keyNew("user/tests/dump",KEY_VALUE,"dump", KEY_END),
+		conf=ksNew (2,keyNew("system/path", KEY_VALUE, file, KEY_END), KS_END)) == 0,
+		"could not mount dump");
+	succeed_if (kdbSet(kdb,ks,keyNew("user/tests/dump",KEY_END),KDB_O_DEL) == 0, "could not set keys");
+	ksDel (conf);
+	keyDel(mnt);
+
+	ksDel (ks);
+	kdbClose (kdb);
+}
+
 
 int main(int argc, char** argv)
 {
@@ -406,6 +427,8 @@ int main(int argc, char** argv)
 	// test_readfstab(".kdb/fstab_mount");
 
 	// test_passwd();
+
+	test_writedump(".kdb/dump.edf");
 
 	printf("\ntest_mount RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

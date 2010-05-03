@@ -15,13 +15,40 @@
 
 #include "dump.hpp"
 
-namespace ckdb {
 extern "C" {
+
+void serialize(std::ostream &os, ckdb::KeySet *ks)
+{
+}
+
+void unserialize(std::istream &is, ckdb::KeySet *ks)
+{
+}
 
 int kdbOpen_dump(ckdb::KDB *handle)
 {
 	int errnosave = errno;
-	/* backend initialization logic */
+	ckdb::KeySet *ks;
+	ckdb::Key *k;
+
+	ks = ckdb::kdbhGetConfig (handle);
+	ckdb::ksRewind (ks);
+	while ((k = ckdb::ksNext (ks)) != 0)
+	{
+		const char *name;
+		std::string f;
+		size_t pos;
+
+		name = ckdb::keyName(k);
+		if (!name) continue;
+		f = std::string(name);
+		pos = f.find_last_of('/');
+		std::string postfix = f.substr(pos);
+		if (postfix == "/path") {
+			ckdb::kdbhSetBackendData (handle, new std::string((char*)ckdb::keyValue(k)));
+		}
+	}
+	if (!ckdb::kdbhGetBackendData (handle)) ckdb::kdbhSetBackendData (handle, new std::string(DUMP_PATH));
 
 	errno = errnosave;
 	return 0;
@@ -30,7 +57,8 @@ int kdbOpen_dump(ckdb::KDB *handle)
 int kdbClose_dump(ckdb::KDB *handle)
 {
 	int errnosave = errno;
-	/* free all backend resources and shut it down */
+
+	delete static_cast<std::string*>(ckdb::kdbhGetBackendData (handle));
 
 	errno = errnosave;
 	return 0; /* success */
@@ -41,7 +69,8 @@ ssize_t kdbGet_dump(ckdb::KDB *handle, ckdb::KeySet *returned, const ckdb::Key *
 	ssize_t nr_keys = 0;
 	int errnosave = errno;
 
-	/* get all keys below parentKey and count them with nr_keys */
+	std::ifstream ofs(static_cast<std::string*>(ckdb::kdbhGetBackendData (handle))->c_str());
+	unserialize (ofs, returned);
 
 	errno = errnosave;
 	return nr_keys; /* success */
@@ -52,13 +81,14 @@ ssize_t kdbSet_dump(ckdb::KDB *handle, ckdb::KeySet *returned, const ckdb::Key *
 	ssize_t nr_keys = 0;
 	int errnosave = errno;
 
-	/* set all keys below parentKey and count them with nr_keys */
+	std::ofstream ifs(static_cast<std::string*>(ckdb::kdbhGetBackendData (handle))->c_str());
+	serialize (ifs, returned);
 
 	errno = errnosave;
 	return nr_keys;
 }
 
-KDBEXPORT(dump)
+ckdb::KDB *KDBEXPORT(dump)
 {
 	return kdbBackendExport(BACKENDNAME,
 		KDB_BE_OPEN,	&kdbOpen_dump,
@@ -74,5 +104,4 @@ KDBEXPORT(dump)
 }
 
 } // extern C
-}
 

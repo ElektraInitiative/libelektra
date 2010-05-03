@@ -29,17 +29,22 @@
 #include <kdbbackend.h>
 #include <errno.h>
 
+#include <iostream>
+#include <fstream>
+#include <string>
+
 #define BACKENDNAME "dump"
 #define BACKENDVERSION "0.0.1"
+#define DUMP_PATH "/tmp/dump.edf"
 
-namespace ckdb {
+// edf = elektra dump format
+
 extern "C" {
 
 int kdbOpen_dump(ckdb::KDB *handle);
 int kdbClose_dump(ckdb::KDB *handle);
 ssize_t kdbGet_dump(ckdb::KDB *handle, ckdb::KeySet *ks, const ckdb::Key *parentKey);
 ssize_t kdbSet_dump(ckdb::KDB *handle, ckdb::KeySet *ks, const ckdb::Key *parentKey);
-KDBEXPORT(dump);
+ckdb::KDB* KDBEXPORT(dump);
 
 } // extern C
-}

@@ -763,7 +763,7 @@ int keyFromStat(Key *key,struct stat *stat) {
 
 
 
-KDBEXPORT(filesys)
+KDB *KDBEXPORT(filesys)
 {
 	return kdbBackendExport(BACKENDNAME,
 		KDB_BE_OPEN,	&kdbOpen_filesys,
