@@ -645,6 +645,8 @@ keyDel (k); // now really free it
  * nothing will happen and SSIZE_MAX will be
  * returned.
  *
+ * @note keyDup() will reset the references for dupped key.
+ *
  * @return the value of the new reference counter
  * @return -1 on null pointer
  * @return SSIZE_MAX when maximum exceeded
@@ -665,10 +667,18 @@ ssize_t keyIncRef(Key *key)
 /**
  * Decrement the viability of a key object.
  *
+ * The references will be decremented for ksPop() or successful calls
+ * of ksLookup() with the option KDB_O_POP.
+ * It will also be decremented with an following keyDel() in
+ * the case that an old key is replaced with another key with
+ * the same name.
+ *
  * The reference counter can't be decremented
  * once it reached 0. In that situation
  * nothing will happen and 0 will be
  * returned.
+ *
+ * @note keyDup() will reset the references for dupped key.
  *
  * @return the value of the new reference counter
  * @return -1 on null pointer
@@ -691,15 +701,13 @@ ssize_t keyDecRef(Key *key)
 /**
  * Return how many references the key has.
  *
- * The references will be incremented when ksAppendKey()
- * or ksAppend() uses the key and will be decremented when
- * ksPop() is used.
+ * The references will be incremented on successful calls to
+ * ksAppendKey() or ksAppend().
  *
- * keyDup() will reset the references for dupped
- * key.
+ * @note keyDup() will reset the references for dupped key.
  *
  * For your own applications you can use
- * keyIncRef() and keyDelRef() for reference
+ * keyIncRef() and keyDecRef() for reference
  * counting. Keys with zero references
  * will be deleted when using keyDel().
  *

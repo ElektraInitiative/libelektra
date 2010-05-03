@@ -341,8 +341,8 @@ void test_keyReference()
 {
 	printf("Test key reference\n");
 
-	Key *key = keyNew (KEY_END);
-	Key *c = keyNew (KEY_END);
+	Key *key = keyNew ("user/key", KEY_END);
+	Key *c = keyNew ("user/c", KEY_END);
 	Key *d;
 	KeySet *ks1, *ks2;
 	succeed_if (keyGetRef(key) == 0, "New created key reference");
@@ -407,7 +407,7 @@ void test_keyReference()
 
 	ks1 = ksNew(0);
 	ks2 = ksNew(0);
-	key = keyNew(0); // ref counter 0
+	key = keyNew("user/key", KEY_END); // ref counter 0
 	succeed_if (keyGetRef(key) == 0, "reference counter");
 	ksAppendKey(ks1, key); // ref counter of key 1
 	succeed_if (keyGetRef(key) == 1, "reference counter");
