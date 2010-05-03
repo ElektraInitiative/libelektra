@@ -87,7 +87,7 @@ static int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr read
 	keyNodeName=xmlTextReaderName(reader);
 	if (!strcmp((char *)keyNodeName,"key")) {
 		mode_t isdir=0;
-		int isbin;
+		int isbin=0;
 		int end=0;
 		
 		newKey=keyNew(0);
