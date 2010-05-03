@@ -31,7 +31,9 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <string>
+#include <vector>
 
 #include <cstring>
 
@@ -42,6 +44,10 @@
 // edf = elektra dump format
 
 extern "C" {
+
+namespace ckdb {
+ssize_t keySetRaw(ckdb::Key *key, const void *newBinary, size_t dataSize);
+}
 
 int kdbOpen_dump(ckdb::KDB *handle);
 int kdbClose_dump(ckdb::KDB *handle);

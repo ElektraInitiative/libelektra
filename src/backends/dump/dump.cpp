@@ -21,8 +21,6 @@ void serialize(std::ostream &os, ckdb::KeySet *ks)
 {
 	ckdb::Key *cur;
 
-	std::cout << "Starting serializing" << std::endl;
-
 	os << "ksNew " << ckdb::ksGetSize(ks) << std::endl;
 
 	ksRewind(ks);
@@ -45,19 +43,84 @@ void serialize(std::ostream &os, ckdb::KeySet *ks)
 			size_t namesize = strlen(metaname);
 			size_t valuesize = strlen(metavalue);
 
-			std::cout << valuesize << " " << metavalue << std::endl;
-
 			os << "keyMeta " << namesize
 			   << " " << valuesize << std::endl;
 			os.write (metaname, namesize);
 			os.write (metavalue, valuesize);
 			os << std::endl;
 		}
+		os << "keyEnd" << std::endl;
 	}
+	os << "ksEnd" << std::endl;
 }
 
 void unserialize(std::istream &is, ckdb::KeySet *ks)
 {
+	ckdb::Key *cur = 0;
+
+	std::vector<char> namebuffer(4048);
+	std::vector<char> valuebuffer(4048);
+	std::string line;
+	std::string command;
+	size_t nrKeys;
+	size_t namesize;
+	size_t valuesize;
+
+	while(std::getline (is, line))
+	{
+		std::stringstream ss (line);
+		ss >> command;
+
+		if (command == "ksNew")
+		{
+			ss >> nrKeys;
+
+			ksClear(ks);
+		}
+		else if (command == "keyNew")
+		{
+			cur = ckdb::keyNew(0);
+
+			ss >> namesize;
+			ss >> valuesize;
+
+			if (namesize > namebuffer.size()) namebuffer.resize(namesize);
+			is.read(&namebuffer[0], namesize);
+			namebuffer[namesize] = 0;
+			ckdb::keySetName(cur, &namebuffer[0]);
+
+			if (valuesize > valuebuffer.size()) valuebuffer.resize(valuesize);
+			is.read(&valuebuffer[0], valuesize);
+			ckdb::keySetRaw (cur, &valuebuffer[0], valuesize);
+			std::getline (is, line);
+		}
+		else if (command == "keyMeta")
+		{
+			ss >> namesize;
+			ss >> valuesize;
+
+			if (namesize > namebuffer.size()) namebuffer.resize(namesize);
+			is.read(&namebuffer[0], namesize);
+			namebuffer[namesize] = 0;
+
+			if (valuesize > valuebuffer.size()) valuebuffer.resize(valuesize);
+			is.read(&valuebuffer[0], valuesize);
+
+			keySetMeta (cur, &namebuffer[0], &valuebuffer[0]);
+			std::getline (is, line);
+		}
+		else if (command == "keyEnd")
+		{
+			ksAppendKey(ks, cur);
+			cur = 0;
+		}
+		else if (command == "ksEnd")
+		{
+			break;
+		} else {
+			std::cerr << "unkown command: " << command << std::endl;
+		}
+	}
 }
 
 int kdbOpen_dump(ckdb::KDB *handle)
@@ -104,6 +167,8 @@ ssize_t kdbGet_dump(ckdb::KDB *handle, ckdb::KeySet *returned, const ckdb::Key *
 	ssize_t nr_keys = 0;
 	int errnosave = errno;
 
+	if (strcmp (keyName(kdbhGetMountpoint(handle)), keyName(parentKey))) return 0;
+
 	std::ifstream ofs(static_cast<std::string*>(ckdb::kdbhGetBackendData (handle))->c_str());
 	unserialize (ofs, returned);
 
@@ -115,6 +180,8 @@ ssize_t kdbSet_dump(ckdb::KDB *handle, ckdb::KeySet *returned, const ckdb::Key *
 {
 	ssize_t nr_keys = 0;
 	int errnosave = errno;
+
+	if (strcmp (keyName(kdbhGetMountpoint(handle)), keyName(parentKey))) return 0;
 
 	std::ofstream ifs(static_cast<std::string*>(ckdb::kdbhGetBackendData (handle))->c_str());
 	serialize (ifs, returned);

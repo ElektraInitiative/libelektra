@@ -389,22 +389,33 @@ void test_writefstab(const char * file)
 	kdbClose (kdb);
 }
 
+KeySet * get_dump()
+{
+	return ksNew(10,
+			keyNew("user/tests/dump",
+			       KEY_VALUE, "root key",
+			       KEY_META, "a", "b",
+			       KEY_END),
+			keyNew("user/tests/dump/a",
+			       KEY_VALUE, "a value",
+			       KEY_META, "a", "b",
+			       KEY_END),
+			keyNew("user/tests/dump/b",
+			       KEY_VALUE, "b value",
+			       KEY_META, "a", "b",
+			       KEY_END),
+			KS_END
+		);
+}
 
 void test_writedump(const char *file)
 {
 	KDB *kdb = kdbOpen();
 	Key *mnt;
 	KeySet *conf;
-	KeySet *ks = ksNew(10,
-			keyNew("user/tests/dump",
-			       KEY_VALUE, "a value",
-			       KEY_META, "a", "b",
-			       KEY_END),
-			KS_END
-		);
+	KeySet *ks = get_dump();
 
-
-	printf("Test mount dump\n");
+	printf("Test write dump\n");
 
 	succeed_if (kdbMount(kdb,mnt=keyNew("user/tests/dump",KEY_VALUE,"dump", KEY_END),
 		conf=ksNew (2,keyNew("system/path", KEY_VALUE, file, KEY_END), KS_END)) == 0,
@@ -414,6 +425,32 @@ void test_writedump(const char *file)
 	keyDel(mnt);
 
 	ksDel (ks);
+	kdbClose (kdb);
+}
+
+void test_readdump(const char *file)
+{
+	KDB *kdb = kdbOpen();
+	Key *mnt;
+	KeySet *conf;
+	KeySet *ks = get_dump();
+	KeySet *read = ksNew(0);
+
+	printf("Test read dump\n");
+
+	succeed_if (kdbMount(kdb,mnt=keyNew("user/tests/dump",KEY_VALUE,"dump", KEY_END),
+		conf=ksNew (2,keyNew("system/path", KEY_VALUE, file, KEY_END), KS_END)) == 0,
+		"could not mount dump");
+	succeed_if (kdbGet(kdb,read,keyNew("user/tests/dump",KEY_END),KDB_O_DEL) == 0, "could not get keys");
+	ksDel (conf);
+	keyDel(mnt);
+
+	compare_keyset (read, ks, 0, 0);
+
+	ksOutput (read, stdout, 0);
+
+	ksDel (ks);
+	ksDel (read);
 	kdbClose (kdb);
 }
 
@@ -435,6 +472,7 @@ int main(int argc, char** argv)
 	// test_passwd();
 
 	test_writedump(".kdb/dump.edf");
+	test_readdump(".kdb/dump.edf");
 
 	printf("\ntest_mount RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
