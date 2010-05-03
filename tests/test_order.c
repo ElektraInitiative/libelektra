@@ -471,8 +471,8 @@ void test_appendowner()
 
 int main(int argc, char** argv)
 {
-	printf("KEYSET       TESTS\n");
-	printf("==================\n\n");
+	printf("KEYSET ORDERING      TESTS\n");
+	printf("==========================\n\n");
 
 	init (argc, argv);
 
