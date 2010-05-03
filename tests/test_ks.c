@@ -36,18 +36,18 @@ void test_ksNew()
 	printf("Test ks creation\n");
 	exit_if_fail((ks=ksNew(0)) != 0, "could not create new keyset");
 
-	succeed_if (ksAppendKey(ks,keyNew(0)) == 1, "could not append a key");
-	succeed_if (ksAppendKey(ks,keyNew(0)) == 2, "could not append a key");
-	succeed_if (ksAppendKey(ks,keyNew(0)) == 3, "could not append a key");
+	succeed_if (ksAppendKey(ks,keyNew("user/a", KEY_END)) == 1, "could not append a key");
+	succeed_if (ksAppendKey(ks,keyNew("user/b", KEY_END)) == 2, "could not append a key");
+	succeed_if (ksAppendKey(ks,keyNew("user/c", KEY_END)) == 3, "could not append a key");
 	succeed_if(ksGetSize(ks) == 3, "size not correct after 3 keys");
 
 	KeySet *ks2=ksNew (0);
 	ksCopy (ks2, ks);
 	compare_keyset (ks, ks2, 0, 0);
 
-	succeed_if (ksAppendKey(ks,keyNew(0)) == 4, "could not append a key");
-	succeed_if (ksAppendKey(ks,keyNew(0)) == 5, "could not append a key");
-	succeed_if (ksAppendKey(ks,keyNew(0)) == 6, "could not append a key");
+	succeed_if (ksAppendKey(ks,keyNew("user/d", KEY_END)) == 4, "could not append a key");
+	succeed_if (ksAppendKey(ks,keyNew("user/e", KEY_END)) == 5, "could not append a key");
+	succeed_if (ksAppendKey(ks,keyNew("user/f", KEY_END)) == 6, "could not append a key");
 	succeed_if(ksGetSize(ks) == 6, "could not append 3 more keys");
 
 	ksCopy (ks2, ks);
@@ -181,15 +181,21 @@ void test_ksReference()
 	ks=ksNew(0);
 	k1 = keyNew("user/aname", KEY_END);
 	succeed_if (keyGetRef(k1) == 0, "reference counter of new key");
-	ksAppendKey(ks,k1);
+	succeed_if (ksAppendKey(ks,k1) == 1, "size should be one");
 	succeed_if (keyGetRef(k1) == 1, "reference counter of inserted key");
+	succeed_if (ksGetSize(ks) == 1, "wrong size, should stay after inserting duplication");
 
 	k2 = keyDup (k1);
+	keySetString(k2, "newvalue");
 
 	succeed_if (keyGetRef(k2) == 0, "reference counter not resetted");
-	ksAppendKey(ks,k2);
-	succeed_if (keyGetRef(k2) == 1, "reference counter not incremented");
-	ksSort (ks);
+	succeed_if (ksAppendKey(ks,k2) == 1, "size should stay at 1");
+	// k1 should be freed by now and instead k2 in the keyset
+	succeed_if (ksGetSize(ks) == 1, "wrong size, should stay after inserting duplication");
+
+	ksRewind(ks);
+	ksNext(ks);
+	succeed_if (strcmp(keyValue(ksCurrent(ks)), "newvalue")==0, "the duplicated key should be in keyset");
 
 	ksDel (ks);
 
@@ -231,17 +237,18 @@ void test_ksReference()
 
 	ks1=ksNew(0);
 	ks2=ksNew(0);
-	k1=keyNew(0);
+	k1=keyNew("user/k1", KEY_END);
 	succeed_if (keyGetRef(k1) == 0, "reference counter of new inserted key");
-	ksAppendKey(ks1, k1);
+	succeed_if (ksAppendKey(ks1, k1) == 1, "appending did not work");
+	succeed_if (ksGetSize(ks1) == 1, "size did not match");
 	succeed_if (keyGetRef(k1) == 1, "reference counter of new inserted key");
-	ksAppendKey(ks2, k1);
-	succeed_if (keyGetRef(k1) == 2, "reference counter of new inserted key");
+	succeed_if (ksAppendKey(ks2, k1) == 1, "appending the very same key");
+	succeed_if (ksGetSize(ks1) == 1, "size did not match");
+	succeed_if (keyGetRef(k1) == 1, "reference counter of new inserted key should stay the same");
 
 	k1=ksPop (ks1);
-	succeed_if (keyGetRef(k1) == 1, "reference counter of new inserted key");
-	succeed_if (keyDel (k1) == 1, "keyDel did not work");
-	succeed_if (keyGetRef(k1) == 1, "reference counter of new inserted key");
+	succeed_if (keyGetRef(k1) == 0, "reference counter of new inserted key");
+	succeed_if (keyDel (k1) == 0, "keyDel did not work");
 
 	succeed_if (ksDel (ks1) == 0, "could not delete key");
 	succeed_if (ksDel (ks2) == 0, "could not delete key");

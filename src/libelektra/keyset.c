@@ -699,6 +699,11 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
 	if (!cmpresult)
 	{
 		/* Seems like the key already exist. */
+		if (toAppend == ks->array[middle])
+		{
+			/* user tried to insert the same key again */
+			return ks->size;
+		}
 
 		/* Pop the key in the middle */
 		keyDecRef (ks->array[middle]);
