@@ -74,7 +74,7 @@ Key * create_root_key (const char *backendName)
 KeySet *create_conf (const char *filename)
 {
 	return ksNew (2,
-		keyNew("system/path", KEY_VALUE, ".kdb/hosts_kdb", KEY_END),
+		keyNew("system/path", KEY_VALUE, filename, KEY_END),
 		KS_END);
 }
 

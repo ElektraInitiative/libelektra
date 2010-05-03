@@ -40,13 +40,13 @@ void serialize(std::ostream &os, ckdb::KeySet *ks)
 		while ((metaname = ckdb::keyNextMeta(cur)) != 0)
 		{
 			metavalue = ckdb::keyCurrentMeta(cur);
-			size_t namesize = strlen(metaname);
-			size_t valuesize = strlen(metavalue);
+			size_t metanamesize = strlen(metaname);
+			size_t metavaluesize = strlen(metavalue);
 
-			os << "keyMeta " << namesize
-			   << " " << valuesize << std::endl;
-			os.write (metaname, namesize);
-			os.write (metavalue, valuesize);
+			os << "keyMeta " << metanamesize
+			   << " " << metavaluesize << std::endl;
+			os.write (metaname, metanamesize);
+			os.write (metavalue, metavaluesize);
 			os << std::endl;
 		}
 		os << "keyEnd" << std::endl;
@@ -128,6 +128,14 @@ int kdbOpen_dump(ckdb::KDB *handle)
 	int errnosave = errno;
 	ckdb::KeySet *ks;
 	ckdb::Key *k;
+
+	KDBCap * cap = ckdb::kdbhGetCapability(handle);
+	cap->onlyFullGet=1;
+	cap->onlyRemoveAll=1;
+	cap->onlyAddKeys=1;
+	cap->onlyFullSet=1;
+	cap->onlySystem=1;
+	cap->onlyUser=1;
 
 	ks = ckdb::kdbhGetConfig (handle);
 	ckdb::ksRewind (ks);

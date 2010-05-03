@@ -341,10 +341,8 @@ void test_backend(KDB * handle, Key * root, char *fileName, KeySet *conf)
 	ks2 = ksNew(0);
 	succeed_if( kdbGet(handle, ks2, root, KDB_O_INACTIVE | options) >= 0, "kdbGet failed.");
 	succeed_if( compare_keyset(ks, ks2, 0, cap) == 0, "compare keyset with all keys failed");
-	/*
-	printf ("We got :\n"); ksGenerate (ks2, stdout, KDB_O_HEADER);
-	printf ("We want:\n"); ksGenerate (ks, stdout, KDB_O_HEADER);
-	*/
+	printf ("We got :\n"); ksGenerate (ks2, stdout, 0);
+	printf ("We want:\n"); ksGenerate (ks, stdout, 0);
 	ksDel(ks2);
 
 	printf ("Testing kdbGet with 2 inactive keys not yet updating (fails)\n");
@@ -469,10 +467,16 @@ int main(int argc, char** argv)
 
 	test_default(handle, create_root_key(""));
 
+	/*
 	test_backend(handle, create_root_key("filesys"),srcdir_file("filesys.xml"),create_conf (".kdb"));
 	test_backend(handle, create_root_key("filesys"),srcdir_file("keyset.xml"), create_conf (".kdb"));
+	*/
+	test_backend(handle, create_root_key("dump"),srcdir_file("dump.xml"),create_conf (".kdb/filesys.edf"));
+	/*
+	test_backend(handle, create_root_key("dump"),srcdir_file("keyset.xml"), create_conf (".kdb/keyset.edf"));
 	test_backend(handle, create_root_key("fstab"),  srcdir_file("fstab.xml"),  create_conf (".kdb/fstab_kdb"));
 	test_backend(handle, create_root_key("hosts"),  srcdir_file("hosts.xml"),  create_conf (".kdb/hosts_kdb"));
+	*/
 
 	printf("\ntest_kdb RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

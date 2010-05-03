@@ -25,4 +25,4 @@ int kdbOpen_hosts(KDB *handle);
 int kdbClose_hosts(KDB *handle);
 ssize_t kdbGet_hosts(KDB *handle, KeySet *ks, const Key *parentKey);
 ssize_t kdbSet_hosts(KDB *handle, KeySet *ks, const Key *parentKey);
-KDBEXPORT(hosts);
+KDB *KDBEXPORT(hosts);

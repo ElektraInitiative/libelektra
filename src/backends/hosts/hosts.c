@@ -360,7 +360,7 @@ error:
 	return -1;
 }
 
-KDBEXPORT(hosts)
+KDB *KDBEXPORT(hosts)
 {
 	return kdbBackendExport(BACKENDNAME,
 		KDB_BE_OPEN,	&kdbOpen_hosts,

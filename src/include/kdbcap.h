@@ -3,12 +3,12 @@
 #ifndef KDBCAP_H
 #define KDBCAP_H
 
+typedef struct _KDBCap	KDBCap;
+
 #ifdef __cplusplus
 namespace ckdb {
 extern "C" {
 #endif
-
-typedef struct _KDBCap	KDBCap;
 
 
 /* Old capability API */

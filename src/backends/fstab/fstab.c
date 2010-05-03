@@ -308,7 +308,7 @@ ssize_t kdbSet_fstab(KDB *handle, KeySet *ks, const Key *parentKey)
 }
 
 
-KDBEXPORT(fstab) {
+KDB *KDBEXPORT(fstab) {
 	return kdbBackendExport(BACKENDNAME,
 		KDB_BE_OPEN,           &kdbOpen_fstab,
 		KDB_BE_CLOSE,          &kdbClose_fstab,
