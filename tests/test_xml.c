@@ -76,62 +76,80 @@ void test_key()
 		//keySetName(cur, buf);
 
 		/* Make tests ... */	
-		// printf ("counter: %d - %s\n", counter, (char*)keyValue(cur));
+		// printf ("counter: %d - name: %s - value: %s\n", counter, (char*) keyName(cur), (char*)keyValue(cur));
 		switch (counter)
 		{
-		case 1: succeed_if(strcmp (keyValue(cur), "StringValue") == 0, "value not correct");
-			succeed_if(strcmp (keyComment(cur), "String key with\nstandard name") == 0, "comment not correct");
-			succeed_if(keyIsInactive (cur) == 0, "key is active");
-			succeed_if(keyIsString(cur) == 1, "key is not string");
-			succeed_if(keyGetUID(cur) == 20, "could not get uid value");
-			break;
-		case 2: succeed_if(strcmp (keyValue(cur), "DirectoryValue") == 0, "value not correct");
-			succeed_if(strcmp (keyComment(cur), "Directory key with standard name") == 0, "comment not correct");
-			succeed_if(keyIsInactive (cur) == 0, "key is active");
-			succeed_if(keyIsString(cur) == 1, "key is not string");
-			break;
-		case 3: succeed_if(strcmp (keyValue(cur), "BinaryValue") == 0, "value not correct");
-			succeed_if(strcmp (keyComment(cur), "Binary key with standard name") == 0, "comment not correct");
-			succeed_if(keyIsInactive (cur) == 0, "key is active");
+		case 1:
+			succeed_if(strcmp (keyName(cur), "user/tests/filesys/.HiddenBinaryKey") == 0, "wrong name");
+			succeed_if(strcmp (keyValue(cur), "BinaryValue") == 0, "value not correct");
+			succeed_if(strcmp (keyComment(cur), "Binary key with hidden name") == 0, "comment not correct");
+			succeed_if(keyIsInactive (cur) == 1, "key is inactive");
 			succeed_if(keyIsBinary(cur) == 1, "key is not binary");
-			succeed_if(keyGetGID(cur) == 40, "could not get gid value");
+			succeed_if(keyGetMode(cur) == 0440, "could not get mode");
 			break;
-		case 4: succeed_if(strcmp (keyValue(cur), "StringValue") == 0, "value not correct");
+		case 2:
+			succeed_if(strcmp (keyName(cur), "user/tests/filesys/.HiddenDirectoryKey") == 0, "wrong name");
+			succeed_if(strcmp (keyValue(cur), "DirectoryValue") == 0, "value not correct");
+			succeed_if(strcmp (keyComment(cur), "Directory key with hidden name") == 0, "comment not correct");
+			succeed_if(keyIsInactive (cur) == 1, "key is inactive");
+			succeed_if(keyIsString(cur) == 1, "key is not string");
+			break;
+		case 3:
+			succeed_if(strcmp (keyName(cur), "user/tests/filesys/.HiddenStringKey") == 0, "wrong name");
+			succeed_if(strcmp (keyValue(cur), "StringValue") == 0, "value not correct");
 			succeed_if(strcmp (keyComment(cur), "String key with hidden name") == 0, "comment not correct");
 			succeed_if(keyIsInactive (cur) == 1, "key is inactive");
 			succeed_if(keyIsString(cur) == 1, "key is not string");
 			succeed_if(keyGetUID(cur) == 0, "could not get uid value");
 			succeed_if(keyGetGID(cur) == 20, "could not get gid value");
 			break;
-		case 5: succeed_if(strcmp (keyValue(cur), "DirectoryValue") == 0, "value not correct");
-			succeed_if(strcmp (keyComment(cur), "Directory key with hidden name") == 0, "comment not correct");
-			succeed_if(keyIsInactive (cur) == 1, "key is inactive");
-			succeed_if(keyIsString(cur) == 1, "key is not string");
-			break;
-		case 6: succeed_if(strcmp (keyValue(cur), "BinaryValue") == 0, "value not correct");
-			succeed_if(strcmp (keyComment(cur), "Binary key with hidden name") == 0, "comment not correct");
-			succeed_if(keyIsInactive (cur) == 1, "key is inactive");
+		case 4:
+			succeed_if(strcmp (keyName(cur), "user/tests/filesys/PerfectBinaryKey") == 0, "wrong name");
+			succeed_if(strcmp (keyValue(cur), "BinaryValue") == 0, "value not correct");
+			succeed_if(strcmp (keyComment(cur), "Binary key with standard name") == 0, "comment not correct");
+			succeed_if(keyIsInactive (cur) == 0, "key is active");
 			succeed_if(keyIsBinary(cur) == 1, "key is not binary");
-			succeed_if(keyGetMode(cur) == 0440, "could not get mode");
+			succeed_if(keyGetGID(cur) == 40, "could not get gid value");
 			break;
-		        // <key type="string" basename="Ug.ly:St@ri€n.g Key" value="With a string value"><comment>string key with ugly name</comment></key>
-		case 7: succeed_if(strcmp (keyValue(cur), "With a string value") == 0, "value not correct");
-			succeed_if(strcmp (keyComment(cur), "string key with ugly name") == 0, "comment not correct");
+		case 5:
+			succeed_if(strcmp (keyName(cur), "user/tests/filesys/PerfectDirectoryKey") == 0, "wrong name");
+			succeed_if(strcmp (keyValue(cur), "DirectoryValue") == 0, "value not correct");
+			succeed_if(strcmp (keyComment(cur), "Directory key with standard name") == 0, "comment not correct");
 			succeed_if(keyIsInactive (cur) == 0, "key is active");
 			succeed_if(keyIsString(cur) == 1, "key is not string");
 			break;
-		        // <key type="directory" basename="Ug.ly:Dir@ect€ory Key"><comment>Directory with ugly name</comment></key>
-		case 8: succeed_if(strcmp (keyValue(cur), "") == 0, "value not correct");
-			succeed_if(strcmp (keyComment(cur), "Directory with ugly name") == 0, "comment not correct");
+		case 6:
+			succeed_if(strcmp (keyName(cur), "user/tests/filesys/PerfectStringKey") == 0, "wrong name");
+			succeed_if(strcmp (keyValue(cur), "StringValue") == 0, "value not correct");
+			succeed_if(strcmp (keyComment(cur), "String key with\nstandard name") == 0, "comment not correct");
 			succeed_if(keyIsInactive (cur) == 0, "key is active");
 			succeed_if(keyIsString(cur) == 1, "key is not string");
+			succeed_if(keyGetUID(cur) == 20, "could not get uid value");
 			break;
-		        // <key type="binary" basename="Ug.ly:Bin@a€ry Key"><comment>Binary key with ugly name</comment></key>
-		case 9: succeed_if(keyValue(cur) == 0, "value not correct");
+		case 7:
+			succeed_if(strcmp (keyName(cur), "user/tests/filesys/Ug.ly:Bin@a€ry Key") == 0, "wrong name");
+			succeed_if(keyValue(cur) == 0, "value not correct");
 			succeed_if(strcmp (keyComment(cur), "Binary key with ugly name") == 0, "comment not correct");
 			succeed_if(keyIsInactive (cur) == 0, "key is active");
 			succeed_if(keyIsBinary(cur) == 1, "key is not binary");
 			succeed_if(keyGetMode(cur) == 230, "could not get mode");
+		// <key type="binary" basename="Ug.ly:Bin@a€ry Key"><comment>Binary key with ugly name</comment></key>
+			break;
+		case 8:
+			succeed_if(strcmp (keyName(cur), "user/tests/filesys/Ug.ly:Dir@ect€ory Key") == 0, "wrong name");
+			succeed_if(strcmp (keyValue(cur), "") == 0, "value not correct");
+			succeed_if(strcmp (keyComment(cur), "Directory with ugly name") == 0, "comment not correct");
+			succeed_if(keyIsInactive (cur) == 0, "key is active");
+			succeed_if(keyIsString(cur) == 1, "key is not string");
+		// <key type="directory" basename="Ug.ly:Dir@ect€ory Key"><comment>Directory with ugly name</comment></key>
+			break;
+		case 9:
+			succeed_if(strcmp (keyName(cur), "user/tests/filesys/Ug.ly:St@ri€n.g Key") == 0, "wrong name");
+			succeed_if(strcmp (keyValue(cur), "With a string value") == 0, "value not correct");
+			succeed_if(strcmp (keyComment(cur), "string key with ugly name") == 0, "comment not correct");
+			succeed_if(keyIsInactive (cur) == 0, "key is active");
+			succeed_if(keyIsString(cur) == 1, "key is not string");
+		// <key type="string" basename="Ug.ly:St@ri€n.g Key" value="With a string value"><comment>string key with ugly name</comment></key>
 			break;
 
 		}
