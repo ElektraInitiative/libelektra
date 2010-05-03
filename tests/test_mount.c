@@ -395,7 +395,13 @@ void test_writedump(const char *file)
 	KDB *kdb = kdbOpen();
 	Key *mnt;
 	KeySet *conf;
-	KeySet *ks = ksNew(0);
+	KeySet *ks = ksNew(10,
+			keyNew("user/tests/dump",
+			       KEY_VALUE, "a value",
+			       KEY_META, "a", "b",
+			       KEY_END),
+			KS_END
+		);
 
 
 	printf("Test mount dump\n");

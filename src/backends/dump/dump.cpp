@@ -19,6 +19,41 @@ extern "C" {
 
 void serialize(std::ostream &os, ckdb::KeySet *ks)
 {
+	ckdb::Key *cur;
+
+	std::cout << "Starting serializing" << std::endl;
+
+	os << "ksNew " << ckdb::ksGetSize(ks) << std::endl;
+
+	ksRewind(ks);
+	while ((cur = ksNext(ks)) != 0)
+	{
+		size_t namesize = ckdb::keyGetNameSize(cur);
+		size_t valuesize = ckdb::keyGetValueSize(cur);
+		os << "keyNew " << namesize
+		   << " " << valuesize << std::endl;
+		os.write(ckdb::keyName(cur), namesize);
+		os.write(static_cast<const char*>(ckdb::keyValue(cur)), valuesize);
+		os << std::endl;
+
+		const char *metaname;
+		const char *metavalue;
+		ckdb::keyRewindMeta(cur);
+		while ((metaname = ckdb::keyNextMeta(cur)) != 0)
+		{
+			metavalue = ckdb::keyCurrentMeta(cur);
+			size_t namesize = strlen(metaname);
+			size_t valuesize = strlen(metavalue);
+
+			std::cout << valuesize << " " << metavalue << std::endl;
+
+			os << "keyMeta " << namesize
+			   << " " << valuesize << std::endl;
+			os.write (metaname, namesize);
+			os.write (metavalue, valuesize);
+			os << std::endl;
+		}
+	}
 }
 
 void unserialize(std::istream &is, ckdb::KeySet *ks)

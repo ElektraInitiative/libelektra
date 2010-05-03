@@ -33,6 +33,8 @@
 #include <fstream>
 #include <string>
 
+#include <cstring>
+
 #define BACKENDNAME "dump"
 #define BACKENDVERSION "0.0.1"
 #define DUMP_PATH "/tmp/dump.edf"
