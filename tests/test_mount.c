@@ -420,7 +420,7 @@ void test_writedump(const char *file)
 	succeed_if (kdbMount(kdb,mnt=keyNew("user/tests/dump",KEY_VALUE,"dump", KEY_END),
 		conf=ksNew (2,keyNew("system/path", KEY_VALUE, file, KEY_END), KS_END)) == 0,
 		"could not mount dump");
-	succeed_if (kdbSet(kdb,ks,keyNew("user/tests/dump",KEY_END),KDB_O_DEL) == 0, "could not set keys");
+	succeed_if (kdbSet(kdb,ks,keyNew("user/tests/dump",KEY_END),KDB_O_DEL) >= 0, "could not set keys");
 	ksDel (conf);
 	keyDel(mnt);
 
@@ -441,7 +441,7 @@ void test_readdump(const char *file)
 	succeed_if (kdbMount(kdb,mnt=keyNew("user/tests/dump",KEY_VALUE,"dump", KEY_END),
 		conf=ksNew (2,keyNew("system/path", KEY_VALUE, file, KEY_END), KS_END)) == 0,
 		"could not mount dump");
-	succeed_if (kdbGet(kdb,read,keyNew("user/tests/dump",KEY_END),KDB_O_DEL) == 0, "could not get keys");
+	succeed_if (kdbGet(kdb,read,keyNew("user/tests/dump",KEY_END),KDB_O_DEL) >= 0, "could not get keys");
 	ksDel (conf);
 	keyDel(mnt);
 

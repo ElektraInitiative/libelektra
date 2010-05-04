@@ -67,6 +67,8 @@ unsigned long kdbGetCapability(KDB *handle, const Key *where, unsigned long mask
 const char *kdbGetString(KDB *handle, const Key *where, unsigned long which);
 */
 
+int keyClearSync (Key *key);
+
 /* Some internal methods */
 int kdbiRealloc (void ** buffer, size_t size);
 void* kdbiMalloc (size_t size);

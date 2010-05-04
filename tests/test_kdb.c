@@ -410,6 +410,8 @@ void test_backend(KDB * handle, Key * root, char *fileName, KeySet *conf)
 	succeed_if( compare_keyset(ks, ks2, KDB_O_DIRONLY | KDB_O_INACTIVE, cap) == 0, "compare keyset DIRONLY failed");
 	ksDel(ks2);
 
+#if 0
+
 	printf ("Testing kdbGet with only stat\n");
 	ks2 = ksNew(0);
 	keyStat(root);
@@ -449,6 +451,8 @@ void test_backend(KDB * handle, Key * root, char *fileName, KeySet *conf)
 	ksDel(ks2);
 	ksDel(ksd);
 
+#endif
+
 	ksDel(ks);
 	remove_keys(handle, root);
 
@@ -469,16 +473,12 @@ int main(int argc, char** argv)
 
 	test_default(handle, create_root_key(""));
 
-	/*
 	test_backend(handle, create_root_key("filesys"),srcdir_file("filesys.xml"),create_conf (".kdb"));
 	test_backend(handle, create_root_key("filesys"),srcdir_file("keyset.xml"), create_conf (".kdb"));
-	*/
 	test_backend(handle, create_root_key("dump"),srcdir_file("dump.xml"),create_conf (".kdb/filesys.edf"));
-	/*
-	test_backend(handle, create_root_key("dump"),srcdir_file("keyset.xml"), create_conf (".kdb/keyset.edf"));
+	test_backend(handle, create_root_key("dump"),srcdir_file("dump_keyset.xml"), create_conf (".kdb/keyset.edf"));
 	test_backend(handle, create_root_key("fstab"),  srcdir_file("fstab.xml"),  create_conf (".kdb/fstab_kdb"));
 	test_backend(handle, create_root_key("hosts"),  srcdir_file("hosts.xml"),  create_conf (".kdb/hosts_kdb"));
-	*/
 
 	printf("\ntest_kdb RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

@@ -52,6 +52,27 @@
 #include "kdbprivate.h"
 
 
+/**Clear flags of a key.
+  *
+  * If you want to get the current flags, just call
+  * it with semiflag set to 0.
+  *
+  * @param key the key object to work with
+  * @return -1 on null key
+  * @return new flags for that key otherwise
+  */
+int keyClearSync (Key *key)
+{
+	if (!key) return -1;
+
+	keyflag_t semiflag = KEY_FLAG_SYNC;
+
+	semiflag=~semiflag;
+	key->flags &= semiflag;
+
+	return key->flags;
+}
+
 
 /**
  * Ask if key is marked for stat only.

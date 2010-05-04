@@ -111,7 +111,8 @@ void unserialize(std::istream &is, ckdb::KeySet *ks)
 		}
 		else if (command == "keyEnd")
 		{
-			ksAppendKey(ks, cur);
+			ckdb::keyClearSync(cur);
+			ckdb::ksAppendKey(ks, cur);
 			cur = 0;
 		}
 		else if (command == "ksEnd")
@@ -172,7 +173,6 @@ int kdbClose_dump(ckdb::KDB *handle)
 
 ssize_t kdbGet_dump(ckdb::KDB *handle, ckdb::KeySet *returned, const ckdb::Key *parentKey)
 {
-	ssize_t nr_keys = 0;
 	int errnosave = errno;
 
 	if (strcmp (keyName(kdbhGetMountpoint(handle)), keyName(parentKey))) return 0;
@@ -181,12 +181,11 @@ ssize_t kdbGet_dump(ckdb::KDB *handle, ckdb::KeySet *returned, const ckdb::Key *
 	unserialize (ofs, returned);
 
 	errno = errnosave;
-	return nr_keys; /* success */
+	return ksGetSize(returned); /* success */
 }
 
 ssize_t kdbSet_dump(ckdb::KDB *handle, ckdb::KeySet *returned, const ckdb::Key *parentKey)
 {
-	ssize_t nr_keys = 0;
 	int errnosave = errno;
 
 	if (strcmp (keyName(kdbhGetMountpoint(handle)), keyName(parentKey))) return 0;
@@ -195,7 +194,7 @@ ssize_t kdbSet_dump(ckdb::KDB *handle, ckdb::KeySet *returned, const ckdb::Key *
 	serialize (ifs, returned);
 
 	errno = errnosave;
-	return nr_keys;
+	return ksGetSize(returned);
 }
 
 ckdb::KDB *KDBEXPORT(dump)
