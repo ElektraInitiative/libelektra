@@ -1,0 +1,18 @@
+These document describes the API Changes from 0.7 to 0.8
+
+It was taken care that there are as little as possible,
+but two obvious API bugs had to be fixed:
+ - the ksNeedsSort() API which is a disaster
+ - the metadata which is filesys only (moved to extensions)
+
+keyNext:
+	wrong documentation (subsequent calls will still return NULL ptr)
+
+keyMeta:
+	newly introduced API
+
+
+C++ Interface
+
+always compare names (not identity) operator== affected
+
