@@ -398,11 +398,11 @@ KeySet * get_dump()
 			       KEY_END),
 			keyNew("user/tests/dump/a",
 			       KEY_VALUE, "a value",
-			       KEY_META, "a", "b",
+			       KEY_META, "ab", "cd",
 			       KEY_END),
 			keyNew("user/tests/dump/b",
 			       KEY_VALUE, "b value",
-			       KEY_META, "a", "b",
+			       KEY_META, "longer val", "here some even more with ugly €@\\1¹²³¼ chars",
 			       KEY_END),
 			KS_END
 		);
@@ -447,7 +447,7 @@ void test_readdump(const char *file)
 
 	compare_keyset (read, ks, 0, 0);
 
-	ksOutput (read, stdout, 0);
+	// ksOutput (read, stdout, KEY_VALUE);
 
 	ksDel (ks);
 	ksDel (read);

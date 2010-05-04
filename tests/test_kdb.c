@@ -34,7 +34,7 @@ void remove_keys (KDB *handle, Key *root)
 
 int test_keyCompare(Key *key1, Key *key2, unsigned int ignoreFlags)
 {
-	int	ret;
+	unsigned int	ret;
 	int	err = nbError;
 
 	ret = keyCompare(key1, key2);
@@ -341,8 +341,10 @@ void test_backend(KDB * handle, Key * root, char *fileName, KeySet *conf)
 	ks2 = ksNew(0);
 	succeed_if( kdbGet(handle, ks2, root, KDB_O_INACTIVE | options) >= 0, "kdbGet failed.");
 	succeed_if( compare_keyset(ks, ks2, 0, cap) == 0, "compare keyset with all keys failed");
+	/*
 	printf ("We got :\n"); ksGenerate (ks2, stdout, 0);
 	printf ("We want:\n"); ksGenerate (ks, stdout, 0);
+	*/
 	ksDel(ks2);
 
 	printf ("Testing kdbGet with 2 inactive keys not yet updating (fails)\n");
@@ -350,8 +352,8 @@ void test_backend(KDB * handle, Key * root, char *fileName, KeySet *conf)
 	succeed_if( kdbGet(handle, ks2, root, KDB_O_INACTIVE | options) >= 0, "kdbGet failed.");
 	succeed_if( compare_keyset(ks, ks2, 0, cap) == 0, "compare keyset with all keys failed");
 	/*
-	printf ("We got :\n"); ksGenerate (ks2, stdout, KDB_O_HEADER);
-	printf ("We want:\n"); ksGenerate (ks, stdout, KDB_O_HEADER);
+	printf ("We got :\n"); ksGenerate (ks2, stdout, 0);
+	printf ("We want:\n"); ksGenerate (ks, stdout, 0);
 	*/
 	ksDel(ks2);
 
@@ -360,8 +362,8 @@ void test_backend(KDB * handle, Key * root, char *fileName, KeySet *conf)
 	succeed_if( kdbGet(handle, ks2, root, options) >= 0, "kdbGet failed.");
 	succeed_if( compare_keyset(ks, ks2, KDB_O_INACTIVE, cap) == 0, "compare keyset INACTIVE failed");
 	/*
-	ksOutput (ks, stdout, KDB_O_HEADER);
-	ksOutput (ks2, stdout, KDB_O_HEADER);
+	printf ("We got :\n"); ksGenerate (ks2, stdout, 0);
+	printf ("We want:\n"); ksGenerate (ks, stdout, 0);
 	*/
 	ksDel(ks2);
 

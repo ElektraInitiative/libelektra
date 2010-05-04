@@ -40,8 +40,8 @@ void serialize(std::ostream &os, ckdb::KeySet *ks)
 		while ((metaname = ckdb::keyNextMeta(cur)) != 0)
 		{
 			metavalue = ckdb::keyCurrentMeta(cur);
-			size_t metanamesize = strlen(metaname);
-			size_t metavaluesize = strlen(metavalue);
+			size_t metanamesize = ckdb::kdbiStrLen(metaname);
+			size_t metavaluesize = ckdb::kdbiStrLen(metavalue);
 
 			os << "keyMeta " << metanamesize
 			   << " " << metavaluesize << std::endl;
