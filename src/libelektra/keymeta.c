@@ -115,15 +115,19 @@
  *
  * @code
 Key *key;
-const char *name;
+const Key *meta;
 
 keyRewindMeta (key);
-while ((name = keyNextMeta (key))!=0) {}
+while ((meta = keyNextMeta (key))!=0)
+{
+	printf ("name: %s, value: %s", keyName(meta), (const char*)keyValue(meta));
+}
  * @endcode
  *
  * @param key the key object to work with
  * @return 0 on success
  * @return 0 if there is no meta information for that key
+ *         (keyNextMeta() will always return 0 in that case)
  * @return -1 on NULL pointer
  * @see keyNextMeta(), keyCurrentMeta()
  * @see ksRewind() for pedant in iterator interface of KeySet
@@ -148,18 +152,21 @@ int keyRewindMeta(Key *key)
  *
  * The @p key internal cursor will be changed, so it is not const.
  *
- * @note You must not delete or change the returned buffer,
- *       use keySetMeta() if you want to delete/change it.
+ * @note That the resulting key is guaranteed to have a value, because
+ *       meta information has no binary or null pointer semantics.
+ *
+ * @note You must not delete or change the returned key,
+ *    use keySetMeta() if you want to delete or change it.
  *
  * @param key the key object to work with
- * @return a buffer to the name of the key's meta info
+ * @return a key representing meta information
  * @return 0 when the end is reached
  * @return 0 on NULL pointer
  *
  * @see ksNext() for pedant in iterator interface of KeySet
  * @ingroup keymeta
   **/
-const char *keyNextMeta(Key *key)
+const Key *keyNextMeta(Key *key)
 {
 	Key *ret;
 	if (!key) return 0;
@@ -167,8 +174,7 @@ const char *keyNextMeta(Key *key)
 
 	ret = ksNext(key->meta);
 
-	if (!ret) return 0;
-	return keyName(ret);
+	return ret;
 }
 
 /**Returns the Value of a Meta-Information which is current.
@@ -176,7 +182,7 @@ const char *keyNextMeta(Key *key)
  * The pointer is NULL if you reached the end or after
  * ksRewind().
  *
- * @note You must not delete or change the returned buffer,
+ * @note You must not delete or change the returned key,
  *    use keySetMeta() if you want to delete or change it.
  *
  * @param key the key object to work with
@@ -187,7 +193,7 @@ const char *keyNextMeta(Key *key)
  * @see ksCurrent() for pedant in iterator interface of KeySet
  * @ingroup keymeta
  **/
-const char *keyCurrentMeta(const Key *key)
+const Key *keyCurrentMeta(const Key *key)
 {
 	Key *ret;
 	if (!key) return 0;
@@ -195,11 +201,8 @@ const char *keyCurrentMeta(const Key *key)
 
 	ret = ksCurrent(key->meta);
 
-	if (!ret) return 0;
-	return keyValue(ret);
+	return ret;
 }
-
-#include "inline.c"
 
 /**Do a shallow copy of meta data from source to dest.
  *
@@ -243,7 +246,7 @@ void o(KeySet *ks)
 }
  * @endcode
  *
- * @post keyMeta(source, metaName) eq keyMeta(dest, metaName)
+ * @post keyGetMeta(source, metaName) == keyGetMeta(dest, metaName)
  *
  * @return 1 if was successfully copied
  * @return 0 if the meta data in dest was removed too
@@ -262,7 +265,7 @@ int keyCopyMeta(Key *dest, const Key *source, char *metaName)
 	if (!dest) return -1;
 	if (dest->flags & KEY_FLAG_RO) return -1;
 
-	ret = keyMetaKey (source, metaName);
+	ret = (Key*) keyGetMeta (source, metaName);
 
 	if (!ret)
 	{
@@ -314,15 +317,15 @@ int keyCopyMeta(Key *dest, const Key *source, char *metaName)
  * @code
 int f(Key *k)
 {
-	if (!strcmp(keyMeta(k, "type"), "boolean"))
+	if (!strcmp(keyValue(keyGetMeta(k, "type")), "boolean"))
 	{
 		// the type of the key is boolean
 	}
 }
  * @endcode
  *
- * keyMeta() can be used to get the value of the current value,
- * see iterator keyNextMeta(), keyCurrentMeta()
+ * @note You must not delete or change the returned key,
+ *    use keySetMeta() if you want to delete or change it.
  *
  * @param key the key object to work with
  * @param metaName the name of the meta information you want the value from
@@ -332,104 +335,27 @@ int f(Key *k)
  * @see keyGetMetaSize(), keyGetMeta(), keySetMeta()
  * @ingroup keymeta
  **/
-const char *keyMeta(const Key *key, const char* metaName)
-{
-	Key *ret = keyMetaKey (key, metaName);
-	return keyValue(ret);
-}
-
-/**
- * Returns the number of bytes needed to store the key meta value, including the
- * NULL terminator.
- *
- * It returns the correct size.
- *
- * For an empty string you need one byte to store the ending NULL.
- * For that reason 1 is returned. This is not true for binary data,
- * so there might be returned 0 too.
- *
- * A binary key has no '\\0' termination. String types have it, so to there
- * length will be added 1 to have enough space to store it.
- *
- * This method can be used with malloc() before keyGetString() or keyGetBinary()
- * is called.
- *
- * @code
-char *buffer;
-buffer = malloc (keyGetValueSize (key));
-// use this buffer to store the value (binary or string)
-// pass keyGetValueSize (key) for maxSize
- * @endcode
- *
- * @param key the key object to work with
- * @param metaName the name of the meta information of
- *                 which value the size is requested
- * @return the number of bytes needed to store the key value
- * @return 1 when there is an empty meta value
- * @return 0 when there is no meta value (deleted or never added)
- * @return -1 on null pointer
- * @see keyGetString(), keyGetBinary(), keyValue()
- * @ingroup keymeta
- */
-ssize_t keyGetMetaSize(const Key *key, const char* metaName)
+const Key *keyGetMeta(const Key *key, const char* metaName)
 {
 	Key *ret;
+	Key *search;
 
-	if (!key) return -1;
+	if (!key) return 0;
+	if (!metaName) return 0;
+	if (!key->meta) return 0;
 
-	ret = keyMetaKey (key, metaName);
-	if (!ret) return 0;
-	return keyGetValueSize(ret);
+	search = keyNew (KEY_END);
+	search->key = kdbiStrDup(metaName);
+
+	if (!search->key) return 0; /*Duplication did not work*/
+
+	ret = ksLookup(key->meta, search, 0);
+
+	keyDel (search);
+
+	return ret;
 }
 
-/**
- * Get the value of a key as a string.
- *
- * When there is no value inside the string, 1 will
- * be returned and the returnedString will be empty
- * "" to avoid programming errors that old strings are
- * shown to the user.
- *
- * For binary values see keyGetBinary() and keyIsBinary().
- *
- * @par Example:
- * @code
-Key *key = keyNew ("user/keyname", KEY_END);
-char buffer[300];
-
-if (keyGetString(key,buffer,sizeof(buffer)) == -1)
-{
-	// handle error
-} else {
-	printf ("buffer: %s\n", buffer);
-}
- * @endcode
- *
- * @param key the object to gather the value from
- * @param metaName the name of which meta information the value should be
- *                 written into returnedMetaString
- * @param returnedMetaString pre-allocated memory to store a copy of the key value
- * @param maxSize number of bytes of allocated memory in @p returnedString
- * @return the number of bytes actually copied to @p returnedString, including
- * 	final NULL
- * @return 1 if the string is empty
- * @return -1 on NULL pointer
- * @return -1 on type mismatch
- * @return maxSize is 0, too small for string or is larger than SSIZE_MAX
- * @see keyValue(), keyGetValueSize(), keySetString()
- * @see keyGetBinary() for working with binary data
- * @ingroup keymeta
- */
-ssize_t keyGetMeta(const Key *key, const char* metaName,
-	char *returnedMetaString, size_t maxSize)
-{
-	Key *ret = keyMetaKey (key, metaName);
-	if (!ret)
-	{
-		return 0;
-	}
-	return keyGetString (ret, returnedMetaString, maxSize);
-}
 
 /**Set a new Meta-Information.
  *
@@ -453,7 +379,7 @@ ssize_t keyGetMeta(const Key *key, const char* metaName,
  * @return 0 if the Meta-Information for metaName was removed
  * @return size (>0) of newMetaString if Meta-Information was
  *         successfully added
- * @see keyMeta(), keyGetMetaSize(), keyGetMeta()
+ * @see keyGetMeta()
  * @ingroup keymeta
  **/
 ssize_t keySetMeta(Key *key, const char* metaName,
@@ -636,7 +562,7 @@ uid_t keyGetUID(const Key *key)
 
 	if (!key) return (uid_t)-1;
 
-	uid = keyMeta (key, "uid");
+	uid = keyValue(keyGetMeta(key, "uid"));
 	if (!uid) return (uid_t)-1;
 	if (*uid == '\0') return (uid_t)-1;
 
@@ -721,7 +647,7 @@ gid_t keyGetGID(const Key *key)
 
 	if (!key) return (gid_t)-1;
 
-	gid = keyMeta (key, "gid");
+	gid = keyValue(keyGetMeta(key, "gid"));
 	if (!gid) return (gid_t)-1;
 	if (*gid == '\0') return (gid_t)-1;
 
@@ -850,7 +776,7 @@ mode_t keyGetMode(const Key *key)
 
 	if (!key) return (mode_t)-1;
 
-	mode = keyMeta (key, "mode");
+	mode = keyValue(keyGetMeta(key, "mode"));
 	if (!mode) return KEY_DEF_MODE;
 	if (*mode == '\0') return KEY_DEF_MODE;
 
@@ -994,7 +920,7 @@ time_t keyGetATime(const Key *key)
 
 	if (!key) return (time_t)-1;
 
-	atime = keyMeta (key, "atime");
+	atime = keyValue(keyGetMeta(key, "atime"));
 	if (!atime) return 0;
 	if (*atime == '\0') return (time_t)-1;
 
@@ -1085,7 +1011,7 @@ time_t keyGetMTime(const Key *key)
 
 	if (!key) return (time_t)-1;
 
-	mtime = keyMeta (key, "mtime");
+	mtime = keyValue(keyGetMeta(key, "mtime"));
 	if (!mtime) return 0;
 	if (*mtime == '\0') return (time_t)-1;
 
@@ -1167,7 +1093,7 @@ time_t keyGetCTime(const Key *key)
 
 	if (!key) return (time_t)-1;
 
-	ctime = keyMeta (key, "ctime");
+	ctime = keyValue(keyGetMeta(key, "ctime"));
 	if (!ctime) return 0;
 	if (*ctime == '\0') return (time_t)-1;
 

@@ -383,7 +383,7 @@ int keyIsBinary(const Key *key)
 {
 	if (!key) return -1;
 
-	return keyMeta(key, "binary") != 0;
+	return keyGetMeta(key, "binary") != 0;
 }
 
 
@@ -407,7 +407,7 @@ int keyIsString(const Key *key)
 {
 	if (!key) return -1;
 
-	return keyMeta(key, "binary") == 0;
+	return keyGetMeta(key, "binary") == 0;
 }
 
 
