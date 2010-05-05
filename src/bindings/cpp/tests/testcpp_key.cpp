@@ -366,8 +366,16 @@ void test_meta()
 	succeed_if (test.getCTime() == 200, "could not set CTime");
 	succeed_if (test.getMeta<time_t>("ctime") == 200, "could not set ctime");
 
+	/*
 	test.setMeta<int>("myint", 333);
 	succeed_if (test.getMeta<int>("myint") == 333, "could not set other meta");
+
+	test.setMeta<double>("mydouble", 333.3);
+	succeed_if (test.getMeta<double>("mydouble") == 333.3, "could not set other meta");
+
+	test.setMeta<std::string>("mystr", "str");
+	succeed_if (test.getMeta<std::string>("mystr") == "str", "could not set other meta");
+	*/
 }
 
 int main()

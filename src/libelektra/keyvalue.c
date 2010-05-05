@@ -552,7 +552,7 @@ const char *keyComment(const Key *key)
 	const char *comment;
 
 	if (!key) return 0;
-	comment = keyMeta(key, "comment");
+	comment = keyValue(keyGetMeta(key, "comment"));
 
 	if (!comment)
 	{
@@ -597,9 +597,9 @@ ssize_t keyGetCommentSize(const Key *key)
 	ssize_t size;
 	if (!key) return -1;
 
-	size = keyGetMetaSize (key, "comment");
+	size = keyGetValueSize(keyGetMeta(key, "comment"));
 
-	if (!size)
+	if (!size || size == -1)
 	{
 		/*errno=KDB_ERR_NODESC;*/
 		return 1;
@@ -646,8 +646,8 @@ ssize_t keyGetComment(const Key *key, char *returnedComment, size_t maxSize)
 	if (!returnedComment) return -1;
 	if (maxSize > SSIZE_MAX) return -1;
 
-	comment = keyMeta(key, "comment");
-	commentSize = keyGetMetaSize(key, "comment");
+	comment = keyValue(keyGetMeta(key, "comment"));
+	commentSize = keyGetValueSize(keyGetMeta(key, "comment"));
 
 	if (!comment)
 	{

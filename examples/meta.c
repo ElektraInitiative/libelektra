@@ -5,7 +5,7 @@
 int main()
 {
 	Key *k;
-	const char *name;
+	const Key* meta;
 	k = keyNew("user/metakey", KEY_END);
 	keySetMeta(k, "hello", "hello_world");
 
@@ -13,28 +13,28 @@ int main()
 	keySetMeta(k, "time", "1271234264");
 	keySetMeta(k, "empty", "");
 
-	printf ("Metadata hello has the value %s\n", keyMeta(k, "hello"));
-	printf ("Metadata mode has the value %s\n", keyMeta(k, "mode"));
-	printf ("Metadata time has the value %s\n", keyMeta(k, "time"));
-	printf ("Metadata empty has the value %s\n", keyMeta(k, "empty"));
+	printf ("Metadata hello has the value %s\n", (const char*)keyValue(keyGetMeta(k, "hello")));
+	printf ("Metadata mode has the value %s\n", (const char*)keyValue(keyGetMeta(k, "mode")));
+	printf ("Metadata time has the value %s\n", (const char*)keyValue(keyGetMeta(k, "time")));
+	printf ("Metadata empty has the value %s\n", (const char*)keyValue(keyGetMeta(k, "empty")));
 
 	keySetMeta(k, "hello", "between");
 
-	printf ("Metadata hello now has the value %s\n", keyMeta(k, "hello"));
+	printf ("Metadata hello now has the value %s\n", (const char*)keyValue(keyGetMeta(k, "hello")));
 
 	keySetMeta(k, "hello", 0);
 
-	printf ("Metadata hello now has the value %s (after dropping)\n", keyMeta(k, "hello"));
+	printf ("Metadata hello now has the value %s (after dropping)\n", (const char*)keyValue(keyGetMeta(k, "hello")));
 
 	keySetMeta(k, "hello", "goodbye");
 
-	printf ("Metadata hello now has the value %s\n", keyMeta(k, "hello"));
+	printf ("Metadata hello now has the value %s\n", (const char*)keyValue(keyGetMeta(k, "hello")));
 
 	printf ("Now we will output all meta data of the key:\n");
 	keyRewindMeta (k);
-	while ((name = keyNextMeta (k))!=0)
+	while ((meta = keyNextMeta (k))!=0)
 	{
-		printf ("%s=%s\n", name, keyCurrentMeta(k));
+		printf ("%s=%s\n", keyName(meta), (const char*)keyValue(meta));
 	}
 
 	keyDel (k);

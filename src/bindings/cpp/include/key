@@ -99,16 +99,24 @@ public:
 	{
 		T x;
 		std::string str;
-		str = std::string(ckdb::keyMeta(key, name.c_str()));
+		str = std::string(
+			static_cast<const char*>(
+				ckdb::keyValue(
+					ckdb::keyGetMeta(key, name.c_str())
+					)
+				)
+			);
 		std::istringstream ist(str);
 		ist >> x;	// convert string to type
 		return x;
 	}
 
-	size_t getMetaSize(const std::string &name)
+	/*
+	const Key *getMeta(const std::string &name)
 	{
-		return ckdb::keyGetMetaSize(key, name.c_str());
+		return ckdb::keyGetMeta(key, name.c_str());
 	}
+	*/
 
 	template <class T>
 	void setMeta(const std::string &name, T x)
@@ -185,12 +193,21 @@ private:
 /*Example for an template specialisation.
   Because mode_t is in fact an int, this would
   also change all other int types.
+  But the real problem is that it only distinguish in
+  the return type, which will not instanciate something
+  new.
 template<>
 inline mode_t Key::getMeta(const std::string &name)
 {
 	mode_t x;
 	std::string str;
-	str = std::string(ckdb::keyMeta(key, name.c_str()));
+	str = std::string(
+		static_cast<const char*>(
+			ckdb::keyValue(
+				ckdb::keyGetMeta(key, name.c_str())
+				)
+			)
+		);
 	std::istringstream ist(str);
 	ist >> std::oct >> x;	// convert string to type
 	return x;
