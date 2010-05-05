@@ -23,6 +23,8 @@ void serialize(std::ostream &os, ckdb::KeySet *ks)
 
 	os << "ksNew " << ckdb::ksGetSize(ks) << std::endl;
 
+	ckdb::KeySet *metacopies = ckdb::ksNew(0);
+
 	ksRewind(ks);
 	while ((cur = ksNext(ks)) != 0)
 	{
@@ -35,21 +37,52 @@ void serialize(std::ostream &os, ckdb::KeySet *ks)
 		os << std::endl;
 
 		const ckdb::Key *meta;
+		ckdb::Key *ret;
+		ckdb::Key *search;
 		ckdb::keyRewindMeta(cur);
 		while ((meta = ckdb::keyNextMeta(cur)) != 0)
 		{
-			size_t metanamesize = ckdb::keyGetNameSize(meta);
-			size_t metavaluesize = ckdb::keyGetValueSize(meta);
+			std::stringstream ss;
+			ss << "user/" << meta;
+			search = ckdb::keyDup (meta);
+			ckdb::keySetName (search, ss.str().c_str());
 
-			os << "keyMeta " << metanamesize
-			   << " " << metavaluesize << std::endl;
-			os.write (ckdb::keyName(meta), metanamesize);
-			os.write (static_cast<const char*>(ckdb::keyValue(meta)), metavaluesize);
-			os << std::endl;
+			ret = ksLookup(metacopies, search, 0);
+			if (!ret)
+			{
+				/* This meta key was not serialized up to now */
+				size_t metanamesize = ckdb::keyGetNameSize(meta);
+				size_t metavaluesize = ckdb::keyGetValueSize(meta);
+
+				os << "keyMeta " << metanamesize
+				   << " " << metavaluesize << std::endl;
+				os.write (ckdb::keyName(meta), metanamesize);
+				os.write (static_cast<const char*>(ckdb::keyValue(meta)), metavaluesize);
+				os << std::endl;
+
+				// TODO: needs to be vector in order to handle 0 bytes
+				std::stringstream ssv;
+				ssv << namesize << " " << metanamesize << std::endl;
+				ssv.write(ckdb::keyName(cur), namesize);
+				ssv.write (ckdb::keyName(meta), metanamesize);
+				std::cerr << ssv.str() << std::endl;
+				// ckdb::keySetRaw(search, ssv.str().c_str(), ssv.str().size()+1);
+
+				ksAppendKey(metacopies, search);
+			} else {
+				/* Meta key already serialized, write out a reference to it */
+				keyDel (search);
+
+				os << "keyMetaCopy "
+				   << static_cast<const char*>(ckdb::keyValue(ret))
+				   << std::endl;
+			}
 		}
 		os << "keyEnd" << std::endl;
 	}
 	os << "ksEnd" << std::endl;
+
+	ksDel (metacopies);
 }
 
 void unserialize(std::istream &is, ckdb::KeySet *ks)
