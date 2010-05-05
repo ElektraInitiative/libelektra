@@ -34,19 +34,17 @@ void serialize(std::ostream &os, ckdb::KeySet *ks)
 		os.write(static_cast<const char*>(ckdb::keyValue(cur)), valuesize);
 		os << std::endl;
 
-		const char *metaname;
-		const char *metavalue;
+		const ckdb::Key *meta;
 		ckdb::keyRewindMeta(cur);
-		while ((metaname = ckdb::keyNextMeta(cur)) != 0)
+		while ((meta = ckdb::keyNextMeta(cur)) != 0)
 		{
-			metavalue = ckdb::keyCurrentMeta(cur);
-			size_t metanamesize = ckdb::kdbiStrLen(metaname);
-			size_t metavaluesize = ckdb::kdbiStrLen(metavalue);
+			size_t metanamesize = ckdb::keyGetNameSize(meta);
+			size_t metavaluesize = ckdb::keyGetValueSize(meta);
 
 			os << "keyMeta " << metanamesize
 			   << " " << metavaluesize << std::endl;
-			os.write (metaname, metanamesize);
-			os.write (metavalue, metavaluesize);
+			os.write (ckdb::keyName(meta), metanamesize);
+			os.write (static_cast<const char*>(ckdb::keyValue(meta)), metavaluesize);
 			os << std::endl;
 		}
 		os << "keyEnd" << std::endl;
