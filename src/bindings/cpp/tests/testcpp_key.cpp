@@ -366,7 +366,6 @@ void test_meta()
 	succeed_if (test.getCTime() == 200, "could not set CTime");
 	succeed_if (test.getMeta<time_t>("ctime") == 200, "could not set ctime");
 
-	/*
 	test.setMeta<int>("myint", 333);
 	succeed_if (test.getMeta<int>("myint") == 333, "could not set other meta");
 
@@ -375,6 +374,32 @@ void test_meta()
 
 	test.setMeta<std::string>("mystr", "str");
 	succeed_if (test.getMeta<std::string>("mystr") == "str", "could not set other meta");
+
+	const ckdb::Key *cmeta = test.getMeta<const ckdb::Key*>("mystr");
+	succeed_if (!strcmp((const char*)ckdb::keyValue(cmeta), "str"), "could not set other meta");
+
+	const Key meta = test.getMeta<const Key>("mystr");
+	succeed_if (meta.getString() == "str", "could not set other meta");
+}
+
+void test_iter()
+{
+	cout << "testing iterating" << endl;
+
+	Key k ("user/metakey",
+		KEY_META, "a", "meta",
+		KEY_META, "b", "my",
+		KEY_META, "c", "other",
+		KEY_END);
+	Key meta;
+	Key end;
+
+	/*
+	k.rewindMeta();
+	while (!((meta = k.nextMeta()) == end))
+	{
+		cout << meta.getName() << " " << meta.getString() << endl;
+	}
 	*/
 }
 
@@ -396,6 +421,7 @@ int main()
 	test_dup();
 	test_ref();
 	test_meta();
+	test_iter();
 
 	cout << endl;
 	cout << "test_key RESULTS: " << nbTest << " test(s) done. " << nbError << " error(s)." << endl;
