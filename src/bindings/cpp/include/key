@@ -104,16 +104,24 @@ public:
 	{
 		T x;
 		std::string str;
-		str = std::string(ckdb::keyMeta(key, name.c_str()));
+		str = std::string(
+			static_cast<const char*>(
+				ckdb::keyValue(
+					ckdb::keyGetMeta(key, name.c_str())
+					)
+				)
+			);
 		std::istringstream ist(str);
 		ist >> x;	// convert string to type
 		return x;
 	}
 
-	size_t getMetaSize(const std::string &name)
+	/*
+	const Key *getMeta(const std::string &name)
 	{
-		return ckdb::keyGetMetaSize(key, name.c_str());
+		return ckdb::keyGetMeta(key, name.c_str());
 	}
+	*/
 
 	template <class T>
 	void setMeta(const std::string &name, T x)
@@ -123,6 +131,10 @@ public:
 		ost << x;	// convert type to string
 		ckdb::keySetMeta(key, name.c_str(), ost.str().c_str());
 	}
+
+	void rewindMeta () const;
+	const Key nextMeta ();
+	const Key currentMeta () const;
 
 	std::string getComment() const;
 	const char* comment() const;
@@ -187,6 +199,49 @@ private:
 	ckdb::Key * key; // holds elektra key struct
 };
 
+template<>
+inline const ckdb::Key* Key::getMeta(const std::string &name)
+{
+	return
+		ckdb::keyGetMeta(key, name.c_str());
+}
+
+template<>
+inline const Key Key::getMeta(const std::string &name)
+{
+	return
+		Key (
+			const_cast<ckdb::Key*>(
+				ckdb::keyGetMeta(key, name.c_str())
+				)
+			);
+}
+
+template<>
+inline const char* Key::getMeta(const std::string &name)
+{
+	return
+		static_cast<const char*>(
+			ckdb::keyValue(
+				ckdb::keyGetMeta(key, name.c_str())
+				)
+			);
+}
+
+template<>
+inline std::string Key::getMeta(const std::string &name)
+{
+	std::string str;
+	str = std::string(
+		static_cast<const char*>(
+			ckdb::keyValue(
+				ckdb::keyGetMeta(key, name.c_str())
+				)
+			)
+		);
+	return str;
+}
+
 /*Example for an template specialisation.
   Because mode_t is in fact an int, this would
   also change all other int types.
@@ -195,12 +250,41 @@ inline mode_t Key::getMeta(const std::string &name)
 {
 	mode_t x;
 	std::string str;
-	str = std::string(ckdb::keyMeta(key, name.c_str()));
+	str = std::string(
+		static_cast<const char*>(
+			ckdb::keyValue(
+				ckdb::keyGetMeta(key, name.c_str())
+				)
+			)
+		);
 	std::istringstream ist(str);
 	ist >> std::oct >> x;	// convert string to type
 	return x;
 }
 */
+
+inline void Key::rewindMeta() const
+{
+	ckdb::keyRewindMeta(key);
+}
+
+
+inline const Key Key::nextMeta()
+{
+	const ckdb::Key *k = ckdb::keyNextMeta(key);
+	return Key(const_cast<ckdb::Key*>(k));
+}
+
+inline const Key Key::currentMeta() const
+{
+	return Key(
+		const_cast<ckdb::Key*>(
+			ckdb::keyCurrentMeta(const_cast<const ckdb::Key*>(
+				key)
+				)
+			)
+		);
+}
 
 inline Key::Key (const char * str, va_list ap)
 {

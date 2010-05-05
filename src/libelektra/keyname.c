@@ -433,7 +433,7 @@ ssize_t keyGetFullNameSize(const Key *key)
 
 	returnedSize=kdbiStrLen(key->key);
 
-	if (keyNameIsUser(key->key) && keyMeta(key, "owner"))
+	if (keyNameIsUser(key->key) && keyGetMeta(key, "owner"))
 		returnedSize+=keyGetOwnerSize(key);
 
 	/*
@@ -492,11 +492,11 @@ ssize_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize)
 	{
 		strncpy(cursor,key->key,userSize);
 		cursor+=userSize;
-		if (keyMeta(key, "owner"))
+		if (keyGetMeta(key, "owner"))
 		{
 			*cursor=':'; ++cursor;
-			ownerSize=keyGetMetaSize(key, "owner")-1;
-			strncpy(cursor,keyMeta(key, "owner"),ownerSize);
+			ownerSize=keyGetValueSize(keyGetMeta(key, "owner"))-1;
+			strncpy(cursor,keyValue(keyGetMeta(key, "owner")),ownerSize);
 			cursor+=ownerSize;
 		}
 		strcpy(cursor,key->key+userSize);
@@ -815,7 +815,7 @@ const char *keyOwner(const Key *key)
 	const char *owner;
 
 	if (!key) return 0;
-	owner = keyMeta(key, "owner");
+	owner = keyValue(keyGetMeta(key, "owner"));
 
 	if (!owner)
 	{
@@ -860,9 +860,9 @@ ssize_t keyGetOwnerSize(const Key *key)
 	ssize_t size;
 	if (!key) return -1;
 
-	size = keyGetMetaSize (key, "owner");
+	size = keyGetValueSize(keyGetMeta (key, "owner"));
 
-	if (!size)
+	if (!size || size == -1)
 	{
 		/*errno=KDB_ERR_NODESC;*/
 		return 1;
@@ -907,8 +907,8 @@ ssize_t keyGetOwner(const Key *key, char *returnedOwner, size_t maxSize)
 	if (!returnedOwner) return -1;
 	if (maxSize > SSIZE_MAX) return -1;
 
-	owner = keyMeta(key, "owner");
-	ownerSize = keyGetMetaSize(key, "owner");
+	owner = keyValue(keyGetMeta(key, "owner"));
+	ownerSize = keyGetValueSize(keyGetMeta(key, "owner"));
 
 	if (!owner)
 	{
