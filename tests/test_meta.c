@@ -500,7 +500,7 @@ void test_copy()
 	succeed_if (key1 = keyNew(0), "could not create key");
 	succeed_if (key2 = keyNew(0), "could not create key");
 
-	succeed_if (keyCopyMeta(key2, key1, "nonexist") == 0, "could not do nothing");
+	succeed_if (keyCopyMeta(key2, key1, "nonexist") == 0, "could not do anything");
 
 	succeed_if (keyValue(keyGetMeta(key2, "nonexist")) == 0, "should not be there");
 
@@ -552,6 +552,32 @@ void test_copy()
 
 	keyDel (key1);
 	keyDel (key2);
+
+	Key *k;
+	Key *c;
+
+	k=keyNew ("user/metakey",
+		KEY_META, "t", "test1",
+		KEY_META, "a", "another",
+		KEY_META, "cya", "see the meta data later",
+		KEY_META, "mode", "0775",
+		KEY_END);
+	c=keyNew ("user/metacopy", KEY_END);
+
+	succeed_if (keyGetMeta(k, "t") != 0, "could not get meta key");
+	succeed_if (keyGetMeta(k, "a") != 0, "could not get meta key");
+
+	succeed_if (keyGetMeta(c, "t") == 0, "could get meta key not there");
+	succeed_if (keyGetMeta(c, "a") == 0, "could get meta key not there");
+
+	succeed_if (keyCopyMeta(c, k, "t") == 1, "could not copy meta data");
+	succeed_if (keyGetMeta(k, "t") == keyGetMeta(c, "t"), "not the same meta data after copy");
+
+	succeed_if (keyCopyMeta(c, k, "a") == 1, "could not copy meta data");
+	succeed_if (keyGetMeta(k, "a") == keyGetMeta(c, "a"), "not the same meta data after copy");
+
+	keyDel (k);
+	keyDel (c);
 }
 
 void test_ro()
