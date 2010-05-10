@@ -61,7 +61,7 @@ void test_ksNew()
 
 
 	succeed_if(ksGetSize(keys) == 0, "could not append 3 more keys");
-	succeed_if(ksGetAlloc(keys) == 16, "allocation size wrong");
+	succeed_if(ksGetAlloc(keys) == 15, "allocation size wrong");
 	succeed_if(ksDel(keys) == 0, "could not delete keyset");
 
 	config = ksNew (100,
@@ -71,11 +71,11 @@ void test_ksNew()
 	succeed_if(ksGetSize(config) == 3, "could not append 3 keys in keyNew");
 	succeed_if(ksGetAlloc(config) == 100, "allocation size wrong");
 	keyDel (ksPop (config));
-	succeed_if(ksGetAlloc(config) == 50, "allocation size wrong");
+	succeed_if(ksGetAlloc(config) == 49, "allocation size wrong");
 	keyDel (ksPop (config));
-	succeed_if(ksGetAlloc(config) == 25, "allocation size wrong");
+	succeed_if(ksGetAlloc(config) == 24, "allocation size wrong");
 	keyDel (ksPop (config));
-	succeed_if(ksGetAlloc(config) == 16, "allocation size wrong");
+	succeed_if(ksGetAlloc(config) == 15, "allocation size wrong");
 	succeed_if(ksDel(config) == 0, "could not delete keyset");
 
 	config = ksNew (10,
@@ -85,7 +85,7 @@ void test_ksNew()
 		keyNew ("user/sw/app/fixedConfiguration/key4", KEY_VALUE, "value3", 0),0);
 
 	succeed_if(ksGetSize(config) == 4, "could not append 5 keys in keyNew");
-	succeed_if(ksGetAlloc(config) == 16, "allocation size wrong");
+	succeed_if(ksGetAlloc(config) == 15, "allocation size wrong");
 	ksAppendKey(config, keyNew ("user/sw/app/fixedConfiguration/key6", KEY_VALUE, "value4", 0));
 
 	ksClear (ks2);
@@ -288,41 +288,66 @@ void test_ksResize()
 	KeySet *copy = ksNew (0);
 	char name[NAME_SIZE];
 
+	ks = ksNew (20,
+			keyNew("user/test01", KEY_END),
+			keyNew("user/test02", KEY_END),
+			keyNew("user/test03", KEY_END),
+			keyNew("user/test04", KEY_END),
+			keyNew("user/test05", KEY_END),
+			keyNew("user/test11", KEY_END),
+			keyNew("user/test12", KEY_END),
+			keyNew("user/test13", KEY_END),
+			keyNew("user/test14", KEY_END),
+			keyNew("user/test15", KEY_END),
+			keyNew("user/test21", KEY_END),
+			keyNew("user/test22", KEY_END),
+			keyNew("user/test23", KEY_END),
+			keyNew("user/test24", KEY_END),
+			keyNew("user/test25", KEY_END),
+			keyNew("user/test31", KEY_END),
+			keyNew("user/test32", KEY_END),
+			keyNew("user/test33", KEY_END),
+			keyNew("user/test34", KEY_END),
+			keyNew("user/test35", KEY_END),
+			KS_END);
+	succeed_if (ksGetAlloc(ks) == 20, "20 keys with alloc 20 should work");
+	ksDel (ks);
+
 	printf("Test resize of keyset\n");
 	exit_if_fail((ks=ksNew(0)) != 0, "could not create new keyset");
 	for (i=0; i< 100; i++)
 	{
 		snprintf(name, NAME_SIZE, "user/test%d", i);
 		ksAppendKey(ks, keyNew (name, KEY_END));
-		if (i >= 63) { succeed_if(ksGetAlloc(ks) == 128, "allocation size wrong"); }
-		else if (i >= 31) { succeed_if(ksGetAlloc(ks) == 64, "allocation size wrong"); }
-		else if (i >= 15) { succeed_if(ksGetAlloc(ks) == 32, "allocation size wrong"); }
-		else if (i >= 0) { succeed_if(ksGetAlloc(ks) == 16, "allocation size wrong"); }
+		if (i >= 63) { succeed_if(ksGetAlloc(ks) == 127, "allocation size wrong"); }
+		else if (i >= 31) { succeed_if(ksGetAlloc(ks) == 63, "allocation size wrong"); }
+		else if (i >= 15) { succeed_if(ksGetAlloc(ks) == 31, "allocation size wrong"); }
+		else if (i >= 0) { succeed_if(ksGetAlloc(ks) == 15, "allocation size wrong"); }
 	}
 	succeed_if(ksGetSize(ks) == 100, "could not append 100 keys");
-	succeed_if(ksGetAlloc(ks) == 128, "allocation size wrong");
+	succeed_if(ksGetAlloc(ks) == 127, "allocation size wrong");
 	for (i=100; i >= 0; i--)
 	{
 		keyDel (ksPop(ks));
-		if (i >= 64) { succeed_if(ksGetAlloc(ks) == 128, "allocation size wrong"); }
-		else if (i >= 32) { succeed_if(ksGetAlloc(ks) == 64, "allocation size wrong"); }
-		else if (i >= 16) { succeed_if(ksGetAlloc(ks) == 32, "allocation size wrong"); }
-		else if (i >= 0) { succeed_if(ksGetAlloc(ks) == 16, "allocation size wrong"); }
+		if (i >= 64) { succeed_if(ksGetAlloc(ks) == 127, "allocation size wrong"); }
+		else if (i >= 32) { succeed_if(ksGetAlloc(ks) == 63, "allocation size wrong"); }
+		else if (i >= 16) { succeed_if(ksGetAlloc(ks) == 31, "allocation size wrong"); }
+		else if (i >= 0) { succeed_if(ksGetAlloc(ks) == 15, "allocation size wrong"); }
 	}
 	succeed_if(ksGetSize(ks) == 0, "could not pop 100 keys");
-	succeed_if(ksGetAlloc(ks) == 16, "allocation size wrong");
+	succeed_if(ksGetAlloc(ks) == 15, "allocation size wrong");
 	ksDel (ks);
 	
 	exit_if_fail((ks=ksNew(0)) != 0, "could not create new keyset");
 	ksResize (ks, 100);
 	succeed_if(ksGetAlloc(ks) == 100, "allocation size wrong");
-	for (i=0; i< 99; i++)
+	for (i=0; i< 100; i++)
 	{
 		snprintf(name, NAME_SIZE, "user/test%d", i);
 		ksAppendKey(ks, keyNew (name, KEY_END));
 		succeed_if(ksGetAlloc(ks) == 100, "allocation size wrong");
 	}
-	succeed_if(ksGetSize(ks) == 99, "could not append 100 keys");
+	succeed_if(ksGetSize(ks) == 100, "could not append 100 keys");
 	succeed_if(ksGetAlloc(ks) == 100, "allocation size wrong");
 	ksDel (ks);
 
@@ -330,7 +355,7 @@ void test_ksResize()
 #include "data_keyset.c"
 
 	succeed_if(ksGetSize(ks) == 102, "Problem loading keyset with 102 keys");
-	succeed_if(ksGetAlloc(ks) == 128, "alloc size wrong");
+	succeed_if(ksGetAlloc(ks) == 102, "alloc size wrong");
 
 	ksCopy (copy, ks);
 	compare_keyset(copy, ks, 0, 0);
@@ -1722,8 +1747,8 @@ void test_ksAppend()
 			succeed_if (ksGetSize (keys) == 18, "size not correct");
 
 			succeed_if (ksGetAlloc (tmp) == 102, "alloc not correct");
-			succeed_if (ksGetAlloc (returned) == 128, "alloc not correct");
-			succeed_if (ksGetAlloc (keys) == 32, "alloc not correct");
+			succeed_if (ksGetAlloc (returned) == 127, "alloc not correct");
+			succeed_if (ksGetAlloc (keys) == 31, "alloc not correct");
 		}
 
 		ksAppend (returned, keys); /* add the keys back */

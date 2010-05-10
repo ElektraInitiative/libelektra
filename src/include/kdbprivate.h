@@ -72,6 +72,9 @@
 #endif
 
 #ifndef KEYSET_SIZE
+/*The minimal allocation size of a keyset inclusive
+  NULL byte. ksGetAlloc() will return one less because
+  it says how much can actually be stored.*/
 #define KEYSET_SIZE 16
 #endif
 

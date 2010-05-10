@@ -61,7 +61,7 @@ void test_ksNew()
 
 
 	succeed_if(ksGetSize(keys) == 0, "could not append 3 more keys");
-	succeed_if(ksGetAlloc(keys) == 16, "allocation size wrong");
+	succeed_if(ksGetAlloc(keys) == 15, "allocation size wrong");
 	succeed_if(ksDel(keys) == 0, "could not delete keyset");
 
 	config = ksNew (100,
@@ -71,21 +71,21 @@ void test_ksNew()
 	succeed_if(ksGetSize(config) == 3, "could not append 3 keys in keyNew");
 	succeed_if(ksGetAlloc(config) == 100, "allocation size wrong");
 	keyDel (ksPop (config));
-	succeed_if(ksGetAlloc(config) == 50, "allocation size wrong");
+	succeed_if(ksGetAlloc(config) == 49, "allocation size wrong");
 	keyDel (ksPop (config));
-	succeed_if(ksGetAlloc(config) == 25, "allocation size wrong");
+	succeed_if(ksGetAlloc(config) == 24, "allocation size wrong");
 	keyDel (ksPop (config));
-	succeed_if(ksGetAlloc(config) == 16, "allocation size wrong");
+	succeed_if(ksGetAlloc(config) == 15, "allocation size wrong");
 	succeed_if(ksDel(config) == 0, "could not delete keyset");
 
-	config = ksNew (10,
+	config = ksNew (17,
 		keyNew ("user/sw/app/fixedConfiguration/key1", KEY_VALUE, "value1", 0),
 		keyNew ("user/sw/app/fixedConfiguration/key2", KEY_VALUE, "value2", 0),
 		keyNew ("user/sw/app/fixedConfiguration/key3", KEY_VALUE, "value1", 0),
 		keyNew ("user/sw/app/fixedConfiguration/key4", KEY_VALUE, "value3", 0),0);
 
 	succeed_if(ksGetSize(config) == 4, "could not append 5 keys in keyNew");
-	succeed_if(ksGetAlloc(config) == 16, "allocation size wrong");
+	succeed_if(ksGetAlloc(config) == 17, "allocation size wrong");
 	ksAppendKey(config, keyNew ("user/sw/app/fixedConfiguration/key6", KEY_VALUE, "value4", 0));
 
 	ksClear (ks2);

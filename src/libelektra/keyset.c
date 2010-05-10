@@ -117,9 +117,15 @@ ksDel (keys);
  * read the next statements.
  *
  * If you want a keyset with length 15 (because you know of your
- * application that you normally need about 12 up to 14 keys), use:
+ * application that you normally need about 12 up to 15 keys), use:
  * @code
-KeySet * keys = ksNew (15, KS_END);
+KeySet * keys = ksNew (15,
+	keyNew ("user/sw/app/fixedConfiguration/key01", KEY_SWITCH_VALUE, "value01", 0),
+	keyNew ("user/sw/app/fixedConfiguration/key02", KEY_SWITCH_VALUE, "value02", 0),
+	keyNew ("user/sw/app/fixedConfiguration/key03", KEY_SWITCH_VALUE, "value03", 0),
+	// ...
+	keyNew ("user/sw/app/fixedConfiguration/key15", KEY_SWITCH_VALUE, "value15", 0),
+	KS_END);
 // work with it
 ksDel (keys);
  * @endcode
@@ -177,6 +183,7 @@ KeySet *ksVNew (size_t alloc, va_list va)
 	}
 	ksInit(keyset);
 
+	alloc ++; /* for ending null byte */
 	if (alloc < KEYSET_SIZE) keyset->alloc=KEYSET_SIZE;
 	else keyset->alloc=alloc;
 
@@ -189,7 +196,7 @@ KeySet *ksVNew (size_t alloc, va_list va)
 	keyset->array[0] = 0;
 	
 
-	if (alloc) {
+	if (alloc != 1) {
 		key = (struct _Key *) va_arg (va, struct _Key *);
 		while (key) {
 			ksAppendKey(keyset, key);
@@ -682,7 +689,7 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
 		  in position middle */
 		++ ks->size;
 		if (keyNeedRemove (toAppend)) ++ ks->rsize;
-		if (ks->size >= ks->alloc) ksResize (ks, ks->alloc * 2);
+		if (ks->size >= ks->alloc) ksResize (ks, ks->alloc * 2-1);
 		keyIncRef (toAppend);
 
 		if (insertpos == (ssize_t)ks->size-1 || insertpos == -1)
@@ -737,7 +744,7 @@ ssize_t ksAppend(KeySet *ks, const KeySet *toAppend)
 	ks->size += toAppend->size;
 	ks->rsize += toAppend->rsize;
 	while (ks->size >= toAlloc) toAlloc *= 2;
-	ksResize (ks, toAlloc);
+	ksResize (ks, toAlloc-1);
 	for (i=0; i<toAppend->size; i++) keyIncRef(toAppend->array[i]);
 	memcpy (ks->array + oldSize, toAppend->array, toAppend->size * sizeof (Key *));
 	ks->array[ks->size] = 0;
@@ -764,7 +771,7 @@ ssize_t ksAppend(KeySet *ks, const KeySet *toAppend)
 ks1=ksNew(0);
 ks2=ksNew(0);
 
-k1=keyNew(0); // ref counter 0
+k1=keyNew("user/name", KEY_END); // ref counter 0
 ksAppendKey(ks1, k1); // ref counter 1
 ksAppendKey(ks2, k1); // ref counter 2
 
@@ -792,7 +799,7 @@ Key *ksPop(KeySet *ks)
 
 	if (ks->size <= 0) return 0;
 	-- ks->size;
-	if (ks->size+1 < ks->alloc/2) ksResize (ks, ks->alloc / 2);
+	if (ks->size+1 < ks->alloc/2) ksResize (ks, ks->alloc / 2-1);
 	ret = ks->array[ks->size];
 	ks->array[ks->size] = 0;
 	keyDecRef(ret);
@@ -1749,10 +1756,13 @@ ssize_t ksGetCommonParentName(const KeySet *working,char *returnedCommonParent, 
  * @return 1 on success
  * @return 0 on nothing done because keyset would be too small.
  * @return -1 if alloc is smaller then current size of keyset.
- * @return -1 on memory error
+ * @return -1 on memory error or null ptr
  */
 int ksResize (KeySet *ks, size_t alloc)
 {
+	if (!ks) return -1;
+
+	alloc ++; /* for ending null byte */
 	if (alloc == ks->alloc) return 1;
 	if (alloc < ks->size) return 0;
 	if (alloc < KEYSET_SIZE)
@@ -1796,11 +1806,14 @@ int ksResize (KeySet *ks, size_t alloc)
 /*
  * Returns current allocation size.
  *
+ * This is the maximum size before a reallocation
+ * happens.
+ *
  * @param ks the keyset object to work with
  * @return allocated size*/
 size_t ksGetAlloc (const KeySet *ks)
 {
-	return ks->alloc;
+	return ks->alloc-1;
 }
 
 
