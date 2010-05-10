@@ -718,8 +718,11 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
  *
  * @p toAppend KeySet will be left unchanged.
  *
- * Makes the keyset dirty, see ksSort().
+ * If a key is both in toAppend and ks, the Key in ks will be
+ * overridden.
  *
+ * @post Sorted KeySet ks with all keys it had before and additionally
+ *       the keys from toAppend
  * @return the size of the KeySet after transfer
  * @return -1 on NULL pointers
  * @param ks the KeySet that will receive the keys
@@ -748,6 +751,7 @@ ssize_t ksAppend(KeySet *ks, const KeySet *toAppend)
 	for (i=0; i<toAppend->size; i++) keyIncRef(toAppend->array[i]);
 	memcpy (ks->array + oldSize, toAppend->array, toAppend->size * sizeof (Key *));
 	ks->array[ks->size] = 0;
+	ksSort(ks);
 	return ks->size;
 }
 
