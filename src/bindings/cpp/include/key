@@ -84,6 +84,7 @@ public:
 	bool operator <= (const Key& other) const {return keyCmp(key, other.key) <= 0; }
 	bool operator > (const Key& other) const {return keyCmp(key, other.key) > 0; }
 	bool operator >= (const Key& other) const {return keyCmp(key, other.key) >= 0; }
+	bool operator ! () const {return key != 0;}
 
 	std::string getName() const;
 	const char* name() const;

@@ -391,16 +391,31 @@ void test_iter()
 		KEY_META, "b", "my",
 		KEY_META, "c", "other",
 		KEY_END);
+
 	Key meta;
 	Key end;
 
-	/*
+	succeed_if (!meta, "key is a null key");
+	succeed_if (!end, "key is a null key");
+
 	k.rewindMeta();
-	while (!((meta = k.nextMeta()) == end))
+	while (!(meta = k.nextMeta()))
 	{
-		cout << meta.getName() << " " << meta.getString() << endl;
+		// cout << meta.getName() << " " << meta.getString() << endl;
 	}
-	*/
+
+	int count = 0;
+	k.rewindMeta();
+	while (!(meta = k.nextMeta())) count ++;
+	succeed_if (count == 3, "Not the correct number of meta data");
+
+	k.setMeta("d", "more");
+	k.setMeta("e", "even more");
+
+	count = 0;
+	k.rewindMeta();
+	while (!(meta = k.nextMeta())) count ++;
+	succeed_if (count == 5, "Not the correct number of meta data");
 }
 
 int main()
