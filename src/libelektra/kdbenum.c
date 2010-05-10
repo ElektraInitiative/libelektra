@@ -113,12 +113,12 @@ enum option_t
       with .).
       @see keyIsInactive() */
 	KDB_O_INACTIVE=1<<8,
-/** Set keys independent of sync status
+/** Set keys independent of sync status.
       @see keyNeedSync() */
 	KDB_O_SYNC=1<<9,
-/** Force sorting instead of sorting when needed.
-      You will get back a sorted keyset for iteration.
-      @see ksNeedSort() */
+/** This option has no effect.
+      KeySets are always sorted.
+      @deprecated dont use */
 	KDB_O_SORT=1<<10,
 /** Do not call kdbGet() for every key
       containing other keys (keyIsDir()). */

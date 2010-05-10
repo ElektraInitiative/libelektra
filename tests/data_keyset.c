@@ -1,4 +1,4 @@
-ksNew(128,
+ksNew(102,
 	keyNew ("user", KEY_DIR,0),
 	keyNew ("user/test", KEY_DIR,0),
 	keyNew ("user/test/keyset", KEY_DIR,0),

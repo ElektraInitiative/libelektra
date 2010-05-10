@@ -134,7 +134,6 @@ inline cursor_t KeySet::getCursor() const
 inline Key KeySet::next()
 {
 	ckdb::Key *k = ckdb::ksNext(ks);
-	if (k==0) throw KeySetOutOfRange();
 	return Key(k);
 }
 

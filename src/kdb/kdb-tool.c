@@ -899,9 +899,6 @@ int commandList(KDB *handle) {
 		}
 	}
 
-	/* Better give it a sort */
-	if (ksNeedSort (ks)) ksSort (ks);
-
 	if (argXML) ksToStream(ks,stdout,options);
 	else if (argShell) listAllKeysForShell(ks);
 	else if (argGenerate) ksGenerate(ks,stdout, 0);

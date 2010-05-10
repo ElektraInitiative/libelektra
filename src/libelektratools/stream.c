@@ -414,7 +414,6 @@ ssize_t ksToStream(const KeySet *ks, FILE* stream, option_t options) {
 	char *codeset = "UTF-8";
 	KeySet *cks = ksDup (ks);
 
-	if (ksNeedSort(cks)) ksSort (cks);
 	ksRewind (cks);
 
 	if (options & KDB_O_HEADER) {
@@ -614,7 +613,6 @@ int ksOutput(const KeySet *ks, FILE *stream, option_t options)
 	KeySet *cks = ksDup (ks);
 	size_t size = 0;
 
-	if (ksNeedSort(cks)) ksSort (cks);
 	ksRewind (cks);
 
 	if (KDB_O_HEADER & options) {
@@ -723,7 +721,6 @@ int ksGenerate (const KeySet *ks, FILE *stream, option_t options)
 	size_t  s = 0;
 	KeySet *cks = ksDup (ks);
 
-	if (ksNeedSort(cks)) ksSort (cks);
 	ksRewind (cks);
 
 	fprintf(stream,"ksNew( %d ,", (int)ksGetSize(cks)+10);

@@ -117,9 +117,15 @@ ksDel (keys);
  * read the next statements.
  *
  * If you want a keyset with length 15 (because you know of your
- * application that you normally need about 12 up to 14 keys), use:
+ * application that you normally need about 12 up to 15 keys), use:
  * @code
-KeySet * keys = ksNew (15, KS_END);
+KeySet * keys = ksNew (15,
+	keyNew ("user/sw/app/fixedConfiguration/key01", KEY_SWITCH_VALUE, "value01", 0),
+	keyNew ("user/sw/app/fixedConfiguration/key02", KEY_SWITCH_VALUE, "value02", 0),
+	keyNew ("user/sw/app/fixedConfiguration/key03", KEY_SWITCH_VALUE, "value03", 0),
+	// ...
+	keyNew ("user/sw/app/fixedConfiguration/key15", KEY_SWITCH_VALUE, "value15", 0),
+	KS_END);
 // work with it
 ksDel (keys);
  * @endcode
@@ -177,6 +183,7 @@ KeySet *ksVNew (size_t alloc, va_list va)
 	}
 	ksInit(keyset);
 
+	alloc ++; /* for ending null byte */
 	if (alloc < KEYSET_SIZE) keyset->alloc=KEYSET_SIZE;
 	else keyset->alloc=alloc;
 
@@ -189,7 +196,7 @@ KeySet *ksVNew (size_t alloc, va_list va)
 	keyset->array[0] = 0;
 	
 
-	if (alloc) {
+	if (alloc != 1) {
 		key = (struct _Key *) va_arg (va, struct _Key *);
 		while (key) {
 			ksAppendKey(keyset, key);
@@ -353,47 +360,14 @@ int ksClear(KeySet *ks)
 
 
 /*
- * Returns if keyset needs sort.
+ * Returns 0.
  *
- * It is very inefficient to resort the keyset every time when a
- * key or a keyset is appended, so only a flag will be set to
- * show that the keyset is not sorted any more.
+ * @deprecated dont use
  *
- * Before operations where the code depends on a sorted keyset,
- * namely in kdbGet(), kdbSet() and ksLookup(), this simple code
- * sorts when needed:
- *
- * @code
-if (ksNeedSort(ks)) ksSort(ks);
- * @endcode
- *
- * @warning ksNeedSort() does not track every change which actually
- * affects sorting: changing of names with keySetName() and
- * marking keys remove with keyRemove() won't be recognized.
- * But any ks* Method will leave the KeySet sorted or
- * set the flag.
- *
- * So if your code might rename keys or flag them to remove,
- * make sure that you use
- *
- * @code
-ksSort(ks);
- * @endcode
- *
- * somewhere afterwards before using ksLookup(). Otherwise the
- * renamed key won't be found.
- *
- * kdbSet() will have no problems with that issue, because it
- * duplicates its keysets using ksDup().
- *
- * @param ks the keyset object to work with
- * @see ksAppendKey(), ksAppend() and ksSort()
- * @return 1 if sort is needed
- *  0 if the keyset is sorted
  */
 int ksNeedSort (const KeySet *ks)
 {
-	return (ks->flags & KS_FLAG_DIRTY) == KS_FLAG_DIRTY;
+	return 0;
 }
 
 
@@ -530,28 +504,9 @@ ksLookup(ks, s, 0); // you dont need to sort ks
  * This is because the KeySet tracks if it needs to be sorted
  * and ksLookup() will sort when needed.
  *
- * @section sortiterate Sort when iterating
- *
- * Before you iterate over a keyset you have to sort it, if
- * you need it in a sorted way.
- *
- * To achieve that you can pass option_t::KDB_O_SORT to kdbGet()
- * and kdbSet(). Then you will receive a already sorted keyset
- * over which you can iterate.
- * @code
-KeySet *ks = ksNew(0);
-kdbGet(h, ks, k, KDB_O_SORT);
-// no changes to keyset allowed
-ksRewind(ks);
-// now you can iterate over a sorted keyset
- * @endcode
- *
- * Its of course also possible to use ksLookup() once, because it
- * will sort the keyset too.
- *
  * @section sortkey Sort when changing key
  *
- * @warning You should not use keySetName() or keyRemove() when a
+ * @warning You must not use keySetName() or keyRemove() when a
  * key belongs to a keyset. When you are doing this, you always need to @p manually
  * sort @p all keysets where the key was before using ksLookup() (otherwise ksLookup()
  * won't find that keys), kdbGet() or kdbSet() methods.
@@ -566,21 +521,7 @@ ksRewind(ks);
  * @note You can remember that easily that all functions which get options
  * require one of the following:
  * - that you did not manipulate a keys name or a remove status
- * - that you pass KDB_O_SORT when you know that you manipulated at least one key
  * - that you ksSort() yourself after manipulating keys
- *
- * @section dirty Dirty KeySet
- *
- * When you use ksAppend(), ksAppendKey(), ksPop() the keyset is dirty
- * afterwards, which means that it needs to be sorted. This is done
- * automatically using a ksLookup() method and in ksGet() or ksSet()
- * (All methods which accept options).
- *
- * It won't be done if you just iterate over the keyset, so you might
- * use a ksLookup() or ksSort() first. ksLookup() will be more efficient
- * in that case, because it will only sort when needed. Don't pass
- * KDB_O_NOALL (it will deactivate the sorting feature),
- * see ksLookup() for more information.
  *
  * @param ks KeySet to be sorted
  * @see kdbGet(), kdbSet(), ksLookup() for some functions which may
@@ -596,7 +537,6 @@ void ksSort(KeySet *ks)
 {
 	if (!ks) return;
 
-	ks->flags = ~KS_FLAG_DIRTY & ks->flags;
 	if (! ks->size) return;
 
 	qsort(ks->array,ks->size,sizeof(Key *),keyCmpInternal);
@@ -715,7 +655,7 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
 		  in position middle */
 		++ ks->size;
 		if (keyNeedRemove (toAppend)) ++ ks->rsize;
-		if (ks->size >= ks->alloc) ksResize (ks, ks->alloc * 2);
+		if (ks->size >= ks->alloc) ksResize (ks, ks->alloc * 2-1);
 		keyIncRef (toAppend);
 
 		if (insertpos == (ssize_t)ks->size-1 || insertpos == -1)
@@ -744,8 +684,11 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
  *
  * @p toAppend KeySet will be left unchanged.
  *
- * Makes the keyset dirty, see ksSort().
+ * If a key is both in toAppend and ks, the Key in ks will be
+ * overridden.
  *
+ * @post Sorted KeySet ks with all keys it had before and additionally
+ *       the keys from toAppend
  * @return the size of the KeySet after transfer
  * @return -1 on NULL pointers
  * @param ks the KeySet that will receive the keys
@@ -766,14 +709,14 @@ ssize_t ksAppend(KeySet *ks, const KeySet *toAppend)
 	toAlloc = ks->alloc;
 
 	if (toAppend->size <= 0) return ks->size;
-	ks->flags |= KS_FLAG_DIRTY;
 	ks->size += toAppend->size;
 	ks->rsize += toAppend->rsize;
 	while (ks->size >= toAlloc) toAlloc *= 2;
-	ksResize (ks, toAlloc);
+	ksResize (ks, toAlloc-1);
 	for (i=0; i<toAppend->size; i++) keyIncRef(toAppend->array[i]);
 	memcpy (ks->array + oldSize, toAppend->array, toAppend->size * sizeof (Key *));
 	ks->array[ks->size] = 0;
+	ksSort(ks);
 	return ks->size;
 }
 
@@ -797,7 +740,7 @@ ssize_t ksAppend(KeySet *ks, const KeySet *toAppend)
 ks1=ksNew(0);
 ks2=ksNew(0);
 
-k1=keyNew(0); // ref counter 0
+k1=keyNew("user/name", KEY_END); // ref counter 0
 ksAppendKey(ks1, k1); // ref counter 1
 ksAppendKey(ks2, k1); // ref counter 2
 
@@ -825,7 +768,7 @@ Key *ksPop(KeySet *ks)
 
 	if (ks->size <= 0) return 0;
 	-- ks->size;
-	if (ks->size+1 < ks->alloc/2) ksResize (ks, ks->alloc / 2);
+	if (ks->size+1 < ks->alloc/2) ksResize (ks, ks->alloc / 2-1);
 	ret = ks->array[ks->size];
 	ks->array[ks->size] = 0;
 	keyDecRef(ret);
@@ -1242,10 +1185,6 @@ static int keyCompareByNameOwnerCase(const void *p1, const void *p2) {
  * When KDB_O_NOALL is not set the cursor will stay untouched and all keys
  * are considered. A much more efficient binary search will be used then.
  *
- * So if you change keys, e.g. rename (keySetName()) or remove (keyRemove()) them
- * make sure to sort the keyset with ksSort(). When the keyset is dirty,
- * see ksNeedSort() it will be sorted automatically when needed.
- *
  * @subsection KDB_O_POP
  *
  * When KDB_O_POP is set the key which was found will be ksPop()ed. ksCurrent()
@@ -1301,9 +1240,6 @@ int f(KeySet *iterator, KeySet *lookup)
  * 		Only search from ksCurrent() to end of keyset, see above text.
  * 	- @p KDB_O_POP @n
  * 		Pop the key which was found.
- * 	- @p KDB_O_SORT @n
- * 		Force sorting before searching, see ksSort().
- * 		Together with KDB_O_NOALL the search will start from beginning.
  * @return pointer to the Key found, 0 otherwise
  * @return 0 on NULL pointers
  * @see ksLookupByName() to search by a name given by a string
@@ -1321,13 +1257,6 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 
 	jump = ks->rsize;
 	cursor = ksGetCursor (ks);
-
-	if (options & KDB_O_SORT)
-	{
-		ksSort (ks);
-		ksRewind (ks);
-	}
-	else if (!(options & KDB_O_NOALL) && ks->flags & KS_FLAG_DIRTY) ksSort(ks);
 
 	if (!key) return 0;
 
@@ -1450,9 +1379,6 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
  * 		Only search from ksCurrent() to end of keyset, see above text.
  * 	- @p KDB_O_POP @n
  * 		Pop the key which was found.
- * 	- @p KDB_O_SORT @n
- * 		Force sorting before searching, see ksSort().
- * 		Together with KDB_O_NOALL the search will start from beginning.
  *
  * 	Currently no options supported.
  * @return pointer to the Key found, 0 otherwise
@@ -1531,9 +1457,6 @@ while (key=ksLookupByString(ks,"my value",0)) {
  * @param options some @p KDB_O_* option bits. Currently supported:
  * 	- @p KDB_O_NOALL @n
  * 		Only search from ksCurrent() to end of keyset, see ksLookup().
- * 	- @p KDB_O_SORT @n
- * 		Force sorting before searching, see ksSort().
- * 		Together with KDB_O_NOALL the search will start from beginning.
  * 	- @p KDB_O_NOCASE @n
  * 	  Lookup ignoring case.
  * @return the Key found, 0 otherwise
@@ -1547,13 +1470,6 @@ Key *ksLookupByString(KeySet *ks, const char *value, option_t options)
 	Key *current=0;
 
 	if (!ks) return 0;
-
-	if (options & KDB_O_SORT)
-	{
-		ksSort (ks);
-		ksRewind (ks);
-	}
-	else if (!(options & KDB_O_NOALL) && ks->flags & KS_FLAG_DIRTY) ksSort(ks);
 
 	if (!(options & KDB_O_NOALL))
 	{
@@ -1602,9 +1518,6 @@ Key *ksLookupByString(KeySet *ks, const char *value, option_t options)
  * @param options some @p KDB_O_* option bits:
  * 	- @p KDB_O_NOALL @n
  * 		Only search from ksCurrent() to end of keyset, see above text.
- * 	- @p KDB_O_SORT @n
- * 		Force sorting before searching, see ksSort().
- * 		Together with KDB_O_NOALL the search will start from beginning.
  * @return the Key found, NULL otherwise
  * @return 0 on NULL pointer
  * @see ksLookupByString()
@@ -1618,13 +1531,6 @@ Key *ksLookupByBinary(KeySet *ks, const void *value, size_t size,
 	Key *current=0;
 
 	if (!ks) return 0;
-
-	if (options & KDB_O_SORT)
-	{
-		ksSort (ks);
-		ksRewind (ks);
-	}
-	else if (!(options & KDB_O_NOALL) && ks->flags & KS_FLAG_DIRTY) ksSort(ks);
 
 	if (!(options & KDB_O_NOALL))
 	{
@@ -1786,10 +1692,13 @@ ssize_t ksGetCommonParentName(const KeySet *working,char *returnedCommonParent, 
  * @return 1 on success
  * @return 0 on nothing done because keyset would be too small.
  * @return -1 if alloc is smaller then current size of keyset.
- * @return -1 on memory error
+ * @return -1 on memory error or null ptr
  */
 int ksResize (KeySet *ks, size_t alloc)
 {
+	if (!ks) return -1;
+
+	alloc ++; /* for ending null byte */
 	if (alloc == ks->alloc) return 1;
 	if (alloc < ks->size) return 0;
 	if (alloc < KEYSET_SIZE)
@@ -1833,11 +1742,14 @@ int ksResize (KeySet *ks, size_t alloc)
 /*
  * Returns current allocation size.
  *
+ * This is the maximum size before a reallocation
+ * happens.
+ *
  * @param ks the keyset object to work with
  * @return allocated size*/
 size_t ksGetAlloc (const KeySet *ks)
 {
-	return ks->alloc;
+	return ks->alloc-1;
 }
 
 
@@ -1857,7 +1769,6 @@ size_t ksGetAlloc (const KeySet *ks)
  */
 int ksInit(KeySet *ks) {
 	ks->array = 0;
-	ks->flags = KS_FLAG_DIRTY;
 
 	ks->size=0;
 	ks->rsize=0;

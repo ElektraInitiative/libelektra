@@ -19,6 +19,21 @@ class KeyInvalidName : public KeyException
 	const char* what() {return "Invalid Keyname";}
 };
 
+class KeyMetaException : public KeyException
+{
+	const char* what() {return "Key Meta Data related Exception";}
+};
+
+class KeyNoSuchMeta : public KeyMetaException
+{
+	const char* what() {return "No such meta data";}
+};
+
+class KeyBadMeta : public KeyMetaException
+{
+	const char* what() {return "Could not convert bad meta data";}
+};
+
 /**Key represents an elektra key.*/
 class Key
 {
@@ -84,6 +99,10 @@ public:
 	bool operator <= (const Key& other) const {return keyCmp(key, other.key) <= 0; }
 	bool operator > (const Key& other) const {return keyCmp(key, other.key) > 0; }
 	bool operator >= (const Key& other) const {return keyCmp(key, other.key) >= 0; }
+	/*This is for loops only. It checks if there are still more keys.
+	 * The check is not related to its name.
+	 */
+	operator bool () const {return key != 0;}
 
 	std::string getName() const;
 	const char* name() const;
@@ -104,15 +123,17 @@ public:
 	{
 		T x;
 		std::string str;
-		str = std::string(
+		const char *v = 
 			static_cast<const char*>(
 				ckdb::keyValue(
 					ckdb::keyGetMeta(key, name.c_str())
 					)
-				)
-			);
+				);
+		if (!v) throw KeyNoSuchMeta();
+		str = std::string(v);
 		std::istringstream ist(str);
 		ist >> x;	// convert string to type
+		if (ist.fail()) throw KeyBadMeta();
 		return x;
 	}
 
@@ -130,6 +151,11 @@ public:
 		std::ostringstream ost;
 		ost << x;	// convert type to string
 		ckdb::keySetMeta(key, name.c_str(), ost.str().c_str());
+	}
+
+	void copyMeta(const Key &other, const std::string &name)
+	{
+		ckdb::keyCopyMeta(key, other.key, name.c_str());
 	}
 
 	void rewindMeta () const;
@@ -199,6 +225,7 @@ private:
 	ckdb::Key * key; // holds elektra key struct
 };
 
+/*@note don't forget the const: getMeta<const ckdb::Key*>*/
 template<>
 inline const ckdb::Key* Key::getMeta(const std::string &name)
 {
@@ -232,13 +259,14 @@ template<>
 inline std::string Key::getMeta(const std::string &name)
 {
 	std::string str;
-	str = std::string(
+	const char *v = 
 		static_cast<const char*>(
 			ckdb::keyValue(
 				ckdb::keyGetMeta(key, name.c_str())
 				)
-			)
-		);
+			);
+	if (!v) throw KeyNoSuchMeta();
+	str = std::string(v);
 	return str;
 }
 
