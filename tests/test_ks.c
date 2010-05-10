@@ -171,7 +171,7 @@ void test_ksEmpty()
 void test_ksReference()
 {
 	KeySet *ks=0;
-	KeySet *ks1, *ks2;
+	KeySet *ks1;
 	Key *k1, *k2;
 	KeySet *kss[NR_KEYSETS];
 	int i;
@@ -236,13 +236,12 @@ void test_ksReference()
 	ksDel (ks1); // k1 and k2 deleted
 
 	ks1=ksNew(0);
-	ks2=ksNew(0);
 	k1=keyNew("user/k1", KEY_END);
 	succeed_if (keyGetRef(k1) == 0, "reference counter of new inserted key");
 	succeed_if (ksAppendKey(ks1, k1) == 1, "appending did not work");
 	succeed_if (ksGetSize(ks1) == 1, "size did not match");
 	succeed_if (keyGetRef(k1) == 1, "reference counter of new inserted key");
-	succeed_if (ksAppendKey(ks2, k1) == 1, "appending the very same key");
+	succeed_if (ksAppendKey(ks1, k1) == 1, "appending the very same key");
 	succeed_if (ksGetSize(ks1) == 1, "size did not match");
 	succeed_if (keyGetRef(k1) == 1, "reference counter of new inserted key should stay the same");
 
@@ -251,12 +250,11 @@ void test_ksReference()
 	succeed_if (keyDel (k1) == 0, "keyDel did not work");
 
 	succeed_if (ksDel (ks1) == 0, "could not delete key");
-	succeed_if (ksDel (ks2) == 0, "could not delete key");
 
 
 	kss[0]=ksNew(5,
-		k1=keyNew ("user/key", KEY_END),
-		k2=keyNew ("system/key", KEY_END),
+		k1=keyNew ("system/key", KEY_END),
+		k2=keyNew ("user/key", KEY_END),
 		KS_END);
 	for (i=1; i< NR_KEYSETS; i++)
 	{
@@ -264,7 +262,8 @@ void test_ksReference()
 		succeed_if (keyGetRef(k2) == 1, "reference counter");
 		kss[i] = ksDup (kss[i-1]);
 		succeed_if (keyGetRef(k2) == 2, "reference counter");
-		ksPop (kss[i-1]);
+		succeed_if (!strcmp(keyName(ksPop (kss[i-1])), "user/key"),
+				"were not in order");
 		succeed_if (keyGetRef(k2) == 1, "reference counter");
 		succeed_if (keyDel(k2) == 1, "delete key");
 		succeed_if (keyGetRef(k2) == 1, "reference counter");
@@ -280,17 +279,21 @@ void test_ksReference()
 	}
 }
 
+#define NAME_SIZE 250
+
 void test_ksResize()
 {
 	int i;
 	KeySet *ks=0;
 	KeySet *copy = ksNew (0);
+	char name[NAME_SIZE];
 
 	printf("Test resize of keyset\n");
 	exit_if_fail((ks=ksNew(0)) != 0, "could not create new keyset");
 	for (i=0; i< 100; i++)
 	{
-		ksAppendKey(ks, keyNew (KEY_END));
+		snprintf(name, NAME_SIZE, "user/test%d", i);
+		ksAppendKey(ks, keyNew (name, KEY_END));
 		if (i >= 63) { succeed_if(ksGetAlloc(ks) == 128, "allocation size wrong"); }
 		else if (i >= 31) { succeed_if(ksGetAlloc(ks) == 64, "allocation size wrong"); }
 		else if (i >= 15) { succeed_if(ksGetAlloc(ks) == 32, "allocation size wrong"); }
@@ -311,14 +314,16 @@ void test_ksResize()
 	ksDel (ks);
 	
 	exit_if_fail((ks=ksNew(0)) != 0, "could not create new keyset");
-	ksResize (ks, 101);
-	succeed_if(ksGetAlloc(ks) == 101, "allocation size wrong");
-	for (i=0; i< 100; i++)
+	ksResize (ks, 100);
+	succeed_if(ksGetAlloc(ks) == 100, "allocation size wrong");
+	for (i=0; i< 99; i++)
 	{
-		ksAppendKey(ks, keyNew (KEY_END));
+		snprintf(name, NAME_SIZE, "user/test%d", i);
+		ksAppendKey(ks, keyNew (name, KEY_END));
+		succeed_if(ksGetAlloc(ks) == 100, "allocation size wrong");
 	}
-	succeed_if(ksGetSize(ks) == 100, "could not append 100 keys");
-	succeed_if(ksGetAlloc(ks) == 101, "allocation size wrong");
+	succeed_if(ksGetSize(ks) == 99, "could not append 100 keys");
+	succeed_if(ksGetAlloc(ks) == 100, "allocation size wrong");
 	ksDel (ks);
 
 	ks =
@@ -353,7 +358,7 @@ void test_ksDup()
 	ksDel (other);
 	ksDel (ks);
 
-	exit_if_fail((ks=ksNew(1, keyNew(0), 0)) != 0, "could not create new keyset");
+	exit_if_fail((ks=ksNew(1, keyNew("user/anything", KEY_END), KS_END)) != 0, "could not create new keyset");
 	other=ksDup(ks);
 	succeed_if(other, "other creation failed");
 	succeed_if(ksGetSize(ks) == 1, "ks has no keys");
@@ -361,10 +366,10 @@ void test_ksDup()
 	ksDel (other);
 	ksDel (ks);
 
-	exit_if_fail((ks=ksNew(1, keyNew(0), 0)) != 0, "could not create new keyset");
-	succeed_if (ksAppendKey(ks,keyNew("user/test", KEY_END)) == 2, "could not append a key");
-	succeed_if (ksAppendKey(ks,keyNew(0)) == 3, "could not append a key");
-	succeed_if (ksAppendKey(ks,keyNew(0)) == 4, "could not append a key");
+	exit_if_fail((ks=ksNew(1, keyNew("system/some", KEY_END), KS_END)) != 0, "could not create new keyset");
+	succeed_if (ksAppendKey(ks,keyNew("user/test1", KEY_END)) == 2, "could not append a key");
+	succeed_if (ksAppendKey(ks,keyNew("user/test2", KEY_END)) == 3, "could not append a key");
+	succeed_if (ksAppendKey(ks,keyNew("user/test3", KEY_END)) == 4, "could not append a key");
 	other=ksDup(ks);
 	succeed_if(other, "other creation failed");
 	succeed_if(ksGetSize(ks) == 4, "ks has no keys");
@@ -372,10 +377,10 @@ void test_ksDup()
 	ksDel (other);
 	ksDel (ks);
 	
-	exit_if_fail((ks=ksNew(1, keyNew(0), 0)) != 0, "could not create new keyset");
-	succeed_if (ksAppendKey(ks,keyNew("user/test", KEY_END)) == 2, "could not append a key");
-	succeed_if (ksAppendKey(ks,keyNew(0)) == 3, "could not append a key");
-	succeed_if (ksAppendKey(ks,keyNew(0)) == 4, "could not append a key");
+	exit_if_fail((ks=ksNew(1, keyNew("user/any123", KEY_END), KS_END)) != 0, "could not create new keyset");
+	succeed_if (ksAppendKey(ks,keyNew("user/test1", KEY_END)) == 2, "could not append a key");
+	succeed_if (ksAppendKey(ks,keyNew("user/test2", KEY_END)) == 3, "could not append a key");
+	succeed_if (ksAppendKey(ks,keyNew("user/test3", KEY_END)) == 4, "could not append a key");
 	other=ksDup(ks);
 	succeed_if(other, "other creation failed");
 	keyDel (ksPop (other));
@@ -384,14 +389,14 @@ void test_ksDup()
 	ksDel (other);
 	ksDel (ks);
 	
-	exit_if_fail((ks=ksNew(1, keyNew(0), 0)) != 0, "could not create new keyset");
-	succeed_if (ksAppendKey(ks,keyNew("user/test", KEY_END)) == 2, "could not append a key");
-	succeed_if (ksAppendKey(ks,keyNew(0)) == 3, "could not append a key");
-	succeed_if (ksAppendKey(ks,keyNew(0)) == 4, "could not append a key");
+	exit_if_fail((ks=ksNew(1, keyNew("system/test", KEY_END), KS_END)) != 0, "could not create new keyset");
+	succeed_if (ksAppendKey(ks,keyNew("user/test1", KEY_END)) == 2, "could not append a key");
+	succeed_if (ksAppendKey(ks,keyNew("user/test2", KEY_END)) == 3, "could not append a key");
+	succeed_if (ksAppendKey(ks,keyNew("user/test3", KEY_END)) == 4, "could not append a key");
 	other=ksDup(ks);
 	succeed_if(other, "other creation failed");
 	keyDel(ksPop (other));
-	succeed_if (ksAppendKey(ks,keyNew(0)) == 5, "could not append a key");
+	succeed_if (ksAppendKey(ks,keyNew("user/test4", KEY_END)) == 5, "could not append a key");
 	succeed_if(ksGetSize(ks) == 5, "ks has no keys");
 	succeed_if(ksGetSize(other) == 3, "other has no keys");
 	ksDel (other);
@@ -415,7 +420,7 @@ void test_ksCopy()
 	ksDel (ks);
 
 	other = ksNew(0);
-	exit_if_fail((ks=ksNew(1, keyNew(0), 0)) != 0, "could not create new keyset");
+	exit_if_fail((ks=ksNew(1, keyNew("user/test3", KEY_END), 0)) != 0, "could not create new keyset");
 	succeed_if(ksCopy(other,ks)==1, "Copy failed");
 	succeed_if(other, "other creation failed");
 	succeed_if(ksGetSize(ks) == 1, "ks has no keys");
@@ -424,10 +429,10 @@ void test_ksCopy()
 	ksDel (ks);
 
 	other = ksNew(0);
-	exit_if_fail((ks=ksNew(1, keyNew(0), 0)) != 0, "could not create new keyset");
-	succeed_if (ksAppendKey(ks,keyNew("user/test", KEY_END)) == 2, "could not append a key");
-	succeed_if (ksAppendKey(ks,keyNew(0)) == 3, "could not append a key");
-	succeed_if (ksAppendKey(ks,keyNew(0)) == 4, "could not append a key");
+	exit_if_fail((ks=ksNew(1, keyNew("user/testro", KEY_END), 0)) != 0, "could not create new keyset");
+	succeed_if (ksAppendKey(ks,keyNew("user/test1", KEY_END)) == 2, "could not append a key");
+	succeed_if (ksAppendKey(ks,keyNew("user/test2", KEY_END)) == 3, "could not append a key");
+	succeed_if (ksAppendKey(ks,keyNew("user/test3", KEY_END)) == 4, "could not append a key");
 	succeed_if(ksCopy(other,ks)==1, "Copy failed");
 	succeed_if(other, "other creation failed");
 	succeed_if(ksGetSize(ks) == 4, "ks has no keys");
@@ -436,10 +441,10 @@ void test_ksCopy()
 	ksDel (ks);
 
 	other = ksNew(0);
-	exit_if_fail((ks=ksNew(1, keyNew(0), 0)) != 0, "could not create new keyset");
-	succeed_if (ksAppendKey(ks,keyNew("user/test", KEY_END)) == 2, "could not append a key");
-	succeed_if (ksAppendKey(ks,keyNew(0)) == 3, "could not append a key");
-	succeed_if (ksAppendKey(ks,keyNew(0)) == 4, "could not append a key");
+	exit_if_fail((ks=ksNew(1, keyNew("system/test", KEY_END), 0)) != 0, "could not create new keyset");
+	succeed_if (ksAppendKey(ks,keyNew("user/test1", KEY_END)) == 2, "could not append a key");
+	succeed_if (ksAppendKey(ks,keyNew("user/test2", KEY_END)) == 3, "could not append a key");
+	succeed_if (ksAppendKey(ks,keyNew("user/test3", KEY_END)) == 4, "could not append a key");
 	succeed_if(ksCopy(other,ks)==1, "Copy failed");
 	succeed_if(other, "other creation failed");
 	keyDel (ksPop (other));
@@ -449,28 +454,28 @@ void test_ksCopy()
 	ksDel (ks);
 
 	other = ksNew(0);
-	exit_if_fail((ks=ksNew(1, keyNew(0), 0)) != 0, "could not create new keyset");
-	succeed_if (ksAppendKey(ks,keyNew("user/test", KEY_END)) == 2, "could not append a key");
-	succeed_if (ksAppendKey(ks,keyNew(0)) == 3, "could not append a key");
-	succeed_if (ksAppendKey(ks,keyNew(0)) == 4, "could not append a key");
+	exit_if_fail((ks=ksNew(1, keyNew("user/mykeys", KEY_END), 0)) != 0, "could not create new keyset");
+	succeed_if (ksAppendKey(ks,keyNew("user/test1", KEY_END)) == 2, "could not append a key");
+	succeed_if (ksAppendKey(ks,keyNew("user/test2", KEY_END)) == 3, "could not append a key");
+	succeed_if (ksAppendKey(ks,keyNew("user/test3", KEY_END)) == 4, "could not append a key");
 	succeed_if(ksCopy(other,ks)==1, "Copy failed");
 	succeed_if(other, "other creation failed");
 	keyDel(ksPop (other));
-	succeed_if (ksAppendKey(ks,keyNew(0)) == 5, "could not append a key");
+	succeed_if (ksAppendKey(ks,keyNew("user/test", KEY_END)) == 5, "could not append a key");
 	succeed_if(ksGetSize(ks) == 5, "ks has no keys");
 	succeed_if(ksGetSize(other) == 3, "other has no keys");
 	ksDel (other);
 	ksDel (ks);
 
 	other = ksNew(0);
-	exit_if_fail((ks=ksNew(1, keyNew(0), 0)) != 0, "could not create new keyset");
-	succeed_if (ksAppendKey(ks,keyNew("user/test", KEY_END)) == 2, "could not append a key");
-	succeed_if (ksAppendKey(ks,keyNew(0)) == 3, "could not append a key");
-	succeed_if (ksAppendKey(ks,keyNew(0)) == 4, "could not append a key");
+	exit_if_fail((ks=ksNew(1, keyNew("user/a/b/c", KEY_END), 0)) != 0, "could not create new keyset");
+	succeed_if (ksAppendKey(ks,keyNew("user/a/test", KEY_END)) == 2, "could not append a key");
+	succeed_if (ksAppendKey(ks,keyNew("user/a/b/test", KEY_END)) == 3, "could not append a key");
+	succeed_if (ksAppendKey(ks,keyNew("user/a/b/ctest", KEY_END)) == 4, "could not append a key");
 	succeed_if(ksCopy(other,ks)==1, "Copy failed");
 	succeed_if(other, "other creation failed");
 	keyDel(ksPop (other));
-	succeed_if (ksAppendKey(ks,keyNew(0)) == 5, "could not append a key");
+	succeed_if (ksAppendKey(ks,keyNew("user/test", KEY_END)) == 5, "could not append a key");
 	succeed_if(ksGetSize(ks) == 5, "ks has no keys");
 	succeed_if(ksGetSize(other) == 3, "other has no keys");
 
@@ -677,17 +682,19 @@ void test_ksSort()
 	ks=ksNew(0);
 	ksAppendKey(ks, keyNew("user/a", KEY_END));
 	ksAppendKey(ks, keyNew("user/e", KEY_END));
-	ksAppendKey(ks, keyNew("user/b", KEY_END));
-	ksAppendKey(ks, keyNew("user/b", KEY_END));
+	ksAppendKey(ks, keyNew("user/b1", KEY_END));
+	ksAppendKey(ks, keyNew("user/h2", KEY_END));
+	ksAppendKey(ks, keyNew("user/b2", KEY_END));
 	ksAppendKey(ks, keyNew("user/d", KEY_END));
-	ksAppendKey(ks, keyNew("user/c", KEY_END));
-	ksAppendKey(ks, keyNew("user/c", KEY_END));
+	ksAppendKey(ks, keyNew("user/a", KEY_END));
 	ksAppendKey(ks, keyNew("user/g", KEY_END));
-	ksAppendKey(ks, keyNew("user/h", KEY_END));
-	ksAppendKey(ks, keyNew("user/h", KEY_END));
+	ksAppendKey(ks, keyNew("user/g", KEY_END));
+	ksAppendKey(ks, keyNew("user/c2", KEY_END));
+	ksAppendKey(ks, keyNew("user/c1", KEY_END));
+	ksAppendKey(ks, keyNew("user/g", KEY_END));
+	ksAppendKey(ks, keyNew("user/h1", KEY_END));
 	ksAppendKey(ks, keyNew("user/f", KEY_END));
 
-	ksSort (ks);
 	ksRewind (ks);
 	for (i=0; (key=ksNext(ks)) != 0; i++)
 	{
@@ -696,16 +703,16 @@ void test_ksSort()
 		case 0:	succeed_if (strcmp (keyName (key), "user/a") == 0, "wrong name found.");
 			succeed_if (keyNeedRemove (key) == 0, "wrong removed key information");
 			break;
-		case 1:	succeed_if (strcmp (keyName (key), "user/b") == 0, "wrong name found.");
+		case 1:	succeed_if (strcmp (keyName (key), "user/b1") == 0, "wrong name found.");
 			succeed_if (keyNeedRemove (key) == 0, "wrong removed key information");
 			break;
-		case 2:	succeed_if (strcmp (keyName (key), "user/b") == 0, "wrong name found.");
+		case 2:	succeed_if (strcmp (keyName (key), "user/b2") == 0, "wrong name found.");
 			succeed_if (keyNeedRemove (key) == 0, "wrong removed key information");
 			break;
-		case 3:	succeed_if (strcmp (keyName (key), "user/c") == 0, "wrong name found.");
+		case 3:	succeed_if (strcmp (keyName (key), "user/c1") == 0, "wrong name found.");
 			succeed_if (keyNeedRemove (key) == 0, "wrong removed key information");
 			break;
-		case 4:	succeed_if (strcmp (keyName (key), "user/c") == 0, "wrong name found.");
+		case 4:	succeed_if (strcmp (keyName (key), "user/c2") == 0, "wrong name found.");
 			succeed_if (keyNeedRemove (key) == 0, "wrong removed key information");
 			break;
 		case 5:	succeed_if (strcmp (keyName (key), "user/d") == 0, "wrong name found.");
@@ -720,10 +727,10 @@ void test_ksSort()
 		case 8:	succeed_if (strcmp (keyName (key), "user/g") == 0, "wrong name found.");
 			succeed_if (keyNeedRemove (key) == 0, "wrong removed key information");
 			break;
-		case 9:	succeed_if (strcmp (keyName (key), "user/h") == 0, "wrong name found.");
+		case 9:	succeed_if (strcmp (keyName (key), "user/h1") == 0, "wrong name found.");
 			succeed_if (keyNeedRemove (key) == 0, "wrong removed key information");
 			break;
-		case 10:succeed_if (strcmp (keyName (key), "user/h") == 0, "wrong name found.");
+		case 10:succeed_if (strcmp (keyName (key), "user/h2") == 0, "wrong name found.");
 			succeed_if (keyNeedRemove (key) == 0, "wrong removed key information");
 			break;
 		default:succeed_if (0, "should not reach");
@@ -1129,13 +1136,12 @@ void test_ksLookupName()
 	KeySet *ks= ksNew(0);
 	
 	printf ("Test lookup functions\n");
-	succeed_if (ksNeedSort (ks) == 1, "sort state not correct");
 
 	ksAppendKey(ks, keyNew("user/domain/key",  KEY_VALUE, "domainvalue",
 		KEY_OWNER, "markus", KEY_END));
 	ksAppendKey(ks, keyNew("user/single/key",  KEY_VALUE, "singlevalue", KEY_END));
 	ksAppendKey(ks, keyNew("user/named/key",   KEY_VALUE, "myvalue", KEY_END));
-	ksAppendKey(ks, keyNew("system/named/key", KEY_VALUE, "syskey",  KEY_END));
+	ksAppendKey(ks, keyNew("system/named/syskey", KEY_VALUE, "syskey",  KEY_END));
 	ksAppendKey(ks, keyNew("system/sysonly/key", KEY_VALUE, "sysonlykey",  KEY_END));
 	ksAppendKey(ks, keyNew("user/named/bin", KEY_BINARY, KEY_SIZE, 10,
 		KEY_VALUE, "binary\1\2data", KEY_END));
@@ -1145,14 +1151,10 @@ void test_ksLookupName()
 		KEY_VALUE, "syskey", KEY_END));
 	succeed_if (ksGetSize(ks) == 8, "could not append all keys");
 
-	succeed_if (ksNeedSort (ks) == 1, "sort state not correct");
-
 	// a positive testcase
 	found = ksLookupByName (ks, "user/named/key", 0);
 	succeed_if (ksCurrent(ks) == found, "current not set correctly");
-	succeed_if (ksNeedSort (ks) == 0, "sort state not correct");
 	ksAppendKey(ks, keyNew("user/single/key",  KEY_VALUE, "singlevalue", KEY_END));
-	succeed_if (ksNeedSort (ks) == 1, "sort state not correct");
 
 	succeed_if (found != 0, "did not found correct name");
 	succeed_if (ksCurrent(ks) == found, "current not set correctly");
@@ -1161,7 +1163,6 @@ void test_ksLookupName()
 	
 	// here you can't find the keys
 	succeed_if (ksLookupByName (ks, "named/key", 0) == 0, "not valid keyname");
-	succeed_if (ksNeedSort (ks) == 0, "sort state not correct");
 	succeed_if (ksLookupByName (ks, "u/named/key", 0) == 0, "not valid keyname");
 	succeed_if (ksLookupByName (ks, "usea/named/key", 0) == 0, "not valid keyname");
 	succeed_if (ksLookupByName (ks, " user/named/key", 0) == 0, "found key with bad prefix");
@@ -1354,6 +1355,7 @@ void test_ksLookupNameAll()
 	succeed_if (found != 0, "could not find key");
 	succeed_if (strcmp (keyName(found), "user/e") == 0, "name not correct in found key");
 
+	ksRewind(ks);
 	found = ksLookupByName (ks, "user/00", KDB_O_NOALL);
 	succeed_if (found != 0, "could not find key");
 	succeed_if (keyIsDir (found) == 1, "should be dir");
@@ -1390,6 +1392,7 @@ void test_ksLookupNameAll()
 	succeed_if (found != 0, "could not find key");
 	succeed_if (strcmp (keyName(found), "user/e") == 0, "name not correct in found key");
 
+	ksRewind(ks);
 	found = ksLookupByName (ks, "user/00", KDB_O_NOALL | KDB_O_NOCASE);
 	succeed_if (ksCurrent(ks) == found, "current not set correctly");
 	succeed_if (found != 0, "could not find key");
@@ -1419,19 +1422,11 @@ void test_ksLookupNameAll()
 	succeed_if (strcmp (keyName(found), "user/02/f") == 0, "name not correct in found key");
 
 	cursor = ksGetCursor (ks);
-	found = ksLookupByName (ks, "user/a", KDB_O_NOALL | KDB_O_NOCASE);
+	found = ksLookupByName (ks, "user/02", KDB_O_NOALL | KDB_O_NOCASE);
 	succeed_if (ksGetCursor(ks) == cursor, "cursor should stay as is if not found");
 	succeed_if (found == 0, "should not find");
 
 	ksRewind(ks);
-	found = ksLookupByName (ks, "user/a", KDB_O_NOALL | KDB_O_WITHOWNER | KDB_O_NOCASE);
-	succeed_if (found != 0, "could not find key");
-	succeed_if (strcmp (keyName(found), "user/a") == 0, "name not correct in found key");
-
-	found = ksLookupByName (ks, "user/E", KDB_O_NOALL | KDB_O_WITHOWNER | KDB_O_NOCASE);
-	succeed_if (found != 0, "could not find key");
-	succeed_if (strcmp (keyName(found), "user/e") == 0, "name not correct in found key");
-
 	found = ksLookupByName (ks, "user/00", KDB_O_NOALL | KDB_O_WITHOWNER | KDB_O_NOCASE);
 	succeed_if (found != 0, "could not find key");
 	succeed_if (keyIsDir (found) == 1, "should be dir");
@@ -1450,6 +1445,15 @@ void test_ksLookupNameAll()
 	succeed_if (found != 0, "could not find key");
 	succeed_if (keyIsDir (found) == 1, "should be dir");
 	succeed_if (strcmp (keyName(found), "user/02") == 0, "name not correct in found key");
+
+	found = ksLookupByName (ks, "user/a", KDB_O_NOALL | KDB_O_WITHOWNER | KDB_O_NOCASE);
+	succeed_if (found != 0, "could not find key");
+	succeed_if (strcmp (keyName(found), "user/a") == 0, "name not correct in found key");
+
+	found = ksLookupByName (ks, "user/E", KDB_O_NOALL | KDB_O_WITHOWNER | KDB_O_NOCASE);
+	succeed_if (found != 0, "could not find key");
+	succeed_if (strcmp (keyName(found), "user/e") == 0, "name not correct in found key");
+
 
 	found = ksLookupByName (ks, "user:notvalid/02/F", KDB_O_NOALL | KDB_O_WITHOWNER | KDB_O_NOCASE);
 	succeed_if (found == 0, "should not find key");
@@ -1547,7 +1551,7 @@ void test_ksExample()
 	KeySet *ks=ksNew(0);
 	Key * key;
 
-	ksAppendKey(ks,keyNew(0));       // an empty key
+	ksAppendKey(ks,keyNew("user/test", KEY_END));       // an empty key
 		
 	ksAppendKey(ks,keyNew("user/sw",              // the name of the key
 		KEY_END));                      // no more args
@@ -1583,11 +1587,28 @@ void test_ksExample()
 	// end of example
 
 	key=ksNext(ks);
-	succeed_if(key != NULL, "keyNew: Unable to create a new empty key");
-	
-	key=ksNext(ks);
-	succeed_if(key != NULL, "keyNew: Unable to create a key with name");
+	succeed_if(key != NULL, "no next key");
 	succeed_if(strcmp(keyName(key), "user/sw") == 0, "keyNew: Key's name setted incorrectly");
+
+	key=ksNext(ks);
+	succeed_if(key != NULL, "no next key");
+	succeed_if(strcmp(keyName(key), "user/test") == 0, "keyNew: Key's name setted incorrectly");
+
+	key=ksNext(ks);
+	succeed_if(key != NULL, "no next key");
+	succeed_if(strcmp(keyName(key), "user/tmp/ex1") == 0, "keyNew: Key's name setted incorrectly");
+
+	key=ksNext(ks);
+	succeed_if(key != NULL, "no next key");
+	succeed_if(strcmp(keyName(key), "user/tmp/ex2") == 0, "keyNew: Key's name setted incorrectly");
+
+	key=ksNext(ks);
+	succeed_if(key != NULL, "no next key");
+	succeed_if(strcmp(keyName(key), "user/tmp/ex4") == 0, "keyNew: Key's name setted incorrectly");
+
+	key=ksNext(ks);
+	succeed_if(key != NULL, "no next key");
+	succeed_if(strcmp(keyName(key), "user/tmp/ex5") == 0, "keyNew: Key's name setted incorrectly");
 
 	ksDel(ks);
 }
@@ -1938,13 +1959,11 @@ void test_ksLookupPop()
 
 	KeySet *ks= ksNew(0);
 
-	succeed_if (ksNeedSort (ks) == 1, "sort state not correct");
-
 	ksAppendKey(ks, keyNew("user/domain/key",  KEY_VALUE, "domainvalue",
 		KEY_OWNER, "markus", KEY_END));
 	ksAppendKey(ks, keyNew("user/single/key",  KEY_VALUE, "singlevalue", KEY_END));
 	ksAppendKey(ks, keyNew("user/named/key",   KEY_VALUE, "myvalue", KEY_END));
-	ksAppendKey(ks, keyNew("system/named/key", KEY_VALUE, "syskey",  KEY_END));
+	ksAppendKey(ks, keyNew("system/named/skey", KEY_VALUE, "syskey",  KEY_END));
 	ksAppendKey(ks, keyNew("system/sysonly/key", KEY_VALUE, "sysonlykey",  KEY_END));
 	ksAppendKey(ks, keyNew("user/named/bin", KEY_BINARY, KEY_SIZE, 10,
 		KEY_VALUE, "binary\1\2data", KEY_END));
@@ -1954,25 +1973,21 @@ void test_ksLookupPop()
 		KEY_VALUE, "syskey", KEY_END));
 	succeed_if (ksGetSize(ks) == 8, "could not append all keys");
 
-	succeed_if (ksNeedSort (ks) == 1, "sort state not correct");
-
 	// a positive testcase
 	found = ksLookupByName (ks, "user/named/key", KDB_O_POP);
 	succeed_if (ksGetSize(ks) == 7, "did not pop key");
 	succeed_if (ksCurrent(ks) == 0, "current not set correctly");
-	succeed_if (ksNeedSort (ks) == 0, "sort state not correct");
-	ksAppendKey(ks, keyNew("user/single/key",  KEY_VALUE, "singlevalue", KEY_END));
-	succeed_if (ksGetSize(ks) == 8, "did not pop key");
-	succeed_if (ksNeedSort (ks) == 1, "sort state not correct");
 	succeed_if (found != 0, "did not found correct name");
 	succeed_if (ksCurrent(ks) == 0, "current not set correctly");
 	succeed_if (strcmp (keyName(found), "user/named/key") == 0, "name not correct in found key");
 	succeed_if (strcmp (keyValue(found), "myvalue") == 0, "not correct value in found key");
 	succeed_if (keyDel (found) == 0, "could not del popped key");
 
+	ksAppendKey(ks, keyNew("user/named/key",  KEY_VALUE, "singlevalue", KEY_END));
+	succeed_if (ksGetSize(ks) == 8, "did not append key");
+
 	// here you can't find the keys
 	succeed_if (ksLookupByName (ks, "named/key", KDB_O_POP) == 0, "not valid keyname");
-	succeed_if (ksNeedSort (ks) == 0, "sort state not correct");
 	succeed_if (ksLookupByName (ks, "u/named/key", KDB_O_POP) == 0, "not valid keyname");
 	succeed_if (ksLookupByName (ks, "usea/named/key", KDB_O_POP) == 0, "not valid keyname");
 	succeed_if (ksLookupByName (ks, " user/named/key", KDB_O_POP) == 0, "found key with bad prefix");
@@ -1989,8 +2004,21 @@ void test_ksLookupPop()
 	succeed_if (ksLookupByName (ks, "user/named/k/ey", KDB_O_POP) == 0, "seperation that should be");
 	succeed_if (ksLookupByName (ks, "user/na/med/key", KDB_O_POP) == 0, "seperation that should be");
 
+	// a positive testcase
+	found = ksLookupByName (ks, "user/named/key", KDB_O_POP);
+	succeed_if (ksGetSize(ks) == 7, "did not pop key");
+	succeed_if (ksCurrent(ks) == 0, "current not set correctly");
+	succeed_if (found != 0, "did not found correct name");
+	succeed_if (ksCurrent(ks) == 0, "current not set correctly");
+	succeed_if (strcmp (keyName(found), "user/named/key") == 0, "name not correct in found key");
+	succeed_if (strcmp (keyValue(found), "singlevalue") == 0, "not correct value in found key");
+	succeed_if (keyDel (found) == 0, "could not del popped key");
+
+	ksAppendKey(ks, keyNew("user/named/otherkey",  KEY_VALUE, "singlevalue", KEY_END));
+	succeed_if (ksGetSize(ks) == 8, "did not append key");
+
 	succeed_if (ksLookupByName (ks, "system/domain/key", KDB_O_POP) == 0, "found key in wrong domain");
-	
+
 	//now try to find them, and compare value
 	found = ksLookupByName (ks, "user/domain/key", KDB_O_POP);
 	succeed_if (ksGetSize(ks) == 7, "did not pop key");
@@ -2063,11 +2091,11 @@ void test_ksLookupPop()
 	succeed_if (strcmp (keyValue(found), "myvalue") == 0, "not correct value in found key");
 	succeed_if (keyDel (found) == 0, "could not del popped key");
 
-	found = ksLookupByName (ks, "/single/Key", KDB_O_NOCASE | KDB_O_POP);
+	found = ksLookupByName (ks, "/named/Otherkey", KDB_O_NOCASE | KDB_O_POP);
 	succeed_if (ksGetSize(ks) == 3, "did not pop key");
 	succeed_if (ksCurrent(ks) == 0, "current not set correctly");
 	succeed_if (found != 0, "could not find same key again, nocase used");
-	succeed_if (strcmp (keyName(found), "user/single/key") == 0, "name not correct in found key");
+	succeed_if (strcmp (keyName(found), "user/named/otherkey") == 0, "name not correct in found key");
 	succeed_if (strcmp (keyValue(found), "singlevalue") == 0, "not correct value in found key");
 	succeed_if (keyDel (found) == 0, "could not del popped key");
 

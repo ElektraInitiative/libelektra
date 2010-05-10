@@ -689,7 +689,6 @@ ssize_t kdbGet (KDB *handle, KeySet *returned,
 
 	ksAppend (returned, tmp);
 	ksDel (tmp);
-	if (ksNeedSort (keys)) ksSort (keys);
 
 	ret = backend_handle->kdbGet(backend_handle,keys,parentKey);
 	if (ret == -1)
@@ -928,8 +927,6 @@ ssize_t kdbSet (KDB *handle, KeySet *ks,
 		return -1;
 	}
 
-	if (ksNeedSort(ks) || (options & KDB_O_SORT)) ksSort (ks);
-
 	if (!kdbhGetTrie(handle)) 
 	{ /* Fallback code without mounting */
 		ksRewind (ks);
@@ -948,7 +945,6 @@ ssize_t kdbSet (KDB *handle, KeySet *ks,
 		}
 		if (keysets->syncbits[i] && keysets->belowparents[i])
 		{
-			if (ksNeedSort(keysets->keysets[i])) ksSort(keysets->keysets[i]);
 			ksRewind (keysets->keysets[i]);
 			t=h->kdbSet(h,keysets->keysets[i],keysets->parents[i]);
 		}

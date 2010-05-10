@@ -353,47 +353,14 @@ int ksClear(KeySet *ks)
 
 
 /*
- * Returns if keyset needs sort.
+ * Returns 0.
  *
- * It is very inefficient to resort the keyset every time when a
- * key or a keyset is appended, so only a flag will be set to
- * show that the keyset is not sorted any more.
+ * @deprecated dont use
  *
- * Before operations where the code depends on a sorted keyset,
- * namely in kdbGet(), kdbSet() and ksLookup(), this simple code
- * sorts when needed:
- *
- * @code
-if (ksNeedSort(ks)) ksSort(ks);
- * @endcode
- *
- * @warning ksNeedSort() does not track every change which actually
- * affects sorting: changing of names with keySetName() and
- * marking keys remove with keyRemove() won't be recognized.
- * But any ks* Method will leave the KeySet sorted or
- * set the flag.
- *
- * So if your code might rename keys or flag them to remove,
- * make sure that you use
- *
- * @code
-ksSort(ks);
- * @endcode
- *
- * somewhere afterwards before using ksLookup(). Otherwise the
- * renamed key won't be found.
- *
- * kdbSet() will have no problems with that issue, because it
- * duplicates its keysets using ksDup().
- *
- * @param ks the keyset object to work with
- * @see ksAppendKey(), ksAppend() and ksSort()
- * @return 1 if sort is needed
- *  0 if the keyset is sorted
  */
 int ksNeedSort (const KeySet *ks)
 {
-	return (ks->flags & KS_FLAG_DIRTY) == KS_FLAG_DIRTY;
+	return 0;
 }
 
 
@@ -1241,10 +1208,6 @@ static int keyCompareByNameOwnerCase(const void *p1, const void *p2) {
  *
  * When KDB_O_NOALL is not set the cursor will stay untouched and all keys
  * are considered. A much more efficient binary search will be used then.
- *
- * So if you change keys, e.g. rename (keySetName()) or remove (keyRemove()) them
- * make sure to sort the keyset with ksSort(). When the keyset is dirty,
- * see ksNeedSort() it will be sorted automatically when needed.
  *
  * @subsection KDB_O_POP
  *
