@@ -257,7 +257,7 @@ void o(KeySet *ks)
  * @param metaName the name of the meta data which should be copied
  * @ingroup keymeta
  */
-int keyCopyMeta(Key *dest, const Key *source, char *metaName)
+int keyCopyMeta(Key *dest, const Key *source, const char *metaName)
 {
 	Key *ret;
 

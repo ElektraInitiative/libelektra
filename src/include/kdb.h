@@ -130,7 +130,7 @@ int keyRewindMeta(Key *key);
 const Key *keyNextMeta(Key *key);
 const Key *keyCurrentMeta(const Key *key);
 
-int keyCopyMeta(Key *dest, const Key *source, char *metaName);
+int keyCopyMeta(Key *dest, const Key *source, const char *metaName);
 
 const Key *keyGetMeta(const Key *key, const char* metaName);
 ssize_t    keySetMeta(Key *key, const char* metaName,
