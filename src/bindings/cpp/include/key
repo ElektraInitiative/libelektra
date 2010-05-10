@@ -86,8 +86,8 @@ public:
 	bool operator >= (const Key& other) const {return keyCmp(key, other.key) >= 0; }
 	/*This is for loops only. It checks if there are still more keys.
 	 * The check is not related to its name.
-	 * @warning Reversed Semantics*/
-	bool operator ! () const {return key != 0;}
+	 */
+	operator bool () const {return key != 0;}
 
 	std::string getName() const;
 	const char* name() const;

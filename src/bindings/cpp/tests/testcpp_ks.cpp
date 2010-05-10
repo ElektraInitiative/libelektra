@@ -109,13 +109,13 @@ void test_iterate()
 	succeed_if (k3.getName() == "user/key3/3", "wrong keyname");
 	succeed_if (k3.getString() == "value", "wrong value");
 	succeed_if (k3 == ks3.tail(), "last key not tail key");
-	succeed_if (!!ks3.next(), "no more key");
-	succeed_if (!!ks3.next(), "no more key");
-	succeed_if (!!ks3.next(), "no more key");
-	succeed_if (!!ks3.next(), "no more key");
+	succeed_if (!ks3.next(), "no more key");
+	succeed_if (!ks3.next(), "no more key");
+	succeed_if (!ks3.next(), "no more key");
+	succeed_if (!ks3.next(), "no more key");
 
 	Key null = static_cast<ckdb::Key*>(0);
-	succeed_if (!!null, "null key");
+	succeed_if (!null, "null key");
 
 	ks3.rewind();
 	for (size_t i=0; i<ks3.size(); i++)
@@ -130,7 +130,7 @@ void test_iterate()
 	ks3.rewind();
 	Key n;
 	int j=0;
-	while (!(n=ks3.next()))
+	while (n=ks3.next())
 	{
 		char str[] = "user/key3/X";
 
@@ -139,13 +139,38 @@ void test_iterate()
 		j++;
 	}
 
-	/*
+	j=0;
 	ks3.rewind();
-	for (Key k; !k; k.next())
+	while ((n=ks3.next()) == true)
 	{
-		cout << "k" << endl;
+		char str[] = "user/key3/X";
+
+		str [10] = j+'1';
+		succeed_if (n.getName() == str, "wrong keyname");
+		j++;
 	}
-	*/
+
+	j=0;
+	ks3.rewind();
+	for (Key k; k=ks3.next();)
+	{
+		char str[] = "user/key3/X";
+
+		str [10] = j+'1';
+		succeed_if (k.getName() == str, "wrong keyname");
+		j++;
+	}
+
+	j=0;
+	ks3.rewind();
+	for (Key k=ks3.next(); k; k=ks3.next())
+	{
+		char str[] = "user/key3/X";
+
+		str [10] = j+'1';
+		succeed_if (k.getName() == str, "wrong keyname");
+		j++;
+	}
 }
 
 void test_cursor()

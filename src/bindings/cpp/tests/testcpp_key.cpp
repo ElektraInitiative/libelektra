@@ -394,10 +394,10 @@ void test_iter()
 
 	Key meta; //keyNew(0)
 
-	succeed_if (!meta, "key is a null key");
+	succeed_if (meta, "key is a null key");
 
 	Key end = static_cast<ckdb::Key*>(0);
-	succeed_if (!!end, "key is not a null key");
+	succeed_if (!end, "key is not a null key");
 
 	k.rewindMeta();
 	while (!(meta = k.nextMeta()))
@@ -407,7 +407,7 @@ void test_iter()
 
 	int count = 0;
 	k.rewindMeta();
-	while (!(meta = k.nextMeta())) count ++;
+	while (meta = k.nextMeta()) count ++;
 	succeed_if (count == 3, "Not the correct number of meta data");
 
 	k.setMeta("d", "more");
@@ -415,7 +415,7 @@ void test_iter()
 
 	count = 0;
 	k.rewindMeta();
-	while (!(meta = k.nextMeta())) count ++;
+	while (meta = k.nextMeta()) count ++;
 	succeed_if (count == 5, "Not the correct number of meta data");
 }
 
