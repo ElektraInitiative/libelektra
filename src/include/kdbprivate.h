@@ -163,23 +163,6 @@ typedef enum
 } keyflag_t;
 
 
-
-/*****************
- * KeySet Flags
- *****************/
-
-/*
- * KeySet Flags
- *
- * @ingroup ks
- */
-typedef enum
-{
-	KS_FLAG_DIRTY=1<<1	/*!< KeySet is dirty.
-		* KeySet will be sorted before next kdbSet() and ksLookupByName().*/
-} ksflag_t;
-
-
 /**
  * The private Key struct.
  *
@@ -260,7 +243,6 @@ struct _KeySet {
 
 	struct _Key  *cursor;	/**< Internal cursor */
 	size_t        current;	/**< Current position of cursor */
-	ksflag_t      flags;	/**< Some control and internal flags. */
 };
 
 

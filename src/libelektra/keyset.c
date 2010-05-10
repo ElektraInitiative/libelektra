@@ -504,28 +504,9 @@ ksLookup(ks, s, 0); // you dont need to sort ks
  * This is because the KeySet tracks if it needs to be sorted
  * and ksLookup() will sort when needed.
  *
- * @section sortiterate Sort when iterating
- *
- * Before you iterate over a keyset you have to sort it, if
- * you need it in a sorted way.
- *
- * To achieve that you can pass option_t::KDB_O_SORT to kdbGet()
- * and kdbSet(). Then you will receive a already sorted keyset
- * over which you can iterate.
- * @code
-KeySet *ks = ksNew(0);
-kdbGet(h, ks, k, KDB_O_SORT);
-// no changes to keyset allowed
-ksRewind(ks);
-// now you can iterate over a sorted keyset
- * @endcode
- *
- * Its of course also possible to use ksLookup() once, because it
- * will sort the keyset too.
- *
  * @section sortkey Sort when changing key
  *
- * @warning You should not use keySetName() or keyRemove() when a
+ * @warning You must not use keySetName() or keyRemove() when a
  * key belongs to a keyset. When you are doing this, you always need to @p manually
  * sort @p all keysets where the key was before using ksLookup() (otherwise ksLookup()
  * won't find that keys), kdbGet() or kdbSet() methods.
@@ -540,21 +521,7 @@ ksRewind(ks);
  * @note You can remember that easily that all functions which get options
  * require one of the following:
  * - that you did not manipulate a keys name or a remove status
- * - that you pass KDB_O_SORT when you know that you manipulated at least one key
  * - that you ksSort() yourself after manipulating keys
- *
- * @section dirty Dirty KeySet
- *
- * When you use ksAppend(), ksAppendKey(), ksPop() the keyset is dirty
- * afterwards, which means that it needs to be sorted. This is done
- * automatically using a ksLookup() method and in ksGet() or ksSet()
- * (All methods which accept options).
- *
- * It won't be done if you just iterate over the keyset, so you might
- * use a ksLookup() or ksSort() first. ksLookup() will be more efficient
- * in that case, because it will only sort when needed. Don't pass
- * KDB_O_NOALL (it will deactivate the sorting feature),
- * see ksLookup() for more information.
  *
  * @param ks KeySet to be sorted
  * @see kdbGet(), kdbSet(), ksLookup() for some functions which may
@@ -570,7 +537,6 @@ void ksSort(KeySet *ks)
 {
 	if (!ks) return;
 
-	ks->flags = ~KS_FLAG_DIRTY & ks->flags;
 	if (! ks->size) return;
 
 	qsort(ks->array,ks->size,sizeof(Key *),keyCmpInternal);
@@ -743,7 +709,6 @@ ssize_t ksAppend(KeySet *ks, const KeySet *toAppend)
 	toAlloc = ks->alloc;
 
 	if (toAppend->size <= 0) return ks->size;
-	ks->flags |= KS_FLAG_DIRTY;
 	ks->size += toAppend->size;
 	ks->rsize += toAppend->rsize;
 	while (ks->size >= toAlloc) toAlloc *= 2;
@@ -1275,9 +1240,6 @@ int f(KeySet *iterator, KeySet *lookup)
  * 		Only search from ksCurrent() to end of keyset, see above text.
  * 	- @p KDB_O_POP @n
  * 		Pop the key which was found.
- * 	- @p KDB_O_SORT @n
- * 		Force sorting before searching, see ksSort().
- * 		Together with KDB_O_NOALL the search will start from beginning.
  * @return pointer to the Key found, 0 otherwise
  * @return 0 on NULL pointers
  * @see ksLookupByName() to search by a name given by a string
@@ -1295,13 +1257,6 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 
 	jump = ks->rsize;
 	cursor = ksGetCursor (ks);
-
-	if (options & KDB_O_SORT)
-	{
-		ksSort (ks);
-		ksRewind (ks);
-	}
-	else if (!(options & KDB_O_NOALL) && ks->flags & KS_FLAG_DIRTY) ksSort(ks);
 
 	if (!key) return 0;
 
@@ -1424,9 +1379,6 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
  * 		Only search from ksCurrent() to end of keyset, see above text.
  * 	- @p KDB_O_POP @n
  * 		Pop the key which was found.
- * 	- @p KDB_O_SORT @n
- * 		Force sorting before searching, see ksSort().
- * 		Together with KDB_O_NOALL the search will start from beginning.
  *
  * 	Currently no options supported.
  * @return pointer to the Key found, 0 otherwise
@@ -1505,9 +1457,6 @@ while (key=ksLookupByString(ks,"my value",0)) {
  * @param options some @p KDB_O_* option bits. Currently supported:
  * 	- @p KDB_O_NOALL @n
  * 		Only search from ksCurrent() to end of keyset, see ksLookup().
- * 	- @p KDB_O_SORT @n
- * 		Force sorting before searching, see ksSort().
- * 		Together with KDB_O_NOALL the search will start from beginning.
  * 	- @p KDB_O_NOCASE @n
  * 	  Lookup ignoring case.
  * @return the Key found, 0 otherwise
@@ -1521,13 +1470,6 @@ Key *ksLookupByString(KeySet *ks, const char *value, option_t options)
 	Key *current=0;
 
 	if (!ks) return 0;
-
-	if (options & KDB_O_SORT)
-	{
-		ksSort (ks);
-		ksRewind (ks);
-	}
-	else if (!(options & KDB_O_NOALL) && ks->flags & KS_FLAG_DIRTY) ksSort(ks);
 
 	if (!(options & KDB_O_NOALL))
 	{
@@ -1576,9 +1518,6 @@ Key *ksLookupByString(KeySet *ks, const char *value, option_t options)
  * @param options some @p KDB_O_* option bits:
  * 	- @p KDB_O_NOALL @n
  * 		Only search from ksCurrent() to end of keyset, see above text.
- * 	- @p KDB_O_SORT @n
- * 		Force sorting before searching, see ksSort().
- * 		Together with KDB_O_NOALL the search will start from beginning.
  * @return the Key found, NULL otherwise
  * @return 0 on NULL pointer
  * @see ksLookupByString()
@@ -1592,13 +1531,6 @@ Key *ksLookupByBinary(KeySet *ks, const void *value, size_t size,
 	Key *current=0;
 
 	if (!ks) return 0;
-
-	if (options & KDB_O_SORT)
-	{
-		ksSort (ks);
-		ksRewind (ks);
-	}
-	else if (!(options & KDB_O_NOALL) && ks->flags & KS_FLAG_DIRTY) ksSort(ks);
 
 	if (!(options & KDB_O_NOALL))
 	{
@@ -1837,7 +1769,6 @@ size_t ksGetAlloc (const KeySet *ks)
  */
 int ksInit(KeySet *ks) {
 	ks->array = 0;
-	ks->flags = KS_FLAG_DIRTY;
 
 	ks->size=0;
 	ks->rsize=0;
