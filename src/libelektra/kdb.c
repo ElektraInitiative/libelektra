@@ -417,9 +417,10 @@ KDB * kdbOpen()
 	KDB * handle;
 	KeySet *keys;
 	Trie *trie;
-
 #if DEBUG && VERBOSE
-	fprintf (stderr, "open elektra " VERSION "\n");
+	Key *key;
+
+	fprintf (stderr, "open elektra " KDB_VERSION "\n");
 #endif
 
 	if (kdbLibInit()) {
@@ -445,7 +446,7 @@ KDB * kdbOpen()
 #if DEBUG && VERBOSE
 	ksRewind(keys);
 	for (key=ksNext(keys);key;key=ksNext(keys)) {
-		printf("mount %s as %s\n",keyName(key),(char*) keyValue(key));
+		printf("config for createTrie name: %s value: %s\n",keyName(key),(char*) keyValue(key));
 	}
 #endif
 	trie=createTrie(keys,kdbOpenBackend);
