@@ -15,7 +15,8 @@
 
 #include "dump.hpp"
 
-extern "C" {
+namespace dump
+{
 
 void serialize(std::ostream &os, ckdb::KeySet *ks)
 {
@@ -37,17 +38,17 @@ void serialize(std::ostream &os, ckdb::KeySet *ks)
 		os << std::endl;
 
 		const ckdb::Key *meta;
-		ckdb::Key *ret;
-		ckdb::Key *search;
 		ckdb::keyRewindMeta(cur);
 		while ((meta = ckdb::keyNextMeta(cur)) != 0)
 		{
 			std::stringstream ss;
-			ss << "user/" << meta;
-			search = ckdb::keyDup (meta);
-			ckdb::keySetName (search, ss.str().c_str());
+			ss << "user/" << meta; // use the address of pointer as name
 
-			ret = ksLookup(metacopies, search, 0);
+			ckdb::Key *search = ckdb::keyNew(
+					ss.str().c_str(),
+					KEY_END);
+			ckdb::Key *ret = ksLookup(metacopies, search, 0);
+
 			if (!ret)
 			{
 				/* This meta key was not serialized up to now */
@@ -60,22 +61,20 @@ void serialize(std::ostream &os, ckdb::KeySet *ks)
 				os.write (static_cast<const char*>(ckdb::keyValue(meta)), metavaluesize);
 				os << std::endl;
 
-				// TODO: needs to be vector in order to handle 0 bytes
 				std::stringstream ssv;
 				ssv << namesize << " " << metanamesize << std::endl;
 				ssv.write(ckdb::keyName(cur), namesize);
 				ssv.write (ckdb::keyName(meta), metanamesize);
-				std::cerr << ssv.str() << std::endl;
-				// ckdb::keySetRaw(search, ssv.str().c_str(), ssv.str().size()+1);
+				ckdb::keySetRaw(search, ssv.str().c_str(), ssv.str().size());
 
 				ksAppendKey(metacopies, search);
 			} else {
 				/* Meta key already serialized, write out a reference to it */
 				keyDel (search);
 
-				os << "keyMetaCopy "
-				   << static_cast<const char*>(ckdb::keyValue(ret))
-				   << std::endl;
+				os << "keyMetaCopy ";
+				os.write(static_cast<const char*>(ckdb::keyValue(ret)), ckdb::keyGetValueSize(ret));
+				os << std::endl;
 			}
 		}
 		os << "keyEnd" << std::endl;
@@ -140,6 +139,22 @@ void unserialize(std::istream &is, ckdb::KeySet *ks)
 			keySetMeta (cur, &namebuffer[0], &valuebuffer[0]);
 			std::getline (is, line);
 		}
+		else if (command == "keyMetaCopy")
+		{
+			ss >> namesize;
+			ss >> valuesize;
+
+			if (namesize > namebuffer.size()) namebuffer.resize(namesize);
+			is.read(&namebuffer[0], namesize);
+			namebuffer[namesize] = 0;
+
+			if (valuesize > valuebuffer.size()) valuebuffer.resize(valuesize);
+			is.read(&valuebuffer[0], valuesize);
+
+			ckdb::Key * search = ckdb::ksLookupByName(ks, &namebuffer[0], 0);
+			ckdb::keyCopyMeta(cur, search, &valuebuffer[0]);
+			std::getline (is, line);
+		}
 		else if (command == "keyEnd")
 		{
 			ckdb::keyClearSync(cur);
@@ -154,6 +169,11 @@ void unserialize(std::istream &is, ckdb::KeySet *ks)
 		}
 	}
 }
+
+} // namespace dump
+
+
+extern "C" {
 
 int kdbOpen_dump(ckdb::KDB *handle)
 {
@@ -209,7 +229,7 @@ ssize_t kdbGet_dump(ckdb::KDB *handle, ckdb::KeySet *returned, const ckdb::Key *
 	if (strcmp (keyName(kdbhGetMountpoint(handle)), keyName(parentKey))) return 0;
 
 	std::ifstream ofs(static_cast<std::string*>(ckdb::kdbhGetBackendData (handle))->c_str());
-	unserialize (ofs, returned);
+	dump::unserialize (ofs, returned);
 
 	errno = errnosave;
 	return ksGetSize(returned); /* success */
@@ -222,7 +242,7 @@ ssize_t kdbSet_dump(ckdb::KDB *handle, ckdb::KeySet *returned, const ckdb::Key *
 	if (strcmp (keyName(kdbhGetMountpoint(handle)), keyName(parentKey))) return 0;
 
 	std::ofstream ifs(static_cast<std::string*>(ckdb::kdbhGetBackendData (handle))->c_str());
-	serialize (ifs, returned);
+	dump::serialize (ifs, returned);
 
 	errno = errnosave;
 	return ksGetSize(returned);

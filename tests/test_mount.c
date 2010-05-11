@@ -391,12 +391,13 @@ void test_writefstab(const char * file)
 
 KeySet * get_dump()
 {
-	return ksNew(10,
-			keyNew("user/tests/dump",
+	Key *k1, *k2;
+	KeySet *ks = ksNew(10,
+			k1 = keyNew("user/tests/dump",
 			       KEY_VALUE, "root key",
 			       KEY_META, "a", "b",
 			       KEY_END),
-			keyNew("user/tests/dump/a",
+			k2 = keyNew("user/tests/dump/a",
 			       KEY_VALUE, "a value",
 			       KEY_META, "ab", "cd",
 			       KEY_END),
@@ -406,6 +407,9 @@ KeySet * get_dump()
 			       KEY_END),
 			KS_END
 		);
+	keyCopyMeta(k1, k2, "ab");
+
+	return ks;
 }
 
 void test_writedump(const char *file)
@@ -435,6 +439,7 @@ void test_readdump(const char *file)
 	KeySet *conf;
 	KeySet *ks = get_dump();
 	KeySet *read = ksNew(0);
+	Key *k1, *k2;
 
 	printf("Test read dump\n");
 
@@ -447,13 +452,21 @@ void test_readdump(const char *file)
 
 	compare_keyset (read, ks, 0, 0);
 
+	k1 = ksLookupByName(ks, "user/tests/dump", 0);
+	succeed_if (k1 != 0, "did not find key");
+	k2 = ksLookupByName(ks, "user/tests/dump/a", 0);
+	succeed_if (k2 != 0, "did not find key");
+
+	succeed_if (!strcmp(keyValue(keyGetMeta(k1, "ab")), "cd"), "meta value not correct");
+	succeed_if (!strcmp(keyValue(keyGetMeta(k2, "ab")), "cd"), "meta value not correct");
+	succeed_if (keyGetMeta(k1, "ab") == keyGetMeta(k2, "ab"), "does not point to the same storage");
+
 	// ksOutput (read, stdout, KEY_VALUE);
 
 	ksDel (ks);
 	ksDel (read);
 	kdbClose (kdb);
 }
-
 
 int main(int argc, char** argv)
 {

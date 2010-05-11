@@ -476,7 +476,8 @@ ssize_t keySetBinary(Key *key, const void *newBinary, size_t dataSize)
  */
 ssize_t keySetRaw(Key *key, const void *newBinary, size_t dataSize)
 {
-	if (key->flags == KEY_FLAG_RO) return -1;
+	if (!key) return -1;
+	if (key->flags & KEY_FLAG_RO) return -1;
 
 	if (!dataSize || !newBinary) {
 		if (key->data) {
