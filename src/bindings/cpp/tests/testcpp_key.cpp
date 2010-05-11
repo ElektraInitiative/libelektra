@@ -11,19 +11,16 @@ void test_keynew()
 
 	Key key0;
 	succeed_if(!key0.needSync(), "key1 need sync");
-	succeed_if(!key0.needRemove(), "key1 need remove");
 	succeed_if( key0.getName() == "", "key0 has wrong name");
 
 	// Empty key
 	Key key1 ("", KEY_END);
 	succeed_if(!key1.needSync(), "key1 need sync");
-	succeed_if(!key1.needRemove(), "key1 need remove");
 	succeed_if( key1.getName() == "", "key0 has wrong name");
 
 	// Key with name
 	Key key2 ("system/sw/test", KEY_END);
 	succeed_if( key2.needSync(), "key2 does not need sync");
-	succeed_if(!key2.needRemove(), "key2 need remove");
 	succeed_if (key2.getBaseName() == "test", "wrong base name");
 	succeed_if( key2.getName() == "system/sw/test", "key2 has wrong name");
 	key2.copy(key0);
@@ -31,8 +28,7 @@ void test_keynew()
 	succeed_if (key2.getBaseName() == "", "wrong base name");
 
 	// Key with name
-	Key key3 ("system/sw/test", KEY_REMOVE, KEY_END);
-	succeed_if(key3.needRemove(), "KEY_REMOVE not set");
+	Key key3 ("system/sw/test", KEY_END);
 	succeed_if(key3.getName() == "system/sw/test", "key3 has wrong name");
 	succeed_if(key3.getBaseName() == "test", "wrong base name");
 	key3 = "system/other/name";

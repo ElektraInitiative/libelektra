@@ -575,7 +575,6 @@ int keyOutput (const Key * k, FILE *stream, option_t options)
 		if (keyIsString(k)) fprintf(stream,"s");
 		if (keyIsDir(k)) fprintf(stream,"d");
 		if (keyIsInactive(k)) fprintf(stream,"i");
-		if (keyNeedRemove(k)) fprintf(stream,"r");
 		if (keyNeedSync(k)) fprintf(stream,"s");
 	}
 
@@ -685,9 +684,6 @@ int keyGenerate(const Key * key, FILE *stream, option_t options)
 		free (com);
 	}
 
-	if (keyNeedRemove(key)) fprintf(stream, "\n\t\t, KEY_REMOVE");
-	if (keyNeedStat(key)) fprintf(stream, "\n\t\t, KEY_STAT");
-
 	if (! (keyGetMode(key) == 0664 || (keyGetMode(key) == 0775 && keyIsDir(key))))
 	{
 		fprintf(stream,"\n\t\t, KEY_MODE, 0%3o", keyGetMode(key));
@@ -729,11 +725,8 @@ int ksGenerate (const KeySet *ks, FILE *stream, option_t options)
 		if (options & KDB_O_NODIR) if (key && keyIsDir (key)) continue;
 		if (options & KDB_O_DIRONLY) if (key && !keyIsDir (key)) continue;
 		if (options & KDB_O_INACTIVE) if (key && keyIsInactive (key)) continue;
-		if (options & KDB_O_STATONLY)
-		{
-			keySetRaw (key, "", 0);
-			keySetComment (key, "");
-		}
+		keySetRaw (key, "", 0);
+		keySetComment (key, "");
 
 		s++;
 

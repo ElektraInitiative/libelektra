@@ -388,14 +388,11 @@ void usercode (Key *key)
  * that the parentKey:
  * - is a valid key (means that it is a system or user key).
  * - is below (see keyIsBelow()) your mountpoint and that your backend is responsible for it.
- * - has keyNeedStat() set when you should only stat keys (see later).
  * and that the returned:
  * - is a valid keyset.
  * - has @p all keys with the flag KEY_FLAG_SYNC set.
- * - @p may has keys with the flag  KEY_FLAG_STAT set.
  * - contains only valid keys direct below (see keyIsDirectBelow()) your parentKey.
  *   That also means, that the parentKey will not be in that keyset.
- * - have keyIsStat() set when the value/comment information is not necessary.
  * - is in a sorted order, see ksSort().
  * and that the handle:
  *  - is a valid KDB for your backend.
@@ -431,7 +428,6 @@ void usercode (Key *key)
  * - next_key() will find the next key and return it (with the name).
  * - fetch_key() gets out all information of a key from storage
  *    (details see below example).
- *    It removes the keyNeedStat() and keyNeedSync() flag afterwards.
  * - stat_key() gets all meta information (everything but value and comment).
  *   It removes the key keyNeedSync() flag afterwards.
  * returns the next key out from the storage.
@@ -443,13 +439,9 @@ ssize_t kdbGet_backend(KDB *handle, KeySet *update, const Key *parentKey) {
 
 	find_key (parentKey);
 	current = keyDup (parentKey);
-	if (keyNeedStat(parentKey))
-	{
-		current = stat_key(current);
-	} else {
-		current = fetch_key(current);
-	}
-	clear_bit (KEY_FLAG_SYNC, current->flags);
+	current = fetch_key(current);
+
+	keyClearSync (current);
 	ksAppendKey(returned, current);
 
 	while ((current = next_key()) != 0)
@@ -457,14 +449,8 @@ ssize_t kdbGet_backend(KDB *handle, KeySet *update, const Key *parentKey) {
 		// search if key was passed in update by caller
 		Key * tmp = ksLookup (update, current, KDB_O_WITHOWNER|KDB_O_POP);
 		if (tmp) current = tmp; // key was passed, so use it
-		if (keyNeedStat(parentKey) || keyNeedStat(current))
-		{
-			current = stat_key (current);
-			set_bit (KEY_FLAG_STAT, current->flags);
-		} else {
-			current = fetch_key(current);
-		}
-		clear_bit (KEY_FLAG_SYNC, current->flags);
+		current = fetch_key(current);
+		keyClearSync (current);
 		ksAppendKey(returned, current);
 		// TODO: delete lookup key
 	}
@@ -487,26 +473,7 @@ ssize_t kdbGet_backend(KDB *handle, KeySet *update, const Key *parentKey) {
  * - the bit KEY_FLAG_SYNC is always cleared, see postconditions
  *
  * So your mission is simple: Search the @c parentKey and add it and then search
- * all keys below and add them too, of course with all requested information
- * (which is only depended on keyNeedStat()).
- *
- * @section stat Stat
- *
- * Sometimes value and comment are not of interest, but
- * metadata. To avoid a potential time-consuming kdbGet()
- * you can keyNeedStat() the @p parentKey. If the backend supports
- * a less time-consuming method to just get names and
- * metadata, implement it, otherwise declare kdbcGetnoStat().
- *
- * The implementation works as follows: When the @p parentKey has
- * keyNeedStat() set, all keys need to be stated instead of getting
- * them. So the keys you ksAppendKey() don't have a value nor a comment
- * and make sure that KEY_FLAG_SYNC is not set, but keyNeedStat()
- * must be set for all keys which are only stated.
- *
- * The keys in @p returned may already have keyNeedStat() set.
- * These keys must keep the status keyNeedStat() and you don't need
- * to get the value and comment. See the example above for code.
+ * all keys below and add them too, of course with all the values.
  *
  * @section updating Updating
  *
@@ -516,18 +483,9 @@ ssize_t kdbGet_backend(KDB *handle, KeySet *update, const Key *parentKey) {
  * use of @p returned KeySet. There are following possibilities:
  * - The key is in returned and up to date.
  *   You just need to remove the KEY_FLAG_SYNC flag.
- * - The key is in returned but keyNeedStat() is true.
- *   You just need to stat the key and remove the KEY_FLAG_SYNC flag and
- *   set the KEY_FLAG_STAT flag.
- * - The key is in returned, keyNeedStat() is false (for the key and the @p parentKey)
- *   and you know that the key has changed. You need to fully retrieve the key and
- *   remove the KEY_FLAG_SYNC flag.
- * - The key is not in returned, the @p parentKey has keyNeedStat(). You just need
- *   to stat the key. Make sure that KEY_FLAG_SYNC is not set, but KEY_FLAG_STAT
- *   needs to be set. Append the key to @p returned.
- * - The key is not in returned and the @p parentKey keyNeedStat() is false.
- *   You need to fully retrieve the key out of storage, clear KEY_FLAG_STAT and
- *   KEY_FLAG_SYNC and ksAppendKey() it to the @p returned keyset.
+ * - The key is not in returned.
+ *   You need to fully retrieve the key out of storage, clear
+ *   KEY_FLAG_SYNC using keyClearSync() and ksAppendKey() it to the @p returned keyset.
  *
  * @note You must clear the flag KEY_FLAG_SYNC at the very last point where no more
  * modification on the key will take place, because any modification on the key will
@@ -647,11 +605,6 @@ kdbSet_backend(KDB *handle, KeySet *keyset, Key *parentKey)
  *  The handle is the same when it is the same backend.
  *
  * @post The information of the keyset @p returned is stored permanently.
- *
- * When some keys have KEY_FLAG_REMOVE set, that means return true for
- * keyNeedRemove(), remove the keys instead of getting them. In this case
- * the sorting order will be the reverse way, first will be the children, then
- * the parentKey when iterating over the KeySet returned.
  *
  * Lock your permanent storage in an exclusive way, no access of a
  * concurrent kdbSet_backend() or kdbGet_backend() is possible

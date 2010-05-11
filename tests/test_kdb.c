@@ -81,48 +81,8 @@ int testcase_kdbSetKeyAndkdbGetKey(KDB *handle, Key *key)
 	return nbError-err;
 }
 
-/* Test kdbStatKey()
- * -----------------
- *
- * kdbGetKey() then kdbStatKey() the supplied key. 
- * Compare the "STATed" version against the getted version.
- *
- * NOTE: The tested key must exist.
- */
-int testcase_kdbStatKey(KDB *handle, Key *k)
-{
-	Key	*tmp;
-	Key	*key = keyDup (k);
-
-	int err = nbError;
-
-
-	/* printf("\t* testing kdbStatKey()\n"); */
-	
-	tmp = keyNew(keyName(key), KEY_END);
-
-	succeed_if( kdbGetKey(handle, key) == 0, "kdbGetKey failed.");
-
-	keyStat (key);
-	succeed_if( kdbGetKey(handle, tmp) == 0, "kdbStatKey failed.");
-	succeed_if( (keyGetUID(tmp) == keyGetUID(key)), "kdbStatKey returned wrong UID.");
-	succeed_if( (keyGetGID(tmp) == keyGetGID(key)), "kdbStatKey returned wrong GID.");
-
-	succeed_if( (keyGetMode(tmp) == keyGetMode(key)), "kdbStatKey returned wrong Mode.");
-
-	succeed_if( (keyGetATime(tmp) >= keyGetATime(key)), "kdbStatKey returned wrong mode time.");
-	succeed_if( (keyGetMTime(tmp) == keyGetMTime(key)), "kdbStatKey returned wrong modification time.");
-	succeed_if( (keyGetCTime(tmp) == keyGetCTime(key)), "kdbStatKey returned wrong last change time.");
-
-	keyDel(tmp);
-	
-	keyDel (key);
-
-	return nbError-err;
-}
-
 /*
- * Renames the key to a given newname in backend in an atomic way.
+ * Renames the key to a given newname.
  *
  * @note the key will not exist afterwards in database
  *
@@ -137,9 +97,7 @@ int testcase_kdbStatKey(KDB *handle, Key *k)
 int kdbRename(KDB *handle, const Key *key, const char *newname) {
 	KeySet * ks = ksNew(0);
 	Key * toRename = keyDup(key);
-	Key * toRemove = keyDup(key);
-	keyRemove (toRemove);
-	ksAppendKey(ks, toRemove);
+	ksAppendKey(ks, toRename);
 
 	if (keySetName (toRename, newname) == -1)
 	{
@@ -190,13 +148,9 @@ int testcase_kdbRename(KDB *handle, Key *k)
 	succeed_if( kdbGetKey(handle, key) , "kdbGetKey succeed. The old renamed key is still existing.");
 	succeed_if( kdbRename(handle, tmp, keyName(key)) == 0, "kdbRename failed. Can't reverse to the original name.");
 
-	// already renamed back
-	// keyRemove (tmp);
-	// succeed_if (kdbSetKey(handle, tmp) == -1, "the renamed back key still exists");
-	
 	keyDel(tmp);
 	keyDel(key);
-	
+
 	return nbError-err;
 }
 
@@ -205,15 +159,14 @@ int testcase_kdbRename(KDB *handle, Key *k)
  * in the default backend before trying to mount others*/
 void test_default(KDB * handle, Key * root)
 {
-	Key     	*key, *key2;
+	Key	*key, *key2;
 
 	// test if current directory works
 	key = keyDup(root);
 	succeed_if (key, "Could not create new key");
 	keyAddBaseName(key, "test_delete");
 	succeed_if (testcase_kdbSetKeyAndkdbGetKey (handle, key) == 0, "Set and Get key failed");
-	succeed_if (keyRemove (key) != -1, "Could not mark key to remove");
-	succeed_if (kdbSetKey (handle, key) != -1, "Could not remove key");
+	succeed_if (kdbRemove (handle, keyName(key)) != -1, "Could not remove key");
 	succeed_if (kdbGetKey (handle, key) == -1, "Key seems to exists");
 	keyDel (key);
 	
@@ -225,8 +178,7 @@ void test_default(KDB * handle, Key * root)
 	succeed_if (key, "Could not create new key");
 	//succeed_if (strcmp (keyName (key), root) == 0, "Name for key is not correct");
 	succeed_if (testcase_kdbSetKeyAndkdbGetKey (handle, key) == 0, "Set and Get key failed");
-	succeed_if (keyRemove (key) != -1, "Could not mark key to remove");
-	succeed_if (kdbSetKey (handle, key) != -1, "Could not remove key");
+	succeed_if (kdbRemove (handle, keyName(key)) != -1, "Could not remove key");
 	succeed_if (kdbGetKey (handle, key) == -1, "Key seems to exists");
 	keyDel(key);
 
@@ -235,8 +187,7 @@ void test_default(KDB * handle, Key * root)
 	succeed_if (key, "Could not create new key");
 	keyAddBaseName(key, "test_delete");
 	succeed_if (testcase_kdbSetKeyAndkdbGetKey (handle, key) == 0, "Set and Get key failed");
-	keyRemove (key);
-	succeed_if (kdbSetKey (handle, key) != -1, "Could not remove key");
+	succeed_if (kdbRemove (handle, keyName(key)) != -1, "Could not remove key");
 	succeed_if (kdbGetKey (handle, key) == -1, "Key seems to exists");
 	keyDel (key);
 
@@ -244,8 +195,7 @@ void test_default(KDB * handle, Key * root)
 	key = keyDup (root);
 	keyAddBaseName (key, "dup_test");
 	succeed_if (testcase_kdbSetKeyAndkdbGetKey (handle, key) == 0, "Set and Get key failed");
-	keyRemove (key);
-	succeed_if (kdbSetKey (handle, key) != -1, "Could not remove key");
+	succeed_if (kdbRemove (handle, keyName(key)) != -1, "Could not remove key");
 	succeed_if (kdbGetKey (handle, key) == -1, "Key seems to exists");
 	keyDel (key);
 
@@ -255,13 +205,11 @@ void test_default(KDB * handle, Key * root)
 		key2 = keyDup (key);
 		keyAddBaseName (key2, "key");
 		succeed_if (testcase_kdbSetKeyAndkdbGetKey (handle, key2) == 0, "Set and Get key failed");
-		keyRemove (key2);
 		succeed_if (kdbSetKey (handle, key2) != -1, "Could not remove key");
 		succeed_if (kdbGetKey (handle, key2) == -1, "Key seems to exists");
 		keyDel (key2);
 	succeed_if (testcase_kdbSetKeyAndkdbGetKey (handle, key) == 0, "Set and Get key failed");
-	keyRemove (key);
-	succeed_if (kdbSetKey (handle, key) != -1, "Could not remove directory key");
+	succeed_if (kdbRemove (handle, keyName(key)) != -1, "Could not remove key");
 	succeed_if (kdbGetKey (handle, key) == -1, "Key seems to exists");
 	keyDel (key);
 	
@@ -330,7 +278,6 @@ void test_backend(KDB * handle, Key * root, char *fileName, KeySet *conf)
 
 			succeed_if (testcase_kdbSetKeyAndkdbGetKey (handle, cur) == 0, "Set and Get key failed");
 			succeed_if (testcase_kdbRename(handle, cur) == 0, "Could not rename key");
-			succeed_if (testcase_kdbStatKey(handle, cur) == 0, "Could not stat key");
 
 			// to get sync flag away, to allow next testcase
 			succeed_if (testcase_kdbSetKeyAndkdbGetKey (handle, cur) == 0, "Set and Get key failed");
@@ -410,26 +357,6 @@ void test_backend(KDB * handle, Key * root, char *fileName, KeySet *conf)
 	succeed_if( compare_keyset(ks, ks2, KDB_O_DIRONLY | KDB_O_INACTIVE, cap) == 0, "compare keyset DIRONLY failed");
 	ksDel(ks2);
 
-#if 0
-
-	printf ("Testing kdbGet with only stat\n");
-	ks2 = ksNew(0);
-	keyStat(root);
-	succeed_if( kdbGet(handle, ks2, root, KDB_O_STATONLY | options) >= 0, "kdbGet failed.");
-	succeed_if (keyNeedStat(root) == 1, "root should need stat");
-	ksRewind (ks2); while (ksNext(ks2) != 0) succeed_if (keyNeedStat(ksCurrent(ks2)) == 1, "all keys should need stat");
-	succeed_if( compare_keyset(ks, ks2, KDB_O_INACTIVE | KDB_O_STATONLY, cap) == 0, "compare keyset STATONLY failed");
-	ksDel(ks2);
-
-	printf ("Testing kdbGet no stat\n");
-	ks2 = ksNew(0);
-	keyStat(root);
-	succeed_if( kdbGet(handle, ks2, root, KDB_O_NOSTAT | options) >= 0, "kdbGet failed.");
-	succeed_if (keyNeedStat(root) == 0, "root should not need stat");
-	ksRewind (ks2); while (ksNext(ks2) != 0) succeed_if (keyNeedStat(ksCurrent(ks2)) == 0, "all keys should not need stat");
-	succeed_if( compare_keyset(ks, ks2, KDB_O_INACTIVE, cap) == 0, "compare keyset NOSTAT failed");
-	ksDel(ks2);
-
 	printf ("Testing kdbGet with inactive keys but no recursive\n");
 	ks2 = ksNew(0);
 	succeed_if( kdbGet(handle, ks2, root, KDB_O_INACTIVE | KDB_O_NORECURSIVE | options) >= 0, "kdbGet failed.");
@@ -450,8 +377,6 @@ void test_backend(KDB * handle, Key * root, char *fileName, KeySet *conf)
 	*/
 	ksDel(ks2);
 	ksDel(ksd);
-
-#endif
 
 	ksDel(ks);
 	remove_keys(handle, root);

@@ -155,16 +155,14 @@ void test_keyNewSystem()
 	// Key with name
 	key = keyNew("system/sw/test", KEY_END);
 	succeed_if(key != NULL, "keyNew: Unable to create a key with name");
-	succeed_if(keyNeedRemove (key) == 0, "KEY_REMOVE set");
 	succeed_if(strcmp(keyName(key), "system/sw/test") == 0, "keyNew: Key's name setted incorrectly");
 	keyCopy (key, 0);
 	succeed_if (strcmp (keyName(key), "") == 0, "name after keyCopy(,0)");
 	succeed_if(keyDel(key) == 0, "keyDel: Unable to delete key with name");
 	
 	// Key with name
-	key = keyNew("system/sw/test", KEY_REMOVE, KEY_END);
+	key = keyNew("system/sw/test", KEY_END);
 	succeed_if(key != NULL, "keyNew: Unable to create a key with name");
-	succeed_if(keyNeedRemove (key) == 1, "KEY_REMOVE not set");
 	succeed_if(strcmp(keyName(key), "system/sw/test") == 0, "keyNew: Key's name setted incorrectly");
 	succeed_if(keyDel(key) == 0, "keyDel: Unable to delete key with name");
 	
@@ -1736,49 +1734,21 @@ void test_keyMeta(void)
 {
 	Key *key=0;
 
-	succeed_if (keyStat (key) == -1, "stat null pointer");
-	succeed_if (keyNeedStat(key) == -1, "could not stat null pointer");
 	succeed_if(keyGetUID(key) == (uid_t)-1, "uid null pointer");
 	succeed_if(keyGetGID(key) == (gid_t)-1, "gid null pointer");
 	succeed_if(keyGetMode(key) == (mode_t)-1, "mode null pointer");
 
-
-	key = keyNew (0);
-
-	succeed_if (keyNeedStat(key) == 0, "fresh key does not need stat");
-	succeed_if (keyStat(key) == 1, "could not stat key");
-	succeed_if (keyNeedStat(key) == 1, "could not stat key");
-	keyDel (key);
-
-	key = keyNew ("user/stat", KEY_STAT, KEY_END);
-	succeed_if (keyNeedStat(key) == 1, "fresh key need stat");
-	succeed_if (keyStat(key) == 1, "could not stat key");
-	succeed_if (keyNeedStat(key) == 1, "could not stat key");
-	keyDel (key);
-
 	key=0;
-	succeed_if (keyRemove (key) == -1, "remove null pointer");
-	succeed_if (keyNeedRemove(key) == -1, "could not remove key");
 	succeed_if (keyNeedSync(key) == -1, "key needs sync");
 	key = keyNew (0);
-	succeed_if (keyNeedRemove(key) == 0, "fresh key does not need remove");
 	succeed_if (keyNeedSync(key) == 0, "fresh key needs sync");
-	succeed_if (keyRemove(key) == 1, "could not remove key");
-	succeed_if (keyNeedRemove(key) == 1, "could not remove key");
-	succeed_if (keyNeedSync(key) == 1, "need sync after remove");
 	keyDel (key);
 
-	key = keyNew ("user/remove", KEY_REMOVE, KEY_END);
-	succeed_if (keyNeedRemove(key) == 1, "fresh key need remove");
-	succeed_if (keyNeedSync(key) == 1, "need sync after remove");
-	succeed_if (keyRemove(key) == 1, "could not remove key");
-	succeed_if (keyNeedRemove(key) == 1, "could not remove key");
-	succeed_if (keyNeedSync(key) == 1, "need sync after remove");
+	key = keyNew ("user/remove", KEY_END);
+	succeed_if (keyNeedSync(key) == 1, "need sync");
 	keyDel (key);
 
 	succeed_if (keyNeedSync(0) == -1, "keyNeedSync(0)");
-	succeed_if (keyNeedStat(0) == -1, "keyNeedStat(0)");
-	succeed_if (keyNeedRemove(0) == -1, "keyNeedRemove(0)");
 
 	key = keyNew(0);
 	succeed_if (keyNeedSync(key) == 0, "keyNew(0) should not need sync");

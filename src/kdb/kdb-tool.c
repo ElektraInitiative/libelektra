@@ -364,11 +364,8 @@ int listTime(time_t when,char *readable) {
 void listSingleKey(Key *key) {
 	char buffer[400];
 	char *p=buffer;
-	char *unknown = "<unknown>";
 	char *binary = "<binary>";
 	int binary_length = strlen (binary);
-	struct passwd *pwd;
-
 
 	if (argLong) {
 		p+=listMode(key,p);
@@ -812,7 +809,6 @@ int commandList(KDB *handle) {
 	if (argSort)                options |= KDB_O_SORT;
 	if (argNoRecursive)         options |= KDB_O_NORECURSIVE;
 	if (argAll)                 options |= KDB_O_INACTIVE;
-	if (!argValue)              options |= KDB_O_STATONLY;
 	
 	/* these options make sense only to ksToStream() */
 	if (argFullName)            options |= KDB_O_FULLNAME;
@@ -870,9 +866,7 @@ int commandList(KDB *handle) {
 					return ret;
 				}
 
-				if (argValue)
-					ret=kdbGetKey(handle,key);
-				else ret=kdbStatKey(handle,key);
+				ret=kdbGetKey(handle,key);
 				
 				if (ret == 0) ksAppendKey(ks,key);
 				else {

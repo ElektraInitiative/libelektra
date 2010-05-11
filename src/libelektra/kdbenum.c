@@ -32,8 +32,6 @@ enum keyswitch_t
 	KEY_MTIME=1<<9,		/*!< Flag for the key change time */
 	KEY_CTIME=1<<10,	/*!< Flag for the key status change time */
 	KEY_SIZE=1<<11,		/*!< Flag for maximum size to limit value */
-	KEY_REMOVE=1<<12,	/*!< Flag if key is marked for remove */
-	KEY_STAT=1<<13,		/*!< Flag if key is marked for stat */
 	KEY_DIR=1<<14,		/*!< Flag for the key directories*/
 	KEY_END=0		/*!< Used as a parameter terminator to keyNew() */
 };
@@ -92,22 +90,13 @@ enum option_t
       This must not be used together with KDB_O_NODIR.
       @see keyIsDir() */
 	KDB_O_DIRONLY=1<<3,
-/** Don't stat keys, get them. No key will be true on
-      keyNeedStat() afterwards. You will receive
-      value, comment and key type regardless of keyNeedStat().
-      @see keyNeedStat() */
-	KDB_O_NOSTAT=1<<4,
-/** Only stat the keys, don't receive value, comment or key type.
-      This must not be used together with KDB_O_NOSTAT.
-      @see keyNeedStat() */
-	KDB_O_STATONLY=1<<5,
-/** Don't remove keys, set them. No key will be true on
-      keyNeedRemove() afterwards.
-      @see keyNeedRemove() */
+/** Don't remove any keys.
+      This must not be used together with KDB_O_REMOVEONLY.
+      */
 	KDB_O_NOREMOVE=1<<6,
-/** Only remove keys, don't set them.
+/** Only remove keys.
       This must not be used together with KDB_O_NOREMOVE.
-      @see keyNeedRemove() */
+      */
 	KDB_O_REMOVEONLY=1<<7,
 /** Do not ignore inactive keys (that name begins
       with .).

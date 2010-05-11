@@ -186,8 +186,6 @@ int compare_key (Key *k1, Key *k2, KDBCap *cap)
  *   remove everything but directories (!keyIsDir)
  * - option_t::KDB_O_INACTIVE (keyIsInactive) 
  *   remove all inactive keys
- * - option_t::KDB_O_STATONLY
- *   remove all value/comments
  * */
 int compare_keyset (KeySet *ks, KeySet *ks2, int filter, KDBCap *cap)
 {
@@ -207,17 +205,6 @@ int compare_keyset (KeySet *ks, KeySet *ks2, int filter, KDBCap *cap)
 		if (filter & KDB_O_NODIR)    if (keyIsDir (key)) continue;
 		if (filter & KDB_O_DIRONLY)  if (!keyIsDir (key)) continue;
 		if (filter & KDB_O_INACTIVE) if (keyIsInactive (key)) continue;
-		if (filter & KDB_O_STATONLY)
-		{
-			if (!kdbcGetnoStat(cap))
-			{	// only remove values for backends which are capable of stating keys.
-				key = keyDup (key); // use a duplicate here...
-				dup = 1;
-				keySetRaw (key, NULL, 0);
-				keySetComment (key, NULL);
-				keySetMeta (key, "binary", 0);
-			}
-		}
 		key2 = ksNext(ks2);
 		if (!key2)
 		{

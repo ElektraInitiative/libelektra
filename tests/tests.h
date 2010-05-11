@@ -70,5 +70,6 @@ char *srcdir_file(const char * fileName);
 Key * create_root_key (const char *backendName);
 KeySet *create_conf (const char *filename);
 
+
 #endif
 

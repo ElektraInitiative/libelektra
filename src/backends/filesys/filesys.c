@@ -114,7 +114,6 @@ ssize_t kdbGet_filesys(KDB *handle, KeySet *returned, const Key *parentKey)
 			keyDel (keyEntry);
 			keyEntry = found; /* use found instead */
 		}
-		if (keyNeedStat(parentKey)) set_bit (keyEntry->flags, KEY_FLAG_STAT);
 		if (kdbGetKey_filesys(handle,keyEntry) != -1)
 		{
 			keyflag_t semiflag;
@@ -155,14 +154,13 @@ ssize_t kdbSet_filesys(KDB *handle, KeySet *returned, const Key *parentKey)
 
 	if (!current) current=ksNext(returned);
 	while (current) {
-		if (keyNeedRemove(current))
+		/*TODO remove keys
+		if (kdbRemoveKey_filesys (handle, current))
 		{
-			if (kdbRemoveKey_filesys (handle, current))
-			{
-				errno = errnosave;
-				return -1;
-			}
+			errno = errnosave;
+			return -1;
 		}
+		*/
 		else if (keyNeedSync(current))
 		{
 			if (kdbSetKey_filesys(handle,current))
@@ -199,15 +197,6 @@ int kdbGetKey_filesys(KDB *handle, Key *key) {
 
 	stat(keyFilename,&keyFilenameInfo);
 	keyFromStat(key,&keyFilenameInfo);
-
-	if (keyNeedStat (key))
-	{
-		/* Remove the SYNC flag */
-		semiflag= KEY_FLAG_SYNC;
-		semiflag=~semiflag;
-		key->flags &= semiflag;
-		return 0;
-	}
 
 	if ((fd=open(keyFilename,O_RDONLY))==-1)
 	{

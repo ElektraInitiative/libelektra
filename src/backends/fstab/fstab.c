@@ -238,7 +238,7 @@ ssize_t kdbSet_fstab(KDB *handle, KeySet *ks, const Key *parentKey)
 	if (strcmp (mountpointname, parentname)) return 0;
 
 	ksRewind (ks);
-	if ((key = ksNext (ks)) != 0 && keyNeedRemove (key))
+	if ((key = ksNext (ks)) != 0)
 	{
 		unlink(kdbhGetBackendData(handle));
 		return ret;

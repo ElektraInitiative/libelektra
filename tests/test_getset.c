@@ -96,10 +96,8 @@ void test_subdir()
 
 	succeed_if (kdbSet(kdb,ks,0,0)!=-1, "kdbSet failed");
 
-	keyRemove (key2);
-	succeed_if(kdbSetKey(kdb,key2)==0,"Cannot remove key2");
-	keyRemove (key1);
-	succeed_if(kdbSetKey(kdb,key1)==0,"Cannot remove key1");
+	succeed_if(kdbRemove(kdb,keyName(key2))==0,"Cannot remove key2");
+	succeed_if(kdbRemove(kdb,keyName(key1))==0,"Cannot remove key1");
 	succeed_if(ksDel(ks)==0,"Could not close keySet");
 	exit_if_fail(kdbClose(kdb)==0,"Could not close libelektra");
 }
@@ -217,10 +215,8 @@ void test_writeread()
 	succeed_if(key2_found, KEY_ROOT "/test2 not found");
 	ksDel(returned);
 
-	keyRemove (key2);
-	succeed_if(kdbSetKey(kdb,key2)==0,"Cannot remove key2");
-	keyRemove (key1);
-	succeed_if(kdbSetKey(kdb,key1)==0,"Cannot remove key1");
+	succeed_if(kdbRemove(kdb,keyName(key2))==0,"Cannot remove key2");
+	succeed_if(kdbRemove(kdb,keyName(key1))==0,"Cannot remove key1");
 	succeed_if(ksDel(ks)==0,"Could not close keySet");
 	exit_if_fail(kdbClose(kdb)==0,"Could not close libelektra");
 }
@@ -403,10 +399,13 @@ void test_simple_getset()
 	// delete key test1
 	kdb=kdbOpen();
 	ks=ksNew(0);
-	key1=keyNew(KEY_ROOT "/test1", KEY_REMOVE, KEY_END);
+
+	key1=keyNew(KEY_ROOT "/test1", KEY_END);
 	ksAppendKey(ks,key1);
 	succeed_if (kdbSet(kdb,ks,0,0)!=-1, "could not kdbSet keys");
 	ksDel(ks);
+
+	kdbRemove (kdb, KEY_ROOT "test1");
 	kdbClose(kdb);
 
 	return;
@@ -440,9 +439,12 @@ void test_highlevel_getset()
 
 	// delete key test3
 	kdb=kdbOpen();
-	key1=keyNew(KEY_ROOT "/test3", KEY_REMOVE, KEY_END);
+	key1=keyNew(KEY_ROOT "/test3", KEY_END);
 	succeed_if (kdbSetKey (kdb,key1)==0, "could not get a key");
 	keyDel (key1);
+
+	kdbRemove (kdb, KEY_ROOT "/test3");
+
 	kdbClose(kdb);
 
 	return;
@@ -493,12 +495,16 @@ void test_simple_recursive_getset()
 	// delete key test1
 	kdb=kdbOpen();
 	ks=ksNew(0);
-	key1=keyNew(KEY_ROOT "/dir/key", KEY_REMOVE, KEY_END);
+	key1=keyNew(KEY_ROOT "/dir/key", KEY_END);
 	ksAppendKey(ks,key1);
-	key1=keyNew(KEY_ROOT "/dir", KEY_DIR, KEY_REMOVE, KEY_END);
+	key1=keyNew(KEY_ROOT "/dir", KEY_DIR, KEY_END);
 	ksAppendKey(ks,key1);
 	succeed_if (kdbSet(kdb,ks,0,0)!=-1, "could not kdbSet keys");
 	ksDel(ks);
+
+	kdbRemove (kdb, KEY_ROOT "/dir");
+	kdbRemove (kdb, KEY_ROOT "/dir/key");
+
 	kdbClose(kdb);
 
 	return;
@@ -579,18 +585,25 @@ void test_recursive_getset()
 	// delete key test1
 	kdb=kdbOpen();
 	ks=ksNew(0);
-	key1=keyNew(KEY_ROOT "/dir1/key1", KEY_REMOVE, KEY_END);
+	key1=keyNew(KEY_ROOT "/dir1/key1", KEY_END);
 	ksAppendKey(ks,key1);
-	key1=keyNew(KEY_ROOT "/dir1/key2", KEY_REMOVE, KEY_END);
+	key1=keyNew(KEY_ROOT "/dir1/key2", KEY_END);
 	ksAppendKey(ks,key1);
-	key1=keyNew(KEY_ROOT "/dir1", KEY_REMOVE, KEY_END);
+	key1=keyNew(KEY_ROOT "/dir1", KEY_END);
 	ksAppendKey(ks,key1);
-	key1=keyNew(KEY_ROOT "/dir2", KEY_REMOVE, KEY_END);
+	key1=keyNew(KEY_ROOT "/dir2", KEY_END);
 	ksAppendKey(ks,key1);
-	key1=keyNew(KEY_ROOT "/key1", KEY_REMOVE, KEY_END);
+	key1=keyNew(KEY_ROOT "/key1", KEY_END);
 	ksAppendKey(ks,key1);
 	succeed_if (kdbSet(kdb,ks,0,0)!=-1, "could not kdbSet keys");
 	ksDel(ks);
+
+	kdbRemove (kdb, KEY_ROOT "/dir1/key1");
+	kdbRemove (kdb, KEY_ROOT "/dir1/key2");
+	kdbRemove (kdb, KEY_ROOT "/dir1");
+	kdbRemove (kdb, KEY_ROOT "/dir2");
+	kdbRemove (kdb, KEY_ROOT "/key1");
+
 	kdbClose(kdb);
 
 	return;
@@ -634,10 +647,13 @@ void test_directory_getset()
 	// delete key test1
 	kdb=kdbOpen();
 	ks=ksNew(0);
-	key1=keyNew(KEY_ROOT "/dir4", KEY_REMOVE, KEY_END);
+	key1=keyNew(KEY_ROOT "/dir4", KEY_END);
 	ksAppendKey(ks,key1);
 	succeed_if (kdbSet(kdb,ks,0,0)!=-1, "could not kdbSet keys");
 	ksDel(ks);
+
+	kdbRemove (kdb, KEY_ROOT "/dir4");
+
 	kdbClose(kdb);
 
 	return;
@@ -672,9 +688,12 @@ void test_directory_highlevel_getset()
 
 	// delete key test3
 	kdb=kdbOpen();
-	key1=keyNew(KEY_ROOT "/dir5", KEY_REMOVE, KEY_END);
+	key1=keyNew(KEY_ROOT "/dir5", KEY_END);
 	succeed_if (kdbSetKey (kdb,key1)!=-1, "could not set a key");
 	keyDel (key1);
+
+	kdbRemove (kdb, KEY_ROOT "/dir5");
+
 	kdbClose(kdb);
 
 	return;

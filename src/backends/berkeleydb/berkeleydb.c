@@ -813,11 +813,6 @@ int kdbGetKey_bdb(KDB *handle, Key *key) {
 
 
 
-int kdbStatKey_bdb(KDB *handle, Key *key) {
-	return kdbGetKeyWithOptions(handle,key,0);
-}
-
-
 
 /**
  * Implementation for kdbSetKey() method.
@@ -1214,9 +1209,6 @@ int kdbOpen_berkeleydb(KDB *handle) {
 	DBContainer *dbs;
 
 	cap->onlyFullGet=1;
-	cap->noStat=1;
-
-	cap->onlyRemoveAll=1;
 
 	cap->onlyFullSet=1;
 	cap->onlyAddKeys=1;
@@ -1234,7 +1226,6 @@ int kdbOpen_berkeleydb(KDB *handle) {
 	cap->noATime=1;
 	cap->noMTime=1;
 	cap->noCTime=1;
-	cap->noRemove=1;
 	cap->noLink=1;
 	cap->noMount=1;
 	cap->noBinary=1;
@@ -1291,12 +1282,7 @@ ssize_t kdbSet_berkeleydb(KDB *handle, KeySet *returned, const Key *parentKey) {
 
 	if (!current) current=ksNext(returned);
 	while (current) {
-		if (keyNeedRemove(current))
-		{
-			if (kdbRemoveKey_bdb (handle, current))
-				return -1;
-			// TODO: should key be removed?
-		}
+		// TODO: How to remove Key?
 		else if (keyNeedSync(current))
 		{
 			if (kdbSetKey_bdb (handle,current)) /* check error */
