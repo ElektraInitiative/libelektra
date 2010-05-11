@@ -226,8 +226,6 @@ ssize_t kdbGet_dump(ckdb::KDB *handle, ckdb::KeySet *returned, const ckdb::Key *
 {
 	int errnosave = errno;
 
-	if (strcmp (keyName(kdbhGetMountpoint(handle)), keyName(parentKey))) return 0;
-
 	std::ifstream ofs(static_cast<std::string*>(ckdb::kdbhGetBackendData (handle))->c_str());
 	dump::unserialize (ofs, returned);
 
@@ -238,8 +236,6 @@ ssize_t kdbGet_dump(ckdb::KDB *handle, ckdb::KeySet *returned, const ckdb::Key *
 ssize_t kdbSet_dump(ckdb::KDB *handle, ckdb::KeySet *returned, const ckdb::Key *parentKey)
 {
 	int errnosave = errno;
-
-	if (strcmp (keyName(kdbhGetMountpoint(handle)), keyName(parentKey))) return 0;
 
 	std::ofstream ifs(static_cast<std::string*>(ckdb::kdbhGetBackendData (handle))->c_str());
 	dump::serialize (ifs, returned);

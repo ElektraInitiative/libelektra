@@ -127,6 +127,9 @@ Trie* createTrie(KeySet *ks, OpenMapper mapper)
 	current=ksGetCursor(ks);
 
 	ksRewind(ks);
+	key=ksLookupByName(ks, KDB_KEY_MOUNTPOINTS, 0);
+	if (!key) return trie;
+
 	key=ksNext(ks);
 
 	for (;key;) {
@@ -134,10 +137,6 @@ Trie* createTrie(KeySet *ks, OpenMapper mapper)
 		char *mountpoint=0;
 		const char *backend_name=0;
 
-		if (!strncmp(KDB_KEY_MOUNTPOINTS, keyName(key),KDB_KEY_MOUNTPOINTS_LEN+1)) {
-			key=ksNext(ks);
-			continue;
-		}
 		config=ksNew(0);
 		entry_name = getEntryName(keyName(key));
 
@@ -363,6 +362,9 @@ static int isOfEntryBackend(Key *key, char *entry)
 	const char *s;
 	int len;
 	int entrylen;
+
+	if (!entry) return -1;
+
 	s=keyName(key);
 	len=strlen(s);
 	entrylen=strlen(entry);
@@ -382,6 +384,9 @@ static int isOfEntryConfig(Key *key, char *entry)
 	const char *s;
 	int len;
 	int entrylen;
+
+	if (!entry) return -1;
+
 	s=keyName(key);
 	len=strlen(s);
 	entrylen=strlen(entry);
