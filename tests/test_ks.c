@@ -753,14 +753,14 @@ void test_ksSort()
 	ksDel (ks);
 
 	ks=ksNew(0);
-	k1 = keyNew("user/aname", KEY_END);
+	k1 = keyNew("user/xname", KEY_END);
 	ksAppendKey(ks,k1);
 
 	k2 = keyDup (k1);
 
 	succeed_if (keyGetRef(k2) == 0, "reference counter not resetted");
 	ksAppendKey(ks,k2);
-	succeed_if (keyGetRef(k2) == 1, "reference counter not incremented");
+	succeed_if (keyGetRef(k2) == 0, "reference counter incremented, but already inserted");
 	ksSort (ks);
 
 	ksRewind (ks);
@@ -768,7 +768,7 @@ void test_ksSort()
 	ksDel(ks);
 	
 	ks=ksNew(0);
-	k1 = keyNew("user/aname", KEY_END);
+	k1 = keyNew("user/yname", KEY_END);
 	k2 = keyDup (k1);
 	ksAppendKey(ks,k2);
 	ksAppendKey(ks,k1);
@@ -791,34 +791,26 @@ void test_ksSort()
 	ksAppendKey(ks, keyNew("user/h", KEY_END));
 	ksAppendKey(ks, keyNew("user/f", KEY_END));
 
-	ksSort (ks);
 	ksRewind (ks);
-	// output_keyset(ks,0);
 	for (i=0; (key=ksNext(ks)) != 0; i++)
 	{
 		switch (i)
 		{
-		case 0:	succeed_if (strcmp (keyName (key), "user/h") == 0, "wrong name found.");
+		case 0:	succeed_if (strcmp (keyName (key), "user/a") == 0, "wrong name found.");
 			break;
-		case 1:	succeed_if (strcmp (keyName (key), "user/g") == 0, "wrong name found.");
+		case 1:	succeed_if (strcmp (keyName (key), "user/b") == 0, "wrong name found.");
 			break;
-		case 2:	succeed_if (strcmp (keyName (key), "user/f") == 0, "wrong name found.");
+		case 2:	succeed_if (strcmp (keyName (key), "user/c") == 0, "wrong name found.");
 			break;
 		case 3:	succeed_if (strcmp (keyName (key), "user/d") == 0, "wrong name found.");
 			break;
-		case 4:	succeed_if (strcmp (keyName (key), "user/c") == 0, "wrong name found.");
+		case 4:	succeed_if (strcmp (keyName (key), "user/e") == 0, "wrong name found.");
 			break;
-		case 5:	succeed_if (strcmp (keyName (key), "user/b") == 0, "wrong name found.");
+		case 5:	succeed_if (strcmp (keyName (key), "user/f") == 0, "wrong name found.");
 			break;
-		case 6:	succeed_if (strcmp (keyName (key), "user/a") == 0, "wrong name found.");
+		case 6:	succeed_if (strcmp (keyName (key), "user/g") == 0, "wrong name found.");
 			break;
-		case 7:	succeed_if (strcmp (keyName (key), "user/b") == 0, "wrong name found.");
-			break;
-		case 8:	succeed_if (strcmp (keyName (key), "user/c") == 0, "wrong name found.");
-			break;
-		case 9:	succeed_if (strcmp (keyName (key), "user/e") == 0, "wrong name found.");
-			break;
-		case 10:succeed_if (strcmp (keyName (key), "user/h") == 0, "wrong name found.");
+		case 7:	succeed_if (strcmp (keyName (key), "user/h") == 0, "wrong name found.");
 			break;
 		default:succeed_if (0, "should not reach");
 			break;
@@ -895,25 +887,25 @@ void test_ksSort()
 	{
 		switch (i)
 		{
-		case 0:	succeed_if (strcmp (keyName (key), "user/dir5/key1") == 0, "wrong name found.");
+		case 9:	succeed_if (strcmp (keyName (key), "user/dir5/key1") == 0, "wrong name found.");
 			break;
-		case 1:	succeed_if (strcmp (keyName (key), "user/dir2/key1") == 0, "wrong name found.");
+		case 4:	succeed_if (strcmp (keyName (key), "user/dir2/key1") == 0, "wrong name found.");
 			break;
-		case 2:	succeed_if (strcmp (keyName (key), "user/dir2") == 0, "wrong name found.");
+		case 3:	succeed_if (strcmp (keyName (key), "user/dir2") == 0, "wrong name found.");
 			break;
-		case 3:	succeed_if (strcmp (keyName (key), "user/dir1/key3") == 0, "wrong name found.");
+		case 2:	succeed_if (strcmp (keyName (key), "user/dir1/key3") == 0, "wrong name found.");
 			break;
-		case 4:	succeed_if (strcmp (keyName (key), "user/dir1/key1") == 0, "wrong name found.");
+		case 0:	succeed_if (strcmp (keyName (key), "user/dir1/key1") == 0, "wrong name found.");
 			break;
-		case 5:	succeed_if (strcmp (keyName (key), "user/dir1/key2") == 0, "wrong name found.");
+		case 1:	succeed_if (strcmp (keyName (key), "user/dir1/key2") == 0, "wrong name found.");
 			break;
-		case 6:	succeed_if (strcmp (keyName (key), "user/dir3") == 0, "wrong name found.");
+		case 5:	succeed_if (strcmp (keyName (key), "user/dir3") == 0, "wrong name found.");
 			break;
-		case 7:	succeed_if (strcmp (keyName (key), "user/dir3/key1") == 0, "wrong name found.");
+		case 6:	succeed_if (strcmp (keyName (key), "user/dir3/key1") == 0, "wrong name found.");
 			break;
-		case 8:	succeed_if (strcmp (keyName (key), "user/dir3/key2") == 0, "wrong name found.");
+		case 7:	succeed_if (strcmp (keyName (key), "user/dir3/key2") == 0, "wrong name found.");
 			break;
-		case 9:	succeed_if (strcmp (keyName (key), "user/dir4") == 0, "wrong name found.");
+		case 8:	succeed_if (strcmp (keyName (key), "user/dir4") == 0, "wrong name found.");
 			break;
 		case 10:succeed_if (strcmp (keyName (key), "user/dir6/key1") == 0, "wrong name found.");
 			break;
@@ -1005,9 +997,7 @@ void test_ksLookup()
 	for (i=0; i<100; i++)
 	{
 		ksUnsort(ks);
-		for (j=0; j<5; j++)
-			succeed_if (ksLookup(ks, k[j], 0)==0, "found removed key");
-		for (j=5; j<23;j++)
+		for (j=0; j<23;j++)
 			succeed_if (ksLookup(ks, k[j], 0)==k[j], "did not found key");
 		succeed_if (ksLookup(ks, k[23], KDB_O_NOCASE) == k[5], "did not found key");
 		succeed_if (ksLookup(ks, k[23], 0) == 0, "found wrong key");
@@ -1079,9 +1069,7 @@ void test_ksLookupByName()
 	for (i=0; i<100; i++)
 	{
 		ksUnsort(ks);
-		for (j=0; j<5; j++)
-			succeed_if (ksLookupByName(ks, name[j], 0)==0, "found removed key");
-		for (j=5; j<23;j++)
+		for (j=0; j<23;j++)
 			succeed_if (ksLookupByName(ks, name[j], 0)==k[j], "did not found key");
 		succeed_if (ksLookupByName(ks, name[23], KDB_O_NOCASE) == k[5], "did not found key");
 		succeed_if (ksLookupByName(ks, name[23], 0) == 0, "found wrong key");
