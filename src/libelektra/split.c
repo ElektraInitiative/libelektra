@@ -122,8 +122,6 @@ Split *split_keyset(KDB *handle, KeySet *ks,
 		curFound = 0;
 
 		if (options & KDB_O_SYNC) curKey->flags |= KEY_FLAG_SYNC;
-		if (options & KDB_O_NOREMOVE) curKey->flags &= ~KEY_FLAG_REMOVE;
-		else if (options & KDB_O_REMOVEONLY) keyRemove(curKey);
 
 		for (i=0; i<ret->no; i++)
 		{

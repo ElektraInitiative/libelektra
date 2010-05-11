@@ -535,18 +535,6 @@ int kdbClose(KDB *handle)
  *   Put in @p returned only the folder keys. The resulting 
  *   KeySet will be only the skeleton of the tree. This option must not be
  *   ORed together with KDB_O_DIR.
- * - @p option_t::KDB_O_NOSTAT \n
- *   Don't stat they keys, whatever keyNeedStat() says.
- *   That means that also the key value and comment will be retrieved.
- *   The flag will result in that all keys in @p returned don't have
- *   keyNeedStat() set.
- * - @p option_t::KDB_O_STATONLY \n
- *   Only stat the keys. It means that key value and comment will
- *   not be retrieved. The resulting keys will contain only meta info such
- *   as user and group IDs, owner, mode permissions and modification times.
- *   You don't need that flag if the keys already have keyNeedStat() set.
- *   The flag will result in that all keys in @p returned have
- *   keyNeedStat() set.
  * - @p option_t::KDB_O_INACTIVE \n
  *   Will make it not ignore inactive keys, so @p returned will contain also
  *   inactive keys. Inactive keys are those that have names
@@ -667,20 +655,13 @@ ssize_t kdbGet (KDB *handle, KeySet *returned,
 	if (backend_handle==NULL)
 		backend_handle=handle;
 
-	if (options & KDB_O_NOSTAT) parentKey->flags &= ~KEY_FLAG_STAT;
-	else if (options & KDB_O_STATONLY) keyStat (parentKey);
-
 	keys = ksNew (0);
 	tmp = ksNew (0);
 	ksRewind (returned);
 	while ((current = ksPop(returned)) != 0)
 	{
-		if (options & KDB_O_NOSTAT) current->flags &= ~KEY_FLAG_STAT;
-		else if (options & KDB_O_STATONLY) keyStat(current);
-
 		if (keyIsDirectBelow(parentKey, current))
 		{
-			if (keyNeedStat(parentKey)) keyStat (current);
 			set_bit (current->flags, KEY_FLAG_SYNC);
 			ksAppendKey(keys, current);
 		} else {
@@ -868,15 +849,10 @@ for (i=0; i< 10; i++) // limit to 10 tries
  * - @p option_t::KDB_O_SYNC \n
  *   Will force to save all keys, independent of their sync state.
  * - @p option_t::KDB_O_NOREMOVE \n
- *   Don't remove any key from disk, even if keyRemove() was set.
+ *   Don't remove any key from disk, even with an empty keyset.
  *   With that flag removing keys can't happen unintentional.
- *   The flag will result in that all keys in @p returned don't have
- *   keyNeedRemove() set.
  * - @p option_t::KDB_O_REMOVEONLY \n
- *   Remove all keys instead of setting them. All keys in @p returned
- *   will have keyNeedRemove() set, but not keyNeedStat() saying to you
- *   that the key was deleted permanently.
- *   This option implicit also activates @p option_t::KDB_O_SYNC
+ *   Remove all keys instead of setting them.
  *   because the sync state will be changed when they are marked remove.
  *   You might need @ref option_t::KDB_O_INACTIVE set for the previous call
  *   of kdbGet() if there are any. Otherwise the recursive remove will fail,
@@ -888,10 +864,6 @@ for (i=0; i< 10; i++) // limit to 10 tries
  * When you dont have a parentKey or its name empty, then all keys will
  * be set.
  *
- * You can remove some keys instead of setting them by marking them with keyRemove().
- * The keyNeedSync() flag will be unset after successful removing. But the keyNeedRemove()
- * flag will stay, but its safe to delete the key.
- *
  * @param handle contains internal information of @link kdbOpen() opened @endlink key database
  * @param ks a KeySet which should contain changed keys, otherwise nothing is done
  * @param parentKey holds the information below which key keys should be set
@@ -899,7 +871,6 @@ for (i=0; i< 10; i++) // limit to 10 tries
  * @return 0 on success
  * @return -1 on failure
  * @see keyNeedSync(), ksNext(), ksCurrent()
- * @see keyRemove(), keyNeedRemove()
  * @see commandEdit(), commandImport() code in kdb command for usage and error
  *       handling example
  * @ingroup kdb

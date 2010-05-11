@@ -144,12 +144,6 @@ keyDel (emptyNamedKey);
  *   Next parameter is the owner. See keySetOwner().
  * - keyswitch_t::KEY_COMMENT \n
  *   Next parameter is a comment. See keySetComment().
- * - keyswitch_t::KEY_REMOVE \n
- *   Mark the key to be removed instead of set it.
- *   See keyRemove().
- * - keyswitch_t::KEY_STAT \n
- *   Mark the key to be stated instead of get it.
- *   See keyStat().
  * - keyswitch_t::KEY_END \n
  *   Must be the last parameter passed to keyNew(). It is always
  *   required, unless the @p keyName is 0.

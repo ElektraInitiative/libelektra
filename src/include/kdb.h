@@ -52,8 +52,6 @@ enum {
 	KDB_O_POP=1<<1,
 	KDB_O_NODIR=1<<2,
 	KDB_O_DIRONLY=1<<3,
-	KDB_O_NOSTAT=1<<4,
-	KDB_O_STATONLY=1<<5,
 	KDB_O_NOREMOVE=1<<6,
 	KDB_O_REMOVEONLY=1<<7,
 	KDB_O_INACTIVE=1<<8,
@@ -134,15 +132,11 @@ const Key *keyGetMeta(const Key *key, const char* metaName);
 ssize_t    keySetMeta(Key *key, const char* metaName,
 	const char *newMetaString);
 
-int keyStat(Key *key);
-int keyRemove(Key *key);
 
 /* Methods for Making Tests */
 int keyCmp(const Key *k1, const Key *k2);
 
-int keyNeedStat(const Key *key);
 int keyNeedSync(const Key *key);
-int keyNeedRemove(const Key *key);
 
 int keyIsBelow(const Key *key, const Key *check);
 int keyIsDirectBelow(const Key *key, const Key *check);

@@ -153,10 +153,6 @@ typedef enum
 		If name, value or metadata
 		are changed this flag will be set, so that the backend will sync
 		the key to database.*/
-	KEY_FLAG_REMOVE=1<<1,	/*!< Key will be removed. (out)
-		The key is marked to be removed.*/
-	KEY_FLAG_STAT=1<<2,	/*!< Only stat the key. (in)
-		don't get value and comment, if the backend supports it. */
 	KEY_FLAG_RO=1<<3	/*!< Key is read only and not allowed
 		to be changed. All attempts to change name, value,
 		or meta data will be ignored.*/
@@ -207,7 +203,7 @@ struct _Key {
 
 	/**
 	 * In how many keysets the key resists.
-	 * keySetName() and keyRemove() are only allowed if ksReference is 0.
+	 * keySetName() is only allowed if ksReference is 0.
 	 * @see ksPop(), ksAppendKey(), ksAppend()
 	 */
 	size_t        ksReference;

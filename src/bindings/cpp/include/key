@@ -218,9 +218,6 @@ public:
 	bool needRemove() const;
 	bool needStat() const;
 
-	void remove();
-	void stat();
-
 private:
 	ckdb::Key * key; // holds elektra key struct
 };
@@ -692,26 +689,6 @@ inline bool Key::isDirectBelow(const Key & k) const
 inline bool Key::needSync() const
 {
 	return ckdb::keyNeedSync(key);
-}
-
-inline bool Key::needRemove() const
-{
-	return ckdb::keyNeedRemove(key);
-}
-
-inline bool Key::needStat() const
-{
-	return ckdb::keyNeedStat(key);
-}
-
-inline void Key::remove()
-{
-	ckdb::keyRemove (key);
-}
-
-inline void Key::stat()
-{
-	ckdb::keyStat (key);
 }
 
 } // end of namespace kdb

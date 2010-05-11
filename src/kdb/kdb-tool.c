@@ -586,7 +586,7 @@ int kdbRename(KDB *handle, const Key *key, const char *newname) {
 	KeySet * ks = ksNew(0);
 	Key * toRename = keyDup(key);
 	Key * toRemove = keyDup(key);
-	keyRemove (toRemove);
+	// TODO implement with removing
 	ksAppendKey(ks, toRemove);
 
 	if (keySetName (toRename, newname) == -1)

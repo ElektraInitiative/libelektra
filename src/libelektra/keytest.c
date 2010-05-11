@@ -472,8 +472,6 @@ keyswitch_t keyCompare(const Key *key1, const Key *key2)
 	const char *owner2 = keyOwner(key2);
 	const void *value1 = keyValue(key1);
 	const void *value2 = keyValue(key2);
-	int remove1 = keyNeedRemove(key1);
-	int remove2 = keyNeedRemove(key2);
 	ssize_t size1 = keyGetValueSize(key1);
 	ssize_t size2 = keyGetValueSize(key2);
 
