@@ -319,12 +319,6 @@ Key *keyVNew (const char *keyName, va_list va)
 				case KEY_COMMENT:
 					keySetComment(key,va_arg(va,char *));
 					break;
-				case KEY_REMOVE:
-					keyRemove(key);
-					break;
-				case KEY_STAT:
-					keyStat(key);
-					break;
 				case KEY_DIR:
 					keySetDir(key);
 					break;

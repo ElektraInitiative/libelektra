@@ -379,28 +379,18 @@ static int keyCmpInternal(const void *p1, const void *p2) {
 	const char *name2 = keyName(key2);
 	int ret = strcmp(name1, name2);
 
-	/* one key remove, sort in order of KEY_FLAG_REMOVE */
-	if (keyNeedRemove(key1) && !keyNeedRemove(key2)) return -1;
-	else if (!keyNeedRemove(key1) && keyNeedRemove(key2)) return 1;
-
-
-	if (keyNeedRemove(key1) && keyNeedRemove(key2))
-	{	/* both keys remove, sort reverse */
-		if (ret < 0) return 1;
-		else if (ret > 0) return -1;
-		else return 0;
-	} else { /* sort by owner */
-		if (ret == 0)
-		{
-			const char *owner1 = keyOwner(key1);
-			const char *owner2 = keyOwner(key2);
-			if (!owner1 && !owner2) return 0;
-			if (!owner1) return -1;
-			if (!owner2) return 1;
-			return strcmp(owner1, owner2);
-		}
-		else return ret;
+	/* sort by owner */
+	if (ret == 0)
+	{
+		const char *owner1 = keyOwner(key1);
+		const char *owner2 = keyOwner(key2);
+		if (!owner1 && !owner2) return 0;
+		if (!owner1) return -1;
+		if (!owner2) return 1;
+		return strcmp(owner1, owner2);
 	}
+
+	return ret;
 }
 
 
@@ -506,7 +496,7 @@ ksLookup(ks, s, 0); // you dont need to sort ks
  *
  * @section sortkey Sort when changing key
  *
- * @warning You must not use keySetName() or keyRemove() when a
+ * @warning You must not use keySetName() when a
  * key belongs to a keyset. When you are doing this, you always need to @p manually
  * sort @p all keysets where the key was before using ksLookup() (otherwise ksLookup()
  * won't find that keys), kdbGet() or kdbSet() methods.
@@ -527,7 +517,7 @@ ksLookup(ks, s, 0); // you dont need to sort ks
  * @see kdbGet(), kdbSet(), ksLookup() for some functions which may
  *     need sorting before they are called. (All functions which take
  *     options as arguments)
- * @see keySetName(), keySetBaseName(), keyAddBaseName() and keyRemove()
+ * @see keySetName(), keySetBaseName() and keyAddBaseName()
  *     for all methods which change the sorting state where the keyset
  *     can't track the change.
  * @see ksAppend(), ksAppendKey(), ksPop() for all methods which make
@@ -654,7 +644,6 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
 		/* We want to append a new key
 		  in position middle */
 		++ ks->size;
-		if (keyNeedRemove (toAppend)) ++ ks->rsize;
 		if (ks->size >= ks->alloc) ksResize (ks, ks->alloc * 2-1);
 		keyIncRef (toAppend);
 
@@ -710,7 +699,6 @@ ssize_t ksAppend(KeySet *ks, const KeySet *toAppend)
 
 	if (toAppend->size <= 0) return ks->size;
 	ks->size += toAppend->size;
-	ks->rsize += toAppend->rsize;
 	while (ks->size >= toAlloc) toAlloc *= 2;
 	ksResize (ks, toAlloc-1);
 	for (i=0; i<toAppend->size; i++) keyIncRef(toAppend->array[i]);
@@ -1191,10 +1179,6 @@ static int keyCompareByNameOwnerCase(const void *p1, const void *p2) {
  * will not be changed, only iff ksCurrent() is the searched key, then the keyset
  * will be ksRewind()ed.
  *
- * @note Note that keyRemove() keys won't be found after the first time the keyset
- * is resorted. Lookup automatically sorts the keyset, if needed, but it
- * can't find it out when only keys are changed, not the keyset.
- *
  * @note Like in ksPop() the popped key always needs to be keyDel() afterwards, even
  * if it is appended to another keyset.
  *
@@ -1252,10 +1236,10 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 	Key ** found;
 	cursor_t cursor = 0;
 	size_t jump = 0;
+	/*If there is a known offset in the beginning jump could be set*/
 
 	if (!ks) return 0;
 
-	jump = ks->rsize;
 	cursor = ksGetCursor (ks);
 
 	if (!key) return 0;
@@ -1771,7 +1755,6 @@ int ksInit(KeySet *ks) {
 	ks->array = 0;
 
 	ks->size=0;
-	ks->rsize=0;
 	ks->alloc=0;
 
 	ksRewind(ks);
@@ -1803,7 +1786,6 @@ int ksClose(KeySet *ks)
 	ks->alloc = 0;
 
 	ks->size = 0;
-	ks->rsize= 0;
 
 	return 0;
 }

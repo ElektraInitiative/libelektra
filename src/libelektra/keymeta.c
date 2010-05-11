@@ -460,67 +460,6 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 }
 
 
-/**
- * Only stat a key instead of receiving value, comment and key type.
- *
- * Only stat the key in the database when doing
- * kdbGet(). The key may not have any value, comment
- * or key type set.
- *
- * It is not possible to revert the action on per-key basis.
- * When you want to remove the flag you have to pass
- * option_t::KDB_O_NOSTAT to the next kdbGet().
- *
- * @see keyNeedStat(), kdbGet()
- * @param key the key object to work with
- * @return 1 on succuess
- * @return -1 on NULL pointer
- *
- * @ingroup keymeta
- */
-int keyStat(Key *key)
-{
-	if (!key) return -1;
-
-	key->flags |= KEY_FLAG_STAT;
-	return 1;
-}
-
-
-/**
- * Permanently remove a key after committing to database.
- *
- * This functions sets a flag that the key needs to be removed.
- * It also sets a flag that it is not synced.
- *
- * Remove the key instead of writing it in the key database when doing
- * kdbSet() and related functions.
- *
- * This key will be ignored and it is save to delete it afterwards.
- * To be sure that it was removed, check if it needs sync with
- * keyNeedSync().
- *
- * @note Delete in elektra terminology means to free memory,
- * remove means to free permanent storage.
- *
- * @warning You should not change a key's remove status once it belongs to a keyset.
- * See ksSort() for more information.
- *
- * @see keyNeedRemove(), kdbSet(), kdbRemove()
- * @param key the key object to work with
- * @return 1 on success
- * @return -1 on NULL pointer
- *
- * @ingroup keymeta
- */
-int keyRemove(Key *key) {
-	if (!key) return -1;
-
-	key->flags |= KEY_FLAG_REMOVE;
-	key->flags |= KEY_FLAG_SYNC;
-	return 1;
-}
-
 
 /*********************************************
  *       UID, GID access methods             *

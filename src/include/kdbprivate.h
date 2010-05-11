@@ -238,11 +238,15 @@ struct _KeySet {
 	struct _Key **array;	/**<Array which holds the keys */
 
 	size_t        size;	/**< Number of keys contained in the KeySet */
-	size_t        rsize;	/**< Number of removed keys contained in the KeySet */
 	size_t        alloc;	/**< Allocated size of array */
 
 	struct _Key  *cursor;	/**< Internal cursor */
 	size_t        current;	/**< Current position of cursor */
+
+	/**
+	 * Some control and internal flags.
+	 */
+	keyflag_t      flags;
 };
 
 

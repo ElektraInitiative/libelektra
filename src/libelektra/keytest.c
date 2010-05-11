@@ -54,6 +54,8 @@
 
 /**Clear flags of a key.
   *
+  * Should be done only in kdbGet() part of plugins.
+  *
   * If you want to get the current flags, just call
   * it with semiflag set to 0.
   *
@@ -71,27 +73,6 @@ int keyClearSync (Key *key)
 	key->flags &= semiflag;
 
 	return key->flags;
-}
-
-
-/**
- * Ask if key is marked for stat only.
- *
- * Ask if the key will be stat instead of get it from the key database
- * completely doing kdbGetKey() or kdbGet(). This is useful
- * if you are not interested in the value, comment or key type.
- *
- * @see keyStat(), kdbGet()
- * @param key the key object to work with
- * @return 1 if it is marked, 0 otherwise
- * @return -1 on NULL pointer
- * @ingroup keytest
- **/
-int keyNeedStat(const Key *key)
-{
-	if (!key) return -1;
-
-	return (key->flags & KEY_FLAG_STAT) == KEY_FLAG_STAT;
 }
 
 
@@ -123,26 +104,6 @@ int keyNeedSync(const Key *key)
 	if (!key) return -1;
 
 	return (key->flags & KEY_FLAG_SYNC) == KEY_FLAG_SYNC;
-}
-
-
-/**
- * Ask if key is marked for permanent remove.
- *
- * Ask if the key will be removed instead of writing in the key database
- * when doing kdbSetKey() or kdbSet().
- *
- * @see keyRemove()
- * @see kdbSet(), kdbSetKey(), kdbRemove()
- * @param key the key object to work with
- * @return 1 if it is marked, 0 otherwise
- * @return -1 on NULL pointer
- * @ingroup keytest*/
-int keyNeedRemove(const Key *key)
-{
-	if (!key) return -1;
-
-	return (key->flags & KEY_FLAG_REMOVE) == KEY_FLAG_REMOVE;
 }
 
 
@@ -520,7 +481,6 @@ keyswitch_t keyCompare(const Key *key1, const Key *key2)
 	if (keyGetUID(key1) != keyGetUID(key2))        ret|=KEY_UID;
 	if (keyGetGID(key1) != keyGetGID(key2))        ret|=KEY_GID;
 	if (keyGetMode(key1)!= keyGetMode(key2))  ret|=KEY_MODE;
-	if (remove1 != remove2)            ret|=KEY_REMOVE;
 	if (strcmp(name1, name2))          ret|=KEY_NAME;
 	if (strcmp(comment1, comment2))    ret|=KEY_COMMENT;
 	if (strcmp(owner1, owner2))        ret|=KEY_OWNER;
