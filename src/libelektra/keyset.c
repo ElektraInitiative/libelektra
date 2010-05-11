@@ -533,6 +533,30 @@ void ksSort(KeySet *ks)
 }
 
 
+/**Checks if KeySet needs sync.
+ *
+ * When keys are changed this is reflected into keyNeedSync().
+ *
+ * But when keys are popped from a keyset this can't be seen
+ * by looking at the individual keys.
+ *
+ * ksNeedSync() allows the backends to know if a key was
+ * popped from the keyset to know that this keyset needs
+ * to be written out.
+ *
+ * @param ks the keyset to work with
+ * @return -1 on null keyset
+ * @return 0 if it does not need sync
+ * @return 1 if it needs sync
+ */
+int ksNeedSync(const KeySet *ks)
+{
+	if (!ks) return -1;
+
+	return (ks->flags & KS_FLAG_SYNC) == KS_FLAG_SYNC;
+}
+
+
 
 
 /**
@@ -754,7 +778,10 @@ Key *ksPop(KeySet *ks)
 
 	if (!ks) return 0;
 
+	ks->flags |= KS_FLAG_SYNC;
+
 	if (ks->size <= 0) return 0;
+
 	-- ks->size;
 	if (ks->size+1 < ks->alloc/2) ksResize (ks, ks->alloc / 2-1);
 	ret = ks->array[ks->size];
@@ -1294,6 +1321,9 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 				{
 					ksRewind(ks);
 				}
+
+				ks->flags |= KS_FLAG_SYNC;
+
 				return ksPop(ks);
 			} else {
 				cursor = found-ks->array;
@@ -1756,6 +1786,7 @@ int ksInit(KeySet *ks) {
 
 	ks->size=0;
 	ks->alloc=0;
+	ks->flags=0;
 
 	ksRewind(ks);
 

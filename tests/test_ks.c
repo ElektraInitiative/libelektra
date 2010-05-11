@@ -2044,6 +2044,45 @@ void test_ksLookupPop()
 	
 }
 
+void test_ksSync()
+{
+	printf ("Test sync flag of KeySet\n");
+
+	KeySet *ks;
+
+	ks = ksNew(0);
+	succeed_if (ksNeedSync(ks) == 0, "need sync after creation");
+
+	keyDel (ksPop (ks));
+	succeed_if (ksNeedSync(ks) == 1, "need sync after pop");
+	ksDel (ks);
+
+
+	ks = ksNew(0);
+	succeed_if (ksNeedSync(ks) == 0, "need sync after creation");
+
+	ksAppendKey (ks, keyNew ("user/key", KEY_END));
+	succeed_if (ksNeedSync(ks) == 0, "need sync after new key");
+
+	keyDel (ksPop (ks));
+	succeed_if (ksNeedSync(ks) == 1, "need sync after new key");
+	ksDel (ks);
+
+
+	ks = ksNew(0);
+	succeed_if (ksNeedSync(ks) == 0, "need sync after creation");
+
+	ksAppendKey (ks, keyNew ("user/key", KEY_END));
+	succeed_if (ksNeedSync(ks) == 0, "need sync after new key");
+
+	ksLookupByName(ks, "user/key", 0);
+	succeed_if (ksNeedSync(ks) == 0, "need sync after new key");
+
+	ksLookupByName(ks, "user/key", KDB_O_POP);
+	succeed_if (ksNeedSync(ks) == 1, "need sync after new key");
+	ksDel (ks);
+}
+
 
 int main(int argc, char** argv)
 {
@@ -2071,6 +2110,7 @@ int main(int argc, char** argv)
 	test_ksAppend();
 	test_ksFunctional();
 	test_ksLookupPop();
+	test_ksSync();
 
 	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
