@@ -259,6 +259,7 @@ void test_name()
 	succeed_if (test.getName() == "user/dir/mykey", "Basename did not work");
 	test.setName (test.getName() + "/onedeeper"); // add basename is trivial
 	succeed_if (test.getName() == "user/dir/mykey/onedeeper", "Basename did not work");
+
 	succeed_if (test.getName().find('/') == 4, "user length"); // keyGetRootNameSize trivial
 	succeed_if (test.isBelow (Key("user/dir/mykey/onedeeper/below", KEY_END)), "key is below");
 	succeed_if (!test.isBelow (Key("user/dir/mykey/twodeeper/below", KEY_END)), "key is below");

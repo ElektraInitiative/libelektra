@@ -885,6 +885,10 @@ ssize_t kdbSet (KDB *handle, KeySet *ks,
 		parentKey = 0;
 	}
 
+#if DEBUG && VERBOSE
+	fprintf (stderr, "now in new kdbSet (%s)\n", keyName(parentKey));
+#endif
+
 	if (!handle || !ks)
 	{
 		if (parentKey && (options & KDB_O_DEL)) keyDel (parentKey);

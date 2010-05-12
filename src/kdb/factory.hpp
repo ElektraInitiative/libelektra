@@ -11,6 +11,7 @@
 //TODO: to add a new command, 1.) include your header here
 #include <hello.hpp>
 #include <get.hpp>
+#include <set.hpp>
 #include <ls.hpp>
 #include <mount.hpp>
 
@@ -40,6 +41,7 @@ public:
 		// TODO: to add a new command, 2.) add a line here  -> and you are done
 		m_factory.insert(std::make_pair("hello", new Cnstancer<HelloCommand>()));
 		m_factory.insert(std::make_pair("get", new Cnstancer<GetCommand>()));
+		m_factory.insert(std::make_pair("set", new Cnstancer<SetCommand>()));
 		m_factory.insert(std::make_pair("ls", new Cnstancer<LsCommand>()));
 		m_factory.insert(std::make_pair("mount", new Cnstancer<MountCommand>()));
 	}

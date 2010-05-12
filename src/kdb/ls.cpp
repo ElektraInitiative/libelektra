@@ -11,7 +11,12 @@ LsCommand::LsCommand()
 
 int LsCommand::execute(int argc, char** argv)
 {
-	if (argc < 3) return 1;
+	if (argc != 3)
+	{
+		cerr << "Please provide a name" << endl;
+		cerr << "Usage: ls <name>" << endl;
+		return 1;
+	}
 
 	kdb.get(ks, argv[2]);
 	ks.rewind();
