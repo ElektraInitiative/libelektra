@@ -16,6 +16,7 @@ int GetCommand::execute(int argc, char** argv)
 	{
 		cerr << "Please provide a name" << endl;
 		cerr << "Usage: get <name>" << endl;
+		return 1;
 	}
 
 	KeySet conf;

@@ -4,7 +4,7 @@
 #include <factory.hpp>
 #include <command.hpp>
 
-int main(int argc, char**argv) try
+int main(int argc, char**argv)
 {
 	Factory f;
 
@@ -18,6 +18,4 @@ int main(int argc, char**argv) try
 
 	std::auto_ptr<Command> c = f.get(argv[1]);
 	return c->execute (argc, argv);
-} catch (...) {
-	std::cerr << argv[0] << " will exit because of unknown exception" << std::endl;
 }
