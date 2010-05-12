@@ -16,5 +16,6 @@ if (BUILD_TOOLS)
 	endif (LIBXML2_FOUND)
 endif (BUILD_TOOLS)
 
-add_subdirectory (kdb)
+add_subdirectory (ckdb)
 add_subdirectory (preload)
+add_subdirectory (kdb)
