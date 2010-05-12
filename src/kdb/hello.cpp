@@ -8,13 +8,13 @@ HelloCommand::HelloCommand()
 	cout << "Hello Command" << endl;
 }
 
-HelloCommand::~HelloCommand()
-{
-	cout << "~Hello Command" << endl;
-}
-
-int HelloCommand::execute (int argc, char**argv)
+int HelloCommand::execute (int, char **)
 {
 	cout << "command()" << endl;
 	return 0;
+}
+
+HelloCommand::~HelloCommand()
+{
+	cout << "~Hello Command" << endl;
 }

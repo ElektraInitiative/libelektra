@@ -441,7 +441,8 @@ KDB * kdbOpen()
 	/* get mount config from root backend */
 	keys=ksNew(0);
 
-	kdbGet(handle,keys,keyNew(KDB_KEY_MOUNTPOINTS,KEY_END),KDB_O_DEL);
+	/* TODO added KDB_O_NORECURSIVE because kdbGet() code is broken at the moment */
+	kdbGet(handle,keys,keyNew(KDB_KEY_MOUNTPOINTS,KEY_END),KDB_O_DEL|KDB_O_NORECURSIVE);
 
 #if DEBUG && VERBOSE
 	ksRewind(keys);

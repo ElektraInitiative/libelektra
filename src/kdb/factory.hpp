@@ -7,7 +7,11 @@
 #include <stdexcept>
 
 #include <command.hpp>
+
+//TODO: to add a new command, 1.) include your header here
 #include <hello.hpp>
+#include <get.hpp>
+#include <ls.hpp>
 
 class Instancer
 {
@@ -32,7 +36,10 @@ public:
 	Factory() :
 		m_factory()
 	{
+		// TODO: to add a new command, 2.) add a line here  -> and you are done
 		m_factory.insert(std::make_pair("hello", new Cnstancer<HelloCommand>()));
+		m_factory.insert(std::make_pair("get", new Cnstancer<GetCommand>()));
+		m_factory.insert(std::make_pair("ls", new Cnstancer<LsCommand>()));
 	}
 
 	~Factory()
