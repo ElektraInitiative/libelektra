@@ -633,6 +633,7 @@ ssize_t kdbGet (KDB *handle, KeySet *returned,
 	KeySet *tmp;
 	Key *current;
 	KDB *backend_handle;
+	KDB *try_handle;
 
 	if (!handle || !returned)
 	{
@@ -682,14 +683,6 @@ ssize_t kdbGet (KDB *handle, KeySet *returned,
 		fprintf (stderr, "call of handle->kdbGet failed\n");
 #endif
 		return -1;
-	} else if (ret == 0)
-	{
-		if (options & KDB_O_DEL) keyDel (parentKey);
-		ksRewind (keys);
-		while ((current = ksNext(keys)) != 0) clear_bit (current->flags, KEY_FLAG_SYNC);
-		ksAppend (returned, keys);
-		ksDel (keys);
-		return 0;
 	}
 
 	ksRewind(keys);
@@ -699,12 +692,6 @@ ssize_t kdbGet (KDB *handle, KeySet *returned,
 		const char *currentName = keyName(current);
 		if (keyNeedSync(current))
 		{	/* Key was not updated, throw it away */
-			keyDel (current);
-			continue;
-		}
-		if ((options & KDB_O_NORECURSIVE) &&
-			!(!strcmp (parentName, currentName) || keyIsDirectBelow(parentKey, current)))
-		{	/* Only parentKey itself or keys direct below */
 			keyDel (current);
 			continue;
 		}
@@ -737,8 +724,23 @@ ssize_t kdbGet (KDB *handle, KeySet *returned,
 		}
 		if (keyIsDir (current))
 		{
-			if (! (options & KDB_O_NORECURSIVE))
+			if (options & KDB_O_NODIR)
 			{
+				keyDel (current);
+				continue;
+			}
+		}
+		else if (options & KDB_O_DIRONLY)
+		{
+			keyDel (current);
+			continue;
+		}
+		if (! (options & KDB_O_NORECURSIVE))
+		{
+			try_handle=kdbGetBackend(handle,parentKey);
+			if (try_handle != backend_handle)
+			{
+				/* This key resides somewhere else, go recurse */
 				ret = kdbGet(handle, returned, current,
 					options & ~KDB_O_DEL & ~KDB_O_SORT & ~KDB_O_POP);
 				if (ret == -1)
@@ -756,16 +758,6 @@ ssize_t kdbGet (KDB *handle, KeySet *returned,
 					continue; /*current was already handeled*/
 				} /* Fallthrough if ret == 0, add current */
 			}
-			if (options & KDB_O_NODIR)
-			{
-				keyDel (current);
-				continue;
-			}
-		}
-		else if (options & KDB_O_DIRONLY)
-		{
-			keyDel (current);
-			continue;
 		}
 		if (size > -1)
 		{
