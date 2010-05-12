@@ -34,7 +34,7 @@ int SetCommand::execute(int argc, char**argv)
 		key = Key(name, KEY_VALUE, value.c_str(), KEY_END);
 		conf.append(key);
 	}
-	kdb.set(conf, Key(name, KEY_END));
+	kdb.set(conf, Key(static_cast<ckdb::Key*>(0)));
 
 	return 0;
 }
