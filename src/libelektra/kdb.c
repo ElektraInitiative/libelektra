@@ -735,7 +735,7 @@ ssize_t kdbGet (KDB *handle, KeySet *returned,
 			keyDel (current);
 			continue;
 		}
-		try_handle=kdbGetBackend(handle,parentKey);
+		try_handle=kdbGetBackend(handle,current);
 		if (try_handle != backend_handle)
 		{
 			/* Ohh, another backend is responsible, so we will delete the key */
