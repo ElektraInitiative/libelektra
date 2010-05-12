@@ -13,7 +13,7 @@ int LsCommand::execute(int argc, char** argv)
 {
 	if (argc < 3) return 1;
 
-	kdb.get(ks, argv[2], KDB_O_NORECURSIVE);
+	kdb.get(ks, argv[2]);
 	ks.rewind();
 	Key k;
 	while (k=ks.next())

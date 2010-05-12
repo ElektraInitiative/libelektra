@@ -735,10 +735,11 @@ ssize_t kdbGet (KDB *handle, KeySet *returned,
 			keyDel (current);
 			continue;
 		}
-		if (! (options & KDB_O_NORECURSIVE))
+		try_handle=kdbGetBackend(handle,parentKey);
+		if (try_handle != backend_handle)
 		{
-			try_handle=kdbGetBackend(handle,parentKey);
-			if (try_handle != backend_handle)
+			/* Ohh, another backend is responsible, so we will delete the key */
+			if (! (options & KDB_O_NORECURSIVE))
 			{
 				/* This key resides somewhere else, go recurse */
 				ret = kdbGet(handle, returned, current,
@@ -751,13 +752,11 @@ ssize_t kdbGet (KDB *handle, KeySet *returned,
 					size = -1;
 					keyDel (current);
 					break;
-				} else if (ret > 0)
-				{
-					size += ret;
-					keyDel (current);
-					continue; /*current was already handeled*/
-				} /* Fallthrough if ret == 0, add current */
+				}
+				size += ret;
 			}
+			keyDel (current);
+			continue;
 		}
 		if (size > -1)
 		{
