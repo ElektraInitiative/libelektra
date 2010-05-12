@@ -91,6 +91,11 @@ void test_keynew()
 	succeed_if (key9.isInactive(), "key should be inactive");
 	succeed_if (key9.getComment() == "inactive key", "comment failed");
 	succeed_if (key9.getBaseName() == ".inactive", "wrong base name");
+
+	std::string name = "system/valid/name";
+	Key keyA(name, KEY_END);
+	succeed_if (keyA.getName() == "system/valid/name", "keyA has wrong name");
+	succeed_if (keyA.getBaseName() == "name", "keyA wrong base name");
 }
 
 void test_constructor()

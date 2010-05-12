@@ -12,6 +12,7 @@
 #include <hello.hpp>
 #include <get.hpp>
 #include <ls.hpp>
+#include <mount.hpp>
 
 class Instancer
 {
@@ -40,6 +41,7 @@ public:
 		m_factory.insert(std::make_pair("hello", new Cnstancer<HelloCommand>()));
 		m_factory.insert(std::make_pair("get", new Cnstancer<GetCommand>()));
 		m_factory.insert(std::make_pair("ls", new Cnstancer<LsCommand>()));
+		m_factory.insert(std::make_pair("mount", new Cnstancer<MountCommand>()));
 	}
 
 	~Factory()

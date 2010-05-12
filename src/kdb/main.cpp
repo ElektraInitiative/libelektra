@@ -10,8 +10,9 @@ int main(int argc, char**argv) try
 
 	if (argc < 2)
 	{
-		std::cout << "You need to supply a command!" << std::endl;
-		std::cout << "Common commands are ls, get and set." << std::endl;
+		std::cout << "You need to supply a command" << std::endl;
+		std::cout << "Common commands are get, set" << std::endl;
+		std::cout << "ls and mount." << std::endl;
 		return 1;
 	}
 
