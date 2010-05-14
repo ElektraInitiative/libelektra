@@ -18,7 +18,14 @@ int LsCommand::execute(int argc, char** argv)
 		return 1;
 	}
 
-	kdb.get(ks, argv[2]);
+	Key root (argv[2], KEY_END);
+	if (!root)
+	{
+		cerr << "Not a valid name supplied" << endl;
+		return 1;
+	}
+
+	kdb.get(ks, root);
 	ks.rewind();
 	Key k;
 	while (k=ks.next())
