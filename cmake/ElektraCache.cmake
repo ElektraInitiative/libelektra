@@ -3,8 +3,8 @@
 #
 # Here the cache variables are set
 
-set (BACKENDS filesys hosts fstab CACHE STRING "Which backends to use?")
-set (BACKEND_DEFAULT filesys CACHE STRING "Which should be the default backend?")
+set (BACKENDS dump hosts fstab CACHE STRING "Which backends to use?")
+set (BACKEND_DEFAULT dump CACHE STRING "Which should be the default backend?")
 
 set (KDB_DB_SYSTEM "/etc" CACHE PATH "Where should be the system configuration?")
 
@@ -17,7 +17,7 @@ else (DEBUG_BUILD)
 	set (DEBUG "0")
 endif (DEBUG_BUILD)
 
-option (ELEKTRA_VERBOSE_BUILD "Build with even more print messages." ON)
+option (ELEKTRA_VERBOSE_BUILD "Build with even more print messages.")
 if (ELEKTRA_VERBOSE_BUILD)
 	set (VERBOSE "1")
 else (ELEKTRA_VERBOSE_BUILD)
@@ -26,7 +26,7 @@ endif (ELEKTRA_VERBOSE_BUILD)
 
 option (BUILD_SHARED "Build the shared version of elektra." ON)
 option (BUILD_FULL "Build the full version of elektra (shared with all selected backends included)." ON)
-option (BUILD_STATIC "Build the static version of elektra (all selected backends included)." ON)
+option (BUILD_STATIC "Build the static version of elektra (all selected backends included statically)." ON)
 
 option (BUILD_TOOLS "Build the library libelektratools (shared, full and static options take affect here too)" ON)
 
