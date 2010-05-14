@@ -1,12 +1,10 @@
 include(LibAddMacros)
 
-find_package( KDE3 REQUIRED )
+find_package( KDE4 REQUIRED )
 
-if (KDE3_FOUND)
+if (KDE4_FOUND)
 # see http://techbase.kde.org/Development/Tutorials/CMake
-	include_directories ( ${KDE3_INCLUDE_DIR} )
-	include_directories ( ${QT_INCLUDE_DIR} )
-	link_directories ( ${KDE3_LIB_DIR} )
+	include_directories( ${KDE4_INCLUDES} )
 
 	set (SOURCES kwallet.hpp kwallet.cpp)
 	add_sources(elektra-full ${SOURCES})
@@ -14,7 +12,7 @@ if (KDE3_FOUND)
 
 	add_library(elektra-kwallet MODULE ${SOURCES})
 	install (TARGETS elektra-kwallet DESTINATION lib/elektra)
-	target_link_libraries( elektra-kwallet ${QT_AND_KDECORE_LIBS} )
-else (KDE3_FOUND)
-	remove_backend (kwallet "kde3 not found")
-endif (KDE3_FOUND)
+	target_link_libraries( elektra-kwallet ${KDE4_KDEUI_LIBS} ${KDE4_KPARTS_LIBS} elektra )
+else (KDE4_FOUND)
+	remove_backend (kwallet "kde not found")
+endif (KDE4_FOUND)
