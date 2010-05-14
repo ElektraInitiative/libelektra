@@ -1,3 +1,5 @@
 include (LibAddMacros)
 
-add_subdirectory (tests)
+if (BUILD_FULL OR BUILD_STATIC)
+	add_subdirectory (tests)
+endif (BUILD_FULL OR BUILD_STATIC)
