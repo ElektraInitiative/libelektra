@@ -118,6 +118,9 @@ KDB* kdbOpenBackend(const char *backendname, const char *mountpoint, KeySet *con
 	dlhandle=kdbLibLoad(backend_name);
 	if (dlhandle == 0) {
 		/*errno=KDB_ERR_EBACKEND;*/
+#if DEBUG && VERBOSE
+		printf("kdbLibLoad(%s) failed\n", backend_name);
+#endif
 		goto err_clup; /* error */
 	}
 
@@ -125,6 +128,9 @@ KDB* kdbOpenBackend(const char *backendname, const char *mountpoint, KeySet *con
 	kdbBackendFactory=(KDBBackendFactory)kdbLibSym(dlhandle, "kdbBackendFactory");
 	if (kdbBackendFactory == 0) {
 		/*errno=KDB_ERR_NOSYS;*/
+#if DEBUG && VERBOSE
+		printf("Could not kdbLibSym kdbBackendFactory for %s\n", backend_name);
+#endif
 		goto err_clup; /* error */
 	}
 	
@@ -132,6 +138,9 @@ KDB* kdbOpenBackend(const char *backendname, const char *mountpoint, KeySet *con
 	if (handle == 0)
 	{
 		/*errno=KDB_ERR_NOSYS;*/
+#if DEBUG && VERBOSE
+		printf("Could not call kdbBackendFactory for %s\n", backend_name);
+#endif
 		goto err_clup; /* error */
 	}
 
@@ -145,10 +154,18 @@ KDB* kdbOpenBackend(const char *backendname, const char *mountpoint, KeySet *con
 	if (handle->kdbOpen)
 	{
 		handle->config = config;
-		handle->kdbOpen(handle);
+		if (handle->kdbOpen(handle) == -1)
+		{
+#if DEBUG && VERBOSE
+			printf("kdbOpen() failed for %s\n", backend_name);
+#endif
+		}
 	}
 	else {
 		/*errno=KDB_ERR_NOSYS;*/
+#if DEBUG && VERBOSE
+			printf("No kdbOpen supplied in %s\n", backend_name);
+#endif
 		goto err_clup;
 	}
 
