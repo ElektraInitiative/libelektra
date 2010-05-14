@@ -27,19 +27,20 @@
 
 #include "kwallet.hpp"
 
+#if 0
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <kwallet.h>
 #include <klocale.h>
+#endif
 
 #include <iostream>
 
 using namespace std;
+using namespace ckdb;
 
 
-namespace ckdb
-{
 extern "C"
 {
 
@@ -81,11 +82,17 @@ int kdbOpen_kwallet(KDB *handle)
 
 	/* backend initialization logic */
 
+	cerr << "Before kde" << endl;
+
+#if 0
+
 	KAboutData about(QByteArray(BACKENDNAME),
 			 QByteArray(BACKENDDISPLAYNAME),
 			 KLocalizedString(),
 			 QByteArray(BACKENDVERSION));
 	KComponentData kcd(about);
+
+	cerr << "After kde" << endl;
 
 	errno = errnosave;
 
@@ -100,6 +107,7 @@ int kdbOpen_kwallet(KDB *handle)
 			if(wallet)
 			{
 				ckdb::kdbhSetBackendData (handle, wallet);
+				cerr << "Setting backend data worked" << endl;
 			} else {
 
 				cerr << "openWallet failed" << endl;
@@ -113,6 +121,7 @@ int kdbOpen_kwallet(KDB *handle)
 		cerr <<  "is not enabled" << endl;
 		return -1;
 	}
+#endif
 	return 0;
 }
 
@@ -121,9 +130,13 @@ int kdbClose_kwallet(KDB *handle)
 	int errnosave = errno;
 	/* free all backend resources and shut it down */
 
+#if 0
+
 	KWallet::Wallet::closeWallet(KWallet::Wallet::LocalWallet(), false);
 	KWallet::Wallet* wallet = static_cast<KWallet::Wallet*>(ckdb::kdbhGetBackendData (handle));
 	delete wallet;
+
+#endif
 
 	errno = errnosave;
 	return 0; /* success */
@@ -134,7 +147,22 @@ ssize_t kdbGet_kwallet(KDB *handle, KeySet *returned, const Key *parentKey)
 	ssize_t nr_keys = 0;
 	int errnosave = errno;
 
-	/* get all keys below parentKey and count them with nr_keys */
+#if 0
+
+	KWallet::Wallet* wallet = static_cast<KWallet::Wallet*>(ckdb::kdbhGetBackendData (handle));
+
+	cout << "in kdbGet_kwallet" << endl;
+	QStringList list = wallet->folderList();
+	QStringList::const_iterator it;
+	for (it = list.begin(); it != list.end(); ++it)
+	{
+		std::string folder = (*it).toLocal8Bit().constData();
+		cout << "Folder: " << folder << endl;
+		ksAppendKey(returned, keyNew (("user/kwallet" + folder).c_str(), KEY_END));
+		nr_keys ++;
+	}
+
+#endif
 
 	errno = errnosave;
 	return nr_keys; /* success */
@@ -159,13 +187,11 @@ KDB *KDBEXPORT(kwallet)
 		KDB_BE_GET,	&kdbGet_kwallet,
 		KDB_BE_SET,	&kdbSet_kwallet,
 		KDB_BE_VERSION,        BACKENDVERSION,
-		KDB_BE_AUTHOR,	"Full Name <email@libelektra.org>",
+		KDB_BE_AUTHOR,	"Markus Raab <elektra@markus-raab.org>",
 		KDB_BE_LICENCE,	"BSD",
-		KDB_BE_DESCRIPTION,
-			"Add description here",
+		KDB_BE_DESCRIPTION, "Kwallet Plugin",
 		KDB_BE_END);
 }
 
 } // extern "C"
-} // namespace ckdb
 
