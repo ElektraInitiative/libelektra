@@ -121,11 +121,9 @@ int kdbClose_kwallet(KDB *handle)
 	int errnosave = errno;
 	/* free all backend resources and shut it down */
 
-	/*
 	KWallet::Wallet::closeWallet(KWallet::Wallet::LocalWallet(), false);
 	KWallet::Wallet* wallet = static_cast<KWallet::Wallet*>(ckdb::kdbhGetBackendData (handle));
 	delete wallet;
-	*/
 
 	errno = errnosave;
 	return 0; /* success */
