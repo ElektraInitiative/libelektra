@@ -14,6 +14,7 @@
 #include <set.hpp>
 #include <ls.hpp>
 #include <mount.hpp>
+#include <meta.hpp>
 
 class Instancer
 {
@@ -44,6 +45,8 @@ public:
 		m_factory.insert(std::make_pair("set", new Cnstancer<SetCommand>()));
 		m_factory.insert(std::make_pair("ls", new Cnstancer<LsCommand>()));
 		m_factory.insert(std::make_pair("mount", new Cnstancer<MountCommand>()));
+		m_factory.insert(std::make_pair("meta-get", new Cnstancer<MetaCommand>()));
+		m_factory.insert(std::make_pair("meta-set", new Cnstancer<MetaCommand>()));
 	}
 
 	~Factory()
