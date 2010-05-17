@@ -147,6 +147,7 @@ int keyNeedSync(const Key *key);
 int keyNeedRemove(const Key *key);
 
 int keyIsBelow(const Key *key, const Key *check);
+int keyIsBelowOrSame(const Key *key, const Key *check);
 int keyIsDirectBelow(const Key *key, const Key *check);
 
 int keyIsInactive(const Key *key);
@@ -201,7 +202,9 @@ void ksSort(KeySet *ks);
 ssize_t ksGetSize(const KeySet *ks);
 
 ssize_t ksAppendKey(KeySet *ks, Key *toAppend);
+
 ssize_t ksAppend(KeySet *ks, const KeySet *toAppend);
+KeySet *ksCut(KeySet *ks, const Key *cutpoint);
 
 Key *ksPop(KeySet *ks);
 

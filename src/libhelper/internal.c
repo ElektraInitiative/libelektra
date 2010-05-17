@@ -65,6 +65,53 @@
 
 #include "kdbbackend.h"
 
+/**
+ * Copies the key array2 into where array1 points.
+ * It copies size elements.
+ *
+ * Overlapping is prohibited, use kdbiMemmove() instead.
+ *
+ * @param array1 the destination
+ * @param array2 the source
+ * @param size how many pointer to Keys to copy
+ * @return -1 on null pointers
+ * @return 0 if nothing was done
+ * @return size how many keys were copied
+ */
+ssize_t kdbiMemcpy (Key** array1, Key** array2, size_t size)
+{
+	if (!array1) return -1;
+	if (!array2) return -1;
+	if (size > SSIZE_MAX) return -1;
+	if (size == 0) return 0;
+	memcpy (array1, array2, size * sizeof(Key*));
+	return size;
+}
+
+/**
+ * Copies the key array2 into where array1 points.
+ * It copies size elements.
+ *
+ * Overlapping is ok. If they do not overlap consider
+ * kdbiMemcpy() instead.
+ *
+ * @param array1 the destination
+ * @param array2 the source
+ * @param size how many pointer to Keys to copy
+ * @return -1 on null pointers
+ * @return 0 if nothing was done
+ * @return size how many keys were copied
+ */
+ssize_t kdbiMemmove (Key** array1, Key** array2, size_t size)
+{
+	if (!array1) return -1;
+	if (!array2) return -1;
+	if (size > SSIZE_MAX) return -1;
+	if (size == 0) return 0;
+	memmove (array1, array2, size * sizeof(Key*));
+	return size;
+}
+
 
 /**Compare Strings ignoring case.
  *

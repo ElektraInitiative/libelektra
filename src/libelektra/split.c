@@ -89,16 +89,6 @@ void resize_splitted_keysets(Split *ret)
 	ret->belowparents[ret->no]=0;
 }
 
-static int keyIsBelowOrSame (Key *key1, Key *key2)
-{
-	const char *name1 = keyName(key1);
-	const char *name2 = keyName(key2);
-
-	if (keyIsBelow (key1, key2)) return 1;
-	else if (!strcmp (name1, name2)) return 1;
-	return 0;
-}
-
 /* Split keysets.
  * Make sure that parentKey has a name or is a null pointer*/
 Split *split_keyset(KDB *handle, KeySet *ks,

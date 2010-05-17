@@ -566,6 +566,79 @@ ssize_t ksGetSize(const KeySet *ks)
  *           Filling up KeySets            *
  *******************************************/
 
+
+/**
+ * Binary search in a keyset.
+ *
+ * @code
+
+ssize_t result = ksSearchInternal(ks, toAppend);
+
+if (result >= 0)
+{
+	ssize_t position = result;
+	// Seems like the key already exist.
+} else {
+	ssize_t insertpos = -result-1;
+	// Seems like the key does not exist.
+}
+ * @endcode
+ *
+ * @param ks the keyset to work with
+ * @param toAppend the key to check
+ * @return position where the key is (>=0) if the key was found
+ * @return -insertpos -1 (< 0) if the key was not found 
+ *    so to get the insertpos simple do: -insertpos -1
+ */
+ssize_t ksSearchInternal(const KeySet *ks, const Key *toAppend)
+{
+	ssize_t left = 0;
+	ssize_t right = ks->size-1;
+	register int cmpresult = 1;
+	ssize_t middle = -1;
+	ssize_t insertpos = 0;
+#if DEBUG && VERBOSE
+	int c=0;
+#endif
+
+
+	while(1)
+	{
+#if DEBUG && VERBOSE
+		++c;
+#endif
+		if (right < left)
+		{
+			/* Nothing was found */
+			break;
+		}
+		middle = left + ((right-left)/2);
+		cmpresult = keyCmpInternal(&toAppend, &ks->array[middle]);
+		if (cmpresult > 0)
+		{
+			insertpos = left = middle + 1;
+		} else if (cmpresult == 0)
+		{
+			/* We have found it */
+			break;
+		} else {
+			insertpos = middle;
+			right = middle - 1;
+		}
+#if DEBUG && VERBOSE
+		printf ("bsearch -- c: %d res: %d left: %zd middle: %zd right: %zd insertpos: %zd\n",
+			c, cmpresult, left, middle, right, insertpos);
+#endif
+	}
+
+	if (!cmpresult)
+	{
+		return middle;
+	} else {
+		return -insertpos - 1;
+	}
+}
+
 /**
  * Appends a Key to the end of @p ks.
  *
@@ -594,12 +667,7 @@ ssize_t ksGetSize(const KeySet *ks)
  */
 ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
 {
-	ssize_t left = 0;
-	ssize_t right = ks->size-1;
-	ssize_t middle = -1;
-	ssize_t insertpos = 0;
-	int cmpresult = 1;
-	int c=0;
+	ssize_t result = -1;
 
 	if (!ks) return -1;
 	if (!toAppend) return -1;
@@ -609,56 +677,33 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
 		return -1;
 	}
 
-	while(1)
-	{
-		++c;
-		if (right < left)
-		{
-			/* Nothing was found */
-			break;
-		}
-		middle = left + ((right-left)/2);
-		cmpresult = keyCmpInternal(&toAppend, &ks->array[middle]);
-		if (cmpresult > 0)
-		{
-			insertpos = left = middle + 1;
-		} else if (cmpresult == 0)
-		{
-			/* We have found it */
-			break;
-		} else {
-			insertpos = middle;
-			right = middle - 1;
-		}
-		/*
-		printf ("bsearch -- c: %d res: %d left: %zd middle: %zd right: %zd insertpos: %zd\n",
-			c, cmpresult, left, middle, right, insertpos);
-		*/
-	}
+	result = ksSearchInternal(ks, toAppend);
 
-	if (!cmpresult)
+	if (result >= 0)
 	{
 		/* Seems like the key already exist. */
-		if (toAppend == ks->array[middle])
+		if (toAppend == ks->array[result])
 		{
 			/* user tried to insert the same key again */
 			return ks->size;
 		}
 
-		/* Pop the key in the middle */
-		keyDecRef (ks->array[middle]);
-		keyDel (ks->array[middle]);
+		/* Pop the key in the result */
+		keyDecRef (ks->array[result]);
+		keyDel (ks->array[result]);
 		/* And use the other one instead */
-		ks->array[middle] = toAppend;
+		ks->array[result] = toAppend;
 	} else {
+		ssize_t insertpos = -result-1;
+
 		/* We want to append a new key
-		  in position middle */
+		  in position insertpos */
 		++ ks->size;
 		if (keyNeedRemove (toAppend)) ++ ks->rsize;
 		if (ks->size >= ks->alloc) ksResize (ks, ks->alloc * 2-1);
 		keyIncRef (toAppend);
 
-		if (insertpos == (ssize_t)ks->size-1 || insertpos == -1)
+		if (insertpos == (ssize_t)ks->size-1)
 		{
 			/* Append it to the very end */
 			ks->array[ks->size-1] = toAppend;
@@ -714,10 +759,95 @@ ssize_t ksAppend(KeySet *ks, const KeySet *toAppend)
 	while (ks->size >= toAlloc) toAlloc *= 2;
 	ksResize (ks, toAlloc-1);
 	for (i=0; i<toAppend->size; i++) keyIncRef(toAppend->array[i]);
-	memcpy (ks->array + oldSize, toAppend->array, toAppend->size * sizeof (Key *));
+	kdbiMemcpy (ks->array + oldSize, toAppend->array, toAppend->size);
 	ks->array[ks->size] = 0;
 	ksSort(ks);
 	return ks->size;
+}
+
+
+static int keyCompareByNameOwner(const void *p1, const void *p2);
+
+/**
+ * Copies all Keys until the end of the array from a position
+ * in the array to an position in the array.
+ *
+ * @param ks the keyset where this should be done
+ * @param to the position where it should be copied to
+ * @param from the position where it should be copied from
+ */
+ssize_t ksCopyInternal(KeySet *ks, size_t to, size_t from)
+{
+	ssize_t ssize = ks->size;
+	ssize_t sto = to;
+	ssize_t sfrom = from;
+
+	ssize_t sizediff = sto-sfrom;
+	ssize_t length = ssize-sfrom;
+	size_t ret = 0;
+
+	if (length < 0) return -1;
+	if (ks->size < to) return -1;
+
+	ks->size = ks->size + sizediff;
+	ret = kdbiMemmove(ks->array + to, ks->array + from, length);
+	ks->array[ks->size] = 0;
+	return ret;
+}
+
+/**
+ * Cuts out a keyset at the cutpoint.
+ *
+ * Searches for the cutpoint inside the KeySet ks.
+ * If found it cuts out everything which is below (see keyIsBelow()) this key.
+ * If not found an empty keyset is returned.
+ *
+ * @return a new allocated KeySet which needs to deleted with ksDel()
+ * @return 0 on null pointers, no key name or allocation problems
+ * @param ks the keyset to cut
+ * @param cutpoint the point where to cut out the keyset
+ */
+KeySet *ksCut(KeySet *ks, const Key *cutpoint)
+{
+	KeySet *returned = 0;
+	size_t found = 0;
+	size_t it = 0;
+	size_t newsize = 0;
+
+	if (!ks) return 0;
+	if (!cutpoint) return 0;
+	if (!cutpoint->key) return 0;
+
+	found = ksSearchInternal(ks, cutpoint);
+
+	if (found < 0) found = -found - 1;
+
+	it = found;
+	while (it < ks->size && keyIsBelowOrSame(cutpoint, ks->array[it]) == 1)
+	{
+		++it;
+	}
+
+	if (it == found) return ksNew(0);
+
+	newsize = it-found;
+#if DEBUG && VERBOSE
+	printf ("new size is: %zd\n", newsize);
+#endif
+
+	returned = ksNew(newsize, KS_END);
+	kdbiMemcpy (returned->array, ks->array+found, newsize);
+	returned->size = newsize;
+	returned->array[returned->size] = 0;
+
+	if (ksCopyInternal(ks, found, it) == -1)
+	{
+#if DEBUG
+		printf ("ksCopyInternal returned an error inside ksCut\n");
+#endif
+	}
+
+	return returned;
 }
 
 
@@ -1718,10 +1848,11 @@ int ksResize (KeySet *ks, size_t alloc)
 			return -1;
 		}
 	}
-
+/* This is much too verbose
 #if DEBUG && VERBOSE
 	printf ("Resize from %d to %d\n",(int) ks->alloc,(int) alloc);
 #endif
+*/
 	ks->alloc=alloc;
 
 
