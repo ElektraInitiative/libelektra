@@ -201,7 +201,9 @@ void ksSort(KeySet *ks);
 ssize_t ksGetSize(const KeySet *ks);
 
 ssize_t ksAppendKey(KeySet *ks, Key *toAppend);
+
 ssize_t ksAppend(KeySet *ks, const KeySet *toAppend);
+KeySet *ksCut(KeySet *ks, const Key *cutpoint);
 
 Key *ksPop(KeySet *ks);
 
