@@ -50,6 +50,8 @@ KeySet * set_a ()
 		KS_END);
 }
 
+ssize_t ksSearchInternal(const KeySet *ks, const Key *toAppend);
+
 void test_search()
 {
 	printf ("Testing operation search (internal)\n");
@@ -81,36 +83,49 @@ void test_cut()
 	KeySet *a = set_a();
 	Key *cutpoint_a = keyNew ("user/a", KEY_END);
 	Key *cutpoint_b = keyNew ("user/a/x", KEY_END);
-	printf ("\n\norig (%d):\n", ksGetSize(a));
+	printf ("\n\norig (%zd):\n", ksGetSize(a));
 	ksOutput(a, stdout, KEY_VALUE);
 
 	KeySet *aa = ksCut(a, cutpoint_a);
-	printf ("\n\naa (%d):\n", ksGetSize(a));
+	printf ("\n\naa (%zd):\n", ksGetSize(a));
 	ksOutput(aa, stdout, KEY_VALUE);
 
-	printf ("\n\norig (%d):\n", ksGetSize(a));
+	printf ("\n\norig (%zd):\n", ksGetSize(a));
 	ksOutput(a, stdout, KEY_VALUE);
 
 	KeySet *ab = ksCut(a, cutpoint_b);
-	printf ("\n\nab (%d):\n", ksGetSize(a));
+	printf ("\n\nab (%zd):\n", ksGetSize(a));
 	ksOutput(ab, stdout, KEY_VALUE);
 
-	printf ("\n\norig (%d):\n", ksGetSize(a));
+	printf ("\n\norig (%zd):\n", ksGetSize(a));
 	ksOutput(a, stdout, KEY_VALUE);
 }
+
+ssize_t ksCopyInternal(KeySet *ks, size_t to, size_t from);
 
 void test_copy()
 {
 	printf ("Testing operation copy (internal)\n");
 
-	KeySet *a;
+	KeySet *copy[17][17];
+#include "data_copy.c"
 
-	a = set_a();
-	printf ("\n\norig (%d):\n", ksGetSize(a));
-	ksOutput(a, stdout, KEY_VALUE);
-	ksCopyInternal (a, 1, 15);
-	printf ("\n\ncut (%d):\n", ksGetSize(a));
-	ksOutput(a, stdout, KEY_VALUE);
+	KeySet *current;
+	Key *key;
+
+	for (int i=0; i<17; ++i)
+	{
+		for (int j=0; j<17; ++j)
+		{
+			/* There are some cases which contain duplicates, we have to jump these...*/
+			if (i>j) continue;
+			if (i==0 && j==16) continue;
+
+			current = set_a();
+			succeed_if (ksCopyInternal (current, i, j) != -1, "ksCopyInternal failed");
+			compare_keyset(current, copy[i][j], 0, 0);
+		}
+	}
 }
 
 

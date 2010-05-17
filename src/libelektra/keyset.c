@@ -592,7 +592,6 @@ if (result >= 0)
  */
 ssize_t ksSearchInternal(const KeySet *ks, const Key *toAppend)
 {
-#define VERBOSE 1
 	ssize_t left = 0;
 	ssize_t right = ks->size-1;
 	register int cmpresult = 1;
@@ -788,7 +787,7 @@ ssize_t ksCopyInternal(KeySet *ks, size_t to, size_t from)
 	size_t ret = 0;
 
 	if (length < 0) return -1;
-	if (ks->size <= to) return -1;
+	if (ks->size < to) return -1;
 
 	ks->size = ks->size + sizediff;
 	ret = kdbiMemmove(ks->array + to, ks->array + from, length);
@@ -811,8 +810,8 @@ ssize_t ksCopyInternal(KeySet *ks, size_t to, size_t from)
 KeySet *ksCut(KeySet *ks, const Key *cutpoint)
 {
 	KeySet *returned = 0;
-	ssize_t found = 0;
-	ssize_t it = 0;
+	size_t found = 0;
+	size_t it = 0;
 	size_t newsize = 0;
 
 	if (!ks) return 0;
@@ -839,7 +838,13 @@ KeySet *ksCut(KeySet *ks, const Key *cutpoint)
 	returned = ksNew(newsize, KS_END);
 	kdbiMemcpy (returned->array, ks->array+found, newsize);
 	returned->size = newsize;
-	ksCopyInternal(returned, found, it);
+
+	if (ksCopyInternal(returned, found, it) == -1)
+	{
+#if DEBUG
+		printf ("ksCopyInternal returned an error inside ksCut\n");
+#endif
+	}
 
 	return returned;
 }
