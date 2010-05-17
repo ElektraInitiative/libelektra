@@ -30,7 +30,7 @@
 
 KeySet * set_a ()
 {
-	return ksNew(20,
+	return ksNew(16,
 		keyNew ("user/0", KEY_END),
 		keyNew ("user/a", KEY_END),
 		keyNew ("user/a/a", KEY_END),
@@ -47,6 +47,26 @@ KeySet * set_a ()
 		keyNew ("user/a/x/c/a", KEY_END),
 		keyNew ("user/a/x/c/b", KEY_END),
 		keyNew ("user/x", KEY_END),
+		KS_END);
+}
+
+KeySet * set_oa ()
+{
+	return ksNew(14,
+		keyNew ("user/a", KEY_END),
+		keyNew ("user/a/a", KEY_END),
+		keyNew ("user/a/a/a", KEY_END),
+		keyNew ("user/a/a/b", KEY_END),
+		keyNew ("user/a/b", KEY_END),
+		keyNew ("user/a/b/a", KEY_END),
+		keyNew ("user/a/b/b", KEY_END),
+		keyNew ("user/a/c", KEY_END),
+		keyNew ("user/a/d", KEY_END),
+		keyNew ("user/a/x/a", KEY_END),
+		keyNew ("user/a/x/b", KEY_END),
+		keyNew ("user/a/x/c", KEY_END),
+		keyNew ("user/a/x/c/a", KEY_END),
+		keyNew ("user/a/x/c/b", KEY_END),
 		KS_END);
 }
 
@@ -80,25 +100,53 @@ void test_cut()
 {
 	printf ("Testing operation cut\n");
 
-	KeySet *a = set_a();
-	Key *cutpoint_a = keyNew ("user/a", KEY_END);
-	Key *cutpoint_b = keyNew ("user/a/x", KEY_END);
-	printf ("\n\norig (%zd):\n", ksGetSize(a));
-	ksOutput(a, stdout, KEY_VALUE);
+	KeySet *orig;
+	Key *cutpoint;
+	KeySet *result;
+	KeySet *real_orig;
 
-	KeySet *aa = ksCut(a, cutpoint_a);
-	printf ("\n\naa (%zd):\n", ksGetSize(a));
-	ksOutput(aa, stdout, KEY_VALUE);
+	orig = set_oa();
+	cutpoint = keyNew ("user/a", KEY_END);
+	result = ksCut(orig, cutpoint);
+	succeed_if (ksGetSize(orig) == 0, "orig not empty");
+	real_orig = set_oa();
+	compare_keyset (result, real_orig, 0, 0);
+	ksDel (orig);
+	ksDel (result);
+	ksDel (real_orig);
+	keyDel (cutpoint);
 
-	printf ("\n\norig (%zd):\n", ksGetSize(a));
-	ksOutput(a, stdout, KEY_VALUE);
 
-	KeySet *ab = ksCut(a, cutpoint_b);
-	printf ("\n\nab (%zd):\n", ksGetSize(a));
-	ksOutput(ab, stdout, KEY_VALUE);
+	KeySet *cmp_orig[16];
+	KeySet *cmp_result[16];
+#include "data_cut.c"
 
-	printf ("\n\norig (%zd):\n", ksGetSize(a));
-	ksOutput(a, stdout, KEY_VALUE);
+	for (int i=0; i<16; ++i)
+	{
+		orig = set_a();
+		cutpoint = keyDup (orig->array[i]);
+		result = ksCut(orig, cutpoint);
+
+		compare_keyset(result, cmp_result[i], 0, 0);
+		compare_keyset(orig, cmp_orig[i], 0, 0);
+
+		/*
+		Key *key;
+		printf ("orig[%d] = ksNew (%zd, ", i, ksGetSize(orig));
+		ksRewind(orig); while ((key=ksNext(orig))!= 0) printf ("keyNew (\"%s\", KEY_END), ", keyName(key));
+		printf ("KS_END);\n");
+
+		printf ("result[%d] = ksNew (%zd, ", i, ksGetSize(result));
+		ksRewind(result); while ((key=ksNext(result))!= 0) printf ("keyNew (\"%s\", KEY_END), ", keyName(key));
+		printf ("KS_END);\n");
+		*/
+
+		keyDel (cutpoint);
+		ksDel (result);
+		ksDel (orig);
+		ksDel (cmp_orig[i]);
+		ksDel (cmp_result[i]);
+	}
 }
 
 ssize_t ksCopyInternal(KeySet *ks, size_t to, size_t from);
@@ -111,19 +159,23 @@ void test_copy()
 #include "data_copy.c"
 
 	KeySet *current;
-	Key *key;
 
 	for (int i=0; i<17; ++i)
 	{
 		for (int j=0; j<17; ++j)
 		{
 			/* There are some cases which contain duplicates, we have to jump these...*/
-			if (i>j) continue;
-			if (i==0 && j==16) continue;
+			if (i>j) goto cleanup;
+			if (i==0 && j==16) goto cleanup;
 
 			current = set_a();
+			/* Some blocks are lost in the next operation */
 			succeed_if (ksCopyInternal (current, i, j) != -1, "ksCopyInternal failed");
 			compare_keyset(current, copy[i][j], 0, 0);
+			ksDel (current);
+
+cleanup:
+			ksDel (copy[i][j]);
 		}
 	}
 }
@@ -136,9 +188,9 @@ int main(int argc, char** argv)
 
 	init (argc, argv);
 
-	// test_search();
+	test_search();
 	// test_cut();
-	test_copy();
+	// test_copy();
 
 	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

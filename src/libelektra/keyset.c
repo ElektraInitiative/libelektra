@@ -838,8 +838,9 @@ KeySet *ksCut(KeySet *ks, const Key *cutpoint)
 	returned = ksNew(newsize, KS_END);
 	kdbiMemcpy (returned->array, ks->array+found, newsize);
 	returned->size = newsize;
+	returned->array[returned->size] = 0;
 
-	if (ksCopyInternal(returned, found, it) == -1)
+	if (ksCopyInternal(ks, found, it) == -1)
 	{
 #if DEBUG
 		printf ("ksCopyInternal returned an error inside ksCut\n");
