@@ -222,7 +222,7 @@ int kdbClose_dump(ckdb::KDB *handle)
 	return 0; /* success */
 }
 
-ssize_t kdbGet_dump(ckdb::KDB *handle, ckdb::KeySet *returned, const ckdb::Key *parentKey)
+ssize_t kdbGet_dump(ckdb::KDB *handle, ckdb::KeySet *returned, const ckdb::Key *)
 {
 	int errnosave = errno;
 
@@ -233,7 +233,7 @@ ssize_t kdbGet_dump(ckdb::KDB *handle, ckdb::KeySet *returned, const ckdb::Key *
 	return ksGetSize(returned); /* success */
 }
 
-ssize_t kdbSet_dump(ckdb::KDB *handle, ckdb::KeySet *returned, const ckdb::Key *parentKey)
+ssize_t kdbSet_dump(ckdb::KDB *handle, ckdb::KeySet *returned, const ckdb::Key *)
 {
 	int errnosave = errno;
 
