@@ -570,28 +570,38 @@ ssize_t ksGetSize(const KeySet *ks)
 /**
  * Binary search in a keyset.
  *
- * If the key was found: cmpresult == 0 and middle is set to the key.
- * If the key was not found: cmpresult != 0 and insertpos gives the
- * position where the key would fit.
+ * @code
+
+ssize_t result = ksSearchInternal(ks, toAppend);
+
+if (result >= 0)
+{
+	ssize_t position = result;
+	// Seems like the key already exist.
+} else {
+	ssize_t insertpos = -result-1;
+	// Seems like the key does not exist.
+}
+ * @endcode
  *
  * @param ks the keyset to work with
- * @param insertpos the position to insert a new key
- * @param middle the position where the key was found
- * @return cmpresult: the result of the last comparision
- * @return 0 if the key was found
+ * @param toAppend the key to check
+ * @return position where the key is (>=0) if the key was found
+ * @return -insertpos -1 (< 0) if the key was not found 
+ *    so to get the insertpos simple do: -insertpos -1
  */
-int ksSearchInternal(const KeySet *ks, const Key *toAppend, ssize_t *insertpos, ssize_t *middle)
+ssize_t ksSearchInternal(const KeySet *ks, const Key *toAppend)
 {
 #define VERBOSE 1
 	ssize_t left = 0;
 	ssize_t right = ks->size-1;
 	register int cmpresult = 1;
+	ssize_t middle = -1;
+	ssize_t insertpos = 0;
 #if DEBUG && VERBOSE
 	int c=0;
 #endif
 
-	*middle = -1;
-	*insertpos = 0;
 
 	while(1)
 	{
@@ -603,18 +613,18 @@ int ksSearchInternal(const KeySet *ks, const Key *toAppend, ssize_t *insertpos, 
 			/* Nothing was found */
 			break;
 		}
-		*middle = left + ((right-left)/2);
-		cmpresult = keyCmpInternal(&toAppend, &ks->array[*middle]);
+		middle = left + ((right-left)/2);
+		cmpresult = keyCmpInternal(&toAppend, &ks->array[middle]);
 		if (cmpresult > 0)
 		{
-			*insertpos = left = *middle + 1;
+			insertpos = left = middle + 1;
 		} else if (cmpresult == 0)
 		{
 			/* We have found it */
 			break;
 		} else {
-			*insertpos = *middle;
-			right = *middle - 1;
+			insertpos = middle;
+			right = middle - 1;
 		}
 #if DEBUG && VERBOSE
 		printf ("bsearch -- c: %d res: %d left: %zd middle: %zd right: %zd insertpos: %zd\n",
@@ -622,7 +632,12 @@ int ksSearchInternal(const KeySet *ks, const Key *toAppend, ssize_t *insertpos, 
 #endif
 	}
 
-	return cmpresult;
+	if (!cmpresult)
+	{
+		return middle;
+	} else {
+		return -insertpos - 1;
+	}
 }
 
 /**
@@ -653,9 +668,7 @@ int ksSearchInternal(const KeySet *ks, const Key *toAppend, ssize_t *insertpos, 
  */
 ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
 {
-	ssize_t insertpos = 0;
-	ssize_t middle = -1;
-	int cmpresult = 1;
+	ssize_t result = -1;
 
 	if (!ks) return -1;
 	if (!toAppend) return -1;
@@ -665,23 +678,25 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
 		return -1;
 	}
 
-	cmpresult = ksSearchInternal(ks, toAppend, &insertpos, &middle);
+	result = ksSearchInternal(ks, toAppend);
 
-	if (!cmpresult)
+	if (result >= 0)
 	{
 		/* Seems like the key already exist. */
-		if (toAppend == ks->array[middle])
+		if (toAppend == ks->array[result])
 		{
 			/* user tried to insert the same key again */
 			return ks->size;
 		}
 
-		/* Pop the key in the middle */
-		keyDecRef (ks->array[middle]);
-		keyDel (ks->array[middle]);
+		/* Pop the key in the result */
+		keyDecRef (ks->array[result]);
+		keyDel (ks->array[result]);
 		/* And use the other one instead */
-		ks->array[middle] = toAppend;
+		ks->array[result] = toAppend;
 	} else {
+		ssize_t insertpos = -result-1;
+
 		/* We want to append a new key
 		  in position insertpos */
 		++ ks->size;
@@ -689,7 +704,7 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
 		if (ks->size >= ks->alloc) ksResize (ks, ks->alloc * 2-1);
 		keyIncRef (toAppend);
 
-		if (insertpos == (ssize_t)ks->size-1 || insertpos == -1)
+		if (insertpos == (ssize_t)ks->size-1)
 		{
 			/* Append it to the very end */
 			ks->array[ks->size-1] = toAppend;

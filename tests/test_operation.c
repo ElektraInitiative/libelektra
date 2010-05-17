@@ -52,30 +52,22 @@ void test_search()
 {
 	KeySet *a = set_a();
 	Key *s = keyNew("user/a", KEY_END);
-	size_t insertpos;
-	size_t middle;
-	int cmpresult;
+	ssize_t result;
 
-	cmpresult = ksSearchInternal (a, s, &insertpos, &middle);
-	succeed_if (middle == 0, "middle wrong");
-	succeed_if (cmpresult == 0, "key not found");
+	result = ksSearchInternal (a, s);
+	succeed_if (result == 0, "key not found");
 
 	keySetName (s, "user/a/b");
-	cmpresult = ksSearchInternal (a, s, &insertpos, &middle);
-	succeed_if (middle == 4, "middle wrong");
-	succeed_if (cmpresult == 0, "key not found");
+	result = ksSearchInternal (a, s);
+	succeed_if (result == 4, "middle wrong");
 
 	keySetName (s, "user/a/x");
-	cmpresult = ksSearchInternal (a, s, &insertpos, &middle);
-	succeed_if (insertpos == 9, "insertpos wrong");
-	succeed_if (cmpresult != 0, "key not found");
+	result = ksSearchInternal (a, s);
+	succeed_if (result == -10, "insertpos wrong");
 
 	keySetName (s, "user/a/e");
-	cmpresult = ksSearchInternal (a, s, &insertpos, &middle);
-	succeed_if (insertpos == 9, "insertpos wrong");
-	succeed_if (cmpresult != 0, "key not found");
-	printf ("cmpresult: %d, insertpos: %zd, middle: %zd\n",
-			cmpresult, insertpos, middle);
+	result = ksSearchInternal (a, s);
+	succeed_if (result == -10, "insertpos wrong");
 }
 
 void test_cut()
