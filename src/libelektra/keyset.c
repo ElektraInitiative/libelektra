@@ -760,7 +760,7 @@ ssize_t ksAppend(KeySet *ks, const KeySet *toAppend)
 	while (ks->size >= toAlloc) toAlloc *= 2;
 	ksResize (ks, toAlloc-1);
 	for (i=0; i<toAppend->size; i++) keyIncRef(toAppend->array[i]);
-	memcpy (ks->array + oldSize, toAppend->array, toAppend->size * sizeof (Key *));
+	kdbiMemcpy (ks->array + oldSize, toAppend->array, toAppend->size);
 	ks->array[ks->size] = 0;
 	ksSort(ks);
 	return ks->size;
@@ -768,6 +768,33 @@ ssize_t ksAppend(KeySet *ks, const KeySet *toAppend)
 
 
 static int keyCompareByNameOwner(const void *p1, const void *p2);
+
+/**
+ * Copies all Keys until the end of the array from a position
+ * in the array to an position in the array.
+ *
+ * @param ks the keyset where this should be done
+ * @param to the position where it should be copied to
+ * @param from the position where it should be copied from
+ */
+ssize_t ksCopyInternal(KeySet *ks, size_t to, size_t from)
+{
+	ssize_t ssize = ks->size;
+	ssize_t sto = to;
+	ssize_t sfrom = from;
+
+	ssize_t sizediff = sto-sfrom;
+	ssize_t length = ssize-sfrom;
+	size_t ret = 0;
+
+	if (length < 0) return -1;
+	if (ks->size <= to) return -1;
+
+	ks->size = ks->size + sizediff;
+	ret = kdbiMemmove(ks->array + to, ks->array + from, length);
+	ks->array[ks->size] = 0;
+	return ret;
+}
 
 /**
  * Cuts out a keyset at the cutpoint.
@@ -783,35 +810,36 @@ static int keyCompareByNameOwner(const void *p1, const void *p2);
  */
 KeySet *ksCut(KeySet *ks, const Key *cutpoint)
 {
-	Key **found = 0;
-	Key **it = 0;
 	KeySet *returned = 0;
+	ssize_t found = 0;
+	ssize_t it = 0;
 	size_t newsize = 0;
 
 	if (!ks) return 0;
 	if (!cutpoint) return 0;
 	if (!cutpoint->key) return 0;
 
-	if (!found)
-	{
-#if DEBUG && VERBOSE
-		printf ("nothing found\n");
-#endif
-		return ksNew(0);
-	}
+	found = ksSearchInternal(ks, cutpoint);
+
+	if (found < 0) found = -found - 1;
 
 	it = found;
-	do {
+	while (it < ks->size && keyIsBelowOrSame(cutpoint, ks->array[it]) == 1)
+	{
 		++it;
 	}
-	while (keyIsBelow(cutpoint, *it) == 1);
 
-	newsize = it-found+1;
+	if (it == found) return ksNew(0);
+
+	newsize = it-found;
 #if DEBUG && VERBOSE
 	printf ("new size is: %zd\n", newsize);
 #endif
 
 	returned = ksNew(newsize, KS_END);
+	kdbiMemcpy (returned->array, ks->array+found, newsize);
+	returned->size = newsize;
+	ksCopyInternal(returned, found, it);
 
 	return returned;
 }

@@ -367,6 +367,9 @@ Split *split_keyset(KDB *handle, KeySet *ks,
 	Key *parentKey, unsigned long options);
 
 /*Internal helpers*/
+
+size_t kdbiMemcpy (Key** array1, Key** array2, size_t size);
+size_t kdbiMemmove (Key** array1, Key** array2, size_t size);
 void *kdbiMalloc (size_t size);
 void  kdbiFree (void *ptr);
 char *kdbiStrDup (const char *s);

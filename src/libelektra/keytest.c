@@ -213,6 +213,23 @@ int keyIsBelow(const Key *key, const Key *check)
 }
 
 /**
+ * Check if a key is below or same or not.
+ *
+ * @param key the key object to work with
+ * @see keyIsBelow()
+ */
+int keyIsBelowOrSame (const Key *key, const Key *check)
+{
+	const char *name1 = keyName(key);
+	const char *name2 = keyName(check);
+
+	if (keyIsBelow (key, check)) return 1;
+	else if (!strcmp (name1, name2)) return 1;
+	return 0;
+}
+
+
+/**
  * Check if the key check is direct below the key key or not.
  *
  * @code

@@ -31,6 +31,7 @@
 KeySet * set_a ()
 {
 	return ksNew(20,
+		keyNew ("user/0", KEY_END),
 		keyNew ("user/a", KEY_END),
 		keyNew ("user/a/a", KEY_END),
 		keyNew ("user/a/a/a", KEY_END),
@@ -45,11 +46,14 @@ KeySet * set_a ()
 		keyNew ("user/a/x/c", KEY_END),
 		keyNew ("user/a/x/c/a", KEY_END),
 		keyNew ("user/a/x/c/b", KEY_END),
+		keyNew ("user/x", KEY_END),
 		KS_END);
 }
 
 void test_search()
 {
+	printf ("Testing operation search (internal)\n");
+
 	KeySet *a = set_a();
 	Key *s = keyNew("user/a", KEY_END);
 	ssize_t result;
@@ -72,13 +76,41 @@ void test_search()
 
 void test_cut()
 {
+	printf ("Testing operation cut\n");
+
 	KeySet *a = set_a();
-	Key *cutpoint_a = keyNew ("user/y", KEY_END);
-	Key *cutpoint_b = keyNew ("user/b", KEY_END);
+	Key *cutpoint_a = keyNew ("user/a", KEY_END);
+	Key *cutpoint_b = keyNew ("user/a/x", KEY_END);
+	printf ("\n\norig (%d):\n", ksGetSize(a));
 	ksOutput(a, stdout, KEY_VALUE);
 
-	KeySet *aa = ksCut(set_a, cutpoint_a);
-	KeySet *ab = ksCut(set_a, cutpoint_b);
+	KeySet *aa = ksCut(a, cutpoint_a);
+	printf ("\n\naa (%d):\n", ksGetSize(a));
+	ksOutput(aa, stdout, KEY_VALUE);
+
+	printf ("\n\norig (%d):\n", ksGetSize(a));
+	ksOutput(a, stdout, KEY_VALUE);
+
+	KeySet *ab = ksCut(a, cutpoint_b);
+	printf ("\n\nab (%d):\n", ksGetSize(a));
+	ksOutput(ab, stdout, KEY_VALUE);
+
+	printf ("\n\norig (%d):\n", ksGetSize(a));
+	ksOutput(a, stdout, KEY_VALUE);
+}
+
+void test_copy()
+{
+	printf ("Testing operation copy (internal)\n");
+
+	KeySet *a;
+
+	a = set_a();
+	printf ("\n\norig (%d):\n", ksGetSize(a));
+	ksOutput(a, stdout, KEY_VALUE);
+	ksCopyInternal (a, 1, 15);
+	printf ("\n\ncut (%d):\n", ksGetSize(a));
+	ksOutput(a, stdout, KEY_VALUE);
 }
 
 
@@ -89,8 +121,9 @@ int main(int argc, char** argv)
 
 	init (argc, argv);
 
-	test_search();
+	// test_search();
 	// test_cut();
+	test_copy();
 
 	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
