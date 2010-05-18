@@ -131,32 +131,57 @@ typedef int (*CloseMapper)(KDB *);
  *****************/
 
 /**
- * Key Flags
+ * Key Flags.
  *
- * Flags are used to communicate between backends and the library.
- * The flags are for internal reasons only, you should not need to
- * modify them.
- *
- * Backend <-> Library
- *
- * There are three possible ways to use the flag,
- * to communicate:
- * - from backend to library (referred as in)
- * - from library to backend (referred as out)
- * - two-way communication (referred as in/out)
+ * Store a synchronizer state so that the Elektra knows if something
+ * has changed or not.
  *
  * @ingroup backend
  */
 typedef enum
 {
-	KEY_FLAG_SYNC=1,	/*!< Key need sync. (in/out)
-		If name, value or metadata
+	KEY_FLAG_SYNC=1,	/*!<
+		Key need sync.
+		If name or value
 		are changed this flag will be set, so that the backend will sync
 		the key to database.*/
-	KEY_FLAG_RO=1<<3	/*!< Key is read only and not allowed
+	KEY_FLAG_META=1<<2,	/*!<
+		Key meta need sync.
+		TODO: not used currently
+		If meta
+		is changed this flag will be set, so that the backend will sync
+		the key to database.*/
+	KEY_FLAG_RO=1<<3	/*!<
+		Read only flag.
+		TODO: not used currently
+		Key is read only and not allowed
 		to be changed. All attempts to change name, value,
 		or meta data will be ignored.*/
 } keyflag_t;
+
+
+/**
+ * Ks Flags.
+ *
+ * Store a synchronizer state so that the Elektra knows if something
+ * has changed or not.
+ *
+ * @ingroup backend
+ */
+typedef enum
+{
+	KS_FLAG_SYNC=1,	/*!<
+		KeySet need sync.
+		If keys were popped from the Keyset
+		this flag will be set, so that the backend will sync
+		the keys to database.*/
+	KS_FLAG_RO=1<<3	/*!<
+		Read only flag.
+		KeySet is read only and not allowed
+		TODO: not used currently
+		to be changed. All attempts to append or pop keys
+		will be ignored.*/
+} ksflag_t;
 
 
 /**
@@ -242,7 +267,7 @@ struct _KeySet {
 	/**
 	 * Some control and internal flags.
 	 */
-	keyflag_t      flags;
+	ksflag_t      flags;
 };
 
 

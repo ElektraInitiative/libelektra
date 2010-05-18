@@ -192,6 +192,8 @@ int ksDel(KeySet *ks);
 
 void ksSort(KeySet *ks);
 
+int ksNeedSync(const KeySet *ks);
+
 ssize_t ksGetSize(const KeySet *ks);
 
 ssize_t ksAppendKey(KeySet *ks, Key *toAppend);
