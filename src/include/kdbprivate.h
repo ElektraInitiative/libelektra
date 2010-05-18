@@ -115,8 +115,8 @@ typedef struct _Trie	Trie;
 typedef struct _Split	Split;
 
 /* These define the type for pointers to all the kdb functions */
-typedef KDB*     (*kdbOpenPtr)();
-typedef int      (*kdbClosePtr)(KDB *);
+typedef int  (*kdbOpenPtr)(KDB *);
+typedef int  (*kdbClosePtr)(KDB *);
 
 typedef ssize_t  (*kdbGetPtr)(KDB *handle, KeySet *returned, const Key *parentKey);
 typedef ssize_t  (*kdbSetPtr)(KDB *handle, KeySet *returned, const Key *parentKey);

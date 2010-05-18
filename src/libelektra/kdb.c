@@ -154,7 +154,7 @@ KDB* kdbOpenBackend(const char *backendname, const char *mountpoint, KeySet *con
 	if (handle->kdbOpen)
 	{
 		handle->config = config;
-		if (handle->kdbOpen(handle) == -1)
+		if ((handle->kdbOpen(handle)) == -1)
 		{
 #if DEBUG && VERBOSE
 			printf("kdbOpen() failed for %s\n", backend_name);
