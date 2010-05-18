@@ -1696,12 +1696,12 @@ Key *ksLookupByBinary(KeySet *ks, const void *value, size_t size,
 
 		if (!value)
 		{
-			if (!current->data) break;
+			if (!current->data.v) break;
 			else continue;
 		}
 
-		if (current->data && 
-			!memcmp(current->data,value,size)) break;
+		if (current->data.v && 
+			!memcmp(current->data.v,value,size)) break;
 	}
 
 	/* reached end of KeySet */

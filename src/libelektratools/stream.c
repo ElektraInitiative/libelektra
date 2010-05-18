@@ -257,16 +257,16 @@ ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
 #endif
 
 
-	if (!key->data && !keyComment(key)) { /* no data AND no comment */
+	if (!key->data.v && !keyComment(key)) { /* no data AND no comment */
 		written+=fprintf(stream,"/>");
 		if (!(options & KDB_O_CONDENSED))
 			written+=fprintf(stream,"\n\n");
 		
 		return written; /* end of <key/> */
 	} else {
-		if (key->data) {
+		if (key->data.v) {
 			if ((key->dataSize <= 16) && keyIsString (key) && /*TODO: is this for string?*/
-					!strchr(key->data,'\n')) {
+					!strchr(key->data.c,'\n')) {
 
 				/* we'll use a "value" attribute instead of a <value> node,
 				   for readability, so the cut size will be 16, which is
@@ -275,7 +275,7 @@ ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
 				if (options & KDB_O_CONDENSED) written+=fprintf(stream," ");
 				else written+=fprintf(stream,"\n\t");
 				
-				written+=fprintf(stream,"value=\"%s\"",(char *)key->data);
+				written+=fprintf(stream,"value=\"%s\"",key->data.c);
 				
 				if (keyComment(key)) written+=fprintf(stream,">\n");
 				else {
@@ -294,7 +294,7 @@ ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
 					written+=fprintf(stream,"<![CDATA[");
 					fflush(stream);
 					/* must chop ending \\0 */
-					written+=fwrite(key->data,sizeof(char),key->dataSize-1,stream);
+					written+=fwrite(key->data.v,sizeof(char),key->dataSize-1,stream);
 					written+=fprintf(stream,"]]>");
 				} else {
 					/* Binary values */
@@ -302,7 +302,7 @@ ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
 					size_t encodedSize;
 
 					written+=fprintf(stream,"\n");
-					encodedSize=kdbbEncode(key->data,key->dataSize,encoded);
+					encodedSize=kdbbEncode(key->data.c,key->dataSize,encoded);
 					fflush(stream);
 					written+=fwrite(encoded,sizeof(char),encodedSize,stream);
 					free(encoded);

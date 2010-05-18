@@ -201,7 +201,7 @@ struct _Key {
 	/**
 	 * The value, which is a NULL terminated string or binary.
 	 * @see keyGetString(), keyGetBinary(), keySetRaw() */
-	void *         data;
+	union {void * v; char* c;} data;
 
 	/**
 	 * Size of the value, in bytes, including ending NULL.

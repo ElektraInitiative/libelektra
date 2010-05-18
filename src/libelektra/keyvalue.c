@@ -108,7 +108,6 @@ keyDel(key);
  *
  * keyValue() returns 0 in binary mode when there is no value. The reason is
  * @code
-int i=23;
 key=keyNew(0);
 keySetBinary(key, 0, 0);
 keyValue(key); // you would expect 0 here
@@ -116,6 +115,7 @@ keyValue(key); // you would expect 0 here
 keySetBinary(key,"", 1);
 keyValue(key); // you would expect "" (a pointer to '\0') here
 
+int i=23;
 keySetBinary(key, (void*)&i, 4);
 (int*)keyValue(key); // you would expect a pointer to (int)23 here
 keyDel(key);
@@ -174,14 +174,27 @@ const void *keyValue(const Key *key)
 {
 	if (!key) return 0;
 
-	if (!key->data)
+	if (!key->data.v)
 	{
 		/*errno=KDB_ERR_NOKEY;*/
 		if (keyIsBinary(key)) return 0;
 		else return "";
 	}
 
-	return key->data;
+	return key->data.v;
+}
+
+
+const char *keyString(const Key *key)
+{
+	if (!key) return "(null)";
+
+	if (!key->data.c)
+	{
+		return "";
+	}
+
+	return key->data.c;
 }
 
 
@@ -224,7 +237,7 @@ ssize_t keyGetValueSize(const Key *key)
 {
 	if (!key) return -1;
 
-	if (!key->data)
+	if (!key->data.v)
 	{
 		/*errno=KDB_ERR_NODATA;*/
 		if (keyIsBinary(key)) return 0;
@@ -287,7 +300,7 @@ ssize_t keyGetString(const Key *key, char *returnedString, size_t maxSize)
 		return -1;
 	}
 
-	if (!key->data) {
+	if (!key->data.v) {
 		returnedString[0]=0;
 		return 1;
 	}
@@ -298,7 +311,7 @@ ssize_t keyGetString(const Key *key, char *returnedString, size_t maxSize)
 	}
 
 
-	strncpy(returnedString,key->data, maxSize);
+	strncpy(returnedString,key->data.c, maxSize);
 	return key->dataSize;
 }
 
@@ -396,7 +409,7 @@ ssize_t keyGetBinary(const Key *key, void *returnedBinary, size_t maxSize)
 		return -1;
 	}
 
-	if (!key->data)
+	if (!key->data.v)
 	{
 		return 0;
 	}
@@ -408,7 +421,7 @@ ssize_t keyGetBinary(const Key *key, void *returnedBinary, size_t maxSize)
 	}
 
 
-	memcpy(returnedBinary,key->data,key->dataSize);
+	memcpy(returnedBinary,key->data.v,key->dataSize);
 	return key->dataSize;
 }
 
@@ -480,9 +493,9 @@ ssize_t keySetRaw(Key *key, const void *newBinary, size_t dataSize)
 	if (key->flags & KEY_FLAG_RO) return -1;
 
 	if (!dataSize || !newBinary) {
-		if (key->data) {
-			free(key->data);
-			key->data=0;
+		if (key->data.v) {
+			free(key->data.v);
+			key->data.v=0;
 		}
 		key->dataSize = 0;
 		key->flags |= KEY_FLAG_SYNC;
@@ -491,18 +504,18 @@ ssize_t keySetRaw(Key *key, const void *newBinary, size_t dataSize)
 	}
 
 	key->dataSize=dataSize;
-	if (key->data) {
+	if (key->data.v) {
 		char *p=0;
-		p=realloc(key->data,key->dataSize);
+		p=realloc(key->data.v,key->dataSize);
 		if (NULL==p) return -1;
-		key->data=p;
+		key->data.v=p;
 	} else {
-		key->data=malloc(key->dataSize);
+		key->data.v=malloc(key->dataSize);
         }
 
-	if (!key->data) return -1;
+	if (!key->data.v) return -1;
 
-	memcpy(key->data,newBinary,key->dataSize);
+	memcpy(key->data.v,newBinary,key->dataSize);
 	key->flags |= KEY_FLAG_SYNC;
 	return keyGetValueSize (key);
 }

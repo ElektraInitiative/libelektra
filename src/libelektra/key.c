@@ -395,13 +395,13 @@ Key* keyDup(const Key *source)
 
 	/* prepare to set dynamic properties */
 	dest->key=
-	dest->data=
+	dest->data.v=
 	dest->meta=0;
 
 	dest->ksReference = 0;
 
 	if (source->key && keySetName(dest,source->key) == -1) goto memerror;
-	if (source->data && keySetRaw(dest,source->data,source->dataSize) == -1) goto memerror;
+	if (source->data.v && keySetRaw(dest,source->data.v,source->dataSize) == -1) goto memerror;
 	if (source->meta)
 	{
 		dest->meta = ksDup (source->meta);
@@ -521,11 +521,11 @@ int keyCopy (Key *dest, const Key *source)
 
 	/* prepare to set dynamic properties */
 	dest->key=
-	dest->data=
+	dest->data.v=
 	dest->meta=0;
 
 	if (keySetName(dest,source->key) == -1) return -1;
-	if (keySetRaw(dest,source->data,source->dataSize) == -1) return -1;
+	if (keySetRaw(dest,source->data.v,source->dataSize) == -1) return -1;
 	if (source->meta)
 	{
 		dest->meta = ksDup (source->meta);
@@ -600,7 +600,7 @@ int f (Key *k)
 int keyClear(Key *key)
 {
 	if (key->key) free(key->key);
-	if (key->data) free(key->data);
+	if (key->data.v) free(key->data.v);
 	if (key->meta) ksDel(key->meta);
 
 	memset(key,0,sizeof(Key));
