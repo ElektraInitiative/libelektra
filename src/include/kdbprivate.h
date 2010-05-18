@@ -329,7 +329,7 @@ struct _KDB {
  * closest to the parentKey.
  */
 struct _Trie {
-	struct _Trie *childs[MAX_UCHAR];/*!<  */
+	struct _Trie *children[MAX_UCHAR];/*!<  */
 	char *text[MAX_UCHAR];		/*!<  */
 	unsigned int textlen[MAX_UCHAR];/*!<  */
 	void *value[MAX_UCHAR];		/*!<  */

@@ -93,7 +93,7 @@ int kdbDelTrie(Trie *trie, CloseMapper close_backend)
 	if (trie==NULL) return 0;
 	for (i=0;i<MAX_UCHAR;i++) {
 		if (trie->text[i]!=NULL) {
-			kdbDelTrie(trie->childs[i],close_backend);
+			kdbDelTrie(trie->children[i],close_backend);
 			if (trie->value[i])
 				close_backend(trie->value[i]);
 			free(trie->text[i]);
@@ -224,7 +224,7 @@ Trie* insert_trie(Trie *trie, const char *name, const void *value)
 		trie=malloc(sizeof(Trie));
 		trie->empty_value=0;
 		for (i=0;i<MAX_UCHAR;i++) {
-			trie->childs[i]=0;
+			trie->children[i]=0;
 			trie->text[i]=0;
 			trie->textlen[i]=0;
 			trie->value[i]=0;
@@ -252,7 +252,7 @@ Trie* insert_trie(Trie *trie, const char *name, const void *value)
 		/* there exists an entry with the same first character */
 		if ((p=starts_with(name, trie->text[idx]))==0) {
 			/* the name in the trie is part of the searched name --> continue search */
-			trie->childs[idx]=insert_trie(trie->childs[idx],name+trie->textlen[idx],value);
+			trie->children[idx]=insert_trie(trie->children[idx],name+trie->textlen[idx],value);
 		} else {
 			/* name in trie doesn't match name --> split trie */
 			char *newname;
@@ -263,18 +263,18 @@ Trie* insert_trie(Trie *trie, const char *name, const void *value)
 			*p=0; /* shorten the old name in the trie */
 			trie->textlen[idx]=strlen(trie->text[idx]);
 
-			child=trie->childs[idx];
+			child=trie->children[idx];
 
 			/* insert the name given as a parameter into the new trie entry */
-			trie->childs[idx]=insert_trie(NULL, name+(p-trie->text[idx]), value);
+			trie->children[idx]=insert_trie(NULL, name+(p-trie->text[idx]), value);
 
 			/* insert the splitted try into the new trie entry */
 
 			idx2=(unsigned int) newname[0];
-			trie->childs[idx]->text[idx2]=newname;
-			trie->childs[idx]->textlen[idx2]=strlen(newname);
-			trie->childs[idx]->value[idx2]=trie->value[idx];
-			trie->childs[idx]->childs[idx2]=child;
+			trie->children[idx]->text[idx2]=newname;
+			trie->children[idx]->textlen[idx2]=strlen(newname);
+			trie->children[idx]->value[idx2]=trie->value[idx];
+			trie->children[idx]->children[idx2]=child;
 
 			trie->value[idx]=0;
 
@@ -305,11 +305,11 @@ Trie *delete_trie(Trie *trie, char *name, CloseMapper closemapper)
 
 	if (starts_with(name,trie->text[idx])==0) {
 
-		tr=delete_trie(trie->childs[idx],name+trie->textlen[idx],closemapper);
+		tr=delete_trie(trie->children[idx],name+trie->textlen[idx],closemapper);
 
 		if (tr==NULL) {
 			/* child trie has been deleted */
-			trie->childs[idx]=NULL;
+			trie->children[idx]=NULL;
 			free(trie->text[idx]);
 			closemapper(trie->value[idx]);
 			trie->text[idx]=NULL;
@@ -451,7 +451,7 @@ static void* prefix_lookup(Trie *trie, const char *name)
 	}
 
 	if (starts_with((char*)name, (char*)trie->text[idx])==0) {
-		ret=prefix_lookup(trie->childs[idx],name+trie->textlen[idx]);
+		ret=prefix_lookup(trie->children[idx],name+trie->textlen[idx]);
 	} else {
 		return trie->empty_value;
 	}
