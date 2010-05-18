@@ -141,6 +141,7 @@ int keyRemove(Key *key);
 
 /* Methods for Making Tests */
 int keyCmp(const Key *k1, const Key *k2);
+int keyRel (const Key *k1, const Key *k2);
 
 int keyNeedStat(const Key *key);
 int keyNeedSync(const Key *key);

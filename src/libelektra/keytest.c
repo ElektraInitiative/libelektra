@@ -53,14 +53,15 @@
 
 
 /**Clear flags of a key.
-  *
-  * If you want to get the current flags, just call
-  * it with semiflag set to 0.
-  *
-  * @param key the key object to work with
-  * @return -1 on null key
-  * @return new flags for that key otherwise
-  */
+ *
+ * If you want to get the current flags, just call
+ * it with semiflag set to 0.
+ *
+ * @param key the key object to work with
+ * @return -1 on null key
+ * @return new flags for that key otherwise
+ * @ingroup keytest
+ */
 int keyClearSync (Key *key)
 {
 	if (!key) return -1;
@@ -189,19 +190,21 @@ int keyIsUser(const Key *key)
 /**
  * Check if the key check is below the key key or not.
  *
- * @code
-Example:
+ * Example:
+@verbatim
 key user/sw/app
 check user/sw/app/key
-
-returns true because check is below key
-
-Example:
+@endverbatim
+ *
+ * returns true because check is below key
+ *
+ * Example:
+@verbatim
 key user/sw/app
 check user/sw/app/folder/key
-
-returns also true because check is indirect below key
- * @endcode
+@endverbatim
+ *
+ * returns also true because check is indirect below key
  *
  * @param key the key object to work with
  * @param check the key to find the relative position of
@@ -251,7 +254,7 @@ int keyIsBelowOrSame (const Key *key, const Key *check)
 /**
  * Check if the key check is direct below the key key or not.
  *
- * @code
+@verbatim
 Example:
 key user/sw/app
 check user/sw/app/key
@@ -263,7 +266,7 @@ key user/sw/app
 check user/sw/app/folder/key
 
 does not return true, because there is only a indirect relation
- * @endcode
+@endverbatim
  *
  * @param key the key object to work with
  * @param check the key to find the relative position of
@@ -306,52 +309,52 @@ int keyIsDirectBelow(const Key *key, const Key *check)
  *
  * - If the keys are the same 0 is returned.
  * So it is the key itself.
- * @code
+@verbatim
 user/key
 user/key
- * @endcode
+@endverbatim
  *
  * - If the key is direct below the other one 1 is returned.
  * That means that, in terms of hierarchy, no other key is
  * between them - it is a direct child.
- * @code
+@verbatim
 user/key/folder
 user/key/folder/child
- * @endcode
+@endverbatim
  *
  * - If the key is below the other one, 2 is returned.
  * This is also called grand-child.
- * @code
+@verbatim
 user/key/folder
 user/key/folder/any/depth/deeper/grand-child
- * @endcode
+@endverbatim
  *
  * - If the keys are next to each other in hierarchy, 3 is returned.
  * This is also called siblings. (TODO not implemented)
- * @code
+@verbatim
 user/key/myself
 user/key/sibling
- * @endcode
+@endverbatim
  *
  * - If the keys are direct below a key which is next to the key, 4 is returned.
  * This is also called nephew. (TODO not implemented)
- * @code
+ * @verbatim
 user/key/myself
 user/key/sibling/nephew
- * @endcode
+@endverbatim
  *
  * - If the keys are below a key which is next to the key, 5 is returned.
  * This is also called grand-nephew. (TODO not implemented)
- * @code
+@verbatim
 user/key/myself
 user/key/sibling/any/depth/deeper/grand-nephew
- * @endcode
+@endverbatim
  *
  * - If there is no relation of the above, INT_MAX is returned.
- * @code
+@verbatim
 user/key/myself
 user/other/sibling/any/depth/deeper/nonrelated
- * @endcode
+@endverbatim
  *
  * The same holds true for the other direction, but with negative values.
  * For no relation INT_MIN is returned.
@@ -359,6 +362,7 @@ user/other/sibling/any/depth/deeper/nonrelated
  * @param k1 the first key object to compare with
  * @param k2 the second key object to compare with
  * @return the information of the relation, see text above
+ * @ingroup keytest
  */
 int keyRel (const Key *k1, const Key *k2)
 {
@@ -367,7 +371,7 @@ int keyRel (const Key *k1, const Key *k2)
 	if (res < 0)
 	{
 		// swapping the keys
-		Key *tmp = k1;
+		const Key *tmp = k1;
 		k1 = k2;
 		k2 = tmp;
 	}
@@ -521,7 +525,7 @@ int keyIsString(const Key *key)
 
 
 
-/*
+/**
  * Compare 2 keys.
  *
  * The returned flags bit array has 1s (differ) or 0s (equal) for each key

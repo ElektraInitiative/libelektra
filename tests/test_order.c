@@ -472,9 +472,18 @@ void test_strcmp()
 {
 	printf ("Testing string comparision\n");
 
+	char array[] = "user/key/a";
+
 	succeed_if (kdbiStrCmp ("user/key", "user/key") == 0, "key should be equal");
 	succeed_if (kdbiStrCmp ("user/key", "user/key/a") >= 0, "key should be greater");
 	succeed_if (kdbiStrCmp ("user/key.a", "user/key/a") >= 0, "key should be greater");
+
+	for (int i=1; i< 255; i++)
+	{
+		array[8] = i;
+		printf ("%s", array);
+		succeed_if (kdbiStrCmp (array, "user/key/a") >= 0, "key should be greater");
+	}
 }
 
 void test_rel()

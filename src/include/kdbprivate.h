@@ -376,6 +376,7 @@ char *kdbiStrDup (const char *s);
 char *kdbiStrNDup (const char *s, size_t l);
 int kdbiRealloc(void **buffer, size_t size);
 
+int kdbiStrCmp (const char *s1, const char *s2);
 int kdbiStrCaseCmp (const char *s1, const char *s2);
 size_t kdbiStrLen(const char *s);
 

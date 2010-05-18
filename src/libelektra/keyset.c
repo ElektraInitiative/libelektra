@@ -475,6 +475,7 @@ Key *k2 = keyNew("user/a", KEY_OWNER, "max", KEY_END);
  *
  * @see ksAppendKey(), ksAppend() will compare keys when appending
  * @see ksLookup() will compare keys during searching
+ * @ingroup keytest
  */
 int keyCmp (const Key *k1, const Key *k2)
 {
