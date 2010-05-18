@@ -94,6 +94,44 @@ void test_kdbTrie()
 	kdbClose (kdb);
 }
 
+void test_iterate()
+{
+	Key *k;
+	Key *mnt;
+	KeySet *conf;
+	KDB *s;
+	KDB *kdb = kdbOpen();
+
+	succeed_if (kdbMount(kdb,mnt=keyNew("user/tests/hosts",KEY_VALUE,"hosts", KEY_END),
+		conf=ksNew (2,keyNew("system/path", KEY_VALUE, "/tmp/hosts", KEY_END), KS_END)) == 0,
+		"could not mount hosts");
+	ksDel (conf);
+	keyDel(mnt);
+
+	succeed_if (kdbMount(kdb,mnt=keyNew("user/tests/hosts/below",KEY_VALUE,"hosts", KEY_END),
+		conf=ksNew (2,keyNew("system/path", KEY_VALUE, "/tmp/hosts", KEY_END), KS_END)) == 0,
+		"could not mount hosts");
+	ksDel (conf);
+	keyDel(mnt);
+
+	k = keyNew ("user/tests/hosts",0);
+	s=kdbGetBackend(kdb,k);
+	succeed_if(!strcmp("hosts",keyValue(s->mountpoint)), "kdbGetBackend: didn't get the correct value");
+	succeed_if(!strcmp("user/tests/hosts",keyName(s->mountpoint)), "kdbGetBackend: didn't get the correct value");
+	keyDel (k);
+
+	k = keyNew ("user/tests/hosts/anything/deeper/here",0);
+	s=kdbGetBackend(kdb,k);
+	succeed_if(!strcmp("hosts",keyValue(s->mountpoint)), "kdbGetBackend: didn't get the correct value");
+	succeed_if(!strcmp("user/tests/hosts",keyName(s->mountpoint)), "kdbGetBackend: didn't get the correct value");
+	keyDel (k);
+	printf ("%s - %s\n", keyName(s->mountpoint), (const char*)keyValue(s->mountpoint));
+	printf ("root trie: %p\n", kdb->trie);
+	printf ("host trie: %p\n", s->trie);
+
+	kdbClose (kdb);
+}
+
 int main(int argc, char** argv)
 {
 	printf("TRIE       TESTS\n");
@@ -101,7 +139,8 @@ int main(int argc, char** argv)
 
 	init (argc, argv);
 
-	test_kdbTrie();
+	// test_kdbTrie();
+	test_iterate();
 
 	printf("\ntest_trie RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
