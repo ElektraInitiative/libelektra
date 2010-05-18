@@ -25,7 +25,7 @@
  ***************************************************************************/
 
 
-#include <template.h>
+#include "template.h"
 
 int kdbOpen_template(KDB *handle)
 {
@@ -54,7 +54,6 @@ int kdbOpen_template(KDB *handle)
 	cap->noMTime=1;
 	cap->noCTime=1;
 	cap->noRemove=1;
-	cap->noLink=1;
 	cap->noMount=1;
 	cap->noBinary=1;
 	cap->noString=1;
