@@ -257,11 +257,6 @@ void test_lookup()
 	succeed_if (k3.getString() == "value", "wrong value");
 
 	try {
-		ks3.lookup("user/key3/2");
-		succeed_if (false, "Not Found not thrown for removed key");
-	} catch (KeySetNotFound) { }
-
-	try {
 		ks3.lookup("user/key3/4");
 		succeed_if (false, "Not Found not thrown for not existing key");
 	} catch (KeySetNotFound) { }
