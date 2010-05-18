@@ -468,6 +468,28 @@ void test_appendowner()
 	ksDel (ks);
 }
 
+void test_strcmp()
+{
+	printf ("Testing string comparision\n");
+
+	succeed_if (kdbiStrCmp ("user/key", "user/key") == 0, "key should be equal");
+	succeed_if (kdbiStrCmp ("user/key", "user/key/a") >= 0, "key should be greater");
+	succeed_if (kdbiStrCmp ("user/key.a", "user/key/a") >= 0, "key should be greater");
+}
+
+void test_rel()
+{
+	printf ("Testing key relations\n");
+
+	Key *k1 = keyNew("user/key", KEY_END);
+	Key *k2 = keyNew("user/key", KEY_END);
+
+	succeed_if (keyRel (k1, k2) == 0, "same keys did not return 0");
+
+	keyDel (k1);
+	keyDel (k2);
+}
+
 
 int main(int argc, char** argv)
 {
@@ -476,17 +498,23 @@ int main(int argc, char** argv)
 
 	init (argc, argv);
 
+	/*
 	test_ksNew();
 	test_ksDuplicate();
+	*/
 
 	// TODO Bugs
 	// test_ksLookupCase();
 	// test_ksLookupOwner();
 	// test_ksHole();
 
+	/*
 	test_append();
 	test_cmp();
 	test_appendowner();
+	*/
+	test_strcmp();
+	// test_rel();
 
 	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

@@ -112,8 +112,46 @@ ssize_t kdbiMemmove (Key** array1, Key** array2, size_t size)
 	return size;
 }
 
+/**Compare Strings using kdb semantics.
+ *
+ * @param s1 The first string to be compared
+ * @param s2 The second string to be compared
+ *
+ * / is handled special, it will always be prefered
+ * for any other character.
+ *
+ * @ingroup internal
+ * @return a negative number if s1 is less than s2
+ * @return 0 if s1 matches s2
+ * @return a positive number if s1 is greater than s2
+ **/
+int kdbiStrCmp (const char *s1, const char *s2)
+{
+	const unsigned char *p1 = (const unsigned char *)s1;
+	const unsigned char *p2 = (const unsigned char *)s2;
+	unsigned char c1;
+	unsigned char c2;
+	int result;
 
-/**Compare Strings ignoring case.
+	if (p1 == p2) return 0;
+
+	do
+	{
+		c1 = *p1;
+		c2 = *p2;
+		if (c1 == '/') c1 = '\0';
+		if (c2 == '/') c2 = '\0';
+		result = (c1 != c2);
+		++p1;
+		++p2;
+	}
+	while (result != 0 && *p1 == '\0');
+
+	return result;
+}
+
+
+/**Compare Strings ignoring case using kdb semantics.
  *
  * @param s1 The first string to be compared
  * @param s2 The second string to be compared

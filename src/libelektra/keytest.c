@@ -186,8 +186,6 @@ int keyIsUser(const Key *key)
 	else return 0;
 }
 
-
-
 /**
  * Check if the key check is below the key key or not.
  *
@@ -289,6 +287,98 @@ int keyIsDirectBelow(const Key *key, const Key *check)
 	if (!keyIsBelow(key, check)) return 0;
 	if (strchr(checkname + keysize, '/')) return 0;
 	return 1;
+}
+
+
+/**
+ * Information about the relation in the hierarchy between
+ * two keys.
+ *
+ * This function returns like keyCmp()
+ * a number less than, equal to or greater than zero if
+ * k1 is found, respectively, to be less than, to match, or
+ * be greater than k2.
+ *
+ * But unlike keyCmp() the exact number gives information
+ * about the exact hierarchical information.
+ * Because of the additional checks this function is
+ * slower.
+ *
+ * - If the keys are the same 0 is returned.
+ * So it is the key itself.
+ * @code
+user/key
+user/key
+ * @endcode
+ *
+ * - If the key is direct below the other one 1 is returned.
+ * That means that, in terms of hierarchy, no other key is
+ * between them - it is a direct child.
+ * @code
+user/key/folder
+user/key/folder/child
+ * @endcode
+ *
+ * - If the key is below the other one, 2 is returned.
+ * This is also called grand-child.
+ * @code
+user/key/folder
+user/key/folder/any/depth/deeper/grand-child
+ * @endcode
+ *
+ * - If the keys are next to each other in hierarchy, 3 is returned.
+ * This is also called siblings. (TODO not implemented)
+ * @code
+user/key/myself
+user/key/sibling
+ * @endcode
+ *
+ * - If the keys are direct below a key which is next to the key, 4 is returned.
+ * This is also called nephew. (TODO not implemented)
+ * @code
+user/key/myself
+user/key/sibling/nephew
+ * @endcode
+ *
+ * - If the keys are below a key which is next to the key, 5 is returned.
+ * This is also called grand-nephew. (TODO not implemented)
+ * @code
+user/key/myself
+user/key/sibling/any/depth/deeper/grand-nephew
+ * @endcode
+ *
+ * - If there is no relation of the above, INT_MAX is returned.
+ * @code
+user/key/myself
+user/other/sibling/any/depth/deeper/nonrelated
+ * @endcode
+ *
+ * The same holds true for the other direction, but with negative values.
+ * For no relation INT_MIN is returned.
+ *
+ * @param k1 the first key object to compare with
+ * @param k2 the second key object to compare with
+ * @return the information of the relation, see text above
+ */
+int keyRel (const Key *k1, const Key *k2)
+{
+	int res = keyCmp (k1, k2);
+	if (!res) return 0;
+	if (res < 0)
+	{
+		// swapping the keys
+		Key *tmp = k1;
+		k1 = k2;
+		k2 = tmp;
+	}
+	if (keyIsDirectBelow(k1, k2)) return 1*res;
+	if (keyIsBelow(k1, k2)) return 2*res;
+	// if (keyIsSibling(k1, k2)) return 3*res;
+	// if (keyIsNephew(k1, k2)) return 4*res;
+	// if (keyIsGrandNephew(k1, k2)) return 5*res;
+
+	if (res < 0) return INT_MIN;
+	else return INT_MAX;
 }
 
 
