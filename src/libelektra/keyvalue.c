@@ -185,6 +185,19 @@ const void *keyValue(const Key *key)
 }
 
 
+/**
+ * Get the c-string representing the value.
+ *
+ * Will return (null) on null pointers.
+ * Will return (binary) on binary data not ended
+ * with a null byte.
+ *
+ * It is not checked if it is actually a string,
+ * only if it terminates for security reasons.
+ *
+ * @return the c-string of the value
+ * @param key the key object to get the string from
+ */
 const char *keyString(const Key *key)
 {
 	if (!key) return "(null)";
@@ -192,6 +205,11 @@ const char *keyString(const Key *key)
 	if (!key->data.c)
 	{
 		return "";
+	}
+
+	if (key->data.c[key->dataSize] != 0)
+	{
+		return "(binary)";
 	}
 
 	return key->data.c;

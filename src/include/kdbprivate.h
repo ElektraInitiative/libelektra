@@ -200,8 +200,11 @@ typedef struct _Key Key;
 struct _Key {
 	/**
 	 * The value, which is a NULL terminated string or binary.
-	 * @see keyGetString(), keyGetBinary(), keySetRaw() */
-	union {void * v; char* c;} data;
+	 * @see keyString(), keyBinary(),
+	 * @see keyGetString(), keyGetBinary(),
+	 * @see keySetString(), keySetBinary()
+	 */
+	union {char* c; void * v;} data;
 
 	/**
 	 * Size of the value, in bytes, including ending NULL.
