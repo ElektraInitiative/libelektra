@@ -94,6 +94,16 @@ void test_kdbTrie()
 	kdbClose (kdb);
 }
 
+void output_trie(Trie *trie)
+{
+	int i;
+	printf ("output_trie: %p\n", trie->value);
+	for (i=0; i <= MAX_UCHAR; ++i)
+	{
+		if (trie->children[i]) output_trie(trie->children[i]);
+	}
+}
+
 void test_iterate()
 {
 	Key *k;
@@ -119,15 +129,27 @@ void test_iterate()
 	succeed_if(!strcmp("hosts",keyValue(s->mountpoint)), "kdbGetBackend: didn't get the correct value");
 	succeed_if(!strcmp("user/tests/hosts",keyName(s->mountpoint)), "kdbGetBackend: didn't get the correct value");
 	keyDel (k);
+	printf ("s: %p\n", s);
 
 	k = keyNew ("user/tests/hosts/anything/deeper/here",0);
 	s=kdbGetBackend(kdb,k);
 	succeed_if(!strcmp("hosts",keyValue(s->mountpoint)), "kdbGetBackend: didn't get the correct value");
 	succeed_if(!strcmp("user/tests/hosts",keyName(s->mountpoint)), "kdbGetBackend: didn't get the correct value");
 	keyDel (k);
-	printf ("%s - %s\n", keyName(s->mountpoint), (const char*)keyValue(s->mountpoint));
+	printf ("s: %p\n", s);
+
+	k = keyNew ("user/tests/hosts/below/anything/deeper/here",0);
+	s=kdbGetBackend(kdb,k);
+	succeed_if(!strcmp("hosts",keyValue(s->mountpoint)), "kdbGetBackend: didn't get the correct value");
+	succeed_if(!strcmp("user/tests/hosts/below",keyName(s->mountpoint)), "kdbGetBackend: didn't get the correct value");
+	keyDel (k);
+	printf ("s: %p\n", s);
+
+	// printf ("%s - %s\n", keyName(s->mountpoint), (const char*)keyValue(s->mountpoint));
 	printf ("root trie: %p\n", kdb->trie);
 	printf ("host trie: %p\n", s->trie);
+
+	output_trie(kdb->trie);
 
 	kdbClose (kdb);
 }
