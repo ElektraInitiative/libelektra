@@ -97,9 +97,9 @@ void test_kdbTrie()
 void output_trie(Trie *trie)
 {
 	int i;
-	printf ("output_trie: %p\n", trie->value);
 	for (i=0; i <= MAX_UCHAR; ++i)
 	{
+		if (trie->value[i]) printf ("output_trie: %p\n", trie->value[i]);
 		if (trie->children[i]) output_trie(trie->children[i]);
 	}
 }
