@@ -1,10 +1,11 @@
 include (LibAddMacros)
 
-file (GLOB HDR_FILES *.h)
+file (GLOB HDR_FILES *.hpp)
 add_headers (HDR_FILES)
+add_cppheaders (HDR_FILES)
 include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 
-file (GLOB SRC_FILES *.c)
+file (GLOB SRC_FILES *.cpp)
 
 set (SOURCES ${SRC_FILES} ${HDR_FILES})
 

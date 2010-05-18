@@ -169,6 +169,9 @@ Trie* createTrie(KeySet *ks, OpenMapper mapper)
 			void *p;
 			p=mapper(backend_name,mountpoint,config);
 			if (p) {
+#if DEBUG && VERBOSE
+				printf ("insert in trie %s\n", mountpoint);
+#endif
 				trie=insert_trie(trie,mountpoint,p);
 			} else {
 				ksDel(config);

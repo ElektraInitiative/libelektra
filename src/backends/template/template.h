@@ -37,4 +37,4 @@ int kdbOpen_template(KDB *handle);
 int kdbClose_template(KDB *handle);
 ssize_t kdbGet_template(KDB *handle, KeySet *ks, const Key *parentKey);
 ssize_t kdbSet_template(KDB *handle, KeySet *ks, const Key *parentKey);
-KDBEXPORT(template);
+KDB *KDBEXPORT(template);

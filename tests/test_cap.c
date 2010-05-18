@@ -14,7 +14,6 @@ void test_system()
 	succeed_if (strcmp (kdbcGetVersion(cap), "0.2.1") == 0, "wrong version");
 	succeed_if (strcmp (kdbcGetLicence(cap), "BSD") == 0, "wrong licence");
 	succeed_if (kdbcGetonlyFullGet(cap) == 0, "default backend must support single gets");
-	succeed_if (kdbcGetonlyRemoveAll(cap) == 0, "default backend must support single removes");
 	succeed_if (kdbcGetonlyAddKeys(cap) == 0, "default backend must support adding keys");
 	succeed_if (kdbcGetnoComment(cap) == 0, "default backend must support comments");
 	succeed_if (kdbcGetnoValue(cap) == 0, "default backend must *really* support values");
@@ -37,7 +36,6 @@ void test_user()
 	warn_if_fail (strcmp (kdbcGetName(cap), "filesys") == 0, "You are not using filesys for user keys");
 	warn_if_fail (strcmp (kdbcGetLicence(cap), "BSD") == 0, "Your user keys are not stored in a bsd licenced backend");
 	succeed_if (kdbcGetonlyFullGet(cap) == 0, "user backend must support single gets");
-	succeed_if (kdbcGetonlyRemoveAll(cap) == 0, "user backend must support single removes");
 	succeed_if (kdbcGetonlyAddKeys(cap) == 0, "user backend must support adding keys");
 	succeed_if (kdbcGetnoComment(cap) == 0, "user backend must support comments");
 	succeed_if (kdbcGetnoValue(cap) == 0, "user backend must *really* support values");
@@ -73,7 +71,6 @@ void test_fstab()
 	succeed_if (strcmp (kdbcGetVersion(cap), "0.0.1") == 0, "wrong version");
 	succeed_if (strcmp (kdbcGetLicence(cap), "BSD") == 0, "wrong licence");
 	succeed_if (kdbcGetonlyFullGet(cap) == 1, "fstab only full get");
-	succeed_if (kdbcGetonlyRemoveAll(cap) == 1, "fstab only remove all");
 	succeed_if (kdbcGetonlyAddKeys(cap) == 1, "fstab only add keys");
 	succeed_if (kdbcGetnoComment(cap) == 1, "fstab does not support comments");
 	succeed_if (kdbcGetnoError(cap) == 1, "fstab does not return correct error values");
@@ -108,7 +105,6 @@ void test_hosts()
 	succeed_if (strcmp (kdbcGetVersion(cap), "0.0.2") == 0, "wrong version");
 	succeed_if (strcmp (kdbcGetLicence(cap), "BSD") == 0, "wrong licence");
 	succeed_if (kdbcGetonlyFullGet(cap) == 1, "hosts only full get");
-	succeed_if (kdbcGetonlyRemoveAll(cap) == 1, "hosts only remove all");
 	succeed_if (kdbcGetonlyAddKeys(cap) == 1, "hosts only add keys");
 	succeed_if (kdbcGetnoComment(cap) == 1, "hosts does not support comments");
 	succeed_if (kdbcGetnoError(cap) == 1, "hosts does not return correct error values");

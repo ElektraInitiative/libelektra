@@ -190,8 +190,6 @@
  *   can be used for something else afterwards.
  * - @b remove, used in @ref kdbRemove(), kdbRemoveKey(), @ref KDB_O_NOREMOVE and @ref KDB_O_REMOVEONLY
  *   means that the key/value information in the physical database will be removed permanently.
- *   The key operations keyNeedRemove() with its flag set in keyNew() by using @ref KEY_REMOVE or keyRemove() means the same,
- *   but will not have effects before kdbSet() was called with that keys.
  *
  */
 

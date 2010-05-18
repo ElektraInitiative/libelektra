@@ -432,8 +432,13 @@ int kdbRemove(KDB *handle, const char *keyname)
 		return -1;
 	}
 
-	keyRemove (key);
-	rc=kdbSetKey(handle,key);
+	/*TODO Implement, pseudocode:
+	  kdbGet(keys);
+	  ret = ksLookup(keys, key, KDB_O_POP);
+	  keyDel (ret); // remove that key
+	  kdbSet(keys);
+	 */
+
 	keyDel(key);
 
 	return rc;
@@ -526,28 +531,3 @@ ssize_t kdbGetByName(KDB *handle, KeySet *returned, const char *name,
 		else return returned->size;
 	}
 }
-
-
-
-/*
- * Stats the key only for its meta-info from the backend storage.
- *
- * The key may not hold value and comment after using kdbStatKey().
- *
- * Info like comments and key data type will not be retrieved.
- *
- * @param handle contains internal information of @link kdbOpen() opened @endlink key database
- * @param key an initialized Key pointer to be filled.
- * @return 0 on success
- * @return -1 on failure
- * @ingroup kdbhighlevel
- */
-int kdbStatKey(KDB *handle, Key *key)
-{
-	if (!handle || !key) return -1;
-
-	keyStat(key);
-	return kdbGetKey (handle, key);
-}
-
-

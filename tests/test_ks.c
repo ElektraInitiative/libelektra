@@ -686,7 +686,6 @@ void test_ksSort()
 
 	printf("Test ks sort\n");
 
-	printf ("Sort with no keyNeedRemove set\n");
 	ks=ksNew(0);
 	ksAppendKey(ks, keyNew("user/bname", KEY_END));
 	ksAppendKey(ks, keyNew("user/aname", KEY_END));
@@ -726,37 +725,26 @@ void test_ksSort()
 		switch (i)
 		{
 		case 0:	succeed_if (strcmp (keyName (key), "user/a") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 0, "wrong removed key information");
 			break;
 		case 1:	succeed_if (strcmp (keyName (key), "user/b1") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 0, "wrong removed key information");
 			break;
 		case 2:	succeed_if (strcmp (keyName (key), "user/b2") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 0, "wrong removed key information");
 			break;
 		case 3:	succeed_if (strcmp (keyName (key), "user/c1") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 0, "wrong removed key information");
 			break;
 		case 4:	succeed_if (strcmp (keyName (key), "user/c2") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 0, "wrong removed key information");
 			break;
 		case 5:	succeed_if (strcmp (keyName (key), "user/d") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 0, "wrong removed key information");
 			break;
 		case 6:	succeed_if (strcmp (keyName (key), "user/e") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 0, "wrong removed key information");
 			break;
 		case 7:	succeed_if (strcmp (keyName (key), "user/f") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 0, "wrong removed key information");
 			break;
 		case 8:	succeed_if (strcmp (keyName (key), "user/g") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 0, "wrong removed key information");
 			break;
 		case 9:	succeed_if (strcmp (keyName (key), "user/h1") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 0, "wrong removed key information");
 			break;
 		case 10:succeed_if (strcmp (keyName (key), "user/h2") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 0, "wrong removed key information");
 			break;
 		default:succeed_if (0, "should not reach");
 			break;
@@ -764,90 +752,65 @@ void test_ksSort()
 	}
 	ksDel (ks);
 
-	printf ("Sort with some keyNeedRemove set\n");
 	ks=ksNew(0);
-	k1 = keyNew("user/aname", KEY_END);
+	k1 = keyNew("user/xname", KEY_END);
 	ksAppendKey(ks,k1);
 
 	k2 = keyDup (k1);
-	keyRemove(k2);
 
 	succeed_if (keyGetRef(k2) == 0, "reference counter not resetted");
 	ksAppendKey(ks,k2);
-	succeed_if (keyGetRef(k2) == 1, "reference counter not incremented");
+	succeed_if (keyGetRef(k2) == 0, "reference counter incremented, but already inserted");
 	ksSort (ks);
 
 	ksRewind (ks);
 	key = ksNext(ks);
-	// printf ("%d\n", keyNeedRemove (key));
-	succeed_if (keyNeedRemove (key) == 1, "Removed key should be on first position");
 	ksDel(ks);
 	
 	ks=ksNew(0);
-	k1 = keyNew("user/aname", KEY_END);
+	k1 = keyNew("user/yname", KEY_END);
 	k2 = keyDup (k1);
-	keyRemove(k2);
 	ksAppendKey(ks,k2);
 	ksAppendKey(ks,k1);
 	ksSort (ks);
 
 	ksRewind (ks);
 	key = ksNext(ks);
-	succeed_if (keyNeedRemove (key) == 1, "Removed key should be on first position");
 	ksDel(ks);
 
 	ks=ksNew(0);
-	ksAppendKey(ks, keyNew("user/a", KEY_REMOVE, KEY_END));
+	ksAppendKey(ks, keyNew("user/a", KEY_END));
 	ksAppendKey(ks, keyNew("user/e", KEY_END));
-	ksAppendKey(ks, keyNew("user/b", KEY_REMOVE, KEY_END));
 	ksAppendKey(ks, keyNew("user/b", KEY_END));
-	ksAppendKey(ks, keyNew("user/d", KEY_REMOVE, KEY_END));
+	ksAppendKey(ks, keyNew("user/b", KEY_END));
+	ksAppendKey(ks, keyNew("user/d", KEY_END));
 	ksAppendKey(ks, keyNew("user/c", KEY_END));
-	ksAppendKey(ks, keyNew("user/c", KEY_REMOVE, KEY_END));
-	ksAppendKey(ks, keyNew("user/g", KEY_REMOVE, KEY_END));
-	ksAppendKey(ks, keyNew("user/h", KEY_REMOVE, KEY_END));
+	ksAppendKey(ks, keyNew("user/c", KEY_END));
+	ksAppendKey(ks, keyNew("user/g", KEY_END));
 	ksAppendKey(ks, keyNew("user/h", KEY_END));
-	ksAppendKey(ks, keyNew("user/f", KEY_REMOVE, KEY_END));
+	ksAppendKey(ks, keyNew("user/h", KEY_END));
+	ksAppendKey(ks, keyNew("user/f", KEY_END));
 
-	ksSort (ks);
 	ksRewind (ks);
-	// output_keyset(ks,0);
 	for (i=0; (key=ksNext(ks)) != 0; i++)
 	{
 		switch (i)
 		{
-		case 0:	succeed_if (strcmp (keyName (key), "user/h") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 1, "wrong removed key information");
+		case 0:	succeed_if (strcmp (keyName (key), "user/a") == 0, "wrong name found.");
 			break;
-		case 1:	succeed_if (strcmp (keyName (key), "user/g") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 1, "wrong removed key information");
+		case 1:	succeed_if (strcmp (keyName (key), "user/b") == 0, "wrong name found.");
 			break;
-		case 2:	succeed_if (strcmp (keyName (key), "user/f") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 1, "wrong removed key information");
+		case 2:	succeed_if (strcmp (keyName (key), "user/c") == 0, "wrong name found.");
 			break;
 		case 3:	succeed_if (strcmp (keyName (key), "user/d") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 1, "wrong removed key information");
 			break;
-		case 4:	succeed_if (strcmp (keyName (key), "user/c") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 1, "wrong removed key information");
+		case 4:	succeed_if (strcmp (keyName (key), "user/e") == 0, "wrong name found.");
 			break;
-		case 5:	succeed_if (strcmp (keyName (key), "user/b") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 1, "wrong removed key information");
+		case 5:	succeed_if (strcmp (keyName (key), "user/f") == 0, "wrong name found.");
 			break;
-		case 6:	succeed_if (strcmp (keyName (key), "user/a") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 1, "wrong removed key information");
+		case 6:	succeed_if (strcmp (keyName (key), "user/g") == 0, "wrong name found.");
 			break;
-		case 7:	succeed_if (strcmp (keyName (key), "user/b") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 0, "wrong removed key information");
-			break;
-		case 8:	succeed_if (strcmp (keyName (key), "user/c") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 0, "wrong removed key information");
-			break;
-		case 9:	succeed_if (strcmp (keyName (key), "user/e") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 0, "wrong removed key information");
-			break;
-		case 10:succeed_if (strcmp (keyName (key), "user/h") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 0, "wrong removed key information");
+		case 7:	succeed_if (strcmp (keyName (key), "user/h") == 0, "wrong name found.");
 			break;
 		default:succeed_if (0, "should not reach");
 			break;
@@ -856,19 +819,18 @@ void test_ksSort()
 	ksDel (ks);
 
 	
-	printf ("Sort with all keyNeedRemove set\n");
 	ks=ksNew(0);
-	ksAppendKey(ks, keyNew("user/a", KEY_REMOVE, KEY_END));
-	ksAppendKey(ks, keyNew("user/e", KEY_REMOVE, KEY_END));
-	ksAppendKey(ks, keyNew("user/b/a", KEY_REMOVE, KEY_END));
-	ksAppendKey(ks, keyNew("user/b", KEY_REMOVE, KEY_END));
-	ksAppendKey(ks, keyNew("user/d", KEY_REMOVE, KEY_END));
-	ksAppendKey(ks, keyNew("user/c", KEY_REMOVE, KEY_END));
-	ksAppendKey(ks, keyNew("user/c/a", KEY_REMOVE, KEY_END));
-	ksAppendKey(ks, keyNew("user/g", KEY_REMOVE, KEY_END));
-	ksAppendKey(ks, keyNew("user/h/a", KEY_REMOVE, KEY_END));
-	ksAppendKey(ks, keyNew("user/h", KEY_REMOVE, KEY_END));
-	ksAppendKey(ks, keyNew("user/f", KEY_REMOVE, KEY_END));
+	ksAppendKey(ks, keyNew("user/a", KEY_END));
+	ksAppendKey(ks, keyNew("user/e", KEY_END));
+	ksAppendKey(ks, keyNew("user/b/a", KEY_END));
+	ksAppendKey(ks, keyNew("user/b", KEY_END));
+	ksAppendKey(ks, keyNew("user/d", KEY_END));
+	ksAppendKey(ks, keyNew("user/c", KEY_END));
+	ksAppendKey(ks, keyNew("user/c/a", KEY_END));
+	ksAppendKey(ks, keyNew("user/g", KEY_END));
+	ksAppendKey(ks, keyNew("user/h/a", KEY_END));
+	ksAppendKey(ks, keyNew("user/h", KEY_END));
+	ksAppendKey(ks, keyNew("user/f", KEY_END));
 
 	ksSort(ks);
 	ksRewind (ks);
@@ -877,38 +839,27 @@ void test_ksSort()
 	{
 		switch (i)
 		{
-		case 0:	succeed_if (strcmp (keyName (key), "user/h/a") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 1, "wrong removed key information");
+		case 10:succeed_if (strcmp (keyName (key), "user/h/a") == 0, "wrong name found.");
 			break;
-		case 1:	succeed_if (strcmp (keyName (key), "user/h") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 1, "wrong removed key information");
+		case 9:	succeed_if (strcmp (keyName (key), "user/h") == 0, "wrong name found.");
 			break;
-		case 2:	succeed_if (strcmp (keyName (key), "user/g") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 1, "wrong removed key information");
+		case 8:	succeed_if (strcmp (keyName (key), "user/g") == 0, "wrong name found.");
 			break;
-		case 3:	succeed_if (strcmp (keyName (key), "user/f") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 1, "wrong removed key information");
+		case 7:	succeed_if (strcmp (keyName (key), "user/f") == 0, "wrong name found.");
 			break;
-		case 4:	succeed_if (strcmp (keyName (key), "user/e") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 1, "wrong removed key information");
+		case 6:	succeed_if (strcmp (keyName (key), "user/e") == 0, "wrong name found.");
 			break;
 		case 5:	succeed_if (strcmp (keyName (key), "user/d") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 1, "wrong removed key information");
 			break;
-		case 6:	succeed_if (strcmp (keyName (key), "user/c/a") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 1, "wrong removed key information");
+		case 4:	succeed_if (strcmp (keyName (key), "user/c/a") == 0, "wrong name found.");
 			break;
-		case 7:	succeed_if (strcmp (keyName (key), "user/c") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 1, "wrong removed key information");
+		case 3:	succeed_if (strcmp (keyName (key), "user/c") == 0, "wrong name found.");
 			break;
-		case 8:	succeed_if (strcmp (keyName (key), "user/b/a") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 1, "wrong removed key information");
+		case 2:	succeed_if (strcmp (keyName (key), "user/b/a") == 0, "wrong name found.");
 			break;
-		case 9:	succeed_if (strcmp (keyName (key), "user/b") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 1, "wrong removed key information");
+		case 1:	succeed_if (strcmp (keyName (key), "user/b") == 0, "wrong name found.");
 			break;
-		case 10:succeed_if (strcmp (keyName (key), "user/a") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 1, "wrong removed key information");
+		case 0:	succeed_if (strcmp (keyName (key), "user/a") == 0, "wrong name found.");
 			break;
 		default:succeed_if (0, "should not reach");
 			break;
@@ -916,18 +867,17 @@ void test_ksSort()
 	}
 	ksDel (ks);
 	
-	printf ("Sort with mixed keyNeedRemove set and subdirs\n");
 	ks=ksNew(0);
-	ksAppendKey(ks, keyNew("user/dir1/key1", KEY_REMOVE, KEY_END));
+	ksAppendKey(ks, keyNew("user/dir1/key1", KEY_END));
 	ksAppendKey(ks, keyNew("user/dir1/key2", KEY_END));
-	ksAppendKey(ks, keyNew("user/dir1/key3", KEY_REMOVE, KEY_END));
-	ksAppendKey(ks, keyNew("user/dir2",      KEY_REMOVE, KEY_END));
-	ksAppendKey(ks, keyNew("user/dir2/key1", KEY_REMOVE, KEY_END));
+	ksAppendKey(ks, keyNew("user/dir1/key3", KEY_END));
+	ksAppendKey(ks, keyNew("user/dir2",      KEY_END));
+	ksAppendKey(ks, keyNew("user/dir2/key1", KEY_END));
 	ksAppendKey(ks, keyNew("user/dir3/key1", KEY_END));
 	ksAppendKey(ks, keyNew("user/dir3",      KEY_END));
 	ksAppendKey(ks, keyNew("user/dir3/key2", KEY_END));
 	ksAppendKey(ks, keyNew("user/dir4",      KEY_END));
-	ksAppendKey(ks, keyNew("user/dir5/key1", KEY_REMOVE, KEY_END));
+	ksAppendKey(ks, keyNew("user/dir5/key1", KEY_END));
 	ksAppendKey(ks, keyNew("user/dir6/key1", KEY_END));
 
 	ksSort(ks);
@@ -937,38 +887,27 @@ void test_ksSort()
 	{
 		switch (i)
 		{
-		case 0:	succeed_if (strcmp (keyName (key), "user/dir5/key1") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 1, "wrong removed key information");
+		case 9:	succeed_if (strcmp (keyName (key), "user/dir5/key1") == 0, "wrong name found.");
 			break;
-		case 1:	succeed_if (strcmp (keyName (key), "user/dir2/key1") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 1, "wrong removed key information");
+		case 4:	succeed_if (strcmp (keyName (key), "user/dir2/key1") == 0, "wrong name found.");
 			break;
-		case 2:	succeed_if (strcmp (keyName (key), "user/dir2") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 1, "wrong removed key information");
+		case 3:	succeed_if (strcmp (keyName (key), "user/dir2") == 0, "wrong name found.");
 			break;
-		case 3:	succeed_if (strcmp (keyName (key), "user/dir1/key3") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 1, "wrong removed key information");
+		case 2:	succeed_if (strcmp (keyName (key), "user/dir1/key3") == 0, "wrong name found.");
 			break;
-		case 4:	succeed_if (strcmp (keyName (key), "user/dir1/key1") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 1, "wrong removed key information");
+		case 0:	succeed_if (strcmp (keyName (key), "user/dir1/key1") == 0, "wrong name found.");
 			break;
-		case 5:	succeed_if (strcmp (keyName (key), "user/dir1/key2") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 0, "wrong removed key information");
+		case 1:	succeed_if (strcmp (keyName (key), "user/dir1/key2") == 0, "wrong name found.");
 			break;
-		case 6:	succeed_if (strcmp (keyName (key), "user/dir3") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 0, "wrong removed key information");
+		case 5:	succeed_if (strcmp (keyName (key), "user/dir3") == 0, "wrong name found.");
 			break;
-		case 7:	succeed_if (strcmp (keyName (key), "user/dir3/key1") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 0, "wrong removed key information");
+		case 6:	succeed_if (strcmp (keyName (key), "user/dir3/key1") == 0, "wrong name found.");
 			break;
-		case 8:	succeed_if (strcmp (keyName (key), "user/dir3/key2") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 0, "wrong removed key information");
+		case 7:	succeed_if (strcmp (keyName (key), "user/dir3/key2") == 0, "wrong name found.");
 			break;
-		case 9:	succeed_if (strcmp (keyName (key), "user/dir4") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 0, "wrong removed key information");
+		case 8:	succeed_if (strcmp (keyName (key), "user/dir4") == 0, "wrong name found.");
 			break;
 		case 10:succeed_if (strcmp (keyName (key), "user/dir6/key1") == 0, "wrong name found.");
-			succeed_if (keyNeedRemove (key) == 0, "wrong removed key information");
 			break;
 		default:succeed_if (0, "should not reach");
 			break;
@@ -1012,11 +951,11 @@ void test_ksLookup()
 	int i,j;
 	Key *k[1000];
 	KeySet *ks = ksNew (30,
-		k[0]=keyNew ("user/rem3", KEY_REMOVE, KEY_DIR, KEY_END),
-		k[1]=keyNew ("user/rem2", KEY_REMOVE, KEY_DIR, KEY_END),
-		k[2]=keyNew ("user/rem1/key2", KEY_REMOVE, KEY_END),
-		k[3]=keyNew ("user/rem1/key1", KEY_REMOVE, KEY_END),
-		k[4]=keyNew ("user/rem1", KEY_REMOVE, KEY_DIR, KEY_END),
+		k[0]=keyNew ("user/rem3", KEY_DIR, KEY_END),
+		k[1]=keyNew ("user/rem2", KEY_DIR, KEY_END),
+		k[2]=keyNew ("user/rem1/key2", KEY_END),
+		k[3]=keyNew ("user/rem1/key1", KEY_END),
+		k[4]=keyNew ("user/rem1", KEY_DIR, KEY_END),
 		k[5]=keyNew ("user/dir1", KEY_DIR, KEY_END),
 		k[6]=keyNew ("user/dir1/key1", KEY_VALUE, "value1", KEY_END),
 		k[7]=keyNew ("user/dir1/key2", KEY_VALUE, "value2", KEY_END),
@@ -1058,9 +997,7 @@ void test_ksLookup()
 	for (i=0; i<100; i++)
 	{
 		ksUnsort(ks);
-		for (j=0; j<5; j++)
-			succeed_if (ksLookup(ks, k[j], 0)==0, "found removed key");
-		for (j=5; j<23;j++)
+		for (j=0; j<23;j++)
 			succeed_if (ksLookup(ks, k[j], 0)==k[j], "did not found key");
 		succeed_if (ksLookup(ks, k[23], KDB_O_NOCASE) == k[5], "did not found key");
 		succeed_if (ksLookup(ks, k[23], 0) == 0, "found wrong key");
@@ -1089,11 +1026,11 @@ void test_ksLookupByName()
 	char *name[1000];
 	Key *k[1000];
 	KeySet *ks = ksNew (30,
-		k[0]=keyNew (name[0] = "user/rem3", KEY_REMOVE, KEY_DIR, KEY_END),
-		k[1]=keyNew (name[1] = "user/rem2", KEY_REMOVE, KEY_DIR, KEY_END),
-		k[2]=keyNew (name[2] = "user/rem1/key2", KEY_REMOVE, KEY_END),
-		k[3]=keyNew (name[3] = "user/rem1/key1", KEY_REMOVE, KEY_END),
-		k[4]=keyNew (name[4] = "user/rem1", KEY_REMOVE, KEY_DIR, KEY_END),
+		k[0]=keyNew (name[0] = "user/rem3", KEY_DIR, KEY_END),
+		k[1]=keyNew (name[1] = "user/rem2", KEY_DIR, KEY_END),
+		k[2]=keyNew (name[2] = "user/rem1/key2", KEY_END),
+		k[3]=keyNew (name[3] = "user/rem1/key1", KEY_END),
+		k[4]=keyNew (name[4] = "user/rem1", KEY_DIR, KEY_END),
 		k[5]=keyNew (name[5] = "user/dir1", KEY_DIR, KEY_END),
 		k[6]=keyNew (name[6] = "user/dir1/key1", KEY_VALUE, "value1", KEY_END),
 		k[7]=keyNew (name[7] = "user/dir1/key2", KEY_VALUE, "value2", KEY_END),
@@ -1132,9 +1069,7 @@ void test_ksLookupByName()
 	for (i=0; i<100; i++)
 	{
 		ksUnsort(ks);
-		for (j=0; j<5; j++)
-			succeed_if (ksLookupByName(ks, name[j], 0)==0, "found removed key");
-		for (j=5; j<23;j++)
+		for (j=0; j<23;j++)
 			succeed_if (ksLookupByName(ks, name[j], 0)==k[j], "did not found key");
 		succeed_if (ksLookupByName(ks, name[23], KDB_O_NOCASE) == k[5], "did not found key");
 		succeed_if (ksLookupByName(ks, name[23], 0) == 0, "found wrong key");
@@ -1290,50 +1225,6 @@ void test_ksLookupName()
 
 	ksDel(ks);
 	
-}
-
-void test_ksLookupNameRemove()
-{
-	Key * found;
-	KeySet *ks=ksNew(0);
-	printf ("Test lookup functions with removed keys\n");
-	ksAppendKey(ks, keyNew("user/a", KEY_REMOVE, KEY_END));
-	ksAppendKey(ks, keyNew("user/e", KEY_END));
-	ksAppendKey(ks, keyNew("user/b", KEY_REMOVE, KEY_END));
-	ksAppendKey(ks, keyNew("user/b", KEY_END));
-	ksAppendKey(ks, keyNew("user/d", KEY_REMOVE, KEY_END));
-	ksAppendKey(ks, keyNew("user/c", KEY_END));
-	ksAppendKey(ks, keyNew("user/c", KEY_REMOVE, KEY_END));
-	ksAppendKey(ks, keyNew("user/g", KEY_REMOVE, KEY_END));
-	ksAppendKey(ks, keyNew("user/h", KEY_REMOVE, KEY_END));
-	ksAppendKey(ks, keyNew("user/h", KEY_END));
-	ksAppendKey(ks, keyNew("user/f", KEY_REMOVE, KEY_END));
-	
-	found = ksLookupByName (ks, "user/e", 0);
-	succeed_if (found != 0, "could not find same key again, nocase used");
-	succeed_if (ksCurrent(ks) == found, "current not set correctly");
-	succeed_if (strcmp (keyName(found), "user/e") == 0, "name not correct in found key");
-
-	found = ksLookupByName (ks, "user/b", 0);
-	succeed_if (found != 0, "could not find same key again, nocase used");
-	succeed_if (ksCurrent(ks) == found, "current not set correctly");
-	succeed_if (strcmp (keyName(found), "user/b") == 0, "name not correct in found key");
-
-	found = ksLookupByName (ks, "user/c", 0);
-	succeed_if (found != 0, "could not find same key again, nocase used");
-	succeed_if (ksCurrent(ks) == found, "current not set correctly");
-	succeed_if (strcmp (keyName(found), "user/c") == 0, "name not correct in found key");
-
-	found = ksLookupByName (ks, "user/h", 0);
-	succeed_if (found != 0, "could not find same key again, nocase used");
-	succeed_if (ksCurrent(ks) == found, "current not set correctly");
-	succeed_if (strcmp (keyName(found), "user/h") == 0, "name not correct in found key");
-
-	succeed_if (ksLookupByName (ks, "user/nonexists", 0) == 0, "found nonexists key");
-	succeed_if (ksLookupByName (ks, "user/g", 0) == 0, "found removed key");
-	succeed_if (ksLookupByName (ks, "user/f", 0) == 0, "found removed key");
-
-	ksDel (ks);
 }
 
 void test_ksLookupNameAll()
@@ -2173,7 +2064,6 @@ int main(int argc, char** argv)
 	test_ksLookup();
 	test_ksLookupByName();
 	test_ksLookupName();
-	test_ksLookupNameRemove();
 	test_ksLookupNameAll();
 	/*test_ksLookupValue();*/
 	test_ksExample();

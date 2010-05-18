@@ -288,15 +288,15 @@ void test_removed()
 	KDB *handle = kdbOpen();
 	KeySet *ks = ksNew (
 		5,
-		keyNew ("user/valid/key2", KEY_REMOVE, KEY_END),
-		keyNew ("user/valid/key1", KEY_REMOVE, KEY_END),
+		keyNew ("user/valid/key2", KEY_END),
+		keyNew ("user/valid/key1", KEY_END),
 		keyNew ("system/valid/key1", KEY_END),
 		keyNew ("system/valid/key2", KEY_END),
 		KS_END);
 	KeySet *split1 = ksNew (
 		3,
-		keyNew ("user/valid/key2", KEY_REMOVE, KEY_END),
-		keyNew ("user/valid/key1", KEY_REMOVE, KEY_END),
+		keyNew ("user/valid/key2", KEY_END),
+		keyNew ("user/valid/key1", KEY_END),
 		KS_END);
 	KeySet *split2 = ksNew (
 		3,

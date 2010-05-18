@@ -101,7 +101,7 @@ ssize_t kdbSet_template(KDB *handle, KeySet *returned, const Key *parentKey)
 	return nr_keys;
 }
 
-KDBEXPORT(template)
+KDB *KDBEXPORT(template)
 {
 	return kdbBackendExport(BACKENDNAME,
 		KDB_BE_OPEN,	&kdbOpen_template,

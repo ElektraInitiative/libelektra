@@ -210,29 +210,6 @@ unsigned int kdbcGetonlyFullSet (const KDBCap *cap)
 }
 
 
-/*When getting keys they cant be stated.
- *
- * @see keyStat(), keyNeedStat()
- * @see kdbGet_backend()
- * @ingroup capability
- **/
-unsigned int kdbcGetnoStat (const KDBCap *cap)
-{
-	return cap->noStat;
-}
-
-
-/*You can only remove all keys at once.
- *
- * @see kdbSet_backend()
- * @ingroup capability
- **/
-unsigned int kdbcGetonlyRemoveAll (const KDBCap *cap)
-{
-	return cap->onlyRemoveAll;
-}
-
-
 /*When setting keys with new name below parentKey, they will be added.
  *
  * Otherwise (changing keys) all keys are required.
@@ -371,14 +348,6 @@ unsigned int kdbcGetnoCTime (const KDBCap *cap)
 {
 	return cap->noCTime;
 }
-
-
-/*The backend does not support removing keys.*/
-unsigned int kdbcGetnoRemove (const KDBCap *cap)
-{
-	return cap->noRemove;
-}
-
 
 
 /*Mount type not supported.*/

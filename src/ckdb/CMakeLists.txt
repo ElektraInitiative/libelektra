@@ -1,0 +1,43 @@
+include (LibAddMacros)
+
+file (GLOB HDR_FILES *.h)
+add_headers (HDR_FILES)
+include_directories (${CMAKE_CURRENT_SOURCE_DIR})
+
+file (GLOB SRC_FILES *.c)
+
+set (SOURCES ${SRC_FILES} ${HDR_FILES})
+
+if (BUILD_SHARED)
+	add_executable (ckdb ${SOURCES})
+
+	target_link_libraries (ckdb elektra)
+
+	install (TARGETS ckdb DESTINATION bin)
+endif (BUILD_SHARED)
+
+if (BUILD_FULL)
+	add_executable (ckdb-full ${SOURCES})
+
+	if (BUILD_TOOLS)
+		target_link_libraries (ckdb-full elektra-full elektratools)
+	else (BUILD_TOOLS)
+		target_link_libraries (ckdb-full elektra-full)
+	endif (BUILD_TOOLS)
+
+	install (TARGETS ckdb-full DESTINATION bin)
+endif (BUILD_FULL)
+
+if (BUILD_STATIC)
+	add_executable (ckdb-static ${SOURCES})
+
+	set_target_properties (ckdb-static PROPERTIES LINKER_LANGUAGE CXX)
+
+	if (BUILD_TOOLS)
+		target_link_libraries (ckdb-static elektra-static elektratools-static elektra-static)
+	else (BUILD_TOOLS)
+		target_link_libraries (ckdb-static elektra-static)
+	endif (BUILD_TOOLS)
+
+	install (TARGETS ckdb-static DESTINATION bin)
+endif (BUILD_STATIC)

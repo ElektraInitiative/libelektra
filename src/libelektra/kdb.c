@@ -118,6 +118,9 @@ KDB* kdbOpenBackend(const char *backendname, const char *mountpoint, KeySet *con
 	dlhandle=kdbLibLoad(backend_name);
 	if (dlhandle == 0) {
 		/*errno=KDB_ERR_EBACKEND;*/
+#if DEBUG && VERBOSE
+		printf("kdbLibLoad(%s) failed\n", backend_name);
+#endif
 		goto err_clup; /* error */
 	}
 
@@ -125,6 +128,9 @@ KDB* kdbOpenBackend(const char *backendname, const char *mountpoint, KeySet *con
 	kdbBackendFactory=(KDBBackendFactory)kdbLibSym(dlhandle, "kdbBackendFactory");
 	if (kdbBackendFactory == 0) {
 		/*errno=KDB_ERR_NOSYS;*/
+#if DEBUG && VERBOSE
+		printf("Could not kdbLibSym kdbBackendFactory for %s\n", backend_name);
+#endif
 		goto err_clup; /* error */
 	}
 	
@@ -132,6 +138,9 @@ KDB* kdbOpenBackend(const char *backendname, const char *mountpoint, KeySet *con
 	if (handle == 0)
 	{
 		/*errno=KDB_ERR_NOSYS;*/
+#if DEBUG && VERBOSE
+		printf("Could not call kdbBackendFactory for %s\n", backend_name);
+#endif
 		goto err_clup; /* error */
 	}
 
@@ -145,10 +154,18 @@ KDB* kdbOpenBackend(const char *backendname, const char *mountpoint, KeySet *con
 	if (handle->kdbOpen)
 	{
 		handle->config = config;
-		handle->kdbOpen(handle);
+		if (handle->kdbOpen(handle) == -1)
+		{
+#if DEBUG && VERBOSE
+			printf("kdbOpen() failed for %s\n", backend_name);
+#endif
+		}
 	}
 	else {
 		/*errno=KDB_ERR_NOSYS;*/
+#if DEBUG && VERBOSE
+			printf("No kdbOpen supplied in %s\n", backend_name);
+#endif
 		goto err_clup;
 	}
 
@@ -441,7 +458,8 @@ KDB * kdbOpen()
 	/* get mount config from root backend */
 	keys=ksNew(0);
 
-	kdbGet(handle,keys,keyNew(KDB_KEY_MOUNTPOINTS,KEY_END),KDB_O_DEL);
+	/* TODO added KDB_O_NORECURSIVE because kdbGet() code is broken at the moment */
+	kdbGet(handle,keys,keyNew(KDB_KEY_MOUNTPOINTS,KEY_END),KDB_O_DEL|KDB_O_NORECURSIVE);
 
 #if DEBUG && VERBOSE
 	ksRewind(keys);
@@ -535,18 +553,6 @@ int kdbClose(KDB *handle)
  *   Put in @p returned only the folder keys. The resulting 
  *   KeySet will be only the skeleton of the tree. This option must not be
  *   ORed together with KDB_O_DIR.
- * - @p option_t::KDB_O_NOSTAT \n
- *   Don't stat they keys, whatever keyNeedStat() says.
- *   That means that also the key value and comment will be retrieved.
- *   The flag will result in that all keys in @p returned don't have
- *   keyNeedStat() set.
- * - @p option_t::KDB_O_STATONLY \n
- *   Only stat the keys. It means that key value and comment will
- *   not be retrieved. The resulting keys will contain only meta info such
- *   as user and group IDs, owner, mode permissions and modification times.
- *   You don't need that flag if the keys already have keyNeedStat() set.
- *   The flag will result in that all keys in @p returned have
- *   keyNeedStat() set.
  * - @p option_t::KDB_O_INACTIVE \n
  *   Will make it not ignore inactive keys, so @p returned will contain also
  *   inactive keys. Inactive keys are those that have names
@@ -644,6 +650,7 @@ ssize_t kdbGet (KDB *handle, KeySet *returned,
 	KeySet *tmp;
 	Key *current;
 	KDB *backend_handle;
+	KDB *try_handle;
 
 	if (!handle || !returned)
 	{
@@ -667,20 +674,13 @@ ssize_t kdbGet (KDB *handle, KeySet *returned,
 	if (backend_handle==NULL)
 		backend_handle=handle;
 
-	if (options & KDB_O_NOSTAT) parentKey->flags &= ~KEY_FLAG_STAT;
-	else if (options & KDB_O_STATONLY) keyStat (parentKey);
-
 	keys = ksNew (0);
 	tmp = ksNew (0);
 	ksRewind (returned);
 	while ((current = ksPop(returned)) != 0)
 	{
-		if (options & KDB_O_NOSTAT) current->flags &= ~KEY_FLAG_STAT;
-		else if (options & KDB_O_STATONLY) keyStat(current);
-
 		if (keyIsDirectBelow(parentKey, current))
 		{
-			if (keyNeedStat(parentKey)) keyStat (current);
 			set_bit (current->flags, KEY_FLAG_SYNC);
 			ksAppendKey(keys, current);
 		} else {
@@ -700,14 +700,6 @@ ssize_t kdbGet (KDB *handle, KeySet *returned,
 		fprintf (stderr, "call of handle->kdbGet failed\n");
 #endif
 		return -1;
-	} else if (ret == 0)
-	{
-		if (options & KDB_O_DEL) keyDel (parentKey);
-		ksRewind (keys);
-		while ((current = ksNext(keys)) != 0) clear_bit (current->flags, KEY_FLAG_SYNC);
-		ksAppend (returned, keys);
-		ksDel (keys);
-		return 0;
 	}
 
 	ksRewind(keys);
@@ -717,12 +709,6 @@ ssize_t kdbGet (KDB *handle, KeySet *returned,
 		const char *currentName = keyName(current);
 		if (keyNeedSync(current))
 		{	/* Key was not updated, throw it away */
-			keyDel (current);
-			continue;
-		}
-		if ((options & KDB_O_NORECURSIVE) &&
-			!(!strcmp (parentName, currentName) || keyIsDirectBelow(parentKey, current)))
-		{	/* Only parentKey itself or keys direct below */
 			keyDel (current);
 			continue;
 		}
@@ -755,8 +741,24 @@ ssize_t kdbGet (KDB *handle, KeySet *returned,
 		}
 		if (keyIsDir (current))
 		{
+			if (options & KDB_O_NODIR)
+			{
+				keyDel (current);
+				continue;
+			}
+		}
+		else if (options & KDB_O_DIRONLY)
+		{
+			keyDel (current);
+			continue;
+		}
+		try_handle=kdbGetBackend(handle,current);
+		if (try_handle != backend_handle)
+		{
+			/* Ohh, another backend is responsible, so we will delete the key */
 			if (! (options & KDB_O_NORECURSIVE))
 			{
+				/* This key resides somewhere else, go recurse */
 				ret = kdbGet(handle, returned, current,
 					options & ~KDB_O_DEL & ~KDB_O_SORT & ~KDB_O_POP);
 				if (ret == -1)
@@ -767,21 +769,9 @@ ssize_t kdbGet (KDB *handle, KeySet *returned,
 					size = -1;
 					keyDel (current);
 					break;
-				} else if (ret > 0)
-				{
-					size += ret;
-					keyDel (current);
-					continue; /*current was already handeled*/
-				} /* Fallthrough if ret == 0, add current */
+				}
+				size += ret;
 			}
-			if (options & KDB_O_NODIR)
-			{
-				keyDel (current);
-				continue;
-			}
-		}
-		else if (options & KDB_O_DIRONLY)
-		{
 			keyDel (current);
 			continue;
 		}
@@ -868,15 +858,10 @@ for (i=0; i< 10; i++) // limit to 10 tries
  * - @p option_t::KDB_O_SYNC \n
  *   Will force to save all keys, independent of their sync state.
  * - @p option_t::KDB_O_NOREMOVE \n
- *   Don't remove any key from disk, even if keyRemove() was set.
+ *   Don't remove any key from disk, even with an empty keyset.
  *   With that flag removing keys can't happen unintentional.
- *   The flag will result in that all keys in @p returned don't have
- *   keyNeedRemove() set.
  * - @p option_t::KDB_O_REMOVEONLY \n
- *   Remove all keys instead of setting them. All keys in @p returned
- *   will have keyNeedRemove() set, but not keyNeedStat() saying to you
- *   that the key was deleted permanently.
- *   This option implicit also activates @p option_t::KDB_O_SYNC
+ *   Remove all keys instead of setting them.
  *   because the sync state will be changed when they are marked remove.
  *   You might need @ref option_t::KDB_O_INACTIVE set for the previous call
  *   of kdbGet() if there are any. Otherwise the recursive remove will fail,
@@ -888,10 +873,6 @@ for (i=0; i< 10; i++) // limit to 10 tries
  * When you dont have a parentKey or its name empty, then all keys will
  * be set.
  *
- * You can remove some keys instead of setting them by marking them with keyRemove().
- * The keyNeedSync() flag will be unset after successful removing. But the keyNeedRemove()
- * flag will stay, but its safe to delete the key.
- *
  * @param handle contains internal information of @link kdbOpen() opened @endlink key database
  * @param ks a KeySet which should contain changed keys, otherwise nothing is done
  * @param parentKey holds the information below which key keys should be set
@@ -899,7 +880,6 @@ for (i=0; i< 10; i++) // limit to 10 tries
  * @return 0 on success
  * @return -1 on failure
  * @see keyNeedSync(), ksNext(), ksCurrent()
- * @see keyRemove(), keyNeedRemove()
  * @see commandEdit(), commandImport() code in kdb command for usage and error
  *       handling example
  * @ingroup kdb
@@ -921,6 +901,10 @@ ssize_t kdbSet (KDB *handle, KeySet *ks,
 		if (options & KDB_O_DEL) keyDel (parentKey);
 		parentKey = 0;
 	}
+
+#if DEBUG && VERBOSE
+	fprintf (stderr, "now in new kdbSet (%s)\n", keyName(parentKey));
+#endif
 
 	if (!handle || !ks)
 	{

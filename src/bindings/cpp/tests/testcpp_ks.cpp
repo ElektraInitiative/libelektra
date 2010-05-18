@@ -15,13 +15,13 @@ void test_ksnew()
 
 	KeySet ks3 (5,
 		*Key ("user/key3/1", KEY_END),
-		*Key ("user/key3/2", KEY_REMOVE, KEY_END),
+		*Key ("user/key3/2", KEY_END),
 		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
 		KS_END);
 	// ks3.toStream(stdout, 0);
 
 	Key k1("user/key4/1", KEY_END);
-	Key k2("user/key4/2", KEY_REMOVE, KEY_END);
+	Key k2("user/key4/2", KEY_END);
 	Key k3("user/key4/3", KEY_VALUE, "value", KEY_END);
 	KeySet ks4 (5,
 		*k1, // k1 will lose its key and pass it to keyset
@@ -31,7 +31,7 @@ void test_ksnew()
 	// ks4.toStream(stdout, 0);
 
 	Key k4("user/key5/1", KEY_END);
-	Key k5("user/key5/2", KEY_REMOVE, KEY_END);
+	Key k5("user/key5/2", KEY_END);
 	Key k6("user/key5/3", KEY_VALUE, "value", KEY_END);
 	KeySet ks5 (5,
 		k4.dup(),
@@ -48,7 +48,7 @@ void test_ksdup()
 
 	KeySet ks3 (5,
 		*Key ("user/key3/1", KEY_END),
-		*Key ("user/key3/2", KEY_REMOVE, KEY_END),
+		*Key ("user/key3/2", KEY_END),
 		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
 		KS_END);
 
@@ -66,7 +66,7 @@ void test_kscopy()
 
 	KeySet ks3 (5,
 		*Key ("user/key3/1", KEY_END),
-		*Key ("user/key3/2", KEY_REMOVE, KEY_END),
+		*Key ("user/key3/2", KEY_END),
 		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
 		KS_END);
 
@@ -245,7 +245,7 @@ void test_lookup()
 
 	KeySet ks3 (5,
 		*Key ("user/key3/1", KEY_END),
-		*Key ("user/key3/2", KEY_REMOVE, KEY_END),
+		*Key ("user/key3/2", KEY_END),
 		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
 		KS_END);
 
@@ -281,7 +281,7 @@ void test_append()
 
 	KeySet ks3 (5,
 		*Key ("user/key3/1", KEY_END),
-		*Key ("user/key3/2", KEY_REMOVE, KEY_END),
+		*Key ("user/key3/2", KEY_END),
 		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
 		KS_END);
 	ks2.append (ks3);
@@ -289,7 +289,7 @@ void test_append()
 	ks3.append (ks2);
 
 	Key k1("user/key4/1", KEY_END);
-	Key k2("user/key4/2", KEY_REMOVE, KEY_END);
+	Key k2("user/key4/2", KEY_END);
 	Key k3("user/key4/3", KEY_VALUE, "value", KEY_END);
 	ks1.append (k1); ks1.append (k2); ks1.append (k3);
 	ks2.append (k1); ks2.append (k2); ks2.append (k3);
@@ -297,7 +297,7 @@ void test_append()
 
 	KeySet ks4 (5,
 		*Key ("user/key3/1", KEY_END),
-		*Key ("user/key3/2", KEY_REMOVE, KEY_END),
+		*Key ("user/key3/2", KEY_END),
 		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
 		KS_END);
 
