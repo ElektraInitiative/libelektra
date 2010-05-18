@@ -475,8 +475,8 @@ int main(int argc, char** argv)
 
 	init (argc, argv);
 
-	test_writehosts(".kdb/hosts_mount");
-	test_readhosts(".kdb/hosts_mount");
+	test_writehosts("hosts_mount_test.hosts");
+	test_readhosts("hosts_mount_test.hosts");
 	// test_failhosts(".kdb/hosts_mount");
 
 	// test_writefstab(".kdb/fstab_mount");
@@ -484,8 +484,8 @@ int main(int argc, char** argv)
 
 	// test_passwd();
 
-	test_writedump(".kdb/dump.edf");
-	test_readdump(".kdb/dump.edf");
+	test_writedump("dump_mount_test.edf");
+	test_readdump("dump_mount_test.edf");
 
 	printf("\ntest_mount RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
