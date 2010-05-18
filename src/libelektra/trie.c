@@ -326,7 +326,7 @@ Trie *delete_trie(Trie *trie, char *name, CloseMapper closemapper)
 
 static char *getEntryName(const char *path)
 {
-	int len;
+	size_t len;
 	char *ret,*p,*q;
 	len=strlen(path);
 
@@ -344,8 +344,8 @@ static char *getEntryName(const char *path)
 static int isOfEntryMountpoint(Key *key, char *entry)
 {
 	const char *s;
-	int len;
-	int entrylen;
+	size_t len;
+	size_t entrylen;
 	s=keyName(key);
 	len=strlen(s);
 	entrylen=strlen(entry);
@@ -363,8 +363,8 @@ static int isOfEntryMountpoint(Key *key, char *entry)
 static int isOfEntryBackend(Key *key, char *entry)
 {
 	const char *s;
-	int len;
-	int entrylen;
+	size_t len;
+	size_t entrylen;
 
 	if (!entry) return -1;
 
@@ -385,8 +385,8 @@ static int isOfEntryBackend(Key *key, char *entry)
 static int isOfEntryConfig(Key *key, char *entry)
 {
 	const char *s;
-	int len;
-	int entrylen;
+	size_t len;
+	size_t entrylen;
 
 	if (!entry) return -1;
 
@@ -407,8 +407,8 @@ static int isOfEntryConfig(Key *key, char *entry)
 static int isOfEntry(Key *key, char *entry)
 {
 	const char *s;
-	int len;
-	int entrylen;
+	size_t len;
+	size_t entrylen;
 	s=keyName(key);
 	len=strlen(s);
 	entrylen=strlen(entry);
