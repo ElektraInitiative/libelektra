@@ -117,14 +117,15 @@ typedef struct _Split	Split;
 typedef struct _Backend	Backend;
 
 /* These define the type for pointers to all the kdb functions */
-typedef int  (*kdbOpenPtr)(KDB *);
-typedef int  (*kdbClosePtr)(KDB *);
+typedef int  (*kdbOpenPtr)(Plugin *);
+typedef int  (*kdbClosePtr)(Plugin *);
 
-typedef ssize_t  (*kdbGetPtr)(KDB *handle, KeySet *returned, const Key *parentKey);
-typedef ssize_t  (*kdbSetPtr)(KDB *handle, KeySet *returned, const Key *parentKey);
+typedef ssize_t  (*kdbGetPtr)(Plugin *handle, KeySet *returned, const Key *parentKey);
+typedef ssize_t  (*kdbSetPtr)(Plugin *handle, KeySet *returned, const Key *parentKey);
 
-typedef KDB* (*OpenMapper)(const char *,const char *,KeySet *);
-typedef int (*CloseMapper)(KDB *);
+
+typedef Backend* (*OpenMapper)(const char *,const char *,KeySet *);
+typedef int (*CloseMapper)(Backend *);
 
 
 
@@ -501,7 +502,8 @@ Backend* backendOpen(KeySet *elektra_config);
 int backendClose(Backend *backend);
 
 /*Plugin handling*/
-int processPlugins(Plugin **plugins, KeySet *config);
+int renameConfig(KeySet *config);
+int processPlugins(Plugin **plugins, KeySet *config, KeySet *systemConfig);
 
 Plugin* pluginOpen(const char *backendname, KeySet *config);
 int pluginClose(Plugin *handle);

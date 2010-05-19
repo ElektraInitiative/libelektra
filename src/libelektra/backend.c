@@ -49,6 +49,44 @@
 #include <kdbinternal.h>
 
 
+/**
+ * Takes the first key and cuts off this common part
+ * for all other keys.
+ *
+ * The first key is removed.
+ *
+ * Works only for system-configs.
+ */
+static int renameBackendConfig(KeySet *config)
+{
+	Key *root;
+	Key *cur;
+	ssize_t systemSize = sizeof("system");
+	ssize_t rootSize = 0;
+
+	ksRewind(config);
+
+	root = ksNext (config);
+	rootSize = keyGetNameSize(root);
+	if (rootSize == -1) return -1;
+
+	keyDel (ksLookup (config, root, KDB_O_POP));
+
+	while ((cur = ksNext(config)) != 0)
+	{
+		ssize_t curSize = keyGetNameSize(cur);
+		if (curSize == -1) return -1;
+		for (ssize_t i=0; i<curSize-rootSize; ++i)
+		{
+			cur->key[i+systemSize] = cur->key[i+rootSize];
+		}
+		cur->keySize = curSize-rootSize+systemSize;
+	}
+
+	return 0;
+}
+
+
 /**Builds a backend out of the configuration supplied
  * from:
  *
@@ -72,29 +110,35 @@ system/elektra/mountpoints/<name>
  * dont use it afterwards.
  *
  * @return a pointer to a freshly allocated backend
- * @return 0 if it did not work, the elektra_config then
+ * @return 0 if it did not work, the elektraConfig then
  *         has the error information.
  * @ingroup backend
  */
-Backend* backendOpen(KeySet *elektra_config)
+Backend* backendOpen(KeySet *elektraConfig)
 {
 	Key * cur;
 	Key * root;
-	ksRewind(elektra_config);
+	KeySet *systemConfig = 0;
+	ksRewind(elektraConfig);
 
-	root = ksNext (elektra_config);
+	root = ksNext (elektraConfig);
 
 	Backend *backend = kdbiCalloc(sizeof(struct _Backend));
 
-	while ((cur = ksNext(elektra_config)) != 0)
+	while ((cur = ksNext(elektraConfig)) != 0)
 	{
 		if (keyRel (root, cur) == 1)
 		{
 			// direct below root key
-			KeySet *cut = ksCut (elektra_config, cur);
-			if (!strcmp(keyBaseName(cur), "getplugins"))
+			KeySet *cut = ksCut (elektraConfig, cur);
+			if (!strcmp(keyBaseName(cur), "config"))
 			{
-				if (processPlugins(backend->getplugins, cut) == -1)
+				systemConfig = cut;
+				renameBackendConfig (systemConfig);
+			}
+			else if (!strcmp(keyBaseName(cur), "getplugins"))
+			{
+				if (processPlugins(backend->getplugins, cut, systemConfig) == -1)
 				{
 #if DEBUG
 					printf ("Processing Get Plugins failed\n");
@@ -104,7 +148,7 @@ Backend* backendOpen(KeySet *elektra_config)
 			}
 			else if (!strcmp(keyBaseName(cur), "setplugins"))
 			{
-				if (processPlugins(backend->setplugins, cut) == -1)
+				if (processPlugins(backend->setplugins, cut, systemConfig) == -1)
 				{
 #if DEBUG
 					printf ("Processing Set Plugins failed\n");
@@ -122,11 +166,13 @@ Backend* backendOpen(KeySet *elektra_config)
 		// handle->mountpoint=keyNew(mountpoint,KEY_VALUE,backendname,0);
 	}
 
-	ksDel (elektra_config);
+	ksDel (systemConfig);
+	ksDel (elektraConfig);
 	return backend;
 
 error:
-	ksDel (elektra_config);
+	ksDel (systemConfig);
+	ksDel (elektraConfig);
 	backendClose(backend);
 	return 0;
 }

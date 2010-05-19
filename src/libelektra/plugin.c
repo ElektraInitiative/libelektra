@@ -49,11 +49,19 @@
 #include <kdbinternal.h>
 
 
-int renamePluginConfig(KeySet *config)
+/**
+ * Takes the first key and cuts off this common part
+ * for all other keys.
+ *
+ * The first key is removed.
+ *
+ * Will convert to a user-config.
+ */
+static int renamePluginConfig(KeySet *config)
 {
 	Key *root;
 	Key *cur;
-	size_t systemSize = sizeof("system");
+	ssize_t userSize = sizeof("user");
 	ssize_t rootSize = 0;
 
 	ksRewind(config);
@@ -68,10 +76,13 @@ int renamePluginConfig(KeySet *config)
 	{
 		ssize_t curSize = keyGetNameSize(cur);
 		if (curSize == -1) return -1;
-		for (size_t i=0; i<curSize-rootSize; ++i)
+		// cant use strcpy here, because it fills up everything with 0
+		strcpy (cur->key, "user/");
+		for (ssize_t i=0; i<curSize-rootSize; ++i)
 		{
-			cur->key[i+systemSize] = cur->key[i+rootSize];
+			cur->key[i+userSize] = cur->key[i+rootSize];
 		}
+		cur->keySize = curSize-rootSize+userSize;
 	}
 
 	return 0;
@@ -83,9 +94,14 @@ int renamePluginConfig(KeySet *config)
  * The array of plugins must be set to 0.
  * Its length is 10.
  *
+ * @param config the config with the information how the
+ *        plugins should be put together
+ * @param systemConfig the shared (system) config for the plugins.
+ *        Every plugin additional get this config.
+ *
  * @return -1 on failure
  */
-int processPlugins(Plugin **plugins, KeySet *config)
+int processPlugins(Plugin **plugins, KeySet *config, KeySet *systemConfig)
 {
 	Key *root;
 	Key *cur;
@@ -114,7 +130,7 @@ int processPlugins(Plugin **plugins, KeySet *config)
 			if (fullname[1] < '0' || fullname[1] > '9')
 			{
 #if DEBUG
-					printf ("Names of Plugins must start have the position number as second char\n");
+				printf ("Names of Plugins must start have the position number as second char\n");
 #endif
 				goto error;
 			}
@@ -151,7 +167,7 @@ Plugin* pluginOpen(const char *pluginname, KeySet *config)
 	char* plugin_name;
 
 	kdbLibHandle dlhandle=0;
-	typedef KDB *(*KDBPluginFactory) (void);
+	typedef Plugin *(*KDBPluginFactory) (void);
 	KDBPluginFactory kdbPluginFactory=0;
 
 	plugin_name = malloc(sizeof("libelektra-")+strlen(pluginname));
