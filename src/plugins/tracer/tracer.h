@@ -1,9 +1,9 @@
 /***************************************************************************
             tracer.h  -  Skeleton of backends to access the Key Database
                              -------------------
-    begin                : Mon Dec 26 2004
-    copyright            : (C) 2004 by Avi Alkalay
-    email                : avi@unix.sh
+ *  begin                : Wed 19 May, 2010
+ *  copyright            : (C) 2010 by Markus Raab
+ *  email                : elektra@markus-raab.org
  ***************************************************************************/
 
 /***************************************************************************
@@ -26,7 +26,6 @@
 
 
 
-#include <kdbbackend.h>
 #include <kdbplugin.h>
 
 #include <stdio.h>
@@ -35,8 +34,8 @@
 #define BACKENDNAME "tracer"
 #define BACKENDVERSION "0.0.1"
 
-int kdbOpen_tracer(KDB *handle);
-int kdbClose_tracer(KDB *handle);
-ssize_t kdbGet_tracer(KDB *handle, KeySet *ks, const Key *parentKey);
-ssize_t kdbSet_tracer(KDB *handle, KeySet *ks, const Key *parentKey);
-KDB *KDBEXPORT(tracer);
+int kdbOpen_tracer(Plugin *handle);
+int kdbClose_tracer(Plugin *handle);
+ssize_t kdbGet_tracer(Plugin *handle, KeySet *ks, const Key *parentKey);
+ssize_t kdbSet_tracer(Plugin *handle, KeySet *ks, const Key *parentKey);
+Plugin *KDBEXPORT(tracer);

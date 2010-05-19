@@ -1,9 +1,9 @@
 /***************************************************************************
             kdb.c  -  Low level functions for access the Key Database
                              -------------------
-    begin                : Mon Dec 29 2003
-    copyright            : (C) 2003 by Avi Alkalay
-    email                : avi@unix.sh
+ *  begin                : Wed 19 May, 2010
+ *  copyright            : (C) 2010 by Markus Raab
+ *  email                : elektra@markus-raab.org
  ***************************************************************************/
 
 /***************************************************************************
@@ -955,7 +955,7 @@ ssize_t kdbSet (KDB *handle, KeySet *ks,
 
 
 /**
- * This function must be called by a backend's kdbBackendFactory() to
+ * This function must be called by a backends's kdbBackendFactory() to
  * define the backend's methods that will be exported.
  *
  * See KDBEXPORT() how to use it for backends.
@@ -1031,5 +1031,4 @@ KDB *kdbBackendExport(const char *backendName, ...) {
 	}
 	return returned;
 }
-
 

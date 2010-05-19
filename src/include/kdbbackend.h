@@ -1,9 +1,9 @@
 /***************************************************************************
                 kdbbackend.h  -  Methods for backend programing
                              -------------------
-    begin                : Mon Dec 25 2004
-    copyright            : (C) 2004 by Avi Alkalay
-    email                : avi@unix.sh
+ *  begin                : Wed 19 May, 2010
+ *  copyright            : (C) 2010 by Markus Raab
+ *  email                : elektra@markus-raab.org
  ***************************************************************************/
 
 /***************************************************************************

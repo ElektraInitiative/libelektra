@@ -1,9 +1,9 @@
 /***************************************************************************
             tracer.c  -  Skeleton of backends to access the Key Database
                              -------------------
-    begin                : Mon Dec 26 2004
-    copyright            : (C) 2004 by Avi Alkalay
-    email                : avi@unix.sh
+ *  begin                : Wed 19 May, 2010
+ *  copyright            : (C) 2010 by Markus Raab
+ *  email                : elektra@markus-raab.org
  ***************************************************************************/
 
 /***************************************************************************
@@ -27,7 +27,7 @@
 
 #include "tracer.h"
 
-int kdbOpen_tracer(KDB *handle)
+int kdbOpen_tracer(Plugin *handle)
 {
 	ssize_t nr_keys = 0;
 	KeySet *config = pluginGetConfig((Plugin*)handle);
@@ -40,7 +40,7 @@ int kdbOpen_tracer(KDB *handle)
 	return 0;
 }
 
-int kdbClose_tracer(KDB *handle)
+int kdbClose_tracer(Plugin *handle)
 {
 	/* free all backend resources and shut it down */
 
@@ -49,7 +49,7 @@ int kdbClose_tracer(KDB *handle)
 	return 0; /* success */
 }
 
-ssize_t kdbGet_tracer(KDB *handle, KeySet *returned, const Key *parentKey)
+ssize_t kdbGet_tracer(Plugin *handle, KeySet *returned, const Key *parentKey)
 {
 	ssize_t nr_keys = 0;
 	Key *k=0;
@@ -61,7 +61,7 @@ ssize_t kdbGet_tracer(KDB *handle, KeySet *returned, const Key *parentKey)
 	return nr_keys; /* success */
 }
 
-ssize_t kdbSet_tracer(KDB *handle, KeySet *returned, const Key *parentKey)
+ssize_t kdbSet_tracer(Plugin *handle, KeySet *returned, const Key *parentKey)
 {
 	ssize_t nr_keys = 0;
 	Key *k=0;
@@ -73,18 +73,18 @@ ssize_t kdbSet_tracer(KDB *handle, KeySet *returned, const Key *parentKey)
 	return nr_keys;
 }
 
-KDB *KDBEXPORT(tracer)
+Plugin *KDBEXPORT(tracer)
 {
-	return kdbBackendExport(BACKENDNAME,
-		KDB_BE_OPEN,	&kdbOpen_tracer,
-		KDB_BE_CLOSE,	&kdbClose_tracer,
-		KDB_BE_GET,	&kdbGet_tracer,
-		KDB_BE_SET,	&kdbSet_tracer,
-		KDB_BE_VERSION,        BACKENDVERSION,
-		KDB_BE_AUTHOR,	"Markus Raab <elektra@markus-raab.org>",
-		KDB_BE_LICENCE,	"BSD",
-		KDB_BE_DESCRIPTION,
+	return pluginExport(BACKENDNAME,
+		KDB_PLUGIN_OPEN,	&kdbOpen_tracer,
+		KDB_PLUGIN_CLOSE,	&kdbClose_tracer,
+		KDB_PLUGIN_GET,	&kdbGet_tracer,
+		KDB_PLUGIN_SET,	&kdbSet_tracer,
+		KDB_PLUGIN_VERSION,        BACKENDVERSION,
+		KDB_PLUGIN_AUTHOR,	"Markus Raab <elektra@markus-raab.org>",
+		KDB_PLUGIN_LICENCE,	"BSD",
+		KDB_PLUGIN_DESCRIPTION,
 			"The first plugin",
-		KDB_BE_END);
+		KDB_PLUGIN_END);
 }
 

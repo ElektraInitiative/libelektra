@@ -24,14 +24,30 @@
 
 
 #include <kdb.h>
-#include <kdbcap.h>
 #include <kdbextension.h>
 
 #ifdef ELEKTRA_STATIC
-        #define KDBEXPORT(module) libelektra_##module##_LTX_kdbBackendFactory(void)
+        #define KDBEXPORT(module) libelektra_##module##_LTX_kdbPluginFactory(void)
 #else
-        #define KDBEXPORT(module) kdbBackendFactory(void)
+        #define KDBEXPORT(module) kdbPluginFactory(void)
 #endif
+
+/**
+ * Switches to denote the backend methods. Used in calls to pluginExport().
+ *
+ * @ingroup backend
+ */
+typedef enum {
+	KDB_PLUGIN_OPEN=1,		/*!< Next arg is backend for kdbOpen() */
+	KDB_PLUGIN_CLOSE=1<<1,	/*!< Next arg is backend for kdbClose() */
+	KDB_PLUGIN_GET=1<<2,	/*!< Next arg is backend for kdbGet() */
+	KDB_PLUGIN_SET=1<<3,	/*!< Next arg is backend for kdbSet() */
+	KDB_PLUGIN_VERSION=1<<4,	/*!< Next arg is char * for Version */
+	KDB_PLUGIN_DESCRIPTION=1<<5,/*!< Next arg is char * for Description */
+	KDB_PLUGIN_AUTHOR=1<<6,	/*!< Next arg is char * for Author*/
+	KDB_PLUGIN_LICENCE=1<<7,	/*!< Next arg is char * for Licence*/
+	KDB_PLUGIN_END=0		/*!< End of arguments */
+} plugin_t;
 
 
 typedef struct _Plugin	Plugin;
