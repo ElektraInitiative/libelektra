@@ -68,6 +68,9 @@ system/elektra/mountpoints/<name>
  * ksCut() is perfectly suitable for cutting out the
  * configuration like needed.
  *
+ * @note The given KeySet will be deleted within the function,
+ * dont use it afterwards.
+ *
  * @return a pointer to a freshly allocated backend
  * @return 0 if it did not work, the elektra_config then
  *         has the error information.
@@ -96,23 +99,40 @@ Backend* backendOpen(KeySet *elektra_config)
 #if DEBUG
 					printf ("Processing Plugins failed\n");
 #endif
-					backendClose(backend);
-					return 0;
+					goto error;
 				}
+			} else {
+				// no one cares about that config
+#if DEBUG && VERBOSE
+				printf ("Unrecognised Config Tree: %s\n", keyBaseName(cur));
+#endif
+				ksDel (cut);
 			}
 		}
 		// handle->mountpoint=keyNew(mountpoint,KEY_VALUE,backendname,0);
 	}
 
+	ksDel (elektra_config);
+	return backend;
+
+error:
+	ksDel (elektra_config);
+	backendClose(backend);
 	return 0;
 }
 
-void backendClose(Backend *backend)
+int backendClose(Backend *backend)
 {
+	int ret = 0;
+
+	if (!backend) return;
+
 	for (int i=0; i<10; ++i)
 	{
-		pluginClose(backend->setplugins[i]);
-		pluginClose(backend->getplugins[i]);
+		ret = ret==0 ? pluginClose(backend->setplugins[i]) : ret;
+		ret = ret==0 ? pluginClose(backend->getplugins[i]) : ret;
 	}
 	kdbiFree (backend);
+
+	return ret;
 }

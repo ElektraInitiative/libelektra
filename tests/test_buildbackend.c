@@ -52,7 +52,8 @@ void test_simple()
 {
 	printf ("Test simple building of backend");
 
-	Backend *b = backendOpen(set_simple());
+	Backend *backend = backendOpen(set_simple());
+	backendClose (backend);
 }
 
 int main(int argc, char** argv)

@@ -498,7 +498,7 @@ int kdbCloseBackend(KDB *handle);
 
 /*Backend handling*/
 Backend* backendOpen(KeySet *elektra_config);
-void backendClose(Backend *backend);
+int backendClose(Backend *backend);
 
 /*Plugin handling*/
 int processPlugins(Plugin **plugins, KeySet *config);

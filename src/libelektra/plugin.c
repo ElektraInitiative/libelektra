@@ -77,20 +77,26 @@ int processPlugins(Plugin **plugins, KeySet *config)
 #if DEBUG
 				printf ("Names of Plugins must start with a #\n");
 #endif
-				return -1;
+				goto error;
 			}
 			if (fullname[1] < '0' || fullname[1] > '9')
 			{
 #if DEBUG
 				printf ("Names of Plugins must start have the position number as second char\n");
 #endif
-				return -1;
+				goto error;
 			}
 			backendname = &fullname[2];
 			printf ("Backendname is %s\n", backendname);
 		}
 	}
+
+	ksDel (config);
 	return 0;
+
+error:
+	ksDel (config);
+	return -1;
 }
 
 
@@ -178,6 +184,8 @@ err_clup:
 int pluginClose(Plugin *handle)
 {
 	int rc=0;
+
+	if (!handle) return;
 
 	if (handle->kdbClose)
 	{
