@@ -97,7 +97,17 @@ Backend* backendOpen(KeySet *elektra_config)
 				if (processPlugins(backend->getplugins, cut) == -1)
 				{
 #if DEBUG
-					printf ("Processing Plugins failed\n");
+					printf ("Processing Get Plugins failed\n");
+#endif
+					goto error;
+				}
+			}
+			else if (!strcmp(keyBaseName(cur), "setplugins"))
+			{
+				if (processPlugins(backend->setplugins, cut) == -1)
+				{
+#if DEBUG
+					printf ("Processing Set Plugins failed\n");
 #endif
 					goto error;
 				}

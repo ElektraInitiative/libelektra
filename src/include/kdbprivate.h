@@ -21,6 +21,7 @@
 
 #include <kdb.h>
 #include <kdbextension.h>
+#include <kdbplugin.h>
 
 #include <limits.h>
 
@@ -114,7 +115,6 @@
 typedef struct _Trie	Trie;
 typedef struct _Split	Split;
 typedef struct _Backend	Backend;
-typedef struct _Plugin	Plugin;
 
 /* These define the type for pointers to all the kdb functions */
 typedef int  (*kdbOpenPtr)(KDB *);
@@ -378,7 +378,7 @@ struct _Plugin {
 		to write configuration to or /host to which host packets should be send.
 		@see kdbhGetConfig() */
 
-	void *backendData;	/*!< A general pointer for any plugins needs.
+	void *data;	/*!< A general pointer for any plugins needs.
 		Thus backends are not allowed to have global variables for thread safety,
 		they must use this pointer.
 		@note Every information you need between kdbOpen(), kdbClose(), kdbGet()
@@ -503,7 +503,7 @@ int backendClose(Backend *backend);
 /*Plugin handling*/
 int processPlugins(Plugin **plugins, KeySet *config);
 
-Plugin* pluginOpen(const char *backendname, const char *mountpoint, KeySet *config);
+Plugin* pluginOpen(const char *backendname, KeySet *config);
 int pluginClose(Plugin *handle);
 
 /*Private helper for keys*/

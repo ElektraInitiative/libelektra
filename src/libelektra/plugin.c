@@ -71,7 +71,8 @@ int processPlugins(Plugin **plugins, KeySet *config)
 		{
 			// this describes a plugin!
 			const char *fullname = keyBaseName(cur);
-			const char *backendname;
+			const char *pluginname = 0;
+			int pluginnumber = 0;
 			if (fullname[0] != '#')
 			{
 #if DEBUG
@@ -86,8 +87,10 @@ int processPlugins(Plugin **plugins, KeySet *config)
 #endif
 				goto error;
 			}
-			backendname = &fullname[2];
-			printf ("Backendname is %s\n", backendname);
+			pluginnumber = fullname[1]-'0';
+			pluginname = &fullname[2];
+
+			plugins[pluginnumber] = pluginOpen(pluginname, 0);
 		}
 	}
 
@@ -100,7 +103,7 @@ error:
 }
 
 
-Plugin* pluginOpen(const char *backendname, const char *mountpoint, KeySet *config)
+Plugin* pluginOpen(const char *backendname, KeySet *config)
 {
 	Plugin* handle;
 	char* backend_name;
@@ -175,7 +178,7 @@ Plugin* pluginOpen(const char *backendname, const char *mountpoint, KeySet *conf
 
 err_clup:
 #if DEBUG
-	fprintf(stderr,"Failed to load backend %s\n", backend_name);
+	printf("Failed to load backend %s\n", backend_name);
 #endif
 	free(backend_name);
 	return 0;
@@ -185,7 +188,7 @@ int pluginClose(Plugin *handle)
 {
 	int rc=0;
 
-	if (!handle) return;
+	if (!handle) return 0;
 
 	if (handle->kdbClose)
 	{
@@ -200,4 +203,22 @@ int pluginClose(Plugin *handle)
 	}
 	
 	return rc;
+}
+
+/**
+ * Returns the configuration of that plugin.
+ */
+KeySet *pluginGetConfig(Plugin *handle)
+{
+	return handle->config;
+}
+
+void *pluginGetData(Plugin *handle)
+{
+	return handle->data;
+}
+
+void pluginSetData(Plugin *handle, void *data)
+{
+	handle->data = data;
 }

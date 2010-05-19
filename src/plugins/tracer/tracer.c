@@ -29,40 +29,13 @@
 
 int kdbOpen_tracer(KDB *handle)
 {
-	KDBCap *cap = kdbhGetCapability (handle);
+	ssize_t nr_keys = 0;
+	KeySet *config = pluginGetConfig((Plugin*)handle);
+	Key *k;
 
-	cap->onlyFullGet=1;
-	cap->noStat=1;
-
-	cap->onlyRemoveAll=1;
-
-	cap->onlyFullSet=1;
-	cap->onlyAddKeys=1;
-
-	cap->onlySystem=1;
-	cap->onlyUser=1;
-
-	cap->noOwner=1;
-	cap->noValue=1;
-	cap->noComment=1;
-	cap->noUID=1;
-	cap->noGID=1;
-	cap->noMode=1;
-	cap->noDir=1;
-	cap->noATime=1;
-	cap->noMTime=1;
-	cap->noCTime=1;
-	cap->noRemove=1;
-	cap->noMount=1;
-	cap->noBinary=1;
-	cap->noString=1;
-	cap->noTypes=1;
-	cap->noError=1;
-
-	cap->noLock=1;
-	cap->noThread=1;
-
-	printf ("tracer: kdbOpen(%p)\n", (void*)handle);
+	printf ("tracer: kdbOpen(%p): ", (void*)handle);
+	while ((k = ksNext(config))!=0) { printf ("%s", keyName(k)); ++nr_keys; }
+	printf (" %zd\n", nr_keys);
 
 	return 0;
 }

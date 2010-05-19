@@ -27,6 +27,7 @@
 
 
 #include <kdbbackend.h>
+#include <kdbplugin.h>
 
 #include <stdio.h>
 
