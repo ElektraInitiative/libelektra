@@ -100,6 +100,45 @@
 
 #include <kdbinternal.h>
 
+/**Builds a backend out of the configuration supplied
+ * from:
+ *
+@verbatim
+system/elektra/mountpoints/<name>
+@endverbatim
+ *
+ * The root key must be like the above example. You do
+ * not need to rewind the keyset. But every key must be
+ * below the root key.
+ *
+ * The internal consistency will be checked in this
+ * function. If necessary parts are missing, like
+ * no plugins, they cant be loaded or similar 0
+ * will be returned.
+ *
+ * ksCut() is perfectly suitable for cutting out the
+ * configuration like needed.
+ *
+ * @return a pointer to a freshly allocated backend
+ * @return 0 if it did not work, the elektra_config then
+ *         has the error information.
+ * @ingroup backend
+ */
+Backend* kdbOpenBackend(KeySet *elektra_config)
+{
+	Key * cur;
+	Key * root;
+	ksRewind(elektra_config);
+
+	root = ksNext (elektra_config);
+
+	while ((cur = ksNext(elektra_config)) != 0)
+	{
+	}
+
+	return 0;
+}
+
 
 KDB* kdbOpenPlugin(const char *backendname, const char *mountpoint, KeySet *config)
 {

@@ -2,8 +2,8 @@
  *      test_buildbackend.c  -  Test cases for how to build
 *        a backend out of system/elektra/mountpoints/<name>
  *                  -------------------
- *  begin                : Fri 19 May 2010
- *  copyright            : (C) 2008 by Markus Raab
+ *  begin                : Wed 19 May, 2010
+ *  copyright            : (C) 2010 by Markus Raab
  *  email                : elektra@markus-raab.org
  ****************************************************************************/
 
@@ -37,12 +37,11 @@
 
 KeySet *set_simple()
 {
-	return ksNew(20,
-		keyNew("system/elektra/mountpoints", KEY_END),
+	return ksNew(4,
 		keyNew("system/elektra/mountpoints/simple", KEY_END),
-		keyNew("system/elektra/mountpoints/simple/setplugins/#1#tracer", KEY_VALUE, "tracer", KEY_END),
-		keyNew("system/elektra/mountpoints/simple/getplugins/#1#tracer", KEY_VALUE, "tracer", KEY_END),
+		keyNew("system/elektra/mountpoints/simple/getplugins/#1tracer", KEY_VALUE, "tracer", KEY_END),
 		keyNew("system/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user/tests/backend/simple", KEY_END),
+		keyNew("system/elektra/mountpoints/simple/setplugins/#1tracer", KEY_VALUE, "tracer", KEY_END),
 		KS_END);
 
 }
@@ -50,6 +49,8 @@ KeySet *set_simple()
 void test_simple()
 {
 	printf ("Test simple building of backend");
+
+
 
 }
 
