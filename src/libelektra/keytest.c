@@ -269,7 +269,7 @@ int keyIsDirectBelow(const Key *key, const Key *check)
  * Because of the additional checks this function is
  * slower.
  *
- * - If the keys are the same 0 is returned.
+ * - If the keys are the same 0 is returned. TODO: ?
  * So it is the key itself.
 @verbatim
 user/key
@@ -312,7 +312,7 @@ user/key/myself
 user/key/sibling/any/depth/deeper/grand-nephew
 @endverbatim
  *
- * - If there is no relation of the above, INT_MAX is returned.
+ * - If there is no relation of the above, 0 is returned.
 @verbatim
 user/key/myself
 user/other/sibling/any/depth/deeper/nonrelated
@@ -321,6 +321,11 @@ user/other/sibling/any/depth/deeper/nonrelated
  * The same holds true for the other direction, but with negative values.
  * For no relation INT_MIN is returned.
  *
+ * @note to check if the keys are the same, you must use
+ *       keyCmp() == 0!
+ *       keyRel() does not give you the information if it did not
+ *       find a relation or if it is the same key.
+ *
  * @param k1 the first key object to compare with
  * @param k2 the second key object to compare with
  * @return the information of the relation, see text above
@@ -328,23 +333,15 @@ user/other/sibling/any/depth/deeper/nonrelated
  */
 int keyRel (const Key *k1, const Key *k2)
 {
-	int res = keyCmp (k1, k2);
-	if (!res) return 0;
-	if (res < 0)
-	{
-		// swapping the keys
-		const Key *tmp = k1;
-		k1 = k2;
-		k2 = tmp;
-	}
-	if (keyIsDirectBelow(k1, k2)) return 1*res;
-	if (keyIsBelow(k1, k2)) return 2*res;
+	if (keyIsDirectBelow(k1, k2)) return 1;
+	if (keyIsDirectBelow(k2, k1)) return -1;
+	if (keyIsBelow(k1, k2)) return 2;
+	if (keyIsBelow(k2, k1)) return -2;
 	// if (keyIsSibling(k1, k2)) return 3*res;
 	// if (keyIsNephew(k1, k2)) return 4*res;
 	// if (keyIsGrandNephew(k1, k2)) return 5*res;
 
-	if (res < 0) return INT_MIN;
-	else return INT_MAX;
+	return 0;
 }
 
 

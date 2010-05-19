@@ -388,6 +388,30 @@ void test_append()
 	keyDecRef (s3);  keyDel (s3);
 }
 
+void test_equal()
+{
+	Key *k1 = keyNew(0);
+	Key *k2 = keyNew(0);
+
+	succeed_if (keyCmp (0,0)    == 0, "null pointers should be same");
+	succeed_if (keyCmp (k1, k2) == 0, "should be same");
+
+	keySetName (k1, ""); keySetName (k2, "");
+	succeed_if (keyCmp (k1, k2) == 0, "should be same");
+
+	keySetName (k1, "user"); keySetName (k2, "user");
+	succeed_if (keyCmp (k1, k2) == 0, "should be same");
+
+	keySetName (k1, "system"); keySetName (k2, "system");
+	succeed_if (keyCmp (k1, k2) == 0, "should be same");
+
+	keySetName (k1, "user/a"); keySetName (k2, "user/a");
+	succeed_if (keyCmp (k1, k2) == 0, "should be same");
+
+	keyDel (k1);
+	keyDel (k2);
+}
+
 void test_cmp()
 {
 	printf ("Compare two keys\n");
@@ -504,20 +528,6 @@ void test_strcmp()
 
 }
 
-void test_rel()
-{
-	printf ("Testing key relations\n");
-
-	Key *k1 = keyNew("user/key", KEY_END);
-	Key *k2 = keyNew("user/key", KEY_END);
-
-	succeed_if (keyRel (k1, k2) == 0, "same keys did not return 0");
-
-	keyDel (k1);
-	keyDel (k2);
-}
-
-
 int main(int argc, char** argv)
 {
 	printf("KEYSET ORDERING      TESTS\n");
@@ -525,23 +535,19 @@ int main(int argc, char** argv)
 
 	init (argc, argv);
 
-	/*
 	test_ksNew();
 	test_ksDuplicate();
-	*/
 
 	// TODO Bugs
 	// test_ksLookupCase();
 	// test_ksLookupOwner();
 	// test_ksHole();
 
-	/*
 	test_append();
+	test_equal();
 	test_cmp();
 	test_appendowner();
-	*/
 	test_strcmp();
-	// test_rel();
 
 	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
