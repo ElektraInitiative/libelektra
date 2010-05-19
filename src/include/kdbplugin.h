@@ -61,9 +61,7 @@ Plugin *pluginExport(const char *pluginName, ...);
 
 KeySet *pluginGetConfig(Plugin *handle);
 
-void *pluginGetData(Plugin *handle);
-void pluginSetData(Plugin *handle, void *data);
-
+// needed for storage plugins?
 int keyClearSync (Key *key);
 
 

@@ -136,8 +136,7 @@ Plugin* pluginOpen(const char *pluginname, KeySet *config)
 		goto err_clup; /* error */
 	}
 
-	/*TODO: kdbPluginFactory should return plugin*/
-	handle=(Plugin*)kdbPluginFactory();
+	handle=kdbPluginFactory();
 	if (handle == 0)
 	{
 		/*errno=KDB_ERR_NOSYS;*/
@@ -154,8 +153,7 @@ Plugin* pluginOpen(const char *pluginname, KeySet *config)
 	if (handle->kdbOpen)
 	{
 		handle->config = config;
-		// TODO should be plugin
-		if ((handle->kdbOpen((KDB*)handle)) == -1)
+		if ((handle->kdbOpen(handle)) == -1)
 		{
 #if DEBUG && VERBOSE
 			printf("kdbOpen() failed for %s\n", plugin_name);
@@ -192,8 +190,7 @@ int pluginClose(Plugin *handle)
 
 	if (handle->kdbClose)
 	{
-		// TODO should be plugin
-		rc=handle->kdbClose((KDB*)handle);
+		rc=handle->kdbClose(handle);
 	}
 	
 	if (rc == 0) {
@@ -283,18 +280,10 @@ Plugin *pluginExport(const char *pluginName, ...) {
 
 /**
  * Returns the configuration of that plugin.
+ *
+ * @ingroup plugin
  */
 KeySet *pluginGetConfig(Plugin *handle)
 {
 	return handle->config;
-}
-
-void *pluginGetData(Plugin *handle)
-{
-	return handle->data;
-}
-
-void pluginSetData(Plugin *handle, void *data)
-{
-	handle->data = data;
 }
