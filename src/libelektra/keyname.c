@@ -171,6 +171,11 @@ ssize_t keyGetNameSize(const Key *key)
  * value passed by accident. Of course malloc is not
  * as failure tolerant and will try to allocate.
  *
+ * @code
+char *getBack = malloc (keyGetNameSize(key));
+keyGetName(key, getBack, keyGetNameSize(key));
+ * @endcode
+ *
  * @return number of bytes written to @p returnedName
  * @return 1 when only a null was written
  * @return -1 when keyname is longer then maxSize or 0 or any NULL pointer

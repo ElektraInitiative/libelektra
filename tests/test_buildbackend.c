@@ -56,6 +56,28 @@ void test_simple()
 	backendClose (backend);
 }
 
+KeySet *set_config()
+{
+	return ksNew(6,
+		keyNew("system/elektra/mountpoints/simple/getplugins/#1tracer/config", KEY_END),
+		keyNew("system/elektra/mountpoints/simple/getplugins/#1tracer/config/anything", KEY_END),
+		keyNew("system/elektra/mountpoints/simple/getplugins/#1tracer/config/more", KEY_END),
+		keyNew("system/elektra/mountpoints/simple/getplugins/#1tracer/config/more/config", KEY_END),
+		keyNew("system/elektra/mountpoints/simple/getplugins/#1tracer/config/more/config/below", KEY_END),
+		keyNew("system/elektra/mountpoints/simple/getplugins/#1tracer/config/path", KEY_END),
+		KS_END);
+}
+
+void renamePluginConfig(KeySet *config);
+
+void test_configrename()
+{
+	KeySet *config = set_config();
+	renamePluginConfig(config);
+	ksOutput(config, stdout, 0);
+	ksDel (config);
+}
+
 int main(int argc, char** argv)
 {
 	printf("BUILDBACKEND   TESTS\n");
@@ -64,6 +86,7 @@ int main(int argc, char** argv)
 	init (argc, argv);
 
 	test_simple();
+	test_configrename();
 
 	printf("\ntest_backendhelpers RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

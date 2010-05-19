@@ -48,6 +48,35 @@
 
 #include <kdbinternal.h>
 
+
+int renamePluginConfig(KeySet *config)
+{
+	Key *root;
+	Key *cur;
+	size_t systemSize = sizeof("system");
+	ssize_t rootSize = 0;
+
+	ksRewind(config);
+
+	root = ksNext (config);
+	rootSize = keyGetNameSize(root);
+	if (rootSize == -1) return -1;
+
+	keyDel (ksLookup (config, root, KDB_O_POP));
+
+	while ((cur = ksNext(config)) != 0)
+	{
+		ssize_t curSize = keyGetNameSize(cur);
+		if (curSize == -1) return -1;
+		for (size_t i=0; i<curSize-rootSize; ++i)
+		{
+			cur->key[i+systemSize] = cur->key[i+rootSize];
+		}
+	}
+
+	return 0;
+}
+
 /**
  * Load a plugin.
  *
@@ -71,8 +100,10 @@ int processPlugins(Plugin **plugins, KeySet *config)
 		{
 			// this describes a plugin!
 			const char *fullname = keyBaseName(cur);
-			const char *pluginname = 0;
-			int pluginnumber = 0;
+			const char *pluginName = 0;
+			int pluginNumber = 0;
+			Key *key;
+			KeySet *pluginConfig;
 			if (fullname[0] != '#')
 			{
 #if DEBUG
@@ -83,14 +114,25 @@ int processPlugins(Plugin **plugins, KeySet *config)
 			if (fullname[1] < '0' || fullname[1] > '9')
 			{
 #if DEBUG
-				printf ("Names of Plugins must start have the position number as second char\n");
+					printf ("Names of Plugins must start have the position number as second char\n");
 #endif
 				goto error;
 			}
-			pluginnumber = fullname[1]-'0';
-			pluginname = &fullname[2];
+			pluginNumber = fullname[1]-'0';
+			pluginName = &fullname[2];
 
-			plugins[pluginnumber] = pluginOpen(pluginname, 0);
+			key = keyDup (cur);
+			keyAddBaseName(key, "config");
+			pluginConfig = ksCut (config, key);
+			keyDel (key);
+
+			renamePluginConfig(pluginConfig);
+
+			plugins[pluginNumber] = pluginOpen(pluginName, pluginConfig);
+		} else {
+#if DEBUG
+			printf ("Unkown additional entries in plugin\n");
+#endif
 		}
 	}
 
