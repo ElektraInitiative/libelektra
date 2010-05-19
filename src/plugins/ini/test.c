@@ -7,7 +7,7 @@ int read_in();
 
 int main ()
 {
-	kdbOpenBackend(&handle, "ini");
+	kdbOpenPlugin(&handle, "ini");
 
 	key_info();
 

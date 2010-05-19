@@ -358,7 +358,7 @@ ssize_t kdbSet_passwd(KDB *handle, KeySet *returned, const Key *parentKey)
  * 
  * @return whatever kdbBackendExport() returns
  * @see kdbBackendExport() for an example
- * @see kdbOpenBackend()
+ * @see kdbOpenPlugin()
  * @ingroup backend
  */
 KDB *KDBEXPORT(passwd)

@@ -101,7 +101,7 @@
 #include <kdbinternal.h>
 
 
-KDB* kdbOpenBackend(const char *backendname, const char *mountpoint, KeySet *config)
+KDB* kdbOpenPlugin(const char *backendname, const char *mountpoint, KeySet *config)
 {
 	KDB * handle;
 	char* backend_name;
@@ -239,7 +239,7 @@ int kdbMount(KDB *handle, const Key *mountpoint, const KeySet *config)
 	mountpoint_slash [size-1] = '/';
 	mountpoint_slash [size] = 0;
 
-	h=kdbOpenBackend(backend,mountpoint_slash,c=ksDup(config));
+	h=kdbOpenPlugin(backend,mountpoint_slash,c=ksDup(config));
 	if (!h) {
 		free(mountpoint_slash);
 		ksDel(c);
@@ -446,7 +446,7 @@ KDB * kdbOpen()
 	}
 
 	/* Open default backend */
-	handle=kdbOpenBackend("default",0,0);
+	handle=kdbOpenPlugin("default",0,0);
 	if (!handle)
 	{
 #if DEBUG
@@ -467,7 +467,7 @@ KDB * kdbOpen()
 		printf("config for createTrie name: %s value: %s\n",keyName(key),(char*) keyValue(key));
 	}
 #endif
-	trie=createTrie(keys,kdbOpenBackend);
+	trie=createTrie(keys,kdbOpenPlugin);
 	kdbhSetTrie(handle, trie);
 	ksDel(keys);
 

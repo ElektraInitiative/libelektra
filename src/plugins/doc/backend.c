@@ -265,7 +265,7 @@ KDBEXPORT(backend) {
 
 /**
  * Initialize the backend.
- * This is the first method kdbOpenBackend() calls after dynamically loading
+ * This is the first method kdbOpenPlugin() calls after dynamically loading
  * the backend library.
  *
  * This method is responsible of:
@@ -674,7 +674,7 @@ ssize_t kdbSet_backend(KDB *handle, KeySet *returned, const Key *parentKey) {
  *
  * @return kdbBackendExport() with the above described parameters.
  * @see kdbBackendExport() for an example
- * @see kdbOpenBackend()
+ * @see kdbOpenPlugin()
  * @ingroup backend
  */
 KDBEXPORT(backend)

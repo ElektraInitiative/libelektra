@@ -436,7 +436,7 @@ extern "C" {
  *
  **************************************/
 
-KDB* kdbOpenBackend(const char *backendname, const char *mountpoint, KeySet *config);
+KDB* kdbOpenPlugin(const char *backendname, const char *mountpoint, KeySet *config);
 int kdbCloseBackend(KDB *handle);
 
 ssize_t keySetRaw(Key *key, const void *newBinary, size_t dataSize);
