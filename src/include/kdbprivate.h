@@ -113,6 +113,8 @@
 
 typedef struct _Trie	Trie;
 typedef struct _Split	Split;
+typedef struct _Backend	Backend;
+typedef struct _Plugin	Plugin;
 
 /* These define the type for pointers to all the kdb functions */
 typedef int  (*kdbOpenPtr)(KDB *);
@@ -275,12 +277,15 @@ struct _KeySet {
 
 
 /**
- * The structure which holds all information of a loaded backend.
+ * The access point to the key database.
  *
- * Its internal private attributes should not be accessed directly by regular
- * programs. Use the @ref capability "KDBCapability access methods" instead.
- * Only a backend writer needs to have access to the private attributes of the
- * KeySet object which is defined as:
+ * The structure which holds all information about loaded backends.
+ *
+ * Its internal private attributes should not be accessed directly.
+ *
+ * See kdb mount tool to mount new backends.
+ *
+ * KDB object is defined as:
  * @code
 typedef struct _KDB KDB;
  * @endcode
@@ -289,9 +294,17 @@ typedef struct _KDB KDB;
  * @ingroup backend
  */
 struct _KDB {
-	Trie *trie;		/*!< The pointer to the trie holding other backends.
+	Trie *trie;		/*!< The pointer to the trie holding backends.
 		@see kdbhGetTrie() */
 
+
+	kdbLibHandle dlHandle;	/*!< The pointer to the datastructure to load a new backend. */
+
+	/* TODO: remove everything below this point */
+	Key *mountpoint;	/*!< The mountpoint where the backend resides.
+		The keyName() is the point where the backend was mounted.
+		The keyValue() is the name of the backend without pre/postfix, e.g.
+		filesys. */
 	KeySet *config;		/*!< This keyset contains configuration for the backend.
 		Don't care about the absolute path, it may change when dynamically
 		kdbMount() or because of another name under system/elektra/mountpoints. 
@@ -304,17 +317,73 @@ struct _KDB {
 		they must use this pointer.
 		@see kdbhGetBackendData() */
 
+	KDBCap *capability;	/*!< The capabilites this backend declares to have.
+		@see kdbhGetCapability() */
+
+	kdbOpenPtr kdbOpen;	/*!< The pointer to kdbOpen_template() of the backend. */
+	kdbClosePtr kdbClose;	/*!< The pointer to kdbClose_template() of the backend. */
+
+	kdbGetPtr kdbGet;	/*!< The pointer to kdbGet_template() of the backend. */
+	kdbSetPtr kdbSet;	/*!< The pointer to kdbSet_template() of the backend. */
+};
+
+/**
+ * Holds all information related to a backend.
+ *
+ * Since Elektra 0.8 a Backend consists of many plugins.
+ * A backend is responsible for everything related to the process
+ * of writing out or reading in configuration.
+ *
+ * So this holds a list of set and get plugins.
+ *
+ * Backends are put together through the configuration
+ * in system/elektra/mountpoints
+ *
+ * See kdb mount tool to mount new backends.
+ *
+ * To develop a backend you have first to develop plugins and describe
+ * through dependencies how they belong together.
+ *
+ * @ingroup backend
+ */
+struct _Backend {
 	Key *mountpoint;	/*!< The mountpoint where the backend resides.
 		The keyName() is the point where the backend was mounted.
 		The keyValue() is the name of the backend without pre/postfix, e.g.
 		filesys. */
 
-	KDBCap *capability;	/*!< The capabilites this backend declares to have.
-		@see kdbhGetCapability() */
+	Plugin *setplugins[10];
+	Plugin *getplugins[10];
+};
 
-	kdbLibHandle dlHandle;	/*!< The pointer to the datastructure to load a new backend. */
+/**
+ * Holds all information related to a plugin.
+ *
+ * Since Elektra 0.8 a Backend consists of many plugins.
+ *
+ * A plugin should be reusable and only implement a single concern.
+ * Plugins which are supplied with Elektra are located below src/plugins.
+ * It is no problem that plugins are developed external too.
+ *
+ * TODO: guides how to develop plugins
+ *
+ * @ingroup backend
+ */
+struct _Plugin {
+	KeySet *config;		/*!< This keyset contains configuration for the plugin.
+		Direct below system/ there is the configuration supplied for the backend.
+		Direct below user/ there is the configuration supplied just for the
+		plugin, which should be of course prefered to the backend configuration.
+		The keys inside contain information like /path which path should be used
+		to write configuration to or /host to which host packets should be send.
+		@see kdbhGetConfig() */
 
-	/* These are the interfaces that must be implemented */
+	void *backendData;	/*!< A general pointer for any plugins needs.
+		Thus backends are not allowed to have global variables for thread safety,
+		they must use this pointer.
+		@note Every information you need between kdbOpen(), kdbClose(), kdbGet()
+		      and kdbSet() *must* be stored here.
+		@see kdbhGetBackendData() */
 
 	kdbOpenPtr kdbOpen;	/*!< The pointer to kdbOpen_template() of the backend. */
 	kdbClosePtr kdbClose;	/*!< The pointer to kdbClose_template() of the backend. */

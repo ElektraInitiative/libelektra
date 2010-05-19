@@ -1,5 +1,5 @@
 /*************************************************************************** 
- *           test_split.c  - Test suite for splitted keyset data structure
+ *        test_backendhelpers.c  - Test suite for small plugins
  *                  -------------------
  *  begin                : Fri 21 Mar 2008
  *  copyright            : (C) 2008 by Markus Raab
