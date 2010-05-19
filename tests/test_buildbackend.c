@@ -69,6 +69,8 @@ void test_simple()
 	printf ("Test simple building of backend");
 
 	Backend *backend = backendOpen(set_simple());
+	kdbPrintFatal("anything\n");
+	kdbPrintDebug("hello world\n");
 	backendClose (backend);
 }
 

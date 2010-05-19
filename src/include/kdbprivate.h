@@ -112,6 +112,19 @@
 #define UTF8_FROM 0
 
 
+#if DEBUG
+# define kdbPrintDebug(text) printf("%s:%d: debug in %s: %s\n", __FILE__, __LINE__, __FUNCTION__, text);
+#else
+# define kdbPrintDebug(text)
+#endif
+
+#if DEBUG && VERBOSE
+# define kdbPrintVerbose(text) printf("%s:%d: verbose in %s: %s\n", __FILE__, __LINE__, __FUNCTION__, text);
+#else
+# define kdbPrintVerbose(text)
+#endif
+
+
 typedef struct _Trie	Trie;
 typedef struct _Split	Split;
 typedef struct _Backend	Backend;
