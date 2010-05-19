@@ -55,7 +55,7 @@ uint32_t kdbMonitorKey_winregistry(Key *interest, uint32_t diffMask, unsigned lo
  * 
  * @return whatever kdbBackendExport() returns
  * @see kdbBackendExport() for an example
- * @see kdbOpenPlugin()
+ * @see kdbOpenBackend()
  * @ingroup backend
  */
 WINREGISTRY_API KDBEXPORT(BACKENDNAME);

@@ -101,6 +101,106 @@
 #include <kdbinternal.h>
 
 
+KDB* kdbOpenBackend(const char *backendname, const char *mountpoint, KeySet *config)
+{
+	KDB * handle;
+	char* backend_name;
+
+	kdbLibHandle dlhandle=0;
+	typedef KDB *(*KDBBackendFactory) (void);
+	KDBBackendFactory kdbBackendFactory=0;
+
+	backend_name = malloc(sizeof("libelektra-")+strlen(backendname));
+
+	strncpy(backend_name,"libelektra-",sizeof("libelektra-"));
+	strncat(backend_name,backendname,strlen(backendname));
+
+	dlhandle=kdbLibLoad(backend_name);
+	if (dlhandle == 0) {
+		/*errno=KDB_ERR_EBACKEND;*/
+#if DEBUG && VERBOSE
+		printf("kdbLibLoad(%s) failed\n", backend_name);
+#endif
+		goto err_clup; /* error */
+	}
+
+	/* load the "kdbBackendFactory" symbol from backend */
+	kdbBackendFactory=(KDBBackendFactory)kdbLibSym(dlhandle, "kdbBackendFactory");
+	if (kdbBackendFactory == 0) {
+		/*errno=KDB_ERR_NOSYS;*/
+#if DEBUG && VERBOSE
+		printf("Could not kdbLibSym kdbBackendFactory for %s\n", backend_name);
+#endif
+		goto err_clup; /* error */
+	}
+	
+	handle=kdbBackendFactory();
+	if (handle == 0)
+	{
+		/*errno=KDB_ERR_NOSYS;*/
+#if DEBUG && VERBOSE
+		printf("Could not call kdbBackendFactory for %s\n", backend_name);
+#endif
+		goto err_clup; /* error */
+	}
+
+	/* save the libloader handle for future use */
+	handle->dlHandle=dlhandle;
+	handle->trie	= 0;
+
+	handle->mountpoint=keyNew(mountpoint,KEY_VALUE,backendname,0);
+
+	/* let the backend initialize itself */
+	if (handle->kdbOpen)
+	{
+		handle->config = config;
+		if ((handle->kdbOpen(handle)) == -1)
+		{
+#if DEBUG && VERBOSE
+			printf("kdbOpen() failed for %s\n", backend_name);
+#endif
+		}
+	}
+	else {
+		/*errno=KDB_ERR_NOSYS;*/
+#if DEBUG && VERBOSE
+			printf("No kdbOpen supplied in %s\n", backend_name);
+#endif
+		goto err_clup;
+	}
+
+#if DEBUG && VERBOSE
+	printf("Finished loading Backend %s\n", backend_name);
+#endif
+	free(backend_name);
+	return handle;
+
+err_clup:
+#if DEBUG
+	fprintf(stderr,"Failed to load backend %s\n", backend_name);
+#endif
+	free(backend_name);
+	return 0;
+}
+
+int kdbCloseBackend(KDB *handle)
+{
+	int rc=0;
+
+	if (handle->kdbClose)
+		rc=handle->kdbClose(handle);
+	
+	if (rc == 0) {
+		kdbLibClose(handle->dlHandle);
+		capDel (handle->capability);
+		keyDel(handle->mountpoint);
+		if (handle->config) ksDel(handle->config);
+		free(handle);
+	}
+	
+	return rc;
+}
+
 
 /**
  * Dynamically mount a single backend.
@@ -139,7 +239,7 @@ int kdbMount(KDB *handle, const Key *mountpoint, const KeySet *config)
 	mountpoint_slash [size-1] = '/';
 	mountpoint_slash [size] = 0;
 
-	h=kdbOpenPlugin(backend,mountpoint_slash,c=ksDup(config));
+	h=kdbOpenBackend(backend,mountpoint_slash,c=ksDup(config));
 	if (!h) {
 		free(mountpoint_slash);
 		ksDel(c);
@@ -346,7 +446,7 @@ KDB * kdbOpen()
 	}
 
 	/* Open default backend */
-	handle=kdbOpenPlugin("default",0,0);
+	handle=kdbOpenBackend("default",0,0);
 	if (!handle)
 	{
 #if DEBUG
@@ -367,7 +467,7 @@ KDB * kdbOpen()
 		printf("config for createTrie name: %s value: %s\n",keyName(key),(char*) keyValue(key));
 	}
 #endif
-	trie=createTrie(keys,kdbOpenPlugin);
+	trie=createTrie(keys,kdbOpenBackend);
 	kdbhSetTrie(handle, trie);
 	ksDel(keys);
 

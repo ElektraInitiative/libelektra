@@ -84,7 +84,7 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 
 /**
  * Initialize the backend.
- * This is the first method kdbOpenPlugin() calls after dynamically loading
+ * This is the first method kdbOpenBackend() calls after dynamically loading
  * the backend library.
  *
  * This method is responsible of:
@@ -94,7 +94,7 @@ BOOL APIENTRY DllMain( HANDLE hModule,
  *   database, etc
  *
  * @return 0 on success, anything else otherwise.
- * @see kdbOpenPlugin()
+ * @see kdbOpenBackend()
  * @see kdbOpen()
  * @ingroup backend
  */

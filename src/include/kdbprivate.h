@@ -438,9 +438,6 @@ extern "C" {
  *
  **************************************/
 
-KDB* kdbOpenPlugin(const char *backendname, const char *mountpoint, KeySet *config);
-int kdbCloseBackend(KDB *handle);
-
 ssize_t keySetRaw(Key *key, const void *newBinary, size_t dataSize);
 
 char *keyNameGetOneLevel(const char *keyname, size_t *size);
@@ -495,14 +492,19 @@ int kdbbKeyNameToRelativeFilename(const char *string, char *buffer, size_t bufSi
 ssize_t kdbbKeyCalcRelativeFilename(const Key *key,char *relativeFilename,size_t maxSize);
 ssize_t kdbbGetFullFilename(KDB *handle, const Key *forKey,char *returned,size_t maxSize);
 
+/*TODO Old Stuff*/
+KDB* kdbOpenBackend(const char *backendname, const char *mountpoint, KeySet *config);
+int kdbCloseBackend(KDB *handle);
+
 /*Backend handling*/
-Backend* kdbOpenBackend(KeySet *elektra_config);
+Backend* backendOpen(KeySet *elektra_config);
+void backendClose(Backend *backend);
 
 /*Plugin handling*/
-Plugin* pluginNew();
-void pluginDel(Plugin *plugin);
 int processPlugins(Plugin **plugins, KeySet *config);
-KDB* kdbOpenPlugin(const char *backendname, const char *mountpoint, KeySet *config);
+
+Plugin* pluginOpen(const char *backendname, const char *mountpoint, KeySet *config);
+int pluginClose(Plugin *handle);
 
 /*Private helper for keys*/
 int keyInit(Key *key);

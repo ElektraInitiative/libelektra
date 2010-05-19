@@ -52,7 +52,7 @@ void test_simple()
 {
 	printf ("Test simple building of backend");
 
-	Backend *b = kdbOpenBackend (set_simple());
+	Backend *b = backendOpen(set_simple());
 }
 
 int main(int argc, char** argv)

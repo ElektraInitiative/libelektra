@@ -48,18 +48,6 @@
 
 #include <kdbinternal.h>
 
-Plugin *pluginNew()
-{
-	Plugin *plugin = kdbiCalloc (sizeof(struct _Plugin));
-
-	return plugin;
-}
-
-void pluginDel(Plugin *plugin)
-{
-	kdbiFree(plugin);
-}
-
 /**
  * Load a plugin.
  *
@@ -106,9 +94,9 @@ int processPlugins(Plugin **plugins, KeySet *config)
 }
 
 
-KDB* kdbOpenPlugin(const char *backendname, const char *mountpoint, KeySet *config)
+Plugin* pluginOpen(const char *backendname, const char *mountpoint, KeySet *config)
 {
-	KDB * handle;
+	Plugin* handle;
 	char* backend_name;
 
 	kdbLibHandle dlhandle=0;
@@ -138,8 +126,9 @@ KDB* kdbOpenPlugin(const char *backendname, const char *mountpoint, KeySet *conf
 #endif
 		goto err_clup; /* error */
 	}
-	
-	handle=kdbBackendFactory();
+
+	/*TODO: kdbBackendFactory should return plugin*/
+	handle=(Plugin*)kdbBackendFactory();
 	if (handle == 0)
 	{
 		/*errno=KDB_ERR_NOSYS;*/
@@ -151,15 +140,13 @@ KDB* kdbOpenPlugin(const char *backendname, const char *mountpoint, KeySet *conf
 
 	/* save the libloader handle for future use */
 	handle->dlHandle=dlhandle;
-	handle->trie	= 0;
-
-	handle->mountpoint=keyNew(mountpoint,KEY_VALUE,backendname,0);
 
 	/* let the backend initialize itself */
 	if (handle->kdbOpen)
 	{
 		handle->config = config;
-		if ((handle->kdbOpen(handle)) == -1)
+		// TODO should be plugin
+		if ((handle->kdbOpen((KDB*)handle)) == -1)
 		{
 #if DEBUG && VERBOSE
 			printf("kdbOpen() failed for %s\n", backend_name);
@@ -188,17 +175,18 @@ err_clup:
 	return 0;
 }
 
-int kdbCloseBackend(KDB *handle)
+int pluginClose(Plugin *handle)
 {
 	int rc=0;
 
 	if (handle->kdbClose)
-		rc=handle->kdbClose(handle);
+	{
+		// TODO should be plugin
+		rc=handle->kdbClose((KDB*)handle);
+	}
 	
 	if (rc == 0) {
 		kdbLibClose(handle->dlHandle);
-		capDel (handle->capability);
-		keyDel(handle->mountpoint);
 		if (handle->config) ksDel(handle->config);
 		free(handle);
 	}

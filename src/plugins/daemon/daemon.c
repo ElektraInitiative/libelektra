@@ -113,7 +113,7 @@ static Message *callDaemon(int socketfd, Message *request)
 
 /**
  * Initialize the backend.
- * This is the first method kdbOpenPlugin() calls after dynamically loading
+ * This is the first method kdbOpenBackend() calls after dynamically loading
  * the backend library.
  *
  * This method is responsible of:
@@ -123,7 +123,7 @@ static Message *callDaemon(int socketfd, Message *request)
  *   database, etc
  *
  * @return 0 on success, anything else otherwise.
- * @see kdbOpenPlugin()
+ * @see kdbOpenBackend()
  * @see kdbOpen()
  * @ingroup backend
  */
@@ -732,7 +732,7 @@ u_int32_t kdbMonitorKey_daemon(KDB *handle, Key *interest, u_int32_t diffMask,
  * 
  * @return whatever kdbBackendExport() returns
  * @see kdbBackendExport() for an example
- * @see kdbOpenPlugin()
+ * @see kdbOpenBackend()
  * @ingroup backend
  */
 KDBEXPORT(daemon)

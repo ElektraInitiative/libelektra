@@ -73,7 +73,7 @@ system/elektra/mountpoints/<name>
  *         has the error information.
  * @ingroup backend
  */
-Backend* kdbOpenBackend(KeySet *elektra_config)
+Backend* backendOpen(KeySet *elektra_config)
 {
 	Key * cur;
 	Key * root;
@@ -96,16 +96,23 @@ Backend* kdbOpenBackend(KeySet *elektra_config)
 #if DEBUG
 					printf ("Processing Plugins failed\n");
 #endif
-					for (int i=0; i<10; ++i)
-					{
-						pluginDel(backend->setplugins[i]);
-					}
-					free (backend);
+					backendClose(backend);
 					return 0;
 				}
 			}
 		}
+		// handle->mountpoint=keyNew(mountpoint,KEY_VALUE,backendname,0);
 	}
 
 	return 0;
+}
+
+void backendClose(Backend *backend)
+{
+	for (int i=0; i<10; ++i)
+	{
+		pluginClose(backend->setplugins[i]);
+		pluginClose(backend->getplugins[i]);
+	}
+	kdbiFree (backend);
 }
