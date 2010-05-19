@@ -72,6 +72,7 @@ int keyClearSync (Key *key);
 /* Some internal methods */
 int kdbiRealloc (void ** buffer, size_t size);
 void* kdbiMalloc (size_t size);
+void* kdbiCalloc (size_t size);
 void kdbiFree (void *ptr);
 char *kdbiStrDup (const char *s);
 size_t kdbiStrLen(const char *s);

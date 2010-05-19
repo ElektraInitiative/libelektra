@@ -100,6 +100,10 @@
 
 #include <kdbinternal.h>
 
+Plugin* pluginNew();
+void pluginDel(Plugin *plugin);
+int processPlugins(Plugin **plugins, KeySet *config);
+
 /**Builds a backend out of the configuration supplied
  * from:
  *
@@ -132,10 +136,82 @@ Backend* kdbOpenBackend(KeySet *elektra_config)
 
 	root = ksNext (elektra_config);
 
+	Backend *backend = kdbiCalloc(sizeof(struct _Backend));
+
 	while ((cur = ksNext(elektra_config)) != 0)
 	{
+		if (keyRel (root, cur) == 1)
+		{
+			// direct below root key
+			KeySet *cut = ksCut (elektra_config, cur);
+			if (!strcmp(keyBaseName(cur), "getplugins"))
+			{
+				if (processPlugins(backend->getplugins, cut) == -1)
+				{
+#if DEBUG
+					printf ("Processing Plugins failed\n");
+#endif
+					for (int i=0; i<10; ++i)
+					{
+						pluginDel(backend->setplugins[i]);
+					}
+					free (backend);
+					return 0;
+				}
+			}
+		}
 	}
 
+	return 0;
+}
+
+void pluginDel(Plugin *plugin)
+{
+	free (plugin);
+}
+
+/**
+ * Load a plugin.
+ *
+ * The array of plugins must be set to 0.
+ * Its length is 10.
+ *
+ * @return -1 on failure
+ */
+int processPlugins(Plugin **plugins, KeySet *config)
+{
+	Key *root;
+	Key *cur;
+
+	ksRewind (config);
+
+	root = ksNext(config);
+
+	while ((cur = ksNext(config)) != 0)
+	{
+		if (keyRel (root, cur) == 1)
+		{
+			// this describes a plugin!
+			const char *fullname = keyBaseName(cur);
+			const char *backendname;
+			if (fullname[0] != '#')
+			{
+#if DEBUG
+				printf ("Names of Plugins must start with a #\n");
+#endif
+				return -1;
+			}
+			if (fullname[1] < '0' || fullname[1] > '9')
+			{
+#if DEBUG
+				printf ("Names of Plugins must start have the position number as second char\n");
+#endif
+				return -1;
+			}
+			backendname = &fullname[2];
+			printf ("Backendname is %s\n", backendname);
+		}
+	}
 	return 0;
 }
 

@@ -224,9 +224,10 @@ int kdbiRealloc (void ** buffer, size_t size)
 	}
 }
 
-/**Allocate memory for elektra or backends.
+/**
+ * Allocate memory for Elektra.
  *
- *@code
+ * @code
 if ((buffer = kdbiMalloc (length)) == 0) {
 	// here comes the failure handler
 	// no allocation happened here, so dont use buffer
@@ -235,15 +236,29 @@ if ((buffer = kdbiMalloc (length)) == 0) {
 #endif
 	// return with error
 }
- *@endcode
+ * @endcode
  *
- *@param size the requested size
+ * @param size the requested size
  *
  * This function is compatible to ANSI-C malloc
- *@see kdbiFree*/
+ * @see kdbiFree
+ * @see kdbiCalloc
+ */
 void* kdbiMalloc (size_t size)
 {
 	return malloc (size);
+}
+
+/**Allocate memory for Elektra.
+ *
+ * Memory will be set to 0.
+ *
+ * @param the requested size
+ * @see kdbiMalloc
+ */
+void* kdbiCalloc (size_t size)
+{
+	return calloc(1, size);
 }
 
 /**Free memory of elektra or its backends.

@@ -298,9 +298,9 @@ struct _KDB {
 		@see kdbhGetTrie() */
 
 
+	/* TODO: remove everything below this point */
 	kdbLibHandle dlHandle;	/*!< The pointer to the datastructure to load a new backend. */
 
-	/* TODO: remove everything below this point */
 	Key *mountpoint;	/*!< The mountpoint where the backend resides.
 		The keyName() is the point where the backend was mounted.
 		The keyValue() is the name of the backend without pre/postfix, e.g.
@@ -390,6 +390,8 @@ struct _Plugin {
 
 	kdbGetPtr kdbGet;	/*!< The pointer to kdbGet_template() of the backend. */
 	kdbSetPtr kdbSet;	/*!< The pointer to kdbSet_template() of the backend. */
+
+	kdbLibHandle dlHandle;	/*!< The pointer to the datastructure to load a new backend. */
 };
 
 
