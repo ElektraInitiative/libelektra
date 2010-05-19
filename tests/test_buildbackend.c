@@ -39,8 +39,10 @@ KeySet *set_simple()
 {
 	return ksNew(4,
 		keyNew("system/elektra/mountpoints/simple", KEY_END),
+		keyNew("system/elektra/mountpoints/simple/getplugins", KEY_END),
 		keyNew("system/elektra/mountpoints/simple/getplugins/#1tracer", KEY_VALUE, "tracer", KEY_END),
 		keyNew("system/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user/tests/backend/simple", KEY_END),
+		keyNew("system/elektra/mountpoints/simple/setplugins", KEY_END),
 		keyNew("system/elektra/mountpoints/simple/setplugins/#1tracer", KEY_VALUE, "tracer", KEY_END),
 		KS_END);
 

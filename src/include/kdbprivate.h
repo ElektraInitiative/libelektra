@@ -495,6 +495,15 @@ int kdbbKeyNameToRelativeFilename(const char *string, char *buffer, size_t bufSi
 ssize_t kdbbKeyCalcRelativeFilename(const Key *key,char *relativeFilename,size_t maxSize);
 ssize_t kdbbGetFullFilename(KDB *handle, const Key *forKey,char *returned,size_t maxSize);
 
+/*Backend handling*/
+Backend* kdbOpenBackend(KeySet *elektra_config);
+
+/*Plugin handling*/
+Plugin* pluginNew();
+void pluginDel(Plugin *plugin);
+int processPlugins(Plugin **plugins, KeySet *config);
+KDB* kdbOpenPlugin(const char *backendname, const char *mountpoint, KeySet *config);
+
 /*Private helper for keys*/
 int keyInit(Key *key);
 int keyClose(Key *key);
