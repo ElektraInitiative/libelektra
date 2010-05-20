@@ -146,6 +146,16 @@ Backend* backendOpen(KeySet *elektraConfig)
 					goto error;
 				}
 			}
+			else if (!strcmp(keyBaseName(cur), "mountpoint"))
+			{
+				backend->mountpoint=keyNew(keyValue(cur),KEY_VALUE,keyBaseName(root),0);
+				if (!backend->mountpoint)
+				{
+					kdbPrintDebug("given mountpoint not valid");
+					goto error;
+				}
+				ksDel (cut);
+			}
 			else if (!strcmp(keyBaseName(cur), "setplugins"))
 			{
 				if (processPlugins(backend->setplugins, cut, systemConfig) == -1)
@@ -163,7 +173,6 @@ Backend* backendOpen(KeySet *elektraConfig)
 				ksDel (cut);
 			}
 		}
-		// handle->mountpoint=keyNew(mountpoint,KEY_VALUE,backendname,0);
 	}
 
 	ksDel (systemConfig);
@@ -183,6 +192,7 @@ int backendClose(Backend *backend)
 
 	if (!backend) return;
 
+	keyDel (backend->mountpoint);
 	for (int i=0; i<10; ++i)
 	{
 		pluginClose(backend->setplugins[i]);

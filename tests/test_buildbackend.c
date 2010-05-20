@@ -77,6 +77,11 @@ void test_simple()
 	exit_if_fail (backend->setplugins[1] != 0, "there should be a plugin");
 	succeed_if (backend->setplugins[2] == 0, "there should be no plugin");
 
+	Key *mp;
+	succeed_if ((mp = backend->mountpoint) != 0, "no mountpoint found");
+	succeed_if (!strcmp(keyName(mp), "user/tests/backend/simple"), "wrong mountpoint for backend");
+	succeed_if (!strcmp(keyString(mp), "simple"), "wrong name for backend");
+
 	Plugin *plugin = backend->getplugins[1];
 	KeySet *config = pluginGetConfig (plugin);
 	succeed_if (config != 0, "there should be a config");

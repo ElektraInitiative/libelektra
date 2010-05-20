@@ -207,7 +207,7 @@ const char *keyString(const Key *key)
 		return "";
 	}
 
-	if (key->data.c[key->dataSize] != 0)
+	if (key->data.c[key->dataSize-1] != 0)
 	{
 		return "(binary)";
 	}

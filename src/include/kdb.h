@@ -167,6 +167,7 @@ ssize_t keySetBaseName(Key *key,const char *baseName);
 const void *keyValue(const Key *key);
 ssize_t keyGetValueSize(const Key *key);
 
+const char *keyString(const Key *key);
 ssize_t keyGetString(const Key *key, char *returnedString, size_t maxSize);
 ssize_t keySetString(Key *key, const char *newString);
 
