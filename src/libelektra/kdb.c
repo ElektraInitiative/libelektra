@@ -720,9 +720,12 @@ ssize_t kdbSet (KDB *handle, KeySet *ks,
 			ksRewind (keysets->keysets[i]);
 			for (size_t p=0; p<NR_OF_PLUGINS; ++p)
 			{
-				ret = backend_handle->setplugins[p]->kdbSet(
-						backend_handle->setplugins[p],
-						keysets->keysets[i],keysets->parents[i]);
+				if (backend_handle->setplugins[p])
+				{
+					ret = backend_handle->setplugins[p]->kdbSet(
+							backend_handle->setplugins[p],
+							keysets->keysets[i],keysets->parents[i]);
+				}
 				if (ret == -1)
 				{
 					break;

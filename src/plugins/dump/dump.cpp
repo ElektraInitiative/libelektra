@@ -175,88 +175,48 @@ void unserialize(std::istream &is, ckdb::KeySet *ks)
 
 extern "C" {
 
-int kdbOpen_dump(ckdb::KDB *handle)
+int kdbOpen_dump(ckdb::Plugin *)
 {
-	int errnosave = errno;
-	ckdb::KeySet *ks;
-	ckdb::Key *k;
-
-	KDBCap * cap = ckdb::kdbhGetCapability(handle);
-	cap->onlyFullGet=1;
-	cap->onlyRemoveAll=1;
-	cap->onlyAddKeys=1;
-	cap->onlyFullSet=1;
-	cap->onlySystem=1;
-	cap->onlyUser=1;
-
-	ks = ckdb::kdbhGetConfig (handle);
-	ckdb::ksRewind (ks);
-	while ((k = ckdb::ksNext (ks)) != 0)
-	{
-		const char *name;
-		std::string f;
-		size_t pos;
-
-		name = ckdb::keyName(k);
-		if (!name) continue;
-		f = std::string(name);
-		pos = f.find_last_of('/');
-		std::string postfix = f.substr(pos);
-		if (postfix == "/path") {
-			ckdb::kdbhSetBackendData (handle, new std::string((char*)ckdb::keyValue(k)));
-		}
-	}
-	if (!ckdb::kdbhGetBackendData (handle)) ckdb::kdbhSetBackendData (handle, new std::string(DUMP_PATH));
-
-	errno = errnosave;
 	return 0;
 }
 
-int kdbClose_dump(ckdb::KDB *handle)
+int kdbClose_dump(ckdb::Plugin *)
 {
-	int errnosave = errno;
-
-	delete static_cast<std::string*>(ckdb::kdbhGetBackendData (handle));
-
-	errno = errnosave;
-	return 0; /* success */
+	return 0;
 }
 
-ssize_t kdbGet_dump(ckdb::KDB *handle, ckdb::KeySet *returned, const ckdb::Key *)
+ssize_t kdbGet_dump(ckdb::Plugin *handle, ckdb::KeySet *returned, const ckdb::Key *)
 {
-	int errnosave = errno;
-
-	std::ifstream ofs(static_cast<std::string*>(ckdb::kdbhGetBackendData (handle))->c_str());
+	std::ifstream ofs(keyString(ksLookupByName(ckdb::pluginGetConfig (handle), "/path", 0)));
+	if (!ofs.is_open()) return -1;
 	dump::unserialize (ofs, returned);
 
-	errno = errnosave;
 	return ksGetSize(returned); /* success */
 }
 
-ssize_t kdbSet_dump(ckdb::KDB *handle, ckdb::KeySet *returned, const ckdb::Key *)
+ssize_t kdbSet_dump(ckdb::Plugin *handle, ckdb::KeySet *returned, const ckdb::Key *)
 {
-	int errnosave = errno;
-
-	std::ofstream ifs(static_cast<std::string*>(ckdb::kdbhGetBackendData (handle))->c_str());
+	std::ofstream ifs(keyString(ksLookupByName(ckdb::pluginGetConfig (handle), "/path", 0)));
+	if (!ifs.is_open()) return -1;
 	dump::serialize (ifs, returned);
 
-	errno = errnosave;
 	return ksGetSize(returned);
 }
 
-ckdb::KDB *KDBEXPORT(dump)
+ckdb::Plugin *KDBEXPORT(dump)
 {
-	return kdbBackendExport(BACKENDNAME,
-		KDB_BE_OPEN,	&kdbOpen_dump,
-		KDB_BE_CLOSE,	&kdbClose_dump,
-		KDB_BE_GET,	&kdbGet_dump,
-		KDB_BE_SET,	&kdbSet_dump,
-		KDB_BE_VERSION,        BACKENDVERSION,
-		KDB_BE_AUTHOR,	"Full Name <email@libelektra.org>",
-		KDB_BE_LICENCE,	"BSD",
-		KDB_BE_DESCRIPTION,
-			"Add description here",
-		KDB_BE_END);
+	return pluginExport(BACKENDNAME,
+		KDB_PLUGIN_OPEN,		&kdbOpen_dump,
+		KDB_PLUGIN_CLOSE,	&kdbClose_dump,
+		KDB_PLUGIN_GET,		&kdbGet_dump,
+		KDB_PLUGIN_SET,		&kdbSet_dump,
+		KDB_PLUGIN_VERSION,	BACKENDVERSION,
+		KDB_PLUGIN_AUTHOR,	"Markus Raab <elektra@markus-raab.org>",
+		KDB_PLUGIN_LICENCE,	"BSD",
+		KDB_PLUGIN_DESCRIPTION,	"Dumps complete Elektra Semantics",
+		KDB_PLUGIN_PROVIDES,	"storage",
+		KDB_PLUGIN_NEEDS,	"",
+		KDB_PLUGIN_END);
 }
 
 } // extern C

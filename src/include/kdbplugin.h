@@ -52,12 +52,12 @@ typedef enum {
 } plugin_t;
 
 
-typedef struct _Plugin	Plugin;
-
 #ifdef __cplusplus
 namespace ckdb {
 extern "C" {
 #endif
+
+typedef struct _Plugin	Plugin;
 
 Plugin *pluginExport(const char *pluginName, ...);
 

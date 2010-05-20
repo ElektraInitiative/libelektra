@@ -26,8 +26,7 @@
 
 
 
-#include <kdbbackend.h>
-#include <errno.h>
+#include <kdbplugin.h>
 
 #include <iostream>
 #include <fstream>
@@ -49,10 +48,10 @@ namespace ckdb {
 ssize_t keySetRaw(ckdb::Key *key, const void *newBinary, size_t dataSize);
 }
 
-int kdbOpen_dump(ckdb::KDB *handle);
-int kdbClose_dump(ckdb::KDB *handle);
-ssize_t kdbGet_dump(ckdb::KDB *handle, ckdb::KeySet *ks, const ckdb::Key *parentKey);
-ssize_t kdbSet_dump(ckdb::KDB *handle, ckdb::KeySet *ks, const ckdb::Key *parentKey);
-ckdb::KDB* KDBEXPORT(dump);
+int kdbOpen_dump(ckdb::Plugin *handle);
+int kdbClose_dump(ckdb::Plugin *handle);
+ssize_t kdbGet_dump(ckdb::Plugin *handle, ckdb::KeySet *ks, const ckdb::Key *parentKey);
+ssize_t kdbSet_dump(ckdb::Plugin *handle, ckdb::KeySet *ks, const ckdb::Key *parentKey);
+ckdb::Plugin* KDBEXPORT(dump);
 
 } // extern C
