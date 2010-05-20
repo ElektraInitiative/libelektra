@@ -34,8 +34,8 @@ int kdbOpen_tracer(Plugin *handle)
 	Key *k;
 
 	printf ("tracer: kdbOpen(%p): ", (void*)handle);
-	while ((k = ksNext(config))!=0) { printf ("%s", keyName(k)); ++nr_keys; }
-	printf (" %zd\n", nr_keys);
+	while ((k = ksNext(config))!=0) { printf ("%s ", keyName(k)); ++nr_keys; }
+	printf ("%zd\n", nr_keys);
 
 	return 0;
 }
@@ -55,8 +55,8 @@ ssize_t kdbGet_tracer(Plugin *handle, KeySet *returned, const Key *parentKey)
 	Key *k=0;
 
 	printf ("tracer: kdbGet(%p, %s): ", (void*)handle, keyName(parentKey));
-	while ((k = ksNext(returned))!=0) { printf ("%s", keyName(k)); ++nr_keys; }
-	printf (" %zd\n", nr_keys);
+	while ((k = ksNext(returned))!=0) { printf ("%s ", keyName(k)); ++nr_keys; }
+	printf ("%zd\n", nr_keys);
 
 	return nr_keys; /* success */
 }
@@ -67,8 +67,8 @@ ssize_t kdbSet_tracer(Plugin *handle, KeySet *returned, const Key *parentKey)
 	Key *k=0;
 
 	printf ("tracer: kdbSet(%p, %s): ", (void*)handle, keyName(parentKey));
-	while ((k = ksNext(returned))!=0) { printf ("%s", keyName(k)); ++nr_keys; }
-	printf (" %zd\n", nr_keys);
+	while ((k = ksNext(returned))!=0) { printf ("%s ", keyName(k)); ++nr_keys; }
+	printf ("%zd\n", nr_keys);
 
 	return nr_keys;
 }

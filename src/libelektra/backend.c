@@ -185,8 +185,8 @@ int backendClose(Backend *backend)
 
 	for (int i=0; i<10; ++i)
 	{
-		ret = ret==0 ? pluginClose(backend->setplugins[i]) : ret;
-		ret = ret==0 ? pluginClose(backend->getplugins[i]) : ret;
+		pluginClose(backend->setplugins[i]);
+		pluginClose(backend->getplugins[i]);
 	}
 	kdbiFree (backend);
 

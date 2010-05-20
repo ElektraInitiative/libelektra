@@ -336,6 +336,50 @@ void test_cursor()
 	succeed_if (!strcmp (keyName(ksCurrent(config)), "system/elektra/mountpoints/simple"),
 			"not pointing to the root key again");
 
+	succeed_if (ksNext(config) != 0, "should be on config");
+	succeed_if (ksGetCursor(config) == 1, "cursor on getplugins");
+	succeed_if (!strcmp (keyName(ksCurrent(config)), "system/elektra/mountpoints/simple/getplugins"),
+			"not pointing to the correct key");
+
+	KeySet *getplugins = ksCut(config, ksCurrent(config));
+	succeed_if (ksGetCursor(getplugins) == -1, "should be invalid cursor");
+	succeed_if (ksNext(getplugins) != 0, "should be root key");
+	succeed_if (ksGetCursor(getplugins) == 0, "cursor on first position");
+
+	succeed_if (ksNext(getplugins) != 0, "should be tracer");
+	succeed_if (ksGetCursor(getplugins) == 1, "cursor not correct");
+
+	KeySet *gettracer = ksCut (getplugins, ksCurrent (getplugins));
+	succeed_if (ksNext(getplugins) == 0, "should be no more getplugins");
+
+	succeed_if (ksNext(config) != 0, "next did not work");
+	succeed_if (ksGetCursor(config ) == 1, "cursor not correct");
+	succeed_if (!strcmp (keyName(ksCurrent(config)), "system/elektra/mountpoints/simple/mountpoint"),
+			"not pointing to the correct key");
+
+	succeed_if (ksNext(config) != 0, "next did not work");
+	succeed_if (ksGetCursor(config ) == 2, "cursor not correct");
+	succeed_if (!strcmp (keyName(ksCurrent(config)), "system/elektra/mountpoints/simple/setplugins"),
+			"not pointing to the correct key");
+
+	KeySet *setplugins = ksCut(config, ksCurrent(config));
+	succeed_if (ksNext(config) == 0, "should be no more config");
+	succeed_if (ksNext(setplugins) != 0, "ksnext did not work");
+	succeed_if (!strcmp (keyName(ksCurrent(setplugins)), "system/elektra/mountpoints/simple/setplugins"),
+			"not pointing to the correct key");
+	succeed_if (ksNext(setplugins) != 0, "ksnext did not work");
+
+	KeySet *settracer = ksCut (setplugins, ksCurrent (setplugins));
+	succeed_if (ksNext(setplugins) == 0, "should be no more setplugins");
+	succeed_if (ksGetSize(settracer) == 1, "should be only one key");
+
+	succeed_if (ksGetSize(config) == 2, "should be only three keys remaining: root, mountpoint");
+
+
+	ksDel (setplugins);
+	ksDel (getplugins);
+	ksDel (settracer);
+	ksDel (gettracer);
 	ksDel (config);
 	ksDel (res);
 }

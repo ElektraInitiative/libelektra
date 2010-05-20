@@ -94,6 +94,8 @@ static int renamePluginConfig(KeySet *config)
  * The array of plugins must be set to 0.
  * Its length is 10.
  *
+ * systemConfig will only be used, not deleted.
+ *
  * @param config the config with the information how the
  *        plugins should be put together
  * @param systemConfig the shared (system) config for the plugins.
@@ -143,8 +145,9 @@ int processPlugins(Plugin **plugins, KeySet *config, KeySet *systemConfig)
 			keyDel (key);
 
 			renamePluginConfig(pluginConfig);
+			ksAppend(pluginConfig, systemConfig);
 
-			plugins[pluginNumber] = pluginOpen(pluginName, ksDup(pluginConfig));
+			plugins[pluginNumber] = pluginOpen(pluginName, pluginConfig);
 		} else {
 #if DEBUG
 			printf ("Unkown additional entries in plugin\n");
@@ -160,7 +163,15 @@ error:
 	return -1;
 }
 
-
+/**
+ * Opens a plugin.
+ *
+ * The config will be used as is. So be sure to transfer ownership
+ * of the config to it, with e.g. ksDup().
+ * pluginClose() will delete the config.
+ *
+ * @return a pointer to a new created plugin or 0 on error
+ */
 Plugin* pluginOpen(const char *pluginname, KeySet *config)
 {
 	Plugin* handle;
@@ -236,6 +247,7 @@ err_clup:
 #if DEBUG
 	printf("Failed to load plugin %s\n", plugin_name);
 #endif
+	ksDel (config);
 	free(plugin_name);
 	return 0;
 }
@@ -250,13 +262,11 @@ int pluginClose(Plugin *handle)
 	{
 		rc=handle->kdbClose(handle);
 	}
-	
-	if (rc == 0) {
-		kdbLibClose(handle->dlHandle);
-		if (handle->config) ksDel(handle->config);
-		free(handle);
-	}
-	
+
+	kdbLibClose(handle->dlHandle);
+	ksDel(handle->config);
+	free(handle);
+
 	return rc;
 }
 

@@ -870,7 +870,7 @@ KeySet *ksCut(KeySet *ks, const Key *cutpoint)
 	if (!cutpoint->key) return 0;
 
 	found = ksSearchInternal(ks, cutpoint);
-	if (ksGetCursor(ks) == c) ksPrev(ks);
+	if (cutpoint == ksCurrent(ks)) ksPrev(ks);
 
 	if (found < 0) found = -found - 1;
 
