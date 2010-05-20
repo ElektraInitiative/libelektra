@@ -25,7 +25,6 @@
 
 #include <limits.h>
 
-#include <kdbcap.h>
 #include <kdbloader.h>
 
 #ifndef KDB_DB_SYSTEM
@@ -129,6 +128,11 @@
 # define kdbPrintVerbose(text)
 #endif
 
+
+#ifdef __cplusplus
+namespace ckdb {
+extern "C" {
+#endif
 
 typedef struct _Trie	Trie;
 typedef struct _Split	Split;
@@ -420,12 +424,6 @@ struct _Split {
 	int *belowparents;	/*!< Is there any key in there which is below the parent? */
 };
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
 /***************************************
  *
  * Not exported functions, for internal use only
@@ -516,6 +514,7 @@ int ksClose(KeySet *ks);
 #define clear_bit(var,bit)           ((var) &= ~(bit))
 
 #ifdef __cplusplus
+}
 }
 #endif
 
