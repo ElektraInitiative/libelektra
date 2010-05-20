@@ -485,6 +485,7 @@ Split *split_keyset(KDB *handle, KeySet *ks,
 size_t kdbiMemcpy (Key** array1, Key** array2, size_t size);
 size_t kdbiMemmove (Key** array1, Key** array2, size_t size);
 void *kdbiMalloc (size_t size);
+void *kdbiCalloc (size_t size);
 void  kdbiFree (void *ptr);
 char *kdbiStrDup (const char *s);
 char *kdbiStrNDup (const char *s, size_t l);

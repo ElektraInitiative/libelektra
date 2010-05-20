@@ -863,7 +863,6 @@ KeySet *ksCut(KeySet *ks, const Key *cutpoint)
 	size_t found = 0;
 	size_t it = 0;
 	size_t newsize = 0;
-	cursor_t c = ksGetCursor (ks);
 
 	if (!ks) return 0;
 	if (!cutpoint) return 0;
