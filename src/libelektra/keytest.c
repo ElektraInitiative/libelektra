@@ -573,6 +573,8 @@ kdbClose (handle);
 keyswitch_t keyCompare(const Key *key1, const Key *key2)
 {
 	keyswitch_t ret=0;
+	ssize_t nsize1 = keyGetNameSize(key1);
+	ssize_t nsize2 = keyGetNameSize(key2);
 	const char *name1 = keyName(key1);
 	const char *name2 = keyName(key2);
 	const char *comment1 = keyComment(key1);
@@ -585,9 +587,10 @@ keyswitch_t keyCompare(const Key *key1, const Key *key2)
 	ssize_t size2 = keyGetValueSize(key2);
 
 
-	if (keyGetUID(key1) != keyGetUID(key2))        ret|=KEY_UID;
-	if (keyGetGID(key1) != keyGetGID(key2))        ret|=KEY_GID;
-	if (keyGetMode(key1)!= keyGetMode(key2))  ret|=KEY_MODE;
+	if (keyGetUID(key1) != keyGetUID(key2))  ret|=KEY_UID;
+	if (keyGetGID(key1) != keyGetGID(key2))  ret|=KEY_GID;
+	if (keyGetMode(key1)!= keyGetMode(key2)) ret|=KEY_MODE;
+	if (nsize1 != nsize2)              ret|=KEY_NAME;
 	if (strcmp(name1, name2))          ret|=KEY_NAME;
 	if (strcmp(comment1, comment2))    ret|=KEY_COMMENT;
 	if (strcmp(owner1, owner2))        ret|=KEY_OWNER;

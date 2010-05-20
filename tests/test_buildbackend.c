@@ -83,9 +83,23 @@ void test_simple()
 	succeed_if (!strcmp(keyString(mp), "simple"), "wrong name for backend");
 
 	Plugin *plugin = backend->getplugins[1];
+	KeySet *test_config = ksNew( 10 ,
+		keyNew ("system/anything", KEY_VALUE, "backend", KEY_END),
+		keyNew ("system/more", KEY_END),
+		keyNew ("system/more/config", KEY_END),
+		keyNew ("system/more/config/below", KEY_END),
+		keyNew ("system/path", KEY_END),
+		keyNew ("user/anything", KEY_VALUE, "plugin", KEY_END),
+		keyNew ("user/more", KEY_END),
+		keyNew ("user/more/config", KEY_END),
+		keyNew ("user/more/config/below", KEY_END),
+		keyNew ("user/path", KEY_END),
+		KS_END);
+
 	KeySet *config = pluginGetConfig (plugin);
 	succeed_if (config != 0, "there should be a config");
-	ksGenerate (config, stdout, 0);
+	compare_keyset(config, test_config, 0, 0);
+	ksDel (test_config);
 
 	backendClose (backend);
 }
