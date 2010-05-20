@@ -1,10 +1,9 @@
-#include <kdbbackend.h>
 #include <string.h>
 #include <stdio.h>
 #include <errno.h>
 
-/*TODO dont use private details*/
-#include <kdbprivate.h>
+#include <kdbplugin.h>
+#include <kdbinternal.h>
 
 #define BACKENDNAME "hosts"
 #define BACKENDVERSION "0.0.2"
@@ -21,8 +20,8 @@ int kdbbWriteLock (FILE *f);
 int kdbbReadLock (FILE *f);
 int kdbbUnlock (FILE *f);
 
-int kdbOpen_hosts(KDB *handle);
-int kdbClose_hosts(KDB *handle);
-ssize_t kdbGet_hosts(KDB *handle, KeySet *ks, const Key *parentKey);
-ssize_t kdbSet_hosts(KDB *handle, KeySet *ks, const Key *parentKey);
-KDB *KDBEXPORT(hosts);
+int kdbOpen_hosts(Plugin *handle);
+int kdbClose_hosts(Plugin *handle);
+ssize_t kdbGet_hosts(Plugin *handle, KeySet *ks, const Key *parentKey);
+ssize_t kdbSet_hosts(Plugin *handle, KeySet *ks, const Key *parentKey);
+Plugin *KDBEXPORT(hosts);

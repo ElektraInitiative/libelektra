@@ -28,58 +28,13 @@
 #include "hosts.h"
 
 
-int kdbOpen_hosts(KDB *handle)
+int kdbOpen_hosts(Plugin *p)
 {
-	KDBCap * cap = kdbhGetCapability(handle);
-	const void *f;
-	KeySet *ks;
-	Key *k;
-
-	cap->onlyFullGet=1;
-	cap->onlyRemoveAll=1;
-	cap->onlyAddKeys=1;
-	cap->onlyFullSet=1;
-	cap->onlySystem=1;
-	cap->onlyUser=1;
-
-	cap->noOwner=1;
-	cap->noValue=1;
-	cap->noComment=1;
-	cap->noUID=1;
-	cap->noGID=1;
-	cap->noMode=1;
-	cap->noDir=1;
-	cap->noATime=1;
-	cap->noMTime=1;
-	cap->noCTime=1;
-	cap->noRemove=1;
-	cap->noStat=1;
-	cap->noMount=1;
-	cap->noBinary=1;
-	cap->noString=1;
-	cap->noTypes=1;
-	cap->noError=1;
-
-	ks = kdbhGetConfig (handle);
-	ksRewind (ks);
-	while ((k = ksNext (ks)) != 0)
-	{
-		f = keyName (k);
-		if (f) f = strrchr (f, '/');
-		if (f && strcmp (f, "/path") == 0) {
-			void *data=kdbiMalloc(keyGetValueSize(k));
-			memcpy(data,keyValue(k),keyGetValueSize(k));
-			kdbhSetBackendData (handle, data);
-		}
-	}
-	if (!kdbhGetBackendData (handle)) kdbhSetBackendData (handle, kdbiStrDup (HOSTS_PATH));
-
 	return 0;
 }
 
-int kdbClose_hosts(KDB *handle)
+int kdbClose_hosts(Plugin *p)
 {
-	kdbiFree(kdbhGetBackendData(handle));
 	return 0; /* success */
 }
 
@@ -168,7 +123,7 @@ static size_t find_token (char **token, char *line)
 	return i+1; /* let find_token continue next time one byte after termination */
 }
 
-ssize_t kdbGet_hosts(KDB *handle, KeySet *returned, const Key *parentKey)
+ssize_t kdbGet_hosts(Plugin *handle, KeySet *returned, const Key *parentKey)
 {
 	int errnosave = errno;
 	ssize_t nr_keys = 0, nr_alias;
@@ -183,18 +138,18 @@ ssize_t kdbGet_hosts(KDB *handle, KeySet *returned, const Key *parentKey)
 	char comment [HOSTS_BUFFER_SIZE] = "";
 	KeySet *append = 0;
 
-	if (strcmp (keyName(kdbhGetMountpoint(handle)), keyName(parentKey))) return 0;
+	/* if (strcmp (keyName(kdbhGetMountpoint(handle)), keyName(parentKey))) return 0; */
 
-	fp = fopen (kdbhGetBackendData(handle), "r");
+	fp = fopen (keyString(ksLookupByName(pluginGetConfig (handle), "/path", 0)), "r");
 
 	if (fp == 0)
 	{
-		/*kdbhSetError (handle, KDB_ERR_NODIR);*/
+		/*kdbhSetError (handle, Plugin_ERR_NODIR);*/
 		errno = errnosave;
 		return -1;
 	}
 
-	kdbbReadLock (fp);
+	// kdbbReadLock (fp);
 
 	ksClear (returned);
 	append = ksNew(ksGetSize(returned)*2, KS_END);
@@ -211,7 +166,7 @@ ssize_t kdbGet_hosts(KDB *handle, KeySet *returned, const Key *parentKey)
 		if (fret == 0) 
 		{
 			/* success */
-			kdbbUnlock(fp);
+			// kdbbUnlock(fp);
 			fclose (fp);
 
 			ksClear (returned);
@@ -272,13 +227,13 @@ ssize_t kdbGet_hosts(KDB *handle, KeySet *returned, const Key *parentKey)
 	printf ("error at line: %s\n", readbuffer);
 #endif
 	ksDel (append);
-	kdbbUnlock (fp);
+	// kdbbUnlock (fp);
 	fclose (fp);
 	errno = errnosave;
 	return -1;
 }
 
-ssize_t kdbSet_hosts(KDB *handle, KeySet *returned, const Key *parentKey)
+ssize_t kdbSet_hosts(Plugin *handle, KeySet *returned, const Key *parentKey)
 {
 	int errnosave = errno;
 	ssize_t nr_keys = 0, nr_alias = 0;
@@ -286,18 +241,18 @@ ssize_t kdbSet_hosts(KDB *handle, KeySet *returned, const Key *parentKey)
 	Key *key, *alias=0;
 	char * lastline;
 
-	if (strcmp (keyName(kdbhGetMountpoint(handle)), keyName(parentKey))) return 0;
+	/* if (strcmp (keyName(kdbhGetMountpoint(handle)), keyName(parentKey))) return 0; */
 
-	fp = fopen (kdbhGetBackendData(handle), "w");
+	fp = fopen (keyString(ksLookupByName(pluginGetConfig (handle), "/path", 0)), "w");
 
 	if (fp == 0)
 	{
-		/*kdbhSetError (handle, KDB_ERR_NODIR);*/
+		/*kdbhSetError (handle, Plugin_ERR_NODIR);*/
 		errno = errnosave;
 		return -1;
 	}
 
-	kdbbWriteLock (fp);
+	// kdbbWriteLock (fp);
 
 	ksRewind (returned);
 	key = ksNext (returned); /* skip parentKey */
@@ -345,13 +300,13 @@ ssize_t kdbSet_hosts(KDB *handle, KeySet *returned, const Key *parentKey)
 		nr_keys += nr_alias + 1;
 	}
 
-	kdbbUnlock (fp);
+	// kdbbUnlock (fp);
 	fclose (fp);
 	errno = errnosave;
 	return nr_keys;
 
 error:
-	kdbbUnlock (fp);
+	// kdbbUnlock (fp);
 	fclose (fp);
 	/* Make the file empty */
 	fp = fopen ("/tmp/hosts", "w");
@@ -360,18 +315,19 @@ error:
 	return -1;
 }
 
-KDB *KDBEXPORT(hosts)
+Plugin *KDBEXPORT(hosts)
 {
-	return kdbBackendExport(BACKENDNAME,
-		KDB_BE_OPEN,	&kdbOpen_hosts,
-		KDB_BE_CLOSE,	&kdbClose_hosts,
-		KDB_BE_GET,	&kdbGet_hosts,
-		KDB_BE_SET,	&kdbSet_hosts,
-		KDB_BE_VERSION,	BACKENDVERSION,
-		KDB_BE_AUTHOR,	"Markus Raab <elektra@markus-raab.org>",
-		KDB_BE_LICENCE,	"BSD",
-		KDB_BE_DESCRIPTION,
-			"Reads and writes /etc/hosts content",
-		KDB_BE_END);
+	return pluginExport(BACKENDNAME,
+		KDB_PLUGIN_OPEN,	&kdbOpen_hosts,
+		KDB_PLUGIN_CLOSE,	&kdbClose_hosts,
+		KDB_PLUGIN_GET,		&kdbGet_hosts,
+		KDB_PLUGIN_SET,		&kdbSet_hosts,
+		KDB_PLUGIN_VERSION,	BACKENDVERSION,
+		KDB_PLUGIN_AUTHOR,	"Markus Raab <elektra@markus-raab.org>",
+		KDB_PLUGIN_LICENCE,	"BSD",
+		KDB_PLUGIN_DESCRIPTION,	"Reads and writes /etc/hosts content",
+		KDB_PLUGIN_PROVIDES,	"storage",
+		KDB_PLUGIN_NEEDS,	"lock",
+		KDB_PLUGIN_END);
 }
 
