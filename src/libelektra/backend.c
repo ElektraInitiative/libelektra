@@ -186,11 +186,41 @@ error:
 	return 0;
 }
 
+Backend* backendOpenDefault()
+{
+	Backend *backend = kdbiCalloc(sizeof(struct _Backend));
+
+	// TODO a default path?
+	KeySet *defaultConfig = ksNew(5,
+		keyNew("system/path", KEY_VALUE, KDB_DB_SYSTEM "/default.ecf", KEY_END),
+		keyNew("user/path", KEY_VALUE, "/tmp/default.ecf", KEY_END),
+		KS_END);
+	Plugin *plugin = pluginOpen("default", defaultConfig);
+	Key *mp = keyNew ("", KEY_VALUE, "default", KEY_END);
+
+	backend->getplugins[0] = plugin;
+	backend->setplugins[0] = plugin;
+
+	backend->mountpoint = mp;
+
+
+	return backend;
+}
+
 int backendClose(Backend *backend)
 {
 	int ret = 0;
 
-	if (!backend) return;
+	if (!backend) return -1;
+
+	if (!strcmp(keyString(backend->mountpoint), "default"))
+	{
+		/* TODO: could more elegant (general) to avoid double free */
+		keyDel (backend->mountpoint);
+		pluginClose(backend->setplugins[0]);
+		kdbiFree (backend);
+		return 0;
+	}
 
 	keyDel (backend->mountpoint);
 	for (int i=0; i<10; ++i)

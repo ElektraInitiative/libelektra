@@ -513,6 +513,7 @@ int kdbCloseBackend(KDB *handle);
 
 /*Backend handling*/
 Backend* backendOpen(KeySet *elektra_config);
+Backend* backendOpenDefault();
 int backendClose(Backend *backend);
 
 /*Plugin handling*/

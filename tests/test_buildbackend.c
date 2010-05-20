@@ -167,6 +167,14 @@ void test_default()
 	*/
 
 	pluginClose(plugin);
+
+	Backend *backend = backendOpenDefault();
+
+	Key *mp;
+	succeed_if ((mp = backend->mountpoint) != 0, "no mountpoint found");
+	succeed_if (!strcmp(keyName(mp), ""), "wrong mountpoint for default backend");
+	succeed_if (!strcmp(keyString(mp), "default"), "wrong name for default backend");
+	backendClose(backend);
 }
 
 void test_trie()
