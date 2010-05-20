@@ -40,13 +40,7 @@
 #include "kdbinternal.h"
 
 static Trie* insert_trie(Trie *trie, const char *name, const void *value);
-static Trie *delete_trie(Trie *trie, char *name, CloseMapper closemapper);
-static char *getEntryName(const char *path);
 static void* prefix_lookup(Trie *trie, const char *name);
-static int isOfEntryMountpoint(Key *key, char *entry);
-static int isOfEntryBackend(Key *key, char *entry);
-static int isOfEntryConfig(Key *key, char *entry);
-static int isOfEntry(Key *key, char *entry);
 static char* starts_with(const char *str, char *substr);
 static void* prefix_lookup(Trie *trie, const char *name);
 
@@ -156,89 +150,6 @@ int trieClose (Trie *trie)
 }
 
 
-/** TODO: remove
- *Creates a trie from a keyset.
- *
- * @param handle data structure where the trie will be stored.
- * @param ks is a keyset, that contains name/value-pairs. The name is the 
- * directory where the backend will mounted to, prefixed by KDB_KEY_MOUNTPOINTS "/"; value is a pointer to the backend.
- * @param mapper is a funtion, that maps the string of the backend name plus the mountpoint to a new created
- * KDB
- * return created trie on success, null on failure
- */
-Trie* createTrie(KeySet *ks, OpenMapper mapper)
-{
-	Key *key;
-	cursor_t current;
-	Trie *trie=0;
-	char *entry_name; /* KDB_KEY_MOUNTPOINTS "/", e.g. system/elektra/mountpoints/fstab" */
-
-	/* Sort the keys alphapetically  */
-	ksSort(ks);
-	current=ksGetCursor(ks);
-
-	ksRewind(ks);
-	key=ksLookupByName(ks, KDB_KEY_MOUNTPOINTS, 0);
-	if (!key) return trie;
-
-	key=ksNext(ks);
-
-	for (;key;) {
-		KeySet *config;
-		char *mountpoint=0;
-		const char *backend_name=0;
-
-		config=ksNew(0);
-		entry_name = getEntryName(keyName(key));
-
-		for (;key;key=ksNext(ks)) {
-			if (!isOfEntry(key,entry_name)) {
-				break;
-			}
-			if (isOfEntryBackend(key,entry_name)) {
-				backend_name=keyValue(key);
-			} else if (isOfEntryMountpoint(key,entry_name)) {
-				if (*(const char*)keyValue(key)=='\0') {
-					mountpoint=kdbiStrDup("");
-				} else {
-					Key *mnt_pnt_key = keyNew (keyValue(key), KEY_END);
-					if (! mnt_pnt_key) {
-						key=ksNext(ks);
-						ksDel(config);
-						break;
-					}
-					mountpoint = kdbiMalloc (keyGetNameSize(mnt_pnt_key)+1);
-					sprintf(mountpoint,"%s/",keyName(mnt_pnt_key));
-					keyDel(mnt_pnt_key);
-				}
-			} else if (isOfEntryConfig(key,entry_name)) {
-				ksAppendKey(config,key);
-			}
-		}
-
-		if (backend_name && mountpoint) {
-			void *p;
-			p=mapper(backend_name,mountpoint,config);
-			if (p) {
-#if DEBUG && VERBOSE
-				printf ("insert in trie %s\n", mountpoint);
-#endif
-				trie=insert_trie(trie,mountpoint,p);
-			} else {
-				ksDel(config);
-			}
-		}
-		free(entry_name);
-		if (mountpoint) {
-			free(mountpoint);
-		}
-	}
-
-	ksSetCursor(ks,current);
-	return trie;
-}
-
-
 /******************
  * Private static declarations
  ******************/
@@ -321,6 +232,8 @@ static Trie* insert_trie(Trie *trie, const char *name, const void *value)
 	return trie;
 }
 
+#if 0
+
 static Trie *delete_trie(Trie *trie, char *name, CloseMapper closemapper)
 {
 	Trie *tr;
@@ -352,104 +265,7 @@ static Trie *delete_trie(Trie *trie, char *name, CloseMapper closemapper)
 	return NULL;
 }
 
-static char *getEntryName(const char *path)
-{
-	size_t len;
-	char *ret,*p,*q;
-	len=strlen(path);
-
-	if (len<=KDB_KEY_MOUNTPOINTS_LEN) return 0;
-	p=(char*)path+KDB_KEY_MOUNTPOINTS_LEN;
-	for (q=p;!(*q==0 ||*q=='/');q++);
-
-	ret = malloc (q-p+1);
-	strncpy (ret, p, q-p);
-	ret[q-p] = 0;
-
-	return ret;
-}
-
-static int isOfEntryMountpoint(Key *key, char *entry)
-{
-	const char *s;
-	size_t len;
-	size_t entrylen;
-	s=keyName(key);
-	len=strlen(s);
-	entrylen=strlen(entry);
-	if (len<=KDB_KEY_MOUNTPOINTS_LEN) return 0;
-
-	if (strncmp(s,KDB_KEY_MOUNTPOINTS "/",KDB_KEY_MOUNTPOINTS_LEN)) return 0;
-
-	if (strncmp(s+KDB_KEY_MOUNTPOINTS_LEN, entry, entrylen)) return 0;
-
-	if (strncmp(s+KDB_KEY_MOUNTPOINTS_LEN+entrylen, "/mountpoint", sizeof("/mountpoint"))) return 0;
-
-	return 1;
-}
-
-static int isOfEntryBackend(Key *key, char *entry)
-{
-	const char *s;
-	size_t len;
-	size_t entrylen;
-
-	if (!entry) return -1;
-
-	s=keyName(key);
-	len=strlen(s);
-	entrylen=strlen(entry);
-	if (len<=KDB_KEY_MOUNTPOINTS_LEN) return 0;
-
-	if (strncmp(s,KDB_KEY_MOUNTPOINTS "/",KDB_KEY_MOUNTPOINTS_LEN)) return 0;
-
-	if (strncmp(s+KDB_KEY_MOUNTPOINTS_LEN, entry, entrylen)) return 0;
-
-	if (strncmp(s+KDB_KEY_MOUNTPOINTS_LEN+entrylen, "/backend", sizeof("/backend"))) return 0;
-
-	return 1;
-}
-
-static int isOfEntryConfig(Key *key, char *entry)
-{
-	const char *s;
-	size_t len;
-	size_t entrylen;
-
-	if (!entry) return -1;
-
-	s=keyName(key);
-	len=strlen(s);
-	entrylen=strlen(entry);
-	if (len<=KDB_KEY_MOUNTPOINTS_LEN) return 0;
-
-	if (strncmp(s,KDB_KEY_MOUNTPOINTS "/",KDB_KEY_MOUNTPOINTS_LEN)) return 0;
-
-	if (strncmp(s+KDB_KEY_MOUNTPOINTS_LEN, entry, entrylen)) return 0;
-
-	if (strncmp(s+KDB_KEY_MOUNTPOINTS_LEN+entrylen, "/config", sizeof("/config")-1)) return 0;
-
-	return 1;
-}
-
-static int isOfEntry(Key *key, char *entry)
-{
-	const char *s;
-	size_t len;
-	size_t entrylen;
-	s=keyName(key);
-	len=strlen(s);
-	entrylen=strlen(entry);
-	if (len<=KDB_KEY_MOUNTPOINTS_LEN) return 0;
-
-	if (strncmp(s,KDB_KEY_MOUNTPOINTS "/",KDB_KEY_MOUNTPOINTS_LEN)) return 0;
-
-	if (strncmp(s+KDB_KEY_MOUNTPOINTS_LEN, entry, entrylen)) return 0;
-
-	if (*(s+KDB_KEY_MOUNTPOINTS_LEN+entrylen)!=0 && *(s+KDB_KEY_MOUNTPOINTS_LEN+entrylen) !='/') return 0;
-
-	return 1;
-}
+#endif
 
 /* return NULL if string starts with substring, except for the terminating '\0',
  * otherwise return a pointer to the first mismatch in substr.

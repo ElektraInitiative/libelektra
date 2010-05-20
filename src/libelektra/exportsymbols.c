@@ -1,11 +1,13 @@
 #include <stdio.h>
+#include <string.h>
 
 int main(int argc, char**argv)
 {
 	char toolsfunc[][20] = {"ksFromXMLfile", "ksFromXML", "ksToStream",
 		"ksOutput", "ksGenerate", "keyToStream", "keyOutput",
 		"keyGenerate"};
-	int i,j;
+	int i;
+	size_t j;
 
 	/*Exit if no backend is given with error code, because
 	  argv[1] is used below*/

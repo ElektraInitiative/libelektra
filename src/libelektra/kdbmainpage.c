@@ -163,21 +163,17 @@
  * to the backends.
  *
  * - ... of users perspective
- *   If you are a @c user of elektra, you will need following information:
- *   - @ref backendhandle to access the information of KDB.
  *
  * - ... of developers perspective
  *   If you want to develop a backend, you should already have some experience
  *   with elektra from the user point of view. You should be familiar with
- *   the data structures: @link key Key @endlink, @link keyset KeySet @endlink,
- *   @link backendhandle KDB @endlink.
- *   Then you can start reading about @link backend Backends @endlink:
+ *   the data structures: @link key Key @endlink and @link keyset KeySet @endlink
+ *   Then you can start reading about Backends:
  *   - They provide storage needed by kdb functions
  *   - Dynamical kdbMount() and kdbUnmount() of backends in the global namespace
  *   - Need to implement
  *     kdbOpen_backend(), kdbClose_backend(), kdbGet_backend(), kdbSet_backend()
  *   - Use KDBEXPORT() to export your functions.
- *   - See @ref backend "class documentation" for more
  *
  *
  *

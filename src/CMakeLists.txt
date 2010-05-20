@@ -1,6 +1,5 @@
 add_subdirectory (include)
 
-add_subdirectory (libhelper)
 add_subdirectory (libloader)
 
 add_subdirectory (plugins)

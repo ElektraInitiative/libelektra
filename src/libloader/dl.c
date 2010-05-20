@@ -40,7 +40,11 @@ kdbLibHandle kdbLibLoad(const char *module)
 
 kdbLibFunc kdbLibSym(kdbLibHandle handle, const char *symbol)
 {
-	return (kdbLibFunc) dlsym((void*) handle, symbol);
+	/* Undefined behaviour, may not work on your platform.
+	   Try another libloader then. */
+	union {kdbLibFunc f; void* v;} conversation;
+	conversation.v = dlsym((void*) handle, symbol);
+	return conversation.f;
 }
 
 int kdbLibClose(kdbLibHandle handle)

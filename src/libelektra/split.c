@@ -47,8 +47,8 @@
 
 void free_splitted_keysets(Split *keysets)
 {
-	int i;
-	for (i=0;i<keysets->no;i++) {
+	for (size_t i=0; i<keysets->no; ++i)
+	{
 		ksDel(keysets->keysets[i]);
 	}
 	free (keysets->keysets);
@@ -97,10 +97,8 @@ Split *split_keyset(KDB *handle, KeySet *ks,
 	Split *ret;
 
 	Key *curKey;
-	KDB *curHandle;
+	Backend *curHandle;
 	int curFound;
-
-	int i;
 
 	ret = malloc (sizeof (Split));
 	init_splitted_keysets (ret);
@@ -113,7 +111,7 @@ Split *split_keyset(KDB *handle, KeySet *ks,
 
 		if (options & KDB_O_SYNC) curKey->flags |= KEY_FLAG_SYNC;
 
-		for (i=0; i<ret->no; i++)
+		for (size_t i=0; i<ret->no; i++)
 		{
 			if (curHandle == ret->handles[i] && 
 				(!parentKey || keyIsBelowOrSame(ret->parents[i], curKey)))
