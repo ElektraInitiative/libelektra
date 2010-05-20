@@ -135,7 +135,8 @@ void test_plugin()
 	succeed_if (!strcmp(plugin->author, "Markus Raab <elektra@markus-raab.org>"), "got wrong author");
 	succeed_if (!strcmp(plugin->licence, "BSD"), "got wrong licence");
 	succeed_if (!strcmp(plugin->description, "The first plugin"), "got wrong description");
-	succeed_if (!strcmp(plugin->capability, ""), "got wrong capability (tracer can do nothing)");
+	succeed_if (!strcmp(plugin->provides, ""), "got wrong provides (tracer can do nothing)");
+	succeed_if (!strcmp(plugin->needs, ""), "got wrong needs (tracer can do nothing)");
 
 	pluginClose(plugin);
 }

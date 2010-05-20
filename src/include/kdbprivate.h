@@ -408,7 +408,8 @@ struct _Plugin {
 	const char *description;
 	const char *author;
 	const char *licence;
-	const char *capability;
+	const char *provides;
+	const char *needs;
 };
 
 
