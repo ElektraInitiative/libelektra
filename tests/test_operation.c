@@ -320,6 +320,24 @@ void test_simple()
 
 void test_cursor()
 {
+	KeySet *config = set_simple();
+	succeed_if (ksGetCursor(config) == -1, "should be invalid cursor");
+	succeed_if (ksNext(config) != 0, "should be root key");
+	succeed_if (ksGetCursor(config) == 0, "cursor on first position");
+	succeed_if (!strcmp (keyName(ksCurrent(config)), "system/elektra/mountpoints/simple"),
+			"not pointing to the root key");
+	succeed_if (ksNext(config) != 0, "should be on config");
+	succeed_if (ksGetCursor(config) == 1, "cursor on config");
+	succeed_if (!strcmp (keyName(ksCurrent(config)), "system/elektra/mountpoints/simple/config"),
+			"not pointing to the correct key");
+
+	KeySet *res = ksCut(config, ksCurrent(config));
+	succeed_if (ksGetCursor(config) == 0, "cursor on first position");
+	succeed_if (!strcmp (keyName(ksCurrent(config)), "system/elektra/mountpoints/simple"),
+			"not pointing to the root key again");
+
+	ksDel (config);
+	ksDel (res);
 }
 
 int main(int argc, char** argv)
