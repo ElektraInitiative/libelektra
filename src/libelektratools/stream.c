@@ -657,11 +657,11 @@ int keyGenerate(const Key * key, FILE *stream, option_t options)
 		nam = (char*) malloc (n);
 		if (nam == NULL) return -1;
 		keyGetName (key, nam, n);
-		fprintf(stream,"\n\tkeyNew (\"%s\"", nam);
+		fprintf(stream,"\tkeyNew (\"%s\"", nam);
 		free (nam);
 	}
 
-	if (keyIsDir(key)) fprintf(stream,"\n\t\t, KEY_DIR");
+	if (keyIsDir(key)) fprintf(stream,", KEY_DIR");
 
 	s = keyGetValueSize (key);
 	if (s>1)
@@ -670,7 +670,7 @@ int keyGenerate(const Key * key, FILE *stream, option_t options)
 		if (str == NULL) return -1;
 		if (keyIsBinary(key)) keyGetBinary(key, str, s);
 		else keyGetString (key, str, s);
-		fprintf(stream,"\n\t\t, KEY_VALUE, \"%s\"", str);
+		fprintf(stream,", KEY_VALUE, \"%s\"", str);
 		free (str);
 	}
 
@@ -680,16 +680,16 @@ int keyGenerate(const Key * key, FILE *stream, option_t options)
 		com = (char*) malloc (c);
 		if (com == NULL) return -1;
 		keyGetComment (key, com, c);
-		fprintf(stream,"\n\t\t, KEY_COMMENT, \"%s\"", com);
+		fprintf(stream,", KEY_COMMENT, \"%s\"", com);
 		free (com);
 	}
 
 	if (! (keyGetMode(key) == 0664 || (keyGetMode(key) == 0775 && keyIsDir(key))))
 	{
-		fprintf(stream,"\n\t\t, KEY_MODE, 0%3o", keyGetMode(key));
+		fprintf(stream,", KEY_MODE, 0%3o", keyGetMode(key));
 	}
 
-	fprintf(stream,"\n\t, KEY_END)");
+	fprintf(stream,", KEY_END)");
 
 	if (options == 0) return 1; /* dummy to make icc happy */
 	return 1;
@@ -719,21 +719,19 @@ int ksGenerate (const KeySet *ks, FILE *stream, option_t options)
 
 	ksRewind (cks);
 
-	fprintf(stream,"ksNew( %d ,", (int)ksGetSize(cks)+10);
+	fprintf(stream,"ksNew( %d ,\n", (int)ksGetSize(cks));
 	while ((key=ksNext(cks)) != 0)
 	{
 		if (options & KDB_O_NODIR) if (key && keyIsDir (key)) continue;
 		if (options & KDB_O_DIRONLY) if (key && !keyIsDir (key)) continue;
 		if (options & KDB_O_INACTIVE) if (key && keyIsInactive (key)) continue;
-		keySetRaw (key, "", 0);
-		keySetComment (key, "");
 
 		s++;
 
 		keyGenerate(key, stream, options);
-		fprintf(stream,",");
+		fprintf(stream,",\n");
 	}
-	fprintf(stream,"KS_END);\n"); 
+	fprintf(stream,"\tKS_END);\n"); 
 
 	ksDel (cks);
 	return 1;

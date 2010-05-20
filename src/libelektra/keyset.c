@@ -884,7 +884,9 @@ KeySet *ksCut(KeySet *ks, const Key *cutpoint)
 
 	newsize = it-found;
 #if DEBUG && VERBOSE
+	/* This is too verbose
 	printf ("new size is: %zd\n", newsize);
+	*/
 #endif
 
 	returned = ksNew(newsize, KS_END);

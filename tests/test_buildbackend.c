@@ -85,6 +85,8 @@ void test_simple()
 	Plugin *plugin = backend->getplugins[1];
 	KeySet *config = pluginGetConfig (plugin);
 	succeed_if (config != 0, "there should be a config");
+	ksGenerate (config, stdout, 0);
+
 	backendClose (backend);
 }
 
