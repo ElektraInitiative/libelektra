@@ -10,7 +10,7 @@ class MountCommand : public Command
 	static std::string root;
 public:
 	MountCommand();
-	kdb::KeySet createMountPoint(std::string name, std::string mountpoint, std::string backend, std::string path);
+	kdb::KeySet addPlugins(std::string name, std::string which);
 	int execute(int argc, char** argv);
 	~MountCommand();
 };
