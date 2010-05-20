@@ -165,6 +165,14 @@ void test_default()
 	pluginClose(plugin);
 }
 
+void test_trie()
+{
+	KeySet *config = set_simple();
+	ksAppendKey(config, keyNew("system/elektra/mountpoints", KEY_END));
+	Trie * trie = trieOpen(config);
+	trieClose(trie);
+}
+
 
 
 int main(int argc, char** argv)
@@ -174,9 +182,12 @@ int main(int argc, char** argv)
 
 	init (argc, argv);
 
+	/*
 	test_simple();
 	test_plugin();
 	test_default();
+	*/
+	test_trie();
 
 	printf("\ntest_backendhelpers RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

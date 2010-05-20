@@ -105,6 +105,78 @@ int kdbDelTrie(Trie *trie, CloseMapper close_backend)
 	return 0;
 }
 
+/** Creates a trie from a given configuration.
+ *
+ * The config will be deleted within this function.
+ *
+ * @param config the configuration which should be used to build up the trie.
+ * @return created trie on success, 0 on failure
+ */
+Trie *trieOpen(KeySet *config)
+{
+	Trie *trie = 0;
+	Key *root;
+	Key *cur;
+
+	ksRewind(config);
+	root=ksLookupByName(config, KDB_KEY_MOUNTPOINTS, 0);
+
+	if (!root)
+	{
+		kdbPrintDebug ("Could not find any mountpoint configuration");
+		goto error;
+	}
+
+	while ((cur = ksNext(config)) != 0)
+	{
+		if (keyRel (root, cur) == 1)
+		{
+			KeySet *cut = ksCut(config, cur);
+			Backend *backend = backendOpen(cut);
+			char *mountpoint;
+
+			if (!backend)
+			{
+				kdbPrintDebug("Ignored invalid backend");
+			}
+
+			if (!backend->mountpoint)
+			{
+				kdbPrintDebug("backend has no mountpoint");
+
+				ksDel(cut);
+				backendClose(backend);
+				continue;
+			}
+			
+			if (!strcmp(keyName(backend->mountpoint), ""))
+			{
+				/* Mount as root backend */
+				mountpoint = kdbiStrDup ("");
+			} else {
+				/* Prepare the name for the mountpoint*/
+				mountpoint = kdbiMalloc (keyGetNameSize(backend->mountpoint)+1);
+				sprintf(mountpoint,"%s/",keyName(backend->mountpoint));
+			}
+			trie = insert_trie(trie, mountpoint, (void*)backend);
+			kdbiFree(mountpoint);
+		}
+	}
+
+	ksDel (config);
+	return trie;
+
+error:
+	trieClose (trie);
+	ksDel (config);
+	return 0;
+}
+
+int trieClose (Trie *trie)
+{
+	return kdbDelTrie (trie,backendClose);
+}
+
 
 /** Creates a trie from a keyset.
  *
