@@ -337,6 +337,7 @@ Plugin *pluginExport(const char *pluginName, ...) {
 #if DEBUG
 				printf ("plugin passed something unexpected\n");
 #endif
+				// fallthrough, will end here
 			case KDB_PLUGIN_END:
 				va_end(va);
 				return returned;

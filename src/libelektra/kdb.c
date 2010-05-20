@@ -1024,6 +1024,7 @@ KDB *kdbBackendExport(const char *backendName, ...) {
 #if DEBUG
 				printf ("backend passed something unexpected");
 #endif
+				// fallthrough, will end here
 			case KDB_BE_END:
 				va_end(va);
 				return returned;

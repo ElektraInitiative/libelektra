@@ -64,6 +64,22 @@ KeySet *set_simple()
 
 }
 
+KeySet *set_pluginconf()
+{
+	return ksNew( 10 ,
+		keyNew ("system/anything", KEY_VALUE, "backend", KEY_END),
+		keyNew ("system/more", KEY_END),
+		keyNew ("system/more/config", KEY_END),
+		keyNew ("system/more/config/below", KEY_END),
+		keyNew ("system/path", KEY_END),
+		keyNew ("user/anything", KEY_VALUE, "plugin", KEY_END),
+		keyNew ("user/more", KEY_END),
+		keyNew ("user/more/config", KEY_END),
+		keyNew ("user/more/config/below", KEY_END),
+		keyNew ("user/path", KEY_END),
+		KS_END);
+}
+
 void test_simple()
 {
 	printf ("Test simple building of backend");
@@ -83,32 +99,58 @@ void test_simple()
 	succeed_if (!strcmp(keyString(mp), "simple"), "wrong name for backend");
 
 	Plugin *plugin = backend->getplugins[1];
-	KeySet *test_config = ksNew( 10 ,
-		keyNew ("system/anything", KEY_VALUE, "backend", KEY_END),
-		keyNew ("system/more", KEY_END),
-		keyNew ("system/more/config", KEY_END),
-		keyNew ("system/more/config/below", KEY_END),
-		keyNew ("system/path", KEY_END),
-		keyNew ("user/anything", KEY_VALUE, "plugin", KEY_END),
-		keyNew ("user/more", KEY_END),
-		keyNew ("user/more/config", KEY_END),
-		keyNew ("user/more/config/below", KEY_END),
-		keyNew ("user/path", KEY_END),
-		KS_END);
 
+	KeySet *test_config = set_pluginconf();
 	KeySet *config = pluginGetConfig (plugin);
 	succeed_if (config != 0, "there should be a config");
 	compare_keyset(config, test_config, 0, 0);
 	ksDel (test_config);
 
+	succeed_if (plugin->kdbOpen != 0, "no open pointer");
+	succeed_if (plugin->kdbClose != 0, "no open pointer");
+	succeed_if (plugin->kdbGet != 0, "no open pointer");
+	succeed_if (plugin->kdbSet != 0, "no open pointer");
+
 	backendClose (backend);
 }
 
-KeySet *set_config()
+void test_plugin()
 {
-	return ksNew(6,
-		KS_END);
+	Plugin *plugin = pluginOpen("tracer", set_pluginconf());
+
+	KeySet *test_config = set_pluginconf();
+	KeySet *config = pluginGetConfig (plugin);
+	succeed_if (config != 0, "there should be a config");
+	compare_keyset(config, test_config, 0, 0);
+	ksDel (test_config);
+
+	succeed_if (plugin->kdbOpen != 0, "no open pointer");
+	succeed_if (plugin->kdbClose != 0, "no open pointer");
+	succeed_if (plugin->kdbGet != 0, "no open pointer");
+	succeed_if (plugin->kdbSet != 0, "no open pointer");
+
+	pluginClose(plugin);
 }
+
+void test_default()
+{
+	Plugin *plugin = pluginOpen("default", set_pluginconf());
+
+	KeySet *test_config = set_pluginconf();
+	KeySet *config = pluginGetConfig (plugin);
+	succeed_if (config != 0, "there should be a config");
+	compare_keyset(config, test_config, 0, 0);
+	ksDel (test_config);
+
+	succeed_if (plugin->kdbOpen != 0, "no open pointer");
+	succeed_if (plugin->kdbClose != 0, "no open pointer");
+	succeed_if (plugin->kdbGet != 0, "no open pointer");
+	succeed_if (plugin->kdbSet != 0, "no open pointer");
+
+	pluginClose(plugin);
+}
+
+
 
 int main(int argc, char** argv)
 {
@@ -118,6 +160,8 @@ int main(int argc, char** argv)
 	init (argc, argv);
 
 	test_simple();
+	test_plugin();
+	test_default();
 
 	printf("\ntest_backendhelpers RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
