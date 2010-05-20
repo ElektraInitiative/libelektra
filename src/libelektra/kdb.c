@@ -510,6 +510,25 @@ int kdbClose(KDB *handle)
 }
 
 
+/**
+ * Lookup a backend handle for a specific key.
+ *
+ * The required canonical name is ensured by using a key as parameter,
+ * which will transform the key to canonical representation.
+ *
+ * Will return handle when no more specific KDB could be
+ * found.
+ *
+ * @param handle is the data structure, where the mounted directories are saved.
+ * @param key the key, that should be looked up.
+ * @return the backend handle associated with the key
+ */
+Backend* kdbGetBackend(KDB *handle, const Key *key)
+{
+	return trieLookup(handle->trie, key);
+}
+
+
 
 /**
  * Retrieve keys in an atomic and universal way, all other kdbGet Functions

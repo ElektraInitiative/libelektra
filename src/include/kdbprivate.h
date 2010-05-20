@@ -457,9 +457,9 @@ ssize_t keySetRaw(Key *key, const void *newBinary, size_t dataSize);
 
 char *keyNameGetOneLevel(const char *keyname, size_t *size);
 
-KDB *kdbGetBackend(KDB *handle, const Key *key);
+Backend* kdbGetBackend(KDB *handle, const Key *key);
 
-/*Methods for trie*/
+/*TODO: delete Methods for trie*/
 int kdbCreateTrie(KDB *handle, KeySet *ks, OpenMapper mapper);
 int kdbDelTrie(Trie *trie,CloseMapper close_backend);
 
@@ -521,6 +521,11 @@ int processPlugins(Plugin **plugins, KeySet *config, KeySet *systemConfig);
 
 Plugin* pluginOpen(const char *backendname, KeySet *config);
 int pluginClose(Plugin *handle);
+
+/*Trie handling*/
+Backend* trieLookup(Trie *trie, const Key *key);
+Trie *trieOpen(KeySet *config);
+int trieClose (Trie *trie);
 
 /*Private helper for keys*/
 int keyInit(Key *key);

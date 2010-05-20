@@ -48,37 +48,23 @@ static int isOfEntry(Key *key, char *entry);
 static char* starts_with(const char *str, char *substr);
 static void* prefix_lookup(Trie *trie, const char *name);
 
-/**
- * Lookup a backend handle for a specific key.
- *
- * The required canonical name is ensured by using a key as parameter,
- * which will transform the key to canonical representation.
- *
- * Will return handle when no more specific KDB could be
- * found.
- *
- * @param handle is the data structure, where the mounted directories are saved.
- * @param key the key, that should be looked up.
- * @return the backend handle associated with the key
- */
-KDB* kdbGetBackend(KDB *handle, const Key *key)
+
+Backend* trieLookup(Trie *trie, const Key *key)
 {
-	char *s;
-	KDB *ret;
-	int len;
-	if (kdbhGetTrie(handle)==NULL) {
-		return handle;
-	}
+	char *where=0;
+	Backend *ret=0;
+	size_t len=0;
 
-	len=strlen(keyName(key))+2;
-	s=malloc(len);
-	strncpy(s,keyName(key),len);
-	s[len-2]='/';
-	s[len-1]=0;
+	if (!trie) return 0;
 
-	ret = prefix_lookup(kdbhGetTrie(handle),s);
-	free (s);
-	if (!ret) return handle;
+	len = keyGetNameSize(key) + 1;
+	where = kdbiMalloc(len);
+	strncpy(where, keyName(key), len);
+	where[len-2] = '/';
+
+	ret = prefix_lookup(trie,where);
+	kdbiFree(where);
+
 	return ret;
 }
 
@@ -178,7 +164,8 @@ int trieClose (Trie *trie)
 }
 
 
-/** Creates a trie from a keyset.
+/** TODO: remove
+ *Creates a trie from a keyset.
  *
  * @param handle data structure where the trie will be stored.
  * @param ks is a keyset, that contains name/value-pairs. The name is the 
