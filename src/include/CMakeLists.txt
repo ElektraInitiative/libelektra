@@ -22,4 +22,3 @@ configure_file (
 	"${CMAKE_CURRENT_BINARY_DIR}/config.h"
 	)
 
-install_files (/include .h kdbbackend kdb kdbloader kdbos kdbprivate kdbtools config)
