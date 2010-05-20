@@ -311,6 +311,8 @@ struct _KDB {
 	Trie *trie;		/*!< The pointer to the trie holding backends.
 		@see kdbhGetTrie() */
 
+	Backend *defaultBackend;/*!< The default backend as fallback when nothing else is found. */
+
 
 	/* TODO: remove everything below this point */
 	kdbLibHandle dlHandle;	/*!< The pointer to the datastructure to load a new backend. */

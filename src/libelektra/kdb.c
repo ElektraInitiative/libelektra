@@ -525,6 +525,7 @@ int kdbClose(KDB *handle)
  */
 Backend* kdbGetBackend(KDB *handle, const Key *key)
 {
+	if (!handle->trie) return handle->defaultBackend;
 	return trieLookup(handle->trie, key);
 }
 
