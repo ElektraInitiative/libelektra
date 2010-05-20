@@ -27,24 +27,6 @@
 
 #include <tests.h>
 
-void test_keyoutput ()
-{
-	KeySet		*ks;
-	FILE *fout = stdout;
-
-	printf("Testing Read and write xml\n");
-	ks = ksNew (0);
-
-//	fout = fopen ("key.txt", "w");
-	exit_if_fail( ksFromXMLfile(ks, srcdir_file ("key.xml")) == 0, "ksFromXMLfile(key.xml) failed.");
-//	compare_files ("key.xml");
-
-//	ksOutput (ks, fout, KEY_VALUE | KEY_COMMENT);
-//	ksOutput (ks, fout, KDB_O_SHOWMETA);
-//	ksOutput (ks, fout, KDB_O_SHOWFLAGS);
-	ksDel (ks);
-}
-
 int main(int argc, char** argv)
 {
 	printf("STREAM TESTS\n");
@@ -52,7 +34,6 @@ int main(int argc, char** argv)
 
 	init (argc, argv);
 
-	test_keyoutput();
 	printf("\ntest_stream RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;

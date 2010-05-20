@@ -90,7 +90,7 @@ void test_ksNew()
 
 	ksClear (ks2);
 	ksCopy (ks2, config);
-	compare_keyset (config, ks2, 0, 0);
+	compare_keyset (config, ks2);
 
 	succeed_if(ksDel(config) == 0, "could not delete keyset");
 	succeed_if(ksDel(ks2) == 0, "could not delete keyset");

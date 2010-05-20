@@ -63,7 +63,7 @@
 #include <ctype.h>
 #endif
 
-#include "kdbbackend.h"
+#include "kdbinternal.h"
 
 /**
  * Copies the key array2 into where array1 points.

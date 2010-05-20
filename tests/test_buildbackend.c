@@ -31,9 +31,6 @@
 
 #include <tests.h>
 
-/*Needs private declarations*/
-#include <kdbbackend.h>
-
 
 KeySet *set_simple()
 {
@@ -103,7 +100,7 @@ void test_simple()
 	KeySet *test_config = set_pluginconf();
 	KeySet *config = pluginGetConfig (plugin);
 	succeed_if (config != 0, "there should be a config");
-	compare_keyset(config, test_config, 0, 0);
+	compare_keyset(config, test_config);
 	ksDel (test_config);
 
 	succeed_if (plugin->kdbOpen != 0, "no open pointer");
@@ -123,7 +120,7 @@ void test_plugin()
 	KeySet *test_config = set_pluginconf();
 	KeySet *config = pluginGetConfig (plugin);
 	succeed_if (config != 0, "there should be a config");
-	compare_keyset(config, test_config, 0, 0);
+	compare_keyset(config, test_config);
 	ksDel (test_config);
 
 	succeed_if (plugin->kdbOpen != 0, "no open pointer");
@@ -150,7 +147,7 @@ void test_default()
 	KeySet *test_config = set_pluginconf();
 	KeySet *config = pluginGetConfig (plugin);
 	succeed_if (config != 0, "there should be a config");
-	compare_keyset(config, test_config, 0, 0);
+	compare_keyset(config, test_config);
 	ksDel (test_config);
 
 	succeed_if (plugin->kdbOpen != 0, "no open pointer");
@@ -211,7 +208,7 @@ void test_trie()
 	KeySet *test_config = set_pluginconf();
 	KeySet *cconfig = pluginGetConfig (plugin);
 	succeed_if (cconfig != 0, "there should be a config");
-	compare_keyset(cconfig, test_config, 0, 0);
+	compare_keyset(cconfig, test_config);
 	ksDel (test_config);
 
 	succeed_if (plugin->kdbOpen != 0, "no open pointer");
@@ -311,7 +308,7 @@ void test_two()
 	KeySet *test_config = set_pluginconf();
 	KeySet *cconfig = pluginGetConfig (plugin);
 	succeed_if (cconfig != 0, "there should be a config");
-	compare_keyset(cconfig, test_config, 0, 0);
+	compare_keyset(cconfig, test_config);
 	ksDel (test_config);
 
 	succeed_if (plugin->kdbOpen != 0, "no open pointer");

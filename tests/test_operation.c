@@ -181,7 +181,7 @@ void test_cut()
 	result = ksCut(orig, cutpoint);
 	succeed_if (ksGetSize(orig) == 0, "orig not empty");
 	real_orig = set_oa();
-	compare_keyset (result, real_orig, 0, 0);
+	compare_keyset (result, real_orig);
 	ksDel (orig);
 	ksDel (result);
 	ksDel (real_orig);
@@ -198,8 +198,8 @@ void test_cut()
 		cutpoint = keyDup (orig->array[i]);
 		result = ksCut(orig, cutpoint);
 
-		compare_keyset(result, cmp_result[i], 0, 0);
-		compare_keyset(orig, cmp_orig[i], 0, 0);
+		compare_keyset(result, cmp_result[i]);
+		compare_keyset(orig, cmp_orig[i]);
 
 		/*
 		Key *key;
@@ -242,7 +242,7 @@ void test_copy()
 			current = set_a();
 			/* Some blocks are lost in the next operation */
 			succeed_if (ksCopyInternal (current, i, j) != -1, "ksCopyInternal failed");
-			compare_keyset(current, copy[i][j], 0, 0);
+			compare_keyset(current, copy[i][j]);
 			ksDel (current);
 
 cleanup:
@@ -309,8 +309,8 @@ void test_simple()
 	succeed_if (ksGetCursor(config) == 1, "cursor not set correctly");
 	KeySet *res = ksCut (config, key);
 	succeed_if (ksGetCursor(config) == 0, "cursor should stay as is");
-	compare_keyset(config, result_config, 0, 0);
-	compare_keyset(res, result_res, 0, 0);
+	compare_keyset(config, result_config);
+	compare_keyset(res, result_res);
 
 	ksDel (result_config);
 	ksDel (result_res);

@@ -27,9 +27,6 @@
 
 #include <tests.h>
 
-/*Needs private declarations*/
-#include <kdbbackend.h>
-
 void test_strlen ()
 {
 	wchar_t multicharSeq [5];
@@ -45,16 +42,6 @@ void test_strlen ()
 	succeed_if(kdbiStrLen ((char*)multicharSeq) == 6, "could not deduce correct multichar sequence length");
 }
 
-int test_load_toolslib()
-{
-	KeySet		*ks = ksNew (0);
-
-	exit_if_fail( ksFromXMLfile(ks, "key.xml") == 0, "ksFromXMLfile(key.xml) failed.");
-
-	ksDel (ks);
-	return 0;
-}
-
 int main(int argc, char** argv)
 {
 	printf("INTERNALS    TESTS\n");
@@ -63,7 +50,6 @@ int main(int argc, char** argv)
 	init (argc, argv);
 
 	test_strlen();
-	// test_load_toolslib();
 
 	printf("\ntest_internals RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

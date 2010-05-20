@@ -39,6 +39,8 @@
 
 #include "kdbinternal.h"
 
+static Trie* insert_trie(Trie *trie, const char *name, const void *value);
+static Trie *delete_trie(Trie *trie, char *name, CloseMapper closemapper);
 static char *getEntryName(const char *path);
 static void* prefix_lookup(Trie *trie, const char *name);
 static int isOfEntryMountpoint(Key *key, char *entry);
@@ -66,29 +68,6 @@ Backend* trieLookup(Trie *trie, const Key *key)
 	kdbiFree(where);
 
 	return ret;
-}
-
-/** Delete a complete trie, close backends and free memory.
- *
- * @param trie the data structure, that should be freed
- * @returns always 0
- */
-int kdbDelTrie(Trie *trie, CloseMapper close_backend)
-{
-	int i;
-	if (trie==NULL) return 0;
-	for (i=0;i<MAX_UCHAR;i++) {
-		if (trie->text[i]!=NULL) {
-			kdbDelTrie(trie->children[i],close_backend);
-			if (trie->value[i])
-				close_backend(trie->value[i]);
-			free(trie->text[i]);
-		}
-	}
-	if (trie->empty_value)
-		close_backend(trie->empty_value);
-	free(trie);
-	return 0;
 }
 
 /** Creates a trie from a given configuration.
@@ -160,7 +139,20 @@ error:
 
 int trieClose (Trie *trie)
 {
-	return kdbDelTrie (trie,backendClose);
+	int i;
+	if (trie==NULL) return 0;
+	for (i=0;i<MAX_UCHAR;i++) {
+		if (trie->text[i]!=NULL) {
+			trieClose(trie->children[i]);
+			if (trie->value[i])
+				backendClose(trie->value[i]);
+			free(trie->text[i]);
+		}
+	}
+	if (trie->empty_value)
+		backendClose(trie->empty_value);
+	free(trie);
+	return 0;
 }
 
 
@@ -246,31 +238,12 @@ Trie* createTrie(KeySet *ks, OpenMapper mapper)
 	return trie;
 }
 
-/** Creates a trie from a keyset.
- *
- * @param handle data structure where the trie will be stored.
- * @param ks is a keyset, that contains name/value-pairs. The name is the 
- * directory where the backend will mounted to, prefixed by KDB_KEY_MOUNTPOINTS; value is a pointer to the backend.
- * @param mapper is a function, that maps the string of the backend name plus the mountpoint to a new created
- * KDB
- * return 0 on success, -1 on failure
- */
-int kdbCreateTrie(KDB *handle, KeySet *ks, OpenMapper mapper)
-{
-	Trie *trie=0;
-	if (kdbhGetTrie(handle)!=0) {
-		return -1;
-	}
 
-	trie=createTrie(ks,mapper);
-	kdbhSetTrie(handle,trie);
-	if (trie==0) {
-		return -1;
-	}
-	return 0;
-}
+/******************
+ * Private static declarations
+ ******************/
 
-Trie* insert_trie(Trie *trie, const char *name, const void *value)
+static Trie* insert_trie(Trie *trie, const char *name, const void *value)
 {
 	char* p;
 	int i;
@@ -348,7 +321,7 @@ Trie* insert_trie(Trie *trie, const char *name, const void *value)
 	return trie;
 }
 
-Trie *delete_trie(Trie *trie, char *name, CloseMapper closemapper)
+static Trie *delete_trie(Trie *trie, char *name, CloseMapper closemapper)
 {
 	Trie *tr;
 	unsigned int idx;
@@ -378,10 +351,6 @@ Trie *delete_trie(Trie *trie, char *name, CloseMapper closemapper)
 	}
 	return NULL;
 }
-
-/******************
- * Private static declarations
- ******************/
 
 static char *getEntryName(const char *path)
 {

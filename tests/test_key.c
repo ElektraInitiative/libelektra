@@ -905,7 +905,7 @@ void test_keyName()
 
 		succeed_if (keyGetRef (copy) == 0, "reference of copy not correct");
 		keyCopy (copy, key);
-		succeed_if (compare_key (copy, key, 0) == 0, "keys are not equal after copy");
+		succeed_if (compare_key (copy, key) == 0, "keys are not equal after copy");
 		succeed_if (keyGetRef (copy) == 0, "reference of copy not correct");
 
 		keyDel(key);
@@ -1570,7 +1570,7 @@ void test_keyCopy()
 	orig = keyNew(0);
 	succeed_if (keyCopy(copy, 0) == 0, "make the key copy fresh");
 
-	succeed_if (compare_key (orig, copy, 0) == 0, "keyCopy did not make the key fresh");
+	succeed_if (compare_key (orig, copy) == 0, "keyCopy did not make the key fresh");
 	keyDel (orig);
 
 	keyDel(copy);

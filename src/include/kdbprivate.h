@@ -312,35 +312,6 @@ struct _KDB {
 		@see kdbhGetTrie() */
 
 	Backend *defaultBackend;/*!< The default backend as fallback when nothing else is found. */
-
-
-	/* TODO: remove everything below this point */
-	kdbLibHandle dlHandle;	/*!< The pointer to the datastructure to load a new backend. */
-
-	Key *mountpoint;	/*!< The mountpoint where the backend resides.
-		The keyName() is the point where the backend was mounted.
-		The keyValue() is the name of the backend without pre/postfix, e.g.
-		filesys. */
-	KeySet *config;		/*!< This keyset contains configuration for the backend.
-		Don't care about the absolute path, it may change when dynamically
-		kdbMount() or because of another name under system/elektra/mountpoints. 
-		The keys inside contain information like /path which path should be used
-		to write configuration to or /host to which host packets should be send.
-		@see kdbhGetConfig() */
-
-	void *backendData;	/*!< A general pointer for any data backend needs.
-		Thus backends are not allowed to have global variables for thread saftey,
-		they must use this pointer.
-		@see kdbhGetBackendData() */
-
-	KDBCap *capability;	/*!< The capabilites this backend declares to have.
-		@see kdbhGetCapability() */
-
-	kdbOpenPtr kdbOpen;	/*!< The pointer to kdbOpen_template() of the backend. */
-	kdbClosePtr kdbClose;	/*!< The pointer to kdbClose_template() of the backend. */
-
-	kdbGetPtr kdbGet;	/*!< The pointer to kdbGet_template() of the backend. */
-	kdbSetPtr kdbSet;	/*!< The pointer to kdbSet_template() of the backend. */
 };
 
 /**
@@ -438,7 +409,7 @@ struct _Split {
 	size_t no;		/*!< Number of keysets */
 	size_t alloc;		/*!< How large the arrays are allocated  */
 	KeySet **keysets;	/*!< The keysets */
-	KDB **handles;	/*!< The KDB for the keyset */
+	Backend **handles;	/*!< The KDB for the keyset */
 	Key **parents;		/*!< The parentkey for the keyset */
 	int *syncbits;		/*!< Is there any key in there which need to be synced? */
 	int *belowparents;	/*!< Is there any key in there which is below the parent? */
@@ -466,13 +437,6 @@ Backend* kdbGetBackend(KDB *handle, const Key *key);
 int kdbCreateTrie(KDB *handle, KeySet *ks, OpenMapper mapper);
 int kdbDelTrie(Trie *trie,CloseMapper close_backend);
 
-Trie *createTrie(KeySet *ks, OpenMapper mapper);
-Trie *delete_trie(Trie *trie, char *name, CloseMapper close_mapper);
-Trie *insert_trie(Trie *trie, const char *name, const void *value);
-
-Trie *kdbhGetTrie(const KDB *handle);
-void kdbhSetTrie(KDB *handle, Trie *trie);
-
 /*Methods for splitted keysets */
 void free_splitted_keysets(Split *keysets);
 void init_splitted_keysets(Split *ret);
@@ -482,8 +446,8 @@ Split *split_keyset(KDB *handle, KeySet *ks,
 
 /*Internal helpers*/
 
-size_t kdbiMemcpy (Key** array1, Key** array2, size_t size);
-size_t kdbiMemmove (Key** array1, Key** array2, size_t size);
+ssize_t kdbiMemcpy (Key** array1, Key** array2, size_t size);
+ssize_t kdbiMemmove (Key** array1, Key** array2, size_t size);
 void *kdbiMalloc (size_t size);
 void *kdbiCalloc (size_t size);
 void  kdbiFree (void *ptr);

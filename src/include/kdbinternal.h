@@ -5,7 +5,6 @@
 
 #include <kdb.h>
 #include <kdbplugin.h>
-#include <kdbbackend.h>
 #include <kdbprivate.h>
 #include <kdbextension.h>
 #include <kdbcap.h>

@@ -145,7 +145,7 @@ int compare_files (const char * filename)
 }
 
 
-int compare_key (Key *k1, Key *k2, KDBCap *cap)
+int compare_key (Key *k1, Key *k2)
 {
 	int	ret;
 	int	err = nbError;
@@ -154,24 +154,13 @@ int compare_key (Key *k1, Key *k2, KDBCap *cap)
 	// printf ("compare value %s with %s\n", keyValue(k1), keyValue(k2));
 	ret = keyCompare(k1, k2);
 
-	if (cap)
-	{
-		succeed_if ((ret & KEY_NAME) == 0 , "compare key: NAME not equal");
-		if (!kdbcGetnoValue(cap))	succeed_if ((ret & KEY_VALUE) == 0 , "compare key: VALUE not equal");
-		if (!kdbcGetnoOwner(cap))	succeed_if ((ret & KEY_OWNER) == 0 , "compare key: OWNER not equal");
-		if (!kdbcGetnoComment(cap))	succeed_if ((ret & KEY_COMMENT) == 0 , "compare key: COMMENT not equal");
-		if (!kdbcGetnoUID(cap))		succeed_if ((ret & KEY_UID) == 0 , "compare key: UID not equal");
-		if (!kdbcGetnoGID(cap))		succeed_if ((ret & KEY_GID) == 0 , "compare key: GID not equal");
-		if (!kdbcGetnoMode(cap))	succeed_if ((ret & KEY_MODE ) == 0 , "compare key: MODE  not equal");
-	} else {
-		succeed_if ((ret & KEY_NAME) == 0 , "compare key: NAME not equal");
-		succeed_if ((ret & KEY_VALUE) == 0 , "compare key: VALUE not equal");
-		succeed_if ((ret & KEY_OWNER) == 0 , "compare key: OWNER not equal");
-		succeed_if ((ret & KEY_COMMENT) == 0 , "compare key: COMMENT not equal");
-		succeed_if ((ret & KEY_UID) == 0 , "compare key: UID not equal");
-		succeed_if ((ret & KEY_GID) == 0 , "compare key: GID not equal");
-		succeed_if ((ret & KEY_MODE ) == 0 , "compare key: MODE  not equal");
-	}
+	succeed_if ((ret & KEY_NAME) == 0 , "compare key: NAME not equal");
+	succeed_if ((ret & KEY_VALUE) == 0 , "compare key: VALUE not equal");
+	succeed_if ((ret & KEY_OWNER) == 0 , "compare key: OWNER not equal");
+	succeed_if ((ret & KEY_COMMENT) == 0 , "compare key: COMMENT not equal");
+	succeed_if ((ret & KEY_UID) == 0 , "compare key: UID not equal");
+	succeed_if ((ret & KEY_GID) == 0 , "compare key: GID not equal");
+	succeed_if ((ret & KEY_MODE ) == 0 , "compare key: MODE  not equal");
 
 	return err-nbError;
 }
@@ -187,7 +176,7 @@ int compare_key (Key *k1, Key *k2, KDBCap *cap)
  * - option_t::KDB_O_INACTIVE (keyIsInactive) 
  *   remove all inactive keys
  * */
-int compare_keyset (KeySet *ks, KeySet *ks2, int filter, KDBCap *cap)
+int compare_keyset (KeySet *ks, KeySet *ks2)
 {
 	Key	*key = 0;
 	Key     *key2 = 0;
@@ -202,9 +191,6 @@ int compare_keyset (KeySet *ks, KeySet *ks2, int filter, KDBCap *cap)
 	//SYNC with ksOutput
 	while ((key = ksNext(ks)) != 0)
 	{
-		if (filter & KDB_O_NODIR)    if (keyIsDir (key)) continue;
-		if (filter & KDB_O_DIRONLY)  if (!keyIsDir (key)) continue;
-		if (filter & KDB_O_INACTIVE) if (keyIsInactive (key)) continue;
 		key2 = ksNext(ks2);
 		if (!key2)
 		{
@@ -214,7 +200,7 @@ int compare_keyset (KeySet *ks, KeySet *ks2, int filter, KDBCap *cap)
 		}
 
 		size ++;
-		compare_key (key, key2, cap);
+		compare_key (key, key2);
 		if (dup) keyDel (key);
 	}
 

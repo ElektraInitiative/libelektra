@@ -436,8 +436,8 @@ ssize_t kdbGet (KDB *handle, KeySet *returned,
 	KeySet *keys;
 	KeySet *tmp;
 	Key *current;
-	KDB *backend_handle;
-	KDB *try_handle;
+	Backend *backend_handle;
+	Backend *try_handle;
 
 	if (!handle || !returned)
 	{
@@ -458,8 +458,6 @@ ssize_t kdbGet (KDB *handle, KeySet *returned,
 #endif
 
 	backend_handle=kdbGetBackend(handle,parentKey);
-	if (backend_handle==NULL)
-		backend_handle=handle;
 
 	keys = ksNew (0);
 	tmp = ksNew (0);
@@ -478,15 +476,23 @@ ssize_t kdbGet (KDB *handle, KeySet *returned,
 	ksAppend (returned, tmp);
 	ksDel (tmp);
 
-	ret = backend_handle->kdbGet(backend_handle,keys,parentKey);
-	if (ret == -1)
+	for (size_t p=0; p<10; ++p)
 	{
-		if (options & KDB_O_DEL) keyDel (parentKey);
-		ksDel (keys);
-#if DEBUG && VERBOSE
-		fprintf (stderr, "call of handle->kdbGet failed\n");
+		if (backend_handle->getplugins[p])
+		{
+			ret = backend_handle->getplugins[p]->kdbGet(
+					backend_handle->getplugins[p],
+					keys,parentKey);
+		}
+		if (ret == -1)
+		{
+			if (options & KDB_O_DEL) keyDel (parentKey);
+			ksDel (keys);
+#if DEBUG
+			fprintf (stderr, "call of handle->kdbGet failed\n");
 #endif
-		return -1;
+			return -1;
+		}
 	}
 
 	ksRewind(keys);
@@ -674,13 +680,11 @@ for (i=0; i< 10; i++) // limit to 10 tries
 ssize_t kdbSet (KDB *handle, KeySet *ks,
 	Key * parentKey, option_t options)
 {
-	size_t i;
-	int t=0;
-	KDB *h;
+	int ret=0;
+	Backend *backend_handle;
 	Key *errorKey;
 
-	int size = 0;
-	int errors_occurred=0;
+	size_t size = 0;
 	Split *keysets;
 
 	if (parentKey && !parentKey->key)
@@ -700,42 +704,45 @@ ssize_t kdbSet (KDB *handle, KeySet *ks,
 		return -1;
 	}
 
-	if (!kdbhGetTrie(handle)) 
-	{ /* Fallback code without mounting */
-		ksRewind (ks);
-		return handle->kdbSet(handle,ks,parentKey);
-	}
-
 	keysets=split_keyset(handle, ks, parentKey, options);
 
-	for (i=0; i<keysets->no;i++) {
-		t=0;
-
-		h=keysets->handles[i];
+	for (size_t i=0; i<keysets->no;i++)
+	{
+		backend_handle=keysets->handles[i];
 		/* if there is no backend in the trie use the default */
-		if (h==NULL) {
-			h=handle;
+		if (backend_handle==NULL)
+		{
+			kdbPrintDebug("No backend handle, but should be!");
+			return -1;
 		}
 		if (keysets->syncbits[i] && keysets->belowparents[i])
 		{
 			ksRewind (keysets->keysets[i]);
-			t=h->kdbSet(h,keysets->keysets[i],keysets->parents[i]);
+			for (size_t p=0; p<10; ++p)
+			{
+				ret = backend_handle->setplugins[p]->kdbSet(
+						backend_handle->setplugins[p],
+						keysets->keysets[i],keysets->parents[i]);
+				if (ret == -1)
+				{
+					break;
+				}
+			}
 		}
-		if (t==-1) {
-			errors_occurred=1;
+		if (ret == -1) {
+			kdbPrintDebug ("kdbSet failed");
 			errorKey = ksCurrent (keysets->keysets[i]);
 			if (errorKey) ksLookup(ks, errorKey, KDB_O_WITHOWNER);
 			break;
 		}
 		else {
-			size+=t;
+			size+=ret;
 		}
 	}
 
 	free_splitted_keysets(keysets);
 	if (options & KDB_O_DEL) keyDel (parentKey);
-	if (errors_occurred)
-		return -1;
+	if (ret == -1) return -1;
 	return size;
 }
 

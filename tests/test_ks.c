@@ -43,7 +43,7 @@ void test_ksNew()
 
 	KeySet *ks2=ksNew (0);
 	ksCopy (ks2, ks);
-	compare_keyset (ks, ks2, 0, 0);
+	compare_keyset (ks, ks2);
 
 	succeed_if (ksAppendKey(ks,keyNew("user/d", KEY_END)) == 4, "could not append a key");
 	succeed_if (ksAppendKey(ks,keyNew("user/e", KEY_END)) == 5, "could not append a key");
@@ -51,11 +51,11 @@ void test_ksNew()
 	succeed_if(ksGetSize(ks) == 6, "could not append 3 more keys");
 
 	ksCopy (ks2, ks);
-	compare_keyset (ks, ks2, 0, 0);
+	compare_keyset (ks, ks2);
 
 	ksClear (ks2); // useless, just test for double free
 	ksCopy (ks2, ks);
-	compare_keyset (ks, ks2, 0, 0);
+	compare_keyset (ks, ks2);
 
 	succeed_if(ksDel(ks) == 0, "could not delete keyset");
 
@@ -90,7 +90,7 @@ void test_ksNew()
 
 	ksClear (ks2);
 	ksCopy (ks2, config);
-	compare_keyset (config, ks2, 0, 0);
+	compare_keyset (config, ks2);
 
 	succeed_if(ksDel(config) == 0, "could not delete keyset");
 	succeed_if(ksDel(ks2) == 0, "could not delete keyset");
@@ -358,11 +358,11 @@ void test_ksResize()
 	succeed_if(ksGetAlloc(ks) == 102, "alloc size wrong");
 
 	ksCopy (copy, ks);
-	compare_keyset(copy, ks, 0, 0);
+	compare_keyset(copy, ks);
 
 	ksClear (copy); // useless, just test for double free
 	ksCopy (copy, ks);
-	compare_keyset(copy, ks, 0, 0);
+	compare_keyset(copy, ks);
 
 	ksDel (copy);
 	ksDel (ks);
@@ -1630,8 +1630,8 @@ void test_ksAppend()
 
 		if (!i)
 		{
-			compare_keyset (returned, testReturned, 0, 0);
-			compare_keyset (keys, testDirectBelow, 0, 0);
+			compare_keyset (returned, testReturned);
+			compare_keyset (keys, testDirectBelow);
 
 			succeed_if (ksGetSize (tmp) == 84, "size not correct");
 			succeed_if (ksGetSize (returned) == 84, "size not correct");
