@@ -233,7 +233,7 @@ KDB * kdbOpen()
 	if (!handle->trie)
 	{
 #if DEBUG
-		printf ("failed to open trie, continue with default backend");
+		printf ("failed to open trie, continue with default backend\n");
 #endif
 	}
 
@@ -476,7 +476,7 @@ ssize_t kdbGet (KDB *handle, KeySet *returned,
 	ksAppend (returned, tmp);
 	ksDel (tmp);
 
-	for (size_t p=0; p<10; ++p)
+	for (size_t p=0; p<NR_OF_PLUGINS; ++p)
 	{
 		if (backend_handle->getplugins[p])
 		{
@@ -619,7 +619,7 @@ ksDel (ks);
 int i;
 KeySet *ks;  // the KeySet I want to set
 // fill ks with some keys
-for (i=0; i< 10; i++) // limit to 10 tries
+for (i=0; i< NR_OF_TRIES; i++) // limit to NR_OF_TRIES tries
 {
 	ret=kdbSet(handle,ks, 0, 0);
 	if (ret == -1)
@@ -718,7 +718,7 @@ ssize_t kdbSet (KDB *handle, KeySet *ks,
 		if (keysets->syncbits[i] && keysets->belowparents[i])
 		{
 			ksRewind (keysets->keysets[i]);
-			for (size_t p=0; p<10; ++p)
+			for (size_t p=0; p<NR_OF_PLUGINS; ++p)
 			{
 				ret = backend_handle->setplugins[p]->kdbSet(
 						backend_handle->setplugins[p],

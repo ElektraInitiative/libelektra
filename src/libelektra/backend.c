@@ -223,7 +223,7 @@ int backendClose(Backend *backend)
 	}
 
 	keyDel (backend->mountpoint);
-	for (int i=0; i<10; ++i)
+	for (int i=0; i<NR_OF_PLUGINS; ++i)
 	{
 		pluginClose(backend->setplugins[i]);
 		pluginClose(backend->getplugins[i]);

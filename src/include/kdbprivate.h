@@ -79,6 +79,10 @@
 #define KEYSET_SIZE 16
 #endif
 
+#ifndef NR_OF_PLUGINS
+#define NR_OF_PLUGINS 10
+#endif
+
 #ifndef APPROXIMATE_NR_OF_BACKENDS
 #define APPROXIMATE_NR_OF_BACKENDS 16
 #endif
@@ -112,14 +116,15 @@
 #define UTF8_FROM 0
 
 
+
 #if DEBUG
-# define kdbPrintDebug(text) printf("%s:%d: debug in %s: %s\n", __FILE__, __LINE__, __FUNCTION__, text);
+# define kdbPrintDebug(text) printf("%s:%d: %s\n", __FUNCTION__, __LINE__ , text);
 #else
 # define kdbPrintDebug(text)
 #endif
 
 #if DEBUG && VERBOSE
-# define kdbPrintVerbose(text) printf("%s:%d: verbose in %s: %s\n", __FILE__, __LINE__, __FUNCTION__, text);
+# define kdbPrintVerbose(text) printf("%s:%d: %s\n", __FUNCTION__, __LINE__ , text);
 #else
 # define kdbPrintVerbose(text)
 #endif
@@ -339,8 +344,8 @@ struct _Backend {
 		The keyValue() is the name of the backend without pre/postfix, e.g.
 		filesys. */
 
-	Plugin *setplugins[10];
-	Plugin *getplugins[10];
+	Plugin *setplugins[NR_OF_PLUGINS];
+	Plugin *getplugins[NR_OF_PLUGINS];
 };
 
 /**

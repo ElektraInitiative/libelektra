@@ -92,7 +92,7 @@ static int renamePluginConfig(KeySet *config)
  * Load a plugin.
  *
  * The array of plugins must be set to 0.
- * Its length is 10.
+ * Its length is NR_OF_PLUGINS.
  *
  * systemConfig will only be used, not deleted.
  *
@@ -124,20 +124,21 @@ int processPlugins(Plugin **plugins, KeySet *config, KeySet *systemConfig)
 			KeySet *pluginConfig;
 			if (fullname[0] != '#')
 			{
-#if DEBUG
-				printf ("Names of Plugins must start with a #\n");
-#endif
+				kdbPrintDebug ("Names of Plugins must start with a #\n");
 				goto error;
 			}
 			if (fullname[1] < '0' || fullname[1] > '9')
 			{
-#if DEBUG
-				printf ("Names of Plugins must start have the position number as second char\n");
-#endif
+				kdbPrintDebug ("Names of Plugins must start have the position number as second char\n");
 				goto error;
 			}
 			pluginNumber = fullname[1]-'0';
 			pluginName = &fullname[2];
+			if (pluginNumber > NR_OF_PLUGINS)
+			{
+				kdbPrintDebug("Tried to set more plugins then definied in NR_OF_PLUGINS\n");
+				goto error;
+			}
 
 			key = keyDup (cur);
 			keyAddBaseName(key, "config");
