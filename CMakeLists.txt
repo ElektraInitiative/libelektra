@@ -45,15 +45,15 @@ if (WITH_DOC)
 	add_subdirectory (doc)
 endif (WITH_DOC)
 
-if (BUILD_TESTING AND BUILD_TOOLS)
+if (BUILD_TESTING)
 	if (BUILD_FULL OR BUILD_STATIC)
 		add_subdirectory (tests)
 	endif (BUILD_FULL OR BUILD_STATIC)
-endif (BUILD_TESTING AND BUILD_TOOLS)
+endif (BUILD_TESTING)
 
-if (BUILD_STATIC)
+if (BUILD_FULL OR BUILD_STATIC)
 	add_subdirectory (examples)
-endif (BUILD_STATIC)
+endif (BUILD_FULL OR BUILD_STATIC)
 #add_subdirectory (examples EXCLUDE_FROM_ALL)
 
 ADD_CUSTOM_TARGET(uninstall

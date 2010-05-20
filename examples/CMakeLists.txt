@@ -20,9 +20,9 @@ macro (do_example source)
 	add_executable (${source} ${SOURCES})
 
 	if (BUILD_FULL)
-		target_link_libraries (${source} elektratools elektra-full)
+		target_link_libraries (${source} elektra-full)
 	else (BUILD_FULL)
-		target_link_libraries (${source} elektratools-static)
+		target_link_libraries (${source} elektra-static)
 	endif (BUILD_FULL)
 
 	set_target_properties (${source} PROPERTIES
