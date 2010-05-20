@@ -69,8 +69,17 @@ void test_simple()
 	printf ("Test simple building of backend");
 
 	Backend *backend = backendOpen(set_simple());
-	kdbPrintFatal("anything\n");
-	kdbPrintDebug("hello world\n");
+	succeed_if (backend->getplugins[0] == 0, "there should be no plugin");
+	exit_if_fail (backend->getplugins[1] != 0, "there should be a plugin");
+	succeed_if (backend->getplugins[2] == 0, "there should be no plugin");
+
+	succeed_if (backend->setplugins[0] == 0, "there should be no plugin");
+	exit_if_fail (backend->setplugins[1] != 0, "there should be a plugin");
+	succeed_if (backend->setplugins[2] == 0, "there should be no plugin");
+
+	Plugin *plugin = backend->getplugins[1];
+	KeySet *config = pluginGetConfig (plugin);
+	succeed_if (config != 0, "there should be a config");
 	backendClose (backend);
 }
 

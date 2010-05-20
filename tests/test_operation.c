@@ -251,6 +251,76 @@ cleanup:
 	}
 }
 
+KeySet *set_simple()
+{
+	return ksNew(50,
+		keyNew ("system/elektra/mountpoints/simple", KEY_END),
+
+		keyNew ("system/elektra/mountpoints/simple/config", KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/config/anything", KEY_VALUE, "backend", KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/config/more", KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/config/more/config", KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/config/more/config/below", KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/config/path", KEY_END),
+
+		keyNew ("system/elektra/mountpoints/simple/getplugins", KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer", KEY_VALUE, "tracer", KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config", KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config/anything", KEY_VALUE, "plugin", KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config/more", KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config/more/config", KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config/more/config/below", KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config/path", KEY_END),
+
+		keyNew ("system/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user/tests/backend/simple", KEY_END),
+
+		keyNew ("system/elektra/mountpoints/simple/setplugins", KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/setplugins/#1tracer", KEY_VALUE, "tracer", KEY_END),
+		KS_END);
+
+}
+
+void test_simple()
+{
+	KeySet *config = set_simple();
+	KeySet * result_res = ksNew( 16 ,
+		keyNew ("system/elektra/mountpoints/simple/config" , KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/config/anything",  KEY_VALUE, "backend", KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/config/more" , KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/config/more/config" , KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/config/more/config/below" , KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/config/path" , KEY_END),
+		KS_END);
+	KeySet *result_config = ksNew( 22 ,
+		keyNew ("system/elektra/mountpoints/simple" , KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/getplugins" , KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer", KEY_VALUE, "tracer", KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config" , KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config/anything", KEY_VALUE, "plugin", KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config/more" , KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config/more/config" , KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config/more/config/below" , KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config/path" , KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user/tests/backend/simple", KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/setplugins" , KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/setplugins/#1tracer", KEY_VALUE, "tracer", KEY_END),
+		KS_END);
+	Key *key = ksLookup(config, keyNew("system/elektra/mountpoints/simple/config", KEY_END), KDB_O_DEL);
+	succeed_if (ksGetCursor(config) == 1, "cursor not set correctly");
+	KeySet *res = ksCut (config, key);
+	succeed_if (ksGetCursor(config) == 0, "cursor should stay as is");
+	compare_keyset(config, result_config, 0, 0);
+	compare_keyset(res, result_res, 0, 0);
+
+	ksDel (result_config);
+	ksDel (result_res);
+	ksDel (res);
+	ksDel (config);
+}
+
+void test_cursor()
+{
+}
 
 int main(int argc, char** argv)
 {
@@ -262,6 +332,8 @@ int main(int argc, char** argv)
 	test_search();
 	test_cut();
 	// test_copy(); // has memory problems...
+	test_simple();
+	test_cursor();
 
 	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

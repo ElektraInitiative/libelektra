@@ -144,7 +144,7 @@ int processPlugins(Plugin **plugins, KeySet *config, KeySet *systemConfig)
 
 			renamePluginConfig(pluginConfig);
 
-			plugins[pluginNumber] = pluginOpen(pluginName, pluginConfig);
+			plugins[pluginNumber] = pluginOpen(pluginName, ksDup(pluginConfig));
 		} else {
 #if DEBUG
 			printf ("Unkown additional entries in plugin\n");

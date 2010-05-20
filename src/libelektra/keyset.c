@@ -646,8 +646,10 @@ ssize_t ksSearchInternal(const KeySet *ks, const Key *toAppend)
 			right = middle - 1;
 		}
 #if DEBUG && VERBOSE
+		/* This is even for verbose too verbose!
 		printf ("bsearch -- c: %d res: %d left: %zd middle: %zd right: %zd insertpos: %zd\n",
 			c, cmpresult, left, middle, right, insertpos);
+		*/
 #endif
 	}
 
@@ -786,6 +788,36 @@ ssize_t ksAppend(KeySet *ks, const KeySet *toAppend)
 
 static int keyCompareByNameOwner(const void *p1, const void *p2);
 
+
+/*
+ * Returns the previous Key in a KeySet.
+ *
+ * KeySets have an internal cursor that can be reset with ksRewind(). Every
+ * time ksPrev() is called the cursor is decremented and the new current Key
+ * is returned.
+ *
+ * You'll get a NULL pointer if the key before begin of the KeySet was reached.
+ *
+ * Don't delete the key, use ksPop() if you want to delete it.
+ *
+ * @return the new current Key
+ * @see ksRewind(), ksCurrent()
+ *
+ */
+static Key *ksPrev(KeySet *ks)
+{
+	if (ks->size == 0) return 0;
+	if (ks->current <= 0)
+	{
+		ksRewind (ks);
+		return 0;
+	}
+	ks->current--;
+	return ks->cursor = ks->array[ks->current];
+}
+
+
+
 /**
  * Copies all Keys until the end of the array from a position
  * in the array to an position in the array.
@@ -831,12 +863,14 @@ KeySet *ksCut(KeySet *ks, const Key *cutpoint)
 	size_t found = 0;
 	size_t it = 0;
 	size_t newsize = 0;
+	cursor_t c = ksGetCursor (ks);
 
 	if (!ks) return 0;
 	if (!cutpoint) return 0;
 	if (!cutpoint->key) return 0;
 
 	found = ksSearchInternal(ks, cutpoint);
+	if (ksGetCursor(ks) == c) ksPrev(ks);
 
 	if (found < 0) found = -found - 1;
 
@@ -1196,36 +1230,6 @@ int ksSetCursor(KeySet *ks, cursor_t cursor)
 	ks->current= (size_t)cursor;
 	ks->cursor=ks->array[ks->current];
 	return 1;
-}
-
-
-
-
-/*
- * Returns the previous Key in a KeySet.
- *
- * KeySets have an internal cursor that can be reset with ksRewind(). Every
- * time ksPrev() is called the cursor is decremented and the new current Key
- * is returned.
- *
- * You'll get a NULL pointer if the key before begin of the KeySet was reached.
- *
- * Don't delete the key, use ksPop() if you want to delete it.
- *
- * @return the new current Key
- * @see ksRewind(), ksCurrent()
- *
- */
-static Key *ksPrev(KeySet *ks)
-{
-	if (ks->size == 0) return 0;
-	if (ks->current <= 0)
-	{
-		ksRewind (ks);
-		return 0;
-	}
-	ks->current--;
-	return ks->cursor = ks->array[ks->current];
 }
 
 
