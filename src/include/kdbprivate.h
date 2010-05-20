@@ -392,13 +392,6 @@ struct _Plugin {
 		to write configuration to or /host to which host packets should be send.
 		@see kdbhGetConfig() */
 
-	void *data;	/*!< A general pointer for any plugins needs.
-		Thus backends are not allowed to have global variables for thread safety,
-		they must use this pointer.
-		@note Every information you need between kdbOpen(), kdbClose(), kdbGet()
-		      and kdbSet() *must* be stored here.
-		@see kdbhGetBackendData() */
-
 	kdbOpenPtr kdbOpen;	/*!< The pointer to kdbOpen_template() of the backend. */
 	kdbClosePtr kdbClose;	/*!< The pointer to kdbClose_template() of the backend. */
 
@@ -406,6 +399,14 @@ struct _Plugin {
 	kdbSetPtr kdbSet;	/*!< The pointer to kdbSet_template() of the backend. */
 
 	kdbLibHandle dlHandle;	/*!< The pointer to the datastructure to load a new backend. */
+
+	/* TODO Consider handling this with a keyset */
+	const char *name;
+	const char *version;
+	const char *description;
+	const char *author;
+	const char *licence;
+	const char *capability;
 };
 
 

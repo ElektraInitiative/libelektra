@@ -129,6 +129,12 @@ void test_plugin()
 	succeed_if (plugin->kdbGet != 0, "no open pointer");
 	succeed_if (plugin->kdbSet != 0, "no open pointer");
 
+	succeed_if (!strcmp(plugin->name, "tracer"), "got wrong name");
+	succeed_if (!strcmp(plugin->author, "Markus Raab <elektra@markus-raab.org>"), "got wrong author");
+	succeed_if (!strcmp(plugin->licence, "BSD"), "got wrong licence");
+	succeed_if (!strcmp(plugin->description, "The first plugin"), "got wrong description");
+	succeed_if (!strcmp(plugin->capability, ""), "got wrong capability (tracer can do nothing)");
+
 	pluginClose(plugin);
 }
 
@@ -146,6 +152,15 @@ void test_default()
 	succeed_if (plugin->kdbClose != 0, "no open pointer");
 	succeed_if (plugin->kdbGet != 0, "no open pointer");
 	succeed_if (plugin->kdbSet != 0, "no open pointer");
+
+	/*
+	   Depends on the which is the plugin
+	succeed_if (!strcmp(plugin->name, "tracer"), "got wrong name");
+	succeed_if (!strcmp(plugin->author, "Markus Raab <elektra@markus-raab.org>"), "got wrong author");
+	succeed_if (!strcmp(plugin->licence, "BSD"), "got wrong licence");
+	succeed_if (!strcmp(plugin->description, "The first plugin"), "got wrong description");
+	succeed_if (!strcmp(plugin->capability, ""), "got wrong capability (tracer can do nothing)");
+	*/
 
 	pluginClose(plugin);
 }

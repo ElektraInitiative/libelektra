@@ -304,6 +304,7 @@ Plugin *pluginExport(const char *pluginName, ...) {
 	/* Start processing parameters */
 	
 	va_start(va,pluginName);
+	returned->name = pluginName;
 
 	while ((method=va_arg(va,plugin_t))) {
 		switch (method) {
@@ -319,20 +320,20 @@ Plugin *pluginExport(const char *pluginName, ...) {
 			case KDB_PLUGIN_SET:
 				returned->kdbSet=va_arg(va,kdbSetPtr);
 				break;
-				/*
 			case KDB_PLUGIN_VERSION:
-				returned->capability->version=va_arg(va, char *);
+				returned->version=va_arg(va, const char *);
 				break;
 			case KDB_PLUGIN_DESCRIPTION:
-				returned->capability->description=va_arg(va, char *);
+				returned->description=va_arg(va, const char *);
 				break;
 			case KDB_PLUGIN_AUTHOR:
-				returned->capability->author=va_arg(va, char *);
+				returned->author=va_arg(va, const char *);
 				break;
 			case KDB_PLUGIN_LICENCE:
-				returned->capability->licence=va_arg(va, char *);
+				returned->licence=va_arg(va, const char *);
 				break;
-				*/
+			case KDB_PLUGIN_CAPABILITY:
+				returned->capability=va_arg(va, const char*);
 			default:
 #if DEBUG
 				printf ("plugin passed something unexpected\n");

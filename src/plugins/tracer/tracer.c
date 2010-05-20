@@ -83,8 +83,8 @@ Plugin *KDBEXPORT(tracer)
 		KDB_PLUGIN_VERSION,        BACKENDVERSION,
 		KDB_PLUGIN_AUTHOR,	"Markus Raab <elektra@markus-raab.org>",
 		KDB_PLUGIN_LICENCE,	"BSD",
-		KDB_PLUGIN_DESCRIPTION,
-			"The first plugin",
+		KDB_PLUGIN_DESCRIPTION,	"The first plugin",
+		KDB_PLUGIN_CAPABILITY,	"",
 		KDB_PLUGIN_END);
 }
 

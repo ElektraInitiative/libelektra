@@ -46,6 +46,10 @@ typedef enum {
 	KDB_PLUGIN_DESCRIPTION=1<<5,/*!< Next arg is char * for Description */
 	KDB_PLUGIN_AUTHOR=1<<6,	/*!< Next arg is char * for Author*/
 	KDB_PLUGIN_LICENCE=1<<7,	/*!< Next arg is char * for Licence*/
+	KDB_PLUGIN_CAPABILITY=1<<8,	/*!< Next arg is char * describing which plugins
+					  do not need before that plugin in the backend
+					  because it is capable of handling it itself.
+					  It is a simple comma separated c-string.*/
 	KDB_PLUGIN_END=0		/*!< End of arguments */
 } plugin_t;
 
