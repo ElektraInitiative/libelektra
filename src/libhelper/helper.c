@@ -731,7 +731,7 @@ ssize_t kdbbGetFullFilename(KDB *handle, const Key *forKey,char *returned,size_t
 			strcat (buffer, "/");
 			strcat (buffer, keyOwner(forKey));
 			strcat (buffer, "/kdb");
-			length=kdbGetString (handle, buffer, returned, maxSize)-1;
+			length=0; /*kdbGetString (handle, buffer, returned, maxSize)-1;*/
 			if (length > 0)
 			{
 				break;
@@ -741,7 +741,7 @@ ssize_t kdbbGetFullFilename(KDB *handle, const Key *forKey,char *returned,size_t
 			strcat (buffer, "/");
 			strcat (buffer, keyOwner(forKey));
 			strcat (buffer, "/home");
-			length=kdbGetString (handle, buffer, returned, maxSize)-1;
+			length=0; /*kdbGetString (handle, buffer, returned, maxSize)-1;*/
 			if (length > 0)
 			{
 				strcpy (buffer, returned);

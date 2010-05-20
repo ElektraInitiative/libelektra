@@ -35,7 +35,6 @@
  *
  * The two essential functions for dynamic information about backends are:
  *  - kdbGetMountpoint()
- *  - kdbGetCapability()
  *
  * They use some backend implementation to know the details about how to access
  * the storage. Currently we have this backends:
@@ -101,196 +100,6 @@
 #include <kdbinternal.h>
 
 
-KDB* kdbOpenBackend(const char *backendname, const char *mountpoint, KeySet *config)
-{
-	KDB * handle;
-	char* backend_name;
-
-	kdbLibHandle dlhandle=0;
-	typedef KDB *(*KDBBackendFactory) (void);
-	KDBBackendFactory kdbBackendFactory=0;
-
-	backend_name = malloc(sizeof("libelektra-")+strlen(backendname));
-
-	strncpy(backend_name,"libelektra-",sizeof("libelektra-"));
-	strncat(backend_name,backendname,strlen(backendname));
-
-	dlhandle=kdbLibLoad(backend_name);
-	if (dlhandle == 0) {
-		/*errno=KDB_ERR_EBACKEND;*/
-#if DEBUG && VERBOSE
-		printf("kdbLibLoad(%s) failed\n", backend_name);
-#endif
-		goto err_clup; /* error */
-	}
-
-	/* load the "kdbBackendFactory" symbol from backend */
-	kdbBackendFactory=(KDBBackendFactory)kdbLibSym(dlhandle, "kdbBackendFactory");
-	if (kdbBackendFactory == 0) {
-		/*errno=KDB_ERR_NOSYS;*/
-#if DEBUG && VERBOSE
-		printf("Could not kdbLibSym kdbBackendFactory for %s\n", backend_name);
-#endif
-		goto err_clup; /* error */
-	}
-	
-	handle=kdbBackendFactory();
-	if (handle == 0)
-	{
-		/*errno=KDB_ERR_NOSYS;*/
-#if DEBUG && VERBOSE
-		printf("Could not call kdbBackendFactory for %s\n", backend_name);
-#endif
-		goto err_clup; /* error */
-	}
-
-	/* save the libloader handle for future use */
-	handle->dlHandle=dlhandle;
-	handle->trie	= 0;
-
-	handle->mountpoint=keyNew(mountpoint,KEY_VALUE,backendname,0);
-
-	/* let the backend initialize itself */
-	if (handle->kdbOpen)
-	{
-		handle->config = config;
-		if ((handle->kdbOpen(handle)) == -1)
-		{
-#if DEBUG && VERBOSE
-			printf("kdbOpen() failed for %s\n", backend_name);
-#endif
-		}
-	}
-	else {
-		/*errno=KDB_ERR_NOSYS;*/
-#if DEBUG && VERBOSE
-			printf("No kdbOpen supplied in %s\n", backend_name);
-#endif
-		goto err_clup;
-	}
-
-#if DEBUG && VERBOSE
-	printf("Finished loading Backend %s\n", backend_name);
-#endif
-	free(backend_name);
-	return handle;
-
-err_clup:
-#if DEBUG
-	fprintf(stderr,"Failed to load backend %s\n", backend_name);
-#endif
-	free(backend_name);
-	return 0;
-}
-
-int kdbCloseBackend(KDB *handle)
-{
-	int rc=0;
-
-	if (handle->kdbClose)
-		rc=handle->kdbClose(handle);
-	
-	if (rc == 0) {
-		kdbLibClose(handle->dlHandle);
-		capDel (handle->capability);
-		keyDel(handle->mountpoint);
-		if (handle->config) ksDel(handle->config);
-		free(handle);
-	}
-	
-	return rc;
-}
-
-
-/**
- * Dynamically mount a single backend.
- *
- * Maps the mountpoint, defined through its name and value, into the global elektra
- * hierachy. If successfull, under the mountpoint another backend will reside.
- *
- * This only works for a single KDB, that means a single thread in a single process.
- * You may want statically mounting by editing system/elektra/mountpoints.
- *
- * If you allocated mountpoint and config first, make sure that you free it!
- * It is ok to free it immediately afterwards.
- *
- * @param handle handle to the kdb data structure 
- * @param mountpoint the keyName() of this key is the mountpoint, keyValue() the backend
- * @param config the configuration passed for that backend
- * @return 0 on success, -1 if an error occurred
- * @ingroup kdb
-*/
-int kdbMount(KDB *handle, const Key *mountpoint, const KeySet *config)
-{
-	char *mountpoint_slash;
-	const char *key_name;
-	const char *backend;
-	size_t size;
-	KDB *h;
-	Trie *trie;
-	KeySet *c;
-
-	key_name=keyName(mountpoint);
-	backend=keyValue(mountpoint);
-
-	size = kdbiStrLen(key_name);
-	mountpoint_slash = malloc (size + 1);
-	strcpy (mountpoint_slash, key_name);
-	mountpoint_slash [size-1] = '/';
-	mountpoint_slash [size] = 0;
-
-	h=kdbOpenBackend(backend,mountpoint_slash,c=ksDup(config));
-	if (!h) {
-		free(mountpoint_slash);
-		ksDel(c);
-		return -1;
-	}
-	trie=insert_trie(kdbhGetTrie(handle), mountpoint_slash, h);
-	kdbhSetTrie(handle,trie);
-
-	free(mountpoint_slash);
-	return 0;
-}
-
-
-/**
- * Dynamically unmount a single backend.
- *
- * Unmount a backend that was mounted with kdbMount() before.
- *
- * @param handle handle to the kdb data structure 
- * @param mountpoint directory where backend is mounted to, that should be unmounted
- * @return 0 on success, -1 if an error ocurred.
- * @ingroup kdb
- */
-
-int kdbUnmount(KDB *handle, const Key *mountpoint)
-{
-	size_t size;
-	const char *key_name;
-	char *mountpoint_slash;
-
-	if (mountpoint==NULL) {
-		return -1;
-	}
-	if (kdbGetBackend(handle,mountpoint)==NULL) {
-		return -1;
-	}
-	key_name=keyName(mountpoint);
-
-	size = kdbiStrLen(key_name);
-	mountpoint_slash = malloc (size + 1);
-	strcpy (mountpoint_slash, key_name);
-	mountpoint_slash [size-1] = '/';
-	mountpoint_slash [size] = 0;
-
-	delete_trie(kdbhGetTrie(handle), mountpoint_slash,kdbCloseBackend);
-	free(mountpoint_slash);
-	return 0;
-}
-
-
-
 /**
  * Lookup a mountpoint in a handle for a specific key.
  *
@@ -323,7 +132,7 @@ keyDel (key);
  */
 Key* kdbGetMountpoint (KDB *handle, const Key *where)
 {
-	KDB *backend_handle;
+	Backend *backend_handle;
 
 	backend_handle=kdbGetBackend(handle,where);
 	if (!backend_handle)
@@ -333,54 +142,6 @@ Key* kdbGetMountpoint (KDB *handle, const Key *where)
 	}
 
 	return backend_handle->mountpoint;
-}
-
-
-/*
- * Returns a structure of information about the internals
- * of the library and the backend used.
- *
- * This is mainly used to check the capabilities of a specific
- * backend.
- *
- * @par Example:
- * @code
-Key * key = keyNew ("system/template");
-KDB * handle = kdbOpen();
-KDBCap *capability=0;
-capability=kdbGetCapability(handle, key);
-
-printf("The library I am using is %s in version %s\n",
-	kdbcGetName(capability),
-	kdbcGetVersion(capability));
-if (kdbcGetnoError(capability)) printf ("Ohh! Error states are not supported\n");
-else printf ("Puhh! Error states are supported\n");
-kdbClose (handle);
-keyDel (key);
- * @endcode
- *
- * Together with kdbGetMountpoint() the two essential
- * informations about mounted backends.
- *
- * @param handle contains internal information of @link kdbOpen() opened @endlink key database
- * @param where lets you choose the position of where you want the information from
- * @return info on sucess, 0 if @p info is NULL
- * 	errno will be set to KDB_ERR_EBACKEND if no backend is found
- * @see commandInfo()
- * @ingroup kdb
- */
-KDBCap *kdbGetCapability(KDB *handle, const Key *where)
-{
-	KDB *backend_handle;
-
-	backend_handle=kdbGetBackend(handle,where);
-	if (!backend_handle)
-	{
-		/*errno = KDB_ERR_EBACKEND;*/
-		return 0;
-	}
-
-	return backend_handle->capability;
 }
 
 
@@ -433,7 +194,6 @@ KDB * kdbOpen()
 {
 	KDB * handle;
 	KeySet *keys;
-	Trie *trie;
 #if DEBUG && VERBOSE
 	Key *key;
 
@@ -445,9 +205,11 @@ KDB * kdbOpen()
 		return 0;
 	}
 
+	handle = kdbiCalloc(sizeof(struct _KDB));
+
 	/* Open default backend */
-	handle=kdbOpenBackend("default",0,0);
-	if (!handle)
+	handle->defaultBackend=backendOpenDefault();
+	if (!handle->defaultBackend)
 	{
 #if DEBUG
 		printf ("failed to open default backend");
@@ -464,12 +226,16 @@ KDB * kdbOpen()
 #if DEBUG && VERBOSE
 	ksRewind(keys);
 	for (key=ksNext(keys);key;key=ksNext(keys)) {
-		printf("config for createTrie name: %s value: %s\n",keyName(key),(char*) keyValue(key));
+		printf("config for createTrie name: %s value: %s\n",keyName(key), keyString(key));
 	}
 #endif
-	trie=createTrie(keys,kdbOpenBackend);
-	kdbhSetTrie(handle, trie);
-	ksDel(keys);
+	handle->trie=trieOpen(keys);
+	if (!handle->trie)
+	{
+#if DEBUG
+		printf ("failed to open trie, continue with default backend");
+#endif
+	}
 
 	return handle;
 }
@@ -501,10 +267,11 @@ int kdbClose(KDB *handle)
 		/*errno=KDB_ERR_NOSYS;*/
 		return -1;
 	}
-	if (handle->trie)
-		kdbDelTrie (handle->trie,kdbCloseBackend);
+	if (handle->trie) trieClose(handle->trie);
 
-	kdbCloseBackend (handle);
+	backendClose (handle->defaultBackend);
+
+	kdbiFree(handle);
 
 	return 0;
 }
@@ -970,86 +737,5 @@ ssize_t kdbSet (KDB *handle, KeySet *ks,
 	if (errors_occurred)
 		return -1;
 	return size;
-}
-
-
-
-/**
- * This function must be called by a backends's kdbBackendFactory() to
- * define the backend's methods that will be exported.
- *
- * See KDBEXPORT() how to use it for backends.
- *
- * The order and number of arguments are flexible (as in keyNew() and ksNew()) to let
- * libelektra.so evolve without breaking its ABI compatibility with backends.
- * So for each method a backend must export, there is a flag defined by
- * #backend_t. Each flag tells kdbBackendExport() which method comes
- * next. A backend can have no implementation for a few methods that have
- * default inefficient high-level implementations and to use these defaults, simply
- * don't pass anything to kdbBackendExport() about them.
- *
- * @param backendName a simple name for this backend
- * @return an object that contains all backend informations needed by
- * 	libelektra.so
- * @ingroup backend
- */
-KDB *kdbBackendExport(const char *backendName, ...) {
-	va_list va;
-	KDB *returned;
-	backend_t method=0;
-
-	if (backendName == 0) return 0;
-
-	returned=malloc(sizeof(KDB));
-	memset(returned,0,sizeof(KDB));
-
-	returned->capability = capNew();
-	returned->capability->name = backendName;
-	returned->capability->version = "";
-	returned->capability->description = "";
-	returned->capability->author = "";
-	returned->capability->licence = "";
-
-	/* Start processing parameters */
-	
-	va_start(va,backendName);
-
-	while ((method=va_arg(va,backend_t))) {
-		switch (method) {
-			case KDB_BE_OPEN:
-				returned->kdbOpen=va_arg(va,kdbOpenPtr);
-				break;
-			case KDB_BE_CLOSE:
-				returned->kdbClose=va_arg(va,kdbClosePtr);
-				break;
-			case KDB_BE_GET:
-				returned->kdbGet=va_arg(va,kdbGetPtr);
-				break;
-			case KDB_BE_SET:
-				returned->kdbSet=va_arg(va,kdbSetPtr);
-				break;
-			case KDB_BE_VERSION:
-				returned->capability->version=va_arg(va, char *);
-				break;
-			case KDB_BE_DESCRIPTION:
-				returned->capability->description=va_arg(va, char *);
-				break;
-			case KDB_BE_AUTHOR:
-				returned->capability->author=va_arg(va, char *);
-				break;
-			case KDB_BE_LICENCE:
-				returned->capability->licence=va_arg(va, char *);
-				break;
-			default:
-#if DEBUG
-				printf ("backend passed something unexpected");
-#endif
-				// fallthrough, will end here
-			case KDB_BE_END:
-				va_end(va);
-				return returned;
-		}
-	}
-	return returned;
 }
 

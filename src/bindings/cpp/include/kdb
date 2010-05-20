@@ -22,17 +22,20 @@ public:
 	~KDB ();
 
 	size_t get (KeySet & returned, const Key &parentKey, option_t options = KDB_O_NONE);
+	size_t set (KeySet & returned, const Key &parentKey, option_t options = KDB_O_NONE);
+
+	/*
 	size_t get (KeySet & returned, const std::string &parentName, option_t options = KDB_O_NONE);
 	size_t get (KeySet & returned, const char * parentName, option_t options = KDB_O_NONE);
-
-	size_t set (KeySet & returned, const Key &parentKey, option_t options = KDB_O_NONE);
 
 	void get (Key & toGet);
 	void set (const Key & toSet);
 
+
 	void getString (const std::string &keyname, std::string value, size_t maxSize);
 	void setString (const std::string &keyname, const std::string &value);
 	void remove (const std::string &keyname);
+	*/
 
 protected:
 	/**You may use the KDB in an inherited class*/
@@ -77,7 +80,7 @@ inline size_t KDB::set (KeySet & returned, const Key & parentKey, option_t optio
 	return ret;
 }
 
-
+/*
 inline size_t KDB::get (KeySet & returned, const std::string &parentName, option_t options)
 {
 	ssize_t ret = ckdb::kdbGetByName (handle, returned.getKeySet(), parentName.c_str(), options);
@@ -91,7 +94,9 @@ inline size_t KDB::get (KeySet & returned, const char * parentName, option_t opt
 	if (ret == -1) throw KDBException();
 	return ret;
 }
+*/
 
+/*
 
 inline void KDB::getString (const std::string &keyname, std::string value, size_t maxSize)
 {
@@ -111,11 +116,15 @@ inline void KDB::remove (const std::string &keyname)
 	ckdb::kdbRemove(handle, keyname.c_str());
 }
 
+*/
+
 /**
  * Get a single key.
  *
  * @param toGet the key to get
  */
+
+/*
 inline void KDB::get (Key & toGet)
 {
 	int ret = ckdb::kdbGetKey(handle, toGet.getKey());
@@ -127,6 +136,8 @@ inline void KDB::set (const Key & toSet)
 	int ret = ckdb::kdbSetKey(handle, toSet.getKey());
 	if (ret == -1) throw KDBException();
 }
+
+*/
 
 } // end of namespace kdb
 
