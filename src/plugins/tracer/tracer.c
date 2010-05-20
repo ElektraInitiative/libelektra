@@ -30,11 +30,11 @@
 int kdbOpen_tracer(Plugin *handle)
 {
 	ssize_t nr_keys = 0;
-	KeySet *config = pluginGetConfig((Plugin*)handle);
+	KeySet *config = pluginGetConfig(handle);
 	Key *k;
 
 	printf ("tracer: kdbOpen(%p): ", (void*)handle);
-	while ((k = ksNext(config))!=0) { printf ("%s ", keyName(k)); ++nr_keys; }
+	while ((k = ksNext(config))!=0) { printf ("%s=%s ", keyName(k), keyString(k)); ++nr_keys; }
 	printf ("%zd\n", nr_keys);
 
 	return 0;

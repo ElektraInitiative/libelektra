@@ -146,6 +146,7 @@ int processPlugins(Plugin **plugins, KeySet *config, KeySet *systemConfig)
 
 			renamePluginConfig(pluginConfig);
 			ksAppend(pluginConfig, systemConfig);
+			ksRewind(pluginConfig); /* TODO: bug ksAppend invalidates cursor */
 
 			plugins[pluginNumber] = pluginOpen(pluginName, pluginConfig);
 		} else {
