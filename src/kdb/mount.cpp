@@ -17,6 +17,15 @@ std::string MountCommand::root = "system/elektra/mountpoints";
 MountCommand::MountCommand()
 {}
 
+void MountCommand::checkFile(std::string path)
+{
+	std::ofstream f(path.c_str());
+	if (!f.is_open())
+	{
+		cerr << "Warning, could not open that file" << endl;
+	}
+}
+
 KeySet MountCommand::addPlugins(std::string name, std::string which)
 {
 	KeySet ret;
@@ -36,9 +45,8 @@ KeySet MountCommand::addPlugins(std::string name, std::string which)
 		cout << "Enter a path to a file in the filesystem: ";
 		std::string path;
 		cin >> path;
+		checkFile(path);
 
-		std::ofstream f(path.c_str());
-		if (!f.is_open()) cerr << "Warning, could not open that file" << endl;
 		KeySet testConfig(1,
 			*Key(	"system/path",
 				KEY_VALUE, path.c_str(),
@@ -68,10 +76,12 @@ KeySet MountCommand::addPlugins(std::string name, std::string which)
 		{
 			cout << "Was not able to load such a plugin!" << endl;
 			cout << "or it had no " << which << " symbol exported (see above)" << endl;
-			cout << "Do you want to (P)roceed with next plugin?" << endl;
+			cout << "Do you want to (P)roceed with next plugin (current will be left empty)?" << endl;
+			cout << "Do you want to go (B)ack to the previous plugin?" << endl;
 			cout << "Do you want to (R)etry?" << endl;
 			cout << "Do you want to (F)inish entering plugins?" << endl;
 			cout << "Or do you want to (A)bort?" << endl;
+			cout << "Please provide action: ";
 			string answer;
 			cin >> answer;
 			if (answer == "P" || answer == "Proceed" || answer == "(P)roceed" || answer == "p")
@@ -80,6 +90,11 @@ KeySet MountCommand::addPlugins(std::string name, std::string which)
 			} else if (answer == "R" || answer == "Retry" || answer == "(R)etry" || answer == "r")
 			{
 				--i;
+				continue;
+			} else if (answer == "B" || answer == "Back" || answer == "(B)ack" || answer == "b")
+			{
+				--i;
+				if (i>=0)--i;
 				continue;
 			} else if (answer == "F" || answer == "Finish" || answer == "(F)inish" || answer == "f")
 			{
@@ -229,17 +244,10 @@ int MountCommand::execute(int , char** )
 
 
 
-	conf.append(addPlugins(name, "set"));
-	conf.append(addPlugins(name, "get"));
-
-
-
 	cout << "Enter a path to a file in the filesystem (for all plugins): ";
 	std::string path;
 	cin >> path;
-
-	std::ofstream f(path.c_str());
-	if (!f.is_open()) cerr << "Warning, could not open that file" << endl;
+	checkFile(path);
 	conf.append ( *Key( root  + "/" + name + "/config",
 			KEY_VALUE, "",
 			KEY_COMMENT, "This is a configuration for a backend, see subkeys for more information",
@@ -248,6 +256,20 @@ int MountCommand::execute(int , char** )
 			KEY_VALUE, path.c_str(),
 			KEY_COMMENT, "The path for this backend. Note that plugins can override that with more specific configuration.",
 			KEY_END));
+	cout << endl;
+
+
+
+	conf.append(addPlugins(name, "set"));
+	cout << endl;
+
+
+
+	conf.append(addPlugins(name, "get"));
+	cout << endl;
+
+
+
 
 	cout << "Ready to mount with following configuration:" << endl;
 	cout << "Name:       " << name << endl;

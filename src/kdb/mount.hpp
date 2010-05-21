@@ -36,6 +36,7 @@ class MountCommand : public Command
 public:
 	MountCommand();
 	kdb::KeySet addPlugins(std::string name, std::string which);
+	void checkFile(std::string file);
 	int execute(int argc, char** argv);
 	~MountCommand();
 };
