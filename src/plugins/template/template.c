@@ -1,9 +1,9 @@
 /***************************************************************************
-            template.c  -  Skeleton of plugins to access the Key Database
+          template.c  -  Skeleton of a plugin to be copied
                              -------------------
-    begin                : Mon Dec 26 2004
-    copyright            : (C) 2004 by Avi Alkalay
-    email                : avi@unix.sh
+    begin                : Fri May 21 2010
+    copyright            : (C) 2010 by Markus Raab
+    email                : elektra@markus-raab.org
  ***************************************************************************/
 
 /***************************************************************************

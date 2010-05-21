@@ -1,9 +1,9 @@
 /***************************************************************************
-            backend.c  -  Skeleton of backends to access the Key Database
+            doc.c  - Documentation on how to write plugins
                              -------------------
-    begin                : Mon Dec 26 2004
-    copyright            : (C) 2004 by Avi Alkalay
-    email                : avi@unix.sh
+    begin                : Fri May 21 2010
+    copyright            : (C) 2010 by Markus Raab
+    email                : elektra@markus-raab.org
  ***************************************************************************/
 
 /***************************************************************************
@@ -14,10 +14,10 @@
  ***************************************************************************/
 
 
-#include <kdbbackend.h>
+#include <kdbplugin.h>
 
 
-#define BACKENDNAME "backend"
+#define BACKENDNAME "doc"
 #define BACKENDVERSION "1.0.0"
 
 
@@ -306,8 +306,11 @@ int kdbOpen_backend(KDB *handle) {
  * @see kdbOpen()
  * @ingroup backend
  */
-int kdbOpen_backend(KDB *handle) {
-	return 0;
+int kdbOpen_doc(Plugin *handle)
+{
+	/* plugin initialization logic */
+
+	return 0; /* success */
 }
 
 
@@ -331,7 +334,7 @@ int kdbOpen_backend(KDB *handle) {
  * @see kdbClose()
  * @ingroup backend
  */
-int kdbClose_backend(KDB *handle) {
+int kdbClose_doc(KDB *handle) {
 	return 0; /* success */
 }
 
@@ -536,10 +539,13 @@ if (strcmp (keyName(kdbhGetMountpoint(handle)), keyName(parentKey))) return 0;
  *
  * @ingroup backend
  */
-ssize_t kdbGet_backend(KDB *handle, KeySet *returned, const Key *parentKey) {
-	return 0;
-}
+ssize_t kdbGet_doc(Plugin *handle, KeySet *returned, const Key *parentKey)
+{
+	ssize_t nr_keys = 0;
+	/* get all keys below parentKey and count them with nr_keys */
 
+	return nr_keys; /* success */
+}
 
 /**
  * Store a keyset permanently.
@@ -637,8 +643,12 @@ kdbSet_backend(KDB *handle, KeySet *keyset, Key *parentKey)
  *
  * @ingroup backend
  */
-ssize_t kdbSet_backend(KDB *handle, KeySet *returned, const Key *parentKey) {
-	return 0;
+ssize_t kdbSet_doc(Plugin *handle, KeySet *returned, const Key *parentKey)
+{
+	ssize_t nr_keys = 0;
+	/* set all keys below parentKey and count them with nr_keys */
+
+	return nr_keys;
 }
 
 /**
@@ -661,8 +671,10 @@ ssize_t kdbSet_backend(KDB *handle, KeySet *returned, const Key *parentKey) {
  * You might also give following information by char *:
  * @c KDB_BE_VERSION,
  * @c KDB_BE_AUTHOR,
- * @c KDB_BE_LICENCE and
- * @c KDB_BE_DESCRIPTION
+ * @c KDB_BE_LICENCE,
+ * @c KDB_BE_DESCRIPTION,
+ * @c KDB_PLUGIN_NEEDS and
+ * @c KDB_PLUGIN_PROVIDES
  *
  * You must use static "char arrays" in a read only segment.
  * Don't allocate storage, it won't be freed.
@@ -677,13 +689,19 @@ ssize_t kdbSet_backend(KDB *handle, KeySet *returned, const Key *parentKey) {
  * @see kdbOpenBackend()
  * @ingroup backend
  */
-KDBEXPORT(backend)
+Plugin *KDBEXPORT(doc)
 {
-	return kdbBackendExport(BACKENDNAME,
-		KDB_BE_OPEN,	&kdbOpen_backend,
-		KDB_BE_CLOSE,	&kdbClose_backend,
-		KDB_BE_GET,	&kdbGet_backend,
-		KDB_BE_SET,	&kdbSet_backend,
-		KDB_BE_END);
+	return pluginExport(BACKENDNAME,
+		KDB_PLUGIN_OPEN,	&kdbOpen_doc,
+		KDB_PLUGIN_CLOSE,	&kdbClose_doc,
+		KDB_PLUGIN_GET,		&kdbGet_doc,
+		KDB_PLUGIN_SET,		&kdbSet_doc,
+		KDB_PLUGIN_VERSION,	BACKENDVERSION,
+		KDB_PLUGIN_AUTHOR,	"Full Name <email@libelektra.org>",
+		KDB_PLUGIN_LICENCE,	"BSD",
+		KDB_PLUGIN_DESCRIPTION,	"Add description here",
+		KDB_PLUGIN_NEEDS,	"",
+		KDB_PLUGIN_PROVIDES,	"",
+		KDB_PLUGIN_END);
 }
 
