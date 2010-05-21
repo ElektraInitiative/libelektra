@@ -26,15 +26,14 @@
 
 
 
-#include <kdbbackend.h>
-#include <errno.h>
+#include <kdbplugin.h>
 
 
 #define BACKENDNAME "template"
 #define BACKENDVERSION "0.0.1"
 
-int kdbOpen_template(KDB *handle);
-int kdbClose_template(KDB *handle);
-ssize_t kdbGet_template(KDB *handle, KeySet *ks, const Key *parentKey);
-ssize_t kdbSet_template(KDB *handle, KeySet *ks, const Key *parentKey);
-KDB *KDBEXPORT(template);
+int kdbOpen_template(Plugin *handle);
+int kdbClose_template(Plugin *handle);
+ssize_t kdbGet_template(Plugin *handle, KeySet *ks, const Key *parentKey);
+ssize_t kdbSet_template(Plugin *handle, KeySet *ks, const Key *parentKey);
+Plugin *KDBEXPORT(template);
