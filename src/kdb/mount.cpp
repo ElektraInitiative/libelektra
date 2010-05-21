@@ -84,7 +84,7 @@ KeySet MountCommand::addPlugins(std::string name, std::string which)
 			} else if (answer == "F" || answer == "Finish" || answer == "(F)inish" || answer == "f")
 			{
 				break;
-			} else throw 3;
+			} else throw CommandAbortException();
 		}
 
 		std::ostringstream pluginNumber;
@@ -155,11 +155,7 @@ int MountCommand::execute(int , char** )
 	std::string name;
 	std::cout << "Name: ";
 	cin >> name;
-	if (std::find(names.begin(), names.end(), name) != names.end())
-	{
-		cerr << "Name already used, will abort" << endl;
-		return 2;
-	}
+	if (std::find(names.begin(), names.end(), name) != names.end()) throw NameAlreadyInUseException();
 	cout << endl;
 
 
@@ -205,11 +201,8 @@ int MountCommand::execute(int , char** )
 	cout << "Enter the mountpoint: ";
 	std::string mp;
 	cin >> mp;
-	if (std::find(mountpoints.begin(), mountpoints.end(), name) != mountpoints.end())
-	{
-		cerr << "Mountpoint already used, will abort" << endl;
-		return 2;
-	}
+	if (std::find(mountpoints.begin(), mountpoints.end(), mp) != mountpoints.end()) throw MountpointAlreadyInUseException();
+
 	if (mp == "/")
 	{
 		conf.append ( *Key(	root  + "/" + name + "/mountpoint",
@@ -219,12 +212,7 @@ int MountCommand::execute(int , char** )
 				"You are not allowed to mount inside system/elektra.",
 				KEY_END));
 	} else {
-		if (!Key (mp, KEY_END))
-		{
-			cerr << "This was not a valid key name" << endl;
-			cerr << "Examples: system/hosts or user/sw/app" << endl;
-			return 3;
-		}
+		if (!Key (mp, KEY_END)) throw MountpointInvalidException();
 		// Hack: currently the mountpoints need to exist, so that they can be found
 		conf.append ( *Key(mp,
 			KEY_COMMENT, "This is a mounted backend.",
@@ -274,11 +262,7 @@ int MountCommand::execute(int , char** )
 	cout << "Are you sure you want to do that (y/N): ";
 	std::string answer;
 	cin >> answer;
-	if (answer != "y")
-	{
-		cerr << "Aborted by user request" << endl;
-		return 4;
-	}
+	if (answer != "y") throw CommandAbortException();
 
 	kdb.set(conf, Key(root, KEY_END));
 	return 0;
