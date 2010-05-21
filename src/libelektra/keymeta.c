@@ -87,7 +87,7 @@
 #include "config.h"
 #endif
 
-#if DEBUG && HAVE_STDIO_H
+#if HAVE_STDIO_H
 #include <stdio.h>
 #endif
 
