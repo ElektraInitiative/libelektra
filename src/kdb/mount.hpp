@@ -29,6 +29,15 @@ class MountpointInvalidException : public CommandException
 	}
 };
 
+class PathInvalidException : public CommandException
+{
+	virtual const char* what() const throw()
+	{
+		return  "Given path could not be opened\n"
+			"You must provide a valid file name for the global path";
+	}
+};
+
 class MountCommand : public Command
 {
 	kdb::KDB kdb;
@@ -36,7 +45,7 @@ class MountCommand : public Command
 public:
 	MountCommand();
 	kdb::KeySet addPlugins(std::string name, std::string which);
-	void checkFile(std::string file);
+	bool checkFile(std::string file);
 	int execute(int argc, char** argv);
 	~MountCommand();
 };

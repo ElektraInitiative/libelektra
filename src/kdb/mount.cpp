@@ -17,13 +17,10 @@ std::string MountCommand::root = "system/elektra/mountpoints";
 MountCommand::MountCommand()
 {}
 
-void MountCommand::checkFile(std::string path)
+bool MountCommand::checkFile(std::string path)
 {
 	std::ofstream f(path.c_str());
-	if (!f.is_open())
-	{
-		cerr << "Warning, could not open that file" << endl;
-	}
+	return f.is_open();
 }
 
 KeySet MountCommand::addPlugins(std::string name, std::string which)
@@ -42,10 +39,16 @@ KeySet MountCommand::addPlugins(std::string name, std::string which)
 		cin >> pluginName;
 		if (pluginName == ".") break;
 
-		cout << "Enter a path to a file in the filesystem: ";
+		cout << "Enter a path to a file in the filesystem." << endl;
+		cout << ". for no path (use global one)" << endl;
+		cout << "Path: ";
 		std::string path;
 		cin >> path;
-		checkFile(path);
+		if (path != "." && !checkFile(path))
+		{
+			cerr << "Warning: Could not open path, will continue with no path" << endl;
+			path = ".";
+		}
 
 		KeySet testConfig(1,
 			*Key(	"system/path",
@@ -77,8 +80,8 @@ KeySet MountCommand::addPlugins(std::string name, std::string which)
 			cout << "Was not able to load such a plugin!" << endl;
 			cout << "or it had no " << which << " symbol exported (see above)" << endl;
 			cout << "Do you want to (P)roceed with next plugin (current will be left empty)?" << endl;
-			cout << "Do you want to go (B)ack to the previous plugin?" << endl;
-			cout << "Do you want to (R)etry?" << endl;
+			cout << "Do you want to go (B)ack to the first plugin?" << endl;
+			cout << "Do you want to (R)etry this plugin?" << endl;
 			cout << "Do you want to (F)inish entering plugins?" << endl;
 			cout << "Or do you want to (A)bort?" << endl;
 			cout << "Please provide action: ";
@@ -93,8 +96,11 @@ KeySet MountCommand::addPlugins(std::string name, std::string which)
 				continue;
 			} else if (answer == "B" || answer == "Back" || answer == "(B)ack" || answer == "b")
 			{
-				--i;
-				if (i>=0)--i;
+				i=-1;
+				ret.clear();
+				ret.append (*Key (root + "/" + name + "/" + which + "plugins",
+					KEY_COMMENT, "List of plugins to use",
+					KEY_END));
 				continue;
 			} else if (answer == "F" || answer == "Finish" || answer == "(F)inish" || answer == "f")
 			{
@@ -107,19 +113,22 @@ KeySet MountCommand::addPlugins(std::string name, std::string which)
 		ret.append (*Key (root + "/" + name + "/" + which + std::string("plugins/#") + pluginNumber.str() + pluginName,
 			KEY_COMMENT, "A plugin",
 			KEY_END));
-		ret.append (*Key (root + "/" + name + "/" + which + std::string("plugins/#") + pluginNumber.str() + pluginName + "/config",
-			KEY_COMMENT, "The configuration for the specific plugin.\n"
-			"All keys below that directory will be passed to plugin.\n"
-			"These keys have backend specific meaning.\n"
-			"See documentation http://www.libelektra.org for which keys must or can be set.\n"
-			"Here the most important keys should be preloaded.",
-			KEY_END));
-		ret.append (*Key (root + "/" + name + "/" + which + "plugins/#" + pluginNumber.str() + pluginName + "/config/path",
-			KEY_VALUE, path.c_str(),
-			KEY_COMMENT, "The path where the config file is located."
-			"This item is often used by backends using configuration in a filesystem"
-			"to know there relative location of the keys to fetch or write.",
-			KEY_END));
+		if (path != ".")
+		{
+			ret.append (*Key (root + "/" + name + "/" + which + std::string("plugins/#") + pluginNumber.str() + pluginName + "/config",
+				KEY_COMMENT, "The configuration for the specific plugin.\n"
+				"All keys below that directory will be passed to plugin.\n"
+				"These keys have backend specific meaning.\n"
+				"See documentation http://www.libelektra.org for which keys must or can be set.\n"
+				"Here the most important keys should be preloaded.",
+				KEY_END));
+			ret.append (*Key (root + "/" + name + "/" + which + "plugins/#" + pluginNumber.str() + pluginName + "/config/path",
+				KEY_VALUE, path.c_str(),
+				KEY_COMMENT, "The path where the config file is located."
+				"This item is often used by backends using configuration in a filesystem"
+				"to know there relative location of the keys to fetch or write.",
+				KEY_END));
+		}
 	}
 
 	return ret;
@@ -244,10 +253,13 @@ int MountCommand::execute(int , char** )
 
 
 
-	cout << "Enter a path to a file in the filesystem (for all plugins): ";
+	cout << "Enter a path to a file in the filesystem" << endl;
+	cout << "This is used by all plugins of this backend as fallback" << endl;
+	cout << "It must be provided and must be a valid path" << endl;
+	cout << "Path: ";
 	std::string path;
 	cin >> path;
-	checkFile(path);
+	if (!checkFile(path)) throw PathInvalidException();
 	conf.append ( *Key( root  + "/" + name + "/config",
 			KEY_VALUE, "",
 			KEY_COMMENT, "This is a configuration for a backend, see subkeys for more information",
