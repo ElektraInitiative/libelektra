@@ -31,6 +31,7 @@ bool MountCommand::checkFile(std::string path)
 KeySet MountCommand::addPlugins(std::string name, std::string which)
 {
 	KeySet ret;
+	int nrStoragePlugins = 0;
 	ret.append (*Key (root + "/" + name + "/" + which + "plugins",
 		KEY_COMMENT, "List of plugins to use",
 		KEY_END));
@@ -64,28 +65,48 @@ KeySet MountCommand::addPlugins(std::string name, std::string which)
 				KEY_END),
 			KS_END);
 
+		bool isStoragePlugin = false;
 		ckdb::Plugin *plugin = ckdb::pluginOpen(pluginName.c_str(), testConfig.dup());
-		if (plugin && which == "get")
+		if (plugin)
 		{
-			if (!plugin->kdbGet)
+			if (std::string(plugin->provides).find("storage") != string::npos)
 			{
-				cout << "get symbol missing" << endl;
-				plugin = 0;
+				cout << "This is a storage plugin" << endl;
+				++ nrStoragePlugins;
+				isStoragePlugin = true;
 			}
-		}
-		if (plugin && which == "set")
-		{
-			if (!plugin->kdbSet)
+			if (std::string(plugin->licence).find("BSD") == string::npos)
 			{
-				cout << "set symbol missing" << endl;
-				plugin = 0;
+				cout << "Warning this plugin is not BSD licenced" << endl;
+				cout << "It might taint the licence of the overall product" << endl;
+				cout << "Its licence is: " << plugin->licence << endl;
+			}
+			if (which == "get")
+			{
+				if (!plugin->kdbGet)
+				{
+					cout << "get symbol missing" << endl;
+					plugin = 0;
+				}
+			}
+			else if (which == "set")
+			{
+				if (!plugin->kdbSet)
+				{
+					cout << "set symbol missing" << endl;
+					plugin = 0;
+				}
 			}
 		}
 		ckdb::pluginClose(plugin);
-		if (!plugin)
+		if (!plugin || nrStoragePlugins>1)
 		{
-			cout << "Was not able to load such a plugin!" << endl;
-			cout << "or it had no " << which << " symbol exported (see above)" << endl;
+			if (!plugin)
+			{
+				cout << "Was not able to load such a plugin!" << endl;
+				cout << "or it had no " << which << " symbol exported (see above)" << endl;
+			}
+			if (nrStoragePlugins>1) cout << "Already to many storage plugins" << endl;
 			cout << "Do you want to (P)roceed with next plugin (current will be left empty)?" << endl;
 			cout << "Do you want to go (B)ack to the first plugin?" << endl;
 			cout << "Do you want to (R)etry this plugin?" << endl;
@@ -96,9 +117,11 @@ KeySet MountCommand::addPlugins(std::string name, std::string which)
 			cin >> answer;
 			if (answer == "P" || answer == "Proceed" || answer == "(P)roceed" || answer == "p")
 			{
+				if (isStoragePlugin) --nrStoragePlugins;
 				continue;
 			} else if (answer == "R" || answer == "Retry" || answer == "(R)etry" || answer == "r")
 			{
+				if (isStoragePlugin) --nrStoragePlugins;
 				--i;
 				continue;
 			} else if (answer == "B" || answer == "Back" || answer == "(B)ack" || answer == "b")
@@ -107,8 +130,10 @@ KeySet MountCommand::addPlugins(std::string name, std::string which)
 				return KeySet(static_cast<ckdb::KeySet*>(0));
 			} else if (answer == "F" || answer == "Finish" || answer == "(F)inish" || answer == "f")
 			{
+				if (isStoragePlugin) --nrStoragePlugins;
 				break;
-			} else throw CommandAbortException();
+			}
+			throw CommandAbortException();
 		}
 
 		std::ostringstream pluginNumber;
@@ -132,6 +157,14 @@ KeySet MountCommand::addPlugins(std::string name, std::string which)
 				"to know there relative location of the keys to fetch or write.",
 				KEY_END));
 		}
+	}
+
+	if (nrStoragePlugins != 1)
+	{
+		cerr << "You need to provide a storage plugin, but did not" << endl;
+		cerr << "Will go back to the first plugin" << endl;
+		cout << endl;
+		return KeySet(static_cast<ckdb::KeySet*>(0));
 	}
 
 	cout << endl;
