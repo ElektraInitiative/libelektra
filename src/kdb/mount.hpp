@@ -4,7 +4,7 @@
 #include <command.hpp>
 #include <kdb>
 
-class NameAlreadyInUseException : public CommandException
+struct NameAlreadyInUseException : public CommandException
 {
 	virtual const char* what() const throw()
 	{
@@ -12,7 +12,7 @@ class NameAlreadyInUseException : public CommandException
 	}
 };
 
-class MountpointAlreadyInUseException : public CommandException
+struct MountpointAlreadyInUseException : public CommandException
 {
 	virtual const char* what() const throw()
 	{
@@ -20,7 +20,7 @@ class MountpointAlreadyInUseException : public CommandException
 	}
 };
 
-class MountpointInvalidException : public CommandException
+struct MountpointInvalidException : public CommandException
 {
 	virtual const char* what() const throw()
 	{
@@ -29,7 +29,7 @@ class MountpointInvalidException : public CommandException
 	}
 };
 
-class PathInvalidException : public CommandException
+struct PathInvalidException : public CommandException
 {
 	virtual const char* what() const throw()
 	{
@@ -37,6 +37,63 @@ class PathInvalidException : public CommandException
 			"You must provide a valid file name for the global path";
 	}
 };
+
+struct PluginCheckException : public CommandException
+{
+	virtual const char* what() const throw()
+	{
+		return  "When you read this, that means there was something wrong with the plugin.\n"
+			"Seems like a check could not specify the error any further";
+	}
+};
+
+struct NoPlugin : public PluginCheckException
+{
+	virtual const char* what() const throw()
+	{
+		return  "Was not able to load such a plugin!\n"
+			"Maybe you misspelled it, there is no such plugin or the loader has problems.\n"
+			"You might want to try to set LD_LIBRARY_PATH to /usr/lib/elektra.";
+	}
+};
+
+struct MissingNeeded : public PluginCheckException
+{
+	std::string need;
+	MissingNeeded (std::string const& need) :
+		need(need)
+	{}
+	~MissingNeeded () throw()
+	{}
+	virtual const char* what() const throw()
+	{
+		return std::string(std::string("The plugin ") + need + " is needed by this plugin but it is not provided.").c_str();
+	}
+};
+
+struct MissingSymbol: public PluginCheckException
+{
+	std::string symbol;
+	MissingSymbol (std::string const& symbol) :
+		symbol(symbol)
+	{}
+	~MissingSymbol () throw()
+	{}
+	virtual const char* what() const throw()
+	{
+		return std::string(std::string("The necessary symbol ") + symbol + " is missing in that plugin!").c_str();
+	}
+};
+
+struct StoragePlugin : public PluginCheckException
+{
+	virtual const char* what() const throw()
+	{
+		return "There need to be exactly one storage plugin!";
+	}
+};
+
+
 
 class MountCommand : public Command
 {

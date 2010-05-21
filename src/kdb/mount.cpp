@@ -14,6 +14,31 @@ using namespace kdb;
 
 std::string MountCommand::root = "system/elektra/mountpoints";
 
+struct Plugin
+{
+	ckdb::Plugin *plugin;
+
+	Plugin(std::string const& pluginName, KeySet const& testConfig)
+	{
+		plugin = ckdb::pluginOpen(pluginName.c_str(), testConfig.dup());
+	}
+
+	~Plugin()
+	{
+		ckdb::pluginClose(plugin);
+	}
+
+	ckdb::Plugin *operator->()
+	{
+		return plugin;
+	}
+
+	bool operator!()
+	{
+		return !plugin;
+	}
+};
+
 MountCommand::MountCommand()
 {}
 
@@ -31,6 +56,7 @@ bool MountCommand::checkFile(std::string path)
 KeySet MountCommand::addPlugins(std::string name, std::string which)
 {
 	KeySet ret;
+	vector <string> alreadyProvided;
 	int nrStoragePlugins = 0;
 	ret.append (*Key (root + "/" + name + "/" + which + "plugins",
 		KEY_COMMENT, "List of plugins to use",
@@ -64,11 +90,29 @@ KeySet MountCommand::addPlugins(std::string name, std::string which)
 				KEY_COMMENT, "Test config for loading a plugin.",
 				KEY_END),
 			KS_END);
-
 		bool isStoragePlugin = false;
-		ckdb::Plugin *plugin = ckdb::pluginOpen(pluginName.c_str(), testConfig.dup());
-		if (plugin)
-		{
+
+		try {
+			Plugin plugin (pluginName, testConfig);
+			if (!plugin) throw NoPlugin();
+
+			std::string provide;
+			std::stringstream ss(plugin->provides);
+			while (ss >> provide)
+			{
+				alreadyProvided.push_back(provide);
+				cout << "add provide: " << provide << endl;
+			}
+			std::string need;
+			std::stringstream nss(plugin->needs);
+			while (nss >> need)
+			{
+				cout << "check for need " << need << endl;;
+				if (std::find(alreadyProvided.begin(), alreadyProvided.end(), need) == alreadyProvided.end())
+				{
+					throw MissingNeeded(need);
+				}
+			}
 			if (std::string(plugin->provides).find("storage") != string::npos)
 			{
 				cout << "This is a storage plugin" << endl;
@@ -85,28 +129,25 @@ KeySet MountCommand::addPlugins(std::string name, std::string which)
 			{
 				if (!plugin->kdbGet)
 				{
-					cout << "get symbol missing" << endl;
-					plugin = 0;
+					throw MissingSymbol("kdbGet");
 				}
 			}
 			else if (which == "set")
 			{
 				if (!plugin->kdbSet)
 				{
-					cout << "set symbol missing" << endl;
-					plugin = 0;
+					throw MissingSymbol("kdbSet");
 				}
 			}
-		}
-		ckdb::pluginClose(plugin);
-		if (!plugin || nrStoragePlugins>1)
-		{
-			if (!plugin)
+			if (nrStoragePlugins>1)
 			{
-				cout << "Was not able to load such a plugin!" << endl;
-				cout << "or it had no " << which << " symbol exported (see above)" << endl;
+				throw StoragePlugin();
 			}
-			if (nrStoragePlugins>1) cout << "Already to many storage plugins" << endl;
+		}
+		catch (PluginCheckException const& e)
+		{
+			cout << "There is a problem with this plugin" << endl;
+			cout << e.what() << endl;
 			cout << "Do you want to (P)roceed with next plugin (current will be left empty)?" << endl;
 			cout << "Do you want to go (B)ack to the first plugin?" << endl;
 			cout << "Do you want to (R)etry this plugin?" << endl;

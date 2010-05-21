@@ -68,7 +68,7 @@ Plugin *KDBEXPORT(backend)
 		KDB_PLUGIN_AUTHOR,	"Markus Raab <elektra@markus-raab.org>",
 		KDB_PLUGIN_LICENCE,	"BSD",
 		KDB_PLUGIN_DESCRIPTION,	"This plugin composes other plugins together to a backend",
-		KDB_PLUGIN_NEEDS,	"tracer dump logger",
+		KDB_PLUGIN_NEEDS,	"tracer storage logger",
 		KDB_PLUGIN_PROVIDES,	"",
 		KDB_PLUGIN_END);
 }
