@@ -46,8 +46,8 @@ public:
 
 	size_t size () const;
 
-	size_t append (const Key &toAppend);
-	size_t append (const KeySet &toAppend);
+	ssize_t append (const Key &toAppend);
+	ssize_t append (const KeySet &toAppend);
 
 	Key pop();
 
@@ -181,12 +181,12 @@ inline Key KeySet::lookup (const char *name, const option_t options) const
 	return Key(k);
 }
 
-inline size_t KeySet::append (const Key &toAppend)
+inline ssize_t KeySet::append (const Key &toAppend)
 {
 	return ckdb::ksAppendKey(ks, toAppend.getKey());
 }
 
-inline size_t KeySet::append (const KeySet &toAppend)
+inline ssize_t KeySet::append (const KeySet &toAppend)
 {
 	return ckdb::ksAppend(ks, toAppend.getKeySet());
 }

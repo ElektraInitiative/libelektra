@@ -19,6 +19,11 @@ MountCommand::MountCommand()
 
 bool MountCommand::checkFile(std::string path)
 {
+	if (path[0] != '/')
+	{
+		cerr << "You must use an absolute path" << endl;
+		return false;
+	}
 	std::ofstream f(path.c_str());
 	return f.is_open();
 }
@@ -29,7 +34,9 @@ KeySet MountCommand::addPlugins(std::string name, std::string which)
 	ret.append (*Key (root + "/" + name + "/" + which + "plugins",
 		KEY_COMMENT, "List of plugins to use",
 		KEY_END));
+
 	cout << "Now you have to provide some " << which << " plugins which should be used for that backend" << endl;
+	cout << "Exactly one plugin must be a storage plugin" << endl;
 	for (int i=0; i<10; ++i)
 	{
 		cout << "Enter the " << i << " plugin to use." << endl;
@@ -96,12 +103,8 @@ KeySet MountCommand::addPlugins(std::string name, std::string which)
 				continue;
 			} else if (answer == "B" || answer == "Back" || answer == "(B)ack" || answer == "b")
 			{
-				i=-1;
-				ret.clear();
-				ret.append (*Key (root + "/" + name + "/" + which + "plugins",
-					KEY_COMMENT, "List of plugins to use",
-					KEY_END));
-				continue;
+				cout << endl;
+				return KeySet(static_cast<ckdb::KeySet*>(0));
 			} else if (answer == "F" || answer == "Finish" || answer == "(F)inish" || answer == "f")
 			{
 				break;
@@ -131,6 +134,7 @@ KeySet MountCommand::addPlugins(std::string name, std::string which)
 		}
 	}
 
+	cout << endl;
 	return ret;
 }
 
@@ -272,13 +276,11 @@ int MountCommand::execute(int , char** )
 
 
 
-	conf.append(addPlugins(name, "set"));
-	cout << endl;
+	while (conf.append(addPlugins(name, "set")) == -1) ;
 
 
 
-	conf.append(addPlugins(name, "get"));
-	cout << endl;
+	while (conf.append(addPlugins(name, "get")) == -1) ;
 
 
 
