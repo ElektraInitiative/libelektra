@@ -23,11 +23,12 @@ KeySet MountCommand::addPlugins(std::string name, std::string which)
 	ret.append (*Key (root + "/" + name + "/" + which + "plugins",
 		KEY_COMMENT, "List of plugins to use",
 		KEY_END));
+	cout << "Now you have to provide some " << which << " plugins which should be used for that backend" << endl;
 	for (int i=0; i<10; ++i)
 	{
 		cout << "Enter the " << i << " plugin to use." << endl;
 		cout << "Write \".\" as name in a single line if you are finished" << endl;
-		cout << "Name of the plugin: ";
+		cout << "Name of the " << which << " plugin: ";
 		std::string pluginName;
 		cin >> pluginName;
 		if (pluginName == ".") break;
@@ -86,8 +87,8 @@ KeySet MountCommand::addPlugins(std::string name, std::string which)
 			} else throw 3;
 		}
 
-		std::istringstream pluginNumber;
-		pluginNumber >> i;
+		std::ostringstream pluginNumber;
+		pluginNumber << i;
 		ret.append (*Key (root + "/" + name + "/" + which + std::string("plugins/#") + pluginNumber.str() + pluginName,
 			KEY_COMMENT, "A plugin",
 			KEY_END));
@@ -118,7 +119,14 @@ int MountCommand::execute(int , char** )
 
 	std::vector <std::string> names;
 	conf.rewind();
-	Key cur;
+
+	Key cur = conf.lookup(Key(root, KEY_END));
+
+	if (!cur) conf.append ( *Key(root,
+			KEY_COMMENT, "Below are the mountpoints.",
+			KEY_END));
+	else conf.rewind();
+
 	while (cur = conf.next())
 	{
 		if (Key(root, KEY_END).isDirectBelow(cur))
@@ -130,37 +138,50 @@ int MountCommand::execute(int , char** )
 	cout << "Already used are: ";
 	std::copy (names.begin(), names.end(), ostream_iterator<std::string>(cout, " "));
 	std::string name;
-	std::cout << endl << "Please provide a unique name: ";
+	std::cout << endl << "Name: ";
 	cin >> name;
 	if (std::find(names.begin(), names.end(), name) != names.end())
 	{
 		cerr << "Name already used, will abort" << endl;
 		return 2;
 	}
+
 	conf.append ( *Key(name,
-			KEY_COMMENT, "Below are the mountpoints.",
-			KEY_END));
+		KEY_COMMENT, "This is a mounted backend.",
+		KEY_END));
+
 	conf.append ( *Key( root  + "/" + name,
 			KEY_DIR,
 			KEY_VALUE, "",
 			KEY_COMMENT, "This is a mounted backend, see subkeys for more information",
 			KEY_END));
 
+	cout << "Please use / for the root backend" << endl;
 	cout << "Enter the mountpoint: ";
 	std::string mp;
 	cin >> mp;
-	if (!Key (mp, KEY_END))
+	if (mp == "/")
 	{
-		cerr << "This was not a valid key name" << endl;
-		cerr << "Examples: system/hosts or user/sw/app" << endl;
-		return 3;
+		conf.append ( *Key(	root  + "/" + name + "/mountpoint",
+				KEY_VALUE, "",
+				KEY_COMMENT, "The mountpoint says the location where the backend should be mounted.\n"
+				"It must be a valid, canonical elektra path. There are no ., .. or multiple slashes allowed.\n"
+				"You are not allowed to mount inside system/elektra.",
+				KEY_END));
+	} else {
+		if (!Key (mp, KEY_END))
+		{
+			cerr << "This was not a valid key name" << endl;
+			cerr << "Examples: system/hosts or user/sw/app" << endl;
+			return 3;
+		}
+		conf.append ( *Key(	root  + "/" + name + "/mountpoint",
+				KEY_VALUE, mp.c_str(),
+				KEY_COMMENT, "The mountpoint says the location where the backend should be mounted.\n"
+				"It must be a valid, canonical elektra path. There are no ., .. or multiple slashes allowed.\n"
+				"You are not allowed to mount inside system/elektra.",
+				KEY_END));
 	}
-	conf.append ( *Key(	root  + "/" + name + "/mountpoint",
-			KEY_VALUE, mp.c_str(),
-			KEY_COMMENT, "The mountpoint says the location where the backend should be mounted.\n"
-			"It must be a valid, canonical elektra path. There are no ., .. or multiple slashes allowed.\n"
-			"You are not allowed to mount inside system/elektra.",
-			KEY_END));
 
 	conf.append(addPlugins(name, "set"));
 	conf.append(addPlugins(name, "get"));
@@ -184,6 +205,12 @@ int MountCommand::execute(int , char** )
 	cout << "Name:       " << name << endl;
 	cout << "Mountpoint: " << mp << endl;
 	cout << "Path:       " << path << endl;
+	cout << "The configuration which will be set is:" << endl;
+	conf.rewind();
+	while (Key k = conf.next())
+	{
+		cout << k.getName() << " " << k.getString() << endl;
+	}
 	cout << "Are you sure you want to do that (y/N): ";
 	std::string answer;
 	cin >> answer;
