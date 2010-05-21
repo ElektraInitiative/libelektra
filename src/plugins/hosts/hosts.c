@@ -327,7 +327,7 @@ Plugin *KDBEXPORT(hosts)
 		KDB_PLUGIN_LICENCE,	"BSD",
 		KDB_PLUGIN_DESCRIPTION,	"Reads and writes /etc/hosts content",
 		KDB_PLUGIN_PROVIDES,	"storage",
-		KDB_PLUGIN_NEEDS,	"lock",
+		KDB_PLUGIN_NEEDS,	"",
 		KDB_PLUGIN_END);
 }
 
