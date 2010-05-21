@@ -127,12 +127,20 @@ int MountCommand::execute(int , char** )
 	std::vector <std::string> names;
 	conf.rewind();
 
-	Key cur = conf.lookup(Key(root, KEY_END));
-
-	if (!cur) conf.append ( *Key(root,
+	Key cur;
+       
+	try {
+		cur = conf.lookup(Key(root, KEY_END));
+	} catch (KeySetNotFound const& e)
+	{
+		cout << "Did not find the root key, will add them" << endl;
+		cout << "Note that nothing will be written out" << endl;
+		cout << "until you say y at the very end of the mounting process" << endl;
+		conf.append ( *Key(root,
 			KEY_COMMENT, "Below are the mountpoints.",
 			KEY_END));
-	else conf.rewind();
+		conf.rewind();
+	}
 
 	while (cur = conf.next())
 	{
