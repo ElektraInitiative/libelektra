@@ -112,10 +112,17 @@ KeySet MountCommand::addPlugins(std::string name, std::string which)
 
 int MountCommand::execute(int , char** )
 {
-	KeySet conf;
-	kdb.get(conf, Key(root, KEY_END));
 	cout << "Welcome to interactive mounting" << endl;
 	cout << "Please provide a unique name." << endl;
+
+	KeySet conf;
+	try {
+		kdb.get(conf, Key(root, KEY_END));
+	} catch (KDBException const& e)
+	{
+		cout << "Could not get configuration" << endl;
+		cout << "Seems like this is your first mount" << endl;
+	}
 
 	std::vector <std::string> names;
 	conf.rewind();
