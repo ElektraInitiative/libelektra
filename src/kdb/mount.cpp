@@ -124,7 +124,6 @@ int MountCommand::execute(int , char** )
 		cout << "Seems like this is your first mount" << endl;
 	}
 
-	std::vector <std::string> names;
 	conf.rewind();
 
 	Key cur;
@@ -133,7 +132,7 @@ int MountCommand::execute(int , char** )
 		cur = conf.lookup(Key(root, KEY_END));
 	} catch (KeySetNotFound const& e)
 	{
-		cout << "Did not find the root key, will add them" << endl;
+		cout << "Did not find the root key, will add it" << endl;
 		cout << "Note that nothing will be written out" << endl;
 		cout << "until you say y at the very end of the mounting process" << endl;
 		conf.append ( *Key(root,
@@ -142,28 +141,28 @@ int MountCommand::execute(int , char** )
 		conf.rewind();
 	}
 
+	std::vector <std::string> names;
 	while (cur = conf.next())
 	{
 		if (Key(root, KEY_END).isDirectBelow(cur))
 		{
-			cout << "adding " << cur.getName() << endl;
 			names.push_back(cur.getBaseName());
-		} else cout << "not adding " << cur.getName() << endl;
+		}
 	}
 	cout << "Already used are: ";
 	std::copy (names.begin(), names.end(), ostream_iterator<std::string>(cout, " "));
+	cout << endl;
 	std::string name;
-	std::cout << endl << "Name: ";
+	std::cout << "Name: ";
 	cin >> name;
 	if (std::find(names.begin(), names.end(), name) != names.end())
 	{
 		cerr << "Name already used, will abort" << endl;
 		return 2;
 	}
+	cout << endl;
 
-	conf.append ( *Key(name,
-		KEY_COMMENT, "This is a mounted backend.",
-		KEY_END));
+
 
 	conf.append ( *Key( root  + "/" + name,
 			KEY_DIR,
@@ -171,10 +170,46 @@ int MountCommand::execute(int , char** )
 			KEY_COMMENT, "This is a mounted backend, see subkeys for more information",
 			KEY_END));
 
+	std::vector <std::string> mountpoints;
+	KeySet ksMountpoints;
+	conf.rewind();
+	while (cur = conf.next())
+	{
+		if (cur.getBaseName() == "mountpoint")
+		{
+			if (cur.getString() == "")
+			{
+				mountpoints.push_back("/");
+			} else {
+				try {
+					conf.lookup(Key(cur.getString(), KEY_END));
+				} catch (KeySetNotFound const& e)
+				{
+					cout << "Did not find the mountpoint " << cur.getString() << ", will add it" << endl;
+					// Hack: currently the mountpoints need to exist, so that they can be found
+					ksMountpoints.append ( *Key(cur.getString(),
+						KEY_COMMENT, "This is a mountpoint",
+						KEY_META, "mountpoint", "",
+						KEY_END));
+				}
+				mountpoints.push_back(cur.getString());
+			}
+		};
+	}
+
+	conf.append(ksMountpoints);
+	cout << "Already used are: ";
+	std::copy (mountpoints.begin(), mountpoints.end(), ostream_iterator<std::string>(cout, " "));
+	cout << endl;
 	cout << "Please use / for the root backend" << endl;
 	cout << "Enter the mountpoint: ";
 	std::string mp;
 	cin >> mp;
+	if (std::find(mountpoints.begin(), mountpoints.end(), name) != mountpoints.end())
+	{
+		cerr << "Mountpoint already used, will abort" << endl;
+		return 2;
+	}
 	if (mp == "/")
 	{
 		conf.append ( *Key(	root  + "/" + name + "/mountpoint",
@@ -190,6 +225,11 @@ int MountCommand::execute(int , char** )
 			cerr << "Examples: system/hosts or user/sw/app" << endl;
 			return 3;
 		}
+		// Hack: currently the mountpoints need to exist, so that they can be found
+		conf.append ( *Key(mp,
+			KEY_COMMENT, "This is a mounted backend.",
+			KEY_META, "mountpoint", "",
+			KEY_END));
 		conf.append ( *Key(	root  + "/" + name + "/mountpoint",
 				KEY_VALUE, mp.c_str(),
 				KEY_COMMENT, "The mountpoint says the location where the backend should be mounted.\n"
@@ -197,9 +237,14 @@ int MountCommand::execute(int , char** )
 				"You are not allowed to mount inside system/elektra.",
 				KEY_END));
 	}
+	cout << endl;
+
+
 
 	conf.append(addPlugins(name, "set"));
 	conf.append(addPlugins(name, "get"));
+
+
 
 	cout << "Enter a path to a file in the filesystem (for all plugins): ";
 	std::string path;
