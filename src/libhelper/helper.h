@@ -9,18 +9,6 @@
 #include <unistd.h>
 #endif
 
-#ifdef HAVE_ICONV
-#include <iconv.h>
-#endif
-
-#ifdef HAVE_LOCALE_H
-#include <locale.h>
-#endif
-
-#ifdef HAVE_LANGINFO_H
-#include <langinfo.h>
-#endif
-
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif

@@ -111,10 +111,6 @@
 #endif
 
 
-#define UTF8_TO   1
-#define UTF8_FROM 0
-
-
 
 #if DEBUG
 # define kdbPrintDebug(text) printf("%s:%d: %s\n", __FUNCTION__, __LINE__ , text);
