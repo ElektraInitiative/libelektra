@@ -27,8 +27,6 @@
 #endif
 
 
-#include <langinfo.h>
-
 #include <tests.h>
 
 

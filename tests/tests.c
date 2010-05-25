@@ -166,15 +166,9 @@ int compare_key (Key *k1, Key *k2)
 }
 
 /**Compare two keysets.
+ *
  * Compare if two keysets contain the same keys.
- * There is a filter for ks, to remove inactive keys, directories and non-directories
- * You can use:
- * - option_t::KDB_O_NODIR 
- *   remove all directories (keyIsDir)
- * - option_t::KDB_O_DIRONLY 
- *   remove everything but directories (!keyIsDir)
- * - option_t::KDB_O_INACTIVE (keyIsInactive) 
- *   remove all inactive keys
+ * @return 0 on success
  * */
 int compare_keyset (KeySet *ks, KeySet *ks2)
 {

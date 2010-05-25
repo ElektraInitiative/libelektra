@@ -27,6 +27,30 @@
 
 #include "iconv.h"
 
+static inline const char* getFrom(Plugin *handle)
+{
+	const char *from;
+	Key *k;
+
+	k = ksLookupByName(pluginGetConfig(handle), "/from", 0);
+	if (!k) from = nl_langinfo(CODESET);
+	else from = keyString(k);
+
+	return from;
+}
+
+static inline const char* getTo(Plugin *handle)
+{
+	const char *to;
+	Key *k;
+
+	k = ksLookupByName(pluginGetConfig(handle), "/to", 0);
+	if (!k) to = "UTF-8";
+	else to = keyString(k);
+
+	return to;
+}
+
 /**
  * Checks if UTF-8 conversion is needed in current context.
  * if nl_langinfo() is not available, no conversion is ever needed.
@@ -39,9 +63,9 @@
  * @return anything else if needed
  * @ingroup backendhelper
  */
-static int kdbbNeedsUTF8Conversion()
+static int kdbbNeedsUTF8Conversion(Plugin *handle)
 {
-	return strcmp(nl_langinfo(CODESET),"UTF-8");
+	return strcmp(getFrom(handle),getTo(handle));
 }
 
 
@@ -80,24 +104,23 @@ setlocale (LC_ALL, "");
  * @ingroup backendhelper
  *
  */
-static int kdbbUTF8Engine(int direction, char **string, size_t *inputOutputByteSize)
+static int kdbbUTF8Engine(Plugin *handle, int direction, char **string, size_t *inputOutputByteSize)
 {
 /* Current solution is not very complete.
  * Iconv might well be available when a usable nl_langinfo is not.
  * In this case we it should be possible to determine charset through other means
  * See http://www.cl.cam.ac.uk/~mgk25/unicode.html#activate for more info on a possible solution */
  
-	char *currentCharset=0;
 	char *converted=0;
 	char *readCursor, *writeCursor;
 	size_t bufferSize;
 	iconv_t converter;
-	
-	if (kdbbNeedsUTF8Conversion() && *inputOutputByteSize) currentCharset=nl_langinfo(CODESET);
-	else return 0;
 
-	if (direction==UTF8_TO) converter=iconv_open("UTF-8",currentCharset);
-	else converter=iconv_open(currentCharset,"UTF-8");
+	if (!*inputOutputByteSize) return 0;
+	if (!kdbbNeedsUTF8Conversion(handle)) return 0;
+
+	if (direction==UTF8_TO) converter=iconv_open(getTo(handle),getFrom(handle));
+	else converter=iconv_open(getFrom(handle),getTo(handle));
 
 	if (converter == (iconv_t)(-1)) return -1;
 
@@ -154,9 +177,9 @@ ssize_t kdbGet_iconv(Plugin *handle, KeySet *returned, const Key *parentKey)
 {
 	ssize_t nr_keys = 0;
 	Key *cur;
+	const Key *meta;
 
-	// TODO not only utf8!
-	if (!kdbbNeedsUTF8Conversion()) return 0;
+	if (!kdbbNeedsUTF8Conversion(handle)) return 0;
 
 	while ((cur = ksNext(returned)) != 0)
 	{
@@ -167,7 +190,7 @@ ssize_t kdbGet_iconv(Plugin *handle, KeySet *returned, const Key *parentKey)
 			char *convertedData=malloc(convertedDataSize);
 
 			memcpy(convertedData,keyString(cur),keyGetValueSize(cur));
-			if (kdbbUTF8Engine(UTF8_FROM,&convertedData,&convertedDataSize)) {
+			if (kdbbUTF8Engine(handle, UTF8_FROM, &convertedData, &convertedDataSize)) {
 				free(convertedData);
 				return -1;
 			}
@@ -175,7 +198,21 @@ ssize_t kdbGet_iconv(Plugin *handle, KeySet *returned, const Key *parentKey)
 			free(convertedData);
 			++ nr_keys;
 		}
-		// TODO handle comment too
+		meta = keyGetMeta(cur, "comment");
+		if (meta)
+		{
+			/* String or similar type of value */
+			size_t convertedDataSize=keyGetValueSize(meta);
+			char *convertedData=malloc(convertedDataSize);
+
+			memcpy(convertedData,keyString(meta),keyGetValueSize(meta));
+			if (kdbbUTF8Engine(handle, UTF8_FROM, &convertedData, &convertedDataSize)) {
+				free(convertedData);
+				return -1;
+			}
+			keySetMeta(cur, "comment", convertedData);
+			free(convertedData);
+		}
 	}
 
 	return nr_keys; /* success */
@@ -185,8 +222,9 @@ ssize_t kdbSet_iconv(Plugin *handle, KeySet *returned, const Key *parentKey)
 {
 	ssize_t nr_keys = 0;
 	Key *cur;
+	const Key *meta;
 
-	if (!kdbbNeedsUTF8Conversion()) return 0;
+	if (!kdbbNeedsUTF8Conversion(handle)) return 0;
 
 	while ((cur = ksNext(returned)) != 0)
 	{
@@ -197,7 +235,7 @@ ssize_t kdbSet_iconv(Plugin *handle, KeySet *returned, const Key *parentKey)
 			char *convertedData=malloc(convertedDataSize);
 
 			memcpy(convertedData,keyString(cur),keyGetValueSize(cur));
-			if (kdbbUTF8Engine(UTF8_TO,&convertedData,&convertedDataSize)) {
+			if (kdbbUTF8Engine(handle, UTF8_TO, &convertedData, &convertedDataSize)) {
 				free(convertedData);
 				return -1;
 			}
@@ -205,9 +243,24 @@ ssize_t kdbSet_iconv(Plugin *handle, KeySet *returned, const Key *parentKey)
 			free(convertedData);
 			++ nr_keys;
 		}
+		meta = keyGetMeta(cur, "comment");
+		if (meta)
+		{
+			/* String or similar type of value */
+			size_t convertedDataSize=keyGetValueSize(meta);
+			char *convertedData=malloc(convertedDataSize);
+
+			memcpy(convertedData,keyString(meta),keyGetValueSize(meta));
+			if (kdbbUTF8Engine(handle, UTF8_TO, &convertedData, &convertedDataSize)) {
+				free(convertedData);
+				return -1;
+			}
+			keySetMeta(cur, "comment", convertedData);
+			free(convertedData);
+		}
 	}
 
-	return nr_keys;
+	return nr_keys; /* success */
 }
 
 Plugin *KDBEXPORT(iconv)
