@@ -5,8 +5,8 @@ Make sure to read DESIGN together with this document.
 
 = Folder structure =
 
-After you downloaded and unpacked elektra you see untypically many
-folders. The reason is that elektra project consists of many activities.
+After you downloaded and unpacked Elektra you see untypically many
+folders. The reason is that Elektra project consists of many activities.
 
 The most important are:
 src ... Here is the source for the library and the tools itself.
@@ -25,15 +25,15 @@ libloader is responsible for loading the backend modules. It works for
 various operating systems by using libltdl, but has an optimized code
 for static linking and win32.
 
-kdb and preload are tools to access and initialize the elektra database.
+kdb and preload are tools to access and initialize the Elektra database.
 
 = Compiling =
 
-To compile a program using elektra, use:
+To compile a program using Elektra, use:
  $ cc `pkg-config --cflags elektra` -o myapp.o -c myapp.c
  $ cc `pkg-config --libs elektra`   -o myapp myapp.o
 
-To compile a backend for elektra, use:
+To compile a backend for Elektra, use:
  $ cc -fpic `pkg-config --cflags elektra` -o myback.o -c myback.c
  $ cc -shared -fpic `pkg-config --libs elektra` -o libelektra-myback.so myback.o
 

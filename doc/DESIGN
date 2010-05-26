@@ -2,13 +2,20 @@ Elektra Design Document
 =======================
 
 This document describes the design of the c-api and gives
-hints for binding writers. It does not aim to backend writers
-because this detail is hidden from the programmer.
+hints for binding writers. It does not aim to plugin writers
+because this detail is hidden from the programmer and is
+Elektra specific.
 
 Elektra follows the design principles to make it hard to use
 it wrong and fully aims towards an easy to use API for
-programmers reading and writing configuration. The datastructures
+programmers reading and writing configuration. The data structures
 are optimized to get, set and lookup values easily and fast.
+
+The idea is that the KDB API is not only implemented by Elektra.
+Elektra provides a full blown architecture to really support
+modern Linux Systems, but comes with some overhead. In this
+document the KDB API is described. But sometimes there are
+hints for elektra specific conventions.
 
 
 Versions and Compatibility
@@ -23,6 +30,10 @@ Compatibility will be the aim of elektra after 1.0. 1.0.x will
 be just bug fixes and corrected behaviour and documentation.
 However, Applications written for elektra 1.0 should always work
 and build together with any elektra released in the future.
+
+The KDB API also won't be finished before 1.0 state. But since
+0.7 it is foreseeable that the API does not need any
+more fundamental changes.
 
 But before we reach a 1.0 state, we must perceive that a
 mature, easy, clean and yet minimalistic powerful library is
@@ -112,7 +123,8 @@ Off-by-one
 Off-by-one errors (OBOE) are avoided by starting all pointers with 0
 as usual in C. The size returned by the *GetSize functions
 (keyGetValueSize, keyGetCommentSize and keyGetOwnerSize) is exactly
-the size needed to be allocated.
+the size needed to be allocated. So if you add 1 to it, too much is
+allocated, but no error will occur.
 
 
 Minimal Set
@@ -245,6 +257,11 @@ written in upper case letters.
 Only singular is used for all names.
 
 
+Function Names not belonging to one of the three classes are Elektra specific.
+Those have the prefix elektra*. They will always be Elektra specific and
+won't be implemented by other KDB implementations.
+
+
 const
 =====
 
@@ -258,6 +275,8 @@ const char *keyName(const Key *key);
 const char *keyBaseName(const Key *key);
 const char *keyComment(const Key *key);
 const void *keyValue(const Key *key);
+const char *keyString(const Key *key);
+const Key  *keyGetMeta(const Key *key, const char* metaName)
 
 These functions are really thought to get something and not to change anything!
 Elektra will lose the knowledge if these keys are synchronized or not. So
