@@ -2049,6 +2049,7 @@ void test_ksSync()
 	printf ("Test sync flag of KeySet\n");
 
 	KeySet *ks;
+	Key *key;
 
 	ks = ksNew(0);
 	succeed_if (ksNeedSync(ks) == 0, "need sync after creation");
@@ -2078,8 +2079,10 @@ void test_ksSync()
 	ksLookupByName(ks, "user/key", 0);
 	succeed_if (ksNeedSync(ks) == 0, "need sync after new key");
 
-	ksLookupByName(ks, "user/key", KDB_O_POP);
+	key = ksLookupByName(ks, "user/key", KDB_O_POP);
 	succeed_if (ksNeedSync(ks) == 1, "need sync after new key");
+	keyDel (key);
+
 	ksDel (ks);
 }
 
