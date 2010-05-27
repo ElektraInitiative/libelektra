@@ -163,21 +163,18 @@ inline Key KeySet::pop()
 inline Key KeySet::lookup (const Key &key, const option_t options) const
 {
 	ckdb::Key *k = ckdb::ksLookup(ks, key.getKey(), options);
-	if (k==0) throw KeySetNotFound();
 	return Key(k);
 }
 
 inline Key KeySet::lookup (const std::string &name, const option_t options) const
 {
 	ckdb::Key *k = ckdb::ksLookupByName(ks, name.c_str(), options);
-	if (k==0) throw KeySetNotFound();
 	return Key(k);
 }
 
 inline Key KeySet::lookup (const char *name, const option_t options) const
 {
 	ckdb::Key *k = ckdb::ksLookupByName(ks, name, options);
-	if (k==0) throw KeySetNotFound();
 	return Key(k);
 }
 

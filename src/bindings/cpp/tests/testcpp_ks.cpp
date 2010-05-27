@@ -250,16 +250,20 @@ void test_lookup()
 		KS_END);
 
 	Key k1 = ks3.lookup("user/key3/1");
+	succeed_if (k1, "did not find key");
 	succeed_if (k1.getName() == "user/key3/1", "wrong keyname");
 
+	Key k2 = ks3.lookup("user/key3/2");
+	succeed_if (k2, "did not find key");
+	succeed_if (k2.getName() == "user/key3/2", "wrong keyname");
+
 	Key k3 = ks3.lookup("user/key3/3");
+	succeed_if (k3, "did not find key");
 	succeed_if (k3.getName() == "user/key3/3", "wrong keyname");
 	succeed_if (k3.getString() == "value", "wrong value");
 
-	try {
-		ks3.lookup("user/key3/4");
-		succeed_if (false, "Not Found not thrown for not existing key");
-	} catch (KeySetNotFound) { }
+	Key k4 = ks3.lookup("user/key3/4");
+	succeed_if (!k4, "Key does not exist");
 }
 
 
