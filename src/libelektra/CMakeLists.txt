@@ -63,6 +63,10 @@ if (BUILD_SHARED)
 			VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION})
 	set_target_properties (elektra PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 
+	#RPATH settings, see http://www.itk.org/Wiki/CMake_RPATH_handling
+	set_target_properties (elektra PROPERTIES
+			INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib/elektra:/usr/lib/elektra:/lib/elektra")
+
 	install (TARGETS elektra DESTINATION lib)
 endif (BUILD_SHARED)
 
