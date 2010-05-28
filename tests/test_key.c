@@ -2094,10 +2094,56 @@ void test_keyNamespace()
 	keyDel (key);
 }
 
+void fun()
+{}
+
+void test_binary()
+{
+	printf ("Test binary values\n");
+
+	Key *k = 0;
+
+	int i = 20;
+	int *p = &i;
+
+	k = keyNew(0);
+	succeed_if (keySetBinary(k, &p, sizeof(p)) == sizeof(p),
+			"could not set binary");
+
+	int *q;
+	succeed_if (keyGetBinary(k, &q, sizeof(q)) == sizeof(q),
+			"could not get binary");
+	succeed_if (p == q, "pointers to int are not equal");
+	succeed_if (*p == *q, "values are not equal");
+	succeed_if (*q == 20, "values are not equal");
+	succeed_if (*p == 20, "values are not equal");
+
+	keyDel (k);
+
+
+
+	union {void (*f)(); void* v;} conversation;
+
+	k = keyNew(0);
+	conversation.f = fun;
+	succeed_if (keySetBinary(k, &conversation.v, sizeof(conversation)) == sizeof(conversation),
+			"could not set binary");
+
+	conversation.v = 0;
+	conversation.f = 0;
+	void (*g) () = 0;
+	succeed_if (keyGetBinary(k, &conversation.v, sizeof(conversation)) == sizeof(conversation),
+			"could not get binary");
+	g = conversation.f;
+	succeed_if (g == fun, "pointers to functions are not equal");
+
+	keyDel (k);
+}
+
 
 int main(int argc, char** argv)
 {
-	printf("KEY  STRUCT  TESTS\n");
+	printf("    KEY  TESTS\n");
 	printf("==================\n\n");
 
 	init (argc, argv);
@@ -2120,6 +2166,7 @@ int main(int argc, char** argv)
 	test_keyMeta();
 	test_keyHelpers();
 	test_keyNamespace();
+	test_binary();
 
 	printf("\ntest_key RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
