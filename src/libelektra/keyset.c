@@ -968,6 +968,11 @@ Key *ksPop(KeySet *ks)
  *           KeySet browsing methods       *
  *******************************************/
 
+Key * ksIndex (KeySet *ks, size_t index)
+{
+	return ks->array[index];
+}
+
 
 
 /**
