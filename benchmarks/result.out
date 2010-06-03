@@ -1,0 +1,7 @@
+internal_iterator needed 1278
+external_iterator needed  662
+
+so external iterator costs only half
+but in absolute numbers both are very
+small (e.g. compared to the whole program
+which is 100Mil)

@@ -20,48 +20,26 @@ int creator (KeySet *large)
 	return 1;
 }
 
-void keyRemove (Key *key)
-{
-	key->flags |= 64;
-}
-
-int marker (KeySet *ks2)
-{
-	Key * k;
-
-	ksRewind (ks2);
-	while ((k = ksNext(ks2)) != 0) keyRemove(k);
-	ksSort (ks2); ksRewind (ks2);
-
-	return 1;
-}
-
 void doNothing (Key *k)
 {}
 
-int iterator (KeySet *ks2)
+int internal_iterator (KeySet *ks)
 {
 	Key * k;
 
-	ksRewind (ks2);
-	while ((k = ksNext(ks2)) != 0) doNothing (k);
+	ksRewind (ks);
+	while ((k = ksNext(ks)) != 0) doNothing (k);
 
 	return 1;
 }
 
-int xiter (KeySet *ks2)
+int external_iterator (KeySet *ks)
 {
 	Key * k;
-	int i;
-
-	for (i=0; i< 5000; i++)
-	{
-		ksRewind (ks2);
-		while ((k = ksNext(ks2)) != 0) doNothing (k);
-	}
-
+	for (int i = 0; i<ksGetSize(ks); ++i) doNothing (ks->array[i]);
 	return 1;
 }
+
 
 int main()
 {
@@ -80,29 +58,11 @@ int main()
 	succeed_if (creator (large), "could not create large keyset");
 	print_time ("New large keyset");
 
-	succeed_if (kdbSet (h, large, root, 0) >= 0, "could not set large keyset");
-	print_time ("Set large keyset");
-
-	succeed_if (kdbSet (h, large, root, 0) >= 0, "could not reset large keyset");
-	print_time ("Reset large keyset");
-
-	succeed_if (kdbGet (h, ks1, root, 0) >= 0, "could not get large keyset");
-	print_time ("Get large keyset");
-	
-	succeed_if (kdbGet (h, ks2, root, 0) >= 0, "could not get large keyset");
-	print_time ("Get large keyset");
-
-	succeed_if (marker (ks2), "could not remove large keyset");
-	print_time ("Mark large keyset");
-
-	succeed_if (iterator (ks2), "could not iterate large keyset");
-	print_time ("Iterate large keyset");
-
-	succeed_if (xiter (ks2), "could not iterate large keyset");
+	succeed_if (internal_iterator (ks2), "could not iterate large keyset");
 	print_time ("XIter large keyset");
 
-	succeed_if (kdbSet (h, ks2, root, 0) >= 0, "could not delete large keyset");
-	print_time ("Removed large keyset");
+	succeed_if (external_iterator (ks2), "could not iterate large keyset");
+	print_time ("Iterate large keyset");
 
 	keyDel (root);
 	ksDel (large);
