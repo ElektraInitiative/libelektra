@@ -43,17 +43,9 @@ int external_iterator (KeySet *ks)
 
 int main()
 {
-	KDB * h = kdbOpen();
-	KeySet * large = ksNew(NUM_KEY*NUM_DIR+1, KS_END);
-	KeySet * ks1 = ksNew(NUM_KEY*NUM_DIR+1, KS_END);
-	KeySet * ks2 = ksNew(NUM_KEY*NUM_DIR+1, KS_END);
-	KeySet * conf= ksNew (0);
-	Key * root = keyNew (KEY_ROOT, KEY_VALUE, "filesys", KEY_END);
+	KeySet * large = ksNew(NUM_KEY*NUM_DIR, KS_END);
 
 	init_time ();
-
-
-	// kdbMount (h, root, conf);
 
 	succeed_if (creator (large), "could not create large keyset");
 	print_time ("New large keyset");
@@ -64,12 +56,7 @@ int main()
 	succeed_if (external_iterator (large), "could not iterate large keyset");
 	print_time ("Iterate large keyset");
 
-	keyDel (root);
 	ksDel (large);
-	ksDel (ks1);
-	ksDel (ks2);
-	ksDel (conf);
-	kdbClose (h);
 	return nbError;
 }
 
