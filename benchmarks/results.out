@@ -1,5 +1,0 @@
-now with null ptr check we have:
-
-direct:   283 457
-external: 303 625
-internal: 516 398
