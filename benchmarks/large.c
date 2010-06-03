@@ -20,9 +20,8 @@ int creator (KeySet *large)
 	return 1;
 }
 
-void doMark (Key *k)
+void doSomething(Key *k)
 {
-	k->flags |= 64;
 }
 
 int internal_iterator (KeySet *ks)
@@ -30,14 +29,14 @@ int internal_iterator (KeySet *ks)
 	Key * k;
 
 	ksRewind (ks);
-	while ((k = ksNext(ks)) != 0) doMark (k);
+	while ((k = ksNext(ks)) != 0) doSomething (k);
 
 	return 1;
 }
 
 int external_iterator (KeySet *ks)
 {
-	for (int i = 0; i<ksGetSize(ks); ++i) doMark (ks->array[i]);
+	for (int i = 0; i<ksGetSize(ks); ++i) doSomething (ks->array[i]);
 	return 1;
 }
 
@@ -59,10 +58,10 @@ int main()
 	succeed_if (creator (large), "could not create large keyset");
 	print_time ("New large keyset");
 
-	succeed_if (internal_iterator (ks2), "could not iterate large keyset");
+	succeed_if (internal_iterator (large), "could not iterate large keyset");
 	print_time ("XIter large keyset");
 
-	succeed_if (external_iterator (ks2), "could not iterate large keyset");
+	succeed_if (external_iterator (large), "could not iterate large keyset");
 	print_time ("Iterate large keyset");
 
 	keyDel (root);
