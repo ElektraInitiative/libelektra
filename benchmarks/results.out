@@ -1,11 +1,7 @@
-With something a little bit more complex like
-keySetMeta it does not matter anymore which
-iterator is used.
+as expected now the internal_iterator is slightly more expensive
 
-costs:
-external: 16.487.208
-internal: 15.135.214
+internal: 16.689.844
+external: 14.932.578
 
-making the external even slightly more expensive,
-because there the keys already have meta data
-(next benchmark reverse)
+so external still have 89,47 % of the cost
+(but its significant)

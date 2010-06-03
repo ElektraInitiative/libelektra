@@ -51,11 +51,11 @@ int main()
 	succeed_if (creator (large), "could not create large keyset");
 	print_time ("New large keyset");
 
-	succeed_if (internal_iterator (large), "could not iterate large keyset");
-	print_time ("XIter large keyset");
-
 	succeed_if (external_iterator (large), "could not iterate large keyset");
-	print_time ("Iterate large keyset");
+	print_time ("External Iterator");
+
+	succeed_if (internal_iterator (large), "could not iterate large keyset");
+	print_time ("Internal Iterator");
 
 	ksDel (large);
 	return nbError;
