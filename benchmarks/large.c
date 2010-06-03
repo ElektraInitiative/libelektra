@@ -20,23 +20,24 @@ int creator (KeySet *large)
 	return 1;
 }
 
-void doNothing (Key *k)
-{}
+void doMark (Key *k)
+{
+	k->flags |= 64;
+}
 
 int internal_iterator (KeySet *ks)
 {
 	Key * k;
 
 	ksRewind (ks);
-	while ((k = ksNext(ks)) != 0) doNothing (k);
+	while ((k = ksNext(ks)) != 0) doMark (k);
 
 	return 1;
 }
 
 int external_iterator (KeySet *ks)
 {
-	Key * k;
-	for (int i = 0; i<ksGetSize(ks); ++i) doNothing (ks->array[i]);
+	for (int i = 0; i<ksGetSize(ks); ++i) doMark (ks->array[i]);
 	return 1;
 }
 

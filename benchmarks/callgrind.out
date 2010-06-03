@@ -1,6 +1,6 @@
 version: 1
 creator: callgrind-3.3.1-Debian
-pid: 9552
+pid: 10503
 cmd:  /home/markus/Projekte/Elektra/current/build64/benchmarks/large
 part: 1
 
@@ -9,12 +9,12 @@ desc: I1 cache:
 desc: D1 cache: 
 desc: L2 cache: 
 
-desc: Timerange: Basic block 0 - 21130990
+desc: Timerange: Basic block 0 - 21130975
 desc: Trigger: Program termination
 
 positions: line
 events: Ir
-summary: 100190755
+summary: 100190699
 
 
 ob=(3) /lib/libgcc_s.so.1
@@ -2884,8 +2884,8 @@ calls=1 0
 cob=(7)
 cfi=(14) /home/markus/Projekte/Elektra/current/benchmarks/large.c
 cfn=(3424) main
-calls=1 45 
-0 98679839
+calls=1 46 
+0 98679821
 0 2
 cfn=(5276)
 calls=1 0 
@@ -3275,7 +3275,7 @@ fn=(2872)
 0 3900
 cfn=(2874) 0x000000000000D100
 calls=260 0 
-0 231863
+0 231845
 0 2600
 
 fn=(284) __libc_memalign
@@ -3496,7 +3496,7 @@ calls=1 0
 0 17
 cfn=(104) 0x0000000000013AD0
 calls=1 0 
-0 1393273
+0 1393235
 0 327
 
 fn=(276)
@@ -3551,7 +3551,7 @@ fn=(2244) 0x0000000000008FE0
 cfn=(960)
 calls=279 0 
 0 13400
-0 94713
+0 94657
 cfn=(2310)
 calls=1444 0 
 0 193361
@@ -3668,21 +3668,21 @@ fn=(2228) 0x0000000000009460
 0 569201
 cfn=(2244)
 calls=1456 0 
-0 723725
+0 723669
 0 49408
 
 fn=(2874)
 0 12480
 cfn=(2228)
 calls=260 0 
-0 213717
+0 213699
 0 5666
 
 fn=(0) 0x0000000000000A60
 0 2
 cfn=(2)
 calls=1 0 
-0 1393975
+0 1393937
 0 14
 cfn=(2524)
 calls=1 0 
@@ -3690,9 +3690,9 @@ calls=1 0
 0 3
 cob=(7)
 cfi=(11)
-cfn=(3384) 0x0000000000400CF0
+cfn=(3384) 0x0000000000400CE0
 calls=1 0 
-0 98691479
+0 98691461
 
 fn=(264) 0x000000000000A270
 0 105
@@ -3788,7 +3788,7 @@ calls=1 0
 0 11
 cfn=(192) 0x0000000000002280
 calls=1 0 
-0 1392813
+0 1392775
 0 46
 cfn=(154)
 calls=1 0 
@@ -3907,7 +3907,7 @@ calls=4 0
 0 128664
 cfn=(2228)
 calls=1196 0 
-0 1128617
+0 1128579
 0 33312
 cfn=(296)
 calls=1 0 
@@ -3968,7 +3968,7 @@ calls=1 0
 0 182
 cfn=(2162)
 calls=7 0 
-0 1333759
+0 1333721
 0 24
 cfn=(2418)
 calls=2 0 
@@ -5250,7 +5250,7 @@ cob=(1)
 cfi=(1)
 cfn=(2872)
 calls=1 0 
-* 599
+* 573
 * 20208
 +4 30312
 cfi=(24)
@@ -5331,7 +5331,7 @@ fn=(3608)
 +1 30321
 cfn=(3614)
 calls=10107 +8 
-* 30708267
+* 30708241
 cob=(1)
 cfi=(1)
 cfn=(2872)
@@ -6081,7 +6081,7 @@ calls=1 0
 cfi=(18)
 cfn=(3600) backendOpenDefault
 calls=1 -21 
-* 38341
+* 38315
 cob=(1)
 cfi=(1)
 cfn=(2872)
@@ -6103,7 +6103,7 @@ calls=1 +30
 * 5
 cfn=(3888) kdbGet
 calls=1 434 
-* 1621367
+* 1621375
 cob=(1)
 cfi=(1)
 cfn=(2872)
@@ -6194,7 +6194,7 @@ calls=1 0
 cfi=(8)
 cfn=(3994) kdbGet_dump
 calls=1 188 
-* 1382624
+* 1382632
 * 1
 +4 20
 -8 32
@@ -6479,7 +6479,7 @@ cob=(1)
 cfi=(1)
 cfn=(2872)
 calls=1 0 
-* 1128
+* 1136
 +2 2
 cfi=(25)
 cfn=(4592)
@@ -6765,7 +6765,7 @@ calls=1 0
 +1 3
 cfn=(4240)
 calls=1 87 
-* 1338819
+* 1338827
 cob=(1)
 cfi=(1)
 cfn=(2872)
@@ -6865,7 +6865,7 @@ calls=1 +69
 cfi=(19)
 cfn=(3608)
 calls=1 +57 
-* 20285
+* 20259
 cob=(1)
 cfi=(1)
 cfn=(2872)
@@ -7144,16 +7144,16 @@ fn=(4304)
 
 ob=(7)
 fl=(12)
-fn=(3396) 0x0000000000400BD0
+fn=(3396) 0x0000000000400BC8
 25 1
 +1 1
-cfn=(3398) 0x0000000000400D1C
+cfn=(3398) 0x0000000000400D0C
 calls=1 -15 
 * 6
 -26 1
 fi=(11)
 cfi=(11)
-cfn=(3404) 0x0000000000400DB0
+cfn=(3404) 0x0000000000400DA0
 calls=1 0 
 0 6
 0 1
@@ -7172,7 +7172,7 @@ fn=(5384)
 -37 1
 fi=(11)
 cfi=(11)
-cfn=(5386) 0x0000000000400D40
+cfn=(5386) 0x0000000000400D30
 calls=1 0 
 0 18
 fi=(13)
@@ -7190,17 +7190,17 @@ fn=(3398)
 
 fl=(14)
 fn=(3424)
-45 3
+46 3
 +1 1
 cob=(6)
 cfi=(15)
 cfn=(3432)
 calls=1 194 
-* 1779139
+* 1779121
 cob=(1)
 cfi=(1)
 cfn=(2872)
-calls=1 -46 
+calls=1 -47 
 * 593
 * 1
 +1 4
@@ -7212,7 +7212,7 @@ calls=1 162
 cob=(1)
 cfi=(1)
 cfn=(2872)
-calls=1 -47 
+calls=1 -48 
 * 561
 * 1
 +1 4
@@ -7245,43 +7245,43 @@ calls=1 254
 cob=(1)
 cfi=(1)
 cfn=(2872)
-calls=1 -51 
+calls=1 -52 
 * 585
 * 1
 +2 1
 cfi=(35) /home/markus/Projekte/Elektra/current/benchmarks/benchmarks.c
 cfn=(5090) init_time
-calls=1 -43 
+calls=1 -44 
 * 1021
 +5 5
 cfn=(5100) creator
-calls=1 -54 
+calls=1 -55 
 * 90951216
 * 2
 +1 2
 cfi=(35)
 cfn=(5170) print_time
-calls=1 -44 
+calls=1 -45 
 * 2741
 +2 5
 cfn=(5194) internal_iterator
-calls=1 -34 
+calls=1 -33 
 * 1278
 * 2
 +1 2
 cfi=(35)
 cfn=(5170)
-calls=1 -47 
+calls=1 -48 
 * 1644
 +2 5
 cfn=(5204) external_iterator
-calls=1 -27 
+calls=1 -26 
 * 662
 * 2
 +1 2
 cfi=(35)
 cfn=(5170)
-calls=1 -50 
+calls=1 -51 
 * 1571
 +2 2
 cob=(6)
@@ -7292,7 +7292,7 @@ calls=1 563
 cob=(1)
 cfi=(1)
 cfn=(2872)
-calls=1 -67 
+calls=1 -68 
 * 603
 +1 2
 cob=(6)
@@ -7303,7 +7303,7 @@ calls=1 309
 cob=(1)
 cfi=(1)
 cfn=(2872)
-calls=1 -68 
+calls=1 -69 
 * 569
 +1 2
 cob=(6)
@@ -7332,13 +7332,13 @@ calls=1 264
 cob=(1)
 cfi=(1)
 cfn=(2872)
-calls=1 -72 
+calls=1 -73 
 * 609
 +1 1
 +1 2
 
 fn=(5194)
-27 4
+29 4
 +3 2
 cob=(6)
 cfi=(25)
@@ -7348,7 +7348,7 @@ calls=1 991
 cob=(1)
 cfi=(1)
 cfn=(2872)
-calls=1 -30 
+calls=1 -32 
 * 651
 * 1
 +1 2
@@ -7360,7 +7360,7 @@ calls=1 1021
 cob=(1)
 cfi=(1)
 cfn=(2872)
-calls=1 -31 
+calls=1 -33 
 * 585
 * 3
 +2 1
@@ -7433,8 +7433,8 @@ fn=(5100)
 +1 2
 
 fn=(5204)
-37 5
-+2 6
+39 5
++1 6
 cob=(6)
 cfi=(25)
 cfn=(4824)
@@ -7443,7 +7443,7 @@ calls=1 577
 cob=(1)
 cfi=(1)
 cfn=(2872)
-calls=1 -39 
+calls=1 -40 
 * 633
 * 2
 +1 1
@@ -7456,7 +7456,7 @@ cob=(2)
 cfi=(2)
 cfn=(3392)
 calls=1 0 
-0 98690399
+0 98690381
 cob=(1)
 cfi=(1)
 cfn=(2872)
@@ -7534,4 +7534,4 @@ calls=3 -24
 * 36
 +1 12
 
-totals: 100190755
+totals: 100190699
