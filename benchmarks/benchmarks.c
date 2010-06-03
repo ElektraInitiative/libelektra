@@ -1,12 +1,10 @@
 #include <benchmarks.h>
 
+#include <sys/time.h>
+
 int nbTest;
 int nbError;
 struct timeval start;
-
-pthread_t preader[NUM_THREAD];
-pthread_t pwriter [NUM_THREAD];
-pthread_t premover [NUM_THREAD];
 
 void init_time (void)
 {

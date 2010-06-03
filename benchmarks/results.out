@@ -1,0 +1,7 @@
+as expected now the internal_iterator is slightly more expensive
+
+internal: 16.689.844
+external: 14.932.578
+
+so external still have 89,47 % of the cost
+(but its significant)
