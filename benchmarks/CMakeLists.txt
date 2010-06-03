@@ -19,9 +19,9 @@ macro (do_benchmark source)
 	get_target_property (command ${source} LOCATION)
 
 	add_custom_target (benchmark
-		"rm callgrind.out strace.out"
-		COMMAND "strace -o strace.out ${command}"
-		COMMAND "valgrind --tool=callgrind --callgrind-out-file=callgrind.out ${command}"
+		rm -f callgrind.out strace.out
+		COMMAND valgrind --tool=callgrind --callgrind-out-file=callgrind.out "${command}" > output.out
+		# COMMAND strace -o strace.out "${command}"
 		WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 		)
 endmacro (do_benchmark)

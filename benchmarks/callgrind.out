@@ -1,7 +1,7 @@
 version: 1
 creator: callgrind-3.3.1-Debian
-pid: 18265
-cmd:  ./large
+pid: 9231
+cmd:  /home/markus/Projekte/Elektra/current/build64/benchmarks/large
 part: 1
 
 
@@ -9,5712 +9,8739 @@ desc: I1 cache:
 desc: D1 cache: 
 desc: L2 cache: 
 
-desc: Timerange: Basic block 0 - 8816274123
+desc: Timerange: Basic block 0 - 185040554
 desc: Trigger: Program termination
 
 positions: line
 events: Ir
-summary: 41250872787
+summary: 687872324
 
 
-ob=(2) /lib/i686/cmov/libc-2.7.so
-fl=(2) ???
-fn=(2702) 0x000E0470
-0 7
-cfn=(2694) 0x0001628F
-calls=1 0 
-0 2
+ob=(3) /lib/libgcc_s.so.1
+fl=(3) ???
+fn=(2740) 0x0000000000002CC0
+0 6
+
+fn=(5798) 0x0000000000002C40
 0 10
-cfn=(2710) rindex
+cob=(2) /lib/libc-2.7.so
+cfi=(2) ???
+cfn=(5700) __cxa_finalize
 calls=1 0 
-0 68
-0 14
-
-fn=(2792) __cxa_atexit
-0 5
-cfn=(2694)
-calls=1 0 
-0 2
-0 4
-cfn=(2794) 0x0002EB90
-calls=1 0 
-0 56
-0 18
-
-fn=(3070) free
-0 54629610
-cfn=(2694)
-calls=10925922 0 
-0 21851844
-0 360555342
-cfn=(3072) 0x0006FE60
-calls=10925915 0 
-0 729209217
-0 54629751
-cfn=(3706) munmap
-calls=7 0 
-0 77
-0 7
-
-fn=(3300) getenv
-0 14508405
-cfn=(2694)
-calls=2901681 0 
-0 5803362
-0 17410086
-cfn=(2852) strlen
-calls=2901681 0 
-0 87678646
-0 124154653
-cfn=(3120) strncmp
-calls=7565664 0 
-0 260959528
-0 782106243
-
-fn=(3358) vsnprintf
-0 7251846
-cfn=(2694)
-calls=1208641 0 
-0 2417282
-0 16920974
-cfn=(3360) 0x0006BF50
-calls=1208641 0 
-0 66475255
-0 10877769
-cfn=(3372) 0x0006DE80
-calls=1208641 0 
-0 83396229
-0 7251846
-cfn=(3384) vfprintf
-calls=1208641 0 
-0 1907440869
-0 21755538
-
-fn=(3502) _IO_file_xsputn
-0 711
-cfn=(2694)
-calls=79 0 
-0 158
-0 790
-cfn=(3506) _IO_file_overflow
-calls=12 0 
-0 1839
-0 9542
-cfn=(3936) mempcpy
-calls=2 0 
-0 42
-0 19
-cfn=(3388) _IO_default_xsputn
-calls=1 0 
-0 309
-0 114
-
-fn=(3508) _IO_doallocbuf
-0 968646
-cfn=(2694)
-calls=138378 0 
-0 276756
-0 2075670
-cfn=(3510) _IO_file_doallocate
-calls=138378 0 
-0 19511309
-0 276756
-
-fn=(3568) strstr
-0 31
-
-fn=(3592) __uflow
-0 2905903
-cfn=(2694)
-calls=415129 0 
-0 830258
-0 10793354
-cfn=(3594) _IO_default_uflow
-calls=415129 0 
-0 54382077
-0 7057193
-
-fn=(3604) memchr
-0 24907780
-
-fn=(3628) _IO_sputbackc
-0 42
-
-fn=(3696) _IO_un_link
-0 3321048
-cfn=(2694)
-calls=415131 0 
-0 830262
-0 14529556
-
-fn=(3826) 0x00071DF0
-0 4457104
-cfn=(2694)
-calls=557138 0 
-0 1114276
-0 36693170
-cfn=(2914) 0x00070A20
-calls=1553 0 
-0 798395
-0 29507
-cfn=(3072)
-calls=1553 0 
-0 131724
-0 87986
-cfn=(3072)
-calls=5305 0 
-0 355538
-0 25381
-cfn=(3020) memcpy
-calls=1553 0 
-0 852870
-0 40763
-
-fn=(3900) readdir
-0 973651
-cfn=(2694)
-calls=139093 0 
-0 278186
-0 3479328
-cfn=(3902) 0x00097E40
-calls=980 0 
-0 10993177
-0 1536116
-
-fn=(3978) bsearch
-0 2488248
-
-fn=(3996) _IO_file_seekoff
-0 1107008
-cfn=(2694)
-calls=138376 0 
-0 276752
-0 2767520
-cfn=(3700) _IO_unsave_markers
-calls=138376 0 
-0 2629144
-0 1245384
-cfn=(3998) _IO_file_seek
-calls=138376 0 
-0 9132816
-0 6780424
-cfn=(3508)
-calls=138376 0 
-0 23108792
-0 1107008
-
-fn=(4270) unlink
-0 276756
+0 73
 cob=(1) /lib/ld-2.7.so
 cfi=(1) ???
-cfn=(2978) 0x000007F0
-calls=69189 0 
-0 138378
-0 276827
-cfn=(2872) 0x0011EE55
-calls=71 0 
-0 142
-0 497
-
-fn=(4280) rmdir
-0 284
-cob=(1)
-cfi=(1)
-cfn=(2978)
-calls=71 0 
-0 142
-0 284
-
-fn=(4500) 0x0006BD90
-0 9
-cfn=(2694)
+cfn=(2872) _dl_runtime_resolve
 calls=1 0 
-0 2
-0 5
-cfn=(4504) _IO_file_sync
-calls=1 0 
-0 26
-0 12
-cfn=(3378) _IO_setb
-calls=1 0 
-0 28
+0 1021
 0 13
 
-fn=(2718) 0x00016230
-0 5
-cfn=(2694)
-calls=1 0 
+fn=(2732) 0x0000000000002938
 0 2
-0 7
-cfn=(2724) 0x0006DFD0
+cfn=(2734) 0x0000000000002C20
 calls=1 0 
-0 17
-0 2
-cfn=(2734) 0x0011BA00
-calls=1 0 
-0 17
-0 10
-
-fn=(2724)
-0 5
-cfn=(2694)
-calls=1 0 
-0 2
-0 10
-
-fn=(2852)
-0 394381738
-
-fn=(2860) 0x00072750
-0 5
-cfn=(2694)
-calls=1 0 
-0 2
 0 6
-cfn=(2864) 0x0006F370
+0 1
+cfn=(2740)
 calls=1 0 
-0 75427
 0 6
-cfn=(2859) malloc'2
+0 1
+cfn=(2746) 0x0000000000013950
 calls=1 0 
-0 1104
-
-fn=(3020)
-0 173065869
-
-fn=(3284) mmap
-0 2216528
-cob=(1)
-cfi=(1)
-cfn=(2978)
-calls=138533 0 
-0 277066
-0 969731
-
-fn=(3390) 0x0003E470
-0 18009099
-cfn=(2694)
-calls=2001011 0 
-0 4002022
-0 97409734
-
-fn=(3486) 0x00072D40
-0 5
-cfn=(2694)
-calls=1 0 
+0 11
 0 2
-0 10
-cfn=(2864)
-calls=1 0 
-0 20
-0 8
-cfn=(3485) realloc'2
-calls=1 0 
-0 111
-
-fn=(3590) _IO_getline_info
-0 5535048
-cfn=(2694)
-calls=691881 0 
-0 1383762
-0 12177107
-cfn=(3604)
-calls=553505 0 
-0 24907780
-0 2352395
-cfn=(3020)
-calls=138376 0 
-0 2214016
-0 7610694
-cfn=(3592)
-calls=415129 0 
-0 75968785
-0 10378227
-cfn=(3020)
-calls=415129 0 
-0 7195574
-0 6918818
-
-fn=(4020) fgets
-0 4151280
-cfn=(2694)
-calls=691880 0 
-0 1383760
-0 28367080
-cfn=(3588) _IO_getline
-calls=691880 0 
-0 173246752
-0 22278536
-
-fn=(4276) sprintf
-0 560
-cfn=(2694)
-calls=70 0 
-0 140
-0 350
-cfn=(4278) vsprintf
-calls=70 0 
-0 66162
-0 280
-
-fn=(2928) 0x0006EDB0
-0 594720
-cfn=(2694)
-calls=99120 0 
-0 198240
-0 73342100
-
-fn=(3194) open
-0 3602274
-cob=(1)
-cfi=(1)
-cfn=(2978)
-calls=554159 0 
-0 1108318
-0 2631921
-cfn=(2872)
-calls=415285 0 
-0 830570
-0 2906995
-
-fn=(3348) gettimeofday
-0 95
-cob=(1)
-cfi=(1)
-cfn=(2978)
-calls=19 0 
-0 38
-0 76
-
-fn=(3596) _IO_file_underflow
-0 3736161
-cfn=(2694)
-calls=415129 0 
-0 830258
-0 6642064
-cfn=(3598) _IO_switch_to_get_mode
-calls=415129 0 
-0 10793354
-0 6226935
-cfn=(3600) _IO_file_read
-calls=415129 0 
-0 11208479
-0 7333952
-cfn=(3508)
-calls=1 0 
-0 167
-0 6
-
-fn=(3610) sscanf
-0 8
-cfn=(2694)
-calls=1 0 
-0 2
-0 5
-cfn=(3612) vsscanf
-calls=1 0 
-0 1850
-0 4
-
-fn=(3616) rawmemchr
-0 82
-
-fn=(3808) strcat
-0 82463889
-
-fn=(4028) strtol
-0 1107008
-cfn=(2694)
-calls=276752 0 
-0 553504
-0 3597776
-cfn=(3632) 0x00030300
-calls=276752 0 
-0 48293224
-0 1107008
-
-fn=(4278)
-0 350
-cfn=(2694)
-calls=70 0 
-0 140
-0 840
-cfn=(3360)
-calls=70 0 
-0 3850
-0 490
-cfn=(3372)
-calls=70 0 
-0 4830
-0 420
-cfn=(3384)
-calls=70 0 
-0 54402
-0 840
 
 fn=(2734)
-0 4
-cfn=(2694)
-calls=1 0 
+0 6
+
+fn=(5796) 0x0000000000013988
 0 2
+cfn=(5798)
+calls=1 0 
+0 1117
+0 2
+
+fn=(2746)
 0 11
 
-fn=(2864)
-0 10
-cfn=(2694)
-calls=2 0 
-0 4
-0 33
-cfn=(2870) getpagesize
-calls=1 0 
-0 13
-0 19
-cfn=(2890) __register_atfork
-calls=1 0 
-0 52
-0 409
-cfn=(2878) _dl_addr
-calls=1 0 
-0 74900
-0 7
-
-fn=(2972) __default_morecore
-0 396978
-cfn=(2974) sbrk
-calls=66163 0 
-0 1859652
-0 330815
-
-fn=(3356) snprintf
-0 9669128
-cfn=(2694)
-calls=1208641 0 
-0 2417282
-0 8460487
-cfn=(3358)
-calls=1208641 0 
-0 2123787608
-0 4834564
-
-fn=(3512) _IO_file_stat
-0 1383780
-cfn=(3514) __fxstat64
-calls=138378 0 
-0 2905938
-0 276756
-
-fn=(3528) qsort
-0 18
-cfn=(2694)
-calls=2 0 
-0 4
-0 70
-cfn=(3530) sysconf
-calls=1 0 
-0 5058
-0 10
-cfn=(3530)
-calls=1 0 
-0 56
-0 28
-cfn=(3756) 0x0002DBD0
-calls=2 0 
-0 4201342722
-0 6
-cfn=(3070)
-calls=2 0 
-0 256
-0 16
-
-fn=(3538) fopen
-0 6
-cfn=(2694)
-calls=1 0 
+ob=(4) /lib/libm-2.7.so
+fl=(4) ???
+fn=(2752) 0x0000000000003D70
 0 2
+cfn=(2754) 0x0000000000003E50
+calls=1 0 
 0 6
-cfn=(3540) 0x0005EC30
+0 1
+cfn=(2760) 0x0000000000003EF0
 calls=1 0 
-0 1232
-0 4
-
-fn=(3540)
-0 5
-cfn=(2694)
+0 6
+0 1
+cfn=(2766) 0x0000000000044710
 calls=1 0 
+0 11
 0 2
-0 4
-cob=(1)
-cfi=(1)
-cfn=(2763) 0x000132D0'2
-calls=1 0 
-0 835
-0 14
-cfn=(3360)
+
+fn=(5778) 0x0000000000003E70
+0 10
+cob=(2)
+cfi=(2)
+cfn=(5700)
 calls=1 0 
 0 73
-0 4
-cfn=(3560) _IO_file_init
-calls=1 0 
-0 113
-0 8
-cfn=(3566) _IO_file_fopen
-calls=1 0 
-0 151
-0 4
-cfn=(3574) 0x0005EBD0
-calls=1 0 
-0 14
-0 5
-
-fn=(3598)
-0 10793354
-
-fn=(3612)
-0 5
-cfn=(2694)
-calls=1 0 
-0 2
-0 10
-cfn=(3360)
-calls=1 0 
-0 55
-0 8
-cfn=(3372)
-calls=1 0 
-0 153
-0 7
-cfn=(3626) _IO_vfscanf
-calls=1 0 
-0 1605
-0 5
-
-fn=(3706)
-0 691920
 cob=(1)
 cfi=(1)
-cfn=(2978)
-calls=138384 0 
-0 276768
-0 553536
-
-fn=(3856) 0x000D6910
-0 1452493
-cfn=(2694)
-calls=207499 0 
-0 414998
-0 13072437
-
-fn=(3992) fdopen
-0 1107008
-cfn=(2694)
-calls=138376 0 
-0 276752
-0 1937264
-cfn=(3878) fcntl
-calls=138376 0 
-0 4704784
-0 1798888
-cfn=(2858) malloc
-calls=138376 0 
-0 30095123
-0 2214016
-cfn=(3360)
-calls=138376 0 
-0 10101448
-0 553504
-cfn=(3560)
-calls=138376 0 
-0 15636488
-0 553504
-cfn=(3994) _IO_file_attach
-calls=138376 0 
-0 53274760
-0 3044272
-
-fn=(4000) llseek
-0 2214016
-cfn=(2694)
-calls=138376 0 
-0 276752
-0 968632
-cob=(1)
-cfi=(1)
-cfn=(2978)
-calls=138376 0 
-0 276752
-0 2352392
-
-fn=(2692) 0x000162C0
-0 5
-cfn=(2694)
+cfn=(2872)
 calls=1 0 
-0 2
-0 24
-cfn=(2702)
-calls=1 0 
-0 101
-0 1
-cfn=(2718)
-calls=1 0 
-0 60
-0 6
-
-fn=(2694)
-0 158864372
-
-fn=(2710)
-0 77946474
-
-fn=(2878)
-0 6
-cfn=(2694)
-calls=1 0 
-0 2
-0 9
-cob=(1)
-cfi=(1)
-cfn=(2880) 0x00000880
-calls=1 0 
-0 6
-0 74859
-cob=(1)
-cfi=(1)
-cfn=(2882) 0x00000890
-calls=1 0 
-0 6
-0 12
-
-fn=(2974)
-0 330815
-cfn=(2694)
-calls=66163 0 
-0 132326
-0 1389212
-cfn=(2976) brk
-calls=1 0 
-0 23
-0 1286
-cfn=(2976)
-calls=210 0 
-0 5422
-0 568
-
-fn=(3110) index
-0 475481448
-
-fn=(3378)
-0 10398276
-cfn=(2694)
-calls=1485468 0 
-0 2970936
-0 26498351
-cfn=(3706)
-calls=138377 0 
-0 1522147
-0 138377
-
-fn=(3520) write
-0 88
-cob=(1)
-cfi=(1)
-cfn=(2978)
-calls=11 0 
-0 22
-0 44
-
-fn=(3532) get_phys_pages
-0 6
-cfn=(2694)
-calls=1 0 
-0 2
-0 9
-cfn=(3538)
-calls=1 0 
-0 1250
+0 1021
 0 13
-cfn=(3586) fgets_unlocked
-calls=1 0 
-0 652
-0 8
-cfn=(3610)
-calls=1 0 
-0 1869
-0 3
-cfn=(2870)
-calls=1 0 
-0 13
-0 12
-cfn=(3694) fclose
-calls=1 0 
-0 1159
+
+fn=(2754)
+0 6
+
+fn=(2766)
 0 11
-cfn=(2872)
-calls=1 0 
+
+fn=(5776) 0x0000000000044748
 0 2
+cfn=(5778)
+calls=1 0 
+0 1117
+0 2
+
+fn=(2760)
 0 6
 
-fn=(3562) _IO_link_in
-0 1107024
-cfn=(2694)
-calls=138378 0 
-0 276756
-0 11346924
+ob=(5) /usr/lib/libstdc++.so.6.0.10
+fl=(5) ???
+fn=(2790) 0x00000000000C5500
+0 3
 
-fn=(3630) __strtol_internal
-0 4
-cfn=(2694)
-calls=1 0 
-0 2
-0 14
-cfn=(3632)
-calls=1 0 
-0 269
-0 4
+fn=(2856) 0x00000000000615F0
+0 3
 
-fn=(4026) atoi
-0 2214016
-cfn=(4028)
-calls=276752 0 
-0 54658520
-0 553504
-
-fn=(2914)
-0 76492325
-cfn=(2694)
-calls=10927475 0 
-0 21854950
-0 434023633
-cfn=(2928)
-calls=663 0 
-0 373945
-0 509837535
-cfn=(2928)
-calls=71 0 
-0 13766
-0 24414815
-cfn=(2928)
-calls=1 0 
-0 669
-0 114036808
-cfn=(2972)
-calls=210 0 
-0 15278
-0 4390
-cfn=(2972)
-calls=1 0 
-0 39
-0 7132
-cfn=(3284)
-calls=148 0 
-0 3700
-0 1972
-cfn=(3072)
-calls=82 0 
-0 5667
-0 4146
-cfn=(3284)
-calls=7 0 
-0 175
-0 611
-
-fn=(3324) strcpy
-0 90037980
-
-fn=(3384)
-0 7252332
-cfn=(2694)
-calls=1208722 0 
-0 2417444
-0 29009328
-cfn=(3386) strchrnul
-calls=1208722 0 
-0 16922388
-0 4835339
-cfn=(3502)
-calls=11 0 
-0 220
-0 16921954
-cfn=(3388)
-calls=1208711 0 
-0 24174220
-0 253624917
-cfn=(3386)
-calls=5418448 0 
-0 102861477
-0 59602928
-cfn=(3502)
-calls=26 0 
-0 5137
-cfn=(3388)
-calls=5418422 0 
-0 209969146
-0 75896879
-cfn=(3504) _IO_padn
-calls=7 0 
-0 1555
-0 77
-cfn=(3502)
-calls=7 0 
-0 1819
-0 20
-cfn=(3502)
-calls=2 0 
-0 592
-0 145977808
-cfn=(3502)
-calls=11 0 
-0 1617
-cfn=(3388)
-calls=2001000 0 
-0 154757340
-0 48856807
-cfn=(3390)
-calls=2001011 0 
-0 119420855
-0 57397331
-cfn=(3504)
-calls=9 0 
-0 2244
-0 62773037
-cfn=(3502)
-calls=6 0 
-0 974
-cfn=(3388)
-calls=3417422 0 
-0 349920381
-0 35096266
-cfn=(2852)
-calls=3417437 0 
-0 112311883
-0 17504645
-
-fn=(3632)
-0 2214024
-cfn=(2694)
-calls=276753 0 
-0 553506
-0 45525963
-
-fn=(3704) close
-0 1692
-cob=(1)
-cfi=(1)
-cfn=(2978)
-calls=282 0 
-0 564
-0 1128
-
-fn=(3902)
-0 10780
-cfn=(2694)
-calls=980 0 
-0 1960
-0 3920
-cob=(1)
-cfi=(1)
-cfn=(2978)
-calls=980 0 
-0 1960
-0 16149
-cfn=(2852)
-calls=767 0 
-0 19631
-0 831090
-cfn=(2852)
-calls=138515 0 
-0 4265504
-0 835692
-cfn=(3916) memmove
-calls=139282 0 
-0 4024657
-0 981834
-
-fn=(4422) 0x00016260
+fn=(2864) 0x000000000005AB80
 0 5
-cfn=(2694)
+cob=(2)
+cfi=(2)
+cfn=(2896) __cxa_atexit
 calls=1 0 
-0 2
+0 63
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 997
+0 4
+
+fn=(3004) 0x0000000000069290
+0 5
+cfn=(3016) std::locale::_Impl::_Impl(unsigned long)
+calls=1 0 
+0 58428
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 872
 0 8
-
-fn=(4444) 0x0006C160
-0 6
-cfn=(2694)
+cfn=(3200) std::locale::locale(std::locale::_Impl*)
 calls=1 0 
 0 2
-0 89
-
-fn=(2858)
-0 54629610
-cfn=(2694)
-calls=10925922 0 
-0 21851844
-0 87407380
-cfn=(2860)
-calls=1 0 
-0 76550
-0 262222112
-cfn=(2914)
-calls=10925921 0 
-0 1180292105
-0 98333289
-
-fn=(2859)
-0 5
-cfn=(2694)
-calls=1 0 
-0 2
-0 32
-cfn=(2914)
-calls=1 0 
-0 1056
-0 9
-
-fn=(3050) memset
-0 212754114
-
-fn=(3168) __errno_location
-0 1246141
+cob=(1)
+cfi=(1)
 cfn=(2872)
-calls=1246141 0 
-0 2492282
-0 8722987
+calls=1 0 
+0 908
+0 31152
 
-fn=(3500) fprintf
-0 90
-cfn=(3384)
-calls=9 0 
-0 19318
-0 18
+fn=(3072) std::numpunct<char>::_M_initialize_numpunct(__locale_struct*)
+0 410
 
-fn=(3566)
-0 6
-cfn=(2694)
-calls=1 0 
-0 2
-0 58
-cfn=(3562)
-calls=1 0 
-0 20
-0 6
-cfn=(3568)
-calls=1 0 
-0 31
+fn=(3090) std::__timepunct<char>::__timepunct(std::__timepunct_cache<char>*, unsigned long)
 0 14
-cfn=(3194)
+cfn=(3022) std::locale::facet::_S_get_c_name()
 calls=1 0 
+0 2
+0 4
+cfn=(3096) std::__timepunct<char>::_M_initialize_timepunct(__locale_struct*)
+calls=1 0 
+0 114
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1285
+0 4
+
+fn=(3102) std::messages<char>::messages(unsigned long)
 0 12
+cfn=(3034) std::locale::facet::_S_get_c_locale()
+calls=1 0 
+0 7
+0 2
+cfn=(3022)
+calls=1 0 
+0 2
+0 5
+
+fn=(3222) __cxa_guard_release
+0 5
+
+fn=(3292) __cxxabiv1::__si_class_type_info::__do_dyncast(long, __cxxabiv1::__class_type_info::__sub_kind, __cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info::__dyncast_result&) const
+0 159970
+
+fn=(3310) std::num_get<char, std::istreambuf_iterator<char, std::char_traits<char> > > const& std::use_facet<std::num_get<char, std::istreambuf_iterator<char, std::char_traits<char> > > >(std::locale const&)
+0 8984
+cfn=(3060) std::locale::id::_M_id() const
+calls=2246 0 
+0 11230
+0 26952
+cfn=(3276) __dynamic_cast
+calls=2246 0 
+0 134760
+0 8984
+
+fn=(3322) std::basic_ios<wchar_t, std::char_traits<wchar_t> >::_M_cache_locale(std::locale const&)
+0 28
+cfn=(3328) bool std::has_facet<std::ctype<wchar_t> >(std::locale const&)
+calls=4 0 
+0 340
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1030
+0 16
+cfn=(3334) std::ctype<wchar_t> const& std::use_facet<std::ctype<wchar_t> >(std::locale const&)
+calls=4 0 
+0 56
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1052
+0 12
+cfn=(3340) bool std::has_facet<std::num_put<wchar_t, std::ostreambuf_iterator<wchar_t, std::char_traits<wchar_t> > > >(std::locale const&)
+calls=4 0 
+0 340
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1452
+0 16
+cfn=(3346) std::num_put<wchar_t, std::ostreambuf_iterator<wchar_t, std::char_traits<wchar_t> > > const& std::use_facet<std::num_put<wchar_t, std::ostreambuf_iterator<wchar_t, std::char_traits<wchar_t> > > >(std::locale const&)
+calls=4 0 
+0 340
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1503
+0 12
+cfn=(3352) bool std::has_facet<std::num_get<wchar_t, std::istreambuf_iterator<wchar_t, std::char_traits<wchar_t> > > >(std::locale const&)
+calls=4 0 
+0 340
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1444
+0 16
+cfn=(3358) std::num_get<wchar_t, std::istreambuf_iterator<wchar_t, std::char_traits<wchar_t> > > const& std::use_facet<std::num_get<wchar_t, std::istreambuf_iterator<wchar_t, std::char_traits<wchar_t> > > >(std::locale const&)
+calls=4 0 
+0 340
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1495
+0 20
+
+fn=(4394) std::codecvt<char, char, __mbstate_t>::do_always_noconv() const
+0 406406
+
+fn=(4482) std::basic_ios<char, std::char_traits<char> >::operator void*() const
+0 2448
+
+fn=(4526) std::basic_istream<char, std::char_traits<char> >& std::operator>><char, std::char_traits<char>, std::allocator<char> >(std::basic_istream<char, std::char_traits<char> >&, std::basic_string<char, std::char_traits<char>, std::allocator<char> >&)
+0 8568
+cfn=(4384) std::istream::sentry::sentry(std::istream&, bool)
+calls=612 0 
+0 34272
+0 3672
+cfn=(4228) std::basic_ios<char, std::char_traits<char> >::clear(std::_Ios_Iostate)
+calls=306 0 
+0 2754
+0 9180
+cfn=(4390) std::string::_M_mutate(unsigned long, unsigned long, unsigned long)
+calls=612 0 
+0 23868
+0 7344
+cfn=(4532) std::locale::locale(std::locale const&)
+calls=612 0 
+0 3672
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 853
+0 1224
+cfn=(3284) std::ctype<char> const& std::use_facet<std::ctype<char> >(std::locale const&)
+calls=612 0 
+0 8568
+0 1836
+cfn=(3258) std::locale::~locale()
+calls=612 0 
+0 7344
+0 43104
+cfn=(4430) std::string::append(char const*, unsigned long)
+calls=612 0 
+0 41771
+0 15606
+cfn=(4580) std::basic_stringbuf<char, std::char_traits<char>, std::allocator<char> >::underflow()
+calls=306 0 
+0 5814
+0 306
+
+fn=(4558) std::istream::operator>>(unsigned long&)
+0 609
+cfn=(4564) std::istream& std::istream::_M_extract<unsigned long>(unsigned long&)
+calls=609 0 
+0 250065
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 944
+
+fn=(4618) operator delete(void*)
+0 2499
+cob=(2)
+cfi=(2)
+cfn=(3752) free
+calls=833 0 
+0 86145
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 861
+
+fn=(4640) std::ios_base::_M_dispose_callbacks()
+0 13040
+
+fn=(4660) std::basic_filebuf<char, std::char_traits<char> >::xsgetn(char*, long)
+0 13938
+cfn=(4666) std::basic_streambuf<char, std::char_traits<char> >::xsgetn(char*, long)
+calls=606 0 
+0 39255
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1217
+0 4848
+
+fn=(4854) operator delete[](void*)
+0 203
+cfn=(4618)
+calls=203 0 
+0 35490
+
+fn=(5302) std::ostream::sentry::sentry(std::ostream&)
+0 4263000
+
+fn=(5374) std::__basic_file<char>::xsputn(char const*, long)
+0 976000
+cob=(2)
+cfi=(2)
+cfn=(5384) write
+calls=61000 0 
+0 427000
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 890
+0 976000
+cfn=(4406) std::__basic_file<char>::fd()
+calls=61000 0 
+0 549000
+0 427000
+
+fn=(5396) std::ostream::operator<<(unsigned long)
+0 40400
+cfn=(5402) std::ostream& std::ostream::_M_insert<unsigned long>(unsigned long)
+calls=40400 0 
+0 13111396
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 957
+
+fn=(5766) 0x000000000005ABF0
+0 6
+
+fn=(2772) 0x00000000000542E0
+0 2
+cfn=(2774) 0x00000000000567C0
+calls=1 0 
+0 6
+0 1
+cfn=(2780) 0x0000000000056860
+calls=1 0 
+0 6
+0 1
+cfn=(2786) 0x00000000000CC3D0
+calls=1 0 
+0 1364
 0 2
 
-fn=(3586)
+fn=(2800) 0x00000000000A8EB0
+0 49
+
+fn=(3022)
+0 10
+
+fn=(3316) std::basic_ios<wchar_t, std::char_traits<wchar_t> >::init(std::basic_streambuf<wchar_t, std::char_traits<wchar_t> >*)
+0 24
+cfn=(3246) std::ios_base::_M_init()
+calls=4 0 
+0 356
+0 12
+cfn=(3322)
+calls=4 0 
+0 9852
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1320
+0 52
+
+fn=(3352)
+0 16
+cfn=(3060)
+calls=4 0 
+0 20
+0 48
+cfn=(3276)
+calls=4 0 
+0 240
+0 16
+
+fn=(4170) std::basic_filebuf<char, std::char_traits<char> >::is_open() const
+0 609
+cfn=(4100) std::__basic_file<char>::is_open() const
+calls=203 0 
+0 609
+0 406
+
+fn=(4372) std::ctype<char>::do_widen(char) const
+0 2
+
+fn=(4520) std::basic_stringbuf<char, std::char_traits<char>, std::allocator<char> >::_M_sync(char*, unsigned long, unsigned long)
+0 17136
+
+fn=(5290) std::basic_ostream<char, std::char_traits<char> >& std::operator<< <std::char_traits<char> >(std::basic_ostream<char, std::char_traits<char> >&, char const*)
+0 549000
+cob=(2)
+cfi=(2)
+cfn=(3150) strlen
+calls=61000 0 
+0 2461400
+0 244000
+cfn=(5296) std::basic_ostream<char, std::char_traits<char> >& std::__ostream_insert<char, std::char_traits<char> >(std::basic_ostream<char, std::char_traits<char> >&, char const*, long)
+calls=61000 0 
+0 10427439
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1394
+0 305000
+
+fn=(5360) std::ostream::flush()
+0 671033
+cfn=(5704) __gnu_cxx::stdio_sync_filebuf<char, std::char_traits<char> >::sync()
+calls=3 0 
+0 1207
+cfn=(5362) std::basic_filebuf<char, std::char_traits<char> >::sync()
+calls=61000 0 
+0 9519186
+0 427021
+
+fn=(5368) std::basic_filebuf<char, std::char_traits<char> >::_M_convert_to_external(char*, long)
+0 976000
+cfn=(4394)
+calls=61000 0 
+0 122000
+0 366000
+cfn=(5374)
+calls=61000 0 
+0 3355890
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 980
+0 610000
+
+fn=(5754) 0x00000000000CC408
+0 2
+cfn=(5756) 0x00000000000567E0
+calls=1 0 
+0 1140
+0 2
+
+fn=(2774)
 0 6
-cfn=(2694)
+
+fn=(3174) std::moneypunct<wchar_t, true>::_M_initialize_moneypunct(__locale_struct*, char const*)
+0 110
+
+fn=(3180) std::__timepunct<wchar_t>::__timepunct(std::__timepunct_cache<wchar_t>*, unsigned long)
+0 14
+cfn=(3022)
 calls=1 0 
 0 2
-0 21
-cfn=(3588)
+0 4
+cfn=(3186) std::__timepunct<wchar_t>::_M_initialize_timepunct(__locale_struct*)
 calls=1 0 
-0 598
+0 112
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1275
+0 4
+
+fn=(3192) std::messages<wchar_t>::messages(unsigned long)
+0 12
+cfn=(3034)
+calls=1 0 
+0 7
+0 2
+cfn=(3022)
+calls=1 0 
+0 2
+0 5
+
+fn=(3210) __cxa_guard_acquire
 0 25
 
-fn=(3594)
-0 3736161
-cfn=(3596)
-calls=415129 0 
-0 46771376
-0 3874540
-
-fn=(3626)
-0 6
-cfn=(2694)
-calls=1 0 
-0 2
-0 787
-cfn=(3628)
-calls=1 0 
-0 21
-0 107
-cfn=(3628)
-calls=1 0 
-0 21
-0 327
-cfn=(3630)
-calls=1 0 
-0 293
-0 41
-
-fn=(3698) _IO_file_close_it
-0 1245393
-cfn=(2694)
-calls=138377 0 
-0 276754
-0 1383770
-cfn=(3700)
-calls=138377 0 
-0 2629163
-0 553508
-cfn=(3702) _IO_file_close
-calls=138377 0 
-0 2352409
-0 1245393
-cfn=(3378)
-calls=138377 0 
-0 6503719
-0 1107016
-cfn=(3696)
-calls=138377 0 
-0 2629163
-0 1798901
-
-fn=(3710) _IO_default_finish
-0 968639
-cfn=(2694)
-calls=138377 0 
-0 276754
-0 1660524
-cfn=(3696)
-calls=138377 0 
-0 2629163
-0 691885
-
-fn=(3934) printf
-0 8
-cfn=(2694)
-calls=2 0 
-0 4
-0 20
-cfn=(3384)
-calls=2 0 
-0 4371
-0 8
-
-fn=(4504)
-0 7
-cfn=(2694)
-calls=1 0 
-0 2
-0 17
-
-fn=(2790) (below main)
-0 7
-cfn=(2694)
-calls=1 0 
-0 2
-0 15
-cfn=(2792)
-calls=1 0 
-0 85
-0 13
-cob=(3) /home/markus/Projekte/Elektra/git32/benchmarks/large
-cfi=(3) ???
-cfn=(2818) __libc_csu_init
-calls=1 0 
-0 57
-0 10
-cfn=(2838) _setjmp
-calls=1 0 
-0 16
-0 16
-cob=(3)
-cfi=(3)
-cfn=(2840) main
-calls=1 0 
-0 41250759699
-0 2
-cfn=(4292) exit
-calls=1 0 
-0 1362
-
-fn=(2976)
-0 1055
-cfn=(2694)
-calls=211 0 
-0 422
-0 844
+fn=(3264) std::basic_ios<char, std::char_traits<char> >::_M_cache_locale(std::locale const&)
+0 15722
+cfn=(3270) bool std::has_facet<std::ctype<char> >(std::locale const&)
+calls=2246 0 
+0 270337
 cob=(1)
 cfi=(1)
-cfn=(2978)
-calls=211 0 
-0 422
-0 2702
-
-fn=(3120)
-0 1523798454
-
-fn=(3192) opendir
-0 3323984
-cfn=(2694)
-calls=415498 0 
-0 830996
-0 2492988
-cfn=(3194)
-calls=415498 0 
-0 9138806
-0 1663067
-cfn=(3514)
-calls=215 0 
-0 4515
-0 1290
-cfn=(3870) 0x00097660
-calls=215 0 
-0 250114
-0 2492988
-
-fn=(3510)
-0 1107024
-cfn=(2694)
-calls=138378 0 
-0 276756
-0 1383780
-cfn=(3512)
-calls=138378 0 
-0 4566474
-0 2767557
+cfn=(2872)
+calls=1 0 
+0 1054
+0 8984
 cfn=(3284)
-calls=138378 0 
-0 3459450
-0 1383780
-cfn=(3378)
-calls=138378 0 
-0 3597828
-0 968660
-
-fn=(3516) _IO_do_write
-0 72
-cfn=(2694)
-calls=12 0 
-0 24
-0 321
-cfn=(3518) _IO_file_write
-calls=11 0 
-0 561
-0 209
-
-fn=(3588)
-0 4151286
-cfn=(2694)
-calls=691881 0 
-0 1383762
-0 8302572
-cfn=(3590)
-calls=691881 0 
-0 156642206
-0 2767524
-
-fn=(3602) read
-0 3321024
+calls=2246 0 
+0 31444
 cob=(1)
 cfi=(1)
-cfn=(2978)
-calls=415128 0 
-0 830256
-0 1660512
-
-fn=(3694)
-0 1107016
-cfn=(2694)
-calls=138377 0 
-0 276754
-0 5535061
-cfn=(3708) _IO_file_finish
-calls=138377 0 
-0 8994505
-0 1660524
-cfn=(3070)
-calls=138376 0 
-0 96551275
-cob=(1)
-cfi=(1)
-cfn=(2763)
+cfn=(2872)
 calls=1 0 
-0 803
-0 1245393
-cfn=(3696)
-calls=138377 0 
-0 13422540
-0 1383767
-cfn=(3698)
-calls=138377 0 
-0 21725189
-0 1798895
-
-fn=(3708)
-0 968639
-cfn=(2694)
-calls=138377 0 
-0 276754
-0 830262
-cfn=(3710)
-calls=138377 0 
-0 6226965
-0 691885
-
-fn=(3878)
-0 3321032
-cfn=(2694)
-calls=415129 0 
-0 830258
-0 4151290
+0 1088
+0 6738
+cfn=(3290) bool std::has_facet<std::num_put<char, std::ostreambuf_iterator<char, std::char_traits<char> > > >(std::locale const&)
+calls=2246 0 
+0 190910
 cob=(1)
 cfi=(1)
-cfn=(2978)
-calls=415129 0 
-0 830258
-0 5811804
+cfn=(2872)
+calls=1 0 
+0 1452
+0 8984
+cfn=(3298) std::num_put<char, std::ostreambuf_iterator<char, std::char_traits<char> > > const& std::use_facet<std::num_put<char, std::ostreambuf_iterator<char, std::char_traits<char> > > >(std::locale const&)
+calls=2246 0 
+0 190910
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1471
+0 6738
+cfn=(3304) bool std::has_facet<std::num_get<char, std::istreambuf_iterator<char, std::char_traits<char> > > >(std::locale const&)
+calls=2246 0 
+0 190910
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1462
+0 8984
+cfn=(3310)
+calls=2246 0 
+0 190910
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1487
+0 11230
 
-fn=(3994)
-0 968632
-cfn=(2694)
-calls=138376 0 
-0 276752
-0 3459400
-cfn=(3996)
-calls=138376 0 
-0 48154848
-0 415128
+fn=(3278) __cxxabiv1::__vmi_class_type_info::__do_dyncast(long, __cxxabiv1::__class_type_info::__sub_kind, __cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info::__dyncast_result&) const
+0 116792
 
-fn=(4292)
+fn=(4182) operator new[](unsigned long)
+0 406
+cfn=(4188) operator new(unsigned long)
+calls=203 0 
+0 104748
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 735
+0 406
+
+fn=(4392) std::basic_filebuf<char, std::char_traits<char> >::underflow()
+0 105
+cfn=(4394)
+calls=3 0 
 0 6
-cfn=(2694)
+0 21
+cfn=(4400) std::__basic_file<char>::xsgetn(char*, long)
+calls=3 0 
+0 2807
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 987
+0 27
+cfn=(4222) std::basic_filebuf<char, std::char_traits<char> >::_M_set_buffer(long)
+calls=3 0 
+0 48
+0 12
+
+fn=(4448) std::string::_Rep::_S_create(unsigned long, unsigned long, std::allocator<char> const&)
+0 4992
+cfn=(4188)
+calls=624 0 
+0 62698
+0 6864
+
+fn=(4500) std::string::string(char const*, unsigned long, std::allocator<char> const&)
+0 4896
+cfn=(4502) 0x00000000000A4DE0
+calls=612 0 
+0 107330
+0 2448
+
+fn=(4532)
+0 3672
+
+fn=(5270) std::basic_ofstream<char, std::char_traits<char> >::basic_ofstream(char const*, std::_Ios_Openmode)
+0 2600
+cfn=(3234) std::ios_base::ios_base()
+calls=200 0 
+0 18200
+0 4200
+cfn=(3240) std::basic_ios<char, std::char_traits<char> >::init(std::basic_streambuf<char, std::char_traits<char> >*)
+calls=200 0 
+0 123000
+0 1600
+cfn=(4070) std::basic_filebuf<char, std::char_traits<char> >::basic_filebuf()
+calls=200 0 
+0 52600
+0 600
+cfn=(3240)
+calls=200 0 
+0 123000
+0 1000
+cfn=(4094) std::basic_filebuf<char, std::char_traits<char> >::open(char const*, std::_Ios_Openmode)
+calls=200 0 
+0 237268
+0 1400
+cfn=(4228)
+calls=200 0 
+0 1800
+0 1600
+
+fn=(5318) std::ostream::operator<<(long)
+0 200
+cfn=(5324) std::ostream& std::ostream::_M_insert<long>(long)
+calls=200 0 
+0 75604
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 909
+
+fn=(4574) 0x00000000000888B0
+0 370881
+cfn=(3060)
+calls=41209 0 
+0 206045
+0 576926
+
+fn=(3016)
+0 219
+cfn=(3022)
 calls=1 0 
 0 2
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1011
+0 56
+cfn=(3028) std::ctype<char>::ctype(unsigned short const*, bool, unsigned long)
+calls=1 0 
+0 3421
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 880
+0 4
+cfn=(3054) std::locale::_Impl::_M_install_facet(std::locale::id const*, std::locale::facet const*)
+calls=1 0 
+0 1144
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1220
+0 3
+cfn=(3066) std::codecvt<char, char, __mbstate_t>::codecvt(unsigned long)
+calls=1 0 
+0 24
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 988
+0 4
+cfn=(3054)
+calls=1 0 
+0 254
+0 23
+cfn=(3072)
+calls=1 0 
+0 410
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1214
+0 6
+cfn=(3054)
+calls=1 0 
+0 254
+0 8
+cfn=(3054)
+calls=1 0 
+0 254
+0 8
+cfn=(3054)
+calls=1 0 
+0 254
+0 5
+cfn=(3034)
+calls=1 0 
+0 7
+0 5
+cfn=(3054)
+calls=1 0 
+0 254
 0 35
-cob=(1)
-cfi=(1)
-cfn=(4294) 0x0000E250
-calls=1 0 
-0 965
-0 12
-cfn=(4440) 0x0006D030
-calls=1 0 
-0 333
-0 6
-cfn=(4526) _Exit
-calls=1 0 
-0 3
-
-fn=(4440)
-0 6
-cfn=(2694)
-calls=1 0 
-0 2
-0 4
-cfn=(4444)
-calls=1 0 
-0 97
-0 66
-cfn=(4498) _IO_file_setbuf
-calls=1 0 
-0 126
-0 32
-
-fn=(2794)
-0 9
-cfn=(2694)
-calls=1 0 
-0 2
-0 45
-
-fn=(3034) strcmp
-0 2110142383
-
-fn=(3372)
-0 7252272
-cfn=(2694)
-calls=1208712 0 
-0 2417424
-0 20548093
-cfn=(3378)
-calls=1208711 0 
-0 31426486
-0 6
-cfn=(3378)
-calls=1 0 
-0 26
-0 21756816
-cfn=(3616)
-calls=1 0 
-0 82
-0 7
-
-fn=(3386)
-0 119783865
-
-fn=(3506)
-0 144
-cfn=(2694)
-calls=16 0 
-0 32
-0 458
-cfn=(3516)
-calls=12 0 
-0 1187
-0 14
-cfn=(3508)
-calls=1 0 
-0 178
-0 6
-
-fn=(3560)
-0 968639
-cfn=(2694)
-calls=138377 0 
-0 276754
-0 830262
-cfn=(3562)
-calls=138377 0 
-0 12730684
-0 830262
-
-fn=(3702)
-0 1522147
-cob=(1)
-cfi=(1)
-cfn=(2978)
-calls=138377 0 
-0 276754
-0 553508
-
-fn=(4044) bcmp
-0 1660512
-cfn=(2694)
-calls=138376 0 
-0 276752
-0 2352392
-
-fn=(4498)
-0 6
-cfn=(2694)
-calls=1 0 
-0 2
-0 8
-cfn=(4500)
-calls=1 0 
-0 95
-0 15
-
-fn=(4526)
-0 3
-
-fn=(2838)
-0 16
-
-fn=(3026) strncat
-0 120
-
-fn=(3072)
-0 98395695
-cfn=(2694)
-calls=10932855 0 
-0 21865710
-0 531795593
-cfn=(2972)
-calls=65952 0 
-0 2572128
-0 526530
-cfn=(2928)
-calls=98385 0 
-0 73746680
-0 799810
-
-fn=(3388)
-0 108410004
-cfn=(2694)
-calls=12045556 0 
-0 24091112
-0 513955541
-cfn=(3506)
-calls=4 0 
-0 180
-0 92362468
-cfn=(3936)
-calls=70 0 
-0 1741
-0 350
-
-fn=(3492) mremap
-0 10090
-cob=(1)
-cfi=(1)
-cfn=(2978)
-calls=1009 0 
-0 2018
-0 6054
-
-fn=(3514)
-0 831558
-cfn=(2694)
-calls=138593 0 
-0 277186
-0 554372
-cob=(1)
-cfi=(1)
-cfn=(2978)
-calls=138593 0 
-0 277186
-0 970151
-
-fn=(3574)
-0 5
-cfn=(2694)
-calls=1 0 
-0 2
-0 7
-
-fn=(3600)
-0 5396671
-cfn=(3602)
-calls=415128 0 
-0 5811792
-0 10
-cob=(1)
-cfi=(1)
-cfn=(2978)
-calls=1 0 
-0 2
-0 4
-
-fn=(3700)
-0 1660518
-cfn=(2694)
-calls=276753 0 
-0 553506
-0 3044283
-
-fn=(3916)
-0 4024657
-
-fn=(3928) closedir
-0 1290
-cfn=(2694)
-calls=215 0 
-0 430
-0 1505
-cfn=(3070)
-calls=215 0 
-0 29565
-0 2150
-cob=(1)
-cfi=(1)
-cfn=(2978)
-calls=215 0 
-0 430
-0 860
-
-fn=(4268) remove
-0 345945
-cfn=(2694)
-calls=69189 0 
-0 138378
-0 345945
-cfn=(4270)
-calls=69189 0 
-0 692600
-0 553867
-cfn=(4280)
-calls=71 0 
-0 710
-0 213
-
-fn=(2870)
-0 3
-cfn=(2872)
-calls=3 0 
-0 6
-0 30
-
-fn=(2872)
-0 3876506
-
-fn=(2890)
-0 8
-cfn=(2694)
-calls=1 0 
-0 2
-0 42
-
-fn=(3130) strncpy
-0 1871659726
-
-fn=(3360)
-0 8082534
-cfn=(2694)
-calls=1347089 0 
-0 2694178
-0 12123801
-cfn=(3364) 0x0006BEB0
-calls=1347089 0 
-0 36786534
-0 16893634
-
-fn=(3364)
-0 36786534
-
-fn=(3484) realloc
-0 3353082
-cfn=(2694)
-calls=558847 0 
-0 1117694
-0 5029629
-cfn=(3486)
-calls=1 0 
-0 156
-0 27914980
-cfn=(3826)
-calls=557138 0 
-0 44586714
-0 5609180
-cfn=(3492)
-calls=1008 0 
-0 18144
-0 15120
-
-fn=(3485)
-0 6
-cfn=(2694)
-calls=1 0 
-0 2
-0 68
-cfn=(3492)
-calls=1 0 
-0 18
-0 17
-
-fn=(3504)
-0 96
-cfn=(2694)
-calls=16 0 
-0 32
-0 179
-cfn=(3502)
-calls=1 0 
-0 252
-0 162
-cfn=(3502)
-calls=15 0 
-0 2913
-0 165
-
-fn=(3518)
-0 231
-cfn=(3520)
-calls=11 0 
-0 154
-0 176
-
-fn=(3530)
-0 12
-cfn=(2694)
-calls=2 0 
-0 4
-0 62
-cfn=(3532)
-calls=1 0 
-0 5015
-0 5
-cfn=(2870)
-calls=1 0 
-0 13
-0 3
-
-fn=(3756)
-0 14
-cfn=(2694)
-calls=2 0 
-0 4
-0 44
-cfn=(3757) 0x0002DBD0'2
-calls=2 0 
-0 1995939286
-0 10
-cfn=(3757)
-calls=2 0 
-0 1887251880
-0 4236454
-cob=(3)
-cfi=(3)
-cfn=(3774) keyCompareWithRemove
-calls=1059107 0 
-0 297482297
-0 11628171
-cfn=(3020)
-calls=2 0 
-0 1059137
-0 3745425
-
-fn=(3757)
-0 14981638
-cfn=(2694)
-calls=2140234 0 
-0 4280468
-0 28893125
-cfn=(3757)
-calls=1070115 0 
-0 17617177059
-0 5350575
-cfn=(3757)
-calls=1070115 0 
-0 17753901286
-0 59473927
-cob=(3)
-cfi=(3)
-cfn=(3774)
-calls=11390608 0 
-0 3542825720
-0 107897675
-cfn=(3020)
-calls=41866 0 
-0 1148073
-0 11813131
-cfn=(3020)
-calls=1070115 0 
-0 27962416
-0 78564418
-
-fn=(3854) __xstat
-0 1244994
-cfn=(2694)
-calls=207499 0 
-0 414998
-0 1452493
-cob=(1)
-cfi=(1)
-cfn=(2978)
-calls=207499 0 
-0 414998
-0 2489988
-cfn=(3856)
-calls=207499 0 
-0 14939928
-0 829996
-
-fn=(3870)
-0 1075
-cfn=(2694)
-calls=215 0 
-0 430
-0 4297
-cfn=(2858)
-calls=215 0 
-0 241256
-0 3014
-cfn=(3878)
-calls=1 0 
-0 34
-0 8
-
-fn=(3936)
-0 1783
-
-fn=(3998)
-0 968632
-cfn=(2694)
-calls=138376 0 
-0 276752
-0 1245384
-cfn=(4000)
-calls=138376 0 
-0 6088544
-0 553504
-
-fn=(4008) fileno
-0 1107008
-cfn=(2872)
-calls=276752 0 
-0 553504
-0 2490768
-
-ob=(1)
-fl=(1)
-fn=(160) 0x000157D0
-0 918
-
-fn=(298) __libc_memalign
-0 132
-cfn=(4) 0x00015DDB
-calls=22 0 
-0 44
-0 418
-cfn=(658) 0x000152E0
-calls=2 0 
-0 46
-0 263
-
-fn=(658)
-0 184
-
-fn=(698) 0x000155E0
-0 602
-
-fn=(1066) 0x000150F0
-0 20
-
-fn=(1764) 0x000102A0
-0 5
-cfn=(4)
-calls=1 0 
-0 2
-0 15
-
-fn=(2318) 0x000090F0
-0 1512
-cfn=(4)
-calls=126 0 
-0 252
-0 22942
-cfn=(982) 0x0000E6F0
-calls=92 0 
-0 7763
-0 7227
-cfn=(2356) 0x00008F20
-calls=126 0 
-0 21782
-0 258
-
-fn=(2550) 0x000103C0
-0 6
-cfn=(4)
-calls=1 0 
-0 2
-0 22
-
-fn=(2978)
-0 4712332
-
-fn=(494) 0x000077B0
-0 6
-cfn=(4)
-calls=1 0 
-0 2
-0 9
-cfn=(498) 0x000133C0
-calls=1 0 
-0 2584
-0 4
-cfn=(294) malloc
-calls=1 0 
-0 53
-0 13
-cfn=(294)
-calls=1 0 
-0 93
-0 413
-cfn=(698)
-calls=1 0 
-0 165
-0 5
-cfn=(160)
-calls=1 0 
-0 89
-0 11
-cfn=(304) 0x00015C80
-calls=1 0 
-0 39
-0 228
-cfn=(294)
-calls=1 0 
-0 53
-0 15
-cfn=(792) 0x00004E70
-calls=1 0 
-0 1378
-0 12
-
-fn=(516) 0x000151B0
-0 30
-cfn=(522) 0x00015DD7
-calls=3 0 
-0 6
-0 18
-
-fn=(522)
-0 78
-
-fn=(968) 0x00007C40
-0 18
-cfn=(4)
-calls=3 0 
-0 6
-0 149
-cfn=(982)
-calls=7 0 
-0 791
-0 47
-cfn=(698)
-calls=2 0 
-0 85
-0 9
-cfn=(1028) 0x000072B0
-calls=1 0 
-0 455
-0 16
-cfn=(1050) 0x00005540
-calls=1 0 
-0 153
-0 55
-cfn=(1106) 0x00005E40
-calls=2 0 
-0 3638
-0 52
-cfn=(390) 0x00015750
-calls=2 0 
-0 53
-0 7
-cfn=(160)
-calls=1 0 
-0 37
-0 33
-cfn=(1442) 0x00005A10
-calls=1 0 
-0 7108
-0 15
-cfn=(1418) 0x00007580
-calls=1 0 
-0 13
-0 7
-cfn=(1528) 0x000087B0
-calls=1 0 
-0 2020
-0 19
-cfn=(1050)
-calls=1 0 
-0 224
-0 5
-cfn=(1730) 0x00004D50
-calls=1 0 
-0 195
-0 30
-cfn=(1418)
-calls=1 0 
-0 13
-0 20
-cfn=(1418)
-calls=1 0 
-0 13
-0 2
-
-fn=(1050)
-0 204
-cfn=(4)
-calls=34 0 
-0 68
-0 476
-cfn=(1056) 0x00015070
-calls=34 0 
-0 628
-0 118
-cfn=(1066)
-calls=2 0 
-0 20
-0 495
-
-fn=(1322) 0x000150B0
-0 24
-
-fn=(1442)
-0 9
-cfn=(4)
-calls=1 0 
-0 2
-0 54
-cfn=(586) 0x00015BE0
-calls=2 0 
-0 71
-0 584
-cfn=(586)
-calls=32 0 
-0 1013
-0 192
-cfn=(586)
-calls=32 0 
-0 1112
-0 480
-cfn=(1050)
-calls=32 0 
-0 1632
-0 859
-cfn=(1478) 0x00014FF0
-calls=32 0 
-0 764
-0 336
-
-fn=(1528)
-0 6
-cfn=(4)
-calls=1 0 
-0 2
-0 13
-cfn=(1536) 0x0000ED60
+cfn=(3078) std::moneypunct<char, false>::_M_initialize_moneypunct(__locale_struct*, char const*)
 calls=1 0 
 0 111
-0 65
-cfn=(390)
+cob=(1)
+cfi=(1)
+cfn=(2872)
 calls=1 0 
-0 30
-0 12
-cfn=(390)
-calls=3 0 
-0 107
-0 24
-cfn=(516)
-calls=1 0 
-0 18
-0 150
-cfn=(1604) 0x00008660
-calls=8 0 
-0 800
-0 78
-cfn=(1604)
-calls=2 0 
-0 285
-0 4
-cfn=(1604)
-calls=1 0 
-0 185
-0 130
-
-fn=(1730)
-0 5
-cfn=(4)
-calls=1 0 
-0 2
+0 1372
 0 6
-cfn=(160)
+cfn=(3054)
 calls=1 0 
-0 74
-0 3
-cfn=(294)
+0 254
+0 35
+cfn=(3084) std::moneypunct<char, true>::_M_initialize_moneypunct(__locale_struct*, char const*)
 calls=1 0 
-0 53
+0 111
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1330
+0 6
+cfn=(3054)
+calls=1 0 
+0 254
 0 8
-cfn=(304)
+cfn=(3054)
 calls=1 0 
-0 38
+0 254
+0 8
+cfn=(3054)
+calls=1 0 
+0 254
+0 56
+cfn=(3090)
+calls=1 0 
+0 1423
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1145
 0 6
-
-fn=(1972) 0x0000D930
-0 5
-cfn=(4)
+cfn=(3054)
 calls=1 0 
-0 2
-0 7
-cfn=(954) 0x00000860
+0 254
+0 8
+cfn=(3054)
 calls=1 0 
-0 9
-0 10
-cfn=(1978) 0x00004AE0
+0 254
+0 8
+cfn=(3054)
 calls=1 0 
-0 3591
-0 9
-
-fn=(2534) 0x00015380
-0 10
-
-fn=(2604) _dl_allocate_tls_init
-0 7
-cfn=(4)
+0 254
+0 3
+cfn=(3102)
 calls=1 0 
-0 2
-0 66
-cfn=(586)
+0 28
+cob=(1)
+cfi=(1)
+cfn=(2872)
 calls=1 0 
-0 32
+0 892
 0 4
-cfn=(1782) 0x00015B80
+cfn=(3054)
 calls=1 0 
-0 46
-0 13
-
-fn=(2652) 0x00000800
-0 2
-
-fn=(2762) 0x000132D0
-0 6
-cfn=(2764) 0x0000D780
+0 254
+0 3
+cfn=(3108) std::ctype<wchar_t>::ctype(unsigned long)
 calls=1 0 
-0 1039
+0 24189
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 836
+0 4
+cfn=(3054)
+calls=1 0 
+0 254
+0 3
+cfn=(3156) std::codecvt<wchar_t, char, __mbstate_t>::codecvt(unsigned long)
+calls=1 0 
+0 24
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1006
+0 4
+cfn=(3054)
+calls=1 0 
+0 254
+0 23
+cfn=(3162) std::numpunct<wchar_t>::_M_initialize_numpunct(__locale_struct*)
+calls=1 0 
+0 345
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1238
 0 5
-cob=(2)
-cfi=(2)
-cfn=(2790)
+cfn=(3054)
 calls=1 0 
-0 41250761284
-
-fn=(2763)
-0 234
-cfn=(2764)
-calls=39 0 
-0 34150
-0 195
-cob=(2)
-cfi=(2)
-cfn=(4276)
+0 254
+0 8
+cfn=(3054)
 calls=1 0 
-0 964
-cob=(2)
-cfi=(2)
-cfn=(4268)
+0 254
+0 8
+cfn=(3054)
 calls=1 0 
-0 30
-cob=(2)
-cfi=(2)
-cfn=(3694)
+0 254
+0 5
+cfn=(3034)
 calls=1 0 
-0 548
-cob=(2)
-cfi=(2)
-cfn=(4044)
+0 7
+0 5
+cfn=(3054)
 calls=1 0 
-0 31
-cob=(2)
-cfi=(2)
-cfn=(4026)
+0 254
+0 35
+cfn=(3168) std::moneypunct<wchar_t, false>::_M_initialize_moneypunct(__locale_struct*, char const*)
 calls=1 0 
-0 221
-cob=(2)
-cfi=(2)
-cfn=(4020)
+0 110
+cob=(1)
+cfi=(1)
+cfn=(2872)
 calls=1 0 
-0 462
-cob=(2)
-cfi=(2)
-cfn=(3878)
+0 1330
+0 5
+cfn=(3054)
 calls=1 0 
-0 40
-cob=(2)
-cfi=(2)
-cfn=(4008)
+0 254
+0 35
+cfn=(3174)
 calls=1 0 
-0 15
-cob=(2)
-cfi=(2)
-cfn=(3992)
+0 110
+cob=(1)
+cfi=(1)
+cfn=(2872)
 calls=1 0 
-0 873
-cob=(2)
-cfi=(2)
-cfn=(3978)
+0 1338
+0 5
+cfn=(3054)
 calls=1 0 
-0 18
-cob=(2)
-cfi=(2)
-cfn=(3704)
+0 254
+0 8
+cfn=(3054)
 calls=1 0 
-0 12
-cob=(2)
-cfi=(2)
-cfn=(3194)
+0 254
+0 8
+cfn=(3054)
 calls=1 0 
-0 14
-cob=(2)
-cfi=(2)
-cfn=(3934)
+0 254
+0 56
+cfn=(3180)
 calls=1 0 
-0 2199
-cob=(2)
-cfi=(2)
-cfn=(3928)
+0 1411
+cob=(1)
+cfi=(1)
+cfn=(2872)
 calls=1 0 
-0 223
-cob=(2)
-cfi=(2)
-cfn=(3900)
+0 1137
+0 5
+cfn=(3054)
 calls=1 0 
-0 16200
-cob=(2)
-cfi=(2)
-cfn=(3854)
+0 254
+0 8
+cfn=(3054)
 calls=1 0 
-0 105
-cob=(2)
-cfi=(2)
-cfn=(2710)
+0 254
+0 8
+cfn=(3054)
 calls=1 0 
-0 132
-cob=(2)
-cfi=(2)
-cfn=(3808)
-calls=1 0 
-0 73
-cob=(2)
-cfi=(2)
-cfn=(3528)
-calls=1 0 
-0 3984145800
-cob=(2)
-cfi=(2)
-cfn=(3500)
-calls=1 0 
-0 2659
-cob=(2)
-cfi=(2)
-cfn=(3484)
-calls=1 0 
-0 187
-cob=(2)
-cfi=(2)
-cfn=(3356)
-calls=1 0 
-0 1271
-cob=(2)
-cfi=(2)
-cfn=(3348)
-calls=1 0 
-0 11
-cob=(2)
-cfi=(2)
-cfn=(3324)
-calls=1 0 
-0 48
-cob=(2)
-cfi=(2)
-cfn=(3300)
-calls=1 0 
-0 603
-cob=(2)
-cfi=(2)
+0 254
+0 3
 cfn=(3192)
 calls=1 0 
-0 48
+0 28
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 868
+0 4
+cfn=(3054)
+calls=1 0 
+0 254
+0 3
+cfn=(3060)
+calls=1 0 
+0 5
+0 5
+cfn=(3060)
+calls=1 0 
+0 5
+0 5
+cfn=(3060)
+calls=1 0 
+0 5
+0 5
+cfn=(3060)
+calls=1 0 
+0 5
+0 5
+cfn=(3060)
+calls=1 0 
+0 5
+0 5
+cfn=(3060)
+calls=1 0 
+0 5
+0 5
+cfn=(3060)
+calls=1 0 
+0 5
+0 5
+cfn=(3060)
+calls=1 0 
+0 5
+0 10
+
+fn=(3042) std::locale::facet::_S_create_c_locale(__locale_struct*&, char const*, __locale_struct*)
+0 4
 cob=(2)
 cfi=(2)
-cfn=(3168)
+cfn=(3048) newlocale
 calls=1 0 
+0 39
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 989
+0 5
+
+fn=(3084)
+0 111
+
+fn=(3258)
+0 53904
+
+fn=(3276)
+0 314712
+cfn=(3292)
+calls=9410 0 
+0 159970
+cfn=(3278)
+calls=2246 0 
+0 116792
+0 186496
+
+fn=(3298)
+0 8984
+cfn=(3060)
+calls=2246 0 
+0 11230
+0 26952
+cfn=(3276)
+calls=2246 0 
+0 134760
+0 8984
+
+fn=(4442) std::string::_Rep::_M_clone(std::allocator<char> const&, unsigned long)
+0 132
+cfn=(4448)
+calls=12 0 
+0 2702
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 949
+0 192
+
+fn=(4476) std::basic_streambuf<char, std::char_traits<char> >::sbumpc()
+0 6405
+
+fn=(4548) std::string::compare(char const*) const
+0 17136
+cob=(2)
+cfi=(2)
+cfn=(3150)
+calls=2142 0 
+0 88149
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 901
+0 54753
+
+fn=(4580)
+0 4896
+cfn=(4586) std::basic_stringbuf<char, std::char_traits<char>, std::allocator<char> >::_M_update_egptr()
+calls=612 0 
+0 4284
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1306
+0 2448
+
+fn=(4612) std::string::_Rep::_M_destroy(std::allocator<char> const&)
+0 624
+cfn=(4618)
+calls=624 0 
+0 53277
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 736
+
+fn=(4634) std::ios_base::_M_call_callbacks(std::ios_base::event)
+0 9780
+
+fn=(4842) std::basic_filebuf<char, std::char_traits<char> >::_M_terminate_output()
+0 3842
+cfn=(4394)
+calls=200 0 
+0 400
+0 2227
+
+fn=(4848) std::basic_filebuf<char, std::char_traits<char> >::_M_destroy_internal_buffer()
+0 1624
+cfn=(4854)
+calls=203 0 
+0 35693
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 728
+0 2233
+
+fn=(5332) std::ostreambuf_iterator<char, std::char_traits<char> > std::num_put<char, std::ostreambuf_iterator<char, std::char_traits<char> > >::_M_insert_int<long>(std::ostreambuf_iterator<char, std::char_traits<char> >, std::ios_base&, char, long) const
+0 4000
+cfn=(4574)
+calls=200 0 
+0 5600
+0 4600
+cfn=(5334) 0x0000000000082A80
+calls=200 0 
+0 9000
+0 9000
+cfn=(5304) std::basic_filebuf<char, std::char_traits<char> >::xsputn(char const*, long)
+calls=200 0 
+0 20800
+0 600
+
+fn=(5334)
+0 1099800
+
+fn=(5362)
+0 610000
+cfn=(5312) std::basic_filebuf<char, std::char_traits<char> >::overflow(int)
+calls=61000 0 
+0 8726186
+0 183000
+
+fn=(4572) std::istreambuf_iterator<char, std::char_traits<char> > std::num_get<char, std::istreambuf_iterator<char, std::char_traits<char> > >::_M_extract_int<unsigned long>(std::istreambuf_iterator<char, std::char_traits<char> >, std::istreambuf_iterator<char, std::char_traits<char> >, std::ios_base&, std::_Ios_Iostate&, unsigned long&) const
+0 9744
+cfn=(4574)
+calls=609 0 
+0 17052
+0 127527
+cfn=(4580)
+calls=306 0 
+0 7120
+0 1530
+
+fn=(2862) 0x000000000005CC50
+0 1
+
+fn=(2928) 0x0000000000056E90
+0 43
+cfn=(2934) 0x0000000000056DB0
+calls=1 0 
+0 6
+0 7
+cfn=(2950) 0x0000000000056E20
+calls=1 0 
+0 6
+0 1
+
+fn=(2934)
+0 6
+
+fn=(3078)
+0 111
+
+fn=(3114) std::ctype<wchar_t>::_M_initialize_ctype()
 0 10
 cob=(2)
 cfi=(2)
-cfn=(3130)
+cfn=(3120) uselocale
 calls=1 0 
-0 61
+0 23
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 967
+0 898
+cob=(2)
+cfi=(2)
+cfn=(3126) wctob
+calls=128 0 
+0 2432
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 911
+0 260
+cob=(2)
+cfi=(2)
+cfn=(3132) btowc
+calls=1 0 
+0 21
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 882
+0 510
+cob=(2)
+cfi=(2)
+cfn=(3132)
+calls=255 0 
+0 9707
+0 1091
+cfn=(3142) std::ctype<wchar_t>::_M_convert_to_wmask(unsigned short) const
+calls=8 0 
+0 2972
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1016
+0 16
+cfn=(3142)
+calls=4 0 
+0 1315
+0 99
 cob=(2)
 cfi=(2)
 cfn=(3120)
 calls=1 0 
-0 32
-cob=(2)
-cfi=(2)
-cfn=(3110)
-calls=1 0 
-0 142
-cob=(2)
-cfi=(2)
-cfn=(3070)
-calls=2 0 
-0 296
-cob=(2)
-cfi=(2)
-cfn=(3050)
-calls=1 0 
-0 29
-cob=(2)
-cfi=(2)
+0 23
+0 2
+
+fn=(3168)
+0 110
+
+fn=(3186)
+0 9
 cfn=(3034)
 calls=1 0 
-0 137
-cob=(2)
-cfi=(2)
-cfn=(3026)
-calls=1 0 
-0 120
-cob=(2)
-cfi=(2)
-cfn=(3020)
-calls=1 0 
-0 18
-cob=(2)
-cfi=(2)
-cfn=(2858)
-calls=2 0 
-0 76762
-cob=(2)
-cfi=(2)
-cfn=(2852)
-calls=1 0 
-0 39
-
-fn=(0) 0x00000810
-0 2
-cfn=(2) 0x00000A40
-calls=1 0 
-0 109957
-0 2
-cfn=(2652)
-calls=1 0 
-0 2
-0 17
-cfn=(2656) 0x0000DE80
-calls=1 0 
-0 457
-0 3
-cob=(3)
-cfi=(3)
-cfn=(2754) 0x08048F30
-calls=1 0 
-0 41250762347
-
-fn=(106) 0x00013D70
-0 8
-cfn=(4)
-calls=1 0 
-0 2
-0 385
-cfn=(146) 0x00014900
-calls=1 0 
-0 20
 0 7
-cfn=(180) 0x00014950
-calls=1 0 
-0 27
-0 13
-cfn=(196) 0x00001CB0
-calls=1 0 
-0 108836
-0 51
-cfn=(160)
-calls=1 0 
-0 24
-0 2
-
-fn=(390)
-0 20051
-
-fn=(890) 0x0000E650
-0 20
-cfn=(4)
-calls=4 0 
-0 8
-0 88
-
-fn=(1478)
-0 192
-cfn=(4)
-calls=32 0 
-0 64
-0 508
-
-fn=(2114) 0x00001AF0
-0 7
-cfn=(4)
-calls=1 0 
-0 2
-0 19
-cfn=(290) calloc
-calls=1 0 
-0 80
-0 41
-cfn=(2134) 0x00010CC0
-calls=1 0 
-0 89
-0 1
-cfn=(2160) 0x00010B80
-calls=1 0 
-0 491
-0 27
-
-fn=(2134)
-0 6
-cfn=(4)
-calls=1 0 
-0 2
-0 81
-
-fn=(2214) 0x0000A860
-0 32
-cfn=(4)
-calls=4 0 
-0 8
-0 1770
-cfn=(2528) 0x0000A630
-calls=2 0 
-0 67
-0 6557
-cfn=(2298) 0x000094B0
-calls=86 0 
-0 54825
-0 2443
-cfn=(304)
-calls=1 0 
-0 24
-0 12758
-
-fn=(2594) 0x000133B0
-0 4
-
-fn=(274) 0x0000A290
-0 18
-cfn=(4)
-calls=3 0 
-0 6
-0 21
-cfn=(160)
-calls=3 0 
-0 153
-0 33
-cfn=(290)
-calls=3 0 
-0 248
-0 39
-cfn=(304)
-calls=3 0 
-0 100
-0 309
-cfn=(160)
-calls=2 0 
-0 171
-0 43
-cfn=(294)
-calls=2 0 
-0 106
-0 18
-cfn=(586)
-calls=2 0 
-0 80
-0 132
-
-fn=(924) _dl_debug_state
-0 8
-
-fn=(982)
-0 848
-cfn=(4)
-calls=106 0 
-0 212
-0 636
-cfn=(390)
-calls=106 0 
-0 2445
-0 1398
-cfn=(390)
-calls=110 0 
-0 2819
-0 962
-
-fn=(1604)
-0 1270
-
-fn=(2764)
-0 360
-cfn=(4)
-calls=40 0 
-0 80
-0 2080
-cfn=(2298)
-calls=40 0 
-0 31629
-0 1040
-
-fn=(792)
-0 6
-cfn=(4)
-calls=1 0 
-0 2
-0 22
-cfn=(796) 0x000141C0
-calls=1 0 
-0 348
-0 10
-cfn=(796)
-calls=2 0 
-0 329
-0 15
-cfn=(160)
-calls=2 0 
-0 100
-0 121
-cfn=(294)
-calls=2 0 
-0 106
-0 24
-cfn=(586)
-calls=2 0 
-0 71
-0 224
-
-fn=(1376) 0x0000C030
-0 23
-cfn=(4)
-calls=1 0 
-0 2
-0 237
-cfn=(698)
-calls=2 0 
-0 138
-0 24
-cfn=(950) 0x0000D9A0
-calls=2 0 
-0 12984
-0 280
-cfn=(294)
-calls=2 0 
-0 106
-0 24
-cfn=(304)
-calls=2 0 
-0 57
-0 12
-cfn=(304)
-calls=2 0 
-0 57
-0 69
-cfn=(294)
-calls=1 0 
-0 53
-0 600
-cfn=(304)
-calls=1 0 
-0 35
-0 3
-
-fn=(1400) 0x0000D0A0
-0 46
-cfn=(968)
-calls=1 0 
-0 347
-0 11
-cfn=(968)
-calls=1 0 
-0 12436
-0 14
-
-fn=(1536)
-0 5
-cfn=(4)
-calls=1 0 
-0 2
-0 9
-cfn=(1056)
-calls=1 0 
-0 10
-0 8
-cfn=(1114) 0x00015030
-calls=1 0 
-0 20
-0 9
-cfn=(1322)
-calls=1 0 
-0 8
-0 15
-cfn=(658)
-calls=1 0 
-0 23
-0 2
-
-fn=(1982) 0x0000F640
-0 9
-cfn=(4)
-calls=1 0 
-0 2
-0 57
-cfn=(1990) 0x0000F1D0
-calls=4 0 
-0 3486
-0 16
-
-fn=(2160)
-0 5
-cfn=(4)
-calls=1 0 
-0 2
-0 10
-cfn=(298)
-calls=1 0 
-0 78
-0 302
-cfn=(290)
-calls=1 0 
-0 80
-0 14
-
-fn=(2356)
-0 1260
-cfn=(4)
-calls=126 0 
-0 252
-0 4635
-cfn=(390)
-calls=123 0 
-0 10198
-0 1475
-cfn=(390)
-calls=53 0 
-0 3856
-0 106
-
-fn=(200) 0x00001430
-0 6
-cfn=(4)
-calls=1 0 
-0 2
-0 27
-cfn=(206) 0x00014040
-calls=1 0 
-0 126
-0 4
-cfn=(206)
-calls=2 0 
-0 239
-0 229
-
-fn=(960) 0x00015420
-0 33
-
-fn=(1106)
-0 12
-cfn=(4)
-calls=2 0 
-0 4
-0 14
-cfn=(890)
-calls=2 0 
-0 54
-0 14
-cfn=(1114)
-calls=2 0 
-0 40
-0 151
-cfn=(274)
-calls=2 0 
-0 1181
-0 330
-cfn=(1764)
-calls=1 0 
-0 22
-0 340
-cfn=(658)
-calls=2 0 
-0 46
-0 150
-cfn=(658)
-calls=2 0 
-0 46
-0 535
-cfn=(1322)
-calls=1 0 
-0 8
-0 3
-cfn=(1322)
-calls=1 0 
-0 8
-0 30
-cfn=(96) 0x00008E50
-calls=2 0 
-0 82
-0 51
-cfn=(658)
-calls=1 0 
-0 23
-0 13
-cfn=(1782)
-calls=1 0 
-0 446
-0 35
-
-fn=(2528)
-0 10
-cfn=(4)
-calls=2 0 
-0 4
-0 31
-cfn=(2534)
-calls=1 0 
-0 10
-0 12
-
-fn=(2)
-0 6
-cfn=(4)
-calls=1 0 
-0 2
-0 231
-cfn=(96)
-calls=1 0 
-0 41
-0 14
-cfn=(106)
-calls=1 0 
-0 109375
-0 288
-
-fn=(4)
-0 1436
-
-fn=(966) 0x00001090
-0 14
-cfn=(968)
-calls=1 0 
-0 2505
-0 5
-
-fn=(1114)
-0 18
-cfn=(4)
-calls=3 0 
-0 6
-0 36
-
-fn=(1418)
-0 39
-
-fn=(1990)
-0 44
-cfn=(4)
-calls=4 0 
-0 8
-0 138
-cfn=(982)
-calls=7 0 
-0 766
-0 162
-cfn=(2014) 0x0000EE20
-calls=3 0 
-0 528
-0 42
-cfn=(2014)
-calls=3 0 
-0 511
-0 361
-cfn=(290)
-calls=3 0 
-0 240
-0 686
-
-fn=(2662) 0x0000DD60
-0 50
-cfn=(4)
-calls=5 0 
-0 10
-0 95
-cob=(2)
-cfi=(2)
-cfn=(2692)
-calls=1 0 
-0 199
-0 13
-
-fn=(4294)
-0 6
-cfn=(4)
-calls=1 0 
-0 2
-0 60
-cfn=(2882)
-calls=15 0 
-0 90
-0 108
-cfn=(2880)
-calls=16 0 
 0 96
-0 150
-cfn=(2882)
+
+fn=(3304)
+0 8984
+cfn=(3060)
+calls=2246 0 
+0 11230
+0 26952
+cfn=(3276)
+calls=2246 0 
+0 134760
+0 8984
+
+fn=(4082) bool std::has_facet<std::codecvt<char, char, __mbstate_t> >(std::locale const&)
+0 812
+cfn=(3060)
+calls=203 0 
+0 1015
+0 2436
+cfn=(3276)
+calls=203 0 
+0 12180
+0 812
+
+fn=(4094)
+0 2233
+cfn=(4100)
+calls=203 0 
+0 609
+cob=(1)
+cfi=(1)
+cfn=(2872)
 calls=1 0 
-0 6
-0 74
-cob=(2)
-cfi=(2)
-cfn=(4422)
+0 987
+0 2639
+cfn=(4106) std::__basic_file<char>::open(char const*, std::_Ios_Openmode, int)
+calls=203 0 
+0 121144
+cob=(1)
+cfi=(1)
+cfn=(2872)
 calls=1 0 
-0 15
-0 14
-cob=(3)
-cfi=(6) /build/buildd-glibc_2.7-18lenny2-i386-Vh19Av/glibc-2.7/build-tree/glibc-2.7/csu/../sysdeps/generic/initfini.c
-cfn=(4398) 0x080540FC
-calls=1 109 
-0 29
-0 99
-cfn=(4330) 0x0000DFB0
-calls=1 0 
-0 214
-0 2
-
-fn=(180)
-0 5
-cfn=(4)
-calls=1 0 
-0 2
-0 20
-
-fn=(1782)
-0 492
-
-fn=(1978)
-0 6
-cfn=(4)
-calls=1 0 
-0 2
-0 6
-cfn=(1982)
-calls=1 0 
-0 3570
-0 7
-
-fn=(2014)
-0 54
-cfn=(4)
-calls=6 0 
-0 12
-0 393
-cfn=(390)
-calls=6 0 
-0 520
-0 60
-
-fn=(2880)
-0 102
-
-fn=(96)
-0 36
-cfn=(4)
-calls=4 0 
-0 8
-0 120
-
-fn=(290)
-0 72
-cfn=(4)
-calls=8 0 
-0 16
-0 64
-cfn=(294)
-calls=8 0 
-0 432
-0 64
-
-fn=(294)
-0 84
-cfn=(4)
-calls=21 0 
-0 42
-0 126
-cfn=(298)
-calls=21 0 
-0 825
-0 84
-
-fn=(950)
-0 15
-cfn=(4)
-calls=3 0 
-0 6
-0 21
-cfn=(954)
-calls=3 0 
-0 27
-0 21
-cfn=(960)
-calls=3 0 
-0 33
-0 27
-cfn=(1400)
-calls=2 0 
-0 12854
-cfn=(966)
-calls=1 0 
-0 2524
-0 45
-
-fn=(954)
-0 4
-cfn=(522)
-calls=4 0 
-0 8
-0 24
-
-fn=(1056)
-0 382
-cfn=(522)
-calls=32 0 
-0 64
-0 192
-
-fn=(2628) 0x00008760
-0 4
-cfn=(4)
-calls=1 0 
-0 2
-0 10
-cfn=(2634) 0x00015340
-calls=1 0 
-0 9
-0 5
-
-fn=(2656)
-0 6
-cfn=(4)
-calls=1 0 
-0 2
-0 31
-cfn=(2662)
-calls=1 0 
-0 34
-0 30
-cfn=(2662)
-calls=3 0 
-0 299
-0 19
-cfn=(2662)
-calls=1 0 
-0 34
-0 2
-
-fn=(4330)
-0 9
-cfn=(4)
-calls=1 0 
-0 2
-0 203
-
-fn=(206)
-0 365
-
-fn=(460) 0x000153C0
-0 8
-
-fn=(498)
-0 6
-cfn=(4)
-calls=1 0 
-0 2
-0 678
-cfn=(516)
-calls=1 0 
-0 18
+0 1149
 0 406
-cfn=(160)
-calls=2 0 
-0 42
-0 76
-cfn=(294)
+cfn=(4170)
+calls=203 0 
+0 1624
+cob=(1)
+cfi=(1)
+cfn=(2872)
 calls=1 0 
-0 53
-0 40
-cfn=(586)
+0 1181
+0 812
+cfn=(4176) std::basic_filebuf<char, std::char_traits<char> >::_M_allocate_internal_buffer()
+calls=203 0 
+0 109474
+cob=(1)
+cfi=(1)
+cfn=(2872)
 calls=1 0 
-0 22
-0 24
-cfn=(586)
-calls=3 0 
-0 66
-0 112
-cfn=(586)
-calls=4 0 
-0 92
-0 44
-cfn=(586)
-calls=4 0 
-0 92
-0 811
+0 1361
+0 1218
+cfn=(4222)
+calls=203 0 
+0 3045
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1241
+0 1421
 
-fn=(586)
-0 2651
+fn=(4100)
+0 4263
 
-fn=(946) 0x00000F20
-0 6
-cfn=(4)
+fn=(4188)
+0 7497
+cob=(2)
+cfi=(2)
+cfn=(3502) malloc
+calls=833 0 
+0 155584
+cob=(1)
+cfi=(1)
+cfn=(2872)
 calls=1 0 
-0 2
-0 17
-cfn=(950)
-calls=1 0 
-0 2589
-0 13
+0 893
+0 4998
 
-fn=(2298)
-0 1638
-cfn=(4)
-calls=126 0 
-0 252
-0 18688
-cfn=(2318)
-calls=126 0 
-0 61736
-0 4140
+fn=(4222)
+0 1165893
 
-fn=(2882)
-0 102
-
-fn=(146)
-0 5
-cfn=(4)
-calls=1 0 
-0 2
-0 13
-
-fn=(196)
-0 6
-cfn=(4)
-calls=1 0 
-0 2
-0 15
-cfn=(200)
-calls=1 0 
-0 633
-0 11
-cfn=(274)
-calls=1 0 
-0 296
-0 158
-cfn=(390)
-calls=1 0 
-0 23
-0 231
-cfn=(96)
-calls=1 0 
-0 41
-0 90
-cfn=(460)
-calls=1 0 
-0 8
-0 79
-cfn=(494)
-calls=1 0 
-0 5172
-0 3
-cfn=(890)
-calls=1 0 
-0 35
-0 60
-cfn=(924)
-calls=1 0 
-0 4
-0 16
-cfn=(516)
-calls=1 0 
-0 18
-0 15
-cfn=(1376)
-calls=1 0 
-0 14704
-0 115
-cfn=(1972)
-calls=1 0 
-0 3633
-0 62
-cfn=(2550)
-calls=1 0 
-0 30
-0 57
-cfn=(2214)
-calls=3 0 
-0 73842
-0 15
-cfn=(2594)
-calls=1 0 
-0 4
-0 12
-cfn=(2604)
-calls=1 0 
-0 170
-0 15
-cfn=(2214)
-calls=1 0 
-0 4642
-0 6
-cfn=(890)
-calls=1 0 
-0 27
-0 2
-cfn=(924)
-calls=1 0 
-0 4
-0 1
-cfn=(2628)
-calls=1 0 
-0 30
-0 24
-cfn=(160)
-calls=1 0 
-0 120
-0 10
-cfn=(304)
-calls=1 0 
-0 44
-0 10
-cfn=(796)
-calls=1 0 
-0 891
-0 4
-cfn=(796)
-calls=1 0 
-0 27
-0 16
-cfn=(946)
-calls=1 0 
-0 2627
-0 17
-cfn=(2114)
-calls=1 0 
-0 757
-0 2
-
-fn=(304)
-0 438
-
-fn=(796)
-0 40
-cfn=(4)
-calls=5 0 
-0 10
-0 1545
-
-fn=(1028)
-0 5
-cfn=(4)
-calls=1 0 
-0 2
-0 8
-cfn=(698)
-calls=1 0 
-0 214
-0 4
-cfn=(160)
-calls=1 0 
-0 108
-0 3
-cfn=(294)
-calls=1 0 
-0 53
-0 8
-cfn=(304)
-calls=1 0 
-0 44
-0 6
-
-fn=(2634)
+fn=(4234) std::basic_ifstream<char, std::char_traits<char> >::is_open()
 0 9
-
-ob=(3)
-fl=(4) /build/buildd-glibc_2.7-18lenny2-i386-Vh19Av/glibc-2.7/build-tree/i386-libc/csu/crti.S
-fn=(2822) 0x08048B4C
-15 1
-+1 1
-+1 1
-+1 1
-+1 1
-+3 1
-+1 1
-+1 1
-+1 1
--25 1
-fi=(3)
-cfi=(3)
-cfn=(2826) 0x08048FC0
-calls=1 0 
-0 8
-0 1
-fi=(3)
-cfi=(3)
-cfn=(2832) 0x080540D0
-calls=1 0 
-0 11
-fi=(5) /tmp/ccJ86Lx9.s
-32 1
-+1 1
-+1 1
-+1 1
-fe=(4)
-
-fl=(3)
-fn=(3036) kdbLibSym
-0 12
-cob=(2)
-cfi=(2)
-cfn=(3034)
-calls=1 0 
-0 130
-0 13
-
-fn=(3140) ksPop
-0 116379362
-cfn=(3476) ksResize
-calls=4346 0 
-0 535762
-0 87152976
-cfn=(4130) keyDecRef
-calls=4841832 0 
-0 101678472
-0 25455861
-
-fn=(3152) ksNeedSort
-0 4154280
-
-fn=(3812) kdbGetKey
-0 4152820
-cfn=(3092) ksNew
-calls=415282 0 
-0 145824888
-0 3737538
-cfn=(3814) kdbGetHelper
-calls=415282 0 
-0 5187991714
-0 2491692
-cfn=(3144) ksDel
-calls=415282 0 
-0 125061752
-0 2076410
-
-fn=(3972) ksLookup
-0 1935304
-cfn=(3202) ksGetCursor
-calls=138236 0 
-0 1935304
-0 6773564
-cob=(2)
-cfi=(2)
-cfn=(3978)
-calls=138235 0 
-0 2488230
-cob=(1)
-cfi=(1)
-cfn=(2763)
-calls=1 0 
-0 938
-0 1797068
-cfn=(3204) ksSetCursor
-calls=138236 0 
-0 3870608
-0 829416
-
-fn=(2846) kdbOpenBackend
-0 8
-cob=(1)
-cfi=(1)
-cfn=(2763)
-calls=1 0 
-0 922
-0 3
-cob=(1)
-cfi=(1)
-cfn=(2763)
-calls=1 0 
-0 77472
-0 6
-cob=(1)
-cfi=(1)
-cfn=(2763)
-calls=1 0 
-0 892
-0 3
-cob=(2)
-cfi=(2)
-cfn=(2852)
-calls=1 0 
-0 39
-0 6
-cob=(1)
-cfi=(1)
-cfn=(2763)
-calls=1 0 
-0 1010
-0 3
-cfn=(3028) kdbLibLoad
-calls=1 0 
-0 1057
-0 7
-cfn=(3036)
-calls=1 0 
-0 155
-0 5
-cfn=(3038) libelektra_filesys_LTX_kdbBackendFactory
-calls=1 0 
-0 1647
-0 15
-cfn=(3054) keyNew
-calls=1 0 
-0 292
-0 15
-cfn=(3060) kdbOpen_filesys
-calls=1 0 
-0 42
-0 3
-cob=(1)
-cfi=(1)
-cfn=(2763)
-calls=1 0 
-0 946
-0 6
-
-fn=(3056) keyVNew
-0 19698030
-cob=(2)
-cfi=(2)
-cfn=(2858)
-calls=1969803 0 
-0 350610994
-0 11818818
-cfn=(3058) keyInit
-calls=1969803 0 
-0 108339165
-0 11021026
-cfn=(3102) keySetName
-calls=1416284 0 
-0 3645124514
-0 32937011
-cfn=(3326) keyIsBinary
-calls=1001001 0 
-0 15015015
-0 7007007
-cfn=(3328) keySetString
-calls=1001001 0 
-0 418426590
-0 21690592
-
-fn=(3172) keyGetNamespace
-0 3737544
-cfn=(3174) keyIsUser
-calls=622924 0 
-0 47134571
-0 2906979
-cfn=(3176) keyIsSystem
-calls=415283 0 
-0 50664526
-0 3529904
-
-fn=(3338) keyIsString
-0 15951278
-
-fn=(3402) keyNeedRemove
-0 846592500
-
-fn=(3522) kdbSet
-0 60
-cfn=(3152)
+cfn=(4100)
 calls=3 0 
-0 30
-0 17
-cfn=(3154) ksSort
-calls=1 0 
-0 3984146684
 0 9
-cfn=(3138) kdbhGetTrie
-calls=3 0 
-0 18
-0 15
-cfn=(3100) ksRewind
-calls=3 0 
-0 39
-0 27
-cfn=(3794) kdbSet_filesys
-calls=3 0 
-0 2520763188
-0 21
+0 6
 
-fn=(3794)
-0 12
+fn=(4246) std::allocator<char>::allocator()
+0 6
+
+fn=(4366) std::ctype<char>::do_widen(char const*, char const*, char*) const
+0 5
 cob=(2)
 cfi=(2)
-cfn=(3168)
-calls=3 0 
-0 30
-0 15
-cfn=(3796) ksCurrent
-calls=3 0 
+cfn=(3686) memcpy
+calls=1 0 
+0 113
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 893
+0 3
+
+fn=(4400)
 0 33
-0 18
-cfn=(3148) ksNext
+cfn=(4406)
 calls=3 0 
-0 102
-0 207369
-cfn=(3402)
-calls=69121 0 
-0 1036815
-0 483837
-cfn=(4262) kdbRemoveKey_filesys
-calls=69119 0 
-0 2515671787
-0 138244
-cfn=(3798) keyNeedSync
-calls=2 0 
-0 26
-0 14
-cfn=(3800) kdbSetKey_filesys
-calls=2 0 
-0 114465
-0 6
+0 920
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 917
+0 12
 cob=(2)
 cfi=(2)
-cfn=(3168)
-calls=2 0 
+cfn=(4418) read
+calls=3 0 
+0 21
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 874
+0 30
+
+fn=(4406)
+0 122006
+cob=(2)
+cfi=(2)
+cfn=(4412) fileno
+calls=61003 0 
+0 427021
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 893
+
+fn=(4436) std::string::reserve(unsigned long)
+0 204
+cfn=(4442)
+calls=12 0 
+0 3975
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 947
+0 174
+cfn=(4612)
+calls=6 0 
+0 510
+0 30
+
+fn=(4586)
+0 4284
+
+fn=(4658) std::istream::read(char*, long)
+0 7272
+cfn=(4384)
+calls=606 0 
+0 24240
+0 9090
+cfn=(4660)
+calls=606 0 
+0 59258
+0 1818
+
+fn=(4836) std::basic_filebuf<char, std::char_traits<char> >::close()
+0 1624
+cfn=(4100)
+calls=203 0 
+0 609
+0 2030
+cfn=(4842)
+calls=203 0 
+0 6469
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1313
+0 1218
+cfn=(4848)
+calls=203 0 
+0 40278
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1318
+0 2842
+cfn=(4860) std::__basic_file<char>::close()
+calls=203 0 
+0 90716
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 976
+0 812
+
+fn=(5310) std::basic_streambuf<char, std::char_traits<char> >::xsputn(char const*, long)
+0 2273800
+cfn=(5312)
+calls=200 0 
+0 10800
+0 1279600
+cob=(2)
+cfi=(2)
+cfn=(3686)
+calls=142000 0 
+0 3289520
+0 1562000
+
+fn=(5348) std::basic_ostream<char, std::char_traits<char> >& std::endl<char, std::char_traits<char> >(std::basic_ostream<char, std::char_traits<char> >&)
+0 1098000
+cfn=(5354) std::ostream::put(char)
+calls=61000 0 
+0 3233000
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 778
+0 122000
+cfn=(5360)
+calls=61000 0 
+0 10617186
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 804
+0 488000
+
+fn=(2786)
+0 11
+cfn=(2790)
+calls=1 0 
+0 3
 0 20
-0 207367
-cfn=(3148)
-calls=69119 0 
-0 2695641
-0 207364
-cob=(2)
-cfi=(2)
-cfn=(3168)
+cfn=(2928)
 calls=1 0 
-0 10
-0 13
-
-fn=(3820) keySetBaseName
-0 7475076
-cob=(2)
-cfi=(2)
-cfn=(2710)
-calls=415281 0 
-0 56146266
-cob=(1)
-cfi=(1)
-cfn=(2763)
+0 63
+cfn=(2924) 0x000000000005A190
 calls=1 0 
-0 1022
-0 10382050
-cob=(2)
-cfi=(2)
-cfn=(3484)
-calls=415282 0 
-0 63830466
-0 8305640
-cfn=(3132) keyNameGetOneLevel
-calls=415282 0 
-0 11212614
-0 9136204
-
-fn=(4254) keyRemove
-0 1451499
-
-fn=(4282) kdbClose
-0 12
-cfn=(4284) kdbCloseBackend
-calls=1 0 
-0 518
-0 4
-
-fn=(4290) capDel
-0 6
-cob=(2)
-cfi=(2)
-cfn=(3070)
-calls=1 0 
-0 104
-0 2
-
-fn=(2818)
-0 6
-cfn=(2820) 0x0805408A
-calls=1 0 
-0 2
 0 3
-cfi=(4)
-cfn=(2822)
-calls=1 15 
+cfn=(2864)
+calls=1 0 
+0 1069
+cfn=(2862)
+calls=1 0 
+0 1
+cfn=(2860) 0x0000000000060950
+calls=1 0 
+0 1
+cfn=(2856)
+calls=1 0 
+0 3
+cfn=(2852) 0x0000000000065C90
+calls=1 0 
+0 3
+cfn=(2826) 0x0000000000082BE0
+calls=1 0 
+0 49
+cfn=(2800)
+calls=1 0 
+0 49
+cfn=(2798) 0x00000000000C4E80
+calls=1 0 
+0 52
+0 37
+
+fn=(2852)
+0 3
+
+fn=(2860)
+0 1
+
+fn=(2996) std::ios_base::Init::Init()
 0 34
+cfn=(3002) std::locale::locale()
+calls=1 0 
+0 62029
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 818
+0 16
+cfn=(3002)
+calls=1 0 
+0 33
+0 14
+cfn=(3002)
+calls=1 0 
+0 33
+0 6
+cfn=(3234)
+calls=1 0 
+0 91
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 836
+0 15
+cfn=(3240)
+calls=1 0 
+0 13353
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1341
+0 3
+cfn=(3234)
+calls=1 0 
+0 91
+0 16
+cfn=(3240)
+calls=1 0 
+0 615
+0 3
+cfn=(3234)
+calls=1 0 
+0 91
+0 14
+cfn=(3240)
+calls=1 0 
+0 615
+0 3
+cfn=(3234)
+calls=1 0 
+0 91
+0 14
+cfn=(3240)
+calls=1 0 
+0 615
+0 16
+cfn=(3002)
+calls=1 0 
+0 33
+0 16
+cfn=(3002)
+calls=1 0 
+0 33
+0 14
+cfn=(3002)
+calls=1 0 
+0 33
+0 6
+cfn=(3234)
+calls=1 0 
+0 91
+0 15
+cfn=(3316)
+calls=1 0 
+0 9876
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1299
+0 3
+cfn=(3234)
+calls=1 0 
+0 91
+0 16
+cfn=(3316)
+calls=1 0 
+0 580
+0 3
+cfn=(3234)
+calls=1 0 
+0 91
+0 14
+cfn=(3316)
+calls=1 0 
+0 580
+0 3
+cfn=(3234)
+calls=1 0 
+0 91
+0 14
+cfn=(3316)
+calls=1 0 
+0 580
 0 12
 
-fn=(2820)
-0 415000
+fn=(3002)
+0 23364
+cfn=(3004)
+calls=3894 0 
+0 91375
+0 3894
+cfn=(3202) 0x0000000000068040
+calls=3894 0 
+0 25137
+0 46728
 
-fn=(3060)
-0 6
-cfn=(3062) kdbhGetCapability
-calls=1 0 
-0 6
-0 18
-cfn=(3064) kdbhSetCapability
-calls=1 0 
-0 9
-0 3
+fn=(3200)
+0 2
 
-fn=(3124) keySetOwner
-0 18591525
-cfn=(3104) kdbiStrLen
-calls=1277757 0 
-0 94273258
-0 15162351
-cob=(2)
-cfi=(2)
-cfn=(3484)
-calls=138378 0 
-0 21171834
-0 5526162
-cob=(2)
-cfi=(2)
-cfn=(2858)
-calls=1139379 0 
-0 233140496
-0 15642195
-cob=(2)
-cfi=(2)
-cfn=(3324)
-calls=1277756 0 
-0 61332288
+fn=(3346)
+0 16
+cfn=(3060)
+calls=4 0 
+0 20
+0 48
+cfn=(3276)
+calls=4 0 
+0 240
+0 16
+
+fn=(4070)
+0 3451
+cfn=(3002)
+calls=203 0 
+0 6699
+0 2233
+cfn=(4076) std::__basic_file<char>::__basic_file(pthread_mutex_t*)
+calls=203 0 
+0 609
 cob=(1)
 cfi=(1)
-cfn=(2763)
-calls=1 0 
-0 940
-0 24916491
-
-fn=(3148)
-0 13754621249
-
-fn=(3174)
-0 8098012
-cfn=(3114) keyNameIsUser
-calls=622924 0 
-0 35921939
-0 3114620
-
-fn=(3178) kdbbKeyCalcRelativeFilename
-0 3114620
-cfn=(3180) kdbbNeedsUTF8Conversion
-calls=622924 0 
-0 3114620
-0 3114620
-cfn=(3182) keyName
-calls=622924 0 
-0 9343860
-0 4360468
-cfn=(3184) kdbbKeyNameToRelativeFilename
-calls=622924 0 
-0 784811568
-0 3737544
-
-fn=(3478) kdbiRealloc
-0 60564
-cob=(2)
-cfi=(2)
-cfn=(3484)
-calls=5046 0 
-0 2620792
-cob=(1)
-cfi=(1)
-cfn=(2763)
+cfn=(2872)
 calls=1 0 
 0 1077
-0 50470
+0 4060
+cfn=(4082)
+calls=203 0 
+0 17255
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1174
+0 812
+cfn=(4088) std::codecvt<char, char, __mbstate_t> const& std::use_facet<std::codecvt<char, char, __mbstate_t> >(std::locale const&)
+calls=203 0 
+0 17255
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1209
+0 1015
 
-fn=(3798)
-0 1798940
+fn=(4228)
+0 7335
 
-fn=(3802) keyOwner
-0 8302770
+fn=(4270) std::allocator<char>::allocator(std::allocator<char> const&)
+0 6
 
-fn=(4150) keyIsDirectBelow
-0 56441448
-cfn=(3182)
-calls=4703454 0 
-0 70551810
-0 18813816
-cfn=(3966) keyGetNameSize
-calls=4703454 0 
-0 70551810
-0 28220724
-cfn=(4152) keyIsBelow
-calls=4703454 0 
-0 1516915526
-0 32924178
+fn=(4358) std::string::string()
+0 24
 
-fn=(4288) kdbLibClose
-0 5
+fn=(4364) std::basic_istream<char, std::char_traits<char> >& std::getline<char, std::char_traits<char>, std::allocator<char> >(std::basic_istream<char, std::char_traits<char> >&, std::basic_string<char, std::char_traits<char>, std::allocator<char> >&)
+0 16587
+cfn=(4366)
+calls=1 0 
+0 1014
+0 266
+cfn=(4372)
+calls=1 0 
+0 2
+0 3660
+cfn=(4378) std::basic_istream<char, std::char_traits<char> >& std::getline<char, std::char_traits<char>, std::allocator<char> >(std::basic_istream<char, std::char_traits<char> >&, std::basic_string<char, std::char_traits<char>, std::allocator<char> >&, char)
+calls=915 0 
+0 262973
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1421
+0 8233
 
-fn=(4400) 0x08048F60
-0 18
+fn=(4378)
+0 13725
+cfn=(4384)
+calls=915 0 
+0 36600
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 866
+0 16470
+cfn=(4390)
+calls=915 0 
+0 35685
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 850
+0 25653
+cob=(2)
+cfi=(2)
+cfn=(4424) memchr
+calls=612 0 
+0 50220
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 901
+0 4896
+cfn=(4430)
+calls=612 0 
+0 45708
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 832
+0 14373
+cfn=(4392)
+calls=3 0 
+0 4013
+0 2757
+cfn=(4476)
+calls=915 0 
+0 6405
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1189
+0 1830
+
+fn=(4502)
+0 9180
+cfn=(4448)
+calls=612 0 
+0 71852
+0 4896
+cob=(2)
+cfi=(2)
+cfn=(3686)
+calls=612 0 
+0 15282
+0 6120
+
+fn=(4628) std::ios_base::~ios_base()
+0 7335
+cfn=(4634)
+calls=815 0 
+0 9780
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1092
+0 1630
+cfn=(4640)
+calls=815 0 
+0 13040
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1030
+0 7335
+cfn=(3258)
+calls=815 0 
+0 9780
+
+fn=(4860)
+0 2030
+cfn=(4100)
+calls=406 0 
+0 1218
+0 4466
+cob=(2)
+cfi=(2)
+cfn=(4866) __errno_location
+calls=203 0 
+0 609
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1053
+0 1015
+cob=(2)
+cfi=(2)
+cfn=(4872) fclose
+calls=203 0 
+0 82258
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 909
+0 406
+
+fn=(5278) std::basic_ofstream<char, std::char_traits<char> >::is_open()
+0 600
+cfn=(4100)
+calls=200 0 
+0 600
+0 400
+
+fn=(5312)
+0 1284200
+cfn=(5368)
+calls=61000 0 
+0 5430870
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1316
+0 305000
+cfn=(4222)
+calls=61000 0 
+0 1159000
+0 429200
+cfn=(4222)
+calls=200 0 
+0 3800
+0 123600
+
+fn=(5346) std::ostream::operator<<(std::ostream& (*)(std::ostream&))
+0 122000
+cfn=(5348)
+calls=61000 0 
+0 15559768
+
+fn=(5354)
+0 610000
+cfn=(5302)
+calls=61000 0 
+0 1281000
+0 1342000
+
+fn=(5404) std::num_put<char, std::ostreambuf_iterator<char, std::char_traits<char> > >::do_put(std::ostreambuf_iterator<char, std::char_traits<char> >, std::ios_base&, char, unsigned long) const
+0 202000
+cfn=(5410) std::ostreambuf_iterator<char, std::char_traits<char> > std::num_put<char, std::ostreambuf_iterator<char, std::char_traits<char> > >::_M_insert_int<unsigned long>(std::ostreambuf_iterator<char, std::char_traits<char> >, std::ios_base&, char, unsigned long) const
+calls=40400 0 
+0 9595000
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1596
+0 161600
+
+fn=(5410)
+0 808000
+cfn=(4574)
+calls=40400 0 
+0 1131200
+0 848400
+cfn=(5334)
+calls=40400 0 
+0 1090800
+0 1575600
+cfn=(5304)
+calls=40400 0 
+0 4019800
+0 121200
+
+fn=(5416) std::ostream::write(char const*, long)
+0 444400
+cfn=(5302)
+calls=40400 0 
+0 848400
+0 363600
+cfn=(5304)
+calls=40400 0 
+0 4427520
+0 565600
+
+fn=(5702) std::ios_base::Init::~Init()
+0 7
+cfn=(5360)
+calls=1 0 
+0 1105
+0 2
+cfn=(5360)
+calls=1 0 
+0 78
+0 2
+cfn=(5360)
+calls=1 0 
+0 78
+0 2
+cfn=(5736) std::basic_ostream<wchar_t, std::char_traits<wchar_t> >::flush()
+calls=1 0 
+0 78
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1136
+0 2
+cfn=(5736)
+calls=1 0 
+0 78
+0 2
+cfn=(5736)
+calls=1 0 
+0 78
+0 7
+
+fn=(5756)
+0 10
+cob=(2)
+cfi=(2)
+cfn=(5700)
+calls=1 0 
+0 96
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1021
+0 13
+
+fn=(2798)
+0 52
+
+fn=(2826)
+0 49
+
+fn=(2924)
+0 3
 
 fn=(3028)
 0 15
-cob=(1)
-cfi=(1)
-cfn=(2763)
-calls=1 0 
-0 1029
-0 13
-
-fn=(3054)
-0 19763003
-cfn=(3056)
-calls=1416284 0 
-0 4499564352
-0 2767595
-cfn=(3056)
-calls=553519 0 
-0 142124410
-0 9849015
-
-fn=(3058)
-0 31519120
-cob=(2)
-cfi=(2)
-cfn=(3050)
-calls=3939890 0 
-0 141836040
-0 43338790
-
-fn=(3098) ksInit
-0 33229504
-cfn=(3100)
-calls=2076844 0 
-0 26998972
-0 6230532
-
-fn=(3132)
-0 1416414595
-
-fn=(3136) kdbGetBackend
-0 5814949
-cfn=(3138)
-calls=830707 0 
-0 4984242
-0 8307070
-
-fn=(3184)
-0 271654459
-cfn=(3186) kdbbEncodeChar
-calls=12191953 0 
-0 329182731
-0 183974378
-
-fn=(3340) keySetType
-0 22787540
-
-fn=(4046) keySetComment
-0 2490768
-
-fn=(4260) xiter
-0 15005
-cfn=(3100)
-calls=5000 0 
-0 65000
-0 1036790000
-cfn=(4258) doNothing
-calls=345595000 0 
-0 1382380000
-0 1036800000
-cfn=(3148)
-calls=345600000 0 
-0 13478375000
-0 1036815005
-
-fn=(4262)
-0 760309
-cfn=(3170) kdbbGetFullFilename
-calls=69119 0 
-0 2502102041
-0 552952
-cfn=(3848) stat
-calls=69119 0 
-0 8501637
-0 415211
-cob=(2)
-cfi=(2)
-cfn=(3192)
-calls=71 0 
-0 91803
-0 1273
-cob=(2)
-cfi=(2)
 cfn=(3034)
-calls=212 0 
-0 3044
-0 1129
-cob=(2)
-cfi=(2)
+calls=1 0 
+0 2301
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1015
+0 90
+
+fn=(3036) 0x0000000000065E60
+0 4
+cfn=(3042)
+calls=1 0 
+0 1037
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1250
+
+fn=(3066)
+0 12
 cfn=(3034)
-calls=141 0 
-0 2405
-0 702
-cob=(2)
-cfi=(2)
-cfn=(3034)
-calls=70 0 
-0 5180
-0 1835
-cob=(2)
-cfi=(2)
-cfn=(3900)
-calls=283 0 
-0 34304
-0 1062
-cob=(2)
-cfi=(2)
-cfn=(3928)
-calls=71 0 
-0 11928
-0 844
-cob=(2)
-cfi=(2)
-cfn=(4276)
-calls=69 0 
-0 66528
-cob=(1)
-cfi=(1)
-cfn=(2763)
 calls=1 0 
-0 1863
-0 210
-cob=(2)
-cfi=(2)
-cfn=(4268)
-calls=70 0 
-0 2100
-0 760519
-cob=(2)
-cfi=(2)
-cfn=(4268)
-calls=69118 0 
-0 2075528
-cob=(1)
-cfi=(1)
-cfn=(2763)
-calls=1 0 
-0 904
-0 276476
-
-fn=(2826)
-0 8
-
-fn=(3094) ksVNew
-0 14537908
-cfn=(3096) kdbiMalloc
-calls=2076844 0 
-0 258552057
-0 12461064
-cfn=(3098)
-calls=2076844 0 
-0 66459008
-0 10384235
-cfn=(3096)
-calls=3 0 
-0 1300
-0 10384205
-cfn=(3096)
-calls=2076841 0 
-0 273949982
-0 35306375
-
-fn=(3494) print_time
-0 72
-cob=(2)
-cfi=(2)
-cfn=(3348)
-calls=9 0 
-0 99
-0 189
-cob=(2)
-cfi=(2)
-cfn=(3500)
-calls=8 0 
-0 16767
-cob=(1)
-cfi=(1)
-cfn=(2763)
-calls=1 0 
-0 3549
-0 27
-cob=(2)
-cfi=(2)
-cfn=(3348)
-calls=9 0 
-0 99
-0 36
-
-fn=(3964) kdbbUTF8Engine
-0 1383060
-
-fn=(4286) kdbClose_filesys
+0 7
 0 5
 
-fn=(3096)
-0 24922980
-cob=(2)
-cfi=(2)
-cfn=(2858)
-calls=4153830 0 
-0 499287609
-0 8307660
-
-fn=(3122) keyNameIsSystem
-0 9966784
-cob=(2)
-cfi=(2)
-cfn=(3120)
-calls=1245848 0 
-0 110880472
-0 8720936
-
-fn=(3170)
-0 216985890
-cfn=(3172)
-calls=207642 0 
-0 23255996
-0 1038214
-cob=(2)
-cfi=(2)
-cfn=(3130)
-calls=1 0 
-0 4256
-0 3
-cob=(2)
-cfi=(2)
-cfn=(2852)
-calls=1 0 
-0 51
-0 415284
-cob=(2)
-cfi=(2)
-cfn=(3300)
-calls=207641 0 
-0 126245728
-0 1038205
-cob=(2)
-cfi=(2)
-cfn=(3300)
-calls=207641 0 
-0 127076292
-0 1868769
-cob=(2)
-cfi=(2)
-cfn=(2852)
-calls=207641 0 
-0 8097999
-0 622923
-cob=(2)
-cfi=(2)
-cfn=(3020)
-calls=207641 0 
-0 3322256
-0 622923
-cfn=(3802)
-calls=207641 0 
-0 3114615
-0 830564
-cob=(2)
-cfi=(2)
-cfn=(3808)
-calls=207640 0 
-0 15984540
-cob=(1)
-cfi=(1)
-cfn=(2763)
-calls=1 0 
-0 947
-0 830564
-cob=(2)
-cfi=(2)
-cfn=(3808)
-calls=207641 0 
-0 16818921
-0 1868769
-cfn=(3810) kdbGetString
-calls=207641 0 
-0 3260433388
-0 1868769
-cob=(2)
-cfi=(2)
-cfn=(3020)
-calls=207641 0 
-0 3945179
-0 830564
-cob=(2)
-cfi=(2)
-cfn=(3808)
-calls=207641 0 
-0 12666101
-0 622923
-cfn=(3802)
-calls=207641 0 
-0 3114615
-0 830564
-cob=(2)
-cfi=(2)
-cfn=(3808)
-calls=207641 0 
-0 16815177
-0 830564
-cob=(2)
-cfi=(2)
-cfn=(3808)
-calls=207641 0 
-0 20141177
-0 1868769
-cfn=(3810)
-calls=207641 0 
-0 3151200335
-0 1245846
-cob=(2)
-cfi=(2)
-cfn=(3300)
-calls=207641 0 
-0 79941785
-0 2491692
-cob=(2)
-cfi=(2)
-cfn=(3356)
-calls=207641 0 
-0 201827052
-0 4360480
-cfn=(3178)
-calls=207642 0 
-0 338591102
-0 2699346
-
-fn=(3171) kdbbGetFullFilename'2
-0 433969690
-cfn=(3172)
-calls=415282 0 
-0 84717528
-0 3737538
-cob=(2)
-cfi=(2)
-cfn=(3130)
-calls=415282 0 
-0 1767440192
-0 1245846
-cob=(2)
-cfi=(2)
-cfn=(2852)
-calls=415282 0 
-0 21179382
-0 8720922
-cfn=(3178)
-calls=415282 0 
-0 473006198
-0 5398666
-
-fn=(3350) creator
-0 9007
-cob=(2)
-cfi=(2)
-cfn=(3356)
-calls=999 0 
-0 1306746
-cob=(1)
-cfi=(1)
-cfn=(2763)
-calls=1 0 
-0 2182
-0 7000
-cfn=(3054)
-calls=1000 0 
-0 3455096
-0 4000
-cfn=(3400) ksAppendKey
-calls=1000 0 
-0 92000
-0 12002000
-cob=(2)
-cfi=(2)
-cfn=(3356)
-calls=1000000 0 
-0 1946034000
-0 7000000
-cfn=(3054)
-calls=1000000 0 
-0 3742609725
-0 4000000
-cfn=(3400)
-calls=1000000 0 
-0 92001139
-0 3005004
-
-fn=(3940) keyDup
-0 1562
-cob=(2)
-cfi=(2)
-cfn=(2858)
-calls=142 0 
-0 30713
-0 852
-cfn=(3058)
-calls=142 0 
-0 7810
-0 7100
-cfn=(3102)
-calls=142 0 
-0 354417
-0 2272
-cfn=(3124)
-calls=142 0 
-0 46572
-0 2130
-cfn=(3330) keySetRaw
-calls=142 0 
-0 28881
-0 1562
-
-fn=(3944) keyFromStat
-0 1245402
-cfn=(3946) keySetUID
-calls=138378 0 
-0 2490804
-0 830268
-cfn=(3948) keySetGID
-calls=138378 0 
-0 2490804
-0 968646
-cfn=(3950) keySetMode
-calls=138378 0 
-0 2490804
-0 2075670
-
-fn=(3962) kdbbGetFullKeyName
-0 1244124
-cfn=(3104)
-calls=138236 0 
-0 9601808
-0 552944
-cob=(2)
-cfi=(2)
-cfn=(2858)
-calls=138236 0 
-0 15009517
-0 829416
-cob=(2)
-cfi=(2)
-cfn=(3324)
-calls=138236 0 
-0 6559228
-0 829416
-cfn=(3964)
-calls=138236 0 
-0 691180
-0 1244124
-cfn=(3966)
-calls=138236 0 
-0 2073540
-0 414708
-cob=(2)
-cfi=(2)
-cfn=(2858)
-calls=138236 0 
-0 14880863
-0 552944
-cfn=(3182)
-calls=138236 0 
-0 2073540
-0 552944
-cob=(2)
-cfi=(2)
-cfn=(3324)
-calls=138236 0 
-0 16888128
-0 414708
-cfn=(3966)
-calls=138236 0 
-0 2073540
-0 1520596
-cfn=(3966)
-calls=138236 0 
-0 2073540
-0 829416
-cfn=(3968) kdbbFilenameToKeyName
-calls=138236 0 
-0 41830908
-0 691180
-cfn=(3102)
-calls=138236 0 
-0 415266171
-0 414708
-cfn=(3802)
-calls=138236 0 
-0 2073540
-0 552944
-cfn=(3124)
-calls=138236 0 
-0 45337408
-0 414708
-cob=(2)
-cfi=(2)
-cfn=(3070)
-calls=138236 0 
-0 14376544
-0 414708
-cob=(2)
-cfi=(2)
-cfn=(3070)
-calls=138236 0 
-0 14376544
-0 829416
-
-fn=(3966)
-0 217876050
-
-fn=(4002) kdbbReadLock
-0 968632
-cob=(2)
-cfi=(2)
-cfn=(4008)
-calls=138375 0 
-0 2075625
-cob=(1)
-cfi=(1)
-cfn=(2763)
-calls=1 0 
-0 889
-0 1522136
-cob=(2)
-cfi=(2)
-cfn=(3878)
-calls=138375 0 
-0 5535000
-cob=(1)
-cfi=(1)
-cfn=(2763)
-calls=1 0 
-0 912
-0 553504
-
-fn=(4130)
-0 227280942
-
-fn=(3104)
-0 30708566
-cob=(2)
-cfi=(2)
-cfn=(3110)
-calls=4386937 0 
-0 387547327
-cob=(1)
-cfi=(1)
-cfn=(2763)
-calls=1 0 
-0 1034
-0 61417132
-
-fn=(3112) keyNameGetFullRootNameSize
-0 11819664
-cob=(2)
-cfi=(2)
-cfn=(2852)
-calls=1969944 0 
-0 136301516
-0 13789608
-cob=(2)
-cfi=(2)
-cfn=(3110)
-calls=1969944 0 
-0 87933979
-0 21669384
-
-fn=(3142) ksAppend
-0 10410883
-cfn=(3476)
-calls=280 0 
-0 184050
-0 38735216
-cfn=(3404) keyIncRef
-calls=4841832 0 
-0 101678472
-0 29056312
-cob=(2)
-cfi=(2)
-cfn=(3020)
-calls=280 0 
-0 4846032
-0 2080635
-
-fn=(3150) kdbiFree
-0 36742650
-cob=(2)
-cfi=(2)
-cfn=(3070)
-calls=6123775 0 
-0 639285048
-0 12247550
-
-fn=(3154)
-0 6231438
-cob=(2)
-cfi=(2)
-cfn=(3528)
-calls=1 0 
-0 217204011
-cob=(1)
-cfi=(1)
-cfn=(2763)
-calls=1 0 
-0 3984146658
-0 830856
-
-fn=(3156) kdbGet_filesys
-0 830310
-cfn=(3158) ksGetSize
-calls=138385 0 
-0 1522235
-0 553540
-cfn=(3092)
-calls=138385 0 
-0 41108010
-0 276770
-cob=(2)
-cfi=(2)
-cfn=(3168)
-calls=138384 0 
-0 1383840
-cob=(1)
-cfi=(1)
-cfn=(2763)
-calls=1 0 
-0 1044
-0 1383850
-cfn=(3171)
-calls=138242 0 
-0 931889322
-cfn=(3170)
-calls=143 0 
-0 5258645
-0 691925
-cob=(2)
-cfi=(2)
-cfn=(3192)
-calls=138384 0 
-0 6806938
-cob=(1)
-cfi=(1)
-cfn=(2763)
-calls=1 0 
-0 952
-0 553398
-cob=(2)
-cfi=(2)
-cfn=(3168)
-calls=138243 0 
-0 1382430
-0 552972
-cfn=(3144)
-calls=138243 0 
-0 41472900
-0 138243
-cob=(2)
-cfi=(2)
-cfn=(3168)
-calls=138243 0 
-0 1382430
-0 691641
-cfn=(3940)
-calls=142 0 
-0 483871
-0 852
-cfn=(3942) kdbGetKey_filesys
-calls=142 0 
-0 5968498
-0 710
-cfn=(3400)
-calls=142 0 
-0 13064
-0 693442
-cob=(2)
-cfi=(2)
-cfn=(3034)
-calls=138660 0 
-0 1250212
-0 969910
-cob=(2)
-cfi=(2)
-cfn=(3034)
-calls=138518 0 
-0 1248934
-0 1107292
-cob=(2)
-cfi=(2)
-cfn=(3034)
-calls=138376 0 
-0 1254484
-0 553224
-cfn=(3054)
-calls=138236 0 
-0 58733829
-0 1520596
-cfn=(3962)
-calls=138236 0 
-0 617489003
-0 1105888
-cfn=(3972)
-calls=138236 0 
-0 19630432
-0 829416
-cfn=(3952) keyNeedStat
-calls=138236 0 
-0 2073540
-0 967652
-cfn=(3942)
-calls=138236 0 
-0 5887755271
-0 2073540
-cfn=(3400)
-calls=138236 0 
-0 13598823
-0 554642
-cob=(2)
-cfi=(2)
-cfn=(3900)
-calls=138802 0 
-0 17193484
-0 416832
-cob=(2)
-cfi=(2)
-cfn=(3928)
-calls=142 0 
-0 23856
-0 426
-cfn=(4118) ksClear
-calls=142 0 
-0 42742
-0 710
-cfn=(3142)
-calls=142 0 
-0 5162760
-0 426
-cfn=(3144)
-calls=142 0 
-0 12227608
-0 142
-cob=(2)
-cfi=(2)
-cfn=(3168)
-calls=142 0 
-0 1420
-0 416007
-
-fn=(3157) kdbGet_filesys'2
-0 1662240
-cfn=(3158)
-calls=277040 0 
-0 3047440
-0 1108160
-cfn=(3092)
-calls=277040 0 
-0 86624546
-0 554080
-cob=(2)
-cfi=(2)
-cfn=(3168)
-calls=277040 0 
-0 2770400
-0 2770400
-cfn=(3171)
-calls=277040 0 
-0 1867526640
-0 1385200
-cob=(2)
-cfi=(2)
-cfn=(3192)
-calls=277040 0 
-0 13297920
-0 1108160
-cob=(2)
-cfi=(2)
-cfn=(3168)
-calls=277040 0 
-0 2770400
-0 1108160
-cfn=(3144)
-calls=277040 0 
-0 83904515
-0 277040
-cob=(2)
-cfi=(2)
-cfn=(3168)
-calls=277040 0 
-0 2770400
-0 2216320
-
-fn=(3196) keyDel
-0 86583156
-cfn=(3198) keyClear
-calls=1969945 0 
-0 697223161
-0 7879780
-cfn=(3150)
-calls=1969945 0 
-0 220687005
-0 24375221
+fn=(3162)
+0 345
 
 fn=(3202)
-0 1935318
-
-fn=(3206) kdbhSetTrie
-0 7
-
-fn=(3800)
-0 34
-cfn=(3170)
-calls=2 0 
-0 75614
-0 16
-cfn=(3848)
-calls=2 0 
-0 1136
-0 22
-cfn=(3868) keyIsDir
-calls=2 0 
-0 30
-0 28
-cob=(2)
-cfi=(2)
-cfn=(3192)
-calls=2 0 
-0 2039
-0 46
-cob=(2)
-cfi=(2)
-cfn=(3034)
-calls=8 0 
-0 104
-0 46
-cob=(2)
-cfi=(2)
-cfn=(3034)
-calls=6 0 
-0 86
-0 36
-cob=(2)
-cfi=(2)
-cfn=(3034)
-calls=4 0 
-0 166
-0 54
-cob=(2)
-cfi=(2)
-cfn=(3900)
-calls=7 0 
-0 16470
-cob=(1)
-cfi=(1)
-cfn=(2763)
-calls=1 0 
-0 17113
-0 30
-cob=(2)
-cfi=(2)
-cfn=(3928)
-calls=1 0 
-0 223
-cob=(1)
-cfi=(1)
-cfn=(2763)
-calls=1 0 
-0 1134
-0 6
-cob=(2)
-cfi=(2)
-cfn=(3168)
-calls=2 0 
-0 20
-0 12
-
-fn=(3810)
-0 7475076
-cfn=(3054)
-calls=415282 0 
-0 91693074
-0 3322256
-cfn=(3102)
-calls=415282 0 
-0 679553433
-0 3322256
-cfn=(3812)
-calls=415282 0 
-0 5471336814
-0 2491692
-cfn=(3196)
-calls=415282 0 
-0 150362712
-0 2076410
-
-fn=(3814)
-0 2491692
-cfn=(3182)
-calls=415282 0 
-0 6229230
-0 1245846
-cfn=(3054)
-calls=415282 0 
-0 777566728
-0 2491692
-cfn=(3816) kdbGetCapability
-calls=415282 0 
-0 16611280
-0 1661128
-cfn=(3818) kdbcGetonlyFullGet
-calls=415282 0 
-0 3322256
-0 2491692
-cfn=(3820)
-calls=415282 0 
-0 166489338
-0 1245846
-cfn=(3182)
-calls=415282 0 
-0 6229230
-0 830564
-cob=(2)
-cfi=(2)
-cfn=(2852)
-calls=415282 0 
-0 21594664
-0 1661128
-cfn=(3092)
-calls=415282 0 
-0 142957331
-0 4568102
-cfn=(3135) kdbGet'2
-calls=277040 0 
-0 2509417216
-cfn=(3134) kdbGet
-calls=138242 0 
-0 1224292132
-0 1661128
-cfn=(3100)
-calls=415282 0 
-0 5398666
-0 1661128
-cfn=(3148)
-calls=415282 0 
-0 5813948
-0 2491692
-cfn=(3144)
-calls=415282 0 
-0 124730703
-0 1245846
-cfn=(3196)
-calls=415282 0 
-0 150345662
-0 1245846
-
-fn=(3946)
-0 2490804
-
-fn=(3948)
-0 2490804
-
-fn=(3970) kdbbDecodeChar
-0 16283920
-
-fn=(4048) kdbbUnlock
-0 968632
-cob=(2)
-cfi=(2)
-cfn=(4008)
-calls=138376 0 
-0 2075640
-0 1522136
-cob=(2)
-cfi=(2)
-cfn=(3878)
-calls=138376 0 
-0 4704784
-0 553504
-
-fn=(4152)
-0 65848356
-cfn=(3182)
-calls=4703454 0 
-0 70551810
-0 18813816
-cfn=(3182)
-calls=4703454 0 
-0 70551810
-0 18813816
-cfn=(3966)
-calls=4703454 0 
-0 70551810
-0 18813816
-cfn=(3966)
-calls=4703454 0 
-0 70551810
-0 61144902
-cob=(2)
-cfi=(2)
-cfn=(3120)
-calls=4703454 0 
-0 1016822702
-0 34450878
-
-fn=(4284)
-0 13
-cfn=(4286)
-calls=1 0 
-0 5
-0 7
-cfn=(4288)
-calls=1 0 
-0 5
-0 4
-cfn=(4290)
-calls=1 0 
-0 112
-0 4
-cfn=(3196)
-calls=1 0 
-0 254
-0 7
-cob=(2)
-cfi=(2)
-cfn=(3070)
-calls=1 0 
-0 104
-0 3
-
-fn=(3064)
-0 9
-
-fn=(3134)
-0 2211920
-cfn=(3136)
-calls=138245 0 
-0 3179635
-0 1797185
-cfn=(3092)
-calls=138245 0 
-0 41069663
-0 414735
-cfn=(3092)
-calls=138245 0 
-0 41069663
-0 552980
-cfn=(3100)
-calls=138245 0 
-0 1797185
-0 552980
-cfn=(3140)
-calls=138245 0 
-0 2073675
-0 1105960
-cfn=(3142)
-calls=138245 0 
-0 4147350
-0 414735
-cfn=(3144)
-calls=138245 0 
-0 41473500
-0 414735
-cfn=(3152)
-calls=138245 0 
-0 1382450
-0 691225
-cfn=(3154)
-calls=138245 0 
-0 2350165
-0 1244205
-cfn=(3156)
-calls=138245 0 
-0 1039648106
-0 967710
-cfn=(3196)
-calls=1 0 
-0 362
-0 414729
-cfn=(3144)
-calls=138243 0 
-0 41472900
-0 276496
-cfn=(3100)
-calls=2 0 
-0 26
-0 428
-cfn=(3182)
-calls=142 0 
-0 2130
-0 568
-cfn=(3182)
-calls=142 0 
-0 2130
-0 568
-cfn=(3798)
-calls=142 0 
-0 1846
-0 1562
-cob=(2)
-cfi=(2)
-cfn=(3034)
-calls=142 0 
-0 15198
-0 298
-cfn=(3868)
-calls=2 0 
-0 30
-0 24
-cfn=(3400)
-calls=2 0 
-0 184
-0 982
-cfn=(4132) keyIsInactive
-calls=140 0 
-0 22764
-0 700
-cfn=(3868)
-calls=140 0 
-0 2100
-0 2240
-cfn=(3135)
-calls=140 0 
-0 9989876702
-0 1400
-cfn=(3196)
-calls=140 0 
-0 80951
-0 572
-cfn=(3140)
-calls=144 0 
-0 11784
-0 438
-cfn=(3144)
-calls=2 0 
-0 600
-0 414755
-
-fn=(3135)
-0 4434880
-cfn=(3136)
-calls=277180 0 
-0 6375140
-0 3603340
-cfn=(3092)
-calls=277180 0 
-0 102909186
-0 831540
-cfn=(3092)
-calls=277180 0 
-0 111622398
-0 1108720
-cfn=(3100)
-calls=277180 0 
-0 3603340
-0 61422082
-cfn=(4150)
-calls=4703454 0 
-0 1794419312
-0 32924178
-cfn=(3400)
-calls=4703454 0 
-0 434071437
-0 14941902
-cfn=(3140)
-calls=4980634 0 
-0 319554172
-0 16327802
-cfn=(3142)
-calls=277180 0 
-0 177681490
-0 831540
-cfn=(3144)
-calls=277180 0 
-0 497863103
-0 831540
-cfn=(3152)
-calls=277180 0 
-0 2771800
-0 1385900
-cfn=(3154)
-calls=277180 0 
-0 4712060
-0 2494620
-cfn=(3156)
-calls=140 0 
-0 6653596827
-cfn=(3157)
-calls=277040 0 
-0 2074902021
-0 2770820
-cfn=(3144)
-calls=277040 0 
-0 83248338
-0 554780
-cfn=(3100)
-calls=140 0 
-0 1820
-0 414848
-cfn=(3182)
-calls=138236 0 
-0 2073540
-0 552944
-cfn=(3182)
-calls=138236 0 
-0 2073540
-0 552944
-cfn=(3798)
-calls=138236 0 
-0 1797068
-0 1520596
-cob=(2)
-cfi=(2)
-cfn=(3034)
-calls=138236 0 
-0 21410942
-0 277452
-cfn=(3868)
-calls=140 0 
-0 2100
-0 1680
-cfn=(3400)
-calls=140 0 
-0 12880
-0 966812
-cfn=(4132)
-calls=138096 0 
-0 27168448
-0 690480
-cfn=(3868)
-calls=138096 0 
-0 2071440
-0 1933344
-cfn=(3400)
-calls=138096 0 
-0 12708354
-0 415128
-cfn=(3140)
-calls=138376 0 
-0 9562802
-0 415548
-cfn=(3144)
-calls=140 0 
-0 42000
-0 832940
-
-fn=(3158)
-0 4569675
-
-fn=(3198)
-0 21669391
-cob=(2)
-cfi=(2)
-cfn=(3070)
-calls=1969944 0 
-0 204874176
-0 12437296
-cob=(2)
-cfi=(2)
-cfn=(3070)
-calls=1139379 0 
-0 118495416
-0 20317076
-cob=(2)
-cfi=(2)
-cfn=(3070)
-calls=1139379 0 
-0 118495416
-0 9849725
-cob=(2)
-cfi=(2)
-cfn=(3050)
-calls=1969945 0 
-0 70918020
-0 5909835
-cfn=(3058)
-calls=1969945 0 
-0 108346975
-0 5909835
-
-fn=(3476)
-0 173521
-cfn=(3478)
-calls=5047 0 
-0 2732903
-0 36162
-
-fn=(3818)
-0 3322256
-
-fn=(3942)
-0 1660536
-cfn=(3170)
-calls=138378 0 
-0 5148932837
-0 1107024
-cfn=(3848)
-calls=138378 0 
-0 17020494
-0 691890
-cfn=(3944)
-calls=138378 0 
-0 12592398
-0 415134
-cfn=(3952)
-calls=138378 0 
-0 2075670
-0 830268
-cob=(2)
-cfi=(2)
-cfn=(3194)
-calls=138377 0 
-0 1937278
-cob=(1)
-cfi=(1)
-cfn=(2763)
-calls=1 0 
-0 861
-0 830268
-cfn=(3868)
-calls=138378 0 
-0 2075670
-0 277602
-cob=(2)
-cfi=(2)
-cfn=(3704)
-calls=281 0 
-0 3372
-cob=(1)
-cfi=(1)
-cfn=(2763)
-calls=1 0 
-0 893
-0 1692
-cob=(2)
-cfi=(2)
-cfn=(2852)
-calls=282 0 
-0 26488
-0 846
-cob=(2)
-cfi=(2)
-cfn=(3020)
-calls=282 0 
-0 4512
-0 1410
-cob=(2)
-cfi=(2)
-cfn=(3808)
-calls=282 0 
-0 37900
-0 1128
-cob=(2)
-cfi=(2)
-cfn=(3194)
-calls=282 0 
-0 3968
-0 1966
-cob=(2)
-cfi=(2)
-cfn=(3992)
-calls=279 0 
-0 247462
-cob=(1)
-cfi=(1)
-cfn=(2763)
-calls=1 0 
-0 1898
-0 1120
-cfn=(4002)
-calls=280 0 
-0 23306
-0 1400
-cfn=(4014) keyFileUnserialize
-calls=280 0 
-0 809648
-0 1400
-cfn=(4048)
-calls=280 0 
-0 19880
-0 840
-cob=(2)
-cfi=(2)
-cfn=(3694)
-calls=279 0 
-0 229777
-cob=(1)
-cfi=(1)
-cfn=(2763)
-calls=1 0 
-0 1582
-0 552664
-cob=(2)
-cfi=(2)
-cfn=(3992)
-calls=138096 0 
-0 125049476
-0 552384
-cfn=(4002)
-calls=138096 0 
-0 10633392
-0 690480
-cfn=(4014)
-calls=138096 0 
-0 398057841
-0 690480
-cfn=(4048)
-calls=138096 0 
-0 9804816
-0 414288
-cob=(2)
-cfi=(2)
-cfn=(3694)
-calls=138096 0 
-0 153470238
-0 1937292
-
-fn=(4252) marker
-0 6
-cfn=(3100)
-calls=1 0 
-0 13
-0 207358
-cfn=(4254)
-calls=69119 0 
-0 1451499
-0 207360
-cfn=(3148)
-calls=69120 0 
-0 2695675
-0 207363
-cfn=(3154)
-calls=1 0 
-0 217204037
-0 3
-cfn=(3100)
-calls=1 0 
-0 13
-0 3
-
-fn=(2842) kdbOpen
-0 4
-cfn=(2844) kdbLibInit
-calls=1 0 
-0 5
-0 6
-cfn=(2846)
-calls=1 0 
-0 84554
-0 5
-cfn=(3092)
-calls=1 0 
-0 501
-0 4
-cfn=(3054)
-calls=1 0 
-0 4683
-0 7
-cfn=(3134)
-calls=1 0 
-0 11994
-0 4
-cfn=(3200) createTrie
-calls=1 0 
-0 115
-0 6
-cfn=(3206)
-calls=1 0 
-0 7
-0 3
-cfn=(3144)
-calls=1 0 
-0 300
-0 5
-
-fn=(3040) kdbBackendExport
-0 8
-cob=(2)
-cfi=(2)
-cfn=(2858)
-calls=1 0 
-0 199
-0 6
-cob=(1)
-cfi=(1)
-cfn=(2763)
-calls=1 0 
-0 921
-0 1
-cfn=(3052) capNew
-calls=1 0 
-0 242
-0 246
-
-fn=(3062)
-0 6
-
-fn=(3092)
-0 10384241
-cfn=(3094)
-calls=3 0 
-0 2062
-0 10384205
-cfn=(3094)
-calls=2076841 0 
-0 682034072
-0 10384220
-
-fn=(3144)
-0 16614752
-cfn=(3146) ksClose
-calls=2076844 0 
-0 1524100111
-0 8307376
-cfn=(3150)
-calls=2076844 0 
-0 232606528
-0 10384220
-
-fn=(3146)
-0 12461916
-cfn=(3100)
-calls=2076986 0 
-0 27000818
-0 20020196
-cfn=(4130)
-calls=5981070 0 
-0 125602470
-0 17943210
-cfn=(3196)
-calls=5981070 0 
-0 735957804
-0 24174168
-cfn=(3148)
-calls=8058056 0 
-0 262345194
-0 40790056
-cfn=(3150)
-calls=2076986 0 
-0 234981715
-0 22846846
-
-fn=(3176)
-0 5398679
-cfn=(3122)
-calls=415283 0 
-0 43189432
-0 2076415
-
-fn=(3180)
-0 3114620
-
-fn=(3182)
-0 615247620
-
-fn=(3326)
-0 15015015
-
-fn=(3774)
-0 149396580
-cfn=(3182)
-calls=12449715 0 
-0 186745725
-0 49798860
-cfn=(3182)
-calls=12449715 0 
-0 186745725
-0 74698290
-cob=(2)
-cfi=(2)
-cfn=(3034)
-calls=12449715 0 
-0 2084951361
-0 49798860
-cfn=(3402)
-calls=12449715 0 
-0 186745725
-0 26670777
-cfn=(3402)
-calls=590449 0 
-0 8856735
-0 38530043
-cfn=(3402)
-calls=12449715 0 
-0 186745725
-0 60477228
-cfn=(3402)
-calls=11859266 0 
-0 177888990
-0 61067677
-cfn=(3402)
-calls=12449715 0 
-0 186745725
-0 26670777
-cfn=(3402)
-calls=590449 0 
-0 8856735
-0 88916479
-
-fn=(4118)
-0 852
-cfn=(3146)
-calls=142 0 
-0 24282
-0 852
-cfn=(3096)
-calls=142 0 
-0 14910
-0 1846
-
-fn=(4132)
-0 1244124
-cfn=(3182)
-calls=138236 0 
-0 2073540
-0 414708
-cob=(2)
-cfi=(2)
-cfn=(2710)
-calls=138236 0 
-0 21800008
-0 1658832
-
-fn=(2754)
-0 13
-cob=(1)
-cfi=(1)
-cfn=(2762)
-calls=1 0 
-0 41250762334
-
-fn=(3138)
-0 4984260
-
-fn=(3186)
-0 329182731
-
-fn=(3200)
-0 7
-cfn=(3154)
-calls=1 0 
-0 17
-0 3
-cfn=(3202)
-calls=1 0 
-0 14
-0 4
-cfn=(3100)
-calls=1 0 
-0 13
-0 3
-cfn=(3148)
-calls=1 0 
-0 14
-0 9
-cfn=(3204)
-calls=1 0 
-0 28
-0 3
-
-fn=(3328)
-0 15015015
-cfn=(3104)
-calls=1001001 0 
-0 70070084
-0 6006006
-cfn=(3330)
-calls=1001001 0 
-0 278286436
-0 4004004
-cfn=(3338)
-calls=1001001 0 
-0 14014014
-0 6006006
-cfn=(3340)
-calls=1001001 0 
-0 20020020
-0 5005005
-
-fn=(3400)
-0 125602470
-cfn=(3402)
-calls=5981070 0 
-0 89716050
-0 47865227
-cfn=(3476)
-calls=2381 0 
-0 2222774
-0 17943210
-cfn=(3404)
-calls=5981070 0 
-0 125602470
-0 143545680
-
-fn=(3404)
-0 227280942
-
-fn=(3816)
-0 3322256
-cfn=(3136)
-calls=415282 0 
-0 9551486
-0 3737538
-
-fn=(3848)
-0 1244994
-cfn=(2820)
-calls=207499 0 
-0 414998
-0 1244994
-cob=(2)
-cfi=(2)
-cfn=(3854)
-calls=207498 0 
-0 21787290
-cob=(1)
-cfi=(1)
-cfn=(2763)
-calls=1 0 
-0 995
-0 829996
-
-fn=(3952)
-0 4149210
-
-fn=(3968)
-0 10323296
-cfn=(3970)
-calls=814196 0 
-0 16283920
-0 15223692
-
-fn=(4256) iterator
-0 6
-cfn=(3100)
-calls=1 0 
-0 13
-0 207358
-cfn=(4258)
-calls=69119 0 
-0 276476
-0 207360
-cfn=(3148)
-calls=69120 0 
-0 2695675
-0 207363
-
-fn=(2832)
-0 11
-
-fn=(2840)
-0 8
-cfn=(2842)
-calls=1 0 
-0 102203
-0 4
-cfn=(3092)
-calls=1 0 
-0 991
-0 4
-cfn=(3092)
-calls=1 0 
-0 561
-0 4
-cfn=(3092)
-calls=1 0 
-0 561
-0 3
-cfn=(3092)
-calls=1 0 
-0 501
-0 6
-cfn=(3054)
-calls=1 0 
-0 4948
-0 2
-cfn=(3342) init_time
-calls=1 0 
-0 994
-0 6
-cfn=(3350)
-calls=1 0 
-0 5811527899
-0 4
-cfn=(3494)
-calls=1 0 
-0 3607
-0 11
-cfn=(3522)
-calls=1 0 
-0 3984206391
-0 11
-cob=(1)
-cfi=(1)
-cfn=(2763)
-calls=1 0 
-0 3121
-0 2
-cfn=(3494)
-calls=1 0 
-0 2192
-0 11
-cfn=(3522)
-calls=1 0 
-0 55191
-0 11
-cob=(2)
-cfi=(2)
-cfn=(3934)
-calls=1 0 
-0 2212
-0 2
-cfn=(3494)
-calls=1 0 
-0 2151
-0 11
-cfn=(3134)
-calls=1 0 
-0 4999846068
-0 4
-cfn=(3494)
-calls=1 0 
-0 2192
-0 11
-cfn=(3134)
-calls=1 0 
-0 4997015035
-0 4
-cfn=(3494)
-calls=1 0 
-0 2192
-0 6
-cfn=(4252)
-calls=1 0 
-0 221973330
-0 4
-cfn=(3494)
-calls=1 0 
-0 2173
-0 6
-cfn=(4256)
-calls=1 0 
-0 3594251
-0 4
-cfn=(3494)
-calls=1 0 
-0 2045
-0 6
-cfn=(4260)
-calls=1 0 
-0 17971240010
-0 4
-cfn=(3494)
-calls=1 0 
-0 2196
-0 11
-cfn=(3522)
-calls=1 0 
-0 2520648526
-0 4
-cfn=(3494)
-calls=1 0 
-0 2090
-0 3
-cfn=(3196)
-calls=1 0 
-0 578
-0 3
-cfn=(3144)
-calls=1 0 
-0 650650280
-0 3
-cfn=(3144)
-calls=1 0 
-0 44932311
-0 3
-cfn=(3144)
-calls=1 0 
-0 44931877
-0 3
-cfn=(3144)
-calls=1 0 
-0 300
-0 3
-cfn=(4282)
-calls=1 0 
-0 534
-0 6
-
-fn=(2844)
-0 5
-
-fn=(3038)
-0 22
-cfn=(3040)
-calls=1 0 
-0 1623
-0 2
-
-fn=(3052)
-0 5
-cob=(2)
-cfi=(2)
-cfn=(2858)
-calls=1 0 
-0 199
-0 8
-cob=(2)
-cfi=(2)
-cfn=(3050)
+0 23366
+cfn=(3210)
 calls=1 0 
 0 25
-0 5
-
-fn=(3100)
-0 66662999
-
-fn=(3102)
-0 39398880
-cfn=(3104)
-calls=1969944 0 
-0 305728909
-0 13789608
-cfn=(3112)
-calls=1969944 0 
-0 271514151
-0 30901476
-cfn=(3114)
-calls=830565 0 
-0 38206880
-0 3418137
-cfn=(3114)
-calls=1139379 0 
-0 92289699
-0 35842500
-cob=(2)
-cfi=(2)
-cfn=(3300)
-calls=1139378 0 
-0 687044934
 cob=(1)
 cfi=(1)
-cfn=(2763)
+cfn=(2872)
 calls=1 0 
-0 1486
-0 5696895
-cob=(2)
-cfi=(2)
-cfn=(3300)
-calls=1139379 0 
-0 272311581
-0 9115032
-cfn=(3124)
-calls=1139379 0 
-0 430253955
-0 7049211
-cfn=(3122)
-calls=830565 0 
-0 86378760
-0 17441865
-cfn=(3124)
-calls=830565 0 
-0 14119605
-0 10371471
-cob=(2)
-cfi=(2)
-cfn=(2858)
-calls=1969944 0 
-0 323562966
-0 43338768
-cob=(2)
-cfi=(2)
-cfn=(3130)
-calls=1969943 0 
-0 104215217
-cob=(1)
-cfi=(1)
-cfn=(2763)
-calls=1 0 
-0 951
-0 19699440
-cfn=(3132)
-calls=1969944 0 
-0 301134984
-0 175288980
-cob=(2)
-cfi=(2)
-cfn=(3020)
-calls=5908545 0 
-0 101143963
-0 76811085
-cfn=(3132)
-calls=5908545 0 
-0 687875949
-0 13789608
-cfn=(3132)
-calls=1969944 0 
-0 416191048
-0 106370541
-
-fn=(3114)
-0 20742944
-cob=(2)
-cfi=(2)
-cfn=(3120)
-calls=2592867 0 
-0 128770424
-cob=(1)
-cfi=(1)
-cfn=(2763)
-calls=1 0 
-0 922
-0 16904228
-
-fn=(3204)
-0 1382370
-cfn=(3100)
-calls=138237 0 
-0 1797081
-0 691185
-
-fn=(3330)
-0 15954386
-cob=(2)
-cfi=(2)
-cfn=(3484)
-calls=140 0 
-0 21420
-0 4558496
-cob=(2)
-cfi=(2)
-cfn=(2858)
-calls=1139379 0 
-0 224447295
-0 18231884
-cob=(2)
-cfi=(2)
-cfn=(3020)
-calls=1139519 0 
-0 19371823
-0 10255671
-cfn=(3336) keyGetValueSize
-calls=1139519 0 
-0 17092785
-0 4558076
-
-fn=(3336)
-0 17092785
-
-fn=(3342)
+0 880
 0 6
-cob=(1)
-cfi=(1)
-cfn=(2763)
+cfn=(3222)
 calls=1 0 
-0 986
-0 2
-
-fn=(3796)
-0 33
-
-fn=(3868)
-0 4151370
-
-fn=(3950)
-0 2490804
-
-fn=(4014)
-0 2214016
-cob=(2)
-cfi=(2)
-cfn=(4020)
-calls=138375 0 
-0 63929250
+0 5
 cob=(1)
 cfi=(1)
-cfn=(2763)
+cfn=(2872)
 calls=1 0 
-0 1343
-0 968632
-cob=(2)
-cfi=(2)
-cfn=(3120)
-calls=138376 0 
-0 6365296
-0 830256
-cob=(2)
-cfi=(2)
-cfn=(4026)
-calls=138375 0 
-0 30580875
+0 854
+0 1
+
+fn=(3270)
+0 8984
+cfn=(3060)
+calls=2246 0 
+0 11230
+0 26952
+cfn=(3276)
+calls=2246 0 
+0 213370
 cob=(1)
 cfi=(1)
-cfn=(2763)
+cfn=(2872)
 calls=1 0 
-0 1072
-0 1522136
-cob=(2)
-cfi=(2)
-cfn=(4020)
-calls=138376 0 
-0 31272976
-0 1107008
-cob=(2)
-cfi=(2)
-cfn=(4020)
-calls=138376 0 
-0 33486992
-0 968632
-cob=(2)
-cfi=(2)
-cfn=(4044)
-calls=138375 0 
-0 4289625
+0 817
+0 8984
+
+fn=(3328)
+0 16
+cfn=(3060)
+calls=4 0 
+0 20
+0 48
+cfn=(3276)
+calls=4 0 
+0 240
+0 16
+
+fn=(3334)
+0 16
+cfn=(3060)
+calls=4 0 
+0 20
+0 20
+
+fn=(4108) 0x00000000000C44F0
+0 2030
+
+fn=(4176)
+0 1624
+cfn=(4182)
+calls=203 0 
+0 106295
 cob=(1)
 cfi=(1)
-cfn=(2763)
+cfn=(2872)
+calls=1 0 
+0 743
+0 812
+
+fn=(4352) std::allocator<char>::~allocator()
+0 12
+
+fn=(4384)
+0 140787
+
+fn=(4390)
+0 59553
+
+fn=(4564)
+0 5481
+cfn=(4384)
+calls=609 0 
+0 45675
+0 14007
+cfn=(4566) std::num_get<char, std::istreambuf_iterator<char, std::char_traits<char> > >::do_get(std::istreambuf_iterator<char, std::char_traits<char> >, std::istreambuf_iterator<char, std::char_traits<char> >, std::ios_base&, std::_Ios_Iostate&, unsigned long&) const
+calls=609 0 
+0 173310
+0 7308
+cfn=(4228)
+calls=306 0 
+0 2754
+0 1530
+
+fn=(4606) std::basic_stringstream<char, std::char_traits<char>, std::allocator<char> >::~basic_stringstream()
+0 13464
+cfn=(3258)
+calls=612 0 
+0 7344
+0 12852
+cfn=(4628)
+calls=612 0 
+0 38842
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 860
+0 5508
+cfn=(4612)
+calls=612 0 
+0 53617
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 949
+0 3060
+
+fn=(4666)
+0 15150
+cob=(2)
+cfi=(2)
+cfn=(3686)
+calls=606 0 
+0 17439
+0 6666
+
+fn=(4754) std::string::~string()
+0 78
+cfn=(4612)
+calls=6 0 
+0 510
+0 30
+
+fn=(5704)
+0 6
+cob=(2)
+cfi=(2)
+cfn=(5710) fflush
+calls=3 0 
+0 287
+cob=(1)
+cfi=(1)
+cfn=(2872)
 calls=1 0 
 0 914
-0 2767520
-cob=(2)
-cfi=(2)
-cfn=(2852)
-calls=138376 0 
-0 2905896
-0 1383760
-cob=(2)
-cfi=(2)
-cfn=(2858)
-calls=138376 0 
-0 13427331
-0 830256
-cob=(2)
-cfi=(2)
-cfn=(3324)
-calls=138376 0 
-0 5258288
-0 1798888
-cob=(2)
-cfi=(2)
-cfn=(4020)
-calls=276752 0 
-0 100737728
-0 1245384
-cfn=(4046)
-calls=138376 0 
-0 2490768
-0 830256
-cob=(2)
-cfi=(2)
-cfn=(4026)
-calls=138376 0 
-0 26844944
-0 553504
-cfn=(3340)
-calls=138376 0 
-0 2767520
-0 830256
-cfn=(3338)
-calls=138376 0 
-0 1937264
-0 1107008
-cfn=(3964)
-calls=138376 0 
-0 691880
-0 1245384
-cfn=(3330)
-calls=138376 0 
-0 36176519
-0 553504
-cob=(2)
-cfi=(2)
-cfn=(3070)
-calls=138376 0 
-0 14391104
-0 553504
 
-fn=(4258)
-0 1382656476
+fn=(3054)
+0 364
+cfn=(3060)
+calls=28 0 
+0 392
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 890
+0 6356
+
+fn=(3156)
+0 12
+cfn=(3034)
+calls=1 0 
+0 7
+0 5
+
+fn=(3234)
+0 47734
+cfn=(3002)
+calls=823 0 
+0 27159
+
+fn=(3240)
+0 13476
+cfn=(3246)
+calls=2246 0 
+0 201607
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 906
+0 6738
+cfn=(3264)
+calls=2246 0 
+0 1140815
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1288
+0 29198
+
+fn=(3290)
+0 8984
+cfn=(3060)
+calls=2246 0 
+0 11230
+0 26952
+cfn=(3276)
+calls=2246 0 
+0 134760
+0 8984
+
+fn=(3340)
+0 16
+cfn=(3060)
+calls=4 0 
+0 20
+0 48
+cfn=(3276)
+calls=4 0 
+0 240
+0 16
+
+fn=(4076)
+0 609
+
+fn=(4430)
+0 36753
+cfn=(4436)
+calls=12 0 
+0 5840
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 822
+0 13488
+cob=(2)
+cfi=(2)
+cfn=(3686)
+calls=1224 0 
+0 29352
+0 1224
+
+fn=(4566)
+0 6090
+cfn=(4572)
+calls=609 0 
+0 162973
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1811
+0 2436
+
+fn=(4830) std::basic_ifstream<char, std::char_traits<char> >::~basic_ifstream()
+0 48
+cfn=(4836)
+calls=3 0 
+0 8905
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1136
+0 6
+cfn=(4898) std::__basic_file<char>::~__basic_file()
+calls=3 0 
+0 51
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 908
+0 15
+cfn=(3258)
+calls=3 0 
+0 36
+0 48
+cfn=(4628)
+calls=3 0 
+0 180
+
+fn=(5324)
+0 2800
+cfn=(5302)
+calls=200 0 
+0 4200
+0 4600
+cfn=(5326) std::num_put<char, std::ostreambuf_iterator<char, std::char_traits<char> > >::do_put(std::ostreambuf_iterator<char, std::char_traits<char> >, std::ios_base&, char, long) const
+calls=200 0 
+0 57004
+0 7000
+
+fn=(5326)
+0 1000
+cfn=(5332)
+calls=200 0 
+0 53600
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1604
+0 800
+
+fn=(5402)
+0 565600
+cfn=(5302)
+calls=40400 0 
+0 848400
+0 929200
+cfn=(5404)
+calls=40400 0 
+0 9960196
+0 808000
+
+fn=(5434) std::basic_ofstream<char, std::char_traits<char> >::~basic_ofstream()
+0 3200
+cfn=(4836)
+calls=200 0 
+0 141300
+0 400
+cfn=(4898)
+calls=200 0 
+0 3400
+0 1000
+cfn=(3258)
+calls=200 0 
+0 2400
+0 3000
+cfn=(4628)
+calls=200 0 
+0 12000
+
+fn=(2780)
+0 6
+
+fn=(2950)
+0 6
+
+fn=(3034)
+0 71
+cfn=(3036)
+calls=1 0 
+0 2291
+0 2
+
+fn=(3060)
+0 279067
+
+fn=(3096)
+0 10
+cfn=(3034)
+calls=1 0 
+0 7
+0 97
+
+fn=(3108)
+0 12
+cfn=(3034)
+calls=1 0 
+0 7
+0 4
+cfn=(3114)
+calls=1 0 
+0 23155
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1007
+0 4
+
+fn=(3142)
+0 100
+cob=(2)
+cfi=(2)
+cfn=(3148) wctype_l
+calls=1 0 
+0 221
+0 13
+cob=(2)
+cfi=(2)
+cfn=(3148)
+calls=1 0 
+0 432
+0 17
+cob=(2)
+cfi=(2)
+cfn=(3148)
+calls=1 0 
+0 659
+0 3
+cob=(2)
+cfi=(2)
+cfn=(3148)
+calls=1 0 
+0 380
+0 3
+cob=(2)
+cfi=(2)
+cfn=(3148)
+calls=1 0 
+0 600
+0 3
+cob=(2)
+cfi=(2)
+cfn=(3148)
+calls=1 0 
+0 171
+0 3
+cob=(2)
+cfi=(2)
+cfn=(3148)
+calls=1 0 
+0 312
+0 3
+cob=(2)
+cfi=(2)
+cfn=(3148)
+calls=1 0 
+0 115
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 973
+0 3
+cob=(2)
+cfi=(2)
+cfn=(3148)
+calls=1 0 
+0 276
+
+fn=(3246)
+0 22500
+cfn=(3002)
+calls=2250 0 
+0 74250
+0 6750
+cfn=(3252) std::locale::operator=(std::locale const&)
+calls=2250 0 
+0 56250
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 861
+0 4500
+cfn=(3258)
+calls=2250 0 
+0 27000
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 852
+0 9000
+
+fn=(3252)
+0 56250
+
+fn=(3284)
+0 11432
+cfn=(3060)
+calls=2858 0 
+0 14290
+0 14290
+
+fn=(3358)
+0 16
+cfn=(3060)
+calls=4 0 
+0 20
+0 48
+cfn=(3276)
+calls=4 0 
+0 240
+0 16
+
+fn=(4064) std::basic_ifstream<char, std::char_traits<char> >::basic_ifstream(char const*, std::_Ios_Openmode)
+0 39
+cfn=(3234)
+calls=3 0 
+0 273
+0 66
+cfn=(3240)
+calls=3 0 
+0 1845
+0 24
+cfn=(4070)
+calls=3 0 
+0 4249
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1126
+0 9
+cfn=(3240)
+calls=3 0 
+0 1845
+0 15
+cfn=(4094)
+calls=3 0 
+0 13276
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1290
+0 21
+cfn=(4228)
+calls=3 0 
+0 27
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1218
+0 24
+
+fn=(4088)
+0 812
+cfn=(3060)
+calls=203 0 
+0 1015
+0 2436
+cfn=(3276)
+calls=203 0 
+0 12180
+0 812
+
+fn=(4106)
+0 1624
+cfn=(4108)
+calls=203 0 
+0 2030
+0 1015
+cfn=(4100)
+calls=203 0 
+0 609
+0 2030
+cob=(2)
+cfi=(2)
+cfn=(4118) fopen64
+calls=203 0 
+0 111704
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 914
+0 1218
+
+fn=(4494) std::basic_stringstream<char, std::char_traits<char>, std::allocator<char> >::basic_stringstream(std::string const&, std::_Ios_Openmode)
+0 7956
+cfn=(3234)
+calls=612 0 
+0 55692
+0 13464
+cfn=(3240)
+calls=612 0 
+0 376380
+0 6120
+cfn=(3240)
+calls=612 0 
+0 376380
+0 14688
+cfn=(3002)
+calls=612 0 
+0 20196
+0 6120
+cfn=(4500)
+calls=612 0 
+0 114674
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 858
+0 3672
+cfn=(4520)
+calls=612 0 
+0 17136
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1244
+0 1836
+cfn=(3240)
+calls=612 0 
+0 376380
+0 6732
+
+fn=(4898)
+0 203
+cfn=(4860)
+calls=203 0 
+0 3248
+
+fn=(5296)
+0 793000
+cfn=(5302)
+calls=61000 0 
+0 1281000
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 857
+0 1830000
+cfn=(5304)
+calls=61000 0 
+0 6339582
+0 183000
+
+fn=(5304)
+0 2130000
+cfn=(4394)
+calls=142000 0 
+0 284000
+0 3976800
+cfn=(5310)
+calls=142000 0 
+0 8415720
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1182
+
+fn=(5736)
+0 33
+cfn=(5738) __gnu_cxx::stdio_sync_filebuf<wchar_t, std::char_traits<wchar_t> >::sync()
+calls=3 0 
+0 180
+0 21
+
+fn=(5738)
+0 6
+cob=(2)
+cfi=(2)
+cfn=(5710)
+calls=3 0 
+0 174
+
+ob=(2)
+fl=(2)
+fn=(2722) 0x0000000000104550
+0 4
+
+fn=(2896)
+0 24
+cfn=(2898) 0x0000000000034AB0
+calls=3 0 
+0 113
+0 48
+
+fn=(3132)
+0 5632
+cfn=(3134) _dl_mcount_wrapper_check
+calls=128 0 
+0 640
+0 384
+cfn=(3136) 0x0000000000021520
+calls=128 0 
+0 640
+0 2432
+
+fn=(3136)
+0 640
+
+fn=(4144) _IO_file_init
+0 1624
+cfn=(4146) _IO_link_in
+calls=203 0 
+0 16037
+0 1015
+
+fn=(4412)
+0 427021
+
+fn=(4418)
+0 21
+
+fn=(4694) realloc
+0 55589
+cfn=(4700) 0x0000000000077130
+calls=1029 0 
+0 230484
+0 17503
+cfn=(3454) 0x0000000000073F90
+calls=1 0 
+0 18
+0 6
+cfn=(4695) realloc'2
+calls=1 0 
+0 434
+
+fn=(4695)
+0 54
+cfn=(4700)
+calls=1 0 
+0 363
+0 17
+
+fn=(4880) _IO_file_close
+0 1421
+
+fn=(4950) 0x000000000007D5B0
+0 11797538
+
+fn=(5176) fprintf
+0 171
+cfn=(5122) vfprintf
+calls=9 0 
+0 13829
+0 18
+
+fn=(5700)
+0 180
+cob=(5)
+cfi=(5)
+cfn=(5766)
+calls=1 0 
+0 6
+cob=(5)
+cfi=(5)
+cfn=(5702)
+calls=1 0 
+0 2655
+0 145
+
+fn=(5710)
+0 144
+cfn=(5712) _IO_file_sync
+calls=6 0 
+0 197
+0 120
+
+fn=(5840) 0x0000000000071690
+0 95
+
+fn=(3452) 0x0000000000077BA0
+0 5
+cfn=(3454)
+calls=1 0 
+0 58363
+0 3
+cfn=(3502)
+calls=1 0 
+0 1006
+
+fn=(3502)
+0 1240436
+cfn=(3504) 0x0000000000075BA0
+calls=53932 0 
+0 5176990
+0 701116
+
+fn=(4874) _IO_un_link
+0 21112
+
+fn=(4876) _IO_file_close_it
+0 3045
+cfn=(4878) _IO_unsave_markers
+calls=203 0 
+0 1015
+0 609
+cfn=(4880)
+calls=203 0 
+0 1421
+0 1827
+cfn=(4884) _IO_setb
+calls=203 0 
+0 4669
+0 1624
+cfn=(4874)
+calls=203 0 
+0 2030
+0 2233
+
+fn=(5096) gettimeofday
+0 95
+cob=(8) /usr/lib/valgrind/amd64-linux/callgrind
+cfi=(36) /root/valgrind/3.3.1/valgrind-3.3.1/coregrind/m_trampoline.S
+cfn=(5098) vgPlain_amd64_linux_REDIR_FOR_vgettimeofday
+calls=19 161 
+0 57
+0 76
+
+fn=(5124) strchrnul
+0 1048968
+
+fn=(5190) __fxstat
+0 12
+
+fn=(5562) exit
+0 62
+cob=(1)
+cfi=(1)
+cfn=(5564) 0x000000000000DB80
+calls=1 0 
+0 9188
+0 11
+cfn=(5838) 0x0000000000072630
+calls=1 0 
+0 286
+0 6
+cfn=(5918) _Exit
+calls=1 0 
+0 5
+
+fn=(5712)
+0 105
+cfn=(5192) _IO_do_write
+calls=1 0 
+0 102
+0 4
+
+fn=(5720) _IO_file_write
+0 22
+cfn=(5384)
+calls=1 0 
+0 7
+0 15
+
+fn=(5894) _IO_file_setbuf
+0 3
+cfn=(5896) 0x0000000000071320
+calls=1 0 
+0 70
+0 12
+
+fn=(5896)
+0 9
+cfn=(5712)
+calls=1 0 
+0 14
+0 10
+cfn=(4884)
+calls=1 0 
+0 25
+0 12
+
+fn=(2556) 0x000000000001DEB0
+0 115
+cfn=(2578) 0x0000000000104580
+calls=1 0 
+0 9
+0 9
+cfn=(2578)
+calls=1 0 
+0 9
+0 7
+cfn=(2586) 0x00000000000CF3F0
+calls=1 0 
+0 667
+0 1
+cfn=(2602) 0x000000000001DE30
+calls=1 0 
+0 5826
+0 6
+
+fn=(3454)
+0 42
+cfn=(3458) getpagesize
+calls=1 0 
+0 6
+0 16
+cfn=(3476) __register_atfork
+calls=1 0 
+0 55
+0 355
+cfn=(3464) _dl_addr
+calls=1 0 
+0 57902
+0 5
+
+fn=(4028) strcpy
+0 10556
+
+fn=(4424)
+0 50220
+
+fn=(5384)
+0 427007
+
+fn=(5838)
+0 9
+cfn=(5840)
+calls=1 0 
+0 95
+0 62
+cfn=(5894)
+calls=1 0 
+0 85
+0 35
+
+fn=(2622) 0x00000000000813D0
+0 549
+cfn=(2634) bsearch
+calls=30 0 
+0 4508
+0 433
+
+fn=(2634)
+0 7152
+cob=(6) /home/markus/Projekte/Elektra/elektra/build64/src/libelektra/libelektra-full.so.0.8.0mile2
+cfi=(25) /home/markus/Projekte/Elektra/current/src/libelektra/keyset.c
+cfn=(4046) keyCompareByName
+calls=210 1243 
+0 25585
+cfn=(2636) 0x00000000000811E0
+calls=165 0 
+0 1306
+0 3481
+
+fn=(3048)
+0 39
+
+fn=(3126)
+0 2432
+
+fn=(3668) strncmp
+0 146397857
+
+fn=(4878)
+0 1015
+
+fn=(4884)
+0 237018
+
+fn=(5490) qsort
+0 46
+cfn=(5492) 0x0000000000033A10
+calls=1 0 
+0 90398
+0 2
+cfn=(3752)
+calls=1 0 
+0 10
+0 12
+
+fn=(5822) 0x000000000001DE60
+0 6
+
+fn=(3134)
+0 640
+
+fn=(3150)
+0 4233877
+
+fn=(3418) __sigsetjmp
+0 27
+
+fn=(3458)
+0 6
+
+fn=(3556) __default_morecore
+0 70
+cfn=(3558) sbrk
+calls=35 0 
+0 1027
+0 175
+
+fn=(3560) brk
+0 300
+
+fn=(3752)
+0 16
+cfn=(5534) munmap
+calls=1 0 
+0 5
+0 1294412
+cfn=(3754) 0x0000000000075230
+calls=53933 0 
+0 3923583
+0 323615
+
+fn=(3860) strncat
+0 109
+
+fn=(4134) 0x0000000000071410
+0 216972
+
+fn=(4700)
+0 66707
+cfn=(3504)
+calls=276 0 
+0 57442
+0 4390
+cfn=(3754)
+calls=6 0 
+0 306
+0 1080
+cfn=(3754)
+calls=270 0 
+0 22245
+0 2076
+cfn=(3754)
+calls=120 0 
+0 9686
+0 2736
+cfn=(3686)
+calls=244 0 
+0 63211
+0 968
+
+fn=(5108) vsnprintf
+0 202000
+cfn=(4132) 0x00000000000714C0
+calls=10100 0 
+0 414100
+0 80800
+cfn=(5114) 0x0000000000073090
+calls=10100 0 
+0 575700
+0 40400
+cfn=(5122)
+calls=10100 0 
+0 15333427
+0 141400
+
+fn=(5714) 0x000000000006F500
+0 16
+cfn=(5720)
+calls=1 0 
+0 44
+0 30
+
+fn=(2586)
+0 12
+cfn=(2592) rindex
+calls=1 0 
+0 643
+0 12
+
+fn=(2606) 0x00000000000816C0
+0 22
+cfn=(2614) 0x0000000000081580
+calls=1 0 
+0 2053
+0 4
+cfn=(2614)
+calls=1 0 
+0 2079
+0 71
+cfn=(2614)
+calls=1 0 
+0 1572
+0 3
+
+fn=(2898)
+0 113
+
+fn=(3148)
+0 81
+cfn=(3150)
+calls=9 0 
+0 350
+0 276
+cfn=(3150)
+calls=40 0 
+0 1596
+0 18
+cfn=(3150)
+calls=9 0 
+0 324
+0 521
+
+fn=(3476)
+0 55
+
+fn=(3504)
+0 4519506
+cfn=(3516) 0x0000000000073950
+calls=11 0 
+0 1162
+0 10531
+cfn=(3516)
+calls=228 0 
+0 51965
+0 33059
+cfn=(3516)
+calls=1 0 
+0 664
+0 616067
+cfn=(5152) mmap
+calls=1 0 
+0 6
+0 381
+cfn=(3556)
+calls=19 0 
+0 792
+0 402
+cfn=(3556)
+calls=1 0 
+0 25
+0 108
+
+fn=(3558)
+0 605
+cfn=(3560)
+calls=1 0 
+0 12
+0 74
+cfn=(3560)
+calls=24 0 
+0 288
+0 48
+
+fn=(3754)
+0 186
+cfn=(3556)
+calls=5 0 
+0 125
+0 107
+cfn=(3556)
+calls=5 0 
+0 205
+0 30
+cfn=(3556)
+calls=5 0 
+0 125
+0 2807704
+cfn=(3516)
+calls=124 0 
+0 1138261
+0 9077
+
+fn=(3848) strcmp
+0 8688148
+
+fn=(3849) strcmp'2
+0 164871419
+
+fn=(4156) strstr
+0 2842
+
+fn=(5114)
+0 191900
+cfn=(4884)
+calls=10100 0 
+0 232300
+0 151500
+
+fn=(5184) _IO_doallocbuf
+0 11
+cfn=(5186) _IO_file_doallocate
+calls=1 0 
+0 90
+0 2
+
+fn=(5186)
+0 10
+cfn=(5188) _IO_file_stat
+calls=1 0 
+0 17
+0 19
+cfn=(5152)
+calls=1 0 
+0 6
+0 8
+cfn=(4884)
+calls=1 0 
+0 24
+0 6
+
+fn=(5918)
+0 5
+
+fn=(2578)
+0 18
+
+fn=(2594) index
+0 2532373
+
+fn=(3416) _setjmp
+0 2
+cfn=(3418)
+calls=1 0 
+0 27
+
+fn=(3594) memset
+0 2988027
+
+fn=(3686)
+0 4603109
+
+fn=(4132)
+0 103030
+cfn=(4134)
+calls=10303 0 
+0 216972
+0 105669
+
+fn=(4866)
+0 1518
+
+fn=(4872)
+0 7714
+cfn=(4886) _IO_file_finish
+calls=203 0 
+0 6496
+0 2436
+cfn=(3752)
+calls=203 0 
+0 24765
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 653
+0 1827
+cfn=(4876)
+calls=203 0 
+0 18473
+0 1015
+cfn=(4874)
+calls=203 0 
+0 17052
+0 1827
+
+fn=(4886)
+0 1624
+cfn=(4888) _IO_default_finish
+calls=203 0 
+0 4872
+
+fn=(4888)
+0 2842
+cfn=(4874)
+calls=203 0 
+0 2030
+
+fn=(5128) 0x00000000000438A0
+0 659994
+
+fn=(5178) _IO_file_xsputn
+0 1317
+cfn=(5182) _IO_file_overflow
+calls=1 0 
+0 164
+0 4539
+cfn=(5126) _IO_default_xsputn
+calls=1 0 
+0 61
+0 2
+
+fn=(5180) _IO_padn
+0 328
+cfn=(5178)
+calls=2 0 
+0 282
+0 126
+cfn=(5178)
+calls=14 0 
+0 1651
+0 126
+
+fn=(5182)
+0 45
+cfn=(5192)
+calls=1 0 
+0 8
+0 2
+cfn=(5184)
+calls=1 0 
+0 103
+0 6
+
+fn=(5534)
+0 5
+
+fn=(2602)
+0 8
+cfn=(2606)
+calls=1 0 
+0 5804
+0 2
+cfn=(2722)
+calls=1 0 
+0 4
+0 8
+
+fn=(2614)
+0 84
+cfn=(2622)
+calls=3 0 
+0 2142
+0 24
+cfn=(2622)
+calls=3 0 
+0 1671
+0 24
+cfn=(2622)
+calls=3 0 
+0 69
+0 24
+cfn=(2622)
+calls=3 0 
+0 1608
+0 58
+
+fn=(2636)
+0 1306
+
+fn=(3120)
+0 46
+
+fn=(3392) (below main)
+0 20
+cfn=(2896)
+calls=1 0 
+0 61
+0 10
+cob=(7) /home/markus/Projekte/Elektra/elektra/build64/benchmarks/large
+cfi=(11) ???
+cfn=(3394) __libc_csu_init
+calls=1 0 
+0 54
+0 9
+cfn=(3416)
+calls=1 0 
+0 29
+0 13
+cob=(7)
+cfi=(14) /home/markus/Projekte/Elektra/current/benchmarks/large.c
+cfn=(3424) main
+calls=1 67 
+0 686363232
+0 2
+cfn=(5562)
+calls=1 0 
+0 9558
+
+fn=(4150) _IO_file_fopen
+0 9932
+cfn=(4152) _IO_file_open
+calls=203 0 
+0 10759
+0 1218
+cfn=(4156)
+calls=203 0 
+0 2842
+0 621
+
+fn=(4152)
+0 2842
+cfn=(4154) open
+calls=203 0 
+0 1421
+0 3045
+cfn=(4146)
+calls=203 0 
+0 2233
+0 1218
+
+fn=(4154)
+0 1421
+
+fn=(4948) memmove
+0 449100
+cfn=(4950)
+calls=9980 0 
+0 11797538
+0 9980
+
+fn=(5122)
+0 343707
+cfn=(5124)
+calls=10109 0 
+0 101090
+0 40715
+cfn=(5178)
+calls=9 0 
+0 189
+0 70700
+cfn=(5126)
+calls=10100 0 
+0 181800
+0 2729193
+cfn=(5124)
+calls=50318 0 
+0 947878
+0 402544
+cfn=(5178)
+calls=18 0 
+0 1818
+cfn=(5126)
+calls=50300 0 
+0 1468200
+0 655027
+cfn=(5180)
+calls=7 0 
+0 989
+0 42
+cfn=(5178)
+calls=7 0 
+0 1012
+0 10
+cfn=(5178)
+calls=2 0 
+0 322
+0 1328039
+cfn=(5178)
+calls=9 0 
+0 809
+cfn=(5126)
+calls=20100 0 
+0 1015050
+0 542943
+cfn=(5128)
+calls=20109 0 
+0 659994
+0 562667
+cfn=(5180)
+calls=9 0 
+0 1524
+0 301554
+cfn=(5126)
+calls=30200 0 
+0 2246700
+0 442953
+cfn=(3150)
+calls=30209 0 
+0 1159160
+0 140627
+
+fn=(5126)
+0 4911811
+
+fn=(5152)
+0 12
+
+fn=(5192)
+0 17
+cfn=(5714)
+calls=1 0 
+0 90
+0 3
+
+fn=(5492)
+0 23
+cfn=(5493) 0x0000000000033A10'2
+calls=1 0 
+0 38339
+0 4
+cfn=(5493)
+calls=1 0 
+0 39377
+0 25
+cfn=(3686)
+calls=1 0 
+0 180
+0 152
+cob=(6)
+cfi=(25)
+cfn=(3836) keyCmpInternal
+calls=50 375 
+0 11650
+0 648
+
+fn=(5493)
+0 3489
+cfn=(5493)
+calls=99 0 
+0 89587
+0 396
+cfn=(5493)
+calls=99 0 
+0 107956
+0 3283
+cfn=(3686)
+calls=99 0 
+0 2503
+0 1005
+cob=(6)
+cfi=(25)
+cfn=(3836)
+calls=269 375 
+0 63741
+0 3299
+
+fn=(2592)
+0 5784
+cfn=(2594)
+calls=914 0 
+0 58529
+0 608
+cfn=(2594)
+calls=304 0 
+0 14252
+0 3956
+
+fn=(3450) calloc
+0 54
+cfn=(3452)
+calls=1 0 
+0 59377
+0 13
+cfn=(3594)
+calls=1 0 
+0 28
+0 48
+cfn=(3504)
+calls=2 0 
+0 236
+0 54
+cfn=(3594)
+calls=2 0 
+0 119
+0 10
+
+fn=(3464)
+0 14
+cob=(1)
+cfi=(1)
+cfn=(3466) 0x0000000000000AC0
+calls=1 0 
+0 2
+0 57871
+cob=(1)
+cfi=(1)
+cfn=(3468) 0x0000000000000AD0
+calls=1 0 
+0 2
+0 13
+
+fn=(3516)
+0 1192052
+
+fn=(3674) strncpy
+0 360819
+
+fn=(4118)
+0 2842
+cfn=(3502)
+calls=203 0 
+0 46279
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 671
+0 2233
+cfn=(4132)
+calls=203 0 
+0 11571
+0 812
+cfn=(4144)
+calls=203 0 
+0 18676
+0 1015
+cfn=(4150)
+calls=203 0 
+0 25372
+0 2233
+
+fn=(4146)
+0 18270
+
+fn=(5106) snprintf
+0 181800
+cfn=(5108)
+calls=10100 0 
+0 16787827
+0 20200
+
+fn=(5188)
+0 5
+cfn=(5190)
+calls=1 0 
+0 12
+
+ob=(1)
+fl=(1)
+fn=(96) 0x0000000000008D40
+0 232
+
+fn=(140) 0x0000000000014550
+0 11
+
+fn=(388) 0x0000000000015090
+0 139767
+
+fn=(498) 0x00000000000149B0
+0 66
+
+fn=(620) 0x0000000000007400
+0 20
+cfn=(622) 0x0000000000014EE0
+calls=2 0 
+0 288
+0 8
+cfn=(154) 0x00000000000151A0
+calls=2 0 
+0 183
+0 6
+cfn=(280) malloc
+calls=2 0 
+0 58
+0 145
+
+fn=(876) 0x000000000000DF40
+0 96
+
+fn=(1292) 0x0000000000014920
+0 35
+
+fn=(2228) 0x0000000000009460
+0 579949
+cfn=(2244) 0x0000000000008FE0
+calls=1488 0 
+0 740410
+0 50496
+
+fn=(2874) 0x000000000000D100
+0 14016
+cfn=(2228)
+calls=292 0 
+0 243180
+0 6362
+
+fn=(0) 0x0000000000000A60
+0 2
+cfn=(2) 0x0000000000001070
+calls=1 0 
+0 1392973
+0 14
+cfn=(2524) 0x000000000000D7A0
+calls=1 0 
+0 105264
+0 3
+cob=(7)
+cfi=(11)
+cfn=(3384) 0x0000000000400DD0
+calls=1 0 
+0 686374068
+
+fn=(264) 0x000000000000A270
+0 105
+cfn=(154)
+calls=7 0 
+0 388
+0 49
+cfn=(276) calloc
+calls=7 0 
+0 326
+0 70
+cfn=(296) 0x00000000000159E0
+calls=7 0 
+0 200
+0 708
+cfn=(154)
+calls=6 0 
+0 372
+0 50
+cfn=(280)
+calls=6 0 
+0 174
+0 42
+cfn=(532) 0x00000000000157B0
+calls=6 0 
+0 228
+0 406
+
+fn=(622)
+0 1618
+
+fn=(1016) 0x00000000000148F0
+0 233
+
+fn=(1622) 0x00000000000085F0
+0 4177
+
+fn=(1892) 0x0000000000015520
+0 438
+
+fn=(1952) 0x000000000000ED80
+0 673
+cfn=(962) 0x000000000000DFE0
+calls=61 0 
+0 3836
+0 357
+cfn=(1974) 0x000000000000E930
+calls=1 0 
+0 140
+0 105
+cfn=(1974)
+calls=15 0 
+0 2201
+0 743
+cfn=(276)
+calls=7 0 
+0 292
+0 1362
+
+fn=(2472) _dl_allocate_tls_init
+0 107
+cfn=(532)
+calls=2 0 
+0 37
+0 8
+cfn=(1478) 0x00000000000156B0
+calls=2 0 
+0 66
+0 12
+
+fn=(104) 0x0000000000013AD0
+0 330
+cfn=(140)
+calls=1 0 
+0 11
+0 7
+cfn=(178) 0x00000000000145A0
+calls=1 0 
+0 17
+0 11
+cfn=(192) 0x0000000000002280
+calls=1 0 
+0 1391811
+0 46
+cfn=(154)
+calls=1 0 
+0 35
+0 3
+
+fn=(280)
+0 132
+cfn=(284) __libc_memalign
+calls=44 0 
+0 1256
+
+fn=(532)
+0 1793
+
+fn=(1566) 0x0000000000008720
+0 52
+cfn=(1572) 0x000000000000E870
+calls=1 0 
+0 69
+0 110
+cfn=(498)
+calls=4 0 
+0 44
+0 663
+cfn=(1622)
+calls=37 0 
+0 3475
+0 241
+cfn=(1622)
+calls=2 0 
+0 166
+0 16
+cfn=(1622)
+calls=4 0 
+0 536
+0 197
+
+fn=(1730) 0x0000000000004EB0
+0 20
+cfn=(154)
+calls=4 0 
+0 251
+0 12
+cfn=(280)
+calls=4 0 
+0 116
+0 157
+
+fn=(1974)
+0 922
+cfn=(388)
+calls=16 0 
+0 1243
+0 176
+
+fn=(2418) 0x000000000000FF70
+0 42
+
+fn=(5564)
+0 45
+cfn=(3468)
+calls=15 0 
+0 30
+0 96
+cfn=(3466)
+calls=16 0 
+0 32
+0 212
+cfn=(3468)
+calls=1 0 
+0 2
+0 110
+cob=(2)
+cfi=(2)
+cfn=(5822)
+calls=1 0 
+0 6
+0 35
+cob=(3)
+cfi=(3)
+cfn=(5796)
+calls=1 0 
+0 1121
+cob=(4)
+cfi=(4)
+cfn=(5776)
+calls=1 0 
+0 1121
+cob=(5)
+cfi=(5)
+cfn=(5754)
+calls=1 0 
+0 1144
+cob=(6)
+cfi=(6) /home/aurel32/glibc/glibc-2.7/build-tree/amd64-libc/csu/crti.S
+cfn=(5688) 0x0000000000013D78
+calls=1 37 
+0 3792
+cob=(7)
+cfi=(12) /home/aurel32/glibc/glibc-2.7/build-tree/amd64-libc/csu/crti.S
+cfn=(5670) 0x0000000000401698
+calls=1 37 
+0 22
+0 140
+cfn=(5598) 0x000000000000D8D0
+calls=1 0 
+0 1279
+0 1
+
+fn=(194) 0x0000000000001AB0
+0 25
+cfn=(196) 0x0000000000013DB0
+calls=1 0 
+0 128
+0 4
+cfn=(196)
+calls=2 0 
+0 221
+0 212
+
+fn=(1066) 0x0000000000005F50
+0 102
+cfn=(876)
+calls=6 0 
+0 66
+0 30
+cfn=(1074) 0x00000000000148A0
+calls=6 0 
+0 72
+0 441
+cfn=(264)
+calls=6 0 
+0 2852
+0 1031
+cfn=(1752) 0x000000000000FE80
+calls=2 0 
+0 18
+0 876
+cfn=(286) 0x0000000000014AD0
+calls=6 0 
+0 36
+0 429
+cfn=(286)
+calls=6 0 
+0 36
+0 60
+cfn=(1192) 0x0000000000014B30
+calls=6 0 
+0 30
+0 1791
+cfn=(1292)
+calls=2 0 
+0 10
+0 8
+cfn=(1292)
+calls=4 0 
+0 20
+0 90
+cfn=(96)
+calls=6 0 
+0 174
+0 97
+cfn=(286)
+calls=2 0 
+0 12
+0 53
+cfn=(1478)
+calls=5 0 
+0 865
+0 133
+
+fn=(1398) 0x0000000000005AE0
+0 450
+cfn=(532)
+calls=13 0 
+0 522
+0 497
+cfn=(532)
+calls=19 0 
+0 353
+0 76
+cfn=(532)
+calls=19 0 
+0 493
+0 209
+cfn=(1012) 0x0000000000005670
+calls=19 0 
+0 941
+0 472
+cfn=(1428) 0x0000000000014850
+calls=11 0 
+0 172
+0 103
+cfn=(280)
+calls=1 0 
+0 29
+0 8
+cfn=(296)
+calls=1 0 
+0 65
+0 126
+
+fn=(1428)
+0 172
+
+fn=(1572)
+0 10
+cfn=(1016)
+calls=1 0 
+0 5
+0 8
+cfn=(1074)
+calls=1 0 
+0 12
+0 8
+cfn=(1292)
+calls=1 0 
+0 5
+0 13
+cfn=(286)
+calls=1 0 
+0 6
+0 2
+
+fn=(1752)
+0 18
+
+fn=(2072) 0x0000000000002110
+0 14
+cfn=(276)
+calls=1 0 
+0 38
+0 63
+cfn=(2090) 0x00000000000108F0
+calls=1 0 
+0 105
+0 1
+cfn=(2112) 0x00000000000107D0
+calls=1 0 
+0 337
+0 15
+
+fn=(2162) 0x000000000000A860
+0 11708
+cfn=(2380) 0x000000000000A680
+calls=4 0 
+0 84
+0 128664
+cfn=(2228)
+calls=1196 0 
+0 1127675
+0 33312
+cfn=(296)
+calls=1 0 
+0 18
+0 36265
+
+fn=(2506) 0x0000000000014B00
+0 5
+
+fn=(154)
+0 1905
+
+fn=(192)
+0 23
+cfn=(194)
+calls=1 0 
+0 590
+0 10
+cfn=(264)
+calls=1 0 
+0 266
+0 157
+cfn=(388)
+calls=1 0 
+0 7
+0 218
+cfn=(96)
+calls=1 0 
+0 29
+0 77
+cfn=(454) 0x0000000000014B90
+calls=1 0 
+0 5
+0 80
+cfn=(488) 0x0000000000007900
+calls=1 0 
+0 4523
+0 3
+cfn=(876)
+calls=1 0 
+0 19
+0 56
+cfn=(906) _dl_debug_state
+calls=1 0 
+0 1
+0 13
+cfn=(498)
+calls=1 0 
+0 11
+0 17
+cfn=(1348) 0x000000000000B7F0
+calls=1 0 
+0 33519
+0 179
+cfn=(1940) 0x000000000000D2A0
+calls=1 0 
+0 9889
+0 182
+cfn=(2162)
+calls=7 0 
+0 1332841
+0 24
+cfn=(2418)
+calls=2 0 
+0 42
+0 18
+cfn=(2462) 0x0000000000013190
+calls=1 0 
+0 1
+0 9
+cfn=(2472)
+calls=1 0 
+0 230
+0 15
+cfn=(2162)
+calls=1 0 
+0 4885
+0 17
+cfn=(876)
+calls=1 0 
+0 11
+0 2
+cfn=(906)
+calls=1 0 
+0 1
+0 1
+cfn=(2502) 0x00000000000086E0
+calls=1 0 
+0 15
+0 31
+cfn=(154)
+calls=1 0 
+0 81
+0 8
+cfn=(296)
+calls=1 0 
+0 47
+0 16
+cfn=(736) 0x0000000000013EF0
+calls=2 0 
+0 918
+0 29
+cfn=(934) 0x0000000000001620
+calls=1 0 
+0 2096
+0 24
+cfn=(2072)
+calls=1 0 
+0 573
+0 2
+
+fn=(196)
+0 349
+
+fn=(938) 0x0000000000000AB0
+0 30
+
+fn=(962)
+0 3108
+cfn=(388)
+calls=444 0 
+0 3115
+0 5364
+cfn=(388)
+calls=460 0 
+0 8473
+0 3140
+
+fn=(1478)
+0 931
+
+fn=(1946) 0x000000000000F240
+0 107
+cfn=(1952)
+calls=8 0 
+0 9709
+0 32
+
+fn=(2502)
+0 7
+cfn=(2506)
+calls=1 0 
+0 5
+0 3
+
+fn=(488)
+0 12
+cfn=(490) 0x00000000000131A0
+calls=1 0 
+0 368
+0 3
+cfn=(280)
+calls=1 0 
+0 29
+0 12
+cfn=(280)
+calls=1 0 
+0 55
+0 197
+cfn=(622)
+calls=1 0 
+0 141
+0 4
+cfn=(154)
+calls=1 0 
+0 85
+0 8
+cfn=(296)
+calls=1 0 
+0 89
+0 228
+cfn=(280)
+calls=1 0 
+0 29
+0 11
+cfn=(734) 0x0000000000004FF0
+calls=1 0 
+0 1107
+0 16
+cfn=(616) 0x0000000000007570
+calls=1 0 
+0 2127
+0 2
+
+fn=(948) 0x0000000000001750
+0 11
+cfn=(950) 0x0000000000007D70
+calls=1 0 
+0 1996
+0 4
+
+fn=(1372) 0x000000000000C980
+0 221
+cfn=(950)
+calls=13 0 
+0 27406
+0 52
+
+fn=(1388) 0x00000000000076E0
+0 105
+
+fn=(1940)
+0 11
+cfn=(938)
+calls=1 0 
+0 2
+0 7
+cfn=(1944) 0x0000000000004C90
+calls=1 0 
+0 9859
+0 10
+
+fn=(2524)
+0 31
+cfn=(2528) 0x000000000000D650
+calls=1 0 
+0 33
+0 56
+cfn=(2528)
+calls=7 0 
+0 105082
+0 26
+cfn=(2528)
+calls=1 0 
+0 33
+0 3
+
+fn=(2872)
+0 4380
+cfn=(2874)
+calls=292 0 
+0 263558
+0 2920
+
+fn=(284)
+0 820
+cfn=(286)
+calls=5 0 
+0 30
+0 458
+
+fn=(490)
+0 25
+cfn=(498)
+calls=1 0 
+0 11
+0 59
+cfn=(280)
+calls=1 0 
+0 29
+0 193
+cfn=(532)
+calls=1 0 
+0 22
+0 5
+cfn=(532)
+calls=1 0 
+0 22
+0 2
+
+fn=(734)
+0 40
+cfn=(736)
+calls=2 0 
+0 1124
+0 9
+cfn=(736)
+calls=3 0 
+0 300
+0 21
+cfn=(154)
+calls=3 0 
+0 203
+0 128
+cfn=(154)
+calls=1 0 
+0 10
+0 5
+cfn=(280)
+calls=1 0 
+0 29
+0 8
+cfn=(280)
+calls=2 0 
+0 58
+0 27
+cfn=(532)
+calls=3 0 
+0 116
+0 105
+cfn=(296)
+calls=1 0 
+0 18
+0 64
+
+fn=(934)
+0 18
+cfn=(936) 0x000000000000D320
+calls=1 0 
+0 2068
+0 10
+
+fn=(950)
+0 1198
+cfn=(962)
+calls=66 0 
+0 4066
+0 324
+cfn=(622)
+calls=6 0 
+0 362
+0 17
+cfn=(620)
+calls=1 0 
+0 300
+0 13
+cfn=(1012)
+calls=1 0 
+0 149
+0 117
+cfn=(1066)
+calls=6 0 
+0 9332
+0 384
+cfn=(388)
+calls=33 0 
+0 749
+0 76
+cfn=(154)
+calls=5 0 
+0 297
+0 112
+cfn=(1398)
+calls=4 0 
+0 2441
+0 52
+cfn=(1388)
+calls=4 0 
+0 33
+0 28
+cfn=(1566)
+calls=4 0 
+0 5569
+0 68
+cfn=(1012)
+calls=4 0 
+0 726
+0 20
+cfn=(1730)
+calls=4 0 
+0 556
+0 156
+cfn=(1388)
+calls=8 0 
+0 72
+0 71
+cfn=(1398)
+calls=5 0 
+0 2075
+0 39
+
+fn=(1944)
+0 6
+cfn=(1946)
+calls=1 0 
+0 9848
+0 5
+
+fn=(2528)
+0 317
+cob=(6)
+cfi=(6)
+cfn=(2966) 0x0000000000006C90
+calls=1 25 
+0 96718
+cob=(5)
+cfi=(5)
+cfn=(2772)
+calls=1 0 
+0 1382
+cob=(4)
+cfi=(4)
+cfn=(2752)
+calls=1 0 
+0 29
+cob=(3)
+cfi=(3)
+cfn=(2732)
+calls=1 0 
+0 29
+cob=(2)
+cfi=(2)
+cfn=(2556)
+calls=1 0 
+0 6649
+0 24
+
+fn=(3468)
+0 34
+
+fn=(178)
+0 17
+
+fn=(286)
+0 120
+
+fn=(296)
+0 820
+
+fn=(454)
+0 5
+
+fn=(616)
+0 13
+cfn=(620)
+calls=1 0 
+0 408
+0 493
+cfn=(280)
+calls=1 0 
+0 29
+0 10
+cfn=(734)
+calls=1 0 
+0 1158
+0 2
+cfn=(822) free
+calls=1 0 
+0 5
+0 9
+
+fn=(736)
+0 2342
+
+fn=(822)
+0 5
+
+fn=(906)
+0 2
+
+fn=(1074)
+0 84
+
+fn=(1348)
+0 1227
+cfn=(622)
+calls=13 0 
+0 827
+0 130
+cfn=(936)
+calls=13 0 
+0 28420
+0 249
+cfn=(280)
+calls=6 0 
+0 174
+0 60
+cfn=(296)
+calls=6 0 
+0 171
+0 30
+cfn=(296)
+calls=6 0 
+0 171
+0 127
+cfn=(280)
+calls=1 0 
+0 29
+0 1514
+cfn=(1892)
+calls=3 0 
+0 219
+0 126
+cfn=(296)
+calls=1 0 
+0 41
+0 4
+
+fn=(2112)
+0 9
+cfn=(284)
+calls=1 0 
+0 52
+0 227
+cfn=(276)
+calls=1 0 
+0 38
+0 11
+
+fn=(2310) 0x0000000000008E00
+0 56775
+cfn=(388)
+calls=1325 0 
+0 113656
+0 15683
+cfn=(388)
+calls=109 0 
+0 12524
+0 218
+
+fn=(2462)
+0 1
+
+fn=(3466)
+0 34
+
+fn=(2)
+0 329
+cfn=(96)
+calls=1 0 
+0 29
+0 17
+cfn=(104)
+calls=1 0 
+0 1392271
+0 327
+
+fn=(276)
+0 144
+cfn=(280)
+calls=16 0 
+0 550
+
+fn=(936)
+0 126
+cfn=(938)
+calls=14 0 
+0 28
+0 84
+cfn=(942) 0x0000000000014C20
+calls=14 0 
+0 266
+0 112
+cfn=(1372)
+calls=13 0 
+0 27679
+cfn=(948)
+calls=1 0 
+0 2011
+0 182
+
+fn=(942)
+0 266
+
+fn=(1012)
+0 504
+cfn=(1016)
+calls=24 0 
+0 228
+0 114
+cfn=(1026) 0x0000000000014950
+calls=6 0 
+0 30
+0 940
+
+fn=(1026)
+0 30
+
+fn=(1192)
+0 40
+
+fn=(2090)
+0 105
+
+fn=(2244)
+0 423197
+cfn=(962)
+calls=317 0 
+0 15298
+0 95679
+cfn=(2310)
+calls=1476 0 
+0 198856
+0 7380
+
+fn=(2380)
+0 58
+cfn=(1192)
+calls=2 0 
+0 10
+0 16
+
+fn=(5598)
+0 1024
+cfn=(1892)
+calls=3 0 
+0 219
+0 36
+
+ob=(6)
+fl=(23) /home/markus/Projekte/Elektra/current/src/libelektra/keymeta.c
+fn=(3698) keyGetMeta
+339 52035
++4 20814
++1 20814
++1 62442
++11 10407
++1 20814
+
+fn=(3722) keySetMeta
+387 60642
++7 20214
++1 50535
++1 20214
++1 20214
+cfi=(17) /home/markus/Projekte/Elektra/current/src/libelektra/internal.c
+cfn=(3642) kdbiStrLen
+calls=10107 -54 
+* 838869
+* 10107
++1 20214
++1 20214
++2 30321
+cfi=(19) /home/markus/Projekte/Elektra/current/src/libelektra/key.c
+cfn=(3609) keyNew'2
+calls=10107 254 
+* 2748215
+* 10107
++1 20214
++2 30321
+cfi=(17)
+cfn=(3728) kdbiStrNDup
+calls=10107 -84 
+* 2161942
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 573
+* 10107
++1 20214
++5 30321
++1 30321
++3 40428
++11 20214
++16 20214
+cfi=(19)
+cfn=(3740) keyDel
+calls=10107 563 
+* 3286754
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 546
++1 20214
++17 10107
++1 20214
+
+fn=(4932) keyGetMode
+710 1212
++4 303
+cob=(2)
+cfi=(2)
+cfn=(4866)
+calls=303 0 
+* 909
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 1053
+* 606
++2 606
++2 909
+cfn=(3698)
+calls=303 339 
+* 5454
+* 606
+cfi=(24) /home/markus/Projekte/Elektra/current/src/libelektra/keyvalue.c
+cfn=(4942) keyValue
+calls=303 174 
+* 3333
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 546
+* 303
++1 1212
++20 303
++1 606
+
+fn=(5422) keyRewindMeta
+137 80800
++1 40400
++1 121200
++2 20200
++1 40400
+
+fn=(5428) keyNextMeta
+170 80800
++2 40400
++1 121200
++4 20200
++1 40400
+
+fl=(29) /usr/include/c++/4.3/ext/new_allocator.h
+fn=(4282) __gnu_cxx::new_allocator<char>::allocate(unsigned long, void const*)
+87 36
++2 12
+cfn=(4288) __gnu_cxx::new_allocator<char>::max_size() const
+calls=6 +12 
+* 36
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 -89 
+* 858
+* 42
++3 12
+cob=(5)
+cfi=(5)
+cfn=(4188)
+calls=6 -92 
+* 1526
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 -92 
+* 1019
++1 12
+
+fn=(4790) __gnu_cxx::new_allocator<char>::deallocate(char*, unsigned long)
+97 36
++1 12
+cob=(5)
+cfi=(5)
+cfn=(4618)
+calls=6 -98 
+* 738
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 -98 
+* 1027
+* 12
+
+fn=(4288)
+101 18
++1 18
+
+fl=(20) /home/markus/Projekte/Elektra/current/src/libelektra/keyhelpers.c
+fn=(3786) keyNameIsSystem
+480 12
++1 12
+cob=(2)
+cfi=(2)
+cfn=(3668)
+calls=3 0 
+* 183
+* 12
++1 3
++1 6
+
+fn=(3662) keyNameIsUser
+496 42444
++1 42444
+cob=(2)
+cfi=(2)
+cfn=(3668)
+calls=10611 0 
+* 445587
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 909
+* 42438
++1 6
++1 6
+-1 10608
++1 21216
+
+fn=(3626) keyInit
+506 165752
++1 165752
+cob=(2)
+cfi=(2)
+cfn=(3594)
+calls=41438 0 
+* 1989024
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 909
++2 41438
++1 82876
+
+fn=(3652) keyNameGetFullRootNameSize
+129 42444
++2 21222
+cob=(2)
+cfi=(2)
+cfn=(3150)
+calls=10611 0 
+* 515691
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 901
+* 10611
++2 21222
++12 31833
+cob=(2)
+cfi=(2)
+cfn=(2594)
+calls=10611 0 
+* 497956
+* 10611
++1 21222
++3 63666
++1 21222
+
+fn=(3680) keyNameGetOneLevel
+86 210152
++1 105076
++1 52538
++1 52538
++1 105076
++3 701631
++4 2634698
++5 93948
++2 31316
++2 31316
+-10 187896
++8 238417
++2 238417
+-10 2347828
++14 136392
++2 93948
++1 31316
++1 62632
+-2 63666
++1 21222
++1 42444
+
+fl=(37) /home/markus/Projekte/Elektra/current/src/libelektra/split.c
+fn=(5210) init_splitted_keysets
+63 12
++1 6
++1 6
+cob=(2)
+cfi=(2)
+cfn=(3502)
+calls=3 -65 
+* 1360
+* 9
++1 9
++1 6
+cob=(2)
+cfi=(2)
+cfn=(3502)
+calls=3 -67 
+* 418
+* 9
++1 9
++1 6
+cob=(2)
+cfi=(2)
+cfn=(3502)
+calls=3 -69 
+* 418
+* 9
++1 9
++1 6
+cob=(2)
+cfi=(2)
+cfn=(3502)
+calls=3 -71 
+* 418
+* 9
++1 9
++1 6
+cob=(2)
+cfi=(2)
+cfn=(3502)
+calls=3 -73 
+* 418
+* 9
++1 9
++1 6
+
+fn=(5216) resize_splitted_keysets
+78 804
++1 1005
++1 1407
+cob=(2)
+cfi=(2)
+cfn=(4694)
+calls=201 -80 
+* 56984
+* 603
++1 1407
++1 1407
+cob=(2)
+cfi=(2)
+cfn=(4694)
+calls=201 -82 
+* 57816
+* 603
++1 1407
++1 1407
+cob=(2)
+cfi=(2)
+cfn=(4694)
+calls=201 -84 
+* 69806
+* 603
++1 1407
++1 1407
+cob=(2)
+cfi=(2)
+cfn=(4694)
+calls=201 -86 
+* 42476
+* 603
++1 1407
++1 1407
+cob=(2)
+cfi=(2)
+cfn=(4694)
+calls=201 -88 
+* 43072
+* 603
++1 1407
++1 402
+
+fn=(5204) split_keyset
+96 24
++7 6
+cob=(2)
+cfi=(2)
+cfn=(3502)
+calls=3 0 
+* 249
+* 3
++1 6
+cfn=(5210)
+calls=3 -41 
+* 3176
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 663
++2 6
+cfi=(25)
+cfn=(3816) ksRewind
+calls=3 991 
+* 39
+* 3
++3 60903
+cfi=(15) /home/markus/Projekte/Elektra/current/src/libelektra/kdb.c
+cfn=(3894) kdbGetBackend
+calls=20301 294 
+* 690234
+* 20301
++1 20301
++2 81204
++2 40602
++2 18360000
+cfi=(22) /home/markus/Projekte/Elektra/current/src/libelektra/keytest.c
+cfn=(5226) keyIsBelowOrSame
+calls=1020000 +90 
+* 439884380
+* 2040000
++3 20100
++1 160800
+cfi=(25)
+cfn=(3822) ksAppendKey
+calls=20100 691 
+* 33284582
++1 40200
+cfi=(22)
+cfn=(4910) keyNeedSync
+calls=20100 -16 
+* 261300
+* 160200
+-7 5181204
++11 40602
++2 402
+cfn=(5216)
+calls=201 -49 
+* 289450
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 673
++2 2613
+cfi=(25)
+cfn=(4824) ksGetSize
+calls=201 577 
+* 2211
+* 1809
+cfi=(25)
+cfn=(3798) ksNew
+calls=201 +33 
+* 116131
+* 201
++1 2814
+cfi=(25)
+cfn=(3822)
+calls=201 691 
+* 23115
++1 2613
++1 2613
++1 402
++2 2814
+cfi=(22)
+cfn=(5226)
+calls=201 +71 
+* 56423
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 618
+* 402
++2 402
+cfi=(22)
+cfn=(4910)
+calls=201 -32 
+* 2613
+* 2802
+-30 400
+cfi=(25)
+cfn=(3930) ksNext
+calls=200 1021 
+* 7800
+* 40208
+cfi=(25)
+cfn=(3930)
+calls=20104 1021 
+* 784041
+* 60912
++34 3
++1 12
+
+fn=(5440) free_splitted_keysets
+49 12
++1 6
++2 1407
+cfi=(25)
+cfn=(3918) ksDel
+calls=201 309 
+* 1818110
+-2 1017
++4 9
+cob=(2)
+cfi=(2)
+cfn=(3752)
+calls=3 -54 
+* 4029
++1 9
+cob=(2)
+cfi=(2)
+cfn=(3752)
+calls=3 -55 
+* 393
++1 9
+cob=(2)
+cfi=(2)
+cfn=(3752)
+calls=3 -56 
+* 643
++1 9
+cob=(2)
+cfi=(2)
+cfn=(3752)
+calls=3 -57 
+* 451
++1 9
+cob=(2)
+cfi=(2)
+cfn=(3752)
+calls=3 -58 
+* 643
++1 6
+cob=(2)
+cfi=(2)
+cfn=(3752)
+calls=3 -59 
+* 243
++1 6
+
+fl=(17)
+fn=(4688) kdbiRealloc
+213 125
++2 75
++1 100
+cob=(2)
+cfi=(2)
+cfn=(4694)
+calls=25 0 
+* 33880
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 943
+* 25
++1 50
++5 75
++1 50
++2 50
+
+fn=(3734) kdbiMalloc
+248 44556
++1 22278
+cob=(2)
+cfi=(2)
+cfn=(3502)
+calls=11139 0 
+* 1800516
++1 22278
+
+fn=(3776) kdbiFree
+272 87012
++1 43506
+cob=(2)
+cfi=(2)
+cfn=(3752)
+calls=21753 0 
+* 2902976
++1 43506
+
+fn=(3728)
+320 50535
++1 10107
++2 20214
+cfn=(3734)
+calls=10107 -75 
+* 1706583
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 556
+* 10107
++1 60642
+cob=(2)
+cfi=(2)
+cfn=(3686)
+calls=10107 0 
+* 272877
++2 10107
++1 20214
+
+fn=(3444) kdbiCalloc
+260 12
++1 9
+cob=(2)
+cfi=(2)
+cfn=(3450)
+calls=3 0 
+* 59939
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 898
++1 6
+
+fn=(3642)
+343 123292
++1 92469
+cob=(2)
+cfi=(2)
+cfn=(2594)
+calls=30823 0 
+* 1961636
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 943
+* 30823
++1 308230
++1 30823
++1 61646
+
+fl=(19)
+fn=(4904) keyDecRef
+679 93027
++1 62018
++2 403117
++1 31009
++1 62018
+
+fn=(3614) keyVNew
+267 53060
++1 10612
++1 10612
++1 10612
++1 10612
++2 21224
+cob=(2)
+cfi=(2)
+cfn=(3502)
+calls=10612 0 
+* 910824
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 893
+* 10612
++1 21224
++1 21224
+cfi=(20)
+cfn=(3626)
+calls=10612 506 
+* 627017
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 529
++2 21224
++1 30927
+cfi=(21) /home/markus/Projekte/Elektra/current/src/libelektra/keyname.c
+cfn=(3636) keySetName
+calls=10309 -24 
+* 15690257
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 574
++2 216489
++2 121248
++8 202080
++1 20208
++3 20208
+cfi=(22)
+cfn=(3692) keyIsBinary
+calls=10104 453 
+* 344092
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 573
+* 20208
++4 30312
+cfi=(24)
+cfn=(3704) keySetString
+calls=10104 +63 
+* 12278098
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 590
+* 10104
++32 202080
+-49 40826
++52 31836
++1 21224
+
+fn=(3615) keyVNew'2
+267 50535
++1 10107
++1 10107
++1 10107
++1 10107
++2 20214
+cob=(2)
+cfi=(2)
+cfn=(3502)
+calls=10107 0 
+* 1626338
+* 10107
++1 20214
++1 20214
+cfi=(20)
+cfn=(3626)
+calls=10107 506 
+* 596313
++2 20214
++56 30321
++1 20214
+
+fn=(3746) keyClear
+601 82876
++1 145030
+cob=(2)
+cfi=(2)
+cfn=(3752)
+calls=20718 0 
+* 1678158
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 861
++1 114097
+cob=(2)
+cfi=(2)
+cfn=(3752)
+calls=10407 0 
+* 842967
++1 82876
++2 82876
+cob=(2)
+cfi=(2)
+cfn=(3594)
+calls=20719 0 
+* 994512
++1 41438
+cfi=(20)
+cfn=(3626)
+calls=20719 506 
+* 1222421
++2 20719
++1 41438
+
+fn=(3608) keyNew
+254 201628
++4 124314
++1 30927
+cfn=(3614)
+calls=10309 +8 
+* 30940638
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 529
+* 909
+cfn=(3614)
+calls=303 +8 
+* 71575
+* 10612
++1 10612
++2 10612
++1 21224
+
+fn=(3609)
+254 192033
++4 20214
++1 30321
+cfn=(3615)
+calls=10107 +8 
+* 2455112
+* 10107
++1 10107
++2 10107
++1 20214
+
+fn=(3740)
+563 164080
++3 82040
++2 164080
++2 81204
++3 41438
+cfn=(3746)
+calls=20719 +28 
+* 5350269
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 572
+* 20719
++1 41438
+cfi=(17)
+cfn=(3776)
+calls=20719 272 
+* 1843991
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 546
++2 62157
++1 41438
+-1 20301
++1 40602
+
+fn=(3834) keyIncRef
+646 93027
++1 62018
++2 434126
++1 31009
++1 62018
+
+fl=(24)
+fn=(4942)
+174 82012
++1 41612
++2 80800
++7 80800
++1 40400
+-1 303
++1 606
+
+fn=(3716) keyGetValueSize
+255 122428
++1 61214
++2 122428
++7 122428
++1 61214
+
+fn=(3710) keySetRaw
+509 62442
++1 20814
++1 52035
++2 41628
++11 31221
++1 41628
++6 31221
+cob=(2)
+cfi=(2)
+cfn=(3502)
+calls=10407 0 
+* 892018
+* 31221
++3 41628
++2 62442
+cob=(2)
+cfi=(2)
+cfn=(3686)
+calls=10407 0 
+* 228964
++1 62442
++1 20814
+cfn=(3716)
+calls=10407 255 
+* 166512
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 601
+* 20814
++1 20814
+
+fn=(4058) keyString
+202 612
++1 408
++2 816
++5 1836
++5 816
++1 408
+
+fn=(3704)
+361 50520
++1 10104
++2 20208
++2 60624
++1 20208
+cfi=(17)
+cfn=(3642)
+calls=10104 -24 
+* 646838
+* 40416
+cfn=(3710)
+calls=10104 509 
+* 1757218
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 555
+* 10104
++2 40416
+cfi=(23)
+cfn=(3722)
+calls=10104 +18 
+* 9569803
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 564
++2 30312
++1 20208
+
+fl=(30) /usr/include/c++/4.3/bits/stl_uninitialized.h
+fn=(4316) void std::uninitialized_fill_n<char*, unsigned long, char>(char*, unsigned long, char const&)
+223 36
++5 24
+cfn=(4322) void std::__uninitialized_fill_n<true>::uninitialized_fill_n<char*, unsigned long, char>(char*, unsigned long, char const&)
+calls=6 -20 
+* 8957
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 1146
++2 12
+
+fn=(4310) void std::__uninitialized_fill_n_a<char*, unsigned long, char, char>(char*, unsigned long, char const&, std::allocator<char>&)
+322 42
++1 24
+cfn=(4316)
+calls=6 223 
+* 10175
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 866
+* 12
+
+fn=(4322)
+208 36
++1 24
+cfi=(31) /usr/include/c++/4.3/bits/stl_algobase.h
+cfn=(4328) char* std::fill_n<char*, unsigned long, char>(char*, unsigned long, char const&)
+calls=6 778 
+* 8128
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 757
+* 12
+
+fl=(34) /usr/include/c++/4.3/bits/stl_construct.h
+fn=(4766) void std::_Destroy<char*, char>(char*, char*, std::allocator<char>&)
+126 36
++2 18
+cfn=(4772) void std::_Destroy<char*>(char*, char*)
+calls=6 -31 
+* 36
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 702
++1 12
+
+fn=(4772)
+97 24
++7 12
+
+fl=(26) /home/markus/Projekte/Elektra/current/src/libelektra/plugin.c
+fn=(3854) pluginOpen
+178 5
++4 1
++2 1
++2 2
+cob=(2)
+cfi=(2)
+cfn=(3150)
+calls=1 0 
+* 51
+* 2
+cob=(2)
+cfi=(2)
+cfn=(3502)
+calls=1 0 
+* 83
+* 1
++2 4
+cob=(2)
+cfi=(2)
+cfn=(3686)
+calls=1 0 
+* 22
++1 2
+cob=(2)
+cfi=(2)
+cfn=(3150)
+calls=1 0 
+* 51
+* 4
+cob=(2)
+cfi=(2)
+cfn=(3860)
+calls=1 0 
+* 109
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 909
++2 2
+cfi=(16) /home/markus/Projekte/Elektra/current/src/libloader/static.c
+cfn=(3866) kdbLibLoad
+calls=1 18 
+* 163
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 564
+* 1
++1 2
++9 3
+cfi=(16)
+cfn=(3872) kdbLibSym
+calls=1 37 
+* 146
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 555
+* 1
++1 2
++8 2
+cfi=(8) /home/markus/Projekte/Elektra/current/src/plugins/dump/dump.cpp
+cfn=(3874) libelektra_dump_LTX_kdbPluginFactory
+calls=1 -4 
+* 1320
+* 1
++1 2
++10 3
++3 4
++2 3
++1 4
+cfi=(8)
+cfn=(3882) kdbOpen_dump
+calls=1 -49 
+* 6
++18 2
+cob=(2)
+cfi=(2)
+cfn=(3752)
+calls=1 0 
+* 81
++1 3
++8 1
++1 2
+
+fn=(3880) pluginExport
+296 19
++3 1
++2 2
++2 2
+cfi=(17)
+cfn=(3444)
+calls=1 -43 
+* 254
+* 1
++4 10
++1 3
++2 24
++8 110
++2 17
++3 17
++3 12
++3 12
++3 12
++3 12
++3 12
++3 12
++3 12
++3 12
+-30 147
++42 3
++1 2
+
+fn=(5552) pluginClose
+258 4
++1 1
++2 2
++2 4
++2 4
+cfi=(8)
+cfn=(5554) kdbClose_dump
+calls=1 -82 
+* 6
+* 1
++3 3
+cfi=(16)
+cfn=(5560) kdbLibClose
+calls=1 53 
+* 6
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 565
++1 3
+cfi=(25)
+cfn=(3918)
+calls=1 +40 
+* 1255
++1 2
+cob=(2)
+cfi=(2)
+cfn=(3752)
+calls=1 0 
+* 127
++2 3
++1 2
+
+fn=(4000) pluginGetConfig
+370 609
++1 406
++1 406
+
+fl=(22)
+fn=(4910)
+105 61812
++1 41208
++2 123624
++1 41208
+
+fn=(5232) keyIsBelow
+180 5101005
++1 1020201
++1 1020201
++1 1020201
++1 1020201
++2 4080804
++2 2040402
+cfi=(21)
+cfn=(3842) keyName
+calls=1020201 -67 
+* 15303015
+* 1020201
++1 2040402
+cfi=(21)
+cfn=(3842)
+calls=1020201 -68 
+* 15303015
+* 1020201
++1 2040402
+cfi=(21)
+cfn=(5238) keyGetNameSize
+calls=1020201 -42 
+* 15303015
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 592
+* 1020201
++1 2040402
+cfi=(21)
+cfn=(5238)
+calls=1020201 -43 
+* 15303015
+* 1020201
++2 4080804
++1 6121206
+cob=(2)
+cfi=(2)
+cfn=(3668)
+calls=1020201 0 
+* 145952087
+* 4003842
++1 267246
++1 40602
++1 40602
+-1 999900
++1 1999800
+
+fn=(3692)
+453 40416
++1 20208
++2 30312
+cfi=(23)
+cfn=(3698)
+calls=10104 339 
+* 181872
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 556
+* 50520
++1 20208
+
+fn=(4676) keyClearSync
+69 909
++1 606
++2 303
++2 303
++1 1818
++2 1212
++1 606
+
+fn=(5226)
+206 5101005
++1 2040402
+cfi=(21)
+cfn=(3842)
+calls=1020201 -86 
+* 15303015
+* 1020201
++1 2040402
+cfi=(21)
+cfn=(3842)
+calls=1020201 -87 
+* 15303015
+* 1020201
++2 3060603
+cfn=(5232)
+calls=1020201 -30 
+* 250223766
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 556
+* 2081004
++1 2999700
+cob=(2)
+cfi=(2)
+cfn=(3848)
+calls=999900 0 
+* 133686630
+* 1999800
++1 1999800
++1 1999800
+-1 20301
++1 40602
+
+fn=(4926) keyIsDir
+424 1212
++3 606
++2 606
+cfi=(23)
+cfn=(4932)
+calls=303 710 
+* 17961
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 556
+* 303
++2 2121
++1 606
+
+fn=(4916) keyIsInactive
+370 1212
++1 303
++2 606
++2 606
+cfi=(21)
+cfn=(3842)
+calls=303 121 
+* 4545
+* 909
+cob=(2)
+cfi=(2)
+cfn=(2592)
+calls=303 0 
+* 82486
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 909
+* 303
++2 606
++4 1515
++1 606
++1 606
+
+fl=(7) ???
+fn=(2974) 0x0000000000007C70
+0 6
+
+fn=(5690) 0x0000000000007BF0
+0 10
+cob=(2)
+cfi=(2)
+cfn=(5700)
+calls=1 0 
+0 2744
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1021
+0 13
+
+fn=(2980) 0x0000000000013D40
+0 11
+cfi=(8)
+cfn=(2984) _GLOBAL__I_dump.cpp
+calls=1 222 
+0 96682
+0 7
+
+fl=(32) /usr/include/c++/4.3/bits/ios_base.h
+fn=(4488) std::operator|(std::_Ios_Openmode, std::_Ios_Openmode)
+125 3248
++1 4060
+
+fl=(21)
+fn=(5238)
+148 6181806
++1 4121204
++2 8242408
++5 8242408
++1 4121204
+
+fn=(3636)
+254 53060
++3 10612
++1 10612
++2 21224
++1 53060
++2 42448
++1 21224
++1 21224
++3 42448
+cfi=(17)
+cfn=(3642)
+calls=10612 +75 
+* 1124155
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 556
+* 42448
++2 4
++5 2
++3 21222
+cfi=(20)
+cfn=(3652)
+calls=10611 129 
+* 1258601
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 708
+* 21222
++1 21222
++4 10611
++1 10611
++1 63666
++2 21225
++2 6
+cfi=(20)
+cfn=(3662)
+calls=3 496 
+* 93
+* 21216
+cfi=(20)
+cfn=(3662)
+calls=10608 496 
+* 605565
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 601
+* 21222
++3 31824
++3 63648
++15 63648
++8 74256
++7 31824
++1 6
+cfi=(20)
+cfn=(3786)
+calls=3 480 
+* 228
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 617
+* 6
++2 27
++7 18
++2 9
+cfn=(3792) keySetOwner
+calls=3 954 
+* 2821
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 565
++2 9
++22 31833
+cob=(2)
+cfi=(2)
+cfn=(3502)
+calls=10611 0 
+* 1682613
+* 10611
++1 21222
++1 42444
++1 31833
++3 42444
++3 53055
+cob=(2)
+cfi=(2)
+cfn=(3674)
+calls=10611 0 
+* 360819
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 909
++3 21222
++1 10611
++1 53055
+cfi=(20)
+cfn=(3680)
+calls=10611 86 
+* 1453827
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 636
+* 10611
++3 42444
++3 93948
++5 93948
++9 187896
++1 156580
++3 281844
+cob=(2)
+cfi=(2)
+cfn=(3686)
+calls=31316 0 
+* 679992
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 893
++1 187896
+-21 156580
+cfi=(20)
+cfn=(3680)
+calls=31316 86 
+* 3443858
+* 53055
+cfi=(20)
+cfn=(3680)
+calls=10611 86 
+* 2584782
+* 220246
++25 95499
++1 63666
++2 63666
++2 53055
++1 42444
++4 10612
++1 21224
+
+fn=(3792)
+954 15
++1 6
++1 6
++2 12
+cfi=(23)
+cfn=(3722)
+calls=3 387 
+* 2767
++1 6
++4 3
++1 6
+
+fn=(3842)
+121 13751487
++1 9167658
++2 18335316
++5 18335316
++1 9167658
+
+fl=(31)
+fn=(4334) std::__niter_base<char*, false>::__b(char*)
+268 18
++1 18
+
+fn=(4340) __gnu_cxx::__enable_if<std::__is_byte<char>::__value, char*>::__type std::__fill_n_a<unsigned long, char>(char*, unsigned long, char const&)
+759 36
++2 36
+cfn=(4346) __gnu_cxx::__enable_if<std::__is_byte<char>::__value, void>::__type std::__fill_a<char>(char*, char*, char const&)
+calls=6 -57 
+* 4470
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 1290
++1 18
++1 12
+
+fn=(4346)
+704 36
++2 18
++1 60
+cob=(2)
+cfi=(2)
+cfn=(3594)
+calls=6 0 
+* 4344
++2 12
+
+fn=(4328)
+778 36
++6 12
+cfn=(4334)
+calls=6 268 
+* 36
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 786
+* 24
+cfn=(4340)
+calls=6 -25 
+* 5862
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 1360
++1 12
+
+fl=(15)
+fn=(3432) kdbOpen
+194 3
++9 1
+cfi=(16)
+cfn=(3438) kdbLibInit
+calls=1 13 
+* 5
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 556
+* 2
++5 2
+cfi=(17)
+cfn=(3444)
+calls=1 +52 
+* 60345
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 564
+* 1
++3 2
+cfi=(18) /home/markus/Projekte/Elektra/current/src/libelektra/backend.c
+cfn=(3600) backendOpenDefault
+calls=1 -21 
+* 38287
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 652
+* 3
++1 4
++9 3
+cfi=(25)
+cfn=(3798)
+calls=1 -59 
+* 353
+* 1
++3 4
+cfi=(19)
+cfn=(3608)
+calls=1 +30 
+* 2771
+* 5
+cfn=(3888) kdbGet
+calls=1 434 
+* 1621357
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 528
++8 2
+cfi=(27) /home/markus/Projekte/Elektra/current/src/libelektra/trie.c
+cfn=(5038) trieOpen
+calls=1 75 
+* 53052
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 546
+* 3
++8 3
++1 2
+
+fn=(3888)
+434 21
++1 3
++1 3
++7 12
++7 6
++11 9
+cfn=(3894)
+calls=3 294 
+* 658
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 591
+* 3
++2 9
+cfi=(25)
+cfn=(3798)
+calls=3 162 
+* 1908
+* 3
++1 9
+cfi=(25)
+cfn=(3798)
+calls=3 162 
+* 1150
+* 3
++1 6
+cfi=(25)
+cfn=(3816)
+calls=3 991 
+* 39
+* 3
++1 6
+cfi=(25)
+cfn=(3906) ksPop
+calls=3 947 
+* 66
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 511
+* 9
++11 9
+cfi=(25)
+cfn=(3912) ksAppend
+calls=3 766 
+* 87
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 538
++1 6
+cfi=(25)
+cfn=(3918)
+calls=3 309 
+* 2222
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 519
++2 6
++2 180
++2 36
+cfi=(8)
+cfn=(3994) kdbGet_dump
+calls=3 188 
+* 3908738
+* 3
++4 60
+-8 96
++19 6
+cfi=(25)
+cfn=(3816)
+calls=3 991 
+* 39
+* 3
++3 606
+cfi=(21)
+cfn=(3842)
+calls=303 121 
+* 4545
+* 303
++1 606
+cfi=(21)
+cfn=(3842)
+calls=303 121 
+* 4545
+* 303
++1 606
+cfi=(22)
+cfn=(4910)
+calls=303 105 
+* 3939
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 573
+* 606
++5 909
+cob=(2)
+cfi=(2)
+cfn=(3848)
+calls=303 0 
+* 21917
+* 606
++22 1818
+cfi=(22)
+cfn=(4916)
+calls=303 370 
+* 95212
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 583
+* 606
++5 606
+cfi=(22)
+cfn=(4926)
+calls=303 424 
+* 23971
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 546
+* 606
++8 1212
++5 909
+cfn=(3894)
+calls=303 294 
+* 10302
+* 303
++1 909
++22 606
++2 303
++1 909
+cfi=(25)
+cfn=(3822)
+calls=303 691 
+* 496065
+-75 612
+cfi=(25)
+cfn=(3906)
+calls=306 947 
+* 26146
+* 918
++78 6
+cfi=(25)
+cfn=(3918)
+calls=3 309 
+* 876
++2 12
++1 14
+cfi=(19)
+cfn=(3740)
+calls=1 -18 
+* 325
++1 9
++1 6
+
+fn=(3894)
+294 103035
++1 82428
+cfi=(27)
+cfn=(3900) trieLookup
+calls=20607 49 
+* 309105
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 556
+* 20607
++1 123642
++1 20607
++1 41214
+
+fn=(5198) kdbSet
+683 21
++1 3
++4 3
++3 18
++10 12
++7 18
+cfi=(37)
+cfn=(5204)
+calls=3 96 
+* 501755585
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 574
+* 3
++2 6
++2 1407
++2 402
++5 3208
++2 1400
+cfi=(25)
+cfn=(3816)
+calls=200 991 
+* 2600
++1 400
++2 10000
++2 4200
+cfi=(8)
+cfn=(5264) kdbSet_dump
+calls=200 197 
+* 54782664
+* 200
++4 4000
+-8 6400
++14 402
++7 603
+-33 1017
++37 6
+cfi=(37)
+cfn=(5440)
+calls=3 49 
+* 1827011
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 655
++1 12
++1 6
++1 9
++1 6
+
+fn=(5540) kdbClose
+264 4
++1 2
++5 4
++2 3
+cfi=(18)
+cfn=(5546) backendClose
+calls=1 -61 
+* 3107
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 574
++2 2
+cfi=(17)
+cfn=(3776)
+calls=1 -2 
+* 89
++2 2
++1 2
+
+fl=(8)
+fn=(4240) dump::unserialize(std::istream&, ckdb::_KeySet*)
+87 21
++2 3
++2 6
+cob=(5)
+cfi=(5)
+cfn=(4246)
+calls=3 -91 
+* 3
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 -91 
+* 1128
+* 18
+cfi=(28) /usr/include/c++/4.3/bits/stl_vector.h
+cfn=(4252) std::vector<char, std::allocator<char> >::vector(unsigned long, char const&, std::allocator<char> const&)
+calls=3 234 
+* 19117
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 -91 
+* 759
+* 6
+cob=(5)
+cfi=(5)
+cfn=(4352)
+calls=3 -91 
+* 3
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 -91 
+* 1144
++1 6
+cob=(5)
+cfi=(5)
+cfn=(4246)
+calls=3 -92 
+* 3
+* 18
+cfi=(28)
+cfn=(4252)
+calls=3 234 
+* 3605
+* 9
+cob=(5)
+cfi=(5)
+cfn=(4352)
+calls=3 -92 
+* 3
++1 6
+cob=(5)
+cfi=(5)
+cfn=(4358)
+calls=3 -93 
+* 12
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 -93 
+* 1088
+* 3
++1 6
+cob=(5)
+cfi=(5)
+cfn=(4358)
+calls=3 -94 
+* 12
+* 3
++7 1836
+cfi=(32)
+cfn=(4488)
+calls=612 +24 
+* 5508
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 704
+* 2448
+cob=(5)
+cfi=(5)
+cfn=(4494)
+calls=612 0 
+* 1399528
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 2128
++1 1836
+cob=(5)
+cfi=(5)
+cfn=(4526)
+calls=612 0 
+* 219756
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 2115
++2 1836
+cfi=(33) /usr/include/c++/4.3/bits/basic_string.h
+cfn=(4542) bool std::operator==<char, std::char_traits<char>, std::allocator<char> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, char const*)
+calls=612 2188 
+* 53580
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 939
+* 1224
++2 9
+cob=(5)
+cfi=(5)
+cfn=(4558)
+calls=3 0 
+* 5582
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 1128
++2 6
+cfi=(25)
+cfn=(4592) ksClear
+calls=3 333 
+* 1077
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 529
+* 3
++2 1827
+cfi=(33)
+cfn=(4542)
+calls=609 2188 
+* 53874
+* 1218
++2 909
+cfi=(19)
+cfn=(3608)
+calls=303 254 
+* 80362
+* 303
++2 909
+cob=(5)
+cfi=(5)
+cfn=(4558)
+calls=303 0 
+* 127563
++1 909
+cob=(5)
+cfi=(5)
+cfn=(4558)
+calls=303 0 
+* 118473
++2 606
+cfi=(28)
+cfn=(4646) std::vector<char, std::allocator<char> >::size() const
+calls=303 484 
+* 3939
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 723
+* 1818
++1 1515
+cfi=(28)
+cfn=(4652) std::vector<char, std::allocator<char> >::operator[](unsigned long)
+calls=303 562 
+* 2727
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 687
+* 1212
+cob=(5)
+cfi=(5)
+cfn=(4658)
+calls=303 0 
+* 53501
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 1160
++1 909
+cfi=(28)
+cfn=(4652)
+calls=303 562 
+* 2727
+* 303
++1 909
+cfi=(28)
+cfn=(4652)
+calls=303 562 
+* 2727
+* 909
+cfi=(21)
+cfn=(3636)
+calls=303 254 
+* 461990
++2 606
+cfi=(28)
+cfn=(4646)
+calls=303 484 
+* 3939
+* 1818
++1 1515
+cfi=(28)
+cfn=(4652)
+calls=303 562 
+* 2727
+* 1212
+cob=(5)
+cfi=(5)
+cfn=(4658)
+calls=303 0 
+* 48177
++1 1212
+cfi=(28)
+cfn=(4652)
+calls=303 562 
+* 2727
+* 1212
+cfi=(24)
+cfn=(3710)
+calls=303 509 
+* 72041
++1 909
+cob=(5)
+cfi=(5)
+cfn=(4364)
+calls=303 0 
+* 53631
+* 303
++2 918
+cfi=(33)
+cfn=(4542)
+calls=306 2188 
+* 24168
+* 612
++15 918
+cfi=(33)
+cfn=(4542)
+calls=306 2188 
+* 24780
+* 612
++16 918
+cfi=(33)
+cfn=(4542)
+calls=306 2188 
+* 31173
+* 612
++2 606
+cfi=(22)
+cfn=(4676)
+calls=303 -91 
+* 5757
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 582
++1 909
+cfi=(25)
+cfn=(3822)
+calls=303 691 
+* 506071
++1 606
++2 9
+cfi=(33)
+cfn=(4542)
+calls=3 2188 
+* 300
+* 12
++4 1218
+-69 1224
+cob=(5)
+cfi=(5)
+cfn=(4606)
+calls=612 -99 
+* 136496
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 -99 
+* 1808
+* 1224
++67 1836
+cob=(5)
+cfi=(5)
+cfn=(4364)
+calls=612 0 
+* 240525
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 2224
+-67 3672
+cob=(5)
+cfi=(5)
+cfn=(4482)
+calls=612 -99 
+* 2448
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 -99 
+* 1656
+* 2448
++71 6
+cob=(5)
+cfi=(5)
+cfn=(4754)
+calls=3 0 
+* 309
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 1072
+* 9
+cob=(5)
+cfi=(5)
+cfn=(4754)
+calls=3 0 
+* 309
+* 9
+cfi=(28)
+cfn=(4760) std::vector<char, std::allocator<char> >::~vector()
+calls=3 299 
+* 7667
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 695
+* 6
+cfi=(28)
+cfn=(4760)
+calls=3 299 
+* 672
++1 15
+
+fn=(3994)
+188 24
++2 6
+cfi=(26)
+cfn=(4000)
+calls=3 370 
+* 21
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 619
+* 12
+cfi=(25)
+cfn=(4006) ksLookupByName
+calls=3 1545 
+* 10589
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 592
+* 6
+cfi=(24)
+cfn=(4058)
+calls=3 +12 
+* 72
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 555
+* 12
+cob=(5)
+cfi=(5)
+cfn=(4064)
+calls=3 0 
+* 25347
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 1984
++1 6
+cob=(5)
+cfi=(5)
+cfn=(4234)
+calls=3 0 
+* 24
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 1768
+* 9
++1 9
+cfn=(4240)
+calls=3 87 
+* 3852603
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 843
++2 6
+cfi=(25)
+cfn=(4824)
+calls=3 577 
+* 33
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 555
+* 12
+cob=(5)
+cfi=(5)
+cfn=(4830)
+calls=3 0 
+* 11333
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 1680
+* 3
++1 15
+
+fn=(2984)
+222 5
+cfn=(2986) __static_initialization_and_destruction_0(int, int)
+calls=1 * 
+* 96675
+* 2
+
+fn=(3882)
+178 3
++2 1
++1 2
+
+fn=(5284) dump::serialize(std::ostream&, ckdb::_KeySet*)
+21 1400
++4 400
+cfi=(25)
+cfn=(4824)
+calls=200 577 
+* 2200
+* 800
+cob=(5)
+cfi=(5)
+cfn=(5290)
+calls=200 -25 
+* 63833
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 -25 
+* 1808
+* 600
+cob=(5)
+cfi=(5)
+cfn=(5318)
+calls=200 -25 
+* 76713
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 -25 
+* 1098
+* 600
+cob=(5)
+cfi=(5)
+cfn=(5346)
+calls=200 -25 
+* 56168
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 -25 
+* 1210
++2 600
+cfi=(25)
+cfn=(3798)
+calls=200 162 
+* 76224
+* 200
++2 400
+cfi=(25)
+cfn=(3816)
+calls=200 991 
+* 2600
+* 200
++3 40400
+cfi=(21)
+cfn=(5238)
+calls=20200 148 
+* 303000
+* 20200
++1 40400
+cfi=(24)
+cfn=(3716)
+calls=20200 255 
+* 323200
+* 20200
++2 60600
+cob=(5)
+cfi=(5)
+cfn=(5290)
+calls=20200 -35 
+* 4827800
+* 60600
+cob=(5)
+cfi=(5)
+cfn=(5396)
+calls=20200 -35 
+* 6708953
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 -35 
+* 1140
+* 60600
+cob=(5)
+cfi=(5)
+cfn=(5290)
+calls=20200 -35 
+* 4262200
+* 60600
+cob=(5)
+cfi=(5)
+cfn=(5396)
+calls=20200 -35 
+* 6443800
+* 60600
+cob=(5)
+cfi=(5)
+cfn=(5346)
+calls=20200 -35 
+* 5191400
++1 60600
+cfi=(21)
+cfn=(3842)
+calls=20200 +85 
+* 303000
+* 80800
+cob=(5)
+cfi=(5)
+cfn=(5416)
+calls=20200 -36 
+* 3457920
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 -36 
+* 1208
++1 60600
+cfi=(24)
+cfn=(4942)
+calls=20200 174 
+* 323200
+* 80800
+cob=(5)
+cfi=(5)
+cfn=(5416)
+calls=20200 -37 
+* 3191600
++1 60600
+cob=(5)
+cfi=(5)
+cfn=(5346)
+calls=20200 -38 
+* 5191400
++3 40400
+cfi=(23)
+cfn=(5422)
+calls=20200 +96 
+* 303000
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 -41 
+* 583
+* 20200
++1 40400
+cfi=(23)
+cfn=(5428)
+calls=20200 170 
+* 303000
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 -42 
+* 565
+* 101000
++38 60600
+cob=(5)
+cfi=(5)
+cfn=(5290)
+calls=20200 -80 
+* 4787400
+* 60600
+cob=(5)
+cfi=(5)
+cfn=(5346)
+calls=20200 -80 
+* 5191400
+-50 40800
+cfi=(25)
+cfn=(3930)
+calls=20400 1021 
+* 794600
+* 102000
++52 600
+cob=(5)
+cfi=(5)
+cfn=(5290)
+calls=200 -82 
+* 47000
+* 600
+cob=(5)
+cfi=(5)
+cfn=(5346)
+calls=200 -82 
+* 51400
++2 400
+cfi=(25)
+cfn=(3918)
+calls=200 309 
+* 58000
++1 1000
+
+fn=(2986)
+222 9
+fi=(9) /usr/include/c++/4.3/iostream
+77 2
+cob=(5)
+cfi=(5)
+cfn=(2996)
+calls=1 -77 
+* 94300
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 -77 
+* 1299
+* 5
+cob=(2)
+cfi=(2)
+cfn=(2896)
+calls=1 -77 
+* 61
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 -77 
+* 997
+fe=(8)
+222 2
+
+fn=(5554)
+183 3
++2 1
++1 2
+
+fn=(5264)
+197 1600
++2 600
+cfi=(32)
+cfn=(4488)
+calls=200 -74 
+* 1800
+* 600
+cfi=(26)
+cfn=(4000)
+calls=200 370 
+* 1400
+* 800
+cfi=(25)
+cfn=(4006)
+calls=200 1545 
+* 430249
+* 400
+cfi=(24)
+cfn=(4058)
+calls=200 +3 
+* 4800
+* 800
+cob=(5)
+cfi=(5)
+cfn=(5270)
+calls=200 0 
+* 568868
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 1968
++1 400
+cob=(5)
+cfi=(5)
+cfn=(5278)
+calls=200 0 
+* 1600
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 1776
+* 600
++1 600
+cfn=(5284)
+calls=200 21 
+* 53590023
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 816
++2 400
+cfi=(25)
+cfn=(4824)
+calls=200 577 
+* 2200
+* 800
+cob=(5)
+cfi=(5)
+cfn=(5434)
+calls=200 0 
+* 166700
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 1664
+* 200
++1 1000
+
+fn=(3874)
+206 3
++13 33
+cfi=(26)
+cfn=(3880)
+calls=1 +77 
+* 708
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 574
++1 2
 
 fl=(6)
-fn=(4398)
-109 1
+fn=(2966)
+25 1
 +1 1
+cfn=(2968) 0x0000000000007BD0
+calls=1 -15 
+* 6
+-26 1
+fi=(7)
+cfi=(7)
+cfn=(2974)
+calls=1 0 
+0 6
+0 1
+fi=(7)
+cfi=(7)
+cfn=(2980)
+calls=1 0 
+0 96700
+fi=(10) /home/aurel32/glibc/glibc-2.7/build-tree/amd64-libc/csu/crtn.S
+9 1
++1 1
+fe=(6)
+
+fn=(5688)
+37 1
+-37 1
+fi=(7)
+cfi=(7)
+cfn=(5690)
+calls=1 0 
+0 3788
+fi=(10)
+16 1
++1 1
+fe=(6)
+
+fn=(2968)
+11 1
 +1 1
 +1 1
 +1 1
 +3 1
-0 1
-fi=(3)
-cfi=(3)
-cfn=(4400)
++1 1
+
+fl=(18)
+fn=(5546)
+211 4
++1 1
++2 2
++2 3
+cfi=(24)
+cfn=(4058)
+calls=1 -14 
+* 24
+* 3
+cob=(2)
+cfi=(2)
+cfn=(3848)
+calls=1 0 
+* 58
+* 2
++3 3
+cfi=(19)
+cfn=(3740)
+calls=1 563 
+* 325
++1 3
+cfi=(26)
+cfn=(5552)
+calls=1 +38 
+* 1988
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 565
++1 2
+cfi=(17)
+cfn=(3776)
+calls=1 +51 
+* 119
++1 2
++11 1
++1 2
+
+fn=(3600)
+190 4
++1 2
+cfi=(17)
+cfn=(3444)
+calls=1 +69 
+* 265
+* 1
++6 6
+cfi=(19)
+cfn=(3608)
+calls=1 +57 
+* 20301
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 528
+* 7
+cfi=(19)
+cfn=(3608)
+calls=1 +57 
+* 4688
+* 6
+cfi=(25)
+cfn=(3798)
+calls=1 -35 
+* 5547
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 511
+* 1
++1 3
+cfi=(26)
+cfn=(3854)
+calls=1 -20 
+* 4120
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 556
+* 1
++1 6
+cfi=(19)
+cfn=(3608)
+calls=1 +55 
+* 1719
+* 1
++2 3
++1 3
++2 3
++3 1
++1 4
+
+fl=(28)
+fn=(4252)
+234 42
++1 24
+cfn=(4258) std::_Vector_base<char, std::allocator<char> >::_Vector_base(unsigned long, std::allocator<char> const&)
+calls=6 114 
+* 7770
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 795
++1 24
+cfn=(4298) std::vector<char, std::allocator<char> >::_M_fill_initialize(unsigned long, char const&)
+calls=6 974 
+* 13179
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 876
+* 12
+
+fn=(4784) std::_Vector_base<char, std::allocator<char> >::_M_deallocate(char*, unsigned long)
+147 36
++2 12
++1 30
+cfi=(29)
+cfn=(4790)
+calls=6 -53 
+* 1825
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 894
++1 12
+
+fn=(4778) std::_Vector_base<char, std::allocator<char> >::~_Vector_base()
+135 24
++1 78
+cfn=(4784)
+calls=6 +11 
+* 2809
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 885
+* 12
+cfn=(4802) std::_Vector_base<char, std::allocator<char> >::_Vector_impl::~_Vector_impl()
+calls=6 -57 
+* 1174
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 876
++1 12
+
+fn=(4802)
+79 36
+cob=(5)
+cfi=(5)
+cfn=(4352)
+calls=6 -79 
+* 6
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 -79 
+* 1120
+* 12
+
+fn=(4298)
+974 36
++2 12
+cfn=(4304) std::_Vector_base<char, std::allocator<char> >::_M_get_Tp_allocator()
+calls=6 97 
+* 36
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 929
+* 36
+cfi=(30)
+cfn=(4310)
+calls=6 322 
+* 11119
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 975
++2 24
++1 12
+
+fn=(4304)
+97 36
++1 36
+
+fn=(4264) std::_Vector_base<char, std::allocator<char> >::_Vector_impl::_Vector_impl(std::allocator<char> const&)
+88 30
++1 18
+cob=(5)
+cfi=(5)
+cfn=(4270)
+calls=6 -89 
+* 6
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 -89 
+* 1168
+* 36
++1 12
+
+fn=(4646)
+484 1818
++1 6060
+
+fn=(4652)
+562 6060
++1 7575
+
+fn=(4760)
+299 24
++1 12
+cfn=(4304)
+calls=6 97 
+* 36
+* 36
+cfi=(34)
+cfn=(4766)
+calls=6 126 
+* 804
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 783
+* 12
+cfn=(4778)
+calls=6 135 
+* 5870
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 750
++1 12
+
+fn=(4258)
+114 48
++1 18
+cfn=(4264)
+calls=6 -27 
+* 1270
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 920
++2 18
+cfn=(4276) std::_Vector_base<char, std::allocator<char> >::_M_allocate(unsigned long)
+calls=6 +26 
+* 4531
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 857
+* 18
++1 24
++1 36
++1 30
+
+fn=(4276)
+143 30
++1 42
+cfi=(29)
+cfn=(4282)
+calls=6 -57 
+* 3553
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 876
+* 30
+
+fl=(25)
+fn=(3804) ksVNew
+174 2065
++1 413
++1 413
++2 826
+cfi=(17)
+cfn=(3734)
+calls=413 +70 
+* 66409
+* 413
++1 826
++5 826
+cfn=(3810) ksInit
+calls=413 1926 
+* 12944
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 528
++2 413
++1 1456
++1 609
++2 812
+cfi=(17)
+cfn=(3734)
+calls=203 +58 
+* 56637
+* 840
+cfi=(17)
+cfn=(3734)
+calls=210 +58 
+* 37626
+* 1239
++1 1652
++5 1239
++3 826
++1 4305
++2 6
+cfn=(3822)
+calls=2 691 
+* 2920
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 589
++1 40
+-2 414
++7 1239
++1 826
+
+fn=(3836)
+375 1203740
++1 722244
++1 722244
++1 481496
+cfi=(21)
+cfn=(3842)
+calls=240748 121 
+* 3611220
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 529
+* 240748
++1 481496
+cfi=(21)
+cfn=(3842)
+calls=240748 121 
+* 3611220
+* 240748
++1 722244
+cob=(2)
+cfi=(2)
+cfn=(3848)
+calls=240748 0 
+* 39836041
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 909
+* 240748
++3 481496
++10 722244
++1 481496
+
+fn=(4034) ksLookup
+1402 1428
++3 204
++1 204
++3 408
++2 408
+cfn=(4040) ksGetCursor
+calls=204 1181 
+* 3058
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 565
+* 204
++2 612
++2 816
++21 816
++3 816
++3 816
++4 2856
+cob=(2)
+cfi=(2)
+cfn=(2634)
+calls=204 0 
+* 33016
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 943
+* 204
++2 816
++1 408
++2 812
++19 1624
++1 609
+cfn=(4052) ksSetCursor
+calls=203 1223 
+* 5075
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 565
++1 812
++4 3
+cfn=(4052)
+calls=1 1223 
+* 29
++1 2
++3 4
+-3 203
++3 812
+
+fn=(4682) ksResize
+1853 230
++1 92
++2 46
++1 184
++1 184
++1 92
++2 84
++1 42
++3 100
++16 75
++3 150
+cfi=(17)
+cfn=(4688)
+calls=25 213 
+* 35373
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 573
+* 50
++11 50
++1 50
+-1 21
++1 42
+
+fn=(3798)
+162 7847
++4 2876
++1 615
+cfn=(3804)
+calls=205 +7 
+* 125317
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 520
+* 624
+cfn=(3804)
+calls=208 +7 
+* 74034
+* 413
++1 413
++2 413
++1 826
+
+fn=(3822)
+691 155045
++1 31009
++2 62018
++1 62018
++1 124036
++6 93027
+cfn=(3828) ksSearchInternal
+calls=31009 -88 
+* 61799197
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 610
+* 31009
++2 62018
++15 93027
++4 155045
++1 186150
+cfn=(4682)
+calls=16 1853 
+* 34204
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 546
++1 62018
+cfi=(19)
+cfn=(3834)
+calls=31009 -79 
+* 682198
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 547
++2 155045
++3 273377
++1 168232
++2 69860
++1 149700
+cob=(2)
+cfi=(2)
+cfn=(4948)
+calls=9980 0 
+* 12256618
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 917
++5 69860
++4 39920
++1 19960
+-1 84116
++1 42058
+
+fn=(3924) ksClose
+1947 1664
++3 832
+cfn=(3816)
+calls=416 991 
+* 5408
+* 416
++3 61412
+cfi=(19)
+cfn=(4904)
+calls=30706 679 
+* 644826
++1 61412
+cfi=(19)
+cfn=(3740)
+calls=30706 563 
+* 4600762
+-3 62244
+cfn=(3930)
+calls=31122 1021 
+* 1207478
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 528
+* 93366
++6 2912
+cfi=(17)
+cfn=(3776)
+calls=416 272 
+* 1177977
++1 832
++1 832
++2 832
++2 416
++1 832
+
+fn=(3930)
+1021 1746090
++1 1164060
++2 2328540
++1 3490920
++5 5209325
++1 7493317
++1 1152818
+-1 70343
++1 10822
+-1 210
++1 420
+
+fn=(4046)
+1243 1050
++1 630
++1 630
++1 420
+cfi=(21)
+cfn=(3842)
+calls=210 121 
+* 3150
+* 210
++1 420
+cfi=(21)
+cfn=(3842)
+calls=210 121 
+* 3150
+* 210
++2 630
+cob=(2)
+cfi=(2)
+cfn=(3848)
+calls=210 0 
+* 14665
++1 420
+
+fn=(4824)
+577 1812
++1 1208
++2 2416
++1 1208
+
+fn=(3906)
+947 1236
++1 309
++2 618
++2 1854
++2 1248
++2 1515
++1 2604
+cfn=(4682)
+calls=30 1853 
+* 3234
++1 2424
++1 2121
++1 606
+cfi=(19)
+cfn=(4904)
+calls=303 679 
+* 6363
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 547
++2 909
++1 606
+-1 6
++1 12
+
+fn=(5484) ksSort
+533 4
++1 2
++2 4
++2 7
+cob=(2)
+cfi=(2)
+cfn=(5490)
+calls=1 0 
+* 90468
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 877
++1 2
+
+fn=(3810)
+1926 1652
++1 826
++2 826
++1 826
++1 826
++2 826
+cfn=(3816)
+calls=413 991 
+* 5369
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 554
++2 413
++1 826
+
+fn=(3918)
+309 1652
++3 826
++2 826
+cfn=(3924)
+calls=413 1947 
+* 7924459
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 529
+* 413
++1 826
+cfi=(17)
+cfn=(3776)
+calls=413 -43 
+* 36757
++2 1239
++1 826
+
+fn=(4040)
+1181 612
++1 408
++2 820
++1 808
++1 404
+-1 2
++1 4
+
+fn=(3816)
+991 18729
++1 12486
++2 12486
++1 12486
++1 12486
++1 12486
+
+fn=(3828)
+614 155045
++1 31009
++1 124036
++1 31009
++1 31009
++1 31009
++11 814314
++5 2644719
++1 1683003
+cfn=(3836)
+calls=240429 375 
+* 53725472
+* 240429
++1 480858
++2 1185684
++1 85630
++5 85630
++1 171260
++10 62018
++4 155045
++2 62018
+
+fn=(3912)
+766 15
++1 3
++1 3
++1 3
++2 6
++1 6
++2 9
++1 9
++2 24
++8 3
++1 6
+
+fn=(4006)
+1545 1224
++1 204
++1 204
++1 204
++2 408
++1 408
++2 816
++2 816
++3 406
+cob=(2)
+cfi=(2)
+cfn=(3150)
+calls=203 0 
+* 7105
+* 406
+cfi=(17)
+cfn=(3734)
+calls=203 248 
+* 21893
+* 203
++1 406
++5 1015
+cob=(2)
+cfi=(2)
+cfn=(3686)
+calls=203 0 
+* 3654
++1 812
+cob=(2)
+cfi=(2)
+cfn=(4028)
+calls=203 0 
+* 10556
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 909
++1 1015
+cfi=(19)
+cfn=(3608)
+calls=203 254 
+* 241447
+* 203
++1 812
+cfn=(4034)
+calls=203 1402 
+* 58506
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 546
+* 203
++1 406
+cfi=(19)
+cfn=(3740)
+calls=203 563 
+* 65975
++2 406
++8 406
+cfi=(17)
+cfn=(3776)
+calls=203 272 
+* 18067
++1 609
++2 4
+cfi=(19)
+cfn=(3608)
+calls=1 254 
+* 2820
+* 1
++1 2
++1 4
+cfn=(4034)
+calls=1 1402 
+* 642
+* 1
++1 2
+cfi=(19)
+cfn=(3740)
+calls=1 563 
+* 325
++1 3
++2 2
+-2 203
++2 406
+
+fn=(4052)
+1223 1020
++1 408
++2 408
++2 2
+cfn=(3816)
+calls=1 991 
+* 13
++1 2
++2 609
++1 1827
++1 406
++1 406
+-1 1
++1 2
+
+fn=(4592)
+333 12
++1 6
+cfn=(3924)
+calls=3 1947 
+* 522
++2 12
++11 6
+cfi=(17)
+cfn=(3734)
+calls=3 -99 
+* 480
+* 21
++7 6
++3 6
++1 6
+
+fl=(33)
+fn=(4542)
+2188 10710
++1 6426
+cob=(5)
+cfi=(5)
+cfn=(4548)
+calls=2142 0 
+* 160939
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 1232
+* 8568
+
+fl=(16)
+fn=(3438)
+13 2
++1 1
++1 2
+
+fn=(3866)
+18 4
++2 3
++4 8
+cob=(2)
+cfi=(2)
+cfn=(3848)
+calls=1 -24 
+* 135
+* 2
++2 1
++1 3
+-6 4
++12 1
++1 2
+
+fn=(5560)
+53 3
++1 1
++1 2
+
+fn=(3872)
+37 5
++3 3
++3 4
+cob=(2)
+cfi=(2)
+cfn=(3848)
+calls=1 -43 
+* 121
+* 2
++1 4
+-2 4
++7 1
++1 2
+
+fl=(27)
+fn=(3900)
+49 103035
++1 20607
++1 20607
++1 20607
++2 82428
++10 20607
++1 41214
+
+fn=(5046) trieClose
+135 4
++2 4
++12 1
++1 2
+
+fn=(5038)
+75 4
++1 1
++4 2
+cfi=(25)
+cfn=(3816)
+calls=1 991 
+* 13
++1 4
+cfi=(25)
+cfn=(4006)
+calls=1 1545 
+* 3827
+* 1
++2 2
++46 2
+cfn=(5046)
+calls=1 +6 
+* 11
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 579
++1 2
+cfi=(25)
+cfn=(3918)
+calls=1 309 
+* 48600
++1 2
++1 2
+
+ob=(7)
+fl=(12)
+fn=(5670)
+37 1
+-37 1
+fi=(11)
+cfi=(11)
+cfn=(5672) 0x0000000000400E20
 calls=1 0 
 0 18
-fi=(5)
-46 1
+fi=(13) /home/aurel32/glibc/glibc-2.7/build-tree/amd64-libc/csu/crtn.S
+16 1
 +1 1
-+1 1
-+1 1
-fe=(6)
+fe=(12)
 
-totals: 41250872787
+fn=(3396) 0x0000000000400C98
+25 1
++1 1
+cfn=(3398) 0x0000000000400DFC
+calls=1 -15 
+* 6
+-26 1
+fi=(11)
+cfi=(11)
+cfn=(3404) 0x0000000000400E90
+calls=1 0 
+0 6
+0 1
+fi=(11)
+cfi=(11)
+cfn=(3410) 0x0000000000401660
+calls=1 0 
+0 11
+fi=(13)
+9 1
++1 1
+fe=(12)
+
+fn=(3398)
+11 1
++1 1
++1 1
++1 1
++3 1
++1 1
+
+fl=(14)
+fn=(5468) marker
+29 4
++3 2
+cob=(6)
+cfi=(25)
+cfn=(3816)
+calls=1 991 
+* 13
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 -32 
+* 625
+* 1
++1 202
+cfn=(5478) keyRemove
+calls=101 -9 
+* 1111
+* 204
+cob=(6)
+cfi=(25)
+cfn=(3930)
+calls=102 1021 
+* 3973
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 -33 
+* 585
+* 306
++1 2
+cob=(6)
+cfi=(25)
+cfn=(5484)
+calls=1 533 
+* 91364
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 -34 
+* 585
+* 2
+cob=(6)
+cfi=(25)
+cfn=(3816)
+calls=1 991 
+* 13
++2 1
++1 2
+
+fn=(5518) doNothing
+40 2525505
+
+fn=(5520) xiter
+53 4
++4 2
++2 10000
+cob=(6)
+cfi=(25)
+cfn=(3816)
+calls=5000 991 
+* 65000
+* 5000
++1 1010000
+cfn=(5518)
+calls=505000 -20 
+* 2525000
+* 1020000
+cob=(6)
+cfi=(25)
+cfn=(3930)
+calls=510000 1021 
+* 19865000
+* 1530000
+-3 15002
++6 1
++1 2
+
+fn=(3424)
+67 3
++1 1
+cob=(6)
+cfi=(15)
+cfn=(3432)
+calls=1 194 
+* 1779057
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 -68 
+* 593
+* 1
++1 4
+cob=(6)
+cfi=(25)
+cfn=(3798)
+calls=1 +93 
+* 10965
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 -69 
+* 561
+* 1
++1 4
+cob=(6)
+cfi=(25)
+cfn=(3798)
+calls=1 +92 
+* 726
+* 1
++1 4
+cob=(6)
+cfi=(25)
+cfn=(3798)
+calls=1 +91 
+* 463
+* 1
++1 3
+cob=(6)
+cfi=(25)
+cfn=(3798)
+calls=1 +90 
+* 431
+* 1
++1 6
+cob=(6)
+cfi=(19)
+cfn=(3608)
+calls=1 254 
+* 2839
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 -73 
+* 585
+* 1
++2 1
+cfi=(35) /home/markus/Projekte/Elektra/current/benchmarks/benchmarks.c
+cfn=(5090) init_time
+calls=1 -65 
+* 1013
++5 5
+cfn=(5100) creator
+calls=1 -76 
+* 90951216
+* 2
++1 2
+cfi=(35)
+cfn=(5170) print_time
+calls=1 -66 
+* 2745
++2 8
+cob=(6)
+cfi=(15)
+cfn=(5198)
+calls=1 683 
+* 279095088
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 -83 
+* 585
+* 2
++1 2
+cfi=(35)
+cfn=(5170)
+calls=1 -69 
+* 1641
++2 8
+cob=(6)
+cfi=(15)
+cfn=(5198)
+calls=1 683 
+* 279082284
+* 2
++1 2
+cfi=(35)
+cfn=(5170)
+calls=1 -72 
+* 1651
++2 8
+cob=(6)
+cfi=(15)
+cfn=(3888)
+calls=1 434 
+* 1500779
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 -89 
+* 585
+* 2
++1 2
+cfi=(35)
+cfn=(5170)
+calls=1 -75 
+* 1612
++2 8
+cob=(6)
+cfi=(15)
+cfn=(3888)
+calls=1 434 
+* 1499894
+* 2
++1 2
+cfi=(35)
+cfn=(5170)
+calls=1 -78 
+* 1612
++2 5
+cfn=(5468)
+calls=1 -66 
+* 98995
+* 2
++1 2
+cfi=(35)
+cfn=(5170)
+calls=1 -81 
+* 1578
++2 5
+cfn=(5516) iterator
+calls=1 -55 
+* 5213
+* 2
++1 2
+cfi=(35)
+cfn=(5170)
+calls=1 -84 
+* 1494
++2 5
+cfn=(5520)
+calls=1 -48 
+* 26045011
+* 2
++1 2
+cfi=(35)
+cfn=(5170)
+calls=1 -87 
+* 1625
++2 8
+cob=(6)
+cfi=(15)
+cfn=(5198)
+calls=1 683 
+* 225479
+* 2
++1 2
+cfi=(35)
+cfn=(5170)
+calls=1 -90 
+* 1500
++2 2
+cob=(6)
+cfi=(19)
+cfn=(3740)
+calls=1 563 
+* 409
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 603
++1 2
+cob=(6)
+cfi=(25)
+cfn=(3918)
+calls=1 309 
+* 4828036
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 569
++1 2
+cob=(6)
+cfi=(25)
+cfn=(3918)
+calls=1 309 
+* 1149397
++1 2
+cob=(6)
+cfi=(25)
+cfn=(3918)
+calls=1 309 
+* 61413
++1 2
+cob=(6)
+cfi=(25)
+cfn=(3918)
+calls=1 309 
+* 444
++1 2
+cob=(6)
+cfi=(15)
+cfn=(5540)
+calls=1 264 
+* 3789
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+* 609
++1 1
++1 2
+
+fn=(5100)
+4 4
++3 2
++2 2
++2 900
+cob=(2)
+cfi=(2)
+cfn=(5106)
+calls=100 -11 
+* 114427
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 -11 
+* 930
++1 600
+cob=(6)
+cfi=(19)
+cfn=(3608)
+calls=100 254 
+* 285052
+* 300
+cob=(6)
+cfi=(25)
+cfn=(3822)
+calls=100 691 
+* 398645
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 -12 
+* 681
++1 200
++2 120000
+cob=(2)
+cfi=(2)
+cfn=(5106)
+calls=10000 -15 
+* 16875400
++1 60000
+cob=(6)
+cfi=(19)
+cfn=(3608)
+calls=10000 254 
+* 30781581
+* 30000
+cob=(6)
+cfi=(25)
+cfn=(3822)
+calls=10000 691 
+* 42251987
+-3 30200
+-4 302
++11 1
++1 2
+
+fn=(5478)
+24 303
++1 606
++1 202
+
+fn=(5516)
+43 4
++3 2
+cob=(6)
+cfi=(25)
+cfn=(3816)
+calls=1 991 
+* 13
+* 1
++1 202
+cfn=(5518)
+calls=101 -7 
+* 505
+* 204
+cob=(6)
+cfi=(25)
+cfn=(3930)
+calls=102 1021 
+* 3973
+* 306
++2 1
++1 2
+
+fl=(11)
+fn=(3384)
+0 11
+cob=(2)
+cfi=(2)
+cfn=(3392)
+calls=1 0 
+0 686372988
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 0 
+0 1069
+
+fn=(3410)
+0 11
+
+fn=(3404)
+0 6
+
+fn=(3394)
+0 15
+cfi=(12)
+cfn=(3396)
+calls=1 25 
+0 29
+0 10
+
+fn=(5672)
+0 18
+
+fl=(35)
+fn=(5090)
+10 2
++1 3
+cob=(2)
+cfi=(2)
+cfn=(5096)
+calls=1 -11 
+* 12
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 -11 
+* 994
++1 2
+
+fn=(5170)
+15 45
++4 27
+cob=(2)
+cfi=(2)
+cfn=(5096)
+calls=9 -19 
+* 108
++2 117
++1 63
+cob=(2)
+cfi=(2)
+cfn=(5176)
+calls=9 -22 
+* 14018
+cob=(1)
+cfi=(1)
+cfn=(2872)
+calls=1 -22 
+* 909
++2 27
+cob=(2)
+cfi=(2)
+cfn=(5096)
+calls=9 -24 
+* 108
++1 36
+
+ob=(8)
+fl=(36)
+fn=(5098)
+161 19
++1 19
++1 19
+
+totals: 687872324
