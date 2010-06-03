@@ -1,0 +1,9 @@
+The costs of
+ksIndex: 495 525
+ksNext : 516 398
+
+are nearly the same
+
+so for just iterating it does not justify to introduce
+an index.
+And index would be terrible slow on trees...
