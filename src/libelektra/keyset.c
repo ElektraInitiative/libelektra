@@ -971,7 +971,7 @@ Key *ksPop(KeySet *ks)
 Key * ksIndex (KeySet *ks, size_t index)
 {
 	if (!ks) return 0;
-	if (index < SSIZE_MAX) return 0;
+	if (index > SSIZE_MAX) return 0;
 
 	return ks->array[index];
 }
