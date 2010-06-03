@@ -22,8 +22,7 @@ int creator (KeySet *large)
 
 void doSomething(Key *k)
 {
-	keyIncRef (k);
-	keyDecRef (k);
+	keySetMeta(k, "mark", "1");
 }
 
 int internal_iterator (KeySet *ks)

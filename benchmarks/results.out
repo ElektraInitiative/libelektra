@@ -1,3 +1,11 @@
-inc + dec of key makes nearly no difference too
-(would be overhead of C++ implementation with
- auto-free)
+With something a little bit more complex like
+keySetMeta it does not matter anymore which
+iterator is used.
+
+costs:
+external: 16.487.208
+internal: 15.135.214
+
+making the external even slightly more expensive,
+because there the keys already have meta data
+(next benchmark reverse)
