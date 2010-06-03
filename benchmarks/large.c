@@ -16,6 +16,13 @@ int creator (KeySet *large)
 			ksAppendKey(large, keyNew (name, KEY_VALUE, value, KEY_END));
 		}
 	}
+
+	return 0;
+}
+
+void keyRemove (Key *key)
+{
+	key->flags |= 64;
 }
 
 int marker (KeySet *ks2)
@@ -23,7 +30,7 @@ int marker (KeySet *ks2)
 	Key * k;
 
 	ksRewind (ks2);
-	while ((k = ksNext(ks2)) != 0) keyRemove (k);
+	while ((k = ksNext(ks2)) != 0) keyRemove(k);
 	ksSort (ks2); ksRewind (ks2);
 
 	return 1;

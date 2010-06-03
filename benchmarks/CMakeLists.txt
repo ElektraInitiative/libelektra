@@ -1,0 +1,30 @@
+include (LibAddMacros)
+
+add_headers (HDR_FILES)
+
+macro (do_benchmark source)
+	include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
+	set (SOURCES ${HDR_FILES} benchmarks.c benchmarks.h ${source}.c)
+	add_executable (${source} ${SOURCES})
+
+	if (BUILD_FULL)
+		target_link_libraries (${source} elektra-full)
+	else (BUILD_FULL)
+		target_link_libraries (${source} elektra-static)
+	endif (BUILD_FULL)
+
+	set_target_properties (${source} PROPERTIES
+			COMPILE_DEFINITIONS HAVE_CONFIG_H)
+
+	get_target_property (command ${source} LOCATION)
+
+	add_custom_target (benchmark
+		"rm callgrind.out strace.out"
+		COMMAND "strace -o strace.out ${command}"
+		COMMAND "valgrind --tool=callgrind --callgrind-out-file=callgrind.out ${command}"
+		WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+		)
+endmacro (do_benchmark)
+
+do_benchmark (large)
+

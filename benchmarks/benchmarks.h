@@ -2,6 +2,7 @@
 #define BENCHMARKS_H
 
 #include <kdb.h>
+#include <kdbinternal.h>
 
 #include <string.h>
 #include <stdio.h>
@@ -9,10 +10,6 @@
 #include <stdlib.h>
 
 #include <time.h>
-
-#include <pthread.h>
-#include <semaphore.h>
-
 
 #define KEY_ROOT "user/benchmark"
 #define ROOT_KEY "user/benchmark"
@@ -33,10 +30,6 @@
 
 extern int nbTest;
 extern int nbError;
-extern struct timeval start;
-extern pthread_t preader[NUM_THREAD];
-extern pthread_t pwriter [NUM_THREAD];
-extern pthread_t premover [NUM_THREAD];
 
 
 #define succeed_if(x,y) nbTest++; if (!(x)) { nbError++; printf("%s:%d: error in %s: %s\n", __FILE__, __LINE__, __FUNCTION__, y);}
