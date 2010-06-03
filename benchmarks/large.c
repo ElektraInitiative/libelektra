@@ -22,6 +22,7 @@ int creator (KeySet *large)
 
 void doSomething(Key *k)
 {
+	k->flags |= 64;
 }
 
 int internal_iterator (KeySet *ks)
