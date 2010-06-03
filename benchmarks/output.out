@@ -1,3 +1,4 @@
-    New large keyset:              5014467 Microseconds
-   External Iterator:               544896 Microseconds
-   Internal Iterator:               747897 Microseconds
+    New large keyset:              3652983 Microseconds
+Direct External Iterator:                15152 Microseconds
+   External Iterator:                20167 Microseconds
+   Internal Iterator:                17599 Microseconds
