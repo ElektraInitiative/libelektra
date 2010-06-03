@@ -1,2 +1,3 @@
-marking keysets make nearly no difference
-Costs of iterating dominates
+inc + dec of key makes nearly no difference too
+(would be overhead of C++ implementation with
+ auto-free)
