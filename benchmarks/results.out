@@ -1,3 +1,5 @@
-direct_external_iterator 283 457
-external iterator        384 452
-internal iterator        516 398
+now with null ptr check we have:
+
+direct:   283 457
+external: 455 125
+internal: 516 398
