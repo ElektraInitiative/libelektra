@@ -53,7 +53,7 @@ bool MountCommand::checkFile(std::string path)
 	return f.is_open();
 }
 
-KeySet MountCommand::addPlugins(std::string name, std::string which)
+KeySet MountCommand::addPlugins(std::string name, KeySet& referencePlugins, std::string which)
 {
 	KeySet ret;
 	vector <string> alreadyProvided;
@@ -73,27 +73,46 @@ KeySet MountCommand::addPlugins(std::string name, std::string which)
 		cin >> pluginName;
 		if (pluginName == ".") break;
 
-		cout << "Enter a path to a file in the filesystem." << endl;
-		cout << ". for no path (use global one)" << endl;
-		cout << "Path: ";
-		std::string path;
-		cin >> path;
-		if (path != "." && !checkFile(path))
-		{
-			cerr << "Warning: Could not open path, will continue with no path" << endl;
-			path = ".";
-		}
-
-		KeySet testConfig(1,
-			*Key(	"system/path",
-				KEY_VALUE, path.c_str(),
-				KEY_COMMENT, "Test config for loading a plugin.",
-				KEY_END),
-			KS_END);
 		bool isStoragePlugin = false;
 
 		try {
-			Plugin plugin (pluginName, testConfig);
+			int nr;
+			char *cPluginName = 0;
+			char *cReferenceName = 0;
+			Key k(std::string("system/elektra/key/#0") + pluginName);
+			if (ckdb::elektraProcessPlugin (*k, &nr, &cPluginName, &cReferenceName) == -1) throw BadPluginName();
+
+			std::string realPluginName;
+			if (cPluginName)
+			{
+				realPluginName = cPluginName;
+				cout << "# seems like there is a pluginName: " << realPluginName << endl;
+
+				if (cReferenceName)
+				{
+					std::string referenceName = cReferenceName;
+					cout << "# and a reference name too: " << referenceName << endl;
+					if (referenceName.find('#') != string::npos) throw BadPluginName();
+
+					referencePlugins.append(Key(cReferenceName, KEY_VALUE, cPluginName, KEY_END));
+				}
+			} else {
+				cout << "# backreference: " << cReferenceName << endl;
+				Key lookup = referencePlugins.lookup(cReferenceName);
+				if (!lookup) throw ReferenceNotFound();
+				realPluginName = lookup.getString();
+			}
+
+			if (realPluginName.find('#') != string::npos) throw BadPluginName();
+
+
+			KeySet testConfig(1,
+				*Key(	"system/test",
+					KEY_VALUE, "test",
+					KEY_COMMENT, "Test config for loading a plugin.",
+					KEY_END),
+				KS_END);
+			Plugin plugin (realPluginName, testConfig);
 			if (!plugin) throw NoPlugin();
 
 			std::string provide;
@@ -182,22 +201,6 @@ KeySet MountCommand::addPlugins(std::string name, std::string which)
 		ret.append (*Key (root + "/" + name + "/" + which + std::string("plugins/#") + pluginNumber.str() + pluginName,
 			KEY_COMMENT, "A plugin",
 			KEY_END));
-		if (path != ".")
-		{
-			ret.append (*Key (root + "/" + name + "/" + which + std::string("plugins/#") + pluginNumber.str() + pluginName + "/config",
-				KEY_COMMENT, "The configuration for the specific plugin.\n"
-				"All keys below that directory will be passed to plugin.\n"
-				"These keys have backend specific meaning.\n"
-				"See documentation http://www.libelektra.org for which keys must or can be set.\n"
-				"Here the most important keys should be preloaded.",
-				KEY_END));
-			ret.append (*Key (root + "/" + name + "/" + which + "plugins/#" + pluginNumber.str() + pluginName + "/config/path",
-				KEY_VALUE, path.c_str(),
-				KEY_COMMENT, "The path where the config file is located."
-				"This item is often used by backends using configuration in a filesystem"
-				"to know there relative location of the keys to fetch or write.",
-				KEY_END));
-		}
 	}
 
 	if (nrStoragePlugins != 1)
@@ -230,9 +233,8 @@ int MountCommand::execute(int , char** )
 
 	Key cur;
        
-	try {
-		cur = conf.lookup(Key(root, KEY_END));
-	} catch (KeySetNotFound const& e)
+	cur = conf.lookup(Key(root, KEY_END));
+	if (!cur)
 	{
 		cout << "Did not find the root key, will add it" << endl;
 		cout << "Note that nothing will be written out" << endl;
@@ -279,9 +281,7 @@ int MountCommand::execute(int , char** )
 			{
 				mountpoints.push_back("/");
 			} else {
-				try {
-					conf.lookup(Key(cur.getString(), KEY_END));
-				} catch (KeySetNotFound const& e)
+				if (!conf.lookup(Key(cur.getString(), KEY_END)))
 				{
 					cout << "Did not find the mountpoint " << cur.getString() << ", will add it" << endl;
 					// Hack: currently the mountpoints need to exist, so that they can be found
@@ -350,11 +350,13 @@ int MountCommand::execute(int , char** )
 
 
 
-	while (conf.append(addPlugins(name, "set")) == -1) ;
+
+	KeySet referencePlugins;
+	while (conf.append(addPlugins(name, referencePlugins, "get")) == -1) ;
 
 
 
-	while (conf.append(addPlugins(name, "get")) == -1) ;
+	while (conf.append(addPlugins(name, referencePlugins, "set")) == -1) ;
 
 
 
@@ -374,7 +376,7 @@ int MountCommand::execute(int , char** )
 	cin >> answer;
 	if (answer != "y") throw CommandAbortException();
 
-	kdb.set(conf, Key(root, KEY_END));
+	kdb.set(conf, Key());
 	return 0;
 }
 

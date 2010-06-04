@@ -23,6 +23,12 @@ int GetCommand::execute(int argc, char** argv)
 	kdb.get(conf, Key(argv[2], KEY_END));
 	Key k = conf.lookup(argv[2]);
 
+	if (!k)
+	{
+		cerr << "Did not find key" << endl;
+		return 1;
+	}
+
 	cout << k.getString() << endl;
 
 	return 0;

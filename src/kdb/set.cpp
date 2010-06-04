@@ -24,16 +24,16 @@ int SetCommand::execute(int argc, char**argv)
 
 	KeySet conf;
 	kdb.get(conf, Key(name, KEY_END));
-	Key key;
-	try {
-		key = conf.lookup(name);
+	Key key = conf.lookup(name);
 
-		cout << "Set string to " << value << endl;
-		key.setString(value);
-	} catch (kdb::KeySetNotFound const& e) {
+	if (!key)
+	{
 		cout << "create a new key with " << name << " and " << value << endl;
 		key = Key(name, KEY_VALUE, value.c_str(), KEY_END);
 		conf.append(key);
+	} else {
+		cout << "Set string to " << value << endl;
+		key.setString(value);
 	}
 	kdb.set(conf, Key(static_cast<ckdb::Key*>(0)));
 

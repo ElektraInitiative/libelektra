@@ -487,6 +487,7 @@ int elektraBackendClose(Backend *backend);
 
 /*Plugin handling*/
 int renameConfig(KeySet *config);
+int elektraProcessPlugin(Key *cur, int *pluginNumber, char **pluginName, char **referenceName);
 int elektraProcessPlugins(Plugin **plugins, KeySet *referencePlugins, KeySet *config, KeySet *systemConfig);
 
 Plugin* elektraPluginOpen(const char *backendname, KeySet *config);
