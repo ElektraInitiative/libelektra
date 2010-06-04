@@ -1392,6 +1392,8 @@ int f(KeySet *iterator, KeySet *lookup)
  * 		Only search from ksCurrent() to end of keyset, see above text.
  * 	- @p KDB_O_POP @n
  * 		Pop the key which was found.
+ *	- @p KDB_O_DEL @n
+ *		Delete the passed key.
  * @return pointer to the Key found, 0 otherwise
  * @return 0 on NULL pointers
  * @see ksLookupByName() to search by a name given by a string

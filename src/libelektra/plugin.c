@@ -119,6 +119,8 @@ int elektraProcessPlugin(Key *cur, int *pluginNumber, char **pluginName, char **
 
 	if (fullname[2] == '#')
 	{
+		char prefixReferenceName[] = "system/elektra/plugins/";
+
 		/* We have a back reference here */
 		if (fullname[fullsize-2] == '#')
 		{
@@ -138,16 +140,18 @@ int elektraProcessPlugin(Key *cur, int *pluginNumber, char **pluginName, char **
 
 			referenceNameSize = fullsize - pluginNameSize - 4;
 			++iter; /* advance to one after hash */
-			*referenceName = elektraMalloc(referenceNameSize);
-			strncpy (*referenceName, iter, referenceNameSize);
-			(*referenceName)[referenceNameSize-1] = 0;
+			*referenceName = elektraMalloc(referenceNameSize + sizeof (prefixReferenceName));
+			strncpy (*referenceName, prefixReferenceName, sizeof (prefixReferenceName));
+			strncat (*referenceName, iter, referenceNameSize);
+			(*referenceName)[referenceNameSize + sizeof (prefixReferenceName)-2] = 0;
 
 			return 3;
 		} else {
 			/* We reference back to a plugin */
 
-			*referenceName = elektraMalloc (fullsize-3);
-			strncpy (*referenceName, &fullname[3], fullsize-3);
+			*referenceName = elektraMalloc (fullsize-3 + sizeof (prefixReferenceName)-1);
+			strncpy (*referenceName, prefixReferenceName, sizeof (prefixReferenceName));
+			strncat (*referenceName, &fullname[3], fullsize-3);
 
 			return 2;
 		}
@@ -177,7 +181,7 @@ int elektraProcessPlugin(Key *cur, int *pluginNumber, char **pluginName, char **
  *
  * @return -1 on failure
  */
-int elektraProcessPlugins(Plugin **plugins, KeySet *config, KeySet *systemConfig)
+int elektraProcessPlugins(Plugin **plugins, KeySet *referencePlugins, KeySet *config, KeySet *systemConfig)
 {
 	Key *root;
 	Key *cur;
@@ -214,7 +218,18 @@ int elektraProcessPlugins(Plugin **plugins, KeySet *config, KeySet *systemConfig
 			ksAppend(pluginConfig, systemConfig);
 			ksRewind(pluginConfig); /* TODO: bug ksAppend invalidates cursor */
 
-			plugins[pluginNumber] = elektraPluginOpen(pluginName, pluginConfig);
+			if (pluginName)
+			{
+				plugins[pluginNumber] = elektraPluginOpen(pluginName, pluginConfig);
+				if (referenceName) ksAppendKey (referencePlugins,
+						keyNew(referenceName,
+							KEY_BINARY,
+							KEY_SIZE, sizeof (plugins[pluginNumber]),
+							KEY_VALUE, &plugins[pluginNumber],
+							KEY_END));
+			} else {
+				plugins[pluginNumber] = *(Plugin**)keyValue(ksLookup(referencePlugins, keyNew(referenceName, KEY_END), KDB_O_DEL));
+			}
 		} else {
 #if DEBUG
 			printf ("Unkown additional entries in plugin\n");

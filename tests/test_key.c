@@ -2138,6 +2138,25 @@ void test_binary()
 	succeed_if (g == fun, "pointers to functions are not equal");
 
 	keyDel (k);
+
+
+
+
+	Plugin *plug = (Plugin *) 1222243;
+
+	k = 
+		keyNew("system/name",
+			KEY_BINARY,
+			KEY_SIZE, sizeof (plug),
+			KEY_VALUE, &plug,
+			KEY_END);
+	Plugin *xlug = *(Plugin**)keyValue(k);
+
+	succeed_if (xlug == plug, "should point to the same");
+	succeed_if (plug == (Plugin *) 1222243, "should point to that");
+	succeed_if (xlug == (Plugin *) 1222243, "should point to that too");
+
+	keyDel (k);
 }
 
 

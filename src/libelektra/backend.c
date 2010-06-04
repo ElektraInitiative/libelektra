@@ -118,7 +118,10 @@ Backend* elektraBackendOpen(KeySet *elektraConfig)
 {
 	Key * cur;
 	Key * root;
+	KeySet *referencePlugins = 0;
 	KeySet *systemConfig = 0;
+
+	referencePlugins = ksNew(0);
 	ksRewind(elektraConfig);
 
 	root = ksNext (elektraConfig);
@@ -138,7 +141,7 @@ Backend* elektraBackendOpen(KeySet *elektraConfig)
 			}
 			else if (!strcmp(keyBaseName(cur), "getplugins"))
 			{
-				if (elektraProcessPlugins(backend->getplugins, cut, systemConfig) == -1)
+				if (elektraProcessPlugins(backend->getplugins, referencePlugins, cut, systemConfig) == -1)
 				{
 #if DEBUG
 					printf ("Processing Get Plugins failed\n");
@@ -158,7 +161,7 @@ Backend* elektraBackendOpen(KeySet *elektraConfig)
 			}
 			else if (!strcmp(keyBaseName(cur), "setplugins"))
 			{
-				if (elektraProcessPlugins(backend->setplugins, cut, systemConfig) == -1)
+				if (elektraProcessPlugins(backend->setplugins, referencePlugins, cut, systemConfig) == -1)
 				{
 #if DEBUG
 					printf ("Processing Set Plugins failed\n");
