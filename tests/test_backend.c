@@ -1,5 +1,5 @@
 /*************************************************************************** 
- *      test_buildbackend.c  -  Test cases for how to build
+ *      test_backend.c  -  Test cases for how to build
 *        a backend out of system/elektra/mountpoints/<name>
  *                  -------------------
  *  begin                : Wed 19 May, 2010
@@ -332,7 +332,7 @@ void test_two()
 
 int main(int argc, char** argv)
 {
-	printf("BUILDBACKEND   TESTS\n");
+	printf("  BACKEND   TESTS\n");
 	printf("====================\n\n");
 
 	init (argc, argv);
@@ -343,7 +343,7 @@ int main(int argc, char** argv)
 	test_trie();
 	test_two();
 
-	printf("\ntest_backendhelpers RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	printf("\ntest_backend RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
 }

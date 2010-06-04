@@ -89,6 +89,80 @@ static int elektraRenamePluginConfig(KeySet *config)
 }
 
 /**
+ * @returns 1 and an allocated string of the pluginName if a new plugins should be created.
+ * @returns 2 and an allocated string of the referenceName if an old plugin should be used
+ * @returns 3 and both if a new plugin should be created and made available for later
+ *          back referencing.
+ * @returns -1 on error
+ */
+int elektraProcessPlugin(Key *cur, int *pluginNumber, char **pluginName, char **referenceName)
+{
+	const char *fullname = keyBaseName(cur);
+	size_t fullsize = keyGetBaseNameSize(cur);
+
+	if (fullname[0] != '#')
+	{
+		kdbPrintDebug ("Names of Plugins must start with a #\n");
+		return -1;
+	}
+	if (fullname[1] < '0' || fullname[1] > '9')
+	{
+		kdbPrintDebug ("Names of Plugins must start have the position number as second char\n");
+		return -1;
+	}
+	*pluginNumber = fullname[1]-'0';
+	if (*pluginNumber > NR_OF_PLUGINS)
+	{
+		kdbPrintDebug("Tried to set more plugins then definied in NR_OF_PLUGINS\n");
+		return -1;
+	}
+
+	if (fullname[2] == '#')
+	{
+		/* We have a back reference here */
+		if (fullname[fullsize-2] == '#')
+		{
+			const char *iter = &fullname[3];
+			size_t pluginNameSize = 1; /* For null character */
+			size_t referenceNameSize = 0;
+			/* We will introduce a new plugin */
+			while (*iter != '#')
+			{
+				++iter;
+				++pluginNameSize;
+			}
+
+			*pluginName = elektraMalloc (pluginNameSize);
+			strncpy (*pluginName, &fullname[3], pluginNameSize);
+			(*pluginName)[pluginNameSize-1] = 0;
+
+			referenceNameSize = fullsize - pluginNameSize - 4;
+			++iter; /* advance to one after hash */
+			*referenceName = elektraMalloc(referenceNameSize);
+			strncpy (*referenceName, iter, referenceNameSize);
+			(*referenceName)[referenceNameSize-1] = 0;
+
+			return 3;
+		} else {
+			/* We reference back to a plugin */
+
+			*referenceName = elektraMalloc (fullsize-3);
+			strncpy (*referenceName, &fullname[3], fullsize-3);
+
+			return 2;
+		}
+	} else {
+		*pluginName = elektraMalloc (fullsize-2); /* dont alloc for #n */
+		strncpy (*pluginName, &fullname[2],fullsize-2);
+
+		return 1;
+	}
+
+	/* Should not be reached */
+	return 0;
+}
+
+/**
  * Load a plugin.
  *
  * The array of plugins must be set to 0.
@@ -116,28 +190,19 @@ int elektraProcessPlugins(Plugin **plugins, KeySet *config, KeySet *systemConfig
 	{
 		if (keyRel (root, cur) == 1)
 		{
-			// this describes a plugin!
-			const char *fullname = keyBaseName(cur);
-			const char *pluginName = 0;
-			int pluginNumber = 0;
-			Key *key;
+			char *pluginName = 0;
+			char *referenceName = 0;
+			int pluginNumber;
+
 			KeySet *pluginConfig;
-			if (fullname[0] != '#')
+			Key *key;
+
+			if (elektraProcessPlugin(cur, &pluginNumber, &pluginName, &referenceName) == -1)
 			{
-				kdbPrintDebug ("Names of Plugins must start with a #\n");
-				goto error;
-			}
-			if (fullname[1] < '0' || fullname[1] > '9')
-			{
-				kdbPrintDebug ("Names of Plugins must start have the position number as second char\n");
-				goto error;
-			}
-			pluginNumber = fullname[1]-'0';
-			pluginName = &fullname[2];
-			if (pluginNumber > NR_OF_PLUGINS)
-			{
-				kdbPrintDebug("Tried to set more plugins then definied in NR_OF_PLUGINS\n");
-				goto error;
+				free (pluginName);
+				free (referenceName);
+				ksDel (config);
+				return -1;
 			}
 
 			key = keyDup (cur);
@@ -159,10 +224,6 @@ int elektraProcessPlugins(Plugin **plugins, KeySet *config, KeySet *systemConfig
 
 	ksDel (config);
 	return 0;
-
-error:
-	ksDel (config);
-	return -1;
 }
 
 /**
