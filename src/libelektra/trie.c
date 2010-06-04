@@ -45,7 +45,7 @@ static char* starts_with(const char *str, char *substr);
 static void* prefix_lookup(Trie *trie, const char *name);
 
 
-Backend* trieLookup(Trie *trie, const Key *key)
+Backend* elektraTrieLookup(Trie *trie, const Key *key)
 {
 	char *where=0;
 	Backend *ret=0;
@@ -71,7 +71,7 @@ Backend* trieLookup(Trie *trie, const Key *key)
  * @param config the configuration which should be used to build up the trie.
  * @return created trie on success, 0 on failure
  */
-Trie *trieOpen(KeySet *config)
+Trie *elektraTrieOpen(KeySet *config)
 {
 	Trie *trie = 0;
 	Key *root;
@@ -126,18 +126,18 @@ Trie *trieOpen(KeySet *config)
 	return trie;
 
 error:
-	trieClose (trie);
+	elektraTrieClose (trie);
 	ksDel (config);
 	return 0;
 }
 
-int trieClose (Trie *trie)
+int elektraTrieClose (Trie *trie)
 {
 	int i;
 	if (trie==NULL) return 0;
 	for (i=0;i<MAX_UCHAR;i++) {
 		if (trie->text[i]!=NULL) {
-			trieClose(trie->children[i]);
+			elektraTrieClose(trie->children[i]);
 			if (trie->value[i])
 				elektraBackendClose(trie->value[i]);
 			free(trie->text[i]);

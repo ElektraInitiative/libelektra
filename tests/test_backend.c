@@ -179,13 +179,13 @@ void test_trie()
 
 	KeySet *config = set_simple();
 	ksAppendKey(config, keyNew("system/elektra/mountpoints", KEY_END));
-	Trie *trie = trieOpen(config);
+	Trie *trie = elektraTrieOpen(config);
 
 	Key *key = keyNew("user/tests/backend/simple", KEY_END);
-	Backend *backend = trieLookup(trie, key);
+	Backend *backend = elektraTrieLookup(trie, key);
 
 	keyAddBaseName(key, "somewhere"); keyAddBaseName(key, "deep"); keyAddBaseName(key, "below");
-	Backend *backend2 = trieLookup(trie, key);
+	Backend *backend2 = elektraTrieLookup(trie, key);
 	succeed_if (backend == backend2, "should be same backend");
 
 	succeed_if (backend->getplugins[0] == 0, "there should be no plugin");
@@ -214,7 +214,7 @@ void test_trie()
 	succeed_if (plugin->kdbGet != 0, "no open pointer");
 	succeed_if (plugin->kdbSet != 0, "no open pointer");
 
-	trieClose(trie);
+	elektraTrieClose(trie);
 	keyDel (key);
 }
 
@@ -279,13 +279,13 @@ void test_two()
 
 	KeySet *config = set_two();
 	ksAppendKey(config, keyNew("system/elektra/mountpoints", KEY_END));
-	Trie *trie = trieOpen(config);
+	Trie *trie = elektraTrieOpen(config);
 
 	Key *key = keyNew("user/tests/backend/simple", KEY_END);
-	Backend *backend = trieLookup(trie, key);
+	Backend *backend = elektraTrieLookup(trie, key);
 
 	keyAddBaseName(key, "somewhere"); keyAddBaseName(key, "deep"); keyAddBaseName(key, "below");
-	Backend *backend2 = trieLookup(trie, key);
+	Backend *backend2 = elektraTrieLookup(trie, key);
 	succeed_if (backend == backend2, "should be same backend");
 
 	succeed_if (backend->getplugins[0] == 0, "there should be no plugin");
@@ -318,14 +318,14 @@ void test_two()
 
 
 	keySetName(key, "user/tests/backend/two");
-	Backend *two = trieLookup(trie, key);
+	Backend *two = elektraTrieLookup(trie, key);
 	succeed_if (two != backend, "should be differnt backend");
 
 	succeed_if ((mp = two->mountpoint) != 0, "no mountpoint found");
 	succeed_if (!strcmp(keyName(mp), "user/tests/backend/two"), "wrong mountpoint for backend two");
 	succeed_if (!strcmp(keyString(mp), "two"), "wrong name for backend");
 
-	trieClose(trie);
+	elektraTrieClose(trie);
 	keyDel (key);
 }
 

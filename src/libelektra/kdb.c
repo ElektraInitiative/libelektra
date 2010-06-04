@@ -229,7 +229,7 @@ KDB * kdbOpen()
 		printf("config for createTrie name: %s value: %s\n",keyName(key), keyString(key));
 	}
 #endif
-	handle->trie=trieOpen(keys);
+	handle->trie=elektraTrieOpen(keys);
 	if (!handle->trie)
 	{
 #if DEBUG
@@ -267,7 +267,7 @@ int kdbClose(KDB *handle)
 		/*errno=KDB_ERR_NOSYS;*/
 		return -1;
 	}
-	if (handle->trie) trieClose(handle->trie);
+	if (handle->trie) elektraTrieClose(handle->trie);
 
 	elektraBackendClose (handle->defaultBackend);
 
@@ -292,7 +292,7 @@ int kdbClose(KDB *handle)
  */
 Backend* kdbGetBackend(KDB *handle, const Key *key)
 {
-	Backend *ret = trieLookup(handle->trie, key);
+	Backend *ret = elektraTrieLookup(handle->trie, key);
 	if (!ret) return handle->defaultBackend;
 	return ret;
 }

@@ -491,9 +491,9 @@ Plugin* elektraPluginOpen(const char *backendname, KeySet *config);
 int elektraPluginClose(Plugin *handle);
 
 /*Trie handling*/
-Backend* trieLookup(Trie *trie, const Key *key);
-Trie *trieOpen(KeySet *config);
-int trieClose (Trie *trie);
+Backend* elektraTrieLookup(Trie *trie, const Key *key);
+Trie *elektraTrieOpen(KeySet *config);
+int elektraTrieClose (Trie *trie);
 
 /*Private helper for keys*/
 int keyInit(Key *key);
