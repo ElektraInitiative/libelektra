@@ -73,7 +73,7 @@ ssize_t kdbSet_tracer(Plugin *handle, KeySet *returned, const Key *parentKey)
 	return nr_keys;
 }
 
-Plugin *KDBEXPORT(tracer)
+Plugin *ELEKTRA_PLUGIN_EXPORT(tracer)
 {
 	return elektraPluginExport(BACKENDNAME,
 		KDB_PLUGIN_OPEN,	&kdbOpen_tracer,

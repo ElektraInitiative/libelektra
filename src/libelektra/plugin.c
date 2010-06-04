@@ -278,7 +278,7 @@ int elektraPluginClose(Plugin *handle)
  * This function must be called by a plugin's kdbPluginFactory() to
  * define the plugin's methods that will be exported.
  *
- * See KDBEXPORT() how to use it for plugins.
+ * See ELEKTRA_PLUGIN_EXPORT() how to use it for plugins.
  *
  * The order and number of arguments are flexible (as in keyNew() and ksNew()) to let
  * libelektra.so evolve without breaking its ABI compatibility with plugins.

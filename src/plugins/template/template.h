@@ -36,4 +36,4 @@ int kdbOpen_template(Plugin *handle);
 int kdbClose_template(Plugin *handle);
 ssize_t kdbGet_template(Plugin *handle, KeySet *ks, const Key *parentKey);
 ssize_t kdbSet_template(Plugin *handle, KeySet *ks, const Key *parentKey);
-Plugin *KDBEXPORT(template);
+Plugin *ELEKTRA_PLUGIN_EXPORT(template);

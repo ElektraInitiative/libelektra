@@ -361,7 +361,7 @@ ssize_t kdbSet_passwd(KDB *handle, KeySet *returned, const Key *parentKey)
  * @see kdbOpenBackend()
  * @ingroup backend
  */
-KDB *KDBEXPORT(passwd)
+KDB *ELEKTRA_PLUGIN_EXPORT(passwd)
 {
 	return kdbBackendExport(BACKENDNAME,
 		KDB_BE_OPEN,	&kdbOpen_passwd,

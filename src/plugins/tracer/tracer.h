@@ -38,4 +38,4 @@ int kdbOpen_tracer(Plugin *handle);
 int kdbClose_tracer(Plugin *handle);
 ssize_t kdbGet_tracer(Plugin *handle, KeySet *ks, const Key *parentKey);
 ssize_t kdbSet_tracer(Plugin *handle, KeySet *ks, const Key *parentKey);
-Plugin *KDBEXPORT(tracer);
+Plugin *ELEKTRA_PLUGIN_EXPORT(tracer);

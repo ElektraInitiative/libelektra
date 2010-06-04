@@ -68,7 +68,7 @@ ssize_t kdbSet_syslog(Plugin *handle, KeySet *returned, const Key *parentKey)
 	return nr_keys;
 }
 
-Plugin *KDBEXPORT(syslog)
+Plugin *ELEKTRA_PLUGIN_EXPORT(syslog)
 {
 	return elektraPluginExport(BACKENDNAME,
 		KDB_PLUGIN_OPEN,	&kdbOpen_syslog,

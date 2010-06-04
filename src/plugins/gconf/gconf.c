@@ -513,7 +513,7 @@ int kdbRename_gconf(Key *key, const char *newName) {
 
 
 
-KDBEXPORT(gconf)
+ELEKTRA_PLUGIN_EXPORT(gconf)
 {
 	return kdbBackendExport(BACKENDNAME,
 		KDB_BE_OPEN,           &kdbOpen_gconf,

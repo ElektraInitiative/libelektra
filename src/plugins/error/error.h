@@ -36,4 +36,4 @@ int kdbOpen_error(Plugin *handle);
 int kdbClose_error(Plugin *handle);
 ssize_t kdbGet_error(Plugin *handle, KeySet *ks, const Key *parentKey);
 ssize_t kdbSet_error(Plugin *handle, KeySet *ks, const Key *parentKey);
-Plugin *KDBEXPORT(error);
+Plugin *ELEKTRA_PLUGIN_EXPORT(error);

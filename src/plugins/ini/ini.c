@@ -482,7 +482,7 @@ fileerror:
 	return -1;
 }
 
-KDBEXPORT(ini)
+ELEKTRA_PLUGIN_EXPORT(ini)
 {
 	return kdbBackendExport(BACKENDNAME,
 		KDB_BE_OPEN,	&kdbOpen_ini,

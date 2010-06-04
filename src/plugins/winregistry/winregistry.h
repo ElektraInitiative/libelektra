@@ -58,7 +58,7 @@ uint32_t kdbMonitorKey_winregistry(Key *interest, uint32_t diffMask, unsigned lo
  * @see kdbOpenBackend()
  * @ingroup backend
  */
-WINREGISTRY_API KDBEXPORT(BACKENDNAME);
+WINREGISTRY_API ELEKTRA_PLUGIN_EXPORT(BACKENDNAME);
 
 #ifdef __cplusplus
 }

@@ -735,7 +735,7 @@ u_int32_t kdbMonitorKey_daemon(KDB *handle, Key *interest, u_int32_t diffMask,
  * @see kdbOpenBackend()
  * @ingroup backend
  */
-KDBEXPORT(daemon)
+ELEKTRA_PLUGIN_EXPORT(daemon)
 {
 	return kdbBackendExport(BACKENDNAME,
 		KDB_BE_OPEN,           &kdbOpen_daemon,

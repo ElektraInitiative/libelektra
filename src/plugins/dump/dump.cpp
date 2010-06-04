@@ -203,7 +203,7 @@ ssize_t kdbSet_dump(ckdb::Plugin *handle, ckdb::KeySet *returned, const ckdb::Ke
 	return ksGetSize(returned);
 }
 
-ckdb::Plugin *KDBEXPORT(dump)
+ckdb::Plugin *ELEKTRA_PLUGIN_EXPORT(dump)
 {
 	return elektraPluginExport(BACKENDNAME,
 		KDB_PLUGIN_OPEN,		&kdbOpen_dump,

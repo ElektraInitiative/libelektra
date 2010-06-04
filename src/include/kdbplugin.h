@@ -27,9 +27,9 @@
 #include <kdbextension.h>
 
 #ifdef ELEKTRA_STATIC
-        #define KDBEXPORT(module) libelektra_##module##_LTX_kdbPluginFactory(void)
+        #define ELEKTRA_PLUGIN_EXPORT(module) libelektra_##module##_LTX_kdbPluginFactory(void)
 #else
-        #define KDBEXPORT(module) kdbPluginFactory(void)
+        #define ELEKTRA_PLUGIN_EXPORT(module) kdbPluginFactory(void)
 #endif
 
 /**

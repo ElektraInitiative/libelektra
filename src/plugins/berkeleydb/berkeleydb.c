@@ -1294,7 +1294,7 @@ ssize_t kdbSet_berkeleydb(KDB *handle, KeySet *returned, const Key *parentKey) {
 	return nr_keys;
 }
 
-KDBEXPORT(berkeleydb)
+ELEKTRA_PLUGIN_EXPORT(berkeleydb)
 {
 	return kdbBackendExport(BACKENDNAME,
 		KDB_BE_OPEN,	&kdbOpen_berkeleydb,

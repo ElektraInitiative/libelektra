@@ -24,4 +24,4 @@ int kdbOpen_hosts(Plugin *handle);
 int kdbClose_hosts(Plugin *handle);
 ssize_t kdbGet_hosts(Plugin *handle, KeySet *ks, const Key *parentKey);
 ssize_t kdbSet_hosts(Plugin *handle, KeySet *ks, const Key *parentKey);
-Plugin *KDBEXPORT(hosts);
+Plugin *ELEKTRA_PLUGIN_EXPORT(hosts);

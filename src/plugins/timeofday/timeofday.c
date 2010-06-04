@@ -82,7 +82,7 @@ ssize_t kdbSet_timeofday(Plugin *handle, KeySet *returned, const Key *parentKey)
 	return nr_keys;
 }
 
-Plugin *KDBEXPORT(timeofday)
+Plugin *ELEKTRA_PLUGIN_EXPORT(timeofday)
 {
 	return elektraPluginExport(BACKENDNAME,
 		KDB_PLUGIN_OPEN,	&kdbOpen_timeofday,

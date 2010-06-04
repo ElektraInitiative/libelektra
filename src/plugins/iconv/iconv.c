@@ -263,7 +263,7 @@ ssize_t kdbSet_iconv(Plugin *handle, KeySet *returned, const Key *parentKey)
 	return nr_keys; /* success */
 }
 
-Plugin *KDBEXPORT(iconv)
+Plugin *ELEKTRA_PLUGIN_EXPORT(iconv)
 {
 	return elektraPluginExport(BACKENDNAME,
 		KDB_PLUGIN_OPEN,	&kdbOpen_iconv,

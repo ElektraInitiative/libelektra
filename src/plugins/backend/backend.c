@@ -57,7 +57,7 @@ ssize_t kdbSet_backend(Plugin *handle, KeySet *returned, const Key *parentKey)
 	return nr_keys;
 }
 
-Plugin *KDBEXPORT(backend)
+Plugin *ELEKTRA_PLUGIN_EXPORT(backend)
 {
 	return elektraPluginExport(BACKENDNAME,
 		KDB_PLUGIN_OPEN,	&kdbOpen_backend,

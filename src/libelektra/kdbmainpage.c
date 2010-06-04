@@ -173,7 +173,7 @@
  *   - Dynamical kdbMount() and kdbUnmount() of backends in the global namespace
  *   - Need to implement
  *     kdbOpen_backend(), kdbClose_backend(), kdbGet_backend(), kdbSet_backend()
- *   - Use KDBEXPORT() to export your functions.
+ *   - Use ELEKTRA_PLUGIN_EXPORT() to export your functions.
  *
  *
  *

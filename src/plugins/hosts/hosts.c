@@ -315,7 +315,7 @@ error:
 	return -1;
 }
 
-Plugin *KDBEXPORT(hosts)
+Plugin *ELEKTRA_PLUGIN_EXPORT(hosts)
 {
 	return elektraPluginExport(BACKENDNAME,
 		KDB_PLUGIN_OPEN,	&kdbOpen_hosts,

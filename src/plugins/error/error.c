@@ -51,7 +51,7 @@ ssize_t kdbSet_error(Plugin *handle, KeySet *returned, const Key *parentKey)
 	return -1; /* error */
 }
 
-Plugin *KDBEXPORT(error)
+Plugin *ELEKTRA_PLUGIN_EXPORT(error)
 {
 	return elektraPluginExport(BACKENDNAME,
 		KDB_PLUGIN_OPEN,	&kdbOpen_error,

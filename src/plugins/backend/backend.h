@@ -36,4 +36,4 @@ int kdbOpen_backend(Plugin *handle);
 int kdbClose_backend(Plugin *handle);
 ssize_t kdbGet_backend(Plugin *handle, KeySet *ks, const Key *parentKey);
 ssize_t kdbSet_backend(Plugin *handle, KeySet *ks, const Key *parentKey);
-Plugin *KDBEXPORT(backend);
+Plugin *ELEKTRA_PLUGIN_EXPORT(backend);

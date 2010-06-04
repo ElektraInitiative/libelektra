@@ -39,4 +39,4 @@ int kdbOpen_timeofday(Plugin *handle);
 int kdbClose_timeofday(Plugin *handle);
 ssize_t kdbGet_timeofday(Plugin *handle, KeySet *ks, const Key *parentKey);
 ssize_t kdbSet_timeofday(Plugin *handle, KeySet *ks, const Key *parentKey);
-Plugin *KDBEXPORT(timeofday);
+Plugin *ELEKTRA_PLUGIN_EXPORT(timeofday);

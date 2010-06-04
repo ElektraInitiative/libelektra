@@ -57,7 +57,7 @@ ssize_t kdbSet_template(Plugin *handle, KeySet *returned, const Key *parentKey)
 	return nr_keys;
 }
 
-Plugin *KDBEXPORT(template)
+Plugin *ELEKTRA_PLUGIN_EXPORT(template)
 {
 	return elektraPluginExport(BACKENDNAME,
 		KDB_PLUGIN_OPEN,	&kdbOpen_template,

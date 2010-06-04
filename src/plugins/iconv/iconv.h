@@ -46,4 +46,4 @@ int kdbOpen_iconv(Plugin *handle);
 int kdbClose_iconv(Plugin *handle);
 ssize_t kdbGet_iconv(Plugin *handle, KeySet *ks, const Key *parentKey);
 ssize_t kdbSet_iconv(Plugin *handle, KeySet *ks, const Key *parentKey);
-Plugin *KDBEXPORT(iconv);
+Plugin *ELEKTRA_PLUGIN_EXPORT(iconv);

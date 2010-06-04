@@ -752,7 +752,7 @@ int keyFromStat(Key *key,struct stat *stat) {
 
 
 
-KDB *KDBEXPORT(filesys)
+KDB *ELEKTRA_PLUGIN_EXPORT(filesys)
 {
 	return kdbBackendExport(BACKENDNAME,
 		KDB_BE_OPEN,	&kdbOpen_filesys,

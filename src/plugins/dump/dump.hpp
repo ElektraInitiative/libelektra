@@ -52,6 +52,6 @@ int kdbOpen_dump(ckdb::Plugin *handle);
 int kdbClose_dump(ckdb::Plugin *handle);
 ssize_t kdbGet_dump(ckdb::Plugin *handle, ckdb::KeySet *ks, const ckdb::Key *parentKey);
 ssize_t kdbSet_dump(ckdb::Plugin *handle, ckdb::KeySet *ks, const ckdb::Key *parentKey);
-ckdb::Plugin* KDBEXPORT(dump);
+ckdb::Plugin* ELEKTRA_PLUGIN_EXPORT(dump);
 
 } // extern C

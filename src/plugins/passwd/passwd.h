@@ -61,6 +61,6 @@ int kdbOpen_passwd(KDB *handle);
 int kdbClose_passwd(KDB *handle);
 ssize_t kdbGet_passwd(KDB *handle, KeySet *ks, const Key *parentKey);
 ssize_t kdbSet_passwd(KDB *handle, KeySet *ks, const Key *parentKey);
-KDBEXPORT(passwd);
+ELEKTRA_PLUGIN_EXPORT(passwd);
 
 #endif

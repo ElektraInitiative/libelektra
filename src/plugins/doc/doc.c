@@ -42,7 +42,7 @@
  * @subsection overview Overview
  *
  * The methods of class KDB that are backend dependent are only kdbOpen_backend(),
- * kdbClose_backend(), kdbGet_backend(), kdbSet_backend() and KDBEXPORT() to export
+ * kdbClose_backend(), kdbGet_backend(), kdbSet_backend() and ELEKTRA_PLUGIN_EXPORT() to export
  * these methods. A backend must implement each of them. A detailed
  * specification of these methods and methods needed in that context
  * follows in this Documentation Module.
@@ -135,7 +135,7 @@ int kdbClose_backend(KDB *handle) {...}
 int kdbGet_backend(KDB handle, KeySet *returned, Key *key) {...}
 int kdbSet_backend(KDB handle, KeySet *returned, Key *key) {...}
 
-KDBEXPORT(backend) {
+ELEKTRA_PLUGIN_EXPORT(backend) {
 	return kdbBackendExport(BACKENDNAME,
 		KDB_BE_OPEN,  &kdbOpen_backend,
 		KDB_BE_CLOSE, &kdbClose_backend,
@@ -689,7 +689,7 @@ ssize_t kdbSet_doc(Plugin *handle, KeySet *returned, const Key *parentKey)
  * @see kdbOpenBackend()
  * @ingroup backend
  */
-Plugin *KDBEXPORT(doc)
+Plugin *ELEKTRA_PLUGIN_EXPORT(doc)
 {
 	return elektraPluginExport(BACKENDNAME,
 		KDB_PLUGIN_OPEN,	&kdbOpen_doc,
