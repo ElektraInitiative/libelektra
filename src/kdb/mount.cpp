@@ -20,12 +20,12 @@ struct Plugin
 
 	Plugin(std::string const& pluginName, KeySet const& testConfig)
 	{
-		plugin = ckdb::pluginOpen(pluginName.c_str(), testConfig.dup());
+		plugin = ckdb::elektraPluginOpen(pluginName.c_str(), testConfig.dup());
 	}
 
 	~Plugin()
 	{
-		ckdb::pluginClose(plugin);
+		ckdb::elektraPluginClose(plugin);
 	}
 
 	ckdb::Plugin *operator->()

@@ -187,7 +187,7 @@ int kdbClose_dump(ckdb::Plugin *)
 
 ssize_t kdbGet_dump(ckdb::Plugin *handle, ckdb::KeySet *returned, const ckdb::Key *)
 {
-	std::ifstream ofs(keyString(ksLookupByName(ckdb::pluginGetConfig (handle), "/path", 0)));
+	std::ifstream ofs(keyString(ksLookupByName(ckdb::elektraPluginGetConfig (handle), "/path", 0)));
 	if (!ofs.is_open()) return -1;
 	dump::unserialize (ofs, returned);
 
@@ -196,7 +196,7 @@ ssize_t kdbGet_dump(ckdb::Plugin *handle, ckdb::KeySet *returned, const ckdb::Ke
 
 ssize_t kdbSet_dump(ckdb::Plugin *handle, ckdb::KeySet *returned, const ckdb::Key *)
 {
-	std::ofstream ifs(keyString(ksLookupByName(ckdb::pluginGetConfig (handle), "/path", 0)));
+	std::ofstream ifs(keyString(ksLookupByName(ckdb::elektraPluginGetConfig (handle), "/path", 0)));
 	if (!ifs.is_open()) return -1;
 	dump::serialize (ifs, returned);
 
@@ -205,7 +205,7 @@ ssize_t kdbSet_dump(ckdb::Plugin *handle, ckdb::KeySet *returned, const ckdb::Ke
 
 ckdb::Plugin *KDBEXPORT(dump)
 {
-	return pluginExport(BACKENDNAME,
+	return elektraPluginExport(BACKENDNAME,
 		KDB_PLUGIN_OPEN,		&kdbOpen_dump,
 		KDB_PLUGIN_CLOSE,	&kdbClose_dump,
 		KDB_PLUGIN_GET,		&kdbGet_dump,

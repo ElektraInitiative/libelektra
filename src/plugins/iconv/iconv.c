@@ -32,7 +32,7 @@ static inline const char* getFrom(Plugin *handle)
 	const char *from;
 	Key *k;
 
-	k = ksLookupByName(pluginGetConfig(handle), "/from", 0);
+	k = ksLookupByName(elektraPluginGetConfig(handle), "/from", 0);
 	if (!k) from = nl_langinfo(CODESET);
 	else from = keyString(k);
 
@@ -44,7 +44,7 @@ static inline const char* getTo(Plugin *handle)
 	const char *to;
 	Key *k;
 
-	k = ksLookupByName(pluginGetConfig(handle), "/to", 0);
+	k = ksLookupByName(elektraPluginGetConfig(handle), "/to", 0);
 	if (!k) to = "UTF-8";
 	else to = keyString(k);
 
@@ -265,7 +265,7 @@ ssize_t kdbSet_iconv(Plugin *handle, KeySet *returned, const Key *parentKey)
 
 Plugin *KDBEXPORT(iconv)
 {
-	return pluginExport(BACKENDNAME,
+	return elektraPluginExport(BACKENDNAME,
 		KDB_PLUGIN_OPEN,	&kdbOpen_iconv,
 		KDB_PLUGIN_CLOSE,	&kdbClose_iconv,
 		KDB_PLUGIN_GET,		&kdbGet_iconv,

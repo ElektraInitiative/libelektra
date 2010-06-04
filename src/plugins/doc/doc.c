@@ -691,7 +691,7 @@ ssize_t kdbSet_doc(Plugin *handle, KeySet *returned, const Key *parentKey)
  */
 Plugin *KDBEXPORT(doc)
 {
-	return pluginExport(BACKENDNAME,
+	return elektraPluginExport(BACKENDNAME,
 		KDB_PLUGIN_OPEN,	&kdbOpen_doc,
 		KDB_PLUGIN_CLOSE,	&kdbClose_doc,
 		KDB_PLUGIN_GET,		&kdbGet_doc,

@@ -59,7 +59,7 @@ ssize_t kdbSet_template(Plugin *handle, KeySet *returned, const Key *parentKey)
 
 Plugin *KDBEXPORT(template)
 {
-	return pluginExport(BACKENDNAME,
+	return elektraPluginExport(BACKENDNAME,
 		KDB_PLUGIN_OPEN,	&kdbOpen_template,
 		KDB_PLUGIN_CLOSE,	&kdbClose_template,
 		KDB_PLUGIN_GET,		&kdbGet_template,

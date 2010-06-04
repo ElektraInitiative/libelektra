@@ -31,7 +31,7 @@ int kdbOpen_syslog(Plugin *handle)
 {
 	/* plugin initialization logic */
 
-	if (!ksLookupByName(pluginGetConfig(handle), "/dontopensyslog", 0))
+	if (!ksLookupByName(elektraPluginGetConfig(handle), "/dontopensyslog", 0))
 	{
 		openlog ("elektra", LOG_PID, LOG_USER);
 	}
@@ -70,7 +70,7 @@ ssize_t kdbSet_syslog(Plugin *handle, KeySet *returned, const Key *parentKey)
 
 Plugin *KDBEXPORT(syslog)
 {
-	return pluginExport(BACKENDNAME,
+	return elektraPluginExport(BACKENDNAME,
 		KDB_PLUGIN_OPEN,	&kdbOpen_syslog,
 		KDB_PLUGIN_CLOSE,	&kdbClose_syslog,
 		KDB_PLUGIN_GET,		&kdbGet_syslog,

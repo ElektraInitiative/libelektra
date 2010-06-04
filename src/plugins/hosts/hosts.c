@@ -140,7 +140,7 @@ ssize_t kdbGet_hosts(Plugin *handle, KeySet *returned, const Key *parentKey)
 
 	/* if (strcmp (keyName(kdbhGetMountpoint(handle)), keyName(parentKey))) return 0; */
 
-	fp = fopen (keyString(ksLookupByName(pluginGetConfig (handle), "/path", 0)), "r");
+	fp = fopen (keyString(ksLookupByName(elektraPluginGetConfig (handle), "/path", 0)), "r");
 
 	if (fp == 0)
 	{
@@ -243,7 +243,7 @@ ssize_t kdbSet_hosts(Plugin *handle, KeySet *returned, const Key *parentKey)
 
 	/* if (strcmp (keyName(kdbhGetMountpoint(handle)), keyName(parentKey))) return 0; */
 
-	fp = fopen (keyString(ksLookupByName(pluginGetConfig (handle), "/path", 0)), "w");
+	fp = fopen (keyString(ksLookupByName(elektraPluginGetConfig (handle), "/path", 0)), "w");
 
 	if (fp == 0)
 	{
@@ -317,7 +317,7 @@ error:
 
 Plugin *KDBEXPORT(hosts)
 {
-	return pluginExport(BACKENDNAME,
+	return elektraPluginExport(BACKENDNAME,
 		KDB_PLUGIN_OPEN,	&kdbOpen_hosts,
 		KDB_PLUGIN_CLOSE,	&kdbClose_hosts,
 		KDB_PLUGIN_GET,		&kdbGet_hosts,

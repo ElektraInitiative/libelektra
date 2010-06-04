@@ -96,7 +96,7 @@ void test_simple()
 	Plugin *plugin = backend->getplugins[1];
 
 	KeySet *test_config = set_pluginconf();
-	KeySet *config = pluginGetConfig (plugin);
+	KeySet *config = elektraPluginGetConfig (plugin);
 	succeed_if (config != 0, "there should be a config");
 	compare_keyset(config, test_config);
 	ksDel (test_config);
@@ -113,10 +113,10 @@ void test_plugin()
 {
 	printf ("Test plugin\n");
 
-	Plugin *plugin = pluginOpen("tracer", set_pluginconf());
+	Plugin *plugin = elektraPluginOpen("tracer", set_pluginconf());
 
 	KeySet *test_config = set_pluginconf();
-	KeySet *config = pluginGetConfig (plugin);
+	KeySet *config = elektraPluginGetConfig (plugin);
 	succeed_if (config != 0, "there should be a config");
 	compare_keyset(config, test_config);
 	ksDel (test_config);
@@ -133,17 +133,17 @@ void test_plugin()
 	succeed_if (!strcmp(plugin->provides, "tracer"), "got wrong provides (tracer can do nothing)");
 	succeed_if (!strcmp(plugin->needs, ""), "got wrong needs (tracer can do nothing)");
 
-	pluginClose(plugin);
+	elektraPluginClose(plugin);
 }
 
 void test_default()
 {
 	printf ("Test default\n");
 
-	Plugin *plugin = pluginOpen("default", set_pluginconf());
+	Plugin *plugin = elektraPluginOpen("default", set_pluginconf());
 
 	KeySet *test_config = set_pluginconf();
-	KeySet *config = pluginGetConfig (plugin);
+	KeySet *config = elektraPluginGetConfig (plugin);
 	succeed_if (config != 0, "there should be a config");
 	compare_keyset(config, test_config);
 	ksDel (test_config);
@@ -162,7 +162,7 @@ void test_default()
 	succeed_if (!strcmp(plugin->capability, ""), "got wrong capability (tracer can do nothing)");
 	*/
 
-	pluginClose(plugin);
+	elektraPluginClose(plugin);
 
 	Backend *backend = backendOpenDefault();
 
@@ -204,7 +204,7 @@ void test_trie()
 	Plugin *plugin = backend->getplugins[1];
 
 	KeySet *test_config = set_pluginconf();
-	KeySet *cconfig = pluginGetConfig (plugin);
+	KeySet *cconfig = elektraPluginGetConfig (plugin);
 	succeed_if (cconfig != 0, "there should be a config");
 	compare_keyset(cconfig, test_config);
 	ksDel (test_config);
@@ -304,7 +304,7 @@ void test_two()
 	Plugin *plugin = backend->getplugins[1];
 
 	KeySet *test_config = set_pluginconf();
-	KeySet *cconfig = pluginGetConfig (plugin);
+	KeySet *cconfig = elektraPluginGetConfig (plugin);
 	succeed_if (cconfig != 0, "there should be a config");
 	compare_keyset(cconfig, test_config);
 	ksDel (test_config);

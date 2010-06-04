@@ -138,7 +138,7 @@ Backend* backendOpen(KeySet *elektraConfig)
 			}
 			else if (!strcmp(keyBaseName(cur), "getplugins"))
 			{
-				if (processPlugins(backend->getplugins, cut, systemConfig) == -1)
+				if (elektraProcessPlugins(backend->getplugins, cut, systemConfig) == -1)
 				{
 #if DEBUG
 					printf ("Processing Get Plugins failed\n");
@@ -158,7 +158,7 @@ Backend* backendOpen(KeySet *elektraConfig)
 			}
 			else if (!strcmp(keyBaseName(cur), "setplugins"))
 			{
-				if (processPlugins(backend->setplugins, cut, systemConfig) == -1)
+				if (elektraProcessPlugins(backend->setplugins, cut, systemConfig) == -1)
 				{
 #if DEBUG
 					printf ("Processing Set Plugins failed\n");
@@ -195,7 +195,7 @@ Backend* backendOpenDefault()
 		keyNew("system/path", KEY_VALUE, KDB_DB_SYSTEM "/default.ecf", KEY_END),
 		keyNew("user/path", KEY_VALUE, "/tmp/default.ecf", KEY_END),
 		KS_END);
-	Plugin *plugin = pluginOpen("default", defaultConfig);
+	Plugin *plugin = elektraPluginOpen("default", defaultConfig);
 	Key *mp = keyNew ("", KEY_VALUE, "default", KEY_END);
 
 	backend->getplugins[0] = plugin;
@@ -217,7 +217,7 @@ int backendClose(Backend *backend)
 	{
 		/* TODO: could more elegant (general) to avoid double free */
 		keyDel (backend->mountpoint);
-		pluginClose(backend->setplugins[0]);
+		elektraPluginClose(backend->setplugins[0]);
 		kdbiFree (backend);
 		return 0;
 	}
@@ -225,8 +225,8 @@ int backendClose(Backend *backend)
 	keyDel (backend->mountpoint);
 	for (int i=0; i<NR_OF_PLUGINS; ++i)
 	{
-		pluginClose(backend->setplugins[i]);
-		pluginClose(backend->getplugins[i]);
+		elektraPluginClose(backend->setplugins[i]);
+		elektraPluginClose(backend->getplugins[i]);
 	}
 	kdbiFree (backend);
 

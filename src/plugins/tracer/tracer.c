@@ -30,7 +30,7 @@
 int kdbOpen_tracer(Plugin *handle)
 {
 	ssize_t nr_keys = 0;
-	KeySet *config = pluginGetConfig(handle);
+	KeySet *config = elektraPluginGetConfig(handle);
 	Key *k;
 
 	printf ("tracer: kdbOpen(%p): ", (void*)handle);
@@ -75,7 +75,7 @@ ssize_t kdbSet_tracer(Plugin *handle, KeySet *returned, const Key *parentKey)
 
 Plugin *KDBEXPORT(tracer)
 {
-	return pluginExport(BACKENDNAME,
+	return elektraPluginExport(BACKENDNAME,
 		KDB_PLUGIN_OPEN,	&kdbOpen_tracer,
 		KDB_PLUGIN_CLOSE,	&kdbClose_tracer,
 		KDB_PLUGIN_GET,		&kdbGet_tracer,

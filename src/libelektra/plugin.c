@@ -103,7 +103,7 @@ static int renamePluginConfig(KeySet *config)
  *
  * @return -1 on failure
  */
-int processPlugins(Plugin **plugins, KeySet *config, KeySet *systemConfig)
+int elektraProcessPlugins(Plugin **plugins, KeySet *config, KeySet *systemConfig)
 {
 	Key *root;
 	Key *cur;
@@ -149,7 +149,7 @@ int processPlugins(Plugin **plugins, KeySet *config, KeySet *systemConfig)
 			ksAppend(pluginConfig, systemConfig);
 			ksRewind(pluginConfig); /* TODO: bug ksAppend invalidates cursor */
 
-			plugins[pluginNumber] = pluginOpen(pluginName, pluginConfig);
+			plugins[pluginNumber] = elektraPluginOpen(pluginName, pluginConfig);
 		} else {
 #if DEBUG
 			printf ("Unkown additional entries in plugin\n");
@@ -170,11 +170,11 @@ error:
  *
  * The config will be used as is. So be sure to transfer ownership
  * of the config to it, with e.g. ksDup().
- * pluginClose() will delete the config.
+ * elektraPluginClose() will delete the config.
  *
  * @return a pointer to a new created plugin or 0 on error
  */
-Plugin* pluginOpen(const char *pluginname, KeySet *config)
+Plugin* elektraPluginOpen(const char *pluginname, KeySet *config)
 {
 	Plugin* handle;
 	char* plugin_name;
@@ -254,7 +254,7 @@ err_clup:
 	return 0;
 }
 
-int pluginClose(Plugin *handle)
+int elektraPluginClose(Plugin *handle)
 {
 	int rc=0;
 
@@ -293,7 +293,7 @@ int pluginClose(Plugin *handle)
  * 	libelektra.so
  * @ingroup plugin
  */
-Plugin *pluginExport(const char *pluginName, ...) {
+Plugin *elektraPluginExport(const char *pluginName, ...) {
 	va_list va;
 	Plugin *returned;
 	plugin_t method=0;
@@ -366,7 +366,7 @@ Plugin *pluginExport(const char *pluginName, ...) {
  *
  * @ingroup plugin
  */
-KeySet *pluginGetConfig(Plugin *handle)
+KeySet *elektraPluginGetConfig(Plugin *handle)
 {
 	return handle->config;
 }

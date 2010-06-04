@@ -485,10 +485,10 @@ int backendClose(Backend *backend);
 
 /*Plugin handling*/
 int renameConfig(KeySet *config);
-int processPlugins(Plugin **plugins, KeySet *config, KeySet *systemConfig);
+int elektraProcessPlugins(Plugin **plugins, KeySet *config, KeySet *systemConfig);
 
-Plugin* pluginOpen(const char *backendname, KeySet *config);
-int pluginClose(Plugin *handle);
+Plugin* elektraPluginOpen(const char *backendname, KeySet *config);
+int elektraPluginClose(Plugin *handle);
 
 /*Trie handling*/
 Backend* trieLookup(Trie *trie, const Key *key);

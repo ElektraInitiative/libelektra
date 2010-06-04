@@ -28,7 +28,7 @@ void test_latin1_to_utf8()
 			KS_END);
 
 
-	Plugin *plugin = pluginOpen("iconv", conf);
+	Plugin *plugin = elektraPluginOpen("iconv", conf);
 
 	plugin->kdbOpen(plugin);
 
@@ -52,7 +52,7 @@ void test_latin1_to_utf8()
 	ksDel (latin1);
 	ksDel (utf8);
 
-	pluginClose (plugin);
+	elektraPluginClose (plugin);
 }
 
 void test_utf8_to_latin1()
@@ -66,7 +66,7 @@ void test_utf8_to_latin1()
 			KS_END);
 
 
-	Plugin *plugin = pluginOpen("iconv", conf);
+	Plugin *plugin = elektraPluginOpen("iconv", conf);
 
 	plugin->kdbOpen(plugin);
 
@@ -90,7 +90,7 @@ void test_utf8_to_latin1()
 	ksDel (latin1);
 	ksDel (utf8);
 
-	pluginClose (plugin);
+	elektraPluginClose (plugin);
 }
 
 

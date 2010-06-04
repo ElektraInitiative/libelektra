@@ -33,7 +33,7 @@
 #endif
 
 /**
- * Switches to denote the backend methods. Used in calls to pluginExport().
+ * Switches to denote the backend methods. Used in calls to elektraPluginExport().
  *
  * @ingroup backend
  */
@@ -59,9 +59,9 @@ extern "C" {
 
 typedef struct _Plugin	Plugin;
 
-Plugin *pluginExport(const char *pluginName, ...);
+Plugin *elektraPluginExport(const char *pluginName, ...);
 
-KeySet *pluginGetConfig(Plugin *handle);
+KeySet *elektraPluginGetConfig(Plugin *handle);
 
 // needed for storage plugins?
 int keyClearSync (Key *key);

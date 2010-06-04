@@ -53,7 +53,7 @@ ssize_t kdbSet_error(Plugin *handle, KeySet *returned, const Key *parentKey)
 
 Plugin *KDBEXPORT(error)
 {
-	return pluginExport(BACKENDNAME,
+	return elektraPluginExport(BACKENDNAME,
 		KDB_PLUGIN_OPEN,	&kdbOpen_error,
 		KDB_PLUGIN_CLOSE,	&kdbClose_error,
 		KDB_PLUGIN_GET,		&kdbGet_error,
