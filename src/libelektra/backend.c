@@ -114,7 +114,7 @@ system/elektra/mountpoints/<name>
  *         has the error information.
  * @ingroup backend
  */
-Backend* backendOpen(KeySet *elektraConfig)
+Backend* elektraBackendOpen(KeySet *elektraConfig)
 {
 	Key * cur;
 	Key * root;
@@ -182,11 +182,11 @@ Backend* backendOpen(KeySet *elektraConfig)
 error:
 	ksDel (systemConfig);
 	ksDel (elektraConfig);
-	backendClose(backend);
+	elektraBackendClose(backend);
 	return 0;
 }
 
-Backend* backendOpenDefault()
+Backend* elektraBackendOpenDefault()
 {
 	Backend *backend = kdbiCalloc(sizeof(struct _Backend));
 
@@ -207,7 +207,7 @@ Backend* backendOpenDefault()
 	return backend;
 }
 
-int backendClose(Backend *backend)
+int elektraBackendClose(Backend *backend)
 {
 	int ret = 0;
 

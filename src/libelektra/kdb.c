@@ -208,7 +208,7 @@ KDB * kdbOpen()
 	handle = kdbiCalloc(sizeof(struct _KDB));
 
 	/* Open default backend */
-	handle->defaultBackend=backendOpenDefault();
+	handle->defaultBackend=elektraBackendOpenDefault();
 	if (!handle->defaultBackend)
 	{
 #if DEBUG
@@ -269,7 +269,7 @@ int kdbClose(KDB *handle)
 	}
 	if (handle->trie) trieClose(handle->trie);
 
-	backendClose (handle->defaultBackend);
+	elektraBackendClose (handle->defaultBackend);
 
 	kdbiFree(handle);
 

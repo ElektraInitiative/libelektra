@@ -91,7 +91,7 @@ Trie *trieOpen(KeySet *config)
 		if (keyRel (root, cur) == 1)
 		{
 			KeySet *cut = ksCut(config, cur);
-			Backend *backend = backendOpen(cut);
+			Backend *backend = elektraBackendOpen(cut);
 			char *mountpoint;
 
 			if (!backend)
@@ -104,7 +104,7 @@ Trie *trieOpen(KeySet *config)
 				kdbPrintDebug("backend has no mountpoint");
 
 				ksDel(cut);
-				backendClose(backend);
+				elektraBackendClose(backend);
 				continue;
 			}
 			
@@ -139,12 +139,12 @@ int trieClose (Trie *trie)
 		if (trie->text[i]!=NULL) {
 			trieClose(trie->children[i]);
 			if (trie->value[i])
-				backendClose(trie->value[i]);
+				elektraBackendClose(trie->value[i]);
 			free(trie->text[i]);
 		}
 	}
 	if (trie->empty_value)
-		backendClose(trie->empty_value);
+		elektraBackendClose(trie->empty_value);
 	free(trie);
 	return 0;
 }

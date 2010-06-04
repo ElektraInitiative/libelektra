@@ -79,7 +79,7 @@ void test_simple()
 {
 	printf ("Test simple building of backend");
 
-	Backend *backend = backendOpen(set_simple());
+	Backend *backend = elektraBackendOpen(set_simple());
 	succeed_if (backend->getplugins[0] == 0, "there should be no plugin");
 	exit_if_fail (backend->getplugins[1] != 0, "there should be a plugin");
 	succeed_if (backend->getplugins[2] == 0, "there should be no plugin");
@@ -106,7 +106,7 @@ void test_simple()
 	succeed_if (plugin->kdbGet != 0, "no open pointer");
 	succeed_if (plugin->kdbSet != 0, "no open pointer");
 
-	backendClose (backend);
+	elektraBackendClose (backend);
 }
 
 void test_plugin()
@@ -164,13 +164,13 @@ void test_default()
 
 	elektraPluginClose(plugin);
 
-	Backend *backend = backendOpenDefault();
+	Backend *backend = elektraBackendOpenDefault();
 
 	Key *mp;
 	succeed_if ((mp = backend->mountpoint) != 0, "no mountpoint found");
 	succeed_if (!strcmp(keyName(mp), ""), "wrong mountpoint for default backend");
 	succeed_if (!strcmp(keyString(mp), "default"), "wrong name for default backend");
-	backendClose(backend);
+	elektraBackendClose(backend);
 }
 
 void test_trie()

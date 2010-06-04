@@ -479,9 +479,9 @@ KDB* kdbOpenBackend(const char *backendname, const char *mountpoint, KeySet *con
 int kdbCloseBackend(KDB *handle);
 
 /*Backend handling*/
-Backend* backendOpen(KeySet *elektra_config);
-Backend* backendOpenDefault();
-int backendClose(Backend *backend);
+Backend* elektraBackendOpen(KeySet *elektra_config);
+Backend* elektraBackendOpenDefault();
+int elektraBackendClose(Backend *backend);
 
 /*Plugin handling*/
 int renameConfig(KeySet *config);
