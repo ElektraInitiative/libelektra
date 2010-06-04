@@ -316,34 +316,34 @@ Plugin *elektraPluginExport(const char *pluginName, ...) {
 
 	while ((method=va_arg(va,plugin_t))) {
 		switch (method) {
-			case KDB_PLUGIN_OPEN:
+			case ELEKTRA_PLUGIN_OPEN:
 				returned->kdbOpen=va_arg(va,kdbOpenPtr);
 				break;
-			case KDB_PLUGIN_CLOSE:
+			case ELEKTRA_PLUGIN_CLOSE:
 				returned->kdbClose=va_arg(va,kdbClosePtr);
 				break;
-			case KDB_PLUGIN_GET:
+			case ELEKTRA_PLUGIN_GET:
 				returned->kdbGet=va_arg(va,kdbGetPtr);
 				break;
-			case KDB_PLUGIN_SET:
+			case ELEKTRA_PLUGIN_SET:
 				returned->kdbSet=va_arg(va,kdbSetPtr);
 				break;
-			case KDB_PLUGIN_VERSION:
+			case ELEKTRA_PLUGIN_VERSION:
 				returned->version=va_arg(va, const char *);
 				break;
-			case KDB_PLUGIN_DESCRIPTION:
+			case ELEKTRA_PLUGIN_DESCRIPTION:
 				returned->description=va_arg(va, const char *);
 				break;
-			case KDB_PLUGIN_AUTHOR:
+			case ELEKTRA_PLUGIN_AUTHOR:
 				returned->author=va_arg(va, const char *);
 				break;
-			case KDB_PLUGIN_LICENCE:
+			case ELEKTRA_PLUGIN_LICENCE:
 				returned->licence=va_arg(va, const char *);
 				break;
-			case KDB_PLUGIN_PROVIDES:
+			case ELEKTRA_PLUGIN_PROVIDES:
 				returned->provides=va_arg(va, const char*);
 				break;
-			case KDB_PLUGIN_NEEDS:
+			case ELEKTRA_PLUGIN_NEEDS:
 				returned->needs=va_arg(va, const char*);
 				break;
 			default:
@@ -351,7 +351,7 @@ Plugin *elektraPluginExport(const char *pluginName, ...) {
 				printf ("plugin passed something unexpected\n");
 #endif
 				// fallthrough, will end here
-			case KDB_PLUGIN_END:
+			case ELEKTRA_PLUGIN_END:
 				va_end(va);
 				return returned;
 		}

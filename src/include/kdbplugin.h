@@ -38,17 +38,17 @@
  * @ingroup backend
  */
 typedef enum {
-	KDB_PLUGIN_OPEN=1,		/*!< Next arg is backend for kdbOpen() */
-	KDB_PLUGIN_CLOSE=1<<1,	/*!< Next arg is backend for kdbClose() */
-	KDB_PLUGIN_GET=1<<2,	/*!< Next arg is backend for kdbGet() */
-	KDB_PLUGIN_SET=1<<3,	/*!< Next arg is backend for kdbSet() */
-	KDB_PLUGIN_VERSION=1<<4,	/*!< Next arg is char * for Version */
-	KDB_PLUGIN_DESCRIPTION=1<<5,/*!< Next arg is char * for Description */
-	KDB_PLUGIN_AUTHOR=1<<6,	/*!< Next arg is char * for Author*/
-	KDB_PLUGIN_LICENCE=1<<7,	/*!< Next arg is char * for Licence*/
-	KDB_PLUGIN_PROVIDES=1<<8,	/*!< Next arg is char * for Licence*/
-	KDB_PLUGIN_NEEDS=1<<9,		/*!< Next arg is char * for Licence*/
-	KDB_PLUGIN_END=0		/*!< End of arguments */
+	ELEKTRA_PLUGIN_OPEN=1,		/*!< Next arg is backend for kdbOpen() */
+	ELEKTRA_PLUGIN_CLOSE=1<<1,	/*!< Next arg is backend for kdbClose() */
+	ELEKTRA_PLUGIN_GET=1<<2,	/*!< Next arg is backend for kdbGet() */
+	ELEKTRA_PLUGIN_SET=1<<3,	/*!< Next arg is backend for kdbSet() */
+	ELEKTRA_PLUGIN_VERSION=1<<4,	/*!< Next arg is char * for Version */
+	ELEKTRA_PLUGIN_DESCRIPTION=1<<5,/*!< Next arg is char * for Description */
+	ELEKTRA_PLUGIN_AUTHOR=1<<6,	/*!< Next arg is char * for Author*/
+	ELEKTRA_PLUGIN_LICENCE=1<<7,	/*!< Next arg is char * for Licence*/
+	ELEKTRA_PLUGIN_PROVIDES=1<<8,	/*!< Next arg is char * for Licence*/
+	ELEKTRA_PLUGIN_NEEDS=1<<9,		/*!< Next arg is char * for Licence*/
+	ELEKTRA_PLUGIN_END=0		/*!< End of arguments */
 } plugin_t;
 
 

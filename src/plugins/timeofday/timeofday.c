@@ -85,16 +85,16 @@ ssize_t kdbSet_timeofday(Plugin *handle, KeySet *returned, const Key *parentKey)
 Plugin *ELEKTRA_PLUGIN_EXPORT(timeofday)
 {
 	return elektraPluginExport(BACKENDNAME,
-		KDB_PLUGIN_OPEN,	&kdbOpen_timeofday,
-		KDB_PLUGIN_CLOSE,	&kdbClose_timeofday,
-		KDB_PLUGIN_GET,		&kdbGet_timeofday,
-		KDB_PLUGIN_SET,		&kdbSet_timeofday,
-		KDB_PLUGIN_VERSION,	BACKENDVERSION,
-		KDB_PLUGIN_AUTHOR,	"Full Name <email@libelektra.org>",
-		KDB_PLUGIN_LICENCE,	"BSD",
-		KDB_PLUGIN_DESCRIPTION,	"Add description here",
-		KDB_PLUGIN_NEEDS,	"",
-		KDB_PLUGIN_PROVIDES,	"",
-		KDB_PLUGIN_END);
+		ELEKTRA_PLUGIN_OPEN,	&kdbOpen_timeofday,
+		ELEKTRA_PLUGIN_CLOSE,	&kdbClose_timeofday,
+		ELEKTRA_PLUGIN_GET,		&kdbGet_timeofday,
+		ELEKTRA_PLUGIN_SET,		&kdbSet_timeofday,
+		ELEKTRA_PLUGIN_VERSION,	BACKENDVERSION,
+		ELEKTRA_PLUGIN_AUTHOR,	"Full Name <email@libelektra.org>",
+		ELEKTRA_PLUGIN_LICENCE,	"BSD",
+		ELEKTRA_PLUGIN_DESCRIPTION,	"Add description here",
+		ELEKTRA_PLUGIN_NEEDS,	"",
+		ELEKTRA_PLUGIN_PROVIDES,	"",
+		ELEKTRA_PLUGIN_END);
 }
 

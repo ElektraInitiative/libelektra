@@ -318,16 +318,16 @@ error:
 Plugin *ELEKTRA_PLUGIN_EXPORT(hosts)
 {
 	return elektraPluginExport(BACKENDNAME,
-		KDB_PLUGIN_OPEN,	&kdbOpen_hosts,
-		KDB_PLUGIN_CLOSE,	&kdbClose_hosts,
-		KDB_PLUGIN_GET,		&kdbGet_hosts,
-		KDB_PLUGIN_SET,		&kdbSet_hosts,
-		KDB_PLUGIN_VERSION,	BACKENDVERSION,
-		KDB_PLUGIN_AUTHOR,	"Markus Raab <elektra@markus-raab.org>",
-		KDB_PLUGIN_LICENCE,	"BSD",
-		KDB_PLUGIN_DESCRIPTION,	"Reads and writes /etc/hosts content",
-		KDB_PLUGIN_PROVIDES,	"storage",
-		KDB_PLUGIN_NEEDS,	"",
-		KDB_PLUGIN_END);
+		ELEKTRA_PLUGIN_OPEN,	&kdbOpen_hosts,
+		ELEKTRA_PLUGIN_CLOSE,	&kdbClose_hosts,
+		ELEKTRA_PLUGIN_GET,		&kdbGet_hosts,
+		ELEKTRA_PLUGIN_SET,		&kdbSet_hosts,
+		ELEKTRA_PLUGIN_VERSION,	BACKENDVERSION,
+		ELEKTRA_PLUGIN_AUTHOR,	"Markus Raab <elektra@markus-raab.org>",
+		ELEKTRA_PLUGIN_LICENCE,	"BSD",
+		ELEKTRA_PLUGIN_DESCRIPTION,	"Reads and writes /etc/hosts content",
+		ELEKTRA_PLUGIN_PROVIDES,	"storage",
+		ELEKTRA_PLUGIN_NEEDS,	"",
+		ELEKTRA_PLUGIN_END);
 }
 

@@ -54,16 +54,16 @@ ssize_t kdbSet_error(Plugin *handle, KeySet *returned, const Key *parentKey)
 Plugin *ELEKTRA_PLUGIN_EXPORT(error)
 {
 	return elektraPluginExport(BACKENDNAME,
-		KDB_PLUGIN_OPEN,	&kdbOpen_error,
-		KDB_PLUGIN_CLOSE,	&kdbClose_error,
-		KDB_PLUGIN_GET,		&kdbGet_error,
-		KDB_PLUGIN_SET,		&kdbSet_error,
-		KDB_PLUGIN_VERSION,	BACKENDVERSION,
-		KDB_PLUGIN_AUTHOR,	"Markus Raab <elektra@markus-raab.org>",
-		KDB_PLUGIN_LICENCE,	"BSD",
-		KDB_PLUGIN_DESCRIPTION,	"Always returns an error",
-		KDB_PLUGIN_NEEDS,	"",
-		KDB_PLUGIN_PROVIDES,	"",
-		KDB_PLUGIN_END);
+		ELEKTRA_PLUGIN_OPEN,	&kdbOpen_error,
+		ELEKTRA_PLUGIN_CLOSE,	&kdbClose_error,
+		ELEKTRA_PLUGIN_GET,		&kdbGet_error,
+		ELEKTRA_PLUGIN_SET,		&kdbSet_error,
+		ELEKTRA_PLUGIN_VERSION,	BACKENDVERSION,
+		ELEKTRA_PLUGIN_AUTHOR,	"Markus Raab <elektra@markus-raab.org>",
+		ELEKTRA_PLUGIN_LICENCE,	"BSD",
+		ELEKTRA_PLUGIN_DESCRIPTION,	"Always returns an error",
+		ELEKTRA_PLUGIN_NEEDS,	"",
+		ELEKTRA_PLUGIN_PROVIDES,	"",
+		ELEKTRA_PLUGIN_END);
 }
 

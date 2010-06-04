@@ -206,17 +206,17 @@ ssize_t kdbSet_dump(ckdb::Plugin *handle, ckdb::KeySet *returned, const ckdb::Ke
 ckdb::Plugin *ELEKTRA_PLUGIN_EXPORT(dump)
 {
 	return elektraPluginExport(BACKENDNAME,
-		KDB_PLUGIN_OPEN,		&kdbOpen_dump,
-		KDB_PLUGIN_CLOSE,	&kdbClose_dump,
-		KDB_PLUGIN_GET,		&kdbGet_dump,
-		KDB_PLUGIN_SET,		&kdbSet_dump,
-		KDB_PLUGIN_VERSION,	BACKENDVERSION,
-		KDB_PLUGIN_AUTHOR,	"Markus Raab <elektra@markus-raab.org>",
-		KDB_PLUGIN_LICENCE,	"BSD",
-		KDB_PLUGIN_DESCRIPTION,	"Dumps complete Elektra Semantics",
-		KDB_PLUGIN_PROVIDES,	"storage",
-		KDB_PLUGIN_NEEDS,	"",
-		KDB_PLUGIN_END);
+		ELEKTRA_PLUGIN_OPEN,		&kdbOpen_dump,
+		ELEKTRA_PLUGIN_CLOSE,	&kdbClose_dump,
+		ELEKTRA_PLUGIN_GET,		&kdbGet_dump,
+		ELEKTRA_PLUGIN_SET,		&kdbSet_dump,
+		ELEKTRA_PLUGIN_VERSION,	BACKENDVERSION,
+		ELEKTRA_PLUGIN_AUTHOR,	"Markus Raab <elektra@markus-raab.org>",
+		ELEKTRA_PLUGIN_LICENCE,	"BSD",
+		ELEKTRA_PLUGIN_DESCRIPTION,	"Dumps complete Elektra Semantics",
+		ELEKTRA_PLUGIN_PROVIDES,	"storage",
+		ELEKTRA_PLUGIN_NEEDS,	"",
+		ELEKTRA_PLUGIN_END);
 }
 
 } // extern C

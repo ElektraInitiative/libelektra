@@ -76,16 +76,16 @@ ssize_t kdbSet_tracer(Plugin *handle, KeySet *returned, const Key *parentKey)
 Plugin *ELEKTRA_PLUGIN_EXPORT(tracer)
 {
 	return elektraPluginExport(BACKENDNAME,
-		KDB_PLUGIN_OPEN,	&kdbOpen_tracer,
-		KDB_PLUGIN_CLOSE,	&kdbClose_tracer,
-		KDB_PLUGIN_GET,		&kdbGet_tracer,
-		KDB_PLUGIN_SET,		&kdbSet_tracer,
-		KDB_PLUGIN_VERSION,	BACKENDVERSION,
-		KDB_PLUGIN_AUTHOR,	"Markus Raab <elektra@markus-raab.org>",
-		KDB_PLUGIN_LICENCE,	"BSD",
-		KDB_PLUGIN_DESCRIPTION,	"The first plugin",
-		KDB_PLUGIN_PROVIDES,	"tracer",
-		KDB_PLUGIN_NEEDS,	"",
-		KDB_PLUGIN_END);
+		ELEKTRA_PLUGIN_OPEN,	&kdbOpen_tracer,
+		ELEKTRA_PLUGIN_CLOSE,	&kdbClose_tracer,
+		ELEKTRA_PLUGIN_GET,		&kdbGet_tracer,
+		ELEKTRA_PLUGIN_SET,		&kdbSet_tracer,
+		ELEKTRA_PLUGIN_VERSION,	BACKENDVERSION,
+		ELEKTRA_PLUGIN_AUTHOR,	"Markus Raab <elektra@markus-raab.org>",
+		ELEKTRA_PLUGIN_LICENCE,	"BSD",
+		ELEKTRA_PLUGIN_DESCRIPTION,	"The first plugin",
+		ELEKTRA_PLUGIN_PROVIDES,	"tracer",
+		ELEKTRA_PLUGIN_NEEDS,	"",
+		ELEKTRA_PLUGIN_END);
 }
 

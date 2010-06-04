@@ -60,16 +60,16 @@ ssize_t kdbSet_backend(Plugin *handle, KeySet *returned, const Key *parentKey)
 Plugin *ELEKTRA_PLUGIN_EXPORT(backend)
 {
 	return elektraPluginExport(BACKENDNAME,
-		KDB_PLUGIN_OPEN,	&kdbOpen_backend,
-		KDB_PLUGIN_CLOSE,	&kdbClose_backend,
-		KDB_PLUGIN_GET,		&kdbGet_backend,
-		KDB_PLUGIN_SET,		&kdbSet_backend,
-		KDB_PLUGIN_VERSION,	BACKENDVERSION,
-		KDB_PLUGIN_AUTHOR,	"Markus Raab <elektra@markus-raab.org>",
-		KDB_PLUGIN_LICENCE,	"BSD",
-		KDB_PLUGIN_DESCRIPTION,	"This plugin composes other plugins together to a backend",
-		KDB_PLUGIN_NEEDS,	"tracer storage logger",
-		KDB_PLUGIN_PROVIDES,	"",
-		KDB_PLUGIN_END);
+		ELEKTRA_PLUGIN_OPEN,	&kdbOpen_backend,
+		ELEKTRA_PLUGIN_CLOSE,	&kdbClose_backend,
+		ELEKTRA_PLUGIN_GET,		&kdbGet_backend,
+		ELEKTRA_PLUGIN_SET,		&kdbSet_backend,
+		ELEKTRA_PLUGIN_VERSION,	BACKENDVERSION,
+		ELEKTRA_PLUGIN_AUTHOR,	"Markus Raab <elektra@markus-raab.org>",
+		ELEKTRA_PLUGIN_LICENCE,	"BSD",
+		ELEKTRA_PLUGIN_DESCRIPTION,	"This plugin composes other plugins together to a backend",
+		ELEKTRA_PLUGIN_NEEDS,	"tracer storage logger",
+		ELEKTRA_PLUGIN_PROVIDES,	"",
+		ELEKTRA_PLUGIN_END);
 }
 
