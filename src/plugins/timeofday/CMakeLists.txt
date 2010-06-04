@@ -5,4 +5,5 @@ add_sources(elektra-full ${SOURCES})
 add_headers(SOURCES)
 
 add_library(elektra-timeofday MODULE ${SOURCES})
+
 install (TARGETS elektra-timeofday DESTINATION lib/elektra)

@@ -27,11 +27,28 @@
 
 #include "timeofday.h"
 
-static char* timeofday(char *t)
+#ifndef timersub
+#define timersub(val1,val2,res) \
+	if (1) \
+	{ \
+		(res)->tv_sec = (val1)->tv_sec - (val2)->tv_sec; \
+		if (((res)->tv_usec = (val1)->tv_usec - (val2)->tv_usec) < 0) \
+		{ \
+			(res)->tv_sec --; \
+			(res)->tv_usec += 1000000; \
+		} \
+	}
+#endif
+
+static char* timeofday(char *t, struct timeval *start)
 {
+	struct timeval now;
 	struct timeval tv;
 
-	gettimeofday(&tv, 0);
+	gettimeofday(&now, 0);
+
+	timersub (&now, start, &tv);
+
 	for (int i=9; i>=4; --i)
 	{
 		t[i] = tv.tv_usec %10 + '0';
@@ -48,8 +65,13 @@ static char* timeofday(char *t)
 
 int kdbOpen_timeofday(Plugin *handle)
 {
+	struct timeval *start = malloc(sizeof (struct timeval));
 	char t[10];
-	fprintf(stderr, "open %s\n", timeofday(t));
+
+	gettimeofday(start, 0);
+	elektraPluginSetHandle(handle, start);
+
+	fprintf(stderr, "open\t%s\n", timeofday(t, start));
 
 	return 0; /* success */
 }
@@ -57,7 +79,11 @@ int kdbOpen_timeofday(Plugin *handle)
 int kdbClose_timeofday(Plugin *handle)
 {
 	char t[10];
-	fprintf(stderr, "close %s\n", timeofday(t));
+	struct timeval *start = elektraPluginGetHandle(handle);
+
+	fprintf(stderr, "close\t%s\n", timeofday(t, start));
+
+	free(start);
 
 	return 0; /* success */
 }
@@ -66,8 +92,9 @@ ssize_t kdbGet_timeofday(Plugin *handle, KeySet *returned, const Key *parentKey)
 {
 	ssize_t nr_keys = 0;
 	char t[10];
+	struct timeval *start = elektraPluginGetHandle(handle);
 
-	fprintf(stderr, "get %s\n", timeofday(t));
+	fprintf(stderr, "get\t%s\n", timeofday(t, start));
 
 	return nr_keys; /* success */
 }
@@ -76,8 +103,9 @@ ssize_t kdbSet_timeofday(Plugin *handle, KeySet *returned, const Key *parentKey)
 {
 	ssize_t nr_keys = 0;
 	char t[10];
+	struct timeval *start = elektraPluginGetHandle(handle);
 
-	fprintf(stderr, "set %s\n", timeofday(t));
+	fprintf(stderr, "set\t%s\n", timeofday(t, start));
 
 	return nr_keys;
 }

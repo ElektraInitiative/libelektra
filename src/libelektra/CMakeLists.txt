@@ -76,6 +76,7 @@ if (BUILD_FULL OR BUILD_STATIC)
 	list (APPEND SOURCES ${elektra-full_SRCS})
 	list (APPEND SOURCES "${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.c")
 
+
 	#and get all libraries to link against
 	get_property (elektra-full_LIBRARIES GLOBAL PROPERTY elektra-full_LIBRARIES)
 

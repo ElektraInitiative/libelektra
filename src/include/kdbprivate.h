@@ -368,7 +368,7 @@ struct _Plugin {
 		plugin, which should be of course prefered to the backend configuration.
 		The keys inside contain information like /path which path should be used
 		to write configuration to or /host to which host packets should be send.
-		@see kdbhGetConfig() */
+		@see elektraPluginGetConfig() */
 
 	kdbOpenPtr kdbOpen;	/*!< The pointer to kdbOpen_template() of the backend. */
 	kdbClosePtr kdbClose;	/*!< The pointer to kdbClose_template() of the backend. */
@@ -387,7 +387,11 @@ struct _Plugin {
 	const char *provides;
 	const char *needs;
 
-	size_t refcounter;
+	size_t refcounter;	/*!< This refcounter shows how often the plugin
+		is used.  Not shared plugins have 1 in it */
+
+	void *handle;		/*!< This handle can be used for a plugin to store
+		any data its want to. */
 };
 
 

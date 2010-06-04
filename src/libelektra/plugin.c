@@ -460,3 +460,13 @@ KeySet *elektraPluginGetConfig(Plugin *handle)
 {
 	return handle->config;
 }
+
+void elektraPluginSetHandle(Plugin *plugin, void *handle)
+{
+	plugin->handle = handle;
+}
+
+void* elektraPluginGetHandle(Plugin *plugin)
+{
+	return plugin->handle;
+}
