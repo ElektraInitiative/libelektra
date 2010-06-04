@@ -386,6 +386,8 @@ struct _Plugin {
 	const char *licence;
 	const char *provides;
 	const char *needs;
+
+	size_t refcounter;
 };
 
 

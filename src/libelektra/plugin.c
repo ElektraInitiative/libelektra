@@ -220,7 +220,9 @@ int elektraProcessPlugins(Plugin **plugins, KeySet *referencePlugins, KeySet *co
 
 			if (pluginName)
 			{
+				/* case 1, we create a new plugin */
 				plugins[pluginNumber] = elektraPluginOpen(pluginName, pluginConfig);
+				/* case 2, we label it for later use */
 				if (referenceName) ksAppendKey (referencePlugins,
 						keyNew(referenceName,
 							KEY_BINARY,
@@ -228,8 +230,12 @@ int elektraProcessPlugins(Plugin **plugins, KeySet *referencePlugins, KeySet *co
 							KEY_VALUE, &plugins[pluginNumber],
 							KEY_END));
 			} else {
+				/* case 3, we use an existing plugin */
 				plugins[pluginNumber] = *(Plugin**)keyValue(ksLookup(referencePlugins, keyNew(referenceName, KEY_END), KDB_O_DEL));
+				++plugins[pluginNumber]->refcounter;
 			}
+			free (pluginName);
+			free (referenceName);
 		} else {
 #if DEBUG
 			printf ("Unkown additional entries in plugin\n");
@@ -296,6 +302,9 @@ Plugin* elektraPluginOpen(const char *pluginname, KeySet *config)
 	/* save the libloader handle for future use */
 	handle->dlHandle=dlhandle;
 
+	/* init reference counting */
+	handle->refcounter = 1;
+
 	/* let the plugin initialize itself */
 	if (handle->kdbOpen)
 	{
@@ -335,6 +344,11 @@ int elektraPluginClose(Plugin *handle)
 	int rc=0;
 
 	if (!handle) return 0;
+
+	--handle->refcounter;
+
+	/* Check if we have the last reference on the plugin */
+	if (handle->refcounter > 0) return 0;
 
 	if (handle->kdbClose)
 	{

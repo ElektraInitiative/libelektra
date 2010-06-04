@@ -180,11 +180,13 @@ Backend* elektraBackendOpen(KeySet *elektraConfig)
 
 	ksDel (systemConfig);
 	ksDel (elektraConfig);
+	ksDel (referencePlugins);
 	return backend;
 
 error:
 	ksDel (systemConfig);
 	ksDel (elektraConfig);
+	ksDel (referencePlugins);
 	elektraBackendClose(backend);
 	return 0;
 }
