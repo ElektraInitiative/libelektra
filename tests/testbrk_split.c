@@ -43,13 +43,13 @@ void test_create()
 	succeed_if (split->keysets, "did not alloc keysets array");
 	succeed_if (split->handles, "did not alloc handles array");
 
-	resize_splitted_keysets (split);
+	elektraSplitResize (split);
 	split->keysets[0] = ksNew(0);
 	succeed_if (split->no == 1, "resize not correct");
-	resize_splitted_keysets (split);
+	elektraSplitResize (split);
 	split->keysets[1] = ksNew(0);
 	succeed_if (split->no == 2, "resize not correct");
-	resize_splitted_keysets (split);
+	elektraSplitResize (split);
 	split->keysets[2] = ksNew(0);
 	succeed_if (split->no == 3, "resize not correct");
 
@@ -63,7 +63,7 @@ void test_emptysplit()
 	KeySet *ks = ksNew (0);
 	Key *parentKey = 0;
 	unsigned long options = 0;
-	Split *split = split_keyset (handle, ks, parentKey, options);
+	Split *split = elektraSplitKeySet (handle, ks, parentKey, options);
 
 	printf ("Test empty split\n");
 	succeed_if (split->no == 0, "empty requires no data");
@@ -85,7 +85,7 @@ void test_easysplit()
 		KS_END);
 	Key *parentKey = 0;
 	unsigned long options = 0;
-	Split *split = split_keyset (handle, ks, parentKey, options);
+	Split *split = elektraSplitKeySet (handle, ks, parentKey, options);
 
 	printf ("Test easy split\n");
 	succeed_if (split->keysets, "did not alloc keysets array");
@@ -107,7 +107,7 @@ void test_singlesplit()
 		KS_END);
 	Key *parentKey = 0;
 	unsigned long options = 0;
-	Split *split = split_keyset (handle, ks, parentKey, options);
+	Split *split = elektraSplitKeySet (handle, ks, parentKey, options);
 
 	printf ("Test single split\n");
 	succeed_if (split->keysets, "did not alloc keysets array");
@@ -151,7 +151,7 @@ void test_mount()
 	kdbMount (handle, mnt=keyNew ("system", KEY_VALUE, "filesys", KEY_END), config=ksNew(0));
 	keyDel (mnt); ksDel (config);
 
-	split = split_keyset (handle, ks, parentKey, options);
+	split = elektraSplitKeySet (handle, ks, parentKey, options);
 	/*ksOutput (split->keysets[0], stdout, KDB_O_HEADER);*/
 
 
@@ -209,7 +209,7 @@ void test_optimize()
 		if (keyIsUser(key) == 1) key->flags &= ~KEY_FLAG_SYNC;
 	}
 
-	split = split_keyset (handle, ks, parentKey, options);
+	split = elektraSplitKeySet (handle, ks, parentKey, options);
 
 
 	printf ("Test optimization split\n");
@@ -230,7 +230,7 @@ void test_optimize()
 		key->flags = 0;
 	}
 
-	split = split_keyset (handle, ks, parentKey, options);
+	split = elektraSplitKeySet (handle, ks, parentKey, options);
 
 
 	succeed_if (split->keysets, "did not alloc keysets array");
@@ -244,7 +244,7 @@ void test_optimize()
 	options = KDB_O_SYNC;
 	elektraSplitClose (split);
 
-	split = split_keyset (handle, ks, parentKey, options);
+	split = elektraSplitKeySet (handle, ks, parentKey, options);
 
 
 	succeed_if (split->keysets, "did not alloc keysets array");
@@ -264,7 +264,7 @@ void test_optimize()
 		key->flags = KEY_FLAG_SYNC;
 	}
 
-	split = split_keyset (handle, ks, parentKey, options);
+	split = elektraSplitKeySet (handle, ks, parentKey, options);
 
 	succeed_if (split->keysets, "did not alloc keysets array");
 	succeed_if (split->handles, "did not alloc handles array");
@@ -315,7 +315,7 @@ void test_removed()
 	kdbMount (handle, mnt=keyNew ("system", KEY_VALUE, "filesys", KEY_END), config=ksNew(0));
 	keyDel (mnt); ksDel (config);
 
-	split = split_keyset (handle, ks, parentKey, options);
+	split = elektraSplitKeySet (handle, ks, parentKey, options);
 
 
 	printf ("Test optimization split with removed keys\n");
@@ -337,7 +337,7 @@ void test_removed()
 		if (keyIsUser(key) == 1) key->flags &= ~KEY_FLAG_SYNC;
 	}
 
-	split = split_keyset (handle, ks, parentKey, options);
+	split = elektraSplitKeySet (handle, ks, parentKey, options);
 
 	succeed_if (split->keysets, "did not alloc keysets array");
 	succeed_if (split->handles, "did not alloc handles array");
@@ -350,7 +350,7 @@ void test_removed()
 	elektraSplitClose (split);
 
 	options = KDB_O_SYNC;
-	split = split_keyset (handle, ks, parentKey, options);
+	split = elektraSplitKeySet (handle, ks, parentKey, options);
 
 	succeed_if (split->keysets, "did not alloc keysets array");
 	succeed_if (split->handles, "did not alloc handles array");
@@ -406,7 +406,7 @@ void test_easyparent()
 
 
 	parentKey = keyNew ("user", KEY_END);
-	split = split_keyset (handle, ks, parentKey, options);
+	split = elektraSplitKeySet (handle, ks, parentKey, options);
 
 
 	succeed_if (split->keysets, "did not alloc keysets array");
@@ -424,7 +424,7 @@ void test_easyparent()
 	keyDel (parentKey);
 
 	parentKey = keyNew ("system", KEY_END);
-	split = split_keyset (handle, ks, parentKey, options);
+	split = elektraSplitKeySet (handle, ks, parentKey, options);
 
 
 	succeed_if (split->keysets, "did not alloc keysets array");
@@ -446,7 +446,7 @@ void test_easyparent()
 	keyDel (mnt); ksDel (config);
 
 	parentKey = keyNew ("user", KEY_END);
-	split = split_keyset (handle, ks, parentKey, options);
+	split = elektraSplitKeySet (handle, ks, parentKey, options);
 
 
 	succeed_if (split->keysets, "did not alloc keysets array");
@@ -463,7 +463,7 @@ void test_easyparent()
 	keyDel (parentKey);
 
 	parentKey = keyNew ("system", KEY_END);
-	split = split_keyset (handle, ks, parentKey, options);
+	split = elektraSplitKeySet (handle, ks, parentKey, options);
 
 
 	succeed_if (split->keysets, "did not alloc keysets array");
@@ -537,7 +537,7 @@ void test_parent()
 
 
 	parentKey = keyNew ("user/valid", KEY_END);
-	split = split_keyset (handle, ks, parentKey, options);
+	split = elektraSplitKeySet (handle, ks, parentKey, options);
 
 
 	succeed_if (split->keysets, "did not alloc keysets array");
@@ -617,7 +617,7 @@ void test_mountparent()
 
 
 	parentKey = keyNew ("user/valid", KEY_END);
-	split = split_keyset (handle, ks, parentKey, options);
+	split = elektraSplitKeySet (handle, ks, parentKey, options);
 
 
 	succeed_if (split->keysets, "did not alloc keysets array");

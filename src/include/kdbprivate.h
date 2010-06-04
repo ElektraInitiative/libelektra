@@ -439,8 +439,8 @@ int kdbDelTrie(Trie *trie,CloseMapper close_backend);
 /*Methods for splitted keysets */
 void elektraSplitClose(Split *keysets);
 void elektraSplitInit(Split *ret);
-void resize_splitted_keysets(Split *ret);
-Split *split_keyset(KDB *handle, KeySet *ks,
+void elektraSplitResize(Split *ret);
+Split *elektraSplitKeySet(KDB *handle, KeySet *ks,
 	Key *parentKey, unsigned long options);
 
 /*Internal helpers*/

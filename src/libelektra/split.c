@@ -74,7 +74,7 @@ void elektraSplitInit(Split *ret)
 	ret->belowparents[0] = 0;
 }
 
-void resize_splitted_keysets(Split *ret)
+void elektraSplitResize(Split *ret)
 {
 	ret->no++;
 	ret->keysets=realloc(ret->keysets,(ret->no+1)*sizeof(KeySet *));
@@ -91,7 +91,7 @@ void resize_splitted_keysets(Split *ret)
 
 /* Split keysets.
  * Make sure that parentKey has a name or is a null pointer*/
-Split *split_keyset(KDB *handle, KeySet *ks,
+Split *elektraSplitKeySet(KDB *handle, KeySet *ks,
 	Key *parentKey, unsigned long options)
 {
 	Split *ret;
@@ -124,7 +124,7 @@ Split *split_keyset(KDB *handle, KeySet *ks,
 
 		if (!curFound)
 		{
-			resize_splitted_keysets (ret);
+			elektraSplitResize (ret);
 
 			ret->keysets[ret->no-1] = ksNew (ksGetSize (ks) / APPROXIMATE_NR_OF_BACKENDS + 2, KS_END);
 			ksAppendKey(ret->keysets[ret->no-1],curKey);

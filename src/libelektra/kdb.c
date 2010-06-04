@@ -705,7 +705,7 @@ ssize_t kdbSet (KDB *handle, KeySet *ks,
 		return -1;
 	}
 
-	keysets=split_keyset(handle, ks, parentKey, options);
+	keysets=elektraSplitKeySet(handle, ks, parentKey, options);
 
 	for (size_t i=0; i<keysets->no;i++)
 	{
