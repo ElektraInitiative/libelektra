@@ -299,7 +299,7 @@ int read_key (KDB *handle, Key * key, char * root)
 		else if (rc == CHAR_NULL ) {	/* anticipated end?*/
 			if (i==string_length-1) { /* no its not*/
 				string_length += BUFFER_SIZE;
-				if (kdbiRealloc ((void**) & buffer, string_length) < 0)
+				if (elektraRealloc ((void**) & buffer, string_length) < 0)
 					goto memerror;
 				else fprintf (stderr, "Realloc ok buffer (%p, %d)\n", buffer, string_length);
 				fgets (buffer+string_length-BUFFER_SIZE,
@@ -317,7 +317,7 @@ int read_key (KDB *handle, Key * key, char * root)
 			if (k == key_length-1)
 			{
 				key_length += BUFFER_SIZE;
-				if (kdbiRealloc ((void **) & buffer_key, key_length) < 0)
+				if (elektraRealloc ((void **) & buffer_key, key_length) < 0)
 					goto memerror;
 				else fprintf (stderr, "Realloc ok key\n");
 			}
@@ -327,7 +327,7 @@ int read_key (KDB *handle, Key * key, char * root)
 			if (v == value_length-1) 
 			{
 				value_length += BUFFER_SIZE;
-				if (kdbiRealloc ((void **) & buffer_value, value_length) < 0) 
+				if (elektraRealloc ((void **) & buffer_value, value_length) < 0) 
 					goto memerror;
 				else fprintf (stderr, "Realloc ok value\n");
 			}
@@ -337,7 +337,7 @@ int read_key (KDB *handle, Key * key, char * root)
 			if (c == comment_length-1)
 			{
 				comment_length += BUFFER_SIZE;
-				if (kdbiRealloc ((void **) & buffer_comment, comment_length) < 0)
+				if (elektraRealloc ((void **) & buffer_comment, comment_length) < 0)
 					goto memerror;
 				else fprintf (stderr, "Realloc ok comment\n");
 			}

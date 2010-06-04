@@ -265,7 +265,7 @@ ssize_t keySetName(Key *key, const char *newName)
 	key->keySize=1; /* equal to length plus room for \\0 */
 
 	/* handle null new key name, removing the old name */
-	if (!newName || !(length=kdbiStrLen(newName)-1))
+	if (!newName || !(length=elektraStrLen(newName)-1))
 	{
 		if (key->key) {
 			key->keySize = 0;
@@ -298,13 +298,13 @@ ssize_t keySetName(Key *key, const char *newName)
 				if (ownerLength > 0)
 				{
 					char *owner;
-					p=kdbiMalloc(ownerLength+1);
+					p=elektraMalloc(ownerLength+1);
 					if (NULL==p) goto error_mem;
 					owner=p;
 					strncpy(owner,newName+userLength+1,ownerLength);
 					owner[ownerLength]=0;
 					keySetOwner(key, owner);
-					kdbiFree (owner);
+					elektraFree (owner);
 				}
 				key->keySize+=length-ownerLength-1;  /* -1 is for the ':' */
 			} else if (*(newName+userLength)!=PATH_SEPARATOR) {
@@ -436,13 +436,13 @@ ssize_t keyGetFullNameSize(const Key *key)
 
 	if (!key->key) return 1;
 
-	returnedSize=kdbiStrLen(key->key);
+	returnedSize=elektraStrLen(key->key);
 
 	if (keyNameIsUser(key->key) && keyGetMeta(key, "owner"))
 		returnedSize+=keyGetOwnerSize(key);
 
 	/*
-	   After 2 kdbiStrLen() calls looks like we counted one more NULL.
+	   After 2 elektraStrLen() calls looks like we counted one more NULL.
 	   But we need this byte count because a full key name has an
 	   additional ':' char.
 	*/

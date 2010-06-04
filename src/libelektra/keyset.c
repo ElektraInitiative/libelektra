@@ -175,7 +175,7 @@ KeySet *ksVNew (size_t alloc, va_list va)
 	KeySet *keyset=0;
 	Key *key = 0;
 
-	keyset= (KeySet *)kdbiMalloc(sizeof(KeySet));
+	keyset= (KeySet *)elektraMalloc(sizeof(KeySet));
 	if (!keyset)
 	{
 		/*errno = KDB_ERR_NOMEM;*/
@@ -187,7 +187,7 @@ KeySet *ksVNew (size_t alloc, va_list va)
 	if (alloc < KEYSET_SIZE) keyset->alloc=KEYSET_SIZE;
 	else keyset->alloc=alloc;
 
-	keyset->array = kdbiMalloc (sizeof(struct _Key *) * keyset->alloc);
+	keyset->array = elektraMalloc (sizeof(struct _Key *) * keyset->alloc);
 	if (!keyset->array)
 	{
 		/*errno = KDB_ERR_NOMEM;*/
@@ -312,7 +312,7 @@ int ksDel(KeySet *ks)
 	if (!ks) return -1;
 
 	rc=ksClose(ks);
-	kdbiFree(ks);
+	elektraFree(ks);
 
 	return rc;
 }
@@ -335,16 +335,16 @@ int ksClear(KeySet *ks)
 
 	if (ks->array)
 	{	/* go back to standard size KEYSET_SIZE */
-		if (kdbiRealloc ((void**) &ks->array, sizeof(struct _Key *) * KEYSET_SIZE) == -1)
+		if (elektraRealloc ((void**) &ks->array, sizeof(struct _Key *) * KEYSET_SIZE) == -1)
 		{
 			/*errno = KDB_ERR_NOMEM;*/
-			kdbiFree (ks->array);
+			elektraFree (ks->array);
 			ks->array = 0;
 			ks->size = 0;
 			return -1;
 		}
 	} else {
-		if ((ks->array = kdbiMalloc (sizeof(struct _Key *) * KEYSET_SIZE)) == 0)
+		if ((ks->array = elektraMalloc (sizeof(struct _Key *) * KEYSET_SIZE)) == 0)
 		{
 			/*errno = KDB_ERR_NOMEM;*/
 			ks->size = 0;
@@ -779,7 +779,7 @@ ssize_t ksAppend(KeySet *ks, const KeySet *toAppend)
 	while (ks->size >= toAlloc) toAlloc *= 2;
 	ksResize (ks, toAlloc-1);
 	for (i=0; i<toAppend->size; i++) keyIncRef(toAppend->array[i]);
-	kdbiMemcpy (ks->array + oldSize, toAppend->array, toAppend->size);
+	elektraMemcpy (ks->array + oldSize, toAppend->array, toAppend->size);
 	ks->array[ks->size] = 0;
 	ksSort(ks);
 	return ks->size;
@@ -840,7 +840,7 @@ ssize_t ksCopyInternal(KeySet *ks, size_t to, size_t from)
 	if (ks->size < to) return -1;
 
 	ks->size = ks->size + sizediff;
-	ret = kdbiMemmove(ks->array + to, ks->array + from, length);
+	ret = elektraMemmove(ks->array + to, ks->array + from, length);
 	ks->array[ks->size] = 0;
 	return ret;
 }
@@ -889,7 +889,7 @@ KeySet *ksCut(KeySet *ks, const Key *cutpoint)
 #endif
 
 	returned = ksNew(newsize, KS_END);
-	kdbiMemcpy (returned->array, ks->array+found, newsize);
+	elektraMemcpy (returned->array, ks->array+found, newsize);
 	returned->size = newsize;
 	returned->array[returned->size] = 0;
 
@@ -1255,7 +1255,7 @@ static int keyCompareByNameCase(const void *p1, const void *p2) {
 	const char *name1 = keyName(key1);
 	const char *name2 = keyName(key2);
 
-	return kdbiStrCaseCmp(name1, name2);
+	return elektraStrCaseCmp(name1, name2);
 }
 
 static int keyCompareByNameOwner(const void *p1, const void *p2) {
@@ -1280,13 +1280,13 @@ static int keyCompareByNameOwnerCase(const void *p1, const void *p2) {
 	Key *key2=*(Key **)p2;
 	const char *name1 = keyName(key1);
 	const char *name2 = keyName(key2);
-	int result = kdbiStrCaseCmp(name1, name2);
+	int result = elektraStrCaseCmp(name1, name2);
 
 	if (result == 0)
 	{
 		const char *owner1 = keyOwner(key1);
 		const char *owner2 = keyOwner(key2);
-		return kdbiStrCaseCmp(owner1, owner2);
+		return elektraStrCaseCmp(owner1, owner2);
 	}
 	else return result;
 }
@@ -1555,7 +1555,7 @@ Key *ksLookupByName(KeySet *ks, const char *name, option_t options)
 	if (name[0] == '/')
 	{
 		/* Will be freed by second key */
-		newname = kdbiMalloc (strlen (name) + sizeof ("system") + 1);
+		newname = elektraMalloc (strlen (name) + sizeof ("system") + 1);
 		if (!newname)
 		{
 			/*errno = KDB_ERR_NOMEM;*/
@@ -1575,7 +1575,7 @@ Key *ksLookupByName(KeySet *ks, const char *name, option_t options)
 			keyDel (key);
 		}
 
-		kdbiFree (newname);
+		elektraFree (newname);
 		return found;
 	} else {
 		key = keyNew (name, KEY_END);
@@ -1641,7 +1641,7 @@ Key *ksLookupByString(KeySet *ks, const char *value, option_t options)
 		/*fprintf (stderr, "Compare %s with %s\n", keyValue(current), value);*/
 
 		if ((options & KDB_O_NOCASE) && 
-			!kdbiStrCaseCmp(keyValue(current),value)) break;
+			!elektraStrCaseCmp(keyValue(current),value)) break;
 		else if (!strcmp(keyValue(current),value)) break;
 	}
 
@@ -1787,7 +1787,7 @@ ssize_t ksGetCommonParentName(const KeySet *working,char *returnedCommonParent, 
 	}
 
 	strcpy(returnedCommonParent,keyName(current));
-	parentSize=kdbiStrLen(returnedCommonParent);
+	parentSize=elektraStrLen(returnedCommonParent);
 
 	while (*returnedCommonParent) {
 		ksRewind(ks);
@@ -1802,7 +1802,7 @@ ssize_t ksGetCommonParentName(const KeySet *working,char *returnedCommonParent, 
 
 			if ((delim=strrchr(returnedCommonParent,PATH_SEPARATOR))) {
 				*delim=0;
-				parentSize=kdbiStrLen(returnedCommonParent);
+				parentSize=elektraStrLen(returnedCommonParent);
 			} else {
 				*returnedCommonParent=0;
 				parentSize=0;
@@ -1866,7 +1866,7 @@ int ksResize (KeySet *ks, size_t alloc)
 	{	/* Not allocated up to now */
 		ks->alloc = alloc;
 		ks->size = 0;
-		ks->array = kdbiMalloc (sizeof(struct _Key *) * ks->alloc);
+		ks->array = elektraMalloc (sizeof(struct _Key *) * ks->alloc);
 		if (!ks->array)
 		{
 			/*errno = KDB_ERR_NOMEM;*/
@@ -1881,12 +1881,12 @@ int ksResize (KeySet *ks, size_t alloc)
 	ks->alloc=alloc;
 
 
-	if (kdbiRealloc((void**) &ks->array, sizeof(struct _Key *) * ks->alloc) == -1)
+	if (elektraRealloc((void**) &ks->array, sizeof(struct _Key *) * ks->alloc) == -1)
 	{
 #if DEBUG
 		fprintf (stderr, "Reallocation error\n");
 #endif
-		kdbiFree (ks->array);
+		elektraFree (ks->array);
 		ks->array = 0;
 		/*errno = KDB_ERR_NOMEM;*/
 		return -1;
@@ -1954,7 +1954,7 @@ int ksClose(KeySet *ks)
 		keyDel (k);
 	}
 
-	if (ks->array) kdbiFree (ks->array);
+	if (ks->array) elektraFree (ks->array);
 	ks->array = 0;
 	ks->alloc = 0;
 

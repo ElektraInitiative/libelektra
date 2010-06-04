@@ -123,7 +123,7 @@ static int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr read
 		/* test for a short value attribute, instead of <value> bellow */
 		buffer=xmlTextReaderGetAttribute(reader,(const xmlChar *)"value");
 		if (buffer) {
-			keySetRaw(newKey,buffer,kdbiStrLen((char *)buffer));
+			keySetRaw(newKey,buffer,elektraStrLen((char *)buffer));
 			xmlFree(buffer); buffer=0;
 		}
 
@@ -219,13 +219,13 @@ static int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr read
 						char *unencoded=0;
 						size_t unencodedSize;
 						
-						unencodedSize=kdbiStrLen((char *)buffer)/2;
+						unencodedSize=elektraStrLen((char *)buffer)/2;
 						unencoded=malloc(unencodedSize);
 						unencodedSize=kdbbDecode((char *)buffer,unencoded);
 						if (!unencodedSize) return -1;
 							keySetRaw(newKey,unencoded,unencodedSize);
 						free(unencoded);
-					} else keySetRaw(newKey,buffer,kdbiStrLen((char *)buffer));
+					} else keySetRaw(newKey,buffer,elektraStrLen((char *)buffer));
 				}
 				xmlFree(buffer);
 			} else if (!strcmp((char *)nodeName,"comment")) {

@@ -57,8 +57,8 @@ int kdbClose_hosts(Plugin *p)
 static int append_comment (char *comment, char *line)
 {
 	size_t i;
-	size_t s = kdbiStrLen(line);
-	size_t c = kdbiStrLen(comment);
+	size_t s = elektraStrLen(line);
+	size_t c = elektraStrLen(comment);
 	char *endline;
 
 	if (line[0] == '\n')

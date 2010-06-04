@@ -69,7 +69,7 @@
  * Copies the key array2 into where array1 points.
  * It copies size elements.
  *
- * Overlapping is prohibited, use kdbiMemmove() instead.
+ * Overlapping is prohibited, use elektraMemmove() instead.
  *
  * @param array1 the destination
  * @param array2 the source
@@ -78,7 +78,7 @@
  * @return 0 if nothing was done
  * @return size how many keys were copied
  */
-ssize_t kdbiMemcpy (Key** array1, Key** array2, size_t size)
+ssize_t elektraMemcpy (Key** array1, Key** array2, size_t size)
 {
 	if (!array1) return -1;
 	if (!array2) return -1;
@@ -93,7 +93,7 @@ ssize_t kdbiMemcpy (Key** array1, Key** array2, size_t size)
  * It copies size elements.
  *
  * Overlapping is ok. If they do not overlap consider
- * kdbiMemcpy() instead.
+ * elektraMemcpy() instead.
  *
  * @param array1 the destination
  * @param array2 the source
@@ -102,7 +102,7 @@ ssize_t kdbiMemcpy (Key** array1, Key** array2, size_t size)
  * @return 0 if nothing was done
  * @return size how many keys were copied
  */
-ssize_t kdbiMemmove (Key** array1, Key** array2, size_t size)
+ssize_t elektraMemmove (Key** array1, Key** array2, size_t size)
 {
 	if (!array1) return -1;
 	if (!array2) return -1;
@@ -126,7 +126,7 @@ ssize_t kdbiMemmove (Key** array1, Key** array2, size_t size)
  *    s1 is found, respectively, to be less than, to match, or
  *    be greater than s2.
  **/
-int kdbiStrCmp (const char *s1, const char *s2)
+int elektraStrCmp (const char *s1, const char *s2)
 {
 	int c1;
 	int c2;
@@ -172,7 +172,7 @@ int kdbiStrCmp (const char *s1, const char *s2)
  * @return 0 if s1 matches s2
  * @return a positive number if s1 is greater than s2
  **/
-int kdbiStrCaseCmp (const char *s1, const char *s2)
+int elektraStrCaseCmp (const char *s1, const char *s2)
 {
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
@@ -191,7 +191,7 @@ int kdbiStrCaseCmp (const char *s1, const char *s2)
 /**Reallocate Storage in a save way.
  *
  *@code
-if (kdbiRealloc ((void **) & buffer, new_length) < 0) {
+if (elektraRealloc ((void **) & buffer, new_length) < 0) {
 	// here comes the failure handler
 	// you can still use the old buffer
 #if DEBUG
@@ -209,7 +209,7 @@ if (kdbiRealloc ((void **) & buffer, new_length) < 0) {
  * @return 0 on success
  * @ingroup internal
  */
-int kdbiRealloc (void ** buffer, size_t size)
+int elektraRealloc (void ** buffer, size_t size)
 {
 	void * ptr;
 	void * svr = *buffer;
@@ -228,7 +228,7 @@ int kdbiRealloc (void ** buffer, size_t size)
  * Allocate memory for Elektra.
  *
  * @code
-if ((buffer = kdbiMalloc (length)) == 0) {
+if ((buffer = elektraMalloc (length)) == 0) {
 	// here comes the failure handler
 	// no allocation happened here, so dont use buffer
 #if DEBUG
@@ -241,10 +241,10 @@ if ((buffer = kdbiMalloc (length)) == 0) {
  * @param size the requested size
  *
  * This function is compatible to ANSI-C malloc
- * @see kdbiFree
- * @see kdbiCalloc
+ * @see elektraFree
+ * @see elektraCalloc
  */
-void* kdbiMalloc (size_t size)
+void* elektraMalloc (size_t size)
 {
 	return malloc (size);
 }
@@ -254,9 +254,9 @@ void* kdbiMalloc (size_t size)
  * Memory will be set to 0.
  *
  * @param the requested size
- * @see kdbiMalloc
+ * @see elektraMalloc
  */
-void* kdbiCalloc (size_t size)
+void* elektraCalloc (size_t size)
 {
 	return calloc(1, size);
 }
@@ -266,9 +266,9 @@ void* kdbiCalloc (size_t size)
  *@param ptr the pointer to free
  *
  * @ingroup internal
- *@see kdbiMalloc
+ *@see elektraMalloc
  */
-void kdbiFree (void *ptr)
+void elektraFree (void *ptr)
 {
 	free (ptr);
 }
@@ -287,17 +287,17 @@ void kdbiFree (void *ptr)
  * @ingroup internal
  * @return 0 if out of memory, a pointer otherwise
  * @pre s must be a c-string.
- * @see kdbiFree
- * @see kdbiStrLen
- * @see kdbiStrNDup
+ * @see elektraFree
+ * @see elektraStrLen
+ * @see elektraStrNDup
  */
-char *kdbiStrDup (const char *s)
+char *elektraStrDup (const char *s)
 {
 	void *tmp = 0;
 	size_t l = 0;
 
-	l = kdbiStrLen(s);
-	tmp = kdbiMalloc (l);
+	l = elektraStrLen(s);
+	tmp = elektraMalloc (l);
 	if (tmp) memcpy (tmp, s, l);
 
 	return tmp;
@@ -316,11 +316,11 @@ char *kdbiStrDup (const char *s)
  * @param l the length of s
  * @ingroup internal
  */
-char *kdbiStrNDup (const char *s, size_t l)
+char *elektraStrNDup (const char *s, size_t l)
 {
 	void *tmp = 0;
 
-	tmp = kdbiMalloc (l);
+	tmp = elektraMalloc (l);
 	if (tmp) memcpy (tmp, s, l);
 
 	return tmp;
@@ -332,14 +332,14 @@ char *kdbiStrNDup (const char *s, size_t l)
  *
  * This function differs from strlen() because it is Unicode and multibyte
  * chars safe. While strlen() counts characters and ignores the final NULL,
- * kdbiStrLen() count bytes including the ending NULL.
+ * elektraStrLen() count bytes including the ending NULL.
  *
  * @ingroup internal
  * @param s the string to get the length from
  * @return number of bytes used by the string, including the final NULL.
  * @ingroup internal
  */
-size_t kdbiStrLen(const char *s)
+size_t elektraStrLen(const char *s)
 {
 	char *found=strchr(s,0);
 	if (found) return found-s+1;

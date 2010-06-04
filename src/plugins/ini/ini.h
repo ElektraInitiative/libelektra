@@ -69,7 +69,7 @@ int read_key (KDB *handle, Key * key, char * root);
 int write_key (KDB *handle, Key * key, long oldpos);
 int remove_key (KDB *handle, Key * key, long oldpos);
 
-int kdbiRealloc (void ** buffer, size_t size);
+int elektraRealloc (void ** buffer, size_t size);
 
 int stat_file (Key * forKey, char * filename);
 size_t base_name (const Key * forKey, char * basename);

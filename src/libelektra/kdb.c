@@ -205,7 +205,7 @@ KDB * kdbOpen()
 		return 0;
 	}
 
-	handle = kdbiCalloc(sizeof(struct _KDB));
+	handle = elektraCalloc(sizeof(struct _KDB));
 
 	/* Open default backend */
 	handle->defaultBackend=elektraBackendOpenDefault();
@@ -271,7 +271,7 @@ int kdbClose(KDB *handle)
 
 	elektraBackendClose (handle->defaultBackend);
 
-	kdbiFree(handle);
+	elektraFree(handle);
 
 	return 0;
 }

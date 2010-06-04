@@ -54,12 +54,12 @@ Backend* trieLookup(Trie *trie, const Key *key)
 	if (!trie) return 0;
 
 	len = keyGetNameSize(key) + 1;
-	where = kdbiMalloc(len);
+	where = elektraMalloc(len);
 	strncpy(where, keyName(key), len);
 	where[len-2] = '/';
 
 	ret = prefix_lookup(trie,where);
-	kdbiFree(where);
+	elektraFree(where);
 
 	return ret;
 }
@@ -111,14 +111,14 @@ Trie *trieOpen(KeySet *config)
 			if (!strcmp(keyName(backend->mountpoint), ""))
 			{
 				/* Mount as root backend */
-				mountpoint = kdbiStrDup ("");
+				mountpoint = elektraStrDup ("");
 			} else {
 				/* Prepare the name for the mountpoint*/
-				mountpoint = kdbiMalloc (keyGetNameSize(backend->mountpoint)+1);
+				mountpoint = elektraMalloc (keyGetNameSize(backend->mountpoint)+1);
 				sprintf(mountpoint,"%s/",keyName(backend->mountpoint));
 			}
 			trie = elektraTrieInsert(trie, mountpoint, (void*)backend);
-			kdbiFree(mountpoint);
+			elektraFree(mountpoint);
 		}
 	}
 
@@ -180,7 +180,7 @@ static Trie* elektraTrieInsert(Trie *trie, const char *name, const void *value)
 
 		trie->textlen[idx]=strlen(name);
 
-		trie->text[idx]=kdbiStrDup(name);
+		trie->text[idx]=elektraStrDup(name);
 
 		trie->value[idx]=(void*)value;
 		return trie;
@@ -202,7 +202,7 @@ static Trie* elektraTrieInsert(Trie *trie, const char *name, const void *value)
 			Trie *child;
 			unsigned int idx2;
 
-			newname=kdbiStrDup(p);
+			newname=elektraStrDup(p);
 			*p=0; /* shorten the old name in the trie */
 			trie->textlen[idx]=strlen(trie->text[idx]);
 
@@ -224,7 +224,7 @@ static Trie* elektraTrieInsert(Trie *trie, const char *name, const void *value)
 		}
 	} else {
 		/* there doesn't exist an entry with the same first character */
-		trie->text[idx]=kdbiStrDup(name);
+		trie->text[idx]=elektraStrDup(name);
 		trie->value[idx]=(void*)value;
 		trie->textlen[idx]=strlen(name);
 	}

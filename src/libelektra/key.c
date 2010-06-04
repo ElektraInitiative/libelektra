@@ -292,7 +292,7 @@ Key *keyVNew (const char *keyName, va_list va)
 					{
 						keySetBinary(key,value, valueSize);
 					} else if (keyIsBinary(key)) {
-						valueSize = (ssize_t) kdbiStrLen (value);
+						valueSize = (ssize_t) elektraStrLen (value);
 						keySetBinary(key,value, valueSize);
 					} else {
 						keySetString(key,value);
@@ -571,7 +571,7 @@ int keyDel(Key *key) {
 	}
 
 	rc=keyClear(key);
-	kdbiFree (key);
+	elektraFree (key);
 
 	return rc;
 }

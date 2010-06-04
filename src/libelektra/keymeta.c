@@ -345,7 +345,7 @@ const Key *keyGetMeta(const Key *key, const char* metaName)
 	if (!key->meta) return 0;
 
 	search = keyNew (KEY_END);
-	search->key = kdbiStrDup(metaName);
+	search->key = elektraStrDup(metaName);
 
 	if (!search->key) return 0; /*Duplication did not work*/
 
@@ -394,14 +394,14 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 	if (!key) return -1;
 	if (key->flags & KEY_FLAG_RO) return -1;
 	if (!metaName) return -1;
-	metaNameSize = kdbiStrLen (metaName);
+	metaNameSize = elektraStrLen (metaName);
 	if (metaNameSize == -1) return -1;
-	if (newMetaString) metaStringSize = kdbiStrLen (newMetaString);
+	if (newMetaString) metaStringSize = elektraStrLen (newMetaString);
 
 	toSet = keyNew(KEY_END);
 	if (!toSet) return -1;
 
-	metaNameDup = kdbiStrNDup(metaName, metaNameSize);
+	metaNameDup = elektraStrNDup(metaName, metaNameSize);
 	if (!metaNameDup)
 	{
 		keyDel (toSet);
@@ -425,7 +425,7 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 	if (newMetaString)
 	{
 		/*Add the meta information to the key*/
-		metaStringDup = kdbiStrNDup(newMetaString, metaStringSize);
+		metaStringDup = elektraStrNDup(newMetaString, metaStringSize);
 		if (!metaStringDup)
 		{
 			keyDel (toSet);

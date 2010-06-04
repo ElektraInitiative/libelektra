@@ -66,7 +66,7 @@ int kdbOpen_fstab(KDB *handle)
 			kdbhSetBackendData (handle, data);
 		}
 	}
-	if (!kdbhGetBackendData (handle)) kdbhSetBackendData (handle, kdbiStrDup (FSTAB_PATH));
+	if (!kdbhGetBackendData (handle)) kdbhSetBackendData (handle, elektraStrDup (FSTAB_PATH));
 	/* backend initialization logic */
 #if DEBUG && VERBOSE
 	printf ("open fstab backend with %s\n", kdbhGetBackendData (handle));

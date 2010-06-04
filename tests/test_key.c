@@ -861,10 +861,10 @@ void test_keyName()
 
 		/* keyGetFullRootNameSize */
 		size = keyGetFullRootNameSize(key);
-		succeed_if( (size == kdbiStrLen(tstKeyName[i].expectedFRootName)), "keyGetFullRootNameSize" );
+		succeed_if( (size == elektraStrLen(tstKeyName[i].expectedFRootName)), "keyGetFullRootNameSize" );
 		
 		/* keyGetFullRootName */
-		buf = kdbiMalloc(size*sizeof(char));
+		buf = elektraMalloc(size*sizeof(char));
 		keyGetFullRootName(key, buf, size);
 		// printf ("comp: %s - %s\n", buf, tstKeyName[i].expectedFRootName);
 		succeed_if( (strncmp(buf, tstKeyName[i].expectedFRootName, size) == 0), "keyGetFullRootName" );
@@ -872,33 +872,33 @@ void test_keyName()
 
 		/* keyGetParentNameSize */
 		size = keyGetParentNameSize(key);
-		succeed_if( (size == kdbiStrLen(tstKeyName[i].expectedParentName)), "ketGetParentNameSize" );
+		succeed_if( (size == elektraStrLen(tstKeyName[i].expectedParentName)), "ketGetParentNameSize" );
 
 		/* keyGetParentName */
 		size = keyGetParentNameSize(key)+1;
-		buf = kdbiMalloc(size*sizeof(char));
+		buf = elektraMalloc(size*sizeof(char));
 		keyGetParentName(key, buf, size);
 		succeed_if( (strncmp(buf, tstKeyName[i].expectedParentName, size) == 0), "keyGetParentName" );
 		free(buf);
 
 		/* keyGetBaseNameSize */
 		size = keyGetBaseNameSize(key);
-		succeed_if( (size == kdbiStrLen(tstKeyName[i].expectedBaseName)), "keyGetBaseNameSize" );
+		succeed_if( (size == elektraStrLen(tstKeyName[i].expectedBaseName)), "keyGetBaseNameSize" );
 
 		/* keyGetBaseName */
 		size = keyGetBaseNameSize(key)+1;
-		buf = kdbiMalloc(size*sizeof(char));
+		buf = elektraMalloc(size*sizeof(char));
 		keyGetBaseName(key, buf, size);
 		succeed_if( (strncmp(buf, tstKeyName[i].expectedBaseName, size) == 0), "keyGetBaseName" );
 		free(buf);
 
 		/* keyGetNameSize */
 		size = keyGetNameSize(key);
-		succeed_if( (size == kdbiStrLen(tstKeyName[i].expectedKeyName)), "keyGetKeyNameSize" );
+		succeed_if( (size == elektraStrLen(tstKeyName[i].expectedKeyName)), "keyGetKeyNameSize" );
 		
 		/* keyGetName */
 		size = keyGetNameSize(key);
-		buf = kdbiMalloc(size*sizeof(char));
+		buf = elektraMalloc(size*sizeof(char));
 		keyGetName(key, buf, size);
 		succeed_if( (strcmp(buf, tstKeyName[i].expectedKeyName) == 0), "keyGetName" );
 		free(buf);

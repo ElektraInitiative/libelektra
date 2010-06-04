@@ -243,7 +243,7 @@ ssize_t kdbbDecode(char *kdbbEncoded,void *returned)
  * @return: Size of the kdbbEncoded string if success or -1
  * if error  * (then buffer is untouched)
  * @ingroup backendhelper
- * @see kdbiDecodeChar
+ * @see elektraDecodeChar
  *
  * NOTE: No '\\0' is added at the end of buffer.
  *
@@ -413,7 +413,7 @@ ssize_t kdbbGetFullKeyName (KDB *handle, const char *forFilename, const Key *par
 	char *name;
 
 	/* Next 2 ifs are required to transform filename from UTF-8 */
-	transformedName = malloc(size=kdbiStrLen(forFilename));
+	transformedName = malloc(size=elektraStrLen(forFilename));
 	strcpy(transformedName,forFilename);
 
 	if (kdbbUTF8Engine(UTF8_FROM,&transformedName,&size)) {

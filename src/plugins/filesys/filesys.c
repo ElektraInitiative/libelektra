@@ -561,7 +561,7 @@ int keyFileUnserialize(Key *key,FILE *input) {
 		if (fgets(generalBuffer,sizeof(generalBuffer),input)) {
 			if (memcmp(generalBuffer,"<DATA>\n\0",8)) {
 				/* This is not the beginning of the data part so it is part of comment */
-				currentBufferSize=kdbiStrLen(generalBuffer);
+				currentBufferSize=elektraStrLen(generalBuffer);
 				if (!comment) {
 					comment=(char *)malloc(commentSize=currentBufferSize);
 					strcpy(comment,generalBuffer);

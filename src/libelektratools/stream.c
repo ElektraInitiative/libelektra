@@ -207,7 +207,7 @@ ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
 	if (parent) {
 		/* some logic to see if we should print only the relative basename */
 		int found;
-		size_t skip=parentSize ? parentSize : kdbiStrLen(parent)-1;
+		size_t skip=parentSize ? parentSize : elektraStrLen(parent)-1;
 
 		found=memcmp(parent,key->key,skip);
 		if (found == 0) {

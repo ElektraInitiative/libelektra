@@ -152,7 +152,7 @@ int keyToBDB(const Key *key, DBT *dbkey, DBT *dbdata) {
 	size_t metaInfoSize;
 	int utf8Conversion=0, utf8CommentConverted=0, utf8ValueConverted = 0;
 	char *convertedName=key->key;
-	size_t sizeName=kdbiStrLen(key->key);
+	size_t sizeName=elektraStrLen(key->key);
 	char *convertedValue=key->data;
 	size_t sizeValue=key->dataSize;
 	char *convertedComment=key->comment;
@@ -225,7 +225,7 @@ int keyToBDB(const Key *key, DBT *dbkey, DBT *dbdata) {
 		dbkey->size=sizeName;
 		dbkey->data=convertedName;
 	} else {
-		dbkey->size=kdbiStrLen(key->key);
+		dbkey->size=elektraStrLen(key->key);
 		dbkey->data=malloc(dbkey->size);
 		strcpy(dbkey->data,key->key);
 	}
@@ -270,7 +270,7 @@ int keyFromBDB(Key *key, const DBT *dbkey, const DBT *dbdata) {
 	keySetRaw(key,dbdata->data+metaInfoSize+key->commentSize,key->dataSize);
 	
 	if (kdbbNeedsUTF8Conversion()) {
-		size_t size=kdbiStrLen(key->key);
+		size_t size=elektraStrLen(key->key);
 		
 		kdbbUTF8Engine(UTF8_FROM,&key->key,&size);
 		kdbbUTF8Engine(UTF8_FROM,&key->comment,&key->commentSize);
@@ -551,7 +551,7 @@ DBTree *dbTreeNew(KDB *handle,const Key *forKey) {
 
 
 	if (!newDB->isSystem) {
-		newDB->owner=malloc(kdbiStrLen(forKey->owner));
+		newDB->owner=malloc(elektraStrLen(forKey->owner));
 		strcpy(newDB->owner,forKey->owner);
 	}
 
@@ -675,7 +675,7 @@ int kdbRemoveKey_bdb(KDB *handle, const Key *key) {
 	/* First check if we have write permission to the key */
 	memset(&dbkey,0,sizeof(DBT));
 	memset(&data,0,sizeof(DBT));
-	dbkey.size=dbkey.ulen=kdbiStrLen(key->key);
+	dbkey.size=dbkey.ulen=elektraStrLen(key->key);
 	dbkey.data=key->key;
 	data.flags=DB_DBT_REALLOC;
 	
@@ -738,7 +738,7 @@ int kdbGetKeyWithOptions(KDB *handle, Key *key, uint32_t options) {
 	keyInit(buffer);
 	memset(&dbkey,0,sizeof(DBT));
 	memset(&data,0,sizeof(DBT));
-	dbkey.size=dbkey.ulen=kdbiStrLen(key->key);
+	dbkey.size=dbkey.ulen=elektraStrLen(key->key);
 	dbkey.data=key->key;
 	data.flags=DB_DBT_REALLOC;
 
@@ -836,7 +836,7 @@ int kdbSetKey_bdb(KDB *handle, Key *key) {
 
 	memset(&dbkey,0,sizeof(DBT));
 	memset(&data,0,sizeof(DBT));
-	dbkey.size=dbkey.ulen=kdbiStrLen(key->key);
+	dbkey.size=dbkey.ulen=elektraStrLen(key->key);
 	dbkey.data=key->key;
 	dbkey.flags=data.flags=DB_DBT_REALLOC;
 

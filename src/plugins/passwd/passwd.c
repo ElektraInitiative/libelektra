@@ -275,7 +275,7 @@ ssize_t kdbGet_passwd(KDB *handle, KeySet *returned, const Key *parentKey)
 				}
 			}
 			fclose (f);
-			kdbiFree ((void*)username);
+			elektraFree ((void*)username);
 			if (!pwd) {
 				/* entry not found */
 				/*errno=KDB_ERR_NOTFOUND;*/

@@ -141,12 +141,12 @@ Key *gEntryToKey(const GConfEntry *gentry) {
 						break;
 					case GCONF_VALUE_INT:
 						keySetType(new,KEY_GCONFTYPE_LIST_INT);
-						sprintf(buffer+kdbiStrLen(buffer)-1,"%d",
+						sprintf(buffer+elektraStrLen(buffer)-1,"%d",
 							gconf_value_get_int(val));
 						break;
 					case GCONF_VALUE_FLOAT:
 						keySetType(new,KEY_GCONFTYPE_LIST_FLOAT);
-						sprintf(buffer+kdbiStrLen(buffer)-1,"%g",
+						sprintf(buffer+elektraStrLen(buffer)-1,"%g",
 							gconf_value_get_float(val));
 						break;
 					case GCONF_VALUE_BOOL:
@@ -164,7 +164,7 @@ Key *gEntryToKey(const GConfEntry *gentry) {
 			}
 			
 			strcat(buffer,"]");
-			keySetRaw(new,buffer,kdbiStrLen(buffer));
+			keySetRaw(new,buffer,elektraStrLen(buffer));
 			break;
 		/* TODO: car+cdr (pair). */
 	}
@@ -192,7 +192,7 @@ GConfEntry *keyToGEntry(const Key *key) {
 	if (!keyIsUser(key)) return 0;
 	
 	/* prepare key name */
-	if (kdbiStrLen(key->key)<sizeof("user/")) {
+	if (elektraStrLen(key->key)<sizeof("user/")) {
 		keyName=malloc(2);
 		strcpy(keyName,"/");
 	} else {

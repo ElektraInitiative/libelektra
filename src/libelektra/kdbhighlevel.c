@@ -498,7 +498,7 @@ ssize_t kdbGetByName(KDB *handle, KeySet *returned, const char *name,
 
 	if (name[0] == '/')
 	{
-		newname = kdbiMalloc (strlen (name) + sizeof ("system") + 1);
+		newname = elektraMalloc (strlen (name) + sizeof ("system") + 1);
 		if (!newname)
 		{
 			/*errno = KDB_ERR_NOMEM;*/
@@ -515,7 +515,7 @@ ssize_t kdbGetByName(KDB *handle, KeySet *returned, const char *name,
 		ret2 = kdbGetHelper(handle, returned, parentKey, options & ~KDB_O_DEL);
 		keyDel (parentKey);
 
-		kdbiFree (newname);
+		elektraFree (newname);
 		if (ret == -1 || ret2 == -1) return -1;
 		else return returned->size;
 	} else {

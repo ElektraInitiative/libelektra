@@ -445,18 +445,18 @@ Split *split_keyset(KDB *handle, KeySet *ks,
 
 /*Internal helpers*/
 
-ssize_t kdbiMemcpy (Key** array1, Key** array2, size_t size);
-ssize_t kdbiMemmove (Key** array1, Key** array2, size_t size);
-void *kdbiMalloc (size_t size);
-void *kdbiCalloc (size_t size);
-void  kdbiFree (void *ptr);
-char *kdbiStrDup (const char *s);
-char *kdbiStrNDup (const char *s, size_t l);
-int kdbiRealloc(void **buffer, size_t size);
+ssize_t elektraMemcpy (Key** array1, Key** array2, size_t size);
+ssize_t elektraMemmove (Key** array1, Key** array2, size_t size);
+void *elektraMalloc (size_t size);
+void *elektraCalloc (size_t size);
+void  elektraFree (void *ptr);
+char *elektraStrDup (const char *s);
+char *elektraStrNDup (const char *s, size_t l);
+int elektraRealloc(void **buffer, size_t size);
 
-int kdbiStrCmp (const char *s1, const char *s2);
-int kdbiStrCaseCmp (const char *s1, const char *s2);
-size_t kdbiStrLen(const char *s);
+int elektraStrCmp (const char *s1, const char *s2);
+int elektraStrCaseCmp (const char *s1, const char *s2);
+size_t elektraStrLen(const char *s);
 
 /*TODO remove those Helpers*/
 ssize_t kdbbEncode(void *kdbbDecoded, size_t size, char *returned);

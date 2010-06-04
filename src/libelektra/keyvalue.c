@@ -149,7 +149,7 @@ while(current=ksNext(ks)) {
 			size,
 			keyComment(current));
 	} else {
-		size=kdbiStrLen((char *)keyValue(current));
+		size=elektraStrLen((char *)keyValue(current));
 		printf("Key %s has a value of size %d bytes. Value: %s\nComment: %s",
 			keyName(current),
 			size,
@@ -364,7 +364,7 @@ ssize_t keySetString(Key *key, const char *newStringValue)
 	if (!key) return -1;
 
 	if (!newStringValue || newStringValue[0] == '\0') ret=keySetRaw(key,0,0);
-	else ret=keySetRaw(key,newStringValue,kdbiStrLen(newStringValue));
+	else ret=keySetRaw(key,newStringValue,elektraStrLen(newStringValue));
 
 	keySetMeta (key, "binary", 0);
 

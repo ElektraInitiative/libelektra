@@ -300,7 +300,7 @@ Plugin *elektraPluginExport(const char *pluginName, ...) {
 
 	if (pluginName == 0) return 0;
 
-	returned=kdbiCalloc(sizeof(struct _Plugin));
+	returned=elektraCalloc(sizeof(struct _Plugin));
 
 	/* Start processing parameters */
 	

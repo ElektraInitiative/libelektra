@@ -123,7 +123,7 @@ Backend* elektraBackendOpen(KeySet *elektraConfig)
 
 	root = ksNext (elektraConfig);
 
-	Backend *backend = kdbiCalloc(sizeof(struct _Backend));
+	Backend *backend = elektraCalloc(sizeof(struct _Backend));
 
 	while ((cur = ksNext(elektraConfig)) != 0)
 	{
@@ -188,7 +188,7 @@ error:
 
 Backend* elektraBackendOpenDefault()
 {
-	Backend *backend = kdbiCalloc(sizeof(struct _Backend));
+	Backend *backend = elektraCalloc(sizeof(struct _Backend));
 
 	// TODO a default path?
 	KeySet *defaultConfig = ksNew(5,
@@ -218,7 +218,7 @@ int elektraBackendClose(Backend *backend)
 		/* TODO: could more elegant (general) to avoid double free */
 		keyDel (backend->mountpoint);
 		elektraPluginClose(backend->setplugins[0]);
-		kdbiFree (backend);
+		elektraFree (backend);
 		return 0;
 	}
 
@@ -228,7 +228,7 @@ int elektraBackendClose(Backend *backend)
 		elektraPluginClose(backend->setplugins[i]);
 		elektraPluginClose(backend->getplugins[i]);
 	}
-	kdbiFree (backend);
+	elektraFree (backend);
 
 	return ret;
 }

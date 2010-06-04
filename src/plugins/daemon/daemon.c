@@ -190,7 +190,7 @@ int kdbOpen_daemon(KDB *handle) {
 	}
 	
 	/* Get the backend name being used by the daemon from the reply... */
-	tmp=malloc(strlen(BACKENDNAME) + 1 + kdbiStrLen(real_backend));
+	tmp=malloc(strlen(BACKENDNAME) + 1 + elektraStrLen(real_backend));
 	sprintf(tmp,BACKENDNAME"+%s",real_backend);
 	kdbhSetBackendName(handle, tmp);
 	free(real_backend);
