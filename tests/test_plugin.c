@@ -33,6 +33,8 @@ int elektraProcessPlugin(Key *cur, int *pluginNumber, char **pluginName, char **
 
 void test_process(void)
 {
+	printf ("Test processing of plugin name\n");
+
 	Key *k = keyNew ("system/elektra/#0name");
 	int pluginNumber = -1;
 	char *pluginName = 0;
@@ -120,6 +122,49 @@ void test_process(void)
 	keyDel (k);
 }
 
+KeySet *set_pluginconf()
+{
+	return ksNew( 10 ,
+		keyNew ("system/anything", KEY_VALUE, "backend", KEY_END),
+		keyNew ("system/more", KEY_END),
+		keyNew ("system/more/config", KEY_END),
+		keyNew ("system/more/config/below", KEY_END),
+		keyNew ("system/path", KEY_END),
+		keyNew ("user/anything", KEY_VALUE, "plugin", KEY_END),
+		keyNew ("user/more", KEY_END),
+		keyNew ("user/more/config", KEY_END),
+		keyNew ("user/more/config/below", KEY_END),
+		keyNew ("user/path", KEY_END),
+		KS_END);
+}
+
+void test_simple()
+{
+	printf ("Test plugin\n");
+
+	Plugin *plugin = elektraPluginOpen("tracer", set_pluginconf());
+
+	KeySet *test_config = set_pluginconf();
+	KeySet *config = elektraPluginGetConfig (plugin);
+	succeed_if (config != 0, "there should be a config");
+	compare_keyset(config, test_config);
+	ksDel (test_config);
+
+	succeed_if (plugin->kdbOpen != 0, "no open pointer");
+	succeed_if (plugin->kdbClose != 0, "no open pointer");
+	succeed_if (plugin->kdbGet != 0, "no open pointer");
+	succeed_if (plugin->kdbSet != 0, "no open pointer");
+
+	succeed_if (!strcmp(plugin->name, "tracer"), "got wrong name");
+	succeed_if (!strcmp(plugin->author, "Markus Raab <elektra@markus-raab.org>"), "got wrong author");
+	succeed_if (!strcmp(plugin->licence, "BSD"), "got wrong licence");
+	succeed_if (!strcmp(plugin->description, "The first plugin"), "got wrong description");
+	succeed_if (!strcmp(plugin->provides, "tracer"), "got wrong provides (tracer can do nothing)");
+	succeed_if (!strcmp(plugin->needs, ""), "got wrong needs (tracer can do nothing)");
+
+	elektraPluginClose(plugin);
+}
+
 int main(int argc, char** argv)
 {
 	printf(" PLUGINS  TESTS\n");
@@ -128,6 +173,7 @@ int main(int argc, char** argv)
 	init (argc, argv);
 
 	test_process();
+	test_simple();
 
 	printf("\ntest_plugin RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

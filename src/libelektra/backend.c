@@ -205,6 +205,7 @@ Backend* elektraBackendOpenDefault()
 
 	backend->getplugins[0] = plugin;
 	backend->setplugins[0] = plugin;
+	plugin->refcounter = 2;
 
 	backend->mountpoint = mp;
 
@@ -217,15 +218,6 @@ int elektraBackendClose(Backend *backend)
 	int ret = 0;
 
 	if (!backend) return -1;
-
-	if (!strcmp(keyString(backend->mountpoint), "default"))
-	{
-		/* TODO: could more elegant (general) to avoid double free */
-		keyDel (backend->mountpoint);
-		elektraPluginClose(backend->setplugins[0]);
-		elektraFree (backend);
-		return 0;
-	}
 
 	keyDel (backend->mountpoint);
 	for (int i=0; i<NR_OF_PLUGINS; ++i)

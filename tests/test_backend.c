@@ -109,33 +109,6 @@ void test_simple()
 	elektraBackendClose (backend);
 }
 
-void test_plugin()
-{
-	printf ("Test plugin\n");
-
-	Plugin *plugin = elektraPluginOpen("tracer", set_pluginconf());
-
-	KeySet *test_config = set_pluginconf();
-	KeySet *config = elektraPluginGetConfig (plugin);
-	succeed_if (config != 0, "there should be a config");
-	compare_keyset(config, test_config);
-	ksDel (test_config);
-
-	succeed_if (plugin->kdbOpen != 0, "no open pointer");
-	succeed_if (plugin->kdbClose != 0, "no open pointer");
-	succeed_if (plugin->kdbGet != 0, "no open pointer");
-	succeed_if (plugin->kdbSet != 0, "no open pointer");
-
-	succeed_if (!strcmp(plugin->name, "tracer"), "got wrong name");
-	succeed_if (!strcmp(plugin->author, "Markus Raab <elektra@markus-raab.org>"), "got wrong author");
-	succeed_if (!strcmp(plugin->licence, "BSD"), "got wrong licence");
-	succeed_if (!strcmp(plugin->description, "The first plugin"), "got wrong description");
-	succeed_if (!strcmp(plugin->provides, "tracer"), "got wrong provides (tracer can do nothing)");
-	succeed_if (!strcmp(plugin->needs, ""), "got wrong needs (tracer can do nothing)");
-
-	elektraPluginClose(plugin);
-}
-
 void test_default()
 {
 	printf ("Test default\n");
@@ -329,6 +302,78 @@ void test_two()
 	keyDel (key);
 }
 
+KeySet *set_backref()
+{
+	return ksNew(50,
+		keyNew("system/elektra/mountpoints/backref", KEY_END),
+
+		keyNew("system/elektra/mountpoints/backref/config", KEY_END),
+		keyNew("system/elektra/mountpoints/backref/config/anything", KEY_VALUE, "backend", KEY_END),
+		keyNew("system/elektra/mountpoints/backref/config/more", KEY_END),
+		keyNew("system/elektra/mountpoints/backref/config/more/config", KEY_END),
+		keyNew("system/elektra/mountpoints/backref/config/more/config/below", KEY_END),
+		keyNew("system/elektra/mountpoints/backref/config/path", KEY_END),
+
+		keyNew("system/elektra/mountpoints/backref/getplugins", KEY_END),
+		keyNew("system/elektra/mountpoints/backref/getplugins/#1#tracer#tracer#", KEY_VALUE, "tracer", KEY_END),
+		keyNew("system/elektra/mountpoints/backref/getplugins/#1#tracer#tracer#/config", KEY_END),
+		keyNew("system/elektra/mountpoints/backref/getplugins/#1#tracer#tracer#/config/anything", KEY_VALUE, "plugin", KEY_END),
+		keyNew("system/elektra/mountpoints/backref/getplugins/#1#tracer#tracer#/config/more", KEY_END),
+		keyNew("system/elektra/mountpoints/backref/getplugins/#1#tracer#tracer#/config/more/config", KEY_END),
+		keyNew("system/elektra/mountpoints/backref/getplugins/#1#tracer#tracer#/config/more/config/below", KEY_END),
+		keyNew("system/elektra/mountpoints/backref/getplugins/#1#tracer#tracer#/config/path", KEY_END),
+
+		keyNew("system/elektra/mountpoints/backref/mountpoint", KEY_VALUE, "user/tests/backend/backref", KEY_END),
+
+		keyNew("system/elektra/mountpoints/backref/setplugins", KEY_END),
+		keyNew("system/elektra/mountpoints/backref/setplugins/#1#tracer", KEY_VALUE, "reference to other tracer", KEY_END),
+		KS_END);
+
+}
+
+void test_backref()
+{
+	printf ("Test back references\n");
+
+	Backend *backend = elektraBackendOpen(set_backref());
+	succeed_if (backend != 0, "there should be a backend");
+	succeed_if (backend->getplugins[0] == 0, "there should be no plugin");
+	exit_if_fail (backend->getplugins[1] != 0, "there should be a plugin");
+	succeed_if (backend->getplugins[2] == 0, "there should be no plugin");
+
+	succeed_if (backend->setplugins[0] == 0, "there should be no plugin");
+	exit_if_fail (backend->setplugins[1] != 0, "there should be a plugin");
+	succeed_if (backend->setplugins[2] == 0, "there should be no plugin");
+
+	Key *mp;
+	succeed_if ((mp = backend->mountpoint) != 0, "no mountpoint found");
+	succeed_if (!strcmp(keyName(mp), "user/tests/backend/backref"), "wrong mountpoint for backend");
+	succeed_if (!strcmp(keyString(mp), "backref"), "wrong name for backend");
+
+	Plugin *plugin1 = backend->getplugins[1];
+	Plugin *plugin2 = backend->setplugins[1];
+
+	succeed_if (plugin1 != 0, "there should be a plugin");
+	succeed_if (plugin2 != 0, "there should be a plugin");
+	succeed_if (plugin1 == plugin2, "it should be the same plugin");
+	succeed_if (plugin1->refcounter == 2, "ref counter should be 2");
+
+	KeySet *test_config = set_pluginconf();
+	KeySet *config = elektraPluginGetConfig (plugin2);
+	succeed_if (config != 0, "there should be a config");
+	compare_keyset(config, test_config);
+	ksDel (test_config);
+
+	succeed_if (plugin1->kdbOpen != 0, "no open pointer");
+	succeed_if (plugin2->kdbOpen != 0, "no open pointer");
+	succeed_if (plugin2->kdbClose != 0, "no open pointer");
+	succeed_if (plugin2->kdbGet != 0, "no open pointer");
+	succeed_if (plugin2->kdbSet != 0, "no open pointer");
+
+	elektraBackendClose (backend);
+}
+
+
 
 int main(int argc, char** argv)
 {
@@ -338,10 +383,10 @@ int main(int argc, char** argv)
 	init (argc, argv);
 
 	test_simple();
-	test_plugin();
 	test_default();
 	test_trie();
 	test_two();
+	test_backref();
 
 	printf("\ntest_backend RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

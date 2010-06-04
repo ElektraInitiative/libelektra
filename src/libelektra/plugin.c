@@ -209,17 +209,17 @@ int elektraProcessPlugins(Plugin **plugins, KeySet *referencePlugins, KeySet *co
 				return -1;
 			}
 
-			key = keyDup (cur);
-			keyAddBaseName(key, "config");
-			pluginConfig = ksCut (config, key);
-			keyDel (key);
-
-			elektraRenamePluginConfig(pluginConfig);
-			ksAppend(pluginConfig, systemConfig);
-			ksRewind(pluginConfig); /* TODO: bug ksAppend invalidates cursor */
-
 			if (pluginName)
 			{
+				key = keyDup (cur);
+				keyAddBaseName(key, "config");
+				pluginConfig = ksCut (config, key);
+				keyDel (key);
+
+				elektraRenamePluginConfig(pluginConfig);
+				ksAppend(pluginConfig, systemConfig);
+				ksRewind(pluginConfig); /* TODO: bug ksAppend invalidates cursor */
+
 				/* case 1, we create a new plugin */
 				plugins[pluginNumber] = elektraPluginOpen(pluginName, pluginConfig);
 				/* case 2, we label it for later use */
