@@ -20,7 +20,7 @@ if (BUILD_FULL)
 	set_target_properties (testmod_iconv PROPERTIES
 			COMPILE_DEFINITIONS HAVE_CONFIG_H)
 	add_test (testmod_iconv
-			"${PROJECT_CURRENT_BINARY_DIR}/testmod_iconv"
-			"${PROJECT_CURRENT_BINARY_DIR}"
+			"${CMAKE_CURRENT_BINARY_DIR}/testmod_iconv"
+			"${CMAKE_CURRENT_BINARY_DIR}"
 			)
 endif (BUILD_FULL)
