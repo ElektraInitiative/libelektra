@@ -744,7 +744,7 @@ ssize_t kdbSet (KDB *handle, KeySet *ks,
 		}
 	}
 
-	free_splitted_keysets(keysets);
+	elektraSplitClose(keysets);
 	if (options & KDB_O_DEL) keyDel (parentKey);
 	if (ret == -1) return -1;
 	return size;

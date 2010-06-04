@@ -36,7 +36,7 @@ void test_create()
 	split = malloc (sizeof (Split));
 	split->keysets = 0;
 	split->handles = 0;
-	init_splitted_keysets (split);
+	elektraSplitInit (split);
 
 
 	printf ("Test create and resize split\n");
@@ -53,7 +53,7 @@ void test_create()
 	split->keysets[2] = ksNew(0);
 	succeed_if (split->no == 3, "resize not correct");
 
-	free_splitted_keysets (split);
+	elektraSplitClose (split);
 }
 
 
@@ -70,7 +70,7 @@ void test_emptysplit()
 	succeed_if (split->keysets, "did not alloc keysets array");
 	succeed_if (split->handles, "did not alloc handles array");
 
-	free_splitted_keysets (split);
+	elektraSplitClose (split);
 	ksDel (ks);
 	kdbClose (handle);
 }
@@ -93,7 +93,7 @@ void test_easysplit()
 	succeed_if (split->no == 1, "everything is in one keyset");
 	compare_keyset (split->keysets[0], ks, 0, 0);
 
-	free_splitted_keysets (split);
+	elektraSplitClose (split);
 	ksDel (ks);
 	kdbClose (handle);
 }
@@ -115,7 +115,7 @@ void test_singlesplit()
 	succeed_if (split->no == 1, "everything is in one keyset");
 	compare_keyset (split->keysets[0], ks, 0, 0);
 
-	free_splitted_keysets (split);
+	elektraSplitClose (split);
 	ksDel (ks);
 	kdbClose (handle);
 }
@@ -164,7 +164,7 @@ void test_mount()
 	succeed_if (compare_keyset (split->keysets[0], split1, 0, 0) == 0, "user keyset not correct");
 	succeed_if (compare_keyset (split->keysets[1], split2, 0, 0) == 0, "system keyset not correct");
 
-	free_splitted_keysets (split);
+	elektraSplitClose (split);
 	ksDel (ks);
 	ksDel (split1);
 	ksDel (split2);
@@ -221,7 +221,7 @@ void test_optimize()
 	succeed_if (compare_keyset (split->keysets[0], split1, 0, 0) == 0, "user keyset not correct");
 	succeed_if (compare_keyset (split->keysets[1], split2, 0, 0) == 0, "system keyset not correct");
 
-	free_splitted_keysets (split);
+	elektraSplitClose (split);
 
 
 	ksRewind (ks);
@@ -242,7 +242,7 @@ void test_optimize()
 	succeed_if (compare_keyset (split->keysets[1], split2, 0, 0) == 0, "system keyset not correct");
 
 	options = KDB_O_SYNC;
-	free_splitted_keysets (split);
+	elektraSplitClose (split);
 
 	split = split_keyset (handle, ks, parentKey, options);
 
@@ -255,7 +255,7 @@ void test_optimize()
 	succeed_if (compare_keyset (split->keysets[0], split1, 0, 0) == 0, "user keyset not correct");
 	succeed_if (compare_keyset (split->keysets[1], split2, 0, 0) == 0, "system keyset not correct");
 
-	free_splitted_keysets (split);
+	elektraSplitClose (split);
 
 
 	ksRewind (ks);
@@ -274,7 +274,7 @@ void test_optimize()
 	succeed_if (compare_keyset (split->keysets[0], split1, 0, 0) == 0, "user keyset not correct");
 	succeed_if (compare_keyset (split->keysets[1], split2, 0, 0) == 0, "system keyset not correct");
 
-	free_splitted_keysets (split);
+	elektraSplitClose (split);
 
 
 	ksDel (ks);
@@ -327,7 +327,7 @@ void test_removed()
 	succeed_if (compare_keyset (split->keysets[0], split1, 0, 0) == 0, "user keyset not correct");
 	succeed_if (compare_keyset (split->keysets[1], split2, 0, 0) == 0, "system keyset not correct");
 
-	free_splitted_keysets (split);
+	elektraSplitClose (split);
 
 
 	ksRewind (ks);
@@ -347,7 +347,7 @@ void test_removed()
 	succeed_if (compare_keyset (split->keysets[0], split1, 0, 0) == 0, "user keyset not correct");
 	succeed_if (compare_keyset (split->keysets[1], split2, 0, 0) == 0, "system keyset not correct");
 
-	free_splitted_keysets (split);
+	elektraSplitClose (split);
 
 	options = KDB_O_SYNC;
 	split = split_keyset (handle, ks, parentKey, options);
@@ -360,7 +360,7 @@ void test_removed()
 	succeed_if (compare_keyset (split->keysets[0], split1, 0, 0) == 0, "user keyset not correct");
 	succeed_if (compare_keyset (split->keysets[1], split2, 0, 0) == 0, "system keyset not correct");
 
-	free_splitted_keysets (split);
+	elektraSplitClose (split);
 
 	ksDel (ks);
 	ksDel (split1);
@@ -420,7 +420,7 @@ void test_easyparent()
 	succeed_if (compare_keyset (split->keysets[0], split1, 0, 0) == 0, "user keyset not correct");
 	succeed_if (compare_keyset (split->keysets[1], split2, 0, 0) == 0, "system keyset not correct");
 
-	free_splitted_keysets (split);
+	elektraSplitClose (split);
 	keyDel (parentKey);
 
 	parentKey = keyNew ("system", KEY_END);
@@ -437,7 +437,7 @@ void test_easyparent()
 	succeed_if (compare_keyset (split->keysets[0], split1, 0, 0) == 0, "user keyset not correct");
 	succeed_if (compare_keyset (split->keysets[1], split2, 0, 0) == 0, "system keyset not correct");
 
-	free_splitted_keysets (split);
+	elektraSplitClose (split);
 	keyDel (parentKey);
 
 	kdbMount (handle, mnt=keyNew ("user", KEY_VALUE, "filesys", KEY_END), config=ksNew(0));
@@ -459,7 +459,7 @@ void test_easyparent()
 	succeed_if (compare_keyset (split->keysets[0], split1, 0, 0) == 0, "user keyset not correct");
 	succeed_if (compare_keyset (split->keysets[1], split2, 0, 0) == 0, "system keyset not correct");
 
-	free_splitted_keysets (split);
+	elektraSplitClose (split);
 	keyDel (parentKey);
 
 	parentKey = keyNew ("system", KEY_END);
@@ -476,7 +476,7 @@ void test_easyparent()
 	succeed_if (compare_keyset (split->keysets[0], split1, 0, 0) == 0, "user keyset not correct");
 	succeed_if (compare_keyset (split->keysets[1], split2, 0, 0) == 0, "system keyset not correct");
 
-	free_splitted_keysets (split);
+	elektraSplitClose (split);
 	keyDel (parentKey);
 
 	ksDel (ks);
@@ -554,7 +554,7 @@ void test_parent()
 	succeed_if (compare_keyset (split->keysets[1], split1, 0, 0) == 0, "user invalid keyset not correct");
 	succeed_if (compare_keyset (split->keysets[2], split2, 0, 0) == 0, "system keyset not correct");
 
-	free_splitted_keysets (split);
+	elektraSplitClose (split);
 	keyDel (parentKey);
 
 	ksDel (ks);
@@ -634,7 +634,7 @@ void test_mountparent()
 	succeed_if (compare_keyset (split->keysets[1], split1, 0, 0) == 0, "user invalid keyset not correct");
 	succeed_if (compare_keyset (split->keysets[2], split2, 0, 0) == 0, "system keyset not correct");
 
-	free_splitted_keysets (split);
+	elektraSplitClose (split);
 	keyDel (parentKey);
 
 	ksDel (ks);

@@ -39,7 +39,7 @@
 
 #include "kdbinternal.h"
 
-static Trie* insert_trie(Trie *trie, const char *name, const void *value);
+static Trie* elektraTrieInsert(Trie *trie, const char *name, const void *value);
 static void* prefix_lookup(Trie *trie, const char *name);
 static char* starts_with(const char *str, char *substr);
 static void* prefix_lookup(Trie *trie, const char *name);
@@ -117,7 +117,7 @@ Trie *trieOpen(KeySet *config)
 				mountpoint = kdbiMalloc (keyGetNameSize(backend->mountpoint)+1);
 				sprintf(mountpoint,"%s/",keyName(backend->mountpoint));
 			}
-			trie = insert_trie(trie, mountpoint, (void*)backend);
+			trie = elektraTrieInsert(trie, mountpoint, (void*)backend);
 			kdbiFree(mountpoint);
 		}
 	}
@@ -154,7 +154,7 @@ int trieClose (Trie *trie)
  * Private static declarations
  ******************/
 
-static Trie* insert_trie(Trie *trie, const char *name, const void *value)
+static Trie* elektraTrieInsert(Trie *trie, const char *name, const void *value)
 {
 	char* p;
 	int i;
@@ -195,7 +195,7 @@ static Trie* insert_trie(Trie *trie, const char *name, const void *value)
 		/* there exists an entry with the same first character */
 		if ((p=starts_with(name, trie->text[idx]))==0) {
 			/* the name in the trie is part of the searched name --> continue search */
-			trie->children[idx]=insert_trie(trie->children[idx],name+trie->textlen[idx],value);
+			trie->children[idx]=elektraTrieInsert(trie->children[idx],name+trie->textlen[idx],value);
 		} else {
 			/* name in trie doesn't match name --> split trie */
 			char *newname;
@@ -209,7 +209,7 @@ static Trie* insert_trie(Trie *trie, const char *name, const void *value)
 			child=trie->children[idx];
 
 			/* insert the name given as a parameter into the new trie entry */
-			trie->children[idx]=insert_trie(NULL, name+(p-trie->text[idx]), value);
+			trie->children[idx]=elektraTrieInsert(NULL, name+(p-trie->text[idx]), value);
 
 			/* insert the splitted try into the new trie entry */
 

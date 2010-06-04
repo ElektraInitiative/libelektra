@@ -45,7 +45,7 @@
 #include <kdbinternal.h>
 
 
-void free_splitted_keysets(Split *keysets)
+void elektraSplitClose(Split *keysets)
 {
 	for (size_t i=0; i<keysets->no; ++i)
 	{
@@ -59,7 +59,7 @@ void free_splitted_keysets(Split *keysets)
 	free (keysets);
 }
 
-void init_splitted_keysets(Split *ret)
+void elektraSplitInit(Split *ret)
 {
 	ret->no=0;
 	ret->keysets=malloc(sizeof(KeySet*));
@@ -101,7 +101,7 @@ Split *split_keyset(KDB *handle, KeySet *ks,
 	int curFound;
 
 	ret = malloc (sizeof (Split));
-	init_splitted_keysets (ret);
+	elektraSplitInit (ret);
 
 	ksRewind (ks);
 	while ((curKey = ksNext (ks)) != 0)
