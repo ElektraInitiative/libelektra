@@ -36,16 +36,7 @@ int internal_iterator (KeySet *ks)
 	return 1;
 }
 
-Key * ksIndex (KeySet *ks, size_t index);
-
 int external_iterator (KeySet *ks)
-{
-	for (ssize_t i = 0; i<ksGetSize(ks); ++i)
-		doSomething (ksIndex(ks,i));
-	return 1;
-}
-
-int direct_external_iterator (KeySet *ks)
 {
 	for (ssize_t i = 0; i<ksGetSize(ks); ++i)
 		doSomething (ks->array[i]);
@@ -61,9 +52,6 @@ int main()
 
 	succeed_if (creator (large), "could not create large keyset");
 	print_time ("New large keyset");
-
-	succeed_if (direct_external_iterator (large), "could not iterate large keyset");
-	print_time ("Direct External Iterator");
 
 	succeed_if (external_iterator (large), "could not iterate large keyset");
 	print_time ("External Iterator");
