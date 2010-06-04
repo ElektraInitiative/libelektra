@@ -57,7 +57,7 @@
  *
  * Will convert to a user-config.
  */
-static int renamePluginConfig(KeySet *config)
+static int elektraRenamePluginConfig(KeySet *config)
 {
 	Key *root;
 	Key *cur;
@@ -145,7 +145,7 @@ int elektraProcessPlugins(Plugin **plugins, KeySet *config, KeySet *systemConfig
 			pluginConfig = ksCut (config, key);
 			keyDel (key);
 
-			renamePluginConfig(pluginConfig);
+			elektraRenamePluginConfig(pluginConfig);
 			ksAppend(pluginConfig, systemConfig);
 			ksRewind(pluginConfig); /* TODO: bug ksAppend invalidates cursor */
 
