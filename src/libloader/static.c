@@ -78,7 +78,7 @@ elektraPluginFactory elektraModulesLoad (KeySet *modules, const char *name, Key 
 		return 0;
 	}
 
-	kdblib_symbol* module = elektraStaticSym(handle, "kdbPluginFactory");
+	kdblib_symbol* module = elektraStaticSym(handle, "elektraPluginSymbol");
 
 	if (module == NULL)
 	{
@@ -86,7 +86,7 @@ elektraPluginFactory elektraModulesLoad (KeySet *modules, const char *name, Key 
 		{
 			keySetMeta (error, "error", "description reason module");
 			keySetMeta (error, "error/description", "could not get pointer to factory, static sym failed");
-			keySetMeta (error, "error/reason", "no such symbol kdbPluginFactory");
+			keySetMeta (error, "error/reason", "no such symbol elektraPluginSymbol");
 			keySetMeta (error, "error/module", "modules");
 		}
 		return 0;

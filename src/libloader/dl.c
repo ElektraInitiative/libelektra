@@ -71,7 +71,7 @@ elektraPluginFactory elektraModulesLoad (KeySet *modules, const char *name, Key 
 		return 0;
 	}
 
-	module.symbol.v = dlsym(module.handle, "kdbPluginFactory");
+	module.symbol.v = dlsym(module.handle, "elektraPluginSymbol");
 	if (module.symbol.v == NULL)
 	{
 		if (error)

@@ -342,7 +342,7 @@ int elektraPluginClose(Plugin *handle)
 
 
 /**
- * This function must be called by a plugin's kdbPluginFactory() to
+ * This function must be called by a plugin's elektraPluginSymbol() to
  * define the plugin's methods that will be exported.
  *
  * See ELEKTRA_PLUGIN_EXPORT() how to use it for plugins.
