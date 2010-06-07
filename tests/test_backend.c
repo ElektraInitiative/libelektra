@@ -79,7 +79,10 @@ void test_simple()
 {
 	printf ("Test simple building of backend");
 
-	Backend *backend = elektraBackendOpen(set_simple());
+	KeySet *modules = ksNew(0);
+	elektraModulesInit(modules, 0);
+
+	Backend *backend = elektraBackendOpen(set_simple(), modules);
 	succeed_if (backend->getplugins[0] == 0, "there should be no plugin");
 	exit_if_fail (backend->getplugins[1] != 0, "there should be a plugin");
 	succeed_if (backend->getplugins[2] == 0, "there should be no plugin");
@@ -107,13 +110,18 @@ void test_simple()
 	succeed_if (plugin->kdbSet != 0, "no open pointer");
 
 	elektraBackendClose (backend);
+	elektraModulesClose (modules, 0);
 }
 
 void test_default()
 {
 	printf ("Test default\n");
 
-	Plugin *plugin = elektraPluginOpen("default", set_pluginconf());
+	KeySet *modules = ksNew(0);
+	elektraModulesInit(modules, 0);
+
+
+	Plugin *plugin = elektraPluginOpen("default", modules, set_pluginconf());
 
 	KeySet *test_config = set_pluginconf();
 	KeySet *config = elektraPluginGetConfig (plugin);
@@ -137,22 +145,27 @@ void test_default()
 
 	elektraPluginClose(plugin);
 
-	Backend *backend = elektraBackendOpenDefault();
+	Backend *backend = elektraBackendOpenDefault(modules);
 
 	Key *mp;
 	succeed_if ((mp = backend->mountpoint) != 0, "no mountpoint found");
 	succeed_if (!strcmp(keyName(mp), ""), "wrong mountpoint for default backend");
 	succeed_if (!strcmp(keyString(mp), "default"), "wrong name for default backend");
+
 	elektraBackendClose(backend);
+	elektraModulesClose (modules, 0);
 }
 
 void test_trie()
 {
 	printf ("Test trie\n");
 
+	KeySet *modules = ksNew(0);
+	elektraModulesInit(modules, 0);
+
 	KeySet *config = set_simple();
 	ksAppendKey(config, keyNew("system/elektra/mountpoints", KEY_END));
-	Trie *trie = elektraTrieOpen(config);
+	Trie *trie = elektraTrieOpen(config, modules);
 
 	Key *key = keyNew("user/tests/backend/simple", KEY_END);
 	Backend *backend = elektraTrieLookup(trie, key);
@@ -189,6 +202,7 @@ void test_trie()
 
 	elektraTrieClose(trie);
 	keyDel (key);
+	elektraModulesClose (modules, 0);
 }
 
 
@@ -250,9 +264,12 @@ void test_two()
 {
 	printf ("Test trie two\n");
 
+	KeySet *modules = ksNew(0);
+	elektraModulesInit(modules, 0);
+
 	KeySet *config = set_two();
 	ksAppendKey(config, keyNew("system/elektra/mountpoints", KEY_END));
-	Trie *trie = elektraTrieOpen(config);
+	Trie *trie = elektraTrieOpen(config, modules);
 
 	Key *key = keyNew("user/tests/backend/simple", KEY_END);
 	Backend *backend = elektraTrieLookup(trie, key);
@@ -300,6 +317,7 @@ void test_two()
 
 	elektraTrieClose(trie);
 	keyDel (key);
+	elektraModulesClose (modules, 0);
 }
 
 KeySet *set_backref()
@@ -335,7 +353,10 @@ void test_backref()
 {
 	printf ("Test back references\n");
 
-	Backend *backend = elektraBackendOpen(set_backref());
+	KeySet *modules = ksNew(0);
+	elektraModulesInit(modules, 0);
+
+	Backend *backend = elektraBackendOpen(set_backref(), modules);
 	succeed_if (backend != 0, "there should be a backend");
 	succeed_if (backend->getplugins[0] == 0, "there should be no plugin");
 	exit_if_fail (backend->getplugins[1] != 0, "there should be a plugin");
@@ -371,6 +392,7 @@ void test_backref()
 	succeed_if (plugin2->kdbSet != 0, "no open pointer");
 
 	elektraBackendClose (backend);
+	elektraModulesClose (modules, 0);
 }
 
 

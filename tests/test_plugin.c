@@ -142,7 +142,10 @@ void test_simple()
 {
 	printf ("Test plugin\n");
 
-	Plugin *plugin = elektraPluginOpen("tracer", set_pluginconf());
+	KeySet *modules = ksNew(0);
+	elektraModulesInit (modules, 0);
+
+	Plugin *plugin = elektraPluginOpen("tracer", modules, set_pluginconf());
 
 	KeySet *test_config = set_pluginconf();
 	KeySet *config = elektraPluginGetConfig (plugin);
@@ -163,6 +166,7 @@ void test_simple()
 	succeed_if (!strcmp(plugin->needs, ""), "got wrong needs (tracer can do nothing)");
 
 	elektraPluginClose(plugin);
+	elektraModulesClose(modules, 0);
 }
 
 int main(int argc, char** argv)

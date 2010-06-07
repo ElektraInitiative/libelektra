@@ -41,6 +41,7 @@ macro (do_test source)
 
 	set_target_properties (${source} PROPERTIES
 			COMPILE_DEFINITIONS HAVE_CONFIG_H)
+	set_target_properties (${source} PROPERTIES LINKER_LANGUAGE CXX)
 	add_test (${source}
 			"${PROJECT_BINARY_DIR}/tests/${source}"
 			"${PROJECT_BINARY_DIR}/tests"
