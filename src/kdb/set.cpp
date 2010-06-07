@@ -23,7 +23,12 @@ int SetCommand::execute(int argc, char**argv)
 	std::string value = argv[3];
 
 	KeySet conf;
-	kdb.get(conf, Key(name, KEY_END));
+	try {
+		kdb.get(conf, Key(name, KEY_END));
+	} catch (KDBException const& e)
+	{
+		cerr << "kdb get failed, but still resume" << endl;
+	}
 	Key key = conf.lookup(name);
 
 	if (!key)

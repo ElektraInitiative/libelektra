@@ -216,10 +216,8 @@ void test_pop()
 	succeed_if (k2.getName() == "user/key3/2", "wrong keyname");
 	Key k1 = ks3.pop();
 	succeed_if (k1.getName() == "user/key3/1", "wrong keyname");
-	try {
-		ks3.pop();
-		succeed_if (false, "Out of Range not catched");
-	} catch (KeySetOutOfRange) { }
+	Key k0 = ks3.pop();
+	succeed_if (!k0, "Out of Range, no more key");
 
 	KeySet ks4 (5,
 		*Key ("user/key3/1", KEY_END),
