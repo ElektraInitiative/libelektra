@@ -16,7 +16,7 @@
 
 #include <dlfcn.h>
 
-#include "kdbloader.h"
+#include <kdbmodule.h>
 
 #include <stdlib.h>
 #include <string.h>

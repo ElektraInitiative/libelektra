@@ -25,8 +25,6 @@
 
 #include <limits.h>
 
-#include <kdbloader.h>
-
 #ifndef KDB_DB_SYSTEM
 /**Below this directory the system configuration (system/) will be searched.*/
 #define KDB_DB_SYSTEM            "@KDB_DB_SYSTEM@"
