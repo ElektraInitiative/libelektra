@@ -316,6 +316,8 @@ struct _KDB {
 	Trie *trie;		/*!< The pointer to the trie holding backends.
 		@see kdbhGetTrie() */
 
+	KeySet *modules;	/*!< A list of all modules loaded at the moment.*/
+
 	Backend *defaultBackend;/*!< The default backend as fallback when nothing else is found. */
 };
 
@@ -375,8 +377,6 @@ struct _Plugin {
 
 	kdbGetPtr kdbGet;	/*!< The pointer to kdbGet_template() of the backend. */
 	kdbSetPtr kdbSet;	/*!< The pointer to kdbSet_template() of the backend. */
-
-	kdbLibHandle dlHandle;	/*!< The pointer to the datastructure to load a new backend. */
 
 	/* TODO Consider handling this with a keyset */
 	const char *name;
@@ -485,21 +485,21 @@ KDB* kdbOpenBackend(const char *backendname, const char *mountpoint, KeySet *con
 int kdbCloseBackend(KDB *handle);
 
 /*Backend handling*/
-Backend* elektraBackendOpen(KeySet *elektra_config);
-Backend* elektraBackendOpenDefault();
+Backend* elektraBackendOpen(KeySet *elektra_config, KeySet *modules);
+Backend* elektraBackendOpenDefault(KeySet *modules);
 int elektraBackendClose(Backend *backend);
 
 /*Plugin handling*/
 int renameConfig(KeySet *config);
 int elektraProcessPlugin(Key *cur, int *pluginNumber, char **pluginName, char **referenceName);
-int elektraProcessPlugins(Plugin **plugins, KeySet *referencePlugins, KeySet *config, KeySet *systemConfig);
+int elektraProcessPlugins(Plugin **plugins, KeySet *modules, KeySet *referencePlugins, KeySet *config, KeySet *systemConfig);
 
-Plugin* elektraPluginOpen(const char *backendname, KeySet *config);
+Plugin* elektraPluginOpen(const char *backendname, KeySet *modules, KeySet *config);
 int elektraPluginClose(Plugin *handle);
 
 /*Trie handling*/
 Backend* elektraTrieLookup(Trie *trie, const Key *key);
-Trie *elektraTrieOpen(KeySet *config);
+Trie *elektraTrieOpen(KeySet *config, KeySet *modules);
 int elektraTrieClose (Trie *trie);
 
 /*Private helper for keys*/

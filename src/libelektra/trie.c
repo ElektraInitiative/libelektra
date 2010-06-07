@@ -71,7 +71,7 @@ Backend* elektraTrieLookup(Trie *trie, const Key *key)
  * @param config the configuration which should be used to build up the trie.
  * @return created trie on success, 0 on failure
  */
-Trie *elektraTrieOpen(KeySet *config)
+Trie *elektraTrieOpen(KeySet *config, KeySet *modules)
 {
 	Trie *trie = 0;
 	Key *root;
@@ -91,7 +91,7 @@ Trie *elektraTrieOpen(KeySet *config)
 		if (keyRel (root, cur) == 1)
 		{
 			KeySet *cut = ksCut(config, cur);
-			Backend *backend = elektraBackendOpen(cut);
+			Backend *backend = elektraBackendOpen(cut, modules);
 			char *mountpoint;
 
 			if (!backend)

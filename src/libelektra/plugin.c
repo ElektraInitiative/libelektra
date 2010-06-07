@@ -181,7 +181,7 @@ int elektraProcessPlugin(Key *cur, int *pluginNumber, char **pluginName, char **
  *
  * @return -1 on failure
  */
-int elektraProcessPlugins(Plugin **plugins, KeySet *referencePlugins, KeySet *config, KeySet *systemConfig)
+int elektraProcessPlugins(Plugin **plugins, KeySet *modules, KeySet *referencePlugins, KeySet *config, KeySet *systemConfig)
 {
 	Key *root;
 	Key *cur;
@@ -221,7 +221,7 @@ int elektraProcessPlugins(Plugin **plugins, KeySet *referencePlugins, KeySet *co
 				ksRewind(pluginConfig); /* TODO: bug ksAppend invalidates cursor */
 
 				/* case 1, we create a new plugin */
-				plugins[pluginNumber] = elektraPluginOpen(pluginName, pluginConfig);
+				plugins[pluginNumber] = elektraPluginOpen(pluginName, modules, pluginConfig);
 				/* case 2, we label it for later use */
 				if (referenceName) ksAppendKey (referencePlugins,
 						keyNew(referenceName,
@@ -256,51 +256,29 @@ int elektraProcessPlugins(Plugin **plugins, KeySet *referencePlugins, KeySet *co
  *
  * @return a pointer to a new created plugin or 0 on error
  */
-Plugin* elektraPluginOpen(const char *pluginname, KeySet *config)
+Plugin* elektraPluginOpen(const char *pluginname, KeySet *modules, KeySet *config)
 {
 	Plugin* handle;
 	char* plugin_name;
 
-	kdbLibHandle dlhandle=0;
-	typedef Plugin *(*KDBPluginFactory) (void);
-	KDBPluginFactory kdbPluginFactory=0;
+	elektraPluginFactory pluginFactory=0;
 
 	plugin_name = malloc(sizeof("libelektra-")+strlen(pluginname));
 
 	strncpy(plugin_name,"libelektra-",sizeof("libelektra-"));
 	strncat(plugin_name,pluginname,strlen(pluginname));
 
-	dlhandle=kdbLibLoad(plugin_name);
-	if (dlhandle == 0) {
-		/*errno=KDB_ERR_EBACKEND;*/
-#if DEBUG && VERBOSE
-		printf("kdbLibLoad(%s) failed\n", plugin_name);
-#endif
-		goto err_clup; /* error */
-	}
+	pluginFactory = elektraModulesLoad(modules, plugin_name, 0);
 
-	/* load the "kdbPluginFactory" symbol from plugin */
-	kdbPluginFactory=(KDBPluginFactory)kdbLibSym(dlhandle, "kdbPluginFactory");
-	if (kdbPluginFactory == 0) {
-		/*errno=KDB_ERR_NOSYS;*/
-#if DEBUG && VERBOSE
-		printf("Could not kdbLibSym kdbPluginFactory for %s\n", plugin_name);
-#endif
-		goto err_clup; /* error */
-	}
-
-	handle=kdbPluginFactory();
+	handle = pluginFactory();
 	if (handle == 0)
 	{
 		/*errno=KDB_ERR_NOSYS;*/
 #if DEBUG && VERBOSE
-		printf("Could not call kdbPluginFactory for %s\n", plugin_name);
+		printf("Could not call elektraPluginFactory for %s\n", plugin_name);
 #endif
 		goto err_clup; /* error */
 	}
-
-	/* save the libloader handle for future use */
-	handle->dlHandle=dlhandle;
 
 	/* init reference counting */
 	handle->refcounter = 1;
@@ -355,7 +333,6 @@ int elektraPluginClose(Plugin *handle)
 		rc=handle->kdbClose(handle);
 	}
 
-	kdbLibClose(handle->dlHandle);
 	ksDel(handle->config);
 	free(handle);
 

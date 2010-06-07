@@ -1,28 +1,24 @@
-/**
-  kdbloader.h
-
-  Abstraction from loading symbols for different OS.
-
-  A void* has been used, because not on every platform a
-  struct is used. It does not give any type safety, but
-  because the code within these functions is trivial anyway
-  that should be no problem.
- */
-
-
 #ifndef KDBLIBLOADER_H
 #define KDBLIBLOADER_H
 
-typedef void* kdbLibHandle;
+#include <kdb.h>
+#include <kdbplugin.h>
 
-/* General pointer to kdbLib Functions and pointer to kdbLibBackend function */
-typedef void (*kdbLibFunc)(void);
+#ifdef __cplusplus
+namespace ckdb {
+extern "C" {
+#endif
 
-/* Functions */
-int kdbLibInit(void);
-kdbLibHandle kdbLibLoad(const char *backendName);
-kdbLibFunc kdbLibSym(kdbLibHandle handle, const char *symbol);
-int kdbLibClose(kdbLibHandle handle);
-const char *kdbLibError(void);
+/* The pointer to a function which will create a plugin */
+typedef Plugin *(*elektraPluginFactory) (void);
+
+int elektraModulesInit (KeySet *modules, Key *error);
+elektraPluginFactory elektraModulesLoad (KeySet *modules, const char *name, Key *error);
+int elektraModulesClose (KeySet *modules, Key *error);
+
+#ifdef __cplusplus
+}
+}
+#endif
 
 #endif /* KDBLIBLOADER_H */

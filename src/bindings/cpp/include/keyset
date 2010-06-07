@@ -8,21 +8,6 @@
 
 namespace kdb {
 
-class KeySetException : public std::exception
-{
-	const char* what() {return "Key Exception";}
-};
-
-class KeySetOutOfRange : public KeySetException
-{
-	const char* what() {return "Out of range in KeySet";}
-};
-
-class KeySetNotFound : public KeySetException
-{
-	const char* what() {return "Could not find Key in KeySet";}
-};
-
 /**Key represents an elektra key.*/
 class KeySet
 {
@@ -155,7 +140,6 @@ inline Key KeySet::tail() const
 inline Key KeySet::pop()
 {
 	ckdb::Key *k = ckdb::ksPop(ks);
-	if (k==0) throw KeySetOutOfRange();
 	Key key(k);
 	return key;
 }

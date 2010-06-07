@@ -18,9 +18,9 @@ struct Plugin
 {
 	ckdb::Plugin *plugin;
 
-	Plugin(std::string const& pluginName, KeySet const& testConfig)
+	Plugin(std::string const& pluginName, KeySet &modules, KeySet const& testConfig)
 	{
-		plugin = ckdb::elektraPluginOpen(pluginName.c_str(), testConfig.dup());
+		plugin = ckdb::elektraPluginOpen(pluginName.c_str(), modules.getKeySet(), testConfig.dup());
 	}
 
 	~Plugin()
@@ -53,7 +53,7 @@ bool MountCommand::checkFile(std::string path)
 	return f.is_open();
 }
 
-KeySet MountCommand::addPlugins(std::string name, KeySet& referencePlugins, std::string which)
+KeySet MountCommand::addPlugins(std::string name, KeySet& modules, KeySet& referencePlugins, std::string which)
 {
 	KeySet ret;
 	vector <string> alreadyProvided;
@@ -112,7 +112,7 @@ KeySet MountCommand::addPlugins(std::string name, KeySet& referencePlugins, std:
 					KEY_COMMENT, "Test config for loading a plugin.",
 					KEY_END),
 				KS_END);
-			Plugin plugin (realPluginName, testConfig);
+			Plugin plugin (realPluginName, modules, testConfig);
 			if (!plugin) throw NoPlugin();
 
 			std::string provide;
@@ -351,13 +351,15 @@ int MountCommand::execute(int , char** )
 
 
 
+	KeySet modules;
 	KeySet referencePlugins;
-	while (conf.append(addPlugins(name, referencePlugins, "get")) == -1) ;
+	elektraModulesInit(modules.getKeySet(), 0);
+	while (conf.append(addPlugins(name, modules, referencePlugins, "get")) == -1) ;
 
 
 
-	while (conf.append(addPlugins(name, referencePlugins, "set")) == -1) ;
-
+	while (conf.append(addPlugins(name, modules, referencePlugins, "set")) == -1) ;
+	elektraModulesClose(modules.getKeySet(), 0);
 
 
 

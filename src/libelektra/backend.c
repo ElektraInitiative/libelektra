@@ -114,7 +114,7 @@ system/elektra/mountpoints/<name>
  *         has the error information.
  * @ingroup backend
  */
-Backend* elektraBackendOpen(KeySet *elektraConfig)
+Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules)
 {
 	Key * cur;
 	Key * root;
@@ -141,7 +141,7 @@ Backend* elektraBackendOpen(KeySet *elektraConfig)
 			}
 			else if (!strcmp(keyBaseName(cur), "getplugins"))
 			{
-				if (elektraProcessPlugins(backend->getplugins, referencePlugins, cut, systemConfig) == -1)
+				if (elektraProcessPlugins(backend->getplugins, modules, referencePlugins, cut, systemConfig) == -1)
 				{
 #if DEBUG
 					printf ("Processing Get Plugins failed\n");
@@ -161,7 +161,7 @@ Backend* elektraBackendOpen(KeySet *elektraConfig)
 			}
 			else if (!strcmp(keyBaseName(cur), "setplugins"))
 			{
-				if (elektraProcessPlugins(backend->setplugins, referencePlugins, cut, systemConfig) == -1)
+				if (elektraProcessPlugins(backend->setplugins, modules, referencePlugins, cut, systemConfig) == -1)
 				{
 #if DEBUG
 					printf ("Processing Set Plugins failed\n");
@@ -191,7 +191,7 @@ error:
 	return 0;
 }
 
-Backend* elektraBackendOpenDefault()
+Backend* elektraBackendOpenDefault(KeySet *modules)
 {
 	Backend *backend = elektraCalloc(sizeof(struct _Backend));
 
@@ -200,7 +200,7 @@ Backend* elektraBackendOpenDefault()
 		keyNew("system/path", KEY_VALUE, KDB_DB_SYSTEM "/default.ecf", KEY_END),
 		keyNew("user/path", KEY_VALUE, "/tmp/default.ecf", KEY_END),
 		KS_END);
-	Plugin *plugin = elektraPluginOpen("default", defaultConfig);
+	Plugin *plugin = elektraPluginOpen("default", modules, defaultConfig);
 	Key *mp = keyNew ("", KEY_VALUE, "default", KEY_END);
 
 	backend->getplugins[0] = plugin;

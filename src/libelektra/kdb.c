@@ -192,7 +192,7 @@ thread2 {
  */
 KDB * kdbOpen()
 {
-	KDB * handle;
+	KDB *handle;
 	KeySet *keys;
 #if DEBUG && VERBOSE
 	Key *key;
@@ -200,15 +200,20 @@ KDB * kdbOpen()
 	fprintf (stderr, "open elektra " KDB_VERSION "\n");
 #endif
 
-	if (kdbLibInit()) {
-		/*errno=KDB_ERR_NOSYS;*/
+	handle = elektraCalloc(sizeof(struct _KDB));
+
+	handle->modules = ksNew(0);
+
+	if (elektraModulesInit(handle->modules, 0) == -1)
+	{
+#if DEBUG
+		printf ("error in initalisation of modules\n");
+#endif
 		return 0;
 	}
 
-	handle = elektraCalloc(sizeof(struct _KDB));
-
 	/* Open default backend */
-	handle->defaultBackend=elektraBackendOpenDefault();
+	handle->defaultBackend=elektraBackendOpenDefault(handle->modules);
 	if (!handle->defaultBackend)
 	{
 #if DEBUG
@@ -229,7 +234,7 @@ KDB * kdbOpen()
 		printf("config for createTrie name: %s value: %s\n",keyName(key), keyString(key));
 	}
 #endif
-	handle->trie=elektraTrieOpen(keys);
+	handle->trie=elektraTrieOpen(keys, handle->modules);
 	if (!handle->trie)
 	{
 #if DEBUG
@@ -270,6 +275,10 @@ int kdbClose(KDB *handle)
 	if (handle->trie) elektraTrieClose(handle->trie);
 
 	elektraBackendClose (handle->defaultBackend);
+
+	elektraModulesClose (handle->modules, 0);
+
+	ksDel (handle->modules);
 
 	elektraFree(handle);
 
