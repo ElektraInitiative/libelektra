@@ -256,26 +256,20 @@ int elektraProcessPlugins(Plugin **plugins, KeySet *modules, KeySet *referencePl
  *
  * @return a pointer to a new created plugin or 0 on error
  */
-Plugin* elektraPluginOpen(const char *pluginname, KeySet *modules, KeySet *config)
+Plugin* elektraPluginOpen(const char *name, KeySet *modules, KeySet *config)
 {
 	Plugin* handle;
-	char* plugin_name;
 
 	elektraPluginFactory pluginFactory=0;
 
-	plugin_name = malloc(sizeof("libelektra-")+strlen(pluginname));
-
-	strncpy(plugin_name,"libelektra-",sizeof("libelektra-"));
-	strncat(plugin_name,pluginname,strlen(pluginname));
-
-	pluginFactory = elektraModulesLoad(modules, plugin_name, 0);
+	pluginFactory = elektraModulesLoad(modules, name, 0);
 
 	handle = pluginFactory();
 	if (handle == 0)
 	{
 		/*errno=KDB_ERR_NOSYS;*/
 #if DEBUG && VERBOSE
-		printf("Could not call elektraPluginFactory for %s\n", plugin_name);
+		printf("Could not call elektraPluginFactory for %s\n", name);
 #endif
 		goto err_clup; /* error */
 	}
@@ -290,30 +284,28 @@ Plugin* elektraPluginOpen(const char *pluginname, KeySet *modules, KeySet *confi
 		if ((handle->kdbOpen(handle)) == -1)
 		{
 #if DEBUG && VERBOSE
-			printf("kdbOpen() failed for %s\n", plugin_name);
+			printf("kdbOpen() failed for %s\n", name);
 #endif
 		}
 	}
 	else {
 		/*errno=KDB_ERR_NOSYS;*/
 #if DEBUG && VERBOSE
-			printf("No kdbOpen supplied in %s\n", plugin_name);
+			printf("No kdbOpen supplied in %s\n", name);
 #endif
 		goto err_clup;
 	}
 
 #if DEBUG && VERBOSE
-	printf("Finished loading Plugin %s\n", plugin_name);
+	printf("Finished loading Plugin %s\n", name);
 #endif
-	free(plugin_name);
 	return handle;
 
 err_clup:
 #if DEBUG
-	printf("Failed to load plugin %s\n", plugin_name);
+	printf("Failed to load plugin %s\n", name);
 #endif
 	ksDel (config);
-	free(plugin_name);
 	return 0;
 }
 

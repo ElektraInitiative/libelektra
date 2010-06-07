@@ -69,7 +69,7 @@ int main(int argc, char**argv)
 			"{\n");
 
 	printf ("Exporting symbols for default...\n");
-	fprintf(f, "\t{\"libelektra-default\", 0},\n");
+	fprintf(f, "\t{\"default\", 0},\n");
 	fprintf(f, "\t{\"elektraPluginSymbol\", &libelektra_%s_LTX_elektraPluginSymbol},\n", argv[1]);
 
 	for (i=1; i<argc; ++i)
@@ -83,7 +83,7 @@ int main(int argc, char**argv)
 			}
 		} else {
 			printf ("Exporting symbols for %s ...\n", argv[i]);
-			fprintf(f, "\t{\"libelektra-%s\", 0},\n", argv[i]);
+			fprintf(f, "\t{\"%s\", 0},\n", argv[i]);
 			fprintf(f, "\t{\"elektraPluginSymbol\", &libelektra_%s_LTX_elektraPluginSymbol},\n", argv[i]);
 		}
 	}

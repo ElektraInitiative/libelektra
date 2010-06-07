@@ -51,8 +51,10 @@ elektraPluginFactory elektraModulesLoad (KeySet *modules, const char *name, Key 
 		return module->symbol.f;
 	}
 
-	char *moduleName = malloc (strlen(name) + sizeof (".so") + 1);
-	strcpy (moduleName, name);
+	char *moduleName = malloc (sizeof("libelektra-") + strlen(name) + sizeof (".so") + 1);
+
+	strcpy (moduleName, "libelektra-");
+	strcat (moduleName, name);
 	strcat (moduleName, ".so");
 
 	Module module;
