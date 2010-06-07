@@ -263,11 +263,17 @@ Plugin* elektraPluginOpen(const char *name, KeySet *modules, KeySet *config)
 	elektraPluginFactory pluginFactory=0;
 
 	pluginFactory = elektraModulesLoad(modules, name, 0);
+	if (pluginFactory == 0)
+	{
+#if DEBUG && VERBOSE
+		printf("Could not load module %s\n", name);
+#endif
+		goto err_clup; /* error */
+	}
 
 	handle = pluginFactory();
 	if (handle == 0)
 	{
-		/*errno=KDB_ERR_NOSYS;*/
 #if DEBUG && VERBOSE
 		printf("Could not call elektraPluginFactory for %s\n", name);
 #endif
@@ -289,7 +295,6 @@ Plugin* elektraPluginOpen(const char *name, KeySet *modules, KeySet *config)
 		}
 	}
 	else {
-		/*errno=KDB_ERR_NOSYS;*/
 #if DEBUG && VERBOSE
 			printf("No kdbOpen supplied in %s\n", name);
 #endif

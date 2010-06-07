@@ -201,6 +201,8 @@ Backend* elektraBackendOpenDefault(KeySet *modules)
 		keyNew("user/path", KEY_VALUE, "/tmp/default.ecf", KEY_END),
 		KS_END);
 	Plugin *plugin = elektraPluginOpen("default", modules, defaultConfig);
+	if (!plugin) return 0;
+
 	Key *mp = keyNew ("", KEY_VALUE, "default", KEY_END);
 
 	backend->getplugins[0] = plugin;
