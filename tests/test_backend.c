@@ -111,6 +111,7 @@ void test_simple()
 
 	elektraBackendClose (backend);
 	elektraModulesClose (modules, 0);
+	ksDel (modules);
 }
 
 void test_default()
@@ -154,6 +155,7 @@ void test_default()
 
 	elektraBackendClose(backend);
 	elektraModulesClose (modules, 0);
+	ksDel (modules);
 }
 
 void test_trie()
@@ -203,6 +205,7 @@ void test_trie()
 	elektraTrieClose(trie);
 	keyDel (key);
 	elektraModulesClose (modules, 0);
+	ksDel (modules);
 }
 
 
@@ -318,6 +321,7 @@ void test_two()
 	elektraTrieClose(trie);
 	keyDel (key);
 	elektraModulesClose (modules, 0);
+	ksDel (modules);
 }
 
 KeySet *set_backref()
@@ -393,6 +397,7 @@ void test_backref()
 
 	elektraBackendClose (backend);
 	elektraModulesClose (modules, 0);
+	ksDel (modules);
 }
 
 

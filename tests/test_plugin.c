@@ -35,7 +35,7 @@ void test_process(void)
 {
 	printf ("Test processing of plugin name\n");
 
-	Key *k = keyNew ("system/elektra/#0name");
+	Key *k = keyNew ("system/elektra/#0name", KEY_END);
 	int pluginNumber = -1;
 	char *pluginName = 0;
 	char *referenceName = 0;
@@ -167,6 +167,7 @@ void test_simple()
 
 	elektraPluginClose(plugin);
 	elektraModulesClose(modules, 0);
+	ksDel (modules);
 }
 
 int main(int argc, char** argv)
