@@ -15,6 +15,8 @@
 
 #include "dump.hpp"
 
+using namespace ckdb;
+
 namespace dump
 {
 
@@ -185,8 +187,56 @@ int kdbClose_dump(ckdb::Plugin *)
 	return 0;
 }
 
-ssize_t kdbGet_dump(ckdb::Plugin *handle, ckdb::KeySet *returned, const ckdb::Key *)
+ssize_t kdbGet_dump(ckdb::Plugin *handle, ckdb::KeySet *returned, const ckdb::Key *parentKey)
 {
+	ckdb::Key *root = ckdb::keyNew("system/elektra/modules/dump", KEY_END);
+	if (keyRel(root, parentKey) >= 0)
+	{
+		keyDel (root);
+		ckdb::KeySet *info =
+			ksNew(50,
+			keyNew ("system/elektra/modules/dump",
+				KEY_VALUE, "dump plugin waits for your orders", KEY_END),
+			keyNew ("system/elektra/modules/dump/exports", KEY_END),
+			keyNew ("system/elektra/modules/dump/exports/get",
+				KEY_SIZE, sizeof (&kdbGet_dump),
+				KEY_BINARY,
+				KEY_VALUE, &kdbGet_dump, KEY_END),
+			keyNew ("system/elektra/modules/dump/exports/set",
+				KEY_SIZE, sizeof (&kdbSet_dump),
+				KEY_BINARY,
+				KEY_VALUE, &kdbSet_dump, KEY_END),
+			keyNew ("system/elektra/modules/dump/exports/serialize",
+				KEY_SIZE, sizeof (&dump::serialize),
+				KEY_BINARY,
+				KEY_VALUE, &dump::serialize, KEY_END),
+			keyNew ("system/elektra/modules/dump/exports/unserialize",
+				KEY_SIZE, sizeof (&dump::serialize),
+				KEY_BINARY,
+				KEY_VALUE, &dump::serialize, KEY_END),
+			keyNew ("system/elektra/modules/dump/infos",
+				KEY_VALUE, "All information you want to know", KEY_END),
+			keyNew ("system/elektra/modules/dump/infos/author",
+				KEY_VALUE, "Markus Raab <elektra@markus-raab.org>", KEY_END),
+			keyNew ("system/elektra/modules/dump/infos/licence",
+				KEY_VALUE, "BSD", KEY_END),
+			keyNew ("system/elektra/modules/dump/infos/description",
+				KEY_VALUE, "Dumps complete Elektra Semantics", KEY_END),
+			keyNew ("system/elektra/modules/dump/infos/provides",
+				KEY_VALUE, "storage", KEY_END),
+			keyNew ("system/elektra/modules/dump/infos/needs",
+				KEY_VALUE, "", KEY_END),
+			keyNew ("system/elektra/modules/dump/infos/version",
+				KEY_VALUE, BACKENDVERSION, KEY_END),
+			KS_END);
+		ksAppend(returned, info);
+		ksRewind(returned);
+
+		ckdb::Key *k;
+		while ((k = ksNext(returned)) != 0) ckdb::keyClearSync(k);
+		return ksGetSize(returned);
+	}
+	keyDel (root);
 	std::ifstream ofs(keyString(ksLookupByName(ckdb::elektraPluginGetConfig (handle), "/path", 0)));
 	if (!ofs.is_open()) return -1;
 	dump::unserialize (ofs, returned);

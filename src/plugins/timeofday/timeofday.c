@@ -96,7 +96,8 @@ ssize_t kdbGet_timeofday(Plugin *handle, KeySet *returned, const Key *parentKey)
 
 	fprintf(stderr, "get\t%s\n", timeofday(t, start));
 
-	if (elektraStrCmp(keyName(parentKey), "system/elektra/modules/timeofday") >= 0)
+	Key *root = keyNew("system/elektra/modules/timeofday", KEY_END);
+	if (keyRel (root, parentKey) >= 0)
 	{
 		Key *cur;
 		cur = keyNew ("system/elektra/modules/timeofday", KEY_END);
@@ -159,6 +160,7 @@ ssize_t kdbGet_timeofday(Plugin *handle, KeySet *returned, const Key *parentKey)
 		fprintf(stderr, "fin\t%s\n", timeofday(t, start));
 	}
 
+	keyDel (root);
 	return nr_keys; /* success */
 }
 
