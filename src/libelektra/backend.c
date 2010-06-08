@@ -203,7 +203,6 @@ Backend* elektraBackendOpenDefault(KeySet *modules)
 	Plugin *plugin = elektraPluginOpen("default", modules, defaultConfig);
 	if (!plugin)
 	{
-		ksDel (defaultConfig);
 		elektraFree(backend);
 		return 0;
 	}
@@ -233,7 +232,6 @@ Backend* elektraBackendOpenModules(KeySet *modules)
 	Plugin *plugin = elektraPluginOpen(keyBaseName(cur), modules, defaultConfig);
 	if (!plugin)
 	{
-		ksDel (defaultConfig);
 		elektraFree(backend);
 		return 0;
 	}

@@ -102,9 +102,60 @@ ssize_t kdbGet_timeofday(Plugin *handle, KeySet *returned, const Key *parentKey)
 		cur = keyNew ("system/elektra/modules/timeofday", KEY_END);
 		keyClearSync (cur); nr_keys++; ksAppendKey(returned, cur);
 
-		cur = keyNew ("system/elektra/modules/timeofday/hello", KEY_VALUE, "Hello World!", KEY_END);
+		cur = keyNew ("system/elektra/modules/timeofday/infos", KEY_END);
 		keyClearSync (cur); nr_keys++; ksAppendKey(returned, cur);
-		
+
+		cur = keyNew ("system/elektra/modules/timeofday/infos/author",
+				KEY_VALUE, "Markus Raab<elektra@markus-raab.org>", KEY_END);
+		keyClearSync (cur); nr_keys++; ksAppendKey(returned, cur);
+
+		cur = keyNew ("system/elektra/modules/timeofday/infos/licence",
+				KEY_VALUE, "BSD", KEY_END);
+		keyClearSync (cur); nr_keys++; ksAppendKey(returned, cur);
+
+		cur = keyNew ("system/elektra/modules/timeofday/infos/description",
+				KEY_VALUE, "Prints timestamps when a method is called", KEY_END);
+		keyClearSync (cur); nr_keys++; ksAppendKey(returned, cur);
+
+		cur = keyNew ("system/elektra/modules/timeofday/infos/version",
+				KEY_VALUE, BACKENDVERSION, KEY_END);
+		keyClearSync (cur); nr_keys++; ksAppendKey(returned, cur);
+
+		cur = keyNew ("system/elektra/modules/timeofday/infos/provides",
+				KEY_VALUE, "", KEY_END);
+		keyClearSync (cur); nr_keys++; ksAppendKey(returned, cur);
+
+		cur = keyNew ("system/elektra/modules/timeofday/infos/needs",
+				KEY_VALUE, "", KEY_END);
+		keyClearSync (cur); nr_keys++; ksAppendKey(returned, cur);
+
+		cur = keyNew ("system/elektra/modules/timeofday/exports", KEY_END);
+		keyClearSync (cur); nr_keys++; ksAppendKey(returned, cur);
+
+		cur = keyNew ("system/elektra/modules/timeofday/exports/open",
+				KEY_SIZE, sizeof (&kdbOpen_timeofday),
+				KEY_BINARY,
+				KEY_VALUE, &kdbOpen_timeofday, KEY_END);
+		keyClearSync (cur); nr_keys++; ksAppendKey(returned, cur);
+
+		cur = keyNew ("system/elektra/modules/timeofday/exports/close",
+				KEY_SIZE, sizeof (&kdbClose_timeofday),
+				KEY_BINARY,
+				KEY_VALUE, &kdbClose_timeofday, KEY_END);
+		keyClearSync (cur); nr_keys++; ksAppendKey(returned, cur);
+
+		cur = keyNew ("system/elektra/modules/timeofday/exports/get",
+				KEY_SIZE, sizeof (&kdbGet_timeofday),
+				KEY_BINARY,
+				KEY_VALUE, &kdbGet_timeofday, KEY_END);
+		keyClearSync (cur); nr_keys++; ksAppendKey(returned, cur);
+
+		cur = keyNew ("system/elektra/modules/timeofday/exports/set",
+				KEY_SIZE, sizeof (&kdbSet_timeofday),
+				KEY_BINARY,
+				KEY_VALUE, &kdbSet_timeofday, KEY_END);
+		keyClearSync (cur); nr_keys++; ksAppendKey(returned, cur);
+
 		fprintf(stderr, "fin\t%s\n", timeofday(t, start));
 	}
 

@@ -23,23 +23,30 @@ void test_keynew()
 	succeed_if( key2.needSync(), "key2 does not need sync");
 	succeed_if (key2.getBaseName() == "test", "wrong base name");
 	succeed_if( key2.getName() == "system/sw/test", "key2 has wrong name");
+	succeed_if (key2.getDirName() == "system/sw", "wrong dir name");
 	key2.copy(key0);
 	succeed_if( key2.getName() == "", "key0 has wrong name");
 	succeed_if (key2.getBaseName() == "", "wrong base name");
+	succeed_if (key2.getDirName() == "", "wrong dir name");
+
 
 	// Key with name
 	Key key3 ("system/sw/test", KEY_END);
 	succeed_if(key3.getName() == "system/sw/test", "key3 has wrong name");
 	succeed_if(key3.getBaseName() == "test", "wrong base name");
+	succeed_if (key3.getDirName() == "system/sw", "wrong dir name");
 	key3 = "system/other/name";
 	succeed_if(key3.getName() == "system/other/name", "key3 has wrong name");
 	succeed_if(key3.getBaseName() == "name", "wrong base name");
+	succeed_if (key3.getDirName() == "system/other", "wrong dir name");
 	key3 += "base";
 	succeed_if(key3.getName() == "system/other/name/base", "key3 has wrong name");
 	succeed_if(key3.getBaseName() == "base", "wrong base name");
+	succeed_if (key3.getDirName() == "system/other/name", "wrong dir name");
 	key3 -= "name";
 	succeed_if(key3.getName() == "system/other/name/name", "key3 has wrong name");
 	succeed_if(key3.getBaseName() == "name", "wrong base name");
+	succeed_if (key3.getDirName() == "system/other/name", "wrong dir name");
 
 	// Key with name + value
 	Key key4 ("system/sw/test",

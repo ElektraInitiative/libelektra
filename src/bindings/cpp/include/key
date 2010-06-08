@@ -112,6 +112,8 @@ public:
 	const char* baseName() const;
 	size_t getBaseNameSize() const;
 
+	std::string getDirName() const;
+
 	void setName (const std::string &name);
 	void setBaseName (const std::string &basename);
 
@@ -421,6 +423,12 @@ inline size_t Key::getBaseNameSize() const
 inline std::string Key::getBaseName() const
 {
 	return std::string (ckdb::keyBaseName(key));
+}
+
+inline std::string Key::getDirName() const
+{
+	std::string ret = ckdb::keyName(key);
+	return ret.substr(0, ret.rfind('/'));
 }
 
 
