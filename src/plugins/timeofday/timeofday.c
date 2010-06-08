@@ -180,14 +180,8 @@ Plugin *ELEKTRA_PLUGIN_EXPORT(timeofday)
 	return elektraPluginExport(BACKENDNAME,
 		ELEKTRA_PLUGIN_OPEN,	&kdbOpen_timeofday,
 		ELEKTRA_PLUGIN_CLOSE,	&kdbClose_timeofday,
-		ELEKTRA_PLUGIN_GET,		&kdbGet_timeofday,
-		ELEKTRA_PLUGIN_SET,		&kdbSet_timeofday,
-		ELEKTRA_PLUGIN_VERSION,	BACKENDVERSION,
-		ELEKTRA_PLUGIN_AUTHOR,	"Full Name <email@libelektra.org>",
-		ELEKTRA_PLUGIN_LICENCE,	"BSD",
-		ELEKTRA_PLUGIN_DESCRIPTION,	"Add description here",
-		ELEKTRA_PLUGIN_NEEDS,	"",
-		ELEKTRA_PLUGIN_PROVIDES,	"",
+		ELEKTRA_PLUGIN_GET,	&kdbGet_timeofday,
+		ELEKTRA_PLUGIN_SET,	&kdbSet_timeofday,
 		ELEKTRA_PLUGIN_END);
 }
 

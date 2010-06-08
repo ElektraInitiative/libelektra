@@ -159,11 +159,6 @@ void test_simple()
 	succeed_if (plugin->kdbSet != 0, "no open pointer");
 
 	succeed_if (!strcmp(plugin->name, "tracer"), "got wrong name");
-	succeed_if (!strcmp(plugin->author, "Markus Raab <elektra@markus-raab.org>"), "got wrong author");
-	succeed_if (!strcmp(plugin->licence, "BSD"), "got wrong licence");
-	succeed_if (!strcmp(plugin->description, "The first plugin"), "got wrong description");
-	succeed_if (!strcmp(plugin->provides, "tracer"), "got wrong provides (tracer can do nothing)");
-	succeed_if (!strcmp(plugin->needs, ""), "got wrong needs (tracer can do nothing)");
 
 	elektraPluginClose(plugin);
 	elektraModulesClose(modules, 0);

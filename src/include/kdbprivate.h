@@ -376,14 +376,7 @@ struct _Plugin {
 	kdbGetPtr kdbGet;	/*!< The pointer to kdbGet_template() of the backend. */
 	kdbSetPtr kdbSet;	/*!< The pointer to kdbSet_template() of the backend. */
 
-	/* TODO Consider handling this with a keyset */
-	const char *name;
-	const char *version;
-	const char *description;
-	const char *author;
-	const char *licence;
-	const char *provides;
-	const char *needs;
+	const char *name;	/*!< The name of the module responsible for that plugin. */
 
 	size_t refcounter;	/*!< This refcounter shows how often the plugin
 		is used.  Not shared plugins have 1 in it */

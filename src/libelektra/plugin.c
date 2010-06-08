@@ -361,16 +361,8 @@ Plugin *elektraPluginExport(const char *pluginName, ...) {
 	returned=elektraCalloc(sizeof(struct _Plugin));
 
 	/* Start processing parameters */
-	
 	va_start(va,pluginName);
 	returned->name = pluginName;
-
-	returned->version =
-	returned->description =
-	returned->author =
-	returned->licence =
-	returned->provides =
-	returned->needs = "";
 
 	while ((method=va_arg(va,plugin_t))) {
 		switch (method) {
@@ -385,24 +377,6 @@ Plugin *elektraPluginExport(const char *pluginName, ...) {
 				break;
 			case ELEKTRA_PLUGIN_SET:
 				returned->kdbSet=va_arg(va,kdbSetPtr);
-				break;
-			case ELEKTRA_PLUGIN_VERSION:
-				returned->version=va_arg(va, const char *);
-				break;
-			case ELEKTRA_PLUGIN_DESCRIPTION:
-				returned->description=va_arg(va, const char *);
-				break;
-			case ELEKTRA_PLUGIN_AUTHOR:
-				returned->author=va_arg(va, const char *);
-				break;
-			case ELEKTRA_PLUGIN_LICENCE:
-				returned->licence=va_arg(va, const char *);
-				break;
-			case ELEKTRA_PLUGIN_PROVIDES:
-				returned->provides=va_arg(va, const char*);
-				break;
-			case ELEKTRA_PLUGIN_NEEDS:
-				returned->needs=va_arg(va, const char*);
 				break;
 			default:
 #if DEBUG

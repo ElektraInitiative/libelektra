@@ -28,16 +28,6 @@
 #include "hosts.h"
 
 
-int kdbOpen_hosts(Plugin *p)
-{
-	return 0;
-}
-
-int kdbClose_hosts(Plugin *p)
-{
-	return 0; /* success */
-}
-
 /** Appends a comment to key found in line.
  *
  * Comments are marked with number signs, also called pound sign (#).
@@ -318,16 +308,8 @@ error:
 Plugin *ELEKTRA_PLUGIN_EXPORT(hosts)
 {
 	return elektraPluginExport(BACKENDNAME,
-		ELEKTRA_PLUGIN_OPEN,	&kdbOpen_hosts,
-		ELEKTRA_PLUGIN_CLOSE,	&kdbClose_hosts,
-		ELEKTRA_PLUGIN_GET,		&kdbGet_hosts,
-		ELEKTRA_PLUGIN_SET,		&kdbSet_hosts,
-		ELEKTRA_PLUGIN_VERSION,	BACKENDVERSION,
-		ELEKTRA_PLUGIN_AUTHOR,	"Markus Raab <elektra@markus-raab.org>",
-		ELEKTRA_PLUGIN_LICENCE,	"BSD",
-		ELEKTRA_PLUGIN_DESCRIPTION,	"Reads and writes /etc/hosts content",
-		ELEKTRA_PLUGIN_PROVIDES,	"storage",
-		ELEKTRA_PLUGIN_NEEDS,	"",
+		ELEKTRA_PLUGIN_GET,	&kdbGet_hosts,
+		ELEKTRA_PLUGIN_SET,	&kdbSet_hosts,
 		ELEKTRA_PLUGIN_END);
 }
 

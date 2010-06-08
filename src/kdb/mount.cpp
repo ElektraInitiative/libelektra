@@ -169,7 +169,7 @@ KeySet MountCommand::addPlugins(std::string name, KeySet& modules, KeySet& refer
 			{
 				cout << "Warning this plugin is not BSD licenced" << endl;
 				cout << "It might taint the licence of the overall product" << endl;
-				cout << "Its licence is: " << plugin->licence << endl;
+				cout << "Its licence is: " << plugin.lookupInfo("licence") << endl;
 			}
 			if (which == "set")
 			{
