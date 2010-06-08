@@ -130,8 +130,6 @@ void test_default()
 	compare_keyset(config, test_config);
 	ksDel (test_config);
 
-	succeed_if (plugin->kdbOpen != 0, "no open pointer");
-	succeed_if (plugin->kdbClose != 0, "no open pointer");
 	succeed_if (plugin->kdbGet != 0, "no open pointer");
 	succeed_if (plugin->kdbSet != 0, "no open pointer");
 

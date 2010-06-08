@@ -282,23 +282,17 @@ Plugin* elektraPluginOpen(const char *name, KeySet *modules, KeySet *config)
 
 	/* init reference counting */
 	handle->refcounter = 1;
+	handle->config = config;
 
 	/* let the plugin initialize itself */
 	if (handle->kdbOpen)
 	{
-		handle->config = config;
 		if ((handle->kdbOpen(handle)) == -1)
 		{
 #if DEBUG && VERBOSE
 			printf("kdbOpen() failed for %s\n", name);
 #endif
 		}
-	}
-	else {
-#if DEBUG && VERBOSE
-			printf("No kdbOpen supplied in %s\n", name);
-#endif
-		goto err_clup;
 	}
 
 #if DEBUG && VERBOSE

@@ -177,16 +177,6 @@ void unserialize(std::istream &is, ckdb::KeySet *ks)
 
 extern "C" {
 
-int kdbOpen_dump(ckdb::Plugin *)
-{
-	return 0;
-}
-
-int kdbClose_dump(ckdb::Plugin *)
-{
-	return 0;
-}
-
 ssize_t kdbGet_dump(ckdb::Plugin *handle, ckdb::KeySet *returned, const ckdb::Key *parentKey)
 {
 	Key *root = ckdb::keyNew("system/elektra/modules/dump", KEY_END);
@@ -256,16 +246,8 @@ ssize_t kdbSet_dump(ckdb::Plugin *handle, ckdb::KeySet *returned, const ckdb::Ke
 ckdb::Plugin *ELEKTRA_PLUGIN_EXPORT(dump)
 {
 	return elektraPluginExport(BACKENDNAME,
-		ELEKTRA_PLUGIN_OPEN,		&kdbOpen_dump,
-		ELEKTRA_PLUGIN_CLOSE,	&kdbClose_dump,
 		ELEKTRA_PLUGIN_GET,		&kdbGet_dump,
 		ELEKTRA_PLUGIN_SET,		&kdbSet_dump,
-		ELEKTRA_PLUGIN_VERSION,	BACKENDVERSION,
-		ELEKTRA_PLUGIN_AUTHOR,	"Markus Raab <elektra@markus-raab.org>",
-		ELEKTRA_PLUGIN_LICENCE,	"BSD",
-		ELEKTRA_PLUGIN_DESCRIPTION,	"Dumps complete Elektra Semantics",
-		ELEKTRA_PLUGIN_PROVIDES,	"storage",
-		ELEKTRA_PLUGIN_NEEDS,	"",
 		ELEKTRA_PLUGIN_END);
 }
 
