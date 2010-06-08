@@ -259,17 +259,10 @@ int keyIsDirectBelow(const Key *key, const Key *check)
  * Information about the relation in the hierarchy between
  * two keys.
  *
- * This function returns like keyCmp()
- * a number less than, equal to or greater than zero if
- * k1 is found, respectively, to be less than, to match, or
- * be greater than k2.
+ * Unlike keyCmp() the number gives information
+ * about hierarchical information.
  *
- * But unlike keyCmp() the exact number gives information
- * about the exact hierarchical information.
- * Because of the additional checks this function is
- * slower.
- *
- * - If the keys are the same 0 is returned. TODO: ?
+ * - If the keys are the same 0 is returned.
  * So it is the key itself.
 @verbatim
 user/key
@@ -291,28 +284,36 @@ user/key/folder
 user/key/folder/any/depth/deeper/grand-child
 @endverbatim
  *
- * - If the keys are next to each other in hierarchy, 3 is returned.
+ * TODO Below is an idea how it could be extended:
+ * It could continue the search into the other direction
+ * if any (grand-)parents are equal.
+ *
+ * In worst case it would not find anything and return the
+ * distance to root (of the first key).
+ *
+ * - If the keys are next to each other in hierarchy, -1 is returned.
  * This is also called siblings. (TODO not implemented)
 @verbatim
 user/key/myself
 user/key/sibling
 @endverbatim
  *
- * - If the keys are direct below a key which is next to the key, 4 is returned.
+ * - If the keys are direct below a key which is next to the key, -2 is returned.
  * This is also called nephew. (TODO not implemented)
  * @verbatim
 user/key/myself
 user/key/sibling/nephew
 @endverbatim
  *
- * - If the keys are below a key which is next to the key, 5 is returned.
+ * - If the keys are below a key which is next to the key, -3 is returned.
  * This is also called grand-nephew. (TODO not implemented)
 @verbatim
 user/key/myself
 user/key/sibling/any/depth/deeper/grand-nephew
 @endverbatim
  *
- * - If there is no relation of the above, 0 is returned.
+ * - If there is no relation of the above, -n is returned (distance to root key + 1)
+ * (TODO not implemented)
 @verbatim
 user/key/myself
 user/other/sibling/any/depth/deeper/nonrelated
@@ -334,14 +335,16 @@ user/other/sibling/any/depth/deeper/nonrelated
 int keyRel (const Key *k1, const Key *k2)
 {
 	if (keyIsDirectBelow(k1, k2)) return 1;
-	if (keyIsDirectBelow(k2, k1)) return -1;
+	// if (keyIsDirectBelow(k2, k1)) return -1;
 	if (keyIsBelow(k1, k2)) return 2;
-	if (keyIsBelow(k2, k1)) return -2;
+	// if (keyIsBelow(k2, k1)) return -2;
 	// if (keyIsSibling(k1, k2)) return 3*res;
 	// if (keyIsNephew(k1, k2)) return 4*res;
 	// if (keyIsGrandNephew(k1, k2)) return 5*res;
 
-	return 0;
+	if (!keyCmp(k1,k2)) return 0;
+
+	return -1;
 }
 
 
