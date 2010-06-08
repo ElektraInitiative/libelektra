@@ -335,9 +335,9 @@ user/other/sibling/any/depth/deeper/nonrelated
 int keyRel (const Key *k1, const Key *k2)
 {
 	if (keyIsDirectBelow(k1, k2)) return 1;
-	// if (keyIsDirectBelow(k2, k1)) return -1;
+	if (keyIsDirectBelow(k2, k1)) return -1;
 	if (keyIsBelow(k1, k2)) return 2;
-	// if (keyIsBelow(k2, k1)) return -2;
+	if (keyIsBelow(k2, k1)) return -2;
 	// if (keyIsSibling(k1, k2)) return 3*res;
 	// if (keyIsNephew(k1, k2)) return 4*res;
 	// if (keyIsGrandNephew(k1, k2)) return 5*res;

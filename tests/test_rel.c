@@ -148,13 +148,17 @@ void test_examples()
 	Key *k1 = keyNew(0);
 	Key *k2 = keyNew(0);
 
+	keySetName (k1, "user/key/folder"); keySetName (k2, "user/key/folder");
+	succeed_if (keyRel (k1, k2) == 0, "should be same");
+	succeed_if (keyRel (k2, k1) == 0, "should be same");
+
 	keySetName (k1, "user/key/folder"); keySetName (k2, "user/key/folder/child");
 	succeed_if (keyRel (k1, k2) == 1, "should be direct below");
 	succeed_if (keyRel (k2, k1) == -1, "should be direct below");
 
 	keySetName (k1, "user/key/folder"); keySetName (k2, "user/key/folder/any/depth/deeper/grand-child");
 	succeed_if (keyRel (k1, k2) == 2, "should be below");
-	succeed_if (keyRel (k2, k1) == -2, "should be below");
+	succeed_if (keyRel (k2, k1) == -2, "should be reverse below");
 
 	keyDel (k1);
 	keyDel (k2);

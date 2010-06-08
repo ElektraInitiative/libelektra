@@ -921,7 +921,7 @@ void test_keyValue()
 	size_t i;
 	char testString[] = "teststring";
 	char testBinary[] = "\0tes\1tbinary";
-	testBinary[sizeof(testBinary)] = 'T';
+	testBinary[sizeof(testBinary)-1] = 'T';
 
 	printf("Test value of keys\n");
 
@@ -1084,7 +1084,7 @@ void test_keyBinary(void)
 	char ret [1000];
 	int i;
 	char binaryData[] = "\0binary \1\34data";
-	binaryData[sizeof(binaryData)] = 'T';
+	binaryData[sizeof(binaryData)-1] = 'T';
 
 	printf ("Test binary special cases\n");
 

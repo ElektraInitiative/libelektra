@@ -389,7 +389,7 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 	char *metaNameDup;
 	char *metaStringDup;
 	ssize_t metaNameSize;
-	ssize_t metaStringSize;
+	ssize_t metaStringSize = 0;
 
 	if (!key) return -1;
 	if (key->flags & KEY_FLAG_RO) return -1;
