@@ -54,11 +54,60 @@ ssize_t kdbGet_tracer(Plugin *handle, KeySet *returned, const Key *parentKey)
 	ssize_t nr_keys = 0;
 	Key *k=0;
 
+	Key *root = keyNew("system/elektra/modules/tracer", KEY_END);
+	if (keyRel(root, parentKey) >= 0)
+	{
+		Key *k;
+		KeySet *info =
+			ksNew(50,
+			keyNew ("system/elektra/modules/tracer",
+				KEY_VALUE, "tracer plugin waits for your orders", KEY_END),
+			keyNew ("system/elektra/modules/tracer/exports", KEY_END),
+			keyNew ("system/elektra/modules/tracer/exports/open",
+				KEY_SIZE, sizeof (&kdbOpen_tracer),
+				KEY_BINARY,
+				KEY_VALUE, &kdbOpen_tracer, KEY_END),
+			keyNew ("system/elektra/modules/tracer/exports/close",
+				KEY_SIZE, sizeof (&kdbClose_tracer),
+				KEY_BINARY,
+				KEY_VALUE, &kdbClose_tracer, KEY_END),
+			keyNew ("system/elektra/modules/tracer/exports/get",
+				KEY_SIZE, sizeof (&kdbGet_tracer),
+				KEY_BINARY,
+				KEY_VALUE, &kdbGet_tracer, KEY_END),
+			keyNew ("system/elektra/modules/tracer/exports/set",
+				KEY_SIZE, sizeof (&kdbSet_tracer),
+				KEY_BINARY,
+				KEY_VALUE, &kdbSet_tracer, KEY_END),
+			keyNew ("system/elektra/modules/tracer/infos",
+				KEY_VALUE, "All information you want to know", KEY_END),
+			keyNew ("system/elektra/modules/tracer/infos/author",
+				KEY_VALUE, "Markus Raab <elektra@markus-raab.org>", KEY_END),
+			keyNew ("system/elektra/modules/tracer/infos/licence",
+				KEY_VALUE, "BSD", KEY_END),
+			keyNew ("system/elektra/modules/tracer/infos/description",
+				KEY_VALUE, "The first plugin", KEY_END),
+			keyNew ("system/elektra/modules/tracer/infos/provides",
+				KEY_VALUE, "", KEY_END),
+			keyNew ("system/elektra/modules/tracer/infos/needs",
+				KEY_VALUE, "", KEY_END),
+			keyNew ("system/elektra/modules/tracer/infos/version",
+				KEY_VALUE, BACKENDVERSION, KEY_END),
+			KS_END);
+		ksAppend(returned, info);
+		ksRewind(returned);
+
+		while ((k = ksNext(returned)) != 0) keyClearSync(k);
+		nr_keys = ksGetSize(returned);
+	}
+
+	keyDel (root);
+
 	printf ("tracer: kdbGet(%p, %s): ", (void*)handle, keyName(parentKey));
 	while ((k = ksNext(returned))!=0) { printf ("%s ", keyName(k)); ++nr_keys; }
 	printf ("%zd\n", nr_keys);
 
-	return nr_keys; /* success */
+	return nr_keys;
 }
 
 ssize_t kdbSet_tracer(Plugin *handle, KeySet *returned, const Key *parentKey)
@@ -78,14 +127,8 @@ Plugin *ELEKTRA_PLUGIN_EXPORT(tracer)
 	return elektraPluginExport(BACKENDNAME,
 		ELEKTRA_PLUGIN_OPEN,	&kdbOpen_tracer,
 		ELEKTRA_PLUGIN_CLOSE,	&kdbClose_tracer,
-		ELEKTRA_PLUGIN_GET,		&kdbGet_tracer,
-		ELEKTRA_PLUGIN_SET,		&kdbSet_tracer,
-		ELEKTRA_PLUGIN_VERSION,	BACKENDVERSION,
-		ELEKTRA_PLUGIN_AUTHOR,	"Markus Raab <elektra@markus-raab.org>",
-		ELEKTRA_PLUGIN_LICENCE,	"BSD",
-		ELEKTRA_PLUGIN_DESCRIPTION,	"The first plugin",
-		ELEKTRA_PLUGIN_PROVIDES,	"tracer",
-		ELEKTRA_PLUGIN_NEEDS,	"",
+		ELEKTRA_PLUGIN_GET,	&kdbGet_tracer,
+		ELEKTRA_PLUGIN_SET,	&kdbSet_tracer,
 		ELEKTRA_PLUGIN_END);
 }
 

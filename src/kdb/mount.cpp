@@ -17,10 +17,24 @@ std::string MountCommand::root = "system/elektra/mountpoints";
 struct Plugin
 {
 	ckdb::Plugin *plugin;
+	std::string pluginName;
+	KeySet info;
 
-	Plugin(std::string const& pluginName, KeySet &modules, KeySet const& testConfig)
+	Plugin(std::string const& pluginName, KeySet &modules, KeySet const& testConfig) :
+		pluginName(pluginName)
 	{
 		plugin = ckdb::elektraPluginOpen(pluginName.c_str(), modules.getKeySet(), testConfig.dup());
+
+		if (!plugin) throw NoPlugin();
+
+		Key infoKey ("system/elektra/modules", KEY_END);
+		infoKey.addBaseName(pluginName);
+
+		if (!plugin->kdbGet)
+		{
+			throw MissingSymbol("kdbGet");
+		}
+		plugin->kdbGet(plugin, info.getKeySet(), *infoKey);
 	}
 
 	~Plugin()
@@ -37,6 +51,20 @@ struct Plugin
 	{
 		return !plugin;
 	}
+
+	std::string lookupInfo(std::string item, std::string section = "infos")
+	{
+		Key k ("system/elektra/modules", KEY_END);
+		k.addBaseName(pluginName);
+		k.addBaseName(section);
+		k.addBaseName(item);
+		Key ret = info.lookup(k);
+
+		if (!ret) return ""; /* Lets say missing info is ok for now */
+
+		return ret.getString();
+	}
+
 };
 
 MountCommand::MountCommand()
@@ -113,17 +141,16 @@ KeySet MountCommand::addPlugins(std::string name, KeySet& modules, KeySet& refer
 					KEY_END),
 				KS_END);
 			Plugin plugin (realPluginName, modules, testConfig);
-			if (!plugin) throw NoPlugin();
 
 			std::string provide;
-			std::stringstream ss(plugin->provides);
+			std::stringstream ss(plugin.lookupInfo("provides"));
 			while (ss >> provide)
 			{
 				alreadyProvided.push_back(provide);
 				cout << "add provide: " << provide << endl;
 			}
 			std::string need;
-			std::stringstream nss(plugin->needs);
+			std::stringstream nss(plugin.lookupInfo("needs"));
 			while (nss >> need)
 			{
 				cout << "check for need " << need << endl;;
@@ -132,26 +159,19 @@ KeySet MountCommand::addPlugins(std::string name, KeySet& modules, KeySet& refer
 					throw MissingNeeded(need);
 				}
 			}
-			if (std::string(plugin->provides).find("storage") != string::npos)
+			if (std::string(plugin.lookupInfo("provides")).find("storage") != string::npos)
 			{
 				cout << "This is a storage plugin" << endl;
 				++ nrStoragePlugins;
 				isStoragePlugin = true;
 			}
-			if (std::string(plugin->licence).find("BSD") == string::npos)
+			if (std::string(plugin.lookupInfo("licence")).find("BSD") == string::npos)
 			{
 				cout << "Warning this plugin is not BSD licenced" << endl;
 				cout << "It might taint the licence of the overall product" << endl;
 				cout << "Its licence is: " << plugin->licence << endl;
 			}
-			if (which == "get")
-			{
-				if (!plugin->kdbGet)
-				{
-					throw MissingSymbol("kdbGet");
-				}
-			}
-			else if (which == "set")
+			if (which == "set")
 			{
 				if (!plugin->kdbSet)
 				{

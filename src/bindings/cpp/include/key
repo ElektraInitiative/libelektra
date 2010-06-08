@@ -116,6 +116,7 @@ public:
 
 	void setName (const std::string &name);
 	void setBaseName (const std::string &basename);
+	void addBaseName (const std::string &basename);
 
 	size_t getFullNameSize() const;
 	std::string getFullName() const;
@@ -451,6 +452,12 @@ inline void Key::setName (const std::string &name)
 inline void Key::setBaseName (const std::string &name)
 {
 	if (ckdb::keySetBaseName (getKey(), name.c_str()) == -1)
+		throw KeyInvalidName();
+}
+
+inline void Key::addBaseName (const std::string &name)
+{
+	if (ckdb::keyAddBaseName (getKey(), name.c_str()) == -1)
 		throw KeyInvalidName();
 }
 

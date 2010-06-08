@@ -189,11 +189,11 @@ int kdbClose_dump(ckdb::Plugin *)
 
 ssize_t kdbGet_dump(ckdb::Plugin *handle, ckdb::KeySet *returned, const ckdb::Key *parentKey)
 {
-	ckdb::Key *root = ckdb::keyNew("system/elektra/modules/dump", KEY_END);
+	Key *root = ckdb::keyNew("system/elektra/modules/dump", KEY_END);
 	if (keyRel(root, parentKey) >= 0)
 	{
 		keyDel (root);
-		ckdb::KeySet *info =
+		KeySet *info =
 			ksNew(50,
 			keyNew ("system/elektra/modules/dump",
 				KEY_VALUE, "dump plugin waits for your orders", KEY_END),
@@ -232,8 +232,8 @@ ssize_t kdbGet_dump(ckdb::Plugin *handle, ckdb::KeySet *returned, const ckdb::Ke
 		ksAppend(returned, info);
 		ksRewind(returned);
 
-		ckdb::Key *k;
-		while ((k = ksNext(returned)) != 0) ckdb::keyClearSync(k);
+		Key *k;
+		while ((k = ksNext(returned)) != 0) keyClearSync(k);
 		return ksGetSize(returned);
 	}
 	keyDel (root);
