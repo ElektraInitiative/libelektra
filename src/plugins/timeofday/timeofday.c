@@ -96,6 +96,18 @@ ssize_t kdbGet_timeofday(Plugin *handle, KeySet *returned, const Key *parentKey)
 
 	fprintf(stderr, "get\t%s\n", timeofday(t, start));
 
+	if (elektraStrCmp(keyName(parentKey), "system/elektra/modules/timeofday") >= 0)
+	{
+		Key *cur;
+		cur = keyNew ("system/elektra/modules/timeofday", KEY_END);
+		keyClearSync (cur); nr_keys++; ksAppendKey(returned, cur);
+
+		cur = keyNew ("system/elektra/modules/timeofday/hello", KEY_VALUE, "Hello World!", KEY_END);
+		keyClearSync (cur); nr_keys++; ksAppendKey(returned, cur);
+		
+		fprintf(stderr, "fin\t%s\n", timeofday(t, start));
+	}
+
 	return nr_keys; /* success */
 }
 

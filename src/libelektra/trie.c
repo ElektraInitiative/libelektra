@@ -39,6 +39,7 @@
 
 #include "kdbinternal.h"
 
+static int elektraMountBackend (Trie **trie, Backend *backend);
 static Trie* elektraTrieInsert(Trie *trie, const char *name, const void *value);
 static void* prefix_lookup(Trie *trie, const char *name);
 static char* starts_with(const char *str, char *substr);
@@ -92,37 +93,26 @@ Trie *elektraTrieOpen(KeySet *config, KeySet *modules)
 		{
 			KeySet *cut = ksCut(config, cur);
 			Backend *backend = elektraBackendOpen(cut, modules);
-			char *mountpoint;
-
-			if (!backend)
-			{
-				kdbPrintDebug("Ignored invalid backend");
-			}
-
-			if (!backend->mountpoint)
-			{
-				kdbPrintDebug("backend has no mountpoint");
-
-				ksDel(cut);
-				elektraBackendClose(backend);
-				continue;
-			}
-			
-			if (!strcmp(keyName(backend->mountpoint), ""))
-			{
-				/* Mount as root backend */
-				mountpoint = elektraStrDup ("");
-			} else {
-				/* Prepare the name for the mountpoint*/
-				mountpoint = elektraMalloc (keyGetNameSize(backend->mountpoint)+1);
-				sprintf(mountpoint,"%s/",keyName(backend->mountpoint));
-			}
-			trie = elektraTrieInsert(trie, mountpoint, (void*)backend);
-			elektraFree(mountpoint);
+			if (elektraMountBackend(&trie, backend) == -1) ksDel (cut);
 		}
 	}
 
 	ksDel (config);
+
+
+	root=ksLookupByName(modules, "system/elektra/modules", 0);
+
+	if (!root)
+	{
+		kdbPrintDebug ("Could not find any modules");
+		goto error;
+	}
+	while ((cur = ksNext (modules)) != 0)
+	{
+		Backend * backend = elektraBackendOpenModules(modules);
+		elektraMountBackend(&trie, backend);
+	}
+
 	return trie;
 
 error:
@@ -130,6 +120,7 @@ error:
 	ksDel (config);
 	return 0;
 }
+
 
 int elektraTrieClose (Trie *trie)
 {
@@ -153,6 +144,45 @@ int elektraTrieClose (Trie *trie)
 /******************
  * Private static declarations
  ******************/
+
+/**
+ * Mounts a backend into the trie.
+ *
+ * @return -1 on failure (free KeySet for backend!)
+ * @return 0 when nothing was done
+ * @return 1 on success
+ */
+static int elektraMountBackend (Trie **trie, Backend *backend)
+{
+	char *mountpoint;
+
+	if (!backend)
+	{
+		kdbPrintDebug("Ignored invalid backend");
+		return 0;
+	}
+
+	if (!backend->mountpoint)
+	{
+		kdbPrintDebug("backend has no mountpoint");
+
+		elektraBackendClose(backend);
+		return -1;
+	}
+
+	if (!strcmp(keyName(backend->mountpoint), ""))
+	{
+		/* Mount as root backend */
+		mountpoint = elektraStrDup ("");
+	} else {
+		/* Prepare the name for the mountpoint*/
+		mountpoint = elektraMalloc (keyGetNameSize(backend->mountpoint)+1);
+		sprintf(mountpoint,"%s/",keyName(backend->mountpoint));
+	}
+	*trie = elektraTrieInsert(*trie, mountpoint, (void*)backend);
+	elektraFree(mountpoint);
+	return 1;
+}
 
 static Trie* elektraTrieInsert(Trie *trie, const char *name, const void *value)
 {

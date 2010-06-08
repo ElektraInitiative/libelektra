@@ -201,7 +201,12 @@ Backend* elektraBackendOpenDefault(KeySet *modules)
 		keyNew("user/path", KEY_VALUE, "/tmp/default.ecf", KEY_END),
 		KS_END);
 	Plugin *plugin = elektraPluginOpen("default", modules, defaultConfig);
-	if (!plugin) return 0;
+	if (!plugin)
+	{
+		ksDel (defaultConfig);
+		elektraFree(backend);
+		return 0;
+	}
 
 	Key *mp = keyNew ("", KEY_VALUE, "default", KEY_END);
 
@@ -211,6 +216,37 @@ Backend* elektraBackendOpenDefault(KeySet *modules)
 
 	backend->mountpoint = mp;
 
+	return backend;
+}
+
+Backend* elektraBackendOpenModules(KeySet *modules)
+{
+	Backend *backend = elektraCalloc(sizeof(struct _Backend));
+
+	cursor_t save = ksGetCursor (modules);
+	KeySet *defaultConfig = ksNew(5,
+		keyNew("system/module", KEY_VALUE, "1", KEY_END),
+		keyNew("user/module", KEY_VALUE, "1", KEY_END),
+		KS_END);
+	Key *cur = ksCurrent(modules);
+
+	Plugin *plugin = elektraPluginOpen(keyBaseName(cur), modules, defaultConfig);
+	if (!plugin)
+	{
+		ksDel (defaultConfig);
+		elektraFree(backend);
+		return 0;
+	}
+
+	Key *mp = keyNew ("system/elektra/modules", KEY_VALUE, "modules", KEY_END);
+	keyAddBaseName (mp, keyBaseName(cur));
+
+	backend->getplugins[0] = plugin;
+	plugin->refcounter = 1;
+
+	backend->mountpoint = mp;
+
+	ksSetCursor (modules, save);
 
 	return backend;
 }

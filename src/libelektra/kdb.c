@@ -234,6 +234,7 @@ KDB * kdbOpen()
 		printf("config for createTrie name: %s value: %s\n",keyName(key), keyString(key));
 	}
 #endif
+
 	handle->trie=elektraTrieOpen(keys, handle->modules);
 	if (!handle->trie)
 	{

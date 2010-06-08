@@ -67,6 +67,10 @@ void* elektraPluginGetHandle(Plugin *plugin);
 // needed for storage plugins?
 int keyClearSync (Key *key);
 
+int elektraStrCmp (const char *s1, const char *s2);
+int elektraStrCaseCmp (const char *s1, const char *s2);
+size_t elektraStrLen(const char *s);
+
 
 
 #ifdef __cplusplus

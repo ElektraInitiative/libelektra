@@ -458,10 +458,6 @@ char *elektraStrDup (const char *s);
 char *elektraStrNDup (const char *s, size_t l);
 int elektraRealloc(void **buffer, size_t size);
 
-int elektraStrCmp (const char *s1, const char *s2);
-int elektraStrCaseCmp (const char *s1, const char *s2);
-size_t elektraStrLen(const char *s);
-
 /*TODO remove those Helpers*/
 ssize_t kdbbEncode(void *kdbbDecoded, size_t size, char *returned);
 ssize_t kdbbDecode(char *kdbbEncoded, void *returned);
@@ -485,6 +481,7 @@ int kdbCloseBackend(KDB *handle);
 /*Backend handling*/
 Backend* elektraBackendOpen(KeySet *elektra_config, KeySet *modules);
 Backend* elektraBackendOpenDefault(KeySet *modules);
+Backend* elektraBackendOpenModules(KeySet *modules);
 int elektraBackendClose(Backend *backend);
 
 /*Plugin handling*/

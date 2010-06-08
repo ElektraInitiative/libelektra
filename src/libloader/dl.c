@@ -113,10 +113,11 @@ int elektraModulesClose (KeySet *modules, Key *error)
 	while ((cur = ksPop(modules)) != 0)
 	{
 		Module *module = (Module*)keyValue(cur);
-		if (dlclose(module->handle) == 0)
+		if (dlclose(module->handle) != 0)
 		{
 			if (ret != -1)
 			{
+				/* First failure, start saving handles where close did not work */
 				newModules = ksNew(0);
 				ksAppendKey (newModules, root);
 			}
@@ -131,7 +132,14 @@ int elektraModulesClose (KeySet *modules, Key *error)
 		}
 	}
 
-	if (!ret == -1) ksAppend (modules, newModules);
+	/* Clear dlerror */
+	dlerror();
+
+	if (ret == -1)
+	{
+		ksAppend (modules, newModules);
+		ksDel (newModules);
+	}
 	else keyDel (root);
 
 	return ret;
