@@ -118,9 +118,9 @@
 #endif
 
 #if DEBUG && VERBOSE
-# define kdbPrintVerbose(text) printf("%s:%d: %s\n", __FILE__, __LINE__ , text);
+# define ELEKTRA_PRINT_VERBOSE(text) printf("%s:%d: %s\n", __FILE__, __LINE__ , text);
 #else
-# define kdbPrintVerbose(text)
+# define ELEKTRA_PRINT_VERBOSE(text)
 #endif
 
 #define ELEKTRA_SET_ERROR(number, key, text) ELEKTRA_SET_ERROR_HELPER\
