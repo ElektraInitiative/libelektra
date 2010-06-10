@@ -145,7 +145,7 @@ void test_simple()
 	KeySet *modules = ksNew(0);
 	elektraModulesInit (modules, 0);
 
-	Plugin *plugin = elektraPluginOpen("tracer", modules, set_pluginconf());
+	Plugin *plugin = elektraPluginOpen("tracer", modules, set_pluginconf(), 0);
 
 	KeySet *test_config = set_pluginconf();
 	KeySet *config = elektraPluginGetConfig (plugin);

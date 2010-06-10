@@ -190,11 +190,10 @@ thread2 {
  * @return NULL on failure
  * @ingroup kdb
  */
-KDB * kdbOpen()
+KDB * kdbOpen(Key *errorKey)
 {
 	KDB *handle;
 	KeySet *keys;
-	Key *errorKey = keyNew(0);
 #if DEBUG && VERBOSE
 	Key *key;
 
@@ -205,22 +204,15 @@ KDB * kdbOpen()
 
 	handle->modules = ksNew(0);
 
-	if (elektraModulesInit(handle->modules, 0) == -1)
+	if (elektraModulesInit(handle->modules, errorKey) == -1)
 	{
-#if DEBUG
-		printf ("error in initalisation of modules\n");
-#endif
 		return 0;
 	}
 
 	/* Open default backend */
-	handle->defaultBackend=elektraBackendOpenDefault(handle->modules);
+	handle->defaultBackend=elektraBackendOpenDefault(handle->modules, errorKey);
 	if (!handle->defaultBackend)
 	{
-#if DEBUG
-		printf ("failed to open default backend");
-#endif
-		ELEKTRA_SET_ERROR(5, errorKey, "unknown reason");
 		return 0;
 	}
 

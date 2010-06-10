@@ -122,7 +122,7 @@ void test_default()
 	elektraModulesInit(modules, 0);
 
 
-	Plugin *plugin = elektraPluginOpen("default", modules, set_pluginconf());
+	Plugin *plugin = elektraPluginOpen("default", modules, set_pluginconf(), 0);
 
 	KeySet *test_config = set_pluginconf();
 	KeySet *config = elektraPluginGetConfig (plugin);
@@ -144,7 +144,7 @@ void test_default()
 
 	elektraPluginClose(plugin);
 
-	Backend *backend = elektraBackendOpenDefault(modules);
+	Backend *backend = elektraBackendOpenDefault(modules, 0);
 
 	Key *mp;
 	succeed_if ((mp = backend->mountpoint) != 0, "no mountpoint found");

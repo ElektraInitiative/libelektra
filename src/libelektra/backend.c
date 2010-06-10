@@ -191,7 +191,7 @@ error:
 	return 0;
 }
 
-Backend* elektraBackendOpenDefault(KeySet *modules)
+Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey)
 {
 	Backend *backend = elektraCalloc(sizeof(struct _Backend));
 
@@ -200,7 +200,7 @@ Backend* elektraBackendOpenDefault(KeySet *modules)
 		keyNew("system/path", KEY_VALUE, KDB_DB_SYSTEM "/default.ecf", KEY_END),
 		keyNew("user/path", KEY_VALUE, "/tmp/default.ecf", KEY_END),
 		KS_END);
-	Plugin *plugin = elektraPluginOpen("default", modules, defaultConfig);
+	Plugin *plugin = elektraPluginOpen("default", modules, defaultConfig, errorKey);
 	if (!plugin)
 	{
 		elektraFree(backend);
@@ -229,7 +229,7 @@ Backend* elektraBackendOpenModules(KeySet *modules)
 		KS_END);
 	Key *cur = ksCurrent(modules);
 
-	Plugin *plugin = elektraPluginOpen(keyBaseName(cur), modules, defaultConfig);
+	Plugin *plugin = elektraPluginOpen(keyBaseName(cur), modules, defaultConfig, 0);
 	if (!plugin)
 	{
 		elektraFree(backend);

@@ -81,7 +81,7 @@ typedef struct _KeySet	KeySet;
  *
  **************************************/
 
-KDB * kdbOpen(void);
+KDB * kdbOpen(Key *errorKey);
 int kdbClose(KDB *handle);
 
 ssize_t kdbGet(KDB *handle, KeySet *returned,

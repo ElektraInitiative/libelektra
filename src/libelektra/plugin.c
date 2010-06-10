@@ -221,7 +221,7 @@ int elektraProcessPlugins(Plugin **plugins, KeySet *modules, KeySet *referencePl
 				ksRewind(pluginConfig); /* TODO: bug ksAppend invalidates cursor */
 
 				/* case 1, we create a new plugin */
-				plugins[pluginNumber] = elektraPluginOpen(pluginName, modules, pluginConfig);
+				plugins[pluginNumber] = elektraPluginOpen(pluginName, modules, pluginConfig, 0);
 				/* case 2, we label it for later use */
 				if (referenceName) ksAppendKey (referencePlugins,
 						keyNew(referenceName,
@@ -256,28 +256,24 @@ int elektraProcessPlugins(Plugin **plugins, KeySet *modules, KeySet *referencePl
  *
  * @return a pointer to a new created plugin or 0 on error
  */
-Plugin* elektraPluginOpen(const char *name, KeySet *modules, KeySet *config)
+Plugin* elektraPluginOpen(const char *name, KeySet *modules, KeySet *config, Key *errorKey)
 {
 	Plugin* handle;
 
 	elektraPluginFactory pluginFactory=0;
 
-	pluginFactory = elektraModulesLoad(modules, name, 0);
+	pluginFactory = elektraModulesLoad(modules, name, errorKey);
 	if (pluginFactory == 0)
 	{
-#if DEBUG && VERBOSE
-		printf("Could not load module %s\n", name);
-#endif
-		goto err_clup; /* error */
+		/* error already set by elektraModulesLoad */
+		goto err_clup;
 	}
 
 	handle = pluginFactory();
 	if (handle == 0)
 	{
-#if DEBUG && VERBOSE
-		printf("Could not call elektraPluginFactory for %s\n", name);
-#endif
-		goto err_clup; /* error */
+		ELEKTRA_SET_ERROR(6, errorKey, name);
+		goto err_clup;
 	}
 
 	/* init reference counting */
@@ -296,7 +292,7 @@ Plugin* elektraPluginOpen(const char *name, KeySet *modules, KeySet *config)
 	}
 
 #if DEBUG && VERBOSE
-	printf("Finished loading Plugin %s\n", name);
+	printf("Finished loading plugin %s\n", name);
 #endif
 	return handle;
 

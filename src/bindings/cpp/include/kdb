@@ -47,7 +47,9 @@ protected:
  */
 inline KDB::KDB ()
 {
-	handle = ckdb::kdbOpen();
+	Key errorKey;
+	handle = ckdb::kdbOpen(*errorKey);
+	if (!handle) throw errorKey;
 }
 
 /**

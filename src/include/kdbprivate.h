@@ -123,13 +123,6 @@
 # define ELEKTRA_PRINT_VERBOSE(text)
 #endif
 
-#define ELEKTRA_SET_ERROR(number, key, text) ELEKTRA_SET_ERROR_HELPER\
-	(number, key, text, __FILE__, __LINE__)
-
-#define ELEKTRA_SET_ERROR_HELPER(number, key, text, file, line) elektraSetError ## number\
-	(key, text, file, #line)
-
-
 
 #ifdef __cplusplus
 namespace ckdb {
@@ -481,16 +474,15 @@ int kdbCloseBackend(KDB *handle);
 
 /*Backend handling*/
 Backend* elektraBackendOpen(KeySet *elektra_config, KeySet *modules);
-Backend* elektraBackendOpenDefault(KeySet *modules);
+Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey);
 Backend* elektraBackendOpenModules(KeySet *modules);
 int elektraBackendClose(Backend *backend);
 
 /*Plugin handling*/
-int renameConfig(KeySet *config);
 int elektraProcessPlugin(Key *cur, int *pluginNumber, char **pluginName, char **referenceName);
 int elektraProcessPlugins(Plugin **plugins, KeySet *modules, KeySet *referencePlugins, KeySet *config, KeySet *systemConfig);
 
-Plugin* elektraPluginOpen(const char *backendname, KeySet *modules, KeySet *config);
+Plugin* elektraPluginOpen(const char *backendname, KeySet *modules, KeySet *config, Key* errorKey);
 int elektraPluginClose(Plugin *handle);
 
 /*Trie handling*/

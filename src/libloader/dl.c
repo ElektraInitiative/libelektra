@@ -17,6 +17,7 @@
 #include <dlfcn.h>
 
 #include <kdbmodule.h>
+#include <kdberrors.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -39,7 +40,7 @@ int elektraModulesInit (KeySet *modules, Key *error)
 	return 0;
 }
 
-elektraPluginFactory elektraModulesLoad (KeySet *modules, const char *name, Key *error)
+elektraPluginFactory elektraModulesLoad (KeySet *modules, const char *name, Key *errorKey)
 {
 	Key *moduleKey = keyNew ("system/elektra/modules", KEY_END);
 	keyAddBaseName (moduleKey, name);
@@ -63,26 +64,14 @@ elektraPluginFactory elektraModulesLoad (KeySet *modules, const char *name, Key 
 
 	if (module.handle == NULL)
 	{
-		if (error)
-		{
-			keySetMeta (error, "error", "description reason module");
-			keySetMeta (error, "error/description", "could not load module, dlopen failed");
-			keySetMeta (error, "error/reason", dlerror());
-			keySetMeta (error, "error/module", "modules");
-		}
+		ELEKTRA_SET_ERROR(1, errorKey, dlerror());
 		return 0;
 	}
 
 	module.symbol.v = dlsym(module.handle, "elektraPluginSymbol");
 	if (module.symbol.v == NULL)
 	{
-		if (error)
-		{
-			keySetMeta (error, "error", "description reason module");
-			keySetMeta (error, "error/description", "could not get pointer to factory, dlsym failed");
-			keySetMeta (error, "error/reason", dlerror());
-			keySetMeta (error, "error/module", "modules");
-		}
+		ELEKTRA_SET_ERROR(2, errorKey, dlerror());
 		return 0;
 	}
 
@@ -92,7 +81,7 @@ elektraPluginFactory elektraModulesLoad (KeySet *modules, const char *name, Key 
 	return module.symbol.f;
 }
 
-int elektraModulesClose (KeySet *modules, Key *error)
+int elektraModulesClose (KeySet *modules, Key *errorKey)
 {
 	Key *root = ksLookupByName (modules, "system/elektra/modules", KDB_O_POP);
 	Key *cur;
@@ -101,12 +90,7 @@ int elektraModulesClose (KeySet *modules, Key *error)
 
 	if (!root)
 	{
-		if (error)
-		{
-			keySetMeta (error, "error", "description module");
-			keySetMeta (error, "error/description", "could not find root key");
-			keySetMeta (error, "error/module", "modules");
-		}
+		ELEKTRA_SET_ERROR(3, errorKey, "elektraModulesClose");
 		return -1;
 	}
 
@@ -122,9 +106,7 @@ int elektraModulesClose (KeySet *modules, Key *error)
 				ksAppendKey (newModules, root);
 			}
 			ret = -1;
-			keySetMeta (error, "error", "description module");
-			keySetMeta (error, "error/description", "could not close a module");
-			keySetMeta (error, "error/module", "modules");
+			ELEKTRA_SET_ERROR(4, errorKey, dlerror());
 
 			ksAppendKey(newModules, cur);
 		} else {

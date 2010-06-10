@@ -26,7 +26,8 @@ struct Plugin
 	Plugin(std::string const& pluginName, KeySet &modules, KeySet const& testConfig) :
 		pluginName(pluginName)
 	{
-		plugin = ckdb::elektraPluginOpen(pluginName.c_str(), modules.getKeySet(), testConfig.dup());
+		Key errorKey;
+		plugin = ckdb::elektraPluginOpen(pluginName.c_str(), modules.getKeySet(), testConfig.dup(), *errorKey);
 
 		if (!plugin) throw NoPlugin();
 

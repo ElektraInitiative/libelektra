@@ -48,3 +48,9 @@ severity:fatal
 class:NoDefaultBackendError
 extends:KDBOpenError
 
+number:6
+description:Could not call elektraPluginFactory
+ingroup:kdb
+severity:fatal
+
+

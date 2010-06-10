@@ -13,6 +13,15 @@ ostream& operator << (ostream& os, parse_t& p)
 	   << "#define KDBERRORS_H" << endl
 	   << endl
 	   << "#include <kdb.h>" << endl
+	   << endl
+	   << "#define ELEKTRA_SET_ERROR(number, key, text) ELEKTRA_SET_ERROR_HELPER\\" << endl
+	   << "	(number, key, text, __FILE__, __LINE__)" << endl
+	   << endl
+	   << "#define ELEKTRA_SET_ERROR_HELPER(number, key, text, file, line) ELEKTRA_SET_ERROR_HELPER_HELPER\\" << endl
+	   << "	(number, key, text, file, line)" << endl
+	   << endl
+	   << "#define ELEKTRA_SET_ERROR_HELPER_HELPER(number, key, text, file, line) elektraSetError ## number\\" << endl
+	   << "	(key, text, file, #line)" << endl
 	   << endl;
 
 	for (size_t i = 1; i<p.size(); ++i)
