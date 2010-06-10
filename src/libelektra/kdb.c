@@ -725,7 +725,7 @@ ssize_t kdbSet (KDB *handle, KeySet *ks,
 		/* if there is no backend in the trie use the default */
 		if (backend_handle==NULL)
 		{
-			kdbPrintDebug("No backend handle, but should be!");
+			ELEKTRA_PRINT_DEBUG("No backend handle, but should be!");
 			return -1;
 		}
 		if (keysets->syncbits[i] && keysets->belowparents[i])
@@ -746,7 +746,7 @@ ssize_t kdbSet (KDB *handle, KeySet *ks,
 			}
 		}
 		if (ret == -1) {
-			kdbPrintDebug ("kdbSet failed");
+			ELEKTRA_PRINT_DEBUG ("kdbSet failed");
 			errorKey = ksCurrent (keysets->keysets[i]);
 			if (errorKey) ksLookup(ks, errorKey, KDB_O_WITHOWNER);
 			break;

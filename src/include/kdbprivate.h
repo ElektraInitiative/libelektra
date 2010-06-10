@@ -112,9 +112,9 @@
 
 #if DEBUG
 # include <stdio.h>
-# define kdbPrintDebug(text) printf("%s:%d: %s\n", __FILE__, __LINE__ , text);
+# define ELEKTRA_PRINT_DEBUG(text) printf("%s:%d: %s\n", __FILE__, __LINE__ , text);
 #else
-# define kdbPrintDebug(text)
+# define ELEKTRA_PRINT_DEBUG(text)
 #endif
 
 #if DEBUG && VERBOSE

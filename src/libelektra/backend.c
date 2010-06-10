@@ -154,7 +154,7 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules)
 				backend->mountpoint=keyNew(keyValue(cur),KEY_VALUE,keyBaseName(root),0);
 				if (!backend->mountpoint)
 				{
-					kdbPrintDebug("given mountpoint not valid");
+					ELEKTRA_PRINT_DEBUG("given mountpoint not valid");
 					goto error;
 				}
 				ksDel (cut);

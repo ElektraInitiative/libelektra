@@ -83,7 +83,7 @@ Trie *elektraTrieOpen(KeySet *config, KeySet *modules)
 
 	if (!root)
 	{
-		kdbPrintDebug ("Could not find any mountpoint configuration");
+		ELEKTRA_PRINT_DEBUG ("Could not find any mountpoint configuration");
 		goto error;
 	}
 
@@ -104,7 +104,7 @@ Trie *elektraTrieOpen(KeySet *config, KeySet *modules)
 
 	if (!root)
 	{
-		kdbPrintDebug ("Could not find any modules");
+		ELEKTRA_PRINT_DEBUG ("Could not find any modules");
 		goto error;
 	}
 	while ((cur = ksNext (modules)) != 0)
@@ -158,13 +158,13 @@ static int elektraMountBackend (Trie **trie, Backend *backend)
 
 	if (!backend)
 	{
-		kdbPrintDebug("Ignored invalid backend");
+		ELEKTRA_PRINT_DEBUG("Ignored invalid backend");
 		return 0;
 	}
 
 	if (!backend->mountpoint)
 	{
-		kdbPrintDebug("backend has no mountpoint");
+		ELEKTRA_PRINT_DEBUG("backend has no mountpoint");
 
 		elektraBackendClose(backend);
 		return -1;

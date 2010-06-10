@@ -102,18 +102,18 @@ int elektraProcessPlugin(Key *cur, int *pluginNumber, char **pluginName, char **
 
 	if (fullname[0] != '#')
 	{
-		kdbPrintDebug ("Names of Plugins must start with a #\n");
+		ELEKTRA_PRINT_DEBUG ("Names of Plugins must start with a #\n");
 		return -1;
 	}
 	if (fullname[1] < '0' || fullname[1] > '9')
 	{
-		kdbPrintDebug ("Names of Plugins must start have the position number as second char\n");
+		ELEKTRA_PRINT_DEBUG ("Names of Plugins must start have the position number as second char\n");
 		return -1;
 	}
 	*pluginNumber = fullname[1]-'0';
 	if (*pluginNumber > NR_OF_PLUGINS)
 	{
-		kdbPrintDebug("Tried to set more plugins then definied in NR_OF_PLUGINS\n");
+		ELEKTRA_PRINT_DEBUG("Tried to set more plugins then definied in NR_OF_PLUGINS\n");
 		return -1;
 	}
 
