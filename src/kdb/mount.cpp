@@ -7,7 +7,10 @@
 #include <vector>
 #include <string>
 
-#include <kdbinternal.h>
+#include <kdb.h>
+#include <kdbplugin.h>
+#include <kdbmodule.h>
+#include <kdbprivate.h>
 
 using namespace std;
 using namespace kdb;

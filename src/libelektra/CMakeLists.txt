@@ -28,15 +28,6 @@ add_custom_command (
 		ARGS ${BACKENDS}
 		)
 
-get_target_property (EXE_LOC exporterrors LOCATION)
-
-add_custom_command (
-		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/exported_errors.c
-		DEPENDS exporterrors
-		COMMAND ${EXE_LOC}
-		ARGS ${CMAKE_SOURCE_DIR}/src/error/specification ${CMAKE_CURRENT_BINARY_DIR}/exported_errors.c
-		)
-
 
 # Include the shared header files of the elektra project
 include(LibAddMacros)
@@ -58,7 +49,7 @@ list (APPEND SRC_FILES ${elektra_SRCS})
 
 set (SOURCES ${SRC_FILES} ${HDR_FILES})
 list (APPEND SOURCES "${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.h")
-list (APPEND SOURCES "${CMAKE_CURRENT_BINARY_DIR}/exported_errors.c")
+
 
 if (BUILD_SHARED)
 	get_property (elektra-shared_SRCS GLOBAL PROPERTY elektra-shared_SRCS)

@@ -194,6 +194,7 @@ KDB * kdbOpen()
 {
 	KDB *handle;
 	KeySet *keys;
+	Key *errorKey = keyNew(0);
 #if DEBUG && VERBOSE
 	Key *key;
 
@@ -219,6 +220,7 @@ KDB * kdbOpen()
 #if DEBUG
 		printf ("failed to open default backend");
 #endif
+		ELEKTRA_SET_ERROR(5, errorKey, "unknown reason");
 		return 0;
 	}
 

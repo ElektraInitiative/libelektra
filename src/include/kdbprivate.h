@@ -111,16 +111,24 @@
 
 
 #if DEBUG
-# define kdbPrintDebug(text) printf("%s:%d: %s\n", __FUNCTION__, __LINE__ , text);
+# include <stdio.h>
+# define kdbPrintDebug(text) printf("%s:%d: %s\n", __FILE__, __LINE__ , text);
 #else
 # define kdbPrintDebug(text)
 #endif
 
 #if DEBUG && VERBOSE
-# define kdbPrintVerbose(text) printf("%s:%d: %s\n", __FUNCTION__, __LINE__ , text);
+# define kdbPrintVerbose(text) printf("%s:%d: %s\n", __FILE__, __LINE__ , text);
 #else
 # define kdbPrintVerbose(text)
 #endif
+
+#define ELEKTRA_SET_ERROR(number, key, text) ELEKTRA_SET_ERROR_HELPER\
+	(number, key, text, __FILE__, __LINE__)
+
+#define ELEKTRA_SET_ERROR_HELPER(number, key, text, file, line) elektraSetError ## number\
+	(key, text, file, #line)
+
 
 
 #ifdef __cplusplus
