@@ -1,5 +1,7 @@
 add_subdirectory (include)
 
+add_subdirectory (error)
+
 add_subdirectory (libloader)
 
 add_subdirectory (plugins)

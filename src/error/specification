@@ -1,0 +1,50 @@
+number:0
+description:a test for a exception specification
+:new lines to the same entry can be started with a colon
+:the number is sequential and has no special meaning
+:
+:there are no comments possible in this file
+ingroup:test
+:a unique identifier for a doxygen module
+module:test
+:the libloader's or plugin's module name
+class:Ok
+:a class name which can be used by bindings
+:they might add Pre- or Postfixes though
+ignore:true
+:a generator should always ignore this first entry
+:or others which have ignore:true.
+:It is for errors which are not relevant anymore
+:an empty line will start the next error specification
+
+number:1
+ingroup:modules
+description:could not load module, dlopen failed
+module:dl
+class:FailedLoadModuleError
+extends:ModuleError
+
+number:2
+ingroup:modules
+description:could not get pointer to factory, dlsym failed
+module:dl
+class:FailedResolveSymbolError
+extends:ModuleError
+
+number:3
+ingroup:modules
+description:could not find root key
+module:dl
+
+number:4
+ingroup:modules
+description:could not close a module, dlclose failed
+module:dl
+
+number:5
+description:failed to open default backend
+ingroup:kdb
+severity:fatal
+class:NoDefaultBackendError
+extends:KDBOpenError
+

@@ -18,12 +18,24 @@ add_custom_command (
 		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.h
 		DEPENDS exportsymbols
 		COMMAND ${EXE_LOC}
-		ARGS ${BACKENDS})
+		ARGS ${BACKENDS}
+		)
+
 add_custom_command (
 		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.c
 		DEPENDS exportsymbols
 		COMMAND ${EXE_LOC}
-		ARGS ${BACKENDS})
+		ARGS ${BACKENDS}
+		)
+
+get_target_property (EXE_LOC exporterrors LOCATION)
+
+add_custom_command (
+		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/exported_errors.c
+		DEPENDS exporterrors
+		COMMAND ${EXE_LOC}
+		ARGS ${CMAKE_SOURCE_DIR}/src/error/specification ${CMAKE_CURRENT_BINARY_DIR}/exported_errors.c
+		)
 
 
 # Include the shared header files of the elektra project
@@ -75,6 +87,7 @@ if (BUILD_FULL OR BUILD_STATIC)
 	get_property (elektra-full_SRCS GLOBAL PROPERTY elektra-full_SRCS)
 	list (APPEND SOURCES ${elektra-full_SRCS})
 	list (APPEND SOURCES "${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.c")
+	list (APPEND SOURCES "${CMAKE_CURRENT_BINARY_DIR}/exported_errors.c")
 
 
 	#and get all libraries to link against
