@@ -12,7 +12,7 @@ ostream& operator << (ostream& os, parse_t& p)
 
 	for (size_t i = 1; i<p.size(); ++i)
 	{
-		os << "static inline void elektraSetError" << i << "(Key *errorKey, const char *reason," << endl
+		os << "void elektraSetError" << i << "(Key *errorKey, const char *reason," << endl
 		   << "	const char *file, const char *line, const char *function)" << endl
 		   << "{" << endl
 		   << "	 keySetMeta(errorKey, \"error\", \"" << "number description ingroup module file line function reason" << "\");" << endl

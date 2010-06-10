@@ -43,7 +43,6 @@ include(LibAddMacros)
 add_headers(HDR_FILES)
 
 #include the current binary directory to get exported_symbols.h
-list (APPEND SOURCES "${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.h")
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
 #now add all source files of this folder
@@ -58,6 +57,8 @@ get_property (elektra_SRCS GLOBAL PROPERTY elektra_SRCS)
 list (APPEND SRC_FILES ${elektra_SRCS})
 
 set (SOURCES ${SRC_FILES} ${HDR_FILES})
+list (APPEND SOURCES "${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.h")
+list (APPEND SOURCES "${CMAKE_CURRENT_BINARY_DIR}/exported_errors.c")
 
 if (BUILD_SHARED)
 	get_property (elektra-shared_SRCS GLOBAL PROPERTY elektra-shared_SRCS)
@@ -87,7 +88,6 @@ if (BUILD_FULL OR BUILD_STATIC)
 	get_property (elektra-full_SRCS GLOBAL PROPERTY elektra-full_SRCS)
 	list (APPEND SOURCES ${elektra-full_SRCS})
 	list (APPEND SOURCES "${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.c")
-	list (APPEND SOURCES "${CMAKE_CURRENT_BINARY_DIR}/exported_errors.c")
 
 
 	#and get all libraries to link against

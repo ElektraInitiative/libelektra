@@ -2,8 +2,9 @@
 #include <stdio.h>
 #include <errno.h>
 
+#include <kdb.h>
 #include <kdbplugin.h>
-#include <kdbinternal.h>
+#include <kdbprivate.h>
 
 #define BACKENDNAME "hosts"
 #define BACKENDVERSION "0.0.2"
