@@ -718,7 +718,7 @@ ssize_t kdbSet (KDB *handle, KeySet *ks,
 		/* if there is no backend in the trie use the default */
 		if (backend_handle==NULL)
 		{
-			ELEKTRA_PRINT_DEBUG("No backend handle, but should be!");
+			ELEKTRA_SET_ERROR(8, parentKey, "backend_handle is NULL");
 			return -1;
 		}
 		if (keysets->syncbits[i] && keysets->belowparents[i])

@@ -5,6 +5,7 @@
 #include <kdb.h>
 #include <kdbplugin.h>
 #include <kdbprivate.h>
+#include <kdberrors.h>
 
 #define BACKENDNAME "hosts"
 #define BACKENDVERSION "0.0.2"
