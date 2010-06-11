@@ -185,6 +185,7 @@ thread2 {
  * manipulate plain in-memory Key or KeySet objects without any affairs with
  * the backend key database,
  *
+ * @param errorKey the key which holds errors and warnings which were issued
  * @see kdbClose() to end all affairs to the key database.
  * @return a KDB pointer on success
  * @return NULL on failure
@@ -197,6 +198,7 @@ KDB * kdbOpen(Key *errorKey)
 #if DEBUG && VERBOSE
 	Key *key;
 
+	/* TODO provide system/elektra/version instead*/
 	fprintf (stderr, "open elektra " KDB_VERSION "\n");
 #endif
 
@@ -232,13 +234,12 @@ KDB * kdbOpen(Key *errorKey)
 	handle->trie=elektraTrieOpen(keys, handle->modules);
 	if (!handle->trie)
 	{
-#if DEBUG
-		printf ("failed to open trie, continue with default backend\n");
-#endif
+		ELEKTRA_ADD_WARNING(7, errorKey, "trie could not be created, see previous warnings");
 	}
 
 	return handle;
 }
+
 
 /**
  * Closes the session with the Key database.

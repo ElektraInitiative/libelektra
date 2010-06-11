@@ -109,6 +109,10 @@ system/elektra/mountpoints/<name>
  * @note The given KeySet will be deleted within the function,
  * dont use it afterwards.
  *
+ * @param elektraConfig the configuration to work with.
+ *        It is used to build up this backend.
+ * @param modules used to load new modules or get references
+ *        to existing one
  * @return a pointer to a freshly allocated backend
  * @return 0 if it did not work, the elektraConfig then
  *         has the error information.
@@ -191,6 +195,13 @@ error:
 	return 0;
 }
 
+/**
+ * Opens a default backend using the plugin named default.
+ *
+ * @param modules the modules to work with
+ * @errorKey the key to issue warnings and errors to
+ * @return the fresh allocated default backend or 0 if it failed
+ */
 Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey)
 {
 	Backend *backend = elektraCalloc(sizeof(struct _Backend));
