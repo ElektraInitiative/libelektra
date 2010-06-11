@@ -53,4 +53,8 @@ description:Could not call elektraPluginFactory
 ingroup:kdb
 severity:fatal
 
+number:7
+description:failed to open trie, continue with default backend
+severity:warning
+ingroup:kdb
 
