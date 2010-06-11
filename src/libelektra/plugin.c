@@ -95,25 +95,25 @@ static int elektraRenamePluginConfig(KeySet *config)
  *          back referencing.
  * @returns -1 on error
  */
-int elektraProcessPlugin(Key *cur, int *pluginNumber, char **pluginName, char **referenceName)
+int elektraProcessPlugin(Key *cur, int *pluginNumber, char **pluginName, char **referenceName, Key *errorKey)
 {
 	const char *fullname = keyBaseName(cur);
 	size_t fullsize = keyGetBaseNameSize(cur);
 
 	if (fullname[0] != '#')
 	{
-		ELEKTRA_PRINT_DEBUG ("Names of Plugins must start with a #\n");
+		ELEKTRA_ADD_WARNING(18, errorKey, fullname);
 		return -1;
 	}
 	if (fullname[1] < '0' || fullname[1] > '9')
 	{
-		ELEKTRA_PRINT_DEBUG ("Names of Plugins must start have the position number as second char\n");
+		ELEKTRA_ADD_WARNING(19, errorKey, fullname);
 		return -1;
 	}
 	*pluginNumber = fullname[1]-'0';
 	if (*pluginNumber > NR_OF_PLUGINS)
 	{
-		ELEKTRA_PRINT_DEBUG("Tried to set more plugins then definied in NR_OF_PLUGINS\n");
+		ELEKTRA_ADD_WARNING(20, errorKey, fullname);
 		return -1;
 	}
 
@@ -181,7 +181,7 @@ int elektraProcessPlugin(Key *cur, int *pluginNumber, char **pluginName, char **
  *
  * @return -1 on failure
  */
-int elektraProcessPlugins(Plugin **plugins, KeySet *modules, KeySet *referencePlugins, KeySet *config, KeySet *systemConfig)
+int elektraProcessPlugins(Plugin **plugins, KeySet *modules, KeySet *referencePlugins, KeySet *config, KeySet *systemConfig, Key *errorKey)
 {
 	Key *root;
 	Key *cur;
@@ -201,7 +201,7 @@ int elektraProcessPlugins(Plugin **plugins, KeySet *modules, KeySet *referencePl
 			KeySet *pluginConfig;
 			Key *key;
 
-			if (elektraProcessPlugin(cur, &pluginNumber, &pluginName, &referenceName) == -1)
+			if (elektraProcessPlugin(cur, &pluginNumber, &pluginName, &referenceName, errorKey) == -1)
 			{
 				free (pluginName);
 				free (referenceName);
@@ -237,9 +237,7 @@ int elektraProcessPlugins(Plugin **plugins, KeySet *modules, KeySet *referencePl
 			free (pluginName);
 			free (referenceName);
 		} else {
-#if DEBUG
-			printf ("Unkown additional entries in plugin\n");
-#endif
+			ELEKTRA_ADD_WARNING(21, errorKey, keyString(cur));
 		}
 	}
 
@@ -283,11 +281,9 @@ Plugin* elektraPluginOpen(const char *name, KeySet *modules, KeySet *config, Key
 	/* let the plugin initialize itself */
 	if (handle->kdbOpen)
 	{
-		if ((handle->kdbOpen(handle)) == -1)
+		if ((handle->kdbOpen(handle, errorKey)) == -1)
 		{
-#if DEBUG && VERBOSE
-			printf("kdbOpen() failed for %s\n", name);
-#endif
+			ELEKTRA_ADD_WARNING(11, errorKey, name);
 		}
 	}
 
@@ -304,7 +300,7 @@ err_clup:
 	return 0;
 }
 
-int elektraPluginClose(Plugin *handle)
+int elektraPluginClose(Plugin *handle, Key *errorKey)
 {
 	int rc=0;
 
@@ -317,7 +313,8 @@ int elektraPluginClose(Plugin *handle)
 
 	if (handle->kdbClose)
 	{
-		rc=handle->kdbClose(handle);
+		rc=handle->kdbClose(handle, errorKey);
+		if (rc == -1) ELEKTRA_ADD_WARNING(12, errorKey, "kdbClose() failed");
 	}
 
 	ksDel(handle->config);

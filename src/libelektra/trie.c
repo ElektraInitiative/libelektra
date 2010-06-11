@@ -39,7 +39,7 @@
 
 #include "kdbinternal.h"
 
-static int elektraMountBackend (Trie **trie, Backend *backend);
+static int elektraMountBackend (Trie **trie, Backend *backend, Key *errorKey);
 static Trie* elektraTrieInsert(Trie *trie, const char *name, const void *value);
 static void* prefix_lookup(Trie *trie, const char *name);
 static char* starts_with(const char *str, char *substr);
@@ -72,7 +72,7 @@ Backend* elektraTrieLookup(Trie *trie, const Key *key)
  * @param config the configuration which should be used to build up the trie.
  * @return created trie on success, 0 on failure
  */
-Trie *elektraTrieOpen(KeySet *config, KeySet *modules)
+Trie *elektraTrieOpen(KeySet *config, KeySet *modules, Key *errorKey)
 {
 	Trie *trie = 0;
 	Key *root;
@@ -83,7 +83,7 @@ Trie *elektraTrieOpen(KeySet *config, KeySet *modules)
 
 	if (!root)
 	{
-		ELEKTRA_PRINT_DEBUG ("Could not find any mountpoint configuration");
+		ELEKTRA_ADD_WARNING(22, errorKey, KDB_KEY_MOUNTPOINTS);
 		goto error;
 	}
 
@@ -92,8 +92,12 @@ Trie *elektraTrieOpen(KeySet *config, KeySet *modules)
 		if (keyRel (root, cur) == 1)
 		{
 			KeySet *cut = ksCut(config, cur);
-			Backend *backend = elektraBackendOpen(cut, modules);
-			if (elektraMountBackend(&trie, backend) == -1) ksDel (cut);
+			Backend *backend = elektraBackendOpen(cut, modules, errorKey);
+			if (elektraMountBackend(&trie, backend, errorKey) == -1)
+			{
+				/* warnings already set by elektraMountBackend */
+				ksDel (cut);
+			}
 		}
 	}
 
@@ -104,38 +108,38 @@ Trie *elektraTrieOpen(KeySet *config, KeySet *modules)
 
 	if (!root)
 	{
-		ELEKTRA_PRINT_DEBUG ("Could not find any modules");
+		ELEKTRA_ADD_WARNING(23, errorKey, "no root key found for modules");
 		goto error;
 	}
 	while ((cur = ksNext (modules)) != 0)
 	{
-		Backend * backend = elektraBackendOpenModules(modules);
-		elektraMountBackend(&trie, backend);
+		Backend * backend = elektraBackendOpenModules(modules, errorKey);
+		elektraMountBackend(&trie, backend, errorKey);
 	}
 
 	return trie;
 
 error:
-	elektraTrieClose (trie);
+	elektraTrieClose (trie, errorKey);
 	ksDel (config);
 	return 0;
 }
 
 
-int elektraTrieClose (Trie *trie)
+int elektraTrieClose (Trie *trie, Key *errorKey)
 {
 	int i;
 	if (trie==NULL) return 0;
 	for (i=0;i<MAX_UCHAR;i++) {
 		if (trie->text[i]!=NULL) {
-			elektraTrieClose(trie->children[i]);
+			elektraTrieClose(trie->children[i], errorKey);
 			if (trie->value[i])
-				elektraBackendClose(trie->value[i]);
+				elektraBackendClose(trie->value[i], errorKey);
 			free(trie->text[i]);
 		}
 	}
 	if (trie->empty_value)
-		elektraBackendClose(trie->empty_value);
+		elektraBackendClose(trie->empty_value, errorKey);
 	free(trie);
 	return 0;
 }
@@ -152,21 +156,20 @@ int elektraTrieClose (Trie *trie)
  * @return 0 when nothing was done
  * @return 1 on success
  */
-static int elektraMountBackend (Trie **trie, Backend *backend)
+static int elektraMountBackend (Trie **trie, Backend *backend, Key *errorKey)
 {
 	char *mountpoint;
 
 	if (!backend)
 	{
-		ELEKTRA_PRINT_DEBUG("Ignored invalid backend");
+		ELEKTRA_ADD_WARNING(24, errorKey, "no backend given to mount");
 		return 0;
 	}
 
 	if (!backend->mountpoint)
 	{
-		ELEKTRA_PRINT_DEBUG("backend has no mountpoint");
-
-		elektraBackendClose(backend);
+		ELEKTRA_ADD_WARNING(25, errorKey, "no mountpoint");
+		elektraBackendClose(backend, errorKey);
 		return -1;
 	}
 

@@ -29,7 +29,11 @@ struct Plugin
 		Key errorKey;
 		plugin = ckdb::elektraPluginOpen(pluginName.c_str(), modules.getKeySet(), testConfig.dup(), *errorKey);
 
-		if (!plugin) throw NoPlugin();
+		if (!plugin)
+		{
+			printWarnings(errorKey);
+			throw NoPlugin();
+		}
 
 		Key infoKey ("system/elektra/modules", KEY_END);
 		infoKey.addBaseName(pluginName);
@@ -43,7 +47,9 @@ struct Plugin
 
 	~Plugin()
 	{
-		ckdb::elektraPluginClose(plugin);
+		Key errorKey;
+		ckdb::elektraPluginClose(plugin, *errorKey);
+		printWarnings(errorKey);
 	}
 
 	ckdb::Plugin *operator->()
@@ -111,8 +117,9 @@ KeySet MountCommand::addPlugins(std::string name, KeySet& modules, KeySet& refer
 			int nr;
 			char *cPluginName = 0;
 			char *cReferenceName = 0;
+			Key errorKey;
 			Key k(std::string("system/elektra/key/#0") + pluginName);
-			if (ckdb::elektraProcessPlugin (*k, &nr, &cPluginName, &cReferenceName) == -1) throw BadPluginName();
+			if (ckdb::elektraProcessPlugin (*k, &nr, &cPluginName, &cReferenceName, *errorKey) == -1) throw BadPluginName();
 
 			std::string realPluginName;
 			if (cPluginName)
@@ -245,10 +252,14 @@ int MountCommand::execute(int , char** )
 	cout << "Please provide a unique name." << endl;
 
 	KeySet conf;
+	Key parentKey(root, KEY_END);
 	try {
-		kdb.get(conf, Key(root, KEY_END));
+		kdb.get(conf, parentKey);
+		printWarnings(parentKey);
 	} catch (KDBException const& e)
 	{
+		printError(parentKey);
+		printWarnings(parentKey);
 		cout << "Could not get configuration" << endl;
 		cout << "Seems like this is your first mount" << endl;
 	}
@@ -402,7 +413,8 @@ int MountCommand::execute(int , char** )
 	cin >> answer;
 	if (answer != "y") throw CommandAbortException();
 
-	kdb.set(conf, Key());
+	Key k;
+	kdb.set(conf, k);
 	return 0;
 }
 

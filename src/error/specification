@@ -73,3 +73,78 @@ description:general parse error
 severity:normal
 ingroup:kdb
 
+number:11
+description:kdbOpen() failed
+severity:warning
+ingroup:kdb
+
+number:12
+description:kdbClose() failed
+severity:warning
+ingroup:kdb
+
+number:13
+description:Processing Get Plugins failed
+severity:warning
+ingroup:kdb
+
+number:14
+description:given mountpoint not valid
+severity:warning
+ingroup:kdb
+
+number:15
+description:Processing Set Plugins failed
+severity:warning
+ingroup:kdb
+
+number:16
+description:Unrecognised Config Tree
+severity:warning
+ingroup:kdb
+
+number:17
+description:Could not get configuration for Trie
+severity:warning
+ingroup:kdb
+
+number:18
+description:Names of Plugins must start with a #
+severity:warning
+ingroup:kdb
+
+number:19
+description:Names of Plugins must start have the position number as second char
+severity:warning
+ingroup:kdb
+
+number:20
+description:Tried to set more plugins then definied in NR_OF_PLUGINS
+severity:warning
+ingroup:kdb
+
+number:21
+description:Unknown additional entries in plugin
+severity:warning
+ingroup:kdb
+
+number:22
+description:Could not find any mountpoint configuration
+severity:warning
+ingroup:trie
+
+number:23
+description:Could not find any modules
+severity:warning
+ingroup:trie
+
+number:24
+description:Ignored invalid backend
+severity:warning
+ingroup:trie
+
+number:25
+description:Backend has no mountpoint
+severity:warning
+ingroup:trie
+

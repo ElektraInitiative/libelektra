@@ -23,10 +23,13 @@ int SetCommand::execute(int argc, char**argv)
 	std::string value = argv[3];
 
 	KeySet conf;
+	Key k(name, KEY_END);
 	try {
-		kdb.get(conf, Key(name, KEY_END));
+		kdb.get(conf, k);
+		printWarnings(k);
 	} catch (KDBException const& e)
 	{
+		printError(k);
 		cerr << "kdb get failed, but still resume" << endl;
 	}
 	Key key = conf.lookup(name);
@@ -40,7 +43,9 @@ int SetCommand::execute(int argc, char**argv)
 		cout << "Set string to " << value << endl;
 		key.setString(value);
 	}
-	kdb.set(conf, Key(static_cast<ckdb::Key*>(0)));
+	Key n;
+	kdb.set(conf, n);
+	printWarnings(n);
 
 	return 0;
 }

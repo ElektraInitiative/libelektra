@@ -23,11 +23,6 @@ int main(int argc, char**argv) try
 }
 catch (kdb::Key& key)
 {
-	std::cerr << "A key was thrown (temporary solution)" << std::endl;
-	std::cerr << "number: " << key.getMeta<std::string>("error/number") << std::endl;
-	std::cerr << "description: " << key.getMeta<std::string>("error/description") << std::endl;
-	std::cerr << "ingroup: " << key.getMeta<std::string>("error/ingroup") << std::endl;
-	std::cerr << "module: " << key.getMeta<std::string>("error/module") << std::endl;
-	std::cerr << "at: " << key.getMeta<std::string>("error/file") << ":" << key.getMeta<std::string>("error/line") << std::endl;
-	std::cerr << "reason: " << key.getMeta<std::string>("error/reason") << std::endl;
+	printError(key);
+	printWarnings(key);
 }

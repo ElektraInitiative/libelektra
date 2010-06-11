@@ -21,8 +21,8 @@ public:
 	KDB ();
 	~KDB ();
 
-	size_t get (KeySet & returned, const Key &parentKey, option_t options = KDB_O_NONE);
-	size_t set (KeySet & returned, const Key &parentKey, option_t options = KDB_O_NONE);
+	int get (KeySet & returned, Key &parentKey);
+	int set (KeySet & returned, Key &parentKey);
 
 	/*
 	size_t get (KeySet & returned, const std::string &parentName, option_t options = KDB_O_NONE);
@@ -57,7 +57,8 @@ inline KDB::KDB ()
  */
 inline KDB::~KDB ()
 {
-	ckdb::kdbClose(handle);
+	Key errorKey;
+	ckdb::kdbClose(handle, errorKey.getKey());
 }
 
 /**
@@ -67,17 +68,17 @@ inline KDB::~KDB ()
  * @param parentKey the parentKey of returned
  * @param options to change the behaviour which keys to fetch
  */
-inline size_t KDB::get (KeySet & returned, const Key & parentKey, option_t options)
+inline int KDB::get (KeySet & returned, Key & parentKey)
 {
-	ssize_t ret = ckdb::kdbGet (handle, returned.getKeySet(), parentKey.getKey(), options);
+	int ret = ckdb::kdbGet (handle, returned.getKeySet(), parentKey.getKey());
 	if (ret == -1) throw KDBException();
 	return ret;
 }
 
 
-inline size_t KDB::set (KeySet & returned, const Key & parentKey, option_t options)
+inline int KDB::set (KeySet & returned, Key & parentKey)
 {
-	ssize_t ret = ckdb::kdbSet(handle, returned.getKeySet(), parentKey.getKey(), options);
+	int ret = ckdb::kdbSet(handle, returned.getKeySet(), parentKey.getKey());
 	if (ret == -1) throw KDBException();
 	return ret;
 }
