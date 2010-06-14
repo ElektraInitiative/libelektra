@@ -40,12 +40,18 @@ struct Plugin
 
 		if (!plugin->kdbGet)
 		{
+			close();
 			throw MissingSymbol("kdbGet");
 		}
 		plugin->kdbGet(plugin, info.getKeySet(), *infoKey);
 	}
 
 	~Plugin()
+	{
+		close();
+	}
+
+	void close()
 	{
 		Key errorKey;
 		ckdb::elektraPluginClose(plugin, *errorKey);
@@ -91,9 +97,10 @@ bool MountCommand::checkFile(std::string path)
 	return f.is_open();
 }
 
-KeySet MountCommand::addPlugins(std::string name, KeySet& modules, KeySet& referencePlugins, std::string which)
+KeySet MountCommand::addPlugins(std::string name, KeySet& modules, KeySet& rreferencePlugins, std::string which)
 {
 	KeySet ret;
+	KeySet referencePlugins = rreferencePlugins;
 	vector <string> alreadyProvided;
 	int nrStoragePlugins = 0;
 	ret.append (*Key (root + "/" + name + "/" + which + "plugins",
@@ -112,6 +119,7 @@ KeySet MountCommand::addPlugins(std::string name, KeySet& modules, KeySet& refer
 		if (pluginName == ".") break;
 
 		bool isStoragePlugin = false;
+		std::string realPluginName;
 
 		try {
 			int nr;
@@ -119,25 +127,36 @@ KeySet MountCommand::addPlugins(std::string name, KeySet& modules, KeySet& refer
 			char *cReferenceName = 0;
 			Key errorKey;
 			Key k(std::string("system/elektra/key/#0") + pluginName);
-			if (ckdb::elektraProcessPlugin (*k, &nr, &cPluginName, &cReferenceName, *errorKey) == -1) throw BadPluginName();
+			if (ckdb::elektraProcessPlugin (*k, &nr, &cPluginName, &cReferenceName, *errorKey) == -1)
+			{
+				ckdb::elektraFree(cPluginName);
+				ckdb::elektraFree(cReferenceName);
+				throw BadPluginName();
+			}
 
-			std::string realPluginName;
 			if (cPluginName)
 			{
 				realPluginName = cPluginName;
+				ckdb::elektraFree(cPluginName);
 				cout << "# seems like there is a pluginName: " << realPluginName << endl;
 
 				if (cReferenceName)
 				{
 					std::string referenceName = cReferenceName;
 					cout << "# and a reference name too: " << referenceName << endl;
-					if (referenceName.find('#') != string::npos) throw BadPluginName();
+					if (referenceName.find('#') != string::npos)
+					{
+						ckdb::elektraFree(cReferenceName);
+						throw BadPluginName();
+					}
 
 					referencePlugins.append(Key(cReferenceName, KEY_VALUE, cPluginName, KEY_END));
+					ckdb::elektraFree(cReferenceName);
 				}
 			} else {
 				cout << "# backreference: " << cReferenceName << endl;
 				Key lookup = referencePlugins.lookup(cReferenceName);
+				ckdb::elektraFree(cReferenceName);
 				if (!lookup) throw ReferenceNotFound();
 				realPluginName = lookup.getString();
 			}
@@ -209,21 +228,26 @@ KeySet MountCommand::addPlugins(std::string name, KeySet& modules, KeySet& refer
 			if (answer == "P" || answer == "Proceed" || answer == "(P)roceed" || answer == "p")
 			{
 				if (isStoragePlugin) --nrStoragePlugins;
+				referencePlugins.lookup(realPluginName, KDB_O_POP);
 				continue;
 			} else if (answer == "R" || answer == "Retry" || answer == "(R)etry" || answer == "r")
 			{
 				if (isStoragePlugin) --nrStoragePlugins;
+				referencePlugins.lookup(realPluginName, KDB_O_POP);
 				--i;
 				continue;
 			} else if (answer == "B" || answer == "Back" || answer == "(B)ack" || answer == "b")
 			{
 				cout << endl;
+				// will throw away any referencePlugins
 				return KeySet(static_cast<ckdb::KeySet*>(0));
 			} else if (answer == "F" || answer == "Finish" || answer == "(F)inish" || answer == "f")
 			{
 				if (isStoragePlugin) --nrStoragePlugins;
+				referencePlugins.lookup(realPluginName, KDB_O_POP);
 				break;
 			}
+			// will throw away any referencePlugins
 			throw CommandAbortException();
 		}
 
@@ -242,6 +266,7 @@ KeySet MountCommand::addPlugins(std::string name, KeySet& modules, KeySet& refer
 		return KeySet(static_cast<ckdb::KeySet*>(0));
 	}
 
+	rreferencePlugins = referencePlugins;
 	cout << endl;
 	return ret;
 }
