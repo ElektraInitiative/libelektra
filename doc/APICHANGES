@@ -4,6 +4,7 @@ It was taken care that there are as little as possible,
 but two obvious API bugs had to be fixed:
  - the ksNeedsSort() API which is a disaster
  - the metadata which is filesys only (moved to extensions)
+ - keyset now describes the desired state of configuration (no removed keys)
 
 keyNext:
 	wrong documentation (subsequent calls will still return NULL ptr)
