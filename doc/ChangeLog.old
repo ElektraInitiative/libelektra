@@ -1,3 +1,7 @@
+This ChangeLog is not used anymore.
+Use git-log to see the changelog.
+
+
 * Fri 31 Oct 2008
 - kdb set user/dir/ will set as dir
 - libxml2 detection with pkg-config
