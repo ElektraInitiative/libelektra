@@ -20,8 +20,14 @@ int GetCommand::execute(int argc, char** argv)
 	}
 
 	KeySet conf;
-	kdb.get(conf, Key(argv[2], KEY_END));
-	Key k = conf.lookup(argv[2]);
+	Key x(argv[2], KEY_END);
+	if (!x)
+	{
+		cerr << "Argument given is not a valid keyname" << endl;
+		return 1;
+	}
+	kdb.get(conf, x);
+	Key k = conf.lookup(x);
 
 	if (!k)
 	{

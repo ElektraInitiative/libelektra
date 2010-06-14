@@ -81,13 +81,13 @@ typedef struct _KeySet	KeySet;
  *
  **************************************/
 
-KDB * kdbOpen(void);
-int kdbClose(KDB *handle);
+KDB * kdbOpen(Key *errorKey);
+int kdbClose(KDB *handle, Key *errorKey);
 
-ssize_t kdbGet(KDB *handle, KeySet *returned,
-	Key * parentKey, option_t options);
-ssize_t kdbSet(KDB *handle, KeySet *returned,
-	Key * parentKey, option_t options);
+int kdbGet(KDB *handle, KeySet *returned,
+	Key * parentKey);
+int kdbSet(KDB *handle, KeySet *returned,
+	Key * parentKey);
 
 ssize_t kdbGetByName(KDB *handle, KeySet *returned,
 	const char *parentName, option_t options);

@@ -28,7 +28,8 @@ int MetaCommand::execute(int argc, char** argv)
 	string metaname = argv[3];
 
 	KeySet conf;
-	kdb.get(conf, Key(keyname, KEY_END));
+	Key parentKey(keyname, KEY_END);
+	kdb.get(conf, parentKey);
 	Key k = conf.lookup(keyname);
 
 	if (command == "meta-get")
@@ -48,7 +49,8 @@ int MetaCommand::execute(int argc, char** argv)
 			k.setMeta<string> (metaname, metavalue);
 		}
 
-		kdb.set(conf, Key(keyname, KEY_END));
+		Key parentKey(keyname, KEY_END);
+		kdb.set(conf,parentKey);
 	}
 
 	return 0;

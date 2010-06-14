@@ -113,7 +113,7 @@ static size_t find_token (char **token, char *line)
 	return i+1; /* let find_token continue next time one byte after termination */
 }
 
-ssize_t kdbGet_hosts(Plugin *handle, KeySet *returned, const Key *parentKey)
+ssize_t kdbGet_hosts(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	int errnosave = errno;
 	ssize_t nr_keys = 0, nr_alias;
@@ -213,9 +213,8 @@ ssize_t kdbGet_hosts(Plugin *handle, KeySet *returned, const Key *parentKey)
 		}
 		nr_keys += nr_alias + 1;
 	}
-#if DEBUG
-	printf ("error at line: %s\n", readbuffer);
-#endif
+
+	ELEKTRA_SET_ERROR(10, parentKey, readbuffer);
 	ksDel (append);
 	// kdbbUnlock (fp);
 	fclose (fp);
@@ -223,7 +222,7 @@ ssize_t kdbGet_hosts(Plugin *handle, KeySet *returned, const Key *parentKey)
 	return -1;
 }
 
-ssize_t kdbSet_hosts(Plugin *handle, KeySet *returned, const Key *parentKey)
+ssize_t kdbSet_hosts(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	int errnosave = errno;
 	ssize_t nr_keys = 0, nr_alias = 0;
@@ -237,7 +236,7 @@ ssize_t kdbSet_hosts(Plugin *handle, KeySet *returned, const Key *parentKey)
 
 	if (fp == 0)
 	{
-		/*kdbhSetError (handle, Plugin_ERR_NODIR);*/
+		ELEKTRA_SET_ERROR(9, parentKey, strerror(errno));
 		errno = errnosave;
 		return -1;
 	}

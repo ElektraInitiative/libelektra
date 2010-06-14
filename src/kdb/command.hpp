@@ -39,4 +39,9 @@ public:
 	virtual int execute (int argc, char**argv) = 0;
 };
 
+#include <key>
+
+void printError(kdb::Key error);
+void printWarnings(kdb::Key error);
+
 #endif

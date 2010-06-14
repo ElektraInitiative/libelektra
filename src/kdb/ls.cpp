@@ -1,6 +1,7 @@
 #include <ls.hpp>
 
 #include <iostream>
+
 #include <kdb>
 
 using namespace kdb;
@@ -32,6 +33,8 @@ int LsCommand::execute(int argc, char** argv)
 	{
 		cout << "key: " << k.getName() << " " << k.getString() << endl;;
 	}
+
+	printWarnings(root);
 
 	return 0;
 }

@@ -2,8 +2,10 @@
 #include <stdio.h>
 #include <errno.h>
 
+#include <kdb.h>
 #include <kdbplugin.h>
-#include <kdbinternal.h>
+#include <kdbprivate.h>
+#include <kdberrors.h>
 
 #define BACKENDNAME "hosts"
 #define BACKENDVERSION "0.0.2"
@@ -16,12 +18,6 @@
 #define HOSTS_BUFFER_SIZE 16 */
 
 
-int kdbbWriteLock (FILE *f);
-int kdbbReadLock (FILE *f);
-int kdbbUnlock (FILE *f);
-
-int kdbOpen_hosts(Plugin *handle);
-int kdbClose_hosts(Plugin *handle);
-ssize_t kdbGet_hosts(Plugin *handle, KeySet *ks, const Key *parentKey);
-ssize_t kdbSet_hosts(Plugin *handle, KeySet *ks, const Key *parentKey);
+ssize_t kdbGet_hosts(Plugin *handle, KeySet *ks, Key *parentKey);
+ssize_t kdbSet_hosts(Plugin *handle, KeySet *ks, Key *parentKey);
 Plugin *ELEKTRA_PLUGIN_EXPORT(hosts);

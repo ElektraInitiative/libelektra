@@ -1,0 +1,150 @@
+number:0
+description:a test for a exception specification
+:new lines to the same entry can be started with a colon
+:the number is sequential and has no special meaning
+:
+:there are no comments possible in this file
+ingroup:test
+:a unique identifier for a doxygen module
+module:test
+:the libloader's or plugin's module name
+class:Ok
+:a class name which can be used by bindings
+:they might add Pre- or Postfixes though
+ignore:true
+:a generator should always ignore this first entry
+:or others which have ignore:true.
+:It is for errors which are not relevant anymore
+:an empty line will start the next error specification
+
+number:1
+ingroup:modules
+description:could not load module, dlopen failed
+module:dl
+class:FailedLoadModuleError
+extends:ModuleError
+
+number:2
+ingroup:modules
+description:could not get pointer to factory, dlsym failed
+module:dl
+class:FailedResolveSymbolError
+extends:ModuleError
+
+number:3
+ingroup:modules
+description:could not find root key
+module:dl
+
+number:4
+ingroup:modules
+description:could not close a module, dlclose failed
+module:dl
+
+number:5
+description:failed to open default backend
+ingroup:kdb
+severity:fatal
+class:NoDefaultBackendError
+extends:KDBOpenError
+
+number:6
+description:Could not call elektraPluginFactory
+ingroup:kdb
+severity:fatal
+
+number:7
+description:failed to open trie, continue with default backend
+severity:warning
+ingroup:kdb
+
+number:8
+description:no default backend found, but should be
+severity:fatal
+ingroup:kdb
+
+number:9
+description:could not open file
+severity:normal
+ingroup:kdb
+
+number:10
+description:general parse error
+severity:normal
+ingroup:kdb
+
+number:11
+description:kdbOpen() failed
+severity:warning
+ingroup:kdb
+
+number:12
+description:kdbClose() failed
+severity:warning
+ingroup:kdb
+
+number:13
+description:Processing Get Plugins failed
+severity:warning
+ingroup:kdb
+
+number:14
+description:given mountpoint not valid
+severity:warning
+ingroup:kdb
+
+number:15
+description:Processing Set Plugins failed
+severity:warning
+ingroup:kdb
+
+number:16
+description:Unrecognised Config Tree
+severity:warning
+ingroup:kdb
+
+number:17
+description:Could not get configuration for Trie
+severity:warning
+ingroup:kdb
+
+number:18
+description:Names of Plugins must start with a #
+severity:warning
+ingroup:kdb
+
+number:19
+description:Names of Plugins must start have the position number as second char
+severity:warning
+ingroup:kdb
+
+number:20
+description:Tried to set more plugins then definied in NR_OF_PLUGINS
+severity:warning
+ingroup:kdb
+
+number:21
+description:Unknown additional entries in plugin
+severity:warning
+ingroup:kdb
+
+number:22
+description:Could not find any mountpoint configuration
+severity:warning
+ingroup:trie
+
+number:23
+description:Could not find any modules
+severity:warning
+ingroup:trie
+
+number:24
+description:Ignored invalid backend
+severity:warning
+ingroup:trie
+
+number:25
+description:Backend has no mountpoint
+severity:warning
+ingroup:trie
+

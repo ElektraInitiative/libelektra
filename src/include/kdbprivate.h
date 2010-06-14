@@ -111,15 +111,16 @@
 
 
 #if DEBUG
-# define kdbPrintDebug(text) printf("%s:%d: %s\n", __FUNCTION__, __LINE__ , text);
+# include <stdio.h>
+# define ELEKTRA_PRINT_DEBUG(text) printf("%s:%d: %s\n", __FILE__, __LINE__ , text);
 #else
-# define kdbPrintDebug(text)
+# define ELEKTRA_PRINT_DEBUG(text)
 #endif
 
 #if DEBUG && VERBOSE
-# define kdbPrintVerbose(text) printf("%s:%d: %s\n", __FUNCTION__, __LINE__ , text);
+# define ELEKTRA_PRINT_VERBOSE(text) printf("%s:%d: %s\n", __FILE__, __LINE__ , text);
 #else
-# define kdbPrintVerbose(text)
+# define ELEKTRA_PRINT_VERBOSE(text)
 #endif
 
 
@@ -133,11 +134,11 @@ typedef struct _Split	Split;
 typedef struct _Backend	Backend;
 
 /* These define the type for pointers to all the kdb functions */
-typedef int  (*kdbOpenPtr)(Plugin *);
-typedef int  (*kdbClosePtr)(Plugin *);
+typedef int (*kdbOpenPtr)(Plugin *, Key *errorKey);
+typedef int (*kdbClosePtr)(Plugin *, Key *errorKey);
 
-typedef ssize_t  (*kdbGetPtr)(Plugin *handle, KeySet *returned, const Key *parentKey);
-typedef ssize_t  (*kdbSetPtr)(Plugin *handle, KeySet *returned, const Key *parentKey);
+typedef int (*kdbGetPtr)(Plugin *handle, KeySet *returned, Key *parentKey);
+typedef int (*kdbSetPtr)(Plugin *handle, KeySet *returned, Key *parentKey);
 
 
 typedef Backend* (*OpenMapper)(const char *,const char *,KeySet *);
@@ -467,28 +468,26 @@ int kdbbKeyNameToRelativeFilename(const char *string, char *buffer, size_t bufSi
 ssize_t kdbbKeyCalcRelativeFilename(const Key *key,char *relativeFilename,size_t maxSize);
 ssize_t kdbbGetFullFilename(KDB *handle, const Key *forKey,char *returned,size_t maxSize);
 
-/*TODO Old Stuff*/
-KDB* kdbOpenBackend(const char *backendname, const char *mountpoint, KeySet *config);
-int kdbCloseBackend(KDB *handle);
 
 /*Backend handling*/
-Backend* elektraBackendOpen(KeySet *elektra_config, KeySet *modules);
-Backend* elektraBackendOpenDefault(KeySet *modules);
-Backend* elektraBackendOpenModules(KeySet *modules);
-int elektraBackendClose(Backend *backend);
+Backend* elektraBackendOpen(KeySet *elektra_config, KeySet *modules, Key *errorKey);
+Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey);
+Backend* elektraBackendOpenModules(KeySet *modules, Key *errorKey);
+int elektraBackendClose(Backend *backend, Key *errorKey);
 
 /*Plugin handling*/
-int renameConfig(KeySet *config);
-int elektraProcessPlugin(Key *cur, int *pluginNumber, char **pluginName, char **referenceName);
-int elektraProcessPlugins(Plugin **plugins, KeySet *modules, KeySet *referencePlugins, KeySet *config, KeySet *systemConfig);
+int elektraProcessPlugin(Key *cur, int *pluginNumber, char **pluginName,
+		char **referenceName, Key *errorKey);
+int elektraProcessPlugins(Plugin **plugins, KeySet *modules, KeySet *referencePlugins,
+		KeySet *config, KeySet *systemConfig, Key *errorKey);
 
-Plugin* elektraPluginOpen(const char *backendname, KeySet *modules, KeySet *config);
-int elektraPluginClose(Plugin *handle);
+Plugin* elektraPluginOpen(const char *backendname, KeySet *modules, KeySet *config, Key* errorKey);
+int elektraPluginClose(Plugin *handle, Key *errorKey);
 
 /*Trie handling*/
 Backend* elektraTrieLookup(Trie *trie, const Key *key);
-Trie *elektraTrieOpen(KeySet *config, KeySet *modules);
-int elektraTrieClose (Trie *trie);
+Trie *elektraTrieOpen(KeySet *config, KeySet *modules, Key *errorKey);
+int elektraTrieClose (Trie *trie, Key *errorKey);
 
 /*Private helper for keys*/
 int keyInit(Key *key);

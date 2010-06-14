@@ -4,7 +4,9 @@
 #include <factory.hpp>
 #include <command.hpp>
 
-int main(int argc, char**argv)
+#include <key>
+
+int main(int argc, char**argv) try
 {
 	Factory f;
 
@@ -18,4 +20,9 @@ int main(int argc, char**argv)
 
 	std::auto_ptr<Command> c = f.get(argv[1]);
 	return c->execute (argc, argv);
+}
+catch (kdb::Key& key)
+{
+	printError(key);
+	printWarnings(key);
 }

@@ -185,18 +185,21 @@ thread2 {
  * manipulate plain in-memory Key or KeySet objects without any affairs with
  * the backend key database,
  *
+ * @param errorKey the key which holds errors and warnings which were issued
+ *                 must be given
  * @see kdbClose() to end all affairs to the key database.
  * @return a KDB pointer on success
  * @return NULL on failure
  * @ingroup kdb
  */
-KDB * kdbOpen()
+KDB * kdbOpen(Key *errorKey)
 {
 	KDB *handle;
 	KeySet *keys;
 #if DEBUG && VERBOSE
 	Key *key;
 
+	/* TODO provide system/elektra/version instead*/
 	fprintf (stderr, "open elektra " KDB_VERSION "\n");
 #endif
 
@@ -204,29 +207,28 @@ KDB * kdbOpen()
 
 	handle->modules = ksNew(0);
 
-	if (elektraModulesInit(handle->modules, 0) == -1)
+	if (elektraModulesInit(handle->modules, errorKey) == -1)
 	{
-#if DEBUG
-		printf ("error in initalisation of modules\n");
-#endif
 		return 0;
 	}
 
 	/* Open default backend */
-	handle->defaultBackend=elektraBackendOpenDefault(handle->modules);
+	handle->defaultBackend=elektraBackendOpenDefault(handle->modules, errorKey);
 	if (!handle->defaultBackend)
 	{
-#if DEBUG
-		printf ("failed to open default backend");
-#endif
 		return 0;
 	}
 
 	/* get mount config from root backend */
 	keys=ksNew(0);
 
-	/* TODO added KDB_O_NORECURSIVE because kdbGet() code is broken at the moment */
-	kdbGet(handle,keys,keyNew(KDB_KEY_MOUNTPOINTS,KEY_END),KDB_O_DEL|KDB_O_NORECURSIVE);
+	keySetName(errorKey, KDB_KEY_MOUNTPOINTS);
+
+	if (kdbGet(handle, keys, errorKey) == -1)
+	{
+		ELEKTRA_ADD_WARNING(17, errorKey, "kdbGet() failed");
+		return handle;
+	}
 
 #if DEBUG && VERBOSE
 	ksRewind(keys);
@@ -235,16 +237,15 @@ KDB * kdbOpen()
 	}
 #endif
 
-	handle->trie=elektraTrieOpen(keys, handle->modules);
+	handle->trie=elektraTrieOpen(keys, handle->modules, errorKey);
 	if (!handle->trie)
 	{
-#if DEBUG
-		printf ("failed to open trie, continue with default backend\n");
-#endif
+		ELEKTRA_ADD_WARNING(7, errorKey, "trie could not be created, see previous warnings");
 	}
 
 	return handle;
 }
+
 
 /**
  * Closes the session with the Key database.
@@ -266,18 +267,18 @@ KDB * kdbOpen()
  * @return -1 on NULL pointer
  * @ingroup kdb
  */
-int kdbClose(KDB *handle)
+int kdbClose(KDB *handle, Key *errorKey)
 {
 	if (!handle)
 	{
 		/*errno=KDB_ERR_NOSYS;*/
 		return -1;
 	}
-	if (handle->trie) elektraTrieClose(handle->trie);
+	if (handle->trie) elektraTrieClose(handle->trie, errorKey);
 
-	elektraBackendClose (handle->defaultBackend);
+	elektraBackendClose (handle->defaultBackend, errorKey);
 
-	elektraModulesClose (handle->modules, 0);
+	elektraModulesClose (handle->modules, errorKey);
 
 	ksDel (handle->modules);
 
@@ -439,16 +440,17 @@ kdbClose(handle); // no more affairs with the key database.
  * @ingroup kdb
  *
  */
-ssize_t kdbGet (KDB *handle, KeySet *returned,
-	Key * parentKey, option_t options)
+int kdbGet (KDB *handle, KeySet *returned,
+	Key * parentKey)
 {
-	ssize_t size = 0; /* nr of keys get */
+	int size = 0; /* nr of keys get */
 	ssize_t ret = 0;
 	KeySet *keys;
 	KeySet *tmp;
 	Key *current;
 	Backend *backend_handle;
 	Backend *try_handle;
+	option_t options = 0;
 
 	if (!handle || !returned)
 	{
@@ -563,8 +565,8 @@ ssize_t kdbGet (KDB *handle, KeySet *returned,
 			if (! (options & KDB_O_NORECURSIVE))
 			{
 				/* This key resides somewhere else, go recurse */
-				ret = kdbGet(handle, returned, current,
-					options & ~KDB_O_DEL & ~KDB_O_SORT & ~KDB_O_POP);
+				ret = kdbGet(handle, returned, current);
+					/* options & ~KDB_O_DEL & ~KDB_O_SORT & ~KDB_O_POP */
 				if (ret == -1)
 				{
 #if DEBUG && VERBOSE
@@ -688,9 +690,10 @@ for (i=0; i< NR_OF_TRIES; i++) // limit to NR_OF_TRIES tries
  *       handling example
  * @ingroup kdb
  */
-ssize_t kdbSet (KDB *handle, KeySet *ks,
-	Key * parentKey, option_t options)
+int kdbSet (KDB *handle, KeySet *ks,
+	Key * parentKey)
 {
+	option_t options = 0;
 	int ret=0;
 	Backend *backend_handle;
 	Key *errorKey;
@@ -723,7 +726,7 @@ ssize_t kdbSet (KDB *handle, KeySet *ks,
 		/* if there is no backend in the trie use the default */
 		if (backend_handle==NULL)
 		{
-			kdbPrintDebug("No backend handle, but should be!");
+			ELEKTRA_SET_ERROR(8, parentKey, "backend_handle is NULL");
 			return -1;
 		}
 		if (keysets->syncbits[i] && keysets->belowparents[i])
@@ -744,7 +747,7 @@ ssize_t kdbSet (KDB *handle, KeySet *ks,
 			}
 		}
 		if (ret == -1) {
-			kdbPrintDebug ("kdbSet failed");
+			ELEKTRA_PRINT_DEBUG ("kdbSet failed");
 			errorKey = ksCurrent (keysets->keysets[i]);
 			if (errorKey) ksLookup(ks, errorKey, KDB_O_WITHOWNER);
 			break;

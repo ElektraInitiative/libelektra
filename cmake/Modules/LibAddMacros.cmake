@@ -52,13 +52,25 @@ endmacro (mkdir)
 # tests/CMakeLists.txt
 #
 macro (add_headers HDR_FILES)
-	include_directories (BEFORE "${PROJECT_BINARY_DIR}/src/include")
-	file (GLOB BIN_HDR_FILES ${PROJECT_BINARY_DIR}/src/include/*.h)
+	set (BINARY_INCLUDE_DIR "${PROJECT_BINARY_DIR}/src/include")
+	set (SOURCE_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/src/include")
+
+	include_directories (BEFORE "${BINARY_INCLUDE_DIR}")
+	file (GLOB BIN_HDR_FILES ${BINARY_INCLUDE_DIR}/*.h)
 	list (APPEND HDR_FILES ${BIN_HDR_FILES})
 
-	include_directories (AFTER "${PROJECT_SOURCE_DIR}/src/include")
-	file (GLOB SRC_HDR_FILES ${PROJECT_SOURCE_DIR}/src/include/*.h)
+	include_directories (AFTER ${SOURCE_INCLUDE_DIR})
+	file (GLOB SRC_HDR_FILES ${SOURCE_INCLUDE_DIR}/*.h)
 	list (APPEND HDR_FILES ${SRC_HDR_FILES})
+
+	get_target_property (EXE_LOC exporterrors LOCATION)
+	add_custom_command (
+			OUTPUT ${BINARY_INCLUDE_DIR}/kdberrors.h
+			DEPENDS exporterrors
+			COMMAND ${EXE_LOC}
+			ARGS ${CMAKE_SOURCE_DIR}/src/error/specification ${BINARY_INCLUDE_DIR}/kdberrors.h
+			)
+	list (APPEND HDR_FILES "${BINARY_INCLUDE_DIR}/kdberrors.h")
 endmacro (add_headers)
 
 macro (add_cppheaders HDR_FILES)

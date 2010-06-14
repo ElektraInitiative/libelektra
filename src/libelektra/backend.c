@@ -109,12 +109,16 @@ system/elektra/mountpoints/<name>
  * @note The given KeySet will be deleted within the function,
  * dont use it afterwards.
  *
+ * @param elektraConfig the configuration to work with.
+ *        It is used to build up this backend.
+ * @param modules used to load new modules or get references
+ *        to existing one
  * @return a pointer to a freshly allocated backend
  * @return 0 if it did not work, the elektraConfig then
  *         has the error information.
  * @ingroup backend
  */
-Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules)
+Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKey)
 {
 	Key * cur;
 	Key * root;
@@ -141,38 +145,34 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules)
 			}
 			else if (!strcmp(keyBaseName(cur), "getplugins"))
 			{
-				if (elektraProcessPlugins(backend->getplugins, modules, referencePlugins, cut, systemConfig) == -1)
+				if (elektraProcessPlugins(backend->getplugins, modules, referencePlugins,
+							cut, systemConfig, errorKey) == -1)
 				{
-#if DEBUG
-					printf ("Processing Get Plugins failed\n");
-#endif
+					ELEKTRA_ADD_WARNING(13, errorKey, "elektraProcessPlugins failed");
 					goto error;
 				}
 			}
 			else if (!strcmp(keyBaseName(cur), "mountpoint"))
 			{
-				backend->mountpoint=keyNew(keyValue(cur),KEY_VALUE,keyBaseName(root),0);
+				backend->mountpoint=keyNew(keyValue(cur),KEY_VALUE,keyBaseName(root), KEY_END);
 				if (!backend->mountpoint)
 				{
-					kdbPrintDebug("given mountpoint not valid");
+					ELEKTRA_ADD_WARNING(14, errorKey, keyValue(cur));
 					goto error;
 				}
 				ksDel (cut);
 			}
 			else if (!strcmp(keyBaseName(cur), "setplugins"))
 			{
-				if (elektraProcessPlugins(backend->setplugins, modules, referencePlugins, cut, systemConfig) == -1)
+				if (elektraProcessPlugins(backend->setplugins, modules, referencePlugins,
+							cut, systemConfig, errorKey) == -1)
 				{
-#if DEBUG
-					printf ("Processing Set Plugins failed\n");
-#endif
+					ELEKTRA_ADD_WARNING(15, errorKey, "elektraProcessPlugins failed");
 					goto error;
 				}
 			} else {
 				// no one cares about that config
-#if DEBUG && VERBOSE
-				printf ("Unrecognised Config Tree: %s\n", keyBaseName(cur));
-#endif
+				ELEKTRA_ADD_WARNING(16, errorKey, keyBaseName(cur));
 				ksDel (cut);
 			}
 		}
@@ -187,11 +187,18 @@ error:
 	ksDel (systemConfig);
 	ksDel (elektraConfig);
 	ksDel (referencePlugins);
-	elektraBackendClose(backend);
+	elektraBackendClose(backend, errorKey);
 	return 0;
 }
 
-Backend* elektraBackendOpenDefault(KeySet *modules)
+/**
+ * Opens a default backend using the plugin named default.
+ *
+ * @param modules the modules to work with
+ * @errorKey the key to issue warnings and errors to
+ * @return the fresh allocated default backend or 0 if it failed
+ */
+Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey)
 {
 	Backend *backend = elektraCalloc(sizeof(struct _Backend));
 
@@ -200,9 +207,10 @@ Backend* elektraBackendOpenDefault(KeySet *modules)
 		keyNew("system/path", KEY_VALUE, KDB_DB_SYSTEM "/default.ecf", KEY_END),
 		keyNew("user/path", KEY_VALUE, "/tmp/default.ecf", KEY_END),
 		KS_END);
-	Plugin *plugin = elektraPluginOpen("default", modules, defaultConfig);
+	Plugin *plugin = elektraPluginOpen("default", modules, defaultConfig, errorKey);
 	if (!plugin)
 	{
+		/* error already set in elektraPluginOpen */
 		elektraFree(backend);
 		return 0;
 	}
@@ -218,7 +226,7 @@ Backend* elektraBackendOpenDefault(KeySet *modules)
 	return backend;
 }
 
-Backend* elektraBackendOpenModules(KeySet *modules)
+Backend* elektraBackendOpenModules(KeySet *modules, Key *errorKey)
 {
 	Backend *backend = elektraCalloc(sizeof(struct _Backend));
 
@@ -229,9 +237,10 @@ Backend* elektraBackendOpenModules(KeySet *modules)
 		KS_END);
 	Key *cur = ksCurrent(modules);
 
-	Plugin *plugin = elektraPluginOpen(keyBaseName(cur), modules, defaultConfig);
+	Plugin *plugin = elektraPluginOpen(keyBaseName(cur), modules, defaultConfig, errorKey);
 	if (!plugin)
 	{
+		/* Error already set in plugin */
 		elektraFree(backend);
 		return 0;
 	}
@@ -249,19 +258,24 @@ Backend* elektraBackendOpenModules(KeySet *modules)
 	return backend;
 }
 
-int elektraBackendClose(Backend *backend)
+int elektraBackendClose(Backend *backend, Key* errorKey)
 {
 	int ret = 0;
+	int errorOccurred = 0;
 
 	if (!backend) return -1;
 
 	keyDel (backend->mountpoint);
 	for (int i=0; i<NR_OF_PLUGINS; ++i)
 	{
-		elektraPluginClose(backend->setplugins[i]);
-		elektraPluginClose(backend->getplugins[i]);
+		ret = elektraPluginClose(backend->setplugins[i], errorKey);
+		if (ret == -1) ++errorOccurred;
+
+		ret = elektraPluginClose(backend->getplugins[i], errorKey);
+		if (ret == -1) ++errorOccurred;
 	}
 	elektraFree (backend);
 
-	return ret;
+	if (errorOccurred) return -1;
+	else return 0;
 }

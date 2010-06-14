@@ -492,8 +492,7 @@ int keyIsString(const Key *key)
  *
  * The returned flags bit array has 1s (differ) or 0s (equal) for each key
  * meta info compared, that can be logically ORed using @c #keyswitch_t flags.
- * The flags you can use are @link keyswitch_t::KEY_TYPE KEY_TYPE
- * @endlink, @link keyswitch_t::KEY_NAME KEY_NAME @endlink,
+ * @link keyswitch_t::KEY_NAME KEY_NAME @endlink,
  * @link keyswitch_t::KEY_VALUE KEY_VALUE @endlink,
  * @link keyswitch_t::KEY_OWNER KEY_OWNER @endlink,
  * @link keyswitch_t::KEY_COMMENT KEY_COMMENT @endlink,

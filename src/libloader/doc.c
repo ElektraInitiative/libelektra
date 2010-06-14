@@ -58,6 +58,12 @@ int elektraModulesInit (KeySet *modules, Key *error)
  * If anything goes wrong dont append anything to modules. Instead
  * report the error to the error key and return with 0.
  *
+ * @param modules where to get existing modules from
+ *        a new module will be added there
+ * @param name the name for the plugin to load. Note that it does
+ *        not have any prefixes or postfixes, you need to add them
+ *        yourself.
+ * @param error the key to add warnings or report errors
  * @return a pointer which can create a Plugin
  * @return 0 on error
  * @ingroup modules
@@ -79,6 +85,7 @@ elektraPluginFactory elektraModulesLoad (KeySet *modules, const char *name, Key 
  * close all other modules, but report the error with the
  * error key.
  *
+ * @param modules all modules in this keyset will be closed
  * @param error a key to append the error information if it is not null
  * @return -1 on error
  * @return >=0 otherwise

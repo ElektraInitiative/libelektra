@@ -255,6 +255,7 @@ inline const char* Key::getMeta(const std::string &name)
 			);
 }
 
+/* We dont want only the first part of the string */
 template<>
 inline std::string Key::getMeta(const std::string &name)
 {

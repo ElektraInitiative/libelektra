@@ -22,7 +22,9 @@ int InfoCommand::execute(int argc, char** argv)
 	std::string name = argv[2];
 
 	KeySet conf;
-	kdb.get(conf, Key(std::string("system/elektra/modules/") + name, KEY_END));
+	Key parentKey(std::string("system/elektra/modules/") + name, KEY_END);
+
+	kdb.get(conf, parentKey);
 
 
 	Key root (std::string("system/elektra/modules/") + name + "/exports", KEY_END);

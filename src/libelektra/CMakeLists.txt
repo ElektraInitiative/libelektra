@@ -18,20 +18,24 @@ add_custom_command (
 		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.h
 		DEPENDS exportsymbols
 		COMMAND ${EXE_LOC}
-		ARGS ${BACKENDS})
+		ARGS ${BACKENDS}
+		)
+
 add_custom_command (
 		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.c
 		DEPENDS exportsymbols
 		COMMAND ${EXE_LOC}
-		ARGS ${BACKENDS})
+		ARGS ${BACKENDS}
+		)
 
 
 # Include the shared header files of the elektra project
 include(LibAddMacros)
 add_headers(HDR_FILES)
+# not always needed.. only with cppplugins
+add_cppheaders(HDR_FILES)
 
 #include the current binary directory to get exported_symbols.h
-list (APPEND SOURCES "${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.h")
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
 #now add all source files of this folder
@@ -46,6 +50,8 @@ get_property (elektra_SRCS GLOBAL PROPERTY elektra_SRCS)
 list (APPEND SRC_FILES ${elektra_SRCS})
 
 set (SOURCES ${SRC_FILES} ${HDR_FILES})
+list (APPEND SOURCES "${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.h")
+
 
 if (BUILD_SHARED)
 	get_property (elektra-shared_SRCS GLOBAL PROPERTY elektra-shared_SRCS)
