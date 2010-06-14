@@ -35,7 +35,8 @@ int RemoveCommand::execute(int argc, char** argv)
 		return 1;
 	}
 
-	kdb.set(conf, x);
+	Key n;
+	kdb.set(conf, n);
 
 	return 0;
 }

@@ -347,6 +347,9 @@ struct _Backend {
 
 	Plugin *setplugins[NR_OF_PLUGINS];
 	Plugin *getplugins[NR_OF_PLUGINS];
+
+	ssize_t size;		/*!< The size of the keyset from the previous get.
+		Needed to know if a key was removed from a keyset. */
 };
 
 /**
