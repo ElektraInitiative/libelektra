@@ -51,9 +51,13 @@ void test_ksdup()
 		*Key ("user/key3/2", KEY_END),
 		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
 		KS_END);
+	succeed_if (ks3.lookup("user/key3/1"), "could not find key");
+	succeed_if (ks3.lookup("user/key3/2"), "could not find key");
+	succeed_if (ks3.lookup("user/key3/3"), "could not find key");
+	succeed_if (ks3.lookup("user/key3/3").getString() == "value", "value not correct");
+	succeed_if (ks3.size() == 3, "size not correct");
 
 	KeySet ks4 (ks3.dup());
-	succeed_if (ks3.size() == 3, "size not correct");
 	succeed_if (ks4.size() == 3, "size not correct");
 
 	// ks3.toStream(stdout, 0);
@@ -551,6 +555,112 @@ void test_cmp()
 	succeed_if (!(ko1 == ko2), "compare key user/a with user/a owner max")
 }
 
+void call (KeySet ks3)
+{
+	succeed_if (ks3.lookup("user/key3/1"), "could not find key");
+	succeed_if (ks3.lookup("user/key3/2"), "could not find key");
+	succeed_if (ks3.lookup("user/key3/3"), "could not find key");
+	succeed_if (ks3.lookup("user/key3/3").getString() == "value", "value not correct");
+	succeed_if (ks3.size() == 3, "size not correct");
+}
+
+void refcall (KeySet &ks3)
+{
+	succeed_if (ks3.lookup("user/key3/1"), "could not find key");
+	succeed_if (ks3.lookup("user/key3/2"), "could not find key");
+	succeed_if (ks3.lookup("user/key3/3"), "could not find key");
+	succeed_if (ks3.lookup("user/key3/3").getString() == "value", "value not correct");
+	succeed_if (ks3.size() == 3, "size not correct");
+}
+
+void test_kscall()
+{
+	cout << "test call with keyset" << endl;
+
+	KeySet ks3 (5,
+		*Key ("user/key3/1", KEY_END),
+		*Key ("user/key3/2", KEY_END),
+		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
+		KS_END);
+	succeed_if (ks3.lookup("user/key3/1"), "could not find key");
+	succeed_if (ks3.lookup("user/key3/2"), "could not find key");
+	succeed_if (ks3.lookup("user/key3/3"), "could not find key");
+	succeed_if (ks3.lookup("user/key3/3").getString() == "value", "value not correct");
+	succeed_if (ks3.size() == 3, "size not correct");
+
+	call(ks3);
+	succeed_if (ks3.lookup("user/key3/1"), "could not find key");
+	succeed_if (ks3.lookup("user/key3/2"), "could not find key");
+	succeed_if (ks3.lookup("user/key3/3"), "could not find key");
+	succeed_if (ks3.lookup("user/key3/3").getString() == "value", "value not correct");
+	succeed_if (ks3.size() == 3, "size not correct");
+
+	refcall(ks3);
+	succeed_if (ks3.lookup("user/key3/1"), "could not find key");
+	succeed_if (ks3.lookup("user/key3/2"), "could not find key");
+	succeed_if (ks3.lookup("user/key3/3"), "could not find key");
+	succeed_if (ks3.lookup("user/key3/3").getString() == "value", "value not correct");
+	succeed_if (ks3.size() == 3, "size not correct");
+}
+
+
+void ccall (KeySet ks3)
+{
+	succeed_if (ks3.lookup("user/key3/1"), "could not find key");
+	succeed_if (ks3.lookup("user/key3/2", KDB_O_POP), "could not find key");
+	succeed_if (ks3.lookup("user/key3/3"), "could not find key");
+	succeed_if (ks3.lookup("user/key3/3").getString() == "value", "value not correct");
+	succeed_if (ks3.size() == 2, "size not correct");
+
+	ks3.lookup("user/key3/1").setString("will change");
+	ks3.append(Key("user/key3/ccall", KEY_END));
+}
+
+void refccall (KeySet &ks3)
+{
+	succeed_if (ks3.lookup("user/key3/1"), "could not find key");
+	succeed_if (ks3.lookup("user/key3/2", KDB_O_POP), "could not find key");
+	succeed_if (ks3.lookup("user/key3/3"), "could not find key");
+	succeed_if (ks3.lookup("user/key3/3").getString() == "value", "value not correct");
+	succeed_if (ks3.size() == 2, "size not correct");
+
+	ks3.append(Key("user/key3/refccall", KEY_END));
+	ks3.lookup("user/key3/1").setString("will change again");
+}
+void test_ksccall()
+{
+	cout << "test changing call with keyset" << endl;
+
+	KeySet ks3 (5,
+		*Key ("user/key3/1", KEY_END),
+		*Key ("user/key3/2", KEY_END),
+		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
+		KS_END);
+	succeed_if (ks3.lookup("user/key3/1"), "could not find key");
+	succeed_if (ks3.lookup("user/key3/2"), "could not find key");
+	succeed_if (ks3.lookup("user/key3/3"), "could not find key");
+	succeed_if (ks3.lookup("user/key3/3").getString() == "value", "value not correct");
+	succeed_if (ks3.size() == 3, "size not correct");
+
+	ccall(ks3);
+	succeed_if (ks3.lookup("user/key3/1"), "could not find key");
+	succeed_if (ks3.lookup("user/key3/1").getString() == "will change", "value did not change");
+	succeed_if (ks3.lookup("user/key3/2"), "could not find key");
+	succeed_if (ks3.lookup("user/key3/3"), "could not find key");
+	succeed_if (ks3.lookup("user/key3/3").getString() == "value", "value not correct");
+	succeed_if (ks3.size() == 3, "size not correct");
+	succeed_if (!ks3.lookup("user/key3/ccall"), "key should not be there");
+
+	refccall(ks3);
+	succeed_if (ks3.lookup("user/key3/1"), "could not find key");
+	succeed_if (ks3.lookup("user/key3/1").getString() == "will change again", "value did not change");
+	succeed_if (!ks3.lookup("user/key3/2"), "could not find key");
+	succeed_if (ks3.lookup("user/key3/3"), "could not find key");
+	succeed_if (ks3.lookup("user/key3/3").getString() == "value", "value not correct");
+	succeed_if (ks3.lookup("user/key3/refccall"), "could not find key");
+	succeed_if (ks3.size() == 3, "size not correct");
+}
+
 
 int main()
 {
@@ -569,6 +679,8 @@ int main()
 	test_appendowner();
 	test_perowner();
 	test_cmp();
+	test_kscall();
+	test_ksccall();
 
 	cout << endl;
 	cout << "test_key RESULTS: " << nbTest << " test(s) done. " << nbError << " error(s)." << endl;

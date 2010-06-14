@@ -22,6 +22,8 @@ public:
 	ckdb::KeySet * getKeySet () const { return ks; }
 	void setKeySet (ckdb::KeySet * k) { ks = k; }
 
+	KeySet& operator=(KeySet const& other);
+
 	ckdb::KeySet* dup () const { return ckdb::ksDup(ks); }
 
 	void copy (const KeySet &other) { ckdb::ksCopy(ks,other.ks); }
@@ -83,15 +85,40 @@ inline KeySet::KeySet (size_t alloc, ...)
 	va_end (va);
 }
 
+/**Duplicate a keyset.
+ *
+ * This keyset will be a duplicate of the other afterwards.
+ *
+ * @note that they still reference to the same Keys, so
+ *       if you change key values also the keys in the original keyset
+ *       will be changed.
+ */
 inline KeySet::KeySet (const KeySet &other)
 {
-	ks = ckdb::ksNew(0);
-	ckdb::ksCopy(ks, other.ks);
+	ks = other.dup();
 }
 
 inline KeySet::~KeySet ()
 {
 	ckdb::ksDel (ks);
+}
+
+/**Duplicate a keyset.
+ *
+ * This keyset will be a duplicate of the other afterwards.
+ *
+ * @note that they still reference to the same Keys, so
+ *       if you change key values also the keys in the original keyset
+ *       will be changed.
+ */
+inline KeySet& KeySet::operator=(KeySet const& other)
+{
+	if (this != &other)
+	{
+		ckdb::ksDel (ks);
+		ks = other.dup();
+	}
+	return *this;
 }
 
 inline size_t KeySet::size () const

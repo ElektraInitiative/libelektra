@@ -508,6 +508,9 @@ int kdbGet (KDB *handle, KeySet *returned,
 		}
 	}
 
+	/* Not correct if loop below changes something */
+	backend_handle->size = ksGetSize(keys);
+
 	ksRewind(keys);
 	while ((current = ksPop(keys)) != 0)
 	{
@@ -729,7 +732,8 @@ int kdbSet (KDB *handle, KeySet *ks,
 			ELEKTRA_SET_ERROR(8, parentKey, "backend_handle is NULL");
 			return -1;
 		}
-		if (keysets->syncbits[i] && keysets->belowparents[i])
+		if ((keysets->syncbits[i] && keysets->belowparents[i]) ||
+		    (backend_handle->size != ksGetSize(keysets->keysets[i]) && keysets->belowparents[i]))
 		{
 			ksRewind (keysets->keysets[i]);
 			for (size_t p=0; p<NR_OF_PLUGINS; ++p)

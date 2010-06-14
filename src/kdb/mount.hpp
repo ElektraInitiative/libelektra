@@ -61,7 +61,7 @@ struct ReferenceNotFound: public PluginCheckException
 {
 	virtual const char* what() const throw()
 	{
-		return  "Could not found a reference!\n"
+		return  "Could not find a reference!\n"
 			"Seems you forgot to create the reference before using it.\n"
 			"Use #modulename#label# before you #ref to it.";
 	}
