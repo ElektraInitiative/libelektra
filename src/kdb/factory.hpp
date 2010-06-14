@@ -16,6 +16,7 @@
 #include <mount.hpp>
 #include <meta.hpp>
 #include <info.hpp>
+#include <rm.hpp>
 
 class Instancer
 {
@@ -49,6 +50,7 @@ public:
 		m_factory.insert(std::make_pair("meta-get", new Cnstancer<MetaCommand>()));
 		m_factory.insert(std::make_pair("meta-set", new Cnstancer<MetaCommand>()));
 		m_factory.insert(std::make_pair("info", new Cnstancer<InfoCommand>()));
+		m_factory.insert(std::make_pair("rm", new Cnstancer<RemoveCommand>()));
 	}
 
 	~Factory()
