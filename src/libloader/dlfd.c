@@ -35,6 +35,8 @@ kdbLibHandle kdbLibLoad(const char *module)
 	strcat (name, module);
 	strcat (name, ".so.0.0");
 
+	// first check if it is a symlink and check for that name (readlink) if it is already open
+
 	if (-1 == (fd = open(name, O_RDONLY))) return 0;
 
 	snprintf(path, sizeof path, "/dev/fd/%d", fd);
@@ -53,4 +55,5 @@ kdbLibFunc kdbLibSym(kdbLibHandle handle, const char *symbol)
 int kdbLibClose(kdbLibHandle handle)
 {
 	return dlclose((void*) handle);
+	// close needed here of file!
 }
