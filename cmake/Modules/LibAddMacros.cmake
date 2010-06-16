@@ -37,6 +37,31 @@ macro (mkdir dir)
 endmacro (mkdir)
 
 
+# Add a test for a plugin
+#
+# will include the common tests.h file + its source files
+#
+# links the executeable (only if build_full)
+# and adds a test
+macro (add_plugintest testname)
+	if (BUILD_FULL)
+		set (TEST_SOURCES
+				${CMAKE_SOURCE_DIR}/tests/tests.c
+				${CMAKE_SOURCE_DIR}/tests/tests.h
+				)
+		include_directories ("${CMAKE_SOURCE_DIR}/tests")
+		add_executable (testmod_${testname} ${TEST_SOURCES} testmod_${testname}.c)
+		target_link_libraries (testmod_${testname} elektra-full)
+		set_target_properties (testmod_${testname} PROPERTIES
+				COMPILE_DEFINITIONS HAVE_CONFIG_H)
+		add_test (testmod_${testname}
+				"${CMAKE_CURRENT_BINARY_DIR}/testmod_${testname}"
+				"${CMAKE_CURRENT_BINARY_DIR}"
+				)
+	endif (BUILD_FULL)
+endmacro (add_plugintest)
+
+
 #- Adds all headerfiles of global include path to the given variable
 #
 #  ADD_HEADERS (variable)
@@ -57,11 +82,11 @@ macro (add_headers HDR_FILES)
 
 	include_directories (BEFORE "${BINARY_INCLUDE_DIR}")
 	file (GLOB BIN_HDR_FILES ${BINARY_INCLUDE_DIR}/*.h)
-	list (APPEND HDR_FILES ${BIN_HDR_FILES})
+	list (APPEND ${HDR_FILES} ${BIN_HDR_FILES})
 
 	include_directories (AFTER ${SOURCE_INCLUDE_DIR})
 	file (GLOB SRC_HDR_FILES ${SOURCE_INCLUDE_DIR}/*.h)
-	list (APPEND HDR_FILES ${SRC_HDR_FILES})
+	list (APPEND ${HDR_FILES} ${SRC_HDR_FILES})
 
 	get_target_property (EXE_LOC exporterrors LOCATION)
 	add_custom_command (
@@ -70,17 +95,19 @@ macro (add_headers HDR_FILES)
 			COMMAND ${EXE_LOC}
 			ARGS ${CMAKE_SOURCE_DIR}/src/error/specification ${BINARY_INCLUDE_DIR}/kdberrors.h
 			)
-	list (APPEND HDR_FILES "${BINARY_INCLUDE_DIR}/kdberrors.h")
+	list (APPEND ${HDR_FILES} "${BINARY_INCLUDE_DIR}/kdberrors.h")
 endmacro (add_headers)
 
+# Add all headers needed for cpp bindings
+#
 macro (add_cppheaders HDR_FILES)
 	include_directories ("${PROJECT_BINARY_DIR}/src/bindings/cpp/include")
 	file (GLOB BIN_HDR_FILES ${PROJECT_BINARY_DIR}/src/bindings/cpp/include/*)
-	list (APPEND HDR_FILES ${BIN_HDR_FILES})
+	list (APPEND ${HDR_FILES} ${BIN_HDR_FILES})
 
 	include_directories ("${PROJECT_SOURCE_DIR}/src/bindings/cpp/include")
 	file (GLOB SRC_HDR_FILES ${PROJECT_SOURCE_DIR}/src/bindings/cpp/include/*)
-	list (APPEND HDR_FILES ${SRC_HDR_FILES})
+	list (APPEND ${HDR_FILES} ${SRC_HDR_FILES})
 endmacro (add_cppheaders)
 
 
