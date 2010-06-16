@@ -41,35 +41,27 @@ int kdbClose_template(Plugin *handle)
 	return 0; /* success */
 }
 
-ssize_t kdbGet_template(Plugin *handle, KeySet *returned, const Key *parentKey)
+int kdbGet_template(Plugin *handle, KeySet *returned, Key *parentKey)
 {
-	ssize_t nr_keys = 0;
-	/* get all keys below parentKey and count them with nr_keys */
+	/* get all keys */
 
-	return nr_keys; /* success */
+	return 1; /* success */
 }
 
-ssize_t kdbSet_template(Plugin *handle, KeySet *returned, const Key *parentKey)
+int kdbSet_template(Plugin *handle, KeySet *returned, Key *parentKey)
 {
-	ssize_t nr_keys = 0;
-	/* set all keys below parentKey and count them with nr_keys */
+	/* set all keys */
 
-	return nr_keys;
+	return 1; /* success */
 }
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(template)
 {
-	return elektraPluginExport(BACKENDNAME,
+	return elektraPluginExport("template",
 		ELEKTRA_PLUGIN_OPEN,	&kdbOpen_template,
 		ELEKTRA_PLUGIN_CLOSE,	&kdbClose_template,
-		ELEKTRA_PLUGIN_GET,		&kdbGet_template,
-		ELEKTRA_PLUGIN_SET,		&kdbSet_template,
-		ELEKTRA_PLUGIN_VERSION,	BACKENDVERSION,
-		ELEKTRA_PLUGIN_AUTHOR,	"Full Name <email@libelektra.org>",
-		ELEKTRA_PLUGIN_LICENCE,	"BSD",
-		ELEKTRA_PLUGIN_DESCRIPTION,	"Add description here",
-		ELEKTRA_PLUGIN_NEEDS,	"",
-		ELEKTRA_PLUGIN_PROVIDES,	"",
+		ELEKTRA_PLUGIN_GET,	&kdbGet_template,
+		ELEKTRA_PLUGIN_SET,	&kdbSet_template,
 		ELEKTRA_PLUGIN_END);
 }
 

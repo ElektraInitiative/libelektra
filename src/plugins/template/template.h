@@ -18,22 +18,23 @@
 /***************************************************************************
  *                                                                         *
  *   This is the skeleton of the methods you'll have to implement in order *
- *   to provide libelektra.so a valid backend.                             *
- *   Simple fill the empty _template functions with your code and you are   *
+ *   to provide libelektra.so a valid plugin.                              *
+ *   Replace all occurences of "template" with your plugin name.           *
+ *   Simple fill the empty template functions with your code and you are   *
  *   ready to go.                                                          *
  *                                                                         *
  ***************************************************************************/
 
-
+#ifndef ELEKTRA_PLUGIN_template_H
+#define ELEKTRA_PLUGIN_template_H
 
 #include <kdbplugin.h>
 
 
-#define BACKENDNAME "template"
-#define BACKENDVERSION "0.0.1"
-
 int kdbOpen_template(Plugin *handle);
 int kdbClose_template(Plugin *handle);
-ssize_t kdbGet_template(Plugin *handle, KeySet *ks, const Key *parentKey);
-ssize_t kdbSet_template(Plugin *handle, KeySet *ks, const Key *parentKey);
+int kdbGet_template(Plugin *handle, KeySet *ks, Key *parentKey);
+int kdbSet_template(Plugin *handle, KeySet *ks, Key *parentKey);
 Plugin *ELEKTRA_PLUGIN_EXPORT(template);
+
+#endif
