@@ -18,8 +18,6 @@
 #include <kdbextension.h>
 #include <kdbprivate.h>
 
-#include <inttypes.h>
-
 #ifndef ESCAPE_CHAR
 #define ESCAPE_CHAR '\\'
 #endif
@@ -376,55 +374,6 @@ int elektraFilenameToKeyName(const char *string, char *buffer, size_t bufSize)
 	return 0;
 }
 
-#if 0
-
-/**Calculates the keyname out of a relative filename.
- *
- * Use elektraFilenameToKeyName instead
- *
- * @param handle The kdb handle to work with
- * @param forFilename needs to be the a null terminated string containing the relative filename
- * @param parentKey is the key above the key which will be returned
- * @param returned The proper keyname and owner will be stored in returned. A valid key must be passed.
- * @return number of bytes written to the buffer, or 0 on error
- * @ingroup backendhelper
- * @return length of returned string on success
- * @return -1 on failure
- * @see elektraKeyNameToRelativeFilename()
- */
-ssize_t elektraGetFullKeyName (KDB *handle, const char *forFilename, const Key *parentKey, Key *returned)
-{
-	size_t size=0;
-	char *transformedName=0;
-	char *name;
-
-	/* Next 2 ifs are required to transform filename from UTF-8 */
-	transformedName = malloc(size=elektraStrLen(forFilename));
-	strcpy(transformedName,forFilename);
-
-	if (elektraUTF8Engine(UTF8_FROM,&transformedName,&size)) {
-		free(transformedName);
-		/*errno = KDB_ERR_CONVERT;*/
-		return -1; 
-	}
-
-	/* Translate from filename -> keyname and concat it into name */
-	name = (char *) malloc(size*3 + keyGetNameSize(parentKey));
-	strcpy (name, keyName(parentKey));
-	name[keyGetNameSize(parentKey)-1] = '/';
-	elektraFilenameToKeyName(transformedName, name+keyGetNameSize(parentKey), size*3);
-
-	/* Now set the name and owner */
-	keySetName (returned, name);
-	keySetOwner(returned, keyOwner(parentKey));
-
-	free(transformedName);
-	free(name);
-	return 0;
-}
-
-#endif
-
 /**
  * Translate a key name to a relative file name
  * applying encoding.
@@ -497,62 +446,6 @@ int elektraKeyNameToRelativeFilename(const char *string, char *buffer, size_t bu
 	return written;
 }
 
-
-#if 0
-
-/**
- * This is a helper to kdbGetFullFilename()
- *
- * not needed, use elektraKeyNameToRelativeFilename instead
- *
- * @param key has the relevant name for the relative filename
- * @param relativeFilename the buffer to return the calculated filename
- * @param maxSize maximum number of bytes that fit the buffer
- * @see kdbGetFullFilename()
- * @return number of bytes written to the buffer
- * @return -1 on failure
- * @ingroup backendhelper
- */
-ssize_t elektraKeyCalcRelativeFilename(const Key *key,char *relativeFilename,size_t maxSize)
-{
-	if (elektraNeedsUTF8Conversion()) {
-		char *converted;
-		size_t size;
-
-		if (!(size=keyGetNameSize(key))) return -1;
-
-		converted = (char *) malloc(MAX_PATH_LENGTH);
-		size = elektraKeyNameToRelativeFilename(keyName(key), converted,
-			MAX_PATH_LENGTH);
-
-/* 		memcpy(converted,relativeFilename,convertedSize); */
-
-		if (elektraUTF8Engine(UTF8_TO,&converted,&size)) {
-			free(converted);
-			/*errno = KDB_ERR_CONVERT;*/
-			return -1;
-		}
-
-		if (size>maxSize) {
-			free(converted);
-			/*errno=KDB_ERR_TOOLONG;*/
-			return -1;
-		}
-
-		memcpy(relativeFilename,converted,size);
-		free(converted);
-
-		return size;
-	} else {
-		return elektraKeyNameToRelativeFilename(keyName(key), relativeFilename, maxSize);
-	}
-
-	return -1;
-}
-
-#endif
-
-
 /**
  * Calculate the real file name for a key.
  *
@@ -576,7 +469,7 @@ ssize_t elektraKeyCalcRelativeFilename(const Key *key,char *relativeFilename,siz
  * @return length of returned string on success
  * @return -1 on failure
  */
-ssize_t elektraGetFullFilename(KDB *handle, const Key *forKey, char *returned, size_t maxSize)
+ssize_t elektraGetFullFilename(const Key *forKey, char *returned, size_t maxSize)
 {
 	size_t length=0;
 	char * home;
@@ -650,6 +543,7 @@ ssize_t elektraGetFullFilename(KDB *handle, const Key *forKey, char *returned, s
 		return -1;
 	}
 	// TODO !! rc=elektraKeyCalcRelativeFilename(forKey,returned+length,maxSize-length);
+	rc = elektraKeyNameToRelativeFilename(keyName(forKey), returned+length, maxSize-length);
 
 	if (rc == -1) return -1;
 	else length += rc;

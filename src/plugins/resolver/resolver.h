@@ -65,9 +65,9 @@ ssize_t elektraDecode(char *elektraEncoded,void *returned);
 int elektraEncodeChar(char c, char *buffer, size_t bufSize);
 int elektraDecodeChar(const char *from, char *into);
 int elektraFilenameToKeyName(const char *string, char *buffer, size_t bufSize);
-ssize_t elektraGetFullKeyName (KDB *handle, const char *forFilename, const Key *parentKey, Key *returned);
+ssize_t elektraGetFullKeyName (const char *forFilename, const Key *parentKey, Key *returned);
 int elektraKeyNameToRelativeFilename(const char *string, char *buffer, size_t bufSize);
 ssize_t elektraKeyCalcRelativeFilename(const Key *key,char *relativeFilename,size_t maxSize);
-ssize_t elektraGetFullFilename(KDB *handle, const Key *forKey,char *returned,size_t maxSize);
+ssize_t elektraGetFullFilename(const Key *forKey, char *returned, size_t maxSize);
 
 #endif

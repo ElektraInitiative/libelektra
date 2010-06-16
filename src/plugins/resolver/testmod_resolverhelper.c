@@ -31,8 +31,6 @@
 #include <tests.h>
 #include "resolver.h"
 
-#if 0
-
 void test_calc_rel_filename()
 {
 	Key *k;
@@ -41,45 +39,43 @@ void test_calc_rel_filename()
 	printf ("Test encoding\n");
 
 	k = keyNew ("user/key", KEY_END);
-	elektraKeyCalcRelativeFilename (k, buffer, MAX_PATH_LENGTH);
+	elektraKeyNameToRelativeFilename (keyName(k), buffer, MAX_PATH_LENGTH);
 	succeed_if (strcmp (buffer, "user/key") == 0, "did not encode correctly with backslash");
 	keyDel (k);
 
 	k = keyNew ("user/key\\", KEY_END);
-	elektraKeyCalcRelativeFilename (k, buffer, MAX_PATH_LENGTH);
+	elektraKeyNameToRelativeFilename (keyName(k), buffer, MAX_PATH_LENGTH);
 	succeed_if (strcmp (buffer, "user/key%5C") == 0, "did not encode correctly with backslash");
 	keyDel (k);
 
 	k = keyNew ("user/key%", KEY_END);
-	elektraKeyCalcRelativeFilename (k, buffer, MAX_PATH_LENGTH);
+	elektraKeyNameToRelativeFilename (keyName(k), buffer, MAX_PATH_LENGTH);
 	succeed_if (strcmp (buffer, "user/key%25") == 0, "did not encode correctly with backslash");
 	keyDel (k);
 
 	k = keyNew ("user/key+", KEY_END);
-	elektraKeyCalcRelativeFilename (k, buffer, MAX_PATH_LENGTH);
+	elektraKeyNameToRelativeFilename (keyName(k), buffer, MAX_PATH_LENGTH);
 	succeed_if (strcmp (buffer, "user/key%2B") == 0, "did not encode correctly with backslash");
 	keyDel (k);
 
 	k = keyNew ("user/key ", KEY_END);
-	elektraKeyCalcRelativeFilename (k, buffer, MAX_PATH_LENGTH);
+	elektraKeyNameToRelativeFilename (keyName(k), buffer, MAX_PATH_LENGTH);
 	succeed_if (strcmp (buffer, "user/key+") == 0, "did not encode correctly with backslash");
 	keyDel (k);
 
 	k = keyNew ("user/key\\/", KEY_END);
-	elektraKeyCalcRelativeFilename (k, buffer, MAX_PATH_LENGTH);
+	elektraKeyNameToRelativeFilename (keyName(k), buffer, MAX_PATH_LENGTH);
 	succeed_if (strcmp (buffer, "user/key%5C%2F") == 0, "did not encode correctly with backslash");
 	keyDel (k);
 
 	k = keyNew ("user/key\\/ls\\\\tt", KEY_END);
-	elektraKeyCalcRelativeFilename (k, buffer, MAX_PATH_LENGTH);
+	elektraKeyNameToRelativeFilename (keyName(k), buffer, MAX_PATH_LENGTH);
 	succeed_if (strcmp (buffer, "user/key%5C%2Fls%5C%5Ctt") == 0, "did not encode correctly with backslash");
 	keyDel (k);
 }
 
 void test_filename()
 {
-	Key *mnt;
-	KeySet *conf;
 	Key *k = keyNew ("user/key", KEY_OWNER, "max", KEY_END);
 	Key *i = keyNew (KEY_END);
 	char buffer [MAX_PATH_LENGTH];
@@ -93,18 +89,13 @@ void test_filename()
 	unsetenv("KDB_HOME");
 #endif
 
-	KDB *handle = kdbOpen(0);
+	succeed_if (elektraGetFullFilename(i, buffer, MAX_PATH_LENGTH) == -1, "how did elektraGetFullFilename found path for invalid key?");
 
-	kdbMount (handle, mnt=keyNew("system/users", KEY_VALUE, "filesys", KEY_END),
-		conf=ksNew (0));
+	succeed_if (elektraGetFullFilename(k, buffer, 5) == -1, "case 1: not even /home/markus fits in buffer");
 
-	succeed_if (elektraGetFullFilename(handle, i, buffer, MAX_PATH_LENGTH) == -1, "how did elektraGetFullFilename found path for invalid key?");
+	succeed_if (elektraGetFullFilename(k, buffer, 16) == -1, "case 2: elektraKeyNameToRelativeFilename");
 
-	succeed_if (elektraGetFullFilename(handle, k, buffer, 5) == -1, "case 1: not even /home/markus fits in buffer");
-
-	succeed_if (elektraGetFullFilename(handle, k, buffer, 16) == -1, "case 2: elektraKeyCalcRelativeFilename");
-
-	elektraGetFullFilename(handle, k, buffer, MAX_PATH_LENGTH);
+	elektraGetFullFilename(k, buffer, MAX_PATH_LENGTH);
 	succeed_if (strcmp (buffer, "/home/max/.kdb/user/key") == 0, "step 4: got wrong filename without environment, no users");
 
 
@@ -113,59 +104,20 @@ void test_filename()
 #else
 	putenv ("HOME=/home/owner");
 #endif
-	elektraGetFullFilename(handle, k, buffer, MAX_PATH_LENGTH);
+	elektraGetFullFilename(k, buffer, MAX_PATH_LENGTH);
 	succeed_if (strcmp (buffer, "/home/owner/.kdb/user/key") == 0, "step 3: got wrong filename with environment HOME");
-
-	kdbSetString (handle, "system/users/max/home", "/usr/homes");
-	elektraGetFullFilename(handle, k, buffer, MAX_PATH_LENGTH);
-	// TODO failing
-	// printf ("%s\n", buffer);
-	// succeed_if (strcmp (buffer, "/usr/homes/.kdb/user/key") == 0, "step 2b: got wrong filename with home in elektra users db set");
-	kdbRemove(handle, "system/users/max/home");
-
-	kdbSetString (handle, "system/users/max/kdb", "/storage/kdb");
-	elektraGetFullFilename(handle, k, buffer, MAX_PATH_LENGTH);
-	// TODO failing
-	// printf ("%s\n", buffer);
-	// succeed_if (strcmp (buffer, "/storage/kdb/user/key") == 0, "step 2a: got wrong filename with kdb in elektra users db set");
-	kdbRemove(handle, "system/users/max/kdb");
 
 #ifdef HAVE_SETENV
 	setenv ("KDB_HOME","/home/else",1);
 #else
 	putenv("KDB_HOME=/home/else");
 #endif
-	elektraGetFullFilename(handle, k, buffer, MAX_PATH_LENGTH);
+	elektraGetFullFilename(k, buffer, MAX_PATH_LENGTH);
 	succeed_if (strcmp (buffer, "/home/else/.kdb/user/key") == 0, "got wrong filename with environment KDB_HOME");
-
-	keyDel (mnt);
-	ksDel (conf);
 
 	keyDel (k);
 	keyDel (i);
-	kdbClose (handle, 0);
 }
-
-void test_keyname()
-{
-	Key *k = keyNew(0);
-	Key *parentKey = keyNew ("user/absolute/reference", KEY_END);
-	KDB *h = kdbOpen(0);
-
-	printf ("Test keynames\n");
-
-	elektraGetFullKeyName(h, "folder/relative/key", parentKey, k);
-	succeed_if (strcmp (keyName(k), "user/absolute/reference/folder/relative/key") == 0, "could not get correct keyname");
-
-	elektraGetFullKeyName(h, "folder/relative%5C%2Fkey%25+", parentKey, k);
-	succeed_if (strcmp (keyName(k), "user/absolute/reference/folder/relative\\/key% ") == 0, "could not get correct keyname");
-
-	keyDel (parentKey);
-	keyDel (k);
-	kdbClose (h, 0);
-}
-
-#endif
 
 void test_filename_to_keyname()
 {
@@ -206,12 +158,9 @@ int main(int argc, char** argv)
 
 	init (argc, argv);
 
-	/*
 	test_calc_rel_filename();
 	test_filename();
 	test_keyname();
-	*/
-
 	test_filename_to_keyname();
 
 	printf("\ntest_backendhelpers RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
