@@ -56,15 +56,6 @@
 
 #define KDB_KEY_MOUNTPOINTS_LEN  (sizeof (KDB_KEY_MOUNTPOINTS))
 
-#ifndef KDB_KEY_USERS
-/**Users information.
- *
- * This key directory tells you the users existing on the system. */
-#define KDB_KEY_USERS            "system/users"
-#endif
-
-#define KDB_KEY_USERS_LEN        (sizeof (KDB_KEY_USERS))
-
 #ifndef MAX_UCHAR
 #define MAX_UCHAR (UCHAR_MAX+1)
 #endif
@@ -84,9 +75,6 @@
 #define APPROXIMATE_NR_OF_BACKENDS 16
 #endif
 
-#ifndef ESCAPE_CHAR
-#define ESCAPE_CHAR '\\'
-#endif
 
 /**BUFFER_SIZE can be used as value for any I/O buffer
  * on files.

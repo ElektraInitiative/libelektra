@@ -148,3 +148,51 @@ description:Backend has no mountpoint
 severity:warning
 ingroup:trie
 
+number:26
+description:could not open lock file
+severity:error
+ingroup:plugin
+module:resolver
+
+number:27
+description:could not lock file
+severity:error
+ingroup:plugin
+module:resolver
+
+number:28
+description:could not fchmod file
+severity:error
+ingroup:plugin
+module:resolver
+
+number:29
+description:could not stat file
+severity:error
+ingroup:plugin
+module:resolver
+
+number:30
+description:found conflict
+severity:error
+ingroup:plugin
+module:resolver
+
+number:31
+description:could not rename file
+severity:error
+ingroup:plugin
+module:resolver
+
+number:32
+description:could not unlock file
+severity:warning
+ingroup:plugin
+module:resolver
+
+number:33
+description:could not close file
+severity:warning
+ingroup:plugin
+module:resolver
+
