@@ -89,6 +89,65 @@ int elektraResolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	struct stat buf;
 
+	Key *root = keyNew("system/elektra/modules/resolver", KEY_END);
+
+	if (keyRel(root, parentKey) >= 0)
+	{
+		keyDel (root);
+		KeySet *info = ksNew (50, keyNew ("system/elektra/modules/resolver",
+				KEY_VALUE, "resolver plugin waits for your orders", KEY_END),
+			keyNew ("system/elektra/modules/resolver/constants", KEY_END),
+			keyNew ("system/elektra/modules/resolver/constants/KDB_DB_SYSTEM",
+				KEY_VALUE, KDB_DB_SYSTEM, KEY_END),
+			keyNew ("system/elektra/modules/resolver/constants/KDB_DB_HOME",
+				KEY_VALUE, KDB_DB_HOME, KEY_END),
+			keyNew ("system/elektra/modules/resolver/constants/KDB_DB_USER",
+				KEY_VALUE, KDB_DB_USER, KEY_END),
+			keyNew ("system/elektra/modules/resolver/exports", KEY_END),
+			keyNew ("system/elektra/modules/resolver/exports/open",
+				KEY_SIZE, sizeof (&elektraResolverOpen),
+				KEY_BINARY,
+				KEY_VALUE, &elektraResolverGet, KEY_END),
+			keyNew ("system/elektra/modules/resolver/exports/close",
+				KEY_SIZE, sizeof (&elektraResolverClose),
+				KEY_BINARY,
+				KEY_VALUE, &elektraResolverGet, KEY_END),
+			keyNew ("system/elektra/modules/resolver/exports/get",
+				KEY_SIZE, sizeof (&elektraResolverGet),
+				KEY_BINARY,
+				KEY_VALUE, &elektraResolverGet, KEY_END),
+			keyNew ("system/elektra/modules/resolver/exports/set",
+				KEY_SIZE, sizeof (&elektraResolverSet),
+				KEY_BINARY,
+				KEY_VALUE, &elektraResolverSet, KEY_END),
+			keyNew ("system/elektra/modules/resolver/exports/error",
+				KEY_SIZE, sizeof (&elektraResolverError),
+				KEY_BINARY,
+				KEY_VALUE, &elektraResolverGet, KEY_END),
+			keyNew ("system/elektra/modules/resolver/infos",
+				KEY_VALUE, "All information you want to know", KEY_END),
+			keyNew ("system/elektra/modules/resolver/infos/author",
+				KEY_VALUE, "Markus Raab <elektra@markus-raab.org>", KEY_END),
+			keyNew ("system/elektra/modules/resolver/infos/licence",
+				KEY_VALUE, "BSD", KEY_END),
+			keyNew ("system/elektra/modules/resolver/infos/description",
+				KEY_VALUE, "Dumps complete Elektra Semantics", KEY_END),
+			keyNew ("system/elektra/modules/resolver/infos/provides",
+				KEY_VALUE, "resolver", KEY_END),
+			keyNew ("system/elektra/modules/resolver/infos/needs",
+				KEY_VALUE, "", KEY_END),
+			keyNew ("system/elektra/modules/resolver/infos/version",
+				KEY_VALUE, BACKENDVERSION, KEY_END),
+			KS_END);
+		ksAppend(returned, info);
+		ksRewind(returned);
+
+		Key *k;
+		while ((k = ksNext(returned)) != 0) keyClearSync(k);
+		return ksGetSize(returned);
+	}
+	keyDel (root);
+
 	resolverHandle *pk = elektraPluginGetHandle(handle);
 	resolveFilename(parentKey, pk);
 
