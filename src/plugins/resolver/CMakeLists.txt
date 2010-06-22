@@ -1,6 +1,6 @@
 include(LibAddMacros)
 
-set (SOURCES resolver.h resolver.c helper.c)
+set (SOURCES resolver.h resolver.c filename.c lock.c)
 add_sources(elektra-full ${SOURCES})
 add_headers(SOURCES)
 
@@ -11,4 +11,4 @@ add_library(elektra-resolver MODULE ${SOURCES})
 #set_target_properties (elektra-resolver PROPERTIES COMPILE_FLAGS "-std=gnu99")
 install (TARGETS elektra-resolver DESTINATION lib/elektra)
 
-add_plugintest(resolverhelper)
+add_plugintest(resolver)

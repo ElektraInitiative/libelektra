@@ -202,25 +202,36 @@ Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey)
 {
 	Backend *backend = elektraCalloc(sizeof(struct _Backend));
 
-	// TODO a default path?
 	KeySet *defaultConfig = ksNew(5,
-		keyNew("system/path", KEY_VALUE, KDB_DB_SYSTEM "/default.ecf", KEY_END),
-		keyNew("user/path", KEY_VALUE, "/tmp/default.ecf", KEY_END),
+		keyNew("system/path", KEY_VALUE, "default.ecf", KEY_END),
 		KS_END);
-	Plugin *plugin = elektraPluginOpen("default", modules, defaultConfig, errorKey);
-	if (!plugin)
+
+	Plugin *resolver = elektraPluginOpen("resolver", modules, defaultConfig, errorKey);
+	if (!resolver)
 	{
-		/* error already set in elektraPluginOpen */
 		elektraFree(backend);
+		/* error already set in elektraPluginOpen */
 		return 0;
 	}
 
+	backend->getplugins[0] = resolver;
+	backend->setplugins[0] = resolver;
+	resolver->refcounter = 2;
+
+	Plugin *storage = elektraPluginOpen("default", modules, defaultConfig, errorKey);
+	if (!storage)
+	{
+		elektraPluginClose(resolver, errorKey);
+		elektraFree(backend);
+		/* error already set in elektraPluginOpen */
+		return 0;
+	}
+
+	backend->getplugins[0] = storage;
+	backend->setplugins[0] = storage;
+	storage->refcounter = 2;
+
 	Key *mp = keyNew ("", KEY_VALUE, "default", KEY_END);
-
-	backend->getplugins[0] = plugin;
-	backend->setplugins[0] = plugin;
-	plugin->refcounter = 2;
-
 	backend->mountpoint = mp;
 
 	return backend;

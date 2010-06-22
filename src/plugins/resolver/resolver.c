@@ -28,30 +28,59 @@
 #include "resolver.h"
 
 
-struct _pluginhandle
+int kdbOpen_resolver(Plugin *handle, Key *errorKey)
 {
-	int fd; /* Descriptor to the locking file */
-	time_t mtime; /* Previous timestamp of the file */
-	mode_t mode; /* The mode to set */
 
-	int action;
-};
+	KeySet *resolverConfig = elektraPluginGetConfig(handle);
 
-
-int kdbOpen_resolver(Plugin *handle)
-{
-	pluginhandle *p = malloc(sizeof(pluginhandle));
+	resolverHandle *p = malloc(sizeof(resolverHandle));
 	p->fd = -1;
 	p->mtime = 0;
 	p->mode = 0664;
+
+	p->filename = 0;
+	p->userFilename = 0;
+	p->systemFilename = 0;
+
+	p->path = keyString(ksLookupByName(resolverConfig, "/path", 0));
+
+	if (!p->path)
+	{
+		free (p);
+		ELEKTRA_ADD_WARNING(34, errorKey, "Could not find file configuration");
+		return -1;
+	}
+
+	/*
+	Key *testKey = keyNew("system", KEY_END);
+	if (resolveFilename(testKey, p) == -1)
+	{
+		free (p);
+		keyDel (testKey);
+		ELEKTRA_ADD_WARNING(35, errorKey, "Could not resolve system key");
+		return -1;
+	}
+
+	keySetName(testKey, "user");
+	if (resolveFilename(testKey, p) == -1)
+	{
+		free (p);
+		keyDel (testKey);
+		ELEKTRA_ADD_WARNING(35, errorKey, "Could not resolve system key");
+		return -1;
+	}
+	*/
+
 	elektraPluginSetHandle(handle, p);
 
 	return 0; /* success */
 }
 
-int kdbClose_resolver(Plugin *handle)
+int kdbClose_resolver(Plugin *handle, Key *errorKey)
 {
-	pluginhandle *p = elektraPluginGetHandle(handle);
+	resolverHandle *p = elektraPluginGetHandle(handle);
+	free (p->userFilename);
+	free (p->systemFilename);
 	free (p);
 
 	return 0; /* success */
@@ -66,7 +95,7 @@ int kdbGet_resolver(Plugin *handle, KeySet *returned, Key *parentKey)
 int kdbSet_resolver(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	int errnoSave = errno;
-	pluginhandle *pk = elektraPluginGetHandle(handle);
+	resolverHandle *pk = elektraPluginGetHandle(handle);
 	int action;
 
 	if (pk->fd == -1)

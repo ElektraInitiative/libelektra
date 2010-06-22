@@ -31,6 +31,53 @@
 #include <tests.h>
 #include "resolver.h"
 
+KeySet *set_pluginconf()
+{
+	return ksNew( 10 ,
+		keyNew ("system/path", KEY_VALUE, "default.ecf", KEY_END),
+		keyNew ("user/path", KEY_VALUE, "elektra.ecf", KEY_END),
+		KS_END);
+}
+
+
+void test_resolveFilename()
+{
+	printf ("Resolve Filename\n");
+
+	KeySet *modules = ksNew(0);
+	elektraModulesInit (modules, 0);
+
+	Plugin *plugin = elektraPluginOpen("resolver", modules, set_pluginconf(), 0);
+
+	KeySet *test_config = set_pluginconf();
+	KeySet *config = elektraPluginGetConfig (plugin);
+	succeed_if (config != 0, "there should be a config");
+	compare_keyset(config, test_config);
+	ksDel (test_config);
+
+	succeed_if (plugin->kdbOpen != 0, "no open pointer");
+	succeed_if (plugin->kdbClose != 0, "no open pointer");
+	succeed_if (plugin->kdbGet != 0, "no open pointer");
+	succeed_if (plugin->kdbSet != 0, "no open pointer");
+
+	resolverHandle *h = elektraPluginGetHandle(plugin);
+	succeed_if (h != 0, "no plugin handle");
+
+	Key *forKey = keyNew("system", KEY_END);
+	succeed_if (resolveFilename(forKey, elektraPluginGetHandle(plugin)) != -1,
+			"could not resolve filename");
+
+	succeed_if (!strcmp(h->path, "elektra.ecf"), "path not set correctly");
+	succeed_if (!strcmp(h->filename, KDB_DB_SYSTEM "/elektra.ecf"), "resulting filename not correct");
+	succeed_if (!strcmp(h->systemFilename, KDB_DB_SYSTEM "/elektra.ecf"), "resulting filename not correct");
+
+	succeed_if (!strcmp(plugin->name, "resolver"), "got wrong name");
+
+	keyDel (forKey);
+	elektraPluginClose(plugin, 0);
+	elektraModulesClose(modules, 0);
+	ksDel (modules);
+}
 
 
 int main(int argc, char** argv)
@@ -39,6 +86,8 @@ int main(int argc, char** argv)
 	printf("====================\n\n");
 
 	init (argc, argv);
+
+	test_resolveFilename();
 
 
 	printf("\ntest_backendhelpers RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);

@@ -196,3 +196,15 @@ severity:warning
 ingroup:plugin
 module:resolver
 
+number:34
+description:no file given in configuration
+severity:warning
+ingroup:plugin
+module:resolver
+
+number:35
+description:could not resolve filename
+severity:warning
+ingroup:plugin
+module:resolver
+

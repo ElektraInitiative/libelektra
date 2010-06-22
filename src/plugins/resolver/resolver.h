@@ -28,6 +28,7 @@
 #ifndef PLUGIN_resolver_H
 #define PLUGIN_resolver_H
 
+#include <kdbvar.h>
 #include <kdbplugin.h>
 #include <kdberrors.h>
 
@@ -47,27 +48,34 @@
 #define BACKENDNAME "resolver"
 #define BACKENDVERSION "0.0.1"
 
-typedef struct _pluginhandle pluginhandle;
+typedef struct _resolverHandle resolverHandle;
 
-int kdbOpen_resolver(Plugin *handle);
-int kdbClose_resolver(Plugin *handle);
+struct _resolverHandle
+{
+	int fd; /* Descriptor to the locking file */
+	time_t mtime; /* Previous timestamp of the file */
+	mode_t mode; /* The mode to set */
+
+	int action;
+
+	char *filename;
+	char *userFilename;
+	char *systemFilename;
+
+	const char *path; /* The relative path to the filename.
+		The user or system part will be prepended. */
+};
+
+int resolveFilename(Key* forKey, resolverHandle *p);
+
+int kdbOpen_resolver(Plugin *handle, Key *errorKey);
+int kdbClose_resolver(Plugin *handle, Key *errorKey);
 int kdbGet_resolver(Plugin *handle, KeySet *ks, Key *parentKey);
 int kdbSet_resolver(Plugin *handle, KeySet *ks, Key *parentKey);
 Plugin *ELEKTRA_PLUGIN_EXPORT(resolver);
 
-/* helper.c */
 int elektraWriteLock(int fd);
 int elektraReadLock(int fd);
 int elektraUnlock(int fd);
-
-ssize_t elektraEncode(void *elektraDecoded, size_t size, char *returned);
-ssize_t elektraDecode(char *elektraEncoded,void *returned);
-int elektraEncodeChar(char c, char *buffer, size_t bufSize);
-int elektraDecodeChar(const char *from, char *into);
-int elektraFilenameToKeyName(const char *string, char *buffer, size_t bufSize);
-ssize_t elektraGetFullKeyName (const char *forFilename, const Key *parentKey, Key *returned);
-int elektraKeyNameToRelativeFilename(const char *string, char *buffer, size_t bufSize);
-ssize_t elektraKeyCalcRelativeFilename(const Key *key,char *relativeFilename,size_t maxSize);
-ssize_t elektraGetFullFilename(const Key *forKey, char *returned, size_t maxSize);
 
 #endif
