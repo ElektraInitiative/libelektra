@@ -42,7 +42,7 @@ int kdbOpen(ckdb::Plugin *handle)
 	try {
 		T * t = new T();
 		ret = t->open();
-		elektraPluginSetHandle(handle, t);
+		elektraPluginSetData(handle, t);
 	}
 	catch (...)
 	{
@@ -56,7 +56,7 @@ template<typename T>
 int kdbClose(ckdb::Plugin *handle)
 {
 	int ret;
-	T * t = static_cast<T *>(elektraPluginGetHandle(handle));
+	T * t = static_cast<T *>(elektraPluginGetData(handle));
 	try {
 		ret = t->close();
 	}
@@ -79,7 +79,7 @@ int kdbClose(ckdb::Plugin *handle)
 template<typename T>
 ssize_t kdbGet(ckdb::Plugin *handle, ckdb::KeySet *cks, const ckdb::Key *cparentKey)
 {
-	T * t = static_cast<T *>(elektraPluginGetHandle(handle));
+	T * t = static_cast<T *>(elektraPluginGetData(handle));
 	try {
 		kdb::Key parentKey (const_cast<ckdb::Key *>(cparentKey));
 		kdb::KeySet  ks (cks);
@@ -94,7 +94,7 @@ ssize_t kdbGet(ckdb::Plugin *handle, ckdb::KeySet *cks, const ckdb::Key *cparent
 template<typename T>
 ssize_t kdbSet(ckdb::Plugin *handle, ckdb::KeySet *cks, const ckdb::Key *cparentKey)
 {
-	T * t = static_cast<T *>(elektraPluginGetHandle(handle));
+	T * t = static_cast<T *>(elektraPluginGetData(handle));
 	try {
 		kdb::Key parentKey (const_cast<ckdb::Key *>(cparentKey));
 		kdb::KeySet  ks (cks);

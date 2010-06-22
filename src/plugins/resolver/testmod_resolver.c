@@ -64,11 +64,11 @@ void test_resolveFilename()
 
 	succeed_if (!strcmp(plugin->name, "resolver"), "got wrong name");
 
-	resolverHandle *h = elektraPluginGetHandle(plugin);
+	resolverHandle *h = elektraPluginGetData(plugin);
 	succeed_if (h != 0, "no plugin handle");
 
 	Key *forKey = keyNew("system", KEY_END);
-	succeed_if (resolveFilename(forKey, elektraPluginGetHandle(plugin)) != -1,
+	succeed_if (resolveFilename(forKey, elektraPluginGetData(plugin)) != -1,
 			"could not resolve filename");
 
 	succeed_if (!strcmp(h->path, "elektra.ecf"), "path not set correctly");
@@ -77,7 +77,7 @@ void test_resolveFilename()
 
 
 	keySetName(forKey, "user");
-	succeed_if (resolveFilename(forKey, elektraPluginGetHandle(plugin)) != -1,
+	succeed_if (resolveFilename(forKey, elektraPluginGetData(plugin)) != -1,
 			"could not resolve filename");
 
 	succeed_if (!strcmp(h->path, "elektra.ecf"), "path not set correctly");
@@ -87,7 +87,7 @@ void test_resolveFilename()
 	keySetMeta(forKey, "owner", "other");
 	/* so that it will resolve the filename */
 	free (h->userFilename); h->userFilename = 0;
-	succeed_if (resolveFilename(forKey, elektraPluginGetHandle(plugin)) != -1,
+	succeed_if (resolveFilename(forKey, elektraPluginGetData(plugin)) != -1,
 			"could not resolve filename");
 
 	succeed_if (!strcmp(h->path, "elektra.ecf"), "path not set correctly");
@@ -124,7 +124,7 @@ void test_name()
 
 	succeed_if (!strcmp(plugin->name, "resolver"), "got wrong name");
 
-	resolverHandle *h = elektraPluginGetHandle(plugin);
+	resolverHandle *h = elektraPluginGetData(plugin);
 	succeed_if (h != 0, "no plugin handle");
 
 	Key *parentKey= keyNew("system", KEY_END);

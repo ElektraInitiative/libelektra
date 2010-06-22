@@ -66,7 +66,7 @@
  * @note The plugin must not have any global variables. If you do your plugin will
  * not be threadsafe.
  *
- * Instead you can use elektraPluginGetHandle() and elektraPluginSetHandle() to store
+ * Instead you can use elektraPluginGetData() and elektraPluginSetData() to store
  * and get any information related to your plugin.
  *
  * The correct substitute for global variables will be:

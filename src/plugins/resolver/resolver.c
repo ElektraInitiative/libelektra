@@ -70,14 +70,14 @@ int elektraResolverOpen(Plugin *handle, Key *errorKey)
 	}
 	keyDel (testKey);
 
-	elektraPluginSetHandle(handle, p);
+	elektraPluginSetData(handle, p);
 
 	return 0; /* success */
 }
 
 int elektraResolverClose(Plugin *handle, Key *errorKey)
 {
-	resolverHandle *p = elektraPluginGetHandle(handle);
+	resolverHandle *p = elektraPluginGetData(handle);
 	free (p->userFilename);
 	free (p->systemFilename);
 	free (p);
@@ -148,7 +148,7 @@ int elektraResolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	}
 	keyDel (root);
 
-	resolverHandle *pk = elektraPluginGetHandle(handle);
+	resolverHandle *pk = elektraPluginGetData(handle);
 	resolveFilename(parentKey, pk);
 
 	/*
@@ -175,7 +175,7 @@ int elektraResolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
 int elektraResolverSet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	int errnoSave = errno;
-	resolverHandle *pk = elektraPluginGetHandle(handle);
+	resolverHandle *pk = elektraPluginGetData(handle);
 	int action;
 
 	if (pk->fd == -1)
@@ -264,7 +264,7 @@ int elektraResolverSet(Plugin *handle, KeySet *returned, Key *parentKey)
 int elektraResolverError(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	int errnoSave = errno;
-	resolverHandle *pk = elektraPluginGetHandle(handle);
+	resolverHandle *pk = elektraPluginGetData(handle);
 
 	if (unlink ("tmp") == -1)
 	{

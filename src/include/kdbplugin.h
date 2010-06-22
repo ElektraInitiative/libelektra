@@ -56,8 +56,8 @@ typedef struct _Plugin	Plugin;
 Plugin *elektraPluginExport(const char *pluginName, ...);
 
 KeySet *elektraPluginGetConfig(Plugin *handle);
-void elektraPluginSetHandle(Plugin *plugin, void *handle);
-void* elektraPluginGetHandle(Plugin *plugin);
+void elektraPluginSetData(Plugin *plugin, void *handle);
+void* elektraPluginGetData(Plugin *plugin);
 
 // needed for storage plugins?
 int keyClearSync (Key *key);
