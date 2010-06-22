@@ -51,7 +51,6 @@ int kdbOpen_resolver(Plugin *handle, Key *errorKey)
 		return -1;
 	}
 
-	/*
 	Key *testKey = keyNew("system", KEY_END);
 	if (resolveFilename(testKey, p) == -1)
 	{
@@ -66,10 +65,10 @@ int kdbOpen_resolver(Plugin *handle, Key *errorKey)
 	{
 		free (p);
 		keyDel (testKey);
-		ELEKTRA_ADD_WARNING(35, errorKey, "Could not resolve system key");
+		ELEKTRA_ADD_WARNING(35, errorKey, "Could not resolve user key");
 		return -1;
 	}
-	*/
+	keyDel (testKey);
 
 	elektraPluginSetHandle(handle, p);
 

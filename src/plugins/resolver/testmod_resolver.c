@@ -47,6 +47,8 @@ void test_resolveFilename()
 	KeySet *modules = ksNew(0);
 	elektraModulesInit (modules, 0);
 
+	putenv("USER=test");
+
 	Plugin *plugin = elektraPluginOpen("resolver", modules, set_pluginconf(), 0);
 	exit_if_fail (plugin, "could not load resolver plugin");
 
@@ -74,12 +76,8 @@ void test_resolveFilename()
 	succeed_if (!strcmp(h->filename, KDB_DB_SYSTEM "/elektra.ecf"), "resulting filename not correct");
 	succeed_if (!strcmp(h->systemFilename, KDB_DB_SYSTEM "/elektra.ecf"), "resulting filename not correct");
 
+
 	keySetName(forKey, "user");
-	succeed_if (resolveFilename(forKey, elektraPluginGetHandle(plugin)) == -1,
-			"should fail because USER is not set");
-
-	putenv("USER=test");
-
 	succeed_if (resolveFilename(forKey, elektraPluginGetHandle(plugin)) != -1,
 			"could not resolve filename");
 
@@ -88,7 +86,6 @@ void test_resolveFilename()
 	succeed_if (!strcmp(h->userFilename, KDB_DB_HOME "/test/" KDB_DB_USER "/elektra.ecf"), "filename not set correctly");
 
 	keySetMeta(forKey, "owner", "other");
-
 	/* so that it will resolve the filename */
 	free (h->userFilename); h->userFilename = 0;
 	succeed_if (resolveFilename(forKey, elektraPluginGetHandle(plugin)) != -1,
