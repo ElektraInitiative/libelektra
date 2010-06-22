@@ -27,14 +27,14 @@
 
 #include "template.h"
 
-int kdbOpen_template(Plugin *handle)
+int kdbOpen_template(Plugin *handle, Key *errorKey)
 {
 	/* plugin initialization logic */
 
 	return 0; /* success */
 }
 
-int kdbClose_template(Plugin *handle)
+int kdbClose_template(Plugin *handle, Key *errorKey)
 {
 	/* free all plugin resources and shut it down */
 

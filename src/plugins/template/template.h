@@ -31,8 +31,8 @@
 #include <kdbplugin.h>
 
 
-int kdbOpen_template(Plugin *handle);
-int kdbClose_template(Plugin *handle);
+int kdbOpen_template(Plugin *handle, Key *errorKey);
+int kdbClose_template(Plugin *handle, Key *errorKey);
 int kdbGet_template(Plugin *handle, KeySet *ks, Key *parentKey);
 int kdbSet_template(Plugin *handle, KeySet *ks, Key *parentKey);
 Plugin *ELEKTRA_PLUGIN_EXPORT(template);
