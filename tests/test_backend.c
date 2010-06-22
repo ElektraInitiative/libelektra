@@ -42,6 +42,9 @@ KeySet *set_simple()
 		keyNew("system/elektra/mountpoints/simple/config/more/config/below", KEY_END),
 		keyNew("system/elektra/mountpoints/simple/config/path", KEY_END),
 
+		keyNew("system/elektra/mountpoints/simple/errorplugins", KEY_END),
+		keyNew("system/elektra/mountpoints/simple/errorplugins/#1default", KEY_VALUE, "default", KEY_END),
+
 		keyNew("system/elektra/mountpoints/simple/getplugins", KEY_END),
 		keyNew("system/elektra/mountpoints/simple/getplugins/#1default", KEY_VALUE, "default", KEY_END),
 		keyNew("system/elektra/mountpoints/simple/getplugins/#1default/config", KEY_END),
@@ -80,13 +83,17 @@ KeySet *set_pluginconf()
 
 void test_simple()
 {
-	printf ("Test simple building of backend");
+	printf ("Test simple building of backend\n");
 
 	KeySet *modules = ksNew(0);
 	elektraModulesInit(modules, 0);
 
 	Key *errorKey = 0;
 	Backend *backend = elektraBackendOpen(set_simple(), modules, errorKey);
+	succeed_if (backend->errorplugins[0] == 0, "there should be no plugin");
+	exit_if_fail (backend->errorplugins[1] != 0, "there should be a plugin");
+	succeed_if (backend->errorplugins[2] == 0, "there should be no plugin");
+
 	succeed_if (backend->getplugins[0] == 0, "there should be no plugin");
 	exit_if_fail (backend->getplugins[1] != 0, "there should be a plugin");
 	succeed_if (backend->getplugins[2] == 0, "there should be no plugin");
@@ -109,7 +116,7 @@ void test_simple()
 	KeySet *test_config = set_pluginconf();
 	KeySet *config = elektraPluginGetConfig (plugin);
 	succeed_if (config != 0, "there should be a config");
-	compare_keyset(config, test_config);
+	succeed_if (compare_keyset(config, test_config) == 0, "error comparing keyset");
 	ksDel (test_config);
 
 	succeed_if (plugin->kdbGet != 0, "no get pointer");
@@ -133,7 +140,7 @@ void test_default()
 	KeySet *test_config = set_pluginconf();
 	KeySet *config = elektraPluginGetConfig (plugin);
 	succeed_if (config != 0, "there should be a config");
-	compare_keyset(config, test_config);
+	succeed_if (compare_keyset(config, test_config) == 0, "error comparing keyset");
 	ksDel (test_config);
 
 	succeed_if (plugin->kdbGet != 0, "no get pointer");
@@ -161,6 +168,7 @@ void test_default()
 	elektraModulesClose (modules, 0);
 	ksDel (modules);
 }
+
 
 void test_trie()
 {
@@ -198,11 +206,12 @@ void test_trie()
 	KeySet *test_config = set_pluginconf();
 	KeySet *cconfig = elektraPluginGetConfig (plugin);
 	succeed_if (cconfig != 0, "there should be a config");
-	compare_keyset(cconfig, test_config);
+	succeed_if (compare_keyset(cconfig, test_config) == 0, "error comparing keyset");
 	ksDel (test_config);
 
 	succeed_if (plugin->kdbGet != 0, "no get pointer");
 	succeed_if (plugin->kdbSet != 0, "no set pointer");
+
 
 	elektraTrieClose(trie, 0);
 	keyDel (key);
@@ -307,9 +316,6 @@ void test_two()
 	succeed_if (plugin->kdbGet != 0, "no get pointer");
 	succeed_if (plugin->kdbSet != 0, "no set pointer");
 
-
-
-
 	keySetName(key, "user/tests/backend/two");
 	Backend *two = elektraTrieLookup(trie, key);
 	succeed_if (two != backend, "should be differnt backend");
@@ -324,6 +330,7 @@ void test_two()
 	ksDel (modules);
 }
 
+
 KeySet *set_backref()
 {
 	return ksNew(50,
@@ -336,14 +343,17 @@ KeySet *set_backref()
 		keyNew("system/elektra/mountpoints/backref/config/more/config/below", KEY_END),
 		keyNew("system/elektra/mountpoints/backref/config/path", KEY_END),
 
+		keyNew("system/elektra/mountpoints/backref/errorplugins", KEY_END),
+		keyNew("system/elektra/mountpoints/backref/errorplugins/#1#default#default#", KEY_VALUE, "introduce reference", KEY_END),
+		keyNew("system/elektra/mountpoints/backref/errorplugins/#1#default#default#/config", KEY_END),
+		keyNew("system/elektra/mountpoints/backref/errorplugins/#1#default#default#/config/anything", KEY_VALUE, "plugin", KEY_END),
+		keyNew("system/elektra/mountpoints/backref/errorplugins/#1#default#default#/config/more", KEY_END),
+		keyNew("system/elektra/mountpoints/backref/errorplugins/#1#default#default#/config/more/config", KEY_END),
+		keyNew("system/elektra/mountpoints/backref/errorplugins/#1#default#default#/config/more/config/below", KEY_END),
+		keyNew("system/elektra/mountpoints/backref/errorplugins/#1#default#default#/config/path", KEY_END),
+
 		keyNew("system/elektra/mountpoints/backref/getplugins", KEY_END),
-		keyNew("system/elektra/mountpoints/backref/getplugins/#1#default#default#", KEY_VALUE, "default", KEY_END),
-		keyNew("system/elektra/mountpoints/backref/getplugins/#1#default#default#/config", KEY_END),
-		keyNew("system/elektra/mountpoints/backref/getplugins/#1#default#default#/config/anything", KEY_VALUE, "plugin", KEY_END),
-		keyNew("system/elektra/mountpoints/backref/getplugins/#1#default#default#/config/more", KEY_END),
-		keyNew("system/elektra/mountpoints/backref/getplugins/#1#default#default#/config/more/config", KEY_END),
-		keyNew("system/elektra/mountpoints/backref/getplugins/#1#default#default#/config/more/config/below", KEY_END),
-		keyNew("system/elektra/mountpoints/backref/getplugins/#1#default#default#/config/path", KEY_END),
+		keyNew("system/elektra/mountpoints/backref/getplugins/#1#default", KEY_VALUE, "backend", KEY_END),
 
 		keyNew("system/elektra/mountpoints/backref/mountpoint", KEY_VALUE, "user/tests/backend/backref", KEY_END),
 
@@ -377,16 +387,22 @@ void test_backref()
 
 	Plugin *plugin1 = backend->getplugins[1];
 	Plugin *plugin2 = backend->setplugins[1];
+	Plugin *plugin3 = backend->errorplugins[1];
 
 	succeed_if (plugin1 != 0, "there should be a plugin");
 	succeed_if (plugin2 != 0, "there should be a plugin");
+	succeed_if (plugin3 != 0, "there should be a plugin");
+
 	succeed_if (plugin1 == plugin2, "it should be the same plugin");
-	succeed_if (plugin1->refcounter == 2, "ref counter should be 2");
+	succeed_if (plugin2 == plugin3, "it should be the same plugin");
+	succeed_if (plugin1 == plugin3, "it should be the same plugin");
+
+	succeed_if (plugin1->refcounter == 3, "ref counter should be 3");
 
 	KeySet *test_config = set_pluginconf();
-	KeySet *config = elektraPluginGetConfig (plugin2);
+	KeySet *config = elektraPluginGetConfig (plugin1);
 	succeed_if (config != 0, "there should be a config");
-	compare_keyset(config, test_config);
+	succeed_if (compare_keyset(config, test_config) == 0, "error comparing keyset");
 	ksDel (test_config);
 
 	succeed_if (plugin1->kdbGet != 0, "no get pointer");

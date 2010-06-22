@@ -50,17 +50,22 @@ int resolveFilename(Key* forKey, resolverHandle *p)
 
 		if (!owner)
 		{
+			owner = getlogin();
+		}
+
+		/*
+		if (!owner)
+		{
 			struct passwd *pw = getpwuid( geteuid());
 			if (pw)
 			{
 				owner = pw->pw_name;
 			}
 		}
+		*/
 
-		if (!owner)
-		{
-			owner = getlogin();
-		}
+		/* TODO for testing */
+		if (!owner) owner = "test";
 
 		if (!owner || !strcmp(owner, ""))
 		{
