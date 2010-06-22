@@ -87,6 +87,17 @@ void test_resolveFilename()
 	succeed_if (!strcmp(h->filename, KDB_DB_HOME "/test/" KDB_DB_USER "/elektra.ecf"), "filename not set correctly");
 	succeed_if (!strcmp(h->userFilename, KDB_DB_HOME "/test/" KDB_DB_USER "/elektra.ecf"), "filename not set correctly");
 
+	keySetMeta(forKey, "owner", "other");
+
+	/* so that it will resolve the filename */
+	free (h->userFilename); h->userFilename = 0;
+	succeed_if (resolveFilename(forKey, elektraPluginGetHandle(plugin)) != -1,
+			"could not resolve filename");
+
+	succeed_if (!strcmp(h->path, "elektra.ecf"), "path not set correctly");
+	succeed_if (!strcmp(h->filename, KDB_DB_HOME "/other/" KDB_DB_USER "/elektra.ecf"), "filename not set correctly");
+	succeed_if (!strcmp(h->userFilename, KDB_DB_HOME "/other/" KDB_DB_USER "/elektra.ecf"), "filename not set correctly");
+
 	keyDel (forKey);
 	elektraPluginClose(plugin, 0);
 	elektraModulesClose(modules, 0);

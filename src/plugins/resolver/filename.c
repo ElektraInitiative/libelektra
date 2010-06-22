@@ -32,15 +32,20 @@ int resolveFilename(Key* forKey, resolverHandle *p)
 		/* TODO implement XDG specification
 		http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
 		*/
-		const char *owner = keyGetMeta(forKey, "owner");
-		if (!owner)
+		const Key *k = keyGetMeta(forKey, "owner");
+		const char *owner;
+		if (k)
 		{
+			owner = keyString(k);
+		}
+		else {
 			owner = getenv ("USER");
-			if (!owner)
-			{
-				/* TODO implement more fallbacks (ask system/users with getuid()) */
-				return -1;
-			}
+		}
+
+		if (!owner || !strcmp(owner, ""))
+		{
+			/* TODO implement more fallbacks (ask system/users with getuid()) */
+			return -1;
 		}
 
 		p->userFilename = malloc (sizeof(KDB_DB_HOME)
