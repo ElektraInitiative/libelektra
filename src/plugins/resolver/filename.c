@@ -14,7 +14,7 @@ int resolveFilename(Key* forKey, resolverHandle *p)
 			p->filename = p->systemFilename;
 			return 0;
 		}
-		p->systemFilename = malloc (sizeof(KDB_DB_SYSTEM) + strlen(p->path) + 1);
+		p->systemFilename = malloc (sizeof(KDB_DB_SYSTEM) + strlen(p->path) + 1 + 5);
 		strcpy (p->systemFilename, KDB_DB_SYSTEM);
 		strcat (p->systemFilename, "/");
 		strcat (p->systemFilename, p->path);
@@ -52,7 +52,8 @@ int resolveFilename(Key* forKey, resolverHandle *p)
 				+ strlen(owner)
 				+ sizeof("/")
 				+ sizeof("/" KDB_DB_USER "/")
-				+ strlen(p->path));
+				+ strlen(p->path)
+				+ 5);
 		strcpy (p->userFilename, KDB_DB_HOME);
 		strcat (p->userFilename, "/");
 		strcat (p->userFilename, owner);

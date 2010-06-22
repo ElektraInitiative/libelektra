@@ -59,6 +59,9 @@ struct _resolverHandle
 	int action;
 
 	char *filename;
+	char *lockfile;
+	char *tmpfile;
+
 	char *userFilename;
 	char *systemFilename;
 
@@ -72,6 +75,7 @@ int kdbOpen_resolver(Plugin *handle, Key *errorKey);
 int kdbClose_resolver(Plugin *handle, Key *errorKey);
 int kdbGet_resolver(Plugin *handle, KeySet *ks, Key *parentKey);
 int kdbSet_resolver(Plugin *handle, KeySet *ks, Key *parentKey);
+int kdbError_resolver(Plugin *handle, KeySet *returned, Key *parentKey);
 Plugin *ELEKTRA_PLUGIN_EXPORT(resolver);
 
 int elektraWriteLock(int fd);

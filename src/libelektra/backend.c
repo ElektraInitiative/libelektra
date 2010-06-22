@@ -148,7 +148,7 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
 				if (elektraProcessPlugins(backend->getplugins, modules, referencePlugins,
 							cut, systemConfig, errorKey) == -1)
 				{
-					ELEKTRA_ADD_WARNING(13, errorKey, "elektraProcessPlugins failed");
+					ELEKTRA_ADD_WARNING(13, errorKey, "elektraProcessPlugins for get failed");
 					goto error;
 				}
 			}
@@ -167,7 +167,16 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
 				if (elektraProcessPlugins(backend->setplugins, modules, referencePlugins,
 							cut, systemConfig, errorKey) == -1)
 				{
-					ELEKTRA_ADD_WARNING(15, errorKey, "elektraProcessPlugins failed");
+					ELEKTRA_ADD_WARNING(15, errorKey, "elektraProcessPlugins for set failed");
+					goto error;
+				}
+			}
+			else if (!strcmp(keyBaseName(cur), "errorplugins"))
+			{
+				if (elektraProcessPlugins(backend->errorplugins, modules, referencePlugins,
+							cut, systemConfig, errorKey) == -1)
+				{
+					ELEKTRA_ADD_WARNING(15, errorKey, "elektraProcessPlugins for error failed");
 					goto error;
 				}
 			} else {
@@ -216,7 +225,8 @@ Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey)
 
 	backend->getplugins[0] = resolver;
 	backend->setplugins[0] = resolver;
-	resolver->refcounter = 2;
+	backend->errorplugins[0] = resolver;
+	resolver->refcounter = 3;
 
 	Plugin *storage = elektraPluginOpen("default", modules, defaultConfig, errorKey);
 	if (!storage)
@@ -283,6 +293,9 @@ int elektraBackendClose(Backend *backend, Key* errorKey)
 		if (ret == -1) ++errorOccurred;
 
 		ret = elektraPluginClose(backend->getplugins[i], errorKey);
+		if (ret == -1) ++errorOccurred;
+
+		ret = elektraPluginClose(backend->errorplugins[i], errorKey);
 		if (ret == -1) ++errorOccurred;
 	}
 	elektraFree (backend);

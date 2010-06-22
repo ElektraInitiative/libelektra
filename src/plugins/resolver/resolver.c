@@ -87,7 +87,27 @@ int kdbClose_resolver(Plugin *handle, Key *errorKey)
 
 int kdbGet_resolver(Plugin *handle, KeySet *returned, Key *parentKey)
 {
-	/* TODO resolve filename + get mtime */
+	struct stat buf;
+	int errnoSave = errno;
+
+	resolverHandle *pk = elektraPluginGetHandle(handle);
+	resolveFilename(parentKey, pk);
+
+	if (stat (pk->filename, &buf) == -1)
+	{
+		char buffer[ERROR_SIZE];
+		strerror_r(errno, buffer, ERROR_SIZE);
+		ELEKTRA_SET_ERROR (29, parentKey, buffer);
+		close(pk->fd);
+		errno = errnoSave;
+		return -1;
+	}
+
+	pk->mtime = buf.st_mtime;
+	/* TODO check if update is necessary, not supported by mainloop yet */
+
+	keySetMeta(parentKey, "path", pk->filename);
+
 	return 1;
 }
 
@@ -101,7 +121,7 @@ int kdbSet_resolver(Plugin *handle, KeySet *returned, Key *parentKey)
 	{
 		/* no fd up to now, so do action 0 */
 		action = 0;
-	} else  action = 3;
+	} else  action = 1;
 
 	if (action == 0)
 	{
@@ -156,10 +176,13 @@ int kdbSet_resolver(Plugin *handle, KeySet *returned, Key *parentKey)
 			errno = errnoSave;
 			return -1;
 		}
+
+		keySetMeta(parentKey, "path", pk->filename);
+
 		return 0;
 	}
 
-	if (action & 1)
+	if (action == 1)
 	{
 		if (rename ("tmp", "orig") == -1)
 		{
@@ -167,33 +190,51 @@ int kdbSet_resolver(Plugin *handle, KeySet *returned, Key *parentKey)
 			strerror_r(errno, buffer, ERROR_SIZE);
 			ELEKTRA_SET_ERROR (31, parentKey, buffer);
 			errno = errnoSave;
-			/* Continue with unlocking */
-		}
-	}
-
-	if (action & 2)
-	{
-		if (elektraUnlock(pk->fd) == -1)
-		{
-			char buffer[ERROR_SIZE];
-			strerror_r(errno, buffer, ERROR_SIZE);
-			ELEKTRA_ADD_WARNING(32, parentKey, buffer);
-			/* Continue with closing file */
-		}
-
-
-		if (close (pk->fd) == -1)
-		{
-			char buffer[ERROR_SIZE];
-			strerror_r(errno, buffer, ERROR_SIZE);
-			ELEKTRA_ADD_WARNING (33, parentKey, buffer);
-			pk->fd = -1;
 			return -1;
 		}
-		pk->fd = -1;
 	}
+
+	/* Always execute the rollback code */
+	kdbError_resolver(handle, returned, parentKey);
+
 	return 0;
 }
+
+int kdbError_resolver(Plugin *handle, KeySet *returned, Key *parentKey)
+{
+	int errnoSave = errno;
+	resolverHandle *pk = elektraPluginGetHandle(handle);
+
+	if (unlink ("tmp") == -1)
+	{
+		char buffer[ERROR_SIZE];
+		strerror_r(errno, buffer, ERROR_SIZE);
+		ELEKTRA_ADD_WARNING(36, parentKey, buffer);
+		errno = errnoSave;
+	}
+
+	if (elektraUnlock(pk->fd) == -1)
+	{
+		char buffer[ERROR_SIZE];
+		strerror_r(errno, buffer, ERROR_SIZE);
+		ELEKTRA_ADD_WARNING(32, parentKey, buffer);
+		errno = errnoSave;
+	}
+
+
+	if (close (pk->fd) == -1)
+	{
+		char buffer[ERROR_SIZE];
+		strerror_r(errno, buffer, ERROR_SIZE);
+		ELEKTRA_ADD_WARNING (33, parentKey, buffer);
+		errno = errnoSave;
+	}
+
+	pk->fd = -1;
+
+	return 0;
+}
+
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(resolver)
 {

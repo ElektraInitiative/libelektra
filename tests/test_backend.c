@@ -55,6 +55,9 @@ KeySet *set_simple()
 
 		keyNew("system/elektra/mountpoints/simple/setplugins", KEY_END),
 		keyNew("system/elektra/mountpoints/simple/setplugins/#1tracer", KEY_VALUE, "tracer", KEY_END),
+
+		keyNew("system/elektra/mountpoints/simple/errorplugins", KEY_END),
+		keyNew("system/elektra/mountpoints/simple/errorplugins/#1tracer", KEY_VALUE, "tracer", KEY_END),
 		KS_END);
 
 }
@@ -91,6 +94,10 @@ void test_simple()
 	succeed_if (backend->setplugins[0] == 0, "there should be no plugin");
 	exit_if_fail (backend->setplugins[1] != 0, "there should be a plugin");
 	succeed_if (backend->setplugins[2] == 0, "there should be no plugin");
+
+	succeed_if (backend->errorplugins[0] == 0, "there should be no plugin");
+	exit_if_fail (backend->errorplugins[1] != 0, "there should be a plugin");
+	succeed_if (backend->errorplugins[2] == 0, "there should be no plugin");
 
 	Key *mp;
 	succeed_if ((mp = backend->mountpoint) != 0, "no mountpoint found");

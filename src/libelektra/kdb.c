@@ -701,7 +701,6 @@ int kdbSet (KDB *handle, KeySet *ks,
 	Backend *backend_handle;
 	Key *errorKey;
 
-	size_t size = 0;
 	Split *keysets;
 
 	if (parentKey && !parentKey->key)
@@ -723,6 +722,9 @@ int kdbSet (KDB *handle, KeySet *ks,
 
 	keysets=elektraSplitKeySet(handle, ks, parentKey, options);
 
+	/*
+	   TODO Check if we need to do anything at all [return 0]
+	*/
 	for (size_t i=0; i<keysets->no;i++)
 	{
 		backend_handle=keysets->handles[i];
@@ -735,35 +737,59 @@ int kdbSet (KDB *handle, KeySet *ks,
 		if ((keysets->syncbits[i] && keysets->belowparents[i]) ||
 		    (backend_handle->size != ksGetSize(keysets->keysets[i]) && keysets->belowparents[i]))
 		{
+			// TODO Duplicate keyset
+		} else {
+			// TODO Remove keyset
+		}
+	}
+
+	for (size_t p=0; p<NR_OF_PLUGINS; ++p)
+	{
+		for (size_t i=0; i<keysets->no;i++)
+		{
+			backend_handle=keysets->handles[i];
 			ksRewind (keysets->keysets[i]);
-			for (size_t p=0; p<NR_OF_PLUGINS; ++p)
+			if (backend_handle->setplugins[p])
 			{
-				if (backend_handle->setplugins[p])
-				{
-					ret = backend_handle->setplugins[p]->kdbSet(
-							backend_handle->setplugins[p],
-							keysets->keysets[i],keysets->parents[i]);
-				}
-				if (ret == -1)
-				{
-					break;
-				}
+				ret = backend_handle->setplugins[p]->kdbSet(
+						backend_handle->setplugins[p],
+						keysets->keysets[i],keysets->parents[i]);
 			}
-		}
-		if (ret == -1) {
-			ELEKTRA_PRINT_DEBUG ("kdbSet failed");
-			errorKey = ksCurrent (keysets->keysets[i]);
-			if (errorKey) ksLookup(ks, errorKey, KDB_O_WITHOWNER);
-			break;
-		}
-		else {
-			size+=ret;
+			if (ret == -1)
+			{
+				errorKey = ksCurrent (keysets->keysets[i]);
+				goto error;
+			}
 		}
 	}
 
 	elektraSplitClose(keysets);
 	if (options & KDB_O_DEL) keyDel (parentKey);
-	if (ret == -1) return -1;
-	return size;
+	return 1;
+
+error:
+	for (size_t p=0; p<NR_OF_PLUGINS; ++p)
+	{
+		for (size_t i=0; i<keysets->no;i++)
+		{
+			backend_handle=keysets->handles[i];
+			/* if there is no backend in the trie use the default */
+			if (backend_handle==NULL)
+			{
+				ELEKTRA_SET_ERROR(8, parentKey, "backend_handle is NULL");
+				return -1;
+			}
+			ksRewind (keysets->keysets[i]);
+			if (backend_handle->errorplugins[p])
+			{
+				ret = backend_handle->errorplugins[p]->kdbError(
+						backend_handle->setplugins[p],
+						keysets->keysets[i],keysets->parents[i]);
+			}
+		}
+	}
+
+	if (errorKey) ksLookup(ks, errorKey, KDB_O_WITHOWNER);
+	return -1;
 }
 

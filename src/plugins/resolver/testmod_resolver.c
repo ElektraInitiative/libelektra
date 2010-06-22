@@ -101,6 +101,11 @@ void test_resolveFilename()
 	ksDel (modules);
 }
 
+void test_renaming()
+{
+	printf ("Test renaming");
+}
+
 
 int main(int argc, char** argv)
 {
@@ -110,6 +115,7 @@ int main(int argc, char** argv)
 	init (argc, argv);
 
 	test_resolveFilename();
+	test_renaming();
 
 
 	printf("\ntest_backendhelpers RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
