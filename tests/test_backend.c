@@ -43,21 +43,21 @@ KeySet *set_simple()
 		keyNew("system/elektra/mountpoints/simple/config/path", KEY_END),
 
 		keyNew("system/elektra/mountpoints/simple/getplugins", KEY_END),
-		keyNew("system/elektra/mountpoints/simple/getplugins/#1tracer", KEY_VALUE, "tracer", KEY_END),
-		keyNew("system/elektra/mountpoints/simple/getplugins/#1tracer/config", KEY_END),
-		keyNew("system/elektra/mountpoints/simple/getplugins/#1tracer/config/anything", KEY_VALUE, "plugin", KEY_END),
-		keyNew("system/elektra/mountpoints/simple/getplugins/#1tracer/config/more", KEY_END),
-		keyNew("system/elektra/mountpoints/simple/getplugins/#1tracer/config/more/config", KEY_END),
-		keyNew("system/elektra/mountpoints/simple/getplugins/#1tracer/config/more/config/below", KEY_END),
-		keyNew("system/elektra/mountpoints/simple/getplugins/#1tracer/config/path", KEY_END),
+		keyNew("system/elektra/mountpoints/simple/getplugins/#1default", KEY_VALUE, "default", KEY_END),
+		keyNew("system/elektra/mountpoints/simple/getplugins/#1default/config", KEY_END),
+		keyNew("system/elektra/mountpoints/simple/getplugins/#1default/config/anything", KEY_VALUE, "plugin", KEY_END),
+		keyNew("system/elektra/mountpoints/simple/getplugins/#1default/config/more", KEY_END),
+		keyNew("system/elektra/mountpoints/simple/getplugins/#1default/config/more/config", KEY_END),
+		keyNew("system/elektra/mountpoints/simple/getplugins/#1default/config/more/config/below", KEY_END),
+		keyNew("system/elektra/mountpoints/simple/getplugins/#1default/config/path", KEY_END),
 
 		keyNew("system/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user/tests/backend/simple", KEY_END),
 
 		keyNew("system/elektra/mountpoints/simple/setplugins", KEY_END),
-		keyNew("system/elektra/mountpoints/simple/setplugins/#1tracer", KEY_VALUE, "tracer", KEY_END),
+		keyNew("system/elektra/mountpoints/simple/setplugins/#1default", KEY_VALUE, "default", KEY_END),
 
 		keyNew("system/elektra/mountpoints/simple/errorplugins", KEY_END),
-		keyNew("system/elektra/mountpoints/simple/errorplugins/#1tracer", KEY_VALUE, "tracer", KEY_END),
+		keyNew("system/elektra/mountpoints/simple/errorplugins/#1default", KEY_VALUE, "default", KEY_END),
 		KS_END);
 
 }
@@ -112,10 +112,8 @@ void test_simple()
 	compare_keyset(config, test_config);
 	ksDel (test_config);
 
-	succeed_if (plugin->kdbOpen != 0, "no open pointer");
-	succeed_if (plugin->kdbClose != 0, "no open pointer");
-	succeed_if (plugin->kdbGet != 0, "no open pointer");
-	succeed_if (plugin->kdbSet != 0, "no open pointer");
+	succeed_if (plugin->kdbGet != 0, "no get pointer");
+	succeed_if (plugin->kdbSet != 0, "no set pointer");
 
 	elektraBackendClose (backend, errorKey);
 	elektraModulesClose (modules, 0);
@@ -138,16 +136,16 @@ void test_default()
 	compare_keyset(config, test_config);
 	ksDel (test_config);
 
-	succeed_if (plugin->kdbGet != 0, "no open pointer");
-	succeed_if (plugin->kdbSet != 0, "no open pointer");
+	succeed_if (plugin->kdbGet != 0, "no get pointer");
+	succeed_if (plugin->kdbSet != 0, "no set pointer");
 
 	/*
 	   Depends on the which is the plugin
-	succeed_if (!strcmp(plugin->name, "tracer"), "got wrong name");
+	succeed_if (!strcmp(plugin->name, "default"), "got wrong name");
 	succeed_if (!strcmp(plugin->author, "Markus Raab <elektra@markus-raab.org>"), "got wrong author");
 	succeed_if (!strcmp(plugin->licence, "BSD"), "got wrong licence");
 	succeed_if (!strcmp(plugin->description, "The first plugin"), "got wrong description");
-	succeed_if (!strcmp(plugin->capability, ""), "got wrong capability (tracer can do nothing)");
+	succeed_if (!strcmp(plugin->capability, ""), "got wrong capability (default can do nothing)");
 	*/
 
 	elektraPluginClose(plugin, 0);
@@ -203,10 +201,8 @@ void test_trie()
 	compare_keyset(cconfig, test_config);
 	ksDel (test_config);
 
-	succeed_if (plugin->kdbOpen != 0, "no open pointer");
-	succeed_if (plugin->kdbClose != 0, "no open pointer");
-	succeed_if (plugin->kdbGet != 0, "no open pointer");
-	succeed_if (plugin->kdbSet != 0, "no open pointer");
+	succeed_if (plugin->kdbGet != 0, "no get pointer");
+	succeed_if (plugin->kdbSet != 0, "no set pointer");
 
 	elektraTrieClose(trie, 0);
 	keyDel (key);
@@ -229,18 +225,18 @@ KeySet *set_two()
 		keyNew("system/elektra/mountpoints/simple/config/path", KEY_END),
 
 		keyNew("system/elektra/mountpoints/simple/getplugins", KEY_END),
-		keyNew("system/elektra/mountpoints/simple/getplugins/#1tracer", KEY_VALUE, "tracer", KEY_END),
-		keyNew("system/elektra/mountpoints/simple/getplugins/#1tracer/config", KEY_END),
-		keyNew("system/elektra/mountpoints/simple/getplugins/#1tracer/config/anything", KEY_VALUE, "plugin", KEY_END),
-		keyNew("system/elektra/mountpoints/simple/getplugins/#1tracer/config/more", KEY_END),
-		keyNew("system/elektra/mountpoints/simple/getplugins/#1tracer/config/more/config", KEY_END),
-		keyNew("system/elektra/mountpoints/simple/getplugins/#1tracer/config/more/config/below", KEY_END),
-		keyNew("system/elektra/mountpoints/simple/getplugins/#1tracer/config/path", KEY_END),
+		keyNew("system/elektra/mountpoints/simple/getplugins/#1default", KEY_VALUE, "default", KEY_END),
+		keyNew("system/elektra/mountpoints/simple/getplugins/#1default/config", KEY_END),
+		keyNew("system/elektra/mountpoints/simple/getplugins/#1default/config/anything", KEY_VALUE, "plugin", KEY_END),
+		keyNew("system/elektra/mountpoints/simple/getplugins/#1default/config/more", KEY_END),
+		keyNew("system/elektra/mountpoints/simple/getplugins/#1default/config/more/config", KEY_END),
+		keyNew("system/elektra/mountpoints/simple/getplugins/#1default/config/more/config/below", KEY_END),
+		keyNew("system/elektra/mountpoints/simple/getplugins/#1default/config/path", KEY_END),
 
 		keyNew("system/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user/tests/backend/simple", KEY_END),
 
 		keyNew("system/elektra/mountpoints/simple/setplugins", KEY_END),
-		keyNew("system/elektra/mountpoints/simple/setplugins/#1tracer", KEY_VALUE, "tracer", KEY_END),
+		keyNew("system/elektra/mountpoints/simple/setplugins/#1default", KEY_VALUE, "default", KEY_END),
 
 
 		keyNew("system/elektra/mountpoints/two", KEY_END),
@@ -253,19 +249,19 @@ KeySet *set_two()
 		keyNew("system/elektra/mountpoints/two/config/path", KEY_END),
 
 		keyNew("system/elektra/mountpoints/two/getplugins", KEY_END),
-		keyNew("system/elektra/mountpoints/two/getplugins/#1tracer", KEY_VALUE, "tracer", KEY_END),
-		keyNew("system/elektra/mountpoints/two/getplugins/#1tracer/config", KEY_END),
-		keyNew("system/elektra/mountpoints/two/getplugins/#1tracer/config/anything", KEY_VALUE, "plugin", KEY_END),
-		keyNew("system/elektra/mountpoints/two/getplugins/#1tracer/config/more", KEY_END),
-		keyNew("system/elektra/mountpoints/two/getplugins/#1tracer/config/more/config", KEY_END),
-		keyNew("system/elektra/mountpoints/two/getplugins/#1tracer/config/more/config/below", KEY_END),
-		keyNew("system/elektra/mountpoints/two/getplugins/#1tracer/config/path", KEY_END),
+		keyNew("system/elektra/mountpoints/two/getplugins/#1default", KEY_VALUE, "default", KEY_END),
+		keyNew("system/elektra/mountpoints/two/getplugins/#1default/config", KEY_END),
+		keyNew("system/elektra/mountpoints/two/getplugins/#1default/config/anything", KEY_VALUE, "plugin", KEY_END),
+		keyNew("system/elektra/mountpoints/two/getplugins/#1default/config/more", KEY_END),
+		keyNew("system/elektra/mountpoints/two/getplugins/#1default/config/more/config", KEY_END),
+		keyNew("system/elektra/mountpoints/two/getplugins/#1default/config/more/config/below", KEY_END),
+		keyNew("system/elektra/mountpoints/two/getplugins/#1default/config/path", KEY_END),
 
 		keyNew("system/elektra/mountpoints/two/mountpoint", KEY_VALUE, "user/tests/backend/two", KEY_END),
 
 		keyNew("system/elektra/mountpoints/two/setplugins", KEY_END),
-		keyNew("system/elektra/mountpoints/two/setplugins/#1tracer", KEY_VALUE, "tracer", KEY_END),
-		keyNew("system/elektra/mountpoints/two/setplugins/#2tracer", KEY_VALUE, "tracer", KEY_END),
+		keyNew("system/elektra/mountpoints/two/setplugins/#1default", KEY_VALUE, "default", KEY_END),
+		keyNew("system/elektra/mountpoints/two/setplugins/#2default", KEY_VALUE, "default", KEY_END),
 		KS_END);
 }
 
@@ -308,10 +304,8 @@ void test_two()
 	compare_keyset(cconfig, test_config);
 	ksDel (test_config);
 
-	succeed_if (plugin->kdbOpen != 0, "no open pointer");
-	succeed_if (plugin->kdbClose != 0, "no open pointer");
-	succeed_if (plugin->kdbGet != 0, "no open pointer");
-	succeed_if (plugin->kdbSet != 0, "no open pointer");
+	succeed_if (plugin->kdbGet != 0, "no get pointer");
+	succeed_if (plugin->kdbSet != 0, "no set pointer");
 
 
 
@@ -343,18 +337,18 @@ KeySet *set_backref()
 		keyNew("system/elektra/mountpoints/backref/config/path", KEY_END),
 
 		keyNew("system/elektra/mountpoints/backref/getplugins", KEY_END),
-		keyNew("system/elektra/mountpoints/backref/getplugins/#1#tracer#tracer#", KEY_VALUE, "tracer", KEY_END),
-		keyNew("system/elektra/mountpoints/backref/getplugins/#1#tracer#tracer#/config", KEY_END),
-		keyNew("system/elektra/mountpoints/backref/getplugins/#1#tracer#tracer#/config/anything", KEY_VALUE, "plugin", KEY_END),
-		keyNew("system/elektra/mountpoints/backref/getplugins/#1#tracer#tracer#/config/more", KEY_END),
-		keyNew("system/elektra/mountpoints/backref/getplugins/#1#tracer#tracer#/config/more/config", KEY_END),
-		keyNew("system/elektra/mountpoints/backref/getplugins/#1#tracer#tracer#/config/more/config/below", KEY_END),
-		keyNew("system/elektra/mountpoints/backref/getplugins/#1#tracer#tracer#/config/path", KEY_END),
+		keyNew("system/elektra/mountpoints/backref/getplugins/#1#default#default#", KEY_VALUE, "default", KEY_END),
+		keyNew("system/elektra/mountpoints/backref/getplugins/#1#default#default#/config", KEY_END),
+		keyNew("system/elektra/mountpoints/backref/getplugins/#1#default#default#/config/anything", KEY_VALUE, "plugin", KEY_END),
+		keyNew("system/elektra/mountpoints/backref/getplugins/#1#default#default#/config/more", KEY_END),
+		keyNew("system/elektra/mountpoints/backref/getplugins/#1#default#default#/config/more/config", KEY_END),
+		keyNew("system/elektra/mountpoints/backref/getplugins/#1#default#default#/config/more/config/below", KEY_END),
+		keyNew("system/elektra/mountpoints/backref/getplugins/#1#default#default#/config/path", KEY_END),
 
 		keyNew("system/elektra/mountpoints/backref/mountpoint", KEY_VALUE, "user/tests/backend/backref", KEY_END),
 
 		keyNew("system/elektra/mountpoints/backref/setplugins", KEY_END),
-		keyNew("system/elektra/mountpoints/backref/setplugins/#1#tracer", KEY_VALUE, "reference to other tracer", KEY_END),
+		keyNew("system/elektra/mountpoints/backref/setplugins/#1#default", KEY_VALUE, "reference to other default", KEY_END),
 		KS_END);
 
 }
@@ -395,11 +389,10 @@ void test_backref()
 	compare_keyset(config, test_config);
 	ksDel (test_config);
 
-	succeed_if (plugin1->kdbOpen != 0, "no open pointer");
-	succeed_if (plugin2->kdbOpen != 0, "no open pointer");
-	succeed_if (plugin2->kdbClose != 0, "no open pointer");
-	succeed_if (plugin2->kdbGet != 0, "no open pointer");
-	succeed_if (plugin2->kdbSet != 0, "no open pointer");
+	succeed_if (plugin1->kdbGet != 0, "no get pointer");
+	succeed_if (plugin1->kdbSet != 0, "no set pointer");
+	succeed_if (plugin2->kdbGet != 0, "no get pointer");
+	succeed_if (plugin2->kdbSet != 0, "no set pointer");
 
 	elektraBackendClose (backend, 0);
 	elektraModulesClose (modules, 0);

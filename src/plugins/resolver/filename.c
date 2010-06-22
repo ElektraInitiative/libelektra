@@ -1,5 +1,8 @@
 #include "resolver.h"
 
+#include <pwd.h>
+#include <sys/types.h>
+
 /**Resolve the filename.
  * @return 0 if an already resolved filename could be used
  * @return 1 if it resolved the filename successfully
@@ -33,13 +36,24 @@ int resolveFilename(Key* forKey, resolverHandle *p)
 		http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
 		*/
 		const Key *k = keyGetMeta(forKey, "owner");
-		const char *owner;
-		if (k)
+		const char *owner = keyString(k);
+		if (!owner)
 		{
-			owner = keyString(k);
+			owner = getenv("USER");
 		}
-		else {
-			owner = getenv ("USER");
+
+		if (!owner)
+		{
+			struct passwd *pw = getpwuid( geteuid());
+			if (pw)
+			{
+				owner = pw->pw_name;
+			}
+		}
+
+		if (!owner)
+		{
+			owner = getlogin();
 		}
 
 		if (!owner || !strcmp(owner, ""))

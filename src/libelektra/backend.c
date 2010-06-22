@@ -211,11 +211,11 @@ Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey)
 {
 	Backend *backend = elektraCalloc(sizeof(struct _Backend));
 
-	KeySet *defaultConfig = ksNew(5,
+	KeySet *resolverConfig = ksNew(5,
 		keyNew("system/path", KEY_VALUE, "default.ecf", KEY_END),
 		KS_END);
 
-	Plugin *resolver = elektraPluginOpen("resolver", modules, defaultConfig, errorKey);
+	Plugin *resolver = elektraPluginOpen("resolver", modules, resolverConfig, errorKey);
 	if (!resolver)
 	{
 		elektraFree(backend);
@@ -225,10 +225,14 @@ Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey)
 
 	backend->getplugins[0] = resolver;
 	backend->setplugins[0] = resolver;
+	backend->setplugins[COMMIT_PLUGIN] = resolver;
 	backend->errorplugins[0] = resolver;
-	resolver->refcounter = 3;
+	resolver->refcounter = 4;
 
-	Plugin *storage = elektraPluginOpen("default", modules, defaultConfig, errorKey);
+	KeySet *storageConfig = ksNew(5,
+		KS_END);
+
+	Plugin *storage = elektraPluginOpen("default", modules, storageConfig, errorKey);
 	if (!storage)
 	{
 		elektraPluginClose(resolver, errorKey);
@@ -237,8 +241,8 @@ Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey)
 		return 0;
 	}
 
-	backend->getplugins[0] = storage;
-	backend->setplugins[0] = storage;
+	backend->getplugins[1] = storage;
+	backend->setplugins[1] = storage;
 	storage->refcounter = 2;
 
 	Key *mp = keyNew ("", KEY_VALUE, "default", KEY_END);

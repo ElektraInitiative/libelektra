@@ -39,6 +39,10 @@
 #define NR_OF_PLUGINS 10
 #endif
 
+#ifndef COMMIT_PLUGIN
+#define COMMIT_PLUGIN 7
+#endif
+
 #ifndef APPROXIMATE_NR_OF_BACKENDS
 #define APPROXIMATE_NR_OF_BACKENDS 16
 #endif
