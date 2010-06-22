@@ -371,6 +371,9 @@ Plugin *elektraPluginExport(const char *pluginName, ...) {
 			case ELEKTRA_PLUGIN_SET:
 				returned->kdbSet=va_arg(va,kdbSetPtr);
 				break;
+			case ELEKTRA_PLUGIN_ERROR:
+				returned->kdbError=va_arg(va,kdbErrorPtr);
+				break;
 			default:
 #if DEBUG
 				printf ("plugin passed something unexpected\n");
