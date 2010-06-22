@@ -29,7 +29,7 @@
  * at runtime inside kdbbGetFullFilename().
  *@see kdbbGetFullFilename
  */
-#define KDB_DB_USER              ".kdb"
+#define KDB_DB_USER              ".config"
 #endif
 
 #ifndef KDB_DB_HOME

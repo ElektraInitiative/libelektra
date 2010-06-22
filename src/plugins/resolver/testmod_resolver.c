@@ -48,6 +48,7 @@ void test_resolveFilename()
 	elektraModulesInit (modules, 0);
 
 	Plugin *plugin = elektraPluginOpen("resolver", modules, set_pluginconf(), 0);
+	exit_if_fail (plugin, "could not load resolver plugin");
 
 	KeySet *test_config = set_pluginconf();
 	KeySet *config = elektraPluginGetConfig (plugin);
@@ -60,6 +61,8 @@ void test_resolveFilename()
 	succeed_if (plugin->kdbGet != 0, "no open pointer");
 	succeed_if (plugin->kdbSet != 0, "no open pointer");
 
+	succeed_if (!strcmp(plugin->name, "resolver"), "got wrong name");
+
 	resolverHandle *h = elektraPluginGetHandle(plugin);
 	succeed_if (h != 0, "no plugin handle");
 
@@ -71,7 +74,18 @@ void test_resolveFilename()
 	succeed_if (!strcmp(h->filename, KDB_DB_SYSTEM "/elektra.ecf"), "resulting filename not correct");
 	succeed_if (!strcmp(h->systemFilename, KDB_DB_SYSTEM "/elektra.ecf"), "resulting filename not correct");
 
-	succeed_if (!strcmp(plugin->name, "resolver"), "got wrong name");
+	keySetName(forKey, "user");
+	succeed_if (resolveFilename(forKey, elektraPluginGetHandle(plugin)) == -1,
+			"should fail because HOME is not set");
+
+	putenv("HOME=/home/test");
+
+	succeed_if (resolveFilename(forKey, elektraPluginGetHandle(plugin)) != -1,
+			"could not resolve filename");
+
+	succeed_if (!strcmp(h->path, "elektra.ecf"), "path not set correctly");
+	succeed_if (!strcmp(h->filename, "/home/test/.config/elektra.ecf"), "filename not set correctly");
+	succeed_if (!strcmp(h->userFilename, "/home/test/.config/elektra.ecf"), "userFilename not set correctly");
 
 	keyDel (forKey);
 	elektraPluginClose(plugin, 0);

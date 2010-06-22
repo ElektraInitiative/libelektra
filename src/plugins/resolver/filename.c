@@ -24,7 +24,29 @@ int resolveFilename(Key* forKey, resolverHandle *p)
 
 	if (!strncmp(keyName(forKey), "user", 4))
 	{
-		return -1;
+		if (p->userFilename)
+		{
+			p->filename = p->userFilename;
+			return 0;
+		}
+		/* TODO implement XDG specification
+		http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
+
+		TODO implement asking owner!
+		*/
+		char *home = getenv("HOME");
+		if (!home)
+		{
+			/* TODO implement more fallbacks (ask system/users) */
+			return -1;
+		}
+
+		p->userFilename = malloc (strlen(home) + strlen(p->path) + sizeof("/" KDB_DB_USER "/"));
+		strcpy (p->userFilename, home);
+		strcat (p->userFilename, "/" KDB_DB_USER "/");
+		strcat (p->userFilename, p->path);
+		p->filename = p->userFilename;
+		return 1;
 	}
 
 	return -1;
