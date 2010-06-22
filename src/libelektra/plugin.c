@@ -399,12 +399,26 @@ KeySet *elektraPluginGetConfig(Plugin *handle)
 	return handle->config;
 }
 
-void elektraPluginSetHandle(Plugin *plugin, void *handle)
+/**
+ * Store a pointer to any plugin related data.
+ *
+ * @param plugin a pointer to the plugin
+ * @param data the pointer to the data
+ * @ingroup plugin
+ */
+void elektraPluginSetData(Plugin *plugin, void *data)
 {
-	plugin->handle = handle;
+	plugin->data = data;
 }
 
-void* elektraPluginGetHandle(Plugin *plugin)
+/**
+ * Get a pointer to any plugin related data stored before.
+ *
+ * @param plugin a pointer to the plugin
+ * @return a pointer to the data
+ * @ingroup plugin
+ */
+void* elektraPluginGetData(Plugin *plugin)
 {
-	return plugin->handle;
+	return plugin->data;
 }

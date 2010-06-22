@@ -22,239 +22,25 @@
 
 
 /**
- * @defgroup backend KDB Backends :: Elektra framework for pluggable backends
- * @brief The tactics to create pluggable backends to libelektra.so
+ * @defgroup plugin Plugins :: Elektra framework for plugins
  *
  * @section intro Introduction
  *
  * @since Since version 0.4.9, Elektra can dynamically load different key storage
- * backends.
+ * plugins.
  *
- * @since Since version 0.7.0 Elektra can have multiple storage backends, called just
- * backends henceforth, at once for different purposes.
+ * @since Since version 0.7.0 Elektra can have multiple plugins,
+ * mounted at any place in the key database.
  *
- * @par Definition: You refers to the implementation of the function in this specification.
- * If you read the documentation about kdbGet_backend(), then the caller is kdbGet()
- * which is the only function which can and will call (invoke) you. The Preconditions
- * will always be met by the caller, you can count on them. But you (as said before we
- * speak about the function) need to take care that all Postconditions are met.
+ * @since Since version 0.8.0 Elektra plugins are composed out of multiple
+ * plugins.
  *
  * @subsection overview Overview
  *
- * The methods of class KDB that are backend dependent are only kdbOpen_backend(),
- * kdbClose_backend(), kdbGet_backend(), kdbSet_backend() and ELEKTRA_PLUGIN_EXPORT() to export
- * these methods. A backend must implement each of them. A detailed
- * specification of these methods and methods needed in that context
- * follows in this Documentation Module.
- *
- * The other KDB methods are higher level. They use the above methods to
- * do their job, and generally don't have to be reimplemented for a
- * different backend, but there might be a solution to do so for higher
- * performance in future. kdbh* methods are for access to the internals
- * of KDB, which will be passed to all functions.
- *
- * @subsection incl Include Files
- *
- * The backend implementation must include:
- * @code
-#include <kdbbackend.h>
- * @endcode
- * to have direct access to the structs, which is currently needed to
- * access the capability structure.
- *
- * Don't include kdb.h, it will be automatically included and some macros will
- * avoid redefining structs where you have more insight from a backend than
- * you would normally have. Additionally you get the declaration of all functions
- * described here, except the one you have to implement.
- *
- * @subsection dyn Dynamic Mounting
- *
- * An elektrified program will use elektra/libelektra-default.so as its default backend.
- * This backend provides the system/ hierarchy and some base configuration
- * in system/elektra for elektra itself. Everything below system/ and the other
- * hierarchies can be stored in any different backend. This is allowed through the
- * technique mounting. A backend can be mounted to any path except system/
- * and system/elektra.
- *
- * A backends is guaranteed to be loaded whenever calling kdbGet()
- * or kdbSet() requires the backend, but may already be loaded at kdbOpen(). It
- * might be loaded explizit by kdbMount() at any time after kdbOpen().
- * Backends get a chance to initialize by calling kdbOpen_backend() whenever
- * they are loaded.
- *
- * Using kdbUnmount() a backend may closed during runtime.
- * All backends will be closed when kdbClose() is called.
- * Backends might be unloaded after some time of inactivity or other reasons.
- * After loading backends get a chance to cleanup by calling
- * kdbClose_backend().
- *
- * That means it is not guaranteed that the backend live the whole time nor
- * it will be loaded only one time. A tactic to handle this well is to build
- * stateless backends referring to kdbGet_backend() and kdbSet_backend().
- * That means that there is no more information present than in the storage itself.
- * Be aware that you must not have any global variables in your backend. Read more
- * about that in kdbOpen_backend().
- * But to be stateless you also have to consider not to store any other than caching
- * information into kdbhGetBackendData(). I repeat: it must be possible to restore
- * everything dynamically stored without exception.
- *
- * @subsection lib Library Names
- *
- * Elektra source code or development package provides a skeleton and Makefile
- * to implement a backend. Copy src/backends/template to have a good
- * starting point. See the CODING document
- * to know how to integrate the backend in the build system or how to compile
- * it external.
- *
- * A backend is defined by a single name, for example @c BACKENDNAME, that
- * causes libelektra.so look for its library as @c libelektra-BACKENDNAME.so.
- *
- * @par Example of a complete backend:
- * @code
-//
-// This is my implementation for an Elektra backend storage.
-//
-// To compile it:
-// $ cc -fpic `pkg-config --cflags elektra` -o myback.o -c myback.c
-// $ cc -shared -fpic `pkg-config --libs elektra` -o libelektra-myback.so myback.o
-//
-// To use it:
-// $ preload mount myback system/myback myback /tmp/nofile
-// $ kdb ls system/myback
-// $ kdb set system/myback/key "value"
-// $ kdb get system/myback/key
-//
-
-#include <kdbbackend.h>
-
-#define BACKENDNAME "backend"
-
-
-int kdbOpen_backend(KDB *handle) {...}
-int kdbClose_backend(KDB *handle) {...}
-int kdbGet_backend(KDB handle, KeySet *returned, Key *key) {...}
-int kdbSet_backend(KDB handle, KeySet *returned, Key *key) {...}
-
-ELEKTRA_PLUGIN_EXPORT(backend) {
-	return kdbBackendExport(BACKENDNAME,
-		KDB_BE_OPEN,  &kdbOpen_backend,
-		KDB_BE_CLOSE, &kdbClose_backend,
-		KDB_BE_GET,   &kdbGet_backend,
-		KDB_BE_SET,   &kdbSet_backend,
-		KDB_BE_END);
-}
- * @endcode
- *
- * In the example, the *_backend() methods can have other random names,
- * since you'll correctly pass them later to kdbBackendExport(). It is
- * recommended to use names according to your backendname to avoid
- * name clashes. Be aware that every symbol name in the linked application
- * must be unique.
- *
- * Don't copy above example out, use src/backends/template, it does
- * compile as-is and does some initialization and cleanup already.
- *
- * Elektra source code tree includes several backend implementations
- * https://svn.libelektra.org/svn/elektra/trunk/src/backends/
- * that can also be used as a reference.
- *
- * @section backenddetail Details
- *
- * @subsection intro Introduction
- *
- * Capabilities may make your live much easier. If it is impossible,
- * very hard or would impact performance badly you may leave out some
- * parts described here, but need to declare that you have done so with
- * capabilites.
- *
- * It is allowed to provide additional information, even if you
- * declared you don't have it. If you declare that you are capable
- * of doing something, you must provide it without exceptions.
- *
- * @subsection owner Owner
- *
- * You need to set the owner of keys by keySetOwner(). Owner is the
- * name to whom a specific key of the user/ hierarchy belongs.
- * If you declare kdbcGetnoOwner() you need not to set the owner of
- * the keys. It also means that even if you want to get keys from another
- * user hierarchy you get yours.
- *
- * @subsection value Values
- *
- * Values are the central information of keys next to the name
- * describing what informations it holds. Parse them out of your backend
- * and put them into the key with keySetString(). The information will
- * be duplicated, so you might need to free() your string. Don't try
- * to directly access key->data, things may change there and your
- * backend might be compiled with a different libc than elektra.
- * If you support types, you might want to use keySetRaw() to not
- * change the key type.
- * If you don't support values for all keys declare kdbcGetnoValue().
- *
- * @subsection id IDs
- *
- * You need to set uid respective gid for any key not having the uid
- * and gid of the current process. This will be set by default in
- * every key. You can do it with keySetUID() and keySetGID().
- * Declaring kdbcGetnoUID() and kdbcGetnoGID() you need not set uid
- * and gid.
- *
- * @subsection mode Mode
- *
- * Mode shows what can be done with the key having or not having
- * the above uid and gid. Use keySetMode() to set the correct
- * mode description, read the description in keySetMode()
- * for the semantics of the 3 octal representation.
- * Declaring kdbcGetnoMode() means mode will remain default.
- *
- * The very related method keySetDir() sets the executable bits
- * of mode. Even if your backend does not support mode, it
- * might support directories, meaning that keys have the mode
- * 0664 or 0775 for directories. Declaring kdbcGetnoDir() means
- * that the backend is flat, no key will be true for keyIsDir()
- * and so can't have any subkeys.
- *
- * @subsection timing Timing
- *
- * Keys should have exact timing information of their
- * modification and access times. Use keySetATime(), keySetMTime()
- * and keySetCTime() to store appropriate information.
- * ATime need to be stored in database, if you stat a key
- * the backend need to return the time kdbGet() was last used
- * for the keys.
- * If you don't support this, declare
- * kdbcGetnoATime() and simple store time(0) in the atime.
- * This must be the same for every key for a single
- * kdbGet_backend().
- * If you only stat keys with kdbGet(), see below, then the access time
- * should not be updated.
- * MTime is the last modification time of value or comment.
- * If you don't support this, declare
- * kdbcGetnoMTime() and simple store time(0) in the mtime.
- * This must be the same for every key for a single
- * kdbGet_backend().
- * CTime is the last change time of any metadata or
- * add/remove of subkeys.
- * If you don't support this, declare
- * kdbcGetnoCTime() and simple store time(0) in the ctime.
- * This must be the same for every key for a single
- * kdbGet_backend().
- *
- * @subsection type Types
- *
- * Keys having value and comment can be one of two fundamental
- * types, string or binary, both called value. While string is
- * a null terminated utf8 character sequence, binary is any data
- * of a specific length. Be sure to use keySetString() for string
- * and keySetBinary() if you want to store binary data.
- * If you do not support one of these, be sure to declare
- * kdbcGetnoBinary() or kdbcGetnoString(), if you don't support
- * both make sure to also declare kdbcGetnoValue().
- *
- * Using keySetRaw() does not set the type, be sure to set the
- * meta data binary using keySetMeta(key, "binary", "")
- * afterwards. Declare kdbcGetnoTypes() when your
- * backend does not support arbitrary types.
+ * A plugin can implement anything related to configuration.
+ * There are 5 possible entry points, but you need not to implement
+ * all of them.
+ * See the descriptions below what each of them is supposed to do.
  *
  *
  */
@@ -264,34 +50,30 @@ ELEKTRA_PLUGIN_EXPORT(backend) {
 
 
 /**
- * Initialize the backend.
- * This is the first method kdbOpenBackend() calls after dynamically loading
- * the backend library.
+ * Initialize the plugin.
+ * This is the first method called after dynamically loading
+ * this plugin.
  *
- * This method is responsible of:
- * - backend's specific configuration gathering
- * - all backend's internal structs initialization
- * - initial setup of all I/O details such as opening a file, connecting to a
- *   database, etc
+ * This method is responsible for:
+ * - plugin's specific configuration gathering
+ * - all plugin's internal structs initialization
+ * - if unavoidable initial setup of all I/O details such as opening a file, connecting to a
+ *   database, setup connection to a server, etc.
  *
- * If your backend does not support all aspects described in kdbGet_backend()
- * and kdbSet_backend() you need capabilities to export this information.
- * Per default you declare to be fully compliant to the specification given
- * here, to change it get a pointer to KDBCap structure by using
- * kdbhGetCapability().
+ * You may also read the configuration you can get with elektraPluginGetConfig() and transform it
+ * into other structures used by your plugin.
  *
- * You may also read the configuration you can get with kdbhGetConfig() and transform it
- * into other structures used by your backend.
+ * @note The plugin must not have any global variables. If you do your plugin will
+ * not be threadsafe.
  *
- * But be aware that you don't have any global variables. If you do your backend will
- * not be threadsafe. You can use kdbhSetBackendData() and kdbhGetBackendData() to store
- * and get any information related to your backend.
+ * Instead you can use elektraPluginGetHandle() and elektraPluginSetHandle() to store
+ * and get any information related to your plugin.
  *
  * The correct substitute for global variables will be:
  * @code
 struct _GlobalData{ int global; };
 typedef struct _GlobalData GlobalData;
-int kdbOpen_backend(KDB *handle) {
+int elektraPluginOpen(KDB *handle) {
 	PasswdData *data;
 	data=malloc(sizeof(PasswdData));
 	data.global = 20;
@@ -299,14 +81,14 @@ int kdbOpen_backend(KDB *handle) {
 }
  * @endcode
  *
- * Make sure to free everything in kdbClose_backend().
+ * Make sure to free everything in elektraPluginClose().
  *
  * @return 0 on success
  * @param handle contains internal information of @link kdbOpen() opened @endlink key database
  * @see kdbOpen()
- * @ingroup backend
+ * @ingroup plugin
  */
-int kdbOpen_doc(Plugin *handle)
+int elektraPluginOpen(Plugin *handle)
 {
 	/* plugin initialization logic */
 
@@ -317,24 +99,24 @@ int kdbOpen_doc(Plugin *handle)
 
 
 /**
- * Finalize the backend.
- * Called prior to unloading the backend dynamic module. Should ensure that no
+ * Finalize the plugin.
+ * Called prior to unloading the plugin dynamic module. Should ensure that no
  * functions or static/global variables from the module will ever be accessed again.
  *
- * Make sure to free all memory that your backend requested at runtime.
+ * Make sure to free all memory that your plugin requested at runtime.
  *
- * Specifically make sure to capDel() all capabilites and free your backendData in
+ * Specifically make sure to capDel() all capabilites and free your pluginData in
  * kdbhGetBackendData().
  *
- * After this call, libelektra.so will unload the backend library, so this is
+ * After this call, libelektra.so will unload the plugin library, so this is
  * the point to shutdown any affairs with the storage.
  *
  * @param handle contains internal information of @link kdbOpen() opened @endlink key database
  * @return 0 on success, anything else otherwise.
  * @see kdbClose()
- * @ingroup backend
+ * @ingroup plugin
  */
-int kdbClose_doc(KDB *handle) {
+int elektraPluginClose(KDB *handle) {
 	return 0; /* success */
 }
 
@@ -347,16 +129,16 @@ int kdbClose_doc(KDB *handle) {
  * @section intro Introduction
  *
  * This function does everything related to get keys out from a
- * backend. There is only one function for that purpose to make
+ * plugin. There is only one function for that purpose to make
  * implementation and locking much easier.
  *
  * The keyset @p returned needs to be filled with information
  * so that the application using elektra can access it.
  * See the live cycle of a comment to understand:
  * @code
-kdbGet_backend(KDB *handle, KeySet *returned, Key *parentKey)
+elektraPluginGet(KDB *handle, KeySet *returned, Key *parentKey)
 {
-	// the task of kdbGet_backend is to retrieve the comment out of the permanent storage
+	// the task of elektraPluginGet is to retrieve the comment out of the permanent storage
 	Key *key = keyDup (parentKey); // generate a new key to hold the information
 	char *comment;
 	loadfromdisc (comment);
@@ -367,7 +149,7 @@ kdbGet_backend(KDB *handle, KeySet *returned, Key *parentKey)
 // Now return to kdbGet
 int kdbGet(KDB *handle, KeySet *keyset, Key *parentKey, options)
 {
-	kdbGet_backend (handle, keyset, 0);
+	elektraPluginGet (handle, keyset, 0);
 	// postprocess the keyset and return it
 }
 
@@ -390,7 +172,7 @@ void usercode (Key *key)
  * @pre The caller kdbGet() will make sure before you are called
  * that the parentKey:
  * - is a valid key (means that it is a system or user key).
- * - is below (see keyIsBelow()) your mountpoint and that your backend is responsible for it.
+ * - is below (see keyIsBelow()) your mountpoint and that your plugin is responsible for it.
  * and that the returned:
  * - is a valid keyset.
  * - has @p all keys with the flag KEY_FLAG_SYNC set.
@@ -398,9 +180,9 @@ void usercode (Key *key)
  *   That also means, that the parentKey will not be in that keyset.
  * - is in a sorted order, see ksSort().
  * and that the handle:
- *  - is a valid KDB for your backend.
- *  - that kdbhGetBackendHandle() contains the same handle for lifetime kdbOpen_backend()
- *    until kdbClose_backend() was called.
+ *  - is a valid KDB for your plugin.
+ *  - that elektraPluginhGetBackendHandle() contains the same handle for lifetime kdbOpen()
+ *    until elektraPluginClose() was called.
  *
  * @pre The caller kdbGet() will make sure that afterwards you were called,
  * whenever the user requested it with the options, that:
@@ -413,7 +195,7 @@ void usercode (Key *key)
  *
  * @invariant There are no global variables and kdbhGetBackendData()
  *  only stores information which can be regenerated any time.
- *  The handle is the same when it is the same backend.
+ *  The handle is the same when it is the same plugin.
  *
  * @post The keyset @p returned has the @p parentKey and all keys direct
  * below (keyIsDirectBelow()) with all information from the storage.
@@ -423,10 +205,10 @@ void usercode (Key *key)
  *
  * @section detail Details
  *
- * Now lets look at an example how the typical kdbGet_backend() might be
+ * Now lets look at an example how the typical elektraPluginGet() might be
  * implemented. To explain we introduce some pseudo functions which do all
  * the work with the storage (which is of course 90% of the work for a real
- * backend):
+ * plugin):
  * - find_key() gets an key out from the storage and memorize the position.
  * - next_key() will find the next key and return it (with the name).
  * - fetch_key() gets out all information of a key from storage
@@ -436,7 +218,7 @@ void usercode (Key *key)
  * returns the next key out from the storage.
  * The typical loop now will be like:
  * @code
-ssize_t kdbGet_backend(KDB *handle, KeySet *update, const Key *parentKey) {
+ssize_t elektraPluginGet(KDB *handle, KeySet *update, const Key *parentKey) {
 	Key * current;
 	KeySet *returned = ksNew(ksGetSize(update)*2, KS_END);
 
@@ -497,11 +279,11 @@ ssize_t kdbGet_backend(KDB *handle, KeySet *update, const Key *parentKey) {
  *
  * @section fullget only Full Get
  *
- * In some backends it is not useful to get only a part of the configuration, because
+ * In some plugins it is not useful to get only a part of the configuration, because
  * getting all keys would take as long as getting some. For this situation,
  * you can declare onlyFullGet, see kdbcGetonlyFullGet().
  *
- * The only valid call for your backend is then that @p parentKey equals the @p mountpoint.
+ * The only valid call for your plugin is then that @p parentKey equals the @p mountpoint.
  * For all other @p parentKey you must, add nothing and just return 0.
  *
  * @code
@@ -514,7 +296,7 @@ if (strcmp (keyName(kdbhGetMountpoint(handle)), keyName(parentKey))) return 0;
  * - every key is below ( keyIsBelow()) the parentKey
  * - every key has a direct parent (keyIsDirectBelow()) in the keyset
  *
- * @note This statement is only valid for backends with kdbcGetonlyFullGet() set.
+ * @note This statement is only valid for plugins with kdbcGetonlyFullGet() set.
  *
  * @note If any calls you use change errno, make sure to restore the old errno.
  *
@@ -537,9 +319,9 @@ if (strcmp (keyName(kdbhGetMountpoint(handle)), keyName(parentKey))) return 0;
  * otherwise you have to set the cause of the error.
  * (Will be added in 0.7.1)
  *
- * @ingroup backend
+ * @ingroup plugin
  */
-ssize_t kdbGet_doc(Plugin *handle, KeySet *returned, const Key *parentKey)
+ssize_t elektraPluginGet(Plugin *handle, KeySet *returned, const Key *parentKey)
 {
 	ssize_t nr_keys = 0;
 	/* get all keys below parentKey and count them with nr_keys */
@@ -551,12 +333,12 @@ ssize_t kdbGet_doc(Plugin *handle, KeySet *returned, const Key *parentKey)
  * Store a keyset permanently.
  *
  * This function does everything related to set and remove keys in a
- * backend. There is only one function for that purpose to make
+ * plugin. There is only one function for that purpose to make
  * implementation and locking much easier.
  *
  * The keyset @p returned was filled in with information from the application
  * using elektra and the task of this function is to store it in a permanent
- * way so that a subsequent call of kdbGet_backend() can rebuild the keyset
+ * way so that a subsequent call of elektraPluginGet() can rebuild the keyset
  * as it was before. See the live cycle of a comment to understand:
  * @code
 void usercode (Key *key)
@@ -569,14 +351,14 @@ void usercode (Key *key)
 // so now kdbSet is called
 int kdbSet(KDB *handle, KeySet *keyset, Key *parentKey, options)
 {
-	// find appropriate backend
-	kdbSet_backend (handle, keyset, 0); // the keyset with the key will be passed to this function
+	// find appropriate plugin
+	elektraPluginSet (handle, keyset, 0); // the keyset with the key will be passed to this function
 }
 
-// so now kdbSet_backend(), which is the function described here, is called
-kdbSet_backend(KDB *handle, KeySet *keyset, Key *parentKey)
+// so now elektraPluginSet(), which is the function described here, is called
+elektraPluginSet(KDB *handle, KeySet *keyset, Key *parentKey)
 {
-	// the task of kdbSet_backend is now to store the comment
+	// the task of elektraPluginSet is now to store the comment
 	Key *key = ksCurrent (keyset); // get out the key where the user set the comment before
 	char *comment = allocate(size);
 	keyGetComment (key, comment, size);
@@ -608,12 +390,12 @@ kdbSet_backend(KDB *handle, KeySet *keyset, Key *parentKey)
  *
  * @invariant There are no global variables and kdbhGetBackendData()
  *  only stores information which can be regenerated any time.
- *  The handle is the same when it is the same backend.
+ *  The handle is the same when it is the same plugin.
  *
  * @post The information of the keyset @p returned is stored permanently.
  *
  * Lock your permanent storage in an exclusive way, no access of a
- * concurrent kdbSet_backend() or kdbGet_backend() is possible
+ * concurrent elektraPluginSet_plugin() or kdbGet() is possible
  * and these methods block until the function has finished.
  * Otherwise declare kdbcGetnoLock().
  *
@@ -641,9 +423,9 @@ kdbSet_backend(KDB *handle, KeySet *keyset, Key *parentKey)
  * You also have to make sure that ksGetCursor()
  * shows to the position where the error appeared.
  *
- * @ingroup backend
+ * @ingroup plugin
  */
-ssize_t kdbSet_doc(Plugin *handle, KeySet *returned, const Key *parentKey)
+ssize_t elektraPluginSet(Plugin *handle, KeySet *returned, const Key *parentKey)
 {
 	ssize_t nr_keys = 0;
 	/* set all keys below parentKey and count them with nr_keys */
@@ -652,17 +434,17 @@ ssize_t kdbSet_doc(Plugin *handle, KeySet *returned, const Key *parentKey)
 }
 
 /**
- * All KDB methods implemented by the backend can have random names, except
+ * All KDB methods implemented by the plugin can have random names, except
  * kdbBackendFactory(). This is the single symbol that will be looked up
- * when loading the backend, and the first method of the backend
+ * when loading the plugin, and the first method of the backend
  * implementation that will be called.
  *
  * Its purpose is to publish the exported methods for libelektra.so. The
  * implementation inside the provided skeleton is usually enough: simply
  * call kdbBackendExport() with all methods that must be exported.
  *
- * The first paramter is the name of the backend.
- * Then every backend must have:
+ * The first paramter is the name of the plugin.
+ * Then every plugin must have:
  * @c KDB_BE_OPEN,
  * @c KDB_BE_CLOSE,
  * @c KDB_BE_GET and
@@ -680,22 +462,22 @@ ssize_t kdbSet_doc(Plugin *handle, KeySet *returned, const Key *parentKey)
  * Don't allocate storage, it won't be freed.
  *
  * With capability you can get that information on
- * runtime from any backend with kdbGetCapability().
+ * runtime from any plugin with kdbGetCapability().
  *
  * The last parameter must be @c KDB_BE_END.
  *
  * @return kdbBackendExport() with the above described parameters.
  * @see kdbBackendExport() for an example
  * @see kdbOpenBackend()
- * @ingroup backend
+ * @ingroup plugin
  */
 Plugin *ELEKTRA_PLUGIN_EXPORT(doc)
 {
 	return elektraPluginExport(BACKENDNAME,
-		ELEKTRA_PLUGIN_OPEN,	&kdbOpen_doc,
-		ELEKTRA_PLUGIN_CLOSE,	&kdbClose_doc,
-		ELEKTRA_PLUGIN_GET,		&kdbGet_doc,
-		ELEKTRA_PLUGIN_SET,		&kdbSet_doc,
+		ELEKTRA_PLUGIN_OPEN,	&elektraPluginOpen,
+		ELEKTRA_PLUGIN_CLOSE,	&elektraPluginClose,
+		ELEKTRA_PLUGIN_GET,	&elektraPluginGet,
+		ELEKTRA_PLUGIN_SET,	&elektraPluginSet,
 		ELEKTRA_PLUGIN_VERSION,	BACKENDVERSION,
 		ELEKTRA_PLUGIN_AUTHOR,	"Full Name <email@libelektra.org>",
 		ELEKTRA_PLUGIN_LICENCE,	"BSD",

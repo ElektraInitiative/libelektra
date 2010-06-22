@@ -336,7 +336,7 @@ struct _Plugin {
 	size_t refcounter;	/*!< This refcounter shows how often the plugin
 		is used.  Not shared plugins have 1 in it */
 
-	void *handle;		/*!< This handle can be used for a plugin to store
+	void *data;		/*!< This handle can be used for a plugin to store
 		any data its want to. */
 };
 
