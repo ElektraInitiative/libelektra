@@ -76,16 +76,16 @@ void test_resolveFilename()
 
 	keySetName(forKey, "user");
 	succeed_if (resolveFilename(forKey, elektraPluginGetHandle(plugin)) == -1,
-			"should fail because HOME is not set");
+			"should fail because USER is not set");
 
-	putenv("HOME=/home/test");
+	putenv("USER=test");
 
 	succeed_if (resolveFilename(forKey, elektraPluginGetHandle(plugin)) != -1,
 			"could not resolve filename");
 
 	succeed_if (!strcmp(h->path, "elektra.ecf"), "path not set correctly");
-	succeed_if (!strcmp(h->filename, "/home/test/.config/elektra.ecf"), "filename not set correctly");
-	succeed_if (!strcmp(h->userFilename, "/home/test/.config/elektra.ecf"), "userFilename not set correctly");
+	succeed_if (!strcmp(h->filename, KDB_DB_HOME "/test/" KDB_DB_USER "/elektra.ecf"), "filename not set correctly");
+	succeed_if (!strcmp(h->userFilename, KDB_DB_HOME "/test/" KDB_DB_USER "/elektra.ecf"), "filename not set correctly");
 
 	keyDel (forKey);
 	elektraPluginClose(plugin, 0);

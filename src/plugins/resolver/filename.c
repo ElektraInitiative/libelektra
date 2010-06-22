@@ -31,18 +31,26 @@ int resolveFilename(Key* forKey, resolverHandle *p)
 		}
 		/* TODO implement XDG specification
 		http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
-
-		TODO implement asking owner!
 		*/
-		char *home = getenv("HOME");
-		if (!home)
+		const char *owner = keyGetMeta(forKey, "owner");
+		if (!owner)
 		{
-			/* TODO implement more fallbacks (ask system/users) */
-			return -1;
+			owner = getenv ("USER");
+			if (!owner)
+			{
+				/* TODO implement more fallbacks (ask system/users with getuid()) */
+				return -1;
+			}
 		}
 
-		p->userFilename = malloc (strlen(home) + strlen(p->path) + sizeof("/" KDB_DB_USER "/"));
-		strcpy (p->userFilename, home);
+		p->userFilename = malloc (sizeof(KDB_DB_HOME)
+				+ strlen(owner)
+				+ sizeof("/")
+				+ sizeof("/" KDB_DB_USER "/")
+				+ strlen(p->path));
+		strcpy (p->userFilename, KDB_DB_HOME);
+		strcat (p->userFilename, "/");
+		strcat (p->userFilename, owner);
 		strcat (p->userFilename, "/" KDB_DB_USER "/");
 		strcat (p->userFilename, p->path);
 		p->filename = p->userFilename;
