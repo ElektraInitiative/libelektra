@@ -1,5 +1,5 @@
 /***************************************************************************
-          template.c  -  Skeleton of a plugin to be copied
+                     template.c  -  Skeleton of a plugin
                              -------------------
     begin                : Fri May 21 2010
     copyright            : (C) 2010 by Markus Raab
@@ -13,13 +13,11 @@
  *                                                                         *
  ***************************************************************************/
 
-
-
 /***************************************************************************
  *                                                                         *
  *   This is the skeleton of the methods you'll have to implement in order *
- *   to provide libelektra.so a valid plugin.                             *
- *   Simple fill the empty _template functions with your code and you are   *
+ *   to provide a valid plugin.                                            *
+ *   Simple fill the empty functions with your code and you are            *
  *   ready to go.                                                          *
  *                                                                         *
  ***************************************************************************/
@@ -27,28 +25,35 @@
 
 #include "template.h"
 
-int kdbOpen_template(Plugin *handle, Key *errorKey)
+int elektraTemplateOpen(Plugin *handle, Key *errorKey)
 {
 	/* plugin initialization logic */
 
-	return 0; /* success */
+	return 1; /* success */
 }
 
-int kdbClose_template(Plugin *handle, Key *errorKey)
+int elektraTemplateClose(Plugin *handle, Key *errorKey)
 {
 	/* free all plugin resources and shut it down */
 
-	return 0; /* success */
+	return 1; /* success */
 }
 
-int kdbGet_template(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraTemplateGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	/* get all keys */
 
 	return 1; /* success */
 }
 
-int kdbSet_template(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraTemplateSet(Plugin *handle, KeySet *returned, Key *parentKey)
+{
+	/* set all keys */
+
+	return 1; /* success */
+}
+
+int elektraTemplateError(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	/* set all keys */
 
@@ -58,10 +63,10 @@ int kdbSet_template(Plugin *handle, KeySet *returned, Key *parentKey)
 Plugin *ELEKTRA_PLUGIN_EXPORT(template)
 {
 	return elektraPluginExport("template",
-		ELEKTRA_PLUGIN_OPEN,	&kdbOpen_template,
-		ELEKTRA_PLUGIN_CLOSE,	&kdbClose_template,
-		ELEKTRA_PLUGIN_GET,	&kdbGet_template,
-		ELEKTRA_PLUGIN_SET,	&kdbSet_template,
+		ELEKTRA_PLUGIN_OPEN,	&elektraTemplateOpen,
+		ELEKTRA_PLUGIN_CLOSE,	&elektraTemplateClose,
+		ELEKTRA_PLUGIN_GET,	&elektraTemplateGet,
+		ELEKTRA_PLUGIN_SET,	&elektraTemplateSet,
 		ELEKTRA_PLUGIN_END);
 }
 
