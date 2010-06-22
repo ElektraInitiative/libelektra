@@ -88,11 +88,12 @@ int elektraResolverClose(Plugin *handle, Key *errorKey)
 int elektraResolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	struct stat buf;
-	int errnoSave = errno;
 
 	resolverHandle *pk = elektraPluginGetHandle(handle);
 	resolveFilename(parentKey, pk);
 
+	/*
+	int errnoSave = errno;
 	if (stat (pk->filename, &buf) == -1)
 	{
 		char buffer[ERROR_SIZE];
@@ -102,11 +103,12 @@ int elektraResolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		errno = errnoSave;
 		return -1;
 	}
+	*/
 
 	pk->mtime = buf.st_mtime;
 	/* TODO check if update is necessary, not supported by mainloop yet */
 
-	keySetMeta(parentKey, "path", pk->filename);
+	keySetString(parentKey, pk->filename);
 
 	return 1;
 }
@@ -177,7 +179,7 @@ int elektraResolverSet(Plugin *handle, KeySet *returned, Key *parentKey)
 			return -1;
 		}
 
-		keySetMeta(parentKey, "path", pk->filename);
+		keySetString(parentKey, pk->filename);
 
 		return 0;
 	}

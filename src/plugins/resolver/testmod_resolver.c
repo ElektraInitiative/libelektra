@@ -47,8 +47,6 @@ void test_resolveFilename()
 	KeySet *modules = ksNew(0);
 	elektraModulesInit (modules, 0);
 
-	putenv("USER=test");
-
 	Plugin *plugin = elektraPluginOpen("resolver", modules, set_pluginconf(), 0);
 	exit_if_fail (plugin, "could not load resolver plugin");
 
@@ -62,6 +60,7 @@ void test_resolveFilename()
 	succeed_if (plugin->kdbClose != 0, "no open pointer");
 	succeed_if (plugin->kdbGet != 0, "no open pointer");
 	succeed_if (plugin->kdbSet != 0, "no open pointer");
+	succeed_if (plugin->kdbError!= 0, "no open pointer");
 
 	succeed_if (!strcmp(plugin->name, "resolver"), "got wrong name");
 
@@ -101,9 +100,54 @@ void test_resolveFilename()
 	ksDel (modules);
 }
 
-void test_renaming()
+void test_name()
 {
-	printf ("Test renaming");
+	printf ("Resolve Name\n");
+
+	KeySet *modules = ksNew(0);
+	elektraModulesInit (modules, 0);
+
+	Plugin *plugin = elektraPluginOpen("resolver", modules, set_pluginconf(), 0);
+	exit_if_fail (plugin, "could not load resolver plugin");
+
+	KeySet *test_config = set_pluginconf();
+	KeySet *config = elektraPluginGetConfig (plugin);
+	succeed_if (config != 0, "there should be a config");
+	compare_keyset(config, test_config);
+	ksDel (test_config);
+
+	succeed_if (plugin->kdbOpen != 0, "no open pointer");
+	succeed_if (plugin->kdbClose != 0, "no open pointer");
+	succeed_if (plugin->kdbGet != 0, "no open pointer");
+	succeed_if (plugin->kdbSet != 0, "no open pointer");
+	succeed_if (plugin->kdbError!= 0, "no open pointer");
+
+	succeed_if (!strcmp(plugin->name, "resolver"), "got wrong name");
+
+	resolverHandle *h = elektraPluginGetHandle(plugin);
+	succeed_if (h != 0, "no plugin handle");
+
+	Key *parentKey= keyNew("system", KEY_END);
+	plugin->kdbGet(plugin, 0, parentKey);
+	succeed_if (!strcmp(keyString(parentKey), KDB_DB_SYSTEM "/elektra.ecf"),
+			"resulting filename not correct");
+
+	keySetName(parentKey, "user");
+	plugin->kdbGet(plugin, 0, parentKey);
+	succeed_if (!strcmp(keyString(parentKey), KDB_DB_HOME "/test/" KDB_DB_USER "/elektra.ecf"),
+			"resulting filename not correct");
+
+	keySetMeta(parentKey, "owner", "other");
+	/* so that it will resolve the filename */
+	free (h->userFilename); h->userFilename = 0;
+	plugin->kdbGet(plugin, 0, parentKey);
+	succeed_if (!strcmp(keyString(parentKey), KDB_DB_HOME "/other/" KDB_DB_USER "/elektra.ecf"),
+			"resulting filename not correct");
+
+	keyDel (parentKey);
+	elektraPluginClose(plugin, 0);
+	elektraModulesClose(modules, 0);
+	ksDel (modules);
 }
 
 
@@ -114,8 +158,10 @@ int main(int argc, char** argv)
 
 	init (argc, argv);
 
+	putenv("USER=test");
+
 	test_resolveFilename();
-	test_renaming();
+	test_name();
 
 
 	printf("\ntest_backendhelpers RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);

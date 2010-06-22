@@ -36,7 +36,13 @@ int resolveFilename(Key* forKey, resolverHandle *p)
 		http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
 		*/
 		const Key *k = keyGetMeta(forKey, "owner");
-		const char *owner = keyString(k);
+		const char *owner = 0;
+		
+		if (k)
+		{
+			owner = keyString(k);
+		}
+
 		if (!owner)
 		{
 			owner = getenv("USER");
