@@ -19,7 +19,7 @@
  *                                                                         *
  *   This is the skeleton of the methods you'll have to implement in order *
  *   to provide libelektra.so a valid plugin.                             *
- *   Simple fill the empty _resolver functions with your code and you are   *
+ *   Simple fill the empty Resolver functions with your code and you are   *
  *   ready to go.                                                          *
  *                                                                         *
  ***************************************************************************/
@@ -28,7 +28,7 @@
 #include "resolver.h"
 
 
-int kdbOpen_resolver(Plugin *handle, Key *errorKey)
+int elektraResolverOpen(Plugin *handle, Key *errorKey)
 {
 
 	KeySet *resolverConfig = elektraPluginGetConfig(handle);
@@ -75,7 +75,7 @@ int kdbOpen_resolver(Plugin *handle, Key *errorKey)
 	return 0; /* success */
 }
 
-int kdbClose_resolver(Plugin *handle, Key *errorKey)
+int elektraResolverClose(Plugin *handle, Key *errorKey)
 {
 	resolverHandle *p = elektraPluginGetHandle(handle);
 	free (p->userFilename);
@@ -85,7 +85,7 @@ int kdbClose_resolver(Plugin *handle, Key *errorKey)
 	return 0; /* success */
 }
 
-int kdbGet_resolver(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraResolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	struct stat buf;
 	int errnoSave = errno;
@@ -111,7 +111,7 @@ int kdbGet_resolver(Plugin *handle, KeySet *returned, Key *parentKey)
 	return 1;
 }
 
-int kdbSet_resolver(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraResolverSet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	int errnoSave = errno;
 	resolverHandle *pk = elektraPluginGetHandle(handle);
@@ -195,12 +195,12 @@ int kdbSet_resolver(Plugin *handle, KeySet *returned, Key *parentKey)
 	}
 
 	/* Always execute the rollback code */
-	kdbError_resolver(handle, returned, parentKey);
+	elektraResolverError(handle, returned, parentKey);
 
 	return 0;
 }
 
-int kdbError_resolver(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraResolverError(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	int errnoSave = errno;
 	resolverHandle *pk = elektraPluginGetHandle(handle);
@@ -239,10 +239,11 @@ int kdbError_resolver(Plugin *handle, KeySet *returned, Key *parentKey)
 Plugin *ELEKTRA_PLUGIN_EXPORT(resolver)
 {
 	return elektraPluginExport(BACKENDNAME,
-		ELEKTRA_PLUGIN_OPEN,	&kdbOpen_resolver,
-		ELEKTRA_PLUGIN_CLOSE,	&kdbClose_resolver,
-		ELEKTRA_PLUGIN_GET,	&kdbGet_resolver,
-		ELEKTRA_PLUGIN_SET,	&kdbSet_resolver,
+		ELEKTRA_PLUGIN_OPEN,	&elektraResolverOpen,
+		ELEKTRA_PLUGIN_CLOSE,	&elektraResolverClose,
+		ELEKTRA_PLUGIN_GET,	&elektraResolverGet,
+		ELEKTRA_PLUGIN_SET,	&elektraResolverSet,
+		ELEKTRA_PLUGIN_ERROR,	&elektraResolverError,
 		ELEKTRA_PLUGIN_END);
 }
 

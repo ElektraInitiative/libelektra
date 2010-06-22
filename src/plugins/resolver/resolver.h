@@ -25,8 +25,8 @@
  ***************************************************************************/
 
 
-#ifndef PLUGIN_resolver_H
-#define PLUGIN_resolver_H
+#ifndef PLUGIN_RESOLVER_H
+#define PLUGIN_RESOLVER_H
 
 #include <kdbvar.h>
 #include <kdbplugin.h>
@@ -71,11 +71,11 @@ struct _resolverHandle
 
 int resolveFilename(Key* forKey, resolverHandle *p);
 
-int kdbOpen_resolver(Plugin *handle, Key *errorKey);
-int kdbClose_resolver(Plugin *handle, Key *errorKey);
-int kdbGet_resolver(Plugin *handle, KeySet *ks, Key *parentKey);
-int kdbSet_resolver(Plugin *handle, KeySet *ks, Key *parentKey);
-int kdbError_resolver(Plugin *handle, KeySet *returned, Key *parentKey);
+int elektraResolverOpen(Plugin *handle, Key *errorKey);
+int elektraResolverClose(Plugin *handle, Key *errorKey);
+int elektraResolverGet(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraResolverSet(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraResolverError(Plugin *handle, KeySet *returned, Key *parentKey);
 Plugin *ELEKTRA_PLUGIN_EXPORT(resolver);
 
 int elektraWriteLock(int fd);
