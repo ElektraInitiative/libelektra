@@ -7,8 +7,6 @@
  *  email                : elektra@markus-raab.org
  ***************************************************************************/
 
-@DISCLAMER@
-
 /***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -25,36 +23,6 @@
 
 #include <limits.h>
 
-#ifndef KDB_DB_SYSTEM
-/**Below this directory the system configuration (system/) will be searched.*/
-#define KDB_DB_SYSTEM            "@KDB_DB_SYSTEM@"
-#endif
-
-#ifndef KDB_DB_USER
-/**This directory will be concatenated with a prefix which will be searched
- * at runtime inside kdbbGetFullFilename().
- *@see kdbbGetFullFilename
- */
-#define KDB_DB_USER              ".kdb"
-#endif
-
-#ifndef KDB_DB_HOME
-/**This directory will be used as fallback when no other method of
- * kdbbGetFullFilename() works.
- *@see kdbbGetFullFilename
- */
-#define KDB_DB_HOME              "/home"
-#endif
-
-#ifndef KDB_KEY_MOUNTPOINTS
-/**Backend information.
- *
- * This key directory tells you where each backend is mounted
- * to which mountpoint. */
-#define KDB_KEY_MOUNTPOINTS      "system/elektra/mountpoints"
-#endif
-
-#define KDB_KEY_MOUNTPOINTS_LEN  (sizeof (KDB_KEY_MOUNTPOINTS))
 
 #ifndef MAX_UCHAR
 #define MAX_UCHAR (UCHAR_MAX+1)
@@ -84,18 +52,6 @@
 #ifndef BUFFER_SIZE
 #define BUFFER_SIZE 256
 #endif
-
-#ifdef UT_NAMESIZE
-#define USER_NAME_SIZE UT_NAMESIZE
-#else
-#define USER_NAME_SIZE 100
-#endif
-
-
-#ifndef DEFFILEMODE
-#define DEFFILEMODE 0666
-#endif
-
 
 
 #if DEBUG
