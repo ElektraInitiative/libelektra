@@ -720,7 +720,7 @@ int kdbSet (KDB *handle, KeySet *ks,
 		return -1;
 	}
 
-	keysets=elektraSplitKeySet(handle, ks, parentKey, options);
+	/* keysets=elektraSplitKeySet(handle, ks, parentKey, options); */
 
 	/*
 	   TODO Check if we need to do anything at all [return 0]

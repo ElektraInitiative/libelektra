@@ -64,11 +64,13 @@ int compare_key (Key *k1, Key *k2);
 int compare_keyset (KeySet *ks, KeySet *ks2);
 int compare_files (const char * filename);
 
-int loadToolsLib(void);
 char *srcdir_file(const char * fileName);
 
 Key * create_root_key (const char *backendName);
 KeySet *create_conf (const char *filename);
+
+void clear_sync (KeySet *ks);
+void output (KeySet *ks);
 
 
 #endif

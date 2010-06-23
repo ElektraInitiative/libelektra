@@ -221,3 +221,19 @@ char * srcdir_file(const char * fileName)
 	return file;
 }
 
+void clear_sync (KeySet *ks)
+{
+	Key *k;
+	ksRewind(ks);
+	while ((k = ksNext(ks)) != 0) keyClearSync(k);
+}
+
+void output (KeySet *ks)
+{
+	Key *k;
+	ksRewind(ks);
+	while ((k = ksNext(ks)) != 0)
+	{
+		printf ("key: %s, string: %s\n", keyName(k), keyString(k));
+	}
+}

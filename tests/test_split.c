@@ -38,7 +38,7 @@ void test_create()
 	succeed_if (split->keysets, "did not alloc keysets array");
 	succeed_if (split->handles, "did not alloc handles array");
 
-	for (int i=1; i< APPROXIMATE_NR_OF_BACKENDS; ++i)
+	for (size_t i=1; i<= APPROXIMATE_NR_OF_BACKENDS; ++i)
 	{
 		elektraSplitAppend(split);
 		succeed_if (split->size == i, "size should be growing");
@@ -48,90 +48,214 @@ void test_create()
 	elektraSplitDel (split);
 }
 
-#if 0
-
 void test_resize()
 {
 	printf ("Test resize split\n");
 
+	Split *split = elektraSplitNew();
+
+	exit_if_fail (split, "there must be a split");
+
+	succeed_if (split->size == 0, "size should be zero");
+	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "initial size not correct");
+
 	elektraSplitResize (split);
-	split->keysets[0] = ksNew(0);
-	succeed_if (split->no == 1, "resize not correct");
+	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS*2, "resize not correct");
+
 	elektraSplitResize (split);
-	split->keysets[1] = ksNew(0);
-	succeed_if (split->no == 2, "resize not correct");
+	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS*4, "resize not correct");
+
 	elektraSplitResize (split);
-	split->keysets[2] = ksNew(0);
-	succeed_if (split->no == 3, "resize not correct");
+	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS*8, "resize not correct");
+
+	elektraSplitDel (split);
+}
+
+void test_append()
+{
+	printf ("Test append split\n");
+
+	Split *split = elektraSplitNew();
+	exit_if_fail (split, "there must be a split");
+
+	succeed_if (split->size == 0, "size should be zero");
+	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "initial size not correct");
+
+	for (size_t i=1; i<= APPROXIMATE_NR_OF_BACKENDS; ++i)
+	{
+		elektraSplitAppend(split);
+		succeed_if (split->size == i, "size should be growing");
+		succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "should not realloc");
+	}
+
+	for (size_t i=APPROXIMATE_NR_OF_BACKENDS+1; i<= APPROXIMATE_NR_OF_BACKENDS*2; ++i)
+	{
+		elektraSplitAppend(split);
+		succeed_if (split->size == i, "size should be growing");
+		succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS*2, "should realloc");
+	}
+
+	elektraSplitDel (split);
 }
 
 
 void test_emptysplit()
 {
-	KDB *handle = kdbOpen();
-	KeySet *ks = ksNew (0);
-	Key *parentKey = 0;
-	unsigned long options = 0;
-	Split *split = elektraSplitKeySet (handle, ks, parentKey, options);
-
 	printf ("Test empty split\n");
-	succeed_if (split->no == 0, "empty requires no data");
-	succeed_if (split->keysets, "did not alloc keysets array");
-	succeed_if (split->handles, "did not alloc handles array");
 
-	elektraSplitClose (split);
+	KDB *handle = elektraCalloc(sizeof(struct _KDB));
+	KeySet *ks = ksNew (0);
+	Split *split = elektraSplitNew();
+
+	succeed_if (split->size == 0, "size should be zero");
+	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "initial size not correct");
+
+	succeed_if (elektraSplitCheckSync (split, handle, ks) == 0, "there should be no need sync");
+
+	succeed_if (split->size == 0, "empty requires no appending");
+	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "initial size not correct");
+
+	elektraSplitDel (split);
 	ksDel (ks);
-	kdbClose (handle);
+	elektraFree(handle);
+}
+
+void test_needsSync()
+{
+	printf ("Test needs sync\n");
+
+	KDB *handle = elektraCalloc(sizeof(struct _KDB));
+	KeySet *ks = ksNew (5,
+			keyNew("user/abc", KEY_END),
+			KS_END);
+	Split *split = elektraSplitNew();
+
+	succeed_if (split->size == 0, "size should be zero");
+	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "initial size not correct");
+
+	succeed_if (elektraSplitCheckSync (split, handle, ks) == 1, "there should be a need sync");
+
+	elektraSplitDel (split);
+
+	split = elektraSplitNew();
+
+	clear_sync (ks);
+	succeed_if (elektraSplitCheckSync (split, handle, ks) == 0, "there should not be a need sync");
+
+	succeed_if (split->size == 1, "size should be one");
+	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "should stay same");
+
+	elektraSplitDel (split);
+
+
+	split = elektraSplitNew();
+	ksAppendKey(ks, keyNew("user/key1", KEY_END));
+	ksAppendKey(ks, keyNew("user/key2", KEY_END));
+	ksAppendKey(ks, keyNew("user/key3", KEY_END));
+	ksAppendKey(ks, keyNew("user/key4", KEY_END));
+	ksAppendKey(ks, keyNew("user/key5", KEY_END));
+	succeed_if (elektraSplitCheckSync (split, handle, ks) == 1, "there should be a need sync");
+	elektraSplitDel (split);
+
+
+	split = elektraSplitNew();
+	clear_sync (ks);
+	succeed_if (elektraSplitCheckSync (split, handle, ks) == 0, "there should not be a need sync");
+
+	succeed_if (split->size == 1, "size should be one");
+	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "should stay same");
+	elektraSplitDel (split);
+
+
+
+	split = elektraSplitNew();
+	succeed_if (elektraSplitCheckSync (split, handle, ks) == 0, "there should not be a need sync (again)");
+
+	succeed_if (split->size == 1, "size should be one");
+	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "should stay same");
+	elektraSplitDel (split);
+
+
+	split = elektraSplitNew();
+	keySetString(ksLookupByName(ks, "user/key2", 0), "value");
+	succeed_if (elektraSplitCheckSync (split, handle, ks) == 1, "there should not be a need sync (value changed)");
+
+	succeed_if (split->size == 1, "size should be one");
+	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "should stay same");
+	elektraSplitDel (split);
+
+
+	ksDel (ks);
+	elektraFree(handle);
 }
 
 void test_easysplit()
 {
-	KDB *handle = kdbOpen();
+	KDB *handle = elektraCalloc(sizeof(struct _KDB));
 	KeySet *ks = ksNew (
 		3,
 		keyNew ("user/valid/key1", KEY_END),
 		keyNew ("user/valid/key2", KEY_END),
 		KS_END);
-	Key *parentKey = 0;
-	unsigned long options = 0;
-	Split *split = elektraSplitKeySet (handle, ks, parentKey, options);
+	Split *split = elektraSplitNew();
+
+	elektraSplitCheckSync (split, handle, ks);
 
 	printf ("Test easy split\n");
 	succeed_if (split->keysets, "did not alloc keysets array");
 	succeed_if (split->handles, "did not alloc handles array");
-	succeed_if (split->no == 1, "everything is in one keyset");
-	compare_keyset (split->keysets[0], ks, 0, 0);
+	succeed_if (split->size == 1, "everything is in one keyset");
+	compare_keyset (split->keysets[0], ks);
 
-	elektraSplitClose (split);
+	elektraSplitDel (split);
 	ksDel (ks);
-	kdbClose (handle);
+	elektraFree(handle);
 }
 
 void test_singlesplit()
 {
-	KDB *handle = kdbOpen();
+	KDB *handle = elektraCalloc(sizeof(struct _KDB));
 	KeySet *ks = ksNew (
 		3,
 		keyNew ("user/valid/key", KEY_END),
 		KS_END);
-	Key *parentKey = 0;
-	unsigned long options = 0;
-	Split *split = elektraSplitKeySet (handle, ks, parentKey, options);
+	Split *split = elektraSplitNew();
+
+	elektraSplitCheckSync (split, handle, ks);
 
 	printf ("Test single split\n");
 	succeed_if (split->keysets, "did not alloc keysets array");
 	succeed_if (split->handles, "did not alloc handles array");
-	succeed_if (split->no == 1, "everything is in one keyset");
-	compare_keyset (split->keysets[0], ks, 0, 0);
+	succeed_if (split->size == 1, "everything is in one keyset");
+	compare_keyset (split->keysets[0], ks);
 
-	elektraSplitClose (split);
+	elektraSplitDel (split);
 	ksDel (ks);
-	kdbClose (handle);
+	elektraFree(handle);
+}
+
+
+KeySet *set_us()
+{
+	return ksNew(50,
+		keyNew("system/elektra/mountpoints", KEY_END),
+		keyNew("system/elektra/mountpoints/user", KEY_END),
+		keyNew("system/elektra/mountpoints/user/mountpoint", KEY_VALUE, "user", KEY_END),
+		keyNew("system/elektra/mountpoints/system", KEY_END),
+		keyNew("system/elektra/mountpoints/system/mountpoint", KEY_VALUE, "system", KEY_END),
+		KS_END);
+
 }
 
 void test_mount()
 {
-	KDB *handle = kdbOpen();
+	printf ("Test mount split\n");
+
+	KDB *handle = elektraCalloc(sizeof(struct _KDB));
+	KeySet *modules = ksNew(0);
+	elektraModulesInit(modules, 0);
+	handle->trie = elektraTrieOpen(set_us(), modules, 0);
+
 	KeySet *ks = ksNew (
 		5,
 		keyNew ("user/valid/key1", KEY_END),
@@ -149,36 +273,69 @@ void test_mount()
 		keyNew ("system/valid/key1", KEY_END),
 		keyNew ("system/valid/key2", KEY_END),
 		KS_END);
-	Key *parentKey = 0;
-	unsigned long options = 0;
-	Key *mnt;
-	KeySet *config;
-	Split *split;
 
-	kdbMount (handle, mnt=keyNew ("user", KEY_VALUE, "filesys", KEY_END), config=ksNew(0));
-	keyDel (mnt); ksDel (config);
-	kdbMount (handle, mnt=keyNew ("system", KEY_VALUE, "filesys", KEY_END), config=ksNew(0));
-	keyDel (mnt); ksDel (config);
-
-	split = elektraSplitKeySet (handle, ks, parentKey, options);
-	/*ksOutput (split->keysets[0], stdout, KDB_O_HEADER);*/
-
-
-	printf ("Test mount split\n");
+	Split *split = elektraSplitNew();
+	succeed_if (elektraSplitCheckSync (split, handle, ks) == 1, "should need sync");
 	succeed_if (split->keysets, "did not alloc keysets array");
 	succeed_if (split->handles, "did not alloc handles array");
-	succeed_if (split->syncbits[0] == 1, "user part need to by synced");
-	succeed_if (split->syncbits[1] == 1, "system part need to by synced");
-	succeed_if (split->no == 2, "not splitted according user, system");
-	succeed_if (compare_keyset (split->keysets[0], split1, 0, 0) == 0, "user keyset not correct");
-	succeed_if (compare_keyset (split->keysets[1], split2, 0, 0) == 0, "system keyset not correct");
+	succeed_if (split->syncbits[0] == 1, "system part need to by synced");
+	succeed_if (split->syncbits[1] == 1, "user part need to by synced");
+	succeed_if (split->size == 2, "not splitted according user, system");
+	succeed_if (ksGetSize(split->keysets[0]) == 2, "size of keyset not correct");
+	succeed_if (ksGetSize(split->keysets[1]) == 2, "size of keyset not correct");
+	succeed_if (compare_keyset (split->keysets[1], split1) == 0, "user keyset not correct");
+	succeed_if (compare_keyset (split->keysets[0], split2) == 0, "system keyset not correct");
+	elektraSplitDel (split);
 
-	elektraSplitClose (split);
+
+	split = elektraSplitNew();
+	clear_sync (ks);
+	succeed_if (elektraSplitCheckSync (split, handle, ks) == 0, "should not need sync");
+	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "should stay same");
+	succeed_if (split->keysets, "did not alloc keysets array");
+	succeed_if (split->handles, "did not alloc handles array");
+	succeed_if (split->syncbits[0] == 0, "system part does not need to by synced");
+	succeed_if (split->syncbits[1] == 0, "user part does not need to by synced");
+	succeed_if (ksGetSize(split->keysets[0]) == 2, "size of keyset not correct");
+	succeed_if (ksGetSize(split->keysets[1]) == 2, "size of keyset not correct");
+	succeed_if (split->size == 2, "not splitted according user, system");
+	elektraSplitDel (split);
+
+	split = elektraSplitNew();
+	keySetString(ksLookupByName(ks, "user/valid/key2", 0), "value");
+	succeed_if (elektraSplitCheckSync (split, handle, ks) == 1, "should need sync");
+	succeed_if (split->keysets, "did not alloc keysets array");
+	succeed_if (split->handles, "did not alloc handles array");
+	succeed_if (split->syncbits[0] == 0, "system part does not need to by synced");
+	succeed_if (split->syncbits[1] == 1, "user part need to by synced");
+	succeed_if (ksGetSize(split->keysets[0]) == 2, "size of keyset not correct");
+	succeed_if (ksGetSize(split->keysets[1]) == 2, "size of keyset not correct");
+	succeed_if (split->size == 2, "not splitted according user, system");
+	elektraSplitDel (split);
+
+	split = elektraSplitNew();
+	keySetString(ksLookupByName(ks, "system/valid/key2", 0), "value");
+	succeed_if (elektraSplitCheckSync (split, handle, ks) == 1, "should need sync");
+	succeed_if (split->keysets, "did not alloc keysets array");
+	succeed_if (split->handles, "did not alloc handles array");
+	succeed_if (split->syncbits[0] == 1, "system part need to by synced");
+	succeed_if (split->syncbits[1] == 1, "user part need to by synced");
+	succeed_if (split->size == 2, "not splitted according user, system");
+	succeed_if (ksGetSize(split->keysets[0]) == 2, "size of keyset not correct");
+	succeed_if (ksGetSize(split->keysets[1]) == 2, "size of keyset not correct");
+	elektraSplitDel (split);
+
+
 	ksDel (ks);
 	ksDel (split1);
 	ksDel (split2);
-	kdbClose (handle);
+	elektraModulesClose(modules, 0);
+	ksDel (modules);
+	elektraTrieClose(handle->trie, 0);
+	elektraFree(handle);
 }
+
+#if 0
 
 void test_optimize()
 {
@@ -665,11 +822,14 @@ int main(int argc, char** argv)
 	init (argc, argv);
 
 	test_create();
-	/*
+	test_resize();
+	test_append();
 	test_emptysplit();
+	test_needsSync();
 	test_easysplit();
 	test_singlesplit();
 	test_mount();
+	/*
 	test_optimize();
 	test_removed();
 	test_easyparent();

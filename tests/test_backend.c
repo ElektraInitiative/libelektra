@@ -415,7 +415,63 @@ void test_backref()
 	ksDel (modules);
 }
 
+KeySet *set_us()
+{
+	return ksNew(50,
+		keyNew("system/elektra/mountpoints", KEY_END),
+		keyNew("system/elektra/mountpoints/user", KEY_END),
+		keyNew("system/elektra/mountpoints/user/mountpoint", KEY_VALUE, "user", KEY_END),
+		keyNew("system/elektra/mountpoints/system", KEY_END),
+		keyNew("system/elektra/mountpoints/system/mountpoint", KEY_VALUE, "system", KEY_END),
+		KS_END);
 
+}
+
+void test_us()
+{
+	printf ("Test simple user system backends\n");
+	KeySet *modules = ksNew(0);
+	elektraModulesInit(modules, 0);
+
+	KeySet *config = set_us();
+	ksAppendKey(config, keyNew("system/elektra/mountpoints", KEY_END));
+	Trie *trie = elektraTrieOpen(config, modules, 0);
+
+	Key *key = keyNew("user/anywhere/backend/simple", KEY_END);
+	Backend *backend = elektraTrieLookup(trie, key);
+
+	keyAddBaseName(key, "somewhere"); keyAddBaseName(key, "deep"); keyAddBaseName(key, "below");
+	Backend *backend2 = elektraTrieLookup(trie, key);
+	succeed_if (backend == backend2, "should be same backend");
+
+	succeed_if (backend->getplugins[0] == 0, "there should be no plugin");
+	exit_if_fail (backend->getplugins[1] == 0, "there should be no plugin");
+	succeed_if (backend->getplugins[2] == 0, "there should be no plugin");
+
+	succeed_if (backend->setplugins[0] == 0, "there should be no plugin");
+	exit_if_fail (backend->setplugins[1] == 0, "there should be no plugin");
+	succeed_if (backend->setplugins[2] == 0, "there should be no plugin");
+
+	Key *mp;
+	succeed_if ((mp = backend->mountpoint) != 0, "no mountpoint found");
+	succeed_if (!strcmp(keyName(mp), "user"), "wrong mountpoint for backend");
+	succeed_if (!strcmp(keyString(mp), "user"), "wrong name for backend");
+
+
+	keySetName(key, "system/anywhere/tests/backend/two");
+	Backend *two = elektraTrieLookup(trie, key);
+	succeed_if (two != backend, "should be differnt backend");
+
+	succeed_if ((mp = two->mountpoint) != 0, "no mountpoint found");
+	succeed_if (!strcmp(keyName(mp), "system"), "wrong mountpoint for backend two");
+	succeed_if (!strcmp(keyString(mp), "system"), "wrong name for backend");
+
+	elektraTrieClose(trie, 0);
+	keyDel (key);
+	elektraModulesClose (modules, 0);
+	ksDel (modules);
+
+}
 
 int main(int argc, char** argv)
 {
@@ -429,6 +485,7 @@ int main(int argc, char** argv)
 	test_trie();
 	test_two();
 	test_backref();
+	test_us();
 
 	printf("\ntest_backend RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

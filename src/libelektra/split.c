@@ -56,8 +56,11 @@
 /**
  * Allocates a new split object.
  *
+ * Initially the size is APPROXIMATE_NR_OF_BACKENDS.
+ *
  * @return a fresh allocated split object
  * @ingroup split
+ * @see elektraSplitDel()
 **/
 Split * elektraSplitNew(void)
 {
@@ -99,7 +102,10 @@ void elektraSplitDel(Split *keysets)
 }
 
 /**
- * Doubles the size
+ * Doubles the size of how many parts of keysets can be appended.
+ *
+ * @param ret the split object to work with
+ * @ingroup split
  */
 void elektraSplitResize(Split *ret)
 {
@@ -112,6 +118,15 @@ void elektraSplitResize(Split *ret)
 	elektraRealloc((void**) &ret->belowparents, ret->alloc * sizeof(int));
 }
 
+/**
+ * Increases the size of split and initializes
+ * the element at size-1 to be used.
+ *
+ * Will automatically resize split if needed.
+ *
+ * @param ret the split object to work with
+ * @ingroup split
+ */
 void elektraSplitAppend(Split *ret)
 {
 	++ ret->size;
@@ -124,6 +139,63 @@ void elektraSplitAppend(Split *ret)
 	ret->belowparents[ret->size-1]=0;
 }
 
+/**
+ * Splits up the keysets and search for a sync bit.
+ *
+ * It does not check if there were removed keys,
+ * see elektraSplitRemove() for the next step.
+ *
+ * @return 0 if there were no sync bits
+ * @return 1 if there were sync bits
+ */
+int elektraSplitCheckSync(Split *split, KDB *handle, KeySet *ks)
+{
+	int curFound = 0; /* If key could be appended to any of the existing splitted keysets */
+	int needsSync = 0;
+	Key *curKey = 0;
+	Backend *curHandle = 0;
+
+	ksRewind (ks);
+	while ((curKey = ksNext (ks)) != 0)
+	{
+		curHandle = kdbGetBackend(handle, curKey);
+		curFound = 0;
+
+		/* TODO: optimization: use an index to find already inserted backends */
+		for (size_t i=0; i<split->size; ++i)
+		{
+			if (curHandle == split->handles[i])
+			{
+				curFound = 1;
+				ksAppendKey(split->keysets[i],curKey);
+				if (!split->syncbits[i] && keyNeedSync (curKey) == 1)
+				{
+					needsSync = 1;
+					split->syncbits[i] = 1;
+				}
+			}
+		}
+
+		if (!curFound)
+		{
+			elektraSplitAppend (split);
+
+			split->keysets[split->size-1] = ksNew (ksGetSize (ks) / APPROXIMATE_NR_OF_BACKENDS + 2, KS_END);
+			ksAppendKey(split->keysets[split->size-1],curKey);
+			split->handles[split->size-1] = curHandle;
+			if (!split->syncbits[split->size-1] && keyNeedSync (curKey) == 1)
+			{
+				needsSync = 1;
+				split->syncbits[split->size-1] = 1;
+			}
+		}
+	}
+
+	return needsSync;
+}
+
+int elektraSplitCheckRemove(Split *split, KDB *handle, KeySet *ks);
+int elektraSplitCheckParent(Split *split, KeySet *ks, Key *parentKey);
 
 /* Split keysets.
  * Make sure that parentKey has a name or is a null pointer*/

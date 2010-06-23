@@ -393,8 +393,10 @@ Split * elektraSplitNew(void);
 void elektraSplitDel(Split *keysets);
 void elektraSplitAppend(Split *ret);
 void elektraSplitResize(Split *ret);
-Split *elektraSplitKeySet(KDB *handle, KeySet *ks,
-	Key *parentKey, unsigned long options);
+int elektraSplitCheckSync(Split *split, KDB *handle, KeySet *ks);
+int elektraSplitCheckRemove(Split *split, KDB *handle, KeySet *ks);
+int elektraSplitCheckParent(Split *split, KeySet *ks, Key *parentKey);
+
 
 /*Internal helpers*/
 
