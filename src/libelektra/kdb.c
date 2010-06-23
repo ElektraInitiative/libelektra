@@ -790,6 +790,7 @@ error:
 	}
 
 	if (errorKey) ksLookup(ks, errorKey, KDB_O_WITHOWNER);
+	elektraSplitClose(keysets);
 	return -1;
 }
 
