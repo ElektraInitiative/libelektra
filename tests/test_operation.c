@@ -320,6 +320,8 @@ void test_simple()
 
 void test_cursor()
 {
+	printf ("test cut cursor\n");
+
 	KeySet *config = set_simple();
 	succeed_if (ksGetCursor(config) == -1, "should be invalid cursor");
 	succeed_if (ksNext(config) != 0, "should be root key");
@@ -384,6 +386,42 @@ void test_cursor()
 	ksDel (res);
 }
 
+void test_morecut()
+{
+	printf ("More cut test cases\n");
+
+	KeySet *ks = ksNew (
+		5,
+		keyNew ("user/valid/key1", KEY_END),
+		keyNew ("user/valid/key2", KEY_END),
+		keyNew ("system/valid/key1", KEY_END),
+		keyNew ("system/valid/key2", KEY_END),
+		KS_END);
+	KeySet *split1 = ksNew (
+		3,
+		keyNew ("user/valid/key1", KEY_END),
+		keyNew ("user/valid/key2", KEY_END),
+		KS_END);
+	KeySet *split2 = ksNew (
+		3,
+		keyNew ("system/valid/key1", KEY_END),
+		keyNew ("system/valid/key2", KEY_END),
+		KS_END);
+
+	Key *userKey = keyNew("user", KEY_END);
+
+	KeySet *cut = ksCut (ks, userKey);
+	succeed_if (compare_keyset (cut, split1) == 0, "user keyset not correct");
+	succeed_if (compare_keyset (ks, split2) == 0, "system keyset not correct");
+	ksDel (cut);
+
+	keyDel (userKey);
+
+	ksDel (ks);
+	ksDel (split1);
+	ksDel (split2);
+}
+
 int main(int argc, char** argv)
 {
 	printf("OPERATION    TESTS\n");
@@ -396,6 +434,7 @@ int main(int argc, char** argv)
 	// test_copy(); // has memory problems...
 	test_simple();
 	test_cursor();
+	test_morecut();
 
 	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

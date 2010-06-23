@@ -860,6 +860,7 @@ ssize_t ksCopyInternal(KeySet *ks, size_t to, size_t from)
 KeySet *ksCut(KeySet *ks, const Key *cutpoint)
 {
 	KeySet *returned = 0;
+	ssize_t sfound = 0;
 	size_t found = 0;
 	size_t it = 0;
 	size_t newsize = 0;
@@ -868,10 +869,11 @@ KeySet *ksCut(KeySet *ks, const Key *cutpoint)
 	if (!cutpoint) return 0;
 	if (!cutpoint->key) return 0;
 
-	found = ksSearchInternal(ks, cutpoint);
-	if (cutpoint == ksCurrent(ks)) ksPrev(ks);
+	sfound = ksSearchInternal(ks, cutpoint);
+	if (sfound < 0) found = -sfound - 1;
+	else found = sfound;
 
-	if (found < 0) found = -found - 1;
+	if (cutpoint == ksCurrent(ks)) ksPrev(ks);
 
 	it = found;
 	while (it < ks->size && keyIsBelowOrSame(cutpoint, ks->array[it]) == 1)
