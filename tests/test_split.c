@@ -479,96 +479,11 @@ void test_optimize()
 	elektraFree(handle);
 }
 
-#if 0
-
-void test_removed()
-{
-	KDB *handle = kdbOpen();
-	KeySet *ks = ksNew (
-		5,
-		keyNew ("user/valid/key2", KEY_END),
-		keyNew ("user/valid/key1", KEY_END),
-		keyNew ("system/valid/key1", KEY_END),
-		keyNew ("system/valid/key2", KEY_END),
-		KS_END);
-	KeySet *split1 = ksNew (
-		3,
-		keyNew ("user/valid/key2", KEY_END),
-		keyNew ("user/valid/key1", KEY_END),
-		KS_END);
-	KeySet *split2 = ksNew (
-		3,
-		keyNew ("system/valid/key1", KEY_END),
-		keyNew ("system/valid/key2", KEY_END),
-		KS_END);
-	Key *parentKey = 0;
-	unsigned long options = 0;
-	Key *mnt;
-	KeySet *config;
-	Split *split;
-	Key *key;
-
-	kdbMount (handle, mnt=keyNew ("user", KEY_VALUE, "filesys", KEY_END), config=ksNew(0));
-	keyDel (mnt); ksDel (config);
-	kdbMount (handle, mnt=keyNew ("system", KEY_VALUE, "filesys", KEY_END), config=ksNew(0));
-	keyDel (mnt); ksDel (config);
-
-	split = elektraSplitKeySet (handle, ks, parentKey, options);
-
-
-	printf ("Test optimization split with removed keys\n");
-	succeed_if (split->keysets, "did not alloc keysets array");
-	succeed_if (split->handles, "did not alloc handles array");
-	succeed_if (split->size == 2, "not splitted according user, system");
-	succeed_if (split->syncbits[1] == 1, "user part need to be synced");
-	succeed_if (split->syncbits[0] == 1, "second part need to by synced");
-	succeed_if (compare_keyset (split->keysets[0], split1, 0, 0) == 0, "user keyset not correct");
-	succeed_if (compare_keyset (split->keysets[1], split2, 0, 0) == 0, "system keyset not correct");
-
-	elektraSplitClose (split);
-
-
-	ksRewind (ks);
-	while ((key = ksNext(ks)) != 0)
-	{
-		/*only removed, no sync*/
-		if (keyIsUser(key) == 1) key->flags &= ~KEY_FLAG_SYNC;
-	}
-
-	split = elektraSplitKeySet (handle, ks, parentKey, options);
-
-	succeed_if (split->keysets, "did not alloc keysets array");
-	succeed_if (split->handles, "did not alloc handles array");
-	succeed_if (split->size == 2, "not splitted according user, system");
-	succeed_if (split->syncbits[0] == 0, "optimized too much");
-	succeed_if (split->syncbits[1] == 1, "user part does not need to be synced");
-	succeed_if (compare_keyset (split->keysets[0], split1, 0, 0) == 0, "user keyset not correct");
-	succeed_if (compare_keyset (split->keysets[1], split2, 0, 0) == 0, "system keyset not correct");
-
-	elektraSplitClose (split);
-
-	options = KDB_O_SYNC;
-	split = elektraSplitKeySet (handle, ks, parentKey, options);
-
-	succeed_if (split->keysets, "did not alloc keysets array");
-	succeed_if (split->handles, "did not alloc handles array");
-	succeed_if (split->size == 2, "not splitted according user, system");
-	succeed_if (split->syncbits[1] == 1, "user part ignoresync");
-	succeed_if (split->syncbits[0] == 1, "optimized too much");
-	succeed_if (compare_keyset (split->keysets[0], split1, 0, 0) == 0, "user keyset not correct");
-	succeed_if (compare_keyset (split->keysets[1], split2, 0, 0) == 0, "system keyset not correct");
-
-	elektraSplitClose (split);
-
-	ksDel (ks);
-	ksDel (split1);
-	ksDel (split2);
-	kdbClose (handle);
-}
-
 void test_easyparent()
 {
-	KDB *handle = kdbOpen();
+	printf ("Test parent separation of user and system\n");
+
+	KDB *handle = elektraCalloc(sizeof(struct _KDB));
 	KeySet *ks = ksNew (
 		8,
 		keyNew ("user/valid", KEY_END),
@@ -578,110 +493,61 @@ void test_easyparent()
 		keyNew ("system/valid/key1", KEY_END),
 		keyNew ("system/valid/key2", KEY_END),
 		KS_END);
-	KeySet *split1 = ksNew (
-		5,
-		keyNew ("user/valid", KEY_END),
-		keyNew ("user/valid/key1", KEY_END),
-		keyNew ("user/valid/key2", KEY_END),
-		KS_END);
-	KeySet *split2 = ksNew (
-		5,
+	KeySet *split1 = ksNew ( 5,
 		keyNew ("system/valid", KEY_END),
 		keyNew ("system/valid/key1", KEY_END),
 		keyNew ("system/valid/key2", KEY_END),
 		KS_END);
-	unsigned long options = 0;
+	KeySet *split2 = ksNew ( 5,
+		keyNew ("user/valid", KEY_END),
+		keyNew ("user/valid/key1", KEY_END),
+		keyNew ("user/valid/key2", KEY_END),
+		KS_END);
 	Key *parentKey;
-	Key *mnt;
-	KeySet *config;
 	Split *split;
 
-	printf ("Test parent separation of user and system\n");
-
-	/*ksOutput (ks, stdout, 0);
-	ksSort (ks);
-	ksOutput (ks, stdout, 0);*/
-
 
 	parentKey = keyNew ("user", KEY_END);
-	split = elektraSplitKeySet (handle, ks, parentKey, options);
+	split = elektraSplitNew();
+	elektraSplitSync (split, handle, ks);
+	elektraSplitDomains (split, ks, parentKey);
 
 
 	succeed_if (split->keysets, "did not alloc keysets array");
 	succeed_if (split->handles, "did not alloc handles array");
-	/*printf ("%d\n", split->size);*/
 	succeed_if (split->size == 2, "not splitted according user, system");
-	succeed_if (split->syncbits[0] == 1, "user part need to by synced");
-	succeed_if (split->syncbits[1] == 1, "system part need to be synced");
-	succeed_if (split->belowparents[0] == 1, "user part is below parent");
-	succeed_if (split->belowparents[1] == 0, "system part is not below parent");
-	succeed_if (compare_keyset (split->keysets[0], split1, 0, 0) == 0, "user keyset not correct");
-	succeed_if (compare_keyset (split->keysets[1], split2, 0, 0) == 0, "system keyset not correct");
+	succeed_if (split->syncbits[0] == 1, "system part need to by synced");
+	succeed_if (split->syncbits[1] == 1, "user part need to be synced");
+	succeed_if (compare_keyset (split->keysets[0], split1) == 0, "user keyset not correct");
+	succeed_if (compare_keyset (split->keysets[1], split2) == 0, "system keyset not correct");
 
-	elektraSplitClose (split);
+	elektraSplitDel (split);
 	keyDel (parentKey);
 
 	parentKey = keyNew ("system", KEY_END);
-	split = elektraSplitKeySet (handle, ks, parentKey, options);
+	split = elektraSplitNew();
+	elektraSplitSync (split, handle, ks);
+	elektraSplitDomains (split, ks, parentKey);
 
 
 	succeed_if (split->keysets, "did not alloc keysets array");
 	succeed_if (split->handles, "did not alloc handles array");
 	succeed_if (split->size == 2, "not splitted according user, system");
-	succeed_if (split->syncbits[0] == 1, "user part need to by synced");
-	succeed_if (split->syncbits[1] == 1, "system part need to be synced");
-	succeed_if (split->belowparents[0] == 0, "user part is not below parent");
-	succeed_if (split->belowparents[1] == 1, "system part is below parent");
-	succeed_if (compare_keyset (split->keysets[0], split1, 0, 0) == 0, "user keyset not correct");
-	succeed_if (compare_keyset (split->keysets[1], split2, 0, 0) == 0, "system keyset not correct");
+	succeed_if (split->syncbits[0] == 1, "system part need to by synced");
+	succeed_if (split->syncbits[1] == 1, "user part need to be synced");
+	succeed_if (compare_keyset (split->keysets[0], split1) == 0, "user keyset not correct");
+	succeed_if (compare_keyset (split->keysets[1], split2) == 0, "system keyset not correct");
 
-	elektraSplitClose (split);
-	keyDel (parentKey);
-
-	kdbMount (handle, mnt=keyNew ("user", KEY_VALUE, "filesys", KEY_END), config=ksNew(0));
-	keyDel (mnt); ksDel (config);
-	kdbMount (handle, mnt=keyNew ("system", KEY_VALUE, "filesys", KEY_END), config=ksNew(0));
-	keyDel (mnt); ksDel (config);
-
-	parentKey = keyNew ("user", KEY_END);
-	split = elektraSplitKeySet (handle, ks, parentKey, options);
-
-
-	succeed_if (split->keysets, "did not alloc keysets array");
-	succeed_if (split->handles, "did not alloc handles array");
-	succeed_if (split->size == 2, "not splitted according user, system");
-	succeed_if (split->syncbits[0] == 1, "user part need to by synced");
-	succeed_if (split->syncbits[1] == 1, "system part need to be synced");
-	succeed_if (split->belowparents[0] == 1, "user part is below parent");
-	succeed_if (split->belowparents[1] == 0, "system part is not below parent");
-	succeed_if (compare_keyset (split->keysets[0], split1, 0, 0) == 0, "user keyset not correct");
-	succeed_if (compare_keyset (split->keysets[1], split2, 0, 0) == 0, "system keyset not correct");
-
-	elektraSplitClose (split);
-	keyDel (parentKey);
-
-	parentKey = keyNew ("system", KEY_END);
-	split = elektraSplitKeySet (handle, ks, parentKey, options);
-
-
-	succeed_if (split->keysets, "did not alloc keysets array");
-	succeed_if (split->handles, "did not alloc handles array");
-	succeed_if (split->size == 2, "not splitted according user, system");
-	succeed_if (split->syncbits[0] == 1, "user part need to by synced");
-	succeed_if (split->syncbits[1] == 1, "system part need to be synced");
-	succeed_if (split->belowparents[0] == 0, "user part is not below parent");
-	succeed_if (split->belowparents[1] == 1, "system part is below parent");
-	succeed_if (compare_keyset (split->keysets[0], split1, 0, 0) == 0, "user keyset not correct");
-	succeed_if (compare_keyset (split->keysets[1], split2, 0, 0) == 0, "system keyset not correct");
-
-	elektraSplitClose (split);
+	elektraSplitDel (split);
 	keyDel (parentKey);
 
 	ksDel (ks);
 	ksDel (split1);
 	ksDel (split2);
-	kdbClose (handle);
+	elektraFree(handle);
 }
+
+#if 0
 
 void test_parent()
 {
@@ -863,9 +729,8 @@ int main(int argc, char** argv)
 	test_mount();
 	test_us();
 	test_optimize();
-	/*
-	test_removed();
 	test_easyparent();
+	/*
 	test_parent();
 	test_mountparent();
 	*/
