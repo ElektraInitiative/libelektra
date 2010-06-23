@@ -369,7 +369,6 @@ struct _Split {
 	Backend **handles;	/*!< The KDB for the keyset */
 	Key **parents;		/*!< The parentkey for the keyset */
 	int *syncbits;		/*!< Is there any key in there which need to be synced? */
-	int *belowparents;	/*!< Is there any key in there which is below the parent? */
 };
 
 /***************************************
@@ -393,9 +392,11 @@ Split * elektraSplitNew(void);
 void elektraSplitDel(Split *keysets);
 void elektraSplitAppend(Split *ret);
 void elektraSplitResize(Split *ret);
-int elektraSplitCheckSync(Split *split, KDB *handle, KeySet *ks);
-int elektraSplitCheckRemove(Split *split, KDB *handle, KeySet *ks);
-int elektraSplitCheckParent(Split *split, KeySet *ks, Key *parentKey);
+
+int elektraSplitSync(Split *split, KDB *handle, KeySet *ks);
+int elektraSplitRemove(Split *split, KDB *handle, KeySet *ks);
+int elektraSplitParent(Split *split, KeySet *ks, Key *parentKey);
+int elektraSplitDomains(Split *split, KeySet *ks, Key *parentKey);
 
 
 /*Internal helpers*/

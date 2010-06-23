@@ -73,7 +73,6 @@ Split * elektraSplitNew(void)
 	ret->handles=elektraCalloc(sizeof(KDB *) * ret->alloc);
 	ret->parents=elektraCalloc(sizeof(Key *) * ret->alloc);
 	ret->syncbits=elektraCalloc(sizeof(int) * ret->alloc);
-	ret->belowparents=elektraCalloc(sizeof(int) * ret->alloc);
 
 	return ret;
 }
@@ -97,7 +96,6 @@ void elektraSplitDel(Split *keysets)
 	elektraFree (keysets->handles);
 	elektraFree (keysets->parents);
 	elektraFree (keysets->syncbits);
-	elektraFree (keysets->belowparents);
 	elektraFree (keysets);
 }
 
@@ -115,7 +113,6 @@ void elektraSplitResize(Split *ret)
 	elektraRealloc((void**) &ret->handles, ret->alloc * sizeof(KDB *));
 	elektraRealloc((void**) &ret->parents, ret->alloc * sizeof(Key *));
 	elektraRealloc((void**) &ret->syncbits, ret->alloc * sizeof(int));
-	elektraRealloc((void**) &ret->belowparents, ret->alloc * sizeof(int));
 }
 
 /**
@@ -136,7 +133,6 @@ void elektraSplitAppend(Split *ret)
 	ret->handles[ret->size-1]=NULL;
 	ret->parents[ret->size-1]=NULL;
 	ret->syncbits[ret->size-1]=0;
-	ret->belowparents[ret->size-1]=0;
 }
 
 /**
@@ -148,7 +144,7 @@ void elektraSplitAppend(Split *ret)
  * @return 0 if there were no sync bits
  * @return 1 if there were sync bits
  */
-int elektraSplitCheckSync(Split *split, KDB *handle, KeySet *ks)
+int elektraSplitSync(Split *split, KDB *handle, KeySet *ks)
 {
 	int curFound = 0; /* If key could be appended to any of the existing splitted keysets */
 	int needsSync = 0;
@@ -183,7 +179,7 @@ int elektraSplitCheckSync(Split *split, KDB *handle, KeySet *ks)
 			split->keysets[split->size-1] = ksNew (ksGetSize (ks) / APPROXIMATE_NR_OF_BACKENDS + 2, KS_END);
 			ksAppendKey(split->keysets[split->size-1],curKey);
 			split->handles[split->size-1] = curHandle;
-			if (!split->syncbits[split->size-1] && keyNeedSync (curKey) == 1)
+			if (keyNeedSync (curKey) == 1)
 			{
 				needsSync = 1;
 				split->syncbits[split->size-1] = 1;
@@ -194,57 +190,82 @@ int elektraSplitCheckSync(Split *split, KDB *handle, KeySet *ks)
 	return needsSync;
 }
 
-int elektraSplitCheckRemove(Split *split, KDB *handle, KeySet *ks);
-int elektraSplitCheckParent(Split *split, KeySet *ks, Key *parentKey);
-
-/* Split keysets.
- * Make sure that parentKey has a name or is a null pointer*/
-Split *elektraSplitKeySet(KDB *handle, KeySet *ks,
-	Key *parentKey, unsigned long options)
+/** Add sync bits everywhere keys were removed */
+int elektraSplitRemove(Split *split, KDB *handle, KeySet *ks)
 {
-	Split *ret;
+	int needsSync = 0;
 
-	Key *curKey;
-	Backend *curHandle;
-	int curFound;
-
-	ret = elektraSplitNew ();
-
-	ksRewind (ks);
-	while ((curKey = ksNext (ks)) != 0)
+	for (size_t i=0; i<split->size; ++i)
 	{
-		curHandle = kdbGetBackend(handle, curKey);
-		curFound = 0;
-
-		if (options & KDB_O_SYNC) curKey->flags |= KEY_FLAG_SYNC;
-
-		for (size_t i=0; i<ret->size; i++)
+		if (split->handles[i]->size != ksGetSize(split->keysets[i]))
 		{
-			if (curHandle == ret->handles[i] && 
-				(!parentKey || keyIsBelowOrSame(ret->parents[i], curKey)))
-			{
-				curFound = 1;
-				ksAppendKey(ret->keysets[i],curKey);
-				if (keyNeedSync (curKey) == 1) ret->syncbits[i]=1;
-			}
-		}
-
-		if (!curFound)
-		{
-			elektraSplitAppend (ret);
-
-			ret->keysets[ret->size-1] = ksNew (ksGetSize (ks) / APPROXIMATE_NR_OF_BACKENDS + 2, KS_END);
-			ksAppendKey(ret->keysets[ret->size-1],curKey);
-			ret->handles[ret->size-1] = curHandle;
-			ret->parents[ret->size-1] = curKey;
-			if (parentKey)
-			{
-				ret->belowparents[ret->size-1] = keyIsBelowOrSame (parentKey, curKey);
-			} else ret->belowparents[ret->size-1] = 1;
-			if (keyNeedSync (curKey) == 1) ret->syncbits[ret->size-1]=1;
+			split->syncbits[i] = 1;
+			needsSync = 1;
 		}
 	}
 
-	return ret;
+	return needsSync;
+}
+
+/** Determine parentKey for the keysets.
+ * Removes sync bits for keysets which are not below parentKey.
+ * Split keysets so that user and system are separated.
+ */
+int elektraSplitParent(Split *split, KeySet *ks, Key *parentKey)
+{
+	int needsSync = 0;
+	Key *curParent;
+
+	for (size_t i=0; i<split->size; ++i)
+	{
+		if (split->syncbits[i])
+		{
+			if (parentKey && keyName(parentKey))
+			{
+				split->syncbits[i] = keyIsBelowOrSame (parentKey, ksHead(split->keysets[0]));
+			}
+
+			/* We removed the syncbit because the keyset is not below the parentKey */
+
+			if (!split->syncbits[i]) continue;
+			curParent = keyDup (parentKey);
+			keySetName(parentKey, keyName(split->handles[i]->mountpoint));
+			needsSync = 1;
+		}
+	}
+
+	return needsSync;
+}
+
+
+int elektraSplitDomains (Split *split, KeySet *ks, Key *parentKey)
+{
+	int needsSync = 0;
+	size_t splitSize = split->size;
+
+	for (size_t i=0; i<splitSize; ++i)
+	{
+		if (split->syncbits[i])
+		{
+			if (!strncmp(keyName(ksHead(split->keysets[0])), "system", 6))
+			{
+				if (!strncmp(keyName(ksTail(split->keysets[0])), "user", 4))
+				{
+					/* Seems like we need user/system separation for that keyset */
+					Key *userKey = keyNew("user", KEY_END);
+
+					elektraSplitAppend(split);
+					split->keysets[split->size-1] = ksCut(split->keysets[i], userKey);
+					split->handles[split->size-1] = split->handles[i];
+					needsSync = 1;
+					split->syncbits[split->size-1] = 1;
+
+					keyDel (userKey);
+				}
+			}
+		}
+	}
+
+	return needsSync;
 }
 

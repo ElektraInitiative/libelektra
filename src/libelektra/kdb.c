@@ -734,13 +734,6 @@ int kdbSet (KDB *handle, KeySet *ks,
 			ELEKTRA_SET_ERROR(8, parentKey, "backend_handle is NULL");
 			return -1;
 		}
-		if ((keysets->syncbits[i] && keysets->belowparents[i]) ||
-		    (backend_handle->size != ksGetSize(keysets->keysets[i]) && keysets->belowparents[i]))
-		{
-			// TODO Duplicate keyset
-		} else {
-			// TODO Remove keyset
-		}
 	}
 
 	for (size_t p=0; p<NR_OF_PLUGINS; ++p)
