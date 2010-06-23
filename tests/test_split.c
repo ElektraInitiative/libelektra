@@ -27,21 +27,32 @@
 
 #include <tests.h>
 
-/*Needs private declarations*/
-#include <kdbbackend.h>
-
 void test_create()
 {
-	Split *split;
-	split = malloc (sizeof (Split));
-	split->keysets = 0;
-	split->handles = 0;
-	elektraSplitInit (split);
+	printf ("Test create split\n");
 
+	Split *split = elektraSplitNew();
+	succeed_if (split->size == 0, "size should be zero");
+	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "alloc not correct");
 
-	printf ("Test create and resize split\n");
 	succeed_if (split->keysets, "did not alloc keysets array");
 	succeed_if (split->handles, "did not alloc handles array");
+
+	for (int i=1; i< APPROXIMATE_NR_OF_BACKENDS; ++i)
+	{
+		elektraSplitAppend(split);
+		succeed_if (split->size == i, "size should be growing");
+		succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "should not realloc");
+	}
+
+	elektraSplitDel (split);
+}
+
+#if 0
+
+void test_resize()
+{
+	printf ("Test resize split\n");
 
 	elektraSplitResize (split);
 	split->keysets[0] = ksNew(0);
@@ -52,8 +63,6 @@ void test_create()
 	elektraSplitResize (split);
 	split->keysets[2] = ksNew(0);
 	succeed_if (split->no == 3, "resize not correct");
-
-	elektraSplitClose (split);
 }
 
 
@@ -645,6 +654,8 @@ void test_mountparent()
 }
 
 
+#endif
+
 
 int main(int argc, char** argv)
 {
@@ -654,6 +665,7 @@ int main(int argc, char** argv)
 	init (argc, argv);
 
 	test_create();
+	/*
 	test_emptysplit();
 	test_easysplit();
 	test_singlesplit();
@@ -663,6 +675,7 @@ int main(int argc, char** argv)
 	test_easyparent();
 	test_parent();
 	test_mountparent();
+	*/
 
 	printf("\ntest_split RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

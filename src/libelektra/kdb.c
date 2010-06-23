@@ -725,7 +725,7 @@ int kdbSet (KDB *handle, KeySet *ks,
 	/*
 	   TODO Check if we need to do anything at all [return 0]
 	*/
-	for (size_t i=0; i<keysets->no;i++)
+	for (size_t i=0; i<keysets->size;i++)
 	{
 		backend_handle=keysets->handles[i];
 		/* if there is no backend in the trie use the default */
@@ -745,7 +745,7 @@ int kdbSet (KDB *handle, KeySet *ks,
 
 	for (size_t p=0; p<NR_OF_PLUGINS; ++p)
 	{
-		for (size_t i=0; i<keysets->no;i++)
+		for (size_t i=0; i<keysets->size;i++)
 		{
 			backend_handle=keysets->handles[i];
 			ksRewind (keysets->keysets[i]);
@@ -763,14 +763,14 @@ int kdbSet (KDB *handle, KeySet *ks,
 		}
 	}
 
-	elektraSplitClose(keysets);
+	elektraSplitDel(keysets);
 	if (options & KDB_O_DEL) keyDel (parentKey);
 	return 1;
 
 error:
 	for (size_t p=0; p<NR_OF_PLUGINS; ++p)
 	{
-		for (size_t i=0; i<keysets->no;i++)
+		for (size_t i=0; i<keysets->size;i++)
 		{
 			backend_handle=keysets->handles[i];
 			/* if there is no backend in the trie use the default */
@@ -790,7 +790,7 @@ error:
 	}
 
 	if (errorKey) ksLookup(ks, errorKey, KDB_O_WITHOWNER);
-	elektraSplitClose(keysets);
+	elektraSplitDel(keysets);
 	return -1;
 }
 

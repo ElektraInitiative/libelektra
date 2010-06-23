@@ -363,7 +363,7 @@ struct _Trie {
  * various information needed to process the keysets afterwards.
  */
 struct _Split {
-	size_t no;		/*!< Number of keysets */
+	size_t size;		/*!< Number of keysets */
 	size_t alloc;		/*!< How large the arrays are allocated  */
 	KeySet **keysets;	/*!< The keysets */
 	Backend **handles;	/*!< The KDB for the keyset */
@@ -389,8 +389,9 @@ int kdbCreateTrie(KDB *handle, KeySet *ks, OpenMapper mapper);
 int kdbDelTrie(Trie *trie,CloseMapper close_backend);
 
 /*Methods for splitted keysets */
-void elektraSplitClose(Split *keysets);
-void elektraSplitInit(Split *ret);
+Split * elektraSplitNew(void);
+void elektraSplitDel(Split *keysets);
+void elektraSplitAppend(Split *ret);
 void elektraSplitResize(Split *ret);
 Split *elektraSplitKeySet(KDB *handle, KeySet *ks,
 	Key *parentKey, unsigned long options);
