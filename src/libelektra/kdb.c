@@ -509,7 +509,7 @@ int kdbGet (KDB *handle, KeySet *returned,
 	}
 
 	/* Not correct if loop below changes something */
-	backend_handle->size = ksGetSize(keys);
+	/* backend_handle->size = ksGetSize(keys); */
 
 	ksRewind(keys);
 	while ((current = ksPop(keys)) != 0)

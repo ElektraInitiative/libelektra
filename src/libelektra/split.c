@@ -135,6 +135,16 @@ void elektraSplitAppend(Split *ret)
 	ret->syncbits[ret->size-1]=0;
 }
 
+void elektraSplitAppendEmpty(Split *split, Backend *backend, Key *parentKey)
+{
+	elektraSplitAppend(split);
+
+	split->keysets[split->size-1]=ksNew(0);
+	split->handles[split->size-1]=backend;
+	split->parents[split->size-1]=parentKey;
+	split->syncbits[split->size-1]=1;
+}
+
 /**
  * Splits up the keysets and search for a sync bit.
  *
@@ -143,6 +153,7 @@ void elektraSplitAppend(Split *ret)
  *
  * @return 0 if there were no sync bits
  * @return 1 if there were sync bits
+ * @ingroup split
  */
 int elektraSplitSync(Split *split, KDB *handle, KeySet *ks)
 {
@@ -190,17 +201,33 @@ int elektraSplitSync(Split *split, KDB *handle, KeySet *ks)
 	return needsSync;
 }
 
-/** Add sync bits everywhere keys were removed */
+/** Add sync bits everywhere keys were removed.
+ *
+ * @pre user/system was splitted before.
+ * @ingroup split
+ *
+**/
 int elektraSplitRemove(Split *split, KDB *handle, KeySet *ks)
 {
 	int needsSync = 0;
 
 	for (size_t i=0; i<split->size; ++i)
 	{
-		if (split->handles[i]->size != ksGetSize(split->keysets[i]))
+		if (!strncmp(keyName(ksHead(split->keysets[0])), "system", 6))
 		{
-			split->syncbits[i] = 1;
-			needsSync = 1;
+			/* Check for system keyset */
+			if (split->handles[i]->systemsize != ksGetSize(split->keysets[i]))
+			{
+				split->syncbits[i] = 1;
+				needsSync = 1;
+			}
+		} else if (!strncmp(keyName(ksTail(split->keysets[0])), "user", 4)) {
+			/* Check for user keyset */
+			if (split->handles[i]->usersize != ksGetSize(split->keysets[i]))
+			{
+				split->syncbits[i] = 1;
+				needsSync = 1;
+			}
 		}
 	}
 
@@ -210,6 +237,7 @@ int elektraSplitRemove(Split *split, KDB *handle, KeySet *ks)
 /** Determine parentKey for the keysets.
  * Removes sync bits for keysets which are not below parentKey.
  * Split keysets so that user and system are separated.
+ * @ingroup split
  */
 int elektraSplitParent(Split *split, KeySet *ks, Key *parentKey)
 {
@@ -245,6 +273,7 @@ int elektraSplitParent(Split *split, KeySet *ks, Key *parentKey)
  * Marks both parts to be synced.
  *
  * TODO: should split domains too
+ * @ingroup split
  */
 int elektraSplitDomains (Split *split, KeySet *ks, Key *parentKey)
 {
@@ -273,6 +302,61 @@ int elektraSplitDomains (Split *split, KeySet *ks, Key *parentKey)
 			}
 		}
 	}
+
+	return needsSync;
+}
+
+void elektraSplitSearchTrie(Split *split, Trie *trie)
+{
+	int i;
+
+	if (trie==NULL) return;
+
+	for (i=0;i<MAX_UCHAR;i++)
+	{
+		if (trie->text[i]!=NULL)
+		{
+			Backend *cur = trie->value[i];
+			elektraSplitSearchTrie(split, trie->children[i]);
+			if (cur) elektraSplitAppendEmpty(split, cur, keyDup(cur->mountpoint));
+		}
+	}
+	if (trie->empty_value)
+	{
+		Backend *cur = trie->empty_value;
+		elektraSplitAppendEmpty(split, cur,
+				keyDup(cur->mountpoint));
+	}
+}
+
+/**
+ * Walks through the trie and adds all backends with size > 0
+ * and below parentKey.
+ *
+ * @pre split needs to be empty
+ *
+ * @ingroup split
+ */
+int elektraSplitTrie (Split *split, KDB *handle, Key *parentKey)
+{
+	Trie *trie = handle->trie;
+	int needsSync = 0;
+
+	Backend *defaultBackend = handle->defaultBackend;
+
+	if (defaultBackend->usersize > 0)
+	{
+		elektraSplitAppendEmpty (split, defaultBackend, keyNew("user", KEY_END));
+		needsSync = 1;
+	}
+
+	if (defaultBackend->systemsize > 0)
+	{
+		elektraSplitAppendEmpty (split, defaultBackend, keyNew("system", KEY_END));
+		needsSync = 1;
+	}
+
+	elektraSplitSearchTrie(split, trie);
 
 	return needsSync;
 }

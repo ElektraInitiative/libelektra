@@ -298,8 +298,11 @@ struct _Backend {
 	Plugin *getplugins[NR_OF_PLUGINS];
 	Plugin *errorplugins[NR_OF_PLUGINS];
 
-	ssize_t size;		/*!< The size of the keyset from the previous get.
+	ssize_t usersize;	/*!< The size of the users key from the previous get.
 		Needed to know if a key was removed from a keyset. */
+	ssize_t systemsize;	/*!< The size of the systems key from the previous get.
+		Needed to know if a key was removed from a keyset. */
+
 };
 
 /**
