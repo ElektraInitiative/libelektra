@@ -238,6 +238,14 @@ int elektraSplitParent(Split *split, KeySet *ks, Key *parentKey)
 }
 
 
+/**
+ * Splits already splitted keysets again when they need to be synced
+ * and have both "user" and "system".
+ *
+ * Marks both parts to be synced.
+ *
+ * TODO: should split domains too
+ */
 int elektraSplitDomains (Split *split, KeySet *ks, Key *parentKey)
 {
 	int needsSync = 0;
