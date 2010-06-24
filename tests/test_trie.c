@@ -121,6 +121,16 @@ void test_simple()
 	keyDel (searchKey);
 }
 
+void collect_mountpoints(Trie *trie, KeySet *mountpoints)
+{
+	int i;
+	for (i=0; i <= MAX_UCHAR; ++i)
+	{
+		if (trie->value[i]) ksAppendKey(mountpoints, ((Backend*) trie->value[i])->mountpoint);
+		if (trie->children[i]) collect_mountpoints(trie->children[i], mountpoints);
+	}
+}
+
 KeySet *iterate_config(void)
 {
 	return ksNew(5,
@@ -130,16 +140,6 @@ KeySet *iterate_config(void)
 		keyNew("system/elektra/mountpoints/below", KEY_END),
 		keyNew("system/elektra/mountpoints/below/mountpoint", KEY_VALUE, "user/tests/hosts/below", KEY_END),
 		KS_END);
-}
-
-void collect_mountpoints(Trie *trie, KeySet *mountpoints)
-{
-	int i;
-	for (i=0; i <= MAX_UCHAR; ++i)
-	{
-		if (trie->value[i]) ksAppendKey(mountpoints, ((Backend*) trie->value[i])->mountpoint);
-		if (trie->children[i]) collect_mountpoints(trie->children[i], mountpoints);
-	}
 }
 
 void test_iterate()
@@ -561,6 +561,141 @@ void test_umlauts()
 	keyDel (searchKey);
 }
 
+KeySet *moreiterate_config(void)
+{
+	return ksNew(50,
+		keyNew("system/elektra/mountpoints", KEY_END),
+		keyNew("system/elektra/mountpoints/user", KEY_END),
+		keyNew("system/elektra/mountpoints/user/mountpoint", KEY_VALUE, "user", KEY_END),
+		keyNew("system/elektra/mountpoints/tests", KEY_END),
+		keyNew("system/elektra/mountpoints/tests/mountpoint", KEY_VALUE, "user/tests", KEY_END),
+		keyNew("system/elektra/mountpoints/hosts", KEY_END),
+		keyNew("system/elektra/mountpoints/hosts/mountpoint", KEY_VALUE, "user/tests/hosts", KEY_END),
+		keyNew("system/elektra/mountpoints/below", KEY_END),
+		keyNew("system/elektra/mountpoints/below/mountpoint", KEY_VALUE, "user/tests/hosts/below", KEY_END),
+		keyNew("system/elektra/mountpoints/system", KEY_END),
+		keyNew("system/elektra/mountpoints/system/mountpoint", KEY_VALUE, "system", KEY_END),
+		keyNew("system/elektra/mountpoints/systests", KEY_END),
+		keyNew("system/elektra/mountpoints/systests/mountpoint", KEY_VALUE, "system/tests", KEY_END),
+		keyNew("system/elektra/mountpoints/syshosts", KEY_END),
+		keyNew("system/elektra/mountpoints/syshosts/mountpoint", KEY_VALUE, "system/tests/hosts", KEY_END),
+		keyNew("system/elektra/mountpoints/sysbelow", KEY_END),
+		keyNew("system/elektra/mountpoints/sysbelow/mountpoint", KEY_VALUE, "system/tests/hosts/below", KEY_END),
+		KS_END);
+}
+
+KeySet *set_mountpoints(void)
+{
+	return ksNew(10,
+		keyNew("user", KEY_VALUE, "user", KEY_END),
+		keyNew("user/tests", KEY_VALUE, "tests", KEY_END),
+		keyNew("user/tests/hosts", KEY_VALUE, "hosts", KEY_END),
+		keyNew("user/tests/hosts/below", KEY_VALUE, "below", KEY_END),
+		keyNew("system", KEY_VALUE, "system", KEY_END),
+		keyNew("system/tests", KEY_VALUE, "systests", KEY_END),
+		keyNew("system/tests/hosts", KEY_VALUE, "syshosts", KEY_END),
+		keyNew("system/tests/hosts/below", KEY_VALUE, "sysbelow", KEY_END),
+		KS_END);
+}
+
+void test_moreiterate()
+{
+	printf ("Test moreiterate trie\n");
+
+	Key *errorKey = keyNew(0);
+	KeySet *modules = modules_config();
+	Trie *trie = elektraTrieOpen(moreiterate_config(), modules, errorKey);
+	KeySet *mps = set_mountpoints();
+
+	output_warnings (errorKey);
+	output_errors (errorKey);
+
+	exit_if_fail (trie, "trie was not build up successfully");
+
+	Key *searchKey = keyNew(0);
+
+	keySetName(searchKey, "user");
+	Backend *backend = elektraTrieLookup(trie, searchKey);
+	succeed_if (backend, "there should be a backend");
+	succeed_if (compare_key(backend->mountpoint, ksLookupByName(mps, "user",0)) == 0, "mountpoint key not correct");
+	// printf ("backend: %p\n", (void*)backend);
+
+
+	keySetName(searchKey, "user/tests/hosts/other/below");
+	Backend *b2 = elektraTrieLookup(trie, searchKey);
+	succeed_if (b2, "there should be a backend");
+	succeed_if (compare_key(b2->mountpoint, ksLookupByName(mps, "user/tests/hosts",0)) == 0, "mountpoint key not correct");
+	// printf ("b2: %p\n", (void*)b2);
+
+
+	keySetName(searchKey, "user/tests/hosts/other/deep/below");
+	b2 = elektraTrieLookup(trie, searchKey);
+	succeed_if (b2, "there should be a backend");
+	succeed_if (compare_key(b2->mountpoint, ksLookupByName(mps, "user/tests/hosts",0)) == 0, "mountpoint key not correct");
+
+
+	keySetName(searchKey, "user/tests/hosts/below");
+	Backend *b3 = elektraTrieLookup(trie, searchKey);
+	succeed_if (b3, "there should be a backend");
+	succeed_if (compare_key(b3->mountpoint, ksLookupByName(mps, "user/tests/hosts/below",0)) == 0, "mountpoint key not correct");
+	backend = b3;
+	// printf ("b3: %p\n", (void*)b3);
+
+
+	keySetName(searchKey, "user/tests/hosts/below/other/deep/below");
+	b2 = elektraTrieLookup(trie, searchKey);
+	succeed_if (b3, "there should be a backend");
+	succeed_if (compare_key(b3->mountpoint, ksLookupByName(mps, "user/tests/hosts/below",0)) == 0, "mountpoint key not correct");
+
+	keySetName(searchKey, "system");
+	backend = elektraTrieLookup(trie, searchKey);
+	succeed_if (backend, "there should be a backend");
+	succeed_if (compare_key(backend->mountpoint, ksLookupByName(mps, "system",0)) == 0, "mountpoint key not correct");
+	// printf ("backend: %p\n", (void*)backend);
+
+
+	keySetName(searchKey, "system/tests/hosts/other/below");
+	b2 = elektraTrieLookup(trie, searchKey);
+	succeed_if (b2, "there should be a backend");
+	succeed_if (compare_key(b2->mountpoint, ksLookupByName(mps, "system/tests/hosts",0)) == 0, "mountpoint key not correct");
+	// printf ("b2: %p\n", (void*)b2);
+
+
+	keySetName(searchKey, "system/tests/hosts/other/deep/below");
+	b2 = elektraTrieLookup(trie, searchKey);
+	succeed_if (b2, "there should be a backend");
+	succeed_if (compare_key(b2->mountpoint, ksLookupByName(mps, "system/tests/hosts",0)) == 0, "mountpoint key not correct");
+
+
+	keySetName(searchKey, "system/tests/hosts/below");
+	b3 = elektraTrieLookup(trie, searchKey);
+	succeed_if (b3, "there should be a backend");
+	succeed_if (compare_key(b3->mountpoint, ksLookupByName(mps, "system/tests/hosts/below",0)) == 0, "mountpoint key not correct");
+	backend = b3;
+	// printf ("b3: %p\n", (void*)b3);
+
+
+	keySetName(searchKey, "system/tests/hosts/below/other/deep/below");
+	b2 = elektraTrieLookup(trie, searchKey);
+	succeed_if (b3, "there should be a backend");
+	succeed_if (compare_key(b3->mountpoint, ksLookupByName(mps, "system/tests/hosts/below",0)) == 0, "mountpoint key not correct");
+
+	// output_trie(trie);
+
+	KeySet *mps_cmp = ksNew(0);
+	collect_mountpoints(trie, mps_cmp);
+	succeed_if (ksGetSize(mps_cmp) == 8, "size should be 8");
+	succeed_if (compare_keyset(mps, mps_cmp) == 0, "could not collect mountpoints");
+
+	ksDel (mps_cmp);
+	ksDel (mps);
+
+	elektraTrieClose(trie, 0);
+	keyDel (errorKey);
+	ksDel (modules);
+	keyDel (searchKey);
+}
+
 int main(int argc, char** argv)
 {
 	printf("TRIE       TESTS\n");
@@ -575,6 +710,7 @@ int main(int argc, char** argv)
 	test_two();
 	test_us();
 	test_umlauts();
+	test_moreiterate();
 
 	printf("\ntest_trie RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
