@@ -394,11 +394,11 @@ void elektraSplitDel(Split *keysets);
 void elektraSplitAppend(Split *ret);
 void elektraSplitResize(Split *ret);
 
+int elektraSplitBuildup (Split *split, KDB *handle, Key *parentKey);
 int elektraSplitSync(Split *split, KDB *handle, KeySet *ks);
 int elektraSplitRemove(Split *split, KDB *handle, KeySet *ks);
 int elektraSplitParent(Split *split, KeySet *ks, Key *parentKey);
 int elektraSplitDomains(Split *split, KeySet *ks, Key *parentKey);
-int elektraSplitTrie (Split *split, KDB *handle, Key *parentKey);
 
 
 /*Internal helpers*/

@@ -724,6 +724,8 @@ void test_systemremove()
 	elektraFree(handle);
 }
 
+#if 0
+
 void test_emptyremove()
 {
 	printf ("Test empty removing\n");
@@ -737,7 +739,7 @@ void test_emptyremove()
 		KS_END);
 	Split *split = elektraSplitNew();
 
-	succeed_if (elektraSplitTrie (split, handle, 0) == 1, "should see remove");
+	//TODO  we need to buildup here first!
 	succeed_if (elektraSplitSync (split, handle, ks) == 0, "wont see sync");
 	succeed_if (elektraSplitRemove (split, handle, ks) == 1, "wont see remove");
 
@@ -751,6 +753,33 @@ void test_emptyremove()
 
 
 	ksDel (ks);
+	elektraFree(handle->defaultBackend);
+	elektraFree(handle);
+}
+
+#endif
+
+void test_basic()
+{
+	printf ("Test basic buildup\n");
+	KDB *handle = elektraCalloc(sizeof(struct _KDB));
+	handle->defaultBackend = elektraCalloc(sizeof(struct _Backend));
+	handle->defaultBackend->usersize = 2;
+	/* So we had 2 keys before in the keyset */
+
+	Split *split = elektraSplitNew();
+	Key *parentKey = keyNew("user", KEY_END);
+
+	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
+
+	succeed_if (split->size == 1, "there is an empty keset");
+	succeed_if (ksGetSize(split->keysets[0]) == 0, "wrong size");
+	succeed_if (compare_key (split->parents[0], parentKey) == 0, "parentKey not correct");
+	succeed_if (split->handles[0] == handle->defaultBackend, "not correct backend");
+
+	elektraSplitDel (split);
+	keyDel (parentKey);
+
 	elektraFree(handle->defaultBackend);
 	elektraFree(handle);
 }
@@ -777,7 +806,7 @@ int main(int argc, char** argv)
 	test_three();
 	test_userremove();
 	test_systemremove();
-	test_emptyremove();
+	test_basic();
 
 	printf("\ntest_split RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

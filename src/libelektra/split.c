@@ -313,7 +313,7 @@ int elektraSplitDomains (Split *split, KeySet *ks, Key *parentKey)
 	return needsSync;
 }
 
-void elektraSplitSearchTrie(Split *split, Trie *trie)
+void elektraSplitSearchTrie(Split *split, Trie *trie, Key *parentKey)
 {
 	int i;
 
@@ -324,15 +324,21 @@ void elektraSplitSearchTrie(Split *split, Trie *trie)
 		if (trie->text[i]!=NULL)
 		{
 			Backend *cur = trie->value[i];
-			elektraSplitSearchTrie(split, trie->children[i]);
+			elektraSplitSearchTrie(split, trie->children[i], parentKey);
 			if (cur) elektraSplitAppendEmpty(split, cur, keyDup(cur->mountpoint));
 		}
 	}
 	if (trie->empty_value)
 	{
 		Backend *cur = trie->empty_value;
-		elektraSplitAppendEmpty(split, cur,
+		if (!strcmp(keyName(cur->mountpoint), ""))
+		{
+			elektraSplitAppendEmpty(split, cur,
+				keyDup(parentKey));
+		} else {
+			elektraSplitAppendEmpty(split, cur,
 				keyDup(cur->mountpoint));
+		}
 	}
 }
 
@@ -340,30 +346,39 @@ void elektraSplitSearchTrie(Split *split, Trie *trie)
  * Walks through the trie and adds all backends with size > 0
  * and below parentKey.
  *
- * @pre split needs to be empty
+ *
+ * @pre split needs to be empty, there needs to be a valid defaultBackend
+ *      but its ok not to have a trie inside KDB
+ *
+ * @pre parentKey must be a valid key! (could be implemented more generally,
+ *      but that would require splitting up of keysets of the same backend)
  *
  * @ingroup split
+ * @return -1 on error;
  */
-int elektraSplitTrie (Split *split, KDB *handle, Key *parentKey)
+int elektraSplitBuildup (Split *split, KDB *handle, Key *parentKey)
 {
 	Trie *trie = handle->trie;
 	int needsSync = 0;
 
+	if (!parentKey || !parentKey->key) return -1;
+
+
 	Backend *defaultBackend = handle->defaultBackend;
 
-	if (defaultBackend->usersize > 0)
+	if (keyIsUser(parentKey) && defaultBackend->usersize > 0)
 	{
 		elektraSplitAppendEmpty (split, defaultBackend, keyNew("user", KEY_END));
 		needsSync = 1;
 	}
 
-	if (defaultBackend->systemsize > 0)
+	if (keyIsSystem(parentKey) && defaultBackend->systemsize > 0)
 	{
 		elektraSplitAppendEmpty (split, defaultBackend, keyNew("system", KEY_END));
 		needsSync = 1;
 	}
 
-	elektraSplitSearchTrie(split, trie);
+	elektraSplitSearchTrie(split, trie, parentKey);
 
 	return needsSync;
 }
