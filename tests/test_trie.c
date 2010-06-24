@@ -696,6 +696,174 @@ void test_moreiterate()
 	keyDel (searchKey);
 }
 
+KeySet *endings_config(void)
+{
+	return ksNew(5,
+		keyNew("system/elektra/mountpoints", KEY_END),
+		keyNew("system/elektra/mountpoints/slash", KEY_END),
+		keyNew("system/elektra/mountpoints/slash/mountpoint", KEY_VALUE, "user/endings", KEY_END),
+		keyNew("system/elektra/mountpoints/hash", KEY_END),
+		keyNew("system/elektra/mountpoints/hash/mountpoint", KEY_VALUE, "user/endings#", KEY_END),
+		keyNew("system/elektra/mountpoints/space", KEY_END),
+		keyNew("system/elektra/mountpoints/space/mountpoint", KEY_VALUE, "user/endings ", KEY_END),
+		keyNew("system/elektra/mountpoints/endings", KEY_END),
+		keyNew("system/elektra/mountpoints/endings/mountpoint", KEY_VALUE, "user/endings\200", KEY_END),
+		KS_END);
+}
+
+void test_endings()
+{
+	printf ("Test endings trie\n");
+
+	Key *errorKey = keyNew(0);
+	KeySet *modules = modules_config();
+	Trie *trie = elektraTrieOpen(endings_config(), modules, errorKey);
+
+	output_warnings (errorKey);
+	output_errors (errorKey);
+
+	exit_if_fail (trie, "trie was not build up successfully");
+
+	Key *searchKey = keyNew("user");
+	Backend *backend = elektraTrieLookup(trie, searchKey);
+	succeed_if (!backend, "there should be no backend");
+
+
+	Key *mp = keyNew("user/endings", KEY_VALUE, "slash", KEY_END);
+	keySetName(searchKey, "user/endings");
+	backend = elektraTrieLookup(trie, searchKey);
+	succeed_if (backend, "there should be a backend");
+	succeed_if (compare_key(backend->mountpoint, mp) == 0, "mountpoint key not correct");
+
+
+	keySetName(searchKey, "user/endings#");
+	keySetName(mp, "user/endings#");
+	keySetString(mp, "hash");
+	Backend *b2 = elektraTrieLookup(trie, searchKey);
+	succeed_if (b2, "there should be a backend");
+	succeed_if (backend != b2, "should be other backend");
+	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+
+
+	keySetName(searchKey, "user/endings/_");
+	keySetName(mp, "user/endings");
+	keySetString(mp, "slash");
+	b2 = elektraTrieLookup(trie, searchKey);
+	succeed_if (b2, "there should be a backend");
+	succeed_if (backend == b2, "should be the same backend");
+	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+
+
+	keySetName(searchKey, "user/endings/X");
+	keySetName(mp, "user/endings");
+	keySetString(mp, "slash");
+	b2 = elektraTrieLookup(trie, searchKey);
+	succeed_if (b2, "there should be a backend");
+	succeed_if (backend == b2, "should be the same backend");
+	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+
+
+	keySetName(searchKey, "user/endings_");
+	b2 = elektraTrieLookup(trie, searchKey);
+	succeed_if (!b2, "there should be no backend");
+
+
+	keySetName(searchKey, "user/endingsX");
+	b2 = elektraTrieLookup(trie, searchKey);
+	succeed_if (!b2, "there should be no backend");
+
+
+	keySetName(searchKey, "user/endings!");
+	b2 = elektraTrieLookup(trie, searchKey);
+	succeed_if (!b2, "there should be no backend");
+
+
+	keySetName(searchKey, "user/endings ");
+	keySetName(mp, "user/endings ");
+	keySetString(mp, "space");
+	b2 = elektraTrieLookup(trie, searchKey);
+	succeed_if (b2, "there should be a backend");
+	succeed_if (backend != b2, "should be other backend");
+	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+
+	keySetName(searchKey, "user/endings\200");
+	keySetName(mp, "user/endings\200");
+	keySetString(mp, "endings");
+	b2 = elektraTrieLookup(trie, searchKey);
+	succeed_if (b2, "there should be a backend");
+	succeed_if (backend != b2, "should be other backend");
+	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+
+	// output_trie(trie);
+
+	elektraTrieClose(trie, 0);
+	keyDel (errorKey);
+	ksDel (modules);
+	keyDel (mp);
+	keyDel (searchKey);
+}
+
+KeySet *root_config(void)
+{
+	return ksNew(5,
+		keyNew("system/elektra/mountpoints", KEY_END),
+		keyNew("system/elektra/mountpoints/root", KEY_END),
+		keyNew("system/elektra/mountpoints/root/mountpoint", KEY_VALUE, "", KEY_END),
+		keyNew("system/elektra/mountpoints/simple", KEY_END),
+		keyNew("system/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user/tests/simple", KEY_END),
+		KS_END);
+}
+
+void test_root()
+{
+	printf ("Test trie with root\n");
+
+	Key *errorKey = keyNew(0);
+	KeySet *modules = modules_config();
+	Trie *trie = elektraTrieOpen(root_config(), modules, errorKey);
+
+	output_warnings (errorKey);
+	output_errors (errorKey);
+
+	exit_if_fail (trie, "trie was not build up successfully");
+
+	Key *searchKey = keyNew("user");
+	Key *rmp = keyNew("", KEY_VALUE, "root", KEY_END);
+	Backend *backend = elektraTrieLookup(trie, searchKey);
+	succeed_if (backend, "there should be the root backend");
+	succeed_if (compare_key(backend->mountpoint, rmp) == 0, "mountpoint key not correct");
+
+
+	Key *mp = keyNew("user/tests/simple", KEY_VALUE, "simple", KEY_END);
+	keySetName(searchKey, "user/tests/simple");
+	backend = elektraTrieLookup(trie, searchKey);
+	succeed_if (backend, "there should be a backend");
+	succeed_if (compare_key(backend->mountpoint, mp) == 0, "mountpoint key not correct");
+
+
+	keySetName(searchKey, "user/tests/simple/below");
+	Backend *b2 = elektraTrieLookup(trie, searchKey);
+	succeed_if (b2, "there should be a backend");
+	succeed_if (backend == b2, "should be same backend");
+	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+
+
+	keySetName(searchKey, "user/tests/simple/deep/below");
+	b2 = elektraTrieLookup(trie, searchKey);
+	succeed_if (b2, "there should be a backend");
+	succeed_if (backend == b2, "should be same backend");
+	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+
+	// output_trie(trie);
+
+	elektraTrieClose(trie, 0);
+	keyDel (errorKey);
+	ksDel (modules);
+	keyDel (mp);
+	keyDel (rmp);
+	keyDel (searchKey);
+}
+
 int main(int argc, char** argv)
 {
 	printf("TRIE       TESTS\n");
@@ -711,6 +879,8 @@ int main(int argc, char** argv)
 	test_us();
 	test_umlauts();
 	test_moreiterate();
+	test_endings();
+	test_root();
 
 	printf("\ntest_trie RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

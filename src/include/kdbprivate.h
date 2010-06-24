@@ -386,10 +386,6 @@ char *keyNameGetOneLevel(const char *keyname, size_t *size);
 
 Backend* kdbGetBackend(KDB *handle, const Key *key);
 
-/*TODO: delete Methods for trie*/
-int kdbCreateTrie(KDB *handle, KeySet *ks, OpenMapper mapper);
-int kdbDelTrie(Trie *trie,CloseMapper close_backend);
-
 /*Methods for splitted keysets */
 Split * elektraSplitNew(void);
 void elektraSplitDel(Split *keysets);
@@ -414,23 +410,6 @@ char *elektraStrDup (const char *s);
 char *elektraStrNDup (const char *s, size_t l);
 int elektraRealloc(void **buffer, size_t size);
 
-/*TODO remove those Helpers*/
-ssize_t kdbbEncode(void *kdbbDecoded, size_t size, char *returned);
-ssize_t kdbbDecode(char *kdbbEncoded, void *returned);
-
-int kdbbNeedsUTF8Conversion(void);
-int kdbbUTF8Engine(int direction, char **string, size_t *inputByteSize);
-
-int kdbbEncodeChar(char c, char *buffer, size_t bufSize);
-int kdbbDecodeChar(const char *from, char *into);
-
-int kdbbFilenameToKeyName(const char *string, char *buffer, int bufSize);
-ssize_t kdbbGetFullKeyName (KDB *handle, const char *forFilename, const Key *parentKey, Key *returned);
-int kdbbKeyNameToRelativeFilename(const char *string, char *buffer, size_t bufSize);
-ssize_t kdbbKeyCalcRelativeFilename(const Key *key,char *relativeFilename,size_t maxSize);
-ssize_t kdbbGetFullFilename(KDB *handle, const Key *forKey,char *returned,size_t maxSize);
-
-
 /*Backend handling*/
 Backend* elektraBackendOpen(KeySet *elektra_config, KeySet *modules, Key *errorKey);
 Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey);
@@ -450,6 +429,7 @@ int elektraPluginClose(Plugin *handle, Key *errorKey);
 Backend* elektraTrieLookup(Trie *trie, const Key *key);
 Trie *elektraTrieOpen(KeySet *config, KeySet *modules, Key *errorKey);
 int elektraTrieClose (Trie *trie, Key *errorKey);
+int elektraMountBackend (Trie **trie, Backend *backend, Key *errorKey);
 
 /*Private helper for keys*/
 int keyInit(Key *key);

@@ -241,6 +241,13 @@ KDB * kdbOpen(Key *errorKey)
 	if (!handle->trie)
 	{
 		ELEKTRA_ADD_WARNING(7, errorKey, "trie could not be created, see previous warnings");
+	} else {
+		/* Trie was created successfully.
+		   We want system/elektra/mountpoints still reachable
+		   through default backend.
+		   kdb-tool must ensure that root backend exist before any other.
+		*/
+		elektraMountBackend (&handle->trie, handle->defaultBackend, errorKey);
 	}
 
 	return handle;
