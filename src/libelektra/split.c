@@ -90,7 +90,9 @@ void elektraSplitDel(Split *keysets)
 {
 	for (size_t i=0; i<keysets->size; ++i)
 	{
-		ksDel(keysets->keysets[i]);
+		ksDel (keysets->keysets[i]);
+		keyDecRef (keysets->parents[i]);
+		keyDel (keysets->parents[i]);
 	}
 	elektraFree (keysets->keysets);
 	elektraFree (keysets->handles);
@@ -190,6 +192,11 @@ int elektraSplitSync(Split *split, KDB *handle, KeySet *ks)
 			split->keysets[split->size-1] = ksNew (ksGetSize (ks) / APPROXIMATE_NR_OF_BACKENDS + 2, KS_END);
 			ksAppendKey(split->keysets[split->size-1],curKey);
 			split->handles[split->size-1] = curHandle;
+			if (curHandle)
+			{
+				split->parents[split->size-1] = curHandle->mountpoint;
+				keyIncRef (split->parents[split->size-1]);
+			}
 			if (keyNeedSync (curKey) == 1)
 			{
 				needsSync = 1;

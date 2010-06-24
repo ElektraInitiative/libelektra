@@ -370,7 +370,9 @@ struct _Split {
 	size_t alloc;		/*!< How large the arrays are allocated  */
 	KeySet **keysets;	/*!< The keysets */
 	Backend **handles;	/*!< The KDB for the keyset */
-	Key **parents;		/*!< The parentkey for the keyset */
+	Key **parents;		/*!< The parentkey for the keyset.
+				Is either the mountpoint of the backend
+				or "user", "system" for the splitted root backends */
 	int *syncbits;		/*!< Is there any key in there which need to be synced? */
 };
 
