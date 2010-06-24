@@ -41,9 +41,8 @@
 
 static int elektraMountBackend (Trie **trie, Backend *backend, Key *errorKey);
 static Trie* elektraTrieInsert(Trie *trie, const char *name, const void *value);
-static void* prefix_lookup(Trie *trie, const char *name);
-static char* starts_with(const char *str, char *substr);
-static void* prefix_lookup(Trie *trie, const char *name);
+static char* elektraTrieStartsWith(const char *str, const char *substr);
+static Backend* elektraTriePrefixLookup(Trie *trie, const char *name);
 
 /**
  * @defgroup trie Internal Datastructure for mountpoints
@@ -69,7 +68,7 @@ Backend* elektraTrieLookup(Trie *trie, const Key *key)
 	strncpy(where, keyName(key), len);
 	where[len-2] = '/';
 
-	ret = prefix_lookup(trie,where);
+	ret = elektraTriePrefixLookup(trie,where);
 	elektraFree(where);
 
 	return ret;
@@ -256,7 +255,7 @@ static Trie* elektraTrieInsert(Trie *trie, const char *name, const void *value)
 
 	if (trie->text[idx]) {
 		/* there exists an entry with the same first character */
-		if ((p=starts_with(name, trie->text[idx]))==0)
+		if ((p=elektraTrieStartsWith(name, trie->text[idx]))==0)
 		{
 			/* the name in the trie is part of the searched name --> continue search */
 			trie->children[idx]=elektraTrieInsert(trie->children[idx],name+trie->textlen[idx],value);
@@ -312,7 +311,7 @@ static Trie *delete_trie(Trie *trie, char *name, CloseMapper closemapper)
 		return NULL;
 	}
 
-	if (starts_with(name,trie->text[idx])==0) {
+	if (elektraTrieStartsWith(name,trie->text[idx])==0) {
 
 		tr=delete_trie(trie->children[idx],name+trie->textlen[idx],closemapper);
 
@@ -331,10 +330,14 @@ static Trie *delete_trie(Trie *trie, char *name, CloseMapper closemapper)
 
 #endif
 
-/* return NULL if string starts with substring, except for the terminating '\0',
+/**
+ * return NULL if string starts with substring, except for the terminating '\0',
  * otherwise return a pointer to the first mismatch in substr.
+ *
+ * Takes const char* arguments but return char* pointer to it.
+ * (like e.g. strchr)
  */
-static char* starts_with(const char *str, char *substr)
+static char* elektraTrieStartsWith(const char *str, const char *substr)
 {
 	size_t i = 0;
 	size_t sublen = strlen(substr);
@@ -342,12 +345,12 @@ static char* starts_with(const char *str, char *substr)
 	for (i=0;i<sublen;i++)
 	{
 		if (substr[i]!=str[i])
-			return substr+i;
+			return (char*)substr+i;
 	}
 	return 0;
 }
 
-static void* prefix_lookup(Trie *trie, const char *name)
+static Backend* elektraTriePrefixLookup(Trie *trie, const char *name)
 {
 	unsigned char idx;
 	void * ret=NULL;
@@ -360,9 +363,9 @@ static void* prefix_lookup(Trie *trie, const char *name)
 		return trie->empty_value;
 	}
 
-	if (starts_with((char*)name, (char*)trie->text[idx])==0)
+	if (elektraTrieStartsWith((char*)name, (char*)trie->text[idx])==0)
 	{
-		ret=prefix_lookup(trie->children[idx],name+trie->textlen[idx]);
+		ret=elektraTriePrefixLookup(trie->children[idx],name+trie->textlen[idx]);
 	} else {
 		return trie->empty_value;
 	}
