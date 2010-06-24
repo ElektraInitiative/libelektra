@@ -893,7 +893,7 @@ KeySet *modules_config(void)
 
 void test_trie()
 {
-	printf ("Test basic buildup\n");
+	printf ("Test basic trie\n");
 	KDB *handle = elektraCalloc(sizeof(struct _KDB));
 	Key *parentKey;
 	Split *split;
@@ -925,6 +925,46 @@ void test_trie()
 	elektraFree(handle);
 }
 
+int elektraSplitSearchRoot(Split *split, Key *parentKey);
+
+void test_searchroot()
+{
+	printf ("Test search root\n");
+
+	Split * split = elektraSplitNew();
+	/* This here is in the trie */
+	elektraSplitAppend(split);
+	split->parents[0] = keyNew("user/bla/bla", KEY_END);
+	elektraSplitAppend(split);
+	split->parents[1] = keyNew("user/bla/bla/something", KEY_END);
+	elektraSplitAppend(split);
+	split->parents[2] = keyNew("user/bla/bla/deep/below", KEY_END);
+
+	Key *searchKey = keyNew("user/bla/bla/deep/below", KEY_END);
+	succeed_if (elektraSplitSearchRoot (split, searchKey) == 1, "is full in it");
+	keySetName(searchKey, "user/bla/bla/something");
+	succeed_if (elektraSplitSearchRoot (split, searchKey) == 1, "is full in it");
+	keySetName(searchKey, "user/bla/bla");
+	succeed_if (elektraSplitSearchRoot (split, searchKey) == 1, "is full in it");
+	keySetName(searchKey, "user/bla/bla/somewhere");
+	succeed_if (elektraSplitSearchRoot (split, searchKey) == 1, "is full in it");
+	keySetName(searchKey, "user/bla/bla/somewhere/else");
+	succeed_if (elektraSplitSearchRoot (split, searchKey) == 1, "is full in it");
+	keySetName(searchKey, "user/bla");
+	succeed_if (elektraSplitSearchRoot (split, searchKey) == 0, "is NOT full in it, need root");
+	keySetName(searchKey, "user/somewhere/else");
+	succeed_if (elektraSplitSearchRoot (split, searchKey) == 0, "is NOT full in it, need root");
+	keySetName(searchKey, "system");
+	succeed_if (elektraSplitSearchRoot (split, searchKey) == 0, "is NOT full in it, need root (mmh, cant be)");
+	keySetName(searchKey, "user/bla/somewhere");
+	succeed_if (elektraSplitSearchRoot (split, searchKey) == 0, "is NOT full in it, need root");
+	keySetName(searchKey, "user/bla/somewhere/else");
+	succeed_if (elektraSplitSearchRoot (split, searchKey) == 0, "is NOT full in it, need root");
+
+	keyDel (searchKey);
+	elektraSplitDel (split);
+}
+
 
 int main(int argc, char** argv)
 {
@@ -949,6 +989,7 @@ int main(int argc, char** argv)
 	test_systemremove();
 	test_basic();
 	test_trie();
+	test_searchroot();
 
 	printf("\ntest_split RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

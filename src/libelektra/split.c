@@ -323,6 +323,23 @@ int elektraSplitDomains (Split *split, KeySet *ks, Key *parentKey)
 	return needsSync;
 }
 
+/**
+ * @returns 1 if one of the backends in split has all
+ *          keys below parentKey
+ */
+int elektraSplitSearchRoot(Split *split, Key *parentKey)
+{
+	size_t splitSize = split->size;
+
+	for (size_t i=0; i<splitSize; ++i)
+	{
+		if (keyRel (split->parents[i], parentKey) >= 0)
+			return 1;
+	}
+
+	return 0;
+}
+
 int elektraSplitSearchTrie(Split *split, Trie *trie, Key *parentKey)
 {
 	int hasAdded = 0;
@@ -369,8 +386,8 @@ int elektraSplitBuildup (Split *split, KDB *handle, Key *parentKey)
 
 	if (elektraSplitSearchTrie(split, trie, parentKey) > 0)
 	{
-		/* We have found something in the trie */
-		return 1;
+		/* We have found something in the trie, is it enough? */
+		if (elektraSplitSearchRoot(split, parentKey) == 1) return 1;
 	}
 
 	Backend *backend = elektraTrieLookup(trie, parentKey);
