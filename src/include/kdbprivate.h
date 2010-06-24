@@ -355,8 +355,8 @@ struct _Trie {
 	struct _Trie *children[MAX_UCHAR];/*!<  */
 	char *text[MAX_UCHAR];	/*!<  */
 	unsigned int textlen[MAX_UCHAR];/*!<  */
-	void *value[MAX_UCHAR];		/*!<  */
-	void *empty_value;		/*!< value for the empty string "" */
+	Backend *value[MAX_UCHAR];	/*!< Pointer to a backend */
+	Backend *empty_value;		/*!< Pointer to a backend for the empty string "" */
 };
 
 

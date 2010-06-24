@@ -51,8 +51,8 @@
  *
  * Backends are physically a library named @c /lib/libelektra-{NAME}.so.
  *
- * See @link backend writing a new backend @endlink for information
- * about how to write a backend.
+ * See @link plugin writing a new plugin @endlink for information
+ * about how to write a plugin.
  *
  * Language binding writers should follow the same rules:
  * - You must relay completely on the backend-dependent methods.
@@ -263,6 +263,7 @@ KDB * kdbOpen(Key *errorKey)
  *
  * @see kdbOpen()
  * @param handle contains internal information of @link kdbOpen() opened @endlink key database
+ * @param errorKey the key which holds error information
  * @return 0 on success
  * @return -1 on NULL pointer
  * @ingroup kdb
@@ -427,8 +428,6 @@ kdbClose(handle); // no more affairs with the key database.
  * @param handle contains internal information of @link kdbOpen() opened @endlink key database
  * @param parentKey parent key or NULL to get the root keys
  * @param returned the (pre-initialized) KeySet returned with all keys found
- * @param options ORed options to control approaches
- * @see #option_t
  * @see @link kdbhighlevel kdb higher level Methods @endlink that rely on kdbGet()
  * @see ksLookupByName(), ksLookupByString() for powerful
  * 	lookups after the KeySet was retrieved

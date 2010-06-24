@@ -244,10 +244,10 @@ void output_trie(Trie *trie)
 	printf ("entered output_trie with %p\n", (void*) trie);
 	for (i=0; i <= MAX_UCHAR; ++i)
 	{
-		if (trie->value[i]) printf ("output_trie: %p\n", trie->value[i]);
+		if (trie->value[i]) printf ("output_trie: %p\n", (void*) trie->value[i]);
 		if (trie->children[i]) output_trie(trie->children[i]);
 	}
-	if (trie->empty_value) printf ("empty_value: %p\n", trie->empty_value);
+	if (trie->empty_value) printf ("empty_value: %p\n", (void*) trie->empty_value);
 }
 
 void output_warnings(Key *warningKey)
