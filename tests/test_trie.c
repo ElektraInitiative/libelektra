@@ -86,40 +86,38 @@ void test_simple()
 
 	exit_if_fail (trie, "trie was not build up successfully");
 
-	/*
+	Key *searchKey = keyNew("user");
+	Backend *backend = elektraTrieLookup(trie, searchKey);
+	succeed_if (!backend, "there should be no backend");
 
-	k = keyNew ("user/tests/hosts",0);
-	s=kdbGetBackend(kdb,k);
-	succeed_if(!strcmp("hosts",keyValue(s->mountpoint)), "kdbGetBackend: didn't get the correct value");
-	succeed_if(!strcmp("user/tests/hosts",keyName(s->mountpoint)), "kdbGetBackend: didn't get the correct value");
-	keyDel (k);
-	printf ("s: %p\n", s);
 
-	k = keyNew ("user/tests/hosts/anything/deeper/here",0);
-	s=kdbGetBackend(kdb,k);
-	succeed_if(!strcmp("hosts",keyValue(s->mountpoint)), "kdbGetBackend: didn't get the correct value");
-	succeed_if(!strcmp("user/tests/hosts",keyName(s->mountpoint)), "kdbGetBackend: didn't get the correct value");
-	keyDel (k);
-	printf ("s: %p\n", s);
+	Key *mp = keyNew("user/tests/simple", KEY_VALUE, "simple", KEY_END);
+	keySetName(searchKey, "user/tests/simple");
+	backend = elektraTrieLookup(trie, searchKey);
+	succeed_if (backend, "there should be a backend");
+	succeed_if (compare_key(backend->mountpoint, mp) == 0, "mountpoint key not correct");
 
-	k = keyNew ("user/tests/hosts/below/anything/deeper/here",0);
-	s=kdbGetBackend(kdb,k);
-	succeed_if(!strcmp("hosts",keyValue(s->mountpoint)), "kdbGetBackend: didn't get the correct value");
-	succeed_if(!strcmp("user/tests/hosts/below",keyName(s->mountpoint)), "kdbGetBackend: didn't get the correct value");
-	keyDel (k);
-	printf ("s: %p\n", s);
 
-	// printf ("%s - %s\n", keyName(s->mountpoint), (const char*)keyValue(s->mountpoint));
-	printf ("root trie: %p\n", kdb->trie);
-	printf ("host trie: %p\n", s->trie);
+	keySetName(searchKey, "user/tests/simple/below");
+	Backend *b2 = elektraTrieLookup(trie, searchKey);
+	succeed_if (b2, "there should be a backend");
+	succeed_if (backend == b2, "should be same backend");
+	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
 
-	*/
 
-	output_trie(trie);
+	keySetName(searchKey, "user/tests/simple/deep/below");
+	b2 = elektraTrieLookup(trie, searchKey);
+	succeed_if (b2, "there should be a backend");
+	succeed_if (backend == b2, "should be same backend");
+	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+
+	// output_trie(trie);
 
 	elektraTrieClose(trie, 0);
 	keyDel (errorKey);
 	ksDel (modules);
+	keyDel (mp);
+	keyDel (searchKey);
 }
 
 KeySet *iterate_config(void)
