@@ -352,9 +352,9 @@ struct _Plugin {
  * closest to the parentKey.
  */
 struct _Trie {
-	struct _Trie *children[MAX_UCHAR];/*!<  */
-	char *text[MAX_UCHAR];	/*!<  */
-	unsigned int textlen[MAX_UCHAR];/*!<  */
+	struct _Trie *children[MAX_UCHAR];/*!< The children building up the trie recursively */
+	char *text[MAX_UCHAR];		/*!< Text identifying this node */
+	size_t textlen[MAX_UCHAR];	/*!< Length of the text */
 	Backend *value[MAX_UCHAR];	/*!< Pointer to a backend */
 	Backend *empty_value;		/*!< Pointer to a backend for the empty string "" */
 };
@@ -400,6 +400,7 @@ int elektraSplitSync(Split *split, KDB *handle, KeySet *ks);
 int elektraSplitRemove(Split *split, KDB *handle, KeySet *ks);
 int elektraSplitParent(Split *split, KeySet *ks, Key *parentKey);
 int elektraSplitDomains(Split *split, KeySet *ks, Key *parentKey);
+int elektraSplitTrie (Split *split, KDB *handle, Key *parentKey);
 
 
 /*Internal helpers*/

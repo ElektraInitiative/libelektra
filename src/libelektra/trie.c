@@ -150,10 +150,12 @@ error:
  */
 int elektraTrieClose (Trie *trie, Key *errorKey)
 {
-	int i;
+	size_t i;
 	if (trie==NULL) return 0;
-	for (i=0;i<MAX_UCHAR;i++) {
-		if (trie->text[i]!=NULL) {
+	for (i=0; i<MAX_UCHAR; ++i)
+	{
+		if (trie->text[i]!=NULL)
+		{
 			elektraTrieClose(trie->children[i], errorKey);
 			if (trie->value[i])
 				elektraBackendClose(trie->value[i], errorKey);
@@ -161,7 +163,9 @@ int elektraTrieClose (Trie *trie, Key *errorKey)
 		}
 	}
 	if (trie->empty_value)
+	{
 		elektraBackendClose(trie->empty_value, errorKey);
+	}
 	free(trie);
 	return 0;
 }
@@ -212,23 +216,26 @@ static int elektraMountBackend (Trie **trie, Backend *backend, Key *errorKey)
 static Trie* elektraTrieInsert(Trie *trie, const char *name, const void *value)
 {
 	char* p;
-	int i;
+	size_t i;
 	unsigned char idx;
 
 	if (name==0) name="";
 	idx=(unsigned char)name[0];
 
-	if (trie==NULL) {
+	if (trie==NULL)
+	{
 		trie=malloc(sizeof(Trie));
 		trie->empty_value=0;
-		for (i=0;i<MAX_UCHAR;i++) {
+		for (i=0; i<MAX_UCHAR; ++i)
+		{
 			trie->children[i]=0;
 			trie->text[i]=0;
 			trie->textlen[i]=0;
 			trie->value[i]=0;
 		}
 
-		if (!strcmp("",name)) {
+		if (!strcmp("",name))
+		{
 			trie->empty_value=(void*)value;
 			return trie;
 		}
@@ -241,14 +248,16 @@ static Trie* elektraTrieInsert(Trie *trie, const char *name, const void *value)
 		return trie;
 	}
 
-	if (!strcmp("",name)) {
+	if (!strcmp("",name))
+	{
 		trie->empty_value=(void*)value;
 		return trie;
 	}
 
 	if (trie->text[idx]) {
 		/* there exists an entry with the same first character */
-		if ((p=starts_with(name, trie->text[idx]))==0) {
+		if ((p=starts_with(name, trie->text[idx]))==0)
+		{
 			/* the name in the trie is part of the searched name --> continue search */
 			trie->children[idx]=elektraTrieInsert(trie->children[idx],name+trie->textlen[idx],value);
 		} else {
@@ -327,10 +336,11 @@ static Trie *delete_trie(Trie *trie, char *name, CloseMapper closemapper)
  */
 static char* starts_with(const char *str, char *substr)
 {
-	int i = 0;
-	int sublen = strlen(substr);
+	size_t i = 0;
+	size_t sublen = strlen(substr);
 
-	for (i=0;i<sublen;i++) {
+	for (i=0;i<sublen;i++)
+	{
 		if (substr[i]!=str[i])
 			return substr+i;
 	}
@@ -345,19 +355,23 @@ static void* prefix_lookup(Trie *trie, const char *name)
 
 	idx=(unsigned char) name[0];
 
-	if (trie->text[idx]==NULL) {
+	if (trie->text[idx]==NULL)
+	{
 		return trie->empty_value;
 	}
 
-	if (starts_with((char*)name, (char*)trie->text[idx])==0) {
+	if (starts_with((char*)name, (char*)trie->text[idx])==0)
+	{
 		ret=prefix_lookup(trie->children[idx],name+trie->textlen[idx]);
 	} else {
 		return trie->empty_value;
 	}
 
-	if (ret==NULL && trie->value[idx]==NULL) {
+	if (ret==NULL && trie->value[idx]==NULL)
+	{
 		return trie->empty_value;
 	}
 	if (ret==NULL) return trie->value[idx];
+
 	return ret;
 }
