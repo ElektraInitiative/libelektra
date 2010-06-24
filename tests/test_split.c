@@ -767,8 +767,107 @@ void test_basic()
 	handle->defaultBackend->usersize = 2;
 	/* So we had 2 keys before in the keyset */
 
+
 	Split *split = elektraSplitNew();
 	Key *parentKey = keyNew("user", KEY_END);
+
+	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
+
+	succeed_if (split->size == 1, "there is an empty keset");
+	succeed_if (ksGetSize(split->keysets[0]) == 0, "wrong size");
+	succeed_if (compare_key (split->parents[0], parentKey) == 0, "parentKey not correct");
+	succeed_if (split->handles[0] == handle->defaultBackend, "not correct backend");
+
+	elektraSplitDel (split);
+	keyDel (parentKey);
+
+
+	split = elektraSplitNew();
+	parentKey = keyNew("system", KEY_END);
+
+	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 0, "we dont add anything");
+
+	succeed_if (split->size == 0, "there is no keset");
+
+	elektraSplitDel (split);
+	keyDel (parentKey);
+
+
+	handle->defaultBackend->usersize = 0;
+	handle->defaultBackend->systemsize = 5;
+
+
+	split = elektraSplitNew();
+	parentKey = keyNew("user", KEY_END);
+
+	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 0, "we dont add anything");
+
+	succeed_if (split->size == 0, "there is no keset");
+
+	elektraSplitDel (split);
+	keyDel (parentKey);
+
+
+	split = elektraSplitNew();
+	parentKey = keyNew("system", KEY_END);
+
+	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "system backend should be added");
+
+	succeed_if (split->size == 1, "there is an empty keset");
+	succeed_if (ksGetSize(split->keysets[0]) == 0, "wrong size");
+	succeed_if (compare_key (split->parents[0], parentKey) == 0, "parentKey not correct");
+	succeed_if (split->handles[0] == handle->defaultBackend, "not correct backend");
+
+	elektraSplitDel (split);
+	keyDel (parentKey);
+
+
+	handle->defaultBackend->usersize = 0;
+	handle->defaultBackend->systemsize = 0;
+
+
+	split = elektraSplitNew();
+	parentKey = keyNew("user", KEY_END);
+
+	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 0, "we dont add anything");
+
+	succeed_if (split->size == 0, "there is no keset");
+
+	elektraSplitDel (split);
+	keyDel (parentKey);
+
+
+	split = elektraSplitNew();
+	parentKey = keyNew("system", KEY_END);
+
+	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 0, "we dont add anything");
+
+	succeed_if (split->size == 0, "there is no keset");
+
+	elektraSplitDel (split);
+	keyDel (parentKey);
+
+
+	handle->defaultBackend->usersize = 8;
+	handle->defaultBackend->systemsize = 12;
+
+
+	split = elektraSplitNew();
+	parentKey = keyNew("system", KEY_END);
+
+	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "system backend should be added");
+
+	succeed_if (split->size == 1, "there is an empty keset");
+	succeed_if (ksGetSize(split->keysets[0]) == 0, "wrong size");
+	succeed_if (compare_key (split->parents[0], parentKey) == 0, "parentKey not correct");
+	succeed_if (split->handles[0] == handle->defaultBackend, "not correct backend");
+
+	elektraSplitDel (split);
+	keyDel (parentKey);
+
+
+	split = elektraSplitNew();
+	parentKey = keyNew("user", KEY_END);
 
 	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
 
