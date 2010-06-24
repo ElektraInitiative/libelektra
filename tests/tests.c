@@ -237,3 +237,61 @@ void output (KeySet *ks)
 		printf ("key: %s, string: %s\n", keyName(k), keyString(k));
 	}
 }
+
+void output_trie(Trie *trie)
+{
+	int i;
+	for (i=0; i <= MAX_UCHAR; ++i)
+	{
+		if (trie->value[i]) printf ("output_trie: %p\n", trie->value[i]);
+		if (trie->children[i]) output_trie(trie->children[i]);
+	}
+}
+
+void output_warnings(Key *warningKey)
+{
+	const Key *metaWarnings = keyGetMeta(warningKey, "warnings");
+	if (!metaWarnings) return; /* There are no current warnings */
+	succeed_if (0, "there were warnings issued");
+
+	int nrWarnings = atoi(keyString(metaWarnings));
+	char buffer[] = "warnings/#00\0description";
+
+	printf ("There are %d warnings\n", nrWarnings+1);
+	for (int i=0; i<=nrWarnings; ++i)
+	{
+		buffer[10] = i/10%10 + '0';
+		buffer[11] = i%10 + '0';
+		printf ("buffer is: %s\n", buffer);
+		strncat(buffer, "/number" , sizeof(buffer));
+		printf ("number: %s\n", keyString(keyGetMeta(warningKey, buffer)));
+		buffer[12] = '\0'; strncat(buffer, "/description" , sizeof(buffer));
+		printf ("description: %s\n", keyString(keyGetMeta(warningKey, buffer)));
+		buffer[12] = '\0'; strncat(buffer, "/ingroup" , sizeof(buffer));
+		keyGetMeta(warningKey, buffer);
+		buffer[12] = '\0'; strncat(buffer, "/module" , sizeof(buffer));
+		keyGetMeta(warningKey, buffer);
+		buffer[12] = '\0'; strncat(buffer, "/file" , sizeof(buffer));
+		keyGetMeta(warningKey, buffer);
+		buffer[12] = '\0'; strncat(buffer, "/line" , sizeof(buffer));
+		keyGetMeta(warningKey, buffer);
+		buffer[12] = '\0'; strncat(buffer, "/reason" , sizeof(buffer));
+		keyGetMeta(warningKey, buffer);
+	}
+}
+
+void output_errors(Key *errorKey)
+{
+	const Key * metaError = keyGetMeta(errorKey, "error");
+	if (!metaError) return; /* There is no current error */
+	succeed_if (0, "there were errors issued");
+
+	printf ("number: %s\n", keyString(keyGetMeta(errorKey, "error/number")));
+	/*
+	std::cerr << "description: " << error.getMeta<std::string>("error/description") << std::endl;
+	std::cerr << "ingroup: " << error.getMeta<std::string>("error/ingroup") << std::endl;
+	std::cerr << "module: " << error.getMeta<std::string>("error/module") << std::endl;
+	std::cerr << "at: " << error.getMeta<std::string>("error/file") << ":" << error.getMeta<std::string>("error/line") << std::endl;
+	std::cerr << "reason: " << error.getMeta<std::string>("error/reason") << std::endl;
+	*/
+}

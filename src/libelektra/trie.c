@@ -84,7 +84,7 @@ Trie *elektraTrieOpen(KeySet *config, KeySet *modules, Key *errorKey)
 	if (!root)
 	{
 		ELEKTRA_ADD_WARNING(22, errorKey, KDB_KEY_MOUNTPOINTS);
-		goto error;
+		goto error1;
 	}
 
 	while ((cur = ksNext(config)) != 0)
@@ -119,9 +119,10 @@ Trie *elektraTrieOpen(KeySet *config, KeySet *modules, Key *errorKey)
 
 	return trie;
 
+error1:
+	ksDel (config);
 error:
 	elektraTrieClose (trie, errorKey);
-	ksDel (config);
 	return 0;
 }
 
