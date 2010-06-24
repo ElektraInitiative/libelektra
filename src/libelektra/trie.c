@@ -39,7 +39,6 @@
 
 #include "kdbinternal.h"
 
-static int elektraMountBackend (Trie **trie, Backend *backend, Key *errorKey);
 static Trie* elektraTrieInsert(Trie *trie, const char *name, Backend *value);
 static char* elektraTrieStartsWith(const char *str, const char *substr);
 static Backend* elektraTriePrefixLookup(Trie *trie, const char *name);
@@ -181,7 +180,7 @@ int elektraTrieClose (Trie *trie, Key *errorKey)
  * @return 0 when nothing was done
  * @return 1 on success
  */
-static int elektraMountBackend (Trie **trie, Backend *backend, Key *errorKey)
+int elektraMountBackend (Trie **trie, Backend *backend, Key *errorKey)
 {
 	char *mountpoint;
 
@@ -215,7 +214,6 @@ static int elektraMountBackend (Trie **trie, Backend *backend, Key *errorKey)
 static Trie* elektraTrieInsert(Trie *trie, const char *name, Backend *value)
 {
 	char* p;
-	size_t i;
 	unsigned char idx;
 
 	if (name==0) name="";
@@ -223,15 +221,7 @@ static Trie* elektraTrieInsert(Trie *trie, const char *name, Backend *value)
 
 	if (trie==NULL)
 	{
-		trie=malloc(sizeof(Trie));
-		trie->empty_value=0;
-		for (i=0; i<MAX_UCHAR; ++i)
-		{
-			trie->children[i]=0;
-			trie->text[i]=0;
-			trie->textlen[i]=0;
-			trie->value[i]=0;
-		}
+		trie=elektraCalloc(sizeof(Trie));
 
 		if (!strcmp("",name))
 		{
