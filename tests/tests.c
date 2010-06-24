@@ -246,6 +246,7 @@ void output_trie(Trie *trie)
 		if (trie->value[i]) printf ("output_trie: %p\n", trie->value[i]);
 		if (trie->children[i]) output_trie(trie->children[i]);
 	}
+	if (trie->empty_value) printf ("empty_value: %p\n", trie->empty_value);
 }
 
 void output_warnings(Key *warningKey)
