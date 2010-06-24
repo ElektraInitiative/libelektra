@@ -139,6 +139,16 @@ void elektraSplitAppend(Split *ret)
 
 void elektraSplitAppendEmpty(Split *split, Backend *backend, Key *parentKey)
 {
+	/* TODO: optimization: use an index to find already inserted backends */
+	for (size_t i=0; i<split->size; ++i)
+	{
+		if (backend == split->handles[i])
+		{
+			/* We already have this backend, so leave */
+			return;
+		}
+	}
+
 	elektraSplitAppend(split);
 
 	split->keysets[split->size-1]=ksNew(0);
@@ -313,33 +323,27 @@ int elektraSplitDomains (Split *split, KeySet *ks, Key *parentKey)
 	return needsSync;
 }
 
-void elektraSplitSearchTrie(Split *split, Trie *trie, Key *parentKey)
+int elektraSplitSearchTrie(Split *split, Trie *trie, Key *parentKey)
 {
+	int hasAdded = 0;
 	int i;
 
-	if (trie==NULL) return;
+	if (trie==NULL) return 0;
 
 	for (i=0;i<MAX_UCHAR;i++)
 	{
 		if (trie->text[i]!=NULL)
 		{
 			Backend *cur = trie->value[i];
-			elektraSplitSearchTrie(split, trie->children[i], parentKey);
-			if (cur) elektraSplitAppendEmpty(split, cur, keyDup(cur->mountpoint));
+			hasAdded += elektraSplitSearchTrie(split, trie->children[i], parentKey);
+			if (keyRel(cur->mountpoint, parentKey) >= 0)
+			{
+				elektraSplitAppendEmpty(split, cur, keyDup(cur->mountpoint));
+				++hasAdded;
+			}
 		}
 	}
-	if (trie->empty_value)
-	{
-		Backend *cur = trie->empty_value;
-		if (!strcmp(keyName(cur->mountpoint), ""))
-		{
-			elektraSplitAppendEmpty(split, cur,
-				keyDup(parentKey));
-		} else {
-			elektraSplitAppendEmpty(split, cur,
-				keyDup(cur->mountpoint));
-		}
-	}
+	return hasAdded;
 }
 
 /**
@@ -363,6 +367,21 @@ int elektraSplitBuildup (Split *split, KDB *handle, Key *parentKey)
 
 	if (!parentKey || !parentKey->key) return -1;
 
+	if (elektraSplitSearchTrie(split, trie, parentKey) > 0)
+	{
+		/* We have found something in the trie */
+		return 1;
+	}
+
+	Backend *backend = elektraTrieLookup(trie, parentKey);
+	if (backend && !strcmp(keyName(backend->mountpoint), ""))
+	{
+		/* seems like there is a root backend, add it */
+		elektraSplitAppendEmpty(split, backend, keyDup(parentKey));
+		return 1;
+	}
+
+	/* We have not found anything, so lets fallback to defaultBackend */
 
 	Backend *defaultBackend = handle->defaultBackend;
 
@@ -378,7 +397,6 @@ int elektraSplitBuildup (Split *split, KDB *handle, Key *parentKey)
 		needsSync = 1;
 	}
 
-	elektraSplitSearchTrie(split, trie, parentKey);
 
 	return needsSync;
 }
