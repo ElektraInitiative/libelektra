@@ -241,6 +241,7 @@ void output (KeySet *ks)
 void output_trie(Trie *trie)
 {
 	int i;
+	printf ("entered output_trie with %p\n", (void*) trie);
 	for (i=0; i <= MAX_UCHAR; ++i)
 	{
 		if (trie->value[i]) printf ("output_trie: %p\n", trie->value[i]);

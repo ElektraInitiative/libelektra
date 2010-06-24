@@ -155,6 +155,7 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
 			else if (!strcmp(keyBaseName(cur), "mountpoint"))
 			{
 				backend->mountpoint=keyNew(keyValue(cur),KEY_VALUE,keyBaseName(root), KEY_END);
+				keyIncRef(backend->mountpoint);
 				if (!backend->mountpoint)
 				{
 					ELEKTRA_ADD_WARNING(14, errorKey, keyValue(cur));
@@ -247,6 +248,7 @@ Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey)
 
 	Key *mp = keyNew ("", KEY_VALUE, "default", KEY_END);
 	backend->mountpoint = mp;
+	keyIncRef(backend->mountpoint);
 
 	return backend;
 }
@@ -277,6 +279,7 @@ Backend* elektraBackendOpenModules(KeySet *modules, Key *errorKey)
 	plugin->refcounter = 1;
 
 	backend->mountpoint = mp;
+	keyIncRef(backend->mountpoint);
 
 	ksSetCursor (modules, save);
 
@@ -290,6 +293,7 @@ int elektraBackendClose(Backend *backend, Key* errorKey)
 
 	if (!backend) return -1;
 
+	keyDecRef(backend->mountpoint);
 	keyDel (backend->mountpoint);
 	for (int i=0; i<NR_OF_PLUGINS; ++i)
 	{
