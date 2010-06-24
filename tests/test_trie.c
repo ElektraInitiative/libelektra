@@ -64,6 +64,7 @@ void test_minimaltrie()
 	keyDel (errorKey);
 	ksDel (modules);
 }
+
 KeySet *simple_config(void)
 {
 	return ksNew(5,
@@ -486,6 +487,80 @@ void test_us()
 
 }
 
+KeySet *umlauts_config(void)
+{
+	return ksNew(5,
+		keyNew("system/elektra/mountpoints", KEY_END),
+		keyNew("system/elektra/mountpoints/slash", KEY_END),
+		keyNew("system/elektra/mountpoints/slash/mountpoint", KEY_VALUE, "user/umlauts/test", KEY_END),
+		keyNew("system/elektra/mountpoints/hash", KEY_END),
+		keyNew("system/elektra/mountpoints/hash/mountpoint", KEY_VALUE, "user/umlauts#test", KEY_END),
+		keyNew("system/elektra/mountpoints/space", KEY_END),
+		keyNew("system/elektra/mountpoints/space/mountpoint", KEY_VALUE, "user/umlauts test", KEY_END),
+		keyNew("system/elektra/mountpoints/umlauts", KEY_END),
+		keyNew("system/elektra/mountpoints/umlauts/mountpoint", KEY_VALUE, "user/umlauts\200test", KEY_END),
+		KS_END);
+}
+
+void test_umlauts()
+{
+	printf ("Test umlauts trie\n");
+
+	Key *errorKey = keyNew(0);
+	KeySet *modules = modules_config();
+	Trie *trie = elektraTrieOpen(umlauts_config(), modules, errorKey);
+
+	output_warnings (errorKey);
+	output_errors (errorKey);
+
+	exit_if_fail (trie, "trie was not build up successfully");
+
+	Key *searchKey = keyNew("user");
+	Backend *backend = elektraTrieLookup(trie, searchKey);
+	succeed_if (!backend, "there should be no backend");
+
+
+	Key *mp = keyNew("user/umlauts/test", KEY_VALUE, "slash", KEY_END);
+	keySetName(searchKey, "user/umlauts/test");
+	backend = elektraTrieLookup(trie, searchKey);
+	succeed_if (backend, "there should be a backend");
+	succeed_if (compare_key(backend->mountpoint, mp) == 0, "mountpoint key not correct");
+
+
+	keySetName(searchKey, "user/umlauts#test");
+	keySetName(mp, "user/umlauts#test");
+	keySetString(mp, "hash");
+	Backend *b2 = elektraTrieLookup(trie, searchKey);
+	succeed_if (b2, "there should be a backend");
+	succeed_if (backend != b2, "should be other backend");
+	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+
+
+	keySetName(searchKey, "user/umlauts test");
+	keySetName(mp, "user/umlauts test");
+	keySetString(mp, "space");
+	b2 = elektraTrieLookup(trie, searchKey);
+	succeed_if (b2, "there should be a backend");
+	succeed_if (backend != b2, "should be other backend");
+	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+
+	keySetName(searchKey, "user/umlauts\200test");
+	keySetName(mp, "user/umlauts\200test");
+	keySetString(mp, "umlauts");
+	b2 = elektraTrieLookup(trie, searchKey);
+	succeed_if (b2, "there should be a backend");
+	succeed_if (backend != b2, "should be other backend");
+	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+
+	// output_trie(trie);
+
+	elektraTrieClose(trie, 0);
+	keyDel (errorKey);
+	ksDel (modules);
+	keyDel (mp);
+	keyDel (searchKey);
+}
+
 int main(int argc, char** argv)
 {
 	printf("TRIE       TESTS\n");
@@ -499,6 +574,7 @@ int main(int argc, char** argv)
 	test_simpletrie();
 	test_two();
 	test_us();
+	test_umlauts();
 
 	printf("\ntest_trie RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

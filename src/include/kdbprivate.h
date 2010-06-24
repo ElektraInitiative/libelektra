@@ -353,7 +353,7 @@ struct _Plugin {
  */
 struct _Trie {
 	struct _Trie *children[MAX_UCHAR];/*!<  */
-	char *text[MAX_UCHAR];		/*!<  */
+	char *text[MAX_UCHAR];	/*!<  */
 	unsigned int textlen[MAX_UCHAR];/*!<  */
 	void *value[MAX_UCHAR];		/*!<  */
 	void *empty_value;		/*!< value for the empty string "" */

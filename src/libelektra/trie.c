@@ -45,7 +45,17 @@ static void* prefix_lookup(Trie *trie, const char *name);
 static char* starts_with(const char *str, char *substr);
 static void* prefix_lookup(Trie *trie, const char *name);
 
+/**
+ * @defgroup trie Internal Datastructure for mountpoints
+ */
 
+/**
+ * Lookups a backend inside the trie.
+ *
+ * @return the backend if found
+ * @return 0 otherwise
+ * @ingroup trie
+ */
 Backend* elektraTrieLookup(Trie *trie, const Key *key)
 {
 	char *where=0;
@@ -65,12 +75,15 @@ Backend* elektraTrieLookup(Trie *trie, const Key *key)
 	return ret;
 }
 
-/** Creates a trie from a given configuration.
+/**
+ * Creates a trie from a given configuration.
  *
  * The config will be deleted within this function.
  *
  * @param config the configuration which should be used to build up the trie.
+ * @param errorKey the key used to report warnings
  * @return created trie on success, 0 on failure
+ * @ingroup trie
  */
 Trie *elektraTrieOpen(KeySet *config, KeySet *modules, Key *errorKey)
 {
@@ -104,6 +117,7 @@ Trie *elektraTrieOpen(KeySet *config, KeySet *modules, Key *errorKey)
 	ksDel (config);
 
 
+	/* Now mount all module configurations */
 	root=ksLookupByName(modules, "system/elektra/modules", 0);
 
 	if (!root)
@@ -127,6 +141,13 @@ error:
 }
 
 
+/**
+ * Closes the trie and all opened backends within.
+ *
+ * @param trie the trie to close
+ * @param errorKey the key used to report warnings
+ * @ingroup trie
+ */
 int elektraTrieClose (Trie *trie, Key *errorKey)
 {
 	int i;
@@ -192,10 +213,10 @@ static Trie* elektraTrieInsert(Trie *trie, const char *name, const void *value)
 {
 	char* p;
 	int i;
-	unsigned int idx;
+	unsigned char idx;
 
 	if (name==0) name="";
-	idx=(unsigned int) name[0];
+	idx=(unsigned char)name[0];
 
 	if (trie==NULL) {
 		trie=malloc(sizeof(Trie));
@@ -234,7 +255,7 @@ static Trie* elektraTrieInsert(Trie *trie, const char *name, const void *value)
 			/* name in trie doesn't match name --> split trie */
 			char *newname;
 			Trie *child;
-			unsigned int idx2;
+			unsigned char idx2;
 
 			newname=elektraStrDup(p);
 			*p=0; /* shorten the old name in the trie */
@@ -247,7 +268,7 @@ static Trie* elektraTrieInsert(Trie *trie, const char *name, const void *value)
 
 			/* insert the splitted try into the new trie entry */
 
-			idx2=(unsigned int) newname[0];
+			idx2 = (unsigned char) newname[0];
 			trie->children[idx]->text[idx2]=newname;
 			trie->children[idx]->textlen[idx2]=strlen(newname);
 			trie->children[idx]->value[idx2]=trie->value[idx];
@@ -271,12 +292,12 @@ static Trie* elektraTrieInsert(Trie *trie, const char *name, const void *value)
 static Trie *delete_trie(Trie *trie, char *name, CloseMapper closemapper)
 {
 	Trie *tr;
-	unsigned int idx;
+	unsigned char idx;
 	if (trie==NULL) {
 		return NULL;
 	}
 
-	idx=(unsigned int) name[0];
+	idx=(unsigned char) name[0];
 
 	if (trie->text[idx]==NULL) {
 		return NULL;
@@ -318,11 +339,11 @@ static char* starts_with(const char *str, char *substr)
 
 static void* prefix_lookup(Trie *trie, const char *name)
 {
-	unsigned int idx;
+	unsigned char idx;
 	void * ret=NULL;
 	if (trie==NULL) return NULL;
 
-	idx=(unsigned int) name[0];
+	idx=(unsigned char) name[0];
 
 	if (trie->text[idx]==NULL) {
 		return trie->empty_value;
