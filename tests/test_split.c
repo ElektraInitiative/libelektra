@@ -59,6 +59,16 @@ KeySet *set_us()
 }
 
 
+KeySet *root_config(void)
+{
+	return ksNew(5,
+		keyNew("system/elektra/mountpoints", KEY_END),
+		keyNew("system/elektra/mountpoints/root", KEY_END),
+		keyNew("system/elektra/mountpoints/root/mountpoint", KEY_VALUE, "", KEY_END),
+		KS_END);
+}
+
+
 void test_create()
 {
 	printf ("Test create split\n");
@@ -175,7 +185,7 @@ void test_basic()
 
 
 	Split *split = elektraSplitNew();
-	Key *parentKey = keyNew("user", KEY_END);
+	Key *parentKey = keyNew("user", KEY_VALUE, "default", KEY_END);
 
 	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
 
@@ -183,13 +193,14 @@ void test_basic()
 	succeed_if (ksGetSize(split->keysets[0]) == 0, "wrong size");
 	succeed_if (compare_key (split->parents[0], parentKey) == 0, "parentKey not correct");
 	succeed_if (split->handles[0] == handle->defaultBackend, "not correct backend");
+	succeed_if (split->syncbits[0] == 2, "should be marked as root");
 
 	elektraSplitDel (split);
 	keyDel (parentKey);
 
 
 	split = elektraSplitNew();
-	parentKey = keyNew("system", KEY_END);
+	parentKey = keyNew("system", KEY_VALUE, "default", KEY_END);
 
 	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "system backend should be added");
 
@@ -197,6 +208,7 @@ void test_basic()
 	succeed_if (ksGetSize(split->keysets[0]) == 0, "wrong size");
 	succeed_if (compare_key (split->parents[0], parentKey) == 0, "parentKey not correct");
 	succeed_if (split->handles[0] == handle->defaultBackend, "not correct backend");
+	succeed_if (split->syncbits[0] == 2, "should be marked as root");
 
 	elektraSplitDel (split);
 	keyDel (parentKey);
@@ -249,6 +261,7 @@ void test_triesimple()
 void test_trie()
 {
 	printf ("Test basic trie\n");
+
 	KDB *handle = elektraCalloc(sizeof(struct _KDB));
 	Key *parentKey;
 	Key *mp;
@@ -326,6 +339,58 @@ void test_trie()
 	elektraFree(handle->defaultBackend);
 	elektraFree(handle);
 }
+
+void test_rootbackend()
+{
+	printf ("Test buildup with root backend\n");
+	KDB *handle = elektraCalloc(sizeof(struct _KDB));
+	KeySet *modules = modules_config();
+	Backend *backend;
+
+	handle->defaultBackend = elektraCalloc(sizeof(struct _Backend));
+	handle->trie = elektraTrieOpen(root_config(), modules, 0);
+
+	Split *split;
+	Key *parentKey;
+	Key *mp;
+
+	split = elektraSplitNew();
+	parentKey = keyNew("user/tests/simple/below", KEY_END);
+	mp = keyNew("user", KEY_VALUE, "root", KEY_END);
+	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
+	succeed_if (split->size == 1, "there is an empty keset");
+	succeed_if (ksGetSize(split->keysets[0]) == 0, "wrong size");
+	succeed_if (compare_key (split->parents[0], mp) == 0, "parentKey not correct");
+	succeed_if (split->handles[0] != handle->defaultBackend, "should be not the default backend");
+	succeed_if (split->syncbits[0] == 2, "should be marked as root");
+	backend = elektraTrieLookup(handle->trie, parentKey);
+	succeed_if (split->handles[0] == backend, "should be root backend");
+	elektraSplitDel (split);
+	keyDel (parentKey);
+	keyDel (mp);
+
+
+	split = elektraSplitNew();
+	parentKey = keyNew("system/tests/simple/below", KEY_END);
+	mp = keyNew("system", KEY_VALUE, "root", KEY_END);
+	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backend for system");
+	succeed_if (split->size == 1, "there is an empty keset");
+	succeed_if (ksGetSize(split->keysets[0]) == 0, "wrong size");
+	succeed_if (compare_key (split->parents[0], mp) == 0, "parentKey not correct");
+	succeed_if (split->handles[0] != handle->defaultBackend, "should be not the default backend");
+	succeed_if (split->syncbits[0] == 2, "should be marked as root");
+	backend = elektraTrieLookup(handle->trie, parentKey);
+	succeed_if (split->handles[0] == backend, "should be root backend");
+	elektraSplitDel (split);
+	keyDel (parentKey);
+	keyDel (mp);
+
+	elektraTrieClose(handle->trie, 0);
+	elektraFree(handle->defaultBackend);
+	elektraFree(handle);
+	ksDel (modules);
+}
+
 
 
 #if 0
@@ -994,6 +1059,7 @@ int main(int argc, char** argv)
 	test_basic();
 	test_triesimple();
 	test_trie();
+	test_rootbackend();
 	/*
 	test_emptysplit();
 	test_needsync();

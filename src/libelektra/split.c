@@ -254,12 +254,12 @@ int elektraSplitBuildup (Split *split, KDB *handle, Key *parentKey)
 		/* seems like there is a root backend, add it */
 		if (keyIsUser(parentKey))
 		{
-			elektraSplitAppend (split, backend, keyNew("user", KEY_END), 2);
+			elektraSplitAppend (split, backend, keyNew("user", KEY_VALUE, "root", KEY_END), 2);
 		}
 
 		if (keyIsSystem(parentKey))
 		{
-			elektraSplitAppend (split, backend, keyNew("system", KEY_END), 2);
+			elektraSplitAppend (split, backend, keyNew("system", KEY_VALUE, "root", KEY_END), 2);
 		}
 		return 1;
 	}
@@ -270,12 +270,12 @@ int elektraSplitBuildup (Split *split, KDB *handle, Key *parentKey)
 
 	if (keyIsUser(parentKey))
 	{
-		elektraSplitAppend (split, defaultBackend, keyNew("user", KEY_END), 2);
+		elektraSplitAppend (split, defaultBackend, keyNew("user", KEY_VALUE, "default", KEY_END), 2);
 	}
 
 	if (keyIsSystem(parentKey))
 	{
-		elektraSplitAppend (split, defaultBackend, keyNew("system", KEY_END), 2);
+		elektraSplitAppend (split, defaultBackend, keyNew("system", KEY_VALUE, "default", KEY_END), 2);
 	}
 
 	return 1;
