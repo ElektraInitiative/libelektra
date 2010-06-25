@@ -203,11 +203,13 @@ int compare_keyset (KeySet *ks, KeySet *ks2)
 		printf ("%d, %d\n", (int)ksGetSize(ks), (int)ksGetSize(ks2));
 		succeed_if( 0, "There are less keys fetched than keys which have been submitted.");
 	}
+	/*
 	if ( err-nbError )
 	{
 		if (key && key2) printf ("error comparing %s - %s\n", keyName(key), keyName(key2));
 		else printf ("error comparing null key\n");
 	}
+	*/
 	return err-nbError;
 }
 
@@ -256,6 +258,20 @@ void output_trie(Trie *trie)
 		printf ("empty_value: %p, mp: %s\n",
 				(void*) trie->empty_value,
 				keyName(trie->empty_value->mountpoint));
+	}
+}
+
+void output_split(Split *split)
+{
+	for (size_t i=0; i<split->size; ++i)
+	{
+		printf ("split size: %zd, handle: %p, sync: %d, parent: %s (%s)\n",
+				ksGetSize(split->keysets[i]),
+				(void*)split->handles[i],
+				split->syncbits[i],
+				keyName(split->parents[i]),
+				keyString(split->parents[i])
+				);
 	}
 }
 

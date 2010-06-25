@@ -71,7 +71,10 @@ KeySet *create_conf (const char *filename);
 
 void clear_sync (KeySet *ks);
 void output (KeySet *ks);
+
 void output_trie(Trie *trie);
+void output_split(Split *split);
+
 void output_warnings(Key *errorKey);
 void output_errors(Key *errorKey);
 

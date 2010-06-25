@@ -41,6 +41,8 @@ KeySet *simple_config(void)
 {
 	return ksNew(5,
 		keyNew("system/elektra/mountpoints", KEY_END),
+		keyNew("system/elektra/mountpoints/root", KEY_END),
+		keyNew("system/elektra/mountpoints/root/mountpoint", KEY_VALUE, "", KEY_END),
 		keyNew("system/elektra/mountpoints/simple", KEY_END),
 		keyNew("system/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user/tests/simple", KEY_END),
 		KS_END);
@@ -67,6 +69,23 @@ KeySet *root_config(void)
 		keyNew("system/elektra/mountpoints/root/mountpoint", KEY_VALUE, "", KEY_END),
 		KS_END);
 }
+
+
+KeySet *set_three()
+{
+	return ksNew(50,
+		keyNew("system/elektra/mountpoints", KEY_END),
+		keyNew("system/elektra/mountpoints/root", KEY_END),
+		keyNew("system/elektra/mountpoints/root/mountpoint", KEY_VALUE, "", KEY_END),
+		keyNew("system/elektra/mountpoints/system", KEY_END),
+		keyNew("system/elektra/mountpoints/system/mountpoint", KEY_VALUE, "system", KEY_END),
+		keyNew("system/elektra/mountpoints/userin", KEY_END),
+		keyNew("system/elektra/mountpoints/userin/mountpoint", KEY_VALUE, "user/invalid", KEY_END),
+		keyNew("system/elektra/mountpoints/userva", KEY_END),
+		keyNew("system/elektra/mountpoints/userva/mountpoint", KEY_VALUE, "user/valid", KEY_END),
+		KS_END);
+}
+
 
 
 void test_create()
@@ -763,22 +782,6 @@ void test_optimize()
 	elektraFree(handle);
 }
 
-
-#if 0
-
-KeySet *set_three()
-{
-	return ksNew(50,
-		keyNew("system/elektra/mountpoints", KEY_END),
-		keyNew("system/elektra/mountpoints/system", KEY_END),
-		keyNew("system/elektra/mountpoints/system/mountpoint", KEY_VALUE, "system", KEY_END),
-		keyNew("system/elektra/mountpoints/userin", KEY_END),
-		keyNew("system/elektra/mountpoints/userin/mountpoint", KEY_VALUE, "user/invalid", KEY_END),
-		keyNew("system/elektra/mountpoints/userva", KEY_END),
-		keyNew("system/elektra/mountpoints/userva/mountpoint", KEY_VALUE, "user/valid", KEY_END),
-		KS_END);
-}
-
 void test_three()
 {
 	printf ("Test three mountpoints\n");
@@ -793,18 +796,20 @@ void test_three()
 		keyNew ("system/valid", KEY_END),
 		keyNew ("system/valid/key1", KEY_END),
 		keyNew ("system/valid/key2", KEY_END),
+		keyNew ("system/valid/key3", KEY_END),
 		keyNew ("user/invalid", KEY_END),
 		keyNew ("user/invalid/key1", KEY_END),
 		keyNew ("user/invalid/key2", KEY_END),
 		keyNew ("user/valid", KEY_END),
 		keyNew ("user/valid/key1", KEY_END),
-		keyNew ("user/valid/key2", KEY_END),
+		keyNew ("user/outside", KEY_END),
 		KS_END);
 	KeySet *split0 = ksNew (
 		9,
 		keyNew ("system/valid", KEY_END),
 		keyNew ("system/valid/key1", KEY_END),
 		keyNew ("system/valid/key2", KEY_END),
+		keyNew ("system/valid/key3", KEY_END),
 		KS_END);
 	KeySet *split1 = ksNew (
 		9,
@@ -816,26 +821,36 @@ void test_three()
 		9,
 		keyNew ("user/valid", KEY_END),
 		keyNew ("user/valid/key1", KEY_END),
-		keyNew ("user/valid/key2", KEY_END),
+		KS_END);
+	KeySet *split3 = ksNew (
+		9,
+		keyNew ("user/outside", KEY_END),
 		KS_END);
 
 
 	Split *split = elektraSplitNew();
-	succeed_if (elektraSplitSync (split, handle, ks) == 1, "should need sync");
+	succeed_if (elektraSplitBuildup (split, handle, 0) == 1, "should need sync");
+	succeed_if (elektraSplitDivide (split, handle, ks) == 1, "should need sync");
+
+	//output_split(split);
+
 	succeed_if (split->keysets, "did not alloc keysets array");
 	succeed_if (split->handles, "did not alloc handles array");
+	succeed_if (split->size == 4, "not splitted according three");
 	succeed_if (split->syncbits[0] == 1, "system part need to by synced");
 	succeed_if (split->syncbits[1] == 1, "user part need to by synced");
 	succeed_if (split->syncbits[2] == 1, "user part need to by synced");
-	succeed_if (split->size == 3, "not splitted according three");
-	succeed_if (ksGetSize(split->keysets[0]) == 3, "size of keyset not correct");
+	succeed_if (split->syncbits[3] == 3, "user root part need to by synced");
+	succeed_if (ksGetSize(split->keysets[0]) == 4, "size of keyset not correct");
 	succeed_if (ksGetSize(split->keysets[1]) == 3, "size of keyset not correct");
-	succeed_if (ksGetSize(split->keysets[2]) == 3, "size of keyset not correct");
+	succeed_if (ksGetSize(split->keysets[2]) == 2, "size of keyset not correct");
+	succeed_if (ksGetSize(split->keysets[3]) == 1, "size of keyset not correct");
 	succeed_if (compare_keyset (split->keysets[0], split0) == 0, "system keyset not correct");
 	succeed_if (compare_keyset (split->keysets[1], split1) == 0, "userin keyset not correct");
 	succeed_if (compare_keyset (split->keysets[2], split2) == 0, "userva keyset not correct");
-	elektraSplitDel (split);
+	succeed_if (compare_keyset (split->keysets[3], split3) == 0, "userva keyset not correct");
 
+	elektraSplitDel (split);
 
 
 
@@ -843,11 +858,14 @@ void test_three()
 	ksDel (split0);
 	ksDel (split1);
 	ksDel (split2);
+	ksDel (split3);
 	elektraModulesClose(modules, 0);
 	ksDel (modules);
 	elektraTrieClose(handle->trie, 0);
 	elektraFree(handle);
 }
+
+#if 0
 
 void test_userremove()
 {
@@ -985,6 +1003,7 @@ int main(int argc, char** argv)
 
 	init (argc, argv);
 
+	/*
 	test_create();
 	test_resize();
 	test_append();
@@ -998,8 +1017,9 @@ int main(int argc, char** argv)
 	test_mount();
 	test_easyparent();
 	test_optimize();
-	/*
+	*/
 	test_three();
+	/*
 	test_userremove();
 	test_systemremove();
 	*/
