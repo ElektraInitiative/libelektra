@@ -388,21 +388,22 @@ int elektraSplitSync(Split *split)
 		if (split->syncbits[i] & 1)
 		{
 			needsSync = 1;
+			continue;
 		}
 
-		if (!strncmp(keyName(split->parents[0]), "system", 6))
+		if (!strncmp(keyName(split->parents[i]), "system", 6))
 		{
 			/* Check for system keyset for removed keys */
 			if (split->handles[i]->systemsize != ksGetSize(split->keysets[i]))
 			{
-				split->syncbits[i] = 1;
+				split->syncbits[i] |= 1;
 				needsSync = 1;
 			}
-		} else if (!strncmp(keyName(split->parents[0]), "user", 4)) {
+		} else if (!strncmp(keyName(split->parents[i]), "user", 4)) {
 			/* Check for user keyset for removed keys */
 			if (split->handles[i]->usersize != ksGetSize(split->keysets[i]))
 			{
-				split->syncbits[i] = 1;
+				split->syncbits[i] |= 1;
 				needsSync = 1;
 			}
 		}

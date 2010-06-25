@@ -265,7 +265,8 @@ void output_split(Split *split)
 {
 	for (size_t i=0; i<split->size; ++i)
 	{
-		printf ("split size: %zd, handle: %p, sync: %d, parent: %s (%s)\n",
+		printf ("split #%zd size: %zd, handle: %p, sync: %d, parent: %s (%s)\n",
+				i,
 				ksGetSize(split->keysets[i]),
 				(void*)split->handles[i],
 				split->syncbits[i],

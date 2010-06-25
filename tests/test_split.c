@@ -87,6 +87,30 @@ KeySet *set_three()
 }
 
 
+KeySet *set_realworld()
+{
+	return ksNew(50,
+		keyNew("system/elektra/mountpoints", KEY_END),
+		keyNew("system/elektra/mountpoints/root", KEY_END),
+		keyNew("system/elektra/mountpoints/root/mountpoint", KEY_VALUE, "", KEY_END),
+		keyNew("system/elektra/mountpoints/default", KEY_END),
+		keyNew("system/elektra/mountpoints/default/mountpoint", KEY_VALUE, "system/elektra", KEY_END),
+		keyNew("system/elektra/mountpoints/users", KEY_END),
+		keyNew("system/elektra/mountpoints/users/mountpoint", KEY_VALUE, "system/users", KEY_END),
+		keyNew("system/elektra/mountpoints/groups", KEY_END),
+		keyNew("system/elektra/mountpoints/groups/mountpoint", KEY_VALUE, "system/groups", KEY_END),
+		keyNew("system/elektra/mountpoints/hosts", KEY_END),
+		keyNew("system/elektra/mountpoints/hosts/mountpoint", KEY_VALUE, "system/hosts", KEY_END),
+		keyNew("system/elektra/mountpoints/kde", KEY_END),
+		keyNew("system/elektra/mountpoints/kde/mountpoint", KEY_VALUE, "user/sw/kde/default", KEY_END),
+		keyNew("system/elektra/mountpoints/app1", KEY_END),
+		keyNew("system/elektra/mountpoints/app1/mountpoint", KEY_VALUE, "user/sw/apps/app1/default", KEY_END),
+		keyNew("system/elektra/mountpoints/app2", KEY_END),
+		keyNew("system/elektra/mountpoints/app2/mountpoint", KEY_VALUE, "user/sw/apps/app2", KEY_END),
+		KS_END);
+}
+
+
 
 void test_create()
 {
@@ -1107,6 +1131,187 @@ void test_emptyremove()
 	keyDel (parent);
 }
 
+void test_realworld()
+{
+	printf ("Test real world example\n");
+
+	printf ("Test three mountpoints\n");
+
+	Key *parent = 0;
+	KDB *handle = elektraCalloc(sizeof(struct _KDB));
+	KeySet *modules = ksNew(0);
+	elektraModulesInit(modules, 0);
+	handle->trie = elektraTrieOpen(set_realworld(), modules, 0);
+
+	KeySet *ks = ksNew ( 18,
+		keyNew ("system/elektra/mountpoints", KEY_END),
+		keyNew ("system/elektra/mountpoints/new", KEY_END),
+		keyNew ("system/elektra/mountpoints/new/mountpoint", KEY_VALUE, "something", KEY_END),
+		keyNew ("system/users", KEY_END),
+		keyNew ("system/users/markus", KEY_END),
+		keyNew ("system/users/harald", KEY_END),
+		keyNew ("system/users/n", KEY_END),
+		keyNew ("system/users/albert", KEY_END),
+		keyNew ("system/hosts", KEY_END),
+		keyNew ("system/hosts/markusbyte", KEY_VALUE, "127.0.0.1", KEY_END),
+		keyNew ("system/hosts/mobilebyte", KEY_END),
+		keyNew ("system/hosts/n900", KEY_END),
+		keyNew ("user/sw/apps/app1/default", KEY_END),
+		keyNew ("user/sw/apps/app1/default/maximize", KEY_VALUE, "1", KEY_END),
+		keyNew ("user/sw/apps/app1/default/download", KEY_VALUE, "0", KEY_END),
+		keyNew ("user/sw/apps/app1/default/keys/a", KEY_VALUE, "a", KEY_END),
+		keyNew ("user/sw/apps/app1/default/keys/b", KEY_VALUE, "b", KEY_END),
+		keyNew ("user/sw/apps/app1/default/keys/c", KEY_VALUE, "c", KEY_END),
+		keyNew ("user/outside", KEY_VALUE, "test", KEY_END),
+		KS_END);
+	KeySet *split0 = ksNew ( 9,
+		keyNew ("system/elektra/mountpoints", KEY_END),
+		keyNew ("system/elektra/mountpoints/new", KEY_END),
+		keyNew ("system/elektra/mountpoints/new/mountpoint", KEY_VALUE, "something", KEY_END),
+		KS_END);
+	KeySet *split2 = ksNew ( 9,
+		keyNew ("system/hosts", KEY_END),
+		keyNew ("system/hosts/markusbyte", KEY_VALUE, "127.0.0.1", KEY_END),
+		keyNew ("system/hosts/mobilebyte", KEY_END),
+		keyNew ("system/hosts/n900", KEY_END),
+		KS_END);
+	KeySet *split3 = ksNew ( 9,
+		keyNew ("system/users", KEY_END),
+		keyNew ("system/users/markus", KEY_END),
+		keyNew ("system/users/harald", KEY_END),
+		keyNew ("system/users/n", KEY_END),
+		keyNew ("system/users/albert", KEY_END),
+		KS_END);
+	KeySet *split4 = ksNew ( 9,
+		keyNew ("user/sw/apps/app1/default", KEY_END),
+		keyNew ("user/sw/apps/app1/default/maximize", KEY_VALUE, "1", KEY_END),
+		keyNew ("user/sw/apps/app1/default/download", KEY_VALUE, "0", KEY_END),
+		keyNew ("user/sw/apps/app1/default/keys/a", KEY_VALUE, "a", KEY_END),
+		keyNew ("user/sw/apps/app1/default/keys/b", KEY_VALUE, "b", KEY_END),
+		keyNew ("user/sw/apps/app1/default/keys/c", KEY_VALUE, "c", KEY_END),
+		KS_END);
+	KeySet *split7 = ksNew ( 3, 
+		keyNew ("user/outside", KEY_VALUE, "test", KEY_END),
+		KS_END);
+
+
+	Split *split = elektraSplitNew();
+
+	succeed_if (elektraSplitBuildup (split, handle, parent) == 1, "should need sync");
+	succeed_if (split->size == 9, "size not correct");
+	succeed_if (split->handles[7] == split->handles[8], "root backends have same handle");
+	succeed_if (split->syncbits[7] == 2, "sync state for root not correct");
+	succeed_if (split->syncbits[8] == 2, "sync state for root not correct");
+	succeed_if (!strcmp(keyName(split->parents[0]), "system/elektra"), "parent key not correct");
+	succeed_if (!strcmp(keyName(split->parents[1]), "system/groups"), "parent key not correct");
+	succeed_if (!strcmp(keyName(split->parents[2]), "system/hosts"), "parent key not correct");
+	succeed_if (!strcmp(keyName(split->parents[3]), "system/users"), "parent key not correct");
+	succeed_if (!strcmp(keyName(split->parents[4]), "user/sw/apps/app1/default"), "parent key not correct");
+	succeed_if (!strcmp(keyName(split->parents[5]), "user/sw/apps/app2"), "parent key not correct");
+	succeed_if (!strcmp(keyName(split->parents[6]), "user/sw/kde/default"), "parent key not correct");
+	succeed_if (!strcmp(keyName(split->parents[7]), "user"), "parent key not correct");
+	succeed_if (!strcmp(keyName(split->parents[8]), "system"), "parent key not correct");
+
+	succeed_if (elektraSplitDivide (split, handle, ks) == 1, "should need sync");
+	succeed_if (split->syncbits[0] == 1, "sync state for root not correct");
+	succeed_if (split->syncbits[1] == 0, "sync state for root not correct");
+	succeed_if (split->syncbits[2] == 1, "sync state for root not correct");
+	succeed_if (split->syncbits[3] == 1, "sync state for root not correct");
+	succeed_if (split->syncbits[4] == 1, "sync state for root not correct");
+	succeed_if (split->syncbits[5] == 0, "sync state for root not correct");
+	succeed_if (split->syncbits[6] == 0, "sync state for root not correct");
+	succeed_if (split->syncbits[7] == 3, "sync state for root not correct");
+	succeed_if (split->syncbits[8] == 2, "sync state for root not correct");
+	succeed_if (compare_keyset (split->keysets[0], split0) == 0, "comparing: not correct result");
+	succeed_if (compare_keyset (split->keysets[2], split2) == 0, "comparing: not correct result");
+	succeed_if (compare_keyset (split->keysets[3], split3) == 0, "comparing: not correct result");
+	succeed_if (compare_keyset (split->keysets[4], split4) == 0, "comparing: not correct result");
+	succeed_if (compare_keyset (split->keysets[7], split7) == 0, "comparing: not correct result");
+
+	split->handles[5]->usersize = 5;
+	split->handles[8]->systemsize = 12;
+	succeed_if (elektraSplitSync (split) == 1, "should need sync");
+	succeed_if (split->syncbits[5] == 1, "sync state did not find deleted keys");
+	succeed_if (split->syncbits[8] == 3, "sync state did not find deleted keys");
+
+	split->handles[5]->usersize = 0;
+	split->handles[8]->systemsize = 0;
+	elektraSplitDel (split);
+
+
+
+	clear_sync (ks);
+	split = elektraSplitNew();
+	succeed_if (elektraSplitBuildup (split, handle, parent) == 1, "should need sync");
+	succeed_if (split->size == 9, "size not correct");
+
+	succeed_if (elektraSplitDivide (split, handle, ks) == 0, "does not need sync anymore");
+	succeed_if (split->syncbits[0] == 0, "sync state for root not correct");
+	succeed_if (split->syncbits[1] == 0, "sync state for root not correct");
+	succeed_if (split->syncbits[2] == 0, "sync state for root not correct");
+	succeed_if (split->syncbits[3] == 0, "sync state for root not correct");
+	succeed_if (split->syncbits[4] == 0, "sync state for root not correct");
+	succeed_if (split->syncbits[5] == 0, "sync state for root not correct");
+	succeed_if (split->syncbits[6] == 0, "sync state for root not correct");
+	succeed_if (split->syncbits[7] == 2, "sync state for root not correct");
+	succeed_if (split->syncbits[8] == 2, "sync state for root not correct");
+
+	succeed_if (elektraSplitSync (split) == 1, "should need sync, because of removes");
+	/* We have the same as before, because everywhere were keys has to be deleted now */
+	succeed_if (split->syncbits[0] == 1, "sync state for root not correct");
+	succeed_if (split->syncbits[1] == 0, "sync state for root not correct");
+	succeed_if (split->syncbits[2] == 1, "sync state for root not correct");
+	succeed_if (split->syncbits[3] == 1, "sync state for root not correct");
+	succeed_if (split->syncbits[4] == 1, "sync state for root not correct");
+	succeed_if (split->syncbits[5] == 0, "sync state for root not correct");
+	succeed_if (split->syncbits[6] == 0, "sync state for root not correct");
+	succeed_if (split->syncbits[7] == 3, "sync state for root not correct");
+	succeed_if (split->syncbits[8] == 2, "sync state for root not correct");
+
+	elektraSplitDel (split);
+
+
+	split = elektraSplitNew();
+	succeed_if (elektraSplitBuildup (split, handle, parent) == 1, "should need sync");
+	succeed_if (split->size == 9, "size not correct");
+	succeed_if (elektraSplitDivide (split, handle, ks) == 0, "does not need sync anymore");
+	split->handles[0]->systemsize = 3;
+	split->handles[2]->systemsize = 4;
+	split->handles[3]->systemsize = 5;
+	split->handles[4]->usersize = 6;
+	split->handles[7]->usersize = 1;
+	succeed_if (elektraSplitSync (split) == 0, "no sync needed");
+	elektraSplitDel (split);
+
+
+	split = elektraSplitNew();
+	succeed_if (elektraSplitBuildup (split, handle, parent) == 1, "should need sync");
+	succeed_if (split->size == 9, "size not correct");
+	succeed_if (elektraSplitDivide (split, handle, ks) == 0, "does not need sync anymore");
+	split->handles[0]->systemsize = 3;
+	split->handles[2]->systemsize = 2; /* changed */
+	split->handles[3]->systemsize = 5;
+	split->handles[4]->usersize = 6;
+	split->handles[7]->usersize = 1;
+	succeed_if (elektraSplitSync (split) == 1, "sync needed because one size not correct");
+	succeed_if (split->syncbits[2] == 1, "sync state for root not correct");
+	elektraSplitDel (split);
+
+
+	ksDel (ks);
+	ksDel (split0);
+	ksDel (split2);
+	ksDel (split3);
+	ksDel (split4);
+	ksDel (split7);
+	keyDel (parent);
+	elektraModulesClose(modules, 0);
+	ksDel (modules);
+	elektraTrieClose(handle->trie, 0);
+	elektraFree(handle);
+
+}
+
 
 
 int main(int argc, char** argv)
@@ -1133,6 +1338,7 @@ int main(int argc, char** argv)
 	test_userremove();
 	test_systemremove();
 	test_emptyremove();
+	test_realworld();
 
 	printf("\ntest_split RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
