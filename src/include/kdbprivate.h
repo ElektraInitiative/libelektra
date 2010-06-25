@@ -391,14 +391,15 @@ Backend* kdbGetBackend(KDB *handle, const Key *key);
 /*Methods for splitted keysets */
 Split * elektraSplitNew(void);
 void elektraSplitDel(Split *keysets);
-void elektraSplitAppend(Split *ret);
 void elektraSplitResize(Split *ret);
+void elektraSplitAppend(Split *split, Backend *backend, Key *parentKey, int syncbits);
+ssize_t elektraSplitSearchBackend(Split *split, Backend *backend, Key *key);
+int elektraSplitSearchRoot(Split *split, Key *parentKey);
 
 int elektraSplitBuildup (Split *split, KDB *handle, Key *parentKey);
-int elektraSplitSync(Split *split, KDB *handle, KeySet *ks);
-int elektraSplitRemove(Split *split, KDB *handle, KeySet *ks);
-int elektraSplitParent(Split *split, KeySet *ks, Key *parentKey);
-int elektraSplitDomains(Split *split, KeySet *ks, Key *parentKey);
+int elektraSplitDivide (Split *split, KDB *handle, KeySet *ks);
+int elektraSplitSync (Split *split);
+int elektraSplitPrepare (Split *split);
 
 
 /*Internal helpers*/

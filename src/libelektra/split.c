@@ -107,14 +107,14 @@ void elektraSplitDel(Split *keysets)
  * @param ret the split object to work with
  * @ingroup split
  */
-void elektraSplitResize(Split *ret)
+void elektraSplitResize(Split *split)
 {
-	ret->alloc *= 2;
+	split->alloc *= 2;
 
-	elektraRealloc((void**) &ret->keysets, ret->alloc * sizeof(KeySet *));
-	elektraRealloc((void**) &ret->handles, ret->alloc * sizeof(KDB *));
-	elektraRealloc((void**) &ret->parents, ret->alloc * sizeof(Key *));
-	elektraRealloc((void**) &ret->syncbits, ret->alloc * sizeof(int));
+	elektraRealloc((void**) &split->keysets, split->alloc * sizeof(KeySet *));
+	elektraRealloc((void**) &split->handles, split->alloc * sizeof(KDB *));
+	elektraRealloc((void**) &split->parents, split->alloc * sizeof(Key *));
+	elektraRealloc((void**) &split->syncbits, split->alloc * sizeof(int));
 }
 
 /**
@@ -126,36 +126,162 @@ void elektraSplitResize(Split *ret)
  * @param ret the split object to work with
  * @ingroup split
  */
-void elektraSplitAppend(Split *ret)
+void elektraSplitAppend(Split *split, Backend *backend, Key *parentKey, int syncbits)
 {
-	++ ret->size;
-	if (ret->size > ret->alloc) elektraSplitResize(ret);
-
-	ret->keysets[ret->size-1]=NULL;
-	ret->handles[ret->size-1]=NULL;
-	ret->parents[ret->size-1]=NULL;
-	ret->syncbits[ret->size-1]=0;
-}
-
-void elektraSplitAppendEmpty(Split *split, Backend *backend, Key *parentKey)
-{
-	/* TODO: optimization: use an index to find already inserted backends */
-	for (size_t i=0; i<split->size; ++i)
-	{
-		if (backend == split->handles[i])
-		{
-			/* We already have this backend, so leave */
-			return;
-		}
-	}
-
-	elektraSplitAppend(split);
+	++ split->size;
+	if (split->size > split->alloc) elektraSplitResize(split);
 
 	split->keysets[split->size-1]=ksNew(0);
 	split->handles[split->size-1]=backend;
 	split->parents[split->size-1]=parentKey;
-	split->syncbits[split->size-1]=1;
+	split->syncbits[split->size-1]=syncbits;
 }
+
+/**
+ * Determines if the backend is already inserted or not.
+ *
+ * @warning If no parent Key is given, the default/root backends won't
+ * be searched.
+ *
+ * @param split the split object to work with
+ * @param backend the backend to search for
+ * @param parent the key to check for domains in default/root backends.
+ * @return pos of backend if it already exist
+ * @return -1 if it does not exist
+ * @ingroup split
+ */
+ssize_t elektraSplitSearchBackend(Split *split, Backend *backend, Key *parent)
+{
+	/* TODO: possible optimization: use an index to find already inserted backends */
+	for (size_t i=0; i<split->size; ++i)
+	{
+		if (backend == split->handles[i])
+		{
+			if (split->syncbits[i] & 2)
+			{
+				if ((keyIsUser(parent) == 1 && keyIsUser(split->parents[i]) == 1)  ||
+				    (keyIsSystem(parent) == 1 && keyIsSystem(split->parents[i]) == 1))
+				{
+					return i;
+				}
+				continue;
+			}
+			/* We already have this backend, so leave */
+			return i;
+		}
+	}
+	return -1;
+}
+
+
+/**
+ * @returns 1 if one of the backends in split has all
+ *          keys below parentKey
+ * @ingroup split
+ */
+int elektraSplitSearchRoot(Split *split, Key *parentKey)
+{
+	size_t splitSize = split->size;
+
+	for (size_t i=0; i<splitSize; ++i)
+	{
+		if (keyRel (split->parents[i], parentKey) >= 0)
+			return 1;
+	}
+
+	return 0;
+}
+
+
+/*Needed for recursive implementation*/
+static int elektraSplitSearchTrie(Split *split, Trie *trie, Key *parentKey)
+{
+	int hasAdded = 0;
+	int i;
+
+	if (trie==NULL) return 0;
+
+	for (i=0;i<MAX_UCHAR;i++)
+	{
+		if (trie->text[i]!=NULL)
+		{
+			Backend *cur = trie->value[i];
+			hasAdded += elektraSplitSearchTrie(split, trie->children[i], parentKey);
+			if (keyRel(cur->mountpoint, parentKey) >= 0)
+			{
+				elektraSplitSearchBackend(split, cur, 0);
+				elektraSplitAppend(split, cur, keyDup(cur->mountpoint), 0);
+				++hasAdded;
+			}
+		}
+	}
+	return hasAdded;
+}
+
+
+/**
+ * Walks through the trie and adds all backends below parentKey.
+ *
+ * Sets syncbits to 2 if it is a default or root backend (which needs splitting).
+ *
+ * @pre split needs to be empty, directly after creation with elektraSplitNew().
+ *
+ * @pre there needs to be a valid defaultBackend
+ *      but its ok not to have a trie inside KDB.
+ *
+ * @pre parentKey must be a valid key! (could be implemented more generally,
+ *      but that would require splitting up of keysets of the same backend)
+ *
+ * @ingroup split
+ * @return -1 on error
+ * @return 1
+ */
+int elektraSplitBuildup (Split *split, KDB *handle, Key *parentKey)
+{
+	Trie *trie = handle->trie;
+
+	if (!parentKey || !parentKey->key) return -1;
+
+	if (elektraSplitSearchTrie(split, trie, parentKey) > 0)
+	{
+		/* We have found something in the trie, is it enough? */
+		if (elektraSplitSearchRoot(split, parentKey) == 1) return 1;
+	}
+
+	Backend *backend = elektraTrieLookup(trie, parentKey);
+	if (backend && !strcmp(keyName(backend->mountpoint), ""))
+	{
+		/* seems like there is a root backend, add it */
+		if (keyIsUser(parentKey))
+		{
+			elektraSplitAppend (split, backend, keyNew("user", KEY_END), 2);
+		}
+
+		if (keyIsSystem(parentKey))
+		{
+			elektraSplitAppend (split, backend, keyNew("system", KEY_END), 2);
+		}
+		return 1;
+	}
+
+	/* We have not found anything, so lets fallback to defaultBackend */
+
+	Backend *defaultBackend = handle->defaultBackend;
+
+	if (keyIsUser(parentKey))
+	{
+		elektraSplitAppend (split, defaultBackend, keyNew("user", KEY_END), 2);
+	}
+
+	if (keyIsSystem(parentKey))
+	{
+		elektraSplitAppend (split, defaultBackend, keyNew("system", KEY_END), 2);
+	}
+
+	return 1;
+}
+
+
 
 /**
  * Splits up the keysets and search for a sync bit.
@@ -167,9 +293,9 @@ void elektraSplitAppendEmpty(Split *split, Backend *backend, Key *parentKey)
  * @return 1 if there were sync bits
  * @ingroup split
  */
-int elektraSplitSync(Split *split, KDB *handle, KeySet *ks)
+int elektraSplitDivide (Split *split, KDB *handle, KeySet *ks)
 {
-	int curFound = 0; /* If key could be appended to any of the existing splitted keysets */
+	ssize_t curFound = 0; /* If key could be appended to any of the existing splitted keysets */
 	int needsSync = 0;
 	Key *curKey = 0;
 	Backend *curHandle = 0;
@@ -178,41 +304,13 @@ int elektraSplitSync(Split *split, KDB *handle, KeySet *ks)
 	while ((curKey = ksNext (ks)) != 0)
 	{
 		curHandle = kdbGetBackend(handle, curKey);
-		curFound = 0;
 
-		/* TODO: optimization: use an index to find already inserted backends */
-		for (size_t i=0; i<split->size; ++i)
-		{
-			if (curHandle == split->handles[i])
-			{
-				curFound = 1;
-				ksAppendKey(split->keysets[i],curKey);
-				if (!split->syncbits[i] && keyNeedSync (curKey) == 1)
-				{
-					needsSync = 1;
-					split->syncbits[i] = 1;
-				}
-			}
-		}
+		curFound = elektraSplitSearchBackend(split, curHandle, curKey);
 
-		if (!curFound)
-		{
-			elektraSplitAppend (split);
+		if (curFound == -1) continue;
 
-			split->keysets[split->size-1] = ksNew (ksGetSize (ks) / APPROXIMATE_NR_OF_BACKENDS + 2, KS_END);
-			ksAppendKey(split->keysets[split->size-1],curKey);
-			split->handles[split->size-1] = curHandle;
-			if (curHandle)
-			{
-				split->parents[split->size-1] = curHandle->mountpoint;
-				keyIncRef (split->parents[split->size-1]);
-			}
-			if (keyNeedSync (curKey) == 1)
-			{
-				needsSync = 1;
-				split->syncbits[split->size-1] = 1;
-			}
-		}
+		ksAppendKey (split->keysets[curFound], curKey);
+		if (keyNeedSync(curKey) == 1) split->syncbits[curFound] &= 1;
 	}
 
 	return needsSync;
@@ -220,11 +318,13 @@ int elektraSplitSync(Split *split, KDB *handle, KeySet *ks)
 
 /** Add sync bits everywhere keys were removed.
  *
+ * @return 0 if kdbSet() is not needed
+ * @return 1 if kdbSet() is needed
  * @pre user/system was splitted before.
  * @ingroup split
  *
 **/
-int elektraSplitRemove(Split *split, KDB *handle, KeySet *ks)
+int elektraSplitSync(Split *split)
 {
 	int needsSync = 0;
 
@@ -251,170 +351,16 @@ int elektraSplitRemove(Split *split, KDB *handle, KeySet *ks)
 	return needsSync;
 }
 
-/** Determine parentKey for the keysets.
- * Removes sync bits for keysets which are not below parentKey.
- * Split keysets so that user and system are separated.
+/** Prepares for kdbSet() mainloop afterwards.
+ *
+ * All splits which do not need sync are removed and a deep copy
+ * of the remaining keysets is done.
+ *
+ * @param split the split object to work with
  * @ingroup split
  */
-int elektraSplitParent(Split *split, KeySet *ks, Key *parentKey)
+int elektraSplitPrepare (Split *split)
 {
-	int needsSync = 0;
-	Key *curParent;
-
-	for (size_t i=0; i<split->size; ++i)
-	{
-		if (split->syncbits[i])
-		{
-			if (parentKey && keyName(parentKey))
-			{
-				split->syncbits[i] = keyIsBelowOrSame (parentKey, ksHead(split->keysets[0]));
-			}
-
-			/* We removed the syncbit because the keyset is not below the parentKey */
-
-			if (!split->syncbits[i]) continue;
-			curParent = keyDup (parentKey);
-			keySetName(parentKey, keyName(split->handles[i]->mountpoint));
-			needsSync = 1;
-		}
-	}
-
-	return needsSync;
-}
-
-
-/**
- * Splits already splitted keysets again when they need to be synced
- * and have both "user" and "system".
- *
- * Marks both parts to be synced.
- *
- * TODO: should split domains too
- * @ingroup split
- */
-int elektraSplitDomains (Split *split, KeySet *ks, Key *parentKey)
-{
-	int needsSync = 0;
-	size_t splitSize = split->size;
-
-	for (size_t i=0; i<splitSize; ++i)
-	{
-		if (split->syncbits[i])
-		{
-			if (!strncmp(keyName(ksHead(split->keysets[0])), "system", 6))
-			{
-				if (!strncmp(keyName(ksTail(split->keysets[0])), "user", 4))
-				{
-					/* Seems like we need user/system separation for that keyset */
-					Key *userKey = keyNew("user", KEY_END);
-
-					elektraSplitAppend(split);
-					split->keysets[split->size-1] = ksCut(split->keysets[i], userKey);
-					split->handles[split->size-1] = split->handles[i];
-					needsSync = 1;
-					split->syncbits[split->size-1] = 1;
-
-					keyDel (userKey);
-				}
-			}
-		}
-	}
-
-	return needsSync;
-}
-
-/**
- * @returns 1 if one of the backends in split has all
- *          keys below parentKey
- */
-int elektraSplitSearchRoot(Split *split, Key *parentKey)
-{
-	size_t splitSize = split->size;
-
-	for (size_t i=0; i<splitSize; ++i)
-	{
-		if (keyRel (split->parents[i], parentKey) >= 0)
-			return 1;
-	}
-
 	return 0;
-}
-
-int elektraSplitSearchTrie(Split *split, Trie *trie, Key *parentKey)
-{
-	int hasAdded = 0;
-	int i;
-
-	if (trie==NULL) return 0;
-
-	for (i=0;i<MAX_UCHAR;i++)
-	{
-		if (trie->text[i]!=NULL)
-		{
-			Backend *cur = trie->value[i];
-			hasAdded += elektraSplitSearchTrie(split, trie->children[i], parentKey);
-			if (keyRel(cur->mountpoint, parentKey) >= 0)
-			{
-				elektraSplitAppendEmpty(split, cur, keyDup(cur->mountpoint));
-				++hasAdded;
-			}
-		}
-	}
-	return hasAdded;
-}
-
-/**
- * Walks through the trie and adds all backends with size > 0
- * and below parentKey.
- *
- *
- * @pre split needs to be empty, there needs to be a valid defaultBackend
- *      but its ok not to have a trie inside KDB
- *
- * @pre parentKey must be a valid key! (could be implemented more generally,
- *      but that would require splitting up of keysets of the same backend)
- *
- * @ingroup split
- * @return -1 on error;
- */
-int elektraSplitBuildup (Split *split, KDB *handle, Key *parentKey)
-{
-	Trie *trie = handle->trie;
-	int needsSync = 0;
-
-	if (!parentKey || !parentKey->key) return -1;
-
-	if (elektraSplitSearchTrie(split, trie, parentKey) > 0)
-	{
-		/* We have found something in the trie, is it enough? */
-		if (elektraSplitSearchRoot(split, parentKey) == 1) return 1;
-	}
-
-	Backend *backend = elektraTrieLookup(trie, parentKey);
-	if (backend && !strcmp(keyName(backend->mountpoint), ""))
-	{
-		/* seems like there is a root backend, add it */
-		elektraSplitAppendEmpty(split, backend, keyDup(parentKey));
-		return 1;
-	}
-
-	/* We have not found anything, so lets fallback to defaultBackend */
-
-	Backend *defaultBackend = handle->defaultBackend;
-
-	if (keyIsUser(parentKey) && defaultBackend->usersize > 0)
-	{
-		elektraSplitAppendEmpty (split, defaultBackend, keyNew("user", KEY_END));
-		needsSync = 1;
-	}
-
-	if (keyIsSystem(parentKey) && defaultBackend->systemsize > 0)
-	{
-		elektraSplitAppendEmpty (split, defaultBackend, keyNew("system", KEY_END));
-		needsSync = 1;
-	}
-
-
-	return needsSync;
 }
 
