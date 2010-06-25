@@ -434,29 +434,26 @@ void test_emptysplit()
 }
 
 
-#if 0
-
 void test_needsync()
 {
 	printf ("Test needs sync\n");
 
 	KDB *handle = elektraCalloc(sizeof(struct _KDB));
+	handle->defaultBackend = elektraCalloc(sizeof(struct _Backend));
 	KeySet *ks = ksNew (5,
 			keyNew("user/abc", KEY_END),
 			KS_END);
 	Split *split = elektraSplitNew();
+	Key *parent = keyNew("user", KEY_VALUE, "parent", KEY_END);
 
 	succeed_if (split->size == 0, "size should be zero");
 	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "initial size not correct");
 
-	succeed_if (elektraSplitSync (split, handle, ks) == 1, "there should be a need sync");
-
-	elektraSplitDel (split);
-
-	split = elektraSplitNew();
-
-	clear_sync (ks);
-	succeed_if (elektraSplitSync (split, handle, ks) == 0, "there should not be a need sync");
+	succeed_if (elektraSplitBuildup(split, handle, parent) == 1, "buildup failure");
+	succeed_if (elektraSplitDivide(split, handle, ks) == 1, "there should be a need sync");
+	succeed_if (split->handles[0] == handle->defaultBackend, "handle not correct");
+	succeed_if (compare_keyset(split->keysets[0], ks) == 0, "keyset not correct");
+	succeed_if (split->syncbits[0] & 1, "sync bit should be set");
 
 	succeed_if (split->size == 1, "size should be one");
 	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "should stay same");
@@ -465,45 +462,46 @@ void test_needsync()
 
 
 	split = elektraSplitNew();
+
+	succeed_if (split->size == 0, "size should be zero");
+	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "initial size not correct");
+
+	clear_sync (ks);
+	succeed_if (elektraSplitBuildup(split, handle, parent) == 1, "buildup failure");
+	succeed_if (elektraSplitDivide (split, handle, ks) == 0, "there should not be a need sync");
+	succeed_if (split->handles[0] == handle->defaultBackend, "handle not correct");
+	succeed_if (compare_keyset(split->keysets[0], ks) == 0, "keyset not correct");
+	succeed_if ((split->syncbits[0] & 1) == 0, "sync bit should be set");
+
+	succeed_if (split->size == 1, "size should be one");
+	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "should stay same");
+
+	elektraSplitDel (split);
+
+
+	split = elektraSplitNew();
+
 	ksAppendKey(ks, keyNew("user/key1", KEY_END));
 	ksAppendKey(ks, keyNew("user/key2", KEY_END));
 	ksAppendKey(ks, keyNew("user/key3", KEY_END));
 	ksAppendKey(ks, keyNew("user/key4", KEY_END));
 	ksAppendKey(ks, keyNew("user/key5", KEY_END));
-	succeed_if (elektraSplitSync (split, handle, ks) == 1, "there should be a need sync");
+
+	succeed_if (elektraSplitBuildup(split, handle, parent) == 1, "buildup failure");
+	succeed_if (elektraSplitDivide (split, handle, ks) == 1, "there should be a need sync");
+	succeed_if (split->handles[0] == handle->defaultBackend, "handle not correct");
+	succeed_if (compare_keyset(split->keysets[0], ks) == 0, "keyset not correct");
+	succeed_if (split->syncbits[0] & 1, "sync bit should be set");
 	elektraSplitDel (split);
 
 
-	split = elektraSplitNew();
-	clear_sync (ks);
-	succeed_if (elektraSplitSync (split, handle, ks) == 0, "there should not be a need sync");
-
-	succeed_if (split->size == 1, "size should be one");
-	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "should stay same");
-	elektraSplitDel (split);
-
-
-
-	split = elektraSplitNew();
-	succeed_if (elektraSplitSync (split, handle, ks) == 0, "there should not be a need sync (again)");
-
-	succeed_if (split->size == 1, "size should be one");
-	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "should stay same");
-	elektraSplitDel (split);
-
-
-	split = elektraSplitNew();
-	keySetString(ksLookupByName(ks, "user/key2", 0), "value");
-	succeed_if (elektraSplitSync (split, handle, ks) == 1, "there should not be a need sync (value changed)");
-
-	succeed_if (split->size == 1, "size should be one");
-	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "should stay same");
-	elektraSplitDel (split);
-
-
+	keyDel (parent);
 	ksDel (ks);
+	elektraFree(handle->defaultBackend);
 	elektraFree(handle);
 }
+
+#if 0
 
 void test_easysplit()
 {
@@ -1080,8 +1078,8 @@ int main(int argc, char** argv)
 	test_trie();
 	test_rootbackend();
 	test_emptysplit();
-	/*
 	test_needsync();
+	/*
 	test_easysplit();
 	test_singlesplit();
 	test_mount();

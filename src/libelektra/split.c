@@ -315,8 +315,11 @@ int elektraSplitDivide (Split *split, KDB *handle, KeySet *ks)
 		if (curFound == -1) continue;
 
 		ksAppendKey (split->keysets[curFound], curKey);
-		if (keyNeedSync(curKey) == 1) split->syncbits[curFound] &= 1;
-		needsSync = 1;
+		if (keyNeedSync(curKey) == 1)
+		{
+			split->syncbits[curFound] |= 1;
+			needsSync = 1;
+		}
 	}
 
 	return needsSync;
