@@ -27,6 +27,38 @@
 
 #include <tests.h>
 
+
+
+KeySet *modules_config(void)
+{
+	return ksNew(5,
+		keyNew("system/elektra/modules", KEY_END),
+		KS_END);
+}
+
+
+KeySet *simple_config(void)
+{
+	return ksNew(5,
+		keyNew("system/elektra/mountpoints", KEY_END),
+		keyNew("system/elektra/mountpoints/simple", KEY_END),
+		keyNew("system/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user/tests/simple", KEY_END),
+		KS_END);
+}
+
+
+KeySet *set_us()
+{
+	return ksNew(50,
+		keyNew("system/elektra/mountpoints", KEY_END),
+		keyNew("system/elektra/mountpoints/user", KEY_END),
+		keyNew("system/elektra/mountpoints/user/mountpoint", KEY_VALUE, "user", KEY_END),
+		keyNew("system/elektra/mountpoints/system", KEY_END),
+		keyNew("system/elektra/mountpoints/system/mountpoint", KEY_VALUE, "system", KEY_END),
+		KS_END);
+}
+
+
 void test_create()
 {
 	printf ("Test create split\n");
@@ -174,6 +206,128 @@ void test_basic()
 	elektraFree(handle);
 }
 
+
+void test_triesimple()
+{
+	printf ("Test simple trie\n");
+
+	KDB *handle = elektraCalloc(sizeof(struct _KDB));
+	KeySet *modules = modules_config();
+	Backend *backend;
+
+	handle->defaultBackend = elektraCalloc(sizeof(struct _Backend));
+	handle->trie = elektraTrieOpen(simple_config(), modules, 0);
+
+	Split *split;
+	Key *parentKey;
+	Key *mp;
+
+	split = elektraSplitNew();
+	parentKey = keyNew("user/tests/simple/below", KEY_END);
+	mp = keyNew("user/tests/simple", KEY_VALUE, "simple", KEY_END);
+	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
+	succeed_if (split->size == 1, "there is an empty keset");
+	succeed_if (ksGetSize(split->keysets[0]) == 0, "wrong size");
+	succeed_if (compare_key (split->parents[0], mp) == 0, "parentKey not correct");
+	succeed_if (split->handles[0] != handle->defaultBackend, "should be not the default backend");
+	backend = elektraTrieLookup(handle->trie, parentKey);
+	succeed_if (split->handles[0] == backend, "should be user backend");
+	elektraSplitDel (split);
+	keyDel (parentKey);
+	keyDel (mp);
+
+	// output_trie(trie);
+
+	elektraTrieClose(handle->trie, 0);
+	elektraFree(handle->defaultBackend);
+	elektraFree(handle);
+	ksDel (modules);
+}
+
+
+
+void test_trie()
+{
+	printf ("Test basic trie\n");
+	KDB *handle = elektraCalloc(sizeof(struct _KDB));
+	Key *parentKey;
+	Key *mp;
+	Split *split;
+	Backend *backend;
+	KeySet *modules = modules_config();
+
+	handle->defaultBackend = elektraCalloc(sizeof(struct _Backend));
+	handle->defaultBackend->usersize = 2;
+	handle->defaultBackend->systemsize = 2;
+	/* So we had 2 keys before in the keyset */
+	handle->trie = elektraTrieOpen(set_us(), modules, 0);
+
+
+	split = elektraSplitNew();
+	parentKey = keyNew("user", KEY_VALUE, "user", KEY_END);
+	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
+	succeed_if (split->size == 1, "there is an empty keset");
+	succeed_if (ksGetSize(split->keysets[0]) == 0, "wrong size");
+	succeed_if (compare_key (split->parents[0], parentKey) == 0, "parentKey not correct");
+	succeed_if (split->handles[0] != handle->defaultBackend, "should be not the default backend");
+	backend = elektraTrieLookup(handle->trie, parentKey);
+	succeed_if (split->handles[0] == backend, "should be user backend");
+	elektraSplitDel (split);
+	keyDel (parentKey);
+
+
+	split = elektraSplitNew();
+	parentKey = keyNew("system", KEY_VALUE, "system", KEY_END);
+	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backend for system");
+	succeed_if (split->size == 1, "there is an empty keset");
+	succeed_if (ksGetSize(split->keysets[0]) == 0, "wrong size");
+	succeed_if (compare_key (split->parents[0], parentKey) == 0, "parentKey not correct");
+	succeed_if (split->handles[0] != handle->defaultBackend, "should be not the default backend");
+	backend = elektraTrieLookup(handle->trie, parentKey);
+	succeed_if (split->handles[0] == backend, "should be system backend");
+	elektraSplitDel (split);
+	keyDel (parentKey);
+
+
+	split = elektraSplitNew();
+	parentKey = keyNew("system/below", KEY_VALUE, "system", KEY_END);
+	mp = keyNew("system", KEY_VALUE, "system", KEY_END);
+	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backend for system");
+	succeed_if (split->size == 1, "there is an empty keset");
+	succeed_if (ksGetSize(split->keysets[0]) == 0, "wrong size");
+	succeed_if (compare_key (split->parents[0], mp) == 0, "parentKey not correct");
+	succeed_if (split->handles[0] != handle->defaultBackend, "should be not the default backend");
+	backend = elektraTrieLookup(handle->trie, parentKey);
+	succeed_if (split->handles[0] == backend, "should be system backend");
+	elektraSplitDel (split);
+	keyDel (parentKey);
+	keyDel (mp);
+
+
+
+	split = elektraSplitNew();
+	parentKey = keyNew("system/deep/below", KEY_VALUE, "system", KEY_END);
+	mp = keyNew("system", KEY_VALUE, "system", KEY_END);
+	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backend for system");
+	succeed_if (split->size == 1, "there is an empty keset");
+	succeed_if (ksGetSize(split->keysets[0]) == 0, "wrong size");
+	succeed_if (compare_key (split->parents[0], mp) == 0, "parentKey not correct");
+	succeed_if (split->handles[0] != handle->defaultBackend, "should be not the default backend");
+	backend = elektraTrieLookup(handle->trie, parentKey);
+	succeed_if (split->handles[0] == backend, "should be system backend");
+	elektraSplitDel (split);
+	keyDel (parentKey);
+	keyDel (mp);
+
+
+
+	ksDel (modules);
+	elektraTrieClose(handle->trie, 0);
+	elektraFree(handle->defaultBackend);
+	elektraFree(handle);
+}
+
+
 #if 0
 
 
@@ -312,17 +466,6 @@ void test_singlesplit()
 	elektraFree(handle);
 }
 
-
-KeySet *set_us()
-{
-	return ksNew(50,
-		keyNew("system/elektra/mountpoints", KEY_END),
-		keyNew("system/elektra/mountpoints/user", KEY_END),
-		keyNew("system/elektra/mountpoints/user/mountpoint", KEY_VALUE, "user", KEY_END),
-		keyNew("system/elektra/mountpoints/system", KEY_END),
-		keyNew("system/elektra/mountpoints/system/mountpoint", KEY_VALUE, "system", KEY_END),
-		KS_END);
-}
 
 void test_mount()
 {
@@ -833,148 +976,6 @@ void test_emptyremove()
 	elektraFree(handle);
 }
 
-KeySet *modules_config(void)
-{
-	return ksNew(5,
-		keyNew("system/elektra/modules", KEY_END),
-		KS_END);
-}
-
-void test_trie()
-{
-	printf ("Test basic trie\n");
-	KDB *handle = elektraCalloc(sizeof(struct _KDB));
-	Key *parentKey;
-	Key *mp;
-	Split *split;
-	Backend *backend;
-	KeySet *modules = modules_config();
-
-	handle->defaultBackend = elektraCalloc(sizeof(struct _Backend));
-	handle->defaultBackend->usersize = 2;
-	handle->defaultBackend->systemsize = 2;
-	/* So we had 2 keys before in the keyset */
-	handle->trie = elektraTrieOpen(set_us(), modules, 0);
-
-
-	split = elektraSplitNew();
-	parentKey = keyNew("user", KEY_VALUE, "user", KEY_END);
-	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
-	succeed_if (split->size == 1, "there is an empty keset");
-	succeed_if (ksGetSize(split->keysets[0]) == 0, "wrong size");
-	succeed_if (compare_key (split->parents[0], parentKey) == 0, "parentKey not correct");
-	succeed_if (split->handles[0] != handle->defaultBackend, "should be not the default backend");
-	backend = elektraTrieLookup(handle->trie, parentKey);
-	succeed_if (split->handles[0] == backend, "should be user backend");
-	elektraSplitDel (split);
-	keyDel (parentKey);
-
-
-	split = elektraSplitNew();
-	parentKey = keyNew("system", KEY_VALUE, "system", KEY_END);
-	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backend for system");
-	succeed_if (split->size == 1, "there is an empty keset");
-	succeed_if (ksGetSize(split->keysets[0]) == 0, "wrong size");
-	succeed_if (compare_key (split->parents[0], parentKey) == 0, "parentKey not correct");
-	succeed_if (split->handles[0] != handle->defaultBackend, "should be not the default backend");
-	backend = elektraTrieLookup(handle->trie, parentKey);
-	succeed_if (split->handles[0] == backend, "should be system backend");
-	elektraSplitDel (split);
-	keyDel (parentKey);
-
-
-	split = elektraSplitNew();
-	parentKey = keyNew("system/below", KEY_VALUE, "system", KEY_END);
-	mp = keyNew("system", KEY_VALUE, "system", KEY_END);
-	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backend for system");
-	succeed_if (split->size == 1, "there is an empty keset");
-	succeed_if (ksGetSize(split->keysets[0]) == 0, "wrong size");
-	succeed_if (compare_key (split->parents[0], mp) == 0, "parentKey not correct");
-	succeed_if (split->handles[0] != handle->defaultBackend, "should be not the default backend");
-	backend = elektraTrieLookup(handle->trie, parentKey);
-	succeed_if (split->handles[0] == backend, "should be system backend");
-	elektraSplitDel (split);
-	keyDel (parentKey);
-	keyDel (mp);
-
-
-
-	split = elektraSplitNew();
-	parentKey = keyNew("system/deep/below", KEY_VALUE, "system", KEY_END);
-	mp = keyNew("system", KEY_VALUE, "system", KEY_END);
-	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backend for system");
-	succeed_if (split->size == 1, "there is an empty keset");
-	succeed_if (ksGetSize(split->keysets[0]) == 0, "wrong size");
-	succeed_if (compare_key (split->parents[0], mp) == 0, "parentKey not correct");
-	succeed_if (split->handles[0] != handle->defaultBackend, "should be not the default backend");
-	backend = elektraTrieLookup(handle->trie, parentKey);
-	succeed_if (split->handles[0] == backend, "should be system backend");
-	elektraSplitDel (split);
-	keyDel (parentKey);
-	keyDel (mp);
-
-
-
-	ksDel (modules);
-	elektraTrieClose(handle->trie, 0);
-	elektraFree(handle->defaultBackend);
-	elektraFree(handle);
-}
-
-
-
-KeySet *simple_config(void)
-{
-	return ksNew(5,
-		keyNew("system/elektra/mountpoints", KEY_END),
-		keyNew("system/elektra/mountpoints/simple", KEY_END),
-		keyNew("system/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user/tests/simple", KEY_END),
-		KS_END);
-}
-
-void test_triesimple()
-{
-	printf ("Test simple trie\n");
-
-	KDB *handle = elektraCalloc(sizeof(struct _KDB));
-	KeySet *modules = modules_config();
-	Backend *backend;
-
-	handle->defaultBackend = elektraCalloc(sizeof(struct _Backend));
-	handle->trie = elektraTrieOpen(set_us(), modules, 0);
-
-	Key *errorKey = keyNew(0);
-	Trie *trie = elektraTrieOpen(simple_config(), modules, errorKey);
-	Split *split;
-	Key *parentKey;
-	Key *mp;
-
-	output_warnings (errorKey);
-	output_errors (errorKey);
-
-	exit_if_fail (trie, "trie was not build up successfully");
-
-
-	split = elektraSplitNew();
-	parentKey = keyNew("user/tests/simple/below", KEY_END);
-	mp = keyNew("user/tests/simple", KEY_VALUE, "system", KEY_END);
-	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
-	succeed_if (split->size == 1, "there is an empty keset");
-	succeed_if (ksGetSize(split->keysets[0]) == 0, "wrong size");
-	succeed_if (compare_key (split->parents[0], parentKey) == 0, "parentKey not correct");
-	succeed_if (split->handles[0] != handle->defaultBackend, "should be not the default backend");
-	backend = elektraTrieLookup(handle->trie, parentKey);
-	succeed_if (split->handles[0] == backend, "should be user backend");
-	elektraSplitDel (split);
-	keyDel (parentKey);
-	keyDel (mp);
-
-	// output_trie(trie);
-
-	elektraTrieClose(trie, 0);
-	keyDel (errorKey);
-	ksDel (modules);
-}
 
 #endif
 
@@ -991,6 +992,8 @@ int main(int argc, char** argv)
 	test_append();
 	test_searchroot();
 	test_basic();
+	test_triesimple();
+	test_trie();
 	/*
 	test_emptysplit();
 	test_needsync();
@@ -1003,8 +1006,6 @@ int main(int argc, char** argv)
 	test_three();
 	test_userremove();
 	test_systemremove();
-	test_trie();
-	test_triesimple();
 	*/
 
 	printf("\ntest_split RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
