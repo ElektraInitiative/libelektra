@@ -240,7 +240,7 @@ int elektraSplitBuildup (Split *split, KDB *handle, Key *parentKey)
 {
 	Trie *trie = handle->trie;
 
-	if (!parentKey || !parentKey->key) return -1;
+	/* If parentKey is null it will be true for keyIsUser and keyIsSystem below */
 
 	if (elektraSplitSearchTrie(split, trie, parentKey) > 0)
 	{
@@ -289,6 +289,11 @@ int elektraSplitBuildup (Split *split, KDB *handle, Key *parentKey)
  * It does not check if there were removed keys,
  * see elektraSplitRemove() for the next step.
  *
+ * It does not create new backends, this has to be
+ * done by buildup before.
+ *
+ * @pre elektraSplitBuildup() need to be executed before.
+ *
  * @return 0 if there were no sync bits
  * @return 1 if there were sync bits
  * @ingroup split
@@ -311,6 +316,7 @@ int elektraSplitDivide (Split *split, KDB *handle, KeySet *ks)
 
 		ksAppendKey (split->keysets[curFound], curKey);
 		if (keyNeedSync(curKey) == 1) split->syncbits[curFound] &= 1;
+		needsSync = 1;
 	}
 
 	return needsSync;

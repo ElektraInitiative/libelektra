@@ -393,29 +393,48 @@ void test_rootbackend()
 
 
 
-#if 0
-
 
 void test_emptysplit()
 {
 	printf ("Test empty split\n");
 
 	KDB *handle = elektraCalloc(sizeof(struct _KDB));
+	handle->defaultBackend = elektraCalloc(sizeof(struct _Backend));
 	KeySet *ks = ksNew (0);
 	Split *split = elektraSplitNew();
+	Key *parentKey;
 
 	succeed_if (split->size == 0, "size should be zero");
 	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "initial size not correct");
 
-	succeed_if (elektraSplitSync (split, handle, ks) == 0, "there should be no need sync");
+	succeed_if (elektraSplitBuildup (split, handle, 0) == 1, "default backend should be added");
+	succeed_if (split->size == 2, "there is an empty keset");
+	succeed_if (ksGetSize(split->keysets[0]) == 0, "wrong size");
+	succeed_if (ksGetSize(split->keysets[1]) == 0, "wrong size");
+	parentKey = keyNew ("user", KEY_VALUE, "default", KEY_END);
+	succeed_if (compare_key (split->parents[0], parentKey) == 0, "parentKey not correct");
+	keyDel (parentKey);
+	parentKey = keyNew ("system", KEY_VALUE, "default", KEY_END);
+	succeed_if (compare_key (split->parents[1], parentKey) == 0, "parentKey not correct");
+	keyDel (parentKey);
+	succeed_if (split->handles[0] == handle->defaultBackend, "not correct backend");
+	succeed_if (split->handles[1] == handle->defaultBackend, "not correct backend");
+	succeed_if (split->syncbits[0] == 2, "should be marked as default");
+	succeed_if (split->syncbits[1] == 2, "should be marked as default");
 
-	succeed_if (split->size == 0, "empty requires no appending");
+	succeed_if (elektraSplitDivide (split, handle, ks) == 0, "there should be no added key");
+
+	succeed_if (split->size == 2, "divide never changes size");
 	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "initial size not correct");
 
 	elektraSplitDel (split);
 	ksDel (ks);
+	elektraFree(handle->defaultBackend);
 	elektraFree(handle);
 }
+
+
+#if 0
 
 void test_needsync()
 {
@@ -1060,8 +1079,8 @@ int main(int argc, char** argv)
 	test_triesimple();
 	test_trie();
 	test_rootbackend();
-	/*
 	test_emptysplit();
+	/*
 	test_needsync();
 	test_easysplit();
 	test_singlesplit();
