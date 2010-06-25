@@ -369,6 +369,10 @@ int elektraSplitDivide (Split *split, KDB *handle, KeySet *ks)
 
 /** Add sync bits everywhere keys were removed.
  *
+ * Only this function can really decide if sync is needed or not.
+ *
+ * @pre split needs to be processed with elektraSplitDivide() before.
+ *
  * @return 0 if kdbSet() is not needed
  * @return 1 if kdbSet() is needed
  * @pre user/system was splitted before.
@@ -381,16 +385,21 @@ int elektraSplitSync(Split *split)
 
 	for (size_t i=0; i<split->size; ++i)
 	{
-		if (!strncmp(keyName(ksHead(split->keysets[0])), "system", 6))
+		if (split->syncbits[i] & 1)
 		{
-			/* Check for system keyset */
+			needsSync = 1;
+		}
+
+		if (!strncmp(keyName(split->parents[0]), "system", 6))
+		{
+			/* Check for system keyset for removed keys */
 			if (split->handles[i]->systemsize != ksGetSize(split->keysets[i]))
 			{
 				split->syncbits[i] = 1;
 				needsSync = 1;
 			}
-		} else if (!strncmp(keyName(ksTail(split->keysets[0])), "user", 4)) {
-			/* Check for user keyset */
+		} else if (!strncmp(keyName(split->parents[0]), "user", 4)) {
+			/* Check for user keyset for removed keys */
 			if (split->handles[i]->usersize != ksGetSize(split->keysets[i]))
 			{
 				split->syncbits[i] = 1;
