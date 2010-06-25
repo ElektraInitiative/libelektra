@@ -277,42 +277,41 @@ int elektraSplitBuildup (Split *split, KDB *handle, Key *parentKey)
 	}
 
 
-	if (elektraSplitSearchTrie(split, trie, parentKey) > 0)
+	elektraSplitSearchTrie(split, trie, parentKey);
+
+	/* We may have found something in the trie, but is it enough? */
+	if (!parentKey)
 	{
-		/* We have found something in the trie, is it enough? */
-		if (!parentKey)
+		/* Do we lack one (or two) of the root backends? */
+		if (elektraSplitSearchRoot(split, userKey) == 0)
 		{
-			/* Do we lack one (or two) of the root backends? */
-			if (elektraSplitSearchRoot(split, userKey) == 0)
-			{
-				Backend *backend = elektraTrieLookup(trie, userKey);
-				elektraSplitAppend (split, backend, keyNew("user", KEY_VALUE, "root", KEY_END), 2);
-			}
-
-			if (elektraSplitSearchRoot(split, systemKey) == 0)
-			{
-				Backend *backend = elektraTrieLookup(trie, systemKey);
-				elektraSplitAppend (split, backend, keyNew("system", KEY_VALUE, "root", KEY_END), 2);
-			}
-			goto finish;
-		} else {
-			if (elektraSplitSearchRoot(split, parentKey) == 1) return 1;
-
-			/* Seems like we are lacking a root backend (in the domain of parentKey) */
-
-			Backend *backend = elektraTrieLookup(trie, parentKey);
-
-			if (keyIsUser(parentKey))
-			{
-				elektraSplitAppend (split, backend, keyNew("user", KEY_VALUE, "root", KEY_END), 2);
-			}
-
-			if (keyIsSystem(parentKey))
-			{
-				elektraSplitAppend (split, backend, keyNew("system", KEY_VALUE, "root", KEY_END), 2);
-			}
-			return 1;
+			Backend *backend = elektraTrieLookup(trie, userKey);
+			elektraSplitAppend (split, backend, keyNew("user", KEY_VALUE, "root", KEY_END), 2);
 		}
+
+		if (elektraSplitSearchRoot(split, systemKey) == 0)
+		{
+			Backend *backend = elektraTrieLookup(trie, systemKey);
+			elektraSplitAppend (split, backend, keyNew("system", KEY_VALUE, "root", KEY_END), 2);
+		}
+		goto finish;
+	} else {
+		if (elektraSplitSearchRoot(split, parentKey) == 1) return 1;
+
+		/* Seems like we are lacking a root backend (in the domain of parentKey) */
+
+		Backend *backend = elektraTrieLookup(trie, parentKey);
+
+		if (keyIsUser(parentKey))
+		{
+			elektraSplitAppend (split, backend, keyNew("user", KEY_VALUE, "root", KEY_END), 2);
+		}
+
+		if (keyIsSystem(parentKey))
+		{
+			elektraSplitAppend (split, backend, keyNew("system", KEY_VALUE, "root", KEY_END), 2);
+		}
+		return 1;
 	}
 
 	/* We have not found a root backend either -> not allowed */
