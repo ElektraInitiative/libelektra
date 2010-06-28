@@ -151,7 +151,6 @@ int elektraResolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	resolverHandle *pk = elektraPluginGetData(handle);
 	resolveFilename(parentKey, pk);
 
-	/*
 	int errnoSave = errno;
 	if (stat (pk->filename, &buf) == -1)
 	{
@@ -162,7 +161,6 @@ int elektraResolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		errno = errnoSave;
 		return -1;
 	}
-	*/
 
 	pk->mtime = buf.st_mtime;
 	/* TODO check if update is necessary, not supported by mainloop yet */
@@ -218,7 +216,7 @@ int elektraResolverSet(Plugin *handle, KeySet *returned, Key *parentKey)
 			return -1;
 		}
 
-		if (fstat(pk->fd, &buf) == -1)
+		if (stat(pk->filename, &buf) == -1)
 		{
 			char buffer[ERROR_SIZE];
 			strerror_r(errno, buffer, ERROR_SIZE);
@@ -230,11 +228,8 @@ int elektraResolverSet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 		if (buf.st_mtime > pk->mtime)
 		{
-			char buffer[ERROR_SIZE];
-			strerror_r(errno, buffer, ERROR_SIZE);
-			ELEKTRA_SET_ERROR (30, parentKey, buffer);
+			ELEKTRA_SET_ERROR (30, parentKey, "file time stamp is too new");
 			close(pk->fd);
-			errno = errnoSave;
 			return -1;
 		}
 
