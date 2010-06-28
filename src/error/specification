@@ -59,7 +59,7 @@ severity:warning
 ingroup:kdb
 
 number:8
-description:no default backend found, but should be
+description:no default backend found, but should be (reason contains keyname)
 severity:fatal
 ingroup:kdb
 
@@ -213,4 +213,14 @@ description:could not unlink file
 severity:warning
 ingroup:plugin
 module:resolver
+
+number:37
+description:null pointer passed
+severity:error
+ingroup:kdb
+
+number:38
+description:could not buildup split
+severity:error
+ingroup:kdb
 

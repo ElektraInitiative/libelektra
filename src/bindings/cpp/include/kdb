@@ -71,7 +71,7 @@ inline KDB::~KDB ()
 inline int KDB::get (KeySet & returned, Key & parentKey)
 {
 	int ret = ckdb::kdbGet (handle, returned.getKeySet(), parentKey.getKey());
-	if (ret == -1) throw KDBException();
+	if (ret == -1) throw parentKey;
 	return ret;
 }
 
@@ -79,7 +79,7 @@ inline int KDB::get (KeySet & returned, Key & parentKey)
 inline int KDB::set (KeySet & returned, Key & parentKey)
 {
 	int ret = ckdb::kdbSet(handle, returned.getKeySet(), parentKey.getKey());
-	if (ret == -1) throw KDBException();
+	if (ret == -1) throw parentKey;
 	return ret;
 }
 

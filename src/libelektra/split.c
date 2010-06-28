@@ -316,7 +316,7 @@ int elektraSplitBuildup (Split *split, KDB *handle, Key *parentKey)
 	}
 
 	/* We have not found a root backend either -> not allowed */
-
+	return -1;
 
 finish:
 	keyDel (userKey);
@@ -339,6 +339,7 @@ finish:
  *
  * @return 0 if there were no sync bits
  * @return 1 if there were sync bits
+ * @return -1 if no backend was found for a key
  * @ingroup split
  */
 int elektraSplitDivide (Split *split, KDB *handle, KeySet *ks)
@@ -352,6 +353,7 @@ int elektraSplitDivide (Split *split, KDB *handle, KeySet *ks)
 	while ((curKey = ksNext (ks)) != 0)
 	{
 		curHandle = kdbGetBackend(handle, curKey);
+		if (!curHandle) return -1;
 
 		curFound = elektraSplitSearchBackend(split, curHandle, curKey);
 

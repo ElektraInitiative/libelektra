@@ -606,35 +606,54 @@ int kdbGet (KDB *handle, KeySet *returned,
 
 
 /**
- * Set keys in an atomic and universal way, all other kdbSet Functions
- * rely on that one.
+ * Set keys in an atomic and universal way.
  *
- * The given handle and keyset are the objects to work with.
+ * All other kdbSet Functions rely on that one.
+ *
+ * @section kdbsetparent parentKey
  *
  * With parentKey you can only store a part of the given keyset.
- * Otherwise pass a null pointer or a parentKey without a name.
  *
  * @code
 KeySet *ks = ksNew(0);
-kdbGet (h, ks, keyNew("system/myapp",0), KDB_O_DEL);
-kdbGet (h, ks, keyNew("user/myapp",0), KDB_O_DEL);
+Key *parentKey = keyNew("user/app/myapp/default", KEY_END);
+kdbGet (h, ks, parentKey));
 
-//now only set everything below user, because you can't write to system
-kdbSet (h, ks, keyNew("user/myapp",0), KDB_O_DEL);
+//now only set everything below user
+if (kdbSet (h, ks, parentKey) == -1)
+{
+	// in parentKey you can check the error cause
+	// ksCurrent(ks) is the faulty key
+}
 
 ksDel (ks);
  * @endcode
  *
+ * If you pass a parentKey without a name the whole keyset will be set
+ * in an atomic way.
+ *
+ * @section kdbsetupdate Update
  *
  * Each key is checked with keyNeedSync() before being actually committed. So
  * only changed keys are updated. If no key of a backend needs to be synced
- * the kdbSet_backend() will be omitted.
+ * any affairs to backends omitted and 0 is returned.
+ *
+ * @section kdbseterror Error Situations
  *
  * If some error occurs, kdbSet() will stop. In this situation the KeySet
  * internal cursor will be set on the key that generated the error.
- * This specific key and all behind it were not set.
- * To be failsafe jump over it and try to set the rest, but report the error
- * to the user.
+ *
+ * None of the keys are actually commited.
+ *
+ * You should present the error message to the user and let the user decide what
+ * to do. Possible solutions are:
+ * - repeat the same kdbSet (for temporary errors)
+ * - remove the key and set it again (for validation or type errors)
+ * - change the value and try it again (for validation errors)
+ * - do a kdbGet and then (for conflicts ...)
+ *   - set the same keyset again (in favour of what was set by this user)
+ *   - drop the old keyset (in favour of what was set elsewhere)
+ * - export the configuration into a file (for unresolvable errors)
  *
  * @par Example of how this method can be used:
  * @code
@@ -643,153 +662,134 @@ KeySet *ks;  // the KeySet I want to set
 // fill ks with some keys
 for (i=0; i< NR_OF_TRIES; i++) // limit to NR_OF_TRIES tries
 {
-	ret=kdbSet(handle,ks, 0, 0);
+	ret=kdbSet(handle, ks, parentKey);
 	if (ret == -1)
 	{
 		// We got an error. Warn user.
-		Key *problem;
-		problem=ksCurrent(ks);
-		if (problem)
+		Key *problemKey = ksCurrent(ks);
+		// parentKey has the errorInformation
+		// problemKey is the faulty key (may be null)
+		int userInput = showElektraErrorDialog (parentKey, problemKey);
+		switch (userInput)
 		{
-			char keyname[300]="";
-			keyGetFullName(problem,keyname,sizeof(keyname));
-			fprintf(stderr,"kdb import: while importing %s", keyname);
-		} else break;
-		// And try to set keys again starting from the next key,
-		// unless we reached the end of KeySet
-		if (ksNext(ks) == 0) break;
+		case INPUT_REPEAT: continue;
+		case INPUT_REMOVE: ksLookup (ks, parentKey, KDB_O_POP); break;
+		...
+		}
 	}
 }
  * @endcode
  *
- * @section kdbsetoption Options
- *
- * There are some options changing the behaviour of kdbSet():
- *
- * - @p option_t::KDB_O_DEL \n
- *   Its often useful to keyDel() the parentKey in the line after kdbGet().
- *   Using this flag, you can just pass a key allocated with keyNew(),
- *   kdbGet() will free it for you in the end.
- * - @p option_t::KDB_O_SYNC \n
- *   Will force to save all keys, independent of their sync state.
- * - @p option_t::KDB_O_NOREMOVE \n
- *   Don't remove any key from disk, even with an empty keyset.
- *   With that flag removing keys can't happen unintentional.
- * - @p option_t::KDB_O_REMOVEONLY \n
- *   Remove all keys instead of setting them.
- *   because the sync state will be changed when they are marked remove.
- *   You might need @ref option_t::KDB_O_INACTIVE set for the previous call
- *   of kdbGet() if there are any. Otherwise the recursive remove will fail,
- *   because removing directories is only possible when all subkeys are
- *   removed.
- *
- * @section kdbsetdetail Details
- *
- * When you dont have a parentKey or its name empty, then all keys will
- * be set.
- *
  * @param handle contains internal information of @link kdbOpen() opened @endlink key database
  * @param ks a KeySet which should contain changed keys, otherwise nothing is done
- * @param parentKey holds the information below which key keys should be set
- * @param options see in kdbSet() documentation
- * @return 0 on success
+ * @param parentKey holds the information below which key keys should be set, see above
+ * @return 1 on success
+ * @return 0 if nothing had to be done
  * @return -1 on failure
  * @see keyNeedSync(), ksNext(), ksCurrent()
- * @see commandEdit(), commandImport() code in kdb command for usage and error
- *       handling example
  * @ingroup kdb
  */
 int kdbSet (KDB *handle, KeySet *ks,
 	Key * parentKey)
 {
-	option_t options = 0;
-	int ret=0;
-	Backend *backend_handle;
-	Key *errorKey;
-
-	Split *keysets;
-
-	if (parentKey && !parentKey->key)
-	{
-		if (options & KDB_O_DEL) keyDel (parentKey);
-		parentKey = 0;
-	}
+	Split *split = elektraSplitNew();
+	Key *initialParent = keyDup (parentKey);
 
 #if DEBUG && VERBOSE
 	fprintf (stderr, "now in new kdbSet (%s)\n", keyName(parentKey));
 #endif
 
-	if (!handle || !ks)
+	if (!parentKey)
 	{
-		if (parentKey && (options & KDB_O_DEL)) keyDel (parentKey);
-		/*errno=KDB_ERR_NOSYS;*/
 		return -1;
 	}
 
-	/* keysets=elektraSplitKeySet(handle, ks, parentKey, options); */
-
-	/*
-	   TODO Check if we need to do anything at all [return 0]
-	*/
-	for (size_t i=0; i<keysets->size;i++)
+	if (!handle || !ks)
 	{
-		backend_handle=keysets->handles[i];
-		/* if there is no backend in the trie use the default */
-		if (backend_handle==NULL)
-		{
-			ELEKTRA_SET_ERROR(8, parentKey, "backend_handle is NULL");
-			return -1;
-		}
+		ELEKTRA_SET_ERROR (37, parentKey, "handle or ks null pointer");
+		return -1;
 	}
+
+	if (elektraSplitBuildup (split, handle, parentKey) == -1)
+	{
+		ELEKTRA_SET_ERROR (38, parentKey, "error in elektraSplitBuildup");
+		return -1;
+	}
+
+	if (elektraSplitDivide (split, handle, ks) == -1)
+	{
+		ELEKTRA_SET_ERROR(8, parentKey, keyName(ksCurrent(ks)));
+		return -1;
+	}
+
+	if (elektraSplitSync (split) == 0)
+	{
+		/* No update is needed */
+		return 0;
+	}
+
+	elektraSplitPrepare (split);
+
+	int ret = 0;
+	Key *errorKey = 0;
+	int errorOccurred = 0;
 
 	for (size_t p=0; p<NR_OF_PLUGINS; ++p)
 	{
-		for (size_t i=0; i<keysets->size;i++)
+		for (size_t i=0; i<split->size;i++)
 		{
-			backend_handle=keysets->handles[i];
-			ksRewind (keysets->keysets[i]);
-			if (backend_handle->setplugins[p])
+			Backend *backend = split->handles[i];
+			ksRewind (split->keysets[i]);
+			if (backend->setplugins[p])
 			{
-				ret = backend_handle->setplugins[p]->kdbSet(
-						backend_handle->setplugins[p],
-						keysets->keysets[i],keysets->parents[i]);
+				keySetName (parentKey, keyName(split->parents[i]));
+				ret = backend->setplugins[p]->kdbSet (
+						backend->setplugins[p],
+						split->keysets[i],
+						parentKey);
 			}
 			if (ret == -1)
 			{
-				errorKey = ksCurrent (keysets->keysets[i]);
-				goto error;
+				errorKey = ksCurrent (split->keysets[i]);
+				++ errorOccurred;
 			}
+		}
+		/* If we have not commited yet, stop processing.
+		   After committing ignore errors. */
+		if (p <= COMMIT_PLUGIN && errorOccurred > 0)
+		{
+			goto error;
 		}
 	}
 
-	elektraSplitDel(keysets);
-	if (options & KDB_O_DEL) keyDel (parentKey);
+	keySetName (parentKey, keyName(initialParent));
+	keyDel (initialParent);
+	elektraSplitDel(split);
 	return 1;
 
 error:
 	for (size_t p=0; p<NR_OF_PLUGINS; ++p)
 	{
-		for (size_t i=0; i<keysets->size;i++)
+		for (size_t i=0; i<split->size;i++)
 		{
-			backend_handle=keysets->handles[i];
-			/* if there is no backend in the trie use the default */
-			if (backend_handle==NULL)
+			Backend *backend = split->handles[i];
+			ksRewind (split->keysets[i]);
+			if (backend->errorplugins[p])
 			{
-				ELEKTRA_SET_ERROR(8, parentKey, "backend_handle is NULL");
-				return -1;
-			}
-			ksRewind (keysets->keysets[i]);
-			if (backend_handle->errorplugins[p])
-			{
-				ret = backend_handle->errorplugins[p]->kdbError(
-						backend_handle->setplugins[p],
-						keysets->keysets[i],keysets->parents[i]);
+				keySetName (parentKey, keyName(split->parents[i]));
+				ret = backend->errorplugins[p]->kdbError (
+						backend->setplugins[p],
+						split->keysets[i],
+						parentKey);
 			}
 		}
 	}
 
 	if (errorKey) ksLookup(ks, errorKey, KDB_O_WITHOWNER);
-	elektraSplitDel(keysets);
+
+	keySetName (parentKey, keyName(initialParent));
+	keyDel (initialParent);
+	elektraSplitDel(split);
 	return -1;
 }
 
