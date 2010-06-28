@@ -412,6 +412,23 @@ int elektraSplitSync(Split *split)
 	return needsSync;
 }
 
+/* Deeply copies from source to dest.
+ */
+KeySet* ksDeepDup(const KeySet *source)
+{
+	size_t s = source->size;
+	size_t i = 0;
+	KeySet *keyset = 0;
+
+	keyset = ksNew(source->alloc,KS_END);
+	for (i=0; i<s; ++i)
+	{
+		ksAppendKey(keyset, keyDup(source->array[i]));
+	}
+
+	return keyset;
+}
+
 /** Prepares for kdbSet() mainloop afterwards.
  *
  * All splits which do not need sync are removed and a deep copy
@@ -422,6 +439,68 @@ int elektraSplitSync(Split *split)
  */
 int elektraSplitPrepare (Split *split)
 {
+	size_t size = split->size;
+	for (size_t i=0; i<size; ++i)
+	{
+		if ((split->syncbits[i] & 1) == 1)
+		{
+			KeySet *n = ksDeepDup(split->keysets[i]);
+			ksDel (split->keysets[i]);
+			split->keysets[i] = n;
+			continue;
+		}
+
+		if ((split->syncbits[i] & 1) == 0)
+		{
+			/* We dont need i anymore */
+			for (size_t j = i+1; j<size; ++j)
+			{
+				if ((split->syncbits[j] & 1) == 1)
+				{
+					Backend *tmpBackend = 0;
+					Key *tmpParent = 0;
+					int tmpSyncbits = 0;
+
+					/* Ohh, we have found an important j... lets swap j and i */
+					ksDel (split->keysets[i]);
+					split->keysets[i] = ksDup(split->keysets[j]);
+
+					tmpBackend = split->handles[i];
+					split->handles[i] = split->handles[j];
+					split->handles[j] = tmpBackend;
+
+					tmpParent = split->parents[i];
+					split->parents[i] = split->parents[j];
+					split->parents[j] = tmpParent;
+
+					tmpSyncbits = split->syncbits[i];
+					split->syncbits[i] = split->syncbits[j];
+					split->syncbits[j] = tmpSyncbits;
+					goto cont; /* Continue the outer loop */
+				}
+			}
+
+			/* We are finished, search did not find anything which needed sync, so lets remove the rest */
+			for (size_t j = i; j<size; ++j)
+			{
+				if ((split->syncbits[j] & 1) == 0)
+				{
+					ksDel (split->keysets[j]);
+					keyDecRef (split->parents[j]);
+					keyDel (split->parents[j]);
+
+					split->keysets[j]=0;
+					split->handles[j]=0;
+					split->parents[j]=0;
+					split->syncbits[j]=0;
+					--split->size;
+				}
+			}
+			break;
+		}
+cont: ;
+	}
+
 	return 0;
 }
 
