@@ -316,11 +316,9 @@ void output_errors(Key *errorKey)
 	succeed_if (0, "there were errors issued");
 
 	printf ("number: %s\n", keyString(keyGetMeta(errorKey, "error/number")));
-	/*
-	std::cerr << "description: " << error.getMeta<std::string>("error/description") << std::endl;
-	std::cerr << "ingroup: " << error.getMeta<std::string>("error/ingroup") << std::endl;
-	std::cerr << "module: " << error.getMeta<std::string>("error/module") << std::endl;
-	std::cerr << "at: " << error.getMeta<std::string>("error/file") << ":" << error.getMeta<std::string>("error/line") << std::endl;
-	std::cerr << "reason: " << error.getMeta<std::string>("error/reason") << std::endl;
-	*/
+	printf ("description: : %s\n", keyString(keyGetMeta(errorKey, "error/description")));
+	printf ("ingroup: : %s\n", keyString(keyGetMeta(errorKey, "error/ingroup")));
+	printf ("module: : %s\n", keyString(keyGetMeta(errorKey, "error/module")));
+	printf ("at: %s:%s\n", keyString(keyGetMeta(errorKey,"error/file")), keyString(keyGetMeta(errorKey, "error/line")));
+	printf ("reason: : %s\n", keyString(keyGetMeta(errorKey, "error/reason")));
 }

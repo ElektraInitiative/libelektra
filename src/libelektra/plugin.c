@@ -257,8 +257,28 @@ int elektraProcessPlugins(Plugin **plugins, KeySet *modules, KeySet *referencePl
 Plugin* elektraPluginOpen(const char *name, KeySet *modules, KeySet *config, Key *errorKey)
 {
 	Plugin* handle;
+	const char* n;
 
 	elektraPluginFactory pluginFactory=0;
+
+	if (!name || name[0] == '\0')
+	{
+		ELEKTRA_SET_ERROR(39, errorKey, "name is null or empty");
+		goto err_clup;
+	}
+
+	n = name;
+	while (*n != '\0')
+	{
+		if (*n == '/') ++n;
+		else break;
+	}
+
+	if (*n == '\0')
+	{
+		ELEKTRA_SET_ERROR(39, errorKey, "name contained slashes only");
+		goto err_clup;
+	}
 
 	pluginFactory = elektraModulesLoad(modules, name, errorKey);
 	if (pluginFactory == 0)

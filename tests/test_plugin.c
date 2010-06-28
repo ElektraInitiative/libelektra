@@ -159,6 +159,24 @@ void test_simple()
 	ksDel (modules);
 }
 
+void test_name()
+{
+	printf ("Test name\n");
+	KeySet *modules = ksNew(0);
+	Key *errorKey = keyNew(0);;
+
+	succeed_if (elektraPluginOpen(0, modules, set_pluginconf(), errorKey) == 0, "should fail with no name");
+	succeed_if (elektraPluginOpen("", modules, set_pluginconf(), errorKey) == 0, "should fail with no name");
+	succeed_if (elektraPluginOpen("/", modules, set_pluginconf(), errorKey) == 0, "should fail with slashes only");
+	succeed_if (elektraPluginOpen("//", modules, set_pluginconf(), errorKey) == 0, "should fail with slashes only");
+	succeed_if (elektraPluginOpen("/////////////", modules, set_pluginconf(), errorKey) == 0,
+			"should fail with slashes only");
+	// output_errors (errorKey);
+
+	keyDel (errorKey);
+	ksDel (modules);
+}
+
 int main(int argc, char** argv)
 {
 	printf(" PLUGINS  TESTS\n");
@@ -168,6 +186,7 @@ int main(int argc, char** argv)
 
 	test_process();
 	test_simple();
+	test_name();
 
 	printf("\ntest_plugin RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
