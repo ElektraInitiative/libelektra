@@ -238,14 +238,14 @@ int elektraResolverSet(Plugin *handle, KeySet *returned, Key *parentKey)
 			return -1;
 		}
 
-		keySetString(parentKey, pk->filename);
+		keySetString(parentKey, "tmp");
 
 		return 0;
 	}
 
 	if (action == 1)
 	{
-		if (rename ("tmp", "orig") == -1)
+		if (rename ("tmp", pk->filename) == -1)
 		{
 			char buffer[ERROR_SIZE];
 			strerror_r(errno, buffer, ERROR_SIZE);

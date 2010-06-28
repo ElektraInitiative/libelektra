@@ -23,6 +23,7 @@ int main(int argc, char**argv) try
 }
 catch (kdb::Key& key)
 {
+	std::cerr << "a key was thrown" << std::endl;
 	printError(key);
 	printWarnings(key);
 }

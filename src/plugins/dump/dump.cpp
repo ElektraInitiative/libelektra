@@ -177,7 +177,7 @@ void unserialize(std::istream &is, ckdb::KeySet *ks)
 
 extern "C" {
 
-ssize_t kdbGet_dump(ckdb::Plugin *handle, ckdb::KeySet *returned, const ckdb::Key *parentKey)
+ssize_t kdbGet_dump(ckdb::Plugin *, ckdb::KeySet *returned, const ckdb::Key *parentKey)
 {
 	Key *root = ckdb::keyNew("system/elektra/modules/dump", KEY_END);
 	if (keyRel(root, parentKey) >= 0)
@@ -227,16 +227,16 @@ ssize_t kdbGet_dump(ckdb::Plugin *handle, ckdb::KeySet *returned, const ckdb::Ke
 		return ksGetSize(returned);
 	}
 	keyDel (root);
-	std::ifstream ofs(keyString(ksLookupByName(ckdb::elektraPluginGetConfig (handle), "/path", 0)));
+	std::ifstream ofs(keyString(parentKey));
 	if (!ofs.is_open()) return -1;
 	dump::unserialize (ofs, returned);
 
 	return ksGetSize(returned); /* success */
 }
 
-ssize_t kdbSet_dump(ckdb::Plugin *handle, ckdb::KeySet *returned, const ckdb::Key *)
+ssize_t kdbSet_dump(ckdb::Plugin *, ckdb::KeySet *returned, const ckdb::Key *parentKey)
 {
-	std::ofstream ifs(keyString(ksLookupByName(ckdb::elektraPluginGetConfig (handle), "/path", 0)));
+	std::ofstream ifs(keyString(parentKey));
 	if (!ifs.is_open()) return -1;
 	dump::serialize (ifs, returned);
 

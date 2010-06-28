@@ -27,7 +27,7 @@ int SetCommand::execute(int argc, char**argv)
 	try {
 		kdb.get(conf, k);
 		printWarnings(k);
-	} catch (KDBException const& e)
+	} catch (...)
 	{
 		printError(k);
 		cerr << "kdb get failed, but still resume" << endl;

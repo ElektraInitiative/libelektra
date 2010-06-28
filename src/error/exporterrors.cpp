@@ -63,7 +63,7 @@ ostream& operator << (ostream& os, parse_t& p)
 		   << "" << endl
 		   << "	keySetMeta(warningKey, buffer, \"number description ingroup module file line function reason\");" << endl
 		   << "	strncat(buffer, \"/number\" , sizeof(buffer));" << endl
-		   << "	keySetMeta(warningKey, buffer, \"7\");" << endl
+		   << "	keySetMeta(warningKey, buffer, \"" << i << "\");" << endl
 		   << "	buffer[12] = '\\0'; strncat(buffer, \"/description\" , sizeof(buffer));" << endl
 		   << "	keySetMeta(warningKey, buffer, \"" << p[i]["description"] << "\");" << endl
 		   << "	buffer[12] = '\\0'; strncat(buffer, \"/ingroup\" , sizeof(buffer));" << endl
