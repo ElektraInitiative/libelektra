@@ -43,7 +43,8 @@ enum {
 	KEY_CTIME=1<<10,
 	KEY_SIZE=1<<11,
 	KEY_DIR=1<<14,
-	KEY_META=1<<15
+	KEY_META=1<<15,
+	KEY_NULL=1<<16
 };
 
 enum {

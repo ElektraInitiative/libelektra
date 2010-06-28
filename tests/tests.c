@@ -161,6 +161,7 @@ int compare_key (Key *k1, Key *k2)
 	succeed_if ((ret & KEY_UID) == 0 , "compare key: UID not equal");
 	succeed_if ((ret & KEY_GID) == 0 , "compare key: GID not equal");
 	succeed_if ((ret & KEY_MODE ) == 0 , "compare key: MODE  not equal");
+	succeed_if ((ret & KEY_NULL ) == 0, "compare key: one of the keys is null");
 
 	return err-nbError;
 }

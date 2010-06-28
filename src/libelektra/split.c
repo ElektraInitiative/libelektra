@@ -251,8 +251,9 @@ int elektraSplitBuildup (Split *split, KDB *handle, Key *parentKey)
 	Key *userKey = 0;
 	Key *systemKey = 0;
 
-	if (!parentKey)
+	if (!parentKey || !parentKey->key)
 	{
+		parentKey = 0;
 		userKey = keyNew("user", KEY_END);
 		systemKey = keyNew("system", KEY_END);
 	}

@@ -1379,7 +1379,40 @@ void test_nothingsync()
 	elektraFree(handle);
 }
 
+void test_invalidname()
+{
+	printf ("Test buildup with invalid parent name\n");
+	KDB *handle = elektraCalloc(sizeof(struct _KDB));
+	handle->defaultBackend = elektraCalloc(sizeof(struct _Backend));
+	/* So we had 2 keys before in the keyset */
+	KeySet *ks = ksNew (0);
 
+
+	Split *split = elektraSplitNew();
+	Key *parentKey = keyNew(0);
+	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backends for user");
+	keyDel (parentKey);
+
+	succeed_if (split->size == 2, "there is an empty keset");
+	succeed_if (ksGetSize(split->keysets[0]) == 0, "wrong size");
+	succeed_if (ksGetSize(split->keysets[1]) == 0, "wrong size");
+	parentKey = keyNew ("user", KEY_VALUE, "default", KEY_END);
+	succeed_if (compare_key (split->parents[0], parentKey) == 0, "parentKey not correct");
+	keyDel (parentKey);
+	parentKey = keyNew ("system", KEY_VALUE, "default", KEY_END);
+	succeed_if (compare_key (split->parents[1], parentKey) == 0, "parentKey not correct");
+	keyDel (parentKey);
+	succeed_if (split->handles[0] == handle->defaultBackend, "not correct backend");
+	succeed_if (split->handles[1] == handle->defaultBackend, "not correct backend");
+	succeed_if (split->syncbits[0] == 2, "should be marked as default");
+	succeed_if (split->syncbits[1] == 2, "should be marked as default");
+
+	elektraSplitDel (split);
+
+	ksDel (ks);
+	elektraFree(handle->defaultBackend);
+	elektraFree(handle);
+}
 
 
 int main(int argc, char** argv)
@@ -1408,6 +1441,7 @@ int main(int argc, char** argv)
 	test_emptyremove();
 	test_realworld();
 	test_nothingsync();
+	test_invalidname();
 
 	printf("\ntest_split RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
