@@ -480,65 +480,6 @@ int keyCmp (const Key *k1, const Key *k2)
 	return keyCmpInternal(&k1, &k2);
 }
 
-
-/**
- * Sorts a KeySet alphabetically by Key name.
- *
- * You need ksSort() only in few cases directly.
- *
- * @section sortlookup Don't need to sort before using ksLookup
- *
- * You don't need it if you just just kdbGet() and subsequent
- * ksLookup().
- * @code
-KeySet *ks = ksNew(0);
-kdbGet(h, ks, k, 0);
-// ksPop(), ksAppend() and ksAppendKey() allowed here
-ksLookup(ks, s, 0); // you dont need to sort ks
- * @endcode
- *
- * This is because the KeySet tracks if it needs to be sorted
- * and ksLookup() will sort when needed.
- *
- * @section sortkey Sort when changing key
- *
- * @warning You must not use keySetName() when a
- * key belongs to a keyset. When you are doing this, you always need to @p manually
- * sort @p all keysets where the key was before using ksLookup() (otherwise ksLookup()
- * won't find that keys), kdbGet() or kdbSet() methods.
- *
- * When you change a key's name or its remove status the order
- * which was previously correctly is then wrong. The keyset
- * does not recognize this, so the programmer has to take care
- * that ksSort() is called before any operation which needs
- * a sorted keyset (which are all ksLookup(), all kdbGet()
- * and all kdbSet() functions).
- *
- * @note You can remember that easily that all functions which get options
- * require one of the following:
- * - that you did not manipulate a keys name or a remove status
- * - that you ksSort() yourself after manipulating keys
- *
- * @param ks KeySet to be sorted
- * @see kdbGet(), kdbSet(), ksLookup() for some functions which may
- *     need sorting before they are called. (All functions which take
- *     options as arguments)
- * @see keySetName(), keySetBaseName() and keyAddBaseName()
- *     for all methods which change the sorting state where the keyset
- *     can't track the change.
- * @see ksAppend(), ksAppendKey(), ksPop() for all methods which make
- *     a keyset dirty.
- */
-void ksSort(KeySet *ks)
-{
-	if (!ks) return;
-
-	if (! ks->size) return;
-
-	qsort(ks->array,ks->size,sizeof(Key *),keyCmpInternal);
-}
-
-
 /**Checks if KeySet needs sync.
  *
  * When keys are changed this is reflected into keyNeedSync().

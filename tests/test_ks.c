@@ -691,7 +691,6 @@ void test_ksSort()
 	ksAppendKey(ks, keyNew("user/aname", KEY_END));
 	ksAppendKey(ks, keyNew("user/cname", KEY_END));
 	
-	ksSort (ks);
 	ksRewind(ks);
 	key = ksNext(ks);
 	succeed_if (strcmp (keyName (key), "user/aname") == 0, "a should be 1.");
@@ -761,7 +760,6 @@ void test_ksSort()
 	succeed_if (keyGetRef(k2) == 0, "reference counter not resetted");
 	ksAppendKey(ks,k2);
 	succeed_if (keyGetRef(k2) == 1, "reference counter not incremented after insertion");
-	ksSort (ks);
 
 	ksRewind (ks);
 	key = ksNext(ks);
@@ -772,7 +770,6 @@ void test_ksSort()
 	k2 = keyDup (k1);
 	ksAppendKey(ks,k2);
 	ksAppendKey(ks,k1);
-	ksSort (ks);
 
 	ksRewind (ks);
 	key = ksNext(ks);
@@ -832,7 +829,6 @@ void test_ksSort()
 	ksAppendKey(ks, keyNew("user/h", KEY_END));
 	ksAppendKey(ks, keyNew("user/f", KEY_END));
 
-	ksSort(ks);
 	ksRewind (ks);
 	// output_keyset(ks,0);
 	for (i=0; (key=ksNext(ks)) != 0; i++)
@@ -880,7 +876,6 @@ void test_ksSort()
 	ksAppendKey(ks, keyNew("user/dir5/key1", KEY_END));
 	ksAppendKey(ks, keyNew("user/dir6/key1", KEY_END));
 
-	ksSort(ks);
 	ksRewind (ks);
 	// output_keyset(ks,0);
 	for (i=0; (key=ksNext(ks)) != 0; i++)
@@ -1542,7 +1537,6 @@ void test_ksCommonParentName()
 		keyNew("system/sw/xorg/Devices/Device1/mode",0),KS_END);
 
 	printf ("Test common parentname\n");
-	ksSort (ks);
 
 	succeed_if (ksGetCommonParentName(ks, ret, MAX_SIZE) > 0, "could not find correct parentname");
 	succeed_if (strcmp (ret, "system/sw/xorg") == 0, "parentname not correct");

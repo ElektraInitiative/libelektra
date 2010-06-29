@@ -180,8 +180,8 @@ int compare_keyset (KeySet *ks, KeySet *ks2)
 	int	err = nbError;
 
 	// I would have a _true_ ksCompare() ...
-	ksSort(ks); ksRewind(ks);
-	ksSort(ks2); ksRewind(ks2);
+	ksRewind(ks);
+	ksRewind(ks2);
 
 	//SYNC with ksOutput
 	while ((key = ksNext(ks)) != 0)
