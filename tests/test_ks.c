@@ -2114,6 +2114,8 @@ void test_ksDoubleFree()
 
 void test_ksDoubleAppend()
 {
+	printf ("Test double appending\n");
+
 	KeySet *ks1 = ksNew (5,
 		keyNew ("user/abc1", KEY_VALUE, "abc1", KEY_END),
 		keyNew ("user/abc2", KEY_VALUE, "abc1", KEY_END),
@@ -2163,6 +2165,7 @@ int main(int argc, char** argv)
 	test_ksLookupPop();
 	test_ksSync();
 	test_ksDoubleFree();
+	test_ksDoubleAppend();
 
 	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

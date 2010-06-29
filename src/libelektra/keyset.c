@@ -766,24 +766,22 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
  */
 ssize_t ksAppend(KeySet *ks, const KeySet *toAppend)
 {
-	size_t oldSize = 0;
-	size_t i = 0;
 	size_t toAlloc = 0;
 
 	if (!ks) return -1;
 	if (!toAppend) return -1;
 
-	oldSize = ks->size;
-	toAlloc = ks->alloc;
-
 	if (toAppend->size <= 0) return ks->size;
-	ks->size += toAppend->size;
-	while (ks->size >= toAlloc) toAlloc *= 2;
+
+	/* Do only one resize in advance */
+	for (toAlloc = ks->alloc; ks->size+toAppend->size >= toAlloc; toAlloc *= 2);
 	ksResize (ks, toAlloc-1);
-	for (i=0; i<toAppend->size; i++) keyIncRef(toAppend->array[i]);
-	elektraMemcpy (ks->array + oldSize, toAppend->array, toAppend->size);
-	ks->array[ks->size] = 0;
-	ksSort(ks);
+
+	/* TODO: here is lots of room for optimizations */
+	for (size_t i=0; i<toAppend->size; ++i)
+	{
+		ksAppendKey (ks, toAppend->array[i]);
+	}
 	return ks->size;
 }
 
@@ -1357,10 +1355,6 @@ static int keyCompareByNameOwnerCase(const void *p1, const void *p2) {
  * @warning All cursors on the keyset will be invalid
  * iff you use KDB_O_POP, so don't use this if you rely on a cursor, see ksGetCursor().
  *
- * @note Never use ksLookup() with KDB_O_POP and ksAppendKey() or ksAppend() together in a loop.
- * Otherwise ksLookup() will need to resort the keyset every iteration and spend 99.96% of the
- * time in ksSort() (benchmarked with above 500k iterations).
- *
  * You can solve this problem by using KDB_O_NOALL, risking you have to iterate n^2 instead of n.
  *
  * The more elegant way is to separate the keyset you use for ksLookup() and ksAppendKey():
@@ -1402,7 +1396,6 @@ int f(KeySet *iterator, KeySet *lookup)
  * @return 0 on NULL pointers
  * @see ksLookupByName() to search by a name given by a string
  * @see ksCurrent(), ksRewind(), ksNext() for iterating over a keyset
- * @see ksSort() to understand how keyset sort themself
  */
 Key *ksLookup(KeySet *ks, Key * key, option_t options)
 {
@@ -1760,7 +1753,7 @@ Key *ksLookupByBinary(KeySet *ks, const void *value, size_t size,
  *
  * No common parent is possible, so @p returnedCommonParent will contain nothing.
  *
- * This method will work correctly only on @link ksSort() sorted KeySets @endlink.
+ * This method will work correctly only sorted KeySets.
  *
  * @param working the Keyset to work with
  * @param returnedCommonParent a pre-allocated buffer that will receive the
