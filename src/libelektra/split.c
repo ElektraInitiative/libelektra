@@ -410,6 +410,72 @@ int elektraSplitAppoint (Split *split, KDB *handle, KeySet *ks)
 	return 1;
 }
 
+/**
+ * Does some work after getting of backends is finished.
+ *
+ * - check if keys are in correct backend
+ * - remove syncbits
+ * - update usersize and systemsize
+ *
+ * @return 1 on success
+ * @return -1 if no backend was found for a key
+ * @ingroup split
+ */
+int elektraSplitGet (Split *split, KDB *handle)
+{
+	Key *cur = 0;
+	Backend *curHandle = 0;
+
+	for (size_t i=0; i<split->size-1; ++i)
+	{
+		if (!(split->syncbits[i] & 1))
+		{
+			/* Dont process keysets which come from the user
+			   and not from the backends */
+			continue;
+		}
+
+		ksRewind (split->keysets[i]);
+		while ((cur = ksNext(split->keysets[i])) != 0)
+		{
+			curHandle = kdbGetBackend(handle, cur);
+			if (!curHandle) return -1;
+			if (curHandle != split->handles[i])
+			{
+				/* drop the key */
+				keyDel (ksLookup(split->keysets[i], cur, KDB_O_POP));
+				continue;
+			}
+			if (!strncmp(keyName(cur), "system", 6) && strncmp(keyName(split->parents[i]), "system", 6))
+			{
+				/* parent is system, but key is not -> drop it */
+				keyDel (ksLookup(split->keysets[i], cur, KDB_O_POP));
+				continue;
+			}
+			if (!strncmp(keyName(split->parents[i]), "user", 4) && strncmp(keyName(split->parents[i]), "user", 4))
+			{
+				/* parent is user, but key is not -> drop it */
+				keyDel (ksLookup(split->keysets[i], cur, KDB_O_POP));
+				continue;
+			}
+
+			keyClearSync (cur);
+		}
+
+		/* Update sizes */
+		if (!strncmp(keyName(split->parents[i]), "system", 6))
+		{
+			split->handles[i]->systemsize = ksGetSize(split->keysets[i]);
+		}
+		else if (!strncmp(keyName(split->parents[i]), "user", 4))
+		{
+			split->handles[i]->usersize = ksGetSize(split->keysets[i]);
+		}
+	}
+
+	return 1;
+}
+
 /** Add sync bits everywhere keys were removed.
  *
  * Only this function can really decide if sync is needed or not.

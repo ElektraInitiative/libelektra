@@ -399,6 +399,7 @@ int elektraSplitBuildup (Split *split, KDB *handle, Key *parentKey);
 
 /* for kdbGet() algorithm */
 int elektraSplitAppoint (Split *split, KDB *handle, KeySet *ks);
+int elektraSplitGet (Split *split, KDB *handle);
 
 /* for kdbSet() algorithm */
 int elektraSplitDivide (Split *split, KDB *handle, KeySet *ks);
