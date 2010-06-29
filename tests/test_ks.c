@@ -760,7 +760,7 @@ void test_ksSort()
 
 	succeed_if (keyGetRef(k2) == 0, "reference counter not resetted");
 	ksAppendKey(ks,k2);
-	succeed_if (keyGetRef(k2) == 0, "reference counter incremented, but already inserted");
+	succeed_if (keyGetRef(k2) == 1, "reference counter not incremented after insertion");
 	ksSort (ks);
 
 	ksRewind (ks);
@@ -2086,6 +2086,54 @@ void test_ksSync()
 	ksDel (ks);
 }
 
+void test_ksDoubleFree()
+{
+	/* Valgrind only test */
+	KeySet *ks1 = ksNew (5,
+		keyNew ("user/abc1", KEY_VALUE, "abc1", KEY_END),
+		keyNew ("user/abc2", KEY_VALUE, "abc1", KEY_END),
+		keyNew ("user/abc3", KEY_VALUE, "abc1", KEY_END),
+		KS_END);
+
+	KeySet *ks2 = ksNew (5,
+		keyNew ("user/abc1", KEY_VALUE, "abc2", KEY_END),
+		keyNew ("user/abc2", KEY_VALUE, "abc2", KEY_END),
+		keyNew ("user/abc3", KEY_VALUE, "abc2", KEY_END),
+		KS_END);
+
+	Key *cur;
+	ksRewind (ks1);
+	while ((cur = ksNext(ks1)) != 0)
+	{
+		ksAppendKey (ks2, cur);
+	}
+
+	ksDel (ks1);
+	ksDel (ks2);
+}
+
+void test_ksDoubleAppend()
+{
+	KeySet *ks1 = ksNew (5,
+		keyNew ("user/abc1", KEY_VALUE, "abc1", KEY_END),
+		keyNew ("user/abc2", KEY_VALUE, "abc1", KEY_END),
+		keyNew ("user/abc3", KEY_VALUE, "abc1", KEY_END),
+		KS_END);
+
+	KeySet *ks2 = ksNew (5,
+		keyNew ("user/abc1", KEY_VALUE, "abc2", KEY_END),
+		keyNew ("user/abc2", KEY_VALUE, "abc2", KEY_END),
+		keyNew ("user/abc3", KEY_VALUE, "abc2", KEY_END),
+		KS_END);
+
+	ksAppend (ks1, ks2);
+	succeed_if (ksGetSize (ks1) == 3, "size not correct");
+	succeed_if (ksGetSize (ks2) == 3, "size not correct");
+
+	ksDel (ks1);
+	ksDel (ks2);
+}
+
 
 int main(int argc, char** argv)
 {
@@ -2114,6 +2162,7 @@ int main(int argc, char** argv)
 	test_ksFunctional();
 	test_ksLookupPop();
 	test_ksSync();
+	test_ksDoubleFree();
 
 	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

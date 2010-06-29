@@ -713,7 +713,9 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
 		/* Pop the key in the result */
 		keyDecRef (ks->array[result]);
 		keyDel (ks->array[result]);
+
 		/* And use the other one instead */
+		keyIncRef (toAppend);
 		ks->array[result] = toAppend;
 	} else {
 		ssize_t insertpos = -result-1;
