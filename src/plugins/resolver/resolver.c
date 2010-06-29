@@ -151,6 +151,8 @@ int elektraResolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	resolverHandle *pk = elektraPluginGetData(handle);
 	resolveFilename(parentKey, pk);
 
+	keySetString(parentKey, pk->filename);
+
 	int errnoSave = errno;
 	if (stat (pk->filename, &buf) == -1)
 	{
@@ -163,9 +165,6 @@ int elektraResolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	}
 
 	pk->mtime = buf.st_mtime;
-	/* TODO check if update is necessary, not supported by mainloop yet */
-
-	keySetString(parentKey, pk->filename);
 
 	return 1;
 }
