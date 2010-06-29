@@ -51,17 +51,17 @@ void test_process(void)
 	succeed_if (referenceName == 0, "reference name not correct");
 	free (pluginName); pluginName = 0;
 
-	keySetName (k, "system/e/#9tracer");
+	keySetName (k, "system/e/#9default");
 	succeed_if (elektraProcessPlugin(k, &pluginNumber, &pluginName, &referenceName, 0) == 1, "process plugin error");
 	succeed_if (pluginNumber == 9, "number not correct");
-	succeed_if (!strcmp(pluginName, "tracer"), "plugin name not correct");
+	succeed_if (!strcmp(pluginName, "default"), "plugin name not correct");
 	succeed_if (referenceName == 0, "reference name not correct");
 	free (pluginName); pluginName = 0;
 
-	keySetName (k, "system/e/1tracer");
+	keySetName (k, "system/e/1default");
 	succeed_if (elektraProcessPlugin(k, &pluginNumber, &pluginName, &referenceName, 0) == -1, "should be error");
 
-	keySetName (k, "system/e/#xtracer");
+	keySetName (k, "system/e/#xdefault");
 	succeed_if (elektraProcessPlugin(k, &pluginNumber, &pluginName, &referenceName, 0) == -1, "should be error");
 
 	keySetName (k, "system/e/#1#name");
@@ -101,11 +101,11 @@ void test_process(void)
 	free (pluginName); pluginName = 0;
 	free (referenceName); referenceName = 0;
 
-	keySetName (k, "system/e/#9#tracer#tracer#");
+	keySetName (k, "system/e/#9#default#default#");
 	succeed_if (elektraProcessPlugin(k, &pluginNumber, &pluginName, &referenceName, 0) == 3, "process plugin error");
 	succeed_if (pluginNumber == 9, "number not correct");
-	succeed_if (!strcmp(pluginName, "tracer"), "plugin name not correct");
-	succeed_if (!strcmp(referenceName, "system/elektra/plugins/tracer"), "reference name not correct");
+	succeed_if (!strcmp(pluginName, "default"), "plugin name not correct");
+	succeed_if (!strcmp(referenceName, "system/elektra/plugins/default"), "reference name not correct");
 	free (pluginName); pluginName = 0;
 	free (referenceName); referenceName = 0;
 
@@ -143,7 +143,7 @@ void test_simple()
 	KeySet *modules = ksNew(0);
 	elektraModulesInit (modules, 0);
 
-	Plugin *plugin = elektraPluginOpen("tracer", modules, set_pluginconf(), 0);
+	Plugin *plugin = elektraPluginOpen("default", modules, set_pluginconf(), 0);
 
 	KeySet *test_config = set_pluginconf();
 	KeySet *config = elektraPluginGetConfig (plugin);
@@ -151,15 +151,29 @@ void test_simple()
 	compare_keyset(config, test_config);
 	ksDel (test_config);
 
-	succeed_if (plugin->kdbOpen != 0, "no open pointer");
-	succeed_if (plugin->kdbClose != 0, "no open pointer");
-	succeed_if (plugin->kdbGet != 0, "no open pointer");
-	succeed_if (plugin->kdbSet != 0, "no open pointer");
-
-	succeed_if (!strcmp(plugin->name, "tracer"), "got wrong name");
+	succeed_if (plugin->kdbGet != 0, "no get pointer");
+	succeed_if (plugin->kdbSet != 0, "no set pointer");
 
 	elektraPluginClose(plugin, 0);
 	elektraModulesClose(modules, 0);
+	ksDel (modules);
+}
+
+void test_name()
+{
+	printf ("Test name\n");
+	KeySet *modules = ksNew(0);
+	Key *errorKey = keyNew(0);;
+
+	succeed_if (elektraPluginOpen(0, modules, set_pluginconf(), errorKey) == 0, "should fail with no name");
+	succeed_if (elektraPluginOpen("", modules, set_pluginconf(), errorKey) == 0, "should fail with no name");
+	succeed_if (elektraPluginOpen("/", modules, set_pluginconf(), errorKey) == 0, "should fail with slashes only");
+	succeed_if (elektraPluginOpen("//", modules, set_pluginconf(), errorKey) == 0, "should fail with slashes only");
+	succeed_if (elektraPluginOpen("/////////////", modules, set_pluginconf(), errorKey) == 0,
+			"should fail with slashes only");
+	// output_errors (errorKey);
+
+	keyDel (errorKey);
 	ksDel (modules);
 }
 
@@ -172,6 +186,7 @@ int main(int argc, char** argv)
 
 	test_process();
 	test_simple();
+	test_name();
 
 	printf("\ntest_plugin RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

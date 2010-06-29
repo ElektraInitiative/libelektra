@@ -13,8 +13,8 @@ configure_file (
 	)
 
 configure_file (
-	"${CMAKE_CURRENT_SOURCE_DIR}/kdbprivate.h"
-	"${CMAKE_CURRENT_BINARY_DIR}/kdbprivate.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/kdbvar.h"
+	"${CMAKE_CURRENT_BINARY_DIR}/kdbvar.h"
 	)
 
 configure_file (

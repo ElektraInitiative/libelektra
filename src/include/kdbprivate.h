@@ -7,8 +7,6 @@
  *  email                : elektra@markus-raab.org
  ***************************************************************************/
 
-@DISCLAMER@
-
 /***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -25,45 +23,6 @@
 
 #include <limits.h>
 
-#ifndef KDB_DB_SYSTEM
-/**Below this directory the system configuration (system/) will be searched.*/
-#define KDB_DB_SYSTEM            "@KDB_DB_SYSTEM@"
-#endif
-
-#ifndef KDB_DB_USER
-/**This directory will be concatenated with a prefix which will be searched
- * at runtime inside kdbbGetFullFilename().
- *@see kdbbGetFullFilename
- */
-#define KDB_DB_USER              ".kdb"
-#endif
-
-#ifndef KDB_DB_HOME
-/**This directory will be used as fallback when no other method of
- * kdbbGetFullFilename() works.
- *@see kdbbGetFullFilename
- */
-#define KDB_DB_HOME              "/home"
-#endif
-
-#ifndef KDB_KEY_MOUNTPOINTS
-/**Backend information.
- *
- * This key directory tells you where each backend is mounted
- * to which mountpoint. */
-#define KDB_KEY_MOUNTPOINTS      "system/elektra/mountpoints"
-#endif
-
-#define KDB_KEY_MOUNTPOINTS_LEN  (sizeof (KDB_KEY_MOUNTPOINTS))
-
-#ifndef KDB_KEY_USERS
-/**Users information.
- *
- * This key directory tells you the users existing on the system. */
-#define KDB_KEY_USERS            "system/users"
-#endif
-
-#define KDB_KEY_USERS_LEN        (sizeof (KDB_KEY_USERS))
 
 #ifndef MAX_UCHAR
 #define MAX_UCHAR (UCHAR_MAX+1)
@@ -80,13 +39,14 @@
 #define NR_OF_PLUGINS 10
 #endif
 
+#ifndef COMMIT_PLUGIN
+#define COMMIT_PLUGIN 7
+#endif
+
 #ifndef APPROXIMATE_NR_OF_BACKENDS
 #define APPROXIMATE_NR_OF_BACKENDS 16
 #endif
 
-#ifndef ESCAPE_CHAR
-#define ESCAPE_CHAR '\\'
-#endif
 
 /**BUFFER_SIZE can be used as value for any I/O buffer
  * on files.
@@ -96,18 +56,6 @@
 #ifndef BUFFER_SIZE
 #define BUFFER_SIZE 256
 #endif
-
-#ifdef UT_NAMESIZE
-#define USER_NAME_SIZE UT_NAMESIZE
-#else
-#define USER_NAME_SIZE 100
-#endif
-
-
-#ifndef DEFFILEMODE
-#define DEFFILEMODE 0666
-#endif
-
 
 
 #if DEBUG
@@ -139,6 +87,7 @@ typedef int (*kdbClosePtr)(Plugin *, Key *errorKey);
 
 typedef int (*kdbGetPtr)(Plugin *handle, KeySet *returned, Key *parentKey);
 typedef int (*kdbSetPtr)(Plugin *handle, KeySet *returned, Key *parentKey);
+typedef int (*kdbErrorPtr)(Plugin *handle, KeySet *returned, Key *parentKey);
 
 
 typedef Backend* (*OpenMapper)(const char *,const char *,KeySet *);
@@ -347,9 +296,13 @@ struct _Backend {
 
 	Plugin *setplugins[NR_OF_PLUGINS];
 	Plugin *getplugins[NR_OF_PLUGINS];
+	Plugin *errorplugins[NR_OF_PLUGINS];
 
-	ssize_t size;		/*!< The size of the keyset from the previous get.
+	ssize_t usersize;	/*!< The size of the users key from the previous get.
 		Needed to know if a key was removed from a keyset. */
+	ssize_t systemsize;	/*!< The size of the systems key from the previous get.
+		Needed to know if a key was removed from a keyset. */
+
 };
 
 /**
@@ -379,13 +332,14 @@ struct _Plugin {
 
 	kdbGetPtr kdbGet;	/*!< The pointer to kdbGet_template() of the backend. */
 	kdbSetPtr kdbSet;	/*!< The pointer to kdbSet_template() of the backend. */
+	kdbErrorPtr kdbError;	/*!< The pointer to kdbError_template() of the backend. */
 
 	const char *name;	/*!< The name of the module responsible for that plugin. */
 
 	size_t refcounter;	/*!< This refcounter shows how often the plugin
 		is used.  Not shared plugins have 1 in it */
 
-	void *handle;		/*!< This handle can be used for a plugin to store
+	void *data;		/*!< This handle can be used for a plugin to store
 		any data its want to. */
 };
 
@@ -398,11 +352,11 @@ struct _Plugin {
  * closest to the parentKey.
  */
 struct _Trie {
-	struct _Trie *children[MAX_UCHAR];/*!<  */
-	char *text[MAX_UCHAR];		/*!<  */
-	unsigned int textlen[MAX_UCHAR];/*!<  */
-	void *value[MAX_UCHAR];		/*!<  */
-	void *empty_value;		/*!< value for the empty string "" */
+	struct _Trie *children[MAX_UCHAR];/*!< The children building up the trie recursively */
+	char *text[MAX_UCHAR];		/*!< Text identifying this node */
+	size_t textlen[MAX_UCHAR];	/*!< Length of the text */
+	Backend *value[MAX_UCHAR];	/*!< Pointer to a backend */
+	Backend *empty_value;		/*!< Pointer to a backend for the empty string "" */
 };
 
 
@@ -412,13 +366,14 @@ struct _Trie {
  * various information needed to process the keysets afterwards.
  */
 struct _Split {
-	size_t no;		/*!< Number of keysets */
+	size_t size;		/*!< Number of keysets */
 	size_t alloc;		/*!< How large the arrays are allocated  */
 	KeySet **keysets;	/*!< The keysets */
 	Backend **handles;	/*!< The KDB for the keyset */
-	Key **parents;		/*!< The parentkey for the keyset */
+	Key **parents;		/*!< The parentkey for the keyset.
+				Is either the mountpoint of the backend
+				or "user", "system" for the splitted root backends */
 	int *syncbits;		/*!< Is there any key in there which need to be synced? */
-	int *belowparents;	/*!< Is there any key in there which is below the parent? */
 };
 
 /***************************************
@@ -433,16 +388,25 @@ char *keyNameGetOneLevel(const char *keyname, size_t *size);
 
 Backend* kdbGetBackend(KDB *handle, const Key *key);
 
-/*TODO: delete Methods for trie*/
-int kdbCreateTrie(KDB *handle, KeySet *ks, OpenMapper mapper);
-int kdbDelTrie(Trie *trie,CloseMapper close_backend);
-
 /*Methods for splitted keysets */
-void elektraSplitClose(Split *keysets);
-void elektraSplitInit(Split *ret);
+Split * elektraSplitNew(void);
+void elektraSplitDel(Split *keysets);
 void elektraSplitResize(Split *ret);
-Split *elektraSplitKeySet(KDB *handle, KeySet *ks,
-	Key *parentKey, unsigned long options);
+ssize_t elektraSplitAppend(Split *split, Backend *backend, Key *parentKey, int syncbits);
+ssize_t elektraSplitSearchBackend(Split *split, Backend *backend, Key *key);
+int elektraSplitSearchRoot(Split *split, Key *parentKey);
+int elektraSplitBuildup (Split *split, KDB *handle, Key *parentKey);
+
+/* for kdbGet() algorithm */
+int elektraSplitAppoint (Split *split, KDB *handle, KeySet *ks);
+int elektraSplitGet (Split *split, KDB *handle);
+int elektraSplitMerge (Split *split, KeySet *dest);
+
+/* for kdbSet() algorithm */
+int elektraSplitDivide (Split *split, KDB *handle, KeySet *ks);
+int elektraSplitSync (Split *split);
+int elektraSplitPrepare (Split *split);
+
 
 /*Internal helpers*/
 
@@ -454,23 +418,6 @@ void  elektraFree (void *ptr);
 char *elektraStrDup (const char *s);
 char *elektraStrNDup (const char *s, size_t l);
 int elektraRealloc(void **buffer, size_t size);
-
-/*TODO remove those Helpers*/
-ssize_t kdbbEncode(void *kdbbDecoded, size_t size, char *returned);
-ssize_t kdbbDecode(char *kdbbEncoded, void *returned);
-
-int kdbbNeedsUTF8Conversion(void);
-int kdbbUTF8Engine(int direction, char **string, size_t *inputByteSize);
-
-int kdbbEncodeChar(char c, char *buffer, size_t bufSize);
-int kdbbDecodeChar(const char *from, char *into);
-
-int kdbbFilenameToKeyName(const char *string, char *buffer, int bufSize);
-ssize_t kdbbGetFullKeyName (KDB *handle, const char *forFilename, const Key *parentKey, Key *returned);
-int kdbbKeyNameToRelativeFilename(const char *string, char *buffer, size_t bufSize);
-ssize_t kdbbKeyCalcRelativeFilename(const Key *key,char *relativeFilename,size_t maxSize);
-ssize_t kdbbGetFullFilename(KDB *handle, const Key *forKey,char *returned,size_t maxSize);
-
 
 /*Backend handling*/
 Backend* elektraBackendOpen(KeySet *elektra_config, KeySet *modules, Key *errorKey);
@@ -491,6 +438,7 @@ int elektraPluginClose(Plugin *handle, Key *errorKey);
 Backend* elektraTrieLookup(Trie *trie, const Key *key);
 Trie *elektraTrieOpen(KeySet *config, KeySet *modules, Key *errorKey);
 int elektraTrieClose (Trie *trie, Key *errorKey);
+int elektraMountBackend (Trie **trie, Backend *backend, Key *errorKey);
 
 /*Private helper for keys*/
 int keyInit(Key *key);

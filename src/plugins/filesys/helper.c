@@ -1,5 +1,5 @@
 /***************************************************************************
-            helper.c  -  Helpers for backends
+            helper.c  -  Helpers for resolver
                              -------------------
     begin                : Mon Dec 29 2003
     copyright            : (C) 2003 by Avi Alkalay
@@ -13,148 +13,58 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "resolver.h"
 
-#include "helper.h"
+#include <kdbextension.h>
+#include <kdbprivate.h>
 
-/**
- * @defgroup backendhelper KDB Backends :: Backend Helper for Elektra
- * @brief Backend helper Methods for Elektra and Backends.
- *
- * To use them:
- * @code
- * #include <kdbbackend.h>
- * @endcode
- *
- * These backend helper methods provide
- * functionality commonly used by backends to make backend
- * development easier and to provide the same behaviour
- * between backends.
- *
- */
-
-
-/**
- * Locks file for exclusive write mode.
- *
- * This function will block until all reader
- * and writer have left the file.
- *
- * @param f is a valid filedescriptor
- * @return 0 on success
- * @return -1 on failure
- * @ingroup backendhelper
- * @err sets KDB_ERR_NOLOCK when locking failed
- */
-int kdbbWriteLock (FILE *f)
-{
-#ifdef HAVE_FCNTL_H
-	int fd = fileno(f);
-	struct flock l;
-	int ret=0;
-	l.l_type = F_WRLCK; /*Do exclusive Lock*/
-	l.l_start= 0;	/*Start at begin*/
-	l.l_whence = SEEK_SET;
-	l.l_len = 0;	/*Do it with whole file*/
-	ret = fcntl (fd, F_SETLKW, &l);
-	return ret;
-#else
-	return 0;
+#ifndef ESCAPE_CHAR
+#define ESCAPE_CHAR '\\'
 #endif
-}
 
-/**
- * Locks file for read mode.
+#ifndef KDB_KEY_USERS
+/**Users information.
  *
- * Other processes and threads are allowed to read the
- * file too simultaneous.
- *
- * @param f is a valid filedescriptor
- * @return 0 on success
- * @return -1 on failure
- * @ingroup backendhelper
- * @err sets KDB_ERR_NOLOCK when locking failed
- */
-int kdbbReadLock (FILE *f)
-{
-#ifdef HAVE_FCNTL_H
-	int ret=0;
-	int fd = fileno(f);
-	struct flock l;
-	l.l_type = F_WRLCK; /*Do exclusive Lock*/
-	l.l_start= 0;	/*Start at begin*/
-	l.l_whence = SEEK_SET;
-	l.l_len = 0;	/*Do it with whole file*/
-	ret = fcntl (fd, F_SETLKW, &l);
-	return ret;
-#else
-	return 0;
+ * This key directory tells you the users existing on the system. */
+#define KDB_KEY_USERS            "system/users"
 #endif
-}
 
-
-/**
- * Unlocks file.
- *
- * @param f is a valid filedescriptor
- * @return 0 on success
- * @return -1 on failure
- * @ingroup backendhelper
- * @err sets KDB_ERR_NOLOCK when locking failed
- */
-int kdbbUnlock (FILE *f)
-{
-#ifdef HAVE_FCNTL_H
-	int ret=0;
-	int fd = fileno(f);
-	struct flock l;
-	l.l_type = F_UNLCK; /*Give Lock away*/
-	l.l_start= 0;	/*Start at begin*/
-	l.l_whence = SEEK_SET;
-	l.l_len = 0;	/*Do it with whole file*/
-	ret = fcntl (fd, F_SETLKW, &l);
-	return ret;
-#else
-	return 0;
-#endif
-}
-
-
+#define KDB_KEY_USERS_LEN        (sizeof (KDB_KEY_USERS))
 
 /**
  * Encodes a buffer of data onto hexadecimal ASCII.
  *
  * The resulting data is made up of pairs of ASCII hex-digits,
  * space- and newline-separated. This is the counterpart of
- * kdbbDecode().
+ * elektraDecode().
  *
  * The @c returned must allocated prior you call this function and won't
- * be bigger than 3 times the size of the source @c kdbbDecoded + 1 byte.
+ * be bigger than 3 times the size of the source @c elektraDecoded + 1 byte.
  *
  *
- * @param kdbbDecoded the source buffer.
+ * @param elektraDecoded the source buffer.
  * @param size the size of the source buffer in bytes.
- * @param returned the preallocated destination for the ASCII-kdbbEncoded data.
- * @return the amount of bytes used in the resulting kdbbEncoded buffer.
- * @see kdbbDecode()
+ * @param returned the preallocated destination for the ASCII-elektraEncoded data.
+ * @return the amount of bytes used in the resulting elektraEncoded buffer.
+ * @see elektraDecode()
  * @ingroup backendhelper
  */
-ssize_t kdbbEncode(void *kdbbDecoded, size_t size, char *returned)
+ssize_t elektraEncode(void *elektraDecoded, size_t size, char *returned)
 {
-	char *readCursor=kdbbDecoded;
+	char *readCursor=elektraDecoded;
 	char *writeCursor=returned;
 	int blockStep=4; /* 4 bytes per block */
 	int lineStep=8*blockStep; /* 8 blocks per line */
 	int currentInBlock=0;
 	int currentInLine=0;
-	ssize_t ssize;
+	ssize_t ssize = size;
 
 	if (size > SSIZE_MAX) return -1;
-	ssize = size;
 
-	if ( size == 0 )
+	if (ssize == 0 )
 		return 0;
 	
-	while ((readCursor-(char *)kdbbDecoded)<ssize)
+	while ((readCursor-(char *)elektraDecoded)<ssize)
 	{
 		sprintf(writeCursor,"%02x",*(unsigned char *)readCursor);
 		readCursor++;
@@ -178,29 +88,29 @@ ssize_t kdbbEncode(void *kdbbDecoded, size_t size, char *returned)
 
 
 /**
- * UnkdbbEncodes a buffer of ASCII hexadecimal values into a byte stream.
+ * UnelektraEncodes a buffer of ASCII hexadecimal values into a byte stream.
  *
  * The allowed format for the hexadecimal values is just
  * a stream of pairs of plain hex-digits, all together or
  * space-separated.
  * 
  * The @c returned data won't be bigger than half the size of the
- * source @c kdbbEncoded data.
+ * source @c elektraEncoded data.
  *
- * @param kdbbEncoded the source of ASCII hexadecimal digits.
- * @param returned preallocated destination for the kdbbDecoded data.
- * @return the amount of bytes kdbbDecoded
+ * @param elektraEncoded the source of ASCII hexadecimal digits.
+ * @param returned preallocated destination for the elektraDecoded data.
+ * @return the amount of bytes elektraDecoded
  * @return -1 on failure
- * @see kdbbEncode()
+ * @see elektraEncode()
  * @ingroup backendhelper
  */
-ssize_t kdbbDecode(char *kdbbEncoded,void *returned)
+ssize_t elektraDecode(char *elektraEncoded,void *returned)
 {
 	char byteInHexa[5]="0x";
-	char *readCursor=kdbbEncoded;
+	char *readCursor=elektraEncoded;
 	char *writeCursor=returned;
 
-	if (!kdbbEncoded) {
+	if (!elektraEncoded) {
 		if (returned) *(char *)returned=0;
 		return 0;
 	}
@@ -237,10 +147,10 @@ ssize_t kdbbDecode(char *kdbbEncoded,void *returned)
  * Encode '/', '\', '%', '+', ' ' char following
  * RFC 2396 or copy char untouched if different.
  *
- * @param c Char to kdbbEncode
- * @param buffer string wich will contain kdbbEncoded char
+ * @param c Char to elektraEncode
+ * @param buffer string wich will contain elektraEncoded char
  * @param bufSize Size of the buffer
- * @return: Size of the kdbbEncoded string if success or -1
+ * @return: Size of the elektraEncoded string if success or -1
  * if error  * (then buffer is untouched)
  * @ingroup backendhelper
  * @see elektraDecodeChar
@@ -248,7 +158,7 @@ ssize_t kdbbDecode(char *kdbbEncoded,void *returned)
  * NOTE: No '\\0' is added at the end of buffer.
  *
  */
-int kdbbEncodeChar(char c, char *buffer, size_t bufSize)
+int elektraEncodeChar(char c, char *buffer, size_t bufSize)
 {
 	switch(c) {
 		case '%':
@@ -308,12 +218,12 @@ int kdbbEncodeChar(char c, char *buffer, size_t bufSize)
  * @return: Positive size of byte read from "from" for decoding
  * the sequence if sucess or -1 if error (into untouched)
  * @ingroup backendhelper
- * @see kdbbEncodeChar
+ * @see elektraEncodeChar
  *
  * NOTE: No '\\0' is added at the end of buffer.
  *
  */
-int kdbbDecodeChar(const char *from, char *into)
+int elektraDecodeChar(const char *from, char *into)
 {
 	switch(*from) {
 		case '%':
@@ -354,10 +264,10 @@ int kdbbDecodeChar(const char *from, char *into)
  * @return 0 on success
  * @return -1 on failure
  * @ingroup backendhelper
- * @see kdbbKeyNameToRelativeFilename
+ * @see elektraKeyNameToRelativeFilename
  *
  */
-int kdbbFilenameToKeyName(const char *string, char *buffer, int bufSize)
+int elektraFilenameToKeyName(const char *string, char *buffer, size_t bufSize)
 {
 	char decoded;
 	int j;
@@ -377,7 +287,7 @@ int kdbbFilenameToKeyName(const char *string, char *buffer, int bufSize)
 			string++;
 		} else {
 			/* Decode char */
-			if ( (j = kdbbDecodeChar(string, &decoded)) != -1 ) {
+			if ( (j = elektraDecodeChar(string, &decoded)) != -1 ) {
 				string += j;
 				*(buffer++) = decoded;
 				bufSize -= sizeof(char);
@@ -394,63 +304,20 @@ int kdbbFilenameToKeyName(const char *string, char *buffer, int bufSize)
 	return 0;
 }
 
-/**Calculates the keyname out of a relative filename.
- *
- * @param handle The kdb handle to work with
- * @param forFilename needs to be the a null terminated string containing the relative filename
- * @param parentKey is the key above the key which will be returned
- * @param returned The proper keyname and owner will be stored in returned. A valid key must be passed.
- * @return number of bytes written to the buffer, or 0 on error
- * @ingroup backendhelper
- * @return length of returned string on success
- * @return -1 on failure
- * @see kdbbKeyNameToRelativeFilename()
- */
-ssize_t kdbbGetFullKeyName (KDB *handle, const char *forFilename, const Key *parentKey, Key *returned)
-{
-	size_t size=0;
-	char *transformedName=0;
-	char *name;
-
-	/* Next 2 ifs are required to transform filename from UTF-8 */
-	transformedName = malloc(size=elektraStrLen(forFilename));
-	strcpy(transformedName,forFilename);
-
-	if (kdbbUTF8Engine(UTF8_FROM,&transformedName,&size)) {
-		free(transformedName);
-		/*errno = KDB_ERR_CONVERT;*/
-		return -1; 
-	}
-
-	/* Translate from filename -> keyname and concat it into name */
-	name = (char *) malloc(size*3 + keyGetNameSize(parentKey));
-	strcpy (name, keyName(parentKey));
-	name[keyGetNameSize(parentKey)-1] = '/';
-	kdbbFilenameToKeyName(transformedName, name+keyGetNameSize(parentKey), size*3);
-
-	/* Now set the name and owner */
-	keySetName (returned, name);
-	keySetOwner(returned, keyOwner(parentKey));
-
-	free(transformedName);
-	free(name);
-	return 0;
-}
-
 /**
  * Translate a key name to a relative file name
  * applying encoding.
  *
  * @param string Keyname
- * @param buffer kdbbEncoded filename
+ * @param buffer elektraEncoded filename
  * @param bufSize Size of buffer
  * @return Number of byte written in buffer on success,
  * @return -1 on failure
  * @ingroup backendhelper
- * @see kdbbKeyNameToRelativeFilename
+ * @see elektraKeyNameToRelativeFilename
  *
  **/
-int kdbbKeyNameToRelativeFilename(const char *string, char *buffer, size_t bufSize)
+int elektraKeyNameToRelativeFilename(const char *string, char *buffer, size_t bufSize)
 {
 	size_t	written;
 	int     j;
@@ -465,8 +332,8 @@ int kdbbKeyNameToRelativeFilename(const char *string, char *buffer, size_t bufSi
 		}
 
 		if ( *string == ESCAPE_CHAR && *(string+1) == PATH_SEPARATOR ) {
-			/* Key delimiter escaped, kdbbEncode these two (escape + delim) */
-			if ( (j = kdbbEncodeChar(*(string++), buffer, bufSize)) != -1 ) {
+			/* Key delimiter escaped, elektraEncode these two (escape + delim) */
+			if ( (j = elektraEncodeChar(*(string++), buffer, bufSize)) != -1 ) {
 				bufSize -= j*sizeof(char);
 				buffer += j;
 				written += j*sizeof(char);
@@ -475,7 +342,7 @@ int kdbbKeyNameToRelativeFilename(const char *string, char *buffer, size_t bufSi
 				return -1;
 			}
 
-			if ( (j = kdbbEncodeChar(*(string++), buffer, bufSize)) != -1 ) {
+			if ( (j = elektraEncodeChar(*(string++), buffer, bufSize)) != -1 ) {
 				bufSize -= j*sizeof(char);
 				written += j*sizeof(char);
 				buffer += j;
@@ -493,7 +360,7 @@ int kdbbKeyNameToRelativeFilename(const char *string, char *buffer, size_t bufSi
 
 		} else {
 			/* Encode ... */
-			if ( (j = kdbbEncodeChar(*(string++), buffer, bufSize)) != -1 ) {
+			if ( (j = elektraEncodeChar(*(string++), buffer, bufSize)) != -1 ) {
 				bufSize -= j*sizeof(char);
 				written += j*sizeof(char);
 				buffer += j;
@@ -508,59 +375,6 @@ int kdbbKeyNameToRelativeFilename(const char *string, char *buffer, size_t bufSi
 
 	return written;
 }
-
-
-
-/**
- * This is a helper to kdbGetFullFilename()
- *
- * @param key has the relevant name for the relative filename
- * @param relativeFilename the buffer to return the calculated filename
- * @param maxSize maximum number of bytes that fit the buffer
- * @see kdbGetFullFilename()
- * @return number of bytes written to the buffer
- * @return -1 on failure
- * @ingroup backendhelper
- */
-ssize_t kdbbKeyCalcRelativeFilename(const Key *key,char *relativeFilename,size_t maxSize)
-{
-	if (kdbbNeedsUTF8Conversion()) {
-		char *converted;
-		size_t size;
-
-		if (!(size=keyGetNameSize(key))) return -1;
-
-		converted = (char *) malloc(MAX_PATH_LENGTH);
-		size = kdbbKeyNameToRelativeFilename(keyName(key), converted,
-			MAX_PATH_LENGTH);
-
-/* 		memcpy(converted,relativeFilename,convertedSize); */
-
-		if (kdbbUTF8Engine(UTF8_TO,&converted,&size)) {
-			free(converted);
-			/*errno = KDB_ERR_CONVERT;*/
-			return -1;
-		}
-
-		if (size>maxSize) {
-			free(converted);
-			/*errno=KDB_ERR_TOOLONG;*/
-			return -1;
-		}
-
-		memcpy(relativeFilename,converted,size);
-		free(converted);
-
-		return size;
-	} else {
-		return kdbbKeyNameToRelativeFilename(keyName(key), relativeFilename, maxSize);
-	}
-
-	return -1;
-}
-
-
-
 
 /**
  * Calculate the real file name for a key.
@@ -585,8 +399,9 @@ ssize_t kdbbKeyCalcRelativeFilename(const Key *key,char *relativeFilename,size_t
  * @return length of returned string on success
  * @return -1 on failure
  */
-ssize_t kdbbGetFullFilename(KDB *handle, const Key *forKey,char *returned,size_t maxSize) {
-	ssize_t length=0;
+ssize_t elektraGetFullFilename(const Key *forKey, char *returned, size_t maxSize)
+{
+	size_t length=0;
 	char * home;
 	char buffer [MAX_PATH_LENGTH] = KDB_KEY_USERS;
 	ssize_t rc;
@@ -657,7 +472,8 @@ ssize_t kdbbGetFullFilename(KDB *handle, const Key *forKey,char *returned,size_t
 		/*errno=KDB_ERR_TOOLONG;*/
 		return -1;
 	}
-	rc=kdbbKeyCalcRelativeFilename(forKey,returned+length,maxSize-length);
+	// TODO !! rc=elektraKeyCalcRelativeFilename(forKey,returned+length,maxSize-length);
+	rc = elektraKeyNameToRelativeFilename(keyName(forKey), returned+length, maxSize-length);
 
 	if (rc == -1) return -1;
 	else length += rc;

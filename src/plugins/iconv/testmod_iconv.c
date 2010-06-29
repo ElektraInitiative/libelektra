@@ -93,6 +93,55 @@ void test_utf8_to_latin1()
 	elektraPluginClose (plugin);
 }
 
+void test_utf8_needed()
+{
+	printf ("Test if utf8 conversation is needed\n");
+
+	printf ("setlocale %s\n",setlocale(LC_CTYPE,""));
+	printf ("langinfo %s\n", nl_langinfo(CODESET));
+	warn_if_fail (kdbbNeedsUTF8Conversion() == 0, "Your default needs conversation, use utf8 to avoid that");
+
+	printf ("setlocale %s\n",setlocale (LC_CTYPE, "C"));
+	printf ("langinfo %s\n", nl_langinfo(CODESET));
+	warn_if_fail (kdbbNeedsUTF8Conversion() != 0, "C needs conversation (you maybe disabled iconv)");
+
+	/*
+	printf ("%s\n",setlocale (LC_CTYPE, "de_AT.utf8"));
+	printf ("%s\n", nl_langinfo(CODESET));
+	succeed_if (kdbbNeedsUTF8Conversion() == 0, "UTF-8 does not need conversation");
+	*/
+}
+
+void set_str (char **str, size_t *len, char *newstr)
+{
+	*len = strlen (newstr)+1;
+	elektraRealloc ((void**)str, *len);
+	strcpy (*str, newstr);
+}
+
+void test_utf8_conversation()
+{
+	char * str = malloc (MAX_PATH_LENGTH);
+	size_t len;
+
+	printf ("Test utf8 conversation\n");
+
+	printf ("setlocale %s\n",setlocale(LC_ALL,"C"));
+
+
+	set_str (&str, &len, "only ascii");
+	succeed_if (kdbbUTF8Engine (UTF8_FROM, &str, &len) != -1, "could not use utf8engine");
+	succeed_if (strcmp ("only ascii", str) == 0, "ascii conversation incorrect");
+
+	/* leads to EILSEQ, means illegal byte sequence */
+	set_str (&str, &len, "Ug.ly:St@ri€n.g Key");
+	succeed_if (kdbbUTF8Engine (UTF8_FROM, &str, &len) == -1, "could use utf8engine");
+	/*succeed_if (errno == EILSEQ, "errno not set correctly");*/
+
+	free (str);
+}
+
+
 
 int main(int argc, char** argv)
 {
@@ -103,6 +152,8 @@ int main(int argc, char** argv)
 
 	test_latin1_to_utf8();
 	test_utf8_to_latin1();
+	test_utf8_needed();
+	test_utf8_conversation();
 
 	printf("\ntest_backendhelpers RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

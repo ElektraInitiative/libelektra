@@ -3,7 +3,7 @@
 #
 # Here the cache variables are set
 
-set (BACKENDS dump hosts fstab CACHE STRING "Which backends to use?")
+set (BACKENDS dump resolver CACHE STRING "Which backends to use?")
 set (BACKEND_DEFAULT dump CACHE STRING "Which should be the default backend?")
 
 set (KDB_DB_SYSTEM "/etc" CACHE PATH "Where should be the system configuration?")

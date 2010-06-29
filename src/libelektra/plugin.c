@@ -257,8 +257,28 @@ int elektraProcessPlugins(Plugin **plugins, KeySet *modules, KeySet *referencePl
 Plugin* elektraPluginOpen(const char *name, KeySet *modules, KeySet *config, Key *errorKey)
 {
 	Plugin* handle;
+	const char* n;
 
 	elektraPluginFactory pluginFactory=0;
+
+	if (!name || name[0] == '\0')
+	{
+		ELEKTRA_SET_ERROR(39, errorKey, "name is null or empty");
+		goto err_clup;
+	}
+
+	n = name;
+	while (*n != '\0')
+	{
+		if (*n == '/') ++n;
+		else break;
+	}
+
+	if (*n == '\0')
+	{
+		ELEKTRA_SET_ERROR(39, errorKey, "name contained slashes only");
+		goto err_clup;
+	}
 
 	pluginFactory = elektraModulesLoad(modules, name, errorKey);
 	if (pluginFactory == 0)
@@ -371,6 +391,9 @@ Plugin *elektraPluginExport(const char *pluginName, ...) {
 			case ELEKTRA_PLUGIN_SET:
 				returned->kdbSet=va_arg(va,kdbSetPtr);
 				break;
+			case ELEKTRA_PLUGIN_ERROR:
+				returned->kdbError=va_arg(va,kdbErrorPtr);
+				break;
 			default:
 #if DEBUG
 				printf ("plugin passed something unexpected\n");
@@ -396,12 +419,26 @@ KeySet *elektraPluginGetConfig(Plugin *handle)
 	return handle->config;
 }
 
-void elektraPluginSetHandle(Plugin *plugin, void *handle)
+/**
+ * Store a pointer to any plugin related data.
+ *
+ * @param plugin a pointer to the plugin
+ * @param data the pointer to the data
+ * @ingroup plugin
+ */
+void elektraPluginSetData(Plugin *plugin, void *data)
 {
-	plugin->handle = handle;
+	plugin->data = data;
 }
 
-void* elektraPluginGetHandle(Plugin *plugin)
+/**
+ * Get a pointer to any plugin related data stored before.
+ *
+ * @param plugin a pointer to the plugin
+ * @return a pointer to the data
+ * @ingroup plugin
+ */
+void* elektraPluginGetData(Plugin *plugin)
 {
-	return plugin->handle;
+	return plugin->data;
 }

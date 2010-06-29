@@ -574,6 +574,9 @@ kdbClose (handle);
  */
 keyswitch_t keyCompare(const Key *key1, const Key *key2)
 {
+	if (!key1 && !key2) return 0;
+	if (!key1 || !key2) return KEY_NULL;
+
 	keyswitch_t ret=0;
 	ssize_t nsize1 = keyGetNameSize(key1);
 	ssize_t nsize2 = keyGetNameSize(key2);

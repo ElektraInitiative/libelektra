@@ -69,7 +69,7 @@ int kdbOpen_timeofday(Plugin *handle)
 	char t[10];
 
 	gettimeofday(start, 0);
-	elektraPluginSetHandle(handle, start);
+	elektraPluginSetData(handle, start);
 
 	fprintf(stderr, "open\t%s\n", timeofday(t, start));
 
@@ -79,7 +79,7 @@ int kdbOpen_timeofday(Plugin *handle)
 int kdbClose_timeofday(Plugin *handle)
 {
 	char t[10];
-	struct timeval *start = elektraPluginGetHandle(handle);
+	struct timeval *start = elektraPluginGetData(handle);
 
 	fprintf(stderr, "close\t%s\n", timeofday(t, start));
 
@@ -92,7 +92,7 @@ ssize_t kdbGet_timeofday(Plugin *handle, KeySet *returned, const Key *parentKey)
 {
 	ssize_t nr_keys = 0;
 	char t[10];
-	struct timeval *start = elektraPluginGetHandle(handle);
+	struct timeval *start = elektraPluginGetData(handle);
 
 	fprintf(stderr, "get\t%s\n", timeofday(t, start));
 
@@ -168,7 +168,7 @@ ssize_t kdbSet_timeofday(Plugin *handle, KeySet *returned, const Key *parentKey)
 {
 	ssize_t nr_keys = 0;
 	char t[10];
-	struct timeval *start = elektraPluginGetHandle(handle);
+	struct timeval *start = elektraPluginGetData(handle);
 
 	fprintf(stderr, "set\t%s\n", timeofday(t, start));
 

@@ -4,6 +4,7 @@
 #define KDBINTERNAL_H
 
 #include <kdb.h>
+#include <kdbvar.h>
 #include <kdberrors.h>
 #include <kdbmodule.h>
 #include <kdbplugin.h>

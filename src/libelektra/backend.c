@@ -148,13 +148,14 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
 				if (elektraProcessPlugins(backend->getplugins, modules, referencePlugins,
 							cut, systemConfig, errorKey) == -1)
 				{
-					ELEKTRA_ADD_WARNING(13, errorKey, "elektraProcessPlugins failed");
+					ELEKTRA_ADD_WARNING(13, errorKey, "elektraProcessPlugins for get failed");
 					goto error;
 				}
 			}
 			else if (!strcmp(keyBaseName(cur), "mountpoint"))
 			{
 				backend->mountpoint=keyNew(keyValue(cur),KEY_VALUE,keyBaseName(root), KEY_END);
+				keyIncRef(backend->mountpoint);
 				if (!backend->mountpoint)
 				{
 					ELEKTRA_ADD_WARNING(14, errorKey, keyValue(cur));
@@ -167,7 +168,16 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
 				if (elektraProcessPlugins(backend->setplugins, modules, referencePlugins,
 							cut, systemConfig, errorKey) == -1)
 				{
-					ELEKTRA_ADD_WARNING(15, errorKey, "elektraProcessPlugins failed");
+					ELEKTRA_ADD_WARNING(15, errorKey, "elektraProcessPlugins for set failed");
+					goto error;
+				}
+			}
+			else if (!strcmp(keyBaseName(cur), "errorplugins"))
+			{
+				if (elektraProcessPlugins(backend->errorplugins, modules, referencePlugins,
+							cut, systemConfig, errorKey) == -1)
+				{
+					ELEKTRA_ADD_WARNING(15, errorKey, "elektraProcessPlugins for error failed");
 					goto error;
 				}
 			} else {
@@ -202,26 +212,43 @@ Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey)
 {
 	Backend *backend = elektraCalloc(sizeof(struct _Backend));
 
-	// TODO a default path?
-	KeySet *defaultConfig = ksNew(5,
-		keyNew("system/path", KEY_VALUE, KDB_DB_SYSTEM "/default.ecf", KEY_END),
-		keyNew("user/path", KEY_VALUE, "/tmp/default.ecf", KEY_END),
+	KeySet *resolverConfig = ksNew(5,
+		keyNew("system/path", KEY_VALUE, "default.ecf", KEY_END),
 		KS_END);
-	Plugin *plugin = elektraPluginOpen("default", modules, defaultConfig, errorKey);
-	if (!plugin)
+
+	Plugin *resolver = elektraPluginOpen("resolver", modules, resolverConfig, errorKey);
+	if (!resolver)
 	{
-		/* error already set in elektraPluginOpen */
 		elektraFree(backend);
+		/* error already set in elektraPluginOpen */
 		return 0;
 	}
 
+	backend->getplugins[0] = resolver;
+	backend->setplugins[0] = resolver;
+	backend->setplugins[COMMIT_PLUGIN] = resolver;
+	backend->errorplugins[0] = resolver;
+	resolver->refcounter = 4;
+
+	KeySet *storageConfig = ksNew(5,
+		KS_END);
+
+	Plugin *storage = elektraPluginOpen("default", modules, storageConfig, errorKey);
+	if (!storage)
+	{
+		elektraPluginClose(resolver, errorKey);
+		elektraFree(backend);
+		/* error already set in elektraPluginOpen */
+		return 0;
+	}
+
+	backend->getplugins[1] = storage;
+	backend->setplugins[1] = storage;
+	storage->refcounter = 2;
+
 	Key *mp = keyNew ("", KEY_VALUE, "default", KEY_END);
-
-	backend->getplugins[0] = plugin;
-	backend->setplugins[0] = plugin;
-	plugin->refcounter = 2;
-
 	backend->mountpoint = mp;
+	keyIncRef(backend->mountpoint);
 
 	return backend;
 }
@@ -252,6 +279,7 @@ Backend* elektraBackendOpenModules(KeySet *modules, Key *errorKey)
 	plugin->refcounter = 1;
 
 	backend->mountpoint = mp;
+	keyIncRef(backend->mountpoint);
 
 	ksSetCursor (modules, save);
 
@@ -265,6 +293,7 @@ int elektraBackendClose(Backend *backend, Key* errorKey)
 
 	if (!backend) return -1;
 
+	keyDecRef(backend->mountpoint);
 	keyDel (backend->mountpoint);
 	for (int i=0; i<NR_OF_PLUGINS; ++i)
 	{
@@ -272,6 +301,9 @@ int elektraBackendClose(Backend *backend, Key* errorKey)
 		if (ret == -1) ++errorOccurred;
 
 		ret = elektraPluginClose(backend->getplugins[i], errorKey);
+		if (ret == -1) ++errorOccurred;
+
+		ret = elektraPluginClose(backend->errorplugins[i], errorKey);
 		if (ret == -1) ++errorOccurred;
 	}
 	elektraFree (backend);

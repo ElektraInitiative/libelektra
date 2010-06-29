@@ -59,7 +59,7 @@ severity:warning
 ingroup:kdb
 
 number:8
-description:no default backend found, but should be
+description:no default backend found, but should be (reason contains keyname)
 severity:fatal
 ingroup:kdb
 
@@ -147,4 +147,85 @@ number:25
 description:Backend has no mountpoint
 severity:warning
 ingroup:trie
+
+number:26
+description:could not open lock file
+severity:error
+ingroup:plugin
+module:resolver
+
+number:27
+description:could not lock file
+severity:error
+ingroup:plugin
+module:resolver
+
+number:28
+description:could not fchmod file
+severity:error
+ingroup:plugin
+module:resolver
+
+number:29
+description:could not stat file
+severity:error
+ingroup:plugin
+module:resolver
+
+number:30
+description:found conflict
+severity:error
+ingroup:plugin
+module:resolver
+
+number:31
+description:could not rename file
+severity:error
+ingroup:plugin
+module:resolver
+
+number:32
+description:could not unlock file
+severity:warning
+ingroup:plugin
+module:resolver
+
+number:33
+description:could not close file
+severity:warning
+ingroup:plugin
+module:resolver
+
+number:34
+description:no file given in configuration
+severity:warning
+ingroup:plugin
+module:resolver
+
+number:35
+description:could not resolve filename
+severity:warning
+ingroup:plugin
+module:resolver
+
+number:36
+description:could not unlink file
+severity:warning
+ingroup:plugin
+module:resolver
+
+number:37
+description:null pointer passed
+severity:error
+ingroup:kdb
+
+number:38
+description:could not buildup split
+severity:error
+ingroup:kdb
+
+number:39
+description:not a valid name supplied for loading plugins
+severity:fatal
+ingroup:modules
 

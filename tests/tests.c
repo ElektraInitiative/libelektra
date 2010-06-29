@@ -161,6 +161,7 @@ int compare_key (Key *k1, Key *k2)
 	succeed_if ((ret & KEY_UID) == 0 , "compare key: UID not equal");
 	succeed_if ((ret & KEY_GID) == 0 , "compare key: GID not equal");
 	succeed_if ((ret & KEY_MODE ) == 0 , "compare key: MODE  not equal");
+	succeed_if ((ret & KEY_NULL ) == 0, "compare key: one of the keys is null");
 
 	return err-nbError;
 }
@@ -179,8 +180,8 @@ int compare_keyset (KeySet *ks, KeySet *ks2)
 	int	err = nbError;
 
 	// I would have a _true_ ksCompare() ...
-	ksSort(ks); ksRewind(ks);
-	ksSort(ks2); ksRewind(ks2);
+	ksRewind(ks);
+	ksRewind(ks2);
 
 	//SYNC with ksOutput
 	while ((key = ksNext(ks)) != 0)
@@ -203,11 +204,13 @@ int compare_keyset (KeySet *ks, KeySet *ks2)
 		printf ("%d, %d\n", (int)ksGetSize(ks), (int)ksGetSize(ks2));
 		succeed_if( 0, "There are less keys fetched than keys which have been submitted.");
 	}
+	/*
 	if ( err-nbError )
 	{
 		if (key && key2) printf ("error comparing %s - %s\n", keyName(key), keyName(key2));
 		else printf ("error comparing null key\n");
 	}
+	*/
 	return err-nbError;
 }
 
@@ -221,3 +224,101 @@ char * srcdir_file(const char * fileName)
 	return file;
 }
 
+void clear_sync (KeySet *ks)
+{
+	Key *k;
+	ksRewind(ks);
+	while ((k = ksNext(ks)) != 0) keyClearSync(k);
+}
+
+void output_keyset (KeySet *ks)
+{
+	Key *k;
+	ksRewind(ks);
+	while ((k = ksNext(ks)) != 0)
+	{
+		printf ("key: %s, string: %s\n", keyName(k), keyString(k));
+	}
+}
+
+void output_trie(Trie *trie)
+{
+	int i;
+	for (i=0; i <= MAX_UCHAR; ++i)
+	{
+		if (trie->value[i])
+		{
+			printf ("output_trie: %p, mp: %s\n",
+					(void*) trie->value[i],
+					keyName(trie->value[i]->mountpoint));
+		}
+		if (trie->children[i]) output_trie(trie->children[i]);
+	}
+	if (trie->empty_value)
+	{
+		printf ("empty_value: %p, mp: %s\n",
+				(void*) trie->empty_value,
+				keyName(trie->empty_value->mountpoint));
+	}
+}
+
+void output_split(Split *split)
+{
+	for (size_t i=0; i<split->size; ++i)
+	{
+		printf ("split #%zd size: %zd, handle: %p, sync: %d, parent: %s (%s)\n",
+				i,
+				ksGetSize(split->keysets[i]),
+				(void*)split->handles[i],
+				split->syncbits[i],
+				keyName(split->parents[i]),
+				keyString(split->parents[i])
+				);
+	}
+}
+
+void output_warnings(Key *warningKey)
+{
+	const Key *metaWarnings = keyGetMeta(warningKey, "warnings");
+	if (!metaWarnings) return; /* There are no current warnings */
+	succeed_if (0, "there were warnings issued");
+
+	int nrWarnings = atoi(keyString(metaWarnings));
+	char buffer[] = "warnings/#00\0description";
+
+	printf ("There are %d warnings\n", nrWarnings+1);
+	for (int i=0; i<=nrWarnings; ++i)
+	{
+		buffer[10] = i/10%10 + '0';
+		buffer[11] = i%10 + '0';
+		printf ("buffer is: %s\n", buffer);
+		strncat(buffer, "/number" , sizeof(buffer));
+		printf ("number: %s\n", keyString(keyGetMeta(warningKey, buffer)));
+		buffer[12] = '\0'; strncat(buffer, "/description" , sizeof(buffer));
+		printf ("description: %s\n", keyString(keyGetMeta(warningKey, buffer)));
+		buffer[12] = '\0'; strncat(buffer, "/ingroup" , sizeof(buffer));
+		keyGetMeta(warningKey, buffer);
+		buffer[12] = '\0'; strncat(buffer, "/module" , sizeof(buffer));
+		keyGetMeta(warningKey, buffer);
+		buffer[12] = '\0'; strncat(buffer, "/file" , sizeof(buffer));
+		keyGetMeta(warningKey, buffer);
+		buffer[12] = '\0'; strncat(buffer, "/line" , sizeof(buffer));
+		keyGetMeta(warningKey, buffer);
+		buffer[12] = '\0'; strncat(buffer, "/reason" , sizeof(buffer));
+		keyGetMeta(warningKey, buffer);
+	}
+}
+
+void output_errors(Key *errorKey)
+{
+	const Key * metaError = keyGetMeta(errorKey, "error");
+	if (!metaError) return; /* There is no current error */
+	succeed_if (0, "there were errors issued");
+
+	printf ("number: %s\n", keyString(keyGetMeta(errorKey, "error/number")));
+	printf ("description: : %s\n", keyString(keyGetMeta(errorKey, "error/description")));
+	printf ("ingroup: : %s\n", keyString(keyGetMeta(errorKey, "error/ingroup")));
+	printf ("module: : %s\n", keyString(keyGetMeta(errorKey, "error/module")));
+	printf ("at: %s:%s\n", keyString(keyGetMeta(errorKey,"error/file")), keyString(keyGetMeta(errorKey, "error/line")));
+	printf ("reason: : %s\n", keyString(keyGetMeta(errorKey, "error/reason")));
+}

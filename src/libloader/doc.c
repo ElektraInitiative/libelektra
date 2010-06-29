@@ -58,6 +58,10 @@ int elektraModulesInit (KeySet *modules, Key *error)
  * If anything goes wrong dont append anything to modules. Instead
  * report the error to the error key and return with 0.
  *
+ * @pre the name is not null, empty and has at least one character
+ *      different to /. It is suitable to be used as keyAddBaseName
+ *      without any further error checking.
+ *
  * @param modules where to get existing modules from
  *        a new module will be added there
  * @param name the name for the plugin to load. Note that it does

@@ -31,6 +31,7 @@ struct Plugin
 
 		if (!plugin)
 		{
+			printError(errorKey);
 			printWarnings(errorKey);
 			throw NoPlugin();
 		}
@@ -88,13 +89,12 @@ MountCommand::MountCommand()
 
 bool MountCommand::checkFile(std::string path)
 {
-	if (path[0] != '/')
+	if (path[0] == '/')
 	{
-		cerr << "You must use an absolute path" << endl;
+		cerr << "You must use an relative path" << endl;
 		return false;
 	}
-	std::ofstream f(path.c_str());
-	return f.is_open();
+	return true;
 }
 
 KeySet MountCommand::addPlugins(std::string name, KeySet& modules, KeySet& rreferencePlugins, std::string which)
