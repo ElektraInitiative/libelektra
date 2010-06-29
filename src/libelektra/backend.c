@@ -243,8 +243,15 @@ Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey)
 	}
 
 	backend->getplugins[1] = storage;
-	backend->setplugins[1] = storage;
+	backend->setplugins[4] = storage;
 	storage->refcounter = 2;
+
+
+	Plugin *hidden = elektraPluginOpen("hidden", modules, 0, errorKey);
+	backend->getplugins[2] = hidden;
+	backend->setplugins[2] = hidden;
+	hidden->refcounter = 2;
+
 
 	Key *mp = keyNew ("", KEY_VALUE, "default", KEY_END);
 	backend->mountpoint = mp;

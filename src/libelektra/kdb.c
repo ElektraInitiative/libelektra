@@ -549,11 +549,6 @@ int kdbGet (KDB *handle, KeySet *returned,
 			}
 			continue;
 		}
-		if ((!(options & KDB_O_INACTIVE)) && keyIsInactive (current))
-		{
-			keyDel (current);
-			continue;
-		}
 		if (keyIsDir (current))
 		{
 			if (options & KDB_O_NODIR)
