@@ -1,0 +1,18 @@
+#ifndef SHELL_HPP
+#define SHELL_HPP
+
+#include <command.hpp>
+
+#include <kdb>
+
+class ShellCommand : public Command
+{
+	kdb::KDB kdb;
+
+public:
+	ShellCommand();
+	~ShellCommand();
+	int execute(int argc, char**argv);
+};
+
+#endif

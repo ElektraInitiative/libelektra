@@ -164,6 +164,12 @@ int elektraResolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		return -1;
 	}
 
+	/* Check if update needed
+	   issue 1: user/system separation
+	   issue 2: already locked by kdbOpen
+	if (pk->mtime == buf.st_mtime) return 0;
+	*/
+
 	pk->mtime = buf.st_mtime;
 
 	return 1;
