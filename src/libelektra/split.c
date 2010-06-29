@@ -426,6 +426,7 @@ int elektraSplitGet (Split *split, KDB *handle)
 	Key *cur = 0;
 	Backend *curHandle = 0;
 
+	/* Dont iterate the default split part */
 	for (size_t i=0; i<split->size-1; ++i)
 	{
 		if (!(split->syncbits[i] & 1))
@@ -473,6 +474,22 @@ int elektraSplitGet (Split *split, KDB *handle)
 		}
 	}
 
+	return 1;
+}
+
+/**
+ * Merges together all parts of split into dest.
+ *
+ * @return 1 on success
+ * @ingroup split
+ */
+int elektraSplitMerge (Split *split, KeySet *dest)
+{
+	/* Iterate everything */
+	for (size_t i=0; i<split->size; ++i)
+	{
+		ksAppend (dest, split->keysets[i]);
+	}
 	return 1;
 }
 
