@@ -413,6 +413,8 @@ int elektraSplitAppoint (Split *split, KDB *handle, KeySet *ks)
 /**
  * Does some work after getting of backends is finished.
  *
+ * @pre elektraSplitAppoint() needs to be executed before.
+ *
  * - check if keys are in correct backend
  * - remove syncbits
  * - update usersize and systemsize

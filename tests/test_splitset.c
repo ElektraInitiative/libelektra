@@ -767,8 +767,6 @@ void test_realworld()
 {
 	printf ("Test real world example\n");
 
-	printf ("Test three mountpoints\n");
-
 	Key *parent = 0;
 	KDB *handle = elektraCalloc(sizeof(struct _KDB));
 	KeySet *modules = ksNew(0);
