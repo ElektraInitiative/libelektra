@@ -126,7 +126,7 @@ void elektraSplitResize(Split *split)
  * @param ret the split object to work with
  * @ingroup split
  */
-void elektraSplitAppend(Split *split, Backend *backend, Key *parentKey, int syncbits)
+ssize_t elektraSplitAppend(Split *split, Backend *backend, Key *parentKey, int syncbits)
 {
 	++ split->size;
 	if (split->size > split->alloc) elektraSplitResize(split);
@@ -135,6 +135,8 @@ void elektraSplitAppend(Split *split, Backend *backend, Key *parentKey, int sync
 	split->handles[split->size-1]=backend;
 	split->parents[split->size-1]=parentKey;
 	split->syncbits[split->size-1]=syncbits;
+
+	return split->size-1;
 }
 
 /**
@@ -368,6 +370,44 @@ int elektraSplitDivide (Split *split, KDB *handle, KeySet *ks)
 	}
 
 	return needsSync;
+}
+
+
+/**
+ * Appoints all keys from ks to yet unsynced splits.
+ *
+ * @pre elektraSplitBuildup() need to be executed before.
+ *
+ * @return 1 on success
+ * @return -1 if no backend was found for a key
+ * @ingroup split
+ */
+int elektraSplitAppoint (Split *split, KDB *handle, KeySet *ks)
+{
+	ssize_t curFound = 0; /* If key could be appended to any of the existing splitted keysets */
+	Key *curKey = 0;
+	Backend *curHandle = 0;
+	ssize_t defFound = elektraSplitAppend (split, 0, 0, 0);
+
+	ksRewind (ks);
+	while ((curKey = ksNext (ks)) != 0)
+	{
+		curHandle = kdbGetBackend(handle, curKey);
+		if (!curHandle) return -1;
+
+		curFound = elektraSplitSearchBackend(split, curHandle, curKey);
+
+		if (curFound == -1) curFound = defFound;
+
+		if (split->syncbits[curFound] & 1)
+		{
+			continue;
+		}
+
+		ksAppendKey (split->keysets[curFound], curKey);
+	}
+
+	return 1;
 }
 
 /** Add sync bits everywhere keys were removed.

@@ -392,11 +392,15 @@ Backend* kdbGetBackend(KDB *handle, const Key *key);
 Split * elektraSplitNew(void);
 void elektraSplitDel(Split *keysets);
 void elektraSplitResize(Split *ret);
-void elektraSplitAppend(Split *split, Backend *backend, Key *parentKey, int syncbits);
+ssize_t elektraSplitAppend(Split *split, Backend *backend, Key *parentKey, int syncbits);
 ssize_t elektraSplitSearchBackend(Split *split, Backend *backend, Key *key);
 int elektraSplitSearchRoot(Split *split, Key *parentKey);
-
 int elektraSplitBuildup (Split *split, KDB *handle, Key *parentKey);
+
+/* for kdbGet() algorithm */
+int elektraSplitAppoint (Split *split, KDB *handle, KeySet *ks);
+
+/* for kdbSet() algorithm */
 int elektraSplitDivide (Split *split, KDB *handle, KeySet *ks);
 int elektraSplitSync (Split *split);
 int elektraSplitPrepare (Split *split);
