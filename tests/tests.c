@@ -231,7 +231,7 @@ void clear_sync (KeySet *ks)
 	while ((k = ksNext(ks)) != 0) keyClearSync(k);
 }
 
-void output (KeySet *ks)
+void output_keyset (KeySet *ks)
 {
 	Key *k;
 	ksRewind(ks);

@@ -443,7 +443,8 @@ void test_triesizes()
 
 	KDB *handle = elektraCalloc(sizeof(struct _KDB));
 	KeySet *modules = modules_config();
-	Backend *backend;
+	Backend *backend = 0;
+	Backend *rootBackend = 0;
 
 	handle->defaultBackend = elektraCalloc(sizeof(struct _Backend));
 	succeed_if (handle->defaultBackend->usersize == 0, "usersize not initialized correct");
@@ -464,9 +465,12 @@ void test_triesizes()
 
 	split = elektraSplitNew();
 
-	parentKey = keyNew("user/tests/simple/below", KEY_END);
+	parentKey = keyNew("user", KEY_END);
 
+	rootBackend = elektraTrieLookup(handle->trie, parentKey);
+	keySetName (parentKey, "user/tests/simple/below");
 	backend = elektraTrieLookup(handle->trie, parentKey);
+	succeed_if (keySetName (parentKey, 0) == 0, "could not delete name of parentKey");
 	succeed_if (backend->usersize == 0, "usersize not initialized correct in backend");
 	succeed_if (backend->systemsize == 0, "systemsize not initialized correct in backend");
 
@@ -474,19 +478,27 @@ void test_triesizes()
 	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
 	succeed_if (elektraSplitAppoint (split, handle, ks) == 1, "could not appoint keys");
 	split->syncbits[0] = 1; /* Simulate a kdbGet() */
+	split->syncbits[1] = 1; /* Simulate a kdbGet() */
 	ksAppendKey(split->keysets[0], keyNew("system/wrong", KEY_END));
 
 	succeed_if (elektraSplitGet (split, handle) == 1, "could not postprocess get");
 	succeed_if (backend->usersize == 2, "usersize should be updated");
 	succeed_if (backend->systemsize == 0, "systemsize should not change");
-	output_split (split);
 
-	succeed_if (split->size == 2, "not correct size after appointing");
+	succeed_if (rootBackend->usersize == 3, "usersize of rootBackend should be updated");
+	succeed_if (rootBackend->systemsize == 0, "systemsize  of rootBackend should not change");
+
+	succeed_if (handle->defaultBackend->usersize == 0, "usersize not initialized correct");
+	succeed_if (handle->defaultBackend->systemsize == 0, "systemsize not initialized correct");
+
+	succeed_if (split->size == 4, "not correct size after appointing");
 	succeed_if (ksGetSize(split->keysets[0]) == 2, "wrong size");
 	succeed_if (ksGetSize(split->keysets[1]) == 3, "wrong size");
 	succeed_if (compare_key (split->parents[0], mp) == 0, "parentKey not correct");
 	succeed_if (split->handles[0] == backend, "should be user backend");
-	succeed_if (split->handles[1] == 0, "should be default backend");
+	succeed_if (split->handles[1] == rootBackend, "should be root backend");
+	succeed_if (split->handles[2] == rootBackend, "should be root backend");
+	succeed_if (split->handles[3] == 0, "should be default backend");
 
 
 	elektraSplitDel (split);
@@ -503,7 +515,83 @@ void test_triesizes()
 
 void test_merge()
 {
+	printf ("Test sizes in backends with trie\n");
 
+	KDB *handle = elektraCalloc(sizeof(struct _KDB));
+	KeySet *modules = modules_config();
+	Backend *backend = 0;
+	Backend *rootBackend = 0;
+
+	handle->defaultBackend = elektraCalloc(sizeof(struct _Backend));
+	succeed_if (handle->defaultBackend->usersize == 0, "usersize not initialized correct");
+	succeed_if (handle->defaultBackend->systemsize == 0, "systemsize not initialized correct");
+	handle->trie = elektraTrieOpen(simple_config(), modules, 0);
+
+	KeySet *ks = ksNew(15,
+			keyNew("user/testkey1/below/here", KEY_END),
+			keyNew("user/testkey/below1/here", KEY_END),
+			keyNew("user/testkey/below2/here", KEY_END),
+			keyNew("user/tests/simple/testkey/b1/b2/down", KEY_END),
+			keyNew("user/tests/simple/testkey/b1/b2/up", KEY_END),
+			KS_END);
+
+	Split *split;
+	Key *parentKey;
+	Key *mp;
+
+	split = elektraSplitNew();
+
+	parentKey = keyNew("user", KEY_END);
+
+	rootBackend = elektraTrieLookup(handle->trie, parentKey);
+	keySetName (parentKey, "user/tests/simple/below");
+	backend = elektraTrieLookup(handle->trie, parentKey);
+	succeed_if (keySetName (parentKey, 0) == 0, "could not delete name of parentKey");
+	succeed_if (backend->usersize == 0, "usersize not initialized correct in backend");
+	succeed_if (backend->systemsize == 0, "systemsize not initialized correct in backend");
+
+	mp = keyNew("user/tests/simple", KEY_VALUE, "simple", KEY_END);
+	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
+	succeed_if (elektraSplitAppoint (split, handle, ks) == 1, "could not appoint keys");
+	split->syncbits[0] = 1; /* Simulate a kdbGet() */
+	split->syncbits[1] = 1; /* Simulate a kdbGet() */
+	ksAppendKey(split->keysets[0], keyNew("system/wrong", KEY_END));
+
+	succeed_if (elektraSplitGet (split, handle) == 1, "could not postprocess get");
+	succeed_if (backend->usersize == 2, "usersize should be updated");
+	succeed_if (backend->systemsize == 0, "systemsize should not change");
+
+	succeed_if (rootBackend->usersize == 3, "usersize of rootBackend should be updated");
+	succeed_if (rootBackend->systemsize == 0, "systemsize  of rootBackend should not change");
+
+	succeed_if (handle->defaultBackend->usersize == 0, "usersize not initialized correct");
+	succeed_if (handle->defaultBackend->systemsize == 0, "systemsize not initialized correct");
+
+	succeed_if (split->size == 4, "not correct size after appointing");
+	succeed_if (ksGetSize(split->keysets[0]) == 2, "wrong size");
+	succeed_if (ksGetSize(split->keysets[1]) == 3, "wrong size");
+	succeed_if (compare_key (split->parents[0], mp) == 0, "parentKey not correct");
+	succeed_if (split->handles[0] == backend, "should be user backend");
+	succeed_if (split->handles[1] == rootBackend, "should be root backend");
+	succeed_if (split->handles[2] == rootBackend, "should be root backend");
+	succeed_if (split->handles[3] == 0, "should be default backend");
+
+	KeySet *nks = ksNew (0);
+	succeed_if (elektraSplitMerge (split, nks) == 1, "could not merge together keysets");
+	succeed_if (compare_keyset (ks, nks) == 0, "keyset is not the same as original one");
+	// output_keyset (nks);
+	ksDel (nks);
+
+
+	elektraSplitDel (split);
+	keyDel (parentKey);
+	keyDel (mp);
+
+	ksDel (ks);
+	elektraTrieClose(handle->trie, 0);
+	elektraFree(handle->defaultBackend);
+	elektraFree(handle);
+	ksDel (modules);
 }
 
 
