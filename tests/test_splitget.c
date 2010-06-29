@@ -736,6 +736,68 @@ void test_realworld()
 
 	elektraSplitDel (split);
 
+
+
+	split = elektraSplitNew();
+
+	succeed_if (elektraSplitBuildup (split, handle, parent) == 1, "should need sync");
+	succeed_if (split->size == 9, "size not correct");
+	succeed_if (split->handles[7] == split->handles[8], "root backends have same handle");
+	succeed_if (split->syncbits[7] == 2, "sync state for root not correct");
+	succeed_if (split->syncbits[8] == 2, "sync state for root not correct");
+	succeed_if (!strcmp(keyName(split->parents[0]), "system/elektra"), "parent key not correct");
+	succeed_if (!strcmp(keyName(split->parents[1]), "system/groups"), "parent key not correct");
+	succeed_if (!strcmp(keyName(split->parents[2]), "system/hosts"), "parent key not correct");
+	succeed_if (!strcmp(keyName(split->parents[3]), "system/users"), "parent key not correct");
+	succeed_if (!strcmp(keyName(split->parents[4]), "user/sw/apps/app1/default"), "parent key not correct");
+	succeed_if (!strcmp(keyName(split->parents[5]), "user/sw/apps/app2"), "parent key not correct");
+	succeed_if (!strcmp(keyName(split->parents[6]), "user/sw/kde/default"), "parent key not correct");
+	succeed_if (!strcmp(keyName(split->parents[7]), "user"), "parent key not correct");
+	succeed_if (!strcmp(keyName(split->parents[8]), "system"), "parent key not correct");
+
+	split->syncbits[3] |= 1;
+	split->syncbits[7] |= 1;
+	succeed_if (elektraSplitAppoint (split, handle, ks) == 1, "should need sync");
+	succeed_if (split->size == 10, "size not correct");
+	succeed_if (split->syncbits[0] == 0, "sync state for root not correct");
+	succeed_if (split->syncbits[1] == 0, "sync state for root not correct");
+	succeed_if (split->syncbits[2] == 0, "sync state for root not correct");
+	succeed_if (split->syncbits[3] == 1, "sync state for root not correct");
+	succeed_if (split->syncbits[4] == 0, "sync state for root not correct");
+	succeed_if (split->syncbits[5] == 0, "sync state for root not correct");
+	succeed_if (split->syncbits[6] == 0, "sync state for root not correct");
+	succeed_if (split->syncbits[7] == 3, "sync state for root not correct");
+	succeed_if (split->syncbits[8] == 2, "sync state for root not correct");
+	succeed_if (compare_keyset (split->keysets[0], split0) == 0, "comparing: not correct result");
+	succeed_if (compare_keyset (split->keysets[2], split2) == 0, "comparing: not correct result");
+	succeed_if (ksGetSize(split->keysets[3]) == 0, "comparing: not correct result");
+	ksAppend (split->keysets[3], split3);
+	succeed_if (compare_keyset (split->keysets[4], split4) == 0, "comparing: not correct result");
+	succeed_if (ksGetSize(split->keysets[7]) == 0, "comparing: not correct result");
+	ksAppend (split->keysets[7], split7);
+
+	split->syncbits[0] |= 1;
+	split->syncbits[2] |= 1;
+	succeed_if (elektraSplitGet (split, handle) == 1, "postprocessing failed");
+
+	succeed_if (split->handles[0]->systemsize == 3, "wrong size");
+	succeed_if (split->handles[2]->systemsize == 4, "wrong size");
+	succeed_if (split->handles[3]->systemsize == 5, "wrong size");
+	succeed_if (split->handles[7]->usersize == 1, "wrong size");
+
+
+	dest = ksNew(5,
+			keyNew("user/test", KEY_VALUE, "should be gone", KEY_END),
+			KS_END);
+	ksClear (dest);
+	succeed_if (elektraSplitMerge (split, dest) == 1, "split merge");
+	succeed_if (compare_keyset (dest, ks) == 0, "comparing: not correct result");
+	ksDel (dest);
+
+	elektraSplitDel (split);
+
+
+
 	ksDel (ks);
 	ksDel (split0);
 	ksDel (split2);
