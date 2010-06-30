@@ -651,11 +651,13 @@ int kdbSet (KDB *handle, KeySet *ks,
 			ksRewind (split->keysets[i]);
 			if (backend->setplugins[p])
 			{
+				if (p != 0) keySetString (parentKey, keyString(split->parents[i]));
 				keySetName (parentKey, keyName(split->parents[i]));
 				ret = backend->setplugins[p]->kdbSet (
 						backend->setplugins[p],
 						split->keysets[i],
 						parentKey);
+				if (p == 0) keySetString (split->parents[i], keyString(parentKey));
 			}
 			if (ret == -1)
 			{
