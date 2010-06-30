@@ -1,4 +1,5 @@
 #include <mount.hpp>
+#include <plugin.hpp>
 
 #include <algorithm>
 #include <iostream>
@@ -7,82 +8,13 @@
 #include <vector>
 #include <string>
 
-#include <kdb.h>
-#include <kdbplugin.h>
-#include <kdbmodule.h>
 #include <kdbprivate.h>
+#include <kdbmodule.h>
 
 using namespace std;
 using namespace kdb;
 
 std::string MountCommand::root = "system/elektra/mountpoints";
-
-struct Plugin
-{
-	ckdb::Plugin *plugin;
-	std::string pluginName;
-	KeySet info;
-
-	Plugin(std::string const& pluginName, KeySet &modules, KeySet const& testConfig) :
-		pluginName(pluginName)
-	{
-		Key errorKey;
-		plugin = ckdb::elektraPluginOpen(pluginName.c_str(), modules.getKeySet(), testConfig.dup(), *errorKey);
-
-		if (!plugin)
-		{
-			printError(errorKey);
-			printWarnings(errorKey);
-			throw NoPlugin();
-		}
-
-		Key infoKey ("system/elektra/modules", KEY_END);
-		infoKey.addBaseName(pluginName);
-
-		if (!plugin->kdbGet)
-		{
-			close();
-			throw MissingSymbol("kdbGet");
-		}
-		plugin->kdbGet(plugin, info.getKeySet(), *infoKey);
-	}
-
-	~Plugin()
-	{
-		close();
-	}
-
-	void close()
-	{
-		Key errorKey;
-		ckdb::elektraPluginClose(plugin, *errorKey);
-		printWarnings(errorKey);
-	}
-
-	ckdb::Plugin *operator->()
-	{
-		return plugin;
-	}
-
-	bool operator!()
-	{
-		return !plugin;
-	}
-
-	std::string lookupInfo(std::string item, std::string section = "infos")
-	{
-		Key k ("system/elektra/modules", KEY_END);
-		k.addBaseName(pluginName);
-		k.addBaseName(section);
-		k.addBaseName(item);
-		Key ret = info.lookup(k);
-
-		if (!ret) return ""; /* Lets say missing info is ok for now */
-
-		return ret.getString();
-	}
-
-};
 
 MountCommand::MountCommand()
 {}
@@ -411,8 +343,8 @@ int MountCommand::execute(int , char** )
 
 
 
-	KeySet modules;
 	KeySet referencePlugins;
+	KeySet modules;
 	elektraModulesInit(modules.getKeySet(), 0);
 	while (conf.append(addPlugins(name, modules, referencePlugins, "get")) == -1) ;
 

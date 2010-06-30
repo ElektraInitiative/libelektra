@@ -4,6 +4,10 @@
 
 #include <iostream>
 
+#include <kdbmodule.h>
+
+#include <plugin.hpp>
+
 using namespace std;
 using namespace kdb;
 
@@ -26,6 +30,21 @@ int InfoCommand::execute(int argc, char** argv)
 
 	kdb.get(conf, parentKey);
 
+	if (!conf.lookup(std::string("system/elektra/modules/") + name))
+	{
+		cerr << "Now in fallback code. Will directly load config from plugin" << endl;
+		KeySet modules;
+		elektraModulesInit(modules.getKeySet(), 0);
+		KeySet testConfig(1,
+			*Key(	"system/test",
+				KEY_VALUE, "test",
+				KEY_COMMENT, "Test config for loading a plugin.",
+				KEY_END),
+			KS_END);
+		Plugin plugin (name, modules, testConfig);
+		elektraModulesClose(modules.getKeySet(), 0);
+		conf = plugin.info;
+	}
 
 	Key root (std::string("system/elektra/modules/") + name + "/exports", KEY_END);
 	Key k = conf.lookup (root);
