@@ -165,15 +165,15 @@ Key* kdbGetMountpoint (KDB *handle, const Key *where)
  * @code
 thread1 {
 	KDB * h;
-	h = kdbOpen();
+	h = kdbOpen(0);
 	// fetch keys and work with them
-	kdbClose(h);
+	kdbClose(h, 0);
 }
 thread2 {
 	KDB * h;
-	h = kdbOpen();
+	h = kdbOpen(0);
 	// fetch keys and work with them
-	kdbClose(h);
+	kdbClose(h, 0);
 }
  * @endcode
  *
@@ -202,16 +202,16 @@ KDB * kdbOpen(Key *errorKey)
 	handle = elektraCalloc(sizeof(struct _KDB));
 
 	handle->modules = ksNew(0);
-
 	if (elektraModulesInit(handle->modules, errorKey) == -1)
 	{
 		return 0;
 	}
 
 	/* Open default backend */
-	handle->defaultBackend=elektraBackendOpenDefault(handle->modules, errorKey);
+	handle->defaultBackend=elektraBackendOpenDefault (handle->modules, errorKey);
 	if (!handle->defaultBackend)
 	{
+		ELEKTRA_SET_ERROR(40, errorKey, "could not open default backend");
 		return 0;
 	}
 
@@ -226,6 +226,8 @@ KDB * kdbOpen(Key *errorKey)
 		return handle;
 	}
 
+	elektraBackendClose (handle->defaultBackend, errorKey);
+
 #if DEBUG && VERBOSE
 	ksRewind(keys);
 	for (key=ksNext(keys);key;key=ksNext(keys)) {
@@ -233,7 +235,17 @@ KDB * kdbOpen(Key *errorKey)
 	}
 #endif
 
+	/* Open the trie */
 	handle->trie=elektraTrieOpen(keys, handle->modules, errorKey);
+
+	/* Reopen the default Backend for fresh user experience (update issue) */
+	handle->defaultBackend = elektraBackendOpenDefault(handle->modules, errorKey);
+	if (!handle->defaultBackend)
+	{
+		ELEKTRA_SET_ERROR(40, errorKey, "could not reopen default backend");
+		return 0;
+	}
+
 	if (!handle->trie)
 	{
 		ELEKTRA_ADD_WARNING(7, errorKey, "trie could not be created, see previous warnings");

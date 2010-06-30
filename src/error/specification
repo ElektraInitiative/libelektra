@@ -229,3 +229,8 @@ description:not a valid name supplied for loading plugins
 severity:fatal
 ingroup:modules
 
+number:40
+description:Failed to open default backend (see warnings for more information)
+severity:fatal
+ingroup:kdb
+
