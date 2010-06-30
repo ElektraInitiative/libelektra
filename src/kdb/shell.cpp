@@ -49,7 +49,7 @@ int ShellCommand::execute(int, char**)
 		else if (command == "keySetString")
 		{
 			string value;
-			is >> value;
+			getline (is, value);
 			currentKey.setString(value);
 		}
 		else if (command == "ksAppendKey")

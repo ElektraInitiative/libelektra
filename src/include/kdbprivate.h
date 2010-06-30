@@ -406,6 +406,7 @@ int elektraSplitMerge (Split *split, KeySet *dest);
 int elektraSplitDivide (Split *split, KDB *handle, KeySet *ks);
 int elektraSplitSync (Split *split);
 int elektraSplitPrepare (Split *split);
+int elektraSplitUpdateSize (Split *split);
 
 
 /*Internal helpers*/

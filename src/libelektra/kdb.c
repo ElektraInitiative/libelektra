@@ -606,8 +606,7 @@ for (i=0; i< NR_OF_TRIES; i++) // limit to NR_OF_TRIES tries
  * @see keyNeedSync(), ksNext(), ksCurrent()
  * @ingroup kdb
  */
-int kdbSet (KDB *handle, KeySet *ks,
-	Key * parentKey)
+int kdbSet (KDB *handle, KeySet *ks, Key * parentKey)
 {
 	if (!parentKey)
 	{
@@ -685,9 +684,13 @@ int kdbSet (KDB *handle, KeySet *ks,
 		}
 	}
 
+	elektraSplitUpdateSize (split);
+
 	keySetName (parentKey, keyName(initialParent));
 	keyDel (initialParent);
 	elektraSplitDel(split);
+	for (size_t i=0; i<ks->size; ++i) ks->array[i]->flags = 0;
+
 	return 1;
 
 error:

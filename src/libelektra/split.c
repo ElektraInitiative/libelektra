@@ -480,6 +480,29 @@ int elektraSplitGet (Split *split, KDB *handle)
 }
 
 /**
+ * Also update sizes after kdbSet() to recognize multiple kdbSet() attempts.
+ *
+ * @warning cant use the same code with elektraSplitGet because there is
+ * no default split part for kdbSet().
+ */
+int elektraSplitUpdateSize (Split *split)
+{
+	/* Iterate everything */
+	for (size_t i=0; i<split->size; ++i)
+	{
+		if (!strncmp(keyName(split->parents[i]), "system", 6))
+		{
+			split->handles[i]->systemsize = ksGetSize(split->keysets[i]);
+		}
+		else if (!strncmp(keyName(split->parents[i]), "user", 4))
+		{
+			split->handles[i]->usersize = ksGetSize(split->keysets[i]);
+		}
+	}
+	return 1;
+}
+
+/**
  * Merges together all parts of split into dest.
  *
  * @return 1 on success

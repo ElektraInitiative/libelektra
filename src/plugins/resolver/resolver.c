@@ -280,6 +280,19 @@ int elektraResolverSet(Plugin *handle, KeySet *returned, Key *parentKey)
 			ret = -1;
 		}
 
+		struct stat buf;
+		if (stat (pk->filename, &buf) == -1)
+		{
+			char buffer[ERROR_SIZE];
+			strerror_r(errno, buffer, ERROR_SIZE);
+			ELEKTRA_SET_ERROR (29, parentKey, buffer);
+			errno = errnoSave;
+			ret = -1;
+		}
+
+		/* Update timestamp */
+		pk->mtime = buf.st_mtime;
+
 		if (elektraUnlock(pk->fd) == -1)
 		{
 			char buffer[ERROR_SIZE];
