@@ -29,6 +29,8 @@ public:
 	void copy (const KeySet &other) { ckdb::ksCopy(ks,other.ks); }
 	void clear () { ckdb::ksCopy(ks,0); }
 
+	KeySet cut (Key k) { return KeySet(ckdb::ksCut(ks,*k)); }
+
 	void sort();
 
 	size_t size () const;

@@ -30,14 +30,14 @@ int ShellCommand::execute(int, char**)
 		{
 			string parent;
 			is >> parent;
-			Key parentKey (parent);
+			Key parentKey (parent, KEY_END);
 			cout << "return value: " << kdb.get(current, parentKey) << endl;
 		}
 		else if (command == "kdbSet")
 		{
 			string parent;
 			is >> parent;
-			Key parentKey (parent);
+			Key parentKey (parent, KEY_END);
 			cout << "return value: " << kdb.set(current, parentKey) << endl;
 		}
 		else if (command == "keySetName")
@@ -55,6 +55,14 @@ int ShellCommand::execute(int, char**)
 		else if (command == "ksAppendKey")
 		{
 			current.append(currentKey);
+		}
+		else if (command == "ksCut")
+		{
+			string parent;
+			is >> parent;
+			Key parentKey (parent, KEY_END);
+
+			current.cut (parentKey);
 		}
 		else if (command == "ksOutput")
 		{
