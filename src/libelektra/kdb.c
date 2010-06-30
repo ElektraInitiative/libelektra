@@ -107,9 +107,6 @@
  * if there is no appropriate mountpoint e.g. its the
  * root mountpoint.
  *
- * Together with kdbGetCapability() the two essential
- * informations about mounted backends.
- *
  * @par Example:
  * @code
 Key * key = keyNew ("system/template");
@@ -137,7 +134,6 @@ Key* kdbGetMountpoint (KDB *handle, const Key *where)
 	backend_handle=kdbGetBackend(handle,where);
 	if (!backend_handle)
 	{
-		/*errno = KDB_ERR_EBACKEND;*/
 		return 0;
 	}
 
@@ -325,84 +321,29 @@ Backend* kdbGetBackend(KDB *handle, const Key *key)
  * The @p returned KeySet must be initialized or may already contain some
  * keys. The new retrieved keys will be appended using ksAppendKey().
  *
- * In default behaviour (@p options = 0) it will fully retrieve all keys
- * under the @p parentKey folder, with all subfolders and their children
- * but not inactive keys or folders.
+ * It will fully retrieve all keys
+ * under the @p parentKey folder, with all subfolders and their children.
  *
- * The keyset will not be sorted at first place, but will be marked dirty and
- * sorted afterwards when needed. That could be a subsequent ksLookup(),
- * ksLookupByName() or kdbSet(). See ksSort() on that issue.
+ * @section kdbgetexample Example
  *
- * The behaviour can be fine-tuned with options in various ways to make kdbGet() more
- * comfortable.
- *
- * @section kdbgetoption Options
- *
- * The @p option is an array of the following ORed flags:
- *
- * - @p option_t::KDB_O_DEL \n
- *   Its often useful to keyDel() the parentKey in the line after kdbGet().
- *   Using this flag, you can just pass a key allocated with keyNew(),
- *   kdbGet() will free it for you in the end.
- * - @p option_t::KDB_O_POP \n
- *   The @p parentKey itself will always be added to @p returned.
- *   If you only want the children
- *   of the parentKey in @p returned, but not the parentKey itself, use this flag.
- *   This is only valid for the first parentKey, the one you passed.
- *   The other recursive parentKeys will stay in the keyset.
- *   To get only the leaves of the tree, without any parentKey,
- *   see @ref option_t::KDB_O_NODIR below.
- * - @p option_t::KDB_O_NODIR \n
- *   Don't include folders in the @p returned KeySet, so only keys without
- *   subkeys. You can picture it best that you only get the leaves of the
- *   tree of keys.
- * - @p option_t::KDB_O_DIRONLY \n
- *   Put in @p returned only the folder keys. The resulting 
- *   KeySet will be only the skeleton of the tree. This option must not be
- *   ORed together with KDB_O_DIR.
- * - @p option_t::KDB_O_INACTIVE \n
- *   Will make it not ignore inactive keys, so @p returned will contain also
- *   inactive keys. Inactive keys are those that have names
- *   begining with '.' (dot).
- *   Please be sure that you know what you are doing, inactive keys must not
- *   have any semantics to the application. This flag should only be set in
- *   key browsers after explicit user request.
- *   You might also get inactive keys when you plan to remove a whole
- *   hierarchy.
- * - @p option_t::KDB_O_SORT \n
- *   Force @p returned to be ksSort()ed. Normally you don't want that the
- *   @p returned is sorted immediately because you might add other keys or
- *   go for another kdbGet(). Sorting will
- *   take place automatically when needed by ksLookup() or kdbSet(),
- *   also without this option set.
- *   But you need to sort the keyset for yourself, when you just iterate
- *   over it. If you want to do that, pass this flag at the last kdbGet().
- * - @p option_t::KDB_O_NORECURSIVE \n
- *   Dont get the keys recursive. Only receive keys from one folder.
- *   This might not work if the backend does not support it. Be prepared
- *   for more keys and use ksLookup() and avoid static assumptions
- *   on how many keys you get.
+ * This example demonstrates the typical usecase within an application
+ * without updating.
  *
  * @par Example:
  * @code
-KDB *handle;
-KeySet *myConfig;
-Key *key;
+KeySet *myConfig = ksNew(0);
+Key *key = keyNew("system/sw/MyApp",KEY_END);
+KDB *handle = kdbOpen(key);
 
-myConfig=ksNew(0);
+kdbGet(handle, myConfig, key);
 
-handle = kdbOpen();
+keySetName(key, "user/sw/MyApp");
+kdbGet(handle, myConfig, key);
 
-key=keyNew("system/sw/MyApp",KEY_END);
-rc=kdbGet(handle,key, myConfig, 0);
+// check for errors by in key
 keyDel(key);
 
-key=keyNew("user/sw/MyApp",KEY_END);
-rc=kdbGet(handle,key, myConfig, 0);
-keyDel(key);
-
-// will sort keyset here
-key=ksLookupByName(myConfig,"/sw/MyApp/key", 0);
+key = ksLookupByName(myConfig,"/sw/MyApp/key", 0);
 // check if key is not 0 and work with it...
 
 ksDel (myConfig); // delete the in-memory configuration
@@ -410,7 +351,7 @@ ksDel (myConfig); // delete the in-memory configuration
 
 // maybe you want kdbSet() myConfig here
 
-kdbClose(handle); // no more affairs with the key database.
+kdbClose(handle, 0); // no more affairs with the key database.
  * @endcode
  *
  * @section kdbgetdetail Details
@@ -418,35 +359,38 @@ kdbClose(handle); // no more affairs with the key database.
  * When no backend could be found (e.g. no backend mounted)
  * the default backend will be used.
  *
- * If you pass a NULL pointer as handle and/or returned  kdbGet() will
- * return -1 and do nothing but keyDel() the parentKey when requested
- * and not a NULL pointer.
+ * If you pass NULL on any parameter kdbGet() will fail
+ * immediately without doing anything.
  *
- * If you pass NULL as parentKey the root keys of all namespaces
- * will be appended to returned.
+ * When a backend fails kdbGet() will return -1 without any
+ * changes to one of the parameter.
  *
- * For every directory key (keyIsDir()) the appropriate backend
- * will be chosen and keys in it will be requested.
+ * @section kdbgetupdate Updating
  *
- * If any backend reports an failure the recursive getting of
- * keys will be stopped. Backends only report failure when they
- * are not able to get keys for any problems.
+ * In the first run of kdbGet all keys are retrieved. On subsequent
+ * calls only the keys are retrieved where something was changed
+ * inside the key database. The other keys stay unchanged in the
+ * keyset, even when they were manipulated.
+ *
+ * It is your responsibility to save the original keyset if you
+ * need it afterwards. If you must get it again, e.g. in another
+ * thread a second connection to the key database must be opened
+ * using kdbOpen().
  *
  * @param handle contains internal information of @link kdbOpen() opened @endlink key database
- * @param parentKey parent key or NULL to get the root keys
- * @param returned the (pre-initialized) KeySet returned with all keys found
+ * @param parentKey parent key - invalid name gets all keys
+ * @param ks the (pre-initialized) KeySet returned with all keys found
+ * 	will not be changed on error or if no update is required
  * @see @link kdbhighlevel kdb higher level Methods @endlink that rely on kdbGet()
- * @see ksLookupByName(), ksLookupByString() for powerful
+ * @see ksLookupByName() for powerful
  * 	lookups after the KeySet was retrieved
- * @see commandList() code in kdb command for usage example
- * @see commandEdit() code in kdb command for usage example
- * @see commandExport() code in kdb command for usage example
- * @return number of keys contained by @p returned
- * @return -1 on failure
+ * @return 1 if the keys were retrieved successfully
+ * @return 0 if there was no update - no changes are made to the keyset then
+ * @return -1 on failure - no changes are made to the keyset then
  * @ingroup kdb
  *
  */
-int kdbGet (KDB *handle, KeySet *ks, Key * parentKey)
+int kdbGet (KDB *handle, KeySet *ks, Key *parentKey)
 {
 	if (!parentKey)
 	{

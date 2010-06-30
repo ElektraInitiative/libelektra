@@ -30,3 +30,4 @@ macro (do_example source)
 endmacro (do_example)
 
 do_example (meta)
+do_example (get)
