@@ -160,7 +160,7 @@ int elektraResolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			keyNew ("system/elektra/modules/resolver/infos/provides",
 				KEY_VALUE, "resolver", KEY_END),
 			keyNew ("system/elektra/modules/resolver/infos/placements",
-				KEY_VALUE, "resolver", KEY_END),
+				KEY_VALUE, "rollback getresolver setresolver commit", KEY_END),
 			keyNew ("system/elektra/modules/resolver/infos/needs",
 				KEY_VALUE, "", KEY_END),
 			keyNew ("system/elektra/modules/resolver/infos/version",

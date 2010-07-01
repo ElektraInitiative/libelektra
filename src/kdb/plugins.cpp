@@ -1,10 +1,35 @@
 #include <plugins.hpp>
 
+#include <kdbprivate.h>
+
 #include <iostream>
 #include <algorithm>
 
 using namespace std;
 using namespace kdb;
+
+
+Plugins::Plugins () :
+	plugins (10),
+	nrStoragePlugins (0),
+	nrResolverPlugins (0)
+{
+	placementInfo["prerollback"] = Place(RESOLVER_PLUGIN, STORAGE_PLUGIN-1);
+	placementInfo["rollback"] = Place(STORAGE_PLUGIN, STORAGE_PLUGIN);
+	placementInfo["postrollback"] = Place(STORAGE_PLUGIN+1, NR_OF_PLUGINS-1);
+
+	placementInfo["getresolver"] = Place(RESOLVER_PLUGIN, RESOLVER_PLUGIN);
+	placementInfo["pregetstorage"] = Place(RESOLVER_PLUGIN+1, STORAGE_PLUGIN-1);
+	placementInfo["getstorage"] = Place(STORAGE_PLUGIN, STORAGE_PLUGIN);
+	placementInfo["postgetstorage"] = Place(STORAGE_PLUGIN+1, NR_OF_PLUGINS-1);
+
+	placementInfo["setresolver"] = Place(RESOLVER_PLUGIN, RESOLVER_PLUGIN);
+	placementInfo["presetstorage"] = Place(RESOLVER_PLUGIN+1, STORAGE_PLUGIN-1);
+	placementInfo["setstorage"] = Place(STORAGE_PLUGIN, STORAGE_PLUGIN);
+	placementInfo["precommit"] = Place(STORAGE_PLUGIN+1, COMMIT_PLUGIN);
+	placementInfo["commit"] = Place(COMMIT_PLUGIN, COMMIT_PLUGIN);
+	placementInfo["postcommit"] = Place(COMMIT_PLUGIN, NR_OF_PLUGINS-1);
+}
 
 void Plugins::addProvided (Plugin &plugin)
 {
@@ -87,10 +112,12 @@ void ErrorPlugins::tryPlugin (Plugin &plugin)
 		return;
 	}
 
+	/*
 	if (!plugin.getSymbol("error"))
 	{
 		throw MissingSymbol("error");
 	}
+	*/
 
 	checkResolver (plugin);
 }
@@ -128,15 +155,36 @@ void SetPlugins::tryPlugin (Plugin &plugin)
 
 void ErrorPlugins::addPlugin (Plugin &plugin)
 {
-	if (std::string(plugin.lookupInfo("provides")).find("resolver") != string::npos)
+	if (std::string(plugin.lookupInfo("placements")).find("prerollback") != string::npos)
 	{
-		// hack, do with proper placement
-		plugins[0] = &plugin;
+		plugins[placementInfo["prerollback"].current++] = &plugin;
+	}
+
+	if (std::string(plugin.lookupInfo("placements")).find("rollback") != string::npos)
+	{
+		plugins[placementInfo["rollback"].current++] = &plugin;
+	}
+
+	if (std::string(plugin.lookupInfo("placements")).find("postrollback") != string::npos)
+	{
+		plugins[placementInfo["postrollback"].current++] = &plugin;
 	}
 }
 
 void GetPlugins::addPlugin (Plugin &plugin)
 {
+	if (std::string(plugin.lookupInfo("placements")).find("pregetstorage") != string::npos)
+	{
+		cout << "Add plugin to " << placementInfo["pregetstorage"].current << endl;
+		plugins[placementInfo["pregetstorage"].current++] = &plugin;
+	}
+
+	if (std::string(plugin.lookupInfo("placements")).find("postgetstorage") != string::npos)
+	{
+		cout << "Add plugin to " << placementInfo["postgetstorage"].current << endl;
+		plugins[placementInfo["postgetstorage"].current++] = &plugin;
+	}
+
 	if (std::string(plugin.lookupInfo("provides")).find("storage") != string::npos)
 	{
 		// hack, do with proper placement

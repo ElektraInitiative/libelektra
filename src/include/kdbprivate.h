@@ -43,6 +43,14 @@
 #define COMMIT_PLUGIN 7
 #endif
 
+#ifndef STORAGE_PLUGIN
+#define STORAGE_PLUGIN 3
+#endif
+
+#ifndef RESOLVER_PLUGIN
+#define RESOLVER_PLUGIN 0
+#endif
+
 #ifndef APPROXIMATE_NR_OF_BACKENDS
 #define APPROXIMATE_NR_OF_BACKENDS 16
 #endif

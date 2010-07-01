@@ -5,8 +5,25 @@
 
 #include <vector>
 #include <string>
+#include <map>
 
 #include <kdb>
+
+struct Place
+{
+	int current;
+	int max;
+
+	Place () :
+		current (-1),
+		max(0)
+	{}
+
+	Place (int current, int max) :
+		current (current),
+		max (max)
+	{}
+};
 
 class Plugins
 {
@@ -19,12 +36,10 @@ protected:
 	int nrStoragePlugins;
 	int nrResolverPlugins;
 
+	std::map <std::string, Place> placementInfo;
+
 public:
-	Plugins () :
-		plugins (10),
-		nrStoragePlugins (0),
-		nrResolverPlugins (0)
-	{}
+	Plugins ();
 
 	void addProvided (Plugin &plugin);
 
