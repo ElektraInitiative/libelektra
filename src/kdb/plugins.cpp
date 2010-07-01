@@ -6,10 +6,8 @@
 using namespace std;
 using namespace kdb;
 
-bool Plugins::checkStorage (Plugin &plugin)
+void Plugins::addProvided (Plugin &plugin)
 {
-	bool isStoragePlugin = false;
-
 	std::string provide;
 	std::stringstream ss(plugin.lookupInfo("provides"));
 	while (ss >> provide)
@@ -17,7 +15,10 @@ bool Plugins::checkStorage (Plugin &plugin)
 		alreadyProvided.push_back(provide);
 		cout << "add provide: " << provide << endl;
 	}
+}
 
+void Plugins::checkProvided(Plugin &plugin)
+{
 	std::string need;
 	std::stringstream nss(plugin.lookupInfo("needs"));
 	while (nss >> need)
@@ -29,28 +30,41 @@ bool Plugins::checkStorage (Plugin &plugin)
 		}
 	}
 
+}
+
+void Plugins::checkStorage (Plugin &plugin)
+{
 	if (std::string(plugin.lookupInfo("provides")).find("storage") != string::npos)
 	{
 		cout << "This is a storage plugin" << endl;
 		++ nrStoragePlugins;
-		isStoragePlugin = true;
 	}
 
 	if (nrStoragePlugins>1)
 	{
+		-- nrStoragePlugins;
 		throw StoragePlugin();
 	}
-
-	if (nrStoragePlugins == 0)
-	{
-		cerr << "You need to provide a storage plugin, but did not" << endl;
-		return false;
-	}
-
-	return true;
 }
 
-bool Plugins::checkInfo (Plugin &plugin)
+void Plugins::checkResolver (Plugin &plugin)
+{
+	if (std::string(plugin.lookupInfo("provides")).find("resolver") != string::npos)
+	{
+		cout << "This is a resolver plugin" << endl;
+		++ nrResolverPlugins;
+	}
+
+
+	if (nrResolverPlugins>1)
+	{
+		-- nrResolverPlugins;
+		throw ResolverPlugin();
+	}
+
+}
+
+void Plugins::checkInfo (Plugin &plugin)
 {
 	if (std::string(plugin.lookupInfo("licence")).find("BSD") == string::npos)
 	{
@@ -58,21 +72,19 @@ bool Plugins::checkInfo (Plugin &plugin)
 		cout << "It might taint the licence of the overall product" << endl;
 		cout << "Its licence is: " << plugin.lookupInfo("licence") << endl;
 	}
-
-	return true;
 }
 
 
 
 
-bool ErrorPlugins::addPlugin (Plugin &plugin)
-{
-	bool ret = true;
 
+
+void ErrorPlugins::tryPlugin (Plugin &plugin)
+{
 	if (std::string(plugin.lookupInfo("provides")).find("storage") != string::npos)
 	{
 		cout << "Ignore storage plugin in ErrorPlugins" << endl;
-		return ret;
+		return;
 	}
 
 	if (!plugin.getSymbol("error"))
@@ -80,33 +92,51 @@ bool ErrorPlugins::addPlugin (Plugin &plugin)
 		throw MissingSymbol("error");
 	}
 
-	if (!checkInfo (plugin)) ret = false;
-
-	if (std::string(plugin.lookupInfo("provides")).find("resolver") != string::npos)
-	{
-		// hack, do with proper placement
-		plugins[0] = &plugin;
-	}
-
-	return ret;
+	checkResolver (plugin);
 }
 
 
-bool GetPlugins::addPlugin (Plugin &plugin)
+void GetPlugins::tryPlugin (Plugin &plugin)
 {
-	bool ret = true;
-
-
-	cout << "Will add a plugin" << endl;
-
 	if (!plugin.getSymbol("get"))
 	{
 		throw MissingSymbol("get");
 	}
 
-	if (!checkStorage (plugin)) ret = false;
-	if (!checkInfo (plugin)) ret = false;
+	checkStorage (plugin);
+	checkResolver (plugin);
+	checkInfo (plugin);
+}
 
+void SetPlugins::tryPlugin (Plugin &plugin)
+{
+	if (!plugin.getSymbol("set"))
+	{
+		throw MissingSymbol("set");
+	}
+
+
+	checkStorage (plugin);
+	checkResolver (plugin);
+	checkInfo (plugin);
+}
+
+
+
+
+
+
+void ErrorPlugins::addPlugin (Plugin &plugin)
+{
+	if (std::string(plugin.lookupInfo("provides")).find("resolver") != string::npos)
+	{
+		// hack, do with proper placement
+		plugins[0] = &plugin;
+	}
+}
+
+void GetPlugins::addPlugin (Plugin &plugin)
+{
 	if (std::string(plugin.lookupInfo("provides")).find("storage") != string::npos)
 	{
 		// hack, do with proper placement
@@ -118,24 +148,10 @@ bool GetPlugins::addPlugin (Plugin &plugin)
 		// hack, do with proper placement
 		plugins[0] = &plugin;
 	}
-
-
-	return true;
 }
 
-bool SetPlugins::addPlugin (Plugin &plugin)
+void SetPlugins::addPlugin (Plugin &plugin)
 {
-	bool ret = true;
-
-	if (!plugin.getSymbol("set"))
-	{
-		throw MissingSymbol("set");
-	}
-
-
-	if (!checkStorage (plugin)) ret = false;
-	if (!checkInfo (plugin)) ret = false;
-
 	if (std::string(plugin.lookupInfo("provides")).find("storage") != string::npos)
 	{
 		// hack, do with proper placement
@@ -148,9 +164,27 @@ bool SetPlugins::addPlugin (Plugin &plugin)
 		plugins[0] = &plugin;
 		plugins[7] = &plugin;
 	}
-
-	return ret;
 }
+
+
+
+
+bool ErrorPlugins::validated ()
+{
+	return nrResolverPlugins == 1;
+}
+
+bool GetPlugins::validated ()
+{
+	return nrStoragePlugins == 1 && nrResolverPlugins == 1;
+}
+
+bool SetPlugins::validated ()
+{
+	return nrStoragePlugins == 1 && nrResolverPlugins == 1;
+}
+
+
 
 
 

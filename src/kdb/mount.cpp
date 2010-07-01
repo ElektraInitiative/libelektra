@@ -165,8 +165,36 @@ int MountCommand::execute(int , char** )
 	{
 		Backend backend (name);
 
-		backend.addPlugin ("resolver");
-		backend.addPlugin ("dump");
+		std::string name;
+
+		cout << "Now enter a sequence of plugins you want in the backend" << endl;
+
+		cout << "First Plugin: ";
+		cin >> name;
+		while (name != "." || !backend.validated())
+		{
+			try {
+				backend.tryPlugin (name);
+				backend.addPlugin ();
+			}
+			catch (PluginCheckException const& e)
+			{
+				cout << "Could not add that plugin" << endl;
+				cout << e.what() << endl;
+			}
+			if (!backend.validated()) cout << "Not validated, try to add another plugin (. to abort)" << endl;
+			else cout << "Enter . to finish entering plugins" << endl;
+
+			cout << endl;
+			cout << "Next Plugin: ";
+			cin >> name;
+		}
+
+		if (name == "." && !backend.validated())
+		{
+			throw CommandAbortException();
+		}
+
 		backend.serialize (rootKey, conf);
 	}
 
@@ -207,7 +235,7 @@ int MountCommand::execute(int , char** )
 	}
 
 	wholeConf.append(conf);
-	cout << "Writing back the old configuration";
+	cout << "Writing back configuration to new mounted backends";
 	{
 		Key parentKey("", KEY_END);
 

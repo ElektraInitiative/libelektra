@@ -24,7 +24,9 @@ public:
 	Backend(std::string name);
 	~Backend();
 
-	void addPlugin (std::string name);
+	void tryPlugin (std::string name);
+	void addPlugin ();
+	bool validated ();
 	void serialize (kdb::Key &rootKey, kdb::KeySet &ret);
 };
 

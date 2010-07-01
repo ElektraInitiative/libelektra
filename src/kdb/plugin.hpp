@@ -89,6 +89,15 @@ struct StoragePlugin : public PluginCheckException
 };
 
 
+struct ResolverPlugin : public PluginCheckException
+{
+	virtual const char* what() const throw()
+	{
+		return "There need to be exactly one resolver plugin!";
+	}
+};
+
+
 class Plugin
 {
 private:

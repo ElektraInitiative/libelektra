@@ -17,15 +17,21 @@ protected:
 
 	std::vector <std::string> alreadyProvided;
 	int nrStoragePlugins;
+	int nrResolverPlugins;
 
 public:
 	Plugins () :
 		plugins (10),
-		nrStoragePlugins (0)
+		nrStoragePlugins (0),
+		nrResolverPlugins (0)
 	{}
 
-	bool checkStorage (Plugin &plugin);
-	bool checkInfo (Plugin &plugin);
+	void addProvided (Plugin &plugin);
+
+	void checkProvided (Plugin &plugin);
+	void checkStorage (Plugin &plugin);
+	void checkResolver (Plugin &plugin);
+	void checkInfo (Plugin &plugin);
 };
 
 class GetPlugins : public Plugins
@@ -37,21 +43,30 @@ public:
 	 * Will throw an exception if plugin could not
 	 * be added.
 	 */
-	bool addPlugin (Plugin &plugin);
+	void tryPlugin (Plugin &plugin);
+	void addPlugin (Plugin &plugin);
+	bool validated ();
+
 	void serialize (kdb::Key &baseKey, kdb::KeySet &ret);
 };
 
 class SetPlugins : public Plugins
 {
 public:
-	bool addPlugin (Plugin &plugin);
+	void tryPlugin (Plugin &plugin);
+	void addPlugin (Plugin &plugin);
+	bool validated ();
+
 	void serialize (kdb::Key &baseKey, kdb::KeySet &ret);
 };
 
 class ErrorPlugins : public Plugins
 {
 public:
-	bool addPlugin (Plugin &plugin);
+	void tryPlugin (Plugin &plugin);
+	void addPlugin (Plugin &plugin);
+	bool validated ();
+
 	void serialize (kdb::Key &baseKey, kdb::KeySet &ret);
 };
 
