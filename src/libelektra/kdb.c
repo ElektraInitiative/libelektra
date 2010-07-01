@@ -290,9 +290,12 @@ int kdbClose(KDB *handle, Key *errorKey)
 		/*errno=KDB_ERR_NOSYS;*/
 		return -1;
 	}
-	if (handle->trie) elektraTrieClose(handle->trie, errorKey);
-
-	elektraBackendClose (handle->defaultBackend, errorKey);
+	if (handle->trie)
+	{
+		elektraTrieClose(handle->trie, errorKey);
+	} else {
+		elektraBackendClose (handle->defaultBackend, errorKey);
+	}
 
 	elektraModulesClose (handle->modules, errorKey);
 
