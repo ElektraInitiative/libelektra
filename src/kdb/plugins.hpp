@@ -34,7 +34,7 @@ public:
 	void checkInfo (Plugin &plugin);
 };
 
-class GetPlugins : public Plugins
+class GetPlugins : private Plugins
 {
 public:
 	/**
@@ -50,7 +50,7 @@ public:
 	void serialize (kdb::Key &baseKey, kdb::KeySet &ret);
 };
 
-class SetPlugins : public Plugins
+class SetPlugins : private Plugins
 {
 public:
 	void tryPlugin (Plugin &plugin);
@@ -60,7 +60,7 @@ public:
 	void serialize (kdb::Key &baseKey, kdb::KeySet &ret);
 };
 
-class ErrorPlugins : public Plugins
+class ErrorPlugins : private Plugins
 {
 public:
 	void tryPlugin (Plugin &plugin);
