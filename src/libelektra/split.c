@@ -118,12 +118,17 @@ void elektraSplitResize(Split *split)
 }
 
 /**
- * Increases the size of split and initializes
- * the element at size-1 to be used.
+ * Increases the size of split and appends a new empty keyset.
+ *
+ * Initializes the element with the given parameters
+ * at size-1 to be used.
  *
  * Will automatically resize split if needed.
  *
- * @param ret the split object to work with
+ * @param split the split object to work with
+ * @param backend the backend which should be appended
+ * @param parentKey the parentKey which should be appended
+ * @param syncbits the initial syncstate which should be appended
  * @ingroup split
  */
 ssize_t elektraSplitAppend(Split *split, Backend *backend, Key *parentKey, int syncbits)

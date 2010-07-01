@@ -1,9 +1,10 @@
-#ifndef PLUGIN_H
-#define PLUGIN_H
+#ifndef PLUGIN_HPP
+#define PLUGIN_HPP
 
 #include <kdb>
 #include <command.hpp>
 
+#include <map>
 #include <string>
 
 namespace ckdb
@@ -94,8 +95,13 @@ struct Plugin
 	std::string pluginName;
 	kdb::KeySet info;
 
+	typedef void (*func_t)();
+	std::map<std::string, func_t> symbols;
+	std::map<std::string, std::string> infos;
+
 	Plugin(std::string const& pluginName, kdb::KeySet &modules, kdb::KeySet const& testConfig);
 	~Plugin();
+	void parse();
 	void close();
 
 	ckdb::Plugin *operator->();

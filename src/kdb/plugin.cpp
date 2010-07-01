@@ -33,11 +33,44 @@ Plugin::Plugin(std::string const& pluginName, KeySet &modules, KeySet const& tes
 		throw MissingSymbol("kdbGet");
 	}
 	plugin->kdbGet(plugin, info.getKeySet(), *infoKey);
+
+	parse();
 }
 
 Plugin::~Plugin()
 {
 	close();
+}
+
+void Plugin::parse ()
+{
+	Key root (std::string("system/elektra/modules/") + pluginName + "/exports", KEY_END);
+	Key k = info.lookup (root);
+
+	if (k)
+	{
+		while ((k = info.next()) && k.getDirName() == root.getName())
+		{
+			symbols[k.baseName()] = (*(func_t*) k.value());
+		}
+	}
+	if (plugin->kdbGet) symbols["open"] = (func_t) plugin->kdbOpen;
+	if (plugin->kdbGet) symbols["close"] = (func_t) plugin->kdbClose;
+	if (plugin->kdbGet) symbols["get"] = (func_t) plugin->kdbGet;
+	if (plugin->kdbGet) symbols["set"] = (func_t) plugin->kdbSet;
+	if (plugin->kdbGet) symbols["error"] = (func_t) plugin->kdbError;
+
+	root.setName(std::string("system/elektra/modules/") + pluginName + "/infos");
+	k = info.lookup (root);
+
+	if (k)
+	{
+		while ((k = info.next()) && k.getDirName() == root.getName())
+		{
+			infos[k.baseName()] = k.getString();
+		}
+	}
+
 }
 
 void Plugin::close()
