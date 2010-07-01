@@ -89,8 +89,9 @@ struct StoragePlugin : public PluginCheckException
 };
 
 
-struct Plugin
+class Plugin
 {
+private:
 	ckdb::Plugin *plugin;
 	std::string pluginName;
 	kdb::KeySet info;
@@ -101,6 +102,7 @@ struct Plugin
 
 	void close();
 
+public:
 	Plugin(std::string const& pluginName, kdb::KeySet &modules, kdb::KeySet const& testConfig);
 
 	Plugin(Plugin const& other);
@@ -112,6 +114,7 @@ struct Plugin
 	ckdb::Plugin *operator->();
 	bool operator!();
 	std::string lookupInfo(std::string item, std::string section = "infos");
+	kdb::KeySet getInfo() {return info;}
 };
 
 #endif

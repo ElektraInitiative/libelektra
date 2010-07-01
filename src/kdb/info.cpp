@@ -43,7 +43,7 @@ int InfoCommand::execute(int argc, char** argv)
 			KS_END);
 		Plugin plugin (name, modules, testConfig);
 		elektraModulesClose(modules.getKeySet(), 0);
-		conf = plugin.info;
+		conf = plugin.getInfo();
 	}
 
 	Key root (std::string("system/elektra/modules/") + name + "/exports", KEY_END);
