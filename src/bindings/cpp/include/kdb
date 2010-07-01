@@ -19,7 +19,10 @@ class KDB
 {
 public:
 	KDB ();
+	KDB (Key &errorKey);
 	~KDB ();
+
+	void close(Key &errorKey);
 
 	int get (KeySet & returned, Key &parentKey);
 	int set (KeySet & returned, Key &parentKey);
@@ -52,13 +55,25 @@ inline KDB::KDB ()
 	if (!handle) throw errorKey;
 }
 
+inline KDB::KDB (Key &errorKey)
+{
+	handle = ckdb::kdbOpen(*errorKey);
+	if (!handle) throw errorKey;
+}
+
 /**
  * The destructor closes the database.
  */
 inline KDB::~KDB ()
 {
 	Key errorKey;
+	close (errorKey);
+}
+
+inline void KDB::close (Key &errorKey)
+{
 	ckdb::kdbClose(handle, errorKey.getKey());
+	handle = 0;
 }
 
 /**

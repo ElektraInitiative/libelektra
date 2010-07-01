@@ -214,6 +214,8 @@ ssize_t kdbGet_dump(ckdb::Plugin *, ckdb::KeySet *returned, const ckdb::Key *par
 				KEY_VALUE, "Dumps complete Elektra Semantics", KEY_END),
 			keyNew ("system/elektra/modules/dump/infos/provides",
 				KEY_VALUE, "storage", KEY_END),
+			keyNew ("system/elektra/modules/dump/infos/placements",
+				KEY_VALUE, "storage", KEY_END),
 			keyNew ("system/elektra/modules/dump/infos/needs",
 				KEY_VALUE, "", KEY_END),
 			keyNew ("system/elektra/modules/dump/infos/version",

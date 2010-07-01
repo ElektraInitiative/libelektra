@@ -1,5 +1,5 @@
 #include <mount.hpp>
-#include <plugin.hpp>
+#include <backend.hpp>
 
 #include <algorithm>
 #include <iostream>
@@ -29,203 +29,31 @@ bool MountCommand::checkFile(std::string path)
 	return true;
 }
 
-KeySet MountCommand::addPlugins(std::string name, KeySet& modules, KeySet& rreferencePlugins, std::string which)
-{
-	KeySet ret;
-	KeySet referencePlugins = rreferencePlugins;
-	vector <string> alreadyProvided;
-	int nrStoragePlugins = 0;
-	ret.append (*Key (root + "/" + name + "/" + which + "plugins",
-		KEY_COMMENT, "List of plugins to use",
-		KEY_END));
-
-	cout << "Now you have to provide some " << which << " plugins which should be used for that backend" << endl;
-	cout << "Exactly one plugin must be a storage plugin" << endl;
-	for (int i=0; i<10; ++i)
-	{
-		cout << "Enter the " << i << " plugin to use." << endl;
-		cout << "Write \".\" as name in a single line if you are finished" << endl;
-		cout << "Name of the " << which << " plugin: ";
-		std::string pluginName;
-		cin >> pluginName;
-		if (pluginName == ".") break;
-
-		bool isStoragePlugin = false;
-		std::string realPluginName;
-
-		try {
-			int nr;
-			char *cPluginName = 0;
-			char *cReferenceName = 0;
-			Key errorKey;
-			Key k(std::string("system/elektra/key/#0") + pluginName);
-			if (ckdb::elektraProcessPlugin (*k, &nr, &cPluginName, &cReferenceName, *errorKey) == -1)
-			{
-				ckdb::elektraFree(cPluginName);
-				ckdb::elektraFree(cReferenceName);
-				throw BadPluginName();
-			}
-
-			if (cPluginName)
-			{
-				realPluginName = cPluginName;
-				ckdb::elektraFree(cPluginName);
-				cout << "# seems like there is a pluginName: " << realPluginName << endl;
-
-				if (cReferenceName)
-				{
-					std::string referenceName = cReferenceName;
-					cout << "# and a reference name too: " << referenceName << endl;
-					if (referenceName.find('#') != string::npos)
-					{
-						ckdb::elektraFree(cReferenceName);
-						throw BadPluginName();
-					}
-
-					referencePlugins.append(Key(cReferenceName, KEY_VALUE, cPluginName, KEY_END));
-					ckdb::elektraFree(cReferenceName);
-				}
-			} else {
-				cout << "# backreference: " << cReferenceName << endl;
-				Key lookup = referencePlugins.lookup(cReferenceName);
-				ckdb::elektraFree(cReferenceName);
-				if (!lookup) throw ReferenceNotFound();
-				realPluginName = lookup.getString();
-			}
-
-			if (realPluginName.find('#') != string::npos) throw BadPluginName();
-
-
-			KeySet testConfig(1,
-				*Key(	"system/test",
-					KEY_VALUE, "test",
-					KEY_COMMENT, "Test config for loading a plugin.",
-					KEY_END),
-				KS_END);
-			Plugin plugin (realPluginName, modules, testConfig);
-
-			std::string provide;
-			std::stringstream ss(plugin.lookupInfo("provides"));
-			while (ss >> provide)
-			{
-				alreadyProvided.push_back(provide);
-				cout << "add provide: " << provide << endl;
-			}
-			std::string need;
-			std::stringstream nss(plugin.lookupInfo("needs"));
-			while (nss >> need)
-			{
-				cout << "check for need " << need << endl;;
-				if (std::find(alreadyProvided.begin(), alreadyProvided.end(), need) == alreadyProvided.end())
-				{
-					throw MissingNeeded(need);
-				}
-			}
-			if (std::string(plugin.lookupInfo("provides")).find("storage") != string::npos)
-			{
-				cout << "This is a storage plugin" << endl;
-				++ nrStoragePlugins;
-				isStoragePlugin = true;
-			}
-			if (std::string(plugin.lookupInfo("licence")).find("BSD") == string::npos)
-			{
-				cout << "Warning this plugin is not BSD licenced" << endl;
-				cout << "It might taint the licence of the overall product" << endl;
-				cout << "Its licence is: " << plugin.lookupInfo("licence") << endl;
-			}
-			if (which == "set")
-			{
-				if (!plugin->kdbSet)
-				{
-					throw MissingSymbol("kdbSet");
-				}
-			}
-			if (nrStoragePlugins>1)
-			{
-				throw StoragePlugin();
-			}
-		}
-		catch (PluginCheckException const& e)
-		{
-			cout << "There is a problem with this plugin" << endl;
-			cout << e.what() << endl;
-			cout << "Do you want to (P)roceed with next plugin (current will be left empty)?" << endl;
-			cout << "Do you want to go (B)ack to the first plugin?" << endl;
-			cout << "Do you want to (R)etry this plugin?" << endl;
-			cout << "Do you want to (F)inish entering plugins?" << endl;
-			cout << "Or do you want to (A)bort?" << endl;
-			cout << "Please provide action: ";
-			string answer;
-			cin >> answer;
-			if (answer == "P" || answer == "Proceed" || answer == "(P)roceed" || answer == "p")
-			{
-				if (isStoragePlugin) --nrStoragePlugins;
-				referencePlugins.lookup(realPluginName, KDB_O_POP);
-				continue;
-			} else if (answer == "R" || answer == "Retry" || answer == "(R)etry" || answer == "r")
-			{
-				if (isStoragePlugin) --nrStoragePlugins;
-				referencePlugins.lookup(realPluginName, KDB_O_POP);
-				--i;
-				continue;
-			} else if (answer == "B" || answer == "Back" || answer == "(B)ack" || answer == "b")
-			{
-				cout << endl;
-				// will throw away any referencePlugins
-				return KeySet(static_cast<ckdb::KeySet*>(0));
-			} else if (answer == "F" || answer == "Finish" || answer == "(F)inish" || answer == "f")
-			{
-				if (isStoragePlugin) --nrStoragePlugins;
-				referencePlugins.lookup(realPluginName, KDB_O_POP);
-				break;
-			}
-			// will throw away any referencePlugins
-			throw CommandAbortException();
-		}
-
-		std::ostringstream pluginNumber;
-		pluginNumber << i;
-		ret.append (*Key (root + "/" + name + "/" + which + std::string("plugins/#") + pluginNumber.str() + pluginName,
-			KEY_COMMENT, "A plugin",
-			KEY_END));
-	}
-
-	if (nrStoragePlugins != 1)
-	{
-		cerr << "You need to provide a storage plugin, but did not" << endl;
-		cerr << "Will go back to the first plugin" << endl;
-		cout << endl;
-		return KeySet(static_cast<ckdb::KeySet*>(0));
-	}
-
-	rreferencePlugins = referencePlugins;
-	cout << endl;
-	return ret;
-}
-
 int MountCommand::execute(int , char** )
 {
 	cout << "Welcome to interactive mounting" << endl;
 	cout << "Please provide a unique name." << endl;
 
-	KeySet conf;
-	Key parentKey(root, KEY_END);
-	try {
-		kdb.get(conf, parentKey);
-		printWarnings(parentKey);
-	} catch (KDBException const& e)
+	KeySet wholeConf;
+
 	{
-		printError(parentKey);
-		printWarnings(parentKey);
-		cout << "Could not get configuration" << endl;
-		cout << "Seems like this is your first mount" << endl;
+		Key parentKey("", KEY_END);
+
+		kdb::KDB kdb (parentKey);
+		kdb.get(wholeConf, parentKey);
+		kdb.close (parentKey);
+
+		printWarnings (parentKey);
+
+		// now we dont need any affairs to the key database
 	}
 
-	conf.rewind();
+	Key rootKey (root, KEY_END);
+	KeySet conf = wholeConf.cut (rootKey);
 
 	Key cur;
        
-	cur = conf.lookup(Key(root, KEY_END));
+	cur = conf.lookup(rootKey);
 	if (!cur)
 	{
 		cout << "Did not find the root key, will add it" << endl;
@@ -240,30 +68,29 @@ int MountCommand::execute(int , char** )
 	std::vector <std::string> names;
 	while (cur = conf.next())
 	{
-		if (Key(root, KEY_END).isDirectBelow(cur))
+		if (rootKey.isDirectBelow(cur))
 		{
 			names.push_back(cur.getBaseName());
+			cout << "add " << cur.getBaseName() << endl;
 		}
 	}
-	cout << "Already used are: ";
-	std::copy (names.begin(), names.end(), ostream_iterator<std::string>(cout, " "));
-	cout << endl;
-	std::string name;
-	std::cout << "Name: ";
-	cin >> name;
-	if (std::find(names.begin(), names.end(), name) != names.end()) throw NameAlreadyInUseException();
-	cout << endl;
 
+	std::string name = "root";
+	if (std::find(names.begin(), names.end(), name) == names.end())
+	{
+		cout << "No root backend found, will first mount that" << endl;
+	} else {
+		cout << "Already used are: ";
+		std::copy (names.begin(), names.end(), ostream_iterator<std::string>(cout, " "));
+		cout << endl;
 
-
-	conf.append ( *Key( root  + "/" + name,
-			KEY_DIR,
-			KEY_VALUE, "",
-			KEY_COMMENT, "This is a mounted backend, see subkeys for more information",
-			KEY_END));
+		std::cout << "Name: ";
+		cin >> name;
+		if (std::find(names.begin(), names.end(), name) != names.end()) throw NameAlreadyInUseException();
+		cout << endl;
+	}
 
 	std::vector <std::string> mountpoints;
-	KeySet ksMountpoints;
 	conf.rewind();
 	while (cur = conf.next())
 	{
@@ -276,25 +103,22 @@ int MountCommand::execute(int , char** )
 				if (!conf.lookup(Key(cur.getString(), KEY_END)))
 				{
 					cout << "Did not find the mountpoint " << cur.getString() << ", will add it" << endl;
-					// Hack: currently the mountpoints need to exist, so that they can be found
-					ksMountpoints.append ( *Key(cur.getString(),
-						KEY_COMMENT, "This is a mountpoint",
-						KEY_META, "mountpoint", "",
-						KEY_END));
 				}
 				mountpoints.push_back(cur.getString());
 			}
 		};
 	}
 
-	conf.append(ksMountpoints);
-	cout << "Already used are: ";
-	std::copy (mountpoints.begin(), mountpoints.end(), ostream_iterator<std::string>(cout, " "));
-	cout << endl;
-	cout << "Please use / for the root backend" << endl;
-	cout << "Enter the mountpoint: ";
-	std::string mp;
-	cin >> mp;
+	std::string mp = "/";
+	if (name != "root")
+	{
+		cout << "Already used are: ";
+		std::copy (mountpoints.begin(), mountpoints.end(), ostream_iterator<std::string>(cout, " "));
+		cout << endl;
+		cout << "Please use / for the root backend" << endl;
+		cout << "Enter the mountpoint: ";
+		cin >> mp;
+	}
 	if (std::find(mountpoints.begin(), mountpoints.end(), mp) != mountpoints.end()) throw MountpointAlreadyInUseException();
 
 	if (mp == "/")
@@ -307,11 +131,6 @@ int MountCommand::execute(int , char** )
 				KEY_END));
 	} else {
 		if (!Key (mp, KEY_END)) throw MountpointInvalidException();
-		// Hack: currently the mountpoints need to exist, so that they can be found
-		conf.append ( *Key(mp,
-			KEY_COMMENT, "This is a mounted backend.",
-			KEY_META, "mountpoint", "",
-			KEY_END));
 		conf.append ( *Key(	root  + "/" + name + "/mountpoint",
 				KEY_VALUE, mp.c_str(),
 				KEY_COMMENT, "The mountpoint says the location where the backend should be mounted.\n"
@@ -343,16 +162,13 @@ int MountCommand::execute(int , char** )
 
 
 
-	KeySet referencePlugins;
-	KeySet modules;
-	elektraModulesInit(modules.getKeySet(), 0);
-	while (conf.append(addPlugins(name, modules, referencePlugins, "get")) == -1) ;
+	{
+		Backend backend (name);
 
-
-
-	while (conf.append(addPlugins(name, modules, referencePlugins, "set")) == -1) ;
-	elektraModulesClose(modules.getKeySet(), 0);
-
+		backend.addPlugin ("resolver");
+		backend.addPlugin ("dump");
+		backend.serialize (conf);
+	}
 
 
 	cout << "Ready to mount with following configuration:" << endl;
@@ -370,8 +186,46 @@ int MountCommand::execute(int , char** )
 	cin >> answer;
 	if (answer != "y") throw CommandAbortException();
 
-	Key k;
-	kdb.set(conf, k);
+
+	cout << "Setting the mountpoint configuration";
+	{
+		Key parentKey(root, KEY_END);
+
+		kdb::KDB kdb (parentKey);
+		cout << ".";
+		KeySet dummy;
+		kdb.get(dummy, parentKey);
+		cout << ".";
+		kdb.set(conf, parentKey);
+		cout << ".";
+		kdb.close (parentKey);
+		cout << endl;
+
+		printWarnings (parentKey);
+
+		// now we dont need any affairs to the key database
+	}
+
+	wholeConf.append(conf);
+	cout << "Writing back the old configuration";
+	{
+		Key parentKey("", KEY_END);
+
+		kdb::KDB kdb (parentKey);
+		KeySet dummy;
+		cout << ".";
+		kdb.get(dummy, parentKey);
+		cout << ".";
+		kdb.set(wholeConf, parentKey);
+		cout << ".";
+		kdb.close (parentKey);
+		cout << endl;
+
+		printWarnings (parentKey);
+
+		// now we dont need any affairs to the key database
+	}
+
 	return 0;
 }
 

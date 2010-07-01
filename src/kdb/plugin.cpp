@@ -12,7 +12,8 @@ using namespace std;
 using namespace kdb;
 
 Plugin::Plugin(std::string const& pluginName, KeySet &modules, KeySet const& testConfig) :
-	pluginName(pluginName)
+	pluginName(pluginName),
+	firstRef (true)
 {
 	Key errorKey;
 	plugin = ckdb::elektraPluginOpen(pluginName.c_str(), modules.getKeySet(), testConfig.dup(), *errorKey);
@@ -42,20 +43,24 @@ Plugin::Plugin(Plugin const& other) :
 	pluginName(other.pluginName),
 	info(other.info),
 	symbols(other.symbols),
-	infos(other.infos)
+	infos(other.infos),
+	firstRef(other.firstRef)
 {
 	++plugin->refcounter;
 }
 
-Plugin& Plugin::operator = (Plugin &other)
+Plugin& Plugin::operator = (Plugin const& other)
 {
 	if (this == &other) return *this;
+
+	close();
 
 	plugin = other.plugin;
 	pluginName = other.pluginName;
 	info = other.info;
 	symbols = other.symbols;
 	infos = other.infos;
+	firstRef = other.firstRef;
 
 	++plugin->refcounter;
 
@@ -128,4 +133,14 @@ std::string Plugin::lookupInfo(std::string item, std::string section)
 	if (!ret) return ""; /* Lets say missing info is ok for now */
 
 	return ret.getString();
+}
+
+std::string Plugin::refname()
+{
+	if (firstRef)
+	{
+		return "#" + pluginName + "#" + pluginName + "#";
+	} else {
+		return "#" + pluginName;
+	}
 }

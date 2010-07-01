@@ -41,11 +41,9 @@ struct PathInvalidException : public CommandException
 
 class MountCommand : public Command
 {
-	kdb::KDB kdb;
 	static std::string root;
 public:
 	MountCommand();
-	kdb::KeySet addPlugins(std::string name, kdb::KeySet& modules, kdb::KeySet& referencePlugins, std::string which);
 	bool checkFile(std::string file);
 	int execute(int argc, char** argv);
 	~MountCommand();

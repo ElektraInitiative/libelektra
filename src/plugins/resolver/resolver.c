@@ -159,6 +159,8 @@ int elektraResolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
 				KEY_VALUE, "Dumps complete Elektra Semantics", KEY_END),
 			keyNew ("system/elektra/modules/resolver/infos/provides",
 				KEY_VALUE, "resolver", KEY_END),
+			keyNew ("system/elektra/modules/resolver/infos/placements",
+				KEY_VALUE, "resolver", KEY_END),
 			keyNew ("system/elektra/modules/resolver/infos/needs",
 				KEY_VALUE, "", KEY_END),
 			keyNew ("system/elektra/modules/resolver/infos/version",

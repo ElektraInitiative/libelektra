@@ -100,13 +100,15 @@ private:
 	std::map<std::string, func_t> symbols;
 	std::map<std::string, std::string> infos;
 
+	bool firstRef;
+
 	void close();
 
 public:
 	Plugin(std::string const& pluginName, kdb::KeySet &modules, kdb::KeySet const& testConfig);
 
 	Plugin(Plugin const& other);
-	Plugin& operator = (Plugin &other);
+	Plugin& operator = (Plugin const& other);
 	~Plugin();
 
 	void parse();
@@ -115,6 +117,9 @@ public:
 	bool operator!();
 	std::string lookupInfo(std::string item, std::string section = "infos");
 	kdb::KeySet getInfo() {return info;}
+	func_t getSymbol (std::string which) {return symbols[which];}
+
+	std::string refname();
 };
 
 #endif
