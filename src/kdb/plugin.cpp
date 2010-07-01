@@ -37,6 +37,31 @@ Plugin::Plugin(std::string const& pluginName, KeySet &modules, KeySet const& tes
 	parse();
 }
 
+Plugin::Plugin(Plugin const& other) :
+	plugin(other.plugin),
+	pluginName(other.pluginName),
+	info(other.info),
+	symbols(other.symbols),
+	infos(other.infos)
+{
+	++plugin->refcounter;
+}
+
+Plugin& Plugin::operator = (Plugin &other)
+{
+	if (this == &other) return *this;
+
+	plugin = other.plugin;
+	pluginName = other.pluginName;
+	info = other.info;
+	symbols = other.symbols;
+	infos = other.infos;
+
+	++plugin->refcounter;
+
+	return *this;
+}
+
 Plugin::~Plugin()
 {
 	close();
@@ -75,6 +100,8 @@ void Plugin::parse ()
 
 void Plugin::close()
 {
+	/* ref counting will avoid closing */
+
 	Key errorKey;
 	ckdb::elektraPluginClose(plugin, *errorKey);
 	printWarnings(errorKey);

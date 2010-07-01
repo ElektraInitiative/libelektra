@@ -99,10 +99,15 @@ struct Plugin
 	std::map<std::string, func_t> symbols;
 	std::map<std::string, std::string> infos;
 
-	Plugin(std::string const& pluginName, kdb::KeySet &modules, kdb::KeySet const& testConfig);
-	~Plugin();
-	void parse();
 	void close();
+
+	Plugin(std::string const& pluginName, kdb::KeySet &modules, kdb::KeySet const& testConfig);
+
+	Plugin(Plugin const& other);
+	Plugin& operator = (Plugin &other);
+	~Plugin();
+
+	void parse();
 
 	ckdb::Plugin *operator->();
 	bool operator!();
