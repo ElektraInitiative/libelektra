@@ -55,9 +55,21 @@ void Backend::addPlugin (std::string pluginName)
 			KEY_COMMENT, "Test config for loading a plugin.",
 			KEY_END),
 		KS_END);
-	Plugin plugin (realPluginName, modules, testConfig);
+	plugins.push_back(Plugin (realPluginName, modules, testConfig));
 
-	getplugins.addPlugin (plugin);
-	setplugins.addPlugin (plugin);
-	errorplugins.addPlugin (plugin);
+	errorplugins.addPlugin (plugins.back());
+	getplugins.addPlugin (plugins.back());
+	setplugins.addPlugin (plugins.back());
+}
+
+void Backend::serialize (kdb::Key &rootKey, kdb::KeySet &ret)
+{
+	Key backendRootKey (rootKey);
+	backendRootKey.addBaseName (name);
+	backendRootKey.setString("serialized Backend");
+	ret.append(backendRootKey);
+
+	errorplugins.serialize(backendRootKey, ret);
+	getplugins.serialize(backendRootKey, ret);
+	setplugins.serialize(backendRootKey, ret);
 }

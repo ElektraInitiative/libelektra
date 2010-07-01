@@ -45,12 +45,14 @@ class SetPlugins : public Plugins
 {
 public:
 	bool addPlugin (Plugin &plugin);
+	void serialize (kdb::Key &baseKey, kdb::KeySet &ret);
 };
 
 class ErrorPlugins : public Plugins
 {
 public:
 	bool addPlugin (Plugin &plugin);
+	void serialize (kdb::Key &baseKey, kdb::KeySet &ret);
 };
 
 #endif

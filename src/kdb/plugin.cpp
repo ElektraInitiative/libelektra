@@ -139,8 +139,9 @@ std::string Plugin::refname()
 {
 	if (firstRef)
 	{
-		return "#" + pluginName + "#" + pluginName + "#";
+		firstRef = false;
+		return std::string("#") + pluginName + "#" + pluginName + "#";
 	} else {
-		return "#" + pluginName;
+		return std::string("#") + pluginName;
 	}
 }

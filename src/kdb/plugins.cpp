@@ -65,6 +65,33 @@ bool Plugins::checkInfo (Plugin &plugin)
 
 
 
+bool ErrorPlugins::addPlugin (Plugin &plugin)
+{
+	bool ret = true;
+
+	if (std::string(plugin.lookupInfo("provides")).find("storage") != string::npos)
+	{
+		cout << "Ignore storage plugin in ErrorPlugins" << endl;
+		return ret;
+	}
+
+	if (!plugin.getSymbol("error"))
+	{
+		throw MissingSymbol("error");
+	}
+
+	if (!checkInfo (plugin)) ret = false;
+
+	if (std::string(plugin.lookupInfo("provides")).find("resolver") != string::npos)
+	{
+		// hack, do with proper placement
+		plugins[0] = &plugin;
+	}
+
+	return ret;
+}
+
+
 bool GetPlugins::addPlugin (Plugin &plugin)
 {
 	bool ret = true;
@@ -79,6 +106,18 @@ bool GetPlugins::addPlugin (Plugin &plugin)
 
 	if (!checkStorage (plugin)) ret = false;
 	if (!checkInfo (plugin)) ret = false;
+
+	if (std::string(plugin.lookupInfo("provides")).find("storage") != string::npos)
+	{
+		// hack, do with proper placement
+		plugins[3] = &plugin;
+	}
+
+	if (std::string(plugin.lookupInfo("provides")).find("resolver") != string::npos)
+	{
+		// hack, do with proper placement
+		plugins[0] = &plugin;
+	}
 
 
 	return true;
@@ -97,31 +136,41 @@ bool SetPlugins::addPlugin (Plugin &plugin)
 	if (!checkStorage (plugin)) ret = false;
 	if (!checkInfo (plugin)) ret = false;
 
-	return ret;
-}
-
-bool ErrorPlugins::addPlugin (Plugin &plugin)
-{
-	bool ret = true;
-
 	if (std::string(plugin.lookupInfo("provides")).find("storage") != string::npos)
 	{
-		cout << "Ignore storage plugin in ErrorPlugins" << endl;
-		return ret;
+		// hack, do with proper placement
+		plugins[3] = &plugin;
 	}
 
-	if (!plugin.getSymbol("error"))
+	if (std::string(plugin.lookupInfo("provides")).find("resolver") != string::npos)
 	{
-		throw MissingSymbol("error");
+		// hack, do with proper placement
+		plugins[0] = &plugin;
+		plugins[7] = &plugin;
 	}
-
-	if (!checkInfo (plugin)) ret = false;
 
 	return ret;
 }
 
 
 
+void ErrorPlugins::serialize (Key &baseKey, KeySet &ret)
+{
+	ret.append (*Key (baseKey.getName() + "/errorplugins",
+		KEY_COMMENT, "List of plugins to use",
+		KEY_END));
+
+	for (int i=0; i< 10; ++i)
+	{
+		if (plugins[i] == 0) continue;
+
+		std::ostringstream pluginNumber;
+		pluginNumber << i;
+		ret.append (*Key (baseKey.getName() + "/errorplugins/#" + pluginNumber.str() + plugins[i]->refname(),
+			KEY_COMMENT, "A plugin",
+			KEY_END));
+	}
+}
 
 void GetPlugins::serialize (Key &baseKey, KeySet &ret)
 {
@@ -136,6 +185,25 @@ void GetPlugins::serialize (Key &baseKey, KeySet &ret)
 		std::ostringstream pluginNumber;
 		pluginNumber << i;
 		ret.append (*Key (baseKey.getName() + "/getplugins/#" + pluginNumber.str() + plugins[i]->refname(),
+			KEY_COMMENT, "A plugin",
+			KEY_END));
+	}
+}
+
+
+void SetPlugins::serialize (Key &baseKey, KeySet &ret)
+{
+	ret.append (*Key (baseKey.getName() + "/setplugins",
+		KEY_COMMENT, "List of plugins to use",
+		KEY_END));
+
+	for (int i=0; i< 10; ++i)
+	{
+		if (plugins[i] == 0) continue;
+
+		std::ostringstream pluginNumber;
+		pluginNumber << i;
+		ret.append (*Key (baseKey.getName() + "/setplugins/#" + pluginNumber.str() + plugins[i]->refname(),
 			KEY_COMMENT, "A plugin",
 			KEY_END));
 	}

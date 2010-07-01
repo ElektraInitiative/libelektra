@@ -18,11 +18,14 @@ private:
 
 	kdb::KeySet modules;
 
+	std::vector <Plugin> plugins;
+
 public:
 	Backend(std::string name);
 	~Backend();
 
 	void addPlugin (std::string name);
+	void serialize (kdb::Key &rootKey, kdb::KeySet &ret);
 };
 
 #endif
