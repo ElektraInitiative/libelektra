@@ -230,7 +230,7 @@ ssize_t kdbGet_dump(ckdb::Plugin *, ckdb::KeySet *returned, const ckdb::Key *par
 	}
 	keyDel (root);
 	std::ifstream ofs(keyString(parentKey));
-	if (!ofs.is_open()) return -1;
+	if (!ofs.is_open()) return 0;
 	dump::unserialize (ofs, returned);
 
 	return ksGetSize(returned); /* success */
@@ -238,9 +238,9 @@ ssize_t kdbGet_dump(ckdb::Plugin *, ckdb::KeySet *returned, const ckdb::Key *par
 
 ssize_t kdbSet_dump(ckdb::Plugin *, ckdb::KeySet *returned, const ckdb::Key *parentKey)
 {
-	std::ofstream ifs(keyString(parentKey));
-	if (!ifs.is_open()) return -1;
-	dump::serialize (ifs, returned);
+	std::ofstream ofs(keyString(parentKey));
+	if (!ofs.is_open()) return -1;
+	dump::serialize (ofs, returned);
 
 	return ksGetSize(returned);
 }

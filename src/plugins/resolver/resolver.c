@@ -183,10 +183,10 @@ int elektraResolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	{
 		char buffer[ERROR_SIZE];
 		strerror_r(errno, buffer, ERROR_SIZE);
-		ELEKTRA_SET_ERROR (29, parentKey, buffer);
-		close(pk->fd);
+		ELEKTRA_ADD_WARNING (29, parentKey, buffer);
 		errno = errnoSave;
-		return -1;
+		return 0;
+		/* File not there, lets assume thats ok. */
 	}
 
 	/* Check if update needed */
@@ -247,14 +247,16 @@ int elektraResolverSet(Plugin *handle, KeySet *returned, Key *parentKey)
 			return -1;
 		}
 
+		keySetString(parentKey, pk->tempfile);
+
 		if (stat(pk->filename, &buf) == -1)
 		{
 			char buffer[ERROR_SIZE];
 			strerror_r(errno, buffer, ERROR_SIZE);
-			ELEKTRA_SET_ERROR (29, parentKey, buffer);
-			close(pk->fd);
+			ELEKTRA_ADD_WARNING (29, parentKey, buffer);
 			errno = errnoSave;
-			return -1;
+			/* Dont fail if configuration file currently does not exist */
+			return 0;
 		}
 
 		if (buf.st_mtime > pk->mtime)
@@ -264,9 +266,7 @@ int elektraResolverSet(Plugin *handle, KeySet *returned, Key *parentKey)
 			return -1;
 		}
 
-		keySetString(parentKey, pk->tempfile);
-
-		return 0;
+		return 1;
 	}
 
 	if (action == 1)
@@ -287,13 +287,12 @@ int elektraResolverSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		{
 			char buffer[ERROR_SIZE];
 			strerror_r(errno, buffer, ERROR_SIZE);
-			ELEKTRA_SET_ERROR (29, parentKey, buffer);
+			ELEKTRA_ADD_WARNING (29, parentKey, buffer);
 			errno = errnoSave;
-			ret = -1;
+		} else {
+			/* Update timestamp */
+			pk->mtime = buf.st_mtime;
 		}
-
-		/* Update timestamp */
-		pk->mtime = buf.st_mtime;
 
 		if (elektraUnlock(pk->fd) == -1)
 		{
