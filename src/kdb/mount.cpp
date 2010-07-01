@@ -166,7 +166,7 @@ int MountCommand::execute(int , char** )
 		Backend backend (name);
 
 		backend.addPlugin ("resolver");
-		// backend.addPlugin ("dump");
+		backend.addPlugin ("dump");
 		backend.serialize (rootKey, conf);
 	}
 

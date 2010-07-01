@@ -20,6 +20,10 @@ Backend::Backend(string name) :
 Backend::~Backend()
 {
 	elektraModulesClose(modules.getKeySet(), 0);
+	for (size_t i = 0; i < plugins.size(); ++i)
+	{
+		delete plugins[i];
+	}
 }
 
 void Backend::addPlugin (std::string pluginName)
@@ -55,11 +59,11 @@ void Backend::addPlugin (std::string pluginName)
 			KEY_COMMENT, "Test config for loading a plugin.",
 			KEY_END),
 		KS_END);
-	plugins.push_back(Plugin (realPluginName, modules, testConfig));
+	plugins.push_back(new Plugin (realPluginName, modules, testConfig));
 
-	errorplugins.addPlugin (plugins.back());
-	getplugins.addPlugin (plugins.back());
-	setplugins.addPlugin (plugins.back());
+	errorplugins.addPlugin (*plugins.back());
+	getplugins.addPlugin (*plugins.back());
+	setplugins.addPlugin (*plugins.back());
 }
 
 void Backend::serialize (kdb::Key &rootKey, kdb::KeySet &ret)

@@ -18,7 +18,7 @@ private:
 
 	kdb::KeySet modules;
 
-	std::vector <Plugin> plugins;
+	std::vector <Plugin*> plugins;
 
 public:
 	Backend(std::string name);
