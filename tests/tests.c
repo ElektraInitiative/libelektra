@@ -241,6 +241,11 @@ void output_keyset (KeySet *ks)
 	}
 }
 
+void output_key (Key *k)
+{
+	printf ("key: %s, string: %s\n", keyName(k), keyString(k));
+}
+
 void output_trie(Trie *trie)
 {
 	int i;

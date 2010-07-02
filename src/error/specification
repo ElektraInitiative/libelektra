@@ -234,3 +234,15 @@ description:Failed to open default backend (see warnings for more information)
 severity:fatal
 ingroup:kdb
 
+number:41
+description:Could not compile regex
+severity:fatal
+ingroup:plugin
+module:validator
+
+number:42
+description:Key Value failed to validate
+severity:fatal
+ingroup:plugin
+module:validator
+
