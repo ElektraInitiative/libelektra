@@ -43,7 +43,7 @@ int elektraHiddenClose(Plugin *handle, Key *errorKey)
 
 int elektraHiddenGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
-	if (!strcmp (keyName(parentKey), "system/elektra/modules/xmltool"))
+	if (!strcmp (keyName(parentKey), "system/elektra/modules/hidden"))
 	{
 		ksAppend (returned, ksNew (30,
 			keyNew ("system/elektra/modules/hidden",
@@ -64,7 +64,7 @@ int elektraHiddenGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			keyNew ("system/elektra/modules/hidden/infos/licence",
 				KEY_VALUE, "BSD", KEY_END),
 			keyNew ("system/elektra/modules/hidden/infos/description",
-				KEY_VALUE, "Validates key values using regular expressions", KEY_END),
+				KEY_VALUE, "Hides keys which start with a .", KEY_END),
 			keyNew ("system/elektra/modules/hidden/infos/provides",
 				KEY_VALUE, "filter", KEY_END),
 			keyNew ("system/elektra/modules/hidden/infos/placements",
