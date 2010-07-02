@@ -26,9 +26,9 @@ Plugins::Plugins () :
 	placementInfo["setresolver"] = Place(RESOLVER_PLUGIN, RESOLVER_PLUGIN);
 	placementInfo["presetstorage"] = Place(RESOLVER_PLUGIN+1, STORAGE_PLUGIN-1);
 	placementInfo["setstorage"] = Place(STORAGE_PLUGIN, STORAGE_PLUGIN);
-	placementInfo["precommit"] = Place(STORAGE_PLUGIN+1, COMMIT_PLUGIN);
+	placementInfo["precommit"] = Place(STORAGE_PLUGIN+1, COMMIT_PLUGIN-1);
 	placementInfo["commit"] = Place(COMMIT_PLUGIN, COMMIT_PLUGIN);
-	placementInfo["postcommit"] = Place(COMMIT_PLUGIN, NR_OF_PLUGINS-1);
+	placementInfo["postcommit"] = Place(COMMIT_PLUGIN+1, NR_OF_PLUGINS-1);
 }
 
 void Plugins::addProvided (Plugin &plugin)

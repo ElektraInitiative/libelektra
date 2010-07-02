@@ -44,7 +44,7 @@
 #endif
 
 #ifndef STORAGE_PLUGIN
-#define STORAGE_PLUGIN 3
+#define STORAGE_PLUGIN 5
 #endif
 
 #ifndef RESOLVER_PLUGIN
