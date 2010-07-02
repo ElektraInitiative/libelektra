@@ -46,6 +46,15 @@ int ShellCommand::execute(int, char**)
 			is >> name;
 			currentKey.setName(name);
 		}
+		else if (command == "keySetMeta")
+		{
+			string name;
+			is >> name;
+			string value;
+			getline (is, value);
+			currentKey.setMeta(name, value);
+			cout << "Set meta " << name << " to " << value << endl;
+		}
 		else if (command == "keySetString")
 		{
 			string value;
