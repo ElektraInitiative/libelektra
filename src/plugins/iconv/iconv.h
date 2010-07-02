@@ -42,8 +42,9 @@
 #define BACKENDNAME "iconv"
 #define BACKENDVERSION "0.0.1"
 
-int kdbOpen_iconv(Plugin *handle);
-int kdbClose_iconv(Plugin *handle);
-ssize_t kdbGet_iconv(Plugin *handle, KeySet *ks, const Key *parentKey);
-ssize_t kdbSet_iconv(Plugin *handle, KeySet *ks, const Key *parentKey);
+int kdbbNeedsUTF8Conversion(Plugin *handle);
+int kdbbUTF8Engine(Plugin *handle, int direction, char **string, size_t *inputOutputByteSize);
+
+int elektraIconvGet(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraIconvSet(Plugin *handle, KeySet *ks, Key *parentKey);
 Plugin *ELEKTRA_PLUGIN_EXPORT(iconv);
