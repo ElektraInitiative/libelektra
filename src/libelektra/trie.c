@@ -123,6 +123,23 @@ Trie *elektraTrieOpen(KeySet *config, KeySet *modules, Key *errorKey)
 		ELEKTRA_ADD_WARNING(23, errorKey, "no root key found for modules");
 		goto error;
 	}
+
+	/* Reopen the default Backend for fresh user experience (update issue) */
+	Backend *defaultBackend = elektraBackendOpenDefault(modules, errorKey);
+	if (!defaultBackend)
+	{
+		ELEKTRA_ADD_WARNING(43, errorKey, "could not reopen default backend");
+		return 0;
+	}
+
+	/* Trie was created successfully.
+	   We want system/elektra/mountpoints still reachable
+	   through default backend.
+	   kdb-tool must ensure that root backend exist before any other.
+	*/
+	elektraMountBackend (&trie, defaultBackend, errorKey);
+
+
 	while ((cur = ksNext (modules)) != 0)
 	{
 		Backend * backend = elektraBackendOpenModules(modules, errorKey);

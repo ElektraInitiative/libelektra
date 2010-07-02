@@ -246,3 +246,8 @@ severity:fatal
 ingroup:plugin
 module:validator
 
+number:43
+description:Failed to open default backend (creation of trie stopped)
+severity:warning
+ingroup:kdb
+

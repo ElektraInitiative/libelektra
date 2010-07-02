@@ -238,24 +238,17 @@ KDB * kdbOpen(Key *errorKey)
 	/* Open the trie */
 	handle->trie=elektraTrieOpen(keys, handle->modules, errorKey);
 
-	/* Reopen the default Backend for fresh user experience (update issue) */
-	handle->defaultBackend = elektraBackendOpenDefault(handle->modules, errorKey);
-	if (!handle->defaultBackend)
-	{
-		ELEKTRA_SET_ERROR(40, errorKey, "could not reopen default backend");
-		return 0;
-	}
-
 	if (!handle->trie)
 	{
 		ELEKTRA_ADD_WARNING(7, errorKey, "trie could not be created, see previous warnings");
-	} else {
-		/* Trie was created successfully.
-		   We want system/elektra/mountpoints still reachable
-		   through default backend.
-		   kdb-tool must ensure that root backend exist before any other.
-		*/
-		elektraMountBackend (&handle->trie, handle->defaultBackend, errorKey);
+
+		/* Reopen the default Backend for fresh user experience (update issue) */
+		Backend *defaultBackend = elektraBackendOpenDefault(handle->modules, errorKey);
+		if (!defaultBackend)
+		{
+			ELEKTRA_SET_ERROR(40, errorKey, "could not reopen default backend");
+			return 0;
+		}
 	}
 
 	return handle;
