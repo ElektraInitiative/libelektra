@@ -27,27 +27,16 @@
 
 #include "timeofday.h"
 
-#ifndef timersub
-#define timersub(val1,val2,res) \
-	if (1) \
-	{ \
-		(res)->tv_sec = (val1)->tv_sec - (val2)->tv_sec; \
-		if (((res)->tv_usec = (val1)->tv_usec - (val2)->tv_usec) < 0) \
-		{ \
-			(res)->tv_sec --; \
-			(res)->tv_usec += 1000000; \
-		} \
-	}
-#endif
-
-static char* timeofday(char *t, struct timeval *start)
+static inline void timeofday(char *t, struct timeval *start, struct timeval *now)
 {
-	struct timeval now;
 	struct timeval tv;
 
-	gettimeofday(&now, 0);
-
-	timersub (&now, start, &tv);
+	tv.tv_sec = now->tv_sec - start->tv_sec;
+	if ((tv.tv_usec = now->tv_usec - start->tv_usec) < 0)
+	{
+		tv.tv_sec --;
+		tv.tv_usec += 1000000;
+	}
 
 	for (int i=9; i>=4; --i)
 	{
@@ -60,41 +49,67 @@ static char* timeofday(char *t, struct timeval *start)
 		tv.tv_sec /= 10;
 	}
 	t[10] = 0;
+}
+
+const char * elektraTimeofdayHelper (char *t, TimeofdayInfo *ti)
+{
+	struct timeval now;
+	gettimeofday(&now, 0);
+	timeofday (t, &ti->start, &now);
+	t[10] = '\t';
+	t[11] = 'd';
+	t[12] = 'i';
+	t[13] = '\t';
+	timeofday(&t[14], &ti->last, &now);
+	ti->last = now;
+
 	return t;
 }
 
 int elektraTimeofdayOpen(Plugin *handle, Key *k)
 {
-	struct timeval *start = malloc(sizeof (struct timeval));
-	char t[10];
+	TimeofdayInfo *ti = calloc(1, sizeof (TimeofdayInfo));
+	char t[24];
 
-	gettimeofday(start, 0);
-	elektraPluginSetData(handle, start);
+	// init time
+	gettimeofday(&ti->start, 0);
+	ti->last = ti->start;
 
-	fprintf(stderr, "open\t%s\n", timeofday(t, start));
+	fprintf(stderr, "open\t%s\n", elektraTimeofdayHelper (t, ti));
+
+	elektraPluginSetData(handle, ti);
 
 	return 0; /* success */
 }
 
 int elektraTimeofdayClose(Plugin *handle, Key *k)
 {
-	char t[10];
-	struct timeval *start = elektraPluginGetData(handle);
+	char t[24];
+	TimeofdayInfo *ti = elektraPluginGetData(handle);
 
-	fprintf(stderr, "close\t%s\n", timeofday(t, start));
+	fprintf(stderr, "close\t%s\n", elektraTimeofdayHelper (t, ti));
 
-	free(start);
+	/* free(ti); */
 
 	return 0; /* success */
 }
 
 int elektraTimeofdayGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
-	ssize_t nr_keys = 0;
-	char t[10];
-	struct timeval *start = elektraPluginGetData(handle);
+	char t[24];
+	TimeofdayInfo *ti = elektraPluginGetData(handle);
+	const char *position = "get";
 
-	fprintf(stderr, "get\t%s\n", timeofday(t, start));
+	ti->nrset = 0;
+	++ ti->nrget;
+	if (ti->nrget == 1) position = "pregetstorage";
+	else if (ti->nrget == 2)
+	{
+		ti->nrget = 0;
+		position = "postgetstorage";
+	}
+
+	fprintf(stderr, "get\t%s\tpos\t%s\n", elektraTimeofdayHelper (t, ti), position);
 
 	Key *root = keyNew("system/elektra/modules/timeofday", KEY_END);
 	if (keyRel (root, parentKey) >= 0)
@@ -141,33 +156,54 @@ int elektraTimeofdayGet(Plugin *handle, KeySet *returned, Key *parentKey)
 				KEY_VALUE, "1.0", KEY_END),
 			KS_END));
 
-			fprintf(stderr, "fin\t%s\n", timeofday(t, start));
+			fprintf(stderr, "get\t%s\tpos\t%s\n", elektraTimeofdayHelper (t, ti), "postmodulesconf");
 	}
 
 	keyDel (root);
-	return nr_keys; /* success */
+
+	return 1;
 }
 
 int elektraTimeofdaySet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
-	ssize_t nr_keys = 0;
-	char t[10];
-	struct timeval *start = elektraPluginGetData(handle);
+	char t[24];
+	TimeofdayInfo *ti = elektraPluginGetData(handle);
+	const char *position = "set";
 
-	fprintf(stderr, "set\t%s\n", timeofday(t, start));
+	ti->nrget = 0;
+	++ ti->nrset;
+	if (ti->nrset == 1) position = "presetstorage";
+	else if (ti->nrset == 2) position = "precommit";
+	else if (ti->nrset == 3)
+	{
+		ti->nrset = 0;
+		position = "postcommit";
+	}
 
-	return nr_keys;
+	fprintf(stderr, "set\t%s\tpos\t%s\n", elektraTimeofdayHelper (t, ti), position);
+
+	return 1;
 }
 
 int elektraTimeofdayError(Plugin *handle, KeySet *returned, Key *parentKey)
 {
-	ssize_t nr_keys = 0;
-	char t[10];
-	struct timeval *start = elektraPluginGetData(handle);
+	char t[24];
+	TimeofdayInfo *ti = elektraPluginGetData(handle);
+	const char *position = "error";
 
-	fprintf(stderr, "err\t%s\n", timeofday(t, start));
+	ti->nrset = 0;
+	ti->nrget = 0;
+	++ ti->nrerr;
+	if (ti->nrerr == 1) position = "prerollback";
+	else if (ti->nrerr == 2)
+	{
+		ti->nrerr = 0;
+		position = "postrollback";
+	}
 
-	return nr_keys;
+	fprintf(stderr, "err\t%s\tpos\t%s\n", elektraTimeofdayHelper (t, ti), position);
+
+	return 1;
 }
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(timeofday)

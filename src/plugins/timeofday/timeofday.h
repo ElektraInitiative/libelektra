@@ -36,6 +36,17 @@
 #define BACKENDNAME "timeofday"
 #define BACKENDVERSION "0.0.1"
 
+struct _TimeofdayInfo
+{
+	struct timeval start;
+	struct timeval last;
+	int nrget;
+	int nrset;
+	int nrerr;
+};
+
+typedef struct _TimeofdayInfo TimeofdayInfo;
+
 int elektraTimeofdayOpen(Plugin *handle, Key *);
 int elektraTimeofdayClose(Plugin *handle, Key *);
 int elektraTimeofdayGet(Plugin *handle, KeySet *ks, Key *parentKey);
