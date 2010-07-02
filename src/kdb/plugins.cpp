@@ -42,6 +42,15 @@ void Plugins::addProvided (Plugin &plugin)
 	}
 }
 
+void Plugins::addPlugin (Plugin &plugin, std::string which)
+{
+	if (std::string(plugin.lookupInfo("placements")).find(which) != string::npos)
+	{
+		cout << "Add plugin to " << placementInfo[which].current << endl;
+		plugins[placementInfo[which].current++] = &plugin;
+	}
+}
+
 bool Plugins::checkPlacement (Plugin &plugin, std::string which)
 {
 	std::string placement = plugin.lookupInfo("placements");
@@ -191,69 +200,27 @@ void SetPlugins::tryPlugin (Plugin &plugin)
 
 void ErrorPlugins::addPlugin (Plugin &plugin)
 {
-	if (std::string(plugin.lookupInfo("placements")).find("prerollback") != string::npos)
-	{
-		plugins[placementInfo["prerollback"].current++] = &plugin;
-	}
-
-	if (std::string(plugin.lookupInfo("placements")).find("rollback") != string::npos)
-	{
-		plugins[placementInfo["rollback"].current++] = &plugin;
-	}
-
-	if (std::string(plugin.lookupInfo("placements")).find("postrollback") != string::npos)
-	{
-		plugins[placementInfo["postrollback"].current++] = &plugin;
-	}
+	Plugins::addPlugin (plugin, "prerollback");
+	Plugins::addPlugin (plugin, "rollback");
+	Plugins::addPlugin (plugin, "postrollback");
 }
 
 void GetPlugins::addPlugin (Plugin &plugin)
 {
-	if (std::string(plugin.lookupInfo("placements")).find("pregetstorage") != string::npos)
-	{
-		cout << "Add plugin to " << placementInfo["pregetstorage"].current << endl;
-		plugins[placementInfo["pregetstorage"].current++] = &plugin;
-	}
-
-	if (std::string(plugin.lookupInfo("placements")).find("postgetstorage") != string::npos)
-	{
-		cout << "Add plugin to " << placementInfo["postgetstorage"].current << endl;
-		plugins[placementInfo["postgetstorage"].current++] = &plugin;
-	}
-
-	if (std::string(plugin.lookupInfo("provides")).find("storage") != string::npos)
-	{
-		// hack, do with proper placement
-		plugins[3] = &plugin;
-	}
-
-	if (std::string(plugin.lookupInfo("provides")).find("resolver") != string::npos)
-	{
-		// hack, do with proper placement
-		plugins[0] = &plugin;
-	}
+	Plugins::addPlugin (plugin, "getresolver");
+	Plugins::addPlugin (plugin, "pregetstorage");
+	Plugins::addPlugin (plugin, "getstorage");
+	Plugins::addPlugin (plugin, "postgetstorage");
 }
 
 void SetPlugins::addPlugin (Plugin &plugin)
 {
-	if (std::string(plugin.lookupInfo("placements")).find("presetstorage") != string::npos)
-	{
-		cout << "Add plugin to " << placementInfo["presetstorage"].current << endl;
-		plugins[placementInfo["presetstorage"].current++] = &plugin;
-	}
-
-	if (std::string(plugin.lookupInfo("provides")).find("storage") != string::npos)
-	{
-		// hack, do with proper placement
-		plugins[3] = &plugin;
-	}
-
-	if (std::string(plugin.lookupInfo("provides")).find("resolver") != string::npos)
-	{
-		// hack, do with proper placement
-		plugins[0] = &plugin;
-		plugins[7] = &plugin;
-	}
+	Plugins::addPlugin (plugin, "setresolver");
+	Plugins::addPlugin (plugin, "presetstorage");
+	Plugins::addPlugin (plugin, "setstorage");
+	Plugins::addPlugin (plugin, "precommit");
+	Plugins::addPlugin (plugin, "commit");
+	Plugins::addPlugin (plugin, "postcommit");
 }
 
 

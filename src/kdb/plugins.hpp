@@ -53,6 +53,7 @@ public:
 	Plugins ();
 
 	void addProvided (Plugin &plugin);
+	void addPlugin (Plugin &plugin, std::string which);
 
 	/** @return true if plugin should be ignored */
 	bool checkPlacement (Plugin &plugin, std::string which);
