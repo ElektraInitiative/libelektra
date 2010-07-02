@@ -243,8 +243,8 @@ KDB * kdbOpen(Key *errorKey)
 		ELEKTRA_ADD_WARNING(7, errorKey, "trie could not be created, see previous warnings");
 
 		/* Reopen the default Backend for fresh user experience (update issue) */
-		Backend *defaultBackend = elektraBackendOpenDefault(handle->modules, errorKey);
-		if (!defaultBackend)
+		handle->defaultBackend = elektraBackendOpenDefault(handle->modules, errorKey);
+		if (!handle->defaultBackend)
 		{
 			ELEKTRA_SET_ERROR(40, errorKey, "could not reopen default backend");
 			return 0;

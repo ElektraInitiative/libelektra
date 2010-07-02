@@ -25,6 +25,8 @@
 
 #include "hidden.h"
 
+#include <string.h>
+
 int elektraHiddenOpen(Plugin *handle, Key *errorKey)
 {
 	elektraPluginSetData(handle, ksNew(0));
@@ -41,6 +43,40 @@ int elektraHiddenClose(Plugin *handle, Key *errorKey)
 
 int elektraHiddenGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
+	if (!strcmp (keyName(parentKey), "system/elektra/modules/xmltool"))
+	{
+		ksAppend (returned, ksNew (30,
+			keyNew ("system/elektra/modules/hidden",
+				KEY_VALUE, "hidden plugin waits for your orders", KEY_END),
+			keyNew ("system/elektra/modules/hidden/exports", KEY_END),
+			keyNew ("system/elektra/modules/hidden/exports/get",
+				KEY_SIZE, sizeof (&elektraHiddenGet),
+				KEY_BINARY,
+				KEY_VALUE, &elektraHiddenGet, KEY_END),
+			keyNew ("system/elektra/modules/hidden/exports/set",
+				KEY_SIZE, sizeof (&elektraHiddenSet),
+				KEY_BINARY,
+				KEY_VALUE, &elektraHiddenSet, KEY_END),
+			keyNew ("system/elektra/modules/hidden/infos",
+				KEY_VALUE, "All information you want to know", KEY_END),
+			keyNew ("system/elektra/modules/hidden/infos/author",
+				KEY_VALUE, "Markus Raab <elektra@markus-raab.org>", KEY_END),
+			keyNew ("system/elektra/modules/hidden/infos/licence",
+				KEY_VALUE, "BSD", KEY_END),
+			keyNew ("system/elektra/modules/hidden/infos/description",
+				KEY_VALUE, "Validates key values using regular expressions", KEY_END),
+			keyNew ("system/elektra/modules/hidden/infos/provides",
+				KEY_VALUE, "filter", KEY_END),
+			keyNew ("system/elektra/modules/hidden/infos/placements",
+				KEY_VALUE, "postgetstorage presetstorage", KEY_END),
+			keyNew ("system/elektra/modules/hidden/infos/needs",
+				KEY_VALUE, "", KEY_END),
+			keyNew ("system/elektra/modules/hidden/infos/version",
+				KEY_VALUE, "1.0", KEY_END),
+			KS_END));
+		return 1;
+	}
+
 	Key *cur = 0;
 	KeySet *newReturned = ksNew (ksGetSize (returned), KS_END);
 	KeySet *hiddenKeys = elektraPluginGetData (handle);
