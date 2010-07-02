@@ -27,6 +27,7 @@
 
 
 #include <kdbplugin.h>
+#include <kdberrors.h>
 
 #include <iconv.h>
 #include <locale.h>

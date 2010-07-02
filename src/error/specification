@@ -263,3 +263,9 @@ severity:warning
 ingroup:plugin
 module:error
 
+number:46
+description:conversation error
+severity:error
+ingroup:plugin
+module:iconv
+

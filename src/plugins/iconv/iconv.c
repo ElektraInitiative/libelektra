@@ -209,7 +209,9 @@ int elektraIconvGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			char *convertedData=malloc(convertedDataSize);
 
 			memcpy(convertedData,keyString(cur),keyGetValueSize(cur));
-			if (kdbbUTF8Engine(handle, UTF8_FROM, &convertedData, &convertedDataSize)) {
+			if (kdbbUTF8Engine(handle, UTF8_FROM, &convertedData, &convertedDataSize))
+			{
+				ELEKTRA_SET_ERROR (46, parentKey, convertedData);
 				free(convertedData);
 				return -1;
 			}
@@ -224,7 +226,9 @@ int elektraIconvGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			char *convertedData=malloc(convertedDataSize);
 
 			memcpy(convertedData,keyString(meta),keyGetValueSize(meta));
-			if (kdbbUTF8Engine(handle, UTF8_FROM, &convertedData, &convertedDataSize)) {
+			if (kdbbUTF8Engine(handle, UTF8_FROM, &convertedData, &convertedDataSize))
+			{
+				ELEKTRA_SET_ERROR (46, parentKey, convertedData);
 				free(convertedData);
 				return -1;
 			}
@@ -252,7 +256,9 @@ int elektraIconvSet(Plugin *handle, KeySet *returned, Key *parentKey)
 			char *convertedData=malloc(convertedDataSize);
 
 			memcpy(convertedData,keyString(cur),keyGetValueSize(cur));
-			if (kdbbUTF8Engine(handle, UTF8_TO, &convertedData, &convertedDataSize)) {
+			if (kdbbUTF8Engine(handle, UTF8_TO, &convertedData, &convertedDataSize))
+			{
+				ELEKTRA_SET_ERROR (46, parentKey, convertedData);
 				free(convertedData);
 				return -1;
 			}
@@ -267,7 +273,9 @@ int elektraIconvSet(Plugin *handle, KeySet *returned, Key *parentKey)
 			char *convertedData=malloc(convertedDataSize);
 
 			memcpy(convertedData,keyString(meta),keyGetValueSize(meta));
-			if (kdbbUTF8Engine(handle, UTF8_TO, &convertedData, &convertedDataSize)) {
+			if (kdbbUTF8Engine(handle, UTF8_TO, &convertedData, &convertedDataSize))
+			{
+				ELEKTRA_SET_ERROR (46, parentKey, convertedData);
 				free(convertedData);
 				return -1;
 			}
