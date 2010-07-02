@@ -128,6 +128,10 @@ public:
 	kdb::KeySet getInfo() {return info;}
 	func_t getSymbol (std::string which) {return symbols[which];}
 
+	/* Returns the name of the plugin */
+	std::string name();
+
+	/* Returns the name how it would be referred to in mountpoint */
 	std::string refname();
 };
 

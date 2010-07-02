@@ -92,7 +92,7 @@ ssize_t kdbGet_tracer(Plugin *handle, KeySet *returned, const Key *parentKey)
 			keyNew ("system/elektra/modules/tracer/infos/needs",
 				KEY_VALUE, "", KEY_END),
 			keyNew ("system/elektra/modules/tracer/infos/placements",
-				KEY_VALUE, "prerollback postrollback pregetstorage postgetstorage presetstorage precommit postcommit", KEY_END),
+				KEY_VALUE, "pregetstorage postgetstorage presetstorage precommit postcommit", KEY_END),
 			keyNew ("system/elektra/modules/tracer/infos/version",
 				KEY_VALUE, BACKENDVERSION, KEY_END),
 			KS_END);

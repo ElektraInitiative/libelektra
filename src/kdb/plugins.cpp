@@ -42,6 +42,19 @@ void Plugins::addProvided (Plugin &plugin)
 	}
 }
 
+bool Plugins::checkPlacement (Plugin &plugin, std::string which)
+{
+	std::string placement = plugin.lookupInfo("placements");
+	if (placement.find(which) == string::npos) return true;
+
+	if (placementInfo[which].current > placementInfo[which].max)
+	{
+		throw TooManyPlugins();
+	}
+
+	return false;
+}
+
 void Plugins::checkProvided(Plugin &plugin)
 {
 	std::string need;
@@ -106,18 +119,19 @@ void Plugins::checkInfo (Plugin &plugin)
 
 void ErrorPlugins::tryPlugin (Plugin &plugin)
 {
-	if (std::string(plugin.lookupInfo("provides")).find("storage") != string::npos)
+	if (	checkPlacement(plugin,"prerollback") &&
+		checkPlacement(plugin,"rollback") &&
+		checkPlacement(plugin,"postrollback"))
 	{
-		cout << "Ignore storage plugin in ErrorPlugins" << endl;
+		/* Wont be added to errorplugins anyway, so ignore it */
+		cout << "Wont be in error plugin, omitting tests" << endl;
 		return;
 	}
 
-	/*
 	if (!plugin.getSymbol("error"))
 	{
 		throw MissingSymbol("error");
 	}
-	*/
 
 	checkResolver (plugin);
 }
@@ -125,6 +139,16 @@ void ErrorPlugins::tryPlugin (Plugin &plugin)
 
 void GetPlugins::tryPlugin (Plugin &plugin)
 {
+	if (	checkPlacement(plugin, "getresolver") &&
+		checkPlacement(plugin, "pregetstorage") &&
+		checkPlacement(plugin, "getstorage") &&
+		checkPlacement(plugin, "postgetstorage"))
+	{
+		/* Wont be added to errorplugins anyway, so ignore it */
+		cout << "Wont be in get plugin, omitting tests" << endl;
+		return;
+	}
+
 	if (!plugin.getSymbol("get"))
 	{
 		throw MissingSymbol("get");
@@ -137,6 +161,18 @@ void GetPlugins::tryPlugin (Plugin &plugin)
 
 void SetPlugins::tryPlugin (Plugin &plugin)
 {
+	if (	checkPlacement(plugin, "setresolver") &&
+		checkPlacement(plugin, "presetstorage") &&
+		checkPlacement(plugin, "setstorage") &&
+		checkPlacement(plugin, "precommit") &&
+		checkPlacement(plugin, "commit") &&
+		checkPlacement(plugin, "postcommit"))
+	{
+		/* Wont be added to errorplugins anyway, so ignore it */
+		cout << "Wont be in set plugin, omitting tests" << endl;
+		return;
+	}
+
 	if (!plugin.getSymbol("set"))
 	{
 		throw MissingSymbol("set");
@@ -200,6 +236,12 @@ void GetPlugins::addPlugin (Plugin &plugin)
 
 void SetPlugins::addPlugin (Plugin &plugin)
 {
+	if (std::string(plugin.lookupInfo("placements")).find("presetstorage") != string::npos)
+	{
+		cout << "Add plugin to " << placementInfo["presetstorage"].current << endl;
+		plugins[placementInfo["presetstorage"].current++] = &plugin;
+	}
+
 	if (std::string(plugin.lookupInfo("provides")).find("storage") != string::npos)
 	{
 		// hack, do with proper placement

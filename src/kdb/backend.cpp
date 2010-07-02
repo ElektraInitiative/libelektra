@@ -76,6 +76,12 @@ void Backend::tryPlugin (std::string pluginName)
 	getplugins.tryPlugin   (*plugin.get());
 	setplugins.tryPlugin   (*plugin.get());
 
+	for (size_t i=0; i<plugins.size(); ++i)
+	{
+		if (plugin->name() == plugins[i]->name())
+			throw PluginAlreadyInserted();
+	}
+
 	plugins.push_back(plugin.release());
 }
 

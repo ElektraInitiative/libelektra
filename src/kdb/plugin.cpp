@@ -135,6 +135,11 @@ std::string Plugin::lookupInfo(std::string item, std::string section)
 	return ret.getString();
 }
 
+std::string Plugin::name()
+{
+	return pluginName;
+}
+
 std::string Plugin::refname()
 {
 	if (firstRef)

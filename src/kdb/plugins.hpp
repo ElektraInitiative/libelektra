@@ -9,6 +9,17 @@
 
 #include <kdb>
 
+struct TooManyPlugins : public PluginCheckException
+{
+	virtual const char* what() const throw()
+	{
+		return  "Too many plugins!\n"
+			"The plugin can't be positioned anymore.\n"
+			"Try to reduce the number of plugins to get better performance.";
+	}
+};
+
+
 struct Place
 {
 	int current;
@@ -43,6 +54,8 @@ public:
 
 	void addProvided (Plugin &plugin);
 
+	/** @return true if plugin should be ignored */
+	bool checkPlacement (Plugin &plugin, std::string which);
 	void checkProvided (Plugin &plugin);
 	void checkStorage (Plugin &plugin);
 	void checkResolver (Plugin &plugin);

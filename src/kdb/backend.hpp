@@ -7,6 +7,15 @@
 
 #include <kdb>
 
+struct PluginAlreadyInserted: public PluginCheckException
+{
+	virtual const char* what() const throw()
+	{
+		return  "It is not allowed to insert the same plugin again!\n"
+			"Try to add other plugins instead.";
+	}
+};
+
 class Backend
 {
 private:
