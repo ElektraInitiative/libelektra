@@ -75,7 +75,7 @@ int elektraValidationSet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 		regex_t regex;
 		regmatch_t offsets;
-		int ret = regcomp(&regex, keyString(meta), REG_NOSUB);
+		int ret = regcomp(&regex, keyString(meta), REG_NOSUB | REG_EXTENDED);
 
 		if (ret != 0)
 		{
@@ -85,7 +85,9 @@ int elektraValidationSet(Plugin *handle, KeySet *returned, Key *parentKey)
 			return -1;
 		}
 
-		if (regexec(&regex, keyString(cur), 1, &offsets, 0) == REG_NOMATCH)
+		ret = regexec(&regex, keyString(cur), 1, &offsets, 0);
+
+		if (ret != 0) /* e.g. REG_NOMATCH */
 		{
 			const Key *msg = keyGetMeta (cur, "validation/message");
 			if (msg)
