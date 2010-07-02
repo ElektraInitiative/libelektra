@@ -71,6 +71,7 @@ void Backend::tryPlugin (std::string pluginName)
 		KS_END);
 
 	auto_ptr<Plugin>plugin (new Plugin (realPluginName, modules, testConfig));
+	plugin->parse();
 
 	errorplugins.tryPlugin (*plugin.get());
 	getplugins.tryPlugin   (*plugin.get());

@@ -35,6 +35,7 @@ int InfoCommand::execute(int argc, char** argv)
 	KeySet modules;
 	elektraModulesInit(modules.getKeySet(), 0);
 	Plugin plugin (name, modules, testConfig);
+	plugin.parse();
 	elektraModulesClose(modules.getKeySet(), 0);
 
 	cout << plugin.lookupInfo("provides") << endl;
@@ -71,6 +72,7 @@ int generalway(int argc, char** argv)
 				KEY_END),
 			KS_END);
 		Plugin plugin (name, modules, testConfig);
+		plugin.parse();
 		elektraModulesClose(modules.getKeySet(), 0);
 		conf = plugin.getInfo();
 	}

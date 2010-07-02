@@ -97,6 +97,23 @@ struct ResolverPlugin : public PluginCheckException
 	}
 };
 
+struct PluginWrongName : public PluginCheckException
+{
+	virtual const char* what() const throw()
+	{
+		return "The real name of the plugin is different!";
+	}
+};
+
+struct PluginNoInfo : public PluginCheckException
+{
+	virtual const char* what() const throw()
+	{
+		return "No info found for that plugin!";
+	}
+};
+
+
 
 class Plugin
 {
@@ -120,12 +137,16 @@ public:
 	Plugin& operator = (Plugin const& other);
 	~Plugin();
 
+	/* Must be called before any affairs to info */
 	void parse();
 
 	ckdb::Plugin *operator->();
 	bool operator!();
+
 	std::string lookupInfo(std::string item, std::string section = "infos");
+	bool findInfo(std::string check, std::string item, std::string section = "infos");
 	kdb::KeySet getInfo() {return info;}
+
 	func_t getSymbol (std::string which) {return symbols[which];}
 
 	/* Returns the name of the plugin */

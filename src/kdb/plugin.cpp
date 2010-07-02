@@ -28,14 +28,18 @@ Plugin::Plugin(std::string const& pluginName, KeySet &modules, KeySet const& tes
 	Key infoKey ("system/elektra/modules", KEY_END);
 	infoKey.addBaseName(pluginName);
 
+	if (pluginName != plugin->name)
+	{
+		close();
+		throw PluginWrongName();
+	}
+
 	if (!plugin->kdbGet)
 	{
 		close();
 		throw MissingSymbol("kdbGet");
 	}
 	plugin->kdbGet(plugin, info.getKeySet(), *infoKey);
-
-	parse();
 }
 
 Plugin::Plugin(Plugin const& other) :
@@ -75,6 +79,7 @@ Plugin::~Plugin()
 void Plugin::parse ()
 {
 	Key root (std::string("system/elektra/modules/") + pluginName + "/exports", KEY_END);
+
 	Key k = info.lookup (root);
 
 	if (k)
@@ -99,6 +104,8 @@ void Plugin::parse ()
 		{
 			infos[k.baseName()] = k.getString();
 		}
+	} else {
+		throw PluginNoInfo();
 	}
 
 }
@@ -130,9 +137,23 @@ std::string Plugin::lookupInfo(std::string item, std::string section)
 	k.addBaseName(item);
 	Key ret = info.lookup(k);
 
-	if (!ret) return ""; /* Lets say missing info is ok for now */
+	if (!ret) return ""; /* TODO Lets say missing info is ok for now */
 
 	return ret.getString();
+}
+
+bool Plugin::findInfo(std::string check, std::string item, std::string section)
+{
+	std::string str = lookupInfo (item, section);
+
+	std::istringstream istr (str);
+
+	std::string toCheck;
+	while (istr >> toCheck)
+	{
+		if (toCheck == check) return true;
+	}
+	return false;
 }
 
 std::string Plugin::name()

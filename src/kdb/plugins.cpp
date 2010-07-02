@@ -44,7 +44,7 @@ void Plugins::addProvided (Plugin &plugin)
 
 void Plugins::addPlugin (Plugin &plugin, std::string which)
 {
-	if (std::string(plugin.lookupInfo("placements")).find(which) != string::npos)
+	if (plugin.findInfo(which, "placements"))
 	{
 		cout << "Add plugin to " << placementInfo[which].current << endl;
 		plugins[placementInfo[which].current++] = &plugin;
@@ -53,11 +53,13 @@ void Plugins::addPlugin (Plugin &plugin, std::string which)
 
 bool Plugins::checkPlacement (Plugin &plugin, std::string which)
 {
-	std::string placement = plugin.lookupInfo("placements");
-	if (placement.find(which) == string::npos) return true;
+	if (!plugin.findInfo(which, "placements")) return true;
 
 	if (placementInfo[which].current > placementInfo[which].max)
 	{
+		cout << "Failed because " << which << " with "
+		     << placementInfo[which].current << " is larger than "
+		     << placementInfo[which].max << endl;
 		throw TooManyPlugins();
 	}
 
@@ -81,7 +83,7 @@ void Plugins::checkProvided(Plugin &plugin)
 
 void Plugins::checkStorage (Plugin &plugin)
 {
-	if (std::string(plugin.lookupInfo("provides")).find("storage") != string::npos)
+	if (plugin.findInfo("storage", "provides"))
 	{
 		cout << "This is a storage plugin" << endl;
 		++ nrStoragePlugins;
@@ -96,7 +98,7 @@ void Plugins::checkStorage (Plugin &plugin)
 
 void Plugins::checkResolver (Plugin &plugin)
 {
-	if (std::string(plugin.lookupInfo("provides")).find("resolver") != string::npos)
+	if (plugin.findInfo("resolver", "provides"))
 	{
 		cout << "This is a resolver plugin" << endl;
 		++ nrResolverPlugins;
@@ -113,7 +115,7 @@ void Plugins::checkResolver (Plugin &plugin)
 
 void Plugins::checkInfo (Plugin &plugin)
 {
-	if (std::string(plugin.lookupInfo("licence")).find("BSD") == string::npos)
+	if (!plugin.findInfo("BSD", "licence"))
 	{
 		cout << "Warning this plugin is not BSD licenced" << endl;
 		cout << "It might taint the licence of the overall product" << endl;

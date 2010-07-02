@@ -188,11 +188,11 @@ int MountCommand::execute(int , char** )
 			cout << endl;
 			cout << "Next Plugin: ";
 			cin >> name;
-		}
 
-		if (name == "." && !backend.validated())
-		{
-			throw CommandAbortException();
+			if (name == "." && !backend.validated())
+			{
+				throw CommandAbortException();
+			}
 		}
 
 		backend.serialize (rootKey, conf);
