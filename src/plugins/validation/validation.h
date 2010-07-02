@@ -1,5 +1,5 @@
 /***************************************************************************
-            iconv.h  -  Skeleton of backends to access the Key Database
+                     validation.c  -  Skeleton of a plugin
                              -------------------
     begin                : Fri May 21 2010
     copyright            : (C) 2010 by Markus Raab
@@ -13,39 +13,33 @@
  *                                                                         *
  ***************************************************************************/
 
-
-
 /***************************************************************************
  *                                                                         *
  *   This is the skeleton of the methods you'll have to implement in order *
- *   to provide libelektra.so a valid backend.                             *
- *   Simple fill the empty _iconv functions with your code and you are   *
+ *   to provide a valid plugin.                                            *
+ *   Simple fill the empty functions with your code and you are            *
  *   ready to go.                                                          *
  *                                                                         *
  ***************************************************************************/
 
 
+#ifndef ELEKTRA_PLUGIN_VALIDATION_H
+#define ELEKTRA_PLUGIN_VALIDATION_H
+
+#include <sys/types.h>
+#include <regex.h>
 
 #include <kdbplugin.h>
 #include <kdberrors.h>
 
-#include <iconv.h>
-#include <locale.h>
-#include <langinfo.h>
+int elektraValidationOpen(Plugin *handle, Key *errorKey);
+int elektraValidationClose(Plugin *handle, Key *errorKey);
+int elektraValidationGet(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraValidationSet(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraValidationError(Plugin *handle, KeySet *ks, Key *parentKey);
 
-#include <string.h>
-#include <stdlib.h>
+Key *ksLookupRE(KeySet *ks, const regex_t *regexp);
 
-#define UTF8_TO   1
-#define UTF8_FROM 0
+Plugin *ELEKTRA_PLUGIN_EXPORT(validation);
 
-
-#define BACKENDNAME "iconv"
-#define BACKENDVERSION "0.0.1"
-
-int kdbbNeedsUTF8Conversion(Plugin *handle);
-int kdbbUTF8Engine(Plugin *handle, int direction, char **string, size_t *inputOutputByteSize);
-
-int elektraIconvGet(Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraIconvSet(Plugin *handle, KeySet *ks, Key *parentKey);
-Plugin *ELEKTRA_PLUGIN_EXPORT(iconv);
+#endif

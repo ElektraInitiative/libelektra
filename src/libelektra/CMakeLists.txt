@@ -82,14 +82,14 @@ if (BUILD_FULL OR BUILD_STATIC)
 	list (APPEND SOURCES ${elektra-full_SRCS})
 	list (APPEND SOURCES "${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.c")
 
-
 	#and get all libraries to link against
 	get_property (elektra-full_LIBRARIES GLOBAL PROPERTY elektra-full_LIBRARIES)
 
 	# include the directories of all libraries for the static or
 	# full-shared build
-	get_property (elektra_INCLUDES GLOBAL PROPERTY elektra_INCLUDES)
-	include_directories (${elektra_INCLUDES})
+	get_property (elektra-full_INCLUDES GLOBAL PROPERTY elektra-full_INCLUDES)
+
+	include_directories (${elektra-full_INCLUDES})
 endif (BUILD_FULL OR BUILD_STATIC)
 
 

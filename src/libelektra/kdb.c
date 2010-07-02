@@ -165,15 +165,15 @@ Key* kdbGetMountpoint (KDB *handle, const Key *where)
  * @code
 thread1 {
 	KDB * h;
-	h = kdbOpen();
+	h = kdbOpen(0);
 	// fetch keys and work with them
-	kdbClose(h);
+	kdbClose(h, 0);
 }
 thread2 {
 	KDB * h;
-	h = kdbOpen();
+	h = kdbOpen(0);
 	// fetch keys and work with them
-	kdbClose(h);
+	kdbClose(h, 0);
 }
  * @endcode
  *
@@ -202,16 +202,16 @@ KDB * kdbOpen(Key *errorKey)
 	handle = elektraCalloc(sizeof(struct _KDB));
 
 	handle->modules = ksNew(0);
-
 	if (elektraModulesInit(handle->modules, errorKey) == -1)
 	{
 		return 0;
 	}
 
 	/* Open default backend */
-	handle->defaultBackend=elektraBackendOpenDefault(handle->modules, errorKey);
+	handle->defaultBackend=elektraBackendOpenDefault (handle->modules, errorKey);
 	if (!handle->defaultBackend)
 	{
+		ELEKTRA_SET_ERROR(40, errorKey, "could not open default backend");
 		return 0;
 	}
 
@@ -226,6 +226,8 @@ KDB * kdbOpen(Key *errorKey)
 		return handle;
 	}
 
+	elektraBackendClose (handle->defaultBackend, errorKey);
+
 #if DEBUG && VERBOSE
 	ksRewind(keys);
 	for (key=ksNext(keys);key;key=ksNext(keys)) {
@@ -233,17 +235,20 @@ KDB * kdbOpen(Key *errorKey)
 	}
 #endif
 
+	/* Open the trie */
 	handle->trie=elektraTrieOpen(keys, handle->modules, errorKey);
+
 	if (!handle->trie)
 	{
 		ELEKTRA_ADD_WARNING(7, errorKey, "trie could not be created, see previous warnings");
-	} else {
-		/* Trie was created successfully.
-		   We want system/elektra/mountpoints still reachable
-		   through default backend.
-		   kdb-tool must ensure that root backend exist before any other.
-		*/
-		elektraMountBackend (&handle->trie, handle->defaultBackend, errorKey);
+
+		/* Reopen the default Backend for fresh user experience (update issue) */
+		handle->defaultBackend = elektraBackendOpenDefault(handle->modules, errorKey);
+		if (!handle->defaultBackend)
+		{
+			ELEKTRA_SET_ERROR(40, errorKey, "could not reopen default backend");
+			return 0;
+		}
 	}
 
 	return handle;
@@ -278,9 +283,12 @@ int kdbClose(KDB *handle, Key *errorKey)
 		/*errno=KDB_ERR_NOSYS;*/
 		return -1;
 	}
-	if (handle->trie) elektraTrieClose(handle->trie, errorKey);
-
-	elektraBackendClose (handle->defaultBackend, errorKey);
+	if (handle->trie)
+	{
+		elektraTrieClose(handle->trie, errorKey);
+	} else {
+		elektraBackendClose (handle->defaultBackend, errorKey);
+	}
 
 	elektraModulesClose (handle->modules, errorKey);
 
@@ -594,8 +602,7 @@ for (i=0; i< NR_OF_TRIES; i++) // limit to NR_OF_TRIES tries
  * @see keyNeedSync(), ksNext(), ksCurrent()
  * @ingroup kdb
  */
-int kdbSet (KDB *handle, KeySet *ks,
-	Key * parentKey)
+int kdbSet (KDB *handle, KeySet *ks, Key * parentKey)
 {
 	if (!parentKey)
 	{
@@ -651,11 +658,13 @@ int kdbSet (KDB *handle, KeySet *ks,
 			ksRewind (split->keysets[i]);
 			if (backend->setplugins[p])
 			{
+				if (p != 0) keySetString (parentKey, keyString(split->parents[i]));
 				keySetName (parentKey, keyName(split->parents[i]));
 				ret = backend->setplugins[p]->kdbSet (
 						backend->setplugins[p],
 						split->keysets[i],
 						parentKey);
+				if (p == 0) keySetString (split->parents[i], keyString(parentKey));
 			}
 			if (ret == -1)
 			{
@@ -671,15 +680,19 @@ int kdbSet (KDB *handle, KeySet *ks,
 		}
 	}
 
+	elektraSplitUpdateSize (split);
+
 	keySetName (parentKey, keyName(initialParent));
 	keyDel (initialParent);
 	elektraSplitDel(split);
+	for (size_t i=0; i<ks->size; ++i) ks->array[i]->flags = 0;
+
 	return 1;
 
 error:
 	for (size_t p=0; p<NR_OF_PLUGINS; ++p)
 	{
-		for (size_t i=0; i<split->size;i++)
+		for (size_t i=0; i<split->size; i++)
 		{
 			Backend *backend = split->handles[i];
 			ksRewind (split->keysets[i]);
@@ -687,7 +700,7 @@ error:
 			{
 				keySetName (parentKey, keyName(split->parents[i]));
 				ret = backend->errorplugins[p]->kdbError (
-						backend->setplugins[p],
+						backend->errorplugins[p],
 						split->keysets[i],
 						parentKey);
 			}

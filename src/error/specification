@@ -168,7 +168,7 @@ module:resolver
 
 number:29
 description:could not stat file
-severity:error
+severity:warning
 ingroup:plugin
 module:resolver
 
@@ -228,4 +228,44 @@ number:39
 description:not a valid name supplied for loading plugins
 severity:fatal
 ingroup:modules
+
+number:40
+description:Failed to open default backend (see warnings for more information)
+severity:fatal
+ingroup:kdb
+
+number:41
+description:Could not compile regex
+severity:fatal
+ingroup:plugin
+module:validator
+
+number:42
+description:Key Value failed to validate
+severity:fatal
+ingroup:plugin
+module:validator
+
+number:43
+description:Failed to open default backend (creation of trie stopped)
+severity:warning
+ingroup:kdb
+
+number:44
+description:unkown error code to trigger
+severity:error
+ingroup:plugin
+module:error
+
+number:45
+description:unkown warning code to trigger
+severity:warning
+ingroup:plugin
+module:error
+
+number:46
+description:conversation error
+severity:error
+ingroup:plugin
+module:iconv
 

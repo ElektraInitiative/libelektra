@@ -67,6 +67,7 @@ Plugin *ELEKTRA_PLUGIN_EXPORT(template)
 		ELEKTRA_PLUGIN_CLOSE,	&elektraTemplateClose,
 		ELEKTRA_PLUGIN_GET,	&elektraTemplateGet,
 		ELEKTRA_PLUGIN_SET,	&elektraTemplateSet,
+		ELEKTRA_PLUGIN_ERROR,	&elektraTemplateError,
 		ELEKTRA_PLUGIN_END);
 }
 

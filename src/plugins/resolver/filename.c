@@ -12,26 +12,26 @@ int resolveFilename(Key* forKey, resolverHandle *p)
 {
 	if (!strncmp(keyName(forKey), "system", 6))
 	{
-		if (p->systemFilename)
-		{
-			p->filename = p->systemFilename;
-			return 0;
-		}
-		p->systemFilename = malloc (sizeof(KDB_DB_SYSTEM) + strlen(p->path) + 1 + 5);
-		strcpy (p->systemFilename, KDB_DB_SYSTEM);
-		strcat (p->systemFilename, "/");
-		strcat (p->systemFilename, p->path);
-		p->filename = p->systemFilename;
+		size_t filenameSize = sizeof(KDB_DB_SYSTEM)
+			+ strlen(p->path) + 1 + 5;
+		p->filename = malloc (filenameSize);
+		strcpy (p->filename, KDB_DB_SYSTEM);
+		strcat (p->filename, "/");
+		strcat (p->filename, p->path);
+		p->filename = p->filename;
+
+		p->lockfile = malloc (filenameSize + 4);
+		strcpy (p->lockfile, p->filename);
+		strcat (p->lockfile, ".lck");
+
+		p->tempfile = malloc (filenameSize + 4);
+		strcpy (p->tempfile, p->filename);
+		strcat (p->tempfile, ".tmp");
 		return 1;
 	}
 
 	if (!strncmp(keyName(forKey), "user", 4))
 	{
-		if (p->userFilename)
-		{
-			p->filename = p->userFilename;
-			return 0;
-		}
 		/* TODO implement XDG specification
 		http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
 		*/
@@ -73,18 +73,29 @@ int resolveFilename(Key* forKey, resolverHandle *p)
 			return -1;
 		}
 
-		p->userFilename = malloc (sizeof(KDB_DB_HOME)
+		size_t filenameSize = sizeof(KDB_DB_HOME)
 				+ strlen(owner)
 				+ sizeof("/")
 				+ sizeof("/" KDB_DB_USER "/")
 				+ strlen(p->path)
-				+ 5);
-		strcpy (p->userFilename, KDB_DB_HOME);
-		strcat (p->userFilename, "/");
-		strcat (p->userFilename, owner);
-		strcat (p->userFilename, "/" KDB_DB_USER "/");
-		strcat (p->userFilename, p->path);
-		p->filename = p->userFilename;
+				+ 5;
+
+		p->filename = malloc (filenameSize);
+		strcpy (p->filename, KDB_DB_HOME);
+		strcat (p->filename, "/");
+		strcat (p->filename, owner);
+		strcat (p->filename, "/" KDB_DB_USER "/");
+		strcat (p->filename, p->path);
+		p->filename = p->filename;
+
+		p->lockfile = malloc (filenameSize + 4);
+		strcpy (p->lockfile, p->filename);
+		strcat (p->lockfile, ".lck");
+
+		p->tempfile = malloc (filenameSize + 4);
+		strcpy (p->tempfile, p->filename);
+		strcat (p->tempfile, ".tmp");
+
 		return 1;
 	}
 

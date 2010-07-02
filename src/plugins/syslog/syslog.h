@@ -33,8 +33,8 @@
 #define BACKENDNAME "syslog"
 #define BACKENDVERSION "0.0.1"
 
-int kdbOpen_syslog(Plugin *handle);
-int kdbClose_syslog(Plugin *handle);
-ssize_t kdbGet_syslog(Plugin *handle, KeySet *ks, const Key *parentKey);
-ssize_t kdbSet_syslog(Plugin *handle, KeySet *ks, const Key *parentKey);
+int elektraSyslogOpen(Plugin *handle, Key *parentKey);
+int elektraSyslogClose(Plugin *handle, Key *parentKey);
+int elektraSyslogGet(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraSyslogSet(Plugin *handle, KeySet *ks, Key *parentKey);
 Plugin *ELEKTRA_PLUGIN_EXPORT(syslog);

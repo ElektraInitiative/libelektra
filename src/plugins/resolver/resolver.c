@@ -27,24 +27,39 @@
 
 #include "resolver.h"
 
-
-int elektraResolverOpen(Plugin *handle, Key *errorKey)
+void resolverInit (resolverHandle *p, const char *path)
 {
-
-	KeySet *resolverConfig = elektraPluginGetConfig(handle);
-
-	resolverHandle *p = malloc(sizeof(resolverHandle));
 	p->fd = -1;
 	p->mtime = 0;
 	p->mode = 0664;
 
 	p->filename = 0;
-	p->userFilename = 0;
-	p->systemFilename = 0;
+	p->tempfile = 0;
+	p->lockfile = 0;
 
-	p->path = keyString(ksLookupByName(resolverConfig, "/path", 0));
+	p->path = path;
+}
 
-	if (!p->path)
+void resolverClose (resolverHandle *p)
+{
+	free (p->filename);
+	free (p->lockfile);
+	free (p->tempfile);
+}
+
+
+int elektraResolverOpen(Plugin *handle, Key *errorKey)
+{
+
+	KeySet *resolverConfig = elektraPluginGetConfig(handle);
+	const char *path = keyString(ksLookupByName(resolverConfig, "/path", 0));
+
+	resolverHandles *p = malloc(sizeof(resolverHandles));
+	resolverInit (&p->user, path);
+	resolverInit (&p->system, path);
+
+
+	if (!path)
 	{
 		free (p);
 		ELEKTRA_ADD_WARNING(34, errorKey, "Could not find file configuration");
@@ -52,8 +67,10 @@ int elektraResolverOpen(Plugin *handle, Key *errorKey)
 	}
 
 	Key *testKey = keyNew("system", KEY_END);
-	if (resolveFilename(testKey, p) == -1)
+	if (resolveFilename(testKey, &p->system) == -1)
 	{
+		resolverClose(&p->user);
+		resolverClose(&p->system);
 		free (p);
 		keyDel (testKey);
 		ELEKTRA_ADD_WARNING(35, errorKey, "Could not resolve system key");
@@ -61,8 +78,10 @@ int elektraResolverOpen(Plugin *handle, Key *errorKey)
 	}
 
 	keySetName(testKey, "user");
-	if (resolveFilename(testKey, p) == -1)
+	if (resolveFilename(testKey, &p->user) == -1)
 	{
+		resolverClose(&p->user);
+		resolverClose(&p->system);
 		free (p);
 		keyDel (testKey);
 		ELEKTRA_ADD_WARNING(35, errorKey, "Could not resolve user key");
@@ -77,17 +96,23 @@ int elektraResolverOpen(Plugin *handle, Key *errorKey)
 
 int elektraResolverClose(Plugin *handle, Key *errorKey)
 {
-	resolverHandle *p = elektraPluginGetData(handle);
-	free (p->userFilename);
-	free (p->systemFilename);
-	free (p);
+	resolverHandles *ps = elektraPluginGetData(handle);
+
+	resolverClose(&ps->user);
+	resolverClose(&ps->system);
+
+	free (ps);
 
 	return 0; /* success */
 }
 
 int elektraResolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
-	struct stat buf;
+	resolverHandles *pks = elektraPluginGetData(handle);
+	resolverHandle *pk = 0;
+	if (!strncmp(keyName(parentKey), "user", 4)) pk = &pks->user;
+	else pk = &pks->system;
+
 
 	Key *root = keyNew("system/elektra/modules/resolver", KEY_END);
 
@@ -134,6 +159,8 @@ int elektraResolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
 				KEY_VALUE, "Dumps complete Elektra Semantics", KEY_END),
 			keyNew ("system/elektra/modules/resolver/infos/provides",
 				KEY_VALUE, "resolver", KEY_END),
+			keyNew ("system/elektra/modules/resolver/infos/placements",
+				KEY_VALUE, "rollback getresolver setresolver commit", KEY_END),
 			keyNew ("system/elektra/modules/resolver/infos/needs",
 				KEY_VALUE, "", KEY_END),
 			keyNew ("system/elektra/modules/resolver/infos/version",
@@ -148,27 +175,22 @@ int elektraResolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	}
 	keyDel (root);
 
-	resolverHandle *pk = elektraPluginGetData(handle);
-	resolveFilename(parentKey, pk);
-
 	keySetString(parentKey, pk->filename);
 
 	int errnoSave = errno;
+	struct stat buf;
 	if (stat (pk->filename, &buf) == -1)
 	{
 		char buffer[ERROR_SIZE];
 		strerror_r(errno, buffer, ERROR_SIZE);
-		ELEKTRA_SET_ERROR (29, parentKey, buffer);
-		close(pk->fd);
+		ELEKTRA_ADD_WARNING (29, parentKey, buffer);
 		errno = errnoSave;
-		return -1;
+		return 0;
+		/* File not there, lets assume thats ok. */
 	}
 
-	/* Check if update needed
-	   issue 1: user/system separation
-	   issue 2: already locked by kdbOpen
+	/* Check if update needed */
 	if (pk->mtime == buf.st_mtime) return 0;
-	*/
 
 	pk->mtime = buf.st_mtime;
 
@@ -177,9 +199,13 @@ int elektraResolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 int elektraResolverSet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
+	resolverHandles *pks = elektraPluginGetData(handle);
+	resolverHandle *pk = 0;
+	if (!strncmp(keyName(parentKey), "user", 4)) pk = &pks->user;
+	else pk = &pks->system;
+
 	int errnoSave = errno;
-	resolverHandle *pk = elektraPluginGetData(handle);
-	int action;
+	int action = 0;
 
 	if (pk->fd == -1)
 	{
@@ -190,7 +216,7 @@ int elektraResolverSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	if (action == 0)
 	{
 		struct stat buf;
-		pk->fd = open ("lock", O_RDWR | O_CREAT);
+		pk->fd = open (pk->lockfile, O_RDWR | O_CREAT);
 
 		if (pk->fd == -1)
 		{
@@ -221,14 +247,16 @@ int elektraResolverSet(Plugin *handle, KeySet *returned, Key *parentKey)
 			return -1;
 		}
 
+		keySetString(parentKey, pk->tempfile);
+
 		if (stat(pk->filename, &buf) == -1)
 		{
 			char buffer[ERROR_SIZE];
 			strerror_r(errno, buffer, ERROR_SIZE);
-			ELEKTRA_SET_ERROR (29, parentKey, buffer);
-			close(pk->fd);
+			ELEKTRA_ADD_WARNING (29, parentKey, buffer);
 			errno = errnoSave;
-			return -1;
+			/* Dont fail if configuration file currently does not exist */
+			return 0;
 		}
 
 		if (buf.st_mtime > pk->mtime)
@@ -238,25 +266,55 @@ int elektraResolverSet(Plugin *handle, KeySet *returned, Key *parentKey)
 			return -1;
 		}
 
-		keySetString(parentKey, "tmp");
-
-		return 0;
+		return 1;
 	}
 
 	if (action == 1)
 	{
-		if (rename ("tmp", pk->filename) == -1)
+		int ret = 0;
+
+		if (rename (pk->tempfile, pk->filename) == -1)
 		{
 			char buffer[ERROR_SIZE];
 			strerror_r(errno, buffer, ERROR_SIZE);
 			ELEKTRA_SET_ERROR (31, parentKey, buffer);
 			errno = errnoSave;
-			return -1;
+			ret = -1;
 		}
-	}
 
-	/* Always execute the rollback code */
-	elektraResolverError(handle, returned, parentKey);
+		struct stat buf;
+		if (stat (pk->filename, &buf) == -1)
+		{
+			char buffer[ERROR_SIZE];
+			strerror_r(errno, buffer, ERROR_SIZE);
+			ELEKTRA_ADD_WARNING (29, parentKey, buffer);
+			errno = errnoSave;
+		} else {
+			/* Update timestamp */
+			pk->mtime = buf.st_mtime;
+		}
+
+		if (elektraUnlock(pk->fd) == -1)
+		{
+			char buffer[ERROR_SIZE];
+			strerror_r(errno, buffer, ERROR_SIZE);
+			ELEKTRA_ADD_WARNING(32, parentKey, buffer);
+			errno = errnoSave;
+		}
+
+
+		if (close (pk->fd) == -1)
+		{
+			char buffer[ERROR_SIZE];
+			strerror_r(errno, buffer, ERROR_SIZE);
+			ELEKTRA_ADD_WARNING (33, parentKey, buffer);
+			errno = errnoSave;
+		}
+
+		pk->fd = -1;
+
+		return ret;
+	}
 
 	return 0;
 }
@@ -266,7 +324,7 @@ int elektraResolverError(Plugin *handle, KeySet *returned, Key *parentKey)
 	int errnoSave = errno;
 	resolverHandle *pk = elektraPluginGetData(handle);
 
-	if (unlink ("tmp") == -1)
+	if (unlink (pk->tempfile) == -1)
 	{
 		char buffer[ERROR_SIZE];
 		strerror_r(errno, buffer, ERROR_SIZE);

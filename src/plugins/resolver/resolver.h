@@ -56,17 +56,19 @@ struct _resolverHandle
 	time_t mtime; /* Previous timestamp of the file */
 	mode_t mode; /* The mode to set */
 
-	int action;
-
 	char *filename;
 	char *lockfile;
-	char *tmpfile;
+	char *tempfile;
 
-	char *userFilename;
-	char *systemFilename;
+	const char *path;
+};
 
-	const char *path; /* The relative path to the filename.
-		The user or system part will be prepended. */
+typedef struct _resolverHandles resolverHandles;
+
+struct _resolverHandles
+{
+	resolverHandle user;
+	resolverHandle system;
 };
 
 int resolveFilename(Key* forKey, resolverHandle *p);

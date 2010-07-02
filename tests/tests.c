@@ -231,6 +231,11 @@ void clear_sync (KeySet *ks)
 	while ((k = ksNext(ks)) != 0) keyClearSync(k);
 }
 
+void output_key (Key *k)
+{
+	printf ("key: %s, string: %s\n", keyName(k), keyString(k));
+}
+
 void output_keyset (KeySet *ks)
 {
 	Key *k;
@@ -239,6 +244,22 @@ void output_keyset (KeySet *ks)
 	{
 		printf ("key: %s, string: %s\n", keyName(k), keyString(k));
 	}
+}
+
+void output_plugin(Plugin *plugin)
+{
+	if (!plugin) return;
+
+	printf ("Name: %s [%zd]\n", plugin->name, plugin->refcounter);
+	output_keyset(plugin->config);
+}
+
+void output_backend(Backend *backend)
+{
+	if (!backend) return;
+
+	printf ("us: %zd, ss: %zd\n", backend->usersize, backend->systemsize);
+	output_key (backend->mountpoint);
 }
 
 void output_trie(Trie *trie)

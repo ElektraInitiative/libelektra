@@ -39,7 +39,8 @@ endmacro (mkdir)
 
 # Add a test for a plugin
 #
-# will include the common tests.h file + its source files
+# will include the common tests.h file + its source file
+# additional source files can be added as additional arguments
 #
 # links the executeable (only if build_full)
 # and adds a test
@@ -48,6 +49,7 @@ macro (add_plugintest testname)
 		set (TEST_SOURCES
 				${CMAKE_SOURCE_DIR}/tests/tests.c
 				${CMAKE_SOURCE_DIR}/tests/tests.h
+				${ARGN}
 				)
 		include_directories ("${CMAKE_SOURCE_DIR}/tests")
 		add_executable (testmod_${testname} ${TEST_SOURCES} testmod_${testname}.c)

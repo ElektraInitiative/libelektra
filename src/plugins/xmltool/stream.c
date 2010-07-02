@@ -13,46 +13,20 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "xmltool.h"
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
-#ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#else
-#error need unistd for getuid and getgid
-#endif
-
-#ifdef HAVE_STDIO_H
 #include <stdio.h>
-#endif
-
-#ifdef HAVE_STRING_H
 #include <string.h>
-#endif
-
-#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
-#endif
-
-#ifdef HAVE_TIME_H
 #include <time.h>
-#endif
 
 #include <kdbtools.h>
 #include <kdbinternal.h>
-
-#ifdef ELEKTRA_STATIC
-
-#define ksToStream libelektratools_LTX_ksToStream
-#define ksOutput libelektratools_LTX_ksOutput
-#define ksGenerate libelektratools_LTX_ksGenerate
-#define keyToStream libelektratools_LTX_keyToStream
-#define keyOutput libelektratools_LTX_keyOutput
-#define keyGenerate libelektratools_LTX_keyGenerate
-
-#endif /* ELEKTRA_STATIC */
-
 
 
 /**
@@ -297,7 +271,7 @@ ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
 					written+=fwrite(key->data.v,sizeof(char),key->dataSize-1,stream);
 					written+=fprintf(stream,"]]>");
 				} else {
-					/* Binary values */
+					/* TODO Binary values 
 					char *encoded=malloc(3*key->dataSize);
 					size_t encodedSize;
 
@@ -307,6 +281,7 @@ ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
 					written+=fwrite(encoded,sizeof(char),encodedSize,stream);
 					free(encoded);
 					written+=fprintf(stream,"\n");
+					*/
 				}
 				/* fflush(stream); */
 				written+=fprintf(stream,"</value>");
@@ -408,7 +383,8 @@ ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
  * @param stream the file pointer where to send the stream
  * @param options see above text
  */
-ssize_t ksToStream(const KeySet *ks, FILE* stream, option_t options) {
+ssize_t ksToStream(const KeySet *ks, FILE* stream, option_t options)
+{
 	size_t written=0;
 	Key *key=0;
 	char *codeset = "UTF-8";

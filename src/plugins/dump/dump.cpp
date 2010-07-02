@@ -183,8 +183,7 @@ ssize_t kdbGet_dump(ckdb::Plugin *, ckdb::KeySet *returned, const ckdb::Key *par
 	if (keyRel(root, parentKey) >= 0)
 	{
 		keyDel (root);
-		KeySet *info =
-			ksNew(50,
+		ksAppend(returned, ksNew(50,
 			keyNew ("system/elektra/modules/dump",
 				KEY_VALUE, "dump plugin waits for your orders", KEY_END),
 			keyNew ("system/elektra/modules/dump/exports", KEY_END),
@@ -214,33 +213,30 @@ ssize_t kdbGet_dump(ckdb::Plugin *, ckdb::KeySet *returned, const ckdb::Key *par
 				KEY_VALUE, "Dumps complete Elektra Semantics", KEY_END),
 			keyNew ("system/elektra/modules/dump/infos/provides",
 				KEY_VALUE, "storage", KEY_END),
+			keyNew ("system/elektra/modules/dump/infos/placements",
+				KEY_VALUE, "getstorage setstorage", KEY_END),
 			keyNew ("system/elektra/modules/dump/infos/needs",
 				KEY_VALUE, "", KEY_END),
 			keyNew ("system/elektra/modules/dump/infos/version",
 				KEY_VALUE, BACKENDVERSION, KEY_END),
-			KS_END);
-		ksAppend(returned, info);
-		ksRewind(returned);
-
-		Key *k;
-		while ((k = ksNext(returned)) != 0) keyClearSync(k);
-		return ksGetSize(returned);
+			KS_END));
+		return 1;
 	}
 	keyDel (root);
 	std::ifstream ofs(keyString(parentKey));
-	if (!ofs.is_open()) return -1;
+	if (!ofs.is_open()) return 0;
 	dump::unserialize (ofs, returned);
 
-	return ksGetSize(returned); /* success */
+	return 1; /* success */
 }
 
 ssize_t kdbSet_dump(ckdb::Plugin *, ckdb::KeySet *returned, const ckdb::Key *parentKey)
 {
-	std::ofstream ifs(keyString(parentKey));
-	if (!ifs.is_open()) return -1;
-	dump::serialize (ifs, returned);
+	std::ofstream ofs(keyString(parentKey));
+	if (!ofs.is_open()) return -1;
+	dump::serialize (ofs, returned);
 
-	return ksGetSize(returned);
+	return 1;
 }
 
 ckdb::Plugin *ELEKTRA_PLUGIN_EXPORT(dump)

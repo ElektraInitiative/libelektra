@@ -224,10 +224,10 @@ Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey)
 		return 0;
 	}
 
-	backend->getplugins[0] = resolver;
-	backend->setplugins[0] = resolver;
+	backend->getplugins[RESOLVER_PLUGIN] = resolver;
+	backend->setplugins[RESOLVER_PLUGIN] = resolver;
 	backend->setplugins[COMMIT_PLUGIN] = resolver;
-	backend->errorplugins[0] = resolver;
+	backend->errorplugins[STORAGE_PLUGIN] = resolver;
 	resolver->refcounter = 4;
 
 	KeySet *storageConfig = ksNew(5,
@@ -242,16 +242,9 @@ Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey)
 		return 0;
 	}
 
-	backend->getplugins[1] = storage;
-	backend->setplugins[4] = storage;
+	backend->getplugins[STORAGE_PLUGIN] = storage;
+	backend->setplugins[STORAGE_PLUGIN] = storage;
 	storage->refcounter = 2;
-
-
-	Plugin *hidden = elektraPluginOpen("hidden", modules, 0, errorKey);
-	backend->getplugins[2] = hidden;
-	backend->setplugins[2] = hidden;
-	hidden->refcounter = 2;
-
 
 	Key *mp = keyNew ("", KEY_VALUE, "default", KEY_END);
 	backend->mountpoint = mp;

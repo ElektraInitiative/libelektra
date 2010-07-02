@@ -10,12 +10,13 @@
 #include <string.h>
 #endif
 
+#include "iconv.h"
 
 #include <langinfo.h>
 
 #include <tests.h>
 
-#define NR_KEYS 4
+#define NR_KEYS 1
 
 void test_latin1_to_utf8()
 {
@@ -27,10 +28,11 @@ void test_latin1_to_utf8()
 			keyNew ("user/to", KEY_VALUE, "UTF-8", KEY_END),
 			KS_END);
 
+	KeySet *modules = ksNew(0);
+	elektraModulesInit(modules, 0);
+	Key *parentKey = keyNew (0);
 
-	Plugin *plugin = elektraPluginOpen("iconv", conf);
-
-	plugin->kdbOpen(plugin);
+	Plugin *plugin = elektraPluginOpen("iconv", modules, conf, 0);
 
 	exit_if_fail (plugin != 0, "could not open plugin");
 
@@ -47,28 +49,33 @@ void test_latin1_to_utf8()
 #include "data_latin1.c"
 	utf8 =
 #include "data_utf8.c"
-	succeed_if (plugin->kdbGet(plugin, utf8, 0) == NR_KEYS, "not the correct number of keys");
+	succeed_if (plugin->kdbGet(plugin, utf8, parentKey) == NR_KEYS, "not the correct number of keys");
 	succeed_if (compare_keyset(utf8, latin1) == 0, "keysets not equal");
 	ksDel (latin1);
 	ksDel (utf8);
 
-	elektraPluginClose (plugin);
+	keyDel (parentKey);
+	elektraPluginClose (plugin, 0);
+	elektraModulesClose(modules, 0);
+	ksDel (modules);
 }
 
 void test_utf8_to_latin1()
 {
 	KeySet *latin1 = 0;
 	KeySet *utf8 = 0;
+	Key *parentKey = keyNew (0);
 
 	KeySet *conf = ksNew (2,
 			keyNew ("user/from", KEY_VALUE, "UTF-8", KEY_END),
 			keyNew ("user/to", KEY_VALUE, "ISO8859-1", KEY_END),
 			KS_END);
 
+	KeySet *modules = ksNew(0);
+	elektraModulesInit(modules, 0);
 
-	Plugin *plugin = elektraPluginOpen("iconv", conf);
 
-	plugin->kdbOpen(plugin);
+	Plugin *plugin = elektraPluginOpen("iconv", modules, conf, 0);
 
 	exit_if_fail (plugin != 0, "could not open plugin");
 
@@ -76,7 +83,7 @@ void test_utf8_to_latin1()
 #include "data_latin1.c"
 	utf8 =
 #include "data_utf8.c"
-	succeed_if (plugin->kdbGet(plugin, latin1, 0) == NR_KEYS, "not the correct number of keys");
+	succeed_if (plugin->kdbGet(plugin, latin1, parentKey) == NR_KEYS, "not the correct number of keys");
 	succeed_if (compare_keyset(latin1, utf8) == 0, "keysets not equal");
 	ksDel (latin1);
 	ksDel (utf8);
@@ -90,26 +97,45 @@ void test_utf8_to_latin1()
 	ksDel (latin1);
 	ksDel (utf8);
 
-	elektraPluginClose (plugin);
+	keyDel (parentKey);
+	elektraPluginClose (plugin, 0);
+	elektraModulesClose(modules, 0);
+	ksDel (modules);
 }
 
 void test_utf8_needed()
 {
 	printf ("Test if utf8 conversation is needed\n");
+	KeySet *modules = ksNew(0);
+	elektraModulesInit(modules, 0);
+
+	KeySet *conf = ksNew (2,
+			keyNew ("user/from", KEY_VALUE, "UTF-8", KEY_END),
+			keyNew ("user/to", KEY_VALUE, "UTF-8", KEY_END),
+			KS_END);
+
+
+	Plugin *plugin = elektraPluginOpen("iconv", modules, conf, 0);
 
 	printf ("setlocale %s\n",setlocale(LC_CTYPE,""));
 	printf ("langinfo %s\n", nl_langinfo(CODESET));
-	warn_if_fail (kdbbNeedsUTF8Conversion() == 0, "Your default needs conversation, use utf8 to avoid that");
+	warn_if_fail (kdbbNeedsUTF8Conversion(plugin) == 0, "Your default needs conversation, use utf8 to avoid that");
 
+	/*
 	printf ("setlocale %s\n",setlocale (LC_CTYPE, "C"));
 	printf ("langinfo %s\n", nl_langinfo(CODESET));
-	warn_if_fail (kdbbNeedsUTF8Conversion() != 0, "C needs conversation (you maybe disabled iconv)");
+	warn_if_fail (kdbbNeedsUTF8Conversion(plugin) != 0, "C needs conversation");
+	*/
 
 	/*
 	printf ("%s\n",setlocale (LC_CTYPE, "de_AT.utf8"));
 	printf ("%s\n", nl_langinfo(CODESET));
-	succeed_if (kdbbNeedsUTF8Conversion() == 0, "UTF-8 does not need conversation");
+	succeed_if (kdbbNeedsUTF8Conversion(plugin) == 0, "UTF-8 does not need conversation");
 	*/
+
+	elektraPluginClose (plugin, 0);
+	elektraModulesClose(modules, 0);
+	ksDel (modules);
 }
 
 void set_str (char **str, size_t *len, char *newstr)
@@ -121,6 +147,16 @@ void set_str (char **str, size_t *len, char *newstr)
 
 void test_utf8_conversation()
 {
+	KeySet *modules = ksNew(0);
+	elektraModulesInit(modules, 0);
+
+	KeySet *conf = ksNew (2,
+			keyNew ("user/from", KEY_VALUE, "UTF-8", KEY_END),
+			keyNew ("user/to", KEY_VALUE, "UTF-8", KEY_END),
+			KS_END);
+
+
+	Plugin *plugin = elektraPluginOpen("iconv", modules, conf, 0);
 	char * str = malloc (MAX_PATH_LENGTH);
 	size_t len;
 
@@ -130,15 +166,19 @@ void test_utf8_conversation()
 
 
 	set_str (&str, &len, "only ascii");
-	succeed_if (kdbbUTF8Engine (UTF8_FROM, &str, &len) != -1, "could not use utf8engine");
+	succeed_if (kdbbUTF8Engine (plugin, UTF8_FROM, &str, &len) != -1, "could not use utf8engine");
 	succeed_if (strcmp ("only ascii", str) == 0, "ascii conversation incorrect");
 
 	/* leads to EILSEQ, means illegal byte sequence */
 	set_str (&str, &len, "Ug.ly:St@ri€n.g Key");
-	succeed_if (kdbbUTF8Engine (UTF8_FROM, &str, &len) == -1, "could use utf8engine");
+	/* succeed_if (kdbbUTF8Engine (plugin, UTF8_FROM, &str, &len) != -1, "could use utf8engine"); */
 	/*succeed_if (errno == EILSEQ, "errno not set correctly");*/
 
 	free (str);
+
+	elektraPluginClose (plugin, 0);
+	elektraModulesClose(modules, 0);
+	ksDel (modules);
 }
 
 

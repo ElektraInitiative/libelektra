@@ -26,39 +26,15 @@ $Id$
 #include <config.h>
 #endif
 
-#ifdef HAVE_STRING_H
 #include <string.h>
-#endif
-
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-
-#ifdef HAVE_SYS_STAT_H
-#include <sys/stat.h>
-#endif
-
-#ifdef HAVE_ERRNO_H
 #include <errno.h>
-#endif
+#include <unistd.h>
 
 #include <libxml/xmlreader.h>
 #include <libxml/xmlschemas.h>
 
 #include <kdbtools.h>
 #include <kdbinternal.h>
-
-#ifdef ELEKTRA_STATIC
-
-#define ksFromXMLfile libelektratools_LTX_ksFromXMLfile
-#define ksFromXML libelektratools_LTX_ksFromXML
-
-#endif /* ELEKTRA_STATIC */
-
 
 /*
  * Processes the current <key> node from reader, converting from XML
@@ -216,6 +192,7 @@ static int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr read
 				if (buffer) {
 					/* Key's value type was already set above */
 					if (keyIsBinary(newKey)) {
+						/* TODO binary values
 						char *unencoded=0;
 						size_t unencodedSize;
 						
@@ -225,6 +202,7 @@ static int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr read
 						if (!unencodedSize) return -1;
 							keySetRaw(newKey,unencoded,unencodedSize);
 						free(unencoded);
+						*/
 					} else keySetRaw(newKey,buffer,elektraStrLen((char *)buffer));
 				}
 				xmlFree(buffer);
@@ -349,7 +327,7 @@ static int consumeKeySetNode(KeySet *ks, const char *context, xmlTextReaderPtr r
  * It will process the entire XML document in reader and convert and
  * save it in ks KeySet. Each node is processed by the processNode() function.
  *
- * This function is completelly dependent on libxml.
+ * This function is completely dependent on libxml.
  */
 static int ksFromXMLReader(KeySet *ks,xmlTextReaderPtr reader)
 {
@@ -370,8 +348,6 @@ static int ksFromXMLReader(KeySet *ks,xmlTextReaderPtr reader)
 
 		xmlFree (nodeName);
 	}
-	
-	if (ret) fprintf(stderr,"kdb: Failed to parse XML input\n");
 
 	return ret;
 }
@@ -446,28 +422,33 @@ if (ret==0) ret = isValidXML(filename,schemaPath);
 else ret = isValidXML(filename,KDB_SCHEMA_PATH); 
  * @endcode
  *
+ * @return -1 on error
+ * @return 0
  * @param ks the keyset
  * @param filename the file to parse
  * @ingroup stream
  */
-int ksFromXMLfile(KeySet *ks,const char *filename)
+int ksFromXMLfile(KeySet *ks, const char *filename)
 {
 	xmlTextReaderPtr reader;
 	xmlDocPtr doc;
 	int ret=0;
 
 	doc = xmlParseFile(filename);
-	if (doc==NULL) return 1;
+	if (doc==NULL)
+	{
+		xmlCleanupParser();
+		return -1;
+	}
 
-	if (!ret) {
-		reader=xmlReaderWalker(doc);
-		if (reader) ret=ksFromXMLReader(ks,reader);
-		else {
-			perror("kdb");
-			return 1;
-		}
+	reader=xmlReaderWalker(doc);
+	if (reader)
+	{
+		ret=ksFromXMLReader(ks,reader);
 		xmlFreeTextReader (reader);
 	}
+	else { ret = -1; }
+
 	xmlFreeDoc(doc);
 
 	xmlCleanupParser();

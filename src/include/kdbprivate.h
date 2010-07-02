@@ -43,6 +43,14 @@
 #define COMMIT_PLUGIN 7
 #endif
 
+#ifndef STORAGE_PLUGIN
+#define STORAGE_PLUGIN 5
+#endif
+
+#ifndef RESOLVER_PLUGIN
+#define RESOLVER_PLUGIN 0
+#endif
+
 #ifndef APPROXIMATE_NR_OF_BACKENDS
 #define APPROXIMATE_NR_OF_BACKENDS 16
 #endif
@@ -406,6 +414,7 @@ int elektraSplitMerge (Split *split, KeySet *dest);
 int elektraSplitDivide (Split *split, KDB *handle, KeySet *ks);
 int elektraSplitSync (Split *split);
 int elektraSplitPrepare (Split *split);
+int elektraSplitUpdateSize (Split *split);
 
 
 /*Internal helpers*/

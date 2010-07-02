@@ -27,7 +27,7 @@
 
 #include "syslog.h"
 
-int kdbOpen_syslog(Plugin *handle)
+int elektraSyslogOpen(Plugin *handle, Key *parent)
 {
 	/* plugin initialization logic */
 
@@ -39,48 +39,78 @@ int kdbOpen_syslog(Plugin *handle)
 	return 0; /* success */
 }
 
-int kdbClose_syslog(Plugin *handle)
+int elektraSyslogClose(Plugin *handle, Key *parent)
 {
 	/* free all plugin resources and shut it down */
+
+	if (!ksLookupByName(elektraPluginGetConfig(handle), "/dontopensyslog", 0))
+	{
+		closelog();
+	}
 
 	return 0; /* success */
 }
 
-ssize_t kdbGet_syslog(Plugin *handle, KeySet *returned, const Key *parentKey)
+int elektraSyslogGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
-	ssize_t nr_keys = 0;
-
-	syslog (LOG_NOTICE, "get configuration %s with %zd keys",
-			keyName(parentKey),
-			ksGetSize(returned));
-
-	return nr_keys; /* success */
+	ksAppend (returned, ksNew (30,
+		keyNew ("system/elektra/modules/syslog",
+			KEY_VALUE, "syslog plugin waits for your orders", KEY_END),
+		keyNew ("system/elektra/modules/syslog/exports", KEY_END),
+		keyNew ("system/elektra/modules/syslog/exports/get",
+			KEY_SIZE, sizeof (&elektraSyslogGet),
+			KEY_BINARY,
+			KEY_VALUE, &elektraSyslogGet, KEY_END),
+		keyNew ("system/elektra/modules/syslog/exports/set",
+			KEY_SIZE, sizeof (&elektraSyslogSet),
+			KEY_BINARY,
+			KEY_VALUE, &elektraSyslogSet, KEY_END),
+		keyNew ("system/elektra/modules/syslog/infos",
+			KEY_VALUE, "All information you want to know", KEY_END),
+		keyNew ("system/elektra/modules/syslog/infos/author",
+			KEY_VALUE, "Markus Raab <elektra@markus-raab.org>", KEY_END),
+		keyNew ("system/elektra/modules/syslog/infos/licence",
+			KEY_VALUE, "BSD", KEY_END),
+		keyNew ("system/elektra/modules/syslog/infos/description",
+			KEY_VALUE, "Logs set and error calls to syslog", KEY_END),
+		keyNew ("system/elektra/modules/syslog/infos/provides",
+			KEY_VALUE, "filter", KEY_END),
+		keyNew ("system/elektra/modules/syslog/infos/placements",
+			KEY_VALUE, "postcommit postrollback", KEY_END),
+		keyNew ("system/elektra/modules/syslog/infos/needs",
+			KEY_VALUE, "", KEY_END),
+		keyNew ("system/elektra/modules/syslog/infos/version",
+			KEY_VALUE, "1.0", KEY_END),
+		KS_END));
+	return 1;
 }
 
-ssize_t kdbSet_syslog(Plugin *handle, KeySet *returned, const Key *parentKey)
+int elektraSyslogSet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
-	ssize_t nr_keys = 0;
-
-	syslog (LOG_NOTICE, "set configuration %s with %zd keys",
+	syslog (LOG_NOTICE, "committed configuration %s with %zd keys",
 			keyName(parentKey),
 			ksGetSize(returned));
 
-	return nr_keys;
+	return 1;
+}
+
+int elektraSyslogError(Plugin *handle, KeySet *returned, Key *parentKey)
+{
+	syslog (LOG_NOTICE, "rollback configuration %s with %zd keys",
+			keyName(parentKey),
+			ksGetSize(returned));
+
+	return 1;
 }
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(syslog)
 {
 	return elektraPluginExport(BACKENDNAME,
-		ELEKTRA_PLUGIN_OPEN,	&kdbOpen_syslog,
-		ELEKTRA_PLUGIN_CLOSE,	&kdbClose_syslog,
-		ELEKTRA_PLUGIN_GET,		&kdbGet_syslog,
-		ELEKTRA_PLUGIN_SET,		&kdbSet_syslog,
-		ELEKTRA_PLUGIN_VERSION,	BACKENDVERSION,
-		ELEKTRA_PLUGIN_AUTHOR,	"Markus Raab <elektra@markus-raab.org>",
-		ELEKTRA_PLUGIN_LICENCE,	"BSD",
-		ELEKTRA_PLUGIN_DESCRIPTION,	"Logs get and set calls to syslog",
-		ELEKTRA_PLUGIN_NEEDS,	"",
-		ELEKTRA_PLUGIN_PROVIDES,	"",
+		ELEKTRA_PLUGIN_OPEN,	&elektraSyslogOpen,
+		ELEKTRA_PLUGIN_CLOSE,	&elektraSyslogClose,
+		ELEKTRA_PLUGIN_GET,	&elektraSyslogGet,
+		ELEKTRA_PLUGIN_SET,	&elektraSyslogSet,
+		ELEKTRA_PLUGIN_ERROR,	&elektraSyslogError,
 		ELEKTRA_PLUGIN_END);
 }
 

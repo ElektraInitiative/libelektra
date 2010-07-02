@@ -48,11 +48,6 @@ macro (do_test source)
 			)
 endmacro (do_test)
 
-file (GLOB XML_FILES *.xml)
-foreach (file ${XML_FILES})
-	copy_file (${file} "${CMAKE_CURRENT_BINARY_DIR}")
-endforeach (file ${XML_FILES})
-
 file (GLOB TESTS test_*.c)
 foreach (file ${TESTS})
 	get_filename_component (name ${file} NAME_WE)

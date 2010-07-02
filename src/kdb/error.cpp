@@ -40,7 +40,7 @@ void printWarnings(Key error)
 			std::cerr << "ingroup: " << error.getMeta<std::string>(name.str() + "/ingroup") << std::endl;
 			std::cerr << "module: " << error.getMeta<std::string>(name.str() + "/module") << std::endl;
 			std::cerr << "at: " << error.getMeta<std::string>(name.str() + "/file") << ":"
-				<< error.getMeta<std::string>("error/line") << std::endl;
+				<< error.getMeta<std::string>(name.str() + "/line") << std::endl;
 			std::cerr << "reason: " << error.getMeta<std::string>(name.str() + "/reason") << std::endl;
 		}
 

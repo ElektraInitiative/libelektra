@@ -63,7 +63,7 @@ static inline const char* getTo(Plugin *handle)
  * @return anything else if needed
  * @ingroup backendhelper
  */
-static int kdbbNeedsUTF8Conversion(Plugin *handle)
+int kdbbNeedsUTF8Conversion(Plugin *handle)
 {
 	return strcmp(getFrom(handle),getTo(handle));
 }
@@ -104,7 +104,7 @@ setlocale (LC_ALL, "");
  * @ingroup backendhelper
  *
  */
-static int kdbbUTF8Engine(Plugin *handle, int direction, char **string, size_t *inputOutputByteSize)
+int kdbbUTF8Engine(Plugin *handle, int direction, char **string, size_t *inputOutputByteSize)
 {
 /* Current solution is not very complete.
  * Iconv might well be available when a usable nl_langinfo is not.
@@ -159,23 +159,89 @@ static int kdbbUTF8Engine(Plugin *handle, int direction, char **string, size_t *
 }
 
 
-int kdbOpen_iconv(Plugin *handle)
+int elektraIconvGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
-	/* plugin initialization logic */
+	Key *cur;
+	const Key *meta;
 
-	return 0; /* success */
+	if (!strcmp (keyName(parentKey), "system/elektra/modules/iconv"))
+	{
+		ksAppend (returned, ksNew (30,
+			keyNew ("system/elektra/modules/iconv",
+				KEY_VALUE, "iconv plugin waits for your orders", KEY_END),
+			keyNew ("system/elektra/modules/iconv/exports", KEY_END),
+			keyNew ("system/elektra/modules/iconv/exports/get",
+				KEY_SIZE, sizeof (&elektraIconvGet),
+				KEY_BINARY,
+				KEY_VALUE, &elektraIconvGet, KEY_END),
+			keyNew ("system/elektra/modules/iconv/exports/set",
+				KEY_SIZE, sizeof (&elektraIconvSet),
+				KEY_BINARY,
+				KEY_VALUE, &elektraIconvSet, KEY_END),
+			keyNew ("system/elektra/modules/iconv/infos",
+				KEY_VALUE, "All information you want to know", KEY_END),
+			keyNew ("system/elektra/modules/iconv/infos/author",
+				KEY_VALUE, "Markus Raab <elektra@markus-raab.org>", KEY_END),
+			keyNew ("system/elektra/modules/iconv/infos/licence",
+				KEY_VALUE, "BSD", KEY_END),
+			keyNew ("system/elektra/modules/iconv/infos/description",
+				KEY_VALUE, "Hides keys which start with a .", KEY_END),
+			keyNew ("system/elektra/modules/iconv/infos/provides",
+				KEY_VALUE, "filter", KEY_END),
+			keyNew ("system/elektra/modules/iconv/infos/placements",
+				KEY_VALUE, "postgetstorage presetstorage", KEY_END),
+			keyNew ("system/elektra/modules/iconv/infos/needs",
+				KEY_VALUE, "", KEY_END),
+			keyNew ("system/elektra/modules/iconv/infos/version",
+				KEY_VALUE, "1.0", KEY_END),
+			KS_END));
+		return 1;
+	}
+
+	if (!kdbbNeedsUTF8Conversion(handle)) return 0;
+
+	while ((cur = ksNext(returned)) != 0)
+	{
+		if (keyIsString (cur))
+		{
+			/* String or similar type of value */
+			size_t convertedDataSize=keyGetValueSize(cur);
+			char *convertedData=malloc(convertedDataSize);
+
+			memcpy(convertedData,keyString(cur),keyGetValueSize(cur));
+			if (kdbbUTF8Engine(handle, UTF8_FROM, &convertedData, &convertedDataSize))
+			{
+				ELEKTRA_SET_ERROR (46, parentKey, convertedData);
+				free(convertedData);
+				return -1;
+			}
+			keySetString(cur, convertedData);
+			free(convertedData);
+		}
+		meta = keyGetMeta(cur, "comment");
+		if (meta)
+		{
+			/* String or similar type of value */
+			size_t convertedDataSize=keyGetValueSize(meta);
+			char *convertedData=malloc(convertedDataSize);
+
+			memcpy(convertedData,keyString(meta),keyGetValueSize(meta));
+			if (kdbbUTF8Engine(handle, UTF8_FROM, &convertedData, &convertedDataSize))
+			{
+				ELEKTRA_SET_ERROR (46, parentKey, convertedData);
+				free(convertedData);
+				return -1;
+			}
+			keySetMeta(cur, "comment", convertedData);
+			free(convertedData);
+		}
+	}
+
+	return 1; /* success */
 }
 
-int kdbClose_iconv(Plugin *handle)
+int elektraIconvSet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
-	/* free all plugin resources and shut it down */
-
-	return 0; /* success */
-}
-
-ssize_t kdbGet_iconv(Plugin *handle, KeySet *returned, const Key *parentKey)
-{
-	ssize_t nr_keys = 0;
 	Key *cur;
 	const Key *meta;
 
@@ -190,13 +256,14 @@ ssize_t kdbGet_iconv(Plugin *handle, KeySet *returned, const Key *parentKey)
 			char *convertedData=malloc(convertedDataSize);
 
 			memcpy(convertedData,keyString(cur),keyGetValueSize(cur));
-			if (kdbbUTF8Engine(handle, UTF8_FROM, &convertedData, &convertedDataSize)) {
+			if (kdbbUTF8Engine(handle, UTF8_TO, &convertedData, &convertedDataSize))
+			{
+				ELEKTRA_SET_ERROR (46, parentKey, convertedData);
 				free(convertedData);
 				return -1;
 			}
 			keySetString(cur, convertedData);
 			free(convertedData);
-			++ nr_keys;
 		}
 		meta = keyGetMeta(cur, "comment");
 		if (meta)
@@ -206,7 +273,9 @@ ssize_t kdbGet_iconv(Plugin *handle, KeySet *returned, const Key *parentKey)
 			char *convertedData=malloc(convertedDataSize);
 
 			memcpy(convertedData,keyString(meta),keyGetValueSize(meta));
-			if (kdbbUTF8Engine(handle, UTF8_FROM, &convertedData, &convertedDataSize)) {
+			if (kdbbUTF8Engine(handle, UTF8_TO, &convertedData, &convertedDataSize))
+			{
+				ELEKTRA_SET_ERROR (46, parentKey, convertedData);
 				free(convertedData);
 				return -1;
 			}
@@ -215,67 +284,14 @@ ssize_t kdbGet_iconv(Plugin *handle, KeySet *returned, const Key *parentKey)
 		}
 	}
 
-	return nr_keys; /* success */
-}
-
-ssize_t kdbSet_iconv(Plugin *handle, KeySet *returned, const Key *parentKey)
-{
-	ssize_t nr_keys = 0;
-	Key *cur;
-	const Key *meta;
-
-	if (!kdbbNeedsUTF8Conversion(handle)) return 0;
-
-	while ((cur = ksNext(returned)) != 0)
-	{
-		if (keyIsString (cur))
-		{
-			/* String or similar type of value */
-			size_t convertedDataSize=keyGetValueSize(cur);
-			char *convertedData=malloc(convertedDataSize);
-
-			memcpy(convertedData,keyString(cur),keyGetValueSize(cur));
-			if (kdbbUTF8Engine(handle, UTF8_TO, &convertedData, &convertedDataSize)) {
-				free(convertedData);
-				return -1;
-			}
-			keySetString(cur, convertedData);
-			free(convertedData);
-			++ nr_keys;
-		}
-		meta = keyGetMeta(cur, "comment");
-		if (meta)
-		{
-			/* String or similar type of value */
-			size_t convertedDataSize=keyGetValueSize(meta);
-			char *convertedData=malloc(convertedDataSize);
-
-			memcpy(convertedData,keyString(meta),keyGetValueSize(meta));
-			if (kdbbUTF8Engine(handle, UTF8_TO, &convertedData, &convertedDataSize)) {
-				free(convertedData);
-				return -1;
-			}
-			keySetMeta(cur, "comment", convertedData);
-			free(convertedData);
-		}
-	}
-
-	return nr_keys; /* success */
+	return 1; /* success */
 }
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(iconv)
 {
 	return elektraPluginExport(BACKENDNAME,
-		ELEKTRA_PLUGIN_OPEN,	&kdbOpen_iconv,
-		ELEKTRA_PLUGIN_CLOSE,	&kdbClose_iconv,
-		ELEKTRA_PLUGIN_GET,		&kdbGet_iconv,
-		ELEKTRA_PLUGIN_SET,		&kdbSet_iconv,
-		ELEKTRA_PLUGIN_VERSION,	BACKENDVERSION,
-		ELEKTRA_PLUGIN_AUTHOR,	"Markus Raab <elektra@markus-raab.org>",
-		ELEKTRA_PLUGIN_LICENCE,	"BSD",
-		ELEKTRA_PLUGIN_DESCRIPTION,	"Converts values of keys with iconv",
-		ELEKTRA_PLUGIN_NEEDS,	"",
-		ELEKTRA_PLUGIN_PROVIDES,	"",
+		ELEKTRA_PLUGIN_GET,	&elektraIconvGet,
+		ELEKTRA_PLUGIN_SET,	&elektraIconvSet,
 		ELEKTRA_PLUGIN_END);
 }
 

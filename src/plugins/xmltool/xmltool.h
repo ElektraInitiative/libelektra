@@ -1,5 +1,5 @@
 /***************************************************************************
-            iconv.h  -  Skeleton of backends to access the Key Database
+                     xmltool.c  -  Skeleton of a plugin
                              -------------------
     begin                : Fri May 21 2010
     copyright            : (C) 2010 by Markus Raab
@@ -13,39 +13,30 @@
  *                                                                         *
  ***************************************************************************/
 
-
-
 /***************************************************************************
  *                                                                         *
  *   This is the skeleton of the methods you'll have to implement in order *
- *   to provide libelektra.so a valid backend.                             *
- *   Simple fill the empty _iconv functions with your code and you are   *
+ *   to provide a valid plugin.                                            *
+ *   Simple fill the empty functions with your code and you are            *
  *   ready to go.                                                          *
  *                                                                         *
  ***************************************************************************/
 
 
+#ifndef ELEKTRA_PLUGIN_XMLTOOL_H
+#define ELEKTRA_PLUGIN_XMLTOOL_H
 
 #include <kdbplugin.h>
-#include <kdberrors.h>
+#include <kdbtools.h>
 
-#include <iconv.h>
-#include <locale.h>
-#include <langinfo.h>
+ssize_t ksToStream(const KeySet *ks, FILE* stream, option_t options);
 
-#include <string.h>
-#include <stdlib.h>
+int elektraXmltoolOpen(Plugin *handle, Key *errorKey);
+int elektraXmltoolClose(Plugin *handle, Key *errorKey);
+int elektraXmltoolGet(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraXmltoolSet(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraXmltoolError(Plugin *handle, KeySet *ks, Key *parentKey);
 
-#define UTF8_TO   1
-#define UTF8_FROM 0
+Plugin *ELEKTRA_PLUGIN_EXPORT(xmltool);
 
-
-#define BACKENDNAME "iconv"
-#define BACKENDVERSION "0.0.1"
-
-int kdbbNeedsUTF8Conversion(Plugin *handle);
-int kdbbUTF8Engine(Plugin *handle, int direction, char **string, size_t *inputOutputByteSize);
-
-int elektraIconvGet(Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraIconvSet(Plugin *handle, KeySet *ks, Key *parentKey);
-Plugin *ELEKTRA_PLUGIN_EXPORT(iconv);
+#endif

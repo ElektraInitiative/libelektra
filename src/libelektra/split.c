@@ -118,12 +118,17 @@ void elektraSplitResize(Split *split)
 }
 
 /**
- * Increases the size of split and initializes
- * the element at size-1 to be used.
+ * Increases the size of split and appends a new empty keyset.
+ *
+ * Initializes the element with the given parameters
+ * at size-1 to be used.
  *
  * Will automatically resize split if needed.
  *
- * @param ret the split object to work with
+ * @param split the split object to work with
+ * @param backend the backend which should be appended
+ * @param parentKey the parentKey which should be appended
+ * @param syncbits the initial syncstate which should be appended
  * @ingroup split
  */
 ssize_t elektraSplitAppend(Split *split, Backend *backend, Key *parentKey, int syncbits)
@@ -476,6 +481,29 @@ int elektraSplitGet (Split *split, KDB *handle)
 		}
 	}
 
+	return 1;
+}
+
+/**
+ * Also update sizes after kdbSet() to recognize multiple kdbSet() attempts.
+ *
+ * @warning cant use the same code with elektraSplitGet because there is
+ * no default split part for kdbSet().
+ */
+int elektraSplitUpdateSize (Split *split)
+{
+	/* Iterate everything */
+	for (size_t i=0; i<split->size; ++i)
+	{
+		if (!strncmp(keyName(split->parents[i]), "system", 6))
+		{
+			split->handles[i]->systemsize = ksGetSize(split->keysets[i]);
+		}
+		else if (!strncmp(keyName(split->parents[i]), "user", 4))
+		{
+			split->handles[i]->usersize = ksGetSize(split->keysets[i]);
+		}
+	}
 	return 1;
 }
 

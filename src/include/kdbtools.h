@@ -26,6 +26,8 @@ $Id$
 
 #include <kdb.h>
 
+#include <stdio.h>
+
 
 /**
  * Options to change the default behavior of streaming.
@@ -93,13 +95,6 @@ ssize_t keyToStreamBasename(const Key *key, FILE *stream,
 
 int keyOutput (const Key *key, FILE *stream, option_t options);
 int keyGenerate (const Key *key, FILE *stream, option_t options);
-
-
-/*
-uint32_t ksLookupRE(KeySet *ks, uint32_t where,
-	const regex_t *regexp, option_t options);
-int ksCompare(KeySet *ks1, KeySet *ks2, KeySet *removed);
-*/
 
 #ifdef __cplusplus
 }
