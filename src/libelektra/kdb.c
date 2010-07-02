@@ -699,7 +699,7 @@ int kdbSet (KDB *handle, KeySet *ks, Key * parentKey)
 error:
 	for (size_t p=0; p<NR_OF_PLUGINS; ++p)
 	{
-		for (size_t i=0; i<split->size;i++)
+		for (size_t i=0; i<split->size; i++)
 		{
 			Backend *backend = split->handles[i];
 			ksRewind (split->keysets[i]);
@@ -707,7 +707,7 @@ error:
 			{
 				keySetName (parentKey, keyName(split->parents[i]));
 				ret = backend->errorplugins[p]->kdbError (
-						backend->setplugins[p],
+						backend->errorplugins[p],
 						split->keysets[i],
 						parentKey);
 			}
