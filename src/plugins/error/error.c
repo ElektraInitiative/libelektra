@@ -27,37 +27,93 @@
 
 #include "error.h"
 
-int kdbOpen_error(Plugin *handle)
-{
-	/* plugin initialization logic */
+#include <stdlib.h>
 
-	return 0; /* success */
+int elektraErrorGet(Plugin *handle, KeySet *returned, Key *parentKey)
+{
+	ksAppend (returned, ksNew (30,
+		keyNew ("system/elektra/modules/error",
+			KEY_VALUE, "error plugin waits for your orders", KEY_END),
+		keyNew ("system/elektra/modules/error/exports", KEY_END),
+		keyNew ("system/elektra/modules/error/exports/get",
+			KEY_SIZE, sizeof (&elektraErrorGet),
+			KEY_BINARY,
+			KEY_VALUE, &elektraErrorGet, KEY_END),
+		keyNew ("system/elektra/modules/error/exports/set",
+			KEY_SIZE, sizeof (&elektraErrorSet),
+			KEY_BINARY,
+			KEY_VALUE, &elektraErrorSet, KEY_END),
+		keyNew ("system/elektra/modules/error/infos",
+			KEY_VALUE, "All information you want to know", KEY_END),
+		keyNew ("system/elektra/modules/error/infos/author",
+			KEY_VALUE, "Markus Raab <elektra@markus-raab.org>", KEY_END),
+		keyNew ("system/elektra/modules/error/infos/licence",
+			KEY_VALUE, "BSD", KEY_END),
+		keyNew ("system/elektra/modules/error/infos/description",
+			KEY_VALUE, "Validates key values using regular expressions", KEY_END),
+		keyNew ("system/elektra/modules/error/infos/provides",
+			KEY_VALUE, "error", KEY_END),
+		keyNew ("system/elektra/modules/error/infos/placements",
+			KEY_VALUE, "presetstorage", KEY_END),
+		keyNew ("system/elektra/modules/error/infos/needs",
+			KEY_VALUE, "", KEY_END),
+		keyNew ("system/elektra/modules/error/infos/version",
+			KEY_VALUE, "1.0", KEY_END),
+		keyNew ("system/elektra/modules/error/specification",
+			KEY_VALUE, "TODO: add the specification of all error codes below", KEY_END),
+		keyNew ("system/elektra/modules/error/specification/1",
+			KEY_VALUE, "", KEY_END),
+		keyNew ("system/elektra/modules/error/specification/1/module",
+			KEY_VALUE, "dl", KEY_END),
+		keyNew ("system/elektra/modules/error/specification/1/ingroup",
+			KEY_VALUE, "modules", KEY_END),
+		keyNew ("system/elektra/modules/error/specification/1/description",
+			KEY_VALUE, "could not load module, dlopen failed", KEY_END),
+		KS_END));
+	return 1;
 }
 
-int kdbClose_error(Plugin *handle)
+int elektraErrorSet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
-	/* free all plugin resources and shut it down */
+	Key *cur;
+	while ((cur = ksNext(returned)) != 0)
+	{
+		const Key *meta = 0;
 
-	return 0; /* success */
-}
+		meta = keyGetMeta (cur, "trigger/warnings");
+		if (meta)
+		{
+			switch (atoi(keyString(meta)))
+			{
+				case 7: ELEKTRA_ADD_WARNING (7, parentKey, "from error plugin");
+					break;
+				default: ELEKTRA_ADD_WARNING (45, parentKey, "in default branch");
+					 break;
+			}
+		}
 
-ssize_t kdbGet_error(Plugin *handle, KeySet *returned, const Key *parentKey)
-{
-	return -1; /* error */
-}
+		meta = keyGetMeta (cur, "trigger/error");
+		if (meta)
+		{
+			switch (atoi(keyString(meta)))
+			{
+				case 1: ELEKTRA_SET_ERROR (1, parentKey, "from error plugin");
+					break;
+				default: ELEKTRA_SET_ERROR (44, parentKey, "in default branch");
+					 break;
+			}
+			return -1; /* error */
+		}
+	}
 
-ssize_t kdbSet_error(Plugin *handle, KeySet *returned, const Key *parentKey)
-{
-	return -1; /* error */
+	return 0;
 }
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(error)
 {
-	return elektraPluginExport(BACKENDNAME,
-		ELEKTRA_PLUGIN_OPEN,	&kdbOpen_error,
-		ELEKTRA_PLUGIN_CLOSE,	&kdbClose_error,
-		ELEKTRA_PLUGIN_GET,	&kdbGet_error,
-		ELEKTRA_PLUGIN_SET,	&kdbSet_error,
+	return elektraPluginExport("error",
+		ELEKTRA_PLUGIN_GET,	&elektraErrorGet,
+		ELEKTRA_PLUGIN_SET,	&elektraErrorSet,
 		ELEKTRA_PLUGIN_END);
 }
 

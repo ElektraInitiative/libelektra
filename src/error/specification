@@ -251,3 +251,15 @@ description:Failed to open default backend (creation of trie stopped)
 severity:warning
 ingroup:kdb
 
+number:44
+description:unkown error code to trigger
+severity:error
+ingroup:plugin
+module:error
+
+number:45
+description:unkown warning code to trigger
+severity:warning
+ingroup:plugin
+module:error
+

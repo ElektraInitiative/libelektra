@@ -27,13 +27,9 @@
 
 
 #include <kdbplugin.h>
+#include <kdberrors.h>
 
 
-#define BACKENDNAME "error"
-#define BACKENDVERSION "0.0.1"
-
-int kdbOpen_error(Plugin *handle);
-int kdbClose_error(Plugin *handle);
-ssize_t kdbGet_error(Plugin *handle, KeySet *ks, const Key *parentKey);
-ssize_t kdbSet_error(Plugin *handle, KeySet *ks, const Key *parentKey);
+int elektraErrorGet(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraErrorSet(Plugin *handle, KeySet *ks, Key *parentKey);
 Plugin *ELEKTRA_PLUGIN_EXPORT(error);
