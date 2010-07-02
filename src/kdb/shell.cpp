@@ -51,14 +51,20 @@ int ShellCommand::execute(int, char**)
 			string name;
 			is >> name;
 			string value;
-			getline (is, value);
+			is >> value;
+			std::string tmp;
+			getline (is, tmp);
+			value += tmp;
 			currentKey.setMeta(name, value);
 			cout << "Set meta " << name << " to " << value << endl;
 		}
 		else if (command == "keySetString")
 		{
 			string value;
-			getline (is, value);
+			is >> value;
+			std::string tmp;
+			getline (is, tmp);
+			value += tmp;
 			currentKey.setString(value);
 		}
 		else if (command == "ksAppendKey")
