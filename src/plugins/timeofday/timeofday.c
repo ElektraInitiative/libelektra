@@ -63,7 +63,7 @@ static char* timeofday(char *t, struct timeval *start)
 	return t;
 }
 
-int kdbOpen_timeofday(Plugin *handle)
+int elektraTimeofdayOpen(Plugin *handle, Key *k)
 {
 	struct timeval *start = malloc(sizeof (struct timeval));
 	char t[10];
@@ -76,7 +76,7 @@ int kdbOpen_timeofday(Plugin *handle)
 	return 0; /* success */
 }
 
-int kdbClose_timeofday(Plugin *handle)
+int elektraTimeofdayClose(Plugin *handle, Key *k)
 {
 	char t[10];
 	struct timeval *start = elektraPluginGetData(handle);
@@ -88,7 +88,7 @@ int kdbClose_timeofday(Plugin *handle)
 	return 0; /* success */
 }
 
-ssize_t kdbGet_timeofday(Plugin *handle, KeySet *returned, const Key *parentKey)
+int elektraTimeofdayGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	ssize_t nr_keys = 0;
 	char t[10];
@@ -99,72 +99,56 @@ ssize_t kdbGet_timeofday(Plugin *handle, KeySet *returned, const Key *parentKey)
 	Key *root = keyNew("system/elektra/modules/timeofday", KEY_END);
 	if (keyRel (root, parentKey) >= 0)
 	{
-		Key *cur;
-		cur = keyNew ("system/elektra/modules/timeofday", KEY_END);
-		keyClearSync (cur); nr_keys++; ksAppendKey(returned, cur);
-
-		cur = keyNew ("system/elektra/modules/timeofday/infos", KEY_END);
-		keyClearSync (cur); nr_keys++; ksAppendKey(returned, cur);
-
-		cur = keyNew ("system/elektra/modules/timeofday/infos/author",
-				KEY_VALUE, "Markus Raab<elektra@markus-raab.org>", KEY_END);
-		keyClearSync (cur); nr_keys++; ksAppendKey(returned, cur);
-
-		cur = keyNew ("system/elektra/modules/timeofday/infos/licence",
-				KEY_VALUE, "BSD", KEY_END);
-		keyClearSync (cur); nr_keys++; ksAppendKey(returned, cur);
-
-		cur = keyNew ("system/elektra/modules/timeofday/infos/description",
-				KEY_VALUE, "Prints timestamps when a method is called", KEY_END);
-		keyClearSync (cur); nr_keys++; ksAppendKey(returned, cur);
-
-		cur = keyNew ("system/elektra/modules/timeofday/infos/version",
-				KEY_VALUE, BACKENDVERSION, KEY_END);
-		keyClearSync (cur); nr_keys++; ksAppendKey(returned, cur);
-
-		cur = keyNew ("system/elektra/modules/timeofday/infos/provides",
-				KEY_VALUE, "", KEY_END);
-		keyClearSync (cur); nr_keys++; ksAppendKey(returned, cur);
-
-		cur = keyNew ("system/elektra/modules/timeofday/infos/needs",
-				KEY_VALUE, "", KEY_END);
-		keyClearSync (cur); nr_keys++; ksAppendKey(returned, cur);
-
-		cur = keyNew ("system/elektra/modules/timeofday/exports", KEY_END);
-		keyClearSync (cur); nr_keys++; ksAppendKey(returned, cur);
-
-		cur = keyNew ("system/elektra/modules/timeofday/exports/open",
-				KEY_SIZE, sizeof (&kdbOpen_timeofday),
+		ksAppend (returned, ksNew (30,
+			keyNew ("system/elektra/modules/timeofday",
+				KEY_VALUE, "timeofday plugin waits for your orders", KEY_END),
+			keyNew ("system/elektra/modules/timeofday/exports", KEY_END),
+			keyNew ("system/elektra/modules/timeofday/exports/open",
+				KEY_SIZE, sizeof (&elektraTimeofdayOpen),
 				KEY_BINARY,
-				KEY_VALUE, &kdbOpen_timeofday, KEY_END);
-		keyClearSync (cur); nr_keys++; ksAppendKey(returned, cur);
-
-		cur = keyNew ("system/elektra/modules/timeofday/exports/close",
-				KEY_SIZE, sizeof (&kdbClose_timeofday),
+				KEY_VALUE, &elektraTimeofdayOpen, KEY_END),
+			keyNew ("system/elektra/modules/timeofday/exports/close",
+				KEY_SIZE, sizeof (&elektraTimeofdayClose),
 				KEY_BINARY,
-				KEY_VALUE, &kdbClose_timeofday, KEY_END);
-		keyClearSync (cur); nr_keys++; ksAppendKey(returned, cur);
-
-		cur = keyNew ("system/elektra/modules/timeofday/exports/get",
-				KEY_SIZE, sizeof (&kdbGet_timeofday),
+				KEY_VALUE, &elektraTimeofdayClose, KEY_END),
+			keyNew ("system/elektra/modules/timeofday/exports/get",
+				KEY_SIZE, sizeof (&elektraTimeofdayGet),
 				KEY_BINARY,
-				KEY_VALUE, &kdbGet_timeofday, KEY_END);
-		keyClearSync (cur); nr_keys++; ksAppendKey(returned, cur);
-
-		cur = keyNew ("system/elektra/modules/timeofday/exports/set",
-				KEY_SIZE, sizeof (&kdbSet_timeofday),
+				KEY_VALUE, &elektraTimeofdayGet, KEY_END),
+			keyNew ("system/elektra/modules/timeofday/exports/set",
+				KEY_SIZE, sizeof (&elektraTimeofdaySet),
 				KEY_BINARY,
-				KEY_VALUE, &kdbSet_timeofday, KEY_END);
-		keyClearSync (cur); nr_keys++; ksAppendKey(returned, cur);
+				KEY_VALUE, &elektraTimeofdaySet, KEY_END),
+			keyNew ("system/elektra/modules/timeofday/exports/error",
+				KEY_SIZE, sizeof (&elektraTimeofdayError),
+				KEY_BINARY,
+				KEY_VALUE, &elektraTimeofdayError, KEY_END),
+			keyNew ("system/elektra/modules/timeofday/infos",
+				KEY_VALUE, "All information you want to know", KEY_END),
+			keyNew ("system/elektra/modules/timeofday/infos/author",
+				KEY_VALUE, "Markus Raab <elektra@markus-raab.org>", KEY_END),
+			keyNew ("system/elektra/modules/timeofday/infos/licence",
+				KEY_VALUE, "BSD", KEY_END),
+			keyNew ("system/elektra/modules/timeofday/infos/description",
+				KEY_VALUE, "Prints timestamps when a method is called", KEY_END),
+			keyNew ("system/elektra/modules/timeofday/infos/provides",
+				KEY_VALUE, "timeofday", KEY_END),
+			keyNew ("system/elektra/modules/timeofday/infos/placements",
+				KEY_VALUE, "prerollback postrollback pregetstorage postgetstorage presetstorage precommit postcommit", KEY_END),
+			keyNew ("system/elektra/modules/timeofday/infos/needs",
+				KEY_VALUE, "", KEY_END),
+			keyNew ("system/elektra/modules/timeofday/infos/version",
+				KEY_VALUE, "1.0", KEY_END),
+			KS_END));
 
-		fprintf(stderr, "fin\t%s\n", timeofday(t, start));
+			fprintf(stderr, "fin\t%s\n", timeofday(t, start));
 	}
 
 	keyDel (root);
 	return nr_keys; /* success */
 }
 
-ssize_t kdbSet_timeofday(Plugin *handle, KeySet *returned, const Key *parentKey)
+int elektraTimeofdaySet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	ssize_t nr_keys = 0;
 	char t[10];
@@ -175,13 +159,25 @@ ssize_t kdbSet_timeofday(Plugin *handle, KeySet *returned, const Key *parentKey)
 	return nr_keys;
 }
 
+int elektraTimeofdayError(Plugin *handle, KeySet *returned, Key *parentKey)
+{
+	ssize_t nr_keys = 0;
+	char t[10];
+	struct timeval *start = elektraPluginGetData(handle);
+
+	fprintf(stderr, "err\t%s\n", timeofday(t, start));
+
+	return nr_keys;
+}
+
 Plugin *ELEKTRA_PLUGIN_EXPORT(timeofday)
 {
 	return elektraPluginExport(BACKENDNAME,
-		ELEKTRA_PLUGIN_OPEN,	&kdbOpen_timeofday,
-		ELEKTRA_PLUGIN_CLOSE,	&kdbClose_timeofday,
-		ELEKTRA_PLUGIN_GET,	&kdbGet_timeofday,
-		ELEKTRA_PLUGIN_SET,	&kdbSet_timeofday,
+		ELEKTRA_PLUGIN_OPEN,	&elektraTimeofdayOpen,
+		ELEKTRA_PLUGIN_CLOSE,	&elektraTimeofdayClose,
+		ELEKTRA_PLUGIN_GET,	&elektraTimeofdayGet,
+		ELEKTRA_PLUGIN_SET,	&elektraTimeofdaySet,
+		ELEKTRA_PLUGIN_ERROR,	&elektraTimeofdayError,
 		ELEKTRA_PLUGIN_END);
 }
 

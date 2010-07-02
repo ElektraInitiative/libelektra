@@ -36,8 +36,9 @@
 #define BACKENDNAME "timeofday"
 #define BACKENDVERSION "0.0.1"
 
-int kdbOpen_timeofday(Plugin *handle);
-int kdbClose_timeofday(Plugin *handle);
-ssize_t kdbGet_timeofday(Plugin *handle, KeySet *ks, const Key *parentKey);
-ssize_t kdbSet_timeofday(Plugin *handle, KeySet *ks, const Key *parentKey);
+int elektraTimeofdayOpen(Plugin *handle, Key *);
+int elektraTimeofdayClose(Plugin *handle, Key *);
+int elektraTimeofdayGet(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraTimeofdaySet(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraTimeofdayError(Plugin *handle, KeySet *ks, Key *parentKey);
 Plugin *ELEKTRA_PLUGIN_EXPORT(timeofday);
