@@ -1,3 +1,5 @@
+#include "xmltool.h"
+
 /*
  * Compare 2 KeySets.
  *

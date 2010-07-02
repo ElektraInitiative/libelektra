@@ -1,10 +1,22 @@
-include (LibAddMacros)
+find_package (LibXml2 REQUIRED)
+if (LIBXML2_FOUND)
+	include (LibAddMacros)
 
-set (SOURCES xmltool.h xmltool.c)
-add_sources (elektra-full ${SOURCES})
-add_headers (SOURCES)
+	add_includes (elektra-full ${LIBXML2_INCLUDE_DIR})
+	include_directories (${LIBXML2_INCLUDE_DIR})
 
-add_library (elektra-xmltool MODULE ${SOURCES})
-install (TARGETS elektra-xmltool DESTINATION lib/elektra)
+	set (SOURCES xmltool.h xmltool.c stream.c kdbtools.c)
+	add_sources (elektra-full ${SOURCES})
+	add_headers (SOURCES)
 
-add_plugintest (xmltool)
+	add_library (elektra-xmltool MODULE ${SOURCES})
+	install (TARGETS elektra-xmltool DESTINATION lib/elektra)
+
+	target_link_libraries (elektra-xmltool ${LIBXML2_LIBRARIES})
+	add_libraries(elektra-full ${LIBXML2_LIBRARIES})
+
+	add_subdirectory (tests)
+else (LIBXML2_FOUND)
+	remove_backend (xmltool "libxml2 not found")
+endif (LIBXML2_FOUND)
+

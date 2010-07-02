@@ -26,39 +26,15 @@ $Id$
 #include <config.h>
 #endif
 
-#ifdef HAVE_STRING_H
 #include <string.h>
-#endif
-
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-
-#ifdef HAVE_SYS_STAT_H
-#include <sys/stat.h>
-#endif
-
-#ifdef HAVE_ERRNO_H
 #include <errno.h>
-#endif
+#include <unistd.h>
 
 #include <libxml/xmlreader.h>
 #include <libxml/xmlschemas.h>
 
 #include <kdbtools.h>
 #include <kdbinternal.h>
-
-#ifdef ELEKTRA_STATIC
-
-#define ksFromXMLfile libelektratools_LTX_ksFromXMLfile
-#define ksFromXML libelektratools_LTX_ksFromXML
-
-#endif /* ELEKTRA_STATIC */
-
 
 /*
  * Processes the current <key> node from reader, converting from XML
@@ -216,6 +192,7 @@ static int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr read
 				if (buffer) {
 					/* Key's value type was already set above */
 					if (keyIsBinary(newKey)) {
+						/*
 						char *unencoded=0;
 						size_t unencodedSize;
 						
@@ -225,6 +202,7 @@ static int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr read
 						if (!unencodedSize) return -1;
 							keySetRaw(newKey,unencoded,unencodedSize);
 						free(unencoded);
+						*/
 					} else keySetRaw(newKey,buffer,elektraStrLen((char *)buffer));
 				}
 				xmlFree(buffer);
