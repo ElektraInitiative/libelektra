@@ -73,6 +73,9 @@ void clear_sync (KeySet *ks);
 void output_keyset (KeySet *ks);
 void output_key (Key *ks);
 
+void output_plugin(Plugin *plugin);
+void output_backend(Backend *backend);
+
 void output_trie(Trie *trie);
 void output_split(Split *split);
 
