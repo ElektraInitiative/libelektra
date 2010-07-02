@@ -26,6 +26,8 @@ $Id$
 
 #include <kdb.h>
 
+#include <stdio.h>
+
 
 /**
  * Options to change the default behavior of streaming.

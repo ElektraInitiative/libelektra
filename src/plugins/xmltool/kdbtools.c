@@ -192,7 +192,7 @@ static int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr read
 				if (buffer) {
 					/* Key's value type was already set above */
 					if (keyIsBinary(newKey)) {
-						/*
+						/* TODO binary values
 						char *unencoded=0;
 						size_t unencodedSize;
 						
@@ -327,7 +327,7 @@ static int consumeKeySetNode(KeySet *ks, const char *context, xmlTextReaderPtr r
  * It will process the entire XML document in reader and convert and
  * save it in ks KeySet. Each node is processed by the processNode() function.
  *
- * This function is completelly dependent on libxml.
+ * This function is completely dependent on libxml.
  */
 static int ksFromXMLReader(KeySet *ks,xmlTextReaderPtr reader)
 {
@@ -348,8 +348,6 @@ static int ksFromXMLReader(KeySet *ks,xmlTextReaderPtr reader)
 
 		xmlFree (nodeName);
 	}
-	
-	if (ret) fprintf(stderr,"kdb: Failed to parse XML input\n");
 
 	return ret;
 }
@@ -424,28 +422,33 @@ if (ret==0) ret = isValidXML(filename,schemaPath);
 else ret = isValidXML(filename,KDB_SCHEMA_PATH); 
  * @endcode
  *
+ * @return -1 on error
+ * @return 0
  * @param ks the keyset
  * @param filename the file to parse
  * @ingroup stream
  */
-int ksFromXMLfile(KeySet *ks,const char *filename)
+int ksFromXMLfile(KeySet *ks, const char *filename)
 {
 	xmlTextReaderPtr reader;
 	xmlDocPtr doc;
 	int ret=0;
 
 	doc = xmlParseFile(filename);
-	if (doc==NULL) return 1;
+	if (doc==NULL)
+	{
+		xmlCleanupParser();
+		return -1;
+	}
 
-	if (!ret) {
-		reader=xmlReaderWalker(doc);
-		if (reader) ret=ksFromXMLReader(ks,reader);
-		else {
-			perror("kdb");
-			return 1;
-		}
+	reader=xmlReaderWalker(doc);
+	if (reader)
+	{
+		ret=ksFromXMLReader(ks,reader);
 		xmlFreeTextReader (reader);
 	}
+	else { ret = -1; }
+
 	xmlFreeDoc(doc);
 
 	xmlCleanupParser();

@@ -27,7 +27,9 @@
 #define ELEKTRA_PLUGIN_XMLTOOL_H
 
 #include <kdbplugin.h>
+#include <kdbtools.h>
 
+ssize_t ksToStream(const KeySet *ks, FILE* stream, option_t options);
 
 int elektraXmltoolOpen(Plugin *handle, Key *errorKey);
 int elektraXmltoolClose(Plugin *handle, Key *errorKey);

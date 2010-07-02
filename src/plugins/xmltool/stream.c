@@ -271,7 +271,7 @@ ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
 					written+=fwrite(key->data.v,sizeof(char),key->dataSize-1,stream);
 					written+=fprintf(stream,"]]>");
 				} else {
-					/* Binary values 
+					/* TODO Binary values 
 					char *encoded=malloc(3*key->dataSize);
 					size_t encodedSize;
 
@@ -383,7 +383,8 @@ ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
  * @param stream the file pointer where to send the stream
  * @param options see above text
  */
-ssize_t ksToStream(const KeySet *ks, FILE* stream, option_t options) {
+ssize_t ksToStream(const KeySet *ks, FILE* stream, option_t options)
+{
 	size_t written=0;
 	Key *key=0;
 	char *codeset = "UTF-8";
