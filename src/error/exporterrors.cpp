@@ -96,6 +96,58 @@ ostream& operator << (ostream& os, parse_t& p)
 		}
 	}
 
+	os << "static inline KeySet *elektraErrorSpecification (void)" << endl
+	   << "{" << endl
+	   << "	return ksNew (30," << endl
+	   << "		keyNew (\"system/elektra/modules/error/specification\"," << endl
+	   << "			KEY_VALUE, \"the specification of all error codes\", KEY_END)," << endl;
+	for (size_t i = 1; i<p.size(); ++i)
+	{
+		os << "		keyNew (\"system/elektra/modules/error/specification/" << i << "\"," << endl
+		   << "			KEY_END)," << endl
+		   << "		keyNew (\"system/elektra/modules/error/specification/" << i << "/description\"," << endl
+		   << "			KEY_VALUE, \"" << p[i]["description"] << "\", KEY_END)," << endl
+		   << "		keyNew (\"system/elektra/modules/error/specification/" << i << "/ingroup\"," << endl
+		   << "			KEY_VALUE, \"" << p[i]["ingroup"] << "\", KEY_END)," << endl
+		   << "		keyNew (\"system/elektra/modules/error/specification/" << i << "/severity\"," << endl
+		   << "			KEY_VALUE, \"" << p[i]["severity"] << "\", KEY_END)," << endl
+		   << "		keyNew (\"system/elektra/modules/error/specification/" << i << "/module\"," << endl
+		   << "			KEY_VALUE, \"" << p[i]["module"] << "\", KEY_END)," << endl;
+	}
+	os << "		KS_END);" << endl
+	   << "}" << endl;
+
+	os << "static inline void elektraTriggerWarnings (int nr, Key *parentKey, const char *message)" << endl
+	   << "{" << endl
+	   << "	switch (nr)" << endl
+	   << "	{" << endl;
+	for (size_t i = 1; i<p.size(); ++i)
+	{
+		if (p[i]["severity"] != "warning") continue;
+		os << "		case " << i << ": ELEKTRA_ADD_WARNING (" << i << ", parentKey, message);" << endl
+		   << "			break;" << endl;
+	}
+	os << "		default: ELEKTRA_ADD_WARNING (45, parentKey, \"in default branch\");" << endl
+	   << "			 break;" << endl
+	   << "	}" << endl
+	   << "}" << endl
+	   << "" << endl;
+	os << "static inline void elektraTriggerError (int nr, Key *parentKey, const char *message)" << endl
+	   << "{" << endl
+	   << "	switch (nr)" << endl
+	   << "	{" << endl;
+	for (size_t i = 1; i<p.size(); ++i)
+	{
+		if (p[i]["severity"] == "warning") continue;
+		os << "		case " << i << ": ELEKTRA_SET_ERROR (" << i << ", parentKey, message);" << endl
+		   << "			break;" << endl;
+	}
+	os << "		default: ELEKTRA_SET_ERROR (44, parentKey, \"in default branch\");" << endl
+	   << "			 break;" << endl
+	   << "	}" << endl
+	   << "}" << endl;
+
+
 	os << "#endif" << endl;
 	return os;
 }
