@@ -579,6 +579,8 @@ void test_oldroot()
 	KeySet *modules = modules_config();
 	succeed_if (elektraMountOpen(kdb, oldroot_config(), modules, errorKey) == -1, "no warning issued?");
 
+	succeed_if(keyGetMeta(errorKey, "warnings") != 0, "there should be warnings");
+
 	/*
 	output_warnings (errorKey);
 	output_errors (errorKey);
