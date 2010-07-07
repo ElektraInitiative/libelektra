@@ -86,6 +86,7 @@ int elektraMountOpen(KDB *kdb, KeySet *config, KeySet *modules, Key *errorKey)
 			}
 		}
 	}
+	ksDel (config);
 
 	return 0;
 }
@@ -172,7 +173,6 @@ int elektraMountModules (KDB *kdb, KeySet *modules, Key *errorKey)
  */
 int elektraMountBackend (KDB *kdb, Backend *backend, Key *errorKey)
 {
-	char *mountpoint;
 
 	if (!backend)
 	{
@@ -187,17 +187,30 @@ int elektraMountBackend (KDB *kdb, Backend *backend, Key *errorKey)
 		return -1;
 	}
 
-	if (!strcmp(keyName(backend->mountpoint), ""))
+	if (!backend->mountpoint->key)
 	{
-		/* Mount as root backend */
-		mountpoint = elektraStrDup ("");
-	} else {
-		/* Prepare the name for the mountpoint*/
-		mountpoint = elektraMalloc (keyGetNameSize(backend->mountpoint)+1);
-		sprintf(mountpoint,"%s/",keyName(backend->mountpoint));
+		ELEKTRA_ADD_WARNING(25, errorKey, "no key in mountpoint");
+		elektraBackendClose(backend, errorKey);
+		return -1;
 	}
-	kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, (void*)backend);
+
+	char *mountpoint;
+	mountpoint = elektraMalloc (keyGetNameSize(backend->mountpoint)+10);
+
+	if (backend->mountpoint->key[0] == '/')
+	{
+		sprintf(mountpoint,"user/%s/",keyName(backend->mountpoint));
+		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, (void*)backend);
+
+		sprintf(mountpoint,"system/%s/",keyName(backend->mountpoint));
+		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, (void*)backend);
+	} else {
+		sprintf(mountpoint,"%s/",keyName(backend->mountpoint));
+		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, (void*)backend);
+	}
+
 	elektraFree(mountpoint);
+
 	return 1;
 }
 

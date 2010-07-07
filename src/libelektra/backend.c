@@ -154,13 +154,19 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
 			}
 			else if (!strcmp(keyBaseName(cur), "mountpoint"))
 			{
-				backend->mountpoint=keyNew(keyValue(cur),KEY_VALUE,keyBaseName(root), KEY_END);
-				keyIncRef(backend->mountpoint);
+				if (keyString(cur)[0] == '/')
+				{
+					backend->mountpoint = keyNew("", KEY_VALUE,keyBaseName(root), KEY_END);
+					backend->mountpoint->key = elektraStrDup(keyString(cur));
+				} else {
+					backend->mountpoint=keyNew(keyString(cur),KEY_VALUE,keyBaseName(root), KEY_END);
+				}
 				if (!backend->mountpoint)
 				{
 					ELEKTRA_ADD_WARNING(14, errorKey, keyValue(cur));
 					goto error;
 				}
+				keyIncRef(backend->mountpoint);
 				ksDel (cut);
 			}
 			else if (!strcmp(keyBaseName(cur), "setplugins"))
