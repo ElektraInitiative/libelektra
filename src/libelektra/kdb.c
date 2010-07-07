@@ -101,48 +101,6 @@
 
 
 /**
- * Lookup a mountpoint in a handle for a specific key.
- *
- * Will return a key representing the mountpoint or null
- * if there is no appropriate mountpoint e.g. its the
- * root mountpoint.
- *
- * @par Example:
- * @code
-Key * key = keyNew ("system/template");
-KDB * handle = kdbOpen();
-Key *mountpoint=0;
-mountpoint=kdbGetMountpoint(handle, key);
-
-printf("The library I am using is %s mounted in %s\n",
-	keyValue(mountpoint),
-	keyName(mountpoint));
-kdbClose (handle);
-keyDel (key);
- * @endcode
- *
- *
- * @param handle is the data structure, where the mounted directories are saved.
- * @param where the key, that should be looked up.
- * @return the mountpoint associated with the key
- * @ingroup kdb
- */
-Key* kdbGetMountpoint (KDB *handle, const Key *where)
-{
-	Backend *backend_handle;
-
-	backend_handle=kdbGetBackend(handle,where);
-	if (!backend_handle)
-	{
-		return 0;
-	}
-
-	return backend_handle->mountpoint;
-}
-
-
-
-/**
  * Opens the session with the Key database.
  *
  * The first step is to open the default backend. With it
@@ -227,6 +185,8 @@ KDB * kdbOpen(Key *errorKey)
 	}
 
 	elektraBackendClose (handle->defaultBackend, errorKey);
+	handle->defaultBackend = 0;
+	handle->trie = 0;
 
 #if DEBUG && VERBOSE
 	ksRewind(keys);
@@ -236,19 +196,21 @@ KDB * kdbOpen(Key *errorKey)
 #endif
 
 	/* Open the trie */
-	handle->trie=elektraTrieOpen(keys, handle->modules, errorKey);
-
-	if (!handle->trie)
+	if (elektraMountOpen(handle, keys, handle->modules, errorKey) == -1)
 	{
-		ELEKTRA_ADD_WARNING(7, errorKey, "trie could not be created, see previous warnings");
+		/* Initial loading of trie did not work */
+	}
 
-		/* Reopen the default Backend for fresh user experience (update issue) */
-		handle->defaultBackend = elektraBackendOpenDefault(handle->modules, errorKey);
-		if (!handle->defaultBackend)
-		{
-			ELEKTRA_SET_ERROR(40, errorKey, "could not reopen default backend");
-			return 0;
-		}
+	if (elektraMountDefault (handle, handle->modules, errorKey) == -1)
+	{
+		/* Could not reopen default backend */
+		ELEKTRA_SET_ERROR(40, errorKey, "could not reopen default backend");
+		return 0;
+	}
+
+	if (elektraMountModules (handle, handle->modules, errorKey) == -1)
+	{
+		/* Mounting modules did not work */
 	}
 
 	return handle;
@@ -298,28 +260,6 @@ int kdbClose(KDB *handle, Key *errorKey)
 
 	return 0;
 }
-
-
-/**
- * Lookup a backend handle for a specific key.
- *
- * The required canonical name is ensured by using a key as parameter,
- * which will transform the key to canonical representation.
- *
- * Will return handle when no more specific KDB could be
- * found.
- *
- * @param handle is the data structure, where the mounted directories are saved.
- * @param key the key, that should be looked up.
- * @return the backend handle associated with the key
- */
-Backend* kdbGetBackend(KDB *handle, const Key *key)
-{
-	Backend *ret = elektraTrieLookup(handle->trie, key);
-	if (!ret) return handle->defaultBackend;
-	return ret;
-}
-
 
 
 /**

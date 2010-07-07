@@ -881,6 +881,10 @@ int main(int argc, char** argv)
 	test_moreiterate();
 	test_endings();
 	test_root();
+	/*
+	test_rootsimple();
+	test_realworld();
+	*/
 
 	printf("\ntest_trie RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

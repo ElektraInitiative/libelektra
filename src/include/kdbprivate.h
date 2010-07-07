@@ -391,10 +391,7 @@ struct _Split {
  **************************************/
 
 ssize_t keySetRaw(Key *key, const void *newBinary, size_t dataSize);
-
 char *keyNameGetOneLevel(const char *keyname, size_t *size);
-
-Backend* kdbGetBackend(KDB *handle, const Key *key);
 
 /*Methods for splitted keysets */
 Split * elektraSplitNew(void);
@@ -444,10 +441,20 @@ Plugin* elektraPluginOpen(const char *backendname, KeySet *modules, KeySet *conf
 int elektraPluginClose(Plugin *handle, Key *errorKey);
 
 /*Trie handling*/
-Backend* elektraTrieLookup(Trie *trie, const Key *key);
 Trie *elektraTrieOpen(KeySet *config, KeySet *modules, Key *errorKey);
 int elektraTrieClose (Trie *trie, Key *errorKey);
-int elektraMountBackend (Trie **trie, Backend *backend, Key *errorKey);
+Backend* elektraTrieLookup(Trie *trie, const Key *key);
+Trie* elektraTrieInsert(Trie *trie, const char *name, Backend *value);
+
+/*Mounting handling */
+int elektraMountOpen(KDB *kdb, KeySet *config, KeySet *modules, Key *errorKey);
+int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey);
+int elektraMountModules (KDB *kdb, KeySet *modules, Key *errorKey);
+
+int elektraMountBackend (KDB *kdb, Backend *backend, Key *errorKey);
+
+Key* elektraMountGetMountpoint(KDB *handle, const Key *where);
+Backend* kdbGetBackend(KDB *handle, const Key *key);
 
 /*Private helper for keys*/
 int keyInit(Key *key);
