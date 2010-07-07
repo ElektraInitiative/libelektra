@@ -46,6 +46,8 @@ KeySet *minimal_config(void)
 		KS_END);
 }
 
+#if 0
+
 
 void test_minimaltrie()
 {
@@ -864,6 +866,8 @@ void test_root()
 	keyDel (searchKey);
 }
 
+#endif
+
 int main(int argc, char** argv)
 {
 	printf("TRIE       TESTS\n");
@@ -871,6 +875,7 @@ int main(int argc, char** argv)
 
 	init (argc, argv);
 
+	/*
 	test_minimaltrie();
 	test_simple();
 	test_iterate();
@@ -881,7 +886,6 @@ int main(int argc, char** argv)
 	test_moreiterate();
 	test_endings();
 	test_root();
-	/*
 	test_rootsimple();
 	test_realworld();
 	*/

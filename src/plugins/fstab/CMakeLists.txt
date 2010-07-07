@@ -11,6 +11,8 @@ if (HAS_MNTENT)
 
 	add_library (elektra-fstab MODULE ${SOURCES})
 	install (TARGETS elektra-fstab DESTINATION lib/elektra)
+
+	add_plugintest (fstab)
 else (HAS_MNTENT)
 	remove_backend (fstab "mntent is missing")
 endif (HAS_MNTENT)

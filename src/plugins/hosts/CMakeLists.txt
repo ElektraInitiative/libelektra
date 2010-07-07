@@ -6,3 +6,5 @@ add_headers (SOURCES)
 
 add_library (elektra-hosts MODULE ${SOURCES})
 install (TARGETS elektra-hosts DESTINATION lib/elektra)
+
+add_plugintest(hosts)
