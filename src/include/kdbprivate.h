@@ -454,7 +454,7 @@ int elektraMountModules (KDB *kdb, KeySet *modules, Key *errorKey);
 int elektraMountBackend (KDB *kdb, Backend *backend, Key *errorKey);
 
 Key* elektraMountGetMountpoint(KDB *handle, const Key *where);
-Backend* kdbGetBackend(KDB *handle, const Key *key);
+Backend* elektraMountGetBackend(KDB *handle, const Key *key);
 
 /*Private helper for keys*/
 int keyInit(Key *key);

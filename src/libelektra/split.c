@@ -359,7 +359,7 @@ int elektraSplitDivide (Split *split, KDB *handle, KeySet *ks)
 	ksRewind (ks);
 	while ((curKey = ksNext (ks)) != 0)
 	{
-		curHandle = kdbGetBackend(handle, curKey);
+		curHandle = elektraMountGetBackend(handle, curKey);
 		if (!curHandle) return -1;
 
 		curFound = elektraSplitSearchBackend(split, curHandle, curKey);
@@ -397,7 +397,7 @@ int elektraSplitAppoint (Split *split, KDB *handle, KeySet *ks)
 	ksRewind (ks);
 	while ((curKey = ksNext (ks)) != 0)
 	{
-		curHandle = kdbGetBackend(handle, curKey);
+		curHandle = elektraMountGetBackend(handle, curKey);
 		if (!curHandle) return -1;
 
 		curFound = elektraSplitSearchBackend(split, curHandle, curKey);
@@ -446,7 +446,7 @@ int elektraSplitGet (Split *split, KDB *handle)
 		ksRewind (split->keysets[i]);
 		while ((cur = ksNext(split->keysets[i])) != 0)
 		{
-			curHandle = kdbGetBackend(handle, cur);
+			curHandle = elektraMountGetBackend(handle, cur);
 			if (!curHandle) return -1;
 			if (curHandle != split->handles[i])
 			{

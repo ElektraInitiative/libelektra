@@ -117,7 +117,7 @@ int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey)
 	   First check if it is still reachable.
 	*/
 	Key *key = keyNew ("system/elektra", KEY_END);
-	Backend* backend = kdbGetBackend(kdb, key);
+	Backend* backend = elektraMountGetBackend(kdb, key);
 	if (backend != kdb->defaultBackend)
 	{
 		elektraMountBackend (kdb, kdb->defaultBackend, errorKey);
@@ -234,7 +234,7 @@ Key* elektraMountGetMountpoint(KDB *handle, const Key *where)
 {
 	Backend *backend_handle;
 
-	backend_handle=kdbGetBackend(handle,where);
+	backend_handle=elektraMountGetBackend(handle,where);
 	if (!backend_handle)
 	{
 		return 0;
@@ -259,7 +259,7 @@ Key* elektraMountGetMountpoint(KDB *handle, const Key *where)
  * @return the backend handle associated with the key
  * @ingroup mount
  */
-Backend* kdbGetBackend(KDB *handle, const Key *key)
+Backend* elektraMountGetBackend(KDB *handle, const Key *key)
 {
 	Backend *ret = elektraTrieLookup(handle->trie, key);
 	if (!ret) return handle->defaultBackend;
