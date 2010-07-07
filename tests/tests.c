@@ -269,17 +269,21 @@ void output_trie(Trie *trie)
 	{
 		if (trie->value[i])
 		{
-			printf ("output_trie: %p, mp: %s\n",
+			printf ("output_trie: %p, mp: %s %s [%d]\n",
 					(void*) trie->value[i],
-					keyName(trie->value[i]->mountpoint));
+					keyName(trie->value[i]->mountpoint),
+					keyString(trie->value[i]->mountpoint),
+					i);
 		}
 		if (trie->children[i]) output_trie(trie->children[i]);
 	}
 	if (trie->empty_value)
 	{
-		printf ("empty_value: %p, mp: %s\n",
+		printf ("empty_value: %p, mp: %s %s\n",
 				(void*) trie->empty_value,
-				keyName(trie->empty_value->mountpoint));
+				keyName(trie->empty_value->mountpoint),
+				keyString(trie->empty_value->mountpoint)
+				);
 	}
 }
 

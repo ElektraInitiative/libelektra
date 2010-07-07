@@ -610,37 +610,45 @@ void test_umlauts()
 	keyDel (searchKey);
 }
 
-#if 0
-
-KeySet *endings_config(void)
-{
-	return ksNew(5,
-		keyNew("system/elektra/mountpoints", KEY_END),
-		keyNew("system/elektra/mountpoints/slash", KEY_END),
-		keyNew("system/elektra/mountpoints/slash/mountpoint", KEY_VALUE, "user/endings", KEY_END),
-		keyNew("system/elektra/mountpoints/hash", KEY_END),
-		keyNew("system/elektra/mountpoints/hash/mountpoint", KEY_VALUE, "user/endings#", KEY_END),
-		keyNew("system/elektra/mountpoints/space", KEY_END),
-		keyNew("system/elektra/mountpoints/space/mountpoint", KEY_VALUE, "user/endings ", KEY_END),
-		keyNew("system/elektra/mountpoints/endings", KEY_END),
-		keyNew("system/elektra/mountpoints/endings/mountpoint", KEY_VALUE, "user/endings\200", KEY_END),
-		KS_END);
-}
-
 void test_endings()
 {
 	printf ("Test endings trie\n");
 
-	Key *errorKey = keyNew(0);
-	KeySet *modules = modules_config();
-	Trie *trie = elektraTrieOpen(endings_config(), modules, errorKey);
+	for (int i=0; i<4; ++i)
+	{
 
-	output_warnings (errorKey);
-	output_errors (errorKey);
+	Trie *trie = 0;
+	switch (i)
+	{
+	case 0:
+		trie = test_insert (trie, "user/endings/","slash");
+		trie = test_insert (trie, "user/endings#","hash");
+		trie = test_insert (trie, "user/endings ","space");
+		trie = test_insert (trie, "user/endings\200","endings");
+		break;
+	case 1:
+		trie = test_insert (trie, "user/endings#","hash");
+		trie = test_insert (trie, "user/endings ","space");
+		trie = test_insert (trie, "user/endings\200","endings");
+		trie = test_insert (trie, "user/endings/","slash");
+		break;
+	case 2:
+		trie = test_insert (trie, "user/endings ","space");
+		trie = test_insert (trie, "user/endings\200","endings");
+		trie = test_insert (trie, "user/endings/","slash");
+		trie = test_insert (trie, "user/endings#","hash");
+		break;
+	case 3:
+		trie = test_insert (trie, "user/endings\200","endings");
+		trie = test_insert (trie, "user/endings ","space");
+		trie = test_insert (trie, "user/endings#","hash");
+		trie = test_insert (trie, "user/endings/","slash");
+		break;
+	}
 
 	exit_if_fail (trie, "trie was not build up successfully");
 
-	Key *searchKey = keyNew("user");
+	Key *searchKey = keyNew("user", KEY_END);
 	Backend *backend = elektraTrieLookup(trie, searchKey);
 	succeed_if (!backend, "there should be no backend");
 
@@ -713,10 +721,10 @@ void test_endings()
 	// output_trie(trie);
 
 	elektraTrieClose(trie, 0);
-	keyDel (errorKey);
-	ksDel (modules);
 	keyDel (mp);
 	keyDel (searchKey);
+
+	}
 }
 
 KeySet *root_config(void)
@@ -734,16 +742,13 @@ void test_root()
 {
 	printf ("Test trie with root\n");
 
-	Key *errorKey = keyNew(0);
-	KeySet *modules = modules_config();
-	Trie *trie = elektraTrieOpen(root_config(), modules, errorKey);
-
-	output_warnings (errorKey);
-	output_errors (errorKey);
+	Trie *trie = 0;
+	trie = test_insert (trie, "", "root");
+	trie = test_insert (trie, "user/tests/simple", "simple");
 
 	exit_if_fail (trie, "trie was not build up successfully");
 
-	Key *searchKey = keyNew("user");
+	Key *searchKey = keyNew("user", KEY_END);
 	Key *rmp = keyNew("", KEY_VALUE, "root", KEY_END);
 	Backend *backend = elektraTrieLookup(trie, searchKey);
 	succeed_if (backend, "there should be the root backend");
@@ -773,14 +778,42 @@ void test_root()
 	// output_trie(trie);
 
 	elektraTrieClose(trie, 0);
-	keyDel (errorKey);
-	ksDel (modules);
 	keyDel (mp);
 	keyDel (rmp);
 	keyDel (searchKey);
 }
 
-#endif
+void test_double()
+{
+	printf ("Test double insertion\n");
+
+	Trie *trie = test_insert (0, "", "root");
+	succeed_if (trie, "could not insert into trie");
+
+	Trie *t1 = test_insert (trie, "user/tests/simple", "t1");
+	succeed_if (t1, "could not insert into trie");
+	succeed_if (t1 == trie, "should be the same");
+
+	// output_trie (trie);
+
+	Trie *t2 = test_insert (trie, "user/tests/simple", "t2");
+	succeed_if (t2, "could not insert into trie");
+	succeed_if (t2 == trie, "should be not the same");
+
+	// output_trie (trie);
+
+	/* ... gets lost
+
+	Trie *t3 = test_insert (trie, "user/tests/simple", "t3");
+	succeed_if (t3, "could not insert into trie");
+	succeed_if (t3 == trie, "should be not the same");
+
+	// output_trie (trie);
+
+	*/
+
+	elektraTrieClose(trie, 0);
+}
 
 int main(int argc, char** argv)
 {
@@ -796,12 +829,9 @@ int main(int argc, char** argv)
 	test_moreiterate();
 	test_revmoreiterate();
 	test_umlauts();
-	/*
 	test_endings();
 	test_root();
-	test_rootsimple();
-	test_realworld();
-	*/
+	test_double();
 
 	printf("\ntest_trie RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
