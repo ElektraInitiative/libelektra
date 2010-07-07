@@ -323,14 +323,19 @@ void output_warnings(Key *warningKey)
 		printf ("description: %s\n", keyString(keyGetMeta(warningKey, buffer)));
 		buffer[12] = '\0'; strncat(buffer, "/ingroup" , sizeof(buffer));
 		keyGetMeta(warningKey, buffer);
+		printf ("ingroup: %s\n", keyString(keyGetMeta(warningKey, buffer)));
 		buffer[12] = '\0'; strncat(buffer, "/module" , sizeof(buffer));
 		keyGetMeta(warningKey, buffer);
+		printf ("module: %s\n", keyString(keyGetMeta(warningKey, buffer)));
 		buffer[12] = '\0'; strncat(buffer, "/file" , sizeof(buffer));
 		keyGetMeta(warningKey, buffer);
+		printf ("file: %s\n", keyString(keyGetMeta(warningKey, buffer)));
 		buffer[12] = '\0'; strncat(buffer, "/line" , sizeof(buffer));
 		keyGetMeta(warningKey, buffer);
+		printf ("line: %s\n", keyString(keyGetMeta(warningKey, buffer)));
 		buffer[12] = '\0'; strncat(buffer, "/reason" , sizeof(buffer));
 		keyGetMeta(warningKey, buffer);
+		printf ("reason: %s\n", keyString(keyGetMeta(warningKey, buffer)));
 	}
 }
 

@@ -73,22 +73,30 @@ int elektraMountOpen(KDB *kdb, KeySet *config, KeySet *modules, Key *errorKey)
 		return -1;
 	}
 
+	int ret = 0;
 	while ((cur = ksNext(config)) != 0)
 	{
 		if (keyRel (root, cur) == 1)
 		{
 			KeySet *cut = ksCut(config, cur);
 			Backend *backend = elektraBackendOpen(cut, modules, errorKey);
-			if (elektraMountBackend(kdb, backend, errorKey) == -1)
+			int val = elektraMountBackend(kdb, backend, errorKey);
+			if (val == 0)
 			{
 				/* warnings already set by elektraMountBackend */
 				ksDel (cut);
+				ret = -1;
+			}
+			else if (val == -1)
+			{
+				/* warnings already set by elektraMountBackend */
+				ret = -1;
 			}
 		}
 	}
 	ksDel (config);
 
-	return 0;
+	return ret;
 }
 
 
@@ -166,14 +174,13 @@ int elektraMountModules (KDB *kdb, KeySet *modules, Key *errorKey)
  * @param kdb the handle to work with
  * @param modules the current list of loaded modules
  * @param errorKey the key used to report warnings
- * @return -1 on failure (free KeySet for backend!)
- * @return 0 when nothing was done
+ * @return -1 on failure
+ * @return 0 if there was no backend (free KeySet!)
  * @return 1 on success
  * @ingroup mount
  */
 int elektraMountBackend (KDB *kdb, Backend *backend, Key *errorKey)
 {
-
 	if (!backend)
 	{
 		ELEKTRA_ADD_WARNING(24, errorKey, "no backend given to mount");

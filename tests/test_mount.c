@@ -104,7 +104,7 @@ KeySet *minimal_config(void)
 
 void test_minimaltrie()
 {
-	printf ("Test minimal trie\n");
+	printf ("Test minimal mount\n");
 
 	KDB *kdb = kdb_new();
 	Key *errorKey = keyNew(0);
@@ -132,7 +132,7 @@ KeySet *simple_config(void)
 
 void test_simple()
 {
-	printf ("Test simple trie\n");
+	printf ("Test simple mount\n");
 
 	KDB *kdb = kdb_new();
 	Key *errorKey = keyNew(0);
@@ -230,7 +230,7 @@ KeySet *set_pluginconf()
 
 void test_simpletrie()
 {
-	printf ("Test simple trie\n");
+	printf ("Test simple mount with plugins\n");
 
 	KDB *kdb = kdb_new();
 	KeySet *modules = ksNew(0);
@@ -335,7 +335,7 @@ KeySet *set_two()
 
 void test_two()
 {
-	printf ("Test trie two\n");
+	printf ("Test two mounts\n");
 
 	KDB *kdb = kdb_new();
 	KeySet *modules = ksNew(0);
@@ -405,7 +405,7 @@ KeySet *set_us()
 
 void test_us()
 {
-	printf ("Test simple user system backends\n");
+	printf ("Test mounting of user and system backends\n");
 
 	KDB *kdb = kdb_new();
 	KeySet *modules = ksNew(0);
@@ -468,7 +468,7 @@ KeySet *endings_config(void)
 
 void test_endings()
 {
-	printf ("Test endings trie\n");
+	printf ("Test mounting with different endings\n");
 
 	KDB *kdb = kdb_new();
 	Key *errorKey = keyNew(0);
@@ -559,9 +559,7 @@ void test_endings()
 	kdb_del (kdb);
 }
 
-#if 0
-
-KeySet *root_config(void)
+KeySet *oldroot_config(void)
 {
 	return ksNew(5,
 		keyNew("system/elektra/mountpoints", KEY_END),
@@ -572,57 +570,57 @@ KeySet *root_config(void)
 		KS_END);
 }
 
-void test_root()
+void test_oldroot()
 {
-	printf ("Test trie with root\n");
+	printf ("Test mounting with old root\n");
 
+	KDB *kdb = kdb_new();
 	Key *errorKey = keyNew(0);
 	KeySet *modules = modules_config();
-	Trie *trie = elektraTrieOpen(root_config(), modules, errorKey);
+	succeed_if (elektraMountOpen(kdb, oldroot_config(), modules, errorKey) == -1, "no warning issued?");
 
+	/*
 	output_warnings (errorKey);
 	output_errors (errorKey);
+	*/
 
-	exit_if_fail (trie, "trie was not build up successfully");
+	exit_if_fail (kdb->trie, "trie was not build up successfully");
 
 	Key *searchKey = keyNew("user", KEY_END);
 	Key *rmp = keyNew("", KEY_VALUE, "root", KEY_END);
-	Backend *backend = elektraTrieLookup(trie, searchKey);
-	succeed_if (backend, "there should be the root backend");
-	succeed_if (compare_key(backend->mountpoint, rmp) == 0, "mountpoint key not correct");
+	Backend *backend = elektraTrieLookup(kdb->trie, searchKey);
+	succeed_if (!backend, "there should be no root backend");
 
 
 	Key *mp = keyNew("user/tests/simple", KEY_VALUE, "simple", KEY_END);
 	keySetName(searchKey, "user/tests/simple");
-	backend = elektraTrieLookup(trie, searchKey);
+	backend = elektraTrieLookup(kdb->trie, searchKey);
 	succeed_if (backend, "there should be a backend");
 	succeed_if (compare_key(backend->mountpoint, mp) == 0, "mountpoint key not correct");
 
 
 	keySetName(searchKey, "user/tests/simple/below");
-	Backend *b2 = elektraTrieLookup(trie, searchKey);
+	Backend *b2 = elektraTrieLookup(kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
 	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
 
 
 	keySetName(searchKey, "user/tests/simple/deep/below");
-	b2 = elektraTrieLookup(trie, searchKey);
+	b2 = elektraTrieLookup(kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
 	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
 
-	// output_trie(trie);
-
-	elektraTrieClose(trie, 0);
-	keyDel (errorKey);
-	ksDel (modules);
 	keyDel (mp);
 	keyDel (rmp);
-	keyDel (searchKey);
-}
 
-#endif
+	keyDel (searchKey);
+
+	kdb_del (kdb);
+	keyDel (errorKey);
+	ksDel (modules);
+}
 
 int main(int argc, char** argv)
 {
@@ -638,11 +636,7 @@ int main(int argc, char** argv)
 	test_two();
 	test_us();
 	test_endings();
-	/*
-	test_root();
-	test_rootsimple();
-	test_realworld();
-	*/
+	test_oldroot();
 
 	printf("\ntest_trie RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
