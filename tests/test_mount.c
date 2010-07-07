@@ -31,43 +31,40 @@
 #include <kdbprivate.h>
 
 
-Trie *test_insert (Trie *trie, char *name, char* value)
+
+KeySet *modules_config(void)
 {
-	Backend *backend = elektraCalloc (sizeof (Backend));
-	backend->mountpoint = keyNew (name, KEY_VALUE, value, KEY_END);
-	keyIncRef (backend->mountpoint);
-	return elektraTrieInsert(trie, name, backend);
+	return ksNew(5,
+		keyNew("system/elektra/modules", KEY_END),
+		KS_END);
 }
+
+KeySet *minimal_config(void)
+{
+	return ksNew(5,
+		keyNew("system/elektra/mountpoints", KEY_END),
+		KS_END);
+}
+
+#if 0
 
 
 void test_minimaltrie()
 {
 	printf ("Test minimal trie\n");
 
-	Trie *trie = test_insert (0, "", "");
-	Key *s = keyNew ("", KEY_END);
-	Key *mp = keyNew ("", KEY_VALUE, "", KEY_END);
+	Key *errorKey = keyNew(0);
+	KeySet *modules = modules_config();
+	Trie *trie = elektraTrieOpen(minimal_config(), modules, errorKey);
 
-	succeed_if (elektraTrieLookup (trie, s), "trie should not be null");
-	succeed_if (compare_key (elektraTrieLookup (trie, s)->mountpoint, mp)==0, "could not find empty key");
+	output_warnings (errorKey);
+	output_errors (errorKey);
 
-	keySetName (s, "user");
-	succeed_if (compare_key (elektraTrieLookup (trie, s)->mountpoint, mp)==0, "could not find empty key");
-
-	keySetName (s, "system");
-	succeed_if (compare_key (elektraTrieLookup (trie, s)->mountpoint, mp)==0, "could not find empty key");
-
-	keySetName (s, "user/below");
-	succeed_if (compare_key (elektraTrieLookup (trie, s)->mountpoint, mp)==0, "could not find empty key");
-
-	keySetName (s, "system/below");
-	succeed_if (compare_key (elektraTrieLookup (trie, s)->mountpoint, mp)==0, "could not find empty key");
-
-	// output_trie (trie);
+	succeed_if (!trie, "minimal trie is null");
 
 	elektraTrieClose(trie, 0);
-	keyDel (s);
-	keyDel (mp);
+	keyDel (errorKey);
+	ksDel (modules);
 }
 
 KeySet *simple_config(void)
@@ -83,11 +80,16 @@ void test_simple()
 {
 	printf ("Test simple trie\n");
 
-	Trie *trie = test_insert (0, "user/tests/simple", "simple");
+	Key *errorKey = keyNew(0);
+	KeySet *modules = modules_config();
+	Trie *trie = elektraTrieOpen(simple_config(), modules, errorKey);
+
+	output_warnings (errorKey);
+	output_errors (errorKey);
 
 	exit_if_fail (trie, "trie was not build up successfully");
 
-	Key *searchKey = keyNew("user", KEY_END);
+	Key *searchKey = keyNew("user");
 	Backend *backend = elektraTrieLookup(trie, searchKey);
 	succeed_if (!backend, "there should be no backend");
 
@@ -112,7 +114,11 @@ void test_simple()
 	succeed_if (backend == b2, "should be same backend");
 	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
 
+	// output_trie(trie);
+
 	elektraTrieClose(trie, 0);
+	keyDel (errorKey);
+	ksDel (modules);
 	keyDel (mp);
 	keyDel (searchKey);
 }
@@ -127,16 +133,31 @@ void collect_mountpoints(Trie *trie, KeySet *mountpoints)
 	}
 }
 
+KeySet *iterate_config(void)
+{
+	return ksNew(5,
+		keyNew("system/elektra/mountpoints", KEY_END),
+		keyNew("system/elektra/mountpoints/hosts", KEY_END),
+		keyNew("system/elektra/mountpoints/hosts/mountpoint", KEY_VALUE, "user/tests/hosts", KEY_END),
+		keyNew("system/elektra/mountpoints/below", KEY_END),
+		keyNew("system/elektra/mountpoints/below/mountpoint", KEY_VALUE, "user/tests/hosts/below", KEY_END),
+		KS_END);
+}
+
 void test_iterate()
 {
 	printf ("Test iterate trie\n");
 
-	Trie *trie = test_insert (0, "user/tests/hosts", "hosts");
-	trie = test_insert (trie, "user/tests/hosts/below", "below");
+	Key *errorKey = keyNew(0);
+	KeySet *modules = modules_config();
+	Trie *trie = elektraTrieOpen(iterate_config(), modules, errorKey);
+
+	output_warnings (errorKey);
+	output_errors (errorKey);
 
 	exit_if_fail (trie, "trie was not build up successfully");
 
-	Key *searchKey = keyNew("user", KEY_END);
+	Key *searchKey = keyNew("user");
 	Backend *backend = elektraTrieLookup(trie, searchKey);
 	succeed_if (!backend, "there should be no backend");
 
@@ -180,7 +201,7 @@ void test_iterate()
 	succeed_if (backend == b3, "should be same backend");
 	succeed_if (compare_key(b3->mountpoint, mp2) == 0, "mountpoint key not correct");
 
-	output_trie(trie);
+	// output_trie(trie);
 
 	KeySet *mps = ksNew(0);
 	collect_mountpoints(trie, mps);
@@ -190,13 +211,12 @@ void test_iterate()
 	ksDel (mps);
 
 	elektraTrieClose(trie, 0);
-
+	keyDel (errorKey);
+	ksDel (modules);
 	keyDel (mp);
 	keyDel (mp2);
 	keyDel (searchKey);
 }
-
-#if 0
 
 KeySet *set_simple()
 {
@@ -855,10 +875,10 @@ int main(int argc, char** argv)
 
 	init (argc, argv);
 
+	/*
 	test_minimaltrie();
 	test_simple();
 	test_iterate();
-	/*
 	test_simpletrie();
 	test_two();
 	test_us();
