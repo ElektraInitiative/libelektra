@@ -960,6 +960,7 @@ void test_kdbopen()
 
 	output_errors (errorKey);
 	output_warnings (errorKey);
+	keyDel (errorKey);
 }
 
 int main(int argc, char** argv)
@@ -981,6 +982,7 @@ int main(int argc, char** argv)
 	test_root();
 	test_default();
 	test_modules();
+	test_kdbopen();
 
 	printf("\ntest_trie RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

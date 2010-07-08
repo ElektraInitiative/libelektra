@@ -231,7 +231,7 @@ void test_triesimple()
 	Backend *backend;
 
 	handle->defaultBackend = elektraCalloc(sizeof(struct _Backend));
-	handle->trie = elektraTrieOpen(simple_config(), modules, 0);
+	elektraMountOpen(handle, simple_config(), modules, 0);
 
 	Split *split;
 	Key *parentKey;
@@ -276,7 +276,7 @@ void test_trie()
 	handle->defaultBackend->usersize = 2;
 	handle->defaultBackend->systemsize = 2;
 	/* So we had 2 keys before in the keyset */
-	handle->trie = elektraTrieOpen(set_us(), modules, 0);
+	elektraMountOpen(handle, set_us(), modules, 0);
 
 
 	split = elektraSplitNew();
@@ -351,7 +351,7 @@ void test_rootbackend()
 	Backend *backend;
 
 	handle->defaultBackend = elektraCalloc(sizeof(struct _Backend));
-	handle->trie = elektraTrieOpen(root_config(), modules, 0);
+	elektraMountOpen(handle, root_config(), modules, 0);
 
 	Split *split;
 	Key *parentKey;
