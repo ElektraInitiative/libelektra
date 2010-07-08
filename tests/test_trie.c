@@ -815,6 +815,24 @@ void test_double()
 	elektraTrieClose(trie, 0);
 }
 
+void test_emptyvalues()
+{
+	printf ("Test empty values in trie\n");
+
+	Trie *trie = 0;
+	trie = test_insert (trie, "user/umlauts/b/", "b");
+	trie = test_insert (trie, "user/umlauts/a/", "a");
+	trie = test_insert (trie, "user/umlauts/", "/");
+	trie = test_insert (trie, "user/umlauts/c/", "c");
+	trie = test_insert (trie, "user/", "u");
+
+	exit_if_fail (trie, "trie was not build up successfully");
+
+	// output_trie(trie);
+
+	elektraTrieClose(trie, 0);
+}
+
 int main(int argc, char** argv)
 {
 	printf("TRIE       TESTS\n");
@@ -832,6 +850,7 @@ int main(int argc, char** argv)
 	test_endings();
 	test_root();
 	test_double();
+	test_emptyvalues();
 
 	printf("\ntest_trie RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
