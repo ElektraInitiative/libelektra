@@ -204,7 +204,15 @@ int elektraMountBackend (KDB *kdb, Backend *backend, Key *errorKey)
 	char *mountpoint;
 	mountpoint = elektraMalloc (keyGetNameSize(backend->mountpoint)+10);
 
-	if (backend->mountpoint->key[0] == '/')
+	if (!strcmp (backend->mountpoint->key, "/"))
+	{
+		sprintf(mountpoint, "user%s", keyName(backend->mountpoint));
+		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
+
+		sprintf(mountpoint, "system%s", keyName(backend->mountpoint));
+		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
+	}
+	else if (backend->mountpoint->key[0] == '/')
 	{
 		sprintf(mountpoint, "user%s/", keyName(backend->mountpoint));
 		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
