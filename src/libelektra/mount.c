@@ -120,15 +120,15 @@ int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey)
 		return -1;
 	}
 
-	/* Trie was created successfully.
-	   We want system/elektra/mountpoints still reachable
-	   through default backend.
-	   First check if it is still reachable.
-	*/
+	/* We want system/elektra still reachable
+	 * through default backend.
+	 * First check if it is still reachable.
+	 */
 	Key *key = keyNew ("system/elektra", KEY_END);
 	Backend* backend = elektraMountGetBackend(kdb, key);
 	if (backend != kdb->defaultBackend)
 	{
+		++ kdb->defaultBackend->refcounter;
 		elektraMountBackend (kdb, kdb->defaultBackend, errorKey);
 	}
 	keyDel (key);
@@ -194,18 +194,19 @@ int elektraMountBackend (KDB *kdb, Backend *backend, Key *errorKey)
 		return -1;
 	}
 
+	char *mountpoint;
+	/* 20 is enough for any of the combinations below. */
+	mountpoint = elektraMalloc (keyGetNameSize(backend->mountpoint)+20);
+
 	if (!backend->mountpoint->key)
 	{
-		ELEKTRA_ADD_WARNING(25, errorKey, "no key in mountpoint");
-		elektraBackendClose(backend, errorKey);
-		return -1;
+		/* Default backend */
+		sprintf(mountpoint, "system/elektra/");
+		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
 	}
-
-	char *mountpoint;
-	mountpoint = elektraMalloc (keyGetNameSize(backend->mountpoint)+10);
-
-	if (!strcmp (backend->mountpoint->key, "/"))
+	else if (!strcmp (backend->mountpoint->key, "/"))
 	{
+		/* Root backend */
 		sprintf(mountpoint, "user%s", keyName(backend->mountpoint));
 		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
 
@@ -214,12 +215,14 @@ int elektraMountBackend (KDB *kdb, Backend *backend, Key *errorKey)
 	}
 	else if (backend->mountpoint->key[0] == '/')
 	{
+		/* Cascading Backend */
 		sprintf(mountpoint, "user%s/", keyName(backend->mountpoint));
 		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
 
 		sprintf(mountpoint, "system%s/", keyName(backend->mountpoint));
 		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
 	} else {
+		/* Normal single mounted backend */
 		sprintf(mountpoint, "%s/", keyName(backend->mountpoint));
 		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
 	}

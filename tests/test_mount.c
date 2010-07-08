@@ -578,9 +578,7 @@ void test_oldroot()
 	KDB *kdb = kdb_new();
 	Key *errorKey = keyNew(0);
 	KeySet *modules = modules_config();
-	succeed_if (elektraMountOpen(kdb, oldroot_config(), modules, errorKey) == -1, "no warning issued?");
-
-	succeed_if(keyGetMeta(errorKey, "warnings") != 0, "there should be warnings");
+	succeed_if (elektraMountOpen(kdb, oldroot_config(), modules, errorKey) == 0, "root should be mounted as default");
 
 	/*
 	output_warnings (errorKey);
@@ -660,7 +658,7 @@ void test_cascading()
 
 	exit_if_fail (kdb->trie, "kdb->trie was not build up successfully");
 
-	output_trie (kdb->trie);
+	// output_trie (kdb->trie);
 
 	Key *searchKey = keyNew("user", KEY_END);
 	Backend *backend = elektraTrieLookup(kdb->trie, searchKey);
@@ -678,7 +676,6 @@ void test_cascading()
 	backend = elektraTrieLookup(kdb->trie, searchKey);
 	succeed_if (backend, "there should be a backend");
 	succeed_if (compare_key(backend->mountpoint, mp) == 0, "mountpoint key not correct");
-	output_key (backend->mountpoint);
 
 
 	keySetName(searchKey, "user/tests/simple/below");
@@ -791,6 +788,180 @@ void test_root()
 	ksDel (modules);
 }
 
+void test_default()
+{
+	printf ("Test mounting with default\n");
+
+	KDB *kdb = kdb_new();
+	Key *errorKey = keyNew(0);
+	KeySet *modules = modules_config();
+	succeed_if (elektraMountOpen(kdb, root_config(), modules, errorKey) == 0, "could not buildup mount");
+	succeed_if (elektraMountDefault(kdb, modules, errorKey) == 0, "could not mount default backend");
+
+	/*
+	output_warnings (errorKey);
+	output_errors (errorKey);
+	*/
+
+	exit_if_fail (kdb->trie, "trie was not build up successfully");
+
+	// output_trie (kdb->trie);
+
+	Key *searchKey = keyNew("", KEY_END);
+	Key *rmp = keyNew("", KEY_VALUE, "root", KEY_END);
+	keySetCascading (rmp, "");
+	Backend *b2 = 0;
+
+	keySetName (searchKey, "user");
+	b2 = elektraTrieLookup(kdb->trie, searchKey);
+	succeed_if (b2, "there should be a backend");
+	succeed_if (compare_key(b2->mountpoint, rmp) == 0, "mountpoint key not correct");
+
+
+	Backend *backend = 0;
+	Key *mp = keyNew("user/tests/simple", KEY_VALUE, "simple", KEY_END);
+	keySetName(searchKey, "user/tests/simple");
+	backend = elektraTrieLookup(kdb->trie, searchKey);
+	succeed_if (backend, "there should be a backend");
+	succeed_if (compare_key(backend->mountpoint, mp) == 0, "mountpoint key not correct");
+
+
+	keySetName(searchKey, "user/tests/simple/below");
+	b2 = elektraTrieLookup(kdb->trie, searchKey);
+	succeed_if (b2, "there should be a backend");
+	succeed_if (backend == b2, "should be same backend");
+	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+
+
+	keySetName(searchKey, "user/tests/simple/deep/below");
+	b2 = elektraTrieLookup(kdb->trie, searchKey);
+	succeed_if (b2, "there should be a backend");
+	succeed_if (backend == b2, "should be same backend");
+	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+
+	Key *dmp = keyNew ("", KEY_VALUE, "default", KEY_END);
+	keySetName(searchKey, "system/elektra");
+	b2 = elektraTrieLookup(kdb->trie, searchKey);
+	succeed_if (b2, "there should be a backend");
+	succeed_if (b2 == kdb->defaultBackend, "should be the default backend");
+	succeed_if (compare_key(b2->mountpoint, dmp) == 0, "mountpoint key not correct");
+
+	keySetName(searchKey, "system/elektra/below");
+	b2 = elektraTrieLookup(kdb->trie, searchKey);
+	succeed_if (b2, "there should be a backend");
+	succeed_if (b2 == kdb->defaultBackend, "should be the default backend");
+	succeed_if (compare_key(b2->mountpoint, dmp) == 0, "mountpoint key not correct");
+
+	keyDel (dmp);
+	keyDel (mp);
+	keyDel (rmp);
+
+	keyDel (searchKey);
+
+	kdb_del (kdb);
+	keyDel (errorKey);
+	ksDel (modules);
+}
+
+void test_modules()
+{
+	printf ("Test mounting with modules\n");
+
+	KDB *kdb = kdb_new();
+	Key *errorKey = keyNew(0);
+	KeySet *modules = modules_config();
+	succeed_if (elektraMountOpen(kdb, root_config(), modules, errorKey) == 0, "could not buildup mount");
+	succeed_if (elektraMountDefault(kdb, modules, errorKey) == 0, "could not mount default backend");
+	succeed_if (elektraMountModules(kdb, modules, errorKey) == 0, "could not mount modules");
+
+	output_warnings (errorKey);
+	output_errors (errorKey);
+
+	exit_if_fail (kdb->trie, "trie was not build up successfully");
+
+	// output_trie (kdb->trie);
+
+	Key *searchKey = keyNew("", KEY_END);
+	Key *rmp = keyNew("", KEY_VALUE, "root", KEY_END);
+	keySetCascading (rmp, "");
+	Backend *b2 = 0;
+
+	keySetName (searchKey, "user");
+	b2 = elektraTrieLookup(kdb->trie, searchKey);
+	succeed_if (b2, "there should be a backend");
+	succeed_if (compare_key(b2->mountpoint, rmp) == 0, "mountpoint key not correct");
+
+
+	Backend *backend = 0;
+	Key *mp = keyNew("user/tests/simple", KEY_VALUE, "simple", KEY_END);
+	keySetName(searchKey, "user/tests/simple");
+	backend = elektraTrieLookup(kdb->trie, searchKey);
+	succeed_if (backend, "there should be a backend");
+	succeed_if (compare_key(backend->mountpoint, mp) == 0, "mountpoint key not correct");
+
+
+	keySetName(searchKey, "user/tests/simple/below");
+	b2 = elektraTrieLookup(kdb->trie, searchKey);
+	succeed_if (b2, "there should be a backend");
+	succeed_if (backend == b2, "should be same backend");
+	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+
+
+	keySetName(searchKey, "user/tests/simple/deep/below");
+	b2 = elektraTrieLookup(kdb->trie, searchKey);
+	succeed_if (b2, "there should be a backend");
+	succeed_if (backend == b2, "should be same backend");
+	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+
+	Key *dmp = keyNew ("", KEY_VALUE, "default", KEY_END);
+	keySetName(searchKey, "system/elektra");
+	b2 = elektraTrieLookup(kdb->trie, searchKey);
+	succeed_if (b2, "there should be a backend");
+	succeed_if (b2 == kdb->defaultBackend, "should be the default backend");
+	succeed_if (compare_key(b2->mountpoint, dmp) == 0, "mountpoint key not correct");
+
+	keySetName(searchKey, "system/elektra/below");
+	b2 = elektraTrieLookup(kdb->trie, searchKey);
+	succeed_if (b2, "there should be a backend");
+	succeed_if (b2 == kdb->defaultBackend, "should be the default backend");
+	succeed_if (compare_key(b2->mountpoint, dmp) == 0, "mountpoint key not correct");
+
+	Key *mmp = keyNew ("system/elektra/modules", KEY_VALUE, "modules", KEY_END);
+	keyAddBaseName (mmp, "default");
+
+	keySetName(searchKey, "system/elektra/modules/default");
+	b2 = elektraTrieLookup(kdb->trie, searchKey);
+	succeed_if (b2, "there should be a backend");
+	succeed_if (b2 != kdb->defaultBackend, "should not be the default backend");
+	succeed_if (compare_key(b2->mountpoint, mmp) == 0, "mountpoint key for modules not correct");
+
+	keyDel (mmp);
+	keyDel (dmp);
+	keyDel (mp);
+	keyDel (rmp);
+
+	keyDel (searchKey);
+
+	kdb_del (kdb);
+	keyDel (errorKey);
+	ksDel (modules);
+}
+
+void test_kdbopen()
+{
+	printf ("Test mounting modules\n");
+
+	Key *errorKey = keyNew("", KEY_END);
+	KDB *kdb = kdbOpen (errorKey);
+
+	output_trie (kdb->trie);
+
+	kdbClose (kdb, errorKey);
+
+	output_errors (errorKey);
+	output_warnings (errorKey);
+}
+
 int main(int argc, char** argv)
 {
 	printf("TRIE       TESTS\n");
@@ -808,6 +979,8 @@ int main(int argc, char** argv)
 	test_oldroot();
 	test_cascading();
 	test_root();
+	test_default();
+	test_modules();
 
 	printf("\ntest_trie RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

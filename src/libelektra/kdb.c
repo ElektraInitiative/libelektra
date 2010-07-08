@@ -195,7 +195,7 @@ KDB * kdbOpen(Key *errorKey)
 	}
 #endif
 
-	/* Open the trie */
+	/* Open the trie, keys will be deleted within elektraMountOpen */
 	if (elektraMountOpen(handle, keys, handle->modules, errorKey) == -1)
 	{
 		/* Initial loading of trie did not work */
@@ -242,15 +242,12 @@ int kdbClose(KDB *handle, Key *errorKey)
 {
 	if (!handle)
 	{
-		/*errno=KDB_ERR_NOSYS;*/
 		return -1;
 	}
-	if (handle->trie)
-	{
-		elektraTrieClose(handle->trie, errorKey);
-	} else {
-		elektraBackendClose (handle->defaultBackend, errorKey);
-	}
+
+	elektraTrieClose(handle->trie, errorKey);
+
+	elektraBackendClose (handle->defaultBackend, errorKey);
 
 	elektraModulesClose (handle->modules, errorKey);
 
