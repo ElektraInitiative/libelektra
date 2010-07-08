@@ -206,14 +206,14 @@ int elektraMountBackend (KDB *kdb, Backend *backend, Key *errorKey)
 
 	if (backend->mountpoint->key[0] == '/')
 	{
-		sprintf(mountpoint,"user/%s/",keyName(backend->mountpoint));
-		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, (void*)backend);
+		sprintf(mountpoint, "user%s/", keyName(backend->mountpoint));
+		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
 
-		sprintf(mountpoint,"system/%s/",keyName(backend->mountpoint));
-		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, (void*)backend);
+		sprintf(mountpoint, "system%s/", keyName(backend->mountpoint));
+		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
 	} else {
-		sprintf(mountpoint,"%s/",keyName(backend->mountpoint));
-		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, (void*)backend);
+		sprintf(mountpoint, "%s/", keyName(backend->mountpoint));
+		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
 	}
 
 	elektraFree(mountpoint);

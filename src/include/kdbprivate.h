@@ -311,6 +311,10 @@ struct _Backend {
 	ssize_t systemsize;	/*!< The size of the systems key from the previous get.
 		Needed to know if a key was removed from a keyset. */
 
+	size_t refcounter;	/*!< This refcounter shows how often the backend
+		is used.  Not cascading or default backends have 1 in it.
+		More than two is not possible, because a backend
+		can be only mounted in system and user each once.*/
 };
 
 /**

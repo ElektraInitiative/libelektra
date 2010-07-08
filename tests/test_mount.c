@@ -39,6 +39,7 @@ KDB* kdb_new()
 Backend *b_new(const char *name, const char *value)
 {
 	Backend *backend = elektraCalloc (sizeof (Backend));
+	backend->refcounter = 1;
 
 	backend->mountpoint = keyNew (name, KEY_VALUE, value, KEY_END);
 	keyIncRef (backend->mountpoint);
@@ -624,6 +625,92 @@ void test_oldroot()
 	ksDel (modules);
 }
 
+KeySet *cascading_config(void)
+{
+	return ksNew(5,
+		keyNew("system/elektra/mountpoints", KEY_END),
+		keyNew("system/elektra/mountpoints/simple", KEY_END),
+		keyNew("system/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "/tests/simple", KEY_END),
+		KS_END);
+}
+
+void test_cascading()
+{
+	printf ("Test simple mount with cascading\n");
+
+	KDB *kdb = kdb_new();
+	Key *errorKey = keyNew(0);
+	KeySet *modules = modules_config();
+	succeed_if (elektraMountOpen(kdb, cascading_config(), modules, errorKey) == 0, "could not open trie");
+
+	output_warnings (errorKey);
+	output_errors (errorKey);
+
+	exit_if_fail (kdb->trie, "kdb->trie was not build up successfully");
+
+	output_trie (kdb->trie);
+
+	Key *searchKey = keyNew("user", KEY_END);
+	Backend *backend = elektraTrieLookup(kdb->trie, searchKey);
+	succeed_if (!backend, "there should be no backend");
+
+	keySetName(searchKey, "system");
+	backend = elektraTrieLookup(kdb->trie, searchKey);
+	succeed_if (!backend, "there should be no backend");
+
+
+	Key *mp = keyNew("", KEY_VALUE, "simple", KEY_END);
+	mp->keySize = sizeof("/tests/simple");
+	mp->key = malloc (mp->keySize);
+	strcpy (mp->key, "/tests/simple");
+
+	keySetName(searchKey, "user/tests/simple");
+	backend = elektraTrieLookup(kdb->trie, searchKey);
+	succeed_if (backend, "there should be a backend");
+	succeed_if (compare_key(backend->mountpoint, mp) == 0, "mountpoint key not correct");
+	output_key (backend->mountpoint);
+
+
+	keySetName(searchKey, "user/tests/simple/below");
+	Backend *b2 = elektraTrieLookup(kdb->trie, searchKey);
+	succeed_if (b2, "there should be a backend");
+	succeed_if (backend == b2, "should be same backend");
+	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+
+
+	keySetName(searchKey, "user/tests/simple/deep/below");
+	b2 = elektraTrieLookup(kdb->trie, searchKey);
+	succeed_if (b2, "there should be a backend");
+	succeed_if (backend == b2, "should be same backend");
+	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+
+
+	keySetName(searchKey, "system/tests/simple");
+	backend = elektraTrieLookup(kdb->trie, searchKey);
+	succeed_if (backend, "there should be a backend");
+	succeed_if (compare_key(backend->mountpoint, mp) == 0, "mountpoint key not correct");
+
+	keySetName(searchKey, "system/tests/simple/below");
+	b2 = elektraTrieLookup(kdb->trie, searchKey);
+	succeed_if (b2, "there should be a backend");
+	succeed_if (backend == b2, "should be same backend");
+	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+
+
+	keySetName(searchKey, "system/tests/simple/deep/below");
+	b2 = elektraTrieLookup(kdb->trie, searchKey);
+	succeed_if (b2, "there should be a backend");
+	succeed_if (backend == b2, "should be same backend");
+	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+
+
+	keyDel (errorKey);
+	ksDel (modules);
+	keyDel (mp);
+	keyDel (searchKey);
+	kdb_del (kdb);
+}
+
 int main(int argc, char** argv)
 {
 	printf("TRIE       TESTS\n");
@@ -639,6 +726,7 @@ int main(int argc, char** argv)
 	test_us();
 	test_endings();
 	test_oldroot();
+	test_cascading();
 
 	printf("\ntest_trie RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
