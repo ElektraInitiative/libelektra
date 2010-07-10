@@ -249,8 +249,7 @@ static int elektraSplitSearchTrie(Split *split, Trie *trie, Key *parentKey)
  *      but that would require splitting up of keysets of the same backend)
  *
  * @ingroup split
- * @return -1 on error
- * @return 1
+ * @return always 1
  */
 int elektraSplitBuildup (Split *split, KDB *handle, Key *parentKey)
 {
@@ -261,73 +260,34 @@ int elektraSplitBuildup (Split *split, KDB *handle, Key *parentKey)
 	if (!parentKey || !parentKey->key)
 	{
 		parentKey = 0;
-		userKey = keyNew("user", KEY_END);
-		systemKey = keyNew("system", KEY_END);
 	}
 
-	if (!handle->trie)
-	{
-		Backend *defaultBackend = handle->defaultBackend;
-
-		/* If parentKey is null it will be true for keyIsUser and keyIsSystem below */
-		if (keyIsUser(parentKey))
-		{
-			elektraSplitAppend (split, defaultBackend, keyNew("user", KEY_VALUE, "default", KEY_END), 2);
-		}
-
-		if (keyIsSystem(parentKey))
-		{
-			elektraSplitAppend (split, defaultBackend, keyNew("system", KEY_VALUE, "default", KEY_END), 2);
-		}
-
-		if (!parentKey) goto finish;
-		else return 1;
-	}
-
+	userKey = keyNew("user", KEY_END);
+	systemKey = keyNew("system", KEY_END);
 
 	elektraSplitSearchTrie(split, trie, parentKey);
 
-	/* We may have found something in the trie, but is it enough? */
-	if (!parentKey)
+	/* If parentKey is null it will be true for keyIsUser and keyIsSystem below */
+	if (keyIsUser(parentKey))
 	{
-		/* Do we lack one (or two) of the root backends? */
+		/* Do we lack one (or two) of the default backends? */
 		if (elektraSplitSearchRoot(split, userKey) == 0)
 		{
-			Backend *backend = elektraTrieLookup(trie, userKey);
-			elektraSplitAppend (split, backend, keyNew("user", KEY_VALUE, "root", KEY_END), 2);
+			elektraSplitAppend (split, handle->defaultBackend, keyNew("user", KEY_VALUE, "default", KEY_END), 2);
 		}
-
-		if (elektraSplitSearchRoot(split, systemKey) == 0)
-		{
-			Backend *backend = elektraTrieLookup(trie, systemKey);
-			elektraSplitAppend (split, backend, keyNew("system", KEY_VALUE, "root", KEY_END), 2);
-		}
-		goto finish;
-	} else {
-		if (elektraSplitSearchRoot(split, parentKey) == 1) return 1;
-
-		/* Seems like we are lacking a root backend (in the domain of parentKey) */
-
-		Backend *backend = elektraTrieLookup(trie, parentKey);
-
-		if (keyIsUser(parentKey))
-		{
-			elektraSplitAppend (split, backend, keyNew("user", KEY_VALUE, "root", KEY_END), 2);
-		}
-
-		if (keyIsSystem(parentKey))
-		{
-			elektraSplitAppend (split, backend, keyNew("system", KEY_VALUE, "root", KEY_END), 2);
-		}
-		return 1;
 	}
 
-	/* We have not found a root backend either -> not allowed */
-	return -1;
+	if (keyIsSystem(parentKey))
+	{
+		if (elektraSplitSearchRoot(split, systemKey) == 0)
+		{
+			elektraSplitAppend (split, handle->defaultBackend, keyNew("system", KEY_VALUE, "default", KEY_END), 2);
+		}
+	}
 
-finish:
 	keyDel (userKey);
 	keyDel (systemKey);
+
 	return 1;
 }
 
