@@ -113,6 +113,7 @@ int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey)
 {
 	/* Reopen the default Backend for fresh user experience (update issue) */
 	kdb->defaultBackend = elektraBackendOpenDefault(modules, errorKey);
+	ssize_t where = -1;
 
 	if (!kdb->defaultBackend)
 	{
@@ -130,6 +131,7 @@ int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey)
 	{
 		++ kdb->defaultBackend->refcounter;
 		elektraMountBackend (kdb, kdb->defaultBackend, errorKey);
+		where = kdb->split->size-1;
 	}
 	keyDel (key);
 
@@ -139,6 +141,12 @@ int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey)
 	if (backend == kdb->defaultBackend)
 	{
 		elektraSplitAppend(kdb->split, backend, key, 0);
+		if (where != -1)
+		{
+			ELEKTRA_ADD_WARNING (48, errorKey, "Default backend already mounted in system");
+			return -1;
+		}
+		where = kdb->split->size-1;
 	} else {
 		keyDel (key);
 	}
@@ -147,7 +155,9 @@ int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey)
 	backend = elektraMountGetBackend(kdb, key);
 	if (backend == kdb->defaultBackend)
 	{
-		elektraSplitAppend(kdb->split, backend, key, 0);
+		elektraSplitAppend(kdb->split, backend, key, 2);
+		/* and update syncbits of default backend in system */
+		kdb->split->syncbits[where] = 2;
 	} else {
 		keyDel (key);
 	}
@@ -229,11 +239,11 @@ int elektraMountBackend (KDB *kdb, Backend *backend, Key *errorKey)
 		/* Root backend */
 		sprintf(mountpoint, "system%s", keyName(backend->mountpoint));
 		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
-		elektraSplitAppend(kdb->split, backend, keyNew("system", KEY_VALUE, "root", KEY_END), 0);
+		elektraSplitAppend(kdb->split, backend, keyNew("system", KEY_VALUE, "root", KEY_END), 2);
 
 		sprintf(mountpoint, "user%s", keyName(backend->mountpoint));
 		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
-		elektraSplitAppend(kdb->split, backend, keyNew("user", KEY_VALUE, "root", KEY_END), 0);
+		elektraSplitAppend(kdb->split, backend, keyNew("user", KEY_VALUE, "root", KEY_END), 2);
 	}
 	else if (backend->mountpoint->key[0] == '/')
 	{
@@ -241,12 +251,12 @@ int elektraMountBackend (KDB *kdb, Backend *backend, Key *errorKey)
 		sprintf(mountpoint, "system%s/", keyName(backend->mountpoint));
 		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
 		elektraSplitAppend(kdb->split, backend,
-			keyNew(mountpoint, KEY_VALUE, keyString(backend->mountpoint), KEY_END), 0);
+			keyNew(mountpoint, KEY_VALUE, keyString(backend->mountpoint), KEY_END), 2);
 
 		sprintf(mountpoint, "user%s/", keyName(backend->mountpoint));
 		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
 		elektraSplitAppend(kdb->split, backend,
-			keyNew(mountpoint, KEY_VALUE, keyString(backend->mountpoint), KEY_END), 0);
+			keyNew(mountpoint, KEY_VALUE, keyString(backend->mountpoint), KEY_END), 2);
 	} else {
 		/* Normal single mounted backend */
 		sprintf(mountpoint, "%s/", keyName(backend->mountpoint));

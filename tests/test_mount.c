@@ -33,6 +33,7 @@
 KDB* kdb_new()
 {
 	KDB *kdb = elektraCalloc (sizeof (KDB));
+	kdb->split = elektraSplitNew();
 	return kdb;
 }
 
@@ -51,6 +52,7 @@ void kdb_del(KDB *kdb)
 {
 	elektraBackendClose (kdb->defaultBackend, 0);
 	elektraTrieClose(kdb->trie, 0);
+	elektraSplitDel (kdb->split);
 
 	elektraFree (kdb);
 }

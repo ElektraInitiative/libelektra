@@ -243,17 +243,17 @@ int elektraSplitBuildup (Split *split, KDB *kdb, Key *parentKey)
 		if (backend == kdb->split->handles[i] && keyRel(kdb->split->parents[i], parentKey) >= 0)
 		{
 			/* parentKey is exactly in this backend, so add it! */
-			elektraSplitAppend (split, kdb->split->handles[i], keyDup(kdb->split->parents[i]), 0);
+			elektraSplitAppend (split, kdb->split->handles[i], keyDup(kdb->split->parents[i]), kdb->split->syncbits[i]);
 		}
 		else if (keyRel(parentKey, kdb->split->parents[i]) >= 0)
 		{
 			/* this backend is completely below the parentKey, so lets add it. */
-			elektraSplitAppend (split, kdb->split->handles[i], keyDup(kdb->split->parents[i]), 0);
+			elektraSplitAppend (split, kdb->split->handles[i], keyDup(kdb->split->parents[i]), kdb->split->syncbits[i]);
 		}
 		else if (parentKey == 0)
 		{
 			/* We want every backend. */
-			elektraSplitAppend (split, kdb->split->handles[i], keyDup(kdb->split->parents[i]), 0);
+			elektraSplitAppend (split, kdb->split->handles[i], keyDup(kdb->split->parents[i]), kdb->split->syncbits[i]);
 		}
 	}
 

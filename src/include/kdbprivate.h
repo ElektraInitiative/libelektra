@@ -388,7 +388,9 @@ struct _Split {
 	Key **parents;		/*!< The parentkey for the keyset.
 				Is either the mountpoint of the backend
 				or "user", "system" for the splitted root backends */
-	int *syncbits;		/*!< Is there any key in there which need to be synced? */
+	int *syncbits;		/*!< Bits for various options:
+				Bit 0: Is there any key in there which need to be synced?
+				Bit 1: Do we need relative checks? (cascading backend?)*/
 };
 
 /***************************************

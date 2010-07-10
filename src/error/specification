@@ -274,3 +274,8 @@ description:Could not close modules
 severity:warning
 ingroup:kdb
 
+number:48
+description:Assertion Failure
+severity:warning
+ingroup:kdb
+
