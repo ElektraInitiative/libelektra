@@ -99,12 +99,6 @@ void test_simple()
 	parentKey = keyNew("user/tests/simple/below", KEY_END);
 	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
 
-	/*
-	output_split(handle->split);
-	printf ("-----\n");
-	output_split(split);
-	*/
-
 	succeed_if (split->size == 1, "user root + simple");
 	succeed_if (ksGetSize(split->keysets[0]) == 0, "wrong size");
 
