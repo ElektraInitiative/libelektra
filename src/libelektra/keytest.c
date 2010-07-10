@@ -262,6 +262,15 @@ int keyIsDirectBelow(const Key *key, const Key *check)
  * Unlike keyCmp() the number gives information
  * about hierarchical information.
  *
+ * TODO: give examples, dont do the reverse calculations
+ * 2... below
+ * 1... direct below
+ * 0... the same
+ * -1.. sibling (in same hierarchy)
+ * -2.. nephew (in same hierarchy)
+ * -3.. same hierarchy
+ * -4.. no relation
+ *
  * - If the keys are the same 0 is returned.
  * So it is the key itself.
 @verbatim
@@ -334,13 +343,17 @@ user/other/sibling/any/depth/deeper/nonrelated
  */
 int keyRel (const Key *k1, const Key *k2)
 {
+	/*TODO: dont do reverse relations..*/
 	if (keyIsDirectBelow(k1, k2)) return 1;
 	if (keyIsDirectBelow(k2, k1)) return -1;
 	if (keyIsBelow(k1, k2)) return 2;
 	if (keyIsBelow(k2, k1)) return -2;
-	// if (keyIsSibling(k1, k2)) return 3*res;
-	// if (keyIsNephew(k1, k2)) return 4*res;
-	// if (keyIsGrandNephew(k1, k2)) return 5*res;
+	// if (!keyCmp(k1,k2)) return 0;
+	// if (keyIsSibling(k1, k2)) return -1;
+	// if (keyIsNephew(k1, k2)) return -2;
+	// if (keyIsUser(k1) && keyIsUser(k2)) return -3;
+	// if (keyIsSystem(k1) && keyIsSystem(k2)) return -3;
+	// return -4;
 
 	if (!keyCmp(k1,k2)) return 0;
 

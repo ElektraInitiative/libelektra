@@ -212,34 +212,6 @@ int elektraSplitSearchRoot(Split *split, Key *parentKey)
 }
 
 
-/*Needed for recursive implementation*/
-static int elektraSplitSearchTrie(Split *split, Trie *trie, Key *parentKey)
-{
-	int hasAdded = 0;
-	int i;
-
-	if (trie==NULL) return 0;
-
-	for (i=0;i<MAX_UCHAR;i++)
-	{
-		if (trie->text[i]!=NULL)
-		{
-			Backend *cur = trie->value[i];
-			hasAdded += elektraSplitSearchTrie(split, trie->children[i], parentKey);
-
-			if (!cur) continue;
-
-			if (keyRel(cur->mountpoint, parentKey) >= 0)
-			{
-				elektraSplitAppend(split, cur, keyDup(cur->mountpoint), 0);
-				++hasAdded;
-			}
-		}
-	}
-	return hasAdded;
-}
-
-
 /**
  * Walks through the trie and adds all backends below parentKey.
  *
@@ -264,23 +236,24 @@ int elektraSplitBuildup (Split *split, KDB *kdb, Key *parentKey)
 		parentKey = 0;
 	}
 
-	elektraSplitSearchTrie(split, kdb->trie, parentKey);
+	Backend * backend = elektraMountGetBackend(kdb, parentKey);
 
-	/* If parentKey is null it will be true for keyIsUser and keyIsSystem below */
-	if (keyIsUser(parentKey))
+	for (size_t i=0; i < kdb->split->size; ++i)
 	{
-		/* Do we lack one (or two) of the default backends? */
-		if (elektraSplitSearchRoot(split, parentKey) == 0)
+		if (backend == kdb->split->handles[i])
 		{
-			elektraSplitAppend (split, kdb->defaultBackend, keyNew("user", KEY_VALUE, "default", KEY_END), 2);
+			/* parentKey is exactly in this backend, so add it! */
+			elektraSplitAppend (split, kdb->split->handles[i], keyDup(kdb->split->parents[i]), 0);
 		}
-	}
-
-	if (keyIsSystem(parentKey))
-	{
-		if (elektraSplitSearchRoot(split, parentKey) == 0)
+		else if (keyRel(parentKey, kdb->split->parents[i]) > 0)
 		{
-			elektraSplitAppend (split, kdb->defaultBackend, keyNew("system", KEY_VALUE, "default", KEY_END), 2);
+			/* this backend is completely below the parentKey, so lets add it. */
+			elektraSplitAppend (split, kdb->split->handles[i], keyDup(kdb->split->parents[i]), 0);
+		}
+		else if (parentKey == 0)
+		{
+			/* We want every backend. */
+			elektraSplitAppend (split, kdb->split->handles[i], keyDup(kdb->split->parents[i]), 0);
 		}
 	}
 
