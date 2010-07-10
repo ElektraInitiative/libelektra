@@ -141,6 +141,8 @@ void test_get()
 	KDB *handle = elektraCalloc(sizeof(struct _KDB));
 	handle->split = elektraSplitNew();
 	handle->defaultBackend = elektraCalloc(sizeof(struct _Backend));
+	handle->defaultBackend->refcounter = 1;
+	KeySet *modules = modules_config();
 	/* So we had 2 keys before in the keyset */
 
 	KeySet *ks = ksNew(15,
@@ -152,10 +154,15 @@ void test_get()
 	Split *split = elektraSplitNew();
 	Key *parentKey = keyNew("user", KEY_VALUE, "default", KEY_END);
 
+	succeed_if (elektraMountDefault (handle, modules, 0) == 1, "could not mount default backends");
 	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
 	succeed_if (elektraSplitAppoint (split, handle, ks) == 1, "could not appoint keys to split");
 	split->syncbits[0] = 3; /* Simulate a kdbGet() */
 	succeed_if (elektraSplitGet (split, handle) == 1, "could not postprocess get");
+
+	output_split(handle->split);
+	printf ("-----\n");
+	output_split(split);
 
 	succeed_if (split->size == 2, "there is an empty keset");
 	succeed_if (ksGetSize(split->keysets[0]) == 3, "wrong size");
@@ -194,9 +201,8 @@ void test_get()
 	keyDel (parentKey);
 
 	ksDel (ks);
-	elektraSplitDel (handle->split);
-	elektraFree(handle->defaultBackend);
-	elektraFree(handle);
+	kdbClose(handle, 0);
+	ksDel (modules);
 }
 
 void test_limit()
@@ -206,6 +212,7 @@ void test_limit()
 	handle->split = elektraSplitNew();
 	handle->defaultBackend = elektraCalloc(sizeof(struct _Backend));
 	/* So we had 2 keys before in the keyset */
+	KeySet *modules = modules_config();
 
 	KeySet *ks = ksNew(15,
 			keyNew("user/testkey1/below/here", KEY_END),
@@ -263,9 +270,11 @@ void test_limit()
 
 
 	ksDel (ks);
+	elektraTrieClose(handle->trie, 0);
 	elektraSplitDel (handle->split);
 	elektraFree(handle->defaultBackend);
 	elektraFree(handle);
+	ksDel (modules);
 }
 
 
@@ -335,6 +344,7 @@ void test_sizes()
 	handle->defaultBackend = elektraCalloc(sizeof(struct _Backend));
 	succeed_if (handle->defaultBackend->usersize == 0, "usersize not initialized correct");
 	succeed_if (handle->defaultBackend->systemsize == 0, "systemsize not initialized correct");
+	KeySet *modules = modules_config();
 
 	KeySet *ks = ksNew(15,
 			keyNew("user/testkey1/below/here", KEY_END),
@@ -396,9 +406,11 @@ void test_sizes()
 
 
 	ksDel (ks);
+	elektraTrieClose(handle->trie, 0);
 	elektraSplitDel (handle->split);
 	elektraFree(handle->defaultBackend);
 	elektraFree(handle);
+	ksDel (modules);
 }
 
 

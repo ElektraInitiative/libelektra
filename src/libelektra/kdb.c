@@ -253,9 +253,13 @@ int kdbClose(KDB *handle, Key *errorKey)
 
 	elektraBackendClose (handle->defaultBackend, errorKey);
 
-	elektraModulesClose (handle->modules, errorKey);
-
-	ksDel (handle->modules);
+	if (handle->modules)
+	{
+		elektraModulesClose (handle->modules, errorKey);
+		ksDel (handle->modules);
+	} else {
+		ELEKTRA_ADD_WARNING (47, errorKey, "modules were not open");
+	}
 
 	elektraFree(handle);
 
