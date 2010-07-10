@@ -133,6 +133,25 @@ int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey)
 	}
 	keyDel (key);
 
+	/* Now lets add the default backends to split. */
+	key = keyNew ("system", KEY_VALUE, "default", KEY_END);
+	backend = elektraMountGetBackend(kdb, key);
+	if (backend == kdb->defaultBackend)
+	{
+		elektraSplitAppend(kdb->split, backend, key, 0);
+	} else {
+		keyDel (key);
+	}
+
+	key = keyNew ("user", KEY_VALUE, "default", KEY_END);
+	backend = elektraMountGetBackend(kdb, key);
+	if (backend == kdb->defaultBackend)
+	{
+		elektraSplitAppend(kdb->split, backend, key, 0);
+	} else {
+		keyDel (key);
+	}
+
 	return 0;
 }
 
@@ -203,28 +222,36 @@ int elektraMountBackend (KDB *kdb, Backend *backend, Key *errorKey)
 		/* Default backend */
 		sprintf(mountpoint, "system/elektra/");
 		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
+		elektraSplitAppend(kdb->split, backend, keyNew("system/elektra/", KEY_VALUE, "default", KEY_END), 0);
 	}
 	else if (!strcmp (backend->mountpoint->key, "/"))
 	{
 		/* Root backend */
-		sprintf(mountpoint, "user%s", keyName(backend->mountpoint));
-		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
-
 		sprintf(mountpoint, "system%s", keyName(backend->mountpoint));
 		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
+		elektraSplitAppend(kdb->split, backend, keyNew("system", KEY_VALUE, "root", KEY_END), 0);
+
+		sprintf(mountpoint, "user%s", keyName(backend->mountpoint));
+		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
+		elektraSplitAppend(kdb->split, backend, keyNew("user", KEY_VALUE, "root", KEY_END), 0);
 	}
 	else if (backend->mountpoint->key[0] == '/')
 	{
 		/* Cascading Backend */
-		sprintf(mountpoint, "user%s/", keyName(backend->mountpoint));
-		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
-
 		sprintf(mountpoint, "system%s/", keyName(backend->mountpoint));
 		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
+		elektraSplitAppend(kdb->split, backend,
+			keyNew(mountpoint, KEY_VALUE, keyString(backend->mountpoint), KEY_END), 0);
+
+		sprintf(mountpoint, "user%s/", keyName(backend->mountpoint));
+		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
+		elektraSplitAppend(kdb->split, backend,
+			keyNew(mountpoint, KEY_VALUE, keyString(backend->mountpoint), KEY_END), 0);
 	} else {
 		/* Normal single mounted backend */
 		sprintf(mountpoint, "%s/", keyName(backend->mountpoint));
 		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
+		elektraSplitAppend(kdb->split, backend, keyDup (backend->mountpoint), 0);
 	}
 
 	elektraFree(mountpoint);

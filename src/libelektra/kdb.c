@@ -195,6 +195,8 @@ KDB * kdbOpen(Key *errorKey)
 	}
 #endif
 
+	handle->split = elektraSplitNew();
+
 	/* Open the trie, keys will be deleted within elektraMountOpen */
 	if (elektraMountOpen(handle, keys, handle->modules, errorKey) == -1)
 	{
@@ -244,6 +246,8 @@ int kdbClose(KDB *handle, Key *errorKey)
 	{
 		return -1;
 	}
+
+	elektraSplitDel (handle->split);
 
 	elektraTrieClose(handle->trie, errorKey);
 

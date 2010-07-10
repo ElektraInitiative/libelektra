@@ -133,6 +133,13 @@ void elektraSplitResize(Split *split)
  */
 ssize_t elektraSplitAppend(Split *split, Backend *backend, Key *parentKey, int syncbits)
 {
+	if (!split)
+	{
+		/* To make test cases work & valgrind clean */
+		keyDel (parentKey);
+		return -1;
+	}
+
 	++ split->size;
 	if (split->size > split->alloc) elektraSplitResize(split);
 

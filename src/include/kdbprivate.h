@@ -269,12 +269,15 @@ typedef struct _KDB KDB;
  * @ingroup backend
  */
 struct _KDB {
-	Trie *trie;		/*!< The pointer to the trie holding backends.
-		@see kdbhGetTrie() */
+	Trie *trie;		/*!< The pointer to the trie holding backends.*/
+
+	Split *split;		/*!< A list of all mountpoints. It basically has the
+				 same information than in the trie, but it is not trivial
+				 to convert from one to the other.*/
 
 	KeySet *modules;	/*!< A list of all modules loaded at the moment.*/
 
-	Backend *defaultBackend;/*!< The default backend as fallback when nothing else is found. */
+	Backend *defaultBackend;/*!< The default backend as fallback when nothing else is found.*/
 };
 
 /**
