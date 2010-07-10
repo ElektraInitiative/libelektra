@@ -35,6 +35,7 @@ Trie *test_insert (Trie *trie, char *name, char* value)
 {
 	Backend *backend = elektraCalloc (sizeof (Backend));
 	backend->mountpoint = keyNew (name, KEY_VALUE, value, KEY_END);
+	backend->refcounter = 1;
 	keyIncRef (backend->mountpoint);
 	return elektraTrieInsert(trie, name, backend);
 }
@@ -62,8 +63,6 @@ void test_minimaltrie()
 
 	keySetName (s, "system/below");
 	succeed_if (compare_key (elektraTrieLookup (trie, s)->mountpoint, mp)==0, "could not find empty key");
-
-	// output_trie (trie);
 
 	elektraTrieClose(trie, 0);
 	keyDel (s);
@@ -180,8 +179,6 @@ void test_iterate()
 	succeed_if (backend == b3, "should be same backend");
 	succeed_if (compare_key(b3->mountpoint, mp2) == 0, "mountpoint key not correct");
 
-	// output_trie(trie);
-
 	KeySet *mps = ksNew(0);
 	collect_mountpoints(trie, mps);
 	succeed_if (ksGetSize (mps) == 2, "not both mountpoints collected");
@@ -248,8 +245,6 @@ void test_reviterate()
 	succeed_if (b3, "there should be a backend");
 	succeed_if (backend == b3, "should be same backend");
 	succeed_if (compare_key(b3->mountpoint, mp2) == 0, "mountpoint key not correct");
-
-	// output_trie(trie);
 
 	KeySet *mps = ksNew(0);
 	collect_mountpoints(trie, mps);
@@ -386,8 +381,6 @@ void test_moreiterate()
 	b2 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b3, "there should be a backend");
 	succeed_if (compare_key(b3->mountpoint, ksLookupByName(mps, "system/tests/hosts/below",0)) == 0, "mountpoint key not correct");
-
-	// output_trie(trie);
 
 	KeySet *mps_cmp = ksNew(0);
 	collect_mountpoints(trie, mps_cmp);
@@ -727,17 +720,6 @@ void test_endings()
 	}
 }
 
-KeySet *root_config(void)
-{
-	return ksNew(5,
-		keyNew("system/elektra/mountpoints", KEY_END),
-		keyNew("system/elektra/mountpoints/root", KEY_END),
-		keyNew("system/elektra/mountpoints/root/mountpoint", KEY_VALUE, "", KEY_END),
-		keyNew("system/elektra/mountpoints/simple", KEY_END),
-		keyNew("system/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user/tests/simple", KEY_END),
-		KS_END);
-}
-
 void test_root()
 {
 	printf ("Test trie with root\n");
@@ -832,6 +814,7 @@ void test_emptyvalues()
 
 	elektraTrieClose(trie, 0);
 }
+
 
 int main(int argc, char** argv)
 {

@@ -169,6 +169,7 @@ void test_triesimple()
 	parentKey = keyNew("user/tests/simple/below", KEY_END);
 	mp = keyNew("user/tests/simple", KEY_VALUE, "simple", KEY_END);
 	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
+
 	succeed_if (split->size == 1, "there is an empty keset");
 	succeed_if (ksGetSize(split->keysets[0]) == 0, "wrong size");
 	succeed_if (compare_key (split->parents[0], mp) == 0, "parentKey not correct");
@@ -824,8 +825,8 @@ int main(int argc, char** argv)
 	init (argc, argv);
 
 	test_basic();
-	/*
 	test_triesimple();
+	/*
 	test_get();
 	test_limit();
 	test_nobackend();

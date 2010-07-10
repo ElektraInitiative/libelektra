@@ -182,13 +182,18 @@ ssize_t elektraSplitSearchBackend(Split *split, Backend *backend, Key *parent)
 
 
 /**
- * @returns 1 if one of the backends in split has all
+ * @return 1 if one of the backends in split has all
  *          keys below parentKey
+ * @return 0 if parentKey == 0 or there are keys below
+ *          or same than parentKey which do not fit
+ *          in any of splitted keysets
  * @ingroup split
  */
 int elektraSplitSearchRoot(Split *split, Key *parentKey)
 {
 	size_t splitSize = split->size;
+
+	if (!parentKey) return 0;
 
 	for (size_t i=0; i<splitSize; ++i)
 	{
@@ -215,17 +220,10 @@ static int elektraSplitSearchTrie(Split *split, Trie *trie, Key *parentKey)
 			Backend *cur = trie->value[i];
 			hasAdded += elektraSplitSearchTrie(split, trie->children[i], parentKey);
 
-			if (!cur)
-			{
-				/* We now might have the situation that the root backend is needed
-				   additionally. In that case we could work here with the empty_value.
-				   However we simply check afterwards if we need to add root/default
-				   backend because of clearness. */
-				continue;
-			}
+			if (!cur) continue;
+
 			if (keyRel(cur->mountpoint, parentKey) >= 0)
 			{
-				/* if (elektraSplitSearchBackend(split, cur, 0) >= 0) continue; */
 				elektraSplitAppend(split, cur, keyDup(cur->mountpoint), 0);
 				++hasAdded;
 			}
@@ -251,42 +249,33 @@ static int elektraSplitSearchTrie(Split *split, Trie *trie, Key *parentKey)
  * @ingroup split
  * @return always 1
  */
-int elektraSplitBuildup (Split *split, KDB *handle, Key *parentKey)
+int elektraSplitBuildup (Split *split, KDB *kdb, Key *parentKey)
 {
-	Trie *trie = handle->trie;
-	Key *userKey = 0;
-	Key *systemKey = 0;
 
 	if (!parentKey || !parentKey->key)
 	{
 		parentKey = 0;
 	}
 
-	userKey = keyNew("user", KEY_END);
-	systemKey = keyNew("system", KEY_END);
-
-	elektraSplitSearchTrie(split, trie, parentKey);
+	elektraSplitSearchTrie(split, kdb->trie, parentKey);
 
 	/* If parentKey is null it will be true for keyIsUser and keyIsSystem below */
 	if (keyIsUser(parentKey))
 	{
 		/* Do we lack one (or two) of the default backends? */
-		if (elektraSplitSearchRoot(split, userKey) == 0)
+		if (elektraSplitSearchRoot(split, parentKey) == 0)
 		{
-			elektraSplitAppend (split, handle->defaultBackend, keyNew("user", KEY_VALUE, "default", KEY_END), 2);
+			elektraSplitAppend (split, kdb->defaultBackend, keyNew("user", KEY_VALUE, "default", KEY_END), 2);
 		}
 	}
 
 	if (keyIsSystem(parentKey))
 	{
-		if (elektraSplitSearchRoot(split, systemKey) == 0)
+		if (elektraSplitSearchRoot(split, parentKey) == 0)
 		{
-			elektraSplitAppend (split, handle->defaultBackend, keyNew("system", KEY_VALUE, "default", KEY_END), 2);
+			elektraSplitAppend (split, kdb->defaultBackend, keyNew("system", KEY_VALUE, "default", KEY_END), 2);
 		}
 	}
-
-	keyDel (userKey);
-	keyDel (systemKey);
 
 	return 1;
 }
