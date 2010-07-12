@@ -313,6 +313,17 @@ void output_split(Split *split)
 	}
 }
 
+void generate_split (Split *split)
+{
+	printf ("succeed_if (split->size == %zd, \"size of split not correct\");\n", split->size);
+	for (size_t i=0; i<split->size; ++i)
+	{
+		printf ("succeed_if (split->syncbits[%zd]== %d, \"size of split not correct\");\n", i, split->syncbits[i]);
+		printf ("succeed_if (ksGetSize(split->keysets[%zd]) == %zd, \"wrong size\");\n", i, ksGetSize(split->keysets[i]));
+	}
+
+}
+
 void output_warnings(Key *warningKey)
 {
 	const Key *metaWarnings = keyGetMeta(warningKey, "warnings");
