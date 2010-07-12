@@ -322,6 +322,8 @@ Key* elektraMountGetMountpoint(KDB *handle, const Key *where)
  * Will return handle when no more specific KDB could be
  * found.
  *
+ * If key is 0 or invalid the default backend will be returned.
+ *
  * @param handle is the data structure, where the mounted directories are saved.
  * @param key the key, that should be looked up.
  * @return the backend handle associated with the key
@@ -329,6 +331,8 @@ Key* elektraMountGetMountpoint(KDB *handle, const Key *where)
  */
 Backend* elektraMountGetBackend(KDB *handle, const Key *key)
 {
+	if (!key || !key->key) return handle->defaultBackend;
+
 	Backend *ret = elektraTrieLookup(handle->trie, key);
 	if (!ret) return handle->defaultBackend;
 	return ret;

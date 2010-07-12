@@ -152,10 +152,6 @@ void test_get()
 	split->syncbits[0] = 3; /* Simulate a kdbGet() */
 	succeed_if (elektraSplitGet (split, handle) == 1, "could not postprocess get");
 
-	output_split(handle->split);
-	printf ("-----\n");
-	output_split(split);
-
 	succeed_if (split->size == 2, "there is an empty keset");
 	succeed_if (ksGetSize(split->keysets[0]) == 3, "wrong size");
 	succeed_if (keyNeedSync(split->keysets[0]->array[0]) == 0, "key should not need sync");
@@ -179,14 +175,10 @@ void test_get()
 	succeed_if (elektraSplitAppoint(split, handle, ks) == 1, "could not appoint keys to split");
 	succeed_if (elektraSplitGet (split, handle) == 1, "could not postprocess get");
 
-	output_split(handle->split);
-	printf ("-----\n");
-	output_split(split);
-
 	succeed_if (split->size == 2, "there is an empty keset");
-	succeed_if (ksGetSize(split->keysets[0]) == 3, "wrong size");
-	succeed_if (ksGetSize(split->keysets[1]) == 0, "wrong size");
-	succeed_if (compare_keyset(split->keysets[0], ks) == 0, "keyset not correct");
+	succeed_if (ksGetSize(split->keysets[0]) == 0, "wrong size");
+	succeed_if (ksGetSize(split->keysets[1]) == 3, "keys with other domain should go to default keyset");
+	succeed_if (compare_keyset(split->keysets[1], ks) == 0, "keyset not correct");
 	succeed_if (compare_key (split->parents[0], parentKey) == 0, "parentKey not correct");
 	succeed_if (split->parents[1] == 0, "parentKey for default not correct");
 	succeed_if (split->handles[0] == handle->defaultBackend, "not correct backend");
@@ -206,7 +198,6 @@ void test_limit()
 	printf ("Test limit\n");
 	KDB *handle = elektraCalloc(sizeof(struct _KDB));
 	handle->split = elektraSplitNew();
-	handle->defaultBackend = elektraCalloc(sizeof(struct _Backend));
 	/* So we had 2 keys before in the keyset */
 	KeySet *modules = modules_config();
 
@@ -219,6 +210,7 @@ void test_limit()
 	Split *split = elektraSplitNew();
 	Key *parentKey = keyNew("user", KEY_VALUE, "default", KEY_END);
 
+	succeed_if (elektraMountDefault (handle, modules, 0) == 0, "could not mount default backends");
 	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
 	succeed_if (elektraSplitAppoint (split, handle, ks) == 1, "could not appoint keys to split");
 	split->syncbits[0] = 3; /* Simulate a kdbGet() */
@@ -266,10 +258,7 @@ void test_limit()
 
 
 	ksDel (ks);
-	elektraTrieClose(handle->trie, 0);
-	elektraSplitDel (handle->split);
-	elektraFree(handle->defaultBackend);
-	elektraFree(handle);
+	kdbClose(handle, 0);
 	ksDel (modules);
 }
 
@@ -283,7 +272,6 @@ void test_nobackend()
 	KeySet *modules = modules_config();
 	Backend *backend;
 
-	handle->defaultBackend = elektraCalloc(sizeof(struct _Backend));
 	elektraMountOpen(handle, simple_config(), modules, 0);
 
 	KeySet *ks = ksNew(15,
@@ -324,10 +312,7 @@ void test_nobackend()
 	// output_trie(trie);
 
 	ksDel (ks);
-	elektraTrieClose(handle->trie, 0);
-	elektraSplitDel (handle->split);
-	elektraFree(handle->defaultBackend);
-	elektraFree(handle);
+	kdbClose (handle, 0);
 	ksDel (modules);
 }
 
@@ -337,9 +322,6 @@ void test_sizes()
 	printf ("Test sizes\n");
 	KDB *handle = elektraCalloc(sizeof(struct _KDB));
 	handle->split = elektraSplitNew();
-	handle->defaultBackend = elektraCalloc(sizeof(struct _Backend));
-	succeed_if (handle->defaultBackend->usersize == 0, "usersize not initialized correct");
-	succeed_if (handle->defaultBackend->systemsize == 0, "systemsize not initialized correct");
 	KeySet *modules = modules_config();
 
 	KeySet *ks = ksNew(15,
@@ -347,6 +329,11 @@ void test_sizes()
 			keyNew("user/testkey/below1/here", KEY_END),
 			keyNew("user/testkey/below2/here", KEY_END),
 			KS_END);
+
+
+	succeed_if (elektraMountDefault (handle, modules, 0) == 0, "could not mount default backends");
+	succeed_if (handle->defaultBackend->usersize == 0, "usersize not initialized correct");
+	succeed_if (handle->defaultBackend->systemsize == 0, "systemsize not initialized correct");
 
 	Split *split = elektraSplitNew();
 	Key *parentKey = keyNew("user", KEY_VALUE, "default", KEY_END);
@@ -402,10 +389,7 @@ void test_sizes()
 
 
 	ksDel (ks);
-	elektraTrieClose(handle->trie, 0);
-	elektraSplitDel (handle->split);
-	elektraFree(handle->defaultBackend);
-	elektraFree(handle);
+	kdbClose (handle, 0);
 	ksDel (modules);
 }
 
@@ -420,7 +404,7 @@ void test_triesizes()
 	Backend *backend = 0;
 	Backend *rootBackend = 0;
 
-	handle->defaultBackend = elektraCalloc(sizeof(struct _Backend));
+	succeed_if (elektraMountDefault (handle, modules, 0) == 0, "could not mount default backends");
 	succeed_if (handle->defaultBackend->usersize == 0, "usersize not initialized correct");
 	succeed_if (handle->defaultBackend->systemsize == 0, "systemsize not initialized correct");
 	elektraMountOpen(handle, simple_config(), modules, 0);
@@ -484,10 +468,7 @@ void test_triesizes()
 	keyDel (mp);
 
 	ksDel (ks);
-	elektraTrieClose(handle->trie, 0);
-	elektraFree(handle->defaultBackend);
-	elektraSplitDel (handle->split);
-	elektraFree(handle);
+	kdbClose (handle, 0);
 	ksDel (modules);
 }
 
@@ -568,10 +549,7 @@ void test_merge()
 	keyDel (mp);
 
 	ksDel (ks);
-	elektraTrieClose(handle->trie, 0);
-	elektraFree(handle->defaultBackend);
-	elektraSplitDel (handle->split);
-	elektraFree(handle);
+	kdbClose (handle, 0);
 	ksDel (modules);
 }
 
@@ -765,9 +743,8 @@ void test_realworld()
 	keyDel (parent);
 	elektraModulesClose(modules, 0);
 	ksDel (modules);
-	elektraTrieClose(handle->trie, 0);
-	elektraSplitDel (handle->split);
-	elektraFree(handle);
+
+	kdbClose (handle, 0);
 }
 
 
@@ -780,12 +757,12 @@ int main(int argc, char** argv)
 	init (argc, argv);
 
 	test_simple();
-	/*
 	test_get();
 	test_limit();
 	test_nobackend();
 	test_sizes();
 	test_triesizes();
+	/*
 	test_merge();
 	test_realworld();
 	*/

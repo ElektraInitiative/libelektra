@@ -236,6 +236,8 @@ int elektraSplitBuildup (Split *split, KDB *kdb, Key *parentKey)
 		parentKey = 0;
 	}
 
+	/* Returns the backend the key is in or the default backend
+	   otherwise */
 	Backend * backend = elektraMountGetBackend(kdb, parentKey);
 
 	for (size_t i=0; i < kdb->split->size; ++i)

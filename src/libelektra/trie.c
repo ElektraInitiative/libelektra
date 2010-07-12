@@ -59,6 +59,7 @@ Backend* elektraTrieLookup(Trie *trie, const Key *key)
 	Backend *ret=0;
 	size_t len=0;
 
+	if (!key) return 0;
 	if (!trie) return 0;
 
 	len = keyGetNameSize(key) + 1;
