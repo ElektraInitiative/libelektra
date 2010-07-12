@@ -540,8 +540,8 @@ void test_userremove()
 	succeed_if (split->keysets, "did not alloc keysets array");
 	succeed_if (split->handles, "did not alloc handles array");
 	succeed_if (split->size == 2, "everything is in two keyset");
-	succeed_if (ksGetSize(split->keysets[0]) == 1, "wrong size");
-	succeed_if (compare_keyset (split->keysets[0], ks) == 0, "comparing: not correct result");
+	succeed_if (ksGetSize(split->keysets[1]) == 1, "wrong size");
+	succeed_if (compare_keyset (split->keysets[1], ks) == 0, "comparing: not correct result");
 
 	elektraSplitDel (split);
 
@@ -592,8 +592,8 @@ void test_userremove()
 	succeed_if (split->keysets, "did not alloc keysets array");
 	succeed_if (split->handles, "did not alloc handles array");
 	succeed_if (split->size == 2, "everything is in two keyset");
-	succeed_if (ksGetSize(split->keysets[0]) == 1, "wrong size");
-	compare_keyset (split->keysets[0], ks);
+	succeed_if (ksGetSize(split->keysets[1]) == 1, "wrong size");
+	compare_keyset (split->keysets[1], ks);
 
 	elektraSplitDel (split);
 
@@ -1034,8 +1034,8 @@ int main(int argc, char** argv)
 	test_easyparent();
 	test_optimize();
 	test_three();
-	/*
 	test_userremove();
+	/*
 	test_systemremove();
 	test_emptyremove();
 	test_realworld();
