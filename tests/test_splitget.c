@@ -404,10 +404,10 @@ void test_triesizes()
 	Backend *backend = 0;
 	Backend *rootBackend = 0;
 
+	elektraMountOpen(handle, simple_config(), modules, 0);
 	succeed_if (elektraMountDefault (handle, modules, 0) == 0, "could not mount default backends");
 	succeed_if (handle->defaultBackend->usersize == 0, "usersize not initialized correct");
 	succeed_if (handle->defaultBackend->systemsize == 0, "systemsize not initialized correct");
-	elektraMountOpen(handle, simple_config(), modules, 0);
 
 	KeySet *ks = ksNew(15,
 			keyNew("user/testkey1/below/here", KEY_END),
@@ -433,16 +433,15 @@ void test_triesizes()
 	succeed_if (backend->systemsize == 0, "systemsize not initialized correct in backend");
 
 	mp = keyNew("user/tests/simple", KEY_VALUE, "simple", KEY_END);
+
 	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
 	succeed_if (elektraSplitAppoint (split, handle, ks) == 1, "could not appoint keys");
-	split->syncbits[0] = 1; /* Simulate a kdbGet() */
-	split->syncbits[1] = 1; /* Simulate a kdbGet() */
-	ksAppendKey(split->keysets[0], keyNew("system/wrong", KEY_END));
-
-	output_split (split);
-	/*
+	split->syncbits[0] = 3; /* Simulate a kdbGet() */
+	split->syncbits[1] = 3; /* Simulate a kdbGet() */
+	split->syncbits[2] = 1; /* Simulate a kdbGet() */
 
 	succeed_if (elektraSplitGet (split, handle) == 1, "could not postprocess get");
+
 	succeed_if (backend->usersize == 2, "usersize should be updated");
 	succeed_if (backend->systemsize == 0, "systemsize should not change");
 
@@ -452,15 +451,13 @@ void test_triesizes()
 	succeed_if (handle->defaultBackend->usersize == 0, "usersize not initialized correct");
 	succeed_if (handle->defaultBackend->systemsize == 0, "systemsize not initialized correct");
 
-	succeed_if (split->size == 4, "not correct size after appointing");
-	succeed_if (ksGetSize(split->keysets[0]) == 2, "wrong size");
+	succeed_if (split->size == 5, "not correct size after appointing");
 	succeed_if (ksGetSize(split->keysets[1]) == 3, "wrong size");
-	succeed_if (compare_key (split->parents[0], mp) == 0, "parentKey not correct");
-	succeed_if (split->handles[0] == backend, "should be user backend");
+	succeed_if (ksGetSize(split->keysets[2]) == 2, "wrong size");
+	succeed_if (compare_key (split->parents[2], mp) == 0, "parentKey not correct");
+	succeed_if (split->handles[0] == rootBackend, "should be user backend");
 	succeed_if (split->handles[1] == rootBackend, "should be root backend");
-	succeed_if (split->handles[2] == rootBackend, "should be root backend");
-	succeed_if (split->handles[3] == 0, "should be default backend");
-	*/
+	succeed_if (split->handles[2] == backend, "should be root backend");
 
 
 	elektraSplitDel (split);
@@ -483,10 +480,10 @@ void test_merge()
 	Backend *backend = 0;
 	Backend *rootBackend = 0;
 
-	handle->defaultBackend = elektraCalloc(sizeof(struct _Backend));
+	elektraMountOpen(handle, simple_config(), modules, 0);
+	succeed_if (elektraMountDefault (handle, modules, 0) == 0, "could not mount default backends");
 	succeed_if (handle->defaultBackend->usersize == 0, "usersize not initialized correct");
 	succeed_if (handle->defaultBackend->systemsize == 0, "systemsize not initialized correct");
-	elektraMountOpen(handle, simple_config(), modules, 0);
 
 	KeySet *ks = ksNew(15,
 			keyNew("user/testkey1/below/here", KEY_END),
@@ -562,7 +559,9 @@ void test_realworld()
 	handle->split = elektraSplitNew();
 	KeySet *modules = ksNew(0);
 	elektraModulesInit(modules, 0);
+
 	elektraMountOpen(handle, set_realworld(), modules, 0);
+	succeed_if (elektraMountDefault (handle, modules, 0) == 0, "could not mount default backends");
 
 	KeySet *ks = ksNew ( 18,
 		keyNew ("system/elektra/mountpoints", KEY_END),

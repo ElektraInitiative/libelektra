@@ -291,14 +291,25 @@ void output_split(Split *split)
 {
 	for (size_t i=0; i<split->size; ++i)
 	{
-		printf ("split #%zd size: %zd, handle: %p, sync: %d, parent: %s (%s)\n",
+		if (split->handles[i])
+		{
+			printf ("split #%zd size: %zd, handle: %p, sync: %d, parent: %s (%s), us: %zd, ss: %zd\n",
 				i,
 				ksGetSize(split->keysets[i]),
 				(void*)split->handles[i],
 				split->syncbits[i],
 				keyName(split->parents[i]),
-				keyString(split->parents[i])
+				keyString(split->parents[i]),
+				split->handles[i]->usersize,
+				split->handles[i]->systemsize
 				);
+		} else {
+			printf ("split #%zd, size: %zd, default split, sync: %d\n",
+				i,
+				ksGetSize(split->keysets[i]),
+				split->syncbits[i]
+				);
+		}
 	}
 }
 

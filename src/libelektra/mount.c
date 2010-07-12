@@ -50,6 +50,8 @@
  *
  * The config will be deleted within this function.
  *
+ * @note elektraMountDefault is not allowed to be executed before
+ *
  * @param kdb the handle to work with
  * @param modules the current list of loaded modules
  * @param config the configuration which should be used to build up the trie.
@@ -101,6 +103,8 @@ int elektraMountOpen(KDB *kdb, KeySet *config, KeySet *modules, Key *errorKey)
 
 
 /** Reopens the default backend and mounts the default backend if needed.
+ *
+ * @pre Default Backend is closed. elektraMountOpen was executed before.
  *
  * @param kdb the handle to work with
  * @param modules the current list of loaded modules
