@@ -72,7 +72,6 @@ int MountCommand::execute(int , char** )
 		if (rootKey.isDirectBelow(cur))
 		{
 			names.push_back(cur.getBaseName());
-			cout << "add " << cur.getBaseName() << endl;
 		}
 	}
 
@@ -87,19 +86,17 @@ int MountCommand::execute(int , char** )
 	cout << endl;
 
 	std::vector <std::string> mountpoints;
+	mountpoints.push_back("system/elektra");
 	conf.rewind();
 	while (cur = conf.next())
 	{
 		if (cur.getBaseName() == "mountpoint")
 		{
-			if (cur.getString() == "")
+			if (cur.getString().at(0) == '/')
 			{
-				mountpoints.push_back("/");
+				mountpoints.push_back(Key ("user" + cur.getString(), KEY_END).getName());
+				mountpoints.push_back(Key ("system" + cur.getString(), KEY_END).getName());
 			} else {
-				if (!conf.lookup(Key(cur.getString(), KEY_END)))
-				{
-					cout << "Did not find the mountpoint " << cur.getString() << ", will add it" << endl;
-				}
 				mountpoints.push_back(cur.getString());
 			}
 		};
@@ -111,24 +108,36 @@ int MountCommand::execute(int , char** )
 		cout << "Already used are: ";
 		std::copy (mountpoints.begin(), mountpoints.end(), ostream_iterator<std::string>(cout, " "));
 		cout << endl;
-		cout << "Please use / for the root backend" << endl;
+		cout << "Please start with / for a cascading backend" << endl;
 		cout << "Enter the mountpoint: ";
 		cin >> mp;
 	}
-	if (std::find(mountpoints.begin(), mountpoints.end(), mp) != mountpoints.end()) throw MountpointAlreadyInUseException();
+
+	if (mp.at(0) == '/')
+	{
+		Key skmp ("system" + mp, KEY_END);
+		if (std::find(mountpoints.begin(), mountpoints.end(), skmp.getName()) != mountpoints.end()) throw MountpointAlreadyInUseException();
+		Key ukmp ("user" + mp, KEY_END);
+		if (std::find(mountpoints.begin(), mountpoints.end(), ukmp.getName()) != mountpoints.end()) throw MountpointAlreadyInUseException();
+	} else {
+		Key kmp (mp, KEY_END);
+		if (std::find(mountpoints.begin(), mountpoints.end(), kmp.getName()) != mountpoints.end()) throw MountpointAlreadyInUseException();
+	}
 
 	if (mp == "/")
 	{
 		conf.append ( *Key(	root  + "/" + name + "/mountpoint",
-				KEY_VALUE, "",
+				KEY_VALUE, "/",
 				KEY_COMMENT, "The mountpoint says the location where the backend should be mounted.\n"
-				"It must be a valid, canonical elektra path. There are no ., .. or multiple slashes allowed.\n"
-				"You are not allowed to mount inside system/elektra.",
+				"This is the root mountpoint.\n",
 				KEY_END));
 	}
 	else if (mp.at(0) == '/')
 	{
-		if (!Key ("system" + mp, KEY_END)) throw MountpointInvalidException();
+		Key k("system" + mp, KEY_END);
+		Key restrictedPath ("system/elektra", KEY_END);
+		if (!k) throw MountpointInvalidException();
+		if (restrictedPath.isBelow(k)) throw MountpointInvalidException();
 		conf.append ( *Key(	root  + "/" + name + "/mountpoint",
 				KEY_VALUE, mp.c_str(),
 				KEY_COMMENT, "The mountpoint says the location where the backend should be mounted.\n"
@@ -136,12 +145,14 @@ int MountCommand::execute(int , char** )
 				"That means it is both mounted to user and system.",
 				KEY_END));
 	} else {
-		if (!Key (mp, KEY_END)) throw MountpointInvalidException();
+		Key k(mp, KEY_END);
+		Key restrictedPath ("system/elektra", KEY_END);
+		if (!k) throw MountpointInvalidException();
+		if (restrictedPath.isBelow(k)) throw MountpointInvalidException();
 		conf.append ( *Key(	root  + "/" + name + "/mountpoint",
 				KEY_VALUE, mp.c_str(),
 				KEY_COMMENT, "The mountpoint says the location where the backend should be mounted.\n"
-				"It must be a valid, canonical elektra path. There are no ., .. or multiple slashes allowed.\n"
-				"You are not allowed to mount inside system/elektra.",
+				"This is a normal mountpoint.\n",
 				KEY_END));
 	}
 	cout << endl;
@@ -164,8 +175,6 @@ int MountCommand::execute(int , char** )
 		cin >> path;
 		backend.checkFile (path);
 		backend.addPlugin ();
-
-		// TODO: Check
 
 		conf.append ( *Key( root  + "/" + name + "/config",
 				KEY_VALUE, "",
