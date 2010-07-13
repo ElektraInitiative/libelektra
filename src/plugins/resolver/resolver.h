@@ -45,9 +45,6 @@
 
 #define ERROR_SIZE 1024
 
-#define BACKENDNAME "resolver"
-#define BACKENDVERSION "0.0.1"
-
 typedef struct _resolverHandle resolverHandle;
 
 struct _resolverHandle

@@ -218,7 +218,7 @@ ssize_t kdbGet_dump(ckdb::Plugin *, ckdb::KeySet *returned, const ckdb::Key *par
 			keyNew ("system/elektra/modules/dump/infos/needs",
 				KEY_VALUE, "", KEY_END),
 			keyNew ("system/elektra/modules/dump/infos/version",
-				KEY_VALUE, BACKENDVERSION, KEY_END),
+				KEY_VALUE, PLUGINVERSION, KEY_END),
 			KS_END);
 		ksAppend(returned, n);
 		ksDel (n);
@@ -243,7 +243,7 @@ ssize_t kdbSet_dump(ckdb::Plugin *, ckdb::KeySet *returned, const ckdb::Key *par
 
 ckdb::Plugin *ELEKTRA_PLUGIN_EXPORT(dump)
 {
-	return elektraPluginExport(BACKENDNAME,
+	return elektraPluginExport("dump",
 		ELEKTRA_PLUGIN_GET,		&kdbGet_dump,
 		ELEKTRA_PLUGIN_SET,		&kdbSet_dump,
 		ELEKTRA_PLUGIN_END);

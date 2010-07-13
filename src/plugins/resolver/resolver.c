@@ -154,7 +154,7 @@ int elektraResolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			keyNew ("system/elektra/modules/resolver/infos/needs",
 				KEY_VALUE, "", KEY_END),
 			keyNew ("system/elektra/modules/resolver/infos/version",
-				KEY_VALUE, BACKENDVERSION, KEY_END),
+				KEY_VALUE, PLUGINVERSION, KEY_END),
 			KS_END);
 		ksAppend(returned, info);
 		ksDel (info);
@@ -380,7 +380,7 @@ error:
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(resolver)
 {
-	return elektraPluginExport(BACKENDNAME,
+	return elektraPluginExport("resolver",
 		ELEKTRA_PLUGIN_OPEN,	&elektraResolverOpen,
 		ELEKTRA_PLUGIN_CLOSE,	&elektraResolverClose,
 		ELEKTRA_PLUGIN_GET,	&elektraResolverGet,

@@ -105,11 +105,19 @@ struct PluginWrongName : public PluginCheckException
 	}
 };
 
-struct PluginNoInfo : public PluginCheckException
+struct PluginNoInfo: public PluginCheckException
 {
 	virtual const char* what() const throw()
 	{
 		return "No info found for that plugin!";
+	}
+};
+
+struct VersionInfoMismatch: public PluginCheckException
+{
+	virtual const char* what() const throw()
+	{
+		return "Version info does not match with library!";
 	}
 };
 
@@ -155,7 +163,7 @@ public:
 	 *
 	 * @pre parse()
 	 */
-	void checks();
+	void check();
 
 	ckdb::Plugin *operator->();
 

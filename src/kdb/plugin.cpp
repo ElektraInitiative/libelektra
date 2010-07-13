@@ -113,8 +113,10 @@ void Plugin::parse ()
 
 }
 
-void Plugin::checks()
-{}
+void Plugin::check()
+{
+	if (infos["version"] != PLUGINVERSION) throw VersionInfoMismatch();
+}
 
 void Plugin::close()
 {

@@ -82,6 +82,7 @@ void Backend::tryPlugin (std::string pluginName)
 	auto_ptr<Plugin>plugin (new Plugin (realPluginName, modules, testConfig));
 	plugin->loadInfo();
 	plugin->parse();
+	plugin->check();
 
 	errorplugins.tryPlugin (*plugin.get());
 	getplugins.tryPlugin   (*plugin.get());
