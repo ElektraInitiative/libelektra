@@ -29,9 +29,6 @@ Backend::~Backend()
 
 void Backend::checkFile (std::string file)
 {
-	plugins.back()->loadInfo();
-	plugins.back()->parse();
-
 	typedef int (*checkFilePtr) (const char*);
 	checkFilePtr checkFile = (checkFilePtr) plugins.back()->getSymbol("checkfile");
 
@@ -56,7 +53,7 @@ void Backend::tryPlugin (std::string pluginName)
 	Key errorKey;
 	string realPluginName;
 
-	Key k(std::string("system/elektra/key/#0") + pluginName);
+	Key k(std::string("system/elektra/key/#0") + pluginName, KEY_END);
 
 	if (ckdb::elektraProcessPlugin (*k, &nr, &cPluginName, &cReferenceName, *errorKey) == -1)
 	{
@@ -83,6 +80,7 @@ void Backend::tryPlugin (std::string pluginName)
 		KS_END);
 
 	auto_ptr<Plugin>plugin (new Plugin (realPluginName, modules, testConfig));
+	plugin->loadInfo();
 	plugin->parse();
 
 	errorplugins.tryPlugin (*plugin.get());

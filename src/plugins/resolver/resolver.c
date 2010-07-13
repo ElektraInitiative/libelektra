@@ -119,6 +119,7 @@ int elektraResolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	if (keyRel(root, parentKey) >= 0)
 	{
 		keyDel (root);
+		void (*p) () = elektraResolverCheckFile;
 		KeySet *info = ksNew (50, keyNew ("system/elektra/modules/resolver",
 				KEY_VALUE, "resolver plugin waits for your orders", KEY_END),
 			keyNew ("system/elektra/modules/resolver/constants", KEY_END),
@@ -150,9 +151,9 @@ int elektraResolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
 				KEY_BINARY,
 				KEY_VALUE, &elektraResolverGet, KEY_END),
 			keyNew ("system/elektra/modules/resolver/exports/checkfile",
-				KEY_SIZE, sizeof (&elektraResolverCheckFile),
 				KEY_BINARY,
-				KEY_VALUE, &elektraResolverCheckFile, KEY_END),
+				KEY_SIZE, sizeof (&elektraResolverCheckFile),
+				KEY_VALUE, &p, KEY_END),
 			keyNew ("system/elektra/modules/resolver/infos",
 				KEY_VALUE, "All information you want to know", KEY_END),
 			keyNew ("system/elektra/modules/resolver/infos/author",
