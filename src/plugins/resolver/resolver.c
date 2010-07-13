@@ -42,9 +42,9 @@ void resolverInit (resolverHandle *p, const char *path)
 
 void resolverClose (resolverHandle *p)
 {
-	free (p->filename);
-	free (p->lockfile);
-	free (p->tempfile);
+	free (p->filename); p->filename = 0;
+	free (p->lockfile); p->lockfile = 0;
+	free (p->tempfile); p->tempfile = 0;
 }
 
 
@@ -149,6 +149,10 @@ int elektraResolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
 				KEY_SIZE, sizeof (&elektraResolverError),
 				KEY_BINARY,
 				KEY_VALUE, &elektraResolverGet, KEY_END),
+			keyNew ("system/elektra/modules/resolver/exports/checkfile",
+				KEY_SIZE, sizeof (&elektraResolverCheckFile),
+				KEY_BINARY,
+				KEY_VALUE, &elektraResolverCheckFile, KEY_END),
 			keyNew ("system/elektra/modules/resolver/infos",
 				KEY_VALUE, "All information you want to know", KEY_END),
 			keyNew ("system/elektra/modules/resolver/infos/author",
@@ -352,6 +356,42 @@ int elektraResolverError(Plugin *handle, KeySet *returned, Key *parentKey)
 	pk->fd = -1;
 
 	return 0;
+}
+
+/**
+ * @return 1 on success (Relative path)
+ * @returns 0 on success (Absolut path)
+ * @return -1 on a non-valid file
+ */
+int elektraResolverCheckFile (const char* filename)
+{
+	if (!filename) return -1;
+	if (filename[0] == '0') return -1;
+
+	size_t size = strlen(filename);
+	char *buffer = malloc (size + sizeof ("system/"));
+	strcpy (buffer, "system/");
+	strcat (buffer, filename);
+
+	/* Because of the outbreak bugs these tests are not enough */
+	Key *check = keyNew (buffer, KEY_END);
+	if (!strcmp(keyName(check), "")) goto error;
+	if (!strcmp(keyName(check), "system")) goto error;
+	keyDel (check);
+	free (buffer);
+
+	/* Be strict, dont allow any .., even if it would be allowed sometimes */
+	if (strstr (filename, "..") != 0) return -1;
+
+
+	if (filename[0] == '/') return 0;
+
+	return 1;
+
+error:
+	keyDel (check);
+	free (buffer);
+	return -1;
 }
 
 

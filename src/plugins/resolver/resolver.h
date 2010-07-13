@@ -71,7 +71,11 @@ struct _resolverHandles
 	resolverHandle system;
 };
 
+void resolverInit (resolverHandle *p, const char *path);
+void resolverClose (resolverHandle *p);
+
 int resolveFilename(Key* forKey, resolverHandle *p);
+int elektraResolverCheckFile (const char* filename);
 
 int elektraResolverOpen(Plugin *handle, Key *errorKey);
 int elektraResolverClose(Plugin *handle, Key *errorKey);

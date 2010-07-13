@@ -27,6 +27,18 @@ Backend::~Backend()
 	}
 }
 
+void Backend::checkFile (std::string file)
+{
+	plugins.back()->loadInfo();
+	plugins.back()->parse();
+
+	typedef int (*checkFilePtr) (const char*);
+	checkFilePtr checkFile = (checkFilePtr) plugins.back()->getSymbol("checkfile");
+
+	if (checkFile(file.c_str()) == -1)
+		throw FileNotValidException();
+}
+
 /** Try if a plugin can be loaded, meets all safety
  * constraints and could be added.
  *

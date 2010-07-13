@@ -18,7 +18,6 @@ int resolveFilename(Key* forKey, resolverHandle *p)
 		strcpy (p->filename, KDB_DB_SYSTEM);
 		strcat (p->filename, "/");
 		strcat (p->filename, p->path);
-		p->filename = p->filename;
 
 		p->lockfile = malloc (filenameSize + 4);
 		strcpy (p->lockfile, p->filename);
@@ -86,7 +85,6 @@ int resolveFilename(Key* forKey, resolverHandle *p)
 		strcat (p->filename, owner);
 		strcat (p->filename, "/" KDB_DB_USER "/");
 		strcat (p->filename, p->path);
-		p->filename = p->filename;
 
 		p->lockfile = malloc (filenameSize + 4);
 		strcpy (p->lockfile, p->filename);

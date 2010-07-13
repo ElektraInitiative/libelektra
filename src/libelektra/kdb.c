@@ -173,6 +173,10 @@ KDB * kdbOpen(Key *errorKey)
 		return 0;
 	}
 
+	handle->split = elektraSplitNew();
+	elektraSplitAppend (handle->split, handle->defaultBackend,
+			keyNew (KDB_KEY_MOUNTPOINTS, KEY_END), 2);
+
 	/* get mount config from root backend */
 	keys=ksNew(0);
 
@@ -185,6 +189,7 @@ KDB * kdbOpen(Key *errorKey)
 	}
 
 	elektraBackendClose (handle->defaultBackend, errorKey);
+	elektraSplitDel (handle->split);
 	handle->defaultBackend = 0;
 	handle->trie = 0;
 

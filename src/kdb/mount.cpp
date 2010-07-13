@@ -142,33 +142,39 @@ int MountCommand::execute(int , char** )
 
 
 
-	cout << "Enter a path to a file in the filesystem" << endl;
-	cout << "This is used by all plugins of this backend as fallback" << endl;
-	cout << "It must be provided and must be a valid path" << endl;
-	cout << "Path: ";
+
 	std::string path;
-	cin >> path;
-	if (!checkFile(path)) throw PathInvalidException();
-	conf.append ( *Key( root  + "/" + name + "/config",
-			KEY_VALUE, "",
-			KEY_COMMENT, "This is a configuration for a backend, see subkeys for more information",
-			KEY_END));
-	conf.append ( *Key( root  + "/" + name + "/config/path",
-			KEY_VALUE, path.c_str(),
-			KEY_COMMENT, "The path for this backend. Note that plugins can override that with more specific configuration.",
-			KEY_END));
-	cout << endl;
-
-
-
-
 	{
 		Backend backend (name);
 
-		std::string name;
+		cout << "Trying to load the resolver plugin" << endl;
+
+		backend.tryPlugin ("resolver");
+
+		cout << "Enter a path to a file in the filesystem" << endl;
+		cout << "This is used by all plugins of this backend as fallback" << endl;
+		cout << "It must be provided and must be a valid path" << endl;
+		cout << "Path: ";
+		cin >> path;
+		backend.checkFile (path);
+		backend.addPlugin ();
+
+		// TODO: Check
+
+		conf.append ( *Key( root  + "/" + name + "/config",
+				KEY_VALUE, "",
+				KEY_COMMENT, "This is a configuration for a backend, see subkeys for more information",
+				KEY_END));
+		conf.append ( *Key( root  + "/" + name + "/config/path",
+				KEY_VALUE, path.c_str(),
+				KEY_COMMENT, "The path for this backend. Note that plugins can override that with more specific configuration.",
+				KEY_END));
+		cout << endl;
+
 
 		cout << "Now enter a sequence of plugins you want in the backend" << endl;
 
+		std::string name;
 		cout << "First Plugin: ";
 		cin >> name;
 		while (name != "." || !backend.validated())

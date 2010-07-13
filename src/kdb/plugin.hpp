@@ -137,17 +137,55 @@ public:
 	Plugin& operator = (Plugin const& other);
 	~Plugin();
 
-	/* Must be called before any affairs to info */
+	/**
+	 * Gets the configuration for the plugin.
+	 */
+	void loadInfo();
+
+	/**
+	 * Creates symbol and info table.
+	 */
 	void parse();
 
-	ckdb::Plugin *operator->();
-	bool operator!();
+	/**
+	 * Does various checks on the Plugin and throws exceptions
+	 * if something is not ok.
+	 *
+	 * - Check if Plugin is compatible to current Version of Backend-API.
+	 *
+	 * @pre parse()
+	 */
+	void checks();
 
+	ckdb::Plugin *operator->();
+
+	/**
+	 * Gets the whole string of an information item.
+	 * @pre loadInfo()
+	 */
 	std::string lookupInfo(std::string item, std::string section = "infos");
+
+	/**
+	 * Searches within a string of an information item.
+	 * @pre loadInfo()
+	 */
 	bool findInfo(std::string check, std::string item, std::string section = "infos");
+
+	/**
+	 * Returns the whole keyset of information.
+	 * @pre loadInfo()
+	 */
 	kdb::KeySet getInfo() {return info;}
 
-	func_t getSymbol (std::string which) {return symbols[which];}
+	/**
+	 * Returns symbol to a function.
+	 * @pre parse()
+	 */
+	func_t getSymbol (std::string which)
+	{
+		if (symbols.find (which) == symbols.end()) throw MissingSymbol(which);
+		return symbols[which];
+	}
 
 	/* Returns the name of the plugin */
 	std::string name();

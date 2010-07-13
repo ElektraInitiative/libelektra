@@ -2159,6 +2159,24 @@ void test_binary()
 	keyDel (k);
 }
 
+void test_outbreak()
+{
+	// TODO: outbreak bugs
+	Key *k = keyNew (KEY_END);
+
+	succeed_if (keySetName (k, "system/something/../..") == -1, "outbreak should not be allowed");
+	succeed_if (keySetName (k, "system/../something") == -1, "outbreak should not be allowed");
+
+	keySetName (k, "system/valid");
+	succeed_if (keySetBaseName (k, "..") == -1, "outbreak should not be allowed");
+
+	keySetName (k, "system/valid");
+	keyAddBaseName (k, "..");
+	succeed_if (keyAddBaseName (k, "..") == -1, "outbreak should not be allowed");
+
+	keyDel (k);
+}
+
 
 int main(int argc, char** argv)
 {
@@ -2186,6 +2204,7 @@ int main(int argc, char** argv)
 	test_keyHelpers();
 	test_keyNamespace();
 	test_binary();
+	// test_outbreak();
 
 	printf("\ntest_key RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
