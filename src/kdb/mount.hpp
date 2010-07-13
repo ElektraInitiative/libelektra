@@ -20,15 +20,6 @@ struct MountpointAlreadyInUseException : public CommandException
 	}
 };
 
-struct MountpointInvalidException : public CommandException
-{
-	virtual const char* what() const throw()
-	{
-		return  "Given mountpoint is not a valid keyname, will abort\n"
-			"Examples: system/hosts or user/sw/app";
-	}
-};
-
 struct PathInvalidException : public CommandException
 {
 	virtual const char* what() const throw()

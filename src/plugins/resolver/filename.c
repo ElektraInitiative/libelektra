@@ -4,7 +4,7 @@
 #include <sys/types.h>
 
 /**Resolve the filename.
- * @return 0 if an already resolved filename could be used
+ * @return 0 if an already absolute filename could be used
  * @return 1 if it resolved the filename successfully
  * @return -1 on error
  */
@@ -12,6 +12,23 @@ int resolveFilename(Key* forKey, resolverHandle *p)
 {
 	if (!strncmp(keyName(forKey), "system", 6))
 	{
+		if (p->path[0] == '/')
+		{
+			/* Use absolute path */
+			size_t filenameSize = strlen(p->path) + 1 + 5;
+			p->filename = malloc (filenameSize);
+			strcat (p->filename, p->path);
+
+			p->lockfile = malloc (filenameSize + 4);
+			strcpy (p->lockfile, p->filename);
+			strcat (p->lockfile, ".lck");
+
+			p->tempfile = malloc (filenameSize + 4);
+			strcpy (p->tempfile, p->filename);
+			strcat (p->tempfile, ".tmp");
+
+			return 0;
+		}
 		size_t filenameSize = sizeof(KDB_DB_SYSTEM)
 			+ strlen(p->path) + 1 + 5;
 		p->filename = malloc (filenameSize);

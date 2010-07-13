@@ -35,6 +35,15 @@ struct PluginAlreadyInserted: public BackendCheckException
 	}
 };
 
+struct MountpointInvalidException : public BackendCheckException
+{
+	virtual const char* what() const throw()
+	{
+		return  "Given mountpoint is not a valid keyname, will abort\n"
+			"Examples: system/hosts or user/sw/app";
+	}
+};
+
 class Backend
 {
 private:
@@ -43,13 +52,14 @@ private:
 	ErrorPlugins errorplugins;
 
 	std::string name;
+	std::string mp;
 
 	kdb::KeySet modules;
 
 	std::vector <Plugin*> plugins;
 
 public:
-	Backend(std::string name);
+	Backend(std::string name, std::string mp);
 	~Backend();
 
 	/**

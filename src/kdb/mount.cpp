@@ -124,37 +124,6 @@ int MountCommand::execute(int , char** )
 		if (std::find(mountpoints.begin(), mountpoints.end(), kmp.getName()) != mountpoints.end()) throw MountpointAlreadyInUseException();
 	}
 
-	if (mp == "/")
-	{
-		conf.append ( *Key(	root  + "/" + name + "/mountpoint",
-				KEY_VALUE, "/",
-				KEY_COMMENT, "The mountpoint says the location where the backend should be mounted.\n"
-				"This is the root mountpoint.\n",
-				KEY_END));
-	}
-	else if (mp.at(0) == '/')
-	{
-		Key k("system" + mp, KEY_END);
-		Key restrictedPath ("system/elektra", KEY_END);
-		if (!k) throw MountpointInvalidException();
-		if (restrictedPath.isBelow(k)) throw MountpointInvalidException();
-		conf.append ( *Key(	root  + "/" + name + "/mountpoint",
-				KEY_VALUE, mp.c_str(),
-				KEY_COMMENT, "The mountpoint says the location where the backend should be mounted.\n"
-				"This is a cascading mountpoint.\n"
-				"That means it is both mounted to user and system.",
-				KEY_END));
-	} else {
-		Key k(mp, KEY_END);
-		Key restrictedPath ("system/elektra", KEY_END);
-		if (!k) throw MountpointInvalidException();
-		if (restrictedPath.isBelow(k)) throw MountpointInvalidException();
-		conf.append ( *Key(	root  + "/" + name + "/mountpoint",
-				KEY_VALUE, mp.c_str(),
-				KEY_COMMENT, "The mountpoint says the location where the backend should be mounted.\n"
-				"This is a normal mountpoint.\n",
-				KEY_END));
-	}
 	cout << endl;
 
 
@@ -162,7 +131,7 @@ int MountCommand::execute(int , char** )
 
 	std::string path;
 	{
-		Backend backend (name);
+		Backend backend (name, mp);
 
 		cout << "Trying to load the resolver plugin" << endl;
 

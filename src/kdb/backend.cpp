@@ -12,8 +12,8 @@
 using namespace std;
 using namespace kdb;
 
-Backend::Backend(string name) :
-	name(name)
+Backend::Backend(string name, string mp) :
+	name(name), mp(mp)
 {
 	elektraModulesInit(modules.getKeySet(), 0);
 }
@@ -32,7 +32,18 @@ void Backend::checkFile (std::string file)
 	typedef int (*checkFilePtr) (const char*);
 	checkFilePtr checkFile = (checkFilePtr) plugins.back()->getSymbol("checkfile");
 
-	if (checkFile(file.c_str()) == -1)
+	int res = checkFile(file.c_str());
+
+	cout << "Result is: " << res << endl;
+
+	if (mp.substr(0,6) == "system")
+	{
+		cout << "Absolut filename is ok: " << file;
+		if (res == -1) throw FileNotValidException();
+		return;
+	}
+
+	if (res <= 0)
 		throw FileNotValidException();
 }
 
@@ -126,6 +137,38 @@ void Backend::serialize (kdb::Key &rootKey, kdb::KeySet &ret)
 	backendRootKey.addBaseName (name);
 	backendRootKey.setString("serialized Backend");
 	ret.append(backendRootKey);
+
+	if (mp == "/")
+	{
+		ret.append ( *Key(	rootKey.getName() + "/mountpoint",
+				KEY_VALUE, "/",
+				KEY_COMMENT, "The mountpoint says the location where the backend should be mounted.\n"
+				"This is the root mountpoint.\n",
+				KEY_END));
+	}
+	else if (mp.at(0) == '/')
+	{
+		Key k("system" + mp, KEY_END);
+		Key restrictedPath ("system/elektra", KEY_END);
+		if (!k) throw MountpointInvalidException();
+		if (restrictedPath.isBelow(k)) throw MountpointInvalidException();
+		ret.append ( *Key(	rootKey.getName() + "/mountpoint",
+				KEY_VALUE, mp.c_str(),
+				KEY_COMMENT, "The mountpoint says the location where the backend should be mounted.\n"
+				"This is a cascading mountpoint.\n"
+				"That means it is both mounted to user and system.",
+				KEY_END));
+	} else {
+		Key k(mp, KEY_END);
+		Key restrictedPath ("system/elektra", KEY_END);
+		if (!k) throw MountpointInvalidException();
+		if (restrictedPath.isBelow(k)) throw MountpointInvalidException();
+		ret.append ( *Key(	rootKey.getName() + "/mountpoint",
+				KEY_VALUE, mp.c_str(),
+				KEY_COMMENT, "The mountpoint says the location where the backend should be mounted.\n"
+				"This is a normal mountpoint.\n",
+				KEY_END));
+	}
 
 	errorplugins.serialize(backendRootKey, ret);
 	getplugins.serialize(backendRootKey, ret);
