@@ -117,7 +117,6 @@ int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey)
 {
 	/* Reopen the default Backend for fresh user experience (update issue) */
 	kdb->defaultBackend = elektraBackendOpenDefault(modules, errorKey);
-	ssize_t where = -1;
 
 	if (!kdb->defaultBackend)
 	{
@@ -131,39 +130,30 @@ int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey)
 	 */
 	Key *key = keyNew ("system/elektra", KEY_END);
 	Backend* backend = elektraMountGetBackend(kdb, key);
+	keyDel (key);
 	if (backend != kdb->defaultBackend)
 	{
+		/* It is not reachable, mount it */
 		++ kdb->defaultBackend->refcounter;
 		elektraMountBackend (kdb, kdb->defaultBackend, errorKey);
-		where = kdb->split->size-1;
-	}
-	keyDel (key);
-
-	/* Now lets add the default backends to split. */
-	key = keyNew ("system", KEY_VALUE, "default", KEY_END);
-	backend = elektraMountGetBackend(kdb, key);
-	if (backend == kdb->defaultBackend)
-	{
-		elektraSplitAppend(kdb->split, backend, key, 0);
-		if (where != -1)
-		{
-			ELEKTRA_ADD_WARNING (48, errorKey, "Default backend already mounted in system");
-			return -1;
-		}
-		where = kdb->split->size-1;
+		kdb->split->syncbits[kdb->split->size-1] = 2;
 	} else {
-		keyDel (key);
+		/* Lets add the reachable default backend to split.
+		 Note that it is not possible that system/elektra has the default
+		 backend, but system has not. */
+		elektraSplitAppend(kdb->split, backend,
+				keyNew("system", KEY_VALUE, "default", KEY_END), 2);
 	}
 
 	key = keyNew ("user", KEY_VALUE, "default", KEY_END);
 	backend = elektraMountGetBackend(kdb, key);
-	if (backend == kdb->defaultBackend)
+	if (backend != kdb->defaultBackend)
 	{
-		elektraSplitAppend(kdb->split, backend, key, 2);
-		/* and update syncbits of default backend in system */
-		kdb->split->syncbits[where] = 2;
-	} else {
+		/* It does not matter that user is not reachable anymore */
 		keyDel (key);
+	} else {
+		/* User is reachable, so append that to split */
+		elektraSplitAppend(kdb->split, backend, key, 2);
 	}
 
 	return 0;

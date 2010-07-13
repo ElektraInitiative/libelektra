@@ -66,6 +66,7 @@ int MountCommand::execute(int , char** )
 	}
 
 	std::vector <std::string> names;
+	names.push_back("default");
 	while (cur = conf.next())
 	{
 		if (rootKey.isDirectBelow(cur))
@@ -75,20 +76,15 @@ int MountCommand::execute(int , char** )
 		}
 	}
 
-	std::string name = "root";
-	if (std::find(names.begin(), names.end(), name) == names.end())
-	{
-		cout << "No root backend found, will first mount that" << endl;
-	} else {
-		cout << "Already used are: ";
-		std::copy (names.begin(), names.end(), ostream_iterator<std::string>(cout, " "));
-		cout << endl;
+	cout << "Already used are: ";
+	std::copy (names.begin(), names.end(), ostream_iterator<std::string>(cout, " "));
+	cout << endl;
 
-		std::cout << "Name: ";
-		cin >> name;
-		if (std::find(names.begin(), names.end(), name) != names.end()) throw NameAlreadyInUseException();
-		cout << endl;
-	}
+	std::string name;
+	std::cout << "Backend name: ";
+	cin >> name;
+	if (std::find(names.begin(), names.end(), name) != names.end()) throw NameAlreadyInUseException();
+	cout << endl;
 
 	std::vector <std::string> mountpoints;
 	conf.rewind();
@@ -128,6 +124,16 @@ int MountCommand::execute(int , char** )
 				KEY_COMMENT, "The mountpoint says the location where the backend should be mounted.\n"
 				"It must be a valid, canonical elektra path. There are no ., .. or multiple slashes allowed.\n"
 				"You are not allowed to mount inside system/elektra.",
+				KEY_END));
+	}
+	else if (mp.at(0) == '/')
+	{
+		if (!Key ("system" + mp, KEY_END)) throw MountpointInvalidException();
+		conf.append ( *Key(	root  + "/" + name + "/mountpoint",
+				KEY_VALUE, mp.c_str(),
+				KEY_COMMENT, "The mountpoint says the location where the backend should be mounted.\n"
+				"This is a cascading mountpoint.\n"
+				"That means it is both mounted to user and system.",
 				KEY_END));
 	} else {
 		if (!Key (mp, KEY_END)) throw MountpointInvalidException();

@@ -594,11 +594,10 @@ inline size_t Key::getValueSize() const
 inline std::string Key::getString() const
 {
 	size_t csize =  ckdb::keyGetValueSize (getKey());
-	std::string str;	
 	char * field = new char [csize];
 
 	ckdb::keyGetString (getKey(), field, csize);
-	str = field;
+	std::string str (field);
 	delete [] field;
 	return str;
 }

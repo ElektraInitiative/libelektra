@@ -183,7 +183,7 @@ ssize_t kdbGet_dump(ckdb::Plugin *, ckdb::KeySet *returned, const ckdb::Key *par
 	if (keyRel(root, parentKey) >= 0)
 	{
 		keyDel (root);
-		ksAppend(returned, ksNew(50,
+		KeySet *n = ksNew(50,
 			keyNew ("system/elektra/modules/dump",
 				KEY_VALUE, "dump plugin waits for your orders", KEY_END),
 			keyNew ("system/elektra/modules/dump/exports", KEY_END),
@@ -219,7 +219,9 @@ ssize_t kdbGet_dump(ckdb::Plugin *, ckdb::KeySet *returned, const ckdb::Key *par
 				KEY_VALUE, "", KEY_END),
 			keyNew ("system/elektra/modules/dump/infos/version",
 				KEY_VALUE, BACKENDVERSION, KEY_END),
-			KS_END));
+			KS_END);
+		ksAppend(returned, n);
+		ksDel (n);
 		return 1;
 	}
 	keyDel (root);

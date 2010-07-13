@@ -119,7 +119,8 @@ int elektraResolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	if (keyRel(root, parentKey) >= 0)
 	{
 		keyDel (root);
-		void (*p) () = elektraResolverCheckFile;
+		void (*checkfile) () = (void (*) ()) elektraResolverCheckFile;
+		void (*get) () = (void (*) ()) elektraResolverGet;
 		KeySet *info = ksNew (50, keyNew ("system/elektra/modules/resolver",
 				KEY_VALUE, "resolver plugin waits for your orders", KEY_END),
 			keyNew ("system/elektra/modules/resolver/constants", KEY_END),
@@ -130,30 +131,14 @@ int elektraResolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			keyNew ("system/elektra/modules/resolver/constants/KDB_DB_USER",
 				KEY_VALUE, KDB_DB_USER, KEY_END),
 			keyNew ("system/elektra/modules/resolver/exports", KEY_END),
-			keyNew ("system/elektra/modules/resolver/exports/open",
-				KEY_SIZE, sizeof (&elektraResolverOpen),
-				KEY_BINARY,
-				KEY_VALUE, &elektraResolverGet, KEY_END),
-			keyNew ("system/elektra/modules/resolver/exports/close",
-				KEY_SIZE, sizeof (&elektraResolverClose),
-				KEY_BINARY,
-				KEY_VALUE, &elektraResolverGet, KEY_END),
 			keyNew ("system/elektra/modules/resolver/exports/get",
-				KEY_SIZE, sizeof (&elektraResolverGet),
+				KEY_SIZE, sizeof (get),
 				KEY_BINARY,
-				KEY_VALUE, &elektraResolverGet, KEY_END),
-			keyNew ("system/elektra/modules/resolver/exports/set",
-				KEY_SIZE, sizeof (&elektraResolverSet),
-				KEY_BINARY,
-				KEY_VALUE, &elektraResolverSet, KEY_END),
-			keyNew ("system/elektra/modules/resolver/exports/error",
-				KEY_SIZE, sizeof (&elektraResolverError),
-				KEY_BINARY,
-				KEY_VALUE, &elektraResolverGet, KEY_END),
+				KEY_VALUE, &get, KEY_END),
 			keyNew ("system/elektra/modules/resolver/exports/checkfile",
 				KEY_BINARY,
-				KEY_SIZE, sizeof (&elektraResolverCheckFile),
-				KEY_VALUE, &p, KEY_END),
+				KEY_SIZE, sizeof (checkfile),
+				KEY_VALUE, &checkfile, KEY_END),
 			keyNew ("system/elektra/modules/resolver/infos",
 				KEY_VALUE, "All information you want to know", KEY_END),
 			keyNew ("system/elektra/modules/resolver/infos/author",
@@ -172,11 +157,8 @@ int elektraResolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
 				KEY_VALUE, BACKENDVERSION, KEY_END),
 			KS_END);
 		ksAppend(returned, info);
-		ksRewind(returned);
-
-		Key *k;
-		while ((k = ksNext(returned)) != 0) keyClearSync(k);
-		return ksGetSize(returned);
+		ksDel (info);
+		return 1;
 	}
 	keyDel (root);
 
