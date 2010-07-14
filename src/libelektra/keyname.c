@@ -685,6 +685,8 @@ ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize)
  * @warning You should not change a keys name once it belongs to a keyset.
  * See ksSort() for more information.
  *
+ * TODO: does not recognice .. and . in the string!
+ *
  * @param key the key object to work with
  * @param baseName the string to append to the name
  * @return the size in bytes of the new key name including the ending NULL
@@ -736,6 +738,8 @@ ssize_t keyAddBaseName(Key *key, const char *baseName)
  *
  * @warning You should not change a keys name once it belongs to a keyset.
  * See ksSort() for more information.
+ *
+ * TODO: does not work with .. and .
  *
  * @param key the key object to work with
  * @param baseName the string used to overwrite the basename of the key

@@ -66,30 +66,34 @@ void test_resolve()
 
 	resolverHandles *h = elektraPluginGetData(plugin);
 	succeed_if (h != 0, "no plugin handle");
+	resolverClose(&h->system);
+	resolverClose(&h->user);
 
 	Key *forKey = keyNew("system", KEY_END);
-	succeed_if (resolveFilename(forKey, elektraPluginGetData(plugin)) != -1,
+	succeed_if (resolveFilename(forKey, &h->system) != -1,
 			"could not resolve filename");
 
 	succeed_if (!strcmp(h->system.path, "elektra.ecf"), "path not set correctly");
 	succeed_if (!strcmp(h->system.filename, KDB_DB_SYSTEM "/elektra.ecf"), "resulting filename not correct");
+	resolverClose(&h->system);
 
 
 	keySetName(forKey, "user");
-	succeed_if (resolveFilename(forKey, elektraPluginGetData(plugin)) != -1,
+	succeed_if (resolveFilename(forKey, &h->user) != -1,
 			"could not resolve filename");
 
 	succeed_if (!strcmp(h->user.path, "elektra.ecf"), "path not set correctly");
 	succeed_if (!strcmp(h->user.filename, KDB_DB_HOME "/test/" KDB_DB_USER "/elektra.ecf"), "filename not set correctly");
+	resolverClose(&h->user);
 
 	keySetMeta(forKey, "owner", "other");
 	/* so that it will resolve the filename */
-	free (h->user.filename); h->user.filename = 0;
-	succeed_if (resolveFilename(forKey, elektraPluginGetData(plugin)) != -1,
+	succeed_if (resolveFilename(forKey, &h->user) != -1,
 			"could not resolve filename");
 
 	succeed_if (!strcmp(h->user.path, "elektra.ecf"), "path not set correctly");
 	succeed_if (!strcmp(h->user.filename, KDB_DB_HOME "/other/" KDB_DB_USER "/elektra.ecf"), "filename not set correctly");
+	resolverClose(&h->user);
 
 	keyDel (forKey);
 	elektraPluginClose(plugin, 0);
@@ -226,6 +230,24 @@ void test_tempname()
 	ksDel (modules);
 }
 
+void test_checkfile()
+{
+	succeed_if (elektraResolverCheckFile("valid") == 1, "valid file not recogniced");
+	succeed_if (elektraResolverCheckFile("/valid") == 0, "valid absolute file not recogniced");
+	succeed_if (elektraResolverCheckFile("/absolute/valid") == 0, "valid absolute file not recogniced");
+	succeed_if (elektraResolverCheckFile("../valid") == -1, "invalid file not recogniced");
+	succeed_if (elektraResolverCheckFile("valid/..") == -1, "invalid file not recogniced");
+	succeed_if (elektraResolverCheckFile("/../valid") == -1, "invalid absolute file not recogniced");
+	succeed_if (elektraResolverCheckFile("/valid/..") == -1, "invalid absolute file not recogniced");
+	succeed_if (elektraResolverCheckFile("very..strict") == -1, "resolver is currently very strict");
+	succeed_if (elektraResolverCheckFile("very/..strict") == -1, "resolver is currently very strict");
+	succeed_if (elektraResolverCheckFile("very../strict") == -1, "resolver is currently very strict");
+	succeed_if (elektraResolverCheckFile("very/../strict") == -1, "resolver is currently very strict");
+	succeed_if (elektraResolverCheckFile("/") == -1, "invalid absolute file not recogniced");
+	succeed_if (elektraResolverCheckFile(".") == -1, "invalid file not recogniced");
+	succeed_if (elektraResolverCheckFile("..") == -1, "invalid file not recogniced");
+}
+
 
 int main(int argc, char** argv)
 {
@@ -240,6 +262,7 @@ int main(int argc, char** argv)
 	test_name();
 	test_lockname();
 	test_tempname();
+	test_checkfile();
 
 
 	printf("\ntest_backendhelpers RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);

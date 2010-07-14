@@ -66,44 +66,37 @@ int MountCommand::execute(int , char** )
 	}
 
 	std::vector <std::string> names;
+	names.push_back("default");
 	while (cur = conf.next())
 	{
 		if (rootKey.isDirectBelow(cur))
 		{
 			names.push_back(cur.getBaseName());
-			cout << "add " << cur.getBaseName() << endl;
 		}
 	}
 
-	std::string name = "root";
-	if (std::find(names.begin(), names.end(), name) == names.end())
-	{
-		cout << "No root backend found, will first mount that" << endl;
-	} else {
-		cout << "Already used are: ";
-		std::copy (names.begin(), names.end(), ostream_iterator<std::string>(cout, " "));
-		cout << endl;
+	cout << "Already used are: ";
+	std::copy (names.begin(), names.end(), ostream_iterator<std::string>(cout, " "));
+	cout << endl;
 
-		std::cout << "Name: ";
-		cin >> name;
-		if (std::find(names.begin(), names.end(), name) != names.end()) throw NameAlreadyInUseException();
-		cout << endl;
-	}
+	std::string name;
+	std::cout << "Backend name: ";
+	cin >> name;
+	if (std::find(names.begin(), names.end(), name) != names.end()) throw NameAlreadyInUseException();
+	cout << endl;
 
 	std::vector <std::string> mountpoints;
+	mountpoints.push_back("system/elektra");
 	conf.rewind();
 	while (cur = conf.next())
 	{
 		if (cur.getBaseName() == "mountpoint")
 		{
-			if (cur.getString() == "")
+			if (cur.getString().at(0) == '/')
 			{
-				mountpoints.push_back("/");
+				mountpoints.push_back(Key ("user" + cur.getString(), KEY_END).getName());
+				mountpoints.push_back(Key ("system" + cur.getString(), KEY_END).getName());
 			} else {
-				if (!conf.lookup(Key(cur.getString(), KEY_END)))
-				{
-					cout << "Did not find the mountpoint " << cur.getString() << ", will add it" << endl;
-				}
 				mountpoints.push_back(cur.getString());
 			}
 		};
@@ -115,60 +108,57 @@ int MountCommand::execute(int , char** )
 		cout << "Already used are: ";
 		std::copy (mountpoints.begin(), mountpoints.end(), ostream_iterator<std::string>(cout, " "));
 		cout << endl;
-		cout << "Please use / for the root backend" << endl;
+		cout << "Please start with / for a cascading backend" << endl;
 		cout << "Enter the mountpoint: ";
 		cin >> mp;
 	}
-	if (std::find(mountpoints.begin(), mountpoints.end(), mp) != mountpoints.end()) throw MountpointAlreadyInUseException();
 
-	if (mp == "/")
+	if (mp.at(0) == '/')
 	{
-		conf.append ( *Key(	root  + "/" + name + "/mountpoint",
-				KEY_VALUE, "",
-				KEY_COMMENT, "The mountpoint says the location where the backend should be mounted.\n"
-				"It must be a valid, canonical elektra path. There are no ., .. or multiple slashes allowed.\n"
-				"You are not allowed to mount inside system/elektra.",
-				KEY_END));
+		Key skmp ("system" + mp, KEY_END);
+		if (std::find(mountpoints.begin(), mountpoints.end(), skmp.getName()) != mountpoints.end()) throw MountpointAlreadyInUseException();
+		Key ukmp ("user" + mp, KEY_END);
+		if (std::find(mountpoints.begin(), mountpoints.end(), ukmp.getName()) != mountpoints.end()) throw MountpointAlreadyInUseException();
 	} else {
-		if (!Key (mp, KEY_END)) throw MountpointInvalidException();
-		conf.append ( *Key(	root  + "/" + name + "/mountpoint",
-				KEY_VALUE, mp.c_str(),
-				KEY_COMMENT, "The mountpoint says the location where the backend should be mounted.\n"
-				"It must be a valid, canonical elektra path. There are no ., .. or multiple slashes allowed.\n"
-				"You are not allowed to mount inside system/elektra.",
-				KEY_END));
+		Key kmp (mp, KEY_END);
+		if (std::find(mountpoints.begin(), mountpoints.end(), kmp.getName()) != mountpoints.end()) throw MountpointAlreadyInUseException();
 	}
+
 	cout << endl;
 
 
 
-	cout << "Enter a path to a file in the filesystem" << endl;
-	cout << "This is used by all plugins of this backend as fallback" << endl;
-	cout << "It must be provided and must be a valid path" << endl;
-	cout << "Path: ";
+
 	std::string path;
-	cin >> path;
-	if (!checkFile(path)) throw PathInvalidException();
-	conf.append ( *Key( root  + "/" + name + "/config",
-			KEY_VALUE, "",
-			KEY_COMMENT, "This is a configuration for a backend, see subkeys for more information",
-			KEY_END));
-	conf.append ( *Key( root  + "/" + name + "/config/path",
-			KEY_VALUE, path.c_str(),
-			KEY_COMMENT, "The path for this backend. Note that plugins can override that with more specific configuration.",
-			KEY_END));
-	cout << endl;
-
-
-
-
 	{
-		Backend backend (name);
+		Backend backend (name, mp);
 
-		std::string name;
+		cout << "Trying to load the resolver plugin" << endl;
+
+		backend.tryPlugin ("resolver");
+
+		cout << "Enter a path to a file in the filesystem" << endl;
+		cout << "This is used by all plugins of this backend as fallback" << endl;
+		cout << "It must be provided and must be a valid path" << endl;
+		cout << "Path: ";
+		cin >> path;
+		backend.checkFile (path);
+		backend.addPlugin ();
+
+		conf.append ( *Key( root  + "/" + name + "/config",
+				KEY_VALUE, "",
+				KEY_COMMENT, "This is a configuration for a backend, see subkeys for more information",
+				KEY_END));
+		conf.append ( *Key( root  + "/" + name + "/config/path",
+				KEY_VALUE, path.c_str(),
+				KEY_COMMENT, "The path for this backend. Note that plugins can override that with more specific configuration.",
+				KEY_END));
+		cout << endl;
+
 
 		cout << "Now enter a sequence of plugins you want in the backend" << endl;
 
+		std::string name;
 		cout << "First Plugin: ";
 		cin >> name;
 		while (name != "." || !backend.validated())

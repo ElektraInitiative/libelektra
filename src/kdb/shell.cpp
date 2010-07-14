@@ -69,7 +69,7 @@ int ShellCommand::execute(int, char**)
 		}
 		else if (command == "ksAppendKey")
 		{
-			current.append(currentKey);
+			current.append(currentKey.dup());
 		}
 		else if (command == "ksCut")
 		{

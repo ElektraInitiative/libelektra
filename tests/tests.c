@@ -269,17 +269,21 @@ void output_trie(Trie *trie)
 	{
 		if (trie->value[i])
 		{
-			printf ("output_trie: %p, mp: %s\n",
+			printf ("output_trie: %p, mp: %s %s [%d]\n",
 					(void*) trie->value[i],
-					keyName(trie->value[i]->mountpoint));
+					keyName(trie->value[i]->mountpoint),
+					keyString(trie->value[i]->mountpoint),
+					i);
 		}
 		if (trie->children[i]) output_trie(trie->children[i]);
 	}
 	if (trie->empty_value)
 	{
-		printf ("empty_value: %p, mp: %s\n",
+		printf ("empty_value: %p, mp: %s %s\n",
 				(void*) trie->empty_value,
-				keyName(trie->empty_value->mountpoint));
+				keyName(trie->empty_value->mountpoint),
+				keyString(trie->empty_value->mountpoint)
+				);
 	}
 }
 
@@ -287,15 +291,37 @@ void output_split(Split *split)
 {
 	for (size_t i=0; i<split->size; ++i)
 	{
-		printf ("split #%zd size: %zd, handle: %p, sync: %d, parent: %s (%s)\n",
+		if (split->handles[i])
+		{
+			printf ("split #%zd size: %zd, handle: %p, sync: %d, parent: %s (%s), us: %zd, ss: %zd\n",
 				i,
 				ksGetSize(split->keysets[i]),
 				(void*)split->handles[i],
 				split->syncbits[i],
 				keyName(split->parents[i]),
-				keyString(split->parents[i])
+				keyString(split->parents[i]),
+				split->handles[i]->usersize,
+				split->handles[i]->systemsize
 				);
+		} else {
+			printf ("split #%zd, size: %zd, default split, sync: %d\n",
+				i,
+				ksGetSize(split->keysets[i]),
+				split->syncbits[i]
+				);
+		}
 	}
+}
+
+void generate_split (Split *split)
+{
+	printf ("succeed_if (split->size == %zd, \"size of split not correct\");\n", split->size);
+	for (size_t i=0; i<split->size; ++i)
+	{
+		printf ("succeed_if (split->syncbits[%zd]== %d, \"size of split not correct\");\n", i, split->syncbits[i]);
+		printf ("succeed_if (ksGetSize(split->keysets[%zd]) == %zd, \"wrong size\");\n", i, ksGetSize(split->keysets[i]));
+	}
+
 }
 
 void output_warnings(Key *warningKey)
@@ -319,14 +345,19 @@ void output_warnings(Key *warningKey)
 		printf ("description: %s\n", keyString(keyGetMeta(warningKey, buffer)));
 		buffer[12] = '\0'; strncat(buffer, "/ingroup" , sizeof(buffer));
 		keyGetMeta(warningKey, buffer);
+		printf ("ingroup: %s\n", keyString(keyGetMeta(warningKey, buffer)));
 		buffer[12] = '\0'; strncat(buffer, "/module" , sizeof(buffer));
 		keyGetMeta(warningKey, buffer);
+		printf ("module: %s\n", keyString(keyGetMeta(warningKey, buffer)));
 		buffer[12] = '\0'; strncat(buffer, "/file" , sizeof(buffer));
 		keyGetMeta(warningKey, buffer);
+		printf ("file: %s\n", keyString(keyGetMeta(warningKey, buffer)));
 		buffer[12] = '\0'; strncat(buffer, "/line" , sizeof(buffer));
 		keyGetMeta(warningKey, buffer);
+		printf ("line: %s\n", keyString(keyGetMeta(warningKey, buffer)));
 		buffer[12] = '\0'; strncat(buffer, "/reason" , sizeof(buffer));
 		keyGetMeta(warningKey, buffer);
+		printf ("reason: %s\n", keyString(keyGetMeta(warningKey, buffer)));
 	}
 }
 

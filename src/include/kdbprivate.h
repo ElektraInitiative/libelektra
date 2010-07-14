@@ -269,12 +269,15 @@ typedef struct _KDB KDB;
  * @ingroup backend
  */
 struct _KDB {
-	Trie *trie;		/*!< The pointer to the trie holding backends.
-		@see kdbhGetTrie() */
+	Trie *trie;		/*!< The pointer to the trie holding backends.*/
+
+	Split *split;		/*!< A list of all mountpoints. It basically has the
+				 same information than in the trie, but it is not trivial
+				 to convert from one to the other.*/
 
 	KeySet *modules;	/*!< A list of all modules loaded at the moment.*/
 
-	Backend *defaultBackend;/*!< The default backend as fallback when nothing else is found. */
+	Backend *defaultBackend;/*!< The default backend as fallback when nothing else is found.*/
 };
 
 /**
@@ -311,6 +314,10 @@ struct _Backend {
 	ssize_t systemsize;	/*!< The size of the systems key from the previous get.
 		Needed to know if a key was removed from a keyset. */
 
+	size_t refcounter;	/*!< This refcounter shows how often the backend
+		is used.  Not cascading or default backends have 1 in it.
+		More than two is not possible, because a backend
+		can be only mounted in system and user each once.*/
 };
 
 /**
@@ -381,7 +388,9 @@ struct _Split {
 	Key **parents;		/*!< The parentkey for the keyset.
 				Is either the mountpoint of the backend
 				or "user", "system" for the splitted root backends */
-	int *syncbits;		/*!< Is there any key in there which need to be synced? */
+	int *syncbits;		/*!< Bits for various options:
+				Bit 0: Is there any key in there which need to be synced?
+				Bit 1: Do we need relative checks? (cascading backend?)*/
 };
 
 /***************************************
@@ -391,10 +400,7 @@ struct _Split {
  **************************************/
 
 ssize_t keySetRaw(Key *key, const void *newBinary, size_t dataSize);
-
 char *keyNameGetOneLevel(const char *keyname, size_t *size);
-
-Backend* kdbGetBackend(KDB *handle, const Key *key);
 
 /*Methods for splitted keysets */
 Split * elektraSplitNew(void);
@@ -444,10 +450,20 @@ Plugin* elektraPluginOpen(const char *backendname, KeySet *modules, KeySet *conf
 int elektraPluginClose(Plugin *handle, Key *errorKey);
 
 /*Trie handling*/
-Backend* elektraTrieLookup(Trie *trie, const Key *key);
 Trie *elektraTrieOpen(KeySet *config, KeySet *modules, Key *errorKey);
 int elektraTrieClose (Trie *trie, Key *errorKey);
-int elektraMountBackend (Trie **trie, Backend *backend, Key *errorKey);
+Backend* elektraTrieLookup(Trie *trie, const Key *key);
+Trie* elektraTrieInsert(Trie *trie, const char *name, Backend *value);
+
+/*Mounting handling */
+int elektraMountOpen(KDB *kdb, KeySet *config, KeySet *modules, Key *errorKey);
+int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey);
+int elektraMountModules (KDB *kdb, KeySet *modules, Key *errorKey);
+
+int elektraMountBackend (KDB *kdb, Backend *backend, Key *errorKey);
+
+Key* elektraMountGetMountpoint(KDB *handle, const Key *where);
+Backend* elektraMountGetBackend(KDB *handle, const Key *key);
 
 /*Private helper for keys*/
 int keyInit(Key *key);

@@ -2094,6 +2094,7 @@ void test_keyNamespace()
 	keyDel (key);
 }
 
+typedef void (*fun_t) ();
 void fun()
 {}
 
@@ -2141,6 +2142,24 @@ void test_binary()
 
 
 
+	conversation.f = fun;
+	k = keyNew("system/symbols/fun",
+			KEY_BINARY,
+			KEY_SIZE, sizeof (conversation),
+			KEY_VALUE, &conversation.v,
+			KEY_END);
+
+	conversation.v = 0;
+	conversation.f = 0;
+	succeed_if (keyGetBinary(k, &conversation.v, sizeof(conversation)) == sizeof(conversation),
+			"could not get binary");
+	g = conversation.f;
+	succeed_if (g == fun, "pointers to functions are not equal");
+
+	keyDel (k);
+
+
+
 
 	Plugin *plug = (Plugin *) 1222243;
 
@@ -2155,6 +2174,41 @@ void test_binary()
 	succeed_if (xlug == plug, "should point to the same");
 	succeed_if (plug == (Plugin *) 1222243, "should point to that");
 	succeed_if (xlug == (Plugin *) 1222243, "should point to that too");
+
+	keyDel (k);
+
+
+	fun_t tmp = fun;
+
+	k = keyNew ("system/symbol/fun",
+			KEY_BINARY,
+			KEY_SIZE, sizeof (fun_t),
+			KEY_VALUE, &tmp,
+			KEY_END);
+
+	fun_t myfun = 0;
+	succeed_if (keyGetBinary(k, &myfun, sizeof(fun_t)) == sizeof(fun_t),
+			"could not get binary");
+
+	succeed_if (fun == myfun, "pointers not equal");
+
+	keyDel (k);
+}
+
+void test_outbreak()
+{
+	// TODO: outbreak bugs
+	Key *k = keyNew (KEY_END);
+
+	succeed_if (keySetName (k, "system/something/../..") == -1, "outbreak should not be allowed");
+	succeed_if (keySetName (k, "system/../something") == -1, "outbreak should not be allowed");
+
+	keySetName (k, "system/valid");
+	succeed_if (keySetBaseName (k, "..") == -1, "outbreak should not be allowed");
+
+	keySetName (k, "system/valid");
+	keyAddBaseName (k, "..");
+	succeed_if (keyAddBaseName (k, "..") == -1, "outbreak should not be allowed");
 
 	keyDel (k);
 }
@@ -2186,6 +2240,7 @@ int main(int argc, char** argv)
 	test_keyHelpers();
 	test_keyNamespace();
 	test_binary();
+	// test_outbreak();
 
 	printf("\ntest_key RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

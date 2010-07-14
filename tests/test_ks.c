@@ -2130,6 +2130,28 @@ void test_ksDoubleAppend()
 	ksDel (ks2);
 }
 
+void test_ksDoubleAppendKey()
+{
+	printf ("Test double appending of key\n");
+
+	Key *k = keyNew("user/my_double_key", KEY_END);
+	KeySet *ks = ksNew(0);
+
+	ksAppendKey (ks, k);
+	succeed_if (ksGetSize (ks) == 1, "size not correct");
+
+	ksAppendKey (ks, k);
+	succeed_if (ksGetSize (ks) == 1, "size not correct");
+
+	ksAppendKey (ks, k);
+	succeed_if (ksGetSize (ks) == 1, "size not correct");
+
+	keyDel (k); // has no effect
+
+	ksDel (ks);
+	// dont free key here!!
+}
+
 
 int main(int argc, char** argv)
 {
@@ -2160,6 +2182,7 @@ int main(int argc, char** argv)
 	test_ksSync();
 	test_ksDoubleFree();
 	test_ksDoubleAppend();
+	test_ksDoubleAppendKey();
 
 	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

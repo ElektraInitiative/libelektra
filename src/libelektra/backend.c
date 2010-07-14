@@ -154,13 +154,22 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
 			}
 			else if (!strcmp(keyBaseName(cur), "mountpoint"))
 			{
-				backend->mountpoint=keyNew(keyValue(cur),KEY_VALUE,keyBaseName(root), KEY_END);
-				keyIncRef(backend->mountpoint);
+				if (keyString(cur)[0] == '/')
+				{
+					backend->mountpoint = keyNew("", KEY_VALUE,keyBaseName(root), KEY_END);
+					backend->mountpoint->key = elektraStrDup(keyString(cur));
+					backend->mountpoint->keySize = cur->dataSize;
+					backend->refcounter = 2;
+				} else {
+					backend->mountpoint=keyNew(keyString(cur),KEY_VALUE,keyBaseName(root), KEY_END);
+					backend->refcounter = 1;
+				}
 				if (!backend->mountpoint)
 				{
 					ELEKTRA_ADD_WARNING(14, errorKey, keyValue(cur));
 					goto error;
 				}
+				keyIncRef(backend->mountpoint);
 				ksDel (cut);
 			}
 			else if (!strcmp(keyBaseName(cur), "setplugins"))
@@ -211,6 +220,7 @@ error:
 Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey)
 {
 	Backend *backend = elektraCalloc(sizeof(struct _Backend));
+	backend->refcounter = 1;
 
 	KeySet *resolverConfig = ksNew(5,
 		keyNew("system/path", KEY_VALUE, "default.ecf", KEY_END),
@@ -256,6 +266,7 @@ Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey)
 Backend* elektraBackendOpenModules(KeySet *modules, Key *errorKey)
 {
 	Backend *backend = elektraCalloc(sizeof(struct _Backend));
+	backend->refcounter = 1;
 
 	cursor_t save = ksGetCursor (modules);
 	KeySet *defaultConfig = ksNew(5,
@@ -293,8 +304,14 @@ int elektraBackendClose(Backend *backend, Key* errorKey)
 
 	if (!backend) return -1;
 
+	backend->refcounter --;
+
+	/* Check if we have the last reference on the backend (unsigned!) */
+	if (backend->refcounter > 0) return 0;
+
 	keyDecRef(backend->mountpoint);
 	keyDel (backend->mountpoint);
+
 	for (int i=0; i<NR_OF_PLUGINS; ++i)
 	{
 		ret = elektraPluginClose(backend->setplugins[i], errorKey);

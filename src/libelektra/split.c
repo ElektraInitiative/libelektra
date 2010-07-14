@@ -133,6 +133,13 @@ void elektraSplitResize(Split *split)
  */
 ssize_t elektraSplitAppend(Split *split, Backend *backend, Key *parentKey, int syncbits)
 {
+	if (!split)
+	{
+		/* To make test cases work & valgrind clean */
+		keyDel (parentKey);
+		return -1;
+	}
+
 	++ split->size;
 	if (split->size > split->alloc) elektraSplitResize(split);
 
@@ -182,13 +189,18 @@ ssize_t elektraSplitSearchBackend(Split *split, Backend *backend, Key *parent)
 
 
 /**
- * @returns 1 if one of the backends in split has all
+ * @return 1 if one of the backends in split has all
  *          keys below parentKey
+ * @return 0 if parentKey == 0 or there are keys below
+ *          or same than parentKey which do not fit
+ *          in any of splitted keysets
  * @ingroup split
  */
 int elektraSplitSearchRoot(Split *split, Key *parentKey)
 {
 	size_t splitSize = split->size;
+
+	if (!parentKey) return 0;
 
 	for (size_t i=0; i<splitSize; ++i)
 	{
@@ -197,41 +209,6 @@ int elektraSplitSearchRoot(Split *split, Key *parentKey)
 	}
 
 	return 0;
-}
-
-
-/*Needed for recursive implementation*/
-static int elektraSplitSearchTrie(Split *split, Trie *trie, Key *parentKey)
-{
-	int hasAdded = 0;
-	int i;
-
-	if (trie==NULL) return 0;
-
-	for (i=0;i<MAX_UCHAR;i++)
-	{
-		if (trie->text[i]!=NULL)
-		{
-			Backend *cur = trie->value[i];
-			hasAdded += elektraSplitSearchTrie(split, trie->children[i], parentKey);
-
-			if (!cur)
-			{
-				/* We now might have the situation that the root backend is needed
-				   additionally. In that case we could work here with the empty_value.
-				   However we simply check afterwards if we need to add root/default
-				   backend because of clearness. */
-				continue;
-			}
-			if (keyRel(cur->mountpoint, parentKey) >= 0)
-			{
-				/* if (elektraSplitSearchBackend(split, cur, 0) >= 0) continue; */
-				elektraSplitAppend(split, cur, keyDup(cur->mountpoint), 0);
-				++hasAdded;
-			}
-		}
-	}
-	return hasAdded;
 }
 
 
@@ -249,85 +226,39 @@ static int elektraSplitSearchTrie(Split *split, Trie *trie, Key *parentKey)
  *      but that would require splitting up of keysets of the same backend)
  *
  * @ingroup split
- * @return -1 on error
- * @return 1
+ * @return always 1
  */
-int elektraSplitBuildup (Split *split, KDB *handle, Key *parentKey)
+int elektraSplitBuildup (Split *split, KDB *kdb, Key *parentKey)
 {
-	Trie *trie = handle->trie;
-	Key *userKey = 0;
-	Key *systemKey = 0;
 
 	if (!parentKey || !parentKey->key)
 	{
 		parentKey = 0;
-		userKey = keyNew("user", KEY_END);
-		systemKey = keyNew("system", KEY_END);
 	}
 
-	if (!handle->trie)
+	/* Returns the backend the key is in or the default backend
+	   otherwise */
+	Backend * backend = elektraMountGetBackend(kdb, parentKey);
+
+	for (size_t i=0; i < kdb->split->size; ++i)
 	{
-		Backend *defaultBackend = handle->defaultBackend;
-
-		/* If parentKey is null it will be true for keyIsUser and keyIsSystem below */
-		if (keyIsUser(parentKey))
+		if (backend == kdb->split->handles[i] && keyRel(kdb->split->parents[i], parentKey) >= 0)
 		{
-			elektraSplitAppend (split, defaultBackend, keyNew("user", KEY_VALUE, "default", KEY_END), 2);
+			/* parentKey is exactly in this backend, so add it! */
+			elektraSplitAppend (split, kdb->split->handles[i], keyDup(kdb->split->parents[i]), kdb->split->syncbits[i]);
 		}
-
-		if (keyIsSystem(parentKey))
+		else if (keyRel(parentKey, kdb->split->parents[i]) >= 0)
 		{
-			elektraSplitAppend (split, defaultBackend, keyNew("system", KEY_VALUE, "default", KEY_END), 2);
+			/* this backend is completely below the parentKey, so lets add it. */
+			elektraSplitAppend (split, kdb->split->handles[i], keyDup(kdb->split->parents[i]), kdb->split->syncbits[i]);
 		}
-
-		if (!parentKey) goto finish;
-		else return 1;
+		else if (parentKey == 0)
+		{
+			/* We want every backend. */
+			elektraSplitAppend (split, kdb->split->handles[i], keyDup(kdb->split->parents[i]), kdb->split->syncbits[i]);
+		}
 	}
 
-
-	elektraSplitSearchTrie(split, trie, parentKey);
-
-	/* We may have found something in the trie, but is it enough? */
-	if (!parentKey)
-	{
-		/* Do we lack one (or two) of the root backends? */
-		if (elektraSplitSearchRoot(split, userKey) == 0)
-		{
-			Backend *backend = elektraTrieLookup(trie, userKey);
-			elektraSplitAppend (split, backend, keyNew("user", KEY_VALUE, "root", KEY_END), 2);
-		}
-
-		if (elektraSplitSearchRoot(split, systemKey) == 0)
-		{
-			Backend *backend = elektraTrieLookup(trie, systemKey);
-			elektraSplitAppend (split, backend, keyNew("system", KEY_VALUE, "root", KEY_END), 2);
-		}
-		goto finish;
-	} else {
-		if (elektraSplitSearchRoot(split, parentKey) == 1) return 1;
-
-		/* Seems like we are lacking a root backend (in the domain of parentKey) */
-
-		Backend *backend = elektraTrieLookup(trie, parentKey);
-
-		if (keyIsUser(parentKey))
-		{
-			elektraSplitAppend (split, backend, keyNew("user", KEY_VALUE, "root", KEY_END), 2);
-		}
-
-		if (keyIsSystem(parentKey))
-		{
-			elektraSplitAppend (split, backend, keyNew("system", KEY_VALUE, "root", KEY_END), 2);
-		}
-		return 1;
-	}
-
-	/* We have not found a root backend either -> not allowed */
-	return -1;
-
-finish:
-	keyDel (userKey);
-	keyDel (systemKey);
 	return 1;
 }
 
@@ -359,7 +290,7 @@ int elektraSplitDivide (Split *split, KDB *handle, KeySet *ks)
 	ksRewind (ks);
 	while ((curKey = ksNext (ks)) != 0)
 	{
-		curHandle = kdbGetBackend(handle, curKey);
+		curHandle = elektraMountGetBackend(handle, curKey);
 		if (!curHandle) return -1;
 
 		curFound = elektraSplitSearchBackend(split, curHandle, curKey);
@@ -397,7 +328,7 @@ int elektraSplitAppoint (Split *split, KDB *handle, KeySet *ks)
 	ksRewind (ks);
 	while ((curKey = ksNext (ks)) != 0)
 	{
-		curHandle = kdbGetBackend(handle, curKey);
+		curHandle = elektraMountGetBackend(handle, curKey);
 		if (!curHandle) return -1;
 
 		curFound = elektraSplitSearchBackend(split, curHandle, curKey);
@@ -446,7 +377,7 @@ int elektraSplitGet (Split *split, KDB *handle)
 		ksRewind (split->keysets[i]);
 		while ((cur = ksNext(split->keysets[i])) != 0)
 		{
-			curHandle = kdbGetBackend(handle, cur);
+			curHandle = elektraMountGetBackend(handle, cur);
 			if (!curHandle) return -1;
 			if (curHandle != split->handles[i])
 			{

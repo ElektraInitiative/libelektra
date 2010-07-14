@@ -25,36 +25,6 @@ int InfoCommand::execute(int argc, char** argv)
 
 	std::string name = argv[2];
 
-	KeySet testConfig(1,
-		*Key(	"system/test",
-			KEY_VALUE, "test",
-			KEY_COMMENT, "Test config for loading a plugin.",
-			KEY_END),
-		KS_END);
-
-	KeySet modules;
-	elektraModulesInit(modules.getKeySet(), 0);
-	Plugin plugin (name, modules, testConfig);
-	plugin.parse();
-	elektraModulesClose(modules.getKeySet(), 0);
-
-	cout << plugin.lookupInfo("provides") << endl;
-	cout << plugin.lookupInfo("placements") << endl;
-	return 0;
-}
-
-/*
-int generalway(int argc, char** argv)
-{
-	if (argc != 3)
-	{
-		cerr << "Please provide a module name" << endl;
-		cerr << "Usage: get <name>" << endl;
-		return 1;
-	}
-
-	std::string name = argv[2];
-
 	KeySet conf;
 	Key parentKey(std::string("system/elektra/modules/") + name, KEY_END);
 
@@ -72,7 +42,11 @@ int generalway(int argc, char** argv)
 				KEY_END),
 			KS_END);
 		Plugin plugin (name, modules, testConfig);
+		plugin.loadInfo();
+		/* Not needed in code below:
 		plugin.parse();
+		plugin.check();
+		*/
 		elektraModulesClose(modules.getKeySet(), 0);
 		conf = plugin.getInfo();
 	}
@@ -104,7 +78,6 @@ int generalway(int argc, char** argv)
 
 	return 0;
 }
-*/
 
 InfoCommand::~InfoCommand()
 {}

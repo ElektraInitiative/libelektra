@@ -36,8 +36,6 @@
 
 #include <cstring>
 
-#define BACKENDNAME "dump"
-#define BACKENDVERSION "0.0.1"
 #define DUMP_PATH "/tmp/dump.edf"
 
 // edf = elektra dump format

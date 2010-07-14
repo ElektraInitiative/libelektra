@@ -42,9 +42,9 @@ void resolverInit (resolverHandle *p, const char *path)
 
 void resolverClose (resolverHandle *p)
 {
-	free (p->filename);
-	free (p->lockfile);
-	free (p->tempfile);
+	free (p->filename); p->filename = 0;
+	free (p->lockfile); p->lockfile = 0;
+	free (p->tempfile); p->tempfile = 0;
 }
 
 
@@ -119,6 +119,8 @@ int elektraResolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	if (keyRel(root, parentKey) >= 0)
 	{
 		keyDel (root);
+		void (*checkfile) () = (void (*) ()) elektraResolverCheckFile;
+		void (*get) () = (void (*) ()) elektraResolverGet;
 		KeySet *info = ksNew (50, keyNew ("system/elektra/modules/resolver",
 				KEY_VALUE, "resolver plugin waits for your orders", KEY_END),
 			keyNew ("system/elektra/modules/resolver/constants", KEY_END),
@@ -129,26 +131,14 @@ int elektraResolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			keyNew ("system/elektra/modules/resolver/constants/KDB_DB_USER",
 				KEY_VALUE, KDB_DB_USER, KEY_END),
 			keyNew ("system/elektra/modules/resolver/exports", KEY_END),
-			keyNew ("system/elektra/modules/resolver/exports/open",
-				KEY_SIZE, sizeof (&elektraResolverOpen),
-				KEY_BINARY,
-				KEY_VALUE, &elektraResolverGet, KEY_END),
-			keyNew ("system/elektra/modules/resolver/exports/close",
-				KEY_SIZE, sizeof (&elektraResolverClose),
-				KEY_BINARY,
-				KEY_VALUE, &elektraResolverGet, KEY_END),
 			keyNew ("system/elektra/modules/resolver/exports/get",
-				KEY_SIZE, sizeof (&elektraResolverGet),
+				KEY_SIZE, sizeof (get),
 				KEY_BINARY,
-				KEY_VALUE, &elektraResolverGet, KEY_END),
-			keyNew ("system/elektra/modules/resolver/exports/set",
-				KEY_SIZE, sizeof (&elektraResolverSet),
+				KEY_VALUE, &get, KEY_END),
+			keyNew ("system/elektra/modules/resolver/exports/checkfile",
 				KEY_BINARY,
-				KEY_VALUE, &elektraResolverSet, KEY_END),
-			keyNew ("system/elektra/modules/resolver/exports/error",
-				KEY_SIZE, sizeof (&elektraResolverError),
-				KEY_BINARY,
-				KEY_VALUE, &elektraResolverGet, KEY_END),
+				KEY_SIZE, sizeof (checkfile),
+				KEY_VALUE, &checkfile, KEY_END),
 			keyNew ("system/elektra/modules/resolver/infos",
 				KEY_VALUE, "All information you want to know", KEY_END),
 			keyNew ("system/elektra/modules/resolver/infos/author",
@@ -164,14 +154,11 @@ int elektraResolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			keyNew ("system/elektra/modules/resolver/infos/needs",
 				KEY_VALUE, "", KEY_END),
 			keyNew ("system/elektra/modules/resolver/infos/version",
-				KEY_VALUE, BACKENDVERSION, KEY_END),
+				KEY_VALUE, PLUGINVERSION, KEY_END),
 			KS_END);
 		ksAppend(returned, info);
-		ksRewind(returned);
-
-		Key *k;
-		while ((k = ksNext(returned)) != 0) keyClearSync(k);
-		return ksGetSize(returned);
+		ksDel (info);
+		return 1;
 	}
 	keyDel (root);
 
@@ -354,10 +341,46 @@ int elektraResolverError(Plugin *handle, KeySet *returned, Key *parentKey)
 	return 0;
 }
 
+/**
+ * @return 1 on success (Relative path)
+ * @returns 0 on success (Absolut path)
+ * @return -1 on a non-valid file
+ */
+int elektraResolverCheckFile (const char* filename)
+{
+	if (!filename) return -1;
+	if (filename[0] == '0') return -1;
+
+	size_t size = strlen(filename);
+	char *buffer = malloc (size + sizeof ("system/"));
+	strcpy (buffer, "system/");
+	strcat (buffer, filename);
+
+	/* Because of the outbreak bugs these tests are not enough */
+	Key *check = keyNew (buffer, KEY_END);
+	if (!strcmp(keyName(check), "")) goto error;
+	if (!strcmp(keyName(check), "system")) goto error;
+	keyDel (check);
+	free (buffer);
+
+	/* Be strict, dont allow any .., even if it would be allowed sometimes */
+	if (strstr (filename, "..") != 0) return -1;
+
+
+	if (filename[0] == '/') return 0;
+
+	return 1;
+
+error:
+	keyDel (check);
+	free (buffer);
+	return -1;
+}
+
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(resolver)
 {
-	return elektraPluginExport(BACKENDNAME,
+	return elektraPluginExport("resolver",
 		ELEKTRA_PLUGIN_OPEN,	&elektraResolverOpen,
 		ELEKTRA_PLUGIN_CLOSE,	&elektraResolverClose,
 		ELEKTRA_PLUGIN_GET,	&elektraResolverGet,

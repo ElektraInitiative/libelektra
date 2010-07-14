@@ -328,7 +328,7 @@ int elektraPluginClose(Plugin *handle, Key *errorKey)
 
 	--handle->refcounter;
 
-	/* Check if we have the last reference on the plugin */
+	/* Check if we have the last reference on the plugin (unsigned!) */
 	if (handle->refcounter > 0) return 0;
 
 	if (handle->kdbClose)

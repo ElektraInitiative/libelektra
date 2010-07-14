@@ -67,6 +67,8 @@ int elektraStrCaseCmp (const char *s1, const char *s2);
 size_t elektraStrLen(const char *s);
 
 
+#define PLUGINVERSION "1"
+
 
 #ifdef __cplusplus
 }

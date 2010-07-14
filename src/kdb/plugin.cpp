@@ -24,22 +24,6 @@ Plugin::Plugin(std::string const& pluginName, KeySet &modules, KeySet const& tes
 		printWarnings(errorKey);
 		throw NoPlugin();
 	}
-
-	Key infoKey ("system/elektra/modules", KEY_END);
-	infoKey.addBaseName(pluginName);
-
-	if (pluginName != plugin->name)
-	{
-		close();
-		throw PluginWrongName();
-	}
-
-	if (!plugin->kdbGet)
-	{
-		close();
-		throw MissingSymbol("kdbGet");
-	}
-	plugin->kdbGet(plugin, info.getKeySet(), *infoKey);
 }
 
 Plugin::Plugin(Plugin const& other) :
@@ -76,6 +60,25 @@ Plugin::~Plugin()
 	close();
 }
 
+void Plugin::loadInfo()
+{
+	Key infoKey ("system/elektra/modules", KEY_END);
+	infoKey.addBaseName(pluginName);
+
+	if (pluginName != plugin->name)
+	{
+		close();
+		throw PluginWrongName();
+	}
+
+	if (!plugin->kdbGet)
+	{
+		close();
+		throw MissingSymbol("kdbGet");
+	}
+	plugin->kdbGet(plugin, info.getKeySet(), *infoKey);
+}
+
 void Plugin::parse ()
 {
 	Key root (std::string("system/elektra/modules/") + pluginName + "/exports", KEY_END);
@@ -110,6 +113,11 @@ void Plugin::parse ()
 
 }
 
+void Plugin::check()
+{
+	if (infos["version"] != PLUGINVERSION) throw VersionInfoMismatch();
+}
+
 void Plugin::close()
 {
 	/* ref counting will avoid closing */
@@ -122,11 +130,6 @@ void Plugin::close()
 ckdb::Plugin *Plugin::operator->()
 {
 	return plugin;
-}
-
-bool Plugin::operator!()
-{
-	return !plugin;
 }
 
 std::string Plugin::lookupInfo(std::string item, std::string section)

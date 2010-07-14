@@ -39,7 +39,6 @@
 
 #include "kdbinternal.h"
 
-static Trie* elektraTrieInsert(Trie *trie, const char *name, Backend *value);
 static char* elektraTrieStartsWith(const char *str, const char *substr);
 static Backend* elektraTriePrefixLookup(Trie *trie, const char *name);
 
@@ -60,6 +59,7 @@ Backend* elektraTrieLookup(Trie *trie, const Key *key)
 	Backend *ret=0;
 	size_t len=0;
 
+	if (!key) return 0;
 	if (!trie) return 0;
 
 	len = keyGetNameSize(key) + 1;
@@ -72,89 +72,6 @@ Backend* elektraTrieLookup(Trie *trie, const Key *key)
 
 	return ret;
 }
-
-/**
- * Creates a trie from a given configuration.
- *
- * The config will be deleted within this function.
- *
- * @param config the configuration which should be used to build up the trie.
- * @param errorKey the key used to report warnings
- * @return created trie on success, 0 on failure
- * @ingroup trie
- */
-Trie *elektraTrieOpen(KeySet *config, KeySet *modules, Key *errorKey)
-{
-	Trie *trie = 0;
-	Key *root;
-	Key *cur;
-
-	ksRewind(config);
-	root=ksLookupByName(config, KDB_KEY_MOUNTPOINTS, 0);
-
-	if (!root)
-	{
-		ELEKTRA_ADD_WARNING(22, errorKey, KDB_KEY_MOUNTPOINTS);
-		goto error1;
-	}
-
-	while ((cur = ksNext(config)) != 0)
-	{
-		if (keyRel (root, cur) == 1)
-		{
-			KeySet *cut = ksCut(config, cur);
-			Backend *backend = elektraBackendOpen(cut, modules, errorKey);
-			if (elektraMountBackend(&trie, backend, errorKey) == -1)
-			{
-				/* warnings already set by elektraMountBackend */
-				ksDel (cut);
-			}
-		}
-	}
-
-	ksDel (config);
-
-
-	/* Now mount all module configurations */
-	root=ksLookupByName(modules, "system/elektra/modules", 0);
-
-	if (!root)
-	{
-		ELEKTRA_ADD_WARNING(23, errorKey, "no root key found for modules");
-		goto error;
-	}
-
-	/* Reopen the default Backend for fresh user experience (update issue) */
-	Backend *defaultBackend = elektraBackendOpenDefault(modules, errorKey);
-	if (!defaultBackend)
-	{
-		ELEKTRA_ADD_WARNING(43, errorKey, "could not reopen default backend");
-		return 0;
-	}
-
-	/* Trie was created successfully.
-	   We want system/elektra/mountpoints still reachable
-	   through default backend.
-	   kdb-tool must ensure that root backend exist before any other.
-	*/
-	elektraMountBackend (&trie, defaultBackend, errorKey);
-
-
-	while ((cur = ksNext (modules)) != 0)
-	{
-		Backend * backend = elektraBackendOpenModules(modules, errorKey);
-		elektraMountBackend(&trie, backend, errorKey);
-	}
-
-	return trie;
-
-error1:
-	ksDel (config);
-error:
-	elektraTrieClose (trie, errorKey);
-	return 0;
-}
-
 
 /**
  * Closes the trie and all opened backends within.
@@ -184,51 +101,7 @@ int elektraTrieClose (Trie *trie, Key *errorKey)
 	free(trie);
 	return 0;
 }
-
-
-/******************
- * Private static declarations
- ******************/
-
-/**
- * Mounts a backend into the trie.
- *
- * @return -1 on failure (free KeySet for backend!)
- * @return 0 when nothing was done
- * @return 1 on success
- */
-int elektraMountBackend (Trie **trie, Backend *backend, Key *errorKey)
-{
-	char *mountpoint;
-
-	if (!backend)
-	{
-		ELEKTRA_ADD_WARNING(24, errorKey, "no backend given to mount");
-		return 0;
-	}
-
-	if (!backend->mountpoint)
-	{
-		ELEKTRA_ADD_WARNING(25, errorKey, "no mountpoint");
-		elektraBackendClose(backend, errorKey);
-		return -1;
-	}
-
-	if (!strcmp(keyName(backend->mountpoint), ""))
-	{
-		/* Mount as root backend */
-		mountpoint = elektraStrDup ("");
-	} else {
-		/* Prepare the name for the mountpoint*/
-		mountpoint = elektraMalloc (keyGetNameSize(backend->mountpoint)+1);
-		sprintf(mountpoint,"%s/",keyName(backend->mountpoint));
-	}
-	*trie = elektraTrieInsert(*trie, mountpoint, (void*)backend);
-	elektraFree(mountpoint);
-	return 1;
-}
-
-static Trie* elektraTrieInsert(Trie *trie, const char *name, Backend *value)
+Trie* elektraTrieInsert(Trie *trie, const char *name, Backend *value)
 {
 	char* p;
 	unsigned char idx;
@@ -301,6 +174,13 @@ static Trie* elektraTrieInsert(Trie *trie, const char *name, Backend *value)
 
 	return trie;
 }
+
+
+
+/******************
+ * Private static declarations
+ ******************/
+
 
 #if 0
 

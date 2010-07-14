@@ -45,9 +45,6 @@
 
 #define ERROR_SIZE 1024
 
-#define BACKENDNAME "resolver"
-#define BACKENDVERSION "0.0.1"
-
 typedef struct _resolverHandle resolverHandle;
 
 struct _resolverHandle
@@ -71,7 +68,11 @@ struct _resolverHandles
 	resolverHandle system;
 };
 
+void resolverInit (resolverHandle *p, const char *path);
+void resolverClose (resolverHandle *p);
+
 int resolveFilename(Key* forKey, resolverHandle *p);
+int elektraResolverCheckFile (const char* filename);
 
 int elektraResolverOpen(Plugin *handle, Key *errorKey);
 int elektraResolverClose(Plugin *handle, Key *errorKey);

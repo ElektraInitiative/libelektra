@@ -262,12 +262,22 @@ int keyIsDirectBelow(const Key *key, const Key *check)
  * Unlike keyCmp() the number gives information
  * about hierarchical information.
  *
+ *
  * - If the keys are the same 0 is returned.
  * So it is the key itself.
 @verbatim
 user/key
 user/key
 @endverbatim
+ *
+ *@code
+keySetName (key, "user/key/folder");
+keySetName (check, "user/key/folder");
+succeed_if (keyRel (key, check) == 0, "should be same");
+ *@endcode
+ *
+ * @note this relation can be checked with keyCmp() too.
+ *
  *
  * - If the key is direct below the other one 1 is returned.
  * That means that, in terms of hierarchy, no other key is
@@ -277,23 +287,60 @@ user/key/folder
 user/key/folder/child
 @endverbatim
  *
- * - If the key is below the other one, 2 is returned.
+ *@code
+keySetName (key, "user/key/folder");
+keySetName (check, "user/key/folder/child");
+succeed_if (keyRel (key, check) == 1, "should be direct below");
+ *@endcode
+ *
+ *
+ * - If the key is below the other one, but not directly 2 is returned.
  * This is also called grand-child.
 @verbatim
 user/key/folder
 user/key/folder/any/depth/deeper/grand-child
 @endverbatim
  *
+ *
+ *@code
+keySetName (key, "user/key/folder");
+keySetName (check, "user/key/folder/any/depth/deeper/grand-child");
+succeed_if (keyRel (key, check) >= 2, "should be below (but not direct)");
+succeed_if (keyRel (key, check) > 0, "should be below");
+succeed_if (keyRel (key, check) >= 0, "should be the same or below");
+ *@endcode
+ *
+ *
+ * - If a invalid or null ptr key is passed, -1 is returned
+ *
+ *
+ * - If the keys have no relations, but are not invalid, -2 is returned.
+ *
+ *
+ * - If the keys are in the same hierarchy, a value smaller then -2 is returned.
+ * It means that the key is not below.
+@verbatim
+user/key/myself
+user/key/sibling
+@endverbatim
+ *
+ * @code
+keySetName (key, "user/key/folder");
+keySetName (check, "user/notsame/folder");
+succeed_if (keyRel (key, check) < -2, "key is not below, but same namespace");
+ * @endcode
+ *
+ * @code
+ * @endcode
+ *
+ *
  * TODO Below is an idea how it could be extended:
  * It could continue the search into the other direction
  * if any (grand-)parents are equal.
  *
- * In worst case it would not find anything and return the
- * distance to root (of the first key).
- *
- * - If the keys are next to each other in hierarchy, -1 is returned.
- * This is also called siblings. (TODO not implemented)
-@verbatim
+ * - If the keys are direct below a key which is next to the key, -2 is returned.
+ * This is also called nephew. (TODO not implemented)
+ * @verbatim
 user/key/myself
 user/key/sibling
 @endverbatim
@@ -312,13 +359,6 @@ user/key/myself
 user/key/sibling/any/depth/deeper/grand-nephew
 @endverbatim
  *
- * - If there is no relation of the above, -n is returned (distance to root key + 1)
- * (TODO not implemented)
-@verbatim
-user/key/myself
-user/other/sibling/any/depth/deeper/nonrelated
-@endverbatim
- *
  * The same holds true for the other direction, but with negative values.
  * For no relation INT_MIN is returned.
  *
@@ -327,24 +367,34 @@ user/other/sibling/any/depth/deeper/nonrelated
  *       keyRel() does not give you the information if it did not
  *       find a relation or if it is the same key.
  *
- * @param k1 the first key object to compare with
- * @param k2 the second key object to compare with
- * @return the information of the relation, see text above
+ * @return dependend on the relation:
+ *   2.. if below
+ *   1.. if direct below
+ *   0.. if the same
+ *  -1.. on null or invalid keys
+ *  -2.. if none of any other relation
+ *  -3.. if same hierarchy (none of those below)
+ *  -4.. if sibling (in same hierarchy)
+ *  -5.. if nephew (in same hierarchy)
+ *
+ * @param key the key object to work with
+ * @param check the second key object to check the relation with
  * @ingroup keytest
  */
-int keyRel (const Key *k1, const Key *k2)
+int keyRel (const Key *key, const Key *check)
 {
-	if (keyIsDirectBelow(k1, k2)) return 1;
-	if (keyIsDirectBelow(k2, k1)) return -1;
-	if (keyIsBelow(k1, k2)) return 2;
-	if (keyIsBelow(k2, k1)) return -2;
-	// if (keyIsSibling(k1, k2)) return 3*res;
-	// if (keyIsNephew(k1, k2)) return 4*res;
-	// if (keyIsGrandNephew(k1, k2)) return 5*res;
+	if (!key || !check) return -1;
+	if (!key->key || !check->key) return -1;
 
-	if (!keyCmp(k1,k2)) return 0;
+	if (!keyCmp(key,check)) return 0;
+	if (keyIsDirectBelow(key, check)) return 1;
+	if (keyIsBelow(key, check)) return 2;
+	if (keyIsUser(key) && keyIsUser(check)) return -3;
+	if (keyIsSystem(key) && keyIsSystem(check)) return -3;
+	// if (keyIsSibling(key, check)) return -4;
+	// if (keyIsNephew(key, check)) return -5;
 
-	return -1;
+	return -2;
 }
 
 

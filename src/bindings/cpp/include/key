@@ -38,6 +38,8 @@ class KeyBadMeta : public KeyMetaException
 class Key
 {
 public:
+	typedef void (*func_t)();
+
 	Key () :key (ckdb::keyNew (0)) { operator++(); }
 	Key (ckdb::Key *k) :key(k) { operator++(); }
 	Key (Key &k) :key (k.key) { operator++(); }
@@ -189,6 +191,8 @@ public:
 
 	std::string getString() const;
 	void setString(std::string newString);
+
+	func_t getFunc() const;
 
 	size_t getBinary(void *returnedBinary, size_t maxSize) const;
 	size_t setBinary(const void *newBinary, size_t dataSize);
@@ -590,13 +594,24 @@ inline size_t Key::getValueSize() const
 inline std::string Key::getString() const
 {
 	size_t csize =  ckdb::keyGetValueSize (getKey());
-	std::string str;	
 	char * field = new char [csize];
 
 	ckdb::keyGetString (getKey(), field, csize);
-	str = field;
+	std::string str (field);
 	delete [] field;
 	return str;
+}
+
+inline Key::func_t Key::getFunc() const
+{
+	union {Key::func_t f; void* v;} conversation;
+
+	if (keyGetBinary(getKey(),
+			&conversation.v,
+			sizeof(conversation)) != sizeof(conversation))
+				return 0;
+
+	return conversation.f;
 }
 
 /**Sets the String of a key.*/
