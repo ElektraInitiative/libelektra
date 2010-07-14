@@ -7,7 +7,7 @@ if (DBUS_FOUND)
 	include_directories (${DBUS_INCLUDE_DIR})
 	include_directories (${DBUS_ARCH_INCLUDE_DIR})
 
-	set (SOURCES dbus.h dbus.c)
+	set (SOURCES dbus.h dbus.c sendmessage.c)
 	add_sources (elektra-full ${SOURCES})
 	add_headers (SOURCES)
 
@@ -17,7 +17,7 @@ if (DBUS_FOUND)
 	target_link_libraries (elektra-dbus ${DBUS_LIBRARIES})
 	add_libraries(elektra-full ${DBUS_LIBRARIES})
 
-	#add_plugintest (dbus)
+	add_plugintest (dbus)
 else (DBUS_FOUND)
 	remove_backend (dbus "dbus not found")
 endif (DBUS_FOUND)

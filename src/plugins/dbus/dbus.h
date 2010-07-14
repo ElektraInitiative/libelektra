@@ -30,6 +30,7 @@
 
 #include <dbus/dbus.h>
 
+int elektraDbusSendMessage (DBusBusType type);
 
 int elektraDbusOpen(Plugin *handle, Key *errorKey);
 int elektraDbusClose(Plugin *handle, Key *errorKey);
