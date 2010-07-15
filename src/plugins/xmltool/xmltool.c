@@ -32,26 +32,30 @@ int elektraXmltoolGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	if (!strcmp (keyName(parentKey), "system/elektra/modules/xmltool"))
 	{
-		ksAppend (returned, ksNew (30,
+		void (*get) () = (void (*) ()) elektraXmltoolGet;
+		void (*set) () = (void (*) ()) elektraXmltoolSet;
+		void (*fromxml) () = (void (*) ()) ksFromXMLfile;
+		void (*toxml) () = (void (*) ()) ksToStream;
+		KeySet *moduleConfig = ksNew (30,
 			keyNew ("system/elektra/modules/xmltool",
 				KEY_VALUE, "xmltool plugin waits for your orders", KEY_END),
 			keyNew ("system/elektra/modules/xmltool/exports", KEY_END),
 			keyNew ("system/elektra/modules/xmltool/exports/get",
-				KEY_SIZE, sizeof (&elektraXmltoolGet),
+				KEY_SIZE, sizeof (get),
 				KEY_BINARY,
-				KEY_VALUE, &elektraXmltoolGet, KEY_END),
+				KEY_VALUE, &get, KEY_END),
 			keyNew ("system/elektra/modules/xmltool/exports/set",
-				KEY_SIZE, sizeof (&elektraXmltoolSet),
+				KEY_SIZE, sizeof (set),
 				KEY_BINARY,
-				KEY_VALUE, &elektraXmltoolSet, KEY_END),
+				KEY_VALUE, &set, KEY_END),
 			keyNew ("system/elektra/modules/xmltool/exports/ksFromXMLfile",
-				KEY_SIZE, sizeof (&ksFromXMLfile),
+				KEY_SIZE, sizeof (fromxml),
 				KEY_BINARY,
-				KEY_VALUE, &ksFromXMLfile, KEY_END),
+				KEY_VALUE, &fromxml, KEY_END),
 			keyNew ("system/elektra/modules/xmltool/exports/ksToStream",
-				KEY_SIZE, sizeof (&ksToStream),
+				KEY_SIZE, sizeof (toxml),
 				KEY_BINARY,
-				KEY_VALUE, &ksToStream, KEY_END),
+				KEY_VALUE, &toxml, KEY_END),
 			keyNew ("system/elektra/modules/xmltool/infos",
 				KEY_VALUE, "All information you want to know", KEY_END),
 			keyNew ("system/elektra/modules/xmltool/infos/author",
@@ -67,8 +71,10 @@ int elektraXmltoolGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			keyNew ("system/elektra/modules/xmltool/infos/needs",
 				KEY_VALUE, "", KEY_END),
 			keyNew ("system/elektra/modules/xmltool/infos/version",
-				KEY_VALUE, "1.0", KEY_END),
-			KS_END));
+				KEY_VALUE, PLUGINVERSION, KEY_END),
+			KS_END);
+		ksAppend (returned, moduleConfig);
+		ksDel (moduleConfig);
 		return 1;
 	}
 
