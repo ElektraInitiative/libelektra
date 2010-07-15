@@ -114,7 +114,7 @@ int elektraTimeofdayGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	Key *root = keyNew("system/elektra/modules/timeofday", KEY_END);
 	if (keyRel (root, parentKey) >= 0)
 	{
-		ksAppend (returned, ksNew (30,
+		KeySet *pluginConfig = ksNew (30,
 			keyNew ("system/elektra/modules/timeofday",
 				KEY_VALUE, "timeofday plugin waits for your orders", KEY_END),
 			keyNew ("system/elektra/modules/timeofday/exports", KEY_END),
@@ -154,9 +154,11 @@ int elektraTimeofdayGet(Plugin *handle, KeySet *returned, Key *parentKey)
 				KEY_VALUE, "", KEY_END),
 			keyNew ("system/elektra/modules/timeofday/infos/version",
 				KEY_VALUE, "1.0", KEY_END),
-			KS_END));
+			KS_END);
+		ksAppend (returned, pluginConfig);
+		ksDel (pluginConfig);
 
-			fprintf(stderr, "get\t%s\tpos\t%s\n", elektraTimeofdayHelper (t, ti), "postmodulesconf");
+		fprintf(stderr, "get\t%s\tpos\t%s\n", elektraTimeofdayHelper (t, ti), "postmodulesconf");
 	}
 
 	keyDel (root);
