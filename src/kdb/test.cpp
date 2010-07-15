@@ -43,6 +43,22 @@ void TestCommand::doStringTest()
 {
 	vector<string> teststrings;
 	teststrings.push_back("");
+	teststrings.push_back("value");
+	teststrings.push_back("value with spaces");
+	teststrings.push_back(" a very long value with many spaces and basically very very long, but only text ... ");
+	for (int i=1; i<256; ++i) teststrings.back() += " very very long, but only text ... ";
+	teststrings.push_back("ascii umlauts !\"§$%&/()=?`\\}][{");
+	teststrings.push_back("utf8 umlauts ¸¬½¼³²¹ł€¶øæßðđł˝«»¢“”nµ─·");
+	teststrings.push_back("all chars:");
+	for (int i=1; i<256; ++i) teststrings.back().push_back(i);
+	teststrings.push_back("€");
+	for (int i=1; i<256; ++i)
+	{
+		string s;
+		s.push_back (i);
+		teststrings.push_back(s);
+	}
+
 
 	for (size_t i = 0; i< teststrings.size(); ++i)
 	{
@@ -79,8 +95,8 @@ void TestCommand::doStringTest()
 			if (res.getString() != teststrings[i])
 			{
 				cerr << "String test failed (string not equal)" << endl;
-				cerr << "We got: " << res << endl;
-				cerr << "We wanted: " << t << endl;
+				cerr << "We got: \"" << res << "\"" << endl;
+				cerr << "We wanted: \"" << t  << "\"" << endl;
 			}
 		}
 	}
