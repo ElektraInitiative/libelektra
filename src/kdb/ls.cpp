@@ -31,7 +31,7 @@ int LsCommand::execute(int argc, char** argv)
 	Key k;
 	while (k=ks.next())
 	{
-		cout << "key: " << k.getName() << " " << k.getString() << endl;;
+		cout << k << endl;
 	}
 
 	printWarnings(root);

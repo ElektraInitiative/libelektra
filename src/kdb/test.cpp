@@ -13,18 +13,30 @@ TestCommand::TestCommand()
 
 void TestCommand::doBasicTest()
 {
-	Key t = root.dup();
-	t.addBaseName ("basic");
-	t.setString ("BasicString");
-	KeySet basic;
-	basic.append(t);
+	{
+		KDB kdb;
+		Key t = root.dup();
+		t.addBaseName ("basic");
+		t.setString ("BasicString");
+		KeySet basic;
+		basic.append(t);
 
-	kdb.set (basic, root);
+		KeySet test;
+		kdb.get (test, root);
+		kdb.set (basic, root);
+	}
 
-	KeySet test;
-	kdb.get (test, root);
+	{
+		KDB kdb;
+		Key t = root.dup();
+		t.addBaseName ("basic");
+		t.setString ("BasicString");
 
-	if (!test.lookup(t)) cerr << "Basic test failed" << endl;
+		KeySet test;
+		kdb.get (test, root);
+
+		if (!test.lookup(t)) cerr << "Basic test failed" << endl;
+	}
 }
 
 void TestCommand::doStringTest()
@@ -34,28 +46,43 @@ void TestCommand::doStringTest()
 
 	for (size_t i = 0; i< teststrings.size(); ++i)
 	{
-		Key t = root.dup();
-		t.addBaseName ("string");
-		t.setString (teststrings[i]);
-		KeySet basic;
-		basic.append(t);
-
-		kdb.set (basic, root);
-
-		KeySet test;
-		kdb.get (test, root);
-
-		Key res = test.lookup(t);
-		if (!res)
 		{
-			cerr << "String test failed (key not found)" << endl;
-			continue;
-		}
-		if (res.getString() != teststrings[i])
-		{
-			cerr << "String test failed (string not equal)" << endl;
+			KDB kdb;
+			Key t = root.dup();
+			t.addBaseName ("string");
+			t.setString (teststrings[i]);
+
+			KeySet basic;
+			basic.append(t);
+
+			KeySet test;
+			kdb.get (test, root);
+			kdb.set (basic, root);
 		}
 
+		{
+			KDB kdb;
+
+			KeySet test;
+			kdb.get (test, root);
+
+			Key t = root.dup();
+			t.addBaseName ("string");
+			t.setString (teststrings[i]);
+
+			Key res = test.lookup(t);
+			if (!res)
+			{
+				cerr << "String test failed (key not found)" << t << endl;
+				continue;
+			}
+			if (res.getString() != teststrings[i])
+			{
+				cerr << "String test failed (string not equal)" << endl;
+				cerr << "We got: " << res << endl;
+				cerr << "We wanted: " << t << endl;
+			}
+		}
 	}
 }
 
@@ -74,13 +101,14 @@ int TestCommand::execute(int argc, char** argv)
 		return 1;
 	}
 
-	root  = Key (argv[2], KEY_END);
-	if (!root)
+	root.setName(argv[2]);
+	if (root.getNameSize() <= 1)
 	{
 		cerr << "Not a valid name supplied" << endl;
 		return 1;
 	}
 
+	KDB kdb;
 	KeySet original;
 	kdb.get(original, root);
 	original.rewind();

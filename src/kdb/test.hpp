@@ -6,7 +6,6 @@
 
 class TestCommand : public Command
 {
-	kdb::KDB kdb;
 	kdb::Key root;
 
 public:
