@@ -13,9 +13,12 @@ class TestCommand : public Command
 public:
 	TestCommand();
 	void doTests();
+
 	void doBasicTest();
 	void doStringTest();
 	void doBinaryTest();
+	void doNamingTest();
+
 	int execute(int argc, char**argv);
 	~TestCommand();
 };

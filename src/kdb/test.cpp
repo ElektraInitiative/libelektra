@@ -199,11 +199,83 @@ void TestCommand::doBinaryTest()
 	}
 }
 
+void TestCommand::doNamingTest()
+{
+	vector<string> teststrings;
+	teststrings.push_back("keyname");
+	teststrings.push_back("deep/below/keyname");
+	teststrings.push_back("keyname with spaces");
+	teststrings.push_back("deep/belowkeyname with spaces");
+	teststrings.push_back(" a very long value with many spaces and basically very very long, but only text ");
+	for (int i=1; i<256; ++i) teststrings.back() += "/ very very long, but only text ... ";
+	teststrings.push_back("ascii umlauts !\"§$%&/()=?`\\}][{");
+	teststrings.push_back("utf8 umlauts ¸¬½¼³²¹ł€¶øæßðđł˝«»¢“”nµ─·");
+	teststrings.push_back("all chars:");
+	for (int i=1; i<256; ++i) teststrings.back().push_back(i);
+	teststrings.push_back("€");
+	for (int i=1; i<256; ++i)
+	{
+		if (i == 46) continue; // ignore .
+		string s;
+		s.push_back (i);
+		teststrings.push_back(s);
+	}
+
+
+	for (size_t i = 0; i< teststrings.size(); ++i)
+	{
+		{
+			KDB kdb;
+			Key t = root.dup();
+			t.addBaseName (teststrings[i]);
+
+			KeySet basic;
+			basic.append(t);
+
+			KeySet test;
+			kdb.get (test, root);
+			kdb.set (basic, root);
+		}
+
+		{
+			KDB kdb;
+
+			KeySet test;
+			kdb.get (test, root);
+
+			test.rewind();
+			Key res = test.next();
+
+			nrTest ++;
+			if (!res)
+			{
+				nrError ++;
+				cerr << "Naming test failed (no key in keyset)" << endl;
+				continue;
+			}
+
+			nrTest ++;
+			Key cmp = root.dup();
+			cmp.addBaseName(teststrings[i]);
+			if (res != cmp)
+			{
+				nrError ++;
+				cerr << "Naming test failed (name is not equal)" << endl;
+				cerr << "We got: \"" << res.getName() << "\"" << endl;
+				cerr << "We wanted: \"" <<  cmp.getName() << "\"" << endl;
+				cerr << "Teststring: " << teststrings[i][0] << endl;
+				cerr << "Teststring: " << (int) teststrings[i][0] << endl;
+			}
+		}
+	}
+}
+
 void TestCommand::doTests()
 {
 	doBasicTest();
 	doStringTest();
 	doBinaryTest();
+	doNamingTest();
 }
 
 int TestCommand::execute(int argc, char** argv)
