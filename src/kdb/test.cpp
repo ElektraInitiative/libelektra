@@ -35,7 +35,12 @@ void TestCommand::doBasicTest()
 		KeySet test;
 		kdb.get (test, root);
 
-		if (!test.lookup(t)) cerr << "Basic test failed" << endl;
+		nrTest ++;
+		if (!test.lookup(t))
+		{
+			nrError ++;
+			cerr << "Basic test failed" << endl;
+		}
 	}
 }
 
@@ -84,19 +89,108 @@ void TestCommand::doStringTest()
 
 			Key t = root.dup();
 			t.addBaseName ("string");
-			t.setString (teststrings[i]);
 
 			Key res = test.lookup(t);
+
+			nrTest ++;
 			if (!res)
 			{
+				nrError ++;
 				cerr << "String test failed (key not found)" << t << endl;
 				continue;
 			}
+
+			nrTest ++;
 			if (res.getString() != teststrings[i])
 			{
-				cerr << "String test failed (string not equal)" << endl;
-				cerr << "We got: \"" << res << "\"" << endl;
-				cerr << "We wanted: \"" << t  << "\"" << endl;
+				nrError ++;
+				cerr << "String test failed (value is not equal)" << endl;
+				cerr << "We got: \"" << res.getString() << "\"" << endl;
+				cerr << "We wanted: \"" <<  teststrings[i] << "\"" << endl;
+			}
+		}
+	}
+}
+
+void TestCommand::doBinaryTest()
+{
+	vector<string> teststrings;
+	teststrings.push_back("binary value");
+	teststrings.push_back("binary value with null");
+	teststrings.back().push_back('\0');
+
+	teststrings.push_back("binary value with null");
+	teststrings.back().push_back('\0');
+	teststrings.back() += "in the middle";
+
+	teststrings.push_back(" a very long value with many spaces and basically very very long, but only binary text ... ");
+	for (int i=0; i<256; ++i)
+	{
+		teststrings.back().push_back('\0');
+		teststrings.back() += " very very long, but only binary text ... ";
+	}
+
+	teststrings.push_back("all chars:");
+	for (int i=0; i<256; ++i) teststrings.back().push_back(i);
+	teststrings.push_back("€");
+	for (int i=0; i<256; ++i)
+	{
+		string s;
+		s.push_back (i);
+		teststrings.push_back(s);
+	}
+
+
+	for (size_t i = 0; i< teststrings.size(); ++i)
+	{
+		{
+			KDB kdb;
+			Key t = root.dup();
+			t.addBaseName ("binary");
+			t.setBinary(teststrings[i].c_str(), teststrings[i].length());
+
+			KeySet basic;
+			basic.append(t);
+
+			KeySet test;
+			kdb.get (test, root);
+			kdb.set (basic, root);
+		}
+
+		{
+			KDB kdb;
+
+			KeySet test;
+			kdb.get (test, root);
+
+			Key t = root.dup();
+			t.addBaseName ("binary");
+
+			Key res = test.lookup(t);
+			nrTest ++;
+			if (!res)
+			{
+				nrError ++;
+				cerr << "Binary test failed (key not found)" << t << endl;
+				continue;
+			}
+
+			nrTest ++;
+			if (res.getValueSize() != teststrings[i].length())
+			{
+				nrError ++;
+				cerr << "Binary test failed (length is not equal)" << endl;
+				cerr << "We got: \"" << res.getBinary() << "\"" << endl;
+				cerr << "We wanted: \"" << teststrings[i] << "\"" << endl;
+			}
+
+			nrTest ++;
+			if (res.getBinary() != teststrings[i])
+			{
+				nrError ++;
+				cerr << "Binary test failed (value is not equal)" << endl;
+				cerr << "We got: \"" << res.getBinary() << "\"" << endl;
+				cerr << "We wanted: \"" << teststrings[i] << "\"" << endl;
 			}
 		}
 	}
@@ -106,6 +200,7 @@ void TestCommand::doTests()
 {
 	doBasicTest();
 	doStringTest();
+	doBinaryTest();
 }
 
 int TestCommand::execute(int argc, char** argv)
@@ -131,12 +226,13 @@ int TestCommand::execute(int argc, char** argv)
 
 	doTests();
 
+	cerr << "We got " << nrError << " errors in " << nrTest << " testcases." << endl;
+
 	cout << "Test suite is now finished." << endl;
 	cout << "Now restoring the original keyset." << endl;
 	kdb.set(original, root);
-	printWarnings(root);
 
-	return 0;
+	return nrError;
 }
 
 TestCommand::~TestCommand()

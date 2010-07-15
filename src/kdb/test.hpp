@@ -7,12 +7,15 @@
 class TestCommand : public Command
 {
 	kdb::Key root;
+	int nrTest;
+	int nrError;
 
 public:
 	TestCommand();
 	void doTests();
 	void doBasicTest();
 	void doStringTest();
+	void doBinaryTest();
 	int execute(int argc, char**argv);
 	~TestCommand();
 };

@@ -195,6 +195,7 @@ public:
 	void setString(std::string newString);
 
 	func_t getFunc() const;
+	std::string getBinary() const;
 
 	size_t getBinary(void *returnedBinary, size_t maxSize) const;
 	size_t setBinary(const void *newBinary, size_t dataSize);
@@ -627,6 +628,18 @@ inline void Key::setString(std::string newString)
 inline size_t Key::getBinary(void *returnedBinary, size_t maxSize) const
 {
 	return ckdb::keyGetBinary (getKey(), returnedBinary, maxSize);
+}
+
+/**Returns the binary Value of the key. It will not be encoded
+ * or decoded.*/
+inline std::string Key::getBinary() const
+{
+	size_t size = getValueSize();
+	char *buffer = new char[size];
+	ckdb::keyGetBinary (getKey(), buffer, size);
+	std::string str (buffer, size);
+	delete []buffer;
+	return str;
 }
 
 /**Sets a binary Value of a key*/
