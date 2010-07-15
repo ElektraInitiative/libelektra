@@ -46,10 +46,8 @@ namespace ckdb {
 ssize_t keySetRaw(ckdb::Key *key, const void *newBinary, size_t dataSize);
 }
 
-int kdbOpen_dump(ckdb::Plugin *handle);
-int kdbClose_dump(ckdb::Plugin *handle);
-ssize_t kdbGet_dump(ckdb::Plugin *handle, ckdb::KeySet *ks, const ckdb::Key *parentKey);
-ssize_t kdbSet_dump(ckdb::Plugin *handle, ckdb::KeySet *ks, const ckdb::Key *parentKey);
+int kdbGet_dump(ckdb::Plugin *handle, ckdb::KeySet *ks, ckdb::Key *parentKey);
+int kdbSet_dump(ckdb::Plugin *handle, ckdb::KeySet *ks, ckdb::Key *parentKey);
 ckdb::Plugin* ELEKTRA_PLUGIN_EXPORT(dump);
 
 } // extern C

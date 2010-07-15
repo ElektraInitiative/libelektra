@@ -17,12 +17,16 @@
 
 using namespace ckdb;
 
+#include <kdberrors.h>
+
 namespace dump
 {
 
-void serialize(std::ostream &os, ckdb::KeySet *ks)
+int serialize(std::ostream &os, ckdb::Key *, ckdb::KeySet *ks)
 {
 	ckdb::Key *cur;
+
+	os << "kdbOpen 1" << std::endl;
 
 	os << "ksNew " << ckdb::ksGetSize(ks) << std::endl;
 
@@ -84,9 +88,11 @@ void serialize(std::ostream &os, ckdb::KeySet *ks)
 	os << "ksEnd" << std::endl;
 
 	ksDel (metacopies);
+
+	return 1;
 }
 
-void unserialize(std::istream &is, ckdb::KeySet *ks)
+int unserialize(std::istream &is, ckdb::Key *errorKey, ckdb::KeySet *ks)
 {
 	ckdb::Key *cur = 0;
 
@@ -103,7 +109,17 @@ void unserialize(std::istream &is, ckdb::KeySet *ks)
 		std::stringstream ss (line);
 		ss >> command;
 
-		if (command == "ksNew")
+		if (command == "kdbOpen")
+		{
+			std::string version;
+			ss >> version;
+			if (version != "1")
+			{
+				ELEKTRA_SET_ERROR (50, errorKey, version.c_str());
+				return -1;
+			}
+		}
+		else if (command == "ksNew")
 		{
 			ss >> nrKeys;
 
@@ -167,9 +183,11 @@ void unserialize(std::istream &is, ckdb::KeySet *ks)
 		{
 			break;
 		} else {
-			std::cerr << "unkown command: " << command << std::endl;
+			ELEKTRA_SET_ERROR (49, errorKey, command.c_str());
+			return -1;
 		}
 	}
+	return 1;
 }
 
 } // namespace dump
@@ -177,32 +195,36 @@ void unserialize(std::istream &is, ckdb::KeySet *ks)
 
 extern "C" {
 
-ssize_t kdbGet_dump(ckdb::Plugin *, ckdb::KeySet *returned, const ckdb::Key *parentKey)
+int kdbGet_dump(ckdb::Plugin *, ckdb::KeySet *returned, ckdb::Key *parentKey)
 {
 	Key *root = ckdb::keyNew("system/elektra/modules/dump", KEY_END);
 	if (keyRel(root, parentKey) >= 0)
 	{
 		keyDel (root);
+		void (*get) (void) = (void (*) (void)) kdbGet_dump;
+		void (*set) (void) = (void (*) (void)) kdbSet_dump;
+		void (*serialize) (void) = (void (*) (void)) dump::serialize;
+		void (*unserialize) (void) = (void (*) (void)) dump::unserialize;
 		KeySet *n = ksNew(50,
 			keyNew ("system/elektra/modules/dump",
 				KEY_VALUE, "dump plugin waits for your orders", KEY_END),
 			keyNew ("system/elektra/modules/dump/exports", KEY_END),
 			keyNew ("system/elektra/modules/dump/exports/get",
-				KEY_SIZE, sizeof (&kdbGet_dump),
+				KEY_SIZE, sizeof (get),
 				KEY_BINARY,
-				KEY_VALUE, &kdbGet_dump, KEY_END),
+				KEY_VALUE, &get, KEY_END),
 			keyNew ("system/elektra/modules/dump/exports/set",
-				KEY_SIZE, sizeof (&kdbSet_dump),
+				KEY_SIZE, sizeof (set),
 				KEY_BINARY,
-				KEY_VALUE, &kdbSet_dump, KEY_END),
+				KEY_VALUE, &set, KEY_END),
 			keyNew ("system/elektra/modules/dump/exports/serialize",
-				KEY_SIZE, sizeof (&dump::serialize),
+				KEY_SIZE, sizeof (serialize),
 				KEY_BINARY,
-				KEY_VALUE, &dump::serialize, KEY_END),
+				KEY_VALUE, &serialize, KEY_END),
 			keyNew ("system/elektra/modules/dump/exports/unserialize",
-				KEY_SIZE, sizeof (&dump::serialize),
+				KEY_SIZE, sizeof (unserialize),
 				KEY_BINARY,
-				KEY_VALUE, &dump::serialize, KEY_END),
+				KEY_VALUE, &unserialize, KEY_END),
 			keyNew ("system/elektra/modules/dump/infos",
 				KEY_VALUE, "All information you want to know", KEY_END),
 			keyNew ("system/elektra/modules/dump/infos/author",
@@ -225,20 +247,18 @@ ssize_t kdbGet_dump(ckdb::Plugin *, ckdb::KeySet *returned, const ckdb::Key *par
 		return 1;
 	}
 	keyDel (root);
-	std::ifstream ofs(keyString(parentKey));
+	std::ifstream ofs(keyString(parentKey), std::ios::binary);
 	if (!ofs.is_open()) return 0;
-	dump::unserialize (ofs, returned);
 
-	return 1; /* success */
+	return dump::unserialize (ofs, parentKey, returned);
 }
 
-ssize_t kdbSet_dump(ckdb::Plugin *, ckdb::KeySet *returned, const ckdb::Key *parentKey)
+int kdbSet_dump(ckdb::Plugin *, ckdb::KeySet *returned, ckdb::Key *parentKey)
 {
-	std::ofstream ofs(keyString(parentKey));
+	std::ofstream ofs(keyString(parentKey), std::ios::binary);
 	if (!ofs.is_open()) return -1;
-	dump::serialize (ofs, returned);
 
-	return 1;
+	return dump::serialize (ofs, parentKey, returned);
 }
 
 ckdb::Plugin *ELEKTRA_PLUGIN_EXPORT(dump)
