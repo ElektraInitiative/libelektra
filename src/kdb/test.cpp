@@ -8,7 +8,10 @@
 using namespace kdb;
 using namespace std;
 
-TestCommand::TestCommand()
+TestCommand::TestCommand():
+	root(),
+	nrTest(0),
+	nrError(0)
 {}
 
 void TestCommand::doBasicTest()
