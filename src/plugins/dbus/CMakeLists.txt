@@ -7,7 +7,7 @@ if (DBUS_FOUND)
 	include_directories (${DBUS_INCLUDE_DIR})
 	include_directories (${DBUS_ARCH_INCLUDE_DIR})
 
-	set (SOURCES dbus.h dbus.c sendmessage.c)
+	set (SOURCES dbus.h dbus.c sendmessage.c receivemessage.c)
 	add_sources (elektra-full ${SOURCES})
 	add_headers (SOURCES)
 

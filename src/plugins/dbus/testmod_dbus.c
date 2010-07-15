@@ -1,28 +1,34 @@
-/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
-/* dbus-send.c  Utility program to send messages from the command line
- *
- * Copyright (C) 2003 Philip Blundell <philb@gnu.org>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- */
-
 #include "dbus.h"
 
-int main ()
+#include <stdio.h>
+
+void print_message (DBusMessage *message, dbus_bool_t literal);
+
+DBusHandlerResult callback (DBusConnection *connection,
+		DBusMessage *message,
+		void *user_data)
 {
-	elektraDbusSendMessage (DBUS_BUS_SESSION);
-	elektraDbusSendMessage (DBUS_BUS_SYSTEM);
+	if (dbus_message_is_signal (message,
+		DBUS_INTERFACE_DBUS,
+		"NameAcquired"))
+		return DBUS_HANDLER_RESULT_HANDLED;
+
+	if (dbus_message_is_signal (message,
+		DBUS_INTERFACE_LOCAL,
+		"Disconnected"))
+		return DBUS_HANDLER_RESULT_HANDLED;
+
+	printf ("Notify received\n");
+	return DBUS_HANDLER_RESULT_HANDLED;
+}
+
+int main (int argc, char**argv)
+{
+	if (argc == 2)
+	{
+		if (!strcmp(argv[1], "send_session")) elektraDbusSendMessage (DBUS_BUS_SESSION);
+		if (!strcmp(argv[1], "send_system")) elektraDbusSendMessage (DBUS_BUS_SYSTEM);
+		if (!strcmp(argv[1], "receive_session")) elektraDbusReceiveMessage (DBUS_BUS_SESSION, callback);
+		if (!strcmp(argv[1], "receive_system")) elektraDbusReceiveMessage (DBUS_BUS_SYSTEM, callback);
+	}
 }
