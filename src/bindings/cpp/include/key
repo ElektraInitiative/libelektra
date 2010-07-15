@@ -599,7 +599,11 @@ inline std::string Key::getString() const
 	size_t csize =  ckdb::keyGetValueSize (getKey());
 	char * field = new char [csize];
 
-	ckdb::keyGetString (getKey(), field, csize);
+	if (ckdb::keyGetString (getKey(), field, csize) == -1)
+	{
+		delete [] field;
+		return "(binary)";
+	}
 	std::string str (field);
 	delete [] field;
 	return str;
