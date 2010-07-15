@@ -18,6 +18,7 @@ public:
 	void doStringTest();
 	void doBinaryTest();
 	void doNamingTest();
+	void doMetaTest();
 
 	int execute(int argc, char**argv);
 	~TestCommand();

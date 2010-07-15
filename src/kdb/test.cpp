@@ -215,7 +215,7 @@ void TestCommand::doNamingTest()
 	teststrings.push_back("€");
 	for (int i=1; i<256; ++i)
 	{
-		if (i == 46) continue; // ignore .
+		if (i == '.') continue;
 		string s;
 		s.push_back (i);
 		teststrings.push_back(s);
@@ -263,8 +263,98 @@ void TestCommand::doNamingTest()
 				cerr << "Naming test failed (name is not equal)" << endl;
 				cerr << "We got: \"" << res.getName() << "\"" << endl;
 				cerr << "We wanted: \"" <<  cmp.getName() << "\"" << endl;
-				cerr << "Teststring: " << teststrings[i][0] << endl;
-				cerr << "Teststring: " << (int) teststrings[i][0] << endl;
+			}
+		}
+	}
+}
+
+void TestCommand::doMetaTest()
+{
+	vector<string> teststrings;
+	teststrings.push_back("");
+	teststrings.push_back("value");
+	teststrings.push_back("value with spaces");
+	teststrings.push_back(" a very long value with many spaces and basically very very long, but only text ... ");
+	for (int i=1; i<256; ++i) teststrings.back() += " very very long, but only text ... ";
+	teststrings.push_back("ascii umlauts !\"§$%&/()=?`\\}][{");
+	teststrings.push_back("utf8 umlauts ¸¬½¼³²¹ł€¶øæßðđł˝«»¢“”nµ─·");
+	teststrings.push_back("all chars:");
+	for (int i=1; i<256; ++i) teststrings.back().push_back(i);
+	teststrings.push_back("€");
+	for (int i=1; i<256; ++i)
+	{
+		string s;
+		s.push_back (i);
+		teststrings.push_back(s);
+	}
+
+	vector<string> testnames;
+	testnames.push_back("keyname");
+	testnames.push_back("deep/below/keyname");
+	/*
+	testnames.push_back("keyname with spaces");
+	testnames.push_back("deep/belowkeyname with spaces");
+	testnames.push_back(" a very long value with many spaces and basically very very long, but only text ");
+	for (int i=1; i<256; ++i) testnames.back() += "/ very very long, but only text ... ";
+	testnames.push_back("ascii umlauts !\"§$%&/()=?`\\}][{");
+	testnames.push_back("utf8 umlauts ¸¬½¼³²¹ł€¶øæßðđł˝«»¢“”nµ─·");
+	testnames.push_back("all chars:");
+	for (int i=1; i<256; ++i) testnames.back().push_back(i);
+	testnames.push_back("€");
+	for (int i=1; i<256; ++i)
+	{
+		if (i == 46) continue; // ignore .
+		string s;
+		s.push_back (i);
+		testnames.push_back(s);
+	}
+	*/
+
+
+	for (size_t j = 0; j< testnames.size(); ++j)
+	for (size_t i = 0; i< teststrings.size(); ++i)
+	{
+		{
+			KDB kdb;
+			Key t = root.dup();
+			t.addBaseName (testnames[j]);
+			t.setMeta<string> ("key", teststrings[i]);
+
+			KeySet basic;
+			basic.append(t);
+
+			KeySet test;
+			kdb.get (test, root);
+			kdb.set (basic, root);
+		}
+
+		{
+			KDB kdb;
+
+			KeySet test;
+			kdb.get (test, root);
+
+			Key t = root.dup();
+			t.addBaseName (testnames[j]);
+			Key res = test.lookup(t);
+
+			nrTest ++;
+			if (!res)
+			{
+				nrError ++;
+				cerr << "Meta test failed (key not found)" << t << endl;
+				continue;
+			}
+
+			std::string meta = res.getMeta<std::string>("key");
+
+			nrTest ++;
+			if (meta != teststrings[i])
+			{
+				nrError ++;
+				cerr << "Meta test failed (name is not equal)" << endl;
+				cerr << "We got: \"" << meta << "\"" << endl;
+				cerr << "We wanted: \"" <<  teststrings[i] << "\"" << endl;
 			}
 		}
 	}
@@ -276,6 +366,7 @@ void TestCommand::doTests()
 	doStringTest();
 	doBinaryTest();
 	doNamingTest();
+	doMetaTest();
 }
 
 int TestCommand::execute(int argc, char** argv)
