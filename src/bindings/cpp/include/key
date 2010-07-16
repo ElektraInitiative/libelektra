@@ -102,7 +102,10 @@ public:
 	bool operator > (const Key& other) const {return keyCmp(key, other.key) > 0; }
 	bool operator >= (const Key& other) const {return keyCmp(key, other.key) >= 0; }
 	/*
-	 * This is for loops only. It checks if there are still more keys.
+	 * This is for loops and lookups only.
+	 * For loops it checks if there are still more keys.
+	 * For lookups it checks if a key could be found.
+	 *
 	 * @return false on null keys
 	 * @return true otherwise
 	 */

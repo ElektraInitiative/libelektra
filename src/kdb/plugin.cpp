@@ -110,29 +110,62 @@ void Plugin::parse ()
 
 void Plugin::check(vector<string> warnings)
 {
-	if (infos["version"] != PLUGINVERSION) throw VersionInfoMismatch();
+	if (infos.find("licence") == infos.end()) warnings.push_back ("no licence information found");
+	else if (infos["licence"] != "BSD") warnings.push_back
+		("the licence is not BSD, it might change the overall licence of your elektra installation");
+
+
+	if (infos.find("description") == infos.end()) warnings.push_back ("no description of the plugin found");
+
+	if (infos.find("provides") == infos.end()) warnings.push_back ("no provides information found");
+	if (infos.find("placements") == infos.end()) warnings.push_back ("no placements information found");
+	if (infos.find("needs") == infos.end()) warnings.push_back ("no needs information found");
+
+	if (infos.find("version") == infos.end()) warnings.push_back ("no version found");
+	else if (infos["version"] != PLUGINVERSION) throw VersionInfoMismatch();
 
 	if (infos.find("author") == infos.end()) warnings.push_back ("no author found");
+	else {
+		std::string author = infos["author"];
+		size_t ppos = 0;
+		ppos = author.find ('<', ppos);
+		if (ppos == string::npos) warnings.push_back ("Could not find \"<\" for authors e-mail address");
+
+		size_t pos = 0;
+		pos = author.find ('@', ppos);
+		if (pos == string::npos) warnings.push_back ("Could not find \"@\" for authors e-mail address");
+		if (pos < ppos) warnings.push_back ("@ found before <");
+
+		size_t lpos = 0;
+		lpos = author.find ('>', pos);
+		if (lpos == string::npos) warnings.push_back ("Could not find \">\" for authors e-mail address");
+		if (lpos < pos) warnings.push_back ("> found before @");
+	}
 
 	if (plugin->kdbOpen)
 	{
-		if (symbols["open"] != (func_t) plugin->kdbOpen) throw SymbolMismatch ("open");
+		if (symbols.find("open") == symbols.end()) warnings.push_back ("no open symbol exported");
+		else if (symbols["open"] != (func_t) plugin->kdbOpen) throw SymbolMismatch ("open");
 	}
 	if (plugin->kdbClose)
 	{
-		if (symbols["close"] != (func_t) plugin->kdbClose) throw SymbolMismatch ("close");
+		if (symbols.find("close") == symbols.end()) warnings.push_back ("no close symbol exported");
+		else if (symbols["close"] != (func_t) plugin->kdbClose) throw SymbolMismatch ("close");
 	}
 	if (plugin->kdbGet)
 	{
-		if (symbols["get"] != (func_t) plugin->kdbGet) throw SymbolMismatch ("get");
+		if (symbols.find("get") == symbols.end()) warnings.push_back ("no get symbol exported");
+		else if (symbols["get"] != (func_t) plugin->kdbGet) throw SymbolMismatch ("get");
 	}
 	if (plugin->kdbSet)
 	{
-		if (symbols["set"] != (func_t) plugin->kdbSet) throw SymbolMismatch ("set");
+		if (symbols.find("set") == symbols.end()) warnings.push_back ("no set symbol exported");
+		else if (symbols["set"] != (func_t) plugin->kdbSet) throw SymbolMismatch ("set");
 	}
 	if (plugin->kdbError)
 	{
-		if (symbols["error"] != (func_t) plugin->kdbError) throw SymbolMismatch ("error");
+		if (symbols.find("error") == symbols.end()) warnings.push_back ("no error symbol exported");
+		else if (symbols["error"] != (func_t) plugin->kdbError) throw SymbolMismatch ("error");
 	}
 }
 
