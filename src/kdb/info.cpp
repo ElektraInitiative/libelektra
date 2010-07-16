@@ -32,6 +32,9 @@ int InfoCommand::execute(int argc, char** argv)
 
 	if (!conf.lookup(std::string("system/elektra/modules/") + name))
 	{
+		cerr << "Seems like module configuration is broken." << endl;
+		cerr << "This presents a severe problem for most application." << endl;
+		cerr << "Maybe the mountpoint configuration is broken." << endl;
 		cerr << "Now in fallback code. Will directly load config from plugin" << endl;
 		KeySet modules;
 		elektraModulesInit(modules.getKeySet(), 0);
@@ -43,10 +46,6 @@ int InfoCommand::execute(int argc, char** argv)
 			KS_END);
 		Plugin plugin (name, modules, testConfig);
 		plugin.loadInfo();
-		/* Not needed in code below:
-		plugin.parse();
-		plugin.check();
-		*/
 		elektraModulesClose(modules.getKeySet(), 0);
 		conf = plugin.getInfo();
 	}

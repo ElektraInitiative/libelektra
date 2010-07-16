@@ -92,11 +92,6 @@ void Plugin::parse ()
 			symbols[k.baseName()] = (*(func_t*) k.value());
 		}
 	}
-	if (plugin->kdbGet) symbols["open"] = (func_t) plugin->kdbOpen;
-	if (plugin->kdbGet) symbols["close"] = (func_t) plugin->kdbClose;
-	if (plugin->kdbGet) symbols["get"] = (func_t) plugin->kdbGet;
-	if (plugin->kdbGet) symbols["set"] = (func_t) plugin->kdbSet;
-	if (plugin->kdbGet) symbols["error"] = (func_t) plugin->kdbError;
 
 	root.setName(std::string("system/elektra/modules/") + pluginName + "/infos");
 	k = info.lookup (root);
@@ -113,9 +108,32 @@ void Plugin::parse ()
 
 }
 
-void Plugin::check()
+void Plugin::check(vector<string> warnings)
 {
 	if (infos["version"] != PLUGINVERSION) throw VersionInfoMismatch();
+
+	if (infos.find("author") == infos.end()) warnings.push_back ("no author found");
+
+	if (plugin->kdbOpen)
+	{
+		if (symbols["open"] != (func_t) plugin->kdbOpen) throw SymbolMismatch ("open");
+	}
+	if (plugin->kdbClose)
+	{
+		if (symbols["close"] != (func_t) plugin->kdbClose) throw SymbolMismatch ("close");
+	}
+	if (plugin->kdbGet)
+	{
+		if (symbols["get"] != (func_t) plugin->kdbGet) throw SymbolMismatch ("get");
+	}
+	if (plugin->kdbSet)
+	{
+		if (symbols["set"] != (func_t) plugin->kdbSet) throw SymbolMismatch ("set");
+	}
+	if (plugin->kdbError)
+	{
+		if (symbols["error"] != (func_t) plugin->kdbError) throw SymbolMismatch ("error");
+	}
 }
 
 void Plugin::close()

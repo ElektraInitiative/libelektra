@@ -19,6 +19,7 @@
 #include <rm.hpp>
 #include <shell.hpp>
 #include <test.hpp>
+#include <check.hpp>
 
 class Instancer
 {
@@ -55,6 +56,7 @@ public:
 		m_factory.insert(std::make_pair("rm", new Cnstancer<RemoveCommand>()));
 		m_factory.insert(std::make_pair("shell", new Cnstancer<ShellCommand>()));
 		m_factory.insert(std::make_pair("test", new Cnstancer<TestCommand>()));
+		m_factory.insert(std::make_pair("check", new Cnstancer<CheckCommand>()));
 	}
 
 	~Factory()
