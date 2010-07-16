@@ -1,6 +1,8 @@
 #ifndef COMMAND_HPP
 #define COMMAND_HPP
 
+#include "print.hpp"
+
 #include <exception>
 
 /**
@@ -38,10 +40,5 @@ public:
 	virtual ~Command();
 	virtual int execute (int argc, char**argv) = 0;
 };
-
-#include <key>
-
-void printError(kdb::Key error);
-void printWarnings(kdb::Key error);
 
 #endif

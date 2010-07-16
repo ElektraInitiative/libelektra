@@ -430,12 +430,12 @@ void test_iter()
 		KEY_META, "c", "other",
 		KEY_END);
 
-	Key meta; //keyNew(0)
+	Key meta; //key = keyNew(0)
 
-	succeed_if (meta, "key is a null key");
+	succeed_if (meta, "key is a not null key");
 
-	Key end = static_cast<ckdb::Key*>(0);
-	succeed_if (!end, "key is not a null key");
+	Key end = static_cast<ckdb::Key*>(0); // key = 0
+	succeed_if (!end, "key is a null key");
 
 	k.rewindMeta();
 	while (meta = k.nextMeta())

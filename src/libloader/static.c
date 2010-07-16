@@ -73,6 +73,7 @@ elektraPluginFactory elektraModulesLoad (KeySet *modules, const char *name, Key 
 			keySetMeta (error, "error/reason", "no such module");
 			keySetMeta (error, "error/module", "modules");
 		}
+		keyDel (moduleKey);
 		return 0;
 	}
 

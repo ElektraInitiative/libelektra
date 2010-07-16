@@ -925,7 +925,7 @@ void test_realworld()
 	succeed_if (ksGetSize(split->keysets[7]) == 0, "wrong size");
 	succeed_if (split->syncbits[8]== 0, "size of split not correct");
 	succeed_if (ksGetSize(split->keysets[8]) == 0, "wrong size");
-	succeed_if (split->syncbits[9]== 0, "size of split not correct");
+	succeed_if (split->syncbits[9]== 2, "size of split not correct");
 	succeed_if (ksGetSize(split->keysets[9]) == 0, "wrong size");
 
 	succeed_if (elektraSplitDivide (split, handle, ks) == 1, "should need sync");
@@ -948,7 +948,7 @@ void test_realworld()
 	succeed_if (ksGetSize(split->keysets[7]) == 1, "wrong size");
 	succeed_if (split->syncbits[8]== 1, "size of split not correct");
 	succeed_if (ksGetSize(split->keysets[8]) == 5, "wrong size");
-	succeed_if (split->syncbits[9]== 1, "size of split not correct");
+	succeed_if (split->syncbits[9]== 3, "size of split not correct");
 	succeed_if (ksGetSize(split->keysets[9]) == 3, "wrong size");
 
 	split->handles[5]->usersize = 5;
@@ -973,7 +973,7 @@ void test_realworld()
 	succeed_if (ksGetSize(split->keysets[7]) == 1, "wrong size");
 	succeed_if (split->syncbits[8]== 1, "size of split not correct");
 	succeed_if (ksGetSize(split->keysets[8]) == 5, "wrong size");
-	succeed_if (split->syncbits[9]== 1, "size of split not correct");
+	succeed_if (split->syncbits[9]== 3, "size of split not correct");
 	succeed_if (ksGetSize(split->keysets[9]) == 3, "wrong size");
 
 
@@ -1005,7 +1005,7 @@ void test_realworld()
 	succeed_if (ksGetSize(split->keysets[7]) == 0, "wrong size");
 	succeed_if (split->syncbits[8]== 0, "size of split not correct");
 	succeed_if (ksGetSize(split->keysets[8]) == 0, "wrong size");
-	succeed_if (split->syncbits[9]== 0, "size of split not correct");
+	succeed_if (split->syncbits[9]== 2, "size of split not correct");
 	succeed_if (ksGetSize(split->keysets[9]) == 0, "wrong size");
 
 	succeed_if (elektraSplitDivide (split, handle, ks) == 0, "does not need sync anymore");
@@ -1028,7 +1028,7 @@ void test_realworld()
 	succeed_if (ksGetSize(split->keysets[7]) == 1, "wrong size");
 	succeed_if (split->syncbits[8]== 0, "size of split not correct");
 	succeed_if (ksGetSize(split->keysets[8]) == 5, "wrong size");
-	succeed_if (split->syncbits[9]== 0, "size of split not correct");
+	succeed_if (split->syncbits[9]== 2, "size of split not correct");
 	succeed_if (ksGetSize(split->keysets[9]) == 3, "wrong size");
 
 	succeed_if (elektraSplitSync (split) == 1, "should need sync, because of removes");
@@ -1052,7 +1052,7 @@ void test_realworld()
 	succeed_if (ksGetSize(split->keysets[7]) == 1, "wrong size");
 	succeed_if (split->syncbits[8]== 1, "size of split not correct");
 	succeed_if (ksGetSize(split->keysets[8]) == 5, "wrong size");
-	succeed_if (split->syncbits[9]== 1, "size of split not correct");
+	succeed_if (split->syncbits[9]== 3, "size of split not correct");
 	succeed_if (ksGetSize(split->keysets[9]) == 3, "wrong size");
 
 	elektraSplitDel (split);
