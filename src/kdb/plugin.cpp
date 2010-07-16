@@ -108,7 +108,7 @@ void Plugin::parse ()
 
 }
 
-void Plugin::check(vector<string> warnings)
+void Plugin::check(vector<string> & warnings)
 {
 	if (infos.find("licence") == infos.end()) warnings.push_back ("no licence information found");
 	else if (infos["licence"] != "BSD") warnings.push_back

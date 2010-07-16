@@ -77,6 +77,7 @@ struct MissingSymbol: public PluginCheckException
 	{}
 	virtual const char* what() const throw()
 	{
+		// TODO: not safe return value
 		return std::string(std::string("The necessary symbol \"") + symbol + "\" is missing in that plugin!").c_str();
 	}
 };
@@ -91,6 +92,7 @@ struct SymbolMismatch: public PluginCheckException
 	{}
 	virtual const char* what() const throw()
 	{
+		// TODO: not safe return value
 		return std::string(std::string("The symbol \"") + symbol + "\" does not match with other exported information!").c_str();
 	}
 };
@@ -181,7 +183,7 @@ public:
 	 *
 	 * @pre parse()
 	 */
-	void check(std::vector<std::string> warnings);
+	void check(std::vector<std::string> & warnings);
 
 	ckdb::Plugin *operator->();
 

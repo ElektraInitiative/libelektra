@@ -166,18 +166,16 @@ int elektraIconvGet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 	if (!strcmp (keyName(parentKey), "system/elektra/modules/iconv"))
 	{
-		ksAppend (returned, ksNew (30,
+		KeySet *pluginConfig = ksNew (30,
 			keyNew ("system/elektra/modules/iconv",
 				KEY_VALUE, "iconv plugin waits for your orders", KEY_END),
 			keyNew ("system/elektra/modules/iconv/exports", KEY_END),
 			keyNew ("system/elektra/modules/iconv/exports/get",
-				KEY_SIZE, sizeof (&elektraIconvGet),
-				KEY_BINARY,
-				KEY_VALUE, &elektraIconvGet, KEY_END),
+				KEY_FUNC, elektraIconvGet,
+				KEY_END),
 			keyNew ("system/elektra/modules/iconv/exports/set",
-				KEY_SIZE, sizeof (&elektraIconvSet),
-				KEY_BINARY,
-				KEY_VALUE, &elektraIconvSet, KEY_END),
+				KEY_FUNC, elektraIconvSet,
+				KEY_END),
 			keyNew ("system/elektra/modules/iconv/infos",
 				KEY_VALUE, "All information you want to know", KEY_END),
 			keyNew ("system/elektra/modules/iconv/infos/author",
@@ -193,8 +191,10 @@ int elektraIconvGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			keyNew ("system/elektra/modules/iconv/infos/needs",
 				KEY_VALUE, "", KEY_END),
 			keyNew ("system/elektra/modules/iconv/infos/version",
-				KEY_VALUE, "1.0", KEY_END),
-			KS_END));
+				KEY_VALUE, PLUGINVERSION, KEY_END),
+			KS_END);
+		ksAppend (returned, pluginConfig);
+		ksDel (pluginConfig);
 		return 1;
 	}
 

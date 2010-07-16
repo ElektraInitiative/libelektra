@@ -30,7 +30,7 @@ int InfoCommand::execute(int argc, char** argv)
 
 	kdb.get(conf, parentKey);
 
-	if (!conf.lookup(std::string("system/elektra/modules/") + name))
+	if (!conf.lookup(parentKey))
 	{
 		cerr << "Seems like module configuration is broken." << endl;
 		cerr << "This presents a severe problem for most application." << endl;
@@ -47,7 +47,8 @@ int InfoCommand::execute(int argc, char** argv)
 		Plugin plugin (name, modules, testConfig);
 		plugin.loadInfo();
 		elektraModulesClose(modules.getKeySet(), 0);
-		conf = plugin.getInfo();
+		// TODO: memory leak
+		conf.append(plugin.getInfo());
 	}
 
 	Key root (std::string("system/elektra/modules/") + name + "/exports", KEY_END);
