@@ -269,6 +269,7 @@ Key *keyVNew (const char *keyName, va_list va)
 	keyswitch_t action=0;
 	void * value=0;
 	ssize_t valueSize=-1;
+	void (*p) (void)=0;
 
 	key=(Key *)malloc(sizeof(Key));
 	if (!key) return 0;
@@ -315,6 +316,10 @@ Key *keyVNew (const char *keyName, va_list va)
 					break;
 				case KEY_DIR:
 					keySetDir(key);
+					break;
+				case KEY_FUNC:
+					p = va_arg(va, void(*)(void));
+					keySetBinary(key, &p, sizeof(p));
 					break;
 				case KEY_META:
 					value = va_arg (va,char *);
