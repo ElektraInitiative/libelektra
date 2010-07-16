@@ -49,3 +49,10 @@ void printWarnings(Key error)
 		// no warnings were issued
 	}
 }
+
+
+std::ostream & operator << (std::ostream & os, Key &k)
+{
+	os << "key: " << k.getName() << " " << k.getString();
+	return os;
+}

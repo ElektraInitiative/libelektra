@@ -101,8 +101,10 @@ public:
 	bool operator <= (const Key& other) const {return keyCmp(key, other.key) <= 0; }
 	bool operator > (const Key& other) const {return keyCmp(key, other.key) > 0; }
 	bool operator >= (const Key& other) const {return keyCmp(key, other.key) >= 0; }
-	/*This is for loops only. It checks if there are still more keys.
-	 * The check is not related to its name.
+	/*
+	 * This is for loops only. It checks if there are still more keys.
+	 * @return false on null keys
+	 * @return true otherwise
 	 */
 	operator bool () const {return key != 0;}
 
@@ -193,6 +195,7 @@ public:
 	void setString(std::string newString);
 
 	func_t getFunc() const;
+	std::string getBinary() const;
 
 	size_t getBinary(void *returnedBinary, size_t maxSize) const;
 	size_t setBinary(const void *newBinary, size_t dataSize);
@@ -596,7 +599,11 @@ inline std::string Key::getString() const
 	size_t csize =  ckdb::keyGetValueSize (getKey());
 	char * field = new char [csize];
 
-	ckdb::keyGetString (getKey(), field, csize);
+	if (ckdb::keyGetString (getKey(), field, csize) == -1)
+	{
+		delete [] field;
+		return "(binary)";
+	}
 	std::string str (field);
 	delete [] field;
 	return str;
@@ -625,6 +632,18 @@ inline void Key::setString(std::string newString)
 inline size_t Key::getBinary(void *returnedBinary, size_t maxSize) const
 {
 	return ckdb::keyGetBinary (getKey(), returnedBinary, maxSize);
+}
+
+/**Returns the binary Value of the key. It will not be encoded
+ * or decoded.*/
+inline std::string Key::getBinary() const
+{
+	size_t size = getValueSize();
+	char *buffer = new char[size];
+	ckdb::keyGetBinary (getKey(), buffer, size);
+	std::string str (buffer, size);
+	delete []buffer;
+	return str;
 }
 
 /**Sets a binary Value of a key*/

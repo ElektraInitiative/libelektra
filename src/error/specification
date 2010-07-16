@@ -279,3 +279,15 @@ description:Assertion Failure
 severity:warning
 ingroup:kdb
 
+number:49
+description:unkown command detected in dumpfile
+severity:error
+ingroup:plugin
+module:dump
+
+number:50
+description:wrong version detected in dumpfile
+severity:error
+ingroup:plugin
+module:dump
+

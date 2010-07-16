@@ -644,7 +644,7 @@ void test_realworld()
 	succeed_if (split->syncbits[5] == 2, "sync state for root not correct");
 	succeed_if (split->syncbits[6] == 2, "sync state for root not correct");
 	succeed_if (split->syncbits[7] == 0, "sync state for root not correct");
-	succeed_if (split->syncbits[8] == 0, "sync state for root not correct");
+	succeed_if (split->syncbits[8] == 2, "sync state for root not correct");
 	succeed_if (compare_keyset (split->keysets[0], split0) == 0, "comparing: not correct result");
 	succeed_if (compare_keyset (split->keysets[3], split3) == 0, "comparing: not correct result");
 	succeed_if (compare_keyset (split->keysets[6], split6) == 0, "comparing: not correct result");
