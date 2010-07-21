@@ -31,18 +31,17 @@
 
 int elektraErrorGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
-	ksAppend (returned, ksNew (30,
+	KeySet *n;
+	ksAppend (returned, n = ksNew (30,
 		keyNew ("system/elektra/modules/error",
 			KEY_VALUE, "error plugin waits for your orders", KEY_END),
 		keyNew ("system/elektra/modules/error/exports", KEY_END),
 		keyNew ("system/elektra/modules/error/exports/get",
-			KEY_SIZE, sizeof (&elektraErrorGet),
-			KEY_BINARY,
-			KEY_VALUE, &elektraErrorGet, KEY_END),
+			KEY_FUNC, elektraErrorGet,
+			KEY_END),
 		keyNew ("system/elektra/modules/error/exports/set",
-			KEY_SIZE, sizeof (&elektraErrorSet),
-			KEY_BINARY,
-			KEY_VALUE, &elektraErrorSet, KEY_END),
+			KEY_FUNC, elektraErrorSet,
+			KEY_END),
 		keyNew ("system/elektra/modules/error/infos",
 			KEY_VALUE, "All information you want to know", KEY_END),
 		keyNew ("system/elektra/modules/error/infos/author",
@@ -58,9 +57,12 @@ int elektraErrorGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		keyNew ("system/elektra/modules/error/infos/needs",
 			KEY_VALUE, "", KEY_END),
 		keyNew ("system/elektra/modules/error/infos/version",
-			KEY_VALUE, "1.0", KEY_END),
+			KEY_VALUE, PLUGINVERSION, KEY_END),
 		KS_END));
-	ksAppend (returned, elektraErrorSpecification());
+	ksDel (n);
+
+	ksAppend (returned, n = elektraErrorSpecification());
+	ksDel (n);
 	return 1;
 }
 
