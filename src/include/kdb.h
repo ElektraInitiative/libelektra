@@ -45,7 +45,7 @@ enum {
 	KEY_FUNC=1<<12,
 	KEY_DIR=1<<14,
 	KEY_META=1<<15,
-	KEY_NULL=1<<16,
+	KEY_NULL=1<<16
 };
 
 enum {
