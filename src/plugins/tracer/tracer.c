@@ -27,29 +27,29 @@
 
 #include "tracer.h"
 
-int kdbOpen_tracer(Plugin *handle)
+int elektraTracerOpen(Plugin *handle, Key *errorKey)
 {
 	ssize_t nr_keys = 0;
 	KeySet *config = elektraPluginGetConfig(handle);
 	Key *k;
 
-	printf ("tracer: kdbOpen(%p): ", (void*)handle);
+	printf ("tracer: open(%p): ", (void*)handle);
 	while ((k = ksNext(config))!=0) { printf ("%s=%s ", keyName(k), keyString(k)); ++nr_keys; }
 	printf ("%zd\n", nr_keys);
 
 	return 0;
 }
 
-int kdbClose_tracer(Plugin *handle)
+int elektraTracerClose(Plugin *handle, Key *errorKey)
 {
 	/* free all backend resources and shut it down */
 
-	printf ("tracer: kdbClose(%p)\n", (void*)handle);
+	printf ("tracer: close(%p)\n", (void*)handle);
 
 	return 0; /* success */
 }
 
-ssize_t kdbGet_tracer(Plugin *handle, KeySet *returned, const Key *parentKey)
+int elektraTracerGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	ssize_t nr_keys = 0;
 	Key *k=0;
@@ -57,28 +57,26 @@ ssize_t kdbGet_tracer(Plugin *handle, KeySet *returned, const Key *parentKey)
 	Key *root = keyNew("system/elektra/modules/tracer", KEY_END);
 	if (keyRel(root, parentKey) >= 0)
 	{
-		Key *k;
 		KeySet *info =
 			ksNew(50,
 			keyNew ("system/elektra/modules/tracer",
 				KEY_VALUE, "tracer plugin waits for your orders", KEY_END),
 			keyNew ("system/elektra/modules/tracer/exports", KEY_END),
 			keyNew ("system/elektra/modules/tracer/exports/open",
-				KEY_SIZE, sizeof (&kdbOpen_tracer),
-				KEY_BINARY,
-				KEY_VALUE, &kdbOpen_tracer, KEY_END),
+				KEY_FUNC, elektraTracerOpen,
+				KEY_END),
 			keyNew ("system/elektra/modules/tracer/exports/close",
-				KEY_SIZE, sizeof (&kdbClose_tracer),
-				KEY_BINARY,
-				KEY_VALUE, &kdbClose_tracer, KEY_END),
+				KEY_FUNC, elektraTracerClose,
+				KEY_END),
 			keyNew ("system/elektra/modules/tracer/exports/get",
-				KEY_SIZE, sizeof (&kdbGet_tracer),
-				KEY_BINARY,
-				KEY_VALUE, &kdbGet_tracer, KEY_END),
+				KEY_FUNC, elektraTracerGet,
+				KEY_END),
 			keyNew ("system/elektra/modules/tracer/exports/set",
-				KEY_SIZE, sizeof (&kdbSet_tracer),
-				KEY_BINARY,
-				KEY_VALUE, &kdbSet_tracer, KEY_END),
+				KEY_FUNC, elektraTracerSet,
+				KEY_END),
+			keyNew ("system/elektra/modules/tracer/exports/error",
+				KEY_FUNC, elektraTracerError,
+				KEY_END),
 			keyNew ("system/elektra/modules/tracer/infos",
 				KEY_VALUE, "All information you want to know", KEY_END),
 			keyNew ("system/elektra/modules/tracer/infos/author",
@@ -92,32 +90,41 @@ ssize_t kdbGet_tracer(Plugin *handle, KeySet *returned, const Key *parentKey)
 			keyNew ("system/elektra/modules/tracer/infos/needs",
 				KEY_VALUE, "", KEY_END),
 			keyNew ("system/elektra/modules/tracer/infos/placements",
-				KEY_VALUE, "pregetstorage postgetstorage presetstorage precommit postcommit", KEY_END),
+				KEY_VALUE, "pregetstorage postgetstorage presetstorage precommit postcommit prerollback postrollback", KEY_END),
 			keyNew ("system/elektra/modules/tracer/infos/version",
-				KEY_VALUE, BACKENDVERSION, KEY_END),
+				KEY_VALUE, PLUGINVERSION, KEY_END),
 			KS_END);
 		ksAppend(returned, info);
-		ksRewind(returned);
-
-		while ((k = ksNext(returned)) != 0) keyClearSync(k);
-		nr_keys = ksGetSize(returned);
+		ksDel (info);
 	}
 
 	keyDel (root);
 
-	printf ("tracer: kdbGet(%p, %s): ", (void*)handle, keyName(parentKey));
+	printf ("tracer: get(%p, %s): ", (void*)handle, keyName(parentKey));
 	while ((k = ksNext(returned))!=0) { printf ("%s ", keyName(k)); ++nr_keys; }
 	printf ("%zd\n", nr_keys);
 
 	return nr_keys;
 }
 
-ssize_t kdbSet_tracer(Plugin *handle, KeySet *returned, const Key *parentKey)
+int elektraTracerSet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	ssize_t nr_keys = 0;
 	Key *k=0;
 
-	printf ("tracer: kdbSet(%p, %s): ", (void*)handle, keyName(parentKey));
+	printf ("tracer: set(%p, %s): ", (void*)handle, keyName(parentKey));
+	while ((k = ksNext(returned))!=0) { printf ("%s ", keyName(k)); ++nr_keys; }
+	printf ("%zd\n", nr_keys);
+
+	return nr_keys;
+}
+
+int elektraTracerError(Plugin *handle, KeySet *returned, Key *parentKey)
+{
+	ssize_t nr_keys = 0;
+	Key *k=0;
+
+	printf ("tracer: error(%p, %s): ", (void*)handle, keyName(parentKey));
 	while ((k = ksNext(returned))!=0) { printf ("%s ", keyName(k)); ++nr_keys; }
 	printf ("%zd\n", nr_keys);
 
@@ -126,11 +133,12 @@ ssize_t kdbSet_tracer(Plugin *handle, KeySet *returned, const Key *parentKey)
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(tracer)
 {
-	return elektraPluginExport(BACKENDNAME,
-		ELEKTRA_PLUGIN_OPEN,	&kdbOpen_tracer,
-		ELEKTRA_PLUGIN_CLOSE,	&kdbClose_tracer,
-		ELEKTRA_PLUGIN_GET,	&kdbGet_tracer,
-		ELEKTRA_PLUGIN_SET,	&kdbSet_tracer,
+	return elektraPluginExport("tracer",
+		ELEKTRA_PLUGIN_OPEN,	&elektraTracerOpen,
+		ELEKTRA_PLUGIN_CLOSE,	&elektraTracerClose,
+		ELEKTRA_PLUGIN_GET,	&elektraTracerGet,
+		ELEKTRA_PLUGIN_SET,	&elektraTracerSet,
+		ELEKTRA_PLUGIN_ERROR,	&elektraTracerError,
 		ELEKTRA_PLUGIN_END);
 }
 

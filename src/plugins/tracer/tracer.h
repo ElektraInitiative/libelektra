@@ -30,12 +30,10 @@
 
 #include <stdio.h>
 
+int elektraTracerOpen(Plugin *handle, Key *errorKey);
+int elektraTracerClose(Plugin *handle, Key *errorKey);
+int elektraTracerGet(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraTracerSet(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraTracerError(Plugin *handle, KeySet *returned, Key *parentKey);
 
-#define BACKENDNAME "tracer"
-#define BACKENDVERSION "0.0.1"
-
-int kdbOpen_tracer(Plugin *handle);
-int kdbClose_tracer(Plugin *handle);
-ssize_t kdbGet_tracer(Plugin *handle, KeySet *ks, const Key *parentKey);
-ssize_t kdbSet_tracer(Plugin *handle, KeySet *ks, const Key *parentKey);
 Plugin *ELEKTRA_PLUGIN_EXPORT(tracer);
