@@ -256,7 +256,11 @@ int kdbGet_dump(ckdb::Plugin *, ckdb::KeySet *returned, ckdb::Key *parentKey)
 int kdbSet_dump(ckdb::Plugin *, ckdb::KeySet *returned, ckdb::Key *parentKey)
 {
 	std::ofstream ofs(keyString(parentKey), std::ios::binary);
-	if (!ofs.is_open()) return -1;
+	if (!ofs.is_open())
+	{
+		ELEKTRA_SET_ERROR (9, parentKey, "file is not open in dump");
+		return -1;
+	}
 
 	return dump::serialize (ofs, parentKey, returned);
 }

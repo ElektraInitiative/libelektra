@@ -627,7 +627,9 @@ int kdbSet (KDB *handle, KeySet *ks, Key * parentKey)
 		if (p <= COMMIT_PLUGIN && errorOccurred > 0)
 		{
 			goto error;
-		}
+		} /* else {
+			 TODO make error to warning?
+		} */
 	}
 
 	elektraSplitUpdateSize (split);
