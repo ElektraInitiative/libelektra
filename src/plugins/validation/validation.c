@@ -81,6 +81,7 @@ int elektraValidationSet(Plugin *handle, KeySet *returned, Key *parentKey)
 			char buffer [1000];
 			regerror (ret, &regex, buffer, 999);
 			ELEKTRA_SET_ERROR (41, parentKey, buffer);
+			regfree (&regex);
 			return -1;
 		}
 
@@ -92,14 +93,17 @@ int elektraValidationSet(Plugin *handle, KeySet *returned, Key *parentKey)
 			if (msg)
 			{
 				ELEKTRA_SET_ERROR (42, parentKey, keyString(msg));
+				regfree (&regex);
 				return -1;
 			} else {
 				char buffer [1000];
 				regerror (ret, &regex, buffer, 999);
 				ELEKTRA_SET_ERROR (42, parentKey, buffer);
+				regfree (&regex);
 				return -1;
 			}
 		}
+		regfree (&regex);
 	}
 
 	return 1; /* success */
