@@ -20,17 +20,21 @@ int elektraDbusSendMessage (DBusBusType type)
 		return -1;
 	}
 
+	dbus_connection_set_exit_on_disconnect (connection, FALSE);
+
 	message = dbus_message_new_signal (path, name, "changed");
 
 	if (message == NULL)
 	{
 		fprintf (stderr, "Couldn't allocate D-Bus message\n");
+		dbus_error_free (&error);
 		return -1;
 	}
 
 	if (dest && !dbus_message_set_destination (message, dest))
 	{
 		fprintf (stderr, "Not enough memory\n");
+		dbus_error_free (&error);
 		return -1;
 	}
 
@@ -40,6 +44,7 @@ int elektraDbusSendMessage (DBusBusType type)
 	dbus_message_unref (message);
 
 	dbus_connection_unref (connection);
+	dbus_error_free (&error);
 
 	return 1;
 }
