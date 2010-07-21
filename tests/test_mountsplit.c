@@ -535,8 +535,10 @@ void test_modules()
 	succeed_if (compare_key (mp, kdb->split->parents[1]) == 0, "parent not correct in split");
 	keySetName(mp, "system/elektra"); keySetString (mp, "default");
 	succeed_if (compare_key (mp, kdb->split->parents[3]) == 0, "parent not correct in split");
+	/*
 	keySetName(mp, "system/elektra/modules/default"); keySetString (mp, "modules");
 	succeed_if (compare_key (mp, kdb->split->parents[4]) == 0, "parent not correct in split");
+	*/
 
 	keySetName(mp, "user/tests/simple"); keySetString (mp, "simple");
 	succeed_if (compare_key (mp, kdb->split->parents[2]) == 0, "parent not correct in split");
@@ -592,11 +594,13 @@ void test_modules()
 	Key *mmp = keyNew ("system/elektra/modules", KEY_VALUE, "modules", KEY_END);
 	keyAddBaseName (mmp, "default");
 
+	/*
 	keySetName(searchKey, "system/elektra/modules/default");
 	b2 = elektraTrieLookup(kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (b2 != kdb->defaultBackend, "should not be the default backend");
 	succeed_if (compare_key(b2->mountpoint, mmp) == 0, "mountpoint key for modules not correct");
+	*/
 
 	keyDel (mmp);
 	keyDel (dmp);

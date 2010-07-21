@@ -31,7 +31,10 @@ int elektraDbusGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		keyNew ("system/elektra/modules/dbus",
 			KEY_VALUE, "dbus plugin waits for your orders", KEY_END),
 		keyNew ("system/elektra/modules/dbus/exports", KEY_END),
-		// TODO exports
+		keyNew ("system/elektra/modules/dbus/exports/get",
+			KEY_FUNC, elektraDbusGet, KEY_END),
+		keyNew ("system/elektra/modules/dbus/exports/set",
+			KEY_FUNC, elektraDbusSet, KEY_END),
 		keyNew ("system/elektra/modules/dbus/infos",
 			KEY_VALUE, "All information you want to know", KEY_END),
 		keyNew ("system/elektra/modules/dbus/infos/author",
@@ -47,7 +50,7 @@ int elektraDbusGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		keyNew ("system/elektra/modules/dbus/infos/needs",
 			KEY_VALUE, "", KEY_END),
 		keyNew ("system/elektra/modules/dbus/infos/version",
-			KEY_VALUE, "1", KEY_END), // TODO PLUGINVERSION
+			KEY_VALUE, PLUGINVERSION, KEY_END),
 		KS_END);
 	ksAppend (returned, pluginConfig);
 	ksDel (pluginConfig);

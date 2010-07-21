@@ -38,6 +38,11 @@ int SetCommand::execute(int argc, char**argv)
 	{
 		cout << "create a new key with " << name << " and " << value << endl;
 		key = Key(name, KEY_VALUE, value.c_str(), KEY_END);
+		if (!key.isValid())
+		{
+			cerr << "no valid name supplied" << endl;
+			return 1;
+		}
 		conf.append(key);
 	} else {
 		cout << "Set string to " << value << endl;

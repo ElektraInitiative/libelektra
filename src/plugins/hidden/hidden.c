@@ -45,18 +45,22 @@ int elektraHiddenGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	if (!strcmp (keyName(parentKey), "system/elektra/modules/hidden"))
 	{
-		ksAppend (returned, ksNew (30,
+		KeySet *pluginConfig = ksNew (30,
 			keyNew ("system/elektra/modules/hidden",
 				KEY_VALUE, "hidden plugin waits for your orders", KEY_END),
 			keyNew ("system/elektra/modules/hidden/exports", KEY_END),
+			keyNew ("system/elektra/modules/hidden/exports/open",
+				KEY_FUNC, elektraHiddenOpen,
+				KEY_END),
+			keyNew ("system/elektra/modules/hidden/exports/close",
+				KEY_FUNC, elektraHiddenClose,
+				KEY_END),
 			keyNew ("system/elektra/modules/hidden/exports/get",
-				KEY_SIZE, sizeof (&elektraHiddenGet),
-				KEY_BINARY,
-				KEY_VALUE, &elektraHiddenGet, KEY_END),
+				KEY_FUNC, elektraHiddenGet,
+				KEY_END),
 			keyNew ("system/elektra/modules/hidden/exports/set",
-				KEY_SIZE, sizeof (&elektraHiddenSet),
-				KEY_BINARY,
-				KEY_VALUE, &elektraHiddenSet, KEY_END),
+				KEY_FUNC, elektraHiddenSet,
+				KEY_END),
 			keyNew ("system/elektra/modules/hidden/infos",
 				KEY_VALUE, "All information you want to know", KEY_END),
 			keyNew ("system/elektra/modules/hidden/infos/author",
@@ -72,8 +76,10 @@ int elektraHiddenGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			keyNew ("system/elektra/modules/hidden/infos/needs",
 				KEY_VALUE, "", KEY_END),
 			keyNew ("system/elektra/modules/hidden/infos/version",
-				KEY_VALUE, "1.0", KEY_END),
-			KS_END));
+				KEY_VALUE, PLUGINVERSION, KEY_END),
+			KS_END);
+		ksAppend (returned,pluginConfig);
+		ksDel (pluginConfig);
 		return 1;
 	}
 

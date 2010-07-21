@@ -93,7 +93,8 @@ void Backend::tryPlugin (std::string pluginName)
 	auto_ptr<Plugin>plugin (new Plugin (realPluginName, modules, testConfig));
 	plugin->loadInfo();
 	plugin->parse();
-	plugin->check();
+	vector<string> warnings;
+	plugin->check(warnings);
 
 	errorplugins.tryPlugin (*plugin.get());
 	getplugins.tryPlugin   (*plugin.get());
@@ -103,6 +104,16 @@ void Backend::tryPlugin (std::string pluginName)
 	{
 		if (plugin->name() == plugins[i]->name())
 			throw PluginAlreadyInserted();
+	}
+
+	if (warnings.size() > 0)
+	{
+		cerr << "There are " << warnings.size() << " Warnings for this plugin" << endl;
+
+		for (size_t i = 0; i < warnings.size(); ++i)
+		{
+			cerr << "Warning #" << i << ": " << warnings[i] << endl;
+		}
 	}
 
 	plugins.push_back(plugin.release());

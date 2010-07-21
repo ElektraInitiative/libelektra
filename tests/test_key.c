@@ -2193,6 +2193,18 @@ void test_binary()
 	succeed_if (fun == myfun, "pointers not equal");
 
 	keyDel (k);
+
+
+	k = keyNew ("system/symbol/cool",
+			KEY_FUNC, fun,
+			KEY_END);
+
+	succeed_if (keyGetBinary(k, &myfun, sizeof(fun_t)) == sizeof(fun_t),
+			"could not get binary");
+
+	succeed_if (fun == myfun, "pointers not equal");
+
+	keyDel (k);
 }
 
 void test_outbreak()

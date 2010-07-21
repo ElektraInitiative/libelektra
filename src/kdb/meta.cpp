@@ -34,9 +34,17 @@ int MetaCommand::execute(int argc, char** argv)
 
 	if (command == "meta-get")
 	{
-		cout << k.getMeta<string>(metaname) << endl;
+		if (!k) cout << "Key not found" << endl;
+		else cout << k.getMeta<string>(metaname) << endl;
 	} else if (command == "meta-set")
 	{
+		if (!k) k = Key(keyname, KEY_END);
+		if (!k.isValid())
+		{
+			cout << "Could not create key" << endl;
+			return 1;
+		}
+
 		std::string metavalue = argv[4];
 		if (metaname == "atime" || metaname == "mtime" || metaname == "ctime")
 		{

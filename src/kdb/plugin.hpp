@@ -5,6 +5,7 @@
 #include <command.hpp>
 
 #include <map>
+#include <vector>
 #include <string>
 
 namespace ckdb
@@ -76,7 +77,23 @@ struct MissingSymbol: public PluginCheckException
 	{}
 	virtual const char* what() const throw()
 	{
-		return std::string(std::string("The necessary symbol ") + symbol + " is missing in that plugin!").c_str();
+		// TODO: not safe return value
+		return std::string(std::string("The necessary symbol \"") + symbol + "\" is missing in that plugin!").c_str();
+	}
+};
+
+struct SymbolMismatch: public PluginCheckException
+{
+	std::string symbol;
+	SymbolMismatch (std::string const& symbol) :
+		symbol(symbol)
+	{}
+	~SymbolMismatch () throw()
+	{}
+	virtual const char* what() const throw()
+	{
+		// TODO: not safe return value
+		return std::string(std::string("The symbol \"") + symbol + "\" does not match with other exported information!").c_str();
 	}
 };
 
@@ -161,9 +178,12 @@ public:
 	 *
 	 * - Check if Plugin is compatible to current Version of Backend-API.
 	 *
+	 * @throw PluginCheckException if there are errors
+	 * @param warnings for warnings
+	 *
 	 * @pre parse()
 	 */
-	void check();
+	void check(std::vector<std::string> & warnings);
 
 	ckdb::Plugin *operator->();
 

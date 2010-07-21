@@ -1,5 +1,7 @@
 #include <tests.h>
 
+#include <vector>
+#include <string>
 #include <stdexcept>
 
 void test_keynew()
@@ -523,6 +525,60 @@ void test_copymeta()
 			"copy meta did not work in the loop");
 }
 
+void test_valid()
+{
+	cout << "Test if keys are valid or not" << endl;
+
+	Key i1;
+	succeed_if (!i1.isValid(), "key should not be valid");
+	succeed_if (i1, "even though it is invalid, it is still not a null key");
+
+	Key i2 ("", KEY_END);
+	succeed_if (!i2.isValid(), "key should not be valid");
+	succeed_if (i2, "even though it is invalid, it is still not a null key");
+
+	vector<string> invalid_names;
+	invalid_names.push_back ("/abc");
+	invalid_names.push_back ("use");
+	invalid_names.push_back ("syste");
+	invalid_names.push_back ("error/somthing");
+	invalid_names.push_back ("/");
+	invalid_names.push_back (".");
+	invalid_names.push_back ("..");
+
+	for (size_t i = 0; i<invalid_names.size(); ++i)
+	{
+		Key i3 (invalid_names[i], KEY_END);
+		succeed_if (!i3.isValid(), "key should not be valid");
+		succeed_if (i3, "even though it is invalid, it is still not a null key");
+	}
+
+	Key v1("user", KEY_END);
+	succeed_if (v1.isValid(), "key should be valid");
+	succeed_if (v1, "should be non-null too");
+
+	Key v2("system", KEY_END);
+	succeed_if (v2.isValid(), "key should be valid");
+	succeed_if (v2, "should be non-null too");
+
+	vector<string> valid_names;
+	valid_names.push_back ("user/abc");
+	valid_names.push_back ("user/s");
+	valid_names.push_back ("system/s");
+	valid_names.push_back ("user/error/somthing");
+	valid_names.push_back ("system/");
+	valid_names.push_back ("user/.");
+	valid_names.push_back ("system/abc/..");
+	valid_names.push_back ("system/abc/../more");
+
+	for (size_t i = 0; i<valid_names.size(); ++i)
+	{
+		Key v3 (valid_names[i], KEY_END);
+		succeed_if (v3.isValid(), "key should be valid");
+		succeed_if (v3, "should not be a null key");
+	}
+}
+
 int main()
 {
 	cout << "KEY CLASS TESTS" << endl;
@@ -543,6 +599,7 @@ int main()
 	test_meta();
 	test_iter();
 	test_copymeta();
+	test_valid();
 
 	cout << endl;
 	cout << "test_key RESULTS: " << nbTest << " test(s) done. " << nbError << " error(s)." << endl;

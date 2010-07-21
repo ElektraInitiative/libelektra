@@ -21,7 +21,7 @@ int GetCommand::execute(int argc, char** argv)
 
 	KeySet conf;
 	Key x(argv[2], KEY_END);
-	if (!x)
+	if (!x.isValid())
 	{
 		cerr << "Argument given is not a valid keyname" << endl;
 		return 1;

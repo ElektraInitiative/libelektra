@@ -53,18 +53,26 @@ int elektraSyslogClose(Plugin *handle, Key *parent)
 
 int elektraSyslogGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
-	ksAppend (returned, ksNew (30,
+	KeySet *n;
+	ksAppend (returned, n = ksNew (30,
 		keyNew ("system/elektra/modules/syslog",
 			KEY_VALUE, "syslog plugin waits for your orders", KEY_END),
 		keyNew ("system/elektra/modules/syslog/exports", KEY_END),
+		keyNew ("system/elektra/modules/syslog/exports/open",
+			KEY_FUNC, elektraSyslogOpen,
+			KEY_END),
+		keyNew ("system/elektra/modules/syslog/exports/close",
+			KEY_FUNC, elektraSyslogClose,
+			KEY_END),
 		keyNew ("system/elektra/modules/syslog/exports/get",
-			KEY_SIZE, sizeof (&elektraSyslogGet),
-			KEY_BINARY,
-			KEY_VALUE, &elektraSyslogGet, KEY_END),
+			KEY_FUNC, elektraSyslogGet,
+			KEY_END),
 		keyNew ("system/elektra/modules/syslog/exports/set",
-			KEY_SIZE, sizeof (&elektraSyslogSet),
-			KEY_BINARY,
-			KEY_VALUE, &elektraSyslogSet, KEY_END),
+			KEY_FUNC, elektraSyslogSet,
+			KEY_END),
+		keyNew ("system/elektra/modules/syslog/exports/error",
+			KEY_FUNC, elektraSyslogError,
+			KEY_END),
 		keyNew ("system/elektra/modules/syslog/infos",
 			KEY_VALUE, "All information you want to know", KEY_END),
 		keyNew ("system/elektra/modules/syslog/infos/author",
@@ -80,8 +88,9 @@ int elektraSyslogGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		keyNew ("system/elektra/modules/syslog/infos/needs",
 			KEY_VALUE, "", KEY_END),
 		keyNew ("system/elektra/modules/syslog/infos/version",
-			KEY_VALUE, "1.0", KEY_END),
+			KEY_VALUE, PLUGINVERSION, KEY_END),
 		KS_END));
+	ksDel (n);
 	return 1;
 }
 

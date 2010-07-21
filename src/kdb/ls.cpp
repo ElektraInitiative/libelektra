@@ -20,7 +20,7 @@ int LsCommand::execute(int argc, char** argv)
 	}
 
 	Key root (argv[2], KEY_END);
-	if (!root)
+	if (!root.isValid())
 	{
 		cerr << "Not a valid name supplied" << endl;
 		return 1;

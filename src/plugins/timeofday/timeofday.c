@@ -71,13 +71,13 @@ int elektraTimeofdayOpen(Plugin *handle, Key *k)
 	TimeofdayInfo *ti = calloc(1, sizeof (TimeofdayInfo));
 	char t[24];
 
+	elektraPluginSetData(handle, ti);
+
 	// init time
 	gettimeofday(&ti->start, 0);
 	ti->last = ti->start;
 
 	fprintf(stderr, "open\t%s\n", elektraTimeofdayHelper (t, ti));
-
-	elektraPluginSetData(handle, ti);
 
 	return 0; /* success */
 }
@@ -86,10 +86,15 @@ int elektraTimeofdayClose(Plugin *handle, Key *k)
 {
 	char t[24];
 	TimeofdayInfo *ti = elektraPluginGetData(handle);
-
 	fprintf(stderr, "close\t%s\n", elektraTimeofdayHelper (t, ti));
 
-	/* free(ti); */
+	/* How weird is that??
+	   ti gets modified after elektraTimeofdayHelper even though
+	   the pointer to it is not even passed and it is valgrind
+	   clean?
+           Fixed by using fti */
+	TimeofdayInfo *fti = elektraPluginGetData(handle);
+	free(fti);
 
 	return 0; /* success */
 }
@@ -119,25 +124,15 @@ int elektraTimeofdayGet(Plugin *handle, KeySet *returned, Key *parentKey)
 				KEY_VALUE, "timeofday plugin waits for your orders", KEY_END),
 			keyNew ("system/elektra/modules/timeofday/exports", KEY_END),
 			keyNew ("system/elektra/modules/timeofday/exports/open",
-				KEY_SIZE, sizeof (&elektraTimeofdayOpen),
-				KEY_BINARY,
-				KEY_VALUE, &elektraTimeofdayOpen, KEY_END),
+				KEY_FUNC, elektraTimeofdayOpen, KEY_END),
 			keyNew ("system/elektra/modules/timeofday/exports/close",
-				KEY_SIZE, sizeof (&elektraTimeofdayClose),
-				KEY_BINARY,
-				KEY_VALUE, &elektraTimeofdayClose, KEY_END),
+				KEY_FUNC, elektraTimeofdayClose, KEY_END),
 			keyNew ("system/elektra/modules/timeofday/exports/get",
-				KEY_SIZE, sizeof (&elektraTimeofdayGet),
-				KEY_BINARY,
-				KEY_VALUE, &elektraTimeofdayGet, KEY_END),
+				KEY_FUNC, elektraTimeofdayGet, KEY_END),
 			keyNew ("system/elektra/modules/timeofday/exports/set",
-				KEY_SIZE, sizeof (&elektraTimeofdaySet),
-				KEY_BINARY,
-				KEY_VALUE, &elektraTimeofdaySet, KEY_END),
+				KEY_FUNC, elektraTimeofdaySet, KEY_END),
 			keyNew ("system/elektra/modules/timeofday/exports/error",
-				KEY_SIZE, sizeof (&elektraTimeofdayError),
-				KEY_BINARY,
-				KEY_VALUE, &elektraTimeofdayError, KEY_END),
+				KEY_FUNC, elektraTimeofdayError, KEY_END),
 			keyNew ("system/elektra/modules/timeofday/infos",
 				KEY_VALUE, "All information you want to know", KEY_END),
 			keyNew ("system/elektra/modules/timeofday/infos/author",
@@ -149,11 +144,11 @@ int elektraTimeofdayGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			keyNew ("system/elektra/modules/timeofday/infos/provides",
 				KEY_VALUE, "timeofday", KEY_END),
 			keyNew ("system/elektra/modules/timeofday/infos/placements",
-				KEY_VALUE, "prerollback postrollback pregetstorage postgetstorage presetstorage precommit postcommit", KEY_END),
+				KEY_VALUE, "pregetstorage postgetstorage presetstorage precommit postcommit prerollback postrollback", KEY_END),
 			keyNew ("system/elektra/modules/timeofday/infos/needs",
 				KEY_VALUE, "", KEY_END),
 			keyNew ("system/elektra/modules/timeofday/infos/version",
-				KEY_VALUE, "1.0", KEY_END),
+				KEY_VALUE, PLUGINVERSION, KEY_END),
 			KS_END);
 		ksAppend (returned, pluginConfig);
 		ksDel (pluginConfig);

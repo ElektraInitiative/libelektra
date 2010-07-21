@@ -27,22 +27,20 @@
 
 int elektraValidationGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
-	ksAppend (returned, ksNew (30,
+	KeySet *n;
+	ksAppend (returned, n=ksNew (30,
 		keyNew ("system/elektra/modules/validation",
 			KEY_VALUE, "validation plugin waits for your orders", KEY_END),
 		keyNew ("system/elektra/modules/validation/exports", KEY_END),
 		keyNew ("system/elektra/modules/validation/exports/get",
-			KEY_SIZE, sizeof (&elektraValidationGet),
-			KEY_BINARY,
-			KEY_VALUE, &elektraValidationGet, KEY_END),
+			KEY_FUNC, elektraValidationGet,
+			KEY_END),
 		keyNew ("system/elektra/modules/validation/exports/set",
-			KEY_SIZE, sizeof (&elektraValidationSet),
-			KEY_BINARY,
-			KEY_VALUE, &elektraValidationSet, KEY_END),
+			KEY_FUNC, elektraValidationSet,
+			KEY_END),
 		keyNew ("system/elektra/modules/validation/exports/ksLookupRE",
-			KEY_SIZE, sizeof (&ksLookupRE),
-			KEY_BINARY,
-			KEY_VALUE, &ksLookupRE, KEY_END),
+			KEY_FUNC, ksLookupRE,
+			KEY_END),
 		keyNew ("system/elektra/modules/validation/infos",
 			KEY_VALUE, "All information you want to know", KEY_END),
 		keyNew ("system/elektra/modules/validation/infos/author",
@@ -58,8 +56,9 @@ int elektraValidationGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		keyNew ("system/elektra/modules/validation/infos/needs",
 			KEY_VALUE, "", KEY_END),
 		keyNew ("system/elektra/modules/validation/infos/version",
-			KEY_VALUE, "1.0", KEY_END),
+			KEY_VALUE, PLUGINVERSION, KEY_END),
 		KS_END));
+	ksDel (n);
 	return 1;
 }
 
@@ -82,6 +81,7 @@ int elektraValidationSet(Plugin *handle, KeySet *returned, Key *parentKey)
 			char buffer [1000];
 			regerror (ret, &regex, buffer, 999);
 			ELEKTRA_SET_ERROR (41, parentKey, buffer);
+			regfree (&regex);
 			return -1;
 		}
 
@@ -93,14 +93,17 @@ int elektraValidationSet(Plugin *handle, KeySet *returned, Key *parentKey)
 			if (msg)
 			{
 				ELEKTRA_SET_ERROR (42, parentKey, keyString(msg));
+				regfree (&regex);
 				return -1;
 			} else {
 				char buffer [1000];
 				regerror (ret, &regex, buffer, 999);
 				ELEKTRA_SET_ERROR (42, parentKey, buffer);
+				regfree (&regex);
 				return -1;
 			}
 		}
+		regfree (&regex);
 	}
 
 	return 1; /* success */
