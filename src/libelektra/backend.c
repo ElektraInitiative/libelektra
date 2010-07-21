@@ -243,7 +243,7 @@ Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey)
 	KeySet *storageConfig = ksNew(5,
 		KS_END);
 
-	Plugin *storage = elektraPluginOpen("default", modules, storageConfig, errorKey);
+	Plugin *storage = elektraPluginOpen("dump", modules, storageConfig, errorKey);
 	if (!storage)
 	{
 		elektraPluginClose(resolver, errorKey);
