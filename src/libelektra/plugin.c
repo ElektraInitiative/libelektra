@@ -47,6 +47,7 @@
 #endif
 
 #include <kdbinternal.h>
+#include <kdbversion.h>
 
 
 /**
@@ -343,6 +344,26 @@ int elektraPluginClose(Plugin *handle, Key *errorKey)
 	return rc;
 }
 
+int elektraVersionGet (Plugin *handle, KeySet *returned, Key *error)
+{
+	KeySet *info = elektraVersionSet();
+	ksAppend(returned, info);
+	ksDel (info);
+	return 1;
+}
+
+Plugin *elektraPluginVersion()
+{
+	Plugin *returned;
+
+	returned=elektraCalloc(sizeof(struct _Plugin));
+	if (!returned) return 0;
+
+	returned->name = "version";
+	returned->kdbGet=elektraVersionGet;
+	return returned;
+}
+
 
 
 /**
@@ -364,7 +385,8 @@ int elektraPluginClose(Plugin *handle, Key *errorKey)
  * 	libelektra.so
  * @ingroup plugin
  */
-Plugin *elektraPluginExport(const char *pluginName, ...) {
+Plugin *elektraPluginExport(const char *pluginName, ...)
+{
 	va_list va;
 	Plugin *returned;
 	plugin_t method=0;

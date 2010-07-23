@@ -438,6 +438,7 @@ int elektraRealloc(void **buffer, size_t size);
 Backend* elektraBackendOpen(KeySet *elektra_config, KeySet *modules, Key *errorKey);
 Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey);
 Backend* elektraBackendOpenModules(KeySet *modules, Key *errorKey);
+Backend* elektraBackendOpenVersion(Key *errorKey);
 int elektraBackendClose(Backend *backend, Key *errorKey);
 
 /*Plugin handling*/
@@ -448,6 +449,7 @@ int elektraProcessPlugins(Plugin **plugins, KeySet *modules, KeySet *referencePl
 
 Plugin* elektraPluginOpen(const char *backendname, KeySet *modules, KeySet *config, Key* errorKey);
 int elektraPluginClose(Plugin *handle, Key *errorKey);
+Plugin *elektraPluginVersion();
 
 /*Trie handling*/
 Trie *elektraTrieOpen(KeySet *config, KeySet *modules, Key *errorKey);
@@ -459,6 +461,7 @@ Trie* elektraTrieInsert(Trie *trie, const char *name, Backend *value);
 int elektraMountOpen(KDB *kdb, KeySet *config, KeySet *modules, Key *errorKey);
 int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey);
 int elektraMountModules (KDB *kdb, KeySet *modules, Key *errorKey);
+int elektraMountVersion (KDB *kdb, Key *errorKey);
 
 int elektraMountBackend (KDB *kdb, Backend *backend, Key *errorKey);
 
