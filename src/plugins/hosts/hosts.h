@@ -18,6 +18,6 @@
 #define HOSTS_BUFFER_SIZE 16 */
 
 
-ssize_t kdbGet_hosts(Plugin *handle, KeySet *ks, Key *parentKey);
-ssize_t kdbSet_hosts(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraHostsGet(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraHostsSet(Plugin *handle, KeySet *ks, Key *parentKey);
 Plugin *ELEKTRA_PLUGIN_EXPORT(hosts);

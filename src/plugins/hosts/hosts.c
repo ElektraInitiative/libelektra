@@ -113,7 +113,7 @@ static size_t find_token (char **token, char *line)
 	return i+1; /* let find_token continue next time one byte after termination */
 }
 
-ssize_t kdbGet_hosts(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraHostsGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	int errnosave = errno;
 	ssize_t nr_keys = 0, nr_alias;
@@ -128,9 +128,41 @@ ssize_t kdbGet_hosts(Plugin *handle, KeySet *returned, Key *parentKey)
 	char comment [HOSTS_BUFFER_SIZE] = "";
 	KeySet *append = 0;
 
-	/* if (strcmp (keyName(kdbhGetMountpoint(handle)), keyName(parentKey))) return 0; */
+	if (!strcmp (keyName(parentKey), "system/elektra/modules/hosts"))
+	{
+		KeySet *moduleConfig = ksNew (30,
+			keyNew ("system/elektra/modules/hosts",
+				KEY_VALUE, "hosts plugin waits for your orders", KEY_END),
+			keyNew ("system/elektra/modules/hosts/exports", KEY_END),
+			keyNew ("system/elektra/modules/hosts/exports/get",
+				KEY_FUNC, elektraHostsGet,
+				KEY_END),
+			keyNew ("system/elektra/modules/hosts/exports/set",
+				KEY_FUNC, elektraHostsSet,
+				KEY_END),
+			keyNew ("system/elektra/modules/hosts/infos",
+				KEY_VALUE, "All information you want to know", KEY_END),
+			keyNew ("system/elektra/modules/hosts/infos/author",
+				KEY_VALUE, "Markus Raab <elektra@markus-raab.org>", KEY_END),
+			keyNew ("system/elektra/modules/hosts/infos/licence",
+				KEY_VALUE, "BSD", KEY_END),
+			keyNew ("system/elektra/modules/hosts/infos/description",
+				KEY_VALUE, "/etc/hosts file", KEY_END),
+			keyNew ("system/elektra/modules/hosts/infos/provides",
+				KEY_VALUE, "storage", KEY_END),
+			keyNew ("system/elektra/modules/hosts/infos/placements",
+				KEY_VALUE, "getstorage setstorage", KEY_END),
+			keyNew ("system/elektra/modules/hosts/infos/needs",
+				KEY_VALUE, "", KEY_END),
+			keyNew ("system/elektra/modules/hosts/infos/version",
+				KEY_VALUE, PLUGINVERSION, KEY_END),
+			KS_END);
+		ksAppend (returned, moduleConfig);
+		ksDel (moduleConfig);
+		return 1;
+	}
 
-	fp = fopen (keyString(ksLookupByName(elektraPluginGetConfig (handle), "/path", 0)), "r");
+	fp = fopen (keyValue(parentKey), "r");
 
 	if (fp == 0)
 	{
@@ -222,7 +254,7 @@ ssize_t kdbGet_hosts(Plugin *handle, KeySet *returned, Key *parentKey)
 	return -1;
 }
 
-ssize_t kdbSet_hosts(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraHostsSet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	int errnosave = errno;
 	ssize_t nr_keys = 0, nr_alias = 0;
@@ -232,7 +264,7 @@ ssize_t kdbSet_hosts(Plugin *handle, KeySet *returned, Key *parentKey)
 
 	/* if (strcmp (keyName(kdbhGetMountpoint(handle)), keyName(parentKey))) return 0; */
 
-	fp = fopen (keyString(ksLookupByName(elektraPluginGetConfig (handle), "/path", 0)), "w");
+	fp = fopen (keyValue(parentKey), "w");
 
 	if (fp == 0)
 	{
@@ -307,8 +339,8 @@ error:
 Plugin *ELEKTRA_PLUGIN_EXPORT(hosts)
 {
 	return elektraPluginExport(BACKENDNAME,
-		ELEKTRA_PLUGIN_GET,	&kdbGet_hosts,
-		ELEKTRA_PLUGIN_SET,	&kdbSet_hosts,
+		ELEKTRA_PLUGIN_GET,	&elektraHostsGet,
+		ELEKTRA_PLUGIN_SET,	&elektraHostsSet,
 		ELEKTRA_PLUGIN_END);
 }
 
