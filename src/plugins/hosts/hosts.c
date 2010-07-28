@@ -44,7 +44,7 @@
  * @return 0 when the caller should go on
  * @return 1 when the caller should continue (with next iteration)
  */
-static int append_comment (char *comment, char *line)
+int elektraHostsAppendComment (char *comment, char *line)
 {
 	size_t i;
 	size_t s = elektraStrLen(line);
@@ -91,7 +91,7 @@ static int append_comment (char *comment, char *line)
  * in order to find the next token.
  * @return 0 if no more token is available
  */
-static size_t find_token (char **token, char *line)
+size_t elektraHostsFindToken (char **token, char *line)
 {
 	size_t i = 0;
 
@@ -105,12 +105,12 @@ static size_t find_token (char **token, char *line)
 	if (line[i] == '\0' || line[i] == '\n')
 	{
 		line[i] = '\0'; /* Terminate the token. */
-		return i; /* find_token will quit next time in Step 1 */
+		return i; /* elektraHostsFindToken will quit next time in Step 1 */
 	}
 
 	/* Step 3, terminate the token */
 	line[i] = '\0';
-	return i+1; /* let find_token continue next time one byte after termination */
+	return i+1; /* let elektraHostsFindToken continue next time one byte after termination */
 }
 
 int elektraHostsGet(Plugin *handle, KeySet *returned, Key *parentKey)
@@ -198,9 +198,9 @@ int elektraHostsGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			return nr_keys;
 		}
 
-		if (append_comment(comment, readbuffer)) continue;
+		if (elektraHostsAppendComment(comment, readbuffer)) continue;
 
-		sret = find_token (&fieldbuffer, readbuffer);
+		sret = elektraHostsFindToken (&fieldbuffer, readbuffer);
 		if (sret == 0) continue;
 
 		key = ksLookupByName(returned, fieldbuffer, KDB_O_POP);
@@ -211,7 +211,7 @@ int elektraHostsGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		*comment = '\0'; /* Start with a new comment */
 
 		readsize = sret;
-		sret = find_token (&fieldbuffer, readbuffer+readsize);
+		sret = elektraHostsFindToken (&fieldbuffer, readbuffer+readsize);
 
 		keyAddBaseName (key, fieldbuffer);
 		ksAppendKey(append, key);
@@ -221,7 +221,7 @@ int elektraHostsGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		while (1) /*Read in aliases*/
 		{
 			readsize += sret;
-			sret = find_token (&fieldbuffer, readbuffer+readsize);
+			sret = elektraHostsFindToken (&fieldbuffer, readbuffer+readsize);
 			if (sret == 0) break;
 
 			tmp = keyDup (key);
