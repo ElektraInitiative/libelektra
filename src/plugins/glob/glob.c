@@ -1,0 +1,155 @@
+/***************************************************************************
+                     glob.c  -  Skeleton of a plugin
+                             -------------------
+    begin                : Fri May 21 2010
+    copyright            : (C) 2010 by Markus Raab
+    email                : elektra@markus-raab.org
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the BSD License (revised).                      *
+ *                                                                         *
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This is the skeleton of the methods you'll have to implement in order *
+ *   to provide a valid plugin.                                            *
+ *   Simple fill the empty functions with your code and you are            *
+ *   ready to go.                                                          *
+ *                                                                         *
+ ***************************************************************************/
+
+
+#include "glob.h"
+
+#include <stdio.h>
+
+int elektraGlobMatch(Key *key, const Key *match)
+{
+	printf ("try to match %s with %s(glob)\n", keyName(key), keyString(match));
+	if (!fnmatch (keyString(match), keyName(key),
+			FNM_PATHNAME))
+	{
+		printf ("matched, now copy all meta\n");
+		keyCopyAllMeta(key, match);
+	}
+	return 0;
+}
+
+int elektraGlobOpen(Plugin *handle, Key *errorKey)
+{
+	/* plugin initialization logic */
+
+	KeySet *keys = ksNew (10,
+			keyNew ("user/#1",
+				KEY_VALUE, "system/hosts/*",
+				KEY_META, "validation/regex",
+					// "^(([0­9]|[0­9][0­9]|[01][0­9][0­9]|2([0­4][0­9]|5[0­5]))\\.){3}([0­9]|[0­9][0­9]|[01][0­9][0­9]|2([0­4][0­9]|5[0­5]))$",
+					"^(\\[0-9]{1,3})\\.(\\[0-9]{1,3})\\.(\\[0-9]{1,3})\\.(\\[0-9]{1,3})$",
+					// "^([0-9]|[a-z])$",
+					// "^[0-9]$",
+/*
+					"^\\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:)))(%.+)?\\s*$",
+*/
+				KEY_META, "validation/message", "Did not match to ip adress",
+				KEY_END),
+			keyNew ("user/#2",
+				KEY_VALUE, "system/hosts/*/alias*",
+				KEY_META, "validation/regex", "^[a-zA-Z]+$",
+				KEY_META, "validation/message", "Did not match host name",
+				KEY_END),
+			KS_END);
+
+	elektraPluginSetData(handle, keys);
+
+	return 1; /* success */
+}
+
+int elektraGlobClose(Plugin *handle, Key *errorKey)
+{
+	/* free all plugin resources and shut it down */
+
+	KeySet *keys = elektraPluginGetData(handle);
+	ksDel (keys);
+
+	return 1; /* success */
+}
+
+int elektraGlobGet(Plugin *handle, KeySet *returned, Key *parentKey)
+{
+	/* configuration only */
+	KeySet *n;
+	ksAppend (returned, n=ksNew (30,
+		keyNew ("system/elektra/modules/glob",
+			KEY_VALUE, "glob plugin waits for your orders", KEY_END),
+		keyNew ("system/elektra/modules/glob/exports", KEY_END),
+		keyNew ("system/elektra/modules/glob/exports/open",
+			KEY_FUNC, elektraGlobOpen,
+			KEY_END),
+		keyNew ("system/elektra/modules/glob/exports/close",
+			KEY_FUNC, elektraGlobClose,
+			KEY_END),
+		keyNew ("system/elektra/modules/glob/exports/get",
+			KEY_FUNC, elektraGlobGet,
+			KEY_END),
+		keyNew ("system/elektra/modules/glob/exports/set",
+			KEY_FUNC, elektraGlobSet,
+			KEY_END),
+		keyNew ("system/elektra/modules/glob/exports/elektraGlobMatch",
+			KEY_FUNC, elektraGlobMatch,
+			KEY_END),
+		keyNew ("system/elektra/modules/glob/infos",
+			KEY_VALUE, "All information you want to know", KEY_END),
+		keyNew ("system/elektra/modules/glob/infos/author",
+			KEY_VALUE, "Markus Raab <elektra@markus-raab.org>", KEY_END),
+		keyNew ("system/elektra/modules/glob/infos/licence",
+			KEY_VALUE, "BSD", KEY_END),
+		keyNew ("system/elektra/modules/glob/infos/description",
+			KEY_VALUE, "Validates key values using regular expressions", KEY_END),
+		keyNew ("system/elektra/modules/glob/infos/provides",
+			KEY_VALUE, "glob", KEY_END),
+		keyNew ("system/elektra/modules/glob/infos/placements",
+			KEY_VALUE, "presetstorage", KEY_END),
+		keyNew ("system/elektra/modules/glob/infos/needs",
+			KEY_VALUE, "", KEY_END),
+		keyNew ("system/elektra/modules/glob/infos/version",
+			KEY_VALUE, PLUGINVERSION, KEY_END),
+		KS_END));
+	ksDel (n);
+
+	return 1; /* success */
+}
+
+int elektraGlobSet(Plugin *handle, KeySet *returned, Key *parentKey)
+{
+	/* set all keys */
+	KeySet *matchKeys = elektraPluginGetData(handle);
+
+	Key *cur;
+	ksRewind (returned);
+	while ((cur = ksNext(returned)) != 0)
+	{
+		Key *match;
+		ksRewind (matchKeys);
+		while ((match = ksNext(matchKeys)) != 0)
+		{
+			elektraGlobMatch (cur, match);
+		}
+	}
+
+	return 1; /* success */
+}
+
+Plugin *ELEKTRA_PLUGIN_EXPORT(glob)
+{
+	return elektraPluginExport("glob",
+		ELEKTRA_PLUGIN_OPEN,	&elektraGlobOpen,
+		ELEKTRA_PLUGIN_CLOSE,	&elektraGlobClose,
+		ELEKTRA_PLUGIN_GET,	&elektraGlobGet,
+		ELEKTRA_PLUGIN_SET,	&elektraGlobSet,
+		ELEKTRA_PLUGIN_END);
+}
+
