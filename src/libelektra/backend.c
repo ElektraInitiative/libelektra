@@ -42,10 +42,6 @@
 #include <string.h>
 #endif
 
-#ifdef HAVE_STDIO_H
-#include <stdio.h>
-#endif
-
 #include <kdbinternal.h>
 
 
@@ -211,10 +207,10 @@ error:
 }
 
 /**
- * Opens a default backend using the plugin named default.
+ * Opens a default backend using the plugin named dump and resolver.
  *
  * @param modules the modules to work with
- * @errorKey the key to issue warnings and errors to
+ * @param errorKey the key to issue warnings and errors to
  * @return the fresh allocated default backend or 0 if it failed
  */
 Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey)
@@ -263,6 +259,12 @@ Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey)
 	return backend;
 }
 
+/**@return a backend which gives plugin configuration of the module
+ * which is currently point to.
+ *
+ * @param modules the modules to work with
+ * @param errorKey the key to issue warnings and errors to
+ */
 Backend* elektraBackendOpenModules(KeySet *modules, Key *errorKey)
 {
 	Backend *backend = elektraCalloc(sizeof(struct _Backend));
@@ -293,6 +295,36 @@ Backend* elektraBackendOpenModules(KeySet *modules, Key *errorKey)
 	keyIncRef(backend->mountpoint);
 
 	ksSetCursor (modules, save);
+
+	return backend;
+}
+
+/**
+ * Opens the internal version backend.
+ *
+ * @param errorKey the key to issue warnings and errors to
+ * @return the fresh allocated default backend or 0 if it failed
+ */
+Backend* elektraBackendOpenVersion(Key *errorKey)
+{
+	Backend *backend = elektraCalloc(sizeof(struct _Backend));
+	backend->refcounter = 1;
+
+	Plugin *plugin = elektraPluginVersion();
+	if (!plugin)
+	{
+		/* Could not allocate plugin */
+		elektraFree(backend);
+		return 0;
+	}
+
+	Key *mp = keyNew ("system/elektra/version", KEY_VALUE, "version", KEY_END);
+
+	backend->getplugins[0] = plugin;
+	plugin->refcounter = 1;
+
+	backend->mountpoint = mp;
+	keyIncRef(backend->mountpoint);
 
 	return backend;
 }

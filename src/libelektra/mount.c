@@ -190,6 +190,20 @@ int elektraMountModules (KDB *kdb, KeySet *modules, Key *errorKey)
 	return 0;
 }
 
+/** Mount the version backend
+ *
+ * @param kdb the handle to work with
+ * @param errorKey the key used to report warnings
+ * @ingroup mount
+ */
+int elektraMountVersion (KDB *kdb, Key *errorKey)
+{
+	Backend * backend = elektraBackendOpenVersion(errorKey);
+	elektraMountBackend(kdb, backend, errorKey);
+
+	return 0;
+}
+
 
 /**
  * Mounts a backend into the trie.

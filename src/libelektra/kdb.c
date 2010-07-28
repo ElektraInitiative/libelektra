@@ -220,6 +220,8 @@ KDB * kdbOpen(Key *errorKey)
 		/* Mounting modules did not work */
 	}
 
+	elektraMountVersion (handle, errorKey);
+
 	return handle;
 }
 
