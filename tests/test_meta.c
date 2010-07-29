@@ -494,6 +494,8 @@ void test_examples()
 
 void test_copy()
 {
+	printf ("Test key meta copy\n");
+
 	Key *key1;
 	Key *key2;
 
@@ -652,6 +654,107 @@ void test_new()
 }
 
 
+void test_copyall()
+{
+	printf ("Test key meta copy all\n");
+
+	Key *key1;
+	Key *key2;
+
+	succeed_if (key1 = keyNew(0), "could not create key");
+	succeed_if (key2 = keyNew(0), "could not create key");
+
+	succeed_if (keyCopyAllMeta(key2, key1) == 0, "could not do anything");
+
+	succeed_if (keyValue(keyGetMeta(key2, "nonexist")) == 0, "should not be there");
+
+	keyDel (key1);
+	keyDel (key2);
+
+
+	succeed_if (key1 = keyNew(0), "could not create key");
+	succeed_if (key2 = keyNew(0), "could not create key");
+
+	succeed_if (keySetMeta(key1, "mymeta", "a longer meta value") == sizeof("a longer meta value"),
+			"could not set meta value");
+	succeed_if (keyCopyAllMeta(key2, key1) == 1, "could not copy meta value");
+	succeed_if (!strcmp(keyValue(keyGetMeta(key1, "mymeta")), "a longer meta value"), "old meta data should be unchanged");
+	succeed_if (!strcmp(keyValue(keyGetMeta(key2, "mymeta")), "a longer meta value"), "old meta data should be unchanged");
+	succeed_if (keyGetMeta(key1, "mymeta") == keyGetMeta(key2, "mymeta"), "reference to the same key");
+
+	succeed_if (keyCopyAllMeta(key1, key2) == 1, "did nothing in the end");
+	succeed_if (!strcmp(keyValue(keyGetMeta(key1, "mymeta")), "a longer meta value"), "old meta data should be unchanged");
+	succeed_if (!strcmp(keyValue(keyGetMeta(key2, "mymeta")), "a longer meta value"), "old meta data should be unchanged");
+	succeed_if (keyGetMeta(key1, "mymeta") == keyGetMeta(key2, "mymeta"), "reference to the same key");
+
+	keyDel (key1);
+	keyDel (key2);
+
+
+	succeed_if (key1 = keyNew(0), "could not create key");
+	succeed_if (key2 = keyNew(0), "could not create key");
+
+	succeed_if (keySetMeta(key1, "mymeta", "a longer meta value") == sizeof("a longer meta value"),
+			"could not set meta value");
+	succeed_if (keyCopyAllMeta(key2, key1) == 1, "could not copy meta value");
+	succeed_if (!strcmp(keyValue(keyGetMeta(key1, "mymeta")), "a longer meta value"), "old meta data should be unchanged");
+	succeed_if (!strcmp(keyValue(keyGetMeta(key2, "mymeta")), "a longer meta value"), "old meta data should be unchanged");
+	succeed_if (keyGetMeta(key1, "mymeta") == keyGetMeta(key2, "mymeta"), "reference to the same key");
+
+	succeed_if (keySetMeta(key1, "mymeta", "a longer meta value") == sizeof("a longer meta value"),
+			"could not set meta value");
+	succeed_if (!strcmp(keyValue(keyGetMeta(key1, "mymeta")), "a longer meta value"), "old meta data should be unchanged");
+	succeed_if (!strcmp(keyValue(keyGetMeta(key2, "mymeta")), "a longer meta value"), "old meta data should be unchanged");
+	succeed_if (keyGetMeta(key1, "mymeta") != keyGetMeta(key2, "mymeta"), "reference to another key");
+
+	succeed_if (keySetMeta(key1, "mymeta", "a longer meta value2") == sizeof("a longer meta value2"),
+			"could not set meta value2");
+	succeed_if (!strcmp(keyValue(keyGetMeta(key1, "mymeta")), "a longer meta value2"), "old meta data should be unchanged");
+	succeed_if (!strcmp(keyValue(keyGetMeta(key2, "mymeta")), "a longer meta value"), "old meta data should be unchanged");
+	succeed_if (keyGetMeta(key1, "mymeta") != keyGetMeta(key2, "mymeta"),
+			"reference to another key (with another value)");
+
+	keyDel (key1);
+	keyDel (key2);
+
+	Key *k;
+	Key *c;
+
+	k=keyNew ("user/metakey",
+		KEY_META, "t", "test1",
+		KEY_META, "a", "another",
+		KEY_META, "cya", "see the meta data later",
+		KEY_META, "mode", "0775",
+		KEY_END);
+	c=keyNew ("user/metacopy", KEY_END);
+
+	succeed_if (keyGetMeta(k, "t") != 0, "could not get meta key");
+	succeed_if (keyGetMeta(k, "a") != 0, "could not get meta key");
+
+	succeed_if (keyGetMeta(c, "t") == 0, "could get meta key not there");
+	succeed_if (keyGetMeta(c, "a") == 0, "could get meta key not there");
+
+	succeed_if (keyCopyAllMeta(c, k) == 1, "could not copy meta data");
+	succeed_if (keyGetMeta(k, "t") == keyGetMeta(c, "t"), "not the same meta data after copy");
+	succeed_if (keyGetMeta(k, "a") == keyGetMeta(c, "a"), "not the same meta data after copy");
+	succeed_if (keyGetMeta(k, "cya") == keyGetMeta(c, "cya"), "not the same meta data after copy");
+	succeed_if (keyGetMeta(k, "mode") == keyGetMeta(c, "mode"), "not the same meta data after copy");
+	succeed_if (keyValue(keyGetMeta(k, "nonexist")) == 0, "should not be there");
+	succeed_if (keyValue(keyGetMeta(c, "nonexist")) == 0, "should not be there");
+
+	succeed_if (keyCopyAllMeta(c, k) == 1, "could not copy meta data (again)");
+	succeed_if (keyGetMeta(k, "t") == keyGetMeta(c, "t"), "not the same meta data after copy");
+	succeed_if (keyGetMeta(k, "a") == keyGetMeta(c, "a"), "not the same meta data after copy");
+	succeed_if (keyGetMeta(k, "cya") == keyGetMeta(c, "cya"), "not the same meta data after copy");
+	succeed_if (keyGetMeta(k, "mode") == keyGetMeta(c, "mode"), "not the same meta data after copy");
+	succeed_if (keyValue(keyGetMeta(k, "nonexist")) == 0, "should not be there");
+	succeed_if (keyValue(keyGetMeta(c, "nonexist")) == 0, "should not be there");
+
+	keyDel (k);
+	keyDel (c);
+}
+
+
 int main(int argc, char** argv)
 {
 	printf("KEY META     TESTS\n");
@@ -671,6 +774,7 @@ int main(int argc, char** argv)
 	test_copy();
 	test_ro();
 	test_new();
+	test_copyall();
 
 
 	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
