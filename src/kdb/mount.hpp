@@ -36,6 +36,7 @@ class MountCommand : public Command
 public:
 	MountCommand();
 	bool checkFile(std::string file);
+	void outputMtab();
 	int execute(int argc, char** argv);
 	~MountCommand();
 };

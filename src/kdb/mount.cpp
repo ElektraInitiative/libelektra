@@ -29,8 +29,56 @@ bool MountCommand::checkFile(std::string path)
 	return true;
 }
 
-int MountCommand::execute(int , char** )
+void MountCommand::outputMtab()
 {
+	KeySet mountConf;
+
+	{
+		Key parentKey("system/elektra/mountpoints", KEY_END);
+
+		kdb::KDB kdb (parentKey);
+		kdb.get(mountConf, parentKey);
+		kdb.close (parentKey);
+
+		printWarnings (parentKey);
+
+		// now we dont need any affairs to the key database
+	}
+
+	Key rootKey (root, KEY_END);
+	Key cur;
+
+	while (cur = mountConf.next())
+	{
+		if (rootKey.isDirectBelow(cur))
+		{
+			Key path = mountConf.lookup (cur.getName() + "/config/path");
+			if (!path)
+			{
+				cout << cur.getName() << " has no path" << endl;
+				continue;
+			}
+			Key mp = mountConf.lookup (cur.getName() + "/mountpoint");
+			if (!mp)
+			{
+				cout << cur.getName() << " has no mountpoint" << endl;
+				continue;
+			}
+
+			cout << path.getString() << " on " << mp.getString() << " with name " << cur.getBaseName() << endl;
+		}
+	}
+}
+
+int MountCommand::execute(int argc, char** argv)
+{
+	if (argc == 2)
+	{
+		// no arguments, just output mountpoints
+		outputMtab();
+		return 0;
+	}
+
 	cout << "Welcome to interactive mounting" << endl;
 	cout << "Please provide a unique name." << endl;
 
