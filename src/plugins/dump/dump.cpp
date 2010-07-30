@@ -78,7 +78,7 @@ int serialize(std::ostream &os, ckdb::Key *, ckdb::KeySet *ks)
 				/* Meta key already serialized, write out a reference to it */
 				keyDel (search);
 
-				os << "keyMetaCopy ";
+				os << "keyCopyMeta ";
 				os.write(static_cast<const char*>(ckdb::keyValue(ret)), ckdb::keyGetValueSize(ret));
 				os << std::endl;
 			}
@@ -157,7 +157,7 @@ int unserialize(std::istream &is, ckdb::Key *errorKey, ckdb::KeySet *ks)
 			keySetMeta (cur, &namebuffer[0], &valuebuffer[0]);
 			std::getline (is, line);
 		}
-		else if (command == "keyMetaCopy")
+		else if (command == "keyCopyMeta")
 		{
 			ss >> namesize;
 			ss >> valuesize;
