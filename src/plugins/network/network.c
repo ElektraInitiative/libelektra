@@ -106,7 +106,19 @@ int elektraNetworkSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		s = elektraNetworkAddrInfo(cur);
 		if (s != 0)
 		{
-			ELEKTRA_SET_ERROR (51, parentKey, gai_strerror(s));
+			const char *gaimsg = gai_strerror(s);
+			char *errmsg = malloc (strlen (gaimsg)
+					+ keyGetNameSize(cur)
+					+ keyGetValueSize(cur)
+					+ sizeof ("name:  value:  message: "));
+			strcpy (errmsg, "name: ");
+			strcat (errmsg, keyName(cur));
+			strcat (errmsg, " value: ");
+			strcat (errmsg, keyValue(cur));
+			strcat (errmsg, " message: ");
+			strcat (errmsg, gaimsg);
+			ELEKTRA_SET_ERROR (51, parentKey, errmsg);
+			free (errmsg);
 			return -1;
 		}
 	}
