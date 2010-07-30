@@ -25,15 +25,11 @@
 
 #include "glob.h"
 
-#include <stdio.h>
-
 int elektraGlobMatch(Key *key, const Key *match)
 {
-	printf ("try to match %s with %s(glob)\n", keyName(key), keyString(match));
 	if (!fnmatch (keyString(match), keyName(key),
 			FNM_PATHNAME))
 	{
-		printf ("matched, now copy all meta\n");
 		keyCopyAllMeta(key, match);
 	}
 	return 0;
@@ -46,12 +42,13 @@ int elektraGlobOpen(Plugin *handle, Key *errorKey)
 	KeySet *keys = ksNew (10,
 			keyNew ("user/#1",
 				KEY_VALUE, "system/hosts/*",
-				KEY_META, "validation/regex", "^[0-9.:]+$",
+				KEY_META, "check/ipaddr", "", /* Preferred way to check */
+				KEY_META, "validation/regex", "^[0-9.:]+$", /* Can be checked additionally */
 				KEY_META, "validation/message", "Character present not suitable for ip address",
 				KEY_END),
 			keyNew ("user/#2",
 				KEY_VALUE, "system/hosts/*/alias*",
-				KEY_META, "validation/regex", "^[0-9a-zA-Z.:]+$",
+				KEY_META, "validation/regex", "^[0-9a-zA-Z.:]+$", /* Only basic character validation */
 				KEY_META, "validation/message", "Character present not suitable for host address",
 				KEY_END),
 			KS_END);
@@ -101,7 +98,7 @@ int elektraGlobGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		keyNew ("system/elektra/modules/glob/infos/licence",
 			KEY_VALUE, "BSD", KEY_END),
 		keyNew ("system/elektra/modules/glob/infos/description",
-			KEY_VALUE, "Validates key values using regular expressions", KEY_END),
+			KEY_VALUE, "Copies meta data to keys using globbing", KEY_END),
 		keyNew ("system/elektra/modules/glob/infos/provides",
 			KEY_VALUE, "glob", KEY_END),
 		keyNew ("system/elektra/modules/glob/infos/placements",
