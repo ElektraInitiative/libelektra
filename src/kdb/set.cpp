@@ -12,15 +12,23 @@ SetCommand::SetCommand()
 
 int SetCommand::execute(int argc, char**argv)
 {
-	if (argc != 4)
+	if (argc != 3 && argc != 4)
 	{
 		cerr << "Please provide a name and a value to set" << endl;
-		cerr << "Usage: set <name> <value>" << endl;
+		cerr << "Usage: set <name> [<value>]" << endl;
+		cerr << "If no value is given, it will be set to a null-value" << endl;
+		cerr << "To get an empty value you need to quote like \"\" (depending on shell)" << endl;
 		return 1;
 	}
 
 	std::string name = argv[2];
-	std::string value = argv[3];
+
+	bool nullValue = false;
+	if (argc == 3) nullValue = true;
+
+	std::string value;
+
+	if (!nullValue) value = argv[3];
 
 	KeySet conf;
 	Key k(name, KEY_END);
@@ -37,7 +45,8 @@ int SetCommand::execute(int argc, char**argv)
 	if (!key)
 	{
 		cout << "create a new key with " << name << " and " << value << endl;
-		key = Key(name, KEY_VALUE, value.c_str(), KEY_END);
+		key = Key(name, KEY_END);
+		if (!nullValue) key.setString(value);
 		if (!key.isValid())
 		{
 			cerr << "no valid name supplied" << endl;
@@ -46,7 +55,7 @@ int SetCommand::execute(int argc, char**argv)
 		conf.append(key);
 	} else {
 		cout << "Set string to " << value << endl;
-		key.setString(value);
+		if (!nullValue) key.setString(value);
 	}
 	Key n;
 	kdb.set(conf, n);
