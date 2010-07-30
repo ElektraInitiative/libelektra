@@ -5,6 +5,7 @@
 #include <map>
 #include <string>
 #include <sstream>
+#include <locale>
 
 
 namespace elektra {
@@ -40,18 +41,22 @@ public:
 	}
 };
 
-class ShortType : public Type
+template <typename T>
+class TType : public Type
 {
 public:
 	bool check(Key k)
 	{
 		istringstream i (k.getString());
-		int16_t n;
+		i.imbue (locale("C"));
+		T n;
 		i >> n;
 		if (i.fail()) return false;
+		if (!i.eof()) return false;
 		return true;
 	}
 };
+
 
 class TypeChecker
 {
@@ -62,7 +67,17 @@ public:
 	{
 		types.insert (pair<string, Type*>("any", new AnyType()));
 		types.insert (pair<string, Type*>("empty", new EmptyType()));
-		types.insert (pair<string, Type*>("short", new ShortType()));
+		types.insert (pair<string, Type*>("short", new TType<int16_t>()));
+		types.insert (pair<string, Type*>("unsigned_short", new TType<uint16_t>()));
+		types.insert (pair<string, Type*>("long", new TType<int32_t>()));
+		types.insert (pair<string, Type*>("unsigned_long", new TType<uint32_t>()));
+		types.insert (pair<string, Type*>("long_long", new TType<int64_t>()));
+		types.insert (pair<string, Type*>("unsigned_long_long", new TType<uint64_t>()));
+		types.insert (pair<string, Type*>("float", new TType<float>()));
+		types.insert (pair<string, Type*>("double", new TType<double>()));
+		types.insert (pair<string, Type*>("char", new TType<unsigned char>()));
+		types.insert (pair<string, Type*>("boolean", new TType<bool>()));
+		types.insert (pair<string, Type*>("octet", new TType<unsigned char>()));
 	}
 
 	bool check (Key &k)
