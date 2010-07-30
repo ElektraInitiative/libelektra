@@ -195,14 +195,14 @@ int unserialize(std::istream &is, ckdb::Key *errorKey, ckdb::KeySet *ks)
 
 extern "C" {
 
-int kdbGet_dump(ckdb::Plugin *, ckdb::KeySet *returned, ckdb::Key *parentKey)
+int elektraDumpGet(ckdb::Plugin *, ckdb::KeySet *returned, ckdb::Key *parentKey)
 {
 	Key *root = ckdb::keyNew("system/elektra/modules/dump", KEY_END);
 	if (keyRel(root, parentKey) >= 0)
 	{
 		keyDel (root);
-		void (*get) (void) = (void (*) (void)) kdbGet_dump;
-		void (*set) (void) = (void (*) (void)) kdbSet_dump;
+		void (*get) (void) = (void (*) (void)) elektraDumpGet;
+		void (*set) (void) = (void (*) (void)) elektraDumpSet;
 		void (*serialize) (void) = (void (*) (void)) dump::serialize;
 		void (*unserialize) (void) = (void (*) (void)) dump::unserialize;
 		KeySet *n = ksNew(50,
@@ -253,7 +253,7 @@ int kdbGet_dump(ckdb::Plugin *, ckdb::KeySet *returned, ckdb::Key *parentKey)
 	return dump::unserialize (ofs, parentKey, returned);
 }
 
-int kdbSet_dump(ckdb::Plugin *, ckdb::KeySet *returned, ckdb::Key *parentKey)
+int elektraDumpSet(ckdb::Plugin *, ckdb::KeySet *returned, ckdb::Key *parentKey)
 {
 	std::ofstream ofs(keyString(parentKey), std::ios::binary);
 	if (!ofs.is_open())
@@ -268,8 +268,8 @@ int kdbSet_dump(ckdb::Plugin *, ckdb::KeySet *returned, ckdb::Key *parentKey)
 ckdb::Plugin *ELEKTRA_PLUGIN_EXPORT(dump)
 {
 	return elektraPluginExport("dump",
-		ELEKTRA_PLUGIN_GET,		&kdbGet_dump,
-		ELEKTRA_PLUGIN_SET,		&kdbSet_dump,
+		ELEKTRA_PLUGIN_GET,		&elektraDumpGet,
+		ELEKTRA_PLUGIN_SET,		&elektraDumpSet,
 		ELEKTRA_PLUGIN_END);
 }
 
