@@ -291,3 +291,9 @@ severity:error
 ingroup:plugin
 module:dump
 
+number:51
+description:Value of key is not a valid IP Address
+severity:error
+ingroup:plugin
+module:network
+
