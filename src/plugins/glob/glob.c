@@ -51,6 +51,22 @@ int elektraGlobOpen(Plugin *handle, Key *errorKey)
 				KEY_META, "validation/regex", "^[0-9a-zA-Z.:]+$", /* Only basic character validation */
 				KEY_META, "validation/message", "Character present not suitable for host address",
 				KEY_END),
+			keyNew ("user/#3",
+				KEY_VALUE, "system/type/*/empty",
+				KEY_META, "check/type", "empty",
+				KEY_END),
+			keyNew ("user/#4",
+				KEY_VALUE, "system/type/*/null",
+				KEY_META, "check/type", "null",
+				KEY_END),
+			keyNew ("user/#5",
+				KEY_VALUE, "system/type/*/any",
+				KEY_META, "check/type", "any",
+				KEY_END),
+			keyNew ("user/#5",
+				KEY_VALUE, "system/type/*/short",
+				KEY_META, "check/type", "short",
+				KEY_END),
 			KS_END);
 
 	elektraPluginSetData(handle, keys);

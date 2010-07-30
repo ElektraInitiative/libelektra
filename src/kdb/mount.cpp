@@ -79,6 +79,8 @@ int MountCommand::execute(int argc, char** argv)
 		return 0;
 	}
 
+	std::string action = argv[2];
+
 	cout << "Welcome to interactive mounting" << endl;
 	cout << "Please provide a unique name." << endl;
 

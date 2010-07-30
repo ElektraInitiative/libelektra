@@ -297,3 +297,9 @@ severity:error
 ingroup:plugin
 module:network
 
+number:52
+description:Could not type check value of key
+severity:error
+ingroup:plugin
+module:type
+

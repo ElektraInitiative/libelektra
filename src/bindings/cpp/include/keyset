@@ -13,6 +13,10 @@ class KeySet
 {
 public:
 	KeySet () :ks (ckdb::ksNew(0)) {}
+	/**@warning takes ownership of keyset!
+	  Keyset will be destroyed at destructor
+	  you cant continue to use keyset afterwards!
+	*/
 	KeySet (ckdb::KeySet *k) :ks(k) {}
 	KeySet (const KeySet &other);
 	KeySet (size_t alloc, va_list ap);
