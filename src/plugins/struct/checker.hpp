@@ -33,29 +33,35 @@ public:
 	
 		root.addBaseName ("device");
 		Key k = ks.lookup(root);
+		k.setMeta<std::string>("check/type", "string");
+		k.setMeta<std::string>("check/path", "device");
 		if (!k) return false;
 
 		root.setBaseName ("mpoint");
 		k = ks.lookup(root);
+		k.setMeta<std::string>("check/type", "string");
+		k.setMeta<std::string>("check/path", "directory");
 		if (!k) return false;
 
 		root.setBaseName ("type");
 		k = ks.lookup(root);
+		k.setMeta<std::string>("check/type", "FSType");
 		if (!k) return false;
 
 		root.setBaseName ("options");
 		k = ks.lookup(root);
+		k.setMeta<std::string>("check/type", "string");
 		if (!k) return false;
 
 		root.setBaseName ("dumpfreq");
 		k = ks.lookup(root);
+		k.setMeta<std::string>("check/type", "unsigned_short");
 		if (!k) return false;
 
 		root.setBaseName ("passno");
 		k = ks.lookup(root);
+		k.setMeta<std::string>("check/type", "unsigned_short");
 		if (!k) return false;
-
-		std::cout << "Structure check succeeded for " << k.getName() << std::endl;
 
 		return true;
 	}
@@ -88,13 +94,11 @@ public:
 
 			if (structures.find(whichStruct) != structures.end())
 			{
-				std::cout << "found known structure " << whichStruct << endl;
 				/* We found a structure */
 				if (!structures[whichStruct]->check(cks)) return false;
 				continue;
 			}
 
-			std::cout << "We got a struct " << whichStruct << " but could not validate it" << endl;
 			return false;
 		}
 		return true;
