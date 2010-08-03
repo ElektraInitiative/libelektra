@@ -103,25 +103,18 @@ int elektraStructSet(ckdb::Plugin *handle, ckdb::KeySet *returned, ckdb::Key *pa
 {
 	/* set all keys */
 
-	std::cout << "apply struct" << std::endl;
-	std::cout << "size: " << ksGetSize(returned) << std::endl;
-
 	if (!static_cast<elektra::StructChecker*>(elektraPluginGetData (handle))->check
 			(reinterpret_cast<kdb::KeySet&>(returned)))
 	{
-		std::cout << "Failed at struct" << std::endl;
 		std::string msg = "None of supplied structs matched for ";
 		const char *name = keyName (ksCurrent(returned));
 		if (name) msg += name;
 		msg += " with string: ";
 		const char *value = keyString (ksCurrent(returned));
 		if (value) msg += value;
-		ELEKTRA_SET_ERROR (52, parentKey, msg.c_str());
+		ELEKTRA_SET_ERROR (53, parentKey, msg.c_str());
 		return -1;
 	}
-
-	std::cout << "size: " << ksGetSize(returned) << std::endl;
-	std::cout << "Succeeded at struct" << std::endl;
 
 	return 1; /* success */
 }
