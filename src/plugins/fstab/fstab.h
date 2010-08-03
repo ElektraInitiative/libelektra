@@ -43,20 +43,12 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include <kdbbackend.h>
+#include <kdbplugin.h>
+#include <kdbextension.h>
 
-/*TODO don't use private details*/
-#include <kdbprivate.h>
-
-#define BACKENDNAME "fstab"
 #define BACKENDVERSION "0.0.1"
 #define BACKENDDESCR "Parses files in a syntax like /etc/fstab"
 
 #define FSTAB_PATH  "/etc/fstab"
-
-
-int kdbbWriteLock (FILE *f);
-int kdbbReadLock (FILE *f);
-int kdbbUnlock (FILE *f);
 
 #endif

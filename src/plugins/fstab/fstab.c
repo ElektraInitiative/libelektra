@@ -24,72 +24,9 @@
 
 #include "fstab.h"
 
-int kdbOpen_fstab(KDB *handle)
-{
-	KDBCap * cap = kdbhGetCapability(handle);
-	const void *f;
-	KeySet *ks;
-	Key *k;
-
-	cap->onlyFullGet=1;
-	cap->noStat=1;
-
-	cap->onlyRemoveAll=1;
-	cap->onlyAddKeys=1;
-	cap->onlyFullSet=1;
-
-	cap->noComment=1;
-	cap->noUID=1;
-	cap->noGID=1;
-	cap->noMode=1;
-	cap->noATime=1;
-	cap->noMTime=1;
-	cap->noCTime=1;
-	cap->noRemove=1;
-	cap->noMount=1;
-	cap->noBinary=1;
-	cap->noTypes=1;
-	cap->noError=1;
-
-	cap->noLock = 1;
-	cap->noThread = 1;
-
-	ks = kdbhGetConfig (handle);
-	ksRewind (ks);
-	while ((k = ksNext (ks)) != 0)
-	{
-		f = keyName (k);
-		if (f) f = strrchr (f, '/');
-		if (f && strcmp (f, "/path") == 0) {
-			void *data=malloc(keyGetValueSize(k));
-			keyGetString (k, data, keyGetValueSize(k));
-			kdbhSetBackendData (handle, data);
-		}
-	}
-	if (!kdbhGetBackendData (handle)) kdbhSetBackendData (handle, elektraStrDup (FSTAB_PATH));
-	/* backend initialization logic */
-#if DEBUG && VERBOSE
-	printf ("open fstab backend with %s\n", kdbhGetBackendData (handle));
-#endif
-	return 0;
-}
-
-
-
-
-int kdbClose_fstab(KDB *handle)
-{
-	/* free all backend resources and shutdown */
-	free(kdbhGetBackendData(handle));
-#if DEBUG && VERBOSE
-	printf ("close fstab backend\n");
-#endif
-	return 0; /* success */
-}
-
 #define MAX_NUMBER_SIZE 10
 
-ssize_t kdbGet_fstab(KDB *handle, KeySet *returned, const Key *parentKey)
+ssize_t elektraFstabGet(KDB *handle, KeySet *returned, const Key *parentKey)
 {
 	int errnosave = errno;
 	ssize_t nr_keys = 0;
@@ -99,23 +36,17 @@ ssize_t kdbGet_fstab(KDB *handle, KeySet *returned, const Key *parentKey)
 	struct mntent *fstabEntry;
 	char fsname[MAX_PATH_LENGTH];
 	char buffer[MAX_NUMBER_SIZE];
-	const char *mountpointname = keyName(kdbhGetMountpoint(handle));
-	const char *parentname = keyName(parentKey);
 
 #if DEBUG && VERBOSE
-	printf ("get fstab %s, point: %s\n", keyName(parentKey), mountpointname);
+	printf ("get fstab %s from %s", keyName(parentKey), keyString(parentKey));
 #endif
-
-	if (strcmp (mountpointname, parentname)) return 0;
 
 	ksClear (returned);
 	key = keyDup (parentKey);
-	keySetDir(key);
 	ksAppendKey(returned, key);
 	nr_keys ++;
-	key->flags &= ~KEY_FLAG_SYNC;
 
-	fstab=setmntent(kdbhGetBackendData(handle), "r");
+	fstab=setmntent(keyString(parentKey), "r");
 	if (fstab == 0)
 	{
 		/* propagate errno */
@@ -169,28 +100,24 @@ ssize_t kdbGet_fstab(KDB *handle, KeySet *returned, const Key *parentKey)
 		keySetString (key, fstabEntry->mnt_fsname);
 		keySetComment (key, "Device or Label");
 		ksAppendKey(returned, key);
-		key->flags &= ~KEY_FLAG_SYNC;
 
 		key = keyDup (dir);
 		keyAddBaseName(key, "mpoint");
 		keySetString (key, fstabEntry->mnt_dir);
 		keySetComment (key, "Mount point");
 		ksAppendKey(returned, key);
-		key->flags &= ~KEY_FLAG_SYNC;
 
 		key = keyDup (dir);
 		keyAddBaseName(key, "type");
 		keySetString (key, fstabEntry->mnt_type);
 		keySetComment (key, "Filesystem type.");
 		ksAppendKey(returned, key);
-		key->flags &= ~KEY_FLAG_SYNC;
 
 		key = keyDup (dir);
 		keyAddBaseName(key, "options");
 		keySetString (key, fstabEntry->mnt_opts);
 		keySetComment (key, "Filesystem specific options");
 		ksAppendKey(returned, key);
-		key->flags &= ~KEY_FLAG_SYNC;
 
 		key = keyDup (dir);
 		keyAddBaseName(key, "dumpfreq");
@@ -198,7 +125,6 @@ ssize_t kdbGet_fstab(KDB *handle, KeySet *returned, const Key *parentKey)
 		keySetString (key, buffer);
 		keySetComment (key, "Dump frequency in days");
 		ksAppendKey(returned, key);
-		key->flags &= ~KEY_FLAG_SYNC;
 
 		key = keyDup (dir);
 		keyAddBaseName(key, "passno");
@@ -206,10 +132,8 @@ ssize_t kdbGet_fstab(KDB *handle, KeySet *returned, const Key *parentKey)
 		keySetString (key, buffer);
 		keySetComment (key, "Pass number on parallel fsck");
 		ksAppendKey(returned, key);
-		key->flags &= ~KEY_FLAG_SYNC;
 
 		keySetDir (dir);
-		dir->flags &= ~KEY_FLAG_SYNC;
 	}
 	
 	endmntent(fstab);
@@ -219,7 +143,7 @@ ssize_t kdbGet_fstab(KDB *handle, KeySet *returned, const Key *parentKey)
 }
 
 
-ssize_t kdbSet_fstab(KDB *handle, KeySet *ks, const Key *parentKey)
+ssize_t elektraFstabSet(KDB *handle, KeySet *ks, const Key *parentKey)
 {
 	int ret = 1;
 	int errnosave = errno;
@@ -228,23 +152,19 @@ ssize_t kdbSet_fstab(KDB *handle, KeySet *ks, const Key *parentKey)
 	char *basename = 0;
 	const void *rootname = 0;
 	struct mntent fstabEntry;
-	const char *mountpointname = keyName(kdbhGetMountpoint(handle));
-	const char *parentname = keyName(parentKey);
 
 #if DEBUG && VERBOSE
-	printf ("set fstab %s, point: %s\n", keyName(parentKey), mountpointname);
+	printf ("set fstab %s from file %s\n", keyName(parentKey), keyString(parentKey));
 #endif
-
-	if (strcmp (mountpointname, parentname)) return 0;
 
 	ksRewind (ks);
 	if ((key = ksNext (ks)) != 0)
 	{
-		unlink(kdbhGetBackendData(handle));
+		unlink(keyString(parentKey));
 		return ret;
 	} /*skip parent key*/
 
-	fstab=setmntent(kdbhGetBackendData(handle), "w");
+	fstab=setmntent(keyString(parentKey), "w");
 	memset(&fstabEntry,0,sizeof(struct mntent));
 
 	while ((key = ksNext (ks)) != 0)
@@ -308,18 +228,11 @@ ssize_t kdbSet_fstab(KDB *handle, KeySet *ks, const Key *parentKey)
 }
 
 
-KDB *ELEKTRA_PLUGIN_EXPORT(fstab) {
-	return kdbBackendExport(BACKENDNAME,
-		KDB_BE_OPEN,           &kdbOpen_fstab,
-		KDB_BE_CLOSE,          &kdbClose_fstab,
-		KDB_BE_GET,            &kdbGet_fstab,
-		KDB_BE_SET,            &kdbSet_fstab,
-		KDB_BE_VERSION,        BACKENDVERSION,
-		KDB_BE_AUTHOR,	"Markus Raab <elektra@markus-raab.org>",
-		KDB_BE_LICENCE,	"BSD",
-		KDB_BE_DESCRIPTION,
-			"Reads and writes /etc/fstab content",
-		KDB_BE_END);
+Plugin *ELEKTRA_PLUGIN_EXPORT(fstab) {
+	return elektraPluginExport("fstab",
+		ELEKTRA_PLUGIN_GET,            &elektraFstabGet,
+		ELEKTRA_PLUGIN_SET,            &elektraFstabSet,
+		ELEKTRA_PLUGIN_END);
 }
 
 
