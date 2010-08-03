@@ -46,9 +46,7 @@
 #include <kdbplugin.h>
 #include <kdbextension.h>
 
-#define BACKENDVERSION "0.0.1"
-#define BACKENDDESCR "Parses files in a syntax like /etc/fstab"
-
-#define FSTAB_PATH  "/etc/fstab"
+int elektraFstabGet(KDB *handle, KeySet *returned, Key *parentKey);
+int elektraFstabSet(KDB *handle, KeySet *ks, Key *parentKey);
 
 #endif

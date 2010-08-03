@@ -26,7 +26,7 @@
 
 #define MAX_NUMBER_SIZE 10
 
-ssize_t elektraFstabGet(KDB *handle, KeySet *returned, const Key *parentKey)
+int elektraFstabGet(KDB *handle, KeySet *returned, Key *parentKey)
 {
 	int errnosave = errno;
 	ssize_t nr_keys = 0;
@@ -41,7 +41,40 @@ ssize_t elektraFstabGet(KDB *handle, KeySet *returned, const Key *parentKey)
 	printf ("get fstab %s from %s", keyName(parentKey), keyString(parentKey));
 #endif
 
-	ksClear (returned);
+	if (!strcmp (keyName(parentKey), "system/elektra/modules/fstab"))
+	{
+		KeySet *moduleConfig = ksNew (30,
+			keyNew ("system/elektra/modules/fstab",
+				KEY_VALUE, "fstab plugin waits for your orders", KEY_END),
+			keyNew ("system/elektra/modules/fstab/exports", KEY_END),
+			keyNew ("system/elektra/modules/fstab/exports/get",
+				KEY_FUNC, elektraFstabGet,
+				KEY_END),
+			keyNew ("system/elektra/modules/fstab/exports/set",
+				KEY_FUNC, elektraFstabSet,
+				KEY_END),
+			keyNew ("system/elektra/modules/fstab/infos",
+				KEY_VALUE, "All information you want to know", KEY_END),
+			keyNew ("system/elektra/modules/fstab/infos/author",
+				KEY_VALUE, "Markus Raab <elektra@markus-raab.org>", KEY_END),
+			keyNew ("system/elektra/modules/fstab/infos/licence",
+				KEY_VALUE, "BSD", KEY_END),
+			keyNew ("system/elektra/modules/fstab/infos/description",
+				KEY_VALUE, "/Parses files in a syntax like /etc/fstab file", KEY_END),
+			keyNew ("system/elektra/modules/fstab/infos/provides",
+				KEY_VALUE, "storage", KEY_END),
+			keyNew ("system/elektra/modules/fstab/infos/placements",
+				KEY_VALUE, "getstorage setstorage", KEY_END),
+			keyNew ("system/elektra/modules/fstab/infos/needs",
+				KEY_VALUE, "", KEY_END),
+			keyNew ("system/elektra/modules/fstab/infos/version",
+				KEY_VALUE, PLUGINVERSION, KEY_END),
+			KS_END);
+		ksAppend (returned, moduleConfig);
+		ksDel (moduleConfig);
+		return 1;
+	}
+
 	key = keyDup (parentKey);
 	ksAppendKey(returned, key);
 	nr_keys ++;
@@ -143,7 +176,7 @@ ssize_t elektraFstabGet(KDB *handle, KeySet *returned, const Key *parentKey)
 }
 
 
-ssize_t elektraFstabSet(KDB *handle, KeySet *ks, const Key *parentKey)
+int elektraFstabSet(KDB *handle, KeySet *ks, Key *parentKey)
 {
 	int ret = 1;
 	int errnosave = errno;
@@ -160,9 +193,8 @@ ssize_t elektraFstabSet(KDB *handle, KeySet *ks, const Key *parentKey)
 	ksRewind (ks);
 	if ((key = ksNext (ks)) != 0)
 	{
-		unlink(keyString(parentKey));
-		return ret;
-	} /*skip parent key*/
+		/*skip parent key*/
+	}
 
 	fstab=setmntent(keyString(parentKey), "w");
 	memset(&fstabEntry,0,sizeof(struct mntent));
