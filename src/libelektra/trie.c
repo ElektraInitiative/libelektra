@@ -51,6 +51,8 @@ static Backend* elektraTriePrefixLookup(Trie *trie, const char *name);
  *
  * @return the backend if found
  * @return 0 otherwise
+ * @param trie the trie object to work with
+ * @param key the name of this key will be looked up
  * @ingroup trie
  */
 Backend* elektraTrieLookup(Trie *trie, const Key *key)

@@ -46,22 +46,10 @@
  * #include <kdb.h>
  * @endcode
  *
- * There is also a library that provides some
- * @ref stream "optional XML manipulation methods called KDB Tools", and to use
- * it you should include:
- * @code
- * #include <kdbtools.h>
- * @endcode
- *
  * To link an executable with the Elektra library, the correct way is to
  * use the @c pkg-config tool:
  * @code
  * bash$ cc `pkg-config --libs elektra` -o myapp myapp.c
- * @endcode
- *
- * Or if you need the options XML manipulation methods, you should use:
- * @code
- * bash$ cc `pkg-config --libs elektratools` -o myapp myapp.c
  * @endcode
  *
  *
@@ -101,8 +89,6 @@
  *   - Test if it is a
  *     @link keyIsUser() @p user/ @endlink or @link keyIsSystem() @p system/
  *     @endlink key, etc
- *   - @link keyToStream() Export Keys to an XML representation @endlink
- *   - keyGenerate() and keyOutput() for per line and c-code output.
  *   - See @ref key "class documentation" for more
  *
  * @link keyset KeySet @endlink
@@ -111,9 +97,6 @@
  *     entire @link ksAppend() KeySet @endlink
  *   - @link ksNext() Work with @endlink its @link ksCurrent() internal
  *     cursor @endlink
- *   - @link ksFromXMLfile() Import @endlink and
- *     ksToStream() Export KeySets to an XML representation
- *   - ksGenerate() and ksOutput() for per line and c-code output.
  *   - See @ref keyset "class documentation" for more
  *
  *

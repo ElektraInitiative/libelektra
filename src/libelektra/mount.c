@@ -209,7 +209,7 @@ int elektraMountVersion (KDB *kdb, Key *errorKey)
  * Mounts a backend into the trie.
  *
  * @param kdb the handle to work with
- * @param modules the current list of loaded modules
+ * @param backend the backend to mount
  * @param errorKey the key used to report warnings
  * @return -1 on failure
  * @return 0 if there was no backend (free KeySet!)

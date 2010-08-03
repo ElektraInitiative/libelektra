@@ -11,9 +11,6 @@
  * In case of keyNew() they give Information what Parameter comes
  * next.
  *
- * In case of ksToStream() the additional information will be typed
- * out. Use them together with #KDBStream in that situation.
- *
  * @ingroup key
  * @see keyNew()
  * @see ksToStream(), keyToStream()
