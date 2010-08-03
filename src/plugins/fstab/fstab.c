@@ -26,7 +26,7 @@
 
 #define MAX_NUMBER_SIZE 10
 
-int elektraFstabGet(KDB *handle, KeySet *returned, Key *parentKey)
+int elektraFstabGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	int errnosave = errno;
 	ssize_t nr_keys = 0;
@@ -38,7 +38,7 @@ int elektraFstabGet(KDB *handle, KeySet *returned, Key *parentKey)
 	char buffer[MAX_NUMBER_SIZE];
 
 #if DEBUG && VERBOSE
-	printf ("get fstab %s from %s", keyName(parentKey), keyString(parentKey));
+	printf ("get fstab %s from %s\n", keyName(parentKey), keyString(parentKey));
 #endif
 
 	if (!strcmp (keyName(parentKey), "system/elektra/modules/fstab"))
@@ -124,7 +124,6 @@ int elektraFstabGet(KDB *handle, KeySet *returned, Key *parentKey)
 		keyAddBaseName(dir, fsname);
 		keySetString(dir,"");
 		keySetComment(dir,"");
-		keySetMode(dir, 0664); /* TODO stat */
 		keySetComment (dir, "Filesystem pseudo-name");
 		ksAppendKey(returned,dir);
 
@@ -166,7 +165,7 @@ int elektraFstabGet(KDB *handle, KeySet *returned, Key *parentKey)
 		keySetComment (key, "Pass number on parallel fsck");
 		ksAppendKey(returned, key);
 
-		keySetDir (dir);
+		keySetMeta (dir, "check/struct", "FStabEntry");
 	}
 	
 	endmntent(fstab);
@@ -176,7 +175,7 @@ int elektraFstabGet(KDB *handle, KeySet *returned, Key *parentKey)
 }
 
 
-int elektraFstabSet(KDB *handle, KeySet *ks, Key *parentKey)
+int elektraFstabSet(Plugin *handle, KeySet *ks, Key *parentKey)
 {
 	int ret = 1;
 	int errnosave = errno;
@@ -187,7 +186,7 @@ int elektraFstabSet(KDB *handle, KeySet *ks, Key *parentKey)
 	struct mntent fstabEntry;
 
 #if DEBUG && VERBOSE
-	printf ("set fstab %s from file %s\n", keyName(parentKey), keyString(parentKey));
+	printf ("set fstab %s to file %s\n", keyName(parentKey), keyString(parentKey));
 #endif
 
 	ksRewind (ks);
