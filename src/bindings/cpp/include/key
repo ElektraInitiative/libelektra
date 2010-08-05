@@ -172,6 +172,11 @@ public:
 		ckdb::keyCopyMeta(key, other.key, name.c_str());
 	}
 
+	void copyAllMeta(const Key &other)
+	{
+		ckdb::keyCopyAllMeta(key, other.key);
+	}
+
 	void rewindMeta () const;
 	const Key nextMeta ();
 	const Key currentMeta () const;

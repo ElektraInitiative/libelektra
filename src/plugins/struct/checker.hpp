@@ -63,6 +63,35 @@ public:
 	}
 };
 
+class StructChecker : public Checker
+{
+	KeySet& config;
+public:
+	StructChecker (KeySet &config) : config(config)
+	{}
+
+	void check(KeySet &ks)
+	{
+		config.rewind();
+
+		Key cur;
+		Key root = ks.next();
+		while (cur = ks.next())
+		{
+			Key searchKey = config.next();
+			if (!searchKey) throw "StructChecker: More keys found than structure should have";
+			if (!root.isDirectBelow(cur)) throw "StructChecker: key is not direct below";
+
+			if (searchKey.getBaseName() != cur.getBaseName())
+				std::string(std::string("StructChecker: ") +
+						searchKey.getBaseName() +
+						" not found: " +
+						cur.getBaseName()).c_str();
+			cur.copyAllMeta (searchKey);
+		}
+	}
+};
+
 class ListChecker : public Checker
 {
 	Checker* structure;
@@ -83,7 +112,7 @@ public:
 
 		while (k = ks2.next())
 		{
-			if (!root.isDirectBelow(k)) throw "key is not direct below";
+			if (!root.isDirectBelow(k)) throw "ListChecker: key is not direct below";
 
 			KeySet cks(ks2.cut(k));
 
@@ -98,12 +127,12 @@ public:
 
 };
 
-class StructChecker : public Checker
+class MetaChecker : public Checker
 {
 	std::map<string, Checker*> structures;
 
 public:
-	StructChecker()
+	MetaChecker()
 	{
 		structures.insert (pair<string, Checker*>("FStabEntry",
 					new FstabChecker()));
@@ -135,7 +164,7 @@ public:
 		}
 	}
 
-	~StructChecker()
+	~MetaChecker()
 	{
 		map<string,Checker*>::iterator it;
 		for ( it=structures.begin() ; it != structures.end(); it++)

@@ -40,8 +40,31 @@ int elektraStructOpen(ckdb::Plugin *handle, ckdb::Key *)
 {
 	/* plugin initialization logic */
 
+	static kdb::KeySet config( 20,
+		*kdb::Key ("user/device",
+			KEY_META, "check/type", "string",
+			KEY_META, "check/path", "device",
+			KEY_END),
+		*kdb::Key ("user/mpoint",
+			KEY_META, "check/type", "string",
+			KEY_META, "check/path", "directory",
+			KEY_END),
+		*kdb::Key ("user/type",
+			KEY_META, "check/type", "FSType",
+			KEY_END),
+		*kdb::Key ("user/options",
+			KEY_META, "check/type", "string",
+			KEY_END),
+		*kdb::Key ("user/dumpfreq",
+			KEY_META, "check/type", "unsigned_short",
+			KEY_END),
+		*kdb::Key ("user/passno",
+			KEY_META, "check/type", "unsigned_short",
+			KEY_END),
+		KS_END);
+
 	elektraPluginSetData (handle, new elektra::ListChecker (
-				new elektra::FstabChecker));
+				new elektra::StructChecker(config)));
 
 	return 1; /* success */
 }
