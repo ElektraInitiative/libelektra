@@ -4,8 +4,6 @@
 
 #include <map>
 #include <string>
-#include <sstream>
-#include <locale>
 
 
 namespace elektra {
@@ -13,20 +11,20 @@ namespace elektra {
 using namespace kdb;
 using namespace std;
 
-class Struct
+class Checker
 {
 public:
-	virtual bool check(KeySet &ks) = 0;
-	virtual ~Struct();
+	virtual void check(KeySet &ks) = 0;
+	virtual ~Checker();
 };
 
-Struct::~Struct()
+Checker::~Checker()
 {}
 
-class FstabStruct : public Struct
+class FstabChecker : public Checker
 {
 public:
-	bool check(KeySet &ks)
+	void check(KeySet &ks)
 	{
 		ks.rewind();
 		Key root = ks.next().dup();
@@ -35,49 +33,83 @@ public:
 		Key k = ks.lookup(root);
 		k.setMeta<std::string>("check/type", "string");
 		k.setMeta<std::string>("check/path", "device");
-		if (!k) return false;
+		if (!k) throw "device not found";
 
 		root.setBaseName ("mpoint");
 		k = ks.lookup(root);
 		k.setMeta<std::string>("check/type", "string");
 		k.setMeta<std::string>("check/path", "directory");
-		if (!k) return false;
+		if (!k) throw "mpoint not found";
 
 		root.setBaseName ("type");
 		k = ks.lookup(root);
 		k.setMeta<std::string>("check/type", "FSType");
-		if (!k) return false;
+		if (!k) throw "type not found";
 
 		root.setBaseName ("options");
 		k = ks.lookup(root);
 		k.setMeta<std::string>("check/type", "string");
-		if (!k) return false;
+		if (!k) throw "options not found";
 
 		root.setBaseName ("dumpfreq");
 		k = ks.lookup(root);
 		k.setMeta<std::string>("check/type", "unsigned_short");
-		if (!k) return false;
+		if (!k) throw "dumpfreq not found";
 
 		root.setBaseName ("passno");
 		k = ks.lookup(root);
 		k.setMeta<std::string>("check/type", "unsigned_short");
-		if (!k) return false;
-
-		return true;
+		if (!k) throw "passno not found";
 	}
 };
 
-class StructChecker
+class ListChecker : public Checker
 {
-	std::map<string, Struct*> structures;
+	Checker* structure;
+
+public:
+	ListChecker(Checker *which)
+	{
+		structure = which;
+	}
+
+	void check (KeySet &ks)
+	{
+		Key k;
+		KeySet ks2 (ks.dup());
+
+		ks2.rewind();
+		Key root = ks2.next();
+
+		while (k = ks2.next())
+		{
+			if (!root.isDirectBelow(k)) throw "key is not direct below";
+
+			KeySet cks(ks2.cut(k));
+
+			structure->check(cks);
+		}
+	}
+
+	~ListChecker()
+	{
+		delete structure;
+	}
+
+};
+
+class StructChecker : public Checker
+{
+	std::map<string, Checker*> structures;
 
 public:
 	StructChecker()
 	{
-		structures.insert (pair<string, Struct*>("FStabEntry", new FstabStruct()));
+		structures.insert (pair<string, Checker*>("FStabEntry",
+					new FstabChecker()));
 	}
 
-	bool check (KeySet &ks)
+	void check (KeySet &ks)
 	{
 		Key k;
 		KeySet ks2 (ks.dup());
@@ -89,24 +121,23 @@ public:
 			KeySet cks(ks2.cut(k));
 			string whichStruct;
 			/* TODO: meta interface without exceptions needed */
-			try { whichStruct = k.getMeta<string>("check/struct"); }
+			try { whichStruct = k.getMeta<string>("check/Checker"); }
 			catch (...) { continue; }
 
 			if (structures.find(whichStruct) != structures.end())
 			{
 				/* We found a structure */
-				if (!structures[whichStruct]->check(cks)) return false;
+				structures[whichStruct]->check(cks);
 				continue;
 			}
 
-			return false;
+			throw "did not found correct checker";
 		}
-		return true;
 	}
 
 	~StructChecker()
 	{
-		map<string,Struct*>::iterator it;
+		map<string,Checker*>::iterator it;
 		for ( it=structures.begin() ; it != structures.end(); it++)
 		{
 			delete it->second;

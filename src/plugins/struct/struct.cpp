@@ -28,9 +28,6 @@
 #include <key>
 #include <keyset>
 
-//TODO REMOVE
-#include <iostream>
-
 #include "checker.hpp"
 
 using namespace ckdb;
@@ -43,7 +40,8 @@ int elektraStructOpen(ckdb::Plugin *handle, ckdb::Key *)
 {
 	/* plugin initialization logic */
 
-	elektraPluginSetData (handle, new elektra::StructChecker());
+	elektraPluginSetData (handle, new elektra::ListChecker (
+				new elektra::FstabChecker));
 
 	return 1; /* success */
 }
@@ -103,16 +101,13 @@ int elektraStructSet(ckdb::Plugin *handle, ckdb::KeySet *returned, ckdb::Key *pa
 {
 	/* set all keys */
 
-	if (!static_cast<elektra::StructChecker*>(elektraPluginGetData (handle))->check
-			(reinterpret_cast<kdb::KeySet&>(returned)))
+	try {
+		static_cast<elektra::StructChecker*>(elektraPluginGetData (handle))->check
+			(reinterpret_cast<kdb::KeySet&>(returned));
+	}
+	catch (const char* msg)
 	{
-		std::string msg = "None of supplied structs matched for ";
-		const char *name = keyName (ksCurrent(returned));
-		if (name) msg += name;
-		msg += " with string: ";
-		const char *value = keyString (ksCurrent(returned));
-		if (value) msg += value;
-		ELEKTRA_SET_ERROR (53, parentKey, msg.c_str());
+		ELEKTRA_SET_ERROR (53, parentKey, msg);
 		return -1;
 	}
 
