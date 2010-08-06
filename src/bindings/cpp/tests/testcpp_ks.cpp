@@ -203,7 +203,7 @@ void test_cursor()
 
 void test_pop()
 {
-	cout << "testing iterate" << endl;
+	cout << "testing pop" << endl;
 
 	KeySet ks3 (5,
 		*Key ("user/key3/1", KEY_END),
@@ -721,6 +721,80 @@ void test_ksrelease()
 	ckdb::ksDel (ks);
 }
 
+void test_lookuppop()
+{
+	cout << "testing lookup pop" << endl;
+
+	KeySet ks3 (5,
+		*Key ("user/key3/1", KEY_END),
+		*Key ("user/key3/2", KEY_END),
+		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
+		KS_END);
+
+	succeed_if (ks3.size() == 3, "size not correct");
+
+	Key k3 = ks3.lookup("user/key3/3", KDB_O_POP);
+	succeed_if (k3.getName() == "user/key3/3", "wrong keyname");
+	succeed_if (k3.getString() == "value", "wrong value");
+	succeed_if (ks3.size() == 2, "size not correct");
+
+	Key k1 = ks3.lookup("user/key3/1", KDB_O_POP);
+	succeed_if (k1.getName() == "user/key3/1", "wrong keyname");
+	succeed_if (ks3.size() == 1, "size not correct");
+
+	Key k2 = ks3.lookup("user/key3/2", KDB_O_POP);
+	succeed_if (k2.getName() == "user/key3/2", "wrong keyname");
+	succeed_if (ks3.size() == 0, "size not correct");
+
+	Key k0 = ks3.lookup("user/key3/2", KDB_O_POP);
+	succeed_if (!k0, "Out of Range, no more key");
+	succeed_if (ks3.size() == 0, "size not correct");
+
+	Key kn = ks3.lookup("user/key3/n", KDB_O_POP);
+	succeed_if (!kn, "key was never in set");
+	succeed_if (ks3.size() == 0, "size not correct");
+
+	KeySet ks4 (5,
+		*Key ("user/key3/1", KEY_END),
+		*Key ("user/key3/2", KEY_END),
+		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
+		KS_END);
+
+	for (size_t i=ks4.size(); i>0; i--)
+	{
+		char str[] = "user/key3/X";
+
+		str [10] = i+'0';
+		succeed_if (ks4.size() == i, "size not correct");
+		Key k = ks4.lookup(str, KDB_O_POP);
+		succeed_if (k, "there should be a key");
+
+		succeed_if (k.getName() == str, str);
+		succeed_if (ks4.size() == i-1, "size not correct");
+	}
+
+	KeySet ks5 (5,
+		*Key ("user/key3/1", KEY_END),
+		*Key ("user/key3/2", KEY_END),
+		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
+		KS_END);
+
+	for (size_t i=ks5.size(); i>0; i--)
+	{
+		char str[] = "user/key3/X";
+
+		str [10] = i+'0';
+		Key searchKey (str, KEY_END);
+		succeed_if (ks5.size() == i, "size not correct");
+
+		Key k = ks5.lookup(searchKey, KDB_O_POP);
+		succeed_if (k, "there should be a key");
+
+		succeed_if (k.getName() == str, str);
+		succeed_if (ks5.size() == i-1, "size not correct");
+	}
+}
+
 
 int main()
 {
@@ -742,6 +816,7 @@ int main()
 	test_kscall();
 	test_ksccall();
 	test_ksrelease();
+	test_lookuppop();
 
 	cout << endl;
 	cout << "test_key RESULTS: " << nbTest << " test(s) done. " << nbError << " error(s)." << endl;
