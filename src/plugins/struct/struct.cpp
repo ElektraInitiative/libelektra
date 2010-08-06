@@ -59,7 +59,7 @@ int elektraStructOpen(ckdb::Plugin *handle, ckdb::Key *errorKey)
 			KEY_META, "check/struct", "string",
 			KEY_META, "check/path", "directory",
 			KEY_END),
-		*kdb::Key ("user/struct/FStab/struct",
+		*kdb::Key ("user/struct/FStab/type",
 			KEY_META, "check/struct", "FSType",
 			KEY_END),
 		*kdb::Key ("user/struct/FStab/options",
