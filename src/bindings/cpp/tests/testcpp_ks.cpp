@@ -662,6 +662,13 @@ void test_ksccall()
 }
 
 
+void rcopycall(KeySet ks)
+{
+	// do something with keyset
+	// (wont be one hierarchy higher)
+	ks.append(Key("user/yyy", KEY_END));
+}
+
 void rrefcall(KeySet & ks)
 {
 	// do something with keyset
@@ -675,6 +682,12 @@ void rcall(KeySet ks)
 
 	rrefcall (ks);
 	succeed_if (ks.lookup("user/xxx"), "could not find key");
+
+
+	rcopycall(ks);
+	succeed_if (ks.lookup("user/xxx"), "could not find key");
+	succeed_if (!ks.lookup("user/yyy"), "could not find key");
+
 	// dont destroy ks
 	ks.release();
 }

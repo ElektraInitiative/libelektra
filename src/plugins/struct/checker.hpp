@@ -4,6 +4,13 @@
 
 #include <map>
 #include <string>
+#include <memory>
+
+#include <key>
+#include <keyset>
+
+// TODO: remove it
+#include <iostream>
 
 
 namespace elektra {
@@ -11,96 +18,71 @@ namespace elektra {
 using namespace kdb;
 using namespace std;
 
+class Factory;
+
 class Checker
 {
 public:
+	/**Gets a reference to the outside keyset.
+	  Dont change it!
+	  Make a duplicate if you need to.*/
 	virtual void check(KeySet &ks) = 0;
+	/**Build up the Checker.
+	  From the Factory you can get instances of other checkers.
+	  Will build up recursively, dependent on the given
+	  configuration*/
+	virtual void buildup (Factory &f, std::string const& templateParameter) = 0;
 	virtual ~Checker();
-};
-
-Checker::~Checker()
-{}
-
-class FstabChecker : public Checker
-{
-public:
-	void check(KeySet &ks)
-	{
-		ks.rewind();
-		Key root = ks.next().dup();
-	
-		root.addBaseName ("device");
-		Key k = ks.lookup(root);
-		k.setMeta<std::string>("check/type", "string");
-		k.setMeta<std::string>("check/path", "device");
-		if (!k) throw "device not found";
-
-		root.setBaseName ("mpoint");
-		k = ks.lookup(root);
-		k.setMeta<std::string>("check/type", "string");
-		k.setMeta<std::string>("check/path", "directory");
-		if (!k) throw "mpoint not found";
-
-		root.setBaseName ("type");
-		k = ks.lookup(root);
-		k.setMeta<std::string>("check/type", "FSType");
-		if (!k) throw "type not found";
-
-		root.setBaseName ("options");
-		k = ks.lookup(root);
-		k.setMeta<std::string>("check/type", "string");
-		if (!k) throw "options not found";
-
-		root.setBaseName ("dumpfreq");
-		k = ks.lookup(root);
-		k.setMeta<std::string>("check/type", "unsigned_short");
-		if (!k) throw "dumpfreq not found";
-
-		root.setBaseName ("passno");
-		k = ks.lookup(root);
-		k.setMeta<std::string>("check/type", "unsigned_short");
-		if (!k) throw "passno not found";
-	}
 };
 
 class StructChecker : public Checker
 {
-	KeySet& config;
+	KeySet config;
 public:
-	StructChecker (KeySet &config) : config(config)
+	StructChecker (KeySet config)
+		: config(config)
 	{}
+
+	void buildup (Factory &f, std::string const& templateParameter);
 
 	void check(KeySet &ks)
 	{
 		config.rewind();
 
+		Key confRoot = config.next();
+
 		Key cur;
 		Key root = ks.next();
+
+		std::cout << "root key is: " << root.getName() << std::endl;
+
+
 		while (cur = ks.next())
 		{
 			Key searchKey = config.next();
 			if (!searchKey) throw "StructChecker: More keys found than structure should have";
 			if (!root.isDirectBelow(cur)) throw "StructChecker: key is not direct below";
 
+			std::cout << "compare basename: " << searchKey.getBaseName() <<
+				" with cur: " << cur.getBaseName() << std::endl;
 			if (searchKey.getBaseName() != cur.getBaseName())
-				std::string(std::string("StructChecker: ") +
-						searchKey.getBaseName() +
-						" not found: " +
-						cur.getBaseName()).c_str();
+				throw "StructChecker: did not find expected subkey";
+
+			std::cout << "Apply meta data of " << searchKey.getName() <<
+				" to the key " << cur.getName() << std::endl;
 			cur.copyAllMeta (searchKey);
 		}
+
+		if (config.next()) throw "StructChecker: There should be more elements in the structure";
 	}
 };
 
 class ListChecker : public Checker
 {
-	Checker* structure;
+	std::auto_ptr<Checker> structure;
 
 public:
-	ListChecker(Checker *which)
-	{
-		structure = which;
-	}
+	void buildup (Factory &f, std::string const& templateParameter);
 
 	void check (KeySet &ks)
 	{
@@ -119,60 +101,6 @@ public:
 			structure->check(cks);
 		}
 	}
-
-	~ListChecker()
-	{
-		delete structure;
-	}
-
-};
-
-class MetaChecker : public Checker
-{
-	std::map<string, Checker*> structures;
-
-public:
-	MetaChecker()
-	{
-		structures.insert (pair<string, Checker*>("FStabEntry",
-					new FstabChecker()));
-	}
-
-	void check (KeySet &ks)
-	{
-		Key k;
-		KeySet ks2 (ks.dup());
-
-		ks2.rewind();
-		ks2.next(); // ignore root key (because it is a list)
-		while (k = ks2.next())
-		{
-			KeySet cks(ks2.cut(k));
-			string whichStruct;
-			/* TODO: meta interface without exceptions needed */
-			try { whichStruct = k.getMeta<string>("check/Checker"); }
-			catch (...) { continue; }
-
-			if (structures.find(whichStruct) != structures.end())
-			{
-				/* We found a structure */
-				structures[whichStruct]->check(cks);
-				continue;
-			}
-
-			throw "did not found correct checker";
-		}
-	}
-
-	~MetaChecker()
-	{
-		map<string,Checker*>::iterator it;
-		for ( it=structures.begin() ; it != structures.end(); it++)
-		{
-			delete it->second;
-		}
-	}
-
 };
 
 } // end namespace elektra

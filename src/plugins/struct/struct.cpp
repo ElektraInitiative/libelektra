@@ -28,7 +28,10 @@
 #include <key>
 #include <keyset>
 
-#include "checker.hpp"
+//TODO: fix opening of modules (show warnings)
+#include <iostream>
+
+#include "factory.hpp"
 
 using namespace ckdb;
 #include <kdberrors.h>
@@ -36,35 +39,52 @@ using namespace ckdb;
 extern "C"
 {
 
-int elektraStructOpen(ckdb::Plugin *handle, ckdb::Key *)
+int elektraStructOpen(ckdb::Plugin *handle, ckdb::Key *errorKey)
 {
 	/* plugin initialization logic */
 
-	static kdb::KeySet config( 20,
-		*kdb::Key ("user/device",
+	/* TODO: should be plugin config given by contract */
+	kdb::KeySet config( 20,
+		*kdb::Key ("user/type",
+			KEY_VALUE, "list<FStab>",
+			KEY_END),
+		*kdb::Key ("user/type/FStab",
+			KEY_META, "check/type", "null empty",
+			KEY_END),
+		*kdb::Key ("user/type/FStab/device",
 			KEY_META, "check/type", "string",
 			KEY_META, "check/path", "device",
 			KEY_END),
-		*kdb::Key ("user/mpoint",
+		*kdb::Key ("user/type/FStab/mpoint",
 			KEY_META, "check/type", "string",
 			KEY_META, "check/path", "directory",
 			KEY_END),
-		*kdb::Key ("user/type",
+		*kdb::Key ("user/type/FStab/type",
 			KEY_META, "check/type", "FSType",
 			KEY_END),
-		*kdb::Key ("user/options",
+		*kdb::Key ("user/type/FStab/options",
 			KEY_META, "check/type", "string",
 			KEY_END),
-		*kdb::Key ("user/dumpfreq",
+		*kdb::Key ("user/type/FStab/dumpfreq",
 			KEY_META, "check/type", "unsigned_short",
 			KEY_END),
-		*kdb::Key ("user/passno",
+		*kdb::Key ("user/type/FStab/passno",
 			KEY_META, "check/type", "unsigned_short",
 			KEY_END),
 		KS_END);
 
-	elektraPluginSetData (handle, new elektra::ListChecker (
-				new elektra::StructChecker(config)));
+	try {
+		elektra::Checker *c = static_cast<elektra::Checker*>(elektra::buildChecker(config));
+		std::cout << "got back [open] " << c << std::endl;
+		elektraPluginSetData (handle, c);
+	}
+	catch (const char* msg)
+	{
+		std::cout << "opening of plugin struct failed with msg: " << msg << std::endl;
+		ELEKTRA_ADD_WARNING (58, errorKey, msg);
+		return -1;
+	}
+
 
 	return 1; /* success */
 }
@@ -72,8 +92,10 @@ int elektraStructOpen(ckdb::Plugin *handle, ckdb::Key *)
 int elektraStructClose(ckdb::Plugin *handle, ckdb::Key *)
 {
 	/* free all plugin resources and shut it down */
+	elektra::Checker *c = static_cast<elektra::Checker*>(elektraPluginGetData (handle));
 
-	delete static_cast<elektra::StructChecker*>(elektraPluginGetData (handle));
+	std::cout << "got back [close] " << c << std::endl;
+	delete c;
 
 	return 1; /* success */
 }
@@ -125,8 +147,9 @@ int elektraStructSet(ckdb::Plugin *handle, ckdb::KeySet *returned, ckdb::Key *pa
 	/* set all keys */
 
 	try {
-		static_cast<elektra::StructChecker*>(elektraPluginGetData (handle))->check
-			(reinterpret_cast<kdb::KeySet&>(returned));
+		elektra::Checker *c = static_cast<elektra::Checker*>(elektraPluginGetData (handle));
+		std::cout << "got back [set] " << c << std::endl;
+		doCheck (c, returned);
 	}
 	catch (const char* msg)
 	{

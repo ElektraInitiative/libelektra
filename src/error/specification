@@ -333,3 +333,9 @@ severity:warning
 ingroup:plugin
 module:path
 
+number:58
+description:could not build up structure checker
+severity:warning
+ingroup:plugin
+module:struct
+

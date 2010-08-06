@@ -1,6 +1,6 @@
 include (LibAddMacros)
 
-set (SOURCES struct.hpp struct.cpp)
+set (SOURCES struct.hpp struct.cpp checker.cpp)
 add_sources (elektra-full ${SOURCES})
 add_headers (SOURCES)
 add_cppheaders (SOURCES)
