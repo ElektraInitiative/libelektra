@@ -662,6 +662,53 @@ void test_ksccall()
 }
 
 
+void rrefcall(KeySet & ks)
+{
+	// do something with keyset
+	ks.append(Key("user/xxx", KEY_END));
+}
+
+/*Calling conventions: user need to free the keyset */
+void rcall(KeySet ks)
+{
+	// do something with ks
+
+	rrefcall (ks);
+	succeed_if (ks.lookup("user/xxx"), "could not find key");
+	// dont destroy ks
+	ks.release();
+}
+
+void test_ksrelease()
+{
+	KeySet ks1;
+
+	ckdb::KeySet *ks = ks1.release();
+	ksDel (ks);
+
+	KeySet ks2 (5,
+		ckdb::keyNew ("user/key2", KEY_END),
+		KS_END);
+
+	ks = ks2.release();
+	ksDel (ks);
+
+	KeySet ks3 (5,
+		*Key ("user/key3/1", KEY_END),
+		*Key ("user/key3/2", KEY_END),
+		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
+		KS_END);
+
+	ks = ks3.release();
+	ksDel (ks);
+
+	ks = ckdb::ksNew (5, ckdb::keyNew("user/abc", KEY_END), KS_END);
+	rcall (ks);
+	succeed_if (ksLookupByName(ks, "user/xxx", 0) != 0, "could not find key");
+	ckdb::ksDel (ks);
+}
+
+
 int main()
 {
 	cout << "KEYSET CLASS TESTS" << endl;
@@ -681,6 +728,7 @@ int main()
 	test_cmp();
 	test_kscall();
 	test_ksccall();
+	test_ksrelease();
 
 	cout << endl;
 	cout << "test_key RESULTS: " << nbTest << " test(s) done. " << nbError << " error(s)." << endl;

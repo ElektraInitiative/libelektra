@@ -16,12 +16,18 @@ public:
 	/**@warning takes ownership of keyset!
 	  Keyset will be destroyed at destructor
 	  you cant continue to use keyset afterwards!
+
+	  Use KeySet::release() to avoid destruction.
 	*/
 	KeySet (ckdb::KeySet *k) :ks(k) {}
 	KeySet (const KeySet &other);
 	KeySet (size_t alloc, va_list ap);
 	KeySet (size_t alloc, ...);
 	~KeySet ();
+
+	/** If you dont want destruction of keyset at
+	  the end you can release the pointer. */
+	ckdb::KeySet * release() {ckdb::KeySet *ret = ks; ks = 0; return ret;}
 
 	ckdb::KeySet * getKeySet () const { return ks; }
 	void setKeySet (ckdb::KeySet * k) { ks = k; }
