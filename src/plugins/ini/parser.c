@@ -174,9 +174,8 @@ int convert_engine (char * p)
 /**Returns the Stringlen for the char, multichars are handeld
  * correct.
  *
- * @param size: You may find it funny to give a strlen function
- * a length. But thus null Char are allowed, this is needed.
- * In fact, the function will only iterate above the size
+ * @param size is needed because null Char are allowed.
+ * The function will only iterate above the size
  * and will calculate how much more it will need after converting*/
 int convert_strlen (char * p, int size)
 {
