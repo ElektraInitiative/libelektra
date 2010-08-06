@@ -50,7 +50,7 @@ public:
 		m_factory()
 	{
 		config.rewind();
-		Key root = config.next(); // type key
+		Key root = config.next(); // struct key
 
 		m_factory.insert(std::make_pair("list", new Cnstancer<ListChecker>()));
 
@@ -109,8 +109,8 @@ static inline void doCheck(Checker *c, KeySet ks)
 
 static inline Checker* buildChecker(KeySet config)
 {
-	Key k = config.lookup ("/type");
-	if (!k) throw "No Key describing the type found";
+	Key k = config.lookup ("/struct");
+	if (!k) throw "No Key describing the struct found";
 
 	Factory f (config.cut(k));
 
