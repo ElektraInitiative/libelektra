@@ -310,18 +310,14 @@ if (strcmp (keyName(kdbhGetMountpoint(handle)), keyName(parentKey))) return 0;
  * @param parentKey contains the information below which key
  * the keys should be gotten.
  *
- * @return Return how many keys you added.
- *
+ * @return 1 on success
+ * @return 0 when nothing was to do
  * @return -1 on failure, the current key in returned shows the position.
- * In normal execution cases a positive value will be returned.
- * But in some cases you are not able to get keys and have to
- * return -1. If you declare kdbcGetnoError() you are done, but
- * otherwise you have to set the cause of the error.
- * (Will be added in 0.7.1)
+ *         use ELEKTRA_SET_ERROR in <kdberrors> to define the error code
  *
  * @ingroup plugin
  */
-ssize_t elektraPluginGet(Plugin *handle, KeySet *returned, const Key *parentKey)
+int elektraPluginGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	ssize_t nr_keys = 0;
 	/* get all keys below parentKey and count them with nr_keys */
@@ -425,7 +421,7 @@ elektraPluginSet(KDB *handle, KeySet *keyset, Key *parentKey)
  *
  * @ingroup plugin
  */
-ssize_t elektraPluginSet(Plugin *handle, KeySet *returned, const Key *parentKey)
+int elektraPluginSet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	ssize_t nr_keys = 0;
 	/* set all keys below parentKey and count them with nr_keys */
