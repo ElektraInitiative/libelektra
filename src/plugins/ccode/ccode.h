@@ -28,7 +28,10 @@
 
 #include <kdbplugin.h>
 
+ssize_t keySetRaw(Key *key, const void *newBinary, size_t dataSize);
+
 void elektraCcodeEncode (Key *cur, char* buf);
+void elektraCcodeDecode (Key *cur, char* buf);
 
 int elektraCcodeGet(Plugin *handle, KeySet *ks, Key *parentKey);
 int elektraCcodeSet(Plugin *handle, KeySet *ks, Key *parentKey);
