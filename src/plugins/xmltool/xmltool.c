@@ -32,30 +32,18 @@ int elektraXmltoolGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	if (!strcmp (keyName(parentKey), "system/elektra/modules/xmltool"))
 	{
-		void (*get) () = (void (*) ()) elektraXmltoolGet;
-		void (*set) () = (void (*) ()) elektraXmltoolSet;
-		void (*fromxml) () = (void (*) ()) ksFromXMLfile;
-		void (*toxml) () = (void (*) ()) ksToStream;
 		KeySet *moduleConfig = ksNew (30,
 			keyNew ("system/elektra/modules/xmltool",
 				KEY_VALUE, "xmltool plugin waits for your orders", KEY_END),
 			keyNew ("system/elektra/modules/xmltool/exports", KEY_END),
 			keyNew ("system/elektra/modules/xmltool/exports/get",
-				KEY_SIZE, sizeof (get),
-				KEY_BINARY,
-				KEY_VALUE, &get, KEY_END),
+				KEY_FUNC, elektraXmltoolGet, KEY_END),
 			keyNew ("system/elektra/modules/xmltool/exports/set",
-				KEY_SIZE, sizeof (set),
-				KEY_BINARY,
-				KEY_VALUE, &set, KEY_END),
+				KEY_FUNC, elektraXmltoolSet, KEY_END),
 			keyNew ("system/elektra/modules/xmltool/exports/ksFromXMLfile",
-				KEY_SIZE, sizeof (fromxml),
-				KEY_BINARY,
-				KEY_VALUE, &fromxml, KEY_END),
+				KEY_FUNC, ksFromXMLfile, KEY_END),
 			keyNew ("system/elektra/modules/xmltool/exports/ksToStream",
-				KEY_SIZE, sizeof (toxml),
-				KEY_BINARY,
-				KEY_VALUE, &toxml, KEY_END),
+				KEY_FUNC, ksToStream, KEY_END),
 			keyNew ("system/elektra/modules/xmltool/infos",
 				KEY_VALUE, "All information you want to know", KEY_END),
 			keyNew ("system/elektra/modules/xmltool/infos/author",
@@ -63,7 +51,7 @@ int elektraXmltoolGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			keyNew ("system/elektra/modules/xmltool/infos/licence",
 				KEY_VALUE, "BSD", KEY_END),
 			keyNew ("system/elektra/modules/xmltool/infos/description",
-				KEY_VALUE, "Validates key values using regular expressions", KEY_END),
+				KEY_VALUE, "Storage using libelektratools xml format.", KEY_END),
 			keyNew ("system/elektra/modules/xmltool/infos/provides",
 				KEY_VALUE, "storage", KEY_END),
 			keyNew ("system/elektra/modules/xmltool/infos/placements",
