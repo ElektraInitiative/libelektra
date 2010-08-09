@@ -339,3 +339,15 @@ severity:warning
 ingroup:plugin
 module:struct
 
+number:59
+description:Key name is not valid
+severity:error
+ingroup:plugin
+module:simpleini
+
+number:60
+description:Invalid Line encountered
+severity:error
+ingroup:plugin
+module:simpleini
+
