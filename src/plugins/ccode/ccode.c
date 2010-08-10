@@ -114,9 +114,9 @@ int elektraCcodeGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	while ((cur = ksNext(returned)) != 0)
 	{
 		size_t valsize = keyGetValueSize(cur);
-		if (valsize*2 > bufalloc)
+		if (valsize > bufalloc)
 		{
-			bufalloc = valsize*2;
+			bufalloc = valsize;
 			buf = realloc (buf, bufalloc);
 		}
 
@@ -185,9 +185,9 @@ int elektraCcodeSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	while ((cur = ksNext(returned)) != 0)
 	{
 		size_t valsize = keyGetValueSize(cur);
-		if (valsize > bufalloc)
+		if (valsize*2 > bufalloc)
 		{
-			bufalloc = valsize;
+			bufalloc = valsize*2;
 			buf = realloc (buf, bufalloc);
 		}
 
