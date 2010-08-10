@@ -32,14 +32,13 @@ int SetCommand::execute(int argc, char**argv)
 
 	KeySet conf;
 	Key k(name, KEY_END);
-	try {
-		kdb.get(conf, k);
-		printWarnings(k);
-	} catch (...)
-	{
-		printError(k);
-		cerr << "kdb get failed, but still resume" << endl;
-	}
+
+	// do not resume on any get errors
+	// otherwise the user might break
+	// the config
+	kdb.get(conf, k);
+	printWarnings(k);
+
 	Key key = conf.lookup(name);
 
 	if (!key)
