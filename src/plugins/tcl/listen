@@ -1,3 +1,9 @@
+Current version: (without significant spaces)
+
+{     {key=val {metakey=b} {comment  =  huhu  }   }  }
+
+
+
 The big advantage of TCL style lists would be that
 also arbitrary meta data could be embedded in a
 natural and distinguish-able style.
