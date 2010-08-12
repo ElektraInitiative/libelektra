@@ -31,6 +31,7 @@
 #include <fstream>
 
 #include <boost/spirit/include/qi_expect.hpp>
+#include <boost/spirit/include/support_istream_iterator.hpp>
 
 using namespace ckdb;
 #include <kdberrors.h>
@@ -85,7 +86,7 @@ int elektraTclGet(Plugin *, KeySet *returned, Key *parentKey)
 		elektra::unserialize (in, input);
 		input.release();
 	}
-	catch (boost::spirit::qi::expectation_failure<std::string::iterator> const& e)
+	catch (boost::spirit::qi::expectation_failure<boost::spirit::istream_iterator> const& e)
 	{
 		ELEKTRA_SET_ERROR (61, parentKey, std::string(e.first, e.last).c_str());
 		input.release();

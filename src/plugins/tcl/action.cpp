@@ -5,7 +5,7 @@
 #include <fstream>
 
 #include <boost/spirit/include/qi.hpp>
-// #include <boost/spirit/include/support_multi_pass.hpp>
+#include <boost/spirit/include/support_istream_iterator.hpp>
 
 #include <boost/bind.hpp>
 
@@ -46,30 +46,11 @@ void unserialize(istream &in, KeySet & input)
 
 	typedef std::istreambuf_iterator<char> base_iterator_type;
 
-	/*
-	// compile error?
-	// dont forget include file above
-	boost::spirit::multi_pass<base_iterator_type> begin =
-		boost::spirit::make_default_multi_pass(base_iterator_type(in));
-	boost::spirit::multi_pass<base_iterator_type> end =
-		boost::spirit::make_default_multi_pass(base_iterator_type());
-	*/
-
-	/*
 	in.unsetf (std::ios::skipws);
 	boost::spirit::istream_iterator begin (in);
 	boost::spirit::istream_iterator end;
-	*/
 
-	std::string str = std::string(std::istreambuf_iterator<char>(in),
-			std::istreambuf_iterator<char>());
-
-	std::string::iterator begin = str.begin();
-	std::string::iterator end = str.end();
-
-	// cout << "The string to parse is: " << str << endl;
-
-	Action<std::string::iterator> p (input);
+	Action<boost::spirit::istream_iterator> p (input);
 
 	bool result = boost::spirit::qi::phrase_parse(begin, end, p, space);
 
