@@ -175,9 +175,15 @@ int compare_keyset (KeySet *ks, KeySet *ks2)
 {
 	Key	*key = 0;
 	Key     *key2 = 0;
-	int	size = 0;
-	int	dup = 0;
 	int	err = nbError;
+
+	if (ksGetSize (ks)  == 0) succeed_if (0, "real size of ks was 0");
+	if (ksGetSize (ks2) == 0) succeed_if (0, "real size of ks2 was 0");
+
+	if (ksGetSize (ks) != ksGetSize(ks2) ) {
+		printf ("%d, %d\n", (int)ksGetSize(ks), (int)ksGetSize(ks2));
+		succeed_if( 0, "Size of keysets not equal.");
+	}
 
 	// I would have a _true_ ksCompare() ...
 	ksRewind(ks);
@@ -190,27 +196,11 @@ int compare_keyset (KeySet *ks, KeySet *ks2)
 		if (!key2)
 		{
 			succeed_if (0, "Will break, did not find corresponding key2");
-			if (dup) keyDel (key);
 			break;
 		}
 
-		size ++;
 		compare_key (key, key2);
-		if (dup) keyDel (key);
 	}
-
-	if (size == 0) succeed_if (0, "real size was 0");
-	if ( size != ksGetSize(ks2) ) {
-		printf ("%d, %d\n", (int)ksGetSize(ks), (int)ksGetSize(ks2));
-		succeed_if( 0, "There are less keys fetched than keys which have been submitted.");
-	}
-	/*
-	if ( err-nbError )
-	{
-		if (key && key2) printf ("error comparing %s - %s\n", keyName(key), keyName(key2));
-		else printf ("error comparing null key\n");
-	}
-	*/
 	return err-nbError;
 }
 

@@ -612,21 +612,28 @@ void test_ksCursor()
 	KeySet *ks=ksNew(0);
 	Key * key;
 	cursor_t cursor;
+	Key *cur;
 	int i;
 	char name [] = "user/n";
 	char output [] = "n key not on its place";
 
 	printf("Test keyset cursor\n");
 
-	ksAppendKey(ks,keyNew("user/1", KEY_END));
-	ksAppendKey(ks,keyNew("user/2", KEY_END));
-	ksAppendKey(ks,keyNew("user/3", KEY_END));
+	ksAppendKey(ks,cur=keyNew("user/1", KEY_END));
+	succeed_if (ksCurrent(ks) == cur, "cursor not set after append key");
+	ksAppendKey(ks,cur=keyNew("user/2", KEY_END));
+	succeed_if (ksCurrent(ks) == cur, "cursor not set after append key");
+	ksAppendKey(ks,cur=keyNew("user/3", KEY_END));
+	succeed_if (ksCurrent(ks) == cur, "cursor not set after append key");
 	cursor = ksGetCursor (ks);
-	ksAppendKey(ks,keyNew("user/4", KEY_END));
-	ksAppendKey(ks,keyNew("user/5", KEY_END));
+	ksAppendKey(ks,cur=keyNew("user/4", KEY_END));
+	succeed_if (ksCurrent(ks) == cur, "cursor not set after append key");
+	ksAppendKey(ks,cur=keyNew("user/5", KEY_END));
+	succeed_if (ksCurrent(ks) == cur, "cursor not set after append key");
 	succeed_if(ksGetSize(ks) == 5, "could not append 5 keys");
 
-	succeed_if (cursor == ksGetCursor(ks), "cursor after appending");
+	ksSetCursor(ks, cursor);
+	succeed_if (cursor == ksGetCursor(ks), "cursor set to 3");
 	ksSetCursor (ks, cursor);
 	succeed_if (cursor == ksGetCursor(ks), "cursor set to 3");
 
@@ -1109,13 +1116,17 @@ void test_ksLookupName()
 	// a positive testcase
 	found = ksLookupByName (ks, "user/named/key", 0);
 	succeed_if (ksCurrent(ks) == found, "current not set correctly");
-	ksAppendKey(ks, keyNew("user/single/key",  KEY_VALUE, "singlevalue", KEY_END));
 
 	succeed_if (found != 0, "did not found correct name");
 	succeed_if (ksCurrent(ks) == found, "current not set correctly");
 	succeed_if (strcmp (keyName(found), "user/named/key") == 0, "name not correct in found key");
 	succeed_if (strcmp (keyValue(found), "myvalue") == 0, "not correct value in found key");
-	
+
+	ksAppendKey(ks, found = keyNew("user/single/key",  KEY_VALUE, "singlevalue", KEY_END));
+	succeed_if (ksCurrent(ks) == found, "current update after append");
+	succeed_if (strcmp (keyName(found), "user/single/key") == 0, "name not correct in found key");
+	succeed_if (strcmp (keyValue(found), "singlevalue") == 0, "not correct value in found key");
+
 	// here you can't find the keys
 	succeed_if (ksLookupByName (ks, "named/key", 0) == 0, "not valid keyname");
 	succeed_if (ksLookupByName (ks, "u/named/key", 0) == 0, "not valid keyname");
@@ -1845,13 +1856,13 @@ void test_ksLookupPop()
 	found = ksLookupByName (small, "user/b", KDB_O_POP);
 	succeed_if (found == b, "not correct key");
 	succeed_if (strcmp (keyName(found), "user/b") == 0, "name not correct in found key");
-	succeed_if (ksCurrent(small) == c, "current not set correctly");
+	succeed_if (ksCurrent(small) == 0, "current not set correctly");
 	succeed_if (keyDel (found) == 0, "could not del popped key");
 
 	succeed_if (ksGetSize(small) == 1, "could not append all keys");
 	found = ksLookupByName (small, "user/b", KDB_O_POP);
 	succeed_if (found == 0, "found something, but shouldnt");
-	succeed_if (ksCurrent(small) == c, "current not set correctly");
+	succeed_if (ksCurrent(small) == 0, "current not set correctly");
 
 	succeed_if (ksGetSize(small) == 1, "could not append all keys");
 	found = ksLookupByName (small, "user/c", KDB_O_POP);
@@ -2152,6 +2163,37 @@ void test_ksDoubleAppendKey()
 	// dont free key here!!
 }
 
+void test_ksAppendKey()
+{
+	printf ("Test cursor after appending key\n");
+	KeySet *ks=0;
+	Key *cur;
+
+	exit_if_fail((ks=ksNew(0)) != 0, "could not create new keyset");
+
+	succeed_if (ksAppendKey(ks,cur=keyNew("user/a", KEY_END)) == 1, "could not append a key");
+	succeed_if (ksCurrent(ks) == cur, "did not update current position");
+	succeed_if (ksAppendKey(ks,cur=keyNew("user/b", KEY_END)) == 2, "could not append a key");
+	succeed_if (ksCurrent(ks) == cur, "did not update current position");
+	succeed_if (ksAppendKey(ks,cur=keyNew("user/x", KEY_END)) == 3, "could not append a key");
+	succeed_if (ksCurrent(ks) == cur, "did not update current position");
+	succeed_if(ksGetSize(ks) == 3, "size not correct after 3 keys");
+
+	succeed_if (ksAppendKey(ks,cur=keyNew("user/b", KEY_END)) == 3, "could not append a key");
+	succeed_if (ksCurrent(ks) == cur, "did not update current position (same key)");
+	succeed_if(ksGetSize(ks) == 3, "size not correct after double append");
+
+	succeed_if (ksAppendKey(ks,cur=keyNew("user/0", KEY_END)) == 4, "could not append a key");
+	succeed_if (ksCurrent(ks) == cur, "did not update current position (front key)");
+	succeed_if(ksGetSize(ks) == 4, "size not correct after 4 keys");
+
+	succeed_if (ksAppendKey(ks,cur=keyNew("user/c", KEY_END)) == 5, "could not append a key");
+	succeed_if (ksCurrent(ks) == cur, "did not update current position (key in between)");
+	succeed_if(ksGetSize(ks) == 5, "size not correct after 5 keys");
+
+	ksDel (ks);
+}
+
 
 int main(int argc, char** argv)
 {
@@ -2183,6 +2225,7 @@ int main(int argc, char** argv)
 	test_ksDoubleFree();
 	test_ksDoubleAppend();
 	test_ksDoubleAppendKey();
+	test_ksAppendKey();
 
 	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

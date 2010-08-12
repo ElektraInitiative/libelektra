@@ -164,6 +164,8 @@ int elektraIconvGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	Key *cur;
 	const Key *meta;
 
+	ksRewind (returned);
+
 	if (!strcmp (keyName(parentKey), "system/elektra/modules/iconv"))
 	{
 		KeySet *pluginConfig = ksNew (30,
@@ -244,6 +246,8 @@ int elektraIconvSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	const Key *meta;
 
 	if (!kdbbNeedsUTF8Conversion(handle)) return 0;
+
+	ksRewind (returned);
 
 	while ((cur = ksNext(returned)) != 0)
 	{
