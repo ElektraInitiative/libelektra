@@ -1,6 +1,6 @@
 include (LibAddMacros)
 
-set (SOURCES tcl.hpp tcl.cpp action.hpp action.cpp)
+set (SOURCES tcl.hpp tcl.cpp action.hpp action.cpp printer.hpp printer.cpp)
 add_sources (elektra-full ${SOURCES})
 add_headers (SOURCES)
 add_cppheaders (SOURCES)

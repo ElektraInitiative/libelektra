@@ -74,7 +74,7 @@ int elektraTclGet(Plugin *, KeySet *returned, Key *parentKey)
 	}
 	/* get all keys */
 
-	std::ifstream in(keyName(parentKey));    // we get our input from this file
+	std::ifstream in(keyString(parentKey), std::ios::binary);    // we get our input from this file
 	if (!in.is_open()) return 0;
 
 	kdb::KeySet input (returned);

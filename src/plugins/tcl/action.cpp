@@ -5,7 +5,7 @@
 #include <fstream>
 
 #include <boost/spirit/include/qi.hpp>
-#include <boost/spirit/include/support_multi_pass.hpp>
+// #include <boost/spirit/include/support_multi_pass.hpp>
 
 #include <boost/bind.hpp>
 
@@ -21,22 +21,24 @@ using namespace kdb;
 void serialize(ostream &ofs, KeySet & output)
 {
 
-	ofs << '{';
+	ofs << '{' << endl;
 	while (Key k = output.next())
 	{
-		ofs << '{' << k.getName() << " = " << k.getString();
+		ofs << "\t{" << endl;
+		ofs << "\t\t" <<  k.getName() << " = " << k.getString() << endl;
 		k.rewindMeta();
 		while (const Key m = k.nextMeta())
 		{
-			ofs << '{' << m.getName() << " = " << m.getString();
-			ofs << '}';
+			ofs << "\t\t{" << endl;
+			ofs << "\t\t\t" << m.getName() << " = " << m.getString() << endl;
+			ofs << "\t\t}" << endl;
 		}
-		ofs << '}';
+		ofs << "\t}" << endl;
 	}
-	ofs << '}';
+	ofs << '}' << endl;
 }
 
-void unserialize(istream &in, KeySet & output)
+void unserialize(istream &in, KeySet & input)
 {
 	namespace qi = boost::spirit::qi;
 
@@ -45,10 +47,18 @@ void unserialize(istream &in, KeySet & output)
 	typedef std::istreambuf_iterator<char> base_iterator_type;
 
 	/*
+	// compile error?
+	// dont forget include file above
 	boost::spirit::multi_pass<base_iterator_type> begin =
 		boost::spirit::make_default_multi_pass(base_iterator_type(in));
 	boost::spirit::multi_pass<base_iterator_type> end =
 		boost::spirit::make_default_multi_pass(base_iterator_type());
+	*/
+
+	/*
+	in.unsetf (std::ios::skipws);
+	boost::spirit::istream_iterator begin (in);
+	boost::spirit::istream_iterator end;
 	*/
 
 	std::string str = std::string(std::istreambuf_iterator<char>(in),
@@ -57,7 +67,9 @@ void unserialize(istream &in, KeySet & output)
 	std::string::iterator begin = str.begin();
 	std::string::iterator end = str.end();
 
-	key_value_sequence<std::string::iterator> p;
+	// cout << "The string to parse is: " << str << endl;
+
+	Action<std::string::iterator> p (input);
 
 	bool result = boost::spirit::qi::phrase_parse(begin, end, p, space);
 
@@ -67,4 +79,4 @@ void unserialize(istream &in, KeySet & output)
 	}
 }
 
-}
+} // end namepace elektra
