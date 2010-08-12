@@ -30,11 +30,12 @@
 
 ssize_t keySetRaw(Key *key, const void *newBinary, size_t dataSize);
 
-void elektraHexcodeEncode (Key *cur, char* buf);
+void elektraHexcodeEncode (Key *cur, char* buf, const char* hd);
 void elektraHexcodeDecode (Key *cur, char* buf);
 
 int elektraHexcodeGet(Plugin *handle, KeySet *ks, Key *parentKey);
 int elektraHexcodeSet(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraHexcodeClose(Plugin *handle, Key *k);
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(hexcode);
 

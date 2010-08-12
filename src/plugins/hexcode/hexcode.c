@@ -187,7 +187,7 @@ static inline char elektraHexcodeConvToHex(int c)
   * @param buf the buffer
   * @pre the buffer needs to have thrice as much space as the value's size
   */
-void elektraHexcodeEncode (Key *cur, char* buf)
+void elektraHexcodeEncode (Key *cur, char* buf, const char* hd)
 {
 	size_t valsize = keyGetValueSize(cur);
 	const char *val = keyValue(cur);
@@ -195,10 +195,10 @@ void elektraHexcodeEncode (Key *cur, char* buf)
 	size_t out=0;
 	for (size_t in=0; in<valsize-1; ++in)
 	{
-		char c = val[in];
+		unsigned char c = val[in];
 
-		if    (c == '\0' || c=='\n' || c=='\\' || c==' '
-				 || c=='='  || c==';'  || c=='#')
+		// need to encode char?
+		if (hd[c & 255])
 		{
 			buf[out] = '\\'; out ++;
 			buf[out] = elektraHexcodeConvToHex(c/16); out ++;
@@ -222,6 +222,45 @@ void elektraHexcodeEncode (Key *cur, char* buf)
 int elektraHexcodeSet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	/* set all keys */
+	char *hd = elektraPluginGetData (handle);
+
+	if (!hd)
+	{
+		hd = calloc (256, sizeof(char));
+
+		/* Store for later use...*/
+		elektraPluginSetData (handle, hd);
+
+		KeySet *config = elektraPluginGetConfig (handle);
+		Key *root = ksLookupByName (config, "/chars", 0);
+
+		Key *cur = 0;
+		if (!root)
+		{
+			/* Some default config */
+			hd['\0'] = 1;
+			hd['\n'] = 1;
+			hd['\\'] = 1;
+			hd[' '] = 1;
+		} else {
+			while ((cur = ksNext(config)) != 0)
+			{
+				/* ignore all keys not direct below */
+				if (keyRel (root, cur) == 1)
+				{
+					/* ignore invalid size */
+					if (keyGetBaseNameSize(cur) != 3) continue;
+
+					int res;
+					res = elektraHexcodeConvFromHex(keyBaseName(cur)[1]);
+					res += elektraHexcodeConvFromHex(keyBaseName(cur)[0])*16;
+
+					/* Hexencode this character! */
+					hd [res & 255] = 1;
+				}
+			}
+		}
+	}
 
 	Key *cur;
 	char *buf = malloc (1000);
@@ -237,7 +276,7 @@ int elektraHexcodeSet(Plugin *handle, KeySet *returned, Key *parentKey)
 			buf = realloc (buf, bufalloc);
 		}
 
-		elektraHexcodeEncode (cur, buf);
+		elektraHexcodeEncode (cur, buf, hd);
 	}
 
 	free (buf);
@@ -245,11 +284,20 @@ int elektraHexcodeSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	return 1; /* success */
 }
 
+int elektraHexcodeClose(Plugin *handle, Key *k)
+{
+	char *hd = elektraPluginGetData (handle);
+	free (hd);
+
+	return 0;
+}
+
 Plugin *ELEKTRA_PLUGIN_EXPORT(hexcode)
 {
 	return elektraPluginExport("hexcode",
 		ELEKTRA_PLUGIN_GET,	&elektraHexcodeGet,
 		ELEKTRA_PLUGIN_SET,	&elektraHexcodeSet,
+		ELEKTRA_PLUGIN_CLOSE,	&elektraHexcodeClose,
 		ELEKTRA_PLUGIN_END);
 }
 
