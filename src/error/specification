@@ -351,3 +351,9 @@ severity:error
 ingroup:plugin
 module:simpleini
 
+number:61
+description:Parse error
+severity:error
+ingroup:plugin
+module:tcl
+

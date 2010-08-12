@@ -30,6 +30,8 @@
 
 #include <fstream>
 
+#include <boost/spirit/include/qi_expect.hpp>
+
 using namespace ckdb;
 #include <kdberrors.h>
 
@@ -79,8 +81,16 @@ int elektraTclGet(Plugin *, KeySet *returned, Key *parentKey)
 
 	kdb::KeySet input (returned);
 
-	elektra::unserialize (in, input);
-	input.release();
+	try {
+		elektra::unserialize (in, input);
+		input.release();
+	}
+	catch (boost::spirit::qi::expectation_failure<std::string::iterator> const& e)
+	{
+		ELEKTRA_SET_ERROR (61, parentKey, std::string(e.first, e.last).c_str());
+		input.release();
+		return -1;
+	}
 
 	return 1; /* success */
 }
@@ -92,7 +102,7 @@ int elektraTclSet(Plugin *, KeySet *returned, Key *parentKey)
 	std::ofstream ofs(keyString(parentKey), std::ios::binary);
 	if (!ofs.is_open())
 	{
-		ELEKTRA_SET_ERROR (9, parentKey, "file is not open in dump");
+		ELEKTRA_SET_ERROR (9, parentKey, "file is not open in tcl");
 		return -1;
 	}
 

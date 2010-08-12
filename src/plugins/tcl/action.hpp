@@ -30,9 +30,9 @@ struct Action: qi::grammar<Iterator, ascii::space_type>
 		: Action::base_type(query),
 		p(ks)
 	{
-		query =  '{' >> pair >> *(pair) >> '}';
-		pair  =  '{' >> key >> '=' >> val >>
-			*('{' >> metakey >> '=' >> metaval >> '}') >>
+		query =  '{' >> pair >> *(pair) > '}';
+		pair  =  '{' >> key > '=' >> val >>
+			*('{' >> metakey > '=' >> metaval > '}') >
 			'}';
 
 		key     =  (+(qi::char_ - qi::char_("={}[]<>"))) [boost::bind(&Printer::add_key, &p, _1)];
