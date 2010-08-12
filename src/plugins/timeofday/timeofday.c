@@ -77,7 +77,7 @@ int elektraTimeofdayOpen(Plugin *handle, Key *k)
 	gettimeofday(&ti->start, 0);
 	ti->last = ti->start;
 
-	fprintf(stderr, "open\t%s\n", elektraTimeofdayHelper (t, ti));
+	// fprintf(stderr, "open\t%s\n", elektraTimeofdayHelper (t, ti));
 
 	return 0; /* success */
 }
@@ -86,7 +86,8 @@ int elektraTimeofdayClose(Plugin *handle, Key *k)
 {
 	char t[24];
 	TimeofdayInfo *ti = elektraPluginGetData(handle);
-	fprintf(stderr, "close\t%s\n", elektraTimeofdayHelper (t, ti));
+
+	// fprintf(stderr, "close\t%s\n", elektraTimeofdayHelper (t, ti));
 
 	/* How weird is that??
 	   ti gets modified after elektraTimeofdayHelper even though
