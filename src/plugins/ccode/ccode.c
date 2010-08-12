@@ -28,13 +28,122 @@
 #include <stdlib.h>
 #include <string.h>
 
+/**
+  * Gives the integer number 0-15 to a corresponding
+  * hex character '0'-'9', 'a'-'f' or 'A'-'F'.
+  */
+static inline int elektraHexcodeConvFromHex(char c)
+{
+	if    (c == '0') return 0;
+	else if (c=='1') return 1;
+	else if (c=='2') return 2;
+	else if (c=='3') return 3;
+	else if (c=='4') return 4;
+	else if (c=='5') return 5;
+	else if (c=='6') return 6;
+	else if (c=='7') return 7;
+	else if (c=='8') return 8;
+	else if (c=='9') return 9;
+	else if (c=='a' || c=='A') return 10;
+	else if (c=='b' || c=='B') return 11;
+	else if (c=='c' || c=='C') return 12;
+	else if (c=='d' || c=='D') return 13;
+	else if (c=='e' || c=='E') return 14;
+	else if (c=='f' || c=='F') return 15;
+	else return 0; /* Unknown escape char */
+}
+
+int elektraCcodeOpen(Plugin *handle, Key *k)
+{
+	CCodeData *d = calloc (1, sizeof(CCodeData));
+
+	/* Store for later use...*/
+	elektraPluginSetData (handle, d);
+
+	KeySet *config = elektraPluginGetConfig (handle);
+
+	Key *escape = ksLookupByName (config, "/escape", 0);
+	d->escape = '\\';
+	if (escape && keyGetBaseNameSize(escape) && keyGetValueSize(escape))
+	{
+		int res;
+		res = elektraHexcodeConvFromHex(keyBaseName(escape)[1]);
+		res += elektraHexcodeConvFromHex(keyBaseName(escape)[0])*16;
+
+		d->escape = res & 255;
+	}
+
+	Key *root = ksLookupByName (config, "/chars", 0);
+
+	Key *cur = 0;
+	if (!root)
+	{
+		/* Some default config */
+
+		d->encode['\b'] = 'b';
+		d->encode['\t'] = 't';
+		d->encode['\n'] = 'n';
+		d->encode['\v'] = 'v';
+		d->encode['\f'] = 'f';
+		d->encode['\r'] = 'r';
+		d->encode['\\'] = '\\';
+		d->encode['\''] = '\'';
+		d->encode['\"'] = '"';
+		d->encode['\0'] = '0';
+
+		d->decode['b'] = '\b';
+		d->decode['t'] = '\t';
+		d->decode['n'] = '\n';
+		d->decode['v'] = '\v';
+		d->decode['f'] = '\f';
+		d->decode['r'] = '\r';
+		d->decode['\\'] = '\\';
+		d->decode['\''] = '\'';
+		d->decode['"'] = '\"';
+		d->decode['0'] = '\0';
+	} else {
+		while ((cur = ksNext(config)) != 0)
+		{
+			/* ignore all keys not direct below */
+			if (keyRel (root, cur) == 1)
+			{
+				/* ignore invalid size */
+				if (keyGetBaseNameSize(cur) != 3) continue;
+				if (keyGetValueSize(cur) != 3) continue;
+
+				int res;
+				res = elektraHexcodeConvFromHex(keyBaseName(cur)[1]);
+				res += elektraHexcodeConvFromHex(keyBaseName(cur)[0])*16;
+
+				int val;
+				val = elektraHexcodeConvFromHex(keyString(cur)[1]);
+				val += elektraHexcodeConvFromHex(keyString(cur)[0])*16;
+
+				/* Hexencode this character! */
+				d->encode [res & 255] = val;
+				d->decode [val & 255] = res;
+			}
+		}
+	}
+
+	return 0;
+}
+
+int elektraCcodeClose(Plugin *handle, Key *k)
+{
+	CCodeData *d = elektraPluginGetData (handle);
+	free (d);
+
+	return 0;
+}
+
 /** Reads the value of the key and decodes all escaping
   * codes into the buffer.
   * @pre the buffer needs to be as large as value's size.
   * @param cur the key holding the value to decode
   * @param buf the buffer to write to
   */
-void elektraCcodeDecode (Key *cur, char* buf)
+void elektraCcodeDecode (Key *cur, char* buf, CCodeData *d)
 {
 	size_t valsize = keyGetValueSize(cur);
 	const char *val = keyValue(cur);
@@ -42,7 +151,7 @@ void elektraCcodeDecode (Key *cur, char* buf)
 	size_t out=0;
 	for (size_t in=0; in<valsize-1; ++in)
 	{
-		char c = val[in];
+		unsigned char c = val[in];
 		char *n = buf+out;
 
 		if (c == '\\')
@@ -50,14 +159,7 @@ void elektraCcodeDecode (Key *cur, char* buf)
 			++in; /* Advance twice */
 			c = val[in];
 
-			if    (c == '0') *n = '\0';
-			else if (c=='n') *n = '\n';
-			else if (c=='b') *n = '\\';
-			else if (c=='w') *n = ' ';
-			else if (c=='e') *n = '=';
-			else if (c=='s') *n = ';';
-			else if (c=='r') *n = '#';
-			else *n = '\0'; /* Unknown escape char */
+			*n = d->decode[c & 255];
 		} else {
 			*n = c;
 		}
@@ -106,6 +208,8 @@ int elektraCcodeGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		return 1;
 	}
 
+	CCodeData *d = elektraPluginGetData (handle);
+
 	Key *cur;
 	char *buf = malloc (1000);
 	size_t bufalloc = 1000;
@@ -120,7 +224,7 @@ int elektraCcodeGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			buf = realloc (buf, bufalloc);
 		}
 
-		elektraCcodeDecode (cur, buf);
+		elektraCcodeDecode (cur, buf, d);
 	}
 
 	free (buf);
@@ -136,7 +240,7 @@ int elektraCcodeGet(Plugin *handle, KeySet *returned, Key *parentKey)
   * @param buf the buffer
   * @pre the buffer needs to have twice as much space as the value's size
   */
-void elektraCcodeEncode (Key *cur, char* buf)
+void elektraCcodeEncode (Key *cur, char* buf, CCodeData *d)
 {
 	size_t valsize = keyGetValueSize(cur);
 	const char *val = keyValue(cur);
@@ -144,16 +248,16 @@ void elektraCcodeEncode (Key *cur, char* buf)
 	size_t out=0;
 	for (size_t in=0; in<valsize-1; ++in)
 	{
-		char c = val[in];
+		unsigned char c = val[in];
 		char *n = buf+out+1;
 
-		if    (c == '\0') *n = '0';
-		else if (c=='\n') *n = 'n';
-		else if (c=='\\') *n = 'b';
-		else if (c==' ') *n = 'w';
-		else if (c=='=') *n = 'e';
-		else if (c==';') *n = 's';
-		else if (c=='#') *n = 'r';
+		if (d->encode[c])
+		{
+			*n = d->encode[c];
+			//Escape char
+			buf[out] = d->escape;
+			out += 2;
+		}
 		else
 		{
 			// just copy one character
@@ -161,10 +265,7 @@ void elektraCcodeEncode (Key *cur, char* buf)
 			// advance out cursor
 			out ++;
 			// go to next char
-			continue;
 		}
-		buf[out] = '\\'; //Escape char
-		out += 2;
 	}
 
 	buf[out] = 0; // null termination for keyString()
@@ -176,6 +277,7 @@ void elektraCcodeEncode (Key *cur, char* buf)
 int elektraCcodeSet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	/* set all keys */
+	CCodeData *d = elektraPluginGetData (handle);
 
 	Key *cur;
 	char *buf = malloc (1000);
@@ -191,7 +293,7 @@ int elektraCcodeSet(Plugin *handle, KeySet *returned, Key *parentKey)
 			buf = realloc (buf, bufalloc);
 		}
 
-		elektraCcodeEncode (cur, buf);
+		elektraCcodeEncode (cur, buf, d);
 	}
 
 	free (buf);
@@ -202,6 +304,8 @@ int elektraCcodeSet(Plugin *handle, KeySet *returned, Key *parentKey)
 Plugin *ELEKTRA_PLUGIN_EXPORT(ccode)
 {
 	return elektraPluginExport("ccode",
+		ELEKTRA_PLUGIN_OPEN,	&elektraCcodeOpen,
+		ELEKTRA_PLUGIN_CLOSE,	&elektraCcodeClose,
 		ELEKTRA_PLUGIN_GET,	&elektraCcodeGet,
 		ELEKTRA_PLUGIN_SET,	&elektraCcodeSet,
 		ELEKTRA_PLUGIN_END);
