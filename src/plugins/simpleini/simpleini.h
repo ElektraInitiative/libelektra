@@ -30,6 +30,7 @@
 #include <kdberrors.h>
 
 #include <stdio.h>
+#include <stdlib.h>
 
 
 int elektraSimpleiniOpen(Plugin *handle, Key *errorKey);

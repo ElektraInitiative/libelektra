@@ -63,10 +63,10 @@ int elektraSimpleiniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 	int n;
 	FILE *fp = fopen (keyString(parentKey), "r");
-	char key[1000];
-	char value[1000];
+	char *key;
+	char *value;
 
-	while ((n = fscanf (fp, "%999s = %999s\n", key, value)) >= 1)
+	while ((n = fscanf (fp, "%ms = %ms\n", &key, &value)) >= 1)
 	{
 		Key *read = keyNew(0);
 		if (keySetName(read, key) == -1)
@@ -79,6 +79,8 @@ int elektraSimpleiniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		keySetString(read, value);
 
 		ksAppendKey (returned, read);
+		free (key);
+		free (value);
 	}
 
 	if (feof(fp) == 0)
