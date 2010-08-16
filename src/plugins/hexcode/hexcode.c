@@ -70,7 +70,7 @@ void elektraHexcodeDecode (Key *cur, CHexData *hd)
 		char c = val[in];
 		char *n = hd->buf+out;
 
-		if (c == '\\')
+		if (c == hd->escape)
 		{
 			in+=2; /* Advance twice (2 hex numbers) */
 			char first = val[in-1];
@@ -206,7 +206,7 @@ void elektraHexcodeEncode (Key *cur, CHexData *hd)
 		// need to encode char?
 		if (hd->hd[c & 255])
 		{
-			hd->buf[out] = '\\'; out ++;
+			hd->buf[out] = hd->escape; out ++;
 			hd->buf[out] = elektraHexcodeConvToHex(c/16); out ++;
 			hd->buf[out] = elektraHexcodeConvToHex(c%16); out ++;
 		}
@@ -260,8 +260,19 @@ int elektraHexcodeOpen(Plugin *handle, Key *k)
 	elektraPluginSetData (handle, hd);
 
 	KeySet *config = elektraPluginGetConfig (handle);
-	Key *root = ksLookupByName (config, "/chars", 0);
 
+	Key *escape = ksLookupByName (config, "/escape", 0);
+	hd->escape = '\\';
+	if (escape && keyGetBaseNameSize(escape) && keyGetValueSize(escape) == 3)
+	{
+		int res;
+		res = elektraHexcodeConvFromHex(keyString(escape)[1]);
+		res += elektraHexcodeConvFromHex(keyString(escape)[0])*16;
+
+		hd->escape = res & 255;
+	}
+
+	Key *root = ksLookupByName (config, "/chars", 0);
 	Key *cur = 0;
 	if (!root)
 	{
