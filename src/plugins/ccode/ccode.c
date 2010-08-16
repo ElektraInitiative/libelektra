@@ -64,11 +64,11 @@ int elektraCcodeOpen(Plugin *handle, Key *k)
 
 	Key *escape = ksLookupByName (config, "/escape", 0);
 	d->escape = '\\';
-	if (escape && keyGetBaseNameSize(escape) && keyGetValueSize(escape))
+	if (escape && keyGetBaseNameSize(escape) && keyGetValueSize(escape) == 3)
 	{
 		int res;
-		res = elektraHexcodeConvFromHex(keyBaseName(escape)[1]);
-		res += elektraHexcodeConvFromHex(keyBaseName(escape)[0])*16;
+		res = elektraHexcodeConvFromHex(keyString(escape)[1]);
+		res += elektraHexcodeConvFromHex(keyString(escape)[0])*16;
 
 		d->escape = res & 255;
 	}

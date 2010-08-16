@@ -36,6 +36,7 @@ CCodeData *get_data()
 }
 
 const char encoded_string [] = "a\\wvalue\\nwith\\e\\s\\r\\wand\\w\\b\\witself";
+const char other_encoded_string [] = "a%wvalue%nwith%e%s%r%wand%w%b%witself";
 const char decoded_string [] = "a value\nwith=;# and \\ itself";
 
 void test_encode()
@@ -168,6 +169,44 @@ void test_config()
 	free (p);
 }
 
+void test_otherescape()
+{
+	printf ("test with config with other escape\n");
+
+	KeySet *config = ksNew (20,
+		keyNew ("user/chars", KEY_END),
+		keyNew ("user/chars/0A", KEY_VALUE, "6E", KEY_END), // new line -> n
+		keyNew ("user/chars/20", KEY_VALUE, "77", KEY_END), // space -> w
+		keyNew ("user/chars/23", KEY_VALUE, "72", KEY_END), // # -> r
+		keyNew ("user/chars/5C", KEY_VALUE, "62", KEY_END), // \\ (backslash) -> b
+		keyNew ("user/chars/3D", KEY_VALUE, "65", KEY_END), // = -> e
+		keyNew ("user/chars/3B", KEY_VALUE, "73", KEY_END), // ; -> s
+		keyNew ("user/escape",   KEY_VALUE, "25", KEY_END), // use % as escape character
+		KS_END);
+
+	KeySet *returned = ksNew (20,
+		keyNew ("user/something", KEY_VALUE, decoded_string, KEY_END),
+		KS_END);
+
+	Plugin *p = calloc(1, sizeof(Plugin));
+	p->config = config;
+
+	elektraCcodeOpen(p, 0);
+
+	elektraCcodeSet(p, returned, 0);
+
+	Key * test = ksLookupByName (returned, "user/something", 0);
+	succeed_if (!memcmp(keyValue(test), other_encoded_string,
+				sizeof(other_encoded_string)-1),
+				"string not correctly encoded");
+
+	elektraCcodeClose(p, 0);
+
+	ksDel (returned);
+	ksDel (p->config);
+	free (p);
+}
+
 
 int main(int argc, char** argv)
 {
@@ -181,6 +220,7 @@ int main(int argc, char** argv)
 	test_reversibility();
 	test_decodeescape();
 	test_config();
+	test_otherescape();
 
 	printf("\ntest_backendhelpers RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
