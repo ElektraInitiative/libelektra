@@ -29,6 +29,7 @@ void test_encode()
 	hd->hd['='] = 1;
 	hd->hd[';'] = 1;
 	hd->hd['#'] = 1;
+	hd->escape = '\\';
 
 	char buf[1000];
 	hd->buf = buf;
@@ -47,6 +48,8 @@ void test_decode()
 	printf ("test decode\n");
 
 	CHexData *hd = calloc (1, sizeof(CHexData));
+	hd->escape = '\\';
+
 	char buf[1000];
 	hd->buf = buf;
 
@@ -74,6 +77,7 @@ void check_reversibility(const char* msg)
 	hd->hd['='] = 1;
 	hd->hd[';'] = 1;
 	hd->hd['#'] = 1;
+	hd->escape = '\\';
 
 	char buf[1000];
 	hd->buf = buf;
