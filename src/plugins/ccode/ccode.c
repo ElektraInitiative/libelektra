@@ -132,6 +132,8 @@ int elektraCcodeOpen(Plugin *handle, Key *k)
 int elektraCcodeClose(Plugin *handle, Key *k)
 {
 	CCodeData *d = elektraPluginGetData (handle);
+
+	free (d->buf);
 	free (d);
 
 	return 0;
@@ -143,7 +145,7 @@ int elektraCcodeClose(Plugin *handle, Key *k)
   * @param cur the key holding the value to decode
   * @param buf the buffer to write to
   */
-void elektraCcodeDecode (Key *cur, char* buf, CCodeData *d)
+void elektraCcodeDecode (Key *cur, CCodeData *d)
 {
 	size_t valsize = keyGetValueSize(cur);
 	const char *val = keyValue(cur);
@@ -152,7 +154,7 @@ void elektraCcodeDecode (Key *cur, char* buf, CCodeData *d)
 	for (size_t in=0; in<valsize-1; ++in)
 	{
 		unsigned char c = val[in];
-		char *n = buf+out;
+		char *n = d->buf+out;
 
 		if (c == '\\')
 		{
@@ -166,9 +168,9 @@ void elektraCcodeDecode (Key *cur, char* buf, CCodeData *d)
 		++out; /* Only one char is written */
 	}
 
-	buf[out] = 0; // null termination for keyString()
+	d->buf[out] = 0; // null termination for keyString()
 
-	keySetRaw(cur, buf, out+1);
+	keySetRaw(cur, d->buf, out+1);
 }
 
 
@@ -209,25 +211,25 @@ int elektraCcodeGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	}
 
 	CCodeData *d = elektraPluginGetData (handle);
+	if (!d->buf)
+	{
+		d->buf = malloc (1000);
+		d->bufalloc = 1000;
+	}
 
 	Key *cur;
-	char *buf = malloc (1000);
-	size_t bufalloc = 1000;
-
 	ksRewind(returned);
 	while ((cur = ksNext(returned)) != 0)
 	{
 		size_t valsize = keyGetValueSize(cur);
-		if (valsize > bufalloc)
+		if (valsize > d->bufalloc)
 		{
-			bufalloc = valsize;
-			buf = realloc (buf, bufalloc);
+			d->bufalloc = valsize;
+			d->buf = realloc (d->buf, d->bufalloc);
 		}
 
-		elektraCcodeDecode (cur, buf, d);
+		elektraCcodeDecode (cur, d);
 	}
-
-	free (buf);
 
 	return 1; /* success */
 }
@@ -240,7 +242,7 @@ int elektraCcodeGet(Plugin *handle, KeySet *returned, Key *parentKey)
   * @param buf the buffer
   * @pre the buffer needs to have twice as much space as the value's size
   */
-void elektraCcodeEncode (Key *cur, char* buf, CCodeData *d)
+void elektraCcodeEncode (Key *cur, CCodeData *d)
 {
 	size_t valsize = keyGetValueSize(cur);
 	const char *val = keyValue(cur);
@@ -249,28 +251,28 @@ void elektraCcodeEncode (Key *cur, char* buf, CCodeData *d)
 	for (size_t in=0; in<valsize-1; ++in)
 	{
 		unsigned char c = val[in];
-		char *n = buf+out+1;
+		char *n = d->buf+out+1;
 
 		if (d->encode[c])
 		{
 			*n = d->encode[c];
 			//Escape char
-			buf[out] = d->escape;
+			d->buf[out] = d->escape;
 			out += 2;
 		}
 		else
 		{
 			// just copy one character
-			buf[out] = val[in];
+			d->buf[out] = val[in];
 			// advance out cursor
 			out ++;
 			// go to next char
 		}
 	}
 
-	buf[out] = 0; // null termination for keyString()
+	d->buf[out] = 0; // null termination for keyString()
 
-	keySetRaw(cur, buf, out+1);
+	keySetRaw(cur, d->buf, out+1);
 }
 
 
@@ -278,25 +280,25 @@ int elektraCcodeSet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	/* set all keys */
 	CCodeData *d = elektraPluginGetData (handle);
+	if (!d->buf)
+	{
+		d->buf = malloc (1000);
+		d->bufalloc = 1000;
+	}
 
 	Key *cur;
-	char *buf = malloc (1000);
-	size_t bufalloc = 1000;
-
 	ksRewind(returned);
 	while ((cur = ksNext(returned)) != 0)
 	{
 		size_t valsize = keyGetValueSize(cur);
-		if (valsize*2 > bufalloc)
+		if (valsize*2 > d->bufalloc)
 		{
-			bufalloc = valsize*2;
-			buf = realloc (buf, bufalloc);
+			d->bufalloc = valsize;
+			d->buf = realloc (d->buf, d->bufalloc);
 		}
 
-		elektraCcodeEncode (cur, buf, d);
+		elektraCcodeEncode (cur, d);
 	}
-
-	free (buf);
 
 	return 1; /* success */
 }

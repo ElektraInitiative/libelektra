@@ -32,13 +32,17 @@ typedef struct
 {
 	char encode [256];
 	char decode [256];
+
 	char escape;
+
+	char *buf;
+	size_t bufalloc;
 } CCodeData;
 
 ssize_t keySetRaw(Key *key, const void *newBinary, size_t dataSize);
 
-void elektraCcodeEncode (Key *cur, char* buf, CCodeData *h);
-void elektraCcodeDecode (Key *cur, char* buf, CCodeData *h);
+void elektraCcodeEncode (Key *cur, CCodeData *h);
+void elektraCcodeDecode (Key *cur, CCodeData *h);
 
 int elektraCcodeOpen(Plugin *handle, Key *k);
 int elektraCcodeClose(Plugin *handle, Key *k);

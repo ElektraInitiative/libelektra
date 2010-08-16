@@ -45,10 +45,11 @@ void test_encode()
 	CCodeData *d = get_data();
 
 	char buf[1000];
+	d->buf = buf;
 	Key *test = keyNew ("user/test",
 			KEY_VALUE, decoded_string,
 			KEY_END);
-	elektraCcodeEncode (test, buf, d);
+	elektraCcodeEncode (test, d);
 	succeed_if (!memcmp(keyValue(test), encoded_string, sizeof(encoded_string)-1), "string not correctly encoded");
 
 	free (d);
@@ -62,11 +63,12 @@ void test_decode()
 	CCodeData *d = get_data();
 
 	char buf[1000];
+	d->buf = buf;
 	Key *test = keyNew ("user/test",
 			KEY_SIZE, sizeof(encoded_string)-1,
 			KEY_VALUE, encoded_string,
 			KEY_END);
-	elektraCcodeDecode (test, buf, d);
+	elektraCcodeDecode (test, d);
 	succeed_if (!memcmp(keyValue(test), decoded_string, sizeof(decoded_string)-1), "string not correctly encoded");
 
 	free(d);
@@ -77,14 +79,15 @@ void check_reversibility(const char* msg)
 {
 	CCodeData *d = get_data();
 	char buf[1000];
+	d->buf = buf;
 	Key *decode = keyNew ("user/test",
 			KEY_VALUE, msg,
 			KEY_END);
 
 	Key *encode = keyDup (decode);
-	elektraCcodeEncode (encode, buf, d);
+	elektraCcodeEncode (encode, d);
 
-	elektraCcodeDecode (encode, buf, d);
+	elektraCcodeDecode (encode, d);
 	succeed_if (compare_key(encode, decode) == 0, "was not reversible");
 
 	free (d);
@@ -118,11 +121,12 @@ void test_decodeescape()
 	d->decode['\\'] = '\\';
 
 	char buf[1000];
+	d->buf = buf;
 	Key *test = keyNew ("user/test",
 			KEY_SIZE, 2,
 			KEY_VALUE, "\\\\",
 			KEY_END);
-	elektraCcodeDecode (test, buf, d);
+	elektraCcodeDecode (test, d);
 	succeed_if (!memcmp(keyValue(test), "\\", 2), "string not correctly encoded");
 
 	free(d);
