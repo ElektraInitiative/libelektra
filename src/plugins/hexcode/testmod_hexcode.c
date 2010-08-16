@@ -21,19 +21,22 @@ void test_encode()
 {
 	printf ("test encode\n");
 
+	CHexData *hd = calloc (1, sizeof(CHexData));
+	hd->hd['\0'] = 1;
+	hd->hd['\n'] = 1;
+	hd->hd['\\'] = 1;
+	hd->hd[' '] = 1;
+	hd->hd['='] = 1;
+	hd->hd[';'] = 1;
+	hd->hd['#'] = 1;
+
 	char buf[1000];
-	char hd[256] = {0};
-	hd['\0'] = 1;
-	hd['\n'] = 1;
-	hd['\\'] = 1;
-	hd[' '] = 1;
-	hd['='] = 1;
-	hd[';'] = 1;
-	hd['#'] = 1;
+	hd->buf = buf;
+
 	Key *test = keyNew ("user/test",
 			KEY_VALUE, decoded_string,
 			KEY_END);
-	elektraHexcodeEncode (test, buf, hd);
+	elektraHexcodeEncode (test, hd);
 	succeed_if (!memcmp(keyValue(test), encoded_string, sizeof(encoded_string)-1), "string not correctly encoded");
 
 	keyDel (test);
@@ -43,12 +46,15 @@ void test_decode()
 {
 	printf ("test decode\n");
 
+	CHexData *hd = calloc (1, sizeof(CHexData));
 	char buf[1000];
+	hd->buf = buf;
+
 	Key *test = keyNew ("user/test",
 			KEY_SIZE, sizeof(encoded_string)-1,
 			KEY_VALUE, encoded_string,
 			KEY_END);
-	elektraHexcodeDecode (test, buf);
+	elektraHexcodeDecode (test, hd);
 	succeed_if (!strcmp(keyString(test), decoded_string), "string not correctly encoded");
 
 	keyDel (test);
@@ -56,23 +62,26 @@ void test_decode()
 
 void check_reversibility(const char* msg)
 {
-	char buf[1000];
 	Key *decode = keyNew ("user/test",
 			KEY_VALUE, msg,
 			KEY_END);
 
-	char hd[256] = {0};
-	hd['\0'] = 1;
-	hd['\n'] = 1;
-	hd['\\'] = 1;
-	hd[' '] = 1;
-	hd['='] = 1;
-	hd[';'] = 1;
-	hd['#'] = 1;
-	Key *encode = keyDup (decode);
-	elektraHexcodeEncode (encode, buf, hd);
+	CHexData *hd = calloc (1, sizeof(CHexData));
+	hd->hd['\0'] = 1;
+	hd->hd['\n'] = 1;
+	hd->hd['\\'] = 1;
+	hd->hd[' '] = 1;
+	hd->hd['='] = 1;
+	hd->hd[';'] = 1;
+	hd->hd['#'] = 1;
 
-	elektraHexcodeDecode (encode, buf);
+	char buf[1000];
+	hd->buf = buf;
+
+	Key *encode = keyDup (decode);
+	elektraHexcodeEncode (encode, hd);
+
+	elektraHexcodeDecode (encode, hd);
 	succeed_if (compare_key(encode, decode) == 0, "was not reversible");
 
 	keyDel (decode);
@@ -113,6 +122,8 @@ void test_config()
 
 	Plugin *p = calloc(1, sizeof(Plugin));
 	p->config = config;
+
+	elektraHexcodeOpen(p, 0);
 
 	elektraHexcodeSet(p, returned, 0);
 

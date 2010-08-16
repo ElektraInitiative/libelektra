@@ -59,7 +59,7 @@ static inline int elektraHexcodeConvFromHex(char c)
   * @param cur the key holding the value to decode
   * @param buf the buffer to write to
   */
-void elektraHexcodeDecode (Key *cur, char* buf)
+void elektraHexcodeDecode (Key *cur, CHexData *hd)
 {
 	size_t valsize = keyGetValueSize(cur);
 	const char *val = keyValue(cur);
@@ -68,7 +68,7 @@ void elektraHexcodeDecode (Key *cur, char* buf)
 	for (size_t in=0; in<valsize-1; ++in)
 	{
 		char c = val[in];
-		char *n = buf+out;
+		char *n = hd->buf+out;
 
 		if (c == '\\')
 		{
@@ -86,9 +86,9 @@ void elektraHexcodeDecode (Key *cur, char* buf)
 		++out; /* Only one char is written */
 	}
 
-	buf[out] = 0; // null termination for keyString()
+	hd->buf[out] = 0; // null termination for keyString()
 
-	keySetRaw(cur, buf, out+1);
+	keySetRaw(cur, hd->buf, out+1);
 }
 
 
@@ -106,6 +106,10 @@ int elektraHexcodeGet(Plugin *handle, KeySet *returned, Key *parentKey)
 				KEY_FUNC, elektraHexcodeGet, KEY_END),
 			keyNew ("system/elektra/modules/hexcode/exports/set",
 				KEY_FUNC, elektraHexcodeSet, KEY_END),
+			keyNew ("system/elektra/modules/hexcode/exports/open",
+				KEY_FUNC, elektraHexcodeOpen, KEY_END),
+			keyNew ("system/elektra/modules/hexcode/exports/close",
+				KEY_FUNC, elektraHexcodeClose, KEY_END),
 			keyNew ("system/elektra/modules/hexcode/infos",
 				KEY_VALUE, "All information you want to know", KEY_END),
 			keyNew ("system/elektra/modules/hexcode/infos/author",
@@ -128,24 +132,26 @@ int elektraHexcodeGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		return 1;
 	}
 
-	Key *cur;
-	char *buf = malloc (1000);
-	size_t bufalloc = 1000;
+	CHexData *hd = elektraPluginGetData (handle);
+	if (!hd->buf)
+	{
+		hd->buf = malloc (1000);
+		hd->bufalloc = 1000;
+	}
 
+	Key *cur;
 	ksRewind(returned);
 	while ((cur = ksNext(returned)) != 0)
 	{
 		size_t valsize = keyGetValueSize(cur);
-		if (valsize > bufalloc)
+		if (valsize > hd->bufalloc)
 		{
-			bufalloc = valsize;
-			buf = realloc (buf, bufalloc);
+			hd->bufalloc = valsize;
+			hd->buf = realloc (hd->buf, hd->bufalloc);
 		}
 
-		elektraHexcodeDecode (cur, buf);
+		elektraHexcodeDecode (cur, hd);
 	}
-
-	free (buf);
 
 	return 1; /* success */
 }
@@ -187,7 +193,7 @@ static inline char elektraHexcodeConvToHex(int c)
   * @param buf the buffer
   * @pre the buffer needs to have thrice as much space as the value's size
   */
-void elektraHexcodeEncode (Key *cur, char* buf, const char* hd)
+void elektraHexcodeEncode (Key *cur, CHexData *hd)
 {
 	size_t valsize = keyGetValueSize(cur);
 	const char *val = keyValue(cur);
@@ -198,95 +204,99 @@ void elektraHexcodeEncode (Key *cur, char* buf, const char* hd)
 		unsigned char c = val[in];
 
 		// need to encode char?
-		if (hd[c & 255])
+		if (hd->hd[c & 255])
 		{
-			buf[out] = '\\'; out ++;
-			buf[out] = elektraHexcodeConvToHex(c/16); out ++;
-			buf[out] = elektraHexcodeConvToHex(c%16); out ++;
+			hd->buf[out] = '\\'; out ++;
+			hd->buf[out] = elektraHexcodeConvToHex(c/16); out ++;
+			hd->buf[out] = elektraHexcodeConvToHex(c%16); out ++;
 		}
 		else
 		{
 			// just copy one character
-			buf[out] = val[in];
+			hd->buf[out] = val[in];
 			// advance out cursor
 			out ++;
 		}
 	}
 
-	buf[out] = 0; // null termination for keyString()
+	hd->buf[out] = 0; // null termination for keyString()
 
-	keySetRaw(cur, buf, out+1);
+	keySetRaw(cur, hd->buf, out+1);
 }
 
 
 int elektraHexcodeSet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	/* set all keys */
-	char *hd = elektraPluginGetData (handle);
-
-	if (!hd)
+	CHexData *hd = elektraPluginGetData (handle);
+	if (!hd->buf)
 	{
-		hd = calloc (256, sizeof(char));
-
-		/* Store for later use...*/
-		elektraPluginSetData (handle, hd);
-
-		KeySet *config = elektraPluginGetConfig (handle);
-		Key *root = ksLookupByName (config, "/chars", 0);
-
-		Key *cur = 0;
-		if (!root)
-		{
-			/* Some default config */
-			hd['\0'] = 1;
-			hd['\n'] = 1;
-			hd['\\'] = 1;
-			hd[' '] = 1;
-		} else {
-			while ((cur = ksNext(config)) != 0)
-			{
-				/* ignore all keys not direct below */
-				if (keyRel (root, cur) == 1)
-				{
-					/* ignore invalid size */
-					if (keyGetBaseNameSize(cur) != 3) continue;
-
-					int res;
-					res = elektraHexcodeConvFromHex(keyBaseName(cur)[1]);
-					res += elektraHexcodeConvFromHex(keyBaseName(cur)[0])*16;
-
-					/* Hexencode this character! */
-					hd [res & 255] = 1;
-				}
-			}
-		}
+		hd->buf = malloc (1000);
+		hd->bufalloc = 1000;
 	}
 
 	Key *cur;
-	char *buf = malloc (1000);
-	size_t bufalloc = 1000;
-
 	ksRewind(returned);
 	while ((cur = ksNext(returned)) != 0)
 	{
 		size_t valsize = keyGetValueSize(cur);
-		if (valsize*3 > bufalloc)
+		if (valsize*3 > hd->bufalloc)
 		{
-			bufalloc = valsize*3;
-			buf = realloc (buf, bufalloc);
+			hd->bufalloc = valsize*3;
+			hd->buf = realloc (hd->buf, hd->bufalloc);
 		}
 
-		elektraHexcodeEncode (cur, buf, hd);
+		elektraHexcodeEncode (cur, hd);
 	}
-
-	free (buf);
 
 	return 1; /* success */
 }
 
+int elektraHexcodeOpen(Plugin *handle, Key *k)
+{
+	CHexData *hd = calloc (1, sizeof(CHexData));
+
+	/* Store for later use...*/
+	elektraPluginSetData (handle, hd);
+
+	KeySet *config = elektraPluginGetConfig (handle);
+	Key *root = ksLookupByName (config, "/chars", 0);
+
+	Key *cur = 0;
+	if (!root)
+	{
+		/* Some default config */
+		hd->hd['\0'] = 1;
+		hd->hd['\n'] = 1;
+		hd->hd['\\'] = 1;
+		hd->hd[' '] = 1;
+	} else {
+		while ((cur = ksNext(config)) != 0)
+		{
+			/* ignore all keys not direct below */
+			if (keyRel (root, cur) == 1)
+			{
+				/* ignore invalid size */
+				if (keyGetBaseNameSize(cur) != 3) continue;
+
+				int res;
+				res = elektraHexcodeConvFromHex(keyBaseName(cur)[1]);
+				res += elektraHexcodeConvFromHex(keyBaseName(cur)[0])*16;
+
+				/* Hexencode this character! */
+				hd->hd [res & 255] = 1;
+			}
+		}
+	}
+
+	return 0;
+}
+
 int elektraHexcodeClose(Plugin *handle, Key *k)
 {
-	char *hd = elektraPluginGetData (handle);
+	CHexData *hd = elektraPluginGetData (handle);
+
+	free (hd->buf);
 	free (hd);
 
 	return 0;
@@ -297,6 +307,7 @@ Plugin *ELEKTRA_PLUGIN_EXPORT(hexcode)
 	return elektraPluginExport("hexcode",
 		ELEKTRA_PLUGIN_GET,	&elektraHexcodeGet,
 		ELEKTRA_PLUGIN_SET,	&elektraHexcodeSet,
+		ELEKTRA_PLUGIN_OPEN,	&elektraHexcodeOpen,
 		ELEKTRA_PLUGIN_CLOSE,	&elektraHexcodeClose,
 		ELEKTRA_PLUGIN_END);
 }
