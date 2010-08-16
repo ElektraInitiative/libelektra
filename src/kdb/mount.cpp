@@ -48,6 +48,7 @@ void MountCommand::outputMtab()
 	Key rootKey (root, KEY_END);
 	Key cur;
 
+	mountConf.rewind();
 	while (cur = mountConf.next())
 	{
 		if (rootKey.isDirectBelow(cur))
