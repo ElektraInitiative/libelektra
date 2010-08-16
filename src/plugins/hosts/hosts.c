@@ -116,12 +116,10 @@ size_t elektraHostsFindToken (char **token, char *line)
 int elektraHostsGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	int errnosave = errno;
-	ssize_t nr_keys = 0, nr_alias;
 	FILE * fp;
 	char readbuffer [HOSTS_BUFFER_SIZE];
 	char *fieldbuffer;
 	size_t readsize;
-	char aliasname[] = "alias00";
 	char *fret;
 	int   sret;
 	Key *key, *alias, *tmp;
@@ -166,36 +164,28 @@ int elektraHostsGet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 	if (fp == 0)
 	{
-		/*kdbhSetError (handle, Plugin_ERR_NODIR);*/
 		errno = errnosave;
-		return -1;
+		return 0;
 	}
-
-	// kdbbReadLock (fp);
 
 	ksClear (returned);
 	append = ksNew(ksGetSize(returned)*2, KS_END);
 
 	key = keyDup (parentKey);
-	keySetDir (key);
 	ksAppendKey(append, key);
-	clear_bit (key->flags, KEY_FLAG_SYNC);
-	nr_keys ++;
 
 	while (1)
 	{
 		fret = fgets (readbuffer, HOSTS_BUFFER_SIZE, fp);
 		if (fret == 0) 
 		{
-			/* success */
-			// kdbbUnlock(fp);
 			fclose (fp);
 
 			ksClear (returned);
 			ksAppend (returned, append);
 			ksDel (append);
 			errno = errnosave;
-			return nr_keys;
+			return 1;
 		}
 
 		if (elektraHostsAppendComment(comment, readbuffer)) continue;
@@ -217,7 +207,7 @@ int elektraHostsGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		ksAppendKey(append, key);
 		clear_bit (key->flags, KEY_FLAG_SYNC);
 
-		nr_alias = 0;
+		ssize_t nr_alias = 0;
 		while (1) /*Read in aliases*/
 		{
 			readsize += sret;
@@ -225,25 +215,13 @@ int elektraHostsGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			if (sret == 0) break;
 
 			tmp = keyDup (key);
-			aliasname[5] = nr_alias / 10 + '0';
-			aliasname[6] = nr_alias % 10 + '0';
-			keyAddBaseName (tmp, aliasname);
+			keyAddBaseName (tmp, fieldbuffer);
 			alias = ksLookup(returned, tmp, KDB_O_POP);
 			if (!alias) alias = tmp;
 			else keyDel (tmp);
-			keySetMode(alias, 0664);
-			keySetString (alias, fieldbuffer);
-			keySetComment (alias, "");
 			ksAppendKey(append, alias);
-			clear_bit (alias->flags, KEY_FLAG_SYNC);
 			nr_alias ++;
-			if (nr_alias == 1)
-			{
-				keySetDir (key);
-				clear_bit (key->flags, KEY_FLAG_SYNC);
-			}
 		}
-		nr_keys += nr_alias + 1;
 	}
 
 	ELEKTRA_SET_ERROR(10, parentKey, readbuffer);
@@ -257,12 +235,9 @@ int elektraHostsGet(Plugin *handle, KeySet *returned, Key *parentKey)
 int elektraHostsSet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	int errnosave = errno;
-	ssize_t nr_keys = 0, nr_alias = 0;
 	FILE *fp;
 	Key *key, *alias=0;
 	char * lastline;
-
-	/* if (strcmp (keyName(kdbhGetMountpoint(handle)), keyName(parentKey))) return 0; */
 
 	fp = fopen (keyValue(parentKey), "w");
 
@@ -273,19 +248,11 @@ int elektraHostsSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		return -1;
 	}
 
-	// kdbbWriteLock (fp);
-
 	ksRewind (returned);
 	key = ksNext (returned); /* skip parentKey */
 
-	nr_keys ++;
-
-	while (1)
+	while ((key = ksNext (returned)) != 0)
 	{
-		if (!alias) key = ksNext (returned);
-		else key = alias;
-		if (!key) break;
-
 		lastline = strrchr (keyComment(key), '\n');
 		if (lastline)
 		{
@@ -296,19 +263,17 @@ int elektraHostsSet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 		fprintf (fp, "%s\t%s", (char*)keyValue(key), (char*)keyBaseName (key));
 
-		nr_alias = 0;
-		if (keyIsDir (key))
+		cursor_t restore = ksGetCursor (returned);
+		while ((alias = ksNext (returned)) != 0)
 		{
-			while ((alias = ksNext (returned)) != 0)
-			{
-				if (keyIsDir(alias)) break;
-				if (strncmp (keyName(key), keyName(alias), strlen(keyName(key)))) break;;
-				if (strlen(keyName(key)) + strlen (keyBaseName (alias)) + 1 != strlen (keyName(alias))) goto error;
-				if (strncmp (keyBaseName (alias), "alias", 5)) goto error;
-				fprintf (fp, "\t%s", (char*)keyValue (alias));
-				nr_alias++;
-			}
-		} else alias = 0;
+			if (keyRel (key, alias) < 1) break;
+			restore = ksGetCursor (returned);
+
+			fprintf (fp, "\t%s", (char*)keyBaseName(alias));
+		}
+		ksSetCursor (returned, restore);
+		/* Now we know how many aliases we have...
+		   So go over them. */
 
 		if (lastline)
 		{
@@ -318,22 +283,11 @@ int elektraHostsSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		}
 
 		fprintf (fp, "\n");
-		nr_keys += nr_alias + 1;
 	}
 
-	// kdbbUnlock (fp);
 	fclose (fp);
 	errno = errnosave;
-	return nr_keys;
-
-error:
-	// kdbbUnlock (fp);
-	fclose (fp);
-	/* Make the file empty */
-	fp = fopen ("/tmp/hosts", "w");
-	fclose (fp);
-	errno = errnosave;
-	return -1;
+	return 1;
 }
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(hosts)
