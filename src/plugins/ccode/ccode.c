@@ -293,7 +293,7 @@ int elektraCcodeSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		size_t valsize = keyGetValueSize(cur);
 		if (valsize*2 > d->bufalloc)
 		{
-			d->bufalloc = valsize;
+			d->bufalloc = valsize*2;
 			d->buf = realloc (d->buf, d->bufalloc);
 		}
 
