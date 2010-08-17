@@ -156,7 +156,7 @@ void elektraCcodeDecode (Key *cur, CCodeData *d)
 		unsigned char c = val[in];
 		char *n = d->buf+out;
 
-		if (c == '\\')
+		if (c == d->escape)
 		{
 			++in; /* Advance twice */
 			c = val[in];
@@ -184,6 +184,10 @@ int elektraCcodeGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			keyNew ("system/elektra/modules/ccode",
 				KEY_VALUE, "ccode plugin waits for your orders", KEY_END),
 			keyNew ("system/elektra/modules/ccode/exports", KEY_END),
+			keyNew ("system/elektra/modules/ccode/exports/open",
+				KEY_FUNC, elektraCcodeOpen, KEY_END),
+			keyNew ("system/elektra/modules/ccode/exports/close",
+				KEY_FUNC, elektraCcodeClose, KEY_END),
 			keyNew ("system/elektra/modules/ccode/exports/get",
 				KEY_FUNC, elektraCcodeGet, KEY_END),
 			keyNew ("system/elektra/modules/ccode/exports/set",

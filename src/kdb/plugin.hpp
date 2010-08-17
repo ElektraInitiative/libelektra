@@ -206,6 +206,16 @@ public:
 	kdb::KeySet getInfo() {return info;}
 
 	/**
+	 * In the plugin's contract there is a description of which
+	 * config is needed in order to work together with a backend
+	 * properly.
+	 *
+	 * @return the keyset with the config needed for the backend.
+	 * @pre loadInfo()
+	 */
+	kdb::KeySet getNeededConfig();
+
+	/**
 	 * Returns symbol to a function.
 	 * @pre parse()
 	 */
