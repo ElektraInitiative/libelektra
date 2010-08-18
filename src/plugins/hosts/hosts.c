@@ -113,6 +113,13 @@ size_t elektraHostsFindToken (char **token, char *line)
 	return i+1; /* let elektraHostsFindToken continue next time one byte after termination */
 }
 
+void elektraHostsSetMeta(Key *key, int order)
+{
+	char buffer[50];
+	snprintf (buffer, 50, "%d", order);
+	keySetMeta(key, "order", buffer);
+}
+
 int elektraHostsGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	int errnosave = errno;
@@ -125,6 +132,7 @@ int elektraHostsGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	Key *key, *alias, *tmp;
 	char comment [HOSTS_BUFFER_SIZE] = "";
 	KeySet *append = 0;
+	size_t order = 1;
 
 	if (!strcmp (keyName(parentKey), "system/elektra/modules/hosts"))
 	{
@@ -195,17 +203,18 @@ int elektraHostsGet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 		key = ksLookupByName(returned, fieldbuffer, KDB_O_POP);
 		if (!key) key = keyDup (parentKey);
-		keySetMode(key, 0664);
 		keySetString (key, fieldbuffer);
 		keySetComment (key, comment);
 		*comment = '\0'; /* Start with a new comment */
 
 		readsize = sret;
 		sret = elektraHostsFindToken (&fieldbuffer, readbuffer+readsize);
-
 		keyAddBaseName (key, fieldbuffer);
+
+		elektraHostsSetMeta(key, order);
+		++ order; /* Next key gets next number */
+
 		ksAppendKey(append, key);
-		clear_bit (key->flags, KEY_FLAG_SYNC);
 
 		ssize_t nr_alias = 0;
 		while (1) /*Read in aliases*/
@@ -219,8 +228,9 @@ int elektraHostsGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			alias = ksLookup(returned, tmp, KDB_O_POP);
 			if (!alias) alias = tmp;
 			else keyDel (tmp);
+
 			ksAppendKey(append, alias);
-			nr_alias ++;
+			++ nr_alias;
 		}
 	}
 
@@ -248,11 +258,38 @@ int elektraHostsSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		return -1;
 	}
 
+	Key **keyarray;
+	size_t retsize = ksGetSize(returned);
+	size_t keyarraysize = retsize *2 +2;
+	keyarray = calloc (keyarraysize, sizeof (Key*));
+	size_t keyarrayend = retsize +1;
+
 	ksRewind (returned);
-	key = ksNext (returned); /* skip parentKey */
+	Key *root = ksNext (returned); /* skip parentKey */
 
 	while ((key = ksNext (returned)) != 0)
 	{
+		/* Only accept keys direct below */
+		if (keyRel (root, key) != 1) continue;
+
+		const Key *orderkey = keyGetMeta (key, "order");
+		int order = 0;
+		if (orderkey) order = atoi (keyString(orderkey));
+		if (order <= 0 || (size_t)order > retsize)
+		{
+			/* Append to the end */
+			keyarray[keyarrayend] = key;
+			++ keyarrayend;
+		} else {
+			keyarray[order] = key;
+			++ order;
+		}
+	}
+
+	for (size_t i=0; i< keyarraysize; ++i)
+	{
+		key = keyarray[i];
+		if (!key) continue;
 		lastline = strrchr (keyComment(key), '\n');
 		if (lastline)
 		{
@@ -263,17 +300,13 @@ int elektraHostsSet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 		fprintf (fp, "%s\t%s", (char*)keyValue(key), (char*)keyBaseName (key));
 
-		cursor_t restore = ksGetCursor (returned);
+		ksLookup(returned, key, 0);
 		while ((alias = ksNext (returned)) != 0)
 		{
 			if (keyRel (key, alias) < 1) break;
-			restore = ksGetCursor (returned);
 
-			fprintf (fp, "\t%s", (char*)keyBaseName(alias));
+			fprintf (fp, " %s", (char*)keyBaseName(alias));
 		}
-		ksSetCursor (returned, restore);
-		/* Now we know how many aliases we have...
-		   So go over them. */
 
 		if (lastline)
 		{
@@ -287,12 +320,13 @@ int elektraHostsSet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 	fclose (fp);
 	errno = errnosave;
+	free (keyarray);
 	return 1;
 }
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(hosts)
 {
-	return elektraPluginExport(BACKENDNAME,
+	return elektraPluginExport("hosts",
 		ELEKTRA_PLUGIN_GET,	&elektraHostsGet,
 		ELEKTRA_PLUGIN_SET,	&elektraHostsSet,
 		ELEKTRA_PLUGIN_END);

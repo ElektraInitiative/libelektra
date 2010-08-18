@@ -7,12 +7,11 @@
 #include <kdbprivate.h>
 #include <kdberrors.h>
 
-#define BACKENDNAME "hosts"
-#define BACKENDVERSION "0.0.2"
+#include <stdlib.h>
 
-#define HOSTS_PATH "/etc/passwd"
 /* Use a buffer so large that it can hold my /etc/hosts :-)
  * TODO: make it dynamic */
+
 #define HOSTS_BUFFER_SIZE 16384
 /*Test size for small buffer
 #define HOSTS_BUFFER_SIZE 16 */
