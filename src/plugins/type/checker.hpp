@@ -44,9 +44,9 @@ public:
 class StringType : public Type
 {
 public:
-	bool check(Key)
+	bool check(Key k)
 	{
-		return true;
+		return !k.getString().empty();
 	}
 };
 
