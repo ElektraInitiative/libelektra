@@ -160,6 +160,8 @@ int elektraHostsGet(Plugin *handle, KeySet *returned, Key *parentKey)
 				KEY_VALUE, "getstorage setstorage", KEY_END),
 			keyNew ("system/elektra/modules/hosts/infos/needs",
 				KEY_VALUE, "", KEY_END),
+			keyNew ("system/elektra/modules/hosts/infos/recommends",
+				KEY_VALUE, "network", KEY_END),
 			keyNew ("system/elektra/modules/hosts/infos/version",
 				KEY_VALUE, PLUGINVERSION, KEY_END),
 			KS_END);

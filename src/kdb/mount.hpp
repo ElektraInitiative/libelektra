@@ -12,6 +12,15 @@ struct NameAlreadyInUseException : public CommandException
 	}
 };
 
+struct MountpointNotValid: public CommandException
+{
+	virtual const char* what() const throw()
+	{
+		return "The supplied name did not start with /\n"
+			"nor is it a valid keyname";
+	}
+};
+
 struct MountpointAlreadyInUseException : public CommandException
 {
 	virtual const char* what() const throw()

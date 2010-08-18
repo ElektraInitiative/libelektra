@@ -172,6 +172,7 @@ int MountCommand::execute(int argc, char** argv)
 		if (std::find(mountpoints.begin(), mountpoints.end(), ukmp.getName()) != mountpoints.end()) throw MountpointAlreadyInUseException();
 	} else {
 		Key kmp (mp, KEY_END);
+		if (!kmp.isValid()) throw MountpointNotValid();
 		if (std::find(mountpoints.begin(), mountpoints.end(), kmp.getName()) != mountpoints.end()) throw MountpointAlreadyInUseException();
 	}
 

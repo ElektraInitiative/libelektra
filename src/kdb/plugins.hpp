@@ -43,7 +43,10 @@ protected:
 
 	kdb::KeySet ret;
 
+	std::vector <std::string> needed;
+	std::vector <std::string> recommended;
 	std::vector <std::string> alreadyProvided;
+
 	int nrStoragePlugins;
 	int nrResolverPlugins;
 
@@ -52,12 +55,15 @@ protected:
 public:
 	Plugins ();
 
+	/** Add needed, provided and recommend information */
 	void addProvided (Plugin &plugin);
 	void addPlugin (Plugin &plugin, std::string which);
 
+	/** Validate needed, recommend and provided information */
+	bool validateProvided();
+
 	/** @return true if plugin should be ignored */
 	bool checkPlacement (Plugin &plugin, std::string which);
-	void checkProvided (Plugin &plugin);
 	void checkStorage (Plugin &plugin);
 	void checkResolver (Plugin &plugin);
 	void checkInfo (Plugin &plugin);

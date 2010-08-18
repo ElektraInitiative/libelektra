@@ -67,6 +67,8 @@ int elektraFstabGet(Plugin *handle, KeySet *returned, Key *parentKey)
 				KEY_VALUE, "getstorage setstorage", KEY_END),
 			keyNew ("system/elektra/modules/fstab/infos/needs",
 				KEY_VALUE, "", KEY_END),
+			keyNew ("system/elektra/modules/fstab/infos/recommends",
+				KEY_VALUE, "struct type path", KEY_END),
 			keyNew ("system/elektra/modules/fstab/infos/version",
 				KEY_VALUE, PLUGINVERSION, KEY_END),
 			KS_END);

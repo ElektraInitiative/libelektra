@@ -33,12 +33,36 @@ Plugins::Plugins () :
 
 void Plugins::addProvided (Plugin &plugin)
 {
-	std::string provide;
-	std::stringstream ss(plugin.lookupInfo("provides"));
-	while (ss >> provide)
 	{
-		alreadyProvided.push_back(provide);
-		cout << "add provide: " << provide << endl;
+		std::string provide;
+		std::stringstream ss(plugin.lookupInfo("provides"));
+		while (ss >> provide)
+		{
+			alreadyProvided.push_back(provide);
+			cout << "add provide: " << provide << endl;
+		}
+		/* Push back the name of the plugin itself */
+		alreadyProvided.push_back (plugin.name());
+	}
+
+	{
+		std::string need;
+		std::stringstream ss(plugin.lookupInfo("needs"));
+		while (ss >> need)
+		{
+			needed.push_back(need);
+			cout << "add need: " << need << endl;
+		}
+	}
+
+	{
+		std::string recommend;
+		std::stringstream ss(plugin.lookupInfo("recommends"));
+		while (ss >> recommend)
+		{
+			recommended.push_back(recommend);
+			cout << "add recommend: " << recommend << endl;
+		}
 	}
 }
 
@@ -66,19 +90,28 @@ bool Plugins::checkPlacement (Plugin &plugin, std::string which)
 	return false;
 }
 
-void Plugins::checkProvided(Plugin &plugin)
+bool Plugins::validateProvided()
 {
-	std::string need;
-	std::stringstream nss(plugin.lookupInfo("needs"));
-	while (nss >> need)
+	for (size_t i=0; i< needed.size(); ++i)
 	{
-		cout << "check for need " << need << endl;;
+		std::string need = needed[i];
 		if (std::find(alreadyProvided.begin(), alreadyProvided.end(), need) == alreadyProvided.end())
 		{
-			throw MissingNeeded(need);
+			cout << "needed plugin " << need << " is missing" << endl;
+			return false;
 		}
 	}
 
+	for (size_t i=0; i< recommended.size(); ++i)
+	{
+		std::string need = recommended[i];
+		if (std::find(alreadyProvided.begin(), alreadyProvided.end(), need) == alreadyProvided.end())
+		{
+			cout << "recommended plugin " << need << " is missing" << endl;
+		}
+	}
+
+	return true;
 }
 
 void Plugins::checkStorage (Plugin &plugin)
@@ -205,6 +238,8 @@ void ErrorPlugins::addPlugin (Plugin &plugin)
 	Plugins::addPlugin (plugin, "prerollback");
 	Plugins::addPlugin (plugin, "rollback");
 	Plugins::addPlugin (plugin, "postrollback");
+
+	Plugins::addProvided (plugin);
 }
 
 void GetPlugins::addPlugin (Plugin &plugin)
@@ -230,7 +265,7 @@ void SetPlugins::addPlugin (Plugin &plugin)
 
 bool ErrorPlugins::validated ()
 {
-	return nrResolverPlugins == 1;
+	return nrResolverPlugins == 1 && validateProvided();
 }
 
 bool GetPlugins::validated ()
