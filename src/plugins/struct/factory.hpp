@@ -9,6 +9,8 @@
 //TODO: to add a new struct checker, 1.) include your header here
 #include "checker.hpp"
 
+#include <iostream>
+
 namespace elektra {
 
 class Instancer
@@ -57,12 +59,12 @@ public:
 		Key k;
 		while (k = config.next())
 		{
-			// std::cout << "root: " << root.getName() << " k: " << k.getName() << std::endl;
+			std::cout << "root: " << root.getName() << " k: " << k.getName() << std::endl;
 			if (!root.isDirectBelow(k)) throw "Factory: key for configuration is not direct below";
 
 			KeySet cks(config.cut(k));
-			// std::cout << "creating StructChecker " << k.getBaseName() <<
-			//	" with first key: " << cks.head().getName() << std::endl;
+			std::cout << "creating StructChecker " << k.getBaseName() <<
+				" with first key: " << cks.head().getName() << std::endl;
 			m_factory.insert(std::make_pair(k.getBaseName(), new StructInstancer(cks)));
 		}
 	}
@@ -109,6 +111,11 @@ static inline void doCheck(Checker *c, KeySet ks)
 
 static inline Checker* buildChecker(KeySet config)
 {
+	config.rewind();
+	while (Key c = config.next())
+	{
+		std::cout << c.getName() << std::endl;
+	}
 	Key k = config.lookup ("/struct");
 	if (!k) throw "No Key describing the struct found";
 

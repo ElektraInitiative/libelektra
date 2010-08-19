@@ -188,6 +188,8 @@ void Backend::serialize (kdb::Key &rootKey, kdb::KeySet &ret)
 	Key common = config.next();
 	string commonName = common.getName();
 
+	// TODO commonName might be too long if config/needs key is missing
+
 	while (Key k = config.next())
 	{
 		string name = k.getName();

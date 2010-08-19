@@ -42,44 +42,18 @@ extern "C"
 int elektraStructOpen(ckdb::Plugin *handle, ckdb::Key *errorKey)
 {
 	/* plugin initialization logic */
-
-	/* TODO: should be plugin config given by contract */
-	kdb::KeySet config( 20,
-		*kdb::Key ("user/struct",
-			KEY_VALUE, "list FStab",
-			KEY_END),
-		*kdb::Key ("user/struct/FStab",
-			KEY_META, "check/type", "null empty",
-			KEY_END),
-		*kdb::Key ("user/struct/FStab/device",
-			KEY_META, "check/type", "string",
-			KEY_META, "check/path", "device",
-			KEY_END),
-		*kdb::Key ("user/struct/FStab/mpoint",
-			KEY_META, "check/type", "string",
-			KEY_META, "check/path", "directory",
-			KEY_END),
-		*kdb::Key ("user/struct/FStab/type",
-			KEY_META, "check/type", "FSType",
-			KEY_END),
-		*kdb::Key ("user/struct/FStab/options",
-			KEY_META, "check/type", "string",
-			KEY_END),
-		*kdb::Key ("user/struct/FStab/dumpfreq",
-			KEY_META, "check/type", "unsigned_short",
-			KEY_END),
-		*kdb::Key ("user/struct/FStab/passno",
-			KEY_META, "check/type", "unsigned_short",
-			KEY_END),
-		KS_END);
+	kdb::KeySet config (elektraPluginGetConfig(handle));
 
 	try {
 		elektra::Checker *c = static_cast<elektra::Checker*>(elektra::buildChecker(config));
+		config.release();
 		// std::cout << "got back [open] " << c << std::endl;
 		elektraPluginSetData (handle, c);
 	}
 	catch (const char* msg)
 	{
+		config.release();
+
 		// TODO: warnings are not passed when plugin creation failed!
 		std::cout << "opening of plugin struct failed with msg: " << msg << std::endl;
 		ELEKTRA_ADD_WARNING (58, errorKey, msg);
