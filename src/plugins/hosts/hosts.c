@@ -161,9 +161,22 @@ int elektraHostsGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			keyNew ("system/elektra/modules/hosts/infos/needs",
 				KEY_VALUE, "", KEY_END),
 			keyNew ("system/elektra/modules/hosts/infos/recommends",
-				KEY_VALUE, "network", KEY_END),
+				KEY_VALUE, "glob network", KEY_END),
 			keyNew ("system/elektra/modules/hosts/infos/version",
 				KEY_VALUE, PLUGINVERSION, KEY_END),
+			keyNew ("system/elektra/modules/hosts/config", KEY_END),
+			keyNew ("system/elektra/modules/hosts/config/needs", KEY_END),
+			keyNew ("system/elektra/modules/hosts/config/needs/glob/#1",
+				KEY_VALUE, "/*",
+				KEY_META, "check/ipaddr", "", /* Preferred way to check */
+				KEY_META, "validation/regex", "^[0-9.:]+$", /* Can be checked additionally */
+				KEY_META, "validation/message", "Character present not suitable for ip address",
+				KEY_END),
+			keyNew ("system/elektra/modules/hosts/config/needs/glob/#2",
+				KEY_VALUE, "/*/*",
+				KEY_META, "validation/regex", "^[0-9a-zA-Z.:]+$", /* Only basic character validation */
+				KEY_META, "validation/message", "Character present not suitable for host address",
+				KEY_END),
 			KS_END);
 		ksAppend (returned, moduleConfig);
 		ksDel (moduleConfig);

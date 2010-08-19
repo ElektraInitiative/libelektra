@@ -35,41 +35,11 @@ int elektraGlobMatch(Key *key, const Key *match)
 	return 0;
 }
 
-int elektraGlobOpen(Plugin *handle, Key *errorKey)
+int elektraGlobOpen(Plugin *handle, Key *parentKey)
 {
-	/* plugin initialization logic */
-
-	KeySet *keys = ksNew (10,
-			keyNew ("user/#1",
-				KEY_VALUE, "system/hosts/*",
-				KEY_META, "check/ipaddr", "", /* Preferred way to check */
-				KEY_META, "validation/regex", "^[0-9.:]+$", /* Can be checked additionally */
-				KEY_META, "validation/message", "Character present not suitable for ip address",
-				KEY_END),
-			keyNew ("user/#2",
-				KEY_VALUE, "system/hosts/*/alias*",
-				KEY_META, "validation/regex", "^[0-9a-zA-Z.:]+$", /* Only basic character validation */
-				KEY_META, "validation/message", "Character present not suitable for host address",
-				KEY_END),
-			keyNew ("user/#3",
-				KEY_VALUE, "system/type/*/empty",
-				KEY_META, "check/type", "empty",
-				KEY_END),
-			keyNew ("user/#4",
-				KEY_VALUE, "system/type/*/null",
-				KEY_META, "check/type", "null",
-				KEY_END),
-			keyNew ("user/#5",
-				KEY_VALUE, "system/type/*/any",
-				KEY_META, "check/type", "any",
-				KEY_END),
-			keyNew ("user/#5",
-				KEY_VALUE, "system/type/*/short",
-				KEY_META, "check/type", "short",
-				KEY_END),
-			KS_END);
-
-	elektraPluginSetData(handle, keys);
+	/* plugin initialization logic should be here */
+	/* TODO: name of parentKey is not set...*/
+	/* So rewriting cannot happen here (is in elektraGlobSet */
 
 	return 1; /* success */
 }
@@ -131,20 +101,55 @@ int elektraGlobGet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 int elektraGlobSet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
-	/* set all keys */
-	KeySet *matchKeys = elektraPluginGetData(handle);
+	KeySet *keys = elektraPluginGetConfig(handle);
+	KeySet *glob = ksNew (0);
+
+	Key *k;
+	ksRewind (keys);
+
+	size_t parentsize = keyGetNameSize(parentKey);
+	while ((k = ksNext(keys)) != 0)
+	{
+
+		/* First look if it is a glob key at all */
+		if (strncmp (keyName(k), "system/glob", sizeof("system/glob")-1) &&
+		    strncmp (keyName(k), "user/glob", sizeof("user/glob")-1)) continue;
+
+		/* Look if we have a string */
+		size_t valsize = keyGetValueSize(k);
+		if (valsize < 2) continue;
+
+		/* We now know we want that key.
+		   Dup it to not change the configuration. */
+		Key *ins = keyDup (k);
+
+		/* Now look if we want cascading for the key */
+		if (keyString(k)[0] == '/')
+		{
+			char *newstring = malloc (valsize + parentsize);
+			strcpy (newstring, keyName(parentKey));
+			strcat (newstring, keyString(k));
+
+			keySetString (ins, newstring);
+			free (newstring);
+		}
+
+		ksAppendKey (glob, ins);
+	}
 
 	Key *cur;
 	ksRewind (returned);
 	while ((cur = ksNext(returned)) != 0)
 	{
 		Key *match;
-		ksRewind (matchKeys);
-		while ((match = ksNext(matchKeys)) != 0)
+		ksRewind (glob);
+		while ((match = ksNext(glob)) != 0)
 		{
 			elektraGlobMatch (cur, match);
 		}
 	}
+
+	ksDel (glob);
 
 	return 1; /* success */
 }
