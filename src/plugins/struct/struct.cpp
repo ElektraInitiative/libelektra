@@ -116,6 +116,13 @@ int elektraStructSet(ckdb::Plugin *handle, ckdb::KeySet *returned, ckdb::Key *pa
 	/* set all keys */
 
 	try {
+		if (ksGetSize(returned) < 1) throw "Empty keyset will not be accepted";
+		ksRewind(returned);
+		const char *first_keyname = keyName(ksNext(returned));
+		const char *parentkeyname = keyName(parentKey);
+		if (strcmp (first_keyname, parentkeyname))
+			throw "first keyname is not equal the parentKey";
+
 		elektra::Checker *c = static_cast<elektra::Checker*>(elektraPluginGetData (handle));
 		doCheck (c, returned);
 	}
