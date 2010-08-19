@@ -26,6 +26,49 @@
 
 #define MAX_NUMBER_SIZE 10
 
+/** @param name is a buffer with MAX_PATH_LENGTH space.
+  * @param fstabEntry will be used to get the name:
+  * @param swapIndex will count up for every swap
+  *
+  *   - mnt_type will be checked if it is swap
+  *
+  * TODO Improvements:
+  *   - no counting up of swap?
+  *   - handle mountpoints none?
+  *
+  * Some logic to define the filesystem name when it is not
+  * so obvious.
+  */
+void elektraFstabFsName(char * fsname, struct mntent *fstabEntry,
+		unsigned int *swapIndex)
+{
+
+	if (!strcmp(fstabEntry->mnt_type,"swap")) {
+		sprintf(fsname,"swap%02d",*swapIndex);
+		++(*swapIndex);
+	} else if (!strcmp(fstabEntry->mnt_dir,"none")) {
+		strcpy(fsname,fstabEntry->mnt_type);
+	} else if (!strcmp(fstabEntry->mnt_dir,"/")) {
+		strcpy(fsname,"rootfs");
+	} else {
+		/* fsname will be the mount point without '/' char */
+		char *slash=0;
+		char *curr=fstabEntry->mnt_dir;
+		fsname[0]=0;
+		
+		while((slash=strchr(curr,PATH_SEPARATOR))) {
+			if (slash==curr) {
+				curr++;
+				continue;
+			}
+			
+			strncat(fsname,curr,slash-curr);
+			curr=slash+1;
+		}
+		strcat(fsname,curr);
+	}
+}
+
 int elektraFstabGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	int errnosave = errno;
@@ -33,9 +76,6 @@ int elektraFstabGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	Key *key;
 	Key *dir;
 	FILE *fstab=0;
-	struct mntent *fstabEntry;
-	char fsname[MAX_PATH_LENGTH];
-	char buffer[MAX_NUMBER_SIZE];
 
 #if DEBUG && VERBOSE
 	printf ("get fstab %s from %s\n", keyName(parentKey), keyString(parentKey));
@@ -117,39 +157,16 @@ int elektraFstabGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		errno = errnosave;
 		return -1;
 	}
-	
+
+	struct mntent *fstabEntry;
+	char fsname[MAX_PATH_LENGTH];
+	char buffer[MAX_NUMBER_SIZE];
+	unsigned int swapIndex=0;
 	while ((fstabEntry=getmntent(fstab)))
 	{
-		unsigned int swapIndex=0;
 		nr_keys += 7;
+		elektraFstabFsName(fsname, fstabEntry, &swapIndex);
 
-		/* Some logic to define the filesystem name when it is not
-		 * so obvious */
-		if (!strcmp(fstabEntry->mnt_type,"swap")) {
-			sprintf(fsname,"swap%02d",swapIndex);
-			swapIndex++;
-		} else if (!strcmp(fstabEntry->mnt_dir,"none")) {
-			strcpy(fsname,fstabEntry->mnt_type);
-		} else if (!strcmp(fstabEntry->mnt_dir,"/")) {
-			strcpy(fsname,"rootfs");
-		} else {
-			/* fsname will be the mount point without '/' char */
-			char *slash=0;
-			char *curr=fstabEntry->mnt_dir;
-			fsname[0]=0;
-			
-			while((slash=strchr(curr,PATH_SEPARATOR))) {
-				if (slash==curr) {
-					curr++;
-					continue;
-				}
-				
-				strncat(fsname,curr,slash-curr);
-				curr=slash+1;
-			}
-			strcat(fsname,curr);
-		}
-		
 		/* Include only the filesystem pseudo-names */
 		dir = keyDup (parentKey);
 		keyAddBaseName(dir, fsname);
