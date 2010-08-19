@@ -166,8 +166,6 @@ int elektraFstabGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		keySetString (key, buffer);
 		keySetComment (key, "Pass number on parallel fsck");
 		ksAppendKey(returned, key);
-
-		keySetMeta (dir, "check/struct", "FStabEntry");
 	}
 	
 	endmntent(fstab);

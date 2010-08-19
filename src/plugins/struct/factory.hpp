@@ -114,10 +114,18 @@ static inline Checker* buildChecker(KeySet config)
 
 	Factory f (config.cut(k));
 
-	std::auto_ptr<Checker> c = f.get("list");
+	std::stringstream ss (k.getString());
+
+	std::string whichChecker;
+	ss >> whichChecker;
+
+	std::auto_ptr<Checker> c = f.get(whichChecker);
 	if (!c.get()) throw "Could not create list";
 
-	c->buildup(f, "FStab");
+	std::string whichParameter;
+	ss >> whichParameter;
+
+	c->buildup(f, whichParameter);
 	return c.release();
 }
 
