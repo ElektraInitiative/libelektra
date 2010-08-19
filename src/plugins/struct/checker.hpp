@@ -47,9 +47,11 @@ public:
 		config.rewind();
 
 		Key confRoot = config.next();
+		if (!confRoot) throw "StructChecker: No confRoot found";
 
 		Key cur;
 		Key root = ks.next();
+		if (!root) throw "StructChecker: No root key found";
 
 
 		while (cur = ks.next())
@@ -64,7 +66,7 @@ public:
 			cur.copyAllMeta (searchKey);
 		}
 
-		if (config.next()) throw "StructChecker: There should not be any more elements in the structure";
+		if (config.next()) throw "StructChecker: There should be more elements in the structure";
 	}
 };
 
@@ -82,6 +84,7 @@ public:
 
 		ks2.rewind();
 		Key root = ks2.next();
+		if (!root) throw "ListChecker: no root key found";
 
 		while (k = ks2.next())
 		{
