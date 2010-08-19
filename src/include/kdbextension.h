@@ -10,6 +10,14 @@
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the BSD License (revised).                      *
+ *
+ * It is debatable if these functions belong to a general purpose key
+ * database. However there are here to make working with Elektra more
+ * easy or just as backwards compatability.
+ *
+ * They might be removed in a later version.
+ *
+ * They are not part of the documentation.
  *                                                                         *
  ***************************************************************************/
 
