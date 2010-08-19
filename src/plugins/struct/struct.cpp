@@ -28,9 +28,6 @@
 #include <key>
 #include <keyset>
 
-//TODO: fix opening of modules (show warnings)
-#include <iostream>
-
 #include "factory.hpp"
 
 using namespace ckdb;
@@ -47,7 +44,6 @@ int elektraStructOpen(ckdb::Plugin *handle, ckdb::Key *errorKey)
 	try {
 		elektra::Checker *c = static_cast<elektra::Checker*>(elektra::buildChecker(config));
 		config.release();
-		// std::cout << "got back [open] " << c << std::endl;
 		elektraPluginSetData (handle, c);
 	}
 	catch (const char* msg)
@@ -55,7 +51,6 @@ int elektraStructOpen(ckdb::Plugin *handle, ckdb::Key *errorKey)
 		config.release();
 
 		// TODO: warnings are not passed when plugin creation failed!
-		std::cout << "opening of plugin struct failed with msg: " << msg << std::endl;
 		ELEKTRA_ADD_WARNING (58, errorKey, msg);
 		return -1;
 	}
@@ -69,7 +64,6 @@ int elektraStructClose(ckdb::Plugin *handle, ckdb::Key *)
 	/* free all plugin resources and shut it down */
 	elektra::Checker *c = static_cast<elektra::Checker*>(elektraPluginGetData (handle));
 
-	// std::cout << "got back [close] " << c << std::endl;
 	delete c;
 
 	return 1; /* success */
@@ -123,7 +117,6 @@ int elektraStructSet(ckdb::Plugin *handle, ckdb::KeySet *returned, ckdb::Key *pa
 
 	try {
 		elektra::Checker *c = static_cast<elektra::Checker*>(elektraPluginGetData (handle));
-		// std::cout << "got back [set] " << c << std::endl;
 		doCheck (c, returned);
 	}
 	catch (const char* msg)

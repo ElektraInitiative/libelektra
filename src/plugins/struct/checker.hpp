@@ -9,9 +9,6 @@
 #include <key>
 #include <keyset>
 
-// TODO remove
-#include <iostream>
-
 
 namespace elektra {
 
@@ -54,8 +51,6 @@ public:
 		Key cur;
 		Key root = ks.next();
 
-		std::cout << "root key is: " << root.getName() << std::endl;
-
 
 		while (cur = ks.next())
 		{
@@ -63,17 +58,13 @@ public:
 			if (!searchKey) throw "StructChecker: More keys found than structure should have";
 			if (!root.isDirectBelow(cur)) throw "StructChecker: key is not direct below";
 
-			std::cout << "compare basename: " << searchKey.getBaseName() <<
-				" with cur: " << cur.getBaseName() << std::endl;
 			if (searchKey.getBaseName() != cur.getBaseName())
 				throw "StructChecker: did not find expected subkey";
 
-			std::cout << "Apply meta data of " << searchKey.getName() <<
-				" to the key " << cur.getName() << std::endl;
 			cur.copyAllMeta (searchKey);
 		}
 
-		if (config.next()) throw "StructChecker: There should be more elements in the structure";
+		if (config.next()) throw "StructChecker: There should not be any more elements in the structure";
 	}
 };
 
