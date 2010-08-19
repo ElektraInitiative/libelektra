@@ -44,18 +44,21 @@ int CpCommand::execute(int argc, char** argv)
 
 	Key k;
 	oldConf.rewind();
+	std::string commonName = sourceKey.getName();
+	cout << "common name: " << commonName << endl;
 	while (k = oldConf.next())
 	{
-		std::string commonName = sourceKey.getName();
 		std::string otherName = k.getName();
 		std::string baseName = otherName.substr(commonName.length());
-		cout << "common name: " << commonName << " otherName: " << otherName <<
-			" base name: " << baseName << " new name: " << newDirName + baseName <<  endl;
+		cout << "key: " << otherName <<
+			" will be copied to: " << newDirName + baseName <<  endl;
 
 		Key newKey = k.dup();
 		newKey.setName (newDirName + baseName);
 		newConf.append(newKey);
 	}
+	newConf.append(tmpConf); // these are unrelated keys
+	newConf.append(oldConf); // these are the original keys
 
 	newConf.rewind();
 	while (Key k = newConf.next())

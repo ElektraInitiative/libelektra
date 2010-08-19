@@ -186,19 +186,22 @@ void Backend::serialize (kdb::Key &rootKey, kdb::KeySet &ret)
 
 	config.rewind();
 	Key common = config.next();
-	string commonName = common.getName();
-
-	// TODO commonName might be too long if config/needs key is missing
-
-	while (Key k = config.next())
+	if (common)
 	{
-		string name = k.getName();
-		string newName = name.substr (commonName.length());
-		Key x (k);
-		x.setName(backendRootKey.getName());
-		x.addBaseName("config");
-		x.addBaseName(newName);
-		ret.append (x);
+		string commonName = common.getName();
+
+		// TODO commonName might be too long if config/needs key is missing
+
+		while (Key k = config.next())
+		{
+			string name = k.getName();
+			string newName = name.substr (commonName.length());
+			Key x (k);
+			x.setName(backendRootKey.getName());
+			x.addBaseName("config");
+			x.addBaseName(newName);
+			ret.append (x);
+		}
 	}
 
 	errorplugins.serialize(backendRootKey, ret);
