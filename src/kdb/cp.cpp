@@ -19,6 +19,7 @@ int CpCommand::execute(int argc, char** argv)
 		return 1;
 	}
 
+	std::string command = argv[1];
 	KeySet conf;
 	Key sourceKey(argv[2], KEY_END);
 	if (!sourceKey)
@@ -38,7 +39,9 @@ int CpCommand::execute(int argc, char** argv)
 	kdb.get(conf, sourceKey);
 	kdb.get(conf, destKey);
 	KeySet tmpConf = conf;
-	KeySet oldConf = tmpConf.cut(sourceKey);
+	KeySet oldConf;
+
+	oldConf.append (tmpConf.cut(sourceKey));
 
 	KeySet newConf;
 
@@ -51,16 +54,21 @@ int CpCommand::execute(int argc, char** argv)
 		std::string otherName = k.getName();
 		std::string baseName = otherName.substr(commonName.length());
 		cout << "key: " << otherName <<
-			" will be copied to: " << newDirName + baseName <<  endl;
+			" will be copied/moved to: " << newDirName + baseName <<  endl;
 
 		Key newKey = k.dup();
 		newKey.setName (newDirName + baseName);
 		newConf.append(newKey);
 	}
 	newConf.append(tmpConf); // these are unrelated keys
-	newConf.append(oldConf); // these are the original keys
+	if (command == "cp" || command == "cp-r")
+	{
+		cout << "in preserving (cp) mode" << endl;
+		newConf.append(oldConf); // these are the original keys
+	} // else simple drop the original conf
 
 	newConf.rewind();
+	cout << "Will write out:" << endl;
 	while (Key k = newConf.next())
 	{
 		cout << k.getName() << " " << k.getString() << endl;

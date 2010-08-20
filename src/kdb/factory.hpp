@@ -65,6 +65,7 @@ public:
 		m_factory.insert(std::make_pair("cp", new Cnstancer<CpCommand>()));
 		m_factory.insert(std::make_pair("fstab-set", new Cnstancer<FstabCommand>()));
 		m_factory.insert(std::make_pair("meta-ls", new Cnstancer<MetaLsCommand>()));
+		m_factory.insert(std::make_pair("mv", new Cnstancer<CpCommand>()));
 	}
 
 	~Factory()
