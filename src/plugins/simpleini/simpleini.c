@@ -52,7 +52,7 @@ int elektraSimpleiniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			keyNew ("system/elektra/modules/simpleini/infos/placements",
 				KEY_VALUE, "getstorage setstorage", KEY_END),
 			keyNew ("system/elektra/modules/simpleini/infos/needs",
-				KEY_VALUE, "code", KEY_END),
+				KEY_VALUE, "code null", KEY_END),
 			keyNew ("system/elektra/modules/simpleini/infos/version",
 				KEY_VALUE, PLUGINVERSION, KEY_END),
 			keyNew ("system/elektra/modules/simpleini/config/needs",
