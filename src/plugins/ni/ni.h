@@ -28,6 +28,8 @@
 
 #include <kdbplugin.h>
 
+#include <bohr/ni.h>
+
 
 int elektraNiOpen(Plugin *handle, Key *errorKey);
 int elektraNiClose(Plugin *handle, Key *errorKey);
