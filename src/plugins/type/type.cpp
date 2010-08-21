@@ -83,7 +83,7 @@ int elektraTypeGet(ckdb::Plugin *, ckdb::KeySet *returned, ckdb::Key *)
 		keyNew ("system/elektra/modules/type/infos/description",
 			KEY_VALUE, "Copies meta data to keys using typebing", KEY_END),
 		keyNew ("system/elektra/modules/type/infos/provides",
-			KEY_VALUE, "type", KEY_END),
+			KEY_VALUE, "check", KEY_END),
 		keyNew ("system/elektra/modules/type/infos/placements",
 			KEY_VALUE, "presetstorage", KEY_END),
 		keyNew ("system/elektra/modules/type/infos/needs",
