@@ -50,6 +50,8 @@ protected:
 	int nrStoragePlugins;
 	int nrResolverPlugins;
 
+	int revPostGet;
+
 	std::map <std::string, Place> placementInfo;
 
 public:

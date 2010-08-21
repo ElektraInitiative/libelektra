@@ -22,6 +22,7 @@ Plugins::Plugins () :
 	placementInfo["pregetstorage"] = Place(RESOLVER_PLUGIN+1, STORAGE_PLUGIN-1);
 	placementInfo["getstorage"] = Place(STORAGE_PLUGIN, STORAGE_PLUGIN);
 	placementInfo["postgetstorage"] = Place(STORAGE_PLUGIN+1, NR_OF_PLUGINS-1);
+	revPostGet = NR_OF_PLUGINS-1;
 
 	placementInfo["setresolver"] = Place(RESOLVER_PLUGIN, RESOLVER_PLUGIN);
 	placementInfo["presetstorage"] = Place(RESOLVER_PLUGIN+1, STORAGE_PLUGIN-1);
@@ -68,16 +69,42 @@ void Plugins::addProvided (Plugin &plugin)
 
 void Plugins::addPlugin (Plugin &plugin, std::string which)
 {
-	if (plugin.findInfo(which, "placements"))
+	if (!plugin.findInfo(which, "placements")) return;
+
+	std::string stacking = plugin.lookupInfo("stacking");
+
+	if (which=="postgetstorage" && stacking == "")
 	{
-		cout << "Add plugin to " << placementInfo[which].current << endl;
-		plugins[placementInfo[which].current++] = &plugin;
+		cout << "Added plugin (stacking) [" << which << "] to "
+			<< revPostGet << endl;
+		plugins[revPostGet --] = &plugin;
+		return;
 	}
+
+	cout << "Added plugin [" << which << "] to "
+		<< placementInfo[which].current << endl;
+	plugins[placementInfo[which].current++] = &plugin;
 }
 
 bool Plugins::checkPlacement (Plugin &plugin, std::string which)
 {
 	if (!plugin.findInfo(which, "placements")) return true;
+
+	std::string stacking = plugin.lookupInfo("stacking");
+
+	if (which=="postgetstorage" && stacking == "")
+	{
+		if (revPostGet >= placementInfo["postgetstorage"].current)
+		{
+			return true;
+		}
+
+		cout << "Failed because of stack overflow cant place to "
+			<< revPostGet  << " because "
+			<< placementInfo["postgetstorage"].current
+			<< " is larger (this slot is in use)" << endl;
+		throw TooManyPlugins();
+	}
 
 	if (placementInfo[which].current > placementInfo[which].max)
 	{
