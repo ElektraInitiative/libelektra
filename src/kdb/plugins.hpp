@@ -19,6 +19,38 @@ struct TooManyPlugins : public PluginCheckException
 	}
 };
 
+struct Stackoverflow: public PluginCheckException
+{
+	virtual const char* what() const throw()
+	{
+		return  "Too many plugins!\n"
+			"The plugin can't be positioned anymore.\n"
+			"Try to reduce the number of plugins to get better performance.";
+	}
+};
+
+struct OrderingViolation: public PluginCheckException
+{
+	virtual const char* what() const throw()
+	{
+		return  "Ordering Violation!\n"
+			"You tried to add a plugin which requests another plugin to be positioned first.\n"
+			"Please position the other plugin first and try again.";
+	}
+};
+
+struct ConflictViolation: public PluginCheckException
+{
+	virtual const char* what() const throw()
+	{
+		return  "Conflict Violation!\n"
+			"You tried to add a plugin which conflicts with another.\n"
+			"Please dont add a plugin which conflicts.";
+	}
+};
+
+
+
 
 struct Place
 {
@@ -46,6 +78,7 @@ protected:
 	std::vector <std::string> needed;
 	std::vector <std::string> recommended;
 	std::vector <std::string> alreadyProvided;
+	std::vector <std::string> alreadyConflict;
 
 	int nrStoragePlugins;
 	int nrResolverPlugins;
@@ -58,7 +91,7 @@ public:
 	Plugins ();
 
 	/** Add needed, provided and recommend information */
-	void addProvided (Plugin &plugin);
+	void addInfo (Plugin &plugin);
 	void addPlugin (Plugin &plugin, std::string which);
 
 	/** Validate needed, recommend and provided information */
@@ -69,6 +102,8 @@ public:
 	void checkStorage (Plugin &plugin);
 	void checkResolver (Plugin &plugin);
 	void checkInfo (Plugin &plugin);
+	void checkOrdering (Plugin &plugin);
+	void checkConflicts (Plugin &plugin);
 };
 
 class GetPlugins : private Plugins

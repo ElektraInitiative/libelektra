@@ -10,7 +10,7 @@ using namespace kdb;
 
 
 Plugins::Plugins () :
-	plugins (10),
+	plugins (NR_OF_PLUGINS),
 	nrStoragePlugins (0),
 	nrResolverPlugins (0)
 {
@@ -32,7 +32,7 @@ Plugins::Plugins () :
 	placementInfo["postcommit"] = Place(COMMIT_PLUGIN+1, NR_OF_PLUGINS-1);
 }
 
-void Plugins::addProvided (Plugin &plugin)
+void Plugins::addInfo (Plugin &plugin)
 {
 	{
 		std::string provide;
@@ -63,6 +63,16 @@ void Plugins::addProvided (Plugin &plugin)
 		{
 			recommended.push_back(recommend);
 			cout << "add recommend: " << recommend << endl;
+		}
+	}
+
+	{
+		std::string conflict;
+		std::stringstream ss(plugin.lookupInfo("conflicts"));
+		while (ss >> conflict)
+		{
+			alreadyConflict.push_back(conflict);
+			cout << "add conflict: " << conflict << endl;
 		}
 	}
 }
@@ -103,7 +113,7 @@ bool Plugins::checkPlacement (Plugin &plugin, std::string which)
 			<< revPostGet  << " because "
 			<< placementInfo["postgetstorage"].current
 			<< " is larger (this slot is in use)" << endl;
-		throw TooManyPlugins();
+		throw Stackoverflow();
 	}
 
 	if (placementInfo[which].current > placementInfo[which].max)
@@ -184,12 +194,77 @@ void Plugins::checkInfo (Plugin &plugin)
 }
 
 
+/** Check ordering of plugins.
+  */
+void Plugins::checkOrdering (Plugin &plugin)
+{
+	std::string order;
+	std::stringstream ss(plugin.lookupInfo("ordering"));
+	while (ss >> order)
+	{
+		/* Simple look in the already provided names.
+		 * Because both plugin names + provided names are
+		 * there.
+		 * If it is found, we have an ordering violation.
+		 */
+		cout << "check if " << order << " is in provided" << endl;
+		if (std::find(alreadyProvided.begin(), alreadyProvided.end(), order) != alreadyProvided.end())
+		{
+			throw OrderingViolation();
+		}
+
+	}
+}
+
+/** Check conflicts of plugins.
+  */
+void Plugins::checkConflicts (Plugin &plugin)
+{
+	{
+		std::string order;
+		std::stringstream ss(plugin.lookupInfo("conflicts"));
+		while (ss >> order)
+		{
+			/* Simple look in the already provided names.
+			 * Because both plugin names + provided names are
+			 * there.
+			 * If one is found, we have an conflict.
+			 */
+			if (std::find(alreadyProvided.begin(), alreadyProvided.end(), order) != alreadyProvided.end())
+			{
+				throw ConflictViolation();
+			}
+		}
+	}
+
+	/* Is there a conflict against the name? */
+	if (std::find(alreadyConflict.begin(), alreadyConflict.end(), plugin.name()) != alreadyConflict.end())
+	{
+		throw ConflictViolation();
+	}
+
+	/* Is there a conflict against what it provides? */
+	std::string order;
+	std::stringstream ss(plugin.lookupInfo("provides"));
+	while (ss >> order)
+	{
+		if (std::find(alreadyConflict.begin(), alreadyConflict.end(), order) != alreadyConflict.end())
+		{
+			throw ConflictViolation();
+		}
+	}
+}
+
+
 
 
 
 
 void ErrorPlugins::tryPlugin (Plugin &plugin)
 {
+	checkOrdering(plugin);
+	checkConflicts(plugin);
+
 	if (	checkPlacement(plugin,"prerollback") &&
 		checkPlacement(plugin,"rollback") &&
 		checkPlacement(plugin,"postrollback"))
@@ -266,7 +341,7 @@ void ErrorPlugins::addPlugin (Plugin &plugin)
 	Plugins::addPlugin (plugin, "rollback");
 	Plugins::addPlugin (plugin, "postrollback");
 
-	Plugins::addProvided (plugin);
+	Plugins::addInfo (plugin);
 }
 
 void GetPlugins::addPlugin (Plugin &plugin)
@@ -315,7 +390,7 @@ void ErrorPlugins::serialize (Key &baseKey, KeySet &ret)
 		KEY_COMMENT, "List of plugins to use",
 		KEY_END));
 
-	for (int i=0; i< 10; ++i)
+	for (int i=0; i< NR_OF_PLUGINS; ++i)
 	{
 		if (plugins[i] == 0) continue;
 
@@ -333,7 +408,7 @@ void GetPlugins::serialize (Key &baseKey, KeySet &ret)
 		KEY_COMMENT, "List of plugins to use",
 		KEY_END));
 
-	for (int i=0; i< 10; ++i)
+	for (int i=0; i< NR_OF_PLUGINS; ++i)
 	{
 		if (plugins[i] == 0) continue;
 
@@ -352,7 +427,7 @@ void SetPlugins::serialize (Key &baseKey, KeySet &ret)
 		KEY_COMMENT, "List of plugins to use",
 		KEY_END));
 
-	for (int i=0; i< 10; ++i)
+	for (int i=0; i< NR_OF_PLUGINS; ++i)
 	{
 		if (plugins[i] == 0) continue;
 
