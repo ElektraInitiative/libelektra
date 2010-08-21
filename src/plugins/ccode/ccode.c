@@ -150,6 +150,8 @@ void elektraCcodeDecode (Key *cur, CCodeData *d)
 	size_t valsize = keyGetValueSize(cur);
 	const char *val = keyValue(cur);
 
+	if (!val) return;
+
 	size_t out=0;
 	for (size_t in=0; in<valsize-1; ++in)
 	{
@@ -250,6 +252,8 @@ void elektraCcodeEncode (Key *cur, CCodeData *d)
 {
 	size_t valsize = keyGetValueSize(cur);
 	const char *val = keyValue(cur);
+
+	if (!val) return;
 
 	size_t out=0;
 	for (size_t in=0; in<valsize-1; ++in)
