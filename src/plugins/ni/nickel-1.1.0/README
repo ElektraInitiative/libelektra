@@ -1,0 +1,17 @@
+Nickel - a library for hierarchical maps and .ini files
+One of the Bohr Game Libraries (see chaoslizard.org/devel/bohr)
+Copyright (C) 2008 Charles Lindsay.  Some rights reserved; see COPYING.
+
+
+This is a stand-alone release of Nickel.
+
+The full documentation is available on the web:
+   http://www.chaoslizard.org/devel/bohr/wiki/Docs/Ni
+
+For quick install instructions, see INSTALL.
+
+For how to get in touch with the author, see AUTHORS (hint: it's email).
+
+If you find a bug in Nickel, please email the author.  Please include "Nickel"
+in the subject line to help ensure your message isn't accidentally discarded as
+spam.

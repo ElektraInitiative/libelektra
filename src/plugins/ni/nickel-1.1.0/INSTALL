@@ -1,0 +1,12 @@
+Nickel doesn't use the GNU autotools.  Installing is as simple as running make
+and (with root privileges) make install from the src directory:
+
+   cd src
+   make
+   make install
+
+Tweak the command line(s) and/or the Makefile itself as you see fit.
+
+
+The full installation documentation is available on the web:
+   http://www.chaoslizard.org/devel/bohr/wiki/Docs/Ni
