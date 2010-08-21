@@ -43,9 +43,16 @@ int SetCommand::execute(int argc, char**argv)
 
 	if (!key)
 	{
-		cout << "create a new key with " << name << " and " << value << endl;
+		cout << "create a new key " << name;
 		key = Key(name, KEY_END);
-		if (!nullValue) key.setString(value);
+		if (!nullValue)
+		{
+			cout << " with string " << value << endl;
+			key.setString(value);
+		} else {
+			cout << " with null value" << endl;
+			key.setBinary(0, 0);
+		}
 		if (!key.isValid())
 		{
 			cerr << "no valid name supplied" << endl;
@@ -53,8 +60,14 @@ int SetCommand::execute(int argc, char**argv)
 		}
 		conf.append(key);
 	} else {
-		cout << "Set string to " << value << endl;
-		if (!nullValue) key.setString(value);
+		if (!nullValue)
+		{
+			cout << "Set string to " << value << endl;
+			key.setString(value);
+		} else {
+			cout << "Set null value" << endl;
+			key.setBinary(0, 0);
+		}
 	}
 	Key n;
 	kdb.set(conf, n);
