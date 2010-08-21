@@ -33,30 +33,48 @@
 using namespace ckdb;
 #include <kdberrors.h>
 
+/** This function avoid that many return pathes need to release the
+  * configuration. */
+inline static int elektraStructOpenDelegator(ckdb::Plugin *handle, kdb::KeySet& config, ckdb::Key *errorKey)
+{
+	if (config.lookup("/module"))
+	{
+		// suppress warnings if it is just a module
+		// dont buildup the struct then
+		return 0;
+	}
+
+	try {
+		elektra::Checker *c = static_cast<elektra::Checker*>(elektra::buildChecker(config));
+		elektraPluginSetData (handle, c);
+	}
+	catch (const char* msg)
+	{
+		// TODO: warnings are not always passed when plugin
+		// creation failed?
+		ELEKTRA_ADD_WARNING (58, errorKey, msg);
+		return -1;
+	}
+
+	return 1;
+}
+
 extern "C"
 {
 
 int elektraStructOpen(ckdb::Plugin *handle, ckdb::Key *errorKey)
 {
+	int ret;
+
 	/* plugin initialization logic */
 	kdb::KeySet config (elektraPluginGetConfig(handle));
 
-	try {
-		elektra::Checker *c = static_cast<elektra::Checker*>(elektra::buildChecker(config));
-		config.release();
-		elektraPluginSetData (handle, c);
-	}
-	catch (const char* msg)
-	{
-		config.release();
+	ret = elektraStructOpenDelegator(handle, config, errorKey);
 
-		// TODO: warnings are not passed when plugin creation failed!
-		ELEKTRA_ADD_WARNING (58, errorKey, msg);
-		return -1;
-	}
+	config.release();
 
 
-	return 1; /* success */
+	return ret;
 }
 
 int elektraStructClose(ckdb::Plugin *handle, ckdb::Key *)
