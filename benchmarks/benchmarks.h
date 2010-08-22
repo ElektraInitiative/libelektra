@@ -12,7 +12,6 @@
 #include <time.h>
 
 #define KEY_ROOT "user/benchmark"
-#define ROOT_KEY "user/benchmark"
 
 #define KEY_NAME_LENGTH 1000
 #define NUM_DIR 100
