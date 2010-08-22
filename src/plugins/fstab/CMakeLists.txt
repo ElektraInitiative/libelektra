@@ -1,6 +1,7 @@
 try_compile (HAS_MNTENT
 		"${CMAKE_BINARY_DIR}"
-		"${PROJECT_SOURCE_DIR}/src/backends/fstab/testmntent.c")
+		"${PROJECT_SOURCE_DIR}/src/plugins/fstab/testmntent.c"
+		)
 
 include(LibAddMacros)
 

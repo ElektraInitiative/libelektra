@@ -44,7 +44,7 @@
  * @return 0 when the caller should go on
  * @return 1 when the caller should continue (with next iteration)
  */
-static int append_comment (char *comment, char *line)
+int elektraHostsAppendComment (char *comment, char *line)
 {
 	size_t i;
 	size_t s = elektraStrLen(line);
@@ -91,7 +91,7 @@ static int append_comment (char *comment, char *line)
  * in order to find the next token.
  * @return 0 if no more token is available
  */
-static size_t find_token (char **token, char *line)
+size_t elektraHostsFindToken (char **token, char *line)
 {
 	size_t i = 0;
 
@@ -105,113 +105,148 @@ static size_t find_token (char **token, char *line)
 	if (line[i] == '\0' || line[i] == '\n')
 	{
 		line[i] = '\0'; /* Terminate the token. */
-		return i; /* find_token will quit next time in Step 1 */
+		return i; /* elektraHostsFindToken will quit next time in Step 1 */
 	}
 
 	/* Step 3, terminate the token */
 	line[i] = '\0';
-	return i+1; /* let find_token continue next time one byte after termination */
+	return i+1; /* let elektraHostsFindToken continue next time one byte after termination */
 }
 
-ssize_t kdbGet_hosts(Plugin *handle, KeySet *returned, Key *parentKey)
+void elektraHostsSetMeta(Key *key, int order)
+{
+	char buffer[50];
+	snprintf (buffer, 50, "%d", order);
+	keySetMeta(key, "order", buffer);
+}
+
+int elektraHostsGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	int errnosave = errno;
-	ssize_t nr_keys = 0, nr_alias;
 	FILE * fp;
 	char readbuffer [HOSTS_BUFFER_SIZE];
 	char *fieldbuffer;
 	size_t readsize;
-	char aliasname[] = "alias00";
 	char *fret;
 	int   sret;
 	Key *key, *alias, *tmp;
 	char comment [HOSTS_BUFFER_SIZE] = "";
 	KeySet *append = 0;
+	size_t order = 1;
 
-	/* if (strcmp (keyName(kdbhGetMountpoint(handle)), keyName(parentKey))) return 0; */
+	if (!strcmp (keyName(parentKey), "system/elektra/modules/hosts"))
+	{
+		KeySet *moduleConfig = ksNew (30,
+			keyNew ("system/elektra/modules/hosts",
+				KEY_VALUE, "hosts plugin waits for your orders", KEY_END),
+			keyNew ("system/elektra/modules/hosts/exports", KEY_END),
+			keyNew ("system/elektra/modules/hosts/exports/get",
+				KEY_FUNC, elektraHostsGet,
+				KEY_END),
+			keyNew ("system/elektra/modules/hosts/exports/set",
+				KEY_FUNC, elektraHostsSet,
+				KEY_END),
+			keyNew ("system/elektra/modules/hosts/infos",
+				KEY_VALUE, "All information you want to know", KEY_END),
+			keyNew ("system/elektra/modules/hosts/infos/author",
+				KEY_VALUE, "Markus Raab <elektra@markus-raab.org>", KEY_END),
+			keyNew ("system/elektra/modules/hosts/infos/licence",
+				KEY_VALUE, "BSD", KEY_END),
+			keyNew ("system/elektra/modules/hosts/infos/description",
+				KEY_VALUE, "/etc/hosts file", KEY_END),
+			keyNew ("system/elektra/modules/hosts/infos/provides",
+				KEY_VALUE, "storage", KEY_END),
+			keyNew ("system/elektra/modules/hosts/infos/placements",
+				KEY_VALUE, "getstorage setstorage", KEY_END),
+			keyNew ("system/elektra/modules/hosts/infos/needs",
+				KEY_VALUE, "", KEY_END),
+			keyNew ("system/elektra/modules/hosts/infos/recommends",
+				KEY_VALUE, "glob network", KEY_END),
+			keyNew ("system/elektra/modules/hosts/infos/version",
+				KEY_VALUE, PLUGINVERSION, KEY_END),
+			keyNew ("system/elektra/modules/hosts/config", KEY_END),
+			keyNew ("system/elektra/modules/hosts/config/needs", KEY_END),
+			keyNew ("system/elektra/modules/hosts/config/needs/glob/#1",
+				KEY_VALUE, "/*",
+				KEY_META, "check/ipaddr", "", /* Preferred way to check */
+				KEY_META, "validation/regex", "^[0-9.:]+$", /* Can be checked additionally */
+				KEY_META, "validation/message", "Character present not suitable for ip address",
+				KEY_END),
+			keyNew ("system/elektra/modules/hosts/config/needs/glob/#2",
+				KEY_VALUE, "/*/*",
+				KEY_META, "validation/regex", "^[0-9a-zA-Z.:]+$", /* Only basic character validation */
+				KEY_META, "validation/message", "Character present not suitable for host address",
+				KEY_END),
+			KS_END);
+		ksAppend (returned, moduleConfig);
+		ksDel (moduleConfig);
+		return 1;
+	}
 
-	fp = fopen (keyString(ksLookupByName(elektraPluginGetConfig (handle), "/path", 0)), "r");
+	fp = fopen (keyValue(parentKey), "r");
 
 	if (fp == 0)
 	{
-		/*kdbhSetError (handle, Plugin_ERR_NODIR);*/
 		errno = errnosave;
-		return -1;
+		return 0;
 	}
-
-	// kdbbReadLock (fp);
 
 	ksClear (returned);
 	append = ksNew(ksGetSize(returned)*2, KS_END);
 
 	key = keyDup (parentKey);
-	keySetDir (key);
 	ksAppendKey(append, key);
-	clear_bit (key->flags, KEY_FLAG_SYNC);
-	nr_keys ++;
 
 	while (1)
 	{
 		fret = fgets (readbuffer, HOSTS_BUFFER_SIZE, fp);
 		if (fret == 0) 
 		{
-			/* success */
-			// kdbbUnlock(fp);
 			fclose (fp);
 
 			ksClear (returned);
 			ksAppend (returned, append);
 			ksDel (append);
 			errno = errnosave;
-			return nr_keys;
+			return 1;
 		}
 
-		if (append_comment(comment, readbuffer)) continue;
+		if (elektraHostsAppendComment(comment, readbuffer)) continue;
 
-		sret = find_token (&fieldbuffer, readbuffer);
+		sret = elektraHostsFindToken (&fieldbuffer, readbuffer);
 		if (sret == 0) continue;
 
 		key = ksLookupByName(returned, fieldbuffer, KDB_O_POP);
 		if (!key) key = keyDup (parentKey);
-		keySetMode(key, 0664);
 		keySetString (key, fieldbuffer);
 		keySetComment (key, comment);
 		*comment = '\0'; /* Start with a new comment */
 
 		readsize = sret;
-		sret = find_token (&fieldbuffer, readbuffer+readsize);
-
+		sret = elektraHostsFindToken (&fieldbuffer, readbuffer+readsize);
 		keyAddBaseName (key, fieldbuffer);
-		ksAppendKey(append, key);
-		clear_bit (key->flags, KEY_FLAG_SYNC);
 
-		nr_alias = 0;
+		elektraHostsSetMeta(key, order);
+		++ order; /* Next key gets next number */
+
+		ksAppendKey(append, key);
+
+		ssize_t nr_alias = 0;
 		while (1) /*Read in aliases*/
 		{
 			readsize += sret;
-			sret = find_token (&fieldbuffer, readbuffer+readsize);
+			sret = elektraHostsFindToken (&fieldbuffer, readbuffer+readsize);
 			if (sret == 0) break;
 
 			tmp = keyDup (key);
-			aliasname[5] = nr_alias / 10 + '0';
-			aliasname[6] = nr_alias % 10 + '0';
-			keyAddBaseName (tmp, aliasname);
+			keyAddBaseName (tmp, fieldbuffer);
 			alias = ksLookup(returned, tmp, KDB_O_POP);
 			if (!alias) alias = tmp;
 			else keyDel (tmp);
-			keySetMode(alias, 0664);
-			keySetString (alias, fieldbuffer);
-			keySetComment (alias, "");
+
 			ksAppendKey(append, alias);
-			clear_bit (alias->flags, KEY_FLAG_SYNC);
-			nr_alias ++;
-			if (nr_alias == 1)
-			{
-				keySetDir (key);
-				clear_bit (key->flags, KEY_FLAG_SYNC);
-			}
+			++ nr_alias;
 		}
-		nr_keys += nr_alias + 1;
 	}
 
 	ELEKTRA_SET_ERROR(10, parentKey, readbuffer);
@@ -222,17 +257,14 @@ ssize_t kdbGet_hosts(Plugin *handle, KeySet *returned, Key *parentKey)
 	return -1;
 }
 
-ssize_t kdbSet_hosts(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraHostsSet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	int errnosave = errno;
-	ssize_t nr_keys = 0, nr_alias = 0;
 	FILE *fp;
 	Key *key, *alias=0;
 	char * lastline;
 
-	/* if (strcmp (keyName(kdbhGetMountpoint(handle)), keyName(parentKey))) return 0; */
-
-	fp = fopen (keyString(ksLookupByName(elektraPluginGetConfig (handle), "/path", 0)), "w");
+	fp = fopen (keyValue(parentKey), "w");
 
 	if (fp == 0)
 	{
@@ -241,19 +273,38 @@ ssize_t kdbSet_hosts(Plugin *handle, KeySet *returned, Key *parentKey)
 		return -1;
 	}
 
-	// kdbbWriteLock (fp);
+	Key **keyarray;
+	size_t retsize = ksGetSize(returned);
+	size_t keyarraysize = retsize *2 +2;
+	keyarray = calloc (keyarraysize, sizeof (Key*));
+	size_t keyarrayend = retsize +1;
 
 	ksRewind (returned);
-	key = ksNext (returned); /* skip parentKey */
+	Key *root = ksNext (returned); /* skip parentKey */
 
-	nr_keys ++;
-
-	while (1)
+	while ((key = ksNext (returned)) != 0)
 	{
-		if (!alias) key = ksNext (returned);
-		else key = alias;
-		if (!key) break;
+		/* Only accept keys direct below */
+		if (keyRel (root, key) != 1) continue;
 
+		const Key *orderkey = keyGetMeta (key, "order");
+		int order = 0;
+		if (orderkey) order = atoi (keyString(orderkey));
+		if (order <= 0 || (size_t)order > retsize)
+		{
+			/* Append to the end */
+			keyarray[keyarrayend] = key;
+			++ keyarrayend;
+		} else {
+			keyarray[order] = key;
+			++ order;
+		}
+	}
+
+	for (size_t i=0; i< keyarraysize; ++i)
+	{
+		key = keyarray[i];
+		if (!key) continue;
 		lastline = strrchr (keyComment(key), '\n');
 		if (lastline)
 		{
@@ -264,19 +315,13 @@ ssize_t kdbSet_hosts(Plugin *handle, KeySet *returned, Key *parentKey)
 
 		fprintf (fp, "%s\t%s", (char*)keyValue(key), (char*)keyBaseName (key));
 
-		nr_alias = 0;
-		if (keyIsDir (key))
+		ksLookup(returned, key, 0);
+		while ((alias = ksNext (returned)) != 0)
 		{
-			while ((alias = ksNext (returned)) != 0)
-			{
-				if (keyIsDir(alias)) break;
-				if (strncmp (keyName(key), keyName(alias), strlen(keyName(key)))) break;;
-				if (strlen(keyName(key)) + strlen (keyBaseName (alias)) + 1 != strlen (keyName(alias))) goto error;
-				if (strncmp (keyBaseName (alias), "alias", 5)) goto error;
-				fprintf (fp, "\t%s", (char*)keyValue (alias));
-				nr_alias++;
-			}
-		} else alias = 0;
+			if (keyRel (key, alias) < 1) break;
+
+			fprintf (fp, " %s", (char*)keyBaseName(alias));
+		}
 
 		if (lastline)
 		{
@@ -286,29 +331,19 @@ ssize_t kdbSet_hosts(Plugin *handle, KeySet *returned, Key *parentKey)
 		}
 
 		fprintf (fp, "\n");
-		nr_keys += nr_alias + 1;
 	}
 
-	// kdbbUnlock (fp);
 	fclose (fp);
 	errno = errnosave;
-	return nr_keys;
-
-error:
-	// kdbbUnlock (fp);
-	fclose (fp);
-	/* Make the file empty */
-	fp = fopen ("/tmp/hosts", "w");
-	fclose (fp);
-	errno = errnosave;
-	return -1;
+	free (keyarray);
+	return 1;
 }
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(hosts)
 {
-	return elektraPluginExport(BACKENDNAME,
-		ELEKTRA_PLUGIN_GET,	&kdbGet_hosts,
-		ELEKTRA_PLUGIN_SET,	&kdbSet_hosts,
+	return elektraPluginExport("hosts",
+		ELEKTRA_PLUGIN_GET,	&elektraHostsGet,
+		ELEKTRA_PLUGIN_SET,	&elektraHostsSet,
 		ELEKTRA_PLUGIN_END);
 }
 

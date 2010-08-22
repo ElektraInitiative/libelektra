@@ -104,7 +104,7 @@ void elektraSplitDel(Split *keysets)
 /**
  * Doubles the size of how many parts of keysets can be appended.
  *
- * @param ret the split object to work with
+ * @param split the split object to work with
  * @ingroup split
  */
 void elektraSplitResize(Split *split)
@@ -194,6 +194,8 @@ ssize_t elektraSplitSearchBackend(Split *split, Backend *backend, Key *parent)
  * @return 0 if parentKey == 0 or there are keys below
  *          or same than parentKey which do not fit
  *          in any of splitted keysets
+ * @param split the split object to work with
+ * @param parentKey the key which relation is searched for
  * @ingroup split
  */
 int elektraSplitSearchRoot(Split *split, Key *parentKey)
@@ -225,6 +227,9 @@ int elektraSplitSearchRoot(Split *split, Key *parentKey)
  * @pre parentKey must be a valid key! (could be implemented more generally,
  *      but that would require splitting up of keysets of the same backend)
  *
+ * @param split the split object to work with
+ * @param kdb the handle to get information about backends
+ * @param parentKey the information below which key the backends are from interest
  * @ingroup split
  * @return always 1
  */
@@ -275,6 +280,10 @@ int elektraSplitBuildup (Split *split, KDB *kdb, Key *parentKey)
  *
  * @pre elektraSplitBuildup() need to be executed before.
  *
+ * @param split the split object to work with
+ * @param handle to get information where the individual keys belong
+ * @param ks the keyset to divide
+ *
  * @return 0 if there were no sync bits
  * @return 1 if there were sync bits
  * @return -1 if no backend was found for a key
@@ -313,6 +322,10 @@ int elektraSplitDivide (Split *split, KDB *handle, KeySet *ks)
  * Appoints all keys from ks to yet unsynced splits.
  *
  * @pre elektraSplitBuildup() need to be executed before.
+ *
+ * @param split the split object to work with
+ * @param handle to determine to which backend a key belongs
+ * @param ks the keyset to appoint to split
  *
  * @return 1 on success
  * @return -1 if no backend was found for a key
@@ -355,6 +368,8 @@ int elektraSplitAppoint (Split *split, KDB *handle, KeySet *ks)
  * - remove syncbits
  * - update usersize and systemsize
  *
+ * @param split the split object to work with
+ * @param handle the handle to preprocess the keys
  * @return 1 on success
  * @return -1 if no backend was found for a key
  * @ingroup split
@@ -441,6 +456,8 @@ int elektraSplitUpdateSize (Split *split)
 /**
  * Merges together all parts of split into dest.
  *
+ * @param split the split object to work with
+ * @param dest the destination keyset where all keysets are appended.
  * @return 1 on success
  * @ingroup split
  */
@@ -463,6 +480,7 @@ int elektraSplitMerge (Split *split, KeySet *dest)
  * @return 0 if kdbSet() is not needed
  * @return 1 if kdbSet() is needed
  * @pre user/system was splitted before.
+ * @param split the split object to work with
  * @ingroup split
  *
 **/

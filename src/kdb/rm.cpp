@@ -27,12 +27,26 @@ int RemoveCommand::execute(int argc, char** argv)
 		return 1;
 	}
 	kdb.get(conf, x);
-	Key k = conf.lookup(x, KDB_O_POP);
 
-	if (!k)
+	std::string command = argv[1];
+	if (command == "rm")
 	{
-		cerr << "Did not find key" << endl;
-		return 1;
+		KeySet k ( conf.cut (x));
+
+		if (k.size() == 0)
+		{
+			cerr << "Did not find any key" << endl;
+			return 1;
+		}
+	} else {
+		// do recursive removing
+		KeySet ks = conf.cut (x);
+
+		if (ks.size() == 0)
+		{
+			cerr << "Did not find any key" << endl;
+			return 1;
+		}
 	}
 
 	Key n;

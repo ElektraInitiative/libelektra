@@ -50,7 +50,7 @@ int elektraValidationGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		keyNew ("system/elektra/modules/validation/infos/description",
 			KEY_VALUE, "Validates key values using regular expressions", KEY_END),
 		keyNew ("system/elektra/modules/validation/infos/provides",
-			KEY_VALUE, "validation", KEY_END),
+			KEY_VALUE, "check", KEY_END),
 		keyNew ("system/elektra/modules/validation/infos/placements",
 			KEY_VALUE, "presetstorage", KEY_END),
 		keyNew ("system/elektra/modules/validation/infos/needs",
@@ -68,7 +68,7 @@ int elektraValidationSet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 	while ((cur = ksNext(returned)) != 0)
 	{
-		const Key *meta = keyGetMeta (cur, "validation/regex");
+		const Key *meta = keyGetMeta (cur, "check/validation");
 
 		if (!meta) continue;
 
@@ -89,7 +89,7 @@ int elektraValidationSet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 		if (ret != 0) /* e.g. REG_NOMATCH */
 		{
-			const Key *msg = keyGetMeta (cur, "validation/message");
+			const Key *msg = keyGetMeta (cur, "check/validation/message");
 			if (msg)
 			{
 				ELEKTRA_SET_ERROR (42, parentKey, keyString(msg));

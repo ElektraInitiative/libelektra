@@ -10,7 +10,7 @@ using namespace kdb;
 
 
 Plugins::Plugins () :
-	plugins (10),
+	plugins (NR_OF_PLUGINS),
 	nrStoragePlugins (0),
 	nrResolverPlugins (0)
 {
@@ -22,6 +22,7 @@ Plugins::Plugins () :
 	placementInfo["pregetstorage"] = Place(RESOLVER_PLUGIN+1, STORAGE_PLUGIN-1);
 	placementInfo["getstorage"] = Place(STORAGE_PLUGIN, STORAGE_PLUGIN);
 	placementInfo["postgetstorage"] = Place(STORAGE_PLUGIN+1, NR_OF_PLUGINS-1);
+	revPostGet = NR_OF_PLUGINS-1;
 
 	placementInfo["setresolver"] = Place(RESOLVER_PLUGIN, RESOLVER_PLUGIN);
 	placementInfo["presetstorage"] = Place(RESOLVER_PLUGIN+1, STORAGE_PLUGIN-1);
@@ -31,29 +32,89 @@ Plugins::Plugins () :
 	placementInfo["postcommit"] = Place(COMMIT_PLUGIN+1, NR_OF_PLUGINS-1);
 }
 
-void Plugins::addProvided (Plugin &plugin)
+void Plugins::addInfo (Plugin &plugin)
 {
-	std::string provide;
-	std::stringstream ss(plugin.lookupInfo("provides"));
-	while (ss >> provide)
 	{
-		alreadyProvided.push_back(provide);
-		cout << "add provide: " << provide << endl;
+		std::string provide;
+		std::stringstream ss(plugin.lookupInfo("provides"));
+		while (ss >> provide)
+		{
+			alreadyProvided.push_back(provide);
+			cout << "add provide: " << provide << endl;
+		}
+		/* Push back the name of the plugin itself */
+		alreadyProvided.push_back (plugin.name());
+	}
+
+	{
+		std::string need;
+		std::stringstream ss(plugin.lookupInfo("needs"));
+		while (ss >> need)
+		{
+			needed.push_back(need);
+			cout << "add need: " << need << endl;
+		}
+	}
+
+	{
+		std::string recommend;
+		std::stringstream ss(plugin.lookupInfo("recommends"));
+		while (ss >> recommend)
+		{
+			recommended.push_back(recommend);
+			cout << "add recommend: " << recommend << endl;
+		}
+	}
+
+	{
+		std::string conflict;
+		std::stringstream ss(plugin.lookupInfo("conflicts"));
+		while (ss >> conflict)
+		{
+			alreadyConflict.push_back(conflict);
+			cout << "add conflict: " << conflict << endl;
+		}
 	}
 }
 
 void Plugins::addPlugin (Plugin &plugin, std::string which)
 {
-	if (plugin.findInfo(which, "placements"))
+	if (!plugin.findInfo(which, "placements")) return;
+
+	std::string stacking = plugin.lookupInfo("stacking");
+
+	if (which=="postgetstorage" && stacking == "")
 	{
-		cout << "Add plugin to " << placementInfo[which].current << endl;
-		plugins[placementInfo[which].current++] = &plugin;
+		cout << "Added plugin (stacking) [" << which << "] to "
+			<< revPostGet << endl;
+		plugins[revPostGet --] = &plugin;
+		return;
 	}
+
+	cout << "Added plugin [" << which << "] to "
+		<< placementInfo[which].current << endl;
+	plugins[placementInfo[which].current++] = &plugin;
 }
 
 bool Plugins::checkPlacement (Plugin &plugin, std::string which)
 {
 	if (!plugin.findInfo(which, "placements")) return true;
+
+	std::string stacking = plugin.lookupInfo("stacking");
+
+	if (which=="postgetstorage" && stacking == "")
+	{
+		if (revPostGet >= placementInfo["postgetstorage"].current)
+		{
+			return true;
+		}
+
+		cout << "Failed because of stack overflow cant place to "
+			<< revPostGet  << " because "
+			<< placementInfo["postgetstorage"].current
+			<< " is larger (this slot is in use)" << endl;
+		throw Stackoverflow();
+	}
 
 	if (placementInfo[which].current > placementInfo[which].max)
 	{
@@ -66,19 +127,28 @@ bool Plugins::checkPlacement (Plugin &plugin, std::string which)
 	return false;
 }
 
-void Plugins::checkProvided(Plugin &plugin)
+bool Plugins::validateProvided()
 {
-	std::string need;
-	std::stringstream nss(plugin.lookupInfo("needs"));
-	while (nss >> need)
+	for (size_t i=0; i< needed.size(); ++i)
 	{
-		cout << "check for need " << need << endl;;
+		std::string need = needed[i];
 		if (std::find(alreadyProvided.begin(), alreadyProvided.end(), need) == alreadyProvided.end())
 		{
-			throw MissingNeeded(need);
+			cout << "needed plugin " << need << " is missing" << endl;
+			return false;
 		}
 	}
 
+	for (size_t i=0; i< recommended.size(); ++i)
+	{
+		std::string need = recommended[i];
+		if (std::find(alreadyProvided.begin(), alreadyProvided.end(), need) == alreadyProvided.end())
+		{
+			cout << "recommended plugin " << need << " is missing" << endl;
+		}
+	}
+
+	return true;
 }
 
 void Plugins::checkStorage (Plugin &plugin)
@@ -124,12 +194,77 @@ void Plugins::checkInfo (Plugin &plugin)
 }
 
 
+/** Check ordering of plugins.
+  */
+void Plugins::checkOrdering (Plugin &plugin)
+{
+	std::string order;
+	std::stringstream ss(plugin.lookupInfo("ordering"));
+	while (ss >> order)
+	{
+		/* Simple look in the already provided names.
+		 * Because both plugin names + provided names are
+		 * there.
+		 * If it is found, we have an ordering violation.
+		 */
+		cout << "check if " << order << " is in provided" << endl;
+		if (std::find(alreadyProvided.begin(), alreadyProvided.end(), order) != alreadyProvided.end())
+		{
+			throw OrderingViolation();
+		}
+
+	}
+}
+
+/** Check conflicts of plugins.
+  */
+void Plugins::checkConflicts (Plugin &plugin)
+{
+	{
+		std::string order;
+		std::stringstream ss(plugin.lookupInfo("conflicts"));
+		while (ss >> order)
+		{
+			/* Simple look in the already provided names.
+			 * Because both plugin names + provided names are
+			 * there.
+			 * If one is found, we have an conflict.
+			 */
+			if (std::find(alreadyProvided.begin(), alreadyProvided.end(), order) != alreadyProvided.end())
+			{
+				throw ConflictViolation();
+			}
+		}
+	}
+
+	/* Is there a conflict against the name? */
+	if (std::find(alreadyConflict.begin(), alreadyConflict.end(), plugin.name()) != alreadyConflict.end())
+	{
+		throw ConflictViolation();
+	}
+
+	/* Is there a conflict against what it provides? */
+	std::string order;
+	std::stringstream ss(plugin.lookupInfo("provides"));
+	while (ss >> order)
+	{
+		if (std::find(alreadyConflict.begin(), alreadyConflict.end(), order) != alreadyConflict.end())
+		{
+			throw ConflictViolation();
+		}
+	}
+}
+
+
 
 
 
 
 void ErrorPlugins::tryPlugin (Plugin &plugin)
 {
+	checkOrdering(plugin);
+	checkConflicts(plugin);
+
 	if (	checkPlacement(plugin,"prerollback") &&
 		checkPlacement(plugin,"rollback") &&
 		checkPlacement(plugin,"postrollback"))
@@ -205,6 +340,8 @@ void ErrorPlugins::addPlugin (Plugin &plugin)
 	Plugins::addPlugin (plugin, "prerollback");
 	Plugins::addPlugin (plugin, "rollback");
 	Plugins::addPlugin (plugin, "postrollback");
+
+	Plugins::addInfo (plugin);
 }
 
 void GetPlugins::addPlugin (Plugin &plugin)
@@ -230,7 +367,7 @@ void SetPlugins::addPlugin (Plugin &plugin)
 
 bool ErrorPlugins::validated ()
 {
-	return nrResolverPlugins == 1;
+	return nrResolverPlugins == 1 && validateProvided();
 }
 
 bool GetPlugins::validated ()
@@ -253,7 +390,7 @@ void ErrorPlugins::serialize (Key &baseKey, KeySet &ret)
 		KEY_COMMENT, "List of plugins to use",
 		KEY_END));
 
-	for (int i=0; i< 10; ++i)
+	for (int i=0; i< NR_OF_PLUGINS; ++i)
 	{
 		if (plugins[i] == 0) continue;
 
@@ -271,7 +408,7 @@ void GetPlugins::serialize (Key &baseKey, KeySet &ret)
 		KEY_COMMENT, "List of plugins to use",
 		KEY_END));
 
-	for (int i=0; i< 10; ++i)
+	for (int i=0; i< NR_OF_PLUGINS; ++i)
 	{
 		if (plugins[i] == 0) continue;
 
@@ -290,7 +427,7 @@ void SetPlugins::serialize (Key &baseKey, KeySet &ret)
 		KEY_COMMENT, "List of plugins to use",
 		KEY_END));
 
-	for (int i=0; i< 10; ++i)
+	for (int i=0; i< NR_OF_PLUGINS; ++i)
 	{
 		if (plugins[i] == 0) continue;
 

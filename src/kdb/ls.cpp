@@ -27,9 +27,11 @@ int LsCommand::execute(int argc, char** argv)
 	}
 
 	kdb.get(ks, root);
-	ks.rewind();
+
+	KeySet part (ks.cut(root));
+	part.rewind();
 	Key k;
-	while (k=ks.next())
+	while (k=part.next())
 	{
 		cout << k << endl;
 	}

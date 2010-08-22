@@ -1,0 +1,22 @@
+= Nickel's Change Log =
+
+The full change log is available on the web:
+   http://www.chaoslizard.org/devel/bohr/wiki/Docs/Ni
+
+== Changes in v1.1.0 ==
+
+ * Several documentation fixes and cleanups in bohr/ni.h and in the source
+   (#93, r306, r320, r324, r329, r334, r336, r344, r345).
+ * Added some more tests (#93, r308, r328).
+ * Added restrict to all pointer parameters in the API, in a portable way
+   (#102).
+ * Reduced memory footprint when parsing .ini files (#103).
+ * Gave generated .ini files a more human-readable Nickel version number in the
+   header comments (r339).
+ * Made generated .ini files always valid UTF-8 (#98).
+ * By the same token, cleaned up generated .ini files so special characters are
+   escaped only when necessary (#49).
+
+== Changes in v1.0.0 ==
+
+ * Initial release.

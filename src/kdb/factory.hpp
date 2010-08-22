@@ -21,6 +21,9 @@
 #include <test.hpp>
 #include <check.hpp>
 #include <validation.hpp>
+#include <cp.hpp>
+#include <fstab.hpp>
+#include <metals.hpp>
 
 class Instancer
 {
@@ -59,6 +62,10 @@ public:
 		m_factory.insert(std::make_pair("test", new Cnstancer<TestCommand>()));
 		m_factory.insert(std::make_pair("check", new Cnstancer<CheckCommand>()));
 		m_factory.insert(std::make_pair("validation-set", new Cnstancer<ValidationCommand>()));
+		m_factory.insert(std::make_pair("cp", new Cnstancer<CpCommand>()));
+		m_factory.insert(std::make_pair("fstab-set", new Cnstancer<FstabCommand>()));
+		m_factory.insert(std::make_pair("meta-ls", new Cnstancer<MetaLsCommand>()));
+		m_factory.insert(std::make_pair("mv", new Cnstancer<CpCommand>()));
 	}
 
 	~Factory()

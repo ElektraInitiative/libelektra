@@ -27,6 +27,8 @@
 
 #include <tests.h>
 
+#if 0
+
 void test_readfstab(const char *file)
 {
 	KDB *kdb = kdbOpen();
@@ -147,6 +149,8 @@ void test_writefstab(const char * file)
 	kdbClose (kdb);
 }
 
+#endif
+
 int main(int argc, char** argv)
 {
 	printf("MOUNT       TESTS\n");
@@ -154,8 +158,10 @@ int main(int argc, char** argv)
 
 	init (argc, argv);
 
+	/*
 	test_writefstab(".kdb/fstab_mount");
 	test_readfstab(".kdb/fstab_mount");
+	*/
 
 	printf("\ntest_mount RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

@@ -545,8 +545,6 @@ WARN_LOGFILE           =
 # with spaces.
 
 INPUT                  = @PROJECT_SOURCE_DIR@/src/libelektra \
-                         @PROJECT_SOURCE_DIR@/src/libhelper \
-                         @PROJECT_SOURCE_DIR@/src/libelektratools \
                          @PROJECT_SOURCE_DIR@/src/include \
                          @PROJECT_SOURCE_DIR@/src/plugins/doc/doc.c \
                          @PROJECT_SOURCE_DIR@/src/libloader/doc.c

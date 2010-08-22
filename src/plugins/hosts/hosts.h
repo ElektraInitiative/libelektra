@@ -7,17 +7,16 @@
 #include <kdbprivate.h>
 #include <kdberrors.h>
 
-#define BACKENDNAME "hosts"
-#define BACKENDVERSION "0.0.2"
+#include <stdlib.h>
 
-#define HOSTS_PATH "/etc/passwd"
 /* Use a buffer so large that it can hold my /etc/hosts :-)
  * TODO: make it dynamic */
+
 #define HOSTS_BUFFER_SIZE 16384
 /*Test size for small buffer
 #define HOSTS_BUFFER_SIZE 16 */
 
 
-ssize_t kdbGet_hosts(Plugin *handle, KeySet *ks, Key *parentKey);
-ssize_t kdbSet_hosts(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraHostsGet(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraHostsSet(Plugin *handle, KeySet *ks, Key *parentKey);
 Plugin *ELEKTRA_PLUGIN_EXPORT(hosts);

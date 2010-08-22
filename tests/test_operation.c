@@ -323,6 +323,8 @@ void test_cursor()
 	printf ("test cut cursor\n");
 
 	KeySet *config = set_simple();
+
+	ksRewind (config);
 	succeed_if (ksGetCursor(config) == -1, "should be invalid cursor");
 	succeed_if (ksNext(config) != 0, "should be root key");
 	succeed_if (ksGetCursor(config) == 0, "cursor on first position");

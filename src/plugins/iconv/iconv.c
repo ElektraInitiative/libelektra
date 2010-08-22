@@ -164,6 +164,8 @@ int elektraIconvGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	Key *cur;
 	const Key *meta;
 
+	ksRewind (returned);
+
 	if (!strcmp (keyName(parentKey), "system/elektra/modules/iconv"))
 	{
 		KeySet *pluginConfig = ksNew (30,
@@ -171,11 +173,9 @@ int elektraIconvGet(Plugin *handle, KeySet *returned, Key *parentKey)
 				KEY_VALUE, "iconv plugin waits for your orders", KEY_END),
 			keyNew ("system/elektra/modules/iconv/exports", KEY_END),
 			keyNew ("system/elektra/modules/iconv/exports/get",
-				KEY_FUNC, elektraIconvGet,
-				KEY_END),
+				KEY_FUNC, elektraIconvGet, KEY_END),
 			keyNew ("system/elektra/modules/iconv/exports/set",
-				KEY_FUNC, elektraIconvSet,
-				KEY_END),
+				KEY_FUNC, elektraIconvSet, KEY_END),
 			keyNew ("system/elektra/modules/iconv/infos",
 				KEY_VALUE, "All information you want to know", KEY_END),
 			keyNew ("system/elektra/modules/iconv/infos/author",
@@ -183,9 +183,9 @@ int elektraIconvGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			keyNew ("system/elektra/modules/iconv/infos/licence",
 				KEY_VALUE, "BSD", KEY_END),
 			keyNew ("system/elektra/modules/iconv/infos/description",
-				KEY_VALUE, "Hides keys which start with a .", KEY_END),
+				KEY_VALUE, "Converts values of keys between charsets", KEY_END),
 			keyNew ("system/elektra/modules/iconv/infos/provides",
-				KEY_VALUE, "filter", KEY_END),
+				KEY_VALUE, "conv", KEY_END),
 			keyNew ("system/elektra/modules/iconv/infos/placements",
 				KEY_VALUE, "postgetstorage presetstorage", KEY_END),
 			keyNew ("system/elektra/modules/iconv/infos/needs",
@@ -246,6 +246,8 @@ int elektraIconvSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	const Key *meta;
 
 	if (!kdbbNeedsUTF8Conversion(handle)) return 0;
+
+	ksRewind (returned);
 
 	while ((cur = ksNext(returned)) != 0)
 	{

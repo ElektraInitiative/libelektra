@@ -27,7 +27,12 @@ int ValidationCommand::execute(int argc, char** argv)
 	kdb.get(conf, parentKey);
 	Key k = conf.lookup(keyname);
 
-	if (!k) k = Key(keyname, KEY_END);
+	if (!k)
+	{
+		k = Key(keyname, KEY_END);
+		conf.append (k);
+	}
+
 	if (!k.isValid())
 	{
 		cout << "Could not create key" << endl;

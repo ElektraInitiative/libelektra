@@ -129,6 +129,7 @@ const Key *keyNextMeta(Key *key);
 const Key *keyCurrentMeta(const Key *key);
 
 int keyCopyMeta(Key *dest, const Key *source, const char *metaName);
+int keyCopyAllMeta(Key *dest, const Key *source);
 
 const Key *keyGetMeta(const Key *key, const char* metaName);
 ssize_t    keySetMeta(Key *key, const char* metaName,

@@ -55,6 +55,7 @@ private:
 	std::string mp;
 
 	kdb::KeySet modules;
+	kdb::KeySet config; // the global config, plugins might add something to it
 
 	std::vector <Plugin*> plugins;
 

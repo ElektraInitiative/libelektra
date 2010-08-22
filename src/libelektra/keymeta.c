@@ -229,7 +229,8 @@ void l(Key *k)
  * considerable amount of memory for many keys with
  * some meta data for each.
  *
- * To avoid that problem you can use keyCopyMeta().
+ * To avoid that problem you can use keyCopyAllMeta()
+ * or keyCopyMeta().
  *
  * @code
 void o(KeySet *ks)
@@ -306,6 +307,86 @@ int keyCopyMeta(Key *dest, const Key *source, const char *metaName)
 	ksAppendKey (dest->meta, ret);
 
 	return 1;
+}
+
+/**Do a shallow copy of all meta data from source to dest.
+ *
+ * The key dest will additionally have all meta data
+ * source had.
+ * Meta data not present in source will not be changed.
+ * Meta data which was present in source and dest will
+ * be overwritten.
+ *
+ * For example the meta data type is copied into the
+ * Key k.
+ *
+ * @code
+void l(Key *k)
+{
+	// receive c
+	keyCopyMeta(k, c);
+	// the caller will see the changed key k
+	// with all the metadata from c
+}
+ * @endcode
+ *
+ * The main purpose of this function is for plugins or
+ * applications which want to add the same meta data to
+ * n keys. When you do that with keySetMeta() it will
+ * take n times the memory for the key. This can be
+ * considerable amount of memory for many keys with
+ * some meta data for each.
+ *
+ * To avoid that problem you can use keyCopyAllMeta()
+ * or keyCopyMeta().
+ *
+ * @code
+void o(KeySet *ks)
+{
+	Key *current;
+	Key *shared = keyNew (0);
+	keySetMeta(shared, "shared1", "this meta data should be shared among many keys");
+	keySetMeta(shared, "shared2", "this meta data should be shared among many keys also");
+	keySetMeta(shared, "shared3", "this meta data should be shared among many keys too");
+
+	ksRewind(ks);
+	while ((current = ksNext(ks)) != 0)
+	{
+		if (needs_shared_data(current)) keyCopyAllMeta(current, shared);
+	}
+}
+ * @endcode
+ *
+ * @post for every metaName present in source: keyGetMeta(source, metaName) == keyGetMeta(dest, metaName)
+ *
+ * @return 1 if was successfully copied
+ * @return 0 if source did not have any meta data
+ * @return -1 on null pointers (source or dest)
+ * @return -1 on memory problems
+ * @param dest the destination where the meta data should be copied too
+ * @param source the key where the meta data should be copied from
+ * @ingroup keymeta
+ */
+int keyCopyAllMeta(Key *dest, const Key *source)
+{
+	if (!source) return -1;
+	if (!dest) return -1;
+	if (dest->flags & KEY_FLAG_RO) return -1;
+
+
+	if (source->meta)
+	{
+		/*Make sure that dest also does not have metaName*/
+		if (dest->meta)
+		{
+			ksAppend (dest->meta, source->meta);
+		} else {
+			dest->meta = ksDup (source->meta);
+		}
+		return 1;
+	}
+
+	return 0;
 }
 
 /**Returns the Value of a Meta-Information given by name.

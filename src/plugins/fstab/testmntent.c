@@ -15,4 +15,6 @@ int main()
 	opts=m->mnt_opts;
 	freq=m->mnt_freq;
 	passno=m->mnt_passno;
+
+	return 0;
 }

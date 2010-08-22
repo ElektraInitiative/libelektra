@@ -13,3 +13,5 @@ build*
 .ctags
 .gdb_history
 
+#boost copy
+src/include/boost

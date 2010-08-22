@@ -327,6 +327,8 @@ int elektraResolverError(Plugin *handle, KeySet *returned, Key *parentKey)
 		errno = errnoSave;
 	}
 
+	if (pk->fd == -1) return 0;
+
 	if (elektraUnlock(pk->fd) == -1)
 	{
 		char buffer[ERROR_SIZE];

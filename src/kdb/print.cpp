@@ -51,7 +51,7 @@ void printWarnings(Key error)
 }
 
 
-std::ostream & operator << (std::ostream & os, Key &k)
+std::ostream & operator << (std::ostream & os, const Key &k)
 {
 	os << "key: " << k.getName() << " " << k.getString();
 	return os;

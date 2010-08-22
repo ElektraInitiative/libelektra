@@ -482,9 +482,9 @@ ssize_t keySetBinary(Key *key, const void *newBinary, size_t dataSize)
 	if (!dataSize && newBinary) return -1;
 	if (dataSize > SSIZE_MAX) return -1;
 
-	ret = keySetRaw(key,newBinary,dataSize);
-
 	keySetMeta (key, "binary", "");
+
+	ret = keySetRaw(key,newBinary,dataSize);
 
 
 	return ret;

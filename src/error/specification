@@ -291,3 +291,69 @@ severity:error
 ingroup:plugin
 module:dump
 
+number:51
+description:Value of key is not a valid IP Address
+severity:error
+ingroup:plugin
+module:network
+
+number:52
+description:Could not type check value of key
+severity:error
+ingroup:plugin
+module:type
+
+number:53
+description:Could not check the structure of the keyset
+severity:error
+ingroup:plugin
+module:struct
+
+number:54
+description:Device not found
+severity:warning
+ingroup:plugin
+module:path
+
+number:55
+description:Directory not found
+severity:warning
+ingroup:plugin
+module:path
+
+number:56
+description:Given path is not absolute
+severity:error
+ingroup:plugin
+module:path
+
+number:57
+description:could not stat file
+severity:warning
+ingroup:plugin
+module:path
+
+number:58
+description:could not build up structure checker
+severity:warning
+ingroup:plugin
+module:struct
+
+number:59
+description:Key name is not valid
+severity:error
+ingroup:plugin
+module:simpleini
+
+number:60
+description:Invalid Line encountered
+severity:error
+ingroup:plugin
+module:simpleini
+
+number:61
+description:Parse error
+severity:error
+ingroup:plugin
+module:tcl
+

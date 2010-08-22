@@ -125,6 +125,9 @@ void Backend::addPlugin ()
 	errorplugins.addPlugin (*plugins.back());
 	getplugins.addPlugin (*plugins.back());
 	setplugins.addPlugin (*plugins.back());
+
+	KeySet toAdd = plugins.back()->getNeededConfig();
+	config.append(toAdd);
 }
 
 /**
@@ -179,6 +182,26 @@ void Backend::serialize (kdb::Key &rootKey, kdb::KeySet &ret)
 				KEY_COMMENT, "The mountpoint says the location where the backend should be mounted.\n"
 				"This is a normal mountpoint.\n",
 				KEY_END));
+	}
+
+	config.rewind();
+	Key common = config.next();
+	if (common)
+	{
+		string commonName = common.getName();
+
+		// TODO commonName might be too long if config/needs key is missing
+
+		while (Key k = config.next())
+		{
+			string name = k.getName();
+			string newName = name.substr (commonName.length());
+			Key x (k);
+			x.setName(backendRootKey.getName());
+			x.addBaseName("config");
+			x.addBaseName(newName);
+			ret.append (x);
+		}
 	}
 
 	errorplugins.serialize(backendRootKey, ret);

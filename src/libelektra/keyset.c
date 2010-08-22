@@ -615,9 +615,8 @@ ssize_t ksSearchInternal(const KeySet *ks, const Key *toAppend)
  * If the keyname already existed, it will be replaced with
  * the new key.
  *
- * The KeySet internal cursor will stay at the same key.
+ * The KeySet internal cursor will be set to the new key.
  *
- * 
  *
  * @return the size of the KeySet after insertion
  * @return -1 on NULL pointers
@@ -658,6 +657,7 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
 		/* And use the other one instead */
 		keyIncRef (toAppend);
 		ks->array[result] = toAppend;
+		ksSetCursor(ks, result);
 	} else {
 		ssize_t insertpos = -result-1;
 
@@ -672,6 +672,7 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
 			/* Append it to the very end */
 			ks->array[ks->size-1] = toAppend;
 			ks->array[ks->size] = 0;
+			ksSetCursor(ks, ks->size-1);
 		} else {
 			size_t n = ks->size-insertpos;
 			memmove(ks->array+(insertpos+1), ks->array+insertpos, n*sizeof(struct Key*));
@@ -680,6 +681,7 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
 				ks->size, insertpos, n);
 			*/
 			ks->array[insertpos] = toAppend;
+			ksSetCursor(ks, insertpos);
 		}
 	}
 
@@ -1405,6 +1407,7 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 
 				ks->flags |= KS_FLAG_SYNC;
 
+				ksRewind(ks);
 				return ksPop(ks);
 			} else {
 				cursor = found-ks->array;
@@ -1436,6 +1439,7 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
  * (also accessible by ksCurrent()), and a pointer to the Key is returned.
  * If not found, @p ks internal cursor will not move, and a NULL pointer is
  * returned.
+ * If requested to pop the key, the cursor will be rewinded.
  *
  * @section cascading Cascading
  *
