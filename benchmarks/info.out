@@ -1,5 +1,0 @@
-the benchmark which is used for the thesis to compare the various costs
-of some plugins.
-
-- getMeta with exceptions is surprisingly expensive
-- lookupTrie needs certainly optimizations
