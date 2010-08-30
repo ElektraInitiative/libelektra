@@ -11,7 +11,9 @@
  * - to have a list of all loaded modules
  * - writing module loaders should be easy
  * - handle and report errors well
- * - avoid loading of modules multiple times (most OS can't handle that well)
+ * - avoid loading of modules multiple times (maybe OS can't handle that well)
+ * - hide the OS dependent handle inside a Key (handle is needed to
+ *   close module afterwards)
  *
  */
 

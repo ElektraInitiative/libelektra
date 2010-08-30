@@ -72,7 +72,7 @@ int elektraPathSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		if (!meta) continue;
 
 		struct stat buf;
-		/* TODO: make exceptions configureable */
+		/* TODO: make exceptions configurable using path/allow */
 		if (!strcmp (keyString(cur), "proc"))
 		{
 			continue;
