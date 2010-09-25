@@ -37,26 +37,20 @@ To compile a backend for Elektra, use:
  $ cc -fpic `pkg-config --cflags elektra` -o myback.o -c myback.c
  $ cc -shared -fpic `pkg-config --libs elektra` -o libelektra-myback.so myback.o
 
-= Add a backend  =
+= Add a plugin =
 
-To add a backend, make a new folder according to your backendname below src/backends.
-Copy the Makefile.am and template.c from src/backends/template to your new folder.
-Substitute all template to your backendname in both files using :%s/template/backendname/g
-using vim.
+To add a backend, make a new folder according to your pluginname below src/plugins.
+Copy the contents from src/plugins/template to your new folder.
+Rename it from template.* to the plugins name.
+Substitute all template names to your backendname in both files using:
 
-Add your directory in AC_OUTPUT of the file configure.ac to generate the Makefile.in and
-Makefile out of Makefile.am.
+ $ sed -i s/TEMPLATE/$ALLCAP/g $1.c $1.h CMakeLists.txt
+ $ sed -i s/Template/$Firstcap/g $1.c $1.h CMakeLists.txt
+ $ sed -i s/template/$allsmall/g $1.c $1.h CMakeLists.txt
 
-Add a switch to enable/disable your backend using ALLOW_BACKEND. Make sure that it is
-disabled by default, you need to put NO as third parameter and do not add the backend
-to BACKENDS variable to do so.
-
-Now add the subdirectory at src/backends/Makefile.am in DIST_SUBDIRS.
-
-Your backend won't be compiled statically yet. You need to trigger that by adding
-the target libelektra-<backend>.a in src/libelektra/Makefile.am of your backend.
-
-Make sure to run ./bootstrap.sh to put the changes into effect.
+If your plugin is not portable you can write some detection code if your plugin
+would compile on the current system or not. If it is known not to compile you
+can remove your backend using the Macro remove_plugin.
 
 = Search path of backends =
 

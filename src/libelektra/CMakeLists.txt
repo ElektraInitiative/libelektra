@@ -18,14 +18,14 @@ add_custom_command (
 		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.h
 		DEPENDS exportsymbols
 		COMMAND ${EXE_LOC}
-		ARGS ${BACKENDS}
+		ARGS ${PLUGINS}
 		)
 
 add_custom_command (
 		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.c
 		DEPENDS exportsymbols
 		COMMAND ${EXE_LOC}
-		ARGS ${BACKENDS}
+		ARGS ${PLUGINS}
 		)
 
 

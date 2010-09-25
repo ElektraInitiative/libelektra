@@ -218,7 +218,7 @@ void test_keyset()
 
 int main(int argc, char** argv)
 {
-	printf("ELEKTRA BACKENDS TEST SUITE\n");
+	printf("ELEKTRA PLUGIN TEST SUITE\n");
 	printf("========================================\n\n");
 
 	init (argc, argv);

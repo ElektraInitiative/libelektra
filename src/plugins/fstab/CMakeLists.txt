@@ -15,5 +15,5 @@ if (HAS_MNTENT)
 
 	add_plugintest (fstab)
 else (HAS_MNTENT)
-	remove_backend (fstab "mntent is missing")
+	remove_plugin (fstab "mntent is missing")
 endif (HAS_MNTENT)

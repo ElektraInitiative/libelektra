@@ -19,5 +19,5 @@ if (DBUS_FOUND)
 
 	add_plugintest (dbus)
 else (DBUS_FOUND)
-	remove_backend (dbus "dbus not found")
+	remove_plugin (dbus "dbus not found")
 endif (DBUS_FOUND)

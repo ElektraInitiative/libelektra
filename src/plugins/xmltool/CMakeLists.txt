@@ -17,6 +17,6 @@ if (LIBXML2_FOUND)
 
 	add_subdirectory (tests)
 else (LIBXML2_FOUND)
-	remove_backend (xmltool "libxml2 not found")
+	remove_plugin (xmltool "libxml2 not found")
 endif (LIBXML2_FOUND)
 

@@ -113,19 +113,19 @@ macro (add_cppheaders HDR_FILES)
 endmacro (add_cppheaders)
 
 
-#- Removes a backend from the global cache
+#- Removes a plugin from the global cache
 #
-#  REMOVE_BACKEND (name reason)
+#  REMOVE_PLUGIN (name reason)
 #
 # example:
-#remove_backend (fstab "mntent is missing")
+#remove_plugin (fstab "mntent is missing")
 #
-macro (remove_backend name reason)
-	set (TMP ${BACKENDS})
-	message ("-- Exclude Backend ${name} because ${reason}")
+macro (remove_plugin name reason)
+	set (TMP ${PLUGINS})
+	message ("-- Exclude Plugin ${name} because ${reason}")
 	list (REMOVE_ITEM TMP ${name})
-	set (BACKENDS ${TMP} CACHE STRING "Which backends to use?" FORCE)
-endmacro (remove_backend)
+	set (PLUGINS ${TMP} CACHE STRING "Which plugins should be compiled?" FORCE)
+endmacro (remove_plugin)
 
 
 #- Add sources for a target
@@ -170,7 +170,7 @@ endmacro (remove_backend)
 # elektra-shared... are the additional sources
 #                   for elektra SHARED only (excludes elektra-full)
 # elektra-full...   are the additional sources for the versions
-#                   with all backends built-in (excludes elektra-shared)
+#                   with all plugins built-in (excludes elektra-shared)
 #
 function (add_sources target)
 	# define the <target>_SRCS properties if necessary
