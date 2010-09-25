@@ -1,0 +1,62 @@
+== PREPARATION ==
+
+Elektra is now using cmake.
+
+To compile it, please create a folder:
+
+ mkdir build
+
+go into the folder
+
+ cd build
+
+== RUN CMAKE ==
+
+tested cmake version: 2.6-patch 0
+
+run ccmake:
+
+ ccmake ..
+
+press c to configure and then e to exit
+
+if you want to create a package afterwards it is ok to use
+pathes that you can write to (e.g. CMAKE_INSTALL_PREFIX /home/markus/bin)
+
+working plugins are:
+dump;resolver;hidden;iconv;syslog;error;validation;xmltool;tracer;timeofday;dbus;glob;hosts;network;type;struct;path;fstab;ccode;
+simpleini;tcl;hexcode;null;ni
+
+BACKEND_DEFAULT only dump is tested currently
+
+CMAKE_BUILD_TYPE: Debug or Release (see cmake docu in the net for that option)
+
+DEBUG_BUILD and ELEKTRA_VERBOSE_BUILD: make the library to output some or a lot of things (not recommended options)
+
+KDB_DB_SYSTEM is the path where the system configuration is
+
+WITH_DOC: build documentation with doxygen
+kdb does not have docu at the moment
+
+
+then press c again and then g to generate
+
+
+== BUILDING ==
+
+with
+
+ make
+
+you build the source (you can pass -j or similar)
+
+== PACKAGING ==
+
+with
+
+ cpack
+
+you create a package of the platform you are running
+(generator needed for it, currently only debian)
+
+
