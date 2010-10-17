@@ -573,6 +573,7 @@ int kdbSet (KDB *handle, KeySet *ks, Key * parentKey)
 
 	Split *split = elektraSplitNew();
 	Key *initialParent = keyDup (parentKey);
+	Key *errorKey = 0;
 
 
 	if (elektraSplitBuildup (split, handle, parentKey) == -1)
@@ -599,7 +600,6 @@ int kdbSet (KDB *handle, KeySet *ks, Key * parentKey)
 	elektraSplitPrepare (split);
 
 	int ret = 0;
-	Key *errorKey = 0;
 	int errorOccurred = 0;
 
 	for (size_t p=0; p<NR_OF_PLUGINS; ++p)
