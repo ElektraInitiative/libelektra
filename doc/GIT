@@ -3,10 +3,23 @@
 git add .
 git commit -a
 
-== INITIAL ==
+== MIGRATION ==
 
 This git folder was imported initially with the command:
 git svn clone -T trunk -t tags -b unstable https://svn.libelektra.org/svn/elektra
 
 then every remote branch (git branch -a) was checked out using:
 git checkout -b $BRANCH $BRANCH
+
+== OTHER TRY ==
+
+(lead to elektra-history)
+
+git svn clone --authors-file=/home/markus/Projekte/Elektra/current/doc/GIT_AUTHORS --prefix=svn/ -T trunk -t tags -b unstable https://svn.libelektra.org/svn/elektra
+
+
+git svn-abandon-fix-refs
+git svn-abandon-cleanup
+
+(nice authors, branches and tags.. but unstable branch missing!)
+
