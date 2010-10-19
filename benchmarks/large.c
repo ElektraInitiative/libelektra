@@ -20,30 +20,6 @@ int creator (KeySet *large)
 	return 1;
 }
 
-void doSomething(Key *k)
-{
-}
-
-
-int internal_iterator (KeySet *ks)
-{
-	Key * k;
-
-	ksRewind (ks);
-	while ((k = ksNext(ks)) != 0)
-		doSomething (k);
-
-	return 1;
-}
-
-int external_iterator (KeySet *ks)
-{
-	for (ssize_t i = 0; i<ksGetSize(ks); ++i)
-		doSomething (ks->array[i]);
-	return 1;
-}
-
-
 int main()
 {
 	KeySet * large = ksNew(NUM_KEY*NUM_DIR, KS_END);
@@ -53,13 +29,24 @@ int main()
 	succeed_if (creator (large), "could not create large keyset");
 	print_time ("New large keyset");
 
-	succeed_if (external_iterator (large), "could not iterate large keyset");
-	print_time ("External Iterator");
+	Key *key = keyNew (KEY_ROOT, KEY_END);
+	KDB *kdb = kdbOpen(key);
+	keySetName (key, KEY_ROOT);
+	print_time ("Opened key database");
 
-	succeed_if (internal_iterator (large), "could not iterate large keyset");
-	print_time ("Internal Iterator");
+	KeySet *n = ksNew(0);
+	kdbGet(kdb, n, key);
+	ksDel (n);
+	print_time ("Read in key database");
+
+	kdbSet(kdb, large, key);
+	print_time ("Write out key database");
+
+	kdbClose(kdb, key);
+	print_time ("Closed key database");
 
 	ksDel (large);
+	keyDel (key);
 	return nbError;
 }
 
