@@ -8,6 +8,10 @@
 
 #include <plugin.hpp>
 
+#include <cmdline.hpp>
+
+#include <dlfcn.h>
+
 using namespace std;
 using namespace kdb;
 
@@ -16,14 +20,51 @@ CheckCommand::CheckCommand()
 
 int CheckCommand::execute(int argc, char** argv)
 {
-	if (argc != 3)
+	Cmdline cl (argc, argv);
+
+	if (cl.utilName != "check")
 	{
-		cerr << "Please provide a module name" << endl;
-		cerr << "Usage: get <name>" << endl;
+		cerr << "This is not the correct utility" << endl;
+		return 3;
+	}
+
+	if (cl.invalidOpt)
+	{
+		cerr << "Invalid option given" << endl;
 		return 1;
 	}
 
-	std::string name = argv[2];
+	if (cl.v)
+	{
+		cerr << cl.progName << " " << cl.utilName << " version 0.1" << endl;
+		return 0;
+	}
+
+	if (cl.t)
+	{
+		cout << "try to dlopen and dlclose libelektra-dump.so" << endl;
+		void *dl = dlopen ("libelektra-dump.so", RTLD_LAZY);
+		if (!dl)
+		{
+			cerr << "Could not load the library" << endl;
+			cerr << dlerror() << endl;
+			return 4;
+		}
+		dlclose (dl);
+		return 0;
+	}
+
+	if (cl.avail() != 1 || cl.h)
+	{
+		cerr << "Please provide a module name" << endl;
+		cerr << "Usage: check <name>" << endl;
+		if (cl.h) return 0;
+		return 2;
+	}
+
+	std::string name = argv[cl.param()];
+
+	cout << name << endl;
 
 	KeySet modules;
 	elektraModulesInit(modules.getKeySet(), 0);
