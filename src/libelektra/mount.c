@@ -82,17 +82,28 @@ int elektraMountOpen(KDB *kdb, KeySet *config, KeySet *modules, Key *errorKey)
 		{
 			KeySet *cut = ksCut(config, cur);
 			Backend *backend = elektraBackendOpen(cut, modules, errorKey);
-			int val = elektraMountBackend(kdb, backend, errorKey);
-			if (val == 0)
+
+			if (!backend)
 			{
-				/* warnings already set by elektraMountBackend */
-				ksDel (cut);
+				ELEKTRA_ADD_WARNING(24, errorKey, "could not create missing backend");
 				ret = -1;
+				continue;
 			}
-			else if (val == -1)
+
+			if (!backend->mountpoint)
 			{
-				/* warnings already set by elektraMountBackend */
+				ELEKTRA_ADD_WARNING(25, errorKey, "no mountpoint");
 				ret = -1;
+				elektraBackendClose(backend, errorKey);
+				continue;
+			}
+
+			if (elektraMountBackend(kdb, backend, errorKey) == -1)
+			{
+				ELEKTRA_ADD_WARNING(24, errorKey, "mounting of backend failed");
+				ret = -1;
+				elektraBackendClose(backend, errorKey);
+				continue;
 			}
 		}
 	}
@@ -204,7 +215,6 @@ int elektraMountVersion (KDB *kdb, Key *errorKey)
 	return 0;
 }
 
-
 /**
  * Mounts a backend into the trie.
  *
@@ -212,24 +222,11 @@ int elektraMountVersion (KDB *kdb, Key *errorKey)
  * @param backend the backend to mount
  * @param errorKey the key used to report warnings
  * @return -1 on failure
- * @return 0 if there was no backend (free KeySet!)
  * @return 1 on success
  * @ingroup mount
  */
 int elektraMountBackend (KDB *kdb, Backend *backend, Key *errorKey)
 {
-	if (!backend)
-	{
-		ELEKTRA_ADD_WARNING(24, errorKey, "no backend given to mount");
-		return 0;
-	}
-
-	if (!backend->mountpoint)
-	{
-		ELEKTRA_ADD_WARNING(25, errorKey, "no mountpoint");
-		elektraBackendClose(backend, errorKey);
-		return -1;
-	}
 
 	char *mountpoint;
 	/* 20 is enough for any of the combinations below. */
