@@ -102,6 +102,8 @@ int elektraMountOpen(KDB *kdb, KeySet *config, KeySet *modules, Key *errorKey)
 			{
 				ELEKTRA_ADD_WARNING(24, errorKey, "mounting of backend failed");
 				ret = -1;
+				/* elektraMountBackend might have modified the refcounter. */
+				backend->refcounter = 1;
 				elektraBackendClose(backend, errorKey);
 				continue;
 			}
@@ -232,12 +234,16 @@ int elektraMountBackend (KDB *kdb, Backend *backend, Key *errorKey)
 	/* 20 is enough for any of the combinations below. */
 	mountpoint = elektraMalloc (keyGetNameSize(backend->mountpoint)+20);
 
+	/* Note that you must set the refcounter to the number of insertions
+	   into the trie */
+
 	if (!backend->mountpoint->key)
 	{
 		/* Default backend */
 		sprintf(mountpoint, "system/elektra/");
 		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
 		elektraSplitAppend(kdb->split, backend, keyNew("system/elektra/", KEY_VALUE, "default", KEY_END), 0);
+		backend->refcounter = 1;
 	}
 	else if (!strcmp (backend->mountpoint->key, "/"))
 	{
@@ -249,6 +255,7 @@ int elektraMountBackend (KDB *kdb, Backend *backend, Key *errorKey)
 		sprintf(mountpoint, "user%s", keyName(backend->mountpoint));
 		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
 		elektraSplitAppend(kdb->split, backend, keyNew("user", KEY_VALUE, "root", KEY_END), 2);
+		backend->refcounter = 2;
 	}
 	else if (backend->mountpoint->key[0] == '/')
 	{
@@ -262,11 +269,13 @@ int elektraMountBackend (KDB *kdb, Backend *backend, Key *errorKey)
 		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
 		elektraSplitAppend(kdb->split, backend,
 			keyNew(mountpoint, KEY_VALUE, keyString(backend->mountpoint), KEY_END), 2);
+		backend->refcounter = 2;
 	} else {
 		/* Normal single mounted backend */
 		sprintf(mountpoint, "%s/", keyName(backend->mountpoint));
 		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
 		elektraSplitAppend(kdb->split, backend, keyDup (backend->mountpoint), 0);
+		backend->refcounter = 1;
 	}
 
 	elektraFree(mountpoint);

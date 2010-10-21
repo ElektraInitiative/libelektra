@@ -129,6 +129,7 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
 	root = ksNext (elektraConfig);
 
 	Backend *backend = elektraCalloc(sizeof(struct _Backend));
+	backend->refcounter = 1;
 
 	while ((cur = ksNext(elektraConfig)) != 0)
 	{
@@ -154,19 +155,21 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
 			{
 				if (keyString(cur)[0] == '/')
 				{
-					backend->mountpoint = keyNew("", KEY_VALUE,keyBaseName(root), KEY_END);
+					backend->mountpoint = keyNew("",
+							KEY_VALUE, keyBaseName(root), KEY_END);
 					backend->mountpoint->key = elektraStrDup(keyString(cur));
 					backend->mountpoint->keySize = cur->dataSize;
-					backend->refcounter = 2;
 				} else {
-					backend->mountpoint=keyNew(keyString(cur),KEY_VALUE,keyBaseName(root), KEY_END);
-					backend->refcounter = 1;
+					backend->mountpoint = keyNew(keyString(cur),
+							KEY_VALUE, keyBaseName(root), KEY_END);
 				}
+
 				if (!backend->mountpoint)
 				{
 					ELEKTRA_ADD_WARNING(14, errorKey, keyValue(cur));
 					failure = 1;
 				}
+
 				keyIncRef(backend->mountpoint);
 				ksDel (cut);
 			}
@@ -215,11 +218,10 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
  *
  * @return the fresh allocated backend or 0 if no memory
  */
-Backend* elektraBackendOpenMissing(Key *mountpoint)
+Backend* elektraBackendOpenMissing(Key *mp)
 {
 	Backend *backend = elektraCalloc(sizeof(struct _Backend));
-	if (mountpoint->key[0] == '/') backend->refcounter = 2;
-	else backend->refcounter = 1;
+	backend->refcounter = 1;
 
 	Plugin *plugin = elektraPluginMissing();
 	if (!plugin)
@@ -233,7 +235,6 @@ Backend* elektraBackendOpenMissing(Key *mountpoint)
 	backend->setplugins[0] = plugin;
 	plugin->refcounter = 2;
 
-	Key *mp = keyDup (mountpoint);
 	keySetString (mp, "missing");
 	backend->mountpoint = mp;
 	keyIncRef(backend->mountpoint);

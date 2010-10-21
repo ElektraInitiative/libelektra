@@ -369,3 +369,15 @@ severity:error
 ingroup:plugin
 module:missing
 
+number:64
+description:could not load plugin in process plugin
+severity:warning
+ingroup:modules
+module:kdb
+
+number:65
+description:could not reference back to plugin in process plugin
+severity:warning
+ingroup:modules
+module:kdb
+

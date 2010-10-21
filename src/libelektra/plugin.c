@@ -221,10 +221,13 @@ int elektraProcessPlugins(Plugin **plugins, KeySet *modules, KeySet *referencePl
 				ksAppend(pluginConfig, systemConfig);
 				ksRewind(pluginConfig); /* TODO: bug ksAppend invalidates cursor */
 
-				/* case 1, we create a new plugin */
-				plugins[pluginNumber] = elektraPluginOpen(pluginName, modules, pluginConfig, errorKey);
+				/* case 1, we create a new plugin,
+				   note that errorKey is not passed here, because it would set error information
+				   but we only want a warning instead. */
+				plugins[pluginNumber] = elektraPluginOpen(pluginName, modules, pluginConfig, 0);
 				if (!plugins[pluginNumber])
 				{
+					ELEKTRA_ADD_WARNING (64, errorKey, pluginName);
 					/* Loading plugin did not work */
 					free (pluginName);
 					free (referenceName);
@@ -244,6 +247,7 @@ int elektraProcessPlugins(Plugin **plugins, KeySet *modules, KeySet *referencePl
 				Key *lookup = ksLookup(referencePlugins, keyNew(referenceName, KEY_END), KDB_O_DEL);
 				if (!lookup)
 				{
+					ELEKTRA_ADD_WARNING (65, errorKey, referenceName);
 					/* Getting a reference plugin at a previous stage did not work.
 					Note that this check is necessary, because loading the plugin could
 					fail for example at errorplugins and at a later point, for example
