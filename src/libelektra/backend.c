@@ -110,8 +110,9 @@ system/elektra/mountpoints/<name>
  * @param modules used to load new modules or get references
  *        to existing one
  * @return a pointer to a freshly allocated backend
- * @return 0 if it did not work, the elektraConfig then
- *         has the error information.
+ *         this could be the requested backend or a so called
+ *         "missing backend".
+ * @return 0 if out of memory
  * @ingroup backend
  */
 Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKey)
@@ -120,6 +121,7 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
 	Key * root;
 	KeySet *referencePlugins = 0;
 	KeySet *systemConfig = 0;
+	int failure = 0;
 
 	referencePlugins = ksNew(0);
 	ksRewind(elektraConfig);
@@ -127,6 +129,7 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
 	root = ksNext (elektraConfig);
 
 	Backend *backend = elektraCalloc(sizeof(struct _Backend));
+	backend->refcounter = 1;
 
 	while ((cur = ksNext(elektraConfig)) != 0)
 	{
@@ -145,26 +148,28 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
 							cut, systemConfig, errorKey) == -1)
 				{
 					ELEKTRA_ADD_WARNING(13, errorKey, "elektraProcessPlugins for get failed");
-					goto error;
+					failure = 1;
 				}
 			}
 			else if (!strcmp(keyBaseName(cur), "mountpoint"))
 			{
 				if (keyString(cur)[0] == '/')
 				{
-					backend->mountpoint = keyNew("", KEY_VALUE,keyBaseName(root), KEY_END);
+					backend->mountpoint = keyNew("",
+							KEY_VALUE, keyBaseName(root), KEY_END);
 					backend->mountpoint->key = elektraStrDup(keyString(cur));
 					backend->mountpoint->keySize = cur->dataSize;
-					backend->refcounter = 2;
 				} else {
-					backend->mountpoint=keyNew(keyString(cur),KEY_VALUE,keyBaseName(root), KEY_END);
-					backend->refcounter = 1;
+					backend->mountpoint = keyNew(keyString(cur),
+							KEY_VALUE, keyBaseName(root), KEY_END);
 				}
+
 				if (!backend->mountpoint)
 				{
 					ELEKTRA_ADD_WARNING(14, errorKey, keyValue(cur));
-					goto error;
+					failure = 1;
 				}
+
 				keyIncRef(backend->mountpoint);
 				ksDel (cut);
 			}
@@ -174,7 +179,7 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
 							cut, systemConfig, errorKey) == -1)
 				{
 					ELEKTRA_ADD_WARNING(15, errorKey, "elektraProcessPlugins for set failed");
-					goto error;
+					failure = 1;
 				}
 			}
 			else if (!strcmp(keyBaseName(cur), "errorplugins"))
@@ -183,7 +188,7 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
 							cut, systemConfig, errorKey) == -1)
 				{
 					ELEKTRA_ADD_WARNING(15, errorKey, "elektraProcessPlugins for error failed");
-					goto error;
+					failure = 1;
 				}
 			} else {
 				// no one cares about that config
@@ -193,17 +198,48 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
 		}
 	}
 
-	ksDel (systemConfig);
-	ksDel (elektraConfig);
-	ksDel (referencePlugins);
-	return backend;
+	if (failure)
+	{
+		Backend *tmpBackend = elektraBackendOpenMissing(backend->mountpoint);
+		elektraBackendClose(backend, errorKey);
+		backend = tmpBackend;
+	}
 
-error:
 	ksDel (systemConfig);
 	ksDel (elektraConfig);
 	ksDel (referencePlugins);
-	elektraBackendClose(backend, errorKey);
-	return 0;
+
+	return backend;
+}
+
+/**
+ * Opens the internal backend that indicates that a backend
+ * is missing at that place.
+ *
+ * @return the fresh allocated backend or 0 if no memory
+ */
+Backend* elektraBackendOpenMissing(Key *mp)
+{
+	Backend *backend = elektraCalloc(sizeof(struct _Backend));
+	backend->refcounter = 1;
+
+	Plugin *plugin = elektraPluginMissing();
+	if (!plugin)
+	{
+		/* Could not allocate plugin */
+		elektraFree(backend);
+		return 0;
+	}
+
+	backend->getplugins[0] = plugin;
+	backend->setplugins[0] = plugin;
+	plugin->refcounter = 2;
+
+	keySetString (mp, "missing");
+	backend->mountpoint = mp;
+	keyIncRef(backend->mountpoint);
+
+	return backend;
 }
 
 /**

@@ -7,8 +7,6 @@
 
 class CheckCommand : public Command
 {
-	kdb::KDB kdb;
-
 public:
 	CheckCommand();
 	~CheckCommand();

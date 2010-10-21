@@ -221,8 +221,20 @@ int elektraProcessPlugins(Plugin **plugins, KeySet *modules, KeySet *referencePl
 				ksAppend(pluginConfig, systemConfig);
 				ksRewind(pluginConfig); /* TODO: bug ksAppend invalidates cursor */
 
-				/* case 1, we create a new plugin */
+				/* case 1, we create a new plugin,
+				   note that errorKey is not passed here, because it would set error information
+				   but we only want a warning instead. */
 				plugins[pluginNumber] = elektraPluginOpen(pluginName, modules, pluginConfig, 0);
+				if (!plugins[pluginNumber])
+				{
+					ELEKTRA_ADD_WARNING (64, errorKey, pluginName);
+					/* Loading plugin did not work */
+					free (pluginName);
+					free (referenceName);
+					ksDel (config);
+					return -1;
+				}
+
 				/* case 2, we label it for later use */
 				if (referenceName) ksAppendKey (referencePlugins,
 						keyNew(referenceName,
@@ -232,7 +244,19 @@ int elektraProcessPlugins(Plugin **plugins, KeySet *modules, KeySet *referencePl
 							KEY_END));
 			} else {
 				/* case 3, we use an existing plugin */
-				plugins[pluginNumber] = *(Plugin**)keyValue(ksLookup(referencePlugins, keyNew(referenceName, KEY_END), KDB_O_DEL));
+				Key *lookup = ksLookup(referencePlugins, keyNew(referenceName, KEY_END), KDB_O_DEL);
+				if (!lookup)
+				{
+					ELEKTRA_ADD_WARNING (65, errorKey, referenceName);
+					/* Getting a reference plugin at a previous stage did not work.
+					Note that this check is necessary, because loading the plugin could
+					fail for example at errorplugins and at a later point, for example
+					at setplugins it is tried to refer to that.*/
+					free (referenceName);
+					ksDel (config);
+					return -1;
+				}
+				plugins[pluginNumber] = *(Plugin**)keyValue(lookup);
 				++plugins[pluginNumber]->refcounter;
 			}
 			free (pluginName);
@@ -344,7 +368,33 @@ int elektraPluginClose(Plugin *handle, Key *errorKey)
 	return rc;
 }
 
-int elektraVersionGet (Plugin *handle, KeySet *returned, Key *error)
+static int elektraMissingGet (Plugin *plugin, KeySet *ks, Key *error)
+{
+	ELEKTRA_SET_ERROR(62, error, keyName(error));
+	return -1;
+}
+
+static int elektraMissingSet (Plugin *plugin, KeySet *ks, Key *error)
+{
+	ELEKTRA_SET_ERROR(63, error, keyName(error));
+	return -1;
+}
+
+
+Plugin *elektraPluginMissing(void)
+{
+	Plugin *returned;
+
+	returned=elektraCalloc(sizeof(struct _Plugin));
+	if (!returned) return 0;
+
+	returned->name = "missing";
+	returned->kdbGet=elektraMissingGet;
+	returned->kdbSet=elektraMissingSet;
+	return returned;
+}
+
+static int elektraVersionGet (Plugin *handle, KeySet *returned, Key *error)
 {
 	KeySet *info = elektraVersionSet();
 	ksAppend(returned, info);
@@ -352,7 +402,7 @@ int elektraVersionGet (Plugin *handle, KeySet *returned, Key *error)
 	return 1;
 }
 
-Plugin *elektraPluginVersion()
+Plugin *elektraPluginVersion(void)
 {
 	Plugin *returned;
 

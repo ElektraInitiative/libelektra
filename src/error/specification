@@ -357,3 +357,27 @@ severity:error
 ingroup:plugin
 module:tcl
 
+number:62
+description:Tried to get a key from a missing backend
+severity:error
+ingroup:plugin
+module:missing
+
+number:63
+description:Tried to set a key in a missing backend
+severity:error
+ingroup:plugin
+module:missing
+
+number:64
+description:could not load plugin in process plugin
+severity:warning
+ingroup:modules
+module:kdb
+
+number:65
+description:could not reference back to plugin in process plugin
+severity:warning
+ingroup:modules
+module:kdb
+
