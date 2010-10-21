@@ -20,11 +20,11 @@ Backend::Backend(string name, string mp) :
 
 Backend::~Backend()
 {
-	elektraModulesClose(modules.getKeySet(), 0);
 	for (size_t i = 0; i < plugins.size(); ++i)
 	{
 		delete plugins[i];
 	}
+	elektraModulesClose(modules.getKeySet(), 0);
 }
 
 void Backend::checkFile (std::string file)
