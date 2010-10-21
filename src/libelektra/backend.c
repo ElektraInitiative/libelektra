@@ -215,10 +215,11 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
  *
  * @return the fresh allocated backend or 0 if no memory
  */
-Backend* elektraBackendOpenMissing()
+Backend* elektraBackendOpenMissing(Key *mp)
 {
 	Backend *backend = elektraCalloc(sizeof(struct _Backend));
-	backend->refcounter = 1;
+	if (mp->key[0] == '/') backend->refcounter = 2;
+	else backend->refcounter = 1;
 
 	Plugin *plugin = elektraPluginMissing();
 	if (!plugin)
@@ -228,11 +229,11 @@ Backend* elektraBackendOpenMissing()
 		return 0;
 	}
 
-	Key *mp = keyNew ("system/elektra/version", KEY_VALUE, "version", KEY_END);
-
 	backend->getplugins[0] = plugin;
-	plugin->refcounter = 1;
+	backend->setplugins[0] = plugin;
+	plugin->refcounter = 2;
 
+	keySetString (mp, "missing");
 	backend->mountpoint = mp;
 	keyIncRef(backend->mountpoint);
 

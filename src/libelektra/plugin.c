@@ -377,7 +377,7 @@ static int elektraMissingSet (Plugin *plugin, KeySet *ks, Key *error)
 }
 
 
-Plugin *elektraPluginMissing()
+Plugin *elektraPluginMissing(void)
 {
 	Plugin *returned;
 
@@ -398,7 +398,7 @@ static int elektraVersionGet (Plugin *handle, KeySet *returned, Key *error)
 	return 1;
 }
 
-Plugin *elektraPluginVersion()
+Plugin *elektraPluginVersion(void)
 {
 	Plugin *returned;
 
