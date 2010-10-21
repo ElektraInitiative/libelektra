@@ -10,8 +10,6 @@
 
 #include <cmdline.hpp>
 
-#include <dlfcn.h>
-
 using namespace std;
 using namespace kdb;
 
@@ -34,40 +32,44 @@ int CheckCommand::execute(int argc, char** argv)
 		return 1;
 	}
 
-	if (cl.v)
+	if (cl.V)
 	{
 		cerr << cl.progName << " " << cl.utilName << " version 0.1" << endl;
 		return 0;
 	}
 
-	if (cl.t)
-	{
-		cout << "try to dlopen and dlclose libelektra-dump.so" << endl;
-		void *dl = dlopen ("libelektra-dump.so", RTLD_LAZY);
-		if (!dl)
-		{
-			cerr << "Could not load the library" << endl;
-			cerr << dlerror() << endl;
-			return 4;
-		}
-		dlclose (dl);
-		return 0;
-	}
-
-	if (cl.avail() != 1 || cl.h)
+	if (cl.avail() != 1 || cl.H)
 	{
 		cerr << "Please provide a module name" << endl;
 		cerr << "Usage: check <name>" << endl;
-		if (cl.h) return 0;
+		if (cl.H) return 0;
 		return 2;
 	}
 
 	std::string name = argv[cl.param()];
 
-	cout << name << endl;
-
 	KeySet modules;
-	elektraModulesInit(modules.getKeySet(), 0);
+	Key errorKey;
+	elektraModulesInit(modules.getKeySet(), *errorKey);
+
+	if (cl.t)
+	{
+		if (cl.v) cout << "will try to load " << name << endl;
+		ckdb::elektraPluginFactory ptr = elektraModulesLoad (modules.getKeySet(),
+				name.c_str(), *errorKey);
+		if (!ptr)
+		{
+			cerr << "Could not load the library" << endl;
+			printError(errorKey);
+			return 4;
+		}
+		elektraModulesClose(modules.getKeySet(), *errorKey);
+		printWarnings(errorKey);
+		return 0;
+	}
+
+	if (cl.v) cout << "will try check the plugin " << name << endl;
+
 	KeySet testConfig(1,
 		*Key(	"system/test",
 			KEY_VALUE, "test",
@@ -95,7 +97,8 @@ int CheckCommand::execute(int argc, char** argv)
 			cerr << "Warning #" << i << ": " << warnings[i] << endl;
 		}
 	}
-	elektraModulesClose(modules.getKeySet(), 0);
+	elektraModulesClose(modules.getKeySet(), *errorKey);
+	printWarnings(errorKey);
 
 	return 0;
 }

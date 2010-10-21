@@ -1,6 +1,16 @@
 #ifndef CMDLINE_HPP
 #define CMDLINE_HPP
 
+/* Cmdline parser.
+ *
+ * To add an option there are 5 steps.
+ * Beware not to introduce options which already have
+ * an meaning in one of the utilities.
+ * Please always append the options in alphabetical order
+ * with capitals later.
+ */
+
+
 #include <string>
 
 class Cmdline
@@ -15,12 +25,12 @@ public:
 	/** At least one of the options was invalid */
 	bool invalidOpt;
 
-	/** True if help is needed. */
-	bool h;
-	/** True to return version info. */
-	bool v;
-	/** True to run some self tests. */
-	bool t;
+	/*XXX: Step 1: add your option here.*/
+	bool h; /*!< True if human readable is preferred. */
+	bool H; /*!< True if help is needed. */
+	bool t; /*!< True to run some self tests instead of the normal action. */
+	bool v; /*!< True to be more verbose. */
+	bool V; /*!< True to return version info. */
 
 	/** The path to the kdb tool. */
 	std::string progName;
