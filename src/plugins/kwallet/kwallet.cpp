@@ -44,45 +44,11 @@ using namespace ckdb;
 extern "C"
 {
 
-int kdbOpen_kwallet(KDB *handle)
+int elektraKwalletOpen(Plugin *, Key *)
 {
-	int errnosave = errno;
-	KDBCap *cap = kdbhGetCapability (handle);
-
-	cap->onlyFullGet=1;
-	cap->noStat=1;
-
-	cap->onlyRemoveAll=1;
-
-	cap->onlyFullSet=1;
-	cap->onlyAddKeys=1;
-
-	cap->onlySystem=1;
-	cap->onlyUser=1;
-
-	cap->noOwner=1;
-	cap->noValue=1;
-	cap->noComment=1;
-	cap->noUID=1;
-	cap->noGID=1;
-	cap->noMode=1;
-	cap->noDir=1;
-	cap->noATime=1;
-	cap->noMTime=1;
-	cap->noCTime=1;
-	cap->noRemove=1;
-	cap->noMount=1;
-	cap->noBinary=1;
-	cap->noString=1;
-	cap->noTypes=1;
-	cap->noError=1;
-
-	cap->noLock=1;
-	cap->noThread=1;
-
 	/* backend initialization logic */
 
-	cerr << "Before kde" << endl;
+	cerr << "open kwallet" << endl;
 
 #if 0
 
@@ -125,10 +91,11 @@ int kdbOpen_kwallet(KDB *handle)
 	return 0;
 }
 
-int kdbClose_kwallet(KDB *handle)
+int elektraKwalletClose(Plugin *, Key *)
 {
-	int errnosave = errno;
 	/* free all backend resources and shut it down */
+
+	cerr << "close kwallet" << endl;
 
 #if 0
 
@@ -138,14 +105,12 @@ int kdbClose_kwallet(KDB *handle)
 
 #endif
 
-	errno = errnosave;
 	return 0; /* success */
 }
 
-ssize_t kdbGet_kwallet(KDB *handle, KeySet *returned, const Key *parentKey)
+int elektraKwalletGet(Plugin *, KeySet *, Key *)
 {
-	ssize_t nr_keys = 0;
-	int errnosave = errno;
+	cerr << "get kwallet" << endl;
 
 #if 0
 
@@ -164,34 +129,27 @@ ssize_t kdbGet_kwallet(KDB *handle, KeySet *returned, const Key *parentKey)
 
 #endif
 
-	errno = errnosave;
-	return nr_keys; /* success */
+	return 1;
 }
 
-ssize_t kdbSet_kwallet(KDB *handle, KeySet *returned, const Key *parentKey)
+int elektraKwalletSet(ckdb::Plugin *, ckdb::KeySet *returned, ckdb::Key *parentKey)
 {
-	ssize_t nr_keys = 0;
-	int errnosave = errno;
-
+	cerr << "set kwallet" << endl;
 	/* set all keys below parentKey and count them with nr_keys */
 
-	errno = errnosave;
-	return nr_keys;
+	return 1;
 }
 
-KDB *KDBEXPORT(kwallet)
+ckdb::Plugin *ELEKTRA_PLUGIN_EXPORT(kwallet)
 {
-	return kdbBackendExport(BACKENDNAME,
-		KDB_BE_OPEN,	&kdbOpen_kwallet,
-		KDB_BE_CLOSE,	&kdbClose_kwallet,
-		KDB_BE_GET,	&kdbGet_kwallet,
-		KDB_BE_SET,	&kdbSet_kwallet,
-		KDB_BE_VERSION,        BACKENDVERSION,
-		KDB_BE_AUTHOR,	"Markus Raab <elektra@markus-raab.org>",
-		KDB_BE_LICENCE,	"BSD",
-		KDB_BE_DESCRIPTION, "Kwallet Plugin",
-		KDB_BE_END);
+	return elektraPluginExport("kwallet",
+		ELEKTRA_PLUGIN_OPEN,		&elektraKwalletOpen,
+		ELEKTRA_PLUGIN_CLOSE,		&elektraKwalletClose,
+		ELEKTRA_PLUGIN_GET,		&elektraKwalletGet,
+		ELEKTRA_PLUGIN_SET,		&elektraKwalletSet,
+		ELEKTRA_PLUGIN_END);
 }
+
 
 } // extern "C"
 

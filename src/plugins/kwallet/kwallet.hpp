@@ -26,20 +26,18 @@
 
 
 
-#include <kdbbackend.h>
-#include <errno.h>
+#include <kdbplugin.h>
 
 
-#define BACKENDNAME "kwallet"
-#define BACKENDDISPLAYNAME "Elektra Kwallet Backend"
-#define BACKENDVERSION "0.0.1"
 
 extern "C" {
 
-int kdbOpen_kwallet(ckdb::KDB *handle);
-int kdbClose_kwallet(ckdb::KDB *handle);
-ssize_t kdbGet_kwallet(ckdb::KDB *handle, ckdb::KeySet *ks, const ckdb::Key *parentKey);
-ssize_t kdbSet_kwallet(ckdb::KDB *handle, ckdb::KeySet *ks, const ckdb::Key *parentKey);
-ckdb::KDB *KDBEXPORT(kwallet);
+int elektraKwalletOpen(ckdb::Plugin *handle, ckdb::Key *error);
+int elektraKwalletClose(ckdb::Plugin *handle, ckdb::Key *error);
+int elektraKwalletGet(ckdb::Plugin *, ckdb::KeySet *returned, ckdb::Key
+		*parentKey);
+int elektraKwalletSet(ckdb::Plugin *, ckdb::KeySet *returned, ckdb::Key
+		*parentKey);
+ckdb::Plugin *ELEKTRA_PLUGIN_EXPORT(kwallet);
 
 } // extern "C"
