@@ -27,13 +27,7 @@
 
 #include "kwallet.hpp"
 
-#if 0
-#include <kapplication.h>
-#include <kcmdlineargs.h>
-#include <kaboutdata.h>
 #include <kwallet.h>
-#include <klocale.h>
-#endif
 
 #include <iostream>
 
@@ -44,23 +38,11 @@ using namespace ckdb;
 extern "C"
 {
 
-int elektraKwalletOpen(Plugin *, Key *)
+int elektraKwalletOpen(Plugin *handle, Key *)
 {
-	/* backend initialization logic */
-
-	cerr << "open kwallet" << endl;
-
-#if 0
-
-	KAboutData about(QByteArray(BACKENDNAME),
-			 QByteArray(BACKENDDISPLAYNAME),
-			 KLocalizedString(),
-			 QByteArray(BACKENDVERSION));
-	KComponentData kcd(about);
+	/* plugin initialization logic */
 
 	cerr << "After kde" << endl;
-
-	errno = errnosave;
 
 	if(KWallet::Wallet::isEnabled())
 	{
@@ -72,7 +54,7 @@ int elektraKwalletOpen(Plugin *, Key *)
 
 			if(wallet)
 			{
-				ckdb::kdbhSetBackendData (handle, wallet);
+				elektraPluginSetData(handle, wallet);
 				cerr << "Setting backend data worked" << endl;
 			} else {
 
@@ -87,7 +69,6 @@ int elektraKwalletOpen(Plugin *, Key *)
 		cerr <<  "is not enabled" << endl;
 		return -1;
 	}
-#endif
 	return 0;
 }
 
@@ -100,7 +81,8 @@ int elektraKwalletClose(Plugin *, Key *)
 #if 0
 
 	KWallet::Wallet::closeWallet(KWallet::Wallet::LocalWallet(), false);
-	KWallet::Wallet* wallet = static_cast<KWallet::Wallet*>(ckdb::kdbhGetBackendData (handle));
+	KWallet::Wallet* wallet =
+		static_cast<KWallet::Wallet*>(elektraPluginGetData(handle));
 	delete wallet;
 
 #endif
@@ -114,7 +96,8 @@ int elektraKwalletGet(Plugin *, KeySet *, Key *)
 
 #if 0
 
-	KWallet::Wallet* wallet = static_cast<KWallet::Wallet*>(ckdb::kdbhGetBackendData (handle));
+	KWallet::Wallet* wallet =
+		static_cast<KWallet::Wallet*>(elektraPluginGetData(handle));
 
 	cout << "in kdbGet_kwallet" << endl;
 	QStringList list = wallet->folderList();
@@ -132,7 +115,7 @@ int elektraKwalletGet(Plugin *, KeySet *, Key *)
 	return 1;
 }
 
-int elektraKwalletSet(ckdb::Plugin *, ckdb::KeySet *returned, ckdb::Key *parentKey)
+int elektraKwalletSet(ckdb::Plugin *, ckdb::KeySet *, ckdb::Key *)
 {
 	cerr << "set kwallet" << endl;
 	/* set all keys below parentKey and count them with nr_keys */
