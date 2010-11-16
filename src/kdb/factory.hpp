@@ -24,6 +24,7 @@
 #include <cp.hpp>
 #include <fstab.hpp>
 #include <metals.hpp>
+#include <getpw.hpp>
 
 class Instancer
 {
@@ -66,6 +67,7 @@ public:
 		m_factory.insert(std::make_pair("fstab-set", new Cnstancer<FstabCommand>()));
 		m_factory.insert(std::make_pair("meta-ls", new Cnstancer<MetaLsCommand>()));
 		m_factory.insert(std::make_pair("mv", new Cnstancer<CpCommand>()));
+		m_factory.insert(std::make_pair("getpw", new Cnstancer<GetPwCommand>()));
 	}
 
 	~Factory()

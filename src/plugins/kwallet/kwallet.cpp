@@ -189,7 +189,7 @@ int elektraKwalletGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	for (it = list.begin(); it != list.end(); ++it)
 	{
 		std::string folder ((*it).utf8());
-		cout << "Folder: " << folder << endl;
+		// cout << "Folder: " << folder << endl;
 		ksAppendKey(returned, keyNew ((keyName(parentKey)
 						+ std::string("/")
 						+ folder).c_str(), KEY_END));
@@ -199,13 +199,25 @@ int elektraKwalletGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		QStringList::const_iterator keyIt;
 		for (keyIt = keyList.begin(); keyIt != keyList.end(); ++keyIt)
 		{
+			QByteArray value;
 			std::string key ((*keyIt).utf8());
-			cout << "Key: " << key << endl;
-			ksAppendKey(returned, keyNew ((keyName(parentKey)
+			if (wallet->readEntry (*keyIt, value) == -1)
+				cerr << "Error reading entry" << endl;
+			std::string data (value.data(), value.size());
+			cout << "Key: " << key << " Value: " <<
+				data.c_str() << " Size: " << data.size() << endl;
+
+			Key *k;
+			ksAppendKey(returned, k = keyNew ((keyName(parentKey)
 						+ std::string("/")
 						+ folder
 						+ std::string("/")
-						+ key).c_str(), KEY_END));
+						+ key).c_str(),
+						KEY_BINARY,
+						KEY_SIZE, data.size(),
+						KEY_VALUE, data.c_str(),
+						KEY_END));
+			keySetMeta (k, "password", "1");
 		}
 	}
 
