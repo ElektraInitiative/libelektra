@@ -190,7 +190,23 @@ int elektraKwalletGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	{
 		std::string folder ((*it).utf8());
 		cout << "Folder: " << folder << endl;
-		ksAppendKey(returned, keyNew (("user/kwallet" + folder).c_str(), KEY_END));
+		ksAppendKey(returned, keyNew ((keyName(parentKey)
+						+ std::string("/")
+						+ folder).c_str(), KEY_END));
+		wallet->setFolder(*it);
+
+		QStringList keyList = wallet->entryList();
+		QStringList::const_iterator keyIt;
+		for (keyIt = keyList.begin(); keyIt != keyList.end(); ++keyIt)
+		{
+			std::string key ((*keyIt).utf8());
+			cout << "Key: " << key << endl;
+			ksAppendKey(returned, keyNew ((keyName(parentKey)
+						+ std::string("/")
+						+ folder
+						+ std::string("/")
+						+ key).c_str(), KEY_END));
+		}
 	}
 
 	return 1;
