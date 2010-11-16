@@ -32,14 +32,70 @@
 #include <kapplication.h>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
+#include <klocale.h>
 
 #include <iostream>
 
 using namespace std;
 using namespace ckdb;
 
-class PluginInfo
+class PluginData
 {
+	KApplication *k;
+	KAboutData *aboutData;
+
+public:
+	KWallet::Wallet* wallet;
+	PluginData()
+	{
+		cerr << "Open kde" << endl;
+
+		// KInstance k("libelektra-kwallet");
+		// qDebug(k.instanceName());
+
+		// QCString("libelektra-kwallet"), 
+
+		int argc = 1;
+		char* argv[2];
+		argv[0] = (char*)"libelektra-kwallet";
+		argv[1] = 0;
+
+		aboutData = new KAboutData ("libelektra-kwallet",
+			I18N_NOOP("Elektra Access to KWallet"),
+			"1.0",
+			"Description",
+			KAboutData::License_BSD,
+			"(c) Markus Raab 2010",
+			0,
+			0,
+			"elektra@markus-raab.org");
+		KCmdLineArgs::init( argc, argv, aboutData, true);
+
+
+		k = new KApplication (false, false);
+
+		if(KWallet::Wallet::isEnabled())
+		{
+			wallet = KWallet::Wallet::openWallet(KWallet::Wallet::LocalWallet(), false);
+
+			if(wallet)
+			{
+				cerr << "Setting backend data worked" << endl;
+			} else {
+				throw "openWallet failed";
+			}
+		} else {
+			throw "KWallet is not enabled";
+		}
+	}
+
+	~PluginData()
+	{
+		KWallet::Wallet::closeWallet(KWallet::Wallet::LocalWallet(), false);
+		delete wallet;
+		delete k;
+		delete aboutData;
+	}
 };
 
 
@@ -50,73 +106,36 @@ int elektraKwalletOpen(Plugin *handle, Key *)
 {
 	/* plugin initialization logic */
 
-	cerr << "Open kde" << endl;
+	elektraPluginSetData(handle, 0);
 
-	// KInstance k("libelektra-kwallet");
-	// qDebug(k.instanceName());
+	KeySet * config = elektraPluginGetConfig(handle);
 
-	// QCString("libelektra-kwallet"), 
+	if (ksLookupByName(config, "/module", 0))
+	{
+		// suppress warnings if it is just a module
+		// dont buildup the struct then
+		return 0;
+	}
 
-	int argc = 1;
-	char* argv[2];
-	argv[0] = (char*)"libelektra-kwallet";
-	argv[1] = 0;
-
-	KAboutData aboutData ("libelektra-kwallet",
-		I18N_NOOP("Elektra Access to KWallet"),
-		"1.0",
-		"Description",
-		KAboutData::License_BSD,
-		"(c) Markus Raab 2010",
-		0,
-		0,
-		"elektra@markus-raab.org");
-	KCmdLineArgs::init( argc, argv, &aboutData );
-
-
-	KApplication k(false, false);
+	elektraPluginSetData(handle, new PluginData);
 
 	cerr << "After kde" << endl;
 
-	if(KWallet::Wallet::isEnabled())
-	{
-		KWallet::Wallet* wallet =
-			KWallet::Wallet::openWallet(KWallet::Wallet::LocalWallet(), false);
-
-		if(wallet)
-		{
-			elektraPluginSetData(handle, wallet);
-			cerr << "Setting backend data worked" << endl;
-		} else {
-			cerr << "openWallet failed" << endl;
-			return -1;
-		}
-	} else {
-		cerr <<  "is not enabled" << endl;
-		return -1;
-	}
 	return 0;
 }
 
-int elektraKwalletClose(Plugin *, Key *)
+int elektraKwalletClose(Plugin *handle, Key *)
 {
 	/* free all backend resources and shut it down */
 
 	cerr << "close kwallet" << endl;
 
-#if 0
-
-	KWallet::Wallet::closeWallet(KWallet::Wallet::LocalWallet(), false);
-	KWallet::Wallet* wallet =
-		static_cast<KWallet::Wallet*>(elektraPluginGetData(handle));
-	delete wallet;
-
-#endif
+	delete static_cast<PluginData*>(elektraPluginGetData (handle));
 
 	return 0; /* success */
 }
 
-int elektraKwalletGet(Plugin *, KeySet *returned, Key *parentKey)
+int elektraKwalletGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	cerr << "get kwallet" << endl;
 	if (!strcmp (keyName(parentKey), "system/elektra/modules/kwallet"))
@@ -161,23 +180,18 @@ int elektraKwalletGet(Plugin *, KeySet *returned, Key *parentKey)
 		return 1;
 	}
 
-#if 0
-
 	KWallet::Wallet* wallet =
-		static_cast<KWallet::Wallet*>(elektraPluginGetData(handle));
+		static_cast<PluginData*>(elektraPluginGetData(handle))->wallet;
 
 	cout << "in kdbGet_kwallet" << endl;
 	QStringList list = wallet->folderList();
 	QStringList::const_iterator it;
 	for (it = list.begin(); it != list.end(); ++it)
 	{
-		std::string folder = (*it).toLocal8Bit().constData();
+		std::string folder ((*it).utf8());
 		cout << "Folder: " << folder << endl;
 		ksAppendKey(returned, keyNew (("user/kwallet" + folder).c_str(), KEY_END));
-		nr_keys ++;
 	}
-
-#endif
 
 	return 1;
 }
