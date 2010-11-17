@@ -387,3 +387,14 @@ severity:warning
 ingroup:plugin
 module:kwallet
 
+number:67
+description:could not read from kwallet
+severity:error
+ingroup:plugin
+module:kwallet
+
+number:68
+description:not implemented
+severity:error
+ingroup:plugin
+

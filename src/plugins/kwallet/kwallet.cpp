@@ -34,8 +34,6 @@
 #include <kcmdlineargs.h>
 #include <klocale.h>
 
-#include <iostream>
-
 using namespace std;
 using namespace ckdb;
 
@@ -49,13 +47,6 @@ public:
 	static KWallet::Wallet* wallet;
 	PluginData()
 	{
-		cerr << "Open kde" << endl;
-
-		// KInstance k("libelektra-kwallet");
-		// qDebug(k.instanceName());
-
-		// QCString("libelektra-kwallet"), 
-
 		int argc = 1;
 		char* argv[2];
 		argv[0] = (char*)"libelektra-kwallet";
@@ -81,12 +72,8 @@ public:
 			 * the others access the singleton. */
 			if (!wallet) wallet = KWallet::Wallet::openWallet(KWallet::Wallet::LocalWallet(), false);
 
-			if (wallet && wallet->isOpen())
-			{
-				cerr << "Setting backend data worked" << endl;
-			} else {
-				throw "openWallet failed";
-			}
+			if (!wallet) throw "wallet still null pointer";
+			if (!wallet->isOpen()) throw "isOpen returned false";
 		} else {
 			throw "KWallet is not enabled";
 		}
@@ -129,12 +116,9 @@ int elektraKwalletOpen(Plugin *handle, Key *errorKey)
 		elektraPluginSetData(handle, new PluginData);
 	} catch (const char* msg) {
 		ELEKTRA_ADD_WARNING (66, errorKey, msg);
-		cerr << "Failed opening PluginData" << endl;
 
 		return -1;
 	}
-
-	cerr << "After kde" << endl;
 
 	return 0;
 }
@@ -152,8 +136,6 @@ int elektraKwalletClose(Plugin *handle, Key *)
 		return 0;
 	}
 
-	cerr << "close kwallet" << endl;
-
 	delete static_cast<PluginData*>(elektraPluginGetData (handle));
 	elektraPluginSetData(handle, 0);
 
@@ -162,7 +144,6 @@ int elektraKwalletClose(Plugin *handle, Key *)
 
 int elektraKwalletGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
-	cerr << "get kwallet" << endl;
 	if (!strcmp (keyName(parentKey), "system/elektra/modules/kwallet"))
 	{
 		KeySet *moduleConfig = ksNew (50,
@@ -206,22 +187,32 @@ int elektraKwalletGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	}
 
 	PluginData *pd = static_cast<PluginData*>(elektraPluginGetData(handle));
-	if (!pd) return -1;
+	if (!pd)
+	{
+		ELEKTRA_SET_ERROR (67, parentKey, "no plugindata found");
+		return -1;
+	}
 
 	KWallet::Wallet* wallet = pd->wallet;
-	if (!wallet) return -1;
+	if (!wallet)
+	{
+		ELEKTRA_SET_ERROR (67, parentKey, "wallet closed");
+		return -1;
+	}
 
-	cout << "in kdbGet_kwallet" << endl;
 	QStringList list = wallet->folderList();
 	QStringList::const_iterator it;
 	for (it = list.begin(); it != list.end(); ++it)
 	{
 		std::string folder ((*it).utf8());
-		// cout << "Folder: " << folder << endl;
 		ksAppendKey(returned, keyNew ((keyName(parentKey)
 						+ std::string("/")
 						+ folder).c_str(), KEY_END));
-		wallet->setFolder(*it);
+		if (!wallet->setFolder(*it))
+		{
+			ELEKTRA_SET_ERROR (67, parentKey, "Could not set folder");
+			return -1;
+		}
 
 		QStringList keyList = wallet->entryList();
 		QStringList::const_iterator keyIt;
@@ -230,10 +221,11 @@ int elektraKwalletGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			QByteArray value;
 			std::string key ((*keyIt).utf8());
 			if (wallet->readEntry (*keyIt, value) == -1)
-				cerr << "Error reading entry" << endl;
+			{
+				ELEKTRA_SET_ERROR (67, parentKey, key.c_str());
+				return -1;
+			}
 			std::string data (value.data(), value.size());
-			cout << "Key: " << key << " Value: " <<
-				data.c_str() << " Size: " << data.size() << endl;
 
 			Key *k;
 			ksAppendKey(returned, k = keyNew ((keyName(parentKey)
@@ -252,12 +244,11 @@ int elektraKwalletGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	return 1;
 }
 
-int elektraKwalletSet(ckdb::Plugin *, ckdb::KeySet *, ckdb::Key *)
+int elektraKwalletSet(ckdb::Plugin *, ckdb::KeySet *, ckdb::Key *errorKey)
 {
-	cerr << "set kwallet" << endl;
-	/* set all keys below parentKey and count them with nr_keys */
+	ELEKTRA_SET_ERROR (67, errorKey, "elektraKwalletSet currently not implemented");
 
-	return 1;
+	return -1;
 }
 
 ckdb::Plugin *ELEKTRA_PLUGIN_EXPORT(kwallet)
