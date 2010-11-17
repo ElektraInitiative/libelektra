@@ -150,12 +150,6 @@ KDB * kdbOpen(Key *errorKey)
 {
 	KDB *handle;
 	KeySet *keys;
-#if DEBUG && VERBOSE
-	Key *key;
-
-	/* TODO provide system/elektra/version instead*/
-	fprintf (stderr, "open elektra " KDB_VERSION "\n");
-#endif
 
 	handle = elektraCalloc(sizeof(struct _KDB));
 
@@ -194,8 +188,11 @@ KDB * kdbOpen(Key *errorKey)
 	handle->trie = 0;
 
 #if DEBUG && VERBOSE
+	Key *key;
+
 	ksRewind(keys);
-	for (key=ksNext(keys);key;key=ksNext(keys)) {
+	for (key=ksNext(keys);key;key=ksNext(keys))
+	{
 		printf("config for createTrie name: %s value: %s\n",keyName(key), keyString(key));
 	}
 #endif
