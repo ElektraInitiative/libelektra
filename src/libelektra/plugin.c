@@ -329,6 +329,7 @@ Plugin* elektraPluginOpen(const char *name, KeySet *modules, KeySet *config, Key
 		if ((handle->kdbOpen(handle, errorKey)) == -1)
 		{
 			ELEKTRA_ADD_WARNING(11, errorKey, name);
+			goto err_clup;
 		}
 	}
 
