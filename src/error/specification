@@ -381,3 +381,9 @@ severity:warning
 ingroup:modules
 module:kdb
 
+number:66
+description:could not open kwallet
+severity:warning
+ingroup:plugin
+module:kwallet
+

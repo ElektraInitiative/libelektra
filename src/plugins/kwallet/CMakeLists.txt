@@ -1,7 +1,7 @@
 include(LibAddMacros)
 
 set (INCLUDES /usr/include/qt3 /usr/include/kde)
-set (LIBRARIES /usr/lib/libkwalletclient.so.1 /usr/lib/libqt-mt.so.3)
+set (LIBRARIES /usr/lib/libkwalletclient.so.1 /usr/lib/libqt-mt.so.3 pthread)
 
 add_includes (elektra-full ${INCLUDES})
 include_directories(${INCLUDES})

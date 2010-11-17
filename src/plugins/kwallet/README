@@ -1,10 +1,23 @@
-This is a skeleton for building a backend.
-You chould copy this files to another dir,
-rename them and start filling with code 
-that accesses yourspecific backend.
+This plugin works on Debian Lenny (because of hard coded build system)
+with Kde 3.x (because of the way the kde application is initialized)
+only. Adaptions are welcome!
 
-See 
-http://elektra.sourceforge.net/elektra-api/html/group__backend.html 
-is the documentation for backend programing.
+It provides an access to kwallet, a convenient and secure way to manage
+all your passwords for kde. On any attempts to access the storage you
+are prompted for a password with a kde dialog.
 
+It automatically access the local wallet, others are ignored and cannot
+be accessed. You can change the local wallet in the preferences.
 
+This plugin uses the kde API. The file behind it typically lies in
+~/.kde/share/apps/kwallet/ and the file is named like the Pocket with
+the ending .kwl. So you can use this file with a normal resolver or use
+the success resolver instead.
+
+For more information about kwallet, see:
+http://docs.kde.org/stable/en/kdeutils/kwallet/kwallet.pdf
+
+* Warning *
+
+This plugin has some severe restrictions and should only be used with
+care.

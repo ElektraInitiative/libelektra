@@ -39,13 +39,14 @@
 using namespace std;
 using namespace ckdb;
 
+#include <kdberrors.h>
+
 class PluginData
 {
-	KApplication *k;
 	KAboutData *aboutData;
 
 public:
-	KWallet::Wallet* wallet;
+	static KWallet::Wallet* wallet;
 	PluginData()
 	{
 		cerr << "Open kde" << endl;
@@ -72,13 +73,15 @@ public:
 		KCmdLineArgs::init( argc, argv, aboutData, true);
 
 
-		k = new KApplication (false, false);
+		if (!kapp) new KApplication (false, false);
 
 		if(KWallet::Wallet::isEnabled())
 		{
-			wallet = KWallet::Wallet::openWallet(KWallet::Wallet::LocalWallet(), false);
+			/* Only the first plugin will open the wallet,
+			 * the others access the singleton. */
+			if (!wallet) wallet = KWallet::Wallet::openWallet(KWallet::Wallet::LocalWallet(), false);
 
-			if(wallet)
+			if (wallet && wallet->isOpen())
 			{
 				cerr << "Setting backend data worked" << endl;
 			} else {
@@ -91,18 +94,23 @@ public:
 
 	~PluginData()
 	{
-		KWallet::Wallet::closeWallet(KWallet::Wallet::LocalWallet(), false);
-		delete wallet;
-		delete k;
-		delete aboutData;
+		/* The first plugin, will close the wallet, the others
+		 * do nothing */
+		if (wallet)
+		{
+			KWallet::Wallet::closeWallet(KWallet::Wallet::LocalWallet(), false);
+			delete wallet;
+			wallet = 0;
+		}
 	}
 };
 
+KWallet::Wallet* PluginData::wallet;
 
 extern "C"
 {
 
-int elektraKwalletOpen(Plugin *handle, Key *)
+int elektraKwalletOpen(Plugin *handle, Key *errorKey)
 {
 	/* plugin initialization logic */
 
@@ -113,11 +121,18 @@ int elektraKwalletOpen(Plugin *handle, Key *)
 	if (ksLookupByName(config, "/module", 0))
 	{
 		// suppress warnings if it is just a module
-		// dont buildup the struct then
+		// do not open wallet
 		return 0;
 	}
 
-	elektraPluginSetData(handle, new PluginData);
+	try {
+		elektraPluginSetData(handle, new PluginData);
+	} catch (const char* msg) {
+		ELEKTRA_ADD_WARNING (66, errorKey, msg);
+		cerr << "Failed opening PluginData" << endl;
+
+		return -1;
+	}
 
 	cerr << "After kde" << endl;
 
@@ -128,9 +143,19 @@ int elektraKwalletClose(Plugin *handle, Key *)
 {
 	/* free all backend resources and shut it down */
 
+	KeySet * config = elektraPluginGetConfig(handle);
+
+	if (ksLookupByName(config, "/module", 0))
+	{
+		// suppress warnings if it is just a module
+		// do not close wallet
+		return 0;
+	}
+
 	cerr << "close kwallet" << endl;
 
 	delete static_cast<PluginData*>(elektraPluginGetData (handle));
+	elektraPluginSetData(handle, 0);
 
 	return 0; /* success */
 }
@@ -180,8 +205,11 @@ int elektraKwalletGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		return 1;
 	}
 
-	KWallet::Wallet* wallet =
-		static_cast<PluginData*>(elektraPluginGetData(handle))->wallet;
+	PluginData *pd = static_cast<PluginData*>(elektraPluginGetData(handle));
+	if (!pd) return -1;
+
+	KWallet::Wallet* wallet = pd->wallet;
+	if (!wallet) return -1;
 
 	cout << "in kdbGet_kwallet" << endl;
 	QStringList list = wallet->folderList();
