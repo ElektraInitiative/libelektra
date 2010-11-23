@@ -1,0 +1,470 @@
+This is a pre-alpha Version, so be beware of bugs!
+The thesis from Markus Raab (see in the folder papers)
+describes what should work - but there are some known
+BUGS described in this file.
+
+missing for alpha:
+	decide what needs to be fixed for first alpha release
+	write documents, announcements
+	build system issues
+	how to kick out non-working plugins
+	People interested to change something should look at it now
+	-> + timeline for release candidates
+
+
+= ALPHA =
+
+needs to be fixed before alpha release
+
+== DOCUMENTATION ==
+
+document the options of the kdb tool (for the user: man pages + html)
+
+internal documentation of the kdb tool
+
+documentation of the c++ binding
+
+document return value of resolver + other plugins
+
+-> use doxygen as only documentation tool
+
+== CMAKE ==
+
+
+headers:
+	rename config.h -> kdbconfig.h
+	or kdb/config.h?
+
+export all information to internal version plugin
+	CMake
+	OS infos
+
+== CONFIGURE ==
+
+ship a ./configure script which calls cmake
+	+ toplevel Makefile which goes to build directory and calls make there
+	./configure && make && make install should work
+
+=== BUGS ===
+
+errorKey not propagated in elektraPluginOpen
+	errors should be transformed to warnings
+
+validation-set of kdb sets other meta keys then which are checked
+
+backends below other: ls does not work recursively
+could not parse file output in tcl!
+
+on non-writeable config files the problem would
+	only occur when committing -> behaviour?
+
+kdbGet: what if returned holds more information then requested
+	by parentKey on an update
+
+network filesystem in fstab plugin?
+
+implement a contract and plugin version
+
+Check if merging configuration after conflict fails
+	(kdbGet() after conflict with an empty keyset?)
+
+kdbOpen does not work without errorKey
+Name of errorKey is overwritten!
+
+non-recursive versions of cp, rm and mv segfault
+	(lookup KDB_O_POP in C++?)
+
+KeySet may be unsorted in some situations
+	changing key names
+	changing owner?
+
+if needed conf lacks a root key it is handled wrong
+
+generating unique names for fstab does not work
+	none fs entries
+	kdb-fstab-set does not work on dump or similar
+
+
+struct: checker
+	don't throw char*
+	string as element of exception class
+
+
+hosts:
+	alias in large file fails
+
+system and user are not valid keys?
+	kdb ls user ??
+
+
+rewind not clearly defined:
+	rewind before plugins?
+	rewind after plugins?
+	rewind after get()?
+	rewind after set()?
+	-> write pre+postconditions
+
+allow to set a keyset when get failed before?
+hard coded limit of characters in simpleset
+
+
+ksCut mit Cursor im Feld geschnitten
+Cursor bei ksAppend
+Was wenn kein mountpoint angegeben?
+
+keyGetStringSize missing
+
+path: UUID= LABEL= rechner:/...
+	/proc/filesystems
+	5.te und 6.te feld ist optional
+	siehe man 5 fstab
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+= BETA =
+
+
+== GLOBAL_PLUGINS ==
+
+for notification start/end
+for shared plugins with expensive startup (typechecker)
+for journaling
+for git-commit
+
+
+== STREAMING ==
+
+define C/C++ serialization API:
+	dump
+	xmltool
+
+Stream Code to plugins
+C++ streaming can always also provide C-Stream interface
+
+move old streaming code to plugins
+remove libelektratools
+
+streaming: for C++ Backends
+	void serialize(ostream& os, const KeySet& ks);
+	void deserialize(istream& is, KeySet& ks);
+	export these symbols via config interface
+
+use backend for other things:
+	e.g.  xml backend for xml serializations
+	ksOutput
+	ksGenerate
+
+implementation:
+	of some backends to prove that it works
+
+using serialization
+	xml
+	tcl strings
+	c (ksNew(keyNew()))
+
+
+== CONTRACTS ==
+
+Consume Metadata:
+	Otherwise would dump write it out?
+
+Rewrite values for glob
+
+
+== DATA STRUCTURES ==
+
+Only implement what is really needed.
+(can take some time to do it well!)
+
+ksForEach (ks, func, handle)
+	void func (Key*, void* handle);
+
+relations
+
+ksLookup: value keys only
+	with relations
+	only in the same folder (sibling)
+	only below the current folder (below)
+
+merge + split configuration
+http://en.wikipedia.org/wiki/Set_(mathematics)
+
+
+KeySet* ksUnion
+ksIntersection
+ksMerge
+
+http://en.wikipedia.org/wiki/Complement_(set_theory)
+ksComplement (Difference, SymmetricDifference)
+
+
+ksCopy -> ksAssign
+ksPopCurrent
+
+
+=== STORAGE ===
+
+resolver:
+	configurable lock/tmpfile
+	configureable flush
+
+passwd resolver
+
+doing nice:
+	file resolution
+	locking
+	checking for conflicts
+
+(backends for issues of type system below)
+
+== KDB_TOOL ==
+
+git-<command> like functionality
+ascii doc
+man pages
+
+env-get env-set `kdb env-get`
+
+kdb-resolver (give file given key name)
+
+kdb-shell:
+	streaming instead of ksOutput
+
+
+
+!!converting von Config files
+Multiple Storages
+
+kdb import --merge
+
+import/export
+
+
+
+== CMAKE ==
+
+"Build System"
+
+
+DEFAULT_BACKEND ->
+	DEFAULT_STORAGE_PLUGIN
+	DEFAULT_RESOLVER_PLUGIN
+	(+ make it work)
+
+
+Externes cmake Projekt welches Elektra verwendet
+Make Plugin as separate project
+pkgconfig working?
+
+Header files are not installed!
+installed files:
+	headers in elektra/ subdir
+	backends in elektra subdir
+	install various other files like before (0.7.0)
+
+shared version:
+	cmake helper files for examples
+	loading of plugins without LD_LIBRARY_PATH or the like (does not work with sudo)
+	backend version info damit man weiß dass diese Plugins für 0.8.0
+
+nice standard compliant (FHS) --prefix --libdir and so on!
+
+
+
+== API Changes ==
+
+. and .. semantics away?
+
+isDirectBelow:
+	Change Order of arguments? (see C++)
+
+
+getRootKeys not needed -> (user + system are fixed)
+
+keyset:
+	ensure that every ks* has as @post a sorted keyset
+	ksClear/keyClear weg (da mit *Copy(,0) ersetzbar)
+
+reintroduce highlevel API
+
+
+== Internals ==
+
+support multiple owner at once for kdbGet()/kdbSet()?
+allow mounting for users?
+
+
+== OPTIMIERUNGEN ==
+
+ksAppend() in O(1)
+KDB_O_NOALL could use binary search
+
+getString in C++ besser impl
+AppendKey sollte schnell appenden
+
+moduleSystem:
+	mit einem KeySet
+	doppelt laden von Plugins verhindern
+
+static loading could be done with keyset
+	es könnte gleich ein keyset generiert werden wo alle module fertig drinnen stehen
+	(statischer fall)
+
+
+== USE ==
+
+Write a program
+	which uses ELektra
+	delievers its own plugins
+	uses the type system
+
+
+== DEFAULT PLUGINS ==
+
+policy how default storage & resolver plugin are named
+resolve the symlink and load the module with correct name
+
+default storage plugin:
+	changeable
+	nickel with meta in [] sections?
+
+
+== PLUGINS ==
+
+bcode: filesys/helpers.c with ksForEach()
+parse c-code: ksNew keyNew..
+	needs multiple encoders?
+libeet
+
+
+only full get/set (?, how to support databases?, SELECT* needed?)
+
+Checkers:
+	check if folders, files or pathes really exist (/etc/fstab)
+	check if hosts are reachable (/etc/hosts)
+
+C++: (FINISH cppplugin)
+	how to write backends in C++
+	Exceptions propagations
+	(C++ Exceptions to error codes)
+
+hosts reparieren: Semantiken kaputt, keine Werte
+/etc/groups plugin schreiben (evt. als gscheites C++ Plugin?)
+
+implement and test easy to implement, but useful plugins
+as many differnt kinds as possible
+but using great frameworks to do that in short time
+
+testing framework step by step
+	with all metadata
+	with all calling combinations
+	(test driven development)
+
+Forensic Logging:
+	environment, pid, gid, uid
+	Zeitzone + in ms
+	IP
+
+
+iconv: (performance)
+	beide Handle öffnen + lookups in open
+	Unterschied?
+
+
+filter: key
+	metadata löschen
+	hidden keys
+
+
+advanced:
+	hash sum
+	signing
+	encrypting
+	binding
+	komprimieren
+
+filesys:
+	reintroduce?
+	empty folder will not show up (only with %%dirdata)
+	Dirdata richtig escapen
+	Metadata reinschreiben
+	remove keys the new way
+	compare sets between current and desired state (set operations)
+	als default backend wieder tauglich machen
+
+others:
+	memory (just hold everything in a keyset)
+	bind (just map keys from somewhere else)
+
+	base64 encoding (and reverse)
+	meta-infos löschen (und wiederherstellt)
+	versteckte dateien löschen (und wiederherstellen)
+
+	Namecencode
+	nameutf8encode
+	namehexencode
+
+
+kwallet plugin
+base64
+Openssl lizenz
+libgcryt (LGPL, GPLv3?) used by cppcms
+
+
+== SPECIFICATION ==
+
+generator for:
+	exc classes
+	try catch blocks
+	as keyset
+	human readable text
+
+
+
+
+
+
+
+
+
+
+
+= FINISH =
+
+symbole, only export
+Version info
+release
+marketing things
++ unexpected	
+
+
+== OVERVIEW ==
+
+draw a big picture
+
+make list of all symbols
+	exported symbols
+	reduce it hard
+	symbole, only export (otherwise static)
+	Version info 4.0
+
+
+== Afterwards ==
+
+FOCUS:
+	*use* Elektra as much as possible
+	*everywhere*
+	*patch* as much as possible
+	fix as many bugs as possible
+	increase performance
