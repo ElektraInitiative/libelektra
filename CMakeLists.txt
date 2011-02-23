@@ -33,11 +33,6 @@ include (cmake/ElektraPackaging.cmake)
 include (cmake/ElektraCache.cmake)
 include (cmake/ElektraCompiling.cmake)
 
-configure_file (
-	"${CMAKE_CURRENT_SOURCE_DIR}/elektra.pc.in"
-	"${CMAKE_CURRENT_BINARY_DIR}/elektra.pc"
-	)
-
 add_subdirectory (src)
 add_subdirectory (cmake)
 

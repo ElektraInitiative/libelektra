@@ -27,14 +27,20 @@ option (BUILD_SHARED "Build the shared version of elektra." ON)
 option (BUILD_FULL "Build the full version of elektra (shared with all selected backends included)." ON)
 option (BUILD_STATIC "Build the static version of elektra (all selected backends included statically)." ON)
 
-set (PROJECT_CMAKE_DIR
+set (CMAKE_DESTINATION
 		"${CMAKE_INSTALL_PREFIX}/share/cmake-2.6/Modules"
 		CACHE PATH
 		"Where to install cmake files?"
     )
 
+set (PKGCONFIG_DESTINATION
+		"${CMAKE_INSTALL_PREFIX}/lib/pkgconfig"
+		CACHE PATH
+		"Where to install pkgconfig files?"
+    )
+
 set (DOCUMENTATION_DESTINATION
-		"${CMAKE_INSTALL_PREFIX}/share/doc/${PROJECT_NAME}"
+		"${CMAKE_INSTALL_PREFIX}/share/doc/elektra-api"
 		CACHE PATH
 		"Where to install documentation files?"
     )

@@ -1,0 +1,22 @@
+# - Find Elektra
+# Find the native Elektra headers and libraries.
+#
+#  Elektra_INCLUDE_DIRS - where to find kdb.h, etc.
+#  Elektra_LIBRARIES    - List of libraries when using Elektra.
+#  Elektra_FOUND        - True if Elektra found.
+
+# Elektra is there
+set (Elektra_FOUND "1")
+
+# Set path to the header file.
+set (Elektra_INCLUDE_DIR @CMAKE_INSTALL_PREFIX@/include/elektra)
+MARK_AS_ADVANCED(Elektra_INCLUDE_DIR)
+
+# Set path to the library.
+set (Elektra_LIBRARIES @PACKAGE_NAME@)
+MARK_AS_ADVANCED(Elektra_LIBRARIES)
+
+# handle the QUIETLY and REQUIRED arguments and set Elektra_FOUND to TRUE if 
+# all listed variables are TRUE
+INCLUDE(FindPackageHandleStandardArgs)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(Elektra DEFAULT_MSG Elektra_LIBRARIES Elektra_INCLUDE_DIR)

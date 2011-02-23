@@ -3,6 +3,9 @@ set (CPACK_PACKAGE_NAME "${PACKAGE_NAME}")
 set (PACKAGE_URL "http://www.libelektra.org/")
 set (PACKAGE_BUGREPORT "http://bugs.libelektra.org/")
 
+#see http://public.kitware.com/Bug/view.php?id=7000
+SET(CPACK_SET_DESTDIR "ON")
+
 
 set (PROJECT_VERSION "${KDB_VERSION}")
 set (CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
