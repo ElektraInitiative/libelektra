@@ -26,3 +26,17 @@ configure_file (
 	"${CMAKE_CURRENT_SOURCE_DIR}/kdbversion.h"
 	"${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h"
 	)
+
+install (FILES
+	"${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h"
+	kdbextension.h
+	"${CMAKE_CURRENT_BINARY_DIR}/kdb.h"
+	kdbinternal.h
+	kdbmodule.h
+	kdbos.h
+	kdbplugin.h
+	kdbprivate.h
+	kdbtools.h
+	"${CMAKE_CURRENT_BINARY_DIR}/kdbvar.h"
+	"${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h"
+	DESTINATION include/elektra)
