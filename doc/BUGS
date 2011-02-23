@@ -28,6 +28,18 @@ document return value of resolver + other plugins
 
 -> use doxygen as only documentation tool
 
+
+Doxygen:
+	enums
+	html pages (css)
+	inline man page
+
+== BUILD ==
+
+try to build with C98 (with one line comments)
+	for VC++ support
+
+
 == CMAKE ==
 
 
