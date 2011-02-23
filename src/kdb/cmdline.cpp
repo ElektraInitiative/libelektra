@@ -1,7 +1,9 @@
 #include <cmdline.hpp>
 #include <iostream>
+#include <cstdio>
 
 #include <getopt.h>
+
 
 using namespace std;
 

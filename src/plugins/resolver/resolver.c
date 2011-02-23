@@ -211,7 +211,7 @@ int elektraResolverSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	if (action == 0)
 	{
 		struct stat buf;
-		pk->fd = open (pk->lockfile, O_RDWR | O_CREAT);
+		pk->fd = open (pk->lockfile, O_RDWR | O_CREAT,pk->mode);
 
 		if (pk->fd == -1)
 		{

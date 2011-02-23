@@ -16,4 +16,4 @@ endforeach(plugin)
 #	message (SEND_ERROR "default backend ${BACKEND_DEFAULT} is not included")
 #endif (output GREATER -1)
 
-install (DIRECTORY ${CMAKE_BINARY_DIR}/dist/lib/elektra DESTINATION lib)
+#install (DIRECTORY ${CMAKE_BINARY_DIR}/dist/lib/elektra DESTINATION lib)

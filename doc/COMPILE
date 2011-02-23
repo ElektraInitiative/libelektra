@@ -10,6 +10,8 @@ go into the folder
 
  cd build
 
+
+
 == RUN CMAKE ==
 
 tested cmake version: 2.6-patch 0
@@ -42,6 +44,7 @@ kdb does not have docu at the moment
 then press c again and then g to generate
 
 
+
 == BUILDING ==
 
 with
@@ -50,13 +53,37 @@ with
 
 you build the source (you can pass -j or similar)
 
-== PACKAGING ==
 
-with
 
- cpack
+== CodeBlocks ==
 
-you create a package of the platform you are running
-(generator needed for it, currently only debian)
+You can build Elektra using Code::Blocks under Gentoo:
+
+Precondition:
+Make sure you have a compiler, xml2 (for kdb tool) and xsl (see later)
+installed. cmake configure will help you with that, it will make sure you don't forget something
+essential.
+
+For Most Linux system all you have to do is open up a console and 
+
+ mkdir build 
+ cd build 
+ cmake .. -G 'CodeBlocks - Unix Makefiles' 
+ make package
+
+
+Note  1:
+	You can use other editor if you like just type cmake at the
+	console to get a list of option you can pass to cmake as long as well
+	as a list of what code editor project cmake can create.
+
+Note 2:
+	For Unix if you have nCurses install you can run ccmake to set important option after
+	running cmake like to enable debug symbol.
+
+Note 3: 
+	for Gentoo is recommend to emerge sys-apps/lsb-release to name the package 
+	right even thou not required.
+
 
 

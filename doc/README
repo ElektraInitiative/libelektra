@@ -13,21 +13,34 @@ most of the problems found in those implementations.
 DOWNLOAD
 ========
 
-Elektra stable source code as tarballs can be found at:
+Elektra git repository with the latest source code can be checked out
+with:
 
-  http://sourceforge.net/project/showfiles.php?group_id=117521
+ git-clone git://www.markus-raab.org/git/elektra
 
-Elektra Subversion repository with the latest stable source code can be checked
-out with these commands:
 
-  bash:~$ cd src
-  bash:~/src$ svn co https://svn.libelektra.org/svn/elektra/trunk elektra
-  bash:~/src$ cd elektra
-  bash:~/src/elektra$ # files are here
 
+COMPILE
+=======
+
+See the COMPILE document for informations how to compile the software.
 
 INSTALL
 =======
 
-See the INSTALL document for informations how to install the software.
+The preferred way to install Elektra is by using packages provided for
+your distribution.
 
+If there are none, you might want to try
+
+ cpack
+
+which should create a package for distributions where a Generator is
+implemented. See cmake/ElektraPackaging.cmake for available Generators.
+
+If everything else fails, you can install the software by typing
+
+ make install
+
+Make sure that the pathes to install are configured correctly. It should
+be either the home directory or /usr/local.

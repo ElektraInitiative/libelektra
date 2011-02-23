@@ -2,6 +2,7 @@
 #define FACTORY_HPP
 
 #include <map>
+#include <vector>
 #include <string>
 #include <memory>
 #include <stdexcept>
@@ -42,6 +43,9 @@ class Cnstancer: public Instancer
 	}
 };
 
+struct UnknownCommand : std::exception
+{};
+
 class Factory
 {
 	std::map<std::string, Instancer*> m_factory;
@@ -73,13 +77,28 @@ public:
 	~Factory()
 	{
 		for (
-			std::map<std::string,Instancer*>::iterator it = 
+			std::map<std::string,Instancer*>::iterator it =
 			m_factory.begin();
 			it != m_factory.end();
 			it++)
 		{
 			delete it->second;
 		}
+	}
+
+	/**Returns a list of available commands */
+	std::vector<std::string> getCommands()
+	{
+		std::vector<std::string> ret;
+		for (
+			std::map<std::string,Instancer*>::iterator it =
+			m_factory.begin();
+			it != m_factory.end();
+			it++)
+		{
+			ret.push_back(it->first);
+		}
+		return ret;
 	}
 
 	std::auto_ptr<Command> get(std::string const& which)
@@ -89,7 +108,13 @@ public:
 		{
 			std::auto_ptr <Command> ret(instancer->get());
 			return ret;
-		} else throw std::out_of_range("unknown command");
+		}
+		else
+		{
+			m_factory.erase(which);
+			throw UnknownCommand();
+		}
+
 	}
 };
 
