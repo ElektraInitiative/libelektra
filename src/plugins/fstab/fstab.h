@@ -25,8 +25,8 @@
 #ifndef FSTAB_H
 #define FSTAB_H
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
+#ifdef HAVE_KDBCONFIG_H
+#include "kdbconfig.h"
 #endif
 
 // without that the backend does not work at all

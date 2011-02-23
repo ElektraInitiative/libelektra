@@ -64,7 +64,7 @@ if (BUILD_SHARED)
 	include_directories (${elektra-shared_INCLUDES})
 
 	set_target_properties (elektra PROPERTIES
-			COMPILE_DEFINITIONS HAVE_CONFIG_H)
+			COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
 	set_target_properties (elektra PROPERTIES
 			VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION})
 	set_target_properties (elektra PROPERTIES CLEAN_DIRECT_OUTPUT 1)
@@ -99,7 +99,7 @@ if (BUILD_FULL)
 	target_link_libraries (elektra-full ${elektra-full_LIBRARIES})
 
 	set_target_properties (elektra-full PROPERTIES
-			COMPILE_DEFINITIONS "HAVE_CONFIG_H;ELEKTRA_STATIC")
+			COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H;ELEKTRA_STATIC")
 	set_target_properties (elektra-full PROPERTIES
 			VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION})
 	set_target_properties (elektra-full PROPERTIES CLEAN_DIRECT_OUTPUT 1)
@@ -115,7 +115,7 @@ if (BUILD_STATIC)
 	target_link_libraries (elektra-static ${elektra-full_LIBRARIES})
 
 	set_target_properties (elektra-static PROPERTIES
-			COMPILE_DEFINITIONS "HAVE_CONFIG_H;ELEKTRA_STATIC")
+			COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H;ELEKTRA_STATIC")
 	set_target_properties (elektra-static PROPERTIES
 			VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION})
 	set_target_properties (elektra-static PROPERTIES CLEAN_DIRECT_OUTPUT 1)

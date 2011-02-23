@@ -26,7 +26,7 @@ macro (do_test source)
 	endif (BUILD_FULL)
 
 	set_target_properties (${source} PROPERTIES
-			COMPILE_DEFINITIONS HAVE_CONFIG_H)
+			COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
 	add_test (${source}
 			"${CMAKE_CURRENT_BINARY_DIR}/${source}"
 			"${CMAKE_CURRENT_BINARY_DIR}/"

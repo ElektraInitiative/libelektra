@@ -17,10 +17,9 @@ configure_file (
 	"${CMAKE_CURRENT_BINARY_DIR}/kdbvar.h"
 	)
 
-# TODO: rename to kdbconfig.h
 configure_file (
-	"${CMAKE_CURRENT_SOURCE_DIR}/config.h"
-	"${CMAKE_CURRENT_BINARY_DIR}/config.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/kdbconfig.h"
+	"${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h"
 	)
 
 configure_file (

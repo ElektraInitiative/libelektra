@@ -43,7 +43,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\src\include;.\"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;WINREGISTRY_EXPORTS;HAVE_CONFIG_H"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;WINREGISTRY_EXPORTS;HAVE_KDBCONFIG_H"
 				MinimalRebuild="true"
 				ExceptionHandling="0"
 				BasicRuntimeChecks="3"

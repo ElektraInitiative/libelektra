@@ -10,8 +10,8 @@
 #ifndef TESTS_H
 #define TESTS_H
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
+#ifdef HAVE_KDBCONFIG_H
+#include "kdbconfig.h"
 #endif
 
 #ifdef HAVE_UNISTD_H

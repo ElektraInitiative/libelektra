@@ -15,8 +15,8 @@
 
 #include "xmltool.h"
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
+#ifdef HAVE_KDBCONFIG_H
+#include "kdbconfig.h"
 #endif
 
 #include <unistd.h>

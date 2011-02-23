@@ -37,7 +37,7 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigbackend_wrapper.cpp kdelibs-3.5.2/k
 +  Elektra patch by Yannick Lecaillez <sizon5@gmail.com>
 +*/
 +
-+#include <config.h>
++#include "kdbconfig.h"
 +
 +#include <unistd.h>
 +#include <ctype.h>
@@ -491,7 +491,7 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigelektraparser.cpp kdelibs-3.5.2/kde
 +	KConfig configuration parser using elektra as backend.
 +*/
 +
-+#include <config.h>
++#include "kdbconfig.h"
 +
 +#include <stdlib.h>
 +#include <unistd.h>
@@ -1326,7 +1326,7 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfiginiparser.cpp kdelibs-3.5.2/kdecore
 +	Copyright (c) 1997-1999 Matthias Kalle Dalheimer <kalle@kde.org>
 +*/
 +
-+#include <config.h>
++#include "kdbconfig.h"
 +
 +#include <unistd.h>
 +#include <ctype.h>
@@ -2450,7 +2450,7 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigparser.cpp kdelibs-3.5.2/kdecore/kc
 + *
 + */
 +
-+#include <config.h>
++#include "kdbconfig.h"
 +
 +#include <unistd.h>
 +#include <ctype.h>
@@ -2510,7 +2510,7 @@ diff -Naur kdelibs-3.5.2.orig/kdecore/kconfigparserfactory.cpp kdelibs-3.5.2/kde
 +	file to parse and resource type.
 +*/
 +
-+#include <config.h>
++#include "kdbconfig.h"
 +
 +#include "kconfigparser.h"
 +#include "kconfiginiparser.h"

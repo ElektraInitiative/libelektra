@@ -9,8 +9,8 @@
 * $Id: ni.c 349 2008-01-19 18:18:22Z chaz $
 ******************************************************************************/
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
+#ifdef HAVE_KDBCONFIG_H
+#include "kdbconfig.h"
 #endif
 
 #include <stdio.h>

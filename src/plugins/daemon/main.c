@@ -20,8 +20,8 @@ $Id$
 
 */
 
-#if HAVE_CONFIG_H
-#include "config.h"
+#if HAVE_KDBCONFIG_H
+#include "kdbconfig.h"
 #endif
 
 

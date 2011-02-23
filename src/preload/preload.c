@@ -14,7 +14,7 @@
  ***************************************************************************/
 
 #include <kdb.h>
-#include <config.h>
+#include "kdbconfig.h"
 #include <string.h>
 #include <stdio.h>
 

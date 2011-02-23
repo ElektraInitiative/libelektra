@@ -26,7 +26,7 @@ macro (do_example source)
 	endif (BUILD_FULL)
 
 	set_target_properties (${source} PROPERTIES
-			COMPILE_DEFINITIONS HAVE_CONFIG_H)
+			COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
 endmacro (do_example)
 
 do_example (meta)

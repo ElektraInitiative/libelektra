@@ -14,8 +14,8 @@
  ***************************************************************************/
 
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
+#ifdef HAVE_KDBCONFIG_H
+#include "kdbconfig.h"
 #endif
 
 #ifndef HASGETOPT

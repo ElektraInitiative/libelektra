@@ -14,7 +14,7 @@ macro (do_benchmark source)
 	endif (BUILD_FULL)
 
 	set_target_properties (${source} PROPERTIES
-			COMPILE_DEFINITIONS HAVE_CONFIG_H)
+			COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
 
 	get_target_property (command ${source} LOCATION)
 

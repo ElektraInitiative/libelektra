@@ -55,7 +55,7 @@ macro (add_plugintest testname)
 		add_executable (testmod_${testname} ${TEST_SOURCES} testmod_${testname}.c)
 		target_link_libraries (testmod_${testname} elektra-full)
 		set_target_properties (testmod_${testname} PROPERTIES
-				COMPILE_DEFINITIONS HAVE_CONFIG_H)
+				COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
 		add_test (testmod_${testname}
 				"${CMAKE_CURRENT_BINARY_DIR}/testmod_${testname}"
 				"${CMAKE_CURRENT_BINARY_DIR}"
