@@ -1,6 +1,6 @@
 #include <command.hpp>
 
-#include <key>
+#include <key.hpp>
 
 #include <sstream>
 #include <iostream>

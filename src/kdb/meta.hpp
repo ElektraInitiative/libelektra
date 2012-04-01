@@ -3,7 +3,7 @@
 
 #include <command.hpp>
 
-#include <kdb>
+#include <kdb.hpp>
 
 class MetaCommand : public Command
 {

@@ -5,7 +5,7 @@ add_cppheaders (HDR_FILES)
 
 macro (do_test source)
 	include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
-	set (SOURCES ${HDR_FILES} ${source}.cpp tests.cpp tests.h)
+	set (SOURCES ${HDR_FILES} ${source}.cpp tests.cpp tests.hpp)
 	add_executable (${source} ${SOURCES})
 
 	if (BUILD_FULL)

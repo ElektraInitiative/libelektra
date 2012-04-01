@@ -7,7 +7,7 @@
 #include <string>
 #include <map>
 
-#include <kdb>
+#include <kdb.hpp>
 
 struct TooManyPlugins : public PluginCheckException
 {

@@ -2,7 +2,7 @@
 #define METALS_H
 
 #include <command.hpp>
-#include <kdb>
+#include <kdb.hpp>
 
 class MetaLsCommand : public Command
 {

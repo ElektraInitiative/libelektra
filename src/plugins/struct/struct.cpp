@@ -25,8 +25,8 @@
 
 #include "struct.hpp"
 
-#include <key>
-#include <keyset>
+#include <key.hpp>
+#include <keyset.hpp>
 
 #include "factory.hpp"
 

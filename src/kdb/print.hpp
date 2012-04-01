@@ -1,7 +1,8 @@
 #ifndef PRINT_HPP
 #define PRINT_HPP
 
-#include <key>
+#include <key.hpp>
+
 #include <ostream>
 
 void printError(kdb::Key error);

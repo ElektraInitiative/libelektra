@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include <kdb>
+#include <kdb.hpp>
 
 using namespace kdb;
 using namespace std;

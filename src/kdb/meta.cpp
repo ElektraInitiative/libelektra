@@ -1,6 +1,6 @@
 #include <meta.hpp>
 
-#include <kdb>
+#include <kdb.hpp>
 
 #include <iostream>
 #include <string>

@@ -2,8 +2,8 @@
 #define CPP_KDB_H
 
 #include <string>
-#include <key>
-#include <keyset>
+#include <key.hpp>
+#include <keyset.hpp>
 
 #include <kdb.h>
 
@@ -70,6 +70,13 @@ inline KDB::~KDB ()
 	close (errorKey);
 }
 
+
+/**
+ * @brief manually close connection to key database
+ *
+ * @note in destructor errorKey information would get lost
+ * @param errorKey the key where the warnings will be attached
+ */
 inline void KDB::close (Key &errorKey)
 {
 	ckdb::kdbClose(handle, errorKey.getKey());

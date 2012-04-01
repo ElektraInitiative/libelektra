@@ -1,13 +1,13 @@
 #ifndef ACTION_HPP
 #define ACTION_HPP
 
-#include <keyset>
+#include <keyset.hpp>
+
 #include <ostream>
 
+#include <boost/bind.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <boost/fusion/include/std_pair.hpp>
-
-#include <boost/bind.hpp>
 
 #include <iostream>
 #include <iterator>

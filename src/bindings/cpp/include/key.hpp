@@ -244,7 +244,7 @@ private:
 	ckdb::Key * key; // holds elektra key struct
 };
 
-/*@note don't forget the const: getMeta<const ckdb::Key*>*/
+/**@note don't forget the const: getMeta<const ckdb::Key*>*/
 template<>
 inline const ckdb::Key* Key::getMeta(const std::string &name)
 {
@@ -252,6 +252,7 @@ inline const ckdb::Key* Key::getMeta(const std::string &name)
 		ckdb::keyGetMeta(key, name.c_str());
 }
 
+/**@note don't forget the const: getMeta<const kdb::Key>*/
 template<>
 inline const Key Key::getMeta(const std::string &name)
 {
@@ -493,7 +494,8 @@ inline size_t Key::getFullNameSize() const
 
 inline std::string Key::getFullName() const
 {
-	size_t csize = ckdb::keyGetFullNameSize (getKey());
+	ssize_t csize = ckdb::keyGetFullNameSize (getKey());
+	if (csize == -1) return "";
 	std::string str;
 	char * field = new char [csize];
 
@@ -609,11 +611,14 @@ inline size_t Key::getValueSize() const
 	return ckdb::keyGetValueSize (key);
 }
 
-/**Returns the string directly from the key. It should be
- * the same as get().*/
+/** Returns the string directly from the key.
+ * It should be the same as get().
+ * @return empty string on null pointers
+ */
 inline std::string Key::getString() const
 {
-	size_t csize =  ckdb::keyGetValueSize (getKey());
+	ssize_t csize =  ckdb::keyGetValueSize (getKey());
+	if (csize == -1) return "";
 	char * field = new char [csize];
 
 	if (ckdb::keyGetString (getKey(), field, csize) == -1)
@@ -651,14 +656,16 @@ inline size_t Key::getBinary(void *returnedBinary, size_t maxSize) const
 	return ckdb::keyGetBinary (getKey(), returnedBinary, maxSize);
 }
 
-/**Returns the binary Value of the key. It will not be encoded
- * or decoded.*/
+/**Returns the binary Value of the key.
+ * It will not be encoded or decoded.
+ * @retval "" on null pointer*/
 inline std::string Key::getBinary() const
 {
-	size_t size = getValueSize();
-	char *buffer = new char[size];
-	ckdb::keyGetBinary (getKey(), buffer, size);
-	std::string str (buffer, size);
+	ssize_t csize = getValueSize();
+	if (csize == -1) return "";
+	char *buffer = new char[csize];
+	ckdb::keyGetBinary (getKey(), buffer, csize);
+	std::string str (buffer, csize);
 	delete []buffer;
 	return str;
 }

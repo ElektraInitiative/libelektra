@@ -6,7 +6,7 @@
 #include <factory.hpp>
 #include <command.hpp>
 
-#include <key>
+#include <key.hpp>
 
 void displayHelp(std::string app, std::vector<std::string> commands)
 {

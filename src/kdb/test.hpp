@@ -2,7 +2,7 @@
 #define TEST_H
 
 #include <command.hpp>
-#include <kdb>
+#include <kdb.hpp>
 
 class TestCommand : public Command
 {

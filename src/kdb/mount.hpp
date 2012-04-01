@@ -2,7 +2,7 @@
 #define MOUNT_HPP
 
 #include <command.hpp>
-#include <kdb>
+#include <kdb.hpp>
 
 struct NameAlreadyInUseException : public CommandException
 {

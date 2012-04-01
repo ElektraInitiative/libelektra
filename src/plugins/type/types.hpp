@@ -1,11 +1,16 @@
-#ifndef CHECKER_HPP
-#define CHECKER_HPP
+#ifndef ELEKTRA_TYPES_HPP
+#define ELEKTRA_TYPES_HPP
 
 #include <set>
 #include <map>
 #include <string>
 #include <sstream>
 #include <locale>
+
+#include <key.hpp>
+#include <keyset.hpp>
+
+#include <iostream>
 
 
 namespace elektra {
@@ -19,9 +24,6 @@ public:
 	virtual bool check(Key k) = 0;
 	virtual ~Type();
 };
-
-Type::~Type()
-{}
 
 class AnyType : public Type
 {
@@ -60,8 +62,91 @@ public:
 		i.imbue (locale("C"));
 		T n;
 		i >> n;
+		if (i.bad()) return false;
 		if (i.fail()) return false;
 		if (!i.eof()) return false;
+		return true;
+	}
+};
+
+/**
+  * Reversible Type
+  * This checks even more pedantic, if the type is reversible
+  * to the same string.
+  * E.g. -1 might get to highest value (but this is not guaranteed)!
+  * */
+template <typename T>
+class RType : public Type
+{
+public:
+	bool check(Key k)
+	{
+		istringstream i (k.getString());
+		i.imbue (locale("C"));
+		T n;
+		i >> n;
+		if (i.bad()) return false;
+		if (i.fail()) return false;
+		if (!i.eof()) return false;
+
+		ostringstream o;
+		o << n;
+		if (o.str() != k.getString()) return false;
+
+		return true;
+	}
+};
+
+/**
+  * Reversible Type with min, max values
+  * This checks even more pedantic, if the type is reversible
+  * to the same string.
+  * E.g. -1 might get to highest value (but this is not guaranteed)!
+  * */
+template <typename T>
+class MType : public Type
+{
+public:
+	bool check(Key k)
+	{
+		istringstream i (k.getString());
+		i.imbue (locale("C"));
+		T n;
+		i >> n;
+		if (i.bad()) return false;
+		if (i.fail()) return false;
+		if (!i.eof()) return false;
+
+		ostringstream o;
+		o << n;
+		if (o.str() != k.getString()) return false;
+
+		Key const min = k.getMeta<const Key>("check/type/min");
+		if (min)
+		{
+			istringstream i_min (min.getString());
+			i_min.imbue (locale("C"));
+			T n_min;
+			i_min >> n_min;
+			if (i_min.bad()) return false;
+			if (i_min.fail()) return false;
+			if (!i_min.eof()) return false;
+			if (n < n_min) return false;
+		}
+
+		Key const max = k.getMeta<const Key>("check/type/max");
+		if (max)
+		{
+			istringstream i_max (max.getString());
+			i_max.imbue (locale("C"));
+			T n_max;
+			i_max >> n_max;
+			if (i_max.bad()) return false;
+			if (i_max.fail()) return false;
+			if (!i_max.eof()) return false;
+			if (n > n_max) return false;
+		}
+
 		return true;
 	}
 };
@@ -96,69 +181,6 @@ public:
 
 		return true;
 	}
-};
-
-
-class TypeChecker
-{
-	std::map<string, Type*> types;
-
-public:
-	TypeChecker()
-	{
-		types.insert (pair<string, Type*>("any", new AnyType()));
-		types.insert (pair<string, Type*>("empty", new EmptyType()));
-		types.insert (pair<string, Type*>("short", new TType<int16_t>()));
-		types.insert (pair<string, Type*>("unsigned_short", new TType<uint16_t>()));
-		types.insert (pair<string, Type*>("long", new TType<int32_t>()));
-		types.insert (pair<string, Type*>("unsigned_long", new TType<uint32_t>()));
-		types.insert (pair<string, Type*>("long_long", new TType<int64_t>()));
-		types.insert (pair<string, Type*>("unsigned_long_long", new TType<uint64_t>()));
-		types.insert (pair<string, Type*>("float", new TType<float>()));
-		types.insert (pair<string, Type*>("double", new TType<double>()));
-		types.insert (pair<string, Type*>("char", new TType<unsigned char>()));
-		types.insert (pair<string, Type*>("boolean", new TType<bool>()));
-		types.insert (pair<string, Type*>("octet", new TType<unsigned char>()));
-		types.insert (pair<string, Type*>("FSType", new FSType()));
-		types.insert (pair<string, Type*>("string", new StringType()));
-	}
-
-	bool check (Key &k)
-	{
-		string typeList;
-		/* TODO: meta interface without exceptions needed */
-		try { typeList = k.getMeta<string>("check/type"); }
-		catch (...) { return true; }
-		istringstream istr (typeList);
-		string type;
-		while (istr >> type)
-		{
-			if (types[type] && types[type]->check(k)) return true;
-		}
-
-		/* Type could not be checked successfully */
-		return false;
-	}
-
-	bool check (KeySet &ks)
-	{
-		Key k;
-		while (k = ks.next())
-		{
-			if (!check(k)) return false;
-		}
-		return true;
-	}
-
-	~TypeChecker()
-	{
-		map<string,Type*>::iterator it;
-		for ( it=types.begin() ; it != types.end(); it++)
-		{
-			delete it->second;
-		}
-	}
-
 };
 
 } // end namespace elektra

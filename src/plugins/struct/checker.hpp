@@ -6,8 +6,8 @@
 #include <string>
 #include <memory>
 
-#include <key>
-#include <keyset>
+#include <key.hpp>
+#include <keyset.hpp>
 
 
 namespace elektra {

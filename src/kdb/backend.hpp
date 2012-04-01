@@ -5,7 +5,7 @@
 
 #include <string>
 
-#include <kdb>
+#include <kdb.hpp>
 
 
 struct BackendCheckException : public CommandException

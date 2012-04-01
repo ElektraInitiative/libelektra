@@ -4,7 +4,7 @@
 #include <kdbplugin.h>
 #include <kdbprivate.h>
 
-#include <kdb>
+#include <kdb.hpp>
 
 #include <iostream>
 #include <memory>

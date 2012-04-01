@@ -25,8 +25,8 @@
 
 #include "tcl.hpp"
 
-#include <keyset>
-#include <key>
+#include <keyset.hpp>
+#include <key.hpp>
 
 #include <fstream>
 

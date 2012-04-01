@@ -3,7 +3,7 @@
 
 #include <command.hpp>
 
-#include <kdb>
+#include <kdb.hpp>
 
 class RemoveCommand : public Command
 {

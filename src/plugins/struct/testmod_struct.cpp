@@ -1,4 +1,4 @@
-#include <tests.h>
+#include <tests.hpp>
 
 #include "checker.hpp"
 

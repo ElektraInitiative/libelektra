@@ -1,5 +1,5 @@
 install (FILES
-	key
-	keyset
-	kdb
+	key.hpp
+	keyset.hpp
+	kdb.hpp
 	DESTINATION include/elektra)

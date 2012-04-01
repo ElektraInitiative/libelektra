@@ -3,8 +3,9 @@
 
 #include <string>
 
+#include <key.hpp>
+
 #include <kdb.h>
-#include <key>
 
 namespace kdb {
 

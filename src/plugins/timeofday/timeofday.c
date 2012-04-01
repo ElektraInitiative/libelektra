@@ -69,7 +69,7 @@ const char * elektraTimeofdayHelper (char *t, TimeofdayInfo *ti)
 int elektraTimeofdayOpen(Plugin *handle, Key *k)
 {
 	TimeofdayInfo *ti = calloc(1, sizeof (TimeofdayInfo));
-	char t[24];
+	// char t[24];
 
 	elektraPluginSetData(handle, ti);
 
@@ -84,8 +84,8 @@ int elektraTimeofdayOpen(Plugin *handle, Key *k)
 
 int elektraTimeofdayClose(Plugin *handle, Key *k)
 {
-	char t[24];
-	TimeofdayInfo *ti = elektraPluginGetData(handle);
+	// char t[24];
+	// TimeofdayInfo *ti = elektraPluginGetData(handle);
 
 	// fprintf(stderr, "close\t%s\n", elektraTimeofdayHelper (t, ti));
 

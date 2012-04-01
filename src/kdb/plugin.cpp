@@ -1,4 +1,4 @@
-#include <kdb>
+#include <kdb.hpp>
 
 #include <kdb.h>
 #include <kdbplugin.h>

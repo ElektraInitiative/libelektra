@@ -7,7 +7,12 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <kdb>
+#ifndef KDB_TESTS_HPP
+#define KDB_TESTS_HPP
+
+#include <key.hpp>
+#include <keyset.hpp>
+#include <kdb.hpp>
 
 #include <exception>
 #include <iostream>
@@ -24,3 +29,4 @@ extern int nbTest;
 #define succeed_if(x,y) {++nbTest; if (!(x)) { cout << __FILE__ << ":" << __LINE__ << " error in " <<  __FUNCTION__ << ": " << y << endl; ++nbError;}}
 #define exit_if_fail(x,y) {++nbTest; if (!(x)) { cout << __FILE__ << ":" << __LINE__ << " fatal in " <<  __FUNCTION__ << ": " << y << endl;  exit(1);}}
 
+#endif

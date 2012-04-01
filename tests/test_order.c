@@ -433,14 +433,14 @@ void test_cmp()
 	succeed_if (keyCmp(k1,k2) == 0, "compare the same key");
 	succeed_if (keyCmp(k2,k1) == 0, "compare the same key");
 
-	keySetOwner (k1, "markus");
+	keySetOwner (k1, "non_existing_user");
 	succeed_if (keyCmp(k2,k2) == 0, "null owner comparision");
-	succeed_if (keyCmp(k1,k2) ==  1, "compare key with no owner with markus");
-	succeed_if (keyCmp(k2,k1) == -1, "compare key with no owner with markus");
+	succeed_if (keyCmp(k1,k2) > 0, "compare key with no owner with non_existing_user");
+	succeed_if (keyCmp(k2,k1) < 0, "compare key with no owner with non_existing_user");
 
-	keySetOwner (k2, "max");
-	succeed_if (keyCmp(k1,k2) < 0, "compare key with owner albert with markus");
-	succeed_if (keyCmp(k2,k1) > 0, "compare key with owner albert with markus");
+	keySetOwner (k2, "other_non_existing_user");
+	succeed_if (keyCmp(k1,k2) < 0, "compare key with owner non_existing_user with other_non_existing_user");
+	succeed_if (keyCmp(k2,k1) > 0, "compare key with owner non_existing_user with other_non_existing_user");
 
 	keySetName (k2, "user/b");
 	succeed_if (keyCmp(k1,k2) < 0, "compare key with different names");

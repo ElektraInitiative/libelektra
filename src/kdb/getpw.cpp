@@ -1,6 +1,6 @@
 #include <getpw.hpp>
 
-#include <kdb>
+#include <kdb.hpp>
 
 #include <ctype.h>
 

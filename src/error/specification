@@ -228,6 +228,7 @@ number:39
 description:not a valid name supplied for loading plugins
 severity:fatal
 ingroup:modules
+module:dl
 
 number:40
 description:Failed to open default backend (see warnings for more information)
@@ -397,4 +398,11 @@ number:68
 description:not implemented
 severity:error
 ingroup:plugin
+
+number:69
+description:could not create type checker
+severity:warning
+ingroup:plugin
+module:type
+
 

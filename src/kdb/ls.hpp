@@ -2,7 +2,7 @@
 #define LS_H
 
 #include <command.hpp>
-#include <kdb>
+#include <kdb.hpp>
 
 class LsCommand : public Command
 {

@@ -1,7 +1,7 @@
 #ifndef PLUGIN_HPP
 #define PLUGIN_HPP
 
-#include <kdb>
+#include <kdb.hpp>
 #include <command.hpp>
 
 #include <map>

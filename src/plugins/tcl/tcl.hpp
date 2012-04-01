@@ -28,7 +28,8 @@
 
 #include <kdbplugin.h>
 
-#include <keyset>
+#include <keyset.hpp>
+
 #include <ostream>
 
 namespace elektra

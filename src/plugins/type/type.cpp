@@ -25,24 +25,55 @@
 
 #include "type.hpp"
 
-#include <key>
-#include <keyset>
+#include <key.hpp>
+#include <keyset.hpp>
 
-#include "checker.hpp"
+#include "type_checker.hpp"
 
 using namespace ckdb;
 #include <kdberrors.h>
 
+/**This function avoid that many return pathes need to release the
+  * configuration. */
+inline static int elektraTypeOpenDelegator(ckdb::Plugin *handle, kdb::KeySet& config, ckdb::Key *errorKey)
+{
+	if (config.lookup("/module"))
+	{
+		// suppress warnings if it is just a module
+		// dont buildup the struct then
+		return 0;
+	}
+
+	try {
+		elektraPluginSetData (handle, new elektra::TypeChecker(config));
+	}
+	catch (const char* msg)
+	{
+		// TODO: warnings are not always passed when plugin
+		// creation failed?
+		ELEKTRA_ADD_WARNING (69, errorKey, msg);
+		return -1;
+	}
+
+	return 1;
+}
+
 extern "C"
 {
 
-int elektraTypeOpen(ckdb::Plugin *handle, ckdb::Key *)
+int elektraTypeOpen(ckdb::Plugin *handle, ckdb::Key *errorKey)
 {
 	/* plugin initialization logic */
+	int ret;
 
-	elektraPluginSetData (handle, new elektra::TypeChecker());
+	kdb::KeySet config (elektraPluginGetConfig(handle));
 
-	return 1; /* success */
+	ret = elektraTypeOpenDelegator(handle, config, errorKey);
+
+	config.release();
+
+	return ret;
+
 }
 
 int elektraTypeClose(ckdb::Plugin *handle, ckdb::Key *)

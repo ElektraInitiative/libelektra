@@ -1,6 +1,6 @@
 #include <set.hpp>
 
-#include <kdb>
+#include <kdb.hpp>
 
 #include <iostream>
 
