@@ -2,7 +2,7 @@ Source: elektra
 Priority: required
 Maintainer: Simon Law <sfllaw@debian.org>
 Uploaders: Pier Luigi Fiorini <pierluigi.fiorini@mockup.org>
-Build-Depends: debhelper (>= 4.1.0), cdbs, libltdl3-dev, libxml2-dev, doxygen, xsltproc, docbook-xsl
+Build-Depends: debhelper (>= 4.1.0), libltdl3-dev, libxml2-dev, doxygen
 Standards-Version: 3.7.2
 Section: base
 
@@ -20,16 +20,6 @@ Description: a framework to get system and user values
  programs which use Elektra.
 
 Package: libelektra2
-Section: libs
-Architecture: any
-Depends: ${shlibs:Depends}
-Description: a framework to get system and user values
- The objective of the Elektra Project is to help create a pervasive, 
- ubiquitous configuration system. This is an entire ecosystem, much
- more than a piece of code. This section lists the work of some 
- people that are helping to build it.
-
-Package: libelektratools1
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}

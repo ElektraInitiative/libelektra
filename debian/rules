@@ -1,8 +1,7 @@
 #!/usr/bin/make -f
 
-include /usr/share/cdbs/1/rules/buildcore.mk
-include /usr/share/cdbs/1/class/autotools.mk
-include /usr/share/cdbs/1/rules/debhelper.mk
+# Uncomment this to turn on verbose mode.
+export DH_VERBOSE=1
 
 # Make sure libelektra2 is built before packages depending on it
 binary/libelektra-bin binary/libelektra-dev:: binary/libelektra2
@@ -10,8 +9,23 @@ binary/libelektra-bin binary/libelektra-dev:: binary/libelektra2
 install/libelektra-bin::
 	install -m 644 debian/kdb.1 debian/tmp/usr/share/man/man1
 
-DEB_DH_INSTALL_ARGS := --sourcedir=debian/tmp
-DEB_DH_MAKESHLIBS_ARGS := -V
+#DEB_DH_INSTALL_ARGS := --sourcedir=debian/tmp --list-missing
+#DEB_DH_MAKESHLIBS_ARGS := -V
 
 DEB_SHLIBDEPS_LIBRARY_libelektra-bin := libelektra2
 DEB_SHLIBDEPS_INCLUDE_libelektra-bin := debian/libelektra2/usr/lib/
+
+CMAKE_FLAGS = \
+			  -DCMAKE_INSTALL_PREFIX=/usr \
+			  -DPLUGINS="dump;resolver;ccode;hosts;syslog;tracer;error;fstab;network;null;path;simpleini;success;tcl;timeofday;type" \
+			  -DKDB_DB_SYSTEM=/etc/kdb
+
+%:
+	dh $@ --buildsystem=cmake --parallel
+
+override_dh_auto_configure:
+	dh_auto_configure -- $(CMAKE_FLAGS)
+
+override_dh_auto_test:
+
+override_dh_installdocs:

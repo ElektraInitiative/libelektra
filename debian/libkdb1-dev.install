@@ -1,6 +1,0 @@
-lib/libkdb.so
-usr/lib/libkdb.a
-usr/include/*
-usr/lib/lib*.{a,so,la}
-usr/lib/pkgconfig
-usr/share/man/man3

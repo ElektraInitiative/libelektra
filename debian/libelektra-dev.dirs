@@ -1,2 +1,6 @@
 usr/lib
 usr/include
+usr/lib
+usr/include/elektra
+usr/share/doc/elektra-api
+usr/lib/pkgconfig

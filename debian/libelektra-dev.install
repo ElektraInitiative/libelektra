@@ -1,6 +1,4 @@
-usr/lib/libelektra.so
-usr/lib/libelektra.a
-usr/include/*
-usr/lib/lib*.{a,so,la}
-usr/lib/pkgconfig
-usr/share/man/man3
+usr/lib/libelektra*.a
+usr/include/elektra
+usr/share/doc/elektra-api
+usr/lib/pkgconfig/elektra.pc
