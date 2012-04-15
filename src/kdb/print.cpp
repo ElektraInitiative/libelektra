@@ -10,6 +10,12 @@ using namespace kdb;
 
 void printError(Key error)
 {
+	if (!error.getMeta<const Key>("error"))
+	{
+		// no error available
+		return;
+	}
+
 	try{
 		error.getMeta<std::string>("error");
 		std::cerr << "number: " << error.getMeta<std::string>("error/number") << std::endl;
@@ -20,12 +26,18 @@ void printError(Key error)
 		std::cerr << "reason: " << error.getMeta<std::string>("error/reason") << std::endl;
 	} catch (KeyMetaException const& e)
 	{
-		// no error available
+		std::cerr << "Error meta data not set correctly by a plugin" << std::endl;
 	}
 }
 
 void printWarnings(Key error)
 {
+	if (!error.getMeta<const Key>("warnings"))
+	{
+		// no warnings were issued
+		return;
+	}
+
 	try{
 		int nr = error.getMeta<int>("warnings");
 		std::cerr << nr+1 << " Warnings were issued" << std::endl;
@@ -46,10 +58,9 @@ void printWarnings(Key error)
 
 	} catch (KeyMetaException const& e)
 	{
-		// no warnings were issued
+		std::cerr << "Warnings meta data not set correctly by a plugin" << std::endl;
 	}
 }
-
 
 std::ostream & operator << (std::ostream & os, const Key &k)
 {
