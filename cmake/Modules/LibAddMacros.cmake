@@ -90,7 +90,12 @@ macro (add_headers HDR_FILES)
 	file (GLOB SRC_HDR_FILES ${SOURCE_INCLUDE_DIR}/*.h)
 	list (APPEND ${HDR_FILES} ${SRC_HDR_FILES})
 
-	get_target_property (EXE_LOC exporterrors LOCATION)
+	if (CMAKE_CROSSCOMPILING)
+		find_program (EXE_LOC exporterrors)
+	else (CMAKE_CROSSCOMPILING)
+		get_target_property (EXE_LOC exporterrors LOCATION)
+	endif (CMAKE_CROSSCOMPILING)
+
 	add_custom_command (
 			OUTPUT ${BINARY_INCLUDE_DIR}/kdberrors.h
 			DEPENDS exporterrors

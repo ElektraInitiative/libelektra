@@ -1,3 +1,9 @@
+elektra (0.8.0rc1-1) unstable; urgency=low
+
+  * Elektra 0.8.0 repackaging
+
+ -- Markus Raab <elektra@markus-raab.org>  Thu, 05 Apr 2012 19:01:05 +0200
+
 elektra (0.8.0rc0-1) unstable; urgency=low
 
   * Elektra 0.8.0 packaging with cmake

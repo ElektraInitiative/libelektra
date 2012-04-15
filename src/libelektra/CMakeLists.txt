@@ -12,19 +12,23 @@
 # Symbols of libelektratools will be treaded specially.
 add_executable (exportsymbols exportsymbols.c)
 
-get_target_property (EXE_LOC exportsymbols LOCATION)
+if (CMAKE_CROSSCOMPILING)
+	find_program (EXE_SYM_LOC exportsymbols)
+else (CMAKE_CROSSCOMPILING)
+	get_target_property (EXE_SYM_LOC exportsymbols LOCATION)
+endif (CMAKE_CROSSCOMPILING)
 
 add_custom_command (
 		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.h
 		DEPENDS exportsymbols
-		COMMAND ${EXE_LOC}
+		COMMAND ${EXE_SYM_LOC}
 		ARGS ${PLUGINS}
 		)
 
 add_custom_command (
 		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.c
 		DEPENDS exportsymbols
-		COMMAND ${EXE_LOC}
+		COMMAND ${EXE_SYM_LOC}
 		ARGS ${PLUGINS}
 		)
 
