@@ -6,8 +6,10 @@ if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
 	message(FATAL_ERROR "In-source builds are not permitted. Make a separate folder for building:\nmkdir build; cd build; cmake ..\nBefore that, remove the files already created:\nrm -rf CMakeCache.txt CMakeFiles")
 endif(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
 
-enable_testing ()
-include (Dart)
+if (ENABLE_TESTING)
+	enable_testing ()
+	include (Dart)
+endif (ENABLE_TESTING)
 
 #additional modules for loading libraries
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
@@ -36,9 +38,9 @@ include (cmake/ElektraCompiling.cmake)
 add_subdirectory (src)
 add_subdirectory (cmake)
 
-if (WITH_DOC)
+if (BUILD_DOCUMENTATION)
 	add_subdirectory (doc)
-endif (WITH_DOC)
+endif (BUILD_DOCUMENTATION)
 
 if (BUILD_TESTING)
 	if (BUILD_FULL OR BUILD_STATIC)

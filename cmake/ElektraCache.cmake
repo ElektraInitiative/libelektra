@@ -5,27 +5,47 @@
 
 set (PLUGINS dump resolver CACHE STRING "Which plugins should be compiled?")
 
-set (KDB_DB_SYSTEM "/etc" CACHE PATH "Where should be the system configuration?")
+set (KDB_DB_SYSTEM "/etc/config" CACHE PATH "Where should be the system configuration?")
 
-option (WITH_DOC "Build the documentation (API, man pages)" ON)
+option (BUILD_SHARED "Build the shared version of elektra." ON)
+option (BUILD_FULL "Build the full version of elektra (shared with all selected backends included)." ON)
+option (BUILD_STATIC "Build the static version of elektra (all selected backends included statically)." ON)
 
-option (DEBUG_BUILD "Build with extra debug print messages.")
-if (DEBUG_BUILD)
+option (BUILD_DOCUMENTATION "Build the documentation (API, man pages)" ON)
+if (BUILD_DOCUMENTATION)
+	option (INSTALL_DOCUMENTATION "Install the documentation (API, man pages)" ON)
+else (BUILD_DOCUMENTATION)
+	#install documentation makes no sense if it is not build
+	#(even though the option would not harm)
+	set (INSTALL_DOCUMENTATION OFF CACHE BOOL
+			"Install the documentation (API, man pages)"
+			FORCE
+		)
+endif (BUILD_DOCUMENTATION)
+
+option (ENABLE_TESTING "Enable to run tests by make test target" ON)
+option (BUILD_TESTING "Build testcases" ON)
+if (BUILD_TESTING)
+	option (INSTALL_TESTING "Install testcases" ON)
+elseif (BUILD_TESTING)
+	#install testing makes no sense if it is not build
+	#(even though the option would not harm)
+	set (INSTALL_TESTING OFF CACHE BOOL "Install testcases" FORCE)
+endif (BUILD_TESTING)
+
+option (ELEKTRA_DEBUG_BUILD "Build with extra debug print messages (to debug elektra).")
+if (ELEKTRA_DEBUG_BUILD)
 	set (DEBUG "1")
-else (DEBUG_BUILD)
+else (ELEKTRA_DEBUG_BUILD)
 	set (DEBUG "0")
-endif (DEBUG_BUILD)
+endif (ELEKTRA_DEBUG_BUILD)
 
-option (ELEKTRA_VERBOSE_BUILD "Build with even more print messages.")
+option (ELEKTRA_VERBOSE_BUILD "Build with even more print messages (to debug elektra).")
 if (ELEKTRA_VERBOSE_BUILD)
 	set (VERBOSE "1")
 else (ELEKTRA_VERBOSE_BUILD)
 	set (VERBOSE "0")
 endif (ELEKTRA_VERBOSE_BUILD)
-
-option (BUILD_SHARED "Build the shared version of elektra." ON)
-option (BUILD_FULL "Build the full version of elektra (shared with all selected backends included)." ON)
-option (BUILD_STATIC "Build the static version of elektra (all selected backends included statically)." ON)
 
 set (CMAKE_DESTINATION
 		"${CMAKE_INSTALL_PREFIX}/share/cmake-2.6/Modules"

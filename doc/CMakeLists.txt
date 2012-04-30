@@ -18,10 +18,12 @@ macro (do_doc target file)
 		DEPENDS ${target}/${file}
 	)
 
-	install (
-		DIRECTORY ${target}
-		DESTINATION ${DOCUMENTATION_DESTINATION}
-	)
+	if (INSTALL_DOCUMENTATION)
+		install (
+			DIRECTORY ${target}
+			DESTINATION ${DOCUMENTATION_DESTINATION}
+		)
+	endif (INSTALL_DOCUMENTATION)
 endmacro (do_doc)
 
 if (DOXYGEN_FOUND)

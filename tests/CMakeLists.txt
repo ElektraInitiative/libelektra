@@ -33,6 +33,10 @@ macro (do_test source)
 	set (SOURCES ${HDR_FILES} ${source}.c tests.c tests.h)
 	add_executable (${source} ${SOURCES})
 
+	if (INSTALL_TESTING)
+		install (TARGETS ${source} DESTINATION bin)
+	endif (INSTALL_TESTING)
+
 	if (BUILD_FULL)
 		target_link_libraries (${source} elektra-full)
 	else (BUILD_FULL)
