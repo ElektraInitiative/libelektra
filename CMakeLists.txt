@@ -4,6 +4,17 @@ project (Elektra)
 
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
 	message(FATAL_ERROR "In-source builds are not permitted. Make a separate folder for building:\nmkdir build; cd build; cmake ..\nBefore that, remove the files already created:\nrm -rf CMakeCache.txt CMakeFiles")
+	if (NOT FORCE_IN_SOURCE_BUILD)
+		message(FATAL_ERROR
+				"In-source builds are not permitted.\n"
+				"Make a separate folder for building:\n"
+				"    mkdir build && cd build && cmake ..\n"
+				"Before that, remove the files already created:\n"
+				"    rm -rf CMakeCache.txt CMakeFiles\n"
+				"If you really know what you are doing\n
+				"(will overwrite original files!) use:\n"
+				"    cmake -DFORCE_IN_SOURCE_BUILD=ON\n")
+	endif (NOT FORCE_IN_SOURCE_BUILD)
 endif(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
 
 if (ENABLE_TESTING)
