@@ -15,7 +15,7 @@ using namespace kdb;
 Backend::Backend(string name, string mp) :
 	name(name), mp(mp)
 {
-	elektraModulesInit(modules.getKeySet(), 0);
+	ckdb::elektraModulesInit(modules.getKeySet(), 0);
 }
 
 Backend::~Backend()
@@ -24,7 +24,7 @@ Backend::~Backend()
 	{
 		delete plugins[i];
 	}
-	elektraModulesClose(modules.getKeySet(), 0);
+	ckdb::elektraModulesClose(modules.getKeySet(), 0);
 }
 
 void Backend::checkFile (std::string file)

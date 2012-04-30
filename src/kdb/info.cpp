@@ -37,7 +37,7 @@ int InfoCommand::execute(int argc, char** argv)
 		cerr << "Maybe the mountpoint configuration is broken." << endl;
 		cerr << "Now in fallback code. Will directly load config from plugin" << endl;
 		KeySet modules;
-		elektraModulesInit(modules.getKeySet(), 0);
+		ckdb::elektraModulesInit(modules.getKeySet(), 0);
 		KeySet testConfig(1,
 			*Key(	"system/test",
 				KEY_VALUE, "test",
@@ -46,7 +46,7 @@ int InfoCommand::execute(int argc, char** argv)
 			KS_END);
 		Plugin plugin (name, modules, testConfig);
 		plugin.loadInfo();
-		elektraModulesClose(modules.getKeySet(), 0);
+		ckdb::elektraModulesClose(modules.getKeySet(), 0);
 		// TODO: memory leak
 		conf.append(plugin.getInfo());
 	}

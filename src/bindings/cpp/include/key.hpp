@@ -95,12 +95,12 @@ public:
 	Key& operator+= (const char *name);
 	Key& operator-= (const char *name);
 
-	bool operator ==(const Key &k) const { return keyCmp(key, k.key) == 0; }
-	bool operator !=(const Key &k) const { return keyCmp(key, k.key) != 0; }
-	bool operator < (const Key& other) const {return keyCmp(key, other.key) < 0; }
-	bool operator <= (const Key& other) const {return keyCmp(key, other.key) <= 0; }
-	bool operator > (const Key& other) const {return keyCmp(key, other.key) > 0; }
-	bool operator >= (const Key& other) const {return keyCmp(key, other.key) >= 0; }
+	bool operator ==(const Key &k) const { return ckdb::keyCmp(key, k.key) == 0; }
+	bool operator !=(const Key &k) const { return ckdb::keyCmp(key, k.key) != 0; }
+	bool operator < (const Key& other) const {return ckdb::keyCmp(key, other.key) < 0; }
+	bool operator <= (const Key& other) const {return ckdb::keyCmp(key, other.key) <= 0; }
+	bool operator > (const Key& other) const {return ckdb::keyCmp(key, other.key) > 0; }
+	bool operator >= (const Key& other) const {return ckdb::keyCmp(key, other.key) >= 0; }
 	/**
 	 * This is for loops and lookups only.
 	 * For loops it checks if there are still more keys.
@@ -635,7 +635,7 @@ inline Key::func_t Key::getFunc() const
 {
 	union {Key::func_t f; void* v;} conversation;
 
-	if (keyGetBinary(getKey(),
+	if (ckdb::keyGetBinary(getKey(),
 			&conversation.v,
 			sizeof(conversation)) != sizeof(conversation))
 				return 0;

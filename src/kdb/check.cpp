@@ -50,12 +50,12 @@ int CheckCommand::execute(int argc, char** argv)
 
 	KeySet modules;
 	Key errorKey;
-	elektraModulesInit(modules.getKeySet(), *errorKey);
+	ckdb::elektraModulesInit(modules.getKeySet(), *errorKey);
 
 	if (cl.t)
 	{
 		if (cl.v) cout << "will try to load " << name << endl;
-		ckdb::elektraPluginFactory ptr = elektraModulesLoad (modules.getKeySet(),
+		ckdb::elektraPluginFactory ptr = ckdb::elektraModulesLoad (modules.getKeySet(),
 				name.c_str(), *errorKey);
 		if (!ptr)
 		{
@@ -63,7 +63,7 @@ int CheckCommand::execute(int argc, char** argv)
 			printError(errorKey);
 			return 4;
 		}
-		elektraModulesClose(modules.getKeySet(), *errorKey);
+		ckdb::elektraModulesClose(modules.getKeySet(), *errorKey);
 		printWarnings(errorKey);
 		return 0;
 	}
@@ -97,7 +97,7 @@ int CheckCommand::execute(int argc, char** argv)
 			cerr << "Warning #" << i << ": " << warnings[i] << endl;
 		}
 	}
-	elektraModulesClose(modules.getKeySet(), *errorKey);
+	ckdb::elektraModulesClose(modules.getKeySet(), *errorKey);
 	printWarnings(errorKey);
 
 	return 0;

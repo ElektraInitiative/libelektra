@@ -179,6 +179,8 @@ int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey)
  * @param modules the current list of loaded modules
  * @param errorKey the key used to report warnings
  * @ingroup mount
+ * @retval -1 if not rootkey was found
+ * @retval 0 otherwise
  */
 int elektraMountModules (KDB *kdb, KeySet *modules, Key *errorKey)
 {
@@ -208,6 +210,7 @@ int elektraMountModules (KDB *kdb, KeySet *modules, Key *errorKey)
  * @param kdb the handle to work with
  * @param errorKey the key used to report warnings
  * @ingroup mount
+ * @retval 0 on success
  */
 int elektraMountVersion (KDB *kdb, Key *errorKey)
 {

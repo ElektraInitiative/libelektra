@@ -130,6 +130,8 @@ void elektraSplitResize(Split *split)
  * @param parentKey the parentKey which should be appended
  * @param syncbits the initial syncstate which should be appended
  * @ingroup split
+ * @retval -1 if no split is found
+ * @return the size of split - 1
  */
 ssize_t elektraSplitAppend(Split *split, Backend *backend, Key *parentKey, int syncbits)
 {
@@ -541,6 +543,7 @@ KeySet* ksDeepDup(const KeySet *source)
  *
  * @param split the split object to work with
  * @ingroup split
+ * @retval 0 on success
  */
 int elektraSplitPrepare (Split *split)
 {

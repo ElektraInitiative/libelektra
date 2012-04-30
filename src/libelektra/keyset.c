@@ -768,6 +768,8 @@ static Key *ksPrev(KeySet *ks)
  * @param ks the keyset where this should be done
  * @param to the position where it should be copied to
  * @param from the position where it should be copied from
+ * @retval -1 if length is smaller then 0
+ * @return the number of moved elements otherwise
  */
 ssize_t ksCopyInternal(KeySet *ks, size_t to, size_t from)
 {

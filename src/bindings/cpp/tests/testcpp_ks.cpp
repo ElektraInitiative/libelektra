@@ -156,7 +156,7 @@ void test_iterate()
 
 	j=0;
 	ks3.rewind();
-	for (Key k; k=ks3.next();)
+	for (Key k; (k=ks3.next());)
 	{
 		char str[] = "user/key3/X";
 
@@ -167,7 +167,7 @@ void test_iterate()
 
 	j=0;
 	ks3.rewind();
-	for (Key k=ks3.next(); k; k=ks3.next())
+	for (Key k=ks3.next(); k; (k=ks3.next()))
 	{
 		char str[] = "user/key3/X";
 
@@ -697,14 +697,14 @@ void test_ksrelease()
 	KeySet ks1;
 
 	ckdb::KeySet *ks = ks1.release();
-	ksDel (ks);
+	ckdb::ksDel (ks);
 
 	KeySet ks2 (5,
 		ckdb::keyNew ("user/key2", KEY_END),
 		KS_END);
 
 	ks = ks2.release();
-	ksDel (ks);
+	ckdb::ksDel (ks);
 
 	KeySet ks3 (5,
 		*Key ("user/key3/1", KEY_END),
@@ -713,11 +713,11 @@ void test_ksrelease()
 		KS_END);
 
 	ks = ks3.release();
-	ksDel (ks);
+	ckdb::ksDel (ks);
 
 	ks = ckdb::ksNew (5, ckdb::keyNew("user/abc", KEY_END), KS_END);
 	rcall (ks);
-	succeed_if (ksLookupByName(ks, "user/xxx", 0) != 0, "could not find key");
+	succeed_if (ckdb::ksLookupByName(ks, "user/xxx", 0) != 0, "could not find key");
 	ckdb::ksDel (ks);
 }
 
