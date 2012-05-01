@@ -19,16 +19,6 @@ std::string MountCommand::root = "system/elektra/mountpoints";
 MountCommand::MountCommand()
 {}
 
-bool MountCommand::checkFile(std::string path)
-{
-	if (path[0] == '/')
-	{
-		cerr << "You must use an relative path" << endl;
-		return false;
-	}
-	return true;
-}
-
 void MountCommand::outputMtab()
 {
 	KeySet mountConf;
@@ -71,16 +61,14 @@ void MountCommand::outputMtab()
 	}
 }
 
-int MountCommand::execute(int argc, char** argv)
+int MountCommand::execute(Cmdline const& cl)
 {
-	if (argc == 2)
+	if (!cl.interactive)
 	{
-		// no arguments, just output mountpoints
+		// no interactive mode, so lets output the mtab
 		outputMtab();
 		return 0;
 	}
-
-	std::string action = argv[2];
 
 	cout << "Welcome to interactive mounting" << endl;
 	cout << "Please provide a unique name." << endl;
@@ -189,9 +177,12 @@ int MountCommand::execute(int argc, char** argv)
 
 		backend.tryPlugin ("resolver");
 
+		cout << endl;
 		cout << "Enter a path to a file in the filesystem" << endl;
 		cout << "This is used by all plugins of this backend as fallback" << endl;
 		cout << "It must be provided and must be a valid path" << endl;
+		cout << "For user or cascading mountpoints it must be a relative path." << endl;
+		cout << "The actual path will be located dynamically by the resolver plugin." << endl;
 		cout << "Path: ";
 		cin >> path;
 		backend.checkFile (path);

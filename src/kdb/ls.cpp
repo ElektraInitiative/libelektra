@@ -10,20 +10,18 @@ using namespace std;
 LsCommand::LsCommand()
 {}
 
-int LsCommand::execute(int argc, char** argv)
+int LsCommand::execute(Cmdline const& cl)
 {
-	if (argc != 3)
+	if (cl.arguments.size() != 1)
 	{
-		cerr << "Please provide a name" << endl;
-		cerr << "Usage: ls <name>" << endl;
-		return 1;
+		throw invalid_argument("1 argument required");
 	}
 
-	Key root (argv[2], KEY_END);
+	Key root (cl.arguments[0], KEY_END);
 	if (!root.isValid())
 	{
-		cerr << "Not a valid name supplied" << endl;
-		return 1;
+		throw invalid_argument(cl.arguments[0] +
+				"is not an valid keyname");
 	}
 
 	kdb.get(ks, root);
@@ -33,7 +31,7 @@ int LsCommand::execute(int argc, char** argv)
 	Key k;
 	while (k=part.next())
 	{
-		cout << k << endl;
+		cout << k.getName() << endl;
 	}
 
 	printWarnings(root);

@@ -1,6 +1,7 @@
 #include <cp.hpp>
 
 #include <kdb.hpp>
+#include <rename.hpp>
 
 #include <iostream>
 
@@ -10,31 +11,26 @@ using namespace kdb;
 CpCommand::CpCommand()
 {}
 
-int CpCommand::execute(int argc, char** argv)
+int CpCommand::execute (Cmdline const& cl)
 {
-	if (argc != 4)
+	if (cl.arguments.size() != 2)
 	{
-		cerr << "Please provide a name" << endl;
-		cerr << "Usage: cp <source> <dest>" << endl;
-		return 1;
+		throw invalid_argument("wrong number of arguments, 2 needed");
 	}
 
-	std::string command = argv[1];
 	KeySet conf;
-	Key sourceKey(argv[2], KEY_END);
-	if (!sourceKey)
+	Key sourceKey(cl.arguments[0], KEY_END);
+	if (!sourceKey.isValid())
 	{
-		cerr << "Source given is not a valid keyname" << endl;
-		return 1;
+		throw invalid_argument("Source given is not a valid keyname");
 	}
 
-	Key destKey(argv[3], KEY_END);
-	if (!destKey)
+	Key destKey(cl.arguments[1], KEY_END);
+	if (!destKey.isValid())
 	{
-		cerr << "Destination given is not a valid keyname" << endl;
-		return 1;
+		throw invalid_argument("Destination given is not a valid keyname");
 	}
-	string newDirName = argv[3];
+	string newDirName = cl.arguments[1];
 
 	kdb.get(conf, sourceKey);
 	kdb.get(conf, destKey);
@@ -47,31 +43,34 @@ int CpCommand::execute(int argc, char** argv)
 
 	Key k;
 	oldConf.rewind();
-	std::string commonName = sourceKey.getName();
-	cout << "common name: " << commonName << endl;
-	while (k = oldConf.next())
+	std::string sourceName = sourceKey.getName();
+	if (cl.verbose) cout << "common name: " << sourceName << endl;
+	if (cl.recursive)
 	{
-		std::string otherName = k.getName();
-		std::string baseName = otherName.substr(commonName.length());
-		cout << "key: " << otherName <<
-			" will be copied/moved to: " << newDirName + baseName <<  endl;
-
-		Key newKey = k.dup();
-		newKey.setName (newDirName + baseName);
-		newConf.append(newKey);
+		// copy all keys with new name
+		while (k = oldConf.next())
+		{
+			newConf.append(rename_key(k, sourceName, newDirName, cl.verbose));
+		}
 	}
-	newConf.append(tmpConf); // these are unrelated keys
-	if (command == "cp" || command == "cp-r")
+	else
 	{
-		cout << "in preserving (cp) mode" << endl;
-		newConf.append(oldConf); // these are the original keys
-	} // else simple drop the original conf
+		// just copy one key
+		k = oldConf.next();
+		newConf.append(rename_key(k, sourceName, newDirName, cl.verbose));
+	}
+
+	newConf.append(tmpConf); // these are unrelated keys
+	newConf.append(oldConf); // these are the original keys
 
 	newConf.rewind();
-	cout << "Will write out:" << endl;
-	while (Key k = newConf.next())
+	if (cl.verbose)
 	{
-		cout << k.getName() << " " << k.getString() << endl;
+		cout << "Will write out:" << endl;
+		while (Key k = newConf.next())
+		{
+			cout << k.getName() << " " << k.getString() << endl;
+		}
 	}
 
 	kdb.set(newConf, destKey);

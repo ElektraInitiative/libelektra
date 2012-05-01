@@ -36,8 +36,6 @@ std::auto_ptr<Plugin> Modules::load(std::string const& pluginName, KeySet const 
 	std::auto_ptr<Plugin> plugin (new Plugin (pluginName, modules, config));
 	plugin->loadInfo();
 	plugin->parse();
-	vector<string> warnings;
-	plugin->check(warnings);
 
 	return plugin;
 }

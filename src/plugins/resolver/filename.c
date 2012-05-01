@@ -45,8 +45,7 @@ int resolveFilename(Key* forKey, resolverHandle *p)
 		strcat (p->tempfile, ".tmp");
 		return 1;
 	}
-
-	if (!strncmp(keyName(forKey), "user", 4))
+	else if (!strncmp(keyName(forKey), "user", 4))
 	{
 		/* TODO implement XDG specification
 		http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html

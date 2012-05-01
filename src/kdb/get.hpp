@@ -12,7 +12,29 @@ class GetCommand : public Command
 public:
 	GetCommand();
 	~GetCommand();
-	int execute(int argc, char**argv);
+	virtual std::string getShortOptions()
+	{
+		return "";
+	}
+
+	virtual unsigned int getNrOfArguments()
+	{
+		return 1;
+	}
+
+	virtual std::string getShortHelpText()
+	{
+		return "Retrieve an key.";
+	}
+
+	virtual std::string getLongHelpText()
+	{
+		return
+			"<name>\n"
+			"Get an individual key.\n";
+	}
+
+	virtual int execute (Cmdline const& cmdline);
 };
 
 #endif

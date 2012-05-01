@@ -10,26 +10,19 @@ using namespace kdb;
 RemoveCommand::RemoveCommand()
 {}
 
-int RemoveCommand::execute(int argc, char** argv)
+int RemoveCommand::execute(Cmdline const& cl)
 {
-	if (argc != 3)
-	{
-		cerr << "Please provide a name" << endl;
-		cerr << "Usage: rm <name>" << endl;
-		return 1;
-	}
+	if (cl.arguments.size() != 1) throw invalid_argument("1 argument required");
 
 	KeySet conf;
-	Key x(argv[2], KEY_END);
+	Key x(cl.arguments[0], KEY_END);
 	if (!x)
 	{
-		cerr << "Argument given is not a valid keyname" << endl;
-		return 1;
+		throw invalid_argument(cl.arguments[0] + " is not a valid keyname");
 	}
 	kdb.get(conf, x);
 
-	std::string command = argv[1];
-	if (command == "rm")
+	if (!cl.recursive)
 	{
 		KeySet k ( conf.cut (x));
 

@@ -11,16 +11,14 @@ using namespace kdb;
 ValidationCommand::ValidationCommand()
 {}
 
-int ValidationCommand::execute(int argc, char** argv)
+int ValidationCommand::execute(Cmdline const& cl)
 {
-	string prog = argv[0];
-	string command = argv[1];
-	if (argc != 6)
+	size_t argc = cl.arguments.size();
+	if (argc != 3 && argc != 4)
 	{
-		cerr << "Usage: " << prog << " " << command << " <key-name> <value> <validation-regex> <validation-message>" << endl;
-		return 1;
+		throw invalid_argument("need 3 or 4 arguments");
 	}
-	string keyname = argv[2];
+	string keyname = cl.arguments[0];
 
 	KeySet conf;
 	Key parentKey(keyname, KEY_END);
@@ -35,13 +33,14 @@ int ValidationCommand::execute(int argc, char** argv)
 
 	if (!k.isValid())
 	{
-		cout << "Could not create key" << endl;
-		return 1;
+		throw invalid_argument("keyname not valid");
 	}
 
-	string value = argv[3];
-	string validationregex = argv[4];
-	string validationmessage = argv[5];
+	string value = cl.arguments[1];
+	string validationregex = cl.arguments[2];
+	string validationmessage;
+	if (argc == 4) validationmessage = cl.arguments[3];
+	else validationmessage = "Regular expression " + validationregex + " does not match the supplied value";
 
 	k.setString (value);
 	k.setMeta<string> ("validation/regex", validationregex);

@@ -14,49 +14,37 @@ using namespace kdb;
 CheckCommand::CheckCommand()
 {}
 
-int CheckCommand::execute(int argc, char** argv)
+int CheckCommand::execute(Cmdline const& cl)
 {
-	Cmdline cl (argc, argv,
-			1,
-			"HvV",
-			"<name>\n"
-			"Do some basic checks on a plugin.\n");
-
-	if (cl.invalidOpt)
+	if (cl.arguments.size() != 1)
 	{
-		cerr << cl << endl;
-		return 1;
+		throw invalid_argument ("One argument required");
 	}
 
-	if (cl.V)
-	{
-		cerr << cl.progName << " " << cl.utilName << " version 0.1" << endl;
-		return 0;
-	}
-
-	if (cl.avail() != 1 || cl.H)
-	{
-		if (!cl.H) cerr << "Please provide a module name\n"
-			<< endl;
-		cerr << cl << endl;
-		if (cl.H) return 0;
-		return 2;
-	}
-
-	std::string name = argv[cl.param()];
+	std::string name = cl.arguments[0];
 
 	Modules modules;
-	if (cl.v) cout << "will try check the plugin " << name << endl;
+	if (cl.verbose) cout << "will try check the plugin " << name << endl;
 
 	vector<string> warnings;
 	try {
 		std::auto_ptr<Plugin> plugin = modules.load (name);
 		plugin->check(warnings);
-	} catch (PluginCheckException const& p) {
-		cerr << "Plugin did not pass all checks!" << endl;
+
+	}
+	catch (NoPlugin const& p)
+	{
+		cerr << p.what() << endl;
+		return 2;
+	}
+	catch (PluginCheckException const& p)
+	{
+		cerr << "Plugin did not pass all checks:" << endl;
 		cerr << "See description below:" << endl;
 		cerr << p.what() << endl;
+		return 3;
 	}
+
 	if (warnings.size() > 0)
 	{
 		cerr << "There are " << warnings.size() << " Warnings for this plugin" << endl;

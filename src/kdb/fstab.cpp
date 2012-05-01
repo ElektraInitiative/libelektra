@@ -11,16 +11,15 @@ using namespace kdb;
 FstabCommand::FstabCommand()
 {}
 
-int FstabCommand::execute(int argc, char** argv)
+int FstabCommand::execute(Cmdline const& cl)
 {
-	string prog = argv[0];
-	string command = argv[1];
-	if (argc != 7)
+	int argc = cl.arguments.size();
+	if (argc != 5 && argc != 6 && argc != 7)
 	{
-		cerr << "Usage: " << prog << " " << command << " <key-name> <device> <mpoint> <type> <options>" << endl;
-		return 1;
+		throw invalid_argument("number of arguments not correct, need 5, 6 or 7");
 	}
-	string keyname = argv[2];
+
+	string keyname = cl.arguments[0];
 
 	KeySet conf;
 	Key parentKey(keyname, KEY_END);
@@ -35,39 +34,53 @@ int FstabCommand::execute(int argc, char** argv)
 
 	if (!k.isValid())
 	{
-		cout << "Could not create key" << endl;
-		return 1;
+		throw invalid_argument("keyname is not valid");
+	}
+
+	string dumpfreq = "0";
+	if (argc >= 6)
+	{
+		dumpfreq = cl.arguments[5].c_str();
+	}
+
+	string passno = "0";
+	if (argc >= 7)
+	{
+		passno = cl.arguments[6].c_str();
 	}
 
 	kdb::KeySet config( 20,
 		*kdb::Key (keyname + "/ZZZNewFstabName",
 			KEY_END),
 		*kdb::Key (keyname + "/ZZZNewFstabName/device",
-			KEY_VALUE, argv[3],
+			KEY_VALUE, cl.arguments[1].c_str(),
 			KEY_END),
 		*kdb::Key (keyname + "/ZZZNewFstabName/mpoint",
-			KEY_VALUE, argv[4],
+			KEY_VALUE, cl.arguments[2].c_str(),
 			KEY_END),
 		*kdb::Key (keyname + "/ZZZNewFstabName/type",
-			KEY_VALUE, argv[5],
+			KEY_VALUE, cl.arguments[3].c_str(),
 			KEY_END),
 		*kdb::Key (keyname + "/ZZZNewFstabName/options",
-			KEY_VALUE, argv[6],
+			KEY_VALUE, cl.arguments[4].c_str(),
 			KEY_END),
 		*kdb::Key (keyname + "/ZZZNewFstabName/dumpfreq",
-			KEY_VALUE, "0",
+			KEY_VALUE, dumpfreq.c_str(),
 			KEY_END),
 		*kdb::Key (keyname + "/ZZZNewFstabName/passno",
-			KEY_VALUE, "0",
+			KEY_VALUE, passno.c_str(),
 			KEY_END),
 		KS_END);
 
 	conf.append(config);
 
-	conf.rewind();
-	while (Key k = conf.next())
+	if (cl.verbose)
 	{
-		cout << k.getName() << " " << k.getString() << endl;
+		conf.rewind();
+		while (Key k = conf.next())
+		{
+			cout << k.getName() << " " << k.getString() << endl;
+		}
 	}
 
 	kdb.set(conf,parentKey);

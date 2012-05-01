@@ -10,22 +10,17 @@ using namespace kdb;
 GetCommand::GetCommand()
 {}
 
-int GetCommand::execute(int argc, char** argv)
+int GetCommand::execute (Cmdline const& cl)
 {
-	if (argc != 3)
-	{
-		cerr << "Please provide a name" << endl;
-		cerr << "Usage: get <name>" << endl;
-		return 1;
-	}
+	if (cl.arguments.size() != 1) throw invalid_argument ("Need one argument");
 
 	KeySet conf;
-	Key x(argv[2], KEY_END);
+	Key x(cl.arguments[0], KEY_END);
 	if (!x.isValid())
 	{
-		cerr << "Argument given is not a valid keyname" << endl;
-		return 1;
+		throw invalid_argument(cl.arguments[0] + " is not an valid keyname");
 	}
+
 	kdb.get(conf, x);
 	Key k = conf.lookup(x);
 

@@ -9,26 +9,44 @@
 using namespace std;
 
 Cmdline::Cmdline (int argc, char** argv,
-		unsigned int nrOptions,
-		string const& acceptedOptions,
-		string const& phelpText) :
-	optindex(0), argc(argc), invalidOpt(false),
+		string const& pAcceptedOptions,
+		string const& pHelpText) :
+	helpText(pHelpText),
+	invalidOpt(false),
+	format("dump"),
+	interactive(),
+	recursive(),
+	humanReadable(),
+	help(),
+	test(),
+	verbose(),
+	version(),
 	/*XXX: Step 2: initialise your option here.*/
-	h(false),
-	H(false),
-	t(false),
-	v(false),
-	V(false),
-	progName(), utilName(),
-	helpText(phelpText)
+	executable(),
+	command()
 {
 	extern int optind;
-	// extern char *optarg;
+	extern char *optarg;
 
 	int index = 0;
 	int opt;
 
+	string acceptedOptions = pAcceptedOptions;
+	acceptedOptions += "HV";
+
 	vector<option> long_options;
+	if (acceptedOptions.find('r')!=string::npos)
+	{
+		option o = {"recursive", no_argument, 0, 'r'};
+		long_options.push_back(o);
+		helpText += "-r --recursive           work in a recursive mode\n";
+	}
+	if (acceptedOptions.find('f')!=string::npos)
+	{
+		option o = {"format", required_argument, 0, 'f'};
+		long_options.push_back(o);
+		helpText += "-f --format              a plugin to be used to format the conf\n";
+	}
 	if (acceptedOptions.find('h')!=string::npos)
 	{
 		option o = {"human-readable", no_argument, 0, 'h'};
@@ -60,31 +78,38 @@ Cmdline::Cmdline (int argc, char** argv,
 		helpText += "-V --version             print version info\n";
 	}
 	/*XXX: Step 3: give it a long name.*/
+
+
 	option o = {0, 0, 0, 0};
 	long_options.push_back(o);
 
-	progName += argv[0];
-	utilName += argv[1];
+	executable += argv[0];
+	command += argv[1];
 
-	while ((opt = getopt_long (argc-1, argv+1,
+	while ((opt = getopt_long (argc, argv,
 					acceptedOptions.c_str(),
 					&long_options[0], &index)) != EOF)
 	{
 		switch (opt)
 		{
-		case 'h': h = true; break;
-		case 'H': H = true; break;
-		case 't': t = true; break;
-		case 'v': v = true; break;
-		case 'V': V = true; break;
+		case 'f': format = optarg; break;
+		case 'i': interactive = true; break;
+		case 'r': recursive = true; break;
+		case 'h': humanReadable = true; break;
+		case 'H': help = true; break;
+		case 't': test = true; break;
+		case 'v': verbose = true; break;
+		case 'V': version = true; break;
 		/*XXX: Step 4: and now process the option.*/
-		default:
-			invalidOpt = true;
-			break;
+		default: invalidOpt = true; break;
 		}
 	}
 
-	optindex = optind;
+	optind++; // skip the command name
+	while (optind < argc)
+	{
+		arguments.push_back(argv[optind++]);
+	}
 }
 
 std::ostream & operator<< (std::ostream & os, Cmdline & cl)
@@ -94,16 +119,7 @@ std::ostream & operator<< (std::ostream & os, Cmdline & cl)
 		os << "Invalid option given\n" << endl;
 	}
 
-	os << "Usage: " << cl.progName << " " << cl.utilName << " ";
+	os << "Usage: " << cl.executable << " " << cl.command << " ";
 	os << cl.helpText;
-	if (cl.v)
-	{
-		os << "Nr param: " << cl.param() << endl;
-		os << "Nr avail: " << cl.avail() << endl;
-	}
-	else
-	{
-		os << "Verbose mode is off" << endl;
-	}
 	return os;
 }

@@ -10,16 +10,9 @@ using namespace std;
 MetaLsCommand::MetaLsCommand()
 {}
 
-int MetaLsCommand::execute(int argc, char** argv)
+int MetaLsCommand::execute (Cmdline const& cl)
 {
-	if (argc != 3)
-	{
-		cerr << "Please provide a name" << endl;
-		cerr << "Usage: meta-ls <name>" << endl;
-		return 1;
-	}
-
-	Key root (argv[2], KEY_END);
+	Key root (cl.arguments[0], KEY_END);
 	if (!root.isValid())
 	{
 		cerr << "Not a valid name supplied" << endl;
@@ -28,16 +21,13 @@ int MetaLsCommand::execute(int argc, char** argv)
 
 	kdb.get(ks, root);
 
-	KeySet part (ks.cut(root));
-	part.rewind();
-	Key k;
-	while (k=part.next())
+	Key k = ks.lookup(root);
+	if (k)
 	{
-		cout << k << endl;
 		k.rewindMeta();
 		while (const Key meta = k.nextMeta())
 		{
-			cout << "meta " << meta << endl;
+			cout << meta.getName() << endl;
 		}
 	}
 

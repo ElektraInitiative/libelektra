@@ -11,8 +11,27 @@ class MetaLsCommand : public Command
 
 public:
 	MetaLsCommand();
-	int execute(int argc, char**argv);
 	~MetaLsCommand();
+
+	virtual std::string getShortOptions()
+	{
+		return "";
+	}
+
+	virtual std::string getShortHelpText()
+	{
+		return "Retrieve meta information.";
+	}
+
+	virtual std::string getLongHelpText()
+	{
+		return
+			"<name>\n"
+			"Get all meta information of an individual\n"
+			"key.\n";
+	}
+
+	virtual int execute (Cmdline const& cmdline);
 };
 
 #endif

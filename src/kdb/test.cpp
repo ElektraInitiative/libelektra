@@ -99,7 +99,7 @@ void TestCommand::doStringTest()
 			if (!res)
 			{
 				nrError ++;
-				cerr << "String test failed (key not found)" << t << endl;
+				cerr << "String test failed (key not found)" << t.getName() << endl;
 				continue;
 			}
 
@@ -174,7 +174,7 @@ void TestCommand::doBinaryTest()
 			if (!res)
 			{
 				nrError ++;
-				cerr << "Binary test failed (key not found)" << t << endl;
+				cerr << "Binary test failed (key not found)" << t.getName() << endl;
 				continue;
 			}
 
@@ -291,7 +291,6 @@ void TestCommand::doMetaTest()
 	vector<string> testnames;
 	testnames.push_back("keyname");
 	testnames.push_back("deep/below/keyname");
-	/*
 	testnames.push_back("keyname with spaces");
 	testnames.push_back("deep/belowkeyname with spaces");
 	testnames.push_back(" a very long value with many spaces and basically very very long, but only text ");
@@ -308,7 +307,6 @@ void TestCommand::doMetaTest()
 		s.push_back (i);
 		testnames.push_back(s);
 	}
-	*/
 
 
 	for (size_t j = 0; j< testnames.size(); ++j)
@@ -342,7 +340,7 @@ void TestCommand::doMetaTest()
 			if (!res)
 			{
 				nrError ++;
-				cerr << "Meta test failed (key not found)" << t << endl;
+				cerr << "Meta test failed (key not found)" << t.getName() << endl;
 				continue;
 			}
 
@@ -369,20 +367,17 @@ void TestCommand::doTests()
 	doMetaTest();
 }
 
-int TestCommand::execute(int argc, char** argv)
+int TestCommand::execute(Cmdline const& cl)
 {
-	if (argc != 3)
+	if (cl.arguments.size() != 1)
 	{
-		cerr << "Please provide a key name" << endl;
-		cerr << "Usage: test <name>" << endl;
-		return 1;
+		throw invalid_argument ("need exactly one argument");
 	}
 
-	root.setName(argv[2]);
+	root.setName(cl.arguments[0]);
 	if (root.getNameSize() <= 1)
 	{
-		cerr << "Not a valid name supplied" << endl;
-		return 1;
+		throw invalid_argument ("Not a valid root name");
 	}
 
 	KDB kdb;

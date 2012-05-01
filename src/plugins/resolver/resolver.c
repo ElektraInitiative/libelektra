@@ -353,7 +353,7 @@ int elektraResolverError(Plugin *handle, KeySet *returned, Key *parentKey)
 
 /**
  * @return 1 on success (Relative path)
- * @returns 0 on success (Absolut path)
+ * @returns 0 on success (Absolute path)
  * @return -1 on a non-valid file
  */
 int elektraResolverCheckFile (const char* filename)

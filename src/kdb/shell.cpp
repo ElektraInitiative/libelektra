@@ -8,10 +8,20 @@
 using namespace std;
 using namespace kdb;
 
-ShellCommand::ShellCommand()
+ShellCommand::ShellCommand() :
+	supportedCommands(
+			"kdbGet\n"
+			"kdbSet\n"
+			"keySetName\n"
+			"keySetMeta\n"
+			"keySetString\n"
+			"ksAppendKey\n"
+			"ksCut\n"
+			"ksOutput .. outputs all keys in a ks\n"
+			)
 {}
 
-int ShellCommand::execute(int, char**)
+int ShellCommand::execute(Cmdline const&)
 {
 	KeySet current;
 	Key currentKey;
@@ -87,7 +97,10 @@ int ShellCommand::execute(int, char**)
 				cout << current.current().getName() << " value: " << current.current().getString() << endl;
 			}
 		} else {
-			cout << "unknown command" << endl;
+			// TODO: keep in sync with getLongHelp
+			cout << "unknown command!\nsupported are:\n"
+				<< supportedCommands
+				<< endl;
 		}
 
 		cout << prompt;

@@ -48,6 +48,30 @@ public:
 	void outputMtab();
 	int execute(int argc, char** argv);
 	~MountCommand();
+	virtual std::string getShortOptions()
+	{
+		return "i";
+	}
+
+	virtual unsigned int getNrOfArguments()
+	{
+		return 0;
+	}
+
+	virtual std::string getShortHelpText()
+	{
+		return "Mount a new backend.";
+	}
+
+	virtual std::string getLongHelpText()
+	{
+		return
+			"\n"
+			"Allows you to interactively mount\n"
+			"a new backend.\n";
+	}
+
+	virtual int execute (Cmdline const& cmdline);
 };
 
 #endif

@@ -26,7 +26,7 @@ void printError(Key error)
 		std::cerr << "reason: " << error.getMeta<std::string>("error/reason") << std::endl;
 	} catch (KeyMetaException const& e)
 	{
-		std::cerr << "Error meta data not set correctly by a plugin" << std::endl;
+		std::cerr << "Error meta data is not set correctly by a plugin" << std::endl;
 	}
 }
 
@@ -60,10 +60,4 @@ void printWarnings(Key error)
 	{
 		std::cerr << "Warnings meta data not set correctly by a plugin" << std::endl;
 	}
-}
-
-std::ostream & operator << (std::ostream & os, const Key &k)
-{
-	os << "key: " << k.getName() << " " << k.getString();
-	return os;
 }

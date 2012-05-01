@@ -10,25 +10,28 @@ using namespace kdb;
 SetCommand::SetCommand()
 {}
 
-int SetCommand::execute(int argc, char**argv)
+int SetCommand::execute(Cmdline const& cl)
 {
-	if (argc != 3 && argc != 4)
+	int argc = cl.arguments.size();
+	if (argc != 1 && argc != 2)
 	{
-		cerr << "Please provide a name and a value to set" << endl;
-		cerr << "Usage: set <name> [<value>]" << endl;
-		cerr << "If no value is given, it will be set to a null-value" << endl;
-		cerr << "To get an empty value you need to quote like \"\" (depending on shell)" << endl;
-		return 1;
+		throw invalid_argument("1 or 2 arguments needed");
 	}
 
-	std::string name = argv[2];
+	std::string name = cl.arguments[0];
 
-	bool nullValue = false;
-	if (argc == 3) nullValue = true;
-
+	bool nullValue;
 	std::string value;
 
-	if (!nullValue) value = argv[3];
+	if (argc == 2)
+	{
+		nullValue = false;
+		value = cl.arguments[1];
+	}
+	else
+	{
+		nullValue = true;
+	}
 
 	KeySet conf;
 	Key k(name, KEY_END);

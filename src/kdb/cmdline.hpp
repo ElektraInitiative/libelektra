@@ -12,54 +12,41 @@
 
 
 #include <string>
+#include <vector>
 
 class Cmdline
 {
-private:
-	int optindex;
-	int argc;
-
 public:
 	Cmdline (int argc, char** argv,
-			unsigned int nrAcceptedOptions,
 			std::string const& shortAcceptedOptions,
 			std::string const& helpText);
 	~Cmdline () {};
+
+	/** The help text to printed out. */
+	std::string helpText;
 
 	/** At least one of the options was invalid */
 	bool invalidOpt;
 
 	/*XXX: Step 1: add your option here.*/
-	bool h; /*!< True if human readable is preferred. */
-	bool H; /*!< True if help is needed. */
-	bool t; /*!< True to run some self tests instead of the normal action. */
-	bool v; /*!< True to be more verbose. */
-	bool V; /*!< True to return version info. */
+	std::string format; /*!< a plugin to be used to format the conf. */
+	bool interactive; /*!< Interactive mode. */
+	bool recursive; /*!< Recursive mode. */
+	bool humanReadable; /*!< Human readable values are preferred. */
+	bool help; /*!< Display help instead of the normal action.. */
+	bool test; /*!< Run some self tests instead of the normal action. */
+	bool verbose; /*!< Be more verbose. */
+	bool version; /*!< Return version info instead of the normal action.. */
 
-	/** The path to the kdb tool. */
-	std::string progName;
-	/** The given name for the current utility.
+	/** The path to the kdb exectuable. */
+	std::string executable;
+
+	/** The given name for the current command.
 	  * This is the second parameter. */
-	std::string utilName;
+	std::string command;
 
-	/** The help text to printed out. */
-	std::string helpText;
-
-	/** Returns first parameter that is not an option.
-	  * @param i Return the i-th instead of the first parameter.
-	  *
-	  * @note Will return the last parameter (argv is null there) for out of range
-	  * So make sure to handle the null pointer or check avail() before.
-	  *
-	  */
-	int param(int i=1) {return (optindex+i >= argc) ? argc : (optindex+i);}
-
-	/** Returns the number of parameters given after the options.
-	 *
-	 * Use param() to get the index to the first of these parameters.
-	 */
-	int avail() {return argc - optindex - 1;}
-
+	/** The arguments given on the commandline. */
+	std::vector <std::string> arguments;
 };
 
 std::ostream & operator<< (std::ostream & os, Cmdline & cl);

@@ -13,16 +13,10 @@ using namespace kdb;
 InfoCommand::InfoCommand()
 {}
 
-int InfoCommand::execute(int argc, char** argv)
+int InfoCommand::execute(Cmdline const& cl)
 {
-	if (argc != 3)
-	{
-		cerr << "Please provide a module name" << endl;
-		cerr << "Usage: info <name>" << endl;
-		return 1;
-	}
-
-	std::string name = argv[2];
+	if (cl.arguments.size() != 1) throw invalid_argument("Need 1 argument");
+	std::string name = cl.arguments[0];
 
 	KeySet conf;
 	Key parentKey(std::string("system/elektra/modules/") + name, KEY_END);
