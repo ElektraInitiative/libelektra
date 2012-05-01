@@ -1,8 +1,8 @@
-elektra (0.8.0rc2-1) unstable; urgency=low
+elektra (0.8.0rc3-1) unstable; urgency=low
 
-  * Elektra 0.8.0 rc2 release.
+  * New upstream version.
 
- -- Markus Raab <elektra@markus-raab.org>  Mon, 23 Apr 2012 15:19:20
+ -- Markus Raab <debian@markus-raab.org>  Tue, 01 May 2012 23:15:48 +0200
 
 elektra (0.8.0rc1-1) unstable; urgency=low
 

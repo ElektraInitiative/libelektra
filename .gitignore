@@ -13,5 +13,8 @@ build*
 .ctags
 .gdb_history
 
+#do not commit core dumps
+core
+
 #boost copy
 src/include/boost
