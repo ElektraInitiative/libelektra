@@ -4,6 +4,7 @@
 
 #include <string.h>
 
+#include <kdberrors.h>
 #include <kdbmodule.h>
 #include <exported_symbols.h>
 
@@ -66,13 +67,10 @@ elektraPluginFactory elektraModulesLoad (KeySet *modules, const char *name, Key 
 
 	if (handle == NULL)
 	{
-		if (error)
-		{
-			keySetMeta (error, "error", "description reason module");
-			keySetMeta (error, "error/description", "could not load module, static load failed");
-			keySetMeta (error, "error/reason", "no such module");
-			keySetMeta (error, "error/module", "modules");
-		}
+		char *errorText = malloc(strlen(name) + 40);
+		strcpy (errorText, "Did not find module ");
+		strcat (errorText, name);
+		ELEKTRA_SET_ERROR(70, error, errorText);
 		keyDel (moduleKey);
 		return 0;
 	}
@@ -81,13 +79,7 @@ elektraPluginFactory elektraModulesLoad (KeySet *modules, const char *name, Key 
 
 	if (module == NULL)
 	{
-		if (error)
-		{
-			keySetMeta (error, "error", "description reason module");
-			keySetMeta (error, "error/description", "could not get pointer to factory, static sym failed");
-			keySetMeta (error, "error/reason", "no such symbol elektraPluginSymbol");
-			keySetMeta (error, "error/module", "modules");
-		}
+		ELEKTRA_SET_ERROR(71, error, "no such symbol elektraPluginSymbol");
 		return 0;
 	}
 

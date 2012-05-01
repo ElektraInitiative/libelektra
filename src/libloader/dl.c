@@ -92,7 +92,7 @@ int elektraModulesClose (KeySet *modules, Key *errorKey)
 
 	if (!root)
 	{
-		ELEKTRA_SET_ERROR(3, errorKey, "elektraModulesClose");
+		ELEKTRA_SET_ERROR(3, errorKey, "root key not found");
 		return -1;
 	}
 

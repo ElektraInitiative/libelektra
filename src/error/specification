@@ -405,4 +405,18 @@ severity:warning
 ingroup:plugin
 module:type
 
+number:70
+ingroup:modules
+description:could not load module, static load failed
+module:static
+class:FailedLoadModuleError
+extends:ModuleError
+
+number:71
+ingroup:modules
+description:could not get pointer to factory, static sym failed
+module:dl
+class:FailedResolveSymbolError
+extends:ModuleError
+
 
