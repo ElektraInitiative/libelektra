@@ -13,7 +13,7 @@ Cmdline::Cmdline (int argc, char** argv,
 		string const& pHelpText) :
 	helpText(pHelpText),
 	invalidOpt(false),
-	format("dump"),
+	force(),
 	interactive(),
 	recursive(),
 	humanReadable(),
@@ -26,7 +26,8 @@ Cmdline::Cmdline (int argc, char** argv,
 	command()
 {
 	extern int optind;
-	extern char *optarg;
+	// for optional parameters you need:
+	// extern char *optarg;
 
 	int index = 0;
 	int opt;
@@ -43,9 +44,9 @@ Cmdline::Cmdline (int argc, char** argv,
 	}
 	if (acceptedOptions.find('f')!=string::npos)
 	{
-		option o = {"format", required_argument, 0, 'f'};
+		option o = {"force", required_argument, 0, 'f'};
 		long_options.push_back(o);
-		helpText += "-f --format              a plugin to be used to format the conf\n";
+		helpText += "-f --force               force the action to be done\n";
 	}
 	if (acceptedOptions.find('h')!=string::npos)
 	{
@@ -92,7 +93,7 @@ Cmdline::Cmdline (int argc, char** argv,
 	{
 		switch (opt)
 		{
-		case 'f': format = optarg; break;
+		case 'f': force = true; break;
 		case 'i': interactive = true; break;
 		case 'r': recursive = true; break;
 		case 'h': humanReadable = true; break;

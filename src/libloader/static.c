@@ -2,6 +2,7 @@
 #include "kdbconfig.h"
 #endif
 
+#include <stdlib.h>
 #include <string.h>
 
 #include <kdberrors.h>
@@ -71,6 +72,7 @@ elektraPluginFactory elektraModulesLoad (KeySet *modules, const char *name, Key 
 		strcpy (errorText, "Did not find module ");
 		strcat (errorText, name);
 		ELEKTRA_SET_ERROR(70, error, errorText);
+		free (errorText);
 		keyDel (moduleKey);
 		return 0;
 	}

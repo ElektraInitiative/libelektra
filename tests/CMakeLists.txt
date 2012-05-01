@@ -66,10 +66,10 @@ endif (BUILD_FULL)
 
 
 #TODO should be in kdb test folder!
-#configure_file(
-#		test_script.sh.in
-#		"${PROJECT_BINARY_DIR}/tests/test_script.sh"
-#	      )
-#add_test (test_script "${PROJECT_BINARY_DIR}/tests/test_script.sh" "${PROJECT_BINARY_DIR}/tests")
+configure_file(
+		test_script.sh.in
+		"${PROJECT_BINARY_DIR}/tests/test_script.sh"
+	      )
+add_test (test_script "${PROJECT_BINARY_DIR}/tests/test_script.sh" "${PROJECT_BINARY_DIR}/tests")
 
 include_directories ("${PROJECT_SOURCE_DIR}/tests")

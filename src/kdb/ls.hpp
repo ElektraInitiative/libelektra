@@ -11,16 +11,11 @@ class LsCommand : public Command
 
 public:
 	LsCommand();
-	int execute(int argc, char**argv);
 	~LsCommand();
+
 	virtual std::string getShortOptions()
 	{
 		return "";
-	}
-
-	virtual unsigned int getNrOfArguments()
-	{
-		return 1;
 	}
 
 	virtual std::string getShortHelpText()

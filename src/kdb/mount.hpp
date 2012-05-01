@@ -42,20 +42,15 @@ struct PathInvalidException : public CommandException
 class MountCommand : public Command
 {
 	static std::string root;
+	void outputMtab();
+
 public:
 	MountCommand();
-	bool checkFile(std::string file);
-	void outputMtab();
-	int execute(int argc, char** argv);
 	~MountCommand();
+
 	virtual std::string getShortOptions()
 	{
 		return "i";
-	}
-
-	virtual unsigned int getNrOfArguments()
-	{
-		return 0;
 	}
 
 	virtual std::string getShortHelpText()

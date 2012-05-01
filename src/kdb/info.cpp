@@ -15,7 +15,10 @@ InfoCommand::InfoCommand()
 
 int InfoCommand::execute(Cmdline const& cl)
 {
-	if (cl.arguments.size() != 1) throw invalid_argument("Need 1 argument");
+	if (cl.arguments.size() != 1)
+	{
+		throw invalid_argument("Need 1 argument");
+	}
 	std::string name = cl.arguments[0];
 
 	KeySet conf;
@@ -27,7 +30,7 @@ int InfoCommand::execute(Cmdline const& cl)
 	{
 		cerr << "Module does not seem to be loaded." << endl;
 		cerr << "Now in fallback code. Will directly load config from plugin." << endl;
-		// TODO: use plugin_loader here!
+
 		Modules modules;
 		std::auto_ptr<Plugin> plugin = modules.load(name);
 		// TODO: memory leak??

@@ -213,175 +213,6 @@ BEGIN_TEST(parse_spaces_quotes)
    Ni_node node = Ni_New();
    assert(node != NULL);
 
-   int error = Ni_ReadFile(node, "ni_parse_spaces_quotes.ini", 1);
-   assert(error != 0);
-
-   int children = Ni_GetNumChildren(node);
-   TEST_COND(children == 24);
-
-   int i;
-   for(i = 0; i < 24; ++i)
-   {
-      Ni_node child = Ni_GetChild(node, names[i], -1, 0, NULL);
-      TEST_COND(child != NULL);
-
-      const char * value = Ni_GetValue(child, NULL);
-      TEST_COND((!value && !values[i]) || (value && values[i] && !strcmp(value, values[i])));
-   }
-
-   Ni_Free(node);
-END_TEST()
-
-BEGIN_TEST(parse_children)
-   Ni_node node = Ni_New();
-   assert(node != NULL);
-
-   int error = Ni_ReadFile(node, "ni_parse_children.ini", 1);
-   assert(error != 0);
-
-   int children = Ni_GetNumChildren(node);
-   TEST_COND(children == 3);
-
-   Ni_node child = Ni_GetChild(node, "1", -1, 0, NULL);
-   TEST_COND(child != NULL);
-
-   const char * value = Ni_GetValue(child, NULL);
-   TEST_COND(value && !strcmp(value, "has a value and children"));
-
-   children = Ni_GetNumChildren(child);
-   TEST_COND(children == 2);
-
-   Ni_node child2 = Ni_GetChild(child, "2", -1, 0, NULL);
-   TEST_COND(child2 != NULL);
-
-   value = Ni_GetValue(child2, NULL);
-   TEST_COND(value == NULL);
-
-   children = Ni_GetNumChildren(child2);
-   TEST_COND(children == 0);
-
-   child2 = Ni_GetChild(child, "2 also", -1, 0, NULL);
-   TEST_COND(child2 != NULL);
-
-   value = Ni_GetValue(child2, NULL);
-   TEST_COND(value == NULL);
-
-   children = Ni_GetNumChildren(child2);
-   TEST_COND(children == 0);
-
-   child = Ni_GetChild(node, "1 again", -1, 0, NULL);
-   TEST_COND(child != NULL);
-
-   value = Ni_GetValue(child, NULL);
-   TEST_COND(value == NULL);
-
-   children = Ni_GetNumChildren(child);
-   TEST_COND(children == 1);
-
-   child2 = Ni_GetChild(child, NULL, 0, 0, NULL);
-   TEST_COND(child2 != NULL);
-
-   value = Ni_GetValue(child2, NULL);
-   TEST_COND(value == NULL);
-
-   children = Ni_GetNumChildren(child2);
-   TEST_COND(children == 1);
-
-   Ni_node child3 = Ni_GetChild(child2, "3 now", -1, 0, NULL);
-   TEST_COND(child3 != NULL);
-
-   value = Ni_GetValue(child3, NULL);
-   TEST_COND(value == NULL);
-
-   children = Ni_GetNumChildren(child3);
-   TEST_COND(children == 1);
-
-   child2 = Ni_GetChild(child3, NULL, 0, 0, NULL);
-   TEST_COND(child2 != NULL);
-
-   value = Ni_GetValue(child2, NULL);
-   TEST_COND(value == NULL);
-
-   children = Ni_GetNumChildren(child2);
-   TEST_COND(children == 1);
-
-   child3 = Ni_GetChild(child2, "5", -1, 0, NULL);
-   TEST_COND(child3 != NULL);
-
-   value = Ni_GetValue(child3, NULL);
-   TEST_COND(value == NULL);
-
-   children = Ni_GetNumChildren(child3);
-   TEST_COND(children == 0);
-
-   child = Ni_GetChild(node, "back to 1", -1, 0, NULL);
-   TEST_COND(child != NULL);
-
-   value = Ni_GetValue(child, NULL);
-   TEST_COND(value == NULL);
-
-   children = Ni_GetNumChildren(child);
-   TEST_COND(children == 1);
-
-   child2 = Ni_GetChild(child, "and 2", -1, 0, NULL);
-   TEST_COND(child2 != NULL);
-
-   value = Ni_GetValue(child2, NULL);
-   TEST_COND(value == NULL);
-
-   children = Ni_GetNumChildren(child2);
-   TEST_COND(children == 0);
-
-   Ni_Free(node);
-END_TEST()
-
-BEGIN_TEST(parse_oddities)
-   char * names[10] =
-   {
-      "",
-      "also not ignored",
-      "a",
-      "concat",
-      "multi",
-      "escapes",
-      "=",
-      "[not a section]",
-      "loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong",
-      "something"
-   };
-   char * values[10] =
-   {
-      "not ignored",
-      "",
-      "multi line",
-      "enated",
-      "line\ninside quotes",
-      "\\\a\r\n\x11\b\056\t\\t\\xj",
-      "; not a comment",
-      "yeah",
-      "truncated",
-      ""
-   };
-
-   Ni_node node = Ni_New();
-   assert(node != NULL);
-
-   int error = Ni_ReadFile(node, "ni_parse_oddities.ini", 1);
-   assert(error != 0);
-
-   int children = Ni_GetNumChildren(node);
-   TEST_COND(children == 10);
-
-   int i;
-   for(i = 0; i < 10; ++i)
-   {
-      Ni_node child = Ni_GetChild(node, names[i], -1, 0, NULL);
-      TEST_COND(child != NULL);
-
-      const char * value = Ni_GetValue(child, NULL);
-      TEST_COND(value && !strcmp(value, values[i]));
-   }
-
    Ni_Free(node);
 END_TEST()
 
@@ -615,38 +446,6 @@ BEGIN_TEST(parse_output)
 #  undef NUM_parse_output_NODES
 END_TEST()
 
-BEGIN_TEST(big_oct)
-   char * names[9] =
-   {
-      "a", "b", "c", "d", "e", "f", "g", "h", "i"
-   };
-   char * values[9] =
-   {
-      "\xff", "\xbf", "\x7f", "\x3f", "\xff", "\xbf", "\x7f", "\x9c", "\x1a"
-   };
-
-   Ni_node node = Ni_New();
-   assert(node != NULL);
-
-   int error = Ni_ReadFile(node, "ni_big_oct.ini", 1);
-   assert(error != 0);
-
-   int children = Ni_GetNumChildren(node);
-   TEST_COND(children == 9);
-
-   int i;
-   for(i = 0; i < 9; ++i)
-   {
-      Ni_node child = Ni_GetChild(node, names[i], -1, 0, NULL);
-      TEST_COND(child != NULL);
-
-      const char * value = Ni_GetValue(child, NULL);
-      TEST_COND(value && !strcmp(value, values[i]));
-   }
-
-   Ni_Free(node);
-END_TEST()
-
 int main(int argc, char** argv)
 {
 	printf("NICKEL TESTS\n");
@@ -657,12 +456,9 @@ int main(int argc, char** argv)
 	TEST(tree);
 	TEST(values);
 	TEST(parse_spaces_quotes);
-	TEST(parse_children);
-	TEST(parse_oddities);
 	TEST(output);
 	TEST(output_modified);
 	TEST(parse_output);
-	TEST(big_oct);
 
 	printf("%s: %s\n", argv0,
 		(any_fail ? "ONE OR MORE TESTS FAILED" : "all tests passed"));

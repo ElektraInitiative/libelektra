@@ -1,33 +1,33 @@
-#ifndef REMOVE_HPP
-#define REMOVE_HPP
+#ifndef MV_HPP
+#define MV_HPP
 
 #include <command.hpp>
 
 #include <kdb.hpp>
 
-class RemoveCommand : public Command
+class MvCommand : public Command
 {
 	kdb::KDB kdb;
 
 public:
-	RemoveCommand();
-	~RemoveCommand();
+	MvCommand();
+	~MvCommand();
 
 	virtual std::string getShortOptions()
 	{
-		return "r";
+		return "rv";
 	}
 
 	virtual std::string getShortHelpText()
 	{
-		return "Remove key(s) from key database.";
+		return "Move configuration.";
 	}
 
 	virtual std::string getLongHelpText()
 	{
 		return
-			"<name>\n"
-			"Remove key(s) from key database.\n";
+			"<source> <dest>\n"
+			"Move configuration within the key database.\n";
 	}
 
 	virtual int execute (Cmdline const& cmdline);

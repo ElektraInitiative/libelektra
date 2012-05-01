@@ -14,13 +14,16 @@ ExportCommand::ExportCommand()
 
 int ExportCommand::execute(Cmdline const& cl)
 {
-	if (cl.arguments.size() != 1) return -1;
+	size_t argc = cl.arguments.size();
+	if (argc != 1 && argc != 2)
+	{
+		throw invalid_argument("need 1 or 2 arguments");
+	}
 
 	Key root (cl.arguments[0], KEY_END);
 	if (!root.isValid())
 	{
-		cerr << cl.arguments[0] << " is not a valid root name" << endl;
-		return -1;
+		throw invalid_argument ("root key is not a valid key name");
 	}
 
 	kdb.get(ks, root);
@@ -28,8 +31,11 @@ int ExportCommand::execute(Cmdline const& cl)
 
 	KeySet part (ks.cut(root));
 
+	string format = "dump";
+	if (argc == 2) format = cl.arguments[1];
+
 	Modules modules;
-	auto_ptr<Plugin> plugin = modules.load(cl.format);
+	auto_ptr<Plugin> plugin = modules.load(format);
 
 	Plugin::func_t fun = plugin->getSymbol ("serialize");
 	Plugin::serialize_t ser_fun = reinterpret_cast<Plugin::serialize_t> (fun);

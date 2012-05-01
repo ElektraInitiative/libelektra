@@ -12,15 +12,10 @@ class InfoCommand : public Command
 public:
 	InfoCommand();
 	~InfoCommand();
-	int execute(int argc, char**argv);
+
 	virtual std::string getShortOptions()
 	{
 		return "";
-	}
-
-	virtual unsigned int getNrOfArguments()
-	{
-		return 1;
 	}
 
 	virtual std::string getShortHelpText()
@@ -34,6 +29,7 @@ public:
 			"<name>\n"
 			"Uses the configuration below system/elektra/modules/\n"
 			"to print some info about an plugin.\n"
+			"\n"
 			"If this information could not be found\n"
 			"(e.g. plugin not mounted anywhere)\n"
 			"the module will be loaded.\n";

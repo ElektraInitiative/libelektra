@@ -15,12 +15,7 @@ public:
 
 	virtual std::string getShortOptions()
 	{
-		return "f";
-	}
-
-	virtual unsigned int getNrOfArguments()
-	{
-		return 1;
+		return "";
 	}
 
 	virtual std::string getShortHelpText()
@@ -31,7 +26,7 @@ public:
 	virtual std::string getLongHelpText()
 	{
 		return
-			"<source>\n"
+			"<source> [<format>]\n"
 			"The export utility allows you to export\n"
 			"all or parts of the configuration to stdout.\n"
 			"\n"

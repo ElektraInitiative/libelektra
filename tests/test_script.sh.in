@@ -15,8 +15,6 @@ export HOME
 
 VALUE="value"
 ROOT="user/tests/script"
-FILE="$HOME/.kdb/$ROOT/value"
-DIR="$HOME/.kdb/$ROOT"
 USER="`id -un`"
 GROUP="`id -gn`"
 DATE="`date \"+%b %d %H:%M\"`"
@@ -49,50 +47,40 @@ echo
 echo ELEKTRA SCRIPTS TESTS
 echo
 
-echo "testing set and get keys"
+echo "testing set and get commands"
 
-@KDB_COMMAND@ -m "775" set $ROOT
+@KDB_COMMAND@ set $ROOT "root"
 exit_if_fail "could not set root"
 
-[ -d "$DIR" ]
-succeed_if "Directory not existing"
+[ "x`@KDB_COMMAND@ get $ROOT 2> /dev/null`" = "xroot" ]
+succeed_if "could not set root"
 
 @KDB_COMMAND@ set "$ROOT/value" "$VALUE"
 exit_if_fail "could not set value"
 
-[ -f "$FILE" ]
-succeed_if "File not existing"
+[ "x`@KDB_COMMAND@ get $ROOT/value 2> /dev/null`" = "x$VALUE" ]
+exit_if_fail "cant get $ROOT/value"
 
-#echo "testing ls subcommand"
+echo "testing ls command"
 
-#[ "x`@KDB_COMMAND@ ls $ROOT 2> /dev/null`" = "x$ROOT/value" ]
-#succeed_if "cant ls $ROOT (may mean that $ROOT folder is not clean)"
+[ "x`@KDB_COMMAND@ ls $ROOT/value 2> /dev/null`" = "x$ROOT/value" ]
+succeed_if "cant ls $ROOT (may mean that $ROOT folder is not clean)"
 
-#[ "x`@KDB_COMMAND@ get $ROOT/value 2> /dev/null`" = "x$VALUE" ]
-#exit_if_fail "cant get $ROOT/value"
-
-#[ "x`@KDB_COMMAND@ get -f $ROOT/value 2> /dev/null`" = "x$VALUE" ]
-#succeed_if "-f option"
-
-#[ "x`@KDB_COMMAND@ get -d $ROOT/value 2> /dev/null`" = "x$ROOT/value=$VALUE" ]
-#succeed_if "-d option"
-
-#[ "x`@KDB_COMMAND@ get -l $ROOT/value 2> /dev/null`" = "x$ROOT/value=$VALUE" ]
-#succeed_if "-l option"
-
-#[ "x`@KDB_COMMAND@ get -s $ROOT/value 2> /dev/null`" = "xvalue=\"$VALUE\"" ]
-#succeed_if "-s option"
+echo "testing rm command"
 
 @KDB_COMMAND@ rm $ROOT/value
-succeed_if "can remove user/test/value"
+succeed_if "could not remove user/test/value"
 
-[ ! -f "$FILE" ]
-succeed_if "File yet existing after delete"
+@KDB_COMMAND@ get $ROOT/value 2> /dev/null
+[ $? != "0" ]
+succeed_if "got removed key $ROOT/value"
 
 @KDB_COMMAND@ rm $ROOT
+succeed_if "could not remove user/test/value"
 
-[ ! -d "$DIR" ]
-succeed_if "Directory yet existing after delete"
+@KDB_COMMAND@ get $ROOT/value 2> /dev/null
+[ $? != "0" ]
+succeed_if "got removed key $ROOT"
 
 
 #############

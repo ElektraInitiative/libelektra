@@ -12,14 +12,10 @@ class GetCommand : public Command
 public:
 	GetCommand();
 	~GetCommand();
+
 	virtual std::string getShortOptions()
 	{
 		return "";
-	}
-
-	virtual unsigned int getNrOfArguments()
-	{
-		return 1;
 	}
 
 	virtual std::string getShortHelpText()

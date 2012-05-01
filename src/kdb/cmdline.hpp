@@ -29,7 +29,7 @@ public:
 	bool invalidOpt;
 
 	/*XXX: Step 1: add your option here.*/
-	std::string format; /*!< a plugin to be used to format the conf. */
+	bool force; /*!< Force the action. */
 	bool interactive; /*!< Interactive mode. */
 	bool recursive; /*!< Recursive mode. */
 	bool humanReadable; /*!< Human readable values are preferred. */
