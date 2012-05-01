@@ -1,4 +1,4 @@
-#include <export.hpp>
+#include <import.hpp>
 
 #include <kdb.hpp>
 #include <modules.hpp>
@@ -9,10 +9,10 @@
 using namespace kdb;
 using namespace std;
 
-ExportCommand::ExportCommand()
+ImportCommand::ImportCommand()
 {}
 
-int ExportCommand::execute(Cmdline const& cl)
+int ImportCommand::execute(Cmdline const& cl)
 {
 	size_t argc = cl.arguments.size();
 	if (argc != 1 && argc != 2)
@@ -29,17 +29,19 @@ int ExportCommand::execute(Cmdline const& cl)
 	kdb.get(ks, root);
 	printWarnings(root);
 
-	KeySet part (ks.cut(root));
+	KeySet importedKeys;
 
 	string format = "dump";
 	if (argc == 2) format = cl.arguments[1];
 
 	Modules modules;
 	auto_ptr<Plugin> plugin = modules.load(format);
-	plugin->serialize(part);
+	plugin->unserialize(importedKeys);
+
+	kdb.set(importedKeys, root);
 
 	return 0;
 }
 
-ExportCommand::~ExportCommand()
+ImportCommand::~ImportCommand()
 {}

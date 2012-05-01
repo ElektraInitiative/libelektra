@@ -460,47 +460,15 @@ int ksFromXMLfile(KeySet *ks, const char *filename)
 
 
 /**
- * FIXME: not working when fd is stdin
  * Given a file descriptor (that can be @p stdin) for an XML file, validate
  * schema, process nodes, convert and save it in the @p ks KeySet.
  *
  * @param ks keyset
- * @param fd Filedeskriptor?? should be FILE*
+ * @param fd POSIX file descriptior
  * @ingroup stream
  */
 int ksFromXML(KeySet *ks, int fd)
 {
-	/* Start of support for old XML library (no xmlReaderForFd()) */
-	char filename[]="/var/tmp/kdbeditXXXXXX";
-	FILE *xmlfile=0;
-
-	/* xmlfile=fopen(tmpnam("/var/tmp/kdbedit"),"rw+"); */
-	xmlfile = tmpfile();
-	while (! feof(xmlfile)) {
-		char buffer[1000];
-		ssize_t readed, writen;
-
-		readed=read(fd,buffer,sizeof(buffer));
-		if (readed<0) {
-			perror("kdb");
-			fclose(xmlfile);
-			remove(filename);
-			return 1;
-		}
-
-		writen=fwrite(buffer,sizeof(char),readed,xmlfile);
-		if (writen<0) {
-			perror("kdb");
-			fclose(xmlfile);
-			remove(filename);
-			return 1;
-		}
-	}
-	fclose(xmlfile);
-	return ksFromXMLfile(ks,filename);
-
-	/* This code requires a newer version of XML library, not present in all
-	   Linux/BSD/Unix distros. Don't use it yet.
 	// a complete XML document is expected
 	xmlTextReaderPtr reader=0;
 	int ret;
@@ -512,6 +480,5 @@ int ksFromXML(KeySet *ks, int fd)
 		return 1;
 	}
 	return ret;
-	// end of newer code */
 }
 

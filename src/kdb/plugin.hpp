@@ -142,9 +142,8 @@ struct VersionInfoMismatch: public PluginCheckException
 
 class Plugin
 {
-public:
+private:
 	typedef void (*func_t)();
-	typedef int  (*serialize_t)(std::ostream &, ckdb::Key *, ckdb::KeySet *);
 
 private:
 	ckdb::Plugin *plugin;
@@ -227,6 +226,17 @@ public:
 		if (symbols.find (which) == symbols.end()) throw MissingSymbol(which);
 		return symbols[which];
 	}
+
+	/**
+	  * Serializes to stdout with any serialize method found in the
+	  * plugin.
+	  */
+	void serialize (kdb::KeySet & ks);
+	/**
+	  * Unserializes to stdout with any serialize method found in the
+	  * plugin.
+	  */
+	void unserialize (kdb::KeySet & ks);
 
 	/* Returns the name of the plugin */
 	std::string name();

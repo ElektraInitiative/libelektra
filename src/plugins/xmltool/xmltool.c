@@ -40,7 +40,7 @@ int elektraXmltoolGet(Plugin *handle, KeySet *returned, Key *parentKey)
 				KEY_FUNC, elektraXmltoolGet, KEY_END),
 			keyNew ("system/elektra/modules/xmltool/exports/set",
 				KEY_FUNC, elektraXmltoolSet, KEY_END),
-			keyNew ("system/elektra/modules/xmltool/exports/ksFromXMLfile",
+			keyNew ("system/elektra/modules/xmltool/exports/ksFromXML",
 				KEY_FUNC, ksFromXMLfile, KEY_END),
 			keyNew ("system/elektra/modules/xmltool/exports/ksToStream",
 				KEY_FUNC, ksToStream, KEY_END),

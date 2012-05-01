@@ -44,7 +44,7 @@ Cmdline::Cmdline (int argc, char** argv,
 	}
 	if (acceptedOptions.find('f')!=string::npos)
 	{
-		option o = {"force", required_argument, 0, 'f'};
+		option o = {"force", no_argument, 0, 'f'};
 		long_options.push_back(o);
 		helpText += "-f --force               force the action to be done\n";
 	}

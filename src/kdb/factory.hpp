@@ -27,6 +27,8 @@
 #include <mv.hpp>
 #include <fstab.hpp>
 #include <export.hpp>
+#include <import.hpp>
+#include <convert.hpp>
 
 class Instancer
 {
@@ -72,6 +74,8 @@ public:
 		m_factory.insert(std::make_pair("vset", new Cnstancer<ValidationCommand>()));
 		m_factory.insert(std::make_pair("fstab", new Cnstancer<FstabCommand>()));
 		m_factory.insert(std::make_pair("export", new Cnstancer<ExportCommand>()));
+		m_factory.insert(std::make_pair("import", new Cnstancer<ImportCommand>()));
+		m_factory.insert(std::make_pair("convert", new Cnstancer<ConvertCommand>()));
 	}
 
 	~Factory()

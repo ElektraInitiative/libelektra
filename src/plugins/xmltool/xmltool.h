@@ -30,6 +30,7 @@
 #include <kdbtools.h>
 
 ssize_t ksToStream(const KeySet *ks, FILE* stream, option_t options);
+int ksFromXML(KeySet *ks, int fd);
 
 int elektraXmltoolOpen(Plugin *handle, Key *errorKey);
 int elektraXmltoolClose(Plugin *handle, Key *errorKey);
