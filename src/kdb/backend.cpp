@@ -90,7 +90,8 @@ void Backend::tryPlugin (std::string pluginName)
 			KEY_END),
 		KS_END);
 
-	auto_ptr<Plugin>plugin (new Plugin (realPluginName, modules, testConfig));
+	// TODO: use PluginLoader here
+	std::auto_ptr<Plugin> plugin (new Plugin (realPluginName, modules, testConfig));
 	plugin->loadInfo();
 	plugin->parse();
 	vector<string> warnings;

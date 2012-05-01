@@ -1,12 +1,11 @@
 #include <info.hpp>
 
 #include <kdb.hpp>
+#include <plugin.hpp>
+#include <modules.hpp>
 
 #include <iostream>
 
-#include <kdbmodule.h>
-
-#include <plugin.hpp>
 
 using namespace std;
 using namespace kdb;
@@ -19,7 +18,7 @@ int InfoCommand::execute(int argc, char** argv)
 	if (argc != 3)
 	{
 		cerr << "Please provide a module name" << endl;
-		cerr << "Usage: get <name>" << endl;
+		cerr << "Usage: info <name>" << endl;
 		return 1;
 	}
 
@@ -32,23 +31,13 @@ int InfoCommand::execute(int argc, char** argv)
 
 	if (!conf.lookup(parentKey))
 	{
-		cerr << "Seems like module configuration is broken." << endl;
-		cerr << "This presents a severe problem for most application." << endl;
-		cerr << "Maybe the mountpoint configuration is broken." << endl;
-		cerr << "Now in fallback code. Will directly load config from plugin" << endl;
-		KeySet modules;
-		ckdb::elektraModulesInit(modules.getKeySet(), 0);
-		KeySet testConfig(1,
-			*Key(	"system/test",
-				KEY_VALUE, "test",
-				KEY_COMMENT, "Test config for loading a plugin.",
-				KEY_END),
-			KS_END);
-		Plugin plugin (name, modules, testConfig);
-		plugin.loadInfo();
-		ckdb::elektraModulesClose(modules.getKeySet(), 0);
-		// TODO: memory leak
-		conf.append(plugin.getInfo());
+		cerr << "Module does not seem to be loaded." << endl;
+		cerr << "Now in fallback code. Will directly load config from plugin." << endl;
+		// TODO: use plugin_loader here!
+		Modules modules;
+		std::auto_ptr<Plugin> plugin = modules.load(name);
+		// TODO: memory leak??
+		conf.append(plugin->getInfo());
 	}
 
 	Key root (std::string("system/elektra/modules/") + name + "/exports", KEY_END);

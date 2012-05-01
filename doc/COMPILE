@@ -1,6 +1,6 @@
 == PREPARATION ==
 
-Elektra is now using cmake.
+Elektra is using cmake.
 
 To compile it, please create a folder:
 
@@ -14,20 +14,19 @@ go into the folder
 
 == RUN CMAKE ==
 
-tested cmake version: 2.6-patch 0
+tested cmake version 2.6-patch 0 and version 2.8.2
 
 run ccmake:
 
  ccmake ..
 
-press c to configure and then e to exit
+press c to configure
 
 if you want to create a package afterwards it is ok to use
 pathes that you can write to (e.g. CMAKE_INSTALL_PREFIX /home/markus/bin)
 
 working plugins are:
-dump;resolver;hidden;iconv;syslog;error;validation;xmltool;tracer;timeofday;dbus;glob;hosts;network;type;struct;path;fstab;ccode;
-simpleini;tcl;hexcode;null;ni
+dump;resolver;hidden;iconv;syslog;error;validation;xmltool;tracer;timeofday;dbus;glob;hosts;network;type;struct;path;fstab;ccode;simpleini;tcl;hexcode;null;ni
 
 BACKEND_DEFAULT only dump is tested currently
 
@@ -37,21 +36,24 @@ DEBUG_BUILD and ELEKTRA_VERBOSE_BUILD: make the library to output some or a lot 
 
 KDB_DB_SYSTEM is the path where the system configuration is
 
-WITH_DOC: build documentation with doxygen
-kdb does not have docu at the moment
+BUILD_DOC: build documentation with doxygen
+ the kdb tool does only have the integrated docu at the moment
 
 
 then press c again and then g to generate
+finally press e to exit
 
 
 
 == BUILDING ==
 
-with
+To build the source use:
 
  make
 
-you build the source (you can pass -j or similar)
+You can pass:
+ -j for parallel builds (use nr of CPUs+1)
+ VERBOSE=1 to see the invocations of the compiler
 
 
 

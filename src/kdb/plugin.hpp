@@ -142,12 +142,15 @@ struct VersionInfoMismatch: public PluginCheckException
 
 class Plugin
 {
+public:
+	typedef void (*func_t)();
+	typedef int  (*serialize_t)(std::ostream &, ckdb::Key *, ckdb::KeySet *);
+
 private:
 	ckdb::Plugin *plugin;
 	std::string pluginName;
 	kdb::KeySet info;
 
-	typedef void (*func_t)();
 	std::map<std::string, func_t> symbols;
 	std::map<std::string, std::string> infos;
 

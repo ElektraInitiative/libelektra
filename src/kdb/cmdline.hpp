@@ -15,11 +15,15 @@
 
 class Cmdline
 {
+private:
 	int optindex;
 	int argc;
 
 public:
-	Cmdline (int argc, char** argv);
+	Cmdline (int argc, char** argv,
+			unsigned int nrAcceptedOptions,
+			std::string const& shortAcceptedOptions,
+			std::string const& helpText);
 	~Cmdline () {};
 
 	/** At least one of the options was invalid */
@@ -38,6 +42,9 @@ public:
 	  * This is the second parameter. */
 	std::string utilName;
 
+	/** The help text to printed out. */
+	std::string helpText;
+
 	/** Returns first parameter that is not an option.
 	  * @param i Return the i-th instead of the first parameter.
 	  *
@@ -53,7 +60,8 @@ public:
 	 */
 	int avail() {return argc - optindex - 1;}
 
-	void printDebug();
 };
+
+std::ostream & operator<< (std::ostream & os, Cmdline & cl);
 
 #endif

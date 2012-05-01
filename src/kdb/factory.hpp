@@ -26,6 +26,7 @@
 #include <fstab.hpp>
 #include <metals.hpp>
 #include <getpw.hpp>
+#include <export.hpp>
 
 class Instancer
 {
@@ -72,6 +73,8 @@ public:
 		m_factory.insert(std::make_pair("meta-ls", new Cnstancer<MetaLsCommand>()));
 		m_factory.insert(std::make_pair("mv", new Cnstancer<CpCommand>()));
 		m_factory.insert(std::make_pair("getpw", new Cnstancer<GetPwCommand>()));
+		m_factory.insert(std::make_pair("export", new Cnstancer<ExportCommand>()));
+		m_factory.insert(std::make_pair("serialize", new Cnstancer<ExportCommand>()));
 	}
 
 	~Factory()
