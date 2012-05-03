@@ -17,8 +17,8 @@
 #include <kdbplugin.h>
 
 
-#define BACKENDNAME "doc"
-#define BACKENDVERSION "1.0.0"
+#define DOC_PLUGIN_NAME "doc"
+#define DOC_PLUGIN_VERSION "1.0.0"
 
 
 /**
@@ -469,12 +469,12 @@ int elektraPluginSet(Plugin *handle, KeySet *returned, Key *parentKey)
  */
 Plugin *ELEKTRA_PLUGIN_EXPORT(doc)
 {
-	return elektraPluginExport(BACKENDNAME,
+	return elektraPluginExport(DOC_PLUGIN_NAME,
 		ELEKTRA_PLUGIN_OPEN,	&elektraPluginOpen,
 		ELEKTRA_PLUGIN_CLOSE,	&elektraPluginClose,
 		ELEKTRA_PLUGIN_GET,	&elektraPluginGet,
 		ELEKTRA_PLUGIN_SET,	&elektraPluginSet,
-		ELEKTRA_PLUGIN_VERSION,	BACKENDVERSION,
+		ELEKTRA_PLUGIN_VERSION,	DOC_PLUGIN_VERSION,
 		ELEKTRA_PLUGIN_AUTHOR,	"Full Name <email@libelektra.org>",
 		ELEKTRA_PLUGIN_LICENCE,	"BSD",
 		ELEKTRA_PLUGIN_DESCRIPTION,	"Add description here",

@@ -82,4 +82,3 @@ if (UNIX)
 endif (UNIX)
 
 include (CPack)
-

@@ -16,7 +16,7 @@ DOWNLOAD
 Elektra git repository with the latest source code can be checked out
 with:
 
- git-clone git://www.markus-raab.org/git/elektra
+ git-clone git://gitorious.org/elektra-initiative/libelektra.git
 
 
 
@@ -25,22 +25,12 @@ COMPILE
 
 See the COMPILE document for informations how to compile the software.
 
+
 INSTALL
 =======
 
 The preferred way to install Elektra is by using packages provided for
 your distribution.
 
-If there are none, you might want to try
+If there are no packages available, see the INSTALL document.
 
- cpack
-
-which should create a package for distributions where a Generator is
-implemented. See cmake/ElektraPackaging.cmake for available Generators.
-
-If everything else fails, you can install the software by typing
-
- make install
-
-Make sure that the pathes to install are configured correctly. It should
-be either the home directory or /usr/local.

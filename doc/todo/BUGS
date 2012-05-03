@@ -1,38 +1,17 @@
-This is a pre-alpha Version, so be beware of bugs!
 The thesis from Markus Raab (see in the folder papers)
 describes what should work - but there are some known
 BUGS described in this file.
 
-missing for alpha:
-	decide what needs to be fixed for first alpha release
-	write documents, announcements
-	build system issues
-	how to kick out non-working plugins
-	People interested to change something should look at it now
-	-> + timeline for release candidates
-
-
-= ALPHA =
-
-needs to be fixed before alpha release
 
 == DOCUMENTATION ==
 
 document the options of the kdb tool (for the user: man pages + html)
 
-internal documentation of the kdb tool
-
 documentation of the c++ binding
 
 document return value of resolver + other plugins
 
--> use doxygen as only documentation tool
 
-
-Doxygen:
-	enums
-	html pages (css)
-	inline man page
 
 == BUILD ==
 
@@ -40,22 +19,12 @@ try to build with C98 (with one line comments)
 	for VC++ support
 
 
-== CMAKE ==
-
-
-headers:
-	rename config.h -> kdbconfig.h
-	or kdb/config.h?
-
-export all information to internal version plugin
-	CMake
-	OS infos
-
 == CONFIGURE ==
 
 ship a ./configure script which calls cmake
 	+ toplevel Makefile which goes to build directory and calls make there
 	./configure && make && make install should work
+
 
 === BUGS ===
 
@@ -457,8 +426,6 @@ generator for:
 symbole, only export
 Version info
 release
-marketing things
-+ unexpected	
 
 
 == OVERVIEW ==
@@ -471,12 +438,3 @@ make list of all symbols
 	symbole, only export (otherwise static)
 	Version info 4.0
 
-
-== Afterwards ==
-
-FOCUS:
-	*use* Elektra as much as possible
-	*everywhere*
-	*patch* as much as possible
-	fix as many bugs as possible
-	increase performance

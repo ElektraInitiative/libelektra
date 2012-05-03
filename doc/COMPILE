@@ -1,3 +1,5 @@
+= COMPILE =
+
 == PREPARATION ==
 
 Elektra is using cmake.
@@ -28,8 +30,6 @@ pathes that you can write to (e.g. CMAKE_INSTALL_PREFIX /home/markus/bin)
 working plugins are:
 dump;resolver;hidden;iconv;syslog;error;validation;xmltool;tracer;timeofday;dbus;glob;hosts;network;type;struct;path;fstab;ccode;simpleini;tcl;hexcode;null;ni
 
-BACKEND_DEFAULT only dump is tested currently
-
 CMAKE_BUILD_TYPE: Debug or Release (see cmake docu in the net for that option)
 
 DEBUG_BUILD and ELEKTRA_VERBOSE_BUILD: make the library to output some or a lot of things (not recommended options)
@@ -40,12 +40,18 @@ BUILD_DOC: build documentation with doxygen
  the kdb tool does only have the integrated docu at the moment
 
 
+Make sure that the pathes to install are configured correctly.
+By default it will install to /usr/local.
+
+
 then press c again and then g to generate
 finally press e to exit
 
 
 
 == BUILDING ==
+
+=== NO IDE ===
 
 To build the source use:
 
@@ -56,8 +62,7 @@ You can pass:
  VERBOSE=1 to see the invocations of the compiler
 
 
-
-== CodeBlocks ==
+=== CodeBlocks ===
 
 You can build Elektra using Code::Blocks under Gentoo:
 
@@ -86,6 +91,4 @@ Note 2:
 Note 3: 
 	for Gentoo is recommend to emerge sys-apps/lsb-release to name the package 
 	right even thou not required.
-
-
 

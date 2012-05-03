@@ -1,5 +1,10 @@
+A list of authors which contributed to elektra.
+Note to also add the authors to COPYING
+
+
+
 Markus Raab <elektra@markus-raab.org>
-development, website, documentation, tutorial
+main development, documentation, tutorial
 Devel/Test on: Debian
 
 
@@ -25,6 +30,15 @@ Bindings: python
 Devel/Test on: Debian Testing
 
 
+Andreas Rottmann <rotty@debian.org>
+Debian packaging
+Bindings: scheme
+
+
+Simon Law <sfllaw@debian.org>
+Debian Packaging
+
+
 Pier Luigi Fiorini <pierluigi.fiorini@mockup.org>
 pkg-config file
 Devel/Test on:
@@ -38,5 +52,7 @@ Devel/Test on:
 Studio-HB <contact@studio-hb.com>
 Elektra logo, website design.
 
+
 Pino Toscano <pino@kde.org>
 Debian Packaging
+

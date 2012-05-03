@@ -10,30 +10,22 @@ On the other hand the libraries use libtool's system
 to handle version info. This is only technical linking
 information, but is related to elektra's version number.
 
-ELEKTRA_VERSION_API
+KDB_VERSION
 
 This is the API to programs using elektra. Its interface
-is src/include/kdb.h and src/include/kdbos.h for defining
-types.
+is defined in src/include/kdb.h.
+Both applications and plugins use this API.
 
-ELEKTRATOOLS_VERSION_API
+Additionally there is also a very small API
+to plugins. It consists of only 5 functions
+and is described in src/plugins/doc/doc.c.
 
-This is the API to programs using elektratools. This
-enables import and export mechanism for elektra. Its
-interface is src/include/kdbtool.h.
-
-BACKEND_VERSION_API
-
-This is the API from elektra to its backends. There are
-only 5 functions but a lot of pre- and postconditions
-to the data passed there. Its interface is described
-in src/backends/doc/backend.c.
 
 = Compatibility =
 
 This document describes under which circumstances API
 and ABI incompatiblities may occur. As developer from
-elektra your mission is of course to avoid that.
+elektra your mission is to avoid that.
 The tool icheck against the interfaces mentioned
 above may help you too.
 
@@ -72,11 +64,8 @@ http://packages.debian.org/de/sid/icheck
 
 = Increment =
 
-This document describes how to increment the *_VERSION_API, in
-contrast to find out if the API is incompatible it is very
-easy.
-
-It consists of a triplet integer current:revision:age.
+This document describes how to increment the KDB_VERSION.
+KDB_VERSION consists of a triplet integer current:revision:age.
 
 Revision is something which will always incremented when there
 is a new bugfix release.

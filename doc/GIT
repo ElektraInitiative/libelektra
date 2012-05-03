@@ -1,9 +1,19 @@
+= INTRODUCTION =
+
 == BASIC GIT COMMANDS ==
 
 git add .
 git commit -a
 
-== MIGRATION ==
+== RELEASE ==
+
+git-tag ${KDB_VERSION}
+git-archive --prefix=elektra-${KDB_VERSION}/ --format=tar ${KDB_VERSION} | gzip > elektra-${KDB_VERSION}.tar.gz
+
+
+
+
+= MIGRATION =
 
 This git folder was imported initially with the command:
 git svn clone -T trunk -t tags -b unstable https://svn.libelektra.org/svn/elektra

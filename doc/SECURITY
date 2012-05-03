@@ -9,10 +9,12 @@ a daemon or some kind of distributed configuration.
 Compiler Options
 ================
 
+http://wiki.debian.org/Hardening
+
 
 Memory Leaks
 ============
 
 We use valgrind (--tool=memcheck) to make sure that elektra
-does not suffer memory leaks.
+does not suffer memory leaks and incorrect memory handling.
 
