@@ -56,6 +56,18 @@ int MvCommand::execute (Cmdline const& cl)
 	{
 		// just rename one key
 		k = oldConf.next();
+		if (!k)
+		{
+			cerr << "Single key to move not found\n";
+			return 1;
+		}
+		if (k != sourceKey)
+		{
+			cerr << "First key found " << k.getName()
+			     << " does not exactly match given key " << sourceKey.getName()
+			     << ", aborting (use -r to move hierarchy)\n";
+			return 1;
+		}
 		newConf.append(rename_key(k, sourceName, newDirName, cl.verbose));
 	}
 	newConf.append(tmpConf); // these are unrelated keys

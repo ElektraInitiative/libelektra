@@ -13,21 +13,24 @@ Cmdline::Cmdline (int argc, char** argv,
 		string const& pHelpText) :
 	helpText(pHelpText),
 	invalidOpt(false),
+
+	/*XXX: Step 2: initialise your option here.*/
+	debug(),
 	force(),
-	interactive(),
-	recursive(),
 	humanReadable(),
 	help(),
+	interactive(),
 	test(),
+	recursive(),
+	strategy("preserve"),
 	verbose(),
 	version(),
-	/*XXX: Step 2: initialise your option here.*/
+
 	executable(),
 	command()
 {
 	extern int optind;
-	// for optional parameters you need:
-	// extern char *optarg;
+	extern char *optarg;
 
 	int index = 0;
 	int opt;
@@ -36,11 +39,12 @@ Cmdline::Cmdline (int argc, char** argv,
 	acceptedOptions += "HV";
 
 	vector<option> long_options;
-	if (acceptedOptions.find('r')!=string::npos)
+	/*XXX: Step 3: give it a long name.*/
+	if (acceptedOptions.find('d')!=string::npos)
 	{
-		option o = {"recursive", no_argument, 0, 'r'};
+		option o = {"debug", no_argument, 0, 'd'};
 		long_options.push_back(o);
-		helpText += "-r --recursive           work in a recursive mode\n";
+		helpText += "-d --debug               give debug information or ask debug questions (in interactive mode)\n";
 	}
 	if (acceptedOptions.find('f')!=string::npos)
 	{
@@ -60,11 +64,33 @@ Cmdline::Cmdline (int argc, char** argv,
 		long_options.push_back(o);
 		helpText += "-H --help                print help text\n";
 	}
+	if (acceptedOptions.find('i')!=string::npos)
+	{
+		option o = {"interactive", no_argument, 0, 'i'};
+		long_options.push_back(o);
+		helpText += "-i --interactive         instead of passing all information by parameters\n";
+		helpText += "                         ask the user interactively\n";
+	}
 	if (acceptedOptions.find('t')!=string::npos)
 	{
 		option o = {"test", no_argument, 0, 't'};
 		long_options.push_back(o);
 		helpText += "-t --test                test\n";
+	}
+	if (acceptedOptions.find('r')!=string::npos)
+	{
+		option o = {"recursive", no_argument, 0, 'r'};
+		long_options.push_back(o);
+		helpText += "-r --recursive           work in a recursive mode\n";
+	}
+	if (acceptedOptions.find('s')!=string::npos)
+	{
+		option o = {"strategy", required_argument, 0, 'r'};
+		long_options.push_back(o);
+		helpText += "-s --strategy <name>     the strategy which should be used on conflicts\n";
+		helpText += "                         preserve .. no old key is overwritten\n";
+		helpText += "                         overwrite .. overwrite keys with same name\n";
+		helpText += "                         cut .. completely cut old keys to make place for new\n";
 	}
 	if (acceptedOptions.find('v')!=string::npos)
 	{
@@ -78,7 +104,6 @@ Cmdline::Cmdline (int argc, char** argv,
 		long_options.push_back(o);
 		helpText += "-V --version             print version info\n";
 	}
-	/*XXX: Step 3: give it a long name.*/
 
 
 	option o = {0, 0, 0, 0};
@@ -93,15 +118,18 @@ Cmdline::Cmdline (int argc, char** argv,
 	{
 		switch (opt)
 		{
+		/*XXX: Step 4: and now process the option.*/
+		case 'd': debug = true; break;
 		case 'f': force = true; break;
-		case 'i': interactive = true; break;
-		case 'r': recursive = true; break;
 		case 'h': humanReadable = true; break;
 		case 'H': help = true; break;
+		case 'i': interactive = true; break;
 		case 't': test = true; break;
+		case 'r': recursive = true; break;
+		case 's': strategy = optarg; break;
 		case 'v': verbose = true; break;
 		case 'V': version = true; break;
-		/*XXX: Step 4: and now process the option.*/
+
 		default: invalidOpt = true; break;
 		}
 	}

@@ -63,15 +63,30 @@ void MountCommand::outputMtab()
 
 int MountCommand::execute(Cmdline const& cl)
 {
-	if (!cl.interactive)
+	size_t argc = cl.arguments.size();
+	if (argc == 0)
 	{
 		// no interactive mode, so lets output the mtab
 		outputMtab();
 		return 0;
 	}
 
-	cout << "Welcome to interactive mounting" << endl;
-	cout << "Please provide a unique name." << endl;
+	if (argc == 1)
+	{
+		throw invalid_argument("wrong number of arguments, 0 or more then 1 needed");
+	}
+
+	if (cl.interactive)
+	{
+		cout << "Welcome to interactive mounting" << endl;
+		cout << "Please provide a unique name." << endl;
+
+	}
+	if (cl.debug)
+	{
+		cout << "Note that nothing will be written out" << endl;
+		cout << "until you say y at the very end of the mounting process" << endl;
+	}
 
 	KeySet wholeConf;
 
@@ -95,9 +110,10 @@ int MountCommand::execute(Cmdline const& cl)
 	cur = conf.lookup(rootKey);
 	if (!cur)
 	{
-		cout << "Did not find the root key, will add it" << endl;
-		cout << "Note that nothing will be written out" << endl;
-		cout << "until you say y at the very end of the mounting process" << endl;
+		if (cl.verbose)
+		{
+			cout << "Did not find the root key, will add it" << endl;
+		}
 		conf.append ( *Key(root,
 			KEY_COMMENT, "Below are the mountpoints.",
 			KEY_END));
@@ -119,8 +135,23 @@ int MountCommand::execute(Cmdline const& cl)
 	cout << endl;
 
 	std::string name;
-	std::cout << "Backend name: ";
-	cin >> name;
+	if (cl.interactive)
+	{
+		std::cout << "Backend name: ";
+		cin >> name;
+	}
+	else
+	{
+		name = cl.arguments[1];
+		if (name == "/")
+		{
+			name = "root";
+		}
+		else
+		{
+			std::replace(name.begin(), name.end(), '/', '_');
+		}
+	}
 	if (std::find(names.begin(), names.end(), name) != names.end()) throw NameAlreadyInUseException();
 	cout << endl;
 
@@ -146,10 +177,17 @@ int MountCommand::execute(Cmdline const& cl)
 	{
 		cout << "Already used are: ";
 		std::copy (mountpoints.begin(), mountpoints.end(), ostream_iterator<std::string>(cout, " "));
-		cout << endl;
-		cout << "Please start with / for a cascading backend" << endl;
-		cout << "Enter the mountpoint: ";
-		cin >> mp;
+		if (cl.interactive)
+		{
+			cout << endl;
+			cout << "Please start with / for a cascading backend" << endl;
+			cout << "Enter the mountpoint: ";
+			cin >> mp;
+		}
+		else
+		{
+			mp = cl.arguments[1];
+		}
 	}
 
 	if (mp.at(0) == '/')
@@ -177,14 +215,21 @@ int MountCommand::execute(Cmdline const& cl)
 
 		backend.tryPlugin ("resolver");
 
-		cout << endl;
-		cout << "Enter a path to a file in the filesystem" << endl;
-		cout << "This is used by all plugins of this backend as fallback" << endl;
-		cout << "It must be provided and must be a valid path" << endl;
-		cout << "For user or cascading mountpoints it must be a relative path." << endl;
-		cout << "The actual path will be located dynamically by the resolver plugin." << endl;
-		cout << "Path: ";
-		cin >> path;
+		if (cl.interactive)
+		{
+			cout << endl;
+			cout << "Enter a path to a file in the filesystem" << endl;
+			cout << "This is used by all plugins of this backend as fallback" << endl;
+			cout << "It must be provided and must be a valid path" << endl;
+			cout << "For user or cascading mountpoints it must be a relative path." << endl;
+			cout << "The actual path will be located dynamically by the resolver plugin." << endl;
+			cout << "Path: ";
+			cin >> path;
+		}
+		else
+		{
+			path = cl.arguments[0];
+		}
 		backend.checkFile (path);
 		backend.addPlugin ();
 
@@ -201,9 +246,26 @@ int MountCommand::execute(Cmdline const& cl)
 
 		cout << "Now enter a sequence of plugins you want in the backend" << endl;
 
-		std::string name;
-		cout << "First Plugin: ";
-		cin >> name;
+		size_t current_plugin = 2;
+		if (cl.interactive)
+		{
+			std::string name;
+			cout << "First Plugin: ";
+			cin >> name;
+		}
+		else
+		{
+			if (current_plugin >= argc)
+			{
+				name = "dump";
+			}
+			else
+			{
+				name = cl.arguments[current_plugin];
+			}
+			current_plugin ++;
+		}
+
 		while (name != "." || !backend.validated())
 		{
 			try {
@@ -215,12 +277,30 @@ int MountCommand::execute(Cmdline const& cl)
 				cout << "Could not add that plugin" << endl;
 				cout << e.what() << endl;
 			}
-			if (!backend.validated()) cout << "Not validated, try to add another plugin (. to abort)" << endl;
-			else cout << "Enter . to finish entering plugins" << endl;
+			if (cl.interactive)
+			{
+				if (!backend.validated()) cout << "Not validated, try to add another plugin (. to abort)" << endl;
+				else cout << "Enter . to finish entering plugins" << endl;
+			}
 
-			cout << endl;
-			cout << "Next Plugin: ";
-			cin >> name;
+			if (cl.interactive)
+			{
+				cout << endl;
+				cout << "Next Plugin: ";
+				cin >> name;
+			}
+			else
+			{
+				if (current_plugin >= argc)
+				{
+					name = ".";
+				}
+				else
+				{
+					name = cl.arguments[current_plugin];
+				}
+				current_plugin ++;
+			}
 
 			if (name == "." && !backend.validated())
 			{
@@ -232,20 +312,23 @@ int MountCommand::execute(Cmdline const& cl)
 	}
 
 
-	cout << "Ready to mount with following configuration:" << endl;
-	cout << "Name:       " << name << endl;
-	cout << "Mountpoint: " << mp << endl;
-	cout << "Path:       " << path << endl;
-	cout << "The configuration which will be set is:" << endl;
-	conf.rewind();
-	while (Key k = conf.next())
+	if (cl.debug)
 	{
-		cout << k.getName() << " " << k.getString() << endl;
+		cout << "Ready to mount with following configuration:" << endl;
+		cout << "Name:       " << name << endl;
+		cout << "Mountpoint: " << mp << endl;
+		cout << "Path:       " << path << endl;
+		cout << "The configuration which will be set is:" << endl;
+		conf.rewind();
+		while (Key k = conf.next())
+		{
+			cout << k.getName() << " " << k.getString() << endl;
+		}
+		cout << "Are you sure you want to do that (y/N): ";
+		std::string answer;
+		cin >> answer;
+		if (answer != "y") throw CommandAbortException();
 	}
-	cout << "Are you sure you want to do that (y/N): ";
-	std::string answer;
-	cin >> answer;
-	if (answer != "y") throw CommandAbortException();
 
 
 	cout << "Setting the mountpoint configuration";

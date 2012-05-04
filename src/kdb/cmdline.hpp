@@ -28,13 +28,16 @@ public:
 	/** At least one of the options was invalid */
 	bool invalidOpt;
 
-	/*XXX: Step 1: add your option here.*/
+	/*XXX: Step 1: add your option here.
+	 * (please sort by getopt short name, small letters first)*/
+	bool debug; /*!< To debug the commands. */
 	bool force; /*!< Force the action. */
-	bool interactive; /*!< Interactive mode. */
-	bool recursive; /*!< Recursive mode. */
 	bool humanReadable; /*!< Human readable values are preferred. */
 	bool help; /*!< Display help instead of the normal action.. */
+	bool interactive; /*!< Interactive mode. */
 	bool test; /*!< Run some self tests instead of the normal action. */
+	bool recursive; /*!< Recursive mode. */
+	std::string strategy; /*!< Merging strategy. */
 	bool verbose; /*!< Be more verbose. */
 	bool version; /*!< Return version info instead of the normal action.. */
 

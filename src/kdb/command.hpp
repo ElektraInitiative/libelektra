@@ -25,7 +25,7 @@ class CommandAbortException : public CommandException
 public:
 	virtual const char* what() const throw()
 	{
-		return "Aborted by user request";
+		return "Command aborted";
 	}
 };
 

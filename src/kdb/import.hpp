@@ -15,7 +15,7 @@ public:
 
 	virtual std::string getShortOptions()
 	{
-		return "";
+		return "s";
 	}
 
 	virtual std::string getShortHelpText()

@@ -50,7 +50,7 @@ public:
 
 	virtual std::string getShortOptions()
 	{
-		return "i";
+		return "id";
 	}
 
 	virtual std::string getShortHelpText()
@@ -61,8 +61,8 @@ public:
 	virtual std::string getLongHelpText()
 	{
 		return
-			"\n"
-			"Allows you to interactively mount\n"
+			"[path mountpoint] [plugin [..]]\n"
+			"Allows you to mount\n"
 			"a new backend.\n";
 	}
 

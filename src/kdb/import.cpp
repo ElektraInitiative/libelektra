@@ -38,6 +38,19 @@ int ImportCommand::execute(Cmdline const& cl)
 	auto_ptr<Plugin> plugin = modules.load(format);
 	plugin->unserialize(importedKeys);
 
+	if (cl.strategy == "cut")
+	{
+		KeySet part(ks.cut(root));
+	}
+	else if (cl.strategy == "overwrite")
+	{
+		ks.append(importedKeys);
+	}
+	else // default strategy preserve
+	{
+		importedKeys.append(ks);
+	}
+
 	kdb.set(importedKeys, root);
 
 	return 0;

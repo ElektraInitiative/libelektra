@@ -26,7 +26,12 @@ int LsCommand::execute(Cmdline const& cl)
 
 	kdb.get(ks, root);
 
+	if (cl.verbose) cout << "size of all keys in mountpoint: " << ks.size() << endl;
+
 	KeySet part (ks.cut(root));
+
+	if (cl.verbose) cout << "size of requested keys: " << part.size() << endl;
+
 	part.rewind();
 	Key k;
 	while (k=part.next())

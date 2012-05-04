@@ -17,7 +17,7 @@ DEB_SHLIBDEPS_INCLUDE_libelektra-bin := debian/libelektra2/usr/lib/
 
 CMAKE_FLAGS = \
 			  -DCMAKE_INSTALL_PREFIX=/usr \
-			  -DPLUGINS="dump;resolver;ccode;hosts;syslog;tracer;error;fstab;network;null;path;simpleini;success;tcl;timeofday;type" \
+			  -DPLUGINS="dump;resolver;ccode;hosts;syslog;tracer;error;fstab;network;null;path;simpleini;success;tcl;timeofday;type;xmltool" \
 			  -DKDB_DB_SYSTEM=/etc/kdb
 
 %:
