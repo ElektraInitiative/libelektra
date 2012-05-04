@@ -1,43 +1,68 @@
-ABOUT
-=====
+= About =
 
 Elektra provides a universal and secure framework to store configuration
 parameters in a hierarchical key-value pair mechanism, instead of each program
 using its own text configuration files. This allows any program to read and
 save its configuration with a consistent API, and allows them to be aware of
 other applications' configurations, permitting easy application integration.
-While architecturally similar to other OS registries, Elektra does not have
-most of the problems found in those implementations.
 
 
-DOWNLOAD
-========
+= Further Information =
+
+To get an introduction, it is best to take a look at the
+[[http://www.markus-raab.org/ftp/elektra/presentations/2012/lgm.odp|presentation]],
+see the
+[[http://www.markus-raab.org/ftp/elektra/poster.pdf|poster]]
+and read the
+[[http://www.markus-raab.org/ftp/elektra/abridgement.pdf|abridgment]].
+
+The currently best information about Elektra is
+[[http://www.markus-raab.org/ftp/elektra/thesis.pdf|this paper]].
+
+
+= Contact =
+
+Do not hesitate to ask any question on
+
+ https://lists.sourceforge.net/lists/listinfo/registry-list
+
+or one of the
+[[https://gitorious.org/elektra-initiative/libelektra/blobs/master/doc/AUTHORS|AUTHORS]].
+
+
+= Get Started =
+
+== Download ==
 
 Elektra git repository with the latest source code can be checked out
 with:
 
  git-clone git://gitorious.org/elektra-initiative/libelektra.git
 
+Releases can be downloaded from
+[[ftp://markus-raab.org/elektra/releases/|ftp]]
+and
+[[http://www.markus-raab.org/ftp/elektra/releases/|http]]
 
-CONTACT
-=======
+Which are also mirrored at:
 
-Do not hesitate to ask any question on
-
- https://lists.sourceforge.net/lists/listinfo/registry-list
-
-
-COMPILE
-=======
-
-See the COMPILE document for informations how to compile the software.
+ git-clone git://gitorious.org/elektra-initiative/ftp.git
 
 
-INSTALL
-=======
+== Compile ==
+
+See the
+[[https://gitorious.org/elektra-initiative/libelektra/blobs/master/doc/COMPILE|COMPILE]]
+document in the repository for informations how to
+compile the software.
+
+
+== Install ==
 
 The preferred way to install Elektra is by using packages provided for
 your distribution.
 
-If there are no packages available, see the INSTALL document.
+If there are no packages available, see the
+[[https://gitorious.org/elektra-initiative/libelektra/blobs/master/doc/INSTALL|INSTALL]]
+document.
 
