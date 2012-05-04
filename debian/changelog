@@ -1,3 +1,9 @@
+elektra (0.8.0rc5-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Markus Raab <debian@markus-raab.org>  Fri, 04 May 2012 09:36:29 +0200
+
 elektra (0.8.0rc4-1) unstable; urgency=low
 
   * New upstream version.
