@@ -234,8 +234,15 @@ void test_cutpoint()
 			keyNew("user/a/b/c/e", KEY_END),
 			keyNew("user/a/b/c/e/d", KEY_END),
 			KS_END);
+	ksRewind(orig);
+	ksNext(orig);
+	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/a"), "wrong cursor");
+	ksNext(orig);
+	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/a/b"), "wrong cursor");
 
 	KeySet *part = ksCut(orig, cutpoint);
+
+	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/a/b"), "cursor should stay");
 
 	KeySet *cmp_orig = ksNew(15,
 			keyNew("user/a", KEY_END),
@@ -255,6 +262,183 @@ void test_cutpoint()
 	succeed_if (compare_keyset(part, cmp_part) == 0, "part keys wrong");
 	ksDel (part);
 	ksDel (cmp_part);
+}
+
+void test_cutpoint_1()
+{
+	printf ("Testing operation cut point 1\n");
+
+	Key *cutpoint = keyNew("user/a/b/c", KEY_END);
+	KeySet *orig = ksNew(30,
+			keyNew("user/a", KEY_END),
+			keyNew("user/a/b", KEY_END),
+			cutpoint,
+			keyNew("user/a/b/c/d", KEY_END),
+			keyNew("user/a/b/c/d/e", KEY_END),
+			keyNew("user/a/b/c/e", KEY_END),
+			keyNew("user/a/b/c/e/d", KEY_END),
+			KS_END);
+	ksRewind(orig);
+	ksNext(orig);
+	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/a"), "wrong cursor");
+	ksNext(orig);
+	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/a/b"), "wrong cursor");
+	ksNext(orig);
+	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/a/b/c"), "wrong cursor");
+
+	KeySet *part = ksCut(orig, cutpoint);
+
+	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/a/b"),
+			"cursor should jump for cutpoint");
+
+	KeySet *cmp_orig = ksNew(15,
+			keyNew("user/a", KEY_END),
+			keyNew("user/a/b", KEY_END),
+			KS_END);
+	succeed_if (compare_keyset(orig, cmp_orig) == 0, "orig keys wrong");
+	ksDel (orig);
+	ksDel (cmp_orig);
+
+	KeySet *cmp_part = ksNew(15,
+			cutpoint,
+			keyNew("user/a/b/c/d", KEY_END),
+			keyNew("user/a/b/c/d/e", KEY_END),
+			keyNew("user/a/b/c/e", KEY_END),
+			keyNew("user/a/b/c/e/d", KEY_END),
+			KS_END);
+	succeed_if (compare_keyset(part, cmp_part) == 0, "part keys wrong");
+	ksDel (part);
+	ksDel (cmp_part);
+}
+
+void test_unique_cutpoint()
+{
+	printf ("Testing operation cut with unique cutpoint\n");
+
+	Key *cutpoint = keyNew("user/a/b/c", KEY_END);
+	KeySet *orig = ksNew(30,
+			keyNew("user/a", KEY_END),
+			keyNew("user/a/b", KEY_END),
+			keyNew("user/a/b/c", KEY_END),
+			keyNew("user/a/b/c/d", KEY_END),
+			keyNew("user/a/b/c/d/e", KEY_END),
+			keyNew("user/a/b/c/e", KEY_END),
+			keyNew("user/a/b/c/e/d", KEY_END),
+			KS_END);
+
+	KeySet *part = ksCut(orig, cutpoint);
+
+	KeySet *cmp_orig = ksNew(15,
+			keyNew("user/a", KEY_END),
+			keyNew("user/a/b", KEY_END),
+			KS_END);
+	succeed_if (compare_keyset(orig, cmp_orig) == 0, "orig keys wrong");
+	ksDel (orig);
+	ksDel (cmp_orig);
+
+	KeySet *cmp_part = ksNew(15,
+			keyNew("user/a/b/c", KEY_END),
+			keyNew("user/a/b/c/d", KEY_END),
+			keyNew("user/a/b/c/d/e", KEY_END),
+			keyNew("user/a/b/c/e", KEY_END),
+			keyNew("user/a/b/c/e/d", KEY_END),
+			KS_END);
+	succeed_if (compare_keyset(part, cmp_part) == 0, "part keys wrong");
+	ksDel (part);
+	ksDel (cmp_part);
+	keyDel (cutpoint);
+}
+
+void test_cutbelow()
+{
+	printf ("Testing cutting below some keys\n");
+
+	Key *cutpoint = keyNew("user/export", KEY_END);
+	KeySet *orig = ksNew(30,
+			keyNew("user/export-backup-2/x", KEY_END),
+			keyNew("user/export-backup/b", KEY_END),
+			keyNew("user/export/a", KEY_END),
+			keyNew("user/export/c", KEY_END),
+			keyNew("user/export/c/x", KEY_END),
+			keyNew("user/export/c/x/b/blah", KEY_END),
+			keyNew("user/export/xyz", KEY_END),
+			KS_END);
+	ksRewind(orig);
+	ksNext(orig);
+	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/export-backup-2/x"), "wrong cursor");
+	ksNext(orig);
+	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/export-backup/b"), "wrong cursor");
+
+	KeySet *part = ksCut(orig, cutpoint);
+
+	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/export-backup/b"), "wrong cursor");
+
+	KeySet *cmp_orig = ksNew(15,
+			keyNew("user/export-backup-2/x", KEY_END),
+			keyNew("user/export-backup/b", KEY_END),
+			KS_END);
+	succeed_if (compare_keyset(orig, cmp_orig) == 0, "orig keys wrong");
+	ksDel (orig);
+	ksDel (cmp_orig);
+
+	KeySet *cmp_part = ksNew(15,
+			keyNew("user/export/a", KEY_END),
+			keyNew("user/export/c", KEY_END),
+			keyNew("user/export/c/x", KEY_END),
+			keyNew("user/export/c/x/b/blah", KEY_END),
+			keyNew("user/export/xyz", KEY_END),
+			KS_END);
+	succeed_if (compare_keyset(part, cmp_part) == 0, "part keys wrong");
+	ksDel (part);
+	ksDel (cmp_part);
+	keyDel (cutpoint);
+}
+
+void test_cutbelow_1()
+{
+	printf ("Testing cutting below some keys\n");
+
+	Key *cutpoint = keyNew("user/export", KEY_END);
+	KeySet *orig = ksNew(30,
+			keyNew("user/export-backup-2/x", KEY_END),
+			keyNew("user/export-backup/b", KEY_END),
+			keyNew("user/export/a", KEY_END),
+			keyNew("user/export/c", KEY_END),
+			keyNew("user/export/c/x", KEY_END),
+			keyNew("user/export/c/x/b/blah", KEY_END),
+			keyNew("user/export/xyz", KEY_END),
+			KS_END);
+	ksRewind(orig);
+	ksNext(orig);
+	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/export-backup-2/x"), "wrong cursor");
+	ksNext(orig);
+	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/export-backup/b"), "wrong cursor");
+	ksNext(orig);
+	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/export/a"), "wrong cursor");
+
+	KeySet *part = ksCut(orig, cutpoint);
+
+	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/export-backup/b"), "wrong cursor");
+
+	KeySet *cmp_orig = ksNew(15,
+			keyNew("user/export-backup-2/x", KEY_END),
+			keyNew("user/export-backup/b", KEY_END),
+			KS_END);
+	succeed_if (compare_keyset(orig, cmp_orig) == 0, "orig keys wrong");
+	ksDel (orig);
+	ksDel (cmp_orig);
+
+	KeySet *cmp_part = ksNew(15,
+			keyNew("user/export/a", KEY_END),
+			keyNew("user/export/c", KEY_END),
+			keyNew("user/export/c/x", KEY_END),
+			keyNew("user/export/c/x/b/blah", KEY_END),
+			keyNew("user/export/xyz", KEY_END),
+			KS_END);
+	succeed_if (compare_keyset(part, cmp_part) == 0, "part keys wrong");
+	ksDel (part);
+	ksDel (cmp_part);
+	keyDel (cutpoint);
 }
 
 ssize_t ksCopyInternal(KeySet *ks, size_t to, size_t from);
@@ -436,6 +620,19 @@ void test_morecut()
 		keyNew ("system/valid/key1", KEY_END),
 		keyNew ("system/valid/key2", KEY_END),
 		KS_END);
+	// printf ("%s\n", keyName(ksCurrent(ks)));
+	succeed_if (!strcmp(keyName(ksCurrent(ks)), "system/valid/key2"),
+			"cursor jumped somewhere else");
+	ksNext(ks);
+	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/valid/key1"), "wrong cursor");
+	ksNext(ks);
+	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/valid/key2"), "wrong cursor");
+	// printf ("%s\n", keyName(ksCurrent(ks)));
+	/*
+	ksNext(ks);
+	succeed_if (!strcmp(keyName(ksCurrent(ks)), "system/valid/key1"), "wrong cursor");
+	*/
+
 	KeySet *split1 = ksNew (
 		3,
 		keyNew ("user/valid/key1", KEY_END),
@@ -450,6 +647,66 @@ void test_morecut()
 	Key *userKey = keyNew("user", KEY_END);
 
 	KeySet *cut = ksCut (ks, userKey);
+	// printf ("%s\n", keyName(ksCurrent(ks)));
+	succeed_if (!strcmp(keyName(ksCurrent(ks)), "system/valid/key2"),
+			"cursor jumped somewhere else");
+
+	succeed_if (compare_keyset (cut, split1) == 0, "user keyset not correct");
+	succeed_if (compare_keyset (ks, split2) == 0, "system keyset not correct");
+	ksDel (cut);
+
+	keyDel (userKey);
+
+	ksDel (ks);
+	ksDel (split1);
+	ksDel (split2);
+}
+
+void test_cutafter()
+{
+	printf ("More cut after\n");
+
+	KeySet *ks = ksNew (
+		5,
+		keyNew ("user/a/valid/key", KEY_END),
+		keyNew ("user/a/x/valid/key", KEY_END),
+		keyNew ("user/b/valid/key", KEY_END),
+		keyNew ("user/b/x/valid/key", KEY_END),
+		keyNew ("user/c/valid/key", KEY_END),
+		keyNew ("user/c/x/valid/key", KEY_END),
+		KS_END);
+	ksRewind(ks);
+	ksNext(ks);
+	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/a/valid/key"), "wrong cursor");
+	ksNext(ks);
+	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/a/x/valid/key"), "wrong cursor");
+	ksNext(ks);
+	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/b/valid/key"), "wrong cursor");
+	ksNext(ks);
+	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/b/x/valid/key"), "wrong cursor");
+	ksNext(ks);
+	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/c/valid/key"), "wrong cursor");
+	// printf ("%s\n", keyName(ksCurrent(ks)));
+
+	KeySet *split1 = ksNew (
+		8,
+		keyNew ("user/b/valid/key", KEY_END),
+		keyNew ("user/b/x/valid/key", KEY_END),
+		KS_END);
+	KeySet *split2 = ksNew (
+		8,
+		keyNew ("user/a/valid/key", KEY_END),
+		keyNew ("user/a/x/valid/key", KEY_END),
+		keyNew ("user/c/valid/key", KEY_END),
+		keyNew ("user/c/x/valid/key", KEY_END),
+		KS_END);
+
+	Key *userKey = keyNew("user/b", KEY_END);
+
+	KeySet *cut = ksCut (ks, userKey);
+	// printf ("%s\n", keyName(ksCurrent(ks)));
+	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/c/valid/key"), "wrong cursor");
+
 	succeed_if (compare_keyset (cut, split1) == 0, "user keyset not correct");
 	succeed_if (compare_keyset (ks, split2) == 0, "system keyset not correct");
 	ksDel (cut);
@@ -471,10 +728,15 @@ int main(int argc, char** argv)
 	test_search();
 	test_cut();
 	test_cutpoint();
-	// test_copy(); // has memory problems...
+	test_cutpoint_1();
+	test_unique_cutpoint();
+	test_cutbelow();
+	test_cutbelow_1();
+	// test_copy(); // TODO has memory problems...
 	test_simple();
 	test_cursor();
 	test_morecut();
+	test_cutafter();
 
 	printf("\ntest_operation RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

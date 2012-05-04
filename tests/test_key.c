@@ -2225,6 +2225,71 @@ void test_outbreak()
 	keyDel (k);
 }
 
+void test_keyBelowOrSame()
+{
+	Key * key1 = keyNew(0);
+	Key * key2 = keyNew(0);
+
+	printf("Test of keyBelowOrSame\n");
+
+	succeed_if (keyIsBelowOrSame(key1,0) == -1, "NULL pointer");
+	succeed_if (keyIsBelowOrSame(0,0) == -1, "NULL pointer");
+	succeed_if (keyIsBelowOrSame(0,key1) == -1, "NULL pointer");
+
+	keySetName(key1,"user/valid");
+	keySetName(key2,"user/valid");
+	succeed_if (keyIsBelowOrSame(key1,key2), "Key should be below");
+	succeed_if (keyIsBelowOrSame(key2,key1), "Key should be below");
+
+	keySetName(key1,"user/valid");
+	keySetName(key2,"user/valid/");
+	succeed_if (keyIsBelowOrSame(key1,key2), "Key should be below");
+	succeed_if (keyIsBelowOrSame(key2,key1), "Key should be below");
+
+	keySetName(key1,"user/valid");
+	keySetName(key2,"user/valid/below");
+	succeed_if (keyIsBelowOrSame(key1,key2), "Key should be below");
+	succeed_if (!keyIsBelowOrSame(key2,key1), "Key should not be below");
+
+	keySetName(key1,"user/valid");
+	keySetName(key2,"user/valid/b");
+	succeed_if (keyIsBelowOrSame(key1,key2), "Key should be below");
+	succeed_if (!keyIsBelowOrSame(key2,key1), "Key should not be below");
+
+	keySetName(key1,"user/valid");
+	keySetName(key2,"user/valid/b");
+	succeed_if (keyIsBelowOrSame(key1,key2), "Key should be below");
+	succeed_if (!keyIsBelowOrSame(key2,key1), "Key should not be below");
+
+	keySetName(key1,"user/valid");
+	keySetName(key2,"user/valid/b/e");
+	succeed_if (keyIsBelowOrSame(key1,key2), "Key should be below");
+	succeed_if (!keyIsBelowOrSame(key2,key1), "Key should not be below");
+
+	keySetName(key1,"user/valide");
+	keySetName(key2,"user/valid/e");
+	succeed_if (!keyIsBelowOrSame(key1,key2), "Key should not be below");
+	succeed_if (!keyIsBelowOrSame(key2,key1), "Key should not be below");
+
+	keySetName(key1,"user/valid/b");
+	keySetName(key2,"user/valid/e");
+	succeed_if (!keyIsBelowOrSame(key1,key2), "Key should not be below");
+	succeed_if (!keyIsBelowOrSame(key2,key1), "Key should not be below");
+
+	keySetName(key1,"user/export/a");
+	keySetName(key2,"user/export-backup/b");
+	succeed_if (!keyIsBelowOrSame(key1,key2), "Key should not be below");
+	succeed_if (!keyIsBelowOrSame(key2,key1), "Key should not be below");
+
+	keySetName(key1,"user/export");
+	keySetName(key2,"user/export-backup-2/x");
+	succeed_if (!keyIsBelowOrSame(key1,key2), "Key should not be below");
+	succeed_if (!keyIsBelowOrSame(key2,key1), "Key should not be below");
+
+	keyDel (key1);
+	keyDel (key2);
+}
+
 
 int main(int argc, char** argv)
 {
@@ -2252,6 +2317,7 @@ int main(int argc, char** argv)
 	test_keyHelpers();
 	test_keyNamespace();
 	test_binary();
+	test_keyBelowOrSame();
 	// test_outbreak();
 
 	printf("\ntest_key RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);

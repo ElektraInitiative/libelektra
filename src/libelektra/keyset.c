@@ -797,6 +797,11 @@ ssize_t ksCopyInternal(KeySet *ks, size_t to, size_t from)
  * If found it cuts out everything which is below (see keyIsBelow()) this key.
  * If not found an empty keyset is returned.
  *
+ * The cursor will stay at the same key as it was before.
+ * If the cursor was inside the region of cutted (moved)
+ * keys, the cursor will be set to the key before
+ * the cutpoint.
+ *
  * @return a new allocated KeySet which needs to deleted with ksDel().
  *         The keyset consists of all keys (of the original keyset ks)
  *         below the cutpoint. If the key cutpoint exists, it will
@@ -810,35 +815,62 @@ ssize_t ksCopyInternal(KeySet *ks, size_t to, size_t from)
 KeySet *ksCut(KeySet *ks, const Key *cutpoint)
 {
 	KeySet *returned = 0;
-	ssize_t sfound = 0;
 	size_t found = 0;
 	size_t it = 0;
 	size_t newsize = 0;
+	int set_cursor = 0;
 
 	if (!ks) return 0;
 	if (!cutpoint) return 0;
 	if (!cutpoint->key) return 0;
 
-	sfound = ksSearchInternal(ks, cutpoint);
-	if (sfound < 0) found = -sfound - 1;
-	else found = sfound;
+	// search the cutpoint
+	while (it < ks->size && keyIsBelowOrSame(cutpoint, ks->array[it]) == 0)
+	{
+		++it;
+	}
 
-	if (cutpoint == ksCurrent(ks)) ksPrev(ks);
+	// we found nothing
+	if (it == ks->size) return ksNew (0);
 
-	it = found;
+	// we found the cutpoint
+	found = it;
+
+	// search the end of the keyset to cut
 	while (it < ks->size && keyIsBelowOrSame(cutpoint, ks->array[it]) == 1)
 	{
 		++it;
 	}
 
-	if (it == found) return ksNew(0);
+	// correct cursor if cursor is in cutted keyset
+	if (ks->current >= found && ks->current < it)
+	{
+		if (found == 0)
+		{
+			ksRewind(ks);
+		}
+		else
+		{
+			ks->current = found - 1;
+			set_cursor = 1;
+		}
+	}
+
+	// correct the cursor for the keys after the cutted keyset
+	if (ks->current >= it)
+	{
+		if (it >= ks->size)
+		{
+			ksRewind(ks);
+		}
+		else
+		{
+			ks->current = found + ks->current - it;
+			set_cursor = 1;
+		}
+	}
 
 	newsize = it-found;
-#if DEBUG && VERBOSE
-	/* This is too verbose
-	printf ("new size is: %zd\n", newsize);
-	*/
-#endif
 
 	returned = ksNew(newsize, KS_END);
 	elektraMemcpy (returned->array, ks->array+found, newsize);
@@ -851,6 +883,8 @@ KeySet *ksCut(KeySet *ks, const Key *cutpoint)
 		printf ("ksCopyInternal returned an error inside ksCut\n");
 #endif
 	}
+
+	if (set_cursor) ks->cursor = ks->array[ks->current];
 
 	return returned;
 }

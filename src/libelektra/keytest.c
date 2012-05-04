@@ -204,6 +204,8 @@ int keyIsBelow(const Key *key, const Key *check)
  */
 int keyIsBelowOrSame (const Key *key, const Key *check)
 {
+	if (!key || !check) return -1;
+
 	const char *name1 = keyName(key);
 	const char *name2 = keyName(check);
 

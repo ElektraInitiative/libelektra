@@ -94,6 +94,17 @@ void test_ksNew()
 
 	succeed_if(ksDel(config) == 0, "could not delete keyset");
 	succeed_if(ksDel(ks2) == 0, "could not delete keyset");
+
+	KeySet *ks_c = ksNew (
+		5,
+		keyNew ("user/valid/key1", KEY_END),
+		keyNew ("user/valid/key2", KEY_END),
+		keyNew ("system/valid/key1", KEY_END),
+		keyNew ("system/valid/key2", KEY_END),
+		KS_END);
+	// TODO: why is the cursor here?
+	succeed_if (!strcmp(keyName(ksCurrent(ks_c)), "system/valid/key2"),
+			"cursor jumped somewhere else");
 }
 
 void test_ksEmpty()
