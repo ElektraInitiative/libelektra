@@ -2,7 +2,7 @@ Source: elektra
 Priority: required
 Maintainer: Simon Law <sfllaw@debian.org>
 Uploaders: Pier Luigi Fiorini <pierluigi.fiorini@mockup.org>
-Build-Depends: debhelper (>= 4.1.0), libxml2-dev, doxygen
+Build-Depends: debhelper (>= 4.1.0), libxml2-dev, doxygen, texlive
 Standards-Version: 3.7.2
 Section: base
 
