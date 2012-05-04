@@ -1,2 +1,0 @@
-It will make GConf calls to access the conceptual key database. It also lets you access GConf keys through the Elektra API.
-It is ready to be used but, thanks to GConf, it is extremelly slow.
