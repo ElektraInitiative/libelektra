@@ -64,6 +64,9 @@ public:
 			"[path mountpoint] [plugin [..]]\n"
 			"Allows you to mount\n"
 			"a new backend.\n";
+			"path .. a filename (absolute for system, relative for cascading or user)\n"
+			"mountpoint .. where to mount the backend, start with / for cascading mp\n"
+			"plugin .. a list of plugins to mount at that place\n"
 	}
 
 	virtual int execute (Cmdline const& cmdline);
