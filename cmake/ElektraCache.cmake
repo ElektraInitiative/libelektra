@@ -5,7 +5,20 @@
 
 set (PLUGINS dump resolver CACHE STRING "Which plugins should be compiled?")
 
-set (KDB_DB_SYSTEM "/etc/config" CACHE PATH "Where should be the system configuration?")
+# May be changed to /etc/config when XDG will be implemented
+set (KDB_DB_SYSTEM "/etc/kdb" CACHE PATH
+		"The path to the system key database."
+		)
+
+set (KDB_DB_HOME "/home" CACHE PATH
+		"The path to users home directories."
+		)
+
+# May be changed to .config when XDG will be implemented
+set (KDB_DB_USER ".kdb" CACHE PATH
+		"This path will be appended after the resolved home directory."
+		"It completes the path to the user key database."
+		)
 
 option (BUILD_SHARED "Build the shared version of elektra." ON)
 option (BUILD_FULL "Build the full version of elektra (shared with all selected backends included)." ON)
