@@ -1,0 +1,40 @@
+= Missing kdb Features =
+
+umount missing! (rm -r..)
+
+list existing plugins?
+	which are available? (src/plugins)
+	which are installed
+	kdb pls?
+
+= Missing Testcases =
+
+more testcases for kdb interface
+	also mount! and check for functionality regressions
+	ls over multiple mountpoints
+
+
+hosts typesafe with plugins enabled
+
+iterator interface (+document better)
+ksNext should be safe to missusage?
+
+ksCut
+
+ksCut mit Cursor im Feld geschnitten
+Cursor bei ksAppend
+Was wenn kein mountpoint angegeben?
+
+backends below other: ls does not work recursively
+also ls above multiple plugins
+
+and execute the kdb test functions
+(but reduce #)
+
+resolver tests?
+
+== cmake ==
+
+-> cmake names
+
+Cleanup non-working code!

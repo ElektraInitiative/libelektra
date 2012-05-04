@@ -1,8 +1,10 @@
-#For bugs and enhancements go to http://bugs.libelektra.org
-#For visions and drafts go to http://www.libelektra.org
-#For TODO in current stable, see TODO
-
 #some enhanced ideas (dont't expect them to be here soon)
+
+GlobalPlugins:
+	for notification start/end
+	for shared plugins with expensive startup (typechecker)
+	for journaling
+	for git-commit
 
 cryptography:
 	sign modules and check them when kdbOpen

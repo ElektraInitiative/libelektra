@@ -5,13 +5,14 @@ BUGS described in this file.
 
 == DOCUMENTATION ==
 
-document the options of the kdb tool (for the user: man pages + html)
-
-documentation of the c++ binding
+documentation of the c++ binding, plugins
 
 document return value of resolver + other plugins
 
 
+== KDB TOOL ==
+
+prohibit rm, mv of system/elektra
 
 == BUILD ==
 
@@ -33,11 +34,13 @@ errorKey not propagated in elektraPluginOpen
 
 validation-set of kdb sets other meta keys then which are checked
 
-backends below other: ls does not work recursively
 could not parse file output in tcl!
 
 on non-writeable config files the problem would
 	only occur when committing -> behaviour?
+
+Partly written configuration tests?
+	(rollback at commit?)
 
 kdbGet: what if returned holds more information then requested
 	by parentKey on an update
@@ -52,9 +55,6 @@ Check if merging configuration after conflict fails
 kdbOpen does not work without errorKey
 Name of errorKey is overwritten!
 
-non-recursive versions of cp, rm and mv segfault
-	(lookup KDB_O_POP in C++?)
-
 KeySet may be unsorted in some situations
 	changing key names
 	changing owner?
@@ -65,18 +65,14 @@ generating unique names for fstab does not work
 	none fs entries
 	kdb-fstab-set does not work on dump or similar
 
-
 struct: checker
-	don't throw char*
-	string as element of exception class
-
+	cannot be deeply nested
 
 hosts:
 	alias in large file fails
 
 system and user are not valid keys?
 	kdb ls user ??
-
 
 rewind not clearly defined:
 	rewind before plugins?
@@ -88,10 +84,6 @@ rewind not clearly defined:
 allow to set a keyset when get failed before?
 hard coded limit of characters in simpleset
 
-
-ksCut mit Cursor im Feld geschnitten
-Cursor bei ksAppend
-Was wenn kein mountpoint angegeben?
 
 keyGetStringSize missing
 
@@ -116,25 +108,12 @@ path: UUID= LABEL= rechner:/...
 = BETA =
 
 
-== GLOBAL_PLUGINS ==
-
-for notification start/end
-for shared plugins with expensive startup (typechecker)
-for journaling
-for git-commit
-
 
 == STREAMING ==
 
 define C/C++ serialization API:
 	dump
 	xmltool
-
-Stream Code to plugins
-C++ streaming can always also provide C-Stream interface
-
-move old streaming code to plugins
-remove libelektratools
 
 streaming: for C++ Backends
 	void serialize(ostream& os, const KeySet& ks);
@@ -146,12 +125,7 @@ use backend for other things:
 	ksOutput
 	ksGenerate
 
-implementation:
-	of some backends to prove that it works
-
-using serialization
-	xml
-	tcl strings
+using C serialization
 	c (ksNew(keyNew()))
 
 
