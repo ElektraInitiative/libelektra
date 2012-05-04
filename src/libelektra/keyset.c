@@ -797,9 +797,14 @@ ssize_t ksCopyInternal(KeySet *ks, size_t to, size_t from)
  * If found it cuts out everything which is below (see keyIsBelow()) this key.
  * If not found an empty keyset is returned.
  *
- * @return a new allocated KeySet which needs to deleted with ksDel()
- * @return 0 on null pointers, no key name or allocation problems
- * @param ks the keyset to cut
+ * @return a new allocated KeySet which needs to deleted with ksDel().
+ *         The keyset consists of all keys (of the original keyset ks)
+ *         below the cutpoint. If the key cutpoint exists, it will
+ *         also be appended.
+ * @retval 0 on null pointers, no key name or allocation problems
+ * @param ks the keyset to cut. It will be modified by removing
+ *           all keys below the cutpoint.
+ *           The cutpoint itself will also be removed.
  * @param cutpoint the point where to cut out the keyset
  */
 KeySet *ksCut(KeySet *ks, const Key *cutpoint)

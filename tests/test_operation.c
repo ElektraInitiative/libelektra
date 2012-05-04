@@ -181,7 +181,7 @@ void test_cut()
 	result = ksCut(orig, cutpoint);
 	succeed_if (ksGetSize(orig) == 0, "orig not empty");
 	real_orig = set_oa();
-	compare_keyset (result, real_orig);
+	succeed_if (compare_keyset (result, real_orig) == 0, "orig wrong");
 	ksDel (orig);
 	ksDel (result);
 	ksDel (real_orig);
@@ -218,6 +218,43 @@ void test_cut()
 		ksDel (cmp_orig[i]);
 		ksDel (cmp_result[i]);
 	}
+}
+
+void test_cutpoint()
+{
+	printf ("Testing operation cut point\n");
+
+	Key *cutpoint = keyNew("user/a/b/c", KEY_END);
+	KeySet *orig = ksNew(30,
+			keyNew("user/a", KEY_END),
+			keyNew("user/a/b", KEY_END),
+			cutpoint,
+			keyNew("user/a/b/c/d", KEY_END),
+			keyNew("user/a/b/c/d/e", KEY_END),
+			keyNew("user/a/b/c/e", KEY_END),
+			keyNew("user/a/b/c/e/d", KEY_END),
+			KS_END);
+
+	KeySet *part = ksCut(orig, cutpoint);
+
+	KeySet *cmp_orig = ksNew(15,
+			keyNew("user/a", KEY_END),
+			keyNew("user/a/b", KEY_END),
+			KS_END);
+	succeed_if (compare_keyset(orig, cmp_orig) == 0, "orig keys wrong");
+	ksDel (orig);
+	ksDel (cmp_orig);
+
+	KeySet *cmp_part = ksNew(15,
+			cutpoint,
+			keyNew("user/a/b/c/d", KEY_END),
+			keyNew("user/a/b/c/d/e", KEY_END),
+			keyNew("user/a/b/c/e", KEY_END),
+			keyNew("user/a/b/c/e/d", KEY_END),
+			KS_END);
+	succeed_if (compare_keyset(part, cmp_part) == 0, "part keys wrong");
+	ksDel (part);
+	ksDel (cmp_part);
 }
 
 ssize_t ksCopyInternal(KeySet *ks, size_t to, size_t from);
@@ -433,12 +470,13 @@ int main(int argc, char** argv)
 
 	test_search();
 	test_cut();
+	test_cutpoint();
 	// test_copy(); // has memory problems...
 	test_simple();
 	test_cursor();
 	test_morecut();
 
-	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	printf("\ntest_operation RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
 }
