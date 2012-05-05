@@ -60,14 +60,14 @@ if (BUILD_TESTING)
 endif (BUILD_TESTING)
 
 if (BUILD_FULL OR BUILD_STATIC)
-	add_subdirectory (examples)
+	if (BUILD_EXAMPLES)
+		add_subdirectory (examples)
+	endif (BUILD_EXAMPLES)
 endif (BUILD_FULL OR BUILD_STATIC)
-#add_subdirectory (examples EXCLUDE_FROM_ALL)
 
 if (BUILD_FULL OR BUILD_STATIC)
-	add_subdirectory (benchmarks)
+	add_subdirectory (benchmarks EXCLUDE_FROM_ALL)
 endif (BUILD_FULL OR BUILD_STATIC)
-#add_subdirectory (benchmarks EXCLUDE_FROM_ALL)
 
 ADD_CUSTOM_TARGET(uninstall
 	"${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/ElektraUninstall.cmake")
