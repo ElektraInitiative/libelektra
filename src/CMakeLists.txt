@@ -11,4 +11,3 @@ add_subdirectory (libelektra)
 add_subdirectory (bindings)
 
 add_subdirectory (kdb)
-add_subdirectory (preload)
