@@ -1,6 +1,6 @@
 #!/bin/sh
 #test_script.sh
-#shell test suite for @KDB_COMMAND@ command
+#shell test suite for kdb command
 
 #variables
 nbError=0
@@ -15,8 +15,14 @@ export HOME
 
 VALUE="value"
 ROOT="user/tests/script"
+
 USER="`id -un`"
 GROUP="`id -gn`"
+
+FOLDER=@KDB_DB_HOME@/$USER/@KDB_DB_USER@
+FILE=test.ecf
+KDB=@KDB_COMMAND@
+
 DATE="`date \"+%b %d %H:%M\"`"
 
 #define succeed_if(x,y) nbTest++; if (!(x)) { nbError++; printf("%s:%d: error in %s: %s\n", __FILE__, __LINE__, __FUNCTION__, y);}
@@ -49,38 +55,47 @@ echo
 
 echo "testing set and get commands"
 
-@KDB_COMMAND@ set $ROOT "root"
+#$KDB mount $FILE $ROOT >/dev/null
+#succeed_if "could not mount $FILE at $ROOT"
+
+$KDB set $ROOT "root" >/dev/null
 exit_if_fail "could not set root"
 
-[ "x`@KDB_COMMAND@ get $ROOT 2> /dev/null`" = "xroot" ]
+#[ -f $FOLDER/$FILE ]
+#succeed_if "$FOLDER/$FILE does not exist"
+
+[ "x`$KDB get $ROOT 2> /dev/null`" = "xroot" ]
 succeed_if "could not set root"
 
-@KDB_COMMAND@ set "$ROOT/value" "$VALUE"
+$KDB set "$ROOT/value" "$VALUE" >/dev/null
 exit_if_fail "could not set value"
 
-[ "x`@KDB_COMMAND@ get $ROOT/value 2> /dev/null`" = "x$VALUE" ]
+[ "x`$KDB get $ROOT/value 2> /dev/null`" = "x$VALUE" ]
 exit_if_fail "cant get $ROOT/value"
 
 echo "testing ls command"
 
-[ "x`@KDB_COMMAND@ ls $ROOT/value 2> /dev/null`" = "x$ROOT/value" ]
+[ "x`$KDB ls $ROOT/value 2> /dev/null`" = "x$ROOT/value" ]
 succeed_if "cant ls $ROOT (may mean that $ROOT folder is not clean)"
 
 echo "testing rm command"
 
-@KDB_COMMAND@ rm $ROOT/value
+$KDB rm $ROOT/value
 succeed_if "could not remove user/test/value"
 
-@KDB_COMMAND@ get $ROOT/value 2> /dev/null
+$KDB get $ROOT/value 2>/dev/null
 [ $? != "0" ]
 succeed_if "got removed key $ROOT/value"
 
-@KDB_COMMAND@ rm $ROOT
+$KDB rm $ROOT >/dev/null 2>/dev/null
 succeed_if "could not remove user/test/value"
 
-@KDB_COMMAND@ get $ROOT/value 2> /dev/null
+$KDB get $ROOT/value 2> /dev/null
 [ $? != "0" ]
 succeed_if "got removed key $ROOT"
+
+#[ ! -f $FOLDER/$FILE ]
+#succeed_if "$FOLDER/$FILE still exist"
 
 
 #############
@@ -89,10 +104,10 @@ succeed_if "got removed key $ROOT"
 
 #echo "testing xml importing and exporting"
 #
-#@KDB_COMMAND@ import fstab.xml
+#$KDB import fstab.xml
 #succeed_if "importing fstab.xml failed"
 #
-#@KDB_COMMAND@ export user/tests/fstab > fstab-gen.xml
+#$KDB export user/tests/fstab > fstab-gen.xml
 #succeed_if "exporting user/tests/fstab failed"
 #
 #diff fstab-gen.xml fstab-cmp.xml
@@ -101,7 +116,7 @@ succeed_if "got removed key $ROOT"
 #rm fstab-gen.xml
 #succeed_if "could not rm key-gen.xml"
 #
-#@KDB_COMMAND@ rm -r user/tests/fstab
+#$KDB rm -r user/tests/fstab
 
 echo test_script.sh RESULTS: $nbTest "test(s)" done $nbError "error(s)".
 exit $nbError

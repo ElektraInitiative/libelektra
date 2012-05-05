@@ -16,8 +16,7 @@ set (KDB_DB_HOME "/home" CACHE PATH
 
 # May be changed to .config when XDG will be implemented
 set (KDB_DB_USER ".kdb" CACHE PATH
-		"This path will be appended after the resolved home directory."
-		"It completes the path to the user key database."
+		"This path will be appended after the resolved home directory. It completes the path to the user key database."
 		)
 
 option (BUILD_SHARED "Build the shared version of elektra." ON)
