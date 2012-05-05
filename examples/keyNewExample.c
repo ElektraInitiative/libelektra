@@ -24,7 +24,7 @@ int main() {
 		KEY_END));                    /* end of args */
 
 	ksAppendKey(ks,keyNew("user/tmp/ex4",
-		KEY_TYPE, KEY_TYPE_BINARY,     /* type and value size */
+		KEY_BINARY,
 		KEY_COMMENT,"value is truncated",
 		KEY_SIZE, 7,
 		KEY_VALUE,"some data",        /* value that will be truncated to 7 bytes */

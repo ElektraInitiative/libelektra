@@ -36,11 +36,11 @@ int main()
 			KEY_VALUE, "myvalue",
 			KEY_END);
 	printf ("Created key %s with value %s\n",
-			keyName(key), keyValue(key));
+			keyName(key), keyString(key));
 
 	f(key);
 	printf ("Key is unchanged with value %s\n",
-			keyValue(key));
+			keyString(key));
 
 	g(key, ks);
 	printf ("A duplication was appended in keyset with name %s\n",
@@ -48,7 +48,7 @@ int main()
 
 	h(key);
 	printf ("Key has changed to name %s with value %s\n",
-			keyName(key), keyValue(key));
+			keyName(key), keyString(key));
 
 	/* key is yet independent */
 	keyDel (key);
@@ -57,7 +57,7 @@ int main()
 	origKey = ksNext (ks);
 	key = keyDup (origKey);
 	printf ("A duplication of the key %s with value %s\n",
-			keyName(key), keyValue(key));
+			keyName(key), keyString(key));
 
 	keyDel (key);
 	ksDel (ks);

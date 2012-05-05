@@ -1,5 +1,8 @@
 #include <kdb.h>
 
+// for keySetComment
+#include <kdbextension.h>
+
 #include <stdlib.h>
 
 /**A functional access to keys.

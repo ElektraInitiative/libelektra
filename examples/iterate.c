@@ -4,6 +4,7 @@
  * over a KeySet in an elegant way. */
 
 #include <kdb.h>
+#include <kdbextension.h>
 #include <stdio.h>
 
 /*
