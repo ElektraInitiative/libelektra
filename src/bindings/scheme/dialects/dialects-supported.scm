@@ -1,2 +1,0 @@
-scheme48
-mzscheme
