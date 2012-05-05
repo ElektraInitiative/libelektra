@@ -25,23 +25,19 @@
 #endif
 
 #ifndef KDB_DB_USER
-/**This directory will be concatenated with a prefix which will be searched
- * at runtime inside kdbbGetFullFilename().
- *@see kdbbGetFullFilename
- */
-#define KDB_DB_USER              ".config"
+/** Depending on the resolver this might be the
+  * postfix to search for user configuration. */
+#define KDB_DB_USER              "@KDB_DB_USER@"
 #endif
 
 #ifndef KDB_DB_HOME
-/**This directory will be used as fallback when no other method of
- * kdbbGetFullFilename() works.
- *@see kdbbGetFullFilename
- */
-#define KDB_DB_HOME              "/home"
+/** Depending on the resolver this might be the root 
+  * to search for user configuration. */
+#define KDB_DB_HOME              "@KDB_DB_HOME@"
 #endif
 
 #ifndef KDB_KEY_MOUNTPOINTS
-/**Backend information.
+/**Backend mounting information.
  *
  * This key directory tells you where each backend is mounted
  * to which mountpoint. */

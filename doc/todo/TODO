@@ -1,21 +1,26 @@
 #For possible extensions in future, see FUTURE
 
+
+cppplugin:
+	make a nice header-only cpp solution for plugins
+	(integration into cpp binding)
+	assemble C symbols with macros
+	keep C->C++ problems at one place to be included
+
+
 backends:
 	using libraries:
-		nickel
+		yajl
 		libconfig
 		eet
 	using keysets:
 		bind
 		memory
-	update old backends:
-		berkleydb
-		ini
-		winregistry
-		uniconf
 
-bindings: using swig
-	cpp
+optimize a key to use a single malloc
+(under typical circumstances)
+
+bindings: using swig?
 	python
 	scheme
 	java
