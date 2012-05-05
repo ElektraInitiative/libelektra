@@ -1,9 +1,9 @@
 /***************************************************************************
             kwallet.c  -  Skeleton of backends to access the Key Database
                              -------------------
-    begin                : Mon Dec 26 2004
-    copyright            : (C) 2004 by Avi Alkalay
-    email                : avi@unix.sh
+    begin                : 2011
+    copyright            : (C) 2011 by Markus Raab
+    email                : elektra@markus-raab.org
  ***************************************************************************/
 
 /***************************************************************************
@@ -13,16 +13,6 @@
  *                                                                         *
  ***************************************************************************/
 
-
-
-/***************************************************************************
- *                                                                         *
- *   This is the skeleton of the methods you'll have to implement in order *
- *   to provide libelektra.so a valid backend.                             *
- *   Simple fill the empty _kwallet functions with your code and you are   *
- *   ready to go.                                                          *
- *                                                                         *
- ***************************************************************************/
 
 
 #include "kwallet.hpp"
