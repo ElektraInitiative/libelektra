@@ -1,0 +1,19 @@
+#!/bin/sh
+
+#copying and renaming of templates is often
+#useful
+
+set -e
+
+
+First=`echo $1 | sed 's/\<./\u&/'`
+ALL=`echo $1 | sed 's/.*/\U&/'`
+
+cp -r template $1
+cd $1
+mv template.c $1.c
+mv template.h $1.h
+
+sed -i s/TEMPLATE/$ALL/g $1.c $1.h CMakeLists.txt
+sed -i s/Template/$First/g $1.c $1.h CMakeLists.txt
+sed -i s/template/$1/g $1.c $1.h CMakeLists.txt
