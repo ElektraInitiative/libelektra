@@ -1,7 +1,6 @@
-The thesis from Markus Raab (see in the folder papers)
-describes what should work - but there are some known
-BUGS described in this file.
-
+Known bugs will be listed here.
+But is planned to move to the
+freedesktop.org bug database.
 
 == DOCUMENTATION ==
 
@@ -94,39 +93,20 @@ path: UUID= LABEL= rechner:/...
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-= BETA =
-
-
-
 == STREAMING ==
 
-define C/C++ serialization API:
-	dump
-	xmltool
+Own serializing API was not a good idea
+better exploit directly using kdbGet and kdbSet
+from plugins with an hand-crafted trivial resolver (doing nothing)
 
 streaming: for C++ Backends
 	void serialize(ostream& os, const KeySet& ks);
 	void deserialize(istream& is, KeySet& ks);
-	export these symbols via config interface
 
-use backend for other things:
-	e.g.  xml backend for xml serializations
-	ksOutput
-	ksGenerate
+C serialization
+	(ksNew(keyNew()))
 
-using C serialization
-	c (ksNew(keyNew()))
+json serialization
 
 
 == CONTRACTS ==

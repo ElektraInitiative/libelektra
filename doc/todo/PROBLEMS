@@ -1,11 +1,16 @@
 = Missing kdb Features =
 
-umount missing! (rm -r..)
+umount missing!
+	(workaround: use kdb rm -r system/elektra/mountpoints)
 
 list existing plugins?
 	which are available? (src/plugins)
 	which are installed
 	kdb pls?
+	(workaround: use ls /usr/lib/elektra)
+
+
+
 
 = Missing Testcases =
 
@@ -32,6 +37,13 @@ and execute the kdb test functions
 (but reduce #)
 
 resolver tests?
+
+
+== Debian Package ==
+
+split up to serveral packages per plugin
+and -full in own package (has all dependencies)
+
 
 == cmake ==
 

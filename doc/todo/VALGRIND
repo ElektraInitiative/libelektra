@@ -1,3 +1,46 @@
+There are still some valgrind issues:
+
+= See 9ef34660fa4a28107a2fb4ada6284e3fd5cb4b52 =
+
+
+    There seems to be still a problem.
+    Need to investigate later,
+    the kdb tool does not show this behaviour
+
+    Test sizes in backends with trie
+    Invalid read of size 8
+       at 0x5082187: elektraBackendClose (backend.c:375)
+       by 0x50837A2: kdbClose (kdb.c:258)
+       by 0x4043A3: test_triesizes (test_splitget.c:468)
+       by 0x406B52: main (test_splitget.c:704)
+     Address 0x6c17ef8 is 264 bytes inside a block of size 272 free'd
+       at 0x4C240FD: free (vg_replace_malloc.c:366)
+       by 0x508223F: elektraBackendClose (backend.c:394)
+       by 0x508DB14: elektraTrieClose (trie.c:95)
+       by 0x508DAFF: elektraTrieClose (trie.c:93)
+       by 0x5083796: kdbClose (kdb.c:256)
+       by 0x4043A3: test_triesizes (test_splitget.c:468)
+       by 0x406B52: main (test_splitget.c:704)
+
+    Invalid write of size 8
+       at 0x5082195: elektraBackendClose (backend.c:375)
+       by 0x50837A2: kdbClose (kdb.c:258)
+       by 0x4043A3: test_triesizes (test_splitget.c:468)
+       by 0x406B52: main (test_splitget.c:704)
+     Address 0x6c17ef8 is 264 bytes inside a block of size 272 free'd
+       at 0x4C240FD: free (vg_replace_malloc.c:366)
+       by 0x508223F: elektraBackendClose (backend.c:394)
+       by 0x508DB14: elektraTrieClose (trie.c:95)
+       by 0x508DAFF: elektraTrieClose (trie.c:93)
+       by 0x5083796: kdbClose (kdb.c:256)
+       by 0x4043A3: test_triesizes (test_splitget.c:468)
+       by 0x406B52: main (test_splitget.c:704)
+
+
+
+= Older issue =
+
+
 markus@markusbyte:~e/build> v src/kdb/kdb-static rm system/filesystems/home/type                                                           Freitag 14:36:56
 ==4985== Memcheck, a memory error detector.
 ==4985== Copyright (C) 2002-2007, and GNU GPL'd, by Julian Seward et al.
