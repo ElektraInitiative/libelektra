@@ -50,3 +50,10 @@ and -full in own package (has all dependencies)
 -> cmake names
 
 Cleanup non-working code!
+
+
+== clear_sync situation unclear?? ==
+
+what about
+keyClearSync
+currently only used in dump??
