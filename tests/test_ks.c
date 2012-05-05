@@ -105,6 +105,7 @@ void test_ksNew()
 	// TODO: why is the cursor here?
 	succeed_if (!strcmp(keyName(ksCurrent(ks_c)), "system/valid/key2"),
 			"cursor jumped somewhere else");
+	ksDel (ks_c);
 }
 
 void test_ksEmpty()

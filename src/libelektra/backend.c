@@ -372,7 +372,7 @@ int elektraBackendClose(Backend *backend, Key* errorKey)
 
 	if (!backend) return -1;
 
-	backend->refcounter --;
+	-- backend->refcounter;
 
 	/* Check if we have the last reference on the backend (unsigned!) */
 	if (backend->refcounter > 0) return 0;
