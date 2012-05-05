@@ -1,10 +1,18 @@
 0.8.0
 
 Finally it is done, 0.8.0 is finished.
-With a very similar API to 0.7.0
-(see APICHANGES) it introduces a completely
-new plugin framework as shown in
-papers/thesis.pdf
+Even though it has a very similar API to 0.7.0
+(see APICHANGES) the implementation changed
+paradigm-shifting.
+It introduces a completely new plugin framework,
+which allows you to check types and structure
+of the keys, make dbus-notification, log to syslog,
+change the way how filenames are resolved and change
+the configuration format and files
+at runtime.
+
+Elektra has a new presence at freedesktop, see
+ http://www.freedesktop.org/wiki/Software/Elektra
 
 
 0.7.0
