@@ -63,8 +63,8 @@
  * You may also read the configuration you can get with elektraPluginGetConfig() and transform it
  * into other structures used by your plugin.
  *
- * @note The plugin must not have any global variables. If you do your plugin will
- * not be threadsafe.
+ * @note The plugin must not have any global variables. If you do
+ * elektra will not be threadsafe.
  *
  * Instead you can use elektraPluginGetData() and elektraPluginSetData() to store
  * and get any information related to your plugin.
@@ -81,14 +81,15 @@ int elektraPluginOpen(KDB *handle) {
 }
  * @endcode
  *
- * Make sure to free everything in elektraPluginClose().
+ * @note Make sure to free everything within elektraDocClose().
  *
  * @return 0 on success
  * @param handle contains internal information of @link kdbOpen() opened @endlink key database
+ * @param errorKey defines an errorKey
  * @see kdbOpen()
  * @ingroup plugin
  */
-int elektraPluginOpen(Plugin *handle)
+int elektraDocOpen(Plugin *handle, Key *errorKey)
 {
 	/* plugin initialization logic */
 
@@ -116,7 +117,8 @@ int elektraPluginOpen(Plugin *handle)
  * @see kdbClose()
  * @ingroup plugin
  */
-int elektraPluginClose(KDB *handle) {
+int elektraDocClose(Plugin *handle, Key *errorKey)
+{
 	return 0; /* success */
 }
 
@@ -136,7 +138,7 @@ int elektraPluginClose(KDB *handle) {
  * so that the application using elektra can access it.
  * See the live cycle of a comment to understand:
  * @code
-elektraPluginGet(KDB *handle, KeySet *returned, Key *parentKey)
+elektraDocGet(KDB *handle, KeySet *returned, Key *parentKey)
 {
 	// the task of elektraPluginGet is to retrieve the comment out of the permanent storage
 	Key *key = keyDup (parentKey); // generate a new key to hold the information
@@ -147,7 +149,7 @@ elektraPluginGet(KDB *handle, KeySet *returned, Key *parentKey)
 }
 
 // Now return to kdbGet
-int kdbGet(KDB *handle, KeySet *keyset, Key *parentKey, options)
+int elektraDocGet(Plugin *handle, KeySet *keyset, Key *parentKey)
 {
 	elektraPluginGet (handle, keyset, 0);
 	// postprocess the keyset and return it
@@ -218,7 +220,7 @@ void usercode (Key *key)
  * returns the next key out from the storage.
  * The typical loop now will be like:
  * @code
-ssize_t elektraPluginGet(KDB *handle, KeySet *update, const Key *parentKey) {
+ssize_t elektraDocGet(KDB *handle, KeySet *update, const Key *parentKey) {
 	Key * current;
 	KeySet *returned = ksNew(ksGetSize(update)*2, KS_END);
 
@@ -317,7 +319,7 @@ if (strcmp (keyName(kdbhGetMountpoint(handle)), keyName(parentKey))) return 0;
  *
  * @ingroup plugin
  */
-int elektraPluginGet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraDocGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	ssize_t nr_keys = 0;
 	/* get all keys below parentKey and count them with nr_keys */
@@ -421,12 +423,20 @@ elektraPluginSet(KDB *handle, KeySet *keyset, Key *parentKey)
  *
  * @ingroup plugin
  */
-int elektraPluginSet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraDocSet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	ssize_t nr_keys = 0;
 	/* set all keys below parentKey and count them with nr_keys */
 
 	return nr_keys;
+}
+
+/**
+  * See resolver for more information
+  */
+int elektraDocError(Plugin *handle, KeySet *returned, Key *parentKey)
+{
+	return 0;
 }
 
 /**
@@ -470,10 +480,11 @@ int elektraPluginSet(Plugin *handle, KeySet *returned, Key *parentKey)
 Plugin *ELEKTRA_PLUGIN_EXPORT(doc)
 {
 	return elektraPluginExport(DOC_PLUGIN_NAME,
-		ELEKTRA_PLUGIN_OPEN,	&elektraPluginOpen,
-		ELEKTRA_PLUGIN_CLOSE,	&elektraPluginClose,
-		ELEKTRA_PLUGIN_GET,	&elektraPluginGet,
-		ELEKTRA_PLUGIN_SET,	&elektraPluginSet,
+		ELEKTRA_PLUGIN_OPEN,	&elektraDocOpen,
+		ELEKTRA_PLUGIN_CLOSE,	&elektraDocClose,
+		ELEKTRA_PLUGIN_GET,	&elektraDocGet,
+		ELEKTRA_PLUGIN_SET,	&elektraDocSet,
+		ELEKTRA_PLUGIN_ERROR,	&elektraDocError,
 		ELEKTRA_PLUGIN_END);
 }
 

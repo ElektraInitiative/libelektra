@@ -1,21 +1,26 @@
 include(LibAddMacros)
 
-set (INCLUDES /usr/include/qt3 /usr/include/kde)
-set (LIBRARIES /usr/lib/libkwalletclient.so.1 /usr/lib/libqt-mt.so.3 pthread)
+if (IS_DIRECTORY /usr/include/qt3 AND IS_DIRECTORY /usr/include/kde)
 
-add_includes (elektra-full ${INCLUDES})
-include_directories(${INCLUDES})
+	set (INCLUDES /usr/include/qt3 /usr/include/kde)
+	set (LIBRARIES /usr/lib/libkwalletclient.so.1 /usr/lib/libqt-mt.so.3 pthread)
 
-set (SOURCES kwallet.hpp kwallet.cpp)
-add_sources (elektra-full ${SOURCES})
-add_headers (SOURCES)
+	add_includes (elektra-full ${INCLUDES})
+	include_directories(${INCLUDES})
 
-add_library (elektra-kwallet MODULE ${SOURCES})
-install (TARGETS elektra-kwallet EXPORT kdbBackendFactory DESTINATION lib/elektra)
+	set (SOURCES kwallet.hpp kwallet.cpp)
+	add_sources (elektra-full ${SOURCES})
+	add_headers (SOURCES)
 
-target_link_libraries (elektra-kwallet ${LIBRARIES})
-add_libraries(elektra-full ${LIBRARIES})
+	add_library (elektra-kwallet MODULE ${SOURCES})
+	install (TARGETS elektra-kwallet EXPORT kdbBackendFactory DESTINATION lib/elektra)
 
+	target_link_libraries (elektra-kwallet ${LIBRARIES})
+	add_libraries(elektra-full ${LIBRARIES})
+
+else()
+	remove_plugin (kwallet3 "kde3 not found")
+endif ()
 
 
 #find_package( KDE4 REQUIRED )
