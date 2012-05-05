@@ -53,7 +53,7 @@ echo "using $KDB as kdb commando"
 #s: short key name and make it shell like with quoting
 #v: give value
 #p: prefix this
-$KDB ls /zsh/env | while read key; do
+$KDB ls user/zsh/env | while read key; do
 	$(
 	echo -n 'export '
 	$KDB get -s $key
