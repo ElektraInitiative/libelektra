@@ -477,6 +477,12 @@ int keyClose(Key *key);
 int ksInit(KeySet *ks);
 int ksClose(KeySet *ks);
 
+int elektraStrCmp (const char *s1, const char *s2);
+int elektraStrCaseCmp (const char *s1, const char *s2);
+size_t elektraStrLen(const char *s);
+
+int keyClearSync (Key *key);
+
 /** Test a bit. @see set_bit(), clear_bit() */
 #define test_bit(var,bit)            ((var) &   (bit))
 /** Set a bit. @see clear_bit() */

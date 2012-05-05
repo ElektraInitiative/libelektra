@@ -59,13 +59,6 @@ KeySet *elektraPluginGetConfig(Plugin *handle);
 void elektraPluginSetData(Plugin *plugin, void *handle);
 void* elektraPluginGetData(Plugin *plugin);
 
-// needed for storage plugins?
-int keyClearSync (Key *key);
-
-int elektraStrCmp (const char *s1, const char *s2);
-int elektraStrCaseCmp (const char *s1, const char *s2);
-size_t elektraStrLen(const char *s);
-
 
 #define PLUGINVERSION "1"
 

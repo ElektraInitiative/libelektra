@@ -46,7 +46,7 @@ include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 file (GLOB SRC_FILES *.c)
 
 #remove those we don't want..
-file (GLOB RM_FILES exportsymbols.c kdbmainpage.c inline.c kdbhighlevel.c)
+file (GLOB RM_FILES exportsymbols.c kdbmainpage.c)
 list (REMOVE_ITEM SRC_FILES ${RM_FILES})
 
 #now add all source files of other folders

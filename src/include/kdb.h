@@ -91,16 +91,6 @@ int kdbGet(KDB *handle, KeySet *returned,
 int kdbSet(KDB *handle, KeySet *returned,
 	Key * parentKey);
 
-ssize_t kdbGetByName(KDB *handle, KeySet *returned,
-	const char *parentName, option_t options);
-
-int kdbGetKey(KDB *handle, Key *key);
-int kdbSetKey(KDB *handle, const Key *key);
-
-int kdbGetString(KDB *handle, const char *keyname, char *returned,
-	size_t maxSize);
-int kdbSetString(KDB *handle, const char *keyname, const char *value);
-int kdbRemove(KDB *handle, const char *keyname);
 
 
 /**************************************

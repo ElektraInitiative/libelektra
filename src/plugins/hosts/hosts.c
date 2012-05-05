@@ -27,6 +27,8 @@
 
 #include "hosts.h"
 
+size_t elektraStrLen(const char *s);
+
 
 /** Appends a comment to key found in line.
  *
