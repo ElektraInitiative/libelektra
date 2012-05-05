@@ -1,3 +1,11 @@
+= Resolver =
+
+auto test cases for locking file
+give filename in warning!
+(dont force to strace)
+disable warning for writing the first time..
+
+
 = Missing kdb Features =
 
 umount missing!

@@ -12,9 +12,9 @@ install/libelektra-bin::
 CMAKE_FLAGS = \
 	-DCMAKE_INSTALL_PREFIX=/usr \
 	-DPLUGINS="dump;resolver;ccode;hosts;syslog;tracer;error;fstab;network;null;path;simpleini;success;tcl;timeofday;type;xmltool" \
-	-DKDB_DB_SYSTEM=/etc/kdb \
-	-DKDB_DB_HOME=/home \
-	-DKDB_DB_USER=.kdb \
+	-DKDB_DB_SYSTEM:PATH="/etc/kdb" \
+	-DKDB_DB_HOME:PATH="/home" \
+	-DKDB_DB_USER:PATH=".kdb" \
 	-DBUILD_FULL=OFF
 #"dump;resolver;hidden;iconv;syslog;error;validation;xmltool;tracer;timeofday;dbus;glob;hosts;network;type;struct;path;fstab;ccode;simplei;ni;tcl;hexcode;null;ni"
 
