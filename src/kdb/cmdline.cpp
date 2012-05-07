@@ -20,6 +20,7 @@ Cmdline::Cmdline (int argc, char** argv,
 	humanReadable(),
 	help(),
 	interactive(),
+	noNewline(),
 	test(),
 	recursive(),
 	strategy("preserve"),
@@ -70,6 +71,12 @@ Cmdline::Cmdline (int argc, char** argv,
 		long_options.push_back(o);
 		helpText += "-i --interactive         instead of passing all information by parameters\n";
 		helpText += "                         ask the user interactively\n";
+	}
+	if (acceptedOptions.find('n')!=string::npos)
+	{
+		option o = {"no-newline", no_argument, 0, 'n'};
+		long_options.push_back(o);
+		helpText += "-n --no-newline          suppress the newline at the end of the output\n";
 	}
 	if (acceptedOptions.find('t')!=string::npos)
 	{
@@ -124,6 +131,7 @@ Cmdline::Cmdline (int argc, char** argv,
 		case 'h': humanReadable = true; break;
 		case 'H': help = true; break;
 		case 'i': interactive = true; break;
+		case 'n': noNewline = true; break;
 		case 't': test = true; break;
 		case 'r': recursive = true; break;
 		case 's': strategy = optarg; break;

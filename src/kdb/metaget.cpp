@@ -25,8 +25,18 @@ int MetaGetCommand::execute (Cmdline const& cl)
 	kdb.get(conf, parentKey);
 	Key k = conf.lookup(keyname);
 
-	if (!k) cout << "Key not found" << endl;
-	else cout << k.getMeta<string>(metaname) << endl;
+	if (!k)
+	{
+		cerr << "Key not found" << endl;
+		return 1;
+	}
+
+	cout << k.getMeta<string>(metaname);
+	
+	if (!cl.noNewline)
+	{
+		cout << endl;
+	}
 
 	return 0;
 }

@@ -30,7 +30,12 @@ int GetCommand::execute (Cmdline const& cl)
 		return 1;
 	}
 
-	cout << k.getString() << endl;
+	cout << k.getString();
+
+	if (!cl.noNewline)
+	{
+		cout << endl;
+	}
 
 	return 0;
 }
