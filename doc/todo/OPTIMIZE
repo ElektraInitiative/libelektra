@@ -1,0 +1,16 @@
+== OPTIMIZE ==
+
+benchmark first!
+
+Key unchanged?
+
+optimize check if changes before make dirty
+(other implementations possible: shadow copies?)
+    have all memory of a Key in a single allocation block
+
+
+ksAppend() in O(1)
+KDB_O_NOALL could use binary search
+
+
+keyNew should only need a single malloc
