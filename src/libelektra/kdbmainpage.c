@@ -3,11 +3,12 @@
  *
  * @section overview Elektra Initiative Overview
  *
- * Elektra is a universal hierarchical configuration store, with related goals like
- * GConf and the Windows Registry. It allows programs to read and save their configurations
- * with a consistent API, and allows them to be aware of other applications' configurations,
- * leveraging easy application integration. The whole point of it is to tie applications
- * together, so that they can co-operate and share their user-preferences.
+ * Elektra provides a universal and secure framework to store
+ * configuration parameters in a global, hierarchical key database. The
+ * core is a small library implemented in C. The plugin-based framework
+ * fulfills many configuration-related tasks to avoid any unnecessary
+ * code duplication across applications while it still allows the core
+ * to stay without any external dependency. Elektra abstracts from 
  *
  * The developers are associated to unix philosophy and the very practical point consists of
  * writing a configuration library. Every software needs this functionality, it is not easy
@@ -15,23 +16,19 @@
  *
  * See the website for more information http://www.libelektra.org
  *
- * Please report all bugs related to interface, documentation or
- * implementation http://bugs.libelektra.org
- *
- *
- *
  *
  *
  * @section focus Major focal points
  *
- * 1. API implementation to access the key/value pairs namespace 
- * 2. Implement the API with a variety of Backends and Bindings 
- * 3. Definition of a standard key/value pair hierarchy, namespace and semantics 
- *
- * This document occupies with the API implementation, documentation, internals and backends.
- * On the one hand it gives an overview and an introduction for developers using elektra, on the
+ * This document occupies with the API implementation, documentation,
+ * internals and plugins.
+ * On the one hand it gives an overview and an introduction for
+ * developers using Elektra, on the
  * other hand it gives an informal descriptions what methods must and may provide
  * to allow an alternative implementation using this description.
+ *
+ * The latest version of this document can be found at
+ * http://doc.libelektra.org/api/current/html
  *
  *
  *
@@ -62,8 +59,6 @@
  * even for the most basic system programs, which are all made in C. Also,
  * being C, bindings to other languages can appear easily.
  *
- * See http://www.libelektra.org/Bindings for Bindings.
- *
  * The API follows an Object Oriented design, and there are 3 main classes
  * as shown by the figure:
  *
@@ -77,7 +72,6 @@
  *   - @link kdbGet() Get @endlink and @link kdbSet() Set @endlink
 *      @link keyset KeySet @endlink in the Database
  *   - Retrieve and commit individual @link kdbGetString() Key value @endlink
- *   - Create and delete regular, folder or symbolic link Keys
  *   - See @ref kdb "class documentation" for more
  *
  * @link key Key @endlink
@@ -162,7 +156,7 @@
  *
  *
  *
- * @section nomenclature Nomenclature
+ * @section glossary Glossary
  * - @b pop, used in @ref ksPop() and @ref KDB_O_POP means to remove
  *   a key from a keyset.
  * - @b delete, or abbr. del, used in @ref keyDel(), @ref ksDel() and @ref KDB_O_DEL means to free a key or keyset. The memory
