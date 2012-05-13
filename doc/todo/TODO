@@ -7,6 +7,13 @@ cppplugin:
 	assemble C symbols with macros
 	keep C->C++ problems at one place to be included
 
+json:
+	write a json storage using yajl and cppplugin
+
+xdg:
+	write a xdg plugin which does xdg conforming resolving
+
+default plugin handling: resolver/storage
 
 backends:
 	using libraries:

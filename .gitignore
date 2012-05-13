@@ -8,6 +8,10 @@
 
 #ignore all build directories of cmake
 build*
+build-*
+build-32
+build-64
+build-clang
 
 #ignore ctags + gdb history files
 .ctags
@@ -15,6 +19,3 @@ build*
 
 #do not commit core dumps
 core
-
-#boost copy
-src/include/boost

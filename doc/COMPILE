@@ -6,11 +6,7 @@ Elektra is using cmake.
 
 To compile it, please create a folder:
 
- mkdir build
-
-go into the folder
-
- cd build
+ mkdir build && cd build
 
 
 
