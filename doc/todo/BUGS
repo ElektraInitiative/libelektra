@@ -231,8 +231,6 @@ keyset:
 	ensure that every ks* has as @post a sorted keyset
 	ksClear/keyClear weg (da mit *Copy(,0) ersetzbar)
 
-reintroduce highlevel API
-
 
 == Internals ==
 

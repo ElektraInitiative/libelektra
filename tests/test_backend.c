@@ -146,15 +146,6 @@ void test_default()
 	succeed_if (plugin->kdbGet != 0, "no get pointer");
 	succeed_if (plugin->kdbSet != 0, "no set pointer");
 
-	/*
-	   Depends on the which is the plugin
-	succeed_if (!strcmp(plugin->name, "default"), "got wrong name");
-	succeed_if (!strcmp(plugin->author, "Markus Raab <elektra@markus-raab.org>"), "got wrong author");
-	succeed_if (!strcmp(plugin->licence, "BSD"), "got wrong licence");
-	succeed_if (!strcmp(plugin->description, "The first plugin"), "got wrong description");
-	succeed_if (!strcmp(plugin->capability, ""), "got wrong capability (default can do nothing)");
-	*/
-
 	elektraPluginClose(plugin, 0);
 
 	Backend *backend = elektraBackendOpenDefault(modules, 0);

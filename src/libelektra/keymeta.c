@@ -557,6 +557,8 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 /**
  * Get the user ID of a key.
  *
+ * @deprecated This API is obsolete.
+ *
  * @section UID UID
  *
  * The user ID is a unique identification for every user present on a
@@ -611,6 +613,8 @@ cleanup:
 /**
  * Set the user ID of a key.
  *
+ * @deprecated This API is obsolete.
+ *
  * See @ref UID for more information about user IDs.
  *
  * @param key the key object to work with
@@ -639,6 +643,8 @@ int keySetUID(Key *key, uid_t uid)
 
 /**
  * Get the group ID of a key.
+ *
+ * @deprecated This API is obsolete.
  *
  * @section GID GID
  *
@@ -696,6 +702,8 @@ cleanup:
 /**
  * Set the group ID of a key.
  *
+ * @deprecated This API is obsolete.
+ *
  * See @ref GID for more information about group IDs.
  *
  * @param key the key object to work with
@@ -725,6 +733,8 @@ int keySetGID(Key *key, gid_t gid)
 
 /**
  * Set mode so that key will be recognized as directory.
+ *
+ * @deprecated This API is obsolete.
  *
  * The function will add all executable bits.
  *
@@ -772,6 +782,8 @@ int keySetDir(Key *key)
 
 /**
  * Return the key mode permissions.
+ *
+ * @deprecated This API is obsolete.
  *
  * Default is 0664 (octal) for keys and 0775 for directory keys
  * which used keySetDir().
@@ -825,6 +837,10 @@ cleanup:
 /**
  * Set the key mode permissions.
  *
+ * @deprecated This API is obsolete.
+ * It is only a mapping
+ * to keySetMeta(key, "mode", str) which should be prefered.
+ *
  * The mode consists of 9 individual bits for mode permissions.
  * In the following explanation the octal notation with leading
  * zero will be used.
@@ -843,11 +859,9 @@ cleanup:
  * 0000 is the most restrictive mode. No user might read, write
  * or execute the key.
  *
- * Reading the key means to get the value and comment by kdbGet()
- * or all highlevel methods.
+ * Reading the key means to get the value by kdbGet().
  *
- * Writing the key means to set the value and comment by kdbSet()
- * or all highlevel methods.
+ * Writing the key means to set the value by kdbSet().
  *
  * Execute the key means to make a step deeper in the hierarchy.
  * But you must be able to read the key to be able to list the
@@ -912,6 +926,8 @@ int keySetMode(Key *key, mode_t mode)
 /**
  * Get last time the key data was read from disk.
  *
+ * @deprecated This API is obsolete.
+ *
  * Every kdbGet() might update the access time
  * of a key. You get information when the key
  * was read the last time from the database.
@@ -967,6 +983,8 @@ cleanup:
 /**
  * Update the atime information for a key.
  *
+ * @deprecated This API is obsolete.
+ *
  * When you do manual sync of keys you might also
  * update the atime to make them indistinguishable.
  *
@@ -998,6 +1016,8 @@ int keySetATime(Key *key, time_t atime)
 
 /**
  * Get last modification time of the key on disk.
+ *
+ * @deprecated This API is obsolete.
  *
  * You will get 0 when the key was not read already.
  *
@@ -1058,6 +1078,8 @@ cleanup:
 /**
  * Update the mtime information for a key.
  *
+ * @deprecated This API is obsolete.
+ *
  * @param key The Key object to work with
  * @param mtime The new modification time for the key
  * @return 0 on success
@@ -1082,6 +1104,8 @@ int keySetMTime(Key *key, time_t mtime)
 
 /**
  * Get last time the key metadata was changed from disk.
+ *
+ * @deprecated This API is obsolete.
  *
  * You will get 0 when the key was not read already.
  *
@@ -1140,6 +1164,8 @@ cleanup:
 
 /**
  * Update the ctime information for a key.
+ *
+ * @deprecated This API is obsolete.
  *
  * @param key The Key object to work with
  * @param ctime The new change metadata time for the key

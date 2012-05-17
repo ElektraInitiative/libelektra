@@ -157,9 +157,6 @@ int elektraDocOpen(Plugin *handle, Key *errorKey)
  *
  * Make sure to free all memory that your plugin requested at runtime.
  *
- * Specifically make sure to capDel() all capabilites and free your pluginData in
- * elektraPluginGetData().
- *
  * After this call, libelektra.so will unload the plugin library, so this is
  * the point to shutdown any affairs with the storage.
  *
