@@ -73,6 +73,7 @@ elektraPluginFactory elektraModulesLoad (KeySet *modules, const char *name, Key 
 	if (module.symbol.v == NULL)
 	{
 		ELEKTRA_SET_ERROR(2, errorKey, dlerror());
+		dlclose(module.handle);
 		keyDel (moduleKey);
 		return 0;
 	}
