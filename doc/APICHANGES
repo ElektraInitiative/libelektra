@@ -1,21 +1,27 @@
 These document describes the API Changes from 0.7 to 0.8
 
 It was taken care that there are as little as possible,
-but two obvious API bugs had to be fixed:
- - the ksNeedsSort() API which is a disaster
- - the metadata which is filesys only (moved to extensions)
+but three API bugs had to be fixed:
+
+ - the ksNeedsSort() API is no longer needed
+   (keyset is always sorted)
+
+   ksSort() removed
+   ksNeedSort() removed
+
+ - the metadata which was filesys only is removed
+
+   keyMeta: newly introduced API
+   remove old keyGetATime, keyGetUID, ..
+   (They are still implemented with new metadata interface in the
+    testcases: tests/test_meta.c)
+
  - keyset now describes the desired state of configuration (no removed keys)
 
-keyNext:
-	wrong documentation (subsequent calls will still return NULL ptr)
-
-keyMeta:
-	newly introduced API
-
-ksSort removed()
+   keyNext: wrong documentation (subsequent calls will still return NULL ptr)
 
 
-C++ Interface
+C++ Interface (currently not ABI/API compatible anyway):
 
-always compare names (not identity) operator== affected
+- always compare names (not identity) operator== affected
 

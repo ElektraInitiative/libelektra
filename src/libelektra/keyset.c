@@ -18,7 +18,8 @@
  * @defgroup keyset KeySet :: Class Methods
  * @brief Methods to manipulate KeySets.
  *
- * A KeySet is a unsorted set of keys.
+ * A KeySet is a sorted set of keys.
+ * So the correct name actually would be KeyMap.
  *
  * Terminate with ksNew(0) or ksNew(20, ..., KS_END)
  * This is because there is a list of Key* required and
@@ -361,20 +362,6 @@ int ksClear(KeySet *ks)
 	return 0;
 }
 
-
-
-/**
- * @internal
- *
- * @retval 0
- *
- * @deprecated dont use
- *
- */
-int ksNeedSort (const KeySet *ks)
-{
-	return 0;
-}
 
 
 /**
@@ -1752,7 +1739,9 @@ Key *ksLookupByBinary(KeySet *ks, const void *value, size_t size,
 
 
 
-/*
+/**
+ * @internal
+ *
  * Calculates the common parent to all keys in @p ks.
  *
  * This is a c-helper function, you need not implement it in bindings.
@@ -1778,8 +1767,6 @@ Key *ksLookupByBinary(KeySet *ks, const void *value, size_t size,
  * @endcode
  *
  * No common parent is possible, so @p returnedCommonParent will contain nothing.
- *
- * This method will work correctly only sorted KeySets.
  *
  * @param working the Keyset to work with
  * @param returnedCommonParent a pre-allocated buffer that will receive the
@@ -1857,7 +1844,9 @@ ssize_t ksGetCommonParentName(const KeySet *working,char *returnedCommonParent, 
  *********************************************************************/
 
 
-/*
+/**
+ * @internal
+ *
  * Resize keyset.
  *
  * For internal useage only.
