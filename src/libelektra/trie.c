@@ -81,6 +81,7 @@ Backend* elektraTrieLookup(Trie *trie, const Key *key)
  * @param trie the trie to close
  * @param errorKey the key used to report warnings
  * @ingroup trie
+ * @retval 0 on success
  */
 int elektraTrieClose (Trie *trie, Key *errorKey)
 {

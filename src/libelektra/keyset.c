@@ -1487,16 +1487,31 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
  * Cascading is done if the first character is a /. This leads to ignoring
  * the prefix like system/ and user/.
  * @code
-        if (kdbGetByName(handle, "/sw/myapp/current", myConfig, 0 ) == -1)
-                ErrorHandler ("Could not get Keys");
+        if (kdbGet(handle, "user/sw/myapp/current", myConfig, parentKey ) == -1)
+                ErrorHandler ("Could not get Keys", parentKey);
+
+        if (kdbGet(handle, "system/sw/myapp/current", myConfig, parentKey ) == -1)
+                ErrorHandler ("Could not get Keys", parentKey);
 
         if ((myKey = ksLookupByName (myConfig, "/myapp/current/key", 0)) == NULL)
                 ErrorHandler ("Could not Lookup Key");
  * @endcode
- * 
+ *
  * This is the way multi user Programs should get there configuration and
  * search after the values. It is guaranteed that more namespaces can be
  * added easily and that all values can be set by admin and user.
+ *
+ * It is up to the application to implement a sophisticated cascading
+ * algorithm, for e.g. a list of profiles (specific, group and fallback):
+ * @code
+if ((myKey = ksLookupByName (myConfig, "/myapp/current/specific/key", 0)) == NULL)
+	if ((myKey = ksLookupByName (myConfig, "/myapp/current/group/key", 0)) == NULL)
+		if ((myKey = ksLookupByName (myConfig, "/myapp/current/fallback/key", 0)) == NULL)
+			ErrorHandler ("All fallbacks failed to lookup key");
+ * @endcode
+ *
+ * Note that for every profile both the user and the system key are
+ * searched. The first key found will be used.
  *
  * @section fullsearch Full Search
  *

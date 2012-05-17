@@ -174,7 +174,8 @@ typedef struct _Key Key;
  *
  * @ingroup backend
  */
-struct _Key {
+struct _Key
+{
 	/**
 	 * The value, which is a NULL terminated string or binary.
 	 * @see keyString(), keyBinary(),
@@ -235,7 +236,8 @@ typedef struct _KeySet KeySet;
  *
  * @ingroup backend
  */
-struct _KeySet {
+struct _KeySet
+{
 	struct _Key **array;	/**<Array which holds the keys */
 
 	size_t        size;	/**< Number of keys contained in the KeySet */
@@ -299,7 +301,8 @@ struct _KDB {
  *
  * @ingroup backend
  */
-struct _Backend {
+struct _Backend
+{
 	Key *mountpoint;	/*!< The mountpoint where the backend resides.
 		The keyName() is the point where the backend was mounted.
 		The keyValue() is the name of the backend without pre/postfix, e.g.
@@ -329,11 +332,10 @@ struct _Backend {
  * Plugins which are supplied with Elektra are located below src/plugins.
  * It is no problem that plugins are developed external too.
  *
- * TODO: guides how to develop plugins
- *
  * @ingroup backend
  */
-struct _Plugin {
+struct _Plugin
+{
 	KeySet *config;		/*!< This keyset contains configuration for the plugin.
 		Direct below system/ there is the configuration supplied for the backend.
 		Direct below user/ there is the configuration supplied just for the
@@ -366,7 +368,8 @@ struct _Plugin {
  * in a hierachy where backends are mounted - you need the backend mounted
  * closest to the parentKey.
  */
-struct _Trie {
+struct _Trie
+{
 	struct _Trie *children[MAX_UCHAR];/*!< The children building up the trie recursively */
 	char *text[MAX_UCHAR];		/*!< Text identifying this node */
 	size_t textlen[MAX_UCHAR];	/*!< Length of the text */
@@ -380,7 +383,8 @@ struct _Trie {
  * kdbSet() splits keysets. This structure contains arrays for
  * various information needed to process the keysets afterwards.
  */
-struct _Split {
+struct _Split
+{
 	size_t size;		/*!< Number of keysets */
 	size_t alloc;		/*!< How large the arrays are allocated  */
 	KeySet **keysets;	/*!< The keysets */

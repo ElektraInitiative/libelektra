@@ -137,7 +137,8 @@ thread2 {
  *
  * You don't need to use the kdbOpen() if you only want to
  * manipulate plain in-memory Key or KeySet objects without any affairs with
- * the backend key database,
+ * the backend key database or when your application loads plugins
+ * directly.
  *
  * @param errorKey the key which holds errors and warnings which were issued
  *                 must be given
@@ -275,7 +276,8 @@ int kdbClose(KDB *handle, Key *errorKey)
  * Retrieve keys in an atomic and universal way, all other kdbGet Functions
  * rely on that one.
  *
- * The @p returned KeySet must be initialized or may already contain some
+ * The @p returned KeySet must be initialized.
+ * The @p returned KeySet may already contain some
  * keys. The new retrieved keys will be appended using ksAppendKey().
  *
  * It will fully retrieve all keys
@@ -297,7 +299,7 @@ kdbGet(handle, myConfig, key);
 keySetName(key, "user/sw/MyApp");
 kdbGet(handle, myConfig, key);
 
-// check for errors by in key
+// check for errors in key
 keyDel(key);
 
 key = ksLookupByName(myConfig,"/sw/MyApp/key", 0);
@@ -330,15 +332,16 @@ kdbClose(handle, 0); // no more affairs with the key database.
  * keyset, even when they were manipulated.
  *
  * It is your responsibility to save the original keyset if you
- * need it afterwards. If you must get it again, e.g. in another
- * thread a second connection to the key database must be opened
+ * need it afterwards.
+ *
+ * If you must get the same keyset again, e.g. in another
+ * thread you need to open a second handle to the key database
  * using kdbOpen().
  *
  * @param handle contains internal information of @link kdbOpen() opened @endlink key database
  * @param parentKey parent key - invalid name gets all keys
  * @param ks the (pre-initialized) KeySet returned with all keys found
  * 	will not be changed on error or if no update is required
- * @see @link kdbhighlevel kdb higher level Methods @endlink that rely on kdbGet()
  * @see ksLookupByName() for powerful
  * 	lookups after the KeySet was retrieved
  * @return 1 if the keys were retrieved successfully

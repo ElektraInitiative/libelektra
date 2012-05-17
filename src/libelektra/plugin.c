@@ -488,6 +488,7 @@ Plugin *elektraPluginExport(const char *pluginName, ...)
  *
  * @param handle a pointer to the plugin
  * @ingroup plugin
+ * @return keyset to the configuration for that plugin
  */
 KeySet *elektraPluginGetConfig(Plugin *handle)
 {

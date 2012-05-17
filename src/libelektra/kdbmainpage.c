@@ -3,29 +3,27 @@
  *
  * @section overview Elektra Initiative Overview
  *
- * Elektra provides a universal and secure framework to store
- * configuration parameters in a global, hierarchical key database. The
- * core is a small library implemented in C. The plugin-based framework
- * fulfills many configuration-related tasks to avoid any unnecessary
- * code duplication across applications while it still allows the core
- * to stay without any external dependency. Elektra abstracts from 
- *
- * The developers are associated to unix philosophy and the very practical point consists of
- * writing a configuration library. Every software needs this functionality, it is not easy
- * to do it right and performant and we want to avoid any unnecessary code duplication.
+ * Elektra provides a universal and secure framework to store configuration
+ * parameters in a global, hierarchical key database.  The core is a small
+ * library implemented in C. The plugin-based framework fulfills many
+ * configuration-related tasks to avoid any unnecessary code duplication
+ * across applications while it still allows the core to stay without any
+ * external dependency. Elektra abstracts from cross-platform-related issues
+ * with an consistent API, and allows applications to be aware of other
+ * applications' configurations, leveraging easy application integration.
  *
  * See the website for more information http://www.libelektra.org
  *
  *
  *
- * @section focus Major focal points
+ * @section focus API docu
  *
  * This document occupies with the API implementation, documentation,
  * internals and plugins.
  * On the one hand it gives an overview and an introduction for
  * developers using Elektra, on the
  * other hand it gives an informal descriptions what methods must and may provide
- * to allow an alternative implementation using this description.
+ * to allow an alternative implementation of the API.
  *
  * The latest version of this document can be found at
  * http://doc.libelektra.org/api/current/html
@@ -35,8 +33,6 @@
  *
  *
  * @section using Using the Elektra Library
- *
- * See http://www.libelektra.org/Tutorial for first Introduction.
  *
  * A C or C++ source file that wants to use Elektra should include:
  * @code
@@ -71,7 +67,6 @@
  *   - @link kdbOpen() Open @endlink and @link kdbClose() Close @endlink the Database
  *   - @link kdbGet() Get @endlink and @link kdbSet() Set @endlink
 *      @link keyset KeySet @endlink in the Database
- *   - Retrieve and commit individual @link kdbGetString() Key value @endlink
  *   - See @ref kdb "class documentation" for more
  *
  * @link key Key @endlink
@@ -136,21 +131,14 @@
  *
  * @section backendsoverview Backend Overview
  *
- * Elektra itself cant store configuration to harddisk, this work is delegated
- * to the backends.
+ * The core of elektra does not store configuration itself to the
+ * harddisk. Instead this work is delegated to backends.
  *
- * - ... of users perspective
- *
- * - ... of developers perspective
- *   If you want to develop a backend, you should already have some experience
- *   with elektra from the user point of view. You should be familiar with
- *   the data structures: @link key Key @endlink and @link keyset KeySet @endlink
- *   Then you can start reading about Backends:
- *   - They provide storage needed by kdb functions
- *   - Dynamical kdbMount() and kdbUnmount() of backends in the global namespace
- *   - Need to implement
- *     kdbOpen_backend(), kdbClose_backend(), kdbGet_backend(), kdbSet_backend()
- *   - Use ELEKTRA_PLUGIN_EXPORT() to export your functions.
+ * If you want to develop a backend, you should already have some experience
+ * with Elektra from the user point of view. You should be familiar with
+ * the data structures: @link key Key @endlink and @link keyset KeySet @endlink
+ * Then you can start reading about Backends, which are composed out of
+ * @ref plugin.
  *
  *
  *
@@ -161,8 +149,7 @@
  *   a key from a keyset.
  * - @b delete, or abbr. del, used in @ref keyDel(), @ref ksDel() and @ref KDB_O_DEL means to free a key or keyset. The memory
  *   can be used for something else afterwards.
- * - @b remove, used in @ref kdbRemove(), kdbRemoveKey(), @ref KDB_O_NOREMOVE and @ref KDB_O_REMOVEONLY
- *   means that the key/value information in the physical database will be removed permanently.
+ * - @b remove  means that the key/value information in the physical database will be removed permanently.
  *
  */
 

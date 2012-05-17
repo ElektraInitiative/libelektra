@@ -24,25 +24,69 @@
 /**
  * @defgroup plugin Plugins :: Elektra framework for plugins
  *
- * @section intro Introduction
+ * @section history History
  *
  * @since Since version 0.4.9, Elektra can dynamically load different key storage
  * plugins.
  *
- * @since Since version 0.7.0 Elektra can have multiple plugins,
+ * @since Since version 0.7.0 Elektra can have multiple backends,
  * mounted at any place in the key database.
  *
- * @since Since version 0.8.0 Elektra plugins are composed out of multiple
+ * @since Since version 0.8.0 Elektra backends are composed out of multiple
  * plugins.
  *
- * @subsection overview Overview
+ * @section overview Overview
+ *
+ * There are different types of plugins for different concerns.
+ * The types of plugins handled in this document:
+ * - file storage plugins (also called just storage plugins here)
+ * - filter plugins
+ *
+ * See http://www.libelektra.org/ftp/elektra/thesis.pdf
+ * for an detailed explanation and description of other types
+ * of plugins.
  *
  * A plugin can implement anything related to configuration.
- * There are 5 possible entry points, but you need not to implement
- * all of them.
+ * There are 5 possible entry points, as described in this
+ * document:
+ * - elektraDocOpen()
+ * - elektraDocClose()
+ * - elektraDocGet()
+ * - elektraDocSet()
+ * - elektraDocError() (not needed by storage or filter plugins)
+ *
+ * Depending of the type of plugin you need not to implement all of
+ * them.
+ *
+ * @note that the Doc within the name is just because the plugin
+ *       described here is called doc (see src/plugins/doc/doc.c).
+ *       Always replace Doc with the name of the plugin you
+ *       are going to implement.
+ *
  * See the descriptions below what each of them is supposed to do.
  *
+ * @subsection storage Storage Plugins
  *
+ * A filter plugin is a plugin which already receives some keys.
+ * It may process or change the keyset.
+ * Or it may reject specific keysets which do not meet some
+ * criteria.
+ *
+ * @subsection filter Filter Plugins
+ *
+ * A storage plugin gets an empty keyset and constructs the
+ * information out from a file.
+ *
+ * Other persistent storage then a file is not handled within
+ * this document because it involves many other issues.
+ * For files the resolver plugin already takes care for
+ * transactions and rollback.
+ *
+ * @section error Error and Wanrings
+ *
+ * In any case of trouble, use ELEKTRA_SET_ERROR and return with -1.
+ * You might add warnings with ELEKTRA_ADD_WARNING if you think
+ * it is appropriate.
  */
 
 
@@ -51,6 +95,7 @@
 
 /**
  * Initialize the plugin.
+ *
  * This is the first method called after dynamically loading
  * this plugin.
  *
@@ -64,7 +109,9 @@
  * into other structures used by your plugin.
  *
  * @note The plugin must not have any global variables. If you do
- * elektra will not be threadsafe.
+ *       Elektra will not be threadsafe.
+ *       It is not a good assumption that your plugin will be opened
+ *       only once.
  *
  * Instead you can use elektraPluginGetData() and elektraPluginSetData() to store
  * and get any information related to your plugin.
@@ -73,20 +120,23 @@
  * @code
 struct _GlobalData{ int global; };
 typedef struct _GlobalData GlobalData;
-int elektraPluginOpen(KDB *handle) {
-	PasswdData *data;
-	data=malloc(sizeof(PasswdData));
+int elektraDocOpen(Plugin *handle, Key *errorKey)
+{
+	GlobalData *data;
+	data=malloc(sizeof(GlobalData));
 	data.global = 20;
-	kdbhSetBackendData(handle,data);
+	elektraPluginSetData(handle,data);
 }
  * @endcode
  *
- * @note Make sure to free everything within elektraDocClose().
+ * @note Make sure to free everything you allocate here within elektraDocClose().
  *
  * @return 0 on success
  * @param handle contains internal information of @link kdbOpen() opened @endlink key database
  * @param errorKey defines an errorKey
- * @see kdbOpen()
+ * @see kdbOpen() which will call elektraDocOpen()
+ * @see elektraPluginGetData(), elektraPluginSetData() and
+ *      elektraPluginGetConfig()
  * @ingroup plugin
  */
 int elektraDocOpen(Plugin *handle, Key *errorKey)
@@ -101,20 +151,25 @@ int elektraDocOpen(Plugin *handle, Key *errorKey)
 
 /**
  * Finalize the plugin.
+ *
  * Called prior to unloading the plugin dynamic module. Should ensure that no
  * functions or static/global variables from the module will ever be accessed again.
  *
  * Make sure to free all memory that your plugin requested at runtime.
  *
  * Specifically make sure to capDel() all capabilites and free your pluginData in
- * kdbhGetBackendData().
+ * elektraPluginGetData().
  *
  * After this call, libelektra.so will unload the plugin library, so this is
  * the point to shutdown any affairs with the storage.
  *
- * @param handle contains internal information of @link kdbOpen() opened @endlink key database
- * @return 0 on success, anything else otherwise.
+ * @param handle contains internal information of the plugin
+ * @param errorKey is needed to add warnings using ELEKTRA_ADD_WARNING
+ *
+ * @retval 0 on success
  * @see kdbClose()
+ * @see elektraPluginGetData(), elektraPluginSetData() and
+ *      elektraPluginGetConfig()
  * @ingroup plugin
  */
 int elektraDocClose(Plugin *handle, Key *errorKey)
@@ -130,46 +185,97 @@ int elektraDocClose(Plugin *handle, Key *errorKey)
  *
  * @section intro Introduction
  *
- * This function does everything related to get keys out from a
- * plugin. There is only one function for that purpose to make
- * implementation and locking much easier.
+ * The elektraDocGet() function handle everything related
+ * to receiving keys.
  *
- * The keyset @p returned needs to be filled with information
- * so that the application using elektra can access it.
- * See the live cycle of a comment to understand:
+ *
+ * @subsection storage Storage Plugins
+ *
+ * For storage plugins the filename is written in the value of the
+ * parentKey. So the first task of the plugin is to open that file.
+ * Then it should parse its content and construct a keyset with all
+ * information of that file.
+ *
+ * You need to be able to reconstruct the same file with the information
+ * of the keyset. So be sure to copy all comments, whitespaces and so on
+ * into some metadata of the keys. Otherwise the information is lost
+ * after writing the file the next time.
+ *
+ * Now lets look at an example how the typical elektraDocGet() might be
+ * implemented. To explain we introduce some pseudo functions which do all
+ * the work with the storage (which is of course 90% of the work for a real
+ * plugin):
+ * - parse_key will parse a key and a value from an open file handle
+ *
+ * The typical loop for a storage plugin will be like:
  * @code
-elektraDocGet(KDB *handle, KeySet *returned, Key *parentKey)
+int elektraDocGet(Plugin *handle, KeySet *returned, const Key *parentKey)
 {
-	// the task of elektraPluginGet is to retrieve the comment out of the permanent storage
-	Key *key = keyDup (parentKey); // generate a new key to hold the information
-	char *comment;
-	loadfromdisc (comment);
-	keySetComment (key, comment, size); // set the information
-	ksAppendKey(returned, key);
-}
+	// contract handling, see below
 
-// Now return to kdbGet
-int elektraDocGet(Plugin *handle, KeySet *keyset, Key *parentKey)
-{
-	elektraPluginGet (handle, keyset, 0);
-	// postprocess the keyset and return it
-}
+	FILE *fp = fopen (keyString(parentKey), "r");
+	char *key;
+	char *value;
 
-// Now return to usercode, waiting for the comment
-void usercode (Key *key)
-{
-	kdbGet (handle, keyset, parentKey, 0);
-	key = ksCurrent (keyset, key); // lookup the key from the keyset
-	keyGetComment (key); // now the usercode retrieves the comment
-}
+	while ((n = parse_key(fp, &key, &value)) >= 1)
+	{
+		Key *read = keyNew(0);
+		if (keySetName(read, key) == -1)
+		{
+			fclose (fp);
+			keyDel (read);
+			ELEKTRA_SET_ERROR(59, parentKey, key);
+			return -1;
+		}
+		keySetString(read, value);
 
+		ksAppendKey (returned, read);
+		free (key);
+		free (value);
+	}
+
+	if (feof(fp) == 0)
+	{
+		fclose (fp);
+		ELEKTRA_SET_ERROR(60, parentKey, "not at the end of file");
+		return -1;
+	}
+
+	fclose (fp);
+
+	return 1; // success
+}
  * @endcode
- * Of course not only the comment, but all information of every key in the keyset
- * @p returned need to be fetched from permanent storage and stored in the key.
- * So this specification needs to give
- * an exhaustive list of information present in a key.
+ *
+ * @subsection filter Filter Plugins
+ *
+ * For filter plugins the actual task is rather unspecified.
+ * You basically can do anything with the keyset.
+ * To get roundtrip properties you might want to undo any
+ * changes you did in elektraDocSet().
+ *
+ * The pseudo functions (which do the real work) are:
+ * - do_action() which processes every key in this filter
+ *
+ * @code
+int elektraDocGet(Plugin *handle, KeySet *returned, Key *parentKey)
+{
+	// contract handling
+
+	Key *k;
+	ksRewind (returned);
+	while ((k = ksNext (returned)) != 0)
+	{
+		do_action(k);
+	}
+
+	return 1; // success
+}
+ * @endcode
+ *
  *
  * @section conditions Conditions
+ * @todo needs some updates
  *
  * @pre The caller kdbGet() will make sure before you are called
  * that the parentKey:
@@ -195,9 +301,9 @@ void usercode (Key *key)
  * - the keyset will be sorted when needed.
  * - the keys in returned having KEY_FLAG_SYNC will be sorted out.
  *
- * @invariant There are no global variables and kdbhGetBackendData()
- *  only stores information which can be regenerated any time.
- *  The handle is the same when it is the same plugin.
+ * @invariant There are no global variables and elektraPluginSetData()
+ *  stores all information.
+ *  The handle is to be guaranteed to be the same if it is the same plugin.
  *
  * @post The keyset @p returned has the @p parentKey and all keys direct
  * below (keyIsDirectBelow()) with all information from the storage.
@@ -205,100 +311,15 @@ void usercode (Key *key)
  * hidden keys. If some of them are not wished, the caller kdbGet() will
  * drop these keys, see above.
  *
- * @section detail Details
- *
- * Now lets look at an example how the typical elektraPluginGet() might be
- * implemented. To explain we introduce some pseudo functions which do all
- * the work with the storage (which is of course 90% of the work for a real
- * plugin):
- * - find_key() gets an key out from the storage and memorize the position.
- * - next_key() will find the next key and return it (with the name).
- * - fetch_key() gets out all information of a key from storage
- *    (details see below example).
- * - stat_key() gets all meta information (everything but value and comment).
- *   It removes the key keyNeedSync() flag afterwards.
- * returns the next key out from the storage.
- * The typical loop now will be like:
- * @code
-ssize_t elektraDocGet(KDB *handle, KeySet *update, const Key *parentKey) {
-	Key * current;
-	KeySet *returned = ksNew(ksGetSize(update)*2, KS_END);
-
-	find_key (parentKey);
-	current = keyDup (parentKey);
-	current = fetch_key(current);
-
-	keyClearSync (current);
-	ksAppendKey(returned, current);
-
-	while ((current = next_key()) != 0)
-	{
-		// search if key was passed in update by caller
-		Key * tmp = ksLookup (update, current, KDB_O_WITHOWNER|KDB_O_POP);
-		if (tmp) current = tmp; // key was passed, so use it
-		current = fetch_key(current);
-		keyClearSync (current);
-		ksAppendKey(returned, current);
-		// TODO: delete lookup key
-	}
-
-	if (error_happened())
-	{
-		errno = restore_errno();
-		return -1;
-	}
-
-	ksClear (update); // the rest of update keys is not in storage anymore
-	ksAppend(update, returned); // append the keys
-	ksDel (returned);
-
-	return nr_keys();
-}
- * @endcode
- *
- * @note - returned and update are separated, for details why see ksLookup()
- * - the bit KEY_FLAG_SYNC is always cleared, see postconditions
- *
- * So your mission is simple: Search the @c parentKey and add it and then search
- * all keys below and add them too, of course with all the values.
  *
  * @section updating Updating
  *
  * To get all keys out of the storage over and over again can be very inefficient.
  * You might know a more efficient method to know if the key needs update or not,
- * e.g. by stating it or by an external time stamp info. In that case you can make
- * use of @p returned KeySet. There are following possibilities:
- * - The key is in returned and up to date.
- *   You just need to remove the KEY_FLAG_SYNC flag.
- * - The key is not in returned.
- *   You need to fully retrieve the key out of storage, clear
- *   KEY_FLAG_SYNC using keyClearSync() and ksAppendKey() it to the @p returned keyset.
- *
- * @note You must clear the flag KEY_FLAG_SYNC at the very last point where no more
- * modification on the key will take place, because any modification on the key will
- * set the KEY_FLAG_SYNC flag again. With that keyNeedSync() will return true and
- * the caller will sort this key out.
- *
- * @section fullget only Full Get
- *
- * In some plugins it is not useful to get only a part of the configuration, because
- * getting all keys would take as long as getting some. For this situation,
- * you can declare onlyFullGet, see kdbcGetonlyFullGet().
- *
- * The only valid call for your plugin is then that @p parentKey equals the @p mountpoint.
- * For all other @p parentKey you must, add nothing and just return 0.
- *
- * @code
-if (strcmp (keyName(kdbhGetMountpoint(handle)), keyName(parentKey))) return 0;
- * @endcode
- *
- * If the @p parentKey is your mountpoint you will of course fetch all keys, and not only
- * the keys direct below the @c parentKey.
- * So @p returned is valid iff:
- * - every key is below ( keyIsBelow()) the parentKey
- * - every key has a direct parent (keyIsDirectBelow()) in the keyset
- *
- * @note This statement is only valid for plugins with kdbcGetonlyFullGet() set.
+ * e.g. by stating it or by an external time stamp info.
+ * For file storage plugins this is automatically done for you.
+ * For other types (e.g. databases) you need to implement your own
+ * resolver doing this.
  *
  * @note If any calls you use change errno, make sure to restore the old errno.
  *
@@ -315,7 +336,7 @@ if (strcmp (keyName(kdbhGetMountpoint(handle)), keyName(parentKey))) return 0;
  * @return 1 on success
  * @return 0 when nothing was to do
  * @return -1 on failure, the current key in returned shows the position.
- *         use ELEKTRA_SET_ERROR in <kdberrors> to define the error code
+ *         use ELEKTRA_SET_ERROR of kdberrors.h to define the error code
  *
  * @ingroup plugin
  */
@@ -441,40 +462,30 @@ int elektraDocError(Plugin *handle, KeySet *returned, Key *parentKey)
 
 /**
  * All KDB methods implemented by the plugin can have random names, except
- * kdbBackendFactory(). This is the single symbol that will be looked up
+ * ELEKTRA_PLUGIN_EXPORT.
+ * This is the single symbol that will be looked up
  * when loading the plugin, and the first method of the backend
  * implementation that will be called.
  *
- * Its purpose is to publish the exported methods for libelektra.so. The
- * implementation inside the provided skeleton is usually enough: simply
- * call kdbBackendExport() with all methods that must be exported.
+ * You need to use a macro so that both dynamic and static loading
+ * of the plugin works.
  *
  * The first paramter is the name of the plugin.
- * Then every plugin must have:
- * @c KDB_BE_OPEN,
- * @c KDB_BE_CLOSE,
- * @c KDB_BE_GET and
- * @c KDB_BE_SET
+ * Then every plugin should have:
+ * @c ELEKTRA_PLUGIN_OPEN,
+ * @c ELEKTRA_PLUGIN_CLOSE,
+ * @c ELEKTRA_PLUGIN_GET,
+ * @c ELEKTRA_PLUGIN_SET and optionally
+ * @c ELEKTRA_PLUGIN_ERROR.
  *
- * You might also give following information by char *:
- * @c KDB_BE_VERSION,
- * @c KDB_BE_AUTHOR,
- * @c KDB_BE_LICENCE,
- * @c KDB_BE_DESCRIPTION,
- * @c ELEKTRA_PLUGIN_NEEDS and
- * @c ELEKTRA_PLUGIN_PROVIDES
+ * The list is terminated with
+ * @c ELEKTRA_PLUGIN_END.
  *
  * You must use static "char arrays" in a read only segment.
  * Don't allocate storage, it won't be freed.
  *
- * With capability you can get that information on
- * runtime from any plugin with kdbGetCapability().
- *
- * The last parameter must be @c KDB_BE_END.
- *
- * @return kdbBackendExport() with the above described parameters.
- * @see kdbBackendExport() for an example
- * @see kdbOpenBackend()
+ * @return Plugin
+ * @see elektraPluginExport()
  * @ingroup plugin
  */
 Plugin *ELEKTRA_PLUGIN_EXPORT(doc)
