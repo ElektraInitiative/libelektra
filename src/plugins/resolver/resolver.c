@@ -178,7 +178,17 @@ int elektraResolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	{
 		char buffer[ERROR_SIZE];
 		strerror_r(errno, buffer, ERROR_SIZE);
-		ELEKTRA_ADD_WARNING (29, parentKey, buffer);
+
+		char *errorText = malloc(
+				strlen(pk->filename) + ERROR_SIZE + 60);
+		strcpy (errorText, "Storage plugin will try to create missing file \"");
+		strcat (errorText, pk->filename);
+		strcat (errorText, "\", error was: \"");
+		strcat (errorText, buffer);
+		strcat (errorText, "\"");
+		ELEKTRA_ADD_WARNING(29, parentKey, errorText);
+		free (errorText);
+
 		errno = errnoSave;
 		return 0;
 		/* File not there, lets assume thats ok. */
@@ -217,7 +227,17 @@ int elektraResolverSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		{
 			char buffer[ERROR_SIZE];
 			strerror_r(errno, buffer, ERROR_SIZE);
-			ELEKTRA_SET_ERROR (26, parentKey, buffer);
+
+			char *errorText = malloc(
+					strlen(pk->filename) + ERROR_SIZE + 60);
+			strcpy (errorText, "Opening lockfile \"");
+			strcat (errorText, pk->lockfile);
+			strcat (errorText, "\" failed, error was: \"");
+			strcat (errorText, buffer);
+			strcat (errorText, "\"");
+			ELEKTRA_SET_ERROR(26, parentKey, errorText);
+			free (errorText);
+
 			errno = errnoSave;
 			return -1;
 		}

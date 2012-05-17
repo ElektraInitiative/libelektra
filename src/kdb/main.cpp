@@ -139,7 +139,8 @@ int main(int argc, char**argv)
 	}
 	catch (kdb::Key& key)
 	{
-		std::cerr << command << " failed while accessing the key database"
+		std::cerr << "The command "
+		 	<< command << " failed while accessing the key database"
 			<< std::endl;
 		printError(key);
 		printWarnings(key);
