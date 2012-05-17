@@ -61,7 +61,8 @@ ksAppendKey(myConfig, keyNew("user/name4", 0));
 
 Key *current;
 ksRewind(myConfig);
-while ((current=ksNext(myConfig))!=0) {
+while ((current=ksNext(myConfig))!=0)
+{
 	printf("Key name is %s.\n", keyName (current));
 }
 ksDel (myConfig); // delete keyset and all keys appended
@@ -159,7 +160,8 @@ ksDel (config);
  * @return a ready to use KeySet object
  * @return 0 on memory error
  */
-KeySet *ksNew(size_t alloc, ...) {
+KeySet *ksNew(size_t alloc, ...)
+{
 	KeySet *ks;
 	va_list va;
 
@@ -317,7 +319,9 @@ int ksDel(KeySet *ks)
 	return rc;
 }
 
-/*
+/**
+ * @internal
+ *
  * KeySet object cleaner.
  *
  * Will keyDel() all contained keys, reset internal pointers and counters.
@@ -359,8 +363,10 @@ int ksClear(KeySet *ks)
 
 
 
-/*
- * Returns 0.
+/**
+ * @internal
+ *
+ * @retval 0
  *
  * @deprecated dont use
  *
@@ -371,8 +377,13 @@ int ksNeedSort (const KeySet *ks)
 }
 
 
-/* Used as a callback by the qsort() function */
-static int keyCmpInternal(const void *p1, const void *p2) {
+/**
+ * @internal
+ *
+ * Used as a callback by the qsort() function
+ */
+static int keyCmpInternal(const void *p1, const void *p2)
+{
 	Key *key1=*(Key **)p1;
 	Key *key2=*(Key **)p2;
 	const char *name1 = keyName(key1);
@@ -456,7 +467,7 @@ Key *k2 = keyNew("user/a", KEY_OWNER, "max", KEY_END);
 // keyCmp(k2,k1) > 0
  * @endcode
  *
- * @warning dont try to strcmp the keyName() yourself because
+ * @warning Do not try to strcmp the keyName() yourself because
  *      the used strcmp implementation is allowed to differ from
  *      simple ascii comparison.
  *
@@ -480,7 +491,10 @@ int keyCmp (const Key *k1, const Key *k2)
 	return keyCmpInternal(&k1, &k2);
 }
 
-/**Checks if KeySet needs sync.
+/**
+ * @internal
+ *
+ * Checks if KeySet needs sync.
  *
  * When keys are changed this is reflected into keyNeedSync().
  *
@@ -529,6 +543,8 @@ ssize_t ksGetSize(const KeySet *ks)
 
 
 /**
+ * @internal
+ *
  * Binary search in a keyset.
  *
  * @code
@@ -623,7 +639,7 @@ ssize_t ksSearchInternal(const KeySet *ks, const Key *toAppend)
  * @return -1 if insertion failed, the key will be deleted then.
  * @param ks KeySet that will receive the key
  * @param toAppend Key that will be appended to ks
- * @see ksInsert(), ksInsertKeys(), ksAppend(), keyNew(), ksDel()
+ * @see ksAppend(), keyNew(), ksDel()
  * @see keyIncRef()
  *
  */
@@ -704,7 +720,7 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
  * @return -1 on NULL pointers
  * @param ks the KeySet that will receive the keys
  * @param toAppend the KeySet that provides the keys that will be transfered
- * @see ksAppendKey(), ksInsert(), ksInsertKeys()
+ * @see ksAppendKey()
  * 
  */
 ssize_t ksAppend(KeySet *ks, const KeySet *toAppend)
@@ -732,7 +748,9 @@ ssize_t ksAppend(KeySet *ks, const KeySet *toAppend)
 static int keyCompareByNameOwner(const void *p1, const void *p2);
 
 
-/*
+/**
+ * @internal
+ *
  * Returns the previous Key in a KeySet.
  *
  * KeySets have an internal cursor that can be reset with ksRewind(). Every
@@ -762,6 +780,8 @@ static Key *ksPrev(KeySet *ks)
 
 
 /**
+ * @internal
+ *
  * Copies all Keys until the end of the array from a position
  * in the array to an position in the array.
  *
@@ -1033,7 +1053,6 @@ Key *ksNext(KeySet *ks)
  * @return pointer to the Key pointed by @p ks's cursor
  * @return 0 on NULL pointer
  * @see ksNext(), ksRewind()
- * @see kdbMonitorKeys() for a usage example
  */
 Key *ksCurrent(const KeySet *ks)
 {
@@ -1226,7 +1245,8 @@ int ksSetCursor(KeySet *ks, cursor_t cursor)
  *    Looking up Keys inside KeySets       *
  *******************************************/
 
-static int keyCompareByName(const void *p1, const void *p2) {
+static int keyCompareByName(const void *p1, const void *p2)
+{
 	Key *key1=*(Key **)p1;
 	Key *key2=*(Key **)p2;
 	const char *name1 = keyName(key1);
@@ -1235,7 +1255,8 @@ static int keyCompareByName(const void *p1, const void *p2) {
 	return strcmp(name1, name2);
 }
 
-static int keyCompareByNameCase(const void *p1, const void *p2) {
+static int keyCompareByNameCase(const void *p1, const void *p2)
+{
 	Key *key1=*(Key **)p1;
 	Key *key2=*(Key **)p2;
 	const char *name1 = keyName(key1);
@@ -1244,7 +1265,8 @@ static int keyCompareByNameCase(const void *p1, const void *p2) {
 	return elektraStrCaseCmp(name1, name2);
 }
 
-static int keyCompareByNameOwner(const void *p1, const void *p2) {
+static int keyCompareByNameOwner(const void *p1, const void *p2)
+{
 	Key *key1=*(Key **)p1;
 	Key *key2=*(Key **)p2;
 	const char *name1 = keyName(key1);
@@ -1261,7 +1283,8 @@ static int keyCompareByNameOwner(const void *p1, const void *p2) {
 }
 
 
-static int keyCompareByNameOwnerCase(const void *p1, const void *p2) {
+static int keyCompareByNameOwnerCase(const void *p1, const void *p2)
+{
 	Key *key1=*(Key **)p1;
 	Key *key2=*(Key **)p2;
 	const char *name1 = keyName(key1);
@@ -1303,14 +1326,14 @@ static int keyCompareByNameOwnerCase(const void *p1, const void *p2) {
  * Cascading is done if the first character is a /. This leads to ignoring
  * the prefix like system/ and user/.
  * @code
-        if (kdbGet(handle, "user/myapp", myConfig, 0 ) == -1)
-                ErrorHandler ("Could not get Keys");
+if (kdbGet(handle, "user/myapp", myConfig, 0 ) == -1)
+	errorHandler ("Could not get Keys");
 
-        if (kdbGet(handle, "system/myapp", myConfig, 0 ) == -1)
-                ErrorHandler ("Could not get Keys");
+if (kdbGet(handle, "system/myapp", myConfig, 0 ) == -1)
+	errorHandler ("Could not get Keys");
 
-        if ((myKey = ksLookup(myConfig, key, 0)) == NULL)
-                ErrorHandler ("Could not Lookup Key");
+if ((myKey = ksLookup(myConfig, key, 0)) == NULL)
+	errorHandler ("Could not Lookup Key");
  * @endcode
  *
  * This is the way multi user Programs should get there configuration and
@@ -1397,7 +1420,8 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 
 	if (options & KDB_O_NOALL)
 	{
-		while ((current=ksNext(ks)) != 0) {
+		while ((current=ksNext(ks)) != 0)
+		{
 			if ((options & KDB_O_WITHOWNER) && (options & KDB_O_NOCASE))
 			{
 				if (!keyCompareByNameOwnerCase(&key, &current)) break;
@@ -1487,14 +1511,14 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
  * Cascading is done if the first character is a /. This leads to ignoring
  * the prefix like system/ and user/.
  * @code
-        if (kdbGet(handle, "user/sw/myapp/current", myConfig, parentKey ) == -1)
-                ErrorHandler ("Could not get Keys", parentKey);
+if (kdbGet(handle, "user/sw/myapp/current", myConfig, parentKey ) == -1)
+	errorHandler ("Could not get Keys", parentKey);
 
-        if (kdbGet(handle, "system/sw/myapp/current", myConfig, parentKey ) == -1)
-                ErrorHandler ("Could not get Keys", parentKey);
+if (kdbGet(handle, "system/sw/myapp/current", myConfig, parentKey ) == -1)
+	errorHandler ("Could not get Keys", parentKey);
 
-        if ((myKey = ksLookupByName (myConfig, "/myapp/current/key", 0)) == NULL)
-                ErrorHandler ("Could not Lookup Key");
+if ((myKey = ksLookupByName (myConfig, "/myapp/current/key", 0)) == NULL)
+	errorHandler ("Could not Lookup Key");
  * @endcode
  *
  * This is the way multi user Programs should get there configuration and
@@ -1507,7 +1531,7 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 if ((myKey = ksLookupByName (myConfig, "/myapp/current/specific/key", 0)) == NULL)
 	if ((myKey = ksLookupByName (myConfig, "/myapp/current/group/key", 0)) == NULL)
 		if ((myKey = ksLookupByName (myConfig, "/myapp/current/fallback/key", 0)) == NULL)
-			ErrorHandler ("All fallbacks failed to lookup key");
+			errorHandler ("All fallbacks failed to lookup key");
  * @endcode
  *
  * Note that for every profile both the user and the system key are
@@ -1601,7 +1625,8 @@ Key *ksLookupByName(KeySet *ks, const char *name, option_t options)
  * @par Example:
  * @code
 ksRewind(ks);
-while (key=ksLookupByString(ks,"my value",0)) {
+while (key=ksLookupByString(ks,"my value",0))
+{
 	// show all keys which value="my value"
 	keyToStream(key,stdout,0);
 }
@@ -1763,7 +1788,8 @@ Key *ksLookupByBinary(KeySet *ks, const void *value, size_t size,
  * @return size in bytes of the parent name, or 0 if there is no common parent,
  *         or -1 to indicate an error, then @p errno must be checked.
  */
-ssize_t ksGetCommonParentName(const KeySet *working,char *returnedCommonParent, size_t maxSize) {
+ssize_t ksGetCommonParentName(const KeySet *working,char *returnedCommonParent, size_t maxSize)
+{
 	size_t parentSize=0;
 	Key *current=0;
 	cursor_t init;
@@ -1780,7 +1806,8 @@ ssize_t ksGetCommonParentName(const KeySet *working,char *returnedCommonParent, 
 
 	ksRewind(ks);
 	current = ksNext(ks);
-	if (keyGetNameSize(current) > sMaxSize) {
+	if (keyGetNameSize(current) > sMaxSize)
+	{
 		/*errno=KDB_ERR_TRUNC;*/
 		returnedCommonParent[0]=0;
 		return -1;
@@ -1789,18 +1816,22 @@ ssize_t ksGetCommonParentName(const KeySet *working,char *returnedCommonParent, 
 	strcpy(returnedCommonParent,keyName(current));
 	parentSize=elektraStrLen(returnedCommonParent);
 
-	while (*returnedCommonParent) {
+	while (*returnedCommonParent)
+	{
 		ksRewind(ks);
-		while ((current = ksNext(ks)) != 0) {
+		while ((current = ksNext(ks)) != 0)
+		{
 			/* Test if a key doesn't match */
 			if (memcmp(returnedCommonParent,keyName(current),parentSize-1)) break;
 		}
-		if (current) {
+		if (current)
+		{
 			/* some key failed to be a child */
 			/* parent will be the parent of current parent... */
 			char *delim=0;
 
-			if ((delim=strrchr(returnedCommonParent,PATH_SEPARATOR))) {
+			if ((delim=strrchr(returnedCommonParent,PATH_SEPARATOR)))
+			{
 				*delim=0;
 				parentSize=elektraStrLen(returnedCommonParent);
 			} else {
@@ -1895,7 +1926,9 @@ int ksResize (KeySet *ks, size_t alloc)
 	return 1;
 }
 
-/*
+/**
+ * @internal
+ *
  * Returns current allocation size.
  *
  * This is the maximum size before a reallocation
@@ -1910,7 +1943,9 @@ size_t ksGetAlloc (const KeySet *ks)
 
 
 
-/*
+/**
+ * @internal
+ *
  * KeySet object initializer.
  *
  * You should always use ksNew() instead of ksInit().
@@ -1918,12 +1953,12 @@ size_t ksGetAlloc (const KeySet *ks)
  * Every KeySet object that will be used must be initialized first, to setup
  * pointers, counters, etc. After use, all ksInit()ialized KeySets must be
  * cleaned with ksClear().
- * 
- * @deprecated Thus you can't get a Keyset without ksNew, this function is useless.
+ *
  * @see ksNew(), ksClose(), keyInit()
  * @return 1 on success
  */
-int ksInit(KeySet *ks) {
+int ksInit(KeySet *ks)
+{
 	ks->array = 0;
 
 	ks->size=0;
@@ -1936,10 +1971,11 @@ int ksInit(KeySet *ks) {
 }
 
 
-/*
+/**
+ * @internal
+ *
  * KeySet object initializer.
  *
- * @deprecated Thus you can't get a Keyset without ksNew, this function is useless.
  * @see ksDel(), ksNew(), keyInit()
  * @return 1 on success
  */
