@@ -17,15 +17,6 @@
 
 using namespace ckdb;
 
-namespace ckdb
-{
-
-// TODO: should be removed, is actually not needed
-// because elektra takes care of it already
-extern "C" int keyClearSync (Key *key);
-
-}
-
 #include <kdberrors.h>
 
 
@@ -185,8 +176,6 @@ int unserialize(std::istream &is, ckdb::Key *errorKey, ckdb::KeySet *ks)
 		}
 		else if (command == "keyEnd")
 		{
-			// TODO: should be removed
-			ckdb::keyClearSync(cur);
 			ckdb::ksAppendKey(ks, cur);
 			cur = 0;
 		}
