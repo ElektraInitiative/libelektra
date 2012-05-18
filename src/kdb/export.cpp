@@ -15,9 +15,9 @@ ExportCommand::ExportCommand()
 int ExportCommand::execute(Cmdline const& cl)
 {
 	size_t argc = cl.arguments.size();
-	if (argc != 1 && argc != 2)
+	if (argc != 1 && argc != 2 && argc != 3)
 	{
-		throw invalid_argument("need 1 or 2 arguments");
+		throw invalid_argument("need 1 to 3 arguments");
 	}
 
 	Key root (cl.arguments[0], KEY_END);
@@ -32,11 +32,21 @@ int ExportCommand::execute(Cmdline const& cl)
 	KeySet part (ks.cut(root));
 
 	string format = "dump";
-	if (argc == 2) format = cl.arguments[1];
+	if (argc > 1) format = cl.arguments[1];
+
+	string file = "/dev/stdout";
+	if (argc > 2 && cl.arguments[2] != "-") file = cl.arguments[2];
 
 	Modules modules;
 	auto_ptr<Plugin> plugin = modules.load(format);
-	plugin->serialize(part);
+
+	Key errorKey;
+	errorKey.setString(file);
+
+	plugin->set(part, errorKey);
+
+	printError(errorKey);
+	printWarnings(errorKey);
 
 	return 0;
 }

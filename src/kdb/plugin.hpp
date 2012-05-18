@@ -140,6 +140,19 @@ struct VersionInfoMismatch: public PluginCheckException
 
 
 
+/**
+ * This is a C++ representation of a plugin.
+ *
+ * It will load an Elektra plugin using the module loader
+ * from Elektra.
+ *
+ * Then you can either check the plugins configuration
+ * using loadInfo(), parse() and check.
+ * Symbols can then be retrieved with getSymbol().
+ *
+ * Or you can use the normal open(), close(), get(),
+ * set() and error() API which every plugin exports.
+ */
 class Plugin
 {
 private:
@@ -155,7 +168,7 @@ private:
 
 	bool firstRef;
 
-	void close();
+	void uninit();
 
 public:
 	Plugin(std::string const& pluginName, kdb::KeySet &modules, kdb::KeySet const& testConfig);
@@ -228,20 +241,59 @@ public:
 	}
 
 	/**
-	  * Serializes to stdout with any serialize method found in the
-	  * plugin.
-	  */
-	void serialize (kdb::KeySet & ks);
+	 * Calls the open function of the plugin
+	 * @pre parse()
+	 */
+	int open (kdb::Key & errorKey);
+
 	/**
-	  * Unserializes to stdout with any serialize method found in the
-	  * plugin.
-	  */
+	 * Calls the close function of the plugin
+	 * @pre parse()
+	 */
+	int close (kdb::Key & errorKey);
+
+	/**
+	 * Calls the get function of the plugin
+	 * @pre parse()
+	 */
+	int get (kdb::KeySet & ks, kdb::Key & parentKey);
+
+	/**
+	 * Calls the set function of the plugin
+	 * @pre parse()
+	 */
+	int set (kdb::KeySet & ks, kdb::Key & parentKey);
+
+	/**
+	 * Calls the error function of the plugin
+	 * @pre parse()
+	 */
+	int error (kdb::KeySet & ks, kdb::Key & parentKey);
+
+	/**
+	 * Not working well (except for dump).
+	 * Do not use.
+	 *
+	 * It tries to load and call some serialize functions.
+	 */
+	void serialize (kdb::KeySet & ks);
+
+	/**
+	 * Not working well (except for dump).
+	 * Do not use.
+	 *
+	 * It tries to load and call some unserialize functions.
+	 */
 	void unserialize (kdb::KeySet & ks);
 
-	/* Returns the name of the plugin */
+	/**
+	 * @return the name of the plugin 
+	 */
 	std::string name();
 
-	/* Returns the name how it would be referred to in mountpoint */
+	/**
+	 * @return the name how it would be referred to in mountpoint
+	 */
 	std::string refname();
 };
 

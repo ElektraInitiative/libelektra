@@ -15,9 +15,9 @@ ConvertCommand::ConvertCommand()
 int ConvertCommand::execute(Cmdline const& cl)
 {
 	size_t argc = cl.arguments.size();
-	if (argc != 0 && argc != 1 && argc != 2)
+	if (argc != 0 && argc != 1 && argc != 2 && argc != 3 && argc != 4)
 	{
-		throw invalid_argument("need 0, 1 or 2 arguments");
+		throw invalid_argument("need 0 to 4 arguments");
 	}
 
 	string import_format = "dump";
@@ -25,6 +25,12 @@ int ConvertCommand::execute(Cmdline const& cl)
 
 	string export_format = "dump";
 	if (argc > 1) export_format = cl.arguments[1];
+
+	string import_file = "/dev/stdin";
+	if (argc > 2 && cl.arguments[2] != "-") import_file = cl.arguments[2];
+
+	string export_file = "/dev/stdout";
+	if (argc > 3 && cl.arguments[3] != "-") export_file = cl.arguments[3];
 
 	if (cl.verbose)
 	{
@@ -36,8 +42,17 @@ int ConvertCommand::execute(Cmdline const& cl)
 	auto_ptr<Plugin> import_plugin = modules.load(import_format);
 	auto_ptr<Plugin> export_plugin = modules.load(export_format);
 
-	import_plugin->unserialize(ks);
-	export_plugin->serialize(ks);
+	Key errorKey;
+	KeySet keys;
+
+	errorKey.setString(import_file);
+	import_plugin->get(keys, errorKey);
+
+	errorKey.setString(export_file);
+	export_plugin->set(keys, errorKey);
+
+	printError(errorKey);
+	printWarnings(errorKey);
 
 	return 0;
 }

@@ -42,7 +42,7 @@ Plugin& Plugin::operator = (Plugin const& other)
 {
 	if (this == &other) return *this;
 
-	close();
+	uninit();
 
 	plugin = other.plugin;
 	pluginName = other.pluginName;
@@ -58,7 +58,7 @@ Plugin& Plugin::operator = (Plugin const& other)
 
 Plugin::~Plugin()
 {
-	close();
+	uninit();
 }
 
 void Plugin::loadInfo()
@@ -68,13 +68,13 @@ void Plugin::loadInfo()
 
 	if (pluginName != plugin->name)
 	{
-		close();
+		uninit();
 		throw PluginWrongName();
 	}
 
 	if (!plugin->kdbGet)
 	{
-		close();
+		uninit();
 		throw MissingSymbol("kdbGet");
 	}
 	plugin->kdbGet(plugin, info.getKeySet(), *infoKey);
@@ -170,7 +170,7 @@ void Plugin::check(vector<string> & warnings)
 	}
 }
 
-void Plugin::close()
+void Plugin::uninit()
 {
 	/* ref counting will avoid closing */
 
@@ -219,6 +219,56 @@ kdb::KeySet Plugin::getNeededConfig()
 
 	KeySet d (info.dup());
 	return d.cut(neededConfigKey);
+}
+
+int Plugin::open (kdb::Key & errorKey)
+{
+	if (!plugin->kdbOpen)
+	{
+		throw MissingSymbol("kdbOpen");
+	}
+
+	return plugin->kdbOpen(plugin, errorKey.getKey());
+}
+
+int Plugin::close (kdb::Key & errorKey)
+{
+	if (!plugin->kdbClose)
+	{
+		throw MissingSymbol("kdbClose");
+	}
+
+	return plugin->kdbClose(plugin, errorKey.getKey());
+}
+
+int Plugin::get (kdb::KeySet & ks, kdb::Key & parentKey)
+{
+	if (!plugin->kdbGet)
+	{
+		throw MissingSymbol("kdbGet");
+	}
+
+	return plugin->kdbGet(plugin, ks.getKeySet(), parentKey.getKey());
+}
+
+int Plugin::set (kdb::KeySet & ks, kdb::Key & parentKey)
+{
+	if (!plugin->kdbSet)
+	{
+		throw MissingSymbol("kdbSet");
+	}
+
+	return plugin->kdbSet(plugin, ks.getKeySet(), parentKey.getKey());
+}
+
+int Plugin::error (kdb::KeySet & ks, kdb::Key & parentKey)
+{
+	if (!plugin->kdbError)
+	{
+		throw MissingSymbol("kdbError");
+	}
+
+	return plugin->kdbError(plugin, ks.getKeySet(), parentKey.getKey());
 }
 
 
