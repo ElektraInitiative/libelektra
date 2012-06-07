@@ -3,22 +3,13 @@
 == PREPARATION ==
 
 Elektra is using cmake.
+Tested are cmake version 2.6-patch 0 and version 2.8.2.
 
-To compile it, please create a folder:
+To configure elektra run:
 
- mkdir build && cd build
+ mkdir build && cd build && ccmake ..
 
-
-
-== RUN CMAKE ==
-
-tested cmake version 2.6-patch 0 and version 2.8.2
-
-run ccmake:
-
- ccmake ..
-
-press c to configure
+and press 'c':
 
 if you want to create a package afterwards it is ok to use
 pathes that you can write to (e.g. CMAKE_INSTALL_PREFIX /home/markus/bin)
@@ -26,22 +17,52 @@ pathes that you can write to (e.g. CMAKE_INSTALL_PREFIX /home/markus/bin)
 working plugins are:
 dump;resolver;hidden;iconv;syslog;error;validation;xmltool;tracer;timeofday;dbus;glob;hosts;network;type;struct;path;fstab;ccode;simpleini;tcl;hexcode;null;ni
 
-CMAKE_BUILD_TYPE: Debug or Release (see cmake docu in the net for that option)
+CMAKE_BUILD_TYPE:
+	e.g. Debug or Release
+	See help bar at bottom of ccmake for that option or:
+	http://www.cmake.org/Wiki/CMake_Useful_Variables
 
-DEBUG_BUILD and ELEKTRA_VERBOSE_BUILD: make the library to output some or a lot of things (not recommended options)
+DEBUG_BUILD and ELEKTRA_VERBOSE_BUILD:
+	Only needed by elektra developers.
+	Make the library to output some or a lot of things.
+	It is not recommended to use these options.
 
-KDB_DB_SYSTEM is the path where the system configuration is
+KDB_DB_SYSTEM:
+	is the path where the system configuration is searched at runtime
 
-BUILD_DOC: build documentation with doxygen
+BUILD_DOCUMENTATION: build documentation with doxygen
  the kdb tool does only have the integrated docu at the moment
 
 
-Make sure that the pathes to install are configured correctly.
-By default it will install to /usr/local.
+CMAKE_INSTALL_PREFIX:
+	By default all files will installed below /usr/local.
+	Edit that cache entry to change that behaviour.
+	Also called system prefix within the documentation.
+
+LIB_SUFFIX:
+	Lets you install libraries into architecture specific folder.
+	E.g. for 32/64 bit systems you might install libraries under
+	lib64. Set LIB_SUFFIX to 64 to achieve exactly that.
+	So the system library folder will be CMAKE_INSTALL_PREFIX/lib64
+	then.
+
+TARGET_INCLUDE_FOLDER:
+	By default include folders will be installed below
+	CMAKE_INSTALL_PREFIX/include/elektra
+	This entry let you change the elektra.
+	If the entry is empty, the include files will be
+	installed directly to CMAKE_INSTALL_PREFIX/include.
+
+TARGET_PLUGIN_FOLDER:
+	Similar to above, but with the plugins. Default is:
+	CMAKE_INSTALL_PREFIX/lib${LIB_SUFFIX}/elektra
+	It can be also left empty to install plugins next
+	to other libraries.
 
 
-then press c again and then g to generate
-finally press e to exit
+It is recommended that you browse through all of the options.
+Afterwards press c again (maybe multiple times until all variables are
+resolved) and then g to generate.  Finally press e to exit.
 
 
 

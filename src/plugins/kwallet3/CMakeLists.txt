@@ -3,7 +3,7 @@ include(LibAddMacros)
 if (IS_DIRECTORY /usr/include/qt3 AND IS_DIRECTORY /usr/include/kde)
 
 	set (INCLUDES /usr/include/qt3 /usr/include/kde)
-	set (LIBRARIES /usr/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}libkwalletclient.so.1 /usr/lib/libqt-mt.so.3 pthread)
+	set (LIBRARIES /usr/lib${LIB_SUFFIX}/libkwalletclient.so.1 /usr/lib/libqt-mt.so.3 pthread)
 
 	add_includes (elektra-full ${INCLUDES})
 	include_directories(${INCLUDES})
