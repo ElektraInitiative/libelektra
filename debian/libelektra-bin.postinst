@@ -19,7 +19,7 @@ set -e
 
 case "$1" in
     configure)
-		/bin/kdb set system/sw/kdb/current/schemapath "/usr/share/sgml/elektra-0.7.0a1/elektra.xsd"
+		kdb set system ""
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

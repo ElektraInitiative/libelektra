@@ -2,3 +2,4 @@ usr/lib/libelektra*.a
 usr/include/elektra
 usr/share/doc/elektra-api
 usr/lib/pkgconfig/elektra.pc
+usr/bin/kdb-static
