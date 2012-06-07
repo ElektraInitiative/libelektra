@@ -1,5 +1,5 @@
 #! /bin/sh
-# postinst script for libelektra1.0-bin
+# postinst script for libelektra-bin
 #
 # see: dh_installdeb(1)
 
@@ -19,7 +19,7 @@ set -e
 
 case "$1" in
     configure)
-		kdb set system ""
+        kdb set system "" 2>&1 >/dev/null
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
