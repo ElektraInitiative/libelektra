@@ -1,12 +1,11 @@
 #ifndef COMMAND_HPP
 #define COMMAND_HPP
 
-#include <print.hpp>
-#include <cmdline.hpp>
-
 #include <string>
 #include <exception>
 #include <stdexcept>
+
+class Cmdline;
 
 /**
  * Base class for any exceptions thrown in a command.
@@ -41,24 +40,67 @@ public:
 	virtual std::string getShortOptions() = 0;
 
 	/**
+	  * @return a string describing describe what parameter the
+	  *       command needs or an empty line if none.
+	  *
+	  * The return value should be:
+	  *
+	  * @code
+	  * <name> [<value>]
+	  * @endcode
+	  *
+	  * if you want the help to be printed like:
+	  *
+	  * @code
+	  * Usage: kdb set <name> [<value>]
+	  * @endcode
+	  *
+	  * The string may be empty if no arguments are taken.
+	  */
+	virtual std::string getSynopsis() = 0;
+
+	/**
 	  * @return a one line help text
 	  *
 	  * The help text is shown in the overview of the command
 	  * and as first line of normal help text given by -H or --help
+	  *
+	  * The sentence should end with an dot.
+	  * No newline should occur in the sentence.
+	  *
+	  * @see getLongHelpText for the other help text lines
 	  */
 	virtual std::string getShortHelpText() = 0;
 
 	/**
 	  * @return a long description of what the command does.
 	  *
-	  * @note the first line must describe what parameter the
-	  *       command needs or an empty line if none.
+	  * May contain multiple lines or paragraphs.
+	  * A line should not exceed 72 characters.
+	  * The text should not start or end with an newline feed.
 	  *
 	  * @code
-	  * \<name\>
 	  * Long description what the command does.
 	  * Even more explanation.
 	  * @endcode
+	  *
+	  * The long description should not repeat what the
+	  * short help text already said, because the
+	  * short help text will be the first line
+	  * when help is shown.
+	  *
+	  * @see getShortHelpText for the first line
+	  *
+	  * The long text should describe all elements
+	  * of the synopsis.
+	  *
+	  * @see getSynopsis for the synopsis
+	  *
+	  * It should not describe any of the commandline
+	  * options, but rather use the cmdline option
+	  * parsing system.
+	  *
+	  * @see getShortOptions to express available options
 	  */
 	virtual std::string getLongHelpText() = 0;
 

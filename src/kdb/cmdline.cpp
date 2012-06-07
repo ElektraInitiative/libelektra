@@ -1,17 +1,21 @@
 #include <cmdline.hpp>
+
 #include <iostream>
 #include <vector>
 #include <cstdio>
 
 #include <getopt.h>
 
+#include <command.hpp>
+
 
 using namespace std;
 
-Cmdline::Cmdline (int argc, char** argv,
-		string const& pAcceptedOptions,
-		string const& pHelpText) :
-	helpText(pHelpText),
+Cmdline::Cmdline (int argc,
+		  char** argv,
+		  Command *command
+		 ) :
+	helpText(),
 	invalidOpt(false),
 
 	/*XXX: Step 2: initialise your option here.*/
@@ -28,7 +32,7 @@ Cmdline::Cmdline (int argc, char** argv,
 	version(),
 
 	executable(),
-	command()
+	commandName()
 {
 	extern int optind;
 	extern char *optarg;
@@ -36,7 +40,14 @@ Cmdline::Cmdline (int argc, char** argv,
 	int index = 0;
 	int opt;
 
-	string acceptedOptions = pAcceptedOptions;
+	synopsis = command->getSynopsis();
+
+	helpText += command->getShortHelpText();
+	helpText += "\n";
+	helpText += command->getLongHelpText();
+	helpText += "\n";
+
+	string acceptedOptions = command->getShortOptions();
 	acceptedOptions += "HV";
 
 	vector<option> long_options;
@@ -116,8 +127,8 @@ Cmdline::Cmdline (int argc, char** argv,
 	option o = {0, 0, 0, 0};
 	long_options.push_back(o);
 
-	executable += argv[0];
-	command += argv[1];
+	executable = argv[0];
+	commandName = argv[1];
 
 	while ((opt = getopt_long (argc, argv,
 					acceptedOptions.c_str(),
@@ -156,7 +167,7 @@ std::ostream & operator<< (std::ostream & os, Cmdline & cl)
 		os << "Invalid option given\n" << endl;
 	}
 
-	os << "Usage: " << cl.executable << " " << cl.command << " ";
-	os << cl.helpText;
+	os << "Usage: " << cl.executable << " " << cl.commandName << " " << cl.synopsis;
+	os << "\n\n" << cl.helpText;
 	return os;
 }

@@ -18,6 +18,11 @@ public:
 		return "s";
 	}
 
+	virtual std::string getSynopsis()
+	{
+		return "<destination> [<format>]";
+	}
+
 	virtual std::string getShortHelpText()
 	{
 		return "Export configuration from the key database.";
@@ -26,14 +31,14 @@ public:
 	virtual std::string getLongHelpText()
 	{
 		return
-			"<destination> [<format>]\n"
 			"The import utility allows you to import\n"
 			"all or parts of the configuration from stdin.\n"
 			"\n"
 			"Example:\n"
 			"cat sw.ecf | kdb import system/sw\n"
 			"To restore a backup of your whole configuration\n"
-			"below system/sw\n";
+			"below system/sw\n"
+			;
 	}
 
 	virtual int execute (Cmdline const& cmdline);

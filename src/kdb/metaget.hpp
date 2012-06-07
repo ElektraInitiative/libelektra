@@ -18,6 +18,11 @@ public:
 		return "n";
 	}
 
+	virtual std::string getSynopsis()
+	{
+		return "<key-name> <meta-name>";
+	}
+
 	virtual std::string getShortHelpText()
 	{
 		return "Get a meta value.";
@@ -26,13 +31,12 @@ public:
 	virtual std::string getLongHelpText()
 	{
 		return
-			"<key-name> <meta-name> <meta-value>\n"
-			"Get a meta value.\n"
 			"Meta key are information about keys.\n"
 			"\n"
 			"Typically there should be a more specific get/set\n"
 			"interface because it is error-prone to directly\n"
-			"edit metadata.\n";
+			"edit metadata."
+			;
 	}
 
 	virtual int execute (Cmdline const& cmdline);

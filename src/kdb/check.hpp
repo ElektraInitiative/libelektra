@@ -16,6 +16,11 @@ public:
 		return "v";
 	}
 
+	virtual std::string getSynopsis()
+	{
+		return "<name>";
+	}
+
 	virtual std::string getShortHelpText()
 	{
 		return "Do some basic checks on a plugin.";
@@ -23,9 +28,7 @@ public:
 
 	virtual std::string getLongHelpText()
 	{
-		return
-			"<name>\n"
-			"Do some basic checks on a plugin.\n";
+		return "";
 	}
 
 	virtual int execute (Cmdline const& cmdline);

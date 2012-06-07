@@ -4,6 +4,7 @@
 #include <kdbplugin.h>
 #include <kdbmodule.h>
 #include <kdbprivate.h>
+#include <print.hpp>
 
 #include <iostream>
 

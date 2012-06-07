@@ -18,6 +18,11 @@ public:
 		return "r";
 	}
 
+	virtual std::string getSynopsis()
+	{
+		return "<name>";
+	}
+
 	virtual std::string getShortHelpText()
 	{
 		return "Remove key(s) from key database.";
@@ -25,9 +30,7 @@ public:
 
 	virtual std::string getLongHelpText()
 	{
-		return
-			"<name>\n"
-			"Remove key(s) from key database.\n";
+		return "";
 	}
 
 	virtual int execute (Cmdline const& cmdline);

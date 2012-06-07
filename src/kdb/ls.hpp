@@ -18,18 +18,23 @@ public:
 		return "v";
 	}
 
+	virtual std::string getSynopsis()
+	{
+		return "<name>";
+	}
+
 	virtual std::string getShortHelpText()
 	{
-		return "List the names of keys.";
+		return "List the names of keys below a given name.";
 	}
 
 	virtual std::string getLongHelpText()
 	{
 		return
-			"<name>\n"
 			"List all keys below given name.\n"
 			"To also retrieve the value use the\n"
-			"export command.\n";
+			"export command."
+			;
 	}
 
 	virtual int execute (Cmdline const& cmdline);

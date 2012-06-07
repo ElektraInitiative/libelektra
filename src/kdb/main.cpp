@@ -5,6 +5,8 @@
 
 #include <factory.hpp>
 #include <command.hpp>
+#include <cmdline.hpp>
+#include <print.hpp>
 
 #include <key.hpp>
 #include <kdb.hpp>
@@ -14,12 +16,12 @@ using namespace std;
 
 void displayHelp(std::string app, std::vector<std::string> commands)
 {
-	std::cout << "Usage: " << app << " <command> [args]"
+	std::cout << "Usage: " << app << " <command> [args]\n"
 		<< std::endl;
 	std::cout << app
-		<< " is a program to manage elektra's key database\n"
-		<< "Run a command with -H to show a help text for\n"
-		<< "this command."
+		<< " is a program to manage elektra's key database.\n"
+		<< "Run a command with -H or --help as args to show a help text for\n"
+		<< "a specific command.\n"
 		<< std::endl;
 	std::cerr << "Known commands are:" << std::endl;
 	for (
@@ -84,9 +86,7 @@ int main(int argc, char**argv)
 
 	try {
 		std::auto_ptr<Command> cmd = f.get(command);
-		Cmdline cl (argc, argv,
-				cmd->getShortOptions(),
-				cmd->getLongHelpText());
+		Cmdline cl (argc, argv, cmd.get());
 
 		if (cl.version)
 		{

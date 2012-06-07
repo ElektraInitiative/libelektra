@@ -18,16 +18,19 @@ public:
 		return "n";
 	}
 
+	virtual std::string getSynopsis()
+	{
+		return "<name>";
+	}
+
 	virtual std::string getShortHelpText()
 	{
-		return "Retrieve an key.";
+		return "Get the value of an individual key.";
 	}
 
 	virtual std::string getLongHelpText()
 	{
-		return
-			"<name>\n"
-			"Get an individual key.\n";
+		return "";
 	}
 
 	virtual int execute (Cmdline const& cmdline);

@@ -53,6 +53,11 @@ public:
 		return "id";
 	}
 
+	virtual std::string getSynopsis()
+	{
+		return "[path mountpoint] [plugin [..]]";
+	}
+
 	virtual std::string getShortHelpText()
 	{
 		return "Mount a new backend.";
@@ -61,12 +66,10 @@ public:
 	virtual std::string getLongHelpText()
 	{
 		return
-			"[path mountpoint] [plugin [..]]\n"
-			"Allows you to mount\n"
-			"a new backend.\n"
 			"path .. a filename (absolute for system, relative for cascading or user)\n"
 			"mountpoint .. where to mount the backend, start with / for cascading mp\n"
-			"plugin .. a list of plugins to mount at that place\n";
+			"plugin .. a list of plugins to mount at that place"
+			;
 	}
 
 	virtual int execute (Cmdline const& cmdline);

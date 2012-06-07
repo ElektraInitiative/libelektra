@@ -1,5 +1,7 @@
 #include <mount.hpp>
 #include <backend.hpp>
+#include <cmdline.hpp>
+#include <print.hpp>
 
 #include <algorithm>
 #include <iostream>

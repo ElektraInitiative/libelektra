@@ -3,6 +3,8 @@
 #include <iostream>
 
 #include <kdb.hpp>
+#include <cmdline.hpp>
+#include <print.hpp>
 
 using namespace kdb;
 using namespace std;

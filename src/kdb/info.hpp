@@ -18,21 +18,26 @@ public:
 		return "";
 	}
 
+	virtual std::string getSynopsis()
+	{
+		return "<plugin name>";
+	}
+
 	virtual std::string getShortHelpText()
 	{
-		return "Print info about a plugin.";
+		return "Print information about a plugin.";
 	}
 
 	virtual std::string getLongHelpText()
 	{
 		return
-			"<name>\n"
 			"Uses the configuration below system/elektra/modules/\n"
 			"to print some info about an plugin.\n"
 			"\n"
 			"If this information could not be found\n"
 			"(e.g. plugin not mounted anywhere)\n"
-			"the module will be loaded.\n";
+			"the module will be loaded dynamically."
+			;
 	}
 
 	virtual int execute (Cmdline const& cmdline);

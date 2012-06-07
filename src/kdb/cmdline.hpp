@@ -14,13 +14,20 @@
 #include <string>
 #include <vector>
 
+class Command;
+
 class Cmdline
 {
 public:
-	Cmdline (int argc, char** argv,
-			std::string const& shortAcceptedOptions,
-			std::string const& helpText);
+	Cmdline (int argc, char **argv, Command *command);
 	~Cmdline () {};
+
+	/** The synopsis of the command
+	  * Currently it is only printed out.
+	  * May be used to determine number of
+	  * commands in the future.
+	 */
+	std::string synopsis;
 
 	/** The help text to printed out. */
 	std::string helpText;
@@ -47,7 +54,7 @@ public:
 
 	/** The given name for the current command.
 	  * This is the second parameter. */
-	std::string command;
+	std::string commandName;
 
 	/** The arguments given on the commandline. */
 	std::vector <std::string> arguments;

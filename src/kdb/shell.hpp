@@ -19,6 +19,11 @@ public:
 		return "";
 	}
 
+	virtual std::string getSynopsis()
+	{
+		return "";
+	}
+
 	virtual std::string getShortHelpText()
 	{
 		return "Start a kdb shell.";
@@ -27,7 +32,6 @@ public:
 	virtual std::string getLongHelpText()
 	{
 		return
-			"\n"
 			"Use an interactive mode to view or edit\n"
 			"the key database.\n"
 			"\n"
@@ -35,7 +39,8 @@ public:
 			+ supportedCommands +
 			"\n"
 			"Read the API docu for the arguments\n"
-			"and what these commands are doing.\n";
+			"and what these commands are doing."
+			;
 	}
 
 	virtual int execute (Cmdline const& cmdline);

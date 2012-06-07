@@ -27,23 +27,27 @@ public:
 		return "";
 	}
 
+	virtual std::string getSynopsis()
+	{
+		return "<root-key>";
+	}
+
 	virtual std::string getShortHelpText()
 	{
-		return "Run tests suite.";
+		return "Run key database test suite.";
 	}
 
 	virtual std::string getLongHelpText()
 	{
 		return
-			"<root-key>\n"
-			"\n"
 			"This command runs an internal test suite.\n"
 			"The tests will set and get many keys below\n"
 			"the given rootkey.\n"
 			"\n"
 			"The main purpose of these tests is to check\n"
 			"if a backend is capable of storing and retrieving\n"
-			"all kinds of configuration keys and values.\n";
+			"all kinds of configuration keys and values."
+			;
 	}
 
 	virtual int execute (Cmdline const& cmdline);

@@ -18,16 +18,19 @@ public:
 		return "rv";
 	}
 
+	virtual std::string getSynopsis()
+	{
+		return "<source> <dest>";
+	}
+
 	virtual std::string getShortHelpText()
 	{
-		return "Copy configuration.";
+		return "Copy keys within the key database.";
 	}
 
 	virtual std::string getLongHelpText()
 	{
-		return
-			"<source> <dest>\n"
-			"Copy configuration within the key database.\n";
+		return "";
 	}
 
 	virtual int execute (Cmdline const& cmdline);

@@ -18,17 +18,19 @@ public:
 		return "";
 	}
 
+	virtual std::string getSynopsis()
+	{
+		return "<name>";
+	}
+
 	virtual std::string getShortHelpText()
 	{
-		return "Retrieve meta information.";
+		return "Get all meta information of an individual key.";
 	}
 
 	virtual std::string getLongHelpText()
 	{
-		return
-			"<name>\n"
-			"Get all meta information of an individual\n"
-			"key.\n";
+		return "";
 	}
 
 	virtual int execute (Cmdline const& cmdline);

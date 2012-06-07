@@ -1,9 +1,11 @@
 #include <test.hpp>
 
+#include <kdb.hpp>
+#include <cmdline.hpp>
+#include <print.hpp>
+
 #include <vector>
 #include <iostream>
-
-#include <kdb.hpp>
 
 using namespace kdb;
 using namespace std;

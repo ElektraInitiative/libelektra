@@ -17,20 +17,22 @@ public:
 		return "v";
 	}
 
+	virtual std::string getSynopsis()
+	{
+		return "<name> [<value>]";
+	}
+
 	virtual std::string getShortHelpText()
 	{
-		return "Get a value.";
+		return "Set the value of an individual key.";
 	}
 
 	virtual std::string getLongHelpText()
 	{
 		return
-			"<name> [<value>]\n"
-			"\n"
-			"Get an value from the key database.\n"
-			"\n"
-			"If no value is given, it will be set to a null-value"
-			"To get an empty value you need to quote like \"\" (depending on shell)";
+			"If no value is given, it will be set to a null-value\n"
+			"To get an empty value you need to quote like \"\" (depending on shell)"
+			;
 	}
 
 	virtual int execute (Cmdline const& cmdline);

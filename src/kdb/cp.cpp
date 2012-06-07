@@ -2,6 +2,8 @@
 
 #include <kdb.hpp>
 #include <rename.hpp>
+#include <cmdline.hpp>
+#include <print.hpp>
 
 #include <iostream>
 

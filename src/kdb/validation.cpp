@@ -1,6 +1,8 @@
 #include <validation.hpp>
 
 #include <kdb.hpp>
+#include <cmdline.hpp>
+#include <print.hpp>
 
 #include <iostream>
 #include <string>

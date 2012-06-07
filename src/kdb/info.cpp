@@ -3,6 +3,8 @@
 #include <kdb.hpp>
 #include <plugin.hpp>
 #include <modules.hpp>
+#include <cmdline.hpp>
+#include <print.hpp>
 
 #include <iostream>
 

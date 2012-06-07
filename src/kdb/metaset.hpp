@@ -18,6 +18,11 @@ public:
 		return "";
 	}
 
+	virtual std::string getSynopsis()
+	{
+		return "<key-name> <meta-name> <meta-value>";
+	}
+
 	virtual std::string getShortHelpText()
 	{
 		return "Set a meta value.";
@@ -26,8 +31,6 @@ public:
 	virtual std::string getLongHelpText()
 	{
 		return
-			"<key-name> <meta-name> <meta-value>\n"
-			"Set a meta value.\n"
 			"Meta key are information about keys.\n"
 			"\n"
 			"Typically there should be a more specific get/set\n"
