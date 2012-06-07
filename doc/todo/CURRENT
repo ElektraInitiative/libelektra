@@ -1,0 +1,24 @@
+cmake:
+	lib64 installation
+
+create debian packages (i386+amd64)
+	-full, plugin and -plugin-xml,dbus split
+	lintian
+
+api:
+	broken links
+	add examples
+	add tutorial
+
+kdb tool:
+	allow verification of local key database by exported file
+	umount!
+	import/export in kdb-shell
+
+Resolver:
+	should create directories
+	give better warnings+say if they can be ignored
+
+c++:
+	Keyset operator==
+	exceptions defined outside
