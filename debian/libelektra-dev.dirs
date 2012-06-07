@@ -3,4 +3,5 @@ usr/include
 usr/bin
 usr/include/elektra
 usr/share/doc/elektra-api
+usr/share/cmake-2.8/Modules
 usr/lib/pkgconfig
