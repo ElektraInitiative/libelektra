@@ -5,4 +5,4 @@ add_sources(elektra-full ${SOURCES})
 add_headers(SOURCES)
 
 add_library(elektra-doc MODULE ${SOURCES})
-install (TARGETS elektra-doc DESTINATION lib/elektra)
+install (TARGETS elektra-doc DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})

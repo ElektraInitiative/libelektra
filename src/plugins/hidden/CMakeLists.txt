@@ -5,4 +5,4 @@ add_sources(elektra-full ${SOURCES})
 add_headers(SOURCES)
 
 add_library(elektra-hidden MODULE ${SOURCES})
-install (TARGETS elektra-hidden DESTINATION lib/elektra)
+install (TARGETS elektra-hidden DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})

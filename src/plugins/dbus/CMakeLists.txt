@@ -12,7 +12,7 @@ if (DBUS_FOUND)
 	add_headers (SOURCES)
 
 	add_library (elektra-dbus MODULE ${SOURCES})
-	install (TARGETS elektra-dbus DESTINATION lib/elektra)
+	install (TARGETS elektra-dbus DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})
 
 	target_link_libraries (elektra-dbus ${DBUS_LIBRARIES})
 	add_libraries(elektra-full ${DBUS_LIBRARIES})

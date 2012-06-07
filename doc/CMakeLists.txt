@@ -21,7 +21,7 @@ macro (do_doc target file)
 	if (INSTALL_DOCUMENTATION)
 		install (
 			DIRECTORY ${target}
-			DESTINATION ${DOCUMENTATION_DESTINATION}
+			DESTINATION ${TARGET_DOCUMENTATION_FOLDER}
 		)
 	endif (INSTALL_DOCUMENTATION)
 endmacro (do_doc)

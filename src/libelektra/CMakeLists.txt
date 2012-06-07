@@ -73,11 +73,17 @@ if (BUILD_SHARED)
 			VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION})
 	set_target_properties (elektra PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 
-	#RPATH settings, see http://www.itk.org/Wiki/CMake_RPATH_handling
-	set_target_properties (elektra PROPERTIES
-			INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib/elektra:/usr/lib/elektra:/lib/elektra")
+	#always search in /lib and /usr/lib and also in the folder the
+	#user decided to install elektra (e.g. /usr/local/)
+	set (ELEKTRA_RPATH "/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}")
+	set (ELEKTRA_RPATH "${ELEKTRA_RPATH}:/usr/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}")
+	set (ELEKTRA_RPATH "${ELEKTRA_RPATH}:${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}")
 
-	install (TARGETS elektra DESTINATION lib)
+	#RPATH settings, see http://www.itk.org/Wiki/CMake_RPATH_handling
+	#those settings are needed to find the plugins at runtime even without ld.so.conf
+	set_target_properties ( elektra PROPERTIES INSTALL_RPATH "${ELEKTRA_RPATH}")
+
+	install (TARGETS elektra DESTINATION lib${LIB_SUFFIX})
 endif (BUILD_SHARED)
 
 if (BUILD_FULL OR BUILD_STATIC)
@@ -109,7 +115,7 @@ if (BUILD_FULL)
 	set_target_properties (elektra-full PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 	set_target_properties (elektra-full PROPERTIES LINKER_LANGUAGE CXX)
 
-	install (TARGETS elektra-full DESTINATION lib)
+	install (TARGETS elektra-full DESTINATION lib${LIB_SUFFIX})
 endif (BUILD_FULL)
 
 
@@ -125,7 +131,7 @@ if (BUILD_STATIC)
 	set_target_properties (elektra-static PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 	set_target_properties (elektra-static PROPERTIES LINKER_LANGUAGE CXX)
 
-	install (TARGETS elektra-static DESTINATION lib)
+	install (TARGETS elektra-static DESTINATION lib${LIB_SUFFIX})
 endif (BUILD_STATIC)
 
 #if you want the same name for those 3 libraries, here is how to do it:

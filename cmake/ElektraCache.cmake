@@ -5,6 +5,10 @@
 
 set (PLUGINS dump resolver CACHE STRING "Which plugins should be compiled?")
 
+#
+# Runtime pathes for KDB
+#
+
 # May be changed to /etc/config when XDG will be implemented
 set (KDB_DB_SYSTEM "/etc/kdb" CACHE PATH
 		"The path to the system key database."
@@ -18,6 +22,12 @@ set (KDB_DB_HOME "/home" CACHE PATH
 set (KDB_DB_USER ".kdb" CACHE PATH
 		"This path will be appended after the resolved home directory. It completes the path to the user key database."
 		)
+
+
+#
+# Build properties
+#
+
 
 option (BUILD_SHARED "Build the shared version of elektra." ON)
 option (BUILD_FULL "Build the full version of elektra (shared with all selected backends included)." ON)
@@ -47,6 +57,10 @@ elseif (BUILD_TESTING)
 	set (INSTALL_TESTING OFF CACHE BOOL "Install testcases" FORCE)
 endif (BUILD_TESTING)
 
+#
+# Developer builds (debug or verbose build)
+#
+
 option (ELEKTRA_DEBUG_BUILD "Build with extra debug print messages (to debug elektra).")
 if (ELEKTRA_DEBUG_BUILD)
 	set (DEBUG "1")
@@ -61,26 +75,52 @@ else (ELEKTRA_VERBOSE_BUILD)
 	set (VERBOSE "0")
 endif (ELEKTRA_VERBOSE_BUILD)
 
-set (CMAKE_DESTINATION
-		"${CMAKE_INSTALL_PREFIX}/share/cmake-2.6/Modules"
-		CACHE PATH
-		"Where to install cmake files?"
+#
+# Target installation folders
+#
+
+set (TARGET_INCLUDE_FOLDER
+		"elektra"
+		CACHE STRING
+		"Optional folder below system include folder to install include files."
     )
 
-set (PKGCONFIG_DESTINATION
-		"${CMAKE_INSTALL_PREFIX}/lib/pkgconfig"
-		CACHE PATH
-		"Where to install pkgconfig files?"
+set (TARGET_CMAKE_FOLDER
+		"share/cmake-${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}/Modules"
+		CACHE STRING
+		"The folder below system prefix where to install cmake files."
     )
 
-set (DOCUMENTATION_DESTINATION
-		"${CMAKE_INSTALL_PREFIX}/share/doc/elektra-api"
-		CACHE PATH
-		"Where to install documentation files?"
+set (TARGET_PLUGIN_FOLDER "elektra"
+		CACHE STRING
+		"Optional folder below system library folder where to install elektra plugins. LIB_SUFFIX is honored."
+    )
+
+set (TARGET_PKGCONFIG_FOLDER
+		"pkgconfig"
+		CACHE STRING
+		"The folder below system library folder where to install pkgconfig files. LIB_SUFFIX is honored."
+    )
+
+set (TARGET_DOCUMENTATION_FOLDER
+		"share/doc/elektra-api"
+		CACHE STRING
+		"The folder below system prefix where to install api documentation files."
+    )
+
+
+#
+# Misc.
+#
+
+set (LIB_SUFFIX ""
+		CACHE STRING
+		"Optional suffix to use on lib folders (e.g. 64 for lib64)"
     )
 
 set (MEMORYCHECK_COMMAND
 		/usr/bin/valgrind
 		CACHE FILEPATH
-		"Path to valgrind the memory checker"
+		"Full path to valgrind the memory checker"
     )
+

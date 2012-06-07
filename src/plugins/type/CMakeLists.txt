@@ -8,14 +8,14 @@ add_headers (SOURCES)
 add_cppheaders (SOURCES)
 
 add_library (elektra-type MODULE ${SOURCES})
-install (TARGETS elektra-type DESTINATION lib/elektra)
+install (TARGETS elektra-type DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})
 
 #first cpp plugin test
 
 add_headers (HDR_FILES)
 add_cppheaders (HDR_FILES)
 
-install (FILES types.hpp DESTINATION lib/elektra)
+install (FILES types.hpp DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})
 
 #this test case works for full and static builds
 #it will not relink correctly

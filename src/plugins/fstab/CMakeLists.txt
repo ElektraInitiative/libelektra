@@ -11,7 +11,7 @@ if (HAS_MNTENT)
 	add_headers (SOURCES)
 
 	add_library (elektra-fstab MODULE ${SOURCES})
-	install (TARGETS elektra-fstab DESTINATION lib/elektra)
+	install (TARGETS elektra-fstab DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})
 
 	add_plugintest (fstab)
 else (HAS_MNTENT)

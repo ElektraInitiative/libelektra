@@ -10,7 +10,7 @@ if (LIBXML2_FOUND)
 	add_headers (SOURCES)
 
 	add_library (elektra-xmltool MODULE ${SOURCES})
-	install (TARGETS elektra-xmltool DESTINATION lib/elektra)
+	install (TARGETS elektra-xmltool DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})
 
 	target_link_libraries (elektra-xmltool ${LIBXML2_LIBRARIES})
 	add_libraries(elektra-full ${LIBXML2_LIBRARIES})

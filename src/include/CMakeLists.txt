@@ -39,4 +39,4 @@ install (FILES
 	kdbtools.h
 	"${CMAKE_CURRENT_BINARY_DIR}/kdbvar.h"
 	"${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h"
-	DESTINATION include/elektra)
+	DESTINATION include/${TARGET_INCLUDE_FOLDER})

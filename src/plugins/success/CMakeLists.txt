@@ -9,4 +9,4 @@ add_library(elektra-success MODULE ${SOURCES})
 #the last -std will be used, so it should be no problem
 #that this is only added here
 #set_target_properties (elektra-success PROPERTIES COMPILE_FLAGS "-std=gnu99")
-install (TARGETS elektra-success DESTINATION lib/elektra)
+install (TARGETS elektra-success DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})

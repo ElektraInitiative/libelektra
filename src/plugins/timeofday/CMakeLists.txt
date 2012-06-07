@@ -6,4 +6,4 @@ add_headers(SOURCES)
 
 add_library(elektra-timeofday MODULE ${SOURCES})
 
-install (TARGETS elektra-timeofday DESTINATION lib/elektra)
+install (TARGETS elektra-timeofday DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})

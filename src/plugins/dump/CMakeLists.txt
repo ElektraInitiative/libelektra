@@ -5,6 +5,6 @@ add_sources(elektra-full ${SOURCES})
 add_headers(SOURCES)
 
 add_library(elektra-dump MODULE ${SOURCES})
-install (TARGETS elektra-dump DESTINATION lib/elektra)
+install (TARGETS elektra-dump DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})
 
 add_plugintest(dump)

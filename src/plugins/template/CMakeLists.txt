@@ -5,6 +5,6 @@ add_sources (elektra-full ${SOURCES})
 add_headers (SOURCES)
 
 add_library (elektra-template MODULE ${SOURCES})
-install (TARGETS elektra-template DESTINATION lib/elektra)
+install (TARGETS elektra-template DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})
 
 #add_plugintest (template)

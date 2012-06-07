@@ -2,7 +2,7 @@ get_filename_component(ELEKTRA_INSTALL_LIBRARY
 		ELEKTRA_LIBRARY NAME
 		)
 
-set (ELEKTRA_LIBRARY ${CMAKE_INSTALL_PREFIX}/lib/${ELEKTRA_INSTALL_LIBRARY})
+set (ELEKTRA_LIBRARY ${CMAKE_INSTALL_PREFIX}/lib${LIB_PREFIX}/${ELEKTRA_INSTALL_LIBRARY})
 set (ELEKTRA_INCLUDE ${CMAKE_INSTALL_PREFIX}/include)
 
 #configure_file (
@@ -37,7 +37,7 @@ install ( FILES
 #		${PROJECT_BINARY_DIR}/cmake/ElektraBuildSettings.cmake
 #		${PROJECT_BINARY_DIR}/cmake/ElektraLibraryDepends.cmake
 		"${CMAKE_CURRENT_BINARY_DIR}/FindElektra.cmake"
-		DESTINATION ${CMAKE_DESTINATION}
+		DESTINATION ${TARGET_CMAKE_FOLDER}
 	)
 
 configure_file (
@@ -48,6 +48,6 @@ configure_file (
 
 install ( FILES
 		"${CMAKE_CURRENT_BINARY_DIR}/elektra.pc"
-		DESTINATION ${PKGCONFIG_DESTINATION}
+		DESTINATION lib${LIB_PREFIX}/${TARGET_CMAKE_FOLDER}
 	)
 
