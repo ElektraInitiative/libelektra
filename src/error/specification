@@ -419,4 +419,21 @@ module:dl
 class:FailedResolveSymbolError
 extends:ModuleError
 
+number:72
+description:could not stat configuration directory
+severity:warning
+ingroup:plugin
+module:resolver
+
+number:73
+description:configuration directory is not a directory
+severity:error
+ingroup:plugin
+module:resolver
+
+number:74
+description:could not create configuration directory
+severity:error
+ingroup:plugin
+module:resolver
 
