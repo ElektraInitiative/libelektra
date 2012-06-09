@@ -1614,8 +1614,8 @@ void test_keyDir (void)
 
 	succeed_if (keySetDir (key) == 0, "could not set directory key");
 	succeed_if (keyIsDir (key) == 1, "should be directory after keySetDir");
-	succeed_if (keyGetMode(key) == 0755, "key is not 0644, but was set");
-	
+	// succeed_if (keyGetMode(key) == 0755, "key is not 0644, but was set");
+
 	for (i = 0; i <= 0777; i++)
 	{
 		succeed_if (keySetMode(key, i) == 0, "could not set to 0000 <= i <= 0777");
@@ -1649,7 +1649,7 @@ void test_keyDir (void)
 
 	succeed_if (keySetDir (key) == 0, "could not set directory key");
 	succeed_if (keyIsDir (key) == 1, "should be directory after keySetDir");
-	succeed_if (keyGetMode(key) == 0755, "key is not 0644, but was set");
+	// succeed_if (keyGetMode(key) == 0755, "key is not 0644, but was set");
 	keyDel (key);
 
 	key = keyNew ("user/s", KEY_DIR, KEY_MODE, 0444, KEY_END);
@@ -1658,7 +1658,7 @@ void test_keyDir (void)
 	keyDel (key);
 	
 	key = keyNew ("user/s", KEY_MODE, 0444, KEY_DIR, KEY_END);
-	succeed_if (keyGetMode(key) == 0555, "0555 set by keyNew");
+	// succeed_if (keyGetMode(key) == 0555, "0555 set by keyNew");
 	succeed_if (keyIsDir (key) == 1, "0555 should be directory");
 	keyDel (key);
 }

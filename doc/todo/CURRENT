@@ -19,4 +19,13 @@ c++:
 	exceptions defined outside
 
 
-fix DEFINES
+fix DEFINES, DEF_MODE.. fix testcases:
+/home/markus/Projekte/Elektra/current/tests/test_key.c:1617: error in
+test_keyDir: key is not 0644, but was set
+/home/markus/Projekte/Elektra/current/tests/test_key.c:1652: error in
+test_keyDir: key is not 0644, but was set
+/home/markus/Projekte/Elektra/current/tests/test_key.c:1661: error in
+test_keyDir: 0555 set by keyNew
+
+"make test" not running on clean build??
+eliminate intra-dependency of cmake

@@ -1,0 +1,50 @@
+This describes what to do for an release:
+
+Set environment variable VERSION to current version to make those
+scripts work:
+ export VERSION=0.x.y
+
+Build everything from scratch and run tests:
+ mkdir build-release && cd build-release && cmake .. &&  make && make test
+
+Write NEWS for new release:
+ editor doc/NEWS
+ git-commit doc/NEWS
+
+Increment number in CMakeLists.txt:
+ editor CMakeLists.txt
+ git-commit CMakeLists.txt
+
+Build deb: (best is to pack those lines in a dpk script)
+ dch --increment
+ git-add debian/changelog
+ git-commit -m $VERSION # this should be last commit!
+ dpkg-buildpackage -rfakeroot -k<keyid>
+
+Now try to install + run some basic commands:
+ kdb --version
+
+Clean up the mess left over:
+ git-clean -df
+
+Build tar.gz and tag version and make hashsum:
+ make source-package
+
+Now copy those packages to ftp:
+ cp -ra ~build/elektra-$VERSION.tar.gz ftp/releases
+
+And copy API docu:
+ cd build-release
+ cp -ra doc/html doc/latex doc/man doc/api/$VERSION/
+
+Push everything to gitorious:
+ git-push --tags
+
+ cd ftp
+ git-commit && git-push
+ git-push <origin>
+
+ cd doc
+ git-commit && git-push
+ git-push <origin>
+ git-push gitorious
