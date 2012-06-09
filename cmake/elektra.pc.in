@@ -1,7 +1,7 @@
 prefix=@CMAKE_INSTALL_PREFIX@
 exec_prefix=${prefix}/bin
 libdir=${prefix}/lib@LIB_SUFFIX@
-includedir=${prefix}/include/@TARGET_LIBRARY_FOLDER@
+includedir=${prefix}/include/@TARGET_INCLUDE_FOLDER@
 
 Name: @PACKAGE_NAME@
 Description: @PACKAGE_DESCRIPTION@

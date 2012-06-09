@@ -67,6 +67,7 @@ if (ELEKTRA_DEBUG_BUILD)
 else (ELEKTRA_DEBUG_BUILD)
 	set (DEBUG "0")
 endif (ELEKTRA_DEBUG_BUILD)
+MARK_AS_ADVANCED(ELEKTRA_DEBUG_BUILD)
 
 option (ELEKTRA_VERBOSE_BUILD "Build with even more print messages (to debug elektra).")
 if (ELEKTRA_VERBOSE_BUILD)
@@ -74,6 +75,7 @@ if (ELEKTRA_VERBOSE_BUILD)
 else (ELEKTRA_VERBOSE_BUILD)
 	set (VERBOSE "0")
 endif (ELEKTRA_VERBOSE_BUILD)
+MARK_AS_ADVANCED(ELEKTRA_VERBOSE_BUILD)
 
 #
 # Target installation folders
