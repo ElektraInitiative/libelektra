@@ -13,7 +13,7 @@ applications' configurations, leveraging easy application integration.
 == Facts and Features ==
 
  * Elektra implements an API to fully access a global key database.
- * Elektra support mounting of existing configuration files into the global key database.
+ * Elektra supports mounting of existing configuration files into the global key database.
  * Elektra is multi-process safe and can be used in multi-threaded programs.
  * Elektra (except for some plugins) is portable and completely written in Ansi-C99.
  * Elektra (except for some plugins) has no external dependency.
@@ -24,7 +24,7 @@ applications' configurations, leveraging easy application integration.
  * Elektra is able to log and notify other software on any configuration changes using [[Software/dbus|dbus]].
  * Elektra is able to avoid the problem that any invalid configuration is written into the permanent storage.
  * Elektra is able to provide different mechanisms to locate configuration files.
- * Elektra support different ways to escape and encode content of configuration files.
+ * Elektra supports different ways to escape and encode content of configuration files.
  * Standard key/value pair hierarchy and semantics are defined within freedesktop.org.
 
 
