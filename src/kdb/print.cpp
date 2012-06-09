@@ -19,11 +19,11 @@ void printError(Key error)
 	try{
 		error.getMeta<std::string>("error");
 		std::cerr << "Error number " << error.getMeta<std::string>("error/number") << " occurred!" << std::endl;
-		std::cerr << "description: " << error.getMeta<std::string>("error/description") << std::endl;
-		std::cerr << "ingroup: " << error.getMeta<std::string>("error/ingroup") << std::endl;
-		std::cerr << "module: " << error.getMeta<std::string>("error/module") << std::endl;
-		std::cerr << "at: " << error.getMeta<std::string>("error/file") << ":" << error.getMeta<std::string>("error/line") << std::endl;
-		std::cerr << "reason: " << error.getMeta<std::string>("error/reason") << std::endl;
+		std::cerr << "Description: " << error.getMeta<std::string>("error/description") << std::endl;
+		std::cerr << "Ingroup: " << error.getMeta<std::string>("error/ingroup") << std::endl;
+		std::cerr << "Module: " << error.getMeta<std::string>("error/module") << std::endl;
+		std::cerr << "At: " << error.getMeta<std::string>("error/file") << ":" << error.getMeta<std::string>("error/line") << std::endl;
+		std::cerr << "Reason: " << error.getMeta<std::string>("error/reason") << std::endl;
 	} catch (KeyMetaException const& e)
 	{
 		std::cerr << "Error meta data is not set correctly by a plugin" << std::endl;
@@ -40,20 +40,27 @@ void printWarnings(Key error)
 
 	try{
 		int nr = error.getMeta<int>("warnings");
-		std::cerr << nr+1 << " Warnings were issued" << std::endl;
+		if (!nr)
+		{
+			std::cerr << "1 Warning was issued:" << std::endl;
+		}
+		else
+		{
+			std::cerr << nr+1 << " Warnings were issued:" << std::endl;
+		}
 
 		for (int i=0; i<=nr; i++)
 		{
 			std::ostringstream name;
 			name << "warnings/#" << std::setfill('0') << std::setw(2) << i;
-			std::cerr << name.str() << ": " << error.getMeta<std::string>(name.str()) << std::endl;
-			std::cerr << "number: " << error.getMeta<std::string>(name.str() + "/number") << std::endl;
-			std::cerr << "description: " << error.getMeta<std::string>(name.str() + "/description") << std::endl;
-			std::cerr << "ingroup: " << error.getMeta<std::string>(name.str() + "/ingroup") << std::endl;
-			std::cerr << "module: " << error.getMeta<std::string>(name.str() + "/module") << std::endl;
-			std::cerr << "at: " << error.getMeta<std::string>(name.str() + "/file") << ":"
-				<< error.getMeta<std::string>(name.str() + "/line") << std::endl;
-			std::cerr << "reason: " << error.getMeta<std::string>(name.str() + "/reason") << std::endl;
+			// std::cerr << "\t" << name.str() << ": " << error.getMeta<std::string>(name.str()) << std::endl;
+			std::cerr << "\tWarning number: " << error.getMeta<std::string>(name.str() + "/number") << std::endl;
+			std::cerr << "\tDescription: " << error.getMeta<std::string>(name.str() + "/description") << std::endl;
+			std::cerr << "\tIngroup: " << error.getMeta<std::string>(name.str() + "/ingroup") << std::endl;
+			std::cerr << "\tModule: " << error.getMeta<std::string>(name.str() + "/module") << std::endl;
+			std::cerr << "\tAt: " << error.getMeta<std::string>(name.str() + "/file") << ":"
+				  << error.getMeta<std::string>(name.str() + "/line") << std::endl;
+			std::cerr << "\tReason: " << error.getMeta<std::string>(name.str() + "/reason") << std::endl;
 		}
 
 	} catch (KeyMetaException const& e)
