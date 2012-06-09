@@ -27,11 +27,23 @@
 
 #include "resolver.h"
 
+#include <stdlib.h>
+#include <ctype.h>
+
+/* Needs posix */
+#include <string.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <errno.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <libgen.h>
+
 void resolverInit (resolverHandle *p, const char *path)
 {
 	p->fd = -1;
 	p->mtime = 0;
-	p->mode = 0664;
+	p->mode = KDB_FILE_MODE;
 
 	p->filename = 0;
 	p->tempfile = 0;
@@ -220,8 +232,76 @@ int elektraResolverSet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 	if (action == 0)
 	{
+		int successful_stat = 1;
 		struct stat buf;
-		pk->fd = open (pk->lockfile, O_RDWR | O_CREAT,pk->mode);
+		char * cname = strdup (pk->lockfile);
+		char * dname = dirname (cname);
+
+		if (stat(dname, &buf) == -1)
+		{
+			successful_stat = 0;
+
+			char buffer[ERROR_SIZE];
+			strerror_r(errno, buffer, ERROR_SIZE);
+
+			char *errorText = malloc(
+					strlen(pk->filename) + ERROR_SIZE + 60);
+			strcpy (errorText, "No configuration directory \"");
+			strcat (errorText, dname);
+			strcat (errorText, "\" found: \"");
+			strcat (errorText, buffer);
+			strcat (errorText, "\". Will try to create one.");
+			ELEKTRA_ADD_WARNING(72, parentKey, errorText);
+			free (errorText);
+
+			errno = errnoSave;
+			/* Do not fail, but try to create directory
+			 * afterwards, TODO: ENOTDIR would be an error.
+			 * note: cname is not freed() here*/
+		}
+
+		if (successful_stat && !S_ISDIR(buf.st_mode))
+		{
+			char *errorText = malloc(
+					strlen(pk->filename) + ERROR_SIZE + 60);
+			strcpy (errorText, "Existing configuration directory \"");
+			strcat (errorText, cname);
+			strcat (errorText, "\" is not a directory.");
+			ELEKTRA_SET_ERROR(73, parentKey, errorText);
+			free (errorText);
+
+			free (cname);
+
+			return -1;
+		}
+
+		if ((!successful_stat) && (mkdir(dname, KDB_DIR_MODE) == -1))
+		{
+			char buffer[ERROR_SIZE];
+			strerror_r(errno, buffer, ERROR_SIZE);
+
+			char *errorText = malloc(
+					strlen(pk->filename) + ERROR_SIZE + 60);
+			strcpy (errorText, "Could not create \"");
+			strcat (errorText, dname);
+			strcat (errorText, "\", because: \"");
+			strcat (errorText, buffer);
+			strcat (errorText, "\"");
+			ELEKTRA_SET_ERROR(74, parentKey, errorText);
+			free (errorText);
+
+			free (cname);
+
+			errno = errnoSave;
+
+			return -1;
+		}
+
+		free (cname);
+
+		// now the directory exists and we can try to open lock file
+
+		pk->fd = open (pk->lockfile, O_RDWR | O_CREAT, pk->mode);
 
 		if (pk->fd == -1)
 		{
@@ -268,7 +348,17 @@ int elektraResolverSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		{
 			char buffer[ERROR_SIZE];
 			strerror_r(errno, buffer, ERROR_SIZE);
-			ELEKTRA_ADD_WARNING (29, parentKey, buffer);
+
+			char *errorText = malloc(
+					strlen(pk->filename) + ERROR_SIZE + 60);
+			strcpy (errorText, "No configuration file \"");
+			strcat (errorText, pk->filename);
+			strcat (errorText, "\" found: \"");
+			strcat (errorText, buffer);
+			strcat (errorText, "\". Will try to create one.");
+			ELEKTRA_ADD_WARNING(29, parentKey, errorText);
+			free (errorText);
+
 			errno = errnoSave;
 			/* Dont fail if configuration file currently does not exist */
 			return 0;

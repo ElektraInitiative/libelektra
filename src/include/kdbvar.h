@@ -83,7 +83,11 @@
 
 
 #ifndef DEFFILEMODE
-#define DEFFILEMODE 0666
+#define DEFFILEMODE 0664
+#endif
+
+#ifndef DEFDIRMODE
+#define DEFDIRMODE 0775
 #endif
 
 #endif

@@ -772,7 +772,7 @@ int keySetDir(Key *key)
 	if (!key) return -1;
 
 	mode = keyGetMode(key);
-	mode |= KEY_DEF_DIR;
+	mode |= KDB_DIR_MODE;
 	keySetMode(key, mode);
 
 	return 0;
@@ -809,8 +809,8 @@ mode_t keyGetMode(const Key *key)
 	if (!key) return (mode_t)-1;
 
 	mode = keyValue(keyGetMeta(key, "mode"));
-	if (!mode) return KEY_DEF_MODE;
-	if (*mode == '\0') return KEY_DEF_MODE;
+	if (!mode) return KDB_FILE_MODE;
+	if (*mode == '\0') return KDB_FILE_MODE;
 
 	/*From now on we have to leave using cleanup*/
 	errno = 0;
@@ -829,7 +829,7 @@ mode_t keyGetMode(const Key *key)
 cleanup:
 	/*First restore errno*/
 	errno = errorval;
-	return KEY_DEF_MODE;
+	return KDB_FILE_MODE;
 }
 
 

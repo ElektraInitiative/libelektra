@@ -1,6 +1,7 @@
 #include "resolver.h"
 
 #include <pwd.h>
+#include <stdlib.h>
 #include <sys/types.h>
 
 /**Resolve the filename.

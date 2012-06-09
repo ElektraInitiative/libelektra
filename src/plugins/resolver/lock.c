@@ -1,5 +1,8 @@
 #include "resolver.h"
 
+#include <fcntl.h>
+#include <unistd.h>
+
 /**
  * Locks file for exclusive write mode.
  *

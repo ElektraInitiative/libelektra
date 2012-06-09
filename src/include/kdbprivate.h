@@ -426,9 +426,7 @@ int elektraSplitSync (Split *split);
 int elektraSplitPrepare (Split *split);
 int elektraSplitUpdateSize (Split *split);
 
-
 /*Internal helpers*/
-
 ssize_t elektraMemcpy (Key** array1, Key** array2, size_t size);
 ssize_t elektraMemmove (Key** array1, Key** array2, size_t size);
 void *elektraMalloc (size_t size);

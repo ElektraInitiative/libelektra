@@ -32,17 +32,6 @@
 #include <kdbplugin.h>
 #include <kdberrors.h>
 
-#include <stdlib.h>
-#include <ctype.h>
-
-/* Needs posix */
-#include <string.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <sys/stat.h>
-
 #define ERROR_SIZE 1024
 
 typedef struct _resolverHandle resolverHandle;

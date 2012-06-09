@@ -166,5 +166,8 @@ typedef int option_t;
 
 #endif /* WIN32 */
 
+#define KDB_FILE_MODE KEY_DEF_MODE
+#define KDB_DIR_MODE 0775
+
 #endif /* KDBOS_H */
 
