@@ -1,4 +1,6 @@
-These document describes the API Changes from 0.7 to 0.8
+These document describes the Changes from Elektra 0.7 to 0.8
+
+== API ==
 
 It was taken care that there are as little as possible,
 but three API bugs had to be fixed:
@@ -25,3 +27,26 @@ C++ Interface (currently not ABI/API compatible anyway):
 
 - always compare names (not identity) operator== affected
 
+
+== Build system ==
+
+ - Changed from autotools to cmake.
+
+ - No more dependency to libtool.
+
+ - C++ is now a build dependency.
+   Rationale: C++ is used by cmake too.
+   Only the "dump" plugin needs to be rewritten in C to remove that dependency.
+
+ - No LD_LIBRARY_PATH or ld.so.conf needed anymore.
+   Instead RPATH is used.
+
+ - New build variant: libelektra-full
+   It is a dynamic library with everything statically included.
+
+== Languages ==
+
+ -  Core is now Ansi C 99.
+
+ -  C++ is now officially supported by plugins.
+    Note that C++ interface is not yet API/ABI compatible.

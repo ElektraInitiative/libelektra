@@ -1,3 +1,58 @@
+0.8.1 Release
+
+The 0.8.1 brings some bugfixes and many small improvements.
+
+The only new feature is that "kdb export" can now be used with any
+storage plugin.  This is useful for backups, but also as replacement of
+the former "kdb-ls -l" which showed keys and values.
+ kdb export <name> simpleini
+now does this job. For a full export of system configuration to xml,
+you can use:
+ kdb export system xmltool
+
+The "kdb get" and "kdb getmeta" tool now support -n and --no-newline to
+suppress the newline at the end of the output.
+
+The cmake installation pathes got a overhaul and are now documented
+more properly in COMPILE.  Noteworthy is that plugins and include files
+can also be installed directly in the system library or include path.
+Additionally the build system now handles multiarch systems by supporting
+LIB_SUFFIX.
+
+FindPackage of cmake and pkgconfig remain the best methods to use elektra
+from external application. New are the examples for such projects in
+the folder "external".
+
+The -H and --help support of the kdb tool were still improved, some typos
+fixed and some information updated. Additionally the warning output got
+some cleanup to be less confusing.
+
+The user experience was improved. The ".kdb" or ".config" directory now
+will be created if they do not exist.
+
+The debian packages are now splitted to have full advantage of the
+new plugin system.  The core packages (libelektra, libelektra-dev and
+libelektra-bin) do not depend on libxml anymore.  New is the package
+libelektra-full, which contains a single dynamic library containing all
+plugins statically.  A repository will be announced separately.
+
+There was also some cleanup of old files, like the old highlevel-api
+(which does not exist anymore). Finally the API documentation, especially
+for plugin developers, was improved.
+
+
+
+
+
+
+
+---------------
+
+
+
+
+
+
 0.8.0
 
 Finally it is done, 0.8.0 is finished.
