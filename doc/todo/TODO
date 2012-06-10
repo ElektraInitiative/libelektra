@@ -1,93 +1,61 @@
 #For current work done, see CURRENT
 #For possible extensions in future, see FUTURE
 
+ == PLUGINS ==
 
 cppplugin:
-	make a nice header-only cpp solution for plugins
+	make a nice header-only(?) cpp solution for plugins
 	(integration into cpp binding)
 	assemble C symbols with macros
 	keep C->C++ problems at one place to be included
 
-json:
+
+json serialization:
 	write a json storage using yajl and cppplugin
+	* should handle cppcms config files
+	  http://cppcms.com/wikipp/en/page/cppcms_1x_config
+	* should handle openicc
+	  doc/standards/OpenICC_device_config_DB.json
+	  http://www.freedesktop.org/wiki/Specifications/icc_meta_tag_for_monitor_profiles
+
+C serialization
+	(ksNew(keyNew()))
+	using cppplugin
 
 xdg:
 	write a xdg plugin which does xdg conforming resolving
 
+struct: checker
+	cannot be deeply nested
+
 default plugin handling: resolver/storage
 
-cmdline tests:
-	cmdtest?
-
-backends:
+plugins:
 	using libraries:
-		yajl
 		libconfig
 		eet
 	using keysets:
 		bind
 		memory
 
-optimize a key to use a single malloc
-(under typical circumstances)
+== BINDINGS ==
 
 bindings: using swig?
 	python
 	scheme
 	java
 
-bugs:
-	bug squashing
-	fix open bugs of http://bugs.libelektra.org
 
-documentation:
-	update all parts of docu to 0.7.0
-	update homepage to 0.7.0 related informatin
-	update Tutorial to 0.7.0 kdbGet()
+== DOCUMENTATION ==
+
+write tutorials:
+	api introduction
+	examples
+	how to use kdb tools
+	how to mount
 
 bsd licence:
 	check for documentation, homepage, modules,...
-
-kdb rewrite: [partial blocker]
-	kdb-ls alike commands
-	rm -r
-	cp -r
-	mv -r
-	ls pretty format
-	preload (mount, config backends)
-	generate
-	meta-info get/set
-	info about backends
-	add capabilities support in kdb tool
-	export xml validation
-
-integration: in other software
-	make autoconf snippet
-	shell-script (like in oyranos)
-
-extend:
-	re-add other backends (berkleydb, gconf)
-	build and test without gconf,... installed
-	ksToStream in stream.c
-	Reintroduce and test Regular Expressions in keyset.c
-	ksCompare in keyset.c
-	mount user/elektra hierarchy
-
-reliably code:
-	error states in kdbSet
-	mode checks 0-7
-	error codes
-
-dynamic memory management:
-	improve realloc, use srealloc
-	don't use sprintf, asprintf, strdup, strndup
-	use only own functions where available
-	use different compilers, libc too
-
-packaging:
-	build with minimal system
-	debian packages
-	fedora packages
 
 all exported methods of elektra need to be:
 	useful in current state
@@ -98,34 +66,14 @@ all exported methods of elektra need to be:
 	having test cases for error cases
 	otherwise fix or mark it obsolete
 
-version:
-	tag everything with 0.7.0
-	get version with macro
-	get version at runtime
+symbols:
 	check exported symbols
 	use symbol table
 
-#portability
+add projects using elektra
 
-bugs::
-	mntent.h fix for macosx
-	dont use libltdl under linux
 
-portability:
-	cross compilation
-	bsd, aix,...
-	glibc functions away
-
-portability:
-	Build on different platforms
-	Statical build testing
-	build and test without iconv, libxml2
-
-compilers:
-	diet-gcc
-	intel cc
-
-#testing
+== Testing ==
 
 testing coverage:
 	-fprofile-arcs
@@ -136,27 +84,5 @@ advanced testing:
 	get and set a real big amount of keys
 	multithreading testing
 
-#performance
-
-general:
-	scripts for performance and stability testing
-	testing optimizations (-O2)
-	profile the code and fix optimization leaks
-
-
-profiler:
-	search for slow parts
-
-malloc trace:
-	reduce mallocs
-
-benchmarks:
-	are large keysets handled?
-
-keySet:
-	make statistics how many keys typical applications need
-	be efficient for typical needs
-
-integer overflows: sizes must not exceed SSIZE_MAX
-check for null pointers and return -1
+kdb tool
 

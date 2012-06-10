@@ -1,15 +1,4 @@
-= Resolver =
-
-auto test cases for locking file
-give filename in warning!
-(dont force to strace)
-disable warning for writing the first time..
-
-
 = Missing kdb Features =
-
-umount missing!
-	(workaround: use kdb rm -r system/elektra/mountpoints)
 
 list existing plugins?
 	which are available? (src/plugins)
@@ -22,21 +11,21 @@ list existing plugins?
 
 = Missing Testcases =
 
+test cases for locking file
+
 more testcases for kdb interface
 	also mount! and check for functionality regressions
 	ls over multiple mountpoints
 
-
 hosts typesafe with plugins enabled
 
 iterator interface (+document better)
+
 ksNext should be safe to missusage?
 
-ksCut
-
-ksCut mit Cursor im Feld geschnitten
-Cursor bei ksAppend
-Was wenn kein mountpoint angegeben?
+cursor placement:
+	ksCut within cutted area
+	ksAppend
 
 backends below other: ls does not work recursively
 also ls above multiple plugins
@@ -47,21 +36,3 @@ and execute the kdb test functions
 resolver tests?
 
 
-== Debian Package ==
-
-split up to serveral packages per plugin
-and -full in own package (has all dependencies)
-
-
-== cmake ==
-
--> cmake names
-
-Cleanup non-working code!
-
-
-== clear_sync situation unclear?? ==
-
-what about
-keyClearSync
-currently only used in dump??

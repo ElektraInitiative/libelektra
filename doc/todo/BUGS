@@ -8,6 +8,16 @@ documentation of the c++ binding, plugins
 
 document return value of resolver + other plugins
 
+rewind not clearly defined:
+	rewind before plugins?
+	rewind after plugins?
+	rewind after get()?
+	rewind after set()?
+	-> write pre+postconditions
+
+not clearly defined how config file is opened
+	(temporary file needs to be opened write+create)
+
 
 == KDB TOOL ==
 
@@ -15,16 +25,22 @@ prohibit rm, mv of system/elektra
 
 == BUILD ==
 
-try to build with C98 (with one line comments)
-	for VC++ support
+VC++ support broken
+	try to build with C98 (with one line comments)
 
+portability:
+	cross compilation
+	bsd, aix,...
+	glibc functions away
 
-== CONFIGURE ==
+portability:
+	Build on different platforms
+	Statical build testing
+	build and test without iconv, libxml2
 
-ship a ./configure script which calls cmake
-	+ toplevel Makefile which goes to build directory and calls make there
-	./configure && make && make install should work
-
+compilers:
+	diet-gcc
+	intel cc
 
 === BUGS ===
 
@@ -46,8 +62,6 @@ kdbGet: what if returned holds more information then requested
 
 network filesystem in fstab plugin?
 
-implement a contract and plugin version
-
 Check if merging configuration after conflict fails
 	(kdbGet() after conflict with an empty keyset?)
 
@@ -58,33 +72,26 @@ KeySet may be unsorted in some situations
 	changing key names
 	changing owner?
 
-if needed conf lacks a root key it is handled wrong
+keyowner:
+	add or drop support for owner of keys?
+	TODO in resolver
+
+if needed conf lacks a root key it is handled wrongly
 
 generating unique names for fstab does not work
 	none fs entries
 	kdb-fstab-set does not work on dump or similar
 
-struct: checker
-	cannot be deeply nested
-
 hosts:
+	add testcases
 	alias in large file fails
 
-system and user are not valid keys?
-	kdb ls user ??
-
-rewind not clearly defined:
-	rewind before plugins?
-	rewind after plugins?
-	rewind after get()?
-	rewind after set()?
-	-> write pre+postconditions
-
 allow to set a keyset when get failed before?
+
 hard coded limit of characters in simpleset
 
-
 keyGetStringSize missing
+	needed?
 
 path: UUID= LABEL= rechner:/...
 	/proc/filesystems
@@ -92,21 +99,6 @@ path: UUID= LABEL= rechner:/...
 	siehe man 5 fstab
 
 
-
-== STREAMING ==
-
-Own serializing API was not a good idea
-better exploit directly using kdbGet and kdbSet
-from plugins with an hand-crafted trivial resolver (doing nothing)
-
-streaming: for C++ Backends
-	void serialize(ostream& os, const KeySet& ks);
-	void deserialize(istream& is, KeySet& ks);
-
-C serialization
-	(ksNew(keyNew()))
-
-json serialization
 
 
 == CONTRACTS ==

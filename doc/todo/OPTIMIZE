@@ -1,12 +1,26 @@
 == OPTIMIZE ==
 
-benchmark first!
+general:
+	scripts for performance and stability testing
+	testing optimizations (-O2)
+	profile the code and fix optimization leaks
+	benchmark first!
 
-Key unchanged?
+Key unchanged always checked correctly?
 
 optimize check if changes before make dirty
-(other implementations possible: shadow copies?)
-    have all memory of a Key in a single allocation block
+	(other implementations possible: shadow copies?)
+
+optimize a key to use a single malloc
+	(under typical circumstances)
+	have all memory of a Key in a single allocation block
+	or use internally memory management which can be in mmap?
+
+dynamic memory management:
+	improve realloc, use srealloc
+	don't use sprintf, asprintf, strdup, strndup
+	use only own functions where available
+	use different compilers, libc too
 
 
 ksAppend() in O(1)
@@ -14,3 +28,23 @@ KDB_O_NOALL could use binary search
 
 
 keyNew should only need a single malloc
+
+
+
+
+profiler:
+	search for slow parts
+
+malloc trace:
+	reduce mallocs
+
+benchmarks:
+	are large keysets handled?
+
+keySet:
+	make statistics how many keys typical applications need
+	be efficient for typical needs
+
+integer overflows: sizes must not exceed SSIZE_MAX
+check for null pointers and return -1
+

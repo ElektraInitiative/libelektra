@@ -35,8 +35,8 @@ Build tar.gz and tag version and make hashsum:
  make source-package
 
 
-Unpack + compile + test those sources:
- tar xvzf elektra-$VERSION.tar.gz && mkdir build && cd build && cmake ../elektra-$VERSION && make && make test
+Unpack + compile + test those sources (using valgrind!):
+ tar xvzf elektra-$VERSION.tar.gz && mkdir build && cd build && cmake ../elektra-$VERSION && make && ctest -T memcheck
 
 
 Now copy the packages to ftp (stay in same folder):

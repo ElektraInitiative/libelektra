@@ -1,5 +1,18 @@
+defines:
+	see DEFINES
+	fix testcases
+	/home/markus/Projekte/Elektra/current/tests/test_key.c:1617: error in
+	test_keyDir: key is not 0644, but was set
+	/home/markus/Projekte/Elektra/current/tests/test_key.c:1652: error in
+	test_keyDir: key is not 0644, but was set
+	/home/markus/Projekte/Elektra/current/tests/test_key.c:1661: error in
+	test_keyDir: 0555 set by keyNew
+
+cmake:
+	"make test" not running on clean build??
+	eliminate intra-dependency of cmake
+
 create debian packages (i386+amd64)
-	-full, plugin and -plugin-xml,dbus split
 	lintian
 	add manpages
 	reprepro announce
@@ -8,24 +21,21 @@ api:
 	add examples
 	add tutorial
 
+chroot:
+	add -c --chroot option for all plugins
+
 kdb tool:
 	allow verification of local key database by exported file
 	umount!
 	import/export in kdb-shell
-	testcases for import/export/convert
+
+kdb testcases:
+	for get/set
+	for mount/umount
+	for import/export/convert
+	using chroot
 
 c++:
 	Keyset operator==
 	exceptions defined outside
 
-
-fix DEFINES, DEF_MODE.. fix testcases:
-/home/markus/Projekte/Elektra/current/tests/test_key.c:1617: error in
-test_keyDir: key is not 0644, but was set
-/home/markus/Projekte/Elektra/current/tests/test_key.c:1652: error in
-test_keyDir: key is not 0644, but was set
-/home/markus/Projekte/Elektra/current/tests/test_key.c:1661: error in
-test_keyDir: 0555 set by keyNew
-
-"make test" not running on clean build??
-eliminate intra-dependency of cmake
