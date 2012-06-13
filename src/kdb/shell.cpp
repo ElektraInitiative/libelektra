@@ -12,14 +12,14 @@ using namespace kdb;
 
 ShellCommand::ShellCommand() :
 	supportedCommands(
-			"kdbGet\n"
-			"kdbSet\n"
-			"keySetName\n"
-			"keySetMeta\n"
-			"keySetString\n"
-			"ksAppendKey\n"
-			"ksCut\n"
-			"ksOutput .. outputs all keys in a ks\n"
+			"kdbGet <name> .. get conf into current keyset\n"
+			"kdbSet <name> .. set conf from current keyset\n"
+			"keySetName <name> .. set name of current key\n"
+			"keySetMeta <name> <string> .. set meta of current key\n"
+			"keySetString <string> .. set string of current key\n"
+			"ksAppendKey .. append current key to current keyset\n"
+			"ksCut <name> .. cut current keyset\n"
+			"ksOutput .. outputs all keys of current keyset\n"
 			)
 {}
 
@@ -99,8 +99,8 @@ int ShellCommand::execute(Cmdline const&)
 				cout << current.current().getName() << " value: " << current.current().getString() << endl;
 			}
 		} else {
-			// TODO: keep in sync with getLongHelp
-			cout << "unknown command!\nsupported are:\n"
+			cout << "unknown command!\n"
+				"supported are:\n"
 				<< supportedCommands
 				<< endl;
 		}

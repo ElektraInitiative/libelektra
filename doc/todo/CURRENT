@@ -8,6 +8,9 @@ defines:
 	/home/markus/Projekte/Elektra/current/tests/test_key.c:1661: error in
 	test_keyDir: 0555 set by keyNew
 
+benchmark: plugins
+	ni, simpleini (check kdbGet ret codes)
+
 cmake:
 	"make test" not running on clean build??
 	eliminate intra-dependency of cmake

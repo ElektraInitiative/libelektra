@@ -38,8 +38,12 @@ public:
 			"Supported commands are:\n"
 			+ supportedCommands +
 			"\n"
-			"Read the API docu for the arguments\n"
-			"and what these commands are doing."
+			"Read the API docu\n"
+			"to see what these commands are doing.\n"
+			"\n"
+			"An internal current key and keyset assist\n"
+			"to build up data structures which can be\n"
+			"applied to the key database."
 			;
 	}
 
