@@ -1,6 +1,15 @@
 #include <benchmarks.h>
 
-int creator (KeySet *large)
+KDB * kdb;
+Key * key;
+KeySet * large;
+
+void benchmarkCreate()
+{
+	large = ksNew(NUM_KEY*NUM_DIR, KS_END);
+}
+
+void benchmarkFillup ()
 {
 	int i,j;
 	char name [KEY_NAME_LENGTH + 1];
@@ -16,37 +25,90 @@ int creator (KeySet *large)
 			ksAppendKey(large, keyNew (name, KEY_VALUE, value, KEY_END));
 		}
 	}
-
-	return 1;
 }
+
+void benchmarkOpen()
+{
+	kdb = kdbOpen(key);
+}
+
+void benchmarkInread()
+{
+	KeySet *n = ksNew(0);
+	kdbGet(kdb, n, key);
+	ksDel(n);
+}
+
+void benchmarkReadin()
+{
+	KeySet *n = ksNew(0);
+	kdbGet(kdb, n, key);
+	ksDel(n);
+}
+
+void benchmarkReread()
+{
+	kdbGet(kdb, large, key);
+}
+
+void benchmarkInwrite()
+{
+	kdbSet(kdb, large, key);
+}
+
+void benchmarkRewrite()
+{
+	kdbSet(kdb, large, key);
+}
+
+void benchmarkWriteout()
+{
+	kdbSet(kdb, large, key);
+}
+
+void benchmarkClose()
+{
+	kdbClose(kdb, key);
+}
+
 
 int main()
 {
-	KeySet * large = ksNew(NUM_KEY*NUM_DIR, KS_END);
+	key = keyNew (KEY_ROOT, KEY_END);
 
-	init_time ();
+	timeInit ();
+	benchmarkCreate();
+	timePrint ("Created empty keyset");
 
-	succeed_if (creator (large), "could not create large keyset");
-	print_time ("New large keyset");
+	benchmarkFillup();
+	timePrint ("New large keyset");
 
-	Key *key = keyNew (KEY_ROOT, KEY_END);
-	KDB *kdb = kdbOpen(key);
-	keySetName (key, KEY_ROOT);
-	print_time ("Opened key database");
+	benchmarkOpen();
+	keySetName(key, KEY_ROOT);
+	timePrint ("Opened key database");
 
-	KeySet *n = ksNew(0);
-	kdbGet(kdb, n, key);
-	ksDel (n);
-	print_time ("Read in key database");
+	benchmarkInread();
+	timePrint ("Initialize read");
+	
+	benchmarkInwrite();
+	timePrint ("Initialize write");
 
-	kdbSet(kdb, large, key);
-	print_time ("Write out key database");
+	benchmarkWriteout();
+	timePrint ("Write key database");
 
-	kdbClose(kdb, key);
-	print_time ("Closed key database");
+	benchmarkRewrite();
+	timePrint ("Rewrite key database");
+
+	benchmarkReadin();
+	timePrint ("Read in key database");
+
+	benchmarkReread();
+	timePrint ("Re read key database");
+
+	benchmarkClose();
+	timePrint ("Closed key database");
 
 	ksDel (large);
 	keyDel (key);
-	return nbError;
 }
 
