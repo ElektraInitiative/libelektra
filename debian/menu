@@ -1,2 +1,0 @@
-?package(elektra):needs=text section=Apps/Text\
-  title="kdb" command="/usr/bin/kdb"

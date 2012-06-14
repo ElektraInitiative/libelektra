@@ -6,11 +6,8 @@ export DH_VERBOSE=1
 ELEKTRA_PLUGINS="dump;resolver;hidden;iconv;syslog;error;ccode;hosts;tracer;fstab;network;null;path;simpleini;ni;success;tcl;timeofday;type;xmltool"
 #ELEKTRA_PLUGINS="dump;resolver;hidden;iconv;syslog;error;validation;xmltool;tracer;timeofday;dbus;glob;hosts;network;type;struct;path;fstab;ccode;simplei;ni;tcl;hexcode;null;ni"
 
-# Make sure libelektra2 is built before packages depending on it
-binary/libelektra-bin binary/libelektra-dev:: binary/libelektra2
-
-install/libelektra-bin::
-	install -m 644 debian/kdb.1 debian/tmp/usr/share/man/man1
+# Make sure libelektra is built before packages depending on it
+binary/libelektra-bin binary/libelektra-dev:: binary/libelektra
 
 CMAKE_FLAGS = \
 	-DCMAKE_INSTALL_PREFIX=/usr \
@@ -25,6 +22,6 @@ CMAKE_FLAGS = \
 override_dh_auto_configure:
 	dh_auto_configure -- $(CMAKE_FLAGS)
 
-override_dh_auto_test:
+#override_dh_auto_test:
 
-override_dh_installdocs:
+#override_dh_installdocs:

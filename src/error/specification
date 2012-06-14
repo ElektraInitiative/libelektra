@@ -253,13 +253,13 @@ severity:warning
 ingroup:kdb
 
 number:44
-description:unkown error code to trigger
+description:Unknown error code to trigger
 severity:error
 ingroup:plugin
 module:error
 
 number:45
-description:unkown warning code to trigger
+description:Unknown warning code to trigger
 severity:warning
 ingroup:plugin
 module:error
@@ -281,7 +281,7 @@ severity:warning
 ingroup:kdb
 
 number:49
-description:unkown command detected in dumpfile
+description:Unknown command detected in dumpfile
 severity:error
 ingroup:plugin
 module:dump
