@@ -1,8 +1,0 @@
-usr/lib/libelektra*.a
-usr/include/elektra
-usr/share/doc/elektra-api
-usr/lib/pkgconfig/elektra.pc
-usr/share/cmake-2.8/Modules/FindElektra.cmake
-usr/bin/kdb-static
-usr/lib/libelektra*.so
-
