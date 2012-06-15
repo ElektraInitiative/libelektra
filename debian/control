@@ -3,7 +3,7 @@ Priority: optional
 Maintainer: Simon Law <sfllaw@debian.org>
 Uploaders: Pier Luigi Fiorini <pierluigi.fiorini@mockup.org>
 Build-Depends: debhelper (>= 8), libxml2-dev, doxygen, libboost-dev, cmake
-Standards-Version: 3.9.3
+Standards-Version: 3.9.1
 Homepage: http://www.libelektra.org
 Vcs-Browser: http://gitorious.org/elektra-initiative/libelektra/commits/debian
 Vcs-git: git://gitorious.org/elektra-initiative/libelektra.git
@@ -12,7 +12,7 @@ Section: libs
 Package: libelektra-dev
 Section: libdevel
 Architecture: any
-Depends: libelektra4 (>= ${Source-Version}), libc6-dev
+Depends: libelektra4 (= ${source:Version}), libc6-dev, ${misc:Depends}
 Description: a framework to get and set configuration
  Elektra provides a universal and secure framework to store
  configuration parameters in a global, hierarchical key database. The
@@ -47,7 +47,7 @@ Description: a framework to get and set configuration
 
 Package: libelektra-xmltool
 Architecture: any
-Depends: libelektra4 (>= ${Source-Version}), ${shlibs:Depends},
+Depends: libelektra4 (>= ${source:Version}), ${shlibs:Depends},
 	${misc:Depends}
 Description: a framework to get and set configuration
  Elektra provides a universal and secure framework to store
@@ -82,7 +82,7 @@ Description: a framework to get and set configuration
 Package: libelektra-bin
 Section: admin
 Architecture: any
-Depends: libelektra4 (>= ${Source-Version}), ${shlibs:Depends}, ${misc:Depends}
+Depends: libelektra4 (>= ${source:Version}), ${shlibs:Depends}, ${misc:Depends}
 Description:a framework to get and set configuration
  Elektra provides a universal and secure framework to store
  configuration parameters in a global, hierarchical key database. The
