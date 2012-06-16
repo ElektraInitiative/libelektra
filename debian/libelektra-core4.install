@@ -1,0 +1,2 @@
+usr/lib/libelektra.so.*
+usr/lib/elektra4/libelektra-{dump,resolver,hidden,iconv,syslog,error,ccode,hosts,tracer,fstab,network,null,path,simpleini,ni,success,tcl,timeofday,type}.so*

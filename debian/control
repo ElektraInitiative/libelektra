@@ -12,7 +12,8 @@ Section: libs
 Package: libelektra-dev
 Section: libdevel
 Architecture: any
-Depends: libelektra4 (= ${source:Version}), libc6-dev, ${misc:Depends}
+Depends: libelektra-core4 (= ${source:Version}),
+	libc6-dev, ${misc:Depends}
 Description: a framework to get and set configuration
  Elektra provides a universal and secure framework to store
  configuration parameters in a global, hierarchical key database. The
@@ -28,7 +29,7 @@ Description: a framework to get and set configuration
  programs which use Elektra.
  It also contains the static library.
 
-Package: libelektra4
+Package: libelektra-core4
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: a framework to get and set configuration
@@ -45,7 +46,7 @@ Description: a framework to get and set configuration
  This package contains the core with the set of plugins
  only having dependencies to essential packages.
 
-Package: libelektra-xmltool
+Package: libelektra-xmltool4
 Architecture: any
 Depends: libelektra4 (>= ${source:Version}), ${shlibs:Depends},
 	${misc:Depends}
@@ -82,7 +83,8 @@ Description: a framework to get and set configuration
 Package: libelektra-bin
 Section: admin
 Architecture: any
-Depends: libelektra4 (>= ${source:Version}), ${shlibs:Depends}, ${misc:Depends}
+Depends: libelektra-core4 (>= ${source:Version}),
+	${shlibs:Depends}, ${misc:Depends}
 Description:a framework to get and set configuration
  Elektra provides a universal and secure framework to store
  configuration parameters in a global, hierarchical key database. The

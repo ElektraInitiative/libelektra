@@ -11,6 +11,7 @@ binary/libelektra-bin binary/libelektra-dev:: binary/libelektra
 
 CMAKE_FLAGS = \
 	-DCMAKE_INSTALL_PREFIX=/usr \
+	-DTARGET_PLUGIN_FOLDER=elektra4 \
 	-DPLUGINS=$(ELEKTRA_PLUGINS) \
 	-DKDB_DB_SYSTEM:PATH="/etc/kdb" \
 	-DKDB_DB_HOME:PATH="/home" \
@@ -21,7 +22,3 @@ CMAKE_FLAGS = \
 
 override_dh_auto_configure:
 	dh_auto_configure -- $(CMAKE_FLAGS)
-
-#override_dh_auto_test:
-
-#override_dh_installdocs:
