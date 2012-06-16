@@ -5,11 +5,39 @@
 git add .
 git commit -a
 
-== RELEASE ==
+== Branches ==
 
-git-tag ${KDB_VERSION}
-git-archive --prefix=elektra-${KDB_VERSION}/ --format=tar ${KDB_VERSION} | gzip > elektra-${KDB_VERSION}.tar.gz
+To list all remote branches use:
+ git-branch -a
 
+To checkout a remote branch initially use:
+ git-checkout -b <branchname>
+
+To merge a branch use (no-fastforward):
+ git-merge --no-ff <branchname>
+
+Following remote branches should exist:
+
+ master
+
+This is the development branch. Please try
+to not work directly on it, but instead
+you should use feature branches. So the
+only commits on master should be non-fastforward
+merges from features branches.
+
+ release
+
+Once the master is ready to be released,
+it should be merged to the release branch
+with --no-ff. So on the release branch
+there are only merges from master.
+
+ debian
+
+Merge changes from the release branch to
+the debian branch in order to make
+debian packages.
 
 
 
