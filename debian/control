@@ -48,7 +48,7 @@ Description: a framework to get and set configuration
 
 Package: libelektra-xmltool4
 Architecture: any
-Depends: libelektra4 (>= ${source:Version}), ${shlibs:Depends},
+Depends: libelektra-core4 (>= ${source:Version}), ${shlibs:Depends},
 	${misc:Depends}
 Description: a framework to get and set configuration
  Elektra provides a universal and secure framework to store
