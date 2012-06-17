@@ -255,7 +255,7 @@ void output_backend(Backend *backend)
 void output_trie(Trie *trie)
 {
 	int i;
-	for (i=0; i <= MAX_UCHAR; ++i)
+	for (i=0; i <= KDB_MAX_UCHAR; ++i)
 	{
 		if (trie->value[i])
 		{

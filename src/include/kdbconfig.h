@@ -30,22 +30,11 @@
   * to search for user configuration. */
 #define KDB_DB_HOME              "@KDB_DB_HOME@"
 
-/**Backend mounting information.
- *
- * This key directory tells you where each backend is mounted
- * to which mountpoint. */
-#define KDB_KEY_MOUNTPOINTS      "system/elektra/mountpoints"
-
-#define KDB_KEY_MOUNTPOINTS_LEN  (sizeof (KDB_KEY_MOUNTPOINTS))
-
 /* disable debug output messages */
 #define DEBUG @DEBUG@
 
 /* disable verbose output messages */
 #define VERBOSE @VERBOSE@
-
-/* Define to 1 if the `closedir' function returns void instead of `int'. */
-/* #undef CLOSEDIR_VOID */
 
 /* Define this if mntent follows glibc conventions */
 #define GETMNTENT_GLIBC 1

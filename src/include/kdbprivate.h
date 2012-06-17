@@ -44,24 +44,11 @@
 /** Trie optimization */
 #define APPROXIMATE_NR_OF_BACKENDS 16
 
-
-#ifdef BUFFER_SIZE
-/**KDB_BUFFER_SIZE can be used as value for any I/O buffer
- * on files.
+/**Backend mounting information.
  *
- * It may be used for optimization on various
- * systems.*/
-# define KDB_BUFFER_SIZE BUFFER_SIZE
-#else
-# define KDB_BUFFER_SIZE 256
-#endif
-
-#ifdef UT_NAMESIZE
-#define KDB_USER_NAME_SIZE UT_NAMESIZE
-#else
-#define KDB_USER_NAME_SIZE 100
-#endif
-
+ * This key directory tells you where each backend is mounted
+ * to which mountpoint. */
+#define KDB_KEY_MOUNTPOINTS      "system/elektra/mountpoints"
 
 #if DEBUG
 # include <stdio.h>
