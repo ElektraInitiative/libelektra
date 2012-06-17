@@ -87,7 +87,7 @@ KeySet *get_hosts ()
 	, KEY_END),KS_END);
 }
 
-#define BUFFER_SIZE 256
+#define KDB_BUFFER_SIZE 256
 
 #if 0
 
@@ -149,7 +149,7 @@ void test_readhosts(const char * file)
 	KeySet *ks=ksNew(0);
 	KeySet *conf;
 	KeySet *hosts_ks = get_hosts();
-	char buffer[BUFFER_SIZE+1];
+	char buffer[KDB_BUFFER_SIZE+1];
 	int i, c;
 
 	printf("Test mount readhosts\n");
@@ -189,7 +189,7 @@ void test_readhosts(const char * file)
 	succeed_if (keyIsString (key), "key is not a string");
 	keyDel (key);
 
-	succeed_if (kdbGetString (kdb, "user/tests/hosts/localhost", buffer, BUFFER_SIZE) != -1, "could not get value");
+	succeed_if (kdbGetString (kdb, "user/tests/hosts/localhost", buffer, KDB_BUFFER_SIZE) != -1, "could not get value");
 	succeed_if (strcmp (buffer, "127.0.0.1") == 0, "value not correct");
 
 
@@ -207,7 +207,7 @@ void test_readhosts(const char * file)
 		}
 	}
 
-	for (i=0; i< BUFFER_SIZE; i++) buffer[i] = 0;
+	for (i=0; i< KDB_BUFFER_SIZE; i++) buffer[i] = 0;
 	succeed_if (kdbGetString (kdb, "user/tests/hosts/localhost", buffer, 3) == -1, "could get value");
 	/*succeed_if (errno == KDB_ERR_TRUNC, "error not correct");*/
 	/*printf ("%s\n", buffer);*/

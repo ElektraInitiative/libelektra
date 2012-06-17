@@ -32,6 +32,5 @@ install (FILES
 	kdbplugin.h
 	kdbprivate.h
 	kdbtools.h
-	"${CMAKE_CURRENT_BINARY_DIR}/kdbvar.h"
 	"${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h"
 	DESTINATION include/${TARGET_INCLUDE_FOLDER})

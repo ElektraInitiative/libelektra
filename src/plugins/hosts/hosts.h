@@ -12,9 +12,9 @@
 /* Use a buffer so large that it can hold my /etc/hosts :-)
  * TODO: make it dynamic */
 
-#define HOSTS_BUFFER_SIZE 16384
+#define HOSTS_KDB_BUFFER_SIZE 16384
 /*Test size for small buffer
-#define HOSTS_BUFFER_SIZE 16 */
+#define HOSTS_KDB_BUFFER_SIZE 16 */
 
 
 int elektraHostsGet(Plugin *handle, KeySet *ks, Key *parentKey);

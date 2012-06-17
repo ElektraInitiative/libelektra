@@ -40,14 +40,6 @@
 
 #include <kdbinternal.h>
 
-#define KEY_ROOT "user/tests"
-#define KEY_LENGTH 1024
-#define BUFFER_LENGTH 4096
-
-#define MODE_WRITE 4
-#define MODE_READ 2
-#define MODE_DIR 1
-
 extern int nbError;
 extern int nbTest;
 
