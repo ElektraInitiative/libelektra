@@ -1,6 +1,3 @@
-fix DEFINES files (kdbos.h, kdbvar.h, kdbinternal...)
-prefix global macros!
+fix DEFINES files (kdbvar.h, kdbinternal...)
 remove unecessary global macros..
-
-
 
