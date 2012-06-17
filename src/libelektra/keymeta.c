@@ -742,7 +742,7 @@ int keySetGID(Key *key, gid_t gid)
  * - Mode 0400 will be translated to 0711
  * - Mode 0664 will be translated to 0775
  *
- * The macro KEY_DEF_DIR (defined to 0111) will be used for that.
+ * The macro KDB_DIR_MODE (defined to 0111) will be used for that.
  *
  * The executable bits show that child keys are allowed and listable. There
  * is no way to have child keys which are not listable for anyone, but it is
@@ -788,7 +788,7 @@ int keySetDir(Key *key)
  * Default is 0664 (octal) for keys and 0775 for directory keys
  * which used keySetDir().
  *
- * The defaults are defined with the macros KDB_FILE_MODE and KEY_DEF_DIR.
+ * The defaults are defined with the macros KDB_FILE_MODE and KDB_DIR_MODE.
  *
  * For more information about the mode permissions see @ref mode.
  *
@@ -848,7 +848,7 @@ cleanup:
  * Default is 0664 (octal) for keys and 0775 for directory keys
  * which used keySetDir().
  *
- * The defaults are defined with the macros KDB_FILE_MODE and KEY_DEF_DIR.
+ * The defaults are defined with the macros KDB_FILE_MODE and KDB_DIR_MODE.
  *
  * @note libelektra 0.7.0 only allows 0775 (directory keys) and
  * 0664 (other keys). More will be added later in a sense of the

@@ -1788,13 +1788,13 @@ void test_keyMeta(void)
 	key = keyNew(0);
 	succeed_if(keyGetMode(key) == KDB_FILE_MODE, "new key does not have default mode");
 	succeed_if(keySetDir(key) == 0, "could not set dir");
-	succeed_if(keyGetMode(key) == (KDB_FILE_MODE | KEY_DEF_DIR), "directory key");
+	succeed_if(keyGetMode(key) == (KDB_FILE_MODE | KDB_DIR_MODE), "directory key");
 	keyDel (key);
 
 	key = keyNew("user/dir", KEY_DIR, KEY_END);
-	succeed_if(keyGetMode(key) == (KDB_FILE_MODE | KEY_DEF_DIR), "directory key");
+	succeed_if(keyGetMode(key) == (KDB_FILE_MODE | KDB_DIR_MODE), "directory key");
 	succeed_if(keySetDir(key) == 0, "could not set dir");
-	succeed_if(keyGetMode(key) == (KDB_FILE_MODE | KEY_DEF_DIR), "directory key");
+	succeed_if(keyGetMode(key) == (KDB_FILE_MODE | KDB_DIR_MODE), "directory key");
 	keyDel (key);
 }
 

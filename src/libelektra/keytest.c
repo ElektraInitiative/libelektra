@@ -483,7 +483,7 @@ int keyIsDir(const Key *key)
 
 	mode = keyGetMode(key);
 
-	return ((mode & KEY_DEF_DIR) != 0);
+	return ((mode & KDB_DIR_MODE) != 0);
 }
 
 
