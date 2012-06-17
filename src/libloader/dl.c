@@ -12,6 +12,9 @@
   also loads libraries which are seen by
   symlink only. That feature is needed for
   libelektra-default.
+
+  The buildsystem makes sure that dlfcn.h
+  exists.
   */
 
 #include <dlfcn.h>

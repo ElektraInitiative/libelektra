@@ -4,7 +4,6 @@
 
 #include <kdb.h>
 #include <kdbplugin.h>
-#include <kdbprivate.h>
 #include <kdberrors.h>
 
 #include <stdlib.h>
@@ -13,6 +12,7 @@
  * TODO: make it dynamic */
 
 #define HOSTS_KDB_BUFFER_SIZE 16384
+#define       KDB_BUFFER_SIZE 16384
 /*Test size for small buffer
 #define HOSTS_KDB_BUFFER_SIZE 16 */
 

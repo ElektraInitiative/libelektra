@@ -28,7 +28,10 @@
 #include "resolver.h"
 
 #include <stdlib.h>
+
+#ifdef HAVE_CTYPE_H
 #include <ctype.h>
+#endif
 
 /* Needs posix */
 #include <string.h>

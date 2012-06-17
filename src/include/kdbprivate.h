@@ -44,6 +44,10 @@
 /** Trie optimization */
 #define APPROXIMATE_NR_OF_BACKENDS 16
 
+/**The maximum of how many characters an integer
+  needs as decimal number.*/
+#define MAX_LEN_INT 31
+
 /**Backend mounting information.
  *
  * This key directory tells you where each backend is mounted

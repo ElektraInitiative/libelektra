@@ -40,6 +40,8 @@
 
 #include <kdbinternal.h>
 
+#define BUFFER_LENGTH 4096
+
 extern int nbError;
 extern int nbTest;
 

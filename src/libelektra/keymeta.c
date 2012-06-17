@@ -83,9 +83,9 @@
 
 
 
-#ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
-#endif
+#include <kdb.h>
+#include <kdbconfig.h>
+#include <kdbprivate.h>
 
 #if HAVE_STDIO_H
 #include <stdio.h>
@@ -103,9 +103,10 @@
 #include <stdlib.h>
 #endif
 
+#ifdef HAVE_ERRNO_H
+#include <errno.h>
+#endif
 
-#include "kdb.h"
-#include "kdbprivate.h"
 
 /**Rewind the internal iterator to first meta data.
  *
@@ -546,11 +547,6 @@ ssize_t keySetMeta(Key *key, const char* metaName,
  *       UID, GID access methods             *
  *********************************************/
 
-
-/**The maximum of how many characters an integer
-  needs as decimal number.*/
-#define MAX_LEN_INT 31
-#include <errno.h>
 
 
 

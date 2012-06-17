@@ -7,6 +7,15 @@ set(DISCLAMER "
  *                                                                         *
  ***************************************************************************/")
 
+include(CheckIncludeFile)
+include(CheckSymbolExists)
+
+check_symbol_exists(clearenv     "stdlib.h"         HAVE_CLEARENV)
+
+check_include_file(ctype.h     HAVE_CTYPE_H)
+check_include_file(errno.h     HAVE_ERRNO_H)
+check_include_file(locale.h    HAVE_LOCALE_H)
+
 configure_file (
 	"${CMAKE_CURRENT_SOURCE_DIR}/kdb.h"
 	"${CMAKE_CURRENT_BINARY_DIR}/kdb.h"

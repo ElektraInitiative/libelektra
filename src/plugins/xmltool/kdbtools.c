@@ -22,10 +22,6 @@ $Id$
 
 */
 
-#ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
-#endif
-
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>

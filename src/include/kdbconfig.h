@@ -36,94 +36,17 @@
 /* disable verbose output messages */
 #define VERBOSE @VERBOSE@
 
-/* Define this if mntent follows glibc conventions */
-#define GETMNTENT_GLIBC 1
-
-/* Working getopt */
-#define HASGETOPT 1
-
-/* sigaction available */
-/* #undef HASSIGACTION */
-
-/* POSIX signal available */
-#define HASSIGPROCMASK 1
-
-/* Define to 1 if your system has a working `chown' function. */
-#define HAVE_CHOWN 1
-
 /* Define to 1 if you have the `clearenv' function. */
-#define HAVE_CLEARENV 1
-
-/* Define to 1 if you have the `ctime_r' function. */
-#define HAVE_CTIME_R 1
+#define HAVE_CLEARENV @HAVE_CLEARENV@
 
 /* Define to 1 if you have the <ctype.h> header file. */
-#define HAVE_CTYPE_H 1
-
-/* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
-   */
-#define HAVE_DIRENT_H 1
-
-/* Define to 1 if you have the <dlfcn.h> header file. */
-#define HAVE_DLFCN_H 1
+#define HAVE_CTYPE_H @HAVE_CTYPE_H@
 
 /* Define to 1 if you have the <errno.h> header file. */
-#define HAVE_ERRNO_H 1
-
-/* Define to 1 if you have the <fcntl.h> header file. */
-#define HAVE_FCNTL_H 1
-
-/* Define to 1 if you have the `ftruncate' function. */
-#define HAVE_FTRUNCATE 1
-
-/* Define to 1 if you have the `getgid' function. */
-#define HAVE_GETGID 1
-
-/* Define to 1 if you have the `getmntent' function. */
-#define HAVE_GETMNTENT 1
-
-/* Define to 1 if you have the `gettimeofday' function. */
-#define HAVE_GETTIMEOFDAY 1
-
-/* Define to 1 if you have the `getuid' function. */
-#define HAVE_GETUID 1
-
-/* Define to 1 if you have the `index' function. */
-#define HAVE_INDEX 1
-
-/* Define to 1 if you have the <inttypes.h> header file. */
-#define HAVE_INTTYPES_H 1
-
-/* Define to 1 if you have the <langinfo.h> header file. */
-#define HAVE_LANGINFO_H 1
-
-/* Define to 1 if you have libltdl */
-#define HAVE_LIBLTDL 1
-
-/* Define to 1 if you have the <limits.h> header file. */
-#define HAVE_LIMITS_H 1
+#define HAVE_ERRNO_H @HAVE_ERRNO_H@
 
 /* Define to 1 if you have the <locale.h> header file. */
-#define HAVE_LOCALE_H 1
-
-/* Define to 1 if you have the <ltdl.h> header file. */
-#define HAVE_LTDL_H 1
-
-/* Define to 1 if your system has a GNU libc compatible `malloc' function, and
-   to 0 otherwise. */
-#define HAVE_MALLOC 1
-
-/* Define to 1 if you have the `memmove' function. */
-#define HAVE_MEMMOVE 1
-
-/* Define to 1 if you have the <memory.h> header file. */
-#define HAVE_MEMORY_H 1
-
-/* Define to 1 if you have the `memset' function. */
-#define HAVE_MEMSET 1
-
-/* Define to 1 if you have the `mkdir' function. */
-#define HAVE_MKDIR 1
+#define HAVE_LOCALE_H @HAVE_LOCALE_H@
 
 /* Define to 1 if you have the <mntent.h> header file. */
 #define HAVE_MNTENT_H 1
