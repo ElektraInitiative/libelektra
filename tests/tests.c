@@ -6,8 +6,8 @@ int nbTest;
 uid_t nbUid;
 gid_t nbGid;
 
-char file [MAX_PATH_LENGTH];
-char srcdir [MAX_PATH_LENGTH];
+char file [KDB_MAX_PATH_LENGTH];
+char srcdir [KDB_MAX_PATH_LENGTH];
 
 #ifdef HAVE_CLEARENV
 int clearenv();
@@ -121,7 +121,7 @@ int compare_line_files (const char *filename, const char *genfilename)
  */
 int compare_files (const char * filename)
 {
-	char genfilename [MAX_PATH_LENGTH];
+	char genfilename [KDB_MAX_PATH_LENGTH];
 	char * dot = strrchr (filename, '.');
 
 	exit_if_fail (dot != 0, "could not find extension in file");

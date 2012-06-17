@@ -26,7 +26,7 @@
 
 #define MAX_NUMBER_SIZE 10
 
-/** @param name is a buffer with MAX_PATH_LENGTH space.
+/** @param name is a buffer with KDB_MAX_PATH_LENGTH space.
   * @param fstabEntry will be used to get the name:
   * @param swapIndex will count up for every swap
   *
@@ -159,7 +159,7 @@ int elektraFstabGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	}
 
 	struct mntent *fstabEntry;
-	char fsname[MAX_PATH_LENGTH];
+	char fsname[KDB_MAX_PATH_LENGTH];
 	char buffer[MAX_NUMBER_SIZE];
 	unsigned int swapIndex=0;
 	while ((fstabEntry=getmntent(fstab)))

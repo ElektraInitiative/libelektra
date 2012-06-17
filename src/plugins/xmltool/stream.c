@@ -172,7 +172,7 @@ ssize_t keyToStream(const Key *key, FILE* stream, option_t options)
 ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
 		const size_t parentSize, option_t options) {
 	ssize_t written=0;
-	char buffer[MAX_PATH_LENGTH];
+	char buffer[KDB_MAX_PATH_LENGTH];
 
 	uid_t uid = getuid();
 	gid_t gid = getgid();
@@ -409,7 +409,7 @@ ssize_t ksToStream(const KeySet *ks, FILE* stream, option_t options)
 	} else written+=fprintf(stream,"<keyset");
 
 	if (options & KDB_O_HIER) {
-		char commonParent[MAX_PATH_LENGTH];
+		char commonParent[KDB_MAX_PATH_LENGTH];
 
 		ksGetCommonParentName(cks,commonParent,sizeof(commonParent));
 	

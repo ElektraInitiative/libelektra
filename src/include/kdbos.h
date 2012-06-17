@@ -38,17 +38,16 @@
  *
  * Following constants must be defined:
  *
- * KEY_SEPARATOR   how to delimit keynames
- * PATH_SEPARATOR  how to delimit pathnames
- * KEY_DEF_MODE    the standard mode for keys
- * KEY_DIR_MODE    the mode to add (|=) for key directories
+ * KDB_PATH_SEPARATOR  how to delimit pathnames
+ * KDB_FILE_MODE    the standard mode for keys
+ * KDB_DIR_MODE    the mode to add (|=) for key directories
  *
  * Following limits must be defined (in addition to limits mentioned
  * above for types):
  *
  * MAX_UCHAR       the maximum for unsigned char
  * MAX_KEY_LENGTH  the maximum length for a keyname
- * MAX_PATH_LENGTH the maximum length for a pathname
+ * KDB_MAX_PATH_LENGTH the maximum length for a pathname
  *
  * In addition to the types the ... or va_list must be supported,
  * this is ISO C and should happen by including <stdarg.h>.
@@ -60,6 +59,10 @@
 
 #ifndef KDBOS_H
 #define KDBOS_H
+
+/***************************************************
+ *               For ANSI C systems
+ ***************************************************/
 
 
 /* Include essential headers used in kdb.h */
@@ -81,21 +84,18 @@
 #include <inttypes.h>
 #include <sys/types.h>
 
-/**Separator for Path names*/
-#define PATH_SEPARATOR '/'
 
-
-/**MAX_PATH_LENGTH will be the value for longest
+/**KDB_MAX_PATH_LENGTH will be the value for longest
  * possible filenames on the system.*/
 
 /*Some systems have even longer pathnames*/
 #ifdef PATH_MAX
-#define MAX_PATH_LENGTH PATH_MAX
+#define KDB_MAX_PATH_LENGTH PATH_MAX
 /*This value is garanteed on any Posixsystem*/
 #elif defined __USE_POSIX
-#define MAX_PATH_LENGTH _POSIX_PATH_MAX
+#define KDB_MAX_PATH_LENGTH _POSIX_PATH_MAX
 #else
-#define MAX_PATH_LENGTH 4096
+#define KDB_MAX_PATH_LENGTH 4096
 #endif
 
 /*Type to point to every position within the keyset*/
@@ -107,18 +107,15 @@ typedef int option_t;
 
 /**Separator for key names.
  * This character will be used to separate key names*/
-#define KEY_SEPARATOR '/'
+#define KDB_PATH_SEPARATOR '/'
+
 /**Default Mode.
- * This mode will be used for fresh keys*/
-#define KEY_DEF_MODE 0664
+ * This mode will be used for new files*/
+#define KDB_FILE_MODE 0664
+
 /**Default directory mode.
- * This mode will be ORed to have a directory key*/
-#define KEY_DEF_DIR 0111
-
-/**Lets assume that the namespace + relative path is shorter then the absolute path.
- * So the maximum length of key is what the system allows for the path.*/
-#define MAX_KEY_LENGTH MAX_PATH_LENGTH
-
+ * This mode will be used for new directories*/
+#define KDB_DIR_MODE 0775
 
 
 
@@ -127,18 +124,18 @@ typedef int option_t;
 /***************************************************
  *                 Windows
  ***************************************************/
+
+/* Avoid the most crazy things */
+#define NOMINMAX
+
 # include <windows.h>
 # include <limits.h>
 
 # define usleep(x) Sleep(x)
-
 # define ssize_t int
 # define snprintf _snprintf
 
-/**Separator for Path names*/
-#define PATH_SEPARATOR '\\'
-
-#define MAX_PATH_LENGTH 4096
+#define KDB_MAX_PATH_LENGTH 4096
 
 /*Type to point to every position within the keyset*/
 typedef ssize_t cursor_t;
@@ -149,25 +146,11 @@ typedef int option_t;
 
 /**Separator for key names.
  * This character will be used to separate key names*/
-#define KEY_SEPARATOR '/'
-/**Default Mode.
- * This mode will be used for fresh keys*/
-#define KEY_DEF_MODE 0664
-/**Default directory mode.
- * This mode will be ORed to have a directory key*/
-#define KEY_DEF_DIR 0111
-
-/**Lets assume that the namespace + relative path is shorter then the absolute path.
- * So the maximum length of key is what the system allows for the path.*/
-#define MAX_KEY_LENGTH MAX_PATH_LENGTH
+#define KDB_PATH_SEPARATOR '/'
 
 
 
 
 #endif /* WIN32 */
 
-#define KDB_FILE_MODE KEY_DEF_MODE
-#define KDB_DIR_MODE 0775
-
 #endif /* KDBOS_H */
-

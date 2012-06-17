@@ -48,7 +48,7 @@ void print_limits()
 	printf ("Maximum size_t is %d\n", SIZE_MAX);
 	printf ("Maximum ssize_t is %d\n", SSIZE_MAX);
 	printf ("Maximum length of a Keyname %d\n", MAX_KEY_LENGTH);
-	printf ("Maximum length of a Path %d\n", MAX_PATH_LENGTH);
+	printf ("Maximum length of a Path %d\n", KDB_MAX_PATH_LENGTH);
 }
 
 int main()
