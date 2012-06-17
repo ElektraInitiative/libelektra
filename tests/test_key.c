@@ -239,7 +239,7 @@ void test_keyNewUser()
 {
 	Key     *key;
 	char array[] = "here is some data stored";
-	char fullroot [MAX_PATH_LENGTH];
+	char fullroot [KDB_MAX_PATH_LENGTH];
 	char * getBack;
 	Key *k1;
 	Key *k2;
@@ -251,7 +251,7 @@ void test_keyNewUser()
 	succeed_if (keySetOwner(key, "hugo") == sizeof("hugo"), "could not set owner");
 	succeed_if( strcmp(keyOwner(key), "hugo") == 0, "keyNew: owner not set correctly");
 	succeed_if( keyGetOwnerSize(key) == 5, "owner length not correct");
-	keyGetFullName (key, fullroot, MAX_PATH_LENGTH);
+	keyGetFullName (key, fullroot, KDB_MAX_PATH_LENGTH);
 	succeed_if( strcmp(keyOwner(key), "hugo") == 0, "keyNew: owner not set correctly");
 	/* printf ("%s, %s, %s\n", keyName(key), keyBaseName(key), fullroot); */
 	succeed_if(strcmp(keyName(key),"user/test/test") == 0, "Wrong keyname: keyName");
@@ -264,7 +264,7 @@ void test_keyNewUser()
 	succeed_if (keySetOwner(key, "tommy") == sizeof("tommy"), "could not set owner");
 	succeed_if( strcmp(keyOwner(key), "tommy") == 0, "keyNew: owner not set correctly");
 	succeed_if( keyGetOwnerSize(key) == 6, "owner length not correct");
-	keyGetFullName (key, fullroot, MAX_PATH_LENGTH);
+	keyGetFullName (key, fullroot, KDB_MAX_PATH_LENGTH);
 	succeed_if( strcmp(keyOwner(key), "tommy") == 0, "keyNew: owner not set correctly");
 	/* printf ("%s, %s, %s\n", keyName(key), keyBaseName(key), fullroot); */
 	succeed_if(strcmp(keyName(key),"user/test/test") == 0, "Wrong keyname: keyName");
@@ -1786,15 +1786,15 @@ void test_keyMeta(void)
 	keyDel (key);
 
 	key = keyNew(0);
-	succeed_if(keyGetMode(key) == KEY_DEF_MODE, "new key does not have default mode");
+	succeed_if(keyGetMode(key) == KDB_FILE_MODE, "new key does not have default mode");
 	succeed_if(keySetDir(key) == 0, "could not set dir");
-	succeed_if(keyGetMode(key) == (KEY_DEF_MODE | KEY_DEF_DIR), "directory key");
+	succeed_if(keyGetMode(key) == (KDB_FILE_MODE | KDB_DIR_MODE), "directory key");
 	keyDel (key);
 
 	key = keyNew("user/dir", KEY_DIR, KEY_END);
-	succeed_if(keyGetMode(key) == (KEY_DEF_MODE | KEY_DEF_DIR), "directory key");
+	succeed_if(keyGetMode(key) == (KDB_FILE_MODE | KDB_DIR_MODE), "directory key");
 	succeed_if(keySetDir(key) == 0, "could not set dir");
-	succeed_if(keyGetMode(key) == (KEY_DEF_MODE | KEY_DEF_DIR), "directory key");
+	succeed_if(keyGetMode(key) == (KDB_FILE_MODE | KDB_DIR_MODE), "directory key");
 	keyDel (key);
 }
 

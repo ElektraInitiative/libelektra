@@ -90,7 +90,7 @@ char *keyNameGetOneLevel(const char *name, size_t *size) {
 	int end=0;
 	
 	/* skip all repeating '/' in the begining */
-	while (*real && *real == PATH_SEPARATOR) real++;
+	while (*real && *real == KDB_PATH_SEPARATOR) real++;
 	
 	/* now see where this basename ends handling escaped chars with '\' */
 	while (real[cursor] && ! end) {
@@ -98,7 +98,7 @@ char *keyNameGetOneLevel(const char *name, size_t *size) {
 			case '\\':
 				escapeNext=1;
 				break;
-			case PATH_SEPARATOR:
+			case KDB_PATH_SEPARATOR:
 				if (! escapeNext) end=1;
 			default:
 				escapeNext=0;
@@ -142,7 +142,7 @@ ssize_t keyNameGetFullRootNameSize(const char *keyName) {
 		\.
 		(empty)
 	*/
-	end=strchr(keyName,PATH_SEPARATOR);
+	end=strchr(keyName,KDB_PATH_SEPARATOR);
 	if (!end) /* Reached end of string. Root is entire key. */
 		end = (char *)keyName + length;
 

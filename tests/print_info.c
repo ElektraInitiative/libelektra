@@ -12,10 +12,9 @@ void print_time (Key *key)
 void print_constant()
 {
 	printf ("\nFollowing constants must be defined in elektra\n");
-	printf ("The Key Separator is %c\n", KEY_SEPARATOR);
-	printf ("The Path Separator is %c\n", PATH_SEPARATOR);
-	printf ("The default mode for new keys 0%o\n", KEY_DEF_MODE);
-	printf ("The default mode added to directory keys 0%o\n", KEY_DEF_DIR);
+	printf ("The Path Separator is %c\n", KDB_PATH_SEPARATOR);
+	printf ("The default mode for new keys 0%o\n", KDB_FILE_MODE);
+	printf ("The default mode added to directory keys 0%o\n", KDB_DIR_MODE);
 }
 
 void print_sizeof()
@@ -48,7 +47,7 @@ void print_limits()
 	printf ("Maximum size_t is %d\n", SIZE_MAX);
 	printf ("Maximum ssize_t is %d\n", SSIZE_MAX);
 	printf ("Maximum length of a Keyname %d\n", MAX_KEY_LENGTH);
-	printf ("Maximum length of a Path %d\n", MAX_PATH_LENGTH);
+	printf ("Maximum length of a Path %d\n", KDB_MAX_PATH_LENGTH);
 }
 
 int main()

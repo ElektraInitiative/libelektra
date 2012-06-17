@@ -380,11 +380,11 @@ void test_mode()
 
 	succeed_if (keySetMeta (key, "mode", "x") == sizeof("x"), "could not set meta");
 	succeed_if (!strcmp(keyValue (keyGetMeta(key, "mode")), "x"), "meta value for mode was not set correctly");
-	succeed_if (keyGetMode(key) == KEY_DEF_MODE, "mode was not set correctly");
+	succeed_if (keyGetMode(key) == KDB_FILE_MODE, "mode was not set correctly");
 
 	succeed_if (keySetMeta (key, "mode", "x1") == sizeof("x1"), "could not set meta");
 	succeed_if (!strcmp(keyValue (keyGetMeta(key, "mode")), "x1"), "meta value for mode was not set correctly");
-	succeed_if (keyGetMode(key) == KEY_DEF_MODE, "mode was not set correctly");
+	succeed_if (keyGetMode(key) == KDB_FILE_MODE, "mode was not set correctly");
 
 	succeed_if (keySetMeta (key, "mode", "2000000") == sizeof("2000000"), "could not set large mode");
 	succeed_if (!strcmp(keyValue (keyGetMeta(key, "mode")), "2000000"), "meta value for large mode was not set correctly");
@@ -392,21 +392,21 @@ void test_mode()
 
 	succeed_if (keySetMeta (key, "mode", "1x") == sizeof("1x"), "could not set meta");
 	succeed_if (!strcmp(keyValue (keyGetMeta(key, "mode")), "1x"), "meta value for mode was not set correctly");
-	succeed_if (keyGetMode(key) == KEY_DEF_MODE, "mode was not set correctly");
+	succeed_if (keyGetMode(key) == KDB_FILE_MODE, "mode was not set correctly");
 
 	succeed_if (keySetMeta (key, "mode", "50x") == sizeof("50x"), "could not set meta");
 	succeed_if (!strcmp(keyValue (keyGetMeta(key, "mode")), "50x"), "meta value for mode was not set correctly");
-	succeed_if (keyGetMode(key) == KEY_DEF_MODE, "mode was not set correctly");
+	succeed_if (keyGetMode(key) == KDB_FILE_MODE, "mode was not set correctly");
 
 	keyDel (key);
 
 	key = keyNew ("user/mode", KEY_END);
 	succeed_if (keyValue (keyGetMeta(key, "mode")) == 0, "got value, but mode was not set up to now");
-	succeed_if (keyGetMode(key) == KEY_DEF_MODE, "KEY_DEF_MODE not default on new key");
+	succeed_if (keyGetMode(key) == KDB_FILE_MODE, "KDB_FILE_MODE not default on new key");
 
 	succeed_if (keySetMeta (key, "mode", "") == sizeof(""), "could not set large mode");
 	succeed_if (!strcmp(keyValue (keyGetMeta(key, "mode")), ""), "meta value for large mode was not set correctly");
-	succeed_if (keyGetMode(key) == KEY_DEF_MODE, "empty mode should also yield default");
+	succeed_if (keyGetMode(key) == KDB_FILE_MODE, "empty mode should also yield default");
 
 	keyDel (key);
 }

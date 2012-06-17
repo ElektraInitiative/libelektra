@@ -1817,7 +1817,7 @@ ssize_t ksGetCommonParentName(const KeySet *working,char *returnedCommonParent, 
 			/* parent will be the parent of current parent... */
 			char *delim=0;
 
-			if ((delim=strrchr(returnedCommonParent,PATH_SEPARATOR)))
+			if ((delim=strrchr(returnedCommonParent,KDB_PATH_SEPARATOR)))
 			{
 				*delim=0;
 				parentSize=elektraStrLen(returnedCommonParent);
