@@ -1,5 +1,5 @@
 /***************************************************************************
-      kdbconfig.h  -  Configuration of build system
+      kdbconfig.h  -  Build system configuration
 
                            -------------------
     begin                : Apr 22 2010
@@ -15,6 +15,71 @@
  *   it under the terms of the BSD License (revised).                      *
  *                                                                         *
  ***************************************************************************/
+
+#ifndef KDBCONFIG_H
+#define KDBCONFIG_H
+
+#ifndef KDB_DB_SYSTEM
+/**Below this directory the system configuration (system/) will be searched.*/
+#define KDB_DB_SYSTEM            "@KDB_DB_SYSTEM@"
+#endif
+
+#ifndef KDB_DB_USER
+/** Depending on the resolver this might be the
+  * postfix to search for user configuration. */
+#define KDB_DB_USER              "@KDB_DB_USER@"
+#endif
+
+#ifndef KDB_DB_HOME
+/** Depending on the resolver this might be the root 
+  * to search for user configuration. */
+#define KDB_DB_HOME              "@KDB_DB_HOME@"
+#endif
+
+#ifndef KDB_KEY_MOUNTPOINTS
+/**Backend mounting information.
+ *
+ * This key directory tells you where each backend is mounted
+ * to which mountpoint. */
+#define KDB_KEY_MOUNTPOINTS      "system/elektra/mountpoints"
+#endif
+
+#define KDB_KEY_MOUNTPOINTS_LEN  (sizeof (KDB_KEY_MOUNTPOINTS))
+
+#ifndef MAX_UCHAR
+#define MAX_UCHAR (UCHAR_MAX+1)
+#endif
+
+#ifndef KEYSET_SIZE
+/*The minimal allocation size of a keyset inclusive
+  NULL byte. ksGetAlloc() will return one less because
+  it says how much can actually be stored.*/
+#define KEYSET_SIZE 16
+#endif
+
+#ifndef NR_OF_PLUGINS
+#define NR_OF_PLUGINS 10
+#endif
+
+#ifndef APPROXIMATE_NR_OF_BACKENDS
+#define APPROXIMATE_NR_OF_BACKENDS 16
+#endif
+
+
+/**BUFFER_SIZE can be used as value for any I/O buffer
+ * on files.
+ *
+ * It may be used for optimization on various
+ * systems.*/
+#ifndef BUFFER_SIZE
+#define BUFFER_SIZE 256
+#endif
+
+#ifdef UT_NAMESIZE
+#define USER_NAME_SIZE UT_NAMESIZE
+#else
+#define USER_NAME_SIZE 100
+#endif
 
 /* disable debug output messages */
 #define DEBUG @DEBUG@
@@ -291,33 +356,4 @@
 # define __EXTENSIONS__ 1
 #endif
 
-
-/* Define to empty if `const' does not conform to ANSI C. */
-/* #undef const */
-
-/* Define to `int' if <sys/types.h> does not define. */
-/* #undef gid_t */
-
-/* Define to rpl_malloc if the replacement function should be used. */
-/* #undef malloc */
-
-/* Define to `int' if <sys/types.h> does not define. */
-/* #undef mode_t */
-
-/* Define to `long int' if <sys/types.h> does not define. */
-/* #undef off_t */
-
-/* Define to rpl_realloc if the replacement function should be used. */
-/* #undef realloc */
-
-/* Define to `unsigned int' if <sys/types.h> does not define. */
-/* #undef size_t */
-
-/* Define to `int' if <sys/types.h> does not define. */
-/* #undef ssize_t */
-
-/* Define to `unsigned long' if <sys/types.h> does not define. */
-/* #undef time_t */
-
-/* Define to `int' if <sys/types.h> doesn't define. */
-/* #undef uid_t */
+#endif

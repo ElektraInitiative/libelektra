@@ -39,8 +39,9 @@
  * Following constants must be defined:
  *
  * KDB_PATH_SEPARATOR  how to delimit pathnames
- * KDB_FILE_MODE    the standard mode for keys
- * KDB_DIR_MODE    the mode to add (|=) for key directories
+ * KDB_FILE_MODE       the standard mode for keys
+ * KDB_DIR_MODE        the mode to add (|=) for key directories
+ * KDB_MAX_UCHAR       the maximum value of unsigned char
  *
  * Following limits must be defined (in addition to limits mentioned
  * above for types):
@@ -143,6 +144,8 @@ typedef int option_t;
 /**Separator for key names.
  * This character will be used to separate key names*/
 #define KDB_PATH_SEPARATOR '/'
+
+#define KDB_MAX_UCHAR (UCHAR_MAX+1)
 
 
 
