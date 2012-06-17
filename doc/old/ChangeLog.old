@@ -475,7 +475,7 @@ NOTE: thus only a single key is locked it only prevents from shredded files
 - all functions are defined in kdbbackend.h
 - added test for backendhelpers
 - added test for internals (with small multichar seq test)
-- distinguish between PATH_SEPARATOR and KEY_SEPARATOR
+- distinguish between KDB_PATH_SEPARATOR and KEY_SEPARATOR
 - added MAX_KEY_LENGTH to say explicit that the length of
 the key name is limited for filesys
 - KDB_KEY_MOUNTPOINTS holds keyname for mountpoint database

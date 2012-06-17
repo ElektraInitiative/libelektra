@@ -185,7 +185,7 @@ ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
 
 		found=memcmp(parent,key->key,skip);
 		if (found == 0) {
-			while (*(key->key+skip) == PATH_SEPARATOR) ++skip;
+			while (*(key->key+skip) == KDB_PATH_SEPARATOR) ++skip;
 
 			if (*(key->key+skip) != 0) /* we don't want a null basename */
 				written+=fprintf(stream,"<key basename=\"%s\"",

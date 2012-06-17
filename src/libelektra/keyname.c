@@ -307,7 +307,7 @@ ssize_t keySetName(Key *key, const char *newName)
 					elektraFree (owner);
 				}
 				key->keySize+=length-ownerLength-1;  /* -1 is for the ':' */
-			} else if (*(newName+userLength)!=PATH_SEPARATOR) {
+			} else if (*(newName+userLength)!=KDB_PATH_SEPARATOR) {
 				/* handle when != "user/ *" */
 				/*errno=KDB_ERR_INVALIDKEY;*/
 				key->key = 0;
@@ -325,7 +325,7 @@ ssize_t keySetName(Key *key, const char *newName)
 		rootLength  = userLength;
 	} else if (keyNameIsSystem(newName)) {
 		/* handle "system*" */
-		if (length > systemLength && *(newName+systemLength)!=PATH_SEPARATOR)
+		if (length > systemLength && *(newName+systemLength)!=KDB_PATH_SEPARATOR)
 		{	/* handle when != "system/ *" */
 			/*errno=KDB_ERR_INVALIDKEY;*/
 			key->key = 0;
@@ -386,13 +386,13 @@ ssize_t keySetName(Key *key, const char *newName)
 		else if (size == 2 && strncmp (p, "..",2) == 0) /* give away directory */
 		{
 			key->key[key->keySize] = 0; /* initialize first (valgrind) */
-			while (key->keySize > rootLength && key->key[key->keySize] != PATH_SEPARATOR) key->keySize--;
+			while (key->keySize > rootLength && key->key[key->keySize] != KDB_PATH_SEPARATOR) key->keySize--;
 			/* printf ("do .. (key->keySize: %d), key->key: %s, rootLength: %d, key->keySize: %d\n",
 					key->keySize, key->key, rootLength, key->keySize); */
 			continue;
 		}
 		/* Add a '/' to the end of key name */
-		key->key[key->keySize]=PATH_SEPARATOR;
+		key->key[key->keySize]=KDB_PATH_SEPARATOR;
 		key->keySize++;
 		
 		/* carefully append basenames */
@@ -401,7 +401,7 @@ ssize_t keySetName(Key *key, const char *newName)
 	}
 
 	/* remove unescaped trailing slashes */
-	while (key->key[key->keySize-1] == PATH_SEPARATOR && key->key[key->keySize-2] != '\\') key->keySize--;
+	while (key->key[key->keySize-1] == KDB_PATH_SEPARATOR && key->key[key->keySize-2] != '\\') key->keySize--;
 	key->key[key->keySize]=0; /* finalize string */
 
 	key->flags |= KEY_FLAG_SYNC;
@@ -713,7 +713,7 @@ ssize_t keyAddBaseName(Key *key, const char *baseName)
 			key->keySize += size+1;
 			key->key=realloc(key->key,key->keySize);
 
-			key->key[key->keySize-size-2]=PATH_SEPARATOR;
+			key->key[key->keySize-size-2]=KDB_PATH_SEPARATOR;
 			memcpy(key->key+key->keySize-size-1,p,size);
 		}
 		key->key[key->keySize-1]=0; /* finalize string */
@@ -770,7 +770,7 @@ ssize_t keySetBaseName(Key *key, const char *baseName)
 			key->keySize += size+1;
 			key->key=realloc(key->key,key->keySize);
 
-			key->key[key->keySize-size-2]=PATH_SEPARATOR;
+			key->key[key->keySize-size-2]=KDB_PATH_SEPARATOR;
 			memcpy(key->key+key->keySize-size-1,p,size);
 		}
 		key->key[key->keySize-1]=0; /* finalize string */

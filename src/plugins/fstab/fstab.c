@@ -56,7 +56,7 @@ void elektraFstabFsName(char * fsname, struct mntent *fstabEntry,
 		char *curr=fstabEntry->mnt_dir;
 		fsname[0]=0;
 		
-		while((slash=strchr(curr,PATH_SEPARATOR))) {
+		while((slash=strchr(curr,KDB_PATH_SEPARATOR))) {
 			if (slash==curr) {
 				curr++;
 				continue;
