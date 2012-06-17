@@ -788,13 +788,13 @@ int keySetDir(Key *key)
  * Default is 0664 (octal) for keys and 0775 for directory keys
  * which used keySetDir().
  *
- * The defaults are defined with the macros KEY_DEF_MODE and KEY_DEF_DIR.
+ * The defaults are defined with the macros KDB_FILE_MODE and KEY_DEF_DIR.
  *
  * For more information about the mode permissions see @ref mode.
  *
  * @param key the key object to work with
  * @return mode permissions of the key
- * @return KEY_DEF_MODE as defaults
+ * @return KDB_FILE_MODE as defaults
  * @return (mode_t)-1 on NULL pointer
  * @see keySetMode()
  * @ingroup keymeta
@@ -848,7 +848,7 @@ cleanup:
  * Default is 0664 (octal) for keys and 0775 for directory keys
  * which used keySetDir().
  *
- * The defaults are defined with the macros KEY_DEF_MODE and KEY_DEF_DIR.
+ * The defaults are defined with the macros KDB_FILE_MODE and KEY_DEF_DIR.
  *
  * @note libelektra 0.7.0 only allows 0775 (directory keys) and
  * 0664 (other keys). More will be added later in a sense of the

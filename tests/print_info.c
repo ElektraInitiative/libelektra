@@ -12,9 +12,8 @@ void print_time (Key *key)
 void print_constant()
 {
 	printf ("\nFollowing constants must be defined in elektra\n");
-	printf ("The Key Separator is %c\n", KEY_SEPARATOR);
 	printf ("The Path Separator is %c\n", KDB_PATH_SEPARATOR);
-	printf ("The default mode for new keys 0%o\n", KEY_DEF_MODE);
+	printf ("The default mode for new keys 0%o\n", KDB_FILE_MODE);
 	printf ("The default mode added to directory keys 0%o\n", KEY_DEF_DIR);
 }
 
