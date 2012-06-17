@@ -1,9 +1,5 @@
 -- 0.8.2 --
 
-cmake:
-	"make test" not running on clean build??
-	eliminate intra-dependency of cmake
-
 defines:
 	see DEFINES
 	fix testcases

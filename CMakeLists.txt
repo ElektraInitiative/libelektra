@@ -2,6 +2,20 @@ cmake_minimum_required (VERSION 2.6)
 
 project (Elektra)
 
+#additional modules for loading libraries
+set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+
+
+#needed by ifs below
+include (cmake/ElektraCache.cmake)
+include (cmake/ElektraPackaging.cmake)
+include (cmake/ElektraCompiling.cmake)
+
+if (ENABLE_TESTING)
+	enable_testing ()
+	include (Dart)
+endif (ENABLE_TESTING)
+
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
 	if (NOT FORCE_IN_SOURCE_BUILD)
 		message(FATAL_ERROR
@@ -17,20 +31,13 @@ if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
 	endif (NOT FORCE_IN_SOURCE_BUILD)
 endif(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
 
-if (ENABLE_TESTING)
-	enable_testing ()
-	include (Dart)
-endif (ENABLE_TESTING)
-
-#additional modules for loading libraries
-set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
-
 if (NOT CMAKE_BUILD_TYPE)
 	SET(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif (NOT CMAKE_BUILD_TYPE)
 
-#needed by doxygen
-set (DOMAIN libelektra.org)
+
+#some basic and important variables
+set (DOMAIN libelektra.org) #needed by doxygen
 set (REVERSE_DOMAIN org.libelektra)
 
 set (KDB_VERSION_MAJOR 0)
@@ -40,13 +47,9 @@ set (KDB_VERSION_MICRO 1)
 set (KDB_VERSION "${KDB_VERSION_MAJOR}.${KDB_VERSION_MINOR}.${KDB_VERSION_MICRO}")
 set (KDB_VERSION_MAJORMINOR "${KDB_VERSION_MAJOR}.${KDB_VERSION_MINOR}")
 
-
 set (SO_VERSION 4)
 
-include (cmake/ElektraPackaging.cmake)
-include (cmake/ElektraCache.cmake)
-include (cmake/ElektraCompiling.cmake)
-
+#now add all directories
 add_subdirectory (src)
 add_subdirectory (cmake)
 
