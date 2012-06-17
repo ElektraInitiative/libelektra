@@ -17,23 +17,23 @@
  * .. means don't care, just enough for your system
  * For more information on that types read POSIX documentation.
  *
- * Type     Purpose                 Limits
- * size_t   size of array or string 0, SIZE_MAX
- * ssize_t  size with error cond.   -1, SSIZE_MAX(<SIZE_MAX)
- * time_t   Seconds since 1970      0,.. recommended: 64 bit
  *
  * Integer Types must be at least 32bit:
  *
+ * Type     Purpose                 Limits
  * int      Integral Fast Type      INT_MIN, INT_MAX
+ * size_t   size of array or string 0, SIZE_MAX
+ * ssize_t  size with error cond.   -1, SSIZE_MAX(<SIZE_MAX)
+ * time_t   Seconds since 1970      0,.. recommended: 64 bit
  * uid_t    User identification     0,..
  * gid_t    Group identification    0,..
- * keyswitch_t For keyNew
- * option_t    For kdbGet, kdbSet and ksLookup*
  *
  *
- * Following elektra specific types are defined:
+ * Following Elektra specific types must be defined with at least 32 bit:
  *
  * Type     Purpose
+ * keyswitch_t For keyNew
+ * option_t    For kdbGet, kdbSet and ksLookup*
  * cursor_t stores information to find a position in a keyset
  *
  * Following constants must be defined:
@@ -45,8 +45,6 @@
  * Following limits must be defined (in addition to limits mentioned
  * above for types):
  *
- * MAX_UCHAR       the maximum for unsigned char
- * MAX_KEY_LENGTH  the maximum length for a keyname
  * KDB_MAX_PATH_LENGTH the maximum length for a pathname
  *
  * In addition to the types the ... or va_list must be supported,
@@ -60,13 +58,6 @@
 #ifndef KDBOS_H
 #define KDBOS_H
 
-/***************************************************
- *               For ANSI C systems
- ***************************************************/
-
-
-/* Include essential headers used in kdb.h */
-#include <stdarg.h>
 
 #ifndef WIN32
 
@@ -98,17 +89,6 @@
 #define KDB_MAX_PATH_LENGTH 4096
 #endif
 
-/*Type to point to every position within the keyset*/
-typedef ssize_t cursor_t;
-
-/*Integer types*/
-typedef int keyswitch_t;
-typedef int option_t;
-
-/**Separator for key names.
- * This character will be used to separate key names*/
-#define KDB_PATH_SEPARATOR '/'
-
 /**Default Mode.
  * This mode will be used for new files*/
 #define KDB_FILE_MODE 0664
@@ -137,7 +117,21 @@ typedef int option_t;
 
 #define KDB_MAX_PATH_LENGTH 4096
 
-/*Type to point to every position within the keyset*/
+
+
+#endif /* WIN32 */
+
+/***************************************************
+ *               For ANSI C systems
+ ***************************************************/
+
+
+/* Include essential headers used in kdb.h */
+#include <stdarg.h>
+
+/*Type to point to every position within the keyset
+ * (note that for windows ssize_t is already redefined
+ * as int) */
 typedef ssize_t cursor_t;
 
 /*Integer types*/
@@ -149,8 +143,5 @@ typedef int option_t;
 #define KDB_PATH_SEPARATOR '/'
 
 
-
-
-#endif /* WIN32 */
 
 #endif /* KDBOS_H */
