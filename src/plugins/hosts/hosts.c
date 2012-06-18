@@ -26,6 +26,7 @@
 
 
 #include "hosts.h"
+#include <kdbextension.h>
 
 size_t elektraStrLen(const char *s);
 

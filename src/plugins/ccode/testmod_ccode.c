@@ -12,7 +12,7 @@
 
 #include "ccode.h"
 
-#include <tests.h>
+#include <tests_internal.h>
 
 CCodeData *get_data()
 {

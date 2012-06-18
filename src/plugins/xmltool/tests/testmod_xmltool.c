@@ -14,7 +14,7 @@
  ***************************************************************************/
 
 
-#include "tests.h"
+#include <tests_internal.h>
 
 #include <kdbtools.h>
 
