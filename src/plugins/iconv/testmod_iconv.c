@@ -14,7 +14,7 @@
 
 #include <langinfo.h>
 
-#include <tests.h>
+#include <tests_internal.h>
 
 #define NR_KEYS 1
 
