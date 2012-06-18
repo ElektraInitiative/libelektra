@@ -1,3 +1,43 @@
+0.8.2 Release
+
+This release mostly brings internal improvements and
+debian packages for debian squeeze.
+
+A benchmark showed that rereading the same database only needs
+about 2ms and the syscalls needed are quite optimal.
+
+The debian folder is now removed from master repository,
+but instead a release and debian branch was created.
+See doc/GIT for new policy of branches.
+Thanks to Christian Amsüss <chrysn@fsfe.org>
+for all tips, suggestions and help.
+The git branches are done like in:
+http://christian.amsuess.com/tools/arandr/
+
+A cmake bug was fixed, so that "make test" now
+works immediately.
+
+The kdbconfig.h and kdbos.h received some needed cleaning
+up. The HAVE_ macros are now set correctly by cmake, Elektra's
+macros are prefixed with KDB_ and not needed macros were
+removed.
+
+Some docu was improved and some typos fixed.
+Thanks to Erkan Yilmaz <erkan77@gmail.com> for
+two fixes.
+
+You can download the release at:
+http://www.markus-raab.org/ftp/elektra/releases/elektra-0.8.2.tar.gz
+
+You can install the debian packages for debian squeeze when
+you add following line in your /etc/apt/sources.list:
+deb http://www.markus-raab.org/ftp/reprepro squeeze main
+
+
+
+---------------
+
+
 0.8.1 Release
 
 The 0.8.1 brings some bugfixes and many small improvements.
@@ -425,18 +465,24 @@ There are 2 new flags:
 The testcases are without any memory leak (dozens of leaks are fixed,
 especially in xml code).
 
+---------------
 
 0.6.10 - 10.03.2007 Elektra received some stability updated from Patrice
 Dumas.
 
+---------------
+
 0.6.6 - 21.12.2006 support for directories with values and comments on
 filesys, berkeleydb and daemon backends.
+
+---------------
 
 0.6.4 - 08.09.2006 Tons of improvements and standarizations to the build
 system from Patrice Dumas and Yannick.  Many improvements to the daemon
 backend from Yannick.  Several other bug fixes.  We are getting closer
 to a production daemon.
 
+---------------
 
 0.6.2 - 02.06.2006 - Includes more robust key name handling and
 intelligent duplicate "/" removal - Escaping of "/" on key names is
@@ -445,5 +491,6 @@ better future daemon backend support - More robust berkeleydb backend -
 Backends are now installed on /lib/elektra/ - The build system was tunned
 to be included as a Fedora Extras package
 
+---------------
 
 0.6.0 - 30.03.2006 Public release of the new API.  Check it out in SF.

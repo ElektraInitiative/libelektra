@@ -24,7 +24,9 @@ This is the development branch. Please try
 to not work directly on it, but instead
 you should use feature branches. So the
 only commits on master should be non-fastforward
-merges from features branches.
+merges from features branches. Commits on
+master should always compile and all test
+cases should pass successfully.
 
  release
 
@@ -38,6 +40,14 @@ there are only merges from master.
 Merge changes from the release branch to
 the debian branch in order to make
 debian packages.
+
+== Other branches ==
+
+You should always make your own feature branch with:
+ git-checkout -b <feature-branch-name>
+
+On this branch it is not so important that every
+commit compiles or all test cases run.
 
 
 
