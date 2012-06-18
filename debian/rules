@@ -4,7 +4,7 @@
 export DH_VERBOSE=1
 
 ELEKTRA_PLUGINS="dump;resolver;hidden;iconv;syslog;error;ccode;hosts;tracer;fstab;network;null;path;simpleini;ni;success;tcl;timeofday;type;xmltool"
-#ELEKTRA_PLUGINS="dump;resolver;hidden;iconv;syslog;error;validation;xmltool;tracer;timeofday;dbus;glob;hosts;network;type;struct;path;fstab;ccode;simplei;ni;tcl;hexcode;null;ni"
+#ELEKTRA_PLUGINS="dump;resolver;hidden;iconv;syslog;error;validation;xmltool;tracer;timeofday;dbus;glob;hosts;network;type;struct;path;fstab;ccode;simpleini;ni;tcl;hexcode;null"
 
 # Make sure libelektra is built before packages depending on it
 binary/libelektra-bin binary/libelektra-dev:: binary/libelektra
