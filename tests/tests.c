@@ -1,4 +1,6 @@
-#include "tests.h"
+#include <tests.h>
+
+#include <kdbinternal.h>
 
 int nbError;
 int nbTest;
@@ -58,12 +60,14 @@ Key * create_root_key (const char *backendName)
 {
 	Key *root = keyNew ("user/tests", KEY_END);
 	/*Make mount point beneath root, and do all tests here*/
+	/* Not needed anymore:
 	keySetDir(root);
 	keySetUID(root, nbUid);
 	keySetGID(root, nbGid);
+	keySetComment (root, "backend root key for tests");
+	*/
 	keyAddBaseName (root, backendName);
 	keySetString (root, backendName);
-	keySetComment (root, "backend root key for tests");
 	keySetString (root, backendName);
 	return root;
 }

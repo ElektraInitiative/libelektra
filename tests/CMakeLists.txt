@@ -30,7 +30,7 @@ add_headers (HDR_FILES)
 
 macro (do_test source)
 	include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
-	set (SOURCES ${HDR_FILES} ${source}.c tests.c tests.h)
+	set (SOURCES ${HDR_FILES} ${source}.c tests.c)
 	add_executable (${source} ${SOURCES})
 
 	if (INSTALL_TESTING)

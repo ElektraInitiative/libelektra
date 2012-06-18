@@ -13,12 +13,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
-#endif
-
-#include <tests.h>
-
+#include <tests_internal.h>
 
 struct test {
 	char	*testName;
