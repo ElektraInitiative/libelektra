@@ -1,5 +1,5 @@
 /*************************************************************************** 
- *           test_split.c  - Test suite for splitted keyset data structure
+ *           test_internal.c  - Test suite for internal data structures
  *                  -------------------
  *  begin                : Fri 21 Mar 2008
  *  copyright            : (C) 2008 by Markus Raab
@@ -13,25 +13,28 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
-#endif
+#include <tests_internal.h>
 
-#include <stdio.h>
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-#ifdef HAVE_STRING_H
-#include <string.h>
-#endif
+void test_simple_strlen ()
+{
+	char charSeq [5];
 
-#include <tests.h>
+	printf ("Test elektraStrLen\n");
+	charSeq [0] = '\33';
+	charSeq [1] = 'a';
+	charSeq [2] = '\20';
+	charSeq [3] = '\40';
+	charSeq [4] = '\0';
+
+	// printf ("%s %d %d\n", charSeq, elektraStrLen (charSeq), strlen(charSeq));
+	succeed_if(elektraStrLen ((char*)charSeq) == 5, "could not deduce correct multichar sequence length");
+}
 
 void test_strlen ()
 {
 	wchar_t multicharSeq [5];
 
-	printf ("Test elektraStrLen\n");
+	printf ("Test elektraStrLen with multichar\n");
 	multicharSeq [0] = '\323';
 	multicharSeq [1] = L'a';
 	multicharSeq [2] = L'\20';
@@ -49,6 +52,7 @@ int main(int argc, char** argv)
 
 	init (argc, argv);
 
+	test_simple_strlen();
 	test_strlen();
 
 	printf("\ntest_internals RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);

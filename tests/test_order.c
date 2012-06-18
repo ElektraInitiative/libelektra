@@ -1,9 +1,9 @@
 /***************************************************************************
- *          test_ks.c  -  KeySet struct test suite
+ *          test_order.c  -  KeySet struct test suite
  *                  -------------------
  *  begin                : Thu Dez 12 2006
  *  copyright            : (C) 2006 by Markus Raab
- *  email                : sizon5@gmail.com
+ *  email                : elektra@markus-raab.org
  ****************************************************************************/
 
 /***************************************************************************
@@ -13,19 +13,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
-#endif
-
-#include <stdio.h>
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-#ifdef HAVE_STRING_H
-#include <string.h>
-#endif
-
-#include <tests.h>
+#include <tests_internal.h>
 
 void test_ksNew()
 {

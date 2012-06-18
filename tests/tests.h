@@ -1,4 +1,7 @@
-/**Some common functions in use for testing framework*/
+/**\file
+  * Some common functions in use for testing framework.
+  * @see tests_internal.h
+  */
 
 /***************************************************************************
  *                                                                         *
@@ -38,15 +41,9 @@
 #include <locale.h>
 #endif
 
-#include <kdbinternal.h>
+#include <kdb.h>
 
-#define KEY_ROOT "user/tests"
-#define KEY_LENGTH 1024
 #define BUFFER_LENGTH 4096
-
-#define MODE_WRITE 4
-#define MODE_READ 2
-#define MODE_DIR 1
 
 extern int nbError;
 extern int nbTest;
@@ -69,21 +66,12 @@ char *srcdir_file(const char * fileName);
 Key * create_root_key (const char *backendName);
 KeySet *create_conf (const char *filename);
 
-void clear_sync (KeySet *ks);
 void output_keyset (KeySet *ks);
 void output_key (Key *ks);
 
-void output_plugin(Plugin *plugin);
-void output_backend(Backend *backend);
-
-void output_trie(Trie *trie);
-
-void generate_split (Split *split);
-void output_split(Split *split);
 
 void output_warnings(Key *errorKey);
 void output_errors(Key *errorKey);
 
 
 #endif
-

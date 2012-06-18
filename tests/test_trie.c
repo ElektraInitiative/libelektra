@@ -13,18 +13,6 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
-#endif
-
-#include <stdio.h>
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-#ifdef HAVE_STRING_H
-#include <string.h>
-#endif
-
 #include <tests.h>
 
 /*Needs private declarations*/
@@ -119,7 +107,7 @@ void test_simple()
 void collect_mountpoints(Trie *trie, KeySet *mountpoints)
 {
 	int i;
-	for (i=0; i <= MAX_UCHAR; ++i)
+	for (i=0; i <= KDB_MAX_UCHAR; ++i)
 	{
 		if (trie->value[i]) ksAppendKey(mountpoints, ((Backend*) trie->value[i])->mountpoint);
 		if (trie->children[i]) collect_mountpoints(trie->children[i], mountpoints);

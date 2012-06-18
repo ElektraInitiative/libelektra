@@ -13,10 +13,6 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
-#endif
-
 #include <tests.h>
 
 void test_equal()

@@ -13,22 +13,12 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
-#endif
+#include <tests_internal.h>
 
-#include <stdio.h>
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-#ifdef HAVE_STRING_H
-#include <string.h>
-#endif
-
+#include <kdbinternal.h>
 
 #include <langinfo.h>
 
-#include <tests.h>
 #include "resolver.h"
 
 KeySet *set_pluginconf()

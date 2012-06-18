@@ -25,10 +25,6 @@
 #ifndef FSTAB_H
 #define FSTAB_H
 
-#ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
-#endif
-
 // without that the backend does not work at all
 // so it will be checked and backend will be disabled
 // if mntent is not available
@@ -39,9 +35,9 @@
 #include <stdlib.h>
 #include <dirent.h>
 #include <fcntl.h>
-#include <errno.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <errno.h>
 
 #include <kdbplugin.h>
 #include <kdbextension.h>

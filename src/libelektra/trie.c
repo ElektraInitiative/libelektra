@@ -87,7 +87,7 @@ int elektraTrieClose (Trie *trie, Key *errorKey)
 {
 	size_t i;
 	if (trie==NULL) return 0;
-	for (i=0; i<MAX_UCHAR; ++i)
+	for (i=0; i<KDB_MAX_UCHAR; ++i)
 	{
 		if (trie->text[i]!=NULL)
 		{

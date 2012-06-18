@@ -7,14 +7,24 @@ set(DISCLAMER "
  *                                                                         *
  ***************************************************************************/")
 
+include(CheckIncludeFile)
+include(CheckSymbolExists)
+
+check_symbol_exists(clearenv     "stdlib.h"         HAVE_CLEARENV)
+check_symbol_exists(setenv       "stdlib.h"         HAVE_SETENV)
+
+check_include_file(ctype.h      HAVE_CTYPE_H)
+check_include_file(errno.h      HAVE_ERRNO_H)
+check_include_file(locale.h     HAVE_LOCALE_H)
+check_include_file(stdio.h      HAVE_STDIO_H)
+check_include_file(stdlib.h     HAVE_STDLIB_H)
+check_include_file(string.h     HAVE_STRING_H)
+check_include_file(time.h       HAVE_TIME_H)
+check_include_file(unistd.h     HAVE_UNISTD_H)
+
 configure_file (
 	"${CMAKE_CURRENT_SOURCE_DIR}/kdb.h"
 	"${CMAKE_CURRENT_BINARY_DIR}/kdb.h"
-	)
-
-configure_file (
-	"${CMAKE_CURRENT_SOURCE_DIR}/kdbvar.h"
-	"${CMAKE_CURRENT_BINARY_DIR}/kdbvar.h"
 	)
 
 configure_file (
@@ -37,6 +47,5 @@ install (FILES
 	kdbplugin.h
 	kdbprivate.h
 	kdbtools.h
-	"${CMAKE_CURRENT_BINARY_DIR}/kdbvar.h"
 	"${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h"
 	DESTINATION include/${TARGET_INCLUDE_FOLDER})

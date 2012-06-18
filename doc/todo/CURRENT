@@ -1,15 +1,5 @@
 -- 0.8.2 --
 
-defines:
-	see DEFINES
-	fix testcases
-	/home/markus/Projekte/Elektra/current/tests/test_key.c:1617: error in
-	test_keyDir: key is not 0644, but was set
-	/home/markus/Projekte/Elektra/current/tests/test_key.c:1652: error in
-	test_keyDir: key is not 0644, but was set
-	/home/markus/Projekte/Elektra/current/tests/test_key.c:1661: error in
-	test_keyDir: 0555 set by keyNew
-
 create debian packages (i386+amd64)
 	lintian
 	add manpages

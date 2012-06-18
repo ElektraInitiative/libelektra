@@ -28,7 +28,7 @@
 #ifndef PLUGIN_RESOLVER_H
 #define PLUGIN_RESOLVER_H
 
-#include <kdbvar.h>
+#include <kdbconfig.h>
 #include <kdbplugin.h>
 #include <kdberrors.h>
 

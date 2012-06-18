@@ -55,13 +55,13 @@ int elektraHostsAppendComment (char *comment, char *line)
 
 	if (line[0] == '\n')
 	{
-		strncat (comment, "\n", HOSTS_BUFFER_SIZE-c-1);
+		strncat (comment, "\n", HOSTS_KDB_BUFFER_SIZE-c-1);
 		return 1; /* Empty line, so go on.. */
 	}
 
 	if (line[0] == '#')
 	{
-		strncat (comment, line, HOSTS_BUFFER_SIZE-c-2);
+		strncat (comment, line, HOSTS_KDB_BUFFER_SIZE-c-2);
 		return 1; /* Complete line is comment, so go on.. */
 	}
 
@@ -76,7 +76,7 @@ int elektraHostsAppendComment (char *comment, char *line)
 			if (endline) *endline = '\0';
 
 			/* Copy the comment */
-			strncat (comment, line+i+1, HOSTS_BUFFER_SIZE-c-s-2);
+			strncat (comment, line+i+1, HOSTS_KDB_BUFFER_SIZE-c-s-2);
 			line[i] = '\0';
 			return 0; /* There should be a key here */
 		}
@@ -126,13 +126,13 @@ int elektraHostsGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	int errnosave = errno;
 	FILE * fp;
-	char readbuffer [HOSTS_BUFFER_SIZE];
+	char readbuffer [HOSTS_KDB_BUFFER_SIZE];
 	char *fieldbuffer;
 	size_t readsize;
 	char *fret;
 	int   sret;
 	Key *key, *alias, *tmp;
-	char comment [HOSTS_BUFFER_SIZE] = "";
+	char comment [HOSTS_KDB_BUFFER_SIZE] = "";
 	KeySet *append = 0;
 	size_t order = 1;
 
@@ -201,7 +201,7 @@ int elektraHostsGet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 	while (1)
 	{
-		fret = fgets (readbuffer, HOSTS_BUFFER_SIZE, fp);
+		fret = fgets (readbuffer, HOSTS_KDB_BUFFER_SIZE, fp);
 		if (fret == 0) 
 		{
 			fclose (fp);

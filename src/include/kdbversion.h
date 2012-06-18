@@ -15,10 +15,6 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
-#endif
-
 #include <kdb.h>
 
 static inline KeySet *elektraVersionSet ()

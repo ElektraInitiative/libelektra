@@ -18,53 +18,41 @@
 #define KDBPRIVATE_H
 
 #include <kdb.h>
-#include <kdbextension.h>
+#include <kdbconfig.h>
 #include <kdbplugin.h>
+#include <kdbextension.h>
 
 #include <limits.h>
 
-
-#ifndef MAX_UCHAR
-#define MAX_UCHAR (UCHAR_MAX+1)
-#endif
-
-#ifndef KEYSET_SIZE
-/*The minimal allocation size of a keyset inclusive
-  NULL byte. ksGetAlloc() will return one less because
-  it says how much can actually be stored.*/
+/** The minimal allocation size of a keyset inclusive
+    NULL byte. ksGetAlloc() will return one less because
+    it says how much can actually be stored.*/
 #define KEYSET_SIZE 16
-#endif
 
-#ifndef NR_OF_PLUGINS
+/** How many plugins can exist in an backend. */
 #define NR_OF_PLUGINS 10
-#endif
 
-#ifndef COMMIT_PLUGIN
+/** The index of the commit plugin */
 #define COMMIT_PLUGIN 7
-#endif
 
-#ifndef STORAGE_PLUGIN
+/** The index of the storage plugin */
 #define STORAGE_PLUGIN 5
-#endif
 
-#ifndef RESOLVER_PLUGIN
+/** The index of the resolver plugin */
 #define RESOLVER_PLUGIN 0
-#endif
 
-#ifndef APPROXIMATE_NR_OF_BACKENDS
+/** Trie optimization */
 #define APPROXIMATE_NR_OF_BACKENDS 16
-#endif
 
+/**The maximum of how many characters an integer
+  needs as decimal number.*/
+#define MAX_LEN_INT 31
 
-/**BUFFER_SIZE can be used as value for any I/O buffer
- * on files.
+/**Backend mounting information.
  *
- * It may be used for optimization on various
- * systems.*/
-#ifndef BUFFER_SIZE
-#define BUFFER_SIZE 256
-#endif
-
+ * This key directory tells you where each backend is mounted
+ * to which mountpoint. */
+#define KDB_KEY_MOUNTPOINTS      "system/elektra/mountpoints"
 
 #if DEBUG
 # include <stdio.h>
@@ -370,10 +358,10 @@ struct _Plugin
  */
 struct _Trie
 {
-	struct _Trie *children[MAX_UCHAR];/*!< The children building up the trie recursively */
-	char *text[MAX_UCHAR];		/*!< Text identifying this node */
-	size_t textlen[MAX_UCHAR];	/*!< Length of the text */
-	Backend *value[MAX_UCHAR];	/*!< Pointer to a backend */
+	struct _Trie *children[KDB_MAX_UCHAR];/*!< The children building up the trie recursively */
+	char *text[KDB_MAX_UCHAR];	/*!< Text identifying this node */
+	size_t textlen[KDB_MAX_UCHAR];	/*!< Length of the text */
+	Backend *value[KDB_MAX_UCHAR];	/*!< Pointer to a backend */
 	Backend *empty_value;		/*!< Pointer to a backend for the empty string "" */
 };
 
