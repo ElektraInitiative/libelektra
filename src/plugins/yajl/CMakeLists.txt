@@ -5,7 +5,7 @@ if (YAJL_FOUND)
 	add_includes (elektra-full ${YAJL_INCLUDE_DIR})
 	include_directories (${YAJL_INCLUDE_DIR})
 
-	set (SOURCES yajl.h yajl.c callbacks.h callbacks.c)
+	set (SOURCES yajl.h yajl.c)
 	add_sources (elektra-full ${SOURCES})
 	add_headers (SOURCES)
 
@@ -15,7 +15,7 @@ if (YAJL_FOUND)
 	target_link_libraries (elektra-yajl ${YAJL_LIBRARIES})
 	add_libraries (elektra-full ${YAJL_LIBRARIES})
 
-	#add_plugintest (yajl)
+	add_plugintest (yajl)
 else (YAJL_FOUND)
 	remove_plugin (yajl "yajl not found")
 endif (YAJL_FOUND)
