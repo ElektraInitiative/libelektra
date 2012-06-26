@@ -27,8 +27,11 @@ KeySet * get_null()
 {
 	Key *k1, *k2;
 	KeySet *ks = ksNew(10,
+			keyNew("user",
+			       KEY_END),
+			keyNew("user/tests",
+			       KEY_END),
 			keyNew("user/tests/yajl",
-			       KEY_VALUE, "root key",
 			       KEY_END),
 			k1 = keyNew("user/tests/yajl/nullkey",
 			       KEY_VALUE, "will be removed",
@@ -57,6 +60,8 @@ void test_readnull()
 			KEY_END);
 	KeySet *keys = ksNew(0);
 	succeed_if (plugin->kdbGet(plugin, keys, parentKey) == 1, "kdbGet was not successful");
+
+	succeed_if (compare_keyset(keys, get_null()) == 0, "keyset is not like it should be");
 
 	output_errors(parentKey);
 	output_warnings(parentKey);

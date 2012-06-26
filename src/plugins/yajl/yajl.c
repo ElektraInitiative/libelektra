@@ -34,6 +34,7 @@
 #include <yajl/yajl_gen.h>
 #include <yajl/yajl_parse.h>
 
+#undef ELEKTRA_YAJL_VERBOSE
 
 
 int elektraYajlOpen(Plugin *handle, Key *errorKey)
@@ -52,6 +53,10 @@ int elektraYajlClose(Plugin *handle, Key *errorKey)
 
 static int parse_null(void *ctx)
 {
+#ifdef ELEKTRA_YAJL_VERBOSE
+	printf ("parse_null\n");
+#endif
+
 	KeySet *ks = (KeySet*) ctx;
 	Key * current = ksCurrent(ks);
 	keySetBinary(current, NULL, 0);
@@ -78,14 +83,28 @@ static int parse_map_key(void *ctx, const unsigned char * stringVal,
 			 unsigned int stringLen)
 {
 	KeySet *ks = (KeySet*) ctx;
+	Key *currentKey = ksCurrent(ks);
 
 	unsigned char delim = stringVal[stringLen];
 	char * stringValue = (char*)stringVal;
 	stringValue[stringLen] = '\0';
-	Key * newKey = keyDup (ksCurrent(ks));
-	keySetBaseName(newKey, stringValue);
 
-	ksAppendKey(ks, newKey);
+#ifdef ELEKTRA_YAJL_VERBOSE
+	printf ("parse_map_key %s current key %s\n", stringValue,
+			keyName(currentKey));
+#endif
+	if (!strcmp(keyBaseName(currentKey), "###start_map"))
+	{
+		// now we know the name of the object
+		keySetBaseName(currentKey, stringValue);
+	}
+	else
+	{
+		// we entered a new pair (inside the previous object)
+		Key * newKey = keyDup (currentKey);
+		keySetBaseName(currentKey, stringValue);
+		ksAppendKey(ks, newKey);
+	}
 
 	// restore old character in buffer
 	stringValue[stringLen] = delim;
@@ -95,11 +114,24 @@ static int parse_map_key(void *ctx, const unsigned char * stringVal,
 
 static int parse_start_map(void *ctx)
 {
+	KeySet *ks = (KeySet*) ctx;
+	Key *currentKey = ksCurrent(ks);
+
+	Key * newKey = keyDup (currentKey);
+	keyAddBaseName(newKey, "###start_map");
+	ksAppendKey(ks, newKey);
+#ifdef ELEKTRA_YAJL_VERBOSE
+	printf ("parse_start_map with new key %s\n", keyName(newKey));
+#endif
+
 	return 1;
 }
 
 static int parse_end_map(void *ctx)
 {
+#ifdef ELEKTRA_YAJL_VERBOSE
+	printf ("parse_end_map\n");
+#endif
 	return 1;
 }
 
@@ -130,9 +162,16 @@ int elektraYajlGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	};
 
 	ksClear (returned);
-	ksAppendKey (returned, parentKey);
+	if (keyIsUser(parentKey))
+	{
+		ksAppendKey (returned, keyNew("user", KS_END));
+	}
+	else
+	{
+		ksAppendKey (returned, keyNew("system", KS_END));
+	}
 
-	/* allow comments */
+	// allow comments
 	yajl_parser_config cfg = { 1, 1 };
 	yajl_handle hand = yajl_alloc(&callbacks, &cfg, NULL, returned);
 
