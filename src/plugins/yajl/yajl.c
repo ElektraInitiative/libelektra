@@ -53,23 +53,47 @@ int elektraYajlClose(Plugin *handle, Key *errorKey)
 
 static int parse_null(void *ctx)
 {
+	KeySet *ks = (KeySet*) ctx;
+	Key * current = ksCurrent(ks);
+	keySetBinary(current, NULL, 0);
+
 #ifdef ELEKTRA_YAJL_VERBOSE
 	printf ("parse_null\n");
 #endif
 
-	KeySet *ks = (KeySet*) ctx;
-	Key * current = ksCurrent(ks);
-	keySetBinary(current, NULL, 0);
 	return 1;
 }
 
 static int parse_boolean(void *ctx, int boolean)
 {
+	KeySet *ks = (KeySet*) ctx;
+	Key * current = ksCurrent(ks);
+	if (boolean == 1)
+	{
+		printf ("setString of %s to true\n", keyName(current));
+		keySetString(current, "true");
+	}
+	else
+	{
+		printf ("setString of %s to false\n", keyName(current));
+		keySetString(current, "false");
+	}
+	keySetMeta(current, "type", "boolean");
+
+#ifdef ELEKTRA_YAJL_VERBOSE
+	printf ("parse_boolean %d\n", boolean);
+#endif
+
 	return 1;
 }
 
-static int parse_number(void *ctx, const char *s, unsigned int l)
+static int parse_number(void *ctx, const char *stringVal,
+			unsigned int stringLen)
 {
+#ifdef ELEKTRA_YAJL_VERBOSE
+	printf ("parse_number %s %d\n", stringVal, stringLen);
+#endif
+
 	return 1;
 }
 
@@ -90,7 +114,7 @@ static int parse_map_key(void *ctx, const unsigned char * stringVal,
 	stringValue[stringLen] = '\0';
 
 #ifdef ELEKTRA_YAJL_VERBOSE
-	printf ("parse_map_key %s current key %s\n", stringValue,
+	printf ("parse_map_key stringValue: %s currentKey: %s\n", stringValue,
 			keyName(currentKey));
 #endif
 	if (!strcmp(keyBaseName(currentKey), "###start_map"))
@@ -102,7 +126,7 @@ static int parse_map_key(void *ctx, const unsigned char * stringVal,
 	{
 		// we entered a new pair (inside the previous object)
 		Key * newKey = keyDup (currentKey);
-		keySetBaseName(currentKey, stringValue);
+		keySetBaseName(newKey, stringValue);
 		ksAppendKey(ks, newKey);
 	}
 

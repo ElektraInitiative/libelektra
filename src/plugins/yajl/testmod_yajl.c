@@ -32,6 +32,29 @@ KeySet *getEmptyKeys()
 			);
 }
 
+KeySet *getBooleanKeys()
+{
+	KeySet *ks = ksNew(10,
+			keyNew("user",
+			       KEY_END),
+			keyNew("user/tests",
+			       KEY_END),
+			keyNew("user/tests/yajl",
+			       KEY_END),
+			keyNew("user/tests/yajl/boolean_key",
+			       KEY_VALUE, "true",
+			       KEY_META, "type", "boolean",
+			       KEY_END),
+			keyNew("user/tests/yajl/second_boolean_key",
+			       KEY_VALUE, "false",
+			       KEY_META, "type", "boolean",
+			       KEY_END),
+			KS_END
+		);
+
+	return ks;
+}
+
 KeySet *getNullKeys()
 {
 	Key *k1, *k2;
@@ -74,7 +97,9 @@ void test_parse_json(const char* fileName, KeySet * compareKeySet)
 
 	output_errors(parentKey);
 	output_warnings(parentKey);
+
 	output_keyset(keys);
+	output_keyset(compareKeySet);
 
 	keyDel (parentKey);
 	ksDel (keys);
@@ -95,6 +120,7 @@ int main(int argc, char** argv)
 
 	test_parse_json("examples/testdata_empty.js", getEmptyKeys());
 	test_parse_json("examples/testdata_null.js", getNullKeys());
+	test_parse_json("examples/testdata_boolean.js", getBooleanKeys());
 
 	elektraModulesClose(modules, 0);
 	ksDel (modules);
