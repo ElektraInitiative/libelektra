@@ -148,24 +148,50 @@ int compare_files (const char * filename)
 	return compare_line_files (filename, genfilename);
 }
 
+void check_attributes(keyswitch_t attributes)
+{
+	succeed_if ((attributes & KEY_NAME) == 0 , "compare key: NAME not equal");
+	succeed_if ((attributes & KEY_VALUE) == 0 , "compare key: VALUE not equal");
+	succeed_if ((attributes & KEY_OWNER) == 0 , "compare key: OWNER not equal");
+	succeed_if ((attributes & KEY_COMMENT) == 0 , "compare key: COMMENT not equal");
+	succeed_if ((attributes & KEY_UID) == 0 , "compare key: UID not equal");
+	succeed_if ((attributes & KEY_GID) == 0 , "compare key: GID not equal");
+	succeed_if ((attributes & KEY_MODE ) == 0 , "compare key: MODE  not equal");
+	succeed_if ((attributes & KEY_NULL ) == 0, "compare key: one of the keys is null");
+}
+
 
 int compare_key (Key *k1, Key *k2)
 {
-	int	ret;
 	int	err = nbError;
 
 	/* printf ("compare: "); keyOutput (k1, stdout); keyOutput (k2, stdout); printf ("\n"); */
 	// printf ("compare value %s with %s\n", keyValue(k1), keyValue(k2));
-	ret = keyCompare(k1, k2);
+	keyswitch_t attributes = keyCompare(k1, k2);
+	check_attributes(attributes);
 
-	succeed_if ((ret & KEY_NAME) == 0 , "compare key: NAME not equal");
-	succeed_if ((ret & KEY_VALUE) == 0 , "compare key: VALUE not equal");
-	succeed_if ((ret & KEY_OWNER) == 0 , "compare key: OWNER not equal");
-	succeed_if ((ret & KEY_COMMENT) == 0 , "compare key: COMMENT not equal");
-	succeed_if ((ret & KEY_UID) == 0 , "compare key: UID not equal");
-	succeed_if ((ret & KEY_GID) == 0 , "compare key: GID not equal");
-	succeed_if ((ret & KEY_MODE ) == 0 , "compare key: MODE  not equal");
-	succeed_if ((ret & KEY_NULL ) == 0, "compare key: one of the keys is null");
+
+	const Key * meta;
+	keyRewindMeta(k1);
+	keyRewindMeta(k2);
+	while ((meta = keyNextMeta (k1)) != 0)
+	{
+		const Key const * metaCmp = keyNextMeta(k2);
+		if (metaCmp == 0)
+		{
+			succeed_if (0, "Will break, did not find corresponding metaCmp (k1 > k2)");
+			break;
+		}
+		attributes = keyCompare(meta, metaCmp);
+		check_attributes(attributes);
+	}
+
+	// check if there is a leftover key
+	const Key const * metaCmp = keyNextMeta(k2);
+	if (metaCmp != 0)
+	{
+		succeed_if (0, "There are too many metaCmp keys (k1 < k2)");
+	}
 
 	return err-nbError;
 }

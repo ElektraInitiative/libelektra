@@ -57,6 +57,8 @@ int init(int argc, char** argv);
 #define succeed_if(x,y) {nbTest++; if (!(x)) { nbError++; printf("%s:%d: error in %s: %s\n", __FILE__, __LINE__, __FUNCTION__, y); }}
 #define exit_if_fail(x,y) {nbTest++; if (!(x)) { printf("%s:%d: fatal in %s: %s\n", __FILE__, __LINE__, __FUNCTION__, y); exit(1); }}
 
+void check_attributes (keyswitch_t attributes);
+
 int compare_key (Key *k1, Key *k2);
 int compare_keyset (KeySet *ks, KeySet *ks2);
 int compare_files (const char * filename);

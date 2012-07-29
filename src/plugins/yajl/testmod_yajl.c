@@ -32,6 +32,30 @@ KeySet *getEmptyKeys()
 			);
 }
 
+KeySet *getNullKeys()
+{
+	Key *k1, *k2;
+	KeySet *ks = ksNew(10,
+			keyNew("user",
+			       KEY_END),
+			keyNew("user/tests",
+			       KEY_END),
+			keyNew("user/tests/yajl",
+			       KEY_END),
+			k1 = keyNew("user/tests/yajl/nullkey",
+			       KEY_VALUE, "will be removed",
+			       KEY_END),
+			k2 = keyNew("user/tests/yajl/second_nullkey",
+			       KEY_VALUE, "will be removed too",
+			       KEY_END),
+			KS_END
+		);
+	keySetBinary(k1, NULL, 0);
+	keySetBinary(k2, NULL, 0);
+
+	return ks;
+}
+
 KeySet *getBooleanKeys()
 {
 	KeySet *ks = ksNew(10,
@@ -55,9 +79,8 @@ KeySet *getBooleanKeys()
 	return ks;
 }
 
-KeySet *getNullKeys()
+KeySet *getNumberKeys()
 {
-	Key *k1, *k2;
 	KeySet *ks = ksNew(10,
 			keyNew("user",
 			       KEY_END),
@@ -65,16 +88,20 @@ KeySet *getNullKeys()
 			       KEY_END),
 			keyNew("user/tests/yajl",
 			       KEY_END),
-			k1 = keyNew("user/tests/yajl/nullkey",
-			       KEY_VALUE, "will be removed",
+			keyNew("user/tests/yajl/number_key",
+			       KEY_VALUE, "25",
+			       KEY_META, "type", "number",
 			       KEY_END),
-			k2 = keyNew("user/tests/yajl/second_nullkey",
-			       KEY_VALUE, "will be removed too",
+			keyNew("user/tests/yajl/second_number_key",
+			       KEY_VALUE, "23002390202",
+			       KEY_META, "type", "number",
+			       KEY_END),
+			keyNew("user/tests/yajl/third_number_key",
+			       KEY_VALUE, "230020202.233",
+			       KEY_META, "type", "number",
 			       KEY_END),
 			KS_END
 		);
-	keySetBinary(k1, NULL, 0);
-	keySetBinary(k2, NULL, 0);
 
 	return ks;
 }
@@ -118,14 +145,15 @@ int main(int argc, char** argv)
 
 	init (argc, argv);
 
-	test_parse_json("examples/testdata_empty.js", getEmptyKeys());
-	test_parse_json("examples/testdata_null.js", getNullKeys());
-	test_parse_json("examples/testdata_boolean.js", getBooleanKeys());
+	// test_parse_json("examples/testdata_empty.js", getEmptyKeys());
+	// test_parse_json("examples/testdata_null.js", getNullKeys());
+	// test_parse_json("examples/testdata_boolean.js", getBooleanKeys());
+	test_parse_json("examples/testdata_number.js", getNumberKeys());
 
 	elektraModulesClose(modules, 0);
 	ksDel (modules);
 
-	printf("\ntest_mount RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	printf("\ntest_yajl RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
 }
