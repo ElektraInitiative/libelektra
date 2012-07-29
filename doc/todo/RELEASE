@@ -1,5 +1,7 @@
 This describes what to do for an release!
 
+== Preperation ==
+
 TODO: describe directory structure
 Make build-release folder
 
@@ -7,6 +9,9 @@ Set environment variable VERSION to current version to make those
 scripts work:
 
  export VERSION=0.x.y
+
+
+== Cleanup ==
 
 
 For the first few steps you have to work on branch master:
@@ -28,10 +33,9 @@ Finally increment version number in CMakeLists.txt:
  editor CMakeLists.txt
  git-commit -m "Ready for release $VERSION" CMakeLists.txt
 
-Push changes to gitorious:
- git-pull && git-push
 
 
+== Source Package ==
 
 Now lets merge that to the release branch:
  git-checkout release
@@ -45,35 +49,28 @@ TODO: write script for that (+ merge with source-package)
 Unpack + compile (with all available plugins) + test those sources (using valgrind!):
 tar xvzf elektra-$VERSION.tar.gz && mkdir build && cd build && cmake -DPLUGINS=dump;resolver;hidden;iconv;syslog;error;validation;xmltool;tracer;timeofday;dbus;glob;hosts;network;type;struct;path;fstab;ccode;simpleini;ni;tcl;hexcode;null;ni ../elektra-$VERSION && make && ctest -T memcheck
 
-Now push release branch with tags to gitorious:
- cd ~e && git-pull && git-push && git-push --tags
-
-
-
 Now copy the packages to ftp (stay in same folder):
  cp ~build/elektra-$VERSION.tar.gz ~elektra-ftp/releases
  cp ~build/elektra-$VERSION.tar.gz.hashsum ~elektra-ftp/releases
 
-Push elektra-ftp to gitorious:
+Commit elektra-ftp to gitorious:
  cd ~elektra-ftp
  git-add releases/elektra-$VERSION.tar.gz
  git-add releases/elektra-$VERSION.tar.gz.hashsum
  git-commit -a -m "Release $VERSION"
- git-push && git-push gitorious
 
+
+== Documentation ==
 
 And the API docu (stay in same folder):
  mkdir ~elektra-doc/api/$VERSION/ && cd ~build/build && cp -ra doc/html doc/latex doc/man ~elektra-doc/api/$VERSION/
-
 
 Symlink current to latest version and add everything:
  cd ~elektra-doc/api/ && rm current && ln -s $VERSION current && git-add current $VERSION
 
 
-Push elektra-doc to gitorious:
- cd ~elektra-doc && git-commit -a -m "$VERSION Release"
- git-push
 
+== Debian Package ==
 
 
 Build deb:
@@ -91,6 +88,29 @@ Build deb:
 Now install package + run some basic commands:
  kdb --version
 
-Debian packages in chroot + publish in reprepro (todo)
+
+
+== Publish ==
+
+
+Now we know that everything worked, well
+
+Now push release branch with tags to gitorious:
+ cd ~e && git-pull && git-push && git-push --tags
+
+Push elektra-ftp to gitorious:
+ cd ~elektra-ftp
+ git-push && git-push gitorious
+
+
+Push changes to gitorious:
+ git-pull && git-push
+
+Push elektra-doc to gitorious:
+ cd ~elektra-doc && git-commit -a -m "$VERSION Release"
+ git-push
+
+
+TODO: Debian packages in chroot + publish in reprepro
 
 Finally check links and send out mail to list

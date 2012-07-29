@@ -437,3 +437,21 @@ severity:error
 ingroup:plugin
 module:resolver
 
+number:75
+description:Could not open file
+severity:error
+ingroup:plugin
+module:simpleini
+
+number:76
+description:Error while reading file
+severity:error
+ingroup:plugin
+module:yajl
+
+number:77
+description:Yajl parser error
+severity:error
+ingroup:plugin
+module:yajl
+

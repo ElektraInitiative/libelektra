@@ -1,5 +1,5 @@
 /***************************************************************************
-                     simpleini.c  -  Skeleton of a plugin
+                     yajl.c  -  Skeleton of a plugin
                              -------------------
     begin                : Fri May 21 2010
     copyright            : (C) 2010 by Markus Raab
@@ -23,18 +23,17 @@
  ***************************************************************************/
 
 
-#ifndef ELEKTRA_PLUGIN_SIMPLEINI_H
-#define ELEKTRA_PLUGIN_SIMPLEINI_H
+#ifndef ELEKTRA_PLUGIN_YAJL_H
+#define ELEKTRA_PLUGIN_YAJL_H
 
 #include <kdbplugin.h>
 
 
-int elektraSimpleiniOpen(Plugin *handle, Key *errorKey);
-int elektraSimpleiniClose(Plugin *handle, Key *errorKey);
-int elektraSimpleiniGet(Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraSimpleiniSet(Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraSimpleiniError(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraYajlOpen(Plugin *handle, Key *errorKey);
+int elektraYajlClose(Plugin *handle, Key *errorKey);
+int elektraYajlGet(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraYajlSet(Plugin *handle, KeySet *ks, Key *parentKey);
 
-Plugin *ELEKTRA_PLUGIN_EXPORT(simpleini);
+Plugin *ELEKTRA_PLUGIN_EXPORT(yajl);
 
 #endif

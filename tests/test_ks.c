@@ -358,11 +358,11 @@ void test_ksResize()
 	succeed_if(ksGetAlloc(ks) == 102, "alloc size wrong");
 
 	ksCopy (copy, ks);
-	compare_keyset(copy, ks);
+	succeed_if (compare_keyset(copy, ks) == 0, "could not copy keyset");
 
 	ksClear (copy); // useless, just test for double free
 	ksCopy (copy, ks);
-	compare_keyset(copy, ks);
+	succeed_if (compare_keyset(copy, ks) == 0, "could not copy keyset again");
 
 	ksDel (copy);
 	ksDel (ks);
@@ -1635,8 +1635,10 @@ void test_ksAppend()
 
 		if (!i)
 		{
-			compare_keyset (returned, testReturned);
-			compare_keyset (keys, testDirectBelow);
+			succeed_if (compare_keyset (returned,
+						testReturned) == 0, "");
+			succeed_if (compare_keyset (keys,
+						testDirectBelow) == 0, "");
 
 			succeed_if (ksGetSize (tmp) == 84, "size not correct");
 			succeed_if (ksGetSize (returned) == 84, "size not correct");
@@ -2177,20 +2179,45 @@ void test_ksAppendKey()
 	succeed_if (ksCurrent(ks) == cur, "did not update current position");
 	succeed_if (ksAppendKey(ks,cur=keyNew("user/x", KEY_END)) == 3, "could not append a key");
 	succeed_if (ksCurrent(ks) == cur, "did not update current position");
-	succeed_if(ksGetSize(ks) == 3, "size not correct after 3 keys");
+	succeed_if (ksGetSize(ks) == 3, "size not correct after 3 keys");
 
 	succeed_if (ksAppendKey(ks,cur=keyNew("user/b", KEY_END)) == 3, "could not append a key");
 	succeed_if (ksCurrent(ks) == cur, "did not update current position (same key)");
-	succeed_if(ksGetSize(ks) == 3, "size not correct after double append");
+	succeed_if (ksGetSize(ks) == 3, "size not correct after double append");
 
 	succeed_if (ksAppendKey(ks,cur=keyNew("user/0", KEY_END)) == 4, "could not append a key");
 	succeed_if (ksCurrent(ks) == cur, "did not update current position (front key)");
-	succeed_if(ksGetSize(ks) == 4, "size not correct after 4 keys");
+	succeed_if (ksGetSize(ks) == 4, "size not correct after 4 keys");
 
 	succeed_if (ksAppendKey(ks,cur=keyNew("user/c", KEY_END)) == 5, "could not append a key");
 	succeed_if (ksCurrent(ks) == cur, "did not update current position (key in between)");
-	succeed_if(ksGetSize(ks) == 5, "size not correct after 5 keys");
+	succeed_if (ksGetSize(ks) == 5, "size not correct after 5 keys");
 
+	ksDel (ks);
+
+	exit_if_fail ((ks=ksNew(0)) != 0, "could not create new keyset");
+	succeed_if (ksAppendKey(ks,cur=keyNew("user", KEY_END)) == 1, "could not append a key");
+	succeed_if (ksCurrent(ks) == cur, "did not update current position");
+	succeed_if (ksGetSize(ks) == 1, "size not correct after 1 keys");
+
+	succeed_if (ksAppendKey(ks,cur=keyNew("user/tests", KEY_END)) == 2, "could not append a key");
+	succeed_if (ksCurrent(ks) == cur, "did not update current position");
+	succeed_if (ksGetSize(ks) == 2, "size not correct after 2 keys");
+
+	succeed_if (ksAppendKey(ks,cur=keyNew("user/tests/folder", KEY_END)) == 3, "could not append a key");
+	succeed_if (ksCurrent(ks) == cur, "did not update current position");
+	succeed_if (ksGetSize(ks) == 3, "size not correct after 3 keys");
+
+	succeed_if (ksAppendKey(ks,cur=keyNew("user/tests/folder/bool_key", KEY_END)) == 4, "could not append a key");
+	succeed_if (ksCurrent(ks) == cur, "did not update current position");
+	succeed_if (ksGetSize(ks) == 4, "size not correct after 4 keys");
+
+	Key *newKey = keyDup(cur);
+	keySetBaseName(newKey, "second_bool_key");
+
+	succeed_if (ksAppendKey(ks, newKey) == 5, "could not append a key");
+	succeed_if (ksCurrent(ks) == newKey, "did not update current position");
+	succeed_if (ksGetSize(ks) == 5, "size not correct after 5 keys");
 	ksDel (ks);
 }
 

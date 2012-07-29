@@ -19,10 +19,6 @@ not clearly defined how config file is opened
 	(temporary file needs to be opened write+create)
 
 
-== KDB TOOL ==
-
-prohibit rm, mv of system/elektra
-
 == BUILD ==
 
 VC++ support broken
@@ -48,8 +44,6 @@ errorKey not propagated in elektraPluginOpen
 	errors should be transformed to warnings
 
 validation-set of kdb sets other meta keys then which are checked
-
-could not parse file output in tcl!
 
 on non-writeable config files the problem would
 	only occur when committing -> behaviour?
@@ -95,8 +89,7 @@ keyGetStringSize missing
 
 path: UUID= LABEL= rechner:/...
 	/proc/filesystems
-	5.te und 6.te feld ist optional
-	siehe man 5 fstab
+	5th and 6th field is optional
 
 
 
@@ -164,19 +157,7 @@ man pages
 env-get env-set `kdb env-get`
 
 kdb-resolver (give file given key name)
-
-kdb-shell:
-	streaming instead of ksOutput
-
-
-
-!!converting von Config files
 Multiple Storages
-
-kdb import --merge
-
-import/export
-
 
 
 == CMAKE ==
@@ -188,25 +169,6 @@ DEFAULT_BACKEND ->
 	DEFAULT_STORAGE_PLUGIN
 	DEFAULT_RESOLVER_PLUGIN
 	(+ make it work)
-
-
-Externes cmake Projekt welches Elektra verwendet
-Make Plugin as separate project
-pkgconfig working?
-
-Header files are not installed!
-installed files:
-	headers in elektra/ subdir
-	backends in elektra subdir
-	install various other files like before (0.7.0)
-
-shared version:
-	cmake helper files for examples
-	loading of plugins without LD_LIBRARY_PATH or the like (does not work with sudo)
-	backend version info damit man weiß dass diese Plugins für 0.8.0
-
-nice standard compliant (FHS) --prefix --libdir and so on!
-
 
 
 == API Changes ==
@@ -230,7 +192,7 @@ support multiple owner at once for kdbGet()/kdbSet()?
 allow mounting for users?
 
 
-== OPTIMIERUNGEN ==
+== OPTIMIZATION ==
 
 ksAppend() in O(1)
 KDB_O_NOALL could use binary search
@@ -247,12 +209,16 @@ static loading could be done with keyset
 	(statischer fall)
 
 
+iconv:
+	open handles in kdbOpen?
+
 == USE ==
 
-Write a program
+Write a program (e.g. dfc)
 	which uses ELektra
 	delievers its own plugins
 	uses the type system
+	with debian packages
 
 
 == DEFAULT PLUGINS ==
@@ -284,8 +250,7 @@ C++: (FINISH cppplugin)
 	Exceptions propagations
 	(C++ Exceptions to error codes)
 
-hosts reparieren: Semantiken kaputt, keine Werte
-/etc/groups plugin schreiben (evt. als gscheites C++ Plugin?)
+/etc/groups plugin
 
 implement and test easy to implement, but useful plugins
 as many differnt kinds as possible
@@ -298,13 +263,8 @@ testing framework step by step
 
 Forensic Logging:
 	environment, pid, gid, uid
-	Zeitzone + in ms
+	timezone + in ms
 	IP
-
-
-iconv: (performance)
-	beide Handle öffnen + lookups in open
-	Unterschied?
 
 
 filter: key
@@ -341,7 +301,6 @@ others:
 	namehexencode
 
 
-kwallet plugin
 base64
 Openssl lizenz
 libgcryt (LGPL, GPLv3?) used by cppcms
@@ -365,7 +324,7 @@ generator for:
 
 
 
-= FINISH =
+= FINISH for 1.0.0 =
 
 symbole, only export
 Version info

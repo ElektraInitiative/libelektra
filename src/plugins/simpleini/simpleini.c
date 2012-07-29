@@ -25,6 +25,11 @@
 
 #include "simpleini.h"
 
+#include <kdberrors.h>
+
+#include <stdio.h>
+#include <stdlib.h>
+
 int elektraSimpleiniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	/* get all keys */
@@ -84,9 +89,14 @@ int elektraSimpleiniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	}
 
 	int n;
-	FILE *fp = fopen (keyString(parentKey), "r");
 	char *key;
 	char *value;
+	FILE *fp = fopen (keyString(parentKey), "r");
+	if (!fp)
+	{
+		ELEKTRA_SET_ERROR(74, parentKey, keyString(parentKey));
+		return -1;
+	}
 
 	while ((n = fscanf (fp, "%ms = %ms\n", &key, &value)) >= 1)
 	{
@@ -122,6 +132,11 @@ int elektraSimpleiniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	/* set all keys */
 
 	FILE *fp = fopen(keyString(parentKey), "w");
+	if (!fp)
+	{
+		ELEKTRA_SET_ERROR(74, parentKey, keyString(parentKey));
+		return -1;
+	}
 
 	Key *cur;
 	ksRewind (returned);
