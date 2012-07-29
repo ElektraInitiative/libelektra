@@ -51,10 +51,56 @@ int elektraYajlClose(Plugin *handle, Key *errorKey)
 	return 1; /* success */
 }
 
+/**
+ @retval 0 if ksCurrent does not hold an array entry
+ @retval 1 if the array entry will be used because its the first
+ @retval 2 if a new array entry was created
+ @retval -1 error in snprintf
+ */
+static int increment_array_entry(KeySet * ks)
+{
+	Key * current = ksCurrent(ks);
+
+	if (keyGetMeta(current, "array"))
+	{
+		const char * baseName = keyBaseName(current);
+
+		if (!strcmp(baseName, "###start_array"))
+		{
+			// we have a new array entry, just use it
+			keySetBaseName (current, "0");
+			return 1;
+		}
+		else
+		{
+			const int maxDigitsOfNumber = 10;
+			int nextNumber = atoi (baseName) + 1;
+			Key * newKey = keyNew (keyName(current), KEY_END);
+			char str[maxDigitsOfNumber+1];
+			if (snprintf (str, maxDigitsOfNumber, "%d", nextNumber) < 0)
+			{
+				return -1;
+			}
+			keySetBaseName(newKey, str);
+			keySetMeta(newKey, "array", "");
+			ksAppendKey(ks, newKey);
+			return 2;
+		}
+	}
+	else
+	{
+		// previous entry indicates this is not an array
+		return 0;
+	}
+}
+
 static int parse_null(void *ctx)
 {
 	KeySet *ks = (KeySet*) ctx;
+	increment_array_entry(ks);
+
 	Key * current = ksCurrent(ks);
+
 	keySetBinary(current, NULL, 0);
 
 #ifdef ELEKTRA_YAJL_VERBOSE
@@ -67,15 +113,16 @@ static int parse_null(void *ctx)
 static int parse_boolean(void *ctx, int boolean)
 {
 	KeySet *ks = (KeySet*) ctx;
+	increment_array_entry(ks);
+
 	Key * current = ksCurrent(ks);
+
 	if (boolean == 1)
 	{
-		printf ("setString of %s to true\n", keyName(current));
 		keySetString(current, "true");
 	}
 	else
 	{
-		printf ("setString of %s to false\n", keyName(current));
 		keySetString(current, "false");
 	}
 	keySetMeta(current, "type", "boolean");
@@ -91,6 +138,8 @@ static int parse_number(void *ctx, const char *stringVal,
 			unsigned int stringLen)
 {
 	KeySet *ks = (KeySet*) ctx;
+	increment_array_entry(ks);
+
 	Key *current = ksCurrent(ks);
 
 	unsigned char delim = stringVal[stringLen];
@@ -114,6 +163,8 @@ static int parse_string(void *ctx, const unsigned char *stringVal,
 			unsigned int stringLen)
 {
 	KeySet *ks = (KeySet*) ctx;
+	increment_array_entry(ks);
+
 	Key *current = ksCurrent(ks);
 
 	unsigned char delim = stringVal[stringLen];
@@ -124,7 +175,7 @@ static int parse_string(void *ctx, const unsigned char *stringVal,
 	printf ("parse_string %s %d\n", stringVal, stringLen);
 #endif
 
-	keySetString(current, stringVal);
+	keySetString(current, stringValue);
 
 	// restore old character in buffer
 	stringValue[stringLen] = delim;
@@ -153,7 +204,7 @@ static int parse_map_key(void *ctx, const unsigned char * stringVal,
 	else
 	{
 		// we entered a new pair (inside the previous object)
-		Key * newKey = keyDup (currentKey);
+		Key * newKey = keyNew (keyName(currentKey), KEY_END);
 		keySetBaseName(newKey, stringValue);
 		ksAppendKey(ks, newKey);
 	}
@@ -169,9 +220,10 @@ static int parse_start_map(void *ctx)
 	KeySet *ks = (KeySet*) ctx;
 	Key *currentKey = ksCurrent(ks);
 
-	Key * newKey = keyDup (currentKey);
+	Key * newKey = keyNew (keyName(currentKey), KEY_END);
 	keyAddBaseName(newKey, "###start_map");
 	ksAppendKey(ks, newKey);
+
 #ifdef ELEKTRA_YAJL_VERBOSE
 	printf ("parse_start_map with new key %s\n", keyName(newKey));
 #endif
@@ -179,22 +231,56 @@ static int parse_start_map(void *ctx)
 	return 1;
 }
 
+static int parse_end(void *ctx)
+{
+	KeySet *ks = (KeySet*) ctx;
+	Key *currentKey = ksCurrent(ks);
+
+	Key * lookupKey = keyNew (keyName(currentKey), KEY_END);
+	keySetBaseName(lookupKey, ""); // remove current key
+	Key * foundKey = ksLookup(ks, lookupKey, 0);
+
+#ifdef ELEKTRA_YAJL_VERBOSE
+	if (foundKey)
+	{
+		printf ("parse_end %s\n", keyName(foundKey));
+	}
+	else
+	{
+		printf ("parse_end did not find key!\n");
+	}
+#endif
+
+	keyDel (lookupKey);
+
+	return 1;
+}
+
 static int parse_end_map(void *ctx)
 {
-#ifdef ELEKTRA_YAJL_VERBOSE
-	printf ("parse_end_map\n");
-#endif
-	return 1;
+	return parse_end(ctx);
 }
 
 static int parse_start_array(void *ctx)
 {
+	KeySet *ks = (KeySet*) ctx;
+	Key *currentKey = ksCurrent(ks);
+
+	Key * newKey = keyNew (keyName(currentKey), KEY_END);
+	keyAddBaseName(newKey, "###start_array");
+	keySetMeta(newKey, "array", "");
+	ksAppendKey(ks, newKey);
+
+#ifdef ELEKTRA_YAJL_VERBOSE
+	printf ("parse_start_array with new key %s\n", keyName(newKey));
+#endif
+
 	return 1;
 }
 
 static int parse_end_array(void *ctx)
 {
-	return 1;
+	return parse_end(ctx);
 }
 
 int elektraYajlGet(Plugin *handle, KeySet *returned, Key *parentKey)

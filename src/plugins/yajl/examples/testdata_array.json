@@ -1,0 +1,11 @@
+{
+	"tests" : {
+		"yajl" : {
+			"array" : [
+				true,
+				25,
+				"some string"
+				]
+		}
+	}
+}

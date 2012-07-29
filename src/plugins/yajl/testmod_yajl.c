@@ -130,6 +130,83 @@ KeySet *getStringKeys()
 	return ks;
 }
 
+KeySet *getMapKeys ()
+{
+	KeySet *ks = ksNew(10,
+			keyNew("user",
+			       KEY_END),
+			keyNew("user/tests",
+			       KEY_END),
+			keyNew("user/tests/yajl",
+			       KEY_END),
+			keyNew("user/tests/yajl/map",
+			       KEY_END),
+			keyNew("user/tests/yajl/map/string_key",
+			       KEY_VALUE, "25",
+			       KEY_END),
+			keyNew("user/tests/yajl/map/second_string_key",
+			       KEY_VALUE, "some string",
+			       KEY_END),
+			keyNew("user/tests/yajl/map/nested_map",
+			       KEY_END),
+			keyNew("user/tests/yajl/map/nested_map/string_key",
+			       KEY_VALUE, "25",
+			       KEY_END),
+			keyNew("user/tests/yajl/map/nested_map/second_string_key",
+			       KEY_VALUE, "some string",
+			       KEY_END),
+			keyNew("user/tests/yajl/second_map",
+			       KEY_END),
+			keyNew("user/tests/yajl/second_map/string_key",
+			       KEY_VALUE, "25",
+			       KEY_END),
+			keyNew("user/tests/yajl/second_map/second_string_key",
+			       KEY_VALUE, "some string",
+			       KEY_END),
+			keyNew("user/tests/yajl/string_key",
+			       KEY_VALUE, "25",
+			       KEY_END),
+			keyNew("user/tests/yajl/second_string_key",
+			       KEY_VALUE, "some string",
+			       KEY_END),
+			KS_END
+		);
+
+	return ks;
+}
+
+KeySet *getArrayKeys()
+{
+	KeySet *ks = ksNew(10,
+			keyNew("user",
+			       KEY_END),
+			keyNew("user/tests",
+			       KEY_END),
+			keyNew("user/tests/yajl",
+			       KEY_END),
+			keyNew("user/tests/yajl/array",
+			       KEY_END),
+			keyNew("user/tests/yajl/array/0",
+			       KEY_VALUE, "true",
+			       KEY_META, "array", "",
+			       KEY_META, "type", "boolean",
+			       KEY_END),
+			keyNew("user/tests/yajl/array/1",
+			       KEY_VALUE, "25",
+			       KEY_META, "array", "",
+			       KEY_META, "type", "number",
+			       KEY_END),
+			keyNew("user/tests/yajl/array/2",
+			       KEY_META, "array", "",
+			       KEY_VALUE, "some string",
+			       KEY_END),
+			KS_END
+		);
+
+	return ks;
+}
+
+
 KeySet *modules;
 
 void test_parse_json(const char* fileName, KeySet * compareKeySet)
@@ -171,11 +248,13 @@ int main(int argc, char** argv)
 
 	init (argc, argv);
 
-	// test_parse_json("examples/testdata_empty.js", getEmptyKeys());
-	// test_parse_json("examples/testdata_null.js", getNullKeys());
-	// test_parse_json("examples/testdata_boolean.js", getBooleanKeys());
-	// test_parse_json("examples/testdata_number.js", getNumberKeys());
-	test_parse_json("examples/testdata_string.js", getStringKeys());
+	// test_parse_json("examples/testdata_empty.json", getEmptyKeys());
+	// test_parse_json("examples/testdata_null.json", getNullKeys());
+	// test_parse_json("examples/testdata_boolean.json", getBooleanKeys());
+	// test_parse_json("examples/testdata_number.json", getNumberKeys());
+	// test_parse_json("examples/testdata_string.json", getStringKeys());
+	// test_parse_json("examples/testdata_maps.json", getMapKeys());
+	test_parse_json("examples/testdata_array.json", getArrayKeys());
 
 	elektraModulesClose(modules, 0);
 	ksDel (modules);
