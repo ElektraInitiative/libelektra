@@ -339,7 +339,7 @@ int elektraYajlGet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 	KeySet *config= elektraPluginGetConfig(handle);
 
-	ksClear (returned);
+	// ksClear (returned);
 	if (keyIsUser(parentKey))
 	{
 		const Key * lookup = ksLookupByName(config, "/user_path", 0);
