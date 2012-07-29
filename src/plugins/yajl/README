@@ -6,3 +6,39 @@ based on the library yajl:
 http://lloyd.github.com/yajl/
 
 
+== Mountpoint ==
+
+To mount the plugin you can do:
+ kdb mount OpenICC_device_config_DB.json /org yajl
+
+Then you can copy the OpenICC_device_config_DB.json
+to /etc/kdb (or the path you have configured during compile time in
+		elektra)
+
+ cp src/plugins/yajl/examples/OpenICC_device_config_DB.json /etc/kdb
+
+ kdb ls system/org
+
+should print out then all device entries available in the config
+
+ kdb get system/org/freedesktop/openicc/device/camera/0/EXIF_manufacturer
+
+should print out "Glasshuette"
+
+
+== Convert/Import ==
+
+You can also use the (read-only) operations convert/import.
+So to output the keyset of the non-mounted file
+OpenICC_device_config_DB.json:
+ kdb convert yajl simpleini OpenICC_device_config_DB.json
+
+Or to import into the key database:
+ cat OpenICC_device_config_DB.json | kdb import system/org yajl
+
+Then you have of course full read/write access to the data.
+
+== Write Support ==
+
+Currently there is no working write support for the
+OpenICC_device_config_DB.json files.
