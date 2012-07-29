@@ -424,7 +424,43 @@ int elektraYajlGet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 int elektraYajlSet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
-	/* set all keys */
+	yajl_gen_config conf = { 1, "  " };
+	yajl_gen g = yajl_gen_alloc(&conf, NULL);
+	yajl_gen_map_open(g);
+
+	Key *cur = 0;
+
+	ksRewind (returned);
+	while ((cur = ksNext(returned)) != 0)
+	{
+		yajl_gen_string(g, (const unsigned char *)keyName(cur), keyGetNameSize(cur)-1);
+		if (keyGetValueSize(cur))
+		{
+			yajl_gen_string(g, (const unsigned char *)keyString(cur), keyGetValueSize(cur)-1);
+		} else {
+			yajl_gen_null(g);
+		}
+	}
+
+	yajl_gen_map_close(g);
+
+
+	FILE *fp = fopen(keyString(parentKey), "w");
+	if (!fp)
+	{
+		ELEKTRA_SET_ERROR(74, parentKey, keyString(parentKey));
+		return -1;
+	}
+
+	const unsigned char * buf;
+	unsigned int len;
+	yajl_gen_get_buf(g, &buf, &len);
+	fwrite(buf, 1, len, fp);
+	yajl_gen_clear(g);
+	yajl_gen_free(g);
+
+
+	fclose (fp);
 
 	return 1; /* success */
 }
