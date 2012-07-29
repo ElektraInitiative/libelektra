@@ -1,4 +1,8 @@
+== Introduction ==
+
 This is a plugin reading and writing json
 based on the library yajl:
 
 http://lloyd.github.com/yajl/
+
+

@@ -34,22 +34,7 @@
 #include <yajl/yajl_gen.h>
 #include <yajl/yajl_parse.h>
 
-#define ELEKTRA_YAJL_VERBOSE 1
-
-
-int elektraYajlOpen(Plugin *handle, Key *errorKey)
-{
-	/* plugin initialization logic */
-
-	return 1; /* success */
-}
-
-int elektraYajlClose(Plugin *handle, Key *errorKey)
-{
-	/* free all plugin resources and shut it down */
-
-	return 1; /* success */
-}
+#undef ELEKTRA_YAJL_VERBOSE
 
 /**
  @retval 0 if ksCurrent does not hold an array entry
@@ -243,7 +228,10 @@ static int parse_end(void *ctx)
 
 	Key * lookupKey = keyNew (keyName(currentKey), KEY_END);
 	keySetBaseName(lookupKey, ""); // remove current key
+
+	// lets point to the correct place
 	Key * foundKey = ksLookup(ks, lookupKey, 0);
+	(void)foundKey;
 
 #ifdef ELEKTRA_YAJL_VERBOSE
 	if (foundKey)
@@ -306,16 +294,73 @@ int elektraYajlGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		parse_end_array
 	};
 
+	if (!strcmp (keyName(parentKey), "system/elektra/modules/yajl"))
+	{
+		KeySet *moduleConfig = ksNew (30,
+			keyNew ("system/elektra/modules/yajl",
+				KEY_VALUE, "yajl plugin waits for your orders", KEY_END),
+			keyNew ("system/elektra/modules/yajl/exports", KEY_END),
+			keyNew ("system/elektra/modules/yajl/exports/get",
+				KEY_FUNC, elektraYajlGet,
+				KEY_END),
+			keyNew ("system/elektra/modules/yajl/exports/set",
+				KEY_FUNC, elektraYajlSet,
+				KEY_END),
+			keyNew ("system/elektra/modules/yajl/infos",
+				KEY_VALUE, "All information you want to know", KEY_END),
+			keyNew ("system/elektra/modules/yajl/infos/author",
+				KEY_VALUE, "Markus Raab <elektra@libelektra.org>", KEY_END),
+			keyNew ("system/elektra/modules/yajl/infos/licence",
+				KEY_VALUE, "BSD", KEY_END),
+			keyNew ("system/elektra/modules/yajl/infos/description",
+				KEY_VALUE, "JSON using YAIL", KEY_END),
+			keyNew ("system/elektra/modules/yajl/infos/provides",
+				KEY_VALUE, "storage", KEY_END),
+			keyNew ("system/elektra/modules/yajl/infos/placements",
+				KEY_VALUE, "getstorage setstorage", KEY_END),
+			keyNew ("system/elektra/modules/yajl/infos/needs",
+				KEY_VALUE, "", KEY_END),
+			keyNew ("system/elektra/modules/yajl/infos/recommends",
+				KEY_VALUE, "", KEY_END),
+			keyNew ("system/elektra/modules/yajl/infos/version",
+				KEY_VALUE, PLUGINVERSION, KEY_END),
+			keyNew ("system/elektra/modules/yajl/config", KEY_END),
+			keyNew ("system/elektra/modules/yajl/config/system_path",
+				KEY_VALUE, "system",
+				KEY_END),
+			keyNew ("system/elektra/modules/yajl/config/user_path",
+				KEY_VALUE, "user",
+				KEY_END),
+			KS_END);
+		ksAppend (returned, moduleConfig);
+		ksDel (moduleConfig);
+		return 1;
+	}
+
+	KeySet *config= elektraPluginGetConfig(handle);
+
 	ksClear (returned);
 	if (keyIsUser(parentKey))
 	{
-		// TODO: should be configureable
-		ksAppendKey (returned, keyNew("user", KS_END));
+		const Key * lookup = ksLookupByName(config, "/user_path", 0);
+		if (!lookup)
+		{
+			ksAppendKey (returned, keyNew("user", KS_END));
+		} else {
+			ksAppendKey (returned, keyNew(keyValue(lookup),
+						KS_END));
+		}
 	}
 	else
 	{
-		// TODO: should be configureable
-		ksAppendKey (returned, keyNew("system", KS_END));
+		const Key * lookup = ksLookupByName(config, "/system_path", 0);
+		if (!lookup)
+		{
+			ksAppendKey (returned, keyNew("system", KS_END));
+		} else {
+			ksAppendKey (returned, keyNew(keyValue(lookup),
+						KS_END));
+		}
 	}
 
 	// allow comments
@@ -387,8 +432,6 @@ int elektraYajlSet(Plugin *handle, KeySet *returned, Key *parentKey)
 Plugin *ELEKTRA_PLUGIN_EXPORT(yajl)
 {
 	return elektraPluginExport("yajl",
-		ELEKTRA_PLUGIN_OPEN,	&elektraYajlOpen,
-		ELEKTRA_PLUGIN_CLOSE,	&elektraYajlClose,
 		ELEKTRA_PLUGIN_GET,	&elektraYajlGet,
 		ELEKTRA_PLUGIN_SET,	&elektraYajlSet,
 		ELEKTRA_PLUGIN_END);

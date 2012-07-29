@@ -402,9 +402,10 @@ keyNew("user/org/freedesktop/openicc/device/camera/1/automatic_assigment",
 
 KeySet *modules;
 
-void test_parse_json(const char* fileName, KeySet * compareKeySet)
+void test_parse_json(const char * fileName,
+		     KeySet * compareKeySet,
+		     KeySet * conf)
 {
-	KeySet *conf = ksNew(0);
 	Plugin *plugin = elektraPluginOpen("yajl", modules, conf, 0);
 	exit_if_fail (plugin != 0, "could not open plugin");
 
@@ -419,16 +420,43 @@ void test_parse_json(const char* fileName, KeySet * compareKeySet)
 	output_errors(parentKey);
 	output_warnings(parentKey);
 
+	/*
 	printf ("The keys we read out are:\n");
 	output_keyset(keys);
 	printf ("The keys we compared it with:\n");
 	output_keyset(compareKeySet);
+	*/
 
 	keyDel (parentKey);
 	ksDel (keys);
 	ksDel (compareKeySet);
 
 	elektraPluginClose(plugin, 0);
+}
+
+void test_path_config()
+{
+	test_parse_json("examples/testdata_empty.json",
+		ksNew(1, keyNew("user/some/path/below", KEY_END), KS_END),
+		ksNew(1, keyNew("system/user_path", KEY_VALUE, "user/some/path/below", KEY_END), KS_END));
+	test_parse_json("examples/testdata_boolean.json",
+		ksNew(10,
+			keyNew("user/some/path/below",
+			       KEY_END),
+			keyNew("user/some/path/below/tests",
+			       KEY_END),
+			keyNew("user/some/path/below/tests/yajl",
+			       KEY_END),
+			keyNew("user/some/path/below/tests/yajl/boolean_key",
+			       KEY_VALUE, "true",
+			       KEY_META, "type", "boolean",
+			       KEY_END),
+			keyNew("user/some/path/below/tests/yajl/second_boolean_key",
+			       KEY_VALUE, "false",
+			       KEY_META, "type", "boolean",
+			       KEY_END),
+			KS_END),
+		ksNew(1, keyNew("system/user_path", KEY_VALUE, "user/some/path/below", KEY_END), KS_END));
 }
 
 int main(int argc, char** argv)
@@ -441,14 +469,17 @@ int main(int argc, char** argv)
 
 	init (argc, argv);
 
-	test_parse_json("examples/testdata_empty.json", getEmptyKeys());
-	test_parse_json("examples/testdata_null.json", getNullKeys());
-	test_parse_json("examples/testdata_boolean.json", getBooleanKeys());
-	test_parse_json("examples/testdata_number.json", getNumberKeys());
-	test_parse_json("examples/testdata_string.json", getStringKeys());
-	test_parse_json("examples/testdata_maps.json", getMapKeys());
-	test_parse_json("examples/testdata_array.json", getArrayKeys());
-	test_parse_json("examples/OpenICC_device_config_DB.json", getOpenICCKeys());
+	test_parse_json("examples/testdata_empty.json", getEmptyKeys(), ksNew(0));
+	test_parse_json("examples/testdata_null.json", getNullKeys(), ksNew(0));
+	test_parse_json("examples/testdata_boolean.json", getBooleanKeys(), ksNew(0));
+	test_parse_json("examples/testdata_number.json", getNumberKeys(), ksNew(0));
+	test_parse_json("examples/testdata_string.json", getStringKeys(), ksNew(0));
+	test_parse_json("examples/testdata_maps.json", getMapKeys(), ksNew(0));
+	test_parse_json("examples/testdata_array.json", getArrayKeys(), ksNew(0));
+	test_parse_json("examples/OpenICC_device_config_DB.json", getOpenICCKeys(), ksNew(0));
+
+	test_path_config();
+
 
 	elektraModulesClose(modules, 0);
 	ksDel (modules);
