@@ -73,6 +73,7 @@ static int increment_array_entry(KeySet * ks)
 		}
 		else
 		{
+			// we are in an array
 			const int maxDigitsOfNumber = 10;
 			int nextNumber = atoi (baseName) + 1;
 			Key * newKey = keyNew (keyName(current), KEY_END);
@@ -186,6 +187,8 @@ static int parse_map_key(void *ctx, const unsigned char * stringVal,
 			 unsigned int stringLen)
 {
 	KeySet *ks = (KeySet*) ctx;
+	increment_array_entry(ks);
+
 	Key *currentKey = ksCurrent(ks);
 
 	unsigned char delim = stringVal[stringLen];
@@ -218,6 +221,8 @@ static int parse_map_key(void *ctx, const unsigned char * stringVal,
 static int parse_start_map(void *ctx)
 {
 	KeySet *ks = (KeySet*) ctx;
+	increment_array_entry(ks);
+
 	Key *currentKey = ksCurrent(ks);
 
 	Key * newKey = keyNew (keyName(currentKey), KEY_END);
@@ -264,6 +269,8 @@ static int parse_end_map(void *ctx)
 static int parse_start_array(void *ctx)
 {
 	KeySet *ks = (KeySet*) ctx;
+	increment_array_entry(ks);
+
 	Key *currentKey = ksCurrent(ks);
 
 	Key * newKey = keyNew (keyName(currentKey), KEY_END);
@@ -302,10 +309,12 @@ int elektraYajlGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	ksClear (returned);
 	if (keyIsUser(parentKey))
 	{
+		// TODO: should be configureable
 		ksAppendKey (returned, keyNew("user", KS_END));
 	}
 	else
 	{
+		// TODO: should be configureable
 		ksAppendKey (returned, keyNew("system", KS_END));
 	}
 
