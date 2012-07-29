@@ -106,6 +106,30 @@ KeySet *getNumberKeys()
 	return ks;
 }
 
+KeySet *getStringKeys()
+{
+	KeySet *ks = ksNew(10,
+			keyNew("user",
+			       KEY_END),
+			keyNew("user/tests",
+			       KEY_END),
+			keyNew("user/tests/yajl",
+			       KEY_END),
+			keyNew("user/tests/yajl/string_key",
+			       KEY_VALUE, "25",
+			       KEY_END),
+			keyNew("user/tests/yajl/second_string_key",
+			       KEY_VALUE, "some string",
+			       KEY_END),
+			keyNew("user/tests/yajl/third_string_key",
+			       KEY_VALUE, "escape {}; \" \\ problem",
+			       KEY_END),
+			KS_END
+		);
+
+	return ks;
+}
+
 KeySet *modules;
 
 void test_parse_json(const char* fileName, KeySet * compareKeySet)
@@ -125,7 +149,9 @@ void test_parse_json(const char* fileName, KeySet * compareKeySet)
 	output_errors(parentKey);
 	output_warnings(parentKey);
 
+	printf ("The keys we read out are:\n");
 	output_keyset(keys);
+	printf ("The keys we compared it with:\n");
 	output_keyset(compareKeySet);
 
 	keyDel (parentKey);
@@ -148,7 +174,8 @@ int main(int argc, char** argv)
 	// test_parse_json("examples/testdata_empty.js", getEmptyKeys());
 	// test_parse_json("examples/testdata_null.js", getNullKeys());
 	// test_parse_json("examples/testdata_boolean.js", getBooleanKeys());
-	test_parse_json("examples/testdata_number.js", getNumberKeys());
+	// test_parse_json("examples/testdata_number.js", getNumberKeys());
+	test_parse_json("examples/testdata_string.js", getStringKeys());
 
 	elektraModulesClose(modules, 0);
 	ksDel (modules);

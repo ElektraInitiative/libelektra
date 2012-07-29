@@ -68,8 +68,9 @@ char *srcdir_file(const char * fileName);
 Key * create_root_key (const char *backendName);
 KeySet *create_conf (const char *filename);
 
-void output_keyset (KeySet *ks);
+void output_meta(Key *k);
 void output_key (Key *ks);
+void output_keyset (KeySet *ks);
 
 
 void output_warnings(Key *errorKey);

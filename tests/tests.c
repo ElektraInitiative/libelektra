@@ -251,9 +251,24 @@ void clear_sync (KeySet *ks)
 	while ((k = ksNext(ks)) != 0) keyClearSync(k);
 }
 
+void output_meta(Key *k)
+{
+	const Key *meta;
+
+	keyRewindMeta (k);
+	while ((meta = keyNextMeta (k))!=0)
+	{
+		printf (", %s: %s", keyName(meta),
+			(const char*)keyValue(meta));
+	}
+	printf ("\n");
+}
+
 void output_key (Key *k)
 {
-	printf ("key: %s, string: %s\n", keyName(k), keyString(k));
+	// output_meta will print endline
+	printf ("key: %s, string: %s", keyName(k), keyString(k));
+	output_meta(k);
 }
 
 void output_keyset (KeySet *ks)
@@ -262,7 +277,7 @@ void output_keyset (KeySet *ks)
 	ksRewind(ks);
 	while ((k = ksNext(ks)) != 0)
 	{
-		printf ("key: %s, string: %s\n", keyName(k), keyString(k));
+		output_key (k);
 	}
 }
 

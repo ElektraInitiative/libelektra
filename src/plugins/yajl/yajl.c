@@ -113,6 +113,21 @@ static int parse_number(void *ctx, const char *stringVal,
 static int parse_string(void *ctx, const unsigned char *stringVal,
 			unsigned int stringLen)
 {
+	KeySet *ks = (KeySet*) ctx;
+	Key *current = ksCurrent(ks);
+
+	unsigned char delim = stringVal[stringLen];
+	char * stringValue = (char*)stringVal;
+	stringValue[stringLen] = '\0';
+
+#ifdef ELEKTRA_YAJL_VERBOSE
+	printf ("parse_string %s %d\n", stringVal, stringLen);
+#endif
+
+	keySetString(current, stringVal);
+
+	// restore old character in buffer
+	stringValue[stringLen] = delim;
 	return 1;
 }
 
