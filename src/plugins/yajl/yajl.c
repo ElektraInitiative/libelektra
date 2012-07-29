@@ -34,7 +34,7 @@
 #include <yajl/yajl_gen.h>
 #include <yajl/yajl_parse.h>
 
-#undef ELEKTRA_YAJL_VERBOSE
+#define ELEKTRA_YAJL_VERBOSE 1
 
 
 int elektraYajlOpen(Plugin *handle, Key *errorKey)

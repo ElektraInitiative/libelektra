@@ -23,7 +23,16 @@
 
 #include <tests_internal.h>
 
-KeySet * getNullKeys()
+KeySet *getEmptyKeys()
+{
+	return ksNew(1,
+			keyNew("user",
+			       KEY_END),
+			KS_END
+			);
+}
+
+KeySet *getNullKeys()
 {
 	Key *k1, *k2;
 	KeySet *ks = ksNew(10,
@@ -49,20 +58,19 @@ KeySet * getNullKeys()
 
 KeySet *modules;
 
-void test_readnull()
+void test_parse_json(const char* fileName, KeySet * compareKeySet)
 {
 	KeySet *conf = ksNew(0);
 	Plugin *plugin = elektraPluginOpen("yajl", modules, conf, 0);
 	exit_if_fail (plugin != 0, "could not open plugin");
 
 	Key *parentKey = keyNew ("user/tests/yajl",
-			KEY_VALUE, srcdir_file("examples/testdata_null.js"),
+			KEY_VALUE, srcdir_file(fileName),
 			KEY_END);
 	KeySet *keys = ksNew(0);
 	succeed_if (plugin->kdbGet(plugin, keys, parentKey) == 1, "kdbGet was not successful");
 
-	KeySet *nullKeys = getNullKeys();
-	succeed_if (compare_keyset(keys, nullKeys) == 0, "keyset is not like it should be");
+	succeed_if (compare_keyset(keys, compareKeySet) == 0, "keyset is not like it should be");
 
 	output_errors(parentKey);
 	output_warnings(parentKey);
@@ -70,7 +78,7 @@ void test_readnull()
 
 	keyDel (parentKey);
 	ksDel (keys);
-	ksDel (nullKeys);
+	ksDel (compareKeySet);
 
 	elektraPluginClose(plugin, 0);
 }
@@ -85,7 +93,8 @@ int main(int argc, char** argv)
 
 	init (argc, argv);
 
-	test_readnull();
+	test_parse_json("examples/testdata_empty.js", getEmptyKeys());
+	test_parse_json("examples/testdata_null.js", getNullKeys());
 
 	elektraModulesClose(modules, 0);
 	ksDel (modules);
