@@ -9,6 +9,9 @@ if (YAJL_FOUND)
 	add_sources (elektra-full ${SOURCES})
 	add_headers (SOURCES)
 
+	file (COPY examples
+		DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
 	add_library (elektra-yajl MODULE ${SOURCES})
 	install (TARGETS elektra-yajl DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})
 

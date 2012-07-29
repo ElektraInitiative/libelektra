@@ -194,6 +194,7 @@ int elektraYajlGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			if (!feof(fileHandle))
 			{
 				ELEKTRA_SET_ERROR(76, parentKey, keyString(parentKey));
+				fclose (fileHandle);
 				return -1;
 			}
 			done = 1;
@@ -217,12 +218,14 @@ int elektraYajlGet(Plugin *handle, KeySet *returned, Key *parentKey)
 					fileData, rd);
 			ELEKTRA_SET_ERROR(77, parentKey, (char*)str);
 			yajl_free_error(hand, str);
+			fclose (fileHandle);
 
 			return -1;
 		}
 	}
 
 	yajl_free(hand);
+	fclose (fileHandle);
 
 	return 1; /* success */
 }

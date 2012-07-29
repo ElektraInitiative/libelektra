@@ -23,7 +23,7 @@
 
 #include <tests_internal.h>
 
-KeySet * get_null()
+KeySet * getNullKeys()
 {
 	Key *k1, *k2;
 	KeySet *ks = ksNew(10,
@@ -56,19 +56,23 @@ void test_readnull()
 	exit_if_fail (plugin != 0, "could not open plugin");
 
 	Key *parentKey = keyNew ("user/tests/yajl",
-			KEY_VALUE, srcdir_file("testdata_null.js"),
+			KEY_VALUE, srcdir_file("examples/testdata_null.js"),
 			KEY_END);
 	KeySet *keys = ksNew(0);
 	succeed_if (plugin->kdbGet(plugin, keys, parentKey) == 1, "kdbGet was not successful");
 
-	succeed_if (compare_keyset(keys, get_null()) == 0, "keyset is not like it should be");
+	KeySet *nullKeys = getNullKeys();
+	succeed_if (compare_keyset(keys, nullKeys) == 0, "keyset is not like it should be");
 
 	output_errors(parentKey);
 	output_warnings(parentKey);
 	output_keyset(keys);
 
-	elektraPluginClose(plugin, 0);
+	keyDel (parentKey);
+	ksDel (keys);
+	ksDel (nullKeys);
 
+	elektraPluginClose(plugin, 0);
 }
 
 int main(int argc, char** argv)
@@ -84,6 +88,7 @@ int main(int argc, char** argv)
 	test_readnull();
 
 	elektraModulesClose(modules, 0);
+	ksDel (modules);
 
 	printf("\ntest_mount RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
