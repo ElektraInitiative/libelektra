@@ -38,6 +38,18 @@ set (KDB_DB_USER ".kdb" CACHE PATH
 		)
 
 
+
+#
+# Compile options
+#
+
+
+option (COMPILE_CXX11_MODE "Use the new C++11 standard" ON)
+
+
+
+
+
 #
 # Build properties
 #
@@ -90,6 +102,7 @@ else (ELEKTRA_VERBOSE_BUILD)
 	set (VERBOSE "0")
 endif (ELEKTRA_VERBOSE_BUILD)
 MARK_AS_ADVANCED(ELEKTRA_VERBOSE_BUILD)
+
 
 #
 # Target installation folders

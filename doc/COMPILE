@@ -4,7 +4,7 @@
 
 For the base system you only need cmake and build-essential.
 
-To build documentation you need doxygen.
+To build documentation you need doxygen and graphviz.
 
 To build pdf documentation you need pdflatex with
   texlive-fonts-recommended
