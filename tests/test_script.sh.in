@@ -14,7 +14,7 @@ fi
 export HOME
 
 VALUE="value"
-ROOT="user/tests/script"
+ROOT="user/tests/script`mktemp -u --tmpdir=/ XXXXXXXXXXXX`"
 
 USER="`id -un`"
 GROUP="`id -gn`"
