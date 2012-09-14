@@ -31,8 +31,7 @@ PLUGINS:
 	actually read and write to configuration files (storage plugins),
 	commit the changes (resolver plugin) and also do many other
 	tasks related to configuration.
-	working plugins are:
-	dump;resolver;hidden;iconv;syslog;error;validation;xmltool;tracer;timeofday;dbus;glob;hosts;network;type;struct;path;fstab;ccode;simpleini;tcl;hexcode;null;ni
+	To add all working plugins you can use ALL.
 
 CMAKE_BUILD_TYPE:
 	e.g. Debug or Release

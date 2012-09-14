@@ -21,6 +21,10 @@ not clearly defined how config file is opened
 
 == BUILD ==
 
+get rid of auto-ptr
+
+clang support broken
+
 VC++ support broken
 	try to build with C98 (with one line comments)
 
@@ -34,7 +38,7 @@ portability:
 	Statical build testing
 	build and test without iconv, libxml2
 
-compilers:
+compilers: (add on build-server)
 	diet-gcc
 	intel cc
 

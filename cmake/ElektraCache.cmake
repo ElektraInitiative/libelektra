@@ -2,8 +2,25 @@
 # CACHE
 #
 # Here the cache variables are set
-
-set (PLUGINS dump resolver CACHE STRING "Which plugins should be compiled?")
+message (check if matches)
+if (${PLUGINS} MATCHES "ALL")
+	message (set plugins to all)
+	set (PLUGINS
+		ccode  dbus  doc  dump  error  fstab
+		glob  hexcode  hidden  hosts  iconv  network  ni  null
+		path  resolver  simpleini  struct  success  syslog  tcl
+		template  timeofday  tracer  type  validation  xmltool
+		yajl
+		CACHE STRING "Which plugins should be compiled?"
+		FORCE
+		)
+else ()
+	message (do not set plugins to all)
+	set (PLUGINS
+		dump resolver
+		CACHE STRING "Which plugins should be compiled? ALL for all available"
+		)
+endif ()
 
 #
 # Runtime pathes for KDB
