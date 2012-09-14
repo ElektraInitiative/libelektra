@@ -16,6 +16,12 @@ let those values be changed on mount/import/export
 
  == PLUGINS ==
 
+yail
+	advanced functionality
+	finish kdbSet
+	test roundtrips
+	configureable root
+
 cppplugin:
 	make a nice header-only(?) cpp solution for plugins
 	(integration into cpp binding)

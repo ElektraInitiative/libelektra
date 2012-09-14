@@ -1,7 +1,51 @@
--- 0.8.3 --
+== 0.8.3 ==
 
-benchmark: plugins
-	ni, simpleini (check kdbGet ret codes)
+documentation:
+	comment -> meta data
+	split real meta data functions + kdbhelpers
+
+import/export:
+	with all plugins
+	with automated kdb tests
+
+== 0.8.4 ==
+
+kdb testcases:
+	for get/set
+	for mount/umount
+	for import/export/convert
+	using chroot
+
+kdb-shell:
+	use import/export
+	automatic tests for functionality
+	Examples in --help
+
+kdb tool:
+	request -f for rm, mv in system/elektra
+	converting of config files (automated tests)
+	test mount/unmount
+
+tcl:
+	parse output?
+	struct output!
+
+documentation of the c++ binding
+	with copydoc
+	include files
+	mark functions which are API/ABI stable (kdb.h)
+
+git-buildpackage
+	should work before release
+
+release:
+	ohloh statistics
+	Preparation
+	Cleanup
+	Source Package
+	Documentation
+	Debian Package
+	Publish
 
 api:
 	add examples
@@ -12,15 +56,7 @@ chroot:
 
 kdb tool:
 	allow verification of local key database by exported file
-	umount!
 	tset (typesafe set)
-	import/export in kdb-shell
-
-kdb testcases:
-	for get/set
-	for mount/umount
-	for import/export/convert
-	using chroot
 
 c++:
 	Keyset operator==

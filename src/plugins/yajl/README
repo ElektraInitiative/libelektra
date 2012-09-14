@@ -5,6 +5,8 @@ based on the library yajl:
 
 http://lloyd.github.com/yajl/
 
+The plugin was tested with yajl version 1.0.8-1 from Debian 6.
+
 
 == Mountpoint ==
 

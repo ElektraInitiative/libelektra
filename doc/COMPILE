@@ -5,17 +5,34 @@
 Elektra is using cmake.
 Tested are cmake version 2.6-patch 0 and version 2.8.2.
 
-To configure elektra run:
+To configure elektra graphically (with curses) run (.. belongs to command):
 
  mkdir build && cd build && ccmake ..
 
 and press 'c':
 
-if you want to create a package afterwards it is ok to use
-pathes that you can write to (e.g. CMAKE_INSTALL_PREFIX /home/markus/bin)
 
-working plugins are:
-dump;resolver;hidden;iconv;syslog;error;validation;xmltool;tracer;timeofday;dbus;glob;hosts;network;type;struct;path;fstab;ccode;simpleini;tcl;hexcode;null;ni
+All options described here, can also be used with cmake rather then
+ccmake (.. belongs to the command!):
+
+ mkdir build && cd build && cmake -D<OPTION1>=<VAR1> -D<OPTION2>=<VAR2> ..
+
+For information what you can use as OPTION1 and OPTION2 see above.
+Note to pass "" to VAR if it contains ;.
+E.g.:
+
+ cmake -DPLUGINS="dump;resolver;yajl" ..
+
+
+== OPTIONS ==
+
+PLUGINS:
+	Because the core of elektra is minimal, plugins are needed to
+	actually read and write to configuration files (storage plugins),
+	commit the changes (resolver plugin) and also do many other
+	tasks related to configuration.
+	working plugins are:
+	dump;resolver;hidden;iconv;syslog;error;validation;xmltool;tracer;timeofday;dbus;glob;hosts;network;type;struct;path;fstab;ccode;simpleini;tcl;hexcode;null;ni
 
 CMAKE_BUILD_TYPE:
 	e.g. Debug or Release
@@ -38,6 +55,9 @@ CMAKE_INSTALL_PREFIX:
 	By default all files will installed below /usr/local.
 	Edit that cache entry to change that behaviour.
 	Also called system prefix within the documentation.
+
+	If you want to create a package afterwards it is ok to use
+	pathes that you can write to (e.g. CMAKE_INSTALL_PREFIX /home/markus/bin)
 
 LIB_SUFFIX:
 	Lets you install libraries into architecture specific folder.
