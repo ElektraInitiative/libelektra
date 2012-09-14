@@ -101,42 +101,49 @@ int init(int argc, char** argv);
 
 #define quote_string(x) #x
 
+/**
+ * Checks if two keys are equal.
+ *
+ */
 #define compare_key(k1, k2) \
 { \
 	nbTest++; \
-	keyswitch_t attributes = keyCompare(k1, k2); \
-	check_attributes(attributes); \
- \
-	const Key * meta; \
-	keyRewindMeta(k1); \
-	keyRewindMeta(k2); \
-	while ((meta = keyNextMeta (k1)) != 0) \
+	if (k1 != k2) \
 	{ \
+		keyswitch_t attributes = keyCompare(k1, k2); \
+		check_attributes(attributes); \
+	 \
+		const Key * meta; \
+		keyRewindMeta(k1); \
+		keyRewindMeta(k2); \
+		while ((meta = keyNextMeta (k1)) != 0) \
+		{ \
+			const Key const * metaCmp = keyNextMeta(k2); \
+			if (metaCmp == 0) \
+			{ \
+				nbError++; \
+				printf("%s:%d: error in %s: Compare key \"%s\" with \"%s\" failed, did not find corresponding meta key %s (k1 > k2)\n", \
+					__FILE__, __LINE__, __FUNCTION__, \
+					quote_string(k1), \
+					quote_string(k2), \
+					keyName(meta) \
+					); \
+				break; \
+			} \
+			attributes = keyCompare(meta, metaCmp); \
+			check_attributes(attributes); \
+		} \
+	 \
 		const Key const * metaCmp = keyNextMeta(k2); \
-		if (metaCmp == 0) \
+		if (metaCmp != 0) \
 		{ \
 			nbError++; \
-			printf("%s:%d: error in %s: Compare key %s with %s failed, did not find corresponding meta key %s (k1 > k2)\n", \
+			printf("%s:%d: error in %s: Compare key \"%s\" with \"%s\" failed, too many meta keys found (k1 < k2)\n", \
 				__FILE__, __LINE__, __FUNCTION__, \
 				quote_string(k1), \
-				quote_string(k2), \
-				keyName(meta) \
+				quote_string(k2) \
 				); \
-			break; \
 		} \
-		attributes = keyCompare(meta, metaCmp); \
-		check_attributes(attributes); \
-	} \
- \
-	const Key const * metaCmp = keyNextMeta(k2); \
-	if (metaCmp != 0) \
-	{ \
-		nbError++; \
-		printf("%s:%d: error in %s: Compare key %s with %s failed, too many meta keys found (k1 < k2)\n", \
-			__FILE__, __LINE__, __FUNCTION__, \
-			quote_string(k1), \
-			quote_string(k2) \
-			); \
 	} \
 }
 
@@ -149,33 +156,37 @@ int init(int argc, char** argv);
 #define compare_keyset(ks1, ks2) \
 { \
 	nbTest++; \
-	Key	*key = 0; \
-	Key     *key2 = 0; \
- \
-	if (ksGetSize (ks1)  == 0) yield_error("real size of " quote_string(ks1) " was 0"); \
-	if (ksGetSize (ks2) == 0) yield_error("real size of " quote_string(ks2) " was 0"); \
- \
-	if (ksGetSize (ks1) != ksGetSize(ks2) ) { \
-		nbError++; \
-		printf("%s:%d: error in %s: Compare keyset failed, size of keysets are not equal with size(" quote_string(ks1) "): %d, size(" quote_string(ks2) "): %d\n", \
-			__FILE__, __LINE__, __FUNCTION__, (int)ksGetSize(ks1), (int)ksGetSize(ks2)); \
-	} \
-	else \
+	if (ks1 != ks2) \
 	{ \
+		Key	*key1 = 0; \
+		Key     *key2 = 0; \
  \
-		ksRewind(ks1); \
-		ksRewind(ks2); \
+		if (ksGetSize (ks1)  == 0) yield_error("real size of " quote_string(ks1) " was 0"); \
+		if (ksGetSize (ks2) == 0) yield_error("real size of " quote_string(ks2) " was 0"); \
  \
-		while ((key = ksNext(ks1)) != 0) \
+		if (ksGetSize (ks1) != ksGetSize(ks2) ) \
+		 { \
+			nbError++; \
+			printf("%s:%d: error in %s: Compare keyset failed, size of keysets are not equal with size(%s): %d, size(%s): %d\n", \
+				__FILE__, __LINE__, __FUNCTION__, quote_string(ks1), (int)ksGetSize(ks1), quote_string(ks2), (int)ksGetSize(ks2)); \
+		} \
+		else \
 		{ \
-			key2 = ksNext(ks2); \
-			if (!key2) \
-			{ \
-				yield_error("Compare keyset " quote_string(ks1) " with " quote_string(ks2) " failed, did not find corresponding key") \
-				break; \
-			} \
  \
-			compare_key (key, key2); \
+			ksRewind(ks1); \
+			ksRewind(ks2); \
+ \
+			while ((key1 = ksNext(ks1)) != 0) \
+			{ \
+				key2 = ksNext(ks2); \
+				if (!key2) \
+				{ \
+					yield_error("Compare keyset " quote_string(ks1) " with " quote_string(ks2) " failed, did not find corresponding key") \
+					break; \
+				} \
+ \
+				compare_key (key1, key2); \
+			} \
 		} \
 	} \
 }

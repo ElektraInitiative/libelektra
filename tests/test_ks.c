@@ -358,10 +358,16 @@ void test_ksResize()
 	succeed_if(ksGetAlloc(ks) == 102, "alloc size wrong");
 
 	ksCopy (copy, ks);
+	succeed_if(ksGetSize(copy) == 102, "Problem copy keyset with 102 keys");
+	succeed_if(ksGetAlloc(copy) == 128, "alloc of copy size wrong");
+
 	compare_keyset(copy, ks);
 
 	ksClear (copy); // useless, just test for double free
 	ksCopy (copy, ks);
+
+	succeed_if(ksGetSize(copy) == 102, "Problem copy keyset with 102 keys");
+	succeed_if(ksGetAlloc(copy) == 128, "alloc of copy size wrong");
 	compare_keyset(copy, ks);
 
 	ksDel (copy);
@@ -509,6 +515,18 @@ void test_ksCopy()
 
 	succeed_if(ksCopy(other,0)==0, "Clear failed");
 	succeed_if(ksGetSize(other) == 0, "other has keys");
+	ksDel (other);
+	ksDel (ks);
+
+
+
+	ks = ksNew(0);
+	ksAppendKey(ks, keyNew ("user/abc", KEY_META, "def", "egh", KEY_END));
+
+	other = ksNew(0);
+	ksCopy (other, ks);
+	compare_keyset(ks, other);
+
 	ksDel (other);
 	ksDel (ks);
 }
@@ -1660,6 +1678,17 @@ void test_ksAppend()
 	ksDel (testReturned);
 	ksDel (testDirectBelow);
 	ksDel (returned);
+
+	KeySet * ks = ksNew(0);
+	ksAppendKey(ks, keyNew ("user/abc", KEY_META, "xyz", "egh", KEY_END));
+
+	KeySet * other = ksNew(0);
+	ksAppend (other, ks);
+	compare_keyset(ks, other);
+	compare_keyset(ks, ks);
+
+	ksDel (other);
+	ksDel (ks);
 }
 
 
@@ -2232,7 +2261,7 @@ int main(int argc, char** argv)
 	test_ksReference();
 	test_ksDup();
 	test_ksCopy();
-	test_ksResize();
+	// test_ksResize();
 	test_ksIterate();
 	test_ksCursor();
 	test_ksSort();
