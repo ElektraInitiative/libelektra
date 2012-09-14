@@ -1,5 +1,20 @@
 = COMPILE =
 
+== DEPENDENCIES ==
+
+For the base system you only need cmake and build-essential.
+
+To build documentation you need doxygen.
+
+To build pdf documentation you need pdflatex with
+  texlive-fonts-recommended
+  texlive-latex-recommended
+
+For the debian package, please refer to debian/control.
+
+For the plugins, please refer to the respective README in src/plugins.
+
+
 == PREPARATION ==
 
 Elektra is using cmake.
