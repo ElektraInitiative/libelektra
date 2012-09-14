@@ -2,9 +2,7 @@
 # CACHE
 #
 # Here the cache variables are set
-message (check if matches)
 if (${PLUGINS} MATCHES "ALL")
-	message (set plugins to all)
 	set (PLUGINS
 		ccode  dbus  doc  dump  error  fstab
 		glob  hexcode  hidden  hosts  iconv  network  ni  null
@@ -15,7 +13,6 @@ if (${PLUGINS} MATCHES "ALL")
 		FORCE
 		)
 else ()
-	message (do not set plugins to all)
 	set (PLUGINS
 		dump resolver
 		CACHE STRING "Which plugins should be compiled? ALL for all available"

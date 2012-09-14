@@ -70,6 +70,6 @@ if (DOXYGEN_FOUND)
 		)
 	endif (LATEX_COMPILER)
 else (DOXYGEN_FOUND)
-	message (STATUS "Warning, Doxygen not found, Reference Manual can't be created. But it was requested to do so.")
+	message (STATUS "Warning, Doxygen not found, Reference Manual can't be created.")
 endif (DOXYGEN_FOUND)
 
