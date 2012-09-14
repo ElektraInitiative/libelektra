@@ -10,9 +10,9 @@ struct parse_error: std::exception
 	std::string info;
 	int linenr;
 
-	parse_error(std::string info, int linenr) :
-		info(info),
-		linenr(linenr)
+	parse_error(std::string info_, int linenr_) :
+		info(info_),
+		linenr(linenr_)
 	{}
 
 	~parse_error() throw()
