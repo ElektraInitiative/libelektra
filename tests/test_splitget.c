@@ -90,7 +90,7 @@ void test_simple()
 	succeed_if (ksGetSize(split->keysets[0]) == 0, "wrong size");
 
 	mp = keyNew("user/tests/simple", KEY_VALUE, "simple", KEY_END);
-	succeed_if (compare_key (split->parents[0], mp) == 0, "parentKey not correct");
+	compare_key(split->parents[0], mp);
 	succeed_if (split->handles[0] != handle->defaultBackend, "should be not the default backend");
 	keyDel (mp);
 
@@ -144,9 +144,9 @@ void test_get()
 	succeed_if (keyNeedSync(split->keysets[0]->array[0]) == 0, "key should not need sync");
 	succeed_if (keyNeedSync(split->keysets[0]->array[1]) == 0, "key should not need sync");
 	succeed_if (keyNeedSync(split->keysets[0]->array[2]) == 0, "key should not need sync");
-	succeed_if (compare_keyset(split->keysets[0], ks) == 0, "keyset not correct");
+	compare_keyset(split->keysets[0], ks);
 	succeed_if (ksGetSize(split->keysets[1]) == 0, "wrong size");
-	succeed_if (compare_key (split->parents[0], parentKey) == 0, "parentKey not correct");
+	compare_key(split->parents[0], parentKey);
 	succeed_if (split->parents[1] == 0, "parentKey for default not correct");
 	succeed_if (split->handles[0] == handle->defaultBackend, "not correct backend");
 	succeed_if (split->syncbits[0] == 3, "should be marked as sync");
@@ -165,8 +165,8 @@ void test_get()
 	succeed_if (split->size == 2, "there is an empty keset");
 	succeed_if (ksGetSize(split->keysets[0]) == 0, "wrong size");
 	succeed_if (ksGetSize(split->keysets[1]) == 3, "keys with other domain should go to default keyset");
-	succeed_if (compare_keyset(split->keysets[1], ks) == 0, "keyset not correct");
-	succeed_if (compare_key (split->parents[0], parentKey) == 0, "parentKey not correct");
+	compare_keyset(split->keysets[1], ks);
+	compare_key(split->parents[0], parentKey);
 	succeed_if (split->parents[1] == 0, "parentKey for default not correct");
 	succeed_if (split->handles[0] == handle->defaultBackend, "not correct backend");
 	succeed_if (split->syncbits[0] == 2, "should be marked as root");
@@ -209,9 +209,9 @@ void test_limit()
 	succeed_if (keyNeedSync(split->keysets[0]->array[0]) == 0, "key should not need sync");
 	succeed_if (keyNeedSync(split->keysets[0]->array[1]) == 0, "key should not need sync");
 	succeed_if (keyNeedSync(split->keysets[0]->array[2]) == 0, "key should not need sync");
-	succeed_if (compare_keyset(split->keysets[0], ks) == 0, "keyset not correct");
+	compare_keyset(split->keysets[0], ks);
 	succeed_if (ksGetSize(split->keysets[1]) == 0, "wrong size");
-	succeed_if (compare_key (split->parents[0], parentKey) == 0, "parentKey not correct");
+	compare_key(split->parents[0], parentKey);
 	succeed_if (split->parents[1] == 0, "parentKey for default not correct");
 	succeed_if (split->handles[0] == handle->defaultBackend, "not correct backend");
 	succeed_if (split->syncbits[0] == 3, "should be marked as root");
@@ -235,7 +235,7 @@ void test_limit()
 	succeed_if (keyNeedSync(split->keysets[1]->array[0]) == 0, "key should not need sync");
 	succeed_if (keyNeedSync(split->keysets[1]->array[1]) == 0, "key should not need sync");
 	succeed_if (keyNeedSync(split->keysets[1]->array[2]) == 0, "key should not need sync");
-	succeed_if (compare_key (split->parents[0], parentKey) == 0, "parentKey not correct");
+	compare_key(split->parents[0], parentKey);
 	succeed_if (split->parents[1] == 0, "parentKey for default not correct");
 	succeed_if (split->handles[0] == handle->defaultBackend, "not correct backend");
 	succeed_if (split->syncbits[0] == 2, "should be marked as root");
@@ -286,7 +286,7 @@ void test_nobackend()
 	succeed_if (split->size == 2, "not correct size after appointing");
 	succeed_if (ksGetSize(split->keysets[0]) == 2, "wrong size");
 	succeed_if (ksGetSize(split->keysets[1]) == 3, "wrong size");
-	succeed_if (compare_key (split->parents[0], mp) == 0, "parentKey not correct");
+	compare_key(split->parents[0], mp);
 	backend = elektraTrieLookup(handle->trie, parentKey);
 	succeed_if (split->handles[0] == backend, "should be user backend");
 	succeed_if (split->handles[1] == 0, "should be default backend");
@@ -338,9 +338,9 @@ void test_sizes()
 	succeed_if (keyNeedSync(split->keysets[0]->array[0]) == 0, "key should not need sync");
 	succeed_if (keyNeedSync(split->keysets[0]->array[1]) == 0, "key should not need sync");
 	succeed_if (keyNeedSync(split->keysets[0]->array[2]) == 0, "key should not need sync");
-	succeed_if (compare_keyset(split->keysets[0], ks) == 0, "keyset not correct");
+	compare_keyset(split->keysets[0], ks);
 	succeed_if (ksGetSize(split->keysets[1]) == 0, "wrong size");
-	succeed_if (compare_key (split->parents[0], parentKey) == 0, "parentKey not correct");
+	compare_key(split->parents[0], parentKey);
 	succeed_if (split->parents[1] == 0, "parentKey for default not correct");
 	succeed_if (split->handles[0] == handle->defaultBackend, "not correct backend");
 	succeed_if (split->syncbits[0] == 3, "should be marked as root");
@@ -366,7 +366,7 @@ void test_sizes()
 	succeed_if (keyNeedSync(split->keysets[1]->array[0]) == 0, "key should not need sync");
 	succeed_if (keyNeedSync(split->keysets[1]->array[1]) == 0, "key should not need sync");
 	succeed_if (keyNeedSync(split->keysets[1]->array[2]) == 0, "key should not need sync");
-	succeed_if (compare_key (split->parents[0], parentKey) == 0, "parentKey not correct");
+	compare_key(split->parents[0], parentKey);
 	succeed_if (split->parents[1] == 0, "parentKey for default not correct");
 	succeed_if (split->handles[0] == handle->defaultBackend, "not correct backend");
 	succeed_if (split->syncbits[0] == 2, "should be marked as root");
@@ -441,7 +441,7 @@ void test_triesizes()
 	succeed_if (split->size == 5, "not correct size after appointing");
 	succeed_if (ksGetSize(split->keysets[1]) == 3, "wrong size");
 	succeed_if (ksGetSize(split->keysets[2]) == 2, "wrong size");
-	succeed_if (compare_key (split->parents[2], mp) == 0, "parentKey not correct");
+	compare_key(split->parents[2], mp);
 	succeed_if (split->handles[0] == rootBackend, "should be user backend");
 	succeed_if (split->handles[1] == rootBackend, "should be root backend");
 	succeed_if (split->handles[2] == backend, "should be root backend");
@@ -517,14 +517,14 @@ void test_merge()
 	succeed_if (split->size == 5, "not correct size after appointing");
 	succeed_if (ksGetSize(split->keysets[1]) == 3, "wrong size");
 	succeed_if (ksGetSize(split->keysets[2]) == 2, "wrong size");
-	succeed_if (compare_key (split->parents[2], mp) == 0, "parentKey not correct");
+	compare_key(split->parents[2], mp);
 	succeed_if (split->handles[0] == rootBackend, "should be user backend");
 	succeed_if (split->handles[1] == rootBackend, "should be root backend");
 	succeed_if (split->handles[2] == backend, "should be root backend");
 
 	KeySet *nks = ksNew (0);
 	succeed_if (elektraSplitMerge (split, nks) == 1, "could not merge together keysets");
-	succeed_if (compare_keyset (ks, nks) == 0, "keyset is not the same as original one");
+	compare_keyset(ks, nks);
 	// output_keyset (nks);
 	ksDel (nks);
 
@@ -632,11 +632,11 @@ void test_realworld()
 	succeed_if (split->syncbits[6] == 2, "sync state for root not correct");
 	succeed_if (split->syncbits[7] == 0, "sync state for root not correct");
 	succeed_if (split->syncbits[8] == 2, "sync state for root not correct");
-	succeed_if (compare_keyset (split->keysets[0], split0) == 0, "comparing: not correct result");
-	succeed_if (compare_keyset (split->keysets[3], split3) == 0, "comparing: not correct result");
-	succeed_if (compare_keyset (split->keysets[6], split6) == 0, "comparing: not correct result");
-	succeed_if (compare_keyset (split->keysets[7], split7) == 0, "comparing: not correct result");
-	succeed_if (compare_keyset (split->keysets[8], split8) == 0, "comparing: not correct result");
+	compare_keyset(split->keysets[0], split0);
+	compare_keyset(split->keysets[3], split3);
+	compare_keyset(split->keysets[6], split6);
+	compare_keyset(split->keysets[7], split7);
+	compare_keyset(split->keysets[8], split8);
 
 	split->syncbits[0] |= 1;
 	split->syncbits[3] |= 1;
@@ -655,7 +655,7 @@ void test_realworld()
 			KS_END);
 	ksClear (dest);
 	succeed_if (elektraSplitMerge (split, dest) == 1, "split merge");
-	succeed_if (compare_keyset (dest, ks) == 0, "comparing: not correct result");
+	compare_keyset(dest, ks);
 	ksDel (dest);
 
 	elektraSplitDel (split);

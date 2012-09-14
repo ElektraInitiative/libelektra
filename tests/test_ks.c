@@ -358,11 +358,11 @@ void test_ksResize()
 	succeed_if(ksGetAlloc(ks) == 102, "alloc size wrong");
 
 	ksCopy (copy, ks);
-	succeed_if (compare_keyset(copy, ks) == 0, "could not copy keyset");
+	compare_keyset(copy, ks);
 
 	ksClear (copy); // useless, just test for double free
 	ksCopy (copy, ks);
-	succeed_if (compare_keyset(copy, ks) == 0, "could not copy keyset again");
+	compare_keyset(copy, ks);
 
 	ksDel (copy);
 	ksDel (ks);
@@ -1635,10 +1635,8 @@ void test_ksAppend()
 
 		if (!i)
 		{
-			succeed_if (compare_keyset (returned,
-						testReturned) == 0, "");
-			succeed_if (compare_keyset (keys,
-						testDirectBelow) == 0, "");
+			compare_keyset (returned, testReturned);
+			compare_keyset (keys, testDirectBelow);
 
 			succeed_if (ksGetSize (tmp) == 84, "size not correct");
 			succeed_if (ksGetSize (returned) == 84, "size not correct");

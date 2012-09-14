@@ -415,7 +415,7 @@ void test_parse_json(const char * fileName,
 	KeySet *keys = ksNew(0);
 	succeed_if (plugin->kdbGet(plugin, keys, parentKey) == 1, "kdbGet was not successful");
 
-	succeed_if (compare_keyset(keys, compareKeySet) == 0, "keyset is not like it should be");
+	compare_keyset(keys, compareKeySet);
 
 	output_errors(parentKey);
 	output_warnings(parentKey);

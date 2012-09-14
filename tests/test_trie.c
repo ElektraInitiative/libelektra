@@ -38,19 +38,19 @@ void test_minimaltrie()
 	Key *mp = keyNew ("", KEY_VALUE, "", KEY_END);
 
 	succeed_if (elektraTrieLookup (trie, s), "trie should not be null");
-	succeed_if (compare_key (elektraTrieLookup (trie, s)->mountpoint, mp)==0, "could not find empty key");
+	compare_key(elektraTrieLookup (trie, s)->mountpoint, mp);
 
 	keySetName (s, "user");
-	succeed_if (compare_key (elektraTrieLookup (trie, s)->mountpoint, mp)==0, "could not find empty key");
+	compare_key(elektraTrieLookup (trie, s)->mountpoint, mp);
 
 	keySetName (s, "system");
-	succeed_if (compare_key (elektraTrieLookup (trie, s)->mountpoint, mp)==0, "could not find empty key");
+	compare_key(elektraTrieLookup (trie, s)->mountpoint, mp);
 
 	keySetName (s, "user/below");
-	succeed_if (compare_key (elektraTrieLookup (trie, s)->mountpoint, mp)==0, "could not find empty key");
+	compare_key(elektraTrieLookup (trie, s)->mountpoint, mp);
 
 	keySetName (s, "system/below");
-	succeed_if (compare_key (elektraTrieLookup (trie, s)->mountpoint, mp)==0, "could not find empty key");
+	compare_key(elektraTrieLookup (trie, s)->mountpoint, mp);
 
 	elektraTrieClose(trie, 0);
 	keyDel (s);
@@ -83,21 +83,21 @@ void test_simple()
 	keySetName(searchKey, "user/tests/simple");
 	backend = elektraTrieLookup(trie, searchKey);
 	succeed_if (backend, "there should be a backend");
-	succeed_if (compare_key(backend->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(backend->mountpoint, mp);
 
 
 	keySetName(searchKey, "user/tests/simple/below");
 	Backend *b2 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, mp);
 
 
 	keySetName(searchKey, "user/tests/simple/deep/below");
 	b2 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, mp);
 
 	elektraTrieClose(trie, 0);
 	keyDel (mp);
@@ -132,7 +132,7 @@ void test_iterate()
 	keySetName(searchKey, "user/tests/hosts");
 	backend = elektraTrieLookup(trie, searchKey);
 	succeed_if (backend, "there should be a backend");
-	succeed_if (compare_key(backend->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(backend->mountpoint, mp);
 	// printf ("backend: %p\n", (void*)backend);
 
 
@@ -140,7 +140,7 @@ void test_iterate()
 	Backend *b2 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, mp);
 	// printf ("b2: %p\n", (void*)b2);
 
 
@@ -148,7 +148,7 @@ void test_iterate()
 	b2 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, mp);
 
 
 	Key *mp2 = keyNew("user/tests/hosts/below", KEY_VALUE, "below", KEY_END);
@@ -156,7 +156,7 @@ void test_iterate()
 	Backend *b3 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b3, "there should be a backend");
 	succeed_if (backend != b3, "should be different backend");
-	succeed_if (compare_key(b3->mountpoint, mp2) == 0, "mountpoint key not correct");
+	compare_key(b3->mountpoint, mp2);
 	backend = b3;
 	// printf ("b3: %p\n", (void*)b3);
 
@@ -165,13 +165,13 @@ void test_iterate()
 	b2 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b3, "there should be a backend");
 	succeed_if (backend == b3, "should be same backend");
-	succeed_if (compare_key(b3->mountpoint, mp2) == 0, "mountpoint key not correct");
+	compare_key(b3->mountpoint, mp2);
 
 	KeySet *mps = ksNew(0);
 	collect_mountpoints(trie, mps);
 	succeed_if (ksGetSize (mps) == 2, "not both mountpoints collected");
-	succeed_if (compare_key(ksHead(mps), mp) == 0, "not correct mountpoint found");
-	succeed_if (compare_key(ksTail(mps), mp2) == 0, "not correct mountpoint found");
+	compare_key(ksHead(mps), mp);
+	compare_key(ksTail(mps), mp2);
 	ksDel (mps);
 
 	elektraTrieClose(trie, 0);
@@ -199,7 +199,7 @@ void test_reviterate()
 	keySetName(searchKey, "user/tests/hosts");
 	backend = elektraTrieLookup(trie, searchKey);
 	succeed_if (backend, "there should be a backend");
-	succeed_if (compare_key(backend->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(backend->mountpoint, mp);
 	// printf ("backend: %p\n", (void*)backend);
 
 
@@ -207,7 +207,7 @@ void test_reviterate()
 	Backend *b2 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, mp);
 	// printf ("b2: %p\n", (void*)b2);
 
 
@@ -215,7 +215,7 @@ void test_reviterate()
 	b2 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, mp);
 
 
 	Key *mp2 = keyNew("user/tests/hosts/below", KEY_VALUE, "below", KEY_END);
@@ -223,7 +223,7 @@ void test_reviterate()
 	Backend *b3 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b3, "there should be a backend");
 	succeed_if (backend != b3, "should be different backend");
-	succeed_if (compare_key(b3->mountpoint, mp2) == 0, "mountpoint key not correct");
+	compare_key(b3->mountpoint, mp2);
 	backend = b3;
 	// printf ("b3: %p\n", (void*)b3);
 
@@ -232,13 +232,13 @@ void test_reviterate()
 	b2 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b3, "there should be a backend");
 	succeed_if (backend == b3, "should be same backend");
-	succeed_if (compare_key(b3->mountpoint, mp2) == 0, "mountpoint key not correct");
+	compare_key(b3->mountpoint, mp2);
 
 	KeySet *mps = ksNew(0);
 	collect_mountpoints(trie, mps);
 	succeed_if (ksGetSize (mps) == 2, "not both mountpoints collected");
-	succeed_if (compare_key(ksHead(mps), mp) == 0, "not correct mountpoint found");
-	succeed_if (compare_key(ksTail(mps), mp2) == 0, "not correct mountpoint found");
+	compare_key(ksHead(mps), mp);
+	compare_key(ksTail(mps), mp2);
 	ksDel (mps);
 
 	elektraTrieClose(trie, 0);
@@ -307,27 +307,27 @@ void test_moreiterate()
 	keySetName(searchKey, "user");
 	Backend *backend = elektraTrieLookup(trie, searchKey);
 	succeed_if (backend, "there should be a backend");
-	succeed_if (compare_key(backend->mountpoint, ksLookupByName(mps, "user",0)) == 0, "mountpoint key not correct");
+	compare_key(backend->mountpoint, ksLookupByName(mps, "user",0));
 	// printf ("backend: %p\n", (void*)backend);
 
 
 	keySetName(searchKey, "user/tests/hosts/other/below");
 	Backend *b2 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b2, "there should be a backend");
-	succeed_if (compare_key(b2->mountpoint, ksLookupByName(mps, "user/tests/hosts",0)) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, ksLookupByName(mps, "user/tests/hosts",0));
 	// printf ("b2: %p\n", (void*)b2);
 
 
 	keySetName(searchKey, "user/tests/hosts/other/deep/below");
 	b2 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b2, "there should be a backend");
-	succeed_if (compare_key(b2->mountpoint, ksLookupByName(mps, "user/tests/hosts",0)) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, ksLookupByName(mps, "user/tests/hosts",0));
 
 
 	keySetName(searchKey, "user/tests/hosts/below");
 	Backend *b3 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b3, "there should be a backend");
-	succeed_if (compare_key(b3->mountpoint, ksLookupByName(mps, "user/tests/hosts/below",0)) == 0, "mountpoint key not correct");
+	compare_key(b3->mountpoint, ksLookupByName(mps, "user/tests/hosts/below",0));
 	backend = b3;
 	// printf ("b3: %p\n", (void*)b3);
 
@@ -335,32 +335,32 @@ void test_moreiterate()
 	keySetName(searchKey, "user/tests/hosts/below/other/deep/below");
 	b2 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b3, "there should be a backend");
-	succeed_if (compare_key(b3->mountpoint, ksLookupByName(mps, "user/tests/hosts/below",0)) == 0, "mountpoint key not correct");
+	compare_key(b3->mountpoint, ksLookupByName(mps, "user/tests/hosts/below",0));
 
 	keySetName(searchKey, "system");
 	backend = elektraTrieLookup(trie, searchKey);
 	succeed_if (backend, "there should be a backend");
-	succeed_if (compare_key(backend->mountpoint, ksLookupByName(mps, "system",0)) == 0, "mountpoint key not correct");
+	compare_key(backend->mountpoint, ksLookupByName(mps, "system",0));
 	// printf ("backend: %p\n", (void*)backend);
 
 
 	keySetName(searchKey, "system/tests/hosts/other/below");
 	b2 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b2, "there should be a backend");
-	succeed_if (compare_key(b2->mountpoint, ksLookupByName(mps, "system/tests/hosts",0)) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, ksLookupByName(mps, "system/tests/hosts",0));
 	// printf ("b2: %p\n", (void*)b2);
 
 
 	keySetName(searchKey, "system/tests/hosts/other/deep/below");
 	b2 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b2, "there should be a backend");
-	succeed_if (compare_key(b2->mountpoint, ksLookupByName(mps, "system/tests/hosts",0)) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, ksLookupByName(mps, "system/tests/hosts",0));
 
 
 	keySetName(searchKey, "system/tests/hosts/below");
 	b3 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b3, "there should be a backend");
-	succeed_if (compare_key(b3->mountpoint, ksLookupByName(mps, "system/tests/hosts/below",0)) == 0, "mountpoint key not correct");
+	compare_key(b3->mountpoint, ksLookupByName(mps, "system/tests/hosts/below",0));
 	backend = b3;
 	// printf ("b3: %p\n", (void*)b3);
 
@@ -368,12 +368,12 @@ void test_moreiterate()
 	keySetName(searchKey, "system/tests/hosts/below/other/deep/below");
 	b2 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b3, "there should be a backend");
-	succeed_if (compare_key(b3->mountpoint, ksLookupByName(mps, "system/tests/hosts/below",0)) == 0, "mountpoint key not correct");
+	compare_key(b3->mountpoint, ksLookupByName(mps, "system/tests/hosts/below",0));
 
 	KeySet *mps_cmp = ksNew(0);
 	collect_mountpoints(trie, mps_cmp);
 	succeed_if (ksGetSize(mps_cmp) == 8, "size should be 8");
-	succeed_if (compare_keyset(mps, mps_cmp) == 0, "could not collect mountpoints");
+	compare_keyset(mps, mps_cmp);
 
 	ksDel (mps_cmp);
 	ksDel (mps);
@@ -453,27 +453,27 @@ void test_revmoreiterate()
 	keySetName(searchKey, "user");
 	Backend *backend = elektraTrieLookup(trie, searchKey);
 	succeed_if (backend, "there should be a backend");
-	succeed_if (compare_key(backend->mountpoint, ksLookupByName(mps, "user",0)) == 0, "mountpoint key not correct");
+	compare_key(backend->mountpoint, ksLookupByName(mps, "user",0));
 	// printf ("backend: %p\n", (void*)backend);
 
 
 	keySetName(searchKey, "user/tests/hosts/other/below");
 	Backend *b2 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b2, "there should be a backend");
-	succeed_if (compare_key(b2->mountpoint, ksLookupByName(mps, "user/tests/hosts",0)) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, ksLookupByName(mps, "user/tests/hosts",0));
 	// printf ("b2: %p\n", (void*)b2);
 
 
 	keySetName(searchKey, "user/tests/hosts/other/deep/below");
 	b2 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b2, "there should be a backend");
-	succeed_if (compare_key(b2->mountpoint, ksLookupByName(mps, "user/tests/hosts",0)) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, ksLookupByName(mps, "user/tests/hosts",0));
 
 
 	keySetName(searchKey, "user/tests/hosts/below");
 	Backend *b3 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b3, "there should be a backend");
-	succeed_if (compare_key(b3->mountpoint, ksLookupByName(mps, "user/tests/hosts/below",0)) == 0, "mountpoint key not correct");
+	compare_key(b3->mountpoint, ksLookupByName(mps, "user/tests/hosts/below",0));
 	backend = b3;
 	// printf ("b3: %p\n", (void*)b3);
 
@@ -481,32 +481,32 @@ void test_revmoreiterate()
 	keySetName(searchKey, "user/tests/hosts/below/other/deep/below");
 	b2 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b3, "there should be a backend");
-	succeed_if (compare_key(b3->mountpoint, ksLookupByName(mps, "user/tests/hosts/below",0)) == 0, "mountpoint key not correct");
+	compare_key(b3->mountpoint, ksLookupByName(mps, "user/tests/hosts/below",0));
 
 	keySetName(searchKey, "system");
 	backend = elektraTrieLookup(trie, searchKey);
 	succeed_if (backend, "there should be a backend");
-	succeed_if (compare_key(backend->mountpoint, ksLookupByName(mps, "system",0)) == 0, "mountpoint key not correct");
+	compare_key(backend->mountpoint, ksLookupByName(mps, "system",0));
 	// printf ("backend: %p\n", (void*)backend);
 
 
 	keySetName(searchKey, "system/tests/hosts/other/below");
 	b2 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b2, "there should be a backend");
-	succeed_if (compare_key(b2->mountpoint, ksLookupByName(mps, "system/tests/hosts",0)) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, ksLookupByName(mps, "system/tests/hosts",0));
 	// printf ("b2: %p\n", (void*)b2);
 
 
 	keySetName(searchKey, "system/tests/hosts/other/deep/below");
 	b2 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b2, "there should be a backend");
-	succeed_if (compare_key(b2->mountpoint, ksLookupByName(mps, "system/tests/hosts",0)) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, ksLookupByName(mps, "system/tests/hosts",0));
 
 
 	keySetName(searchKey, "system/tests/hosts/below");
 	b3 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b3, "there should be a backend");
-	succeed_if (compare_key(b3->mountpoint, ksLookupByName(mps, "system/tests/hosts/below",0)) == 0, "mountpoint key not correct");
+	compare_key(b3->mountpoint, ksLookupByName(mps, "system/tests/hosts/below",0));
 	backend = b3;
 	// printf ("b3: %p\n", (void*)b3);
 
@@ -514,7 +514,7 @@ void test_revmoreiterate()
 	keySetName(searchKey, "system/tests/hosts/below/other/deep/below");
 	b2 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b3, "there should be a backend");
-	succeed_if (compare_key(b3->mountpoint, ksLookupByName(mps, "system/tests/hosts/below",0)) == 0, "mountpoint key not correct");
+	compare_key(b3->mountpoint, ksLookupByName(mps, "system/tests/hosts/below",0));
 
 	/*
 	printf ("---------\n");
@@ -524,7 +524,7 @@ void test_revmoreiterate()
 	KeySet *mps_cmp = ksNew(0);
 	collect_mountpoints(trie, mps_cmp);
 	succeed_if (ksGetSize(mps_cmp) == 8, "size should be 8");
-	succeed_if (compare_keyset(mps, mps_cmp) == 0, "could not collect mountpoints");
+	compare_keyset(mps, mps_cmp);
 
 	ksDel (mps_cmp);
 	ksDel (mps);
@@ -556,7 +556,7 @@ void test_umlauts()
 	keySetName(searchKey, "user/umlauts/test");
 	backend = elektraTrieLookup(trie, searchKey);
 	succeed_if (backend, "there should be a backend");
-	succeed_if (compare_key(backend->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(backend->mountpoint, mp);
 
 
 	keySetName(searchKey, "user/umlauts#test");
@@ -565,7 +565,7 @@ void test_umlauts()
 	Backend *b2 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend != b2, "should be other backend");
-	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, mp);
 
 
 	keySetName(searchKey, "user/umlauts test");
@@ -574,7 +574,7 @@ void test_umlauts()
 	b2 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend != b2, "should be other backend");
-	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, mp);
 
 	keySetName(searchKey, "user/umlauts\200test");
 	keySetName(mp, "user/umlauts\200test");
@@ -582,7 +582,7 @@ void test_umlauts()
 	b2 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend != b2, "should be other backend");
-	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, mp);
 
 	// output_trie(trie);
 
@@ -638,7 +638,7 @@ void test_endings()
 	keySetName(searchKey, "user/endings");
 	backend = elektraTrieLookup(trie, searchKey);
 	succeed_if (backend, "there should be a backend");
-	succeed_if (compare_key(backend->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(backend->mountpoint, mp);
 
 
 	keySetName(searchKey, "user/endings#");
@@ -647,7 +647,7 @@ void test_endings()
 	Backend *b2 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend != b2, "should be other backend");
-	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, mp);
 
 
 	keySetName(searchKey, "user/endings/_");
@@ -656,7 +656,7 @@ void test_endings()
 	b2 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be the same backend");
-	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, mp);
 
 
 	keySetName(searchKey, "user/endings/X");
@@ -665,7 +665,7 @@ void test_endings()
 	b2 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be the same backend");
-	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, mp);
 
 
 	keySetName(searchKey, "user/endings_");
@@ -689,7 +689,7 @@ void test_endings()
 	b2 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend != b2, "should be other backend");
-	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, mp);
 
 	keySetName(searchKey, "user/endings\200");
 	keySetName(mp, "user/endings\200");
@@ -697,7 +697,7 @@ void test_endings()
 	b2 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend != b2, "should be other backend");
-	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, mp);
 
 	// output_trie(trie);
 
@@ -722,28 +722,28 @@ void test_root()
 	Key *rmp = keyNew("", KEY_VALUE, "root", KEY_END);
 	Backend *backend = elektraTrieLookup(trie, searchKey);
 	succeed_if (backend, "there should be the root backend");
-	succeed_if (compare_key(backend->mountpoint, rmp) == 0, "mountpoint key not correct");
+	compare_key(backend->mountpoint, rmp);
 
 
 	Key *mp = keyNew("user/tests/simple", KEY_VALUE, "simple", KEY_END);
 	keySetName(searchKey, "user/tests/simple");
 	backend = elektraTrieLookup(trie, searchKey);
 	succeed_if (backend, "there should be a backend");
-	succeed_if (compare_key(backend->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(backend->mountpoint, mp);
 
 
 	keySetName(searchKey, "user/tests/simple/below");
 	Backend *b2 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, mp);
 
 
 	keySetName(searchKey, "user/tests/simple/deep/below");
 	b2 = elektraTrieLookup(trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, mp);
 
 	// output_trie(trie);
 
