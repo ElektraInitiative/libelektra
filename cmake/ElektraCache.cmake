@@ -2,7 +2,7 @@
 # CACHE
 #
 # Here the cache variables are set
-if (${PLUGINS} MATCHES "ALL")
+if (PLUGINS MATCHES "ALL")
 	set (PLUGINS
 		ccode  dbus  doc  dump  error  fstab
 		glob  hexcode  hidden  hosts  iconv  network  ni  null
