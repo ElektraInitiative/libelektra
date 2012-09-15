@@ -10,7 +10,8 @@ else()
 endif()
 
 
-if (CMAKE_CXX_COMPILER_ID MATCHES clang)
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+	message (STATUS "Detected Clang compiler")
 	set (CXX_EXTRA "${CXX_EXTRA} -Wno-error=non-pod-varargs")
 endif()
 
