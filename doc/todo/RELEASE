@@ -47,7 +47,7 @@ Build tar.gz and tag version and make hashsum:
 
 TODO: write script for that (+ merge with source-package)
 Unpack + compile (with all available plugins) + test those sources (using valgrind!):
-tar xvzf elektra-$VERSION.tar.gz && mkdir build && cd build && cmake -DPLUGINS=dump;resolver;hidden;iconv;syslog;error;validation;xmltool;tracer;timeofday;dbus;glob;hosts;network;type;struct;path;fstab;ccode;simpleini;ni;tcl;hexcode;null;ni ../elektra-$VERSION && make && ctest -T memcheck
+tar xvzf elektra-$VERSION.tar.gz && mkdir build && cd build && cmake -DPLUGINS=ALL ../elektra-$VERSION && make && ctest -T memcheck
 
 Now copy the packages to ftp (stay in same folder):
  cp ~build/elektra-$VERSION.tar.gz ~elektra-ftp/releases
