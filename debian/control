@@ -12,7 +12,7 @@ Section: libs
 Package: libelektra-dev
 Section: libdevel
 Architecture: any
-Depends: libelektra-core4 (= ${source:Version}),
+Depends: libelektra-core4 (= ${binary:Version}),
 	libc6-dev, ${misc:Depends}
 Description: a framework to get and set configuration
  Elektra provides a universal and secure framework to store
