@@ -15,6 +15,7 @@ For the debian package, please refer to debian/control.
 For the plugins, please refer to the respective README in src/plugins.
 
 
+
 == PREPARATION ==
 
 Elektra is using cmake.
@@ -39,7 +40,34 @@ E.g.:
  cmake -DPLUGINS="dump;resolver;yajl" ..
 
 
-== OPTIONS ==
+=== COMPILERS ===
+
+For supported compilers see the automatic build farm on
+http://build.libelektra.org:8080/
+
+Additional gcc 4.6 armhf is tested regularly.
+
+
+
+|   Compiler        |         Version             |      Target       |
+|-------------------|-----------------------------|-------------------|
+|      gcc          | (Debian 4.4.5-8) 4.4.5      |      amd64        |
+|      gcc          | (Debian 4.4.5-8) 4.3        |      amd64        |
+|      gcc          | 4.6                         |      armhf        |
+|      gcc          | (Debian 4.4.5-8) 4.4.5      |      i386         |
+|     clang         | version 1.1 (Debian 2.7-3)  |x86_64-pc-linux-gnu|
+|-------------------|-----------------------------|-------------------|
+
+
+To change the compiler, use
+CMAKE_C_COMPILER and CMAKE_CXX_COMPILER.
+
+for example to use gcc-4.3
+  cmake -DCMAKE_C_COMPILER=gcc-4.3 -DCMAKE_CXX_COMPILER=g++-4.3 ..
+
+
+
+=== OPTIONS ===
 
 PLUGINS:
 	Because the core of elektra is minimal, plugins are needed to

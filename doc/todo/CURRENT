@@ -16,6 +16,10 @@ kdb testcases:
 	for import/export/convert
 	using chroot
 
+unit tests:
+	debian package with unit tests
+	install old unit tests with new elektra for ABI tests
+
 kdb-shell:
 	use import/export
 	automatic tests for functionality
