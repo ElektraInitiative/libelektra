@@ -82,7 +82,7 @@ PLUGINS:
 		-DPLUGINS=DEFAULT
 
 CMAKE_BUILD_TYPE:
-	e.g. Debug or Release
+	Debug, Release or RelWithDebInfo
 	See help bar at bottom of ccmake for that option or:
 	http://www.cmake.org/Wiki/CMake_Useful_Variables
 

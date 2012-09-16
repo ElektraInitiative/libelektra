@@ -42,6 +42,9 @@ compilers: (add on build-server)
 	diet-gcc
 	intel cc
 
+one option with NOLOG, DEBUG, VERBOSE  better then
+	DEBUG_BUILD and ELEKTRA_VERBOSE_BUILD
+
 === BUGS ===
 
 errorKey not propagated in elektraPluginOpen
