@@ -74,7 +74,12 @@ PLUGINS:
 	actually read and write to configuration files (storage plugins),
 	commit the changes (resolver plugin) and also do many other
 	tasks related to configuration.
-	To add all working plugins you can use ALL.
+	To add all plugins, you can use
+		-DPLUGINS=ALL
+	To add all plugins not having additional dependencies, you can use
+		-DPLUGINS=NODEP
+	To manually set the default (same as not setting), you can use
+		-DPLUGINS=DEFAULT
 
 CMAKE_BUILD_TYPE:
 	e.g. Debug or Release

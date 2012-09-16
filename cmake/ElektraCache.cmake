@@ -2,22 +2,61 @@
 # CACHE
 #
 # Here the cache variables are set
-if (PLUGINS MATCHES "ALL")
-	set (PLUGINS
-		ccode  dbus  doc  dump  error  fstab
-		glob  hexcode  hidden  hosts  iconv  network  ni  null
-		path  resolver  simpleini  struct  success  syslog  tcl
-		template  timeofday  tracer  type  validation  xmltool
-		yajl
-		CACHE STRING "Which plugins should be compiled?"
-		FORCE
-		)
-else ()
-	set (PLUGINS
-		dump resolver
-		CACHE STRING "Which plugins should be compiled? ALL for all available"
-		)
+
+#
+# the default list of plugins
+#
+set (PLUGINS_LIST
+	dump resolver
+	)
+
+#
+# force default list
+#
+if (PLUGINS MATCHES "DEFAULT")
+	set (PLUGINS_FORCE FORCE)
 endif ()
+
+#
+# force no dependency list
+#
+if (PLUGINS MATCHES "NODEP")
+	set (PLUGINS_LIST
+		dump resolver
+		ccode  doc  error  fstab
+		glob  hexcode  hidden  hosts  iconv  network  ni  null
+		path  simpleini  struct  success  syslog
+		template  timeofday  tracer  type  validation
+	    )
+	set (PLUGINS_FORCE FORCE)
+endif ()
+
+#
+# force all plugins
+#
+if (PLUGINS MATCHES "ALL")
+	set (PLUGINS_LIST
+		dump resolver
+		ccode  doc  error  fstab
+		glob  hexcode  hidden  hosts  iconv  network  ni  null
+		path  simpleini  struct  success  syslog
+		template  timeofday  tracer  type  validation
+		yajl dbus tcl xmltool
+		)
+	set (PLUGINS_FORCE FORCE)
+endif ()
+
+
+#
+# now actually set the plugins cache variable
+#
+set (PLUGINS
+	${PLUGINS_LIST}
+	CACHE STRING "Which plugins should be compiled? ALL for all available, NODEP for plugins without additional dependencies, DEFAULT for minimal set."
+	${PLUGINS_FORCE}
+	)
+
+
 
 #
 # Runtime pathes for KDB
