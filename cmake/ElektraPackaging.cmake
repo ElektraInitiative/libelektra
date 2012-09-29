@@ -12,7 +12,7 @@ set (CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
 set (CPACK_DEBIAN_PACKAGE_VERSION "${PROJECT_VERSION}")
 
 set (PACKAGE_DESCRIPTION "Elektra provides a universal and secure framework to store configuration parameters in a global, hierarchical key database. The core is a small library implemented in C. The plugin-based framework fulfills many configuration-related tasks to avoid any unnecessary code duplication across applications while it still allows the core to stay without any external dependency.  Elektra abstracts from cross-platform-related issues with an consistent API, and allows applications to be aware of other applications' configurations, leveraging easy application integration.")
-set (CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PACKAGE_DESCRIPTION}"})
+set (CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PACKAGE_DESCRIPTION}")
 set (CPACK_PACKAGE_CONTACT "${PACKAGE_URL}")
 set (CPACK_SOURCE_IGNORE_FILES
 	"/.cvsignore"
