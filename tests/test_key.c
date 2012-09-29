@@ -81,7 +81,12 @@ struct test tstKeyName[] =
 	
 	},
 	
-	{ NULL, NULL, NULL }
+	{ NULL, NULL,
+		NULL, /* keyName 	*/
+		NULL, /* keyBaseName 	*/
+		NULL, /* keyGetFullRootName 	*/ 
+		NULL  /* keyGetParentName	*/
+	}
 };
 
 void test_keyComparing()

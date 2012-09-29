@@ -64,6 +64,129 @@ macro (add_plugintest testname)
 endmacro (add_plugintest)
 
 
+# Add a test for a script
+#
+# The the given testname is blah.sh
+#   the script file must be called blah.sh
+#   it will be installed on the system as blah.sh
+#   the test will be called testscr_blah
+#   and the script file for the test will be testscr_blah.sh
+function (add_scripttest testname)
+	get_filename_component (testname_we ${testname} NAME_WE)
+
+	set (filename ${CMAKE_CURRENT_SOURCE_DIR}/${testname})
+	if (NOT EXISTS ${filename})
+		message (SEND_ERROR "add_scripttest: given file ${filename} does not exists")
+	endif (NOT EXISTS ${filename})
+
+	foreach (TARGET true false)
+		if (TARGET)
+			if (BUILD_FULL)
+				set (KDB_COMMAND "kdb-full")
+			else (BUILD_FULL)
+				if (BUILD_STATIC)
+					set (KDB_COMMAND "kdb-static")
+				else (BUILD_STATIC)
+					set (KDB_COMMAND "kdb")
+				endif (BUILD_STATIC)
+			endif (BUILD_FULL)
+		else (TARGET)
+			if (BUILD_FULL)
+				set (KDB_COMMAND "${PROJECT_BINARY_DIR}/src/kdb/kdb-full")
+			else (BUILD_FULL)
+				if (BUILD_STATIC)
+					set (KDB_COMMAND "${PROJECT_BINARY_DIR}/src/kdb/kdb-static")
+				else (BUILD_STATIC)
+					message (WARNING "add_scripttest: neither full nor static activated, cant run ${testname}")
+				endif (BUILD_STATIC)
+			endif (BUILD_FULL)
+		endif (TARGET)
+		set (INCLUDE_COMMON "
+# This file is AUTO GENERATED, do not modify it or your changes might be
+# lost!
+#
+# shell test suite v0.2 for kdb command
+
+# variables to count up errors and tests
+nbError=0
+nbTest=0
+
+# the script itself
+scriptName=`basename $0`
+
+if [ \"z$1\" = 'z' ]; then
+	HOME=.
+else
+	HOME=$1
+fi
+export HOME
+
+VALUE=value
+ROOT=\"user/tests/script\"
+#ROOT=\"user/tests/script`mktemp -u --tmpdir=/ XXXXXXXXXXXX`\"
+
+USER=\"`id -un`\"
+GROUP=\"`id -gn`\"
+
+FOLDER=@KDB_DB_HOME@/$USER/@KDB_DB_USER@
+FILE=test.ecf
+KDB=@KDB_COMMAND@
+
+DATE=\"`date \\\"+%b %d %H:%M\\\"`\"
+
+#succeed if the previous command was successful
+succeed_if ()
+{
+	if [ $? != \"0\" ]
+	then
+		nbError=$(( $nbError + 1 ))
+		echo error: $*
+	fi
+	nbTest=$(( $nbTest + 1 ))
+}
+
+#fails and exits the program if the previous command failed
+exit_if_fail ()
+{
+	if [ $? != \"0\" ]
+	then
+		echo fatal: $*
+		exit 1
+	fi
+	nbTest=$(( $nbTest + 1 ))
+}
+
+end_script()
+{
+	echo $scriptName RESULTS: $nbTest \"test(s)\" done $nbError \"error(s)\".
+	exit $nbError
+}
+		")
+
+		if (TARGET)
+			configure_file(
+					"${filename}"
+					"${CMAKE_CURRENT_BINARY_DIR}/${testname}"
+					@ONLY
+				      )
+			install (FILES "${CMAKE_CURRENT_BINARY_DIR}/${testname}"
+				DESTINATION bin
+				PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+				GROUP_READ GROUP_EXECUTE
+				WORLD_READ WORLD_EXECUTE)
+		else()
+			configure_file(
+					"${filename}"
+					"${CMAKE_CURRENT_BINARY_DIR}/testscr_${testname}"
+					@ONLY
+				      )
+			add_test (testscr_${testname_we} "${CMAKE_CURRENT_BINARY_DIR}/testscr_${testname}" "${PROJECT_BINARY_DIR}/tests")
+		endif()
+	endforeach()
+
+endfunction (add_scripttest)
+
+
 #- Adds all headerfiles of global include path to the given variable
 #
 #  ADD_HEADERS (variable)
