@@ -1,5 +1,17 @@
 == 0.8.3 ==
 
+write release notes
+announce
+
+fix debian_packaging and todo/RELEASE
+
+
+build_server:
+
+== 0.8.4 ==
+
+abi tests:
+
 documentation:
 	comment -> meta data
 	split real meta data functions + kdbhelpers
@@ -7,8 +19,6 @@ documentation:
 import/export:
 	with all plugins
 	with automated kdb tests
-
-== 0.8.4 ==
 
 kdb testcases:
 	for get/set
