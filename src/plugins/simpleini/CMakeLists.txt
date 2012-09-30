@@ -7,6 +7,6 @@ add_headers (SOURCES)
 add_library (elektra-simpleini MODULE ${SOURCES})
 install (TARGETS elektra-simpleini DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})
 
-add_scripttest(simpleini.sh)
+add_scripttest(simpleini_export.sh)
 
 #add_plugintest (simpleini)
