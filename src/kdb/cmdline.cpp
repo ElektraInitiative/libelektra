@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <cstdio>
+#include <set>
 
 #include <getopt.h>
 
@@ -40,6 +41,8 @@ Cmdline::Cmdline (int argc,
 	int index = 0;
 	int opt;
 
+	size_t optionPos;
+
 	synopsis = command->getSynopsis();
 
 	helpText += command->getShortHelpText();
@@ -47,8 +50,11 @@ Cmdline::Cmdline (int argc,
 	helpText += command->getLongHelpText();
 	helpText += "\n";
 
-	string acceptedOptions = command->getShortOptions();
-	acceptedOptions += "HV";
+	string allOptions = command->getShortOptions();
+	allOptions += "HV";
+
+	std::set<string::value_type> unique_sorted_chars (allOptions.begin(), allOptions.end());
+	string acceptedOptions (unique_sorted_chars.begin(), unique_sorted_chars.end());
 
 	vector<option> long_options;
 	/*XXX: Step 3: give it a long name.*/
@@ -101,12 +107,14 @@ Cmdline::Cmdline (int argc,
 		long_options.push_back(o);
 		helpText += "-r --recursive           work in a recursive mode\n";
 	}
-	if (acceptedOptions.find('s')!=string::npos)
+	optionPos = acceptedOptions.find('s');
+	if (optionPos!=string::npos)
 	{
-		option o = {"strategy", required_argument, 0, 'r'};
+		acceptedOptions.insert(optionPos+1, ":");
+		option o = {"strategy", required_argument, 0, 's'};
 		long_options.push_back(o);
 		helpText += "-s --strategy <name>     the strategy which should be used on conflicts\n";
-		helpText += "                         preserve .. no old key is overwritten\n";
+		helpText += "                         preserve .. no old key is overwritten (default)\n";
 		helpText += "                         overwrite .. overwrite keys with same name\n";
 		helpText += "                         cut .. completely cut old keys to make place for new\n";
 	}

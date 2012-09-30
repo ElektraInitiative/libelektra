@@ -36,6 +36,13 @@ public:
 	/**
 	  * @return the text representing which short options are needed
 	  *         by this command.
+	  *
+	  * @note the :, which indicates that an optional argument is needed,
+	  *       is added automatically.
+	  *       HV (for help and version) are automatically added.
+	  *       All options are sorted and made unique before passed
+	  *       to getopt.
+	  *
 	  */
 	virtual std::string getShortOptions() = 0;
 
