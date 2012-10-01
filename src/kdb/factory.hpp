@@ -29,6 +29,7 @@
 #include <export.hpp>
 #include <import.hpp>
 #include <convert.hpp>
+#include <umount.hpp>
 
 class Instancer
 {
@@ -76,6 +77,7 @@ public:
 		m_factory.insert(std::make_pair("export", new Cnstancer<ExportCommand>()));
 		m_factory.insert(std::make_pair("import", new Cnstancer<ImportCommand>()));
 		m_factory.insert(std::make_pair("convert", new Cnstancer<ConvertCommand>()));
+		m_factory.insert(std::make_pair("umount", new Cnstancer<UmountCommand>()));
 	}
 
 	~Factory()

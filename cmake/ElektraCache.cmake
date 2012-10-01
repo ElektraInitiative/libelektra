@@ -3,7 +3,60 @@
 #
 # Here the cache variables are set
 
-set (PLUGINS dump resolver CACHE STRING "Which plugins should be compiled?")
+#
+# the default list of plugins
+#
+set (PLUGINS_LIST
+	dump resolver
+	)
+
+#
+# force default list
+#
+if (PLUGINS MATCHES "DEFAULT")
+	set (PLUGINS_FORCE FORCE)
+endif ()
+
+#
+# force no dependency list
+#
+if (PLUGINS MATCHES "NODEP")
+	set (PLUGINS_LIST
+		dump resolver
+		ccode  doc  error  fstab
+		glob  hexcode  hidden  hosts  iconv  network  ni  null
+		path  simpleini  struct  success  syslog
+		template  timeofday  tracer  type  validation
+	    )
+	set (PLUGINS_FORCE FORCE)
+endif ()
+
+#
+# force all plugins
+#
+if (PLUGINS MATCHES "ALL")
+	set (PLUGINS_LIST
+		dump resolver
+		ccode  doc  error  fstab
+		glob  hexcode  hidden  hosts  iconv  network  ni  null
+		path  simpleini  struct  success  syslog
+		template  timeofday  tracer  type  validation
+		yajl dbus tcl xmltool
+		)
+	set (PLUGINS_FORCE FORCE)
+endif ()
+
+
+#
+# now actually set the plugins cache variable
+#
+set (PLUGINS
+	${PLUGINS_LIST}
+	CACHE STRING "Which plugins should be compiled? ALL for all available, NODEP for plugins without additional dependencies, DEFAULT for minimal set."
+	${PLUGINS_FORCE}
+	)
+
+
 
 #
 # Runtime pathes for KDB
@@ -22,6 +75,18 @@ set (KDB_DB_HOME "/home" CACHE PATH
 set (KDB_DB_USER ".kdb" CACHE PATH
 		"This path will be appended after the resolved home directory. It completes the path to the user key database."
 		)
+
+
+
+#
+# Compile options
+#
+
+
+option (COMPILE_CXX11_MODE "Use the new C++11 standard" ON)
+
+
+
 
 
 #
@@ -76,6 +141,7 @@ else (ELEKTRA_VERBOSE_BUILD)
 	set (VERBOSE "0")
 endif (ELEKTRA_VERBOSE_BUILD)
 MARK_AS_ADVANCED(ELEKTRA_VERBOSE_BUILD)
+
 
 #
 # Target installation folders

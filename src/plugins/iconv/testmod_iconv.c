@@ -14,7 +14,7 @@
 
 #include <langinfo.h>
 
-#include <tests.h>
+#include <tests_internal.h>
 
 #define NR_KEYS 1
 
@@ -41,7 +41,7 @@ void test_latin1_to_utf8()
 	utf8 =
 #include "data_utf8.c"
 	succeed_if (plugin->kdbSet(plugin, latin1, 0) == NR_KEYS, "not the correct number of keys");
-	succeed_if (compare_keyset(latin1, utf8) == 0, "keysets not equal");
+	compare_keyset(latin1, utf8);
 	ksDel (latin1);
 	ksDel (utf8);
 
@@ -50,7 +50,7 @@ void test_latin1_to_utf8()
 	utf8 =
 #include "data_utf8.c"
 	succeed_if (plugin->kdbGet(plugin, utf8, parentKey) == NR_KEYS, "not the correct number of keys");
-	succeed_if (compare_keyset(utf8, latin1) == 0, "keysets not equal");
+	compare_keyset(utf8, latin1);
 	ksDel (latin1);
 	ksDel (utf8);
 
@@ -84,7 +84,7 @@ void test_utf8_to_latin1()
 	utf8 =
 #include "data_utf8.c"
 	succeed_if (plugin->kdbGet(plugin, latin1, parentKey) == NR_KEYS, "not the correct number of keys");
-	succeed_if (compare_keyset(latin1, utf8) == 0, "keysets not equal");
+	compare_keyset(latin1, utf8);
 	ksDel (latin1);
 	ksDel (utf8);
 
@@ -93,7 +93,7 @@ void test_utf8_to_latin1()
 	utf8 =
 #include "data_utf8.c"
 	succeed_if (plugin->kdbSet(plugin, utf8, 0) == NR_KEYS, "not the correct number of keys");
-	succeed_if (compare_keyset(utf8, latin1) == 0, "keysets not equal");
+	compare_keyset(utf8, latin1);
 	ksDel (latin1);
 	ksDel (utf8);
 

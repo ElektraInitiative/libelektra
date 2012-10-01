@@ -1,0 +1,15 @@
+currently following resources are available:
+	freedesktop (synced with README)
+	thesis (running out of date!)
+	API (many parts missing, not linked with thesis)
+
+Thesis should be:
+	brought up to date
+	build as official part
+	integrated with rest of documentation
+
+Alternative:
+	Make homepage with all information
+	Using doxygen?
+
+This document describes what is missing in the documentation

@@ -573,7 +573,7 @@ if (changes & KEY_UID)
  * @endcode
  *
  * 
- * @par Example of very powerfull specific Key lookup in a KeySet:
+ * @par Example of very powerful specific Key lookup in a KeySet:
  * @code
 KDB *handle = kdbOpen();
 KeySet *ks=ksNew(0);

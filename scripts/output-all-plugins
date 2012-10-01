@@ -1,0 +1,13 @@
+#!/bin/sh
+
+for i in `ls src/plugins`
+do
+	if [ -d "src/plugins/$i" ]
+	then
+		echo -n "$i;"
+		#echo "--- $i ---"
+		#build/src/kdb/kdb-full check $i
+	fi
+done
+
+echo

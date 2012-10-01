@@ -10,6 +10,9 @@
 
 #include <plugin.hpp>
 
+// for stdout
+#include <stdio.h>
+
 using namespace std;
 using namespace kdb;
 

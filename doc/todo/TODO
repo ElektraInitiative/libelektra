@@ -1,7 +1,26 @@
 #For current work done, see CURRENT
 #For possible extensions in future, see FUTURE
 
+== CONTRACTS ==
+
+add following configuration for storage plugins:
+	use_absolute 
+	use_namespaces 
+	use_owner 
+
+if given use information inside file rather then parent key
+if storage plugin cannot represent this information, make it as information only
+give (hardcoded) defaults in contract
+Warn on ignored settings -> But better to always check contract!! 
+let those values be changed on mount/import/export
+
  == PLUGINS ==
+
+yail
+	advanced functionality
+	finish kdbSet
+	test roundtrips
+	configureable root
 
 cppplugin:
 	make a nice header-only(?) cpp solution for plugins

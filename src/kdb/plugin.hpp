@@ -56,8 +56,8 @@ struct BadPluginName : public PluginCheckException
 struct MissingNeeded : public PluginCheckException
 {
 	std::string need;
-	MissingNeeded (std::string const& need) :
-		need(need)
+	MissingNeeded (std::string const& need_) :
+		need(need_)
 	{}
 	~MissingNeeded () throw()
 	{}
@@ -70,8 +70,8 @@ struct MissingNeeded : public PluginCheckException
 struct MissingSymbol: public PluginCheckException
 {
 	std::string symbol;
-	MissingSymbol (std::string const& symbol) :
-		symbol(symbol)
+	MissingSymbol (std::string const& symbol_) :
+		symbol(symbol_)
 	{}
 	~MissingSymbol () throw()
 	{}
@@ -85,8 +85,8 @@ struct MissingSymbol: public PluginCheckException
 struct SymbolMismatch: public PluginCheckException
 {
 	std::string symbol;
-	SymbolMismatch (std::string const& symbol) :
-		symbol(symbol)
+	SymbolMismatch (std::string const& symbol_) :
+		symbol(symbol_)
 	{}
 	~SymbolMismatch () throw()
 	{}
