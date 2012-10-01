@@ -1,3 +1,10 @@
+elektra (0.8.3-2) unstable; urgency=low
+
+  * Add test package (containing unit tests)
+  * Do not run tests (broken in cowbuilder)
+
+ -- Markus Raab <debian@markus-raab.org>  Mon, 01 Oct 2012 20:40:46 +0200
+
 elektra (0.8.3-1) unstable; urgency=low
 
   * New upstream version.
