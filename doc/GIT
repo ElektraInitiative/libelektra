@@ -42,13 +42,21 @@ debian packages.
 == Local branches ==
 
 You should always make your own feature branch with:
- git-checkout -b <feature-branch-name>
+git-checkout -b <feature-branch-name>
 
 On this branch it is not so important that every
 commit compiles or all test cases run.
 
 To merge a branch use (no-fastforward):
- git-merge --no-ff <branchname>
+git-merge --no-ff <branchname>
+
+If you already did some commits, but want them in a branch,
+you can do:
+git-branch foo
+git reset HEAD^^  (für 2 commits zurück oder)
+git reset origin/master
+
+git-ref-log # recover
 
 
 

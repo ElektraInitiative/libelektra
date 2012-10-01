@@ -1,7 +1,7 @@
-0.8.2 Release
+0.8.3 Release
 
-This release mostly brings internal improvements and
-debian packages for debian squeeze.
+This release mostly brings improvements in the release process, the test framework and
+new debian packages.
 
 A benchmark showed that rereading the same database only needs
 about 2ms and the syscalls needed are quite optimal.
@@ -11,8 +11,16 @@ but instead a release and debian branch was created.
 See doc/GIT for new policy of branches.
 Thanks to Christian Amsüss <chrysn@fsfe.org>
 for all tips, suggestions and help.
-The git branches are done like in:
-http://christian.amsuess.com/tools/arandr/
+The git branches are done like in arandr.
+0.8.2 was skipped because a git tag was placed wrongly
+when the new release scheme was tried out on Monday June
+18 2012.
+The tag was removed later.
+
+kdb export now works nicely, use
+ kdb export <path> simpleini
+to show key = value pairs.
+Additionally kdb umount was added.
 
 A cmake bug was fixed, so that "make test" now
 works immediately.
@@ -26,12 +34,37 @@ Some docu was improved and some typos fixed.
 Thanks to Erkan Yilmaz <erkan77@gmail.com> for
 two fixes.
 
-You can download the release at:
-http://www.markus-raab.org/ftp/elektra/releases/elektra-0.8.2.tar.gz
+The test framework now has built-in support for comparing keysets and
+keys together with its metadata. Because of usage of macros the
+linenumber will be stated correctly for comparision.
 
-You can install the debian packages for debian squeeze when
-you add following line in your /etc/apt/sources.list:
-deb http://www.markus-raab.org/ftp/reprepro squeeze main
+Additionally also a script test framework was started.
+
+The documentation was updated and improved at some places.
+
+The build system was improved. Now also ALL, NODEP or DEFAULT are
+accepted as magic values for a list of plugins.
+
+Most of the tests run automatically on a buildserver:
+http://build.libelektra.org:8080/
+
+It gives you an good impression with how many different compilers elektra
+is currently tested. Elektra now also compiles with clang.
+
+You can download the release at:
+http://www.markus-raab.org/ftp/elektra/releases/elektra-0.8.3.tar.gz
+md5sum: d6b1d668a1a1e155137d4ebc1bd0d5d7
+sha256: 48fab82a6b1e8f0038c43ae9ade4da25b697d0aa74e39b7b94056ab7febc4be1
+
+You can install the debian packages for debian squeeze (i386 and amd64 only) by
+adding following lines to your /etc/apt/sources.list:
+deb     http://build.libelektra.org/debian/ elektra-release-glue main
+deb-src http://build.libelektra.org/debian/ elektra-release-glue main
+
+and install all or some of:
+sudo apt-get install libelektra-core4 libelektra-full4 libelektra-bin libelektra-dev libelektra-test libelektra-xmltool4
+
+Have fun!
 
 
 

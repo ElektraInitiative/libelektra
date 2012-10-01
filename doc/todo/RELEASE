@@ -2,9 +2,6 @@ This describes what to do for an release!
 
 == Preperation ==
 
-TODO: describe directory structure
-Make build-release folder
-
 Set environment variable VERSION to current version to make those
 scripts work:
 
@@ -20,18 +17,11 @@ For the first few steps you have to work on branch master:
 If any feature branch is left over merge it:
  git-merge --no-ff feature
 
-Write NEWS for new release (do not forget to add links where to download release):
- editor doc/NEWS
-
 And now commit everything:
  git-commit -a
 
 Clean up the mess left over:
  git-clean -df
-
-Finally increment version number in CMakeLists.txt:
- editor CMakeLists.txt
- git-commit -m "Ready for release $VERSION" CMakeLists.txt
 
 
 
@@ -63,7 +53,8 @@ Commit elektra-ftp to gitorious:
 == Documentation ==
 
 And the API docu (stay in same folder):
- mkdir ~elektra-doc/api/$VERSION/ && cd ~build/build && cp -ra doc/html doc/latex doc/man ~elektra-doc/api/$VERSION/
+ mkdir ~elektra-doc/api/$VERSION/
+ cd ~build && make doc && cp -ra doc/html doc/latex doc/man ~elektra-doc/api/$VERSION/
 
 Symlink current to latest version and add everything:
  cd ~elektra-doc/api/ && rm current && ln -s $VERSION current && git-add current $VERSION
@@ -88,6 +79,10 @@ Build deb:
 Now install package + run some basic commands:
  kdb --version
 
+Debian packages in chroot + publish in reprepro
+
+You might want to run lintian:
+ lintian -EI --color=auto --pedantic elektra_0.8.1-1_i386.changes
 
 
 == Publish ==
@@ -111,6 +106,17 @@ Push elektra-doc to gitorious:
  git-push
 
 
-TODO: Debian packages in chroot + publish in reprepro
+== Announce ==
+
+Write NEWS for new release (do not forget to add links where to download release):
+ editor doc/NEWS
+
+Finally increment version number in CMakeLists.txt:
+ editor CMakeLists.txt
+ git-commit -m "Ready for release $VERSION" CMakeLists.txt
+
+Maybe also generate a ChangeLog?
+ git log --first-parent master > ChangeLog
+
 
 Finally check links and send out mail to list
