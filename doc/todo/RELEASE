@@ -94,16 +94,10 @@ Now push release branch with tags to gitorious:
  cd ~e && git-pull && git-push && git-push --tags
 
 Push elektra-ftp to gitorious:
- cd ~elektra-ftp
- git-push && git-push gitorious
-
-
-Push changes to gitorious:
- git-pull && git-push
+ cd ~elektra-ftp && git-push && git-push gitorious
 
 Push elektra-doc to gitorious:
- cd ~elektra-doc && git-commit -a -m "$VERSION Release"
- git-push
+ cd ~elektra-doc && git-commit -a -m "$VERSION Release" && git-push
 
 
 == Announce ==

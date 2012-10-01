@@ -44,6 +44,7 @@ The API documentation can be found
 [[http://doc.libelektra.org/api/current/html|here]].
 
 
+
 == Contact ==
 
 Do not hesitate to ask any question on
@@ -72,6 +73,16 @@ and
 Which are also [[http://gitorious.org/elektra-initiative/ftp|mirrored at]]:
 
  git-clone git://gitorious.org/elektra-initiative/ftp.git
+
+To use the debian repository of the releases put following files in
+/etc/apt/sources.list:
+{{{
+deb     http://build.libelektra.org/debian/ elektra-release-glue main
+deb-src http://build.libelektra.org/debian/ elektra-release-glue main
+}}}
+
+The [[http://build.libelektra.org:8080/|build server]] builds release
+and master branches on every commit.
 
 
 == Compile ==

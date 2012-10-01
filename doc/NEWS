@@ -61,7 +61,7 @@ adding following lines to your /etc/apt/sources.list:
 deb     http://build.libelektra.org/debian/ elektra-release-glue main
 deb-src http://build.libelektra.org/debian/ elektra-release-glue main
 
-and install all or some of:
+and install all or some of the packages with:
 sudo apt-get install libelektra-core4 libelektra-full4 libelektra-bin libelektra-dev libelektra-test libelektra-xmltool4
 
 Have fun!
