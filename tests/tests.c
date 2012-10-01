@@ -149,65 +149,6 @@ int compare_files (const char * filename)
 }
 
 
-int compare_key (Key *k1, Key *k2)
-{
-	int	ret;
-	int	err = nbError;
-
-	/* printf ("compare: "); keyOutput (k1, stdout); keyOutput (k2, stdout); printf ("\n"); */
-	// printf ("compare value %s with %s\n", keyValue(k1), keyValue(k2));
-	ret = keyCompare(k1, k2);
-
-	succeed_if ((ret & KEY_NAME) == 0 , "compare key: NAME not equal");
-	succeed_if ((ret & KEY_VALUE) == 0 , "compare key: VALUE not equal");
-	succeed_if ((ret & KEY_OWNER) == 0 , "compare key: OWNER not equal");
-	succeed_if ((ret & KEY_COMMENT) == 0 , "compare key: COMMENT not equal");
-	succeed_if ((ret & KEY_UID) == 0 , "compare key: UID not equal");
-	succeed_if ((ret & KEY_GID) == 0 , "compare key: GID not equal");
-	succeed_if ((ret & KEY_MODE ) == 0 , "compare key: MODE  not equal");
-	succeed_if ((ret & KEY_NULL ) == 0, "compare key: one of the keys is null");
-
-	return err-nbError;
-}
-
-/**Compare two keysets.
- *
- * Compare if two keysets contain the same keys.
- * @return 0 on success
- * */
-int compare_keyset (KeySet *ks, KeySet *ks2)
-{
-	Key	*key = 0;
-	Key     *key2 = 0;
-	int	err = nbError;
-
-	if (ksGetSize (ks)  == 0) succeed_if (0, "real size of ks was 0");
-	if (ksGetSize (ks2) == 0) succeed_if (0, "real size of ks2 was 0");
-
-	if (ksGetSize (ks) != ksGetSize(ks2) ) {
-		printf ("%d, %d\n", (int)ksGetSize(ks), (int)ksGetSize(ks2));
-		succeed_if( 0, "Size of keysets not equal.");
-	}
-
-	// I would have a _true_ ksCompare() ...
-	ksRewind(ks);
-	ksRewind(ks2);
-
-	//SYNC with ksOutput
-	while ((key = ksNext(ks)) != 0)
-	{
-		key2 = ksNext(ks2);
-		if (!key2)
-		{
-			succeed_if (0, "Will break, did not find corresponding key2");
-			break;
-		}
-
-		compare_key (key, key2);
-	}
-	return err-nbError;
-}
-
 /* return file name in srcdir.
  * No bound checking on file size, may overflow. */
 char * srcdir_file(const char * fileName)
@@ -225,9 +166,24 @@ void clear_sync (KeySet *ks)
 	while ((k = ksNext(ks)) != 0) keyClearSync(k);
 }
 
+void output_meta(Key *k)
+{
+	const Key *meta;
+
+	keyRewindMeta (k);
+	while ((meta = keyNextMeta (k))!=0)
+	{
+		printf (", %s: %s", keyName(meta),
+			(const char*)keyValue(meta));
+	}
+	printf ("\n");
+}
+
 void output_key (Key *k)
 {
-	printf ("key: %s, string: %s\n", keyName(k), keyString(k));
+	// output_meta will print endline
+	printf ("key: %s, string: %s", keyName(k), keyString(k));
+	output_meta(k);
 }
 
 void output_keyset (KeySet *ks)
@@ -236,7 +192,7 @@ void output_keyset (KeySet *ks)
 	ksRewind(ks);
 	while ((k = ksNext(ks)) != 0)
 	{
-		printf ("key: %s, string: %s\n", keyName(k), keyString(k));
+		output_key (k);
 	}
 }
 

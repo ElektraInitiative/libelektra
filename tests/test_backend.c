@@ -103,7 +103,7 @@ void test_simple()
 	KeySet *test_config = set_pluginconf();
 	KeySet *config = elektraPluginGetConfig (plugin);
 	succeed_if (config != 0, "there should be a config");
-	succeed_if (compare_keyset(config, test_config) == 0, "error comparing keyset");
+	compare_keyset(config, test_config);
 	ksDel (test_config);
 
 	succeed_if (plugin->kdbGet != 0, "no get pointer");
@@ -127,7 +127,7 @@ void test_default()
 	KeySet *test_config = set_pluginconf();
 	KeySet *config = elektraPluginGetConfig (plugin);
 	succeed_if (config != 0, "there should be a config");
-	succeed_if (compare_keyset(config, test_config) == 0, "error comparing keyset");
+	compare_keyset(config, test_config);
 	ksDel (test_config);
 
 	succeed_if (plugin->kdbGet != 0, "no get pointer");
@@ -219,7 +219,7 @@ void test_backref()
 	KeySet *test_config = set_pluginconf();
 	KeySet *config = elektraPluginGetConfig (plugin1);
 	succeed_if (config != 0, "there should be a config");
-	succeed_if (compare_keyset(config, test_config) == 0, "error comparing keyset");
+	compare_keyset(config, test_config);
 	ksDel (test_config);
 
 	succeed_if (plugin1->kdbGet != 0, "no get pointer");

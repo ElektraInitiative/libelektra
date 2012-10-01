@@ -27,10 +27,6 @@
 #define ELEKTRA_PLUGIN_SIMPLEINI_H
 
 #include <kdbplugin.h>
-#include <kdberrors.h>
-
-#include <stdio.h>
-#include <stdlib.h>
 
 
 int elektraSimpleiniOpen(Plugin *handle, Key *errorKey);

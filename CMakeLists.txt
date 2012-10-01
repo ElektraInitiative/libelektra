@@ -8,7 +8,6 @@ set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/"
 
 #needed by ifs below
 include (cmake/ElektraCache.cmake)
-include (cmake/ElektraPackaging.cmake)
 include (cmake/ElektraCompiling.cmake)
 
 if (ENABLE_TESTING)
@@ -42,12 +41,15 @@ set (REVERSE_DOMAIN org.libelektra)
 
 set (KDB_VERSION_MAJOR 0)
 set (KDB_VERSION_MINOR 8)
-set (KDB_VERSION_MICRO 2)
+set (KDB_VERSION_MICRO 3)
 
 set (KDB_VERSION "${KDB_VERSION_MAJOR}.${KDB_VERSION_MINOR}.${KDB_VERSION_MICRO}")
 set (KDB_VERSION_MAJORMINOR "${KDB_VERSION_MAJOR}.${KDB_VERSION_MINOR}")
 
 set (SO_VERSION 4)
+
+#needs version above
+include (cmake/ElektraPackaging.cmake)
 
 #now add all directories
 add_subdirectory (src)
@@ -77,7 +79,7 @@ ADD_CUSTOM_TARGET(uninstall
 	"${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/ElektraUninstall.cmake")
 
 ADD_CUSTOM_TARGET(source-package
-		COMMAND git-tag ${KDB_VERSION} && git-archive --prefix=elektra-${KDB_VERSION}/ --format=tar ${KDB_VERSION} | gzip > ${CMAKE_BINARY_DIR}/elektra-${KDB_VERSION}.tar.gz && hashsum ${CMAKE_BINARY_DIR}/elektra-${KDB_VERSION}.tar.gz > ${CMAKE_BINARY_DIR}/elektra-${KDB_VERSION}.tar.gz.hashsum
+		COMMAND git tag ${KDB_VERSION} && git archive --prefix=elektra-${KDB_VERSION}/ --format=tar ${KDB_VERSION} | gzip > ${CMAKE_BINARY_DIR}/elektra-${KDB_VERSION}.tar.gz && hashsum ${CMAKE_BINARY_DIR}/elektra-${KDB_VERSION}.tar.gz > ${CMAKE_BINARY_DIR}/elektra-${KDB_VERSION}.tar.gz.hashsum
 		COMMENT Make a elektra source package by using git
 		VERBATIM
 		WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"

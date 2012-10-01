@@ -44,9 +44,9 @@ public:
 	Key (ckdb::Key *k) :key(k) { operator++(); }
 	Key (Key &k) :key (k.key) { operator++(); }
 	Key (const Key &k) :key (k.key) { operator++(); }
-	Key (const char * name, va_list ap);
-	Key (const char * name, ...);
-	Key (const std::string name, ...);
+	Key (const char * name_, va_list ap);
+	Key (const char * name_, ...);
+	Key (const std::string name_, ...);
 
 	void del () { operator --(); ckdb::keyDel(key); }
 	void copy (const Key &other) { ckdb::keyCopy(key,other.key); }
@@ -87,13 +87,13 @@ public:
 	Key& operator= (ckdb::Key *k);
 	Key& operator= (const Key &k);
 
-	Key& operator=  (const std::string &name);
-	Key& operator+= (const std::string &name);
-	Key& operator-= (const std::string &name);
+	Key& operator=  (const std::string &name_);
+	Key& operator+= (const std::string &name_);
+	Key& operator-= (const std::string &name_);
 
-	Key& operator=  (const char *name);
-	Key& operator+= (const char *name);
-	Key& operator-= (const char *name);
+	Key& operator=  (const char *name_);
+	Key& operator+= (const char *name_);
+	Key& operator-= (const char *name_);
 
 	bool operator ==(const Key &k) const { return ckdb::keyCmp(key, k.key) == 0; }
 	bool operator !=(const Key &k) const { return ckdb::keyCmp(key, k.key) != 0; }
@@ -125,7 +125,7 @@ public:
 
 	std::string getDirName() const;
 
-	void setName (const std::string &name);
+	void setName (const std::string &name_);
 	void setBaseName (const std::string &basename);
 	void addBaseName (const std::string &basename);
 
@@ -133,14 +133,14 @@ public:
 	std::string getFullName() const;
 
 	template <class T>
-	T getMeta(const std::string &name)
+	T getMeta(const std::string &name_)
 	{
 		T x;
 		std::string str;
 		const char *v = 
 			static_cast<const char*>(
 				ckdb::keyValue(
-					ckdb::keyGetMeta(key, name.c_str())
+					ckdb::keyGetMeta(key, name_.c_str())
 					)
 				);
 		if (!v) throw KeyNoSuchMeta();
@@ -152,24 +152,24 @@ public:
 	}
 
 	/*
-	const Key *getMeta(const std::string &name)
+	const Key *getMeta(const std::string &name_)
 	{
-		return ckdb::keyGetMeta(key, name.c_str());
+		return ckdb::keyGetMeta(key, name_.c_str());
 	}
 	*/
 
 	template <class T>
-	void setMeta(const std::string &name, T x)
+	void setMeta(const std::string &name_, T x)
 	{
 		std::string str;
 		std::ostringstream ost;
 		ost << x;	// convert type to string
-		ckdb::keySetMeta(key, name.c_str(), ost.str().c_str());
+		ckdb::keySetMeta(key, name_.c_str(), ost.str().c_str());
 	}
 
-	void copyMeta(const Key &other, const std::string &name)
+	void copyMeta(const Key &other, const std::string &name_)
 	{
-		ckdb::keyCopyMeta(key, other.key, name.c_str());
+		ckdb::keyCopyMeta(key, other.key, name_.c_str());
 	}
 
 	void copyAllMeta(const Key &other)
@@ -246,44 +246,44 @@ private:
 
 /**@note don't forget the const: getMeta<const ckdb::Key*>*/
 template<>
-inline const ckdb::Key* Key::getMeta(const std::string &name)
+inline const ckdb::Key* Key::getMeta(const std::string &name_)
 {
 	return
-		ckdb::keyGetMeta(key, name.c_str());
+		ckdb::keyGetMeta(key, name_.c_str());
 }
 
 /**@note don't forget the const: getMeta<const kdb::Key>*/
 template<>
-inline const Key Key::getMeta(const std::string &name)
+inline const Key Key::getMeta(const std::string &name_)
 {
 	return
 		Key (
 			const_cast<ckdb::Key*>(
-				ckdb::keyGetMeta(key, name.c_str())
+				ckdb::keyGetMeta(key, name_.c_str())
 				)
 			);
 }
 
 template<>
-inline const char* Key::getMeta(const std::string &name)
+inline const char* Key::getMeta(const std::string &name_)
 {
 	return
 		static_cast<const char*>(
 			ckdb::keyValue(
-				ckdb::keyGetMeta(key, name.c_str())
+				ckdb::keyGetMeta(key, name_.c_str())
 				)
 			);
 }
 
 /* We dont want only the first part of the string */
 template<>
-inline std::string Key::getMeta(const std::string &name)
+inline std::string Key::getMeta(const std::string &name_)
 {
 	std::string str;
 	const char *v = 
 		static_cast<const char*>(
 			ckdb::keyValue(
-				ckdb::keyGetMeta(key, name.c_str())
+				ckdb::keyGetMeta(key, name_.c_str())
 				)
 			);
 	if (!v) throw KeyNoSuchMeta();
@@ -295,14 +295,14 @@ inline std::string Key::getMeta(const std::string &name)
   Because mode_t is in fact an int, this would
   also change all other int types.
 template<>
-inline mode_t Key::getMeta(const std::string &name)
+inline mode_t Key::getMeta(const std::string &name_)
 {
 	mode_t x;
 	std::string str;
 	str = std::string(
 		static_cast<const char*>(
 			ckdb::keyValue(
-				ckdb::keyGetMeta(key, name.c_str())
+				ckdb::keyGetMeta(key, name_.c_str())
 				)
 			)
 		);
@@ -386,39 +386,39 @@ inline Key& Key::operator= (const Key &k)
 	return *this;
 }
 
-inline Key& Key::operator= (const std::string &name)
+inline Key& Key::operator= (const std::string &name_)
 {
-	ckdb::keySetName(getKey(), name.c_str());
+	ckdb::keySetName(getKey(), name_.c_str());
 	return *this;
 }
 
-inline Key& Key::operator+= (const std::string &name)
+inline Key& Key::operator+= (const std::string &name_)
 {
-	ckdb::keyAddBaseName(getKey(), name.c_str());
+	ckdb::keyAddBaseName(getKey(), name_.c_str());
 	return *this;
 }
 
-inline Key& Key::operator-= (const std::string &name)
+inline Key& Key::operator-= (const std::string &name_)
 {
-	ckdb::keySetBaseName(getKey(), name.c_str());
+	ckdb::keySetBaseName(getKey(), name_.c_str());
 	return *this;
 }
 
-inline Key& Key::operator= (const char *name)
+inline Key& Key::operator= (const char *name_)
 {
-	ckdb::keySetName(getKey(), name);
+	ckdb::keySetName(getKey(), name_);
 	return *this;
 }
 
-inline Key& Key::operator+= (const char *name)
+inline Key& Key::operator+= (const char *name_)
 {
-	ckdb::keyAddBaseName(getKey(), name);
+	ckdb::keyAddBaseName(getKey(), name_);
 	return *this;
 }
 
-inline Key& Key::operator-= (const char *name)
+inline Key& Key::operator-= (const char *name_)
 {
-	ckdb::keySetBaseName(getKey(), name);
+	ckdb::keySetBaseName(getKey(), name_);
 	return *this;
 }
 
@@ -465,25 +465,25 @@ inline const char* Key::baseName() const
 }
 
 
-/**Sets a name for a key.
- * Throws kdb::KeyInvalidName when the name is not valid*/
-inline void Key::setName (const std::string &name)
+/**Sets a name_ for a key.
+ * Throws kdb::KeyInvalidName when the name_ is not valid*/
+inline void Key::setName (const std::string &name_)
 {
-	if (ckdb::keySetName (getKey(), name.c_str()) == -1)
+	if (ckdb::keySetName (getKey(), name_.c_str()) == -1)
 		throw KeyInvalidName();
 }
 
-/**Sets a base name for a key.
- * Throws kdb::KeyInvalidName when the name is not valid*/
-inline void Key::setBaseName (const std::string &name)
+/**Sets a base name_ for a key.
+ * Throws kdb::KeyInvalidName when the name_ is not valid*/
+inline void Key::setBaseName (const std::string &name_)
 {
-	if (ckdb::keySetBaseName (getKey(), name.c_str()) == -1)
+	if (ckdb::keySetBaseName (getKey(), name_.c_str()) == -1)
 		throw KeyInvalidName();
 }
 
-inline void Key::addBaseName (const std::string &name)
+inline void Key::addBaseName (const std::string &name_)
 {
-	if (ckdb::keyAddBaseName (getKey(), name.c_str()) == -1)
+	if (ckdb::keyAddBaseName (getKey(), name_.c_str()) == -1)
 		throw KeyInvalidName();
 }
 
@@ -523,9 +523,9 @@ inline size_t Key::getCommentSize() const
 }
 
 /**Sets a comment for the specified key.*/
-inline void Key::setComment(const std::string &comment)
+inline void Key::setComment(const std::string &comment_)
 {
-	ckdb::keySetComment (getKey(), comment.c_str());
+	ckdb::keySetComment (getKey(), comment_.c_str());
 }
 
 /**Returns the UID of the the key. It always
@@ -594,9 +594,9 @@ inline size_t Key::getOwnerSize() const
 
 /**Sets the Owner of the Key. It will fail, because
  * you are not root.*/
-inline void Key::setOwner(const std::string &owner)
+inline void Key::setOwner(const std::string &owner_)
 {
-	ckdb::keySetOwner(getKey(), owner.c_str());
+	ckdb::keySetOwner(getKey(), owner_.c_str());
 }
 
 inline const void*Key::value() const

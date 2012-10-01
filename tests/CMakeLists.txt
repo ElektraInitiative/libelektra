@@ -58,18 +58,10 @@ foreach (file ${TESTS})
 	do_test (${name})
 endforeach (file ${TESTS})
 
-if (BUILD_FULL)
-	get_target_property (KDB_COMMAND kdb-full LOCATION)
-else (BUILD_FULL)
-	get_target_property (KDB_COMMAND kdb-static LOCATION)
-endif (BUILD_FULL)
-
-
-#TODO should be in kdb test folder!
-configure_file(
-		test_script.sh.in
-		"${PROJECT_BINARY_DIR}/tests/test_script.sh"
-	      )
-add_test (test_script "${PROJECT_BINARY_DIR}/tests/test_script.sh" "${PROJECT_BINARY_DIR}/tests")
+file (GLOB SCRIPT_TESTS *.sh)
+foreach (file ${SCRIPT_TESTS})
+	get_filename_component (name ${file} NAME)
+	add_scripttest(${name})
+endforeach (file ${SCRIPT_TESTS})
 
 include_directories ("${PROJECT_SOURCE_DIR}/tests")

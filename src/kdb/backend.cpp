@@ -12,8 +12,8 @@
 using namespace std;
 using namespace kdb;
 
-Backend::Backend(string name, string mp) :
-	name(name), mp(mp)
+Backend::Backend(string name_, string mp_) :
+	name(name_), mp(mp_)
 {
 	ckdb::elektraModulesInit(modules.getKeySet(), 0);
 }
@@ -195,8 +195,7 @@ void Backend::serialize (kdb::Key &rootKey, kdb::KeySet &ret)
 
 		while (Key k = config.next())
 		{
-			string name = k.getName();
-			string newName = name.substr (commonName.length());
+			string newName = k.getName().substr (commonName.length());
 			Key x (k);
 			x.setName(backendRootKey.getName());
 			x.addBaseName("config");

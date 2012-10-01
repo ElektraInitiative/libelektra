@@ -358,10 +358,16 @@ void test_ksResize()
 	succeed_if(ksGetAlloc(ks) == 102, "alloc size wrong");
 
 	ksCopy (copy, ks);
+	succeed_if(ksGetSize(copy) == 102, "Problem copy keyset with 102 keys");
+	succeed_if(ksGetAlloc(copy) == 128, "alloc of copy size wrong");
+
 	compare_keyset(copy, ks);
 
 	ksClear (copy); // useless, just test for double free
 	ksCopy (copy, ks);
+
+	succeed_if(ksGetSize(copy) == 102, "Problem copy keyset with 102 keys");
+	succeed_if(ksGetAlloc(copy) == 128, "alloc of copy size wrong");
 	compare_keyset(copy, ks);
 
 	ksDel (copy);
@@ -509,6 +515,18 @@ void test_ksCopy()
 
 	succeed_if(ksCopy(other,0)==0, "Clear failed");
 	succeed_if(ksGetSize(other) == 0, "other has keys");
+	ksDel (other);
+	ksDel (ks);
+
+
+
+	ks = ksNew(0);
+	ksAppendKey(ks, keyNew ("user/abc", KEY_META, "def", "egh", KEY_END));
+
+	other = ksNew(0);
+	ksCopy (other, ks);
+	compare_keyset(ks, other);
+
 	ksDel (other);
 	ksDel (ks);
 }
@@ -1660,6 +1678,17 @@ void test_ksAppend()
 	ksDel (testReturned);
 	ksDel (testDirectBelow);
 	ksDel (returned);
+
+	KeySet * ks = ksNew(0);
+	ksAppendKey(ks, keyNew ("user/abc", KEY_META, "xyz", "egh", KEY_END));
+
+	KeySet * other = ksNew(0);
+	ksAppend (other, ks);
+	compare_keyset(ks, other);
+	compare_keyset(ks, ks);
+
+	ksDel (other);
+	ksDel (ks);
 }
 
 
@@ -2177,20 +2206,45 @@ void test_ksAppendKey()
 	succeed_if (ksCurrent(ks) == cur, "did not update current position");
 	succeed_if (ksAppendKey(ks,cur=keyNew("user/x", KEY_END)) == 3, "could not append a key");
 	succeed_if (ksCurrent(ks) == cur, "did not update current position");
-	succeed_if(ksGetSize(ks) == 3, "size not correct after 3 keys");
+	succeed_if (ksGetSize(ks) == 3, "size not correct after 3 keys");
 
 	succeed_if (ksAppendKey(ks,cur=keyNew("user/b", KEY_END)) == 3, "could not append a key");
 	succeed_if (ksCurrent(ks) == cur, "did not update current position (same key)");
-	succeed_if(ksGetSize(ks) == 3, "size not correct after double append");
+	succeed_if (ksGetSize(ks) == 3, "size not correct after double append");
 
 	succeed_if (ksAppendKey(ks,cur=keyNew("user/0", KEY_END)) == 4, "could not append a key");
 	succeed_if (ksCurrent(ks) == cur, "did not update current position (front key)");
-	succeed_if(ksGetSize(ks) == 4, "size not correct after 4 keys");
+	succeed_if (ksGetSize(ks) == 4, "size not correct after 4 keys");
 
 	succeed_if (ksAppendKey(ks,cur=keyNew("user/c", KEY_END)) == 5, "could not append a key");
 	succeed_if (ksCurrent(ks) == cur, "did not update current position (key in between)");
-	succeed_if(ksGetSize(ks) == 5, "size not correct after 5 keys");
+	succeed_if (ksGetSize(ks) == 5, "size not correct after 5 keys");
 
+	ksDel (ks);
+
+	exit_if_fail ((ks=ksNew(0)) != 0, "could not create new keyset");
+	succeed_if (ksAppendKey(ks,cur=keyNew("user", KEY_END)) == 1, "could not append a key");
+	succeed_if (ksCurrent(ks) == cur, "did not update current position");
+	succeed_if (ksGetSize(ks) == 1, "size not correct after 1 keys");
+
+	succeed_if (ksAppendKey(ks,cur=keyNew("user/tests", KEY_END)) == 2, "could not append a key");
+	succeed_if (ksCurrent(ks) == cur, "did not update current position");
+	succeed_if (ksGetSize(ks) == 2, "size not correct after 2 keys");
+
+	succeed_if (ksAppendKey(ks,cur=keyNew("user/tests/folder", KEY_END)) == 3, "could not append a key");
+	succeed_if (ksCurrent(ks) == cur, "did not update current position");
+	succeed_if (ksGetSize(ks) == 3, "size not correct after 3 keys");
+
+	succeed_if (ksAppendKey(ks,cur=keyNew("user/tests/folder/bool_key", KEY_END)) == 4, "could not append a key");
+	succeed_if (ksCurrent(ks) == cur, "did not update current position");
+	succeed_if (ksGetSize(ks) == 4, "size not correct after 4 keys");
+
+	Key *newKey = keyDup(cur);
+	keySetBaseName(newKey, "second_bool_key");
+
+	succeed_if (ksAppendKey(ks, newKey) == 5, "could not append a key");
+	succeed_if (ksCurrent(ks) == newKey, "did not update current position");
+	succeed_if (ksGetSize(ks) == 5, "size not correct after 5 keys");
 	ksDel (ks);
 }
 
@@ -2207,7 +2261,7 @@ int main(int argc, char** argv)
 	test_ksReference();
 	test_ksDup();
 	test_ksCopy();
-	test_ksResize();
+	// test_ksResize();
 	test_ksIterate();
 	test_ksCursor();
 	test_ksSort();

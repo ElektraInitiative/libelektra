@@ -32,8 +32,8 @@ class StructInstancer: public Instancer
 	KeySet config;
 
 public:
-	StructInstancer (KeySet config) :
-		config(config)
+	StructInstancer (KeySet config_) :
+		config(config_)
 	{}
 
 	virtual StructChecker* get()

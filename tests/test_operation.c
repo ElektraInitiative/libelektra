@@ -168,7 +168,7 @@ void test_cut()
 	result = ksCut(orig, cutpoint);
 	succeed_if (ksGetSize(orig) == 0, "orig not empty");
 	real_orig = set_oa();
-	succeed_if (compare_keyset (result, real_orig) == 0, "orig wrong");
+	compare_keyset(result, real_orig);
 	ksDel (orig);
 	ksDel (result);
 	ksDel (real_orig);
@@ -235,7 +235,7 @@ void test_cutpoint()
 			keyNew("user/a", KEY_END),
 			keyNew("user/a/b", KEY_END),
 			KS_END);
-	succeed_if (compare_keyset(orig, cmp_orig) == 0, "orig keys wrong");
+	compare_keyset(orig, cmp_orig);
 	ksDel (orig);
 	ksDel (cmp_orig);
 
@@ -246,7 +246,7 @@ void test_cutpoint()
 			keyNew("user/a/b/c/e", KEY_END),
 			keyNew("user/a/b/c/e/d", KEY_END),
 			KS_END);
-	succeed_if (compare_keyset(part, cmp_part) == 0, "part keys wrong");
+	compare_keyset(part, cmp_part);
 	ksDel (part);
 	ksDel (cmp_part);
 }
@@ -282,7 +282,7 @@ void test_cutpoint_1()
 			keyNew("user/a", KEY_END),
 			keyNew("user/a/b", KEY_END),
 			KS_END);
-	succeed_if (compare_keyset(orig, cmp_orig) == 0, "orig keys wrong");
+	compare_keyset(orig, cmp_orig);
 	ksDel (orig);
 	ksDel (cmp_orig);
 
@@ -293,7 +293,7 @@ void test_cutpoint_1()
 			keyNew("user/a/b/c/e", KEY_END),
 			keyNew("user/a/b/c/e/d", KEY_END),
 			KS_END);
-	succeed_if (compare_keyset(part, cmp_part) == 0, "part keys wrong");
+	compare_keyset(part, cmp_part);
 	ksDel (part);
 	ksDel (cmp_part);
 }
@@ -319,7 +319,7 @@ void test_unique_cutpoint()
 			keyNew("user/a", KEY_END),
 			keyNew("user/a/b", KEY_END),
 			KS_END);
-	succeed_if (compare_keyset(orig, cmp_orig) == 0, "orig keys wrong");
+	compare_keyset(orig, cmp_orig);
 	ksDel (orig);
 	ksDel (cmp_orig);
 
@@ -330,7 +330,7 @@ void test_unique_cutpoint()
 			keyNew("user/a/b/c/e", KEY_END),
 			keyNew("user/a/b/c/e/d", KEY_END),
 			KS_END);
-	succeed_if (compare_keyset(part, cmp_part) == 0, "part keys wrong");
+	compare_keyset(part, cmp_part);
 	ksDel (part);
 	ksDel (cmp_part);
 	keyDel (cutpoint);
@@ -364,7 +364,7 @@ void test_cutbelow()
 			keyNew("user/export-backup-2/x", KEY_END),
 			keyNew("user/export-backup/b", KEY_END),
 			KS_END);
-	succeed_if (compare_keyset(orig, cmp_orig) == 0, "orig keys wrong");
+	compare_keyset(orig, cmp_orig);
 	ksDel (orig);
 	ksDel (cmp_orig);
 
@@ -375,7 +375,7 @@ void test_cutbelow()
 			keyNew("user/export/c/x/b/blah", KEY_END),
 			keyNew("user/export/xyz", KEY_END),
 			KS_END);
-	succeed_if (compare_keyset(part, cmp_part) == 0, "part keys wrong");
+	compare_keyset(part, cmp_part);
 	ksDel (part);
 	ksDel (cmp_part);
 	keyDel (cutpoint);
@@ -411,7 +411,7 @@ void test_cutbelow_1()
 			keyNew("user/export-backup-2/x", KEY_END),
 			keyNew("user/export-backup/b", KEY_END),
 			KS_END);
-	succeed_if (compare_keyset(orig, cmp_orig) == 0, "orig keys wrong");
+	compare_keyset(orig, cmp_orig);
 	ksDel (orig);
 	ksDel (cmp_orig);
 
@@ -422,7 +422,7 @@ void test_cutbelow_1()
 			keyNew("user/export/c/x/b/blah", KEY_END),
 			keyNew("user/export/xyz", KEY_END),
 			KS_END);
-	succeed_if (compare_keyset(part, cmp_part) == 0, "part keys wrong");
+	compare_keyset(part, cmp_part);
 	ksDel (part);
 	ksDel (cmp_part);
 	keyDel (cutpoint);
@@ -638,8 +638,8 @@ void test_morecut()
 	succeed_if (!strcmp(keyName(ksCurrent(ks)), "system/valid/key2"),
 			"cursor jumped somewhere else");
 
-	succeed_if (compare_keyset (cut, split1) == 0, "user keyset not correct");
-	succeed_if (compare_keyset (ks, split2) == 0, "system keyset not correct");
+	compare_keyset(cut, split1);
+	compare_keyset(ks, split2);
 	ksDel (cut);
 
 	keyDel (userKey);
@@ -694,8 +694,8 @@ void test_cutafter()
 	// printf ("%s\n", keyName(ksCurrent(ks)));
 	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/c/valid/key"), "wrong cursor");
 
-	succeed_if (compare_keyset (cut, split1) == 0, "user keyset not correct");
-	succeed_if (compare_keyset (ks, split2) == 0, "system keyset not correct");
+	compare_keyset(cut, split1);
+	compare_keyset(ks, split2);
 	ksDel (cut);
 
 	keyDel (userKey);

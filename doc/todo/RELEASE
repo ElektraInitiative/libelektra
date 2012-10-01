@@ -1,9 +1,17 @@
 This describes what to do for an release!
 
+== Preperation ==
+
+TODO: describe directory structure
+Make build-release folder
+
 Set environment variable VERSION to current version to make those
 scripts work:
 
  export VERSION=0.x.y
+
+
+== Cleanup ==
 
 
 For the first few steps you have to work on branch master:
@@ -25,63 +33,84 @@ Finally increment version number in CMakeLists.txt:
  editor CMakeLists.txt
  git-commit -m "Ready for release $VERSION" CMakeLists.txt
 
-Push changes to gitorious:
- git-pull && git-push
 
 
+== Source Package ==
 
 Now lets merge that to the release branch:
  git-checkout release
  git-merge --no-ff master
-
-Create a new ChangeLog:
- git log --first-parent master > ChangeLog
+ git-commit --amend -m "Release $VERSION"
 
 Build tar.gz and tag version and make hashsum:
- git-commit --amend ChangeLog -m "Release $VERSION"
- make source-package
+ cd ~build && make source-package
 
-Unpack + compile + test those sources (using valgrind!):
- tar xvzf elektra-$VERSION.tar.gz && mkdir build && cd build && cmake ../elektra-$VERSION && make && ctest -T memcheck
-
-Now push release branch with tags to gitorious:
- git-pull && git-push && git-push --tags
-
-
+TODO: write script for that (+ merge with source-package)
+Unpack + compile (with all available plugins) + test those sources (using valgrind!):
+tar xvzf elektra-$VERSION.tar.gz && mkdir build && cd build && cmake -DPLUGINS=ALL ../elektra-$VERSION && make && ctest -T memcheck
 
 Now copy the packages to ftp (stay in same folder):
- cp ../elektra-$VERSION.tar.gz ~elektra-ftp/releases
+ cp ~build/elektra-$VERSION.tar.gz ~elektra-ftp/releases
+ cp ~build/elektra-$VERSION.tar.gz.hashsum ~elektra-ftp/releases
 
-Push elektra-ftp to gitorious:
- cd ~elektra-ftp && git-commit -a
- git-push && git-push gitorious
+Commit elektra-ftp to gitorious:
+ cd ~elektra-ftp
+ git-add releases/elektra-$VERSION.tar.gz
+ git-add releases/elektra-$VERSION.tar.gz.hashsum
+ git-commit -a -m "Release $VERSION"
 
+
+== Documentation ==
 
 And the API docu (stay in same folder):
- mkdir ~elektra-doc/api/$VERSION/ && cp -ra doc/html doc/latex doc/man ~elektra-doc/api/$VERSION/
-
+ mkdir ~elektra-doc/api/$VERSION/ && cd ~build/build && cp -ra doc/html doc/latex doc/man ~elektra-doc/api/$VERSION/
 
 Symlink current to latest version and add everything:
  cd ~elektra-doc/api/ && rm current && ln -s $VERSION current && git-add current $VERSION
 
 
-Push elektra-doc to gitorious:
- cd ~elektra-doc && git-commit -a
- git-push
 
+== Debian Package ==
 
 
 Build deb:
  git-checkout debian
- dch --newversion $VERSION "New upstream version." 
+ git-merge --no-ff release
+
+ dch --newversion $VERSION-1 "New upstream version."
  git-add debian/changelog
- git-commit -m $VERSION # this should be last commit!
- dpkg-buildpackage -rfakeroot -k00B86A15
+ git-commit -m "Debian Package $VERSION-1"
+ git-tag $VERSION-1
+ cp ~elektra-ftp/releases/elektra-$VERSION.tar.gz ~elektra/elektra_$VERSION.orig.tar.gz
+ git-buildpackage -rfakeroot -k00B86A15
 
 
 Now install package + run some basic commands:
  kdb --version
 
-Debian packages in chroot + publish in reprepro (todo)
+
+
+== Publish ==
+
+
+Now we know that everything worked, well
+
+Now push release branch with tags to gitorious:
+ cd ~e && git-pull && git-push && git-push --tags
+
+Push elektra-ftp to gitorious:
+ cd ~elektra-ftp
+ git-push && git-push gitorious
+
+
+Push changes to gitorious:
+ git-pull && git-push
+
+Push elektra-doc to gitorious:
+ cd ~elektra-doc && git-commit -a -m "$VERSION Release"
+ git-push
+
+
+TODO: Debian packages in chroot + publish in reprepro
 
 Finally check links and send out mail to list

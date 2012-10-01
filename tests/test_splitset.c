@@ -100,7 +100,7 @@ void test_needsync()
 	succeed_if (elektraSplitDivide(split, handle, ks) == 1, "there should be a need sync");
 
 	succeed_if (split->handles[0] == handle->defaultBackend, "handle not correct");
-	succeed_if (compare_keyset(split->keysets[0], ks) == 0, "keyset not correct");
+	compare_keyset(split->keysets[0], ks);
 	succeed_if (split->syncbits[0] & 1, "sync bit should be set");
 
 	succeed_if (split->size == 1, "size should be one");
@@ -118,7 +118,7 @@ void test_needsync()
 	succeed_if (elektraSplitBuildup(split, handle, parent) == 1, "buildup failure");
 	succeed_if (elektraSplitDivide (split, handle, ks) == 0, "there should not be a need sync");
 	succeed_if (split->handles[0] == handle->defaultBackend, "handle not correct");
-	succeed_if (compare_keyset(split->keysets[0], ks) == 0, "keyset not correct");
+	compare_keyset(split->keysets[0], ks);
 	succeed_if ((split->syncbits[0] & 1) == 0, "sync bit should be set");
 
 	succeed_if (split->size == 1, "size should be one");
@@ -138,7 +138,7 @@ void test_needsync()
 	succeed_if (elektraSplitBuildup(split, handle, parent) == 1, "buildup failure");
 	succeed_if (elektraSplitDivide (split, handle, ks) == 1, "there should be a need sync");
 	succeed_if (split->handles[0] == handle->defaultBackend, "handle not correct");
-	succeed_if (compare_keyset(split->keysets[0], ks) == 0, "keyset not correct");
+	compare_keyset(split->keysets[0], ks);
 	succeed_if (split->syncbits[0] & 1, "sync bit should be set");
 	elektraSplitDel (split);
 
@@ -188,8 +188,8 @@ void test_mount()
 	succeed_if (split->size == 3, "not splitted according user, system");
 	succeed_if (ksGetSize(split->keysets[0]) == 2, "size of keyset not correct");
 	succeed_if (ksGetSize(split->keysets[1]) == 2, "size of keyset not correct");
-	succeed_if (compare_keyset (split->keysets[1], split1) == 0, "user keyset not correct");
-	succeed_if (compare_keyset (split->keysets[0], split2) == 0, "system keyset not correct");
+	compare_keyset(split->keysets[1], split1);
+	compare_keyset(split->keysets[0], split2);
 	elektraSplitDel (split);
 
 
@@ -280,8 +280,8 @@ void test_easyparent()
 	succeed_if (split->size == 2, "not splitted according user, system");
 	succeed_if (split->syncbits[0] & 1, "system part need to by synced");
 	succeed_if (split->syncbits[1] & 1, "user part need to be synced");
-	succeed_if (compare_keyset (split->keysets[0], split1) == 0, "system keyset not correct");
-	succeed_if (compare_keyset (split->keysets[1], split2) == 0, "user keyset not correct");
+	compare_keyset(split->keysets[0], split1);
+	compare_keyset(split->keysets[1], split2);
 
 	elektraSplitDel (split);
 	keyDel (parentKey);
@@ -297,8 +297,8 @@ void test_easyparent()
 	succeed_if (split->size == 2, "not splitted according user, system");
 	succeed_if (split->syncbits[0] & 1, "system part need to by synced");
 	succeed_if (split->syncbits[1] & 1, "user part need to be synced");
-	succeed_if (compare_keyset (split->keysets[0], split1) == 0, "user keyset not correct");
-	succeed_if (compare_keyset (split->keysets[1], split2) == 0, "system keyset not correct");
+	compare_keyset(split->keysets[0], split1);
+	compare_keyset(split->keysets[1], split2);
 
 	elektraSplitDel (split);
 	keyDel (parentKey);
@@ -350,8 +350,8 @@ void test_optimize()
 	succeed_if (split->size == 3, "not splitted according user, system");
 	succeed_if (split->syncbits[0] == 1, "system part not optimized");
 	succeed_if (split->syncbits[1] == 0, "user part need to by synced");
-	succeed_if (compare_keyset (split->keysets[0], split1) == 0, "user keyset not correct");
-	succeed_if (compare_keyset (split->keysets[1], split2) == 0, "system keyset not correct");
+	compare_keyset(split->keysets[0], split1);
+	compare_keyset(split->keysets[1], split2);
 
 	elektraSplitDel (split);
 
@@ -367,8 +367,8 @@ void test_optimize()
 	succeed_if (split->size == 3, "not splitted according user, system");
 	succeed_if (split->syncbits[0] == 0, "system part not optimized");
 	succeed_if (split->syncbits[1] == 0, "user part not optimized");
-	succeed_if (compare_keyset (split->keysets[0], split1) == 0, "user keyset not correct");
-	succeed_if (compare_keyset (split->keysets[1], split2) == 0, "system keyset not correct");
+	compare_keyset(split->keysets[0], split1);
+	compare_keyset(split->keysets[1], split2);
 
 	elektraSplitDel (split);
 
@@ -390,8 +390,8 @@ void test_optimize()
 	succeed_if (split->size == 3, "not splitted according user, system");
 	succeed_if (split->syncbits[0] == 1, "optimized too much");
 	succeed_if (split->syncbits[1] == 1, "optimized too much");
-	succeed_if (compare_keyset (split->keysets[0], split1) == 0, "user keyset not correct");
-	succeed_if (compare_keyset (split->keysets[1], split2) == 0, "system keyset not correct");
+	compare_keyset(split->keysets[0], split1);
+	compare_keyset(split->keysets[1], split2);
 
 	elektraSplitDel (split);
 
@@ -466,10 +466,10 @@ void test_three()
 	succeed_if (ksGetSize(split->keysets[2]) == 2, "size of keyset not correct");
 	succeed_if (ksGetSize(split->keysets[3]) == 0, "size of keyset not correct");
 	succeed_if (ksGetSize(split->keysets[4]) == 1, "size of keyset not correct");
-	succeed_if (compare_keyset (split->keysets[0], split0) == 0, "system keyset not correct");
-	succeed_if (compare_keyset (split->keysets[1], split1) == 0, "userin keyset not correct");
-	succeed_if (compare_keyset (split->keysets[2], split2) == 0, "userva keyset not correct");
-	succeed_if (compare_keyset (split->keysets[4], split3) == 0, "userva keyset not correct");
+	compare_keyset(split->keysets[0], split0);
+	compare_keyset(split->keysets[1], split1);
+	compare_keyset(split->keysets[2], split2);
+	compare_keyset(split->keysets[4], split3);
 
 	elektraSplitPrepare(split);
 
@@ -485,10 +485,10 @@ void test_three()
 	succeed_if (ksGetSize(split->keysets[1]) == 3, "size of keyset not correct");
 	succeed_if (ksGetSize(split->keysets[2]) == 2, "size of keyset not correct");
 	succeed_if (ksGetSize(split->keysets[3]) == 1, "size of keyset not correct");
-	succeed_if (compare_keyset (split->keysets[0], split0) == 0, "system keyset not correct");
-	succeed_if (compare_keyset (split->keysets[1], split1) == 0, "userin keyset not correct");
-	succeed_if (compare_keyset (split->keysets[2], split2) == 0, "userva keyset not correct");
-	succeed_if (compare_keyset (split->keysets[3], split3) == 0, "userva keyset not correct");
+	compare_keyset(split->keysets[0], split0);
+	compare_keyset(split->keysets[1], split1);
+	compare_keyset(split->keysets[2], split2);
+	compare_keyset(split->keysets[3], split3);
 
 	elektraSplitDel (split);
 
@@ -529,7 +529,7 @@ void test_userremove()
 	succeed_if (split->handles, "did not alloc handles array");
 	succeed_if (split->size == 2, "everything is in two keyset");
 	succeed_if (ksGetSize(split->keysets[1]) == 1, "wrong size");
-	succeed_if (compare_keyset (split->keysets[1], ks) == 0, "comparing: not correct result");
+	compare_keyset(split->keysets[1], ks);
 
 	elektraSplitDel (split);
 
@@ -546,7 +546,7 @@ void test_userremove()
 	succeed_if (split->size == 1, "everything is in two keyset");
 	// output_split(split);
 	succeed_if (ksGetSize(split->keysets[0]) == 1, "wrong size");
-	succeed_if (compare_keyset (split->keysets[0], ks) == 0, "comparing: not correct result");
+	compare_keyset(split->keysets[0], ks);
 	keyDel (parent);
 
 	elektraSplitDel (split);
@@ -598,7 +598,7 @@ void test_userremove()
 	succeed_if (split->size == 1, "everything is in two keyset");
 	// output_split(split);
 	succeed_if (ksGetSize(split->keysets[0]) == 1, "wrong size");
-	succeed_if (compare_keyset (split->keysets[0], ks) == 0, "comparing: not correct result");
+	compare_keyset(split->keysets[0], ks);
 	keyDel (parent);
 
 	elektraSplitDel (split);
@@ -656,7 +656,7 @@ void test_systemremove()
 	succeed_if (split->handles, "did not alloc handles array");
 	succeed_if (split->size == 2, "everything is in two keyset");
 	succeed_if (ksGetSize(split->keysets[0]) == 1, "wrong size");
-	succeed_if (compare_keyset (split->keysets[0], ks) == 0, "comparing: not correct result");
+	compare_keyset(split->keysets[0], ks);
 
 	elektraSplitDel (split);
 
@@ -673,7 +673,7 @@ void test_systemremove()
 	succeed_if (split->size == 1, "everything is in one keyset");
 	// output_split(split);
 	succeed_if (ksGetSize(split->keysets[0]) == 1, "wrong size");
-	succeed_if (compare_keyset (split->keysets[0], ks) == 0, "comparing: not correct result");
+	compare_keyset(split->keysets[0], ks);
 	keyDel (parent);
 
 	elektraSplitDel (split);
@@ -708,7 +708,7 @@ void test_systemremove()
 	succeed_if (split->handles, "did not alloc handles array");
 	succeed_if (split->size == 2, "everything is in two keyset");
 	succeed_if (ksGetSize(split->keysets[0]) == 1, "wrong size");
-	succeed_if (compare_keyset (split->keysets[0], ks) == 0, "keyset comparing failed");
+	compare_keyset(split->keysets[0], ks);
 
 	elektraSplitDel (split);
 
@@ -725,7 +725,7 @@ void test_systemremove()
 	succeed_if (split->size == 1, "everything is in two keyset");
 	// output_split(split);
 	succeed_if (ksGetSize(split->keysets[0]) == 1, "wrong size");
-	succeed_if (compare_keyset (split->keysets[0], ks) == 0, "comparing: not correct result");
+	compare_keyset(split->keysets[0], ks);
 	keyDel (parent);
 
 	elektraSplitDel (split);
@@ -1112,11 +1112,11 @@ void test_emptysplit()
 	succeed_if (ksGetSize(split->keysets[1]) == 0, "wrong size");
 
 	parentKey = keyNew ("system", KEY_VALUE, "default", KEY_END);
-	succeed_if (compare_key (split->parents[0], parentKey) == 0, "parentKey not correct");
+	compare_key(split->parents[0], parentKey);
 	keyDel (parentKey);
 
 	parentKey = keyNew ("user", KEY_VALUE, "default", KEY_END);
-	succeed_if (compare_key (split->parents[1], parentKey) == 0, "parentKey not correct");
+	compare_key(split->parents[1], parentKey);
 	keyDel (parentKey);
 
 	succeed_if (split->handles[0] == handle->defaultBackend, "not correct backend");
@@ -1150,7 +1150,7 @@ void test_nothingsync()
 
 	succeed_if (split->size == 1, "there is an empty keset");
 	succeed_if (ksGetSize(split->keysets[0]) == 0, "wrong size");
-	succeed_if (compare_key (split->parents[0], parentKey) == 0, "parentKey not correct");
+	compare_key(split->parents[0], parentKey);
 	succeed_if (split->handles[0] == handle->defaultBackend, "not correct backend");
 	succeed_if (split->syncbits[0] == 2, "should be marked as root");
 

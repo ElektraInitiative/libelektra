@@ -59,8 +59,9 @@ if (DOXYGEN_FOUND)
 
 		add_custom_command (
 			OUTPUT ${OUTPUT_DIRECTORY}/latex/refman.pdf
-			COMMAND ${PDFLATEX_COMPILER}
-			ARGS ${OUTPUT_DIRECTORY}/latex/refman.tex
+			COMMAND ${PDFLATEX_COMPILER} ARGS ${OUTPUT_DIRECTORY}/latex/refman.tex
+			COMMAND ${PDFLATEX_COMPILER} ARGS ${OUTPUT_DIRECTORY}/latex/refman.tex
+			COMMAND ${PDFLATEX_COMPILER} ARGS ${OUTPUT_DIRECTORY}/latex/refman.tex
 			DEPENDS ${OUTPUT_DIRECTORY}/latex/refman.tex
 			WORKING_DIRECTORY ${OUTPUT_DIRECTORY}/latex/
 		)
@@ -70,6 +71,6 @@ if (DOXYGEN_FOUND)
 		)
 	endif (LATEX_COMPILER)
 else (DOXYGEN_FOUND)
-	message (STATUS "Warning, Doxygen not found, Reference Manual can't be created. But it was requested to do so.")
+	message (STATUS "Warning, Doxygen not found, Reference Manual can't be created.")
 endif (DOXYGEN_FOUND)
 

@@ -54,14 +54,14 @@ void test_mount()
 	Key *sk = keyNew ("user", KEY_VALUE, "user", KEY_END);
 
 	succeed_if (kdb->split->size == 1, "size of split not correct");
-	succeed_if (compare_key (mp, kdb->split->parents[0]) == 0, "parent not correct in split");
+	compare_key(mp, kdb->split->parents[0]);
 
-	succeed_if (compare_key (elektraMountGetBackend (kdb, sk)->mountpoint, mp) == 0, "could not find mp");
-	succeed_if (compare_key (elektraMountGetMountpoint (kdb, sk), mp) == 0, "could not find mp");
+	compare_key(elektraMountGetBackend (kdb, sk)->mountpoint, mp);
+	compare_key(elektraMountGetMountpoint (kdb, sk), mp);
 
 	keySetName (sk, "user/below");
-	succeed_if (compare_key (elektraMountGetBackend (kdb, sk)->mountpoint, mp) == 0, "could not find mp");
-	succeed_if (compare_key (elektraMountGetMountpoint (kdb, sk), mp) == 0, "could not find mp below");
+	compare_key(elektraMountGetBackend (kdb, sk)->mountpoint, mp);
+	compare_key(elektraMountGetMountpoint (kdb, sk), mp);
 
 	keySetName (sk, "system");
 	kdb->defaultBackend = b_new("", "default");
@@ -69,8 +69,8 @@ void test_mount()
 
 	keySetName (mp, "");
 	keySetString (mp, "default");
-	succeed_if (compare_key (elektraMountGetBackend (kdb, sk)->mountpoint, mp) == 0, "could not find mp");
-	succeed_if (compare_key (elektraMountGetMountpoint (kdb, sk), mp) == 0, "could not find mp below");
+	compare_key(elektraMountGetBackend (kdb, sk)->mountpoint, mp);
+	compare_key(elektraMountGetMountpoint (kdb, sk), mp);
 
 	keyDel (sk);
 	keyDel (mp);
@@ -134,7 +134,7 @@ void test_simple()
 	succeed_if (elektraMountOpen(kdb, simple_config(), modules, errorKey) == 0, "could not open trie");
 
 	succeed_if (kdb->split->size == 1, "size of split not correct");
-	succeed_if (compare_key (mp, kdb->split->parents[0]) == 0, "parent not correct in split");
+	compare_key(mp, kdb->split->parents[0]);
 
 	output_warnings (errorKey);
 	output_errors (errorKey);
@@ -149,21 +149,21 @@ void test_simple()
 	keySetName(searchKey, "user/tests/simple");
 	backend = elektraTrieLookup(kdb->trie, searchKey);
 	succeed_if (backend, "there should be a backend");
-	succeed_if (compare_key(backend->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(backend->mountpoint, mp);
 
 
 	keySetName(searchKey, "user/tests/simple/below");
 	Backend *b2 = elektraTrieLookup(kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, mp);
 
 
 	keySetName(searchKey, "user/tests/simple/deep/below");
 	b2 = elektraTrieLookup(kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, mp);
 
 	keyDel (errorKey);
 	ksDel (modules);
@@ -200,11 +200,11 @@ void test_us()
 
 	succeed_if (kdb->split->size == 3, "size of split not correct");
 	mp = keyNew("system", KEY_VALUE, "system", KEY_END);
-	succeed_if (compare_key (mp, kdb->split->parents[0]) == 0, "parent not correct in split");
+	compare_key(mp, kdb->split->parents[0]);
 	keySetName(mp, "user"); keySetString (mp, "user");
-	succeed_if (compare_key (mp, kdb->split->parents[1]) == 0, "parent not correct in split");
+	compare_key(mp, kdb->split->parents[1]);
 	keySetName(mp, "system/elektra"); keySetString (mp, "default");
-	succeed_if (compare_key (mp, kdb->split->parents[2]) == 0, "parent not correct in split");
+	compare_key(mp, kdb->split->parents[2]);
 	keyDel (mp);
 
 	Key *key = keyNew("user/anywhere/backend/simple", KEY_END);
@@ -272,9 +272,9 @@ void test_cascading()
 
 	succeed_if (kdb->split->size == 4, "size of split not correct");
 	Key *mp = keyNew("system/tests/simple", KEY_VALUE, "simple", KEY_END);
-	succeed_if (compare_key (mp, kdb->split->parents[0]) == 0, "parent not correct in split");
+	compare_key(mp, kdb->split->parents[0]);
 	keySetName(mp, "user/tests/simple"); keySetString (mp, "simple");
-	succeed_if (compare_key (mp, kdb->split->parents[1]) == 0, "parent not correct in split");
+	compare_key(mp, kdb->split->parents[1]);
 	keyDel (mp);
 
 	// output_split (kdb->split);
@@ -295,40 +295,40 @@ void test_cascading()
 	keySetName(searchKey, "user/tests/simple");
 	backend = elektraTrieLookup(kdb->trie, searchKey);
 	succeed_if (backend, "there should be a backend");
-	succeed_if (compare_key(backend->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(backend->mountpoint, mp);
 
 
 	keySetName(searchKey, "user/tests/simple/below");
 	Backend *b2 = elektraTrieLookup(kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, mp);
 
 
 	keySetName(searchKey, "user/tests/simple/deep/below");
 	b2 = elektraTrieLookup(kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, mp);
 
 
 	keySetName(searchKey, "system/tests/simple");
 	backend = elektraTrieLookup(kdb->trie, searchKey);
 	succeed_if (backend, "there should be a backend");
-	succeed_if (compare_key(backend->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(backend->mountpoint, mp);
 
 	keySetName(searchKey, "system/tests/simple/below");
 	b2 = elektraTrieLookup(kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, mp);
 
 
 	keySetName(searchKey, "system/tests/simple/deep/below");
 	b2 = elektraTrieLookup(kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, mp);
 
 
 	keyDel (errorKey);
@@ -366,11 +366,11 @@ void test_root()
 
 	succeed_if (kdb->split->size == 3, "size of split not correct");
 	Key *mp = keyNew("system", KEY_VALUE, "root", KEY_END);
-	succeed_if (compare_key (mp, kdb->split->parents[0]) == 0, "parent not correct in split");
+	compare_key(mp, kdb->split->parents[0]);
 	keySetName(mp, "user"); keySetString (mp, "root");
-	succeed_if (compare_key (mp, kdb->split->parents[1]) == 0, "parent not correct in split");
+	compare_key(mp, kdb->split->parents[1]);
 	keySetName(mp, "user/tests/simple"); keySetString (mp, "simple");
-	succeed_if (compare_key (mp, kdb->split->parents[2]) == 0, "parent not correct in split");
+	compare_key(mp, kdb->split->parents[2]);
 
 	Key *searchKey = keyNew("", KEY_END);
 	Key *rmp = keyNew("", KEY_VALUE, "root", KEY_END);
@@ -380,28 +380,28 @@ void test_root()
 	keySetName (searchKey, "user");
 	b2 = elektraTrieLookup(kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
-	succeed_if (compare_key(b2->mountpoint, rmp) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, rmp);
 
 
 	Backend *backend = 0;
 	keySetName(searchKey, "user/tests/simple");
 	backend = elektraTrieLookup(kdb->trie, searchKey);
 	succeed_if (backend, "there should be a backend");
-	succeed_if (compare_key(backend->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(backend->mountpoint, mp);
 
 
 	keySetName(searchKey, "user/tests/simple/below");
 	b2 = elektraTrieLookup(kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, mp);
 
 
 	keySetName(searchKey, "user/tests/simple/deep/below");
 	b2 = elektraTrieLookup(kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, mp);
 
 	keyDel (mp);
 	keyDel (rmp);
@@ -425,13 +425,13 @@ void test_default()
 
 	succeed_if (kdb->split->size == 4, "size of split not correct");
 	Key *mp = keyNew("system", KEY_VALUE, "root", KEY_END);
-	succeed_if (compare_key (mp, kdb->split->parents[0]) == 0, "parent not correct in split");
+	compare_key(mp, kdb->split->parents[0]);
 	keySetName(mp, "user"); keySetString (mp, "root");
-	succeed_if (compare_key (mp, kdb->split->parents[1]) == 0, "parent not correct in split");
+	compare_key(mp, kdb->split->parents[1]);
 	keySetName(mp, "system/elektra"); keySetString (mp, "default");
-	succeed_if (compare_key (mp, kdb->split->parents[3]) == 0, "parent not correct in split");
+	compare_key(mp, kdb->split->parents[3]);
 	keySetName(mp, "user/tests/simple"); keySetString (mp, "simple");
-	succeed_if (compare_key (mp, kdb->split->parents[2]) == 0, "parent not correct in split");
+	compare_key(mp, kdb->split->parents[2]);
 
 	/*
 	output_warnings (errorKey);
@@ -450,41 +450,41 @@ void test_default()
 	keySetName (searchKey, "user");
 	b2 = elektraTrieLookup(kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
-	succeed_if (compare_key(b2->mountpoint, rmp) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, rmp);
 
 
 	Backend *backend = 0;
 	keySetName(searchKey, "user/tests/simple");
 	backend = elektraTrieLookup(kdb->trie, searchKey);
 	succeed_if (backend, "there should be a backend");
-	succeed_if (compare_key(backend->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(backend->mountpoint, mp);
 
 
 	keySetName(searchKey, "user/tests/simple/below");
 	b2 = elektraTrieLookup(kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, mp);
 
 
 	keySetName(searchKey, "user/tests/simple/deep/below");
 	b2 = elektraTrieLookup(kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, mp);
 
 	Key *dmp = keyNew ("", KEY_VALUE, "default", KEY_END);
 	keySetName(searchKey, "system/elektra");
 	b2 = elektraTrieLookup(kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (b2 == kdb->defaultBackend, "should be the default backend");
-	succeed_if (compare_key(b2->mountpoint, dmp) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, dmp);
 
 	keySetName(searchKey, "system/elektra/below");
 	b2 = elektraTrieLookup(kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (b2 == kdb->defaultBackend, "should be the default backend");
-	succeed_if (compare_key(b2->mountpoint, dmp) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, dmp);
 
 	keyDel (dmp);
 	keyDel (mp);
@@ -515,18 +515,18 @@ void test_modules()
 
 	succeed_if (kdb->split->size > 5, "size of split not correct");
 	Key *mp = keyNew("system", KEY_VALUE, "root", KEY_END);
-	succeed_if (compare_key (mp, kdb->split->parents[0]) == 0, "parent not correct in split");
+	compare_key(mp, kdb->split->parents[0]);
 	keySetName(mp, "user"); keySetString (mp, "root");
-	succeed_if (compare_key (mp, kdb->split->parents[1]) == 0, "parent not correct in split");
+	compare_key(mp, kdb->split->parents[1]);
 	keySetName(mp, "system/elektra"); keySetString (mp, "default");
-	succeed_if (compare_key (mp, kdb->split->parents[3]) == 0, "parent not correct in split");
+	compare_key(mp, kdb->split->parents[3]);
 	/*
 	keySetName(mp, "system/elektra/modules/default"); keySetString (mp, "modules");
-	succeed_if (compare_key (mp, kdb->split->parents[4]) == 0, "parent not correct in split");
+	compare_key(mp, kdb->split->parents[4]);
 	*/
 
 	keySetName(mp, "user/tests/simple"); keySetString (mp, "simple");
-	succeed_if (compare_key (mp, kdb->split->parents[2]) == 0, "parent not correct in split");
+	compare_key(mp, kdb->split->parents[2]);
 
 	exit_if_fail (kdb->trie, "trie was not build up successfully");
 
@@ -540,41 +540,41 @@ void test_modules()
 	keySetName (searchKey, "user");
 	b2 = elektraTrieLookup(kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
-	succeed_if (compare_key(b2->mountpoint, rmp) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, rmp);
 
 
 	Backend *backend = 0;
 	keySetName(searchKey, "user/tests/simple");
 	backend = elektraTrieLookup(kdb->trie, searchKey);
 	succeed_if (backend, "there should be a backend");
-	succeed_if (compare_key(backend->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(backend->mountpoint, mp);
 
 
 	keySetName(searchKey, "user/tests/simple/below");
 	b2 = elektraTrieLookup(kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, mp);
 
 
 	keySetName(searchKey, "user/tests/simple/deep/below");
 	b2 = elektraTrieLookup(kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	succeed_if (compare_key(b2->mountpoint, mp) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, mp);
 
 	Key *dmp = keyNew ("", KEY_VALUE, "default", KEY_END);
 	keySetName(searchKey, "system/elektra");
 	b2 = elektraTrieLookup(kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (b2 == kdb->defaultBackend, "should be the default backend");
-	succeed_if (compare_key(b2->mountpoint, dmp) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, dmp);
 
 	keySetName(searchKey, "system/elektra/below");
 	b2 = elektraTrieLookup(kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (b2 == kdb->defaultBackend, "should be the default backend");
-	succeed_if (compare_key(b2->mountpoint, dmp) == 0, "mountpoint key not correct");
+	compare_key(b2->mountpoint, dmp);
 
 	Key *mmp = keyNew ("system/elektra/modules", KEY_VALUE, "modules", KEY_END);
 	keyAddBaseName (mmp, "default");
@@ -584,7 +584,7 @@ void test_modules()
 	b2 = elektraTrieLookup(kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (b2 != kdb->defaultBackend, "should not be the default backend");
-	succeed_if (compare_key(b2->mountpoint, mmp) == 0, "mountpoint key for modules not correct");
+	compare_key(b2->mountpoint, mmp);
 	*/
 
 	keyDel (mmp);
@@ -628,9 +628,9 @@ void test_defaultonly()
 
 	succeed_if (kdb->split->size == 2, "size of split not correct");
 	Key *mp = keyNew("system", KEY_VALUE, "default", KEY_END);
-	succeed_if (compare_key (mp, kdb->split->parents[0]) == 0, "parent not correct in split");
+	compare_key(mp, kdb->split->parents[0]);
 	keySetName(mp, "user"); keySetString (mp, "default");
-	succeed_if (compare_key (mp, kdb->split->parents[1]) == 0, "parent not correct in split");
+	compare_key(mp, kdb->split->parents[1]);
 
 	output_warnings (errorKey);
 	output_errors (errorKey);

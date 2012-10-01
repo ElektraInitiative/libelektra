@@ -1,9 +1,9 @@
 /***************************************************************************
-            kwallet.h  -  Skeleton of backends to access the Key Database
+                     yajl.c  -  Skeleton of a plugin
                              -------------------
-    begin                : Mon Dec 26 2004
-    copyright            : (C) 2004 by Avi Alkalay
-    email                : avi@unix.sh
+    begin                : Fri May 21 2010
+    copyright            : (C) 2010 by Markus Raab
+    email                : elektra@markus-raab.org
  ***************************************************************************/
 
 /***************************************************************************
@@ -13,31 +13,27 @@
  *                                                                         *
  ***************************************************************************/
 
-
-
 /***************************************************************************
  *                                                                         *
  *   This is the skeleton of the methods you'll have to implement in order *
- *   to provide libelektra.so a valid backend.                             *
- *   Simple fill the empty _kwallet functions with your code and you are   *
+ *   to provide a valid plugin.                                            *
+ *   Simple fill the empty functions with your code and you are            *
  *   ready to go.                                                          *
  *                                                                         *
  ***************************************************************************/
 
 
+#ifndef ELEKTRA_PLUGIN_YAJL_H
+#define ELEKTRA_PLUGIN_YAJL_H
 
 #include <kdbplugin.h>
 
 
+int elektraYajlOpen(Plugin *handle, Key *errorKey);
+int elektraYajlClose(Plugin *handle, Key *errorKey);
+int elektraYajlGet(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraYajlSet(Plugin *handle, KeySet *ks, Key *parentKey);
 
-extern "C" {
+Plugin *ELEKTRA_PLUGIN_EXPORT(yajl);
 
-int elektraKwalletOpen(ckdb::Plugin *handle, ckdb::Key *error);
-int elektraKwalletClose(ckdb::Plugin *handle, ckdb::Key *error);
-int elektraKwalletGet(ckdb::Plugin *, ckdb::KeySet *returned, ckdb::Key
-		*parentKey);
-int elektraKwalletSet(ckdb::Plugin *, ckdb::KeySet *returned, ckdb::Key
-		*parentKey);
-ckdb::Plugin *ELEKTRA_PLUGIN_EXPORT(kwallet);
-
-} // extern "C"
+#endif

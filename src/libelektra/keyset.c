@@ -14,6 +14,13 @@
  ***************************************************************************/
 
 
+/** @class flat_copy
+ *
+ * \note Because the key is not copied,
+ * also the pointer to the current metadata keyNextMeta()
+ * will be shared.
+ */
+
 /**
  * @defgroup keyset KeySet :: Class Methods
  * @brief Methods to manipulate KeySets.
@@ -21,17 +28,14 @@
  * A KeySet is a sorted set of keys.
  * So the correct name actually would be KeyMap.
  *
- * Terminate with ksNew(0) or ksNew(20, ..., KS_END)
- * This is because there is a list of Key* required and
- * KS_END has the length of (Key*).
- *
- * It can be implemented in various ways like a linked list or with a
- * dynamically allocated array.
- *
  * With ksNew() you can create a new KeySet.
  *
- * You can add keys with ksAppendKey() in the keyset. ksGetSize() tells you
- * the current size of the keyset.
+ * You can add keys with ksAppendKey() in the keyset.
+ * Using ksAppend() you can append a whole keyset.
+ *
+ * \copydoc flat_copy
+ *
+ * ksGetSize() tells you the current size of the keyset.
  *
  * With ksRewind() and ksNext() you can navigate through the keyset. Don't
  * expect any particular order, but it is assured that you will get every
@@ -104,6 +108,8 @@ ksDel (myConfig); // delete keyset and all keys appended
  * You can use a various long list of parameters to preload the keyset
  * with a list of keys. Either your first and only parameter is 0 or
  * your last parameter must be KEY_END.
+ *
+ * So, terminate with ksNew(0) or ksNew(20, ..., KS_END)
  *
  * For most uses
  * @code
@@ -260,7 +266,9 @@ KeySet *ksDup (const KeySet * source)
  *
  * A flat copy is made, so the keys will not be duplicated,
  * but there reference counter is updated, so both keysets
- * need to be  ksDel().
+ * need to be ksDel().
+ *
+ * @copydoc flat_copy
  *
  * @code
 int f (KeySet *ks)
@@ -615,6 +623,8 @@ ssize_t ksSearchInternal(const KeySet *ks, const Key *toAppend)
  * The reference counter of the key will be incremented, and
  * thus toAppend is not const.
  *
+ * \copydoc flat_copy
+ *
  * If the keyname already existed, it will be replaced with
  * the new key.
  *
@@ -700,6 +710,8 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
  *
  * If a key is both in toAppend and ks, the Key in ks will be
  * overridden.
+ *
+ * \copydoc flat_copy
  *
  * @post Sorted KeySet ks with all keys it had before and additionally
  *       the keys from toAppend

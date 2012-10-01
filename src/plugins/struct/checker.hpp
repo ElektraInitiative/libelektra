@@ -36,8 +36,8 @@ class StructChecker : public Checker
 {
 	KeySet config;
 public:
-	StructChecker (KeySet config)
-		: config(config)
+	StructChecker (KeySet config_)
+		: config(config_)
 	{}
 
 	void buildup (Factory &f, std::string const& templateParameter);

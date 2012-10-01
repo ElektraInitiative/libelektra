@@ -33,10 +33,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <stdlib.h>
-
-#ifdef HAVE_ERRNO_H
 #include <errno.h>
-#endif
 
 int elektraPathOpen(Plugin *handle, Key *errorKey);
 int elektraPathClose(Plugin *handle, Key *errorKey);

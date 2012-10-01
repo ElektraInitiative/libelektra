@@ -12,7 +12,7 @@
 
 #include "hexcode.h"
 
-#include <tests.h>
+#include <tests_internal.h>
 
 const char encoded_string[] = "a\\20value\\20with\\3D\\3B\\23\\20and\\20\\5C\\20itself";
 const char decoded_string[] = "a value with=;# and \\ itself";
@@ -86,7 +86,7 @@ void check_reversibility(const char* msg)
 	elektraHexcodeEncode (encode, hd);
 
 	elektraHexcodeDecode (encode, hd);
-	succeed_if (compare_key(encode, decode) == 0, "was not reversible");
+	compare_key(encode, decode);
 
 	keyDel (decode);
 	keyDel (encode);
