@@ -84,7 +84,19 @@ int resolveFilename(Key* forKey, resolverHandle *p)
 
 		if (!owner)
 		{
+			/* On my system this basically gives the
+			 * environment variable USER, so if unset
+			 * this will fail too.
+			 * But on other systems this might be
+			 * implemented differently.*/
 			owner = getlogin();
+		}
+
+		if (!owner)
+		{
+			/* Needed for some unit tests which do not have
+			 * an owner and also no environment*/
+			owner = "test";
 		}
 
 		size_t filenameSize = sizeof(KDB_DB_HOME)
