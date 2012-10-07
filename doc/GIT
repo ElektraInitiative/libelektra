@@ -35,9 +35,12 @@ there are only merges from master.
 
  debian
 
-Merge changes from the release branch to
-the debian branch in order to make
-debian packages.
+Is the branch to be used to build debian
+packages. It additionally contains the
+debian folder. Only debian related commits
+should be on the debian branch - otherwise
+it should only contain --no-ff merges from
+release.
 
 == Local branches ==
 
