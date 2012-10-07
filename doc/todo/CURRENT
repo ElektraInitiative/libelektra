@@ -1,16 +1,31 @@
-== 0.8.3 ==
-
-write release notes
-announce
-
-fix debian_packaging and todo/RELEASE
-
-
-build_server:
-
 == 0.8.4 ==
 
-abi tests:
+jenkins:
+	build packages for dfc
+	cleanup elektra branches
+	job for docu
+	use docu from build server?
+	(source packages does not work)
+
+
+elektra kdb fixes:
+	document C++ interface
+	build docu for C++ interface.. (copydoc)
+	import/export
+	with automated kdb tests
+
+
+script testing:
+	should be runned by make test
+	should be available at tarket (be installed)
+	can be everything directly at the kdb commandline tool
+	should be able to run tests for all plugins +
+	different combination of plugins
+	should support partly installations and/or builds (not all plugins)
+	line number (maybe not important)
+	modularity (testing where the code is) (maybe not important)
+		-> plugin specifica might be tested at other level/only C
+		-> how to do without need of capabilities again? backends at serialization level?? (like with mount)
 
 documentation:
 	comment -> meta data
@@ -39,6 +54,9 @@ kdb tool:
 	request -f for rm, mv in system/elektra
 	converting of config files (automated tests)
 	test mount/unmount
+
+
+== 0.8.5 ==
 
 tcl:
 	parse output?
