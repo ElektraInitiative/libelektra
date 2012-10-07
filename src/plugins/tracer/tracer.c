@@ -25,9 +25,13 @@
  ***************************************************************************/
 
 
+#ifndef HAVE_KDBCONFIG
+# include "kdbconfig.h"
+#endif
+
 #include "tracer.h"
 
-int elektraTracerOpen(Plugin *handle, Key *errorKey)
+int elektraTracerOpen(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
 {
 	/*
 	ssize_t nr_keys = 0;
@@ -42,7 +46,7 @@ int elektraTracerOpen(Plugin *handle, Key *errorKey)
 	return 0;
 }
 
-int elektraTracerClose(Plugin *handle, Key *errorKey)
+int elektraTracerClose(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
 {
 	/*
 	printf ("tracer: close(%p)\n", (void*)handle);

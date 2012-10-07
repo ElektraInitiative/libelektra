@@ -25,6 +25,10 @@
 
 #include "hexcode.h"
 
+#ifndef HAVE_KDBCONFIG
+# include "kdbconfig.h"
+#endif
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -229,7 +233,7 @@ void elektraHexcodeEncode (Key *cur, CHexData *hd)
 }
 
 
-int elektraHexcodeSet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraHexcodeSet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA_UNUSED)
 {
 	/* set all keys */
 	CHexData *hd = elektraPluginGetData (handle);
@@ -256,7 +260,7 @@ int elektraHexcodeSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	return 1; /* success */
 }
 
-int elektraHexcodeOpen(Plugin *handle, Key *k)
+int elektraHexcodeOpen(Plugin *handle, Key *key ELEKTRA_UNUSED)
 {
 	CHexData *hd = calloc (1, sizeof(CHexData));
 
@@ -307,7 +311,7 @@ int elektraHexcodeOpen(Plugin *handle, Key *k)
 	return 0;
 }
 
-int elektraHexcodeClose(Plugin *handle, Key *k)
+int elektraHexcodeClose(Plugin *handle, Key *key ELEKTRA_UNUSED)
 {
 	CHexData *hd = elektraPluginGetData (handle);
 

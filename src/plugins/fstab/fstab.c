@@ -24,6 +24,10 @@
 
 #include "fstab.h"
 
+#ifndef HAVE_KDBCONFIG
+# include "kdbconfig.h"
+#endif
+
 #define MAX_NUMBER_SIZE 10
 
 /** @param name is a buffer with KDB_MAX_PATH_LENGTH space.
@@ -69,7 +73,7 @@ void elektraFstabFsName(char * fsname, struct mntent *fstabEntry,
 	}
 }
 
-int elektraFstabGet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraFstabGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
 	int errnosave = errno;
 	ssize_t nr_keys = 0;
@@ -221,7 +225,7 @@ int elektraFstabGet(Plugin *handle, KeySet *returned, Key *parentKey)
 }
 
 
-int elektraFstabSet(Plugin *handle, KeySet *ks, Key *parentKey)
+int elektraFstabSet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 {
 	int ret = 1;
 	int errnosave = errno;

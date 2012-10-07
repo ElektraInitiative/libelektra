@@ -25,6 +25,10 @@
 
 #include "glob.h"
 
+#ifndef HAVE_KDBCONFIG
+# include "kdbconfig.h"
+#endif
+
 int elektraGlobMatch(Key *key, const Key *match)
 {
 	if (!fnmatch (keyString(match), keyName(key),
@@ -35,7 +39,7 @@ int elektraGlobMatch(Key *key, const Key *match)
 	return 0;
 }
 
-int elektraGlobOpen(Plugin *handle, Key *parentKey)
+int elektraGlobOpen(Plugin *handle ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
 {
 	/* plugin initialization logic should be here */
 	/* TODO: name of parentKey is not set...*/
@@ -44,7 +48,7 @@ int elektraGlobOpen(Plugin *handle, Key *parentKey)
 	return 1; /* success */
 }
 
-int elektraGlobClose(Plugin *handle, Key *errorKey)
+int elektraGlobClose(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
 {
 	/* free all plugin resources and shut it down */
 
@@ -54,7 +58,7 @@ int elektraGlobClose(Plugin *handle, Key *errorKey)
 	return 1; /* success */
 }
 
-int elektraGlobGet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraGlobGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey ELEKTRA_UNUSED)
 {
 	/* configuration only */
 	KeySet *n;

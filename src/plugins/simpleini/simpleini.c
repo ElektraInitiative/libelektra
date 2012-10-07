@@ -23,6 +23,10 @@
  ***************************************************************************/
 
 
+#ifndef HAVE_KDBCONFIG
+# include "kdbconfig.h"
+#endif
+
 #include "simpleini.h"
 
 #include <kdberrors.h>
@@ -30,7 +34,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int elektraSimpleiniGet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraSimpleiniGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
 	/* get all keys */
 
@@ -127,7 +131,7 @@ int elektraSimpleiniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	return 1; /* success */
 }
 
-int elektraSimpleiniSet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraSimpleiniSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
 	/* set all keys */
 

@@ -369,13 +369,13 @@ int elektraPluginClose(Plugin *handle, Key *errorKey)
 	return rc;
 }
 
-static int elektraMissingGet (Plugin *plugin, KeySet *ks, Key *error)
+static int elektraMissingGet (Plugin *plugin ELEKTRA_UNUSED, KeySet *ks ELEKTRA_UNUSED, Key *error)
 {
 	ELEKTRA_SET_ERROR(62, error, keyName(error));
 	return -1;
 }
 
-static int elektraMissingSet (Plugin *plugin, KeySet *ks, Key *error)
+static int elektraMissingSet (Plugin *plugin ELEKTRA_UNUSED, KeySet *ks ELEKTRA_UNUSED, Key *error)
 {
 	ELEKTRA_SET_ERROR(63, error, keyName(error));
 	return -1;
@@ -395,7 +395,7 @@ Plugin *elektraPluginMissing(void)
 	return returned;
 }
 
-static int elektraVersionGet (Plugin *handle, KeySet *returned, Key *error)
+static int elektraVersionGet (Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *error ELEKTRA_UNUSED)
 {
 	KeySet *info = elektraVersionSet();
 	ksAppend(returned, info);
