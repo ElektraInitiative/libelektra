@@ -89,7 +89,8 @@ endif (BUILD_SHARED)
 if (BUILD_FULL OR BUILD_STATIC)
 	#for the next two builds, append some more sources
 	get_property (elektra-full_SRCS GLOBAL PROPERTY elektra-full_SRCS)
-	list (APPEND SOURCES ${elektra-full_SRCS})
+	list (APPEND SOURCES ${elektra-full_SRCS}
+		${BINARY_INCLUDE_DIR}/kdberrors.h)
 	list (APPEND SOURCES "${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.c")
 
 	#and get all libraries to link against
