@@ -22,6 +22,9 @@ check_include_file(string.h     HAVE_STRING_H)
 check_include_file(time.h       HAVE_TIME_H)
 check_include_file(unistd.h     HAVE_UNISTD_H)
 
+set (ELEKTRA_DEPRECATED "__attribute__ ((deprecated))")
+set (ELEKTRA_UNUSED "__attribute__ ((unused))")
+
 configure_file (
 	"${CMAKE_CURRENT_SOURCE_DIR}/kdb.h"
 	"${CMAKE_CURRENT_BINARY_DIR}/kdb.h"

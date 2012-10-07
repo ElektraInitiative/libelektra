@@ -30,6 +30,12 @@
   * to search for user configuration. */
 #define KDB_DB_HOME              "@KDB_DB_HOME@"
 
+/** Declares a parameter as unused. */
+#define ELEKTRA_UNUSED           @ELEKTRA_UNUSED@
+
+/** Declares an API as deprecated. */
+#define ELEKTRA_DEPRECATED       @ELEKTRA_DEPRECATED@
+
 /* disable debug output messages */
 #define DEBUG @DEBUG@
 
