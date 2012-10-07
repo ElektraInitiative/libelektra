@@ -24,7 +24,6 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "resolver.h"
 
 #include <stdlib.h>
@@ -41,6 +40,10 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <libgen.h>
+
+#ifdef _GNU_SOURCE
+#error "Something turned _GNU_SOURCE on, this breaks strerror_r!"
+#endif
 
 void resolverInit (resolverHandle *p, const char *path)
 {
@@ -60,6 +63,36 @@ void resolverClose (resolverHandle *p)
 	free (p->filename); p->filename = 0;
 	free (p->lockfile); p->lockfile = 0;
 	free (p->tempfile); p->tempfile = 0;
+}
+
+/**
+ * @brief Add error text received from strerror_r
+ *
+ * @param errorText should have at least ERROR_SIZE bytes in reserve
+ */
+static void elektraAddErrorText(char *errorText)
+{
+	char buffer[ERROR_SIZE];
+	int error_ret = strerror_r(errno, buffer, ERROR_SIZE-2);
+	if (error_ret == -1)
+	{
+		if (errno == EINVAL)
+		{
+			strcat (errorText, "Got no valid errno!");
+		}
+		else if (errno == ERANGE)
+		{
+			strcat (errorText, "Not enough space for error text in buffer!");
+		}
+		else
+		{
+			strcat (errorText, "strerror_r returned wrong error value!");
+		}
+	}
+	else
+	{
+		strcat (errorText, buffer);
+	}
 }
 
 
@@ -109,7 +142,7 @@ int elektraResolverOpen(Plugin *handle, Key *errorKey)
 	return 0; /* success */
 }
 
-int elektraResolverClose(Plugin *handle, Key *errorKey)
+int elektraResolverClose(Plugin *handle, Key *errorKey ELEKTRA_UNUSED)
 {
 	resolverHandles *ps = elektraPluginGetData(handle);
 
@@ -191,15 +224,12 @@ int elektraResolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	struct stat buf;
 	if (stat (pk->filename, &buf) == -1)
 	{
-		char buffer[ERROR_SIZE];
-		strerror_r(errno, buffer, ERROR_SIZE);
-
 		char *errorText = malloc(
 				strlen(pk->filename) + ERROR_SIZE + 60);
 		strcpy (errorText, "Storage plugin will try to create missing file \"");
 		strcat (errorText, pk->filename);
-		strcat (errorText, "\", error was: \"");
-		strcat (errorText, buffer);
+		strcat (errorText, "\", stat said: \"");
+		elektraAddErrorText(errorText);
 		strcat (errorText, "\"");
 		ELEKTRA_ADD_WARNING(29, parentKey, errorText);
 		free (errorText);
@@ -217,7 +247,78 @@ int elektraResolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	return 1;
 }
 
-int elektraResolverSet(Plugin *handle, KeySet *returned, Key *parentKey)
+/**
+ * @brief Create pathname recursively.
+ *
+ * Try unless the whole path was
+ * created or it is sure that it cannot be done.
+ *
+ * @param pathname The path to create.
+ * @param mode The mode to use for the directories.
+ *
+ * @retval 0 on success
+ * @retval -1 on error, see errno if mkdir caused the error
+ *         E2BIG if no / was found
+ *         EBADMSG if it was not an absolute path
+ */
+static int elektraMkdirParents(const char *pathname)
+{
+	if (mkdir(pathname, KDB_DIR_MODE | KDB_FILE_MODE) < 0)
+	{
+		if (errno != ENOENT)
+		{
+			return -1;
+		}
+
+		char *p = strrchr(pathname, '/');
+
+		/* nothing found */
+		if (p == NULL)
+		{
+			errno = E2BIG;
+			return -1;
+		}
+
+		/* absolute path */
+		if (p == pathname)
+		{
+			errno = EBADMSG;
+			return -1;
+		}
+
+		/* Cut path at last /. */
+		*p = 0;
+
+		/* Now call ourselves recursively */
+		if (elektraMkdirParents(pathname) < 0)
+		{
+			return -1;
+		}
+
+		/* Restore path. */
+		*p = '/';
+
+		if (mkdir (pathname, KDB_DIR_MODE | KDB_FILE_MODE) < 0)
+		{
+			return -1;
+		}
+	}
+	return 0;
+}
+
+/**
+ * @brief Add identity received from getuid(), geteuid(), getgid() and getegid()
+ *
+ * @param errorText should have at least ERROR_SIZE bytes in reserve
+ */
+static void elektraAddIdentity(char *errorText)
+{
+	char buffer[ERROR_SIZE];
+	snprintf (buffer, ERROR_SIZE-2, "uid: %u, euid: %u, gid: %u, egid: %u", getuid(), geteuid(), getgid(), getegid());
+	strcat (errorText, buffer);
+}
+
+int elektraResolverSet(Plugin *handle, KeySet *returned ELEKTRA_UNUSED, Key *parentKey)
 {
 	resolverHandles *pks = elektraPluginGetData(handle);
 	resolverHandle *pk = 0;
@@ -231,7 +332,11 @@ int elektraResolverSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	{
 		/* no fd up to now, so do action 0 */
 		action = 0;
-	} else  action = 1;
+	}
+	else
+	{
+		action = 1;
+	}
 
 	if (action == 0)
 	{
@@ -244,23 +349,45 @@ int elektraResolverSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		{
 			successful_stat = 0;
 
-			char buffer[ERROR_SIZE];
-			strerror_r(errno, buffer, ERROR_SIZE);
+			if (errno == ENOENT)
+			{
+				/* Do not fail, but try to create directory
+				 * afterwards.*/
+				char *errorText = malloc(
+						strlen(pk->filename) + ERROR_SIZE + 60);
+				strcpy (errorText, "No configuration directory \"");
+				strcat (errorText, dname);
+				strcat (errorText, "\" found: \"");
+				elektraAddErrorText(errorText);
+				strcat (errorText, "\". Will try to create one.");
+				ELEKTRA_ADD_WARNING(72, parentKey, errorText);
+				free (errorText);
 
-			char *errorText = malloc(
-					strlen(pk->filename) + ERROR_SIZE + 60);
-			strcpy (errorText, "No configuration directory \"");
-			strcat (errorText, dname);
-			strcat (errorText, "\" found: \"");
-			strcat (errorText, buffer);
-			strcat (errorText, "\". Will try to create one.");
-			ELEKTRA_ADD_WARNING(72, parentKey, errorText);
-			free (errorText);
+				errno = errnoSave;
+				/* note: cname is not freed() here on purpose*/
+			}
+			else
+			{
+				/* There is no hope, everything else
+				 * then ENOENT is fatal.*/
+				char *errorText = malloc(
+						strlen(pk->filename) + ERROR_SIZE*2 + 60);
+				strcpy (errorText, "Would not be possible to create a directory \"");
+				strcat (errorText, dname);
+				strcat (errorText, "\" ");
+				strcat (errorText, "because stat said: \"");
+				elektraAddErrorText(errorText);
+				strcat (errorText, "\" ");
+				elektraAddIdentity(errorText);
+				ELEKTRA_SET_ERROR(74, parentKey, errorText);
+				free (errorText);
 
-			errno = errnoSave;
-			/* Do not fail, but try to create directory
-			 * afterwards, TODO: ENOTDIR would be an error.
-			 * note: cname is not freed() here*/
+				free (cname);
+
+				errno = errnoSave;
+
+				return -1;
+			}
 		}
 
 		if (successful_stat && !S_ISDIR(buf.st_mode))
@@ -278,18 +405,16 @@ int elektraResolverSet(Plugin *handle, KeySet *returned, Key *parentKey)
 			return -1;
 		}
 
-		if ((!successful_stat) && (mkdir(dname, KDB_DIR_MODE) == -1))
+		if ((!successful_stat) && (elektraMkdirParents(dname) == -1))
 		{
-			char buffer[ERROR_SIZE];
-			strerror_r(errno, buffer, ERROR_SIZE);
-
 			char *errorText = malloc(
-					strlen(pk->filename) + ERROR_SIZE + 60);
+					strlen(pk->filename) + ERROR_SIZE*2 + 60);
 			strcpy (errorText, "Could not create \"");
 			strcat (errorText, dname);
 			strcat (errorText, "\", because: \"");
-			strcat (errorText, buffer);
-			strcat (errorText, "\"");
+			elektraAddErrorText(errorText);
+			strcat (errorText, "\" ");
+			elektraAddIdentity(errorText);
 			ELEKTRA_SET_ERROR(74, parentKey, errorText);
 			free (errorText);
 
@@ -308,16 +433,14 @@ int elektraResolverSet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 		if (pk->fd == -1)
 		{
-			char buffer[ERROR_SIZE];
-			strerror_r(errno, buffer, ERROR_SIZE);
-
 			char *errorText = malloc(
-					strlen(pk->filename) + ERROR_SIZE + 60);
+					strlen(pk->filename) + ERROR_SIZE*2 + 60);
 			strcpy (errorText, "Opening lockfile \"");
 			strcat (errorText, pk->lockfile);
 			strcat (errorText, "\" failed, error was: \"");
-			strcat (errorText, buffer);
-			strcat (errorText, "\"");
+			elektraAddErrorText(errorText);
+			strcat (errorText, "\" ");
+			elektraAddIdentity(errorText);
 			ELEKTRA_SET_ERROR(26, parentKey, errorText);
 			free (errorText);
 
@@ -349,15 +472,12 @@ int elektraResolverSet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 		if (stat(pk->filename, &buf) == -1)
 		{
-			char buffer[ERROR_SIZE];
-			strerror_r(errno, buffer, ERROR_SIZE);
-
 			char *errorText = malloc(
 					strlen(pk->filename) + ERROR_SIZE + 60);
 			strcpy (errorText, "No configuration file \"");
 			strcat (errorText, pk->filename);
 			strcat (errorText, "\" found: \"");
-			strcat (errorText, buffer);
+			elektraAddErrorText(errorText);
 			strcat (errorText, "\". Will try to create one.");
 			ELEKTRA_ADD_WARNING(29, parentKey, errorText);
 			free (errorText);
@@ -427,7 +547,7 @@ int elektraResolverSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	return 0;
 }
 
-int elektraResolverError(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraResolverError(Plugin *handle, KeySet *returned ELEKTRA_UNUSED, Key *parentKey)
 {
 	int errnoSave = errno;
 	resolverHandle *pk = elektraPluginGetData(handle);

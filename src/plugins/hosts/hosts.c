@@ -26,6 +26,11 @@
 
 
 #include "hosts.h"
+
+#ifndef HAVE_KDBCONFIG
+# include "kdbconfig.h"
+#endif
+
 #include <kdbextension.h>
 
 size_t elektraStrLen(const char *s);
@@ -123,7 +128,7 @@ void elektraHostsSetMeta(Key *key, int order)
 	keySetMeta(key, "order", buffer);
 }
 
-int elektraHostsGet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraHostsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
 	int errnosave = errno;
 	FILE * fp;
@@ -260,7 +265,7 @@ int elektraHostsGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	return -1;
 }
 
-int elektraHostsSet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraHostsSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
 	int errnosave = errno;
 	FILE *fp;

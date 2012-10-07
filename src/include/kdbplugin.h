@@ -22,7 +22,6 @@
 #ifndef KDBPLUGIN_H
 #define KDBPLUGIN_H
 
-
 #include <kdb.h>
 
 #ifdef ELEKTRA_STATIC

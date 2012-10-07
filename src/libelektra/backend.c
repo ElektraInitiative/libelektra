@@ -341,7 +341,7 @@ Backend* elektraBackendOpenModules(KeySet *modules, Key *errorKey)
  * @param errorKey the key to issue warnings and errors to
  * @return the fresh allocated default backend or 0 if it failed
  */
-Backend* elektraBackendOpenVersion(Key *errorKey)
+Backend* elektraBackendOpenVersion(Key * errorKey ELEKTRA_UNUSED)
 {
 	Backend *backend = elektraCalloc(sizeof(struct _Backend));
 	backend->refcounter = 1;

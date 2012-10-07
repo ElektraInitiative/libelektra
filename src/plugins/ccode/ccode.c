@@ -25,6 +25,8 @@
 
 #include "ccode.h"
 
+#include "kdbconfig.h"
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -53,7 +55,7 @@ static inline int elektraHexcodeConvFromHex(char c)
 	else return 0; /* Unknown escape char */
 }
 
-int elektraCcodeOpen(Plugin *handle, Key *k)
+int elektraCcodeOpen(Plugin *handle, Key *key ELEKTRA_UNUSED)
 {
 	CCodeData *d = calloc (1, sizeof(CCodeData));
 
@@ -129,7 +131,7 @@ int elektraCcodeOpen(Plugin *handle, Key *k)
 	return 0;
 }
 
-int elektraCcodeClose(Plugin *handle, Key *k)
+int elektraCcodeClose(Plugin *handle, Key *key ELEKTRA_UNUSED)
 {
 	CCodeData *d = elektraPluginGetData (handle);
 
@@ -284,7 +286,7 @@ void elektraCcodeEncode (Key *cur, CCodeData *d)
 }
 
 
-int elektraCcodeSet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraCcodeSet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA_UNUSED)
 {
 	/* set all keys */
 	CCodeData *d = elektraPluginGetData (handle);

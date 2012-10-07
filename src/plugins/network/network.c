@@ -25,6 +25,10 @@
 
 #include "network.h"
 
+#ifndef HAVE_KDBCONFIG
+# include "kdbconfig.h"
+#endif
+
 /* Obtain address(es) matching host/port */
 int elektraNetworkAddrInfo(Key *toCheck)
 {
@@ -55,7 +59,7 @@ int elektraNetworkAddrInfo(Key *toCheck)
 	return 0;
 }
 
-int elektraNetworkGet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraNetworkGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey ELEKTRA_UNUSED)
 {
 	/* configuration only */
 	KeySet *n;
@@ -94,7 +98,7 @@ int elektraNetworkGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	return 1; /* success */
 }
 
-int elektraNetworkSet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraNetworkSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
 	/* set all keys */
 	Key *cur;

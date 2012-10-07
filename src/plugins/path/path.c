@@ -25,7 +25,11 @@
 
 #include "path.h"
 
-int elektraPathGet(Plugin *handle, KeySet *returned, Key *parentKey)
+#ifndef HAVE_KDBCONFIG
+# include "kdbconfig.h"
+#endif
+
+int elektraPathGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey ELEKTRA_UNUSED)
 {
 	/* contract only */
 	KeySet *n;
@@ -61,7 +65,7 @@ int elektraPathGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	return 1; /* success */
 }
 
-int elektraPathSet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraPathSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
 	/* set all keys */
 	Key *cur;

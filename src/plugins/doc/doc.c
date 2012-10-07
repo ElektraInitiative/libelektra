@@ -16,6 +16,10 @@
 
 #include <kdbplugin.h>
 
+#ifndef HAVE_KDBCONFIG
+# include "kdbconfig.h"
+#endif
+
 
 #define DOC_PLUGIN_NAME "doc"
 #define DOC_PLUGIN_VERSION "1.0.0"
@@ -139,7 +143,7 @@ int elektraDocOpen(Plugin *handle, Key *errorKey)
  *      elektraPluginGetConfig()
  * @ingroup plugin
  */
-int elektraDocOpen(Plugin *handle, Key *errorKey)
+int elektraDocOpen(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
 {
 	/* plugin initialization logic */
 
@@ -169,7 +173,7 @@ int elektraDocOpen(Plugin *handle, Key *errorKey)
  *      elektraPluginGetConfig()
  * @ingroup plugin
  */
-int elektraDocClose(Plugin *handle, Key *errorKey)
+int elektraDocClose(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
 {
 	return 0; /* success */
 }
@@ -337,7 +341,7 @@ int elektraDocGet(Plugin *handle, KeySet *returned, Key *parentKey)
  *
  * @ingroup plugin
  */
-int elektraDocGet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraDocGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
 {
 	ssize_t nr_keys = 0;
 	/* get all keys below parentKey and count them with nr_keys */
@@ -441,7 +445,7 @@ elektraPluginSet(KDB *handle, KeySet *keyset, Key *parentKey)
  *
  * @ingroup plugin
  */
-int elektraDocSet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraDocSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
 {
 	ssize_t nr_keys = 0;
 	/* set all keys below parentKey and count them with nr_keys */
@@ -452,7 +456,7 @@ int elektraDocSet(Plugin *handle, KeySet *returned, Key *parentKey)
 /**
   * See resolver for more information
   */
-int elektraDocError(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraDocError(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
 {
 	return 0;
 }

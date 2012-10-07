@@ -25,9 +25,13 @@
  ***************************************************************************/
 
 
+#ifndef HAVE_KDBCONFIG
+# include "kdbconfig.h"
+#endif
+
 #include "syslog.h"
 
-int elektraSyslogOpen(Plugin *handle, Key *parent)
+int elektraSyslogOpen(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 {
 	/* plugin initialization logic */
 
@@ -39,7 +43,7 @@ int elektraSyslogOpen(Plugin *handle, Key *parent)
 	return 0; /* success */
 }
 
-int elektraSyslogClose(Plugin *handle, Key *parent)
+int elektraSyslogClose(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 {
 	/* free all plugin resources and shut it down */
 
@@ -51,7 +55,7 @@ int elektraSyslogClose(Plugin *handle, Key *parent)
 	return 0; /* success */
 }
 
-int elektraSyslogGet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraSyslogGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey ELEKTRA_UNUSED)
 {
 	KeySet *n;
 	ksAppend (returned, n = ksNew (30,
@@ -94,7 +98,7 @@ int elektraSyslogGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	return 1;
 }
 
-int elektraSyslogSet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraSyslogSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
 	syslog (LOG_NOTICE, "committed configuration %s with %zd keys",
 			keyName(parentKey),
@@ -103,7 +107,7 @@ int elektraSyslogSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	return 1;
 }
 
-int elektraSyslogError(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraSyslogError(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
 	syslog (LOG_NOTICE, "rollback configuration %s with %zd keys",
 			keyName(parentKey),

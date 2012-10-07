@@ -23,37 +23,41 @@
  ***************************************************************************/
 
 
+#ifndef HAVE_KDBCONFIG
+# include "kdbconfig.h"
+#endif
+
 #include "template.h"
 
-int elektraTemplateOpen(Plugin *handle, Key *errorKey)
+int elektraTemplateOpen(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
 {
 	/* plugin initialization logic */
 
 	return 1; /* success */
 }
 
-int elektraTemplateClose(Plugin *handle, Key *errorKey)
+int elektraTemplateClose(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
 {
 	/* free all plugin resources and shut it down */
 
 	return 1; /* success */
 }
 
-int elektraTemplateGet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraTemplateGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
 {
 	/* get all keys */
 
 	return 1; /* success */
 }
 
-int elektraTemplateSet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraTemplateSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
 {
 	/* set all keys */
 
 	return 1; /* success */
 }
 
-int elektraTemplateError(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraTemplateError(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
 {
 	/* set all keys */
 

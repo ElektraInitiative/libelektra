@@ -6,6 +6,23 @@
 #include <sys/types.h>
 
 /**Resolve the filename.
+ *
+ * For system keys it must be an absolute path, or KDB_DB_SYSTEM
+ * will be attached (which should always be an absolute name).
+ * This is because of security: If the user can forge the
+ * path it could manipulate setuid applications to use wrong
+ * configuration.
+ *
+ * For user keys it is ok to manipulate the path with user
+ * environment variables.
+ * In this implementation the owner resolution works
+ * like this:
+ * 1.) Owner is the metadata "owner" of the key
+ * 2.) The environment variable USER will be used
+ * 3.) The POSIX.1-2001 getlogin() will be used
+ * Whatever is found first, will be used.
+ * Then KDB_DB_HOME + owner + KDB_DB_USER will be used as dirname.
+ *
  * @return 0 if an already absolute filename could be used
  * @return 1 if it resolved the filename successfully
  * @return -1 on error
@@ -67,27 +84,19 @@ int resolveFilename(Key* forKey, resolverHandle *p)
 
 		if (!owner)
 		{
+			/* On my system this basically gives the
+			 * environment variable USER, so if unset
+			 * this will fail too.
+			 * But on other systems this might be
+			 * implemented differently.*/
 			owner = getlogin();
 		}
 
-		/*
 		if (!owner)
 		{
-			struct passwd *pw = getpwuid( geteuid());
-			if (pw)
-			{
-				owner = pw->pw_name;
-			}
-		}
-		*/
-
-		/* TODO for testing */
-		if (!owner) owner = "test";
-
-		if (!owner || !strcmp(owner, ""))
-		{
-			/* TODO implement more fallbacks (ask system/users with getuid()) */
-			return -1;
+			/* Needed for some unit tests which do not have
+			 * an owner and also no environment*/
+			owner = "test";
 		}
 
 		size_t filenameSize = sizeof(KDB_DB_HOME)
