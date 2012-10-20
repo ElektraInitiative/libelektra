@@ -1,3 +1,19 @@
+0.8.4 Release
+
+
+The latest documentation from git master is now build on
+http://doc.libelektra.org/api/latest/html
+
+Note that this documentation describes a version
+not yet published, so it might describe features
+not available in the current release.
+
+The current release is documented at
+http://doc.libelektra.org/api/current/html/pages.html
+
+
+---------------
+
 0.8.3 Release
 
 This release mostly brings improvements in the release process, the test framework and

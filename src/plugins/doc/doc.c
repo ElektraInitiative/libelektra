@@ -276,7 +276,6 @@ int elektraDocGet(Plugin *handle, KeySet *returned, Key *parentKey)
  *
  *
  * @section conditions Conditions
- * @todo needs some updates
  *
  * @pre The caller kdbGet() will make sure before you are called
  * that the parentKey:
@@ -434,7 +433,7 @@ elektraPluginSet(KDB *handle, KeySet *keyset, Key *parentKey)
  *
  * @note If any calls you use change errno, make sure to restore the old errno.
  *
- * @err In normal execution cases a positive value will be returned.
+ * In normal execution cases a positive value will be returned.
  * But in some cases you are not able to set keys and have to
  * return -1. If you declare kdbcGetnoError() you are done, but
  * otherwise you have to set the cause of the error.

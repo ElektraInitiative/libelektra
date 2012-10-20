@@ -12,4 +12,7 @@ Alternative:
 	Make homepage with all information
 	Using doxygen?
 
+plugin writers guide:
+	needs to be rewritten (doc.c only as base)
+
 This document describes what is missing in the documentation

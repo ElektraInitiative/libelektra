@@ -189,7 +189,7 @@ TAB_SIZE               = 8
 # will result in a user-defined paragraph with heading "Side Effects:". 
 # You can put \n's in the value part of an alias to insert newlines.
 
-ALIASES                = "err=\xrefitem err \"Error\" \"Error\""
+ALIASES                =
 
 # Set the OPTIMIZE_OUTPUT_FOR_C tag to YES if your project consists of C 
 # sources only. Doxygen will then generate output that is more tailored for C. 
@@ -539,6 +539,7 @@ WARN_LOGFILE           =
 
 INPUT                  = @PROJECT_SOURCE_DIR@/src/libelektra \
                          @PROJECT_SOURCE_DIR@/src/include \
+                         @PROJECT_SOURCE_DIR@/src/bindings/cpp/include \
                          @PROJECT_SOURCE_DIR@/src/plugins/doc/doc.c \
                          @PROJECT_SOURCE_DIR@/src/libloader/doc.c
 

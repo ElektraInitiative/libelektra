@@ -13,7 +13,6 @@
  * @return 0 on success
  * @return -1 on failure
  * @ingroup backendhelper
- * @err sets KDB_ERR_NOLOCK when locking failed
  */
 int elektraWriteLock (int fd)
 {
@@ -37,7 +36,6 @@ int elektraWriteLock (int fd)
  * @return 0 on success
  * @return -1 on failure
  * @ingroup backendhelper
- * @err sets KDB_ERR_NOLOCK when locking failed
  */
 int elektraReadLock (int fd)
 {

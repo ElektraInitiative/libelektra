@@ -52,12 +52,9 @@
 #include "kdbprivate.h"
 
 
-/**Clear flags of a key.
+/** \internal
  *
- * @todo Should be done only in kdbGet() part of plugins.
- *
- * If you want to get the current flags, just call
- * it with semiflag set to 0.
+ * Clear sync flag of a key.
  *
  * @param key the key object to work with
  * @return -1 on null key

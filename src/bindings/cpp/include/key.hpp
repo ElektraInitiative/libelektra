@@ -34,7 +34,9 @@ class KeyBadMeta : public KeyMetaException
 	const char* what() {return "Could not convert bad meta data";}
 };
 
-/**Key represents an elektra key.*/
+/**
+ * Key represents an elektra key.
+ * */
 class Key
 {
 public:
@@ -45,7 +47,11 @@ public:
 	Key (Key &k) :key (k.key) { operator++(); }
 	Key (const Key &k) :key (k.key) { operator++(); }
 	Key (const char * name_, va_list ap);
-	Key (const char * name_, ...);
+
+	/**
+	 * @copydoc keyNew
+	 */
+	Key (const char * keyName, ...);
 	Key (const std::string name_, ...);
 
 	void del () { operator --(); ckdb::keyDel(key); }

@@ -9,6 +9,7 @@ XDG specification:
 	xdg mail announce
 
 fix warnings:
+	(deactivate static build to disable duplications)
 	unused
 	shadow
 	C++11
