@@ -136,6 +136,36 @@ void test_keyComparing()
 	keyDel (key2);
 }
 
+void test_keyNewSpecial()
+{
+	printf ("Test special key creation\n");
+
+	Key *k = keyNew (KEY_END);
+	succeed_if (!strcmp (keyName(k), ""), "name should be empty after initialization");
+	keyDel (k);
+
+	k = keyNew (0, KEY_END); //  might break, useless arguments?
+	succeed_if (!strcmp (keyName(k), ""), "name should be empty after initialization");
+	keyDel (k);
+
+	k = keyNew ("", KEY_END);
+	succeed_if (!strcmp (keyName(k), ""), "name should be empty after initialization");
+	keyDel (k);
+
+	k = keyNew ("invalid", KEY_END);
+	succeed_if (!strcmp (keyName(k), ""), "name should be empty after initialization");
+	keyDel (k);
+
+
+	k = keyNew ("other invalid", KEY_END);
+	succeed_if (!strcmp (keyName(k), ""), "name should be empty after initialization");
+	keyDel (k);
+
+	k = keyNew ("system spaces", KEY_END);
+	succeed_if (!strcmp (keyName(k), ""), "name should be empty after initialization");
+	keyDel (k);
+}
+
 void test_keyNewSystem()
 {
 	Key     *key;
@@ -256,7 +286,7 @@ void test_keyNewUser()
 	/* printf ("%s, %s, %s\n", keyName(key), keyBaseName(key), fullroot); */
 	succeed_if(strcmp(keyName(key),"user/test/test") == 0, "Wrong keyname: keyName");
 	succeed_if(strcmp(keyBaseName(key),"test") == 0, "Wrong keyname: keyBaseName");
-	printf ("%s\n", fullroot);
+	// printf ("%s\n", fullroot);
 	succeed_if(strcmp(fullroot,"user:hugo/test/test") == 0, "Wrong keyname: keyGetFullName");
 	succeed_if(keyDel(key) == 0, "keyDel: Unable to delete key with name + owner");
 
@@ -2207,24 +2237,6 @@ void test_binary()
 	keyDel (k);
 }
 
-void test_outbreak()
-{
-	// TODO: outbreak bugs
-	Key *k = keyNew (KEY_END);
-
-	succeed_if (keySetName (k, "system/something/../..") == -1, "outbreak should not be allowed");
-	succeed_if (keySetName (k, "system/../something") == -1, "outbreak should not be allowed");
-
-	keySetName (k, "system/valid");
-	succeed_if (keySetBaseName (k, "..") == -1, "outbreak should not be allowed");
-
-	keySetName (k, "system/valid");
-	keyAddBaseName (k, "..");
-	succeed_if (keyAddBaseName (k, "..") == -1, "outbreak should not be allowed");
-
-	keyDel (k);
-}
-
 void test_keyBelowOrSame()
 {
 	Key * key1 = keyNew(0);
@@ -2290,6 +2302,124 @@ void test_keyBelowOrSame()
 	keyDel (key2);
 }
 
+void test_keyNameSpecial()
+{
+	printf ("Test special keynames");
+	Key *k = keyNew (KEY_END);
+	succeed_if (!strcmp (keyName(k), ""), "name should be empty after initialization");
+
+	succeed_if (keySetName (k, "system"), "could not set key name with system");
+	succeed_if (!strcmp (keyName(k), "system"), "name wrong");
+
+	succeed_if (keySetName (k, 0) == 0, "could not set key name with 0");
+	succeed_if (!strcmp (keyName(k), ""), "name should be empty after initialization");
+
+	succeed_if (keySetName (k, "system"), "could not set key name with system");
+	succeed_if (!strcmp (keyName(k), "system"), "name wrong");
+
+	succeed_if (keySetName (k, "") == 0, "could not set key name with empty string");
+	succeed_if (!strcmp (keyName(k), ""), "name should be empty after initialization");
+
+	succeed_if (keySetName (k, "system"), "could not set key name with system");
+	succeed_if (!strcmp (keyName(k), "system"), "name wrong");
+
+	succeed_if (keySetName (k, "invalid") == -1, "could not set key name invalid");
+	succeed_if (!strcmp (keyName(k), ""), "name should be empty after initialization");
+
+
+
+	succeed_if (keySetName (k, "system/something/.."), "could not set key name with ..");
+	succeed_if (!strcmp (keyName(k), "system"), "name wrong");
+
+	succeed_if (keySetName (k, "system/something/.."), "could not set key name with ..");
+	succeed_if (!strcmp (keyName(k), "system"), "name wrong");
+
+	succeed_if (keySetName (k, "system/something/../.."), "could not set key name with ..");
+	succeed_if (!strcmp (keyName(k), "system"), "name wrong");
+
+	succeed_if (keySetName (k, "system/something/../../.."), "could not set key name with ..");
+	succeed_if (!strcmp (keyName(k), "system"), "name wrong");
+
+	succeed_if (keySetName (k, "system/something/../../../.."), "could not set key name with ..");
+	succeed_if (!strcmp (keyName(k), "system"), "name wrong");
+
+	succeed_if (keySetName (k, "system/something/../../../../.."), "could not set key name with ..");
+	succeed_if (!strcmp (keyName(k), "system"), "name wrong");
+
+
+
+	succeed_if (keySetName (k, "system/../something"), "could not set key name with ..");
+	succeed_if (!strcmp (keyName(k), "system/something"), "name wrong");
+
+	succeed_if (keySetName (k, "system/../../something"), "could not set key name with ..");
+	succeed_if (!strcmp (keyName(k), "system/something"), "name wrong");
+
+	succeed_if (keySetName (k, "system/../../../something"), "could not set key name with ..");
+	succeed_if (!strcmp (keyName(k), "system/something"), "name wrong");
+
+	succeed_if (keySetName (k, "system/../../../../something"), "could not set key name with ..");
+	succeed_if (!strcmp (keyName(k), "system/something"), "name wrong");
+
+	succeed_if (keySetName (k, "system/../../../../../something"), "could not set key name with ..");
+	succeed_if (!strcmp (keyName(k), "system/something"), "name wrong");
+
+
+
+	succeed_if (keySetName (k, "system/a/b/c/.."), "could not set key name with ..");
+	succeed_if (!strcmp (keyName(k), "system/a/b"), "name wrong");
+
+	succeed_if (keySetName (k, "system/a/b/c/../.."), "could not set key name with ..");
+	succeed_if (!strcmp (keyName(k), "system/a"), "name wrong");
+
+	succeed_if (keySetName (k, "system/a/b/c/../../.."), "could not set key name with ..");
+	succeed_if (!strcmp (keyName(k), "system"), "name wrong");
+
+	succeed_if (keySetName (k, "system/a/b/c/../../../.."), "could not set key name with ..");
+	succeed_if (!strcmp (keyName(k), "system"), "name wrong");
+
+	succeed_if (keySetName (k, "system/a/b/c/../../../../.."), "could not set key name with ..");
+	succeed_if (!strcmp (keyName(k), "system"), "name wrong");
+
+
+
+	succeed_if (keySetName (k, "system/../a/b/c"), "could not set key name with ..");
+	succeed_if (!strcmp (keyName(k), "system/a/b/c"), "name wrong");
+
+	succeed_if (keySetName (k, "system/../../a/b/c"), "could not set key name with ..");
+	succeed_if (!strcmp (keyName(k), "system/a/b/c"), "name wrong");
+
+	succeed_if (keySetName (k, "system/../../../a/b/c"), "could not set key name with ..");
+	succeed_if (!strcmp (keyName(k), "system/a/b/c"), "name wrong");
+
+	succeed_if (keySetName (k, "system/../../../../a/b/c"), "could not set key name with ..");
+	succeed_if (!strcmp (keyName(k), "system/a/b/c"), "name wrong");
+
+	succeed_if (keySetName (k, "system/../../../../../a/b/c"), "could not set key name with ..");
+	succeed_if (!strcmp (keyName(k), "system/a/b/c"), "name wrong");
+
+
+	keyDel (k);
+}
+
+void test_keyBaseName()
+{
+	// TODO: Bug, does not work at the moment!
+	printf ("Test add and set basename");
+
+	Key *k = keyNew (KEY_END);
+
+	keySetName (k, "system/valid");
+	succeed_if (keySetBaseName (k, "..") == -1, "outbreak should not be allowed");
+	output_key(k);
+
+	keySetName (k, "system/valid");
+	keyAddBaseName (k, "..");
+	succeed_if (keyAddBaseName (k, "..") == -1, "outbreak should not be allowed");
+	output_key(k);
+
+	keyDel (k);
+}
+
 
 int main(int argc, char** argv)
 {
@@ -2299,6 +2429,7 @@ int main(int argc, char** argv)
 	init (argc, argv);
 
 	test_keyComparing();
+	test_keyNewSpecial();
 	test_keyNewSystem();
 	test_keyNewUser();
 	test_keyReference();
@@ -2318,7 +2449,8 @@ int main(int argc, char** argv)
 	test_keyNamespace();
 	test_binary();
 	test_keyBelowOrSame();
-	// test_outbreak();
+	test_keyNameSpecial();
+	// test_keyBaseName(); TODO: Bug, does not work at the moment
 
 	printf("\ntest_key RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

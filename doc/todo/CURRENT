@@ -1,5 +1,18 @@
 == 0.8.4 ==
 
+ELEKTRA_SET_ERROR in dump fixed?
+
+XDG specification:
+	XDG_CONFIG_HOME
+	KDB_CONFIG_HOME
+	describe, implement, test
+	xdg mail announce
+
+fix warnings:
+	unused
+	shadow
+	C++11
+
 jenkins:
 	build packages for dfc
 	cleanup elektra branches
@@ -45,6 +58,8 @@ unit tests:
 	debian package with unit tests
 	install old unit tests with new elektra for ABI tests
 
+== 0.8.5 ==
+
 kdb-shell:
 	use import/export
 	automatic tests for functionality
@@ -55,8 +70,11 @@ kdb tool:
 	converting of config files (automated tests)
 	test mount/unmount
 
+kdb resolve feature:
+	output file how it would resolve for key
 
-== 0.8.5 ==
+error specification plugin:
+	parse error specification content into keyset
 
 tcl:
 	parse output?

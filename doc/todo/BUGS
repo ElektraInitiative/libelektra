@@ -1,6 +1,17 @@
 Known bugs will be listed here.
-But is planned to move to the
-freedesktop.org bug database.
+But is planned to move to a
+bug database.
+
+
+
+== BASIC ==
+
+keySet/AddBaseName do not handle . or ..
+
+keySet* also work when keys are appended to keyset!
+(add a flag for that situation?)
+
+
 
 == DOCUMENTATION ==
 
@@ -179,8 +190,6 @@ DEFAULT_BACKEND ->
 
 
 == API Changes ==
-
-. and .. semantics away?
 
 isDirectBelow:
 	Change Order of arguments? (see C++)

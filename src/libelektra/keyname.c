@@ -224,8 +224,7 @@ ssize_t keyGetName(const Key *key, char *returnedName, size_t maxSize)
  *
  * The last form has explicitly set the owner, to let the library
  * know in which user folder to save the key. A owner is a user name.
- * If not defined (the second form) current user is calculated and used
- * as default.
+ * If it is not defined (the second form) current user is used.
  *
  * You should always follow the guidelines for key tree structure creation.
  *
@@ -237,11 +236,11 @@ ssize_t keyGetName(const Key *key, char *returnedName, size_t maxSize)
  *
  * On invalid names, NULL or "" the name will be "" afterwards.
  *
- * @warning You should not change a keys name once it belongs to a keyset.
- * See ksSort() for more information.
+ * @warning You shall not change a key name once it belongs to a keyset.
  *
- * @return size in bytes of this new key name including ending NULL
- * @return -1 if @p newName is empty or invalid or any NULL pointer
+ * @retval size in bytes of this new key name including ending NULL
+ * @retval 0 if newName is an empty string or a NULL pointer (name will be empty afterwards)
+ * @retval -1 if newName is invalid (name will be empty afterwards)
  * @param key the key object to work with
  * @param newName the new key name
  * @see keyNew(), keySetOwner()

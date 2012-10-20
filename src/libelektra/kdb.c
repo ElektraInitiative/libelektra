@@ -554,7 +554,7 @@ for (i=0; i< NR_OF_TRIES; i++) // limit to NR_OF_TRIES tries
  * @see keyNeedSync(), ksNext(), ksCurrent()
  * @ingroup kdb
  */
-int kdbSet (KDB *handle, KeySet *ks, Key * parentKey)
+int kdbSet (KDB *handle, KeySet *ks, Key *parentKey)
 {
 	if (!parentKey)
 	{
