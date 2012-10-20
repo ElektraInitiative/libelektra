@@ -14,9 +14,9 @@
  ***************************************************************************/
 
 
-/** @class flat_copy
+/** @class doxygenFlatCopy
  *
- * \note Because the key is not copied,
+ * @note Because the key is not copied,
  * also the pointer to the current metadata keyNextMeta()
  * will be shared.
  */
@@ -33,7 +33,7 @@
  * You can add keys with ksAppendKey() in the keyset.
  * Using ksAppend() you can append a whole keyset.
  *
- * \copydoc flat_copy
+ * @copydoc doxygenFlatCopy
  *
  * ksGetSize() tells you the current size of the keyset.
  *
@@ -268,7 +268,7 @@ KeySet *ksDup (const KeySet * source)
  * but there reference counter is updated, so both keysets
  * need to be ksDel().
  *
- * @copydoc flat_copy
+ * @copydoc doxygenFlatCopy
  *
  * @code
 int f (KeySet *ks)
@@ -623,7 +623,7 @@ ssize_t ksSearchInternal(const KeySet *ks, const Key *toAppend)
  * The reference counter of the key will be incremented, and
  * thus toAppend is not const.
  *
- * \copydoc flat_copy
+ * @copydoc doxygenFlatCopy
  *
  * If the keyname already existed, it will be replaced with
  * the new key.
@@ -711,7 +711,7 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
  * If a key is both in toAppend and ks, the Key in ks will be
  * overridden.
  *
- * \copydoc flat_copy
+ * @copydoc doxygenFlatCopy
  *
  * @post Sorted KeySet ks with all keys it had before and additionally
  *       the keys from toAppend
