@@ -16,7 +16,7 @@
 
 
 /**
- * @defgroup kdb KDB :: Low Level Methods
+ * @defgroup kdb KDB
  * @brief General methods to access the Key database.
  *
  * To use them:
@@ -62,6 +62,8 @@
  * - Many methods are just for comfort in C. These methods are marked
  *   and need not to be implemented if the binding language has e.g. string
  *   operators which can do the operation easily.
+ *
+ * @{
  */
 
 
@@ -669,3 +671,6 @@ error:
 	return -1;
 }
 
+/**
+ * @}
+ */

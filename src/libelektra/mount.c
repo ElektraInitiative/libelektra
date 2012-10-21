@@ -40,10 +40,6 @@
 #include "kdbinternal.h"
 
 
-/**
- * @defgroup mount Interface for mounting backends
- */
-
 
 /**
  * Creates a trie from a given configuration.
@@ -354,5 +350,3 @@ Backend* elektraMountGetBackend(KDB *handle, const Key *key)
 	if (!ret) return handle->defaultBackend;
 	return ret;
 }
-
-

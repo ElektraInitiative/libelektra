@@ -26,30 +26,28 @@
 
 
 /**
- * @defgroup plugin Plugins :: Elektra framework for plugins
+ * @defgroup plugin Plugins
+ * @brief Elektra plugin framework
  *
- * @section history History
- *
- * @since Since version 0.4.9, Elektra can dynamically load different key storage
+ * @since version 0.4.9, Elektra can dynamically load different key storage
  * plugins.
  *
- * @since Since version 0.7.0 Elektra can have multiple backends,
+ * @since version 0.7.0 Elektra can have multiple backends,
  * mounted at any place in the key database.
  *
- * @since Since version 0.8.0 Elektra backends are composed out of multiple
+ * @since version 0.8.0 Elektra backends are composed out of multiple
  * plugins.
  *
- * @section overview Overview
- *
+ * @par Overview
  * There are different types of plugins for different concerns.
  * The types of plugins handled in this document:
  * - file storage plugins (also called just storage plugins here)
  * - filter plugins
- *
+ * \n
  * See http://www.libelektra.org/ftp/elektra/thesis.pdf
  * for an detailed explanation and description of other types
  * of plugins.
- *
+ * \n
  * A plugin can implement anything related to configuration.
  * There are 5 possible entry points, as described in this
  * document:
@@ -58,10 +56,10 @@
  * - elektraDocGet()
  * - elektraDocSet()
  * - elektraDocError() (not needed by storage or filter plugins)
- *
+ * \n
  * Depending of the type of plugin you need not to implement all of
  * them.
- *
+ * \n
  * @note that the Doc within the name is just because the plugin
  *       described here is called doc (see src/plugins/doc/doc.c).
  *       Always replace Doc with the name of the plugin you
@@ -69,28 +67,28 @@
  *
  * See the descriptions below what each of them is supposed to do.
  *
- * @subsection storage Storage Plugins
- *
+ * @par Storage Plugins
  * A filter plugin is a plugin which already receives some keys.
  * It may process or change the keyset.
  * Or it may reject specific keysets which do not meet some
  * criteria.
  *
- * @subsection filter Filter Plugins
- *
+ * @par Filter Plugins
  * A storage plugin gets an empty keyset and constructs the
  * information out from a file.
- *
+ * \n
  * Other persistent storage then a file is not handled within
  * this document because it involves many other issues.
  * For files the resolver plugin already takes care for
  * transactions and rollback.
  *
- * @section error Error and Wanrings
- *
+ * @par Error and Wanrings
  * In any case of trouble, use ELEKTRA_SET_ERROR and return with -1.
  * You might add warnings with ELEKTRA_ADD_WARNING if you think
  * it is appropriate.
+ *
+ * @addtogroup plugin
+ * @{
  */
 
 
@@ -143,7 +141,7 @@ int elektraDocOpen(Plugin *handle, Key *errorKey)
  *      elektraPluginGetConfig()
  * @ingroup plugin
  */
-int elektraDocOpen(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
+int docOpen(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
 {
 	/* plugin initialization logic */
 
@@ -173,7 +171,7 @@ int elektraDocOpen(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
  *      elektraPluginGetConfig()
  * @ingroup plugin
  */
-int elektraDocClose(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
+int docClose(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
 {
 	return 0; /* success */
 }
@@ -340,7 +338,7 @@ int elektraDocGet(Plugin *handle, KeySet *returned, Key *parentKey)
  *
  * @ingroup plugin
  */
-int elektraDocGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
+int docGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
 {
 	ssize_t nr_keys = 0;
 	/* get all keys below parentKey and count them with nr_keys */
@@ -444,7 +442,7 @@ elektraPluginSet(KDB *handle, KeySet *keyset, Key *parentKey)
  *
  * @ingroup plugin
  */
-int elektraDocSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
+int docSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
 {
 	ssize_t nr_keys = 0;
 	/* set all keys below parentKey and count them with nr_keys */
@@ -453,9 +451,11 @@ int elektraDocSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED
 }
 
 /**
-  * See resolver for more information
-  */
-int elektraDocError(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
+ * Rollback in case of errors.
+ *
+ * @ingroup plugin
+ */
+int docError(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
 {
 	return 0;
 }
@@ -491,11 +491,14 @@ int elektraDocError(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUS
 Plugin *ELEKTRA_PLUGIN_EXPORT(doc)
 {
 	return elektraPluginExport(DOC_PLUGIN_NAME,
-		ELEKTRA_PLUGIN_OPEN,	&elektraDocOpen,
-		ELEKTRA_PLUGIN_CLOSE,	&elektraDocClose,
-		ELEKTRA_PLUGIN_GET,	&elektraDocGet,
-		ELEKTRA_PLUGIN_SET,	&elektraDocSet,
-		ELEKTRA_PLUGIN_ERROR,	&elektraDocError,
+		ELEKTRA_PLUGIN_OPEN,	&docOpen,
+		ELEKTRA_PLUGIN_CLOSE,	&docClose,
+		ELEKTRA_PLUGIN_GET,	&docGet,
+		ELEKTRA_PLUGIN_SET,	&docSet,
+		ELEKTRA_PLUGIN_ERROR,	&docError,
 		ELEKTRA_PLUGIN_END);
 }
 
+/**
+ * @}
+ */

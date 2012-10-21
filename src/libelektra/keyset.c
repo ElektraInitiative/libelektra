@@ -22,7 +22,7 @@
  */
 
 /**
- * @defgroup keyset KeySet :: Class Methods
+ * @defgroup keyset KeySet
  * @brief Methods to manipulate KeySets.
  *
  * A KeySet is a sorted set of keys.

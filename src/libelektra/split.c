@@ -44,17 +44,12 @@
 
 #include <kdbinternal.h>
 
-/**
- * @defgroup split Split :: Represents splitted keysets
- * @brief used internally for kdbSet()
- *
- * Splits up a keyset into multiple keysets where each
- * of them will passed to the correct kdbSet().
-**/
-
 
 /**
  * Allocates a new split object.
+ *
+ * Splits up a keyset into multiple keysets where each
+ * of them will passed to the correct kdbSet().
  *
  * Initially the size is APPROXIMATE_NR_OF_BACKENDS.
  *
@@ -611,4 +606,3 @@ cont: ;
 
 	return 0;
 }
-

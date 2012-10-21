@@ -43,7 +43,9 @@ static char* elektraTrieStartsWith(const char *str, const char *substr);
 static Backend* elektraTriePrefixLookup(Trie *trie, const char *name);
 
 /**
- * @defgroup trie Internal Datastructure for mountpoints
+ * @brief Internal Datastructure for mountpoints
+ *
+ * @{
  */
 
 /**
