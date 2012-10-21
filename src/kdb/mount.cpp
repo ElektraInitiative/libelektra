@@ -251,7 +251,6 @@ int MountCommand::execute(Cmdline const& cl)
 		size_t current_plugin = 2;
 		if (cl.interactive)
 		{
-			std::string name;
 			cout << "First Plugin: ";
 			cin >> name;
 		}

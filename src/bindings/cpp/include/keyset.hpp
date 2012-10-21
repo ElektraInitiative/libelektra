@@ -9,7 +9,11 @@
 
 namespace kdb {
 
-/**Key represents an elektra key.*/
+/**Key represents an elektra keyset.
+ *
+ * \note that the cursor is mutable,
+ * so it might be changed even in const functions.
+ * */
 class KeySet
 {
 public:
@@ -42,8 +46,6 @@ public:
 
 	KeySet cut (Key k) { return KeySet(ckdb::ksCut(ks,*k)); }
 
-	void sort();
-
 	size_t size () const;
 
 	ssize_t append (const Key &toAppend);
@@ -51,28 +53,19 @@ public:
 
 	Key pop();
 
-	void rewind () const;
-	Key next();
-	Key current() const;
-
 	Key head() const;
 	Key tail() const;
 
-	void setCursor(cursor_t cursor);
+	void rewind () const;
+	Key next() const;
+	Key current() const;
+
+	void setCursor(cursor_t cursor) const;
 	cursor_t getCursor() const;
 
 	Key lookup (const Key &k, const option_t options = KDB_O_NONE) const;
 	Key lookup (const std::string &name, const option_t options = KDB_O_NONE) const;
 	Key lookup (const char *name, const option_t options = KDB_O_NONE) const;
-
-	/*
-	ssize_t toStream(FILE* stream = stdout, option_t options = (option_t)0) const;
-	ssize_t output(FILE* stream = stdout, option_t options = 0) const;
-	ssize_t generate(FILE* stream = stdout, option_t options = 0) const;
-	*/
-
-	friend std::ostream & operator << (std::ostream & os, const KeySet &d);
-	friend std::istream & operator >> (std::istream & os, KeySet &d);
 
 private:
 	/*
@@ -145,7 +138,7 @@ inline void KeySet::rewind () const
 }
 
 
-inline void KeySet::setCursor(cursor_t cursor)
+inline void KeySet::setCursor(cursor_t cursor) const
 {
 	ckdb::ksSetCursor(ks, cursor);
 }
@@ -156,7 +149,7 @@ inline cursor_t KeySet::getCursor() const
 }
 
 
-inline Key KeySet::next()
+inline Key KeySet::next() const
 {
 	ckdb::Key *k = ckdb::ksNext(ks);
 	return Key(k);
@@ -211,12 +204,6 @@ inline ssize_t KeySet::append (const KeySet &toAppend)
 {
 	return ckdb::ksAppend(ks, toAppend.getKeySet());
 }
-
-inline void KeySet::sort()
-{
-	ckdb::ksSort(ks);
-}
-
 
 } // end of namespace kdb
 

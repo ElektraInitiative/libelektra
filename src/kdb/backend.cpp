@@ -30,9 +30,9 @@ Backend::~Backend()
 void Backend::checkFile (std::string file)
 {
 	typedef int (*checkFilePtr) (const char*);
-	checkFilePtr checkFile = (checkFilePtr) plugins.back()->getSymbol("checkfile");
+	checkFilePtr checkFileFunction = (checkFilePtr) plugins.back()->getSymbol("checkfile");
 
-	int res = checkFile(file.c_str());
+	int res = checkFileFunction(file.c_str());
 
 	cout << "Result is: " << res << endl;
 

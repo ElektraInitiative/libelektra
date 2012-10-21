@@ -78,11 +78,7 @@ int FstabCommand::execute(Cmdline const& cl)
 
 	if (cl.verbose)
 	{
-		conf.rewind();
-		while (Key k = conf.next())
-		{
-			cout << k.getName() << " " << k.getString() << endl;
-		}
+		cout << conf;
 	}
 
 	kdb.set(conf,parentKey);

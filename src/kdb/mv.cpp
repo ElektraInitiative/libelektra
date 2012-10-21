@@ -79,10 +79,7 @@ int MvCommand::execute (Cmdline const& cl)
 	if (cl.verbose)
 	{
 		cout << "Will write out:" << endl;
-		while (Key k = newConf.next())
-		{
-			cout << k.getName() << " " << k.getString() << endl;
-		}
+		cout << newConf;
 	}
 
 	kdb.set(newConf, sourceKey);

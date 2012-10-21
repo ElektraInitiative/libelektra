@@ -2,6 +2,17 @@
 
 ELEKTRA_SET_ERROR in dump fixed?
 
+keyAdd+Set basename: handle . and .. correctly
+
+
+resolver recursively:
+	double slashes
+	starting with /
+	kdb file using resolver plugin without function! (parent value!)
+	should be returned in kdbGet/kdbSet
+
+debian package should have tests
+
 XDG specification:
 	XDG_CONFIG_HOME
 	KDB_CONFIG_HOME

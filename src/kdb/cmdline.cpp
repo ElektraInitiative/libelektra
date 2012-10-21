@@ -116,7 +116,7 @@ Cmdline::Cmdline (int argc,
 		helpText += "-s --strategy <name>     the strategy which should be used on conflicts\n";
 		helpText += "                         preserve .. no old key is overwritten (default)\n";
 		helpText += "                         overwrite .. overwrite keys with same name\n";
-		helpText += "                         cut .. completely cut old keys to make place for new\n";
+		helpText += "                         cut .. completely cut at rootkey to make place for new keys\n";
 	}
 	if (acceptedOptions.find('v')!=string::npos)
 	{
