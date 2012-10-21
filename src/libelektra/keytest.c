@@ -15,7 +15,8 @@
 
 
 /**
- * @defgroup keytest Key :: Methods for Making Tests
+ * @defgroup keytest Methods for Making Tests
+ * @ingroup key
  * @brief Methods to do various tests on Keys
  *
  * To use them:

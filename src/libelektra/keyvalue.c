@@ -16,7 +16,8 @@
 
 
 /**
- * @defgroup keyvalue Key :: Value Manipulation Methods
+ * @defgroup keyvalue Value Manipulation Methods
+ * @ingroup key
  * @brief Methods to do various operations on Key values.
  *
  * A key can contain a value in different format. The most

@@ -15,7 +15,17 @@
 
 
 /**
- * @defgroup key Key :: Basic Methods
+ * @defgroup key Key
+ *
+ * @brief A Key is the essential class that encapsulates key @link keyname name @endlink,
+ * @link keyvalue value @endlink and @link keymeta metainfo @endlink.
+ *
+ */
+
+/**
+ * @defgroup key_basic Basic Methods
+ * @ingroup key
+ *
  * @brief Key construction and initialization methods.
  *
  * To use them:
@@ -23,8 +33,6 @@
 #include <kdb.h>
  * @endcode
  *
- * A Key is the essential class that encapsulates key @link keyname name @endlink,
- * @link keyvalue value @endlink and @link keymeta metainfo @endlink.
  * Key properties are:
  * - @link keyname Key name @endlink
  * - @link keyvalue Key value @endlink
@@ -249,7 +257,7 @@ Key *k = keyNew(0);
  * @return a pointer to a new allocated and initialized Key object,
  * 	or NULL if an invalid @p keyName was passed (see keySetName()).
  * @ingroup key
- * 
+ *
  */
 Key *keyNew(const char *keyName, ...) {
 	Key * k;
@@ -263,6 +271,11 @@ Key *keyNew(const char *keyName, ...) {
 }
 
 
+/**
+ * @copydoc keyNew
+ *
+ * @param va the variadic argument list
+ */
 Key *keyVNew (const char *keyName, va_list va)
 {
 	Key *key=0;

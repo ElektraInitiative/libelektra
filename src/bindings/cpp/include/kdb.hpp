@@ -15,6 +15,9 @@ class KDBException : public std::exception
 	const char* what() {return "KDB Exception";}
 };
 
+/**
+ * Access to the key database
+ */
 class KDB
 {
 public:
@@ -47,6 +50,8 @@ protected:
 
 /**
  * Constructs a class KDB.
+ *
+ * @copydoc kdbOpen
  */
 inline KDB::KDB ()
 {
@@ -55,6 +60,11 @@ inline KDB::KDB ()
 	if (!handle) throw errorKey;
 }
 
+/**
+ * Constructs a class KDB.
+ *
+ * @copydoc kdbOpen
+ */
 inline KDB::KDB (Key &errorKey)
 {
 	handle = ckdb::kdbOpen(*errorKey);
@@ -63,6 +73,8 @@ inline KDB::KDB (Key &errorKey)
 
 /**
  * The destructor closes the database.
+ *
+ * @copydoc kdbClose
  */
 inline KDB::~KDB ()
 {
@@ -73,6 +85,8 @@ inline KDB::~KDB ()
 
 /**
  * @brief manually close connection to key database
+ *
+ * @copydoc kdbClose
  *
  * @note in destructor errorKey information would get lost
  * @param errorKey the key where the warnings will be attached
@@ -86,6 +100,8 @@ inline void KDB::close (Key &errorKey)
 /**
  * Get all keys below parentKey inside returned.
  *
+ * @copydoc kdbGet
+ *
  * @param returned the keyset where the keys will be in
  * @param parentKey the parentKey of returned
  * @param options to change the behaviour which keys to fetch
@@ -97,7 +113,9 @@ inline int KDB::get (KeySet & returned, Key & parentKey)
 	return ret;
 }
 
-
+/**
+ * @copydoc kdbSet
+ */
 inline int KDB::set (KeySet & returned, Key & parentKey)
 {
 	int ret = ckdb::kdbSet(handle, returned.getKeySet(), parentKey.getKey());
@@ -119,9 +137,6 @@ inline size_t KDB::get (KeySet & returned, const char * parentName, option_t opt
 	if (ret == -1) throw KDBException();
 	return ret;
 }
-*/
-
-/*
 
 inline void KDB::getString (const std::string &keyname, std::string value, size_t maxSize)
 {
@@ -141,15 +156,6 @@ inline void KDB::remove (const std::string &keyname)
 	ckdb::kdbRemove(handle, keyname.c_str());
 }
 
-*/
-
-/**
- * Get a single key.
- *
- * @param toGet the key to get
- */
-
-/*
 inline void KDB::get (Key & toGet)
 {
 	int ret = ckdb::kdbGetKey(handle, toGet.getKey());

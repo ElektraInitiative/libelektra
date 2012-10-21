@@ -400,7 +400,8 @@ static int keyCmpInternal(const void *p1, const void *p2)
 }
 
 
-/**Compare two keys.
+/**
+ * Compare the name of two keys.
  *
  * @return a number less than, equal to or greater than zero if
  *    k1 is found, respectively, to be less than, to match, or

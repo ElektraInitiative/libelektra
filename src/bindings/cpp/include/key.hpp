@@ -35,118 +35,96 @@ class KeyBadMeta : public KeyMetaException
 };
 
 /**
- * Key represents an elektra key.
- * */
+ * @copydoc key
+ *
+ * Keys are refcounted and are cheap to copy or copy-construct.
+ * If you really need a deep copy, you can use copy() or dup().
+ *
+ * \note that the reference counting in the keys is mutable,
+ * so that const keys can be passed around by value.
+ */
 class Key
 {
 public:
 	typedef void (*func_t)();
 
-	Key () :key (ckdb::keyNew (0)) { operator++(); }
-	Key (ckdb::Key *k) :key(k) { operator++(); }
-	Key (Key &k) :key (k.key) { operator++(); }
-	Key (const Key &k) :key (k.key) { operator++(); }
-	Key (const char * name_, va_list ap);
+	inline Key ();
+	inline Key (ckdb::Key *k);
+	inline Key (Key &k);
+	inline Key (const Key &k);
 
-	/**
-	 * @copydoc keyNew
-	 */
-	Key (const char * keyName, ...);
-	Key (const std::string name_, ...);
+	inline Key (const char * keyName, ...);
+	inline Key (const std::string keyName, ...);
+	inline Key (const char * keyName, va_list ap);
 
-	void del () { operator --(); ckdb::keyDel(key); }
-	void copy (const Key &other) { ckdb::keyCopy(key,other.key); }
-	void clear () { ckdb::keyCopy(key,0); }
-	~Key () { del(); }
+	inline int del ();
+	inline void copy (const Key &other);
+	inline void clear ();
+	inline ~Key ();
 
-	void operator ++(int) { operator++(); }
-	void operator ++() { ckdb::keyIncRef(key); }
+	inline void operator ++(int) const;
+	inline void operator ++() const;
 
-	void operator --(int) { operator--(); }
-	void operator --() { ckdb::keyDecRef(key); }
+	inline void operator --(int) const;
+	inline void operator --() const;
 
 	template <class T>
-	T get()
-	{
-		T x;
-		std::string str;
-		str = getString();
-		std::istringstream ist(str);
-		ist >> x;	// convert string to type
-		return x;
-	}
+	inline T get() const;
 
 	template <class T>
-	void set(T x)
-	{
-		std::string str;
-		std::ostringstream ost;
-		ost << x;	// convert type to string
-		setString (ost.str());
-	}
+	inline void set(T x);
 
-	/*Passes out the pointer, maybe directly changing this object*/
-	ckdb::Key* getKey () const { return key; }
-	ckdb::Key* operator* () const { return key; }
-	ckdb::Key* dup () const { return ckdb::keyDup(getKey()); }
+	inline ckdb::Key* getKey () const;
+	inline ckdb::Key* operator* () const;
+	inline ckdb::Key* dup () const;
 
-	Key& operator= (ckdb::Key *k);
-	Key& operator= (const Key &k);
+	inline Key& operator= (ckdb::Key *k);
+	inline Key& operator= (const Key &k);
 
-	Key& operator=  (const std::string &name_);
-	Key& operator+= (const std::string &name_);
-	Key& operator-= (const std::string &name_);
+	inline Key& operator=  (const std::string &newName);
+	inline Key& operator+= (const std::string &baseName);
+	inline Key& operator-= (const std::string &baseName);
 
-	Key& operator=  (const char *name_);
-	Key& operator+= (const char *name_);
-	Key& operator-= (const char *name_);
+	inline Key& operator=  (const char *newName);
+	inline Key& operator+= (const char *baseName);
+	inline Key& operator-= (const char *baseName);
 
-	bool operator ==(const Key &k) const { return ckdb::keyCmp(key, k.key) == 0; }
-	bool operator !=(const Key &k) const { return ckdb::keyCmp(key, k.key) != 0; }
-	bool operator < (const Key& other) const {return ckdb::keyCmp(key, other.key) < 0; }
-	bool operator <= (const Key& other) const {return ckdb::keyCmp(key, other.key) <= 0; }
-	bool operator > (const Key& other) const {return ckdb::keyCmp(key, other.key) > 0; }
-	bool operator >= (const Key& other) const {return ckdb::keyCmp(key, other.key) >= 0; }
-	/**
-	 * This is for loops and lookups only.
-	 * For loops it checks if there are still more keys.
-	 * For lookups it checks if a key could be found.
-	 *
-	 * @return false on null keys
-	 * @return true otherwise
-	 */
-	operator bool () const {return key != 0;}
+	inline bool operator ==(const Key &k) const;
+	inline bool operator !=(const Key &k) const;
+	inline bool operator < (const Key& other) const;
+	inline bool operator <= (const Key& other) const;
+	inline bool operator > (const Key& other) const;
+	inline bool operator >= (const Key& other) const;
 
-	std::string getName() const;
+	inline operator bool () const;
+
 	const char* name() const;
+	std::string getName() const;
 	size_t getNameSize() const;
-	/**
-	  * @returns true if the key has a valid name
-	  */
 	bool isValid() const;
 
-	std::string getBaseName() const;
 	const char* baseName() const;
+	std::string getBaseName() const;
 	size_t getBaseNameSize() const;
 
 	std::string getDirName() const;
 
-	void setName (const std::string &name_);
-	void setBaseName (const std::string &basename);
-	void addBaseName (const std::string &basename);
+	void setName (const std::string &newName);
+	void setBaseName (const std::string &baseName);
+	void addBaseName (const std::string &baseName);
 
 	size_t getFullNameSize() const;
 	std::string getFullName() const;
 
 	template <class T>
-	T getMeta(const std::string &name_)
+	T getMeta(const std::string &metaName)
 	{
 		T x;
 		std::string str;
 		const char *v = 
 			static_cast<const char*>(
 				ckdb::keyValue(
-					ckdb::keyGetMeta(key, name_.c_str())
+					ckdb::keyGetMeta(key, metaName.c_str())
 					)
 				);
 		if (!v) throw KeyNoSuchMeta();
@@ -158,24 +136,24 @@ public:
 	}
 
 	/*
-	const Key *getMeta(const std::string &name_)
+	const Key *getMeta(const std::string &metaName)
 	{
-		return ckdb::keyGetMeta(key, name_.c_str());
+		return ckdb::keyGetMeta(key, metaName.c_str());
 	}
 	*/
 
 	template <class T>
-	void setMeta(const std::string &name_, T x)
+	void setMeta(const std::string &metaName, T x)
 	{
 		std::string str;
 		std::ostringstream ost;
 		ost << x;	// convert type to string
-		ckdb::keySetMeta(key, name_.c_str(), ost.str().c_str());
+		ckdb::keySetMeta(key, metaName.c_str(), ost.str().c_str());
 	}
 
-	void copyMeta(const Key &other, const std::string &name_)
+	void copyMeta(const Key &other, const std::string &metaName)
 	{
-		ckdb::keyCopyMeta(key, other.key, name_.c_str());
+		ckdb::keyCopyMeta(key, other.key, metaName.c_str());
 	}
 
 	void copyAllMeta(const Key &other)
@@ -249,6 +227,374 @@ public:
 private:
 	ckdb::Key * key; // holds elektra key struct
 };
+
+/**
+ * Constructs an empty, invalid key.
+ *
+ * \note That this is not a null key, so it will
+ * evaluate to true.
+ *
+ * @see isValid(), operator bool ()
+ */
+inline Key::Key () :key (ckdb::keyNew (0))
+{
+	operator++(); 
+}
+
+/**
+ * Constructs a key out of a C key.
+ *
+ * If you pass a null pointer here, it will
+ * evaluate to false.
+ *
+ * @see isValid(), operator bool ()
+ */
+inline Key::Key (ckdb::Key *k) :key(k)
+{
+	operator++(); 
+}
+
+/**
+ * Takes a reference of another key.
+ */
+inline Key::Key (Key &k) :key (k.key)
+{
+	operator++();
+}
+
+/**
+ * Takes a reference of another key.
+ */
+inline Key::Key (const Key &k) :key (k.key)
+{
+	operator++();
+}
+
+/**
+ * @copydoc keyNew
+ */
+inline Key::Key (const char * str, ...)
+{
+	va_list ap;
+
+	va_start(ap, str);
+	key = ckdb::keyVNew (str, ap);
+	va_end(ap);
+
+	operator++();
+}
+
+/**
+ * @copydoc keyVNew
+ *
+ * @note Not supported on some compilers, e.g.
+ * clang which require you to only pass non-POD
+ * in varg lists.
+ */
+inline Key::Key (const std::string str, ...)
+{
+	va_list ap;
+
+	va_start(ap, str);
+	key = ckdb::keyVNew (str.c_str(), ap);
+	va_end(ap);
+
+	operator++();
+}
+
+/**
+ * @copydoc keyVNew
+ */
+inline Key::Key (const char * str, va_list av)
+{
+	key = ckdb::keyVNew (str, av);
+
+	operator++();
+}
+
+/**
+ * @copydoc keyDel
+ */
+inline int Key::del ()
+{
+	operator --();
+	return ckdb::keyDel(key);
+}
+
+/**
+ * @copydoc keyCopy
+ */
+inline void Key::copy (const Key &other)
+{
+	ckdb::keyCopy(key,other.key);
+}
+
+/**
+ * Clears a key.
+ *
+ * @see copy
+ */
+inline void Key::clear ()
+{
+	ckdb::keyCopy(key,0);
+}
+
+/**
+ * Frees the key.
+ *
+ * @see del
+ */
+inline Key::~Key ()
+{
+	del();
+}
+
+/**
+ * @copydoc keyIncRef
+ */
+void Key::operator ++(int) const
+{
+	operator++();
+}
+
+/**
+ * @copydoc keyIncRef
+ */
+void Key::operator ++() const
+{
+	ckdb::keyIncRef(key);
+}
+
+/**
+ * @copydoc keyDecRef
+ */
+void Key::operator --(int) const
+{
+	operator--();
+}
+
+/**
+ * @copydoc keyDecRef
+ */
+void Key::operator --() const
+{
+	ckdb::keyDecRef(key);
+}
+
+/**
+ * Get a key value.
+ *
+ * This method tries to serialize the string to the given type.
+ */
+template <class T>
+inline T Key::get() const
+{
+	T x;
+	std::string str;
+	str = getString();
+	std::istringstream ist(str);
+	ist >> x;	// convert string to type
+	return x;
+}
+
+/**
+ * Set a key value.
+ *
+ * This method tries to deserialize the string to the given type.
+ */
+template <class T>
+inline void Key::set(T x)
+{
+	std::string str;
+	std::ostringstream ost;
+	ost << x;	// convert type to string
+	setString (ost.str());
+}
+
+/**
+ * Passes out the raw pointer.
+ *
+ * This pointer can be used to directly change the underlying key
+ * object.
+ *
+ * \note that the ownership remains in the object
+ */
+ckdb::Key* Key::getKey () const
+{
+	return key;
+}
+
+/**
+ * @copydoc getKey
+ */
+ckdb::Key* Key::operator* () const
+{
+	return key;
+}
+
+/**
+ * @copydoc keyDup
+ */
+ckdb::Key* Key::dup () const
+{
+	return ckdb::keyDup(getKey());
+}
+
+/**
+ * Assign a C key.
+ *
+ * Will call del() first.
+ */
+inline Key& Key::operator= (ckdb::Key *k)
+{
+	if (key != k)
+	{
+		del();
+		key = k;
+		operator++();
+	}
+	return *this;
+}
+
+/**
+ * Assign a key.
+ *
+ * Will call del() first.
+ */
+inline Key& Key::operator= (const Key &k)
+{
+	if (this != &k)
+	{
+		del();
+		key = k.key;
+		operator++();
+	}
+	return *this;
+}
+
+/**
+ * Assign the name of a key.
+ *
+ * @see keySetName
+ */
+inline Key& Key::operator= (const std::string &newName)
+{
+	ckdb::keySetName(getKey(), newName.c_str());
+	return *this;
+}
+
+/**
+ * Add a new basename.
+ *
+ * @see keyAddBaseName
+ */
+inline Key& Key::operator+= (const std::string &baseName)
+{
+	ckdb::keyAddBaseName(getKey(), baseName.c_str());
+	return *this;
+}
+
+/**
+ * Set a new basename.
+ *
+ * @see keySetBaseName
+ */
+inline Key& Key::operator-= (const std::string &baseName)
+{
+	ckdb::keySetBaseName(getKey(), baseName.c_str());
+	return *this;
+}
+
+/**
+ * @copydoc Key::operator= (const std::string &newName)
+ */
+inline Key& Key::operator= (const char *newName)
+{
+	ckdb::keySetName(getKey(), newName);
+	return *this;
+}
+
+/**
+ * @copydoc Key::operator+= (const std::string &baseName)
+ */
+inline Key& Key::operator+= (const char *baseName)
+{
+	ckdb::keyAddBaseName(getKey(), baseName);
+	return *this;
+}
+
+/**
+ * @copydoc Key::operator-= (const std::string &baseName)
+ */
+inline Key& Key::operator-= (const char *baseName)
+{
+	ckdb::keySetBaseName(getKey(), baseName);
+	return *this;
+}
+
+/**
+ * @copydoc keyCmp
+ */
+inline bool Key::operator ==(const Key &k) const
+{
+	return ckdb::keyCmp(key, k.key) == 0;
+}
+
+/**
+ * @copydoc keyCmp
+ */
+inline bool Key::operator !=(const Key &k) const
+{
+	return ckdb::keyCmp(key, k.key) != 0;
+}
+
+/**
+ * @copydoc keyCmp
+ */
+inline bool Key::operator < (const Key& other) const
+{
+	return ckdb::keyCmp(key, other.key) < 0;
+}
+
+/**
+ * @copydoc keyCmp
+ */
+inline bool Key::operator <= (const Key& other) const
+{
+	return ckdb::keyCmp(key, other.key) <= 0;
+}
+
+/**
+ * @copydoc keyCmp
+ */
+inline bool Key::operator > (const Key& other) const
+{
+	return ckdb::keyCmp(key, other.key) > 0;
+}
+
+/**
+ * @copydoc keyCmp
+ */
+inline bool Key::operator >= (const Key& other) const
+{
+	return ckdb::keyCmp(key, other.key) >= 0;
+}
+
+
+/**
+ * This is for loops and lookups only.
+ * For loops it checks if there are still more keys.
+ * For lookups it checks if a key could be found.
+ *
+ * @return false on null keys
+ * @return true otherwise
+ */
+inline Key::operator bool () const
+{
+	return key != 0;
+}
+
+
 
 /**@note don't forget the const: getMeta<const ckdb::Key*>*/
 template<>
@@ -341,93 +687,6 @@ inline const Key Key::currentMeta() const
 		);
 }
 
-inline Key::Key (const char * str, va_list ap)
-{
-	key = ckdb::keyVNew (str, ap);
-
-	operator++();
-}
-
-inline Key::Key (const char * str, ...)
-{
-	va_list ap;
-
-	va_start(ap, str);
-	key = ckdb::keyVNew (str, ap);
-	va_end(ap);
-
-	operator++();
-}
-
-inline Key::Key (const std::string str, ...)
-{
-	va_list ap;
-
-	va_start(ap, str);
-	key = ckdb::keyVNew (str.c_str(), ap);
-	va_end(ap);
-
-	operator++();
-}
-
-inline Key& Key::operator= (ckdb::Key *k)
-{
-	if (key != k)
-	{
-		del();
-		key = k;
-		operator++();
-	}
-	return *this;
-}
-
-inline Key& Key::operator= (const Key &k)
-{
-	if (this != &k)
-	{
-		del();
-		key = k.key;
-		operator++();
-	}
-	return *this;
-}
-
-inline Key& Key::operator= (const std::string &name_)
-{
-	ckdb::keySetName(getKey(), name_.c_str());
-	return *this;
-}
-
-inline Key& Key::operator+= (const std::string &name_)
-{
-	ckdb::keyAddBaseName(getKey(), name_.c_str());
-	return *this;
-}
-
-inline Key& Key::operator-= (const std::string &name_)
-{
-	ckdb::keySetBaseName(getKey(), name_.c_str());
-	return *this;
-}
-
-inline Key& Key::operator= (const char *name_)
-{
-	ckdb::keySetName(getKey(), name_);
-	return *this;
-}
-
-inline Key& Key::operator+= (const char *name_)
-{
-	ckdb::keyAddBaseName(getKey(), name_);
-	return *this;
-}
-
-inline Key& Key::operator-= (const char *name_)
-{
-	ckdb::keySetBaseName(getKey(), name_);
-	return *this;
-}
-
 inline size_t Key::getNameSize() const
 {
 	return ckdb::keyGetNameSize (getKey());
@@ -443,6 +702,10 @@ inline const char* Key::name() const
 	return ckdb::keyName(getKey());
 }
 
+/**
+  * @retval true if the key has a valid name
+  * @retval false if the key has no valid name
+  */
 inline bool Key::isValid() const
 {
 	return ckdb::keyGetNameSize (getKey()) > 1;
@@ -473,24 +736,30 @@ inline const char* Key::baseName() const
 
 /**Sets a name_ for a key.
  * Throws kdb::KeyInvalidName when the name_ is not valid*/
-inline void Key::setName (const std::string &name_)
+inline void Key::setName (const std::string &newName)
 {
-	if (ckdb::keySetName (getKey(), name_.c_str()) == -1)
+	if (ckdb::keySetName (getKey(), newName.c_str()) == -1)
+	{
 		throw KeyInvalidName();
+	}
 }
 
 /**Sets a base name_ for a key.
  * Throws kdb::KeyInvalidName when the name_ is not valid*/
-inline void Key::setBaseName (const std::string &name_)
+inline void Key::setBaseName (const std::string &baseName)
 {
-	if (ckdb::keySetBaseName (getKey(), name_.c_str()) == -1)
+	if (ckdb::keySetBaseName (getKey(), baseName.c_str()) == -1)
+	{
 		throw KeyInvalidName();
+	}
 }
 
-inline void Key::addBaseName (const std::string &name_)
+inline void Key::addBaseName (const std::string &baseName)
 {
-	if (ckdb::keyAddBaseName (getKey(), name_.c_str()) == -1)
+	if (ckdb::keyAddBaseName (getKey(), baseName.c_str()) == -1)
+	{
 		throw KeyInvalidName();
+	}
 }
 
 inline size_t Key::getFullNameSize() const

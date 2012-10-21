@@ -16,7 +16,8 @@
 
 
 /**
- * @defgroup keymeta Key :: Meta Info Manipulation Methods
+ * @defgroup keymeta Meta Info Manipulation Methods
+ * @ingroup key
  * @brief Methods to do various operations on Key metainfo
  *
  * To use them:

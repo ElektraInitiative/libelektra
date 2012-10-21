@@ -9,7 +9,7 @@
 
 namespace kdb {
 
-/**Key represents an elektra keyset.
+/**Represents an elektra keyset.
  *
  * \note that the cursor is mutable,
  * so it might be changed even in const functions.

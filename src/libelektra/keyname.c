@@ -17,7 +17,8 @@
 
 
 /**
- * @defgroup keyname Key :: Name Manipulation Methods
+ * @defgroup keyname Name Manipulation Methods
+ * @ingroup key
  * @brief Methods to do various operations on Key names.
  *
  * To use them:
