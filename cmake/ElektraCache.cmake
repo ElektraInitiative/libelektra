@@ -14,11 +14,9 @@ set (PLUGINS_LIST_DEFAULT
 
 #
 # force default list
+# (default plugins are always included, so PLUGINS_LIST is unset)
 #
 if (PLUGINS MATCHES "DEFAULT")
-	set (PLUGINS_LIST
-		${PLUGINS_LIST_DEFAULT}
-		)
 	set (PLUGINS_FORCE FORCE)
 endif ()
 
@@ -60,7 +58,6 @@ set (PLUGINS_LIST_POSIX
 #
 if (PLUGINS MATCHES "NODEP")
 	set (PLUGINS_LIST
-		${PLUGINS_LIST_DEFAULT}
 		${PLUGINS_LIST_COMPILE}
 		${PLUGINS_LIST_NODEP}
 		${PLUGINS_LIST_POSIX}
@@ -81,7 +78,6 @@ set (PLUGINS_LIST_DEP
 #
 if (PLUGINS MATCHES "ALL")
 	set (PLUGINS_LIST
-		${PLUGINS_LIST_DEFAULT}
 		${PLUGINS_LIST_COMPILE}
 		${PLUGINS_LIST_NODEP}
 		${PLUGINS_LIST_POSIX}
@@ -96,7 +92,10 @@ endif ()
 #
 # now actually set the plugins cache variable
 #
+# Always include DEFAULT plugins, but maybe include more
+#
 set (PLUGINS
+	${PLUGINS_LIST_DEFAULT}
 	${PLUGINS_LIST}
 	CACHE STRING "Which plugins should be compiled? ALL for all available, NODEP for plugins without additional dependencies, DEFAULT for minimal set."
 	${PLUGINS_FORCE}

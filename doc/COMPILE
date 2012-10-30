@@ -76,9 +76,10 @@ PLUGINS:
 	tasks related to configuration.
 	To add all plugins, you can use
 		-DPLUGINS=ALL
-	To add all plugins not having additional dependencies, you can use
+	To add all plugins not having additional dependencies
+	(they need only POSIX), you can use
 		-DPLUGINS=NODEP
-	To manually set the default (same as not setting), you can use
+	To manually set the default (same as not setting PLUGINS), you can use
 		-DPLUGINS=DEFAULT
 
 CMAKE_BUILD_TYPE:
