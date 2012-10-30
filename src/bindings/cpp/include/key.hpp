@@ -61,6 +61,7 @@ public:
 	inline ckdb::Key* operator* () const;
 	inline ckdb::Key* releaseKey ();
 	inline ckdb::Key* dup () const;
+	inline bool checkIdentity (const Key & k) const;
 
 	inline Key& operator= (ckdb::Key *k);
 	inline Key& operator= (const Key &k);
@@ -82,12 +83,10 @@ public:
 
 	inline operator bool () const;
 
-	const char* name() const;
 	std::string getName() const;
 	size_t getNameSize() const;
 	bool isValid() const;
 
-	const char* baseName() const;
 	std::string getBaseName() const;
 	size_t getBaseNameSize() const;
 
@@ -150,7 +149,6 @@ public:
 	const Key currentMeta () const;
 
 	std::string getComment() const;
-	const char* comment() const;
 	size_t getCommentSize() const;
 	void setComment(const std::string &comment);
 
@@ -164,7 +162,6 @@ public:
 	void setMode(mode_t mode);
 
 	std::string getOwner() const;
-	const char* owner() const;
 	size_t getOwnerSize() const;
 	void setOwner(const std::string &owner);
 
@@ -203,10 +200,6 @@ public:
 	bool isInactive() const;
 	bool isBelow(const Key &k) const;
 	bool isDirectBelow(const Key &k) const;
-
-	bool needSync() const;
-	bool needRemove() const;
-	bool needStat() const;
 
 private:
 	ckdb::Key * key; // holds elektra key struct
@@ -432,6 +425,17 @@ ckdb::Key* Key::releaseKey ()
 ckdb::Key* Key::operator* () const
 {
 	return key;
+}
+
+
+/**
+ * Check if the underlying key object is the same.
+ *
+ * @see dup()
+ */
+inline bool Key::checkIdentity (const Key & k) const
+{
+	return key == k.key;
 }
 
 /**
@@ -699,11 +703,6 @@ inline std::string Key::getName() const
 	return std::string (ckdb::keyName(key));
 }
 
-inline const char* Key::name() const
-{
-	return ckdb::keyName(getKey());
-}
-
 /** @return if the key is valid
  *
  * An invalid key has no name.
@@ -735,11 +734,6 @@ inline std::string Key::getDirName() const
 	return ret.substr(0, ret.rfind('/'));
 }
 
-
-inline const char* Key::baseName() const
-{
-	return ckdb::keyBaseName(getKey());
-}
 
 
 /**Sets a name_ for a key.
@@ -793,11 +787,6 @@ inline std::string Key::getFullName() const
 inline std::string Key::getComment() const
 {
 	return std::string(ckdb::keyComment(key));
-}
-
-inline const char* Key::comment() const
-{
-	return ckdb::keyComment (key);
 }
 
 /**Returns the size of the comment*/
@@ -864,11 +853,6 @@ inline void Key::setMode(mode_t mode)
 inline std::string Key::getOwner() const
 {
 	return std::string (ckdb::keyOwner(key));
-}
-
-inline const char* Key::owner() const
-{
-	return ckdb::keyOwner(key);
 }
 
 inline size_t Key::getOwnerSize() const
@@ -1042,11 +1026,6 @@ inline bool Key::isBelow(const Key & k) const
 inline bool Key::isDirectBelow(const Key & k) const
 {
 	return ckdb::keyIsDirectBelow(key, k.getKey());
-}
-
-inline bool Key::needSync() const
-{
-	return ckdb::keyNeedSync(key);
 }
 
 } // end of namespace kdb

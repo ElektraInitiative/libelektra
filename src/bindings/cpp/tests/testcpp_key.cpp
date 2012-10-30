@@ -12,17 +12,14 @@ void test_keynew()
 	char * getBack;
 
 	Key key0;
-	succeed_if(!key0.needSync(), "key1 need sync");
 	succeed_if( key0.getName() == "", "key0 has wrong name");
 
 	// Empty key
 	Key key1 ("", KEY_END);
-	succeed_if(!key1.needSync(), "key1 need sync");
 	succeed_if( key1.getName() == "", "key0 has wrong name");
 
 	// Key with name
 	Key key2 ("system/sw/test", KEY_END);
-	succeed_if( key2.needSync(), "key2 does not need sync");
 	succeed_if (key2.getBaseName() == "test", "wrong base name");
 	succeed_if( key2.getName() == "system/sw/test", "key2 has wrong name");
 	succeed_if (key2.getDirName() == "system/sw", "wrong dir name");
@@ -238,10 +235,8 @@ void test_name()
 
 	Key test;
 	test.setName("user:markus/test");
-	succeed_if (std::string(test.name()) == "user/test", "Wrong name");
 	succeed_if (test.getName() == "user/test", "Wrong name");
 	succeed_if (test.getFullName() == "user:markus/test", "Wrong full name");
-	succeed_if (std::string(test.owner()) == "markus", "Wrong owner");
 	succeed_if (test.getOwner() == "markus", "Wrong owner");
 	succeed_if (test.getNameSize() == 10, "wrong name size");
 	succeed_if (test.getFullNameSize() == 17, "wrong full name size");
@@ -249,7 +244,6 @@ void test_name()
 	succeed_if ( test.isUser(), "key is not user");
 
 	test.setOwner("gerald");
-	succeed_if (std::string(test.name()) == "user/test", "Wrong name");
 	succeed_if (test.getName() == "user/test", "Wrong name");
 	succeed_if (test.getFullName() == "user:gerald/test", "Wrong full name");
 	succeed_if (test.getNameSize() == 10, "wrong name size");
@@ -259,10 +253,8 @@ void test_name()
 
 	test.setName("system/test");
 	test.setOwner("markus"); // has no semantics...
-	succeed_if (std::string(test.name()) == "system/test", "Wrong name");
 	succeed_if (test.getName() == "system/test", "Wrong name");
 	succeed_if (test.getFullName() == "system/test", "Wrong full name");
-	succeed_if (std::string(test.owner()) == "markus", "Wrong owner");
 	succeed_if (test.getOwner() == "markus", "Wrong owner");
 	succeed_if (test.getNameSize() == 12, "wrong name size");
 	succeed_if (test.getFullNameSize() == 12, "wrong full name size");
