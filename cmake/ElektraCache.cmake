@@ -6,7 +6,9 @@
 #
 # the default list of plugins
 #
-set (PLUGINS_LIST
+# They are essential so that elektra can work
+#
+set (PLUGINS_LIST_DEFAULT
 	dump resolver
 	)
 
@@ -14,37 +16,81 @@ set (PLUGINS_LIST
 # force default list
 #
 if (PLUGINS MATCHES "DEFAULT")
+	set (PLUGINS_LIST
+		${PLUGINS_LIST_DEFAULT}
+		)
 	set (PLUGINS_FORCE FORCE)
 endif ()
+
+#
+# Those plugins can only be compiled, but cannot be used.
+# Should compile on every system where elektra compiles.
+#
+set (PLUGINS_LIST_COMPILE
+	template doc
+	)
+
+#
+# Plugins which only need Ansi C/C++,
+# (like elektra core itself)
+# Should compile on every system where elektra compiles.
+#
+set (PLUGINS_LIST_NODEP
+	ccode
+	error  fstab
+	hexcode  hidden
+	ni  null
+	struct  success
+	tracer  type  validation
+	)
+
+#
+# Plugins which use some posix facility
+#
+set (PLUGINS_LIST_POSIX
+	glob  hosts  iconv  network
+	path
+	syslog uname
+	timeofday
+	simpleini
+	)
 
 #
 # force no dependency list
 #
 if (PLUGINS MATCHES "NODEP")
 	set (PLUGINS_LIST
-		dump resolver
-		ccode  doc  error  fstab
-		glob  hexcode  hidden  hosts  iconv  network  ni  null
-		path  simpleini  struct  success  syslog
-		template  timeofday  tracer  type  validation
+		${PLUGINS_LIST_DEFAULT}
+		${PLUGINS_LIST_COMPILE}
+		${PLUGINS_LIST_NODEP}
+		${PLUGINS_LIST_POSIX}
 	    )
 	set (PLUGINS_FORCE FORCE)
 endif ()
+
+
+#
+# plugins with dependencies
+#
+set (PLUGINS_LIST_DEP
+	yajl dbus tcl xmltool
+	)
 
 #
 # force all plugins
 #
 if (PLUGINS MATCHES "ALL")
 	set (PLUGINS_LIST
-		dump resolver
-		ccode  doc  error  fstab
-		glob  hexcode  hidden  hosts  iconv  network  ni  null
-		path  simpleini  struct  success  syslog
-		template  timeofday  tracer  type  validation
-		yajl dbus tcl xmltool
+		${PLUGINS_LIST_DEFAULT}
+		${PLUGINS_LIST_COMPILE}
+		${PLUGINS_LIST_NODEP}
+		${PLUGINS_LIST_POSIX}
+		${PLUGINS_LIST_DEP}
 		)
 	set (PLUGINS_FORCE FORCE)
 endif ()
+
+
 
 
 #

@@ -1,0 +1,11 @@
+Includes uname information into the key database.
+
+It defines following keynames below its mountpoint:
+
+sysname
+nodename
+release
+version
+machine
+
+They are readonly.
