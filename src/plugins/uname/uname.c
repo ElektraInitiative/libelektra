@@ -28,9 +28,6 @@
 #include <errno.h>
 #include <sys/utsname.h>
 
-#define DEBUG
-#define VERBOSE
-
 #ifndef HAVE_KDBCONFIG
 # include "kdbconfig.h"
 #endif
