@@ -1,23 +1,22 @@
 == 0.8.4 ==
 
-ELEKTRA_SET_ERROR in dump fixed?
+ELEKTRA_SET_ERROR in dump compile error
+
+c++:
+	Keyset operator==
+	exceptions defined outside
+	document C++ interface
+	build docu for C++ interface.. (copydoc)
+	import/export
+	with automated kdb tests written from docu
+	mark internal docu + hide it
+	add examples in docu (snippets from testcases)
 
 keyAdd+Set basename: handle . and .. correctly
 
-
-resolver recursively:
-	double slashes
-	starting with /
-	kdb file using resolver plugin without function! (parent value!)
-	should be returned in kdbGet/kdbSet
+warning in resolver aborts execution? (uname plugin)
 
 debian package should have tests
-
-XDG specification:
-	XDG_CONFIG_HOME
-	KDB_CONFIG_HOME
-	describe, implement, test
-	xdg mail announce
 
 fix warnings:
 	(deactivate static build to disable duplications)
@@ -31,14 +30,7 @@ jenkins:
 	job for docu
 	use docu from build server?
 	(source packages does not work)
-
-
-elektra kdb fixes:
-	document C++ interface
-	build docu for C++ interface.. (copydoc)
-	import/export
-	with automated kdb tests
-
+	-> RELEASE plan
 
 script testing:
 	should be runned by make test
@@ -71,6 +63,19 @@ unit tests:
 	install old unit tests with new elektra for ABI tests
 
 == 0.8.5 ==
+
+resolver recursively:
+	double slashes
+	starting with /
+	kdb file using resolver plugin without function! (parent value!)
+	should be returned in kdbGet/kdbSet
+
+XDG specification:
+	XDG_CONFIG_HOME
+	KDB_CONFIG_HOME
+	describe, implement, test
+	xdg mail announce
+
 
 kdb-shell:
 	use import/export
@@ -119,8 +124,3 @@ chroot:
 kdb tool:
 	allow verification of local key database by exported file
 	tset (typesafe set)
-
-c++:
-	Keyset operator==
-	exceptions defined outside
-
