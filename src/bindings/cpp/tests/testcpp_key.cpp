@@ -394,6 +394,16 @@ void test_valid()
 	}
 }
 
+void test_clear()
+{
+	cout << "Test clearing of keys" << endl;
+
+	Key k1;
+	Key k2 = k1;
+
+	k2.clear();
+}
+
 int main()
 {
 	cout << "KEY CLASS TESTS" << endl;
@@ -410,6 +420,7 @@ int main()
 	test_dup();
 	test_ref();
 	test_valid();
+	test_clear();
 
 	cout << endl;
 	cout << "testcpp_key RESULTS: " << nbTest << " test(s) done. " << nbError << " error(s)." << endl;

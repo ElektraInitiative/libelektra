@@ -76,6 +76,7 @@ public:
 
 	inline ckdb::Key* getKey () const;
 	inline ckdb::Key* operator* () const;
+	inline ckdb::Key* releaseKey ();
 	inline ckdb::Key* dup () const;
 
 	inline Key& operator= (ckdb::Key *k);
@@ -332,11 +333,16 @@ inline void Key::copy (const Key &other)
 /**
  * Clears a key.
  *
- * @see copy
+ * Afterwards the object is empty again.
+ *
+ * @copydoc keyClear
  */
 inline void Key::clear ()
 {
-	ckdb::keyCopy(key,0);
+	ckdb::keyClear(key);
+	key = ckdb::keyNew (0);
+
+	operator++();
 }
 
 /**
@@ -412,7 +418,7 @@ inline void Key::set(T x)
 }
 
 /**
- * Passes out the raw pointer.
+ * Passes out the raw key pointer.
  *
  * This pointer can be used to directly change the underlying key
  * object.
@@ -422,6 +428,19 @@ inline void Key::set(T x)
 ckdb::Key* Key::getKey () const
 {
 	return key;
+}
+
+/**
+ * Passes out the raw key pointer.
+ *
+ * \note that the ownership is moved outside.
+ *
+ * The container is left empty.
+ */
+ckdb::Key* Key::releaseKey ()
+{
+	return key;
+	key = 0;
 }
 
 /**
