@@ -38,7 +38,12 @@ class KeyBadMeta : public KeyMetaException
  * @copydoc key
  *
  * Keys are refcounted and are cheap to copy or copy-construct.
- * If you really need a deep copy, you can use copy() or dup().
+ * If you really need a deep copy, you can use copy() or dup(),
+ * all other operations operate on references.
+ *
+ * @invariant Key always has a working underlying Elektra Key
+ * object. So clear() and release() reset to a new internal Key
+ * object. This Key, however, might be invalid (see isValid()).
  *
  * \note that the reference counting in the keys is mutable,
  * so that const keys can be passed around by value.
@@ -505,22 +510,22 @@ inline Key& Key::operator= (const std::string &newName)
 /**
  * Add a new basename.
  *
- * @see keyAddBaseName
+ * @see keyAddBaseName()
  */
-inline Key& Key::operator+= (const std::string &baseName)
+inline Key& Key::operator+= (const std::string &newAddBaseName)
 {
-	ckdb::keyAddBaseName(getKey(), baseName.c_str());
+	ckdb::keyAddBaseName(getKey(), newAddBaseName.c_str());
 	return *this;
 }
 
 /**
  * Set a new basename.
  *
- * @see keySetBaseName
+ * @see keySetBaseName()
  */
-inline Key& Key::operator-= (const std::string &baseName)
+inline Key& Key::operator-= (const std::string &newSetBaseName)
 {
-	ckdb::keySetBaseName(getKey(), baseName.c_str());
+	ckdb::keySetBaseName(getKey(), newSetBaseName.c_str());
 	return *this;
 }
 
@@ -534,20 +539,20 @@ inline Key& Key::operator= (const char *newName)
 }
 
 /**
- * @copydoc Key::operator+= (const std::string &baseName)
+ * @copydoc Key::operator+= (const std::string &)
  */
-inline Key& Key::operator+= (const char *baseName)
+inline Key& Key::operator+= (const char *newAddBaseName)
 {
-	ckdb::keyAddBaseName(getKey(), baseName);
+	ckdb::keyAddBaseName(getKey(), newAddBaseName);
 	return *this;
 }
 
 /**
- * @copydoc Key::operator-= (const std::string &baseName)
+ * @copydoc Key::operator-= (const std::string &)
  */
-inline Key& Key::operator-= (const char *baseName)
+inline Key& Key::operator-= (const char *newSetBaseName)
 {
-	ckdb::keySetBaseName(getKey(), baseName);
+	ckdb::keySetBaseName(getKey(), newSetBaseName);
 	return *this;
 }
 
@@ -721,10 +726,16 @@ inline const char* Key::name() const
 	return ckdb::keyName(getKey());
 }
 
-/**
-  * @retval true if the key has a valid name
-  * @retval false if the key has no valid name
-  */
+/** @return if the key is valid
+ *
+ * An invalid key has no name.
+ * The name of valid keys either start with user or system.
+ *
+ * @retval true if the key has a valid name
+ * @retval false if the key has an invalid name
+ *
+ * @see getName()
+ */
 inline bool Key::isValid() const
 {
 	return ckdb::keyGetNameSize (getKey()) > 1;
