@@ -1,0 +1,17 @@
+== ABI compatability tests ==
+
+need defined set of tests which only use tests.h (and not internal,..)
+deploy them correctly and run old tests with new elektra
+
+== srcdir ==
+
+Currently a srcdir is defined, but no dir to write to
+needed for fstab, dump and so on tests..
+
+== testmod ==
+
+most plugins do not use PLUGIN_OPEN interface
+most plugins (especially storage) do only basic or no tests
+	dump
+	fstab
+	hosts

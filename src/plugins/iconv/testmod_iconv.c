@@ -138,7 +138,7 @@ void test_utf8_needed()
 	ksDel (modules);
 }
 
-void set_str (char **str, size_t *len, char *newstr)
+static void set_str (char **str, size_t *len, char *newstr)
 {
 	*len = strlen (newstr)+1;
 	elektraRealloc ((void**)str, *len);
