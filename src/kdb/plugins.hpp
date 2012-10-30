@@ -73,8 +73,6 @@ class Plugins
 protected:
 	std::vector<Plugin *> plugins;
 
-	kdb::KeySet ret;
-
 	std::vector <std::string> needed;
 	std::vector <std::string> recommended;
 	std::vector <std::string> alreadyProvided;

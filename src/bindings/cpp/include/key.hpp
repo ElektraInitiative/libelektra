@@ -1,38 +1,16 @@
-#ifndef CPP_KEY_H
-#define CPP_KEY_H
+#ifndef ELEKTRA_KEY_HPP
+#define ELEKTRA_KEY_HPP
 
 #include <sstream>
 #include <string>
 #include <cstdarg>
 
+#include <kdbexcept.hpp>
+
 #include <kdbextension.h>
 
 namespace kdb {
 
-class KeyException : public std::exception
-{
-	const char* what() {return "Key Exception";}
-};
-
-class KeyInvalidName : public KeyException
-{
-	const char* what() {return "Invalid Keyname";}
-};
-
-class KeyMetaException : public KeyException
-{
-	const char* what() {return "Key Meta Data related Exception";}
-};
-
-class KeyNoSuchMeta : public KeyMetaException
-{
-	const char* what() {return "No such meta data";}
-};
-
-class KeyBadMeta : public KeyMetaException
-{
-	const char* what() {return "Could not convert bad meta data";}
-};
 
 /**
  * @copydoc key
@@ -765,7 +743,8 @@ inline const char* Key::baseName() const
 
 
 /**Sets a name_ for a key.
- * Throws kdb::KeyInvalidName when the name_ is not valid*/
+ * \throw kdb::KeyInvalidName when the name_ is not valid
+ * */
 inline void Key::setName (const std::string &newName)
 {
 	if (ckdb::keySetName (getKey(), newName.c_str()) == -1)
@@ -776,17 +755,17 @@ inline void Key::setName (const std::string &newName)
 
 /**Sets a base name_ for a key.
  * Throws kdb::KeyInvalidName when the name_ is not valid*/
-inline void Key::setBaseName (const std::string &baseName)
+inline void Key::setBaseName (const std::string &newSetBaseName)
 {
-	if (ckdb::keySetBaseName (getKey(), baseName.c_str()) == -1)
+	if (ckdb::keySetBaseName (getKey(), newSetBaseName.c_str()) == -1)
 	{
 		throw KeyInvalidName();
 	}
 }
 
-inline void Key::addBaseName (const std::string &baseName)
+inline void Key::addBaseName (const std::string &newAddBaseName)
 {
-	if (ckdb::keyAddBaseName (getKey(), baseName.c_str()) == -1)
+	if (ckdb::keyAddBaseName (getKey(), newAddBaseName.c_str()) == -1)
 	{
 		throw KeyInvalidName();
 	}

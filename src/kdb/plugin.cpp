@@ -16,8 +16,8 @@
 using namespace std;
 using namespace kdb;
 
-Plugin::Plugin(std::string const& pluginName, KeySet &modules, KeySet const& testConfig) :
-	pluginName(pluginName),
+Plugin::Plugin(std::string const& nameOfNewPlugin, KeySet &modules, KeySet const& testConfig) :
+	pluginName(nameOfNewPlugin),
 	firstRef (true)
 {
 	Key errorKey;
@@ -201,7 +201,7 @@ std::string Plugin::lookupInfo(std::string item, std::string section)
 	return ret.getString();
 }
 
-bool Plugin::findInfo(std::string check, std::string item, std::string section)
+bool Plugin::findInfo(std::string compare, std::string item, std::string section)
 {
 	std::string str = lookupInfo (item, section);
 
@@ -210,7 +210,7 @@ bool Plugin::findInfo(std::string check, std::string item, std::string section)
 	std::string toCheck;
 	while (istr >> toCheck)
 	{
-		if (toCheck == check) return true;
+		if (toCheck == compare) return true;
 	}
 	return false;
 }
