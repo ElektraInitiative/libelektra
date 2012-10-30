@@ -16,8 +16,10 @@ namespace kdb {
  * @copydoc key
  *
  * Keys are refcounted and are cheap to copy or copy-construct.
- * If you really need a deep copy, you can use copy() or dup(),
- * all other operations operate on references.
+ * If you really need a deep copy, you can use copy() or dup().
+ * If you want to break references, use clear().
+ * All other operations operate on references.
+ *
  *
  * @invariant Key always has a working underlying Elektra Key
  * object. So clear() and release() reset to a new internal Key
@@ -50,12 +52,6 @@ public:
 
 	inline void operator --(int) const;
 	inline void operator --() const;
-
-	template <class T>
-	inline T get() const;
-
-	template <class T>
-	inline void set(T x);
 
 	inline ckdb::Key* getKey () const;
 	inline ckdb::Key* operator* () const;
@@ -100,49 +96,19 @@ public:
 	std::string getFullName() const;
 
 	template <class T>
-	T getMeta(const std::string &metaName)
-	{
-		T x;
-		std::string str;
-		const char *v = 
-			static_cast<const char*>(
-				ckdb::keyValue(
-					ckdb::keyGetMeta(key, metaName.c_str())
-					)
-				);
-		if (!v) throw KeyNoSuchMeta();
-		str = std::string(v);
-		std::istringstream ist(str);
-		ist >> x;	// convert string to type
-		if (ist.fail()) throw KeyBadMeta();
-		return x;
-	}
-
-	/*
-	const Key *getMeta(const std::string &metaName)
-	{
-		return ckdb::keyGetMeta(key, metaName.c_str());
-	}
-	*/
+	inline T get() const;
 
 	template <class T>
-	void setMeta(const std::string &metaName, T x)
-	{
-		std::string str;
-		std::ostringstream ost;
-		ost << x;	// convert type to string
-		ckdb::keySetMeta(key, metaName.c_str(), ost.str().c_str());
-	}
+	inline void set(T x);
 
-	void copyMeta(const Key &other, const std::string &metaName)
-	{
-		ckdb::keyCopyMeta(key, other.key, metaName.c_str());
-	}
+	template <class T>
+	inline T getMeta(const std::string &metaName);
 
-	void copyAllMeta(const Key &other)
-	{
-		ckdb::keyCopyAllMeta(key, other.key);
-	}
+	template <class T>
+	inline void setMeta(const std::string &metaName, T x);
+
+	inline void copyMeta(const Key &other, const std::string &metaName);
+	inline void copyAllMeta(const Key &other);
 
 	void rewindMeta () const;
 	const Key nextMeta ();
@@ -604,44 +570,44 @@ inline Key::operator bool () const
 
 /**@note don't forget the const: getMeta<const ckdb::Key*>*/
 template<>
-inline const ckdb::Key* Key::getMeta(const std::string &name_)
+inline const ckdb::Key* Key::getMeta(const std::string &name)
 {
 	return
-		ckdb::keyGetMeta(key, name_.c_str());
+		ckdb::keyGetMeta(key, name.c_str());
 }
 
 /**@note don't forget the const: getMeta<const kdb::Key>*/
 template<>
-inline const Key Key::getMeta(const std::string &name_)
+inline const Key Key::getMeta(const std::string &name)
 {
 	return
 		Key (
 			const_cast<ckdb::Key*>(
-				ckdb::keyGetMeta(key, name_.c_str())
+				ckdb::keyGetMeta(key, name.c_str())
 				)
 			);
 }
 
 template<>
-inline const char* Key::getMeta(const std::string &name_)
+inline const char* Key::getMeta(const std::string &name)
 {
 	return
 		static_cast<const char*>(
 			ckdb::keyValue(
-				ckdb::keyGetMeta(key, name_.c_str())
+				ckdb::keyGetMeta(key, name.c_str())
 				)
 			);
 }
 
 /* We dont want only the first part of the string */
 template<>
-inline std::string Key::getMeta(const std::string &name_)
+inline std::string Key::getMeta(const std::string &name)
 {
 	std::string str;
 	const char *v = 
 		static_cast<const char*>(
 			ckdb::keyValue(
-				ckdb::keyGetMeta(key, name_.c_str())
+				ckdb::keyGetMeta(key, name.c_str())
 				)
 			);
 	if (!v) throw KeyNoSuchMeta();
@@ -649,18 +615,37 @@ inline std::string Key::getMeta(const std::string &name_)
 	return str;
 }
 
+template <class T>
+inline T Key::getMeta(const std::string &metaName)
+{
+	T x;
+	std::string str;
+	const char *v = 
+		static_cast<const char*>(
+			ckdb::keyValue(
+				ckdb::keyGetMeta(key, metaName.c_str())
+				)
+			);
+	if (!v) throw KeyNoSuchMeta();
+	str = std::string(v);
+	std::istringstream ist(str);
+	ist >> x;	// convert string to type
+	if (ist.fail()) throw KeyBadMeta();
+	return x;
+}
+
 /*Example for an template specialisation.
   Because mode_t is in fact an int, this would
   also change all other int types.
 template<>
-inline mode_t Key::getMeta(const std::string &name_)
+inline mode_t Key::getMeta(const std::string &name)
 {
 	mode_t x;
 	std::string str;
 	str = std::string(
 		static_cast<const char*>(
 			ckdb::keyValue(
-				ckdb::keyGetMeta(key, name_.c_str())
+				ckdb::keyGetMeta(key, name.c_str())
 				)
 			)
 		);
@@ -669,6 +654,25 @@ inline mode_t Key::getMeta(const std::string &name_)
 	return x;
 }
 */
+
+template <class T>
+inline void Key::setMeta(const std::string &metaName, T x)
+{
+	std::string str;
+	std::ostringstream ost;
+	ost << x;	// convert type to string
+	ckdb::keySetMeta(key, metaName.c_str(), ost.str().c_str());
+}
+
+inline void Key::copyMeta(const Key &other, const std::string &metaName)
+{
+	ckdb::keyCopyMeta(key, other.key, metaName.c_str());
+}
+
+inline void Key::copyAllMeta(const Key &other)
+{
+	ckdb::keyCopyAllMeta(key, other.key);
+}
 
 inline void Key::rewindMeta() const
 {
@@ -736,8 +740,8 @@ inline std::string Key::getDirName() const
 
 
 
-/**Sets a name_ for a key.
- * \throw kdb::KeyInvalidName when the name_ is not valid
+/**Sets a name for a key.
+ * \throw kdb::KeyInvalidName when the name is not valid
  * */
 inline void Key::setName (const std::string &newName)
 {
@@ -747,8 +751,8 @@ inline void Key::setName (const std::string &newName)
 	}
 }
 
-/**Sets a base name_ for a key.
- * Throws kdb::KeyInvalidName when the name_ is not valid*/
+/**Sets a base name for a key.
+ * Throws kdb::KeyInvalidName when the name is not valid*/
 inline void Key::setBaseName (const std::string &newSetBaseName)
 {
 	if (ckdb::keySetBaseName (getKey(), newSetBaseName.c_str()) == -1)
