@@ -1,4 +1,5 @@
 #include <kdb.h>
+#include <stdio.h>
 
 int main()
 {
@@ -14,8 +15,13 @@ int main()
 	// check for errors by in key
 	keyDel(key);
 
-	key = ksLookupByName(myConfig,"/sw/MyApp/key", 0);
-	// check if key is not 0 and work with it...
+	Key * result = ksLookupByName(myConfig,"/sw/MyApp/Tests/TestKey1", 0);
+	// check if result is not 0 and work with it...
+
+	const char * key_name = keyName(result);
+	const char * key_value = keyString(result);
+	const char * key_comment = keyString(keyGetMeta(result, "comment"));
+	printf("key: %s value: %s comment: %s", key_name, key_value, key_comment);
 
 	ksDel (myConfig); // delete the in-memory configuration
 
