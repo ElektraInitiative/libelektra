@@ -3,6 +3,11 @@
 need defined set of tests which only use tests.h (and not internal,..)
 deploy them correctly and run old tests with new elektra
 
+== cpptests ==
+
+make common cmake test infrastructure for cpp plugin tests
+needed in: type, dump (currently no tests)
+
 == srcdir ==
 
 Currently a srcdir is defined, but no dir to write to
