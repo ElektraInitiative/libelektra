@@ -23,6 +23,15 @@ public:
 	}
 };
 
+class KeyTypeMismatch: public Exception
+{
+public:
+	virtual const char* what() const throw()
+	{
+		return "Binary or String key mismatch";
+	}
+};
+
 class KeyInvalidName : public KeyException
 {
 public:

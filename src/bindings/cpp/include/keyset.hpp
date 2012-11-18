@@ -9,7 +9,10 @@
 
 namespace kdb {
 
-/**Represents an elektra keyset.
+/**
+ * Represents an elektra keyset.
+ *
+ * \invariant always holds an underlying elektra keyset.
  *
  * \note that the cursor is mutable,
  * so it might be changed even in const functions.
@@ -18,11 +21,13 @@ class KeySet
 {
 public:
 	KeySet () :ks (ckdb::ksNew(0)) {}
-	/**@warning takes ownership of keyset!
-	  Keyset will be destroyed at destructor
-	  you cant continue to use keyset afterwards!
-
-	  Use KeySet::release() to avoid destruction.
+	/**
+	 * Takes ownership of keyset!
+	 *
+	 * Keyset will be destroyed at destructor
+	 * you cant continue to use keyset afterwards!
+	 *
+	 * Use KeySet::release() to avoid destruction.
 	*/
 	KeySet (ckdb::KeySet *k) :ks(k) {}
 	KeySet (const KeySet &other);
@@ -30,9 +35,11 @@ public:
 	KeySet (size_t alloc, ...);
 	~KeySet ();
 
-	/** If you dont want destruction of keyset at
-	  the end you can release the pointer. */
-	ckdb::KeySet * release() {ckdb::KeySet *ret = ks; ks = 0; return ret;}
+	/**
+	 * If you dont want destruction of keyset at
+	 * the end you can release the pointer.
+	 * */
+	ckdb::KeySet * release() {ckdb::KeySet *ret = ks; ks = ckdb::ksNew(0); return ret;}
 
 	ckdb::KeySet * getKeySet () const { return ks; }
 	void setKeySet (ckdb::KeySet * k) { ks = k; }
@@ -68,13 +75,7 @@ public:
 	Key lookup (const char *name, const option_t options = KDB_O_NONE) const;
 
 private:
-	/*
-	KeySet (KeySet &k) :ks (k.ks) { }
-	KeySet (const KeySet &k) :ks (k.ks) { }
-	*/
-
-private:
-	ckdb::KeySet * ks; // holds elektra keyset struct
+	ckdb::KeySet * ks; ///< holds an elektra keyset
 };
 
 inline KeySet::KeySet (size_t alloc, va_list ap)

@@ -181,7 +181,7 @@ void TestCommand::doBinaryTest()
 			}
 
 			nrTest ++;
-			if (res.getValueSize() != teststrings[i].length())
+			if (res.getBinarySize() != teststrings[i].length())
 			{
 				nrError ++;
 				cerr << "Binary test failed (length is not equal)" << endl;
