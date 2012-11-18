@@ -10,184 +10,186 @@
 
 #include <kdb.h>
 
-namespace kdb {
+	namespace kdb {
 
 
-/**
- * @copydoc key
- *
- * Keys are refcounted and are cheap to copy or copy-construct.
- * If you really need a deep copy, you can use copy() or dup().
- * If you want to break references, use clear().
- * All other operations operate on references.
- *
- *
- * @invariant Key always has a working underlying Elektra Key
- * object. So clear() and release() reset to a new internal Key
- * object. This Key, however, might be invalid (see isValid()).
- *
- * \note that the reference counting in the keys is mutable,
- * so that const keys can be passed around by value.
- */
-class Key
-{
-public:
-	// constructors
+	/**
+	 * @copydoc key
+	 *
+	 * Keys are refcounted and are cheap to copy or copy-construct.
+	 * If you really need a deep copy, you can use copy() or dup().
+	 * If you want to break references, use clear().
+	 * All other operations operate on references.
+	 *
+	 *
+	 * @invariant Key always has a working underlying Elektra Key
+	 * object. So clear() and release() reset to a new internal Key
+	 * object. This Key, however, might be invalid (see isValid()).
+	 *
+	 * \note that the reference counting in the keys is mutable,
+	 * so that const keys can be passed around by value.
+	 */
+	class Key
+	{
+	public:
+		// constructors
 
-	inline Key ();
-	inline Key (ckdb::Key *k);
-	inline Key (Key &k);
-	inline Key (const Key &k);
+		inline Key ();
+		inline Key (ckdb::Key * k);
+		inline Key (Key &k);
+		inline Key (Key const & k);
 
-	inline Key (const char * keyName, ...);
-	inline Key (const std::string keyName, ...);
-	inline Key (const char * keyName, va_list ap);
-
-
-	// reference handling
-
-	inline void operator ++(int) const;
-	inline void operator ++() const;
-
-	inline void operator --(int) const;
-	inline void operator --() const;
-
-	inline size_t getReferenceCounter() const;
+		inline explicit Key (const char * keyName, ...);
+		inline explicit Key (const std::string keyName, ...);
+		inline explicit Key (const char * keyName, va_list ap);
 
 
-	// basic methods
+		// reference handling
+
+		inline void operator ++(int) const;
+		inline void operator ++() const;
+
+		inline void operator --(int) const;
+		inline void operator --() const;
+
+		inline size_t getReferenceCounter() const;
 
 
-	inline Key& operator= (ckdb::Key *k);
-	inline Key& operator= (const Key &k);
-
-	inline void copy (const Key &other);
-	inline void clear ();
-	inline ckdb::Key* getKey () const;
-	inline ckdb::Key* operator* () const;
-	inline ckdb::Key* release ();
-	inline ckdb::Key* dup () const;
-	inline bool checkIdentity (const Key & k) const;
-	inline ~Key ();
+		// basic methods
 
 
-	// name manipulation
+		inline Key& operator= (ckdb::Key *k);
+		inline Key& operator= (const Key &k);
 
-	inline std::string getName() const;
-	inline size_t getNameSize() const;
-
-	inline std::string getBaseName() const;
-	inline size_t getBaseNameSize() const;
-	inline std::string getDirName() const;
-
-	inline void setName (const std::string &newName);
-	inline void setBaseName (const std::string &baseName);
-	inline void addBaseName (const std::string &baseName);
-
-	inline size_t getFullNameSize() const;
-	inline std::string getFullName() const;
-
-	inline Key& operator=  (const std::string &newName);
-	inline Key& operator+= (const std::string &baseName);
-	inline Key& operator-= (const std::string &baseName);
-
-	inline Key& operator=  (const char *newName);
-	inline Key& operator+= (const char *baseName);
-	inline Key& operator-= (const char *baseName);
+		inline void copy (const Key &other);
+		inline void clear ();
+		inline ckdb::Key* getKey () const;
+		inline ckdb::Key* operator* () const;
+		inline ckdb::Key* release ();
+		inline ckdb::Key* dup () const;
+		inline bool checkIdentity (const Key & k) const;
+		inline ~Key ();
 
 
-	// operators
+		// name manipulation
 
-	inline bool operator ==(const Key &k) const;
-	inline bool operator !=(const Key &k) const;
-	inline bool operator < (const Key& other) const;
-	inline bool operator <= (const Key& other) const;
-	inline bool operator > (const Key& other) const;
-	inline bool operator >= (const Key& other) const;
+		inline std::string getName() const;
+		inline size_t getNameSize() const;
 
-	inline operator bool() const;
+		inline std::string getBaseName() const;
+		inline size_t getBaseNameSize() const;
+		inline std::string getDirName() const;
 
+		inline void setName (const std::string &newName);
+		inline void setBaseName (const std::string &baseName);
+		inline void addBaseName (const std::string &baseName);
 
-	// value operations
+		inline size_t getFullNameSize() const;
+		inline std::string getFullName() const;
 
-	template <class T>
-	inline T get() const;
+		inline Key& operator=  (const std::string &newName);
+		inline Key& operator+= (const std::string &baseName);
+		inline Key& operator-= (const std::string &baseName);
 
-	template <class T>
-	inline void set(T x);
-
-	inline std::string getString() const;
-	inline void setString(std::string newString);
-	inline size_t getStringSize() const;
-
-	typedef void (*func_t)();
-
-	inline func_t getFunc() const;
-
-	inline std::string getBinary() const;
-	inline size_t getBinarySize() const;
-	inline size_t setBinary(const void *newBinary, size_t dataSize);
+		inline Key& operator=  (const char *newName);
+		inline Key& operator+= (const char *baseName);
+		inline Key& operator-= (const char *baseName);
 
 
-	// meta data
+		// operators
 
-	template <class T>
-	inline T getMeta(const std::string &metaName);
+		inline bool operator ==(const Key &k) const;
+		inline bool operator !=(const Key &k) const;
+		inline bool operator < (const Key& other) const;
+		inline bool operator <= (const Key& other) const;
+		inline bool operator > (const Key& other) const;
+		inline bool operator >= (const Key& other) const;
 
-	template <class T>
-	inline void setMeta(const std::string &metaName, T x);
-
-	inline void copyMeta(const Key &other, const std::string &metaName);
-	inline void copyAllMeta(const Key &other);
-
-	inline void rewindMeta () const;
-	inline const Key nextMeta ();
-	inline const Key currentMeta () const;
+		inline operator bool() const;
 
 
-	// Methods for Making tests
+		// value operations
 
-	inline bool isValid() const;
-	inline bool isSystem() const;
-	inline bool isUser() const;
+		template <class T>
+		inline T get() const;
 
-	inline bool isString() const;
-	inline bool isBinary() const;
+		template <class T>
+		inline void set(T x);
 
-	inline bool isInactive() const;
+		inline std::string getString() const;
+		inline void setString(std::string newString);
+		inline size_t getStringSize() const;
 
-	inline bool isBelow(const Key &k) const;
-	inline bool isBelowOrSame(const Key &k) const;
-	inline bool isDirectBelow(const Key &k) const;
+		typedef void (*func_t)();
 
-private:
-	inline int del ();
+		inline func_t getFunc() const;
 
-	ckdb::Key * key; ///< holds an elektra key
-};
+		inline std::string getBinary() const;
+		inline size_t getBinarySize() const;
+		inline size_t setBinary(const void *newBinary, size_t dataSize);
 
-/**
- * Constructs an empty, invalid key.
- *
- * @note That this is not a null key, so it will
- * evaluate to true.
- *
- * @see isValid(), operator bool()
- */
-inline Key::Key () :key (ckdb::keyNew (0))
-{
-	operator++(); 
-}
 
-/**
- * Constructs a key out of a C key.
- *
- * If you pass a null pointer here, it will
- * evaluate to false.
- *
- * @see isValid(), operator bool()
- */
-inline Key::Key (ckdb::Key *k) :key(k)
+		// meta data
+
+		template <class T>
+		inline T getMeta(const std::string &metaName);
+
+		template <class T>
+		inline void setMeta(const std::string &metaName, T x);
+
+		inline void copyMeta(const Key &other, const std::string &metaName);
+		inline void copyAllMeta(const Key &other);
+
+		inline void rewindMeta () const;
+		inline const Key nextMeta ();
+		inline const Key currentMeta () const;
+
+
+		// Methods for Making tests
+
+		inline bool isValid() const;
+		inline bool isSystem() const;
+		inline bool isUser() const;
+
+		inline bool isString() const;
+		inline bool isBinary() const;
+
+		inline bool isInactive() const;
+
+		inline bool isBelow(const Key &k) const;
+		inline bool isBelowOrSame(const Key &k) const;
+		inline bool isDirectBelow(const Key &k) const;
+
+	private:
+		inline int del ();
+
+		ckdb::Key * key; ///< holds an elektra key
+	};
+
+	/**
+	 * Constructs an empty, invalid key.
+	 *
+	 * @note That this is not a null key, so it will
+	 * evaluate to true.
+	 *
+	 * @see isValid(), operator bool()
+	 */
+	inline Key::Key () :
+		key(ckdb::keyNew (0))
+	{
+		operator++(); 
+	}
+
+	/**
+	 * Constructs a key out of a C key.
+	 *
+	 * If you pass a null pointer here, it will
+	 * evaluate to false.
+	 *
+	 * @see isValid(), operator bool()
+	 */
+	inline Key::Key (ckdb::Key * k) :
+	key(k)
 {
 	operator++(); 
 }
@@ -195,7 +197,8 @@ inline Key::Key (ckdb::Key *k) :key(k)
 /**
  * Takes a reference of another key.
  */
-inline Key::Key (Key &k) :key(k.key)
+inline Key::Key (Key &k) :
+	key(k.key)
 {
 	operator++();
 }
@@ -203,7 +206,8 @@ inline Key::Key (Key &k) :key(k.key)
 /**
  * Takes a reference of another key.
  */
-inline Key::Key (const Key &k) :key(k.key)
+inline Key::Key (Key const & k) :
+	key(k.key)
 {
 	operator++();
 }
@@ -358,7 +362,7 @@ inline void Key::clear ()
  *
  * \note that the ownership remains in the object
  */
-ckdb::Key* Key::getKey () const
+ckdb::Key * Key::getKey () const
 {
 	return key;
 }
@@ -366,7 +370,7 @@ ckdb::Key* Key::getKey () const
 /**
  * @copydoc getKey
  */
-ckdb::Key* Key::operator* () const
+ckdb::Key * Key::operator* () const
 {
 	return key;
 }

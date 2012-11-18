@@ -11,7 +11,7 @@
 namespace kdb {
 
 /**
- * Access to the key database.
+ * @brief Access to the key database.
  *
  * TODO: currently Key is thrown as exception
  */
@@ -22,14 +22,13 @@ public:
 	KDB (Key &errorKey);
 	~KDB ();
 
-	void close(Key &errorKey);
+	inline void close(Key &errorKey);
 
-	int get (KeySet & returned, Key &parentKey);
-	int set (KeySet & returned, Key &parentKey);
+	inline int get (KeySet & returned, Key &parentKey);
+	inline int set (KeySet & returned, Key &parentKey);
 
-protected:
-	/**You may use the KDB in an inherited class*/
-	ckdb::KDB* handle;
+private:
+	ckdb::KDB* handle; ///< holds an kdb handle
 };
 
 /**
