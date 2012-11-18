@@ -311,7 +311,7 @@ void test_append()
 	ks5.rewind();
 	for (size_t i=0; i<ks5.size(); ++i)
 	{
-		succeed_if (ks5.next().name() == v[i].name(), "wrong order");
+		succeed_if (ks5.next().checkIdentity(v[i]), "wrong order");
 	}
 
 	// ks1.toStream();
@@ -338,7 +338,7 @@ void test_per()
 		ks.rewind();
 		for (size_t i=0; i<ks.size(); ++i)
 		{
-			succeed_if (ks.next().name() == solution[i].name(), "wrong order");
+			succeed_if (ks.next().checkIdentity(solution[i]), "wrong order");
 		}
 	} while (next_permutation(permutation.begin(), permutation.end()));
 
@@ -355,8 +355,7 @@ void test_per()
 		ks.rewind();
 		for (size_t i=0; i<ks.size(); ++i)
 		{
-			// note: char*==char* checks the identity! It needs to be the same reference
-			succeed_if (ks.next().name() == solution[i].name(), "wrong order");
+			succeed_if (ks.next().checkIdentity(solution[i]), "wrong order");
 		}
 	} while (next_permutation(permutation.begin(), permutation.end()));
 
@@ -375,7 +374,7 @@ void test_per()
 		for (size_t i=0; i<ks.size(); ++i)
 		{
 			// note: char*==char* checks the identity! It needs to be the same reference
-			succeed_if (ks.next().name() == solution[i].name(), "wrong order");
+			succeed_if (ks.next().checkIdentity(solution[i]), "wrong order");
 		}
 	} while (next_permutation(permutation.begin(), permutation.end()));
 
@@ -394,8 +393,7 @@ void test_per()
 		ks.rewind();
 		for (size_t i=0; i<ks.size(); ++i)
 		{
-			// note: char*==char* checks the identity! It needs to be the same reference
-			succeed_if (ks.next().name() == solution[i].name(), "wrong order");
+			succeed_if (ks.next().checkIdentity(solution[i]), "wrong order");
 		}
 	} while (next_permutation(permutation.begin(), permutation.end()));
 
@@ -414,7 +412,7 @@ void test_appendowner()
 	ks.rewind();
 	for (size_t i=0; i<ks.size(); ++i)
 	{
-		succeed_if (ks.next().name() == v[i].name(), "wrong order");
+		succeed_if ((ks.next().checkIdentity(v[i])), "wrong order");
 	}
 }
 
@@ -437,7 +435,7 @@ void test_perowner()
 		ks.rewind();
 		for (size_t i=0; i<ks.size(); ++i)
 		{
-			succeed_if (ks.next().name() == solution[i].name(), "wrong order");
+			succeed_if ((ks.next().checkIdentity(solution[i])), "wrong order");
 		}
 	} while (next_permutation(permutation.begin(), permutation.end()));
 
@@ -454,8 +452,7 @@ void test_perowner()
 		ks.rewind();
 		for (size_t i=0; i<ks.size(); ++i)
 		{
-			// note: char*==char* checks the identity! It needs to be the same reference
-			succeed_if (ks.next().name() == solution[i].name(), "wrong order");
+			succeed_if (ks.next().checkIdentity(solution[i]), "wrong order");
 		}
 	} while (next_permutation(permutation.begin(), permutation.end()));
 
@@ -473,8 +470,7 @@ void test_perowner()
 		ks.rewind();
 		for (size_t i=0; i<ks.size(); ++i)
 		{
-			// note: char*==char* checks the identity! It needs to be the same reference
-			succeed_if (ks.next().name() == solution[i].name(), "wrong order");
+			succeed_if (ks.next().checkIdentity(solution[i]), "wrong order");
 		}
 	} while (next_permutation(permutation.begin(), permutation.end()));
 
@@ -493,8 +489,7 @@ void test_perowner()
 		ks.rewind();
 		for (size_t i=0; i<ks.size(); ++i)
 		{
-			// note: char*==char* checks the identity! It needs to be the same reference
-			succeed_if (ks.next().name() == solution[i].name(), "wrong order");
+			succeed_if (ks.next().checkIdentity(solution[i]), "wrong order");
 		}
 	} while (next_permutation(permutation.begin(), permutation.end()));
 

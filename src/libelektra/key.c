@@ -594,7 +594,7 @@ int keyDel(Key *key) {
 	return rc;
 }
 
-/*
+/**
  * Key Object Cleaner.
  *
  * Will reset all internal data.

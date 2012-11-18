@@ -988,8 +988,18 @@ void test_keyValue()
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
 	succeed_if (key = keyNew(0), "could not create new key");
+	succeed_if (keySetBinary (key, "a", 1) == 1, "could not set binary");
+	succeed_if (keyGetBinary (key, ret, 1) == 1, "binary not truncated");
+	succeed_if (!strncmp(ret, "a", 1), "binary value wrong");
+	succeed_if (keyGetString (key, ret, 999) == -1, "string not mismatch");
+	succeed_if (keySetString (key, 0) == 1, "wrong error code for SetString");
+	succeed_if (keyDel (key) == 0, "could not delete key");
+
+	succeed_if (key = keyNew(0), "could not create new key");
 	succeed_if (keySetBinary (key, "a long long binary", 19) == 19, "could not set string");
 	succeed_if (keyGetBinary (key, ret, 6) == -1, "binary not truncated");
+	succeed_if (keyGetBinary (key, ret, 19) == 19, "could not get binary");
+	succeed_if (!strncmp(ret, "a long long binary", 19), "binary value wrong");
 	succeed_if (keyGetString (key, ret, 999) == -1, "string not mismatch");
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
@@ -1003,6 +1013,16 @@ void test_keyValue()
 	}
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
+
+	succeed_if (key = keyNew(0), "could not create new key");
+	for (i=0; i<255; i++)
+	{
+		ret[0] =  i; ret[1] = 255-i; ret[2] = i;
+		//output_key (key);
+		succeed_if (keySetBinary(key,ret,3) == 3, "could not set string");
+		succeed_if (memcmp (keyValue(key), ret, 3) == 0, "String not same as set");
+	}
+	succeed_if (keyDel (key) == 0, "could not delete key");
 
 
 

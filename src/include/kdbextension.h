@@ -25,7 +25,6 @@
 #define KDBEXTENSION_H
 
 #include <kdb.h>
-#include <kdbos.h>
 
 #ifdef __cplusplus
 namespace ckdb {

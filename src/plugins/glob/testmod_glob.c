@@ -20,14 +20,14 @@ void test_match()
 
 int main(int argc, char** argv)
 {
-	printf("   ICONV   TESTS\n");
+	printf("GLOB      TESTS\n");
 	printf("====================\n\n");
 
 	init (argc, argv);
 
 	test_match();
 
-	printf("\ntest_backendhelpers RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	printf("\ntestmod_glob RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
 }

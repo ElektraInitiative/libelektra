@@ -9,20 +9,16 @@ void test_keynew()
 	cout << "testing keynew" << endl;
 
 	char array[] = "here is some data stored";
-	char * getBack;
 
 	Key key0;
-	succeed_if(!key0.needSync(), "key1 need sync");
 	succeed_if( key0.getName() == "", "key0 has wrong name");
 
 	// Empty key
 	Key key1 ("", KEY_END);
-	succeed_if(!key1.needSync(), "key1 need sync");
 	succeed_if( key1.getName() == "", "key0 has wrong name");
 
 	// Key with name
 	Key key2 ("system/sw/test", KEY_END);
-	succeed_if( key2.needSync(), "key2 does not need sync");
 	succeed_if (key2.getBaseName() == "test", "wrong base name");
 	succeed_if( key2.getName() == "system/sw/test", "key2 has wrong name");
 	succeed_if (key2.getDirName() == "system/sw", "wrong dir name");
@@ -55,31 +51,73 @@ void test_keynew()
 			KEY_VALUE, "test",
 			KEY_END);
 	succeed_if(key4.getName() == "system/sw/test", "key4 has wrong name");
-	succeed_if(key4.get<string>() == "test", "key4 has wrong name");
-	// key4.generate(stdout, 0); cout << endl;
+	succeed_if(key4.getString() == "test", "key4 has wrong value");
+	succeed_if(key4.get<string>() == "test", "key4 has wrong value");
+	succeed_if(key4.getStringSize() == 5, "key4 has wrong value size");
+	key4.setString("test");
+	succeed_if(key4.getString() == "test", "key4 has wrong value");
+	succeed_if(key4.get<string>() == "test", "key4 has wrong value");
+	succeed_if(key4.getStringSize() == 5, "key4 has wrong value size");
+	try
+	{
+		key4.getBinary();
+		succeed_if (false, "string key did not throw after getting binary");
+	}
+	catch (KeyTypeMismatch const & ktm)
+	{
+		succeed_if (true, "string key did not throw after getting binary");
+	}
+	key4.setString("");
+	succeed_if(key4.getString() == "", "key4 has wrong value");
+	succeed_if(key4.isString(), "key4 is not string");
+	succeed_if(!key4.isBinary(), "key4 is not string");
+	succeed_if(key4.get<string>() == "", "key4 has wrong value");
+	succeed_if(key4.getStringSize() == 1, "key4 has wrong value size");
+	key4.setBinary("abc", 3);
+	succeed_if(key4.isBinary(), "key4 is not string");
+	succeed_if(!key4.isString(), "key4 is not string");
+	try
+	{
+		key4.getString();
+		succeed_if (false, "binary key did not throw after getting string");
+	}
+	catch (KeyTypeMismatch const & ktm)
+	{
+		succeed_if (true, "binary key did not throw after getting string");
+	}
+	std::string s("abc");
+	s.resize(3);
+	succeed_if(key4.getBinary() == s, "key4 has wrong binary value");
+	succeed_if(key4.getBinarySize() == 3, "key4 has wrong value size");
+	s[1] = 0;
+	key4.setBinary("a\0c", 3);
+	succeed_if(key4.getBinary() == s, "key4 has wrong binary value");
+	succeed_if(key4.getBinarySize() == 3, "key4 has wrong value size");
 
 	// Key with name + UID/GID
 	Key key5 ("system/sw/test",
 			KEY_UID, 123,
 			KEY_GID, 456,
 			KEY_END);
-	succeed_if(key5.getUID() == 123, "key5 UID no set correctly");
-	succeed_if(key5.getGID() == 456, "key5 GID not set correctly");
+	succeed_if(key5.getMeta<uid_t>("uid") == 123, "key5 UID no set correctly");
+	succeed_if(key5.getMeta<gid_t>("gid") == 456, "key5 UID no set correctly");
 	succeed_if(key5.getName() == "system/sw/test", "key5 has wrong name");
-	// key5.output(stdout, 0);
 
 	// Key with name + MODE
 	Key key6 ("system/sw/test",
 			KEY_MODE, 0642,
 			KEY_END);
-	succeed_if(key6.getMode() == 0642, "key6 mode no set correctly");
+	succeed_if(key6.getMeta<mode_t>("mode") == 642, "key6 mode no set correctly");
 	succeed_if(key6.getName() == "system/sw/test", "key6 has wrong name");
+	key6.setString("a very long string");
+	succeed_if(key6.getString() == "a very long string", "key6 has wrong value");
+	succeed_if(key6.get<string>() == "a very long string", "key6 has wrong value");
 
 	// Key with name + owner
 	Key key7 ("system/sw/test",
 			KEY_OWNER, "yl",
 			KEY_END);
-	succeed_if( key7.getOwner() ==  "yl", "key7 owner not set correctly");
+	succeed_if( key7.getMeta<std::string>("owner") ==  "yl", "key7 owner not set correctly");
 	succeed_if (!key7.isInactive(), "key should not be inactive");
 
 	Key key8 ("system/valid/there",
@@ -89,16 +127,15 @@ void test_keynew()
 			KEY_END);
 	succeed_if(key8.getName() == "system/valid/there", "key8 has wrong name");
 	succeed_if(key8.isBinary (), "Key should be binary");
-	succeed_if(key8.getValueSize() == sizeof(array), "Value size not correct");
-	getBack = new char [key8.getValueSize()];
-	key8.getBinary(getBack, key8.getValueSize());
-	succeed_if(memcmp(getBack, array, sizeof(array)) == 0, "could not get correct value with keyGetBinary");
-	delete [] getBack;
+	succeed_if(!key8.isString(), "Key should be binary");
+	succeed_if(key8.getBinarySize() == sizeof(array), "Value size not correct");
+	std::string getBack = key8.getBinary();
+	succeed_if(memcmp(&getBack[0], array, sizeof(array)) == 0, "could not get correct value with keyGetBinary");
 	succeed_if (key8.getBaseName() == "there", "wrong base name");
 
 	Key key9("system/valid/.inactive", KEY_COMMENT, "inactive key", KEY_END);
 	succeed_if (key9.isInactive(), "key should be inactive");
-	succeed_if (key9.getComment() == "inactive key", "comment failed");
+	succeed_if (key9.getMeta<std::string>("comment") == "inactive key", "comment failed");
 	succeed_if (key9.getBaseName() == ".inactive", "wrong base name");
 
 	std::string name = "system/valid/name";
@@ -173,39 +210,38 @@ void test_value ()
 
 	test.setString ("23.3");
 	succeed_if (test.get<double> () == 23.3, "could not get same double");
-	succeed_if (test.getValueSize () == 5, "value size not correct");
+	succeed_if (test.getBinarySize () == 5, "value size not correct");
 
 	test.setString ("401");
 	succeed_if (test.get<int> () == 401, "could not get same int");
-	succeed_if (test.getValueSize () == 4, "value size not correct");
+	succeed_if (test.getBinarySize () == 4, "value size not correct");
 
 	test.setString ("mystr");
 	succeed_if (test.get<string> () == "mystr", "could not get same string");
-	succeed_if (test.getValueSize () == 6, "value size not correct");
+	succeed_if (test.getBinarySize () == 6, "value size not correct");
 
 	test.setString ("myoth");
 	succeed_if (test.get<string> () == "myoth", "could not get same string");
-	succeed_if (test.getValueSize () == 6, "value size not correct");
+	succeed_if (test.getBinarySize () == 6, "value size not correct");
 
 	test.set<double> (23.3);
 	succeed_if (test.getString() == "23.3", "could not get same double");
-	succeed_if (test.getValueSize () == 5, "value size not correct");
+	succeed_if (test.getBinarySize () == 5, "value size not correct");
 
 	test.set<int> (401);
 	succeed_if (test.getString() == "401", "could not get same int");
-	succeed_if (test.getValueSize () == 4, "value size not correct");
+	succeed_if (test.getBinarySize () == 4, "value size not correct");
 
 	test.set<string> ("mystr");
 	succeed_if (test.getString() == "mystr", "could not get same string");
-	succeed_if (test.getValueSize () == 6, "value size not correct");
+	succeed_if (test.getBinarySize () == 6, "value size not correct");
 
 	test.set<string> ("myoth");
 	succeed_if (test.getString () == "myoth", "could not get same string");
-	succeed_if (test.getValueSize () == 6, "value size not correct");
+	succeed_if (test.getBinarySize () == 6, "value size not correct");
 
-	test.setComment ("mycomment");
-	succeed_if (test.getComment () == "mycomment", "could not get same comment");
-	succeed_if (test.getCommentSize () == 10, "comment size not correct");
+	test.setMeta<std::string>("comment", "mycomment");
+	succeed_if (test.getMeta<std::string>("comment") == "mycomment", "could not get same comment");
 }
 
 void test_exceptions ()
@@ -238,32 +274,29 @@ void test_name()
 
 	Key test;
 	test.setName("user:markus/test");
-	succeed_if (std::string(test.name()) == "user/test", "Wrong name");
 	succeed_if (test.getName() == "user/test", "Wrong name");
 	succeed_if (test.getFullName() == "user:markus/test", "Wrong full name");
-	succeed_if (std::string(test.owner()) == "markus", "Wrong owner");
-	succeed_if (test.getOwner() == "markus", "Wrong owner");
+	succeed_if (test.getMeta<std::string>("owner") == "markus", "Wrong owner");
 	succeed_if (test.getNameSize() == 10, "wrong name size");
 	succeed_if (test.getFullNameSize() == 17, "wrong full name size");
 	succeed_if (!test.isSystem(), "key is system");
 	succeed_if ( test.isUser(), "key is not user");
 
-	test.setOwner("gerald");
-	succeed_if (std::string(test.name()) == "user/test", "Wrong name");
+	test.setMeta<std::string>("owner", "gerald");
 	succeed_if (test.getName() == "user/test", "Wrong name");
 	succeed_if (test.getFullName() == "user:gerald/test", "Wrong full name");
+	succeed_if (test.getMeta<std::string>("owner") == "gerald", "Wrong owner");
 	succeed_if (test.getNameSize() == 10, "wrong name size");
 	succeed_if (test.getFullNameSize() == 17, "wrong full name size");
 	succeed_if (!test.isSystem(), "key is system");
 	succeed_if ( test.isUser(), "key is not user");
 
 	test.setName("system/test");
-	test.setOwner("markus"); // has no semantics...
-	succeed_if (std::string(test.name()) == "system/test", "Wrong name");
+	test.setMeta<std::string>("owner", "markus");
 	succeed_if (test.getName() == "system/test", "Wrong name");
 	succeed_if (test.getFullName() == "system/test", "Wrong full name");
-	succeed_if (std::string(test.owner()) == "markus", "Wrong owner");
-	succeed_if (test.getOwner() == "markus", "Wrong owner");
+	succeed_if (test.getMeta<std::string>("owner") == "markus", "Wrong owner");
+	succeed_if (test.getMeta<std::string>("owner") == "markus", "Wrong owner");
 	succeed_if (test.getNameSize() == 12, "wrong name size");
 	succeed_if (test.getFullNameSize() == 12, "wrong full name size");
 	succeed_if ( test.isSystem(), "key is system");
@@ -394,6 +427,16 @@ void test_valid()
 	}
 }
 
+void test_clear()
+{
+	cout << "Test clearing of keys" << endl;
+
+	Key k1;
+	Key k2 = k1;
+
+	k2.clear();
+}
+
 int main()
 {
 	cout << "KEY CLASS TESTS" << endl;
@@ -410,6 +453,7 @@ int main()
 	test_dup();
 	test_ref();
 	test_valid();
+	test_clear();
 
 	cout << endl;
 	cout << "testcpp_key RESULTS: " << nbTest << " test(s) done. " << nbError << " error(s)." << endl;

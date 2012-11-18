@@ -22,8 +22,24 @@ but three API bugs had to be fixed:
 
    keyNext: wrong documentation (subsequent calls will still return NULL ptr)
 
+ - kdbSet() now requires you to use kdbGet() before.
+   This is needed because elektra now can detect multi-process
+   conflicts. That means, if another process does a kdbSet() during you
+   work with the keyset, you will get the error/number:   30 "found
+   conflict".
+   Normally you also get this error if you did not do any kdbGet() with
+   the handle you try to kdbSet(), too.
+   This topic is discussed in
+   http://www.markus-raab.org/ftp/elektra/thesis.pdf
 
-C++ Interface (currently not ABI/API compatible anyway):
+ - The keyset now takes ownership of a key when you use ksAppendKey.
+   This means that you do not need to keyDel() every single key you
+   appended, but ksDel() will delete all keys.
+   Because of reference counting you can also pass a key to multiple
+   keysets.
+
+
+C++ Interface:
 
 - always compare names (not identity) operator== affected
 

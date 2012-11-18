@@ -10,13 +10,10 @@
 
 namespace kdb {
 
-class KDBException : public std::exception
-{
-	const char* what() {return "KDB Exception";}
-};
-
 /**
- * Access to the key database
+ * @brief Access to the key database.
+ *
+ * TODO: currently Key is thrown as exception
  */
 class KDB
 {
@@ -25,27 +22,13 @@ public:
 	KDB (Key &errorKey);
 	~KDB ();
 
-	void close(Key &errorKey);
+	inline void close(Key &errorKey);
 
-	int get (KeySet & returned, Key &parentKey);
-	int set (KeySet & returned, Key &parentKey);
+	inline int get (KeySet & returned, Key &parentKey);
+	inline int set (KeySet & returned, Key &parentKey);
 
-	/*
-	size_t get (KeySet & returned, const std::string &parentName, option_t options = KDB_O_NONE);
-	size_t get (KeySet & returned, const char * parentName, option_t options = KDB_O_NONE);
-
-	void get (Key & toGet);
-	void set (const Key & toSet);
-
-
-	void getString (const std::string &keyname, std::string value, size_t maxSize);
-	void setString (const std::string &keyname, const std::string &value);
-	void remove (const std::string &keyname);
-	*/
-
-protected:
-	/**You may use the KDB in an inherited class*/
-	ckdb::KDB* handle;
+private:
+	ckdb::KDB* handle; ///< holds an kdb handle
 };
 
 /**
@@ -57,7 +40,10 @@ inline KDB::KDB ()
 {
 	Key errorKey;
 	handle = ckdb::kdbOpen(*errorKey);
-	if (!handle) throw errorKey;
+	if (!handle)
+	{
+		throw errorKey;
+	}
 }
 
 /**
@@ -68,7 +54,10 @@ inline KDB::KDB ()
 inline KDB::KDB (Key &errorKey)
 {
 	handle = ckdb::kdbOpen(*errorKey);
-	if (!handle) throw errorKey;
+	if (!handle)
+	{
+		throw errorKey;
+	}
 }
 
 /**
@@ -122,53 +111,6 @@ inline int KDB::set (KeySet & returned, Key & parentKey)
 	if (ret == -1) throw parentKey;
 	return ret;
 }
-
-/*
-inline size_t KDB::get (KeySet & returned, const std::string &parentName, option_t options)
-{
-	ssize_t ret = ckdb::kdbGetByName (handle, returned.getKeySet(), parentName.c_str(), options);
-	if (ret == -1) throw KDBException();
-	return ret;
-}
-
-inline size_t KDB::get (KeySet & returned, const char * parentName, option_t options)
-{
-	ssize_t ret = ckdb::kdbGetByName (handle, returned.getKeySet(), parentName, options);
-	if (ret == -1) throw KDBException();
-	return ret;
-}
-
-inline void KDB::getString (const std::string &keyname, std::string value, size_t maxSize)
-{
-	char *c = new char[maxSize];
-	ckdb::kdbGetString(handle, keyname.c_str(), c, maxSize);
-	value = c;
-	delete (c);
-}
-
-inline void KDB::setString (const std::string &keyname, const std::string &value)
-{
-	ckdb::kdbSetString(handle, keyname.c_str(), value.c_str());
-}
-
-inline void KDB::remove (const std::string &keyname)
-{
-	ckdb::kdbRemove(handle, keyname.c_str());
-}
-
-inline void KDB::get (Key & toGet)
-{
-	int ret = ckdb::kdbGetKey(handle, toGet.getKey());
-	if (ret == -1) throw KDBException();
-}
-
-inline void KDB::set (const Key & toSet)
-{
-	int ret = ckdb::kdbSetKey(handle, toSet.getKey());
-	if (ret == -1) throw KDBException();
-}
-
-*/
 
 } // end of namespace kdb
 

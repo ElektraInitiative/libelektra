@@ -341,7 +341,8 @@ kdbClose(handle, 0); // no more affairs with the key database.
  * using kdbOpen().
  *
  * @param handle contains internal information of @link kdbOpen() opened @endlink key database
- * @param parentKey parent key - invalid name gets all keys
+ * @param parentKey parent key holds the information which keys should
+ * 	be get - invalid name gets all keys
  * @param ks the (pre-initialized) KeySet returned with all keys found
  * 	will not be changed on error or if no update is required
  * @see ksLookupByName() for powerful

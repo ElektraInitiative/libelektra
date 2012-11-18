@@ -1,4 +1,5 @@
 install (FILES
+	kdbexcept.hpp
 	key.hpp
 	keyset.hpp
 	kdb.hpp
