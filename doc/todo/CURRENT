@@ -1,22 +1,18 @@
 == 0.8.4 ==
 
-ELEKTRA_SET_ERROR in dump compile error
-
 c++:
 	Keyset operator==
 	exceptions defined outside
-	document C++ interface
-	build docu for C++ interface.. (copydoc)
-	import/export
+	what should print Key warnings+errors
 	with automated kdb tests written from docu
+
+c docu:
 	mark internal docu + hide it
-	add examples in docu (snippets from testcases)
+	add examples in docu, make more examples
 
-keyAdd+Set basename: handle . and .. correctly
-
-warning in resolver aborts execution? (uname plugin)
-
-debian package should have tests
+kdb get/set:
+	get features: cascading, default value
+	intensive tests
 
 fix warnings:
 	(deactivate static build to disable duplications)
@@ -24,13 +20,15 @@ fix warnings:
 	shadow
 	C++11
 
-jenkins:
-	build packages for dfc
-	cleanup elektra branches
-	job for docu
-	use docu from build server?
-	(source packages does not work)
-	-> RELEASE plan
+ELEKTRA_SET_ERROR in dump compile error
+
+keyAdd+Set basename: handle . and .. correctly
+
+warning in resolver aborts execution? (uname plugin)
+
+kdb set system/elektra/version/constants/KDB_VERSION_MINOR
+fails silently
+
 
 script testing:
 	should be runned by make test
@@ -53,14 +51,25 @@ import/export:
 	with automated kdb tests
 
 kdb testcases:
-	for get/set
 	for mount/umount
 	for import/export/convert
 	using chroot
 
-unit tests:
-	debian package with unit tests
+ABI unit tests: (manually)
 	install old unit tests with new elektra for ABI tests
+
+jenkins:
+	build packages for dfc
+	cleanup elektra branches
+	job for docu
+	use docu from build server?
+	(source packages does not work)
+	-> RELEASE plan
+
+debian:
+	dfc package
+	add examples as package
+	enable all plugins (struct, type, validation!!!)
 
 == 0.8.5 ==
 
