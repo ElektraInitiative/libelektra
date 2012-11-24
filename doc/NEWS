@@ -1,8 +1,9 @@
 0.8.4 Release
 
 
-The new command kdb file allows you to print out the configuration file
-where a given key is located.
+Two new kdb commands were added:
+kdb file allows you to print out the configuration file where a given key is located.
+kdb sget guarantees you to get a value which is handy in shell scripts.
 
 The latest documentation from git master is now build on
 http://doc.libelektra.org/api/latest/html
