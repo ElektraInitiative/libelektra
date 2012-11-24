@@ -30,7 +30,7 @@ void MountCommand::outputMtab()
 
 		kdb::KDB kdb (parentKey);
 		kdb.get(mountConf, parentKey);
-		kdb.close (parentKey);
+		// kdb.close (parentKey);
 
 		printWarnings (parentKey);
 
@@ -97,7 +97,7 @@ int MountCommand::execute(Cmdline const& cl)
 
 		kdb::KDB kdb (parentKey);
 		kdb.get(wholeConf, parentKey);
-		kdb.close (parentKey);
+		// kdb.close (parentKey);
 
 		printWarnings (parentKey);
 
@@ -343,7 +343,7 @@ int MountCommand::execute(Cmdline const& cl)
 		cout << ".";
 		kdb.set(conf, parentKey);
 		cout << ".";
-		kdb.close (parentKey);
+		// kdb.close (parentKey);
 		cout << endl;
 
 		printWarnings (parentKey);
@@ -363,7 +363,7 @@ int MountCommand::execute(Cmdline const& cl)
 		cout << ".";
 		kdb.set(wholeConf, parentKey);
 		cout << ".";
-		kdb.close (parentKey);
+		// kdb.close (parentKey);
 		cout << endl;
 
 		printWarnings (parentKey);

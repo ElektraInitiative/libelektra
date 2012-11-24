@@ -4,6 +4,7 @@
 #include <string>
 #include <key.hpp>
 #include <keyset.hpp>
+#include <kdbexcept.hpp>
 
 #include <kdb.h>
 
@@ -13,7 +14,7 @@ namespace kdb {
 /**
  * @brief Access to the key database.
  *
- * TODO: currently Key is thrown as exception
+ * @invariant the object holds an connection to the key database
  */
 class KDB
 {
@@ -21,8 +22,6 @@ public:
 	KDB ();
 	KDB (Key &errorKey);
 	~KDB ();
-
-	inline void close(Key &errorKey);
 
 	inline int get (KeySet & returned, Key &parentKey);
 	inline int set (KeySet & returned, Key &parentKey);
@@ -34,6 +33,8 @@ private:
 /**
  * Constructs a class KDB.
  *
+ * @throw KDBException if database could not be opened
+ *
  * @copydoc kdbOpen
  */
 inline KDB::KDB ()
@@ -42,12 +43,14 @@ inline KDB::KDB ()
 	handle = ckdb::kdbOpen(*errorKey);
 	if (!handle)
 	{
-		throw errorKey;
+		throw KDBException(errorKey);
 	}
 }
 
 /**
  * Constructs a class KDB.
+ *
+ * @throw KDBException if database could not be opened
  *
  * @copydoc kdbOpen
  */
@@ -56,7 +59,7 @@ inline KDB::KDB (Key &errorKey)
 	handle = ckdb::kdbOpen(*errorKey);
 	if (!handle)
 	{
-		throw errorKey;
+		throw kdb::KDBException(errorKey);
 	}
 }
 
@@ -71,21 +74,6 @@ inline KDB::~KDB ()
 	close (errorKey);
 }
 
-
-/**
- * @brief manually close connection to key database
- *
- * @copydoc kdbClose
- *
- * @note in destructor errorKey information would get lost
- * @param errorKey the key where the warnings will be attached
- */
-inline void KDB::close (Key &errorKey)
-{
-	ckdb::kdbClose(handle, errorKey.getKey());
-	handle = 0;
-}
-
 /**
  * Get all keys below parentKey inside returned.
  *
@@ -98,7 +86,10 @@ inline void KDB::close (Key &errorKey)
 inline int KDB::get (KeySet & returned, Key & parentKey)
 {
 	int ret = ckdb::kdbGet (handle, returned.getKeySet(), parentKey.getKey());
-	if (ret == -1) throw parentKey;
+	if (ret == -1)
+	{
+		throw KDBException(parentKey);
+	}
 	return ret;
 }
 
@@ -108,7 +99,10 @@ inline int KDB::get (KeySet & returned, Key & parentKey)
 inline int KDB::set (KeySet & returned, Key & parentKey)
 {
 	int ret = ckdb::kdbSet(handle, returned.getKeySet(), parentKey.getKey());
-	if (ret == -1) throw parentKey;
+	if (ret == -1)
+	{
+		throw KDBException(parentKey);
+	}
 	return ret;
 }
 

@@ -391,4 +391,3 @@ inline Key KeySet::lookup (std::string const & name, option_t const options) con
 } // end of namespace kdb
 
 #endif
-

@@ -3,69 +3,37 @@
 
 #ifndef USER_DEFINED_EXCEPTIONS
 
+#include <keyexcept.hpp>
+
+#include <kdbio.hpp>
+
 namespace kdb {
 
-class Exception : public std::exception
+class KDBException : public Exception
 {
 public:
-	virtual const char* what() const throw()
-	{
-		return "Exception thrown by Elektra";
-	}
-};
+	KDBException (Key key) :
+		m_key (key)
+	{}
 
-class KeyException : public Exception
-{
-public:
-	virtual const char* what() const throw()
-	{
-		return "Exception thrown by a Key";
-	}
-};
+	virtual ~KDBException() throw()
+	{}
 
-class KeyTypeMismatch: public Exception
-{
-public:
 	virtual const char* what() const throw()
 	{
-		return "Binary or String key mismatch";
+		/*
+		std::ostringstream m_str;
+		if (m_str.str().empty())
+		{
+			printError(m_str, m_key);
+			printWarnings(m_str, m_key);
+		}
+		return m_str.str().c_str();
+		*/
+		return "KDBException";
 	}
-};
-
-class KeyInvalidName : public KeyException
-{
-public:
-	virtual const char* what() const throw()
-	{
-		return "Invalid Keyname";
-	}
-};
-
-class KeyMetaException : public KeyException
-{
-public:
-	virtual const char* what() const throw()
-	{
-		return "Exception thrown by Key Meta Data related Operations";
-	}
-};
-
-class KeyNoSuchMeta : public KeyMetaException
-{
-public:
-	virtual const char* what() const throw()
-	{
-		return "No such meta data";
-	}
-};
-
-class KeyBadMeta : public KeyMetaException
-{
-public:
-	virtual const char* what() const throw()
-	{
-		return "Could not convert bad meta data";
-	}
+private:
+	Key m_key;
 };
 
 }
