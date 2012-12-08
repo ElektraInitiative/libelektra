@@ -82,10 +82,14 @@
  * For files the resolver plugin already takes care for
  * transactions and rollback.
  *
- * @par Error and Wanrings
+ * @par Error and Warnings
  * In any case of trouble, use ELEKTRA_SET_ERROR and return with -1.
  * You might add warnings with ELEKTRA_ADD_WARNING if you think
  * it is appropriate.
+ *
+ * @note some docu in this section might be confusing or not updated,
+ * please refer to http://www.libelektra.org/ftp/elektra/thesis.pdf
+ * or ask at the mailinglist if something is unclear.
  *
  * @addtogroup plugin
  * @{
@@ -134,7 +138,7 @@ int elektraDocOpen(Plugin *handle, Key *errorKey)
  * @note Make sure to free everything you allocate here within elektraDocClose().
  *
  * @return 0 on success
- * @param handle contains internal information of @link kdbOpen() opened @endlink key database
+ * @param handle contains internal information of the plugin
  * @param errorKey defines an errorKey
  * @see kdbOpen() which will call elektraDocOpen()
  * @see elektraPluginGetData(), elektraPluginSetData() and
@@ -418,24 +422,19 @@ elektraPluginSet(KDB *handle, KeySet *keyset, Key *parentKey)
  *
  * @see kdbSet() for caller.
  *
- * @param handle contains internal information of @link kdbOpen() opened @endlink key database
+ * @param handle contains internal information of the plugin
  * @param returned contains a keyset with relevant keys
  * @param parentKey contains the information where to set the keys
  *
  * @return When everything works gracefully return the number of keys you set.
  * The cursor position and the keys remaining in the keyset are not important.
  *
- * @return Return 0 on success with no changed key in database
- *
- * @return Return -1 on failure.
  *
  * @note If any calls you use change errno, make sure to restore the old errno.
  *
- * In normal execution cases a positive value will be returned.
- * But in some cases you are not able to set keys and have to
- * return -1. If you declare kdbcGetnoError() you are done, but
- * otherwise you have to set the cause of the error.
- * (Will be added with 0.7.1)
+ * @retval 1 on success
+ * @retval 0 on success with no changed key in database
+ * @retval -1 on failure. The cause of the error needs to beadded in parentKey
  *
  * You also have to make sure that ksGetCursor()
  * shows to the position where the error appeared.
@@ -452,6 +451,14 @@ int docSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *
 
 /**
  * Rollback in case of errors.
+ *
+ * @param handle contains internal information of the plugin
+ * @param returned contains a keyset with relevant keys
+ * @param parentKey contains the information where to set the keys
+ *
+ * @retval 1 on success
+ * @retval 0 on success with no action
+ * @retval -1 on failure
  *
  * @ingroup plugin
  */

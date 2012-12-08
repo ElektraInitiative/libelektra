@@ -612,6 +612,8 @@ int f (Key *k)
 }
  * @endcode
  *
+ * @return always returns 0
+ *
  * @param key the key object to work with
  * @ingroup key
  */
