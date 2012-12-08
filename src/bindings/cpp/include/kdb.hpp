@@ -77,13 +77,25 @@ inline KDB::~KDB () throw()
 }
 
 /**
+ * @class doxygenKDBReturn
+ * @brief
+ *
+ * @retval 0 if no key was updated
+ * @retval 1 if user or system keys were updated
+ * @retval 2 if user and system keys were updated
+ */
+
+/**
  * Get all keys below keyname inside returned.
  *
  * @copydoc kdbGet
  *
+ * @include cpp_example_get.cpp
+ *
  * @param returned the keyset where the keys will be in
  * @param keyname the root keyname which should be used to get keys below it
- * @param options to change the behaviour which keys to fetch
+ *
+ * @copydetails doxygenKDBReturn
  *
  * @throw KeyInvalidName if the keyname is invalid
  * @throw KDBException if there were problems with the database
@@ -123,7 +135,8 @@ inline int KDB::get (KeySet & returned, std::string const & keyname)
  *
  * @param returned the keyset where the keys will be in
  * @param parentKey the parentKey of returned
- * @param options to change the behaviour which keys to fetch
+ *
+ * @copydetails doxygenKDBReturn
  *
  * @throw KeyInvalidName if the keyname is invalid
  * @throw KDBException if there were problems with the database
@@ -147,6 +160,11 @@ inline int KDB::get (KeySet & returned, Key & parentKey)
  * Set all keys below keyname.
  *
  * @copydoc kdbSet
+ *
+ * @copydetails doxygenKDBReturn
+ *
+ * @param returned the keyset where the keys will be in
+ * @param keyname the keyname below the names should be set
  *
  * @throw KeyInvalidName if the keyname is invalid
  * @throw KDBException if there were problems with the database
@@ -181,6 +199,11 @@ inline int KDB::set (KeySet & returned, std::string const & keyname)
  * Set all keys below parentKey.
  *
  * @copydoc kdbSet
+ *
+ * @copydetails doxygenKDBReturn
+ *
+ * @param returned the keyset where the keys are passed to the user
+ * @param parentKey the parentKey of returned
  *
  * @throw KeyInvalidName if the keyname is invalid
  * @throw KDBException if there were problems with the database

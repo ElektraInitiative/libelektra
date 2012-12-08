@@ -186,6 +186,8 @@ inline Key::Key () :
  * If you pass a null pointer here, it will
  * evaluate to false.
  *
+ * @param k the key to work with
+ *
  * @see isValid(), operator bool()
  */
 inline Key::Key (ckdb::Key * k) :
@@ -196,6 +198,8 @@ key(k)
 
 /**
  * Takes a reference of another key.
+ *
+ * @param k the key to work with
  */
 inline Key::Key (Key &k) :
 	key(k.key)
@@ -205,6 +209,8 @@ inline Key::Key (Key &k) :
 
 /**
  * Takes a reference of another key.
+ *
+ * @param k the key to work with
  */
 inline Key::Key (Key const & k) :
 	key(k.key)
@@ -214,13 +220,15 @@ inline Key::Key (Key const & k) :
 
 /**
  * @copydoc keyNew
+ *
+ * @param keyName the name of the new key
  */
-inline Key::Key (const char * str, ...)
+inline Key::Key (const char * keyName, ...)
 {
 	va_list ap;
 
-	va_start(ap, str);
-	key = ckdb::keyVNew (str, ap);
+	va_start(ap, keyName);
+	key = ckdb::keyVNew (keyName, ap);
 	va_end(ap);
 
 	operator++();
@@ -232,13 +240,15 @@ inline Key::Key (const char * str, ...)
  * @note Not supported on some compilers, e.g.
  * clang which require you to only pass non-POD
  * in varg lists.
+ *
+ * @param keyName the name of the new key
  */
-inline Key::Key (const std::string str, ...)
+inline Key::Key (const std::string keyName, ...)
 {
 	va_list ap;
 
-	va_start(ap, str);
-	key = ckdb::keyVNew (str.c_str(), ap);
+	va_start(ap, keyName);
+	key = ckdb::keyVNew (keyName.c_str(), ap);
 	va_end(ap);
 
 	operator++();
@@ -246,6 +256,9 @@ inline Key::Key (const std::string str, ...)
 
 /**
  * @copydoc keyVNew
+ *
+ * @param keyName the name of the new key
+ * @param ap the variable argument list pointer
  */
 inline Key::Key (const char * keyName, va_list ap)
 {
@@ -483,22 +496,23 @@ inline void Key::setName (const std::string &newName)
  *
  * @throw kdb::KeyInvalidName when the name is not valid
  */
-inline void Key::setBaseName (const std::string &newSetBaseName)
+inline void Key::setBaseName (const std::string & baseName)
 {
-	if (ckdb::keySetBaseName (getKey(), newSetBaseName.c_str()) == -1)
+	if (ckdb::keySetBaseName (getKey(), baseName.c_str()) == -1)
 	{
 		throw KeyInvalidName();
 	}
 }
 
-/**
+/** Adds a base name for a key
+ *
  * @copydoc keyAddBaseName
  *
  * @throw KeyInvalidName
  */
-inline void Key::addBaseName (const std::string &newAddBaseName)
+inline void Key::addBaseName (const std::string &baseName)
 {
-	if (ckdb::keyAddBaseName (getKey(), newAddBaseName.c_str()) == -1)
+	if (ckdb::keyAddBaseName (getKey(), baseName.c_str()) == -1)
 	{
 		throw KeyInvalidName();
 	}

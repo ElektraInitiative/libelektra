@@ -778,6 +778,7 @@ EXCLUDE_SYMBOLS        = doxygen* \
 # the \include command).
 
 EXAMPLE_PATH           = @PROJECT_SOURCE_DIR@/examples
+                         @PROJECT_SOURCE_DIR@/src/bindings/cpp/examples
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp
