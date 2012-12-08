@@ -1,5 +1,5 @@
-#ifndef CPP_KDB_H
-#define CPP_KDB_H
+#ifndef ELEKTRA_KDB_HPP
+#define ELEKTRA_KDB_HPP
 
 #include <string>
 #include <key.hpp>
@@ -20,11 +20,13 @@ class KDB
 {
 public:
 	KDB ();
-	KDB (Key &errorKey);
-	~KDB ();
+	KDB (Key & errorKey);
+	~KDB () throw();
 
-	inline int get (KeySet & returned, Key &parentKey);
-	inline int set (KeySet & returned, Key &parentKey);
+	inline int get (KeySet & returned, std::string const & keyname);
+	inline int get (KeySet & returned, Key & parentKey);
+	inline int set (KeySet & returned, std::string const & keyname);
+	inline int set (KeySet & returned, Key & parentKey);
 
 private:
 	ckdb::KDB* handle; ///< holds an kdb handle
@@ -68,10 +70,50 @@ inline KDB::KDB (Key &errorKey)
  *
  * @copydoc kdbClose
  */
-inline KDB::~KDB ()
+inline KDB::~KDB () throw()
 {
 	Key errorKey;
 	close (errorKey);
+}
+
+/**
+ * Get all keys below keyname inside returned.
+ *
+ * @copydoc kdbGet
+ *
+ * @param returned the keyset where the keys will be in
+ * @param keyname the root keyname which should be used to get keys below it
+ * @param options to change the behaviour which keys to fetch
+ *
+ * @throw KeyInvalidName if the keyname is invalid
+ * @throw KDBException if there were problems with the database
+ *
+ * @see KDB::get (KeySet & returned, Key & parentKey)
+ */
+inline int KDB::get (KeySet & returned, std::string const & keyname)
+{
+	if (keyname.empty())
+	{
+		throw KeyInvalidName();
+	}
+
+	int ret=0;
+	if (keyname[0] != '/')
+	{
+		Key parentKey (keyname.c_str(), KEY_END);
+		ret += get (returned, parentKey);
+	}
+	else
+	{
+		std::string userKeyname = "user" + keyname;
+		Key userParentKey (userKeyname.c_str(), KEY_END);
+		ret += get (returned, userParentKey);
+
+		std::string systemKeyname = "system" + keyname;
+		Key systemParentKey (systemKeyname.c_str(), KEY_END);
+		ret += get (returned, systemParentKey);
+	}
+	return ret;
 }
 
 /**
@@ -82,9 +124,17 @@ inline KDB::~KDB ()
  * @param returned the keyset where the keys will be in
  * @param parentKey the parentKey of returned
  * @param options to change the behaviour which keys to fetch
+ *
+ * @throw KeyInvalidName if the keyname is invalid
+ * @throw KDBException if there were problems with the database
  */
 inline int KDB::get (KeySet & returned, Key & parentKey)
 {
+	if (!parentKey.isValid())
+	{
+		throw KeyInvalidName();
+	}
+
 	int ret = ckdb::kdbGet (handle, returned.getKeySet(), parentKey.getKey());
 	if (ret == -1)
 	{
@@ -94,10 +144,54 @@ inline int KDB::get (KeySet & returned, Key & parentKey)
 }
 
 /**
+ * Set all keys below keyname.
+ *
  * @copydoc kdbSet
+ *
+ * @throw KeyInvalidName if the keyname is invalid
+ * @throw KDBException if there were problems with the database
+ */
+inline int KDB::set (KeySet & returned, std::string const & keyname)
+{
+	if (keyname.empty())
+	{
+		throw KeyInvalidName();
+	}
+
+	int ret = 0;
+	if (keyname[0] != '/')
+	{
+		Key parentKey (keyname.c_str(), KEY_END);
+		ret += set (returned, parentKey);
+	}
+	else
+	{
+		std::string userKeyname = "user" + keyname;
+		Key userParentKey (userKeyname.c_str(), KEY_END);
+		ret += set (returned, userParentKey);
+
+		std::string systemKeyname = "system" + keyname;
+		Key systemParentKey (systemKeyname.c_str(), KEY_END);
+		ret += set (returned, systemParentKey);
+	}
+	return ret;
+}
+
+/**
+ * Set all keys below parentKey.
+ *
+ * @copydoc kdbSet
+ *
+ * @throw KeyInvalidName if the keyname is invalid
+ * @throw KDBException if there were problems with the database
  */
 inline int KDB::set (KeySet & returned, Key & parentKey)
 {
+	if (!parentKey.isValid())
+	{
+		throw KeyInvalidName();
+	}
+
 	int ret = ckdb::kdbSet(handle, returned.getKeySet(), parentKey.getKey());
 	if (ret == -1)
 	{

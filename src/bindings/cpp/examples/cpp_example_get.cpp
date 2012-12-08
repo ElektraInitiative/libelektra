@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+using namespace kdb;
+
 int main()
 {
 	KeySet config;

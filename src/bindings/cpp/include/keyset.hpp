@@ -1,5 +1,5 @@
-#ifndef CPP_KEYSET_H
-#define CPP_KEYSET_H
+#ifndef ELEKTRA_KEYSET_HPP
+#define ELEKTRA_KEYSET_HPP
 
 #include <string>
 

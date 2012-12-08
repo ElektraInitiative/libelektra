@@ -26,7 +26,7 @@ namespace kdb {
  * object. So clear() and release() reset to a new internal Key
  * object. This Key, however, might be invalid (see isValid()).
  *
- * \note that the reference counting in the keys is mutable,
+ * @note that the reference counting in the keys is mutable,
  * so that const keys can be passed around by value.
  */
 class Key
