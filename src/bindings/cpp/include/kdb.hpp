@@ -12,9 +12,12 @@
 namespace kdb {
 
 /**
+ * @copydoc KDB
+ *
  * @brief Access to the key database.
  *
- * @invariant the object holds an connection to the key database
+ * @invariant the object holds an valid connection to the key database
+ * or is empty
  */
 class KDB
 {
@@ -22,6 +25,9 @@ public:
 	KDB ();
 	KDB (Key & errorKey);
 	~KDB () throw();
+
+	void open(Key & errorKey);
+	void close(Key & errorKey) throw();
 
 	inline int get (KeySet & returned, std::string const & keyname);
 	inline int get (KeySet & returned, Key & parentKey);
@@ -42,15 +48,14 @@ private:
 inline KDB::KDB ()
 {
 	Key errorKey;
-	handle = ckdb::kdbOpen(*errorKey);
-	if (!handle)
-	{
-		throw KDBException(errorKey);
-	}
+	open(errorKey);
 }
 
 /**
  * Constructs a class KDB.
+ *
+ * @param errorKey is useful if you want to get the warnings in
+ * the successful case, when no exception is thrown.
  *
  * @throw KDBException if database could not be opened
  *
@@ -58,11 +63,7 @@ inline KDB::KDB ()
  */
 inline KDB::KDB (Key &errorKey)
 {
-	handle = ckdb::kdbOpen(*errorKey);
-	if (!handle)
-	{
-		throw kdb::KDBException(errorKey);
-	}
+	open(errorKey);
 }
 
 /**
@@ -73,7 +74,45 @@ inline KDB::KDB (Key &errorKey)
 inline KDB::~KDB () throw()
 {
 	Key errorKey;
-	close (errorKey);
+	try {
+		close (errorKey);
+	}
+	catch (...)
+	{
+		// silently drop potential warnings/errors
+	}
+}
+
+/**
+ * Open the database
+ *
+ * @param errorKey is useful if you want to get the warnings in
+ * the successful case, when no exception is thrown.
+ *
+ * @copydoc kdbOpen
+ */
+inline void KDB::open (Key &errorKey)
+{
+	handle = ckdb::kdbOpen(*errorKey);
+	if (!handle)
+	{
+		throw kdb::KDBException(errorKey);
+	}
+}
+
+/**
+ * Open the database.
+ *
+ * The return value does not matter because its only a null pointer check.
+ *
+ * @param errorKey is useful if you want to get the warnings
+ *
+ * @copydoc kdbClose
+ */
+inline void KDB::close (Key & errorKey) throw()
+{
+	ckdb::kdbClose(handle, *errorKey);
+	handle = 0;
 }
 
 /**
@@ -159,6 +198,8 @@ inline int KDB::get (KeySet & returned, Key & parentKey)
 /**
  * Set all keys below keyname.
  *
+ * If the keyname of the parentKey is invalid (e.g. empty) all keys will be set.
+ *
  * @copydoc kdbSet
  *
  * @copydetails doxygenKDBReturn
@@ -166,16 +207,10 @@ inline int KDB::get (KeySet & returned, Key & parentKey)
  * @param returned the keyset where the keys will be in
  * @param keyname the keyname below the names should be set
  *
- * @throw KeyInvalidName if the keyname is invalid
  * @throw KDBException if there were problems with the database
  */
 inline int KDB::set (KeySet & returned, std::string const & keyname)
 {
-	if (keyname.empty())
-	{
-		throw KeyInvalidName();
-	}
-
 	int ret = 0;
 	if (keyname[0] != '/')
 	{
@@ -198,6 +233,8 @@ inline int KDB::set (KeySet & returned, std::string const & keyname)
 /**
  * Set all keys below parentKey.
  *
+ * If the keyname of the parentKey is invalid (e.g. empty) all keys will be set.
+ *
  * @copydoc kdbSet
  *
  * @copydetails doxygenKDBReturn
@@ -205,16 +242,10 @@ inline int KDB::set (KeySet & returned, std::string const & keyname)
  * @param returned the keyset where the keys are passed to the user
  * @param parentKey the parentKey of returned
  *
- * @throw KeyInvalidName if the keyname is invalid
  * @throw KDBException if there were problems with the database
  */
 inline int KDB::set (KeySet & returned, Key & parentKey)
 {
-	if (!parentKey.isValid())
-	{
-		throw KeyInvalidName();
-	}
-
 	int ret = ckdb::kdbSet(handle, returned.getKeySet(), parentKey.getKey());
 	if (ret == -1)
 	{
