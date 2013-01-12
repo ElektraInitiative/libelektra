@@ -16,15 +16,37 @@ namespace kdb {
 /**
  * @copydoc key
  *
- * Keys are refcounted and are cheap to copy or copy-construct.
+ * This class is an wrapper for an optional, refcounted ckdb::Key.
+ * It is like an shared_ptr<ckdb::Key>, but the
+ * shared_ptr functionality is already within the Key and exposed
+ * with this wrapper.
+ *
+ * @par optional
+ * A key can be constructed with an null pointer, by using
+ * @code
+ * Key (static_cast<ckdb::Key*>(0));
+ * @endcode
+ * or made empty afterwards by using release() or assign a null key.
+ * To check if there is an associated managed object the user
+ * can use operator bool().
+ *
+ * @par references
+ * Copies of keys are cheap because they are only flat.
  * If you really need a deep copy, you can use copy() or dup().
- * If you want to break references, use clear().
+ * If you release() an object, the reference counter will
+ * stay
  * All other operations operate on references.
  *
+ * @par documentation
+ * Note that the documentation is typically copied from the underlying
+ * function which is wrapped and sometimes extended with C++ specific
+ * details. So you might find C examples within the C++ documentation.
  *
- * @invariant Key always has a working underlying Elektra Key
- * object. So clear() and release() reset to a new internal Key
- * object. This Key, however, might be invalid (see isValid()).
+ *
+ * @invariant Key either has a working underlying Elektra Key
+ * object or a null pointer.
+ * The Key, however, might be invalid (see isValid()) or null
+ * (see operator bool()).
  *
  * @note that the reference counting in the keys is mutable,
  * so that const keys can be passed around by value.
@@ -67,7 +89,6 @@ public:
 	inline ckdb::Key* operator* () const;
 	inline ckdb::Key* release ();
 	inline ckdb::Key* dup () const;
-	inline bool checkIdentity (const Key & k) const;
 	inline ~Key ();
 
 
@@ -107,7 +128,6 @@ public:
 
 	inline operator bool() const;
 
-
 	// value operations
 
 	template <class T>
@@ -121,7 +141,6 @@ public:
 	inline size_t getStringSize() const;
 
 	typedef void (*func_t)();
-
 	inline func_t getFunc() const;
 
 	inline std::string getBinary() const;
@@ -169,7 +188,7 @@ private:
 /**
  * Constructs an empty, invalid key.
  *
- * @note That this is not a null key, so it will
+ * @note That this is not a null key, so the key will
  * evaluate to true.
  *
  * @see isValid(), operator bool()
@@ -183,7 +202,7 @@ inline Key::Key () :
 /**
  * Constructs a key out of a C key.
  *
- * If you pass a null pointer here, it will
+ * @note If you pass a null pointer here, the key will
  * evaluate to false.
  *
  * @param k the key to work with
@@ -199,6 +218,9 @@ key(k)
 /**
  * Takes a reference of another key.
  *
+ * The key will not be copied, but the reference
+ * counter will be increased.
+ *
  * @param k the key to work with
  */
 inline Key::Key (Key &k) :
@@ -209,6 +231,9 @@ inline Key::Key (Key &k) :
 
 /**
  * Takes a reference of another key.
+ *
+ * The key will not be copied, but the reference
+ * counter will be increased.
  *
  * @param k the key to work with
  */
@@ -237,7 +262,7 @@ inline Key::Key (const char * keyName, ...)
 /**
  * @copydoc keyVNew
  *
- * @note Not supported on some compilers, e.g.
+ * @warning Not supported on some compilers, e.g.
  * clang which require you to only pass non-POD
  * in varg lists.
  *
@@ -348,13 +373,15 @@ inline void Key::copy (const Key &other)
 }
 
 /**
- * Clears a key.
+ * Clears/Invalidates a key.
  *
  * Afterwards the object is empty again.
  *
- * @note That this is not a null key, so it will
+ * @note This is not a null key, so it will
  * evaluate to true.
+ * isValid() will, however, be false.
  *
+ * @see release()
  * @see isValid(), operator bool()
  *
  * @copydoc keyClear
@@ -362,9 +389,6 @@ inline void Key::copy (const Key &other)
 inline void Key::clear ()
 {
 	ckdb::keyClear(key);
-	key = ckdb::keyNew (0);
-
-	operator++();
 }
 
 /**
@@ -393,12 +417,14 @@ ckdb::Key * Key::operator* () const
  *
  * \note that the ownership is moved outside.
  *
- * The container will be initialized with a new key.
+ * The key will stay empty.
  */
 ckdb::Key* Key::release ()
 {
 	ckdb::Key* ret = key;
-	key = ckdb::keyNew(0);
+	operator --();
+
+	key = 0;
 	return ret;
 }
 
@@ -410,21 +436,12 @@ ckdb::Key* Key::dup () const
 	return ckdb::keyDup(getKey());
 }
 
-
-/**
- * Check if the underlying key object is the same.
- *
- * @see dup()
- */
-inline bool Key::checkIdentity (const Key & k) const
-{
-	return key == k.key;
-}
-
 /**
  * Destructs the key.
  *
- * @see del
+ * @copydoc del()
+ *
+ * @see del()
  */
 inline Key::~Key ()
 {
@@ -433,6 +450,9 @@ inline Key::~Key ()
 
 /**
  * @copydoc keyName
+ *
+ * @note unlike in the C version, it is safe to change the returned
+ * string.
  */
 inline std::string Key::getName() const
 {
@@ -480,7 +500,7 @@ inline std::string Key::getDirName() const
 /**
  * @copydoc keySetName
  *
- * @throw kdb::KeyInvalidName when the name is not valid
+ * @throw KeyInvalidName if the name is not valid
  * */
 inline void Key::setName (const std::string &newName)
 {
@@ -494,7 +514,7 @@ inline void Key::setName (const std::string &newName)
  *
  * @copydoc keySetBaseName
  *
- * @throw kdb::KeyInvalidName when the name is not valid
+ * @throw KeyInvalidName if the name is not valid
  */
 inline void Key::setBaseName (const std::string & baseName)
 {
@@ -508,7 +528,7 @@ inline void Key::setBaseName (const std::string & baseName)
  *
  * @copydoc keyAddBaseName
  *
- * @throw KeyInvalidName
+ * @throw KeyInvalidName if the name is not valid
  */
 inline void Key::addBaseName (const std::string &baseName)
 {
@@ -528,6 +548,8 @@ inline size_t Key::getFullNameSize() const
 
 /**
  * @copydoc keyGetFullName
+ *
+ * @throw KeyException if key is null
  */
 inline std::string Key::getFullName() const
 {
@@ -730,7 +752,13 @@ inline void Key::set(T x)
  * It should be the same as get().
  * @return empty string on null pointers
  *
- * @throw KeyException
+ * @throw KeyException on null key or not a valid size
+ * @throw KeyTypeMismatch if key holds binary data and not a string
+ *
+ * @note unlike in the C version, it is safe to change the returned
+ * string.
+ *
+ * @see isString(), getBinary()
  */
 inline std::string Key::getString() const
 {
@@ -761,6 +789,7 @@ inline size_t Key::getStringSize() const
  * This function returns such a function pointer.
  *
  * @throw KeyTypeMismatch if no binary data found, or binary data has not correct length
+ *
  * @return a function pointer stored with setBinary()
  */
 inline Key::func_t Key::getFunc() const
@@ -785,10 +814,13 @@ inline void Key::setString(std::string newString)
 
 /**
  * @returns the binary Value of the key.
+ *
  * @throw KeyException on invalid binary size
- * @throw KeyTypeMismatch if key is string
+ * @throw KeyTypeMismatch if key is string and not a binary
  *
  * @copydoc keyGetBinary
+ *
+ * @see isBinary(), getString()
  **/
 inline std::string Key::getBinary() const
 {
@@ -824,7 +856,70 @@ inline size_t Key::setBinary(const void *newBinary, size_t dataSize)
 }
 
 
-/**@note don't forget the const: getMeta<const ckdb::Key*>*/
+/**
+ * @copydoc keyGetMeta
+ *
+ * You can specify your own template specialisation:
+ * @code
+template<>
+inline mode_t Key::getMeta(const std::string &name) const
+{
+	mode_t x;
+	std::string str;
+	str = std::string(
+		static_cast<const char*>(
+			ckdb::keyValue(
+				ckdb::keyGetMeta(key, name.c_str())
+				)
+			)
+		);
+	std::istringstream ist(str);
+	ist >> std::oct >> x;	// convert string to type
+	return x;
+}
+ * @endcode
+ *
+ * @note Because mode_t is in fact an int, this would
+ * also change all other int types.
+ *
+ * @throw KeyBadMeta if meta data could not be parsed
+ * @throw KeyNoSuchMeta if a value was requested, but none is available.
+ *
+ * @note No exception will be thrown if a const Key or char* is requested,
+ * but don't forget the const: getMeta<const ckdb::Key*>,
+ * otherwise you will get an obfuscated compiler error.
+ *
+ * - char* is null if meta data is not available
+ * - const Key is null (evaluate to false) if no meta data is
+ *   available
+ *
+ * @see setMeta(), copyMeta(), copyAllMeta()
+ */
+template <class T>
+inline T Key::getMeta(const std::string &metaName) const
+{
+	T x;
+	std::string str;
+	const char *v = 
+		static_cast<const char*>(
+			ckdb::keyValue(
+				ckdb::keyGetMeta(key, metaName.c_str())
+				)
+			);
+	if (!v)
+	{
+		throw KeyNoSuchMeta();
+	}
+	str = std::string(v);
+	std::istringstream ist(str);
+	ist >> x;	// convert string to type
+	if (ist.fail())
+	{
+		throw KeyBadMeta();
+	}
+	return x;
+}
+
 template<>
 inline const ckdb::Key* Key::getMeta(const std::string &name) const
 {
@@ -832,7 +927,6 @@ inline const ckdb::Key* Key::getMeta(const std::string &name) const
 		ckdb::keyGetMeta(key, name.c_str());
 }
 
-/**@note don't forget the const: getMeta<const kdb::Key>*/
 template<>
 inline const Key Key::getMeta(const std::string &name) const
 {
@@ -874,61 +968,9 @@ inline std::string Key::getMeta(const std::string &name) const
 }
 
 /**
- * @copydoc keyGetMeta
- *
- * You can specify your own template specialisation.
- * @code
-template<>
-inline mode_t Key::getMeta(const std::string &name) const
-{
-	mode_t x;
-	std::string str;
-	str = std::string(
-		static_cast<const char*>(
-			ckdb::keyValue(
-				ckdb::keyGetMeta(key, name.c_str())
-				)
-			)
-		);
-	std::istringstream ist(str);
-	ist >> std::oct >> x;	// convert string to type
-	return x;
-}
- * @endcode
- *
- * @note Because mode_t is in fact an int, this would
- * also change all other int types.
- *
- * @throw KeyNoSuchMeta if no meta data found
- * @throw KeyBadMeta if meta data could not be parsed
- */
-template <class T>
-inline T Key::getMeta(const std::string &metaName) const
-{
-	T x;
-	std::string str;
-	const char *v = 
-		static_cast<const char*>(
-			ckdb::keyValue(
-				ckdb::keyGetMeta(key, metaName.c_str())
-				)
-			);
-	if (!v)
-	{
-		throw KeyNoSuchMeta();
-	}
-	str = std::string(v);
-	std::istringstream ist(str);
-	ist >> x;	// convert string to type
-	if (ist.fail())
-	{
-		throw KeyBadMeta();
-	}
-	return x;
-}
-
-/**
  * @copydoc keySetMeta
+ *
+ * @see getMeta(), copyMeta(), copyAllMeta()
  */
 template <class T>
 inline void Key::setMeta(const std::string &metaName, T x)
@@ -941,6 +983,8 @@ inline void Key::setMeta(const std::string &metaName, T x)
 
 /**
  * @copydoc keyCopyMeta
+ *
+ * @see getMeta(), setMeta(), copyAllMeta()
  */
 inline void Key::copyMeta(const Key &other, const std::string &metaName)
 {
@@ -949,6 +993,8 @@ inline void Key::copyMeta(const Key &other, const std::string &metaName)
 
 /**
  * @copydoc keyCopyAllMeta
+ *
+ * @see getMeta(), setMeta(), copyMeta()
  */
 inline void Key::copyAllMeta(const Key &other)
 {
@@ -957,6 +1003,8 @@ inline void Key::copyAllMeta(const Key &other)
 
 /**
  * @copydoc keyRewindMeta
+ *
+ * @see nextMeta(), currentMeta()
  */
 inline void Key::rewindMeta() const
 {
@@ -965,6 +1013,8 @@ inline void Key::rewindMeta() const
 
 /**
  * @copydoc keyNextMeta
+ *
+ * @see rewindMeta(), currentMeta()
  */
 inline const Key Key::nextMeta()
 {
@@ -975,6 +1025,18 @@ inline const Key Key::nextMeta()
 
 /**
  * @copydoc keyCurrentMeta
+ *
+ * @note that the key will be null if last meta data is found.
+ *
+ * @code
+ * k.rewindMeta();
+ * while (meta = k.nextMeta())
+ * {
+ * 	cout << meta.getName() << " " << meta.getString() << endl;
+ * }
+ * @endcode
+ *
+ * @see rewindMeta(), nextMeta()
  */
 inline const Key Key::currentMeta() const
 {
@@ -1075,7 +1137,10 @@ inline bool Key::isDirectBelow(const Key & k) const
 }
 
 /**
- * Deallocate the key
+ * Deallocate the key if the reference counter reached zero.
+ *
+ * If there are still references, the function will only
+ * decrement the reference counter.
  *
  * @copydoc keyDel
  */

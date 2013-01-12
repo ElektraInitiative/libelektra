@@ -30,7 +30,7 @@ public:
 	}
 };
 
-class KeyTypeMismatch: public Exception
+class KeyTypeMismatch: public KeyException
 {
 public:
 	virtual const char* what() const throw()

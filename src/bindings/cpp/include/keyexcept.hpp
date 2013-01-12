@@ -19,11 +19,11 @@ class KeyException : public Exception
 public:
 	virtual const char* what() const throw()
 	{
-		return "Exception thrown by a Key";
+		return "Exception thrown by a Key, typically because you called a function on a null key";
 	}
 };
 
-class KeyTypeMismatch: public Exception
+class KeyTypeMismatch: public KeyException
 {
 public:
 	virtual const char* what() const throw()

@@ -4,6 +4,20 @@
 #include <string>
 #include <stdexcept>
 
+void test_null()
+{
+	cout << "testing null" << endl;
+
+	Key key0(static_cast<ckdb::Key*>(0));
+	succeed_if (!key0, "key should evaluate to false");
+
+	key0 = static_cast<ckdb::Key*>(0);
+	succeed_if (!key0, "key should evaluate to false");
+
+	key0.release();
+	succeed_if (!key0, "key should evaluate to false");
+}
+
 void test_keynew()
 {
 	cout << "testing keynew" << endl;
@@ -11,10 +25,12 @@ void test_keynew()
 	char array[] = "here is some data stored";
 
 	Key key0;
+	succeed_if( key0, "key should evaluate to true");
 	succeed_if( key0.getName() == "", "key0 has wrong name");
 
 	// Empty key
 	Key key1 ("", KEY_END);
+	succeed_if( key1, "key should evaluate to true");
 	succeed_if( key1.getName() == "", "key0 has wrong name");
 
 	// Key with name
@@ -265,7 +281,6 @@ void test_exceptions ()
 	{
 		succeed_if (test.getName() == "", "not set to noname");
 	}
-	
 }
 
 void test_name()
@@ -344,17 +359,20 @@ void test_ref()
 
 	Key ref1;
 	ref1 = test; // operator =
+	succeed_if(*ref1 == *test, "should point to the same object");
 
 	succeed_if (test.getName() == "user/test", "wrong name");
 	succeed_if (ref1.getName() == "user/test", "ref key wrong name");
 
 	Key ref2 = test; // copy constructor
+	succeed_if(*ref2 == *test, "should point to the same object");
 
 	succeed_if (test.getName() == "user/test", "wrong name");
 	succeed_if (ref2.getName() == "user/test", "ref key wrong name");
 
 	const Key consttest ("user/test", KEY_END);
 	Key ref3 = consttest; // const copy constructor
+	succeed_if(*ref3 == *consttest, "should point to the same object");
 
 	succeed_if (consttest.getName() == "user/test", "wrong name");
 	succeed_if (ref3.getName() == "user/test", "ref key wrong name");
@@ -371,6 +389,12 @@ void test_dup()
 
 	succeed_if (test.getName() == "user/test", "wrong name");
 	succeed_if (dup0.getName() == "user/test", "dup key wrong name");
+
+	Key dup1 = test.dup(); // directly call of dup()
+	succeed_if (dup1.getName() == "user/test", "dup key wrong name");
+
+	succeed_if(*test != *dup0, "should be other key")
+	succeed_if(*test != *dup1, "should be other key")
 }
 
 void test_valid()
@@ -431,10 +455,53 @@ void test_clear()
 {
 	cout << "Test clearing of keys" << endl;
 
-	Key k1;
+	Key k1("user", KEY_END);
 	Key k2 = k1;
+	Key k3 = k1;
+
+	succeed_if(k1.isValid(), "key should be valid");
+	succeed_if(k2.isValid(), "key should be valid");
+	succeed_if(k3.isValid(), "key should be valid");
+
+	succeed_if(k1.getName() == "user", "name should be user");
+	succeed_if(k2.getName() == "user", "name should be user");
+	succeed_if(k3.getName() == "user", "name should be user");
+
+
+	k1.clear();
+
+	succeed_if(!k1.isValid(), "key should be invalid");
+	succeed_if(!k2.isValid(), "key should be invalid");
+	succeed_if(!k3.isValid(), "key should be invalid");
+
+	succeed_if(k1.getName() == "", "name should be empty");
+	succeed_if(k2.getName() == "", "name should be empty");
+	succeed_if(k3.getName() == "", "name should be empty");
+
+	k1.setMeta("test_meta", "meta_value");
+	succeed_if(k1.getMeta<std::string>("test_meta") == "meta_value", "metadata not set correctly");
+	succeed_if(k2.getMeta<std::string>("test_meta") == "meta_value", "metadata not set correctly");
+	succeed_if(k3.getMeta<std::string>("test_meta") == "meta_value", "metadata not set correctly");
 
 	k2.clear();
+
+	succeed_if(!k1.getMeta<const Key>("test_meta"), "metadata not set correctly");
+	succeed_if(!k2.getMeta<const Key>("test_meta"), "metadata not set correctly");
+	succeed_if(!k3.getMeta<const Key>("test_meta"), "metadata not set correctly");
+}
+
+void test_cconv()
+{
+	cout << "Test conversion to C Key" << endl;
+
+	Key k1("user", KEY_END);
+	ckdb::Key * ck1 = k1.getKey();
+	succeed_if(!strcmp(ckdb::keyName(ck1), "user"), "c key does not have correct name");
+	succeed_if(!strcmp(ckdb::keyName(*k1), "user"), "c key does not have correct name");
+
+	ck1 = k1.release();
+	succeed_if(!strcmp(ckdb::keyName(ck1), "user"), "c key does not have correct name");
+	keyDel (ck1);
 }
 
 int main()
@@ -442,6 +509,7 @@ int main()
 	cout << "KEY CLASS TESTS" << endl;
 	cout << "===============" << endl << endl;
 
+	test_null();
 	test_constructor();
 	test_setkey();
 	test_cast();
@@ -454,6 +522,7 @@ int main()
 	test_ref();
 	test_valid();
 	test_clear();
+	test_cconv();
 
 	cout << endl;
 	cout << "testcpp_key RESULTS: " << nbTest << " test(s) done. " << nbError << " error(s)." << endl;
