@@ -177,13 +177,17 @@ KDB * kdbOpen(Key *errorKey)
 	/* get mount config from root backend */
 	keys=ksNew(0);
 
+	/* TODO optimize by just copy name */
+	Key *initialParent = keyDup (errorKey);
 	keySetName(errorKey, KDB_KEY_MOUNTPOINTS);
 
 	if (kdbGet(handle, keys, errorKey) == -1)
 	{
-		ELEKTRA_ADD_WARNING(17, errorKey, "kdbGet() failed");
+		ELEKTRA_ADD_WARNING(17, errorKey, "kdbGet() of " KDB_KEY_MOUNTPOINTS " failed");
+		keySetName (errorKey, keyName(initialParent));
 		return handle;
 	}
+	keySetName (errorKey, keyName(initialParent));
 
 	elektraBackendClose (handle->defaultBackend, errorKey);
 	elektraSplitDel (handle->split);
@@ -367,6 +371,8 @@ int kdbGet (KDB *handle, KeySet *ks, Key *parentKey)
 	int ret = 0;
 	int updateNeededOccurred = 0;
 	Split *split = elektraSplitNew();
+
+	/* TODO optimize by just copy name (and other needed info?) */
 	Key *initialParent = keyDup (parentKey);
 
 	if (!handle || !ks)
