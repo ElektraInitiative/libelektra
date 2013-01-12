@@ -2421,6 +2421,71 @@ void test_keyNameSpecial()
 	keyDel (k);
 }
 
+void test_keyClear()
+{
+	printf ("Test clear of key\n");
+
+	Key *k1 = keyNew("system/abc", KEY_END);
+	succeed_if (!strcmp (keyName(k1), "system/abc"), "name wrong");
+
+	succeed_if (keyGetRef(k1) == 0, "New key reference");
+	keyIncRef(k1);
+	succeed_if (keyGetRef(k1) == 1, "Incremented key reference");
+	Key *k2 = k1; // create an alias for k1
+	succeed_if (!strcmp (keyName(k2), "system/abc"), "name wrong");
+	succeed_if (keyGetRef(k1) == 1, "Incremented key reference");
+	succeed_if (keyGetRef(k2) == 1, "Incremented key reference");
+
+	keyIncRef(k1);
+	Key *k3 = k1; // create an alias for k1
+	succeed_if (!strcmp (keyName(k3), "system/abc"), "name wrong");
+	succeed_if (keyGetRef(k1) == 2, "Incremented key reference");
+	succeed_if (keyGetRef(k2) == 2, "Incremented key reference");
+	succeed_if (keyGetRef(k3) == 2, "Incremented key reference");
+
+	keyClear(k1);
+	succeed_if (!strcmp (keyName(k1), ""), "name wrong after clear");
+	succeed_if (!strcmp (keyName(k2), ""), "name wrong after clear");
+	succeed_if (!strcmp (keyName(k3), ""), "name wrong after clear");
+
+	keySetMeta(k1, "test_meta", "test_value");
+	succeed_if (!strcmp (keyValue(keyGetMeta(k1, "test_meta")), "test_value"), "meta wrong");
+	succeed_if (!strcmp (keyValue(keyGetMeta(k2, "test_meta")), "test_value"), "meta wrong");
+	succeed_if (!strcmp (keyValue(keyGetMeta(k3, "test_meta")), "test_value"), "meta wrong");
+
+	keyClear(k2);
+	succeed_if (keyGetMeta(k1, "test_meta") == 0, "there should be no meta after keyClear");
+	succeed_if (keyGetMeta(k2, "test_meta") == 0, "there should be no meta after keyClear");
+	succeed_if (keyGetMeta(k3, "test_meta") == 0, "there should be no meta after keyClear");
+
+	keySetString(k1, "mystring");
+	succeed_if (!strcmp (keyValue(k1), "mystring"), "value wrong after clear");
+	succeed_if (!strcmp (keyValue(k2), "mystring"), "value wrong after clear");
+	succeed_if (!strcmp (keyValue(k3), "mystring"), "value wrong after clear");
+
+	keyClear(k3);
+	succeed_if (!strcmp (keyValue(k1), ""), "value wrong");
+	succeed_if (!strcmp (keyValue(k2), ""), "value wrong");
+	succeed_if (!strcmp (keyValue(k3), ""), "value wrong");
+
+	succeed_if (keyGetRef(k1) == 2, "Incremented key reference");
+	succeed_if (keyGetRef(k2) == 2, "Incremented key reference");
+	succeed_if (keyGetRef(k3) == 2, "Incremented key reference");
+
+	keyDel(k3); // does nothing
+	keyDecRef(k3);
+	k3 = 0; // remove alias
+	succeed_if (keyGetRef(k1) == 1, "Incremented key reference");
+	succeed_if (keyGetRef(k2) == 1, "Incremented key reference");
+
+	keyDel(k2); // does nothing
+	keyDecRef(k2);
+	k2 = 0; // remove alias
+	succeed_if (keyGetRef(k1) == 0, "Incremented key reference");
+
+	keyDel(k1);
+}
+
 void test_keyBaseName()
 {
 	// TODO: Bug, does not work at the moment!
@@ -2470,6 +2535,8 @@ int main(int argc, char** argv)
 	test_binary();
 	test_keyBelowOrSame();
 	test_keyNameSpecial();
+	test_keyClear();
+
 	// test_keyBaseName(); TODO: Bug, does not work at the moment
 
 	printf("\ntest_key RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
