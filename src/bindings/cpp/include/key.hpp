@@ -10,7 +10,8 @@
 
 #include <kdb.h>
 
-namespace kdb {
+namespace kdb
+{
 
 
 /**
@@ -559,6 +560,11 @@ inline std::string Key::getFullName() const
 		throw KeyException();
 	}
 
+	if (csize == 0)
+	{
+		return "";
+	}
+
 	std::string str (csize-1, '\0');
 	ckdb::keyGetFullName (getKey(), &str[0], csize);
 	return str;
@@ -768,6 +774,11 @@ inline std::string Key::getString() const
 		throw KeyException();
 	}
 
+	if (csize == 0)
+	{
+		return "";
+	}
+
 	std::string str (csize-1, '\0');
 	if (ckdb::keyGetString (getKey(), &str[0], csize) == -1)
 	{
@@ -828,6 +839,11 @@ inline std::string Key::getBinary() const
 	if (csize == -1)
 	{
 		throw KeyException();
+	}
+
+	if (csize == 0)
+	{
+		return "";
 	}
 
 	std::string str (csize, '\0');

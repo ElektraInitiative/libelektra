@@ -1,9 +1,12 @@
 #ifndef ELEKTRA_KEY_IO_HPP
 #define ELEKTRA_KEY_IO_HPP
 
-#ifndef USER_DEFINED_IO
+#include <key.hpp>
 
 #include <iostream>
+
+namespace kdb
+{
 
 /**
  * @brief Stream a the name of a key
@@ -15,7 +18,7 @@
  *
  * @return the stream
  */
-std::ostream & operator << (std::ostream & os, kdb::Key const & k)
+inline std::ostream & operator << (std::ostream & os, kdb::Key const & k)
 {
 	os << k.getName();
 
@@ -30,7 +33,7 @@ std::ostream & operator << (std::ostream & os, kdb::Key const & k)
  *
  * @return the stream
  */
-std::istream & operator >> (std::istream & is, kdb::Key & k)
+inline std::istream & operator >> (std::istream & is, kdb::Key & k)
 {
 	std::string name;
 	getline(is, name);
@@ -39,6 +42,6 @@ std::istream & operator >> (std::istream & is, kdb::Key & k)
 	return is;
 }
 
-#endif
+}
 
 #endif

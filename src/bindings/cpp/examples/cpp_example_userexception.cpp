@@ -87,7 +87,8 @@ class KDBException : public Exception
 {
 public:
 	KDBException (Key key) :
-		m_key (key)
+		m_key (key),
+		m_str ()
 	{}
 
 	virtual ~KDBException() throw()
@@ -98,7 +99,10 @@ public:
 		return "User Exception: KDB";
 	}
 private:
+	// note: the exception must be binary compatible!
+	// It must have both members exactly in the same order!
 	Key m_key;
+	std::string m_str;
 };
 
 }

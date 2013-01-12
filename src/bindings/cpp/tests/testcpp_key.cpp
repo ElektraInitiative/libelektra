@@ -158,6 +158,13 @@ void test_keynew()
 	Key keyA(name, KEY_END);
 	succeed_if (keyA.getName() == "system/valid/name", "keyA has wrong name");
 	succeed_if (keyA.getBaseName() == "name", "keyA wrong base name");
+
+	/*
+	Key keyB("", KEY_END);
+	keyB.setBinary("", 0); // should throw or set binary...
+	succeed_if (keyB.isBinary(), "should be binary");
+	succeed_if (keyB.getBinary() == "", "Binary should be empty");
+	*/
 }
 
 void test_constructor()
@@ -223,6 +230,7 @@ void test_value ()
 {
 	cout << "testing value" << endl;
 	Key test;
+	succeed_if (test.getString() == "", "String should be empty");
 
 	test.setString ("23.3");
 	succeed_if (test.get<double> () == 23.3, "could not get same double");
@@ -288,6 +296,8 @@ void test_name()
 	cout << "testing name" << endl;
 
 	Key test;
+	succeed_if (test.getName() == "", "Name should be empty");
+
 	test.setName("user:markus/test");
 	succeed_if (test.getName() == "user/test", "Wrong name");
 	succeed_if (test.getFullName() == "user:markus/test", "Wrong full name");

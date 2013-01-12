@@ -1,6 +1,6 @@
 #include <kdb.hpp>
 
-#include <iostream>
+#include <keyio.hpp>
 
 using namespace kdb;
 
@@ -13,7 +13,7 @@ int main()
 	Key k = config.lookup("/sw/MyApp/mykey");
 	if (k)
 	{
-		std::cout << k << std::endl;
+		std::cout << k << " is " << k.get<int>() << std::endl;
 	}
 	else
 	{

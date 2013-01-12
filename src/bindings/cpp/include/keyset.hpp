@@ -7,7 +7,8 @@
 
 #include <kdb.h>
 
-namespace kdb {
+namespace kdb
+{
 
 /**
  * @brief A keyset holds together a set of keys.

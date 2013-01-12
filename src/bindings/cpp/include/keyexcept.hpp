@@ -3,7 +3,8 @@
 
 #ifndef USER_DEFINED_EXCEPTIONS
 
-namespace kdb {
+namespace kdb
+{
 
 class Exception : public std::exception
 {

@@ -9,7 +9,8 @@
 #include <kdb.h>
 
 
-namespace kdb {
+namespace kdb
+{
 
 /**
  * @copydoc KDB

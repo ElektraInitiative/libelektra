@@ -8,6 +8,9 @@
 #include <ostream>
 #include <iomanip>
 
+namespace kdb
+{
+
 inline std::ostream & printError(std::ostream & os, kdb::Key const & error)
 {
 	if (!error.getMeta<const kdb::Key>("error"))
@@ -28,6 +31,7 @@ inline std::ostream & printError(std::ostream & os, kdb::Key const & error)
 	{
 		os << "Error meta data is not set correctly by a plugin" << std::endl;
 	}
+
 	return os;
 }
 
@@ -68,6 +72,10 @@ inline std::ostream & printWarnings(std::ostream & os, kdb::Key const & error)
 	{
 		os << "Warnings meta data not set correctly by a plugin" << std::endl;
 	}
+
+	return os;
+}
+
 }
 
 #endif
