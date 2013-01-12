@@ -5,13 +5,16 @@ c++:
 	exceptions defined outside
 	what should print Key warnings+errors
 	with automated kdb tests written from docu
+	more examples which should compile
+	use more copydoc
 
 c docu:
 	mark internal docu + hide it
 	add examples in docu, make more examples
 
 kdb get/set:
-	get features: cascading, default value
+	get features: cascading(untested)
+	default value with sget (untested?)
 	intensive tests
 
 fix warnings:
@@ -19,6 +22,8 @@ fix warnings:
 	unused
 	shadow
 	C++11
+
+doxygen 0.8.* upgrade on server->wheezy upgrade
 
 ELEKTRA_SET_ERROR in dump compile error
 
