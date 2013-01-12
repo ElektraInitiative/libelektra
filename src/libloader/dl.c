@@ -36,7 +36,7 @@ struct _Module
 	} symbol;
 };
 
-int elektraModulesInit (KeySet *modules, Key *error)
+int elektraModulesInit (KeySet *modules, Key *)
 {
 	ksAppendKey (modules, keyNew ("system/elektra/modules", KEY_END));
 
