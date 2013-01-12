@@ -38,7 +38,7 @@ endif (WIN32)
 #
 # Common flags can be used by both C and C++
 #
-set (COMMON_FLAGS "${COMMON_FLAGS} -Wall -Wextra")
+set (COMMON_FLAGS "${COMMON_FLAGS} -Wall -Wextra -Wno-deprecated-declarations")
 
 
 
