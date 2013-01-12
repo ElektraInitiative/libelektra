@@ -32,9 +32,9 @@ void test_elektraMalloc()
 	{
 		succeed_if (buffer[i] == 0, "elektraCalloc did not initialize buffer with zeros");
 	}
-	elektraRealloc(&buffer, 100);
+	elektraRealloc((void**)&buffer, 100);
 	exit_if_fail (buffer, "buffer must not be 0 after reallocation");
-	elektraRealloc(&buffer, 20);
+	elektraRealloc((void**)&buffer, 20);
 	exit_if_fail (buffer, "buffer must not be 0 after reallocation");
 
 	char * dup = elektraStrNDup(buffer, 20);
