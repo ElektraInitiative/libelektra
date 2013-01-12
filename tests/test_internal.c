@@ -20,9 +20,9 @@ void test_elektraMalloc()
 	char * buffer=0;
 	buffer = elektraMalloc(50);
 	exit_if_fail (buffer, "buffer must not be 0 after allocation");
-	elektraRealloc(&buffer, 100);
+	elektraRealloc((void**)&buffer, 100);
 	exit_if_fail (buffer, "buffer must not be 0 after reallocation");
-	elektraRealloc(&buffer, 20);
+	elektraRealloc((void**)&buffer, 20);
 	exit_if_fail (buffer, "buffer must not be 0 after reallocation");
 	elektraFree(buffer);
 
