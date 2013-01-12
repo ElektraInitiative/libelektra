@@ -602,6 +602,11 @@ int keyDel(Key *key) {
  * After this call you will receive a fresh
  * key.
  *
+ * @note that this operation does not honor the reference
+ * counter. It will completely wipe out the keys contents,
+ * and invalidate all your aliases you might still have
+ * to the key!
+ *
  * @code
 int f (Key *k)
 {
