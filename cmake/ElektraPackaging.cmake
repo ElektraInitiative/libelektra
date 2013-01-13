@@ -69,11 +69,14 @@ if (UNIX)
 		# thus only one package is build you must list here *any* depending libraries,
 		# even if they are only used in one module
 		if ("${LSB_DISTRIB}" MATCHES "Debian5.*")
-			set (CPACK_DEBIAN_PACKAGE_DEPENDS "libxml2-dev")
+			set (CPACK_DEBIAN_PACKAGE_DEPENDS " ")
 		endif ("${LSB_DISTRIB}" MATCHES "Debian5.*")
 		if ("${LSB_DISTRIB}" MATCHES "Debian6.*")
-			set (CPACK_DEBIAN_PACKAGE_DEPENDS "libxml2-dev")
+			set (CPACK_DEBIAN_PACKAGE_DEPENDS " ")
 		endif ("${LSB_DISTRIB}" MATCHES "Debian6.*")
+		if ("${LSB_DISTRIB}" MATCHES "Debian7.*")
+			set (CPACK_DEBIAN_PACKAGE_DEPENDS " ") # if build with no plugins
+		endif ("${LSB_DISTRIB}" MATCHES "Debian7.*")
 		if (NOT CPACK_DEBIAN_PACKAGE_DEPENDS)
 			message ("WARNING: ${LSB_DISTRIB} not supported yet.\nPlease set deps in cmake/ElektraPackaging.cmake before packaging.")
 		endif (NOT CPACK_DEBIAN_PACKAGE_DEPENDS)
