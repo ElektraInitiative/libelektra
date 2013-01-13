@@ -2255,6 +2255,29 @@ void test_binary()
 	succeed_if (fun == myfun, "pointers not equal");
 
 	keyDel (k);
+
+	char data[10];
+	k = keyNew ("system/empty_binary", KEY_END);
+	succeed_if (keySetBinary(k, 0, 0) == 0, "could not set binary will null pointer");
+	succeed_if (keyIsBinary(k), "key is not binary");
+	succeed_if (keyGetBinary(k, data, 1) == 0, "could not get empty binary");
+	succeed_if (keyValue(k) == 0, "did not get back null pointer");
+
+	succeed_if (keySetBinary(k, 0, 1) == 0, "could not set binary will null pointer");
+	succeed_if (keyIsBinary(k), "key is not binary");
+	succeed_if (keyGetBinary(k, data, 1) == 0, "could not get empty binary");
+	succeed_if (keyValue(k) == 0, "did not get back null pointer");
+
+	succeed_if (keySetBinary(k, 0, 5) == 0, "could not set binary will null pointer");
+	succeed_if (keyIsBinary(k), "key is not binary");
+	succeed_if (keyGetBinary(k, data, 1) == 0, "could not get empty binary");
+	succeed_if (keyValue(k) == 0, "did not get back null pointer");
+
+	succeed_if (keySetBinary(k, 0, -1) == -1, "misusage: this will fail");
+	succeed_if (keyIsBinary(k), "key is not binary (should be from previous calls)");
+	succeed_if (keyGetBinary(k, data, 1) == 0, "could not get empty binary");
+	succeed_if (keyValue(k) == 0, "did not get back null pointer");
+	keyDel (k);
 }
 
 void test_keyBelowOrSame()

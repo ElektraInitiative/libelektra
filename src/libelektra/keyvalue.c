@@ -462,8 +462,8 @@ ssize_t keyGetBinary(const Key *key, void *returnedBinary, size_t maxSize)
  * so the parameter can be deallocated after the call.
  *
  * Binary values might be encoded in another way then string values
- * depending on the plugin.
- *
+ * depending on the plugin. Typically character encodings should not take
+ * place on binary data.
  * Consider using a string key instead.
  *
  * When newBinary is a NULL pointer the binary will be freed and 0 will
@@ -471,14 +471,15 @@ ssize_t keyGetBinary(const Key *key, void *returnedBinary, size_t maxSize)
  *
  * @note The meta data "binary" will be set to mark that the key is
  * binary from now on. When the key is already binary the meta data
- * won't be changed.
+ * won't be changed. This will only happen in the successful case,
+ * but not when -1 is returned.
  *
  * @param key the object on which to set the value
  * @param newBinary is a pointer to any binary data or NULL to free the previous set data
  * @param dataSize number of bytes to copy from @p newBinary
  * @return the number of bytes actually copied to internal struct storage
- * @return 0 when the internal binary was freed
- * @return -1 on NULL pointer
+ * @return 0 when the internal binary was freed and is now a null pointer
+ * @return -1 if key is a NULL pointer
  * @return -1 when dataSize is 0 (but newBinary not NULL) or larger than SSIZE_MAX
  * @see keyGetBinary()
  * @see keyIsBinary() to check if the type is binary
