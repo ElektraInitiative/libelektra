@@ -1,3 +1,26 @@
+/**
+ * @file
+ *
+ * This example explains how to define user defined exception.
+ *
+ * That means that the user can implement their own exceptions,
+ * e.g. potentially derived from their own base class with its
+ * own what() information.
+ * The user could even decide to use another mechanism
+ * instead of what().
+ *
+ * The only requirements are: They must be named exactly like
+ * the original classes and KDBException constructor must take a key
+ * as argument (which has all information like error and warnings).
+ *
+ * It does not matter from which class the exceptions are derived
+ * or which members they have (if they are binary compatible) as
+ * long as they are used everywhere.
+ *
+ * Never use non-binary compatible user exceptions if you do not
+ * use them everywhere where you include any of elektras header
+ * files!
+ */
 #include <stdexcept>
 
 class UserException : public std::exception
@@ -87,8 +110,7 @@ class KDBException : public Exception
 {
 public:
 	KDBException (Key key) :
-		m_key (key),
-		m_str ()
+		m_key (key)
 	{}
 
 	virtual ~KDBException() throw()
@@ -99,10 +121,7 @@ public:
 		return "User Exception: KDB";
 	}
 private:
-	// note: the exception must be binary compatible!
-	// It must have both members exactly in the same order!
 	Key m_key;
-	std::string m_str;
 };
 
 }

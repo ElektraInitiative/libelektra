@@ -1,4 +1,24 @@
+/**
+ * @file
+ *
+ * This examples show how elektras KDBException can be changed in a way
+ * so that it has user defined output.
+ *
+ * It works -- because of binary compatibility -- if only the receiver
+ * of the message (where it is catched) redefines the IO functions
+ * printError and printWarnings. They need to be defined with the
+ * same signature and in either global or kdb namespace.
+ *
+ * The output operators of Key and KeySet can be redefined without any
+ * macro by simply not including \<keyio.hpp\> and \<keysetio.hpp\>.
+ */
+
 #define USER_DEFINED_IO
+
+#include <iostream>
+#include <iomanip>
+
+#include <key.hpp>
 
 inline std::ostream & printError(std::ostream & os, kdb::Key const & error)
 {
@@ -93,10 +113,10 @@ int main()
 
 		kdb.set(ks, k);
 		kdb.close(k);
-		printWarnings(k);
+		printWarnings(std::cout, k);
 	}
-	catch (KDBException const & e)
+	catch (kdb::KDBException const & e)
 	{
-		e.what(); // will print user defined IO
+		std::cout << e.what(); // will print user defined IO
 	}
 }

@@ -1,6 +1,10 @@
 #ifndef ELEKTRA_KDB_EXCEPT_HPP
 #define ELEKTRA_KDB_EXCEPT_HPP
 
+/**
+ * @brief See examples/cpp_example_userexception.cpp for how to use
+ * USER_DEFINED_EXEPTIONS.
+ */
 #ifndef USER_DEFINED_EXCEPTIONS
 
 #include <keyexcept.hpp>
@@ -33,8 +37,12 @@ public:
 			// if it prints nothing, but an expensive
 			// function not printing anything seems
 			// to be unlikely.
-			kdb::printError(ss, m_key);
-			kdb::printWarnings(ss, m_key);
+			//
+			// note that printError/printWarning will be
+			// used either from namespace kdb or global
+			// namespace.
+			printError(ss, m_key);
+			printWarnings(ss, m_key);
 			m_str = ss.str();
 		}
 		return m_str.c_str();
