@@ -144,6 +144,7 @@ public:
 	typedef void (*func_t)();
 	inline func_t getFunc() const;
 
+	inline const void *getValue() const;
 	inline std::string getBinary() const;
 	inline size_t getBinarySize() const;
 	inline size_t setBinary(const void *newBinary, size_t dataSize);
@@ -824,14 +825,30 @@ inline void Key::setString(std::string newString)
 }
 
 /**
+ * @copydoc keyValue
+ *
+ * @return the value of the key
+ * @see getBinary()
+ */
+inline const void * Key::getValue() const
+{
+	return ckdb::keyValue(getKey());
+}
+
+/**
  * @returns the binary Value of the key.
+ *
+ * @retval "" on null pointers (size == 0) and on data only containing \\0
+ *
+ * @note if you need to distinguish between null pointers and data
+ * containing \\0 you can use getValue().
  *
  * @throw KeyException on invalid binary size
  * @throw KeyTypeMismatch if key is string and not a binary
  *
  * @copydoc keyGetBinary
  *
- * @see isBinary(), getString()
+ * @see isBinary(), getString(), getValue()
  **/
 inline std::string Key::getBinary() const
 {

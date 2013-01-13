@@ -159,12 +159,16 @@ void test_keynew()
 	succeed_if (keyA.getName() == "system/valid/name", "keyA has wrong name");
 	succeed_if (keyA.getBaseName() == "name", "keyA wrong base name");
 
-	/*
 	Key keyB("", KEY_END);
-	keyB.setBinary("", 0); // should throw or set binary...
+	keyB.setBinary(0, 0);
 	succeed_if (keyB.isBinary(), "should be binary");
-	succeed_if (keyB.getBinary() == "", "Binary should be empty");
-	*/
+	succeed_if (keyB.getBinary() == "", "Binary should be a nullpointer");
+	succeed_if (keyB.getValue() == 0, "Binary should be a nullpointer");
+
+	keyB.setBinary(0, 1);
+	succeed_if (keyB.isBinary(), "should be binary");
+	succeed_if (keyB.getBinary() == "", "Binary should be a nullpointer");
+	succeed_if (keyB.getValue() == 0, "Binary should be a nullpointer");
 }
 
 void test_constructor()
