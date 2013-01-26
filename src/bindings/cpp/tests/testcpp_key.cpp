@@ -515,7 +515,7 @@ void test_cconv()
 
 	ck1 = k1.release();
 	succeed_if(!strcmp(ckdb::keyName(ck1), "user"), "c key does not have correct name");
-	keyDel (ck1);
+	ckdb::keyDel (ck1);
 }
 
 int main()

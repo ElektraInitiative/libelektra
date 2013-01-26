@@ -33,7 +33,7 @@ inline std::ostream & printError(std::ostream & os, kdb::Key const & error)
 		os << "Reason: " << error.getMeta<std::string>("error/reason") << std::endl;
 	} catch (kdb::KeyMetaException const& e)
 	{
-		os << "Error meta data is not set correctly by a plugin" << std::endl;
+		os << "Error meta data is not set correctly by a plugin: " << e.what() << std::endl;
 	}
 
 	return os;
@@ -74,7 +74,7 @@ inline std::ostream & printWarnings(std::ostream & os, kdb::Key const & error)
 
 	} catch (kdb::KeyMetaException const& e)
 	{
-		os << "Warnings meta data not set correctly by a plugin" << std::endl;
+		os << "Warnings meta data not set correctly by a plugin: " << e.what() << std::endl;
 	}
 
 	return os;
