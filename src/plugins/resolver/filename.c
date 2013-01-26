@@ -19,7 +19,7 @@
  * like this:
  * 1.) Owner is the metadata "owner" of the key
  * 2.) The environment variable USER will be used
- * 3.) The POSIX.1-2001 getlogin() will be used
+ * 3.) Fall back to user "test"
  * Whatever is found first, will be used.
  * Then KDB_DB_HOME + owner + KDB_DB_USER will be used as dirname.
  *
@@ -80,16 +80,6 @@ int resolveFilename(Key* forKey, resolverHandle *p)
 		if (!owner)
 		{
 			owner = getenv("USER");
-		}
-
-		if (!owner)
-		{
-			/* On my system this basically gives the
-			 * environment variable USER, so if unset
-			 * this will fail too.
-			 * But on other systems this might be
-			 * implemented differently.*/
-			owner = getlogin();
 		}
 
 		if (!owner)
