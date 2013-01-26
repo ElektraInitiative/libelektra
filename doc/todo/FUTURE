@@ -1,5 +1,11 @@
 #some enhanced ideas (dont't expect them to be here soon)
 
+
+InternalDatabase:
+	mainly for global plugins (plugins need config from other)
+	especially plugins (resolver) need internal userdatabase (e.g. /etc/passwd)
+	for highlevel kdbGetString, kdbSetString
+
 GlobalPlugins:
 	for notification start/end
 	for shared plugins with expensive startup (typechecker)

@@ -1,6 +1,12 @@
 #For current work done, see CURRENT
 #For possible extensions in future, see FUTURE
 
+resolver:
+	reintroduce getpwent?
+	(what if no environment set?)
+
+kdb chroot feature
+
 == CONTRACTS ==
 
 add following configuration for storage plugins:
