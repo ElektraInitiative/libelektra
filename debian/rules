@@ -23,5 +23,5 @@ CMAKE_FLAGS = \
 override_dh_auto_configure:
 	dh_auto_configure -- $(CMAKE_FLAGS)
 
-#disable tests if they are broken
-#override_dh_auto_test:
+#disable tests for cowbuilder (currently broken)
+override_dh_auto_test:
