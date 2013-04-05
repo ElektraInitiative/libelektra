@@ -2,7 +2,7 @@ Source: elektra
 Priority: optional
 Maintainer: Simon Law <sfllaw@debian.org>
 Uploaders: Pier Luigi Fiorini <pierluigi.fiorini@mockup.org>
-Build-Depends: debhelper (>= 8), libxml2-dev, doxygen, libboost-dev, cmake
+Build-Depends: debhelper (>= 8), libxml2-dev, doxygen, libboost-dev, cmake, texlive-latex-extra
 Standards-Version: 3.9.1
 Homepage: http://www.libelektra.org
 Vcs-Browser: http://gitorious.org/elektra-initiative/libelektra/commits/debian
