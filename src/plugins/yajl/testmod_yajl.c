@@ -185,67 +185,81 @@ KeySet *getArrayKeys()
 			keyNew("user/tests/yajl",
 			       KEY_END),
 			keyNew("user/tests/yajl/array",
+			       KEY_META, "array", "",
 			       KEY_END),
-			keyNew("user/tests/yajl/array/0",
+			keyNew("user/tests/yajl/array/#0",
 			       KEY_VALUE, "true",
 			       KEY_META, "array", "",
 			       KEY_META, "type", "boolean",
 			       KEY_END),
-			keyNew("user/tests/yajl/array/1",
+			keyNew("user/tests/yajl/array/#1",
 			       KEY_VALUE, "25",
 			       KEY_META, "array", "",
 			       KEY_META, "type", "number",
 			       KEY_END),
-			keyNew("user/tests/yajl/array/2",
+			keyNew("user/tests/yajl/array/#2",
 			       KEY_META, "array", "",
 			       KEY_VALUE, "some string",
 			       KEY_END),
-			keyNew("user/tests/yajl/array/3",
+			keyNew("user/tests/yajl/array/#3",
 			       KEY_META, "array", "",
 			       KEY_VALUE, "0",
 			       KEY_META, "type", "number",
 			       KEY_END),
-			keyNew("user/tests/yajl/array/4",
+			keyNew("user/tests/yajl/array/#4",
 			       KEY_META, "array", "",
 			       KEY_VALUE, "1",
 			       KEY_META, "type", "number",
 			       KEY_END),
-			keyNew("user/tests/yajl/array/5",
+			keyNew("user/tests/yajl/array/#5",
 			       KEY_META, "array", "",
 			       KEY_VALUE, "2",
 			       KEY_META, "type", "number",
 			       KEY_END),
-			keyNew("user/tests/yajl/array/6",
+			keyNew("user/tests/yajl/array/#6",
 			       KEY_META, "array", "",
 			       KEY_VALUE, "3",
 			       KEY_META, "type", "number",
 			       KEY_END),
-			keyNew("user/tests/yajl/array/7",
+			keyNew("user/tests/yajl/array/#7",
 			       KEY_META, "array", "",
 			       KEY_VALUE, "more \\ a",
 			       KEY_END),
-			keyNew("user/tests/yajl/array/8",
+			keyNew("user/tests/yajl/array/#8",
 			       KEY_META, "array", "",
 			       KEY_VALUE, "string \"",
 			       KEY_END),
-			keyNew("user/tests/yajl/array/9",
+			keyNew("user/tests/yajl/array/#9",
 			       KEY_META, "array", "",
 			       KEY_VALUE, "string abc",
 			       KEY_END),
-			keyNew("user/tests/yajl/array/10",
+			keyNew("user/tests/yajl/array/#_10", // hack for keeping sort order
 			       KEY_META, "array", "",
 			       KEY_VALUE, "def abc",
 			       KEY_END),
-			keyNew("user/tests/yajl/array/11",
+			keyNew("user/tests/yajl/array/#_11",
 			       KEY_META, "array", "",
 			       KEY_VALUE, "false",
 			       KEY_META, "type", "boolean",
 			       KEY_END),
-			keyNew("user/tests/yajl/array/12",
+			keyNew("user/tests/yajl/array/#_12",
 			       KEY_META, "array", "",
 			       KEY_VALUE, "42",
 			       KEY_META, "type", "number",
 			       KEY_END),
+			/*
+			keyNew("user/tests/yajl/array/#___333",
+			       KEY_END),
+			keyNew("user/tests/yajl/array/#_#__#333",
+			       KEY_META, "array", "",
+			       KEY_VALUE, "42",
+			       KEY_META, "type", "number",
+			       KEY_END),
+			keyNew("user/tests/yajl/array/#______4444", // number of _ not intuitive
+			       KEY_END),
+			keyNew("user/tests/yajl/array/#_#__#___#4444", // gets quite long... (but works!)
+			       KEY_END),
+			*/
 			KS_END
 		);
 
@@ -266,132 +280,145 @@ KeySet *getOpenICCKeys()
 
 keyNew("user/org/freedesktop/openicc/device",
 		KEY_END),
-
-keyNew("user/org/freedesktop/openicc/device/monitor",
-		KEY_END),
-
-keyNew("user/org/freedesktop/openicc/device/monitor/0",
-		KEY_META, "array", "", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/monitor/0/prefix",
-		KEY_VALUE, "EDID_", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/monitor/0/EDID_mnft_id",
-		KEY_VALUE, "12", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/monitor/0/EDID_model_id",
-		KEY_VALUE, "123", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/monitor/0/EDID_model",
-		KEY_VALUE, "LCD1", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/monitor/0/EDID_serial",
-		KEY_VALUE, "ABCD", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/monitor/0/EDID_red_x",
-		KEY_VALUE, "0.599609", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/monitor/0/EDID_red_y",
-		KEY_VALUE, "0.34375", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/monitor/0/EDID_green_x",
-		KEY_VALUE, "0.320312", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/monitor/0/EDID_green_y",
-		KEY_VALUE, "0.554688", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/monitor/0/EDID_blue_x",
-		KEY_VALUE, "0.150391", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/monitor/0/EDID_blue_y",
-		KEY_VALUE, "0.120117", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/monitor/0/EDID_white_x",
-		KEY_VALUE, "0.313477", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/monitor/0/EDID_white_y",
-		KEY_VALUE, "0.329102", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/monitor/0/EDID_gamma",
-		KEY_VALUE, "2.2", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/monitor/0/EDID_mnft",
-		KEY_VALUE, "VEN", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/monitor/0/EDID_manufacturer",
-		KEY_VALUE, "Vendor1", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/monitor/0/EDID_date",
-		KEY_VALUE, "2007-T16", KEY_END),
-
-keyNew("user/org/freedesktop/openicc/device/monitor/1",
-		KEY_META, "array", "", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/monitor/1/prefix",
-		KEY_VALUE, "EDID_", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/monitor/1/EDID_mnft_id",
-		KEY_VALUE, "34", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/monitor/1/EDID_model_id",
-		KEY_VALUE, "456", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/monitor/1/EDID_model",
-		KEY_VALUE, "other monitor", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/monitor/1/EDID_serial",
-		KEY_VALUE, "other serial", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/monitor/1/EDID_red_x",
-		KEY_VALUE, "0.599609", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/monitor/1/EDID_red_y",
-		KEY_VALUE, "0.34375", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/monitor/1/EDID_green_x",
-		KEY_VALUE, "0.320312", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/monitor/1/EDID_green_y",
-		KEY_VALUE, "0.554688", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/monitor/1/EDID_blue_x",
-		KEY_VALUE, "0.150391", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/monitor/1/EDID_blue_y",
-		KEY_VALUE, "0.120117", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/monitor/1/EDID_white_x",
-		KEY_VALUE, "0.313477", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/monitor/1/EDID_white_y",
-		KEY_VALUE, "0.329102", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/monitor/1/EDID_gamma",
-		KEY_VALUE, "2.2", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/monitor/1/EDID_mnft",
-		KEY_VALUE, "NEC", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/monitor/1/EDID_manufacturer",
-		KEY_VALUE, "NEC", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/monitor/1/EDID_date",
-		KEY_VALUE, "2001-T12", KEY_END),
-
 keyNew("user/org/freedesktop/openicc/device/camera",
+		KEY_META, "array", "",
 		KEY_END),
-keyNew("user/org/freedesktop/openicc/device/camera/0",
-		KEY_META, "array", "", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/camera/0/prefix",
-		KEY_VALUE, "EXIF_", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/camera/0/EXIF_model",
+keyNew("user/org/freedesktop/openicc/device/camera/#0",
+		KEY_META, "array", "",
+		KEY_END),
+keyNew("user/org/freedesktop/openicc/device/camera/#0/prefix",
+		KEY_VALUE, "EXIF_",
+		KEY_END),
+keyNew("user/org/freedesktop/openicc/device/camera/#0/EXIF_model",
 		KEY_VALUE, "ShinyGlass", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/camera/0/EXIF_serial",
+keyNew("user/org/freedesktop/openicc/device/camera/#0/EXIF_serial",
 		KEY_VALUE, "1200000", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/camera/0/EXIF_mnft",
+keyNew("user/org/freedesktop/openicc/device/camera/#0/EXIF_mnft",
 		KEY_VALUE, "GLAS", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/camera/0/EXIF_manufacturer",
+keyNew("user/org/freedesktop/openicc/device/camera/#0/EXIF_manufacturer",
 		KEY_VALUE, "Glasshuette", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/camera/0/icc_profile",
-		KEY_VALUE, "profile_name.icc", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/camera/0/creation_date",
-		KEY_VALUE, "05/08/11 11:59:50", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/camera/0/expire_date",
-		KEY_VALUE, "08/08/11 11:59:50", KEY_END),
+keyNew("user/org/freedesktop/openicc/device/camera/#0/icc_profile",
+		KEY_VALUE, "profile_name.icc",
+		KEY_END),
+keyNew("user/org/freedesktop/openicc/device/camera/#0/creation_date",
+		KEY_VALUE, "05/08/11 11:59:50",
+		KEY_END),
+keyNew("user/org/freedesktop/openicc/device/camera/#0/expire_date",
+		KEY_VALUE, "08/08/11 11:59:50",
+		KEY_END),
 //Typo in example:
-//keyNew("user/org/freedesktop/openicc/device/camera/0/automatic_assignment",
-keyNew("user/org/freedesktop/openicc/device/camera/0/automatic_assigment",
+//keyNew("user/org/freedesktop/openicc/device/camera/#0/automatic_assignment",
+keyNew("user/org/freedesktop/openicc/device/camera/#0/automatic_assigment",
 		KEY_VALUE, "1", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/camera/0/comment",
+keyNew("user/org/freedesktop/openicc/device/camera/#0/comment",
 		KEY_VALUE, "nonsense example", KEY_END),
 
-keyNew("user/org/freedesktop/openicc/device/camera/1",
-		KEY_META, "array", "", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/camera/1/prefix",
+keyNew("user/org/freedesktop/openicc/device/camera/#1",
+		KEY_META, "array", "",
+		KEY_END),
+keyNew("user/org/freedesktop/openicc/device/camera/#1/prefix",
 		KEY_VALUE, "EXIF_", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/camera/1/EXIF_model",
+keyNew("user/org/freedesktop/openicc/device/camera/#1/EXIF_model",
 		KEY_VALUE, "Knips", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/camera/1/EXIF_serial",
+keyNew("user/org/freedesktop/openicc/device/camera/#1/EXIF_serial",
 		KEY_VALUE, "3400000", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/camera/1/EXIF_mnft",
+keyNew("user/org/freedesktop/openicc/device/camera/#1/EXIF_mnft",
 		KEY_VALUE, "CON", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/camera/1/EXIF_manufacturer",
-		KEY_VALUE, "ConquerLight", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/camera/1/icc_profile",
-		KEY_VALUE, "profile_name2.icc", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/camera/1/creation_date",
-		KEY_VALUE, "05/08/11 11:59:50", KEY_END),
-keyNew("user/org/freedesktop/openicc/device/camera/1/expire_date",
-		KEY_VALUE, "08/08/11 11:59:50", KEY_END),
-// keyNew("user/org/freedesktop/openicc/device/camera/1/automatic_assignment",
-keyNew("user/org/freedesktop/openicc/device/camera/1/automatic_assigment",
+keyNew("user/org/freedesktop/openicc/device/camera/#1/EXIF_manufacturer",
+		KEY_VALUE, "ConquerLight",
+		KEY_END),
+keyNew("user/org/freedesktop/openicc/device/camera/#1/icc_profile",
+		KEY_VALUE, "profile_name2.icc",
+		KEY_END),
+keyNew("user/org/freedesktop/openicc/device/camera/#1/creation_date",
+		KEY_VALUE, "05/08/11 11:59:50",
+		KEY_END),
+keyNew("user/org/freedesktop/openicc/device/camera/#1/expire_date",
+		KEY_VALUE, "08/08/11 11:59:50",
+		KEY_END),
+// keyNew("user/org/freedesktop/openicc/device/camera/#1/automatic_assignment",
+keyNew("user/org/freedesktop/openicc/device/camera/#1/automatic_assigment",
 		KEY_VALUE, "1", KEY_END),
+
+keyNew("user/org/freedesktop/openicc/device/monitor",
+		KEY_META, "array", "",
+		KEY_END),
+
+keyNew("user/org/freedesktop/openicc/device/monitor/#0",
+		KEY_META, "array", "",
+		KEY_END),
+keyNew("user/org/freedesktop/openicc/device/monitor/#0/prefix",
+		KEY_VALUE, "EDID_", KEY_END),
+keyNew("user/org/freedesktop/openicc/device/monitor/#0/EDID_mnft_id",
+		KEY_VALUE, "12", KEY_END),
+keyNew("user/org/freedesktop/openicc/device/monitor/#0/EDID_model_id",
+		KEY_VALUE, "123", KEY_END),
+keyNew("user/org/freedesktop/openicc/device/monitor/#0/EDID_model",
+		KEY_VALUE, "LCD1", KEY_END),
+keyNew("user/org/freedesktop/openicc/device/monitor/#0/EDID_serial",
+		KEY_VALUE, "ABCD", KEY_END),
+keyNew("user/org/freedesktop/openicc/device/monitor/#0/EDID_red_x",
+		KEY_VALUE, "0.599609", KEY_END),
+keyNew("user/org/freedesktop/openicc/device/monitor/#0/EDID_red_y",
+		KEY_VALUE, "0.34375", KEY_END),
+keyNew("user/org/freedesktop/openicc/device/monitor/#0/EDID_green_x",
+		KEY_VALUE, "0.320312", KEY_END),
+keyNew("user/org/freedesktop/openicc/device/monitor/#0/EDID_green_y",
+		KEY_VALUE, "0.554688", KEY_END),
+keyNew("user/org/freedesktop/openicc/device/monitor/#0/EDID_blue_x",
+		KEY_VALUE, "0.150391", KEY_END),
+keyNew("user/org/freedesktop/openicc/device/monitor/#0/EDID_blue_y",
+		KEY_VALUE, "0.120117", KEY_END),
+keyNew("user/org/freedesktop/openicc/device/monitor/#0/EDID_white_x",
+		KEY_VALUE, "0.313477", KEY_END),
+keyNew("user/org/freedesktop/openicc/device/monitor/#0/EDID_white_y",
+		KEY_VALUE, "0.329102", KEY_END),
+keyNew("user/org/freedesktop/openicc/device/monitor/#0/EDID_gamma",
+		KEY_VALUE, "2.2", KEY_END),
+keyNew("user/org/freedesktop/openicc/device/monitor/#0/EDID_mnft",
+		KEY_VALUE, "VEN", KEY_END),
+keyNew("user/org/freedesktop/openicc/device/monitor/#0/EDID_manufacturer",
+		KEY_VALUE, "Vendor1", KEY_END),
+keyNew("user/org/freedesktop/openicc/device/monitor/#0/EDID_date",
+		KEY_VALUE, "2007-T16", KEY_END),
+
+keyNew("user/org/freedesktop/openicc/device/monitor/#1",
+		KEY_META, "array", "", KEY_END),
+keyNew("user/org/freedesktop/openicc/device/monitor/#1/prefix",
+		KEY_VALUE, "EDID_", KEY_END),
+keyNew("user/org/freedesktop/openicc/device/monitor/#1/EDID_mnft_id",
+		KEY_VALUE, "34", KEY_END),
+keyNew("user/org/freedesktop/openicc/device/monitor/#1/EDID_model_id",
+		KEY_VALUE, "456", KEY_END),
+keyNew("user/org/freedesktop/openicc/device/monitor/#1/EDID_model",
+		KEY_VALUE, "other monitor", KEY_END),
+keyNew("user/org/freedesktop/openicc/device/monitor/#1/EDID_serial",
+		KEY_VALUE, "other serial", KEY_END),
+keyNew("user/org/freedesktop/openicc/device/monitor/#1/EDID_red_x",
+		KEY_VALUE, "0.599609", KEY_END),
+keyNew("user/org/freedesktop/openicc/device/monitor/#1/EDID_red_y",
+		KEY_VALUE, "0.34375", KEY_END),
+keyNew("user/org/freedesktop/openicc/device/monitor/#1/EDID_green_x",
+		KEY_VALUE, "0.320312", KEY_END),
+keyNew("user/org/freedesktop/openicc/device/monitor/#1/EDID_green_y",
+		KEY_VALUE, "0.554688", KEY_END),
+keyNew("user/org/freedesktop/openicc/device/monitor/#1/EDID_blue_x",
+		KEY_VALUE, "0.150391", KEY_END),
+keyNew("user/org/freedesktop/openicc/device/monitor/#1/EDID_blue_y",
+		KEY_VALUE, "0.120117", KEY_END),
+keyNew("user/org/freedesktop/openicc/device/monitor/#1/EDID_white_x",
+		KEY_VALUE, "0.313477", KEY_END),
+keyNew("user/org/freedesktop/openicc/device/monitor/#1/EDID_white_y",
+		KEY_VALUE, "0.329102", KEY_END),
+keyNew("user/org/freedesktop/openicc/device/monitor/#1/EDID_gamma",
+		KEY_VALUE, "2.2", KEY_END),
+keyNew("user/org/freedesktop/openicc/device/monitor/#1/EDID_mnft",
+		KEY_VALUE, "NEC", KEY_END),
+keyNew("user/org/freedesktop/openicc/device/monitor/#1/EDID_manufacturer",
+		KEY_VALUE, "NEC", KEY_END),
+keyNew("user/org/freedesktop/openicc/device/monitor/#1/EDID_date",
+		KEY_VALUE, "2001-T12", KEY_END),
+
 
 			KS_END
 		);
@@ -422,24 +449,37 @@ KeySet *getSomePathKeys()
 
 KeySet *modules;
 
-void test_parse_json(const char * fileName,
+void test_json(const char * fileName,
 		     KeySet * compareKeySet,
 		     KeySet * conf)
 {
 	Plugin *plugin = elektraPluginOpen("yajl", modules, conf, 0);
 	exit_if_fail (plugin != 0, "could not open plugin");
-	printf ("Test with %s\n", srcdir_file(fileName));
+	// printf ("Test with %s\n", srcdir_file(fileName));
 
 	Key *parentKey = keyNew ("user/tests/yajl",
 			KEY_VALUE, srcdir_file(fileName),
 			KEY_END);
 	KeySet *keys = ksNew(0);
-	succeed_if (plugin->kdbGet(plugin, keys, parentKey) == 1, "kdbGet was not successful");
+	succeed_if(plugin->kdbGet(plugin, keys, parentKey) == 1, "kdbGet was not successful");
+	succeed_if(output_errors(parentKey), "error in kdbGet");
+	succeed_if(output_warnings(parentKey), "warnings in kdbGet");
 
 	compare_keyset(keys, compareKeySet);
 
-	output_errors(parentKey);
-	output_warnings(parentKey);
+	char * fileNameCompare = malloc(strlen(fileName)+5);
+	strcat(fileNameCompare, fileName);
+	strcat(fileNameCompare, ".comp");
+	keySetString(parentKey, srcdir_file(fileNameCompare));
+	// printf("File name is: %s\n", keyString(parentKey));
+
+	succeed_if(plugin->kdbSet(plugin, keys, parentKey) == 1, "kdbGet was not successful");
+	succeed_if(output_errors(parentKey), "error in kdbSet");
+	succeed_if(output_warnings(parentKey), "warnings in kdbSet");
+	free(fileNameCompare);
+
+	succeed_if(compare_line_files(srcdir_file(fileName), keyString(parentKey)),
+			"files do not match as expected");
 
 	/*
 	printf ("The keys we read out are:\n");
@@ -455,6 +495,54 @@ void test_parse_json(const char * fileName,
 	elektraPluginClose(plugin, 0);
 }
 
+void test_sibling()
+{
+	Key *x1 = keyNew("user/sw/app/x1", KEY_END);
+	Key *x2 = keyNew("user/sw/app/x2", KEY_END);
+
+	succeed_if (keyIsSibling(x1, x2), "keys should be siblings");
+
+	keySetName(x2, "user/sw/app/ydksaa");
+	succeed_if (keyIsSibling(x1, x2), "keys should be siblings");
+
+	keySetName(x2, "user/sw/app/x1/a");
+	succeed_if (!keyIsSibling(x1, x2), "keys should not be siblings");
+
+	keySetName(x2, "user/sw/apps");
+	succeed_if (!keyIsSibling(x1, x2), "keys should not be siblings");
+}
+
+void test_array()
+{
+	Key *k = keyNew("user/array/#0", KEY_END);
+	succeed_if(!keyArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!strcmp(keyName(k), "user/array/#1"), "array entry name not correct");
+	succeed_if(!keyArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!strcmp(keyName(k), "user/array/#2"), "array entry name not correct");
+	succeed_if(!keyArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!strcmp(keyName(k), "user/array/#3"), "array entry name not correct");
+	succeed_if(!keyArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!strcmp(keyName(k), "user/array/#4"), "array entry name not correct");
+	succeed_if(!keyArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!strcmp(keyName(k), "user/array/#5"), "array entry name not correct");
+	succeed_if(!keyArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!strcmp(keyName(k), "user/array/#6"), "array entry name not correct");
+	succeed_if(!keyArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!strcmp(keyName(k), "user/array/#7"), "array entry name not correct");
+	succeed_if(!keyArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!strcmp(keyName(k), "user/array/#8"), "array entry name not correct");
+	succeed_if(!keyArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!strcmp(keyName(k), "user/array/#9"), "array entry name not correct");
+	succeed_if(!keyArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!strcmp(keyName(k), "user/array/#_10"), "array entry name not correct");
+	succeed_if(!keyArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!strcmp(keyName(k), "user/array/#_11"), "array entry name not correct");
+	succeed_if(!keyArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!strcmp(keyName(k), "user/array/#_12"), "array entry name not correct");
+	succeed_if(!keyArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!strcmp(keyName(k), "user/array/#_13"), "array entry name not correct");
+}
+
 int main(int argc, char** argv)
 {
 	printf("YAJL       TESTS\n");
@@ -465,14 +553,17 @@ int main(int argc, char** argv)
 
 	init (argc, argv);
 
-	test_parse_json("examples/testdata_null.json", getNullKeys(), ksNew(0));
-	test_parse_json("examples/testdata_boolean.json", getBooleanKeys(), ksNew(0));
-	test_parse_json("examples/testdata_number.json", getNumberKeys(), ksNew(0));
-	test_parse_json("examples/testdata_string.json", getStringKeys(), ksNew(0));
-	test_parse_json("examples/testdata_maps.json", getMapKeys(), ksNew(0));
-	test_parse_json("examples/testdata_array.json", getArrayKeys(), ksNew(0));
-	test_parse_json("examples/OpenICC_device_config_DB.json", getOpenICCKeys(), ksNew(0));
-	test_parse_json("examples/testdata_boolean.json", getSomePathKeys(),
+	test_array();
+	test_sibling();
+
+	test_json("examples/testdata_null.json", getNullKeys(), ksNew(0));
+	test_json("examples/testdata_boolean.json", getBooleanKeys(), ksNew(0));
+	test_json("examples/testdata_number.json", getNumberKeys(), ksNew(0));
+	test_json("examples/testdata_string.json", getStringKeys(), ksNew(0));
+	test_json("examples/testdata_maps.json", getMapKeys(), ksNew(0));
+	test_json("examples/testdata_array.json", getArrayKeys(), ksNew(0));
+	// test_json("examples/OpenICC_device_config_DB.json", getOpenICCKeys(), ksNew(0));
+	test_json("examples/testdata_boolean.json", getSomePathKeys(),
 		ksNew(1, keyNew("system/user_path", KEY_VALUE, "user/some/path/below", KEY_END), KS_END));
 
 

@@ -45,6 +45,92 @@
 #undef ELEKTRA_YAJL_VERBOSE
 
 /**
+ * @brief Only works from 0..9
+ *
+ * @param key which base name will be incremented
+ *
+ * @retval -1 on error
+ * @retval 0 on success
+ */
+int keyArrayIncName(Key *key)
+{
+	if (!key)
+	{
+		return -1;
+	}
+
+	const char * baseName = keyBaseName(key);
+	if (!baseName)
+	{
+		return -1;
+	}
+	else if (*baseName != '#')
+	{
+		return -1;
+	}
+
+	++baseName; // jump over #
+	while(*baseName == '_') // jump over all _
+	{
+		++baseName;
+	}
+
+	int oldIndex = atoi(baseName);
+	int newIndex = oldIndex+1; // we increment by one
+
+	// maximal size calculation (C99 would also allow non maximum though...)
+	size_t sizeHash = 1;
+	size_t sizeMax_ = 55;
+	size_t sizeNum = 10;
+	size_t size = sizeHash + sizeMax_ + sizeNum + 1;
+	char newName[size]; // #_______________________________________________________4000000000
+
+	// now we fill out newName
+	size_t index = 0; // index of newName
+	newName[index++] = '#';
+	size_t size_=0;
+	size_t i = newIndex/10;
+	while (i>0)
+	{
+		size_++; // increment the number of decimals
+		for (size_t j=0; j<size_; ++j)
+		{
+			newName[index++] = '_'; // index max. 56 for >1billion
+		}
+		i/=10;
+	}
+	if (snprintf (&newName[index], sizeNum, "%d", newIndex)  < 0)
+	{
+		return -1;
+	}
+	keySetBaseName(key, newName);
+
+	/*
+	if (!strncmp(keyBaseName(key), "#", 1)) // check if string starts with #
+	{
+		int newIndex = atoi(keyBaseName(key)+1 // parse old number
+				)+1; // and increment 1
+		if (newIndex > 9) // TODO: handle generation of _
+		{
+			return -1;
+		}
+		char str[3];
+		if (snprintf (str, 3, "#%d", newIndex)  < 0)
+		{
+			return -1;
+		}
+		keySetBaseName(key, str);
+	}
+	else
+	{
+		return -1;
+	}
+	*/
+
+	return 0;
+}
+
+/**
  @retval 0 if ksCurrent does not hold an array entry
  @retval 1 if the array entry will be used because its the first
  @retval 2 if a new array entry was created
@@ -61,21 +147,14 @@ static int increment_array_entry(KeySet * ks)
 		if (!strcmp(baseName, "###start_array"))
 		{
 			// we have a new array entry, just use it
-			keySetBaseName (current, "0");
+			keySetBaseName (current, "#0");
 			return 1;
 		}
 		else
 		{
 			// we are in an array
-			const int maxDigitsOfNumber = 10;
-			int nextNumber = atoi (baseName) + 1;
 			Key * newKey = keyNew (keyName(current), KEY_END);
-			char str[maxDigitsOfNumber+1];
-			if (snprintf (str, maxDigitsOfNumber, "%d", nextNumber) < 0)
-			{
-				return -1;
-			}
-			keySetBaseName(newKey, str);
+			keyArrayIncName(newKey);
 			keySetMeta(newKey, "array", "");
 			ksAppendKey(ks, newKey);
 			return 2;
@@ -268,6 +347,7 @@ static int parse_start_array(void *ctx)
 	increment_array_entry(ks);
 
 	Key *currentKey = ksCurrent(ks);
+	keySetMeta(currentKey, "array", "");
 
 	Key * newKey = keyNew (keyName(currentKey), KEY_END);
 	keyAddBaseName(newKey, "###start_array");
@@ -288,20 +368,6 @@ static int parse_end_array(void *ctx)
 
 int elektraYajlGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
-	yajl_callbacks callbacks = {
-		parse_null,
-		parse_boolean,
-		NULL,
-		NULL,
-		parse_number,
-		parse_string,
-		parse_start_map,
-		parse_map_key,
-		parse_end_map,
-		parse_start_array,
-		parse_end_array
-	};
-
 	if (!strcmp (keyName(parentKey), "system/elektra/modules/yajl"))
 	{
 		KeySet *moduleConfig = ksNew (30,
@@ -344,6 +410,20 @@ int elektraYajlGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		ksDel (moduleConfig);
 		return 1;
 	}
+
+	yajl_callbacks callbacks = {
+		parse_null,
+		parse_boolean,
+		NULL,
+		NULL,
+		parse_number,
+		parse_string,
+		parse_start_map,
+		parse_map_key,
+		parse_end_map,
+		parse_start_array,
+		parse_end_array
+	};
 
 	KeySet *config= elektraPluginGetConfig(handle);
 
@@ -442,6 +522,118 @@ int elektraYajlGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	return 1; /* success */
 }
 
+void elektraGenName(yajl_gen g, Key *cur)
+{
+	yajl_gen_string(g, (const unsigned char *)keyBaseName(cur), keyGetBaseNameSize(cur)-1);
+}
+
+char *keyNameGetOneLevel(const char *name, size_t *size); // defined in keyhelpers.c, API might be broken!
+
+/**
+ * @brief open so many levels as keys are different
+ *
+ * @pre cur and prev have a name which is not equal
+ *
+ * @param g handle to generate to
+ * @param cur current key of iteration
+ * @param prev previous key of iteration
+ */
+int elektraGenOpen(yajl_gen g, Key *cur, Key *prev)
+{
+	const char *p = keyName(cur);
+	const char *x = keyName(prev);
+	// search for first unequal character
+	while(*p == *x)
+	{
+		++p;
+		++x;
+	}
+	size_t size=0;
+	int level = 0;
+
+	// maximum needed buffer per element is the size of largest keyname
+	char *buffer = malloc(keyGetNameSize(cur) > keyGetNameSize(prev) ?
+			keyGetNameSize(cur)+1 :
+			keyGetNameSize(prev)+1);
+
+	while (*(p=keyNameGetOneLevel(p+size,&size)))
+	{
+		level ++;
+		// copy what we found to a buffer, so we can NULL-terminate it
+		strncpy(buffer,p,size);
+		buffer[size]=0;
+
+		printf("Open name: \"%s\"\n",buffer);
+		yajl_gen_string(g, (const unsigned char *)buffer, size);
+		yajl_gen_map_open(g);
+	}
+
+	return level;
+}
+
+int elektraGenClose(yajl_gen g, Key *cur, Key *prev)
+{
+	const char *p = keyName(cur);
+	const char *x = keyName(prev);
+	// search for first unequal character
+	while(*p == *x)
+	{
+		++p;
+		++x;
+	}
+	size_t size=0;
+	int level = 0;
+
+	// maximum needed buffer per element is the size of largest keyname
+	char *buffer = malloc(keyGetNameSize(cur) > keyGetNameSize(prev) ?
+			keyGetNameSize(cur)+1 :
+			keyGetNameSize(prev)+1);
+
+	x=keyNameGetOneLevel(x+size,&size); // skip first level to close, we assume that this was not a map
+	while (*(x=keyNameGetOneLevel(x+size,&size)))
+	{
+		++ level;
+		// copy what we found to a buffer, so we can NULL-terminate it
+		strncpy(buffer,x,size);
+		buffer[size]=0;
+
+		printf("Close name: \"%s\"\n",buffer);
+		yajl_gen_map_close(g);
+	}
+	return level;
+}
+
+int keyIsSibling(Key *cur, Key *prev)
+{
+	const char *p = keyName(cur);
+	const char *x = keyName(prev);
+	// search for first unequal character
+	while(*p == *x)
+	{
+		++p;
+		++x;
+	}
+
+	// now search if any of them has a / afterwards
+	while(*p != 0)
+	{
+		if (*p == '/')
+		{
+			return 0;
+		}
+		++p;
+	}
+	while(*x != 0)
+	{
+		if (*x == '/')
+		{
+			return 0;
+		}
+		++x;
+	}
+	return 1; // they are siblings
+}
+
 int elektraYajlSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
 #if YAJL_MAJOR == 1
@@ -455,20 +647,112 @@ int elektraYajlSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 	yajl_gen_map_open(g);
 
 	Key *cur = 0;
+	Key *prev = 0;
+	int map_to_close = 1; // see above
+	int in_array = 0; // if we are currently in an array
 
 	ksRewind (returned);
 	while ((cur = ksNext(returned)) != 0)
 	{
-		yajl_gen_string(g, (const unsigned char *)keyName(cur), keyGetNameSize(cur)-1);
-		if (keyGetValueSize(cur))
+		// skip root
+		// TODO: make configureable deep ignoring
+		if (!strcmp(keyName(cur), "user"))
 		{
-			yajl_gen_string(g, (const unsigned char *)keyString(cur), keyGetValueSize(cur)-1);
-		} else {
+			continue;
+		}
+		else if (!strcmp(keyName(cur), "system"))
+		{
+			continue;
+		}
+
+		// TODO: open and close everywhere!
+
+		if (in_array && !keyGetMeta(cur, "array")) // we leave an array
+		{
+			// printf ("leave array prev: %s to cur: %s\n", keyName(prev), keyName(cur));
+			yajl_gen_array_close(g);
+			in_array = 0;
+		}
+		else if (!in_array && keyGetMeta(cur, "array")) // we enter an array
+		{
+			// printf ("enter array prev: %s to cur: %s\n", keyName(prev), keyName(cur));
+			elektraGenName(g, cur);
+			yajl_gen_array_open(g);
+			in_array = 1;
+			continue;
+		}
+
+		const Key * type = keyGetMeta(cur, "type");
+		if (!type && keyGetValueSize(cur) == 0) // empty binary type is null
+		{
+			if (!in_array) elektraGenName(g, cur);
 			yajl_gen_null(g);
 		}
+		else if (!type && keyGetValueSize(cur) > 1)
+		{
+			map_to_close -= elektraGenClose(g, cur, prev);
+			if (!in_array) elektraGenName(g, cur);
+			yajl_gen_string(g, (const unsigned char *)keyString(cur), keyGetValueSize(cur)-1);
+		}
+		else if (!type) // not a string key, so it gives structure
+		{
+			if (!prev) // always create map for first key
+			{
+				elektraGenName(g, cur);
+				yajl_gen_map_open(g);
+				++map_to_close;
+			}
+			else if (keyIsBelow(prev, cur)) // generate map for other keys iff they are below
+			{
+				// printf ("open from prev: %s to cur: %s\n", keyName(prev), keyName(cur));
+				map_to_close += elektraGenOpen(g, cur, prev);
+			}
+			else if (!keyIsSibling(prev, cur))
+				// not below, not sibling, so we close down to level of one map and open up to map of other
+			{
+				// printf ("open and close from prev: %s to cur: %s\n", keyName(prev), keyName(cur));
+				map_to_close -= elektraGenClose(g, cur, prev);
+				map_to_close += elektraGenOpen(g, cur, prev);
+			}
+		}
+		else if (!strcmp(keyString(type), "boolean"))
+		{
+			if (!strcmp(keyString(cur), "true"))
+			{
+				if (!in_array) elektraGenName(g, cur);
+				yajl_gen_bool(g, 1);
+			}
+			else if (!strcmp(keyString(cur), "false"))
+			{
+				if (!in_array) elektraGenName(g, cur);
+				yajl_gen_bool(g, 0);
+			}
+			else
+			{
+				ELEKTRA_ADD_WARNING(78, parentKey, "drop boolean which is neither true nor false");
+			}
+		}
+		else if (!strcmp(keyString(type), "number"))
+		{
+			if (!in_array) elektraGenName(g, cur);
+			yajl_gen_number(g, keyString(cur), keyGetValueSize(cur)-1);
+		}
+		else { // existing, but unknown or unsupported type, drop it and add warning
+			ELEKTRA_ADD_WARNING(78, parentKey, keyString(type));
+		}
+
+		prev = cur;
 	}
 
-	yajl_gen_map_close(g);
+	if (in_array)
+	{
+		yajl_gen_array_close(g);
+	}
+
+	for (int i=0; i<map_to_close; ++i)
+	{
+		yajl_gen_map_close(g);
+	}
 
 
 	FILE *fp = fopen(keyString(parentKey), "w");
