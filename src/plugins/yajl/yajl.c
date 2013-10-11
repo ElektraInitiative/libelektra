@@ -23,20 +23,24 @@
  ***************************************************************************/
 
 
-#ifndef HAVE_KDBCONFIG
-# include "kdbconfig.h"
-#endif
-
 #include "yajl.h"
-
-#include <kdberrors.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include <kdbconfig.h>
+#include <kdberrors.h>
+
 #include <yajl/yajl_gen.h>
 #include <yajl/yajl_parse.h>
+#include <yajl/yajl_version.h>
+
+#if YAJL_MAJOR == 1
+	typedef unsigned int yajl_size_type;
+#else
+	typedef size_t yajl_size_type;
+#endif
 
 #undef ELEKTRA_YAJL_VERBOSE
 
@@ -125,7 +129,7 @@ static int parse_boolean(void *ctx, int boolean)
 }
 
 static int parse_number(void *ctx, const char *stringVal,
-			unsigned int stringLen)
+			yajl_size_type stringLen)
 {
 	KeySet *ks = (KeySet*) ctx;
 	increment_array_entry(ks);
@@ -150,7 +154,7 @@ static int parse_number(void *ctx, const char *stringVal,
 }
 
 static int parse_string(void *ctx, const unsigned char *stringVal,
-			unsigned int stringLen)
+			yajl_size_type stringLen)
 {
 	KeySet *ks = (KeySet*) ctx;
 	increment_array_entry(ks);
@@ -173,7 +177,7 @@ static int parse_string(void *ctx, const unsigned char *stringVal,
 }
 
 static int parse_map_key(void *ctx, const unsigned char * stringVal,
-			 unsigned int stringLen)
+			 yajl_size_type stringLen)
 {
 	KeySet *ks = (KeySet*) ctx;
 	increment_array_entry(ks);
@@ -368,8 +372,13 @@ int elektraYajlGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	}
 
 	// allow comments
+#if YAJL_MAJOR == 1
 	yajl_parser_config cfg = { 1, 1 };
 	yajl_handle hand = yajl_alloc(&callbacks, &cfg, NULL, returned);
+#else
+	yajl_handle hand = yajl_alloc(&callbacks, NULL, returned);
+	yajl_config(hand, yajl_allow_comments, 1);
+#endif
 
 	unsigned char fileData[65536];
 	int done = 0;
@@ -382,7 +391,7 @@ int elektraYajlGet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 	while (!done)
 	{
-		size_t rd = fread(	(void *) fileData, 1,
+		yajl_size_type rd = fread(	(void *) fileData, 1,
 					sizeof(fileData) - 1,
 					fileHandle);
 		if (rd == 0)
@@ -400,15 +409,22 @@ int elektraYajlGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		yajl_status stat;
 		if (done)
 		{
+#if YAJL_MAJOR == 1
 			stat = yajl_parse_complete(hand);
+#else
+			stat = yajl_complete_parse(hand);
+#endif
 		}
 		else
 		{
 			stat = yajl_parse(hand, fileData, rd);
 		}
 
-		if (stat != yajl_status_ok &&
-		    stat != yajl_status_insufficient_data)
+		if (stat != yajl_status_ok
+#if YAJL_MAJOR == 1
+			&& stat != yajl_status_insufficient_data
+#endif
+			)
 		{
 			unsigned char * str = yajl_get_error(hand, 1,
 					fileData, rd);
@@ -428,8 +444,14 @@ int elektraYajlGet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 int elektraYajlSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
+#if YAJL_MAJOR == 1
 	yajl_gen_config conf = { 1, "  " };
-	yajl_gen g = yajl_gen_alloc(&conf, NULL);
+	yajl_gen g = yajl_gen_alloc(&conf, NULL
+#else
+	yajl_gen g = yajl_gen_alloc(NULL);
+	yajl_gen_config(g, yajl_gen_beautify, 1);
+	yajl_gen_config(g, yajl_gen_validate_utf8, 1);
+#endif
 	yajl_gen_map_open(g);
 
 	Key *cur = 0;
@@ -457,7 +479,7 @@ int elektraYajlSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 	}
 
 	const unsigned char * buf;
-	unsigned int len;
+	yajl_size_type len;
 	yajl_gen_get_buf(g, &buf, &len);
 	fwrite(buf, 1, len, fp);
 	yajl_gen_clear(g);
