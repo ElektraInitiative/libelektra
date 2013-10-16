@@ -28,6 +28,19 @@
 
 #include <kdbplugin.h>
 
+typedef struct _keyNameReverseIterator
+{
+	const char *rbegin;  // begin of name (constant during iteration)
+	const char *rend;    // end of name (constant during iteration)
+	const char *current; // current position
+	size_t size;         // size of current substring (beginning from position)
+} keyNameReverseIterator;
+
+keyNameReverseIterator elektraKeyNameGetReverseIterator(const Key *k);
+int elektraKeyNameReverseNext(keyNameReverseIterator *it);
+int elektraKeyIsSibling(Key *cur, Key *prev);
+int elektraArrayIncName(Key *key);
+Key * elektraNextNotBelow(KeySet *ks);
 
 int elektraYajlOpen(Plugin *handle, Key *errorKey);
 int elektraYajlClose(Plugin *handle, Key *errorKey);

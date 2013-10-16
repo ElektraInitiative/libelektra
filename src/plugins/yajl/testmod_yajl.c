@@ -13,6 +13,8 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "yajl.h" // for two functions declared in there
+
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"
 #endif
@@ -53,6 +55,7 @@ KeySet *getNullKeys()
 	keySetBinary(k1, NULL, 0);
 	keySetBinary(k2, NULL, 0);
 
+	ksRewind(ks); // shouldn't that be default?
 	return ks;
 }
 
@@ -76,6 +79,7 @@ KeySet *getBooleanKeys()
 			KS_END
 		);
 
+	ksRewind(ks);
 	return ks;
 }
 
@@ -500,47 +504,135 @@ void test_sibling()
 	Key *x1 = keyNew("user/sw/app/x1", KEY_END);
 	Key *x2 = keyNew("user/sw/app/x2", KEY_END);
 
-	succeed_if (keyIsSibling(x1, x2), "keys should be siblings");
+	succeed_if (elektraKeyIsSibling(x1, x2), "keys should be siblings");
 
 	keySetName(x2, "user/sw/app/ydksaa");
-	succeed_if (keyIsSibling(x1, x2), "keys should be siblings");
+	succeed_if (elektraKeyIsSibling(x1, x2), "keys should be siblings");
 
 	keySetName(x2, "user/sw/app/x1/a");
-	succeed_if (!keyIsSibling(x1, x2), "keys should not be siblings");
+	succeed_if (!elektraKeyIsSibling(x1, x2), "keys should not be siblings");
 
 	keySetName(x2, "user/sw/apps");
-	succeed_if (!keyIsSibling(x1, x2), "keys should not be siblings");
+	succeed_if (!elektraKeyIsSibling(x1, x2), "keys should not be siblings");
+
+	keyDel(x1);
+	keyDel(x2);
 }
 
 void test_array()
 {
 	Key *k = keyNew("user/array/#0", KEY_END);
-	succeed_if(!keyArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
 	succeed_if(!strcmp(keyName(k), "user/array/#1"), "array entry name not correct");
-	succeed_if(!keyArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
 	succeed_if(!strcmp(keyName(k), "user/array/#2"), "array entry name not correct");
-	succeed_if(!keyArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
 	succeed_if(!strcmp(keyName(k), "user/array/#3"), "array entry name not correct");
-	succeed_if(!keyArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
 	succeed_if(!strcmp(keyName(k), "user/array/#4"), "array entry name not correct");
-	succeed_if(!keyArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
 	succeed_if(!strcmp(keyName(k), "user/array/#5"), "array entry name not correct");
-	succeed_if(!keyArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
 	succeed_if(!strcmp(keyName(k), "user/array/#6"), "array entry name not correct");
-	succeed_if(!keyArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
 	succeed_if(!strcmp(keyName(k), "user/array/#7"), "array entry name not correct");
-	succeed_if(!keyArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
 	succeed_if(!strcmp(keyName(k), "user/array/#8"), "array entry name not correct");
-	succeed_if(!keyArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
 	succeed_if(!strcmp(keyName(k), "user/array/#9"), "array entry name not correct");
-	succeed_if(!keyArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
 	succeed_if(!strcmp(keyName(k), "user/array/#_10"), "array entry name not correct");
-	succeed_if(!keyArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
 	succeed_if(!strcmp(keyName(k), "user/array/#_11"), "array entry name not correct");
-	succeed_if(!keyArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
 	succeed_if(!strcmp(keyName(k), "user/array/#_12"), "array entry name not correct");
-	succeed_if(!keyArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
 	succeed_if(!strcmp(keyName(k), "user/array/#_13"), "array entry name not correct");
+	keyDel(k);
+}
+
+// TODO: make nicer and put to test framework
+#define succeed_if_equal(x,y) succeed_if(!strcmp(x,y), x)
+
+void test_nextNotBelow()
+{
+	KeySet *ks = getNullKeys();
+	ksRewind(ks);
+	Key *k = elektraNextNotBelow(ks);
+	succeed_if_equal(keyName(k), "user/tests/yajl/nullkey");
+	succeed_if_equal(keyName(ksCurrent(ks)), "user/tests/yajl/nullkey");
+	k = elektraNextNotBelow(ks);
+	succeed_if_equal(keyName(k), "user/tests/yajl/second_nullkey");
+	succeed_if_equal(keyName(ksCurrent(ks)), "user/tests/yajl/second_nullkey");
+	k = elektraNextNotBelow(ks);
+	succeed_if(k == 0, "not at end of keyset");
+	succeed_if(ksCurrent(ks) == 0, "not at end of keyset");
+	ksDel (ks);
+
+	ks = getBooleanKeys();
+	ksRewind(ks);
+	k = elektraNextNotBelow(ks);
+	succeed_if_equal(keyName(k), "user/tests/yajl/boolean_key");
+	succeed_if_equal(keyName(ksCurrent(ks)), "user/tests/yajl/boolean_key");
+	k = elektraNextNotBelow(ks);
+	succeed_if_equal(keyName(k), "user/tests/yajl/second_boolean_key");
+	succeed_if_equal(keyName(ksCurrent(ks)), "user/tests/yajl/second_boolean_key");
+	k = elektraNextNotBelow(ks);
+	succeed_if(k == 0, "not at end of keyset");
+	succeed_if(ksCurrent(ks) == 0, "not at end of keyset");
+	ksDel (ks);
+}
+
+void test_reverseLevel()
+{
+	Key *k = keyNew("user/abc/defghi/jkl", KEY_END);
+	int level=0;
+	char buffer[20];
+
+	printf ("Test reverse level\n");
+
+	keyNameReverseIterator it =  elektraKeyNameGetReverseIterator(k);
+	while (elektraKeyNameReverseNext(&it))
+	{
+		level++;
+
+		strncpy(buffer,it.current,it.size);
+		buffer[it.size]=0;
+
+		// printf("Level %d name: \"%s\"\n",level,buffer);
+		switch (level)
+		{
+			case 4: succeed_if (strcmp (buffer, "user") == 0, "keyNameGetOneLevel not correct"); break;
+			case 3: succeed_if (strcmp (buffer, "abc") == 0, "keyNameGetOneLevel not correct"); break;
+			case 2: succeed_if (strcmp (buffer, "defghi") == 0, "keyNameGetOneLevel not correct"); break;
+			case 1: succeed_if (strcmp (buffer, "jkl") == 0, "keyNameGetOneLevel not correct"); break;
+			default: succeed_if (0, "should not reach case statement");
+		}
+	}
+
+	keySetName(k,"user////\\/abc/\\/def\\/ghi////jkl\\/\\/");
+
+	level = 0;
+	it =  elektraKeyNameGetReverseIterator(k);
+	while (elektraKeyNameReverseNext(&it))
+	{
+		level++;
+
+		strncpy(buffer,it.current,it.size);
+		buffer[it.size]=0;
+
+		// printf("Level %d name: \"%s\"\n",level,buffer);
+		switch (level)
+		{
+			case 4: succeed_if (strcmp (buffer, "user") == 0, "keyNameGetOneLevel not correct"); break;
+			case 3: succeed_if (strcmp (buffer, "\\/abc") == 0, "keyNameGetOneLevel not correct"); break;
+			case 2: succeed_if (strcmp (buffer, "\\/def\\/ghi") == 0, "keyNameGetOneLevel not correct"); break;
+			case 1: succeed_if (strcmp (buffer, "jkl\\/\\/") == 0, "keyNameGetOneLevel not correct"); break;
+			default: succeed_if (0, "should not reach case statement");
+		}
+	}
+
+	keyDel (k);
 }
 
 int main(int argc, char** argv)
@@ -555,16 +647,20 @@ int main(int argc, char** argv)
 
 	test_array();
 	test_sibling();
+	test_nextNotBelow();
+	test_reverseLevel();
 
+	/*
 	test_json("examples/testdata_null.json", getNullKeys(), ksNew(0));
 	test_json("examples/testdata_boolean.json", getBooleanKeys(), ksNew(0));
 	test_json("examples/testdata_number.json", getNumberKeys(), ksNew(0));
 	test_json("examples/testdata_string.json", getStringKeys(), ksNew(0));
 	test_json("examples/testdata_maps.json", getMapKeys(), ksNew(0));
 	test_json("examples/testdata_array.json", getArrayKeys(), ksNew(0));
-	// test_json("examples/OpenICC_device_config_DB.json", getOpenICCKeys(), ksNew(0));
+	test_json("examples/OpenICC_device_config_DB.json", getOpenICCKeys(), ksNew(0));
 	test_json("examples/testdata_boolean.json", getSomePathKeys(),
 		ksNew(1, keyNew("system/user_path", KEY_VALUE, "user/some/path/below", KEY_END), KS_END));
+	*/
 
 
 	elektraModulesClose(modules, 0);

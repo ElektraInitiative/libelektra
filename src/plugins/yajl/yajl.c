@@ -52,7 +52,7 @@
  * @retval -1 on error
  * @retval 0 on success
  */
-int keyArrayIncName(Key *key)
+int elektraArrayIncName(Key *key)
 {
 	if (!key)
 	{
@@ -140,7 +140,7 @@ static int increment_array_entry(KeySet * ks)
 {
 	Key * current = ksCurrent(ks);
 
-	if (keyGetMeta(current, "array"))
+	if (keyGetMeta(current, "array")) // TODO: use # in name instead, metadata is avoidable
 	{
 		const char * baseName = keyBaseName(current);
 
@@ -152,9 +152,10 @@ static int increment_array_entry(KeySet * ks)
 		}
 		else
 		{
+			// TODO use: ksAppendArray instead
 			// we are in an array
 			Key * newKey = keyNew (keyName(current), KEY_END);
-			keyArrayIncName(newKey);
+			elektraArrayIncName(newKey);
 			keySetMeta(newKey, "array", "");
 			ksAppendKey(ks, newKey);
 			return 2;
@@ -527,83 +528,7 @@ void elektraGenName(yajl_gen g, Key *cur)
 	yajl_gen_string(g, (const unsigned char *)keyBaseName(cur), keyGetBaseNameSize(cur)-1);
 }
 
-char *keyNameGetOneLevel(const char *name, size_t *size); // defined in keyhelpers.c, API might be broken!
-
-/**
- * @brief open so many levels as keys are different
- *
- * @pre cur and prev have a name which is not equal
- *
- * @param g handle to generate to
- * @param cur current key of iteration
- * @param prev previous key of iteration
- */
-int elektraGenOpen(yajl_gen g, Key *cur, Key *prev)
-{
-	const char *p = keyName(cur);
-	const char *x = keyName(prev);
-	// search for first unequal character
-	while(*p == *x)
-	{
-		++p;
-		++x;
-	}
-	size_t size=0;
-	int level = 0;
-
-	// maximum needed buffer per element is the size of largest keyname
-	char *buffer = malloc(keyGetNameSize(cur) > keyGetNameSize(prev) ?
-			keyGetNameSize(cur)+1 :
-			keyGetNameSize(prev)+1);
-
-	while (*(p=keyNameGetOneLevel(p+size,&size)))
-	{
-		level ++;
-		// copy what we found to a buffer, so we can NULL-terminate it
-		strncpy(buffer,p,size);
-		buffer[size]=0;
-
-		printf("Open name: \"%s\"\n",buffer);
-		yajl_gen_string(g, (const unsigned char *)buffer, size);
-		yajl_gen_map_open(g);
-	}
-
-	return level;
-}
-
-int elektraGenClose(yajl_gen g, Key *cur, Key *prev)
-{
-	const char *p = keyName(cur);
-	const char *x = keyName(prev);
-	// search for first unequal character
-	while(*p == *x)
-	{
-		++p;
-		++x;
-	}
-	size_t size=0;
-	int level = 0;
-
-	// maximum needed buffer per element is the size of largest keyname
-	char *buffer = malloc(keyGetNameSize(cur) > keyGetNameSize(prev) ?
-			keyGetNameSize(cur)+1 :
-			keyGetNameSize(prev)+1);
-
-	x=keyNameGetOneLevel(x+size,&size); // skip first level to close, we assume that this was not a map
-	while (*(x=keyNameGetOneLevel(x+size,&size)))
-	{
-		++ level;
-		// copy what we found to a buffer, so we can NULL-terminate it
-		strncpy(buffer,x,size);
-		buffer[size]=0;
-
-		printf("Close name: \"%s\"\n",buffer);
-		yajl_gen_map_close(g);
-	}
-	return level;
-}
-
-int keyIsSibling(Key *cur, Key *prev)
+int elektraKeyIsSibling(Key *cur, Key *prev)
 {
 	const char *p = keyName(cur);
 	const char *x = keyName(prev);
@@ -634,6 +559,247 @@ int keyIsSibling(Key *cur, Key *prev)
 	return 1; // they are siblings
 }
 
+char *keyNameGetOneLevel(const char *name, size_t *size); // defined in keyhelpers.c, API might be broken!
+
+/**
+ * @brief open so many levels as needed
+ *
+ * Iterates over next and generate
+ * needed groups for every / and needed arrays
+ * for every name/#.
+ * Yields name for leaf.
+ *
+ * e.g.
+ * cur:  user/sw/org/#0/blah
+ * next: user/sw/org/#1/test
+ *
+ * will not open org or array (because that did not change),
+ * but will open group test (because within arrays every key
+ * needs a group).
+ *
+ * cur:  user/sw/org/#0/blah
+ * next: user/sw/oth/#0/test
+ *
+ * will open new group oth and new array and yield blah
+ *
+ * cur:  user/sw/org/a
+ * next: user/sw/org/x
+ *
+ * will yield the new name x
+ *
+ *
+ * @pre cur and next have a name which is not equal
+ *
+ * @param g handle to generate to
+ * @param cur current key of iteration
+ * @param next next key of iteration
+ */
+void elektraGenOpen(yajl_gen g, const Key *cur, const Key *next)
+{
+	const char *pcur = keyName(cur);
+	const char *pend = pcur + keyGetNameSize(cur);
+	const char *pnext = keyName(next);
+	// search for first unequal character
+	while(*pnext == *pcur)
+	{
+		++pnext;
+		++pcur;
+	}
+
+	size_t size=0;
+	int group_open = 0;;
+	while (*(pnext=keyNameGetOneLevel(pnext+size,&size)))
+	{
+		printf("Open: \"%s\"\n",pnext);
+		if (group_open)
+		{
+			yajl_gen_map_open(g);
+			group_open = 0;
+		}
+
+		if (*pnext == '#') // we found an array in next
+		{
+			if (pcur<pend || *pcur != '#') // but the array is already open
+			{
+				yajl_gen_array_open(g);
+			}
+		}
+		else // it is an ordinary group
+		{
+			yajl_gen_string(g, (const unsigned char *)pnext, size);
+			group_open = 1;
+		}
+	}
+}
+
+keyNameReverseIterator elektraKeyNameGetReverseIterator(const Key *k)
+{
+	keyNameReverseIterator it;
+	it.rend   = keyName(k);
+	it.rbegin = it.rend + keyGetNameSize(k);
+	it.current = it.rbegin;
+	it.size = 0;
+	return it;
+}
+
+
+int elektraKeyNameReverseNext(keyNameReverseIterator *it)
+{
+	if (it->current == it->rend) // we are at the end (move that to hasNext?)
+	{
+		return 0;
+	}
+
+	const char *real=it->current-1; // start at one position left
+	int endReached=0;
+
+	// skip all repeating '/' in the "beginning" of string
+	while (*real == KDB_PATH_SEPARATOR)
+	{
+		--real;
+	}
+
+	if (*real == KDB_PATH_ESCAPE)
+	{
+		++real; // we skipped to much
+	}
+
+	const char *currentEnd = real; // now we know where the string will end
+
+	// now see where this basename begins
+	// also handles escaped chars with '\'
+	while (real != it->rend && !endReached)
+	{
+		--real;
+		if (real != it->rend && *real==KDB_PATH_SEPARATOR)
+		{
+			// only decrement if we have not send the end
+			--real;
+			if (*real != KDB_PATH_ESCAPE)
+			{
+				endReached = 1;
+				real += 2; // fix for lookahead
+			}
+		}
+	}
+
+	// update iterator and return it
+	it->size=currentEnd-real+1;
+	it->current = real;
+	return 1;
+}
+
+void elektraGenClose(yajl_gen g, const Key *cur, const Key *next)
+{
+	const char *x = keyName(cur);
+	const char *p = keyName(next);
+	const char *endp = p + keyGetNameSize(next);
+	// search for first unequal character
+	while(*p == *x)
+	{
+		++p;
+		++x;
+	}
+	size_t size=0;
+
+	x=keyNameGetOneLevel(x+size,&size); // skip first level to close, we assume that this was not a map
+	while (*(x=keyNameGetOneLevel(x+size,&size)))
+	{
+		p+=size; // follow where we are for second key
+		printf("Close: \"%s\"\n",x);
+		if (*x == '#') // we found an array
+		{
+			if (p<endp || *p != '#') // and we won't be in the array next time
+			{
+				yajl_gen_array_close(g);
+			}
+		}
+		else // it is an ordinary group
+		{
+			yajl_gen_map_close(g);
+		}
+	}
+}
+
+void elektraGenValue(yajl_gen g, Key *parentKey, const Key *cur)
+{
+
+	const Key * type = keyGetMeta(cur, "type");
+	if (!type && keyGetValueSize(cur) == 0) // empty binary type is null
+	{
+		yajl_gen_null(g);
+	}
+	else if (!type && keyGetValueSize(cur) > 1)
+	{
+		yajl_gen_string(g, (const unsigned char *)keyString(cur), keyGetValueSize(cur)-1);
+	}
+	else if (!strcmp(keyString(type), "boolean"))
+	{
+		if (!strcmp(keyString(cur), "true"))
+		{
+			yajl_gen_bool(g, 1);
+		}
+		else if (!strcmp(keyString(cur), "false"))
+		{
+			yajl_gen_bool(g, 0);
+		}
+		else
+		{
+			ELEKTRA_ADD_WARNING(78, parentKey, "drop boolean which is neither true nor false");
+		}
+	}
+	else if (!strcmp(keyString(type), "number"))
+	{
+		yajl_gen_number(g, keyString(cur), keyGetValueSize(cur)-1);
+	}
+	else { // existing, but unknown or unsupported type, drop it and add warning
+		ELEKTRA_ADD_WARNING(78, parentKey, keyString(type));
+	}
+}
+
+
+/**
+ * @brief Forwards to key which is not below the next one
+ *
+ * Forwards at least forward one element.
+ * ksCurrent() will point at the same key as the key which is returned.
+ *
+ * @retval last element if no other found.
+ * @retval 0 if there is no other element afterwards (keyset will be
+ * rewinded then)
+ *
+ * @param ks keyset to use
+ *
+ * @return key after starting position which is not below (to any latter
+ * one)
+ */
+Key * elektraNextNotBelow(KeySet *ks)
+{
+	const Key *previous = ksNext(ks);
+
+	if (!previous)
+	{
+		ksRewind(ks);
+		return 0;
+	}
+
+	// unitialized variables are ok, because do{}while guarantees initialisation
+	cursor_t pos; // always one before current
+	const Key * current = previous; // current is same as ksCurrent()
+	do
+	{
+		pos = ksGetCursor(ks); // remember candidate
+		previous = current;    // and remember last key
+		current = ksNext(ks);  // look forward to next key
+	}
+	while (current && keyIsBelow(previous, current));
+
+	// jump to and return candidate, because next is known to be not
+	// below candidate
+	ksSetCursor(ks, pos);
+	return ksCurrent(ks);
+}
+
 int elektraYajlSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
 #if YAJL_MAJOR == 1
@@ -646,114 +812,35 @@ int elektraYajlSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 #endif
 	yajl_gen_map_open(g);
 
-	Key *cur = 0;
-	Key *prev = 0;
-	int map_to_close = 1; // see above
-	int in_array = 0; // if we are currently in an array
-
 	ksRewind (returned);
-	while ((cur = ksNext(returned)) != 0)
+	int first_key = 1;
+	Key *cur= 0;
+	Key *next = elektraNextNotBelow(returned);
+	elektraGenOpen(g, parentKey, next);
+	while ((next = elektraNextNotBelow(returned)) != 0)
 	{
-		// skip root
-		// TODO: make configureable deep ignoring
-		if (!strcmp(keyName(cur), "user"))
+		printf ("in iter: %s next: %s\n", keyName(cur), keyName(next));
+
+		printf ("in f: %s next: %s\n", keyName(cur), keyName(next));
+
+		// for the first key we had not opened anything,
+		// so we do not close anything
+		if (!first_key)
 		{
-			continue;
+			elektraGenClose(g, cur, next);
 		}
-		else if (!strcmp(keyName(cur), "system"))
+		else
 		{
-			continue;
+			first_key = 0;
 		}
 
-		// TODO: open and close everywhere!
+		elektraGenValue(g, parentKey, cur);
+		elektraGenOpen(g, cur, next);
 
-		if (in_array && !keyGetMeta(cur, "array")) // we leave an array
-		{
-			// printf ("leave array prev: %s to cur: %s\n", keyName(prev), keyName(cur));
-			yajl_gen_array_close(g);
-			in_array = 0;
-		}
-		else if (!in_array && keyGetMeta(cur, "array")) // we enter an array
-		{
-			// printf ("enter array prev: %s to cur: %s\n", keyName(prev), keyName(cur));
-			elektraGenName(g, cur);
-			yajl_gen_array_open(g);
-			in_array = 1;
-			continue;
-		}
-
-		const Key * type = keyGetMeta(cur, "type");
-		if (!type && keyGetValueSize(cur) == 0) // empty binary type is null
-		{
-			if (!in_array) elektraGenName(g, cur);
-			yajl_gen_null(g);
-		}
-		else if (!type && keyGetValueSize(cur) > 1)
-		{
-			map_to_close -= elektraGenClose(g, cur, prev);
-			if (!in_array) elektraGenName(g, cur);
-			yajl_gen_string(g, (const unsigned char *)keyString(cur), keyGetValueSize(cur)-1);
-		}
-		else if (!type) // not a string key, so it gives structure
-		{
-			if (!prev) // always create map for first key
-			{
-				elektraGenName(g, cur);
-				yajl_gen_map_open(g);
-				++map_to_close;
-			}
-			else if (keyIsBelow(prev, cur)) // generate map for other keys iff they are below
-			{
-				// printf ("open from prev: %s to cur: %s\n", keyName(prev), keyName(cur));
-				map_to_close += elektraGenOpen(g, cur, prev);
-			}
-			else if (!keyIsSibling(prev, cur))
-				// not below, not sibling, so we close down to level of one map and open up to map of other
-			{
-				// printf ("open and close from prev: %s to cur: %s\n", keyName(prev), keyName(cur));
-				map_to_close -= elektraGenClose(g, cur, prev);
-				map_to_close += elektraGenOpen(g, cur, prev);
-			}
-		}
-		else if (!strcmp(keyString(type), "boolean"))
-		{
-			if (!strcmp(keyString(cur), "true"))
-			{
-				if (!in_array) elektraGenName(g, cur);
-				yajl_gen_bool(g, 1);
-			}
-			else if (!strcmp(keyString(cur), "false"))
-			{
-				if (!in_array) elektraGenName(g, cur);
-				yajl_gen_bool(g, 0);
-			}
-			else
-			{
-				ELEKTRA_ADD_WARNING(78, parentKey, "drop boolean which is neither true nor false");
-			}
-		}
-		else if (!strcmp(keyString(type), "number"))
-		{
-			if (!in_array) elektraGenName(g, cur);
-			yajl_gen_number(g, keyString(cur), keyGetValueSize(cur)-1);
-		}
-		else { // existing, but unknown or unsupported type, drop it and add warning
-			ELEKTRA_ADD_WARNING(78, parentKey, keyString(type));
-		}
-
-		prev = cur;
+		cur = next;
 	}
 
-	if (in_array)
-	{
-		yajl_gen_array_close(g);
-	}
-
-	for (int i=0; i<map_to_close; ++i)
-	{
-		yajl_gen_map_close(g);
-	}
-
+	// TODO close all affairs of last key
 
 	FILE *fp = fopen(keyString(parentKey), "w");
 	if (!fp)
