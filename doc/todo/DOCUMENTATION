@@ -1,3 +1,5 @@
+Lacking documentation for current releases.
+
 currently following resources are available:
 	freedesktop (synced with README)
 	thesis (running out of date!)
@@ -12,7 +14,87 @@ Alternative:
 	Make homepage with all information
 	Using doxygen?
 
+This document describes what is missing in the documentation
+
+
+== ISSUES ==
+
+documentation of the c++ binding, plugins
+
+document return value of resolver + other plugins
+
+rewind not clearly defined:
+	rewind before plugins?
+	rewind after plugins?
+	rewind after get()?
+	rewind after set()?
+	-> write pre+postconditions
+
+not clearly defined how config file is opened
+	(temporary file needs to be opened write+create)
+
+
+documentation:
+	comment -> meta data
+	split real meta data functions + kdbhelpers
+
+== MISSING ==
+
+api:
+	add examples
+	add tutorial
+
+c docu:
+	mark internal docu + hide it
+	add examples in docu, make more examples
+
 plugin writers guide:
 	needs to be rewritten (doc.c only as base)
 
-This document describes what is missing in the documentation
+== OTHER TASKS ==
+
+jenkins:
+	job for docu
+	use docu from build server?
+
+
+== DOCUMENTATION ==
+
+write tutorials:
+	api introduction
+	examples
+	how to use kdb tools
+	how to mount
+
+bsd licence:
+	check for documentation, homepage, modules,...
+
+all exported methods of elektra need to be:
+	useful in current state
+	well documented in behavior
+	having test cases for behavior
+	behavior not overlapping with another function
+	well documented error cases, return and errno values
+	having test cases for error cases
+	otherwise fix or mark it obsolete
+
+symbols:
+	check exported symbols
+	use symbol table
+
+add projects using elektra
+
+
+== OVERVIEW ==
+
+draw a big picture
+
+make list of all symbols
+	exported symbols
+	reduce it hard
+	symbole, only export (sonst static)
+	Version info 4.0
+
+dissertation with full API docu and tutorials
++ with homepage in mind
+architecture for elektra eco system

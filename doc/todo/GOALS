@@ -1,0 +1,40 @@
+define goals and put them on homepage (+mailinglist)
+
+== Quality Goals ==
+
+1.) Extensibility
+
+There are so many variants of
+- storage formats
+- frontend integrations
+- bindings
+
+Nearly every aspekt of Elektra must be extremely extensible.
+On the other side semantics must be very clear and well defined
+so that this extensible system works reproduceable and predictable.
+
+
+2.) Simplicity
+
+An overly complex system cannot be managed nor understood.
+On the other side extensibility brings some complex issues,
+which need to be solved - but in a way so that the user
+sees either nothing of it or only needs to understand very
+simple concepts in order that it works flawlessly.
+Special care for simplicity is taken for the users:
+- Endusers when doing Elektra or Configuration upgrades
+  (they should never take any notice of Elektra, except that
+   it works better integrated and with less problems)
+- Frontend Programmers to integrate Elektra
+- Plugin Programmers to extend Elektra
+- Application's Maintainers to correctly setup+upgrade KDB
+- Administrators which want to change the maintainers setup
+  according to their needs
+
+
+3.) Performance
+
+Configuration is the main impact for bootup and startup time.
+Elektra needs to be similar fast then current solutions.
+Ideally it should get faster because of centralized optimization
+endeavours where everyone using Elektra can benefit from.

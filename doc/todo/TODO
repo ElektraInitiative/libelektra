@@ -1,18 +1,29 @@
-#For current work done, see CURRENT
-#For possible extensions in future, see FUTURE
+This is a list of TODO items which do not fit in
+the other TODO categories which should be resolved in 0.8.
 
-resolver:
-	reintroduce getpwent?
-	(what if no environment set?)
 
-kdb chroot feature
+== GENERATORS ==
+
+C++ code generated as frontend 
+	policy based (not available, conversion failed)
+	make it really simple to type and structure safe access configuration
+	allow notification+locking
+
+generator for:
+	exc classes
+	try catch blocks
+	as keyset
+	human readable text
+
+
+
 
 == CONTRACTS ==
 
 add following configuration for storage plugins:
-	use_absolute 
-	use_namespaces 
-	use_owner 
+	use_absolute
+	use_namespaces
+	use_owner
 
 if given use information inside file rather then parent key
 if storage plugin cannot represent this information, make it as information only
@@ -20,94 +31,76 @@ give (hardcoded) defaults in contract
 Warn on ignored settings -> But better to always check contract!! 
 let those values be changed on mount/import/export
 
- == PLUGINS ==
 
-yail
-	advanced functionality
-	finish kdbSet
-	test roundtrips
-	configureable root
+make plugins (backends) recursive
 
-cppplugin:
-	make a nice header-only(?) cpp solution for plugins
-	(integration into cpp binding)
-	assemble C symbols with macros
-	keep C->C++ problems at one place to be included
+Plugins should state which metadata they can handle and which they can interpret or generate
 
 
-json serialization:
-	write a json storage using yajl and cppplugin
-	* should handle cppcms config files
-	  http://cppcms.com/wikipp/en/page/cppcms_1x_config
-	* should handle openicc
-	  doc/standards/OpenICC_device_config_DB.json
-	  http://www.freedesktop.org/wiki/Specifications/icc_meta_tag_for_monitor_profiles
-
-C serialization
-	(ksNew(keyNew()))
-	using cppplugin
-
-xdg:
-	write a xdg plugin which does xdg conforming resolving
-
-struct: checker
-	cannot be deeply nested
-
-default plugin handling: resolver/storage
-
-plugins:
-	using libraries:
-		libconfig
-		eet
-	using keysets:
-		bind
-		memory
 
 == BINDINGS ==
 
-bindings: using swig?
+c++:
+	Keyset operator==
+
+bindings: using swig
 	python
 	scheme
 	java
 
 
-== DOCUMENTATION ==
-
-write tutorials:
-	api introduction
-	examples
-	how to use kdb tools
-	how to mount
-
-bsd licence:
-	check for documentation, homepage, modules,...
-
-all exported methods of elektra need to be:
-	useful in current state
-	well documented in behavior
-	having test cases for behavior
-	behavior not overlapping with another function
-	well documented error cases, return and errno values
-	having test cases for error cases
-	otherwise fix or mark it obsolete
-
-symbols:
-	check exported symbols
-	use symbol table
-
-add projects using elektra
 
 
-== Testing ==
+== NOTIFICATION ==
 
-testing coverage:
-	-fprofile-arcs
-	-ftest-coverage
-	reasoning which parts are tested
+get list of involved configuration files and do inotify on it
 
-advanced testing:
-	get and set a real big amount of keys
-	multithreading testing
 
-kdb tool
+
+== DATA STRUCTURES ==
+
+Only implement what is really needed.
+(can take some time to do it well!)
+
+ksForEach (ks, func, handle)
+	void func (Key*, void* handle);
+
+relations
+
+ksLookup: value keys only
+	with relations
+	only in the same folder (sibling)
+	only below the current folder (below)
+
+merge + split configuration
+http://en.wikipedia.org/wiki/Set_(mathematics)
+
+
+KeySet* ksUnion
+ksIntersection
+ksMerge
+
+http://en.wikipedia.org/wiki/Complement_(set_theory)
+ksComplement (Difference, SymmetricDifference)
+
+
+ksCopy -> ksAssign
+ksPopCurrent
+
+InsertIterator
+	ksAppend() in O(1)
+	KDB_O_NOALL could use binary search
+
+AccessIterator
+	not integrated
+	ksCurrent only for iterator
+	feature for error handling needed?
+	functors and same level iterators build on top of it
+
+KeySet as hash?
+
+
+Transform to propertY tree
+import or inherit from config
+commandline parser?
 

@@ -73,7 +73,8 @@ Build deb:
  git-commit -m "Debian Package $VERSION-1"
  git-tag $VERSION-1
  cp ~elektra-ftp/releases/elektra-$VERSION.tar.gz ~elektra/elektra_$VERSION.orig.tar.gz
- git-buildpackage -rfakeroot -k00B86A15
+ git-buildpackage -rfakeroot -k00B86A15 -sa
+ reprepro --ignore=wrongdistribution include wheezy elektra_$VERSION-1_amd64.changes
 
 
 Now install package + run some basic commands:
@@ -82,13 +83,18 @@ Now install package + run some basic commands:
 Debian packages in chroot + publish in reprepro
 
 You might want to run lintian:
- lintian -EI --color=auto --pedantic elektra_0.8.1-1_i386.changes
+ lintian -EI --color=auto --pedantic elektra_$VERSION-1_i386.changes
+
+And also run piuparts:
+ sudo piuparts elektra_$VERSION-1_i386.changes
+
+And run adequate (combined with piuparts or after installation)
 
 
 == Publish ==
 
 
-Now we know that everything worked, well
+Now we know that everything worked well:
 
 Now push release branch with tags to gitorious:
  cd ~e && git-pull && git-push && git-push --tags

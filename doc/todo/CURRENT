@@ -1,142 +1,56 @@
+Add items here which should be implemented within the next release.
+Release often, so keep this list very short.
+During implementation phase no new items may be added here (only
+those which are necessary to fulfil the initial tasks)
+Items are e.g. BUGS, OPTIMIZE, PROBLEMS, TESTING, PLUGINS, TODO,..
+
 == 0.8.4 ==
 
+Improve resolver (create tmp, open original)
 
 
-c++:
-	Keyset operator==
-	exceptions defined outside
-	what should print Key warnings+errors
-	with automated kdb tests written from docu
-	more examples which should compile
-	use more copydoc
-
-c docu:
-	mark internal docu + hide it
-	add examples in docu, make more examples
-
-kdb get/set:
-	get features: cascading(untested)
-	default value with sget (untested?)
-	intensive tests
-
-fix warnings:
-	(deactivate static build to disable duplications)
-	unused
-	shadow
-	C++11
+== 0.8.5 ==
 
 doxygen 0.8.* upgrade on server->wheezy upgrade
 
-ELEKTRA_SET_ERROR in dump compile error
-
-keyAdd+Set basename: handle . and .. correctly
-
-warning in resolver aborts execution? (uname plugin)
-
-kdb set system/elektra/version/constants/KDB_VERSION_MINOR
-fails silently
-
+chroot
+	-c option which allows you to chroot before doing
+	-u options which allows you to switch user (by setting env internally)
+	kdbOpen/kdbGet/kdbSet
 
 script testing:
-	should be runned by make test
-	should be available at tarket (be installed)
-	can be everything directly at the kdb commandline tool
+	make scripts safe by chroot (only modify files below /tmp)
+	should be executed by make test
 	should be able to run tests for all plugins +
 	different combination of plugins
 	should support partly installations and/or builds (not all plugins)
+
 	line number (maybe not important)
+	should be available at target (be installed) why?
 	modularity (testing where the code is) (maybe not important)
 		-> plugin specifica might be tested at other level/only C
 		-> how to do without need of capabilities again? backends at serialization level?? (like with mount)
-
-documentation:
-	comment -> meta data
-	split real meta data functions + kdbhelpers
 
 import/export:
 	with all plugins
 	with automated kdb tests
 
 kdb testcases:
+	get features: cascading(untested)
+	default value with sget (untested?)
 	for mount/umount
 	for import/export/convert
-	using chroot
 
 ABI unit tests: (manually)
 	install old unit tests with new elektra for ABI tests
 
-jenkins:
-	build packages for dfc
-	cleanup elektra branches
-	job for docu
-	use docu from build server?
-	(source packages does not work)
-	-> RELEASE plan
-
 debian:
-	dfc package
+	enable (fix) tests
 	add examples as package
 	enable all plugins (struct, type, validation!!!)
 
-== 0.8.5 ==
 
-resolver recursively:
-	double slashes
-	starting with /
-	kdb file using resolver plugin without function! (parent value!)
-	should be returned in kdbGet/kdbSet
+ship a ./configure script which calls cmake
+	+ toplevel Makefile which goes to build directory and calls make there
+	./configure && make && make install should work
 
-XDG specification:
-	XDG_CONFIG_HOME
-	KDB_CONFIG_HOME
-	describe, implement, test
-	xdg mail announce
-
-
-kdb-shell:
-	use import/export
-	automatic tests for functionality
-	Examples in --help
-
-kdb tool:
-	request -f for rm, mv in system/elektra
-	converting of config files (automated tests)
-	test mount/unmount
-
-kdb resolve feature:
-	output file how it would resolve for key
-
-error specification plugin:
-	parse error specification content into keyset
-
-tcl:
-	parse output?
-	struct output!
-
-documentation of the c++ binding
-	with copydoc
-	include files
-	mark functions which are API/ABI stable (kdb.h)
-
-git-buildpackage
-	should work before release
-
-release:
-	ohloh statistics
-	Preparation
-	Cleanup
-	Source Package
-	Documentation
-	Debian Package
-	Publish
-
-api:
-	add examples
-	add tutorial
-
-chroot:
-	add -c --chroot option for all plugins
-
-kdb tool:
-	allow verification of local key database by exported file
-	tset (typesafe set)

@@ -20,3 +20,53 @@ most plugins (especially storage) do only basic or no tests
 	dump
 	fstab
 	hosts
+
+
+= Missing Testcases =
+
+test cases for locking file
+
+more testcases for kdb interface
+	also mount! and check for functionality regressions
+	ls over multiple mountpoints
+
+hosts typesafe with plugins enabled
+
+iterator interface (+document better)
+
+ksNext should be safe to missusage?
+
+cursor placement:
+	ksCut within cutted area
+	ksAppend
+
+backends below other: ls does not work recursively
+also ls above multiple plugins
+
+and execute the kdb test functions
+(but reduce #)
+
+resolver tests?
+
+Partly written configuration tests?
+	(rollback at commit?)
+converting of config files (automated tests)
+
+== ADVANCED ==
+
+testing coverage:
+	-fprofile-arcs
+	-ftest-coverage
+	reasoning which parts are tested
+
+advanced testing:
+	get and set a real big amount of keys
+	multithreading testing
+
+
+testing framework step by step
+	with all metadata
+	with all calling combinations
+	(test driven development)
+
+see if config file does proper roundtrips
