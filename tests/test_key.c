@@ -1938,6 +1938,33 @@ void test_keyHelpers()
 			default: succeed_if (0, "should not reach case statement");
 		}
 	}
+
+	/* with escaped sequence at the begin:*/
+	name="user////\\/abc/\\/def\\/ghi////jkl\\/\\/";
+	size=0;
+	level=0;
+
+	p=name;
+	while (*(p=keyNameGetOneLevel(p+size,&size))) {
+		level++;
+
+		strncpy(buffer,p,size);
+		buffer[size]=0;
+
+		/* printf("Level %d name: \"%s\"\n",level,buffer);*/
+		switch (level)
+		{
+			case 1: succeed_if (strcmp (buffer, "user") == 0, "keyNameGetOneLevel not correct");
+				succeed_if (size == 4, "wrong size returned"); break;
+			case 2: succeed_if (strcmp (buffer, "\\/abc") == 0, "keyNameGetOneLevel not correct");
+				succeed_if (size == 5, "wrong size returned"); break;
+			case 3: succeed_if (strcmp (buffer, "\\/def\\/ghi") == 0, "keyNameGetOneLevel not correct");
+				succeed_if (size == 10, "wrong size returned"); break;
+			case 4: succeed_if (strcmp (buffer, "jkl\\/\\/") == 0, "keyNameGetOneLevel not correct");
+				succeed_if (size == 7, "wrong size returned"); break;
+			default: succeed_if (0, "should not reach case statement");
+		}
+	}
 	
 
 	parentSize=keyGetParentNameSize(key);
@@ -2525,6 +2552,15 @@ void test_keyBaseName()
 	succeed_if (keyAddBaseName (k, "..") == -1, "outbreak should not be allowed");
 	output_key(k);
 
+	keySetName (k, "system/valid");
+	succeed_if (!strcmp(keyBaseName(k), "valid"), "invalid base name");
+
+	keySetName (k, "system");
+	succeed_if (!strcmp(keyBaseName(k), "system"), "invalid base name for system");
+
+	keySetName (k, "user");
+	succeed_if (!strcmp(keyBaseName(k), "user"), "invalid base name for user");
+
 	keyDel (k);
 }
 
@@ -2560,7 +2596,7 @@ int main(int argc, char** argv)
 	test_keyNameSpecial();
 	test_keyClear();
 
-	// test_keyBaseName(); TODO: Bug, does not work at the moment
+	// test_keyBaseName(); // TODO: Bug, does not work at the moment
 
 	printf("\ntest_key RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
