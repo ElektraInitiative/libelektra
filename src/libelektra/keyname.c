@@ -524,9 +524,9 @@ ssize_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize)
  * @code
 key=keyNew(0);
 keySetName(key,"");
-keyName(key); // you would expect "" here
+keyBaseName(key); // you would expect "" here
 keySetName(key,"user");
-keyName(key); // you would expect "" here
+keyBaseName(key); // you would expect "" here
 keyDel(key);
  * @endcode
  *

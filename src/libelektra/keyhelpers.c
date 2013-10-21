@@ -41,6 +41,9 @@
 /*
  * Returns one level of the key name.
  *
+ * Interface should be build on top of Keys.
+ * Interface is not const-correct (it does a const-cast).
+ *
  * This method is used to skip repeating '/' and to find escaping chars.
  * Given @p keyName, this method returns a pointer to the next name level
  * found and changes @p size to the number of bytes on this level name.
@@ -54,10 +57,11 @@ char *keyName="user////abc/def\/ghi////jkl///";
 char *p;
 size_t size=0;
 int level=0;
-char buffer[20];
+char buffer[20]; // TODO: make sure buffer size is ok
 
 p=keyName;
-while (*(p=keyNameGetOneLevel(p+size,&size))) {
+while (*(p=keyNameGetOneLevel(p+size,&size)))
+{
 	level++;
 
 	// copy what we found to a buffer, so we can NULL-terminate it
@@ -83,32 +87,45 @@ Level 4 name: jkl
  * 	NULL when done.
  * @ingroup keyname
  */
-char *keyNameGetOneLevel(const char *name, size_t *size) {
+char *keyNameGetOneLevel(const char *name, size_t *size)
+{
 	char *real=(char *)name;
 	size_t cursor=0;
 	int escapeNext=0;
 	int end=0;
-	
-	/* skip all repeating '/' in the begining */
-	while (*real && *real == KDB_PATH_SEPARATOR) real++;
-	
+
+	/* skip all repeating '/' in the beginning */
+	while (*real && *real == KDB_PATH_SEPARATOR)
+	{
+		real++;
+	}
+
 	/* now see where this basename ends handling escaped chars with '\' */
-	while (real[cursor] && ! end) {
-		switch (real[cursor]) {
-			case '\\':
-				escapeNext=1;
-				break;
-			case KDB_PATH_SEPARATOR:
-				if (! escapeNext) end=1;
-			default:
-				escapeNext=0;
+	while (real[cursor] && !end)
+	{
+		switch (real[cursor])
+		{
+		case KDB_PATH_ESCAPE:
+			escapeNext=1;
+			break;
+		case KDB_PATH_SEPARATOR:
+			if (! escapeNext)
+			{
+				end=1;
+			}
+			// fallthrough
+		default:
+			escapeNext=0;
 		}
 		++cursor;
 	}
-	
+
 	/* if a '/' stopped our loop, balance the counter */
-	if (end) --cursor;
-	
+	if (end)
+	{
+		--cursor;
+	}
+
 	*size=cursor;
 	return real;
 }
@@ -126,7 +143,8 @@ char *keyNameGetOneLevel(const char *name, size_t *size) {
  * @see keyGetFullRootNameSize()
  * @ingroup keyname
  */
-ssize_t keyNameGetFullRootNameSize(const char *keyName) {
+ssize_t keyNameGetFullRootNameSize(const char *keyName)
+{
 	char *end;
 	int length=strlen(keyName);
 
@@ -162,7 +180,8 @@ ssize_t keyNameGetFullRootNameSize(const char *keyName) {
  * @see keyGetFullRootNameSize()
  * @ingroup keyname
  */
-ssize_t keyGetRootNameSize(const Key *key) {
+ssize_t keyGetRootNameSize(const Key *key)
+{
 	if (!key->key) return 0;
 
 	if (keyIsUser(key)) return sizeof("user");
@@ -188,7 +207,8 @@ ssize_t keyGetRootNameSize(const Key *key) {
  * @see keyGetRootNameSize(), keyGetFullRootName()
  * @ingroup keyname
  */
-ssize_t keyGetRootName(const Key *key, char *returned, size_t maxSize) {
+ssize_t keyGetRootName(const Key *key, char *returned, size_t maxSize)
+{
 	size_t size;
 
 	if (!key->key) {
@@ -229,7 +249,8 @@ ssize_t keyGetRootName(const Key *key, char *returned, size_t maxSize) {
  * @see keyGetRootNameSize()
  * @ingroup keyname
  */
-ssize_t keyNameGetRootNameSize(const char *keyName) {
+ssize_t keyNameGetRootNameSize(const char *keyName)
+{
 	int length=strlen(keyName);
 
 	if (!length) return 0;
@@ -272,7 +293,8 @@ ssize_t keyNameGetRootNameSize(const char *keyName) {
  * @see keyGetRootNameSize()
  * @ingroup keyname
  */
-ssize_t keyGetFullRootNameSize(const Key *key) {
+ssize_t keyGetFullRootNameSize(const Key *key)
+{
 	size_t size=0;
 
 	if (keyIsUser(key))
@@ -303,7 +325,8 @@ ssize_t keyGetFullRootNameSize(const Key *key) {
  * @see keyGetFullRootNameSize(), keyGetRootName()
  * @ingroup keyname
  */
-ssize_t keyGetFullRootName(const Key *key, char *returned, size_t maxSize) {
+ssize_t keyGetFullRootName(const Key *key, char *returned, size_t maxSize)
+{
 	size_t size;
 	size_t rootSize;
 	char *cursor;
@@ -350,7 +373,8 @@ ssize_t keyGetFullRootName(const Key *key, char *returned, size_t maxSize) {
  * @see keyGetParentName() for example
  * @ingroup keyname
  */
-ssize_t keyGetParentNameSize(const Key *key) {
+ssize_t keyGetParentNameSize(const Key *key)
+{
 	char *parentNameEnd=0;
 	char *p;
 	size_t size;
@@ -408,7 +432,8 @@ free (parentName);
  * @return number of bytes copied including ending NULL
  * @ingroup keyname
  */
-ssize_t keyGetParentName(const Key *key, char *returnedParent, size_t maxSize) {
+ssize_t keyGetParentName(const Key *key, char *returnedParent, size_t maxSize)
+{
 	size_t parentSize;
 
 	parentSize=keyGetParentNameSize(key);
