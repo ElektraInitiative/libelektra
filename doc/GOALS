@@ -1,4 +1,14 @@
-define goals and put them on homepage (+mailinglist)
+== Target ==
+
+- Embedded: Elektra is on the frontier for embedded systems because of
+  its tiny core and the many possibilities with it's plugins.
+- Server: Elektra is ideal suited for a local configuration storage by
+  mounting existing configuration files into the global tree. Nodes
+  using Elektra can be connected by already existing configuration
+  management tools.
+- Desktop: Elektra allows applications to read and write from a global
+  configuration tree. Missing is a description (schema) so that these
+  values actually can be shared.
 
 == Quality Goals ==
 
