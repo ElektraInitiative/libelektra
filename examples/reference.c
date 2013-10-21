@@ -21,14 +21,14 @@ void h(Key *k)
 int main(void)
 {
 	Key *k = keyNew(0);
-	printf ("key has ref %d\n", keyGetRef(k));
+	printf ("key has ref %zu\n", keyGetRef(k));
 
 	f(k);
 	printf ("key is now deleted\n");
 
 	k = keyNew(0);
 	keyIncRef (k);
-	printf ("key has ref %d\n", keyGetRef(k));
+	printf ("key has ref %zu\n", keyGetRef(k));
 
 	f(k);
 	printf ("key has now name %s\n", keyName(k));
@@ -36,7 +36,7 @@ int main(void)
 	f(k);
 
 	keyDecRef (k);
-	printf ("key has ref %d", keyGetRef(k));
+	printf ("key has ref %zu", keyGetRef(k));
 	keyDel (k);
 	printf ("key is now deleted\n");
 

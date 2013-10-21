@@ -27,11 +27,11 @@ void check_key()
 	Key * error_key = keyNew(KEY_END);
 	KDB * kdb_handle = kdbOpen(error_key);
 	Key * top = keyNew(KEY_END);
-	int rc = keySetName(top, "user/sw/MyApp"); // == 14
+	keySetName(top, "user/sw/MyApp"); // == 14
 	KeySet * ks = ksNew(0);
-	rc = kdbGet(kdb_handle, ks, top);
+	kdbGet(kdb_handle, ks, top);
 	Key * key = keyNew(KEY_END);
-	rc = keySetName(key, "user/sw/MyApp/Tests/TestKey1"); // == 14
+	keySetName(key, "user/sw/MyApp/Tests/TestKey1"); // == 14
 	Key * result = ksLookup(ks, key, KDB_O_NONE);
 	const char * key_name = keyName(result);
 	const char * key_value = keyString(result);
@@ -50,18 +50,18 @@ int main()
 	Key * error_key = keyNew(KEY_END);
 	KDB * kdb_handle = kdbOpen(error_key);
 	Key * top = keyNew(KEY_END);
-	int rc = keySetName(top, "user/sw/MyApp");
+	keySetName(top, "user/sw/MyApp");
 
 	KeySet * ks = ksNew(0);
-	rc = kdbGet(kdb_handle, ks, top);
+	kdbGet(kdb_handle, ks, top);
 
 	Key * key = keyNew(KEY_END);
-	rc = keySetName(key, "user/sw/MyApp/Tests/TestKey1"); // == 31
-	rc = keySetString(key, "NULLTestValue"); // == 14
-	rc = keySetMeta(key, "comment", "NULLTestComment"); // == 16
+	keySetName(key, "user/sw/MyApp/Tests/TestKey1"); // == 31
+	keySetString(key, "NULLTestValue"); // == 14
+	keySetMeta(key, "comment", "NULLTestComment"); // == 16
 	ksAppendKey(ks, key); // == 1
-	rc = keyNeedSync(key);
-	rc = kdbSet(kdb_handle, ks, top); // == -1
+	keyNeedSync(key);
+	kdbSet(kdb_handle, ks, top); // == -1
 	print_warnings(top);
 	keyDel(top);
 	ksDel(ks);
