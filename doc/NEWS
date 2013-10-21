@@ -82,6 +82,22 @@ The targets will be:
   configuration tree. Missing is a description (schema) so that these
   values actually can be shared.
 
+Quality Goals will be:
+- Extensibility: Requirements for configuration can vary a lot.
+  The only common dominator are key/value pairs, nearly everything else
+  can differ from project to project. So Elektra needs to be, and is,
+  very extensible to fulfil this wide range of goals.
+- Simplicity: The system should be very simple in its core so that it
+  can be understood easily. Complexity should be hidden in optional
+  extensions. The full system should work out-of-the-box as much as
+  possible. With these properties it should also be as safe and
+  fault-tolerant as possible.
+- Performance: Features will not be used if they impact performance too
+  hard. So Elektra and it's extensions are designed to perform well with
+  a minimum amount of syscalls with an emphasis on retrieving configuration
+  fast.
+
+
 The roadmap for Elektra's implementation has three steps:
 
 1.) Elektra 0.8
@@ -90,7 +106,7 @@ with releases at least every two month. They focus will be on stability,
 better user experience, integration of new programming languages and
 more serialize formats.
 Some ideas:
-- serializer: e.g. json
+- serializer: e.g. json, using lenses
 - resolver: e.g. xdg with improved locking
 - testing: automated abi compatibility checks, shell test suite
 - bindings: gobject, swig
@@ -98,6 +114,7 @@ Some ideas:
 - more advertisement (e.g. conferences)
 - creating applications using Elektra
 - schema for configuration
+- more tool support, e.g. GUIs
 - and much more...
 (see also doc/todo/CURRENT and doc/todo/TODO in repo)
 
@@ -105,7 +122,7 @@ If you are interested in working on one of these topics, please contact me.
 It will also be possible for students to write a thesis solving problems
 concerning those ideas.
 
-2.) Elektra 0.9
+2.) Elektra 0.9 (starting around 2014)
 This will be a development branch which will coexist next to 0.8. In it
 all features will emerge which are too large for the 0.8 branch, like
 changes in the core and the plugin system. Some of them might be "boring
@@ -137,6 +154,8 @@ Some ideas:
 - build sharing platforms for configuration
 - extend the foundations created in 0.9
 - and much more...
+
+More information will be published soon, so stay tuned.
 
 
 ---------------
