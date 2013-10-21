@@ -455,3 +455,9 @@ severity:error
 ingroup:plugin
 module:yajl
 
+number:78
+description:Unknown or unsupported type found during streaming, key was dropped
+severity:warning
+ingroup:plugin
+module:yajl
+
