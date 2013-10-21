@@ -1,0 +1,50 @@
+#This document describes all meta data/schema values available.
+#
+# meta-meta (description how to parse that file)
+#
+# key: the name of the meta-key
+# type: (string|enumeration|regular expression) the type of the meta-value
+# status: (implemented|idea) the current state of this meta data entry
+# plugin: the plugins which use the meta-key (space separated)
+# description: explains what it is about
+#
+# v0.1
+
+key: check/type
+type: string
+status: implemented
+plugin: type
+description: defines the type of the value
+
+key: check/format
+type: string
+status: idea
+description: defines the format of the value
+
+key: check/path
+status: implemented
+plugin: path
+description: defines which file (path) the value referes to
+
+key: check/validation
+status: implemented
+plugin: validation
+type: regular expression
+description: a regular expression to check against
+
+key: check/validation/message
+status: implemented
+plugin: validation
+description: a message added to warning if validation fails
+
+key: check/range
+status: idea
+description: range checks, from-to, or arbitrary sets of numbers
+
+key: dependency/control
+status: idea
+description: control keys which enable/disable parameters
+
+key: dependency/value
+status: idea
+description: specific values of the dependency key have impact on that key
