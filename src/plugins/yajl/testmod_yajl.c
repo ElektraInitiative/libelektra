@@ -457,6 +457,8 @@ void test_json(const char * fileName,
 		     KeySet * compareKeySet,
 		     KeySet * conf)
 {
+	printf ("Test json with %s\n", fileName);
+
 	Plugin *plugin = elektraPluginOpen("yajl", modules, conf, 0);
 	exit_if_fail (plugin != 0, "could not open plugin");
 	// printf ("Test with %s\n", srcdir_file(fileName));
@@ -471,7 +473,7 @@ void test_json(const char * fileName,
 
 	compare_keyset(keys, compareKeySet);
 
-	char * fileNameCompare = malloc(strlen(fileName)+5);
+	char * fileNameCompare = malloc(strlen(fileName)+6);
 	strcat(fileNameCompare, fileName);
 	strcat(fileNameCompare, ".comp");
 	keySetString(parentKey, srcdir_file(fileNameCompare));
@@ -501,6 +503,8 @@ void test_json(const char * fileName,
 
 void test_sibling()
 {
+	printf ("Test sibling\n");
+
 	Key *x1 = keyNew("user/sw/app/x1", KEY_END);
 	Key *x2 = keyNew("user/sw/app/x2", KEY_END);
 
@@ -521,6 +525,8 @@ void test_sibling()
 
 void test_array()
 {
+	printf ("Test array\n");
+
 	Key *k = keyNew("user/array/#0", KEY_END);
 	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
 	succeed_if(!strcmp(keyName(k), "user/array/#1"), "array entry name not correct");
@@ -556,6 +562,8 @@ void test_array()
 
 void test_nextNotBelow()
 {
+	printf ("Test next not below\n");
+
 	KeySet *ks = getNullKeys();
 	ksRewind(ks);
 	Key *k = elektraNextNotBelow(ks);
@@ -650,8 +658,8 @@ int main(int argc, char** argv)
 	test_nextNotBelow();
 	test_reverseLevel();
 
-	/*
 	test_json("examples/testdata_null.json", getNullKeys(), ksNew(0));
+	/*
 	test_json("examples/testdata_boolean.json", getBooleanKeys(), ksNew(0));
 	test_json("examples/testdata_number.json", getNumberKeys(), ksNew(0));
 	test_json("examples/testdata_string.json", getStringKeys(), ksNew(0));

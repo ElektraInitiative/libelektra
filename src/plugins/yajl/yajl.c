@@ -80,8 +80,8 @@ int elektraArrayIncName(Key *key)
 
 	// maximal size calculation (C99 would also allow non maximum though...)
 	size_t sizeHash = 1;
-	size_t sizeMax_ = 55;
-	size_t sizeNum = 10;
+	size_t sizeMax_ = 9; // maximum of n-1 _
+	size_t sizeNum = 10; // maximum of 10 digits in 32bit number
 	size_t size = sizeHash + sizeMax_ + sizeNum + 1;
 	char newName[size]; // #_______________________________________________________4000000000
 
@@ -93,10 +93,7 @@ int elektraArrayIncName(Key *key)
 	while (i>0)
 	{
 		size_++; // increment the number of decimals
-		for (size_t j=0; j<size_; ++j)
-		{
-			newName[index++] = '_'; // index max. 56 for >1billion
-		}
+		newName[index++] = '_'; // index n-1 of decimals
 		i/=10;
 	}
 	if (snprintf (&newName[index], sizeNum, "%d", newIndex)  < 0)
@@ -104,28 +101,6 @@ int elektraArrayIncName(Key *key)
 		return -1;
 	}
 	keySetBaseName(key, newName);
-
-	/*
-	if (!strncmp(keyBaseName(key), "#", 1)) // check if string starts with #
-	{
-		int newIndex = atoi(keyBaseName(key)+1 // parse old number
-				)+1; // and increment 1
-		if (newIndex > 9) // TODO: handle generation of _
-		{
-			return -1;
-		}
-		char str[3];
-		if (snprintf (str, 3, "#%d", newIndex)  < 0)
-		{
-			return -1;
-		}
-		keySetBaseName(key, str);
-	}
-	else
-	{
-		return -1;
-	}
-	*/
 
 	return 0;
 }
@@ -599,6 +574,7 @@ void elektraGenOpen(yajl_gen g, const Key *cur, const Key *next)
 	const char *pcur = keyName(cur);
 	const char *pend = pcur + keyGetNameSize(cur);
 	const char *pnext = keyName(next);
+
 	// search for first unequal character
 	while(*pnext == *pcur)
 	{
@@ -610,7 +586,7 @@ void elektraGenOpen(yajl_gen g, const Key *cur, const Key *next)
 	int group_open = 0;;
 	while (*(pnext=keyNameGetOneLevel(pnext+size,&size)))
 	{
-		printf("Open: \"%s\"\n",pnext);
+		printf("Open: \"%.*s\"\n",(int)size, pnext);
 		if (group_open)
 		{
 			yajl_gen_map_open(g);
@@ -689,25 +665,28 @@ int elektraKeyNameReverseNext(keyNameReverseIterator *it)
 	return 1;
 }
 
+// TODO: comment what this function does + how to test?
 void elektraGenClose(yajl_gen g, const Key *cur, const Key *next)
 {
 	const char *x = keyName(cur);
 	const char *p = keyName(next);
 	const char *endp = p + keyGetNameSize(next);
+
+	//TODO: search for last equal level
+	//TODO: search for number of levels
 	// search for first unequal character
 	while(*p == *x)
 	{
 		++p;
 		++x;
 	}
-	size_t size=0;
 
-	x=keyNameGetOneLevel(x+size,&size); // skip first level to close, we assume that this was not a map
-	while (*(x=keyNameGetOneLevel(x+size,&size)))
+	keyNameReverseIterator curIt =  elektraKeyNameGetReverseIterator(cur);
+	// keyNameReverseIterator nextIt =  elektraKeyNameGetReverseIterator(next);
+	while (elektraKeyNameReverseNext(&curIt))
 	{
-		p+=size; // follow where we are for second key
-		printf("Close: \"%s\"\n",x);
-		if (*x == '#') // we found an array
+		printf("Close: \"%.*s\"\n", (int)curIt.size, curIt.current);
+		if (*curIt.current == '#') // we found an array
 		{
 			if (p<endp || *p != '#') // and we won't be in the array next time
 			{
@@ -800,6 +779,19 @@ Key * elektraNextNotBelow(KeySet *ks)
 	return ksCurrent(ks);
 }
 
+int elektraRemoveFile(Key *parentKey)
+{
+	FILE *fp = fopen(keyString(parentKey), "w"); // truncates file
+	if (!fp)
+	{
+		ELEKTRA_SET_ERROR(74, parentKey, keyString(parentKey));
+		return -1;
+	}
+
+	fclose (fp);
+	return 0;
+}
+
 int elektraYajlSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
 #if YAJL_MAJOR == 1
@@ -814,9 +806,35 @@ int elektraYajlSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 
 	ksRewind (returned);
 	int first_key = 1;
-	Key *cur= 0;
-	Key *next = elektraNextNotBelow(returned);
-	elektraGenOpen(g, parentKey, next);
+	Key *cur = elektraNextNotBelow(returned);
+	if (!cur)
+	{
+		return elektraRemoveFile(parentKey);
+	}
+
+	KeySet *config= elektraPluginGetConfig(handle);
+	if (!strncmp(keyName(parentKey), "user", 4))
+	{
+		const Key * lookup = ksLookupByName(config, "/user_path", 0);
+		if (!lookup)
+		{
+			elektraGenOpen(g, parentKey, cur);
+		} else {
+			elektraGenOpen(g, lookup, cur);
+		}
+	}
+	else
+	{
+		const Key * lookup = ksLookupByName(config, "/system_path", 0);
+		if (!lookup)
+		{
+			elektraGenOpen(g, parentKey, cur);
+		} else {
+			elektraGenOpen(g, lookup, cur);
+		}
+	}
+
+	Key *next = 0;
 	while ((next = elektraNextNotBelow(returned)) != 0)
 	{
 		printf ("in iter: %s next: %s\n", keyName(cur), keyName(next));
