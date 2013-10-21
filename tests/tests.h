@@ -192,6 +192,7 @@ int init(int argc, char** argv);
 }
 
 int compare_files (const char * filename);
+int compare_line_files (const char *filename, const char *genfilename);
 
 char *srcdir_file(const char * fileName);
 
@@ -202,9 +203,10 @@ void output_meta(Key *k);
 void output_key (Key *ks);
 void output_keyset (KeySet *ks);
 
+int output_warnings(Key *errorKey);
+int output_errors(Key *errorKey);
 
-void output_warnings(Key *errorKey);
-void output_errors(Key *errorKey);
-
+int check_for_error(Key *errorKey);
+int check_for_error_and_warnings(Key *errorKey);
 
 #endif
