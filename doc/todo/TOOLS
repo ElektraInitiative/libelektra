@@ -23,7 +23,9 @@ kdb tool:
 
 env-get env-set `kdb env-get`
 
-kdb-resolver (give file given key name)
+kdb-file/resolver (give file given key name)
+
+kdb-edit edit file in any of Elektra's format
 
 
 install config (mount+preload system config) by using meta struct

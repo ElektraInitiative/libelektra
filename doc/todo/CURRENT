@@ -6,10 +6,13 @@ Items are e.g. BUGS, OPTIMIZE, PROBLEMS, TESTING, PLUGINS, TODO,..
 
 == 0.8.4 ==
 
-Improve resolver (create tmp, open original)
-
+json
+testing framework: allow to disable hdd access for test cases
+test mount for json (and maybe others)
 
 == 0.8.5 ==
+
+Improve resolver (create tmp, open original)
 
 doxygen 0.8.* upgrade on server->wheezy upgrade
 
@@ -34,6 +37,7 @@ script testing:
 import/export:
 	with all plugins
 	with automated kdb tests
+	+ edit functionality (tmpfile)
 
 kdb testcases:
 	get features: cascading(untested)
