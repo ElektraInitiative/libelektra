@@ -48,3 +48,35 @@ description: control keys which enable/disable parameters
 key: dependency/value
 status: idea
 description: specific values of the dependency key have impact on that key
+
+key: application/name
+status: idea
+description: links a key to a application, so that it can be easily purged
+ when the application is no longer installed.
+ Note that this is only needed together with another option below like version.
+ Typically purged keys can be found easily when no schema for it exists anymore.
+
+key: application/version
+status: idea
+description: links a key to a specific set of version(s). Can be used to control
+ purging even more specific
+
+key: restrict/write
+status: idea
+description: avoid writing on the value of the key, it still can be removed
+
+key: restrict/remove
+status: idea
+description: avoid removal of key (needs schema-checker to read key)
+
+key: final
+status: idea
+plugin: merger
+description: do not allow the key to be overwritten by a merger plugin
+
+key: evaluate/<language>
+type: program code
+status: idea
+plugin: evaluater
+description: evaluate expression to check if key should be included, program should
+ abort or however evalute plugin is configured
