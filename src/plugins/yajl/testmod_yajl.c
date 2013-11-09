@@ -59,6 +59,30 @@ KeySet *getNullKeys()
 	return ks;
 }
 
+KeySet *getBelowKeys()
+{
+	KeySet *ks = ksNew(10,
+			keyNew("user",
+			       KEY_END),
+			keyNew("user/tests",
+			       KEY_END),
+			keyNew("user/tests/yajl",
+			       KEY_END),
+			keyNew("user/tests/yajl/x",
+			       KEY_END),
+			keyNew("user/tests/yajl/x/y/z",
+			       KEY_END),
+			keyNew("user/tests/yajl/v",
+			       KEY_END),
+			keyNew("user/tests/yajl/v/y/z",
+			       KEY_END),
+			KS_END
+		);
+
+	ksRewind(ks); // shouldn't that be default?
+	return ks;
+}
+
 KeySet *getBooleanKeys()
 {
 	KeySet *ks = ksNew(10,
@@ -585,6 +609,19 @@ void test_nextNotBelow()
 	k = elektraNextNotBelow(ks);
 	succeed_if_equal(keyName(k), "user/tests/yajl/second_boolean_key");
 	succeed_if_equal(keyName(ksCurrent(ks)), "user/tests/yajl/second_boolean_key");
+	k = elektraNextNotBelow(ks);
+	succeed_if(k == 0, "not at end of keyset");
+	succeed_if(ksCurrent(ks) == 0, "not at end of keyset");
+	ksDel (ks);
+
+	ks = getBelowKeys();
+	ksRewind(ks);
+	k = elektraNextNotBelow(ks);
+	succeed_if_equal(keyName(k), "user/tests/yajl/v/y/z");
+	succeed_if_equal(keyName(ksCurrent(ks)), "user/tests/yajl/v/y/z");
+	k = elektraNextNotBelow(ks);
+	succeed_if_equal(keyName(k), "user/tests/yajl/x/y/z");
+	succeed_if_equal(keyName(ksCurrent(ks)), "user/tests/yajl/x/y/z");
 	k = elektraNextNotBelow(ks);
 	succeed_if(k == 0, "not at end of keyset");
 	succeed_if(ksCurrent(ks) == 0, "not at end of keyset");

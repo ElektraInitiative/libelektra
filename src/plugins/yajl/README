@@ -1,3 +1,5 @@
+TODO: This README should be part of 
+
 == Introduction ==
 
 This is a plugin reading and writing json
@@ -5,7 +7,24 @@ based on the library yajl:
 
 http://lloyd.github.com/yajl/
 
-The plugin was tested with yajl version 1.0.8-1 from Debian 6.
+The plugin was tested with yajl version 1.0.8-1 from Debian 6
+and yajl version 2.0.4-2 from Debian 7.
+
+== Restrictions ==
+
+Everything is string if not tagged by meta key "type".
+Only json types can be used, everything else will be rendered as string
+ (types are discarded, but warnings are produced)
+
+== todos ==
+
+No comments are allowed.
+Directories cannot hold values.
+binary blobs?
+special characters?
+
+-> shall be solved with filters, not within storage
+   (because they might be reused)
 
 
 == Mountpoint ==

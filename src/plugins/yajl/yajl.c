@@ -537,30 +537,60 @@ int elektraKeyIsSibling(Key *cur, Key *prev)
 char *keyNameGetOneLevel(const char *name, size_t *size); // defined in keyhelpers.c, API might be broken!
 
 /**
- * @brief open so many levels as needed
+ * @brief open so many levels as needed for key next
  *
  * Iterates over next and generate
  * needed groups for every / and needed arrays
  * for every name/#.
  * Yields name for leaf.
  *
- * e.g.
+ * TODO: cur should be renamed to prev and next should be renamed to cur
+ *
+ * @pre keys are not allowed to be below
+ *
+ * Example for elektraNextNotBelow:
+ * cur:  user/sw/org
+ * next: user/sw/org/deeper
+ * -> do nothing, "deeper" is unknown
+ *
+ * cur:  user/sw/org/deeper
+ * next: user/sw/org/other
+ * -> this cannot happen (see elektraNextNotBelow)
+ *
+ * cur:  user/sw/org/other
+ * next: user/sw/org/other/deeper/below
+ * -> this cannot happen (see elektraNextNotBelow)
+ *
+ * @example
+ *
+ * instead of two entries above following would happen:
+ * cur:  user/sw/org/deeper
+ * next: user/sw/org/other/deeper/below
+ * -> and "other" and "deeper" would be opened
+ *
+ * cur:  user/sw/org/other/deeper/below
+ * next: user/no
+ * -> do nothing, because "no" is value
+ *
+ * cur:  user/no
+ * next: user/oops/it/is/below
+ * -> create map "oops" "it" "is"
+ *
+ * cur:  user/oops/it/is/below
+ * next: user/x/t/s/x
+ * -> create "x" "t" "s"
+ *
+ * @example
+ *
  * cur:  user/sw/org/#0/blah
  * next: user/sw/org/#1/test
- *
- * will not open org or array (because that did not change),
- * but will open group test (because within arrays every key
- * needs a group).
+ * -> will not open org or array (because that did not change),
+ *    but will open group test (because within arrays every key
+ *    needs a group).
  *
  * cur:  user/sw/org/#0/blah
  * next: user/sw/oth/#0/test
- *
- * will open new group oth and new array and yield blah
- *
- * cur:  user/sw/org/a
- * next: user/sw/org/x
- *
- * will yield the new name x
+ * -> will open new group oth and new array and yield blah
  *
  *
  * @pre cur and next have a name which is not equal
@@ -575,6 +605,8 @@ void elektraGenOpen(yajl_gen g, const Key *cur, const Key *next)
 	const char *pend = pcur + keyGetNameSize(cur);
 	const char *pnext = keyName(next);
 
+	printf ("Open: pcur: %s , pnext: %s\n", pcur, pnext);
+
 	// search for first unequal character
 	while(*pnext == *pcur)
 	{
@@ -586,9 +618,10 @@ void elektraGenOpen(yajl_gen g, const Key *cur, const Key *next)
 	int group_open = 0;;
 	while (*(pnext=keyNameGetOneLevel(pnext+size,&size)))
 	{
-		printf("Open: \"%.*s\"\n",(int)size, pnext);
+		printf("Level: \"%.*s\"\n",(int)size, pnext);
 		if (group_open)
 		{
+			printf ("open map because we stepped\n");
 			yajl_gen_map_open(g);
 			group_open = 0;
 		}
@@ -600,8 +633,9 @@ void elektraGenOpen(yajl_gen g, const Key *cur, const Key *next)
 				yajl_gen_array_open(g);
 			}
 		}
-		else // it is an ordinary group
+		else  // it is an ordinary group
 		{
+			printf ("ordinary group\n");
 			yajl_gen_string(g, (const unsigned char *)pnext, size);
 			group_open = 1;
 		}
@@ -700,15 +734,27 @@ void elektraGenClose(yajl_gen g, const Key *cur, const Key *next)
 	}
 }
 
+/**
+ * @brief Generate the value for the current key
+ *
+ * No auto-guessing takes place, because that can be terrible wrong and
+ * is not reversible. So make sure that all your boolean and numbers
+ * have the proper type in meta value "type".
+ *
+ * @param g handle to generate to
+ * @param parentKey needed for adding warnings/errors
+ * @param cur the key to generate the value from
+ */
 void elektraGenValue(yajl_gen g, Key *parentKey, const Key *cur)
 {
+	printf ("Gen for %s\n", keyName(cur));
 
 	const Key * type = keyGetMeta(cur, "type");
 	if (!type && keyGetValueSize(cur) == 0) // empty binary type is null
 	{
 		yajl_gen_null(g);
 	}
-	else if (!type && keyGetValueSize(cur) > 1)
+	else if (!type && keyGetValueSize(cur) >= 1) // default is string
 	{
 		yajl_gen_string(g, (const unsigned char *)keyString(cur), keyGetValueSize(cur)-1);
 	}
@@ -727,12 +773,13 @@ void elektraGenValue(yajl_gen g, Key *parentKey, const Key *cur)
 			ELEKTRA_ADD_WARNING(78, parentKey, "drop boolean which is neither true nor false");
 		}
 	}
-	else if (!strcmp(keyString(type), "number"))
+	else if (!strcmp(keyString(type), "number")) // TODO: distuingish between float and int
 	{
 		yajl_gen_number(g, keyString(cur), keyGetValueSize(cur)-1);
 	}
-	else { // existing, but unknown or unsupported type, drop it and add warning
+	else { // unknown or unsupported type, render it as string but add warning
 		ELEKTRA_ADD_WARNING(78, parentKey, keyString(type));
+		yajl_gen_string(g, (const unsigned char *)keyString(cur), keyGetValueSize(cur)-1);
 	}
 }
 
@@ -742,6 +789,11 @@ void elektraGenValue(yajl_gen g, Key *parentKey, const Key *cur)
  *
  * Forwards at least forward one element.
  * ksCurrent() will point at the same key as the key which is returned.
+ *
+ * e.g.
+ * user/sw/x
+ * user/sw/x/y
+ * user/sw/x/y/z1
  *
  * @retval last element if no other found.
  * @retval 0 if there is no other element afterwards (keyset will be
