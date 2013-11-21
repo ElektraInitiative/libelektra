@@ -41,6 +41,8 @@ int elektraKeyNameReverseNext(keyNameReverseIterator *it);
 int elektraKeyIsSibling(Key *cur, Key *prev);
 int elektraArrayIncName(Key *key);
 Key * elektraNextNotBelow(KeySet *ks);
+ssize_t elektraKeyCountLevel(const Key *cur);
+ssize_t elektraKeyCountEqualLevel(const Key *cmp1, const Key *cmp2);
 
 int elektraYajlOpen(Plugin *handle, Key *errorKey);
 int elektraYajlClose(Plugin *handle, Key *errorKey);

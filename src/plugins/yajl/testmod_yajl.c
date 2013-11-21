@@ -503,7 +503,7 @@ void test_json(const char * fileName,
 	keySetString(parentKey, srcdir_file(fileNameCompare));
 	// printf("File name is: %s\n", keyString(parentKey));
 
-	succeed_if(plugin->kdbSet(plugin, keys, parentKey) == 1, "kdbGet was not successful");
+	succeed_if(plugin->kdbSet(plugin, keys, parentKey) == 1, "kdbSet was not successful");
 	succeed_if(output_errors(parentKey), "error in kdbSet");
 	succeed_if(output_warnings(parentKey), "warnings in kdbSet");
 	free(fileNameCompare);
@@ -626,6 +626,14 @@ void test_nextNotBelow()
 	succeed_if(k == 0, "not at end of keyset");
 	succeed_if(ksCurrent(ks) == 0, "not at end of keyset");
 	ksDel (ks);
+
+	ks = getMapKeys();
+	output_keyset(ks);
+	ksRewind(ks);
+	k = elektraNextNotBelow(ks);
+	succeed_if_equal(keyName(k), "user/tests/yajl/map/nested_map/second_string_key");
+	succeed_if_equal(keyName(ksCurrent(ks)), "user/tests/yajl/map/nested_map/second_string_key");
+	ksDel (ks);
 }
 
 void test_reverseLevel()
@@ -680,6 +688,62 @@ void test_reverseLevel()
 	keyDel (k);
 }
 
+void test_countLevel()
+{
+	Key *k = keyNew("user///", KEY_END);
+	succeed_if(elektraKeyCountLevel(k) == 1, "count level wrong");
+	keySetName(k, "user/x");
+	succeed_if(elektraKeyCountLevel(k) == 2, "count level wrong");
+	keySetName(k, "user/x/z/f");
+	succeed_if(elektraKeyCountLevel(k) == 4, "count level wrong");
+	keySetName(k, "user/x/z\\/f");
+	succeed_if(elektraKeyCountLevel(k) == 3, "count level wrong");
+
+	Key *k2 = keyNew("user/x/z", KEY_END);
+	succeed_if(elektraKeyCountEqualLevel(k, k2) == 2,
+			"equal level wrong");
+
+	keySetName(k,  "user/x/z\\/f");
+	keySetName(k2, "user/x/z\\/f");
+	succeed_if(elektraKeyCountEqualLevel(k, k2) == 3,
+			"equal level wrong");
+
+	keySetName(k,  "user/x/v/ffkkk");
+	keySetName(k2, "user/x/v/ff");
+	succeed_if(elektraKeyCountEqualLevel(k, k2) == 3,
+			"equal level wrong");
+
+	keySetName(k,  "user/x/v/ff");
+	keySetName(k2, "user/x/v/ff");
+	succeed_if(elektraKeyCountEqualLevel(k, k2) == 4,
+			"equal level wrong");
+
+	keySetName(k,  "user/x\\abc/v/ff");
+	keySetName(k2, "user/x\\abc/v/ff");
+	succeed_if(elektraKeyCountEqualLevel(k, k2) == 4,
+			"equal level wrong");
+
+	keyDel(k);
+	keyDel(k2);
+}
+
+void test_writing()
+{
+	KeySet *conf = ksNew(0);
+	Key *parentKey = keyNew("user",
+				KEY_VALUE, "/proc/self/fd/1",
+				KEY_END);
+
+	Plugin *plugin = elektraPluginOpen("yajl", modules, conf, 0);
+	exit_if_fail (plugin != 0, "could not open plugin");
+
+	succeed_if(plugin->kdbSet(plugin, getNullKeys(), parentKey) == 1, "kdbSet was not successful");
+	succeed_if(plugin->kdbSet(plugin, getBooleanKeys(), parentKey) == 1, "kdbSet was not successful");
+	succeed_if(plugin->kdbSet(plugin, getNumberKeys(), parentKey) == 1, "kdbSet was not successful");
+	succeed_if(plugin->kdbSet(plugin, getStringKeys(), parentKey) == 1, "kdbSet was not successful");
+	// succeed_if(plugin->kdbSet(plugin, getMapKeys(), parentKey) == 1, "kdbSet was not successful");
+}
+
 int main(int argc, char** argv)
 {
 	printf("YAJL       TESTS\n");
@@ -694,9 +758,11 @@ int main(int argc, char** argv)
 	test_sibling();
 	test_nextNotBelow();
 	test_reverseLevel();
+	test_countLevel();
+	test_writing();
 
-	test_json("examples/testdata_null.json", getNullKeys(), ksNew(0));
 	/*
+	test_json("examples/testdata_null.json", getNullKeys(), ksNew(0));
 	test_json("examples/testdata_boolean.json", getBooleanKeys(), ksNew(0));
 	test_json("examples/testdata_number.json", getNumberKeys(), ksNew(0));
 	test_json("examples/testdata_string.json", getStringKeys(), ksNew(0));
