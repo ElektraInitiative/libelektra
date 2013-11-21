@@ -583,16 +583,19 @@ char *keyNameGetOneLevel(const char *name, size_t *size); // defined in keyhelpe
  *
  * @example
  *
- * cur:  user/sw/org/#0/blah
- * next: user/sw/org/#1/test
+ * cur:  user/sw/org/#0
+ * next: user/sw/org/#1
  * -> will not open org or array (because that did not change),
  *    but will open group test (because within arrays every key
  *    needs a group).
  *
- * cur:  user/sw/org/#0/blah
- * next: user/sw/oth/#0/test
+ * cur:  user/sw/org/#0
+ * next: user/sw/oth/#0
  * -> will open new group oth and new array and yield blah
  *
+ * cur:  user/sw
+ * next: user/sw/array/#0
+ * -> will yield a new array using name "array"
  *
  * @pre cur and next have a name which is not equal
  *
@@ -603,43 +606,73 @@ char *keyNameGetOneLevel(const char *name, size_t *size); // defined in keyhelpe
 void elektraGenOpen(yajl_gen g, const Key *cur, const Key *next)
 {
 	const char *pcur = keyName(cur);
-	const char *pend = pcur + keyGetNameSize(cur);
 	const char *pnext = keyName(next);
+	// size_t curLevels = elektraKeyCountLevel(cur);
+	size_t nextLevels = elektraKeyCountLevel(next);
+	size_t size=0;
+	size_t csize=0;
 
-	printf ("Open: pcur: %s , pnext: %s\n", pcur, pnext);
-
-	// search for first unequal character
-	while(*pnext == *pcur)
+	int equalLevels = elektraKeyCountEqualLevel(cur, next);
+	// forward all equal levels, nothing to do there
+	for (int i=0; i < equalLevels; ++i)
 	{
-		++pnext;
-		++pcur;
+		pnext=keyNameGetOneLevel(pnext+size,&size);
+		pcur=keyNameGetOneLevel(pcur+csize,&csize);
 	}
 
-	size_t size=0;
+	int levels = nextLevels - equalLevels;
 
-	while ( *(pnext=keyNameGetOneLevel(pnext+size,&size)) &&
-		*(pnext+size) != 0) // iterate over all but last step
+	printf ("Open %d: pcur: %s , pnext: %s\n", (int) levels,
+		pcur, pnext);
+
+	for (int i=0; i<levels-2; ++i)
 	{
-		printf("Level: \"%.*s\"\n",(int)size, pnext);
+		printf("Level %d: \"%.*s\"\n", (int)i,
+				(int)size, pnext);
+		pnext=keyNameGetOneLevel(pnext+size,&size);
 
+		printf ("GEN string %.*s for ordinary group\n",
+				(int)size, pnext);
+		yajl_gen_string(g, (const unsigned char *)pnext, size);
 
-		if (*pnext == '#') // we found an array in next
+		printf ("GEN map open because we stepped\n");
+		yajl_gen_map_open(g);
+	}
+
+	printf ("BASENAME: %s\n", keyBaseName(next));
+
+	if (!strcmp(keyBaseName(next), "#0"))
+	{
+		pnext=keyNameGetOneLevel(pnext+size,&size);
+		// we have found the first element of an array
+		printf ("GEN string %.*s for array\n",
+				(int)size, pnext);
+		yajl_gen_string(g, (const unsigned char *)pnext, size);
+
+		printf ("GEN array open\n");
+		yajl_gen_array_open(g);
+	}
+	else if (*keyBaseName(next) != '#')
+	{
+		if (levels > 1)
 		{
-			if (pcur<pend || *pcur != '#') // but the array is already open
-			{
-				printf ("GEN array open\n");
-				yajl_gen_array_open(g);
-			}
-		}
-		else  // it is an ordinary group
-		{
-			printf ("GEN string %.*s for ordinary group\n",
+			// not an array, print missing element + name for later
+			// value
+			pnext=keyNameGetOneLevel(pnext+size,&size);
+
+			printf ("GEN string %.*s for last group\n",
 					(int)size, pnext);
 			yajl_gen_string(g, (const unsigned char *)pnext, size);
 
 			printf ("GEN map open because we stepped\n");
 			yajl_gen_map_open(g);
 		}
+
+		printf ("GEN string %.*s for value's name\n",
+				(int)keyGetBaseNameSize(next)-1,
+				keyBaseName(next));
+		yajl_gen_string(g, (const unsigned char *)keyBaseName(next),
+				keyGetBaseNameSize(next)-1);
 	}
 }
 
@@ -799,6 +832,11 @@ ssize_t elektraKeyCountEqualLevel(const Key *cmp1, const Key *cmp2)
  * -> close "s", "t" and "x" maps
  * [eq: 1, cur: 5, next: 1, gen: 3]
  *
+ * cur:  user/#0/1/1/1
+ * next: user/#1/1/1/1
+ * -> close "1", "1", "1", but not array
+ * [eq: 1, cur: 5, next: 5, gen: 3]
+ *
  * @param g
  * @param cur
  * @param next
@@ -822,9 +860,20 @@ void elektraGenClose(yajl_gen g, const Key *cur, const Key *next)
 	keyNameReverseIterator nextIt =
 		elektraKeyNameGetReverseIterator(next);
 
-	// skip last element of cur (which is a value)
+	// go to last element of cur (which is a value)
 	elektraKeyNameReverseNext(&curIt);
+	elektraKeyNameReverseNext(&nextIt);
 	counter--;
+
+	// we are closing an array
+	printf ("CURRENT: %.*s\n", 
+			(int)curIt.size, curIt.current);
+	if (*curIt.current == '#' && *nextIt.current != '#')
+	{
+		printf("GEN array close\n");
+		yajl_gen_array_close(g);
+		counter --;
+	}
 
 	while ( elektraKeyNameReverseNext(&curIt) &&
 		counter > equalLevels)
@@ -834,19 +883,9 @@ void elektraGenClose(yajl_gen g, const Key *cur, const Key *next)
 			(int)equalLevels,
 			(int)curIt.size, curIt.current);
 		counter --;
-		if (*curIt.current == '#') // we found an array
-		{
-			if (*nextIt.current != '#') // and we won't be in the array next time
-			{
-				printf("GEN array close\n");
-				yajl_gen_array_close(g);
-			}
-		}
-		else // it is an ordinary group
-		{
-			printf ("GEN map close ordinary group\n");
-			yajl_gen_map_close(g);
-		}
+
+		printf ("GEN map close ordinary group\n");
+		yajl_gen_map_close(g);
 	}
 }
 
@@ -867,11 +906,6 @@ void elektraGenClose(yajl_gen g, const Key *cur, const Key *next)
  */
 void elektraGenValue(yajl_gen g, Key *parentKey, const Key *cur)
 {
-	printf ("GEN string %.*s for value's name\n",
-			(int)keyGetBaseNameSize(cur)-1,
-			keyBaseName(cur));
-	yajl_gen_string(g, (const unsigned char *)keyBaseName(cur),
-			keyGetBaseNameSize(cur)-1);
 	printf ("GEN value %s for %s\n", keyString(cur), keyName(cur));
 
 	const Key * type = keyGetMeta(cur, "type");
