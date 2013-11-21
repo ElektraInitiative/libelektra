@@ -741,7 +741,7 @@ void test_writing()
 	succeed_if(plugin->kdbSet(plugin, getBooleanKeys(), parentKey) == 1, "kdbSet was not successful");
 	succeed_if(plugin->kdbSet(plugin, getNumberKeys(), parentKey) == 1, "kdbSet was not successful");
 	succeed_if(plugin->kdbSet(plugin, getStringKeys(), parentKey) == 1, "kdbSet was not successful");
-	// succeed_if(plugin->kdbSet(plugin, getMapKeys(), parentKey) == 1, "kdbSet was not successful");
+	succeed_if(plugin->kdbSet(plugin, getMapKeys(), parentKey) == 1, "kdbSet was not successful");
 }
 
 int main(int argc, char** argv)

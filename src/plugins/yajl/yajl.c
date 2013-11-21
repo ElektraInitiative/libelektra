@@ -616,26 +616,12 @@ void elektraGenOpen(yajl_gen g, const Key *cur, const Key *next)
 	}
 
 	size_t size=0;
-	int group_open = 0;;
-	while (*(pnext=keyNameGetOneLevel(pnext+size,&size)))
+
+	while ( *(pnext=keyNameGetOneLevel(pnext+size,&size)) &&
+		*(pnext+size) != 0) // iterate over all but last step
 	{
 		printf("Level: \"%.*s\"\n",(int)size, pnext);
-		/*
-		if (*(pnext+size) == 0)
-		{
-			printf ("GEN string %.*s for last element\n",
-					(int)size, pnext);
-			yajl_gen_string(g, (const unsigned char *)pnext, size);
-			break;
-		}
-		*/
 
-		if (group_open)
-		{
-			printf ("GEN map open because we stepped\n");
-			yajl_gen_map_open(g);
-			group_open = 0;
-		}
 
 		if (*pnext == '#') // we found an array in next
 		{
@@ -650,7 +636,9 @@ void elektraGenOpen(yajl_gen g, const Key *cur, const Key *next)
 			printf ("GEN string %.*s for ordinary group\n",
 					(int)size, pnext);
 			yajl_gen_string(g, (const unsigned char *)pnext, size);
-			group_open = 1;
+
+			printf ("GEN map open because we stepped\n");
+			yajl_gen_map_open(g);
 		}
 	}
 }
@@ -829,10 +817,14 @@ void elektraGenClose(yajl_gen g, const Key *cur, const Key *next)
 
 	ssize_t counter = curLevels-1;
 
-	keyNameReverseIterator curIt =  elektraKeyNameGetReverseIterator(cur);
-	keyNameReverseIterator nextIt =  elektraKeyNameGetReverseIterator(next);
+	keyNameReverseIterator curIt =
+		elektraKeyNameGetReverseIterator(cur);
+	keyNameReverseIterator nextIt =
+		elektraKeyNameGetReverseIterator(next);
 	elektraKeyNameReverseNext(&curIt); // skip value of cur
-	while (elektraKeyNameReverseNext(&curIt) && counter > equalLevels)
+
+	while ( elektraKeyNameReverseNext(&curIt) &&
+		counter > equalLevels)
 	{
 		counter --;
 		printf("Close: \"%.*s\"\n", (int)curIt.size, curIt.current);
@@ -865,8 +857,13 @@ void elektraGenClose(yajl_gen g, const Key *cur, const Key *next)
  */
 void elektraGenValue(yajl_gen g, Key *parentKey, const Key *cur)
 {
-	printf ("GEN value %s for %s\n", keyString(cur), keyName(cur));
+	printf ("GEN string %.*s for value's name\n",
+			(int)keyGetBaseNameSize(cur)-1,
+			keyBaseName(cur));
+	yajl_gen_string(g, (const unsigned char *)keyBaseName(cur),
+			keyGetBaseNameSize(cur)-1);
 
+	printf ("GEN value %s for %s\n", keyString(cur), keyName(cur));
 	const Key * type = keyGetMeta(cur, "type");
 	if (!type && keyGetValueSize(cur) == 0) // empty binary type is null
 	{
@@ -972,7 +969,6 @@ int elektraYajlSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 	yajl_gen_config(g, yajl_gen_beautify, 1);
 	yajl_gen_config(g, yajl_gen_validate_utf8, 1);
 #endif
-	yajl_gen_map_open(g);
 
 	ksRewind (returned);
 	Key *cur = elektraNextNotBelow(returned);
@@ -980,6 +976,9 @@ int elektraYajlSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 	{
 		return elektraRemoveFile(parentKey);
 	}
+
+	printf ("GEN map open START\n");
+	yajl_gen_map_open(g);
 
 	KeySet *config= elektraPluginGetConfig(handle);
 	if (!strncmp(keyName(parentKey), "user", 4))
@@ -1053,6 +1052,10 @@ int elektraYajlSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 			elektraGenClose(g, cur, lookup);
 		}
 	}
+
+	// hack: because "user" or "system" never gets closed
+	// TODO: do properly by using dirname for closing
+	printf ("GEN map close FINAL\n");
 	yajl_gen_map_close(g);
 
 	FILE *fp = fopen(keyString(parentKey), "w");
