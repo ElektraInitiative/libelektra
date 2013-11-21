@@ -815,19 +815,25 @@ void elektraGenClose(yajl_gen g, const Key *cur, const Key *next)
 			keyName(next), nextLevels);
 
 
-	ssize_t counter = curLevels-1;
+	ssize_t counter = curLevels;
 
 	keyNameReverseIterator curIt =
 		elektraKeyNameGetReverseIterator(cur);
 	keyNameReverseIterator nextIt =
 		elektraKeyNameGetReverseIterator(next);
-	elektraKeyNameReverseNext(&curIt); // skip value of cur
+
+	// skip last element of cur (which is a value)
+	elektraKeyNameReverseNext(&curIt);
+	counter--;
 
 	while ( elektraKeyNameReverseNext(&curIt) &&
 		counter > equalLevels)
 	{
+		printf("Close [%d > %d]: \"%.*s\"\n",
+			(int)counter,
+			(int)equalLevels,
+			(int)curIt.size, curIt.current);
 		counter --;
-		printf("Close: \"%.*s\"\n", (int)curIt.size, curIt.current);
 		if (*curIt.current == '#') // we found an array
 		{
 			if (*nextIt.current != '#') // and we won't be in the array next time
@@ -844,12 +850,16 @@ void elektraGenClose(yajl_gen g, const Key *cur, const Key *next)
 	}
 }
 
+
 /**
  * @brief Generate the value for the current key
  *
  * No auto-guessing takes place, because that can be terrible wrong and
  * is not reversible. So make sure that all your boolean and numbers
  * have the proper type in meta value "type".
+ *
+ * In case of type problems it will be rendered as string but a warning
+ * will be added. Use a type checker to avoid such problems.
  *
  * @param g handle to generate to
  * @param parentKey needed for adding warnings/errors
@@ -862,8 +872,8 @@ void elektraGenValue(yajl_gen g, Key *parentKey, const Key *cur)
 			keyBaseName(cur));
 	yajl_gen_string(g, (const unsigned char *)keyBaseName(cur),
 			keyGetBaseNameSize(cur)-1);
-
 	printf ("GEN value %s for %s\n", keyString(cur), keyName(cur));
+
 	const Key * type = keyGetMeta(cur, "type");
 	if (!type && keyGetValueSize(cur) == 0) // empty binary type is null
 	{
@@ -885,7 +895,8 @@ void elektraGenValue(yajl_gen g, Key *parentKey, const Key *cur)
 		}
 		else
 		{
-			ELEKTRA_ADD_WARNING(78, parentKey, "drop boolean which is neither true nor false");
+			ELEKTRA_ADD_WARNING(78, parentKey, "got boolean which is neither true nor false");
+			yajl_gen_string(g, (const unsigned char *)keyString(cur), keyGetValueSize(cur)-1);
 		}
 	}
 	else if (!strcmp(keyString(type), "number")) // TODO: distuingish between float and int
@@ -1002,26 +1013,14 @@ int elektraYajlSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 		}
 	}
 
-	int first_key = 1;
 	Key *next = 0;
 	while ((next = elektraNextNotBelow(returned)) != 0)
 	{
 		printf ("\nin iter: %s next: %s\n", keyName(cur), keyName(next));
-
 		printf ("in f: %s next: %s\n", keyName(cur), keyName(next));
 
-		// for the first key we had not opened anything,
-		// so we do not close anything
-		if (!first_key)
-		{
-			elektraGenClose(g, cur, next);
-		}
-		else
-		{
-			first_key = 0;
-		}
-
 		elektraGenValue(g, parentKey, cur);
+		elektraGenClose(g, cur, next);
 		elektraGenOpen(g, cur, next);
 
 		cur = next;
