@@ -375,10 +375,12 @@ int elektraYajlGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		const Key * lookup = ksLookupByName(config, "/user_path", 0);
 		if (!lookup)
 		{
-			ksAppendKey (returned, keyNew("user", KS_END));
+			// ksAppendKey (returned, keyNew("user", KEY_END));
+			ksAppendKey (returned, keyNew(keyName((parentKey)),
+						KEY_END));
 		} else {
 			ksAppendKey (returned, keyNew(keyValue(lookup),
-						KS_END));
+						KEY_END));
 		}
 	}
 	else
@@ -386,10 +388,12 @@ int elektraYajlGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		const Key * lookup = ksLookupByName(config, "/system_path", 0);
 		if (!lookup)
 		{
-			ksAppendKey (returned, keyNew("system", KS_END));
+			// ksAppendKey (returned, keyNew("system", KEY_END));
+			ksAppendKey (returned, keyNew(keyName((parentKey)),
+						KEY_END));
 		} else {
 			ksAppendKey (returned, keyNew(keyValue(lookup),
-						KS_END));
+						KEY_END));
 		}
 	}
 

@@ -1,8 +1,4 @@
 {
-	"tests" : {
-		"yajl" : {
-			"nullkey" : null,
-			"second_nullkey" : null
-		}
-	}
+    "nullkey": null,
+    "second_nullkey": null
 }

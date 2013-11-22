@@ -28,7 +28,7 @@
 KeySet *getEmptyKeys()
 {
 	return ksNew(1,
-			keyNew("user",
+			keyNew("user/tests/yajl",
 			       KEY_END),
 			KS_END
 			);
@@ -38,10 +38,6 @@ KeySet *getNullKeys()
 {
 	Key *k1, *k2;
 	KeySet *ks = ksNew(10,
-			keyNew("user",
-			       KEY_END),
-			keyNew("user/tests",
-			       KEY_END),
 			keyNew("user/tests/yajl",
 			       KEY_END),
 			k1 = keyNew("user/tests/yajl/nullkey",
@@ -62,10 +58,6 @@ KeySet *getNullKeys()
 KeySet *getBelowKeys()
 {
 	KeySet *ks = ksNew(10,
-			keyNew("user",
-			       KEY_END),
-			keyNew("user/tests",
-			       KEY_END),
 			keyNew("user/tests/yajl",
 			       KEY_END),
 			keyNew("user/tests/yajl/x",
@@ -86,10 +78,6 @@ KeySet *getBelowKeys()
 KeySet *getBooleanKeys()
 {
 	KeySet *ks = ksNew(10,
-			keyNew("user",
-			       KEY_END),
-			keyNew("user/tests",
-			       KEY_END),
 			keyNew("user/tests/yajl",
 			       KEY_END),
 			keyNew("user/tests/yajl/boolean_key",
@@ -110,10 +98,6 @@ KeySet *getBooleanKeys()
 KeySet *getNumberKeys()
 {
 	KeySet *ks = ksNew(10,
-			keyNew("user",
-			       KEY_END),
-			keyNew("user/tests",
-			       KEY_END),
 			keyNew("user/tests/yajl",
 			       KEY_END),
 			keyNew("user/tests/yajl/number_key",
@@ -137,10 +121,6 @@ KeySet *getNumberKeys()
 KeySet *getStringKeys()
 {
 	KeySet *ks = ksNew(10,
-			keyNew("user",
-			       KEY_END),
-			keyNew("user/tests",
-			       KEY_END),
 			keyNew("user/tests/yajl",
 			       KEY_END),
 			keyNew("user/tests/yajl/string_key",
@@ -161,10 +141,6 @@ KeySet *getStringKeys()
 KeySet *getMapKeys ()
 {
 	KeySet *ks = ksNew(10,
-			keyNew("user",
-			       KEY_END),
-			keyNew("user/tests",
-			       KEY_END),
 			keyNew("user/tests/yajl",
 			       KEY_END),
 			keyNew("user/tests/yajl/map",
@@ -206,10 +182,6 @@ KeySet *getMapKeys ()
 KeySet *getArrayKeys()
 {
 	KeySet *ks = ksNew(30,
-			keyNew("user",
-			       KEY_END),
-			keyNew("user/tests",
-			       KEY_END),
 			keyNew("user/tests/yajl",
 			       KEY_END),
 			keyNew("user/tests/yajl/array",
@@ -495,6 +467,8 @@ void test_json(const char * fileName,
 	succeed_if(output_errors(parentKey), "error in kdbGet");
 	succeed_if(output_warnings(parentKey), "warnings in kdbGet");
 
+	output_keyset(keys);
+	output_keyset(compareKeySet);
 	compare_keyset(keys, compareKeySet);
 
 	char * fileNameCompare = malloc(strlen(fileName)+6);
@@ -772,12 +746,12 @@ int main(int argc, char** argv)
 	test_writing();
 
 	test_json("examples/testdata_null.json", getNullKeys(), ksNew(0));
-	/*
 	test_json("examples/testdata_boolean.json", getBooleanKeys(), ksNew(0));
 	test_json("examples/testdata_number.json", getNumberKeys(), ksNew(0));
 	test_json("examples/testdata_string.json", getStringKeys(), ksNew(0));
 	test_json("examples/testdata_maps.json", getMapKeys(), ksNew(0));
 	test_json("examples/testdata_array.json", getArrayKeys(), ksNew(0));
+	/*
 	test_json("examples/testdata_boolean.json", getSomePathKeys(),
 		ksNew(1, keyNew("system/user_path", KEY_VALUE, "user/some/path/below", KEY_END), KS_END));
 	test_json("examples/OpenICC_device_config_DB.json", getOpenICCKeys(), ksNew(0));
