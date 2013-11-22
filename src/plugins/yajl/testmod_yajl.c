@@ -473,8 +473,10 @@ void test_json(const char * fileName,
 	succeed_if(output_errors(parentKey), "error in kdbGet");
 	succeed_if(output_warnings(parentKey), "warnings in kdbGet");
 
+	/*
 	output_keyset(keys);
 	output_keyset(compareKeySet);
+	*/
 	compare_keyset(keys, compareKeySet);
 
 	char * fileNameCompare = malloc(strlen(fileName)+6);
@@ -723,12 +725,12 @@ void test_writing()
 	succeed_if(plugin->kdbSet(plugin, getStringKeys(), parentKey) == 1, "kdbSet was not successful");
 	succeed_if(plugin->kdbSet(plugin, getMapKeys(), parentKey) == 1, "kdbSet was not successful");
 	succeed_if(plugin->kdbSet(plugin, getArrayKeys(), parentKey) == 1, "kdbSet was not successful");
-	*/
 	KeySet * ks = getOpenICCKeys();
 	output_keyset(ks);
 	succeed_if(plugin->kdbSet(plugin, ks, parentKey) == 1, "kdbSet was not successful");
 
 	ksDel(ks);
+	*/
 	keyDel(parentKey);
 
 	elektraPluginClose(plugin, 0);
