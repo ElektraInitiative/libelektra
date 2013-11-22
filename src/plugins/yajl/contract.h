@@ -35,6 +35,11 @@ keyNew ("system/elektra/modules/yajl/infos/description",
 "The json grammar can be found here:\n"
 "http://www.ietf.org/rfc/rfc4627.txt\n"
 "\n"
+"A validator can be found here:\n"
+"http://jsonlint.com/\n"
+"\n"
+"\n"
+"\n"
 "== Restrictions ==                               \n"
 "                                                 \n"
 "- Everything is string if not tagged by meta key \"type\"   \n"
@@ -48,6 +53,28 @@ keyNew ("system/elektra/modules/yajl/infos/description",
 "comments filter and directory value filter are highly recommended.\n"
 "\n"
 "\n"
+"== Below ==\n"
+"\n"
+"Typically all keys are below the mountpoint. The config file itself is flat\n"
+"and does not where it is mounted.\n"
+"\n"
+"To fake a hierarchy in a config file which actually does not exist,\n"
+"the config option \"below\" can be used. With that parameter the plugin\n"
+"knows to set all parameters below these parameters or to search for\n"
+"any real user values below this path.\n"
+"\n"
+"The values in below are just searched for and discarded, they are\n"
+"just needed if you do not want to shorten the names.\n"
+"\n"
+"  e.g. system/org/freedesktop/openicc/org/freedesktop/openicc/value\n"
+"can be shortened to\n"
+"  system/org/freedesktop/openicc/value\n"
+"without changing the mountpoint (system/org/freedesktop/openicc)\n"
+"and having the exact same config file.\n"
+"\n"
+"See in the example below how to use that feature in practice.\n"
+"\n"
+"\n"
 "== OpenICC Device Config == \n"
 "\n"
 "\n"
@@ -58,9 +85,9 @@ keyNew ("system/elektra/modules/yajl/infos/description",
 "Mount the plugin:                                                                                       \n"
 " kdb mount OpenICC_device_config_DB.json /org/freedesktop/openicc yajl                                  \n"
 "                                                                                                        \n"
-"And configure so that it has the correct prefix inside the file:                                        \n"
-"  kdb set system/elektra/mountpoints/_org_freedesktop_openicc/config/user_path org/freedesktop/openicc  \n"
-"  kdb set system/elektra/mountpoints/_org_freedesktop_openicc/config/system_path org/freedesktop/openicc\n"
+"And configure so that it has the correct prefix/postfix inside the file:                                        \n"
+"  kdb set system/elektra/mountpoints/_org_freedesktop_openicc/config/below org/freedesktop/openicc  \n"
+"                                                                                                        \n"
 "                                                                                                        \n"
 "Then you can copy the OpenICC_device_config_DB.json                                                     \n"
 "to systemwide or user config, e.g.                                                                      \n"
@@ -97,7 +124,7 @@ keyNew ("system/elektra/modules/yajl/config", KEY_END),
 keyNew ("system/elektra/modules/yajl/config/",
 	KEY_VALUE, "system",
 	KEY_END),
-keyNew ("system/elektra/modules/yajl/config/",
+keyNew ("system/elektra/modules/yajl/config/below",
 	KEY_VALUE, "user",
 	KEY_END),
 KS_END);

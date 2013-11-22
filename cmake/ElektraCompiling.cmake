@@ -7,12 +7,12 @@
 #
 # The mode (standard) to be used by the compiler
 #
-set (C_MODE "-std=gnu99 -pedantic")
+set (C_MODE "-std=gnu99")
 
 if (COMPILE_CXX11_MODE)
-	set (CXX_MODE "-std=c++0x -pedantic")
+	set (CXX_MODE "-std=c++0x")
 else()
-	set (CXX_MODE "-std=c++98 -pedantic")
+	set (CXX_MODE "-std=c++98")
 endif()
 
 
@@ -38,7 +38,10 @@ endif (WIN32)
 #
 # Common flags can be used by both C and C++
 #
-set (COMMON_FLAGS "${COMMON_FLAGS} -Wall -Wextra -Wno-deprecated-declarations")
+set (COMMON_FLAGS "${COMMON_FLAGS} -pedantic")
+set (COMMON_FLAGS "${COMMON_FLAGS} -Wall -Wextra")
+set (COMMON_FLAGS "${COMMON_FLAGS} -Wno-deprecated-declarations")
+set (COMMON_FLAGS "${COMMON_FLAGS} -Wno-overlength-strings")
 
 
 
