@@ -28,21 +28,14 @@
 
 #include <kdbplugin.h>
 
-typedef struct _keyNameReverseIterator
-{
-	const char *rbegin;  // begin of name (constant during iteration)
-	const char *rend;    // end of name (constant during iteration)
-	const char *current; // current position
-	size_t size;         // size of current substring (beginning from position)
-} keyNameReverseIterator;
+#if YAJL_MAJOR == 1
+	typedef unsigned int yajl_size_type;
+#else
+	typedef size_t yajl_size_type;
+#endif
 
-keyNameReverseIterator elektraKeyNameGetReverseIterator(const Key *k);
-int elektraKeyNameReverseNext(keyNameReverseIterator *it);
-int elektraKeyIsSibling(Key *cur, Key *prev);
-int elektraArrayIncName(Key *key);
-Key * elektraNextNotBelow(KeySet *ks);
-ssize_t elektraKeyCountLevel(const Key *cur);
-ssize_t elektraKeyCountEqualLevel(const Key *cmp1, const Key *cmp2);
+// defined in keyhelpers.c, API might be broken!
+char *keyNameGetOneLevel(const char *name, size_t *size);
 
 int elektraYajlOpen(Plugin *handle, Key *errorKey);
 int elektraYajlClose(Plugin *handle, Key *errorKey);

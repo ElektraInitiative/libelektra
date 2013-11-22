@@ -2,10 +2,13 @@ find_package(Yajl REQUIRED)
 if (YAJL_FOUND)
 	include (LibAddMacros)
 
+	#add_definitions(ELEKTRA_YAJL_VERBOSE)
+
 	add_includes (elektra-full ${YAJL_INCLUDE_DIR})
 	include_directories (${YAJL_INCLUDE_DIR})
 
-	set (SOURCES yajl.h yajl.c)
+	set (SOURCES yajl.c array.c iterator.c yajl_gen.c
+		yajl_parse.c name.c)
 	add_sources (elektra-full ${SOURCES})
 	add_headers (SOURCES)
 

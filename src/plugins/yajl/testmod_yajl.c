@@ -13,7 +13,10 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "yajl.h" // for two functions declared in there
+#include "yajl.h"
+#include "name.h"
+#include "array.h"
+#include "iterator.h"
 
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"
@@ -507,28 +510,6 @@ void test_json(const char * fileName,
 	elektraPluginClose(plugin, 0);
 }
 
-void test_sibling()
-{
-	printf ("Test sibling\n");
-
-	Key *x1 = keyNew("user/sw/app/x1", KEY_END);
-	Key *x2 = keyNew("user/sw/app/x2", KEY_END);
-
-	succeed_if (elektraKeyIsSibling(x1, x2), "keys should be siblings");
-
-	keySetName(x2, "user/sw/app/ydksaa");
-	succeed_if (elektraKeyIsSibling(x1, x2), "keys should be siblings");
-
-	keySetName(x2, "user/sw/app/x1/a");
-	succeed_if (!elektraKeyIsSibling(x1, x2), "keys should not be siblings");
-
-	keySetName(x2, "user/sw/apps");
-	succeed_if (!elektraKeyIsSibling(x1, x2), "keys should not be siblings");
-
-	keyDel(x1);
-	keyDel(x2);
-}
-
 void test_array()
 {
 	printf ("Test array\n");
@@ -560,6 +541,39 @@ void test_array()
 	succeed_if(!strcmp(keyName(k), "user/array/#_12"), "array entry name not correct");
 	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
 	succeed_if(!strcmp(keyName(k), "user/array/#_13"), "array entry name not correct");
+	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!strcmp(keyName(k), "user/array/#_14"), "array entry name not correct");
+	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!strcmp(keyName(k), "user/array/#_15"), "array entry name not correct");
+	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!strcmp(keyName(k), "user/array/#_16"), "array entry name not correct");
+	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!strcmp(keyName(k), "user/array/#_17"), "array entry name not correct");
+	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!strcmp(keyName(k), "user/array/#_18"), "array entry name not correct");
+	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!strcmp(keyName(k), "user/array/#_19"), "array entry name not correct");
+	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!strcmp(keyName(k), "user/array/#_20"), "array entry name not correct");
+	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!strcmp(keyName(k), "user/array/#_21"), "array entry name not correct");
+	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!strcmp(keyName(k), "user/array/#_22"), "array entry name not correct");
+	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!strcmp(keyName(k), "user/array/#_23"), "array entry name not correct");
+	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!strcmp(keyName(k), "user/array/#_24"), "array entry name not correct");
+	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!strcmp(keyName(k), "user/array/#_25"), "array entry name not correct");
+	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!strcmp(keyName(k), "user/array/#_26"), "array entry name not correct");
+	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!strcmp(keyName(k), "user/array/#_27"), "array entry name not correct");
+	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!strcmp(keyName(k), "user/array/#_28"), "array entry name not correct");
+	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
+	succeed_if(!strcmp(keyName(k), "user/array/#_29"), "array entry name not correct");
+	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
 	keyDel(k);
 }
 
@@ -747,7 +761,6 @@ int main(int argc, char** argv)
 	init (argc, argv);
 
 	test_array();
-	test_sibling();
 	test_nextNotBelow();
 	test_reverseLevel();
 	test_countLevel();

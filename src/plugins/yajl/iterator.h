@@ -1,0 +1,19 @@
+#ifndef ELEKTRA_PLUGIN_YAJL_ITERATOR_H
+#define ELEKTRA_PLUGIN_YAJL_ITERATOR_H
+
+#include "kdb.h"
+
+typedef struct _keyNameReverseIterator
+{
+	const char *rbegin;  // begin of name (constant during iteration)
+	const char *rend;    // end of name (constant during iteration)
+	const char *current; // current position
+	size_t size;         // size of current substring (beginning from position)
+} keyNameReverseIterator;
+
+keyNameReverseIterator elektraKeyNameGetReverseIterator(const Key *k);
+int elektraKeyNameReverseNext(keyNameReverseIterator *it);
+
+Key * elektraNextNotBelow(KeySet *ks);
+
+#endif
