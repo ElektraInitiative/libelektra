@@ -498,7 +498,7 @@ void test_json(const char * fileName,
 	compare_keyset(keys, compareKeySet);
 
 	char * fileNameCompare = malloc(strlen(fileName)+6);
-	strcat(fileNameCompare, fileName);
+	strcpy(fileNameCompare, fileName);
 	strcat(fileNameCompare, ".comp");
 	keySetString(parentKey, srcdir_file(fileNameCompare));
 	// printf("File name is: %s\n", keyString(parentKey));
@@ -736,14 +736,22 @@ void test_writing()
 	Plugin *plugin = elektraPluginOpen("yajl", modules, conf, 0);
 	exit_if_fail (plugin != 0, "could not open plugin");
 
-	// succeed_if(plugin->kdbSet(plugin, getNullKeys(), parentKey) == 1, "kdbSet was not successful");
-	// succeed_if(plugin->kdbSet(plugin, getBooleanKeys(), parentKey) == 1, "kdbSet was not successful");
-	// succeed_if(plugin->kdbSet(plugin, getNumberKeys(), parentKey) == 1, "kdbSet was not successful");
-	// succeed_if(plugin->kdbSet(plugin, getStringKeys(), parentKey) == 1, "kdbSet was not successful");
-	// succeed_if(plugin->kdbSet(plugin, getMapKeys(), parentKey) == 1, "kdbSet was not successful");
-	output_keyset(getArrayKeys());
+	/*
+	succeed_if(plugin->kdbSet(plugin, getNullKeys(), parentKey) == 1, "kdbSet was not successful");
+	succeed_if(plugin->kdbSet(plugin, getBooleanKeys(), parentKey) == 1, "kdbSet was not successful");
+	succeed_if(plugin->kdbSet(plugin, getNumberKeys(), parentKey) == 1, "kdbSet was not successful");
+	succeed_if(plugin->kdbSet(plugin, getStringKeys(), parentKey) == 1, "kdbSet was not successful");
+	succeed_if(plugin->kdbSet(plugin, getMapKeys(), parentKey) == 1, "kdbSet was not successful");
 	succeed_if(plugin->kdbSet(plugin, getArrayKeys(), parentKey) == 1, "kdbSet was not successful");
-	// succeed_if(plugin->kdbSet(plugin, getOpenICCKeys(), parentKey) == 1, "kdbSet was not successful");
+	*/
+	KeySet * ks = getOpenICCKeys();
+	output_keyset(ks);
+	succeed_if(plugin->kdbSet(plugin, ks, parentKey) == 1, "kdbSet was not successful");
+
+	ksDel(ks);
+	keyDel(parentKey);
+
+	elektraPluginClose(plugin, 0);
 }
 
 int main(int argc, char** argv)
@@ -763,16 +771,16 @@ int main(int argc, char** argv)
 	test_countLevel();
 	test_writing();
 
-	/*
 	test_json("examples/testdata_null.json", getNullKeys(), ksNew(0));
+	/*
 	test_json("examples/testdata_boolean.json", getBooleanKeys(), ksNew(0));
 	test_json("examples/testdata_number.json", getNumberKeys(), ksNew(0));
 	test_json("examples/testdata_string.json", getStringKeys(), ksNew(0));
 	test_json("examples/testdata_maps.json", getMapKeys(), ksNew(0));
 	test_json("examples/testdata_array.json", getArrayKeys(), ksNew(0));
-	test_json("examples/OpenICC_device_config_DB.json", getOpenICCKeys(), ksNew(0));
 	test_json("examples/testdata_boolean.json", getSomePathKeys(),
 		ksNew(1, keyNew("system/user_path", KEY_VALUE, "user/some/path/below", KEY_END), KS_END));
+	test_json("examples/OpenICC_device_config_DB.json", getOpenICCKeys(), ksNew(0));
 	*/
 
 

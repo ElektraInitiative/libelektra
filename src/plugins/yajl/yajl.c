@@ -346,42 +346,8 @@ int elektraYajlGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	if (!strcmp (keyName(parentKey), "system/elektra/modules/yajl"))
 	{
-		KeySet *moduleConfig = ksNew (30,
-			keyNew ("system/elektra/modules/yajl",
-				KEY_VALUE, "yajl plugin waits for your orders", KEY_END),
-			keyNew ("system/elektra/modules/yajl/exports", KEY_END),
-			keyNew ("system/elektra/modules/yajl/exports/get",
-				KEY_FUNC, elektraYajlGet,
-				KEY_END),
-			keyNew ("system/elektra/modules/yajl/exports/set",
-				KEY_FUNC, elektraYajlSet,
-				KEY_END),
-			keyNew ("system/elektra/modules/yajl/infos",
-				KEY_VALUE, "All information you want to know", KEY_END),
-			keyNew ("system/elektra/modules/yajl/infos/author",
-				KEY_VALUE, "Markus Raab <elektra@libelektra.org>", KEY_END),
-			keyNew ("system/elektra/modules/yajl/infos/licence",
-				KEY_VALUE, "BSD", KEY_END),
-			keyNew ("system/elektra/modules/yajl/infos/description",
-				KEY_VALUE, "JSON using YAIL", KEY_END),
-			keyNew ("system/elektra/modules/yajl/infos/provides",
-				KEY_VALUE, "storage", KEY_END),
-			keyNew ("system/elektra/modules/yajl/infos/placements",
-				KEY_VALUE, "getstorage setstorage", KEY_END),
-			keyNew ("system/elektra/modules/yajl/infos/needs",
-				KEY_VALUE, "", KEY_END),
-			keyNew ("system/elektra/modules/yajl/infos/recommends",
-				KEY_VALUE, "", KEY_END),
-			keyNew ("system/elektra/modules/yajl/infos/version",
-				KEY_VALUE, PLUGINVERSION, KEY_END),
-			keyNew ("system/elektra/modules/yajl/config", KEY_END),
-			keyNew ("system/elektra/modules/yajl/config/system_path",
-				KEY_VALUE, "system",
-				KEY_END),
-			keyNew ("system/elektra/modules/yajl/config/user_path",
-				KEY_VALUE, "user",
-				KEY_END),
-			KS_END);
+		KeySet *moduleConfig =
+#include "contract.h"
 		ksAppend (returned, moduleConfig);
 		ksDel (moduleConfig);
 		return 1;
@@ -639,8 +605,6 @@ void elektraGenOpen(yajl_gen g, const Key *cur, const Key *next)
 		yajl_gen_map_open(g);
 	}
 
-	printf ("BASENAME: %s\n", keyBaseName(next));
-
 	if (!strcmp(keyBaseName(next), "#0"))
 	{
 		pnext=keyNameGetOneLevel(pnext+size,&size);
@@ -866,8 +830,6 @@ void elektraGenClose(yajl_gen g, const Key *cur, const Key *next)
 	counter--;
 
 	// we are closing an array
-	printf ("CURRENT: %.*s\n", 
-			(int)curIt.size, curIt.current);
 	if (*curIt.current == '#' && *nextIt.current != '#')
 	{
 		printf("GEN array close\n");
