@@ -55,6 +55,8 @@ keyNew ("system/elektra/modules/yajl/infos/description",
 "\n"
 "== Below ==\n"
 "\n"
+"Disclaimer: This feature is not yet implemented.\n"
+"\n"
 "Typically all keys are below the mountpoint. The config file itself is flat\n"
 "and does not where it is mounted.\n"
 "\n"

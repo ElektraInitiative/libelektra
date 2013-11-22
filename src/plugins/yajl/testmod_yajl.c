@@ -60,14 +60,24 @@ KeySet *getBelowKeys()
 	KeySet *ks = ksNew(10,
 			keyNew("user/tests/yajl",
 			       KEY_END),
-			keyNew("user/tests/yajl/x",
+			keyNew("user/tests/yajl/fancy",
 			       KEY_END),
-			keyNew("user/tests/yajl/x/y/z",
+			keyNew("user/tests/yajl/fancy/path",
+			       KEY_END),
+			keyNew("user/tests/yajl/fancy/path/below",
+			       KEY_END),
+			keyNew("user/tests/yajl/fancy/path/below/x",
+			       KEY_END),
+			keyNew("user/tests/yajl/fancy/path/below/x/y",
+			       KEY_END),
+			keyNew("user/tests/yajl/fancy/path/below/x/y/z",
 			       KEY_VALUE, "val1",
 			       KEY_END),
-			keyNew("user/tests/yajl/v",
+			keyNew("user/tests/yajl/fancy/path/below/v",
 			       KEY_END),
-			keyNew("user/tests/yajl/v/y/z",
+			keyNew("user/tests/yajl/fancy/path/below/v/y",
+			       KEY_END),
+			keyNew("user/tests/yajl/fancy/path/below/v/y/z",
 			       KEY_VALUE, "val2",
 			       KEY_END),
 			KS_END
@@ -587,11 +597,11 @@ void test_nextNotBelow()
 	ks = getBelowKeys();
 	ksRewind(ks);
 	k = elektraNextNotBelow(ks);
-	succeed_if_equal(keyName(k), "user/tests/yajl/v/y/z");
-	succeed_if_equal(keyName(ksCurrent(ks)), "user/tests/yajl/v/y/z");
+	succeed_if_equal(keyName(k), "user/tests/yajl/fancy/path/below/v/y/z");
+	succeed_if_equal(keyName(ksCurrent(ks)), "user/tests/yajl/fancy/path/below/v/y/z");
 	k = elektraNextNotBelow(ks);
-	succeed_if_equal(keyName(k), "user/tests/yajl/x/y/z");
-	succeed_if_equal(keyName(ksCurrent(ks)), "user/tests/yajl/x/y/z");
+	succeed_if_equal(keyName(k), "user/tests/yajl/fancy/path/below/x/y/z");
+	succeed_if_equal(keyName(ksCurrent(ks)), "user/tests/yajl/fancy/path/below/x/y/z");
 	k = elektraNextNotBelow(ks);
 	succeed_if(k == 0, "not at end of keyset");
 	succeed_if(ksCurrent(ks) == 0, "not at end of keyset");
