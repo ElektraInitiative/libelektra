@@ -749,8 +749,10 @@ int main(int argc, char** argv)
 	test_json("examples/testdata_array.json", getArrayKeys(), ksNew(0));
 	test_json("examples/testdata_below.json", getBelowKeys(),
 		ksNew(1, keyNew("system/below", KEY_VALUE, "fancy/path/below", KEY_END), KS_END));
+	/*
 	test_json("examples/OpenICC_device_config_DB.json", getOpenICCKeys(),
 		ksNew(1, keyNew("system/below", KEY_VALUE, "org/freedesktop/openicc", KEY_END), KS_END));
+	*/
 
 
 	elektraModulesClose(modules, 0);
