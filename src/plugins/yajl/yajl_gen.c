@@ -6,24 +6,466 @@
 #include <kdbconfig.h>
 #include <kdberrors.h>
 #include <yajl/yajl_gen.h>
+#include <yajl/yajl_version.h>
 
 #include "name.h"
 #include "iterator.h"
 
+#define ELEKTRA_YAJL_VERBOSE
+
+
+/**
+ * @brief Return the character of next name level
+ *
+ * @param pnext pointer to current level
+ * @param size size of name in that level
+ *
+ * @retval # if it is an array
+ * @retval / if it was not possible to look further (for pretty
+ *         printing, NULL is not visible)
+ * @retval anything_else otherwise
+ */
+static char elektraLookahead(const char* pnext, size_t size)
+{
+	if (*(pnext+size) == '/')
+	{
+		// we are not at end, so we can look one further
+		return *(pnext+size+1);
+	}
+
+	// / and not NULL for nice printing
+	return '/'; // found End
+
+}
+
+/**
+ * @brief Iterate over string and open everything as being told
+ *
+ * Sometimes the first or last value needs special handling, the
+ * caller needs to do that.
+ *
+ * Implements lookahead for arrays, but does not implement leaf
+ * semenatics.
+ *
+ * @pre g must be in a map environment
+ *
+ * @post g is left in map or array environment
+ *
+ *
+ * It handles following scenarios:
+ *
+ * (N0)
+ * #/_
+ * found array start, but followed by non-array so we need a map
+ * yield array and map (name of array done already)
+ *
+ * (N1)
+ * #
+ * found array start, yield array (name done already)
+ *
+ * (N2)
+ * _/#
+ *
+ * found array name, yield string (array done later)
+ *
+ * (N3)
+ * _
+ * found map start, yield string + map
+ *
+ * @param g to yield maps, strings
+ * @param name
+ * @param levels to iterate, if smaller or equal zero it does nothing
+ */
+static void elektraGenOpenByName(yajl_gen g,
+		const char *pnext,
+		int levels)
+{
+	size_t size=0;
+
+#ifdef ELEKTRA_YAJL_VERBOSE
+	printf("elektraGenOpenByName levels: %d,  next: \"%s\"\n",
+			levels, pnext);
+#endif
+
+	for (int i=0; i<levels; ++i)
+	{
+		pnext=keyNameGetOneLevel(pnext+size,&size);
+
+		char lookahead = elektraLookahead(pnext, size);
+
+#ifdef ELEKTRA_YAJL_VERBOSE
+		printf("level by name %d: \"%.*s\", lookahead: %c\n",
+				(int)i,
+				(int)size, pnext,
+				lookahead);
+#endif
+
+		// do not yield array indizes as names
+		if (*pnext == '#')
+		{
+#ifdef ELEKTRA_YAJL_VERBOSE
+			printf ("GEN (N1) array by name\n");
+#endif
+			yajl_gen_array_open(g);
+
+			if (lookahead == '/')
+			{
+				// do not care if last element
+				// N1 handled it already
+			}
+			else if (lookahead != '#')
+			{
+#ifdef ELEKTRA_YAJL_VERBOSE
+				printf ("GEN (N0) anon-map\n");
+#endif
+				yajl_gen_map_open(g);
+
+			}
+		}
+
+
+		if (lookahead == '#')
+		{
+#ifdef ELEKTRA_YAJL_VERBOSE
+			printf ("GEN (N2) string %.*s\n",
+				(int)size, pnext);
+#endif
+			yajl_gen_string(g, (const unsigned char *)pnext,
+					size);
+
+			continue;
+		}
+
+#ifdef ELEKTRA_YAJL_VERBOSE
+		printf ("GEN (N3) string %.*s\n",
+			(int)size, pnext);
+#endif
+		yajl_gen_string(g, (const unsigned char *)pnext,
+				size);
+
+#ifdef ELEKTRA_YAJL_VERBOSE
+		printf ("GEN (N3) map by name\n");
+#endif
+		yajl_gen_map_open(g);
+	}
+}
+
+/**
+ * @brief Implements special handling for last element of key name
+ *
+ * @pre g is in a map or array
+ *
+ * @post g need value as next step
+ *
+ * (L1)
+ * #/_
+ * If # is in the same counter stage, we just have to yield the name
+ *
+ * If # is in a new counter stage elektraGenOpenFirst already has
+ * yield the map, so we also just have to yield the name
+ *
+ * (L2)
+ * /#
+ * does nothing (even for #/# the array was already done because of
+ * lookahead)
+ *
+ * (L3)
+ * /_
+ * yields the name for the value
+ *
+ * @param g the generator
+ * @param next the key
+ */
+static void elektraGenOpenLast(yajl_gen g, const Key *next)
+{
+	keyNameReverseIterator last =
+		elektraKeyNameGetReverseIterator(next);
+	elektraKeyNameReverseNext(&last);
+
+#ifdef ELEKTRA_YAJL_VERBOSE
+	printf("elektraGenOpenLast next: \"%.*s\"\n",
+			(int)last.size, last.current);
+#endif
+
+	if (last.current[0] != '#')
+	{
+#ifdef ELEKTRA_YAJL_VERBOSE
+		printf("GEN string (L1,3)\n");
+#endif
+		yajl_gen_string(g,
+			(const unsigned char *)last.current,
+			last.size-1);
+	}
+}
+
+/**
+ * @brief Open initially
+ *
+ * Unlike in elektraGenOpen there is no precondition that parentKey
+ * must be below first. Instead:
+ *
+ * @pre first must be below parentKey
+ *
+ * @pre g expects to be in a map
+ *
+ * @post g left in map or array
+ *
+ * Does not have special handling for first key (only for last key)
+ *
+ * @see elektraGenOpen
+ *
+ * @param g
+ * @param parentKey
+ * @param first
+ */
+static void elektraGenOpenInitial(yajl_gen g, Key *parentKey,
+		const Key *first)
+{
+	const char *pfirst = keyName(first);
+	size_t csize=0;
+
+	int equalLevels = elektraKeyCountEqualLevel(parentKey, first);
+	int firstLevels = elektraKeyCountLevel(first);
+
+	// forward all equal levels
+	for (int i=0; i < equalLevels+1; ++i)
+	{
+		pfirst=keyNameGetOneLevel(pfirst+csize,&csize);
+	}
+
+	// calculate levels: do not iterate over last element
+	const int levelsToOpen = firstLevels - equalLevels - 1;
+
+#ifdef ELEKTRA_YAJL_VERBOSE
+		printf ("open by name Initial %s, equal: %d, to open: %d\n",
+				pfirst, equalLevels, levelsToOpen);
+#endif
+
+
+	elektraGenOpenByName(g, pfirst, levelsToOpen);
+
+	// fixes elektraGenOpenByName for the special handling of
+	// arrays at startup
+	keyNameReverseIterator last =
+		elektraKeyNameGetReverseIterator(first);
+	elektraKeyNameReverseNext(&last);
+
+#ifdef ELEKTRA_YAJL_VERBOSE
+	printf("last startup entry: \"%.*s\"\n",
+			(int)last.size, last.current);
+#endif
+
+	if (last.current[0] == '#')
+	{
+#ifdef ELEKTRA_YAJL_VERBOSE
+		printf("GEN array open (startup)\n");
+#endif
+		yajl_gen_array_open(g);
+	}
+}
+
+
+/**
+ * @brief Implements special handling for the first found name
+ *
+ * @pre expects to be in a map or array
+ *
+ * @post will leave in a map or array
+ *
+ * Looks at first place where two key name differ and need a lookahead
+ * of one in next to not generate too much.
+ *
+ * It handles the first level entirely, except of values.
+ *
+ * _ .. is a arbitrary map
+ * # .. is a arbitrary member of array
+ * Note that "test/" would not be contained in the string
+ * given by argument.
+ *
+ * (1)
+ * cur:  test/#
+ * next: test/#
+ *
+ * Will do nothing, because we are in a situation where we just iterate
+ * over leaves in the array.
+ *
+ * (2)
+ * cur:  test/#
+ * next: test/#/#
+ *
+ * Will create an array in the array.
+ * Array won't have a name.
+ * Staying in the same array "test".
+ *
+ * (3)
+ * cur:  test/#
+ * next: test/#/_
+ *
+ * Will yield a map (name will be yield later).
+ * Staying in the same array.
+ *
+ * (4)
+ * cur:  test/_
+ * next: test/_
+ *
+ * Will yield a value. (Value yield later)
+ *
+ * (5)
+ * cur:  test/_
+ * next: test/_/#
+ *
+ * Will yield the name of the array and the array.
+ *
+ * (6)
+ * cur:  test/_
+ * next: test/_/_
+ *
+ * Will yield the name of the map and the map.
+ *
+ * @pre
+ * (P1) Precondition
+ * cur:  test/_
+ * next: test
+ *
+ * Is not possible.
+ * @see elektraNextNotBelow
+ *
+ * @pre
+ * (P2) Precondition
+ * cur:  test
+ * next: test/_
+ *
+ * Is not possible.
+ * @see elektraGenOpenInitial
+ *
+ * (E1)
+ * cur:  test/_
+ * next: test/#
+ *
+ * Error situation: cannot change to array within map.
+ * Lookahead does not matter.
+ *
+ * (E2)
+ * cur:  test/#
+ * next: test/_
+ *
+ * Error situation: leaving array in the middle.
+ * Lookahead does not matter.
+ *
+ * Rationale for arrays:
+ * Error situations should be handled by struct checker.
+ * They could be avoided by encoding array names like
+ * array#0, but this would lead to the possibility to create
+ * non-unique names which would be kicked away in json.
+ * It is considered that always generating correct files
+ * is more important than not having the possibility to generate
+ * wrong keysets for a particual storage.
+ *
+ * @param g
+ * @param cur
+ * @param next
+ */
+static void elektraGenOpenFirst(yajl_gen g,
+		const char *cur, size_t curSize,
+		const char *next, size_t nextSize)
+{
+#ifdef ELEKTRA_YAJL_VERBOSE
+	printf("elektraGenOpenFirst cur: \"%.*s\" next: \"%.*s\"\n",
+			(int)curSize+2, cur,
+			(int)nextSize+2, next);
+#endif
+
+	if (*cur == '#')
+	{
+		if (*next == '#')
+		{
+			char lookahead =
+				elektraLookahead(next, nextSize);
+			// see if we are at end
+			if (lookahead == '/')
+			{
+				// (1)
+			}
+			else if (lookahead == '#')
+			{
+#ifdef ELEKTRA_YAJL_VERBOSE
+				printf("GEN array (2)\n");
+#endif
+				yajl_gen_array_open(g);
+			}
+			else
+			{
+#ifdef ELEKTRA_YAJL_VERBOSE
+				printf("GEN map (3)\n");
+#endif
+				yajl_gen_map_open(g);
+			}
+		}
+		else
+		{
+#ifdef ELEKTRA_YAJL_VERBOSE
+			printf ("ERROR should not happen");
+#endif
+			// TODO: handle by adding warning
+		}
+	}
+	else
+	{
+		char lookahead =
+			elektraLookahead(next, nextSize);
+
+		if (lookahead == '/')
+		{
+#ifdef ELEKTRA_YAJL_VERBOSE
+			printf("GEN string (4)\n");
+#endif
+			yajl_gen_string(g,
+				(const unsigned char *)next,
+				nextSize);
+		}
+		if (lookahead == '#')
+		{
+#ifdef ELEKTRA_YAJL_VERBOSE
+			printf("GEN string (5)\n");
+#endif
+			yajl_gen_string(g,
+				(const unsigned char *)next,
+				nextSize);
+#ifdef ELEKTRA_YAJL_VERBOSE
+			printf("GEN array (5)");
+#endif
+			yajl_gen_array_open(g);
+		}
+		else
+		{
+#ifdef ELEKTRA_YAJL_VERBOSE
+			printf("GEN string (6)\n");
+#endif
+			yajl_gen_string(g,
+				(const unsigned char *)next,
+				nextSize);
+
+#ifdef ELEKTRA_YAJL_VERBOSE
+			printf("GEN map (6)\n");
+#endif
+			yajl_gen_map_open(g);
+		}
+	}
+}
 
 /**
  * @brief open so many levels as needed for key next
  *
  * Iterates over next and generate
- * needed groups for every / and needed arrays
+ * needed groups for every name/ and needed arrays
  * for every name/#.
- * Yields name for leaf.
  *
- * TODO: cur should be renamed to prev and next should be renamed to cur
+ * Yields names for leafs, but suppresses to yield names
+ * for array entries (like #0)
  *
- * @pre keys are not allowed to be below,
- *      except: first run where everything below root/parent key is
- *      opened
+ * @see elektraGenOpenFirst
+ *
+ * @pre keys are not allowed to be below
  *
  * @example
  *
@@ -92,84 +534,35 @@ static void elektraGenOpen(yajl_gen g, const Key *cur, const Key *next)
 	size_t size=0;
 	size_t csize=0;
 
-	int equalLevels = elektraKeyCountEqualLevel(cur, next);
-	// forward all equal levels, nothing to do there
-	for (int i=0; i < equalLevels; ++i)
+	size_t equalLevels = elektraKeyCountEqualLevel(cur, next);
+
+	// forward all equal levels
+	for (size_t i=0; i < equalLevels+1; ++i)
 	{
 		pnext=keyNameGetOneLevel(pnext+size,&size);
 		pcur=keyNameGetOneLevel(pcur+csize,&csize);
 	}
 
-	int levels = nextLevels - equalLevels;
-
-#ifdef ELEKTRA_YAJL_VERBOSE
-	printf ("Open %d: pcur: %s , pnext: %s\n", (int) levels,
-		pcur, pnext);
-#endif
-
-	for (int i=0; i<levels-2; ++i)
+	// do what needs to be done for first unequal level
+	if (equalLevels+1 < nextLevels)
 	{
-#ifdef ELEKTRA_YAJL_VERBOSE
-		printf("Level %d: \"%.*s\"\n", (int)i,
-				(int)size, pnext);
-#endif
+		elektraGenOpenFirst(g, pcur, csize, pnext, size);
+
+		// one level more is done
 		pnext=keyNameGetOneLevel(pnext+size,&size);
-
-#ifdef ELEKTRA_YAJL_VERBOSE
-		printf ("GEN string %.*s for ordinary group\n",
-				(int)size, pnext);
-#endif
-		yajl_gen_string(g, (const unsigned char *)pnext, size);
-
-#ifdef ELEKTRA_YAJL_VERBOSE
-		printf ("GEN map open because we stepped\n");
-#endif
-		yajl_gen_map_open(g);
 	}
 
-	if (!strcmp(keyBaseName(next), "#0"))
-	{
-		pnext=keyNameGetOneLevel(pnext+size,&size);
-		// we have found the first element of an array
-#ifdef ELEKTRA_YAJL_VERBOSE
-		printf ("GEN string %.*s for array\n",
-				(int)size, pnext);
-#endif
-		yajl_gen_string(g, (const unsigned char *)pnext, size);
+	// calculate levels which are neither handled by first,
+	// nor by last
+	int levels = nextLevels - equalLevels - 2;
 
 #ifdef ELEKTRA_YAJL_VERBOSE
-		printf ("GEN array open\n");
+	printf ("elektraGenOpen %d: pcur: %s , pnext: %s\n",
+		(int) levels, pcur, pnext);
 #endif
-		yajl_gen_array_open(g);
-	}
-	else if (*keyBaseName(next) != '#')
-	{
-		if (levels > 1)
-		{
-			// not an array, print missing element + name for later
-			// value
-			pnext=keyNameGetOneLevel(pnext+size,&size);
 
-#ifdef ELEKTRA_YAJL_VERBOSE
-			printf ("GEN string %.*s for last group\n",
-					(int)size, pnext);
-#endif
-			yajl_gen_string(g, (const unsigned char *)pnext, size);
-
-#ifdef ELEKTRA_YAJL_VERBOSE
-			printf ("GEN map open because we stepped\n");
-#endif
-			yajl_gen_map_open(g);
-		}
-
-#ifdef ELEKTRA_YAJL_VERBOSE
-		printf ("GEN string %.*s for value's name\n",
-				(int)keyGetBaseNameSize(next)-1,
-				keyBaseName(next));
-#endif
-		yajl_gen_string(g, (const unsigned char *)keyBaseName(next),
-				keyGetBaseNameSize(next)-1);
-	}
+	// now yield everything else in the string but the last value
+	elektraGenOpenByName(g, pnext, levels);
 }
 
 /**
@@ -223,7 +616,7 @@ static void elektraGenClose(yajl_gen g, const Key *cur, const Key *next)
 	int equalLevels = elektraKeyCountEqualLevel(cur, next);
 
 #ifdef ELEKTRA_YAJL_VERBOSE
-	printf ("in close, eq: %d, cur: %s %d, next: %s %d\n",
+	printf ("elektraGenClose, eq: %d, cur: %s %d, next: %s %d\n",
 			equalLevels,
 			keyName(cur), curLevels,
 			keyName(next), nextLevels);
@@ -358,40 +751,42 @@ int elektraYajlSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 	}
 
 #ifdef ELEKTRA_YAJL_VERBOSE
-	printf ("GEN map open START\n");
+	// TODO: could be array also
+	printf("GEN map open PRE-INITIAL\n");
 #endif
 	yajl_gen_map_open(g);
 
+	/* works, but deactivated because parsing code is missing!
 	KeySet *config= elektraPluginGetConfig(handle);
-	if (!strncmp(keyName(parentKey), "user", 4))
+	const Key * lookup = ksLookupByName(config, "/below", 0);
+	if (lookup)
 	{
-		const Key * lookup = ksLookupByName(config, "/user_path", 0);
-		if (!lookup)
+		const char * below = keyString(lookup);
+		const char * pnext = below;
+		size_t size=0;
+		int levels=0;
+		printf ("below is %s\n", below);
+		while (*(pnext=keyNameGetOneLevel(pnext+size,&size)))
 		{
-			elektraGenOpen(g, parentKey, cur);
-		} else {
-			elektraGenOpen(g, lookup, cur);
+			++ levels;
 		}
+		elektraGenOpenByName(g, below, levels);
 	}
-	else
-	{
-		const Key * lookup = ksLookupByName(config, "/system_path", 0);
-		if (!lookup)
-		{
-			elektraGenOpen(g, parentKey, cur);
-		} else {
-			elektraGenOpen(g, lookup, cur);
-		}
-	}
+	*/
+
+#ifdef ELEKTRA_YAJL_VERBOSE
+	printf ("parentKey: %s, cur: %s\n", keyName(parentKey), keyName(cur));
+#endif
+	elektraGenOpenInitial(g, parentKey, cur);
 
 	Key *next = 0;
 	while ((next = elektraNextNotBelow(returned)) != 0)
 	{
 #ifdef ELEKTRA_YAJL_VERBOSE
-		printf ("\nin iter: %s next: %s\n", keyName(cur), keyName(next));
-		printf ("in f: %s next: %s\n", keyName(cur), keyName(next));
+		printf ("\nITERATE: %s next: %s\n", keyName(cur), keyName(next));
 #endif
 
+		elektraGenOpenLast(g, cur);
 		elektraGenValue(g, parentKey, cur);
 		elektraGenClose(g, cur, next);
 		elektraGenOpen(g, cur, next);
@@ -403,9 +798,11 @@ int elektraYajlSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 	printf ("\nleaving loop: %s\n", keyName(cur));
 #endif
 
+	elektraGenOpenLast(g, cur);
 	elektraGenValue(g, parentKey, cur);
 
 	// Close what we opened in the beginning
+	KeySet *config= elektraPluginGetConfig(handle);
 	if (!strncmp(keyName(parentKey), "user", 4))
 	{
 		const Key * lookup = ksLookupByName(config, "/user_path", 0);

@@ -5,6 +5,7 @@
 
 #include <kdberrors.h>
 #include <yajl/yajl_parse.h>
+#include <yajl/yajl_version.h>
 
 #include "array.h"
 

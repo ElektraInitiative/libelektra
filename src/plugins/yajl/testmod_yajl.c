@@ -90,6 +90,34 @@ KeySet *getBelowKeys()
 	return ks;
 }
 
+/*
+KeySet *getBelowKeys()
+{
+	KeySet *ks = ksNew(10,
+			keyNew("user/tests/yajl",
+			       KEY_END),
+			keyNew("user/tests/yajl/x",
+			       KEY_END),
+			keyNew("user/tests/yajl/x/y",
+			       KEY_END),
+			keyNew("user/tests/yajl/x/y/z",
+			       KEY_VALUE, "val1",
+			       KEY_END),
+			keyNew("user/tests/yajl/v",
+			       KEY_END),
+			keyNew("user/tests/yajl/v/y",
+			       KEY_END),
+			keyNew("user/tests/yajl/v/y/z",
+			       KEY_VALUE, "val2",
+			       KEY_END),
+			KS_END
+		);
+
+	ksRewind(ks); // shouldn't that be default?
+	return ks;
+}
+*/
+
 KeySet *getBooleanKeys()
 {
 	KeySet *ks = ksNew(10,
@@ -725,26 +753,28 @@ void test_countLevel()
 void test_writing()
 {
 	KeySet *conf = ksNew(0);
-	Key *parentKey = keyNew("user",
+	Key *parentKey = keyNew("user/tests/yajl",
 				KEY_VALUE, "/proc/self/fd/1",
 				KEY_END);
 
 	Plugin *plugin = elektraPluginOpen("yajl", modules, conf, 0);
 	exit_if_fail (plugin != 0, "could not open plugin");
 
+	KeySet *ks = getNullKeys();
 	/*
-	succeed_if(plugin->kdbSet(plugin, getNullKeys(), parentKey) == 1, "kdbSet was not successful");
+	output_keyset(ks);
+
+	succeed_if(plugin->kdbSet(plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if(plugin->kdbSet(plugin, getBooleanKeys(), parentKey) == 1, "kdbSet was not successful");
 	succeed_if(plugin->kdbSet(plugin, getNumberKeys(), parentKey) == 1, "kdbSet was not successful");
 	succeed_if(plugin->kdbSet(plugin, getStringKeys(), parentKey) == 1, "kdbSet was not successful");
 	succeed_if(plugin->kdbSet(plugin, getMapKeys(), parentKey) == 1, "kdbSet was not successful");
 	succeed_if(plugin->kdbSet(plugin, getArrayKeys(), parentKey) == 1, "kdbSet was not successful");
-	KeySet * ks = getOpenICCKeys();
-	output_keyset(ks);
+	ksDel(ks); ks = getOpenICCKeys();
 	succeed_if(plugin->kdbSet(plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	*/
 
 	ksDel(ks);
-	*/
 	keyDel(parentKey);
 
 	elektraPluginClose(plugin, 0);
