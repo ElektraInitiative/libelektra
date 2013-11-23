@@ -441,13 +441,13 @@ number:75
 description:Could not open file
 severity:error
 ingroup:plugin
-module:simpleini
+module:storage
 
 number:76
 description:Error while reading file
 severity:error
 ingroup:plugin
-module:yajl
+module:storage
 
 number:77
 description:Yajl parser error
@@ -456,7 +456,7 @@ ingroup:plugin
 module:yajl
 
 number:78
-description:Unknown or unsupported type found during streaming, key was dropped
+description:Unknown or unsupported type found during streaming, key as string, type lost
 severity:warning
 ingroup:plugin
 module:yajl
