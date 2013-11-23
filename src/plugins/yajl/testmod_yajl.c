@@ -852,6 +852,7 @@ int main(int argc, char** argv)
 	// easy to generate it..
 	test_readWrite("examples/rfc_object.json", ksNew(0));
 	test_readWrite("examples/testdata_array_mixed.json", ksNew(0));
+	test_readWrite("examples/testdata_array_in_array.json", ksNew(0));
 
 	// These situations are not implemented at the moment, see TODO
 	// test_readWrite("examples/empty_object.json", ksNew(0));
