@@ -538,6 +538,45 @@ void test_json(const char * fileName,
 	elektraPluginClose(plugin, 0);
 }
 
+void test_readWrite(const char * fileName,
+		     KeySet * conf)
+{
+	printf ("Test read write with %s\n", fileName);
+
+	Plugin *plugin = elektraPluginOpen("yajl", modules, conf, 0);
+	exit_if_fail (plugin != 0, "could not open plugin");
+	// printf ("Test with %s\n", srcdir_file(fileName));
+
+	Key *parentKey = keyNew ("user/tests/yajl",
+			KEY_VALUE, srcdir_file(fileName),
+			KEY_END);
+	KeySet *keys = ksNew(0);
+	succeed_if(plugin->kdbGet(plugin, keys, parentKey) == 1, "kdbGet was not successful");
+	succeed_if(output_errors(parentKey), "error in kdbGet");
+	succeed_if(output_warnings(parentKey), "warnings in kdbGet");
+
+	// output_keyset(keys);
+
+	char * fileNameCompare = malloc(strlen(fileName)+6);
+	strcpy(fileNameCompare, fileName);
+	strcat(fileNameCompare, ".comp");
+	keySetString(parentKey, srcdir_file(fileNameCompare));
+	// printf("File name is: %s\n", keyString(parentKey));
+
+	succeed_if(plugin->kdbSet(plugin, keys, parentKey) == 1, "kdbSet was not successful");
+	succeed_if(output_errors(parentKey), "error in kdbSet");
+	succeed_if(output_warnings(parentKey), "warnings in kdbSet");
+	free(fileNameCompare);
+
+	succeed_if(compare_line_files(srcdir_file(fileName), keyString(parentKey)),
+			"files do not match as expected");
+
+	keyDel (parentKey);
+	ksDel (keys);
+
+	elektraPluginClose(plugin, 0);
+}
+
 void test_array()
 {
 	printf ("Test array\n");
@@ -808,6 +847,16 @@ int main(int argc, char** argv)
 	test_json("examples/OpenICC_device_config_DB.json", getOpenICCKeys(),
 		ksNew(1, keyNew("system/below", KEY_VALUE, "org/freedesktop/openicc", KEY_END), KS_END));
 	*/
+
+	// currently do not have a KeySet, wait for C-plugin to make it
+	// easy to generate it..
+	test_readWrite("examples/rfc_object.json", ksNew(0));
+	test_readWrite("examples/testdata_array_mixed.json", ksNew(0));
+
+	// These situations are not implemented at the moment, see TODO
+	// test_readWrite("examples/empty_object.json", ksNew(0));
+	// test_readWrite("examples/empty_array.json", ksNew(0));
+	// test_readWrite("examples/rfc_array.json", ksNew(0));
 
 
 	elektraModulesClose(modules, 0);
