@@ -37,8 +37,6 @@
 // defined in keyhelpers.c, API might be broken!
 char *keyNameGetOneLevel(const char *name, size_t *size);
 
-int elektraYajlOpen(Plugin *handle, Key *errorKey);
-int elektraYajlClose(Plugin *handle, Key *errorKey);
 int elektraYajlGet(Plugin *handle, KeySet *ks, Key *parentKey);
 int elektraYajlSet(Plugin *handle, KeySet *ks, Key *parentKey);
 

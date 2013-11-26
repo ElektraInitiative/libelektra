@@ -301,11 +301,11 @@ int elektraYajlGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		}
 	}
 
-	// allow comments
 #if YAJL_MAJOR == 1
 	yajl_parser_config cfg = { 1, 1 };
 	yajl_handle hand = yajl_alloc(&callbacks, &cfg, NULL, returned);
 #else
+	//TODO: allow configuration?
 	yajl_handle hand = yajl_alloc(&callbacks, NULL, returned);
 	yajl_config(hand, yajl_allow_comments, 1);
 #endif

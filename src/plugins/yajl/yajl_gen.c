@@ -11,6 +11,8 @@
 #include "name.h"
 #include "iterator.h"
 
+#define ELEKTRA_YAJL_VERBOSE
+
 
 /**
  * @brief Return the first character of next name level
@@ -365,8 +367,8 @@ static void elektraGenOpenFirst(yajl_gen g,
 		const char *next, size_t nextSize)
 {
 #ifdef ELEKTRA_YAJL_VERBOSE
-	printf("elektraGenOpenFirst cur: \"%.*s\" next: \"%.*s\"\n",
-			(int)curSize+2, cur,
+	printf("elektraGenOpenFirst cur: \"%s\" next: \"%.*s\"\n",
+			cur,
 			(int)nextSize+2, next);
 #endif
 
@@ -576,12 +578,141 @@ static void elektraGenOpen(yajl_gen g, const Key *cur, const Key *next)
 	elektraGenOpenByName(g, pnext, levels);
 }
 
+
+
 /**
- * @brief Close all levels from cur to next
+ * @brief Close given number of levels of key
+ *
+ * For the basename of cur nothing needs to be done
+ * (it was either a value or an array entry)
+ *
+ * Then for every level do:
+ *
+ *
+ * (C1)
+ * #/_
+ * (lookahead says it is a map in the array)
+ * -> close the anonymous map and then the array
+ *
+ * (C2)
+ * _/#
+ * (lookahead says it is an array)
+ * -> dont do anything
+ *
+ * (C3)
+ * #
+ * -> close the map
+ *
+ * (C4)
+ * _
+ * -> close the map
+ *
+ *
+ * @param g to yield json information
+ * @param cur the key which name is used for closing
+ * @param levels the number of levels to close
+ */
+static void elektraGenCloseIterate(yajl_gen g, const Key *cur,
+		int levels)
+{
+	keyNameReverseIterator curIt =
+		elektraKeyNameGetReverseIterator(cur);
+
+	// jump last element
+	elektraKeyNameReverseNext(&curIt);
+
+	for (int i=0; i<levels; ++i)
+	{
+		elektraKeyNameReverseNext(&curIt);
+
+		char lookahead = elektraLookahead(curIt.current,
+				curIt.size);
+
+		if (curIt.current[0] == '#')
+		{
+			if (lookahead != '#')
+			{
+#ifdef ELEKTRA_YAJL_VERBOSE
+				printf ("GEN (C1) anon map close\n");
+#endif
+				yajl_gen_map_close(g);
+
+			}
+#ifdef ELEKTRA_YAJL_VERBOSE
+			printf ("GEN (C3) array close\n");
+#endif
+			yajl_gen_array_close(g);
+		}
+		else
+		{
+			if (lookahead != '#')
+			{
+#ifdef ELEKTRA_YAJL_VERBOSE
+				printf ("GEN (C3) map close\n");
+#endif
+				yajl_gen_map_close(g);
+			}
+			else
+			{
+#ifdef ELEKTRA_YAJL_VERBOSE
+			printf ("(C2) array name: nothing to do\n");
+#endif
+			}
+		}
+	}
+
+}
+
+/**
+ * @brief Close all levels in cur not needed in next
+ *
+ * Closing is much simpler then opening because no names need to be
+ * yield.
  *
  * @pre keys are not allowed to be below,
  *      except: last run where everything below root/parent key is
  *      closed
+ *
+ * Then all levels are reverse iterated until the level before the equal
+ * level.
+ * @see elektraGenCloseIterate
+ *
+ * In the level before the equal level there is some special handling in
+ * regards to the next level.
+ * Following situations are possible:
+ *
+ * (X1)
+ * cur:  #/#
+ * next: #
+ * -> closing array (always, because 2 arrays need to be closed)
+ *
+ * (X2)
+ * cur:  #/_
+ * next: #
+ * -> array iteration, but with anon map
+ *
+ * (X3)
+ * cur:  #
+ * next: #
+ * -> array iteration, so do not close array
+ *
+ * (X4)
+ * cur:  _/#
+ * next: _
+ * -> closing map, but only if levels <= 0 (means iteration did nothing)
+ *    (otherwise iteration already closed it)
+ *
+ * (X5)
+ * cur:  _/_
+ * next: _
+ * -> closing map (only if levels <= 0, because iteration did not do it)
+ *
+ * (X6)
+ * cur:  _
+ * next: _
+ * -> map iteration on same level, doing nothing
+ *
+ * @example
  *
  * cur:  user/sw/org/deeper
  * next: user/sw/org/other/deeper/below
@@ -626,51 +757,78 @@ static void elektraGenClose(yajl_gen g, const Key *cur, const Key *next)
 #endif
 	int equalLevels = elektraKeyCountEqualLevel(cur, next);
 
-#ifdef ELEKTRA_YAJL_VERBOSE
-	printf ("elektraGenClose, eq: %d, cur: %s %d, next: %s %d\n",
-			equalLevels,
-			keyName(cur), curLevels,
-			keyName(next), nextLevels);
-#endif
+	// 1 for last level not to iterate, 1 before 1 after equal
+	int levels = curLevels - equalLevels - 2;
 
+	elektraGenCloseIterate(g, cur, levels);
 
-	ssize_t counter = curLevels;
-
-	keyNameReverseIterator curIt =
-		elektraKeyNameGetReverseIterator(cur);
-	keyNameReverseIterator nextIt =
-		elektraKeyNameGetReverseIterator(next);
-
-	// go to last element of cur (which is a value)
-	elektraKeyNameReverseNext(&curIt);
-	elektraKeyNameReverseNext(&nextIt);
-	counter--;
-
-	// we are closing an array
-	if (*curIt.current == '#' && *nextIt.current != '#')
+	const char *pcur = keyName(cur);
+	size_t csize = 0;
+	const char *pnext = keyName(next);
+	size_t nsize = 0;
+	for (int i=0; i < equalLevels+1; ++i)
 	{
-#ifdef ELEKTRA_YAJL_VERBOSE
-		printf("GEN array close\n");
-#endif
-		yajl_gen_array_close(g);
-		counter --;
+		pcur=keyNameGetOneLevel(pcur+csize,&csize);
+		pnext=keyNameGetOneLevel(pnext+nsize, &nsize);
 	}
 
-	while ( elektraKeyNameReverseNext(&curIt) &&
-		counter > equalLevels)
-	{
+	char lookahead = elektraLookahead(pcur, csize);
 #ifdef ELEKTRA_YAJL_VERBOSE
-		printf("Close [%d > %d]: \"%.*s\"\n",
-			(int)counter,
-			(int)equalLevels,
-			(int)curIt.size, curIt.current);
+	printf ("elektraGenClose, eq: %d, cur: %s %d, next: %s %d, "
+		"lookahead: %d, levels: %d\n",
+			equalLevels,
+			pcur, curLevels,
+			pnext, nextLevels,
+			lookahead,
+			levels);
 #endif
-		counter --;
 
+
+	if (*pcur == '#' && *pnext == '#')
+	{
+		if (lookahead == '#')
+		{
 #ifdef ELEKTRA_YAJL_VERBOSE
-		printf ("GEN map close ordinary group\n");
+			printf("GEN (X1) closing array in array\n");
 #endif
-		yajl_gen_map_close(g);
+			yajl_gen_array_close(g);
+		}
+		else if(lookahead != '/')
+		{
+#ifdef ELEKTRA_YAJL_VERBOSE
+			printf("GEN (X2) next anon-map\n");
+#endif
+			yajl_gen_map_close(g);
+		}
+		else
+		{
+#ifdef ELEKTRA_YAJL_VERBOSE
+			printf("(X3) array iteration\n");
+#endif
+		}
+	}
+	else if (*pcur != '#')
+	{
+		if (levels <= 0 && lookahead == '#')
+		{
+#ifdef ELEKTRA_YAJL_VERBOSE
+			printf("GEN (X4) closing array\n");
+#endif
+			yajl_gen_array_close(g);
+		}
+		else if (lookahead != '/')
+		{
+#ifdef ELEKTRA_YAJL_VERBOSE
+			printf("GEN (X5) closing map\n");
+#endif
+			yajl_gen_map_close(g);
+		}
+		else
+		{
+#ifdef ELEKTRA_YAJL_VERBOSE
+			printf("(X6) same level iteration\n");
+#endif
+		}
 	}
 }
 
@@ -691,6 +849,7 @@ static void elektraGenClose(yajl_gen g, const Key *cur, const Key *next)
  */
 static void elektraGenValue(yajl_gen g, Key *parentKey, const Key *cur)
 {
+	// TODO call elektraGenOpenLast here
 #ifdef ELEKTRA_YAJL_VERBOSE
 	printf ("GEN value %s for %s\n", keyString(cur), keyName(cur));
 #endif
@@ -720,7 +879,7 @@ static void elektraGenValue(yajl_gen g, Key *parentKey, const Key *cur)
 			yajl_gen_string(g, (const unsigned char *)keyString(cur), keyGetValueSize(cur)-1);
 		}
 	}
-	else if (!strcmp(keyString(type), "number")) // TODO: distuingish between float and int
+	else if (!strcmp(keyString(type), "number")) // TODO: distuingish between float and int (parser too)
 	{
 		yajl_gen_number(g, keyString(cur), keyGetValueSize(cur)-1);
 	}
@@ -730,36 +889,13 @@ static void elektraGenValue(yajl_gen g, Key *parentKey, const Key *cur)
 	}
 }
 
-/**
- * @brief Generate maps and arrays as requested by config
- *
- * @param g where to generate to
- * @param config to use for lookup of /below parameter
- */
-void elektraGenInitialBelow(yajl_gen g, KeySet *config)
-{
-	const Key * lookup = ksLookupByName(config, "/below", 0);
-	if (lookup)
-	{
-		const char * below = keyString(lookup);
-		const char * pnext = below;
-		size_t size=0;
-		int levels=0;
-		printf ("below is %s\n", below);
-		while (*(pnext=keyNameGetOneLevel(pnext+size,&size)))
-		{
-			++ levels;
-		}
-		elektraGenOpenByName(g, below, levels);
-	}
-}
-
 int elektraYajlSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
 #if YAJL_MAJOR == 1
 	yajl_gen_config conf = { 1, "  " };
 	yajl_gen g = yajl_gen_alloc(&conf, NULL
 #else
+	// TODO: do this by config
 	yajl_gen g = yajl_gen_alloc(NULL);
 	yajl_gen_config(g, yajl_gen_beautify, 1);
 	yajl_gen_config(g, yajl_gen_validate_utf8, 1);
@@ -779,10 +915,6 @@ int elektraYajlSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 	printf("GEN map open PRE-INITIAL\n");
 #endif
 	yajl_gen_map_open(g);
-
-	// works, but deactivated because parsing (and closing) code is missing!
-	// KeySet *config= elektraPluginGetConfig(handle);
-	// elektraGenInitialBelow(g, config);
 
 #ifdef ELEKTRA_YAJL_VERBOSE
 	printf ("parentKey: %s, cur: %s\n", keyName(parentKey), keyName(cur));
