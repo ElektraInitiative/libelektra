@@ -992,6 +992,76 @@ static void elektraGenValue(yajl_gen g, Key *parentKey, const Key *cur)
 	}
 }
 
+int elektraYajlGenEmpty(yajl_gen g, KeySet *returned, Key *parentKey)
+{
+	int did_something = 0;
+	// TODO: do all these situations actually occur?
+	if (ksGetSize(returned) == 0) // we got nothing..
+	{
+#ifdef ELEKTRA_YAJL_VERBOSE
+		printf ("GEN empty map (got nothing)\n");
+#endif
+		yajl_gen_map_open(g);
+		yajl_gen_map_close(g);
+		did_something = 1;
+	}
+	else if (ksGetSize(returned) == 1) // maybe just parentKey
+	{
+		if (!strcmp(keyName(ksTail(returned)), keyName(parentKey)))
+		{
+#ifdef ELEKTRA_YAJL_VERBOSE
+			printf ("GEN empty map (got parent)\n");
+#endif
+			yajl_gen_map_open(g);
+			yajl_gen_map_close(g);
+			did_something = 1;
+		}
+	}
+	else
+	{
+		if (!strcmp(keyBaseName(ksTail(returned)), "###start_array"))
+		{
+#ifdef ELEKTRA_YAJL_VERBOSE
+			printf ("GEN empty array\n");
+#endif
+			yajl_gen_array_open(g);
+			yajl_gen_array_close(g);
+			did_something = 1;
+		}
+		else if (!strcmp(keyBaseName(ksTail(returned)), "###start_map"))
+		{
+#ifdef ELEKTRA_YAJL_VERBOSE
+			printf ("GEN empty map (got ###start_map)\n");
+#endif
+			yajl_gen_map_open(g);
+			yajl_gen_map_close(g);
+			did_something = 1;
+		}
+	}
+	
+	return did_something;
+}
+
+int elektraGenWriteFile(yajl_gen g, Key *parentKey)
+{
+	FILE *fp = fopen(keyString(parentKey), "w");
+	if (!fp)
+	{
+		ELEKTRA_SET_ERROR(74, parentKey, keyString(parentKey));
+		return -1;
+	}
+
+	const unsigned char * buf;
+	yajl_size_type len;
+	yajl_gen_get_buf(g, &buf, &len);
+	fwrite(buf, 1, len, fp);
+	yajl_gen_clear(g);
+
+	fclose (fp);
+
+	return 1; /* success */
+}
+
 int elektraYajlSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
 #if YAJL_MAJOR == 1
@@ -1010,7 +1080,15 @@ int elektraYajlSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 	{
 		// empty config should be handled by resolver
 		// (e.g. remove file)
+		yajl_gen_free(g);
 		return 0;
+	}
+
+	if (elektraYajlGenEmpty(g, returned, parentKey))
+	{
+		int ret = elektraGenWriteFile(g, parentKey);
+		yajl_gen_free(g);
+		return ret;
 	}
 
 #ifdef ELEKTRA_YAJL_VERBOSE
@@ -1042,22 +1120,8 @@ int elektraYajlSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 
 	elektraGenCloseFinally(g, cur, parentKey);
 
-	FILE *fp = fopen(keyString(parentKey), "w");
-	if (!fp)
-	{
-		ELEKTRA_SET_ERROR(74, parentKey, keyString(parentKey));
-		return -1;
-	}
-
-	const unsigned char * buf;
-	yajl_size_type len;
-	yajl_gen_get_buf(g, &buf, &len);
-	fwrite(buf, 1, len, fp);
-	yajl_gen_clear(g);
+	int ret = elektraGenWriteFile(g, parentKey);
 	yajl_gen_free(g);
 
-
-	fclose (fp);
-
-	return 1; /* success */
+	return ret;
 }

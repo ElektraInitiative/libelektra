@@ -340,14 +340,6 @@ int elektraYajlGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned,
 		}
 	}
 
-	/*
-	// special case for empty object/array
-	if (ksGetSize(returned) == 2)
-	{
-		ksPop(returned);
-	}
-	*/
-
 	yajl_free(hand);
 	fclose (fileHandle);
 

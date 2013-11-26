@@ -838,6 +838,7 @@ int main(int argc, char** argv)
 	test_countLevel();
 	test_writing();
 
+	/*
 	test_json("examples/testdata_null.json", getNullKeys(), ksNew(0));
 	test_json("examples/testdata_boolean.json", getBooleanKeys(), ksNew(0));
 	test_json("examples/testdata_number.json", getNumberKeys(), ksNew(0));
@@ -847,16 +848,15 @@ int main(int argc, char** argv)
 	test_json("examples/testdata_below.json", getBelowKeys(), ksNew(0));
 	test_json("examples/OpenICC_device_config_DB.json", getOpenICCKeys(), ksNew(0));
 
-	// currently do not have a KeySet, wait for C-plugin to make it
-	// easy to generate it..
+	// TODO currently do not have a KeySet, wait for C-plugin to make
+	// it easy to generate it..
 	test_readWrite("examples/rfc_object.json", ksNew(0));
 	test_readWrite("examples/rfc_array.json", ksNew(0));
 	test_readWrite("examples/testdata_array_mixed.json", ksNew(0));
 	test_readWrite("examples/testdata_array_in_array.json", ksNew(0));
-	/*
+	*/
 	test_readWrite("examples/empty_object.json", ksNew(0));
 	test_readWrite("examples/empty_array.json", ksNew(0));
-	*/
 
 
 	elektraModulesClose(modules, 0);
