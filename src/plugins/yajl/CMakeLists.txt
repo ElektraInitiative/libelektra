@@ -5,7 +5,8 @@ if (YAJL_FOUND)
 	add_includes (elektra-full ${YAJL_INCLUDE_DIR})
 	include_directories (${YAJL_INCLUDE_DIR})
 
-	set (SOURCES yajl.h yajl.c)
+	set (SOURCES yajl.c array.c iterator.c yajl_gen.c
+		yajl_parse.c name.c)
 	add_sources (elektra-full ${SOURCES})
 	add_headers (SOURCES)
 

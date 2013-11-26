@@ -54,7 +54,7 @@
  * @code
 // Lets define a key name with a lot of repeating '/' and escaped '/'
 char *keyName="user////abc/def\/ghi////jkl///";
-char *p;
+char *p=keyName;
 size_t size=0;
 int level=0;
 char buffer[20]; // TODO: make sure buffer size is ok

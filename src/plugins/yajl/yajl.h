@@ -28,9 +28,12 @@
 
 #include <kdbplugin.h>
 
+#if YAJL_MAJOR == 1
+	typedef unsigned int yajl_size_type;
+#else
+	typedef size_t yajl_size_type;
+#endif
 
-int elektraYajlOpen(Plugin *handle, Key *errorKey);
-int elektraYajlClose(Plugin *handle, Key *errorKey);
 int elektraYajlGet(Plugin *handle, KeySet *ks, Key *parentKey);
 int elektraYajlSet(Plugin *handle, KeySet *ks, Key *parentKey);
 

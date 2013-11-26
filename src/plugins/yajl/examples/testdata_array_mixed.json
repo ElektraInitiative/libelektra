@@ -1,4 +1,5 @@
 {
+    "aaa": "abc",
     "array": [
         true,
         25,
@@ -13,5 +14,6 @@
         "def abc",
         false,
         42
-    ]
+    ],
+    "yyy": "abc"
 }

@@ -17,6 +17,81 @@ generator for:
 
 
 
+== unsorted ==
+
+doxygen 0.8.* upgrade on server->wheezy upgrade
+
+chroot
+	-c option which allows you to chroot before doing
+	-u options which allows you to switch user (by setting env internally)
+	kdbOpen/kdbGet/kdbSet
+
+script testing:
+	make scripts safe by chroot (only modify files below /tmp)
+	should be executed by make test
+	should be able to run tests for all plugins +
+	different combination of plugins
+	should support partly installations and/or builds (not all plugins)
+
+	line number (maybe not important)
+	should be available at target (be installed) why?
+	modularity (testing where the code is) (maybe not important)
+		-> plugin specifica might be tested at other level/only C
+		-> how to do without need of capabilities again? backends at serialization level?? (like with mount)
+
+resolver recursively:
+	Improve resolver (create tmp, open original)
+	double slashes
+	starting with /
+	kdb file using resolver plugin without function! (parent value!)
+	should be returned in kdbGet/kdbSet
+
+XDG specification:
+	XDG_CONFIG_HOME
+	KDB_CONFIG_HOME
+	describe, implement, test
+	xdg mail announce
+
+
+kdb-shell:
+	use import/export
+	automatic tests for functionality
+	Examples in --help
+
+kdb tool:
+	request -f for rm, mv in system/elektra
+	converting of config files (automated tests)
+	test mount/unmount
+
+kdb resolve feature:
+	output file how it would resolve for key
+
+error specification plugin:
+	parse error specification content into keyset
+
+tcl:
+	parse output?
+	struct output!
+
+documentation of the c++ binding
+	with copydoc
+	include files
+	mark functions which are API/ABI stable (kdb.h)
+
+git-buildpackage
+	should work before release
+
+api:
+	add examples
+	add tutorial
+
+chroot:
+	add -c --chroot option for all plugins
+
+kdb tool:
+	allow verification of local key database by exported file
+	tset (typesafe set)
+
 
 == CONTRACTS ==
 

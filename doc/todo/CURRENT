@@ -6,55 +6,59 @@ Items are e.g. BUGS, OPTIMIZE, PROBLEMS, TESTING, PLUGINS, TODO,..
 
 == 0.8.4 ==
 
-json
 testing framework: allow to disable hdd access for test cases
 test mount for json (and maybe others)
 
-== 0.8.5 ==
+rebase plugin:
+	remove/add a common prefix after parentKey
 
-Improve resolver (create tmp, open original)
+json: fix parsing+generating without metadata "array"
+	announce without release?
 
-doxygen 0.8.* upgrade on server->wheezy upgrade
+base structure for system with mounts:
+	hosts
+	fstab
+	passwd
 
-chroot
-	-c option which allows you to chroot before doing
-	-u options which allows you to switch user (by setting env internally)
-	kdbOpen/kdbGet/kdbSet
+testing:
+	json
+	rebase
+	mount with scripts
+	import, export with scripts
+	elektraYajlGenEmpty
+	get features: cascading
+	default value with sget
 
-script testing:
-	make scripts safe by chroot (only modify files below /tmp)
-	should be executed by make test
-	should be able to run tests for all plugins +
-	different combination of plugins
-	should support partly installations and/or builds (not all plugins)
 
-	line number (maybe not important)
-	should be available at target (be installed) why?
-	modularity (testing where the code is) (maybe not important)
-		-> plugin specifica might be tested at other level/only C
-		-> how to do without need of capabilities again? backends at serialization level?? (like with mount)
+warning in resolver aborts execution? (uname plugin)
+resolver on empty files?
 
-import/export:
-	with all plugins
-	with automated kdb tests
-	+ edit functionality (tmpfile)
+kdb set system/elektra/version/constants/KDB_VERSION_MINOR
+fails silently
 
-kdb testcases:
-	get features: cascading(untested)
-	default value with sget (untested?)
-	for mount/umount
-	for import/export/convert
+documentation:
+	comment -> meta data
+	split real meta data functions + kdbhelpers
 
-ABI unit tests: (manually)
-	install old unit tests with new elektra for ABI tests
+jenkins:
+	upgrade
+	build packages for dfc
+	cleanup elektra branches
+	job for docu
+	use docu from build server?
+	(source packages does not work)
+	-> RELEASE plan
 
 debian:
 	enable (fix) tests
 	add examples as package
 	enable all plugins (struct, type, validation!!!)
 
-
-ship a ./configure script which calls cmake
-	+ toplevel Makefile which goes to build directory and calls make there
-	./configure && make && make install should work
-
+release:
+	ohloh statistics
+	Preparation
+	Cleanup
+	Source Package
+	Documentation
+	Debian Package
+	Publish

@@ -104,7 +104,7 @@ int compare_line_files (const char *filename, const char *genfilename)
 	forg = fopen (filename, "r");
 	fgen = fopen (genfilename, "r");
 
-	strncat(bufferorg, "could not open file, orig: ", BUFFER_LENGTH);
+	strncpy(bufferorg, "could not open file, orig: ", BUFFER_LENGTH);
 	strncat(bufferorg, filename, BUFFER_LENGTH);
 	strncat(bufferorg, " gen: ", BUFFER_LENGTH);
 	strncat(bufferorg, genfilename, BUFFER_LENGTH);

@@ -18,6 +18,8 @@ ELEKTRA_SET_ERROR in dump sometimes raises compile error
 
 get rid of auto-ptr
 
+ELEKTRA_SET_ERROR in dump compile error
+
 clang support broken
 
 VC++ support broken
