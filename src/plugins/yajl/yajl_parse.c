@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include <kdberrors.h>
+#include <kdbconfig.h>
 #include <yajl/yajl_parse.h>
 #include <yajl/yajl_version.h>
 
@@ -246,7 +247,8 @@ static int elektraYajlParseEndArray(void *ctx)
 	return parse_end(ctx);
 }
 
-int elektraYajlGet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraYajlGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned,
+		Key *parentKey)
 {
 	if (!strcmp (keyName(parentKey), "system/elektra/modules/yajl"))
 	{
@@ -271,35 +273,7 @@ int elektraYajlGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		elektraYajlParseEndArray
 	};
 
-	KeySet *config= elektraPluginGetConfig(handle);
-
-	// ksClear (returned);
-	if (!strncmp(keyName(parentKey), "user", 4))
-	{
-		const Key * lookup = ksLookupByName(config, "/user_path", 0);
-		if (!lookup)
-		{
-			// ksAppendKey (returned, keyNew("user", KEY_END));
-			ksAppendKey (returned, keyNew(keyName((parentKey)),
-						KEY_END));
-		} else {
-			ksAppendKey (returned, keyNew(keyValue(lookup),
-						KEY_END));
-		}
-	}
-	else
-	{
-		const Key * lookup = ksLookupByName(config, "/system_path", 0);
-		if (!lookup)
-		{
-			// ksAppendKey (returned, keyNew("system", KEY_END));
-			ksAppendKey (returned, keyNew(keyName((parentKey)),
-						KEY_END));
-		} else {
-			ksAppendKey (returned, keyNew(keyValue(lookup),
-						KEY_END));
-		}
-	}
+	ksAppendKey (returned, keyNew(keyName((parentKey)), KEY_END));
 
 #if YAJL_MAJOR == 1
 	yajl_parser_config cfg = { 1, 1 };
@@ -365,6 +339,14 @@ int elektraYajlGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			return -1;
 		}
 	}
+
+	/*
+	// special case for empty object/array
+	if (ksGetSize(returned) == 2)
+	{
+		ksPop(returned);
+	}
+	*/
 
 	yajl_free(hand);
 	fclose (fileHandle);
