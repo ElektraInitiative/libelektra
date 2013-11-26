@@ -1,72 +1,75 @@
 {
-  "org": {
-    "freedesktop": {
-      "openicc": {
-        "device": {
-          "monitor": [
-            { "prefix": "EDID_",
-              "EDID_mnft_id": "12",
-              "EDID_model_id": "123",
-              "EDID_model": "LCD1",
-              "EDID_serial": "ABCD",
-              "EDID_red_x": "0.599609",
-              "EDID_red_y": "0.34375",
-              "EDID_green_x": "0.320312",
-              "EDID_green_y": "0.554688",
-              "EDID_blue_x": "0.150391",
-              "EDID_blue_y": "0.120117",
-              "EDID_white_x": "0.313477",
-              "EDID_white_y": "0.329102",
-              "EDID_gamma": "2.2",
-              "EDID_mnft": "VEN",
-              "EDID_manufacturer": "Vendor1",
-              "EDID_date": "2007-T16"
-            },
-            { "prefix": "EDID_",
-              "EDID_mnft_id": "34",
-              "EDID_model_id": "456",
-              "EDID_model": "other monitor",
-              "EDID_serial": "other serial",
-              "EDID_red_x": "0.599609",
-              "EDID_red_y": "0.34375",
-              "EDID_green_x": "0.320312",
-              "EDID_green_y": "0.554688",
-              "EDID_blue_x": "0.150391",
-              "EDID_blue_y": "0.120117",
-              "EDID_white_x": "0.313477",
-              "EDID_white_y": "0.329102",
-              "EDID_gamma": "2.2",
-              "EDID_mnft": "NEC",
-              "EDID_manufacturer": "NEC",
-              "EDID_date": "2001-T12"
+    "org": {
+        "freedesktop": {
+            "openicc": {
+                "device": {
+                    "camera": [
+                        {
+                            "EXIF_manufacturer": "Glasshuette",
+                            "EXIF_mnft": "GLAS",
+                            "EXIF_model": "ShinyGlass",
+                            "EXIF_serial": "1200000",
+                            "automatic_assigment": "1",
+                            "comment": "nonsense example",
+                            "creation_date": "05/08/11 11:59:50",
+                            "expire_date": "08/08/11 11:59:50",
+                            "icc_profile": "profile_name.icc",
+                            "prefix": "EXIF_"
+                        },
+                        {
+                            "EXIF_manufacturer": "ConquerLight",
+                            "EXIF_mnft": "CON",
+                            "EXIF_model": "Knips",
+                            "EXIF_serial": "3400000",
+                            "automatic_assigment": "1",
+                            "creation_date": "05/08/11 11:59:50",
+                            "expire_date": "08/08/11 11:59:50",
+                            "icc_profile": "profile_name2.icc",
+                            "prefix": "EXIF_"
+                        }
+                    ],
+                    "monitor": [
+                        {
+                            "EDID_blue_x": "0.150391",
+                            "EDID_blue_y": "0.120117",
+                            "EDID_date": "2007-T16",
+                            "EDID_gamma": "2.2",
+                            "EDID_green_x": "0.320312",
+                            "EDID_green_y": "0.554688",
+                            "EDID_manufacturer": "Vendor1",
+                            "EDID_mnft": "VEN",
+                            "EDID_mnft_id": "12",
+                            "EDID_model": "LCD1",
+                            "EDID_model_id": "123",
+                            "EDID_red_x": "0.599609",
+                            "EDID_red_y": "0.34375",
+                            "EDID_serial": "ABCD",
+                            "EDID_white_x": "0.313477",
+                            "EDID_white_y": "0.329102",
+                            "prefix": "EDID_"
+                        },
+                        {
+                            "EDID_blue_x": "0.150391",
+                            "EDID_blue_y": "0.120117",
+                            "EDID_date": "2001-T12",
+                            "EDID_gamma": "2.2",
+                            "EDID_green_x": "0.320312",
+                            "EDID_green_y": "0.554688",
+                            "EDID_manufacturer": "NEC",
+                            "EDID_mnft": "NEC",
+                            "EDID_mnft_id": "34",
+                            "EDID_model": "other monitor",
+                            "EDID_model_id": "456",
+                            "EDID_red_x": "0.599609",
+                            "EDID_red_y": "0.34375",
+                            "EDID_serial": "other serial",
+                            "EDID_white_x": "0.313477",
+                            "EDID_white_y": "0.329102",
+                            "prefix": "EDID_"
+                        }
+                    ]
+                }
             }
-          ],
-          "camera": [
-            { "prefix": "EXIF_",
-              "EXIF_model": "ShinyGlass",
-              "EXIF_serial": "1200000",
-              "EXIF_mnft": "GLAS",
-              "EXIF_manufacturer": "Glasshuette",
-              "icc_profile": "profile_name.icc",
-              "creation_date": "05/08/11 11:59:50",
-              "expire_date": "08/08/11 11:59:50",
-              "automatic_assigment": "1",
-              "comment": "nonsense example"
-            },
-            { "prefix": "EXIF_",
-              "EXIF_model": "Knips",
-              "EXIF_serial": "3400000",
-              "EXIF_mnft": "CON",
-              "EXIF_manufacturer": "ConquerLight",
-              "icc_profile": "profile_name2.icc",
-              "creation_date": "05/08/11 11:59:50",
-              "expire_date": "08/08/11 11:59:50",
-              "automatic_assigment": "1"
-            }
-          ]
         }
-      }
     }
-  }
 }
-
