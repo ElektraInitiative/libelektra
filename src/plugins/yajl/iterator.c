@@ -11,6 +11,13 @@ keyNameReverseIterator elektraKeyNameGetReverseIterator(const Key *k)
 }
 
 
+/**
+ * @brief Go to the previous element
+ *
+ * @param it the iterator to iterate
+ *
+ * @return 
+ */
 int elektraKeyNameReverseNext(keyNameReverseIterator *it)
 {
 	if (it->current == it->rend) // we are at the end (move that to hasNext?)

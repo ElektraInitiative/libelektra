@@ -73,14 +73,14 @@ static char elektraLookahead(const char* pnext, size_t size)
  * @param pnext a pointer to the name of the key at the correct pos
  * @param levels to iterate, if smaller or equal zero it does nothing
  */
-static void elektraGenOpenByName(yajl_gen g,
+static void elektraGenOpenIterate(yajl_gen g,
 		const char *pnext,
 		int levels)
 {
 	size_t size=0;
 
 #ifdef ELEKTRA_YAJL_VERBOSE
-	printf("elektraGenOpenByName levels: %d,  next: \"%s\"\n",
+	printf("elektraGenOpenIterate levels: %d,  next: \"%s\"\n",
 			levels, pnext);
 #endif
 
@@ -253,9 +253,9 @@ static void elektraGenOpenInitial(yajl_gen g, Key *parentKey,
 
 
 
-	elektraGenOpenByName(g, pfirst, levelsToOpen);
+	elektraGenOpenIterate(g, pfirst, levelsToOpen);
 
-	// fixes elektraGenOpenByName for the special handling of
+	// fixes elektraGenOpenIterate for the special handling of
 	// arrays at startup
 	keyNameReverseIterator last =
 		elektraKeyNameGetReverseIterator(first);
@@ -589,13 +589,16 @@ static void elektraGenOpen(yajl_gen g, const Key *cur, const Key *next)
 	}
 
 	// now yield everything else in the string but the last value
-	elektraGenOpenByName(g, pnext, levels);
+	elektraGenOpenIterate(g, pnext, levels);
 }
 
 
 
 /**
  * @brief Close given number of levels of key
+ *
+ * @pre there is some needed special handling at begin at end,
+ * the caller needs to do that
  *
  * For the basename of cur nothing needs to be done
  * (it was either a value or an array entry)

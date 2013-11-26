@@ -4,7 +4,13 @@
 #include <stdio.h>
 
 /**
- * @brief Only works from 0..9
+ * @brief Increment the name of the key by one
+ *
+ * Alphabetical order will remain
+ *
+ * e.g. user/abc/#9 will be changed to
+ *      user/abc/#_10
+ *
  *
  * @param key which base name will be incremented
  *
