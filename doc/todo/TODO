@@ -7,6 +7,60 @@ resolver:
 
 kdb chroot feature
 
+== 0.8.5 ==
+
+resolver recursively:
+	double slashes
+	starting with /
+	kdb file using resolver plugin without function! (parent value!)
+	should be returned in kdbGet/kdbSet
+
+XDG specification:
+	XDG_CONFIG_HOME
+	KDB_CONFIG_HOME
+	describe, implement, test
+	xdg mail announce
+
+
+kdb-shell:
+	use import/export
+	automatic tests for functionality
+	Examples in --help
+
+kdb tool:
+	request -f for rm, mv in system/elektra
+	converting of config files (automated tests)
+	test mount/unmount
+
+kdb resolve feature:
+	output file how it would resolve for key
+
+error specification plugin:
+	parse error specification content into keyset
+
+tcl:
+	parse output?
+	struct output!
+
+documentation of the c++ binding
+	with copydoc
+	include files
+	mark functions which are API/ABI stable (kdb.h)
+
+git-buildpackage
+	should work before release
+
+api:
+	add examples
+	add tutorial
+
+chroot:
+	add -c --chroot option for all plugins
+
+kdb tool:
+	allow verification of local key database by exported file
+	tset (typesafe set)
+
 == CONTRACTS ==
 
 add following configuration for storage plugins:

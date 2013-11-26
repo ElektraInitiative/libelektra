@@ -32,7 +32,6 @@ static int elektraYajlIncrementArrayEntry(KeySet * ks)
 		}
 		else
 		{
-			// TODO use: ksAppendArray instead
 			// we are in an array
 			Key * newKey = keyNew (keyName(current), KEY_END);
 			elektraArrayIncName(newKey);
@@ -279,7 +278,6 @@ int elektraYajlGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned,
 	yajl_parser_config cfg = { 1, 1 };
 	yajl_handle hand = yajl_alloc(&callbacks, &cfg, NULL, returned);
 #else
-	//TODO: allow configuration?
 	yajl_handle hand = yajl_alloc(&callbacks, NULL, returned);
 	yajl_config(hand, yajl_allow_comments, 1);
 #endif

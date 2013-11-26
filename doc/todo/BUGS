@@ -34,6 +34,8 @@ not clearly defined how config file is opened
 
 get rid of auto-ptr
 
+ELEKTRA_SET_ERROR in dump compile error
+
 clang support broken
 
 VC++ support broken

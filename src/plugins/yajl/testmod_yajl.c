@@ -558,7 +558,7 @@ void test_readWrite(const char * fileName,
 	succeed_if(output_errors(parentKey), "error in kdbGet");
 	succeed_if(output_warnings(parentKey), "warnings in kdbGet");
 
-	// output_keyset(keys);
+	output_keyset(keys);
 
 	char * fileNameCompare = malloc(strlen(fileName)+6);
 	strcpy(fileNameCompare, fileName);
@@ -849,12 +849,13 @@ int main(int argc, char** argv)
 
 	// TODO currently do not have a KeySet, wait for C-plugin to make
 	// it easy to generate it..
+	test_readWrite("examples/empty_object.json", ksNew(0));
+	test_readWrite("examples/empty_array.json", ksNew(0));
 	test_readWrite("examples/rfc_object.json", ksNew(0));
 	test_readWrite("examples/rfc_array.json", ksNew(0));
 	test_readWrite("examples/testdata_array_mixed.json", ksNew(0));
 	test_readWrite("examples/testdata_array_in_array.json", ksNew(0));
-	test_readWrite("examples/empty_object.json", ksNew(0));
-	test_readWrite("examples/empty_array.json", ksNew(0));
+	// test_readWrite("examples/testdata_array_nested.json", ksNew(0));
 
 
 	elektraModulesClose(modules, 0);

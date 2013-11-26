@@ -20,3 +20,29 @@ most plugins (especially storage) do only basic or no tests
 	dump
 	fstab
 	hosts
+
+== scripts ==
+
+script testing:
+	should be runned by make test
+	should be available at tarket (be installed)
+	can be everything directly at the kdb commandline tool
+	should be able to run tests for all plugins +
+	different combination of plugins
+	should support partly installations and/or builds (not all plugins)
+	line number (maybe not important)
+	modularity (testing where the code is) (maybe not important)
+		-> plugin specifica might be tested at other level/only C
+		-> how to do without need of capabilities again? backends at serialization level?? (like with mount)
+
+import/export:
+	with all plugins
+	with automated kdb tests
+
+kdb testcases:
+	for mount/umount
+	for import/export/convert
+	using chroot
+
+ABI unit tests: (manually)
+	install old unit tests with new elektra for ABI tests

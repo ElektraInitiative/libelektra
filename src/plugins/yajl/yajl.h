@@ -34,9 +34,6 @@
 	typedef size_t yajl_size_type;
 #endif
 
-// defined in keyhelpers.c, API might be broken!
-char *keyNameGetOneLevel(const char *name, size_t *size);
-
 int elektraYajlGet(Plugin *handle, KeySet *ks, Key *parentKey);
 int elektraYajlSet(Plugin *handle, KeySet *ks, Key *parentKey);
 

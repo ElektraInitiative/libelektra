@@ -5,6 +5,9 @@
 #include "yajl.h"
 #include "iterator.h"
 
+// TODO defined privately in keyhelpers.c, API break possible..
+char *keyNameGetOneLevel(const char *name, size_t *size);
+
 /**
  * @brief Count number of levels in name of key
  *

@@ -12,6 +12,9 @@
 #include "iterator.h"
 
 
+// TODO defined privately in keyhelpers.c, API break possible..
+char *keyNameGetOneLevel(const char *name, size_t *size);
+
 /**
  * @brief Return the first character of next name level
  *
@@ -953,7 +956,8 @@ static void elektraGenCloseFinally(yajl_gen g, const Key *cur, const Key *next)
  */
 static void elektraGenValue(yajl_gen g, Key *parentKey, const Key *cur)
 {
-	// TODO call elektraGenOpenLast here
+	elektraGenOpenLast(g, cur);
+
 #ifdef ELEKTRA_YAJL_VERBOSE
 	printf ("GEN value %s for %s\n", keyString(cur), keyName(cur));
 #endif
@@ -1100,7 +1104,6 @@ int elektraYajlSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 	Key *next = 0;
 	while ((next = elektraNextNotBelow(returned)) != 0)
 	{
-		elektraGenOpenLast(g, cur);
 		elektraGenValue(g, parentKey, cur);
 		elektraGenClose(g, cur, next);
 
@@ -1116,7 +1119,6 @@ int elektraYajlSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 	printf ("\nleaving loop: %s\n", keyName(cur));
 #endif
 
-	elektraGenOpenLast(g, cur);
 	elektraGenValue(g, parentKey, cur);
 
 	elektraGenCloseFinally(g, cur, parentKey);
