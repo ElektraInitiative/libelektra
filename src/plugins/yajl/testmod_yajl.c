@@ -838,7 +838,6 @@ int main(int argc, char** argv)
 	test_countLevel();
 	test_writing();
 
-	/*
 	test_json("examples/testdata_null.json", getNullKeys(), ksNew(0));
 	test_json("examples/testdata_boolean.json", getBooleanKeys(), ksNew(0));
 	test_json("examples/testdata_number.json", getNumberKeys(), ksNew(0));
@@ -854,7 +853,6 @@ int main(int argc, char** argv)
 	test_readWrite("examples/rfc_array.json", ksNew(0));
 	test_readWrite("examples/testdata_array_mixed.json", ksNew(0));
 	test_readWrite("examples/testdata_array_in_array.json", ksNew(0));
-	*/
 	test_readWrite("examples/empty_object.json", ksNew(0));
 	test_readWrite("examples/empty_array.json", ksNew(0));
 

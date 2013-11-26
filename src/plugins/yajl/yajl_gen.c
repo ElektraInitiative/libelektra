@@ -11,8 +11,6 @@
 #include "name.h"
 #include "iterator.h"
 
-#define ELEKTRA_YAJL_VERBOSE
-
 
 /**
  * @brief Return the first character of next name level
