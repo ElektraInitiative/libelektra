@@ -237,6 +237,22 @@ static void elektraGenOpenInitial(yajl_gen g, Key *parentKey,
 #endif
 
 
+	if (pfirst && *pfirst == '#')
+	{
+#ifdef ELEKTRA_YAJL_VERBOSE
+		printf("array open INITIAL\n");
+#endif
+	}
+	else
+	{
+#ifdef ELEKTRA_YAJL_VERBOSE
+		printf("GEN map open INITIAL\n");
+#endif
+		yajl_gen_map_open(g);
+	}
+
+
+
 	elektraGenOpenByName(g, pfirst, levelsToOpen);
 
 	// fixes elektraGenOpenByName for the special handling of
@@ -899,6 +915,22 @@ static void elektraGenCloseFinally(yajl_gen g, const Key *cur, const Key *next)
 #endif
 		yajl_gen_array_close(g);
 	}
+
+	// now we look at the first unequal element
+	// this is the very last element we are about to close
+	if (pcur && *pcur == '#')
+	{
+#ifdef ELEKTRA_YAJL_VERBOSE
+		printf ("array close FINAL\n");
+#endif
+	}
+	else
+	{
+#ifdef ELEKTRA_YAJL_VERBOSE
+		printf ("GEN map close FINAL\n");
+#endif
+		yajl_gen_map_close(g);
+	}
 }
 
 
@@ -980,12 +1012,6 @@ int elektraYajlSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 	}
 
 #ifdef ELEKTRA_YAJL_VERBOSE
-	// TODO: could be array also
-	printf("GEN map open PRE-INITIAL\n");
-#endif
-	yajl_gen_map_open(g);
-
-#ifdef ELEKTRA_YAJL_VERBOSE
 	printf ("parentKey: %s, cur: %s\n", keyName(parentKey), keyName(cur));
 #endif
 	elektraGenOpenInitial(g, parentKey, cur);
@@ -1012,14 +1038,7 @@ int elektraYajlSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 	elektraGenOpenLast(g, cur);
 	elektraGenValue(g, parentKey, cur);
 
-	// Close what we opened in the beginning
 	elektraGenCloseFinally(g, cur, parentKey);
-
-	// TODO: could also be array
-#ifdef ELEKTRA_YAJL_VERBOSE
-	printf ("GEN map close FINAL\n");
-#endif
-	yajl_gen_map_close(g);
 
 	FILE *fp = fopen(keyString(parentKey), "w");
 	if (!fp)

@@ -1,22 +1,22 @@
 [
-   {
-      "precision": "zip",
-      "Latitude":  37.7668,
-      "Longitude": -122.3959,
-      "Address":   "",
-      "City":      "SAN FRANCISCO",
-      "State":     "CA",
-      "Zip":       "94107",
-      "Country":   "US"
-   },
-   {
-      "precision": "zip",
-      "Latitude":  37.371991,
-      "Longitude": -122.026020,
-      "Address":   "",
-      "City":      "SUNNYVALE",
-      "State":     "CA",
-      "Zip":       "94085",
-      "Country":   "US"
-   }
+    {
+        "Address": "",
+        "City": "SAN FRANCISCO",
+        "Country": "US",
+        "Latitude": 37.7668,
+        "Longitude": -122.3959,
+        "State": "CA",
+        "Zip": "94107",
+        "precision": "zip"
+    },
+    {
+        "Address": "",
+        "City": "SUNNYVALE",
+        "Country": "US",
+        "Latitude": 37.371991,
+        "Longitude": -122.026020,
+        "State": "CA",
+        "Zip": "94085",
+        "precision": "zip"
+    }
 ]
