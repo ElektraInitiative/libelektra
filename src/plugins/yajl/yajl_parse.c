@@ -10,6 +10,7 @@
 
 #include "array.h"
 
+
 /**
  @retval 0 if ksCurrent does not hold an array entry
  @retval 1 if the array entry will be used because its the first
@@ -19,12 +20,11 @@
 static int elektraYajlIncrementArrayEntry(KeySet * ks)
 {
 	Key * current = ksCurrent(ks);
+	const char * baseName = keyBaseName(current);
 
-	if (keyGetMeta(current, "array")) // TODO: use # in name instead, metadata is avoidable
+	if (*baseName == '#')
 	{
-		const char * baseName = keyBaseName(current);
-
-		if (!strcmp(baseName, "###start_array"))
+		if (!strcmp(baseName, "###empty_array"))
 		{
 			// we have a new array entry, just use it
 			keySetBaseName (current, "#0");
@@ -35,7 +35,6 @@ static int elektraYajlIncrementArrayEntry(KeySet * ks)
 			// we are in an array
 			Key * newKey = keyNew (keyName(current), KEY_END);
 			elektraArrayIncName(newKey);
-			keySetMeta(newKey, "array", "");
 			ksAppendKey(ks, newKey);
 			return 2;
 		}
@@ -151,7 +150,7 @@ static int elektraYajlParseMapKey(void *ctx, const unsigned char * stringVal,
 	printf ("elektraYajlParseMapKey stringValue: %s currentKey: %s\n", stringValue,
 			keyName(currentKey));
 #endif
-	if (!strcmp(keyBaseName(currentKey), "###start_map"))
+	if (!strcmp(keyBaseName(currentKey), "___empty_map"))
 	{
 		// now we know the name of the object
 		keySetBaseName(currentKey, stringValue);
@@ -178,7 +177,8 @@ static int elektraYajlParseStartMap(void *ctx)
 	Key *currentKey = ksCurrent(ks);
 
 	Key * newKey = keyNew (keyName(currentKey), KEY_END);
-	keyAddBaseName(newKey, "###start_map");
+	// add a pseudo element for empty map
+	keyAddBaseName(newKey, "___empty_map");
 	ksAppendKey(ks, newKey);
 
 #ifdef ELEKTRA_YAJL_VERBOSE
@@ -188,37 +188,33 @@ static int elektraYajlParseStartMap(void *ctx)
 	return 1;
 }
 
-static int parse_end(void *ctx)
+static int elektraYajlParseEnd(void *ctx)
 {
 	KeySet *ks = (KeySet*) ctx;
 	Key *currentKey = ksCurrent(ks);
 
 	Key * lookupKey = keyNew (keyName(currentKey), KEY_END);
-	keySetBaseName(lookupKey, ""); // remove current key
+	keySetBaseName(lookupKey, ""); // remove current baseName
 
-	// lets point to the correct place
+	// lets point current to the correct place
 	Key * foundKey = ksLookup(ks, lookupKey, 0);
-	(void)foundKey;
 
 #ifdef ELEKTRA_YAJL_VERBOSE
 	if (foundKey)
 	{
-		printf ("parse_end %s\n", keyName(foundKey));
+		printf ("elektraYajlParseEnd %s\n", keyName(foundKey));
 	}
 	else
 	{
-		printf ("parse_end did not find key!\n");
+		printf ("elektraYajlParseEnd did not find key!\n");
 	}
+#else
+	(void)foundKey; // foundKey is not used, but lookup is needed
 #endif
 
 	keyDel (lookupKey);
 
 	return 1;
-}
-
-static int elektraYajlParseEndMap(void *ctx)
-{
-	return parse_end(ctx);
 }
 
 static int elektraYajlParseStartArray(void *ctx)
@@ -227,11 +223,10 @@ static int elektraYajlParseStartArray(void *ctx)
 	elektraYajlIncrementArrayEntry(ks);
 
 	Key *currentKey = ksCurrent(ks);
-	keySetMeta(currentKey, "array", "");
 
 	Key * newKey = keyNew (keyName(currentKey), KEY_END);
-	keyAddBaseName(newKey, "###start_array");
-	keySetMeta(newKey, "array", "");
+	// add a pseudo element for empty array
+	keyAddBaseName(newKey, "###empty_array");
 	ksAppendKey(ks, newKey);
 
 #ifdef ELEKTRA_YAJL_VERBOSE
@@ -239,11 +234,6 @@ static int elektraYajlParseStartArray(void *ctx)
 #endif
 
 	return 1;
-}
-
-static int elektraYajlParseEndArray(void *ctx)
-{
-	return parse_end(ctx);
 }
 
 int elektraYajlGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned,
@@ -267,9 +257,9 @@ int elektraYajlGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned,
 		elektraYajlParseString,
 		elektraYajlParseStartMap,
 		elektraYajlParseMapKey,
-		elektraYajlParseEndMap,
+		elektraYajlParseEnd,
 		elektraYajlParseStartArray,
-		elektraYajlParseEndArray
+		elektraYajlParseEnd
 	};
 
 	ksAppendKey (returned, keyNew(keyName((parentKey)), KEY_END));

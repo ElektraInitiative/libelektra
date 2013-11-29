@@ -11,6 +11,7 @@
 #include "name.h"
 #include "iterator.h"
 
+// #define ELEKTRA_YAJL_VERBOSE
 
 // TODO defined privately in keyhelpers.c, API break possible..
 char *keyNameGetOneLevel(const char *name, size_t *size);
@@ -680,7 +681,6 @@ static void elektraGenCloseIterate(yajl_gen g, const Key *cur,
 			}
 		}
 	}
-
 }
 
 /**
@@ -1024,19 +1024,19 @@ int elektraYajlGenEmpty(yajl_gen g, KeySet *returned, Key *parentKey)
 	}
 	else
 	{
-		if (!strcmp(keyBaseName(ksTail(returned)), "###start_array"))
+		if (!strcmp(keyBaseName(ksTail(returned)), "###empty_array"))
 		{
 #ifdef ELEKTRA_YAJL_VERBOSE
-			printf ("GEN empty array\n");
+			printf ("GEN empty array (got ###empty_array)\n");
 #endif
 			yajl_gen_array_open(g);
 			yajl_gen_array_close(g);
 			did_something = 1;
 		}
-		else if (!strcmp(keyBaseName(ksTail(returned)), "###start_map"))
+		else if (!strcmp(keyBaseName(ksTail(returned)), "___empty_map"))
 		{
 #ifdef ELEKTRA_YAJL_VERBOSE
-			printf ("GEN empty map (got ###start_map)\n");
+			printf ("GEN empty map (got ___empty_map)\n");
 #endif
 			yajl_gen_map_open(g);
 			yajl_gen_map_close(g);
