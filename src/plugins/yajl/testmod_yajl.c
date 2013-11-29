@@ -537,7 +537,7 @@ void test_readWrite(const char * fileName,
 	succeed_if(output_errors(parentKey), "error in kdbGet");
 	succeed_if(output_warnings(parentKey), "warnings in kdbGet");
 
-	// output_keyset(keys);
+	output_keyset(keys);
 
 	char * fileNameCompare = malloc(strlen(fileName)+6);
 	strcpy(fileNameCompare, fileName);
@@ -834,6 +834,7 @@ int main(int argc, char** argv)
 	test_readWrite("examples/rfc_array.json", ksNew(0));
 	test_readWrite("examples/testdata_array_mixed.json", ksNew(0));
 	test_readWrite("examples/testdata_array_in_array.json", ksNew(0));
+	test_readWrite("examples/testdata_array_in_array_anon_map.json", ksNew(0));
 	// test_readWrite("examples/testdata_array_nested.json", ksNew(0));
 
 

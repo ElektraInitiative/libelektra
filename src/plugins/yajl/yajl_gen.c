@@ -11,7 +11,38 @@
 #include "name.h"
 #include "iterator.h"
 
-// #define ELEKTRA_YAJL_VERBOSE
+#define ELEKTRA_YAJL_VERBOSE
+
+typedef enum
+{
+	/**
+	 * We are at end of string, so no lookahead.
+	 */
+	LOOKAHEAD_END,
+	/**
+	 * We are iterating in the middle of an array (or at least
+	 * certainly not starting it)
+	 */
+	LOOKAHEAD_ARRAY,
+	/**
+	 * We are starting a new array.
+	 */
+	LOOKAHEAD_START_ARRAY,
+	/**
+	 * We found a special marker for empty arrays.
+	 * @todo not implemented yet
+	 */
+	LOOKAHEAD_EMPTY_ARRAY,
+	/**
+	 * We found a special marker for empty maps.
+	 * @todo not implemented yet
+	 */
+	LOOKAHEAD_EMPTY_MAP,
+	/**
+	 * We are iterating a map or starting it.
+	 */
+	LOOKAHEAD_MAP
+} lookahead_t;
 
 // TODO defined privately in keyhelpers.c, API break possible..
 char *keyNameGetOneLevel(const char *name, size_t *size);
@@ -19,24 +50,50 @@ char *keyNameGetOneLevel(const char *name, size_t *size);
 /**
  * @brief Return the first character of next name level
  *
+ * @pre it must be safe to look at pnext+size
+ * @pre string must be null terminated
+ *
  * @param pnext pointer to current level
  * @param size size of name in that level
  *
- * @retval # if it is an array
- * @retval / if it was not possible to look further (for pretty
- *         printing, NULL is not visible)
- * @retval anything_else otherwise
+ * @return #lookahead
  */
-static char elektraLookahead(const char* pnext, size_t size)
+static lookahead_t elektraLookahead(const char* pnext, size_t size)
 {
+	lookahead_t lookahead = LOOKAHEAD_END; // found end
 	if (*(pnext+size) == '/')
 	{
 		// we are not at end, so we can look one further
-		return *(pnext+size+1);
+		if (*(pnext+size+1) == '#')
+		{
+			if (*(pnext+size+2) == '0')
+			{
+				lookahead = LOOKAHEAD_START_ARRAY;
+			}
+			else if (!strcmp(pnext+size, "###empty_array"))
+			{
+				lookahead = LOOKAHEAD_EMPTY_ARRAY;
+			}
+			else
+			{
+				lookahead = LOOKAHEAD_ARRAY;
+			}
+		}
+		else
+		{
+			if (!strcmp(pnext+size, "___empty_map"))
+			{
+				lookahead = LOOKAHEAD_EMPTY_MAP;
+			}
+			else
+			{
+				lookahead = LOOKAHEAD_MAP;
+			}
+		}
 	}
 
 	// / and not NULL for nice printing
-	return '/'; // found End
+	return lookahead; // found End
 
 }
 
@@ -92,7 +149,7 @@ static void elektraGenOpenIterate(yajl_gen g,
 	{
 		pnext=keyNameGetOneLevel(pnext+size,&size);
 
-		char lookahead = elektraLookahead(pnext, size);
+		lookahead_t lookahead = elektraLookahead(pnext, size);
 
 #ifdef ELEKTRA_YAJL_VERBOSE
 		printf("level by name %d: \"%.*s\", lookahead: %c\n",
@@ -109,12 +166,7 @@ static void elektraGenOpenIterate(yajl_gen g,
 #endif
 			yajl_gen_array_open(g);
 
-			if (lookahead == '/')
-			{
-				// do not care if last element
-				// N1 handled it already
-			}
-			else if (lookahead != '#')
+			if (lookahead == LOOKAHEAD_MAP)
 			{
 #ifdef ELEKTRA_YAJL_VERBOSE
 				printf ("GEN (N0) anon-map\n");
@@ -123,7 +175,7 @@ static void elektraGenOpenIterate(yajl_gen g,
 
 			}
 		}
-		else if (lookahead == '#')
+		else if (lookahead == LOOKAHEAD_START_ARRAY)
 		{
 #ifdef ELEKTRA_YAJL_VERBOSE
 			printf ("GEN (N2) string %.*s\n",
@@ -382,7 +434,8 @@ static void elektraGenOpenInitial(yajl_gen g, Key *parentKey,
  */
 static void elektraGenOpenFirst(yajl_gen g,
 		const char *cur,
-		const char *next, size_t nextSize)
+		const char *next,
+		size_t nextSize)
 {
 #ifdef ELEKTRA_YAJL_VERBOSE
 	printf("elektraGenOpenFirst cur: \"%s\" next: \"%.*s\"\n",
@@ -394,21 +447,28 @@ static void elektraGenOpenFirst(yajl_gen g,
 	{
 		if (*next == '#')
 		{
-			char lookahead =
+			lookahead_t lookahead =
 				elektraLookahead(next, nextSize);
 			// see if we are at end
-			if (lookahead == '/')
+			if (lookahead == LOOKAHEAD_END)
 			{
 				// (1)
 			}
-			else if (lookahead == '#')
+			else if (lookahead == LOOKAHEAD_START_ARRAY)
+			{
+#ifdef ELEKTRA_YAJL_VERBOSE
+				printf("GEN start array (2)\n");
+#endif
+				yajl_gen_array_open(g);
+			}
+			else if (lookahead == LOOKAHEAD_ARRAY)
 			{
 #ifdef ELEKTRA_YAJL_VERBOSE
 				printf("GEN array (2)\n");
 #endif
 				yajl_gen_array_open(g);
 			}
-			else
+			else if (lookahead == LOOKAHEAD_MAP)
 			{
 #ifdef ELEKTRA_YAJL_VERBOSE
 				printf("GEN map (3)\n");
@@ -426,10 +486,10 @@ static void elektraGenOpenFirst(yajl_gen g,
 	}
 	else
 	{
-		char lookahead =
+		lookahead_t lookahead =
 			elektraLookahead(next, nextSize);
 
-		if (lookahead == '/')
+		if (lookahead == LOOKAHEAD_END)
 		{
 #ifdef ELEKTRA_YAJL_VERBOSE
 			printf("GEN string (4)\n");
@@ -438,23 +498,17 @@ static void elektraGenOpenFirst(yajl_gen g,
 				(const unsigned char *)next,
 				nextSize);
 		}
-		if (lookahead == '#')
+		else if (lookahead == LOOKAHEAD_START_ARRAY)
 		{
 #ifdef ELEKTRA_YAJL_VERBOSE
-			printf("GEN string (5)\n");
+			printf("GEN string for start array (5)\n");
 #endif
 			yajl_gen_string(g,
 				(const unsigned char *)next,
 				nextSize);
-			/*
-			array handled later?
-#ifdef ELEKTRA_YAJL_VERBOSE
-			printf("GEN array (5)\n");
-#endif
-			yajl_gen_array_open(g);
-			*/
+			// opening array will be handled later
 		}
-		else
+		else if (lookahead == LOOKAHEAD_MAP)
 		{
 #ifdef ELEKTRA_YAJL_VERBOSE
 			printf("GEN string (6)\n");
@@ -646,12 +700,12 @@ static void elektraGenCloseIterate(yajl_gen g, const Key *cur,
 	{
 		elektraKeyNameReverseNext(&curIt);
 
-		char lookahead = elektraLookahead(curIt.current,
+		lookahead_t lookahead = elektraLookahead(curIt.current,
 				curIt.size);
 
 		if (curIt.current[0] == '#')
 		{
-			if (lookahead != '#')
+			if (lookahead == LOOKAHEAD_MAP)
 			{
 #ifdef ELEKTRA_YAJL_VERBOSE
 				printf ("GEN (C1) anon map close\n");
@@ -666,7 +720,7 @@ static void elektraGenCloseIterate(yajl_gen g, const Key *cur,
 		}
 		else
 		{
-			if (lookahead != '#')
+			if (lookahead == LOOKAHEAD_MAP)
 			{
 #ifdef ELEKTRA_YAJL_VERBOSE
 				printf ("GEN (C3) map close\n");
@@ -732,17 +786,17 @@ static void elektraGenCloseSpecial(yajl_gen g, const char* pcur,
 		const char * pnext,
 		int levels)
 {
-	char lookahead = elektraLookahead(pcur, csize);
+	lookahead_t lookahead = elektraLookahead(pcur, csize);
 	if (*pcur == '#' && *pnext == '#')
 	{
-		if (lookahead == '#')
+		if (lookahead == LOOKAHEAD_ARRAY)
 		{
 #ifdef ELEKTRA_YAJL_VERBOSE
 			printf("GEN (X1) closing array in array\n");
 #endif
 			yajl_gen_array_close(g);
 		}
-		else if(lookahead != '/')
+		else if(lookahead == LOOKAHEAD_MAP)
 		{
 #ifdef ELEKTRA_YAJL_VERBOSE
 			printf("GEN (X2) next anon-map\n");
@@ -758,15 +812,14 @@ static void elektraGenCloseSpecial(yajl_gen g, const char* pcur,
 	}
 	else if (*pcur != '#')
 	{
-		if (levels <= 0 && lookahead == '#')
+		if (levels <= 0 && lookahead == LOOKAHEAD_ARRAY)
 		{
 #ifdef ELEKTRA_YAJL_VERBOSE
 			printf("GEN (X4) closing array\n");
 #endif
 			yajl_gen_array_close(g);
 		}
-		// we need to recheck # because of levels
-		else if (lookahead != '/' && lookahead != '#')
+		else if (lookahead == LOOKAHEAD_MAP)
 		{
 #ifdef ELEKTRA_YAJL_VERBOSE
 			printf("GEN (X5) closing map\n");
