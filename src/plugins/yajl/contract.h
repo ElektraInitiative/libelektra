@@ -40,6 +40,13 @@ keyNew ("system/elektra/modules/yajl/infos/description",
 "\n"
 "\n"
 "\n"
+"== Special values==                               \n"
+"\n"
+"In json it is possible to have empty arrays and objects.\n"
+"In Elektra this is mapped using the special names ###empty_array\n"
+"and ___empty_map.\n"
+"\n"
+"\n"
 "== Restrictions ==                               \n"
 "                                                 \n"
 "- Everything is string if not tagged by meta key \"type\"   \n"
@@ -87,8 +94,15 @@ keyNew ("system/elektra/modules/yajl/infos/description",
 "                                                                                                        \n"
 "or import it                                                                                            \n"
 " kdb import system/org/freedesktop/openicc ini < dump.ini                                               \n"
-"\n"
-	, KEY_END),
+"\n",
+	KEY_END),
+keyNew ("system/elektra/modules/yajl/infos/metadata",
+	KEY_END),
+keyNew ("system/elektra/modules/yajl/infos/metadata/boolean",
+	KEY_VALUE,
+"Used to signal that a value should be syntactically rendered as boolean\n"
+"See system/elektra/modules/type/infos/metadata/boolean for information what a boolean is.",
+	KEY_END),
 keyNew ("system/elektra/modules/yajl/infos/provides",
 	KEY_VALUE, "storage", KEY_END),
 keyNew ("system/elektra/modules/yajl/infos/placements",
@@ -96,7 +110,7 @@ keyNew ("system/elektra/modules/yajl/infos/placements",
 keyNew ("system/elektra/modules/yajl/infos/needs",
 	KEY_VALUE, "", KEY_END),
 keyNew ("system/elektra/modules/yajl/infos/recommends",
-	KEY_VALUE, "directoryvalue comment type", KEY_END),
+	KEY_VALUE, "rebase directoryvalue comment type", KEY_END),
 keyNew ("system/elektra/modules/yajl/infos/version",
 	KEY_VALUE, PLUGINVERSION, KEY_END),
 keyNew ("system/elektra/modules/yajl/config", KEY_END),
