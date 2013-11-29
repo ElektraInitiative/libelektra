@@ -227,14 +227,14 @@ static void elektraGenOpenIterate(yajl_gen g,
  * @param g the generator
  * @param next the key
  */
-static void elektraGenOpenLast(yajl_gen g, const Key *next)
+static void elektraGenOpenValue(yajl_gen g, const Key *next)
 {
 	keyNameReverseIterator last =
 		elektraKeyNameGetReverseIterator(next);
 	elektraKeyNameReverseNext(&last);
 
 #ifdef ELEKTRA_YAJL_VERBOSE
-	printf("elektraGenOpenLast next: \"%.*s\"\n",
+	printf("elektraGenOpenValue next: \"%.*s\"\n",
 			(int)last.size, last.current);
 #endif
 
@@ -246,6 +246,33 @@ static void elektraGenOpenLast(yajl_gen g, const Key *next)
 		yajl_gen_string(g,
 			(const unsigned char *)last.current,
 			last.size-1);
+	}
+}
+
+/**
+ * @brief fixes elektraGenOpenIterate for the special handling of
+ * arrays at very last position.
+ *
+ * @param g generate array there
+ * @param key the key to look at
+ */
+static void elektraGenOpenLast(yajl_gen g, const Key *key)
+{
+	keyNameReverseIterator last =
+		elektraKeyNameGetReverseIterator(key);
+	elektraKeyNameReverseNext(&last);
+
+#ifdef ELEKTRA_YAJL_VERBOSE
+	printf("last startup entry: \"%.*s\"\n",
+			(int)last.size, last.current);
+#endif
+
+	if (last.current[0] == '#')
+	{
+#ifdef ELEKTRA_YAJL_VERBOSE
+		printf("GEN array open (startup)\n");
+#endif
+		yajl_gen_array_open(g);
 	}
 }
 
@@ -311,24 +338,7 @@ static void elektraGenOpenInitial(yajl_gen g, Key *parentKey,
 
 	elektraGenOpenIterate(g, pfirst, levelsToOpen);
 
-	// fixes elektraGenOpenIterate for the special handling of
-	// arrays at startup
-	keyNameReverseIterator last =
-		elektraKeyNameGetReverseIterator(first);
-	elektraKeyNameReverseNext(&last);
-
-#ifdef ELEKTRA_YAJL_VERBOSE
-	printf("last startup entry: \"%.*s\"\n",
-			(int)last.size, last.current);
-#endif
-
-	if (last.current[0] == '#')
-	{
-#ifdef ELEKTRA_YAJL_VERBOSE
-		printf("GEN array open (startup)\n");
-#endif
-		yajl_gen_array_open(g);
-	}
+	elektraGenOpenLast(g, first);
 }
 
 
@@ -622,32 +632,29 @@ static void elektraGenOpen(yajl_gen g, const Key *cur, const Key *next)
 	// nor the last one
 	int levels = nextLevels - equalLevels - levelsToSkip;
 
+	int actionRequired = equalLevels+1 < nextLevels;
+
 #ifdef ELEKTRA_YAJL_VERBOSE
-	printf ("elektraGenOpen %d: pcur: %s , pnext: %s\n",
-		(int) levels, pcur, pnext);
+	printf ("elektraGenOpen %d: pcur: %s , pnext: %s, action: %d\n",
+		(int) levels, pcur, pnext, actionRequired);
 #endif
 
-	// do what needs to be done for first unequal level
-	if (equalLevels+1 < nextLevels)
+	// check if anything needs to be done at all
+	if (actionRequired)
 	{
 		elektraGenOpenFirst(g, pcur, pnext, size);
 
-		// one level more is done
+		// skip the first level we did already
 		pnext=keyNameGetOneLevel(pnext+size,&size);
 
-		// no more iterating afterwards, but we need to open
-		// an array here
-		if (levels <= 0 && pnext && *pnext == '#')
+		// now yield everything else in the string but the last value
+		elektraGenOpenIterate(g, pnext, levels);
+
+		if (levels <= 0)
 		{
-#ifdef ELEKTRA_YAJL_VERBOSE
-			printf ("GEN (S1) array after first\n");
-#endif
-			yajl_gen_array_open(g);
+			elektraGenOpenLast(g, next);
 		}
 	}
-
-	// now yield everything else in the string but the last value
-	elektraGenOpenIterate(g, pnext, levels);
 }
 
 
@@ -1009,7 +1016,7 @@ static void elektraGenCloseFinally(yajl_gen g, const Key *cur, const Key *next)
  */
 static void elektraGenValue(yajl_gen g, Key *parentKey, const Key *cur)
 {
-	elektraGenOpenLast(g, cur);
+	elektraGenOpenValue(g, cur);
 
 #ifdef ELEKTRA_YAJL_VERBOSE
 	printf ("GEN value %s for %s\n", keyString(cur), keyName(cur));
