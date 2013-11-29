@@ -54,6 +54,7 @@ json serialization:
 	  doc/standards/OpenICC_device_config_DB.json
 	  http://www.freedesktop.org/wiki/Specifications/icc_meta_tag_for_monitor_profiles
 
+http://json-schema.org
 
 == PRETTY ==
 
@@ -61,6 +62,13 @@ latex plugin to make pretty printed key/value pairs
 dot/graphviz plugin to visualize graph of keys
 html plugin (to show elektra config in html format)
 csv plugin with metadata as additional columns (configureable)
+
+literate data
+	good for documentation
+	everything is ignored except special introduced key/value pairs
+	<start><key><seperator><value><terminator>
+	needs two more special characters next to seperator, but is
+	otherwise alike
 
 
 == CPPPLUGIN ==
