@@ -835,7 +835,7 @@ int main(int argc, char** argv)
 	test_readWrite("examples/testdata_array_mixed.json", ksNew(0));
 	test_readWrite("examples/testdata_array_in_array.json", ksNew(0));
 	test_readWrite("examples/testdata_array_in_array_anon_map.json", ksNew(0));
-	// test_readWrite("examples/testdata_array_nested.json", ksNew(0));
+	test_readWrite("examples/testdata_array_nested.json", ksNew(0));
 
 
 	elektraModulesClose(modules, 0);

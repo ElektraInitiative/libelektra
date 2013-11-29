@@ -250,6 +250,33 @@ static void elektraGenOpenValue(yajl_gen g, const Key *next)
 }
 
 /**
+ * @brief fixes elektraGenCloseIterate for the special handling of
+ * arrays at very last position.
+ *
+ * @param g generate array there
+ * @param key the key to look at
+ */
+static void elektraGenCloseLast(yajl_gen g, const Key *key)
+{
+	keyNameReverseIterator last =
+		elektraKeyNameGetReverseIterator(key);
+	elektraKeyNameReverseNext(&last);
+
+#ifdef ELEKTRA_YAJL_VERBOSE
+	printf("last startup entry: \"%.*s\"\n",
+			(int)last.size, last.current);
+#endif
+
+	if (last.current[0] == '#')
+	{
+#ifdef ELEKTRA_YAJL_VERBOSE
+		printf("GEN array close last\n");
+#endif
+		yajl_gen_array_close(g);
+	}
+}
+
+/**
  * @brief fixes elektraGenOpenIterate for the special handling of
  * arrays at very last position.
  *
@@ -270,7 +297,7 @@ static void elektraGenOpenLast(yajl_gen g, const Key *key)
 	if (last.current[0] == '#')
 	{
 #ifdef ELEKTRA_YAJL_VERBOSE
-		printf("GEN array open (startup)\n");
+		printf("GEN array open last\n");
 #endif
 		yajl_gen_array_open(g);
 	}
@@ -459,31 +486,18 @@ static void elektraGenOpenFirst(yajl_gen g,
 		{
 			lookahead_t lookahead =
 				elektraLookahead(next, nextSize);
-			// see if we are at end
-			if (lookahead == LOOKAHEAD_END)
-			{
-				// (1)
-			}
-			else if (lookahead == LOOKAHEAD_START_ARRAY)
+			if (lookahead == LOOKAHEAD_MAP)
 			{
 #ifdef ELEKTRA_YAJL_VERBOSE
-				printf("GEN start array (2)\n");
-#endif
-				yajl_gen_array_open(g);
-			}
-			else if (lookahead == LOOKAHEAD_ARRAY)
-			{
-#ifdef ELEKTRA_YAJL_VERBOSE
-				printf("GEN array (2)\n");
-#endif
-				yajl_gen_array_open(g);
-			}
-			else if (lookahead == LOOKAHEAD_MAP)
-			{
-#ifdef ELEKTRA_YAJL_VERBOSE
-				printf("GEN map (3)\n");
+				printf("GEN next anon map (3)\n");
 #endif
 				yajl_gen_map_open(g);
+			}
+			else
+			{
+#ifdef ELEKTRA_YAJL_VERBOSE
+				printf("we are iterating over array, nothing to do\n");
+#endif
 			}
 		}
 		else
@@ -650,10 +664,7 @@ static void elektraGenOpen(yajl_gen g, const Key *cur, const Key *next)
 		// now yield everything else in the string but the last value
 		elektraGenOpenIterate(g, pnext, levels);
 
-		if (levels <= 0)
-		{
-			elektraGenOpenLast(g, next);
-		}
+		elektraGenOpenLast(g, next);
 	}
 }
 
@@ -683,7 +694,7 @@ static void elektraGenOpen(yajl_gen g, const Key *cur, const Key *next)
  *
  * (C3)
  * #
- * -> close the map
+ * -> close the array
  *
  * (C4)
  * _
@@ -730,7 +741,7 @@ static void elektraGenCloseIterate(yajl_gen g, const Key *cur,
 			if (lookahead == LOOKAHEAD_MAP)
 			{
 #ifdef ELEKTRA_YAJL_VERBOSE
-				printf ("GEN (C3) map close\n");
+				printf ("GEN (C4) map close\n");
 #endif
 				yajl_gen_map_close(g);
 			}
@@ -746,7 +757,10 @@ static void elektraGenCloseIterate(yajl_gen g, const Key *cur,
 
 /**
  * @brief Special handling of cases related to closing in non-final
- * situation
+ * situation.
+ *
+ * Closes the name in the middle (first unequal), so it must be executed
+ * after iterating. (Because closing is in reverse order)
  *
  * Following situations are possible:
  *
@@ -788,7 +802,7 @@ static void elektraGenCloseIterate(yajl_gen g, const Key *cur,
  * @param levels how many levels were handled before (see examples
  * above)
  */
-static void elektraGenCloseSpecial(yajl_gen g, const char* pcur,
+static void elektraGenCloseFirst(yajl_gen g, const char* pcur,
 		size_t csize,
 		const char * pnext,
 		int levels)
@@ -858,7 +872,7 @@ static void elektraGenCloseSpecial(yajl_gen g, const char* pcur,
  *
  * In the level before the equal level there is some special handling in
  * regards to the next level.
- * @see elektraGenCloseSpecial
+ * @see elektraGenCloseFirst
  *
  * @example
  *
@@ -927,8 +941,12 @@ static void elektraGenClose(yajl_gen g, const Key *cur, const Key *next)
 			levels);
 #endif
 
+	if (levels > 0)
+	{
+		elektraGenCloseLast(g, cur);
+	}
 	elektraGenCloseIterate(g, cur, levels);
-	elektraGenCloseSpecial(g, pcur, csize, pnext, levels);
+	elektraGenCloseFirst(g, pcur, csize, pnext, levels);
 }
 
 static void elektraGenCloseFinally(yajl_gen g, const Key *cur, const Key *next)
@@ -963,7 +981,7 @@ static void elektraGenCloseFinally(yajl_gen g, const Key *cur, const Key *next)
 
 	elektraGenCloseIterate(g, cur, levels);
 
-	// fixes elektraCloseIterate for the special handling of
+	// fixes elektraGenCloseIterate for the special handling of
 	// arrays finally
 	keyNameReverseIterator last =
 		elektraKeyNameGetReverseIterator(cur);
@@ -1057,7 +1075,7 @@ static void elektraGenValue(yajl_gen g, Key *parentKey, const Key *cur)
 	}
 }
 
-int elektraYajlGenEmpty(yajl_gen g, KeySet *returned, Key *parentKey)
+int elektraGenEmpty(yajl_gen g, KeySet *returned, Key *parentKey)
 {
 	int did_something = 0;
 	// TODO: do all these situations actually occur?
@@ -1149,7 +1167,7 @@ int elektraYajlSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 		return 0;
 	}
 
-	if (elektraYajlGenEmpty(g, returned, parentKey))
+	if (elektraGenEmpty(g, returned, parentKey))
 	{
 		int ret = elektraGenWriteFile(g, parentKey);
 		yajl_gen_free(g);
