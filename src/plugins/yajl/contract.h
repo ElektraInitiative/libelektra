@@ -55,6 +55,8 @@ keyNew ("system/elektra/modules/yajl/infos/description",
 "- Values in non-leaves are discarded.\n"
 "- Arrays will be normalized (to #0, #1, ..)\n"
 "- Comments of various json-dialects are discarded.       \n"
+"- Intermixing of arrays and maps is not allowed (except anonymous maps within array).       \n"
+"  (it is of course allowed to nest them, see testdata_array_broken.json for whats not allowed)\n"
 "\n"
 "Because of these potential problems a type checker,\n"
 "comments filter and directory value filter are highly recommended.\n"

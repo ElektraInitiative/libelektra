@@ -817,7 +817,8 @@ static void elektraGenCloseFirst(yajl_gen g, const char* pcur,
 #endif
 			yajl_gen_array_close(g);
 		}
-		else if(lookahead == LOOKAHEAD_MAP)
+		else
+		if(lookahead == LOOKAHEAD_MAP)
 		{
 #ifdef ELEKTRA_YAJL_VERBOSE
 			printf("GEN (X2) next anon-map\n");

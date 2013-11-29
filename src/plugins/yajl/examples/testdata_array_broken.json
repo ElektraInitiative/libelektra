@@ -16,11 +16,18 @@
                                     1,
                                     2,
                                     3
-                                ]
+                                ],
+                                { <-- not allowed, intermixture of array and map
+                                    "other_test": "also deep"
+                                }
                             ],
                             "test",
                             "string"
-                        ]
+                        },
+                        "def": 6
+                    },
+                    {
+                        "syx": 7
                     }
                 ]
             ],
