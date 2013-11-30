@@ -1,0 +1,17 @@
+{
+    "array": [
+        true,
+        [
+            false,
+            42,
+            {
+                "one_more_map": 888,
+                "one_more_xarray": [
+                    1,
+                    3,
+                    2
+                ]
+            }
+        ]
+    ]
+}
