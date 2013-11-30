@@ -350,19 +350,11 @@ void elektraGenCloseFinally(yajl_gen g, const Key *cur, const Key *next)
 			pnext, nextLevels,
 			levels);
 #endif
-
-	elektraGenCloseIterate(g, cur, levels);
-
 	// fixes elektraGenCloseIterate for the special handling of
 	// arrays finally
 	keyNameReverseIterator last =
 		elektraKeyNameGetReverseIterator(cur);
 	elektraKeyNameReverseNext(&last);
-
-#ifdef ELEKTRA_YAJL_VERBOSE
-	printf("last startup entry: \"%.*s\"\n",
-			(int)last.size, last.current);
-#endif
 
 	if (last.current[0] == '#')
 	{
@@ -371,6 +363,9 @@ void elektraGenCloseFinally(yajl_gen g, const Key *cur, const Key *next)
 #endif
 		yajl_gen_array_close(g);
 	}
+
+	// now we iterate over the middle part
+	elektraGenCloseIterate(g, cur, levels);
 
 	// now we look at the first unequal element
 	// this is the very last element we are about to close
@@ -387,5 +382,7 @@ void elektraGenCloseFinally(yajl_gen g, const Key *cur, const Key *next)
 #endif
 		yajl_gen_map_close(g);
 	}
+
+
 }
 

@@ -10,6 +10,9 @@
 
 #include "array.h"
 
+// uncomment to enable logging for yajl_gen functionality
+// #define ELEKTRA_YAJL_VERBOSE
+
 
 /**
  @retval 0 if ksCurrent does not hold an array entry

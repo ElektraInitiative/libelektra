@@ -837,6 +837,8 @@ int main(int argc, char** argv)
 	test_readWrite("examples/testdata_array_in_array_anon_map.json", ksNew(0));
 	test_readWrite("examples/testdata_array_nested.json", ksNew(0));
 	test_readWrite("examples/testdata_array_broken.json", ksNew(0));
+	test_readWrite("examples/testdata_array_special_ending.json", ksNew(0));
+	test_readWrite("examples/testdata_array_outside.json", ksNew(0));
 
 	elektraModulesClose(modules, 0);
 	ksDel (modules);
@@ -845,4 +847,3 @@ int main(int argc, char** argv)
 
 	return nbError;
 }
-
