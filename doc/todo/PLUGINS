@@ -114,8 +114,10 @@ other file formats:
 	kde-ini
 	gconf
 	xml
-	fstab
 	inittab
+
+fstab:
+	support for spaces and so on (with \040)
 
 error specification plugin:
 	parse error specification content into keyset
