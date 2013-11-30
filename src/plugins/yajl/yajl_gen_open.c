@@ -334,7 +334,6 @@ static void elektraGenOpenFirst(yajl_gen g,
 #ifdef ELEKTRA_YAJL_VERBOSE
 			printf ("ERROR should not happen");
 #endif
-			// TODO: handle by adding warning
 		}
 	}
 	else

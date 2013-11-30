@@ -233,7 +233,6 @@ int elektraYajlSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 	yajl_gen_config conf = { 1, "  " };
 	yajl_gen g = yajl_gen_alloc(&conf, NULL
 #else
-	// TODO: do this by config
 	yajl_gen g = yajl_gen_alloc(NULL);
 	yajl_gen_config(g, yajl_gen_beautify, 1);
 	yajl_gen_config(g, yajl_gen_validate_utf8, 1);

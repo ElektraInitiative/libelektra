@@ -11,6 +11,10 @@
  * e.g. user/abc/#9 will be changed to
  *      user/abc/#_10
  *
+ * TODO: add elektraArrayIncName for kdb tool
+ * use it for other arrays within elektra
+ * add more test cases
+ *
  *
  * @param key which base name will be incremented
  *
