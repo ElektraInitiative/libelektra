@@ -537,7 +537,7 @@ void test_readWrite(const char * fileName,
 	succeed_if(output_errors(parentKey), "error in kdbGet");
 	succeed_if(output_warnings(parentKey), "warnings in kdbGet");
 
-	output_keyset(keys);
+	// output_keyset(keys);
 
 	char * fileNameCompare = malloc(strlen(fileName)+6);
 	strcpy(fileNameCompare, fileName);
@@ -839,6 +839,7 @@ int main(int argc, char** argv)
 	test_readWrite("examples/testdata_array_broken.json", ksNew(0));
 	test_readWrite("examples/testdata_array_special_ending.json", ksNew(0));
 	test_readWrite("examples/testdata_array_outside.json", ksNew(0));
+	test_readWrite("examples/keyframes_complex.json", ksNew(0));
 
 	elektraModulesClose(modules, 0);
 	ksDel (modules);
