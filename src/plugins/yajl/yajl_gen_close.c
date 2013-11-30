@@ -126,7 +126,8 @@ static void elektraGenCloseIterate(yajl_gen g, const Key *cur,
  * (X1)
  * cur:  #/#
  * next: #
- * -> closing array (always, because 2 arrays need to be closed)
+ * -> closing array (only if levels <0, because it might be outside
+ *  array with iterating one level deeper)
  *
  * (X2)
  * cur:  #/_
@@ -169,7 +170,7 @@ static void elektraGenCloseFirst(yajl_gen g, const char* pcur,
 	lookahead_t lookahead = elektraLookahead(pcur, csize);
 	if (*pcur == '#' && *pnext == '#')
 	{
-		if (lookahead == LOOKAHEAD_ARRAY)
+		if (levels <= 0 && lookahead == LOOKAHEAD_ARRAY)
 		{
 #ifdef ELEKTRA_YAJL_VERBOSE
 			printf("GEN (X1) closing array in array\n");
