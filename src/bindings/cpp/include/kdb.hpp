@@ -137,18 +137,12 @@ inline void KDB::close (Key & errorKey) throw()
  *
  * @copydetails doxygenKDBReturn
  *
- * @throw KeyInvalidName if the keyname is invalid
  * @throw KDBException if there were problems with the database
  *
  * @see KDB::get (KeySet & returned, Key & parentKey)
  */
 inline int KDB::get (KeySet & returned, std::string const & keyname)
 {
-	if (keyname.empty())
-	{
-		throw KeyInvalidName();
-	}
-
 	int ret=0;
 	if (keyname[0] != '/')
 	{
@@ -178,16 +172,10 @@ inline int KDB::get (KeySet & returned, std::string const & keyname)
  *
  * @copydetails doxygenKDBReturn
  *
- * @throw KeyInvalidName if the keyname is invalid
  * @throw KDBException if there were problems with the database
  */
 inline int KDB::get (KeySet & returned, Key & parentKey)
 {
-	if (!parentKey.isValid())
-	{
-		throw KeyInvalidName();
-	}
-
 	int ret = ckdb::kdbGet (handle, returned.getKeySet(), parentKey.getKey());
 	if (ret == -1)
 	{
