@@ -200,6 +200,7 @@ const void *keyValue(const Key *key)
  * @retval "(null)" on null keys
  * @retval "" if no data found
  * @retval "(binary)" on binary keys
+ * @ingroup keyvalue
  * @param key the key object to get the string from
  */
 const char *keyString(const Key *key)
