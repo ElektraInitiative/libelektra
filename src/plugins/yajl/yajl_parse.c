@@ -325,6 +325,7 @@ int elektraYajlGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned,
 					fileData, rd);
 			ELEKTRA_SET_ERROR(77, parentKey, (char*)str);
 			yajl_free_error(hand, str);
+			yajl_free(hand);
 			fclose (fileHandle);
 
 			return -1;
