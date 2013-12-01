@@ -400,6 +400,9 @@ int kdbGet (KDB *handle, KeySet *ks, Key *parentKey)
 					backend->getplugins[0],
 					split->keysets[i],
 					parentKey);
+			// store resolved filename
+			keySetString(split->parents[i],
+					keyString(parentKey));
 		}
 		if (ret == -1)
 		{
@@ -436,6 +439,8 @@ int kdbGet (KDB *handle, KeySet *ks, Key *parentKey)
 		Backend *backend = split->handles[i];
 		ksRewind (split->keysets[i]);
 		keySetName (parentKey, keyName(split->parents[i]));
+		keySetString(parentKey,
+				keyString(split->parents[i]));
 
 		for (size_t p=1; p<NR_OF_PLUGINS; ++p)
 		{
