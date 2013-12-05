@@ -10,11 +10,6 @@
 
 find_path(YAJL_INCLUDE_DIR yajl/yajl_common.h)
 
-find_path(YAJL2_INCLUDE_DIR yajl/yajl_version.h)
-if(NOT YAJL2_INCLUDE_DIR)
-	add_definitions(-DYAJL_MAJOR=1)
-endif(NOT YAJL2_INCLUDE_DIR)
-
 set(YAJL_NAMES ${YAJL_NAMES} yajl libyajl)
 find_library(YAJL_LIBRARY NAMES ${YAJL_NAMES} PATH)
 
@@ -24,4 +19,10 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS(Yajl DEFAULT_MSG YAJL_LIBRARY YAJL_INCLUDE_DIR
 if(YAJL_FOUND)
 	set (YAJL_INCLUDE_DIRS ${YAJL_INCLUDE_DIR})
 	set (YAJL_LIBRARIES ${YAJL_LIBRARY})
+
+	find_path(YAJL2_INCLUDE_DIR yajl/yajl_version.h)
+	if(NOT YAJL2_INCLUDE_DIR)
+		message(INFO "Assume Yajl Version 1 because yajl/yajl_version.h was not found")
+		add_definitions(-DYAJL_MAJOR=1)
+	endif(NOT YAJL2_INCLUDE_DIR)
 endif(YAJL_FOUND)

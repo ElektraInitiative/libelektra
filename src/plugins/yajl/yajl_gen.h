@@ -13,7 +13,7 @@
 
 // yajl1 did not have the yajl/yajl_version.h
 // in that case YAJL_MAJOR is set by FindYajl.cmake to 1
-#ifndef YAJL_MAJOR
+#if YAJL_MAJOR != 1
 #include <yajl/yajl_version.h>
 #endif
 
