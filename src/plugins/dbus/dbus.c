@@ -25,7 +25,11 @@
 
 #include "dbus.h"
 
-int elektraDbusGet(Plugin *handle, KeySet *returned, Key *parentKey)
+#include "kdbconfig.h"
+
+int elektraDbusGet(Plugin *handle ELEKTRA_UNUSED,
+		   KeySet *returned,
+		   Key *parentKey ELEKTRA_UNUSED)
 {
 	KeySet *pluginConfig = ksNew (30,
 		keyNew ("system/elektra/modules/dbus",
@@ -58,7 +62,9 @@ int elektraDbusGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	return 1; /* success */
 }
 
-int elektraDbusSet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraDbusSet(Plugin *handle ELEKTRA_UNUSED,
+		   KeySet *returned ELEKTRA_UNUSED,
+		   Key *parentKey)
 {
 	if (!strncmp (keyName(parentKey), "user", 4)) elektraDbusSendMessage (DBUS_BUS_SESSION);
 	if (!strncmp (keyName(parentKey), "system", 6)) elektraDbusSendMessage (DBUS_BUS_SYSTEM);

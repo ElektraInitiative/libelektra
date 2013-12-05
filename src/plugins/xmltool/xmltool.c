@@ -25,10 +25,14 @@
 
 #include "xmltool.h"
 
+#include "kdbconfig.h"
+
 #include <string.h>
 #include <stdio.h>
 
-int elektraXmltoolGet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraXmltoolGet(Plugin *handle ELEKTRA_UNUSED,
+		      KeySet *returned,
+		      Key *parentKey)
 {
 	if (!strcmp (keyName(parentKey), "system/elektra/modules/xmltool"))
 	{
@@ -70,7 +74,8 @@ int elektraXmltoolGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	return ksFromXMLfile(returned, keyString(parentKey));
 }
 
-int elektraXmltoolSet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraXmltoolSet(Plugin *handle ELEKTRA_UNUSED,
+		      KeySet *returned, Key *parentKey)
 {
 	/* set all keys */
 
