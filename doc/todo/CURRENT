@@ -12,9 +12,6 @@ test mount for json (and maybe others)
 rebase plugin:
 	remove/add a common prefix after parentKey
 
-json: fix parsing+generating without metadata "array"
-	announce without release?
-
 base structure for system with mounts:
 	hosts
 	fstab

@@ -76,19 +76,41 @@ lookahead_t elektraLookahead(const char* pnext, size_t size)
  *
  * @param g the generator
  * @param next the key
+ * @retval 0 no value needed afterwards
+ * @retval 1 value is needed
  */
-static void elektraGenOpenValue(yajl_gen g, const Key *next)
+static int elektraGenOpenValue(yajl_gen g, const Key *next)
 {
 	keyNameReverseIterator last =
 		elektraKeyNameGetReverseIterator(next);
 	elektraKeyNameReverseNext(&last);
+
+	int valueNeeded = 1;
 
 #ifdef ELEKTRA_YAJL_VERBOSE
 	printf("elektraGenOpenValue next: \"%.*s\"\n",
 			(int)last.size, last.current);
 #endif
 
-	if (last.current[0] != '#')
+	if (!strcmp(last.current, "###empty_array"))
+	{
+#ifdef ELEKTRA_YAJL_VERBOSE
+		printf ("GEN empty array in value\n");
+#endif
+		yajl_gen_array_open(g);
+		yajl_gen_array_close(g);
+		valueNeeded = 0;
+	}
+	else if (!strcmp(last.current, "___empty_map"))
+	{
+#ifdef ELEKTRA_YAJL_VERBOSE
+		printf ("GEN empty map in value\n");
+#endif
+		yajl_gen_map_open(g);
+		yajl_gen_map_close(g);
+		valueNeeded = 0;
+	}
+	else if (last.current[0] != '#')
 	{
 #ifdef ELEKTRA_YAJL_VERBOSE
 		printf("GEN string (L1,3)\n");
@@ -97,6 +119,8 @@ static void elektraGenOpenValue(yajl_gen g, const Key *next)
 			(const unsigned char *)last.current,
 			last.size-1);
 	}
+
+	return valueNeeded;
 }
 
 
@@ -116,11 +140,17 @@ static void elektraGenOpenValue(yajl_gen g, const Key *next)
  */
 static void elektraGenValue(yajl_gen g, Key *parentKey, const Key *cur)
 {
-	elektraGenOpenValue(g, cur);
-
 #ifdef ELEKTRA_YAJL_VERBOSE
 	printf ("GEN value %s for %s\n", keyString(cur), keyName(cur));
 #endif
+
+	if (!elektraGenOpenValue(g, cur))
+	{
+#ifdef ELEKTRA_YAJL_VERBOSE
+		printf ("Do not yield value\n");
+#endif
+		return;
+	}
 
 	const Key * type = keyGetMeta(cur, "type");
 	if (!type && keyGetValueSize(cur) == 0) // empty binary type is null

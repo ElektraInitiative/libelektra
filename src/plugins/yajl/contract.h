@@ -9,7 +9,7 @@ keyNew ("system/elektra/modules/yajl/exports/set",
 	KEY_FUNC, elektraYajlSet,
 	KEY_END),
 keyNew ("system/elektra/modules/yajl/infos",
-	KEY_VALUE, "All information you want to know", KEY_END),
+	KEY_VALUE, "Information about plugin is in keys below", KEY_END),
 keyNew ("system/elektra/modules/yajl/infos/author",
 	KEY_VALUE, "Markus Raab <elektra@libelektra.org>", KEY_END),
 keyNew ("system/elektra/modules/yajl/infos/licence",
@@ -22,7 +22,7 @@ keyNew ("system/elektra/modules/yajl/infos/description",
 "== Introduction  ==                                          \n"
 "\n"
 "This is a plugin reading and writing json files              \n"
-"based on the library yajl:                                   \n"
+"using the library yajl:                                   \n"
 "                                                             \n"
 "http://lloyd.github.com/yajl/                                \n"
 "\n"
@@ -45,6 +45,8 @@ keyNew ("system/elektra/modules/yajl/infos/description",
 "In json it is possible to have empty arrays and objects.\n"
 "In Elektra this is mapped using the special names ###empty_array\n"
 "and ___empty_map.\n"
+"\n"
+"Arrays are mapped to Elektra's array convention #0, #1,..\n"
 "\n"
 "\n"
 "== Restrictions ==                               \n"
