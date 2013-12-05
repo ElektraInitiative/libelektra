@@ -260,7 +260,7 @@ int elektraGenWriteFile(yajl_gen g, Key *parentKey)
 int elektraYajlSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
 #if YAJL_MAJOR == 1
-	yajl_gen_config conf = { 1, "  " };
+	yajl_gen_config conf = { 1, "    " };
 	yajl_gen g = yajl_gen_alloc(&conf, NULL);
 #else
 	yajl_gen g = yajl_gen_alloc(NULL);
