@@ -10,6 +10,11 @@
 
 find_path(YAJL_INCLUDE_DIR yajl/yajl_common.h)
 
+find_path(YAJL2_INCLUDE_DIR yajl/yajl_version.h)
+if(NOT YAJL2_INCLUDE_DIR)
+	add_definitions(-DYAJL_MAJOR=1)
+endif(NOT YAJL2_INCLUDE_DIR)
+
 set(YAJL_NAMES ${YAJL_NAMES} yajl libyajl)
 find_library(YAJL_LIBRARY NAMES ${YAJL_NAMES} PATH)
 

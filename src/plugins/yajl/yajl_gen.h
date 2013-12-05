@@ -10,7 +10,12 @@
 #include <kdberrors.h>
 
 #include <yajl/yajl_gen.h>
+
+// yajl1 did not have the yajl/yajl_version.h
+// in that case YAJL_MAJOR is set by FindYajl.cmake to 1
+#ifndef YAJL_MAJOR
 #include <yajl/yajl_version.h>
+#endif
 
 #include "iterator.h"
 #include "name.h"
