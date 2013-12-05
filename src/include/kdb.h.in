@@ -19,7 +19,7 @@
 #ifndef KDB_H
 #define KDB_H
 
-#include <kdbos.h>
+#include "kdbos.h"
 
 #define KDB_VERSION "@KDB_VERSION@"
 #define KDB_VERSION_MAJOR @KDB_VERSION_MAJOR@
