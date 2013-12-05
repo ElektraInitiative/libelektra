@@ -32,9 +32,9 @@
 
 #cmakedefine ELEKTRA_YAJL_VERBOSE
 
-#cmakedefine YAJL_VERSION
+#cmakedefine YAJL_NO_VERSION
 
-#if YAJL_VERSION == 1
+#ifdef YAJL_NO_VERSION
 # define YAJL_MAJOR 1
 #else
 # include <yajl/yajl_version.h>
