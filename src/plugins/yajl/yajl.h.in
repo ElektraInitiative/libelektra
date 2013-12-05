@@ -6,6 +6,8 @@
     email                : elektra@markus-raab.org
  ***************************************************************************/
 
+@DISCLAMER@
+
 /***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -27,6 +29,16 @@
 #define ELEKTRA_PLUGIN_YAJL_H
 
 #include <kdbplugin.h>
+
+#cmakedefine ELEKTRA_YAJL_VERBOSE
+
+#cmakedefine YAJL_VERSION
+
+#if YAJL_VERSION == 1
+# define YAJL_MAJOR 1
+#else
+# include <yajl/yajl_version.h>
+#endif
 
 #if YAJL_MAJOR == 1
 	typedef unsigned int yajl_size_type;

@@ -6,12 +6,8 @@
 #include <kdberrors.h>
 #include <kdbconfig.h>
 #include <yajl/yajl_parse.h>
-#include <yajl/yajl_version.h>
 
 #include "array.h"
-
-// uncomment to enable logging for yajl_gen functionality
-// #define ELEKTRA_YAJL_VERBOSE
 
 
 /**
