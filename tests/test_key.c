@@ -989,6 +989,8 @@ void test_keyValue()
 
 	succeed_if (key = keyNew(0), "could not create new key");
 	succeed_if (keySetBinary (key, "a", 1) == 1, "could not set binary");
+	succeed_if (keyIsString (key) == 0, "is not a string");
+	succeed_if (keyIsBinary (key) == 1, "is not a string");
 	succeed_if (keyGetBinary (key, ret, 1) == 1, "binary not truncated");
 	succeed_if (!strncmp(ret, "a", 1), "binary value wrong");
 	succeed_if (keyGetString (key, ret, 999) == -1, "string not mismatch");
@@ -996,7 +998,23 @@ void test_keyValue()
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
 	succeed_if (key = keyNew(0), "could not create new key");
+	succeed_if (keySetBinary (key, NULL, 0) == 0, "could not set null binary");
+	succeed_if (keyIsString (key) == 0, "is not a string");
+	succeed_if (keyIsBinary (key) == 1, "is not a string");
+	succeed_if (keyGetValueSize(key) == 0, "Empty value size problem");
+	succeed_if (keyDel (key) == 0, "could not delete key");
+
+	succeed_if (key = keyNew(0), "could not create new key");
+	succeed_if (keySetString (key, "") == 1, "could not set empty string");
+	succeed_if (keyIsString (key) == 1, "is not a string");
+	succeed_if (keyIsBinary (key) == 0, "is a binary");
+	succeed_if (keyGetValueSize(key) == 1, "Empty value size problem");
+	succeed_if (keyDel (key) == 0, "could not delete key");
+
+	succeed_if (key = keyNew(0), "could not create new key");
 	succeed_if (keySetBinary (key, "a long long binary", 19) == 19, "could not set string");
+	succeed_if (keyIsString (key) == 0, "is not a string");
+	succeed_if (keyIsBinary (key) == 1, "is not a string");
 	succeed_if (keyGetBinary (key, ret, 6) == -1, "binary not truncated");
 	succeed_if (keyGetBinary (key, ret, 19) == 19, "could not get binary");
 	succeed_if (!strncmp(ret, "a long long binary", 19), "binary value wrong");
