@@ -66,7 +66,7 @@ endmacro (add_plugintest)
 
 # Add a test for a script
 #
-# The the given testname is blah.sh
+# The given testname is blah.sh
 #   the script file must be called blah.sh
 #   it will be installed on the system as blah.sh
 #   the test will be called testscr_blah
@@ -101,67 +101,12 @@ function (add_scripttest testname)
 				endif (BUILD_STATIC)
 			endif (BUILD_FULL)
 		endif (TARGET)
-		set (INCLUDE_COMMON "
-# This file is AUTO GENERATED, do not modify it or your changes might be
-# lost!
-#
-# shell test suite v0.2 for kdb command
 
-# variables to count up errors and tests
-nbError=0
-nbTest=0
-
-# the script itself
-scriptName=`basename $0`
-
-if [ \"z$1\" = 'z' ]; then
-	HOME=.
-else
-	HOME=$1
-fi
-export HOME
-
-VALUE=value
-ROOT=\"user/tests/script\"
-#ROOT=\"user/tests/script`mktemp -u --tmpdir=/ XXXXXXXXXXXX`\"
-
-USER=\"`id -un`\"
-GROUP=\"`id -gn`\"
-
-FOLDER=@KDB_DB_HOME@/$USER/@KDB_DB_USER@
-FILE=test.ecf
-KDB=@KDB_COMMAND@
-
-DATE=\"`date \\\"+%b %d %H:%M\\\"`\"
-
-#succeed if the previous command was successful
-succeed_if ()
-{
-	if [ $? != \"0\" ]
-	then
-		nbError=$(( $nbError + 1 ))
-		echo error: $*
-	fi
-	nbTest=$(( $nbTest + 1 ))
-}
-
-#fails and exits the program if the previous command failed
-exit_if_fail ()
-{
-	if [ $? != \"0\" ]
-	then
-		echo fatal: $*
-		exit 1
-	fi
-	nbTest=$(( $nbTest + 1 ))
-}
-
-end_script()
-{
-	echo $scriptName RESULTS: $nbTest \"test(s)\" done $nbError \"error(s)\".
-	exit $nbError
-}
-		")
+		file(READ "${CMAKE_BINARY_DIR}/cmake/include_common.sh"
+			INCLUDE_COMMON_FILE)
+		set(INCLUDE_COMMON
+			"${INCLUDE_COMMON_FILE}KDB=${KDB_COMMAND}"
+			)
 
 		if (TARGET)
 			configure_file(

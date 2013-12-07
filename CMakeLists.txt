@@ -52,8 +52,8 @@ set (SO_VERSION 4)
 include (cmake/ElektraPackaging.cmake)
 
 #now add all directories
-add_subdirectory (src)
 add_subdirectory (cmake)
+add_subdirectory (src)
 
 if (BUILD_DOCUMENTATION)
 	add_subdirectory (doc)

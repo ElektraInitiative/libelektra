@@ -24,3 +24,8 @@ install ( FILES
 		DESTINATION lib${LIB_SUFFIX}/${TARGET_PKGCONFIG_FOLDER}
 	)
 
+configure_file (
+		"${CMAKE_SOURCE_DIR}/cmake/include_common.sh.in"
+		"${CMAKE_BINARY_DIR}/cmake/include_common.sh"
+		@ONLY
+	)

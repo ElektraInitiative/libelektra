@@ -1,5 +1,3 @@
-#!/bin/sh
-
 @INCLUDE_COMMON@
 
 $KDB set $ROOT "root" >/dev/null

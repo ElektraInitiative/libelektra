@@ -495,6 +495,7 @@ ssize_t keySetBinary(Key *key, const void *newBinary, size_t dataSize)
 
 	if (!dataSize && newBinary) return -1;
 	if (dataSize > SSIZE_MAX) return -1;
+	if (key->flags & KEY_FLAG_RO) return -1;
 
 	keySetMeta (key, "binary", "");
 
@@ -524,7 +525,8 @@ ssize_t keySetRaw(Key *key, const void *newBinary, size_t dataSize)
 	if (!key) return -1;
 	if (key->flags & KEY_FLAG_RO) return -1;
 
-	if (!dataSize || !newBinary) {
+	if (!dataSize || !newBinary)
+	{
 		if (key->data.v) {
 			free(key->data.v);
 			key->data.v=0;
@@ -536,7 +538,8 @@ ssize_t keySetRaw(Key *key, const void *newBinary, size_t dataSize)
 	}
 
 	key->dataSize=dataSize;
-	if (key->data.v) {
+	if (key->data.v)
+	{
 		char *p=0;
 		p=realloc(key->data.v,key->dataSize);
 		if (NULL==p) return -1;
