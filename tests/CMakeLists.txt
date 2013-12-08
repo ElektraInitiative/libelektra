@@ -58,10 +58,6 @@ foreach (file ${TESTS})
 	do_test (${name})
 endforeach (file ${TESTS})
 
-file (GLOB SCRIPT_TESTS *.sh)
-foreach (file ${SCRIPT_TESTS})
-	get_filename_component (name ${file} NAME)
-	add_scripttest(${name})
-endforeach (file ${SCRIPT_TESTS})
+add_subdirectory(shell)
 
 include_directories ("${PROJECT_SOURCE_DIR}/tests")
