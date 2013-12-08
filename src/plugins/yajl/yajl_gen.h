@@ -8,18 +8,13 @@
 
 #include <kdbconfig.h>
 #include <kdberrors.h>
+#include <kdbproposal.h>
 
 #include <yajl/yajl_gen.h>
 
 
 #include "iterator.h"
 #include "name.h"
-
-// uncomment to enable logging for yajl_gen functionality
-// #define ELEKTRA_YAJL_VERBOSE
-
-// TODO defined privately in keyhelpers.c, API break possible..
-char *keyNameGetOneLevel(const char *name, size_t *size);
 
 typedef enum
 {
