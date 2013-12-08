@@ -51,5 +51,11 @@ parse_t parse(std::string const& file)
 		lastIdentifier = identifier;
 	}
 
+	// if new newline at end of file
+	if (!currentMap.empty())
+	{
+		result.push_back(currentMap);
+	}
+
 	return result;
 }
