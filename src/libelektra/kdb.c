@@ -460,7 +460,7 @@ int kdbGet (KDB *handle, KeySet *ks, Key *parentKey)
 	}
 
 	/* Now postprocess the updated keysets */
-	if (elektraSplitGet (split, handle) == -1)
+	if (elektraSplitGet (split, parentKey, handle) == -1)
 	{
 		ELEKTRA_SET_ERROR(8, parentKey, keyName(ksCurrent(ks)));
 		goto error;

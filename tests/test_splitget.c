@@ -135,9 +135,14 @@ void test_get()
 
 	succeed_if (elektraMountDefault (handle, modules, 0) == 0, "could not mount default backends");
 	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
+	succeed_if (output_error(parentKey), "error found");
+	succeed_if (output_warnings(parentKey), "warning(s) found");
+
 	succeed_if (elektraSplitAppoint (split, handle, ks) == 1, "could not appoint keys to split");
 	split->syncbits[0] = 3; /* Simulate a kdbGet() */
-	succeed_if (elektraSplitGet (split, handle) == 1, "could not postprocess get");
+	succeed_if (elektraSplitGet (split, parentKey, handle) == 1, "could not postprocess get");
+	succeed_if (output_error(parentKey), "error found");
+	succeed_if (output_warnings(parentKey), "warning(s) found");
 
 	succeed_if (split->size == 2, "there is an empty keset");
 	succeed_if (ksGetSize(split->keysets[0]) == 3, "wrong size");
@@ -159,8 +164,13 @@ void test_get()
 	parentKey = keyNew("system", KEY_VALUE, "default", KEY_END);
 
 	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "system backend should be added");
+	succeed_if (output_error(parentKey), "error found");
+	succeed_if (output_warnings(parentKey), "warning(s) found");
+
 	succeed_if (elektraSplitAppoint(split, handle, ks) == 1, "could not appoint keys to split");
-	succeed_if (elektraSplitGet (split, handle) == 1, "could not postprocess get");
+	succeed_if (elektraSplitGet (split, parentKey, handle) == 1, "could not postprocess get");
+	succeed_if (output_error(parentKey), "error found");
+	succeed_if (output_warnings(parentKey), "warning(s) found");
 
 	succeed_if (split->size == 2, "there is an empty keset");
 	succeed_if (ksGetSize(split->keysets[0]) == 0, "wrong size");
@@ -199,10 +209,13 @@ void test_limit()
 
 	succeed_if (elektraMountDefault (handle, modules, 0) == 0, "could not mount default backends");
 	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
+	succeed_if (output_error(parentKey), "error found");
+	succeed_if (output_warnings(parentKey), "warning(s) found");
+
 	succeed_if (elektraSplitAppoint (split, handle, ks) == 1, "could not appoint keys to split");
 	split->syncbits[0] = 3; /* Simulate a kdbGet() */
 	ksAppendKey(split->keysets[0], keyNew("system/wrong", KEY_END));
-	succeed_if (elektraSplitGet (split, handle) == 1, "could not postprocess get");
+	succeed_if (elektraSplitGet (split, parentKey, handle) == 1, "could not postprocess get");
 
 	succeed_if (split->size == 2, "there is an empty keset");
 	succeed_if (ksGetSize(split->keysets[0]) == 3, "wrong size");
@@ -211,7 +224,9 @@ void test_limit()
 	succeed_if (keyNeedSync(split->keysets[0]->array[2]) == 0, "key should not need sync");
 	compare_keyset(split->keysets[0], ks);
 	succeed_if (ksGetSize(split->keysets[1]) == 0, "wrong size");
-	compare_key(split->parents[0], parentKey);
+
+	// we know that system/wrong will produce a warning
+	compare_key_name(split->parents[0], parentKey);
 	succeed_if (split->parents[1] == 0, "parentKey for default not correct");
 	succeed_if (split->handles[0] == handle->defaultBackend, "not correct backend");
 	succeed_if (split->syncbits[0] == 3, "should be marked as root");
@@ -224,10 +239,15 @@ void test_limit()
 	parentKey = keyNew("system", KEY_VALUE, "default", KEY_END);
 
 	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "system backend should be added");
+	succeed_if (output_error(parentKey), "error found");
+	succeed_if (output_warnings(parentKey), "warning(s) found");
+
 	succeed_if (elektraSplitAppoint(split, handle, ks) == 1, "could not appoint keys to split");
 	split->syncbits[1] = 1; /* Simulate a kdbGet() */
 	ksAppendKey(split->keysets[1], keyNew("user/wrong", KEY_END));
-	succeed_if (elektraSplitGet (split, handle) == 1, "could not postprocess get");
+	succeed_if (elektraSplitGet (split, parentKey, handle) == 1, "could not postprocess get");
+	succeed_if (output_error(parentKey), "error found");
+	succeed_if (output_warnings(parentKey), "warning(s) found");
 
 	succeed_if (split->size == 2, "there is an empty keset");
 	succeed_if (ksGetSize(split->keysets[0]) == 0, "wrong size");
@@ -278,11 +298,18 @@ void test_nobackend()
 	parentKey = keyNew("user/tests/simple/below", KEY_END);
 	mp = keyNew("user/tests/simple", KEY_VALUE, "simple", KEY_END);
 	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
+	succeed_if (output_error(parentKey), "error found");
+	succeed_if (output_warnings(parentKey), "warning(s) found");
+
 	succeed_if (elektraSplitAppoint (split, handle, ks) == 1, "could not appoint keys");
 	split->syncbits[0] = 1; /* Simulate a kdbGet() */
 	ksAppendKey(split->keysets[0], keyNew("system/wrong", KEY_END));
 
-	succeed_if (elektraSplitGet (split, handle) == 1, "could not postprocess get");
+	succeed_if (elektraSplitGet (split, parentKey, handle) == 1, "could not postprocess get");
+	succeed_if (output_error(parentKey), "error found");
+	// there will be a warning
+	// succeed_if (output_warnings(parentKey), "warning(s) found");
+
 	succeed_if (split->size == 2, "not correct size after appointing");
 	succeed_if (ksGetSize(split->keysets[0]) == 2, "wrong size");
 	succeed_if (ksGetSize(split->keysets[1]) == 3, "wrong size");
@@ -326,10 +353,16 @@ void test_sizes()
 	Key *parentKey = keyNew("user", KEY_VALUE, "default", KEY_END);
 
 	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
+	succeed_if (output_error(parentKey), "error found");
+	succeed_if (output_warnings(parentKey), "warning(s) found");
+
 	succeed_if (elektraSplitAppoint (split, handle, ks) == 1, "could not appoint keys to split");
 	split->syncbits[0] = 3; /* Simulate a kdbGet() */
 	ksAppendKey(split->keysets[0], keyNew("system/wrong", KEY_END));
-	succeed_if (elektraSplitGet (split, handle) == 1, "could not postprocess get");
+	succeed_if (elektraSplitGet (split, parentKey, handle) == 1, "could not postprocess get");
+	succeed_if (output_error(parentKey), "error found");
+	// there will be a warning
+	// succeed_if (output_warnings(parentKey), "warning(s) found");
 
 	succeed_if (handle->defaultBackend->usersize == 3, "usersize not updated by elektraSplitGet");
 	succeed_if (handle->defaultBackend->systemsize == 0, "systemsize not initialized correct");
@@ -340,7 +373,7 @@ void test_sizes()
 	succeed_if (keyNeedSync(split->keysets[0]->array[2]) == 0, "key should not need sync");
 	compare_keyset(split->keysets[0], ks);
 	succeed_if (ksGetSize(split->keysets[1]) == 0, "wrong size");
-	compare_key(split->parents[0], parentKey);
+	compare_key_name(split->parents[0], parentKey);
 	succeed_if (split->parents[1] == 0, "parentKey for default not correct");
 	succeed_if (split->handles[0] == handle->defaultBackend, "not correct backend");
 	succeed_if (split->syncbits[0] == 3, "should be marked as root");
@@ -353,10 +386,15 @@ void test_sizes()
 	parentKey = keyNew("system", KEY_VALUE, "default", KEY_END);
 
 	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "system backend should be added");
+	succeed_if (output_error(parentKey), "error found");
+	succeed_if (output_warnings(parentKey), "warning(s) found");
+
 	succeed_if (elektraSplitAppoint(split, handle, ks) == 1, "could not appoint keys to split");
 	split->syncbits[1] = 1; /* Simulate a kdbGet() */
 	ksAppendKey(split->keysets[1], keyNew("user/wrong", KEY_END));
-	succeed_if (elektraSplitGet (split, handle) == 1, "could not postprocess get");
+	succeed_if (elektraSplitGet (split, parentKey, handle) == 1, "could not postprocess get");
+	succeed_if (output_error(parentKey), "error found");
+	succeed_if (output_warnings(parentKey), "warning(s) found");
 
 	succeed_if (handle->defaultBackend->usersize == 3, "usersize should not be updated");
 	succeed_if (handle->defaultBackend->systemsize == 0, "systemsize not initialized correct");
@@ -422,12 +460,17 @@ void test_triesizes()
 	mp = keyNew("user/tests/simple", KEY_VALUE, "simple", KEY_END);
 
 	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
+	succeed_if (output_error(parentKey), "error found");
+	succeed_if (output_warnings(parentKey), "warning(s) found");
+
 	succeed_if (elektraSplitAppoint (split, handle, ks) == 1, "could not appoint keys");
 	split->syncbits[0] = 3; /* Simulate a kdbGet() */
 	split->syncbits[1] = 3; /* Simulate a kdbGet() */
 	split->syncbits[2] = 1; /* Simulate a kdbGet() */
 
-	succeed_if (elektraSplitGet (split, handle) == 1, "could not postprocess get");
+	succeed_if (elektraSplitGet (split, parentKey, handle) == 1, "could not postprocess get");
+	succeed_if (output_error(parentKey), "error found");
+	succeed_if (output_warnings(parentKey), "warning(s) found");
 
 	succeed_if (backend->usersize == 2, "usersize should be updated");
 	succeed_if (backend->systemsize == 0, "systemsize should not change");
@@ -498,12 +541,17 @@ void test_merge()
 	mp = keyNew("user/tests/simple", KEY_VALUE, "simple", KEY_END);
 
 	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
+	succeed_if (output_error(parentKey), "error found");
+	succeed_if (output_warnings(parentKey), "warning(s) found");
+
 	succeed_if (elektraSplitAppoint (split, handle, ks) == 1, "could not appoint keys");
 	split->syncbits[0] = 3; /* Simulate a kdbGet() */
 	split->syncbits[1] = 3; /* Simulate a kdbGet() */
 	split->syncbits[2] = 1; /* Simulate a kdbGet() */
 
-	succeed_if (elektraSplitGet (split, handle) == 1, "could not postprocess get");
+	succeed_if (elektraSplitGet (split, parentKey, handle) == 1, "could not postprocess get");
+	succeed_if (output_error(parentKey), "error found");
+	succeed_if (output_warnings(parentKey), "warning(s) found");
 
 	succeed_if (backend->usersize == 2, "usersize should be updated");
 	succeed_if (backend->systemsize == 0, "systemsize should not change");
@@ -607,6 +655,9 @@ void test_realworld()
 	Split *split = elektraSplitNew();
 
 	succeed_if (elektraSplitBuildup (split, handle, parent) == 1, "should need sync");
+	succeed_if (output_error(parent), "error found");
+	succeed_if (output_warnings(parent), "warning(s) found");
+
 	succeed_if (split->size == 9, "size not correct");
 	succeed_if (split->handles[5] == split->handles[6], "root backends have same handle");
 	succeed_if (split->syncbits[5] == 2, "sync state for root not correct");
@@ -642,7 +693,9 @@ void test_realworld()
 	split->syncbits[3] |= 1;
 	split->syncbits[6] |= 1;
 	split->syncbits[7] |= 1;
-	succeed_if (elektraSplitGet (split, handle) == 1, "postprocessing failed");
+	succeed_if (elektraSplitGet (split, parent, handle) == 1, "postprocessing failed");
+	succeed_if (output_error(parent), "error found");
+	succeed_if (output_warnings(parent), "warning(s) found");
 
 	succeed_if (split->handles[0]->usersize == 6, "wrong size");
 	succeed_if (split->handles[3]->systemsize == 4, "wrong size");
