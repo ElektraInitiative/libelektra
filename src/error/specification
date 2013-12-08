@@ -461,3 +461,7 @@ severity:warning
 ingroup:plugin
 module:yajl
 
+number:79
+description:Postcondition of backend was violated
+severity:warning
+ingroup:kdb

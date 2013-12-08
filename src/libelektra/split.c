@@ -42,6 +42,7 @@
 #include <errno.h>
 #endif
 
+#include <kdberrors.h>
 #include <kdbinternal.h>
 
 
@@ -356,6 +357,33 @@ int elektraSplitAppoint (Split *split, KDB *handle, KeySet *ks)
 	return 1;
 }
 
+static void elektraDropCurrentKey(KeySet *ks,
+		Key *warningKey,
+		const Backend *curHandle,
+		const char *msg)
+{
+	const Key *k = ksCurrent(ks);
+
+	const size_t sizeOfStaticText = 100;
+	char *errorMsg = elektraMalloc(
+			keyGetNameSize(curHandle->mountpoint) +
+			keyGetValueSize(curHandle->mountpoint) +
+			keyGetNameSize(k) +
+			strlen(msg) +
+			sizeOfStaticText);
+	strcpy(errorMsg, "drop key ");
+	strcat(errorMsg, keyName(k));
+	strcat(errorMsg, " not belonging to ");
+	strcat(errorMsg, keyName(curHandle->mountpoint));
+	strcat(errorMsg, " with name ");
+	strcat(errorMsg, keyString(curHandle->mountpoint));
+	strcat(errorMsg, " because ");
+	strcat(errorMsg, msg);
+	ELEKTRA_ADD_WARNING(79, warningKey, errorMsg);
+	cursor_t c = ksGetCursor(ks);
+	keyDel (ksPopAtCursor(ks, c));
+}
+
 /**
  * Does some work after getting of backends is finished.
  *
@@ -366,12 +394,13 @@ int elektraSplitAppoint (Split *split, KDB *handle, KeySet *ks)
  * - update usersize and systemsize
  *
  * @param split the split object to work with
+ * @param warningKey postcondition violations are reported here
  * @param handle the handle to preprocess the keys
  * @return 1 on success
  * @return -1 if no backend was found for a key
  * @ingroup split
  */
-int elektraSplitGet (Split *split, KDB *handle)
+int elektraSplitGet (Split *split, Key *warningKey, KDB *handle)
 {
 	Key *cur = 0;
 	Backend *curHandle = 0;
@@ -391,22 +420,25 @@ int elektraSplitGet (Split *split, KDB *handle)
 		{
 			curHandle = elektraMountGetBackend(handle, cur);
 			if (!curHandle) return -1;
+
 			if (curHandle != split->handles[i])
 			{
-				/* drop the key */
-				keyDel (ksLookup(split->keysets[i], cur, KDB_O_POP));
+				elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it is hidden by other mountpoint");
+				continue;
+			}
+			if (keyGetNameSize(cur) == 0)
+			{
+				elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it has an empty name");
+				continue;
+			}
+			if (!strncmp(keyName(cur), "user", 4) && strncmp(keyName(split->parents[i]), "user", 4))
+			{
+				elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it is not user");
 				continue;
 			}
 			if (!strncmp(keyName(cur), "system", 6) && strncmp(keyName(split->parents[i]), "system", 6))
 			{
-				/* parent is system, but key is not -> drop it */
-				keyDel (ksLookup(split->keysets[i], cur, KDB_O_POP));
-				continue;
-			}
-			if (!strncmp(keyName(split->parents[i]), "user", 4) && strncmp(keyName(split->parents[i]), "user", 4))
-			{
-				/* parent is user, but key is not -> drop it */
-				keyDel (ksLookup(split->keysets[i], cur, KDB_O_POP));
+				elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it is not system");
 				continue;
 			}
 
