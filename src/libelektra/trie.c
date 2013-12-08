@@ -67,6 +67,7 @@ Backend* elektraTrieLookup(Trie *trie, const Key *key)
 	if (!trie) return 0;
 
 	len = keyGetNameSize(key) + 1;
+	if (len == 1) return 0; // would crash otherwise
 	where = elektraMalloc(len);
 	strncpy(where, keyName(key), len);
 	where[len-2] = '/';
