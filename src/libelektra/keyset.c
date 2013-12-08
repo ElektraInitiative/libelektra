@@ -1190,6 +1190,29 @@ cursor_t ksGetCursor(const KeySet *ks)
 	else return (cursor_t) ks->current;
 }
 
+Key *ksPopAtCursor(KeySet *ks, cursor_t pos)
+{
+	if (!ks) return 0;
+	Key ** found = ks->array+pos;
+	Key * k = *found;
+	/* Move the array over the place where key was found */
+	memmove (found, found+1, ks->size*sizeof(Key *)-(found-ks->array)-sizeof(Key *));
+	*(ks->array+ks->size-1) = k;
+	if (found < ks->array+ks->current)
+	{
+		ksPrev(ks);
+	}
+	else if (found == ks->array+ks->current)
+	{
+		ksRewind(ks);
+	}
+
+	ks->flags |= KS_FLAG_SYNC;
+
+	ksRewind(ks);
+	return ksPop(ks);
+}
+
 
 
 
@@ -1457,23 +1480,8 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 		{
 			if (options & KDB_O_POP)
 			{
-				Key * k = *found;
-				/* Move the array over the place where key was found */
-				memmove (found, found+1, ks->size*sizeof(Key *)-(found-ks->array)-sizeof(Key *));
-				*(ks->array+ks->size-1) = k;
-				if (found < ks->array+ks->current)
-				{
-					ksPrev(ks);
-				}
-				else if (found == ks->array+ks->current)
-				{
-					ksRewind(ks);
-				}
-
-				ks->flags |= KS_FLAG_SYNC;
-
-				ksRewind(ks);
-				return ksPop(ks);
+				cursor = found-ks->array;
+				return ksPopAtCursor(ks, cursor);
 			} else {
 				cursor = found-ks->array;
 				ksSetCursor(ks, cursor);
