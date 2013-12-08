@@ -20,7 +20,7 @@ public:
 
 	virtual std::string getSynopsis()
 	{
-		return "<plugin name>";
+		return "<plugin name> [<clause name>]";
 	}
 
 	virtual std::string getShortHelpText()
@@ -31,12 +31,28 @@ public:
 	virtual std::string getLongHelpText()
 	{
 		return
-			"Uses the configuration below system/elektra/modules/\n"
-			"to print some info about an plugin.\n"
+			"Print out the information except configuration of a specific plugin.\n"
+			"This means all exported functions and all info will be printed.\n"
 			"\n"
-			"If this information could not be found\n"
+			"The tool will use the configuration below system/elektra/modules/.\n"
+			"\n"
+			"If this information could not be found,\n"
 			"(e.g. plugin not mounted anywhere)\n"
-			"the module will be loaded dynamically."
+			"the module will be loaded dynamically\n"
+			"and the information is requested directly.\n"
+			"\n"
+			"Clause name lets you to restrict to a specific\n"
+			"clause to print out.\n"
+			"\n"
+			"Returns 0 on success.\n"
+			"Returns 1 if clause was not found.\n"
+			"\n"
+			"E.g.\n"
+			"Print out all information about dump plugin:\n"
+			" kdb info dump\n"
+			"\n"
+			"Print out the licence of the resolver plugin:\n"
+			" kdb info resolver licence\n"
 			;
 	}
 

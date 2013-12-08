@@ -17,9 +17,17 @@ InfoCommand::InfoCommand()
 
 int InfoCommand::execute(Cmdline const& cl)
 {
-	if (cl.arguments.size() != 1)
+	std::string subkey;
+	if (cl.arguments.size() == 1)
 	{
-		throw invalid_argument("Need 1 argument");
+	}
+	else if (cl.arguments.size() == 2)
+	{
+		subkey = cl.arguments[1];
+	}
+	else
+	{
+		throw invalid_argument("Need 1 or 2 argument(s)");
 	}
 	std::string name = cl.arguments[0];
 
@@ -40,6 +48,24 @@ int InfoCommand::execute(Cmdline const& cl)
 	}
 
 	Key root (std::string("system/elektra/modules/") + name + "/exports", KEY_END);
+
+	if (!subkey.empty())
+	{
+		root.setName(std::string("system/elektra/modules/") + name + "/infos/" + subkey);
+		Key k = conf.lookup (root);
+		if (k)
+		{
+			cout << k.getString() << std::endl;
+			return 0;
+		}
+		else
+		{
+			cerr << "clause not found" << std::endl;
+			return 1;
+		}
+	}
+
+	root.setName(std::string("system/elektra/modules/") + name + "/exports");
 	Key k = conf.lookup (root);
 
 	if (k)
