@@ -101,6 +101,21 @@ int init(int argc, char** argv);
 
 #define quote_string(x) #x
 
+#define compare_key_name(k1, k2) \
+{ \
+	if (strcmp(keyName(k1), keyName(k2))) \
+	{ \
+		char errorMsg [BUFFER_LENGTH]; \
+		 \
+		strcpy(errorMsg, "key name "); \
+		strcat(errorMsg, keyName(k1)); \
+		strcat(errorMsg, " is not equal "); \
+		strcat(errorMsg, keyName(k2)); \
+		 \
+		yield_error(errorMsg); \
+	} \
+}
+
 /**
  * Checks if two keys are equal.
  *
@@ -110,9 +125,11 @@ int init(int argc, char** argv);
 	nbTest++; \
 	if (k1 != k2) \
 	{ \
+		compare_key_name(k1, k2); \
+		 \
 		keyswitch_t attributes = keyCompare(k1, k2); \
 		check_attributes(attributes); \
-	 \
+		 \
 		const Key * meta; \
 		keyRewindMeta(k1); \
 		keyRewindMeta(k2); \
@@ -204,9 +221,6 @@ void output_key (Key *ks);
 void output_keyset (KeySet *ks);
 
 int output_warnings(Key *errorKey);
-int output_errors(Key *errorKey);
-
-int check_for_error(Key *errorKey);
-int check_for_error_and_warnings(Key *errorKey);
+int output_error(Key *errorKey);
 
 #endif

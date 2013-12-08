@@ -2266,6 +2266,31 @@ void test_ksModifyKey()
 	ksDel (ks);
 }
 
+void test_ksPopAtCursor()
+{
+	KeySet *ks = ksNew (
+		5,
+		keyNew ("user/valid/key1", KEY_END),
+		keyNew ("user/valid/key2", KEY_END),
+		keyNew ("system/valid/key1", KEY_END),
+		keyNew ("system/valid/key2", KEY_END),
+		KS_END);
+	KeySet *ks_c = ksNew (
+		5,
+		keyNew ("user/valid/key1", KEY_END),
+		keyNew ("user/valid/key2", KEY_END),
+		keyNew ("system/valid/key1", KEY_END),
+		KS_END);
+	ksRewind(ks);
+	ksNext(ks);
+	ksNext(ks);
+	cursor_t c = ksGetCursor(ks);
+	keyDel (ksPopAtCursor(ks, c));
+	compare_keyset(ks, ks_c);
+	ksDel(ks);
+	ksDel(ks_c);
+}
+
 int main(int argc, char** argv)
 {
 	printf("KEYSET       TESTS\n");
@@ -2297,6 +2322,7 @@ int main(int argc, char** argv)
 	test_ksDoubleAppend();
 	test_ksDoubleAppendKey();
 	test_ksAppendKey();
+	test_ksPopAtCursor();
 	// test_ksModifyKey(); // TODO: Bug, not handled correctly
 
 	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);

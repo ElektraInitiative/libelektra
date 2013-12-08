@@ -304,9 +304,14 @@ void generate_split (Split *split)
 }
 
 /**
- * @brief Checks and output warnings
+ * @brief Output warnings if present
+ *
+ * To check for warnings use:
+ * succeed_if(output_warnings(parentKey), "warning(s) found");
  *
  * @param warningKey the key to retrieve metadata from
+ *
+ * @see check_for_errors_and_warnings if you want errors to have a test case failed without output
  *
  * @return 1 if no warnings (can be used within succeed_if)
  */
@@ -314,7 +319,6 @@ int output_warnings(Key *warningKey)
 {
 	const Key *metaWarnings = keyGetMeta(warningKey, "warnings");
 	if (!metaWarnings) return 1; /* There are no current warnings */
-	succeed_if (0, "there were warnings issued");
 
 	int nrWarnings = atoi(keyString(metaWarnings));
 	char buffer[] = "warnings/#00\0description";
@@ -350,17 +354,19 @@ int output_warnings(Key *warningKey)
 }
 
 /**
- * @brief Output errors
+ * @brief Output the error if present
+ *
+ * To check for error use:
+ * succeed_if(output_error(parentKey), "error found");
  *
  * @param errorKey keys to retrieve errors from
  *
  * @return 1 if no warnings (can be used within succeed_if)
  */
-int output_errors(Key *errorKey)
+int output_error(Key *errorKey)
 {
 	const Key * metaError = keyGetMeta(errorKey, "error");
 	if (!metaError) return 1; /* There is no current error */
-	succeed_if (0, "there were errors issued");
 
 	printf ("number: %s\n", keyString(keyGetMeta(errorKey, "error/number")));
 	printf ("description: : %s\n", keyString(keyGetMeta(errorKey, "error/description")));
