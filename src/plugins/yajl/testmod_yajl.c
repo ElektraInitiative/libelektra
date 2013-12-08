@@ -483,7 +483,7 @@ void test_json(const char * fileName,
 			KEY_END);
 	KeySet *keys = ksNew(0);
 	succeed_if(plugin->kdbGet(plugin, keys, parentKey) == 1, "kdbGet was not successful");
-	succeed_if(output_errors(parentKey), "error in kdbGet");
+	succeed_if(output_error(parentKey), "error in kdbGet");
 	succeed_if(output_warnings(parentKey), "warnings in kdbGet");
 
 	/*
@@ -499,7 +499,7 @@ void test_json(const char * fileName,
 	// printf("File name is: %s\n", keyString(parentKey));
 
 	succeed_if(plugin->kdbSet(plugin, keys, parentKey) == 1, "kdbSet was not successful");
-	succeed_if(output_errors(parentKey), "error in kdbSet");
+	succeed_if(output_error(parentKey), "error in kdbSet");
 	succeed_if(output_warnings(parentKey), "warnings in kdbSet");
 	free(fileNameCompare);
 
@@ -534,7 +534,7 @@ void test_readWrite(const char * fileName,
 			KEY_END);
 	KeySet *keys = ksNew(0);
 	succeed_if(plugin->kdbGet(plugin, keys, parentKey) == 1, "kdbGet was not successful");
-	succeed_if(output_errors(parentKey), "error in kdbGet");
+	succeed_if(output_error(parentKey), "error in kdbGet");
 	succeed_if(output_warnings(parentKey), "warnings in kdbGet");
 
 	// output_keyset(keys);
@@ -546,7 +546,7 @@ void test_readWrite(const char * fileName,
 	// printf("File name is: %s\n", keyString(parentKey));
 
 	succeed_if(plugin->kdbSet(plugin, keys, parentKey) == 1, "kdbSet was not successful");
-	succeed_if(output_errors(parentKey), "error in kdbSet");
+	succeed_if(output_error(parentKey), "error in kdbSet");
 	succeed_if(output_warnings(parentKey), "warnings in kdbSet");
 	free(fileNameCompare);
 
