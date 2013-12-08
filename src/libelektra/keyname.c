@@ -73,7 +73,7 @@
 #endif
 
 #include "kdb.h"
-#include "kdbprivate.h"
+#include "kdbinternal.h"
 
 
 
