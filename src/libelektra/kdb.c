@@ -486,6 +486,112 @@ error:
 }
 
 
+/**
+ * @brief Does all set steps but not commit
+ *
+ * @param split all information for iteration
+ * @param parentKey to add warnings (also passed to plugins for the same reason)
+ *
+ * @return the errorKey (where the last plugin failed doing something)
+ */
+static Key *elektraSetPrepare(Split *split, Key *parentKey)
+{
+	for (size_t p=0; p<COMMIT_PLUGIN; ++p)
+	{
+		int ret = 0;
+
+		for (size_t i=0; i<split->size;i++)
+		{
+			Backend *backend = split->handles[i];
+			ksRewind (split->keysets[i]);
+			if (backend->setplugins[p])
+			{
+				if (p != 0) keySetString (parentKey, keyString(split->parents[i]));
+				keySetName (parentKey, keyName(split->parents[i]));
+				ret = backend->setplugins[p]->kdbSet (
+						backend->setplugins[p],
+						split->keysets[i],
+						parentKey);
+				if (p == 0) keySetString (split->parents[i], keyString(parentKey));
+			}
+			if (ret == -1)
+			{
+				// error, immediately abort
+				return ksCurrent (split->keysets[i]);
+			}
+		}
+	}
+	return 0;
+}
+
+/**
+ * @brief Does the commit
+ *
+ * @param split all information for iteration
+ * @param parentKey to add warnings (also passed to plugins for the same reason)
+ */
+static void elektraSetCommit(Split *split, Key *parentKey)
+{
+	for (size_t p=COMMIT_PLUGIN; p<NR_OF_PLUGINS; ++p)
+	{
+		int ret = 0;
+
+		for (size_t i=0; i<split->size;i++)
+		{
+			Backend *backend = split->handles[i];
+			ksRewind (split->keysets[i]);
+			if (backend->setplugins[p])
+			{
+				if (p != 0) keySetString (parentKey, keyString(split->parents[i]));
+				keySetName (parentKey, keyName(split->parents[i]));
+				ret = backend->setplugins[p]->kdbSet (
+						backend->setplugins[p],
+						split->keysets[i],
+						parentKey);
+				if (p == 0) keySetString (split->parents[i], keyString(parentKey));
+			}
+			if (ret == -1)
+			{
+				ELEKTRA_ADD_WARNING(80, parentKey,
+						keyName(backend->mountpoint));
+			}
+		}
+	}
+}
+
+/**
+ * @brief Does the rollback
+ *
+ * @param split all information for iteration
+ * @param parentKey to add warnings (also passed to plugins for the same reason)
+ */
+static void elektraSetRollback(Split *split, Key *parentKey)
+{
+	for (size_t p=0; p<NR_OF_PLUGINS; ++p)
+	{
+		int ret = 0;
+
+		for (size_t i=0; i<split->size; i++)
+		{
+			Backend *backend = split->handles[i];
+			ksRewind (split->keysets[i]);
+			if (backend->errorplugins[p])
+			{
+				keySetName (parentKey, keyName(split->parents[i]));
+				ret = backend->errorplugins[p]->kdbError (
+						backend->errorplugins[p],
+						split->keysets[i],
+						parentKey);
+			}
+			if (ret == -1)
+			{
+				ELEKTRA_ADD_WARNING(81, parentKey,
+						keyName(backend->mountpoint));
+			}
+		}
+	}
+}
+
 
 /**
  * Set keys in an atomic and universal way.
@@ -590,7 +696,6 @@ int kdbSet (KDB *handle, KeySet *ks, Key *parentKey)
 
 	Split *split = elektraSplitNew();
 	Key *initialParent = keyDup (parentKey);
-	Key *errorKey = 0;
 
 
 	if (elektraSplitBuildup (split, handle, parentKey) == -1)
@@ -616,40 +721,13 @@ int kdbSet (KDB *handle, KeySet *ks, Key *parentKey)
 
 	elektraSplitPrepare (split);
 
-	int ret = 0;
-	int errorOccurred = 0;
-
-	for (size_t p=0; p<NR_OF_PLUGINS; ++p)
+	Key *errorKey = elektraSetPrepare(split, parentKey);
+	if (errorKey)
 	{
-		for (size_t i=0; i<split->size;i++)
-		{
-			Backend *backend = split->handles[i];
-			ksRewind (split->keysets[i]);
-			if (backend->setplugins[p])
-			{
-				if (p != 0) keySetString (parentKey, keyString(split->parents[i]));
-				keySetName (parentKey, keyName(split->parents[i]));
-				ret = backend->setplugins[p]->kdbSet (
-						backend->setplugins[p],
-						split->keysets[i],
-						parentKey);
-				if (p == 0) keySetString (split->parents[i], keyString(parentKey));
-			}
-			if (ret == -1)
-			{
-				errorKey = ksCurrent (split->keysets[i]);
-				++ errorOccurred;
-			}
-		}
-		/* If we have not commited yet, stop processing.
-		   After committing ignore errors. */
-		if (p <= COMMIT_PLUGIN && errorOccurred > 0)
-		{
-			goto error;
-		} /* else {
-			 TODO make error to warning?
-		} */
+		goto error;
 	}
+
+	elektraSetCommit(split, parentKey);
 
 	elektraSplitUpdateSize (split);
 
@@ -661,24 +739,17 @@ int kdbSet (KDB *handle, KeySet *ks, Key *parentKey)
 	return 1;
 
 error:
-	for (size_t p=0; p<NR_OF_PLUGINS; ++p)
+	elektraSetRollback(split, parentKey);
+
+	if (errorKey)
 	{
-		for (size_t i=0; i<split->size; i++)
+		Key *found = ksLookup(ks, errorKey, KDB_O_WITHOWNER);
+		if (!found)
 		{
-			Backend *backend = split->handles[i];
-			ksRewind (split->keysets[i]);
-			if (backend->errorplugins[p])
-			{
-				keySetName (parentKey, keyName(split->parents[i]));
-				ret = backend->errorplugins[p]->kdbError (
-						backend->errorplugins[p],
-						split->keysets[i],
-						parentKey);
-			}
+			ELEKTRA_ADD_WARNING(82, parentKey,
+					keyName(errorKey));
 		}
 	}
-
-	if (errorKey) ksLookup(ks, errorKey, KDB_O_WITHOWNER);
 
 	keySetName (parentKey, keyName(initialParent));
 	keyDel (initialParent);

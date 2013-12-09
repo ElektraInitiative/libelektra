@@ -465,3 +465,18 @@ number:79
 description:Postcondition of backend was violated
 severity:warning
 ingroup:kdb
+
+number:80
+description:Error during commit (this means backend is broken, reason states where it is mounted)
+severity:warning
+ingroup:kdb
+
+number:81
+description:Error during rollback (this means backend is broken, reason states where it is mounted)
+severity:warning
+ingroup:kdb
+
+number:82
+description:Error key not found in keyset (reason states name)
+severity:warning
+ingroup:kdb
