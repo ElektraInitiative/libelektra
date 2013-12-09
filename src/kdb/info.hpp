@@ -15,7 +15,7 @@ public:
 
 	virtual std::string getShortOptions()
 	{
-		return "";
+		return "l";
 	}
 
 	virtual std::string getSynopsis()
@@ -40,6 +40,8 @@ public:
 			"(e.g. plugin not mounted anywhere)\n"
 			"the module will be loaded dynamically\n"
 			"and the information is requested directly.\n"
+			"\n"
+			" -l forces loading, even if it is mounted\n"
 			"\n"
 			"Clause name lets you to restrict to a specific\n"
 			"clause to print out.\n"

@@ -34,16 +34,22 @@ int InfoCommand::execute(Cmdline const& cl)
 	KeySet conf;
 	Key parentKey(std::string("system/elektra/modules/") + name, KEY_END);
 
-	kdb.get(conf, parentKey);
+	if (!cl.load)
+	{
+
+		kdb.get(conf, parentKey);
+	}
 
 	if (!conf.lookup(parentKey))
 	{
-		cerr << "Module does not seem to be loaded." << endl;
-		cerr << "Now in fallback code. Will directly load config from plugin." << endl;
+		if (!cl.load)
+		{
+			cerr << "Module does not seem to be loaded." << endl;
+			cerr << "Now in fallback code. Will directly load config from plugin." << endl;
+		}
 
 		Modules modules;
 		std::auto_ptr<Plugin> plugin = modules.load(name);
-		// TODO: memory leak??
 		conf.append(plugin->getInfo());
 	}
 

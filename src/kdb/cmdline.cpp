@@ -22,6 +22,7 @@ Cmdline::Cmdline (int argc,
 	/*XXX: Step 2: initialise your option here.*/
 	debug(),
 	force(),
+	load(),
 	humanReadable(),
 	help(),
 	interactive(),
@@ -69,6 +70,12 @@ Cmdline::Cmdline (int argc,
 		option o = {"force", no_argument, 0, 'f'};
 		long_options.push_back(o);
 		helpText += "-f --force               force the action to be done\n";
+	}
+	if (acceptedOptions.find('l')!=string::npos)
+	{
+		option o = {"load", no_argument, 0, 'f'};
+		long_options.push_back(o);
+		helpText += "-l --load                load plugin even if system/elektra is available\n";
 	}
 	if (acceptedOptions.find('h')!=string::npos)
 	{
@@ -148,6 +155,7 @@ Cmdline::Cmdline (int argc,
 		case 'd': debug = true; break;
 		case 'f': force = true; break;
 		case 'h': humanReadable = true; break;
+		case 'l': load= true; break;
 		case 'H': help = true; break;
 		case 'i': interactive = true; break;
 		case 'n': noNewline = true; break;

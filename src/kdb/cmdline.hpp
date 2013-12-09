@@ -39,6 +39,7 @@ public:
 	 * (please sort by getopt short name, small letters first)*/
 	bool debug; /*!< To debug the commands. */
 	bool force; /*!< Force the action. */
+	bool load; /*!< Load plugins instead of using system/elektra. */
 	bool humanReadable; /*!< Human readable values are preferred. */
 	bool help; /*!< Display help instead of the normal action.. */
 	bool interactive; /*!< Interactive mode. */

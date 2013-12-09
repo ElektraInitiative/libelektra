@@ -185,6 +185,7 @@ KDB * kdbOpen(Key *errorKey)
 	{
 		ELEKTRA_ADD_WARNING(17, errorKey, "kdbGet() of " KDB_KEY_MOUNTPOINTS " failed");
 		keySetName (errorKey, keyName(initialParent));
+		keyDel (initialParent);
 		return handle;
 	}
 	keySetName (errorKey, keyName(initialParent));
@@ -216,6 +217,7 @@ KDB * kdbOpen(Key *errorKey)
 	{
 		/* Could not reopen default backend */
 		ELEKTRA_SET_ERROR(40, errorKey, "could not reopen default backend");
+		keyDel (initialParent);
 		return 0;
 	}
 
@@ -226,6 +228,7 @@ KDB * kdbOpen(Key *errorKey)
 
 	elektraMountVersion (handle, errorKey);
 
+	keyDel (initialParent);
 	return handle;
 }
 
