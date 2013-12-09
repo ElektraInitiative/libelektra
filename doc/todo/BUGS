@@ -3,6 +3,19 @@ Remove them if they are fixed (git will track them for you).
 Move to CURRENT if they should be fixed in next release.
 
 
+
+== RELEASE ==
+
+symbol error in compiz
+
+crash with broken keys in DB
+
+document contracts
+check contract for integration tests and plugin version
+
+non-recursive versions of cp, rm and mv segfault
+	(lookup KDB_O_POP in C++?)
+
 == BASIC ==
 
 keySet/AddBaseName do not handle . or ..
@@ -11,14 +24,15 @@ keySet* also work when keys are appended to keyset!
 (add a flag for that situation?)
 
 
+kdb set system/elektra/version/constants/KDB_VERSION_MINOR
+fails silently -> should raise an error
+
 
 == BUILD ==
 
 ELEKTRA_SET_ERROR in dump sometimes raises compile error
 
 get rid of auto-ptr
-
-ELEKTRA_SET_ERROR in dump compile error
 
 clang support broken
 
@@ -30,11 +44,6 @@ portability:
 	bsd, aix,...
 	glibc functions away
 
-portability:
-	Build on different platforms
-	Statical build testing
-	build and test without iconv, libxml2
-
 compilers: (add on build-server)
 	diet-gcc
 	intel cc
@@ -45,9 +54,6 @@ one option with NOLOG, DEBUG, VERBOSE  better then
 === BUGS ===
 
 warning in resolver aborts execution? (uname plugin)
-
-kdb set system/elektra/version/constants/KDB_VERSION_MINOR
-fails silently
 
 errorKey not propagated in elektraPluginOpen
 	errors should be transformed to warnings
@@ -89,13 +95,6 @@ allow to set a keyset when get failed before?
 
 hard coded limit of characters in simpleset
 
-keyGetStringSize missing
-	needed?
-
-path: UUID= LABEL= rechner:/...
-	/proc/filesystems
-	5th and 6th field is optional
-
 
 == potential bugs ==
 
@@ -103,8 +102,9 @@ errorKey not propagated in elektraPluginOpen
 
 validation-set of kdb sets other meta keys then which are checked
 
-backends below other: ls does not work recursively
-could not parse file output in tcl!
+backends below other: ls may not work recursively
+
+could not parse file output in tcl
 
 on non-writeable config files the problem would
 	only occur when committing -> behaviour?
@@ -112,18 +112,11 @@ on non-writeable config files the problem would
 kdbGet: what if returned holds more information then requested
 	by parentKey on an update
 
-network filesystem in fstab plugin?
-
-implement a contract and plugin version
-
 Check if merging configuration after conflict fails
 	(kdbGet() after conflict with an empty keyset?)
 
 kdbOpen does not work without errorKey
 Name of errorKey is overwritten!
-
-non-recursive versions of cp, rm and mv segfault
-	(lookup KDB_O_POP in C++?)
 
 KeySet may be unsorted in some situations
 	changing key names
@@ -135,20 +128,12 @@ generating unique names for fstab does not work
 	none fs entries
 	kdb-fstab-set does not work on dump or similar
 
-
 hosts:
 	alias in large file fails
 
-system and user are not valid keys?
-	kdb ls user ??
-
-
-
 allow to set a keyset when get failed before?
+
 hard coded limit of characters in simpleset
-
-
-keyGetStringSize missing
 
 path: UUID= LABEL= rechner:/...
 	/proc/filesystems
