@@ -5,6 +5,7 @@ add_sources(elektra-full ${SOURCES})
 add_headers(SOURCES)
 
 add_library(elektra-resolver MODULE ${SOURCES})
+target_link_libraries (elektra-resolver elektra)
 #this needs posix, so it won't compile with c99 standard
 #the last -std will be used, so it should be no problem
 #that this is only added here
