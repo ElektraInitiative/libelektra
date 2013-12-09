@@ -11,10 +11,14 @@ if (DBUS_FOUND)
 	add_sources (elektra-full ${SOURCES})
 	add_headers (SOURCES)
 
-	add_library (elektra-dbus MODULE ${SOURCES})
-	install (TARGETS elektra-dbus DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})
+	set (PLUGIN_NAME elektra-dbus)
+	add_library (${PLUGIN_NAME} MODULE ${SOURCES})
+	target_link_libraries (${PLUGIN_NAME} elektra)
+	target_link_libraries (${PLUGIN_NAME} ${DBUS_LIBRARIES})
 
-	target_link_libraries (elektra-dbus ${DBUS_LIBRARIES})
+	install (TARGETS ${PLUGIN_NAME}
+		DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})
+
 	add_libraries(elektra-full ${DBUS_LIBRARIES})
 
 	add_plugintest (dbus)

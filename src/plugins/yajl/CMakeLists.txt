@@ -23,10 +23,13 @@ if (YAJL_FOUND)
 	file (COPY examples
 		DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
-	add_library (elektra-yajl MODULE ${SOURCES})
-	install (TARGETS elektra-yajl DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})
+	set (PLUGIN_NAME elektra-yajl)
+	add_library (${PLUGIN_NAME} MODULE ${SOURCES})
+	install (TARGETS ${PLUGIN_NAME} DESTINATION
+		lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})
 
-	target_link_libraries (elektra-yajl ${YAJL_LIBRARIES})
+	target_link_libraries (${PLUGIN_NAME} elektra)
+	target_link_libraries (${PLUGIN_NAME} ${YAJL_LIBRARIES})
 	add_libraries (elektra-full ${YAJL_LIBRARIES})
 
 	add_plugintest (yajl)
