@@ -485,20 +485,22 @@ error:
 	return -1;
 }
 
-
 /**
  * @brief Does all set steps but not commit
  *
  * @param split all information for iteration
  * @param parentKey to add warnings (also passed to plugins for the same reason)
+ * @param [out] errorKey may point to which key caused the error or 0 otherwise
  *
- * @return the errorKey (where the last plugin failed doing something)
+ * @retval -1 on error
+ * @retval 0 on success
  */
-static Key *elektraSetPrepare(Split *split, Key *parentKey)
+static int elektraSetPrepare(Split *split, Key *parentKey, Key **errorKey)
 {
+	int any_error = 0;
 	for (size_t p=0; p<COMMIT_PLUGIN; ++p)
 	{
-		int ret = 0;
+		int ret = 0; // last return value
 
 		for (size_t i=0; i<split->size;i++)
 		{
@@ -516,12 +518,25 @@ static Key *elektraSetPrepare(Split *split, Key *parentKey)
 			}
 			if (ret == -1)
 			{
-				// error, immediately abort
-				return ksCurrent (split->keysets[i]);
+				// we know that resolver does not yield
+				// an errorKey, so lets save some cycles
+				if (p != 0)
+				{
+					// do not
+					// abort because it might
+					// corrupt the KeySet
+					// and leads to warnings
+					// because of .tmp files not
+					// found
+					*errorKey = ksCurrent(split->keysets[i]);
+					// -> better keep going, but of
+					// course we will not commit
+				}
+				any_error = -1;
 			}
 		}
 	}
-	return 0;
+	return any_error;
 }
 
 /**
@@ -721,8 +736,8 @@ int kdbSet (KDB *handle, KeySet *ks, Key *parentKey)
 
 	elektraSplitPrepare (split);
 
-	Key *errorKey = elektraSetPrepare(split, parentKey);
-	if (errorKey)
+	Key *errorKey = 0;
+	if (elektraSetPrepare(split, parentKey, &errorKey) == -1)
 	{
 		goto error;
 	}
@@ -743,7 +758,7 @@ error:
 
 	if (errorKey)
 	{
-		Key *found = ksLookup(ks, errorKey, KDB_O_WITHOWNER);
+		Key *found = ksLookup(ks, errorKey, 0);
 		if (!found)
 		{
 			ELEKTRA_ADD_WARNING(82, parentKey,
