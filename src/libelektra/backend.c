@@ -358,7 +358,7 @@ Backend* elektraBackendOpenVersion(Key * errorKey ELEKTRA_UNUSED)
 
 	backend->getplugins[0] = plugin;
 	backend->setplugins[0] = plugin;
-	plugin->refcounter = 1;
+	plugin->refcounter = 2;
 
 	backend->mountpoint = mp;
 	keyIncRef(backend->mountpoint);
