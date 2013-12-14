@@ -327,7 +327,7 @@ static int consumeKeySetNode(KeySet *ks, const char *context, xmlTextReaderPtr r
  */
 static int ksFromXMLReader(KeySet *ks,xmlTextReaderPtr reader)
 {
-	int ret;
+	int ret = 0;
 	xmlChar *nodeName=0;
 
 	ret = xmlTextReaderRead(reader); /* go to first node */
@@ -418,8 +418,8 @@ if (ret==0) ret = isValidXML(filename,schemaPath);
 else ret = isValidXML(filename,KDB_SCHEMA_PATH); 
  * @endcode
  *
- * @return -1 on error
- * @return 0
+ * @retval -1 on error
+ * @retval 0 if file could not be opened
  * @param ks the keyset
  * @param filename the file to parse
  * @ingroup stream
@@ -433,8 +433,9 @@ int ksFromXMLfile(KeySet *ks, const char *filename)
 	doc = xmlParseFile(filename);
 	if (doc==NULL)
 	{
+		// TODO: distinguish between parser errors and no file
 		xmlCleanupParser();
-		return -1;
+		return 0;
 	}
 
 	reader=xmlReaderWalker(doc);
@@ -443,7 +444,9 @@ int ksFromXMLfile(KeySet *ks, const char *filename)
 		ret=ksFromXMLReader(ks,reader);
 		xmlFreeTextReader (reader);
 	}
-	else { ret = -1; }
+	else {
+		ret = -1;
+	}
 
 	xmlFreeDoc(doc);
 
