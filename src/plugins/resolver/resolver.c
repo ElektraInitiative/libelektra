@@ -39,7 +39,16 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <libgen.h>
+
+//TODO: make multiple resolver plugins
+//has stop signals at certain points to let you test
+//concurrent access from shell scripts
+// #define RESOLVER_DEBUG
+
+#ifdef RESOLVER_DEBUG
+#include <sys/types.h>
+#include <signal.h>
+#endif
 
 #ifdef _GNU_SOURCE
 #error "Something turned _GNU_SOURCE on, this breaks strerror_r!"
@@ -49,11 +58,10 @@ void resolverInit (resolverHandle *p, const char *path)
 {
 	p->fd = -1;
 	p->mtime = 0;
-	p->mode = KDB_FILE_MODE;
 
 	p->filename = 0;
+	p->dirname= 0;
 	p->tempfile = 0;
-	p->lockfile = 0;
 
 	p->path = path;
 }
@@ -61,7 +69,7 @@ void resolverInit (resolverHandle *p, const char *path)
 void resolverClose (resolverHandle *p)
 {
 	free (p->filename); p->filename = 0;
-	free (p->lockfile); p->lockfile = 0;
+	free (p->dirname); p->dirname= 0;
 	free (p->tempfile); p->tempfile = 0;
 }
 
@@ -70,28 +78,39 @@ void resolverClose (resolverHandle *p)
  *
  * @param errorText should have at least ERROR_SIZE bytes in reserve
  */
-static void elektraAddErrorText(char *errorText)
+static void elektraAddErrnoText(char *errorText)
 {
 	char buffer[ERROR_SIZE];
-	int error_ret = strerror_r(errno, buffer, ERROR_SIZE-2);
-	if (error_ret == -1)
+	if (errno == E2BIG)
 	{
-		if (errno == EINVAL)
-		{
-			strcat (errorText, "Got no valid errno!");
-		}
-		else if (errno == ERANGE)
-		{
-			strcat (errorText, "Not enough space for error text in buffer!");
-		}
-		else
-		{
-			strcat (errorText, "strerror_r returned wrong error value!");
-		}
+		strcat (errorText, "could not find a / in the pathname");
+	}
+	else if (errno == EBADMSG)
+	{
+		strcat (errorText, "went up to root for creating directory");
 	}
 	else
 	{
-		strcat (errorText, buffer);
+		int error_ret = strerror_r(errno, buffer, ERROR_SIZE-2);
+		if (error_ret == -1)
+		{
+			if (errno == EINVAL)
+			{
+				strcat (errorText, "Got no valid errno!");
+			}
+			else if (errno == ERANGE)
+			{
+				strcat (errorText, "Not enough space for error text in buffer!");
+			}
+			else
+			{
+				strcat (errorText, "strerror_r returned wrong error value!");
+			}
+		}
+		else
+		{
+			strcat (errorText, buffer);
+		}
 	}
 }
 
@@ -110,29 +129,29 @@ int elektraResolverOpen(Plugin *handle, Key *errorKey)
 	if (!path)
 	{
 		free (p);
-		ELEKTRA_ADD_WARNING(34, errorKey, "Could not find file configuration");
+		ELEKTRA_SET_ERROR(34, errorKey, "Could not find file configuration");
 		return -1;
 	}
 
 	Key *testKey = keyNew("system", KEY_END);
-	if (resolveFilename(testKey, &p->system) == -1)
+	if (resolveFilename(testKey, &p->system, errorKey) == -1)
 	{
 		resolverClose(&p->user);
 		resolverClose(&p->system);
 		free (p);
 		keyDel (testKey);
-		ELEKTRA_ADD_WARNING(35, errorKey, "Could not resolve system key");
+		ELEKTRA_SET_ERROR(35, errorKey, "Could not resolve system key");
 		return -1;
 	}
 
 	keySetName(testKey, "user");
-	if (resolveFilename(testKey, &p->user) == -1)
+	if (resolveFilename(testKey, &p->user, errorKey) == -1)
 	{
 		resolverClose(&p->user);
 		resolverClose(&p->system);
 		free (p);
 		keyDel (testKey);
-		ELEKTRA_ADD_WARNING(35, errorKey, "Could not resolve user key");
+		ELEKTRA_SET_ERROR(35, errorKey, "Could not resolve user key");
 		return -1;
 	}
 	keyDel (testKey);
@@ -154,6 +173,7 @@ int elektraResolverClose(Plugin *handle, Key *errorKey ELEKTRA_UNUSED)
 	return 0; /* success */
 }
 
+
 int elektraResolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	resolverHandles *pks = elektraPluginGetData(handle);
@@ -161,150 +181,49 @@ int elektraResolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	if (!strncmp(keyName(parentKey), "user", 4)) pk = &pks->user;
 	else pk = &pks->system;
 
+	// might be useless, will not harm
+	keySetString(parentKey, pk->filename);
+
 
 	Key *root = keyNew("system/elektra/modules/resolver", KEY_END);
 
 	if (keyRel(root, parentKey) >= 0)
 	{
 		keyDel (root);
-		KeySet *info = ksNew (50, keyNew ("system/elektra/modules/resolver",
-				KEY_VALUE, "resolver plugin waits for your orders", KEY_END),
-			keyNew ("system/elektra/modules/resolver/constants", KEY_END),
-			keyNew ("system/elektra/modules/resolver/constants/KDB_DB_SYSTEM",
-				KEY_VALUE, KDB_DB_SYSTEM, KEY_END),
-			keyNew ("system/elektra/modules/resolver/constants/KDB_DB_HOME",
-				KEY_VALUE, KDB_DB_HOME, KEY_END),
-			keyNew ("system/elektra/modules/resolver/constants/KDB_DB_USER",
-				KEY_VALUE, KDB_DB_USER, KEY_END),
-			keyNew ("system/elektra/modules/resolver/exports", KEY_END),
-			keyNew ("system/elektra/modules/resolver/exports/open",
-				KEY_FUNC, elektraResolverOpen,
-				KEY_END),
-			keyNew ("system/elektra/modules/resolver/exports/close",
-				KEY_FUNC, elektraResolverClose,
-				KEY_END),
-			keyNew ("system/elektra/modules/resolver/exports/get",
-				KEY_FUNC, elektraResolverGet,
-				KEY_END),
-			keyNew ("system/elektra/modules/resolver/exports/set",
-				KEY_FUNC, elektraResolverSet,
-				KEY_END),
-			keyNew ("system/elektra/modules/resolver/exports/error",
-				KEY_FUNC, elektraResolverError,
-				KEY_END),
-			keyNew ("system/elektra/modules/resolver/exports/checkfile",
-				KEY_FUNC, elektraResolverCheckFile,
-				KEY_END),
-			keyNew ("system/elektra/modules/resolver/infos",
-				KEY_VALUE, "All information you want to know", KEY_END),
-			keyNew ("system/elektra/modules/resolver/infos/author",
-				KEY_VALUE, "Markus Raab <elektra@markus-raab.org>", KEY_END),
-			keyNew ("system/elektra/modules/resolver/infos/licence",
-				KEY_VALUE, "BSD", KEY_END),
-			keyNew ("system/elektra/modules/resolver/infos/description",
-				KEY_VALUE, "Dumps complete Elektra Semantics", KEY_END),
-			keyNew ("system/elektra/modules/resolver/infos/provides",
-				KEY_VALUE, "resolver", KEY_END),
-			keyNew ("system/elektra/modules/resolver/infos/placements",
-				KEY_VALUE, "rollback getresolver setresolver commit", KEY_END),
-			keyNew ("system/elektra/modules/resolver/infos/needs",
-				KEY_VALUE, "", KEY_END),
-			keyNew ("system/elektra/modules/resolver/infos/version",
-				KEY_VALUE, PLUGINVERSION, KEY_END),
-			KS_END);
+		KeySet *info =
+#include "contract.h"
 		ksAppend(returned, info);
 		ksDel (info);
 		return 1;
 	}
 	keyDel (root);
 
-	keySetString(parentKey, pk->filename);
-
 	int errnoSave = errno;
 	struct stat buf;
+
+	/* Start file IO with stat() */
 	if (stat (pk->filename, &buf) == -1)
 	{
-		char *errorText = malloc(
-				strlen(pk->filename) + ERROR_SIZE + 60);
-		strcpy (errorText, "Storage plugin will try to create missing file \"");
-		strcat (errorText, pk->filename);
-		strcat (errorText, "\", stat said: \"");
-		elektraAddErrorText(errorText);
-		strcat (errorText, "\"");
-		ELEKTRA_ADD_WARNING(29, parentKey, errorText);
-		free (errorText);
-
+		// no file, so storage has no job
 		errno = errnoSave;
+		pk->mtime = 0; // no file, so no time
 		return 0;
-		/* File not there, lets assume thats ok. */
 	}
 
 	/* Check if update needed */
-	if (pk->mtime == buf.st_mtime) return 0;
+	if (pk->mtime == buf.st_mtime)
+	{
+		// no update, so storage has no job
+		errno = errnoSave;
+		return 0;
+	}
 
 	pk->mtime = buf.st_mtime;
 
+	errno = errnoSave;
 	return 1;
 }
 
-/**
- * @brief Create pathname recursively.
- *
- * Try unless the whole path was
- * created or it is sure that it cannot be done.
- *
- * @param pathname The path to create.
- * @param mode The mode to use for the directories.
- *
- * @retval 0 on success
- * @retval -1 on error, see errno if mkdir caused the error
- *         E2BIG if no / was found
- *         EBADMSG if it was not an absolute path
- */
-static int elektraMkdirParents(const char *pathname)
-{
-	if (mkdir(pathname, KDB_DIR_MODE | KDB_FILE_MODE) < 0)
-	{
-		if (errno != ENOENT)
-		{
-			return -1;
-		}
-
-		char *p = strrchr(pathname, '/');
-
-		/* nothing found */
-		if (p == NULL)
-		{
-			errno = E2BIG;
-			return -1;
-		}
-
-		/* absolute path */
-		if (p == pathname)
-		{
-			errno = EBADMSG;
-			return -1;
-		}
-
-		/* Cut path at last /. */
-		*p = 0;
-
-		/* Now call ourselves recursively */
-		if (elektraMkdirParents(pathname) < 0)
-		{
-			return -1;
-		}
-
-		/* Restore path. */
-		*p = '/';
-
-		if (mkdir (pathname, KDB_DIR_MODE | KDB_FILE_MODE) < 0)
-		{
-			return -1;
-		}
-	}
-	return 0;
-}
 
 /**
  * @brief Add identity received from getuid(), geteuid(), getgid() and getegid()
@@ -318,6 +237,269 @@ static void elektraAddIdentity(char *errorText)
 	strcat (errorText, buffer);
 }
 
+/**
+ * @brief Open a file and yield an error if it did not work
+ *
+ * @param pk->filename will be used
+ * @param parentKey to yield the error too
+ *
+ * @retval 0 on success
+ * @retval -1 on error
+ */
+static int elektraOpenFile(resolverHandle *pk, Key *parentKey)
+{
+	pk->fd = open (pk->filename, O_RDWR | O_CREAT, KDB_FILE_MODE);
+
+	if (pk->fd == -1)
+	{
+		char *errorText = malloc(
+				strlen(pk->filename) + ERROR_SIZE*2 + 60);
+		strcpy (errorText, "Opening configuration file \"");
+		strcat (errorText, pk->filename);
+		strcat (errorText, "\" failed, error was: \"");
+		elektraAddErrnoText(errorText);
+		strcat (errorText, "\" ");
+		elektraAddIdentity(errorText);
+		ELEKTRA_SET_ERROR(26, parentKey, errorText);
+		free (errorText);
+		return -1;
+	}
+	return 0;
+}
+
+
+/**
+ * @brief Create pathname recursively.
+ *
+ * Try unless the whole path was
+ * created or it is sure that it cannot be done.
+ *
+ * @param pathname The path to create.
+ *
+ * @retval 0 on success
+ * @retval -1 on error + elektra error will be set
+ */
+static int elektraMkdirParents(const char *pathname, Key *parentKey)
+{
+	if (mkdir(pathname, KDB_DIR_MODE | KDB_FILE_MODE) == -1)
+	{
+		if (errno != ENOENT)
+		{
+			// hopeless, give it up
+			goto error;
+		}
+
+		char *p = strrchr(pathname, '/');
+
+		/* nothing found */
+		if (p == NULL)
+		{
+			// set any errno, corrected in
+			// elektraAddErrnoText
+			errno = E2BIG;
+			goto error;
+		}
+
+		/* absolute path */
+		if (p == pathname)
+		{
+			// set any errno, corrected in
+			// elektraAddErrnoText
+			errno = EBADMSG;
+			goto error;
+		}
+
+		/* Cut path at last /. */
+		*p = 0;
+
+		/* Now call ourselves recursively */
+		if (elektraMkdirParents(pathname, parentKey) == -1)
+		{
+			// do not yield an error, was already done
+			// before
+			*p = '/';
+			return -1;
+		}
+
+		/* Restore path. */
+		*p = '/';
+
+		if (mkdir (pathname, KDB_DIR_MODE | KDB_FILE_MODE) == -1)
+		{
+			goto error;
+		}
+	}
+
+	return 0;
+
+error:
+	{
+		char *errorText = malloc(
+				strlen(pathname) + ERROR_SIZE*2 + 60);
+		strcpy (errorText, "Could not create directory \"");
+		strcat (errorText, pathname);
+		strcat (errorText, "\", because: \"");
+		elektraAddErrnoText(errorText);
+		strcat (errorText, "\" ");
+		elektraAddIdentity(errorText);
+		ELEKTRA_SET_ERROR(74, parentKey, errorText);
+		free (errorText);
+		return -1;
+	}
+}
+
+/**
+ * @brief Check conflict for the current open file
+ *
+ * Does an fstat and checks if mtime are equal as they were 
+ *
+ * @param pk to get mtime and fd from
+ * @param parentKey to write errors&warnings to
+ *
+ * @retval 0 success
+ * @retval -1 error
+ */
+int elektraCheckConflict(resolverHandle *pk, Key *parentKey)
+{
+	if (pk->mtime == 0)
+	{
+		// this can happen if the kdbGet() path found no file
+
+		// no conflict possible, so just return successfully
+		return 0;
+	}
+
+	struct stat buf;
+
+	if (fstat(pk->fd, &buf) == -1)
+	{
+		char *errorText = malloc(
+				strlen(pk->filename) + ERROR_SIZE*2 + 60);
+		strcpy (errorText, "Could not fstat to check for conflict \"");
+		strcat (errorText, pk->filename);
+		strcat (errorText, "\" ");
+		strcat (errorText, "because stat said: \"");
+		elektraAddErrnoText(errorText);
+		strcat (errorText, "\" ");
+		elektraAddIdentity(errorText);
+		ELEKTRA_ADD_WARNING(29, parentKey, errorText);
+		free (errorText);
+
+		ELEKTRA_SET_ERROR (30, parentKey, "assuming conflict because of failed stat (warning 29 for details)");
+		return -1;
+	}
+
+	if (buf.st_mtime != pk->mtime)
+	{
+		char *errorText = malloc(
+				strlen(pk->filename) +
+				ERROR_SIZE*2+ // for snprintf+identity
+				5); // for spaces after filename
+		snprintf(errorText, ERROR_SIZE,
+				"conflict, file time stamp %ld is different than our time stamp %ld, config file name is \"",
+				buf.st_mtime, pk->mtime);
+		strcat(errorText, pk->filename);
+		strcat(errorText, "\" ");
+		elektraAddIdentity(errorText);
+		ELEKTRA_SET_ERROR (30, parentKey, errorText);
+		return -1;
+	}
+
+	return 0;
+}
+
+
+/**
+ * @brief Does everything needed before the storage plugin will be
+ * invoked.
+ *
+ * @param pk
+ * @param parentKey
+ *
+ * @retval 0 on success
+ * @retval -1 on error
+ */
+int elektraSetPrepare(resolverHandle *pk, Key *parentKey)
+{
+#ifdef RESOLVER_DEBUG
+	// we are somewhere in the middle of work
+	kill(getpid(), SIGSTOP);
+#endif
+
+	pk->fd = open (pk->filename, O_RDWR | O_CREAT, KDB_FILE_MODE);
+	// we can silently ignore an error, because we will retry later
+	if (pk->fd == -1)
+	{
+		elektraMkdirParents(pk->dirname, parentKey);
+		if (elektraOpenFile(pk, parentKey) == -1)
+		{
+			// no way to be successful
+			return -1;
+		}
+	}
+
+	// now we have a file, so lock immediately
+	if (elektraLockFile(pk->fd, parentKey) == -1)
+	{
+		elektraCloseFile(pk->fd, parentKey);
+		return -1;
+	}
+
+#ifdef RESOLVER_DEBUG
+	kill(getpid(), SIGSTOP);
+#endif
+
+	if (elektraCheckConflict(pk, parentKey) == -1)
+	{
+		elektraUnlockFile(pk->fd, parentKey);
+		elektraCloseFile(pk->fd, parentKey);
+		return -1;
+	}
+
+	return 0;
+}
+
+/**
+ * @brief Now commit the temporary file to be final
+ *
+ * @param pk
+ * @param parentKey
+ *
+ * It will also reset pk->fd
+ *
+ * @retval 0 on success
+ * @retval -1 on error
+ */
+int elektraSetCommit(resolverHandle *pk, Key *parentKey)
+{
+	int ret = 0;
+
+	if (rename (pk->tempfile, pk->filename) == -1)
+	{
+		char buffer[ERROR_SIZE];
+		strerror_r(errno, buffer, ERROR_SIZE);
+		ELEKTRA_SET_ERROR (31, parentKey, buffer);
+		ret = -1;
+	}
+
+	struct stat buf;
+	if (stat (pk->filename, &buf) == -1)
+	{
+		char buffer[ERROR_SIZE];
+		strerror_r(errno, buffer, ERROR_SIZE);
+		ELEKTRA_ADD_WARNING (29, parentKey, buffer);
+	} else {
+		/* Update timestamp */
+		pk->mtime = buf.st_mtime;
+	}
+
+	elektraUnlockFile(pk->fd, parentKey);
+	elektraCloseFile(pk->fd, parentKey);
+
+	return ret;
+}
+
+
 int elektraResolverSet(Plugin *handle, KeySet *returned ELEKTRA_UNUSED, Key *parentKey)
 {
 	resolverHandles *pks = elektraPluginGetData(handle);
@@ -325,226 +507,37 @@ int elektraResolverSet(Plugin *handle, KeySet *returned ELEKTRA_UNUSED, Key *par
 	if (!strncmp(keyName(parentKey), "user", 4)) pk = &pks->user;
 	else pk = &pks->system;
 
+	// might be useless, will not harm
+	keySetString(parentKey, pk->tempfile);
+
 	int errnoSave = errno;
-	int action = 0;
+	int ret = 1;
 
 	if (pk->fd == -1)
 	{
-		/* no fd up to now, so do action 0 */
-		action = 0;
-	}
-	else
-	{
-		action = 1;
-	}
-
-	if (action == 0)
-	{
-		int successful_stat = 1;
-		struct stat buf;
-		char * cname = strdup (pk->lockfile);
-		char * dname = dirname (cname);
-
-		if (stat(dname, &buf) == -1)
+		/* no fd up to now, so we are in first phase*/
+		if (elektraSetPrepare(pk, parentKey) == -1)
 		{
-			successful_stat = 0;
-
-			if (errno == ENOENT)
-			{
-				/* Do not fail, but try to create directory
-				 * afterwards.*/
-				char *errorText = malloc(
-						strlen(pk->filename) + ERROR_SIZE + 60);
-				strcpy (errorText, "No configuration directory \"");
-				strcat (errorText, dname);
-				strcat (errorText, "\" found: \"");
-				elektraAddErrorText(errorText);
-				strcat (errorText, "\". Will try to create one.");
-				ELEKTRA_ADD_WARNING(72, parentKey, errorText);
-				free (errorText);
-
-				errno = errnoSave;
-				/* note: cname is not freed() here on purpose*/
-			}
-			else
-			{
-				/* There is no hope, everything else
-				 * then ENOENT is fatal.*/
-				char *errorText = malloc(
-						strlen(pk->filename) + ERROR_SIZE*2 + 60);
-				strcpy (errorText, "Would not be possible to create a directory \"");
-				strcat (errorText, dname);
-				strcat (errorText, "\" ");
-				strcat (errorText, "because stat said: \"");
-				elektraAddErrorText(errorText);
-				strcat (errorText, "\" ");
-				elektraAddIdentity(errorText);
-				ELEKTRA_SET_ERROR(74, parentKey, errorText);
-				free (errorText);
-
-				free (cname);
-
-				errno = errnoSave;
-
-				return -1;
-			}
-		}
-
-		if (successful_stat && !S_ISDIR(buf.st_mode))
-		{
-			char *errorText = malloc(
-					strlen(pk->filename) + ERROR_SIZE + 60);
-			strcpy (errorText, "Existing configuration directory \"");
-			strcat (errorText, cname);
-			strcat (errorText, "\" is not a directory.");
-			ELEKTRA_SET_ERROR(73, parentKey, errorText);
-			free (errorText);
-
-			free (cname);
-
-			return -1;
-		}
-
-		if ((!successful_stat) && (elektraMkdirParents(dname) == -1))
-		{
-			char *errorText = malloc(
-					strlen(pk->filename) + ERROR_SIZE*2 + 60);
-			strcpy (errorText, "Could not create \"");
-			strcat (errorText, dname);
-			strcat (errorText, "\", because: \"");
-			elektraAddErrorText(errorText);
-			strcat (errorText, "\" ");
-			elektraAddIdentity(errorText);
-			ELEKTRA_SET_ERROR(74, parentKey, errorText);
-			free (errorText);
-
-			free (cname);
-
-			errno = errnoSave;
-
-			return -1;
-		}
-
-		free (cname);
-
-		// now the directory exists and we can try to open lock file
-
-		pk->fd = open (pk->lockfile, O_RDWR | O_CREAT, pk->mode);
-
-		if (pk->fd == -1)
-		{
-			char *errorText = malloc(
-					strlen(pk->filename) + ERROR_SIZE*2 + 60);
-			strcpy (errorText, "Opening lockfile \"");
-			strcat (errorText, pk->lockfile);
-			strcat (errorText, "\" failed, error was: \"");
-			elektraAddErrorText(errorText);
-			strcat (errorText, "\" ");
-			elektraAddIdentity(errorText);
-			ELEKTRA_SET_ERROR(26, parentKey, errorText);
-			free (errorText);
-
-			errno = errnoSave;
-			return -1;
-		}
-
-		if (elektraWriteLock(pk->fd) == -1)
-		{
-			char buffer[ERROR_SIZE];
-			strerror_r(errno, buffer, ERROR_SIZE);
-			ELEKTRA_SET_ERROR(27, parentKey, buffer);
-			close(pk->fd);
-			errno = errnoSave;
-			return -1;
-		}
-
-		if (fchmod(pk->fd, pk->mode) == -1)
-		{
-			char buffer[ERROR_SIZE];
-			strerror_r(errno, buffer, ERROR_SIZE);
-			ELEKTRA_SET_ERROR (28, parentKey, buffer);
-			close(pk->fd);
-			errno = errnoSave;
-			return -1;
-		}
-
-		keySetString(parentKey, pk->tempfile);
-
-		if (stat(pk->filename, &buf) == -1)
-		{
-			char *errorText = malloc(
-					strlen(pk->filename) + ERROR_SIZE + 60);
-			strcpy (errorText, "No configuration file \"");
-			strcat (errorText, pk->filename);
-			strcat (errorText, "\" found: \"");
-			elektraAddErrorText(errorText);
-			strcat (errorText, "\". Will try to create one.");
-			ELEKTRA_ADD_WARNING(29, parentKey, errorText);
-			free (errorText);
-
-			errno = errnoSave;
-			/* Dont fail if configuration file currently does not exist */
-			return 0;
-		}
-
-		if (buf.st_mtime > pk->mtime)
-		{
-			ELEKTRA_SET_ERROR (30, parentKey, "file time stamp is too new");
-			close(pk->fd);
-			return -1;
-		}
-
-		return 1;
-	}
-
-	if (action == 1)
-	{
-		int ret = 0;
-
-		if (rename (pk->tempfile, pk->filename) == -1)
-		{
-			char buffer[ERROR_SIZE];
-			strerror_r(errno, buffer, ERROR_SIZE);
-			ELEKTRA_SET_ERROR (31, parentKey, buffer);
-			errno = errnoSave;
 			ret = -1;
 		}
 
-		struct stat buf;
-		if (stat (pk->filename, &buf) == -1)
+		errno = errnoSave; // maybe some temporary error happened
+	}
+	else
+	{
+		/* we have an fd, so we are in second phase*/
+		if (elektraSetCommit(pk, parentKey) == -1)
 		{
-			char buffer[ERROR_SIZE];
-			strerror_r(errno, buffer, ERROR_SIZE);
-			ELEKTRA_ADD_WARNING (29, parentKey, buffer);
-			errno = errnoSave;
-		} else {
-			/* Update timestamp */
-			pk->mtime = buf.st_mtime;
+			ret = -1;
 		}
 
-		if (elektraUnlock(pk->fd) == -1)
-		{
-			char buffer[ERROR_SIZE];
-			strerror_r(errno, buffer, ERROR_SIZE);
-			ELEKTRA_ADD_WARNING(32, parentKey, buffer);
-			errno = errnoSave;
-		}
+		errno = errnoSave; // maybe some temporary error happened
 
-
-		if (close (pk->fd) == -1)
-		{
-			char buffer[ERROR_SIZE];
-			strerror_r(errno, buffer, ERROR_SIZE);
-			ELEKTRA_ADD_WARNING (33, parentKey, buffer);
-			errno = errnoSave;
-		}
-
+		// reset for next time
 		pk->fd = -1;
-
-		return ret;
 	}
 
-	return 0;
+	return ret;
 }
 
 int elektraResolverError(Plugin *handle, KeySet *returned ELEKTRA_UNUSED, Key *parentKey)
@@ -560,25 +553,7 @@ int elektraResolverError(Plugin *handle, KeySet *returned ELEKTRA_UNUSED, Key *p
 		errno = errnoSave;
 	}
 
-	if (pk->fd == -1) return 0;
-
-	if (elektraUnlock(pk->fd) == -1)
-	{
-		char buffer[ERROR_SIZE];
-		strerror_r(errno, buffer, ERROR_SIZE);
-		ELEKTRA_ADD_WARNING(32, parentKey, buffer);
-		errno = errnoSave;
-	}
-
-
-	if (close (pk->fd) == -1)
-	{
-		char buffer[ERROR_SIZE];
-		strerror_r(errno, buffer, ERROR_SIZE);
-		ELEKTRA_ADD_WARNING (33, parentKey, buffer);
-		errno = errnoSave;
-	}
-
+	// reset for next time
 	pk->fd = -1;
 
 	return 0;
