@@ -276,8 +276,9 @@ int elektraYajlGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned,
 	FILE * fileHandle = fopen(keyString(parentKey), "r");
 	if (!fileHandle)
 	{
-		ELEKTRA_SET_ERROR(75, parentKey, keyString(parentKey));
-		return -1;
+		// ELEKTRA_SET_ERROR(75, parentKey, keyString(parentKey));
+		// return -1;
+		return 0;
 	}
 
 	while (!done)
