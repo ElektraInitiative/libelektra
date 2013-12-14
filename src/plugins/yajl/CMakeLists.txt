@@ -33,7 +33,6 @@ if (YAJL_FOUND)
 	add_libraries (elektra-full ${YAJL_LIBRARIES})
 
 	add_plugintest (yajl)
-	#add_scripttest (yajl_getset.sh)
 else (YAJL_FOUND)
 	remove_plugin (yajl "yajl not found")
 endif (YAJL_FOUND)
