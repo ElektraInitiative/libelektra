@@ -19,10 +19,9 @@
 #ifndef KDBPROPOSAL_H
 #define KDBPROPOSAL_H
 
-// new external API, alternative: introduce ksPopCurrent
-Key *ksPopAtCursor(KeySet *ks, cursor_t pos);
+#include <kdb.h>
 
-// old name level iteration API, alternative see reversal in yajl
-char *keyNameGetOneLevel(const char *keyname, size_t *size);
+Key *ksPrev(KeySet *ks);
+Key *ksPopAtCursor(KeySet *ks, cursor_t c);
 
 #endif
