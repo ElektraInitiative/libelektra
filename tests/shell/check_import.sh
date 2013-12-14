@@ -1,7 +1,22 @@
 @INCLUDE_COMMON@
 
+echo
+echo ELEKTRA IMPORT SCRIPTS TESTS
+echo
 
+check_version
+
+
+ROOT=$USER_ROOT
+FILE=`mktemp`
 SIDE=$ROOT/../side_val
+PLUGIN=simpleini
+DATADIR=@CMAKE_CURRENT_BINARY_DIR@/data
+
+cleanup()
+{
+	rm -f $FILE
+}
 
 
 echo "Import with existing root"
@@ -12,7 +27,7 @@ exit_if_fail "could not set root"
 test `$KDB ls $ROOT` = $ROOT
 succeed_if "Root key not found"
 
-$KDB import $ROOT simpleini < @CMAKE_CURRENT_SOURCE_DIR@/one_value.ini
+$KDB import $ROOT simpleini < $DATADIR/one_value.simpleini
 succeed_if "Could not run kdb import"
 
 test "`$KDB ls $ROOT`" = "user/tests/script"
@@ -21,12 +36,11 @@ succeed_if "key name not correct"
 test "`$KDB get $ROOT`" = root
 succeed_if "root value not correct"
 
-FILE=`mktemp`
 $KDB export $ROOT simpleini > $FILE
 succeed_if "Could not run kdb export"
 
-diff @CMAKE_CURRENT_SOURCE_DIR@/one_value.ini $FILE
-succeed_if "Export file one_value.ini was not equal"
+diff $DATADIR/one_value.simpleini $FILE
+succeed_if "Export file one_value.simpleini was not equal"
 
 $KDB rm -r $ROOT
 succeed_if "Could not remove root"
@@ -35,7 +49,7 @@ succeed_if "Could not remove root"
 
 echo "Import with empty root"
 
-$KDB import $ROOT simpleini < @CMAKE_CURRENT_SOURCE_DIR@/one_value.ini
+$KDB import $ROOT simpleini < $DATADIR/one_value.simpleini
 succeed_if "Could not run kdb import"
 
 test "`$KDB ls $ROOT`" = "user/tests/script"
@@ -44,12 +58,11 @@ succeed_if "key name not correct"
 test "`$KDB get $ROOT`" = root
 succeed_if "root value not correct"
 
-FILE=`mktemp`
 $KDB export $ROOT simpleini > $FILE
 succeed_if "Could not run kdb export"
 
-diff @CMAKE_CURRENT_SOURCE_DIR@/one_value.ini $FILE
-succeed_if "Export file one_value.ini was not equal"
+diff $DATADIR/one_value.simpleini $FILE
+succeed_if "Export file one_value.simpleini was not equal"
 
 
 
@@ -61,7 +74,7 @@ succeed_if "Could not set $SIDE"
 $KDB set $ROOT "wrong_root" >/dev/null
 exit_if_fail "could not set wrong_root"
 
-$KDB import -s overwrite $ROOT simpleini < @CMAKE_CURRENT_SOURCE_DIR@/one_value.ini
+$KDB import -s overwrite $ROOT simpleini < $DATADIR/one_value.simpleini
 succeed_if "Could not run kdb import"
 
 test "`$KDB ls $ROOT`" = "user/tests/script"
@@ -70,12 +83,11 @@ succeed_if "key name not correct"
 test "`$KDB get $ROOT`" = root
 succeed_if "root value not correct"
 
-FILE=`mktemp`
 $KDB export $ROOT simpleini > $FILE
 succeed_if "Could not run kdb export"
 
-diff @CMAKE_CURRENT_SOURCE_DIR@/one_value.ini $FILE
-succeed_if "Export file one_value.ini was not equal"
+diff $DATADIR/one_value.simpleini $FILE
+succeed_if "Export file one_value.simpleini was not equal"
 
 $KDB rm -r $ROOT
 succeed_if "Could not remove root"
@@ -92,7 +104,7 @@ succeed_if "Could not remove $SIDE"
 
 echo "Import two values"
 
-$KDB import $ROOT simpleini < @CMAKE_CURRENT_SOURCE_DIR@/two_value.ini
+$KDB import $ROOT simpleini < $DATADIR/two_value.simpleini
 succeed_if "Could not run kdb import"
 
 test "`$KDB ls $ROOT`" = "user/tests/script
@@ -105,12 +117,11 @@ succeed_if "root value not correct"
 test "`$KDB get $ROOT/key`" = value
 succeed_if "key value not correct"
 
-FILE=`mktemp`
 $KDB export $ROOT simpleini > $FILE
 succeed_if "Could not run kdb export"
 
-diff @CMAKE_CURRENT_SOURCE_DIR@/two_value.ini $FILE
-succeed_if "Export file two_value.ini was not equal"
+diff $DATADIR/two_value.simpleini $FILE
+succeed_if "Export file two_value.simpleini was not equal"
 
 
 
@@ -119,7 +130,7 @@ echo "Import one value (cut two values from previous test case)"
 $KDB set $SIDE val
 succeed_if "Could not set $SIDE"
 
-$KDB import -s cut $ROOT simpleini < @CMAKE_CURRENT_SOURCE_DIR@/one_value.ini
+$KDB import -s cut $ROOT simpleini < $DATADIR/one_value.simpleini
 succeed_if "Could not run kdb import"
 
 test "`$KDB ls $ROOT`" = "user/tests/script"
@@ -128,12 +139,11 @@ succeed_if "key name not correct"
 test "`$KDB get $ROOT`" = root
 succeed_if "root value not correct"
 
-FILE=`mktemp`
 $KDB export $ROOT simpleini > $FILE
 succeed_if "Could not run kdb export"
 
-diff @CMAKE_CURRENT_SOURCE_DIR@/one_value.ini $FILE
-succeed_if "Export file one_value.ini was not equal"
+diff $DATADIR/one_value.simpleini $FILE
+succeed_if "Export file one_value.simpleini was not equal"
 
 test "`$KDB get $SIDE`" = val
 succeed_if "root value not correct"
@@ -156,7 +166,7 @@ succeed_if "Could not set $ROOT/val"
 $KDB set $SIDE val
 succeed_if "Could not set $SIDE"
 
-$KDB import -s cut $ROOT simpleini < @CMAKE_CURRENT_SOURCE_DIR@/one_value.ini
+$KDB import -s cut $ROOT simpleini < $DATADIR/one_value.simpleini
 succeed_if "Could not run kdb import"
 
 test "`$KDB ls $ROOT`" = "user/tests/script"
@@ -165,12 +175,11 @@ succeed_if "key name not correct"
 test "`$KDB get $ROOT`" = root
 succeed_if "root value not correct"
 
-FILE=`mktemp`
 $KDB export $ROOT simpleini > $FILE
 succeed_if "Could not run kdb export"
 
-diff @CMAKE_CURRENT_SOURCE_DIR@/one_value.ini $FILE
-succeed_if "Export file one_value.ini was not equal"
+diff $DATADIR/one_value.simpleini $FILE
+succeed_if "Export file one_value.simpleini was not equal"
 
 test "`$KDB get $SIDE`" = val
 succeed_if "root value not correct"

@@ -4,61 +4,127 @@ echo
 echo ELEKTRA BASIC COMMAND SCRIPTS TESTS
 echo
 
+check_version
+
+FILE=test_$RANDOMNAME.conf
+VALUE=value
+
 echo "testing set and get commands"
 
-#$KDB mount $FILE $ROOT >/dev/null
-#succeed_if "could not mount $FILE at $ROOT"
+for PLUGIN in $PLUGINS
+do
+	echo -------- $PLUGIN -----------
+	if [ ! "x`$KDB info $PLUGIN provides`" = "xstorage" ]
+	then
+		echo "$PLUGIN not a storage"
+		continue;
+	fi
 
-$KDB set $ROOT "root" >/dev/null
-exit_if_fail "could not set root"
+	if [ "x$PLUGIN" = "xhosts" ]
+	then
+		echo "fstab does not work"
+		continue;
+	fi
 
-#[ -f $FOLDER/$FILE ]
-#succeed_if "$FOLDER/$FILE does not exist"
+	if [ "x$PLUGIN" = "xfstab" ]
+	then
+		echo "fstab does not work"
+		continue;
+	fi
 
-[ "x`$KDB sget $ROOT/value value 2> /dev/null`" = "xvalue" ]
-succeed_if "Did not get default value"
+	if [ "x$PLUGIN" = "xuname" ]
+	then
+		echo "uname cannot work"
+		continue;
+	fi
 
-[ "x`$KDB get $ROOT 2> /dev/null`" = "xroot" ]
-succeed_if "could not set root"
+	if [ "x$PLUGIN" = "xyajl" ]
+	then
+		echo "yajl currently broken (to be fixed)"
+		echo "TODO problem: empty file not empty (___empty_map)"
+		continue;
+	fi
 
-[ "x`$KDB sget $ROOT default 2> /dev/null`" = "xroot" ]
-succeed_if "could not shell get root"
+	if [ "x$PLUGIN" = "xtcl" ]
+	then
+		PLUGIN="tcl ccode null"
+		echo "tcl currently broken (to be fixed)"
+		echo "TODO problem: after removing root key file is broken"
+		continue;
+	fi
 
-$KDB set "$ROOT/value" "$VALUE" >/dev/null
-exit_if_fail "could not set value"
+	if [ "x$PLUGIN" = "xsimpleini" ]
+	then
+		PLUGIN="simpleini ccode null"
+	fi
 
-[ "x`$KDB get $ROOT/value 2> /dev/null`" = "x$VALUE" ]
-exit_if_fail "cant get $ROOT/value"
+	unset -f cleanup
 
-[ "x`$KDB sget $ROOT/value default 2> /dev/null`" = "x$VALUE" ]
-exit_if_fail "cant shell get $ROOT/value"
+	$KDB mount $FILE $MOUNTPOINT $PLUGIN 1>/dev/null 2>/dev/null
+	exit_if_fail "could not mount $FILE at $MOUNTPOINT using $PLUGIN"
 
-echo "testing ls command"
+	cleanup()
+	{
+		$KDB umount $MOUNTNAME >/dev/null
+		succeed_if "could not umount $MOUNTNAME"
+		rm -f $USER_FOLDER/$FILE
+		rm -f $SYSTEM_FOLDER/$FILE
+		rm -f $USER_FOLDER/$FILE.lck
+		rm -f $SYSTEM_FOLDER/$FILE.lck
+		rm -f $USER_FOLDER/$FILE.tmp
+		rm -f $SYSTEM_FOLDER/$FILE.tmp
+	}
 
-[ "x`$KDB ls $ROOT/value 2> /dev/null`" = "x$ROOT/value" ]
-succeed_if "cant ls $ROOT (may mean that $ROOT folder is not clean)"
+	for ROOT in $USER_ROOT $SYSTEM_ROOT
+	do
+		echo "do preparation for $PLUGIN in $ROOT"
+		$KDB set $ROOT "root" 1>/dev/null 2>/dev/null
+		succeed_if "could not set root"
 
+		[ "x`$KDB sget $ROOT/value defvalue 2> /dev/null`" = "xdefvalue" ]
+		succeed_if "Did not get default value"
 
-echo "testing rm command"
+		[ "x`$KDB get $ROOT 2> /dev/null`" = "xroot" ]
+		succeed_if "could not get root"
 
-$KDB rm $ROOT/value
-succeed_if "could not remove user/test/value"
+		[ "x`$KDB sget $ROOT default 2> /dev/null`" = "xroot" ]
+		succeed_if "could not shell get root"
 
-$KDB get $ROOT/value 2>/dev/null
-[ $? != "0" ]
-succeed_if "got removed key $ROOT/value"
+		$KDB set "$ROOT/value" "$VALUE" 1>/dev/null 2>/dev/null
+		succeed_if "could not set value"
 
-$KDB rm $ROOT >/dev/null 2>/dev/null
-succeed_if "could not remove user/test/value"
+		[ "x`$KDB get $ROOT/value 2> /dev/null`" = "x$VALUE" ]
+		succeed_if "cant get $ROOT/value"
 
-[ "x`$KDB sget $ROOT/value value 2> /dev/null`" = "xvalue" ]
-succeed_if "Did not get default value"
+		[ "x`$KDB sget $ROOT/value default 2> /dev/null`" = "x$VALUE" ]
+		succeed_if "cant shell get $ROOT/value"
 
-$KDB get $ROOT/value 2> /dev/null
-[ $? != "0" ]
-succeed_if "got removed key $ROOT"
+		echo "testing ls command"
 
-#[ ! -f $FOLDER/$FILE ]
-#succeed_if "$FOLDER/$FILE still exist"
+		[ "x`$KDB ls $ROOT/value 2> /dev/null`" = "x$ROOT/value" ]
+		succeed_if "cant ls $ROOT (may mean that $ROOT folder is not clean)"
 
-end_script
+		echo "testing rm command"
+
+		$KDB rm $ROOT/value 1> /dev/null 2> /dev/null
+		succeed_if "could not remove user/test/value"
+
+		$KDB get $ROOT/value 1> /dev/null  2>/dev/null
+		[ $? != "0" ]
+		succeed_if "got removed key $ROOT/value"
+
+		$KDB rm $ROOT 1>/dev/null 2>/dev/null
+		succeed_if "could not remove user/test/value"
+
+		[ "x`$KDB sget $ROOT/value value 2> /dev/null`" = "xvalue" ]
+		succeed_if "Did not get default value"
+
+		$KDB get $ROOT/value 1>/dev/null  2> /dev/null
+		[ $? != "0" ]
+		succeed_if "got removed key $ROOT"
+	done
+
+	cleanup
+done
+
+end_script basic commands
