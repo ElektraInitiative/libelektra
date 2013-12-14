@@ -1213,20 +1213,42 @@ cursor_t ksGetCursor(const KeySet *ks)
  * @return the popped key
  * @retval 0 if ks is 0
  */
-Key *ksPopAtCursor(KeySet *ks, cursor_t c)
+Key *ksPopAtCursor(KeySet *ks, cursor_t pos)
 {
 	if (!ks) return 0;
-	if (c<0) return 0;
-	if ((size_t)c>=ks->size) return 0;
+	if (pos<0) return 0;
+	if (pos>SSIZE_MAX) return 0;
 
-	Key ** found = ks->array+c;
-	Key * k = *found;
-	/* Move the array over the place where key was found */
-	memmove (found, found+1, ks->size*sizeof(Key *)-(found-ks->array)-sizeof(Key *));
-	*(ks->array+ks->size-1) = k; // prepare last element to pop
+	size_t c = pos;
+	if (c>=ks->size) return 0;
+
+	if (c != ks->size-1)
+	{
+		Key ** found = ks->array+c;
+		Key * k = *found;
+		/* Move the array over the place where key was found
+		 *
+		 * e.g. c = 2
+		 *   size = 6
+		 *
+		 * 0  1  2  3  4  5  6
+		 * |--|--|c |--|--|--|size
+		 * move to (c/pos is overwritten):
+		 * |--|--|--|--|--|
+		 *
+		 * */
+		memmove (found,
+			found+1,
+			(ks->size-c-1) * sizeof(Key *));
+		*(ks->array+ks->size-1) = k; // prepare last element to pop
+	}
+	else
+	{
+		// if c is on last position it is just a ksPop..
+		// so do nothing..
+	}
+
 	ksRewind(ks);
-
-	ks->flags |= KS_FLAG_SYNC;
 
 	return ksPop(ks);
 }
