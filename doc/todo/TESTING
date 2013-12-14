@@ -45,8 +45,6 @@ also ls above multiple plugins
 and execute the kdb test functions
 (but reduce #)
 
-resolver tests?
-
 Partly written configuration tests?
 	(rollback at commit?)
 converting of config files (automated tests)

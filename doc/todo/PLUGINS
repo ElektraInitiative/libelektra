@@ -174,35 +174,46 @@ Checkers:
 
 === RESOLVER ===
 
+make (at least) 4 resolvers:
+	resolver-debug for tests
+		concurrency: sets breakpoints within
+		folder: write into folders controlled by env, maybe xdg
+	resolver-xdg-passwd
+		use passwd with XDG overides
+	resolver-xdg
+		use $HOME with XDG overides
+	resolver-hardcoded (just use KDB_DB_* for single users embedded systems)
+	resolver-passwd
+	resolver-posix
+		using HOME def. in posix: http://pubs.opengroup.org/onlinepubs/009695399/basedefs/xbd_chap08.html
+		using USER as fallback? not def. in posix, but often in shells
+
+race conditions:
+	the losing process must not remove the .tmp file, but it
+	has to remove all .tmp files it created before (in those cases
+		it won)
+	-> needs also some logic within kdbSet() to handle this
+
+use nanoseconds timestamps, maybe avoid locking completely
+fsync: both file+directory
+
+remove files on empty keysets (also needs logic in kdbSet())
+
+tmp files:
+	thread ID + randomness?
+
 resolver:
-	configurable lock/tmpfile
-	configureable flush
+	configureable flush+locking
 
-passwd resolver
+kdb file
+	using resolver plugin without function! (parent value!)
+	should be returned in kdbGet/kdbSet?
 
-doing nice:
-	file resolution
-	locking
-	checking for conflicts
-
-(backends for issues of type system below)
-
-resolver recursively:
-	double slashes
-	starting with /
-	kdb file using resolver plugin without function! (parent value!)
-	should be returned in kdbGet/kdbSet
-
-xdg:
+XDG specification:
 	write a xdg plugin which does xdg conforming resolving
-	resolver XDG specification:
 	XDG_CONFIG_HOME
-	KDB_CONFIG_HOME
-
-resolver:
-	reintroduce getpwent?
-	(what if no environment set?)
-
+	describe, implement, test
+	xdg mail announce
 
 == DEFAULT PLUGINS ==
 

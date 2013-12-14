@@ -39,18 +39,8 @@ script testing:
 		-> plugin specifica might be tested at other level/only C
 		-> how to do without need of capabilities again? backends at serialization level?? (like with mount)
 
-resolver recursively:
-	Improve resolver (create tmp, open original)
-	double slashes
-	starting with /
-	kdb file using resolver plugin without function! (parent value!)
-	should be returned in kdbGet/kdbSet
-
-XDG specification:
-	XDG_CONFIG_HOME
-	KDB_CONFIG_HOME
-	describe, implement, test
-	xdg mail announce
+use error value as exit (does it start with 0?)
+printError usw. Nicht von makro abhängig machen?
 
 
 kdb-shell:
