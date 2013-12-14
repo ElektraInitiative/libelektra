@@ -487,3 +487,9 @@ description:resolver was missing some information, keys might be stored at wrong
 severity:warning
 ingroup:plugin
 module:storage
+
+number:84
+description:Read only plugin, kdbSet not supported
+severity:error
+ingroup:kdb
+

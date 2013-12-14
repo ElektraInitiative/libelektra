@@ -131,10 +131,12 @@ change to proper 2phase algorithm?
 kdbGet
 * do not get empty files
 * only run on those parts where needed (not only shortcut on nothing changed)
+* create an error if no kdbGet was done (no plugin added)
 
 kdbSet
 * do not run on empty configuration
 * but remove config file instead
+* create an error if no kdbSet was done (no plugin added)
 
 
 

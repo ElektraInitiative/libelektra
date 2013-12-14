@@ -32,6 +32,8 @@
 # include "kdbconfig.h"
 #endif
 
+#include <kdberrors.h>
+
 int elektraUnameGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
 	int errnosave = errno;
@@ -122,13 +124,15 @@ int elektraUnameGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 	return 1;
 }
 
-int elektraUnameSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
+int elektraUnameSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey)
 {
 #if DEBUG && VERBOSE
 	printf ("set uname %s from %s\n", keyName(parentKey), keyString(parentKey));
 #endif
 
-	return 1;
+	ELEKTRA_SET_ERROR(84, parentKey, keyName(parentKey));
+
+	return -1;
 }
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(uname) {
