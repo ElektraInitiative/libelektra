@@ -2286,6 +2286,8 @@ void test_ksPopAtCursor()
 	ksNext(ks);
 	cursor_t c = ksGetCursor(ks);
 	keyDel (ksPopAtCursor(ks, c));
+	succeed_if(ksCurrent(ks) == 0, "cursor position wrong");
+
 	compare_keyset(ks, ks_c);
 	ksDel(ks);
 	ksDel(ks_c);

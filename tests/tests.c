@@ -41,14 +41,9 @@ int init (int argc, char**argv)
 #else
 	unsetenv("HOME");
 	unsetenv("USER");
-	unsetenv("KDB_HOME");
-	unsetenv("KDB_USER");
-	unsetenv("KDB_DIR");
 #endif
 
-#ifdef HAVE_SETENV
-	setenv("KDB_HOME",".",1);
-#endif
+	setenv("HOME","/tmp/elektra-test",1);
 
 	return 0;
 }
