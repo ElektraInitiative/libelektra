@@ -365,23 +365,26 @@ static void elektraDropCurrentKey(KeySet *ks,
 	const Key *k = ksCurrent(ks);
 
 	const size_t sizeOfStaticText = 100;
-	char *errorMsg = elektraMalloc(
+	char *warningMsg = elektraMalloc(
 			keyGetNameSize(curHandle->mountpoint) +
 			keyGetValueSize(curHandle->mountpoint) +
 			keyGetNameSize(k) +
 			strlen(msg) +
 			sizeOfStaticText);
-	strcpy(errorMsg, "drop key ");
-	strcat(errorMsg, keyName(k));
-	strcat(errorMsg, " not belonging to ");
-	strcat(errorMsg, keyName(curHandle->mountpoint));
-	strcat(errorMsg, " with name ");
-	strcat(errorMsg, keyString(curHandle->mountpoint));
-	strcat(errorMsg, " because ");
-	strcat(errorMsg, msg);
-	ELEKTRA_ADD_WARNING(79, warningKey, errorMsg);
+	strcpy(warningMsg, "drop key ");
+	strcat(warningMsg, keyName(k));
+	strcat(warningMsg, " not belonging to ");
+	strcat(warningMsg, keyName(curHandle->mountpoint));
+	strcat(warningMsg, " with name ");
+	strcat(warningMsg, keyString(curHandle->mountpoint));
+	strcat(warningMsg, " because ");
+	strcat(warningMsg, msg);
+	ELEKTRA_ADD_WARNING(79, warningKey, warningMsg);
+	elektraFree(warningMsg);
 	cursor_t c = ksGetCursor(ks);
 	keyDel (ksPopAtCursor(ks, c));
+	ksSetCursor(ks, c);
+	ksPrev(ks); // next ksNext() will point correctly again
 }
 
 /**

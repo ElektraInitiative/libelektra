@@ -39,18 +39,8 @@ script testing:
 		-> plugin specifica might be tested at other level/only C
 		-> how to do without need of capabilities again? backends at serialization level?? (like with mount)
 
-resolver recursively:
-	Improve resolver (create tmp, open original)
-	double slashes
-	starting with /
-	kdb file using resolver plugin without function! (parent value!)
-	should be returned in kdbGet/kdbSet
-
-XDG specification:
-	XDG_CONFIG_HOME
-	KDB_CONFIG_HOME
-	describe, implement, test
-	xdg mail announce
+use error value as exit (does it start with 0?)
+printError usw. Nicht von makro abhängig machen?
 
 
 kdb-shell:
@@ -129,6 +119,24 @@ bindings: using swig
 == NOTIFICATION ==
 
 get list of involved configuration files and do inotify on it
+
+
+== ALGORITHM ==
+
+
+aka distributor+filebackend plugin
+(currently directly in core)
+change to proper 2phase algorithm?
+
+kdbGet
+* do not get empty files
+* only run on those parts where needed (not only shortcut on nothing changed)
+* create an error if no kdbGet was done (no plugin added)
+
+kdbSet
+* do not run on empty configuration
+* but remove config file instead
+* create an error if no kdbSet was done (no plugin added)
 
 
 

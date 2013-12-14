@@ -8,7 +8,7 @@
 
 #include <kdbconfig.h>
 #include <kdberrors.h>
-#include <kdbproposal.h>
+#include <kdbobsolete.h>
 
 #include <yajl/yajl_gen.h>
 

@@ -38,6 +38,11 @@ ostream& operator << (ostream& os, parse_t& p)
 
 	for (size_t i = 1; i<p.size(); ++i)
 	{
+		if (p[i]["unused"] == "yes")
+		{
+			continue;
+		}
+
 		if (p[i]["severity"] == "warning")
 		{
 		os << "static inline void elektraAddWarning" << i << "(Key *warningKey, const char *reason," << endl
@@ -103,6 +108,11 @@ ostream& operator << (ostream& os, parse_t& p)
 	   << "			KEY_VALUE, \"the specification of all error codes\", KEY_END)," << endl;
 	for (size_t i = 1; i<p.size(); ++i)
 	{
+		if (p[i]["unused"] == "yes")
+		{
+			continue;
+		}
+
 		os << "		keyNew (\"system/elektra/modules/error/specification/" << i << "\"," << endl
 		   << "			KEY_END)," << endl
 		   << "		keyNew (\"system/elektra/modules/error/specification/" << i << "/description\"," << endl
@@ -123,6 +133,11 @@ ostream& operator << (ostream& os, parse_t& p)
 	   << "	{" << endl;
 	for (size_t i = 1; i<p.size(); ++i)
 	{
+		if (p[i]["unused"] == "yes")
+		{
+			continue;
+		}
+
 		if (p[i]["severity"] != "warning") continue;
 		os << "		case " << i << ": ELEKTRA_ADD_WARNING (" << i << ", parentKey, message);" << endl
 		   << "			break;" << endl;
@@ -138,6 +153,11 @@ ostream& operator << (ostream& os, parse_t& p)
 	   << "	{" << endl;
 	for (size_t i = 1; i<p.size(); ++i)
 	{
+		if (p[i]["unused"] == "yes")
+		{
+			continue;
+		}
+
 		if (p[i]["severity"] == "warning") continue;
 		os << "		case " << i << ": ELEKTRA_SET_ERROR (" << i << ", parentKey, message);" << endl
 		   << "			break;" << endl;

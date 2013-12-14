@@ -38,15 +38,15 @@ typedef struct _resolverHandle resolverHandle;
 
 struct _resolverHandle
 {
-	int fd; /* Descriptor to the locking file */
-	time_t mtime; /* Previous timestamp of the file */
-	mode_t mode; /* The mode to set */
+	int fd;       ///< Descriptor to the locking file
+	time_t mtime; ///< Previous timestamp of the file
+	mode_t mode;  ///< The mode to set
 
-	char *filename;
-	char *lockfile;
-	char *tempfile;
+	char *dirname; ///< directory where real+temp file is
+	char *filename;///< the full path to the configuration file
+	char *tempfile;///< temporary file storages write to
 
-	const char *path;
+	const char *path; ///< the configuration file name as passed from config
 };
 
 typedef struct _resolverHandles resolverHandles;
@@ -60,7 +60,7 @@ struct _resolverHandles
 void resolverInit (resolverHandle *p, const char *path);
 void resolverClose (resolverHandle *p);
 
-int resolveFilename(Key* forKey, resolverHandle *p);
+int resolveFilename(Key* forKey, resolverHandle *p, Key *warningKey);
 int elektraResolverCheckFile (const char* filename);
 
 int elektraResolverOpen(Plugin *handle, Key *errorKey);
@@ -70,8 +70,8 @@ int elektraResolverSet(Plugin *handle, KeySet *ks, Key *parentKey);
 int elektraResolverError(Plugin *handle, KeySet *returned, Key *parentKey);
 Plugin *ELEKTRA_PLUGIN_EXPORT(resolver);
 
-int elektraWriteLock(int fd);
-int elektraReadLock(int fd);
-int elektraUnlock(int fd);
+int elektraLockFile(int fd, Key *parentKey);
+int elektraUnlockFile(int fd, Key *parentKey);
+void elektraCloseFile(int fd, Key *parentKey);
 
 #endif

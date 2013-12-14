@@ -1,9 +1,11 @@
 #!/bin/sh
-set -x
+#set -x
+@DISCLAIMER@
 # This file is AUTO GENERATED, do not modify it or your changes might be
 # lost!
 #
 # shell test suite v0.3 for kdb command
+set -x
 
 # variables to count up errors and tests
 nbError=0
@@ -12,25 +14,24 @@ nbTest=0
 # the script itself
 scriptName=`basename $0`
 
-if [ "z$1" = 'z' ]; then
-	HOME=.
-else
-	HOME=$1
-fi
-export HOME
+#RANDOM does not work with testdata
+#RANDOM=`mktemp -u --tmpdir=/ XXXXXXXXXXXX`
+MOUNTPOINT="/tests/script$RANDOM"
+RANDOMNAME=`echo $RANDOM | tr / _`
+MOUNTNAME="_tests_script$RANDOMNAME"
 
-VALUE=value
-ROOT="user/tests/script"
-ROOTNAME="user_tests_script"
-#ROOT="user/tests/script`mktemp -u --tmpdir=/ XXXXXXXXXXXX`"
+USER_ROOT="user/tests/script$RANDOM"
+SYSTEM_ROOT="system/tests/script$RANDOM"
+
 
 USER="`id -un`"
 GROUP="`id -gn`"
 
-FOLDER=@KDB_DB_HOME@/$USER/@KDB_DB_USER@
-FILE=test.ecf
+SYSTEM_FOLDER=@KDB_DB_SYSTEM@
+USER_FOLDER=@KDB_DB_HOME@/$USER/@KDB_DB_USER@
+PLUGINS=`echo "@PLUGINS@" | tr ';' ' '`
 
-DATE="`date \\"+%b %d %H:%M\\"`"
+DATE=`date "+%b %d %H:%M"`
 
 #succeed if the previous command was successful
 succeed_if ()
@@ -48,7 +49,13 @@ exit_if_fail ()
 {
 	if [ $? != "0" ]
 	then
-		echo fatal: $*
+		if type cleanup
+		then
+			echo "fatal: $*"
+			cleanup
+		else
+			echo "fatal (no cleanup): $*"
+		fi
 		exit 1
 	fi
 	nbTest=$(( $nbTest + 1 ))
@@ -60,23 +67,16 @@ end_script()
 	exit "$nbError"
 }
 
+check_version()
+{
+	echo "Check if script tests the correct version"
 
+	[ "x`$KDB get system/elektra/version/constants/KDB_VERSION 2> /dev/null`" = "x@KDB_VERSION@" ]
+	exit_if_fail "Script was not compiled with this elektra version: KDB_VERSION mismatch"
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	[ "x`$KDB get system/elektra/version/constants/SO_VERSION 2> /dev/null`" = "x@SO_VERSION@" ]
+	exit_if_fail "Script was not compiled with this elektra version: SO_VERSION mismatch"
+}
 
 
 

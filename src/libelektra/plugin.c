@@ -48,6 +48,7 @@
 
 #include <kdbinternal.h>
 #include <kdbversion.h>
+#include <kdberrors.h>
 
 
 /**
@@ -395,12 +396,22 @@ Plugin *elektraPluginMissing(void)
 	return returned;
 }
 
-static int elektraVersionGet (Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *error ELEKTRA_UNUSED)
+static int elektraVersionGet (Plugin *handle ELEKTRA_UNUSED,
+		KeySet *returned, Key *error ELEKTRA_UNUSED)
 {
-	KeySet *info = elektraVersionSet();
+	KeySet *info = elektraVersionKeySet();
 	ksAppend(returned, info);
 	ksDel (info);
 	return 1;
+}
+
+
+static int elektraVersionSet (Plugin *handle ELEKTRA_UNUSED,
+		KeySet *returned ELEKTRA_UNUSED, Key *error)
+{
+	ELEKTRA_SET_ERROR(84, error, keyName(error));
+
+	return -1;
 }
 
 Plugin *elektraPluginVersion(void)
@@ -412,6 +423,7 @@ Plugin *elektraPluginVersion(void)
 
 	returned->name = "version";
 	returned->kdbGet=elektraVersionGet;
+	returned->kdbSet=elektraVersionSet;
 	return returned;
 }
 

@@ -6,6 +6,10 @@ general:
 	profile the code and fix optimization leaks
 	benchmark first!
 
+== STORAGE ==
+
+use less write() syscalls in dump
+
 
 == SEARCH ==
 

@@ -116,6 +116,22 @@ int init(int argc, char** argv);
 	} \
 }
 
+#define succeed_if_same_string(s1, s2) \
+{ \
+	if (strcmp(s1, s2)) \
+	{ \
+		char errorMsg [BUFFER_LENGTH]; \
+		 \
+		strcpy(errorMsg, "string "); \
+		strcat(errorMsg, s1); \
+		strcat(errorMsg, " is not equal "); \
+		strcat(errorMsg, s2); \
+		 \
+		yield_error(errorMsg); \
+	} \
+}
+
+
 /**
  * Checks if two keys are equal.
  *

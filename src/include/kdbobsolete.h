@@ -1,7 +1,8 @@
 /***************************************************************************
- *    kdbproposal.h  -  Proposed declarations
+ *    kdbobsolete.h  -  Obsolete API
  *
- * Do not use them if avoidable, they are likely not API/ABI stable.
+ * Do not use them if avoidable, they are to be removed next major
+ * release.
  *
  *                         -------------------
  *  begin                : Sun 08 Dec, 2013
@@ -16,12 +17,11 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef KDBPROPOSAL_H
-#define KDBPROPOSAL_H
+#ifndef KDBOBSOLETE_H
+#define KDBOBSOLETE_H
 
 #include <kdb.h>
 
-Key *ksPrev(KeySet *ks);
-Key *ksPopAtCursor(KeySet *ks, cursor_t c);
+char *keyNameGetOneLevel(const char *keyname, size_t *size);
 
 #endif

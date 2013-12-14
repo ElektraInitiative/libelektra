@@ -9,6 +9,12 @@ Items are e.g. BUGS, OPTIMIZE, PROBLEMS, TESTING, PLUGINS, TODO,..
 testing framework: allow to disable hdd access for test cases
 test mount for json (and maybe others)
 
+resolver:
+	remove on empty keyset (move from yail)
+	not get on missing file
+	errors on storage plugins
+	improve locking
+
 rebase plugin:
 	remove/add a common prefix after parentKey
 

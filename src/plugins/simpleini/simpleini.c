@@ -98,10 +98,17 @@ int elektraSimpleiniGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *pa
 	FILE *fp = fopen (keyString(parentKey), "r");
 	if (!fp)
 	{
-		ELEKTRA_SET_ERROR(74, parentKey, keyString(parentKey));
-		return -1;
+		// ELEKTRA_SET_ERROR(74, parentKey, keyString(parentKey));
+		// return -1;
+		return 0; // we just ignore if we could not open file
 	}
 
+// 4.7.2 supports %ms but yields warning using -Wformat together with
+// -ansi -pedantic
+// warning: ISO C does not support the 'm' scanf flag
+#if  GCC_VERSION < 40800
+# pragma GCC diagnostic ignored "-Wformat"
+#endif
 	while ((n = fscanf (fp, "%ms = %ms\n", &key, &value)) >= 1)
 	{
 		Key *read = keyNew(0);

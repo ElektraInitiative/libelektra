@@ -19,7 +19,7 @@ void printError(Key error)
 
 	try{
 		error.getMeta<std::string>("error");
-		std::cerr << "Error number " << error.getMeta<std::string>("error/number") << " occurred!" << std::endl;
+		std::cerr << "Error (#" << error.getMeta<std::string>("error/number") << ") occurred!" << std::endl;
 		std::cerr << "Description: " << error.getMeta<std::string>("error/description") << std::endl;
 		std::cerr << "Ingroup: " << error.getMeta<std::string>("error/ingroup") << std::endl;
 		std::cerr << "Module: " << error.getMeta<std::string>("error/module") << std::endl;

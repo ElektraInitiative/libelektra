@@ -357,7 +357,8 @@ Backend* elektraBackendOpenVersion(Key * errorKey ELEKTRA_UNUSED)
 	Key *mp = keyNew ("system/elektra/version", KEY_VALUE, "version", KEY_END);
 
 	backend->getplugins[0] = plugin;
-	plugin->refcounter = 1;
+	backend->setplugins[0] = plugin;
+	plugin->refcounter = 2;
 
 	backend->mountpoint = mp;
 	keyIncRef(backend->mountpoint);
