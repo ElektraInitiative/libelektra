@@ -1,0 +1,7 @@
+{
+    "user": {
+        "tests": {
+            "script": "root"
+        }
+    }
+}

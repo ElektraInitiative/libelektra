@@ -13,28 +13,9 @@ echo "testing set and get commands"
 
 for PLUGIN in $PLUGINS
 do
-	echo -------- $PLUGIN -----------
-	if [ ! "x`$KDB info $PLUGIN provides`" = "xstorage" ]
+	if is_not_rw_storage
 	then
-		echo "$PLUGIN not a storage"
-		continue;
-	fi
-
-	if [ "x$PLUGIN" = "xhosts" ]
-	then
-		echo "fstab does not work"
-		continue;
-	fi
-
-	if [ "x$PLUGIN" = "xfstab" ]
-	then
-		echo "fstab does not work"
-		continue;
-	fi
-
-	if [ "x$PLUGIN" = "xuname" ]
-	then
-		echo "uname cannot work"
+		echo "$PLUGIN not a read-write storage"
 		continue;
 	fi
 

@@ -1,20 +1,16 @@
 @INCLUDE_COMMON@
 
+#comment out next line to re-generate test data
+exit 0
+
 echo
-echo ELEKTRA EXPORT SCRIPTS TESTS
+echo ELEKTRA GENERATE DATA
 echo
 
 check_version
 
 ROOT=$USER_ROOT
-FILE=`mktemp`
-PLUGIN=$PLUGIN
 DATADIR=@CMAKE_CURRENT_BINARY_DIR@/data
-
-cleanup()
-{
-	rm -f $FILE
-}
 
 for PLUGIN in $PLUGINS
 do
@@ -32,41 +28,29 @@ do
 	test `$KDB ls $ROOT` = $ROOT
 	succeed_if "Root key not found"
 
-	$KDB export $ROOT $PLUGIN > $FILE
+	$KDB export $ROOT $PLUGIN > $DATADIR/one_value.$PLUGIN
 	succeed_if "Could not run kdb export"
-
-	diff $DATADIR/one_value.$PLUGIN $FILE
-	succeed_if "Export file one_value.$PLUGIN was not equal"
 
 
 	test "`$KDB set $ROOT/key "value"`" = "create a new key $ROOT/key with string value"
 	succeed_if "Could not set $ROOT/key"
 
-	$KDB export $ROOT $PLUGIN > $FILE
+	$KDB export $ROOT $PLUGIN > $DATADIR/two_value.$PLUGIN
 	succeed_if "Could not run kdb export"
-
-	diff $DATADIR/two_value.$PLUGIN $FILE
-	succeed_if "Export file two_value.$PLUGIN was not equal"
 
 
 	$KDB set $ROOT/key/subkey "another value" > /dev/null
 	succeed_if "Could not set $ROOT/key/subkey"
 
-	$KDB export $ROOT $PLUGIN > $FILE
+	$KDB export $ROOT $PLUGIN > $DATADIR/three_value.$PLUGIN
 	succeed_if "Could not run kdb export"
-
-	diff $DATADIR/three_value.$PLUGIN $FILE
-	succeed_if "Export file three_value.$PLUGIN was not equal"
 
 
 	$KDB rm $ROOT/key > /dev/null
 	succeed_if "Could not rm $ROOT/key"
 
-	$KDB export $ROOT $PLUGIN > $FILE
+	$KDB export $ROOT $PLUGIN > $DATADIR/again_two_value.$PLUGIN
 	succeed_if "Could not run kdb export"
-
-	diff $DATADIR/again_two_value.$PLUGIN $FILE
-	succeed_if "Export file again_two_value.$PLUGIN was not equal"
 
 
 	$KDB rm -r $ROOT

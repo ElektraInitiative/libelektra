@@ -119,14 +119,20 @@ other file formats:
 fstab:
 	support for spaces and so on (with \040)
 
-error specification plugin:
-	parse error specification content into keyset
-
 tcl:
 	parse output?
 	struct output!
 
 create storage plugins with lenses
+
+== ERROR ==
+
+
+error specification plugin:
+	parse error specification content into keyset
+
+ignore_error plugin:
+	transform error of a plugin to a warning
 
 
 == FILTER ==
@@ -195,7 +201,7 @@ race conditions:
 	-> needs also some logic within kdbSet() to handle this
 
 use nanoseconds timestamps, maybe avoid locking completely
-fsync: both file+directory
+fsync the directory
 
 remove files on empty keysets (also needs logic in kdbSet())
 
@@ -214,6 +220,12 @@ XDG specification:
 	XDG_CONFIG_HOME
 	describe, implement, test
 	xdg mail announce
+
+== SYNC plugin ==
+
+fsync the file in keyname
+abort on error
+
 
 == DEFAULT PLUGINS ==
 

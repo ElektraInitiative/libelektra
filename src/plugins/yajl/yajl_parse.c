@@ -21,7 +21,7 @@ static int elektraYajlIncrementArrayEntry(KeySet * ks)
 	Key * current = ksCurrent(ks);
 	const char * baseName = keyBaseName(current);
 
-	if (*baseName == '#')
+	if (baseName && *baseName == '#')
 	{
 		if (!strcmp(baseName, "###empty_array"))
 		{

@@ -79,13 +79,13 @@ check_version()
 }
 
 
-
-
-
-
-
-
-
+is_not_rw_storage()
+{
+	test ! "x`$KDB info $PLUGIN provides`" = "xstorage" \
+	-o "x$PLUGIN" = "xhosts" \
+	-o "x$PLUGIN" = "xfstab" \
+	-o "x$PLUGIN" = "xuname"
+}
 
 
 
