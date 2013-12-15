@@ -149,7 +149,7 @@ static int elektraYajlParseMapKey(void *ctx, const unsigned char * stringVal,
 	printf ("elektraYajlParseMapKey stringValue: %s currentKey: %s\n", stringValue,
 			keyName(currentKey));
 #endif
-	if (!strcmp(keyBaseName(currentKey), "___empty_map"))
+	if (currentKey && !strcmp(keyBaseName(currentKey), "___empty_map"))
 	{
 		// now we know the name of the object
 		keySetBaseName(currentKey, stringValue);
@@ -242,8 +242,8 @@ int elektraYajlGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned,
 	{
 		KeySet *moduleConfig =
 #include "contract.h"
-		ksAppend (returned, moduleConfig);
-		ksDel (moduleConfig);
+		ksAppend(returned, moduleConfig);
+		ksDel(moduleConfig);
 		return 1;
 	}
 
@@ -261,7 +261,7 @@ int elektraYajlGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned,
 		elektraYajlParseEnd
 	};
 
-	ksAppendKey (returned, keyNew(keyName((parentKey)), KEY_END));
+	ksAppendKey(returned, keyNew(keyName((parentKey)), KEY_END));
 
 #if YAJL_MAJOR == 1
 	yajl_parser_config cfg = { 1, 1 };
@@ -290,7 +290,8 @@ int elektraYajlGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned,
 		{
 			if (!feof(fileHandle))
 			{
-				ELEKTRA_SET_ERROR(76, parentKey, keyString(parentKey));
+				ELEKTRA_SET_ERROR(76, parentKey,
+						keyString(parentKey));
 				fclose (fileHandle);
 				return -1;
 			}
@@ -330,7 +331,7 @@ int elektraYajlGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned,
 	}
 
 	yajl_free(hand);
-	fclose (fileHandle);
+	fclose(fileHandle);
 
 	return 1; /* success */
 }
