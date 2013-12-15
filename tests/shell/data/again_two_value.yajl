@@ -1,0 +1,11 @@
+{
+    "user": {
+        "tests": {
+            "script": {
+                "key": {
+                    "subkey": "another value"
+                }
+            }
+        }
+    }
+}
