@@ -40,6 +40,9 @@ do not hardcode 10 plugins (rationale?)
 
 == JSON ==
 
+rebase plugin:
+	remove/add a common prefix after parentKey
+
 yail
 	advanced functionality
 	finish kdbSet

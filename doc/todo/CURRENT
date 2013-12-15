@@ -7,37 +7,33 @@ Items are e.g. BUGS, OPTIMIZE, PROBLEMS, TESTING, PLUGINS, TODO,..
 == 0.8.4 ==
 
 testing framework: allow to disable hdd access for test cases
-test mount for json (and maybe others)
+	ENABLE_KDB_TESTING
 
-resolver:
-	remove on empty keyset (move from yail)
-	not get on missing file
-	errors on storage plugins
-	improve locking
 
-rebase plugin:
-	remove/add a common prefix after parentKey
+=== bugs ===
+
+storage inconsistency on empty keys: (see check_get_set)
+	json elektraYajlGenEmpty
+	plugins
+
+warning in resolver aborts execution? (uname plugin)
+
+=== packaging ===
 
 base structure for system with mounts:
 	hosts
 	fstab
 	passwd
 
-testing:
-	json
-	rebase
-	mount with scripts
-	import, export with scripts
-	elektraYajlGenEmpty
-	get features: cascading
-	default value with sget
+debian:
+	enable (fix) tests
+	add examples as package
+	enable all plugins (struct, type, validation!!!)
 
+=== testing ===
 
-warning in resolver aborts execution? (uname plugin)
-resolver on empty files?
-
-kdb set system/elektra/version/constants/KDB_VERSION_MINOR
-fails silently
+multiple mounts
+nested mounts
 
 documentation:
 	comment -> meta data
@@ -50,12 +46,10 @@ jenkins:
 	job for docu
 	use docu from build server?
 	(source packages does not work)
+	job for TODO
 	-> RELEASE plan
 
-debian:
-	enable (fix) tests
-	add examples as package
-	enable all plugins (struct, type, validation!!!)
+=== release ===
 
 release:
 	ohloh statistics
@@ -65,3 +59,4 @@ release:
 	Documentation
 	Debian Package
 	Publish
+
