@@ -2,6 +2,7 @@
 #define ELEKTRA_KDB_HPP
 
 #include <string>
+
 #include <key.hpp>
 #include <keyset.hpp>
 #include <kdbexcept.hpp>
