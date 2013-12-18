@@ -34,6 +34,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// 4.7.2 supports %ms but yields warning using -Wformat together with
+// -ansi -pedantic
+// warning: ISO C does not support the 'm' scanf flag
+#if  GCC_VERSION < 40800
+# pragma GCC diagnostic ignored "-Wformat"
+#endif
+
 int elektraSimpleiniGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
 	/* get all keys */
@@ -103,12 +110,6 @@ int elektraSimpleiniGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *pa
 		return 0; // we just ignore if we could not open file
 	}
 
-// 4.7.2 supports %ms but yields warning using -Wformat together with
-// -ansi -pedantic
-// warning: ISO C does not support the 'm' scanf flag
-#if  GCC_VERSION < 40800
-# pragma GCC diagnostic ignored "-Wformat"
-#endif
 	while ((n = fscanf (fp, "%ms = %ms\n", &key, &value)) >= 1)
 	{
 		Key *read = keyNew(0);
