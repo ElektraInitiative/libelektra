@@ -41,6 +41,11 @@ not be used anymore and even if all optimizations could be reimplemented
 a natural sort order will never be as fast, because it needs a state
 machine and generates more cache misses because of that.
 
+POSIX compatibility has been improved. Now the HOME environment variable
+will be used. The old behaviour using USER is still available as
+fallback. Additionally there is a fallback for embedded systems to the
+hardcoded variant. In both fallbacks a warning will be added.
+
 Two new kdb commands were added:
 kdb file allows you to print out the configuration file where a given key is located.
 kdb sget guarantees you to get a value which is handy in shell scripts.

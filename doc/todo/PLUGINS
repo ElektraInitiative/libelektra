@@ -3,20 +3,21 @@ Implement and test easy to implement, but useful plugins
 as many different plugins as possible.
 Prefer using great frameworks to do that in short time.
 
+== VERSION IN CONTRACT ==
 
-== DEFINITION ==
+Configure file for plugin.h
+with defines for verbosity, configuration, version numbers + contract in
+static inline function
+with licence, author in contract
+Everything also in constants/build_info
+add dependencies in contract?
 
-rewind not clearly defined:
-	rewind before plugins?
-	rewind after plugins?
-	rewind after get()?
-	rewind after set()?
-	-> write pre+postconditions
 
 
 == OS abstraction ==
 
 getcwd plugin
+
 
 == DISTRIBUTOR BACKENDS ==
 
