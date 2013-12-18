@@ -58,6 +58,8 @@ foreach (file ${TESTS})
 	do_test (${name})
 endforeach (file ${TESTS})
 
-add_subdirectory(shell)
+if (ENABLE_KDB_TESTING)
+	add_subdirectory (shell)
+endif (ENABLE_KDB_TESTING)
 
 include_directories ("${PROJECT_SOURCE_DIR}/tests")

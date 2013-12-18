@@ -113,7 +113,7 @@ set (KDB_DB_SYSTEM "/etc/kdb" CACHE PATH
 		)
 
 set (KDB_DB_HOME "/home" CACHE PATH
-		"The path to users home directories."
+		"The compiled-in fallback path to users home directories."
 		)
 
 # May be changed to .config when XDG will be implemented
@@ -158,6 +158,7 @@ else (BUILD_DOCUMENTATION)
 endif (BUILD_DOCUMENTATION)
 
 option (ENABLE_TESTING "Enable to run tests by make test target" ON)
+option (ENABLE_KDB_TESTING "Enable to run tests writing to hard disc using the kdb tool" ON)
 option (BUILD_TESTING "Build testcases" ON)
 if (BUILD_TESTING)
 	option (INSTALL_TESTING "Install testcases" ON)
