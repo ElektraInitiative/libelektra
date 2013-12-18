@@ -24,9 +24,9 @@ namespace kdb
  *
  * @par optional
  * A key can be constructed with an null pointer, by using
- * @code
  * Key (static_cast<ckdb::Key*>(0));
- * @endcode
+ * or
+ * Key (ckdb::Key(0));
  * or made empty afterwards by using release() or assign a null key.
  * To check if there is an associated managed object the user
  * can use operator bool().
@@ -424,8 +424,11 @@ ckdb::Key * Key::operator* () const
 ckdb::Key* Key::release ()
 {
 	ckdb::Key* ret = key;
+<<<<<<< Updated upstream
 	operator --();
 
+=======
+>>>>>>> Stashed changes
 	key = 0;
 	return ret;
 }
