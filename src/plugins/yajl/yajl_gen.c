@@ -214,24 +214,33 @@ int elektraGenEmpty(yajl_gen g, KeySet *returned, Key *parentKey)
 	}
 	else if (ksGetSize(returned) == 2) // maybe just parent+specialkey
 	{
-		if (!strcmp(keyBaseName(ksTail(returned)), "###empty_array"))
+		Key *toCheck = keyDup(parentKey);
+		keyAddBaseName(toCheck, "###empty_array");
+		if (!strcmp(keyName(ksTail(returned)), keyName(toCheck)))
 		{
 #ifdef ELEKTRA_YAJL_VERBOSE
-			printf ("GEN empty array (got ###empty_array)\n");
+			printf ("GEN empty array (got %s)\n",
+				keyName(ksTail(returned))
+				);
 #endif
 			yajl_gen_array_open(g);
 			yajl_gen_array_close(g);
 			did_something = 1;
 		}
-		else if (!strcmp(keyBaseName(ksTail(returned)), "___empty_map"))
+
+		keySetBaseName(toCheck, "___empty_map");
+		if (!strcmp(keyName(ksTail(returned)), keyName(toCheck)))
 		{
 #ifdef ELEKTRA_YAJL_VERBOSE
-			printf ("GEN empty map (got ___empty_map)\n");
+			printf ("GEN empty map (got %s)\n",
+				keyName(ksTail(returned))
+				);
 #endif
 			yajl_gen_map_open(g);
 			yajl_gen_map_close(g);
 			did_something = 1;
 		}
+		keyDel(toCheck);
 	}
 	
 	return did_something;
