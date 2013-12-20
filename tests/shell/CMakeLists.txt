@@ -1,5 +1,14 @@
 include (LibAddMacros)
 
+configure_file (
+		"${CMAKE_CURRENT_SOURCE_DIR}/include_common.sh.in"
+		"${CMAKE_CURRENT_BINARY_DIR}/include_common.sh"
+		@ONLY
+	)
+
+file(READ "${CMAKE_CURRENT_BINARY_DIR}/include_common.sh"
+	INCLUDE_COMMON_FILE)
+
 # Add a test for a script
 #
 # The given testname is blah.sh
@@ -38,8 +47,6 @@ function (add_scripttest testname)
 			endif (BUILD_FULL)
 		endif (TARGET)
 
-		file(READ "${CMAKE_BINARY_DIR}/cmake/include_common.sh"
-			INCLUDE_COMMON_FILE)
 		set(INCLUDE_COMMON
 			"${INCLUDE_COMMON_FILE}KDB=${KDB_COMMAND}"
 			)

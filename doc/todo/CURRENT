@@ -60,3 +60,35 @@ release:
 	Debian Package
 	Publish
 
+
+== bugs to fix ==
+
+markus@elitebyte:~build/src/kdb> ./kdb-full set system/json/hello/a/key
+"is a value"+
+Donnerstag 19:24:24
+create a new key system/json/hello/a/key with string is a value+
+markus@elitebyte:~build/src/kdb> ./kdb-full set system/json/hello/a/key2
+"is a value"+
+Donnerstag 19:24:45
+create a new key system/json/hello/a/key2 with string is a value+
+markus@elitebyte:~build/src/kdb> ./kdb-full get system/json/hello/a/key2
+Donnerstag 19:24:54
+is a value+
+markus@elitebyte:~build/src/kdb> ./kdb-full set
+"system/json/hello/a/array/#0" "1"
+Donnerstag 19:25:05
+create a new key system/json/hello/a/array/#0 with string 1
+markus@elitebyte:~build/src/kdb> ./kdb-full set
+"system/json/hello/a/array/#1" "hello"
+Donnerstag 19:25:24
+The command set terminated unsuccessfully with the info: Error (#77)
+	occurred!
+	Description: Yajl parser error
+	Ingroup: plugin
+	Module: yajl
+	At:
+	/home/markus/Projekte/Elektra/current/src/plugins/yajl/yajl_parse.c:324
+	Reason: parse error: after array element, I expect ',' or ']'
+	             "is a value+"             }         }     }
+		                          (right here) ------^
+
