@@ -343,10 +343,11 @@ int MountCommand::execute(Cmdline const& cl)
 		cout << ".";
 		kdb.set(conf, parentKey);
 		cout << ".";
-		// kdb.close (parentKey);
+		kdb.close (parentKey);
 		cout << endl;
 
-		printWarnings (parentKey);
+		printError(parentKey);
+		printWarnings(parentKey);
 
 		// now we dont need any affairs to the key database
 	}
@@ -363,10 +364,11 @@ int MountCommand::execute(Cmdline const& cl)
 		cout << ".";
 		kdb.set(wholeConf, parentKey);
 		cout << ".";
-		// kdb.close (parentKey);
+		kdb.close (parentKey);
 		cout << endl;
 
-		printWarnings (parentKey);
+		printError(parentKey);
+		printWarnings(parentKey);
 
 		// now we dont need any affairs to the key database
 	}
