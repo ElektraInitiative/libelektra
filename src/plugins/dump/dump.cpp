@@ -258,7 +258,10 @@ int elektraDumpSet(ckdb::Plugin *, ckdb::KeySet *returned, ckdb::Key *parentKey)
 	std::ofstream ofs(keyString(parentKey), std::ios::binary);
 	if (!ofs.is_open())
 	{
-		ELEKTRA_SET_ERROR (9, parentKey, "file is not open in dump");
+		std::string error_reason = 
+			"dump storage could not open file ";
+		error_reason += keyString(parentKey);
+		ELEKTRA_SET_ERROR (9, parentKey, error_reason.c_str());
 		return -1;
 	}
 

@@ -549,6 +549,9 @@ int elektraResolverError(Plugin *handle, KeySet *returned ELEKTRA_UNUSED, Key *p
 	{
 		char buffer[ERROR_SIZE];
 		strerror_r(errno, buffer, ERROR_SIZE);
+		int written = strlen(buffer);
+		strcat(buffer, " the file: ");
+		strncat(buffer, pk->tempfile, ERROR_SIZE-written-10);
 		ELEKTRA_ADD_WARNING(36, parentKey, buffer);
 		errno = errnoSave;
 	}
