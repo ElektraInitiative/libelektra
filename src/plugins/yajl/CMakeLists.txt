@@ -2,6 +2,8 @@ find_package(Yajl REQUIRED)
 if (YAJL_FOUND)
 	include (LibAddMacros)
 
+	#set(ELEKTRA_YAJL_VERBOSE yes)
+
 	add_includes (elektra-full ${YAJL_INCLUDE_DIR})
 	include_directories (${YAJL_INCLUDE_DIR})
 
