@@ -170,7 +170,8 @@ static void elektraGenCloseFirst(yajl_gen g, const char* pcur,
 	lookahead_t lookahead = elektraLookahead(pcur, csize);
 	if (*pcur == '#' && *pnext == '#')
 	{
-		if (levels <= 0 && lookahead == LOOKAHEAD_ARRAY)
+		if (levels <= 0 && (lookahead == LOOKAHEAD_ARRAY
+				|| lookahead == LOOKAHEAD_START_ARRAY))
 		{
 #ifdef ELEKTRA_YAJL_VERBOSE
 			printf("GEN (X1) closing array in array\n");
@@ -194,7 +195,8 @@ static void elektraGenCloseFirst(yajl_gen g, const char* pcur,
 	}
 	else if (*pcur != '#')
 	{
-		if (levels <= 0 && lookahead == LOOKAHEAD_ARRAY)
+		if (levels <= 0 && (lookahead == LOOKAHEAD_ARRAY
+				|| lookahead == LOOKAHEAD_START_ARRAY))
 		{
 #ifdef ELEKTRA_YAJL_VERBOSE
 			printf("GEN (X4) closing array\n");
