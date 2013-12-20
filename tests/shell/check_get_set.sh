@@ -41,7 +41,7 @@ do
 
 	unset -f cleanup
 
-	$KDB mount $FILE $MOUNTPOINT $PLUGIN 1>/dev/null 2>/dev/null
+	$KDB mount $FILE $MOUNTPOINT $PLUGIN 1>/dev/null
 	exit_if_fail "could not mount $FILE at $MOUNTPOINT using $PLUGIN"
 
 	cleanup()
