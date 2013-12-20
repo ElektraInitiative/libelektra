@@ -6,7 +6,6 @@ echo
 
 check_version
 
-FILE=test_$RANDOMNAME.conf
 VALUE=value
 
 echo "testing set and get commands"
@@ -28,7 +27,7 @@ do
 
 	if [ "x$PLUGIN" = "xtcl" ]
 	then
-		PLUGIN="tcl ccode null"
+		MOUNT_PLUGIN="tcl ccode null"
 		echo "tcl currently broken (to be fixed)"
 		echo "TODO problem: after removing root key file is broken"
 		continue;
@@ -36,13 +35,24 @@ do
 
 	if [ "x$PLUGIN" = "xsimpleini" ]
 	then
-		PLUGIN="simpleini ccode null"
+		MOUNT_PLUGIN="simpleini ccode null"
+	else
+		MOUNT_PLUGIN=$PLUGIN
 	fi
 
 	unset -f cleanup
+	FILE=test.$PLUGIN
 
-	$KDB mount $FILE $MOUNTPOINT $PLUGIN 1>/dev/null
-	exit_if_fail "could not mount $FILE at $MOUNTPOINT using $PLUGIN"
+	USER_REMAINING="`find $USER_FOLDER -maxdepth 1 -name $FILE'*' -print -quit`"
+	test -z "$USER_REMAINING"
+	exit_if_fail "files $USER_REMAINING in $USER_FOLDER would be removed during tests, so test is aborted"
+
+	SYSTEM_REMAINING="`find $SYSTEM_FOLDER -maxdepth 1 -name $FILE'*' -print -quit`"
+	test -z "$SYSTEM_REMAINING"
+	exit_if_fail "files $SYSTEM_REMAINING in $SYSTEM_FOLDER would be removed during tests, so test is aborted"
+
+	$KDB mount $FILE $MOUNTPOINT $MOUNT_PLUGIN 1>/dev/null
+	exit_if_fail "could not mount $FILE at $MOUNTPOINT using $MOUNT_PLUGIN"
 
 	cleanup()
 	{
@@ -50,10 +60,14 @@ do
 		succeed_if "could not umount $MOUNTNAME"
 		rm -f $USER_FOLDER/$FILE
 		rm -f $SYSTEM_FOLDER/$FILE
-		rm -f $USER_FOLDER/$FILE.lck
-		rm -f $SYSTEM_FOLDER/$FILE.lck
-		rm -f $USER_FOLDER/$FILE.tmp
-		rm -f $SYSTEM_FOLDER/$FILE.tmp
+
+		USER_REMAINING="`find $USER_FOLDER -maxdepth 1 -name $FILE'*' -print -exec rm {} +`"
+		test -z "$USER_REMAINING"
+		succeed_if "found remaining files $USER_REMAINING in $USER_FOLDER"
+
+		SYSTEM_REMAINING="`find $SYSTEM_FOLDER -maxdepth 1 -name $FILE'*' -print -exec rm {} +`"
+		test -z "$SYSTEM_REMAINING"
+		succeed_if "found remaining files $SYSTEM_REMAINING in $SYSTEM_FOLDER"
 	}
 
 	for ROOT in $USER_ROOT $SYSTEM_ROOT
