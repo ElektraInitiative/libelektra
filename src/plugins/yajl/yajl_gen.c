@@ -212,7 +212,7 @@ int elektraGenEmpty(yajl_gen g, KeySet *returned, Key *parentKey)
 			did_something = 1;
 		}
 	}
-	else
+	else if (ksGetSize(returned) == 2) // maybe just parent+specialkey
 	{
 		if (!strcmp(keyBaseName(ksTail(returned)), "###empty_array"))
 		{
@@ -268,6 +268,13 @@ int elektraYajlSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 	yajl_gen_config(g, yajl_gen_validate_utf8, 1);
 #endif
 
+	if (elektraGenEmpty(g, returned, parentKey))
+	{
+		int ret = elektraGenWriteFile(g, parentKey);
+		yajl_gen_free(g);
+		return ret;
+	}
+
 	ksRewind (returned);
 	Key *cur = elektraNextNotBelow(returned);
 	if (!cur)
@@ -276,13 +283,6 @@ int elektraYajlSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 		// (e.g. remove file)
 		yajl_gen_free(g);
 		return 0;
-	}
-
-	if (elektraGenEmpty(g, returned, parentKey))
-	{
-		int ret = elektraGenWriteFile(g, parentKey);
-		yajl_gen_free(g);
-		return ret;
 	}
 
 #ifdef ELEKTRA_YAJL_VERBOSE
