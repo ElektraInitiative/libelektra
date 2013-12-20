@@ -540,10 +540,10 @@ static int elektraSetPrepare(Split *split, Key *parentKey, Key **errorKey)
 	int any_error = 0;
 	for(size_t p=0; p<COMMIT_PLUGIN; ++p)
 	{
-		int ret = 0; // last return value
-
 		for(size_t i=0; i<split->size;i++)
 		{
+			int ret = 0; // last return value
+
 			Backend *backend = split->handles[i];
 			ksRewind (split->keysets[i]);
 			if(backend->setplugins[p])
@@ -567,21 +567,17 @@ static int elektraSetPrepare(Split *split, Key *parentKey, Key **errorKey)
 			}
 			if (ret == -1)
 			{
-				// we know that resolver does not yield
-				// an errorKey, so lets save some cycles
-				if (p != 0)
-				{
-					// do not
-					// abort because it might
-					// corrupt the KeySet
-					// and leads to warnings
-					// because of .tmp files not
-					// found
-					*errorKey =
-						ksCurrent(split->keysets[i]);
-					// -> better keep going, but of
-					// course we will not commit
-				}
+				// do not
+				// abort because it might
+				// corrupt the KeySet
+				// and leads to warnings
+				// because of .tmp files not
+				// found
+				*errorKey =
+					ksCurrent(split->keysets[i]);
+
+				// so better keep going, but of
+				// course we will not commit
 				any_error = -1;
 			}
 		}
@@ -599,30 +595,23 @@ static void elektraSetCommit(Split *split, Key *parentKey)
 {
 	for(size_t p=COMMIT_PLUGIN; p<NR_OF_PLUGINS; ++p)
 	{
-		int ret = 0;
-
 		for(size_t i=0; i<split->size;i++)
 		{
+			int ret = 0;
 			Backend *backend = split->handles[i];
+
 			ksRewind (split->keysets[i]);
 			if(backend->setplugins[p])
 			{
-				if(p != 0)
-				{
-					keySetString(parentKey,
-						keyString(split->parents[i]));
-				}
+				keySetString(parentKey,
+					keyString(split->parents[i]));
 				keySetName(parentKey, keyName(split->parents[i]));
 				ret = backend->setplugins[p]->kdbSet (
 						backend->setplugins[p],
 						split->keysets[i],
 						parentKey);
-				if(p == 0)
-				{
-					keySetString(split->parents[i],
-							keyString(parentKey));
-				}
 			}
+
 			if (ret == -1)
 			{
 				ELEKTRA_ADD_WARNING(80, parentKey,
@@ -642,11 +631,11 @@ static void elektraSetRollback(Split *split, Key *parentKey)
 {
 	for(size_t p=0; p<NR_OF_PLUGINS; ++p)
 	{
-		int ret = 0;
-
 		for(size_t i=0; i<split->size; i++)
 		{
+			int ret = 0;
 			Backend *backend = split->handles[i];
+
 			ksRewind (split->keysets[i]);
 			if(backend->errorplugins[p])
 			{
@@ -656,6 +645,7 @@ static void elektraSetRollback(Split *split, Key *parentKey)
 						split->keysets[i],
 						parentKey);
 			}
+
 			if(ret == -1)
 			{
 				ELEKTRA_ADD_WARNING(81, parentKey,
