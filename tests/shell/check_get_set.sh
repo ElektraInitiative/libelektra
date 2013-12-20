@@ -21,13 +21,6 @@ do
 		continue;
 	fi
 
-	if [ "x$PLUGIN" = "xyajl" ]
-	then
-		echo "yajl currently broken (to be fixed)"
-		echo "TODO problem: empty file not empty (___empty_map)"
-		continue;
-	fi
-
 	if [ "x$PLUGIN" = "xtcl" ]
 	then
 		MOUNT_PLUGIN="tcl ccode null"
@@ -82,11 +75,15 @@ do
 		[ "x`$KDB sget $ROOT/value defvalue 2> /dev/null`" = "xdefvalue" ]
 		succeed_if "Did not get default value"
 
-		[ "x`$KDB get $ROOT 2> /dev/null`" = "xroot" ]
-		succeed_if "could not get root"
+		if [ "x$PLUGIN" != "xyajl" ]
+		then
+			#TODO: Fix by directoryvalue plugin
+			[ "x`$KDB get $ROOT 2> /dev/null`" = "xroot" ]
+			succeed_if "could not get root"
 
-		[ "x`$KDB sget $ROOT default 2> /dev/null`" = "xroot" ]
-		succeed_if "could not shell get root"
+			[ "x`$KDB sget $ROOT default 2> /dev/null`" = "xroot" ]
+			succeed_if "could not shell get root"
+		fi
 
 		$KDB set "$ROOT/value" "$VALUE" 1>/dev/null 2>/dev/null
 		succeed_if "could not set value"
@@ -130,7 +127,7 @@ do
 		[ "x`$KDB get $KEY`" = "x$VALUE" ]
 		succeed_if "$KEY is not $VALUE"
 
-		for i in `seq 1 9`
+		for i in `seq 0 9`
 		do
 			KEY="$ROOT/hello/a/array/#$i"
 			VALUE="$i"
