@@ -82,7 +82,7 @@ static void elektraGenCloseIterate(yajl_gen g, const Key *cur,
 
 		if (curIt.current[0] == '#')
 		{
-			if (lookahead == LOOKAHEAD_MAP)
+			if(lookahead == LOOKAHEAD_MAP)
 			{
 #ifdef ELEKTRA_YAJL_VERBOSE
 				printf ("GEN (C1) anon map close\n");
@@ -97,7 +97,7 @@ static void elektraGenCloseIterate(yajl_gen g, const Key *cur,
 		}
 		else
 		{
-			if (lookahead == LOOKAHEAD_MAP)
+			if(lookahead == LOOKAHEAD_MAP)
 			{
 #ifdef ELEKTRA_YAJL_VERBOSE
 				printf ("GEN (C4) map close\n");
@@ -179,7 +179,8 @@ static void elektraGenCloseFirst(yajl_gen g, const char* pcur,
 			yajl_gen_array_close(g);
 		}
 		else
-		if(lookahead == LOOKAHEAD_MAP)
+		if(lookahead == LOOKAHEAD_MAP ||
+		   lookahead == LOOKAHEAD_EMPTY_MAP)
 		{
 #ifdef ELEKTRA_YAJL_VERBOSE
 			printf("GEN (X2) next anon-map\n");
@@ -203,7 +204,8 @@ static void elektraGenCloseFirst(yajl_gen g, const char* pcur,
 #endif
 			yajl_gen_array_close(g);
 		}
-		else if (lookahead == LOOKAHEAD_MAP)
+		else if (lookahead == LOOKAHEAD_MAP ||
+			 lookahead == LOOKAHEAD_EMPTY_MAP)
 		{
 #ifdef ELEKTRA_YAJL_VERBOSE
 			printf("GEN (X5) closing map\n");

@@ -21,30 +21,30 @@ typedef enum
 	/**
 	 * We are at end of string, so no lookahead.
 	 */
-	LOOKAHEAD_END,
+	LOOKAHEAD_END=0,
 	/**
 	 * We are iterating in the middle of an array (or at least
 	 * certainly not starting it)
 	 */
-	LOOKAHEAD_ARRAY,
+	LOOKAHEAD_ARRAY=1,
 	/**
 	 * We are starting a new array.
 	 */
-	LOOKAHEAD_START_ARRAY,
+	LOOKAHEAD_START_ARRAY=2,
 	/**
 	 * We found a special marker for empty arrays.
 	 * @todo not implemented yet
 	 */
-	LOOKAHEAD_EMPTY_ARRAY,
+	LOOKAHEAD_EMPTY_ARRAY=3,
 	/**
 	 * We found a special marker for empty maps.
 	 * @todo not implemented yet
 	 */
-	LOOKAHEAD_EMPTY_MAP,
+	LOOKAHEAD_EMPTY_MAP=4,
 	/**
 	 * We are iterating a map or starting it.
 	 */
-	LOOKAHEAD_MAP
+	LOOKAHEAD_MAP=5
 } lookahead_t;
 
 lookahead_t elektraLookahead(const char* pnext, size_t size);

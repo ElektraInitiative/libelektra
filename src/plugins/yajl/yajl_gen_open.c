@@ -55,7 +55,7 @@ static void elektraGenOpenIterate(yajl_gen g,
 		lookahead_t lookahead = elektraLookahead(pnext, size);
 
 #ifdef ELEKTRA_YAJL_VERBOSE
-		printf("level by name %d: \"%.*s\", lookahead: %c\n",
+		printf("level by name %d: \"%.*s\", lookahead: %d\n",
 				(int)i,
 				(int)size, pnext,
 				lookahead);
@@ -78,14 +78,17 @@ static void elektraGenOpenIterate(yajl_gen g,
 
 			}
 		}
-		else if (lookahead == LOOKAHEAD_START_ARRAY)
+		else if (lookahead == LOOKAHEAD_START_ARRAY ||
+			 lookahead == LOOKAHEAD_EMPTY_ARRAY)
 		{
 #ifdef ELEKTRA_YAJL_VERBOSE
-			printf ("GEN (N2) string %.*s\n",
+			printf ("GEN (N2) string for start/empty array %.*s\n",
 				(int)size, pnext);
 #endif
 			yajl_gen_string(g, (const unsigned char *)pnext,
 					size);
+
+			// opening (empty) array will be handled later
 		}
 		else
 		{
@@ -123,8 +126,10 @@ static void elektraGenOpenLast(yajl_gen g, const Key *key)
 			(int)last.size, last.current);
 #endif
 
-	if (last.current[0] == '#')
+	if (last.current[0] == '#' && strcmp(last.current,
+				"###empty_array"))
 	{
+		// is an array, but not an empty one
 #ifdef ELEKTRA_YAJL_VERBOSE
 		printf("GEN array open last\n");
 #endif
@@ -350,15 +355,16 @@ static void elektraGenOpenFirst(yajl_gen g,
 				(const unsigned char *)next,
 				nextSize);
 		}
-		else if (lookahead == LOOKAHEAD_START_ARRAY)
+		else if (lookahead == LOOKAHEAD_START_ARRAY ||
+			 lookahead == LOOKAHEAD_EMPTY_ARRAY)
 		{
 #ifdef ELEKTRA_YAJL_VERBOSE
-			printf("GEN string for start array (5)\n");
+			printf("GEN string for start/empty array (5)\n");
 #endif
 			yajl_gen_string(g,
 				(const unsigned char *)next,
 				nextSize);
-			// opening array will be handled later
+			// opening (empty) array will be handled later
 		}
 		else if (lookahead == LOOKAHEAD_MAP)
 		{

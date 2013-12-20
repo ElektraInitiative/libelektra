@@ -24,7 +24,7 @@ lookahead_t elektraLookahead(const char* pnext, size_t size)
 			{
 				lookahead = LOOKAHEAD_START_ARRAY;
 			}
-			else if (!strcmp(pnext+size, "###empty_array"))
+			else if (!strcmp(pnext+size+1, "###empty_array"))
 			{
 				lookahead = LOOKAHEAD_EMPTY_ARRAY;
 			}
@@ -35,7 +35,7 @@ lookahead_t elektraLookahead(const char* pnext, size_t size)
 		}
 		else
 		{
-			if (!strcmp(pnext+size, "___empty_map"))
+			if (!strcmp(pnext+size+1, "___empty_map"))
 			{
 				lookahead = LOOKAHEAD_EMPTY_MAP;
 			}
