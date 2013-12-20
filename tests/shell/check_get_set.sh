@@ -10,6 +10,9 @@ VALUE=value
 
 echo "testing set and get commands"
 
+#override for specific testing
+#PLUGINS=yajl
+
 for PLUGIN in $PLUGINS
 do
 	if is_not_rw_storage
@@ -117,6 +120,27 @@ do
 		$KDB get $ROOT/value 1>/dev/null  2> /dev/null
 		[ $? != "0" ]
 		succeed_if "got removed key $ROOT"
+
+		echo "testing array"
+
+		KEY=$ROOT/hello/a/key
+		$KDB set "$KEY" "$VALUE" 1>/dev/null
+		succeed_if "could not set key $KEY"
+
+		[ "x`$KDB get $KEY`" = "x$VALUE" ]
+		succeed_if "$KEY is not $VALUE"
+
+		for i in `seq 1 9`
+		do
+			KEY="$ROOT/hello/a/array/#$i"
+			VALUE="$i"
+
+			$KDB set "$KEY" "$VALUE" 1>/dev/null
+			succeed_if "could not set key $ROOT/hello/a/array/#0"
+
+			[ "x`$KDB get $KEY`" = "x$VALUE" ]
+			succeed_if "$KEY is not $VALUE"
+		done
 	done
 
 	cleanup
