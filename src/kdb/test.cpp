@@ -6,6 +6,7 @@
 
 #include <vector>
 #include <iostream>
+#include <algorithm>
 
 using namespace kdb;
 using namespace std;
@@ -57,6 +58,58 @@ void TestCommand::doStringTest()
 	teststrings.push_back("value with spaces");
 	teststrings.push_back(" a very long value with many spaces and basically very very long, but only text ... ");
 	for (int i=1; i<256; ++i) teststrings.back() += " very very long, but only text ... ";
+
+
+	for (size_t i = 0; i< teststrings.size(); ++i)
+	{
+		{
+			KDB kdb;
+			Key t = root.dup();
+			t.addBaseName ("string");
+			t.setString (teststrings[i]);
+
+			KeySet basic;
+			basic.append(t);
+
+			KeySet test;
+			kdb.get (test, root);
+			kdb.set (basic, root);
+		}
+
+		{
+			KDB kdb;
+
+			KeySet test;
+			kdb.get (test, root);
+
+			Key t = root.dup();
+			t.addBaseName ("string");
+
+			Key res = test.lookup(t);
+
+			nrTest ++;
+			if (!res)
+			{
+				nrError ++;
+				cerr << "String test failed (key not found)" << t.getName() << endl;
+				continue;
+			}
+
+			nrTest ++;
+			if (res.getString() != teststrings[i])
+			{
+				nrError ++;
+				cerr << "String test failed (value is not equal)" << endl;
+				cerr << "We got: \"" << res.getString() << "\"" << endl;
+				cerr << "We wanted: \"" <<  teststrings[i] << "\"" << endl;
+			}
+		}
+	}
+}
+
+void TestCommand::doUmlautsTest()
+{
+	vector<string> teststrings;
 	teststrings.push_back("ascii umlauts !\"§$%&/()=?`\\}][{");
 	teststrings.push_back("utf8 umlauts ¸¬½¼³²¹ł€¶øæßðđł˝«»¢“”nµ─·");
 	teststrings.push_back("all chars:");
@@ -360,20 +413,72 @@ void TestCommand::doMetaTest()
 	}
 }
 
-void TestCommand::doTests()
+void TestCommand::doTests(std::vector<std::string> const& arguments)
 {
-	doBasicTest();
-	doStringTest();
-	doBinaryTest();
-	doNamingTest();
-	doMetaTest();
+	if (arguments.size() == 1 ||
+		find(arguments.begin(), arguments.end(), "basic") !=
+		arguments.end())
+	{
+		cout << "Doing basic tests" << std::endl;
+		doBasicTest();
+	}
+	if (arguments.size() == 1 ||
+		find(arguments.begin(), arguments.end(), "string") !=
+		arguments.end())
+	{
+		cout << "Doing string tests" << std::endl;
+		doStringTest();
+	}
+	if (arguments.size() == 1 ||
+		find(arguments.begin(), arguments.end(), "umlauts") !=
+		arguments.end())
+	{
+		cout << "Doing umlauts tests" << std::endl;
+		doUmlautsTest();
+	}
+	if (arguments.size() == 1 ||
+		find(arguments.begin(), arguments.end(), "binary") !=
+		arguments.end())
+	{
+		cout << "Doing binary tests" << std::endl;
+		doBinaryTest();
+	}
+	if (arguments.size() == 1 ||
+		find(arguments.begin(), arguments.end(), "naming") !=
+		arguments.end())
+	{
+		cout << "Doing naming tests" << std::endl;
+		doNamingTest();
+	}
+	if (arguments.size() == 1 ||
+		find(arguments.begin(), arguments.end(), "meta") !=
+		arguments.end())
+	{
+		cout << "Doing meta tests" << std::endl;
+		doMetaTest();
+	}
 }
 
 int TestCommand::execute(Cmdline const& cl)
 {
-	if (cl.arguments.size() != 1)
+	if (cl.arguments.size() < 1)
 	{
-		throw invalid_argument ("need exactly one argument");
+		throw invalid_argument ("need at least one argument");
+	}
+
+	// do a basic check on every argument
+	for (size_t i=1; i<cl.arguments.size(); ++i)
+	{
+		string name = " ";
+		name += cl.arguments[i];
+		name += " ";
+		if (test_names.find(name) == std::string::npos)
+		{
+			throw invalid_argument ("test name " +
+					cl.arguments[i] +
+					" does not exist in:" +
+					test_names);
+		}
 	}
 
 	root.setName(cl.arguments[0]);
@@ -387,7 +492,7 @@ int TestCommand::execute(Cmdline const& cl)
 	kdb.get(original, root);
 	original.rewind();
 
-	doTests();
+	doTests(cl.arguments);
 
 	cerr << "We got " << nrError << " errors in " << nrTest << " testcases." << endl;
 
