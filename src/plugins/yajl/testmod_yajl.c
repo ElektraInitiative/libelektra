@@ -840,6 +840,9 @@ int main(int argc, char** argv)
 	test_readWrite("examples/testdata_array_special_ending.json", ksNew(0));
 	test_readWrite("examples/testdata_array_outside.json", ksNew(0));
 	test_readWrite("examples/keyframes_complex.json", ksNew(0));
+	test_readWrite("examples/testdata_array_mixed2.json", ksNew(0));
+	test_readWrite("examples/testdata_array_special_start.json", ksNew(0));
+	test_readWrite("examples/testdata_array_mixed3.json", ksNew(0));
 
 	elektraModulesClose(modules, 0);
 	ksDel (modules);
