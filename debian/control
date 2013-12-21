@@ -2,7 +2,15 @@ Source: elektra
 Priority: optional
 Maintainer: Simon Law <sfllaw@debian.org>
 Uploaders: Pier Luigi Fiorini <pierluigi.fiorini@mockup.org>
-Build-Depends: debhelper (>= 8), libxml2-dev, doxygen, libboost-dev, cmake, texlive-latex-extra, texlive-latex-recommended, texlive-fonts-recommended
+Build-Depends: debhelper (>= 8),
+ libxml2-dev,
+ doxygen,
+ libboost-dev,
+ cmake,
+ texlive-latex-extra,
+ texlive-latex-recommended,
+ texlive-fonts-recommended,
+ libdbus-1-dev
 Standards-Version: 3.9.1
 Homepage: http://www.libelektra.org
 Vcs-Browser: http://gitorious.org/elektra-initiative/libelektra/commits/debian
@@ -13,7 +21,8 @@ Package: libelektra-dev
 Section: libdevel
 Architecture: any
 Depends: libelektra-core4 (= ${binary:Version}),
-	libc6-dev, ${misc:Depends}
+ libc6-dev,
+ ${misc:Depends}
 Description: a framework to get and set configuration
  Elektra provides a universal and secure framework to store
  configuration parameters in a global, hierarchical key database. The
@@ -31,7 +40,8 @@ Description: a framework to get and set configuration
 
 Package: libelektra-core4
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends},
+ ${misc:Depends}
 Description: a framework to get and set configuration
  Elektra provides a universal and secure framework to store
  configuration parameters in a global, hierarchical key database. The
@@ -48,8 +58,9 @@ Description: a framework to get and set configuration
 
 Package: libelektra-xmltool4
 Architecture: any
-Depends: libelektra-core4 (>= ${source:Version}), ${shlibs:Depends},
-	${misc:Depends}
+Depends: libelektra-core4 (>= ${source:Version}),
+ ${shlibs:Depends},
+ ${misc:Depends}
 Description: a framework to get and set configuration
  Elektra provides a universal and secure framework to store
  configuration parameters in a global, hierarchical key database. The
@@ -84,7 +95,8 @@ Package: libelektra-bin
 Section: admin
 Architecture: any
 Depends: libelektra-core4 (>= ${source:Version}),
-	${shlibs:Depends}, ${misc:Depends}
+ ${shlibs:Depends},
+ ${misc:Depends}
 Description:a framework to get and set configuration
  Elektra provides a universal and secure framework to store
  configuration parameters in a global, hierarchical key database. The
@@ -102,7 +114,8 @@ Package: libelektra-test
 Section: admin
 Architecture: any
 Depends: libelektra-core4 (>= ${source:Version}),
-	${shlibs:Depends}, ${misc:Depends}
+ ${shlibs:Depends},
+ ${misc:Depends}
 Description:a framework to get and set configuration
  Elektra provides a universal and secure framework to store
  configuration parameters in a global, hierarchical key database. The
