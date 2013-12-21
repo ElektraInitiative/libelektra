@@ -899,6 +899,7 @@ static int Compare(const void * restrict key, size_t key_size,
    assert(n->name != NULL);
    assert(key_size < Ni_KEY_SIZE);
    assert(n->name_len < Ni_KEY_SIZE);
+   const size_t n_name_len = n->name_len;
 
-   return (key_size != n->name_len || memcmp(key, n->name, key_size));
+   return (key_size != n_name_len || memcmp(key, n->name, key_size));
 }

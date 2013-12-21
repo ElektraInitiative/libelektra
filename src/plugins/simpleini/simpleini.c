@@ -23,6 +23,10 @@
  ***************************************************************************/
 
 
+#ifndef HAVE_KDBCONFIG
+# include "kdbconfig.h"
+#endif
+
 #include "simpleini.h"
 
 #include <kdberrors.h>
@@ -30,7 +34,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int elektraSimpleiniGet(Plugin *handle, KeySet *returned, Key *parentKey)
+// 4.7.2 supports %ms but yields warning using -Wformat together with
+// -ansi -pedantic
+// warning: ISO C does not support the 'm' scanf flag
+#if  GCC_VERSION < 40800
+# pragma GCC diagnostic ignored "-Wformat"
+#endif
+
+int elektraSimpleiniGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
 	/* get all keys */
 
@@ -94,8 +105,9 @@ int elektraSimpleiniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	FILE *fp = fopen (keyString(parentKey), "r");
 	if (!fp)
 	{
-		ELEKTRA_SET_ERROR(74, parentKey, keyString(parentKey));
-		return -1;
+		// ELEKTRA_SET_ERROR(74, parentKey, keyString(parentKey));
+		// return -1;
+		return 0; // we just ignore if we could not open file
 	}
 
 	while ((n = fscanf (fp, "%ms = %ms\n", &key, &value)) >= 1)
@@ -127,7 +139,7 @@ int elektraSimpleiniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	return 1; /* success */
 }
 
-int elektraSimpleiniSet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraSimpleiniSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
 	/* set all keys */
 

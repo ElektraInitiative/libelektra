@@ -4,5 +4,9 @@ set (SOURCES tracer.h tracer.c)
 add_sources(elektra-full ${SOURCES})
 add_headers(SOURCES)
 
-add_library(elektra-tracer MODULE ${SOURCES})
-install (TARGETS elektra-tracer DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})
+set (PLUGIN_NAME elektra-tracer)
+add_library (${PLUGIN_NAME} MODULE ${SOURCES})
+target_link_libraries (${PLUGIN_NAME} elektra)
+
+install (TARGETS ${PLUGIN_NAME}
+	DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})

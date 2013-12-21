@@ -28,7 +28,8 @@ int ImportCommand::execute(Cmdline const& cl)
 		throw invalid_argument ("root key is not a valid key name");
 	}
 
-	kdb.get(ks, root);
+	KeySet originalKeys;
+	kdb.get(originalKeys, root);
 	printWarnings(root);
 
 	KeySet importedKeys;
@@ -50,20 +51,34 @@ int ImportCommand::execute(Cmdline const& cl)
 	printError(errorKey);
 	printWarnings(errorKey);
 
+	KeySet mergedKeys;
 	if (cl.strategy == "cut")
 	{
-		KeySet part(ks.cut(root));
+		KeySet rootKeys(originalKeys.cut(root));
+		mergedKeys.append(importedKeys);
+		mergedKeys.append(originalKeys);
+		// rootKeys are dropped
 	}
 	else if (cl.strategy == "overwrite")
 	{
-		ks.append(importedKeys);
+		mergedKeys.append(originalKeys);
+		mergedKeys.append(importedKeys);
 	}
-	else // default strategy preserve
+	else
 	{
-		importedKeys.append(ks);
+		// default strategy preserve
+		mergedKeys.append(importedKeys);
+		mergedKeys.append(originalKeys);
 	}
 
-	kdb.set(importedKeys, root);
+
+	if (cl.verbose)
+	{
+		cout << "The merged keyset with strategy " << cl.strategy << " is:" << endl;
+		cout << mergedKeys;
+	}
+
+	kdb.set(mergedKeys, root);
 
 	return 0;
 }

@@ -14,15 +14,15 @@
  ***************************************************************************/
 
 
-/** @class flat_copy
+/** @class doxygenFlatCopy
  *
- * \note Because the key is not copied,
+ * @note Because the key is not copied,
  * also the pointer to the current metadata keyNextMeta()
  * will be shared.
  */
 
 /**
- * @defgroup keyset KeySet :: Class Methods
+ * @defgroup keyset KeySet
  * @brief Methods to manipulate KeySets.
  *
  * A KeySet is a sorted set of keys.
@@ -33,7 +33,7 @@
  * You can add keys with ksAppendKey() in the keyset.
  * Using ksAppend() you can append a whole keyset.
  *
- * \copydoc flat_copy
+ * @copydoc doxygenFlatCopy
  *
  * ksGetSize() tells you the current size of the keyset.
  *
@@ -268,7 +268,7 @@ KeySet *ksDup (const KeySet * source)
  * but there reference counter is updated, so both keysets
  * need to be ksDel().
  *
- * @copydoc flat_copy
+ * @copydoc doxygenFlatCopy
  *
  * @code
 int f (KeySet *ks)
@@ -400,7 +400,8 @@ static int keyCmpInternal(const void *p1, const void *p2)
 }
 
 
-/**Compare two keys.
+/**
+ * Compare the name of two keys.
  *
  * @return a number less than, equal to or greater than zero if
  *    k1 is found, respectively, to be less than, to match, or
@@ -623,7 +624,7 @@ ssize_t ksSearchInternal(const KeySet *ks, const Key *toAppend)
  * The reference counter of the key will be incremented, and
  * thus toAppend is not const.
  *
- * \copydoc flat_copy
+ * @copydoc doxygenFlatCopy
  *
  * If the keyname already existed, it will be replaced with
  * the new key.
@@ -711,7 +712,7 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
  * If a key is both in toAppend and ks, the Key in ks will be
  * overridden.
  *
- * \copydoc flat_copy
+ * @copydoc doxygenFlatCopy
  *
  * @post Sorted KeySet ks with all keys it had before and additionally
  *       the keys from toAppend
@@ -764,7 +765,7 @@ static int keyCompareByNameOwner(const void *p1, const void *p2);
  * @see ksRewind(), ksCurrent()
  *
  */
-static Key *ksPrev(KeySet *ks)
+Key *ksPrev(KeySet *ks)
 {
 	if (ks->size == 0) return 0;
 	if (ks->current <= 0)
@@ -1189,6 +1190,69 @@ cursor_t ksGetCursor(const KeySet *ks)
 	else return (cursor_t) ks->current;
 }
 
+/**
+ * @internal
+ *
+ * @brief Pop key at given cursor position
+ *
+ * @param ks the keyset to pop key from
+ * @param c where to pop
+ *
+ * The internal cursor will be rewinded using ksRewind(). You can use
+ * ksGetCursor() and ksSetCursor() jump back to the previous position.
+ * e.g. to pop at current position within ksNext() loop:
+ * @code
+ * cursor_t c = ksGetCursor(ks);
+ * keyDel (ksPopAtCursor(ks, c));
+ * ksSetCursor(ks, c);
+ * ksPrev(ks); // to have correct key after next ksNext()
+ * @endcode
+ *
+ * @warning do not use, will be superseded by external iterator API
+ *
+ * @return the popped key
+ * @retval 0 if ks is 0
+ */
+Key *ksPopAtCursor(KeySet *ks, cursor_t pos)
+{
+	if (!ks) return 0;
+	if (pos<0) return 0;
+	if (pos>SSIZE_MAX) return 0;
+
+	size_t c = pos;
+	if (c>=ks->size) return 0;
+
+	if (c != ks->size-1)
+	{
+		Key ** found = ks->array+c;
+		Key * k = *found;
+		/* Move the array over the place where key was found
+		 *
+		 * e.g. c = 2
+		 *   size = 6
+		 *
+		 * 0  1  2  3  4  5  6
+		 * |--|--|c |--|--|--|size
+		 * move to (c/pos is overwritten):
+		 * |--|--|--|--|--|
+		 *
+		 * */
+		memmove (found,
+			found+1,
+			(ks->size-c-1) * sizeof(Key *));
+		*(ks->array+ks->size-1) = k; // prepare last element to pop
+	}
+	else
+	{
+		// if c is on last position it is just a ksPop..
+		// so do nothing..
+	}
+
+	ksRewind(ks);
+
+	return ksPop(ks);
+}
+
 
 
 
@@ -1454,27 +1518,11 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 		if (options & KDB_O_DEL) keyDel (key);
 		if (found)
 		{
+			cursor = found-ks->array;
 			if (options & KDB_O_POP)
 			{
-				Key * k = *found;
-				/* Move the array over the place where key was found */
-				memmove (found, found+1, ks->size*sizeof(Key *)-(found-ks->array)-sizeof(Key *));
-				*(ks->array+ks->size-1) = k;
-				if (found < ks->array+ks->current)
-				{
-					ksPrev(ks);
-				}
-				else if (found == ks->array+ks->current)
-				{
-					ksRewind(ks);
-				}
-
-				ks->flags |= KS_FLAG_SYNC;
-
-				ksRewind(ks);
-				return ksPop(ks);
+				return ksPopAtCursor(ks, cursor);
 			} else {
-				cursor = found-ks->array;
 				ksSetCursor(ks, cursor);
 				return (*found);
 			}

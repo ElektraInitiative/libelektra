@@ -1,20 +1,16 @@
 {
-	"tests" : {
-		"yajl" : {
-			"map" : {
-				"string_key" : "25",
-				"nested_map" : {
-					"string_key" : "25",
-					"second_string_key" : "some string"
-				},
-				"second_string_key" : "some string"
-			},
-			"second_map" : {
-				"string_key" : "25",
-				"second_string_key" : "some string"
-			},
-			"string_key" : "25",
-			"second_string_key" : "some string"
-		}
-	}
+    "map": {
+        "nested_map": {
+            "second_string_key": "some string",
+            "string_key": "25"
+        },
+        "second_string_key": "some string",
+        "string_key": "25"
+    },
+    "second_map": {
+        "second_string_key": "some string",
+        "string_key": "25"
+    },
+    "second_string_key": "some string",
+    "string_key": "25"
 }

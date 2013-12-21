@@ -155,13 +155,14 @@ ingroup:plugin
 module:resolver
 
 number:27
-description:could not lock file
-severity:error
+description:locking yield an error
+severity:warning
 ingroup:plugin
 module:resolver
 
 number:28
-description:could not fchmod file
+unused:yes
+description:could not remove file, obsolete, now 32 is used
 severity:error
 ingroup:plugin
 module:resolver
@@ -197,14 +198,14 @@ ingroup:plugin
 module:resolver
 
 number:34
-description:no file given in configuration
-severity:warning
+description:no file given in configuration, not possible to resolve filename
+severity:error
 ingroup:plugin
 module:resolver
 
 number:35
-description:could not resolve filename
-severity:warning
+description:could not resolve filename, not possible to resolve filename
+severity:error
 ingroup:plugin
 module:resolver
 
@@ -438,20 +439,57 @@ ingroup:plugin
 module:resolver
 
 number:75
-description:Could not open file
+description:Could not open file for writing
 severity:error
 ingroup:plugin
-module:simpleini
+module:storage
 
 number:76
 description:Error while reading file
 severity:error
 ingroup:plugin
-module:yajl
+module:storage
 
 number:77
 description:Yajl parser error
 severity:error
 ingroup:plugin
 module:yajl
+
+number:78
+description:Unknown or unsupported type found during streaming, key as string, type lost
+severity:warning
+ingroup:plugin
+module:yajl
+
+number:79
+description:Postcondition of backend was violated
+severity:warning
+ingroup:kdb
+
+number:80
+description:Error during commit (this means backend is broken, reason states where it is mounted)
+severity:warning
+ingroup:kdb
+
+number:81
+description:Error during rollback (this means backend is broken, reason states where it is mounted)
+severity:warning
+ingroup:kdb
+
+number:82
+description:Error key not found in keyset even though it was found before
+severity:warning
+ingroup:kdb
+
+number:83
+description:resolver was missing some information, keys might be stored at wrong place
+severity:warning
+ingroup:plugin
+module:storage
+
+number:84
+description:Read only plugin, kdbSet not supported
+severity:error
+ingroup:kdb
 

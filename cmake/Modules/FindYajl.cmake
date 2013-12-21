@@ -6,6 +6,7 @@
 # YAJL_FOUND          - true if yajl was found
 # YAJL_INCLUDE_DIRS   - where to find the header file yajl/yajl_common.h
 # YAJL_LIBRARIES      - where to find the library libyail
+# YAJL_VERSION        - "1" if no yajl/yajl_version.h found
 #
 
 find_path(YAJL_INCLUDE_DIR yajl/yajl_common.h)
@@ -19,4 +20,10 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS(Yajl DEFAULT_MSG YAJL_LIBRARY YAJL_INCLUDE_DIR
 if(YAJL_FOUND)
 	set (YAJL_INCLUDE_DIRS ${YAJL_INCLUDE_DIR})
 	set (YAJL_LIBRARIES ${YAJL_LIBRARY})
+
+	find_path(YAJL2_INCLUDE_DIR yajl/yajl_version.h)
+	if(NOT YAJL2_INCLUDE_DIR)
+		message(STATUS "Assume Yajl Version 1 because yajl/yajl_version.h was not found")
+		set(YAJL_NO_VERSION "1")
+	endif(NOT YAJL2_INCLUDE_DIR)
 endif(YAJL_FOUND)

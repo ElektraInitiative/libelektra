@@ -43,7 +43,9 @@ static char* elektraTrieStartsWith(const char *str, const char *substr);
 static Backend* elektraTriePrefixLookup(Trie *trie, const char *name);
 
 /**
- * @defgroup trie Internal Datastructure for mountpoints
+ * @brief Internal Datastructure for mountpoints
+ *
+ * @{
  */
 
 /**
@@ -65,6 +67,7 @@ Backend* elektraTrieLookup(Trie *trie, const Key *key)
 	if (!trie) return 0;
 
 	len = keyGetNameSize(key) + 1;
+	if (len == 1) return 0; // would crash otherwise
 	where = elektraMalloc(len);
 	strncpy(where, keyName(key), len);
 	where[len-2] = '/';

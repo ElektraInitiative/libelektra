@@ -16,7 +16,8 @@
 
 
 /**
- * @defgroup keyvalue Key :: Value Manipulation Methods
+ * @defgroup keyvalue Value Manipulation Methods
+ * @ingroup key
  * @brief Methods to do various operations on Key values.
  *
  * A key can contain a value in different format. The most
@@ -196,6 +197,10 @@ const void *keyValue(const Key *key)
  * only if it terminates for security reasons.
  *
  * @return the c-string of the value
+ * @retval "(null)" on null keys
+ * @retval "" if no data found
+ * @retval "(binary)" on binary keys
+ * @ingroup keyvalue
  * @param key the key object to get the string from
  */
 const char *keyString(const Key *key)
@@ -296,11 +301,13 @@ if (keyGetString(key,buffer,sizeof(buffer)) == -1)
  * @param maxSize number of bytes of allocated memory in @p returnedString
  * @return the number of bytes actually copied to @p returnedString, including
  * 	final NULL
- * @return 1 if the string is empty
- * @return -1 on NULL pointer
- * @return -1 on type mismatch
- * @return maxSize is 0, too small for string or is larger than SSIZE_MAX
- * @see keyValue(), keyGetValueSize(), keySetString()
+ * @retval 1 if the string is empty
+ * @retval -1 on any NULL pointers
+ * @retval -1 on type mismatch: string expected, but found binary
+ * @retval -1 maxSize is 0
+ * @retval -1 if maxSize is too small for string
+ * @retval -1 if maxSize is larger than SSIZE_MAX
+ * @see keyValue(), keyGetValueSize(), keySetString(), keyString()
  * @see keyGetBinary() for working with binary data
  * @ingroup keyvalue
  */
@@ -343,9 +350,9 @@ ssize_t keyGetString(const Key *key, char *returnedString, size_t maxSize)
  *
  * String values will be saved in backend storage, when kdbSetKey() will be
  * called, in UTF-8 universal encoding, regardless of the program's current
- * encoding, when compiled with --enable-iconv.
+ * encoding, when iconv plugin is present.
  *
- * The type will be set to KEY_TYPE_STRING.
+ * @note The type will be set to KEY_TYPE_STRING.
  * When the type of the key is already a string type it won't be changed.
  *
  * @param key the key to set the string value
@@ -353,8 +360,10 @@ ssize_t keyGetString(const Key *key, char *returnedString, size_t maxSize)
  * 	value
  * @return the number of bytes actually saved in private struct including final
  * 	NULL
- * @return -1 on NULL pointer
- * @see keyGetString(), keyValue()
+ * @retval 1 if newStringValue is a NULL pointer, this will make the
+ *           string empty (string only containing null termination)
+ * @retval -1 if key is a NULL pointer
+ * @see keyGetString(), keyValue(), keyString()
  * @ingroup keyvalue
  */
 ssize_t keySetString(Key *key, const char *newStringValue)
@@ -363,10 +372,10 @@ ssize_t keySetString(Key *key, const char *newStringValue)
 
 	if (!key) return -1;
 
+	keySetMeta (key, "binary", 0);
+
 	if (!newStringValue || newStringValue[0] == '\0') ret=keySetRaw(key,0,0);
 	else ret=keySetRaw(key,newStringValue,elektraStrLen(newStringValue));
-
-	keySetMeta (key, "binary", 0);
 
 	return ret;
 }
@@ -404,10 +413,12 @@ if (keyGetBinary(key,buffer,sizeof(buffer)) == -1)
  * @param returnedBinary pre-allocated memory to store a copy of the key value
  * @param maxSize number of bytes of pre-allocated memory in @p returnedBinary
  * @return the number of bytes actually copied to @p returnedBinary
- * @return 0 if the binary is empty
- * @return -1 on NULL pointers
- * @return -1 when maxSize is 0, too small to hold the value or larger than SSIZE_MAX
- * @return -1 on typing error when the key is not binary
+ * @retval 0 if the binary is empty
+ * @retval -1 on NULL pointers
+ * @retval -1 if maxSize is 0
+ * @retval -1 if maxSize is too small for string
+ * @retval -1 if maxSize is larger than SSIZE_MAX
+ * @retval -1 on type mismatch: binary expected, but found string
  * @see keyValue(), keyGetValueSize(), keySetBinary()
  * @see keyGetString() and keySetString() as preferred alternative to binary
  * @see keyIsBinary() to see how to check for binary type
@@ -452,21 +463,24 @@ ssize_t keyGetBinary(const Key *key, void *returnedBinary, size_t maxSize)
  * so the parameter can be deallocated after the call.
  *
  * Binary values might be encoded in another way then string values
- * depending on the plugin.
- *
+ * depending on the plugin. Typically character encodings should not take
+ * place on binary data.
  * Consider using a string key instead.
  *
  * When newBinary is a NULL pointer the binary will be freed and 0 will
  * be returned.
  *
- * @note When the key is already binary the meta data won't be changed.
+ * @note The meta data "binary" will be set to mark that the key is
+ * binary from now on. When the key is already binary the meta data
+ * won't be changed. This will only happen in the successful case,
+ * but not when -1 is returned.
  *
  * @param key the object on which to set the value
  * @param newBinary is a pointer to any binary data or NULL to free the previous set data
  * @param dataSize number of bytes to copy from @p newBinary
  * @return the number of bytes actually copied to internal struct storage
- * @return 0 when the internal binary was freed
- * @return -1 on NULL pointer
+ * @return 0 when the internal binary was freed and is now a null pointer
+ * @return -1 if key is a NULL pointer
  * @return -1 when dataSize is 0 (but newBinary not NULL) or larger than SSIZE_MAX
  * @see keyGetBinary()
  * @see keyIsBinary() to check if the type is binary
@@ -481,6 +495,7 @@ ssize_t keySetBinary(Key *key, const void *newBinary, size_t dataSize)
 
 	if (!dataSize && newBinary) return -1;
 	if (dataSize > SSIZE_MAX) return -1;
+	if (key->flags & KEY_FLAG_RO) return -1;
 
 	keySetMeta (key, "binary", "");
 
@@ -510,7 +525,8 @@ ssize_t keySetRaw(Key *key, const void *newBinary, size_t dataSize)
 	if (!key) return -1;
 	if (key->flags & KEY_FLAG_RO) return -1;
 
-	if (!dataSize || !newBinary) {
+	if (!dataSize || !newBinary)
+	{
 		if (key->data.v) {
 			free(key->data.v);
 			key->data.v=0;
@@ -522,7 +538,8 @@ ssize_t keySetRaw(Key *key, const void *newBinary, size_t dataSize)
 	}
 
 	key->dataSize=dataSize;
-	if (key->data.v) {
+	if (key->data.v)
+	{
 		char *p=0;
 		p=realloc(key->data.v,key->dataSize);
 		if (NULL==p) return -1;

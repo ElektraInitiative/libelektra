@@ -28,7 +28,7 @@ struct NoPlugin : public PluginCheckException
 	{
 		return  "Was not able to load such a plugin!\n\n"
 			"Maybe you misspelled it, there is no such plugin or the loader has problems.\n"
-			"You might want to try to set LD_LIBRARY_PATH to /usr/lib/elektra.";
+			"You might want to try to set LD_LIBRARY_PATH, use kdb-full or kdb-static.";
 	}
 };
 

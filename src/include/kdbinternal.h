@@ -10,5 +10,7 @@
 #include <kdbplugin.h>
 #include <kdbprivate.h>
 #include <kdbextension.h>
+#include <kdbproposal.h>
+#include <kdbobsolete.h>
 
 #endif

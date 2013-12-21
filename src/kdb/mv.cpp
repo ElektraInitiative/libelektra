@@ -35,7 +35,9 @@ int MvCommand::execute (Cmdline const& cl)
 	string newDirName = cl.arguments[1];
 
 	kdb.get(conf, sourceKey);
+	printWarnings(sourceKey);
 	kdb.get(conf, destKey);
+	printWarnings(destKey);
 	KeySet tmpConf = conf;
 	KeySet oldConf;
 
@@ -79,14 +81,14 @@ int MvCommand::execute (Cmdline const& cl)
 	if (cl.verbose)
 	{
 		cout << "Will write out:" << endl;
-		while (Key k = newConf.next())
-		{
-			cout << k.getName() << " " << k.getString() << endl;
-		}
+		cout << newConf;
 	}
 
 	kdb.set(newConf, sourceKey);
+	printWarnings(sourceKey);
+
 	kdb.set(newConf, destKey);
+	printWarnings(destKey);
 
 	return 0;
 }

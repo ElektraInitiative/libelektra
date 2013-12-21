@@ -40,10 +40,6 @@
 #include "kdbinternal.h"
 
 
-/**
- * @defgroup mount Interface for mounting backends
- */
-
 
 /**
  * Creates a trie from a given configuration.
@@ -230,7 +226,7 @@ int elektraMountVersion (KDB *kdb, Key *errorKey)
  * @return 1 on success
  * @ingroup mount
  */
-int elektraMountBackend (KDB *kdb, Backend *backend, Key *errorKey)
+int elektraMountBackend (KDB *kdb, Backend *backend, Key *errorKey ELEKTRA_UNUSED)
 {
 
 	char *mountpoint;
@@ -354,5 +350,3 @@ Backend* elektraMountGetBackend(KDB *handle, const Key *key)
 	if (!ret) return handle->defaultBackend;
 	return ret;
 }
-
-

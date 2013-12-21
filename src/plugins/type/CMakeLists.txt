@@ -7,8 +7,12 @@ add_sources (elektra-full ${SOURCES})
 add_headers (SOURCES)
 add_cppheaders (SOURCES)
 
-add_library (elektra-type MODULE ${SOURCES})
-install (TARGETS elektra-type DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})
+set (PLUGIN_NAME elektra-type)
+
+add_library (${PLUGIN_NAME} MODULE ${SOURCES})
+target_link_libraries (${PLUGIN_NAME} elektra)
+install (TARGETS ${PLUGIN_NAME}
+	DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})
 
 #first cpp plugin test
 

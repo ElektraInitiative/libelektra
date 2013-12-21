@@ -1,0 +1,267 @@
+Plugins to be added for current releases.
+Implement and test easy to implement, but useful plugins
+as many different plugins as possible.
+Prefer using great frameworks to do that in short time.
+
+== VERSION IN CONTRACT ==
+
+Configure file for plugin.h
+with defines for verbosity, configuration, version numbers + contract in
+static inline function
+with licence, author in contract
+Everything also in constants/build_info
+add dependencies in contract?
+
+
+
+== OS abstraction ==
+
+getcwd plugin
+
+
+== DISTRIBUTOR BACKENDS ==
+
+can be used as default using symlinks
+
+1.st level citizen
+	allow resolver only (one plugin for backend to be able to hierarchically stack backends)
+	share modules globally (to allow loading of module within module)
+
+mount: current implementation
+mount-mpi: current implementation, but multithreaded
+filesystem: implementation compatible with 0.7
+lazy-mount
+bind-mount
+owner support
+user-mount
+
+do not hardcode 10 plugins (rationale?)
+
+
+
+== JSON ==
+
+rebase plugin:
+	remove/add a common prefix after parentKey
+
+yail
+	advanced functionality
+	finish kdbSet
+	test roundtrips
+	configureable root
+	compilation variants: yail 1+2
+
+json serialization:
+	* should handle cppcms config files
+	  http://cppcms.com/wikipp/en/page/cppcms_1x_config
+	* should handle openicc
+	  doc/standards/OpenICC_device_config_DB.json
+	  http://www.freedesktop.org/wiki/Specifications/icc_meta_tag_for_monitor_profiles
+
+http://json-schema.org
+
+== PRETTY ==
+
+latex plugin to make pretty printed key/value pairs
+dot/graphviz plugin to visualize graph of keys
+html plugin (to show elektra config in html format)
+csv plugin with metadata as additional columns (configureable)
+
+literate data
+	good for documentation
+	everything is ignored except special introduced key/value pairs
+	<start><key><seperator><value><terminator>
+	needs two more special characters next to seperator, but is
+	otherwise alike
+
+
+== CPPPLUGIN ==
+
+cppplugin:
+	make a nice and easy cpp solution for plugins
+	(integration into cpp binding)
+	assemble C symbols with macros
+	keep C->C++ problems at one place to be included
+
+C++: (FINISH cppplugin)
+	how to write backends in C++
+	Exceptions propagations
+	(C++ Exceptions to error codes)
+
+
+== STORAGE ==
+
+xpath plugin:
+	on an xml file with an mapping from (reduced) xpath<->elektra keys
+
+C serialization
+	(ksNew(keyNew()))
+
+using libraries:
+	libconfig
+	eet
+
+/etc/groups plugin
+
+filesys:
+	reintroduce? (useful for 0.7 migrations)
+	empty folder will not show up (only with %%dirdata)
+	Dirdata richtig escapen
+	Metadata reinschreiben
+	remove keys the new way
+	compare sets between current and desired state (set operations)
+	could be default-storage plugin, integrated resolver for previous siutation
+
+other file formats:
+	xfree
+	apache
+	kde-ini
+	gconf
+	xml
+	inittab
+
+fstab:
+	support for spaces and so on (with \040)
+
+tcl:
+	parse output?
+	struct output!
+
+create storage plugins with lenses
+
+== ERROR ==
+
+
+error specification plugin:
+	parse error specification content into keyset
+
+ignore_error plugin:
+	transform error of a plugin to a warning
+
+
+== FILTER ==
+
+Forensic Logging:
+	environment, pid, gid, uid
+	timezone + in ms
+	IP
+
+filter: key
+	metadata löschen
+	hidden keys
+
+
+advanced:
+	hash sum
+	signing
+	encrypting
+	binding
+
+base64 encoding (and reverse)
+
+libgcryt (LGPL, GPLv3?) used by cppcms
+
+make name lowercase
+	(case sensitivity can be error prone)
+
+infer links between configuration (user/a=@user/b)
+	and copy values
+
+convert units (e.g. G, M, m,..) to values (and back)
+
+
+== TYPE ==
+
+struct: checker
+	cannot be deeply nested
+	don't throw char*
+	string as element of exception class
+
+Checkers:
+	check if hosts are reachable (/etc/hosts)
+
+
+== HOSTS ==
+
+does not fully support ipv6
+canonical_name is not canonical anymore
+(solve by having ipv4 and ipv6 subhierarchies?)
+
+
+=== RESOLVER ===
+
+make (at least) 4 resolvers:
+	resolver-debug for tests
+		concurrency: sets breakpoints within
+		folder: write into folders controlled by env, maybe xdg
+	resolver-xdg-passwd
+		use passwd with XDG overides
+	resolver-xdg
+		use $HOME with XDG overides
+	resolver-hardcoded (just use KDB_DB_* for single users embedded systems)
+	resolver-passwd
+	resolver-posix
+		using HOME def. in posix: http://pubs.opengroup.org/onlinepubs/009695399/basedefs/xbd_chap08.html
+		using USER as fallback? not def. in posix, but often in shells
+
+race conditions:
+	the losing process must not remove the .tmp file, but it
+	has to remove all .tmp files it created before (in those cases
+		it won)
+	-> needs also some logic within kdbSet() to handle this
+
+use nanoseconds timestamps, maybe avoid locking completely
+fsync the directory
+
+remove files on empty keysets (also needs logic in kdbSet())
+
+tmp files:
+	thread ID + randomness?
+
+resolver:
+	configureable flush+locking
+
+kdb file
+	using resolver plugin without function! (parent value!)
+	should be returned in kdbGet/kdbSet?
+
+XDG specification:
+	write a xdg plugin which does xdg conforming resolving
+	XDG_CONFIG_HOME
+	describe, implement, test
+	xdg mail announce
+
+== SYNC plugin ==
+
+fsync the file in keyname
+abort on error
+
+
+== DEFAULT PLUGINS ==
+
+default plugin handling: resolver/storage
+
+policy how default storage & resolver plugin are named
+resolve the symlink and load the module with correct name
+
+default storage plugin:
+	changeable
+	nickel with meta in [] sections?
+
+DEFAULT_BACKEND ->
+	DEFAULT_STORAGE_PLUGIN
+	DEFAULT_RESOLVER_PLUGIN
+	(+ make it work)
+	good out-of-the-box behaviour
+
+
+others:
+	memory (just hold everything in a keyset)
+	bind (just map keys from somewhere else)
+
+	meta-infos hide
+
+	Namecencode
+	nameutf8encode
+	namehexencode
+

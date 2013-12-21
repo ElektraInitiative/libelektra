@@ -43,12 +43,10 @@ int SetCommand::execute(Cmdline const& cl)
 	// the config
 	kdb.get(conf, k);
 
+	printError(k);
+	printWarnings(k);
+
 	Key key = conf.lookup(name);
-	if (cl.verbose)
-	{
-		cout << "Getting configuration emitted warnings:" << endl;
-		printWarnings(k);
-	}
 
 	if (!key)
 	{
@@ -80,7 +78,7 @@ int SetCommand::execute(Cmdline const& cl)
 	}
 	Key n;
 	kdb.set(conf, n);
-
+	printError(n);
 	printWarnings(n);
 
 	return 0;

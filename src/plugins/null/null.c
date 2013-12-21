@@ -25,10 +25,14 @@
 
 #include "null.h"
 
+#ifndef HAVE_KDBCONFIG
+# include "kdbconfig.h"
+#endif
+
 #include <string.h>
 #include <stdlib.h>
 
-int elektraNullGet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraNullGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
 	if (!strcmp (keyName(parentKey), "system/elektra/modules/null"))
 	{
@@ -86,7 +90,7 @@ int elektraNullGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	return 1; /* success */
 }
 
-int elektraNullSet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraNullSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey ELEKTRA_UNUSED)
 {
 	/* set all keys */
 

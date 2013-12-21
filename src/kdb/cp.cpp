@@ -43,13 +43,13 @@ int CpCommand::execute (Cmdline const& cl)
 
 	KeySet newConf;
 
-	Key k;
 	oldConf.rewind();
 	std::string sourceName = sourceKey.getName();
 	if (cl.verbose) cout << "common name: " << sourceName << endl;
 	if (cl.recursive)
 	{
 		// copy all keys with new name
+		Key k;
 		while (k = oldConf.next())
 		{
 			newConf.append(rename_key(k, sourceName, newDirName, cl.verbose));
@@ -58,7 +58,7 @@ int CpCommand::execute (Cmdline const& cl)
 	else
 	{
 		// just copy one key
-		k = oldConf.next();
+		Key k = oldConf.next();
 		newConf.append(rename_key(k, sourceName, newDirName, cl.verbose));
 	}
 
@@ -69,10 +69,7 @@ int CpCommand::execute (Cmdline const& cl)
 	if (cl.verbose)
 	{
 		cout << "Will write out:" << endl;
-		while (Key k = newConf.next())
-		{
-			cout << k.getName() << " " << k.getString() << endl;
-		}
+		cout << newConf;
 	}
 
 	kdb.set(newConf, destKey);

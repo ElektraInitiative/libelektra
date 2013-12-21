@@ -27,9 +27,13 @@
 
 #include "error.h"
 
+#ifndef HAVE_KDBCONFIG
+# include "kdbconfig.h"
+#endif
+
 #include <stdlib.h>
 
-int elektraErrorGet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraErrorGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey ELEKTRA_UNUSED)
 {
 	KeySet *n;
 	ksAppend (returned, n = ksNew (30,
@@ -66,7 +70,7 @@ int elektraErrorGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	return 1;
 }
 
-int elektraErrorSet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraErrorSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
 	Key *cur;
 	while ((cur = ksNext(returned)) != 0)

@@ -18,32 +18,6 @@ document the KDB API is described. But sometimes there are
 hints for elektra specific conventions.
 
 
-Versions and Compatibility
-==========================
-
-Elektra will be stable and maintained with 0.7.0. 0.7.x will
-be just bug fixes and corrected behaviour and documentation.
-It will be respected at least for a year, but certainly
-longer when there is a request for it.
-
-Compatibility will be the aim of elektra after 1.0. 1.0.x will
-be just bug fixes and corrected behaviour and documentation.
-However, Applications written for elektra 1.0 should always work
-and build together with any elektra released in the future.
-
-The KDB API also won't be finished before 1.0 state. But since
-0.7 it is foreseeable that the API does not need any
-more fundamental changes.
-
-But before we reach a 1.0 state, we must perceive that a
-mature, easy, clean and yet minimalistic powerful library is
-required. To archive that it is required to change not-perfect
-parts, which might be the case from 0.y to 1.0.
-
-Only a large testing framework, many ported apps and backends
-can exhibit that the goal is achieved.
-
-
 Data Structures
 ===============
 
@@ -227,7 +201,8 @@ Error Handling
 Error handling will not be implemented with 0.7.0. So it won't be
 possible for an application to determine what exactly went wrong.
 
-Elektra does not set errno.
+Elektra does not set errno. If a function you call sets errno, make sure
+to set it back to the old value again.
 
 Naming
 ======

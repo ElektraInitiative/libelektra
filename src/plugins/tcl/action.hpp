@@ -30,7 +30,7 @@ struct Action: qi::grammar<Iterator, ascii::space_type>
 		: Action::base_type(query),
 		p(ks)
 	{
-		query =  '{' >> pair >> *(pair) > '}';
+		query =  '{' >> *(pair) > '}';
 		pair  =  '{' >> key > '=' >> val >>
 			*('{' >> metakey > '=' >> metaval > '}') >
 			'}';

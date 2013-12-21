@@ -144,6 +144,7 @@ typedef int option_t;
 /**Separator for key names.
  * This character will be used to separate key names*/
 #define KDB_PATH_SEPARATOR '/'
+#define KDB_PATH_ESCAPE '\\'
 
 #define KDB_MAX_UCHAR (UCHAR_MAX+1)
 

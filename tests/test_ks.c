@@ -2248,6 +2248,50 @@ void test_ksAppendKey()
 	ksDel (ks);
 }
 
+void test_ksModifyKey()
+{
+	// TODO: broken, it is allowed to change keyname!
+	printf ("Test modify key after insertion\n");
+
+	KeySet *ks=0;
+	Key *cur;
+
+	exit_if_fail((ks=ksNew(0)) != 0, "could not create new keyset");
+
+	succeed_if (ksAppendKey(ks,cur=keyNew("user/a", KEY_END)) == 1, "could not append a key");
+	succeed_if (ksCurrent(ks) == cur, "did not update current position");
+	succeed_if (keySetName (cur, "user/b") == -1, "set name with appended key should be disallowed");
+	succeed_if (ksCurrent(ks) == cur, "did not update current position");
+
+	ksDel (ks);
+}
+
+void test_ksPopAtCursor()
+{
+	KeySet *ks = ksNew (
+		5,
+		keyNew ("user/valid/key1", KEY_END),
+		keyNew ("user/valid/key2", KEY_END),
+		keyNew ("system/valid/key1", KEY_END),
+		keyNew ("system/valid/key2", KEY_END),
+		KS_END);
+	KeySet *ks_c = ksNew (
+		5,
+		keyNew ("user/valid/key1", KEY_END),
+		keyNew ("user/valid/key2", KEY_END),
+		keyNew ("system/valid/key1", KEY_END),
+		KS_END);
+	ksRewind(ks);
+	ksNext(ks);
+	ksNext(ks);
+	cursor_t c = ksGetCursor(ks);
+	keyDel (ksPopAtCursor(ks, c));
+	succeed_if(ksCurrent(ks) == 0, "cursor position wrong");
+
+	compare_keyset(ks, ks_c);
+	ksDel(ks);
+	ksDel(ks_c);
+}
 
 int main(int argc, char** argv)
 {
@@ -2280,6 +2324,8 @@ int main(int argc, char** argv)
 	test_ksDoubleAppend();
 	test_ksDoubleAppendKey();
 	test_ksAppendKey();
+	test_ksPopAtCursor();
+	// test_ksModifyKey(); // TODO: Bug, not handled correctly
 
 	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

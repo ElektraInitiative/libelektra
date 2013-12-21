@@ -1,15 +1,5 @@
 This describes what to do for an release!
 
-== Preperation ==
-
-TODO: describe directory structure
-Make build-release folder
-
-Set environment variable VERSION to current version to make those
-scripts work:
-
- export VERSION=0.x.y
-
 
 == Cleanup ==
 
@@ -20,19 +10,35 @@ For the first few steps you have to work on branch master:
 If any feature branch is left over merge it:
  git-merge --no-ff feature
 
-Write NEWS for new release (do not forget to add links where to download release):
- editor doc/NEWS
-
 And now commit everything:
  git-commit -a
 
 Clean up the mess left over:
  git-clean -df
 
-Finally increment version number in CMakeLists.txt:
- editor CMakeLists.txt
- git-commit -m "Ready for release $VERSION" CMakeLists.txt
 
+== Check ==
+
+Try to move as much as possible from this manual checks to build-server!
+
+Before release is done, following must be checked:
+- Everything blue on http://community.markus-raab.org:8080/
+- Version number in CMakeLists.txt
+- using installed debian packages, run:
+ - (installed executeable tests
+ - API/ABI compatible by running old tests
+ - (installed) shell tests
+ - if tests cases do not remove existing config
+ - if external compilation works
+ - if API/ABI compatible
+
+
+== Preperation ==
+
+Set environment variable VERSION to current version to make the
+commands below work for copy&paste:
+
+ export VERSION=0.x.y
 
 
 == Source Package ==
@@ -63,7 +69,8 @@ Commit elektra-ftp to gitorious:
 == Documentation ==
 
 And the API docu (stay in same folder):
- mkdir ~elektra-doc/api/$VERSION/ && cd ~build/build && cp -ra doc/html doc/latex doc/man ~elektra-doc/api/$VERSION/
+ mkdir ~elektra-doc/api/$VERSION/
+ cd ~build && make doc && cp -ra doc/html doc/latex doc/man ~elektra-doc/api/$VERSION/
 
 Symlink current to latest version and add everything:
  cd ~elektra-doc/api/ && rm current && ln -s $VERSION current && git-add current $VERSION
@@ -82,35 +89,51 @@ Build deb:
  git-commit -m "Debian Package $VERSION-1"
  git-tag $VERSION-1
  cp ~elektra-ftp/releases/elektra-$VERSION.tar.gz ~elektra/elektra_$VERSION.orig.tar.gz
- git-buildpackage -rfakeroot -k00B86A15
+ git-buildpackage -rfakeroot -k00B86A15 -sa
+ reprepro --ignore=wrongdistribution include wheezy elektra_$VERSION-1_amd64.changes
 
 
 Now install package + run some basic commands:
  kdb --version
 
+Debian packages in chroot + publish in reprepro
+
+You might want to run lintian:
+ lintian -EI --color=auto --pedantic elektra_$VERSION-1_i386.changes
+
+And also run piuparts:
+ sudo piuparts elektra_$VERSION-1_i386.changes
+
+And run adequate (combined with piuparts or after installation)
 
 
 == Publish ==
 
 
-Now we know that everything worked, well
+Now we know that everything worked well:
 
 Now push release branch with tags to gitorious:
  cd ~e && git-pull && git-push && git-push --tags
 
 Push elektra-ftp to gitorious:
- cd ~elektra-ftp
- git-push && git-push gitorious
-
-
-Push changes to gitorious:
- git-pull && git-push
+ cd ~elektra-ftp && git-push && git-push gitorious
 
 Push elektra-doc to gitorious:
- cd ~elektra-doc && git-commit -a -m "$VERSION Release"
- git-push
+ cd ~elektra-doc && git-commit -a -m "$VERSION Release" && git-push
 
 
-TODO: Debian packages in chroot + publish in reprepro
+== Announce ==
+
+Write NEWS for new release (do not forget to add links where to download release):
+ editor doc/NEWS
+
+Finally increment version number in CMakeLists.txt:
+ editor CMakeLists.txt
+ git-commit -m "Ready for release $VERSION" CMakeLists.txt
+
+Maybe also generate a ChangeLog?
+ git log --first-parent master > ChangeLog
+
 
 Finally check links and send out mail to list
+(Personal notice: see also NOTIFY)

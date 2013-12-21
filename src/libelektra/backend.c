@@ -341,7 +341,7 @@ Backend* elektraBackendOpenModules(KeySet *modules, Key *errorKey)
  * @param errorKey the key to issue warnings and errors to
  * @return the fresh allocated default backend or 0 if it failed
  */
-Backend* elektraBackendOpenVersion(Key *errorKey)
+Backend* elektraBackendOpenVersion(Key * errorKey ELEKTRA_UNUSED)
 {
 	Backend *backend = elektraCalloc(sizeof(struct _Backend));
 	backend->refcounter = 1;
@@ -357,7 +357,8 @@ Backend* elektraBackendOpenVersion(Key *errorKey)
 	Key *mp = keyNew ("system/elektra/version", KEY_VALUE, "version", KEY_END);
 
 	backend->getplugins[0] = plugin;
-	plugin->refcounter = 1;
+	backend->setplugins[0] = plugin;
+	plugin->refcounter = 2;
 
 	backend->mountpoint = mp;
 	keyIncRef(backend->mountpoint);

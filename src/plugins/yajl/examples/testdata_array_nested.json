@@ -1,0 +1,41 @@
+{
+    "array": [
+        true,
+        [
+            [
+                [
+                    {
+                        "abc": 5,
+                        "more": "x",
+                        "subarray": [
+                            {
+                                "test": "deep"
+                            },
+                            [
+                                [
+                                    1,
+                                    2,
+                                    3
+                                ]
+                            ],
+                            "test",
+                            "string"
+                        ]
+                    }
+                ]
+            ],
+            25,
+            "some string",
+            0,
+            1,
+            2,
+            3,
+            "more \\ a",
+            "string \"",
+            "string abc",
+            "def abc",
+            false,
+            42
+        ]
+    ]
+}

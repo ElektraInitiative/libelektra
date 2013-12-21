@@ -22,6 +22,7 @@ Cmdline::Cmdline (int argc,
 	/*XXX: Step 2: initialise your option here.*/
 	debug(),
 	force(),
+	load(),
 	humanReadable(),
 	help(),
 	interactive(),
@@ -70,6 +71,12 @@ Cmdline::Cmdline (int argc,
 		long_options.push_back(o);
 		helpText += "-f --force               force the action to be done\n";
 	}
+	if (acceptedOptions.find('l')!=string::npos)
+	{
+		option o = {"load", no_argument, 0, 'f'};
+		long_options.push_back(o);
+		helpText += "-l --load                load plugin even if system/elektra is available\n";
+	}
 	if (acceptedOptions.find('h')!=string::npos)
 	{
 		option o = {"human-readable", no_argument, 0, 'h'};
@@ -116,7 +123,7 @@ Cmdline::Cmdline (int argc,
 		helpText += "-s --strategy <name>     the strategy which should be used on conflicts\n";
 		helpText += "                         preserve .. no old key is overwritten (default)\n";
 		helpText += "                         overwrite .. overwrite keys with same name\n";
-		helpText += "                         cut .. completely cut old keys to make place for new\n";
+		helpText += "                         cut .. completely cut at rootkey to make place for new keys\n";
 	}
 	if (acceptedOptions.find('v')!=string::npos)
 	{
@@ -148,6 +155,7 @@ Cmdline::Cmdline (int argc,
 		case 'd': debug = true; break;
 		case 'f': force = true; break;
 		case 'h': humanReadable = true; break;
+		case 'l': load= true; break;
 		case 'H': help = true; break;
 		case 'i': interactive = true; break;
 		case 'n': noNewline = true; break;

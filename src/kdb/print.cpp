@@ -1,6 +1,7 @@
 #include <command.hpp>
 
 #include <key.hpp>
+#include <keyset.hpp>
 
 #include <sstream>
 #include <iostream>
@@ -18,7 +19,7 @@ void printError(Key error)
 
 	try{
 		error.getMeta<std::string>("error");
-		std::cerr << "Error number " << error.getMeta<std::string>("error/number") << " occurred!" << std::endl;
+		std::cerr << "Error (#" << error.getMeta<std::string>("error/number") << ") occurred!" << std::endl;
 		std::cerr << "Description: " << error.getMeta<std::string>("error/description") << std::endl;
 		std::cerr << "Ingroup: " << error.getMeta<std::string>("error/ingroup") << std::endl;
 		std::cerr << "Module: " << error.getMeta<std::string>("error/module") << std::endl;
@@ -67,4 +68,26 @@ void printWarnings(Key error)
 	{
 		std::cerr << "Warnings meta data not set correctly by a plugin" << std::endl;
 	}
+}
+
+std::ostream & operator << (std::ostream & os, const kdb::Key &k)
+{
+	os << k.getName();
+
+	return os;
+}
+
+std::ostream & operator << (std::ostream & os, const kdb::KeySet &cks)
+{
+	kdb::KeySet & ks = const_cast<kdb::KeySet &>(cks);
+	cursor_t c = ks.getCursor();
+	ks.rewind();
+	Key k;
+	while (k=ks.next())
+	{
+		os << k << std::endl;
+	}
+	ks.setCursor(c);
+
+	return os;
 }

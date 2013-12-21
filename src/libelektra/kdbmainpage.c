@@ -25,9 +25,11 @@
  * other hand it gives an informal descriptions what methods must and may provide
  * to allow an alternative implementation of the API.
  *
- * The latest version of this document can be found at
+ * The current version (for stable releases) of this document can be found at
  * http://doc.libelektra.org/api/current/html
  *
+ * The latest version (from git master) of this document can be found at
+ * http://doc.libelektra.org/api/latest/html
  *
  *
  *

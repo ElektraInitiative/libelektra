@@ -96,7 +96,6 @@ int find_80 (Key *check) { int n=atoi(keyValue(check)); return n>70?-1:1; }
 
 int main()
 {
-	Key *found;
 	KeySet *out;
 	KeySet *ks = ksNew (64,
 		keyNew ("user/a/1", KEY_END),
@@ -148,8 +147,8 @@ int main()
 	ksForEach (values_below_30, sum_helper);
 
 	ksForEach (values, find_80);
-	found = ksCurrent (values); /* here is user/c */
-	found = ksLookupByName (values, "user/c", 0); /* should find the same */
+	ksCurrent (values); /* here is user/c */
+	ksLookupByName (values, "user/c", 0); /* should find the same */
 	ksDel (values);
 	ksDel (values_below_30);
 }

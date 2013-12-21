@@ -101,6 +101,37 @@ int init(int argc, char** argv);
 
 #define quote_string(x) #x
 
+#define compare_key_name(k1, k2) \
+{ \
+	if (strcmp(keyName(k1), keyName(k2))) \
+	{ \
+		char errorMsg [BUFFER_LENGTH]; \
+		 \
+		strcpy(errorMsg, "key name "); \
+		strcat(errorMsg, keyName(k1)); \
+		strcat(errorMsg, " is not equal "); \
+		strcat(errorMsg, keyName(k2)); \
+		 \
+		yield_error(errorMsg); \
+	} \
+}
+
+#define succeed_if_same_string(s1, s2) \
+{ \
+	if (strcmp(s1, s2)) \
+	{ \
+		char errorMsg [BUFFER_LENGTH]; \
+		 \
+		strcpy(errorMsg, "string "); \
+		strcat(errorMsg, s1); \
+		strcat(errorMsg, " is not equal "); \
+		strcat(errorMsg, s2); \
+		 \
+		yield_error(errorMsg); \
+	} \
+}
+
+
 /**
  * Checks if two keys are equal.
  *
@@ -110,9 +141,11 @@ int init(int argc, char** argv);
 	nbTest++; \
 	if (k1 != k2) \
 	{ \
+		compare_key_name(k1, k2); \
+		 \
 		keyswitch_t attributes = keyCompare(k1, k2); \
 		check_attributes(attributes); \
-	 \
+		 \
 		const Key * meta; \
 		keyRewindMeta(k1); \
 		keyRewindMeta(k2); \
@@ -192,6 +225,7 @@ int init(int argc, char** argv);
 }
 
 int compare_files (const char * filename);
+int compare_line_files (const char *filename, const char *genfilename);
 
 char *srcdir_file(const char * fileName);
 
@@ -202,9 +236,7 @@ void output_meta(Key *k);
 void output_key (Key *ks);
 void output_keyset (KeySet *ks);
 
-
-void output_warnings(Key *errorKey);
-void output_errors(Key *errorKey);
-
+int output_warnings(Key *errorKey);
+int output_error(Key *errorKey);
 
 #endif

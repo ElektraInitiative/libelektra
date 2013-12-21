@@ -1,7 +1,187 @@
-0.8.2 Release
+0.8.4 Release
 
-This release mostly brings internal improvements and
-debian packages for debian squeeze.
+I am proud to announce this amazing feature release!
+
+Elektra now speaks json!
+From this release on, Elektra has full read and write capabilities
+towards the world of json. json is a very popular serialization format
+which is originated in Javascript.
+It is very similar to the already existing tcl plugin, which also works
+like a parser without intermediate datastructures. But unlike the tcl
+plugin, where a grammar was written, the blazing fast yajl library was
+used.
+
+Elektra now has convention for arrays!
+Multiplicity is a very common need within configuration. Json specifically
+has syntactic support for it. Up to now Elektra used different conventions
+for arrays. E.g. Mountpoints name their plugins #0-#9, and fstab had
+#00-#99 lines. These approaches
+always limited to  number of predefined elements.
+
+The new convention solves the problem: #0-#9 (unmodified to be compatible
+with mountpoints) is followed by #_10-#_99, continuing with #__100 -
+#__999 and so on. It gets a bit long for large arrays, but they are
+supposedly not edited by hand anyway.  This approach has the big advantage
+that it works without modifying the sort order for the KeySet., which
+cannot be done for two reasons:
+
+1.) Backwards compatibility: It would break applications which count on
+5 being ordered after 12. The compatibility problem could be tackled in
+Elektra 0.9, but:
+
+2.) Slower comparison is the main issue. Elektra heavily depends on
+comparing keys. It is needed for inserting, lookups and other KeySet
+operations.
+Currently comparison is done by strcmp() which is highly optimized on
+most platforms. When numbers need some special handling, strcmp() could
+not be used anymore.
+
+POSIX compatibility and handling of multi-process conflicts has
+been improved. Now the HOME environment variable will be used. The
+old behaviour (USER environment variable) is still available as
+fallback. Additionally there is a fallback for embedded systems to the
+hardcoded variant. In case of these fallbacks a warning will be added.
+
+A new plugin uname was added. It allows you to mount the functionality
+of uname within Elektra's key/value namespace. Currently it is read-only
+and needs POSIX.
+
+The built-in description of plugins, especially for new plugins, was
+extended and improved. It is now also possible to output the description
+by:
+ kdb info <plugin> description
+e.g.
+ kdb info yajl description
+
+Two new kdb commands were added:
+ kdb file
+allows you to print out the configuration file where a given key is located.
+
+ kdb sget
+guarantees you to get a value which is handy in shell scripts.
+
+
+Now a large test suite makes sure that the kdb tool works without
+troubles. Many bugs, especially concerning resolver and mounting, were
+fixed. The list is way too long to put it here, see git log for details.
+
+
+The build server now has a job searching for TODOs:
+ http://build.libelektra.org:8080/job/elektra-todo/
+
+The latest documentation from git master is also build there and the
+results are published here:
+ http://doc.libelektra.org/api/latest/html
+
+The current release is always documented at:
+ http://doc.libelektra.org/api/current/html
+
+
+
+
+---------------
+
+Roadmap
+
+Exciting times for software integration for free operating systems:
+After some years of more or less deep sleep I will reactivate the
+initiative so that we finally can lay a foundation for a truly integrated
+system. During my PhD I will have time to remove the larger barriers and
+tackle some fundamental problems.
+
+The targets will be:
+- Embedded: Elektra is on the frontier for embedded systems because of
+  its tiny core and the many possibilities with it's plugins.
+- Server: Elektra is ideal suited for a local configuration storage by
+  mounting existing configuration files into the global tree. Nodes
+  using Elektra can be connected by already existing configuration
+  management tools.
+- Desktop: Elektra allows applications to read and write from a global
+  configuration tree. Missing is a description (schema) so that these
+  values actually can be shared.
+
+Quality Goals will be:
+- Extensibility: Requirements for configuration can vary a lot.
+  The only common dominator are key/value pairs, nearly everything else
+  can differ from project to project. So Elektra needs to be, and is,
+  very extensible to fulfil this wide range of goals.
+- Simplicity: The system should be very simple in its core so that it
+  can be understood easily. Complexity should be hidden in optional
+  extensions. The full system should work out-of-the-box as much as
+  possible. With these properties it should also be as safe and
+  fault-tolerant as possible.
+- Performance: Features will not be used if they impact performance too
+  hard. So Elektra and it's extensions are designed to perform well with
+  a minimum amount of syscalls with an emphasis on retrieving configuration
+  fast.
+
+
+The roadmap for Elektra's implementation has three steps:
+
+1.) Elektra 0.8
+Is the current stable release branch. It will get continuous development
+with releases at least every two month. They focus will be on stability,
+better user experience, integration of new programming languages and
+more serialize formats.
+Some ideas:
+- serializer: e.g. json, using lenses
+- resolver: e.g. xdg with improved locking
+- testing: automated abi compatibility checks, shell test suite
+- bindings: gobject, swig
+- more tutorials and explanations
+- more advertisement (e.g. conferences)
+- creating applications using Elektra
+- schema for configuration
+- more tool support, e.g. GUIs
+- and much more...
+(see also doc/todo/CURRENT and doc/todo/TODO in repo)
+
+If you are interested in working on one of these topics, please contact me.
+It will also be possible for students to write a thesis solving problems
+concerning those ideas.
+
+2.) Elektra 0.9 (starting around 2014)
+This will be a development branch which will coexist next to 0.8. In it
+all features will emerge which are too large for the 0.8 branch, like
+changes in the core and the plugin system. Some of them might be "boring
+and academical" :-)
+The branch will lead to releases which can be considered as technology
+previews. They will be most likely not intended to be used in a
+production environment.
+Some ideas:
+- allow plugins to be first level citizens
+- allow plugins to nest in each other
+- allow non-file based plugins
+- Next generation of type system allowing user defined types, subtypes,
+  units and constraints
+- Next generation of contracts which allow recursive nesting and
+  auto-negotiation of capabilities
+- and much more...
+(see also doc/todo/FUTURE in repo)
+
+Those tasks will be done by me, but ideas and discussions are always
+appreciated.
+
+3.) Elektra 1.0
+This will basically a stable snapshot of 0.9 when there is no doubt that
+Elektra can be extended without breaking your (the customers) way to
+deal with configuration.
+Some ideas:
+- API cleanup
+- build an environment around the libraries
+- build sharing platforms for configuration
+- extend the foundations created in 0.9
+- and much more...
+
+More information will be published soon, so stay tuned.
+
+
+---------------
+
+0.8.3 Release
+
+This release mostly brings improvements in the release process, the test framework and
+new debian packages.
 
 A benchmark showed that rereading the same database only needs
 about 2ms and the syscalls needed are quite optimal.
@@ -11,8 +191,16 @@ but instead a release and debian branch was created.
 See doc/GIT for new policy of branches.
 Thanks to Christian Amsüss <chrysn@fsfe.org>
 for all tips, suggestions and help.
-The git branches are done like in:
-http://christian.amsuess.com/tools/arandr/
+The git branches are done like in arandr.
+0.8.2 was skipped because a git tag was placed wrongly
+when the new release scheme was tried out on Monday June
+18 2012.
+The tag was removed later.
+
+kdb export now works nicely, use
+ kdb export <path> simpleini
+to show key = value pairs.
+Additionally kdb umount was added.
 
 A cmake bug was fixed, so that "make test" now
 works immediately.
@@ -26,12 +214,37 @@ Some docu was improved and some typos fixed.
 Thanks to Erkan Yilmaz <erkan77@gmail.com> for
 two fixes.
 
-You can download the release at:
-http://www.markus-raab.org/ftp/elektra/releases/elektra-0.8.2.tar.gz
+The test framework now has built-in support for comparing keysets and
+keys together with its metadata. Because of usage of macros the
+linenumber will be stated correctly for comparison.
 
-You can install the debian packages for debian squeeze when
-you add following line in your /etc/apt/sources.list:
-deb http://www.markus-raab.org/ftp/reprepro squeeze main
+Additionally also a script test framework was started.
+
+The documentation was updated and improved at some places.
+
+The build system was improved. Now also ALL, NODEP or DEFAULT are
+accepted as magic values for a list of plugins.
+
+Most of the tests run automatically on a buildserver:
+http://build.libelektra.org:8080/
+
+It gives you an good impression with how many different compilers elektra
+is currently tested. Elektra now also compiles with clang.
+
+You can download the release at:
+http://www.markus-raab.org/ftp/elektra/releases/elektra-0.8.3.tar.gz
+md5sum: d6b1d668a1a1e155137d4ebc1bd0d5d7
+sha256: 48fab82a6b1e8f0038c43ae9ade4da25b697d0aa74e39b7b94056ab7febc4be1
+
+You can install the debian packages for debian squeeze (i386 and amd64 only) by
+adding following lines to your /etc/apt/sources.list:
+deb     http://build.libelektra.org/debian/ elektra-release-glue main
+deb-src http://build.libelektra.org/debian/ elektra-release-glue main
+
+and install all or some of the packages with:
+sudo apt-get install libelektra-core4 libelektra-full4 libelektra-bin libelektra-dev libelektra-test libelektra-xmltool4
+
+Have fun!
 
 
 
