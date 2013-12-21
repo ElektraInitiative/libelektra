@@ -1,12 +1,5 @@
 This describes what to do for an release!
 
-== Preperation ==
-
-Set environment variable VERSION to current version to make those
-scripts work:
-
- export VERSION=0.x.y
-
 
 == Cleanup ==
 
@@ -23,6 +16,23 @@ And now commit everything:
 Clean up the mess left over:
  git-clean -df
 
+
+== Check ==
+
+Before release is done, following must be checked:
+- Version number in CMakeLists.txt
+- Everything blue on http://community.markus-raab.org:8080/
+- if tests cases do not remove existing config
+- if external compilation works
+- if API/ABI compatible
+
+
+== Preperation ==
+
+Set environment variable VERSION to current version to make the
+commands below work for copy&paste:
+
+ export VERSION=0.x.y
 
 
 == Source Package ==
