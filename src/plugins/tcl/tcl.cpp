@@ -92,18 +92,32 @@ int elektraTclGet(Plugin *, KeySet *returned, Key *parentKey)
 
 	kdb::KeySet input (returned);
 
-	try {
-		elektra::unserialize (in, input);
-		input.release();
-	}
-	catch (boost::spirit::qi::expectation_failure<boost::spirit::istream_iterator> const& e)
+	int ret = 0;
+	try
 	{
-		ELEKTRA_SET_ERROR (61, parentKey, std::string(e.first, e.last).c_str());
-		input.release();
-		return -1;
+		elektra::unserialize (in, input);
 	}
+	catch(boost::spirit::qi::expectation_failure<boost::spirit::istream_iterator> const& e)
+	{
+		ELEKTRA_SET_ERROR (61, parentKey,
+				std::string(std::string("file: ") +
+				keyString(parentKey) +
+				" could not be parsed because: " +
+				std::string(e.first, e.last)).c_str());
+		ret = -1;
+	}
+	catch(std::exception const& e)
+	{
+		ELEKTRA_SET_ERROR (61, parentKey,
+				std::string(std::string("file: ") +
+				keyString(parentKey) +
+				" could not be parsed because: " +
+				e.what()).c_str());
+		ret = -1;
+	}
+	input.release();
 
-	return 1; /* success */
+	return ret;
 }
 
 int elektraTclSet(Plugin *, KeySet *returned, Key *parentKey)

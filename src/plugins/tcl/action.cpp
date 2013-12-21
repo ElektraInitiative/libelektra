@@ -22,6 +22,7 @@ void serialize(ostream &ofs, KeySet & output)
 {
 
 	ofs << '{' << endl;
+	output.rewind();
 	while (Key k = output.next())
 	{
 		ofs << "\t{" << endl;
@@ -52,11 +53,9 @@ void unserialize(istream &in, KeySet & input)
 
 	Action<boost::spirit::istream_iterator> p (input);
 
-	bool result = boost::spirit::qi::phrase_parse(begin, end, p, space);
-
-	if (!result)
+	if (!boost::spirit::qi::phrase_parse(begin, end, p, space))
 	{
-		std::cout << "Failed parsing input file!" << std::endl;
+		throw std::runtime_error("boost::spirit::qi::phrase_parse returned unsuccessfully");
 	}
 }
 
