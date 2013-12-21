@@ -19,9 +19,7 @@ public:
 
 	void doTests(std::vector<std::string> const& arguments);
 
-	// add here the name if you add a test
-	// (spaces at begin/end needed for check)
-	std::string test_names = " basic string umlauts binary naming meta ";
+	std::string test_names;
 
 	void doBasicTest();
 	void doStringTest();

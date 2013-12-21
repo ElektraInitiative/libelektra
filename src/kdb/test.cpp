@@ -14,7 +14,10 @@ using namespace std;
 TestCommand::TestCommand():
 	root(),
 	nrTest(0),
-	nrError(0)
+	nrError(0),
+	// XXX add here the name if you add a test
+	// (spaces at begin/end needed for check)
+	testNames(" basic string umlauts binary naming meta ")
 {}
 
 void TestCommand::doBasicTest()
@@ -457,6 +460,7 @@ void TestCommand::doTests(std::vector<std::string> const& arguments)
 		cout << "Doing meta tests" << std::endl;
 		doMetaTest();
 	}
+	// XXX add here a new test execution (as above)
 }
 
 int TestCommand::execute(Cmdline const& cl)
