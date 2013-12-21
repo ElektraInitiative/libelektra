@@ -847,6 +847,7 @@ int main(int argc, char** argv)
 	test_readWrite("examples/testdata_empty_in_array.json", ksNew(0));
 	test_readWrite("examples/testdata_empty_in_map.json", ksNew(0));
 	test_readWrite("examples/testdata_empty_in_array1.json", ksNew(0));
+	test_readWrite("examples/testdata_empty_in_map2.json", ksNew(0));
 	test_readWrite("examples/testdata_empty_in_map1.json", ksNew(0));
 
 	elektraModulesClose(modules, 0);
