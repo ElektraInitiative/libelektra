@@ -140,10 +140,6 @@ static int elektraGenOpenValue(yajl_gen g, const Key *next)
  */
 static void elektraGenValue(yajl_gen g, Key *parentKey, const Key *cur)
 {
-#ifdef ELEKTRA_YAJL_VERBOSE
-	printf ("GEN value %s for %s\n", keyString(cur), keyName(cur));
-#endif
-
 	if (!elektraGenOpenValue(g, cur))
 	{
 #ifdef ELEKTRA_YAJL_VERBOSE
@@ -151,6 +147,10 @@ static void elektraGenValue(yajl_gen g, Key *parentKey, const Key *cur)
 #endif
 		return;
 	}
+
+#ifdef ELEKTRA_YAJL_VERBOSE
+	printf ("GEN value %s for %s\n", keyString(cur), keyName(cur));
+#endif
 
 	const Key * type = keyGetMeta(cur, "type");
 	if (!type && keyGetValueSize(cur) == 0) // empty binary type is null
