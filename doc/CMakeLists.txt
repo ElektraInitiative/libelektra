@@ -29,13 +29,17 @@ endmacro (do_doc)
 if (DOXYGEN_FOUND)
 	set (OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
-	find_package(LATEX)
-
-	if (LATEX_COMPILER)
-		set (WITH_LATEX YES)
-	else (LATEX_COMPILER)
+	if (BUILD_PDF)
+		find_package(LATEX)
+		if (LATEX_COMPILER)
+			set (WITH_LATEX YES)
+		else (LATEX_COMPILER)
+			set (WITH_LATEX NO)
+			message (WARNING "Latex not found, PDF Manual can't be created.")
+		endif (LATEX_COMPILER)
+	else (BUILD_PDF)
 		set (WITH_LATEX NO)
-	endif (LATEX_COMPILER)
+	endif (BUILD_PDF)
 
 	if (DOXYGEN_DOT_FOUND)
 		set (WITH_DOT YES)
@@ -54,7 +58,7 @@ if (DOXYGEN_FOUND)
 	do_doc(${OUTPUT_DIRECTORY}/html index.html)
 	do_doc(${OUTPUT_DIRECTORY}/man man3/kdb.3)
 
-	if (LATEX_COMPILER)
+	if (WITH_LATEX)
 		do_doc(${OUTPUT_DIRECTORY}/latex refman.tex)
 
 		add_custom_command (
@@ -69,7 +73,7 @@ if (DOXYGEN_FOUND)
 		add_custom_target (pdf ALL
 			DEPENDS ${OUTPUT_DIRECTORY}/latex/refman.pdf
 		)
-	endif (LATEX_COMPILER)
+	endif (WITH_LATEX)
 else (DOXYGEN_FOUND)
 	message (WARNING "Doxygen not found, Reference Manual can't be created.")
 endif (DOXYGEN_FOUND)

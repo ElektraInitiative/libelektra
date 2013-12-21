@@ -148,11 +148,16 @@ option (BUILD_EXAMPLES "Build example applications using elektra." ON)
 option (BUILD_DOCUMENTATION "Build the documentation (API, man pages)" ON)
 if (BUILD_DOCUMENTATION)
 	option (INSTALL_DOCUMENTATION "Install the documentation (API, man pages)" ON)
+	option (BUILD_PDF "Build the documentation also in PDF form" OFF)
 else (BUILD_DOCUMENTATION)
 	#install documentation makes no sense if it is not build
 	#(even though the option would not harm)
 	set (INSTALL_DOCUMENTATION OFF CACHE BOOL
 			"Install the documentation (API, man pages)"
+			FORCE
+		)
+	set (BUILD_PDF OFF CACHE BOOL
+			"Build the documentation also in PDF form"
 			FORCE
 		)
 endif (BUILD_DOCUMENTATION)
