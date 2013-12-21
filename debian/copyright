@@ -1,11 +1,11 @@
-This package was debianized by Pier Luigi Fiorini <pierluigi.fiorini@mockup.org> on
+This package was originally debianized by Pier Luigi Fiorini <pierluigi.fiorini@mockup.org> on
 Mon, 25 Apr 2005 19:44:10 +0200.
 
-It was downloaded from http://elektra.sourceforge.net/
+It was downloaded from http://www.libelektra.org/ftp/elektra/releases/
 
-Copyright Holder: Avi Alkalay <avi@unix.sh>
+Copyright Holder: see AUTHORS
 
-Copyright: (c) 2004, Avi Alkalay
+Copyright: (c) 2012, see AUTHORS
  All rights reserved.
 
 This is a BSD license.

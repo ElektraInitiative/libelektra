@@ -5,4 +5,3 @@ usr/lib/pkgconfig/elektra.pc
 usr/share/cmake-2.8/Modules/FindElektra.cmake
 usr/bin/kdb-static
 usr/lib/libelektra*.so
-
