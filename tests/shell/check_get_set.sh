@@ -9,7 +9,7 @@ check_version
 VALUE=value
 
 #override for specific testing
-#PLUGINS=yajl
+#PLUGINS=tcl
 
 for PLUGIN in $PLUGINS
 do
@@ -22,9 +22,9 @@ do
 	case "$PLUGIN" in
 	"tcl")
 		MOUNT_PLUGIN="tcl ccode null"
-		echo "tcl currently broken (to be fixed)"
-		echo "TODO problem: after removing root key file is broken"
-		continue;
+		;;
+	"yajl")
+		DO_NOT_TEST_ROOT_VALUE="yes"
 		;;
 	"simpleini")
 		MOUNT_PLUGIN="simpleini ccode null"
@@ -73,7 +73,7 @@ do
 		[ "x`$KDB sget $ROOT/value defvalue 2> /dev/null`" = "xdefvalue" ]
 		succeed_if "Did not get default value"
 
-		if [ "x$PLUGIN" != "xyajl" ]
+		if [ "x$DO_NOT_TEST_ROOT_VALUE" != "xyes" ]
 		then
 			#TODO: Fix by directoryvalue plugin
 			[ "x`$KDB get $ROOT 2> /dev/null`" = "xroot" ]
@@ -110,7 +110,7 @@ do
 		succeed_if "could not remove user/test/value"
 
 		[ "x`$KDB sget $ROOT/value value 2> /dev/null`" = "xvalue" ]
-		succeed_if "Did not get default value"
+		succeed_if "Did not get default value after remove"
 
 		$KDB get $ROOT/value 1>/dev/null  2> /dev/null
 		[ $? != "0" ]
