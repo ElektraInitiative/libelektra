@@ -6,19 +6,6 @@ Items are e.g. BUGS, OPTIMIZE, PROBLEMS, TESTING, PLUGINS, TODO,..
 
 == 0.8.4 ==
 
-=== testing ===
-
-multiple mounts
-nested mounts
-real-world mounts
-
-=== packaging ===
-
-base structure for system with mounts:
-	hosts
-	fstab
-	passwd
-
 debian:
 	enable (fix) tests
 	add examples as package

@@ -43,13 +43,7 @@ do
 	unset -f cleanup
 	FILE=test.$PLUGIN
 
-	USER_REMAINING="`find $USER_FOLDER -maxdepth 1 -name $FILE'*' -print -quit`"
-	test -z "$USER_REMAINING"
-	exit_if_fail "files $USER_REMAINING in $USER_FOLDER would be removed during tests, so test is aborted"
-
-	SYSTEM_REMAINING="`find $SYSTEM_FOLDER -maxdepth 1 -name $FILE'*' -print -quit`"
-	test -z "$SYSTEM_REMAINING"
-	exit_if_fail "files $SYSTEM_REMAINING in $SYSTEM_FOLDER would be removed during tests, so test is aborted"
+	check_remaining_files $FILE
 
 	$KDB mount $FILE $MOUNTPOINT $MOUNT_PLUGIN 1>/dev/null
 	exit_if_fail "could not mount $FILE at $MOUNTPOINT using $MOUNT_PLUGIN"
