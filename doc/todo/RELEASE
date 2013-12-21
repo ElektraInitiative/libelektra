@@ -19,12 +19,18 @@ Clean up the mess left over:
 
 == Check ==
 
+Try to move as much as possible from this manual checks to build-server!
+
 Before release is done, following must be checked:
-- Version number in CMakeLists.txt
 - Everything blue on http://community.markus-raab.org:8080/
+- Version number in CMakeLists.txt
 - if tests cases do not remove existing config
 - if external compilation works
 - if API/ABI compatible
+- using installed debian packages, run:
+ - executeable tests
+ - API/ABI compatible by running old tests
+ - shell tests
 
 
 == Preperation ==

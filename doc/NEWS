@@ -46,10 +46,29 @@ will be used. The old behaviour using USER is still available as
 fallback. Additionally there is a fallback for embedded systems to the
 hardcoded variant. In both fallbacks a warning will be added.
 
+A new plugin uname was added. It allows you to mount the functionality
+of uname within Elektra's key/value namespace. (Currently read-only and
+POSIX-only)
+
+The built-in description of plugins, especially for new plugins, was
+extended by a great deal. It is now also possible to just output the
+description by using
+ kdb info <plugin> description
+e.g.
+ kdb info yajl description
+
 Two new kdb commands were added:
 kdb file allows you to print out the configuration file where a given key is located.
 kdb sget guarantees you to get a value which is handy in shell scripts.
 
+
+Now a large test suite makes sure that working with the kdb tool is
+without troubles. Many bugs, especially concerning resolver and
+mounting, were fixed. The list is way too long to put it here,
+see git log for details.
+
+The build server now has a job searching for TODOs:
+ http://build.libelektra.org:8080/job/elektra-todo/
 
 
 

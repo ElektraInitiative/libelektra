@@ -8,11 +8,13 @@ Items are e.g. BUGS, OPTIMIZE, PROBLEMS, TESTING, PLUGINS, TODO,..
 
 === bugs ===
 
-storage inconsistency on empty keys: (see check_get_set)
+yajl-gen on yajl1 incorrectly?
 
-tcl fails on empty set
+=== testing ===
 
-warning in resolver aborts execution? (uname plugin)
+multiple mounts
+nested mounts
+real-world mounts
 
 === packaging ===
 
@@ -25,12 +27,3 @@ debian:
 	enable (fix) tests
 	add examples as package
 	enable all plugins (struct, type, validation!!!)
-
-=== testing ===
-
-multiple mounts
-nested mounts
-
-jenkins:
-	build packages for dfc
-	job for TODO

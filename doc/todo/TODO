@@ -19,6 +19,11 @@ generator for:
 
 == unsorted ==
 
+jenkins:
+	build packages for dfc
+	code coverage
+
+
 doxygen 0.8.* upgrade on server->wheezy upgrade
 
 chroot
