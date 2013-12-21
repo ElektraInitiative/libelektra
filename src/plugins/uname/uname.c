@@ -63,7 +63,24 @@ int elektraUnameGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 			keyNew ("system/elektra/modules/uname/infos/licence",
 				KEY_VALUE, "BSD", KEY_END),
 			keyNew ("system/elektra/modules/uname/infos/description",
-				KEY_VALUE, "/Parses files in a syntax like /etc/uname file", KEY_END),
+				KEY_VALUE,
+"Includes uname information into the key database.\n"
+"\n"
+"It defines following keynames below its mountpoint:\n"
+"\n"
+"sysname\n"
+"nodename\n"
+"release\n"
+"version\n"
+"machine\n"
+"\n"
+"To mount it, use src/kdb/kdb-full mount /tmp system/uname uname \n"
+"/tmp can be replaced with any existing file or directory.\n"
+"It will only be used for stat(), which is currently needed because\n"
+"plugins cannot be mounted without resolver.\n"
+"\n"
+"They are readonly.\n"
+				, KEY_END),
 			keyNew ("system/elektra/modules/uname/infos/provides",
 				KEY_VALUE, "storage", KEY_END),
 			keyNew ("system/elektra/modules/uname/infos/placements",

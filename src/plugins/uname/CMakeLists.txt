@@ -1,11 +1,11 @@
-try_compile (HAS_UNAME
+try_compile(HAS_UNAME
 		"${CMAKE_BINARY_DIR}"
 		"${PROJECT_SOURCE_DIR}/src/plugins/uname/testuname.c"
 		)
 
 include(LibAddMacros)
 
-if (HAS_MNTENT)
+if(HAS_UNAME)
 	set (SOURCES uname.h uname.c)
 	add_sources (elektra-full ${SOURCES})
 	add_headers (SOURCES)
@@ -16,6 +16,6 @@ if (HAS_MNTENT)
 	install (TARGETS ${PLUGIN_NAME} DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})
 
 	add_plugintest (uname)
-else (HAS_MNTENT)
+else()
 	remove_plugin (uname "uname is missing")
-endif (HAS_MNTENT)
+endif()
