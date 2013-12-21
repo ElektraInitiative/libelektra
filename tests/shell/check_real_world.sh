@@ -83,8 +83,8 @@ then
 	$KDB mount $DESKTOP_FILE $DESKTOP_MOUNTPOINT yajl
 	succeed_if "could not mount DESKTOP: $DESKTOP_FILE at $DESKTOP_MOUNTPOINT"
 
-	check_set_get_rm system/test/script/apps/desktop/x y
-	check_set_get_rm user/test/script/apps/desktop/x y
+	check_set_rm system/test/script/apps/desktop/x y
+	check_set_rm user/test/script/apps/desktop/x y
 fi
 
 
@@ -100,8 +100,8 @@ then
 	$KDB mount | grep "test_real_world_root.ecf on /test/script with name _test_script"
 	succeed_if "mountpoint $ROOT_MOUNTPOINT missing"
 
-	check_set_get_rm system/test/script/next/key value
-	check_set_get_rm user/test/script/next/key value
+	check_set_rm system/test/script/next/key value
+	check_set_rm user/test/script/next/key value
 fi
 
 if is_plugin_available ni
@@ -109,8 +109,10 @@ then
 	$KDB mount | grep "test_real_world_sys.ni on /test/script/sys with name _test_script_sys"
 	succeed_if "mountpoint $SYS_MOUNTPOINT missing"
 
-	check_set_get_rm system/test/script/sys/next/key value
-	check_set_get_rm user/test/script/sys/next/key value
+	check_set_rm system/test/script/sys/next/key value
+	check_set_rm user/test/script/sys/next/key value
+
+	check_set_mv_rm system/test/script/sys/next/key user/test/script/next/key myvalue
 fi
 
 if is_plugin_available hosts
@@ -118,8 +120,12 @@ then
 	$KDB mount | grep "test_real_world_hosts on /test/script/sys/hosts with name _test_script_sys_hosts"
 	succeed_if "mountpoint $HOSTS_MOUNTPOINT missing"
 
-	check_set_get_rm system/test/script/sys/hosts/localhost 127.0.0.1
-	check_set_get_rm user/test/script/sys/hosts/localhost 127.0.0.1
+	check_set_rm system/test/script/sys/hosts/localhost 127.0.0.1
+	check_set_rm user/test/script/sys/hosts/localhost 127.0.0.1
+
+	check_set_mv_rm user/test/script/sys/hosts/localhost system/test/script/sys/hosts/localhost myvalue
+
+	check_set_mv_rm user/test/script/sys/hosts/localhost system/test/script/sys/next/key myvalue
 fi
 
 if is_plugin_available simpleini
@@ -127,10 +133,12 @@ then
 	$KDB mount | grep "test_real_world_apps.ini on /test/script/apps with name _test_script_apps"
 	succeed_if "mountpoint $APPS_MOUNTPOINT missing"
 
-	check_set_get_rm system/test/script/apps/next/x y
-	check_set_get_rm user/test/script/apps/next/x y
-	check_set_get_rm system/test/script/apps/next/x/a/b y
-	check_set_get_rm user/test/script/apps/next/x/x/y y
+	check_set_rm system/test/script/apps/next/x y
+	check_set_rm user/test/script/apps/next/x y
+	check_set_mv_rm user/test/script/apps/next/x/x/y system/test/script/sys/hosts/localhost myvalue
+
+	check_set_rm system/test/script/apps/next/x/a/b y
+	check_set_rm user/test/script/apps/next/x/x/y y
 fi
 
 
