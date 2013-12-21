@@ -1,3 +1,9 @@
+elektra (0.8.4-1) UNRELEASED; urgency=low
+
+  * New upstream version.
+
+ -- Markus Raab <debian@markus-raab.org>  Sat, 21 Dec 2013 19:49:33 +0100
+
 elektra (0.8.3-2) unstable; urgency=low
 
   * Add test package (containing unit tests)
