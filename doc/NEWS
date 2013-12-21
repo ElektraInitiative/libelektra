@@ -11,78 +11,72 @@ like a parser without intermediate datastructures. But unlike the tcl
 plugin, where a grammar was written, the blazing fast yajl library was
 used.
 
-Elektra has convention for arrays
-Multiplicity is a very common need within configuration. Json
-specifically has syntactic support for it. Up to now Elektra
-used different conventions for arrays. E.g. Mountpoints has #0-#9, and
-fstab had #00-#99(The trailing zero was needed for asciibetical
-ordering.). Different conventions would make problems for such
-file formats where arrays have other syntax then named numerations.
-If they were detected at all (as a matter of fact they would be
-recogniced, because all of them start with an #) they would at least
-have roundtrip problems (e.g. you set user/#a but you get user/#0).
-Current approaches always limited to  number of predefined
-elements.
+Elektra now has convention for arrays!
+Multiplicity is a very common need within configuration. Json specifically
+has syntactic support for it. Up to now Elektra used different conventions
+for arrays. E.g. Mountpoints name their plugins #0-#9, and fstab had
+#00-#99 lines. These approaches
+always limited to  number of predefined elements.
 
-The new convention solves the problem: #0-#9 (unmodified to be
-compatible with mountpoints) and then #_10-#_99, continuing with #__100
-- #__999 and so on. It gets a bit ugly for large arrays, but they are
-supposedly not edited by hand anyway.
-This approach has the big advantage that it works without modifying the
-sort order, which cannot be done for two reasons:
-1.) backwards compatibility! It would break applications which count on 5
-being ordered after 12. The compatibility problem could be tackled in
+The new convention solves the problem: #0-#9 (unmodified to be compatible
+with mountpoints) is followed by #_10-#_99, continuing with #__100 -
+#__999 and so on. It gets a bit long for large arrays, but they are
+supposedly not edited by hand anyway.  This approach has the big advantage
+that it works without modifying the sort order for the KeySet., which
+cannot be done for two reasons:
+
+1.) Backwards compatibility: It would break applications which count on
+5 being ordered after 12. The compatibility problem could be tackled in
 Elektra 0.9, but:
-2.) slower comparision! is the main issue. Elektra heavily depends on
-comparing keys. It is needed for inserting, lookups and so on..
-Currently comparision is done by strcmp() which is highly optimized on
-most platforms. When numbers need some special handling, strcmp() could
-not be used anymore and even if all optimizations could be reimplemented
-a natural sort order will never be as fast, because it needs a state
-machine and generates more cache misses because of that.
 
-POSIX compatibility has been improved. Now the HOME environment variable
-will be used. The old behaviour using USER is still available as
+2.) Slower comparison is the main issue. Elektra heavily depends on
+comparing keys. It is needed for inserting, lookups and other KeySet
+operations.
+Currently comparison is done by strcmp() which is highly optimized on
+most platforms. When numbers need some special handling, strcmp() could
+not be used anymore.
+
+POSIX compatibility and handling of multi-process conflicts has
+been improved. Now the HOME environment variable will be used. The
+old behaviour (USER environment variable) is still available as
 fallback. Additionally there is a fallback for embedded systems to the
-hardcoded variant. In both fallbacks a warning will be added.
+hardcoded variant. In case of these fallbacks a warning will be added.
 
 A new plugin uname was added. It allows you to mount the functionality
-of uname within Elektra's key/value namespace. (Currently read-only and
-POSIX-only)
+of uname within Elektra's key/value namespace. Currently it is read-only
+and needs POSIX.
 
 The built-in description of plugins, especially for new plugins, was
-extended by a great deal. It is now also possible to just output the
-description by using
+extended and improved. It is now also possible to output the description
+by:
  kdb info <plugin> description
 e.g.
  kdb info yajl description
 
 Two new kdb commands were added:
-kdb file allows you to print out the configuration file where a given key is located.
-kdb sget guarantees you to get a value which is handy in shell scripts.
+ kdb file
+allows you to print out the configuration file where a given key is located.
+
+ kdb sget
+guarantees you to get a value which is handy in shell scripts.
 
 
-Now a large test suite makes sure that working with the kdb tool is
-without troubles. Many bugs, especially concerning resolver and
-mounting, were fixed. The list is way too long to put it here,
-see git log for details.
+Now a large test suite makes sure that the kdb tool works without
+troubles. Many bugs, especially concerning resolver and mounting, were
+fixed. The list is way too long to put it here, see git log for details.
+
 
 The build server now has a job searching for TODOs:
  http://build.libelektra.org:8080/job/elektra-todo/
 
+The latest documentation from git master is also build there and the
+results are published here:
+ http://doc.libelektra.org/api/latest/html
+
+The current release is always documented at:
+ http://doc.libelektra.org/api/current/html
 
 
-
-
-The latest documentation from git master is now build on
-http://doc.libelektra.org/api/latest/html
-
-Note that this documentation describes a version
-not yet published, so it might describe features
-not available in the current release.
-
-The current release is documented at
-http://doc.libelektra.org/api/current/html/pages.html
 
 
 ---------------
@@ -222,7 +216,7 @@ two fixes.
 
 The test framework now has built-in support for comparing keysets and
 keys together with its metadata. Because of usage of macros the
-linenumber will be stated correctly for comparision.
+linenumber will be stated correctly for comparison.
 
 Additionally also a script test framework was started.
 
