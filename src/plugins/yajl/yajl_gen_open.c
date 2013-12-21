@@ -309,9 +309,9 @@ static void elektraGenOpenFirst(yajl_gen g,
 		const char *next,
 		size_t nextSize)
 {
-#ifdef ELEKTRA_YAJL_VERBOSE
 	lookahead_t lookahead =
 		elektraLookahead(next, nextSize);
+#ifdef ELEKTRA_YAJL_VERBOSE
 	printf("elektraGenOpenFirst cur: \"%s\" next: \"%s\", lookahead: %d\n",
 			cur,
 			next,
