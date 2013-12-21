@@ -24,7 +24,7 @@ public:
 
 	virtual std::string getShortHelpText()
 	{
-		return "Export configuration from the key database.";
+		return "Import configuration to the key database.";
 	}
 
 	virtual std::string getLongHelpText()
