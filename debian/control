@@ -7,7 +7,8 @@ Build-Depends: debhelper (>= 8),
  doxygen,
  libboost-dev,
  cmake,
- libdbus-1-dev
+ libdbus-1-dev,
+ libyajl-dev
 Standards-Version: 3.9.1
 Homepage: http://www.libelektra.org
 Vcs-Browser: http://gitorious.org/elektra-initiative/libelektra/commits/debian
