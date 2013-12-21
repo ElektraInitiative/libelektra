@@ -42,7 +42,7 @@ ksNew (50,
 "\n"
 "\n"
 "We have an optimistic approach. Locking is only used to detect\n"
-"concurrent cooperative processes in the short moment between prepare and commit.\m"
+"concurrent cooperative processes in the short moment between prepare and commit.\n"
 "A conflict will be raised in that situation.\n"
 "When processes do not lock the file it might be overwritten.\n"
 "This is unavoidable because\n"
