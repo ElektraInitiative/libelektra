@@ -181,6 +181,12 @@ Checkers:
 	check if hosts are reachable (/etc/hosts)
 
 
+== HOSTS ==
+
+does not fully support ipv6
+canonical_name is not canonical anymore
+(solve by having ipv4 and ipv6 subhierarchies?)
+
 
 === RESOLVER ===
 

@@ -6,15 +6,11 @@ Items are e.g. BUGS, OPTIMIZE, PROBLEMS, TESTING, PLUGINS, TODO,..
 
 == 0.8.4 ==
 
-testing framework: allow to disable hdd access for test cases
-	ENABLE_KDB_TESTING
-
-
 === bugs ===
 
 storage inconsistency on empty keys: (see check_get_set)
-	json elektraYajlGenEmpty
-	plugins
+
+tcl fails on empty set
 
 warning in resolver aborts execution? (uname plugin)
 
@@ -34,10 +30,6 @@ debian:
 
 multiple mounts
 nested mounts
-
-documentation:
-	comment -> meta data
-	split real meta data functions + kdbhelpers
 
 jenkins:
 	upgrade
