@@ -18,7 +18,8 @@ static void elektraGenCloseLast(yajl_gen g, const Key *key)
 			(int)last.size, last.current);
 #endif
 
-	if (last.current[0] == '#')
+	if (last.current[0] == '#' && strcmp(last.current,
+				"###empty_array"))
 	{
 #ifdef ELEKTRA_YAJL_VERBOSE
 		printf("GEN array close last\n");
@@ -359,17 +360,7 @@ void elektraGenCloseFinally(yajl_gen g, const Key *cur, const Key *next)
 #endif
 	// fixes elektraGenCloseIterate for the special handling of
 	// arrays finally
-	keyNameReverseIterator last =
-		elektraKeyNameGetReverseIterator(cur);
-	elektraKeyNameReverseNext(&last);
-
-	if (last.current[0] == '#')
-	{
-#ifdef ELEKTRA_YAJL_VERBOSE
-		printf("GEN array close (finally)\n");
-#endif
-		yajl_gen_array_close(g);
-	}
+	elektraGenCloseLast(g, cur);
 
 	// now we iterate over the middle part
 	elektraGenCloseIterate(g, cur, levels);
