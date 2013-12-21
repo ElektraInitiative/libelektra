@@ -7,9 +7,6 @@ Build-Depends: debhelper (>= 8),
  doxygen,
  libboost-dev,
  cmake,
- texlive-latex-extra,
- texlive-latex-recommended,
- texlive-fonts-recommended,
  libdbus-1-dev
 Standards-Version: 3.9.1
 Homepage: http://www.libelektra.org
