@@ -127,7 +127,8 @@ BEGIN_TEST(values)
    TEST_COND(ivalue == 1);
 
    double fvalue = Ni_GetValueFloat(child);
-   TEST_COND(fvalue == 1.0);
+   TEST_COND(fvalue <= 1.01);
+   TEST_COND(fvalue >= 0.99);
 
    int bvalue = Ni_GetValueBool(child);
    TEST_COND(bvalue != 0);
@@ -149,7 +150,8 @@ BEGIN_TEST(values)
    TEST_COND(ivalue == 3);
 
    fvalue = Ni_GetValueFloat(child);
-   TEST_COND(fvalue == 3.333);
+   TEST_COND(fvalue >= 3.332);
+   TEST_COND(fvalue <= 3.334);
 
    bvalue = Ni_GetValueBool(child);
    TEST_COND(bvalue != 0);
@@ -157,7 +159,8 @@ BEGIN_TEST(values)
    float scanned_fvalue;
    len = Ni_ValueScan(child, "%f", &scanned_fvalue);
    TEST_COND(len == 1);
-   TEST_COND(scanned_fvalue == 3.333f);
+   TEST_COND(scanned_fvalue >= 3.332f);
+   TEST_COND(scanned_fvalue <= 3.334f);
 
    len = Ni_SetValueInt(child, 23);
    assert(len >= 0);
@@ -199,16 +202,6 @@ BEGIN_TEST(values)
 END_TEST()
 
 BEGIN_TEST(parse_spaces_quotes)
-   char * names[24] =
-   {
-      "a", "b", "c", "d", "e ", "f", " g", "h", "i", "j", "k", "l",
-      "m", "n ", "o", " p", "q", "r", "s", "t", "u ", "v", " w", "x"
-   };
-   char * values[24] =
-   {
-      "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12",
-      "13", "14", "15", "16", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
-   };
 
    Ni_node node = Ni_New();
    assert(node != NULL);
@@ -399,7 +392,7 @@ BEGIN_TEST(parse_output)
    Ni_node node = Ni_New();
    assert(node != NULL);
 
-   int i;
+   size_t i;
    for(i = 0; i < NUM_parse_output_NODES; ++i)
    {
       Ni_node child = Ni_GetChild(node, names[i], -1, 1, NULL);
@@ -446,7 +439,7 @@ BEGIN_TEST(parse_output)
 #  undef NUM_parse_output_NODES
 END_TEST()
 
-int main(int argc, char** argv)
+int main()
 {
 	printf("NICKEL TESTS\n");
 	printf("==================\n\n");

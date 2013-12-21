@@ -7,7 +7,6 @@
 class ImportCommand : public Command
 {
 	kdb::KDB kdb;
-	kdb::KeySet ks;
 
 public:
 	ImportCommand();
@@ -15,7 +14,7 @@ public:
 
 	virtual std::string getShortOptions()
 	{
-		return "s";
+		return "sv";
 	}
 
 	virtual std::string getSynopsis()
@@ -25,7 +24,7 @@ public:
 
 	virtual std::string getShortHelpText()
 	{
-		return "Export configuration from the key database.";
+		return "Import configuration to the key database.";
 	}
 
 	virtual std::string getLongHelpText()

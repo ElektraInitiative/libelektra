@@ -1,78 +1,12 @@
-== 0.8.3 ==
-
-write release notes
-announce
-
-fix debian_packaging and todo/RELEASE
-
-
-build_server:
+Add items here which should be implemented within the next release.
+Release often, so keep this list very short.
+During implementation phase no new items may be added here (only
+those which are necessary to fulfil the initial tasks)
+Items are e.g. BUGS, OPTIMIZE, PROBLEMS, TESTING, PLUGINS, TODO,..
 
 == 0.8.4 ==
 
-abi tests:
-
-documentation:
-	comment -> meta data
-	split real meta data functions + kdbhelpers
-
-import/export:
-	with all plugins
-	with automated kdb tests
-
-kdb testcases:
-	for get/set
-	for mount/umount
-	for import/export/convert
-	using chroot
-
-unit tests:
-	debian package with unit tests
-	install old unit tests with new elektra for ABI tests
-
-kdb-shell:
-	use import/export
-	automatic tests for functionality
-	Examples in --help
-
-kdb tool:
-	request -f for rm, mv in system/elektra
-	converting of config files (automated tests)
-	test mount/unmount
-
-tcl:
-	parse output?
-	struct output!
-
-documentation of the c++ binding
-	with copydoc
-	include files
-	mark functions which are API/ABI stable (kdb.h)
-
-git-buildpackage
-	should work before release
-
-release:
-	ohloh statistics
-	Preparation
-	Cleanup
-	Source Package
-	Documentation
-	Debian Package
-	Publish
-
-api:
-	add examples
-	add tutorial
-
-chroot:
-	add -c --chroot option for all plugins
-
-kdb tool:
-	allow verification of local key database by exported file
-	tset (typesafe set)
-
-c++:
-	Keyset operator==
-	exceptions defined outside
-
+debian:
+	enable (fix) tests
+	add examples as package
+	enable all plugins (struct, type, validation!!!)

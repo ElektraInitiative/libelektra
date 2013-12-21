@@ -1,0 +1,63 @@
+= KDB =
+
+list existing plugins
+	which are available? (src/plugins)
+	which are installed
+	kdb pls
+	(workaround: use ls /usr/lib/elektra)
+
+kdb-shell:
+	use import/export
+	automatic tests for functionality
+	Examples in --help
+
+kdb tool:
+	request -f for rm, mv in system/elektra
+
+kdb resolve feature:
+	output file how it would resolve for key
+
+kdb tool:
+	allow verification of local key database by exported file
+	tset (typesafe set)
+
+env-get env-set `kdb env-get`
+
+kdb-file/resolver (give file given key name)
+
+kdb-edit edit file in any of Elektra's format
+
+
+install config (mount+preload system config) by using meta struct
+
+
+== CODE ==
+
+duplicated code for printError() and printWarnings()
+(binding+kdb tool)
+use error value as exit (does it start with 0?)
+printError usw. Nicht von makro abhängig machen?
+
+
+== DBUS ==
+
+Daemon which exports whole elektra configuration
+(dbus bridge, first of so called bridges, other ideas: ldap, snmp)
+
+
+= other stuff =
+
+uninstall:
+	let user find configuration of uninstalled software
+upgrade
+
+web2.0:
+	share elektra xml files
+	web frontent to kdb with xml/generate output/paste
+
+
+== docu ==
+
+git-<command> like functionality
+ascii doc
+man pages

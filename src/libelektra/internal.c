@@ -15,12 +15,11 @@
 
 
 /**
- * @defgroup internal KDB Backends :: Internal Helper for Elektra
- * @brief Internal Methods for Elektra and Backends.
+ * @brief Internal Methods for Elektra
  *
  * To use them:
  * @code
- * #include <kdbbackend.h>
+ * #include <kdbinternal.h>
  * @endcode
  *
  * There are some areas where libraries have to reimplement

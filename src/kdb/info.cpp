@@ -17,29 +17,61 @@ InfoCommand::InfoCommand()
 
 int InfoCommand::execute(Cmdline const& cl)
 {
-	if (cl.arguments.size() != 1)
+	std::string subkey;
+	if (cl.arguments.size() == 1)
 	{
-		throw invalid_argument("Need 1 argument");
+	}
+	else if (cl.arguments.size() == 2)
+	{
+		subkey = cl.arguments[1];
+	}
+	else
+	{
+		throw invalid_argument("Need 1 or 2 argument(s)");
 	}
 	std::string name = cl.arguments[0];
 
 	KeySet conf;
 	Key parentKey(std::string("system/elektra/modules/") + name, KEY_END);
 
-	kdb.get(conf, parentKey);
+	if (!cl.load)
+	{
+
+		kdb.get(conf, parentKey);
+	}
 
 	if (!conf.lookup(parentKey))
 	{
-		cerr << "Module does not seem to be loaded." << endl;
-		cerr << "Now in fallback code. Will directly load config from plugin." << endl;
+		if (!cl.load)
+		{
+			cerr << "Module does not seem to be loaded." << endl;
+			cerr << "Now in fallback code. Will directly load config from plugin." << endl;
+		}
 
 		Modules modules;
 		std::auto_ptr<Plugin> plugin = modules.load(name);
-		// TODO: memory leak??
 		conf.append(plugin->getInfo());
 	}
 
 	Key root (std::string("system/elektra/modules/") + name + "/exports", KEY_END);
+
+	if (!subkey.empty())
+	{
+		root.setName(std::string("system/elektra/modules/") + name + "/infos/" + subkey);
+		Key k = conf.lookup (root);
+		if (k)
+		{
+			cout << k.getString() << std::endl;
+			return 0;
+		}
+		else
+		{
+			cerr << "clause not found" << std::endl;
+			return 1;
+		}
+	}
+
+	root.setName(std::string("system/elektra/modules/") + name + "/exports");
 	Key k = conf.lookup (root);
 
 	if (k)
@@ -47,7 +79,7 @@ int InfoCommand::execute(Cmdline const& cl)
 		cout << "Exported symbols: ";
 		while ((k = conf.next()) && k.getDirName() == root.getName())
 		{
-			cout << k.baseName() << " ";
+			cout << k.getBaseName() << " ";
 		}
 		cout << endl;
 	}
@@ -60,7 +92,7 @@ int InfoCommand::execute(Cmdline const& cl)
 	{
 		while ((k = conf.next()) && k.getDirName() == root.getName())
 		{
-			cout << k.baseName() << ": " << k.getString() << endl;
+			cout << k.getBaseName() << ": " << k.getString() << endl;
 		}
 	} else cout << "no information found" << endl;
 

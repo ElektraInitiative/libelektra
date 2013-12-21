@@ -16,7 +16,7 @@
 
 
 /**
- * @defgroup kdb KDB :: Low Level Methods
+ * @defgroup kdb KDB
  * @brief General methods to access the Key database.
  *
  * To use them:
@@ -62,6 +62,8 @@
  * - Many methods are just for comfort in C. These methods are marked
  *   and need not to be implemented if the binding language has e.g. string
  *   operators which can do the operation easily.
+ *
+ * @{
  */
 
 
@@ -101,7 +103,7 @@
 
 
 /**
- * Opens the session with the Key database.
+ * @brief Opens the session with the Key database.
  *
  * The first step is to open the default backend. With it
  * system/elektra/mountpoints will be loaded and all needed
@@ -121,13 +123,15 @@
  * Get a @p KDB handle for every thread using elektra. Don't share the
  * handle across threads, and also not the pointer accessing it:
  * @code
-thread1 {
+thread1
+{
 	KDB * h;
 	h = kdbOpen(0);
 	// fetch keys and work with them
 	kdbClose(h, 0);
 }
-thread2 {
+thread2
+{
 	KDB * h;
 	h = kdbOpen(0);
 	// fetch keys and work with them
@@ -155,16 +159,17 @@ KDB * kdbOpen(Key *errorKey)
 	handle = elektraCalloc(sizeof(struct _KDB));
 
 	handle->modules = ksNew(0);
-	if (elektraModulesInit(handle->modules, errorKey) == -1)
+	if(elektraModulesInit(handle->modules, errorKey) == -1)
 	{
 		return 0;
 	}
 
-	/* Open default backend */
-	handle->defaultBackend=elektraBackendOpenDefault (handle->modules, errorKey);
-	if (!handle->defaultBackend)
+	handle->defaultBackend=elektraBackendOpenDefault(handle->modules,
+			errorKey);
+	if(!handle->defaultBackend)
 	{
-		ELEKTRA_SET_ERROR(40, errorKey, "could not open default backend");
+		ELEKTRA_SET_ERROR(40, errorKey,
+				"could not open default backend");
 		return 0;
 	}
 
@@ -172,19 +177,24 @@ KDB * kdbOpen(Key *errorKey)
 	elektraSplitAppend (handle->split, handle->defaultBackend,
 			keyNew (KDB_KEY_MOUNTPOINTS, KEY_END), 2);
 
-	/* get mount config from root backend */
 	keys=ksNew(0);
 
+	Key *initialParent = keyDup (errorKey);
 	keySetName(errorKey, KDB_KEY_MOUNTPOINTS);
 
 	if (kdbGet(handle, keys, errorKey) == -1)
 	{
-		ELEKTRA_ADD_WARNING(17, errorKey, "kdbGet() failed");
+		ELEKTRA_ADD_WARNING(17, errorKey,
+				"kdbGet() of " KDB_KEY_MOUNTPOINTS
+				" failed");
+		keySetName(errorKey, keyName(initialParent));
+		keyDel(initialParent);
 		return handle;
 	}
+	keySetName(errorKey, keyName(initialParent));
 
-	elektraBackendClose (handle->defaultBackend, errorKey);
-	elektraSplitDel (handle->split);
+	elektraBackendClose(handle->defaultBackend, errorKey);
+	elektraSplitDel(handle->split);
 	handle->defaultBackend = 0;
 	handle->trie = 0;
 
@@ -194,32 +204,35 @@ KDB * kdbOpen(Key *errorKey)
 	ksRewind(keys);
 	for (key=ksNext(keys);key;key=ksNext(keys))
 	{
-		printf("config for createTrie name: %s value: %s\n",keyName(key), keyString(key));
+		printf("config for createTrie name: %s value: %s\n",
+				keyName(key), keyString(key));
 	}
 #endif
 
 	handle->split = elektraSplitNew();
 
-	/* Open the trie, keys will be deleted within elektraMountOpen */
+	// Open the trie, keys will be deleted within elektraMountOpen
 	if (elektraMountOpen(handle, keys, handle->modules, errorKey) == -1)
 	{
-		/* Initial loading of trie did not work */
+		// Initial loading of trie did not work
 	}
 
-	if (elektraMountDefault (handle, handle->modules, errorKey) == -1)
+	if (elektraMountDefault(handle, handle->modules, errorKey) == -1)
 	{
-		/* Could not reopen default backend */
-		ELEKTRA_SET_ERROR(40, errorKey, "could not reopen default backend");
+		ELEKTRA_SET_ERROR(40, errorKey,
+				"could not reopen default backend");
+		keyDel (initialParent);
 		return 0;
 	}
 
-	if (elektraMountModules (handle, handle->modules, errorKey) == -1)
+	if (elektraMountModules(handle, handle->modules, errorKey) == -1)
 	{
-		/* Mounting modules did not work */
+		// Mounting modules did not work
 	}
 
 	elektraMountVersion (handle, errorKey);
 
+	keyDel (initialParent);
 	return handle;
 }
 
@@ -239,7 +252,8 @@ KDB * kdbOpen(Key *errorKey)
  * unless it gets initialized again with another call to kdbOpen().
  *
  * @see kdbOpen()
- * @param handle contains internal information of @link kdbOpen() opened @endlink key database
+ * @param handle contains internal information of
+ *               @link kdbOpen() opened @endlink key database
  * @param errorKey the key which holds error information
  * @return 0 on success
  * @return -1 on NULL pointer
@@ -262,8 +276,11 @@ int kdbClose(KDB *handle, Key *errorKey)
 	{
 		elektraModulesClose (handle->modules, errorKey);
 		ksDel (handle->modules);
-	} else {
-		ELEKTRA_ADD_WARNING (47, errorKey, "modules were not open");
+	}
+	else
+	{
+		ELEKTRA_ADD_WARNING(47, errorKey,
+				"modules were not open");
 	}
 
 	elektraFree(handle);
@@ -271,10 +288,91 @@ int kdbClose(KDB *handle, Key *errorKey)
 	return 0;
 }
 
+/**
+ * @brief Check if an update is needed at all
+ *
+ * @retval -1 an error occurred
+ * @retval 0 no update needed
+ * @retval number of plugins which need update
+ */
+static int elektraGetCheckUpdateNeeded(Split *split, Key *parentKey)
+{
+	int updateNeededOccurred = 0;
+	for (size_t i=0; i<split->size;i++)
+	{
+		int ret = 0;
+		Backend *backend = split->handles[i];
+
+		if (backend->getplugins[0])
+		{
+			ksRewind(split->keysets[i]);
+			keySetName(parentKey,
+					keyName(split->parents[i]));
+			ret = backend->getplugins[0]->kdbGet (
+					backend->getplugins[0],
+					split->keysets[i],
+					parentKey);
+			// store resolved filename
+			keySetString(split->parents[i],
+					keyString(parentKey));
+		}
+		if (ret == -1)
+		{
+			// Ohh, an error occurred, lets stop the
+			// process.
+			return -1;
+		}
+		if (ret == 1)
+		{
+			/* Seems like we need to sync that */
+			split->syncbits[i] |= 1;
+			++ updateNeededOccurred;
+		}
+	}
+	return updateNeededOccurred;
+}
 
 /**
- * Retrieve keys in an atomic and universal way, all other kdbGet Functions
- * rely on that one.
+ * @brief Do the real update.
+ *
+ * @retval -1 on error
+ * @retval 0 on success
+ */
+static int elektraGetDoUpdate(Split *split, Key *parentKey)
+{
+	for (size_t i=0; i<split->size-1;i++)
+	{
+		Backend *backend = split->handles[i];
+		ksRewind (split->keysets[i]);
+		keySetName (parentKey, keyName(split->parents[i]));
+		keySetString(parentKey,
+				keyString(split->parents[i]));
+
+		for (size_t p=1; p<NR_OF_PLUGINS; ++p)
+		{
+			int ret = 0;
+			if (backend->getplugins[p])
+			{
+				ret = backend->getplugins[p]->kdbGet(
+						backend->getplugins[p],
+						split->keysets[i],
+						parentKey);
+			}
+			if (ret == -1)
+			{
+				// Ohh, an error occurred,
+				// lets stop the process.
+				return -1;
+			}
+		}
+	}
+	return 0;
+}
+
+
+/**
+ * @brief Retrieve keys in an atomic and universal way, all other
+ * kdbGet() Functions rely on that one.
  *
  * The @p returned KeySet must be initialized.
  * The @p returned KeySet may already contain some
@@ -339,7 +437,8 @@ kdbClose(handle, 0); // no more affairs with the key database.
  * using kdbOpen().
  *
  * @param handle contains internal information of @link kdbOpen() opened @endlink key database
- * @param parentKey parent key - invalid name gets all keys
+ * @param parentKey parent key holds the information which keys should
+ * 	be get - invalid name gets all keys
  * @param ks the (pre-initialized) KeySet returned with all keys found
  * 	will not be changed on error or if no update is required
  * @see ksLookupByName() for powerful
@@ -348,9 +447,8 @@ kdbClose(handle, 0); // no more affairs with the key database.
  * @return 0 if there was no update - no changes are made to the keyset then
  * @return -1 on failure - no changes are made to the keyset then
  * @ingroup kdb
- *
  */
-int kdbGet (KDB *handle, KeySet *ks, Key *parentKey)
+int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 {
 	if (!parentKey)
 	{
@@ -358,63 +456,40 @@ int kdbGet (KDB *handle, KeySet *ks, Key *parentKey)
 	}
 
 #if DEBUG && VERBOSE
-	fprintf (stderr, "now in new kdbGet (%s)\n", keyName(parentKey));
+	fprintf (stderr, "now in new kdbGet (%s)\n",
+			keyName(parentKey));
 #endif
 
-	int ret = 0;
-	int updateNeededOccurred = 0;
 	Split *split = elektraSplitNew();
+
 	Key *initialParent = keyDup (parentKey);
 
-	if (!handle || !ks)
+	if(!handle || !ks)
 	{
-		ELEKTRA_SET_ERROR (37, parentKey, "handle or ks null pointer");
+		ELEKTRA_SET_ERROR(37, parentKey,
+				"handle or ks null pointer");
 		goto error;
 	}
 
-	if (elektraSplitBuildup (split, handle, parentKey) == -1)
+	if(elektraSplitBuildup (split, handle, parentKey) == -1)
 	{
-		ELEKTRA_SET_ERROR (38, parentKey, "error in elektraSplitBuildup");
+		ELEKTRA_SET_ERROR(38, parentKey,
+				"error in elektraSplitBuildup");
 		goto error;
 	}
 
-	/* Check if a update is needed at all */
-	for (size_t i=0; i<split->size;i++)
+	// Check if a update is needed at all
+	switch(elektraGetCheckUpdateNeeded(split, parentKey))
 	{
-		Backend *backend = split->handles[i];
-
-		if (backend->getplugins[0])
-		{
-			ksRewind (split->keysets[i]);
-			keySetName (parentKey, keyName(split->parents[i]));
-			ret = backend->getplugins[0]->kdbGet (
-					backend->getplugins[0],
-					split->keysets[i],
-					parentKey);
-		}
-		if (ret == -1)
-		{
-			/* Ohh, an error occurred, lets stop the process. */
-			goto error;
-		}
-		if (ret == 1)
-		{
-			/* Seems like we need to sync that */
-			split->syncbits[i] |= 1;
-			++ updateNeededOccurred;
-		}
-	}
-
-	if (!updateNeededOccurred)
-	{
-		/* We dont need an update so lets do nothing */
+	case 0: // We dont need an update so lets do nothing
 		keySetName (parentKey, keyName(initialParent));
 		keyDel (initialParent);
 		elektraSplitDel (split);
 		return 0;
+	case -1: goto error;
 	}
 
-	if (elektraSplitAppoint (split, handle, ks) == -1)
+	if(elektraSplitAppoint (split, handle, ks) == -1)
 	{
 		ELEKTRA_SET_ERROR (38, parentKey, "error in elektraSplitAppoint");
 		goto error;
@@ -422,31 +497,13 @@ int kdbGet (KDB *handle, KeySet *ks, Key *parentKey)
 
 	/* Now do the real updating,
 	  but not for bypassed keys in split->size-1 */
-	for (size_t i=0; i<split->size-1;i++)
+	if(elektraGetDoUpdate(split, parentKey) == -1)
 	{
-		Backend *backend = split->handles[i];
-		ksRewind (split->keysets[i]);
-		keySetName (parentKey, keyName(split->parents[i]));
-
-		for (size_t p=1; p<NR_OF_PLUGINS; ++p)
-		{
-			if (backend->getplugins[p])
-			{
-				ret = backend->getplugins[p]->kdbGet (
-						backend->getplugins[p],
-						split->keysets[i],
-						parentKey);
-			}
-			if (ret == -1)
-			{
-				/* Ohh, an error occurred, lets stop the process. */
-				goto error;
-			}
-		}
+		goto error;
 	}
 
 	/* Now postprocess the updated keysets */
-	if (elektraSplitGet (split, handle) == -1)
+	if (elektraSplitGet (split, parentKey, handle) == -1)
 	{
 		ELEKTRA_SET_ERROR(8, parentKey, keyName(ksCurrent(ks)));
 		goto error;
@@ -468,6 +525,135 @@ error:
 	return -1;
 }
 
+/**
+ * @brief Does all set steps but not commit
+ *
+ * @param split all information for iteration
+ * @param parentKey to add warnings (also passed to plugins for the same reason)
+ * @param [out] errorKey may point to which key caused the error or 0 otherwise
+ *
+ * @retval -1 on error
+ * @retval 0 on success
+ */
+static int elektraSetPrepare(Split *split, Key *parentKey, Key **errorKey)
+{
+	int any_error = 0;
+	for(size_t p=0; p<COMMIT_PLUGIN; ++p)
+	{
+		for(size_t i=0; i<split->size;i++)
+		{
+			int ret = 0; // last return value
+
+			Backend *backend = split->handles[i];
+			ksRewind (split->keysets[i]);
+			if(backend->setplugins[p])
+			{
+				if(p != 0)
+				{
+					keySetString (parentKey,
+						keyString(split->parents[i]));
+				}
+				keySetName (parentKey,
+					keyName(split->parents[i]));
+				ret = backend->setplugins[p]->kdbSet (
+						backend->setplugins[p],
+						split->keysets[i],
+						parentKey);
+				if(p == 0)
+				{
+					keySetString (split->parents[i],
+						keyString(parentKey));
+				}
+			}
+			if (ret == -1)
+			{
+				// do not
+				// abort because it might
+				// corrupt the KeySet
+				// and leads to warnings
+				// because of .tmp files not
+				// found
+				*errorKey =
+					ksCurrent(split->keysets[i]);
+
+				// so better keep going, but of
+				// course we will not commit
+				any_error = -1;
+			}
+		}
+	}
+	return any_error;
+}
+
+/**
+ * @brief Does the commit
+ *
+ * @param split all information for iteration
+ * @param parentKey to add warnings (also passed to plugins for the same reason)
+ */
+static void elektraSetCommit(Split *split, Key *parentKey)
+{
+	for(size_t p=COMMIT_PLUGIN; p<NR_OF_PLUGINS; ++p)
+	{
+		for(size_t i=0; i<split->size;i++)
+		{
+			int ret = 0;
+			Backend *backend = split->handles[i];
+
+			ksRewind (split->keysets[i]);
+			if(backend->setplugins[p])
+			{
+				keySetString(parentKey,
+					keyString(split->parents[i]));
+				keySetName(parentKey, keyName(split->parents[i]));
+				ret = backend->setplugins[p]->kdbSet (
+						backend->setplugins[p],
+						split->keysets[i],
+						parentKey);
+			}
+
+			if (ret == -1)
+			{
+				ELEKTRA_ADD_WARNING(80, parentKey,
+						keyName(backend->mountpoint));
+			}
+		}
+	}
+}
+
+/**
+ * @brief Does the rollback
+ *
+ * @param split all information for iteration
+ * @param parentKey to add warnings (also passed to plugins for the same reason)
+ */
+static void elektraSetRollback(Split *split, Key *parentKey)
+{
+	for(size_t p=0; p<NR_OF_PLUGINS; ++p)
+	{
+		for(size_t i=0; i<split->size; i++)
+		{
+			int ret = 0;
+			Backend *backend = split->handles[i];
+
+			ksRewind (split->keysets[i]);
+			if(backend->errorplugins[p])
+			{
+				keySetName (parentKey, keyName(split->parents[i]));
+				ret = backend->errorplugins[p]->kdbError (
+						backend->errorplugins[p],
+						split->keysets[i],
+						parentKey);
+			}
+
+			if(ret == -1)
+			{
+				ELEKTRA_ADD_WARNING(81, parentKey,
+						keyName(backend->mountpoint));
+			}
+		}
+	}
+}
 
 
 /**
@@ -554,41 +740,41 @@ for (i=0; i< NR_OF_TRIES; i++) // limit to NR_OF_TRIES tries
  * @see keyNeedSync(), ksNext(), ksCurrent()
  * @ingroup kdb
  */
-int kdbSet (KDB *handle, KeySet *ks, Key * parentKey)
+int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 {
-	if (!parentKey)
+	if(!parentKey)
 	{
 		return -1;
 	}
 
 #if DEBUG && VERBOSE
-	fprintf (stderr, "now in new kdbSet (%s)\n", keyName(parentKey));
+	fprintf(stderr, "now in new kdbSet (%s)\n", keyName(parentKey));
 #endif
 
-	if (!handle || !ks)
+	if(!handle || !ks)
 	{
 		ELEKTRA_SET_ERROR (37, parentKey, "handle or ks null pointer");
 		return -1;
 	}
 
 	Split *split = elektraSplitNew();
-	Key *initialParent = keyDup (parentKey);
+	Key *initialParent = keyDup(parentKey);
 	Key *errorKey = 0;
 
 
-	if (elektraSplitBuildup (split, handle, parentKey) == -1)
+	if(elektraSplitBuildup(split, handle, parentKey) == -1)
 	{
-		ELEKTRA_SET_ERROR (38, parentKey, "error in elektraSplitBuildup");
+		ELEKTRA_SET_ERROR(38, parentKey, "error in elektraSplitBuildup");
 		goto error;
 	}
 
-	if (elektraSplitDivide (split, handle, ks) == -1)
+	if(elektraSplitDivide(split, handle, ks) == -1)
 	{
 		ELEKTRA_SET_ERROR(8, parentKey, keyName(ksCurrent(ks)));
 		goto error;
 	}
 
-	if (elektraSplitSync (split) == 0)
+	if(elektraSplitSync(split) == 0)
 	{
 		/* No update is needed */
 		keySetName (parentKey, keyName(initialParent));
@@ -597,75 +783,43 @@ int kdbSet (KDB *handle, KeySet *ks, Key * parentKey)
 		return 0;
 	}
 
-	elektraSplitPrepare (split);
+	elektraSplitPrepare(split);
 
-	int ret = 0;
-	int errorOccurred = 0;
-
-	for (size_t p=0; p<NR_OF_PLUGINS; ++p)
+	if (elektraSetPrepare(split, parentKey, &errorKey) == -1)
 	{
-		for (size_t i=0; i<split->size;i++)
-		{
-			Backend *backend = split->handles[i];
-			ksRewind (split->keysets[i]);
-			if (backend->setplugins[p])
-			{
-				if (p != 0) keySetString (parentKey, keyString(split->parents[i]));
-				keySetName (parentKey, keyName(split->parents[i]));
-				ret = backend->setplugins[p]->kdbSet (
-						backend->setplugins[p],
-						split->keysets[i],
-						parentKey);
-				if (p == 0) keySetString (split->parents[i], keyString(parentKey));
-			}
-			if (ret == -1)
-			{
-				errorKey = ksCurrent (split->keysets[i]);
-				++ errorOccurred;
-			}
-		}
-		/* If we have not commited yet, stop processing.
-		   After committing ignore errors. */
-		if (p <= COMMIT_PLUGIN && errorOccurred > 0)
-		{
-			goto error;
-		} /* else {
-			 TODO make error to warning?
-		} */
+		goto error;
 	}
 
-	elektraSplitUpdateSize (split);
+	elektraSetCommit(split, parentKey);
 
-	keySetName (parentKey, keyName(initialParent));
-	keyDel (initialParent);
+	elektraSplitUpdateSize(split);
+
+	keySetName(parentKey, keyName(initialParent));
+	keyDel(initialParent);
 	elektraSplitDel(split);
 	for (size_t i=0; i<ks->size; ++i) ks->array[i]->flags = 0;
 
 	return 1;
 
 error:
-	for (size_t p=0; p<NR_OF_PLUGINS; ++p)
+	elektraSetRollback(split, parentKey);
+
+	if(errorKey)
 	{
-		for (size_t i=0; i<split->size; i++)
+		Key *found = ksLookup(ks, errorKey, 0);
+		if (!found)
 		{
-			Backend *backend = split->handles[i];
-			ksRewind (split->keysets[i]);
-			if (backend->errorplugins[p])
-			{
-				keySetName (parentKey, keyName(split->parents[i]));
-				ret = backend->errorplugins[p]->kdbError (
-						backend->errorplugins[p],
-						split->keysets[i],
-						parentKey);
-			}
+			ELEKTRA_ADD_WARNING(82, parentKey,
+					keyName(errorKey));
 		}
 	}
 
-	if (errorKey) ksLookup(ks, errorKey, KDB_O_WITHOWNER);
-
-	keySetName (parentKey, keyName(initialParent));
-	keyDel (initialParent);
+	keySetName(parentKey, keyName(initialParent));
+	keyDel(initialParent);
 	elektraSplitDel(split);
 	return -1;
 }
 
+/**
+ * @}
+ */

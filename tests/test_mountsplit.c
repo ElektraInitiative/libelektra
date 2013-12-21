@@ -102,8 +102,8 @@ void test_minimaltrie()
 	KeySet *modules = modules_config();
 	succeed_if (elektraMountOpen(kdb, minimal_config(), modules, errorKey) == 0, "could not open minimal config");
 
-	output_warnings (errorKey);
-	output_errors (errorKey);
+	succeed_if(output_warnings (errorKey), "warnings found");
+	succeed_if(output_error (errorKey), "error found");
 
 	succeed_if (!kdb->trie, "minimal trie is null");
 	succeed_if (kdb->split->size == 0, "minimal trie has size 0");
@@ -136,8 +136,8 @@ void test_simple()
 	succeed_if (kdb->split->size == 1, "size of split not correct");
 	compare_key(mp, kdb->split->parents[0]);
 
-	output_warnings (errorKey);
-	output_errors (errorKey);
+	succeed_if(output_warnings (errorKey), "warnings found");
+	succeed_if(output_error (errorKey), "error found");
 
 	exit_if_fail (kdb->trie, "kdb->trie was not build up successfully");
 
@@ -265,8 +265,8 @@ void test_cascading()
 	succeed_if (elektraMountOpen(kdb, cascading_config(), modules, errorKey) == 0, "could not open trie");
 	succeed_if (elektraMountDefault(kdb, modules, errorKey) == 0, "could not mount default backend");
 
-	output_warnings (errorKey);
-	output_errors (errorKey);
+	succeed_if(output_warnings (errorKey), "warnings found");
+	succeed_if(output_error (errorKey), "error found");
 
 	exit_if_fail (kdb->trie, "kdb->trie was not build up successfully");
 
@@ -359,8 +359,8 @@ void test_root()
 	KeySet *modules = modules_config();
 	succeed_if (elektraMountOpen(kdb, root_config(), modules, errorKey) == 0, "could not buildup mount");
 
-	output_warnings (errorKey);
-	output_errors (errorKey);
+	succeed_if(output_warnings (errorKey), "warnings found");
+	succeed_if(output_error (errorKey), "error found");
 
 	exit_if_fail (kdb->trie, "trie was not build up successfully");
 
@@ -433,10 +433,8 @@ void test_default()
 	keySetName(mp, "user/tests/simple"); keySetString (mp, "simple");
 	compare_key(mp, kdb->split->parents[2]);
 
-	/*
-	output_warnings (errorKey);
-	output_errors (errorKey);
-	*/
+	succeed_if(output_warnings (errorKey), "warnings found");
+	succeed_if(output_error (errorKey), "error found");
 
 	exit_if_fail (kdb->trie, "trie was not build up successfully");
 
@@ -508,8 +506,8 @@ void test_modules()
 	succeed_if (elektraMountDefault(kdb, modules, errorKey) == 0, "could not mount default backend");
 	succeed_if (elektraMountModules(kdb, modules, errorKey) == 0, "could not mount modules");
 
-	output_warnings (errorKey);
-	output_errors (errorKey);
+	succeed_if(output_warnings (errorKey), "warnings found");
+	succeed_if(output_error (errorKey), "error found");
 
 	// output_split (kdb->split);
 
@@ -611,8 +609,9 @@ void test_kdbopen()
 
 	kdbClose (kdb, errorKey);
 
-	output_errors (errorKey);
-	output_warnings (errorKey);
+	succeed_if(output_warnings (errorKey), "warnings found");
+	succeed_if(output_error (errorKey), "error found");
+
 	keyDel (errorKey);
 }
 
@@ -632,8 +631,8 @@ void test_defaultonly()
 	keySetName(mp, "user"); keySetString (mp, "default");
 	compare_key(mp, kdb->split->parents[1]);
 
-	output_warnings (errorKey);
-	output_errors (errorKey);
+	succeed_if(output_warnings (errorKey), "warnings found");
+	succeed_if(output_error (errorKey), "error found");
 
 	succeed_if (!kdb->trie, "trie should be empty");
 

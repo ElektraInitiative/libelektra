@@ -10,43 +10,17 @@ void test_basic()
 	cout << "testing metainfo" << endl;
 	Key test;
 
-	test.setUID(50);
-	succeed_if (test.getUID() == 50, "could not set UID");
-	succeed_if (test.getMeta<uid_t>("uid") == 50, "could not set UID");
-
-	test.setMeta<uid_t>("uid", 80);
-	succeed_if (test.getUID() == 80, "could not set UID");
-	succeed_if (test.getMeta<uid_t>("uid") == 80, "could not set UID");
-
-	test.setGID(50);
-	succeed_if (test.getGID() == 50, "could not set GID");
-	succeed_if (test.getMeta<gid_t>("gid") == 50, "could not set GID");
-
-	succeed_if (test.getMode() == 0664, "not correct default mode");
 	try {
 		test.getMeta<mode_t>("mode");
-		succeed_if (0, "failed, should raise exception");
+		succeed_if (0, "missing mode should raise exception");
 	} catch (KeyNoSuchMeta const &e) {
 		succeed_if (1, "exception raised successfully");
 	}
-	test.setDir ();
-	succeed_if (test.isDir(), "is not dir");
-	succeed_if (test.getMode() == 0775, "not correct default mode for dir");
 
-	//octal problem for mode:
-	succeed_if (test.getMeta<mode_t>("mode") == 775, "not correct default mode for dir");
+	test.setMeta<mode_t>("mode", 0775);
 
-	test.setMTime (200);
-	succeed_if (test.getMTime() == 200, "could not set MTime");
-	succeed_if (test.getMeta<time_t>("mtime") == 200, "could not set mtime");
-
-	test.setATime (200);
-	succeed_if (test.getATime() == 200, "could not set ATime");
-	succeed_if (test.getMeta<time_t>("atime") == 200, "could not set atime");
-
-	test.setCTime (200);
-	succeed_if (test.getCTime() == 200, "could not set CTime");
-	succeed_if (test.getMeta<time_t>("ctime") == 200, "could not set ctime");
+	//note that mode is not octal!
+	succeed_if (test.getMeta<mode_t>("mode") == 0775, "not correct default mode for dir");
 
 	test.setMeta<int>("myint", 333);
 	succeed_if (test.getMeta<int>("myint") == 333, "could not set other meta");
@@ -65,7 +39,7 @@ void test_basic()
 
 	const Key meta = test.getMeta<const Key>("mystr");
 	succeed_if (meta, "null key");
-	succeed_if (meta.getString() == "str", "could not set other meta");
+	succeed_if (meta.getString() == "str", "could not get other meta");
 
 	const Key xmeta = test.getMeta<const Key>("not available");
 	succeed_if (!xmeta, "not a null key");
@@ -212,10 +186,15 @@ void test_string()
 	succeed_if (m, "could not get meta key");
 	succeed_if (m.getString()  == "a meta value", "could not get meta string");
 
-	Key m1 = k.getMeta<const Key> ("x");
-	succeed_if (!m1, "could not get meta key");
-	succeed_if (m1.getKey() == 0, "key should be 0");
-	succeed_if (m1.getString()  == "", "could not get meta string");
+	try
+	{
+		Key m1 = k.getMeta<const Key> ("x");
+		succeed_if (!m1, "could not get meta key");
+		succeed_if (m1.getKey() == 0, "key should be 0");
+		succeed_if (m1.getString()  == "", "could not get meta string");
+	}
+	catch (...)
+	{}
 }
 
 int main()

@@ -1,0 +1,198 @@
+{
+    "stylesheet": {
+        "rules": [
+            {
+                "keyframes": [
+                    {
+                        "declarations": [
+                            {
+                                "position": {
+                                    "end": {
+                                        "column": 14,
+                                        "line": 2
+                                    },
+                                    "source": "keyframes.complex.css",
+                                    "start": {
+                                        "column": 8,
+                                        "line": 2
+                                    }
+                                },
+                                "property": "top",
+                                "type": "declaration",
+                                "value": "0"
+                            },
+                            {
+                                "position": {
+                                    "end": {
+                                        "column": 24,
+                                        "line": 2
+                                    },
+                                    "source": "keyframes.complex.css",
+                                    "start": {
+                                        "column": 16,
+                                        "line": 2
+                                    }
+                                },
+                                "property": "left",
+                                "type": "declaration",
+                                "value": "0"
+                            }
+                        ],
+                        "position": {
+                            "end": {
+                                "column": 25,
+                                "line": 2
+                            },
+                            "source": "keyframes.complex.css",
+                            "start": {
+                                "column": 3,
+                                "line": 2
+                            }
+                        },
+                        "type": "keyframe",
+                        "values": [
+                            "0%"
+                        ]
+                    },
+                    {
+                        "declarations": [
+                            {
+                                "position": {
+                                    "end": {
+                                        "column": 22,
+                                        "line": 3
+                                    },
+                                    "source": "keyframes.complex.css",
+                                    "start": {
+                                        "column": 12,
+                                        "line": 3
+                                    }
+                                },
+                                "property": "top",
+                                "type": "declaration",
+                                "value": "50px"
+                            }
+                        ],
+                        "position": {
+                            "end": {
+                                "column": 23,
+                                "line": 3
+                            },
+                            "source": "keyframes.complex.css",
+                            "start": {
+                                "column": 3,
+                                "line": 3
+                            }
+                        },
+                        "type": "keyframe",
+                        "values": [
+                            "30.50%"
+                        ]
+                    },
+                    {
+                        "declarations": [
+                            {
+                                "position": {
+                                    "end": {
+                                        "column": 26,
+                                        "line": 6
+                                    },
+                                    "source": "keyframes.complex.css",
+                                    "start": {
+                                        "column": 15,
+                                        "line": 6
+                                    }
+                                },
+                                "property": "left",
+                                "type": "declaration",
+                                "value": "50px"
+                            }
+                        ],
+                        "position": {
+                            "end": {
+                                "column": 27,
+                                "line": 6
+                            },
+                            "source": "keyframes.complex.css",
+                            "start": {
+                                "column": 3,
+                                "line": 4
+                            }
+                        },
+                        "type": "keyframe",
+                        "values": [
+                            ".68%",
+                            "72%",
+                            "85%"
+                        ]
+                    },
+                    {
+                        "declarations": [
+                            {
+                                "position": {
+                                    "end": {
+                                        "column": 20,
+                                        "line": 7
+                                    },
+                                    "source": "keyframes.complex.css",
+                                    "start": {
+                                        "column": 10,
+                                        "line": 7
+                                    }
+                                },
+                                "property": "top",
+                                "type": "declaration",
+                                "value": "100px"
+                            },
+                            {
+                                "position": {
+                                    "end": {
+                                        "column": 33,
+                                        "line": 7
+                                    },
+                                    "source": "keyframes.complex.css",
+                                    "start": {
+                                        "column": 22,
+                                        "line": 7
+                                    }
+                                },
+                                "property": "left",
+                                "type": "declaration",
+                                "value": "100%"
+                            }
+                        ],
+                        "position": {
+                            "end": {
+                                "column": 34,
+                                "line": 7
+                            },
+                            "source": "keyframes.complex.css",
+                            "start": {
+                                "column": 3,
+                                "line": 7
+                            }
+                        },
+                        "type": "keyframe",
+                        "values": [
+                            "100%"
+                        ]
+                    }
+                ],
+                "name": "foo",
+                "position": {
+                    "end": {
+                        "column": 2,
+                        "line": 8
+                    },
+                    "source": "keyframes.complex.css",
+                    "start": {
+                        "column": 1,
+                        "line": 1
+                    }
+                },
+                "type": "keyframes"
+            }
+        ]
+    },
+    "type": "stylesheet"
+}

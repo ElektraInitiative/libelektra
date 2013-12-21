@@ -41,14 +41,9 @@ int init (int argc, char**argv)
 #else
 	unsetenv("HOME");
 	unsetenv("USER");
-	unsetenv("KDB_HOME");
-	unsetenv("KDB_USER");
-	unsetenv("KDB_DIR");
 #endif
 
-#ifdef HAVE_SETENV
-	setenv("KDB_HOME",".",1);
-#endif
+	setenv("HOME","/tmp/elektra-test",1);
 
 	return 0;
 }
@@ -83,31 +78,60 @@ KeySet *create_conf (const char *filename)
 }
 
 
+/**
+ * @brief Compare two files line by line
+ *
+ * @param filename first file
+ * @param genfilename file to compare with
+ *
+ * @retval 0 on errors (succeed_if already executed)
+ * @retval 1 on success
+ */
 int compare_line_files (const char *filename, const char *genfilename)
 {
 	FILE *forg, *fgen;
 	char bufferorg [BUFFER_LENGTH + 1];
 	char buffergen [BUFFER_LENGTH + 1];
+	char *org = 0;
+	char *gen = 0;
 	int line = 0;
 
 	forg = fopen (filename, "r");
 	fgen = fopen (genfilename, "r");
-	exit_if_fail (forg && fgen, "could not open file");
 
-	while (	fgets (bufferorg, BUFFER_LENGTH, forg) &&
-		fgets (buffergen, BUFFER_LENGTH, fgen))
+	strncpy(bufferorg, "could not open file, orig: ", BUFFER_LENGTH);
+	strncat(bufferorg, filename, BUFFER_LENGTH);
+	strncat(bufferorg, " gen: ", BUFFER_LENGTH);
+	strncat(bufferorg, genfilename, BUFFER_LENGTH);
+
+	exit_if_fail (forg && fgen, bufferorg);
+
+	while (	(org = fgets (bufferorg, BUFFER_LENGTH, forg)) &&
+		(gen = fgets (buffergen, BUFFER_LENGTH, fgen)))
 	{
 		line ++;
 		if (strncmp (bufferorg, buffergen, BUFFER_LENGTH))
 		{
-			printf ("In file %s, line %d.\n", filename, line);
-			fclose (forg); fclose (fgen);
+			printf ("Compare <%s>, with <%s>\n", bufferorg, buffergen);
+			printf ("in file %s, line %d.\n", filename, line);
 			succeed_if (0, "comparing lines failed");
-			return 0;
+			goto error;
 		}
 	}
+
+	if (	org || fgets (buffergen, BUFFER_LENGTH, fgen))
+	{
+		printf ("The files do not have same number of lines (%d): %s.\n", line, filename);
+		succeed_if (0, "comparing files failed");
+		goto error;
+	}
+
 	fclose (forg); fclose (fgen);
 	return 1;
+
+error:
+	fclose (forg); fclose (fgen);
+	return 0;
 }
 
 
@@ -274,11 +298,22 @@ void generate_split (Split *split)
 
 }
 
-void output_warnings(Key *warningKey)
+/**
+ * @brief Output warnings if present
+ *
+ * To check for warnings use:
+ * succeed_if(output_warnings(parentKey), "warning(s) found");
+ *
+ * @param warningKey the key to retrieve metadata from
+ *
+ * @see check_for_errors_and_warnings if you want errors to have a test case failed without output
+ *
+ * @return 1 if no warnings (can be used within succeed_if)
+ */
+int output_warnings(Key *warningKey)
 {
 	const Key *metaWarnings = keyGetMeta(warningKey, "warnings");
-	if (!metaWarnings) return; /* There are no current warnings */
-	succeed_if (0, "there were warnings issued");
+	if (!metaWarnings) return 1; /* There are no current warnings */
 
 	int nrWarnings = atoi(keyString(metaWarnings));
 	char buffer[] = "warnings/#00\0description";
@@ -309,13 +344,24 @@ void output_warnings(Key *warningKey)
 		keyGetMeta(warningKey, buffer);
 		printf ("reason: %s\n", keyString(keyGetMeta(warningKey, buffer)));
 	}
+
+	return 0;
 }
 
-void output_errors(Key *errorKey)
+/**
+ * @brief Output the error if present
+ *
+ * To check for error use:
+ * succeed_if(output_error(parentKey), "error found");
+ *
+ * @param errorKey keys to retrieve errors from
+ *
+ * @return 1 if no warnings (can be used within succeed_if)
+ */
+int output_error(Key *errorKey)
 {
 	const Key * metaError = keyGetMeta(errorKey, "error");
-	if (!metaError) return; /* There is no current error */
-	succeed_if (0, "there were errors issued");
+	if (!metaError) return 1; /* There is no current error */
 
 	printf ("number: %s\n", keyString(keyGetMeta(errorKey, "error/number")));
 	printf ("description: : %s\n", keyString(keyGetMeta(errorKey, "error/description")));
@@ -323,4 +369,6 @@ void output_errors(Key *errorKey)
 	printf ("module: : %s\n", keyString(keyGetMeta(errorKey, "error/module")));
 	printf ("at: %s:%s\n", keyString(keyGetMeta(errorKey,"error/file")), keyString(keyGetMeta(errorKey, "error/line")));
 	printf ("reason: : %s\n", keyString(keyGetMeta(errorKey, "error/reason")));
+
+	return 0;
 }

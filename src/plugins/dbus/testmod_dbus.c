@@ -1,12 +1,16 @@
 #include "dbus.h"
 
+#ifdef HAVE_KDBCONFIG_H
+#include "kdbconfig.h"
+#endif
+
 #include <stdio.h>
 
 void print_message (DBusMessage *message, dbus_bool_t literal);
 
-DBusHandlerResult callback (DBusConnection *connection,
+DBusHandlerResult callback (DBusConnection *connection ELEKTRA_UNUSED,
 		DBusMessage *message,
-		void *user_data)
+		void *user_data ELEKTRA_UNUSED)
 {
 	if (dbus_message_is_signal (message,
 		DBUS_INTERFACE_DBUS,

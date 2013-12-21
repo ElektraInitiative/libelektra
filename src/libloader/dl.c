@@ -17,6 +17,8 @@
   exists.
   */
 
+#include <kdbconfig.h>
+
 #include <dlfcn.h>
 
 #include <kdbmodule.h>
@@ -36,7 +38,7 @@ struct _Module
 	} symbol;
 };
 
-int elektraModulesInit (KeySet *modules, Key *error)
+int elektraModulesInit (KeySet *modules, Key * error ELEKTRA_UNUSED)
 {
 	ksAppendKey (modules, keyNew ("system/elektra/modules", KEY_END));
 

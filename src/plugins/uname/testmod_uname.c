@@ -1,0 +1,68 @@
+/*************************************************************************** 
+ *           testmod_fstab.c  - Test suite for fstab
+ *                  -------------------
+ *  begin                : Thu Nov 6 2007
+ *  copyright            : (C) 2007 by Patrick Sabin
+ *  email                : patricksabin@gmx.at
+ ****************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the BSD License (revised).                      *
+ *                                                                         *
+ ***************************************************************************/
+
+#ifdef HAVE_KDBCONFIG_H
+#include "kdbconfig.h"
+#endif
+
+#include <stdio.h>
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
+
+#include <tests_plugin.h>
+
+void test_structure()
+{
+	printf ("Test structure of keys returned from uname plugin");
+
+	KeySet *conf = 0;
+	Key *parentKey = keyNew("user/test/key", KEY_END);
+	KeySet *keys = ksNew(0);
+
+	PLUGIN_OPEN("uname");
+
+	succeed_if (plugin->kdbGet(plugin, keys, parentKey) == 1, "could not call kdbGet");
+
+	succeed_if (ksGetSize(keys) == 6, "size not correct");
+	succeed_if (ksLookupByName(keys, "user/test/key", 0), "parentkey not found");
+	succeed_if (ksLookupByName(keys, "user/test/key/sysname", 0), "sysname key not found");
+	succeed_if (ksLookupByName(keys, "user/test/key/nodename", 0), "nodename key not found");
+	succeed_if (ksLookupByName(keys, "user/test/key/release", 0), "release key not found");
+	succeed_if (ksLookupByName(keys, "user/test/key/version", 0), "version key not found");
+	succeed_if (ksLookupByName(keys, "user/test/key/machine", 0), "machine key not found");
+
+	PLUGIN_CLOSE();
+}
+
+
+int main(int argc, char** argv)
+{
+	printf("UNAME       TESTS\n");
+	printf("==================\n\n");
+
+	init (argc, argv);
+
+	test_structure();
+
+
+	printf("\ntestmod_uname RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+
+	return nbError;
+}
+

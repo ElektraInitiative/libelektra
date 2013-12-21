@@ -26,20 +26,27 @@ int GetCommand::execute (Cmdline const& cl)
 	kdb.get(conf, x);
 	Key k = conf.lookup(x);
 
-	if (!k)
-	{
-		cerr << "Did not find key" << endl;
-		return 1;
-	}
+	int ret = 0;
 
-	cout << k.getString();
+	if (k)
+	{
+		cout << k.getString();
+	}
+	else
+	{
+		cerr << "Did not find key";
+		ret = 1;
+	}
 
 	if (!cl.noNewline)
 	{
 		cout << endl;
 	}
 
-	return 0;
+	printError(x);
+	printWarnings(x);
+
+	return ret;
 }
 
 GetCommand::~GetCommand()

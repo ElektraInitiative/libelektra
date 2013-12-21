@@ -30,7 +30,6 @@
 
 
 /**
- * @defgroup stream Streaming
  * @brief Methods to output, generate and toXML Keys and Keysets.
  *
  * Here are some functions that are in a separate library because they
@@ -109,7 +108,6 @@
  *
  * @see ksToStream()
  * @return number of bytes written to output
- * @ingroup stream
  */
 ssize_t keyToStream(const Key *key, FILE* stream, option_t options)
 {
@@ -167,7 +165,6 @@ ssize_t keyToStream(const Key *key, FILE* stream, option_t options)
  *   user domains)
  *
  * @return number of bytes written to output
- * @ingroup stream
  */
 ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
 		const size_t parentSize, option_t options) {
@@ -378,7 +375,6 @@ ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
  * @see keyToStream()
  * @see commandList() for usage example
  * @return number of bytes written to output, or -1 if some error occurs
- * @ingroup stream
  * @param ks The keyset to output
  * @param stream the file pointer where to send the stream
  * @param options see above text

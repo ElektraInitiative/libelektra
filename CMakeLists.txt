@@ -41,10 +41,9 @@ set (REVERSE_DOMAIN org.libelektra)
 
 set (KDB_VERSION_MAJOR 0)
 set (KDB_VERSION_MINOR 8)
-set (KDB_VERSION_MICRO 3)
+set (KDB_VERSION_MICRO 4)
 
 set (KDB_VERSION "${KDB_VERSION_MAJOR}.${KDB_VERSION_MINOR}.${KDB_VERSION_MICRO}")
-set (KDB_VERSION_MAJORMINOR "${KDB_VERSION_MAJOR}.${KDB_VERSION_MINOR}")
 
 set (SO_VERSION 4)
 
@@ -52,8 +51,8 @@ set (SO_VERSION 4)
 include (cmake/ElektraPackaging.cmake)
 
 #now add all directories
-add_subdirectory (src)
 add_subdirectory (cmake)
+add_subdirectory (src)
 
 if (BUILD_DOCUMENTATION)
 	add_subdirectory (doc)

@@ -25,6 +25,10 @@
  ***************************************************************************/
 
 
+#ifndef HAVE_KDBCONFIG
+# include "kdbconfig.h"
+#endif
+
 #include "timeofday.h"
 
 static inline void timeofday(char *t, struct timeval *start, struct timeval *now)
@@ -66,7 +70,7 @@ const char * elektraTimeofdayHelper (char *t, TimeofdayInfo *ti)
 	return t;
 }
 
-int elektraTimeofdayOpen(Plugin *handle, Key *k)
+int elektraTimeofdayOpen(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 {
 	TimeofdayInfo *ti = calloc(1, sizeof (TimeofdayInfo));
 	// char t[24];
@@ -82,7 +86,7 @@ int elektraTimeofdayOpen(Plugin *handle, Key *k)
 	return 0; /* success */
 }
 
-int elektraTimeofdayClose(Plugin *handle, Key *k)
+int elektraTimeofdayClose(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 {
 	// char t[24];
 	// TimeofdayInfo *ti = elektraPluginGetData(handle);
@@ -162,7 +166,7 @@ int elektraTimeofdayGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	return 1;
 }
 
-int elektraTimeofdaySet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraTimeofdaySet(Plugin *handle, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
 {
 	char t[24];
 	TimeofdayInfo *ti = elektraPluginGetData(handle);
@@ -183,7 +187,7 @@ int elektraTimeofdaySet(Plugin *handle, KeySet *returned, Key *parentKey)
 	return 1;
 }
 
-int elektraTimeofdayError(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraTimeofdayError(Plugin *handle, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
 {
 	char t[24];
 	TimeofdayInfo *ti = elektraPluginGetData(handle);

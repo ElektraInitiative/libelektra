@@ -25,19 +25,23 @@
  ***************************************************************************/
 
 
+#ifndef HAVE_KDBCONFIG
+# include "kdbconfig.h"
+#endif
+
 #include "success.h"
 
-int elektraSuccessOpen(Plugin *handle, Key *errorKey)
+int elektraSuccessOpen(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
 {
 	return 0; /* success */
 }
 
-int elektraSuccessClose(Plugin *handle, Key *errorKey)
+int elektraSuccessClose(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
 {
 	return 0; /* success */
 }
 
-int elektraSuccessGet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraSuccessGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
 	Key *root = keyNew("system/elektra/modules/success", KEY_END);
 
@@ -91,12 +95,12 @@ int elektraSuccessGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	return 1; /* Always success, always update needed */
 }
 
-int elektraSuccessSet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraSuccessSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
 {
 	return 1; /* Always success, no conflict*/
 }
 
-int elektraSuccessError(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraSuccessError(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
 {
 	return 0;
 }

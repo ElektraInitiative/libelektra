@@ -1,0 +1,19 @@
+{
+    "aaa": "abc",
+    "array": [
+        true,
+        25,
+        "some string",
+        0,
+        1,
+        2,
+        3,
+        "more \\ a",
+        "string \"",
+        "string abc",
+        "def abc",
+        false,
+        42
+    ],
+    "yyy": "abc"
+}

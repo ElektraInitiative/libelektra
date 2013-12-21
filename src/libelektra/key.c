@@ -15,7 +15,17 @@
 
 
 /**
- * @defgroup key Key :: Basic Methods
+ * @defgroup key Key
+ *
+ * @brief A Key is the essential class that encapsulates key @link keyname name @endlink,
+ * @link keyvalue value @endlink and @link keymeta metainfo @endlink.
+ *
+ */
+
+/**
+ * @defgroup key_basic Basic Methods
+ * @ingroup key
+ *
  * @brief Key construction and initialization methods.
  *
  * To use them:
@@ -23,8 +33,6 @@
 #include <kdb.h>
  * @endcode
  *
- * A Key is the essential class that encapsulates key @link keyname name @endlink,
- * @link keyvalue value @endlink and @link keymeta metainfo @endlink.
  * Key properties are:
  * - @link keyname Key name @endlink
  * - @link keyvalue Key value @endlink
@@ -249,7 +257,7 @@ Key *k = keyNew(0);
  * @return a pointer to a new allocated and initialized Key object,
  * 	or NULL if an invalid @p keyName was passed (see keySetName()).
  * @ingroup key
- * 
+ *
  */
 Key *keyNew(const char *keyName, ...) {
 	Key * k;
@@ -263,6 +271,11 @@ Key *keyNew(const char *keyName, ...) {
 }
 
 
+/**
+ * @copydoc keyNew
+ *
+ * @param va the variadic argument list
+ */
 Key *keyVNew (const char *keyName, va_list va)
 {
 	Key *key=0;
@@ -381,8 +394,7 @@ int g (const Key * source, KeySet * ks)
  * @param source has to be an initializised source Key
  * @return 0 failure or on NULL pointer
  * @return a fully copy of source on success
- * @see ksAppend(), keyDel()
- * @see keyClear(), keyNew()
+ * @see ksAppend(), keyDel(), keyNew()
  * @ingroup key
  */
 Key* keyDup(const Key *source)
@@ -440,12 +452,13 @@ void h (Key *k)
 }
  * @endcode
  *
- * The reference counter will not change for
- * the destination key. Affiliation to keysets
+ * The reference counter will not be changed for
+ * both keys. Affiliation to keysets
  * are also not affected.
  *
  * When you pass a NULL-pointer as source the
- * data of dest will be cleaned completely and
+ * data of dest will be cleaned completely
+ * (except reference counter, see keyClear()) and
  * you get a fresh dest key.
  *
  * @code
@@ -496,23 +509,17 @@ void j (Key *k)
  * @ingroup key
  * @return -1 on failure when a NULL pointer
  *     was passed for dest or a dynamic property could not
- *     be written.
+ *     be written. Both name and value are
+ *     empty then.
  * @return 0 when dest was cleaned
  * @return 1 when source was successfully copied
  * @see keyDup() to get a duplication of a key
  */
 int keyCopy (Key *dest, const Key *source)
 {
-	size_t destref = 0;
-
 	if (!dest) return -1;
-	destref = dest->ksReference;
 
-	/* free everything in dest */
-	keySetName (dest, 0);
-	keySetComment (dest,0);
-	keySetOwner (dest, 0);
-	keySetRaw (dest, 0, 0);
+	size_t destRef = dest->ksReference;;
 
 	keyClear (dest);
 
@@ -521,20 +528,28 @@ int keyCopy (Key *dest, const Key *source)
 	/* copy all data of structure */
 	*dest=*source;
 
-	/* Set reference properties */
-	dest->ksReference = destref;
-
 	/* prepare to set dynamic properties */
-	dest->key=
-	dest->data.v=
+	dest->key=0;
+	dest->data.v=0;
 	dest->meta=0;
 
-	if (keySetName(dest,source->key) == -1) return -1;
-	if (keySetRaw(dest,source->data.v,source->dataSize) == -1) return -1;
+	if (keySetName(dest,source->key) == -1)
+	{
+		return -1;
+	}
+
+	if (keySetRaw(dest,source->data.v,source->dataSize) == -1)
+	{
+		keySetName(dest, "");
+		return -1;
+	}
+
 	if (source->meta)
 	{
 		dest->meta = ksDup (source->meta);
 	}
+
+	dest->ksReference = destRef;
 
 	return 1;
 }
@@ -555,6 +570,11 @@ int keyCopy (Key *dest, const Key *source)
  *
  * It is save to delete a nullpointer,
  * -1 will be returned then.
+ *
+ * It is also save to delete a multiple
+ * referenced key, nothing will happen
+ * then and the reference counter will
+ * be returned.
  *
  * @param key the key object to delete
  * @see keyNew(), keyInc(), keyGetRef()
@@ -581,13 +601,18 @@ int keyDel(Key *key) {
 	return rc;
 }
 
-/*
+/**
  * Key Object Cleaner.
  *
  * Will reset all internal data.
  *
  * After this call you will receive a fresh
  * key.
+ *
+ * The reference counter will stay unmodified.
+ *
+ * @note that you might also clear() all aliases
+ * with this operation.
  *
  * @code
 int f (Key *k)
@@ -599,17 +624,31 @@ int f (Key *k)
 }
  * @endcode
  *
+ * @return returns 0 on success
+ * @return -1 on null pointer
+ *
  * @param key the key object to work with
  * @ingroup key
  */
 int keyClear(Key *key)
 {
+	if (!key)
+	{
+		return -1;
+	}
+
+	size_t ref = 0;
+
+	ref = key->ksReference;
 	if (key->key) free(key->key);
 	if (key->data.v) free(key->data.v);
 	if (key->meta) ksDel(key->meta);
 
-	memset(key,0,sizeof(Key));
 	keyInit (key);
+
+
+	/* Set reference properties */
+	key->ksReference = ref;
 
 	return 0;
 }

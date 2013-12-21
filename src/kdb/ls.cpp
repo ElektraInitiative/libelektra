@@ -34,12 +34,7 @@ int LsCommand::execute(Cmdline const& cl)
 
 	if (cl.verbose) cout << "size of requested keys: " << part.size() << endl;
 
-	part.rewind();
-	Key k;
-	while (k=part.next())
-	{
-		cout << k.getName() << endl;
-	}
+	cout << part;
 
 	printWarnings(root);
 

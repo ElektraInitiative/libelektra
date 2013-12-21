@@ -1,5 +1,5 @@
 /***************************************************************************
-      kdbprivate.h  -  Private classes definition
+      kdbprivate.h  -  Private declarations
 
                            -------------------
  *  begin                : Wed 19 May, 2010
@@ -392,7 +392,6 @@ struct _Split
  **************************************/
 
 ssize_t keySetRaw(Key *key, const void *newBinary, size_t dataSize);
-char *keyNameGetOneLevel(const char *keyname, size_t *size);
 
 /*Methods for splitted keysets */
 Split * elektraSplitNew(void);
@@ -405,7 +404,7 @@ int elektraSplitBuildup (Split *split, KDB *handle, Key *parentKey);
 
 /* for kdbGet() algorithm */
 int elektraSplitAppoint (Split *split, KDB *handle, KeySet *ks);
-int elektraSplitGet (Split *split, KDB *handle);
+int elektraSplitGet (Split *split, Key *warningKey, KDB *handle);
 int elektraSplitMerge (Split *split, KeySet *dest);
 
 /* for kdbSet() algorithm */
@@ -472,6 +471,7 @@ int elektraStrCaseCmp (const char *s1, const char *s2);
 size_t elektraStrLen(const char *s);
 
 int keyClearSync (Key *key);
+
 
 /** Test a bit. @see set_bit(), clear_bit() */
 #define test_bit(var,bit)            ((var) &   (bit))

@@ -1,14 +1,17 @@
 = Version =
 
-The version of elektra is handeled with the macros
+The version of elektra is handeled with the kdb.h macros
 KDB_VERSION which is a string and KDB_VERSION_MAJOR,
 KDB_VERSION_MINOR and KDB_VERSION_MICRO which are
 numbers. They represent the public announced version
 information.
 
-On the other hand the libraries use libtool's system
-to handle version info. This is only technical linking
-information, but is related to elektra's version number.
+The same information can be retrieved at runtime using
+system/elektra/version/constants/KDB_VERSION
+system/elektra/version/constants/KDB_VERSION_MAJOR
+system/elektra/version/constants/KDB_VERSION_MICRO
+system/elektra/version/constants/KDB_VERSION_MINOR
+
 
 KDB_VERSION
 
@@ -29,12 +32,12 @@ elektra your mission is to avoid that.
 The tool icheck against the interfaces mentioned
 above may help you too.
 
-In 0.7.* the API and ABI must be always forward-compatible,
+In 0.8.* the API and ABI must be always forward-compatible,
 but not backwards-compatible.
-That means that a program written and compiled against 0.7.0
-can compile and link against 0.7.1. But because it is
+That means that a program written and compiled against 0.8.0
+compiles and links against 0.8.1. But because it is
 not necessarily backendwards-compatible a program written
-for 0.7.1 may not link or compile against elektra 0.7.0
+for 0.8.1 may not link or compile against elektra 0.8.0
 (but it may do when you use the compatible subset, maybe
 with #ifdefs).
 

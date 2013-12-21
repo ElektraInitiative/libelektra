@@ -1,0 +1,43 @@
+{
+    "array": [
+        true,
+        [
+            [
+                [
+                    12,
+                    14,
+                    "string",
+                    true
+                ],
+                55,
+                77,
+                "string",
+                true
+            ],
+            25,
+            "some string",
+            0,
+            [
+                [
+                    44,
+                    14,
+                    "string",
+                    true
+                ],
+                7,
+                70,
+                "string",
+                true
+            ],
+            18,
+            298,
+            388,
+            "more \\ a",
+            "string \"",
+            "string abc",
+            "def abc",
+            false,
+            42
+        ]
+    ]
+}

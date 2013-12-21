@@ -1,25 +1,36 @@
-Known bugs will be listed here.
-But is planned to move to the
-freedesktop.org bug database.
+Known bugs for current releases will be listed here.
+Remove them if they are fixed (git will track them for you).
+Move to CURRENT if they should be fixed in next release.
 
-== DOCUMENTATION ==
 
-documentation of the c++ binding, plugins
 
-document return value of resolver + other plugins
+== RELEASE ==
 
-rewind not clearly defined:
-	rewind before plugins?
-	rewind after plugins?
-	rewind after get()?
-	rewind after set()?
-	-> write pre+postconditions
+symbol error in compiz
 
-not clearly defined how config file is opened
-	(temporary file needs to be opened write+create)
+crash with broken keys in DB
+
+document contracts
+check contract for integration tests and plugin version
+
+non-recursive versions of cp, rm and mv segfault
+	(lookup KDB_O_POP in C++?)
+
+== BASIC ==
+
+keySet/AddBaseName do not handle . or ..
+
+keySet* also work when keys are appended to keyset!
+(add a flag for that situation?)
+
+
+kdb set system/elektra/version/constants/KDB_VERSION_MINOR
+fails silently -> should raise an error
 
 
 == BUILD ==
+
+ELEKTRA_SET_ERROR in dump sometimes raises compile error
 
 get rid of auto-ptr
 
@@ -33,11 +44,6 @@ portability:
 	bsd, aix,...
 	glibc functions away
 
-portability:
-	Build on different platforms
-	Statical build testing
-	build and test without iconv, libxml2
-
 compilers: (add on build-server)
 	diet-gcc
 	intel cc
@@ -47,6 +53,8 @@ one option with NOLOG, DEBUG, VERBOSE  better then
 
 === BUGS ===
 
+warning in resolver aborts execution? (uname plugin)
+
 errorKey not propagated in elektraPluginOpen
 	errors should be transformed to warnings
 
@@ -54,9 +62,6 @@ validation-set of kdb sets other meta keys then which are checked
 
 on non-writeable config files the problem would
 	only occur when committing -> behaviour?
-
-Partly written configuration tests?
-	(rollback at commit?)
 
 kdbGet: what if returned holds more information then requested
 	by parentKey on an update
@@ -84,267 +89,53 @@ generating unique names for fstab does not work
 	kdb-fstab-set does not work on dump or similar
 
 hosts:
-	add testcases
 	alias in large file fails
 
 allow to set a keyset when get failed before?
 
 hard coded limit of characters in simpleset
 
-keyGetStringSize missing
-	needed?
+
+== potential bugs ==
+
+errorKey not propagated in elektraPluginOpen
+
+validation-set of kdb sets other meta keys then which are checked
+
+backends below other: ls may not work recursively
+
+could not parse file output in tcl
+
+on non-writeable config files the problem would
+	only occur when committing -> behaviour?
+
+kdbGet: what if returned holds more information then requested
+	by parentKey on an update
+
+Check if merging configuration after conflict fails
+	(kdbGet() after conflict with an empty keyset?)
+
+kdbOpen does not work without errorKey
+Name of errorKey is overwritten!
+
+KeySet may be unsorted in some situations
+	changing key names
+	changing owner?
+
+if needed conf lacks a root key it is handled wrong
+
+generating unique names for fstab does not work
+	none fs entries
+	kdb-fstab-set does not work on dump or similar
+
+hosts:
+	alias in large file fails
+
+allow to set a keyset when get failed before?
+
+hard coded limit of characters in simpleset
 
 path: UUID= LABEL= rechner:/...
 	/proc/filesystems
-	5th and 6th field is optional
-
-
-
-
-== CONTRACTS ==
-
-Consume Metadata:
-	Otherwise would dump write it out?
-
-Rewrite values for glob
-
-
-== DATA STRUCTURES ==
-
-Only implement what is really needed.
-(can take some time to do it well!)
-
-ksForEach (ks, func, handle)
-	void func (Key*, void* handle);
-
-relations
-
-ksLookup: value keys only
-	with relations
-	only in the same folder (sibling)
-	only below the current folder (below)
-
-merge + split configuration
-http://en.wikipedia.org/wiki/Set_(mathematics)
-
-
-KeySet* ksUnion
-ksIntersection
-ksMerge
-
-http://en.wikipedia.org/wiki/Complement_(set_theory)
-ksComplement (Difference, SymmetricDifference)
-
-
-ksCopy -> ksAssign
-ksPopCurrent
-
-
-=== STORAGE ===
-
-resolver:
-	configurable lock/tmpfile
-	configureable flush
-
-passwd resolver
-
-doing nice:
-	file resolution
-	locking
-	checking for conflicts
-
-(backends for issues of type system below)
-
-== KDB_TOOL ==
-
-git-<command> like functionality
-ascii doc
-man pages
-
-env-get env-set `kdb env-get`
-
-kdb-resolver (give file given key name)
-Multiple Storages
-
-
-== CMAKE ==
-
-"Build System"
-
-
-DEFAULT_BACKEND ->
-	DEFAULT_STORAGE_PLUGIN
-	DEFAULT_RESOLVER_PLUGIN
-	(+ make it work)
-
-
-== API Changes ==
-
-. and .. semantics away?
-
-isDirectBelow:
-	Change Order of arguments? (see C++)
-
-
-getRootKeys not needed -> (user + system are fixed)
-
-keyset:
-	ensure that every ks* has as @post a sorted keyset
-	ksClear/keyClear weg (da mit *Copy(,0) ersetzbar)
-
-
-== Internals ==
-
-support multiple owner at once for kdbGet()/kdbSet()?
-allow mounting for users?
-
-
-== OPTIMIZATION ==
-
-ksAppend() in O(1)
-KDB_O_NOALL could use binary search
-
-getString in C++ besser impl
-AppendKey sollte schnell appenden
-
-moduleSystem:
-	mit einem KeySet
-	doppelt laden von Plugins verhindern
-
-static loading could be done with keyset
-	es könnte gleich ein keyset generiert werden wo alle module fertig drinnen stehen
-	(statischer fall)
-
-
-iconv:
-	open handles in kdbOpen?
-
-== USE ==
-
-Write a program (e.g. dfc)
-	which uses ELektra
-	delievers its own plugins
-	uses the type system
-	with debian packages
-
-
-== DEFAULT PLUGINS ==
-
-policy how default storage & resolver plugin are named
-resolve the symlink and load the module with correct name
-
-default storage plugin:
-	changeable
-	nickel with meta in [] sections?
-
-
-== PLUGINS ==
-
-bcode: filesys/helpers.c with ksForEach()
-parse c-code: ksNew keyNew..
-	needs multiple encoders?
-libeet
-
-
-only full get/set (?, how to support databases?, SELECT* needed?)
-
-Checkers:
-	check if folders, files or pathes really exist (/etc/fstab)
-	check if hosts are reachable (/etc/hosts)
-
-C++: (FINISH cppplugin)
-	how to write backends in C++
-	Exceptions propagations
-	(C++ Exceptions to error codes)
-
-/etc/groups plugin
-
-implement and test easy to implement, but useful plugins
-as many differnt kinds as possible
-but using great frameworks to do that in short time
-
-testing framework step by step
-	with all metadata
-	with all calling combinations
-	(test driven development)
-
-Forensic Logging:
-	environment, pid, gid, uid
-	timezone + in ms
-	IP
-
-
-filter: key
-	metadata löschen
-	hidden keys
-
-
-advanced:
-	hash sum
-	signing
-	encrypting
-	binding
-	komprimieren
-
-filesys:
-	reintroduce?
-	empty folder will not show up (only with %%dirdata)
-	Dirdata richtig escapen
-	Metadata reinschreiben
-	remove keys the new way
-	compare sets between current and desired state (set operations)
-	als default backend wieder tauglich machen
-
-others:
-	memory (just hold everything in a keyset)
-	bind (just map keys from somewhere else)
-
-	base64 encoding (and reverse)
-	meta-infos löschen (und wiederherstellt)
-	versteckte dateien löschen (und wiederherstellen)
-
-	Namecencode
-	nameutf8encode
-	namehexencode
-
-
-base64
-Openssl lizenz
-libgcryt (LGPL, GPLv3?) used by cppcms
-
-
-== SPECIFICATION ==
-
-generator for:
-	exc classes
-	try catch blocks
-	as keyset
-	human readable text
-
-
-
-
-
-
-
-
-
-
-
-= FINISH for 1.0.0 =
-
-symbole, only export
-Version info
-release
-
-
-== OVERVIEW ==
-
-draw a big picture
-
-make list of all symbols
-	exported symbols
-	reduce it hard
-	symbole, only export (otherwise static)
-	Version info 4.0
-
+	5.te und 6.te feld ist optional
+	siehe man 5 fstab

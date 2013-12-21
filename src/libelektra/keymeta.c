@@ -16,7 +16,8 @@
 
 
 /**
- * @defgroup keymeta Key :: Meta Info Manipulation Methods
+ * @defgroup keymeta Meta Info Manipulation Methods
+ * @ingroup key
  * @brief Methods to do various operations on Key metainfo
  *
  * To use them:
@@ -414,7 +415,7 @@ int f(Key *k)
  * @return 0 if the key or metaName is 0
  * @return 0 if no such metaName is found
  * @return value of Meta-Information if Meta-Information is found
- * @see keyGetMetaSize(), keyGetMeta(), keySetMeta()
+ * @see keyGetMeta(), keySetMeta()
  * @ingroup keymeta
  **/
 const Key *keyGetMeta(const Key *key, const char* metaName)

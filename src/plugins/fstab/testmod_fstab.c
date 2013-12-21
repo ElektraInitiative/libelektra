@@ -25,42 +25,35 @@
 #include <string.h>
 #endif
 
-#include <tests.h>
+#include <tests_plugin.h>
 
-#if 0
-
-void test_readfstab(const char *file)
+void test_readfstab()
 {
-	KDB *kdb = kdbOpen();
-	KeySet *ks;
-	KeySet *conf;
-	Key* mnt;
+	Key * parentKey = keyNew ("user/tests/fstab", KEY_VALUE, srcdir_file("fstab"), KEY_END);
+	KeySet *conf = 0;
+	PLUGIN_OPEN("fstab");
 
-	printf("Test mount readfstab\n");
+	KeySet *ks=ksNew(0);
 
-	succeed_if (kdbMount (kdb, mnt=keyNew("user/tests/filesystems",KEY_VALUE, "fstab", KEY_END),
-		conf=ksNew (2,keyNew("system/path", KEY_VALUE, file, KEY_END), KS_END)) == 0,
-		"could not mount fstab");
-	keyDel(mnt);
-	ksDel (conf);
+	printf ("%s\n", srcdir_file("fstab"));
 
-	ks=ksNew(0);
-	int i;
-	succeed_if ((i=kdbGet(kdb,ks,keyNew("user/tests/filesystems",KEY_END),KDB_O_DEL)) == 15, "could not get keys");
+	succeed_if (plugin->kdbGet(plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 
-	/*
-	printf ("%d", i);
-	ksOutput (ks, stdout, 0);
-	ksGenerate (ks,stdout, 0);
-	*/
-	Key *key = ksLookupByName(ks, "user/tests/filesystems/rootfs/device",0);
-	succeed_if (key, "rootfs device not found");
-	succeed_if (strcmp( "/dev/sda6", keyValue(key)) == 0, "rootfs device not correct");
+	output_keyset(ks);
+
+	Key *key = ksLookupByName(ks, "user/tests/fstab/mediaext4/device",0);
+	exit_if_fail (key, "rootfs device not found");
+	succeed_if (strcmp( "/dev/sdg1", keyValue(key)) == 0, "device not correct");
+
+	exit_if_fail (key = ksLookupByName(ks, "user/tests/fstab/mediaext4/dumpfreq",0), "rootfs device not found");
+	succeed_if (strcmp( "0", keyValue(key)) == 0, "dumpfreq not correct");
 
 	ksDel (ks);
-	kdbClose (kdb);
+
+	PLUGIN_CLOSE();
 }
 
+#if 0
 
 void test_writefstab(const char * file)
 {
@@ -153,17 +146,15 @@ void test_writefstab(const char * file)
 
 int main(int argc, char** argv)
 {
-	printf("MOUNT       TESTS\n");
+	printf("FSTAB       TESTS\n");
 	printf("==================\n\n");
 
 	init (argc, argv);
 
-	/*
-	test_writefstab(".kdb/fstab_mount");
-	test_readfstab(".kdb/fstab_mount");
-	*/
+	// test_writefstab();
+	test_readfstab();
 
-	printf("\ntest_mount RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	printf("\ntestmod_fstab RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
 }

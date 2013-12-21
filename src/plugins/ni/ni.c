@@ -25,9 +25,13 @@
 
 #include "ni.h"
 
+#ifndef HAVE_KDBCONFIG
+# include "kdbconfig.h"
+#endif
+
 #include <string.h>
 
-int elektraNiGet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraNiGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
 	/* get all keys */
 
@@ -81,7 +85,7 @@ int elektraNiGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	return 1; /* success */
 }
 
-int elektraNiSet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraNiSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
 	/* set all keys */
 

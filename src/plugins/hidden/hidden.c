@@ -25,16 +25,20 @@
 
 #include "hidden.h"
 
+#ifndef HAVE_KDBCONFIG
+# include "kdbconfig.h"
+#endif
+
 #include <string.h>
 
-int elektraHiddenOpen(Plugin *handle, Key *errorKey)
+int elektraHiddenOpen(Plugin *handle, Key *errorKey ELEKTRA_UNUSED)
 {
 	elektraPluginSetData(handle, ksNew(0));
 
 	return 1; /* success */
 }
 
-int elektraHiddenClose(Plugin *handle, Key *errorKey)
+int elektraHiddenClose(Plugin *handle, Key *errorKey ELEKTRA_UNUSED)
 {
 	ksDel (elektraPluginGetData(handle));
 
@@ -100,7 +104,7 @@ int elektraHiddenGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	return 1; /* success */
 }
 
-int elektraHiddenSet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraHiddenSet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA_UNUSED)
 {
 	KeySet *hiddenKeys = elektraPluginGetData (handle);
 	ksAppend (returned, hiddenKeys);

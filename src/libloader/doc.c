@@ -1,5 +1,4 @@
 /**
- * @defgroup modules Elektra Modules :: Elektra framework for loading modules
  * @brief Loading Modules for Elektra.
  *
  * Unfortunately there is no portable way to load modules, plugins or libraries.
@@ -15,9 +14,11 @@
  * - hide the OS dependent handle inside a Key (handle is needed to
  *   close module afterwards)
  *
+ * @{
  */
 
 /**
+ * @ingroup modules
  * Initialises the module loading system.
  *
  * Most operating systems will have to do nothing here.
@@ -31,7 +32,6 @@
  * @param error a key to append the error information if it is not null
  * @return -1 on error
  * @return >=0 otherwise
- * @ingroup modules
  */
 int elektraModulesInit (KeySet *modules, Key *error)
 {

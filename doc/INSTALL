@@ -8,6 +8,7 @@ You might want to use:
  dpkg-buildpackage -us -uc -sa
 
 to build a debian package.
+(In the Debian branch, see GIT)
 
 
 == GENERIC ==

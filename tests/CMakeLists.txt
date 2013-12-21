@@ -58,10 +58,8 @@ foreach (file ${TESTS})
 	do_test (${name})
 endforeach (file ${TESTS})
 
-file (GLOB SCRIPT_TESTS *.sh)
-foreach (file ${SCRIPT_TESTS})
-	get_filename_component (name ${file} NAME)
-	add_scripttest(${name})
-endforeach (file ${SCRIPT_TESTS})
+if (ENABLE_KDB_TESTING)
+	add_subdirectory (shell)
+endif (ENABLE_KDB_TESTING)
 
 include_directories ("${PROJECT_SOURCE_DIR}/tests")

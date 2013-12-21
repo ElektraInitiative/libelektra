@@ -1,0 +1,58 @@
+{
+    "array": [
+        true,
+        [
+            [
+                [
+                    {
+                        "abc": 5,
+                        "def": 6,
+                        "subarray": [
+                            {
+                                "subsubarray": [
+                                    1,
+                                    2,
+                                    3
+                                ],
+                                "test": "deep"
+                            },
+                            [
+                                [
+                                    1,
+                                    2,
+                                    3
+                                ],
+                                {
+                                    "other_test": "also deep"
+                                }
+                            ],
+                            "test",
+                            "string"
+                        ],
+                        "xmore": "x"
+                    },
+                    {
+                        "syx": 7
+                    },
+                    [
+                        1,
+                        2,
+                        3
+                    ]
+                ]
+            ],
+            25,
+            "some string",
+            0,
+            1,
+            2,
+            3,
+            "more \\ a",
+            "string \"",
+            "string abc",
+            "def abc",
+            false,
+            42
+        ]
+    ]
+}

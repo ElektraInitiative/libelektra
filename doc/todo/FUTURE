@@ -1,4 +1,85 @@
-#some enhanced ideas (dont't expect them to be here soon)
+Some enhanced ideas which will not be part of 0.8.
+
+
+== API Changes ==
+
+isDirectBelow:
+	Change Order of arguments? (see C++)
+	or improve keyRel?
+
+getRootKeys not needed OR (user + system are fixed) OR make / as root (see hierarchy below)
+
+keyset:
+	ensure that every ks* has as @post a sorted keyset
+	ksClear/keyClear weg (da mit *Copy(,0) ersetzbar)
+
+Single Interface: only get pointers, no memcopy (only one keyGetString)
+
+no "binary" metadata hack, just provide keyGetString and keyGetStringSize
+
+remove old metadata get/set
+
+remove null ptr checks? (speed? decision?)
+
+
+=== Plugin API Changes ===
+
+lazy kdbOpen, maybe kdbConstruct and kdbDestruct needed too?
+
+
+
+
+== Error handling ==
+
+translation of exceptions too different languages
+
+
+== Elektra types ==
+
+customized type checkers
+	which can be integrated within Frontend generator
+	(for checking default values and preloading)
+	maybe even checking of values within frontend
+
+
+== Schema ==
+
+convert elektra schema to xsd, yaml or similar
+base schema (user/system)
+plugins like fstab, hosts should provide their schema
+schema for config of plugins + generation of code for them
+
+define vectors, maps, class hierarchy
+upgrade by global schema files similar to ldconfig
+
+
+== Vision ==
+
+Configuration definitions:
+	provide definitions of known configuration trees
+	generate code
+	generate other schemas
+	generate docu of comments (see libcomment)
+	do mounting+preloading (generate config for type checkers)
+	provide definitions which metadata is available and how it is used ("columns" of Configuration definitions)
+
+community:
+	make place to share configuration
+	make place to share plugins
+
+Make Plugins 1st level citizen
+	plugins should be able to do everything the core can do
+	(mounting, exceptions, bootstrapping, user/system split)
+
+InternalDatabase: (only for frontend!)
+	for highlevel kdbGetString, kdbSetString
+
+Lazy+Bind Mounting
+	makes kdbOpen cheaper (with many plugins)
+	plugins can have global information bind mounted into their conf
+	(e.g. /etc/passwd into resolver)
+	kdbDup to copy current state
+	leaves architecture as is -> possibility for any frontend and caching strategy + plays nicely with recursive plugins
 
 GlobalPlugins:
 	for notification start/end
@@ -6,9 +87,16 @@ GlobalPlugins:
 	for journaling
 	for git-commit
 
+non-file based storage plugins (backends):
+	nvram
+	sql
+	mmap
+	filesys
+
 cryptography:
 	sign modules and check them when kdbOpen
 	encrypted keys backend
+	sign+encrypt configurationn
 
 distributed elektra
 	automatical synchronisation of nodes
@@ -17,29 +105,8 @@ typed elektra
 	typing system with subtyping
 	dynamic type checking
 
-daemon:
-	mmap keys
-	distributed configuration
-	notification feature (see api above)
-
-ksToStream:
-	Streaming of all Backends (not only binary and xml)
-	xml backend
-	c-code streaming
-	shell-code streaming
-
-backends:
-	xfree
-	apache
-	kde-ini
-	gconf
-	xml
-	fstab
-	inittab
-	nvram
-	sql
-
-notification: new notification api
+notification: new notification api (only for frontend!)
+	for highlevel API
 	void kdbRegisterCallback(KeySet *interests, u_int32_t diffMask,
 		KdbCallback *cb, void *userdata);
 	void kdbUnregisterCallback(KeySet *interests, u_int32_t diffMask,
@@ -47,7 +114,7 @@ notification: new notification api
 	void kdbDeliverEvents(long iterations, int sleep);
 
 
-libcomment:
+libcomment: -> define as metadata
 	multilanguage comments
 	type of key (list, int, bool,...)
 	validator of key (what is valid?)
@@ -58,12 +125,24 @@ libcomment:
 	without any field it will be taken as
 		comment for every language,
 		not especially specified
+	readonly?
+	dynamic?
+	persistent?
+	visibility (enum for groups)
+	default
+	type
+	description
+
 
 
 hierarchy: sorted by priority
+	add high level ksLookup which builds up hash for any search folders
+		(e.g. /system/keybindings /user/keybindings /system/sw/myapp/keybindings...)
+	Let new software load old keys, even after renaming of keys
+		e.g. /system/old_app_name/keyname
 	add new folders next to system/ and user/
 	support multiple hierachies (doc, local) by conf
-	memory (memory fallback)	
+	memory (memory fallback)
 	system/, local/, opt/(will be used if installed to /usr, /usr/local or /opt)
 	user/
 	current/ (configuration in the current working directory)
@@ -73,17 +152,36 @@ hierarchy: sorted by priority
 	doc(/usr/share/doc/kdb) hierachys, value -> comment
 	keyset: build up a hash with highest priority found
 
-uninstall:
-	let user find configuration of uninstalled software
-
-web2.0:
-	share elektra xml files
-	web frontent to kdb with xml/generate output/paste
-
 
 BackendCtl:
-	set and get options of backends
+	set and get options dynamically of backends
 	readonly
 	transactions
 	locking (performance)
 	filesys optimistic lock
+
+
+== Internals ==
+
+support multiple owner at once for kdbGet()/kdbSet()? -> or just set USER env or uid?
+allow mounting for users?
+
+
+= FINISH for 1.0.0 =
+
+symbole, only export
+Version info
+release
+minimize API -> (split core and convienience?)
+
+
+== OVERVIEW ==
+
+draw a big picture
+
+make list of all symbols
+	exported symbols
+	reduce it hard
+	symbole, only export (otherwise static)
+	Version info 4.0
+

@@ -10,7 +10,7 @@
 #include <exported_symbols.h>
 
 
-int elektraModulesInit (KeySet *modules, Key *error)
+int elektraModulesInit (KeySet *modules, Key *error ELEKTRA_UNUSED)
 {
 	ksAppendKey (modules, keyNew ("system/elektra/modules", KEY_END));
 
@@ -91,7 +91,7 @@ elektraPluginFactory elektraModulesLoad (KeySet *modules, const char *name, Key 
 	return (elektraPluginFactory)module->function;
 }
 
-int elektraModulesClose (KeySet *modules, Key *error)
+int elektraModulesClose (KeySet *modules, Key *error ELEKTRA_UNUSED)
 {
 	ksClear(modules);
 	return 0;

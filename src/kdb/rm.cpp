@@ -26,11 +26,11 @@ int RemoveCommand::execute(Cmdline const& cl)
 
 	if (!cl.recursive)
 	{
-		KeySet k ( conf.cut (x));
+		Key f = conf.lookup(x, KDB_O_POP);
 
-		if (k.size() == 0)
+		if (!f)
 		{
-			cerr << "Did not find any key" << endl;
+			cerr << "Did not find the key" << endl;
 			return 1;
 		}
 	} else {

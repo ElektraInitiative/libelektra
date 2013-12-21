@@ -23,9 +23,13 @@
  ***************************************************************************/
 
 
+#ifndef HAVE_KDBCONFIG
+# include "kdbconfig.h"
+#endif
+
 #include "validation.h"
 
-int elektraValidationGet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraValidationGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey ELEKTRA_UNUSED)
 {
 	KeySet *n;
 	ksAppend (returned, n=ksNew (30,
@@ -62,7 +66,7 @@ int elektraValidationGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	return 1;
 }
 
-int elektraValidationSet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraValidationSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
 	Key *cur = 0;
 

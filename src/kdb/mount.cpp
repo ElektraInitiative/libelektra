@@ -21,21 +21,24 @@ std::string MountCommand::root = "system/elektra/mountpoints";
 MountCommand::MountCommand()
 {}
 
-void MountCommand::outputMtab()
+KeySet readMountConf()
 {
 	KeySet mountConf;
+	Key parentKey("system/elektra/mountpoints", KEY_END);
 
-	{
-		Key parentKey("system/elektra/mountpoints", KEY_END);
+	kdb::KDB kdb (parentKey);
+	kdb.get(mountConf, parentKey);
+	kdb.close (parentKey);
 
-		kdb::KDB kdb (parentKey);
-		kdb.get(mountConf, parentKey);
-		kdb.close (parentKey);
+	printError(parentKey);
+	printWarnings (parentKey);
 
-		printWarnings (parentKey);
+	return mountConf;
+}
 
-		// now we dont need any affairs to the key database
-	}
+void MountCommand::outputMtab()
+{
+	KeySet mountConf = readMountConf();
 
 	Key rootKey (root, KEY_END);
 	Key cur;
@@ -90,41 +93,27 @@ int MountCommand::execute(Cmdline const& cl)
 		cout << "until you say y at the very end of the mounting process" << endl;
 	}
 
-	KeySet wholeConf;
-
-	{
-		Key parentKey("", KEY_END);
-
-		kdb::KDB kdb (parentKey);
-		kdb.get(wholeConf, parentKey);
-		kdb.close (parentKey);
-
-		printWarnings (parentKey);
-
-		// now we dont need any affairs to the key database
-	}
+	KeySet mountConf = readMountConf();
 
 	Key rootKey (root, KEY_END);
-	KeySet conf = wholeConf.cut (rootKey);
 
 	Key cur;
-       
-	cur = conf.lookup(rootKey);
+	cur = mountConf.lookup(rootKey);
 	if (!cur)
 	{
 		if (cl.verbose)
 		{
 			cout << "Did not find the root key, will add it" << endl;
 		}
-		conf.append ( *Key(root,
+		mountConf.append ( *Key(root,
 			KEY_COMMENT, "Below are the mountpoints.",
 			KEY_END));
-		conf.rewind();
+		mountConf.rewind();
 	}
 
 	std::vector <std::string> names;
 	names.push_back("default");
-	while (cur = conf.next())
+	while (cur = mountConf.next())
 	{
 		if (rootKey.isDirectBelow(cur))
 		{
@@ -159,8 +148,8 @@ int MountCommand::execute(Cmdline const& cl)
 
 	std::vector <std::string> mountpoints;
 	mountpoints.push_back("system/elektra");
-	conf.rewind();
-	while (cur = conf.next())
+	mountConf.rewind();
+	while (cur = mountConf.next())
 	{
 		if (cur.getBaseName() == "mountpoint")
 		{
@@ -235,11 +224,11 @@ int MountCommand::execute(Cmdline const& cl)
 		backend.checkFile (path);
 		backend.addPlugin ();
 
-		conf.append ( *Key( root  + "/" + name + "/config",
+		mountConf.append ( *Key( root  + "/" + name + "/config",
 				KEY_VALUE, "",
 				KEY_COMMENT, "This is a configuration for a backend, see subkeys for more information",
 				KEY_END));
-		conf.append ( *Key( root  + "/" + name + "/config/path",
+		mountConf.append ( *Key( root  + "/" + name + "/config/path",
 				KEY_VALUE, path.c_str(),
 				KEY_COMMENT, "The path for this backend. Note that plugins can override that with more specific configuration.",
 				KEY_END));
@@ -251,7 +240,6 @@ int MountCommand::execute(Cmdline const& cl)
 		size_t current_plugin = 2;
 		if (cl.interactive)
 		{
-			std::string name;
 			cout << "First Plugin: ";
 			cin >> name;
 		}
@@ -310,7 +298,7 @@ int MountCommand::execute(Cmdline const& cl)
 			}
 		}
 
-		backend.serialize (rootKey, conf);
+		backend.serialize (rootKey, mountConf);
 	}
 
 
@@ -321,8 +309,8 @@ int MountCommand::execute(Cmdline const& cl)
 		cout << "Mountpoint: " << mp << endl;
 		cout << "Path:       " << path << endl;
 		cout << "The configuration which will be set is:" << endl;
-		conf.rewind();
-		while (Key k = conf.next())
+		mountConf.rewind();
+		while (Key k = mountConf.next())
 		{
 			cout << k.getName() << " " << k.getString() << endl;
 		}
@@ -333,7 +321,7 @@ int MountCommand::execute(Cmdline const& cl)
 	}
 
 
-	cout << "Setting the mountpoint configuration";
+	cout << "Now writing the mountpoint configuration";
 	{
 		Key parentKey(root, KEY_END);
 
@@ -342,34 +330,13 @@ int MountCommand::execute(Cmdline const& cl)
 		KeySet dummy;
 		kdb.get(dummy, parentKey);
 		cout << ".";
-		kdb.set(conf, parentKey);
+		kdb.set(mountConf, parentKey);
 		cout << ".";
 		kdb.close (parentKey);
 		cout << endl;
 
-		printWarnings (parentKey);
-
-		// now we dont need any affairs to the key database
-	}
-
-	wholeConf.append(conf);
-	cout << "Writing back configuration to new mounted backends";
-	{
-		Key parentKey("", KEY_END);
-
-		kdb::KDB kdb (parentKey);
-		KeySet dummy;
-		cout << ".";
-		kdb.get(dummy, parentKey);
-		cout << ".";
-		kdb.set(wholeConf, parentKey);
-		cout << ".";
-		kdb.close (parentKey);
-		cout << endl;
-
-		printWarnings (parentKey);
-
-		// now we dont need any affairs to the key database
+		printError(parentKey);
+		printWarnings(parentKey);
 	}
 
 	return 0;

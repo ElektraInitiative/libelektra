@@ -154,7 +154,7 @@ int main(int argc, char** argv)
 	test_reversibility();
 	test_config();
 
-	printf("\ntest_backendhelpers RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	printf("\ntestmod_hexcode RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
 }
