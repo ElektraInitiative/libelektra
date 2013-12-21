@@ -17,7 +17,7 @@ TestCommand::TestCommand():
 	nrError(0),
 	// XXX add here the name if you add a test
 	// (spaces at begin/end needed for check)
-	testNames(" basic string umlauts binary naming meta ")
+	test_names(" basic string umlauts binary naming meta ")
 {}
 
 void TestCommand::doBasicTest()
