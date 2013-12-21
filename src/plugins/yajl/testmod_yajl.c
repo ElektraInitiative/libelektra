@@ -537,14 +537,14 @@ void test_readWrite(const char * fileName,
 	succeed_if(output_error(parentKey), "error in kdbGet");
 	succeed_if(output_warnings(parentKey), "warnings in kdbGet");
 
-	output_keyset(keys);
+	// output_keyset(keys);
 
 	char * fileNameCompare = malloc(strlen(fileName)+6);
 	strcpy(fileNameCompare, fileName);
 	strcat(fileNameCompare, ".comp");
 	keySetString(parentKey, srcdir_file(fileNameCompare));
 	// keySetString(parentKey, "/proc/self/fd/1");
-	printf("File name is: %s\n", keyString(parentKey));
+	// printf("File name is: %s\n", keyString(parentKey));
 
 	succeed_if(plugin->kdbSet(plugin, keys, parentKey) == 1, "kdbSet was not successful");
 	succeed_if(output_error(parentKey), "error in kdbSet");
