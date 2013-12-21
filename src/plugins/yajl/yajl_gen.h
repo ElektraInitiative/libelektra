@@ -28,10 +28,6 @@ typedef enum
 	 */
 	LOOKAHEAD_ARRAY=1,
 	/**
-	 * We are starting a new array.
-	 */
-	LOOKAHEAD_START_ARRAY=2,
-	/**
 	 * We found a special marker for empty arrays.
 	 * @todo not implemented yet
 	 */

@@ -78,7 +78,7 @@ static void elektraGenOpenIterate(yajl_gen g,
 
 			}
 		}
-		else if (lookahead == LOOKAHEAD_START_ARRAY ||
+		else if (lookahead == LOOKAHEAD_ARRAY ||
 			 lookahead == LOOKAHEAD_EMPTY_ARRAY)
 		{
 #ifdef ELEKTRA_YAJL_VERBOSE
@@ -354,7 +354,7 @@ static void elektraGenOpenFirst(yajl_gen g,
 				(const unsigned char *)next,
 				nextSize);
 		}
-		else if (lookahead == LOOKAHEAD_START_ARRAY ||
+		else if (lookahead == LOOKAHEAD_ARRAY ||
 			 lookahead == LOOKAHEAD_EMPTY_ARRAY)
 		{
 #ifdef ELEKTRA_YAJL_VERBOSE

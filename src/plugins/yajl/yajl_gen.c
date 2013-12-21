@@ -20,11 +20,7 @@ lookahead_t elektraLookahead(const char* pnext, size_t size)
 		// we are not at end, so we can look one further
 		if (*(pnext+size+1) == '#')
 		{
-			if (*(pnext+size+2) == '0')
-			{
-				lookahead = LOOKAHEAD_START_ARRAY;
-			}
-			else if (!strcmp(pnext+size+1, "###empty_array"))
+			if (!strcmp(pnext+size+1, "###empty_array"))
 			{
 				lookahead = LOOKAHEAD_EMPTY_ARRAY;
 			}
