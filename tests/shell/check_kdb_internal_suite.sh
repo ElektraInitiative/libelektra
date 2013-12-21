@@ -1,0 +1,82 @@
+@INCLUDE_COMMON@
+
+echo
+echo ELEKTRA KDB INTERNAL TEST SUITE
+echo
+
+check_version
+
+#override for specific testing
+#PLUGINS=ni
+
+for PLUGIN in $PLUGINS
+do
+	if is_not_rw_storage
+	then
+		echo "$PLUGIN not a read-write storage"
+		continue;
+	fi
+
+	case "$PLUGIN" in
+	"tcl")
+		MOUNT_PLUGIN="$PLUGIN ccode null"
+		TESTS="basic"
+		;;
+	"simpleini")
+		MOUNT_PLUGIN="$PLUGIN hexcode null"
+		TESTS="basic string"
+		;;
+	"dump")
+		MOUNT_PLUGIN="$PLUGIN"
+		# all tests for dump.. (takes long time)
+		TESTS=
+		# tests taking not soo long:
+		TESTS="basic string umlauts binary naming"
+		;;
+	*)
+		MOUNT_PLUGIN="$PLUGIN"
+		#if a new plugin can manage something we are happy
+		TESTS="basic string"
+		;;
+	esac
+
+	unset -f cleanup
+	FILE=test.$PLUGIN
+
+	USER_REMAINING="`find $USER_FOLDER -maxdepth 1 -name $FILE'*' -print -quit`"
+	test -z "$USER_REMAINING"
+	exit_if_fail "files $USER_REMAINING in $USER_FOLDER would be removed during tests, so test is aborted"
+
+	SYSTEM_REMAINING="`find $SYSTEM_FOLDER -maxdepth 1 -name $FILE'*' -print -quit`"
+	test -z "$SYSTEM_REMAINING"
+	exit_if_fail "files $SYSTEM_REMAINING in $SYSTEM_FOLDER would be removed during tests, so test is aborted"
+
+	$KDB mount $FILE $MOUNTPOINT $MOUNT_PLUGIN 1>/dev/null
+	exit_if_fail "could not mount $FILE at $MOUNTPOINT using $MOUNT_PLUGIN"
+
+	cleanup()
+	{
+		$KDB umount $MOUNTNAME >/dev/null
+		succeed_if "could not umount $MOUNTNAME"
+		rm -f $USER_FOLDER/$FILE
+		rm -f $SYSTEM_FOLDER/$FILE
+
+		USER_REMAINING="`find $USER_FOLDER -maxdepth 1 -name $FILE'*' -print -exec rm {} +`"
+		test -z "$USER_REMAINING"
+		succeed_if "found remaining files $USER_REMAINING in $USER_FOLDER"
+
+		SYSTEM_REMAINING="`find $SYSTEM_FOLDER -maxdepth 1 -name $FILE'*' -print -exec rm {} +`"
+		test -z "$SYSTEM_REMAINING"
+		succeed_if "found remaining files $SYSTEM_REMAINING in $SYSTEM_FOLDER"
+	}
+
+	for ROOT in $USER_ROOT $SYSTEM_ROOT
+	do
+		$KDB test "$ROOT" $TESTS
+		succeed_if "could not run test suite"
+	done
+
+	cleanup
+done
+
+end_script basic commands

@@ -20,11 +20,7 @@ lookahead_t elektraLookahead(const char* pnext, size_t size)
 		// we are not at end, so we can look one further
 		if (*(pnext+size+1) == '#')
 		{
-			if (*(pnext+size+2) == '0')
-			{
-				lookahead = LOOKAHEAD_START_ARRAY;
-			}
-			else if (!strcmp(pnext+size, "###empty_array"))
+			if (!strcmp(pnext+size+1, "###empty_array"))
 			{
 				lookahead = LOOKAHEAD_EMPTY_ARRAY;
 			}
@@ -35,7 +31,7 @@ lookahead_t elektraLookahead(const char* pnext, size_t size)
 		}
 		else
 		{
-			if (!strcmp(pnext+size, "___empty_map"))
+			if (!strcmp(pnext+size+1, "___empty_map"))
 			{
 				lookahead = LOOKAHEAD_EMPTY_MAP;
 			}
@@ -140,10 +136,6 @@ static int elektraGenOpenValue(yajl_gen g, const Key *next)
  */
 static void elektraGenValue(yajl_gen g, Key *parentKey, const Key *cur)
 {
-#ifdef ELEKTRA_YAJL_VERBOSE
-	printf ("GEN value %s for %s\n", keyString(cur), keyName(cur));
-#endif
-
 	if (!elektraGenOpenValue(g, cur))
 	{
 #ifdef ELEKTRA_YAJL_VERBOSE
@@ -151,6 +143,10 @@ static void elektraGenValue(yajl_gen g, Key *parentKey, const Key *cur)
 #endif
 		return;
 	}
+
+#ifdef ELEKTRA_YAJL_VERBOSE
+	printf ("GEN value %s for %s\n", keyString(cur), keyName(cur));
+#endif
 
 	const Key * type = keyGetMeta(cur, "type");
 	if (!type && keyGetValueSize(cur) == 0) // empty binary type is null

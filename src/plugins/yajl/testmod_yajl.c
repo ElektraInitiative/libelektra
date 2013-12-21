@@ -543,6 +543,7 @@ void test_readWrite(const char * fileName,
 	strcpy(fileNameCompare, fileName);
 	strcat(fileNameCompare, ".comp");
 	keySetString(parentKey, srcdir_file(fileNameCompare));
+	// keySetString(parentKey, "/proc/self/fd/1");
 	// printf("File name is: %s\n", keyString(parentKey));
 
 	succeed_if(plugin->kdbSet(plugin, keys, parentKey) == 1, "kdbSet was not successful");
@@ -551,7 +552,7 @@ void test_readWrite(const char * fileName,
 	free(fileNameCompare);
 
 	succeed_if(compare_line_files(srcdir_file(fileName), keyString(parentKey)),
-			"files do not match as expected");
+	 		"files do not match as expected");
 
 	keyDel (parentKey);
 	ksDel (keys);
@@ -843,6 +844,11 @@ int main(int argc, char** argv)
 	test_readWrite("examples/testdata_array_mixed2.json", ksNew(0));
 	test_readWrite("examples/testdata_array_special_start.json", ksNew(0));
 	test_readWrite("examples/testdata_array_mixed3.json", ksNew(0));
+	test_readWrite("examples/testdata_empty_in_array.json", ksNew(0));
+	test_readWrite("examples/testdata_empty_in_map.json", ksNew(0));
+	test_readWrite("examples/testdata_empty_in_array1.json", ksNew(0));
+	test_readWrite("examples/testdata_empty_in_map2.json", ksNew(0));
+	test_readWrite("examples/testdata_empty_in_map1.json", ksNew(0));
 
 	elektraModulesClose(modules, 0);
 	ksDel (modules);

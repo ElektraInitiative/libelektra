@@ -8,8 +8,6 @@ check_version
 
 VALUE=value
 
-echo "testing set and get commands"
-
 #override for specific testing
 #PLUGINS=yajl
 
@@ -21,20 +19,20 @@ do
 		continue;
 	fi
 
-	if [ "x$PLUGIN" = "xtcl" ]
-	then
+	case "$PLUGIN" in
+	"tcl")
 		MOUNT_PLUGIN="tcl ccode null"
 		echo "tcl currently broken (to be fixed)"
 		echo "TODO problem: after removing root key file is broken"
 		continue;
-	fi
-
-	if [ "x$PLUGIN" = "xsimpleini" ]
-	then
+		;;
+	"simpleini")
 		MOUNT_PLUGIN="simpleini ccode null"
-	else
-		MOUNT_PLUGIN=$PLUGIN
-	fi
+		;;
+	*)
+		MOUNT_PLUGIN="$PLUGIN"
+		;;
+	esac
 
 	unset -f cleanup
 	FILE=test.$PLUGIN
@@ -138,6 +136,9 @@ do
 			[ "x`$KDB get $KEY`" = "x$VALUE" ]
 			succeed_if "$KEY is not $VALUE"
 		done
+
+		$KDB rm -r "$ROOT"
+		succeed_if "could not remove all keys"
 	done
 
 	cleanup

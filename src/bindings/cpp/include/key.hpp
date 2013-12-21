@@ -260,7 +260,7 @@ inline Key::Key (const char * keyName, ...)
 }
 
 /**
- * @copydoc keyVNew
+ * @copydoc keyNew
  *
  * @warning Not supported on some compilers, e.g.
  * clang which require you to only pass non-POD
@@ -280,7 +280,7 @@ inline Key::Key (const std::string keyName, ...)
 }
 
 /**
- * @copydoc keyVNew
+ * @copydoc keyNew
  *
  * @param keyName the name of the new key
  * @param ap the variable argument list pointer
