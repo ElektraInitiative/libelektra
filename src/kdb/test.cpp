@@ -17,7 +17,7 @@ TestCommand::TestCommand():
 	nrError(0),
 	// XXX add here the name if you add a test
 	// (spaces at begin/end needed for check)
-	test_names(" basic string umlauts binary naming meta ")
+	testNames(" basic string umlauts binary naming meta ")
 {}
 
 void TestCommand::doBasicTest()
@@ -476,12 +476,12 @@ int TestCommand::execute(Cmdline const& cl)
 		string name = " ";
 		name += cl.arguments[i];
 		name += " ";
-		if (test_names.find(name) == std::string::npos)
+		if (testNames.find(name) == std::string::npos)
 		{
 			throw invalid_argument ("test name " +
 					cl.arguments[i] +
 					" does not exist in:" +
-					test_names);
+					testNames);
 		}
 	}
 

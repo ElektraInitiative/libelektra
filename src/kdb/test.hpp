@@ -12,14 +12,13 @@ class TestCommand : public Command
 	kdb::Key root;
 	int nrTest;
 	int nrError;
+	std::string testNames;
 
 public:
 	TestCommand();
 	~TestCommand();
 
 	void doTests(std::vector<std::string> const& arguments);
-
-	std::string test_names;
 
 	void doBasicTest();
 	void doStringTest();
@@ -57,7 +56,7 @@ public:
 			"If no test name is given, every available test\n"
 			" is executed.\n"
 			"\n"
-			"Following tests are available:" + test_names
+			"Following tests are available:" + testNames
 			;
 	}
 
