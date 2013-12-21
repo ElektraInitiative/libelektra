@@ -1,7 +1,6 @@
 This describes what to do for an release!
 
-
-== Cleanup ==
+= Cleanup =
 
 
 For the first few steps you have to work on branch master:
@@ -24,46 +23,86 @@ Try to move as much as possible from this manual checks to build-server!
 Before release is done, following must be checked:
 - Everything blue on http://community.markus-raab.org:8080/
 - Version number in CMakeLists.txt
-- using installed debian packages, run:
- - (installed executeable tests
- - API/ABI compatible by running old tests
- - (installed) shell tests
- - if tests cases do not remove existing config
- - if external compilation works
- - if API/ABI compatible
+- make sure no TODO is in this file (resolve them first!)
 
 
-== Preperation ==
+
+= Preperation =
 
 Set environment variable VERSION to current version to make the
 commands below work for copy&paste:
 
  export VERSION=0.x.y
 
-
-== Source Package ==
-
 Now lets merge that to the release branch:
  git-checkout release
  git-merge --no-ff master
- git-commit --amend -m "Release $VERSION"
+ git-commit --amend -m "Merge for release $VERSION"
+
+
+== Prepare Source Package ==
 
 Build tar.gz and tag version and make hashsum:
+TODO: add -u 0B2F0DDC in release-tag signed-release-tag
  cd ~build && make source-package
 
-TODO: write script for that (+ merge with source-package)
 Unpack + compile (with all available plugins) + test those sources (using valgrind!):
-tar xvzf elektra-$VERSION.tar.gz && mkdir build && cd build && cmake -DPLUGINS=ALL ../elektra-$VERSION && make && ctest -T memcheck
+tar xvzf elektra-$VERSION.tar.gz && mkdir build && cd build && cmake -DPLUGINS=ALL ../elektra-$VERSION && make -j 5 && ctest -T memcheck
 
 Now copy the packages to ftp (stay in same folder):
  cp ~build/elektra-$VERSION.tar.gz ~elektra-ftp/releases
  cp ~build/elektra-$VERSION.tar.gz.hashsum ~elektra-ftp/releases
 
-Commit elektra-ftp to gitorious:
- cd ~elektra-ftp
- git-add releases/elektra-$VERSION.tar.gz
- git-add releases/elektra-$VERSION.tar.gz.hashsum
- git-commit -a -m "Release $VERSION"
+TODO: ./check_get_set.sh:
+
+
+== Debian Package ==
+
+
+Build deb:
+ git-checkout debian
+ git-merge --no-ff release
+
+ dch --newversion $VERSION-1 "New upstream version."
+ git-add debian/changelog
+ git-commit -m "Debian Package $VERSION-1"
+ cp ~elektra-ftp/releases/elektra-$VERSION.tar.gz ~elektra/elektra_$VERSION.orig.tar.gz
+ git-buildpackage -rfakeroot -k0B2F0DDC -sa
+
+Now move and install:
+ cd ~elektra && mkdir deb/$VERSION && mv elektra_$VERSION* deb/$VERSION && mv *.deb deb/$VERSION && sudo dpkg -i deb/$VERSION/*.deb
+
+
+Run some basic commands:
+ kdb --version
+
+Debian packages in chroot + publish in reprepro
+
+Now run lintian:
+ lintian -EI --color=auto --pedantic deb/$VERSION/elektra_$VERSION-1_*.changes
+
+And run piuparts:
+ sudo piuparts deb/$VERSION/elektra_$VERSION-1_*.changes
+
+And run adequate (combined with piuparts and after installation)
+
+Install libelektra-test of the previous version and run:
+ for i in `dpkg -L libelektra-test | grep bin`; do $i; done
+
+TODO: remove set -x from shell tests
+TODO: install shell scripts
+
+
+== Test external tools ==
+
+Check if external compilation works:
+ cd ~e/external && mkdir build && cd build && cmake ../cmake && make && ./application && cd .. && rm -r build
+ cd ~e/external/pkgconfig && make && ./get && rm get
+
+TODO: print something!
+
+Check if installed tools based on work:
+ dq
 
 
 == Documentation ==
@@ -77,38 +116,20 @@ Symlink current to latest version and add everything:
 
 
 
+
+= Publish =
+
 == Debian Package ==
 
+ cd ~elektra/deb/$VERSION && reprepro --ignore=wrongdistribution include wheezy elektra_$VERSION-1_amd64.changes && update-reprepro
 
-Build deb:
- git-checkout debian
- git-merge --no-ff release
+== Commit source package ==
 
- dch --newversion $VERSION-1 "New upstream version."
- git-add debian/changelog
- git-commit -m "Debian Package $VERSION-1"
- git-tag $VERSION-1
- cp ~elektra-ftp/releases/elektra-$VERSION.tar.gz ~elektra/elektra_$VERSION.orig.tar.gz
- git-buildpackage -rfakeroot -k00B86A15 -sa
- reprepro --ignore=wrongdistribution include wheezy elektra_$VERSION-1_amd64.changes
+Commit elektra-ftp to gitorious:
+ cd ~elektra-ftp && git-add releases/elektra-$VERSION.tar.gz && git-add releases/elektra-$VERSION.tar.gz.hashsum && git-commit -a -m "Release $VERSION"
 
 
-Now install package + run some basic commands:
- kdb --version
-
-Debian packages in chroot + publish in reprepro
-
-You might want to run lintian:
- lintian -EI --color=auto --pedantic elektra_$VERSION-1_i386.changes
-
-And also run piuparts:
- sudo piuparts elektra_$VERSION-1_i386.changes
-
-And run adequate (combined with piuparts or after installation)
-
-
-== Publish ==
-
+== push ==
 
 Now we know that everything worked well:
 
