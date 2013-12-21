@@ -6,10 +6,6 @@ Items are e.g. BUGS, OPTIMIZE, PROBLEMS, TESTING, PLUGINS, TODO,..
 
 == 0.8.4 ==
 
-=== bugs ===
-
-yajl-gen on yajl1 incorrectly?
-
 === testing ===
 
 multiple mounts
