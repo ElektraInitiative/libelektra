@@ -73,7 +73,7 @@ Now move and install:
  cd ~elektra && mkdir deb/$VERSION && mv elektra_$VERSION* deb/$VERSION && mv *.deb deb/$VERSION && sudo dpkg -i deb/$VERSION/*.deb
 
 
-Run some basic commands:
+Run some basic commands, at least:
  kdb --version
 
 Debian packages in chroot + publish in reprepro
@@ -85,12 +85,14 @@ And run piuparts:
  sudo piuparts deb/$VERSION/elektra_$VERSION-1_*.changes
 
 And run adequate (combined with piuparts and after installation)
+ adequate '*elektra*'
 
 Install libelektra-test of the previous version and run:
  for i in `dpkg -L libelektra-test | grep bin`; do $i; done
 
 TODO: remove set -x from shell tests
 TODO: install shell scripts
+TODO: usr/bin/check_* should be added, but needs modification of ENABLE_KDB_TESTING
 
 
 == Test external tools ==
