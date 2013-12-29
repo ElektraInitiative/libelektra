@@ -1,6 +1,8 @@
 elektra (0.8.4-2) unstable; urgency=low
 
   * Fix problems reported by lintian
+  * Fix which files to install
+  * Add docu as separate package
 
  -- Markus Raab <debian@markus-raab.org>  Sat, 21 Dec 2013 22:34:06 +0100
 
