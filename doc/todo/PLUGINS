@@ -204,6 +204,11 @@ make (at least) 4 resolvers:
 		using HOME def. in posix: http://pubs.opengroup.org/onlinepubs/009695399/basedefs/xbd_chap08.html
 		using USER as fallback? not def. in posix, but often in shells
 
+better error messages:
+	#9 (when opening file failed)
+	resolver in kdbError should correct error message
+	the storage plugins do not have to state reason then
+
 race conditions:
 	the losing process must not remove the .tmp file, but it
 	has to remove all .tmp files it created before (in those cases
