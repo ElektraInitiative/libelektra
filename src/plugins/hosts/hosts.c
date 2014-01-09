@@ -67,7 +67,7 @@ int elektraHostsAppendComment (char *comment, char *line)
 
 	if (line[0] == '#')
 	{
-		strncat (comment, line, HOSTS_KDB_BUFFER_SIZE-c-2);
+		strncat (comment, line+1, HOSTS_KDB_BUFFER_SIZE-c-2);
 		return 1; /* Complete line is comment, so go on.. */
 	}
 
