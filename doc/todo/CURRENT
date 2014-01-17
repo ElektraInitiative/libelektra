@@ -10,3 +10,8 @@ debian:
 	enable (fix) tests
 	add examples as package
 	enable all plugins (struct, type, validation!!!)
+
+
+doxygen -u
+types.hpp installed to /usr/lib
+
