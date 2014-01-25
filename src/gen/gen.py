@@ -16,6 +16,12 @@ def main():
     parameterSpecification['parameters']={}
     for section in parser.sections():
         parameterSpecification['parameters'][section]={}
+        fallback={}
+        override={}
+        if parser.has_option(section, "fallback"):
+                fallback = parser.get(section, "fallback").split(' ')
+        if parser.has_option(section, "override"):
+                override = parser.get(section, "override").split(' ')
         for item in parser.items(section):
             parameterSpecification['parameters'][section][item[0]] = item[1]
 
