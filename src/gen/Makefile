@@ -10,4 +10,6 @@ lift.h:gen.py specification.ini template.h
 .PHONY:clean
 clean:
 	rm -f lift.h
+	rm -f lift.html
 	rm -f lift
+	rm -f *.pyc
