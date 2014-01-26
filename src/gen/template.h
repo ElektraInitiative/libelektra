@@ -1,5 +1,4 @@
 #from c_support import *
-
 #compiler-settings
 directiveStartToken = @
 cheetahVarStartToken = $
@@ -10,6 +9,9 @@ cheetahVarStartToken = $
 #include <stdint.h>
 #include <string.h>
 #include <stdio.h>
+
+// needs template_getopt.c
+int ksGetOpt(int argc, char **argv, KeySet *ks);
 
 @for $key, $info in $parameters.items()
 @if $isenum(info):
