@@ -7,6 +7,9 @@ def isenum(info):
 def enumval(info):
     return info["type"].split(' ')[2:]
 
+def enumname(info):
+    return info["type"].split(' ')[1]
+
 def valof(info):
     val = info["default"]
     type = info["type"]
@@ -27,6 +30,6 @@ def typeof(info):
     elif type == "string":
         return "char*"
     elif isenum(info):
-        return "enum " + type.split(' ')[1]
+        return "enum " + enumname(info)
     else:
         return type
