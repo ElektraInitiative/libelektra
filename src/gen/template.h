@@ -1,4 +1,3 @@
-#from gen_support import *
 #from c_support import *
 
 #compiler-settings

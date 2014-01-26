@@ -1,14 +1,7 @@
+from gen_support import *
+
 def funcname(key):
     return key.replace('/','_').replace('#','')
-
-def isenum(info):
-    return info["type"].startswith("enum ")
-
-def enumval(info):
-    return info["type"].split(' ')[2:]
-
-def enumname(info):
-    return info["type"].split(' ')[1]
 
 def valof(info):
     val = info["default"]
