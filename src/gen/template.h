@@ -3,8 +3,10 @@
 directiveStartToken = @
 cheetahVarStartToken = $
 #end compiler-settings
+#ifndef ELEKTRA_GEN_FILENAME_H
+#define ELEKTRA_GEN_FILENAME_H
 /** \file
- * start of a generated file
+ * \warning this is a generated file, do not modify it
  * \warning this is a prototype and not production code
  */
 #include "kdb.h"
@@ -208,4 +210,4 @@ static inline void set_$funcname($key)(KeySet *ks, $typeof(info) n)
 
 
 @end for
-// end of a generated file
+#endif
