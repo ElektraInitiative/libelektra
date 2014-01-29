@@ -1,0 +1,6 @@
+make a commit model for configuration with a rollback when commit failed
+(set only on temporary object, until commit was done)
+separate commit to kdbSet
+
+longopt support
+environment parsing support

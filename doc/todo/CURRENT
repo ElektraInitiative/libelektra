@@ -4,14 +4,45 @@ During implementation phase no new items may be added here (only
 those which are necessary to fulfil the initial tasks)
 Items are e.g. BUGS, OPTIMIZE, PROBLEMS, TESTING, PLUGINS, TODO,..
 
-== 0.8.4 ==
 
-debian:
-	enable (fix) tests
-	add examples as package
-	enable all plugins (struct, type, validation!!!)
-
+== 0.8.5 ==
 
 doxygen -u
 types.hpp installed to /usr/lib
 
+improve gen
+
+Starting points:
+	add Tutorials
+	add former thesis as official docu?
+	add more Examples in literal style
+
+integration tests:
+	converting (any to any storage plugin)
+
+
+resolver:
+	pick most cruical features, e.g. xdg
+
+rebase:
+	python+C impl compare
+
+kdb convert
+kdb file:
+	export to temporary file, open with editor and reimport
+
+gen:
+	for each file
+	copy directory
+	enums?
+
+tools: dfc, ..
+	publish tools using gen
+
+fix TODOs in RELEASE
+	automate tests of external + examples using scripts
+
+man pages:
+	allow to change section
+	remove prefix path
+	man page for kdb tool?
