@@ -5,11 +5,11 @@ html
 
 == Todo ==
 
-doxygen refactor
-default behaviour
-override/fallback lookups
-override/fallback type inference
+remove common part or at least User
+let user to get common part
+
 C++ frontend
+override/fallback type inference
 ranges support with fallbacks
 allow file names, correct header guard
 

@@ -17,11 +17,11 @@ int main(int argc, char**argv)
 	enum algorithm a = get_user_sw_app_lift_algorithm(conf);
 	int write = get_user_sw_app_lift_write(conf);
 
-	printf ("delay: %d, stops: %s, algorithm: %s, height: %f, write: %s\n",
+	printf ("delay: %d, stops: %s, algorithm: %s, height #3: %f, write: %s\n",
 		get_user_sw_app_lift_emergency_delay(conf),
 		bool_to_string(stops),
 		algorithm_to_string(a),
-		get_user_sw_app_lift_floor_height(conf),
+		get_user_sw_app_lift_floor_3_height(conf),
 		bool_to_string(write));
 
 	// rewrite the same (does not change anything)

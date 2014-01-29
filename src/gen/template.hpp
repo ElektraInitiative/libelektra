@@ -38,7 +38,7 @@ inline void Key::set($enumname(info) e)
 	switch(e)
 	{
 @for $enum in $enumval(info)
-	case $typeof(info)::$enum: setString("$enum");
+	case $typeof(info)::$enum: setString("$enum"); break;
 @end for
 	}
 }
@@ -104,6 +104,22 @@ inline $enumname(info) Key::get() const
 @end if
 @end def
 
+class Parameters
+{
+public:
+
+	Parameters(kdb::KeySet & ks) : ks(ks)
+	{}
+
+@for $key, $info in $parameters.items()
+	$typeof(info) get$funcname($key)();
+	void set$funcname($key)($typeof(info) n);
+@end for
+
+private:
+	kdb::KeySet &ks;
+};
+
 @for $key, $info in $parameters.items()
 /** \brief Get parameter $key
  *
@@ -114,9 +130,36 @@ inline $enumname(info) Key::get() const
  * \return the value of the parameter, default if it could not be found
  * \param ks the keyset where the parameter is searched
  */
-static inline $typeof(info) get_$funcname($key)(kdb::KeySet ks)
+inline $typeof(info) Parameters::get$funcname($key)()
 {
+@if $info.get('override')
+	// override
+	kdb::Key found = ks.lookup("${override(info)[0]}", 0);
+@for $o in $override(info)[1:]
+	if (!found)
+	{
+		found = ks.lookup("$o", 0);
+	}
+@end for
+	// now the key itself
+	if(!found)
+	{
+		found = ks.lookup("$key", 0);
+	}
+@else
 	kdb::Key found = ks.lookup("$key", 0);
+@end if
+
+@if $info.get('fallback')
+	// fallback
+@for $f in $fallback(info)
+	if (!found)
+	{
+		found = ks.lookup("$f", 0);
+	}
+@end for
+@end if
+
 	$typeof(info) ret $valof(info)
 
 	if(found)
@@ -136,7 +179,7 @@ static inline $typeof(info) get_$funcname($key)(kdb::KeySet ks)
  * \param ks the keyset where the parameter is added or replaced
  * \param n is the value to set in the parameter
  */
-static inline void set_$funcname($key)(kdb::KeySet ks, $typeof(info) n)
+inline void Parameters::set$funcname($key)($typeof(info) n)
 {
 	kdb::Key found = ks.lookup("$key", 0);
 
