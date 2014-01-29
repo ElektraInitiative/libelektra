@@ -96,6 +96,7 @@ static inline int bool_from_string(const char *s)
 		return 0;
 }
 
+##todo: duplicate
 @def doxygen(key, info)
  * \par Type
  * $info['type']

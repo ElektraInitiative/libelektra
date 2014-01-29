@@ -13,11 +13,11 @@ int main()
 
 	Parameters par(ks);
 
-	std::cout << par.getUserSwAppLiftLimit() << std::endl;
+	std::cout << par.getSwLiftLimit() << std::endl;
 
-	par.setUserSwAppLiftLimit(42);
+	par.setSwLiftLimit(42);
 
-	std::cout << par.getUserSwAppLiftLimit() << std::endl;
+	std::cout << par.getSwLiftLimit() << std::endl;
 	// kdb.set(ks, parentKey);
 
 	return 0;

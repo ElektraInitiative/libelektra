@@ -1,7 +1,16 @@
 from gen_support import *
 
+#todo: duplicate
 def funcname(key):
-    return key.replace('/','_').replace('#','')
+    if key.startswith('user/'):
+        return funcpretty(key[5:])
+    elif key.startswith('system/'):
+        return funcpretty(key[7:])
+    else:
+        return funcpretty(key)
+
+def funcpretty(key):
+        return key.replace('/','_').replace('#','')
 
 def valof(info):
     val = info["default"]

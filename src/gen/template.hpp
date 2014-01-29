@@ -62,6 +62,7 @@ inline $enumname(info) Key::get() const
 @end if
 @end for
 
+##todo: duplicate
 @def doxygen(key, info)
  * \par Type
  * $info['type']

@@ -1,6 +1,15 @@
 from c_support import *
 
+#todo: duplicate
 def funcname(key):
+    if key.startswith('user/'):
+        return funcpretty(key[5:])
+    elif key.startswith('system/'):
+        return funcpretty(key[7:])
+    else:
+        return funcpretty(key)
+
+def funcpretty(key):
     return key.title().replace('/','').replace('#','')
 
 def valof(info):

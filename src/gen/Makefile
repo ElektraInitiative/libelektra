@@ -7,10 +7,10 @@ lift:lift.c lift.h getopt.c
 lift.html:gen.py specification.ini template.html
 	python gen.py specification.ini template.html > lift.html
 
-lift.h:gen.py specification.ini template.h
+lift.h:gen.py specification.ini template.h c_support.py
 	python gen.py specification.ini template.h > lift.h
 
-getopt.c:gen.py specification.ini template_getopt.c
+getopt.c:gen.py specification.ini template_getopt.c cpp_support.py
 	python gen.py specification.ini template_getopt.c > getopt.c
 
 cpplift:lift.cpp lift.hpp
