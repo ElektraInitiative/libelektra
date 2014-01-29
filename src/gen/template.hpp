@@ -12,6 +12,11 @@ cheetahVarStartToken = $
 #include "kdb.hpp"
 #include <string>
 
+extern "C"
+{
+int ksGetOpt(int argc, char **argv, ckdb::KeySet *ks);
+}
+
 namespace kdb
 {
 
@@ -186,7 +191,7 @@ inline void Parameters::set$funcname($key)($typeof(info) n)
 
 	if(!found)
 	{
-		kdb::Key k("$key", KEY_END);
+		kdb::Key k("$userkey(key)", KEY_END);
 		k.set<$typeof(info)>(n);
 		ks.append(k);
 	}

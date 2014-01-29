@@ -226,7 +226,7 @@ static inline void set_$funcname($key)(KeySet *ks, $typeof(info) n)
 @end if
 	if(!found)
 	{
-		ksAppendKey(ks, keyNew("$key",
+		ksAppendKey(ks, keyNew("$userkey(key)",
 				KEY_VALUE, s,
 				KEY_END));
 	}

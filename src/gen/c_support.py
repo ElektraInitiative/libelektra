@@ -2,15 +2,27 @@ from gen_support import *
 
 #todo: duplicate
 def funcname(key):
-    if key.startswith('user/'):
+    if key.startswith('/'):
+        return funcpretty(key[1:])
+    elif key.startswith('user/'):
         return funcpretty(key[5:])
     elif key.startswith('system/'):
         return funcpretty(key[7:])
     else:
-        return funcpretty(key)
+        raise Exception("invalid keyname " + key)
 
 def funcpretty(key):
-        return key.replace('/','_').replace('#','')
+    return key.replace('/','_').replace('#','')
+
+def userkey(key):
+    if key.startswith('/'):
+        return "user"+key
+    elif key.startswith('user/'):
+        return key
+    elif key.startswith('system/'):
+        return "user"+key[6:]
+    else:
+        raise Exception("invalid keyname " + key)
 
 def valof(info):
     val = info["default"]
