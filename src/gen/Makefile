@@ -21,8 +21,10 @@ lift.hpp:gen.py specification.ini template.hpp
 
 .PHONY:clean
 clean:
-	rm -f lift.h lift.hpp
+	rm -f lift.h
+	rm -f lift.hpp
 	rm -f lift.html
 	rm -f getopt.c
 	rm -f lift
+	rm -f cpplift
 	rm -f *.pyc
