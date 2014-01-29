@@ -12,9 +12,11 @@ def funcname(key):
         raise Exception("invalid keyname " + key)
 
 def funcpretty(key):
-    return key.title().replace('/','').replace('#','')
+    """Return pretty printed key name for functions"""
+    return key.title().replace('_','').replace('/','').replace('#','')
 
 def valof(info):
+    """Return the default value for given parameter"""
     val = info["default"]
     type = info["type"]
     if isenum(info):
@@ -22,6 +24,7 @@ def valof(info):
     return " = "+val+";"
 
 def typeof(info):
+    """Return the type for given parameter"""
     type = info["type"]
     if type == "unsigned_int_32":
         return "uint32_t"

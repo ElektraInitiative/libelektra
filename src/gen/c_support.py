@@ -15,6 +15,7 @@ def funcpretty(key):
     return key.replace('/','_').replace('#','')
 
 def userkey(key):
+    """Return the key name within user/"""
     if key.startswith('/'):
         return "user"+key
     elif key.startswith('user/'):
@@ -25,6 +26,7 @@ def userkey(key):
         raise Exception("invalid keyname " + key)
 
 def valof(info):
+    """Return the default value for given parameter"""
     val = info["default"]
     type = info["type"]
     if type == "bool":
@@ -36,6 +38,7 @@ def valof(info):
         return " = "+val+";"
 
 def typeof(info):
+    """Return the type for given parameter"""
     type = info["type"]
     if type == "unsigned_int_32":
         return "uint32_t"

@@ -91,7 +91,7 @@ inline $enumname(info) Key::get() const
  * \par Override
 <ul>
     @for $i in $override(info)
-    <li>get_${funcname($i)}()</li>
+    <li>get${funcname($i)}()</li>
     @end for
 </ul>
 @end if
@@ -99,13 +99,13 @@ inline $enumname(info) Key::get() const
  * \par Fallback
 <ul>
     @for $i in $fallback(info)
-    <li>get_${funcname($i)}()</li>
+    <li>get${funcname($i)}()</li>
     @end for
 </ul>
 @end if
 @if $info.get('see')
     @for $i in $see(info)
- * \see get_${funcname($i)}
+ * \see get${funcname($i)}
     @end for
 @end if
 @end def
@@ -131,7 +131,7 @@ private:
  *
  * $doxygen(key, info)
  *
- * \see set_$funcname($key)
+ * \see set$funcname($key)
  *
  * \return the value of the parameter, default if it could not be found
  * \param ks the keyset where the parameter is searched
@@ -180,7 +180,7 @@ inline $typeof(info) Parameters::get$funcname($key)()
  *
  * $doxygen(key, info)
  *
- * \see set_$funcname($key)
+ * \see set$funcname($key)
  *
  * \param ks the keyset where the parameter is added or replaced
  * \param n is the value to set in the parameter

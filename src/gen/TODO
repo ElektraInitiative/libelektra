@@ -1,12 +1,14 @@
 == Demo ==
 
 Add parameter
+use it in C
+modify by kdb
+modify by commandline
+write back by commandline
 html
+doxygen
 
 == Todo ==
-
-remove common part or at least User
-let user to get common part
 
 override/fallback type inference
 ranges support with fallbacks
