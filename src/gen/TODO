@@ -1,3 +1,10 @@
+== Demo ==
+
+Add parameter
+html
+
+== Todo ==
+
 doxygen refactor
 default behaviour
 override/fallback lookups
@@ -5,3 +12,10 @@ override/fallback type inference
 C++ frontend
 ranges support with fallbacks
 allow file names, correct header guard
+
+== Finish ==
+
+utilities with static methods
+http://packages.python.org/Cheetah/recipes/staticmethod.html
+docu
+validation of schema + line info
