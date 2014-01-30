@@ -1,6 +1,9 @@
 .PHONY:all
 all:lift cpplift lift.html
 
+util.py:util.tmpl
+	cheetah-compile util.tmpl
+
 lift:lift.c lift.h getopt.c
 	cc -Wall -lelektra -I/usr/include/elektra lift.c getopt.c lift.h -o lift
 
