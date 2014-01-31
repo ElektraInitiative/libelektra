@@ -15,6 +15,10 @@ cheetahVarStartToken = $
 #include <string.h>
 #include <stdio.h>
 
+// for strol
+#include <limits.h>
+#include <errno.h>
+
 /** Parse commandline options and append it to keyset
  * \param argc the argument counter
  * \param argv the argument string array
@@ -184,9 +188,35 @@ static inline $typeof(info) get_$funcname($key)(KeySet *ks)
 	if(found)
 	{
 	@if $info['type'] == 'unsigned_int_32'
-		ret = atoi(keyString(found));
+		char *endptr;
+		errno = 0;
+		ret = strtol(keyString(found), &endptr, 10);
+		if ((errno == ERANGE
+				&& (ret == LONG_MAX || ret == LONG_MIN))
+				|| (errno != 0 && ret == 0))
+		{
+			ret $valof(info)
+		}
+
+		if (endptr == keyString(found))
+		{
+		
+			ret $valof(info)
+		}
 	@else if $info['type'] == 'double'
-		ret = atof(keyString(found));
+		char *endptr;
+		errno = 0;
+		ret = strtod(keyString(found), &endptr);
+		if (errno != 0)
+		{
+			ret $valof(info)
+		}
+
+		if (endptr == keyString(found))
+		{
+		
+			ret $valof(info)
+		}
 	@else if $info['type'] == 'string'
 		ret = keyString(found);
 	@else if $info['type'] == 'bool'

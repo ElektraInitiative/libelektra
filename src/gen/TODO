@@ -1,21 +1,11 @@
-== Demo ==
-
-Add parameter
-use it in C
-modify by kdb
-modify by commandline
-write back by commandline
-html
-doxygen
-
-
-
 == Important ==
 
-range property
+functionality test scripts
 
 == Todo ==
 
+longopt + --help, --version support
+man pages
 override/fallback type inference
 allow file names, correct header guard
 nested c++ support

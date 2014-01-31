@@ -1,5 +1,13 @@
 from os.path import basename
 
+def min(info):
+    """Min range from parameter"""
+    return info["range"].split('-')[0]
+
+def max(info):
+    """Max range from parameter"""
+    return info["range"].split('-')[1]
+
 def fallback(info):
     """Array of fallback options of parameter"""
     return info["fallback"].split(' ')

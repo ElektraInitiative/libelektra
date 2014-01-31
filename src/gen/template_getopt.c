@@ -7,16 +7,23 @@ cheetahVarStartToken = $
 #include "kdb.h"
 #include <unistd.h>
 
+// for strol
+#include <stdlib.h>
+#include <limits.h>
+#include <stdio.h>
+#include <errno.h>
+
 int ksGetOpt(int argc, char **argv, KeySet *ks)
 {
 	int c;
+	int retval = 0;
 	opterr = 0;
 	Key *found = 0;
 
 	while ((c = getopt (argc, argv,
 @for $key, $info in $parameters.items()
 @if $info.get('opt'):
-"$info.get('opt'):"
+		"$info.get('opt'):"
 @end if
 @end for
 		)) != -1)
@@ -26,6 +33,36 @@ int ksGetOpt(int argc, char **argv, KeySet *ks)
 @for $key, $info in $parameters.items()
 @if $info.get('opt'):
 			case '$info.get("opt")':
+@if $info.get('range')
+				{
+					$typeof(info) check;
+					char *endptr;
+					errno = 0;
+					check = strtol(optarg, &endptr, 10);
+					if ((errno == ERANGE
+							&& (check == LONG_MAX || check == LONG_MIN))
+							|| (errno != 0 && check == 0))
+					{
+						retval = 5;
+						break;
+					}
+					if (endptr == optarg)
+					{
+						retval = 6;
+						break;
+					}
+					if (check < $min(info))
+					{
+						retval = 3;
+						break;
+					}
+					if (check > $max(info))
+					{
+						retval = 4;
+						break;
+					}
+				}
+@end if
 				found = ksLookupByName(ks, "$key", 0);
 				if(!found)
 				{
@@ -41,9 +78,11 @@ int ksGetOpt(int argc, char **argv, KeySet *ks)
 @end if
 @end for
 			case '?':
-				return 1;
+				retval = 1;
+				break;
 			default:
-				return 1;
+				retval = 2;
+				break;
 /*
 			case '?':
 				if (optopt == 'c')
@@ -55,10 +94,8 @@ int ksGetOpt(int argc, char **argv, KeySet *ks)
 							"Unknown option character `\\x%x'.\n",
 							optopt);
 				return 1;
-			default:
-				abort ();
 */
 		}
 	}
-	return 0;
+	return retval;
 }
