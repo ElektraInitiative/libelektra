@@ -56,7 +56,7 @@ if (DOXYGEN_FOUND)
 	)
 
 	do_doc(${OUTPUT_DIRECTORY}/html index.html)
-	do_doc(${OUTPUT_DIRECTORY}/man man3/kdb.3)
+	do_doc(${OUTPUT_DIRECTORY}/man man3elektra/kdb.3elektra)
 
 	if (WITH_LATEX)
 		do_doc(${OUTPUT_DIRECTORY}/latex refman.tex)
