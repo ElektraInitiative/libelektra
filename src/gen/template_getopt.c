@@ -63,7 +63,7 @@ int ksGetOpt(int argc, char **argv, KeySet *ks)
 					}
 				}
 @end if
-				found = ksLookupByName(ks, "$key", 0);
+				found = ksLookupByName(ks, "$userkey(key)", 0);
 				if(!found)
 				{
 					ksAppendKey(ks, keyNew("$userkey(key)",
