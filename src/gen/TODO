@@ -1,18 +1,14 @@
-== Important ==
-
-functionality test scripts
-
-== Todo ==
-
-longopt + --help, --version support
+longopt
+--help, --version support
 man pages
+
 override/fallback type inference
+
 allow file names, correct header guard
 nested c++ support
 
-== Finish ==
-
-utilities with static methods
+utilities for cheetha+python
 http://packages.python.org/Cheetah/recipes/staticmethod.html
+
 docu
 validation of schema + line info

@@ -97,13 +97,8 @@ TODO: usr/bin/check_* should be added, but needs modification of ENABLE_KDB_TEST
 
 == Test external tools ==
 
-Check if external compilation works:
- cd ~e/external && mkdir build && cd build && cmake ../cmake && make && ./application && cd .. && rm -r build
- cd ~e/external/pkgconfig && make && ./get && rm get
 
-TODO: print something!
-
-Check if installed tools based on work:
+Check if tools based on elektra still do:
  dq
 
 

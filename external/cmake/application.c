@@ -1,21 +1,28 @@
 #include <kdb.h>
 
+#include <stdio.h>
+
 int main()
 {
 	KeySet *myConfig = ksNew(0);
-	Key *key = keyNew("system/sw/MyApp",KEY_END);
+	Key *key = keyNew("system/test/myapp",KEY_END);
 	KDB *handle = kdbOpen(key);
 
 	kdbGet(handle, myConfig, key);
 
-	keySetName(key, "user/sw/MyApp");
+	keySetName(key, "user/test/myapp");
 	kdbGet(handle, myConfig, key);
 
 	// check for errors by in key
 	keyDel(key);
 
-	key = ksLookupByName(myConfig,"/sw/MyApp/key", 0);
+	key = ksLookupByName(myConfig,"/test/myapp/key", 0);
 	// check if key is not 0 and work with it...
+	
+	if(key)
+	{
+		printf("%s\n", keyString(key));
+	}
 
 	ksDel (myConfig); // delete the in-memory configuration
 

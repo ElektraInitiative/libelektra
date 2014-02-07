@@ -8,19 +8,28 @@ int main(int argc, char**argv)
 
 	KDB kdb;
 	KeySet ks;
-	Key parentKey("system/sw/app/lift", KEY_END);
-	kdb.get(ks, parentKey);
-	parentKey.setName("user/sw/app/lift");
-	kdb.get(ks, parentKey);
+	kdb.get(ks, "/test/lift");
+	kdb.get(ks, "/test/material_lift");
+	kdb.get(ks, "/test/heavy_material_lift");
+	kdb.get(ks, "/test/person_lift");
 
 	Parameters par(ks);
 
-	std::cout << par.getSwLiftLimit() << std::endl;
+	std::cout << std::boolalpha;
+	std::cout << "delay: " << par.getTestLiftEmergencyDelay() << std::endl;
+	std::cout << "stops: " << par.getTestLiftEmergencyActionStops() << std::endl;
+	// std::cout << "algorithm: " << par.getTestLiftAlgorithm() << std::endl;
+	std::cout << "height #3: " << par.getTestLiftFloor3Height() << std::endl;
+	std::cout << "limit: " << par.getTestLiftLimit() << std::endl;
 
-	par.setSwLiftLimit(42);
+	bool write = par.getTestLiftWrite();
+	par.setTestLiftWrite(false);
 
-	std::cout << par.getSwLiftLimit() << std::endl;
-	// kdb.set(ks, parentKey); // write back to user/
+	// write back to user/test/lift, see comments in lift.c
+	if(write)
+	{
+		kdb.set(ks, "user/test/lift");
+	}
 
 	return 0;
 }
