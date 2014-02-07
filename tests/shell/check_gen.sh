@@ -289,6 +289,8 @@ succeed_if "cannot rm $SKEY"
 $KDB rm "$UKEY" 1>/dev/null
 succeed_if "cannot rm $UKEY"
 
+make clean
+
 
 
 
