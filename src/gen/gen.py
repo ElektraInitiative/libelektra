@@ -25,8 +25,6 @@ def main():
         for item in parser.items(section):
             parameterSpecification['parameters'][section][item[0]] = item[1]
 
-    #print parameterSpecification
-
     template = Template(file=sys.argv[2], searchList=[parameterSpecification])
     print template
 
