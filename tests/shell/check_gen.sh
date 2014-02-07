@@ -65,6 +65,10 @@ cd $GEN_FOLDER
 
 make
 
+
+
+
+
 echo "Test defaults"
 
 ./lift | grep "delay: 0"
@@ -82,8 +86,34 @@ succeed_if "default of algorithm not correct"
 ./lift | grep "height #3: 2.5"
 succeed_if "default of height #3 not correct"
 
+./lift | grep "limit: 1"
+succeed_if "default of limit not correct"
+
+
+
+
+echo "Test commandline arguments"
+
 ./lift -d 2 | grep "delay: 2"
-succeed_if "delay commandline parameter not working"
+succeed_if "delay commandline argument not working"
+
+./lift -s false | grep "stops: false"
+succeed_if "stops commandline argument not working"
+
+./lift -a go_base_floor | grep "algorithm: go_base_floor"
+succeed_if "algorithm commandline argument not working"
+
+./lift -h 5.5 | grep "height #3: 5.5"
+succeed_if "height commandline argument not working"
+
+./lift -l 12 | grep "limit: 12"
+succeed_if "limit commandline argument not working"
+
+
+
+
+
+echo "Test with keys in KDB"
 
 SKEY=$LIFT_SYSTEMROOT/emergency/delay
 UKEY=$LIFT_USERROOT/emergency/delay
@@ -109,6 +139,9 @@ succeed_if "value of delay not $VALUE"
 ./cpplift | grep "delay: $VALUE"
 succeed_if "value of delay not $VALUE"
 
+
+
+
 echo "test writeback to user using -w"
 
 $KDB get $UKEY 1> /dev/null
@@ -116,15 +149,148 @@ $KDB get $UKEY 1> /dev/null
 succeed_if "got nonexisting key $UKEY"
 
 ./lift -d 4 -w true | grep "delay: 4"
-succeed_if "delay commandline parameter not working"
-
-$KDB ls user/test
+succeed_if "delay commandline parameter with writeback not working"
 
 [ "x`$KDB get $UKEY 2> /dev/null`" = "x4" ]
-succeed_if "cant get $UKEY"
+succeed_if "cant get $UKEY (writeback problem)"
+
+[ "x`$KDB get $SKEY 2> /dev/null`" = "x$VALUE" ]
+succeed_if "cant get $SKEY with $VALUE (writeback)"
+
+./lift | grep "delay: 4"
+succeed_if "writeback was not permenent"
+
+./cpplift | grep "delay: 4"
+succeed_if "writeback was not permenent"
 
 $KDB rm "$SKEY" 1>/dev/null
 succeed_if "cannot rm $SKEY"
+
+$KDB rm "$UKEY" 1>/dev/null
+succeed_if "cannot rm $UKEY"
+
+
+
+
+
+echo "test override with limit"
+
+UKEY=$LIFT_USERROOT/limit
+OKEY=system/test/material_lift/limit
+VALUE=33
+$KDB get $UKEY 1> /dev/null
+[ $? != "0" ]
+succeed_if "got nonexisting key $UKEY"
+
+$KDB get $OKEY 1> /dev/null
+[ $? != "0" ]
+succeed_if "got nonexisting key $OKEY"
+
+./lift -l 22 -w true | grep "limit: 22"
+succeed_if "limit commandline parameter with writeback not working"
+
+[ "x`$KDB get $UKEY 2> /dev/null`" = "x22" ]
+succeed_if "cant get $UKEY (writeback problem)"
+
+./lift | grep "limit: 22"
+succeed_if "writeback was not permenent"
+
+./cpplift | grep "limit: 22"
+succeed_if "writeback was not permenent"
+
+$KDB set "$OKEY" "$VALUE" 1>/dev/null
+succeed_if "could not set $OKEY to value $VALUE"
+
+./lift | grep "limit: $VALUE"
+succeed_if "override value $VALUE not found"
+
+./cpplift | grep "limit: $VALUE"
+succeed_if "override value $VALUE not found"
+
+./lift -l 22 -w true | grep "limit: $VALUE"
+succeed_if "override was not in favour to commandline parameter"
+
+[ "x`$KDB get $UKEY 2> /dev/null`" = "x22" ]
+succeed_if "cant get $UKEY which will not be used"
+
+./lift | grep "limit: $VALUE"
+succeed_if "override was not in favour to writeback"
+
+./cpplift | grep "limit: $VALUE"
+succeed_if "override was not in favour to writeback"
+
+$KDB rm "$OKEY" 1>/dev/null
+succeed_if "cannot rm $OKEY"
+
+$KDB rm "$UKEY" 1>/dev/null
+succeed_if "cannot rm $UKEY"
+
+
+
+
+
+
+echo "test fallback with height"
+
+./lift | grep "height #3: 2.5"
+succeed_if "default of height #3 not correct"
+
+VALUE=8.5
+#the concrete (user) key
+KKEY=user/test/lift/floor/#3/height
+#the fallback keys (user+system
+UKEY=user/test/lift/floor/height
+SKEY=system/test/lift/floor/height
+
+$KDB set "$SKEY" "$VALUE" 1>/dev/null
+succeed_if "could not set $SKEY to value $VALUE"
+
+./lift | grep "height #3: $VALUE"
+succeed_if "fallback of height $VALUE was not used"
+
+VALUE=9.5
+$KDB set "$UKEY" "$VALUE" 1>/dev/null
+succeed_if "could not set $UKEY to value $VALUE"
+
+./lift | grep "height #3: $VALUE"
+succeed_if "fallback of height $VALUE was not used"
+
+./cpplift | grep "height #3: $VALUE"
+succeed_if "fallback of height $VALUE was not used"
+
+./lift -h 14.4 | grep "height #3: 14.4"
+succeed_if "commandline parameter did not overwrite fallback"
+
+./lift -h 14.4 -w true | grep "height #3: 14.4"
+succeed_if "commandline parameter did not overwrite fallback"
+
+$KDB ls user/test/
+
+[ "x`$KDB get $KKEY 2> /dev/null`" = "x14.4" ]
+succeed_if "cant get $KKEY which was written back"
+
+
+VALUE=18.8
+$KDB set "$KKEY" "$VALUE" 1>/dev/null
+succeed_if "could not set $KKEY to value $VALUE"
+
+./lift | grep "height #3: $VALUE"
+succeed_if "fallback of height $VALUE was not used"
+
+./cpplift | grep "height #3: $VALUE"
+succeed_if "fallback of height $VALUE was not used"
+
+$KDB rm "$KKEY" 1>/dev/null
+succeed_if "cannot rm $KKEY"
+
+$KDB rm "$SKEY" 1>/dev/null
+succeed_if "cannot rm $SKEY"
+
+$KDB rm "$UKEY" 1>/dev/null
+succeed_if "cannot rm $UKEY"
+
+
+
 
 
 

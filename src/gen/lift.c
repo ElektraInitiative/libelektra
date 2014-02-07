@@ -14,6 +14,7 @@ int lift(KeySet *conf)
 	printf ("algorithm: %s\n", algorithm_to_string(a));
 	printf ("height #3: %f\n", get_test_lift_floor_3_height(conf));
 	printf ("write: %s\n", bool_to_string(write));
+	printf ("limit: %d\n", get_test_lift_limit(conf));
 
 	// rewrite the same (does not change anything)
 	set_test_lift_algorithm(conf, a);

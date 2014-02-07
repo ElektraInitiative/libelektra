@@ -20,6 +20,7 @@ int main(int argc, char**argv)
 	std::cout << "stops: " << par.getTestLiftEmergencyActionStops() << std::endl;
 	// std::cout << "algorithm: " << par.getTestLiftAlgorithm() << std::endl;
 	std::cout << "height #3: " << par.getTestLiftFloor3Height() << std::endl;
+	std::cout << "limit: " << par.getTestLiftLimit() << std::endl;
 
 	bool write = par.getTestLiftWrite();
 	par.setTestLiftWrite(false);
