@@ -97,7 +97,13 @@ echo "Test commandline arguments"
 ./lift -d 2 | grep "delay: 2"
 succeed_if "delay commandline argument not working"
 
-./lift -s false | grep "stops: false"
+./lift --delay 2 | grep "delay: 2"
+succeed_if "delay commandline argument not working"
+
+./lift -s | grep "stops: false"
+succeed_if "stops commandline argument not working"
+
+./lift --stops | grep "stops: false"
 succeed_if "stops commandline argument not working"
 
 ./lift -a go_base_floor | grep "algorithm: go_base_floor"

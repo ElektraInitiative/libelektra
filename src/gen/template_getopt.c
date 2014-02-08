@@ -16,6 +16,10 @@ cheetahVarStartToken = $
 #include <stdio.h>
 #include <errno.h>
 
+#ifdef _GNU_SOURCE
+#include <getopt.h>
+#endif
+
 #ifdef __cplusplus
 using namespace ckdb;
 
@@ -30,7 +34,29 @@ int ksGetOpt(int argc, char **argv, KeySet *ks)
 	opterr = 0;
 	Key *found = 0;
 
+#ifdef _GNU_SOURCE
+	static struct option long_options[] = {
+@for $key, $info in $parameters.items()
+@if $info.get('opt/long'):
+		{
+			"$info.get('opt/long')", 
+@if $info.get('type') == 'bool':
+			no_argument,
+@else:
+			required_argument,
+@end if
+			NULL,
+			'$info.get('opt')'
+		},
+@end if
+@end for
+	};
+
+
+	while ((c = getopt_long (argc, argv,
+#else
 	while ((c = getopt (argc, argv,
+#endif
 @for $key, $info in $parameters.items()
 @if $info.get('opt'):
 @if $info.get('type') == 'bool':
@@ -40,6 +66,9 @@ int ksGetOpt(int argc, char **argv, KeySet *ks)
 @end if
 @end if
 @end for
+#ifdef _GNU_SOURCE
+		, long_options, NULL
+#endif
 		)) != -1)
 	{
 		switch (c)

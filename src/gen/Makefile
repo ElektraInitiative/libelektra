@@ -5,7 +5,7 @@ util.py:util.tmpl
 	cheetah-compile util.tmpl
 
 lift:lift.c lift.h getopt.c
-	cc -Wall -lelektra -I/usr/include/elektra lift.c getopt.c lift.h -o lift
+	cc -Wall -D _GNU_SOURCE -lelektra -I/usr/include/elektra lift.c getopt.c lift.h -o lift
 
 lift.html:gen.py specification.ini template.html
 	python gen.py specification.ini template.html > lift.html
