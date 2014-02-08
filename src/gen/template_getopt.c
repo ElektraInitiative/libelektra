@@ -27,6 +27,19 @@ extern "C"
 {
 #endif
 
+char *elektraGenHelpText()
+{
+	return
+@for $key, $info in $parameters.items()
+@if $info.get('opt/long'):
+	"  -$info.get('opt')\t--$info.get('opt/long')\t$info.get('explanation')\n"
+@else if $info.get('opt'):
+	"  -$info.get('opt')\t    \t$info.get('explanation')\n"
+@end if
+@end for
+	;
+}
+
 int ksGetOpt(int argc, char **argv, KeySet *ks)
 {
 	int c;
@@ -39,7 +52,7 @@ int ksGetOpt(int argc, char **argv, KeySet *ks)
 @for $key, $info in $parameters.items()
 @if $info.get('opt/long'):
 		{
-			"$info.get('opt/long')", 
+			"$info.get('opt/long')",
 @if $info.get('type') == 'bool':
 			no_argument,
 @else:
@@ -50,6 +63,18 @@ int ksGetOpt(int argc, char **argv, KeySet *ks)
 		},
 @end if
 @end for
+		{
+			"version",
+			no_argument,
+			NULL,
+			500
+		},
+		{
+			"help",
+			no_argument,
+			NULL,
+			501
+		}
 	};
 
 
@@ -73,6 +98,12 @@ int ksGetOpt(int argc, char **argv, KeySet *ks)
 	{
 		switch (c)
 		{
+			case 500:
+				retval |= 1;
+				break;
+			case 501:
+				retval |= 2;
+				break;
 @for $key, $info in $parameters.items()
 	@if $info.get('opt'):
 			case '$info.get("opt")':
@@ -86,22 +117,22 @@ int ksGetOpt(int argc, char **argv, KeySet *ks)
 							&& (check == LONG_MAX || check == LONG_MIN))
 							|| (errno != 0 && check == 0))
 					{
-						retval = 5;
+						retval |= 4;
 						break;
 					}
 					if (endptr == optarg)
 					{
-						retval = 6;
+						retval |= 8;
 						break;
 					}
 					if (check < $min(info))
 					{
-						retval = 3;
+						retval |= 16;
 						break;
 					}
 					if (check > $max(info))
 					{
-						retval = 4;
+						retval |= 32;
 						break;
 					}
 				}
@@ -114,7 +145,7 @@ int ksGetOpt(int argc, char **argv, KeySet *ks)
 			@end for
 				  ))
 				{
-					retval = 7;
+					retval |= 64;
 					break;
 				}
 		@end if
@@ -133,10 +164,10 @@ int ksGetOpt(int argc, char **argv, KeySet *ks)
 	@end if
 @end for
 			case '?':
-				retval = 1;
+				retval |= 128;
 				break;
 			default:
-				retval = 2;
+				retval |= 256;
 				break;
 /*
 			case '?':

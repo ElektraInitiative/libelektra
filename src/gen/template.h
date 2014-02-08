@@ -26,6 +26,7 @@ cheetahVarStartToken = $
  * needs template_getopt.c
  */
 int ksGetOpt(int argc, char **argv, KeySet *ks);
+char *elektraGenHelpText();
 
 @for $key, $info in $parameters.items()
 @if $isenum(info):

@@ -207,11 +207,20 @@ succeed_if "changed without writeback"
 ./lift -l 81 | grep "limit: 1"
 succeed_if "limit commandline above limit not working (with default)"
 
+./lift -l 81 | grep "Error in parsing options"
+succeed_if "limit commandline validation was not detected"
+
 ./lift -l 0 | grep "limit: 1"
 succeed_if "limit commandline below limit not working (with default)"
 
+./lift -l 0 | grep "Error in parsing options"
+succeed_if "limit commandline validation was not detected"
+
 ./lift -l -1 | grep "limit: 1"
 succeed_if "limit commandline negative not working (with default)"
+
+./lift -l -1 | grep "Error in parsing options"
+succeed_if "limit commandline validation was not detected"
 
 ./lift -l 22 -w | grep "limit: 22"
 succeed_if "limit commandline parameter with writeback not working"

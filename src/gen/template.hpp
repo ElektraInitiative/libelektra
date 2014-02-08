@@ -15,6 +15,7 @@ cheetahVarStartToken = $
 extern "C"
 {
 int ksGetOpt(int argc, char **argv, ckdb::KeySet *ks);
+char *elektraGenHelpText();
 }
 
 namespace kdb
