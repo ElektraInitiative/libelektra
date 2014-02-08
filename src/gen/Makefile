@@ -1,5 +1,5 @@
 .PHONY:all
-all:lift cpplift lift.html
+all:lift cpplift lift.html lift.3
 
 util.py:util.tmpl
 	cheetah-compile util.tmpl
@@ -9,6 +9,9 @@ lift:lift.c lift.h genopt.c genopt.h
 
 lift.html:gen.py specification.ini template.html
 	python gen.py specification.ini template.html > lift.html
+
+lift.3:gen.py specification.ini template.man
+	python gen.py specification.ini template.man > lift.3
 
 lift.h:gen.py specification.ini template.h c_support.py
 	python gen.py specification.ini template.h > lift.h
@@ -35,3 +38,4 @@ clean:
 	rm -f lift
 	rm -f cpplift
 	rm -f *.pyc
+	rm -f lift.3

@@ -21,6 +21,7 @@ setup(name='ElektraGen',
                  'template_genopt.c',
                  'template.h',
                  'template.hpp',
+                 'template.man',
                  'template.html',
                 ]
           )
