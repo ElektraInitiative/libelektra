@@ -186,6 +186,21 @@ $KDB get $OKEY 1> /dev/null
 [ $? != "0" ]
 succeed_if "got nonexisting key $OKEY"
 
+./lift -l 22 | grep "limit: 22"
+succeed_if "limit commandline parameter without writeback not working"
+
+./lift | grep "limit: 1"
+succeed_if "changed without writeback"
+
+./lift -l 81 | grep "limit: 1"
+succeed_if "limit commandline above limit not working (with default)"
+
+./lift -l 0 | grep "limit: 1"
+succeed_if "limit commandline below limit not working (with default)"
+
+./lift -l -1 | grep "limit: 1"
+succeed_if "limit commandline negative not working (with default)"
+
 ./lift -l 22 -w true | grep "limit: 22"
 succeed_if "limit commandline parameter with writeback not working"
 
@@ -197,6 +212,15 @@ succeed_if "writeback was not permenent"
 
 ./cpplift | grep "limit: 22"
 succeed_if "writeback was not permenent"
+
+./lift -l 81 | grep "limit: 22"
+succeed_if "limit commandline above limit not working (with param)"
+
+./lift -l 0 | grep "limit: 22"
+succeed_if "limit commandline below limit not working (with param)"
+
+./lift -l -1 | grep "limit: 22"
+succeed_if "limit commandline negativ not working (with param)"
 
 $KDB set "$OKEY" "$VALUE" 1>/dev/null
 succeed_if "could not set $OKEY to value $VALUE"
@@ -263,8 +287,6 @@ succeed_if "commandline parameter did not overwrite fallback"
 
 ./lift -h 14.4 -w true | grep "height #3: 14.4"
 succeed_if "commandline parameter did not overwrite fallback"
-
-$KDB ls user/test/
 
 [ "x`$KDB get $KKEY 2> /dev/null`" = "x14.4" ]
 succeed_if "cant get $KKEY which was written back"
