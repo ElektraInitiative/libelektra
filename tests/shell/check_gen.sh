@@ -148,7 +148,7 @@ $KDB get $UKEY 1> /dev/null
 [ $? != "0" ]
 succeed_if "got nonexisting key $UKEY"
 
-./lift -d 4 -w true | grep "delay: 4"
+./lift -d 4 -w | grep "delay: 4"
 succeed_if "delay commandline parameter with writeback not working"
 
 [ "x`$KDB get $UKEY 2> /dev/null`" = "x4" ]
@@ -201,7 +201,7 @@ succeed_if "limit commandline below limit not working (with default)"
 ./lift -l -1 | grep "limit: 1"
 succeed_if "limit commandline negative not working (with default)"
 
-./lift -l 22 -w true | grep "limit: 22"
+./lift -l 22 -w | grep "limit: 22"
 succeed_if "limit commandline parameter with writeback not working"
 
 [ "x`$KDB get $UKEY 2> /dev/null`" = "x22" ]
@@ -231,7 +231,7 @@ succeed_if "override value $VALUE not found"
 ./cpplift | grep "limit: $VALUE"
 succeed_if "override value $VALUE not found"
 
-./lift -l 22 -w true | grep "limit: $VALUE"
+./lift -l 22 -w | grep "limit: $VALUE"
 succeed_if "override was not in favour to commandline parameter"
 
 [ "x`$KDB get $UKEY 2> /dev/null`" = "x22" ]
@@ -285,7 +285,7 @@ succeed_if "fallback of height $VALUE was not used"
 ./lift -h 14.4 | grep "height #3: 14.4"
 succeed_if "commandline parameter did not overwrite fallback"
 
-./lift -h 14.4 -w true | grep "height #3: 14.4"
+./lift -h 14.4 -w | grep "height #3: 14.4"
 succeed_if "commandline parameter did not overwrite fallback"
 
 [ "x`$KDB get $KKEY 2> /dev/null`" = "x14.4" ]

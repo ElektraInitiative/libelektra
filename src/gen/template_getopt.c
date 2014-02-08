@@ -30,7 +30,11 @@ int ksGetOpt(int argc, char **argv, KeySet *ks)
 	while ((c = getopt (argc, argv,
 @for $key, $info in $parameters.items()
 @if $info.get('opt'):
+@if $info.get('type') == 'bool':
+		"$info.get('opt')"
+@else:
 		"$info.get('opt'):"
+@end if
 @end if
 @end for
 		)) != -1)
@@ -38,9 +42,9 @@ int ksGetOpt(int argc, char **argv, KeySet *ks)
 		switch (c)
 		{
 @for $key, $info in $parameters.items()
-@if $info.get('opt'):
+	@if $info.get('opt'):
 			case '$info.get("opt")':
-@if $info.get('range')
+		@if $info.get('range')
 				{
 					$typeof(info) check;
 					char *endptr;
@@ -69,20 +73,20 @@ int ksGetOpt(int argc, char **argv, KeySet *ks)
 						break;
 					}
 				}
-@end if
+		@end if
 				found = ksLookupByName(ks, "$userkey(key)", 0);
 				if(!found)
 				{
 					ksAppendKey(ks, keyNew("$userkey(key)",
-							KEY_VALUE, optarg,
+							KEY_VALUE, $optarg(info),
 							KEY_END));
 				}
 				else
 				{
-					keySetString(found, optarg);
+					keySetString(found, $optarg(info));
 				}
 				break;
-@end if
+	@end if
 @end for
 			case '?':
 				retval = 1;
