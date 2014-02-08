@@ -1,4 +1,5 @@
 #include "lift.h"
+#include "genopt.h"
 
 #include <stdio.h>
 

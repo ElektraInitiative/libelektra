@@ -4,6 +4,12 @@ directiveStartToken = @
 cheetahVarStartToken = $
 #end compiler-settings
 // start of a generated file
+#ifdef __cplusplus
+#include "genopt.hpp"
+#else
+#include "genopt.h"
+#endif
+
 #include "kdb.h"
 #include <unistd.h>
 
@@ -27,7 +33,7 @@ extern "C"
 {
 #endif
 
-char *elektraGenHelpText()
+const char *elektraGenHelpText()
 {
 	return
 @for $key, $info in $parameters.items()

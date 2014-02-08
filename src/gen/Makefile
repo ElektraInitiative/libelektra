@@ -4,8 +4,8 @@ all:lift cpplift lift.html
 util.py:util.tmpl
 	cheetah-compile util.tmpl
 
-lift:lift.c lift.h getopt.c
-	cc -Wall -D _GNU_SOURCE -lelektra -I/usr/include/elektra lift.c getopt.c lift.h -o lift
+lift:lift.c lift.h genopt.c genopt.h
+	cc -Wall -D _GNU_SOURCE -lelektra -I/usr/include/elektra lift.c genopt.c genopt.h lift.h -o lift
 
 lift.html:gen.py specification.ini template.html
 	python gen.py specification.ini template.html > lift.html
@@ -13,8 +13,11 @@ lift.html:gen.py specification.ini template.html
 lift.h:gen.py specification.ini template.h c_support.py
 	python gen.py specification.ini template.h > lift.h
 
-getopt.c:gen.py specification.ini template_getopt.c cpp_support.py
-	python gen.py specification.ini template_getopt.c > getopt.c
+genopt.c:gen.py specification.ini template_genopt.c opt_support.py
+	python gen.py specification.ini template_genopt.c > genopt.c
+
+genopt.h:gen.py specification.ini template_genopt.h opt_support.py
+	python gen.py specification.ini template_genopt.h > genopt.h
 
 cpplift:lift.cpp lift.hpp
 	c++ -std=c++11 -Wall -lelektra -I/usr/include/elektra lift.cpp lift.hpp -o cpplift
@@ -27,7 +30,8 @@ clean:
 	rm -f lift.h
 	rm -f lift.hpp
 	rm -f lift.html
-	rm -f getopt.c
+	rm -f genopt.c
+	rm -f genopt.h
 	rm -f lift
 	rm -f cpplift
 	rm -f *.pyc
