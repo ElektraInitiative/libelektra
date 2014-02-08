@@ -7,6 +7,9 @@ cheetahVarStartToken = $
 #include "kdb.h"
 #include <unistd.h>
 
+// for strcmp
+#include <string.h>
+
 // for strol
 #include <stdlib.h>
 #include <limits.h>
@@ -72,6 +75,18 @@ int ksGetOpt(int argc, char **argv, KeySet *ks)
 						retval = 4;
 						break;
 					}
+				}
+		@end if
+		@if $isenum(info):
+				if(!(
+				   !strcmp(optarg, "${enumval(info)[0]}")
+			@for $enum in $enumval(info)[1:]
+				   || !strcmp(optarg, "$enum")
+			@end for
+				  ))
+				{
+					retval = 7;
+					break;
 				}
 		@end if
 				found = ksLookupByName(ks, "$userkey(key)", 0);

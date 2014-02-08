@@ -103,6 +103,12 @@ succeed_if "stops commandline argument not working"
 ./lift -a go_base_floor | grep "algorithm: go_base_floor"
 succeed_if "algorithm commandline argument not working"
 
+./lift -a stay | grep "algorithm: stay"
+succeed_if "algorithm commandline argument not working"
+
+./lift -a xxx | grep "Error in parsing options"
+succeed_ir "algorithm commandline argument not working"
+
 ./lift -h 5.5 | grep "height #3: 5.5"
 succeed_if "height commandline argument not working"
 
