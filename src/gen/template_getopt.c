@@ -13,6 +13,13 @@ cheetahVarStartToken = $
 #include <stdio.h>
 #include <errno.h>
 
+#ifdef __cplusplus
+using namespace ckdb;
+
+extern "C"
+{
+#endif
+
 int ksGetOpt(int argc, char **argv, KeySet *ks)
 {
 	int c;
@@ -99,3 +106,8 @@ int ksGetOpt(int argc, char **argv, KeySet *ks)
 	}
 	return retval;
 }
+
+#ifdef __cplusplus
+}
+//extern "C"
+#endif

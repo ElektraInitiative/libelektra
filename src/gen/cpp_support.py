@@ -21,6 +21,8 @@ def valof(info):
     type = info["type"]
     if isenum(info):
         return " = "+enumname(info)+"::"+val+";"
+    elif type == "string" and val == "":
+        return ' = "";'
     return " = "+val+";"
 
 def typeof(info):

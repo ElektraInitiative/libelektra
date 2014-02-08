@@ -34,6 +34,8 @@ def valof(info):
             return " = 1;"
         elif val == "false":
             return " = 0;"
+    elif type == "string" and val == "":
+        return ' = "";'
     else:
         return " = "+val+";"
 
@@ -45,7 +47,7 @@ def typeof(info):
     elif type == "bool":
         return "int"
     elif type == "string":
-        return "char*"
+        return "const char*"
     elif isenum(info):
         return "enum " + enumname(info)
     else:

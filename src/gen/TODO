@@ -2,6 +2,8 @@ longopt
 --help, --version support
 man pages
 
+limit range for bool/enum
+
 override/fallback type inference
 
 allow file names, correct header guard
