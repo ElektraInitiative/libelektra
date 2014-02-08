@@ -92,9 +92,12 @@ static inline const char *bool_to_string(int b)
  */
 static inline int bool_from_string(const char *s)
 {
-	if(!strcmp(s, "true") ||
-	   !strcmp(s, "1") ||
-	   !strcmp(s, "on"))
+	if(
+	   !strcmp(s, "${trueval()[0]}")
+@for $b in $trueval()[1:]
+	   || !strcmp(s, "$b")
+@end for
+	   )
 		return 1;
 	else
 		return 0;
