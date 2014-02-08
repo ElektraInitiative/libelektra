@@ -17,9 +17,11 @@ setup(name='ElektraGen',
           ],
       data_files = [
           ('templates', [
-                 'template_getopt.c',
+                 'template_genopt.h',
+                 'template_genopt.c',
                  'template.h',
                  'template.hpp',
+                 'template.man',
                  'template.html',
                 ]
           )

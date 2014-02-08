@@ -12,11 +12,6 @@ cheetahVarStartToken = $
 #include "kdb.hpp"
 #include <string>
 
-extern "C"
-{
-int ksGetOpt(int argc, char **argv, ckdb::KeySet *ks);
-}
-
 namespace kdb
 {
 
@@ -66,6 +61,42 @@ inline $enumname(info) Key::get() const
 
 @end if
 @end for
+
+/** \brief Convert bool to string
+ *
+ * \return string that holds value of bool
+ * \param e the bool that should be converted
+ */
+template <>
+inline void Key::set(bool e)
+{
+	if(e)
+	{
+		setString("true");
+	}
+	else
+	{
+		setString("false");
+	}
+}
+
+/** \brief Convert bool from string
+ *
+ * \return bool from string s or default value
+ * \param s the string that should be converted
+ */
+template <>
+inline bool Key::get() const
+{
+	$typeof(info) ret = false;
+	if(getString() == "${trueval()[0]}")
+		ret = true;
+@for $b in $trueval()[1:]
+	else if(getString() == "$b")
+		ret = true;
+@end for
+	return ret;
+}
 
 ##todo: duplicate
 @def doxygen(key, info)

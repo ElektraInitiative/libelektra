@@ -19,13 +19,6 @@ cheetahVarStartToken = $
 #include <limits.h>
 #include <errno.h>
 
-/** Parse commandline options and append it to keyset
- * \param argc the argument counter
- * \param argv the argument string array
- * \param ks the keyset to store the configuration to
- * needs template_getopt.c
- */
-int ksGetOpt(int argc, char **argv, KeySet *ks);
 
 @for $key, $info in $parameters.items()
 @if $isenum(info):
@@ -92,9 +85,12 @@ static inline const char *bool_to_string(int b)
  */
 static inline int bool_from_string(const char *s)
 {
-	if(!strcmp(s, "true") ||
-	   !strcmp(s, "1") ||
-	   !strcmp(s, "on"))
+	if(
+	   !strcmp(s, "${trueval()[0]}")
+@for $b in $trueval()[1:]
+	   || !strcmp(s, "$b")
+@end for
+	   )
 		return 1;
 	else
 		return 0;

@@ -1,6 +1,7 @@
-longopt
 --help, --version support
 man pages
+
+limit range for bool/enum
 
 override/fallback type inference
 

@@ -97,11 +97,23 @@ echo "Test commandline arguments"
 ./lift -d 2 | grep "delay: 2"
 succeed_if "delay commandline argument not working"
 
-./lift -s false | grep "stops: false"
+./lift --delay 2 | grep "delay: 2"
+succeed_if "delay commandline argument not working"
+
+./lift -s | grep "stops: false"
+succeed_if "stops commandline argument not working"
+
+./lift --stops | grep "stops: false"
 succeed_if "stops commandline argument not working"
 
 ./lift -a go_base_floor | grep "algorithm: go_base_floor"
 succeed_if "algorithm commandline argument not working"
+
+./lift -a stay | grep "algorithm: stay"
+succeed_if "algorithm commandline argument not working"
+
+./lift -a xxx | grep "Error in parsing options"
+succeed_ir "algorithm commandline argument not working"
 
 ./lift -h 5.5 | grep "height #3: 5.5"
 succeed_if "height commandline argument not working"
@@ -148,7 +160,7 @@ $KDB get $UKEY 1> /dev/null
 [ $? != "0" ]
 succeed_if "got nonexisting key $UKEY"
 
-./lift -d 4 -w true | grep "delay: 4"
+./lift -d 4 -w | grep "delay: 4"
 succeed_if "delay commandline parameter with writeback not working"
 
 [ "x`$KDB get $UKEY 2> /dev/null`" = "x4" ]
@@ -186,7 +198,31 @@ $KDB get $OKEY 1> /dev/null
 [ $? != "0" ]
 succeed_if "got nonexisting key $OKEY"
 
-./lift -l 22 -w true | grep "limit: 22"
+./lift -l 22 | grep "limit: 22"
+succeed_if "limit commandline parameter without writeback not working"
+
+./lift | grep "limit: 1"
+succeed_if "changed without writeback"
+
+./lift -l 81 | grep "limit: 1"
+succeed_if "limit commandline above limit not working (with default)"
+
+./lift -l 81 | grep "Error in parsing options"
+succeed_if "limit commandline validation was not detected"
+
+./lift -l 0 | grep "limit: 1"
+succeed_if "limit commandline below limit not working (with default)"
+
+./lift -l 0 | grep "Error in parsing options"
+succeed_if "limit commandline validation was not detected"
+
+./lift -l -1 | grep "limit: 1"
+succeed_if "limit commandline negative not working (with default)"
+
+./lift -l -1 | grep "Error in parsing options"
+succeed_if "limit commandline validation was not detected"
+
+./lift -l 22 -w | grep "limit: 22"
 succeed_if "limit commandline parameter with writeback not working"
 
 [ "x`$KDB get $UKEY 2> /dev/null`" = "x22" ]
@@ -198,6 +234,15 @@ succeed_if "writeback was not permenent"
 ./cpplift | grep "limit: 22"
 succeed_if "writeback was not permenent"
 
+./lift -l 81 | grep "limit: 22"
+succeed_if "limit commandline above limit not working (with param)"
+
+./lift -l 0 | grep "limit: 22"
+succeed_if "limit commandline below limit not working (with param)"
+
+./lift -l -1 | grep "limit: 22"
+succeed_if "limit commandline negativ not working (with param)"
+
 $KDB set "$OKEY" "$VALUE" 1>/dev/null
 succeed_if "could not set $OKEY to value $VALUE"
 
@@ -207,7 +252,7 @@ succeed_if "override value $VALUE not found"
 ./cpplift | grep "limit: $VALUE"
 succeed_if "override value $VALUE not found"
 
-./lift -l 22 -w true | grep "limit: $VALUE"
+./lift -l 22 -w | grep "limit: $VALUE"
 succeed_if "override was not in favour to commandline parameter"
 
 [ "x`$KDB get $UKEY 2> /dev/null`" = "x22" ]
@@ -261,10 +306,8 @@ succeed_if "fallback of height $VALUE was not used"
 ./lift -h 14.4 | grep "height #3: 14.4"
 succeed_if "commandline parameter did not overwrite fallback"
 
-./lift -h 14.4 -w true | grep "height #3: 14.4"
+./lift -h 14.4 -w | grep "height #3: 14.4"
 succeed_if "commandline parameter did not overwrite fallback"
-
-$KDB ls user/test/
 
 [ "x`$KDB get $KKEY 2> /dev/null`" = "x14.4" ]
 succeed_if "cant get $KKEY which was written back"

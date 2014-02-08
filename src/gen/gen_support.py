@@ -1,5 +1,9 @@
 from os.path import basename
 
+def trueval():
+    """Return all values interpreted as true, everything else is false"""
+    return ["true", "1", "on"]
+
 def min(info):
     """Min range from parameter"""
     return info["range"].split('-')[0]
