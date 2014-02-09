@@ -1,4 +1,7 @@
-lift_nested.hpp:gen.py specification.ini template_nested.hpp
+nestedlift:lift_nested.hpp
+	c++ -std=c++11 -Wall -lelektra -I/usr/include/elektra lift_nested.cpp lift_nested.hpp -o nestedlift
+
+lift_nested.hpp:gen.py specification.ini template_nested.hpp nested_support.py
 	python gen.py specification.ini template_nested.hpp > lift_nested.hpp
 
 .PHONY:all
