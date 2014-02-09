@@ -1,3 +1,6 @@
+lift_nested.hpp:gen.py specification.ini template_nested.hpp
+	python gen.py specification.ini template_nested.hpp > lift_nested.hpp
+
 .PHONY:all
 all:lift cpplift lift.html lift.3
 
