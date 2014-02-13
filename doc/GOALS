@@ -23,6 +23,9 @@ Nearly every aspekt of Elektra must be extremely extensible.
 On the other side semantics must be very clear and well defined
 so that this extensible system works reproduceable and predictable.
 
+The user should only pay for what is needed. Only key/value pairs
+are the common factor, everything else is extended.
+
 
 2.) Simplicity
 

@@ -13,11 +13,25 @@ Everything also in constants/build_info
 add dependencies in contract?
 
 
-
 == OS abstraction ==
 
 getcwd plugin
 
+== global plugins ==
+
+needed for global constraints, notifications, remappings and so on
+
+== plugin commands ==
+
+metadata that is evaluated by plugins
+
+selective commit phases:
+	define phases, minimum:
+	commit
+	check
+
+norecursive:
+	only fetch a single plugin without recursion
 
 == DISTRIBUTOR BACKENDS ==
 
