@@ -149,7 +149,7 @@ public:
 	{}
 
 @for $key, $info in $parameters.items()
-	$typeof(info) get$funcname($key)();
+	$typeof(info) get$funcname($key)() const;
 	void set$funcname($key)($typeof(info) n);
 @end for
 
@@ -167,7 +167,7 @@ private:
  * \return the value of the parameter, default if it could not be found
  * \param ks the keyset where the parameter is searched
  */
-inline $typeof(info) Parameters::get$funcname($key)()
+inline $typeof(info) Parameters::get$funcname($key)() const
 {
 @if $info.get('override')
 	// override

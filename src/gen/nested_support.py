@@ -22,14 +22,20 @@ def classpretty(key):
 
 def nestedpretty(key):
     """Getter name for the nested hierarchy"""
-    key = key.title().replace('_','').replace('/','').replace('#','')
+    key = key.title().replace('_','').replace('/','').replace('#','N')
     return key[:1].lower() + key[1:]
 
 def nspretty(key):
     """Return pretty printed key name for namespaces"""
+    if key == '/':
+        return '' # no namespace
     if key[0] == '/':
-        key = key[1:]
-    return key.lower().replace('/','::').replace('#','N')
+        key = key[1:] #cut off / at start
+    return key.lower().replace('/','::').replace('#','N')+"::"
+
+def nsnpretty(name):
+    """The namespace name to be used to create a new namespace"""
+    return name.lower().replace('#','N')
 
 def below(key, check):
     """Check if key check is below key"""
@@ -55,20 +61,24 @@ def directbelow(key, check):
         return False # too many key levels for direct below
     return below(key, check)
 
-def nested(key, check):
-    nkey = key.split('/')
-    ckey = check.split('/')
-    if len(nkey) + 2 > len(ckey):
-        return None
-    pckey = ckey[:len(nkey)]
-    if nkey != pckey:
-        return None
-    return '/'.join(ckey[:len(nkey)+2])
-
 def cutname(key, otherkey):
-    """cut the name key to the length of otherkey + 1"""
-    okey = otherkey.split('/')
-    return '/'.join(key.split('/')[:len(okey)+1])
+    """cut the name key to the length of otherkey + 1
+    >>> cutname('/hello', '/')
+    '/hello'
+    >>> cutname('/hello/lift/example', '/hello')
+    '/hello/lift'
+    >>> cutname('/hello/lift/more/deep', '/hello/lift')
+    '/hello/lift/more'
+    >>> cutname('/hello/below/nested/deep', '/')
+    '/hello'
+    """
+    l = 0
+    if otherkey == '/':
+        l = 2
+    else:
+        okey = otherkey.split('/')
+        l = len(okey)+1
+    return '/'.join(key.split('/')[:l])
 
 def sibling(key, check):
     nkey = key.split('/')
@@ -92,14 +102,6 @@ def siblings(parameters, key):
             "nosibling", key, k
     return ret
 
-def nestedclasses(parameters, key):
-    """Return only keys that are siblings to key"""
-    ret = set() # makes sure values are unique
-    for k,v in parameters.iteritems():
-        if nested(key, k):
-            ret.update({nested(key, k)})
-    return ret
-
 def cut(parameters, key):
     """Return only keys below key
     >>> below('/hello', '/hello/below')
@@ -116,6 +118,48 @@ def cut(parameters, key):
     return ret
 
 class Hierarchy:
+    """ Build up an hierarchy of keys with info
+
+    >>> h = Hierarchy('/', {'root': 'val', 'key': 'x'})
+    >>> h.add(Hierarchy('/hello/below/nested/deep', {'k5': 'moreotherval'}))
+    >>> h.add(Hierarchy('/hello/below', {'k3': 'otherval'}))
+    >>> h.add(Hierarchy('/hello/below/sibling', {'k6': 'siblingval'}))
+    >>> h.add(Hierarchy('/hello/somewhere/else/deep/below', {'k': 'siblingval'}))
+    >>> h.add(Hierarchy('/hello/somewhere/else', {'k2': 'k2siblingval'}))
+    >>> h.add(Hierarchy('/we/can/add/anywhere', {'k12': 'xkls'}))
+    >>> h.add(Hierarchy('/we/can', {'k22': 'ls'}))
+    >>> print h
+    / {'root': 'val', 'key': 'x'}
+            /we {}
+                    /can {}
+                            /add {}
+                                    /anywhere {'k12': 'xkls'}
+            /below {'k3': 'otherval'}
+                    /sibling {'k6': 'siblingval'}
+            /can {'k22': 'ls'}
+            /hello {}
+                    /somewhere {}
+                            /else {'k2': 'k2siblingval'}
+                                    /deep {}
+                                            /below {'k': 'siblingval'}
+                    /below {}
+                            /nested {}
+                                    /deep {'k5': 'moreotherval'}
+    <BLANKLINE>
+    >>> hierarchy=Hierarchy('/', {})
+    >>> hierarchy.add(Hierarchy('/test/lift/floor/#3/height',{"x": "y"}))
+    >>> hierarchy.add(Hierarchy('/test/lift/floor/number', {"t": "v"}))
+    >>> print hierarchy
+    / {}
+            /test {}
+                    /lift {}
+                            /floor {}
+                                    /#3 {}
+                                            /height {'x': 'y'}
+                                    /number {'t': 'v'}
+    <BLANKLINE>
+    """
+
     def __init__(self, name, info):
         assert isinstance(name, basestring)
         assert isinstance(info, dict)
@@ -128,6 +172,18 @@ class Hierarchy:
         return self._name
 
     @property
+    def classname(self):
+        return classpretty(basename(self.name))
+
+    @property
+    def dirname(self):
+        return dirname(self._name)
+
+    @property
+    def basename(self):
+        return basename(self._name)
+
+    @property
     def info(self):
         return self._info
 
@@ -135,9 +191,25 @@ class Hierarchy:
     def children(self):
         return self._children
 
+    @property
+    def childrenWithChildren(self):
+        cwc = set()
+        for c in self._children:
+            if c._children:
+                cwc.update({c})
+        return cwc
+
+    @property
+    def childrenWithType(self):
+        cwc = set()
+        for c in self._children:
+            if 'type' in c.info:
+                cwc.update({c})
+        return cwc
+
     def __eq__(self, other):
         if isinstance(other, self.__class__):
-            return self.__dict__ == other.__dict__
+            return self.name==other.name
         else:
             return False
 
@@ -149,40 +221,41 @@ class Hierarchy:
 
     def add(self, hierarchy):
         """Add an element to hierarchy
-           >>> h = Hierarchy('/', {'root': 'val', 'key': 'x'})
-           >>> h.add(Hierarchy('/hello', {'hello': 'first element'}))
-           >>> h.add(Hierarchy('/hello/below', {'k3': 'otherval'}))
-           >>> h.add(Hierarchy('/hello/below/nested', {'k4': 'moreotherval'}))
-           >>> h.add(Hierarchy('/hello/below/nested/deep', {'k5': 'moreotherval'}))
-           >>> h.add(Hierarchy('/hello/below/sibling', {'k6': 'siblingval'}))
-           >>> h.add(Hierarchy('/hello/somewhere/else/deep/below', {'k': 'siblingval'}))
-           >>> h.add(Hierarchy('/hello/somewhere/else', {'k2': 'k2siblingval'}))
            """
         assert below(self.name, hierarchy.name), ""+self.name+" not below "+ hierarchy.name
         if directbelow(self.name, hierarchy.name):
             """check if child already exists"""
             for c in self._children:
                 if hierarchy.name == c.name:
-                    """merge info and children into """
+                    """update info and children into previous structure hierarchy"""
+                    assert c._info == {}, "info is not empty in" + c.name
                     c._info.update(hierarchy.info)
                     c._children.update(hierarchy.children)
-                    return self
-            """add new child"""
-            return self._children.update({hierarchy})
+                    "updated " + hierarchy.name + " in child " + c.name
+                    return
+            """add new child below myself""" + hierarchy.name + " into " + self.name
+            self._children.update({hierarchy})
+            return
 
         for c in self._children:
-            if directbelow(c.name, hierarchy.name):
+            if below(c.name, hierarchy.name):
                 """add below existing children""", c.name, hierarchy.name
                 return c.add(hierarchy)
 
-        """create a hierarchy and add there"""
-        h = Hierarchy(cutname(hierarchy.name, self.name), {})
+        n = cutname(hierarchy.name, self.name)
+        h = Hierarchy(n, {})
+        """create a structure hierarchy""",hierarchy.name, self.name, h.name
         self._children.update({h})
-        return h.add(hierarchy)
+        h.add(hierarchy)
+        return
 
     def __str__(self, level = 0):
         ret = ""
-        ret += '\t'*level + "/"+basename(self.name) + " " + str(self.info) + "\n"
+        ret += '        '*level + "/" + self.basename + " " + str(self.info) + "\n"
         for c in self._children:
             ret += c.__str__(level + 1)
         return ret
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()

@@ -15,11 +15,8 @@ cheetahVarStartToken = $
 namespace kdb
 {
 
-@set hierarchy = Hierarchy('/test', {})
-
 ##todo: duplicate
 @for $key, $info in $parameters.iteritems()
-@silent hierarchy.add(Hierarchy($key, $info))
 @if $isenum(info):
 /**
  * Class enum of $key
@@ -67,8 +64,6 @@ inline $enumname(info) Key::get() const
 
 @end if
 @end for
-
-hierarchy is $hierarchy
 
 ##todo: duplicate
 /** \brief Convert bool to string
@@ -151,55 +146,122 @@ inline bool Key::get() const
 @end if
 @end def
 
-@def outputx(mparameters, mkey)
-@set $lparameters = $cut(mparameters, mkey)
 
-@for n in mkey.split('/')[1:-2]
-namespace $nspretty($n)
+
+
+
+
+
+
+
+@def outputForwardDecl(hierarchy)
+@if not hierarchy.children
+@return
+@end if
+
+@for n in hierarchy.name.split('/')[1:-1]
+namespace $nsnpretty($n)
 {
 @end for
 
-// mkey is $mkey
-class $classname($mkey)
+class $hierarchy.classname;
+
+@for n in hierarchy.name.split('/')[1:-1]
+}
+@end for
+
+@for $child in hierarchy.children
+$outputForwardDecl(child)
+@end for
+
+@end def
+
+
+
+
+
+
+
+
+
+
+
+
+
+@def outputClasses(hierarchy)
+@if not hierarchy.children
+@return
+@end if
+
+@for n in hierarchy.name.split('/')[1:-1]
+namespace $nsnpretty($n)
+{
+@end for
+
+class $hierarchy.classname
 {
 public:
 
-	${classname($mkey)}(kdb::KeySet & ks) : ks(ks)
+	${hierarchy.classname}(kdb::KeySet & ks) : ks(ks)
 	{}
 
-@for k in $nestedclasses(mparameters, dirname(mkey))
-@set nsname = $nspretty(dirname(k))
-@set nestedname = $nestedpretty(basename(k))
-@set nestedclassname = $classpretty(basename(k))
-	$nsname::$nestedclassname ${nestedname}() const
+@for k in hierarchy.childrenWithChildren
+@set nsname = $nspretty(k.dirname)
+@set nestedname = $nestedpretty(k.basename)
+@set nestedclassname = $classpretty(k.basename)
+	$nsname$nestedclassname& ${nestedname}()
 	{
-		return static_cast<$nsname::$nestedclassname>(ks);
+		// works in C++11 because classes are layout compatible
+		return reinterpret_cast<$nsname$nestedclassname&>(*this);
+	}
+
+	$nsname$nestedclassname const& ${nestedname}() const
+	{
+		// works in C++11 because classes are layout compatible
+		return reinterpret_cast<$nsname$nestedclassname const&>(*this);
 	}
 @end for
 
-@for k,i in $siblings(mparameters, mkey).iteritems()
-	$typeof(i) get${funcname(k)}() const;
-	void set${funcname(k)}($typeof(i) n);
+@for k in hierarchy.childrenWithType
+	$typeof(k.info) get${funcname(k.name)}() const;
+	void set${funcname(k.name)}($typeof(k.info) n);
 @end for
 
 private:
 	kdb::KeySet &ks;
 };
 
-@for n in mkey.split('/')[1:-2]
+@for n in hierarchy.name.split('/')[1:-1]
 }
 @end for
 
-@for $k in lparameters
-@silent $sys.stderr.write("var is '$k'" + $getVar('k', 'default')+ ".\n")
-$outputx(lparameters, k)
+@for $child in hierarchy.children
+$outputClasses(child)
 @end for
 
 @end def
 
-##TODO use hierarchy here
-@set px = $parameters
-$outputx(px, "/")
+
+
+
+
+
+
+
+
+/*
+hierarchy is
+@set hierarchy = Hierarchy('/', {})
+@for $key, $info in $parameters.items()
+hierarchy.add(Hierarchy($key, $info))
+$hierarchy.add(Hierarchy($key, $info))
+$hierarchy
+@end for
+*/
+
+
+$outputForwardDecl(hierarchy)
+$outputClasses(hierarchy)
 
 @for $key, $info in $parameters.iteritems()
 /** \brief Get parameter $key
@@ -211,7 +273,7 @@ $outputx(px, "/")
  * \return the value of the parameter, default if it could not be found
  * \param ks the keyset where the parameter is searched
  */
-inline $typeof(info) $nsname($key)::$classname($key)::get$funcname($key)()
+inline $typeof(info) $nsname($key)$classname($key)::get$funcname($key)() const
 {
 @if $info.get('override')
 	// override
@@ -260,7 +322,7 @@ inline $typeof(info) $nsname($key)::$classname($key)::get$funcname($key)()
  * \param ks the keyset where the parameter is added or replaced
  * \param n is the value to set in the parameter
  */
-inline void Parameters::set$funcname($key)($typeof(info) n)
+inline void $nsname($key)$classname($key)::set$funcname($key)($typeof(info) n)
 {
 	kdb::Key found = ks.lookup("$key", 0);
 
