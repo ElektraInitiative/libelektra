@@ -22,14 +22,15 @@ else
 	exit
 fi
 
-GEN_FOLDER=@CMAKE_SOURCE_DIR@/src/gen
-GEN="/usr/bin/python $GEN_FOLDER/gen.py"
+GEN_FOLDER="@CMAKE_SOURCE_DIR@/src/gen"
+GEN="$GEN_FOLDER/kdb-gen"
+TESTPROGS="./lift ./cpplift ./nestedlift"
 
 if $GEN | grep "^Usage:"
 then
-	echo "gen available"
+	echo "$GEN available"
 else
-	echo "no gen available (e.g. cheetah missing)"
+	echo "$GEN does not work (e.g. cheetah missing)"
 	exit
 fi
 
@@ -71,11 +72,11 @@ make
 
 echo "Test defaults"
 
-./lift | grep "delay: 0"
-succeed_if "default of delay not correct"
-
-./cpplift | grep "delay: 0"
-succeed_if "default of delay not correct"
+for TESTPROG in $TESTPROGS
+do
+	$TESTPROG | grep "delay: 0"
+	succeed_if "default of delay not correct"
+done
 
 ./lift | grep "stops: true"
 succeed_if "default of stops not correct"
@@ -136,20 +137,20 @@ succeed_if "could not set $SKEY to value $VALUE"
 [ "x`$KDB get $SKEY 2> /dev/null`" = "x$VALUE" ]
 succeed_if "cant get $SKEY"
 
-./lift | grep "delay: $VALUE"
-succeed_if "value of delay not $VALUE"
-
-./cpplift | grep "delay: $VALUE"
-succeed_if "value of delay not $VALUE"
+for TESTPROG in $TESTPROGS
+do
+	$TESTPROG | grep "delay: $VALUE"
+	succeed_if "value of delay not $VALUE"
+done
 
 ./lift -d 2 | grep "delay: 2"
 succeed_if "delay commandline parameter not working"
 
-./lift | grep "delay: $VALUE"
-succeed_if "value of delay not $VALUE"
-
-./cpplift | grep "delay: $VALUE"
-succeed_if "value of delay not $VALUE"
+for TESTPROG in $TESTPROGS
+do
+	$TESTPROG | grep "delay: $VALUE"
+	succeed_if "value of delay not $VALUE"
+done
 
 
 
@@ -169,11 +170,11 @@ succeed_if "cant get $UKEY (writeback problem)"
 [ "x`$KDB get $SKEY 2> /dev/null`" = "x$VALUE" ]
 succeed_if "cant get $SKEY with $VALUE (writeback)"
 
-./lift | grep "delay: 4"
-succeed_if "writeback was not permenent"
-
-./cpplift | grep "delay: 4"
-succeed_if "writeback was not permenent"
+for TESTPROG in $TESTPROGS
+do
+	$TESTPROG | grep "delay: 4"
+	succeed_if "writeback was not permenent"
+done
 
 $KDB rm "$SKEY" 1>/dev/null
 succeed_if "cannot rm $SKEY"
@@ -228,11 +229,11 @@ succeed_if "limit commandline parameter with writeback not working"
 [ "x`$KDB get $UKEY 2> /dev/null`" = "x22" ]
 succeed_if "cant get $UKEY (writeback problem)"
 
-./lift | grep "limit: 22"
-succeed_if "writeback was not permenent"
-
-./cpplift | grep "limit: 22"
-succeed_if "writeback was not permenent"
+for TESTPROG in $TESTPROGS
+do
+	$TESTPROG | grep "limit: 22"
+	succeed_if "writeback was not permenent"
+done
 
 ./lift -l 81 | grep "limit: 22"
 succeed_if "limit commandline above limit not working (with param)"
@@ -246,11 +247,11 @@ succeed_if "limit commandline negativ not working (with param)"
 $KDB set "$OKEY" "$VALUE" 1>/dev/null
 succeed_if "could not set $OKEY to value $VALUE"
 
-./lift | grep "limit: $VALUE"
-succeed_if "override value $VALUE not found"
-
-./cpplift | grep "limit: $VALUE"
-succeed_if "override value $VALUE not found"
+for TESTPROG in $TESTPROGS
+do
+	$TESTPROG | grep "limit: $VALUE"
+	succeed_if "override value $VALUE not found"
+done
 
 ./lift -l 22 -w | grep "limit: $VALUE"
 succeed_if "override was not in favour to commandline parameter"
@@ -258,11 +259,11 @@ succeed_if "override was not in favour to commandline parameter"
 [ "x`$KDB get $UKEY 2> /dev/null`" = "x22" ]
 succeed_if "cant get $UKEY which will not be used"
 
-./lift | grep "limit: $VALUE"
-succeed_if "override was not in favour to writeback"
-
-./cpplift | grep "limit: $VALUE"
-succeed_if "override was not in favour to writeback"
+for TESTPROG in $TESTPROGS
+do
+	$TESTPROG | grep "limit: $VALUE"
+	succeed_if "override was not in favour to writeback"
+done
 
 $KDB rm "$OKEY" 1>/dev/null
 succeed_if "cannot rm $OKEY"
@@ -297,11 +298,11 @@ VALUE=9.5
 $KDB set "$UKEY" "$VALUE" 1>/dev/null
 succeed_if "could not set $UKEY to value $VALUE"
 
-./lift | grep "height #3: $VALUE"
-succeed_if "fallback of height $VALUE was not used"
-
-./cpplift | grep "height #3: $VALUE"
-succeed_if "fallback of height $VALUE was not used"
+for TESTPROG in $TESTPROGS
+do
+	$TESTPROG | grep "height #3: $VALUE"
+	succeed_if "fallback of height $VALUE was not used"
+done
 
 ./lift -h 14.4 | grep "height #3: 14.4"
 succeed_if "commandline parameter did not overwrite fallback"
@@ -317,11 +318,11 @@ VALUE=18.8
 $KDB set "$KKEY" "$VALUE" 1>/dev/null
 succeed_if "could not set $KKEY to value $VALUE"
 
-./lift | grep "height #3: $VALUE"
-succeed_if "fallback of height $VALUE was not used"
-
-./cpplift | grep "height #3: $VALUE"
-succeed_if "fallback of height $VALUE was not used"
+for TESTPROG in $TESTPROGS
+do
+	$TESTPROG | grep "height #3: $VALUE"
+	succeed_if "fallback of height $VALUE was not used"
+done
 
 $KDB rm "$KKEY" 1>/dev/null
 succeed_if "cannot rm $KKEY"
