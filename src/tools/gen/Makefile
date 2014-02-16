@@ -48,3 +48,5 @@ clean:
 	rm -f cpplift
 	rm -f *.pyc
 	rm -f lift.3
+	rm -f lift_nested.hpp
+	rm -f nestedlift
