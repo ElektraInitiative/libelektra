@@ -4,6 +4,8 @@
 #include <vector>
 #include <iostream>
 
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <limits.h>
@@ -11,7 +13,7 @@
 
 extern char **environ;
 
-// get from cmake, RPATH?
+// TODO get from cmake, RPATH?
 const char * buildinExecPath = "/usr/lib/kdb-tool";
 
 void tryExternalCommand(char** argv)
@@ -37,19 +39,44 @@ void tryExternalCommand(char** argv)
 
 			if (!getcwd(currentPath, sizeof(currentPath)))
 			{
-				std::cerr << "Could not determine current "
-					<< "path" << strerror(errno)
+				std::cerr << "Could not determine "
+					<< "current path for path "
+					<< pathes[p]
+					<< " and command name: "
+					<< argv[0]
+					<< " because: "
+					<< strerror(errno)
 					<< std::endl;
-				break;
+				continue;
 			}
 			command += currentPath;
+			command += "/";
 		}
 
 		command += pathes[p];
 		command += "/kdb-";
 		command += argv[0];
 
-		std::cout << "try to exec " << command << std::endl;
+		struct stat buf;
+		if (stat(command.c_str(), &buf) == -1)
+		{
+			if (errno == ENOENT)
+			{
+				// the file simply does not exist
+				// so it seems like it is an
+				// UnknownCommand
+				continue;
+			}
+			else
+			{
+				std::cerr << "The external command "
+					<< command
+					<< " could not be found, because: "
+					<< strerror(errno)
+					<< std::endl;
+				continue;
+			}
+		}
 
 		savedArg = argv[0];
 		argv[0] = const_cast<char*>(command.c_str());
