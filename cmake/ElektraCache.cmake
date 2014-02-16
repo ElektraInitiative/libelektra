@@ -103,6 +103,37 @@ set (PLUGINS
 
 
 
+
+#
+# set TOOLS cache variable
+#
+set (TOOLS_LIST_DEFAULT kdb)
+
+if (TOOLS MATCHES "DEFAULT")
+	set (TOOLS_FORCE FORCE)
+endif ()
+
+if (TOOLS MATCHES "NODEP")
+	set (TOOLS_LIST
+		)
+	set (TOOLS_FORCE FORCE)
+endif ()
+
+if (TOOLS MATCHES "ALL")
+	set (TOOLS_LIST
+		gen
+		)
+	set (TOOLS_FORCE FORCE)
+endif ()
+
+set (TOOLS
+	${TOOLS_LIST_DEFAULT}
+	${TOOLS_LIST}
+	CACHE STRING "Which TOOLS should be compiled? ALL for all available, NODEP for TOOLS without additional dependencies, DEFAULT for minimal set."
+	${TOOLS_FORCE}
+	)
+
+
 #
 # Runtime pathes for KDB
 #

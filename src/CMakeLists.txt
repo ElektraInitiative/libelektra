@@ -1,6 +1,6 @@
 add_subdirectory (include)
 
-add_subdirectory (error)
+add_subdirectory (liberror)
 
 add_subdirectory (libloader)
 
@@ -10,4 +10,4 @@ add_subdirectory (libelektra)
 
 add_subdirectory (bindings)
 
-add_subdirectory (kdb)
+add_subdirectory (tools)

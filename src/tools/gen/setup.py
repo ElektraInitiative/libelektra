@@ -2,7 +2,7 @@
 
 from distutils.core import setup
 
-setup(name='ElektraGen',
+setup(name='kdb-gen',
       version='0.1',
       description='Elektra Front End Generator',
       author='Markus Raab',
