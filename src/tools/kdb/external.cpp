@@ -1,4 +1,5 @@
 #include <external.hpp>
+#include "kdbconfig.h"
 
 #include <string>
 #include <vector>
@@ -13,8 +14,7 @@
 
 extern char **environ;
 
-// TODO get from cmake, RPATH?
-const char * buildinExecPath = "/usr/lib/kdb-tool";
+const char * buildinExecPath = BUILTIN_EXEC_FOLDER;
 
 void tryExternalCommand(char** argv)
 {

@@ -8,7 +8,8 @@ setup(name='kdb-gen',
       author='Markus Raab',
       author_email='elektra@markus-raab.org',
       url='http://www.libelektra.org/',
-      scripts=['gen.py'],
+      package_dir={ '': '${CMAKE_CURRENT_SOURCE_DIR}' },
+      scripts=['${CMAKE_CURRENT_SOURCE_DIR}/kdb-gen'],
       py_modules = [
           'cpp_support',
           'c_support',
@@ -17,12 +18,12 @@ setup(name='kdb-gen',
           ],
       data_files = [
           ('templates', [
-                 'template_genopt.h',
-                 'template_genopt.c',
-                 'template.h',
-                 'template.hpp',
-                 'template.man',
-                 'template.html',
+                 '${CMAKE_CURRENT_SOURCE_DIR}/template_genopt.h',
+                 '${CMAKE_CURRENT_SOURCE_DIR}/template_genopt.c',
+                 '${CMAKE_CURRENT_SOURCE_DIR}/template.h',
+                 '${CMAKE_CURRENT_SOURCE_DIR}/template.hpp',
+                 '${CMAKE_CURRENT_SOURCE_DIR}/template.man',
+                 '${CMAKE_CURRENT_SOURCE_DIR}/template.html',
                 ]
           )
       ]

@@ -232,32 +232,37 @@ MARK_AS_ADVANCED(ELEKTRA_VERBOSE_BUILD)
 set (TARGET_INCLUDE_FOLDER
 		"elektra"
 		CACHE STRING
-		"Optional folder below system include folder to install include files."
+		"This folder (below prefix/include) will be used to install include files."
     )
 
 set (TARGET_CMAKE_FOLDER
 		"share/cmake-${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}/Modules"
 		CACHE STRING
-		"The folder below system prefix where to install cmake files."
+		"This folder (below prefix) will be used to install cmake files."
     )
 
 set (TARGET_PLUGIN_FOLDER "elektra"
 		CACHE STRING
-		"Optional folder below system library folder where to install elektra plugins. LIB_SUFFIX is honored."
+		"This folder (below prefix/lib) will be used to install elektra plugins. LIB_SUFFIX is honored."
     )
 
 set (TARGET_PKGCONFIG_FOLDER
 		"pkgconfig"
 		CACHE STRING
-		"The folder below system library folder where to install pkgconfig files. LIB_SUFFIX is honored."
+		"The folder (below prefix/lib) folder where to install pkgconfig files. LIB_SUFFIX is honored."
     )
 
 set (TARGET_DOCUMENTATION_FOLDER
 		"share/doc/elektra-api"
 		CACHE STRING
-		"The folder below system prefix where to install api documentation files."
+		"The folder (below prefix) where to install api documentation files."
     )
 
+set (TARGET_TOOLS_EXEC_FOLDER
+		"lib/kdb-tool"
+		CACHE STRING
+		"This folder (below prefix) will be used to install additional kdb-tools"
+    )
 
 #
 # Misc.

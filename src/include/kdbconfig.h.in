@@ -36,6 +36,8 @@
 /** Declares an API as deprecated. */
 #define ELEKTRA_DEPRECATED       @ELEKTRA_DEPRECATED@
 
+#define BUILTIN_EXEC_FOLDER      "@BUILTIN_EXEC_FOLDER@"
+
 /* disable debug output messages */
 #define DEBUG @DEBUG@
 

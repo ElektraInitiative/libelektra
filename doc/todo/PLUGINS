@@ -15,7 +15,11 @@ add dependencies in contract?
 
 == OS abstraction ==
 
-getcwd plugin
+chdir/getcwd
+chroot
+hostname
+uname also to set
+ulimit
 
 == global plugins ==
 

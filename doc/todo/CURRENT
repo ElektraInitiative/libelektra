@@ -7,40 +7,31 @@ Items are e.g. BUGS, OPTIMIZE, PROBLEMS, TESTING, PLUGINS, TODO,..
 
 == 0.8.5 ==
 
-doxygen -u
-types.hpp installed to /usr/lib
-
 improve gen
-
-Starting points:
-	add Tutorials
-	add former thesis as official docu?
-	add more Examples in literal style
-
-integration tests:
-	converting (any to any storage plugin)
-
-
-resolver:
-	pick most cruical features, e.g. xdg
-
-rebase:
-	python+C impl compare
-
-kdb convert
-kdb file:
-	export to temporary file, open with editor and reimport
+	path to templates for external projects
 
 gen:
-	for each file
-	copy directory
-	enums?
+	file write support (not redirect)
+	(allow file names, correct header guard)
+	cleanup: utilities for cheetha+python
 
-tools: dfc, ..
-	publish tools using gen
+tools:
+	wc
+	add dfc
 
-fix TODOs in RELEASE
-	automate tests of external + examples using scripts
+Starting points:
+	add small Tutorial for gen
+	add more Examples in literal style
+
+
+announcements: docu
+	gen
+	kdb <tool>
+	tools
+
+=== install problems ===
+
+types.hpp installed to /usr/lib
 
 man pages:
 	allow to change section
