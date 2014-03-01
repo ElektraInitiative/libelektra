@@ -241,7 +241,8 @@ set (TARGET_CMAKE_FOLDER
 		"This folder (below prefix) will be used to install cmake files."
     )
 
-set (TARGET_PLUGIN_FOLDER "elektra"
+set (TARGET_PLUGIN_FOLDER
+		"elektra"
 		CACHE STRING
 		"This folder (below prefix/lib) will be used to install elektra plugins. LIB_SUFFIX is honored."
     )
@@ -258,10 +259,16 @@ set (TARGET_DOCUMENTATION_FOLDER
 		"The folder (below prefix) where to install api documentation files."
     )
 
-set (TARGET_TOOLS_EXEC_FOLDER
+set (TARGET_TOOL_EXEC_FOLDER
 		"lib/kdb-tool"
 		CACHE STRING
 		"This folder (below prefix) will be used to install additional kdb-tools"
+    )
+
+set (TARGET_TEMPLATE_FOLDER
+		"share/elektra/templates"
+		CACHE STRING
+		"This folder (below prefix) will be used to install templates for kdb-gen"
     )
 
 #
