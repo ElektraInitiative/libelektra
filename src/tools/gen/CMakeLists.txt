@@ -12,11 +12,16 @@ if (PYTHON)
 	set(SETUP_PY ${CMAKE_CURRENT_BINARY_DIR}/setup.py)
 	configure_file(setup.py.in ${SETUP_PY})
 
+	#"/usr/local/lib/python2.7/dist-packages"
 	install(CODE "execute_process(COMMAND
-		${PYTHON} ${SETUP_PY} install
+		${PYTHON} ${SETUP_PY}
+			--no-user-cfg
+			--quiet
+			install
 			--prefix=${CMAKE_INSTALL_PREFIX}
 			--root=\$ENV{DESTDIR}
-			--install-scripts=${CMAKE_INSTALL_PREFIX}/${TARGET_TOOLS_EXEC_FOLDER}
+			--install-scripts=${CMAKE_INSTALL_PREFIX}/${TARGET_TOOL_EXEC_FOLDER}
+			--install-layout=deb
 			)"
 		)
 
