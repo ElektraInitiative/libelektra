@@ -14,7 +14,7 @@ check_include_file(time.h       HAVE_TIME_H)
 check_include_file(unistd.h     HAVE_UNISTD_H)
 
 set (BUILTIN_EXEC_FOLDER
-	"${CMAKE_INSTALL_PREFIX}/${TARGET_TOOLS_EXEC_FOLDER}")
+	"${CMAKE_INSTALL_PREFIX}/${TARGET_TOOL_EXEC_FOLDER}")
 set (ELEKTRA_DEPRECATED "__attribute__ ((deprecated))")
 set (ELEKTRA_UNUSED "__attribute__ ((unused))")
 
