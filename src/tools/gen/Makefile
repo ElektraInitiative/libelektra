@@ -11,7 +11,7 @@
 #"fatal error: kdb.h" means that you do not have Elektra installed
 #properly.
 
-GEN=./kdb-gen
+GEN=./gen
 ELEKTRA=-lelektra-static
 CFLAGS=-O0 -ggdb
 FLAGS = `pkg-config --libs --cflags elektra`

@@ -268,7 +268,7 @@ set (TARGET_TOOL_EXEC_FOLDER
 set (TARGET_TEMPLATE_FOLDER
 		"share/elektra/templates"
 		CACHE STRING
-		"This folder (below prefix) will be used to install templates for kdb-gen"
+		"This folder (below prefix) will be used to install templates for gen"
     )
 
 #

@@ -31,7 +31,7 @@ else
 fi
 
 GEN_FOLDER="@CMAKE_SOURCE_DIR@/src/tools/gen"
-GEN="$GEN_FOLDER/kdb-gen"
+GEN="$GEN_FOLDER/gen"
 TESTPROGS="./lift ./cpplift ./nestedlift"
 
 if $GEN -h | grep "^usage:"

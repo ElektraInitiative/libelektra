@@ -3,7 +3,7 @@
 from distutils.core import setup
 from distutils.util import get_platform
 
-setup(name='elektra-kdb-gen',
+setup(name='elektra-gen',
       version='0.1',
       description='Elektra Front End Generator',
       long_description="""Generate Front Ends for static programming
@@ -19,7 +19,7 @@ setup(name='elektra-kdb-gen',
       author_email='elektra@markus-raab.org',
       url='http://www.libelektra.org/',
       package_dir={ '': '${CMAKE_CURRENT_SOURCE_DIR}' },
-      scripts=['${CMAKE_CURRENT_SOURCE_DIR}/kdb-gen'],
+      scripts=['${CMAKE_CURRENT_SOURCE_DIR}/gen'],
       py_modules = [
           'cpp_support',
           'c_support',
