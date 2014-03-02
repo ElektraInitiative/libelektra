@@ -260,7 +260,7 @@ set (TARGET_DOCUMENTATION_FOLDER
     )
 
 set (TARGET_TOOL_EXEC_FOLDER
-		"lib/kdb-tool"
+		"lib/kdb-tool/exec"
 		CACHE STRING
 		"This folder (below prefix) will be used to install additional kdb-tools"
     )
