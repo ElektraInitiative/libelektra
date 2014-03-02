@@ -55,11 +55,14 @@ if (DOXYGEN_FOUND)
 		@ONLY
 	)
 
-	do_doc(${OUTPUT_DIRECTORY}/html/ index.html ${TARGET_DOCUMENTATION_HTML_FOLDER})
-	do_doc(${OUTPUT_DIRECTORY}/man/man3elektra/ kdb.3elektra ${TARGET_DOCUMENTATION_MAN_FOLDER})
+	do_doc(${OUTPUT_DIRECTORY}/html/ index.html
+		${TARGET_DOCUMENTATION_HTML_FOLDER})
+	do_doc(${OUTPUT_DIRECTORY}/man/man3elektra/ kdb.3elektra
+		"${TARGET_DOCUMENTATION_MAN_FOLDER};PATTERN;_*;EXCLUDE")
 
 	if (WITH_LATEX)
-		do_doc(${OUTPUT_DIRECTORY}/latex/ refman.tex ${TARGET_DOCUMENTATION_LATEX_FOLDER})
+		do_doc(${OUTPUT_DIRECTORY}/latex/ refman.tex
+			${TARGET_DOCUMENTATION_LATEX_FOLDER})
 
 		add_custom_command (
 			OUTPUT ${OUTPUT_DIRECTORY}/latex/refman.pdf
