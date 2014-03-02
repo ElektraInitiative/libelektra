@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <string.h>
+#include <errno.h>
 
 extern char **environ;
 
@@ -54,7 +55,7 @@ void tryExternalCommand(char** argv)
 		}
 
 		command += pathes[p];
-		command += "/kdb-";
+		command += "/";
 		command += argv[0];
 
 		struct stat buf;
