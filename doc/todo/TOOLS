@@ -1,3 +1,7 @@
+== TOOLS ==
+
+kdb tools meta description files
+
 = KDB =
 
 list existing plugins
@@ -32,6 +36,8 @@ kdb-edit edit file in any of Elektra's format
 install config (mount+preload system config) by using meta struct
 
 == GEN ==
+
+cmake support for "kdb gen" (run kdb gen within cmake)
 
 environment parsing support
 static compilation model

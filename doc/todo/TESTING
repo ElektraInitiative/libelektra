@@ -7,6 +7,8 @@ deploy them correctly and run old tests with new elektra
 
 == integration tests ==
 
+run-tests run-shell-tests
+
 kdb convert
 converting (any to any storage plugin)
 
