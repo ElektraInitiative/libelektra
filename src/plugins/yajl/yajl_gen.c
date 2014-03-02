@@ -173,7 +173,7 @@ static void elektraGenValue(yajl_gen g, Key *parentKey, const Key *cur)
 			yajl_gen_string(g, (const unsigned char *)keyString(cur), keyGetValueSize(cur)-1);
 		}
 	}
-	else if (!strcmp(keyString(type), "number")) // TODO: distuingish between float and int (parser too)
+	else if (!strcmp(keyString(type), "double"))
 	{
 		yajl_gen_number(g, keyString(cur), keyGetValueSize(cur)-1);
 	}
