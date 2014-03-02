@@ -49,4 +49,4 @@ def typeof(info):
     elif isenum(info):
         return "enum " + enumname(info)
     else:
-        return "elektra_"+type
+        return "kdb_"+type+"_t"
