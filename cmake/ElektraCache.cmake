@@ -253,10 +253,22 @@ set (TARGET_PKGCONFIG_FOLDER
 		"The folder (below prefix/lib) folder where to install pkgconfig files. LIB_SUFFIX is honored."
     )
 
-set (TARGET_DOCUMENTATION_FOLDER
-		"share/doc/elektra-api"
+set (TARGET_DOCUMENTATION_HTML_FOLDER
+		"share/doc/elektra-api/html"
 		CACHE STRING
-		"The folder (below prefix) where to install api documentation files."
+		"The folder (below prefix) where to install html api documentation files."
+    )
+
+set (TARGET_DOCUMENTATION_MAN_FOLDER
+		"share/man/man3"
+		CACHE STRING
+		"The folder (below prefix) where to install man3 api documentation files."
+    )
+
+set (TARGET_DOCUMENTATION_LATEX_FOLDER
+		"share/doc/elektra-api/latex"
+		CACHE STRING
+		"The folder (below prefix) where to install latex api documentation files."
     )
 
 set (TARGET_TOOL_EXEC_FOLDER

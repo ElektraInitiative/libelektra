@@ -4,7 +4,7 @@ find_package(Doxygen)
 #
 #name is man, html or latex
 #builds and install documentation
-macro (do_doc target file)
+macro (do_doc target file install)
 	add_custom_command (
 		OUTPUT ${target}/${file}
 		COMMAND ${DOXYGEN_EXECUTABLE}
@@ -12,16 +12,16 @@ macro (do_doc target file)
 		DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
 	)
 
-	get_filename_component (name ${target} NAME_WE)
+	#get_filename_component (name ${target} NAME_WE)
 
-	add_custom_target (${name} ALL
+	add_custom_target (doc/${file} ALL
 		DEPENDS ${target}/${file}
 	)
 
 	if (INSTALL_DOCUMENTATION)
 		install (
 			DIRECTORY ${target}
-			DESTINATION ${TARGET_DOCUMENTATION_FOLDER}
+			DESTINATION ${install}
 		)
 	endif (INSTALL_DOCUMENTATION)
 endmacro (do_doc)
@@ -55,11 +55,11 @@ if (DOXYGEN_FOUND)
 		@ONLY
 	)
 
-	do_doc(${OUTPUT_DIRECTORY}/html index.html)
-	do_doc(${OUTPUT_DIRECTORY}/man man3elektra/kdb.3elektra)
+	do_doc(${OUTPUT_DIRECTORY}/html/ index.html ${TARGET_DOCUMENTATION_HTML_FOLDER})
+	do_doc(${OUTPUT_DIRECTORY}/man/man3elektra/ kdb.3elektra ${TARGET_DOCUMENTATION_MAN_FOLDER})
 
 	if (WITH_LATEX)
-		do_doc(${OUTPUT_DIRECTORY}/latex refman.tex)
+		do_doc(${OUTPUT_DIRECTORY}/latex/ refman.tex ${TARGET_DOCUMENTATION_LATEX_FOLDER})
 
 		add_custom_command (
 			OUTPUT ${OUTPUT_DIRECTORY}/latex/refman.pdf
