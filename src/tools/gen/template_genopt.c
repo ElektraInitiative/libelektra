@@ -66,7 +66,7 @@ int ksGetOpt(int argc, char **argv, KeySet *ks)
 @if $info.get('opt/long'):
 		{
 			"$info.get('opt/long')",
-@if $info.get('type') == 'bool':
+@if $info.get('type') == 'boolean':
 			no_argument,
 @else:
 			required_argument,
@@ -103,7 +103,7 @@ int ksGetOpt(int argc, char **argv, KeySet *ks)
 #endif
 @for $key, $info in $parameters.items()
 @if $info.get('opt'):
-@if $info.get('type') == 'bool':
+@if $info.get('type') == 'boolean':
 		"$info.get('opt')"
 @else:
 	@if isinstance($info.get('opt'), int):

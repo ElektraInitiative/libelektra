@@ -3,13 +3,16 @@
 directiveStartToken = @
 cheetahVarStartToken = $
 #end compiler-settings
-#ifndef ELEKTRA_GEN_FILENAME_HPP
-#define ELEKTRA_GEN_FILENAME_HPP
+#ifndef $includeguard($args.output)
+#define $includeguard($args.output)
+
 /** \file
  * \warning this is a generated file, do not modify it
  * \warning this is a prototype and not production code
  */
 #include "kdb.hpp"
+#include "kdbtypes.h"
+
 #include <string>
 
 namespace kdb
@@ -342,4 +345,4 @@ inline void $nsname($key)$classname($key)::set$funcname($key)($typeof(info) n)
 
 } // namespace kdb
 
-#endif
+#endif // $includeguard($args.output)

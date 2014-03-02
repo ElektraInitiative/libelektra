@@ -4,7 +4,8 @@ directiveStartToken = @
 cheetahVarStartToken = $
 #end compiler-settings
 // start of a generated file
-#ifndef ELEKTRA_GEN_GETOPT_H
+#ifndef $includeguard($args.output)
+#define $includeguard($args.output)
 
 #include "kdb.h"
 
@@ -36,4 +37,4 @@ const char *elektraGenHelpText();
 }
 #endif
 
-#endif
+#endif // $includeguard($args.output)
