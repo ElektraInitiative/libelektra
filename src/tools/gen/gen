@@ -8,10 +8,10 @@ except ImportError:
 import sys
 import argparse
 import ConfigParser
-import pkg_resources
 
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(prog="kdb gen",
+                                     description="Generates source files")
     parser.add_argument("specification",
         help="A meta configuration file that describes the configuration")
     parser.add_argument("template",
@@ -45,7 +45,8 @@ def main():
     if args.verbose:
         print parameterSpecification
 
-    template = str(Template(file=args.template, searchList=[parameterSpecification]))
+    template = str(Template(file=args.template,
+                            searchList=[parameterSpecification]))
 
     if args.output == '-':
         print template
