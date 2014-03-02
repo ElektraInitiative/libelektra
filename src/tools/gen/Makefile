@@ -1,13 +1,26 @@
-GEN=kdb-gen
+#this Makefile allows you to build some examples
+#note that the build is in-tree
+#
+#You need to have Elektra installed and pkg-config available so that
+#it will work.
+#
+#For compilation, just type:
+#
+# make
+#
+#"fatal error: kdb.h" means that you do not have Elektra installed
+#properly.
+
+GEN=./kdb-gen
+ELEKTRA=-lelektra-static
+CFLAGS=-O0 -ggdb
+FLAGS = `pkg-config --libs --cflags elektra`
 
 .PHONY:all
 all:lift cpplift nestedlift lift.html lift.3
 
 util.py:util.tmpl
 	cheetah-compile util.tmpl
-
-lift:lift.c lift.h genopt.c genopt.h
-	cc -Wall -D _GNU_SOURCE -lelektra -I/usr/include/elektra lift.c genopt.c genopt.h lift.h -o lift
 
 lift.html:${GEN} specification.ini template.html
 	${GEN} specification.ini template.html > lift.html
@@ -18,23 +31,26 @@ lift.3:${GEN} specification.ini template.man
 lift.h:${GEN} specification.ini template.h c_support.py
 	${GEN} specification.ini template.h > lift.h
 
+lift.hpp:${GEN} specification.ini template.hpp
+	${GEN} specification.ini template.hpp > lift.hpp
+
+lift_nested.hpp:${GEN} specification.ini template_nested.hpp nested_support.py
+	${GEN} specification.ini template_nested.hpp > lift_nested.hpp
+
 genopt.c:${GEN} specification.ini template_genopt.c opt_support.py
 	${GEN} specification.ini template_genopt.c > genopt.c
 
 genopt.h:${GEN} specification.ini template_genopt.h opt_support.py
 	${GEN} specification.ini template_genopt.h > genopt.h
 
-cpplift:lift.cpp lift.hpp
-	c++ -std=c++11 -Wall -lelektra -I/usr/include/elektra lift.cpp lift.hpp -o cpplift
+lift:lift.c lift.h genopt.c genopt.h
+	cc ${FLAGS} ${LDFLAGS} ${CFLAGS} -Wall -D _GNU_SOURCE lift.c genopt.c genopt.h lift.h ${ELEKTRA} -o lift
 
-lift.hpp:${GEN} specification.ini template.hpp
-	${GEN} specification.ini template.hpp > lift.hpp
+cpplift:lift.cpp lift.hpp
+	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall lift.cpp lift.hpp ${ELEKTRA}  -o cpplift
 
 nestedlift:lift_nested.hpp lift_nested.cpp
-	c++ -std=c++11 -Wall -lelektra -I/usr/include/elektra lift_nested.cpp lift_nested.hpp -o nestedlift
-
-lift_nested.hpp:${GEN} specification.ini template_nested.hpp nested_support.py
-	${GEN} specification.ini template_nested.hpp > lift_nested.hpp
+	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall lift_nested.cpp lift_nested.hpp ${ELEKTRA}  -o nestedlift
 
 
 .PHONY:clean

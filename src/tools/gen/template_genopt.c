@@ -104,9 +104,11 @@ int ksGetOpt(int argc, char **argv, KeySet *ks)
 @for $key, $info in $parameters.items()
 @if $info.get('opt'):
 @if $info.get('type') == 'boolean':
+	@if not isinstance($info.get('opt'), int):
 		"$info.get('opt')"
+	@end if
 @else:
-	@if isinstance($info.get('opt'), int):
+	@if not isinstance($info.get('opt'), int):
 		"$info.get('opt'):"
 	@end if
 @end if

@@ -234,7 +234,7 @@ char *endptr;
 		$strtonumber(info, "strtol")
 	@else if $info['type'] == 'string'
 		ret = keyString(found);
-	@else if $info['type'] == 'bool'
+	@else if $info['type'] == 'boolean'
 		ret = bool_from_string(keyString(found));
 	@else if $isenum(info)
 		ret = ${enumname(info)}_from_string(keyString(found));

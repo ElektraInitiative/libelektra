@@ -4,6 +4,14 @@ echo
 echo ELEKTRA CHECK GEN
 echo
 
+if pkg-config elektra
+then
+	echo "Installed Elektra will be used"
+else
+	echo "Elektra or pkg-config not installed, will exit"
+	exit
+fi
+
 check_version
 
 if is_plugin_available ni
@@ -22,16 +30,16 @@ else
 	exit
 fi
 
-GEN_FOLDER="@CMAKE_SOURCE_DIR@/src/gen"
+GEN_FOLDER="@CMAKE_SOURCE_DIR@/src/tools/gen"
 GEN="$GEN_FOLDER/kdb-gen"
 TESTPROGS="./lift ./cpplift ./nestedlift"
 
-if $GEN | grep "^Usage:"
+if $GEN -h | grep "^usage:"
 then
 	echo "$GEN available"
 else
 	echo "$GEN does not work (e.g. cheetah missing)"
-	exit
+	exit 1
 fi
 
 LIFT_FILE=test_lift.ini
@@ -64,7 +72,8 @@ succeed_if "could not mount: $HEAVY_MATERIAL_LIFT_FILE at $HEAVY_MATERIAL_LIFT_M
 
 cd $GEN_FOLDER
 
-make
+
+BUILD_DIR="@CMAKE_BINARY_DIR@" make
 
 
 

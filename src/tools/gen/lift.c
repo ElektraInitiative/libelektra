@@ -43,7 +43,6 @@ int main(int argc, char**argv)
 	Key *parentKey = keyNew("", KEY_END);
 	KDB *kdb = kdbOpen(parentKey);
 	KeySet *conf = ksNew(0);
-	int retval = 0;
 
 	// get all config files
 	kdbGetByName(kdb, conf, parentKey, "/test/lift");
@@ -52,14 +51,14 @@ int main(int argc, char**argv)
 	kdbGetByName(kdb, conf, parentKey, "/test/person_lift");
 
 	// get by params
-	int optret = ksGetOpt(argc, argv, conf);
-	if (optret & 1)
+	int retval = ksGetOpt(argc, argv, conf);
+	if (retval & 1)
 	{
 		printf("%s Version 0.1\n",
 			argv[0]);
 		return 0;
 	}
-	else if (optret & 2)
+	else if (retval & 2)
 	{
 		printf("Usage: %s [OPTIONS]\n"
 			"%s\n"
@@ -68,10 +67,9 @@ int main(int argc, char**argv)
 			elektraGenHelpText());
 		return 0;
 	}
-	else if (optret != 0)
+	else if (retval != 0)
 	{
-		printf ("Error in parsing options\n");
-		retval = 1;
+		printf ("Error in parsing options %d\n", retval);
 	}
 
 	// write back to user/test/lift what we got by commandline
@@ -79,6 +77,7 @@ int main(int argc, char**argv)
 	// fallbacks will be overriden.
 	if (lift(conf))
 	{
+		printf("Write out config\n");
 		keySetName(parentKey, "user/test/lift");
 		kdbSet(kdb, conf, parentKey);
 	}

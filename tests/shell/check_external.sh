@@ -4,7 +4,13 @@ echo
 echo ELEKTRA CHECK EXTERNAL
 echo
 
-echo "Requires installed Elektra"
+if pkg-config elektra
+then
+	echo "Installed Elektra will be used"
+else
+	echo "Elektra or pkg-config not installed, will exit"
+	exit
+fi
 
 check_version
 
