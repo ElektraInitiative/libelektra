@@ -35,7 +35,7 @@
 
 #if __cplusplus > 199711L
 // for C++11
-namespace elektra
+namespace kdb
 {
 	using short_t = int16_t; // default: 0
 	using long_t = int32_t; // default: 0
@@ -53,38 +53,38 @@ namespace elektra
 }
 #else
 // for C
-typedef unsigned char             elektra_boolean;
-typedef unsigned char             elektra_char;
-typedef unsigned char             elektra_octet;
-typedef short                     elektra_short;
-typedef unsigned short            elektra_unsigned_short;
+typedef unsigned char             kdb_boolean_t;
+typedef unsigned char             kdb_char_t;
+typedef unsigned char             kdb_octet_t;
+typedef short                     kdb_short_t;
+typedef unsigned short            kdb_unsigned_short_t;
 #if SIZEOF_LONG == 4
-typedef long                      elektra_long;
-typedef unsigned long             elektra_unsigned_long;
+typedef long                      kdb_long_t;
+typedef unsigned long             kdb_unsigned_long_t;
 #elif SIZEOF_INT == 4
-typedef int                       elektra_long;
-typedef unsigned int              elektra_unsigned_long;
+typedef int                       kdb_long_t;
+typedef unsigned int              kdb_unsigned_long_t;
 #else
-# error "Can't map elektra_long (32 bits) to a native type."
+# error "Can't map kdb_long_t (4 bytes, 32 bits) to a native type."
 #endif
 
-// typedef wchar_t                   elektra_wchar; // wchar_t not supported!
+// typedef wchar_t                   kdb_wchar_t; // wchar_t not supported!
 
 #if SIZEOF_LONG == 8
-typedef long                      elektra_long_long;
-typedef unsigned long             elektra_unsigned_long_long;
+typedef long                      kdb_long_long_t;
+typedef unsigned long             kdb_unsigned_long_long_t;
 #elif defined(HAVE_SIZEOF_LONG_LONG) && (SIZEOF_LONG_LONG == 8)
-typedef long long                 elektra_long_long;
-typedef unsigned long long        elektra_unsigned_long_long;
+typedef long long                 kdb_long_long_t;
+typedef unsigned long long        kdb_unsigned_long_long_t;
 #endif
 
-typedef float                     elektra_float;
-typedef double                    elektra_double;
+typedef float                     kdb_float_t;
+typedef double                    kdb_double_t;
 
 #if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16)
-typedef long double               elektra_long_double;
+typedef long double               kdb_long_double_t;
 #elif defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 12) && defined(__i386__)
-typedef long double               elektra_long_double;
+typedef long double               kdb_long_double_t;
 #endif
 
 #endif
