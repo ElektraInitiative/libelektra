@@ -3,6 +3,13 @@ Implement and test easy to implement, but useful plugins
 as many different plugins as possible.
 Prefer using great frameworks to do that in short time.
 
+
+== export BUILD INFORMATION ==
+
+similar to KDB_VERSION constants, all other CMake constants of the
+elektra installation should be included in a plugin like version
+
+
 == VERSION IN CONTRACT ==
 
 Configure file for plugin.h

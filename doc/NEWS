@@ -1,3 +1,42 @@
+0.8.5 Release
+
+In this release again amazing features wait for you.
+
+kdb tool now smoothly integrates external tools. These tools can reside
+in external source repositories and even written in other programming
+languages. The approach is similar from "git". Any executable in the
+folder, given with the CMake Cache variable TARGET_TOOL_EXEC_FOLDER
+(default "/usr/lib/kdb-tool/exec"), can be executed by kdb <name>.
+
+The CMake variable TOOLS, similar to PLUGINS, now allows you to decide
+which tools should be built and installed. Default is
+
+The first tool that makes use of this feature creates a powerful
+alternative to directly use Elektra's API. The tool "gen", executed with
+"kdb gen" can generate code and documentation for your specific
+application with your specific types. The code includes getopt parsing
+(short+long options),
+high level getter and setter in C and C++. The documentation includes
+html, doxygen and troff (manpages). The full implications of this
+holistic approach cannot be summarised in one paragraph, but they
+include better type safety and especially much more time for other
+non-configuration related tasks. Give it a try, examples are included in
+the folder "src/tools/gen" and external tools using it will be released
+soon (see https://gitorious.org/elektra-tools/elektra-tools/).
+
+For the code generation clear mappings from Elektra's type system to
+C/C++11 types are needed. The new header file kdbtypes.h introduces this
+mappings compatible to CORBAs fundamental types -- except wchar_t was not
+included, because imho it is useless to have a wide char as long it is
+not clear if it is 16 or 32 bits, but including enum types.
+
+
+
+
+
+
+---------------
+
 0.8.4 Release
 
 I am proud to announce this amazing feature release!
