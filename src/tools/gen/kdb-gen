@@ -1,18 +1,35 @@
 #!/usr/bin/python
 
+try:
+    from Cheetah.Template import Template
+except ImportError:
+    print "You need to install Cheetah"
+
 import sys
+import argparse
 import ConfigParser
-from Cheetah.Template import Template
+import pkg_resources
 
 def main():
-    if len(sys.argv) != 3:
-        print "Usage: ", sys.argv[0], " <parameter specification> <template>"
-        sys.exit()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("specification",
+        help="A meta configuration file that describes the configuration")
+    parser.add_argument("template",
+        help="The template file for cheetah")
+    parser.add_argument("--verbose",
+        help="Prints the specification",
+        action="store_true")
+    parser.add_argument("--output",
+        help="Write the evaluated file to given file (- for stdout)",
+        default='-')
+    args = parser.parse_args()
 
     parser = ConfigParser.ConfigParser(allow_no_value=True)
-    parser.read(sys.argv[1])
+    parser.read(args.specification)
 
     parameterSpecification={}
+    parameterSpecification['parser'] = parser
+    parameterSpecification['args'] = args
     parameterSpecification['parameters']={}
     for section in parser.sections():
         parameterSpecification['parameters'][section]={}
@@ -25,7 +42,15 @@ def main():
         for item in parser.items(section):
             parameterSpecification['parameters'][section][item[0]] = item[1]
 
-    template = Template(file=sys.argv[2], searchList=[parameterSpecification])
-    print template
+    if args.verbose:
+        print parameterSpecification
+
+    template = str(Template(file=args.template, searchList=[parameterSpecification]))
+
+    if args.output == '-':
+        print template
+    else:
+       with open(args.output, 'w') as f:
+           f.write(template)
 
 main()
