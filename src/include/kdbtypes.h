@@ -57,13 +57,13 @@ typedef unsigned char             elektra_boolean;
 typedef unsigned char             elektra_char;
 typedef unsigned char             elektra_octet;
 typedef short                     elektra_short;
-typedef unsigned short            elektra_ushort;
+typedef unsigned short            elektra_unsigned_short;
 #if SIZEOF_LONG == 4
 typedef long                      elektra_long;
-typedef unsigned long             elektra_ulong;
+typedef unsigned long             elektra_unsigned_long;
 #elif SIZEOF_INT == 4
 typedef int                       elektra_long;
-typedef unsigned int              elektra_ulong;
+typedef unsigned int              elektra_unsigned_long;
 #else
 # error "Can't map elektra_long (32 bits) to a native type."
 #endif
@@ -78,14 +78,14 @@ typedef long long                 elektra_long_long;
 typedef unsigned long long        elektra_unsigned_long_long;
 #endif
 
-#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16)
-typedef elektra_long_double        long double
-#elif defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 12) && defined(__i386__)
-typedef elektra_long_double        long double
-#endif
-
 typedef float                     elektra_float;
 typedef double                    elektra_double;
+
+#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16)
+typedef long double               elektra_long_double;
+#elif defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 12) && defined(__i386__)
+typedef long double               elektra_long_double;
+#endif
 
 #endif
 
