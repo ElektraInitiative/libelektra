@@ -213,15 +213,15 @@ char *endptr;
 	@if $info['type'] == 'short'
 		$strtonumber(info, "strtol")
 	@else if $info['type'] == 'long'
-		$strtonumber(info, "strtol")
+		$strtonumber(info, "strtoul")
 	@else if $info['type'] == 'long_long'
-		$strtonumber(info, "strtoll")
+		$strtonumber(info, "ELEKTRA_LONG_LONG_S")
 	@else if $info['type'] == 'unsigned_short'
 		$strtonumber(info, "strtoul")
 	@else if $info['type'] == 'unsigned_long'
 		$strtonumber(info, "strtoul")
 	@else if $info['type'] == 'unsigned_long_long'
-		$strtonumber(info, "strtoull")
+		$strtonumber(info, "ELEKTRA_UNSIGNED_LONG_LONG_S")
 	@else if $info['type'] == 'float'
 		$strtonumber(info, "strtof")
 	@else if $info['type'] == 'double'
@@ -261,19 +261,19 @@ static inline void set_$funcname($key)(KeySet *ks, $typeof(info) n)
 	snprintf(s, 99, "%hd", n);
 @else if $info['type'] == 'long'
 	char s[100];
-	snprintf(s, 99, "%d", n);
+	snprintf(s, 99, ELEKTRA_LONG_F, n);
 @else if $info['type'] == 'long_long'
 	char s[100];
-	snprintf(s, 99, "%ld", n);
+	snprintf(s, 99, ELEKTRA_LONG_LONG_F, n);
 @else if $info['type'] == 'unsigned_short'
 	char s[100];
 	snprintf(s, 99, "%hu", n);
 @else if $info['type'] == 'unsigned_long'
 	char s[100];
-	snprintf(s, 99, "%u", n);
+	snprintf(s, 99, ELEKTRA_UNSIGNED_LONG_F, n);
 @else if $info['type'] == 'unsigned_long_long'
 	char s[100];
-	snprintf(s, 99, "%lu", n);
+	snprintf(s, 99, ELEKTRA_UNSIGNED_LONG_LONG_F, n);
 @else if $info['type'] == 'float'
 	char s[100];
 	snprintf(s, 99, "%f", n);
