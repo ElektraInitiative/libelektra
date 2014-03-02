@@ -272,15 +272,21 @@ set (TARGET_DOCUMENTATION_LATEX_FOLDER
     )
 
 set (TARGET_TOOL_EXEC_FOLDER
-		"lib/kdb-tool/exec"
+		"lib/elektra/tool_exec"
 		CACHE STRING
 		"This folder (below prefix) will be used to install additional kdb-tools"
+    )
+
+set (TARGET_TEST_DATA_FOLDER
+		"share/elektra/test_data"
+		CACHE STRING
+		"This folder (below prefix) will be used to install test data"
     )
 
 set (TARGET_TEMPLATE_FOLDER
 		"share/elektra/templates"
 		CACHE STRING
-		"This folder (below prefix) will be used to install templates for gen"
+		"This folder (below prefix) will be used to install templates"
     )
 
 #

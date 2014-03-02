@@ -14,7 +14,7 @@ macro (do_doc target file install)
 
 	#get_filename_component (name ${target} NAME_WE)
 
-	add_custom_target (doc/${file} ALL
+	add_custom_target (doc_${file} ALL
 		DEPENDS ${target}/${file}
 	)
 
