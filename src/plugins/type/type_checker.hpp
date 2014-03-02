@@ -7,6 +7,7 @@
 #include <sstream>
 #include <locale>
 
+#include "kdbtypes.h"
 #include "types.hpp"
 
 
@@ -29,21 +30,24 @@ public:
 		Key k = config.lookup("/require_version");
 		if (k && k.getString() != "2") throw "Required Version does not match 2";
 
+		types.insert (pair<string, Type*>("short", new MType<kdb::short_t>()));
+		types.insert (pair<string, Type*>("unsigned_short", new MType<kdb::unsigned_short_t>()));
+		types.insert (pair<string, Type*>("long", new MType<kdb::long_t>()));
+		types.insert (pair<string, Type*>("unsigned_long", new MType<kdb::unsigned_long_t>()));
+		types.insert (pair<string, Type*>("long_long", new MType<kdb::long_long_t>()));
+		types.insert (pair<string, Type*>("unsigned_long_long", new MType<kdb::unsigned_long_long_t>()));
+
+		types.insert (pair<string, Type*>("float", new TType<kdb::float_t>()));
+		types.insert (pair<string, Type*>("double", new TType<kdb::double_t>()));
+		types.insert (pair<string, Type*>("long_double", new TType<kdb::long_double_t>()));
+		types.insert (pair<string, Type*>("char", new TType<kdb::char_t>()));
+		types.insert (pair<string, Type*>("boolean", new TType<kdb::boolean_t>()));
+		types.insert (pair<string, Type*>("octet", new TType<kdb::octet_t>()));
+
+		// non-standard types (deprecated, just for
+		// compatibility):
 		types.insert (pair<string, Type*>("any", new AnyType()));
 		types.insert (pair<string, Type*>("empty", new EmptyType()));
-
-		types.insert (pair<string, Type*>("short", new MType<int16_t>()));
-		types.insert (pair<string, Type*>("unsigned_short", new MType<uint16_t>()));
-		types.insert (pair<string, Type*>("long", new MType<int32_t>()));
-		types.insert (pair<string, Type*>("unsigned_long", new MType<uint32_t>()));
-		types.insert (pair<string, Type*>("long_long", new MType<int64_t>()));
-		types.insert (pair<string, Type*>("unsigned_long_long", new MType<uint64_t>()));
-
-		types.insert (pair<string, Type*>("float", new TType<float>()));
-		types.insert (pair<string, Type*>("double", new TType<double>()));
-		types.insert (pair<string, Type*>("char", new TType<unsigned char>()));
-		types.insert (pair<string, Type*>("boolean", new TType<bool>()));
-		types.insert (pair<string, Type*>("octet", new TType<unsigned char>()));
 		types.insert (pair<string, Type*>("FSType", new FSType()));
 		types.insert (pair<string, Type*>("string", new StringType()));
 	}

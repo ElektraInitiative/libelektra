@@ -33,8 +33,31 @@
 
 #include "kdbconfig.h"
 
-#if __cplusplus > 199711L
-// for C++11
+#if __cplusplus
+#if __cplusplus <= 199711L
+// for C++97 or older
+
+#include <inttypes.h>
+
+namespace kdb
+{
+	typedef int16_t short_t; // default: 0
+	typedef int32_t long_t; // default: 0
+	typedef int64_t long_long_t; // default: 0
+	typedef uint16_t unsigned_short_t; // default: 0
+	typedef uint32_t unsigned_long_t; // default: 0
+	typedef uint64_t unsigned_long_long_t; // default: 0
+	typedef float float_t; // default: 0.0
+	typedef double double_t; // default: 0.0
+	typedef long double long_double_t; // default: 0.0
+	typedef unsigned char char_t; // default: 0
+	typedef bool boolean_t; // default: false
+	typedef uint8_t octet_t; // default: 0
+	// using wchar_t; // default: 0 wchar_t not supported!
+}
+#else
+// for C++11 or later
+
 namespace kdb
 {
 	using short_t = int16_t; // default: 0
@@ -46,13 +69,15 @@ namespace kdb
 	using float_t = float; // default: 0.0
 	using double_t = double; // default: 0.0
 	using long_double_t = long double; // default: 0.0
-	using char_t = char; // default: 0
+	using char_t = unsigned char; // default: 0
 	// using wchar_t; // default: 0 wchar_t not supported!
 	using boolean_t = bool; // default: false
 	using octet_t = uint8_t; // default: 0
 }
+#endif
 #else
 // for C
+
 typedef unsigned char             kdb_boolean_t;
 typedef unsigned char             kdb_char_t;
 typedef unsigned char             kdb_octet_t;
