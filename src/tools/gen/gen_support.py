@@ -1,5 +1,14 @@
 from os.path import basename, dirname
 
+import uuid
+generated_uuid = str(uuid.uuid4()).replace('-','_').upper()
+
+def includeguard(filename):
+    if filename == '-':
+        return "ELEKTRA_GEN_" + generated_uuid + "_H"
+    else:
+        return "ELEKTRA_GEN_" + generated_uuid + filename.replace('.','_').upper()
+
 def trueval():
     """Return all values interpreted as true, everything else is false"""
     return ["true", "1", "on"]
