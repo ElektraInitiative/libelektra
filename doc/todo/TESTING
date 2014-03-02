@@ -3,6 +3,16 @@
 need defined set of tests which only use tests.h (and not internal,..)
 deploy them correctly and run old tests with new elektra
 
+
+
+== integration tests ==
+
+run-tests run-shell-tests
+
+kdb convert
+converting (any to any storage plugin)
+
+
 == cpptests ==
 
 make common cmake test infrastructure for cpp plugin tests

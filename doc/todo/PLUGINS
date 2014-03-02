@@ -3,6 +3,13 @@ Implement and test easy to implement, but useful plugins
 as many different plugins as possible.
 Prefer using great frameworks to do that in short time.
 
+
+== export BUILD INFORMATION ==
+
+similar to KDB_VERSION constants, all other CMake constants of the
+elektra installation should be included in a plugin like version
+
+
 == VERSION IN CONTRACT ==
 
 Configure file for plugin.h
@@ -13,11 +20,29 @@ Everything also in constants/build_info
 add dependencies in contract?
 
 
-
 == OS abstraction ==
 
-getcwd plugin
+chdir/getcwd
+chroot
+hostname
+uname also to set
+ulimit
 
+== global plugins ==
+
+needed for global constraints, notifications, remappings and so on
+
+== plugin commands ==
+
+metadata that is evaluated by plugins
+
+selective commit phases:
+	define phases, minimum:
+	commit
+	check
+
+norecursive:
+	only fetch a single plugin without recursion
 
 == DISTRIBUTOR BACKENDS ==
 

@@ -1,21 +1,25 @@
-#from cpp_support import *
+#from nested_support import *
 #compiler-settings
 directiveStartToken = @
 cheetahVarStartToken = $
 #end compiler-settings
-#ifndef ELEKTRA_GEN_FILENAME_HPP
-#define ELEKTRA_GEN_FILENAME_HPP
+#ifndef $includeguard($args.output)
+#define $includeguard($args.output)
+
 /** \file
  * \warning this is a generated file, do not modify it
  * \warning this is a prototype and not production code
  */
 #include "kdb.hpp"
+#include "kdbtypes.h"
+
 #include <string>
 
 namespace kdb
 {
 
-@for $key, $info in $parameters.items()
+##todo: duplicate
+@for $key, $info in $parameters.iteritems()
 @if $isenum(info):
 /**
  * Class enum of $key
@@ -27,6 +31,7 @@ enum class $typeof(info)
 @end for
 };
 
+##todo: duplicate
 /** \brief Convert enum to string
  *
  * \return string that holds value of enum
@@ -43,6 +48,7 @@ inline void Key::set($enumname(info) e)
 	}
 }
 
+##todo: duplicate
 /** \brief Convert enum from string
  *
  * \return enum from string s or default value
@@ -62,6 +68,7 @@ inline $enumname(info) Key::get() const
 @end if
 @end for
 
+##todo: duplicate
 /** \brief Convert bool to string
  *
  * \return string that holds value of bool
@@ -80,6 +87,7 @@ inline void Key::set(bool e)
 	}
 }
 
+##todo: duplicate
 /** \brief Convert bool from string
  *
  * \return bool from string s or default value
@@ -99,7 +107,7 @@ inline bool Key::get() const
 }
 
 ##todo: duplicate
-@def doxygen(key, info)
+@def doxygen($key, $info)
  * \par Type
  * $info['type']
  * \par Mapped Type
@@ -141,23 +149,124 @@ inline bool Key::get() const
 @end if
 @end def
 
-class Parameters
+
+
+
+
+
+
+
+
+@def outputForwardDecl(hierarchy)
+@if not hierarchy.children
+@return
+@end if
+
+@for n in hierarchy.name.split('/')[1:-1]
+namespace $nsnpretty($n)
+{
+@end for
+
+class $hierarchy.classname;
+
+@for n in hierarchy.name.split('/')[1:-1]
+}
+@end for
+
+@for $child in hierarchy.children
+$outputForwardDecl(child)
+@end for
+
+@end def
+
+
+
+
+
+
+
+
+
+
+
+
+
+@def outputClasses(hierarchy)
+@if not hierarchy.children
+@return
+@end if
+
+@for n in hierarchy.name.split('/')[1:-1]
+namespace $nsnpretty($n)
+{
+@end for
+
+class $hierarchy.classname
 {
 public:
 
-	Parameters(kdb::KeySet & ks) : ks(ks)
+	${hierarchy.classname}(kdb::KeySet & ks) : ks(ks)
 	{}
 
-@for $key, $info in $parameters.items()
-	$typeof(info) get$funcname($key)();
-	void set$funcname($key)($typeof(info) n);
+@for k in hierarchy.childrenWithChildren
+@set nsname = $nspretty(k.dirname)
+@set nestedname = $nestedpretty(k.basename)
+@set nestedclassname = $classpretty(k.basename)
+	$nsname$nestedclassname& ${nestedname}()
+	{
+		// works in C++11 because classes are layout compatible
+		return reinterpret_cast<$nsname$nestedclassname&>(*this);
+	}
+
+	$nsname$nestedclassname const& ${nestedname}() const
+	{
+		// works in C++11 because classes are layout compatible
+		return reinterpret_cast<$nsname$nestedclassname const&>(*this);
+	}
+@end for
+
+@for k in hierarchy.childrenWithType
+	$typeof(k.info) get${funcname(k.name)}() const;
+	void set${funcname(k.name)}($typeof(k.info) n);
 @end for
 
 private:
 	kdb::KeySet &ks;
 };
 
+@for n in hierarchy.name.split('/')[1:-1]
+}
+@end for
+
+@for $child in hierarchy.children
+$outputClasses(child)
+@end for
+
+@end def
+
+
+
+
+
+
+
+
+
+/*
+hierarchy is
+@set hierarchy = Hierarchy('/', {})
 @for $key, $info in $parameters.items()
+hierarchy.add(Hierarchy($key, $info))
+$hierarchy.add(Hierarchy($key, $info))
+$hierarchy
+@end for
+*/
+
+
+$outputForwardDecl(hierarchy)
+$outputClasses(hierarchy)
+
+@for $key, $info in $parameters.iteritems()
 /** \brief Get parameter $key
  *
  * $doxygen(key, info)
@@ -167,7 +276,7 @@ private:
  * \return the value of the parameter, default if it could not be found
  * \param ks the keyset where the parameter is searched
  */
-inline $typeof(info) Parameters::get$funcname($key)()
+inline $typeof(info) $nsname($key)$classname($key)::get$funcname($key)() const
 {
 @if $info.get('override')
 	// override
@@ -216,7 +325,7 @@ inline $typeof(info) Parameters::get$funcname($key)()
  * \param ks the keyset where the parameter is added or replaced
  * \param n is the value to set in the parameter
  */
-inline void Parameters::set$funcname($key)($typeof(info) n)
+inline void $nsname($key)$classname($key)::set$funcname($key)($typeof(info) n)
 {
 	kdb::Key found = ks.lookup("$key", 0);
 
@@ -236,4 +345,4 @@ inline void Parameters::set$funcname($key)($typeof(info) n)
 
 } // namespace kdb
 
-#endif
+#endif // $includeguard($args.output)

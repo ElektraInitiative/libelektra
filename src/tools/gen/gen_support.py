@@ -1,4 +1,13 @@
-from os.path import basename
+from os.path import basename, dirname
+
+import uuid
+generated_uuid = str(uuid.uuid4()).replace('-','_').upper()
+
+def includeguard(filename):
+    if filename == '-':
+        return "ELEKTRA_GEN_" + generated_uuid + "_H"
+    else:
+        return "ELEKTRA_GEN_" + generated_uuid + filename.replace('.','_').upper()
 
 def trueval():
     """Return all values interpreted as true, everything else is false"""
@@ -35,4 +44,3 @@ def enumval(info):
 def enumname(info):
     """Return name of enum"""
     return info["type"].split(' ')[1]
-

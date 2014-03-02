@@ -7,42 +7,57 @@ Items are e.g. BUGS, OPTIMIZE, PROBLEMS, TESTING, PLUGINS, TODO,..
 
 == 0.8.5 ==
 
-doxygen -u
-types.hpp installed to /usr/lib
-
-improve gen
-
-Starting points:
-	add Tutorials
-	add former thesis as official docu?
-	add more Examples in literal style
-
-integration tests:
-	converting (any to any storage plugin)
-
-
-resolver:
-	pick most cruical features, e.g. xdg
-
-rebase:
-	python+C impl compare
-
-kdb convert
-kdb file:
-	export to temporary file, open with editor and reimport
+write some release notes
+reintergrate branch + push
+check buildserver
 
 gen:
-	for each file
-	copy directory
-	enums?
+	cleanup: utilities for cheetha+python
 
-tools: dfc, ..
-	publish tools using gen
+gen examples:
+	use correct types
 
-fix TODOs in RELEASE
-	automate tests of external + examples using scripts
+define sprintf+strtoXX
+string not needed: will be assumed if no type .given
+additional test cases with all types (min, max)
+
+Starting points:
+	add small Tutorial for gen
+	add docu to examples
+
+
+announcements: docu
+	gen
+	kdb <tool>
+	tools
+
+fix types:
+	type checker should check like defined in schema
+	let json use same types (double, boolean, nothing for string)
+
+template naming conventions
+refactor template code a bit (util class)
+
+=== tools ===
+
+make exec subfolder in kdb
+kdb- prefix unnecessary
+mv scripts to tools
+
+=== test ===
+
+check on 32bit system
+
+=== install ===
+
+install test scripts to tool exec path
+install test data + path
+man page path
+additional pathes must be in kdb repo (man pages, test data, templates)
+install man pages correctly under elektra3
+
+
+=== packaging ===
 
 man pages:
-	allow to change section
-	remove prefix path
-	man page for kdb tool?
+	symlink kdb-full and kdb-static

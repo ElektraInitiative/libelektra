@@ -28,11 +28,9 @@ def valof(info):
 def typeof(info):
     """Return the type for given parameter"""
     type = info["type"]
-    if type == "unsigned_int_32":
-        return "uint32_t"
-    elif type == "string":
+    if type == "string":
         return "std::string"
     elif isenum(info):
         return enumname(info)
     else:
-        return type
+        return "kdb::"+type+"_t"

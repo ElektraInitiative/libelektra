@@ -3,13 +3,19 @@
 directiveStartToken = @
 cheetahVarStartToken = $
 #end compiler-settings
-#ifndef ELEKTRA_GEN_FILENAME_H
-#define ELEKTRA_GEN_FILENAME_H
+#ifndef $includeguard($args.output)
+#define $includeguard($args.output)
 /** \file
+ *
+ * Generated file ${args.output}
+ * With include guard $includeguard($args.output)
+ *
  * \warning this is a generated file, do not modify it
  * \warning this is a prototype and not production code
  */
 #include "kdb.h"
+#include "kdbtypes.h"
+
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
@@ -179,14 +185,14 @@ static inline $typeof(info) get_$funcname($key)(KeySet *ks)
 @end for
 @end if
 
-	$typeof(info) ret $valof(info)
-
-	if(found)
-	{
-	@if $info['type'] == 'unsigned_int_32'
-		char *endptr;
+@def strtonumber(info, function)
+char *endptr;
 		errno = 0;
-		ret = strtol(keyString(found), &endptr, 10);
+@if function == 'strtof' or function == 'strtod' or function == 'strtold'
+		ret = ${function}(keyString(found), &endptr);
+@else
+		ret = ${function}(keyString(found), &endptr, 10);
+@end if
 		if ((errno == ERANGE
 				&& (ret == LONG_MAX || ret == LONG_MIN))
 				|| (errno != 0 && ret == 0))
@@ -199,20 +205,33 @@ static inline $typeof(info) get_$funcname($key)(KeySet *ks)
 		
 			ret $valof(info)
 		}
-	@else if $info['type'] == 'double'
-		char *endptr;
-		errno = 0;
-		ret = strtod(keyString(found), &endptr);
-		if (errno != 0)
-		{
-			ret $valof(info)
-		}
+@end def
+	$typeof(info) ret $valof(info)
 
-		if (endptr == keyString(found))
-		{
-		
-			ret $valof(info)
-		}
+	if(found)
+	{
+	@if $info['type'] == 'short'
+		$strtonumber(info, "strtol")
+	@else if $info['type'] == 'long'
+		$strtonumber(info, "strtol")
+	@else if $info['type'] == 'long_long'
+		$strtonumber(info, "strtoll")
+	@else if $info['type'] == 'unsigned_short'
+		$strtonumber(info, "strtoul")
+	@else if $info['type'] == 'unsigned_long'
+		$strtonumber(info, "strtoul")
+	@else if $info['type'] == 'unsigned_long_long'
+		$strtonumber(info, "strtoull")
+	@else if $info['type'] == 'float'
+		$strtonumber(info, "strtof")
+	@else if $info['type'] == 'double'
+		$strtonumber(info, "strtod")
+	@else if $info['type'] == 'long_double'
+		$strtonumber(info, "strtold")
+	@else if $info['type'] == 'char'
+		ret = keyString(found)[0];
+	@else if $info['type'] == 'octet'
+		$strtonumber(info, "strtol")
 	@else if $info['type'] == 'string'
 		ret = keyString(found);
 	@else if $info['type'] == 'bool'
@@ -237,15 +256,42 @@ static inline $typeof(info) get_$funcname($key)(KeySet *ks)
 static inline void set_$funcname($key)(KeySet *ks, $typeof(info) n)
 {
 	Key * found = ksLookupByName(ks, "$key", 0);
-@if $info['type'] == 'unsigned_int_32'
+@if $info['type'] == 'short'
+	char s[100];
+	snprintf(s, 99, "%hd", n);
+@else if $info['type'] == 'long'
 	char s[100];
 	snprintf(s, 99, "%d", n);
+@else if $info['type'] == 'long_long'
+	char s[100];
+	snprintf(s, 99, "%ld", n);
+@else if $info['type'] == 'unsigned_short'
+	char s[100];
+	snprintf(s, 99, "%hu", n);
+@else if $info['type'] == 'unsigned_long'
+	char s[100];
+	snprintf(s, 99, "%u", n);
+@else if $info['type'] == 'unsigned_long_long'
+	char s[100];
+	snprintf(s, 99, "%lu", n);
+@else if $info['type'] == 'float'
+	char s[100];
+	snprintf(s, 99, "%f", n);
 @else if $info['type'] == 'double'
 	char s[100];
 	snprintf(s, 99, "%f", n);
+@else if $info['type'] == 'long_double'
+	char s[100];
+	snprintf(s, 99, "%Lf", n);
+@else if $info['type'] == 'char'
+	char s[100];
+	snprintf(s, 99, "%c", n);
+@else if $info['type'] == 'octet'
+	char s[100];
+	snprintf(s, 99, "%hd", n);
 @else if $info['type'] == 'string'
 	const char *s = n;
-@else if $info['type'] == 'bool'
+@else if $info['type'] == 'boolean'
 	const char *s = bool_to_string(n);
 @else if $isenum(info)
 	const char *s = ${enumname(info)}_to_string(n);
@@ -264,4 +310,4 @@ static inline void set_$funcname($key)(KeySet *ks, $typeof(info) n)
 
 
 @end for
-#endif
+#endif // $includeguard($args.output)

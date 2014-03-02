@@ -11,6 +11,8 @@ cheetahVarStartToken = $
 #endif
 
 #include "kdb.h"
+#include "kdbtypes.h"
+
 #include <unistd.h>
 
 // for strcmp
@@ -38,7 +40,11 @@ const char *elektraGenHelpText()
 	return
 @for $key, $info in $parameters.items()
 @if $info.get('opt/long'):
+@if $info.get('opt'):
 	"  -$info.get('opt')\t--$info.get('opt/long')\t$info.get('explanation')\n"
+@else
+	"     \t--$info.get('opt/long')\t$info.get('explanation')\n"
+@end if
 @else if $info.get('opt'):
 	"  -$info.get('opt')\t    \t$info.get('explanation')\n"
 @end if
@@ -53,19 +59,26 @@ int ksGetOpt(int argc, char **argv, KeySet *ks)
 	opterr = 0;
 	Key *found = 0;
 
+@set counter = 502
 #ifdef _GNU_SOURCE
 	static struct option long_options[] = {
 @for $key, $info in $parameters.items()
 @if $info.get('opt/long'):
 		{
 			"$info.get('opt/long')",
-@if $info.get('type') == 'bool':
+@if $info.get('type') == 'boolean':
 			no_argument,
 @else:
 			required_argument,
 @end if
 			NULL,
+@if $info.get('opt')
 			'$info.get('opt')'
+@else
+			$counter
+@set counter = counter + 1
+@set info["opt"] = counter
+@end if
 		},
 @end if
 @end for
@@ -90,10 +103,12 @@ int ksGetOpt(int argc, char **argv, KeySet *ks)
 #endif
 @for $key, $info in $parameters.items()
 @if $info.get('opt'):
-@if $info.get('type') == 'bool':
+@if $info.get('type') == 'boolean':
 		"$info.get('opt')"
 @else:
+	@if isinstance($info.get('opt'), int):
 		"$info.get('opt'):"
+	@end if
 @end if
 @end if
 @end for
@@ -112,7 +127,11 @@ int ksGetOpt(int argc, char **argv, KeySet *ks)
 				break;
 @for $key, $info in $parameters.items()
 	@if $info.get('opt'):
+		@if isinstance($info.get('opt'), int):
+			case $info.get("opt"):
+		@else:
 			case '$info.get("opt")':
+		@end if
 		@if $info.get('range')
 				{
 					$typeof(info) check;

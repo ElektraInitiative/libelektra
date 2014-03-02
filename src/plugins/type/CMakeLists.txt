@@ -19,9 +19,6 @@ install (TARGETS ${PLUGIN_NAME}
 add_headers (HDR_FILES)
 add_cppheaders (HDR_FILES)
 
-install (FILES types.hpp
-	DESTINATION include/${TARGET_INCLUDE_FOLDER})
-
 #this test case works for full and static builds
 #it will not relink correctly
 file (GLOB TESTS testmod_*.cpp)

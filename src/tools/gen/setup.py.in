@@ -1,0 +1,40 @@
+#!/usr/bin/env python
+
+from distutils.core import setup
+from distutils.util import get_platform
+
+setup(name='elektra-kdb-gen',
+      version='0.1',
+      description='Elektra Front End Generator',
+      long_description="""Generate Front Ends for static programming
+      languages using Cheetah templates.""",
+      #entry_points = {
+      #    'dirs' : [
+      #        'templates = @CMAKE_INSTALL_PREFIX@/@TARGET_TEMPLATE_FOLDER@'
+      #    ],
+      #},
+      platforms = get_platform(),
+      license='bsd',
+      author='Markus Raab',
+      author_email='elektra@markus-raab.org',
+      url='http://www.libelektra.org/',
+      package_dir={ '': '${CMAKE_CURRENT_SOURCE_DIR}' },
+      scripts=['${CMAKE_CURRENT_SOURCE_DIR}/kdb-gen'],
+      py_modules = [
+          'cpp_support',
+          'c_support',
+          'gen_support',
+          'opt_support',
+          ],
+      data_files = [
+          ('@CMAKE_INSTALL_PREFIX@/@TARGET_TEMPLATE_FOLDER@', [
+                 '${CMAKE_CURRENT_SOURCE_DIR}/template_genopt.h',
+                 '${CMAKE_CURRENT_SOURCE_DIR}/template_genopt.c',
+                 '${CMAKE_CURRENT_SOURCE_DIR}/template.h',
+                 '${CMAKE_CURRENT_SOURCE_DIR}/template.hpp',
+                 '${CMAKE_CURRENT_SOURCE_DIR}/template.man',
+                 '${CMAKE_CURRENT_SOURCE_DIR}/template.html',
+                ]
+          )
+      ]
+)

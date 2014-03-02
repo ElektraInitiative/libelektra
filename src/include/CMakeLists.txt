@@ -1,5 +1,6 @@
 include(CheckIncludeFile)
 include(CheckSymbolExists)
+INCLUDE (CheckTypeSize)
 
 check_symbol_exists(clearenv     "stdlib.h"         HAVE_CLEARENV)
 check_symbol_exists(setenv       "stdlib.h"         HAVE_SETENV)
@@ -13,6 +14,13 @@ check_include_file(string.h     HAVE_STRING_H)
 check_include_file(time.h       HAVE_TIME_H)
 check_include_file(unistd.h     HAVE_UNISTD_H)
 
+check_type_size(int             SIZEOF_INT)
+check_type_size(long            SIZEOF_LONG)
+check_type_size("long long"     SIZEOF_LONG_LONG)
+check_type_size("long double"   SIZEOF_LONG_DOUBLE)
+
+set (BUILTIN_EXEC_FOLDER
+	"${CMAKE_INSTALL_PREFIX}/${TARGET_TOOL_EXEC_FOLDER}")
 set (ELEKTRA_DEPRECATED "__attribute__ ((deprecated))")
 set (ELEKTRA_UNUSED "__attribute__ ((unused))")
 
@@ -34,6 +42,7 @@ configure_file (
 install (FILES
 	"${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h"
 	kdbextension.h
+	kdbtypes.h
 	"${CMAKE_CURRENT_BINARY_DIR}/kdb.h"
 	kdbinternal.h
 	kdbmodule.h

@@ -29,26 +29,24 @@ def valof(info):
     """Return the default value for given parameter"""
     val = info["default"]
     type = info["type"]
-    if type == "bool":
+    if type == "boolean":
         if val == "true":
             return " = 1;"
         elif val == "false":
             return " = 0;"
     elif type == "string" and val == "":
         return ' = "";'
+    elif type == "char":
+        return " = '"+val+"';"
     else:
         return " = "+val+";"
 
 def typeof(info):
     """Return the type for given parameter"""
     type = info["type"]
-    if type == "unsigned_int_32":
-        return "uint32_t"
-    elif type == "bool":
-        return "int"
-    elif type == "string":
+    if type == "string":
         return "const char*"
     elif isenum(info):
         return "enum " + enumname(info)
     else:
-        return type
+        return "kdb_"+type+"_t"
