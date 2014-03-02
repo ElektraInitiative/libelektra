@@ -1,13 +1,20 @@
 #!/usr/bin/python
 
+import sys
+import argparse
+import ConfigParser
+
 try:
     from Cheetah.Template import Template
 except ImportError:
     print "You need to install Cheetah"
+    print
+    print "On Debian based systems type:"
+    print "apt-get install python-cheetah"
+    print
+    print "Or visit http://www.cheetahtemplate.org"
+    sys.exit(1)
 
-import sys
-import argparse
-import ConfigParser
 
 def main():
     parser = argparse.ArgumentParser(prog="kdb gen",
