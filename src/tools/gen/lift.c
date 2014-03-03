@@ -10,12 +10,13 @@ int lift(KeySet *conf)
 	enum algorithm a = get_test_lift_algorithm(conf);
 	kdb_boolean_t write = get_test_lift_write(conf);
 
-	printf ("delay: "ELEKTRA_LONG_F"\n", get_test_lift_emergency_delay(conf));
-	printf ("stops: %s\n", bool_to_string(stops));
-	printf ("algorithm: %s\n", algorithm_to_string(a));
-	printf ("height #3: %f\n", get_test_lift_floor_3_height(conf));
-	printf ("write: %s\n", bool_to_string(write));
-	printf ("limit: "ELEKTRA_LONG_F"\n", get_test_lift_limit(conf));
+	printf("delay: "ELEKTRA_LONG_F"\n", get_test_lift_emergency_delay(conf));
+	printf("stops: %s\n", bool_to_string(stops));
+	printf("algorithm: %s\n", algorithm_to_string(a));
+	printf("height #3: %f\n", get_test_lift_floor_3_height(conf));
+	printf("write: %s\n", bool_to_string(write));
+	printf("limit: "ELEKTRA_LONG_F"\n", get_test_lift_limit(conf));
+	printf("number: %s\n", get_test_lift_emergency_action_calls_number(conf));
 
 	// rewrite the same (does not change anything)
 	set_test_lift_algorithm(conf, a);
