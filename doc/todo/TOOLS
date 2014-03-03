@@ -39,6 +39,12 @@ install config (mount+preload system config) by using meta struct
 
 cmake support for "kdb gen" (run kdb gen within cmake)
 
+use doc/SPECIFICATION to validate config files
+	fix check/type vs. type and check/type/{min,max} vs. range problem
+
+cleanup: use utilities to avoid code duplication
+	see Makefile + util.tmpl
+
 environment parsing support
 static compilation model
 

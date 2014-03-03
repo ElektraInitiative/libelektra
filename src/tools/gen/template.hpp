@@ -148,6 +148,9 @@ class Parameters
 {
 public:
 
+	/** \brief Constructor
+	 * \param ks the keyset to work with.
+	 */
 	Parameters(kdb::KeySet & ks) : ks(ks)
 	{}
 
@@ -168,7 +171,6 @@ private:
  * \see set$funcname($key)
  *
  * \return the value of the parameter, default if it could not be found
- * \param ks the keyset where the parameter is searched
  */
 inline $typeof(info) Parameters::get$funcname($key)() const
 {
@@ -216,7 +218,6 @@ inline $typeof(info) Parameters::get$funcname($key)() const
  *
  * \see set$funcname($key)
  *
- * \param ks the keyset where the parameter is added or replaced
  * \param n is the value to set in the parameter
  */
 inline void Parameters::set$funcname($key)($typeof(info) n)

@@ -19,6 +19,9 @@ FLAGS = `pkg-config --libs --cflags elektra`
 .PHONY:all
 all:lift cpplift nestedlift lift.html lift.3
 
+# see util.tmpl for motivation
+#not used at the moment, do not have dependency to cheetah-compile,
+#2 liner should be integrated into kdb gen if approach is chosen
 util.py:util.tmpl
 	cheetah-compile util.tmpl
 

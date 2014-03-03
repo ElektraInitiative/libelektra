@@ -201,10 +201,15 @@ namespace $nsnpretty($n)
 {
 @end for
 
+/** \brief class */
 class $hierarchy.classname
 {
 public:
 
+
+	/** \brief Constructor for $hierarchy.classname
+	 * \param ks keyset to work with
+	 */
 	${hierarchy.classname}(kdb::KeySet & ks) : ks(ks)
 	{}
 
@@ -212,12 +217,14 @@ public:
 @set nsname = $nspretty(k.dirname)
 @set nestedname = $nestedpretty(k.basename)
 @set nestedclassname = $classpretty(k.basename)
+	/** \return nested subclass */
 	$nsname$nestedclassname& ${nestedname}()
 	{
 		// works in C++11 because classes are layout compatible
 		return reinterpret_cast<$nsname$nestedclassname&>(*this);
 	}
 
+	/** \return nested subclass */
 	$nsname$nestedclassname const& ${nestedname}() const
 	{
 		// works in C++11 because classes are layout compatible
@@ -274,7 +281,6 @@ $outputClasses(hierarchy)
  * \see set$funcname($key)
  *
  * \return the value of the parameter, default if it could not be found
- * \param ks the keyset where the parameter is searched
  */
 inline $typeof(info) $nsname($key)$classname($key)::get$funcname($key)() const
 {
@@ -322,7 +328,6 @@ inline $typeof(info) $nsname($key)$classname($key)::get$funcname($key)() const
  *
  * \see set$funcname($key)
  *
- * \param ks the keyset where the parameter is added or replaced
  * \param n is the value to set in the parameter
  */
 inline void $nsname($key)$classname($key)::set$funcname($key)($typeof(info) n)
