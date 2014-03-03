@@ -17,11 +17,12 @@ CMAKE_FLAGS = \
 	-DKDB_DB_HOME:PATH="/home" \
 	-DKDB_DB_USER:PATH=".kdb" \
 	-DINSTALL_DOCUMENTATION=ON \
-	-DTARGET_DOCUMENTATION_FOLDER=share/doc/libelektra-doc \
+	-DTARGET_HTML_DOCUMENTATION_FOLDER=share/doc/libelektra-doc/html \
 	-DENABLE_TESTING=ON \
 	-DINSTALL_TESTING=ON \
 	-DENABLE_KDB_TESTING=OFF \
-	-DBUILD_PDF=OFF
+	-DBUILD_PDF=OFF \
+	-DTARGET_TEST_DATA_FOLDER=share/libelektra-test/test-data
 
 %:
 	dh $@ --buildsystem=cmake --parallel
