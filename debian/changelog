@@ -1,3 +1,9 @@
+elektra (0.8.5-1) UNRELEASED; urgency=low
+
+  * New upstream version.
+
+ -- Markus Raab <debian@markus-raab.org>  Mon, 03 Mar 2014 22:20:32 +0100
+
 elektra (0.8.4-2) unstable; urgency=low
 
   * Fix problems reported by lintian
