@@ -49,7 +49,7 @@ Now lets merge that to the release branch:
 == Prepare Source Package ==
 
 Build tar.gz and tag version and make hashsum:
-TODO: add -u 0B2F0DDC in release-tag signed-release-tag
+TODO: use external script invoked by "make source-package"
  cd ~build && make source-package
 
 Unpack + compile (with all available plugins) + test those sources (using valgrind!):
@@ -58,8 +58,6 @@ tar xvzf elektra-$VERSION.tar.gz && mkdir build && cd build && cmake -DPLUGINS=A
 Now copy the packages to ftp (stay in same folder):
  cp ~build/elektra-$VERSION.tar.gz ~elektra-ftp/releases
  cp ~build/elektra-$VERSION.tar.gz.hashsum ~elektra-ftp/releases
-
-TODO: ./check_get_set.sh:
 
 
 == Debian Package ==
@@ -73,6 +71,8 @@ Build deb:
  git-add debian/changelog
  git-commit -m "Debian Package $VERSION-1"
  cp ~elektra-ftp/releases/elektra-$VERSION.tar.gz ~elektra/elektra_$VERSION.orig.tar.gz
+
+Fix debian/ + document in NEWS what maintainer need to consider, then build the package:
  git-buildpackage -rfakeroot -k0B2F0DDC -sa
 
 Now move and install:
@@ -80,9 +80,7 @@ Now move and install:
 
 
 Run some basic commands, at least:
- kdb --version
-
-Debian packages in chroot + publish in reprepro
+ kdb --version && kdb test_key && man kdb
 
 Now run lintian:
  lintian -EI --color=auto --pedantic deb/$VERSION/elektra_$VERSION-1_*.changes
@@ -94,11 +92,8 @@ And run adequate (combined with piuparts and after installation)
  adequate '*elektra*'
 
 Install libelektra-test of the previous version and run:
- for i in `dpkg -L libelektra-test | grep bin`; do $i; done
+ for i in `dpkg -L libelektra-test | grep tool_exec`; do $i; done
 
-TODO: remove set -x from shell tests
-TODO: install shell scripts
-TODO: usr/bin/check_* should be added, but needs modification of ENABLE_KDB_TESTING
 
 
 == Test external tools ==
@@ -112,7 +107,7 @@ Check if tools based on elektra still do:
 
 And the API docu (stay in same folder):
  mkdir ~elektra-doc/api/$VERSION/
- cd ~build && make doc && cp -ra doc/html doc/latex doc/man ~elektra-doc/api/$VERSION/
+ cd ~build && make html man && cp -ra doc/html doc/latex doc/man ~elektra-doc/api/$VERSION/
 
 Symlink current to latest version and add everything:
  cd ~elektra-doc/api/ && rm current && ln -s $VERSION current && git-add current $VERSION
@@ -151,13 +146,8 @@ Push elektra-doc to gitorious:
 Write NEWS for new release (do not forget to add links where to download release):
  editor doc/NEWS
 
-Finally increment version number in CMakeLists.txt:
- editor CMakeLists.txt
- git-commit -m "Ready for release $VERSION" CMakeLists.txt
-
 Maybe also generate a ChangeLog?
- git log --first-parent master > ChangeLog
-
+ git log --first-parent master > ~e/doc/ChangeLog
 
 Finally check links and send out mail to list
 (Personal notice: see also NOTIFY)

@@ -1,37 +1,81 @@
 0.8.5 Release
 
-In this release again amazing features wait for you.
+In this release, again, amazing features wait for you.
 
 kdb tool now smoothly integrates external tools. These tools can reside
 in external source repositories and even written in other programming
 languages. The approach is similar from "git". Any executable in the
 folder, given with the CMake Cache variable TARGET_TOOL_EXEC_FOLDER
-(default "/usr/lib/kdb-tool/exec"), can be executed by kdb <name>.
+(default "/usr/lib/elektra/tool_exec"), can be executed by kdb <name>.
+
+All tests (script+compiled) now install in this folder instead of
+directly to /usr/bin to minimise cluttering folders in the user's PATH.
 
 The CMake variable TOOLS, similar to PLUGINS, now allows you to decide
-which tools should be built and installed. Default is
+which tools should be built and installed. Default is "kdb" only.
 
-The first tool that makes use of this feature creates a powerful
+The first new tool that makes use of this feature creates a powerful
 alternative to directly use Elektra's API. The tool "gen", executed with
 "kdb gen" can generate code and documentation for your specific
 application with your specific types. The code includes getopt parsing
-(short+long options),
-high level getter and setter in C and C++. The documentation includes
-html, doxygen and troff (manpages). The full implications of this
-holistic approach cannot be summarised in one paragraph, but they
-include better type safety and especially much more time for other
-non-configuration related tasks. Give it a try, examples are included in
-the folder "src/tools/gen" and external tools using it will be released
-soon (see https://gitorious.org/elektra-tools/elektra-tools/).
+(short+long options), high level getter and setter in C and C++. The
+documentation includes html, doxygen and troff (manpages). The
+full implications of this holistic approach cannot be summarised in
+one paragraph, but they include better type safety and especially
+much faster development. Give it a try, examples are included in the
+folder "src/tools/gen" (see Makefile) and external tools using it will
+be released soon
+(see https://gitorious.org/elektra-tools/elektra-tools/).
 
 For the code generation clear mappings from Elektra's type system to
-C/C++11 types are needed. The new header file kdbtypes.h introduces this
-mappings compatible to CORBAs fundamental types -- except wchar_t was not
+C/C++11 types are needed. The new header file kdbtypes.h introduces
+these mappings using CORBAs mappings for types -- except wchar_t was not
 included, because imho it is useless to have a wide char as long it is
-not clear if it is 16 or 32 bits, but including enum types.
+not clear if it is 16 or 32 bits. But also included are including enum
+and string types.
+
+Unfortunately, the freedesktop-resolver features for OpenICC have to be
+moved to the next release.
+
+The documentation's installation directory now can be configured more
+fine-grained (the old TARGET_DOCUMENTATION_FOLDER is gone):
+TARGET_DOCUMENTATION_HTML_FOLDER
+TARGET_DOCUMENTATION_LATEX_FOLDER
+TARGET_DOCUMENTATION_MAN_FOLDER
+
+Man pages now have the default location /usr/share/man/man3 and all
+man pages are in namespace 3elektra to not conflict with other man
+pages.
+
+Test data for the test cases will be installed, too. The path can be
+configured with:
+TARGET_TEST_DATA_FOLDER
+The path allows to run tests from an installed version.
+
+Additionally, many small bugs were fixed. The release is, as always,
+100% binary and API compatible, so you can drop it in and all
+applications continue to work.
 
 
 
+You can download the release at:
+ http://www.markus-raab.org/ftp/elektra/releases/elektra-0.8.5.tar.gz
+ size: 1193948
+ md5sum: 6fe4a48d70cefc04c04639e5d85a0ddc
+ sha1: 7e26ce19a186d96091bfc0ec3ce4013991082a1c
+ sha256: 4ff9fc35ce9354d3bfe7877ae7ac3426621952c974feaab8d1ad20f72c4fb9ce
+
+Docu can be found here:
+ http://doc.libelektra.org/api/0.8.5/html/
+
+You can install the debian packages for debian (wheezy, amd64 only;
+gen tool, and "all" package will be added later) by
+adding following lines to your /etc/apt/sources.list:
+ deb http://markus-raab.org/ftp/wheezy wheezy main
+
+and install or upgrade the packages with:
+ sudo apt-get update
+ sudo apt-get install libelektra-core4 libelektra-full4 libelektra-bin libelektra-dev libelektra-test libelektra-xmltool4 libelektra-json4 libelektra-dbus4 libelektra-doc
 
 
 
