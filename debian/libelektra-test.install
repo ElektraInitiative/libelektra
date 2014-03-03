@@ -1,4 +1,1 @@
-usr/lib/kdb-tool/exec/check_*
-usr/lib/kdb-tool/exec/generate_*
-usr/lib/kdb-tool/exec/test_*
-usr/share/libelektra-test/test_data
+usr/lib/elektra/tool_exec/test_*
