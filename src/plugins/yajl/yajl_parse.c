@@ -102,7 +102,7 @@ static int elektraYajlParseNumber(void *ctx, const char *stringVal,
 #endif
 
 	keySetString(current, stringVal);
-	keySetMeta(current, "type", "number");
+	keySetMeta(current, "type", "double");
 
 	// restore old character in buffer
 	stringValue[stringLen] = delim;

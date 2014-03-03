@@ -36,6 +36,21 @@
 /** Declares an API as deprecated. */
 #define ELEKTRA_DEPRECATED       @ELEKTRA_DEPRECATED@
 
+#define BUILTIN_EXEC_FOLDER      "@BUILTIN_EXEC_FOLDER@"
+
+#define SIZEOF_INT               @SIZEOF_INT@
+#define SIZEOF_LONG              @SIZEOF_LONG@
+
+#cmakedefine HAVE_SIZEOF_LONG_LONG
+#ifdef HAVE_SIZEOF_LONG_LONG
+# define SIZEOF_LONG_LONG         @SIZEOF_LONG_LONG@
+#endif
+
+#cmakedefine HAVE_SIZEOF_LONG_DOUBLE
+#ifdef HAVE_SIZEOF_LONG_DOUBLE
+# define SIZEOF_LONG_DOUBLE       @SIZEOF_LONG_DOUBLE@
+#endif
+
 /* disable debug output messages */
 #define DEBUG @DEBUG@
 

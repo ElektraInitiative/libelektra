@@ -16,6 +16,16 @@ generator for:
 	human readable text
 
 
+== OpenICC ==
+
+
+resolver:
+	pick most cruical features, e.g. xdg
+
+rebase:
+	python+C impl compare
+
+
 
 == unsorted ==
 

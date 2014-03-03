@@ -10,7 +10,6 @@ echo
 check_version
 
 ROOT=$USER_ROOT
-DATADIR=@CMAKE_CURRENT_BINARY_DIR@/data
 
 for PLUGIN in $PLUGINS
 do

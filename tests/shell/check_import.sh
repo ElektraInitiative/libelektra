@@ -10,7 +10,6 @@ check_version
 ROOT=$USER_ROOT
 FILE=`mktemp`
 SIDE=$ROOT/../side_val
-DATADIR=@CMAKE_CURRENT_BINARY_DIR@/data
 
 cleanup()
 {

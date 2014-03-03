@@ -34,7 +34,8 @@ macro (do_test source)
 	add_executable (${source} ${SOURCES})
 
 	if (INSTALL_TESTING)
-		install (TARGETS ${source} DESTINATION bin)
+		install (TARGETS ${source}
+			DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 	endif (INSTALL_TESTING)
 
 	if (BUILD_FULL)

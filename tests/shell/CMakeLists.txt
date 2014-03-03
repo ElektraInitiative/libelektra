@@ -1,5 +1,18 @@
 include (LibAddMacros)
 
+
+set(IS_INSTALLED "YES")
+configure_file (
+		"${CMAKE_CURRENT_SOURCE_DIR}/include_common.sh.in"
+		"${CMAKE_CURRENT_BINARY_DIR}/include_common.sh"
+		@ONLY
+	)
+
+file(READ "${CMAKE_CURRENT_BINARY_DIR}/include_common.sh"
+	INCLUDE_COMMON_INSTALLED_FILE)
+
+
+set(IS_INSTALLED "NO")
 configure_file (
 		"${CMAKE_CURRENT_SOURCE_DIR}/include_common.sh.in"
 		"${CMAKE_CURRENT_BINARY_DIR}/include_common.sh"
@@ -8,6 +21,7 @@ configure_file (
 
 file(READ "${CMAKE_CURRENT_BINARY_DIR}/include_common.sh"
 	INCLUDE_COMMON_FILE)
+file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/include_common.sh")
 
 # Add a test for a script
 #
@@ -35,35 +49,34 @@ function (add_scripttest testname)
 					set (KDB_COMMAND "kdb")
 				endif (BUILD_STATIC)
 			endif (BUILD_FULL)
-		else (TARGET)
-			if (BUILD_FULL)
-				set (KDB_COMMAND "${PROJECT_BINARY_DIR}/src/kdb/kdb-full")
-			else (BUILD_FULL)
-				if (BUILD_STATIC)
-					set (KDB_COMMAND "${PROJECT_BINARY_DIR}/src/kdb/kdb-static")
-				else (BUILD_STATIC)
-					message (WARNING "add_scripttest: neither full nor static activated, cant run ${testname}")
-				endif (BUILD_STATIC)
-			endif (BUILD_FULL)
-		endif (TARGET)
-
-		set(INCLUDE_COMMON
-			"${INCLUDE_COMMON_FILE}KDB=${KDB_COMMAND}"
-			)
-
-		if (TARGET)
+			set(INCLUDE_COMMON
+				"${INCLUDE_COMMON_INSTALLED_FILE}KDB=${KDB_COMMAND}"
+				)
 			configure_file(
 				"${filename}"
 				"${CMAKE_CURRENT_BINARY_DIR}/${testname}"
 				@ONLY
 				)
 			install (FILES "${CMAKE_CURRENT_BINARY_DIR}/${testname}"
-				DESTINATION bin
+				DESTINATION ${TARGET_TOOL_EXEC_FOLDER}
 				PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
 				GROUP_READ GROUP_EXECUTE
 				WORLD_READ WORLD_EXECUTE
+				RENAME ${testname_we}
 				)
 		else()
+			if (BUILD_FULL)
+				set (KDB_COMMAND "${PROJECT_BINARY_DIR}/src/tools/kdb/kdb-full")
+			else (BUILD_FULL)
+				if (BUILD_STATIC)
+					set (KDB_COMMAND "${PROJECT_BINARY_DIR}/src/tools/kdb/kdb-static")
+				else (BUILD_STATIC)
+					message (WARNING "add_scripttest: neither full nor static activated, cant run ${testname}")
+				endif (BUILD_STATIC)
+			endif (BUILD_FULL)
+			set(INCLUDE_COMMON
+				"${INCLUDE_COMMON_FILE}KDB=${KDB_COMMAND}"
+				)
 			set(testscriptname
 				"${CMAKE_CURRENT_BINARY_DIR}/testscr_${testname}")
 			configure_file(
@@ -83,6 +96,11 @@ endfunction (add_scripttest)
 
 file (COPY data
 	DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+install (
+	DIRECTORY "data/"
+	DESTINATION ${TARGET_TEST_DATA_FOLDER}
+)
 
 file (GLOB SCRIPT_TESTS *.sh)
 foreach (file ${SCRIPT_TESTS})

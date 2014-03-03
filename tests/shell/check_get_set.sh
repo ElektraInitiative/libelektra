@@ -24,6 +24,8 @@ do
 		MOUNT_PLUGIN="tcl ccode null"
 		;;
 	"yajl")
+		MOUNT_PLUGIN="$PLUGIN"
+		#TODO: add plugin to fix problem
 		DO_NOT_TEST_ROOT_VALUE="yes"
 		;;
 	"simpleini")

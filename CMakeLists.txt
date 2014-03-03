@@ -41,7 +41,7 @@ set (REVERSE_DOMAIN org.libelektra)
 
 set (KDB_VERSION_MAJOR 0)
 set (KDB_VERSION_MINOR 8)
-set (KDB_VERSION_MICRO 4)
+set (KDB_VERSION_MICRO 5)
 
 set (KDB_VERSION "${KDB_VERSION_MAJOR}.${KDB_VERSION_MINOR}.${KDB_VERSION_MICRO}")
 
@@ -78,7 +78,7 @@ ADD_CUSTOM_TARGET(uninstall
 	"${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/ElektraUninstall.cmake")
 
 ADD_CUSTOM_TARGET(source-package
-		COMMAND git tag ${KDB_VERSION} && git archive --prefix=elektra-${KDB_VERSION}/ --format=tar ${KDB_VERSION} | gzip > ${CMAKE_BINARY_DIR}/elektra-${KDB_VERSION}.tar.gz && hashsum ${CMAKE_BINARY_DIR}/elektra-${KDB_VERSION}.tar.gz > ${CMAKE_BINARY_DIR}/elektra-${KDB_VERSION}.tar.gz.hashsum
+	COMMAND git tag -u 0B2F0DDC ${KDB_VERSION} && git archive --prefix=elektra-${KDB_VERSION}/ --format=tar ${KDB_VERSION} | gzip > ${CMAKE_BINARY_DIR}/elektra-${KDB_VERSION}.tar.gz && hashsum ${CMAKE_BINARY_DIR}/elektra-${KDB_VERSION}.tar.gz > ${CMAKE_BINARY_DIR}/elektra-${KDB_VERSION}.tar.gz.hashsum
 		COMMENT Make a elektra source package by using git
 		VERBATIM
 		WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"

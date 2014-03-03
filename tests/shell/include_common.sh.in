@@ -4,8 +4,8 @@
 # This file is AUTO GENERATED, do not modify it or your changes might be
 # lost!
 #
-# shell test suite v0.3 for kdb command
-set -x
+# shell test suite v0.4 for kdb command
+#set -x
 
 
 #
@@ -28,6 +28,13 @@ MOUNTNAME="_tests_script$RANDOMNAME"
 USER_ROOT="user/tests/script$RANDOM"
 SYSTEM_ROOT="system/tests/script$RANDOM"
 
+IS_INSTALLED=@IS_INSTALLED@
+if [ "x$IS_INSTALLED" = "xYES" ]
+then
+	DATADIR="@CMAKE_INSTALL_PREFIX@/@TARGET_TEST_DATA_FOLDER@"
+else
+	DATADIR="@CMAKE_CURRENT_BINARY_DIR@/data"
+fi
 
 USER="`id -un`"
 GROUP="`id -gn`"
@@ -170,13 +177,6 @@ is_plugin_available()
 	done
 	return 1
 }
-
-
-
-
-
-
-
 
 
 

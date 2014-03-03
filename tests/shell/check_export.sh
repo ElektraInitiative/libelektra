@@ -9,7 +9,6 @@ check_version
 ROOT=$USER_ROOT
 FILE=`mktemp`
 PLUGIN=$PLUGIN
-DATADIR=@CMAKE_CURRENT_BINARY_DIR@/data
 
 cleanup()
 {

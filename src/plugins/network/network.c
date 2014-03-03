@@ -32,17 +32,15 @@
 /* Obtain address(es) matching host/port */
 int elektraNetworkAddrInfo(Key *toCheck)
 {
-	struct addrinfo hints;
 	struct addrinfo *result;
 	int s;
-
-
-	memset(&hints, 0, sizeof(struct addrinfo));
 
 	const Key *meta = keyGetMeta (toCheck, "check/ipaddr");
 
 	if (!meta) return 0; /* No check to do */
 
+	struct addrinfo hints;
+	memset(&hints, 0, sizeof(struct addrinfo));
 	hints.ai_family = AF_UNSPEC;     /* Allow IPv4 or IPv6 */
 	hints.ai_socktype = SOCK_DGRAM;  /* Datagram socket */
 	hints.ai_flags = AI_NUMERICHOST; /* Only accept numeric hosts */
