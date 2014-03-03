@@ -116,6 +116,9 @@ succeed_if "stops commandline argument not working"
 ./lift --stops | grep "stops: false"
 succeed_if "stops commandline argument not working"
 
+./lift --number zwei | grep "number: zwei"
+succeed_if "number commandline argument not working"
+
 ./lift -a go_base_floor | grep "algorithm: go_base_floor"
 succeed_if "algorithm commandline argument not working"
 
@@ -131,6 +134,17 @@ succeed_if "height commandline argument not working"
 ./lift -l 12 | grep "limit: 12"
 succeed_if "limit commandline argument not working"
 
+
+echo "Test wrong commandline arguments"
+
+./lift -d -2 | grep "Error in parsing options 16"
+succeed_if "negative number accepted"
+
+./lift -d no | grep "Error in parsing options 8"
+succeed_if "string as int accepted"
+
+./lift -a ksks | grep "Error in parsing options 64"
+succeed_if "wrong string as enum accepted"
 
 
 
