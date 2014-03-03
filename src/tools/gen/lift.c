@@ -6,9 +6,9 @@
 // The application (just print out some config values in this case)
 int lift(KeySet *conf)
 {
-	int stops = get_test_lift_emergency_action_stops(conf);
+	kdb_boolean_t stops = get_test_lift_emergency_action_stops(conf);
 	enum algorithm a = get_test_lift_algorithm(conf);
-	int write = get_test_lift_write(conf);
+	kdb_boolean_t write = get_test_lift_write(conf);
 
 	printf ("delay: "ELEKTRA_LONG_F"\n", get_test_lift_emergency_delay(conf));
 	printf ("stops: %s\n", bool_to_string(stops));
