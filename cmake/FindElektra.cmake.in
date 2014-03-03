@@ -1,9 +1,20 @@
 # - Find Elektra
-# Find the native Elektra headers and libraries.
 #
-#  ELEKTRA_FOUND        - True if Elektra found.
-#  ELEKTRA_INCLUDE_DIRS - where to find kdb.h, etc.
-#  ELEKTRA_LIBRARIES    - List of libraries when using Elektra.
+# Find the native Elektra headers and libraries:
+#
+#  ELEKTRA_FOUND         - True if Elektra found.
+#  ELEKTRA_INCLUDE_DIRS  - where to find kdb.h, etc.
+#  ELEKTRA_LIBRARIES     - List of libraries when using Elektra.
+#
+#
+# Find the kdb tools:
+#
+#  ELEKTRA_KDB_FOUND     - True if KDB TOOL found.
+#  ELEKTRA_KDB_GEN_FOUND - True if KDB GEN TOOL found
+#  ELEKTRA_TEMPLATES     - Folder where to find templates for kdb gen
+#
+#
+# For version information see:
 #
 #  ELEKTRA_VERSION       - The version of elektra (x.y.z)
 #  ELEKTRA_VERSION_MAJOR - The major version of elektra (x)
@@ -29,6 +40,12 @@ FIND_LIBRARY(ELEKTRA_LIBRARY
 	NO_DEFAULT_PATH
 )
 MARK_AS_ADVANCED(ELEKTRA_LIBRARY)
+
+FIND_PATH(ELEKTRA_TEMPLATES
+	NAMES template.h
+	PATHS @CMAKE_INSTALL_PREFIX@/@TARGET_TEMPLATE_FOLDER@
+	NO_DEFAULT_PATH
+)
 
 # handle the QUIETLY and REQUIRED arguments and set ELEKTRA_FOUND to TRUE if
 # all listed variables are TRUE

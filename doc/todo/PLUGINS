@@ -3,6 +3,13 @@ Implement and test easy to implement, but useful plugins
 as many different plugins as possible.
 Prefer using great frameworks to do that in short time.
 
+
+== export BUILD INFORMATION ==
+
+similar to KDB_VERSION constants, all other CMake constants of the
+elektra installation should be included in a plugin like version
+
+
 == VERSION IN CONTRACT ==
 
 Configure file for plugin.h
@@ -13,11 +20,29 @@ Everything also in constants/build_info
 add dependencies in contract?
 
 
-
 == OS abstraction ==
 
-getcwd plugin
+chdir/getcwd
+chroot
+hostname
+uname also to set
+ulimit
 
+== global plugins ==
+
+needed for global constraints, notifications, remappings and so on
+
+== plugin commands ==
+
+metadata that is evaluated by plugins
+
+selective commit phases:
+	define phases, minimum:
+	commit
+	check
+
+norecursive:
+	only fetch a single plugin without recursion
 
 == DISTRIBUTOR BACKENDS ==
 
@@ -100,6 +125,7 @@ C serialization
 using libraries:
 	libconfig
 	eet
+	tdb.samba (using tdb_traverse)
 
 /etc/groups plugin
 
@@ -204,6 +230,11 @@ make (at least) 4 resolvers:
 		using HOME def. in posix: http://pubs.opengroup.org/onlinepubs/009695399/basedefs/xbd_chap08.html
 		using USER as fallback? not def. in posix, but often in shells
 
+better error messages:
+	#9 (when opening file failed)
+	resolver in kdbError should correct error message
+	the storage plugins do not have to state reason then
+
 race conditions:
 	the losing process must not remove the .tmp file, but it
 	has to remove all .tmp files it created before (in those cases
@@ -212,6 +243,8 @@ race conditions:
 
 use nanoseconds timestamps, maybe avoid locking completely
 fsync the directory
+
+make explicit state variable (for both user+system) or return fd!=-1
 
 remove files on empty keysets (also needs logic in kdbSet())
 
@@ -237,12 +270,26 @@ fsync the file in keyname
 abort on error
 
 
+== METAREWRITE plugin ==
+
+meta data rewriter into value
+replaces NULL plugin
+
+binary, type and any other meta data
+encoded into string value
+also encode null value (only possible in binary)
+and binary (including encoding of null bytes and terminating null?)
+
+
 == DEFAULT PLUGINS ==
 
 default plugin handling: resolver/storage
 
 policy how default storage & resolver plugin are named
 resolve the symlink and load the module with correct name
+
+is meta data in default plugin needed?
+	add rewrite plugins?
 
 default storage plugin:
 	changeable

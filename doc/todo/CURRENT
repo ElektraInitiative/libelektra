@@ -4,9 +4,60 @@ During implementation phase no new items may be added here (only
 those which are necessary to fulfil the initial tasks)
 Items are e.g. BUGS, OPTIMIZE, PROBLEMS, TESTING, PLUGINS, TODO,..
 
-== 0.8.4 ==
 
-debian:
-	enable (fix) tests
-	add examples as package
-	enable all plugins (struct, type, validation!!!)
+== 0.8.5 ==
+
+write some release notes
+reintergrate branch + push
+check buildserver
+
+gen:
+	cleanup: utilities for cheetha+python
+
+gen examples:
+	use correct types
+
+define sprintf+strtoXX
+string not needed: will be assumed if no type .given
+additional test cases with all types (min, max)
+
+Starting points:
+	add small Tutorial for gen
+	add docu to examples
+
+
+announcements: docu
+	gen
+	kdb <tool>
+	tools
+
+fix types:
+	type checker should check like defined in schema
+	let json use same types (double, boolean, nothing for string)
+
+template naming conventions
+refactor template code a bit (util class)
+
+=== tools ===
+
+make exec subfolder in kdb
+kdb- prefix unnecessary
+mv scripts to tools
+
+=== test ===
+
+check on 32bit system
+
+=== install ===
+
+install test scripts to tool exec path
+install test data + path
+man page path
+additional pathes must be in kdb repo (man pages, test data, templates)
+install man pages correctly under elektra3
+
+
+=== packaging ===
+
+man pages:
+	symlink kdb-full and kdb-static

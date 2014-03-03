@@ -49,9 +49,6 @@ class Cnstancer: public Instancer
 	}
 };
 
-struct UnknownCommand : std::exception
-{};
-
 class Factory
 {
 	std::map<std::string, Instancer*> m_factory;
@@ -127,7 +124,7 @@ public:
 		else
 		{
 			m_factory.erase(which);
-			throw UnknownCommand();
+			return std::auto_ptr <Command>();
 		}
 
 	}

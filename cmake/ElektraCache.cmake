@@ -103,6 +103,37 @@ set (PLUGINS
 
 
 
+
+#
+# set TOOLS cache variable
+#
+set (TOOLS_LIST_DEFAULT kdb)
+
+if (TOOLS MATCHES "DEFAULT")
+	set (TOOLS_FORCE FORCE)
+endif ()
+
+if (TOOLS MATCHES "NODEP")
+	set (TOOLS_LIST
+		)
+	set (TOOLS_FORCE FORCE)
+endif ()
+
+if (TOOLS MATCHES "ALL")
+	set (TOOLS_LIST
+		gen
+		)
+	set (TOOLS_FORCE FORCE)
+endif ()
+
+set (TOOLS
+	${TOOLS_LIST_DEFAULT}
+	${TOOLS_LIST}
+	CACHE STRING "Which TOOLS should be compiled? ALL for all available, NODEP for TOOLS without additional dependencies, DEFAULT for minimal set."
+	${TOOLS_FORCE}
+	)
+
+
 #
 # Runtime pathes for KDB
 #
@@ -201,32 +232,62 @@ MARK_AS_ADVANCED(ELEKTRA_VERBOSE_BUILD)
 set (TARGET_INCLUDE_FOLDER
 		"elektra"
 		CACHE STRING
-		"Optional folder below system include folder to install include files."
+		"This folder (below prefix/include) will be used to install include files."
     )
 
 set (TARGET_CMAKE_FOLDER
 		"share/cmake-${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}/Modules"
 		CACHE STRING
-		"The folder below system prefix where to install cmake files."
+		"This folder (below prefix) will be used to install cmake files."
     )
 
-set (TARGET_PLUGIN_FOLDER "elektra"
+set (TARGET_PLUGIN_FOLDER
+		"elektra"
 		CACHE STRING
-		"Optional folder below system library folder where to install elektra plugins. LIB_SUFFIX is honored."
+		"This folder (below prefix/lib) will be used to install elektra plugins. LIB_SUFFIX is honored."
     )
 
 set (TARGET_PKGCONFIG_FOLDER
 		"pkgconfig"
 		CACHE STRING
-		"The folder below system library folder where to install pkgconfig files. LIB_SUFFIX is honored."
+		"The folder (below prefix/lib) folder where to install pkgconfig files. LIB_SUFFIX is honored."
     )
 
-set (TARGET_DOCUMENTATION_FOLDER
-		"share/doc/elektra-api"
+set (TARGET_DOCUMENTATION_HTML_FOLDER
+		"share/doc/elektra-api/html"
 		CACHE STRING
-		"The folder below system prefix where to install api documentation files."
+		"The folder (below prefix) where to install html api documentation files."
     )
 
+set (TARGET_DOCUMENTATION_MAN_FOLDER
+		"share/man/man3"
+		CACHE STRING
+		"The folder (below prefix) where to install man3 api documentation files."
+    )
+
+set (TARGET_DOCUMENTATION_LATEX_FOLDER
+		"share/doc/elektra-api/latex"
+		CACHE STRING
+		"The folder (below prefix) where to install latex api documentation files."
+    )
+
+set (TARGET_TOOL_EXEC_FOLDER
+		"lib/elektra/tool_exec"
+		CACHE STRING
+		"This folder (below prefix) will be used to install additional kdb-tools"
+    )
+
+set (TARGET_TEST_DATA_FOLDER
+		"share/elektra/test_data"
+		CACHE STRING
+		"This folder (below prefix) will be used to install test data"
+    )
+
+set (TARGET_TEMPLATE_FOLDER
+		"share/elektra/templates"
+		CACHE STRING
+		"This folder (below prefix) will be used to install templates"
+    )
 
 #
 # Misc.
