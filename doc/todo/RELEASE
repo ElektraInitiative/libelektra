@@ -22,9 +22,15 @@ Try to move as much as possible from this manual checks to build-server!
 
 Before release is done, following must be checked:
 - Everything blue on http://community.markus-raab.org:8080/
-- Version number in CMakeLists.txt
 - make sure no TODO is in this file (resolve them first!)
 
+
+
+== Increment Version numbers ==
+
+- CMakeLists.txt
+- tests/shell/include_common.sh.in
+- src/tools/gen/setup.py.in
 
 
 = Preperation =

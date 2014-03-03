@@ -4,8 +4,8 @@
 # This file is AUTO GENERATED, do not modify it or your changes might be
 # lost!
 #
-# shell test suite v0.3 for kdb command
-set -x
+# shell test suite v0.4 for kdb command
+#set -x
 
 
 #
