@@ -76,8 +76,8 @@ int ksGetOpt(int argc, char **argv, KeySet *ks)
 			'$info.get('opt')'
 @else
 			$counter
-@set counter = counter + 1
 @set info["opt"] = counter
+@set counter = counter + 1
 @end if
 		},
 @end if
