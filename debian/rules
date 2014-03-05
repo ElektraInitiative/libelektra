@@ -7,8 +7,8 @@
 binary/libelektra-bin binary/libelektra-dev:: binary/libelektra
 
 # Which plugins and tools should be built
-ELEKTRA_PLUGINS="ALL"
-ELEKTRA_TOOLS="ALL"
+ELEKTRA_PLUGINS=ALL
+ELEKTRA_TOOLS=ALL
 
 #workaround for hardening flags
 CPPFLAGS:=$(shell dpkg-buildflags --get CPPFLAGS)
@@ -32,7 +32,10 @@ CMAKE_FLAGS = \
 	-DBUILD_PDF=OFF \
 	-DTARGET_TEST_DATA_FOLDER=share/libelektra-test/test-data \
 	-DCMAKE_C_FLAGS="$(CFLAGS)" \
-	-DCMAKE_CXX_FLAGS="$(CXXFLAGS)"
+	-DCMAKE_CXX_FLAGS="$(CXXFLAGS)" \
+	-DCMAKE_EXE_LINKER_FLAGS="$(LDFLAGS)" \
+	-DCMAKE_MODULE_LINKER_FLAGS="$(LDFLAGS)" \
+	-DCMAKE_SHARED_LINKER_FLAGS="$(LDFLAGS)"
 
 %:
 	dh $@ --buildsystem=cmake --parallel
