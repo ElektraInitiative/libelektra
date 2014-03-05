@@ -6,13 +6,15 @@
 # Make sure libelektra is built before packages depending on it
 binary/libelektra-bin binary/libelektra-dev:: binary/libelektra
 
-# Which plugins should be built
+# Which plugins and tools should be built
 ELEKTRA_PLUGINS="ALL"
+ELEKTRA_TOOLS="ALL"
 
 CMAKE_FLAGS = \
 	-DCMAKE_INSTALL_PREFIX=/usr \
 	-DTARGET_PLUGIN_FOLDER=elektra4 \
 	-DPLUGINS=$(ELEKTRA_PLUGINS) \
+	-DTOOLS=$(ELEKTRA_TOOLS)\
 	-DKDB_DB_SYSTEM:PATH="/etc/kdb" \
 	-DKDB_DB_HOME:PATH="/home" \
 	-DKDB_DB_USER:PATH=".kdb" \
