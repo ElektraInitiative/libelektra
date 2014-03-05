@@ -10,6 +10,12 @@ binary/libelektra-bin binary/libelektra-dev:: binary/libelektra
 ELEKTRA_PLUGINS="ALL"
 ELEKTRA_TOOLS="ALL"
 
+#workaround for hardening flags
+CPPFLAGS:=$(shell dpkg-buildflags --get CPPFLAGS)
+CFLAGS:=$(shell dpkg-buildflags --get CFLAGS) $(CPPFLAGS)
+CXXFLAGS:=$(shell dpkg-buildflags --get CXXFLAGS) $(CPPFLAGS)
+LDFLAGS:=$(shell dpkg-buildflags --get LDFLAGS)
+
 CMAKE_FLAGS = \
 	-DCMAKE_INSTALL_PREFIX=/usr \
 	-DTARGET_PLUGIN_FOLDER=elektra4 \

@@ -207,6 +207,9 @@ Description: dbus plugin for a framework to get and set configuration
 Package: libelektra-gen
 Architecture: any
 Depends: libelektra-bin (>= ${source:Version}),
+ python-support,
+ python-setuptools,
+ python-cheetah,
  ${shlibs:Depends},
  ${misc:Depends}
 Description: gen tool for Elektra
