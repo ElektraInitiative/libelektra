@@ -19,8 +19,8 @@ LDFLAGS:=$(shell dpkg-buildflags --get LDFLAGS)
 CMAKE_FLAGS = \
 	-DCMAKE_INSTALL_PREFIX=/usr \
 	-DTARGET_PLUGIN_FOLDER=elektra4 \
-	-DPLUGINS=$(ELEKTRA_PLUGINS) \
-	-DTOOLS=$(ELEKTRA_TOOLS)\
+	-DPLUGINS="$(ELEKTRA_PLUGINS)" \
+	-DTOOLS="$(ELEKTRA_TOOLS)" \
 	-DKDB_DB_SYSTEM:PATH="/etc/kdb" \
 	-DKDB_DB_HOME:PATH="/home" \
 	-DKDB_DB_USER:PATH=".kdb" \
@@ -31,8 +31,8 @@ CMAKE_FLAGS = \
 	-DENABLE_KDB_TESTING=OFF \
 	-DBUILD_PDF=OFF \
 	-DTARGET_TEST_DATA_FOLDER=share/libelektra-test/test-data \
-	-DCMAKE_C_FLAGS=$(CFLAGS) \
-	-DCMAKE_CXX_FLAGS=$(CXXFLAGS)
+	-DCMAKE_C_FLAGS="$(CFLAGS)" \
+	-DCMAKE_CXX_FLAGS="$(CXXFLAGS)"
 
 %:
 	dh $@ --buildsystem=cmake --parallel
