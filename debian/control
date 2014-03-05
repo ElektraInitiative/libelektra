@@ -9,7 +9,8 @@ Build-Depends: debhelper (>= 8),
  libboost-dev,
  cmake,
  libdbus-1-dev,
- libyajl-dev
+ libyajl-dev,
+ python-support (>= 0.90)
 Standards-Version: 3.9.4
 Homepage: http://www.libelektra.org
 Vcs-Browser: http://gitorious.org/elektra-initiative/libelektra/commits/debian
@@ -153,7 +154,6 @@ Description: tests for a framework to get and set configuration
 Package: libelektra-xmltool4
 Architecture: any
 Depends: libelektra-core4 (>= ${source:Version}),
- ${shlibs:Depends},
  ${misc:Depends}
 Description: xml plugin for a framework to get and set configuration
  Elektra provides a universal and secure framework to store
@@ -171,7 +171,6 @@ Description: xml plugin for a framework to get and set configuration
 Package: libelektra-yajl4
 Architecture: any
 Depends: libelektra-core4 (>= ${source:Version}),
- ${shlibs:Depends},
  ${misc:Depends}
 Description: json plugin for a framework to get and set configuration
  Elektra provides a universal and secure framework to store
@@ -189,7 +188,6 @@ Description: json plugin for a framework to get and set configuration
 Package: libelektra-dbus4
 Architecture: any
 Depends: libelektra-core4 (>= ${source:Version}),
- ${shlibs:Depends},
  ${misc:Depends}
 Description: dbus plugin for a framework to get and set configuration
  Elektra provides a universal and secure framework to store
@@ -207,7 +205,8 @@ Description: dbus plugin for a framework to get and set configuration
 Package: libelektra-gen
 Architecture: any
 Depends: libelektra-bin (>= ${source:Version}),
- python-support,
+ python2.7,
+ python (>= 2.7.3~),
  python-setuptools,
  python-cheetah,
  ${shlibs:Depends},
