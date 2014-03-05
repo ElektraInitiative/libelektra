@@ -30,7 +30,9 @@ CMAKE_FLAGS = \
 	-DINSTALL_TESTING=ON \
 	-DENABLE_KDB_TESTING=OFF \
 	-DBUILD_PDF=OFF \
-	-DTARGET_TEST_DATA_FOLDER=share/libelektra-test/test-data
+	-DTARGET_TEST_DATA_FOLDER=share/libelektra-test/test-data \
+	-DCMAKE_C_FLAGS=$(CFLAGS) \
+	-DCMAKE_CXX_FLAGS=$(CXXFLAGS)
 
 %:
 	dh $@ --buildsystem=cmake --parallel
