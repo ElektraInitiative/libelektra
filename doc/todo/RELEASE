@@ -1,5 +1,11 @@
 This describes what to do for an release!
 
+= TODO =
+
+- VERSION is not suitable for debian commands, introduce DVERSION
+
+- make sure no TODO is in this file (resolve them first!)
+
 = Cleanup =
 
 
@@ -22,7 +28,6 @@ Try to move as much as possible from this manual checks to build-server!
 
 Before release is done, following must be checked:
 - Everything blue on http://community.markus-raab.org:8080/
-- make sure no TODO is in this file (resolve them first!)
 
 
 
