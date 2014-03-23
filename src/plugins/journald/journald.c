@@ -1,19 +1,11 @@
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This is the skeleton of the methods you'll have to implement in order *
- *   to provide a valid plugin.                                            *
- *   Simple fill the empty functions with your code and you are            *
- *   ready to go.                                                          *
- *                                                                         *
- ***************************************************************************/
-
+/**
+ * \file
+ *
+ * \brief A plugin which logs write operations and errors via the native journald interface
+ *
+ * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
 
 #ifndef HAVE_KDBCONFIG
 # include "kdbconfig.h"
@@ -68,9 +60,9 @@ int elektraJournaldSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_U
         		keyName (parentKey),
         		ksGetSize (returned),
         		"MESSAGE_ID=fc65eab25c18463f97e4f9b61ea31eae",
-        		"PRIORITY=5",
+        		"PRIORITY=5",	/* notice priority */
         		"HOME=%s", getenv ("HOME"),
-        		"TERM=%s", getenv ("TERM"),
+        		"USER=%s", getenv ("USER"),
         		"PAGE_SIZE=%li", sysconf (_SC_PAGESIZE),
         		"N_CPUS=%li", sysconf (_SC_NPROCESSORS_ONLN),
         		NULL);
@@ -83,9 +75,9 @@ int elektraJournaldError(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA
         		keyName (parentKey),
         		ksGetSize (returned),
         		"MESSAGE_ID=fb3928ea453048649c61d62619847ef6",
-        		"PRIORITY=5",
+        		"PRIORITY=3",	/* error priority */
         		"HOME=%s", getenv ("HOME"),
-        		"TERM=%s", getenv ("TERM"),
+        		"USER=%s", getenv ("USER"),
         		"PAGE_SIZE=%li", sysconf (_SC_PAGESIZE),
         		"N_CPUS=%li", sysconf (_SC_NPROCESSORS_ONLN),
         		NULL);

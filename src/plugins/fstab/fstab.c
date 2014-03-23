@@ -249,7 +249,7 @@ int elektraFstabSet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 
 	if(fstab == 0) {
 		/* propagate errno */
-		errno = errnosave;
+		ELEKTRA_SET_ERROR(75, parentKey, strerror(errnosave));
 		return -1;
 	}
 
