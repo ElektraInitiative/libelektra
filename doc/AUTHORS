@@ -1,17 +1,19 @@
-A list of authors which contributed to elektra.
-Note to also add the authors to COPYING
-
+List of authors that contributed to Elektra.
 
 
 Markus Raab <elektra@markus-raab.org>
-main development, documentation, tutorial
+maintainer, development, documentation
 Devel/Test on: Debian
+
+
+Christopher Meng <cickumqt@gmail.com>
+Fedora packaging
+Test on: Fedora
 
 
 Avi Alkalay <avi@unix.sh>
 Initial concept&architecture, development, manuals, previous website
 Backends: berkleydb, filesys, fstab
-Devel/Test on: redhat.ia32, fedora.ia32, redhat.ppc, redhat.s390, aix.ppc
 
 
 Yannick Lecaillez <yl@itioweb.com>
