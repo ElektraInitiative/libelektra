@@ -109,3 +109,31 @@ Do not use static, but anonymous namespaces.
 Write everything within namespaces and do not prefix names.
 
 Example: bindings/cpp/include/kdb.hpp
+
+
+== Doxygen Guidelines ==
+
+Use doxygen to document APIs, if available.
+
+Do not duplicate information available in git in doxygen.
+Use \copydoc, \copybrief and \copydetails intensively.
+
+
+Files should start with:
+---- file template ----
+/**
+ * \file
+ *
+ * \brief <short statement about the content of the file>
+ *
+ * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
+---- file template ----
+
+\file should *not* contain any text.
+\brief should contain a short statement about the content of the file.
+
+The duplication of the filename, author and date is not needed, because
+this information is tracked using git.
+
