@@ -35,11 +35,7 @@ void test_readhosts()
 
 	KeySet *ks=ksNew(0);
 
-	printf ("%s\n", srcdir_file("hosts"));
-
 	succeed_if (plugin->kdbGet(plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
-
-	output_keyset(ks);
 
 	Key *key = ksLookupByName(ks, "user/tests/hosts/localhost", 0);
 	exit_if_fail (key, "hostname localhost kira not found");
