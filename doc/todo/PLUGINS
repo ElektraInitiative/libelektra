@@ -19,6 +19,25 @@ with licence, author in contract
 Everything also in constants/build_info
 add dependencies in contract?
 
+== Contract on Plugin configuration ==
+
+do not only depend on "provides" but on configuration another plugin
+provides. This option would allow to add multiple plugins with same
+functionality, but only one is configured to do it actually.
+* type checker
+* encoding
+
+
+== name conversion ==
+
+rebase plugin:
+	remove/add a common prefix after parentKey
+
+trim
+lowercase
+encoding
+
+
 
 == OS abstraction ==
 
@@ -65,9 +84,6 @@ do not hardcode 10 plugins (rationale?)
 
 
 == JSON ==
-
-rebase plugin:
-	remove/add a common prefix after parentKey
 
 yail
 	advanced functionality

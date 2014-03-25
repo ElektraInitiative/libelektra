@@ -172,13 +172,18 @@ KeySet *ksNew(size_t alloc, ...)
 	KeySet *ks;
 	va_list va;
 
-	if (alloc) va_start(va, alloc);
+	va_start(va, alloc);
 	ks = ksVNew (alloc, va);
-	if (alloc) va_end (va);
+	va_end (va);
 
 	return ks;
 }
 
+/**
+ * @copydoc ksNew
+ *
+ * @pre caller must call va_start and va_end
+ **/
 KeySet *ksVNew (size_t alloc, va_list va)
 {
 	KeySet *keyset=0;
@@ -205,9 +210,11 @@ KeySet *ksVNew (size_t alloc, va_list va)
 	keyset->array[0] = 0;
 	
 
-	if (alloc != 1) {
+	if (alloc != 1)
+	{
 		key = (struct _Key *) va_arg (va, struct _Key *);
-		while (key) {
+		while (key)
+		{
 			ksAppendKey(keyset, key);
 			key = (struct _Key *) va_arg (va, struct _Key *);
 		}

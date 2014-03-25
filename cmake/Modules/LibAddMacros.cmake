@@ -1,6 +1,6 @@
 # Copy a file from source dir to binary dir
 #
-# copy_file name
+# copy_file or directory
 #
 macro (copy_file src dest)
 	execute_process (

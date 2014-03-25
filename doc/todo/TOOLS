@@ -35,6 +35,12 @@ kdb-edit edit file in any of Elektra's format
 
 install config (mount+preload system config) by using meta struct
 
+== MOUNT ==
+
+mountget, mountset, mountls
+
+rename getmeta to metaget, metaset, metals?
+
 == GEN ==
 
 cmake support for "kdb gen" (run kdb gen within cmake)

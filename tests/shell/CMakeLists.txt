@@ -93,7 +93,7 @@ function (add_scripttest testname)
 
 endfunction (add_scripttest)
 
-
+#does not work with cmake 2.6
 file (COPY data
 	DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
