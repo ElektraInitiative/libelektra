@@ -50,7 +50,7 @@ int elektraPathGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 		keyNew ("system/elektra/modules/path/infos/licence",
 			KEY_VALUE, "BSD", KEY_END),
 		keyNew ("system/elektra/modules/path/infos/description",
-			KEY_VALUE, "Checks keys if they contain a valid ip address", KEY_END),
+			KEY_VALUE, "Checks if keys enriched with appropriate metadata contain valid paths as values", KEY_END),
 		keyNew ("system/elektra/modules/path/infos/provides",
 			KEY_VALUE, "check", KEY_END),
 		keyNew ("system/elektra/modules/path/infos/placements",
