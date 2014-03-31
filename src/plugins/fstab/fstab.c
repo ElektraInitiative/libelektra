@@ -246,6 +246,13 @@ int elektraFstabSet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 	}
 
 	fstab=setmntent(keyString(parentKey), "w");
+
+	if(fstab == 0) {
+		/* propagate errno */
+		ELEKTRA_SET_ERROR(75, parentKey, strerror(errnosave));
+		return -1;
+	}
+
 	memset(&fstabEntry,0,sizeof(struct mntent));
 
 	while ((key = ksNext (ks)) != 0)

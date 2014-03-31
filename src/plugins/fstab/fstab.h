@@ -41,6 +41,8 @@
 
 #include <kdbplugin.h>
 #include <kdbextension.h>
+#include <kdberrors.h>
+
 
 int elektraFstabGet(Plugin *handle, KeySet *returned, Key *parentKey);
 int elektraFstabSet(Plugin *handle, KeySet *ks, Key *parentKey);
