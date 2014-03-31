@@ -17,7 +17,7 @@
 
 #include "journald.h"
 
-int elektraJournaldGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
+int elektraJournaldGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey ELEKTRA_UNUSED)
 {
 	KeySet *n;
 	ksAppend (returned, n = ksNew (30,
@@ -54,33 +54,33 @@ int elektraJournaldGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_U
 	return 1;
 }
 
-int elektraJournaldSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
+int elektraJournaldSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
-        sd_journal_send ("MESSAGE=committed configuration %s with %zd keys",
-        		keyName (parentKey),
-        		ksGetSize (returned),
-        		"MESSAGE_ID=fc65eab25c18463f97e4f9b61ea31eae",
-        		"PRIORITY=5",	/* notice priority */
-        		"HOME=%s", getenv ("HOME"),
-        		"USER=%s", getenv ("USER"),
-        		"PAGE_SIZE=%li", sysconf (_SC_PAGESIZE),
-        		"N_CPUS=%li", sysconf (_SC_NPROCESSORS_ONLN),
-        		NULL);
-        return 1;
+	sd_journal_send ("MESSAGE=committed configuration %s with %zd keys",
+			keyName (parentKey),
+			ksGetSize (returned),
+			"MESSAGE_ID=fc65eab25c18463f97e4f9b61ea31eae",
+			"PRIORITY=5",	/* notice priority */
+			"HOME=%s", getenv ("HOME"),
+			"USER=%s", getenv ("USER"),
+			"PAGE_SIZE=%li", sysconf (_SC_PAGESIZE),
+			"N_CPUS=%li", sysconf (_SC_NPROCESSORS_ONLN),
+			NULL);
+	return 1;
 }
 
-int elektraJournaldError(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
+int elektraJournaldError(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
-        sd_journal_send ("MESSAGE=rollback configuration %s with %zd keys",
-        		keyName (parentKey),
-        		ksGetSize (returned),
-        		"MESSAGE_ID=fb3928ea453048649c61d62619847ef6",
-        		"PRIORITY=3",	/* error priority */
-        		"HOME=%s", getenv ("HOME"),
-        		"USER=%s", getenv ("USER"),
-        		"PAGE_SIZE=%li", sysconf (_SC_PAGESIZE),
-        		"N_CPUS=%li", sysconf (_SC_NPROCESSORS_ONLN),
-        		NULL);
+	sd_journal_send ("MESSAGE=rollback configuration %s with %zd keys",
+			keyName (parentKey),
+			ksGetSize (returned),
+			"MESSAGE_ID=fb3928ea453048649c61d62619847ef6",
+			"PRIORITY=3",	/* error priority */
+			"HOME=%s", getenv ("HOME"),
+			"USER=%s", getenv ("USER"),
+			"PAGE_SIZE=%li", sysconf (_SC_PAGESIZE),
+			"N_CPUS=%li", sysconf (_SC_NPROCESSORS_ONLN),
+			NULL);
 
 	return 1; /* success */
 }
