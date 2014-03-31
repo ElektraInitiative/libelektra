@@ -2,6 +2,27 @@
 
 kdb tools meta description files
 
+== MOUNT ==
+
+mountget, mountset, mountls
+
+rename getmeta to metaget, metaset, metals?
+
+add possibility to give names and configure plugins:
+
+e.g.
+kdb mount path=s.ini,recode=utf8..latin1,name=backendname /path/to/mount
+          ni,name=pluginname rebase,relative=/path
+
+kdb mount OpenICC_device_config_DB.json /org/freedesktop/openicc yajl
+          rebase,relative=/org/freedesktop/openicc,case=ignore
+
+== libelektra-tools ==
+
+including mounting functionality
+
+
+
 = KDB =
 
 list existing plugins
@@ -34,12 +55,6 @@ kdb-edit edit file in any of Elektra's format
 
 
 install config (mount+preload system config) by using meta struct
-
-== MOUNT ==
-
-mountget, mountset, mountls
-
-rename getmeta to metaget, metaset, metals?
 
 == GEN ==
 

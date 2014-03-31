@@ -1,3 +1,11 @@
+0.8.6 Release
+
+A plugin which logs write operations and errors via the native
+journald interface was added.
+
+
+---------------
+
 0.8.5 Release
 
 In this release, again, amazing features wait for you.
