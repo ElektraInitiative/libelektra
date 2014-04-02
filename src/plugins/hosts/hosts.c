@@ -191,7 +191,7 @@ int elektraHostsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 "\n"
 "== Ordering ==\n"
 "The ordering of the hosts is stored in meta keys of type \"order\".\n"
-"The value is an ascending number."
+"The value is an ascending number. Ordering of aliases is NOT preserved."
 				, KEY_END),
 			keyNew ("system/elektra/modules/hosts/infos/provides",
 				KEY_VALUE, "storage", KEY_END),
