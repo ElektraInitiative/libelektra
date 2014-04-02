@@ -346,7 +346,15 @@ int elektraHostsSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 		if (lastline)
 		{
 			*lastline = '\0';
-			fprintf (fp, "%s\n", keyComment(key));
+			char *token, *saveptr, *mcomment = malloc (keyGetCommentSize(key));
+			strcpy (mcomment, keyComment(key));
+			token = strtok_r (mcomment, "\n", &saveptr);
+			while (token != 0)
+			{
+				fprintf (fp, "#%s\n", token);
+				token = strtok_r (NULL, "\n", &saveptr);
+			}
+			free (mcomment);
 			*lastline = '\n'; /* preserve comment */
 		}
 
