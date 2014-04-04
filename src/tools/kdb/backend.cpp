@@ -38,7 +38,7 @@ void Backend::checkFile (std::string file)
 
 	if (mp.substr(0,6) == "system")
 	{
-		cout << "Absolut filename is ok: " << file;
+		cout << "Absolut filename is ok: " << file << endl;
 		if (res == -1) throw FileNotValidException();
 		return;
 	}

@@ -23,7 +23,7 @@ int LsCommand::execute(Cmdline const& cl)
 	if (!root.isValid())
 	{
 		throw invalid_argument(cl.arguments[0] +
-				"is not an valid keyname");
+				" is not a valid keyname");
 	}
 
 	kdb.get(ks, root);

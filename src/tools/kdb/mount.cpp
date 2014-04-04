@@ -168,6 +168,7 @@ int MountCommand::execute(Cmdline const& cl)
 	{
 		cout << "Already used are: ";
 		std::copy (mountpoints.begin(), mountpoints.end(), ostream_iterator<std::string>(cout, " "));
+		cout << endl;
 		if (cl.interactive)
 		{
 			cout << endl;
@@ -192,8 +193,6 @@ int MountCommand::execute(Cmdline const& cl)
 		if (!kmp.isValid()) throw MountpointNotValid();
 		if (std::find(mountpoints.begin(), mountpoints.end(), kmp.getName()) != mountpoints.end()) throw MountpointAlreadyInUseException();
 	}
-
-	cout << endl;
 
 
 
@@ -221,7 +220,17 @@ int MountCommand::execute(Cmdline const& cl)
 		{
 			path = cl.arguments[0];
 		}
-		backend.checkFile (path);
+
+		try
+		{
+			backend.checkFile (path);
+		}
+		catch(FileNotValidException const& e)
+		{
+			cout << "Invalid path " << path << ": " << e.what() << endl;
+			return 1;
+		}
+
 		backend.addPlugin ();
 
 		mountConf.append ( *Key( root  + "/" + name + "/config",
