@@ -3,6 +3,12 @@
 A plugin which logs write operations and errors via the native
 journald interface was added.
 
+The hosts plugin got a documentation and several bug fixes.
+Multiline comments now remove the comment start sequences within
+the metadata comment.
+Additionally the kdb tool has an improved error message on invalid
+filenames.
+
 
 ---------------
 
