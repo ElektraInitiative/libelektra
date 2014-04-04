@@ -41,6 +41,13 @@ key: check/range
 status: idea
 description: range checks, from-to, or arbitrary sets of numbers
 
+key: source
+status: idea
+description: states where a key comes from if it is not from an ordinary
+ persistent configuration. E.g.: hardware (queries)
+ e.g. system/sw/xorg/current/monitor might have "source" metadata if it
+ is queried from hardware and not from configuration file.
+
 key: dependency/control
 status: idea
 description: control keys which enable/disable parameters

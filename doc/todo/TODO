@@ -173,6 +173,10 @@ ksLookup: value keys only
 merge + split configuration
 http://en.wikipedia.org/wiki/Set_(mathematics)
 
+allow to change behaviour of keyset using callbacks:
+	collect statistics which keys were used and modified how often
+	allow tracing of individual (non-removed) keys
+
 
 KeySet* ksUnion
 ksIntersection
