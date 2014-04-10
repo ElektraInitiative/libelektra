@@ -209,6 +209,7 @@ Depends: libelektra-bin (>= ${source:Version}),
  python (>= 2.7.3~),
  python-setuptools,
  python-cheetah,
+ python-support (>= 0.90),
  ${shlibs:Depends},
  ${misc:Depends}
 Description: gen tool for Elektra
