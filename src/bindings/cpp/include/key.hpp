@@ -73,7 +73,7 @@ public:
 	inline void operator --(int) const;
 	inline void operator --() const;
 
-	inline size_t getReferenceCounter() const;
+	inline ssize_t getReferenceCounter() const;
 
 
 	// basic methods
@@ -95,17 +95,17 @@ public:
 	// name manipulation
 
 	inline std::string getName() const;
-	inline size_t getNameSize() const;
+	inline ssize_t getNameSize() const;
 
 	inline std::string getBaseName() const;
-	inline size_t getBaseNameSize() const;
+	inline ssize_t getBaseNameSize() const;
 	inline std::string getDirName() const;
 
 	inline void setName (const std::string &newName);
 	inline void setBaseName (const std::string &baseName);
 	inline void addBaseName (const std::string &baseName);
 
-	inline size_t getFullNameSize() const;
+	inline ssize_t getFullNameSize() const;
 	inline std::string getFullName() const;
 
 	inline Key& operator=  (const std::string &newName);
@@ -138,15 +138,15 @@ public:
 
 	inline std::string getString() const;
 	inline void setString(std::string newString);
-	inline size_t getStringSize() const;
+	inline ssize_t getStringSize() const;
 
 	typedef void (*func_t)();
 	inline func_t getFunc() const;
 
 	inline const void *getValue() const;
 	inline std::string getBinary() const;
-	inline size_t getBinarySize() const;
-	inline size_t setBinary(const void *newBinary, size_t dataSize);
+	inline ssize_t getBinarySize() const;
+	inline ssize_t setBinary(const void *newBinary, size_t dataSize);
 
 
 	// meta data
@@ -343,7 +343,7 @@ void Key::operator --() const
 /**
  * @copydoc keyGetRef
  */
-inline size_t Key::getReferenceCounter() const
+inline ssize_t Key::getReferenceCounter() const
 {
 	return ckdb::keyGetRef(key);
 }
@@ -486,7 +486,7 @@ inline std::string Key::getName() const
 /**
  * @copydoc keyGetNameSize
  */
-inline size_t Key::getNameSize() const
+inline ssize_t Key::getNameSize() const
 {
 	return ckdb::keyGetNameSize (getKey());
 }
@@ -495,7 +495,7 @@ inline size_t Key::getNameSize() const
 /**
  * @copydoc keyGetBaseNameSize
  */
-inline size_t Key::getBaseNameSize() const
+inline ssize_t Key::getBaseNameSize() const
 {
 	return ckdb::keyGetBaseNameSize(getKey());
 }
@@ -565,7 +565,7 @@ inline void Key::addBaseName (const std::string &baseName)
 /**
  * @copydoc keyGetFullNameSize
  */
-inline size_t Key::getFullNameSize() const
+inline ssize_t Key::getFullNameSize() const
 {
 	return ckdb::keyGetFullNameSize (getKey());
 }
@@ -813,7 +813,7 @@ inline std::string Key::getString() const
 /**
  * @copydoc keyGetValueSize()
  */
-inline size_t Key::getStringSize() const
+inline ssize_t Key::getStringSize() const
 {
 	return ckdb::keyGetValueSize(key);
 }
@@ -896,7 +896,7 @@ inline std::string Key::getBinary() const
 /**
  * @copydoc keyGetValueSize()
  */
-inline size_t Key::getBinarySize() const
+inline ssize_t Key::getBinarySize() const
 {
 	return ckdb::keyGetValueSize(key);
 }
@@ -904,10 +904,9 @@ inline size_t Key::getBinarySize() const
 /**
  * @copydoc keySetBinary
  */
-inline size_t Key::setBinary(const void *newBinary, size_t dataSize)
+inline ssize_t Key::setBinary(const void *newBinary, size_t dataSize)
 {
-	size_t s = ckdb::keySetBinary (getKey(), newBinary, dataSize);
-	return s;
+	return ckdb::keySetBinary (getKey(), newBinary, dataSize);
 }
 
 
@@ -985,12 +984,12 @@ inline const ckdb::Key* Key::getMeta(const std::string &name) const
 template<>
 inline const Key Key::getMeta(const std::string &name) const
 {
-	return
-		Key (
-			const_cast<ckdb::Key*>(
-				ckdb::keyGetMeta(key, name.c_str())
-				)
-			);
+	const ckdb::Key *k = ckdb::keyGetMeta(key, name.c_str());
+	if (!k)
+	{
+		throw KeyNoSuchMeta();
+	}
+	return Key(const_cast<ckdb::Key*>(k));
 }
 
 template<>
