@@ -69,16 +69,23 @@ void MountCommand::outputMtab()
 int MountCommand::execute(Cmdline const& cl)
 {
 	size_t argc = cl.arguments.size();
-	if (argc == 0)
+
+	if (!cl.interactive && argc == 0)
 	{
 		// no interactive mode, so lets output the mtab
 		outputMtab();
 		return 0;
 	}
 
-	if (argc == 1)
+	if (!cl.interactive && argc == 1)
 	{
 		throw invalid_argument("wrong number of arguments, 0 or more then 1 needed");
+	}
+
+	if (cl.debug)
+	{
+		cout << "Note that nothing will be written out" << endl;
+		cout << "until you say y at the very end of the mounting process" << endl;
 	}
 
 	if (cl.interactive)
@@ -86,11 +93,6 @@ int MountCommand::execute(Cmdline const& cl)
 		cout << "Welcome to interactive mounting" << endl;
 		cout << "Please provide a unique name." << endl;
 
-	}
-	if (cl.debug)
-	{
-		cout << "Note that nothing will be written out" << endl;
-		cout << "until you say y at the very end of the mounting process" << endl;
 	}
 
 	KeySet mountConf = readMountConf();
