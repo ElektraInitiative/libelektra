@@ -81,7 +81,7 @@ namespace kdb
 typedef unsigned char             kdb_boolean_t;
 typedef unsigned char             kdb_char_t;
 typedef unsigned char             kdb_octet_t;
-typedef short                     kdb_short_t;
+typedef signed short              kdb_short_t;
 typedef unsigned short            kdb_unsigned_short_t;
 
 #if SIZEOF_LONG == 4
