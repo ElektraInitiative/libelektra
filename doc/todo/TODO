@@ -155,10 +155,40 @@ kdbSet
 
 
 
+
+== FURTHER HIERARCHIES ==
+
+see also FUTURE/hierarchy for incompatible change
+
+spec:
+	has metadata only for all other hierarchies
+	including explanation, description
+	(but not comments which are specific for individual keys)
+	allows to retrieve config with globs and placeholders
+	metadata in unapplied form
+	other hierarchies get the metadata copied by struct checker
+
+
+local/cwd/current: for .git/.htaccess features
+	(e.g. configuration in the current working directory)
+	(similar to user/ is current user)
+	but maybe just using metadata and existing user/ hierarchy is
+		the better option
+		(would require n keysets to capture n directories)
+
+memory (memory fallback)
+local/opt: will be used if installed to /usr/local or /opt?
+override/ (in memory override)
+env for environment options overrides
+cmd for commandline options overrides
+
+
+
 == DATA STRUCTURES ==
 
 Only implement what is really needed.
 (can take some time to do it well!)
+See also OPTIMISE
 
 ksForEach (ks, func, handle)
 	void func (Key*, void* handle);

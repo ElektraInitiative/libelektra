@@ -1,0 +1,90 @@
+This page describes optimization tasks for the current release.
+
+general:
+	scripts for performance and stability testing
+	testing optimizations (-O2)
+	profile the code and fix optimization leaks
+	benchmark first!
+
+== STORAGE ==
+
+use less write() syscalls in dump
+
+
+== SEARCH ==
+
+profiler:
+	search for slow parts
+
+malloc trace:
+	reduce mallocs
+
+keySet:
+	make statistics how many keys typical applications need
+	be efficient for typical needs
+
+== metadata ==
+
+Because metadata is often the same accross many keys we introduced a way to share it.
+heap profiling of a large keyset with/without shared metadata
+
+examine "benchmark" again, maybe some more interesting things are hidden there...
+
+== EXCEPTION ==
+
+do not throw exceptions within checker plugins (or fix benchmark)
+
+
+== OPTIMIZE ==
+
+Key unchanged always checked correctly?
+
+check if anything was really changed making key dirty
+
+optimize a key to use a single malloc
+	(under typical circumstances)
+	have all memory of a Key in a single allocation block
+	or use internally memory management which can be in mmap?
+	-> especially useful for keyNew
+
+dynamic memory management:
+	improve realloc, use srealloc
+	don't use sprintf, asprintf, strdup, strndup
+	use only own functions where available
+	use different compilers, libc too
+
+ksAppend() in O(1)
+
+KDB_O_NOALL could use binary search
+
+iconv:
+	open handles in kdbOpen? (depending on kdbOpen optimization that it is only done when needed)
+
+
+== OTHER ==
+
+getString in C++
+
+optimization: single malloc per key, name unchangeable?
+	Mmap custom storage, cow, realloc only when too large
+	Limit: only do when necessary!!
+
+
+== BENCHMARK TESTS ==
+
+iteration
+multiple type checkers overhead?
+insertion (dump::serialize)
+null ptr checks
+many mountpoints
+many globbing statements
+
+== DATA STRUCTURES ==
+
+Implement order preserving perfect hashing functions
+	O(1) lookup, but keep O(n) ordered iteration
+	http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.51.5566&rep=rep1&type=pdf
+	ksLookup(,, KDB_O_HASH) or KDB_O_HASH_HEURISTIC to avoid
+	rebuilding on seldom lookups
+	if hash is available it will be used regardless of options
+
