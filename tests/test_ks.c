@@ -1214,8 +1214,28 @@ void test_ksLookupName()
 	succeed_if (ksCurrent(ks) == found, "current not set correctly");
 	succeed_if (strcmp (keyName(found), "user/named/key") == 0, "name not correct in found key");
 	succeed_if (strcmp (keyValue(found), "myvalue") == 0, "not correct value in found key");
-	
+
+	ksDel(ks);
+}
+
+void test_ksLookupNameCascading()
+{
+	Key * found;
+	KeySet *ks= ksNew(0);
+
 	printf ("Test cascading lookup functions\n");
+
+	succeed_if (ksLookupByName (ks, "/named/", 0) == 0, "found in empty keyset");
+	succeed_if (ksLookupByName (ks, "//named/", 0) == 0, "found in empty keyset");
+	succeed_if (ksLookupByName (ks, "////named/", 0) == 0, "found in empty keyset");
+	succeed_if (ksLookupByName (ks, "//Person/Visits", 0) == 0, "found in empty keyset");
+
+	ksAppendKey(ks, keyNew("user/named/key",   KEY_VALUE, "myvalue", KEY_END));
+	ksAppendKey(ks, keyNew("system/named/key",   KEY_VALUE, "wrong value", KEY_END));
+	ksAppendKey(ks, keyNew("user/single/key",  KEY_VALUE, "singlevalue", KEY_END));
+	ksAppendKey(ks, keyNew("system/sysonly/key", KEY_VALUE, "sysonlykey",  KEY_END));
+	ksAppendKey(ks, keyNew("user/named/otherkey",  KEY_VALUE, "singlevalue", KEY_END));
+
 	found = ksLookupByName (ks, "/named/key", 0);
 	succeed_if (ksCurrent(ks) == found, "current not set correctly");
 	succeed_if (found != 0, "cascading search failed");
@@ -1236,8 +1256,74 @@ void test_ksLookupName()
 
 	succeed_if (ksLookupByName (ks, "/named/", 0) == 0, "found part of key with cascading");
 	succeed_if (ksLookupByName (ks, "/named/keyd", 0) == 0, "found part of key with cascading, bad postfix");
-	
+
+
+	// cascading double slash
+
+	found = ksLookupByName (ks, "///named/key", 0);
+	succeed_if (ksCurrent(ks) == found, "current not set correctly");
+	succeed_if (found != 0, "cascading search failed");
+	succeed_if (strcmp (keyName(found), "user/named/key") == 0, "name not correct in found key");
+	succeed_if (strcmp (keyValue(found), "myvalue") == 0, "not correct value in found key");
+
+	found = ksLookupByName (ks, "////single/Key", KDB_O_NOCASE);
+	succeed_if (ksCurrent(ks) == found, "current not set correctly");
+	succeed_if (found != 0, "could not find same key again, nocase used");
+	succeed_if (strcmp (keyName(found), "user/single/key") == 0, "name not correct in found key");
+	succeed_if (strcmp (keyValue(found), "singlevalue") == 0, "not correct value in found key");
+
+	found = ksLookupByName (ks, "//sysonly/key", 0);
+	succeed_if (ksCurrent(ks) == found, "current not set correctly");
+	succeed_if (found != 0, "could not find same key again, nocase used");
+	succeed_if (strcmp (keyName(found), "system/sysonly/key") == 0, "name not correct in found key");
+	succeed_if (strcmp (keyValue(found), "sysonlykey") == 0, "not correct value in found key");
+
+	succeed_if (ksLookupByName (ks, "//Person/Visits", 0) == 0, "found part of key with cascading");
+	succeed_if (ksLookupByName (ks, "////named/", 0) == 0, "found part of key with cascading");
+	succeed_if (ksLookupByName (ks, "/////named/keyd", 0) == 0, "found part of key with cascading, bad postfix");
+
+	ksAppendKey(ks, keyNew("user/named/key",   KEY_VALUE, "myvalue", KEY_END));
+	found = ksLookupByName (ks, "//named/key", KDB_O_POP);
+	succeed_if (ksGetSize(ks) == 4, "did not pop key");
+	succeed_if (ksCurrent(ks) == 0, "current not set correctly");
+	succeed_if (found != 0, "cascading search failed");
+	succeed_if (strcmp (keyName(found), "user/named/key") == 0, "name not correct in found key");
+	succeed_if (strcmp (keyValue(found), "myvalue") == 0, "not correct value in found key");
+	succeed_if (keyDel (found) == 0, "could not del popped key");
+
+	found = ksLookupByName (ks, "///named/Otherkey", KDB_O_NOCASE | KDB_O_POP);
+	succeed_if (ksGetSize(ks) == 3, "did not pop key");
+	succeed_if (ksCurrent(ks) == 0, "current not set correctly");
+	succeed_if (found != 0, "could not find same key again, nocase used");
+	succeed_if (strcmp (keyName(found), "user/named/otherkey") == 0, "name not correct in found key");
+	succeed_if (strcmp (keyValue(found), "singlevalue") == 0, "not correct value in found key");
+	succeed_if (keyDel (found) == 0, "could not del popped key");
+
+	found = ksLookupByName (ks, "///sysonly/key", KDB_O_POP);
+	succeed_if (ksCurrent(ks) == 0, "current not set correctly");
+	succeed_if (ksGetSize(ks) == 2, "did not pop key");
+	succeed_if (found != 0, "could not find same key again, nocase used");
+	succeed_if (strcmp (keyName(found), "system/sysonly/key") == 0, "name not correct in found key");
+	succeed_if (strcmp (keyValue(found), "sysonlykey") == 0, "not correct value in found key");
+	succeed_if (keyDel (found) == 0, "could not del popped key");
+
+	succeed_if (ksLookupByName (ks, "///named/", KDB_O_POP) == 0, "found part of key with cascading");
+	succeed_if (ksLookupByName (ks, "///named/keyd", KDB_O_POP) == 0, "found part of key with cascading, bad postfix");
+
+
+	ksDel(ks);
+}
+
+void test_ksLookupNameDomain()
+{
+	Key * found;
+	KeySet *ks= ksNew(0);
+
 	printf ("Test domain lookup functions\n");
+
+	ksAppendKey(ks, keyNew("user/domain/key",  KEY_VALUE, "domainvalue",
+		KEY_OWNER, "markus", KEY_END));
+
 	found = ksLookupByName (ks, "user:markus/domain/key", KDB_O_WITHOWNER);
 	succeed_if (ksCurrent(ks) == found, "current not set correctly");
 	succeed_if (found != 0, "could not find domain key");
@@ -1247,8 +1333,20 @@ void test_ksLookupName()
 	succeed_if (ksLookupByName (ks, "user:markuss/domain/key", KDB_O_WITHOWNER) == 0, "found key in wrong domain");
 	succeed_if (ksLookupByName (ks, "user:marku/domain/key", KDB_O_WITHOWNER) == 0, "found key in wrong domain");
 
+	ksAppendKey(ks, keyNew("user:markus/domain/key",   KEY_VALUE, "domainvalue", KEY_END));
+	found = ksLookupByName (ks, "user:markus/domain/key", KDB_O_WITHOWNER | KDB_O_POP);
+	succeed_if (ksCurrent(ks) == 0, "current not set correctly");
+	succeed_if (ksGetSize(ks) == 0, "did not pop key");
+	succeed_if (found != 0, "could not find domain key");
+	succeed_if (strcmp (keyValue(found), "domainvalue") == 0, "not correct value in domain key");
+	succeed_if (ksLookupByName (ks, "user:hugo/domain/key", KDB_O_WITHOWNER | KDB_O_POP) == 0, "found key in wrong domain");
+	succeed_if (ksLookupByName (ks, "user:y/domain/key", KDB_O_WITHOWNER | KDB_O_POP) == 0, "found key in wrong domain");
+	succeed_if (ksLookupByName (ks, "user:markuss/domain/key", KDB_O_WITHOWNER | KDB_O_POP) == 0, "found key in wrong domain");
+	succeed_if (ksLookupByName (ks, "user:marku/domain/key", KDB_O_WITHOWNER | KDB_O_POP) == 0, "found key in wrong domain");
+	succeed_if (ksGetSize(ks) == 0, "did not pop key");
+	succeed_if (keyDel (found) == 0, "could not del popped key");
+
 	ksDel(ks);
-	
 }
 
 void test_ksLookupNameAll()
@@ -2031,6 +2129,8 @@ void test_ksLookupPop()
 	succeed_if (strcmp (keyValue(found), "myvalue") == 0, "not correct value in found key");
 	succeed_if (keyDel (found) == 0, "could not del popped key");
 
+	// cascading
+
 	ksAppendKey(ks, keyNew("user/named/key",   KEY_VALUE, "myvalue", KEY_END));
 	printf ("Test cascading lookup functions\n");
 	found = ksLookupByName (ks, "/named/key", KDB_O_POP);
@@ -2312,8 +2412,10 @@ int main(int argc, char** argv)
 	test_ksLookup();
 	test_ksLookupByName();
 	test_ksLookupName();
+	test_ksLookupNameDomain();
 	test_ksLookupNameAll();
-	/*test_ksLookupValue();*/
+	test_ksLookupNameCascading();
+	//test_ksLookupValue();
 	test_ksExample();
 	test_ksCommonParentName();
 	test_ksAppend();
