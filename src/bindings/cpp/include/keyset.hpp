@@ -198,40 +198,39 @@ inline KeySet::const_reverse_iterator KeySet::crend() const noexcept
 
 
 // Forward iterator requirements
-inline bool operator==(const KeySetIterator& __lhs, const KeySetIterator& __rhs)
-{ return __lhs.base() == __rhs.base(); }
+inline bool operator==(const KeySetIterator& lhs, const KeySetIterator& rhs)
+{ return &lhs.getKeySet() == &rhs.getKeySet() && lhs.base() == rhs.base(); }
 
-inline bool operator!=(const KeySetIterator& __lhs, const KeySetIterator& __rhs)
-{ return __lhs.base() != __rhs.base(); }
+inline bool operator!=(const KeySetIterator& lhs, const KeySetIterator& rhs)
+{ return &lhs.getKeySet() != &rhs.getKeySet() || lhs.base() != rhs.base()  ; }
 
 // Random access iterator requirements
-inline bool operator<(const KeySetIterator& __lhs, const KeySetIterator& __rhs)
-{ return __lhs.base() < __rhs.base(); }
+inline bool operator<(const KeySetIterator& lhs, const KeySetIterator& rhs)
+{ return lhs.base() < rhs.base(); }
 
-inline bool operator>(const KeySetIterator& __lhs, const KeySetIterator& __rhs)
-{ return __lhs.base() > __rhs.base(); }
+inline bool operator>(const KeySetIterator& lhs, const KeySetIterator& rhs)
+{ return lhs.base() > rhs.base(); }
 
-inline bool operator<=(const KeySetIterator& __lhs, const KeySetIterator& __rhs)
-{ return __lhs.base() <= __rhs.base(); }
+inline bool operator<=(const KeySetIterator& lhs, const KeySetIterator& rhs)
+{ return lhs.base() <= rhs.base(); }
 
-inline bool operator>=(const KeySetIterator& __lhs, const KeySetIterator& __rhs)
-{ return __lhs.base() >= __rhs.base(); }
+inline bool operator>=(const KeySetIterator& lhs, const KeySetIterator& rhs)
+{ return lhs.base() >= rhs.base(); }
 
 #if __cplusplus > 199711L
 // DR 685.
-inline auto operator-(const KeySetIterator& __lhs, const KeySetIterator& __rhs)
-	-> decltype(__lhs.base() - __rhs.base())
+inline auto operator-(const KeySetIterator& lhs, const KeySetIterator& rhs)
+	-> decltype(lhs.base() - rhs.base())
 #else
 inline typename KeySetIterator::difference_type
-	operator-(const KeySetIterator& __lhs,
-	const KeySetIterator& __rhs)
+operator-(const KeySetIterator& lhs,
+	const KeySetIterator& rhs)
 #endif
-{ return __lhs.base() - __rhs.base(); }
+{ return lhs.base() - rhs.base(); }
 
 inline KeySetIterator
-	operator+(typename KeySetIterator::difference_type
-	__n, const KeySetIterator& __i)
-{ return KeySetIterator(__i.getKeySet(), __i.base() + __n); }
+operator+(typename KeySetIterator::difference_type n, const KeySetIterator& i)
+{ return KeySetIterator(i.getKeySet(), i.base() + n); }
 
 
 
