@@ -1200,6 +1200,21 @@ cursor_t ksGetCursor(const KeySet *ks)
 /**
  * @internal
  *
+ * @brief return key at given cursor position
+ *
+ * @param ks the keyset to pop key from
+ * @param c where to get
+ */
+Key *ksGetAtCursor(KeySet *ks, cursor_t pos)
+{
+	if (!ks) return 0;
+	if (pos < 0) return 0;
+	return ks->array[pos];
+}
+
+/**
+ * @internal
+ *
  * @brief Pop key at given cursor position
  *
  * @param ks the keyset to pop key from
@@ -1259,7 +1274,6 @@ Key *ksPopAtCursor(KeySet *ks, cursor_t pos)
 
 	return ksPop(ks);
 }
-
 
 
 

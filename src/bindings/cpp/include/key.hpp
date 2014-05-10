@@ -85,7 +85,8 @@ public:
 	inline void copy (const Key &other);
 	inline void clear ();
 	inline ckdb::Key* getKey () const;
-	inline ckdb::Key* operator* () const;
+	inline ckdb::Key* operator* () const; // should be reference
+	inline ckdb::Key* operator->() const;
 	inline ckdb::Key* release ();
 	inline ckdb::Key* dup () const;
 	inline ~Key ();
@@ -423,6 +424,14 @@ ckdb::Key * Key::getKey () const
  * @copydoc getKey
  */
 ckdb::Key * Key::operator* () const
+{
+	return key;
+}
+
+/**
+ * @copydoc getKey
+ */
+ckdb::Key * Key::operator-> () const
 {
 	return key;
 }

@@ -10,6 +10,8 @@
 namespace kdb
 {
 
+class KeySetIterator;
+
 /**
  * @brief A keyset holds together a set of keys.
  *
@@ -67,9 +69,171 @@ public:
 	Key lookup (const Key &k, const option_t options = KDB_O_NONE) const;
 	Key lookup (std::string const & name, const option_t options = KDB_O_NONE) const;
 
+	typedef KeySetIterator iterator;
+	typedef KeySetIterator const_iterator;
+	typedef std::reverse_iterator<const_iterator>  const_reverse_iterator;
+	typedef std::reverse_iterator<iterator>  reverse_iterator;
+
+	iterator begin();
+	const_iterator begin() const;
+	iterator end();
+	const_iterator end() const;
+	reverse_iterator rbegin();
+	const_reverse_iterator rbegin() const;
+	reverse_iterator rend();
+	const_reverse_iterator rend() const;
+#if __cplusplus > 199711L
+	const_iterator cbegin() const noexcept;
+	const_iterator cend() const noexcept;
+	const_reverse_iterator crbegin() const noexcept;
+	const_reverse_iterator crend() const noexcept;
+#endif
 private:
 	ckdb::KeySet * ks; ///< holds an elektra keyset
 };
+
+class KeySetIterator
+{
+public:
+	typedef Key value_type;
+	typedef cursor_t difference_type;
+	typedef Key pointer;
+	typedef Key reference;
+	typedef std::random_access_iterator_tag iterator_category;
+
+	KeySetIterator(KeySet const & k) : ks(k), current() {};
+	KeySetIterator(KeySet const & k, const cursor_t c) : ks(k), current(c) {};
+	// conversion to const iterator?
+
+	Key get() const{return Key(ckdb::ksGetAtCursor(ks.getKeySet(), current));}
+	Key get(cursor_t pos) const {return Key(ckdb::ksGetAtCursor(ks.getKeySet(), pos));}
+
+	KeySet const & getKeySet() const {return ks;}
+
+	// Forward iterator requirements
+	reference operator*() const { return get(); } 
+	pointer operator->() const { return get(); } 
+	KeySetIterator& operator++() { ++current; return *this; }
+	KeySetIterator operator++(int) { return KeySetIterator(ks, current++); }
+
+	// Bidirectional iterator requirements
+	KeySetIterator& operator--() { --current; return *this; }
+	KeySetIterator operator--(int) { return KeySetIterator(ks, current--); }
+
+	// Random access iterator requirements
+	reference operator[](const difference_type& pos) const { return get(pos); }
+	KeySetIterator& operator+=(const difference_type& pos) { current += pos; return *this; }
+	KeySetIterator operator+(const difference_type& pos) const { return KeySetIterator(ks, current + pos); }
+	KeySetIterator& operator-=(const difference_type& pos) { current -= pos; return *this; }
+	KeySetIterator operator-(const difference_type& pos) const { return KeySetIterator(ks, current - pos); }
+	const cursor_t& base() const { return current; }
+
+private:
+	KeySet const & ks;
+	cursor_t current;
+};
+
+inline KeySet::iterator KeySet::begin()
+{
+	return KeySet::iterator(*this, 0);
+}
+
+inline KeySet::const_iterator KeySet::begin() const
+{
+	return KeySet::const_iterator(*this, 0);
+}
+
+inline KeySet::iterator KeySet::end()
+{
+	return KeySet::iterator(*this, size());
+}
+
+inline KeySet::const_iterator KeySet::end() const
+{
+	return KeySet::const_iterator(*this, size());
+}
+
+inline KeySet::reverse_iterator KeySet::rbegin()
+{
+	return KeySet::reverse_iterator(end());
+}
+
+inline KeySet::const_reverse_iterator KeySet::rbegin() const
+{
+	return KeySet::const_reverse_iterator(end());
+}
+
+inline KeySet::reverse_iterator KeySet::rend()
+{
+	return KeySet::reverse_iterator(begin());
+}
+
+inline KeySet::const_reverse_iterator KeySet::rend() const
+{
+	return KeySet::const_reverse_iterator(begin());
+}
+
+#if __cplusplus > 199711L
+inline KeySet::const_iterator KeySet::cbegin() const noexcept
+{
+	return KeySet::const_iterator(*this, 0);
+}
+
+inline KeySet::const_iterator KeySet::cend() const noexcept
+{
+	return KeySet::const_iterator(*this, size());
+}
+
+inline KeySet::const_reverse_iterator KeySet::crbegin() const noexcept
+{
+	return KeySet::const_reverse_iterator(end());
+}
+
+inline KeySet::const_reverse_iterator KeySet::crend() const noexcept
+{
+	return KeySet::const_reverse_iterator(begin());
+}
+
+#endif
+
+
+// Forward iterator requirements
+inline bool operator==(const KeySetIterator& __lhs, const KeySetIterator& __rhs)
+{ return __lhs.base() == __rhs.base(); }
+
+inline bool operator!=(const KeySetIterator& __lhs, const KeySetIterator& __rhs)
+{ return __lhs.base() != __rhs.base(); }
+
+// Random access iterator requirements
+inline bool operator<(const KeySetIterator& __lhs, const KeySetIterator& __rhs)
+{ return __lhs.base() < __rhs.base(); }
+
+inline bool operator>(const KeySetIterator& __lhs, const KeySetIterator& __rhs)
+{ return __lhs.base() > __rhs.base(); }
+
+inline bool operator<=(const KeySetIterator& __lhs, const KeySetIterator& __rhs)
+{ return __lhs.base() <= __rhs.base(); }
+
+inline bool operator>=(const KeySetIterator& __lhs, const KeySetIterator& __rhs)
+{ return __lhs.base() >= __rhs.base(); }
+
+#if __cplusplus > 199711L
+// DR 685.
+inline auto operator-(const KeySetIterator& __lhs, const KeySetIterator& __rhs)
+	-> decltype(__lhs.base() - __rhs.base())
+#else
+inline typename KeySetIterator::difference_type
+	operator-(const KeySetIterator& __lhs,
+	const KeySetIterator& __rhs)
+#endif
+{ return __lhs.base() - __rhs.base(); }
+
+inline KeySetIterator
+	operator+(typename KeySetIterator::difference_type
+	__n, const KeySetIterator& __i)
+{ return KeySetIterator(__i.getKeySet(), __i.base() + __n); }
+
+
 
 
 /**
