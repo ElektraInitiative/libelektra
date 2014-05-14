@@ -937,7 +937,6 @@ inline mode_t Key::getMeta(const std::string &name) const
  * also change all other int types.
  *
  * @throw KeyBadMeta if meta data could not be parsed
- * @throw KeyNoSuchMeta if a value was requested, but none is available.
  *
  * @note No exception will be thrown if a const Key or char* is requested,
  * but don't forget the const: getMeta<const ckdb::Key*>,
@@ -954,7 +953,7 @@ inline T Key::getMeta(const std::string &metaName) const
 {
 	T x;
 	std::string str;
-	const char *v = 
+	const char *v =
 		static_cast<const char*>(
 			ckdb::keyValue(
 				ckdb::keyGetMeta(key, metaName.c_str())
@@ -962,7 +961,7 @@ inline T Key::getMeta(const std::string &metaName) const
 			);
 	if (!v)
 	{
-		throw KeyNoSuchMeta();
+		throw KeyBadMeta();
 	}
 	str = std::string(v);
 	std::istringstream ist(str);
@@ -985,10 +984,6 @@ template<>
 inline const Key Key::getMeta(const std::string &name) const
 {
 	const ckdb::Key *k = ckdb::keyGetMeta(key, name.c_str());
-	if (!k)
-	{
-		throw KeyNoSuchMeta();
-	}
 	return Key(const_cast<ckdb::Key*>(k));
 }
 
@@ -1007,7 +1002,7 @@ template<>
 inline std::string Key::getMeta(const std::string &name) const
 {
 	std::string str;
-	const char *v = 
+	const char *v =
 		static_cast<const char*>(
 			ckdb::keyValue(
 				ckdb::keyGetMeta(key, name.c_str())
@@ -1015,7 +1010,7 @@ inline std::string Key::getMeta(const std::string &name) const
 			);
 	if (!v)
 	{
-		throw KeyNoSuchMeta();
+		throw KeyBadMeta();
 	}
 	str = std::string(v);
 	return str;

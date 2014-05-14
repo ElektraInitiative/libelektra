@@ -80,15 +80,6 @@ public:
 	}
 };
 
-class KeyNoSuchMeta : public KeyMetaException
-{
-public:
-	virtual const char* what() const throw()
-	{
-		return "User Exception: No such meta data";
-	}
-};
-
 class KeyBadMeta : public KeyMetaException
 {
 public:

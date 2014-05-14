@@ -13,7 +13,7 @@ void test_basic()
 	try {
 		test.getMeta<mode_t>("mode");
 		succeed_if (0, "missing mode should raise exception");
-	} catch (KeyNoSuchMeta const &e) {
+	} catch (KeyBadMeta const &e) {
 		succeed_if (1, "exception raised successfully");
 	}
 
@@ -53,7 +53,7 @@ void test_basic()
 	try {
 		test.getMeta<int>("not available");
 		succeed_if (0, "exception did not raise");
-	} catch (KeyNoSuchMeta const& e)
+	} catch (KeyBadMeta const& e)
 	{
 		succeed_if (1, "no such meta data");
 	}
@@ -61,7 +61,7 @@ void test_basic()
 	try {
 		test.getMeta<std::string>("not available");
 		succeed_if (0, "exception did not raise");
-	} catch (KeyNoSuchMeta const& e)
+	} catch (KeyBadMeta const& e)
 	{
 		succeed_if (1, "no such meta data");
 	}
