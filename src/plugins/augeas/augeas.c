@@ -20,7 +20,7 @@
 #define AUGEAS_CONTENT_ROOT "/raw/content"
 #define AUGEAS_TREE_ROOT "/raw/tree"
 
-static void elektraAugeasSetMeta(Key *key, int order)
+static void setKeyOrder(Key *key, int order)
 {
 	char *buffer;
 	asprintf (&buffer, "%d", order);
@@ -99,8 +99,9 @@ static int saveTree(augeas* augeasHandle, Key** keyArray, size_t arraySize,
 	return ret;
 }
 
+// TODO: using the global state currentOrder is not very clean
 static int convertToKeys(augeas *handle, KeySet *ks, const Key *rootKey,
-		const char *treePath, int baseOrder)
+		const char *treePath, int *currentOrder)
 {
 	char *matchPath;
 	asprintf (&matchPath, "%s/*", treePath);
@@ -128,14 +129,15 @@ static int convertToKeys(augeas *handle, KeySet *ks, const Key *rootKey,
 		keySetString (key, value);
 		char *baseName = (strrchr (curr, '/') + 1);
 		keyAddBaseName (key, baseName);
-		elektraAugeasSetMeta (key, baseOrder + i);
+		(*currentOrder)++;
+		setKeyOrder (key, *currentOrder);
 		result = ksAppendKey (ks, key);
 
 		if (result < 0) break;
 
 		/* handle the subtree */
 		// TODO: fix static order
-		result = convertToKeys (handle, ks, key, curr, baseOrder * 10);
+		result = convertToKeys (handle, ks, key, curr, currentOrder);
 
 		if (result < 0) break;
 
@@ -288,7 +290,8 @@ int elektraAugeasGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	Key *key = keyDup (parentKey);
 	ksAppendKey (append, key);
 
-	ret = convertToKeys (augeasHandle, append, key, AUGEAS_TREE_ROOT, 0);
+	int order = 1;
+	ret = convertToKeys (augeasHandle, append, key, AUGEAS_TREE_ROOT, &order);
 	if (ret < 0)
 	{
 		ksDel (append);
