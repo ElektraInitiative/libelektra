@@ -42,7 +42,7 @@ public:
 
 	KeySet& operator=(KeySet const& other);
 
-	size_t size() const;
+	ssize_t size() const;
 
 	ckdb::KeySet* dup() const;
 
@@ -89,7 +89,7 @@ public:
 	const_reverse_iterator crend() const noexcept;
 #endif
 private:
-	ckdb::KeySet * ks; ///< holds an elektra keyset
+	ckdb::KeySet *ks; ///< holds an elektra keyset
 };
 
 class KeySetIterator
@@ -377,7 +377,7 @@ inline KeySet& KeySet::operator=(KeySet const& other)
  *
  * @return the number of keys in the keyset
  */
-inline size_t KeySet::size () const
+inline ssize_t KeySet::size () const
 {
 	return ckdb::ksGetSize(ks);
 }

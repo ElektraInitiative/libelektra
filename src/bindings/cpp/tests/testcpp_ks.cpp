@@ -122,7 +122,7 @@ void test_iterate()
 	succeed_if (!null, "null key");
 
 	ks3.rewind();
-	for (size_t i=0; i<ks3.size(); i++)
+	for (ssize_t i=0; i<ks3.size(); i++)
 	{
 		Key k = ks3.next();
 		char str[] = "user/key3/X";
@@ -189,7 +189,7 @@ void test_cursor()
 	cursor_t cursorTest = ks3.getCursor();
 
 	ks3.rewind();
-	for (size_t i=0; i<ks3.size(); i++)
+	for (ssize_t i=0; i<ks3.size(); i++)
 	{
 		Key k = ks3.next();
 		if (i==0) cursorTest = ks3.getCursor();
@@ -309,7 +309,7 @@ void test_append()
 	ks5.append(v[2]=Key("user/s/3", KEY_END));
 
 	ks5.rewind();
-	for (size_t i=0; i<ks5.size(); ++i)
+	for (ssize_t i=0; i<ks5.size(); ++i)
 	{
 		succeed_if (*ks5.next() == *v[i], "wrong order");
 	}
@@ -336,7 +336,7 @@ void test_per()
 		ks.append(permutation[1]);
 		ks.append(permutation[2]);
 		ks.rewind();
-		for (size_t i=0; i<ks.size(); ++i)
+		for (ssize_t i=0; i<ks.size(); ++i)
 		{
 			succeed_if (*ks.next() == *solution[i], "wrong order");
 		}
@@ -353,7 +353,7 @@ void test_per()
 		ks.append(permutation[2]);
 		ks.append(permutation[3]);
 		ks.rewind();
-		for (size_t i=0; i<ks.size(); ++i)
+		for (ssize_t i=0; i<ks.size(); ++i)
 		{
 			succeed_if (*ks.next() == *solution[i], "wrong order");
 		}
@@ -371,7 +371,7 @@ void test_per()
 		ks.append(permutation[3]);
 		ks.append(permutation[4]);
 		ks.rewind();
-		for (size_t i=0; i<ks.size(); ++i)
+		for (ssize_t i=0; i<ks.size(); ++i)
 		{
 			// note: raw pointers check the identity! It needs to be the same reference
 			succeed_if (*ks.next() == *solution[i], "wrong order");
@@ -391,7 +391,7 @@ void test_per()
 		ks.append(permutation[4]);
 		ks.append(permutation[5]);
 		ks.rewind();
-		for (size_t i=0; i<ks.size(); ++i)
+		for (ssize_t i=0; i<ks.size(); ++i)
 		{
 			succeed_if (*ks.next() == *solution[i], "wrong order");
 		}
@@ -410,7 +410,7 @@ void test_appendowner()
 	ks.append(v[2]=Key("user/s/1", KEY_OWNER, "max", KEY_END));
 
 	ks.rewind();
-	for (size_t i=0; i<ks.size(); ++i)
+	for (ssize_t i=0; i<ks.size(); ++i)
 	{
 		succeed_if (*ks.next() == *v[i], "wrong order");
 	}
@@ -433,7 +433,7 @@ void test_perowner()
 		ks.append(permutation[1]);
 		ks.append(permutation[2]);
 		ks.rewind();
-		for (size_t i=0; i<ks.size(); ++i)
+		for (ssize_t i=0; i<ks.size(); ++i)
 		{
 			succeed_if(*ks.next() == *solution[i], "wrong order");
 		}
@@ -450,7 +450,7 @@ void test_perowner()
 		ks.append(permutation[2]);
 		ks.append(permutation[3]);
 		ks.rewind();
-		for (size_t i=0; i<ks.size(); ++i)
+		for (ssize_t i=0; i<ks.size(); ++i)
 		{
 			succeed_if (*ks.next() == *solution[i], "wrong order");
 		}
@@ -468,7 +468,7 @@ void test_perowner()
 		ks.append(permutation[3]);
 		ks.append(permutation[4]);
 		ks.rewind();
-		for (size_t i=0; i<ks.size(); ++i)
+		for (ssize_t i=0; i<ks.size(); ++i)
 		{
 			succeed_if (*ks.next() == *solution[i], "wrong order");
 		}
@@ -487,7 +487,7 @@ void test_perowner()
 		ks.append(permutation[4]);
 		ks.append(permutation[5]);
 		ks.rewind();
-		for (size_t i=0; i<ks.size(); ++i)
+		for (ssize_t i=0; i<ks.size(); ++i)
 		{
 			succeed_if (*ks.next() == *solution[i], "wrong order");
 		}
@@ -755,7 +755,7 @@ void test_lookuppop()
 		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
 		KS_END);
 
-	for (size_t i=ks4.size(); i>0; i--)
+	for (ssize_t i=ks4.size(); i>0; i--)
 	{
 		char str[] = "user/key3/X";
 
@@ -774,7 +774,7 @@ void test_lookuppop()
 		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
 		KS_END);
 
-	for (size_t i=ks5.size(); i>0; i--)
+	for (ssize_t i=ks5.size(); i>0; i--)
 	{
 		char str[] = "user/key3/X";
 
