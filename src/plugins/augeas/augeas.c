@@ -25,6 +25,7 @@ static void elektraAugeasSetMeta(Key *key, int order)
 	char *buffer;
 	asprintf (&buffer, "%d", order);
 	keySetMeta (key, "order", buffer);
+	free (buffer);
 }
 
 static const char *getLensPath(Plugin *handle)
@@ -107,6 +108,7 @@ static int convertToKeys(augeas *handle, KeySet *ks, const Key *rootKey,
 	/* must be non NULL for aug_match to return matches */
 	char **matches = (char **) 1;
 	int numMatches = aug_match (handle, matchPath, &matches);
+	free (matchPath);
 
 	if (numMatches < 0) return numMatches;
 
@@ -204,6 +206,7 @@ int elektraAugeasOpen(Plugin *handle, Key *parentKey)
 		asprintf (&errormessage, "Unable to initialize augeas: %s",
 				aug_error_message (augeasHandle));
 		ELEKTRA_SET_ERROR (85, parentKey, errormessage);
+		free (errormessage);
 		return -1;
 	}
 
