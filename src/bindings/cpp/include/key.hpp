@@ -84,9 +84,13 @@ public:
 
 	inline void copy (const Key &other);
 	inline void clear ();
-	inline ckdb::Key* getKey () const;
-	inline ckdb::Key* operator* () const; // should be reference
 	inline ckdb::Key* operator->() const;
+
+	inline Key* operator->();
+
+	inline ckdb::Key* getKey () const;
+	inline ckdb::Key* operator* () const;
+
 	inline ckdb::Key* release ();
 	inline ckdb::Key* dup () const;
 	inline ~Key ();
@@ -421,7 +425,11 @@ ckdb::Key * Key::getKey () const
 }
 
 /**
+ * Is a abbreviation for getKey.
+ *
  * @copydoc getKey
+ *
+ * @see getKey()
  */
 ckdb::Key * Key::operator* () const
 {
@@ -429,11 +437,14 @@ ckdb::Key * Key::operator* () const
 }
 
 /**
- * @copydoc getKey
+ * @returns a pointer to this object
+ *
+ * Needed for KeySet iterators.
+ * @see KeySetIterator
  */
-ckdb::Key * Key::operator-> () const
+Key* Key::operator-> ()
 {
-	return key;
+	return this;
 }
 
 /**
