@@ -123,8 +123,8 @@ size_t elektraHostsFindToken (char **token, char *line)
 
 void elektraHostsSetMeta(Key *key, int order)
 {
-	char buffer[50];
-	snprintf (buffer, 50, "%d", order);
+	char buffer[MAX_ORDER_SIZE];
+	snprintf (buffer, MAX_ORDER_SIZE, "%d", order);
 	keySetMeta(key, "order", buffer);
 }
 
