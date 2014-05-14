@@ -22,8 +22,8 @@
 
 static void elektraAugeasSetMeta(Key *key, int order)
 {
-	char buffer[50];
-	snprintf (buffer, 50, "%d", order);
+	char *buffer;
+	asprintf (&buffer, "%d", order);
 	keySetMeta (key, "order", buffer);
 }
 
