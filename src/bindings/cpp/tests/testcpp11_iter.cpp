@@ -5,7 +5,7 @@
 
 void test_iterate()
 {
-	std::cout << "testing iterators" << std::endl;
+	std::cout << "testing iterate" << std::endl;
 	KeySet ks2 (5,
 		*Key ("user/key2/1", KEY_END),
 		*Key ("user/key2/2", KEY_END),
@@ -69,7 +69,7 @@ void test_iterate()
 
 void test_const_iterate()
 {
-	std::cout << "testing const iterators" << std::endl;
+	std::cout << "testing const iterate" << std::endl;
 	const KeySet ks2 (5,
 		*Key ("user/key2/1", KEY_END),
 		*Key ("user/key2/2", KEY_END),
@@ -131,6 +131,110 @@ void test_const_iterate()
 #endif
 }
 
+void test_iterator()
+{
+	std::cout << "test iterator" << std::endl;
+	KeySet ks4 (5,
+		*Key ("user/key4/1", KEY_END),
+		*Key ("user/key4/2", KEY_END),
+		*Key ("user/key4/3", KEY_VALUE, "value", KEY_END),
+		KS_END);
+
+	KeySet::iterator it = ks4.begin();
+	succeed_if(it->getName() == "user/key4/1"    , "name wrong");
+	succeed_if((*it).getName() == "user/key4/1"    , "name wrong");
+	it+=1;
+	succeed_if(it->getName() == "user/key4/2"    , "name wrong");
+	succeed_if((*it).getName() == "user/key4/2"    , "name wrong");
+	it+=1;
+	succeed_if(it->getName() == "user/key4/3"    , "name wrong");
+	succeed_if((*it).getName() == "user/key4/3"    , "name wrong");
+	it+=1;
+	succeed_if(it == ks4.end()    , "not at end");
+	it-=1;
+	succeed_if(it->getName() == "user/key4/3"    , "name wrong");
+	succeed_if((*it).getName() == "user/key4/3"    , "name wrong");
+	it-=1;
+	succeed_if(it->getName() == "user/key4/2"    , "name wrong");
+	succeed_if((*it).getName() == "user/key4/2"    , "name wrong");
+	it-=1;
+	succeed_if(it->getName() == "user/key4/1"    , "name wrong");
+	succeed_if((*it).getName() == "user/key4/1"    , "name wrong");
+	succeed_if(it == ks4.begin()    , "not at begin");
+
+
+
+	succeed_if(it->getName() == "user/key4/1"    , "name wrong");
+	succeed_if((*it).getName() == "user/key4/1"    , "name wrong");
+	it++;
+	succeed_if(it->getName() == "user/key4/2"    , "name wrong");
+	succeed_if((*it).getName() == "user/key4/2"    , "name wrong");
+	it++;
+	succeed_if(it->getName() == "user/key4/3"    , "name wrong");
+	succeed_if((*it).getName() == "user/key4/3"    , "name wrong");
+	it++;
+	succeed_if(it == ks4.end()    , "not at end");
+	it--;
+	succeed_if(it->getName() == "user/key4/3"    , "name wrong");
+	succeed_if((*it).getName() == "user/key4/3"    , "name wrong");
+	it--;
+	succeed_if(it->getName() == "user/key4/2"    , "name wrong");
+	succeed_if((*it).getName() == "user/key4/2"    , "name wrong");
+	it--;
+}
+
+void test_const_iterator()
+{
+	std::cout << "test const iterator" << std::endl;
+	const KeySet ks4 (5,
+		*Key ("user/key4/1", KEY_END),
+		*Key ("user/key4/2", KEY_END),
+		*Key ("user/key4/3", KEY_VALUE, "value", KEY_END),
+		KS_END);
+
+	KeySet::iterator it = ks4.begin();
+	succeed_if(it->getName() == "user/key4/1"    , "name wrong");
+	succeed_if((*it).getName() == "user/key4/1"    , "name wrong");
+	it+=1;
+	succeed_if(it->getName() == "user/key4/2"    , "name wrong");
+	succeed_if((*it).getName() == "user/key4/2"    , "name wrong");
+	it+=1;
+	succeed_if(it->getName() == "user/key4/3"    , "name wrong");
+	succeed_if((*it).getName() == "user/key4/3"    , "name wrong");
+	it+=1;
+	succeed_if(it == ks4.end()    , "not at end");
+	it-=1;
+	succeed_if(it->getName() == "user/key4/3"    , "name wrong");
+	succeed_if((*it).getName() == "user/key4/3"    , "name wrong");
+	it-=1;
+	succeed_if(it->getName() == "user/key4/2"    , "name wrong");
+	succeed_if((*it).getName() == "user/key4/2"    , "name wrong");
+	it-=1;
+	succeed_if(it->getName() == "user/key4/1"    , "name wrong");
+	succeed_if((*it).getName() == "user/key4/1"    , "name wrong");
+	succeed_if(it == ks4.begin()    , "not at begin");
+
+
+
+	succeed_if(it->getName() == "user/key4/1"    , "name wrong");
+	succeed_if((*it).getName() == "user/key4/1"    , "name wrong");
+	it++;
+	succeed_if(it->getName() == "user/key4/2"    , "name wrong");
+	succeed_if((*it).getName() == "user/key4/2"    , "name wrong");
+	it++;
+	succeed_if(it->getName() == "user/key4/3"    , "name wrong");
+	succeed_if((*it).getName() == "user/key4/3"    , "name wrong");
+	it++;
+	succeed_if(it == ks4.end()    , "not at end");
+	it--;
+	succeed_if(it->getName() == "user/key4/3"    , "name wrong");
+	succeed_if((*it).getName() == "user/key4/3"    , "name wrong");
+	it--;
+	succeed_if(it->getName() == "user/key4/2"    , "name wrong");
+	succeed_if((*it).getName() == "user/key4/2"    , "name wrong");
+	it--;
+}
+
 // TODO: should be in example:
 void test_for_loop()
 {
@@ -178,6 +282,8 @@ int main()
 
 	test_iterate();
 	test_const_iterate();
+	test_iterator();
+	test_const_iterator();
 	// test_for_loop();
 
 	cout << endl;
