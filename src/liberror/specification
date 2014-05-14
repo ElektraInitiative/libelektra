@@ -493,3 +493,19 @@ description:Read only plugin, kdbSet not supported
 severity:error
 ingroup:kdb
 
+number: 85
+description:an Augeas error occurred
+severity:error
+ingroup:plugin
+module:storage
+
+number: 86
+description:no Augeas lens was configured
+severity:error
+ingroup:plugin
+module:storage
+
+number: 87
+description:memory allocation error
+severity:error
+ingroup:plugin
