@@ -18,7 +18,7 @@
  * 
  * @see ksLookupByName(), ksLookupByString(), keyCompare() for other types of
  * 	lookups.
- * @see kdbGetByName(), ksSort()
+ * @see kdbGetByName()
  * 
  * @par Example:
  * @code

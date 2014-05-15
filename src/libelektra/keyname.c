@@ -682,8 +682,8 @@ ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize)
  *
  * When baseName is 0 or "" nothing will happen and the size of the name is returned.
  *
- * @warning You should not change a keys name once it belongs to a keyset.
- * See ksSort() for more information.
+ * @warning You should not change a keys name once it belongs to a
+ *          keyset because it would destroy the order.
  *
  * TODO: does not recognice .. and . in the string!
  *
@@ -736,8 +736,8 @@ ssize_t keyAddBaseName(Key *key, const char *baseName)
  * If @p baseName is empty or NULL, the resulting key name will
  * be @c "system/dir1/dir2".
  *
- * @warning You should not change a keys name once it belongs to a keyset.
- * See ksSort() for more information.
+ * @warning You should not change a keys name once it belongs to a
+ *          keyset because it would destroy the order.
  *
  * TODO: does not work with .. and .
  *
