@@ -33,11 +33,27 @@ void test_readhosts()
 
 	Key *key = ksLookupByName (ks, "user/tests/augeas-hosts/1/ipaddr", 0);
 	exit_if_fail(key, "ip address of localhost not found");
-	succeed_if(strcmp ("127.0.0.1", keyValue (key)) == 0, "address not correct");
+	succeed_if(strcmp ("127.0.0.1", keyValue (key)) == 0, "address of localhost not correct");
 
 	key = ksLookupByName (ks, "user/tests/augeas-hosts/1/canonical", 0);
 	exit_if_fail(key, "name of localhost not found");
-	succeed_if(strcmp ("localhost", keyValue (key)) == 0, "name not correct");
+	succeed_if(strcmp ("localhost", keyValue (key)) == 0, "name of localhost not correct");
+
+	key = ksLookupByName (ks, "user/tests/augeas-hosts/2/ipaddr", 0);
+	exit_if_fail(key, "ip address of host1 not found");
+	succeed_if(strcmp ("192.168.0.1", keyValue (key)) == 0, "address of host1 not correct");
+
+	key = ksLookupByName (ks, "user/tests/augeas-hosts/2/canonical", 0);
+	exit_if_fail (key, "name of host1 not found");
+	succeed_if(strcmp ("host1", keyValue (key)) == 0, "name of host1 not correct");
+
+	key = ksLookupByName (ks, "user/tests/augeas-hosts/2/alias[1]", 0);
+	exit_if_fail (key, "alias1 of host1 not found");
+	succeed_if(strcmp ("alias1", keyValue (key)) == 0, "name of alias1 of host1 not correct");
+
+	key = ksLookupByName (ks, "user/tests/augeas-hosts/2/alias[2]", 0);
+	exit_if_fail (key, "alias2 of host1 not found");
+	succeed_if(strcmp ("alias2", keyValue (key)) == 0, "name of alias2 of host1 not correct");
 
 	ksDel (ks);
 
