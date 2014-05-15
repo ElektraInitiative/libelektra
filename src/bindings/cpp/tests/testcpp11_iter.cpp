@@ -236,6 +236,7 @@ void test_const_iterator()
 }
 
 // TODO: should be in example:
+#if __cplusplus > 199711L
 void test_for_loop()
 {
 	KeySet ks3 (5,
@@ -273,6 +274,7 @@ void test_for_loop()
 		std::cout << k.getName() << std::endl;
 	}
 }
+#endif
 
 
 int main()
