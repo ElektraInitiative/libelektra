@@ -204,7 +204,7 @@ Key *ksTail(const KeySet *ks);
 
 cursor_t ksGetCursor(const KeySet *ks);
 int ksSetCursor(KeySet *ks, cursor_t cursor);
-Key *ksGetAtCursor(KeySet *ks, cursor_t cursor);
+Key *ksAtCursor(KeySet *ks, cursor_t cursor);
 
 Key *ksLookup(KeySet *ks, Key *k, option_t options);
 Key *ksLookupByName(KeySet *ks, const char *name, option_t options);

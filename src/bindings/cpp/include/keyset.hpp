@@ -116,8 +116,8 @@ public:
 	KeySetIterator(KeySet const & k, const cursor_t c) : ks(k), current(c) {};
 	// conversion to const iterator?
 
-	Key get() const{return Key(ckdb::ksGetAtCursor(ks.getKeySet(), current));}
-	Key get(cursor_t pos) const {return Key(ckdb::ksGetAtCursor(ks.getKeySet(), pos));}
+	Key get() const{return Key(ckdb::ksAtCursor(ks.getKeySet(), current));}
+	Key get(cursor_t pos) const {return Key(ckdb::ksAtCursor(ks.getKeySet(), pos));}
 
 	KeySet const & getKeySet() const {return ks;}
 
@@ -201,8 +201,8 @@ public:
 	KeySetReverseIterator(KeySet const & k, const cursor_t c) : ks(k), current(c) {};
 	// conversion to const iterator?
 
-	Key get() const{return Key(ckdb::ksGetAtCursor(ks.getKeySet(), current));}
-	Key get(cursor_t pos) const {return Key(ckdb::ksGetAtCursor(ks.getKeySet(), pos));}
+	Key get() const{return Key(ckdb::ksAtCursor(ks.getKeySet(), current));}
+	Key get(cursor_t pos) const {return Key(ckdb::ksAtCursor(ks.getKeySet(), pos));}
 
 	KeySet const & getKeySet() const {return ks;}
 

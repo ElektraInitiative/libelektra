@@ -9,6 +9,14 @@ the metadata comment.
 Additionally the kdb tool has an improved error message on invalid
 filenames.
 
+Added ksAtCursor()
+
+ksSort was wrongly in the header file, even though it was not available
+
+New C++(11) iterators allow to write
+Internally they use the new API function ksAtCursor()
+
+
 
 ---------------
 
