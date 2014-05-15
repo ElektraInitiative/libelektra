@@ -170,14 +170,14 @@ inline bool operator>=(const KeySetIterator& lhs, const KeySetIterator& rhs)
 inline auto operator-(const KeySetIterator& lhs, const KeySetIterator& rhs)
 	-> decltype(lhs.base() - rhs.base())
 #else
-inline typename KeySetIterator::difference_type
+inline KeySetIterator::difference_type
 operator-(const KeySetIterator& lhs,
 	const KeySetIterator& rhs)
 #endif
 { return lhs.base() - rhs.base(); }
 
 inline KeySetIterator
-operator+(typename KeySetIterator::difference_type n, const KeySetIterator& i)
+operator+(KeySetIterator::difference_type n, const KeySetIterator& i)
 { return KeySetIterator(i.getKeySet(), i.base() + n); }
 
 
@@ -256,14 +256,14 @@ inline bool operator>=(const KeySetReverseIterator& lhs, const KeySetReverseIter
 inline auto operator-(const KeySetReverseIterator& lhs, const KeySetReverseIterator& rhs)
 	-> decltype(lhs.base() - rhs.base())
 #else
-inline typename KeySetReverseIterator::difference_type
+inline KeySetReverseIterator::difference_type
 operator-(const KeySetReverseIterator& lhs,
 	const KeySetReverseIterator& rhs)
 #endif
 { return lhs.base() - rhs.base(); }
 
 inline KeySetReverseIterator
-operator+(typename KeySetReverseIterator::difference_type n, const KeySetReverseIterator& i)
+operator+(KeySetReverseIterator::difference_type n, const KeySetReverseIterator& i)
 { return KeySetReverseIterator(i.getKeySet(), i.base() + n); }
 
 
