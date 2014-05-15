@@ -41,6 +41,9 @@ if(LIBAUGEAS_FOUND AND LIBXML2_FOUND)
 	  install (TARGETS ${PLUGIN_NAME}
 	    DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})
 	
+	  configure_file (hosts ${CMAKE_CURRENT_BINARY_DIR}/hosts)
+	  configure_file (hosts-big ${CMAKE_CURRENT_BINARY_DIR}/hosts-big)
+	  	
 	  add_plugintest(augeas)
   else (HAS_LIBAUGEAS16)
     remove_plugin (augeas "symbols aug_text_store and aug_text_retrieve not found. Make sure you have libaugeas 0.16 or higher")
