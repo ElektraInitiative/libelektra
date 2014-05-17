@@ -21,8 +21,20 @@ struct FileNotValidException : public BackendCheckException
 {
 	virtual const char* what() const throw()
 	{
-		return  "The path you entered does not present a valid file!\n"
-			"Try to add another path instead.";
+		return  "The path/mountpoint combination does not work this way.\n"
+			"Try to add another path or mountpoint instead.\n"
+			"\n"
+			"Filenames for cascading and user mountpoints\n"
+			"are not allowed to be absolute (starting with /),\n"
+			"because user configuration files are by definition\n"
+			"different files per-user.\n"
+			"\n"
+			"If you want to mount an absolute filename, mount\n"
+			"it into system/ regardless if it is /etc or somewhere\n"
+			"else. Note that the file permissions will apply, so\n"
+			"it might be possible for non-root to modify this path\n"
+			"of the system-hierarchy.\n"
+			;
 	}
 };
 
