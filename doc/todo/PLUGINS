@@ -135,8 +135,9 @@ C++: (FINISH cppplugin)
 xpath plugin:
 	on an xml file with an mapping from (reduced) xpath<->elektra keys
 
-C serialization
+C/C++ serialization
 	(ksNew(keyNew()))
+	reading with llvm?
 
 using libraries:
 	libconfig
