@@ -20,7 +20,9 @@ class KeyException : public Exception
 public:
 	virtual const char* what() const throw()
 	{
-		return "Exception thrown by a Key, typically because you called a function on a null key";
+		return  "Exception thrown by a Key, typically "
+			"because you called a method on a null key. "
+			"Make sure to check this with !key first";
 	}
 };
 
@@ -29,7 +31,8 @@ class KeyTypeMismatch: public KeyException
 public:
 	virtual const char* what() const throw()
 	{
-		return "Binary or String key mismatch";
+		return  "Binary/String key mismatch, use proper "
+			"getString()/getBinary() or use getValue() to get both.";
 	}
 };
 
@@ -38,7 +41,7 @@ class KeyInvalidName : public KeyException
 public:
 	virtual const char* what() const throw()
 	{
-		return "Invalid Keyname";
+		return "Invalid Keyname: keyname needs to start with user/ or system/";
 	}
 };
 
@@ -56,7 +59,8 @@ class KeyBadMeta : public KeyMetaException
 public:
 	virtual const char* what() const throw()
 	{
-		return "Could not convert bad meta data";
+		return  "Could not convert meta data to requested type, "
+			"use .get<const Key> if it may be empty.";
 	}
 };
 
