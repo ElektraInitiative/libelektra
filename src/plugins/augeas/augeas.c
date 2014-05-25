@@ -46,6 +46,7 @@ static int loadFile(FILE *fh, char **content)
 	if (*content == 0) return -1;
 
 	fread (*content, sizeof(char), fileSize, fh);
+	// REVIEW TODO: call feof(3) or ferror(3) to check for error
 
 	return 0;
 }
@@ -69,6 +70,8 @@ static int saveFile(augeas* augeasHandle, FILE* fh)
 	if (value)
 	{
 		ret = fwrite (value, sizeof(char), strlen (value), fh);
+		// REVIEW TODO: call feof(3) or ferror(3) to check for error,
+		// even on error it could be > 1
 	}
 
 	return ret;
@@ -227,6 +230,7 @@ int elektraAugeasClose(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 
 int elektraAugeasGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
+	// REVIEW TODO: method too long
 	int errnosave = errno;
 	int ret = 0;
 
