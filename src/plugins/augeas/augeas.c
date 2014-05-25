@@ -90,7 +90,7 @@ static int saveTree(augeas* augeasHandle, Key** keyArray, size_t arraySize,
 	{
 		Key *key = keyArray[i];
 		char *nodeName;
-		asprintf (&nodeName, AUGEAS_TREE_ROOT "/%s",
+		asprintf (&nodeName, AUGEAS_TREE_ROOT "%s",
 				(keyName (key) + prefixSize));
 		aug_set (augeasHandle, nodeName, keyString (key));
 		free (nodeName);
@@ -313,7 +313,7 @@ int elektraAugeasSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	int errnosave = errno;
 	augeas *augeasHandle = elektraPluginGetData (handle);
 
-	size_t prefixSize = keyGetNameSize (parentKey);
+	size_t prefixSize = keyGetNameSize (parentKey) - 1;
 	const char *lensPath = getLensPath (handle);
 
 	if (!lensPath)
