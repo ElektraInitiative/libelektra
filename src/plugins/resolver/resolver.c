@@ -66,6 +66,14 @@ void resolverInit (resolverHandle *p, const char *path)
 	p->path = path;
 }
 
+static resolverHandle * elektraGetResolverHandle(Plugin *handle, Key *parentKey)
+{
+	resolverHandles *pks = elektraPluginGetData(handle);
+	if (!strncmp(keyName(parentKey), "user", 4)) return &pks->user;
+	else return &pks->system;
+}
+
+
 void resolverClose (resolverHandle *p)
 {
 	free (p->filename); p->filename = 0;
@@ -176,10 +184,7 @@ int elektraResolverClose(Plugin *handle, Key *errorKey ELEKTRA_UNUSED)
 
 int elektraResolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
-	resolverHandles *pks = elektraPluginGetData(handle);
-	resolverHandle *pk = 0;
-	if (!strncmp(keyName(parentKey), "user", 4)) pk = &pks->user;
-	else pk = &pks->system;
+	resolverHandle *pk = elektraGetResolverHandle(handle, parentKey);
 
 	// might be useless, will not harm
 	keySetString(parentKey, pk->filename);
@@ -502,10 +507,7 @@ int elektraSetCommit(resolverHandle *pk, Key *parentKey)
 
 int elektraResolverSet(Plugin *handle, KeySet *returned ELEKTRA_UNUSED, Key *parentKey)
 {
-	resolverHandles *pks = elektraPluginGetData(handle);
-	resolverHandle *pk = 0;
-	if (!strncmp(keyName(parentKey), "user", 4)) pk = &pks->user;
-	else pk = &pks->system;
+	resolverHandle *pk = elektraGetResolverHandle(handle, parentKey);
 
 	// might be useless, will not harm
 	keySetString(parentKey, pk->tempfile);
@@ -543,7 +545,7 @@ int elektraResolverSet(Plugin *handle, KeySet *returned ELEKTRA_UNUSED, Key *par
 int elektraResolverError(Plugin *handle, KeySet *returned ELEKTRA_UNUSED, Key *parentKey)
 {
 	int errnoSave = errno;
-	resolverHandle *pk = elektraPluginGetData(handle);
+	resolverHandle *pk = elektraGetResolverHandle(handle, parentKey);
 
 	if (unlink (pk->tempfile) == -1)
 	{
