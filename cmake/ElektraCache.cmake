@@ -206,6 +206,7 @@ endif (BUILD_TESTING)
 
 option (BUILD_SWIG "Enable SWIG generated bindings" OFF)
 if (BUILD_SWIG)
+	option (BUILD_SWIG_PYTHON "Enable the SWIG bindings for Python" ON)
 endif (BUILD_SWIG)
 
 #
