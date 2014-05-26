@@ -59,8 +59,8 @@ class KeyBadMeta : public KeyMetaException
 public:
 	virtual const char* what() const throw()
 	{
-		return  "Could not convert meta data to requested type, "
-			"use .get<const Key> if it may be empty.";
+		return  "Could not convert meta data to requested type."
+			"use getMeta<const Key> or getMeta<std::string>.";
 	}
 };
 

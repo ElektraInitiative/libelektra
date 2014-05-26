@@ -154,6 +154,7 @@ public:
 
 
 	// meta data
+	inline bool hasMeta(const std::string &metaName) const;
 
 	template <class T>
 	inline T getMeta(const std::string &metaName) const;
@@ -927,9 +928,9 @@ inline ssize_t Key::setBinary(const void *newBinary, size_t dataSize)
  * You can specify your own template specialisation:
  * @code
 template<>
-inline mode_t Key::getMeta(const std::string &name) const
+inline yourtype Key::getMeta(const std::string &name) const
 {
-	mode_t x;
+	yourtype x;
 	std::string str;
 	str = std::string(
 		static_cast<const char*>(
@@ -938,32 +939,27 @@ inline mode_t Key::getMeta(const std::string &name) const
 				)
 			)
 		);
-	std::istringstream ist(str);
-	ist >> std::oct >> x;	// convert string to type
-	return x;
+	return yourconversion(str);
 }
  * @endcode
- *
- * @note Because mode_t is in fact an int, this would
- * also change all other int types.
  *
  * @throw KeyBadMeta if meta data could not be parsed
  *
  * @note No exception will be thrown if a const Key or char* is requested,
- * but don't forget the const: getMeta<const ckdb::Key*>,
- * otherwise you will get an obfuscated compiler error.
+ * but don't forget the const: getMeta<const Key>,
+ * otherwise you will get an compiler error.
  *
- * - char* is null if meta data is not available
- * - const Key is null (evaluate to false) if no meta data is
- *   available
+ * If no meta is available:
+ * - char* is null
+ * - const Key is null (evaluate to false)
+ * - otherwise the default constructed type will be returned
+ * @see hasMeta
  *
  * @see setMeta(), copyMeta(), copyAllMeta()
  */
 template <class T>
 inline T Key::getMeta(const std::string &metaName) const
 {
-	T x;
-	std::string str;
 	const char *v =
 		static_cast<const char*>(
 			ckdb::keyValue(
@@ -972,16 +968,35 @@ inline T Key::getMeta(const std::string &metaName) const
 			);
 	if (!v)
 	{
-		throw KeyBadMeta();
+		return T();
 	}
-	str = std::string(v);
+	std::string str(v);
 	std::istringstream ist(str);
+	T x;
 	ist >> x;	// convert string to type
 	if (ist.fail())
 	{
 		throw KeyBadMeta();
 	}
 	return x;
+}
+
+
+/**
+ * @retval true if there is a metadata with given name
+ * @retval false if no such metadata exists
+ *
+ *@see getMeta()
+ */
+inline bool Key::hasMeta(const std::string &metaName) const
+{
+	const char *v =
+		static_cast<const char*>(
+			ckdb::keyValue(
+				ckdb::keyGetMeta(key, metaName.c_str())
+				)
+			);
+	return v;
 }
 
 template<>
@@ -1012,7 +1027,6 @@ inline const char* Key::getMeta(const std::string &name) const
 template<>
 inline std::string Key::getMeta(const std::string &name) const
 {
-	std::string str;
 	const char *v =
 		static_cast<const char*>(
 			ckdb::keyValue(
@@ -1021,8 +1035,9 @@ inline std::string Key::getMeta(const std::string &name) const
 			);
 	if (!v)
 	{
-		throw KeyBadMeta();
+		return std::string();
 	}
+	std::string str;
 	str = std::string(v);
 	return str;
 }

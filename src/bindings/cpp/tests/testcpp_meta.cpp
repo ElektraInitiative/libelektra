@@ -10,16 +10,12 @@ void test_basic()
 	cout << "testing metainfo" << endl;
 	Key test;
 
-	try {
-		test.getMeta<mode_t>("mode");
-		succeed_if (0, "missing mode should raise exception");
-	} catch (KeyBadMeta const &e) {
-		succeed_if (1, "exception raised successfully");
-	}
+	succeed_if (test.hasMeta("mode") == false, "has meta?");
+	succeed_if (test.getMeta<mode_t>("mode") == 0, "not properly default constructed");
 
 	test.setMeta<mode_t>("mode", 0775);
+	succeed_if (test.hasMeta("mode") == true, "has not meta even though set?");
 
-	//note that mode is not octal!
 	succeed_if (test.getMeta<mode_t>("mode") == 0775, "not correct default mode for dir");
 
 	test.setMeta<int>("myint", 333);
@@ -50,16 +46,14 @@ void test_basic()
 	const char * nstr = test.getMeta<const char*>("not available");
 	succeed_if (nstr == 0, "did not get null pointer on not available meta data");
 
-	try {
-		test.getMeta<int>("not available");
-		succeed_if (0, "exception did not raise");
-	} catch (KeyBadMeta const& e)
-	{
-		succeed_if (1, "no such meta data");
-	}
+	succeed_if (test.getMeta<int>("not available") == 0, "not default constructed");
+	succeed_if (test.getMeta<std::string>("not available") == "", "not default constructed");
+
+	test.setMeta<std::string>("wrong", "not an int");
 
 	try {
-		test.getMeta<std::string>("not available");
+		succeed_if (test.hasMeta("wrong") == true, "meta is here");
+		test.getMeta<int>("wrong");
 		succeed_if (0, "exception did not raise");
 	} catch (KeyBadMeta const& e)
 	{
@@ -83,12 +77,6 @@ void test_iter()
 
 	Key end = static_cast<ckdb::Key*>(0); // key = 0
 	succeed_if (!end, "key is a null key");
-
-	k.rewindMeta();
-	while (meta = k.nextMeta())
-	{
-		// cout << meta.getName() << " " << meta.getString() << endl;
-	}
 
 	int count = 0;
 	k.rewindMeta();
@@ -127,13 +115,6 @@ void test_copy()
 	k.setMeta<int>("a", 420);
 
 	succeed_if (k.getMeta<int>("a") == 420, "could not get value set before");
-	try {
-		c.getMeta<int>("a");
-		succeed_if (0, "exception did not raise");
-	} catch (KeyBadMeta const& e)
-	{
-		succeed_if (1, "no such meta data");
-	}
 
 	c.copyMeta(k, "a");
 	succeed_if (c.getMeta<int>("a") == 420, "could not get value copied before");
@@ -186,15 +167,8 @@ void test_string()
 	succeed_if (m, "could not get meta key");
 	succeed_if (m.getString()  == "a meta value", "could not get meta string");
 
-	try
-	{
-		Key m1 = k.getMeta<const Key> ("x");
-		succeed_if (!m1, "could not get meta key");
-		succeed_if (m1.getKey() == 0, "key should be 0");
-		succeed_if (m1.getString()  == "", "could not get meta string");
-	}
-	catch (...)
-	{}
+	Key m1 = k.getMeta<const Key> ("x");
+	succeed_if (!m1, "got not existing meta key");
 }
 
 int main()
