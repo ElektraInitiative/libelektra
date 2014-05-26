@@ -69,7 +69,9 @@ public:
 
 	Key lookup (const Key &k, const option_t options = KDB_O_NONE) const;
 	Key lookup (std::string const & name, const option_t options = KDB_O_NONE) const;
+	Key at (cursor_t pos) const;
 
+#ifndef WITHOUT_KEYSET_ITERATOR
 	typedef KeySetIterator iterator;
 	typedef KeySetIterator const_iterator;
 	typedef KeySetReverseIterator reverse_iterator;
@@ -89,10 +91,14 @@ public:
 	const_reverse_iterator crbegin() const noexcept;
 	const_reverse_iterator crend() const noexcept;
 #endif
+#endif //WITHOUT_KEYSET_ITERATOR
+
 private:
 	ckdb::KeySet *ks; ///< holds an elektra keyset
 };
 
+
+#ifndef WITHOUT_KEYSET_ITERATOR
 /**
  * For C++ forward Iteration over KeySets.
  * (External Iterator)
@@ -116,14 +122,14 @@ public:
 	KeySetIterator(KeySet const & k, const cursor_t c) : ks(k), current(c) {};
 	// conversion to const iterator?
 
-	Key get() const{return Key(ckdb::ksAtCursor(ks.getKeySet(), current));}
-	Key get(cursor_t pos) const {return Key(ckdb::ksAtCursor(ks.getKeySet(), pos));}
+	Key get() const { return Key(ckdb::ksAtCursor(ks.getKeySet(), current)); }
+	Key get(cursor_t pos) const { return Key(ckdb::ksAtCursor(ks.getKeySet(), pos)); }
 
-	KeySet const & getKeySet() const {return ks;}
+	KeySet const & getKeySet() const { return ks; }
 
 	// Forward iterator requirements
-	reference operator*() const { return get(); } 
-	pointer operator->() const { return get(); } 
+	reference operator*() const { return get(); }
+	pointer operator->() const { return get(); }
 	KeySetIterator& operator++() { ++current; return *this; }
 	KeySetIterator operator++(int) { return KeySetIterator(ks, current++); }
 
@@ -201,14 +207,14 @@ public:
 	KeySetReverseIterator(KeySet const & k, const cursor_t c) : ks(k), current(c) {};
 	// conversion to const iterator?
 
-	Key get() const{return Key(ckdb::ksAtCursor(ks.getKeySet(), current));}
-	Key get(cursor_t pos) const {return Key(ckdb::ksAtCursor(ks.getKeySet(), pos));}
+	Key get() const { return Key(ckdb::ksAtCursor(ks.getKeySet(), current)); }
+	Key get(cursor_t pos) const { return Key(ckdb::ksAtCursor(ks.getKeySet(), pos)); }
 
-	KeySet const & getKeySet() const {return ks;}
+	KeySet const & getKeySet() const { return ks;}
 
 	// Forward iterator requirements
-	reference operator*() const { return get(); } 
-	pointer operator->() const { return get(); } 
+	reference operator*() const { return get(); }
+	pointer operator->() const { return get(); }
 	KeySetReverseIterator& operator++() { --current; return *this; }
 	KeySetReverseIterator operator++(int) { return KeySetReverseIterator(ks, current--); }
 
@@ -265,8 +271,6 @@ operator-(const KeySetReverseIterator& lhs,
 inline KeySetReverseIterator
 operator+(KeySetReverseIterator::difference_type n, const KeySetReverseIterator& i)
 { return KeySetReverseIterator(i.getKeySet(), i.base() + n); }
-
-
 
 
 
@@ -330,9 +334,8 @@ inline KeySet::const_reverse_iterator KeySet::crend() const noexcept
 {
 	return KeySet::const_reverse_iterator(*this, -1);
 }
-
 #endif
-
+#endif //WITHOUT_KEYSET_ITERATOR
 
 
 /**
@@ -621,7 +624,7 @@ inline Key KeySet::pop()
  */
 inline KeySet KeySet::cut (Key k)
 {
-	return KeySet(ckdb::ksCut(ks,*k));
+	return KeySet(ckdb::ksCut(ks, k.getKey()));
 }
 
 /**
@@ -650,6 +653,20 @@ inline Key KeySet::lookup (std::string const & name, option_t const options) con
 {
 	ckdb::Key *k = ckdb::ksLookupByName(ks, name.c_str(), options);
 	return Key(k);
+}
+
+/**
+ * @brief Lookup a key by index
+ *
+ * @param pos cursor position
+ *
+ * @return the found key
+ */
+inline Key KeySet::at (cursor_t pos) const
+{
+	if (pos < 0)
+		pos += size();
+	return Key(ckdb::ksAtCursor(ks, pos));
 }
 
 } // end of namespace kdb

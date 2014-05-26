@@ -95,7 +95,7 @@ inline KDB::~KDB () throw()
  */
 inline void KDB::open (Key &errorKey)
 {
-	handle = ckdb::kdbOpen(*errorKey);
+	handle = ckdb::kdbOpen(errorKey.getKey());
 	if (!handle)
 	{
 		throw kdb::KDBException(errorKey);
@@ -113,7 +113,7 @@ inline void KDB::open (Key &errorKey)
  */
 inline void KDB::close (Key & errorKey) throw()
 {
-	ckdb::kdbClose(handle, *errorKey);
+	ckdb::kdbClose(handle, errorKey.getKey());
 	handle = 0;
 }
 
