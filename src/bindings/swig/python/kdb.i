@@ -2,6 +2,7 @@
 
 %include "stl.i"
 %include "../common.i"
+%feature("autodoc", "3");
 
 
 /* handle exceptions */
@@ -132,21 +133,27 @@
 
   %pythoncode %{
     def get(self):
+      """returns the keys value"""
       if self.isBinary():
         return self._getBinary()
       return self._getString()
 
     def set(self, value):
+      """set the keys value. Can be either string or binary"""
       if isinstance(value, bytes):
         return self._setBinary(value)
       return self._setString(str(value))
 
-    def getMeta(self, *args):
-      if len(args):
-        return self._getMeta(*args)
+    def getMeta(self, name = None):
+      """returns the value of a meta key given by name. Parameter can be either
+      string or Key. If name is omitted an iterator object is returned.
+      """
+      if name is not None:
+        return self._getMeta(name)
       return self.__metaIter()
 
     def setMeta(self, name, value):
+      """set a new meta key consisting of name and value"""
       if isinstance(value, str):
         return self._setMeta(name, value)
       raise TypeError("Unsupported value type")
@@ -211,11 +218,18 @@
   }
 
   %pythoncode %{
-    def lookup(self, *args):
-      key = self._lookup(*args)
+    def lookup(self, name):
+      """Lookup a key by name. Name can be either string, Key or indexes.
+      If index is negative, search starts at the end.
+      Returns None if no key is found.
+      """
+      key = self._lookup(name)
       return key if key else None
 
     def __getitem__(self, key):
+      """See lookup(...) for details.
+      Slices and negative indexes are supported as well.
+      """
       if isinstance(key, slice):
         return [ self[k] for k in range(*key.indices(len(self))) ]
       elif isinstance(key, ( int, str, Key )):
@@ -223,6 +237,7 @@
       raise TypeError("Invalid argument type")
 
     def __contains__(self, item):
+      """See lookup(...) for details"""
       if isinstance(item, ( str, Key )):
         key = self._lookup(item)
         return True if key else False
@@ -260,9 +275,13 @@
 %extend kdb::KDB {
   %pythoncode %{
     def __enter__(self):
+      """Internal method for usage with context managers"""
       return self
 
     def __exit__(self, type, value, tb):
+      """Internal method for usage with context managers.
+      Closes the database.
+      """
       try:
         self.close(Key())
       except:
