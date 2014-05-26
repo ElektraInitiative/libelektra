@@ -26,7 +26,11 @@
 #define KDB_VERSION_MINOR @KDB_VERSION_MINOR@
 #define KDB_VERSION_MICRO @KDB_VERSION_MICRO@
 
+#ifdef __cplusplus
+#define KS_END ((ckdb::Key*)0)
+#else
 #define KS_END ((Key*)0)
+#endif
 
 enum {
 	KEY_END=0,

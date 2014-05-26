@@ -7,15 +7,15 @@ Items are e.g. BUGS, OPTIMIZE, PROBLEMS, TESTING, PLUGINS, TODO,..
 
 == 0.8.5 ==
 
-write some release notes
-reintergrate branch + push
-check buildserver
+write release notes
 
 gen:
+	Contextual
 	cleanup: utilities for cheetha+python
 
-gen examples:
-	use correct types
+== 0.8.6 ==
+
+allow key names starting with /?
 
 define sprintf+strtoXX
 string not needed: will be assumed if no type .given
