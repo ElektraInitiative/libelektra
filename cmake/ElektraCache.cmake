@@ -204,6 +204,10 @@ elseif (BUILD_TESTING)
 	set (INSTALL_TESTING OFF CACHE BOOL "Install testcases" FORCE)
 endif (BUILD_TESTING)
 
+option (BUILD_SWIG "Enable SWIG generated bindings" OFF)
+if (BUILD_SWIG)
+endif (BUILD_SWIG)
+
 #
 # Developer builds (debug or verbose build)
 #
