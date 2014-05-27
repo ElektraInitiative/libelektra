@@ -48,19 +48,18 @@ class Key(unittest.TestCase):
 		self.assertTrue(k.isValid())
 
 	def test_name(self):
-		with self.assertRaises(kdb.KeyInvalidName):
-			k = kdb.Key("wrongname") # should throw kdb.KeyInvalidName?
-			k = kdb.Key("/wrongname")
+		k = kdb.Key("wrongname")
+		k = kdb.Key("/wrongname")
 
 	def test_type(self):
 		k = kdb.Key("user/name")
-		self.assertFalse(self.bkey.isBinary())
+		self.assertFalse(k.isBinary())
 		k.value = "12"
-		self.assertFalse(self.key.getMeta("binary"))
-		self.assertFalse(self.bkey.isBinary())
+		self.assertFalse(k.getMeta("binary"))
+		self.assertFalse(k.isBinary())
 		k.value = b"12\0"
-		self.assertTrue(self.bkey.isBinary())
-		self.assertTrue(self.key.getMeta("binary")) # metaKey should evaluate to true?
+		self.assertTrue(k.isBinary())
+		self.assertTrue(k.getMeta("binary"))
 
 	def test_operator(self):
 		self.assertNotEqual(self.key, self.bkey)
