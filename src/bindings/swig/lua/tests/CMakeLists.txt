@@ -1,4 +1,4 @@
-get_filename_component(LUA_MODULEPATH ${CMAKE_CURRENT_BINARY_DIR} DIRECTORY)
+set(LUA_MODULEPATH "${CMAKE_CURRENT_BINARY_DIR}/..")
 
 macro (do_lua_test source)
 	get_filename_component (name ${source} NAME)
