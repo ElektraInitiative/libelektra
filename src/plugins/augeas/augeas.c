@@ -46,7 +46,8 @@ static int loadFile(FILE *fh, char **content)
 	if (*content == 0) return -1;
 
 	fread (*content, sizeof(char), fileSize, fh);
-	// REVIEW TODO: call feof(3) or ferror(3) to check for error
+
+	if(feof(fh) || ferror(fh)) return -1;
 
 	return 0;
 }
@@ -70,8 +71,8 @@ static int saveFile(augeas* augeasHandle, FILE* fh)
 	if (value)
 	{
 		ret = fwrite (value, sizeof(char), strlen (value), fh);
-		// REVIEW TODO: call feof(3) or ferror(3) to check for error,
-		// even on error it could be > 1
+
+		if(feof(fh) || ferror(fh)) return -1;
 	}
 
 	return ret;
@@ -90,7 +91,7 @@ static int saveTree(augeas* augeasHandle, Key** keyArray, size_t arraySize,
 	{
 		Key *key = keyArray[i];
 		char *nodeName;
-		asprintf (&nodeName, AUGEAS_TREE_ROOT "/%s",
+		asprintf (&nodeName, AUGEAS_TREE_ROOT "%s",
 				(keyName (key) + prefixSize));
 		aug_set (augeasHandle, nodeName, keyString (key));
 		free (nodeName);
@@ -313,7 +314,7 @@ int elektraAugeasSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	int errnosave = errno;
 	augeas *augeasHandle = elektraPluginGetData (handle);
 
-	size_t prefixSize = keyGetNameSize (parentKey);
+	size_t prefixSize = keyGetNameSize (parentKey) - 1;
 	const char *lensPath = getLensPath (handle);
 
 	if (!lensPath)
