@@ -145,11 +145,13 @@
       return self._setString(str(value))
 
     def getMeta(self, name = None):
-      """returns the value of a meta key given by name. Parameter can be either
-      string or Key. If name is omitted an iterator object is returned.
+      """returns a meta key given by name. Name can be either string or Key.
+      If no meta key is found None is returned.
+      If name is omitted an iterator object is returned.
       """
       if name is not None:
-        return self._getMeta(name)
+        meta = self._getMeta(name)
+        return meta if meta else None
       return self.__metaIter()
 
     def setMeta(self, name, value):

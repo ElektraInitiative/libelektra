@@ -98,16 +98,20 @@ class Key(unittest.TestCase):
 		self.assertEqual(self.bkey.fullname, "system/bkey")
 
 		k = kdb.Key("user/key1", kdb.KEY_VALUE, "value")
+		self.assertFalse(k.isBinary())
+		self.assertIsNone(k.getMeta("binary"))
+
 		k.name     = "system/key2"
 		k.basename = "key3"
 		k.value    = b"bvalue\0\0"
 		self.assertEqual(k.name,  "system/key3")
 		self.assertEqual(k.value, b"bvalue\0\0")
+		self.assertTrue(k.isBinary())
+		self.assertIsInstance(self.bkey.getMeta("binary"), kdb.Key)
 
 		k = kdb.Key("user/key2")
 		with self.assertRaises(kdb.KeyInvalidName):
 			k.name = "foo"
-			k.basename = "foo"
 
 	def test_functions(self):
 		self.assertTrue(self.key.isUser())
@@ -135,12 +139,9 @@ class Key(unittest.TestCase):
 		self.assertEqual(self.key.getMeta("by").value,      "manuel")
 
 		self.assertFalse(self.key.hasMeta("doesnt_exist"))
-		self.assertFalse(bool(self.key.getMeta("doesnt_exist")))
+		self.assertIsNone(self.key.getMeta("doesnt_exist"))
 		self.assertTrue(bool(self.bkey.getMeta("binary")))
-		self.assertFalse(bool(self.bkey.getMeta("owner")))
-		with self.assertRaises(kdb.KeyException):
-			self.key.getMeta("doesnt_exist").value
-			self.key.getMeta("doesnt_exist").name
+		self.assertIsNone(self.bkey.getMeta("owner"))
 
 		k = kdb.Key("user/key1")
 		k.setMeta("foo", "bar")
