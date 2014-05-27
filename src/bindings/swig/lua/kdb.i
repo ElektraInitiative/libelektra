@@ -123,10 +123,9 @@
 
 // add/override some other useful methods
 %luacode %{
-  local mt = getmetatable(kdb.Key)
-  local orig_call = mt["__call"]
-  mt["__call"] = function(t, name, ...)
-    local key = orig_call(t, name)
+  local orig_call = kdb.Key
+  kdb.Key = function(name, ...)
+    local key = orig_call(name)
 
     if select("#", ...) > 0 then
       local t = { ... }
@@ -334,10 +333,9 @@
 %}
 
 %luacode %{
-  local mt = getmetatable(kdb.KeySet)
-  local orig_call = mt["__call"]
-  mt["__call"] = function(t, alloc, ...)
-    local ks = orig_call(t, alloc)
+  local orig_call = kdb.KeySet
+  kdb.KeySet = function(alloc, ...)
+    local ks = orig_call(alloc)
 
     if select("#", ...) > 0 then
       -- there's no need to check for KS_END

@@ -1,4 +1,4 @@
-get_filename_component(PYTHON_MODULEPATH ${CMAKE_CURRENT_BINARY_DIR} DIRECTORY)
+set(PYTHON_MODULEPATH "${CMAKE_CURRENT_BINARY_DIR}/..")
 
 macro (do_python_test source)
 	get_filename_component (name ${source} NAME)
