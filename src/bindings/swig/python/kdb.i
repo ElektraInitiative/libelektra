@@ -234,8 +234,16 @@
       """
       if isinstance(key, slice):
         return [ self[k] for k in range(*key.indices(len(self))) ]
-      elif isinstance(key, ( int, str, Key )):
-        return self.lookup(key)
+      elif isinstance(key, ( int )):
+        item = self.lookup(key)
+        if item is None:
+          raise IndexError("index out of range")
+        return item
+      elif isinstance(key, ( str, Key )):
+        item = self.lookup(key)
+        if item is None:
+          raise KeyError(str(key))
+        return item
       raise TypeError("Invalid argument type")
 
     def __contains__(self, item):
