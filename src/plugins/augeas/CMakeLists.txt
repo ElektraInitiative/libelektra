@@ -43,7 +43,7 @@ if(LIBAUGEAS_FOUND AND LIBXML2_FOUND)
 		
 		add_plugintest(augeas)
 	else (HAS_LIBAUGEAS16)
-		remove_plugin (augeas "symbols aug_text_store and aug_text_retrieve not found. Make sure you have libaugeas 0.16 or higher")
+		remove_plugin (augeas "symbols aug_text_store and aug_text_retrieve not found. Make sure you have libaugeas 0.16 or higher. This library version is included in Augeas 1.0 or higher")
 	endif (HAS_LIBAUGEAS16)
 else (LIBAUGEAS_FOUND AND LIBXML2_FOUND AND)
 	remove_plugin (augeas "augeas not found")
