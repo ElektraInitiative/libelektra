@@ -121,7 +121,7 @@ void test_order()
 
 int main(int argc, char** argv)
 {
-	printf ("MOUNT       TESTS\n");
+	printf ("AUGEAS       TESTS\n");
 	printf ("==================\n\n");
 
 	init (argc, argv);
