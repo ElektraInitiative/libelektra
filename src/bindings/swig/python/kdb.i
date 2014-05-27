@@ -145,11 +145,13 @@
       return self._setString(str(value))
 
     def getMeta(self, name = None):
-      """returns the value of a meta key given by name. Parameter can be either
-      string or Key. If name is omitted an iterator object is returned.
+      """returns a meta key given by name. Name can be either string or Key.
+      If no meta key is found None is returned.
+      If name is omitted an iterator object is returned.
       """
       if name is not None:
-        return self._getMeta(name)
+        meta = self._getMeta(name)
+        return meta if meta else None
       return self.__metaIter()
 
     def setMeta(self, name, value):
@@ -232,8 +234,16 @@
       """
       if isinstance(key, slice):
         return [ self[k] for k in range(*key.indices(len(self))) ]
-      elif isinstance(key, ( int, str, Key )):
-        return self.lookup(key)
+      elif isinstance(key, ( int )):
+        item = self.lookup(key)
+        if item is None:
+          raise IndexError("index out of range")
+        return item
+      elif isinstance(key, ( str, Key )):
+        item = self.lookup(key)
+        if item is None:
+          raise KeyError(str(key))
+        return item
       raise TypeError("Invalid argument type")
 
     def __contains__(self, item):

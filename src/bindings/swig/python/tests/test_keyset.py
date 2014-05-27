@@ -29,14 +29,20 @@ class KeySet(unittest.TestCase):
 
 		self.assertEqual(self.ks[0],  kdb.Key("system/key1"))
 		self.assertEqual(self.ks[-1], kdb.Key("user/key4"))
+		with self.assertRaises(IndexError):
+			self.assertIsNone(self.ks[100])
+		with self.assertRaises(IndexError):
+			self.assertIsNone(self.ks[-100])
 
 		self.assertEqual(self.ks[1:3], [ self.ks[1], self.ks[2] ])
 
 		self.assertEqual(self.ks["user/key3"], kdb.Key("user/key3"))
-		self.assertIsNone(self.ks["user/doesnt_exist"])
+		with self.assertRaises(KeyError):
+			self.assertIsNone(self.ks["user/doesnt_exist"])
 
 		self.assertEqual(self.ks[kdb.Key("system/key2")], kdb.Key("system/key2"))
-		self.assertIsNone(self.ks[kdb.Key("user/doesnt_exist")])
+		with self.assertRaises(KeyError):
+			self.ks[kdb.Key("user/doesnt_exist")]
 
 	def test_functions(self):
 		self.assertEqual(self.ks.lookup("user/key3"), kdb.Key("user/key3"))

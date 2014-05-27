@@ -72,16 +72,20 @@ assert(bkey.dirname  == "system")
 assert(bkey.fullname == "system/bkey")
 
 local k = kdb.Key("user/key1", kdb.KEY_VALUE, "value")
+assert(k:isBinary() == false)
+assert(k:getMeta("binary") == nil)
+
 k.name     = "system/key2"
 k.basename = "key3"
 k.binary   = "bvalue\0\0"
 assert(k.name   == "system/key3")
 assert(k.value  == "bvalue\0\0")
 assert(k.binary == "bvalue\0\0")
+assert(k:isBinary() == true)
+assert(swig_type(k:getMeta("binary")) == "kdb::Key *")
 
 local k = kdb.Key("user/key2")
-assert(pcall(function() k.name     = "foo" end) == false)
-assert(pcall(function() k.basename = "foo" end) == false)
+assert(pcall(function() k.name = "foo" end) == false)
 
 -- functions
 assert(key:isNull()  == false)
@@ -112,11 +116,9 @@ assert(key:getMeta("ctime").value   == "789")
 assert(key:getMeta("by").value      == "manuel")
 
 assert(key:hasMeta("doesnt_exist") == false)
-assert(key:getMeta("doesnt_exist"):isNull() == true)
+assert(key:getMeta("doesnt_exist") == nil)
 assert(bkey:getMeta("binary"):isNull() == false)
-assert(bkey:getMeta("owner"):isNull() == true)
-assert(pcall(function() return key:getMeta("doesnt_exist").value end) == false)
-assert(pcall(function() return key:getMeta("doesnt_exist").name  end) == false)
+assert(bkey:getMeta("owner")       == nil)
 
 local k = kdb.Key("user/key1")
 k:setMeta("foo", "bar")

@@ -210,7 +210,8 @@
 
   mt[".fn"]["getMeta"] = function(self, ...)
     if select("#", ...) > 0 then
-      return self:_getMeta(...)
+      local meta = self:_getMeta(...)
+      return not meta:isNull() and meta or nil
     end
     return self:__metaIter()
   end
