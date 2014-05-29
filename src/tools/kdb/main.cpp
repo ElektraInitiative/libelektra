@@ -3,11 +3,12 @@
 #include <memory>
 #include <string>
 
-#include <external.hpp>
+#include <print.hpp>
 #include <factory.hpp>
 #include <command.hpp>
 #include <cmdline.hpp>
-#include <print.hpp>
+#include <external.hpp>
+#include <toolexception.hpp>
 
 #include <key.hpp>
 #include <kdb.hpp>
@@ -86,7 +87,7 @@ int main(int argc, char**argv)
 	}
 
 	try {
-		std::auto_ptr<Command> cmd = f.get(command);
+		CommandPtr cmd = f.get(command);
 		if (!cmd.get())
 		{
 			tryExternalCommand(argv+1);

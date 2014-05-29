@@ -13,16 +13,6 @@
 #include <stdexcept>
 #include <memory>
 
-namespace kdb
-{
-#if __cplusplus > 199711L
-using std::unique_ptr;
-#else
-typedef std::auto_ptr unique_ptr;
-#endif
-
-}
-
 /**
  * @brief All exceptions from the elektratools library are derived from
  * this exception

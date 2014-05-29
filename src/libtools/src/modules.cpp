@@ -14,8 +14,6 @@
 #include <kdbmodule.h>
 #include <kdbplugin.h>
 
-#include <memory>
-
 using namespace kdb;
 using namespace std;
 
@@ -29,7 +27,7 @@ Modules::~Modules()
 	ckdb::elektraModulesClose(modules.getKeySet(), 0);
 }
 
-std::auto_ptr<Plugin> Modules::load(std::string const& pluginName)
+kdb::PluginPtr Modules::load(std::string const& pluginName)
 {
 	KeySet config(1,
 		*Key(	"system/empty",
@@ -40,9 +38,9 @@ std::auto_ptr<Plugin> Modules::load(std::string const& pluginName)
 	return load(pluginName, config);
 }
 
-std::auto_ptr<Plugin> Modules::load(std::string const& pluginName, KeySet const & config)
+kdb::PluginPtr Modules::load(std::string const& pluginName, KeySet const & config)
 {
-	std::auto_ptr<Plugin> plugin (new Plugin (pluginName, modules, config));
+	kdb::PluginPtr plugin (new Plugin (pluginName, modules, config));
 	plugin->loadInfo();
 	plugin->parse();
 

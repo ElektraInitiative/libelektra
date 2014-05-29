@@ -24,8 +24,8 @@ public:
 	/**
 	 * @return a new created plugin
 	 */
-	std::auto_ptr<Plugin> load(std::string const& pluginName);
-	std::auto_ptr<Plugin> load(std::string const& pluginName, kdb::KeySet const& config);
+	kdb::PluginPtr load(std::string const& pluginName);
+	kdb::PluginPtr load(std::string const& pluginName, kdb::KeySet const& config);
 
 private:
 	kdb::KeySet modules;

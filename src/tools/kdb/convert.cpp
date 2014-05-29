@@ -1,12 +1,12 @@
 #include <convert.hpp>
 
 #include <kdb.hpp>
+#include <print.hpp>
 #include <modules.hpp>
 #include <cmdline.hpp>
-#include <print.hpp>
+#include <toolexception.hpp>
 
 #include <iostream>
-#include <memory>
 
 using namespace kdb;
 using namespace std;
@@ -41,8 +41,8 @@ int ConvertCommand::execute(Cmdline const& cl)
 	}
 
 	Modules modules;
-	auto_ptr<Plugin> import_plugin = modules.load(import_format);
-	auto_ptr<Plugin> export_plugin = modules.load(export_format);
+	PluginPtr import_plugin = modules.load(import_format);
+	PluginPtr export_plugin = modules.load(export_format);
 
 	Key errorKey;
 	KeySet keys;

@@ -1,10 +1,10 @@
 #include <info.hpp>
 
 #include <kdb.hpp>
+#include <print.hpp>
 #include <plugin.hpp>
 #include <modules.hpp>
 #include <cmdline.hpp>
-#include <print.hpp>
 
 #include <iostream>
 
@@ -49,7 +49,7 @@ int InfoCommand::execute(Cmdline const& cl)
 		}
 
 		Modules modules;
-		std::auto_ptr<Plugin> plugin = modules.load(name);
+		PluginPtr plugin = modules.load(name);
 		conf.append(plugin->getInfo());
 	}
 

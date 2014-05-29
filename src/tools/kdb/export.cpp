@@ -1,12 +1,12 @@
 #include <export.hpp>
 
 #include <kdb.hpp>
+#include <print.hpp>
 #include <modules.hpp>
 #include <cmdline.hpp>
-#include <print.hpp>
+#include <toolexception.hpp>
 
 #include <iostream>
-#include <memory>
 
 using namespace kdb;
 using namespace std;
@@ -40,7 +40,7 @@ int ExportCommand::execute(Cmdline const& cl)
 	if (argc > 2 && cl.arguments[2] != "-") file = cl.arguments[2];
 
 	Modules modules;
-	auto_ptr<Plugin> plugin = modules.load(format);
+	PluginPtr plugin = modules.load(format);
 
 	Key errorKey;
 	errorKey.setString(file);

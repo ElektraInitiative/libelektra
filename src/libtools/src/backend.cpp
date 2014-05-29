@@ -29,7 +29,6 @@ using namespace kdb;
 Backend::Backend(string name_ = "", string mp_ = "") :
 	name(name_), mp(mp_)
 {
-	ckdb::elektraModulesInit(modules.getKeySet(), 0);
 }
 
 Backend::~Backend()
@@ -38,7 +37,6 @@ Backend::~Backend()
 	{
 		delete plugins[i];
 	}
-	ckdb::elektraModulesClose(modules.getKeySet(), 0);
 }
 
 /**@pre: resolver needs to be loaded first
@@ -106,13 +104,12 @@ void Backend::tryPlugin (std::string pluginName)
 			KEY_END),
 		KS_END);
 
-	// TODO: use PluginLoader here
-	std::auto_ptr<Plugin> plugin (new Plugin (realPluginName, modules, testConfig));
-	plugin->loadInfo();
-	plugin->parse();
+	kdb::PluginPtr plugin = modules.load(realPluginName, testConfig);
 	vector<string> warnings;
 	plugin->check(warnings);
 
+	// because PluginPtr might be auto_ptr we cannot make that more
+	// pretty:
 	errorplugins.tryPlugin (*plugin.get());
 	getplugins.tryPlugin   (*plugin.get());
 	setplugins.tryPlugin   (*plugin.get());

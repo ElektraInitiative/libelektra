@@ -29,7 +29,7 @@ int CheckCommand::execute(Cmdline const& cl)
 
 	vector<string> warnings;
 	try {
-		std::auto_ptr<Plugin> plugin = modules.load (name);
+		PluginPtr plugin = modules.load (name);
 		plugin->check(warnings);
 
 	}

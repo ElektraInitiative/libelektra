@@ -40,7 +40,6 @@ endif (WIN32)
 #
 set (COMMON_FLAGS "${COMMON_FLAGS} -pedantic")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wall -Wextra")
-set (COMMON_FLAGS "${COMMON_FLAGS} -Wno-deprecated-declarations")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wno-overlength-strings")
 
 

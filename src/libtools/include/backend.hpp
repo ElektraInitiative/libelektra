@@ -12,6 +12,7 @@
 #define TOOLS_BACKEND_HPP
 
 #include <plugins.hpp>
+#include <modules.hpp>
 #include <toolexception.hpp>
 
 #include <string>
@@ -29,7 +30,7 @@ private:
 	std::string name;
 	std::string mp;
 
-	kdb::KeySet modules;
+	Modules modules;
 	kdb::KeySet config; // the global config, plugins might add something to it
 
 	std::vector <Plugin*> plugins;
