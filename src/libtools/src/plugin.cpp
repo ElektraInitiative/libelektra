@@ -1,3 +1,13 @@
+/**
+ * \file
+ *
+ * \brief Implementation of plugin
+ *
+ * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
+
+
 #include <kdb.hpp>
 
 #include <kdb.h>

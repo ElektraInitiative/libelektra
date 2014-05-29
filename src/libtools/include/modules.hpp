@@ -1,10 +1,19 @@
-#ifndef MODULES_HPP
-#define MODULES_HPP
+/**
+ * \file
+ *
+ * \brief Allows to load plugins
+ *
+ * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
+
+
+#ifndef TOOLS_MODULES_HPP
+#define TOOLS_MODULES_HPP
 
 #include <plugin.hpp>
 #include <keyset.hpp>
-
-#include <memory>
+#include <toolexception.hpp>
 
 class Modules
 {

@@ -1,3 +1,13 @@
+/**
+ * \file
+ *
+ * \brief Implementation of backend
+ *
+ * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
+
+
 #include <backend.hpp>
 
 #include <kdbmodule.h>

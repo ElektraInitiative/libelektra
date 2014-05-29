@@ -1,7 +1,18 @@
-#ifndef PRINT_HPP
-#define PRINT_HPP
+/**
+ * \file
+ *
+ * \brief Allows to print errors and warnings, key and keysets
+ *
+ * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
+
+
+#ifndef TOOLS_PRINT_HPP
+#define TOOLS_PRINT_HPP
 
 #include <iosfwd>
+#include <toolexception.hpp>
 
 namespace kdb
 {

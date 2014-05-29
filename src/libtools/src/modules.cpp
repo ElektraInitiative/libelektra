@@ -1,3 +1,13 @@
+/**
+ * \file
+ *
+ * \brief Implementation of module loading
+ *
+ * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
+
+
 #include <modules.hpp>
 #include <keyset.hpp>
 
@@ -22,9 +32,8 @@ Modules::~Modules()
 std::auto_ptr<Plugin> Modules::load(std::string const& pluginName)
 {
 	KeySet config(1,
-		*Key(	"system/test",
-			KEY_VALUE, "test",
-			KEY_COMMENT, "Test config for loading a plugin.",
+		*Key(	"system/empty",
+			KEY_VALUE, "this plugin was loaded without a config",
 			KEY_END),
 		KS_END);
 

@@ -1,3 +1,13 @@
+/**
+ * \file
+ *
+ * \brief header file of mount command
+ *
+ * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
+
+
 #ifndef MOUNT_HPP
 #define MOUNT_HPP
 
@@ -26,15 +36,6 @@ struct MountpointAlreadyInUseException : public CommandException
 	virtual const char* what() const throw()
 	{
 		return "Mountpoint already used, will abort";
-	}
-};
-
-struct PathInvalidException : public CommandException
-{
-	virtual const char* what() const throw()
-	{
-		return  "Given path could not be opened\n"
-			"You must provide a valid file name for the global path";
 	}
 };
 

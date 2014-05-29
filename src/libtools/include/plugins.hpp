@@ -1,54 +1,24 @@
-#ifndef PLUGINS_HPP
-#define PLUGINS_HPP
+/**
+ * \file
+ *
+ * \brief Implementation of get/set and error plugins
+ *
+ * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
+
+
+#ifndef TOOLS_PLUGINS_HPP
+#define TOOLS_PLUGINS_HPP
 
 #include <plugin.hpp>
+#include <toolexception.hpp>
 
 #include <vector>
 #include <string>
 #include <map>
 
 #include <kdb.hpp>
-
-struct TooManyPlugins : public PluginCheckException
-{
-	virtual const char* what() const throw()
-	{
-		return  "Too many plugins!\n"
-			"The plugin can't be positioned anymore.\n"
-			"Try to reduce the number of plugins to get better performance.";
-	}
-};
-
-struct Stackoverflow: public PluginCheckException
-{
-	virtual const char* what() const throw()
-	{
-		return  "Too many plugins!\n"
-			"The plugin can't be positioned anymore.\n"
-			"Try to reduce the number of plugins to get better performance.";
-	}
-};
-
-struct OrderingViolation: public PluginCheckException
-{
-	virtual const char* what() const throw()
-	{
-		return  "Ordering Violation!\n"
-			"You tried to add a plugin which requests another plugin to be positioned first.\n"
-			"Please position the other plugin first and try again.";
-	}
-};
-
-struct ConflictViolation: public PluginCheckException
-{
-	virtual const char* what() const throw()
-	{
-		return  "Conflict Violation!\n"
-			"You tried to add a plugin which conflicts with another.\n"
-			"Please dont add a plugin which conflicts.";
-	}
-};
-
 
 
 

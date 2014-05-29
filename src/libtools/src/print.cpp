@@ -1,3 +1,15 @@
+/**
+ * \file
+ *
+ * \brief Implementation of printing key/keysets
+ *
+ * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
+
+
+
+
 #include <key.hpp>
 #include <keyset.hpp>
 

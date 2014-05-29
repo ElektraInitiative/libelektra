@@ -1,3 +1,13 @@
+/**
+ * \file
+ *
+ * \brief source file of mount command
+ *
+ * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
+
+
 #include <mount.hpp>
 #include <backend.hpp>
 #include <cmdline.hpp>
