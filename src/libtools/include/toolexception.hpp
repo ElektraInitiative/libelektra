@@ -101,22 +101,19 @@ struct BadPluginName : public PluginCheckException
 
 struct TooManyPlugins : public PluginCheckException
 {
-	virtual const char* what() const throw()
-	{
-		return  "Too many plugins!\n"
-			"The plugin can't be positioned anymore.\n"
-			"Try to reduce the number of plugins to get better performance.";
-	}
-};
+	TooManyPlugins(std::string str) :
+		m_str(str)
+	{}
 
-struct Stackoverflow: public PluginCheckException
-{
+	virtual ~TooManyPlugins() throw()
+	{}
+
 	virtual const char* what() const throw()
 	{
-		return  "Too many plugins!\n"
-			"The plugin can't be positioned anymore.\n"
-			"Try to reduce the number of plugins to get better performance.";
+		return m_str.c_str();
 	}
+
+	std::string m_str;
 };
 
 struct OrderingViolation: public PluginCheckException

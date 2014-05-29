@@ -64,14 +64,17 @@ public:
 	void addInfo (Plugin &plugin);
 	void addPlugin (Plugin &plugin, std::string which);
 
-	/** Validate needed, recommend and provided information */
+	/** Validate needed, and provided information.
+	 * (Recommended ignored, @see getRecommendedMissing(),
+	 * @see getNeededMissing() */
 	bool validateProvided();
+	std::vector<std::string> getNeededMissing();
+	std::vector<std::string> getRecommendedMissing();
 
 	/** @return true if plugin should be ignored */
 	bool checkPlacement (Plugin &plugin, std::string which);
 	void checkStorage (Plugin &plugin);
 	void checkResolver (Plugin &plugin);
-	void checkInfo (Plugin &plugin);
 	void checkOrdering (Plugin &plugin);
 	void checkConflicts (Plugin &plugin);
 };

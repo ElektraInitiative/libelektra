@@ -17,9 +17,6 @@
 #include <kdb.hpp>
 #include <cassert>
 
-#include <iostream>
-#include <memory>
-
 using namespace std;
 
 namespace kdb
@@ -93,7 +90,6 @@ void Backend::tryPlugin (std::string pluginName)
 	{
 		realPluginName = cPluginName;
 		ckdb::elektraFree(cPluginName);
-		cout << "# seems like there is a pluginName: " << realPluginName << endl;
 	}
 
 	if (realPluginName.find('#') != string::npos) throw BadPluginName();
@@ -107,8 +103,6 @@ void Backend::tryPlugin (std::string pluginName)
 		KS_END);
 
 	kdb::PluginPtr plugin = modules.load(realPluginName, testConfig);
-	vector<string> warnings;
-	plugin->check(warnings);
 
 	// because PluginPtr might be auto_ptr we cannot make that more
 	// pretty:
@@ -120,16 +114,6 @@ void Backend::tryPlugin (std::string pluginName)
 	{
 		if (plugin->name() == plugins[i]->name())
 			throw PluginAlreadyInserted();
-	}
-
-	if (warnings.size() > 0)
-	{
-		cerr << "There are " << warnings.size() << " Warnings for this plugin" << endl;
-
-		for (size_t i = 0; i < warnings.size(); ++i)
-		{
-			cerr << "Warning #" << i << ": " << warnings[i] << endl;
-		}
 	}
 
 	plugins.push_back(plugin.release());
