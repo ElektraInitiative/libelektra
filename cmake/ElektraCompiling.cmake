@@ -20,19 +20,30 @@ endif()
 # Extra handling/flags for specific compilers/OS
 #
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+	#older clang did not support non-pod-varargs (will compile, but crash if used)
 	set (EXTRA_FLAGS "${EXTRA_FLAGS} -Wno-error=non-pod-varargs")
+	#not supported by icc:
+	set (EXTRA_FLAGS "${EXTRA_FLAGS} -Wno-deprecated-declarations")
 	message (STATUS "Clang detected")
 endif()
 
 if (CMAKE_COMPILER_IS_GNUCXX)
+	#not supported by icc:
+	set (EXTRA_FLAGS "${EXTRA_FLAGS} -Wno-deprecated-declarations")
 	message (STATUS "GCC detected")
 endif (CMAKE_COMPILER_IS_GNUCXX)
 
 if (WIN32)
 	set (HAVE_WIN32 "1")
 	message (STATUS "Win32 detected")
-endif (WIN32)
+endif ()
 
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
+	#statically link in libimf.so libsvml.so libirng.so libintlc.so.5
+	#and fix warning #10237: -lcilkrts linked in dynamically, # static library not available
+	set (EXTRA_FLAGS "${EXTRA_FLAGS} -static-intel -wd10237")
+	message (STATUS "ICC detected")
+endif ()
 
 
 #
@@ -40,21 +51,15 @@ endif (WIN32)
 #
 set (COMMON_FLAGS "${COMMON_FLAGS} -pedantic")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wall -Wextra")
-set (COMMON_FLAGS "${COMMON_FLAGS} -Wno-deprecated-declarations")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wno-overlength-strings")
 
 
-
 #
-# Now set flags for compilers
+# Merge all flags
 #
-if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
-	set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${C_MODE} ${EXTRA_FLAGS} ${COMMON_FLAGS} -Wsign-compare -Wfloat-equal -Wformat-security")
-	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_MODE} ${EXTRA_FLAGS} ${COMMON_FLAGS} -Wshadow -Wno-missing-field-initializers")
+set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${C_MODE} ${EXTRA_FLAGS} ${COMMON_FLAGS} -Wsign-compare -Wfloat-equal -Wformat-security")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_MODE} ${EXTRA_FLAGS} ${COMMON_FLAGS} -Wshadow -Wno-missing-field-initializers")
 
-	message (STATUS "C flags are ${CMAKE_C_FLAGS}")
-	message (STATUS "CXX flags are ${CMAKE_CXX_FLAGS}")
-else (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
-	message (STATUS "Compiler is nor clang nor gnu gcc, no compiler flags are set")
-endif (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
+message (STATUS "C flags are ${CMAKE_C_FLAGS}")
+message (STATUS "CXX flags are ${CMAKE_CXX_FLAGS}")
 
