@@ -198,7 +198,6 @@ int MountCommand::execute(Cmdline const& cl)
 
 
 
-
 	std::string path;
 	{
 		Backend backend (name, mp);
@@ -325,14 +324,20 @@ int MountCommand::execute(Cmdline const& cl)
 		{
 			cout << k.getName() << " " << k.getString() << endl;
 		}
+	}
+
+	if (cl.interactive)
+	{
 		cout << "Are you sure you want to do that (y/N): ";
 		std::string answer;
 		cin >> answer;
 		if (answer != "y") throw CommandAbortException();
 	}
 
-
-	cout << "Now writing the mountpoint configuration";
+	if (cl.debug)
+	{
+		cout << "Now writing the mountpoint configuration";
+	}
 	{
 		Key parentKey(root, KEY_END);
 
