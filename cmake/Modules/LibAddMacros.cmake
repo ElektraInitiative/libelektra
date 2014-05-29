@@ -117,6 +117,16 @@ macro (add_cppheaders HDR_FILES)
 	list (APPEND ${HDR_FILES} ${SRC_HDR_FILES})
 endmacro (add_cppheaders)
 
+macro (add_toolheaders HDR_FILES)
+	include_directories ("${PROJECT_BINARY_DIR}/src/libtools/include")
+	file (GLOB BIN_HDR_FILES ${PROJECT_BINARY_DIR}/src/libtools/include/*)
+	list (APPEND ${HDR_FILES} ${BIN_HDR_FILES})
+
+	include_directories ("${PROJECT_SOURCE_DIR}/src/libtools/include")
+	file (GLOB SRC_HDR_FILES ${PROJECT_SOURCE_DIR}/src/libtools/include/*)
+	list (APPEND ${HDR_FILES} ${SRC_HDR_FILES})
+endmacro (add_toolheaders)
+
 
 #- Removes a plugin from the global cache
 #

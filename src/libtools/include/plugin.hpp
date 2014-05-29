@@ -2,18 +2,18 @@
 #define PLUGIN_HPP
 
 #include <kdb.hpp>
-#include <command.hpp>
 
 #include <map>
 #include <vector>
 #include <string>
+#include <stdexcept>
 
 namespace ckdb
 {
 	typedef struct _Plugin Plugin;
 }
 
-struct PluginCheckException : public CommandException
+struct PluginCheckException : public std::exception
 {
 	virtual const char* what() const throw()
 	{
@@ -39,17 +39,6 @@ struct ReferenceNotFound: public PluginCheckException
 		return  "Could not find a reference!\n"
 			"Seems you forgot to create the reference before using it.\n"
 			"Use #modulename#label# before you #ref to it.";
-	}
-};
-
-struct BadPluginName : public PluginCheckException
-{
-	virtual const char* what() const throw()
-	{
-		return  "You entered a bad name for a plugin!\n"
-			"A valid name of a plugin has either no #\n"
-			"or of the following form: #modulename#label# or #ref\n"
-			"where ref must be one of the previously defined labels";
 	}
 };
 

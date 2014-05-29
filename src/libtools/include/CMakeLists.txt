@@ -1,8 +1,5 @@
+file (GLOB HDR_FILES *.hpp)
+
 install (FILES
-	backend.hpp
-	modules.hpp
-	plugin.hpp
-	print.hpp
-	merge.hpp
-	mount.hpp
+	${HDR_FILES}
 	DESTINATION include/${TARGET_INCLUDE_FOLDER})

@@ -10,4 +10,6 @@ add_subdirectory (libelektra)
 
 add_subdirectory (bindings)
 
+add_subdirectory (libtools)
+
 add_subdirectory (tools)

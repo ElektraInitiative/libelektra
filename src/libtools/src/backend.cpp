@@ -5,6 +5,7 @@
 #include <kdbprivate.h>
 
 #include <kdb.hpp>
+#include <cassert>
 
 #include <iostream>
 #include <memory>
@@ -12,7 +13,10 @@
 using namespace std;
 using namespace kdb;
 
-Backend::Backend(string name_, string mp_) :
+/** Creates a new backend with a given name and mountpoint.
+ * Parameters are needed for serialisation only, so you can
+ * keep them empty if you do not want to serialise. */
+Backend::Backend(string name_ = "", string mp_ = "") :
 	name(name_), mp(mp_)
 {
 	ckdb::elektraModulesInit(modules.getKeySet(), 0);
@@ -27,24 +31,24 @@ Backend::~Backend()
 	ckdb::elektraModulesClose(modules.getKeySet(), 0);
 }
 
+/**@pre: resolver needs to be loaded first
+ * Will check the filename.
+ * @throw FileNotValidException if filename is not valid */
 void Backend::checkFile (std::string file)
 {
 	typedef int (*checkFilePtr) (const char*);
 	checkFilePtr checkFileFunction = (checkFilePtr) plugins.back()->getSymbol("checkfile");
+	assert(checkFileFunction);
 
 	int res = checkFileFunction(file.c_str());
 
-	cout << "Result is: " << res << endl;
-
 	if (mp.substr(0,6) == "system")
 	{
-		cout << "Absolut filename is ok: " << file << endl;
 		if (res == -1) throw FileNotValidException();
 		return;
 	}
 
-	if (res <= 0)
-		throw FileNotValidException();
+	if (res <= 0) throw FileNotValidException();
 }
 
 /** Try if a plugin can be loaded, meets all safety
@@ -54,7 +58,9 @@ void Backend::checkFile (std::string file)
  * validates after it is added. It only means that
  * the situation is not getting worse.
  *
- * For validation see validated().
+ * @throw PluginCheckException or its subclasses
+ *
+ * For validation @see validated().
  */
 void Backend::tryPlugin (std::string pluginName)
 {
@@ -120,7 +126,8 @@ void Backend::tryPlugin (std::string pluginName)
 	plugins.push_back(plugin.release());
 }
 
-/** Add the plugin which were tried the last time */
+/** Add the plugin which were tried the last time.
+ * @pre tryPlugin was successful first (did not throw) */
 void Backend::addPlugin ()
 {
 	errorplugins.addPlugin (*plugins.back());
@@ -146,8 +153,13 @@ bool Backend::validated ()
 	return ret;
 }
 
+/**
+ * @pre name and mountpoint set
+ * Write plugin into keyset ret below rootKey. */
 void Backend::serialize (kdb::Key &rootKey, kdb::KeySet &ret)
 {
+	assert(!name.empty());
+	assert(!mp.empty());
 	Key backendRootKey (rootKey);
 	backendRootKey.addBaseName (name);
 	backendRootKey.setString("serialized Backend");

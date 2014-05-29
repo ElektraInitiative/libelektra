@@ -4,11 +4,12 @@
 #include <plugins.hpp>
 
 #include <string>
+#include <stdexcept>
 
 #include <kdb.hpp>
 
 
-struct BackendCheckException : public CommandException
+struct BackendCheckException : public std::exception
 {
 	virtual const char* what() const throw()
 	{
@@ -38,12 +39,23 @@ struct FileNotValidException : public BackendCheckException
 	}
 };
 
-struct PluginAlreadyInserted: public BackendCheckException
+struct PluginAlreadyInserted: public PluginCheckException
 {
 	virtual const char* what() const throw()
 	{
 		return  "It is not allowed to insert the same plugin again!\n"
 			"Try to add other plugins instead.";
+	}
+};
+
+struct BadPluginName : public PluginCheckException
+{
+	virtual const char* what() const throw()
+	{
+		return  "You entered a bad name for a plugin!\n"
+			"A valid name of a plugin has either no #\n"
+			"or of the following form: #modulename#label# or #ref\n"
+			"where ref must be one of the previously defined labels";
 	}
 };
 
@@ -72,11 +84,9 @@ private:
 	std::vector <Plugin*> plugins;
 
 public:
-	Backend(std::string name, std::string mp);
+	Backend(std::string name, std::string mountpoint);
 	~Backend();
 
-	/**
-	 * If the resolver was loaded first, this will check the filename */
 	void checkFile (std::string file);
 	void tryPlugin (std::string name);
 	void addPlugin ();

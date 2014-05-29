@@ -1,5 +1,3 @@
-#include <command.hpp>
-
 #include <key.hpp>
 #include <keyset.hpp>
 
