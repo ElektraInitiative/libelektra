@@ -109,7 +109,7 @@ void test_hostLensWrite(char *fileName)
 			keyNew ("user/tests/augeas-hosts/3/alias[1]", KEY_VALUE,
 					"host2alias1", KEY_META, "order", "90", KEY_END),
 			keyNew ("user/tests/augeas-hosts/3/alias[2]", KEY_VALUE,
-					"host2alias2", KEY_META, "order", "100", KEY_END));
+					"host2alias2", KEY_META, "order", "100", KEY_END), KS_END);
 
 	ksAppendKey (ks, parentKey);
 
@@ -124,7 +124,10 @@ void test_hostLensWrite(char *fileName)
 			compare_line_files (srcdir_file (fileName), keyString (parentKey)),
 			"files do not match as expected");
 
-	PLUGIN_CLOSE ();
+	ksDel (ks);
+
+	PLUGIN_CLOSE ()
+	;
 }
 
 void test_hostLensModify(char *fileName)
@@ -144,21 +147,21 @@ void test_hostLensModify(char *fileName)
 
 	Key *key = ksLookupByName (ks, "user/tests/augeas-hosts/1/ipaddr", 0);
 	exit_if_fail(key, "ip address of localhost not found");
-	keySetString(key, "127.0.0.2");
+	keySetString (key, "127.0.0.2");
 
 	key = ksLookupByName (ks, "user/tests/augeas-hosts/3/ipaddr", 0);
 	exit_if_fail(key, "ip address of host2 not found");
-	keySetString(key, "fd00::4711:4712:2::2");
+	keySetString (key, "fd00::4711:4712:2::2");
 
 	key = ksLookupByName (ks, "user/tests/augeas-hosts/#comment", 0);
 	exit_if_fail(key, "line comment not found");
-	keySetString(key, "line comment modified");
+	keySetString (key, "line comment modified");
 
 	char * fileNameCompare = malloc (strlen (fileName) + 6);
 	strcpy (fileNameCompare, fileName);
 	strcat (fileNameCompare, ".comp");
 
-	keySetString(parentKey, fileNameCompare);
+	keySetString (parentKey, srcdir_file(fileNameCompare));
 
 	succeed_if(plugin->kdbSet (plugin, ks, parentKey) == 1,
 			"kdbSet was not successful");
@@ -171,7 +174,8 @@ void test_hostLensModify(char *fileName)
 			compare_line_files (srcdir_file (fileName), keyString (parentKey)),
 			"files do not match as expected");
 
-	PLUGIN_CLOSE ();
+	PLUGIN_CLOSE ()
+	;
 
 }
 
@@ -193,8 +197,15 @@ void test_order(char *fileName)
 	Key *key;
 	size_t currentIndex = 0;
 	size_t numKeys = ksGetSize (ks);
-	long *usedOrders = calloc (numKeys, sizeof(long));
-	memset (usedOrders, -1, sizeof(usedOrders));
+	long *usedOrders = malloc (numKeys * sizeof(long));
+
+	exit_if_fail(usedOrders, "unable to allocate memory for order array");
+
+	/* as 0 is a legit order we have to initialize the array manually */
+	for (size_t index = 0; index < numKeys; index++)
+	{
+		usedOrders[index] = -1;
+	}
 
 	ksRewind (ks);
 	while ((key = ksNext (ks)) != 0)
@@ -252,7 +263,7 @@ int main(int argc, char** argv)
 
 	test_hostLensRead ("testdata/hosts-read");
 	test_hostLensWrite ("testdata/hosts-write");
-	test_hostLensModify("testdata/hosts-modify");
+	test_hostLensModify ("testdata/hosts-modify");
 	test_order ("testdata/hosts-big");
 
 	printf ("\ntest_hosts RESULTS: %d test(s) done. %d error(s).\n", nbTest,
