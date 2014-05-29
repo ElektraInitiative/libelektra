@@ -3,7 +3,7 @@
 
 /**
  * @brief See examples/cpp_example_userexception.cpp for how to use
- * USER_DEFINED_EXEPTIONS.
+ * USER_DEFINED_EXCEPTIONS.
  */
 #ifndef USER_DEFINED_EXCEPTIONS
 
@@ -30,7 +30,6 @@ public:
 
 	virtual const char* what() const throw()
 	{
-		std::stringstream ss;
 		if (m_str.empty())
 		{
 			// note that the code will be re-evaluated
@@ -41,6 +40,7 @@ public:
 			// note that printError/printWarning will be
 			// used either from namespace kdb or global
 			// namespace.
+			std::stringstream ss;
 			printError(ss, m_key);
 			printWarnings(ss, m_key);
 			m_str = ss.str();

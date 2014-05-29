@@ -13,6 +13,8 @@
 #include <stdexcept>
 #include <memory>
 
+#include <kdbio.hpp>
+
 namespace kdb
 {
 
@@ -140,12 +142,40 @@ struct ConflictViolation: public PluginCheckException
 
 struct NoPlugin : public PluginCheckException
 {
+	NoPlugin(Key key) :
+		m_key(key),
+		m_str()
+	{}
+
+	virtual ~NoPlugin() throw()
+	{}
+
 	virtual const char* what() const throw()
 	{
-		return  "Was not able to load such a plugin!\n\n"
-			"Maybe you misspelled it, there is no such plugin or the loader has problems.\n"
-			"You might want to try to set LD_LIBRARY_PATH, use kdb-full or kdb-static.";
+		if (m_str.empty())
+		{
+			// note that the code will be re-evaluated
+			// if it prints nothing, but an expensive
+			// function not printing anything seems
+			// to be unlikely.
+			//
+			// note that printError/printWarning will be
+			// used either from namespace kdb or global
+			// namespace.
+			std::stringstream ss;
+			ss << "Was not able to load such a plugin!\n\n";
+			ss << "Maybe you misspelled it, there is no such plugin or the loader has problems.\n";
+			ss << "You might want to try to set LD_LIBRARY_PATH, use kdb-full or kdb-static.\n";
+			ss << "Errors/Warnings during loading were:\n";
+			printError(ss, m_key);
+			printWarnings(ss, m_key);
+			m_str = ss.str();
+		}
+		return m_str.c_str();
 	}
+private:
+	Key m_key;
+	mutable std::string m_str;
 };
 
 struct ReferenceNotFound: public PluginCheckException

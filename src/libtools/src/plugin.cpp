@@ -14,9 +14,6 @@
 #include <kdbplugin.h>
 #include <kdbmodule.h>
 #include <kdbprivate.h>
-#include <print.hpp>
-
-#include <iostream>
 
 #include <plugin.hpp>
 
@@ -37,9 +34,7 @@ Plugin::Plugin(std::string const& nameOfNewPlugin, KeySet &modules, KeySet const
 
 	if (!plugin)
 	{
-		printError(errorKey);
-		printWarnings(errorKey);
-		throw NoPlugin();
+		throw NoPlugin(errorKey);
 	}
 }
 
@@ -191,8 +186,7 @@ void Plugin::uninit()
 	/* ref counting will avoid closing */
 
 	Key errorKey;
-	ckdb::elektraPluginClose(plugin, *errorKey);
-	printWarnings(errorKey);
+	ckdb::elektraPluginClose(plugin, errorKey.getKey());
 }
 
 ckdb::Plugin *Plugin::operator->()
@@ -287,66 +281,6 @@ int Plugin::error (kdb::KeySet & ks, kdb::Key & parentKey)
 	return plugin->kdbError(plugin, ks.getKeySet(), parentKey.getKey());
 }
 
-
-void Plugin::serialize (KeySet & ks)
-{
-	try {
-		typedef int  (*serialize_t)(std::ostream &, ckdb::Key *, ckdb::KeySet *);
-		Plugin::func_t fun = getSymbol ("serialize");
-		serialize_t ser_fun = reinterpret_cast<serialize_t> (fun);
-
-		ser_fun(std::cout, 0, ks.getKeySet());
-		return;
-	} catch (...) {}
-
-	try {
-		typedef void (*serialize_t)(std::ostream& os, kdb::KeySet & output);
-		Plugin::func_t fun = getSymbol ("cpp_serialize");
-		serialize_t ser_fun = reinterpret_cast<serialize_t> (fun);
-
-		ser_fun(std::cout, ks);
-		return;
-	} catch (...) {}
-
-	try {
-		typedef ssize_t (*serialize_t)(const ckdb::KeySet *ks, FILE* stream, option_t options);
-		Plugin::func_t fun = getSymbol ("ksToStream");
-		serialize_t ser_fun = reinterpret_cast<serialize_t> (fun);
-
-		ser_fun(ks.getKeySet(), stdout, 0);
-		return;
-	} catch (...) {}
-}
-
-void Plugin::unserialize (KeySet & ks)
-{
-	try {
-		typedef int (*unserialize_t)(std::istream &is, ckdb::Key *errorKey, ckdb::KeySet *ks);
-		Plugin::func_t fun = getSymbol ("unserialize");
-		unserialize_t ser_fun = reinterpret_cast<unserialize_t> (fun);
-
-		ser_fun(cin, 0, ks.getKeySet());
-		return;
-	} catch (...) {}
-
-	try {
-		typedef void (*unserialize_t)(std::istream& os, kdb::KeySet & output);
-		Plugin::func_t fun = getSymbol ("cpp_unserialize");
-		unserialize_t ser_fun = reinterpret_cast<unserialize_t> (fun);
-
-		ser_fun(cin, ks);
-		return;
-	} catch (...) {}
-
-	try {
-		typedef int (*unserialize_t)(ckdb::KeySet *ks, int fd);
-		Plugin::func_t fun = getSymbol ("ksFromXML");
-		unserialize_t ser_fun = reinterpret_cast<unserialize_t> (fun);
-
-		ser_fun(ks.getKeySet(), 0); // read from stdin
-		return;
-	} catch (...) {}
-}
 
 std::string Plugin::name()
 {

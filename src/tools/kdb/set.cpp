@@ -1,8 +1,8 @@
 #include <set.hpp>
 
 #include <kdb.hpp>
+#include <kdbio.hpp>
 #include <cmdline.hpp>
-#include <print.hpp>
 
 #include <iostream>
 
@@ -43,8 +43,8 @@ int SetCommand::execute(Cmdline const& cl)
 	// the config
 	kdb.get(conf, k);
 
-	printError(k);
-	printWarnings(k);
+	printError(cerr, k);
+	printWarnings(cerr, k);
 
 	Key key = conf.lookup(name);
 
@@ -78,8 +78,8 @@ int SetCommand::execute(Cmdline const& cl)
 	}
 	Key n;
 	kdb.set(conf, n);
-	printError(n);
-	printWarnings(n);
+	printError(cerr, n);
+	printWarnings(cerr, n);
 
 	return 0;
 }

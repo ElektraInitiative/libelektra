@@ -1,7 +1,6 @@
 #include <convert.hpp>
 
 #include <kdb.hpp>
-#include <print.hpp>
 #include <modules.hpp>
 #include <cmdline.hpp>
 #include <toolexception.hpp>
@@ -53,8 +52,8 @@ int ConvertCommand::execute(Cmdline const& cl)
 	errorKey.setString(export_file);
 	export_plugin->set(keys, errorKey);
 
-	printError(errorKey);
-	printWarnings(errorKey);
+	printError(cerr, errorKey);
+	printWarnings(cerr, errorKey);
 
 	return 0;
 }

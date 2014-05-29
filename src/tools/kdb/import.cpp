@@ -1,9 +1,9 @@
 #include <import.hpp>
 
 #include <kdb.hpp>
-#include <print.hpp>
 #include <modules.hpp>
 #include <cmdline.hpp>
+#include <keysetio.hpp>
 #include <toolexception.hpp>
 
 #include <iostream>
@@ -30,7 +30,7 @@ int ImportCommand::execute(Cmdline const& cl)
 
 	KeySet originalKeys;
 	kdb.get(originalKeys, root);
-	printWarnings(root);
+	printWarnings(cerr, root);
 
 	KeySet importedKeys;
 
@@ -48,8 +48,8 @@ int ImportCommand::execute(Cmdline const& cl)
 
 	plugin->get(importedKeys, errorKey);
 
-	printError(errorKey);
-	printWarnings(errorKey);
+	printWarnings(cerr, errorKey);
+	printError(cerr, errorKey);
 
 	KeySet mergedKeys;
 	if (cl.strategy == "cut")

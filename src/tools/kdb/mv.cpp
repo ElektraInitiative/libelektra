@@ -3,7 +3,7 @@
 #include <kdb.hpp>
 #include <rename.hpp>
 #include <cmdline.hpp>
-#include <print.hpp>
+#include <keysetio.hpp>
 
 #include <iostream>
 
@@ -35,9 +35,9 @@ int MvCommand::execute (Cmdline const& cl)
 	string newDirName = cl.arguments[1];
 
 	kdb.get(conf, sourceKey);
-	printWarnings(sourceKey);
+	printWarnings(cerr, sourceKey);
 	kdb.get(conf, destKey);
-	printWarnings(destKey);
+	printWarnings(cerr, destKey);
 	KeySet tmpConf = conf;
 	KeySet oldConf;
 
@@ -84,11 +84,9 @@ int MvCommand::execute (Cmdline const& cl)
 		cout << newConf;
 	}
 
-	kdb.set(newConf, sourceKey);
-	printWarnings(sourceKey);
-
-	kdb.set(newConf, destKey);
-	printWarnings(destKey);
+	Key parentKey;
+	kdb.set(newConf, parentKey);
+	printWarnings(cerr, parentKey);
 
 	return 0;
 }

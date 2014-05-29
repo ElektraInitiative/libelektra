@@ -16,7 +16,6 @@
 #include <map>
 #include <vector>
 #include <string>
-#include <stdexcept>
 
 namespace ckdb
 {
@@ -155,22 +154,6 @@ public:
 	 * @pre parse()
 	 */
 	int error (kdb::KeySet & ks, kdb::Key & parentKey);
-
-	/**
-	 * Not working well (except for dump).
-	 * Do not use.
-	 *
-	 * It tries to load and call some serialize functions.
-	 */
-	void serialize (kdb::KeySet & ks);
-
-	/**
-	 * Not working well (except for dump).
-	 * Do not use.
-	 *
-	 * It tries to load and call some unserialize functions.
-	 */
-	void unserialize (kdb::KeySet & ks);
 
 	/**
 	 * @return the name of the plugin 

@@ -4,7 +4,6 @@
 
 #include <kdb.hpp>
 #include <cmdline.hpp>
-#include <print.hpp>
 
 using namespace kdb;
 using namespace std;
@@ -33,7 +32,7 @@ int MetaLsCommand::execute (Cmdline const& cl)
 		}
 	}
 
-	printWarnings(root);
+	printWarnings(cerr, root);
 
 	return 0;
 }

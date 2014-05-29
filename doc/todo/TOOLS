@@ -107,14 +107,6 @@ compiled variant thereof.
 Needed for bootstrapping.
 
 
-== CODE ==
-
-duplicated code for printError() and printWarnings()
-(binding+kdb tool)
-use error value as exit (does it start with 0?)
-printError usw. Nicht von makro abhängig machen?
-
-
 == DBUS ==
 
 Daemon which exports whole elektra configuration

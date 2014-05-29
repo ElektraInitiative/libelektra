@@ -3,7 +3,6 @@
 #include <memory>
 #include <string>
 
-#include <print.hpp>
 #include <factory.hpp>
 #include <command.hpp>
 #include <cmdline.hpp>
@@ -149,8 +148,8 @@ int main(int argc, char**argv)
 		std::cerr << "The command "
 		 	<< command << " failed while accessing the key database"
 			<< std::endl;
-		printError(key);
-		printWarnings(key);
+		printWarnings(cerr, key);
+		printError(cerr, key);
 		return 5;
 	}
 	catch (std::exception const& ce)

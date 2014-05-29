@@ -11,7 +11,6 @@
 #include <mount.hpp>
 #include <backend.hpp>
 #include <cmdline.hpp>
-#include <print.hpp>
 
 #include <algorithm>
 #include <iostream>
@@ -40,8 +39,8 @@ KeySet readMountConf()
 	kdb.get(mountConf, parentKey);
 	kdb.close (parentKey);
 
-	printError(parentKey);
-	printWarnings (parentKey);
+	printError(cerr, parentKey);
+	printWarnings (cerr, parentKey);
 
 	return mountConf;
 }
@@ -361,8 +360,8 @@ int MountCommand::execute(Cmdline const& cl)
 		kdb.close (parentKey);
 		cout << endl;
 
-		printError(parentKey);
-		printWarnings(parentKey);
+		printError(cerr, parentKey);
+		printWarnings(cerr, parentKey);
 	}
 
 	return 0;

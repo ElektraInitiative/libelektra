@@ -1,7 +1,6 @@
 #include <export.hpp>
 
 #include <kdb.hpp>
-#include <print.hpp>
 #include <modules.hpp>
 #include <cmdline.hpp>
 #include <toolexception.hpp>
@@ -29,7 +28,7 @@ int ExportCommand::execute(Cmdline const& cl)
 	}
 
 	kdb.get(ks, root);
-	printWarnings(root);
+	printWarnings(cerr, root);
 
 	KeySet part (ks.cut(root));
 
@@ -47,8 +46,8 @@ int ExportCommand::execute(Cmdline const& cl)
 
 	plugin->set(part, errorKey);
 
-	printError(errorKey);
-	printWarnings(errorKey);
+	printWarnings(cerr, errorKey);
+	printError(cerr, errorKey);
 
 	return 0;
 }
