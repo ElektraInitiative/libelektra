@@ -20,6 +20,8 @@
 
 #include <kdb.hpp>
 
+namespace kdb
+{
 
 
 struct Place
@@ -109,5 +111,7 @@ public:
 
 	void serialize (kdb::Key &baseKey, kdb::KeySet &ret);
 };
+
+}
 
 #endif

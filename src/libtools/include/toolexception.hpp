@@ -13,6 +13,9 @@
 #include <stdexcept>
 #include <memory>
 
+namespace kdb
+{
+
 /**
  * @brief All exceptions from the elektratools library are derived from
  * this exception
@@ -239,5 +242,7 @@ struct VersionInfoMismatch: public PluginCheckException
 		return "Version info does not match with library!";
 	}
 };
+
+}
 
 #endif

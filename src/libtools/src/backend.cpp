@@ -21,7 +21,9 @@
 #include <memory>
 
 using namespace std;
-using namespace kdb;
+
+namespace kdb
+{
 
 /** Creates a new backend with a given name and mountpoint.
  * Parameters are needed for serialisation only, so you can
@@ -226,4 +228,6 @@ void Backend::serialize (kdb::Key &rootKey, kdb::KeySet &ret)
 	errorplugins.serialize(backendRootKey, ret);
 	getplugins.serialize(backendRootKey, ret);
 	setplugins.serialize(backendRootKey, ret);
+}
+
 }

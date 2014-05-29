@@ -12,4 +12,8 @@
 
 #include <toolexception.hpp>
 
+namespace kdb
+{
+}
+
 #endif

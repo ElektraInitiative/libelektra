@@ -23,6 +23,9 @@ namespace ckdb
 	typedef struct _Plugin Plugin;
 }
 
+namespace kdb
+{
+
 /**
  * This is a C++ representation of a plugin.
  *
@@ -180,8 +183,6 @@ public:
 	std::string refname();
 };
 
-namespace kdb
-{
 #if __cplusplus > 199711L
 typedef std::unique_ptr<Plugin> PluginPtr;
 #else

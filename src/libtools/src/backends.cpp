@@ -7,3 +7,8 @@
  *
  */
 
+#include <backends.hpp>
+
+namespace kdb
+{
+}

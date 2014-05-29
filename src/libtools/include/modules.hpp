@@ -15,6 +15,9 @@
 #include <keyset.hpp>
 #include <toolexception.hpp>
 
+namespace kdb
+{
+
 class Modules
 {
 public:
@@ -24,11 +27,13 @@ public:
 	/**
 	 * @return a new created plugin
 	 */
-	kdb::PluginPtr load(std::string const& pluginName);
-	kdb::PluginPtr load(std::string const& pluginName, kdb::KeySet const& config);
+	PluginPtr load(std::string const& pluginName);
+	PluginPtr load(std::string const& pluginName, kdb::KeySet const& config);
 
 private:
-	kdb::KeySet modules;
+	KeySet modules;
 };
+
+}
 
 #endif

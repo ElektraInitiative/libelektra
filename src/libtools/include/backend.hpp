@@ -19,6 +19,8 @@
 
 #include <kdb.hpp>
 
+namespace kdb
+{
 
 class Backend
 {
@@ -45,5 +47,7 @@ public:
 	bool validated ();
 	void serialize (kdb::Key &rootKey, kdb::KeySet &ret);
 };
+
+}
 
 #endif

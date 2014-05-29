@@ -24,7 +24,9 @@
 #include <stdio.h>
 
 using namespace std;
-using namespace kdb;
+
+namespace kdb
+{
 
 Plugin::Plugin(std::string const& nameOfNewPlugin, KeySet &modules, KeySet const& testConfig) :
 	pluginName(nameOfNewPlugin),
@@ -360,4 +362,6 @@ std::string Plugin::refname()
 	} else {
 		return std::string("#") + pluginName;
 	}
+}
+
 }

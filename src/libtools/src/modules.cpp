@@ -14,8 +14,10 @@
 #include <kdbmodule.h>
 #include <kdbplugin.h>
 
-using namespace kdb;
 using namespace std;
+
+namespace kdb
+{
 
 Modules::Modules()
 {
@@ -45,4 +47,6 @@ kdb::PluginPtr Modules::load(std::string const& pluginName, KeySet const & confi
 	plugin->parse();
 
 	return plugin;
+}
+
 }

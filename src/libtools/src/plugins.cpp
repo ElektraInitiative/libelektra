@@ -18,7 +18,9 @@
 #include <algorithm>
 
 using namespace std;
-using namespace kdb;
+
+namespace kdb
+{
 
 
 Plugins::Plugins () :
@@ -449,4 +451,6 @@ void SetPlugins::serialize (Key &baseKey, KeySet &ret)
 			KEY_COMMENT, "A plugin",
 			KEY_END));
 	}
+}
+
 }

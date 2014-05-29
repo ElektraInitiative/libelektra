@@ -17,7 +17,9 @@
 #include <iostream>
 #include <iomanip>
 
-using namespace kdb;
+
+namespace kdb
+{
 
 void printError(Key error)
 {
@@ -100,4 +102,6 @@ std::ostream & operator << (std::ostream & os, const kdb::KeySet &cks)
 	ks.setCursor(c);
 
 	return os;
+}
+
 }
