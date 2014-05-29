@@ -84,11 +84,9 @@ int MvCommand::execute (Cmdline const& cl)
 		cout << newConf;
 	}
 
-	kdb.set(newConf, sourceKey);
-	printWarnings(sourceKey);
-
-	kdb.set(newConf, destKey);
-	printWarnings(destKey);
+	Key warningsKey;
+	kdb.set(newConf, warningsKey);
+	printWarnings(warningsKey);
 
 	return 0;
 }
