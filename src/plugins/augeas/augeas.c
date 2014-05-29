@@ -51,23 +51,32 @@ static const char *getLensPath(Plugin *handle)
 static int loadFile(FILE *fh, char **content)
 {
 	// allocate file content buffer
-	fseek (fh, 0, SEEK_END);
+	if (fseek (fh, 0, SEEK_END) != 0) return -1;
+
 	long fileSize = ftell (fh);
 	rewind (fh);
 
 	if (fileSize > 0)
 	{
-		*content = malloc (fileSize * sizeof(char));
+		*content = malloc (fileSize * sizeof(char) + 1);
 		if (*content == 0) return -1;
-		fread (*content, sizeof(char), fileSize, fh);
-		if (feof (fh) || ferror (fh)) return -1;
+		int readBytes = fread(*content, sizeof (char), fileSize, fh);
+
+		if (feof (fh) || ferror (fh) || readBytes != fileSize) return -1;
+
+		/* null terminate the string, as fread doesn't do it */
+		(*content)[fileSize] = 0;
 	}
-	else
+	else if (fileSize == 0)
 	{
 		*content = malloc (1);
 		if (*content == 0) return -1;
 		**content = (char) 0;
+	} else {
+		return -1;
 	}
+
+
 	return 0;
 }
 
