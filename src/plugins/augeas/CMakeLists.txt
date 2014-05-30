@@ -38,8 +38,10 @@ if(LIBAUGEAS_FOUND AND LIBXML2_FOUND)
 		install (TARGETS ${PLUGIN_NAME}
 			DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})
 	
-		configure_file (hosts ${CMAKE_CURRENT_BINARY_DIR}/hosts)
-		configure_file (hosts-big ${CMAKE_CURRENT_BINARY_DIR}/hosts-big)
+		configure_file (testdata/hosts-read ${CMAKE_CURRENT_BINARY_DIR}/testdata/hosts-read)
+		configure_file (testdata/hosts-write ${CMAKE_CURRENT_BINARY_DIR}/testdata/hosts-write)
+		configure_file (testdata/hosts-big ${CMAKE_CURRENT_BINARY_DIR}/testdata/hosts-big)
+		configure_file (testdata/hosts-modify ${CMAKE_CURRENT_BINARY_DIR}/testdata/hosts-modify)
 		
 		add_plugintest(augeas)
 	else (HAS_LIBAUGEAS16)

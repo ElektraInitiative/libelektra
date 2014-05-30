@@ -20,6 +20,19 @@
 #define AUGEAS_CONTENT_ROOT "/raw/content"
 #define AUGEAS_TREE_ROOT "/raw/tree"
 
+#define ELEKTRA_SET_GENERAL_ERROR(id, parentKey, message) \
+	do { \
+		ELEKTRA_SET_ERROR (id, parentKey, message); \
+		errno = errnosave; \
+		return -1; \
+	} while (0)
+
+#define ELEKTRA_SET_ERRNO_ERROR(id, parentKey) \
+	ELEKTRA_SET_GENERAL_ERROR(id, parentKey, strerror(errno))
+
+#define ELEKTRA_SET_AUGEAS_ERROR(handle, parrentKey) \
+	ELEKTRA_SET_GENERAL_ERROR(85, parentKey, getAugeasError(augeasHandle))
+
 static void setKeyOrder(Key *key, int order)
 {
 	char *buffer;
@@ -38,16 +51,31 @@ static const char *getLensPath(Plugin *handle)
 static int loadFile(FILE *fh, char **content)
 {
 	// allocate file content buffer
-	fseek (fh, 0, SEEK_END);
+	if (fseek (fh, 0, SEEK_END) != 0) return -1;
+
 	long fileSize = ftell (fh);
 	rewind (fh);
-	*content = malloc (fileSize * sizeof(char));
 
-	if (*content == 0) return -1;
+	if (fileSize > 0)
+	{
+		*content = malloc (fileSize * sizeof(char) + 1);
+		if (*content == 0) return -1;
+		int readBytes = fread(*content, sizeof (char), fileSize, fh);
 
-	fread (*content, sizeof(char), fileSize, fh);
+		if (feof (fh) || ferror (fh) || readBytes != fileSize) return -1;
 
-	if(feof(fh) || ferror(fh)) return -1;
+		/* null terminate the string, as fread doesn't do it */
+		(*content)[fileSize] = 0;
+	}
+	else if (fileSize == 0)
+	{
+		*content = malloc (1);
+		if (*content == 0) return -1;
+		**content = (char) 0;
+	} else {
+		return -1;
+	}
+
 
 	return 0;
 }
@@ -72,7 +100,7 @@ static int saveFile(augeas* augeasHandle, FILE* fh)
 	{
 		ret = fwrite (value, sizeof(char), strlen (value), fh);
 
-		if(feof(fh) || ferror(fh)) return -1;
+		if (feof (fh) || ferror (fh)) return -1;
 	}
 
 	return ret;
@@ -158,29 +186,24 @@ static int convertToKeys(augeas *handle, KeySet *ks, const Key *rootKey,
 	return result;
 }
 
-static void reportAugeasError(augeas* augeasHandle, Key* parentKey)
+static const char *getAugeasError(augeas* augeasHandle)
 {
-	const char* message;
+	const char* message = 0;
 	if (aug_error (augeasHandle) != 0)
 	{
 		message = aug_error_message (augeasHandle);
 	}
 	else
 	{
-		const char *value = 0;
-		aug_get (augeasHandle, "/augeas/text"AUGEAS_TREE_ROOT"/error/message", &value);
-
-		if (value)
-		{
-			message = value;
-		}
-		else
-		{
-			message = "No specific reason was reported";
-		}
+		aug_get (augeasHandle, "/augeas/text"AUGEAS_TREE_ROOT"/error/message",
+				&message);
+		if (!message) message = "No specific reason was reported";
 	}
 
-	ELEKTRA_SET_ERROR (85, parentKey, message);
+	/* should not happen, but avoid 0 return */
+	if (!message) message = "";
+
+	return message;
 }
 
 int compareKeysByOrder(const void *a, const void *b)
@@ -211,7 +234,7 @@ int elektraAugeasOpen(Plugin *handle, Key *parentKey)
 		char *errormessage;
 		asprintf (&errormessage, "Unable to initialize augeas: %s",
 				aug_error_message (augeasHandle));
-		ELEKTRA_SET_ERROR (85, parentKey, errormessage);
+		ELEKTRA_SET_ERROR(85, parentKey, errormessage);
 		free (errormessage);
 		return -1;
 	}
@@ -231,7 +254,6 @@ int elektraAugeasClose(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 
 int elektraAugeasGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
-	// REVIEW TODO: method too long
 	int errnosave = errno;
 	int ret = 0;
 
@@ -248,45 +270,26 @@ int elektraAugeasGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	/* retrieve the lens to use */
 	const char* lensPath = getLensPath (handle);
 	if (!lensPath)
-	{
-		ELEKTRA_SET_ERROR (86, parentKey, keyName (parentKey));
-		errno = errnosave;
-		return -1;
-	}
+		ELEKTRA_SET_GENERAL_ERROR(86, parentKey, keyName (parentKey));
 
 	/* open the file */
 	char* content;
 	augeas *augeasHandle = elektraPluginGetData (handle);
 	FILE *fh = fopen (keyValue (parentKey), "r");
 
-	if (fh == 0)
-	{
-		ELEKTRA_SET_ERROR (9, parentKey, strerror (errno));
-		errno = errnosave;
-		return -1;
-	}
+	if (fh == 0) ELEKTRA_SET_ERRNO_ERROR(9, parentKey);
 
 	/* load its contents into a string */
 	ret = loadFile (fh, &content);
 	fclose (fh);
 
-	if (ret < 0)
-	{
-		ELEKTRA_SET_ERROR (76, parentKey, strerror (errno));
-		errno = errnosave;
-		return -1;
-	}
+	if (ret < 0) ELEKTRA_SET_ERRNO_ERROR(76, parentKey);
 
 	/* convert the string into an augeas tree */
 	ret = loadTree (augeasHandle, lensPath, content);
 	free (content);
 
-	if (ret < 0)
-	{
-		reportAugeasError (augeasHandle, parentKey);
-		errno = errnosave;
-		return -1;
-	}
+	if (ret < 0) ELEKTRA_SET_AUGEAS_ERROR(augeasHandle, parentKey);
 
 	/* convert the augeas tree to an Elektra KeySet */
 	ksClear (returned);
@@ -297,10 +300,11 @@ int elektraAugeasGet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 	int order = 1;
 	ret = convertToKeys (augeasHandle, append, key, AUGEAS_TREE_ROOT, &order);
+
 	if (ret < 0)
 	{
 		ksDel (append);
-		return -1;
+		ELEKTRA_SET_AUGEAS_ERROR(augeasHandle, parentKey);
 	}
 
 	ksAppend (returned, append);
@@ -318,20 +322,11 @@ int elektraAugeasSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	const char *lensPath = getLensPath (handle);
 
 	if (!lensPath)
-	{
-		ELEKTRA_SET_ERROR (86, parentKey, keyName (parentKey));
-		errno = errnosave;
-		return -1;
-	}
+		ELEKTRA_SET_GENERAL_ERROR(86, parentKey, keyName (parentKey));
 
-	FILE *fh = fopen (keyValue (parentKey), "w");
+	FILE *fh = fopen (keyValue (parentKey), "w+");
 
-	if (fh == 0)
-	{
-		ELEKTRA_SET_ERROR (9, parentKey, strerror (errno));
-		errno = errnosave;
-		return -1;
-	}
+	if (fh == 0) ELEKTRA_SET_ERRNO_ERROR(9, parentKey);
 
 	/* build an array of keys ordered by the order MetaKey */
 	Key **keyArray;
@@ -341,9 +336,7 @@ int elektraAugeasSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	if (keyArray == 0)
 	{
 		fclose (fh);
-		ELEKTRA_SET_ERROR (87, parentKey, strerror (errno));
-		errno = errnosave;
-		return -1;
+		ELEKTRA_SET_ERRNO_ERROR(87, parentKey);
 	}
 
 	ksRewind (returned);
@@ -360,14 +353,23 @@ int elektraAugeasSet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 	int ret = 0;
 
+	/* load a fresh copy of the file into the tree */
+	char *content;
+	ret = loadFile (fh, &content);
+
+	if (ret < 0) ELEKTRA_SET_ERRNO_ERROR(76, parentKey);
+
+	/* convert the string into an augeas tree */
+	ret = loadTree (augeasHandle, lensPath, content);
+	free (content);
+
+	if (ret < 0) ELEKTRA_SET_AUGEAS_ERROR(augeasHandle, parentKey);
 	ret = saveTree (augeasHandle, keyArray, arraySize, lensPath, prefixSize);
 
 	if (ret < 0)
 	{
 		fclose (fh);
-		reportAugeasError (augeasHandle, parentKey);
-		errno = errnosave;
-		return -1;
+		ELEKTRA_SET_AUGEAS_ERROR(augeasHandle, parentKey);
 	}
 
 	/* write the Augeas tree to the file */
@@ -376,9 +378,7 @@ int elektraAugeasSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	if (ret < 0)
 	{
 		fclose (fh);
-		ELEKTRA_SET_ERROR (75, parentKey, strerror (errno));
-		errno = errnosave;
-		return -1;
+		ELEKTRA_SET_ERRNO_ERROR(75, parentKey);
 	}
 
 	free (keyArray);
