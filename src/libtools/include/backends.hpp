@@ -19,6 +19,9 @@
 namespace kdb
 {
 
+/**
+ * @brief Info about a backend
+ */
 struct BackendInfo
 {
 	std::string name;
@@ -26,6 +29,9 @@ struct BackendInfo
 	std::string path;
 };
 
+/**
+ * @brief Allows to list backends
+ */
 class Backends
 {
 public:

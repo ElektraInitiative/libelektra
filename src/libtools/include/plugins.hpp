@@ -40,6 +40,9 @@ struct Place
 	{}
 };
 
+/**
+ * @brief A collection of plugins (either get, set or error)
+ */
 class Plugins
 {
 protected:

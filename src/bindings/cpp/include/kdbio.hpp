@@ -1,7 +1,7 @@
 #ifndef ELEKTRA_KDB_IO_HPP
 #define ELEKTRA_KDB_IO_HPP
 
-/**
+/*
  * @brief See examples/cpp_example_userio.cpp for how to use
  * USER_DEFINED_IO
  */

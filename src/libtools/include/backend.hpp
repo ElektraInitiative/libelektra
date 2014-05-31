@@ -22,6 +22,10 @@
 namespace kdb
 {
 
+/**
+ * @brief A representation of the backend (= set of plugins) that can be
+ * mounted.
+ */
 class Backend
 {
 private:

@@ -18,6 +18,9 @@
 namespace kdb
 {
 
+/**
+ * @brief Allows to load plugins
+ */
 class Modules
 {
 public:
