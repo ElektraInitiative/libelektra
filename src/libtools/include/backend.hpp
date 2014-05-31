@@ -36,14 +36,14 @@ private:
 	kdb::KeySet config; // the global config, plugins might add something to it
 
 	std::vector <Plugin*> plugins;
+	void tryPlugin (std::string name);
 
 public:
 	Backend(std::string name, std::string mountpoint);
 	~Backend();
 
+	void addPlugin (std::string name);
 	void checkFile (std::string file);
-	void tryPlugin (std::string name);
-	void addPlugin ();
 	bool validated ();
 	void serialize (kdb::Key &rootKey, kdb::KeySet &ret);
 };

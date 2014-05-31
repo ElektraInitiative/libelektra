@@ -58,17 +58,6 @@ void Backend::checkFile (std::string file)
 	if (res <= 0) throw FileNotValidException();
 }
 
-/** Try if a plugin can be loaded, meets all safety
- * constraints and could be added.
- *
- * @note that this does not mean that the backend
- * validates after it is added. It only means that
- * the situation is not getting worse.
- *
- * @throw PluginCheckException or its subclasses
- *
- * For validation @see validated().
- */
 void Backend::tryPlugin (std::string pluginName)
 {
 	int nr;
@@ -119,10 +108,22 @@ void Backend::tryPlugin (std::string pluginName)
 	plugins.push_back(plugin.release());
 }
 
-/** Add the plugin which were tried the last time.
- * @pre tryPlugin was successful first (did not throw) */
-void Backend::addPlugin ()
+/**
+ * Add a plugin that can be loaded, meets all
+ * constraints.
+ *
+ * @note that this does not mean that the backend
+ * validates after it is added. It only means that
+ * the situation is not getting worse.
+ *
+ * @throw PluginCheckException or its subclasses if it was not possible
+ * to load the plugin
+ *
+ * For validation @see validated().
+ */
+void Backend::addPlugin (std::string pluginName)
 {
+	tryPlugin (pluginName);
 	errorplugins.addPlugin (*plugins.back());
 	getplugins.addPlugin (*plugins.back());
 	setplugins.addPlugin (*plugins.back());

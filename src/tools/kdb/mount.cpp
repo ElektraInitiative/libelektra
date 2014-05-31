@@ -205,7 +205,7 @@ void MountCommand::buildBackend(Cmdline const& cl)
 		cout << "Trying to load the resolver plugin" << endl;
 	}
 
-	backend.tryPlugin ("resolver");
+	backend.addPlugin ("resolver");
 
 	if (cl.interactive)
 	{
@@ -223,8 +223,6 @@ void MountCommand::buildBackend(Cmdline const& cl)
 	}
 
 	backend.checkFile (path);
-
-	backend.addPlugin ();
 
 	std::string configPath = Backends::mountpointsPath;
 	configPath += "/";
@@ -277,8 +275,7 @@ void MountCommand::appendPlugins(Cmdline const& cl, Backend & backend)
 	while (pname != "." || !backend.validated())
 	{
 		try {
-			backend.tryPlugin (pname);
-			backend.addPlugin ();
+			backend.addPlugin (pname);
 		}
 		catch (PluginCheckException const& e)
 		{
