@@ -168,11 +168,10 @@ void MountCommand::getMountpoint(Cmdline const& cl)
 	mp = "/";
 	if (name != "root")
 	{
-		cout << "Already used are: ";
-		std::copy (mountpoints.begin(), mountpoints.end(), ostream_iterator<std::string>(cout, " "));
-		cout << endl;
 		if (cl.interactive)
 		{
+			cout << "Already used are: ";
+			std::copy (mountpoints.begin(), mountpoints.end(), ostream_iterator<std::string>(cout, " "));
 			cout << endl;
 			cout << "Please start with / for a cascading backend" << endl;
 			cout << "Enter the mountpoint: ";
@@ -240,7 +239,6 @@ void MountCommand::buildBackend(Cmdline const& cl)
 			KEY_VALUE, path.c_str(),
 			KEY_COMMENT, "The path for this backend. Note that plugins can override that with more specific configuration.",
 			KEY_END));
-	cout << endl;
 
 
 	if (cl.interactive)
@@ -362,16 +360,9 @@ void MountCommand::doIt()
 	Key parentKey(Backends::mountpointsPath, KEY_END);
 
 	kdb::KDB kdb (parentKey);
-	cout << ".";
-	KeySet dummy;
-	kdb.get(dummy, parentKey);
-	cout << ".";
 	kdb.set(mountConf, parentKey);
-	cout << ".";
 	kdb.close (parentKey);
-	cout << endl;
 
-	printError(cerr, parentKey);
 	printWarnings(cerr, parentKey);
 }
 
