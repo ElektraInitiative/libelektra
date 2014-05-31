@@ -46,7 +46,7 @@ namespace kdb
 
 class MountCommand : public Command
 {
-	kdb::KeySet readMountConf();
+	void readMountConf();
 	void outputMtab();
 	void processArguments(Cmdline const& cl);
 	void fixRootKey(Cmdline const& cl);
