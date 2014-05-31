@@ -703,6 +703,69 @@ void test_ksCursor()
 	ksDel (ks);
 }
 
+void test_ksAtCursor()
+{
+	KeySet *ks;
+	Key *current;
+	Key *other;
+	Key *testKeys[5];
+	ks = ksNew (0);
+
+	testKeys[0] = keyNew ("user/test1", KEY_END);
+	testKeys[1] = keyNew ("user/test2", KEY_END);
+	testKeys[2] = keyNew ("user/test3", KEY_END);
+	testKeys[3] = keyNew ("user/test4", KEY_END);
+	testKeys[4] = keyNew ("user/test5", KEY_END);
+
+	for (size_t index = 0; index < 5; index++)
+	{
+		ksAppendKey (ks, testKeys[index]);
+	}
+
+	ksRewind (ks);
+
+	cursor_t cursor;
+
+	/* test whether the correct key is returned */
+	for (size_t index = 0; index < 5; index++)
+	{
+		current = testKeys[index];
+		ksNext (ks);
+		cursor = ksGetCursor (ks);
+		other = ksAtCursor (ks, cursor);
+		succeed_if(!strcmp (keyName (current), keyName (other)),
+				"Key with wrong name returned");
+	}
+
+	/* test whether the correct key is returned even if
+	 * the internal cursor is positioned somewhere else */
+	ksRewind (ks);
+	ksNext (ks);
+	cursor = ksGetCursor (ks);
+	ksNext (ks);
+	ksNext (ks);
+	current = ksAtCursor (ks, cursor);
+	succeed_if (!strcmp (keyName(current), "user/test1"), "wrong key returned after internal cursor was moved");
+
+	/* test whether the internal cursor is modified */
+	ksRewind (ks);
+	ksNext (ks);
+	cursor = ksGetCursor (ks);
+	ksNext (ks);
+	current = ksAtCursor (ks, cursor);
+	succeed_if (!strcmp (keyName (current), "user/test1"), "initial cursor position wrong");
+	current = ksNext (ks);
+	succeed_if (!strcmp (keyName (current), "user/test3"), "internal cursor not correct");
+
+	/* test postconditions */
+	succeed_if (!ksAtCursor (0, cursor), "did not return NULL on NULL keyset");
+	succeed_if (!ksAtCursor (ks, -1), "did not return NULL on negative cursor");
+	succeed_if (!ksAtCursor (ks, 10), "did not return NULL on invalid cursor");
+
+	ksDel (ks);
+
+}
+
 void test_ksSort()
 {
 	KeySet	*ks;
@@ -2408,6 +2471,7 @@ int main(int argc, char** argv)
 	// test_ksResize();
 	test_ksIterate();
 	test_ksCursor();
+	test_ksAtCursor();
 	test_ksSort();
 	test_ksLookup();
 	test_ksLookupByName();
