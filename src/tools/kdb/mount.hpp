@@ -39,11 +39,28 @@ struct MountpointAlreadyInUseException : public CommandException
 	}
 };
 
+namespace kdb
+{
+	class Backend;
+}
 
 class MountCommand : public Command
 {
-	static std::string root;
+	kdb::KeySet readMountConf();
 	void outputMtab();
+	void processArguments(Cmdline const& cl);
+	void fixRootKey(Cmdline const& cl);
+	void getName(Cmdline const& cl);
+	void getMountpoint(Cmdline const& cl);
+	void buildBackend(Cmdline const& cl);
+	void appendPlugins(Cmdline const& cl, kdb::Backend & backend);
+	void askForConfirmation(Cmdline const& cl);
+	void doIt();
+
+	kdb::KeySet mountConf;
+	std::string name;
+	std::string path;
+	std::string mp;
 
 public:
 	MountCommand();
@@ -69,7 +86,10 @@ public:
 		return
 			"path .. a filename (absolute for system, relative for cascading or user)\n"
 			"mountpoint .. where to mount the backend, start with / for cascading mp\n"
-			"plugin .. a list of plugins to mount at that place"
+			"plugin .. a list of plugins to mount at that place\n"
+			"\n"
+			"With the -i option, the mounting will be done interactively\n"
+			"With no options and no arguments, the current mountpoints will be listed\n"
 			;
 	}
 
