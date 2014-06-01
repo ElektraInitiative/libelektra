@@ -1,3 +1,5 @@
+include (LibAddMacros)
+
 add_headers(HDR_FILES)
 add_cppheaders(HDR_FILES)
 add_toolheaders(HDR_FILES)

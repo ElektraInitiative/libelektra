@@ -1,8 +1,3 @@
-include (LibAddMacros)
-
-add_headers (HDR_FILES)
-add_cppheaders (HDR_FILES)
-
 add_subdirectory(include)
 add_subdirectory(src)
 
