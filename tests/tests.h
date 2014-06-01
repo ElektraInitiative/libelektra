@@ -103,6 +103,7 @@ int init(int argc, char** argv);
 
 #define compare_key_name(k1, k2) \
 { \
+	nbTest++; \
 	if (strcmp(keyName(k1), keyName(k2))) \
 	{ \
 		char errorMsg [BUFFER_LENGTH]; \
@@ -118,6 +119,7 @@ int init(int argc, char** argv);
 
 #define succeed_if_same_string(s1, s2) \
 { \
+	nbTest++; \
 	if (strcmp(s1, s2)) \
 	{ \
 		char errorMsg [BUFFER_LENGTH]; \

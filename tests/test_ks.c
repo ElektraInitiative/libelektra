@@ -644,16 +644,19 @@ void test_ksCursor()
 	ksAppendKey(ks,cur=keyNew("user/3", KEY_END));
 	succeed_if (ksCurrent(ks) == cur, "cursor not set after append key");
 	cursor = ksGetCursor (ks);
+	succeed_if_same_string (keyName(ksAtCursor(ks, cursor)), "user/3");
 	ksAppendKey(ks,cur=keyNew("user/4", KEY_END));
 	succeed_if (ksCurrent(ks) == cur, "cursor not set after append key");
 	ksAppendKey(ks,cur=keyNew("user/5", KEY_END));
 	succeed_if (ksCurrent(ks) == cur, "cursor not set after append key");
 	succeed_if(ksGetSize(ks) == 5, "could not append 5 keys");
 
+	succeed_if_same_string (keyName(ksAtCursor(ks, cursor)), "user/3");
 	ksSetCursor(ks, cursor);
-	succeed_if (cursor == ksGetCursor(ks), "cursor set to 3");
+	succeed_if (cursor == ksGetCursor(ks), "cursor not set to 3");
+	succeed_if_same_string (keyName(ksAtCursor(ks, cursor)), "user/3");
 	ksSetCursor (ks, cursor);
-	succeed_if (cursor == ksGetCursor(ks), "cursor set to 3");
+	succeed_if (cursor == ksGetCursor(ks), "cursor not set to 3 (again)");
 
 	cursor = ksGetCursor (ks);
 	key = ksPop(ks);
@@ -699,6 +702,31 @@ void test_ksCursor()
 	ksSetCursor(ks, cursor);
 	key = ksCurrent (ks);
 	succeed_if(!strcmp (keyName(key), name), output);
+
+	ksDel (ks);
+
+	ks = ksNew(10,
+		keyNew("user/0", KEY_END),
+		keyNew("user/1", KEY_END),
+		keyNew("user/2", KEY_END),
+		keyNew("user/3", KEY_END),
+		0);
+
+	ksRewind (ks);
+	for (i=0; i < 4; i++)
+	{
+		key = ksNext(ks);
+		cursor = ksGetCursor (ks);
+		name[5] = '0' + i;
+		succeed_if_same_string (keyName(ksAtCursor(ks, cursor)), name);
+	}
+
+	succeed_if_same_string (keyName(ksAtCursor(ks, 0)), "user/0");
+	succeed_if_same_string (keyName(ksAtCursor(ks, 1)), "user/1");
+	succeed_if_same_string (keyName(ksAtCursor(ks, 2)), "user/2");
+	succeed_if_same_string (keyName(ksAtCursor(ks, 3)), "user/3");
+	succeed_if(ksAtCursor(ks, -1) == 0, "bounds check not correct");
+	succeed_if(ksAtCursor(ks, 4) == 0, "bounds check not correct");
 
 	ksDel (ks);
 }
