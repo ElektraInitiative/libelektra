@@ -6,7 +6,13 @@ namespace kdb
 namespace tools
 {
 
-std::vector<BackendInfo> Backends::getBackendInfo(KeySet mountConf)
+#if __cplusplus > 199711L
+using std::move;
+#else
+#define move(x) x
+#endif
+
+Backends::BackendInfoVector Backends::getBackendInfo(KeySet mountConf)
 {
 	std::vector<BackendInfo> ret;
 	Key rootKey (Backends::mountpointsPath, KEY_END);
@@ -34,7 +40,7 @@ std::vector<BackendInfo> Backends::getBackendInfo(KeySet mountConf)
 			ret.push_back(bi);
 		}
 	}
-	return std::move(ret);
+	return move(ret);
 }
 
 const char *Backends::mountpointsPath = "system/elektra/mountpoints";
