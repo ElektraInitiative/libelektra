@@ -19,6 +19,9 @@ using namespace std;
 namespace kdb
 {
 
+namespace tools
+{
+
 Modules::Modules()
 {
 	ckdb::elektraModulesInit(modules.getKeySet(), 0);
@@ -29,7 +32,7 @@ Modules::~Modules()
 	ckdb::elektraModulesClose(modules.getKeySet(), 0);
 }
 
-kdb::PluginPtr Modules::load(std::string const& pluginName)
+PluginPtr Modules::load(std::string const& pluginName)
 {
 	KeySet config(1,
 		*Key(	"system/empty",
@@ -40,13 +43,15 @@ kdb::PluginPtr Modules::load(std::string const& pluginName)
 	return load(pluginName, config);
 }
 
-kdb::PluginPtr Modules::load(std::string const& pluginName, KeySet const & config)
+PluginPtr Modules::load(std::string const& pluginName, KeySet const & config)
 {
-	kdb::PluginPtr plugin (new Plugin (pluginName, modules, config));
+	PluginPtr plugin (new Plugin (pluginName, modules, config));
 	plugin->loadInfo();
 	plugin->parse();
 
 	return plugin;
+}
+
 }
 
 }

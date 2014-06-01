@@ -23,6 +23,9 @@
 namespace kdb
 {
 
+namespace tools
+{
+
 
 struct Place
 {
@@ -117,6 +120,8 @@ public:
 
 	void serialize (kdb::Key &baseKey, kdb::KeySet &ret);
 };
+
+}
 
 }
 

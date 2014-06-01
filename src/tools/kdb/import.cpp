@@ -8,8 +8,9 @@
 
 #include <iostream>
 
-using namespace kdb;
 using namespace std;
+using namespace kdb;
+using namespace kdb::tools;
 
 ImportCommand::ImportCommand()
 {}

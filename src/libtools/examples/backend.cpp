@@ -6,6 +6,7 @@
 int main()
 {
 	using namespace kdb;
+	using namespace kdb::tools;
 	Backend b("my_backend", "/");
 	b.addPlugin("resolver");
 	b.addPlugin("dump");

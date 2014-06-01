@@ -25,6 +25,9 @@ using namespace std;
 namespace kdb
 {
 
+namespace tools
+{
+
 Plugin::Plugin(std::string const& nameOfNewPlugin, KeySet &modules, KeySet const& testConfig) :
 	pluginName(nameOfNewPlugin),
 	firstRef (true)
@@ -296,6 +299,8 @@ std::string Plugin::refname()
 	} else {
 		return std::string("#") + pluginName;
 	}
+}
+
 }
 
 }

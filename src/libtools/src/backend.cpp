@@ -22,6 +22,9 @@ using namespace std;
 namespace kdb
 {
 
+namespace tools
+{
+
 /** Creates a new backend with a given name and mountpoint.
  * Parameters are needed for serialisation only, so you can
  * keep them empty if you do not want to serialise. */
@@ -91,7 +94,7 @@ void Backend::tryPlugin (std::string pluginName)
 			KEY_END),
 		KS_END);
 
-	kdb::PluginPtr plugin = modules.load(realPluginName, testConfig);
+	PluginPtr plugin = modules.load(realPluginName, testConfig);
 
 	// because PluginPtr might be auto_ptr we cannot make that more
 	// pretty:
@@ -213,6 +216,8 @@ void Backend::serialize (kdb::Key &rootKey, kdb::KeySet &ret)
 	errorplugins.serialize(backendRootKey, ret);
 	getplugins.serialize(backendRootKey, ret);
 	setplugins.serialize(backendRootKey, ret);
+}
+
 }
 
 }

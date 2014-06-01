@@ -25,6 +25,9 @@ namespace ckdb
 namespace kdb
 {
 
+namespace tools
+{
+
 /**
  * This is a C++ representation of a plugin.
  *
@@ -171,6 +174,9 @@ typedef std::unique_ptr<Plugin> PluginPtr;
 #else
 typedef std::auto_ptr<Plugin> PluginPtr;
 #endif
+
+}
+
 }
 
 #endif

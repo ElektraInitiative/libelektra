@@ -22,6 +22,9 @@
 namespace kdb
 {
 
+namespace tools
+{
+
 /**
  * @brief A representation of the backend (= set of plugins) that can be
  * mounted.
@@ -51,6 +54,8 @@ public:
 	bool validated ();
 	void serialize (kdb::Key &rootKey, kdb::KeySet &ret);
 };
+
+}
 
 }
 

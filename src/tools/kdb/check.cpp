@@ -10,6 +10,7 @@
 
 using namespace std;
 using namespace kdb;
+using namespace kdb::tools;
 
 CheckCommand::CheckCommand()
 {}

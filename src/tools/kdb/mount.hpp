@@ -41,7 +41,10 @@ struct MountpointAlreadyInUseException : public CommandException
 
 namespace kdb
 {
+namespace tools
+{
 	class Backend;
+}
 }
 
 class MountCommand : public Command
@@ -53,7 +56,7 @@ class MountCommand : public Command
 	void getName(Cmdline const& cl);
 	void getMountpoint(Cmdline const& cl);
 	void buildBackend(Cmdline const& cl);
-	void appendPlugins(Cmdline const& cl, kdb::Backend & backend);
+	void appendPlugins(Cmdline const& cl, kdb::tools::Backend & backend);
 	void askForConfirmation(Cmdline const& cl);
 	void doIt();
 

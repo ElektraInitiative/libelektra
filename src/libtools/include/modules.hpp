@@ -18,6 +18,9 @@
 namespace kdb
 {
 
+namespace tools
+{
+
 /**
  * @brief Allows to load plugins
  */
@@ -36,6 +39,8 @@ public:
 private:
 	KeySet modules;
 };
+
+}
 
 }
 

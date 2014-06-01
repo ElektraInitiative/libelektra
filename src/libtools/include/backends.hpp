@@ -19,6 +19,9 @@
 namespace kdb
 {
 
+namespace tools
+{
+
 /**
  * @brief Info about a backend
  */
@@ -51,6 +54,8 @@ public:
 	 */
 	static const char * mountpointsPath;
 };
+
+}
 
 }
 

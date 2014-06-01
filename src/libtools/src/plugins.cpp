@@ -21,6 +21,9 @@ using namespace std;
 namespace kdb
 {
 
+namespace tools
+{
+
 
 Plugins::Plugins () :
 	plugins (NR_OF_PLUGINS),
@@ -443,6 +446,8 @@ void SetPlugins::serialize (Key &baseKey, KeySet &ret)
 			KEY_COMMENT, "A plugin",
 			KEY_END));
 	}
+}
+
 }
 
 }

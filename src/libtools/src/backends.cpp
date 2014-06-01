@@ -3,6 +3,9 @@
 namespace kdb
 {
 
+namespace tools
+{
+
 std::vector<BackendInfo> Backends::getBackendInfo(KeySet mountConf)
 {
 	std::vector<BackendInfo> ret;
@@ -35,5 +38,7 @@ std::vector<BackendInfo> Backends::getBackendInfo(KeySet mountConf)
 }
 
 const char *Backends::mountpointsPath = "system/elektra/mountpoints";
+
+}
 
 }

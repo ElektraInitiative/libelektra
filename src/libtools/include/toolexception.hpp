@@ -18,6 +18,9 @@
 namespace kdb
 {
 
+namespace tools
+{
+
 /**
  * @brief All exceptions from the elektratools library are derived from
  * this exception
@@ -269,6 +272,8 @@ struct VersionInfoMismatch: public PluginCheckException
 		return "Version info does not match with library!";
 	}
 };
+
+}
 
 }
 
