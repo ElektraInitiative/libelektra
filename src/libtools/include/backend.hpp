@@ -52,7 +52,7 @@ public:
 	void addPlugin (std::string name);
 	void checkFile (std::string file);
 	bool validated ();
-	void serialize (kdb::Key &rootKey, kdb::KeySet &ret);
+	void serialise (kdb::Key &rootKey, kdb::KeySet &ret);
 };
 
 }

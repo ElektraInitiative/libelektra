@@ -35,8 +35,8 @@
 namespace elektra
 {
 
-void serialize(std::ostream& os, kdb::KeySet & output);
-void unserialize(std::istream& os, kdb::KeySet & output);
+void serialise(std::ostream& os, kdb::KeySet & output);
+void unserialise(std::istream& os, kdb::KeySet & output);
 
 }
 

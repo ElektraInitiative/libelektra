@@ -98,7 +98,7 @@ public:
 	void addPlugin (Plugin &plugin);
 	bool validated ();
 
-	void serialize (kdb::Key &baseKey, kdb::KeySet &ret);
+	void serialise (kdb::Key &baseKey, kdb::KeySet &ret);
 };
 
 class SetPlugins : private Plugins
@@ -108,7 +108,7 @@ public:
 	void addPlugin (Plugin &plugin);
 	bool validated ();
 
-	void serialize (kdb::Key &baseKey, kdb::KeySet &ret);
+	void serialise (kdb::Key &baseKey, kdb::KeySet &ret);
 };
 
 class ErrorPlugins : private Plugins
@@ -118,7 +118,7 @@ public:
 	void addPlugin (Plugin &plugin);
 	bool validated ();
 
-	void serialize (kdb::Key &baseKey, kdb::KeySet &ret);
+	void serialise (kdb::Key &baseKey, kdb::KeySet &ret);
 };
 
 }

@@ -153,13 +153,13 @@ bool Backend::validated ()
 /**
  * @pre name and mountpoint set
  * Write plugin into keyset ret below rootKey. */
-void Backend::serialize (kdb::Key &rootKey, kdb::KeySet &ret)
+void Backend::serialise (kdb::Key &rootKey, kdb::KeySet &ret)
 {
 	assert(!name.empty());
 	assert(!mp.empty());
 	Key backendRootKey (rootKey);
 	backendRootKey.addBaseName (name);
-	backendRootKey.setString("serialized Backend");
+	backendRootKey.setString("serialised Backend");
 	ret.append(backendRootKey);
 
 	if (mp == "/")
@@ -213,9 +213,9 @@ void Backend::serialize (kdb::Key &rootKey, kdb::KeySet &ret)
 		}
 	}
 
-	errorplugins.serialize(backendRootKey, ret);
-	getplugins.serialize(backendRootKey, ret);
-	setplugins.serialize(backendRootKey, ret);
+	errorplugins.serialise(backendRootKey, ret);
+	getplugins.serialise(backendRootKey, ret);
+	setplugins.serialise(backendRootKey, ret);
 }
 
 }

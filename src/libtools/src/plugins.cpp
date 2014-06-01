@@ -393,7 +393,7 @@ bool SetPlugins::validated ()
 
 
 
-void ErrorPlugins::serialize (Key &baseKey, KeySet &ret)
+void ErrorPlugins::serialise (Key &baseKey, KeySet &ret)
 {
 	ret.append (*Key (baseKey.getName() + "/errorplugins",
 		KEY_COMMENT, "List of plugins to use",
@@ -411,7 +411,7 @@ void ErrorPlugins::serialize (Key &baseKey, KeySet &ret)
 	}
 }
 
-void GetPlugins::serialize (Key &baseKey, KeySet &ret)
+void GetPlugins::serialise (Key &baseKey, KeySet &ret)
 {
 	ret.append (*Key (baseKey.getName() + "/getplugins",
 		KEY_COMMENT, "List of plugins to use",
@@ -430,7 +430,7 @@ void GetPlugins::serialize (Key &baseKey, KeySet &ret)
 }
 
 
-void SetPlugins::serialize (Key &baseKey, KeySet &ret)
+void SetPlugins::serialise (Key &baseKey, KeySet &ret)
 {
 	ret.append (*Key (baseKey.getName() + "/setplugins",
 		KEY_COMMENT, "List of plugins to use",

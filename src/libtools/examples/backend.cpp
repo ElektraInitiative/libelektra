@@ -13,7 +13,7 @@ int main()
 
 	Key rootKey(Backends::mountpointsPath, KEY_END);
 	KeySet mountConfig;
-	b.serialize(rootKey, mountConfig);
+	b.serialise(rootKey, mountConfig);
 
 	mountConfig.rewind();
 	while(mountConfig.next())

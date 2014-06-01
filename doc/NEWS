@@ -246,9 +246,9 @@ The roadmap for Elektra's implementation has three steps:
 Is the current stable release branch. It will get continuous development
 with releases at least every two month. They focus will be on stability,
 better user experience, integration of new programming languages and
-more serialize formats.
+more serialise formats.
 Some ideas:
-- serializer: e.g. json, using lenses
+- serialiser: e.g. json, using lenses
 - resolver: e.g. xdg with improved locking
 - testing: automated abi compatibility checks, shell test suite
 - bindings: gobject, swig
@@ -764,7 +764,7 @@ but very little and something about zero when no backend is mounted.
 
 The key now uses sizes for name, owner, value and comment. This allows a
 complete new technique of serializing: keyCompose(). With that you can
-serialize a key without a single malloc(). keySerialize() is rewritten
+serialise a key without a single malloc(). keySerialize() is rewritten
 for the new key struct too.
 
 == Access Types ==

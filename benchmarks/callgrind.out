@@ -9176,7 +9176,7 @@ calls=1 *
 * 106892
 * 2
 
-fn=(1802) dump::unserialize(std::istream&, ckdb::_Key*, ckdb::_KeySet*)
+fn=(1802) dump::unserialise(std::istream&, ckdb::_Key*, ckdb::_KeySet*)
 97 16
 +1 2
 +2 6
@@ -9613,7 +9613,7 @@ calls=1 30
 * 2175
 * 3
 +6 6
-cfn=(2656) dump::serialize(std::ostream&, ckdb::_Key*, ckdb::_KeySet*)
+cfn=(2656) dump::serialise(std::ostream&, ckdb::_Key*, ckdb::_KeySet*)
 calls=1 27 
 * 24593403
 cob=(1)
