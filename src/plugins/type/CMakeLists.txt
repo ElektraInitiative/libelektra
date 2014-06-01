@@ -34,6 +34,11 @@ macro (do_test source)
 		target_link_libraries (${source} elektra-static)
 	endif (BUILD_FULL)
 
+	if (INSTALL_TESTING)
+		install (TARGETS ${source}
+			DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+	endif (INSTALL_TESTING)
+
 	set_target_properties (${source} PROPERTIES
 			COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
 	add_test (${source}

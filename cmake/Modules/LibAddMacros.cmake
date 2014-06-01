@@ -53,6 +53,10 @@ macro (add_plugintest testname)
 				)
 		include_directories ("${CMAKE_SOURCE_DIR}/tests")
 		add_executable (testmod_${testname} ${TEST_SOURCES} testmod_${testname}.c)
+		if (INSTALL_TESTING)
+			install (TARGETS testmod_${testname}
+				DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+		endif (INSTALL_TESTING)
 		target_link_libraries (testmod_${testname} elektra-full)
 		set_target_properties (testmod_${testname} PROPERTIES
 				COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)

@@ -22,7 +22,6 @@ configure_file (
 file(READ "${CMAKE_CURRENT_BINARY_DIR}/include_common.sh"
 	INCLUDE_COMMON_FILE)
 file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/include_common.sh")
-file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/run_all.sh")
 
 # Add a test for a script
 #
@@ -44,6 +43,7 @@ function (add_scripttest testname)
 			#cascading of if is && for poor people
 			if (INSTALL_TESTING)
 			if (NOT ${testname_we} STREQUAL "check_gen")
+			if (NOT ${testname_we} STREQUAL "check_external")
 			if (BUILD_FULL)
 				set (KDB_COMMAND "kdb-full")
 			else (BUILD_FULL)
@@ -53,9 +53,7 @@ function (add_scripttest testname)
 					set (KDB_COMMAND "kdb")
 				endif (BUILD_STATIC)
 			endif (BUILD_FULL)
-			set(INCLUDE_COMMON
-				"${INCLUDE_COMMON_INSTALLED_FILE}if [-z "$KDB" ]; then KDB=${KDB_COMMAND}; fi"
-				)
+			set(INCLUDE_COMMON "${INCLUDE_COMMON_INSTALLED_FILE}if [ -z \"$KDB\" ]; then KDB=${KDB_COMMAND}; fi")
 			configure_file(
 				"${filename}"
 				"${CMAKE_CURRENT_BINARY_DIR}/${testname}"
@@ -68,11 +66,12 @@ function (add_scripttest testname)
 				WORLD_READ WORLD_EXECUTE
 				RENAME ${testname_we}
 				)
-			file (APPEND "${CMAKE_CURRENT_BINARY_DIR}/run_all.sh" "${testname}\n")
+			endif (NOT ${testname_we} STREQUAL "check_external")
 			endif (NOT ${testname_we} STREQUAL "check_gen")
 			endif(INSTALL_TESTING)
 		else (TARGET)
 			if (ENABLE_KDB_TESTING)
+			if (NOT ${testname_we} STREQUAL "run_all")
 			if (BUILD_FULL)
 				set (KDB_COMMAND "${PROJECT_BINARY_DIR}/src/tools/kdb/kdb-full")
 			else (BUILD_FULL)
@@ -96,6 +95,7 @@ function (add_scripttest testname)
 				testscr_${testname_we}
 				"${testscriptname}"
 				)
+			endif (NOT ${testname_we} STREQUAL "run_all")
 			endif(ENABLE_KDB_TESTING)
 		endif (TARGET)
 	endforeach()
