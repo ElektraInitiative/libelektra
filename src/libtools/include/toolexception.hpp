@@ -18,6 +18,15 @@
 namespace kdb
 {
 
+/**
+ * @brief This namespace is for the libtool library.
+ *
+ * @note You have to link against libelektratools if you want to
+ * use functionality from it. Contrary to classes in namespace kdb it
+ * is not header-only.
+ *
+ * @see Backend for an entry point
+ */
 namespace tools
 {
 

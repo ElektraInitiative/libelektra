@@ -10,6 +10,14 @@
 #include <kdb.h>
 
 
+/**
+ * @brief This is the main namespace for the C++ binding and libraries.
+ *
+ * Classes or Functions directly below this namespace are header-only.
+ * Sub namespaces are intended for libraries and you need to link
+ * the library if you want to use them.
+ * - @see kdb::tools
+ */
 namespace kdb
 {
 

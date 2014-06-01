@@ -1,7 +1,7 @@
 #ifndef ELEKTRA_KDB_EXCEPT_HPP
 #define ELEKTRA_KDB_EXCEPT_HPP
 
-/**
+/*
  * @brief See examples/cpp_example_userexception.cpp for how to use
  * USER_DEFINED_EXCEPTIONS.
  */
