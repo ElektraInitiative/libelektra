@@ -5,11 +5,9 @@ those which are necessary to fulfil the initial tasks)
 Items are e.g. BUGS, OPTIMIZE, PROBLEMS, TESTING, PLUGINS, TODO,..
 
 
-== 0.8.5 ==
+== 0.8.7 ==
 
 write some release notes
-reintergrate branch + push
-check buildserver
 
 gen:
 	cleanup: utilities for cheetha+python
@@ -38,15 +36,13 @@ fix types:
 template naming conventions
 refactor template code a bit (util class)
 
-=== tools ===
-
-make exec subfolder in kdb
-kdb- prefix unnecessary
-mv scripts to tools
-
 === test ===
 
+have a single add_test place
+install and search for all test_data in the same way
+
 check on 32bit system
+check icc/clang on buildserver
 
 === install ===
 
