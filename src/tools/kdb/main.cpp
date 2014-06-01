@@ -3,11 +3,11 @@
 #include <memory>
 #include <string>
 
-#include <external.hpp>
 #include <factory.hpp>
 #include <command.hpp>
 #include <cmdline.hpp>
-#include <print.hpp>
+#include <external.hpp>
+#include <toolexception.hpp>
 
 #include <key.hpp>
 #include <kdb.hpp>
@@ -86,7 +86,7 @@ int main(int argc, char**argv)
 	}
 
 	try {
-		std::auto_ptr<Command> cmd = f.get(command);
+		CommandPtr cmd = f.get(command);
 		if (!cmd.get())
 		{
 			tryExternalCommand(argv+1);
@@ -148,8 +148,8 @@ int main(int argc, char**argv)
 		std::cerr << "The command "
 		 	<< command << " failed while accessing the key database"
 			<< std::endl;
-		printError(key);
-		printWarnings(key);
+		printWarnings(cerr, key);
+		printError(cerr, key);
 		return 5;
 	}
 	catch (std::exception const& ce)

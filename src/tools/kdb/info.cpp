@@ -4,13 +4,13 @@
 #include <plugin.hpp>
 #include <modules.hpp>
 #include <cmdline.hpp>
-#include <print.hpp>
 
 #include <iostream>
 
 
 using namespace std;
 using namespace kdb;
+using namespace kdb::tools;
 
 InfoCommand::InfoCommand()
 {}
@@ -49,7 +49,7 @@ int InfoCommand::execute(Cmdline const& cl)
 		}
 
 		Modules modules;
-		std::auto_ptr<Plugin> plugin = modules.load(name);
+		PluginPtr plugin = modules.load(name);
 		conf.append(plugin->getInfo());
 	}
 

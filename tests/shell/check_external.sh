@@ -21,7 +21,7 @@ do_tests()
 	SKEY=system/test/myapp/key
 	UKEY=user/test/myapp/key
 	VALUE="Hello World"
-	kdb set "$SKEY"  "$VALUE"
+	$KDB set "$SKEY"  "$VALUE"
 	succeed_if "could not set key $SKEY"
 
 	./application
@@ -29,15 +29,15 @@ do_tests()
 	succeed_if "application did not output $VALUE"
 
 	VALUE="More world"
-	kdb set "$UKEY"  "$VALUE"
+	$KDB set "$UKEY"  "$VALUE"
 	succeed_if "could not set key $SKEY"
 
 	./application
 	./application | grep "$VALUE"
 	succeed_if "application did not prefer $UKEY with $VALUE"
 
-	kdb rm "$SKEY"
-	kdb rm "$UKEY"
+	$KDB rm "$SKEY"
+	$KDB rm "$UKEY"
 }
 
 

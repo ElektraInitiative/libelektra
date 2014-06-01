@@ -20,9 +20,16 @@ ksSort was wrongly in the header file, even though it was not available
 New C++(11) iterators allow to write
 Internally they use the new API function ksAtCursor()
 
+kdb run_all will now run all tests using the elektra as installed
+
+The libtools library is back to life again! It has the same idea as its
+predecessor, but it is much more powerful. Because of the plugin system
+libtools is able to export and import in any configuration format
+Elektra supports. Additionally it adds support for mounting backends.
+Its API is not final, though.
 
 
----------------
+-------------
 
 0.8.5 Release
 
@@ -250,9 +257,9 @@ The roadmap for Elektra's implementation has three steps:
 Is the current stable release branch. It will get continuous development
 with releases at least every two month. They focus will be on stability,
 better user experience, integration of new programming languages and
-more serialize formats.
+more serialise formats.
 Some ideas:
-- serializer: e.g. json, using lenses
+- serialiser: e.g. json, using lenses
 - resolver: e.g. xdg with improved locking
 - testing: automated abi compatibility checks, shell test suite
 - bindings: gobject, swig
@@ -768,7 +775,7 @@ but very little and something about zero when no backend is mounted.
 
 The key now uses sizes for name, owner, value and comment. This allows a
 complete new technique of serializing: keyCompose(). With that you can
-serialize a key without a single malloc(). keySerialize() is rewritten
+serialise a key without a single malloc(). keySerialize() is rewritten
 for the new key struct too.
 
 == Access Types ==

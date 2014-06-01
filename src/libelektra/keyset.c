@@ -183,6 +183,7 @@ KeySet *ksNew(size_t alloc, ...)
  * @copydoc ksNew
  *
  * @pre caller must call va_start and va_end
+ * @par va the list of arguments
  **/
 KeySet *ksVNew (size_t alloc, va_list va)
 {

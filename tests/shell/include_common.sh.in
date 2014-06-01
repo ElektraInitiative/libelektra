@@ -46,6 +46,7 @@ PLUGINS=`echo "@PLUGINS@" | tr ';' ' '`
 DATE=`date "+%b %d %H:%M"`
 
 
+
 #
 # ASSERTIONS
 #
@@ -93,11 +94,15 @@ check_version()
 {
 	echo "Check if script tests the correct version"
 
-	[ "x`$KDB get system/elektra/version/constants/KDB_VERSION 2> /dev/null`" = "x@KDB_VERSION@" ]
-	exit_if_fail "Script was not compiled with this elektra version: KDB_VERSION mismatch"
+	REAL_KDB_VERSION="`$KDB get system/elektra/version/constants/KDB_VERSION 2> /dev/null`"
+	KDB_VERSION="@KDB_VERSION@"
+	[ "x$REAL_KDB_VERSION" = "x$KDB_VERSION" ]
+	exit_if_fail "Script was not compiled ($KDB_VERSION) with this elektra version ($REAL_KDB_VERSION): KDB_VERSION mismatch"
 
-	[ "x`$KDB get system/elektra/version/constants/SO_VERSION 2> /dev/null`" = "x@SO_VERSION@" ]
-	exit_if_fail "Script was not compiled with this elektra version: SO_VERSION mismatch"
+	REAL_SO_VERSION="`$KDB get system/elektra/version/constants/SO_VERSION 2> /dev/null`"
+	SO_VERSION="@SO_VERSION@"
+	[ "x$REAL_SO_VERSION" = "x$SO_VERSION" ]
+	exit_if_fail "Script was not compiled ($SO_VERSION) with this elektra version ($REAL_SO_VERSION): SO_VERSION mismatch"
 }
 
 check_remaining_files()
@@ -178,12 +183,6 @@ is_plugin_available()
 	done
 	return 1
 }
-
-
-
-
-
-
 
 
 

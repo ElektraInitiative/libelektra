@@ -193,12 +193,19 @@ else (BUILD_DOCUMENTATION)
 		)
 endif (BUILD_DOCUMENTATION)
 
-option (ENABLE_TESTING "Enable to run tests by make test target" ON)
-option (ENABLE_KDB_TESTING "Enable to run tests writing to hard disc using the kdb tool" ON)
-option (BUILD_TESTING "Build testcases" ON)
+option (ENABLE_TESTING "Enable to run (any) tests by make test" ON)
+if (ENABLE_TESTING)
+	option (ENABLE_KDB_TESTING "Enable to run tests writing to hard disc" ON)
+else (ENABLE_TESTING)
+	set (ENABLE_KDB_TESTING OFF CACHE BOOL "Enable to run tests writing to hard disc" FORCE)
+endif (ENABLE_TESTING)
+
+
+
+option (BUILD_TESTING "Build main test suite (does not affect plugins+bindings)" ON)
 if (BUILD_TESTING)
 	option (INSTALL_TESTING "Install testcases" ON)
-elseif (BUILD_TESTING)
+else (BUILD_TESTING)
 	#install testing makes no sense if it is not build
 	#(even though the option would not harm)
 	set (INSTALL_TESTING OFF CACHE BOOL "Install testcases" FORCE)

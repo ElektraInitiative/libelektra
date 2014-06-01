@@ -751,7 +751,7 @@ inline Key::operator bool() const
  *
  * @copydoc getString
  *
- * This method tries to serialize the string to the given type.
+ * This method tries to serialise the string to the given type.
  */
 template <class T>
 inline T Key::get() const
@@ -775,7 +775,7 @@ inline std::string Key::get() const
  *
  * @copydoc setString
  *
- * This method tries to deserialize the string to the given type.
+ * This method tries to deserialise the string to the given type.
  */
 template <class T>
 inline void Key::set(T x)

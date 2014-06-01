@@ -113,18 +113,18 @@ public:
 		return ret;
 	}
 
-	std::auto_ptr<Command> get(std::string const& which)
+	CommandPtr get(std::string const& which)
 	{
 		Instancer* instancer = m_factory[which];
 		if (instancer)
 		{
-			std::auto_ptr <Command> ret(instancer->get());
+			CommandPtr ret(instancer->get());
 			return ret;
 		}
 		else
 		{
 			m_factory.erase(which);
-			return std::auto_ptr <Command>();
+			return CommandPtr();
 		}
 
 	}

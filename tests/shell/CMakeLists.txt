@@ -40,6 +40,10 @@ function (add_scripttest testname)
 
 	foreach (TARGET true false)
 		if (TARGET)
+			#cascading of if is && for poor people
+			if (INSTALL_TESTING)
+			if (NOT ${testname_we} STREQUAL "check_gen")
+			if (NOT ${testname_we} STREQUAL "check_external")
 			if (BUILD_FULL)
 				set (KDB_COMMAND "kdb-full")
 			else (BUILD_FULL)
@@ -49,9 +53,7 @@ function (add_scripttest testname)
 					set (KDB_COMMAND "kdb")
 				endif (BUILD_STATIC)
 			endif (BUILD_FULL)
-			set(INCLUDE_COMMON
-				"${INCLUDE_COMMON_INSTALLED_FILE}KDB=${KDB_COMMAND}"
-				)
+			set(INCLUDE_COMMON "${INCLUDE_COMMON_INSTALLED_FILE}if [ -z \"$KDB\" ]; then KDB=${KDB_COMMAND}; fi")
 			configure_file(
 				"${filename}"
 				"${CMAKE_CURRENT_BINARY_DIR}/${testname}"
@@ -64,7 +66,12 @@ function (add_scripttest testname)
 				WORLD_READ WORLD_EXECUTE
 				RENAME ${testname_we}
 				)
-		else()
+			endif (NOT ${testname_we} STREQUAL "check_external")
+			endif (NOT ${testname_we} STREQUAL "check_gen")
+			endif(INSTALL_TESTING)
+		else (TARGET)
+			if (ENABLE_KDB_TESTING)
+			if (NOT ${testname_we} STREQUAL "run_all")
 			if (BUILD_FULL)
 				set (KDB_COMMAND "${PROJECT_BINARY_DIR}/src/tools/kdb/kdb-full")
 			else (BUILD_FULL)
@@ -88,19 +95,23 @@ function (add_scripttest testname)
 				testscr_${testname_we}
 				"${testscriptname}"
 				)
-		endif()
+			endif (NOT ${testname_we} STREQUAL "run_all")
+			endif(ENABLE_KDB_TESTING)
+		endif (TARGET)
 	endforeach()
 
 endfunction (add_scripttest)
 
-#does not work with cmake 2.6
-file (COPY data
-	DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+if (INSTALL_TESTING)
+	#does not work with cmake 2.6
+	file (COPY data
+		DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
-install (
-	DIRECTORY "data/"
-	DESTINATION ${TARGET_TEST_DATA_FOLDER}
-)
+	install (
+		DIRECTORY "data/"
+		DESTINATION ${TARGET_TEST_DATA_FOLDER}
+	)
+endif (INSTALL_TESTING)
 
 file (GLOB SCRIPT_TESTS *.sh)
 foreach (file ${SCRIPT_TESTS})

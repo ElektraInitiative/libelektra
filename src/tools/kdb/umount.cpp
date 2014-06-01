@@ -2,7 +2,6 @@
 
 #include <kdb.hpp>
 #include <cmdline.hpp>
-#include <print.hpp>
 
 #include <iostream>
 
@@ -32,7 +31,7 @@ int UmountCommand::execute(Cmdline const& cl)
 	{
 		Key parentKey(mountpoints_name, KEY_END);
 		kdb.get(conf, parentKey);
-		printWarnings (parentKey);
+		printWarnings (cerr, parentKey);
 	}
 
 	KeySet ks = conf.cut (x);
@@ -46,7 +45,7 @@ int UmountCommand::execute(Cmdline const& cl)
 	{
 		Key parentKey(mountpoints_name, KEY_END);
 		kdb.set(conf, parentKey);
-		printWarnings (parentKey);
+		printWarnings (cerr, parentKey);
 	}
 
 	return 0;

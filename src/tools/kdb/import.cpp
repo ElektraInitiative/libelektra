@@ -3,13 +3,14 @@
 #include <kdb.hpp>
 #include <modules.hpp>
 #include <cmdline.hpp>
-#include <print.hpp>
+#include <keysetio.hpp>
+#include <toolexception.hpp>
 
 #include <iostream>
-#include <memory>
 
-using namespace kdb;
 using namespace std;
+using namespace kdb;
+using namespace kdb::tools;
 
 ImportCommand::ImportCommand()
 {}
@@ -30,7 +31,7 @@ int ImportCommand::execute(Cmdline const& cl)
 
 	KeySet originalKeys;
 	kdb.get(originalKeys, root);
-	printWarnings(root);
+	printWarnings(cerr, root);
 
 	KeySet importedKeys;
 
@@ -41,15 +42,15 @@ int ImportCommand::execute(Cmdline const& cl)
 	if (argc > 2 && cl.arguments[2] != "-") file = cl.arguments[2];
 
 	Modules modules;
-	auto_ptr<Plugin> plugin = modules.load(format);
+	PluginPtr plugin = modules.load(format);
 
 	Key errorKey;
 	errorKey.setString(file);
 
 	plugin->get(importedKeys, errorKey);
 
-	printError(errorKey);
-	printWarnings(errorKey);
+	printWarnings(cerr, errorKey);
+	printError(cerr, errorKey);
 
 	KeySet mergedKeys;
 	if (cl.strategy == "cut")

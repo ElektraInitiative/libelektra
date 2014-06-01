@@ -74,7 +74,7 @@ optimization: single malloc per key, name unchangeable?
 
 iteration
 multiple type checkers overhead?
-insertion (dump::serialize)
+insertion (dump::serialise)
 null ptr checks
 many mountpoints
 many globbing statements

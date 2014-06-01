@@ -2,6 +2,7 @@
 #define COMMAND_HPP
 
 #include <string>
+#include <memory>
 #include <exception>
 #include <stdexcept>
 
@@ -130,5 +131,11 @@ public:
 	  */
 	virtual int execute (Cmdline const& cmdline) = 0;
 };
+
+#if __cplusplus > 199711L
+typedef std::unique_ptr<Command> CommandPtr;
+#else
+typedef std::auto_ptr<Command> CommandPtr;
+#endif
 
 #endif

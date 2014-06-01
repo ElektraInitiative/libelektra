@@ -9,7 +9,7 @@ namespace kdb
 {
 
 /**
- * @brief Stream a the name of a key
+ * @brief Stream the name of a key
  *
  * If you also want to stream the value, use the plugin framework.
  *

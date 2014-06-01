@@ -1,12 +1,28 @@
+/**
+ * \file
+ *
+ * \brief Implementation of set/get/error plugins
+ *
+ * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
+
+
+
+
 #include <plugins.hpp>
 
 #include <kdbprivate.h>
 
-#include <iostream>
 #include <algorithm>
 
 using namespace std;
-using namespace kdb;
+
+namespace kdb
+{
+
+namespace tools
+{
 
 
 Plugins::Plugins () :
@@ -40,7 +56,6 @@ void Plugins::addInfo (Plugin &plugin)
 		while (ss >> provide)
 		{
 			alreadyProvided.push_back(provide);
-			cout << "add provide: " << provide << endl;
 		}
 		/* Push back the name of the plugin itself */
 		alreadyProvided.push_back (plugin.name());
@@ -52,7 +67,6 @@ void Plugins::addInfo (Plugin &plugin)
 		while (ss >> need)
 		{
 			needed.push_back(need);
-			cout << "add need: " << need << endl;
 		}
 	}
 
@@ -62,7 +76,6 @@ void Plugins::addInfo (Plugin &plugin)
 		while (ss >> recommend)
 		{
 			recommended.push_back(recommend);
-			cout << "add recommend: " << recommend << endl;
 		}
 	}
 
@@ -72,7 +85,6 @@ void Plugins::addInfo (Plugin &plugin)
 		while (ss >> conflict)
 		{
 			alreadyConflict.push_back(conflict);
-			cout << "add conflict: " << conflict << endl;
 		}
 	}
 }
@@ -85,14 +97,10 @@ void Plugins::addPlugin (Plugin &plugin, std::string which)
 
 	if (which=="postgetstorage" && stacking == "")
 	{
-		cout << "Added plugin (stacking) [" << which << "] to "
-			<< revPostGet << endl;
 		plugins[revPostGet --] = &plugin;
 		return;
 	}
 
-	cout << "Added plugin [" << which << "] to "
-		<< placementInfo[which].current << endl;
 	plugins[placementInfo[which].current++] = &plugin;
 }
 
@@ -109,19 +117,29 @@ bool Plugins::checkPlacement (Plugin &plugin, std::string which)
 			return true;
 		}
 
-		cout << "Failed because of stack overflow cant place to "
+		std::ostringstream os;
+		os << "Too many plugins!\n"
+			"The plugin can't be positioned anymore.\n"
+			"Try to reduce the number of plugins!\n"
+			"\n"
+			"Failed because of stack overflow: cant place to "
 			<< revPostGet  << " because "
 			<< placementInfo["postgetstorage"].current
-			<< " is larger (this slot is in use)" << endl;
-		throw Stackoverflow();
+			<< " is larger (this slot is in use)." << endl;
+		throw TooManyPlugins(os.str());
 	}
 
 	if (placementInfo[which].current > placementInfo[which].max)
 	{
-		cout << "Failed because " << which << " with "
-		     << placementInfo[which].current << " is larger than "
-		     << placementInfo[which].max << endl;
-		throw TooManyPlugins();
+		std::ostringstream os;
+		os << "Too many plugins!\n"
+			"The plugin can't be positioned anymore.\n"
+			"Try to reduce the number of plugins!\n"
+			"\n"
+			"Failed because " << which << " with "
+			<< placementInfo[which].current << " is larger than "
+			<< placementInfo[which].max << endl;
+		throw TooManyPlugins(os.str());
 	}
 
 	return false;
@@ -129,33 +147,41 @@ bool Plugins::checkPlacement (Plugin &plugin, std::string which)
 
 bool Plugins::validateProvided()
 {
+	return getNeededMissing().empty();
+}
+
+std::vector<std::string> Plugins::getNeededMissing()
+{
+	std::vector<std::string> ret;
 	for (size_t i=0; i< needed.size(); ++i)
 	{
 		std::string need = needed[i];
 		if (std::find(alreadyProvided.begin(), alreadyProvided.end(), need) == alreadyProvided.end())
 		{
-			cout << "needed plugin " << need << " is missing" << endl;
-			return false;
+			ret.push_back(need);
 		}
 	}
+	return ret;
+}
 
+std::vector<std::string> Plugins::getRecommendedMissing()
+{
+	std::vector<std::string> ret;
 	for (size_t i=0; i< recommended.size(); ++i)
 	{
-		std::string need = recommended[i];
-		if (std::find(alreadyProvided.begin(), alreadyProvided.end(), need) == alreadyProvided.end())
+		std::string recommend = recommended[i];
+		if (std::find(alreadyProvided.begin(), alreadyProvided.end(), recommend) == alreadyProvided.end())
 		{
-			cout << "recommended plugin " << need << " is missing" << endl;
+			ret.push_back(recommend);
 		}
 	}
-
-	return true;
+	return ret;
 }
 
 void Plugins::checkStorage (Plugin &plugin)
 {
 	if (plugin.findInfo("storage", "provides"))
 	{
-		cout << "This is a storage plugin" << endl;
 		++ nrStoragePlugins;
 	}
 
@@ -170,7 +196,6 @@ void Plugins::checkResolver (Plugin &plugin)
 {
 	if (plugin.findInfo("resolver", "provides"))
 	{
-		cout << "This is a resolver plugin" << endl;
 		++ nrResolverPlugins;
 	}
 
@@ -181,16 +206,6 @@ void Plugins::checkResolver (Plugin &plugin)
 		throw ResolverPlugin();
 	}
 
-}
-
-void Plugins::checkInfo (Plugin &plugin)
-{
-	if (!plugin.findInfo("BSD", "licence"))
-	{
-		cout << "Warning this plugin is not BSD licenced" << endl;
-		cout << "It might taint the licence of the overall product" << endl;
-		cout << "Its licence is: " << plugin.lookupInfo("licence") << endl;
-	}
 }
 
 
@@ -207,7 +222,6 @@ void Plugins::checkOrdering (Plugin &plugin)
 		 * there.
 		 * If it is found, we have an ordering violation.
 		 */
-		cout << "check if " << order << " is in provided" << endl;
 		if (std::find(alreadyProvided.begin(), alreadyProvided.end(), order) != alreadyProvided.end())
 		{
 			throw OrderingViolation();
@@ -270,7 +284,6 @@ void ErrorPlugins::tryPlugin (Plugin &plugin)
 		checkPlacement(plugin,"postrollback"))
 	{
 		/* Wont be added to errorplugins anyway, so ignore it */
-		cout << "Wont be in error plugin, omitting tests" << endl;
 		return;
 	}
 
@@ -291,7 +304,6 @@ void GetPlugins::tryPlugin (Plugin &plugin)
 		checkPlacement(plugin, "postgetstorage"))
 	{
 		/* Wont be added to errorplugins anyway, so ignore it */
-		cout << "Wont be in get plugin, omitting tests" << endl;
 		return;
 	}
 
@@ -302,7 +314,6 @@ void GetPlugins::tryPlugin (Plugin &plugin)
 
 	checkStorage (plugin);
 	checkResolver (plugin);
-	checkInfo (plugin);
 }
 
 void SetPlugins::tryPlugin (Plugin &plugin)
@@ -315,7 +326,6 @@ void SetPlugins::tryPlugin (Plugin &plugin)
 		checkPlacement(plugin, "postcommit"))
 	{
 		/* Wont be added to errorplugins anyway, so ignore it */
-		cout << "Wont be in set plugin, omitting tests" << endl;
 		return;
 	}
 
@@ -327,7 +337,6 @@ void SetPlugins::tryPlugin (Plugin &plugin)
 
 	checkStorage (plugin);
 	checkResolver (plugin);
-	checkInfo (plugin);
 }
 
 
@@ -384,7 +393,7 @@ bool SetPlugins::validated ()
 
 
 
-void ErrorPlugins::serialize (Key &baseKey, KeySet &ret)
+void ErrorPlugins::serialise (Key &baseKey, KeySet &ret)
 {
 	ret.append (*Key (baseKey.getName() + "/errorplugins",
 		KEY_COMMENT, "List of plugins to use",
@@ -402,7 +411,7 @@ void ErrorPlugins::serialize (Key &baseKey, KeySet &ret)
 	}
 }
 
-void GetPlugins::serialize (Key &baseKey, KeySet &ret)
+void GetPlugins::serialise (Key &baseKey, KeySet &ret)
 {
 	ret.append (*Key (baseKey.getName() + "/getplugins",
 		KEY_COMMENT, "List of plugins to use",
@@ -421,7 +430,7 @@ void GetPlugins::serialize (Key &baseKey, KeySet &ret)
 }
 
 
-void SetPlugins::serialize (Key &baseKey, KeySet &ret)
+void SetPlugins::serialise (Key &baseKey, KeySet &ret)
 {
 	ret.append (*Key (baseKey.getName() + "/setplugins",
 		KEY_COMMENT, "List of plugins to use",
@@ -437,4 +446,8 @@ void SetPlugins::serialize (Key &baseKey, KeySet &ret)
 			KEY_COMMENT, "A plugin",
 			KEY_END));
 	}
+}
+
+}
+
 }

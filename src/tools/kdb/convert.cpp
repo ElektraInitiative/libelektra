@@ -3,13 +3,13 @@
 #include <kdb.hpp>
 #include <modules.hpp>
 #include <cmdline.hpp>
-#include <print.hpp>
+#include <toolexception.hpp>
 
 #include <iostream>
-#include <memory>
 
-using namespace kdb;
 using namespace std;
+using namespace kdb;
+using namespace kdb::tools;
 
 ConvertCommand::ConvertCommand()
 {}
@@ -41,8 +41,8 @@ int ConvertCommand::execute(Cmdline const& cl)
 	}
 
 	Modules modules;
-	auto_ptr<Plugin> import_plugin = modules.load(import_format);
-	auto_ptr<Plugin> export_plugin = modules.load(export_format);
+	PluginPtr import_plugin = modules.load(import_format);
+	PluginPtr export_plugin = modules.load(export_format);
 
 	Key errorKey;
 	KeySet keys;
@@ -53,8 +53,8 @@ int ConvertCommand::execute(Cmdline const& cl)
 	errorKey.setString(export_file);
 	export_plugin->set(keys, errorKey);
 
-	printError(errorKey);
-	printWarnings(errorKey);
+	printError(cerr, errorKey);
+	printWarnings(cerr, errorKey);
 
 	return 0;
 }
