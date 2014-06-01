@@ -153,7 +153,7 @@ int init(int argc, char** argv);
 		keyRewindMeta(k2); \
 		while ((meta = keyNextMeta (k1)) != 0) \
 		{ \
-			const Key const * metaCmp = keyNextMeta(k2); \
+			const Key *const metaCmp = keyNextMeta(k2); \
 			if (metaCmp == 0) \
 			{ \
 				nbError++; \
@@ -169,7 +169,7 @@ int init(int argc, char** argv);
 			check_attributes(attributes); \
 		} \
 	 \
-		const Key const * metaCmp = keyNextMeta(k2); \
+		const Key *const metaCmp = keyNextMeta(k2); \
 		if (metaCmp != 0) \
 		{ \
 			nbError++; \
