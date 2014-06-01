@@ -81,9 +81,12 @@ endif (BUILD_FULL OR BUILD_STATIC)
 ADD_CUSTOM_TARGET(uninstall
 	"${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/ElektraUninstall.cmake")
 
+configure_file( "${CMAKE_CURRENT_SOURCE_DIR}/scripts/make-source-package"
+		"${CMAKE_CURRENT_BINARY_DIR}/scripts/make-source-package")
+
 ADD_CUSTOM_TARGET(source-package
-		COMMAND git tag ${KDB_VERSION} && git archive --prefix=elektra-${KDB_VERSION}/ --format=tar ${KDB_VERSION} | gzip > ${CMAKE_BINARY_DIR}/elektra-${KDB_VERSION}.tar.gz && hashsum ${CMAKE_BINARY_DIR}/elektra-${KDB_VERSION}.tar.gz > ${CMAKE_BINARY_DIR}/elektra-${KDB_VERSION}.tar.gz.hashsum
-		COMMENT Make a elektra source package by using git
+		COMMAND "${CMAKE_CURRENT_BINARY_DIR}/scripts/make-source-package"
+		COMMENT "Make a elektra source package by using git"
 		VERBATIM
 		WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 		)

@@ -54,7 +54,6 @@ Now lets merge that to the release branch:
 == Prepare Source Package ==
 
 Build tar.gz and tag version and make hashsum:
-TODO: use external script invoked by "make source-package"
  cd ~build && make source-package
 
 Unpack + compile (with all available plugins) + test those sources (using valgrind!):
