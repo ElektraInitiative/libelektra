@@ -76,3 +76,5 @@ clean:
 	rm -f lift.3
 	rm -f lift_nested.hpp
 	rm -f nestedlift
+	rm -f lift_context.hpp
+	rm -f contextlift
