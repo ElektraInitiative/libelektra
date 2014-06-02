@@ -55,7 +55,7 @@ void test_basic()
 		succeed_if (test.hasMeta("wrong") == true, "meta is here");
 		test.getMeta<int>("wrong");
 		succeed_if (0, "exception did not raise");
-	} catch (KeyBadMeta const& e)
+	} catch (KeyTypeConversion const& e)
 	{
 		succeed_if (1, "no such meta data");
 	}

@@ -761,6 +761,10 @@ inline T Key::get() const
 	std::istringstream ist(str);
 	T x;
 	ist >> x;	// convert string to type
+	if (ist.fail())
+	{
+		throw KeyTypeConversion();
+	}
 	return x;
 }
 
@@ -783,6 +787,10 @@ inline void Key::set(T x)
 	std::string str;
 	std::ostringstream ost;
 	ost << x;	// convert type to string
+	if (ost.fail())
+	{
+		throw KeyTypeConversion();
+	}
 	setString (ost.str());
 }
 
@@ -943,7 +951,7 @@ inline yourtype Key::getMeta(const std::string &name) const
 }
  * @endcode
  *
- * @throw KeyBadMeta if meta data could not be parsed
+ * @throw KeyTypeConversion if meta data could not be parsed
  *
  * @note No exception will be thrown if a const Key or char* is requested,
  * but don't forget the const: getMeta<const Key>,
@@ -960,25 +968,12 @@ inline yourtype Key::getMeta(const std::string &name) const
 template <class T>
 inline T Key::getMeta(const std::string &metaName) const
 {
-	const char *v =
-		static_cast<const char*>(
-			ckdb::keyValue(
-				ckdb::keyGetMeta(key, metaName.c_str())
-				)
-			);
-	if (!v)
+	Key k(const_cast<ckdb::Key*>(ckdb::keyGetMeta(key, metaName.c_str())));
+	if (!k)
 	{
 		return T();
 	}
-	std::string str(v);
-	std::istringstream ist(str);
-	T x;
-	ist >> x;	// convert string to type
-	if (ist.fail())
-	{
-		throw KeyBadMeta();
-	}
-	return x;
+	return k.get<T>();
 }
 
 
@@ -990,13 +985,8 @@ inline T Key::getMeta(const std::string &metaName) const
  */
 inline bool Key::hasMeta(const std::string &metaName) const
 {
-	const char *v =
-		static_cast<const char*>(
-			ckdb::keyValue(
-				ckdb::keyGetMeta(key, metaName.c_str())
-				)
-			);
-	return v;
+	Key k(const_cast<ckdb::Key*>(ckdb::keyGetMeta(key, metaName.c_str())));
+	return k;
 }
 
 template<>
@@ -1050,10 +1040,9 @@ inline std::string Key::getMeta(const std::string &name) const
 template <class T>
 inline void Key::setMeta(const std::string &metaName, T x)
 {
-	std::string str;
-	std::ostringstream ost;
-	ost << x;	// convert type to string
-	ckdb::keySetMeta(key, metaName.c_str(), ost.str().c_str());
+	Key k;
+	k.set<T>(x);
+	ckdb::keySetMeta(key, metaName.c_str(), k.getString().c_str());
 }
 
 /**

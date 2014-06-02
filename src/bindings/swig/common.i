@@ -46,8 +46,7 @@
   #define KEY_EXCEPTIONS \
     KDB_CATCH_EX(kdb, KeyTypeMismatch) \
     KDB_CATCH_EX(kdb, KeyInvalidName) \
-    KDB_CATCH_EX(kdb, KeyBadMeta) \
-    KDB_CATCH_EX(kdb, KeyMetaException) \
+    KDB_CATCH_EX(kdb, KeyTypeConversion) \
     KDB_CATCH_EX(kdb, KeyException) \
     KDB_CATCH_EX(kdb, Exception)
 

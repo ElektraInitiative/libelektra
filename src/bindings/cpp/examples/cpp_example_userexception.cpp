@@ -71,21 +71,12 @@ public:
 	}
 };
 
-class KeyMetaException : public KeyException
+class KeyTypeConversion : public KeyException
 {
 public:
 	virtual const char* what() const throw()
 	{
-		return "User Exception: Exception thrown by Key Meta Data related Operations";
-	}
-};
-
-class KeyBadMeta : public KeyMetaException
-{
-public:
-	virtual const char* what() const throw()
-	{
-		return "User Exception: Could not convert bad meta data";
+		return "User Exception: Exception thrown by get/set";
 	}
 };
 

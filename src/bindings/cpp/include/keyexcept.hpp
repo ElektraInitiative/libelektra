@@ -36,31 +36,24 @@ public:
 	}
 };
 
+class KeyTypeConversion : public KeyException
+{
+public:
+	virtual const char* what() const throw()
+	{
+		return  "Could not convert data to requested type."
+			"get(Meta)<std::string> or use getMeta<const Key>."
+			"or specialise these template methods";
+	}
+};
+
+
 class KeyInvalidName : public KeyException
 {
 public:
 	virtual const char* what() const throw()
 	{
 		return "Invalid Keyname: keyname needs to start with user/ or system/";
-	}
-};
-
-class KeyMetaException : public KeyException
-{
-public:
-	virtual const char* what() const throw()
-	{
-		return "Exception thrown by Key Meta Data related Operations";
-	}
-};
-
-class KeyBadMeta : public KeyMetaException
-{
-public:
-	virtual const char* what() const throw()
-	{
-		return  "Could not convert meta data to requested type."
-			"use getMeta<const Key> or getMeta<std::string>.";
 	}
 };
 

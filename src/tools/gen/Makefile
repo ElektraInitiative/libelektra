@@ -16,6 +16,8 @@ ELEKTRA=-lelektra-static
 CFLAGS=-O0 -ggdb
 FLAGS = `pkg-config --libs --cflags elektra`
 
+all:contextlift
+
 .PHONY:all
 all:lift cpplift nestedlift lift.html lift.3
 
@@ -40,6 +42,9 @@ lift.hpp:${GEN} specification.ini template.hpp
 lift_nested.hpp:${GEN} specification.ini template_nested.hpp nested_support.py
 	${GEN} specification.ini template_nested.hpp > lift_nested.hpp
 
+lift_context.hpp:${GEN} specification.ini template_context.hpp context_support.py
+	${GEN} specification.ini template_context.hpp > lift_context.hpp
+
 genopt.c:${GEN} specification.ini template_genopt.c opt_support.py
 	${GEN} specification.ini template_genopt.c > genopt.c
 
@@ -55,6 +60,8 @@ cpplift:lift.cpp lift.hpp
 nestedlift:lift_nested.hpp lift_nested.cpp
 	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall lift_nested.cpp lift_nested.hpp ${ELEKTRA}  -o nestedlift
 
+contextlift:lift_context.hpp lift_context.cpp
+	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall lift_context.cpp lift_context.hpp ${ELEKTRA}  -o contextlift
 
 .PHONY:clean
 clean:
