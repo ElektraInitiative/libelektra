@@ -159,7 +159,7 @@ set (KDB_DB_USER ".kdb" CACHE PATH
 #
 
 
-option (COMPILE_CXX11_MODE "Use the new C++11 standard" ON)
+option (ENABLE_CXX11 "Include code using C++11 standard, needs gcc 4.7 or comparable clang/icc" OFF)
 
 
 
