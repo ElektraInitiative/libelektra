@@ -219,6 +219,10 @@ class Hierarchy:
     def __hash__(self):
         return hash(self.name)
 
+    def structure(self, n):
+        """Creates an structure Hierarchy entry"""
+        return Hierarchy(n, {})
+
     def add(self, hierarchy):
         """Add an element to hierarchy
            """
@@ -243,7 +247,7 @@ class Hierarchy:
                 return c.add(hierarchy)
 
         n = cutname(hierarchy.name, self.name)
-        h = Hierarchy(n, {})
+        h = self.structure(n)
         """create a structure hierarchy""",hierarchy.name, self.name, h.name
         self._children.update({h})
         h.add(hierarchy)

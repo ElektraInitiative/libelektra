@@ -217,7 +217,12 @@ namespace $nsnpretty($n)
 {
 @end for
 
-/** \brief class */
+/** \brief class of $hierarchy.name
+ * Full Name (with contextual placeholders):
+ * $hierarchy.info.get('name')
+ * Dirname: $hierarchy.dirname
+ * Basename: $hierarchy.basename
+ * */
 class $hierarchy.classname : public ContextualValue<$typeof($hierarchy.info)>
 {
 public:
@@ -230,7 +235,11 @@ public:
 		: ContextualValue<$typeof($hierarchy.info)>(ks,
 			context,
 			kdb::Key("",
-				KEY_VALUE, "$hierarchy.name",
+@if $hierarchy.info.get('name'):
+				KEY_VALUE, "$hierarchy.info.get('name')",
+@else
+				KEY_VALUE, "/",
+@end if
 @if $hierarchy.info.get('default'):
 				KEY_META, "default", $quote($hierarchy.info.get('default')),
 @end if
@@ -263,6 +272,15 @@ public:
 @end for
 };
 
+@if $typeof($hierarchy.info)=='std::string':
+inline std::ostream & operator<<(std::ostream & os,
+		$hierarchy.classname const & c)
+{
+	os << static_cast<std::string>(c);
+	return os;
+}
+@end if
+
 @for n in hierarchy.name.split('/')[1:-1]
 }
 @end for
@@ -279,10 +297,10 @@ public:
 
 /*
 hierarchy is
-@set hierarchy = Hierarchy('/', {})
+@set hierarchy = ContextHierarchy('/', {})
 @for $key, $info in $parameters.items()
-hierarchy.add(Hierarchy($key, $info))
-$hierarchy.add(Hierarchy($key, $info))
+hierarchy.addWithContext(Hierarchy($key, $info))
+$hierarchy.addWithContext(Hierarchy($key, $info))
 $hierarchy
 @end for
 */
