@@ -296,39 +296,39 @@ void test_groups()
 	KEY_META, "default", s_value, KEY_END));
 	assert(i.getEvaluatedName() == "/%/%/%/serial_number");
 	c.activate<MainApplicationLayer>();
-	assert(i.getEvaluatedName() == "/main/%/%/serial_number");
 	String s(ks, c, Key("", KEY_VALUE, "/%x%", KEY_META, "default", "anonymous", KEY_END));
 	c.activate<ProfileLayer>(s);
+	assert(i.getEvaluatedName() == "/main/%/%/serial_number");
 	c.activate<KeyValueLayer>("version", "1");
-	assert(i.getEvaluatedName() == "/main/1%anonymous/%/serial_number");
+	assert(i.getEvaluatedName() == "/main/%1%anonymous/%/serial_number");
 	c.activate<KeyValueLayer>("module", "M1");
-	assert(i.getEvaluatedName() == "/main/1%anonymous/%/serial_number");
+	assert(i.getEvaluatedName() == "/main/%1%anonymous/%/serial_number");
 	c.activate<KeyValueLayer>("manufacturer", "hp");
-	assert(i.getEvaluatedName() == "/main/1%anonymous/hp/serial_number");
+	assert(i.getEvaluatedName() == "/main/%1%anonymous/%hp/serial_number");
 	c.activate<KeyValueLayer>("family", "EliteBook");
-	assert(i.getEvaluatedName() == "/main/1%anonymous/hp/serial_number");
+	assert(i.getEvaluatedName() == "/main/%1%anonymous/%hp/serial_number");
 	c.activate<KeyValueLayer>("type", "MobileWorkstation");
-	assert(i.getEvaluatedName() == "/main/1%anonymous/hp%MobileWorkstation%EliteBook/serial_number");
+	assert(i.getEvaluatedName() == "/main/%1%anonymous/%hp%MobileWorkstation%EliteBook/serial_number");
 	c.activate<KeyValueLayer>("model", "8570");
-	assert(i.getEvaluatedName() == "/main/1%anonymous/hp%MobileWorkstation%EliteBook%8570/serial_number");
+	assert(i.getEvaluatedName() == "/main/%1%anonymous/%hp%MobileWorkstation%EliteBook%8570/serial_number");
 	c.activate<KeyValueLayer>("thread", "40");
-	assert(i.getEvaluatedName() == "/main/1%anonymous%40%M1/hp%MobileWorkstation%EliteBook%8570/serial_number");
+	assert(i.getEvaluatedName() == "/main/%1%anonymous%40%M1/%hp%MobileWorkstation%EliteBook%8570/serial_number");
 	c.deactivate<KeyValueLayer>("version", "");
-	assert(i.getEvaluatedName() == "/main/%/hp%MobileWorkstation%EliteBook%8570/serial_number");
+	assert(i.getEvaluatedName() == "/main/%/%hp%MobileWorkstation%EliteBook%8570/serial_number");
 	c.activate<KeyValueLayer>("version", "4");
-	assert(i.getEvaluatedName() == "/main/4%anonymous%40%M1/hp%MobileWorkstation%EliteBook%8570/serial_number");
+	assert(i.getEvaluatedName() == "/main/%4%anonymous%40%M1/%hp%MobileWorkstation%EliteBook%8570/serial_number");
 	c.deactivate<KeyValueLayer>("manufacturer", "");
-	assert(i.getEvaluatedName() == "/main/4%anonymous%40%M1/%/serial_number");
+	assert(i.getEvaluatedName() == "/main/%4%anonymous%40%M1/%/serial_number");
 	c.activate<KeyValueLayer>("manufacturer", "HP");
-	assert(i.getEvaluatedName() == "/main/4%anonymous%40%M1/HP%MobileWorkstation%EliteBook%8570/serial_number");
+	assert(i.getEvaluatedName() == "/main/%4%anonymous%40%M1/%HP%MobileWorkstation%EliteBook%8570/serial_number");
 	c.deactivate<KeyValueLayer>("type", "");
-	assert(i.getEvaluatedName() == "/main/4%anonymous%40%M1/HP/serial_number");
+	assert(i.getEvaluatedName() == "/main/%4%anonymous%40%M1/%HP/serial_number");
 	c.with<KeyValueLayer>("type", "Notebook")([&]
 	{
-		assert(i.getEvaluatedName() == "/main/4%anonymous%40%M1/HP%Notebook%EliteBook%8570/serial_number");
+		assert(i.getEvaluatedName() == "/main/%4%anonymous%40%M1/%HP%Notebook%EliteBook%8570/serial_number");
 		c.without<KeyValueLayer>("type", "")([&]
 		{
-			assert(i.getEvaluatedName() == "/main/4%anonymous%40%M1/HP/serial_number");
+			assert(i.getEvaluatedName() == "/main/%4%anonymous%40%M1/%HP/serial_number");
 		});
 	});
 }

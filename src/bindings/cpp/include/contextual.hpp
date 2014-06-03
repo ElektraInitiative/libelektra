@@ -15,7 +15,7 @@
 
 #include <keyset.hpp>
 
-#define unlikely(x) __builtin_expect((x),0)
+#define ELEKTRA_INLINE __attribute__((noinline))
 
 namespace kdb
 {
@@ -165,7 +165,7 @@ public:
 	 */
 	void attachByName(std::string const & key_name, Observer & observer)
 	{
-		evaluate(key_name, [&](std::string const & current_id, std::string & , bool &){
+		evaluate(key_name, [&](std::string const & current_id, std::string &, bool){
 			this->attach(current_id, observer);
 			return false;
 		});
@@ -177,7 +177,7 @@ public:
 	 */
 	std::string evaluate(std::string const & key_name) const
 	{
-		return evaluate(key_name, [&](std::string const & current_id, std::string & ret, bool & first_in_group){
+		return evaluate(key_name, [&](std::string const & current_id, std::string & ret, bool in_group){
 			auto f = m_active_layers.find(current_id);
 			bool left_group = true;
 			if (f != m_active_layers.end())
@@ -186,13 +186,21 @@ public:
 				std::string r = (*f->second)();
 				if (!r.empty())
 				{
-					if (!first_in_group)
+					if (in_group)
 					{
 						ret += "%";
 					}
 					ret += r;
 					left_group = false;
 				}
+				else if (!in_group)
+				{
+					ret += "%";
+				}
+			}
+			else if (!in_group)
+			{
+				ret += "%";
 			}
 			return left_group;
 		});
@@ -204,7 +212,7 @@ public:
 	 * @par on_layer is called for every layer in the
 	 * specification.
 	*/
-	std::string evaluate(std::string const & key_name, std::function<bool(std::string const &, std::string &, bool & left_group)> const & on_layer) const
+	std::string evaluate(std::string const & key_name, std::function<bool(std::string const &, std::string &, bool in_group)> const & on_layer) const
 	{
 		size_t const & s = key_name.size();
 		std::string ret;
@@ -212,7 +220,6 @@ public:
 		bool capture_id = false; // we are currently within a % block (group or single layer)
 		bool left_group = false; // needed to omit layers that do not matter in a group anymore
 		bool is_in_group = false;
-		bool first_in_group = true; // needed to omit separation character the first time
 
 		// heuristic how much too allocate
 		ret.reserve(s*2);
@@ -220,46 +227,40 @@ public:
 
 		for (std::string::size_type i=0; i<s; ++i)
 		{
-			if (unlikely(key_name[i] == '%'))
+			if (key_name[i] == '%')
 			{
 				if (capture_id)
 				{
-					// we are at end of group or
-					// normal layer
-					capture_id = false;
-					// either it was a group, then
-					// this cannot be the first
-					// element OR
-					// it was never a group
+					// finish capturing
 					if (!left_group)
 					{
-						left_group = on_layer(current_id, ret, first_in_group);
-						if (left_group && !is_in_group)
-						{
-							ret += "%";
-						}
+						on_layer(current_id, ret, is_in_group);
 					}
 					current_id.clear();
+					capture_id = false;
 				}
 				else
 				{
+					// start capturing
 					capture_id = true;
 					left_group = false;
-					first_in_group = true;
+					is_in_group = false;
 				}
 			}
 			else if (capture_id && key_name[i] == ' ' && !left_group)
 			{
 				// found group separator in active
 				// group
-				left_group = on_layer(current_id, ret, first_in_group);
-				if (first_in_group && left_group)
+				left_group = on_layer(current_id, ret, true);
+				if (!is_in_group && left_group)
 				{
-					ret += "%";
+					ret += "%"; // empty groups
+				}
+				else
+				{
+					is_in_group = true;
 				}
 				current_id.clear();
-				first_in_group = false;
-				is_in_group = true;
 			}
 			else // non % character
 			{
@@ -531,8 +532,8 @@ public:
 	}
 
 	/// Do not inline so that we can use it for debugging
-	__attribute__((noinline)) 
-	std::string const & getEvaluatedName() const
+	
+	ELEKTRA_INLINE std::string const & getEvaluatedName() const
 	{
 		return m_evaluated_name;
 	}
