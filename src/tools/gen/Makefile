@@ -82,4 +82,5 @@ clean:
 	rm -f nestedlift
 	rm -f lift_context.hpp
 	rm -f contextlift
+	rm -f visit_context.hpp
 	rm -f contextvisit
