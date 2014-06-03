@@ -79,7 +79,7 @@ int main()
 	KDB kdb;
 	KeySet ks;
 	Context c;
-	kdb.get(ks, "/visit");
+	// some predefined values (for convenience):
 	ks.append(Key("user/visit/%/%/%/person/greeting",
 				   KEY_VALUE,
 				   "Tag",
@@ -92,6 +92,10 @@ int main()
 				   KEY_VALUE,
 				   "Grüezi",
 				   KEY_END));
+	KeySet ks2;
+	kdb.get(ks2, "/visit");
+	// overwrite them if something is available in config files:
+	ks.append(ks2);
 
 	Parameters par(ks,c);
 
