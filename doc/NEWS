@@ -6,7 +6,7 @@ This release both adds many improvements and some technical previews.
 
 == Improvements ==
 
-The hosts plugin got a documentation and several bug fixes.
+The hosts plugin got documentation and several bug fixes.
 Multiline comments now remove the comment start sequences within
 the metadata comment.
 Additionally the kdb tool has an improved error message on invalid
