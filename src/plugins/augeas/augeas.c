@@ -16,13 +16,9 @@
 
 #include "augeas.h"
 
-#define AUGEAS_OUTPUT_ROOT "/raw/output"
-#define AUGEAS_CONTENT_ROOT "/raw/content"
-#define AUGEAS_TREE_ROOT "/raw/tree"
-
 #define ELEKTRA_SET_GENERAL_ERROR(id, parentKey, message) \
 	do { \
-		ELEKTRA_SET_ERROR (id, parentKey, message); \
+		ELEKTRA_SET_ERROR(id, parentKey, message); \
 		errno = errnosave; \
 		return -1; \
 	} while (0)
@@ -33,12 +29,44 @@
 #define ELEKTRA_SET_AUGEAS_ERROR(handle, parrentKey) \
 	ELEKTRA_SET_GENERAL_ERROR(85, parentKey, getAugeasError(augeasHandle))
 
-static void setKeyOrder(Key *key, int order)
+struct KeyConversion
+{
+	KeySet *ks;
+	Key *parentKey;
+	int currentOrder;
+};
+
+struct OrphanSearch
+{
+	KeySet *ks;
+	Key *parentKey;
+};
+
+typedef int (*ForeachCallback)(augeas *, const char *, void *);
+
+void keySetOrderMeta(Key *key, int order)
 {
 	char *buffer;
 	asprintf (&buffer, "%d", order);
 	keySetMeta (key, "order", buffer);
 	free (buffer);
+}
+
+int keyCmpOrder(const void *a, const void *b)
+{
+	const Key **ka = (const Key **) a;
+	const Key **kb = (const Key **) b;
+
+	int aorder = 0;
+	int border = 0;
+
+	const Key *kam = keyGetMeta (*ka, "order");
+	const Key *kbm = keyGetMeta (*kb, "order");
+
+	if (kam) aorder = atoi (keyString (kam));
+	if (kbm) border = atoi (keyString (kbm));
+
+	return aorder - border;
 }
 
 static const char *getLensPath(Plugin *handle)
@@ -48,36 +76,194 @@ static const char *getLensPath(Plugin *handle)
 	return keyString (lensPathKey);
 }
 
-static int loadFile(FILE *fh, char **content)
+static const char *getAugeasError(augeas* augeasHandle)
 {
-	// allocate file content buffer
-	if (fseek (fh, 0, SEEK_END) != 0) return -1;
+	const char* message = 0;
+	if (aug_error (augeasHandle) != 0)
+	{
+		message = aug_error_message (augeasHandle);
+	}
+	else
+	{
+		aug_get (augeasHandle, "/augeas/text"AUGEAS_TREE_ROOT"/error/message",
+				&message);
+		if (!message) message = "No specific reason was reported";
+	}
+
+	/* should not happen, but avoid 0 return */
+	if (!message) message = "";
+
+	return message;
+}
+
+static Key *createKeyFromPath(Key *parentKey, const char *treePath)
+{
+	Key *key = keyDup (parentKey);
+	const char *baseName = (treePath + strlen (AUGEAS_TREE_ROOT) + 1);
+	keyAddBaseName (key, baseName);
+	return key;
+}
+
+static int convertToKey(augeas *handle, const char *treePath, void *data)
+{
+	struct KeyConversion *conversionData = (struct KeyConversion *) data;
+	int result = 0;
+	const char *value = 0;
+	result = aug_get (handle, treePath, &value);
+
+	if (result < 0) return result;
+
+	Key *key = createKeyFromPath (conversionData->parentKey, treePath);
+
+	/* fill key values */
+	keySetString (key, value);
+	conversionData->currentOrder++;
+	keySetOrderMeta (key, conversionData->currentOrder);
+	result = ksAppendKey (conversionData->ks, key);
+
+	return result;
+}
+
+static int removeOrphan(augeas *handle, const char *treePath, void *data)
+{
+	struct OrphanSearch *orphanData = (struct OrphanSearch *) data;
+
+	Key *key = createKeyFromPath (orphanData->parentKey, treePath);
+
+	if (!ksLookup (orphanData->ks, key, KDB_O_NONE))
+	{
+		char *nodeMatch;
+		char **matches;
+		asprintf (&nodeMatch, "%s/*", treePath);
+		int numChildNodes = aug_match (handle, nodeMatch, &matches);
+		free (nodeMatch);
+
+		/* if the node is a leaf node we can safely delete it */
+		if (numChildNodes == 0)
+		{
+			aug_rm (handle, treePath);
+		}
+		else
+		{
+			short pruneTree = 1;
+			for (int i = 0; i < numChildNodes; i++)
+			{
+				Key *childKey = createKeyFromPath (orphanData->parentKey,
+						matches[i]);
+				if (ksLookup (orphanData->ks, childKey, KDB_O_NONE))
+				{
+					pruneTree = 0;
+				}
+				keyDel (childKey);
+				free (matches[i]);
+			}
+			free (matches);
+
+			if (pruneTree)
+			{
+				aug_rm (handle, treePath);
+			}
+		}
+	}
+
+	keyDel (key);
+
+	return 0;
+}
+
+static int foreachAugeasNode(augeas *handle, const char *treePath,
+		ForeachCallback callback, void *callbackData)
+{
+	char *matchPath;
+	asprintf (&matchPath, "%s/*", treePath);
+
+	/* must be non NULL for aug_match to return matches */
+	char **matches = (char **) 1;
+	int numMatches = aug_match (handle, matchPath, &matches);
+	free (matchPath);
+
+	if (numMatches < 0) return numMatches;
+
+	int i;
+	int result = 0;
+	for (i = 0; i < numMatches; i++)
+	{
+		/* retrieve the value from augeas */
+		char *curPath = matches[i];
+
+		result = (*callback) (handle, curPath, callbackData);
+
+		/* handle the subtree */
+		result = foreachAugeasNode (handle, curPath, callback, callbackData);
+
+		if (result < 0) break;
+
+		free (curPath);
+	}
+
+	for (; i < numMatches; i++)
+	{
+		free (matches[i]);
+	}
+
+	free (matches);
+
+	return result;
+}
+
+static Key **convertToArray(KeySet *ks)
+{
+	/* build an array of keys ordered by the order MetaKey */
+	Key **result;
+	size_t arraySize = ksGetSize (ks);
+	result = calloc (arraySize, sizeof(Key *));
+
+	if (result == 0) return 0;
+
+	ksRewind (ks);
+	size_t index = 0;
+
+	Key *key;
+	while ((key = ksNext (ks)) != 0)
+	{
+		result[index] = key;
+		++index;
+	}
+
+	qsort (result, arraySize, sizeof(Key *), keyCmpOrder);
+
+	return result;
+}
+
+static char *loadFile(FILE *fh)
+{
+	/* open the file */
+	char* content = 0;
+
+	if (fseek (fh, 0, SEEK_END) != 0) return 0;
 
 	long fileSize = ftell (fh);
 	rewind (fh);
 
 	if (fileSize > 0)
 	{
-		*content = malloc (fileSize * sizeof(char) + 1);
-		if (*content == 0) return -1;
-		int readBytes = fread(*content, sizeof (char), fileSize, fh);
+		content = malloc (fileSize * sizeof(char) + 1);
+		if (content == 0) return 0;
+		int readBytes = fread (content, sizeof(char), fileSize, fh);
 
-		if (feof (fh) || ferror (fh) || readBytes != fileSize) return -1;
+		if (feof (fh) || ferror (fh) || readBytes != fileSize) return 0;
 
 		/* null terminate the string, as fread doesn't do it */
-		(*content)[fileSize] = 0;
+		(content)[fileSize] = 0;
 	}
 	else if (fileSize == 0)
 	{
-		*content = malloc (1);
-		if (*content == 0) return -1;
-		**content = (char) 0;
-	} else {
-		return -1;
+		content = malloc (1);
+		if (content == 0) return 0;
+		*content = (char) 0;
 	}
 
-
-	return 0;
+	return content;
 }
 
 static int loadTree(augeas* augeasHandle, const char *lensPath, char *content)
@@ -106,13 +292,16 @@ static int saveFile(augeas* augeasHandle, FILE* fh)
 	return ret;
 }
 
-static int saveTree(augeas* augeasHandle, Key** keyArray, size_t arraySize,
-		const char* lensPath, size_t prefixSize)
+static int saveTree(augeas* augeasHandle, KeySet* ks, const char* lensPath,
+		Key *parentKey)
 {
 	int ret = 0;
 
-	/* erase the existing tree */
-	aug_rm (augeasHandle, AUGEAS_TREE_ROOT);
+	size_t prefixSize = keyGetNameSize (parentKey) - 1;
+	size_t arraySize = ksGetSize (ks);
+	Key **keyArray = convertToArray (ks);
+
+	if (keyArray == 0) return -1;
 
 	/* convert the Elektra KeySet to an Augeas tree */
 	for (size_t i = 0; i < arraySize; i++)
@@ -125,102 +314,21 @@ static int saveTree(augeas* augeasHandle, Key** keyArray, size_t arraySize,
 		free (nodeName);
 	}
 
+	/* remove keys not present in the KeySet */
+	struct OrphanSearch *data = malloc (sizeof(struct OrphanSearch));
+
+	if (!data) return -1;
+
+	data->ks = ks;
+	data->parentKey = parentKey;
+
+	foreachAugeasNode (augeasHandle, AUGEAS_TREE_ROOT, &removeOrphan, data);
+
+	/* build the tree */
 	ret = aug_text_retrieve (augeasHandle, lensPath, AUGEAS_CONTENT_ROOT,
 	AUGEAS_TREE_ROOT, AUGEAS_OUTPUT_ROOT);
 
 	return ret;
-}
-
-// TODO: using the global state currentOrder is not very clean
-static int convertToKeys(augeas *handle, KeySet *ks, const Key *rootKey,
-		const char *treePath, int *currentOrder)
-{
-	char *matchPath;
-	asprintf (&matchPath, "%s/*", treePath);
-
-	/* must be non NULL for aug_match to return matches */
-	char **matches = (char **) 1;
-	int numMatches = aug_match (handle, matchPath, &matches);
-	free (matchPath);
-
-	if (numMatches < 0) return numMatches;
-
-	int i;
-	int result = 0;
-	for (i = 0; i < numMatches; i++)
-	{
-		/* retrieve the value from augeas */
-		char *curr = matches[i];
-		const char *value = 0;
-		result = aug_get (handle, curr, &value);
-
-		if (result < 0) break;
-
-		/* build an Elektra key */
-		Key *key = keyDup (rootKey);
-		keySetString (key, value);
-		char *baseName = (strrchr (curr, '/') + 1);
-		keyAddBaseName (key, baseName);
-		(*currentOrder)++;
-		setKeyOrder (key, *currentOrder);
-		result = ksAppendKey (ks, key);
-
-		if (result < 0) break;
-
-		/* handle the subtree */
-		// TODO: fix static order
-		result = convertToKeys (handle, ks, key, curr, currentOrder);
-
-		if (result < 0) break;
-
-		free (curr);
-	}
-
-	for (; i < numMatches; i++)
-	{
-		free (matches[i]);
-	}
-
-	free (matches);
-
-	return result;
-}
-
-static const char *getAugeasError(augeas* augeasHandle)
-{
-	const char* message = 0;
-	if (aug_error (augeasHandle) != 0)
-	{
-		message = aug_error_message (augeasHandle);
-	}
-	else
-	{
-		aug_get (augeasHandle, "/augeas/text"AUGEAS_TREE_ROOT"/error/message",
-				&message);
-		if (!message) message = "No specific reason was reported";
-	}
-
-	/* should not happen, but avoid 0 return */
-	if (!message) message = "";
-
-	return message;
-}
-
-int compareKeysByOrder(const void *a, const void *b)
-{
-	const Key **ka = (const Key **) a;
-	const Key **kb = (const Key **) b;
-
-	int aorder = 0;
-	int border = 0;
-
-	const Key *kam = keyGetMeta (*ka, "order");
-	const Key *kbm = keyGetMeta (*kb, "order");
-
-	if (kam) aorder = atoi (keyString (kam));
-	if (kbm) border = atoi (keyString (kbm));
-
-	return aorder - border;
 }
 
 int elektraAugeasOpen(Plugin *handle, Key *parentKey)
@@ -267,23 +375,21 @@ int elektraAugeasGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		return 1;
 	}
 
+	augeas *augeasHandle = elektraPluginGetData (handle);
+
 	/* retrieve the lens to use */
 	const char* lensPath = getLensPath (handle);
 	if (!lensPath)
-		ELEKTRA_SET_GENERAL_ERROR(86, parentKey, keyName (parentKey));
+	ELEKTRA_SET_GENERAL_ERROR(86, parentKey, keyName (parentKey));
 
-	/* open the file */
-	char* content;
-	augeas *augeasHandle = elektraPluginGetData (handle);
-	FILE *fh = fopen (keyValue (parentKey), "r");
+	FILE *fh = fopen (keyString (parentKey), "r");
 
 	if (fh == 0) ELEKTRA_SET_ERRNO_ERROR(9, parentKey);
 
 	/* load its contents into a string */
-	ret = loadFile (fh, &content);
-	fclose (fh);
+	char *content = loadFile (fh);
 
-	if (ret < 0) ELEKTRA_SET_ERRNO_ERROR(76, parentKey);
+	if (content == 0) ELEKTRA_SET_ERRNO_ERROR(76, parentKey);
 
 	/* convert the string into an augeas tree */
 	ret = loadTree (augeasHandle, lensPath, content);
@@ -298,8 +404,20 @@ int elektraAugeasGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	Key *key = keyDup (parentKey);
 	ksAppendKey (append, key);
 
-	int order = 1;
-	ret = convertToKeys (augeasHandle, append, key, AUGEAS_TREE_ROOT, &order);
+	struct KeyConversion *conversionData = malloc (
+			sizeof(struct KeyConversion));
+
+	if (!conversionData)
+	ELEKTRA_SET_GENERAL_ERROR(87, parentKey, strerror (errno));
+
+	conversionData->currentOrder = 0;
+	conversionData->parentKey = key;
+	conversionData->ks = append;
+
+	ret = foreachAugeasNode (augeasHandle, AUGEAS_TREE_ROOT, &convertToKey,
+			conversionData);
+
+	free (conversionData);
 
 	if (ret < 0)
 	{
@@ -318,71 +436,46 @@ int elektraAugeasSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	int errnosave = errno;
 	augeas *augeasHandle = elektraPluginGetData (handle);
 
-	size_t prefixSize = keyGetNameSize (parentKey) - 1;
 	const char *lensPath = getLensPath (handle);
 
 	if (!lensPath)
-		ELEKTRA_SET_GENERAL_ERROR(86, parentKey, keyName (parentKey));
+	ELEKTRA_SET_GENERAL_ERROR(86, parentKey, keyName (parentKey));
 
 	FILE *fh = fopen (keyValue (parentKey), "w+");
 
 	if (fh == 0) ELEKTRA_SET_ERRNO_ERROR(9, parentKey);
 
-	/* build an array of keys ordered by the order MetaKey */
-	Key **keyArray;
-	size_t arraySize = ksGetSize (returned);
-	keyArray = calloc (arraySize, sizeof(Key *));
-
-	if (keyArray == 0)
-	{
-		fclose (fh);
-		ELEKTRA_SET_ERRNO_ERROR(87, parentKey);
-	}
-
-	ksRewind (returned);
-	size_t index = 0;
-
-	Key *key;
-	while ((key = ksNext (returned)) != 0)
-	{
-		keyArray[index] = key;
-		++index;
-	}
-
-	qsort (keyArray, arraySize, sizeof(Key *), compareKeysByOrder);
-
 	int ret = 0;
 
-	/* load a fresh copy of the file into the tree */
-	char *content;
-	ret = loadFile (fh, &content);
+	if (aug_match (augeasHandle, AUGEAS_TREE_ROOT, NULL) == 0)
+	{
+		/* load a fresh copy of the file into the tree */
+		char *content = loadFile (fh);
 
-	if (ret < 0) ELEKTRA_SET_ERRNO_ERROR(76, parentKey);
+		if (content == 0) ELEKTRA_SET_ERRNO_ERROR(76, parentKey);
 
-	/* convert the string into an augeas tree */
-	ret = loadTree (augeasHandle, lensPath, content);
-	free (content);
+		/* convert the string into an augeas tree */
+		ret = loadTree (augeasHandle, lensPath, content);
+		free (content);
 
-	if (ret < 0) ELEKTRA_SET_AUGEAS_ERROR(augeasHandle, parentKey);
-	ret = saveTree (augeasHandle, keyArray, arraySize, lensPath, prefixSize);
+		if (ret < 0) ELEKTRA_SET_AUGEAS_ERROR(augeasHandle, parentKey);
+	}
+
+	ret = saveTree (augeasHandle, returned, lensPath, parentKey);
 
 	if (ret < 0)
 	{
 		fclose (fh);
+		/* TODO: this is not always an Augeas error (could be an malloc error) */
 		ELEKTRA_SET_AUGEAS_ERROR(augeasHandle, parentKey);
 	}
 
 	/* write the Augeas tree to the file */
 	ret = saveFile (augeasHandle, fh);
-
-	if (ret < 0)
-	{
-		fclose (fh);
-		ELEKTRA_SET_ERRNO_ERROR(75, parentKey);
-	}
-
-	free (keyArray);
 	fclose (fh);
+
+	if (ret < 0) ELEKTRA_SET_ERRNO_ERROR(75, parentKey);
+
 	errno = errnosave;
 	return 1;
 }

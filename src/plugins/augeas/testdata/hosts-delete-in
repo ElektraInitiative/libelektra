@@ -1,0 +1,4 @@
+127.0.0.1	localhost # hostcomment
+# linecomment
+192.168.0.1	host1 host1alias1 host1alias2
+fd00::4711:4712:2::1	host2 host2alias1 host2alias2

@@ -38,11 +38,13 @@ if(LIBAUGEAS_FOUND AND LIBXML2_FOUND)
 		install (TARGETS ${PLUGIN_NAME}
 			DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})
 	
-		configure_file (testdata/hosts-read ${CMAKE_CURRENT_BINARY_DIR}/testdata/hosts-read)
-		configure_file (testdata/hosts-write ${CMAKE_CURRENT_BINARY_DIR}/testdata/hosts-write)
-		configure_file (testdata/hosts-big ${CMAKE_CURRENT_BINARY_DIR}/testdata/hosts-big)
-		configure_file (testdata/hosts-modify ${CMAKE_CURRENT_BINARY_DIR}/testdata/hosts-modify)
+		file (GLOB testfiles "testdata/*")
 		
+		foreach (testfilepath ${testfiles})
+			get_filename_component(testfile ${testfilepath} NAME)
+			configure_file(${testfilepath} ${CMAKE_CURRENT_BINARY_DIR}/testdata/${testfile})
+		endforeach()
+
 		add_plugintest(augeas)
 	else (HAS_LIBAUGEAS16)
 		remove_plugin (augeas "symbols aug_text_store and aug_text_retrieve not found. Make sure you have libaugeas 0.16 or higher. This library version is included in Augeas 1.0 or higher")
