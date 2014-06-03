@@ -129,10 +129,63 @@ void test_hostLensWrite(char *fileName)
 	;
 }
 
-void test_hostLensModify(char *fileName)
+void test_hostLensDelete(char *sourceFile, char *compFile)
 {
 	Key *parentKey = keyNew ("user/tests/augeas-hosts", KEY_VALUE,
-			srcdir_file (fileName), KEY_END);
+			srcdir_file (sourceFile), KEY_END);
+	KeySet *conf = ksNew (20,
+			keyNew ("system/lens", KEY_VALUE, "Hosts.lns", KEY_END), KS_END);
+	PLUGIN_OPEN("augeas");
+
+	KeySet *ks = ksNew (0);
+
+	succeed_if(plugin->kdbGet (plugin, ks, parentKey) >= 1,
+			"call to kdbGet was not successful");
+	succeed_if(output_error (parentKey), "error in kdbGet");
+	succeed_if(output_warnings (parentKey), "warnings in kdbGet");
+
+	Key *key = ksLookupByName (ks, "user/tests/augeas-hosts/1", 0);
+	exit_if_fail(key, "localhost not found");
+	ksPopAtCursor(ks, ksGetCursor(ks));
+
+	key = ksLookupByName (ks, "user/tests/augeas-hosts/1/ipaddr", 0);
+	exit_if_fail(key, "ip address of localhost not found");
+	ksPopAtCursor(ks, ksGetCursor(ks));
+
+	key = ksLookupByName (ks, "user/tests/augeas-hosts/1/canonical", 0);
+	exit_if_fail(key, "canonical of localhost not found");
+	ksPopAtCursor(ks, ksGetCursor(ks));
+
+	key = ksLookupByName (ks, "user/tests/augeas-hosts/1/#comment", 0);
+	exit_if_fail(key, "comment of localhost not found");
+	ksPopAtCursor(ks, ksGetCursor(ks));
+
+	char * fileNameCompare = malloc (strlen (compFile) + 6);
+	strcpy (fileNameCompare, compFile);
+	strcat (fileNameCompare, ".comp");
+
+	keySetString (parentKey, srcdir_file(fileNameCompare));
+
+	succeed_if(plugin->kdbSet (plugin, ks, parentKey) == 1,
+			"kdbSet was not successful");
+	succeed_if(output_error (parentKey), "error in kdbSet");
+	succeed_if(output_warnings (parentKey), "warnings in kdbSet");
+
+	free (fileNameCompare);
+
+	succeed_if(
+			compare_line_files (srcdir_file (compFile), keyString (parentKey)),
+			"files do not match as expected");
+
+	PLUGIN_CLOSE ()
+	;
+
+}
+
+void test_hostLensModify(char *sourceFile, char *compFile)
+{
+	Key *parentKey = keyNew ("user/tests/augeas-hosts", KEY_VALUE,
+			srcdir_file (sourceFile), KEY_END);
 	KeySet *conf = ksNew (20,
 			keyNew ("system/lens", KEY_VALUE, "Hosts.lns", KEY_END), KS_END);
 	PLUGIN_OPEN("augeas");
@@ -156,8 +209,8 @@ void test_hostLensModify(char *fileName)
 	exit_if_fail(key, "line comment not found");
 	keySetString (key, "line comment modified");
 
-	char * fileNameCompare = malloc (strlen (fileName) + 6);
-	strcpy (fileNameCompare, fileName);
+	char * fileNameCompare = malloc (strlen (compFile) + 6);
+	strcpy (fileNameCompare, compFile);
 	strcat (fileNameCompare, ".comp");
 
 	keySetString (parentKey, srcdir_file(fileNameCompare));
@@ -170,7 +223,7 @@ void test_hostLensModify(char *fileName)
 	free (fileNameCompare);
 
 	succeed_if(
-			compare_line_files (srcdir_file (fileName), keyString (parentKey)),
+			compare_line_files (srcdir_file (compFile), keyString (parentKey)),
 			"files do not match as expected");
 
 	PLUGIN_CLOSE ();
@@ -254,6 +307,43 @@ void test_order(char *fileName)
 	PLUGIN_CLOSE() ;
 }
 
+void test_hostLensFormatting(char *fileName)
+{
+	Key *parentKey = keyNew ("user/tests/augeas-hosts", KEY_VALUE,
+			srcdir_file (fileName), KEY_END);
+	KeySet *conf = ksNew (20,
+			keyNew ("system/lens", KEY_VALUE, "Hosts.lns", KEY_END), KS_END);
+	PLUGIN_OPEN("augeas");
+
+	KeySet *ks = ksNew (0);
+
+	succeed_if(plugin->kdbGet (plugin, ks, parentKey) >= 1,
+			"call to kdbGet was not successful");
+	succeed_if(output_error (parentKey), "error in kdbGet");
+	succeed_if(output_warnings (parentKey), "warnings in kdbGet");
+
+	char * fileNameCompare = malloc (strlen (fileName) + 6);
+	strcpy (fileNameCompare, fileName);
+	strcat (fileNameCompare, ".comp");
+
+	keySetString (parentKey, srcdir_file(fileNameCompare));
+
+	succeed_if(plugin->kdbSet (plugin, ks, parentKey) == 1,
+			"kdbSet was not successful");
+	succeed_if(output_error (parentKey), "error in kdbSet");
+	succeed_if(output_warnings (parentKey), "warnings in kdbSet");
+
+	free (fileNameCompare);
+
+	succeed_if(
+			compare_line_files (srcdir_file (fileName), keyString (parentKey)),
+			"files do not match as expected");
+
+	PLUGIN_CLOSE ()
+	;
+
+}
+
 int main(int argc, char** argv)
 {
 	printf ("AUGEAS       TESTS\n");
@@ -263,7 +353,9 @@ int main(int argc, char** argv)
 
 	test_hostLensRead ("testdata/hosts-read");
 	test_hostLensWrite ("testdata/hosts-write");
-	test_hostLensModify ("testdata/hosts-modify");
+	test_hostLensModify ("testdata/hosts-modify-in", "testdata/hosts-modify");
+	test_hostLensDelete ("testdata/hosts-delete-in", "testdata/hosts-delete");
+	test_hostLensFormatting("testdata/hosts-formatting");
 	test_order ("testdata/hosts-big");
 
 	printf ("\ntest_hosts RESULTS: %d test(s) done. %d error(s).\n", nbTest,
