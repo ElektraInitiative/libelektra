@@ -14,7 +14,7 @@
 #include <string>
 
 #include <keyset.hpp>
-#include <toolexception.hpp>
+#include <toolexcept.hpp>
 
 namespace kdb
 {

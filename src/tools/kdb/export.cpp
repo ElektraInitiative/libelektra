@@ -3,7 +3,7 @@
 #include <kdb.hpp>
 #include <modules.hpp>
 #include <cmdline.hpp>
-#include <toolexception.hpp>
+#include <toolexcept.hpp>
 
 #include <iostream>
 

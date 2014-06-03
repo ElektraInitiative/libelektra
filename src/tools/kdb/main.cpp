@@ -7,7 +7,7 @@
 #include <command.hpp>
 #include <cmdline.hpp>
 #include <external.hpp>
-#include <toolexception.hpp>
+#include <toolexcept.hpp>
 
 #include <key.hpp>
 #include <kdb.hpp>

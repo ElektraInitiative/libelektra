@@ -4,7 +4,7 @@
 #include <modules.hpp>
 #include <cmdline.hpp>
 #include <keysetio.hpp>
-#include <toolexception.hpp>
+#include <toolexcept.hpp>
 
 #include <iostream>
 

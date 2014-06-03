@@ -11,7 +11,7 @@
 #define TOOLS_PLUGIN_HPP
 
 #include <kdb.hpp>
-#include <toolexception.hpp>
+#include <toolexcept.hpp>
 
 #include <map>
 #include <vector>

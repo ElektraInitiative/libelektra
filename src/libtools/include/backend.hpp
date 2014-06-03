@@ -13,7 +13,7 @@
 
 #include <plugins.hpp>
 #include <modules.hpp>
-#include <toolexception.hpp>
+#include <toolexcept.hpp>
 
 #include <string>
 

@@ -12,7 +12,7 @@
 #define TOOLS_PLUGINS_HPP
 
 #include <plugin.hpp>
-#include <toolexception.hpp>
+#include <toolexcept.hpp>
 
 #include <vector>
 #include <string>
