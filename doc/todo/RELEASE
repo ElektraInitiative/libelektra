@@ -1,5 +1,9 @@
 This describes what to do for an release!
 
+= TODO =
+
+- make sure no TODO is in this file (resolve them first!)
+
 = Cleanup =
 
 
@@ -22,15 +26,12 @@ Try to move as much as possible from this manual checks to build-server!
 
 Before release is done, following must be checked:
 - Everything blue on http://community.markus-raab.org:8080/
-- make sure no TODO is in this file (resolve them first!)
 
-
-
-== Increment Version numbers ==
-
+If version numbers are correct in
 - CMakeLists.txt
-- tests/shell/include_common.sh.in
-- src/tools/gen/setup.py.in
+
+Memleaks:
+- ctest -T memcheck
 
 
 = Preperation =
@@ -49,7 +50,6 @@ Now lets merge that to the release branch:
 == Prepare Source Package ==
 
 Build tar.gz and tag version and make hashsum:
-TODO: add -u 0B2F0DDC in release-tag signed-release-tag
  cd ~build && make source-package
 
 Unpack + compile (with all available plugins) + test those sources (using valgrind!):
@@ -59,46 +59,47 @@ Now copy the packages to ftp (stay in same folder):
  cp ~build/elektra-$VERSION.tar.gz ~elektra-ftp/releases
  cp ~build/elektra-$VERSION.tar.gz.hashsum ~elektra-ftp/releases
 
-TODO: ./check_get_set.sh:
-
 
 == Debian Package ==
 
+export DVERSION=$VERSION-1
 
 Build deb:
  git-checkout debian
  git-merge --no-ff release
 
- dch --newversion $VERSION-1 "New upstream version."
+ dch --newversion $DVERSION "New upstream version."
  git-add debian/changelog
- git-commit -m "Debian Package $VERSION-1"
+ git-commit -m "Debian Package $DVERSION"
  cp ~elektra-ftp/releases/elektra-$VERSION.tar.gz ~elektra/elektra_$VERSION.orig.tar.gz
+
+Fix debian/ + document in NEWS what maintainer need to consider, then build the package:
  git-buildpackage -rfakeroot -k0B2F0DDC -sa
 
 Now move and install:
- cd ~elektra && mkdir deb/$VERSION && mv elektra_$VERSION* deb/$VERSION && mv *.deb deb/$VERSION && sudo dpkg -i deb/$VERSION/*.deb
+ cd ~elektra && mkdir deb/$DVERSION && mv elektra_$DVERSION* deb/$DVERSION && mv *.deb deb/$DVERSION && sudo dpkg -i deb/$DVERSION/*.deb
 
 
 Run some basic commands, at least:
- kdb --version
+ kdb --version && kdb test_key && man kdb
 
-Debian packages in chroot + publish in reprepro
+Run local tests:
+ kdb run_all
 
 Now run lintian:
- lintian -EI --color=auto --pedantic deb/$VERSION/elektra_$VERSION-1_*.changes
+ lintian -EI --color=auto --pedantic deb/$DVERSION/elektra_$DVERSION-1_*.changes
 
 And run piuparts:
- sudo piuparts deb/$VERSION/elektra_$VERSION-1_*.changes
+ sudo piuparts deb/$DVERSION/elektra_$DVERSION_*.changes
 
 And run adequate (combined with piuparts and after installation)
  adequate '*elektra*'
 
 Install libelektra-test of the previous version and run:
- for i in `dpkg -L libelektra-test | grep bin`; do $i; done
+ for i in `dpkg -L libelektra-test | grep tool_exec`; do $i; done
+or, if available:
+ kdb run_all
 
-TODO: remove set -x from shell tests
-TODO: install shell scripts
-TODO: usr/bin/check_* should be added, but needs modification of ENABLE_KDB_TESTING
 
 
 == Test external tools ==
@@ -112,7 +113,7 @@ Check if tools based on elektra still do:
 
 And the API docu (stay in same folder):
  mkdir ~elektra-doc/api/$VERSION/
- cd ~build && make doc && cp -ra doc/html doc/latex doc/man ~elektra-doc/api/$VERSION/
+ cd ~build && make html man && cp -ra doc/html doc/latex doc/man ~elektra-doc/api/$VERSION/
 
 Symlink current to latest version and add everything:
  cd ~elektra-doc/api/ && rm current && ln -s $VERSION current && git-add current $VERSION
@@ -151,13 +152,8 @@ Push elektra-doc to gitorious:
 Write NEWS for new release (do not forget to add links where to download release):
  editor doc/NEWS
 
-Finally increment version number in CMakeLists.txt:
- editor CMakeLists.txt
- git-commit -m "Ready for release $VERSION" CMakeLists.txt
-
 Maybe also generate a ChangeLog?
- git log --first-parent master > ChangeLog
-
+ git log --first-parent master > ~e/doc/ChangeLog
 
 Finally check links and send out mail to list
 (Personal notice: see also NOTIFY)

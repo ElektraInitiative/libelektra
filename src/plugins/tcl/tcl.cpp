@@ -46,8 +46,8 @@ int elektraTclGet(Plugin *, KeySet *returned, Key *parentKey)
 	{
 		/* get config */
 		KeySet *n;
-		void (*serialize) (void) = (void (*) (void)) elektra::serialize;
-		void (*unserialize) (void) = (void (*) (void)) elektra::unserialize;
+		void (*serialise) (void) = (void (*) (void)) elektra::serialise;
+		void (*unserialise) (void) = (void (*) (void)) elektra::unserialise;
 		ksAppend (returned, n=ksNew (30,
 			keyNew ("system/elektra/modules/tcl",
 				KEY_VALUE, "tcl plugin waits for your orders", KEY_END),
@@ -58,14 +58,14 @@ int elektraTclGet(Plugin *, KeySet *returned, Key *parentKey)
 			keyNew ("system/elektra/modules/tcl/exports/set",
 				KEY_FUNC, elektraTclSet,
 				KEY_END),
-			keyNew ("system/elektra/modules/tcl/exports/cpp_serialize",
-				KEY_SIZE, sizeof (serialize),
+			keyNew ("system/elektra/modules/tcl/exports/cpp_serialise",
+				KEY_SIZE, sizeof (serialise),
 				KEY_BINARY,
-				KEY_VALUE, &serialize, KEY_END),
-			keyNew ("system/elektra/modules/tcl/exports/cpp_unserialize",
-				KEY_SIZE, sizeof (unserialize),
+				KEY_VALUE, &serialise, KEY_END),
+			keyNew ("system/elektra/modules/tcl/exports/cpp_unserialise",
+				KEY_SIZE, sizeof (unserialise),
 				KEY_BINARY,
-				KEY_VALUE, &unserialize, KEY_END),
+				KEY_VALUE, &unserialise, KEY_END),
 			keyNew ("system/elektra/modules/tcl/infos",
 				KEY_VALUE, "All information you want to know", KEY_END),
 			keyNew ("system/elektra/modules/tcl/infos/author",
@@ -95,7 +95,7 @@ int elektraTclGet(Plugin *, KeySet *returned, Key *parentKey)
 	int ret = 0;
 	try
 	{
-		elektra::unserialize (in, input);
+		elektra::unserialise (in, input);
 	}
 	catch(boost::spirit::qi::expectation_failure<boost::spirit::istream_iterator> const& e)
 	{
@@ -133,7 +133,7 @@ int elektraTclSet(Plugin *, KeySet *returned, Key *parentKey)
 
 	kdb::KeySet output (returned);
 
-	elektra::serialize (ofs, output);
+	elektra::serialise (ofs, output);
 	output.release();
 
 	return 1; /* success */

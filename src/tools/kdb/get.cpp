@@ -2,7 +2,6 @@
 
 #include <kdb.hpp>
 #include <cmdline.hpp>
-#include <print.hpp>
 
 #include <iostream>
 
@@ -43,8 +42,8 @@ int GetCommand::execute (Cmdline const& cl)
 		cout << endl;
 	}
 
-	printError(x);
-	printWarnings(x);
+	printError(cerr, x);
+	printWarnings(cerr, x);
 
 	return ret;
 }

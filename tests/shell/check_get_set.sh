@@ -112,7 +112,7 @@ do
 		[ $? != "0" ]
 		succeed_if "got removed key $ROOT"
 
-		check_set_get_rm $ROOT/value other_value
+		check_set_rm $ROOT/value other_value
 
 		echo "testing array"
 

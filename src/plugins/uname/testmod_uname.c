@@ -31,9 +31,9 @@ void test_structure()
 {
 	printf ("Test structure of keys returned from uname plugin");
 
-	KeySet *conf = 0;
 	Key *parentKey = keyNew("user/test/key", KEY_END);
 	KeySet *keys = ksNew(0);
+	KeySet *conf = 0;
 
 	PLUGIN_OPEN("uname");
 
@@ -46,6 +46,9 @@ void test_structure()
 	succeed_if (ksLookupByName(keys, "user/test/key/release", 0), "release key not found");
 	succeed_if (ksLookupByName(keys, "user/test/key/version", 0), "version key not found");
 	succeed_if (ksLookupByName(keys, "user/test/key/machine", 0), "machine key not found");
+
+	ksDel(keys);
+	keyDel(parentKey);
 
 	PLUGIN_CLOSE();
 }

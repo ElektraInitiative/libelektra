@@ -13,7 +13,7 @@
 namespace elektra {
 
 using namespace kdb;
-using namespace std;
+using namespace std; // TODO: remove hack!
 
 class Factory;
 
@@ -31,6 +31,14 @@ public:
 	virtual void buildup (Factory &f, std::string const& templateParameter) = 0;
 	virtual ~Checker();
 };
+
+#if __cplusplus > 199711L
+typedef std::unique_ptr<Checker> CheckerPtr;
+using std::move;
+#else
+typedef std::auto_ptr<Checker> CheckerPtr;
+inline CheckerPtr move(CheckerPtr ptr) {return ptr;}
+#endif
 
 class StructChecker : public Checker
 {
@@ -72,7 +80,7 @@ public:
 
 class ListChecker : public Checker
 {
-	std::auto_ptr<Checker> structure;
+	CheckerPtr structure;
 
 public:
 	void buildup (Factory &f, std::string const& templateParameter);

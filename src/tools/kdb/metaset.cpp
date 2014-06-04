@@ -5,7 +5,6 @@
 
 #include <kdb.hpp>
 #include <cmdline.hpp>
-#include <print.hpp>
 
 using namespace std;
 using namespace kdb;

@@ -32,7 +32,9 @@ fi
 
 GEN_FOLDER="@CMAKE_SOURCE_DIR@/src/tools/gen"
 GEN="$GEN_FOLDER/gen"
-TESTPROGS="./lift ./cpplift ./nestedlift"
+
+#changed later again (if fallback/override) not supported
+TESTPROGS="./lift ./cpplift ./nestedlift ./contextlift"
 
 if $GEN -h | grep "^usage:"
 then
@@ -126,7 +128,7 @@ succeed_if "algorithm commandline argument not working"
 succeed_if "algorithm commandline argument not working"
 
 ./lift -a xxx | grep "Error in parsing options"
-succeed_ir "algorithm commandline argument not working"
+succeed_if "algorithm commandline argument not working"
 
 ./lift -h 5.5 | grep "height #3: 5.5"
 succeed_if "height commandline argument not working"
@@ -209,6 +211,14 @@ succeed_if "cannot rm $UKEY"
 
 
 
+
+
+
+
+
+
+TESTPROGS="./lift ./cpplift ./nestedlift"
+
 echo "test override with limit"
 
 UKEY=$LIFT_USERROOT/limit
@@ -269,6 +279,7 @@ succeed_if "limit commandline negativ not working (with param)"
 
 $KDB set "$OKEY" "$VALUE" 1>/dev/null
 succeed_if "could not set $OKEY to value $VALUE"
+
 
 for TESTPROG in $TESTPROGS
 do

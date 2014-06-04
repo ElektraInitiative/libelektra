@@ -1,6 +1,6 @@
 # Copy a file from source dir to binary dir
 #
-# copy_file name
+# copy_file or directory
 #
 macro (copy_file src dest)
 	execute_process (
@@ -53,6 +53,10 @@ macro (add_plugintest testname)
 				)
 		include_directories ("${CMAKE_SOURCE_DIR}/tests")
 		add_executable (testmod_${testname} ${TEST_SOURCES} testmod_${testname}.c)
+		if (INSTALL_TESTING)
+			install (TARGETS testmod_${testname}
+				DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+		endif (INSTALL_TESTING)
 		target_link_libraries (testmod_${testname} elektra-full)
 		set_target_properties (testmod_${testname} PROPERTIES
 				COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
@@ -116,6 +120,16 @@ macro (add_cppheaders HDR_FILES)
 	file (GLOB SRC_HDR_FILES ${PROJECT_SOURCE_DIR}/src/bindings/cpp/include/*)
 	list (APPEND ${HDR_FILES} ${SRC_HDR_FILES})
 endmacro (add_cppheaders)
+
+macro (add_toolheaders HDR_FILES)
+	include_directories ("${PROJECT_BINARY_DIR}/src/libtools/include")
+	file (GLOB BIN_HDR_FILES ${PROJECT_BINARY_DIR}/src/libtools/include/*)
+	list (APPEND ${HDR_FILES} ${BIN_HDR_FILES})
+
+	include_directories ("${PROJECT_SOURCE_DIR}/src/libtools/include")
+	file (GLOB SRC_HDR_FILES ${PROJECT_SOURCE_DIR}/src/libtools/include/*)
+	list (APPEND ${HDR_FILES} ${SRC_HDR_FILES})
+endmacro (add_toolheaders)
 
 
 #- Removes a plugin from the global cache

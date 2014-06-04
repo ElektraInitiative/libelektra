@@ -22,6 +22,7 @@ if (YAJL_FOUND)
 	add_sources (elektra-full ${SOURCES})
 	add_headers (SOURCES)
 
+	#does not work with cmake 2.6
 	file (COPY examples
 		DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 

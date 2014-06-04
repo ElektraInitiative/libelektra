@@ -626,7 +626,7 @@ or any other type
 - BUG: when there is no comment, value filesys won't store type fixed
 - BUG: keyAdd/SetBasename do realloc something wrong and do not set nameSize
 - rewrite serialization
-- keyCompose: serialize a key without any malloc
+- keyCompose: serialise a key without any malloc
 - added keyGenerate and ksGenerate
 - use FILE *stream for Output/Generate
 
@@ -1237,7 +1237,7 @@ or any other type
 - Fixed bug releated to NEEDSYNC: ~RG_KEY_FLAG_NEEDSYNC needed a special cast to use the right number of bits
 - Improved HOWTO documentation and manual. Link to ReiserFS.
 - Started writting of the key.3 manual
-- One more bug related to strblen in registryFileUnserialize(), causing wrong data size calculation
+- One more bug related to strblen in registryFileUnserialise(), causing wrong data size calculation
 
 * Mon Mar 29 2004 Avi Alkalay <avi@unix.sh> 0.1.4
 - Written manual pages rg(1), registry(7), registry(5) and registry(3) using DocBook

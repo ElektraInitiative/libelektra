@@ -17,7 +17,7 @@ CFLAGS=-O0 -ggdb
 FLAGS = `pkg-config --libs --cflags elektra`
 
 .PHONY:all
-all:lift cpplift nestedlift lift.html lift.3
+all:lift cpplift nestedlift contextlift contextvisit lift.html lift.3
 
 # see util.tmpl for motivation
 #not used at the moment, do not have dependency to cheetah-compile,
@@ -40,6 +40,12 @@ lift.hpp:${GEN} specification.ini template.hpp
 lift_nested.hpp:${GEN} specification.ini template_nested.hpp nested_support.py
 	${GEN} specification.ini template_nested.hpp > lift_nested.hpp
 
+lift_context.hpp:${GEN} specification.ini template_context.hpp context_support.py
+	${GEN} specification.ini template_context.hpp > lift_context.hpp
+
+visit_context.hpp:${GEN} visit_specification.ini template_context.hpp context_support.py
+	${GEN} visit_specification.ini template_context.hpp > visit_context.hpp
+
 genopt.c:${GEN} specification.ini template_genopt.c opt_support.py
 	${GEN} specification.ini template_genopt.c > genopt.c
 
@@ -55,6 +61,11 @@ cpplift:lift.cpp lift.hpp
 nestedlift:lift_nested.hpp lift_nested.cpp
 	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall lift_nested.cpp lift_nested.hpp ${ELEKTRA}  -o nestedlift
 
+contextlift:lift_context.hpp lift_context.cpp
+	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall lift_context.cpp lift_context.hpp ${ELEKTRA}  -o contextlift
+
+contextvisit:visit_context.hpp visit_context.cpp
+	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall visit_context.cpp visit_context.hpp ${ELEKTRA}  -o contextvisit
 
 .PHONY:clean
 clean:
@@ -69,3 +80,7 @@ clean:
 	rm -f lift.3
 	rm -f lift_nested.hpp
 	rm -f nestedlift
+	rm -f lift_context.hpp
+	rm -f contextlift
+	rm -f visit_context.hpp
+	rm -f contextvisit

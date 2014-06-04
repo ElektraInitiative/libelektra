@@ -83,6 +83,17 @@ void test_keynew()
 	{
 		succeed_if (true, "string key did not throw after getting binary");
 	}
+
+	try
+	{
+		key4.get<int>();
+		succeed_if (false, "string key did not throw after int");
+	}
+	catch (KeyTypeConversion const & ktm)
+	{
+		succeed_if (true, "string key did not throw after getting binary");
+	}
+
 	key4.setString("");
 	succeed_if(key4.getString() == "", "key4 has wrong value");
 	succeed_if(key4.isString(), "key4 is not string");

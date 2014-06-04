@@ -53,8 +53,6 @@ kdbSetKeys(ks1); // commit changed keys
 ksDel(ks1);  // don't need ks1 anymore
 
 // Remove all keys that disapeared from ks1...
-ksSort(removed); // Sort it first so then we ensure child keys are removed
-                 // before their parents
 while (key=ksPop(removed)) {
 	kdbRemoveKey(key);
 	keyDel(key);

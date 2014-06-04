@@ -12,6 +12,15 @@ run-tests run-shell-tests
 kdb convert
 converting (any to any storage plugin)
 
+== LEVELS ==
+
+make different levels of testing:
+core tests
+test with shell scripts (all of them modify kdb)
+test with shell scripts that modify in-build (external, gen)
+
+Goal: allow to install scripts even if running them does not work
+(during package creation)
 
 == cpptests ==
 

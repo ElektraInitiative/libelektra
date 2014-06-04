@@ -4,13 +4,13 @@
 #include <plugin.hpp>
 #include <modules.hpp>
 #include <cmdline.hpp>
-#include <print.hpp>
 
 #include <iostream>
 
 
 using namespace std;
 using namespace kdb;
+using namespace kdb::tools;
 
 CheckCommand::CheckCommand()
 {}
@@ -29,7 +29,7 @@ int CheckCommand::execute(Cmdline const& cl)
 
 	vector<string> warnings;
 	try {
-		std::auto_ptr<Plugin> plugin = modules.load (name);
+		PluginPtr plugin = modules.load (name);
 		plugin->check(warnings);
 
 	}

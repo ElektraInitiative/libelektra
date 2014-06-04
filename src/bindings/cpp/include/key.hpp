@@ -73,7 +73,7 @@ public:
 	inline void operator --(int) const;
 	inline void operator --() const;
 
-	inline size_t getReferenceCounter() const;
+	inline ssize_t getReferenceCounter() const;
 
 
 	// basic methods
@@ -84,8 +84,13 @@ public:
 
 	inline void copy (const Key &other);
 	inline void clear ();
+	inline ckdb::Key* operator->() const;
+
+	inline Key* operator->();
+
 	inline ckdb::Key* getKey () const;
 	inline ckdb::Key* operator* () const;
+
 	inline ckdb::Key* release ();
 	inline ckdb::Key* dup () const;
 	inline ~Key ();
@@ -94,17 +99,17 @@ public:
 	// name manipulation
 
 	inline std::string getName() const;
-	inline size_t getNameSize() const;
+	inline ssize_t getNameSize() const;
 
 	inline std::string getBaseName() const;
-	inline size_t getBaseNameSize() const;
+	inline ssize_t getBaseNameSize() const;
 	inline std::string getDirName() const;
 
 	inline void setName (const std::string &newName);
 	inline void setBaseName (const std::string &baseName);
 	inline void addBaseName (const std::string &baseName);
 
-	inline size_t getFullNameSize() const;
+	inline ssize_t getFullNameSize() const;
 	inline std::string getFullName() const;
 
 	inline Key& operator=  (const std::string &newName);
@@ -137,18 +142,19 @@ public:
 
 	inline std::string getString() const;
 	inline void setString(std::string newString);
-	inline size_t getStringSize() const;
+	inline ssize_t getStringSize() const;
 
 	typedef void (*func_t)();
 	inline func_t getFunc() const;
 
 	inline const void *getValue() const;
 	inline std::string getBinary() const;
-	inline size_t getBinarySize() const;
-	inline size_t setBinary(const void *newBinary, size_t dataSize);
+	inline ssize_t getBinarySize() const;
+	inline ssize_t setBinary(const void *newBinary, size_t dataSize);
 
 
 	// meta data
+	inline bool hasMeta(const std::string &metaName) const;
 
 	template <class T>
 	inline T getMeta(const std::string &metaName) const;
@@ -196,7 +202,7 @@ private:
 inline Key::Key () :
 	key(ckdb::keyNew (0))
 {
-	operator++(); 
+	operator++();
 }
 
 /**
@@ -210,9 +216,9 @@ inline Key::Key () :
  * @see isValid(), operator bool()
  */
 inline Key::Key (ckdb::Key * k) :
-key(k)
+	key(k)
 {
-	operator++(); 
+	operator++();
 }
 
 /**
@@ -246,6 +252,9 @@ inline Key::Key (Key const & k) :
 /**
  * @copydoc keyNew
  *
+ * @throw KeyInvalidName if key could not be constructed (typically name
+ * wrong or at runtime on allocation problems)
+ *
  * @param keyName the name of the new key
  */
 inline Key::Key (const char * keyName, ...)
@@ -256,11 +265,16 @@ inline Key::Key (const char * keyName, ...)
 	key = ckdb::keyVNew (keyName, ap);
 	va_end(ap);
 
+	if (!key) throw KeyInvalidName();
+
 	operator++();
 }
 
 /**
  * @copydoc keyNew
+ *
+ * @throw KeyInvalidName if key could not be constructed (typically name
+ * wrong or at runtime on allocation problems)
  *
  * @warning Not supported on some compilers, e.g.
  * clang which require you to only pass non-POD
@@ -276,11 +290,16 @@ inline Key::Key (const std::string keyName, ...)
 	key = ckdb::keyVNew (keyName.c_str(), ap);
 	va_end(ap);
 
+	if (!key) throw KeyInvalidName();
+
 	operator++();
 }
 
 /**
  * @copydoc keyNew
+ *
+ * @throw KeyInvalidName if key could not be constructed (typically name
+ * wrong or at runtime on allocation problems)
  *
  * @param keyName the name of the new key
  * @param ap the variable argument list pointer
@@ -288,6 +307,8 @@ inline Key::Key (const std::string keyName, ...)
 inline Key::Key (const char * keyName, va_list ap)
 {
 	key = ckdb::keyVNew (keyName, ap);
+
+	if (!key) throw KeyInvalidName();
 
 	operator++();
 }
@@ -327,7 +348,7 @@ void Key::operator --() const
 /**
  * @copydoc keyGetRef
  */
-inline size_t Key::getReferenceCounter() const
+inline ssize_t Key::getReferenceCounter() const
 {
 	return ckdb::keyGetRef(key);
 }
@@ -405,11 +426,26 @@ ckdb::Key * Key::getKey () const
 }
 
 /**
+ * Is a abbreviation for getKey.
+ *
  * @copydoc getKey
+ *
+ * @see getKey()
  */
 ckdb::Key * Key::operator* () const
 {
 	return key;
+}
+
+/**
+ * @returns a pointer to this object
+ *
+ * Needed for KeySet iterators.
+ * @see KeySetIterator
+ */
+Key* Key::operator-> ()
+{
+	return this;
 }
 
 /**
@@ -462,7 +498,7 @@ inline std::string Key::getName() const
 /**
  * @copydoc keyGetNameSize
  */
-inline size_t Key::getNameSize() const
+inline ssize_t Key::getNameSize() const
 {
 	return ckdb::keyGetNameSize (getKey());
 }
@@ -471,7 +507,7 @@ inline size_t Key::getNameSize() const
 /**
  * @copydoc keyGetBaseNameSize
  */
-inline size_t Key::getBaseNameSize() const
+inline ssize_t Key::getBaseNameSize() const
 {
 	return ckdb::keyGetBaseNameSize(getKey());
 }
@@ -541,7 +577,7 @@ inline void Key::addBaseName (const std::string &baseName)
 /**
  * @copydoc keyGetFullNameSize
  */
-inline size_t Key::getFullNameSize() const
+inline ssize_t Key::getFullNameSize() const
 {
 	return ckdb::keyGetFullNameSize (getKey());
 }
@@ -715,7 +751,7 @@ inline Key::operator bool() const
  *
  * @copydoc getString
  *
- * This method tries to serialize the string to the given type.
+ * This method tries to serialise the string to the given type.
  */
 template <class T>
 inline T Key::get() const
@@ -725,6 +761,10 @@ inline T Key::get() const
 	std::istringstream ist(str);
 	T x;
 	ist >> x;	// convert string to type
+	if (ist.fail())
+	{
+		throw KeyTypeConversion();
+	}
 	return x;
 }
 
@@ -739,7 +779,7 @@ inline std::string Key::get() const
  *
  * @copydoc setString
  *
- * This method tries to deserialize the string to the given type.
+ * This method tries to deserialise the string to the given type.
  */
 template <class T>
 inline void Key::set(T x)
@@ -747,6 +787,10 @@ inline void Key::set(T x)
 	std::string str;
 	std::ostringstream ost;
 	ost << x;	// convert type to string
+	if (ost.fail())
+	{
+		throw KeyTypeConversion();
+	}
 	setString (ost.str());
 }
 
@@ -789,7 +833,7 @@ inline std::string Key::getString() const
 /**
  * @copydoc keyGetValueSize()
  */
-inline size_t Key::getStringSize() const
+inline ssize_t Key::getStringSize() const
 {
 	return ckdb::keyGetValueSize(key);
 }
@@ -872,7 +916,7 @@ inline std::string Key::getBinary() const
 /**
  * @copydoc keyGetValueSize()
  */
-inline size_t Key::getBinarySize() const
+inline ssize_t Key::getBinarySize() const
 {
 	return ckdb::keyGetValueSize(key);
 }
@@ -880,10 +924,9 @@ inline size_t Key::getBinarySize() const
 /**
  * @copydoc keySetBinary
  */
-inline size_t Key::setBinary(const void *newBinary, size_t dataSize)
+inline ssize_t Key::setBinary(const void *newBinary, size_t dataSize)
 {
-	size_t s = ckdb::keySetBinary (getKey(), newBinary, dataSize);
-	return s;
+	return ckdb::keySetBinary (getKey(), newBinary, dataSize);
 }
 
 
@@ -893,9 +936,9 @@ inline size_t Key::setBinary(const void *newBinary, size_t dataSize)
  * You can specify your own template specialisation:
  * @code
 template<>
-inline mode_t Key::getMeta(const std::string &name) const
+inline yourtype Key::getMeta(const std::string &name) const
 {
-	mode_t x;
+	yourtype x;
 	std::string str;
 	str = std::string(
 		static_cast<const char*>(
@@ -904,51 +947,46 @@ inline mode_t Key::getMeta(const std::string &name) const
 				)
 			)
 		);
-	std::istringstream ist(str);
-	ist >> std::oct >> x;	// convert string to type
-	return x;
+	return yourconversion(str);
 }
  * @endcode
  *
- * @note Because mode_t is in fact an int, this would
- * also change all other int types.
- *
- * @throw KeyBadMeta if meta data could not be parsed
- * @throw KeyNoSuchMeta if a value was requested, but none is available.
+ * @throw KeyTypeConversion if meta data could not be parsed
  *
  * @note No exception will be thrown if a const Key or char* is requested,
- * but don't forget the const: getMeta<const ckdb::Key*>,
- * otherwise you will get an obfuscated compiler error.
+ * but don't forget the const: getMeta<const Key>,
+ * otherwise you will get an compiler error.
  *
- * - char* is null if meta data is not available
- * - const Key is null (evaluate to false) if no meta data is
- *   available
+ * If no meta is available:
+ * - char* is null
+ * - const Key is null (evaluate to false)
+ * - otherwise the default constructed type will be returned
+ * @see hasMeta
  *
  * @see setMeta(), copyMeta(), copyAllMeta()
  */
 template <class T>
 inline T Key::getMeta(const std::string &metaName) const
 {
-	T x;
-	std::string str;
-	const char *v = 
-		static_cast<const char*>(
-			ckdb::keyValue(
-				ckdb::keyGetMeta(key, metaName.c_str())
-				)
-			);
-	if (!v)
+	Key k(const_cast<ckdb::Key*>(ckdb::keyGetMeta(key, metaName.c_str())));
+	if (!k)
 	{
-		throw KeyNoSuchMeta();
+		return T();
 	}
-	str = std::string(v);
-	std::istringstream ist(str);
-	ist >> x;	// convert string to type
-	if (ist.fail())
-	{
-		throw KeyBadMeta();
-	}
-	return x;
+	return k.get<T>();
+}
+
+
+/**
+ * @retval true if there is a metadata with given name
+ * @retval false if no such metadata exists
+ *
+ *@see getMeta()
+ */
+inline bool Key::hasMeta(const std::string &metaName) const
+{
+	Key k(const_cast<ckdb::Key*>(ckdb::keyGetMeta(key, metaName.c_str())));
+	return k;
 }
 
 template<>
@@ -961,12 +999,8 @@ inline const ckdb::Key* Key::getMeta(const std::string &name) const
 template<>
 inline const Key Key::getMeta(const std::string &name) const
 {
-	return
-		Key (
-			const_cast<ckdb::Key*>(
-				ckdb::keyGetMeta(key, name.c_str())
-				)
-			);
+	const ckdb::Key *k = ckdb::keyGetMeta(key, name.c_str());
+	return Key(const_cast<ckdb::Key*>(k));
 }
 
 template<>
@@ -983,8 +1017,7 @@ inline const char* Key::getMeta(const std::string &name) const
 template<>
 inline std::string Key::getMeta(const std::string &name) const
 {
-	std::string str;
-	const char *v = 
+	const char *v =
 		static_cast<const char*>(
 			ckdb::keyValue(
 				ckdb::keyGetMeta(key, name.c_str())
@@ -992,8 +1025,9 @@ inline std::string Key::getMeta(const std::string &name) const
 			);
 	if (!v)
 	{
-		throw KeyNoSuchMeta();
+		return std::string();
 	}
+	std::string str;
 	str = std::string(v);
 	return str;
 }
@@ -1006,10 +1040,9 @@ inline std::string Key::getMeta(const std::string &name) const
 template <class T>
 inline void Key::setMeta(const std::string &metaName, T x)
 {
-	std::string str;
-	std::ostringstream ost;
-	ost << x;	// convert type to string
-	ckdb::keySetMeta(key, metaName.c_str(), ost.str().c_str());
+	Key k;
+	k.set<T>(x);
+	ckdb::keySetMeta(key, metaName.c_str(), k.getString().c_str());
 }
 
 /**

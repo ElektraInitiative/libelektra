@@ -42,8 +42,8 @@
 
 namespace dump
 {
-int serialize(std::ostream &os, ckdb::Key *, ckdb::KeySet *ks);
-int unserialize(std::istream &is, ckdb::Key *errorKey, ckdb::KeySet *ks);
+int serialise(std::ostream &os, ckdb::Key *, ckdb::KeySet *ks);
+int unserialise(std::istream &is, ckdb::Key *errorKey, ckdb::KeySet *ks);
 }
 
 extern "C" {

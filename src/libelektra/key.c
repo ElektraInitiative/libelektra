@@ -70,6 +70,19 @@
 #include "kdb.h"
 #include "kdbprivate.h"
 
+/*
+ * Allocates and initialices a key
+ * @returns 0 if allocation did not work, the key otherwise
+ */
+static Key *elektraKeyMalloc()
+{
+	Key *key = (Key *)malloc(sizeof(Key));
+	if (!key) return 0;
+	keyInit(key);
+
+	return key;
+}
+
 
 /**
  * A practical way to fully create a Key object in one step.
@@ -254,8 +267,8 @@ Key *k = keyNew(0);
  * @param keyName a valid name to the key, or NULL to get a simple
  * 	initialized, but really empty, object 
  * @see keyDel()
- * @return a pointer to a new allocated and initialized Key object,
- * 	or NULL if an invalid @p keyName was passed (see keySetName()).
+ * @return a pointer to a new allocated and initialized Key object.
+ * @retval NULL on malloc error or if an invalid @p keyName was passed (see keySetName()).
  * @ingroup key
  *
  */
@@ -263,9 +276,16 @@ Key *keyNew(const char *keyName, ...) {
 	Key * k;
 	va_list va;
 
-	if (keyName) va_start(va,keyName);
-	k = keyVNew (keyName, va);
-	if (keyName) va_end (va);
+	if (!keyName)
+	{
+		k = elektraKeyMalloc();
+	}
+	else
+	{
+		va_start(va,keyName);
+		k = keyVNew (keyName, va);
+		va_end (va);
+	}
 
 	return k;
 }
@@ -274,7 +294,8 @@ Key *keyNew(const char *keyName, ...) {
 /**
  * @copydoc keyNew
  *
- * @param va the variadic argument list
+ * @pre caller must use va_start and va_end on va
+ * @param va the variadic argument list 
  */
 Key *keyVNew (const char *keyName, va_list va)
 {
@@ -284,9 +305,8 @@ Key *keyVNew (const char *keyName, va_list va)
 	ssize_t valueSize=-1;
 	void (*p) (void)=0;
 
-	key=(Key *)malloc(sizeof(Key));
+	key=elektraKeyMalloc();
 	if (!key) return 0;
-	keyInit(key);
 
 	if (keyName) {
 		keySetName(key,keyName);
@@ -403,9 +423,8 @@ Key* keyDup(const Key *source)
 
 	if (!source) return 0;
 
-	dest = (Key *)malloc(sizeof(Key));
+	dest = elektraKeyMalloc();
 	if (!dest) return 0;
-	keyInit(dest);
 
 	/* Copy the struct data, including the "next" pointer */
 	*dest=*source;

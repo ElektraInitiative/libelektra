@@ -103,6 +103,7 @@ int init(int argc, char** argv);
 
 #define compare_key_name(k1, k2) \
 { \
+	nbTest++; \
 	if (strcmp(keyName(k1), keyName(k2))) \
 	{ \
 		char errorMsg [BUFFER_LENGTH]; \
@@ -118,6 +119,7 @@ int init(int argc, char** argv);
 
 #define succeed_if_same_string(s1, s2) \
 { \
+	nbTest++; \
 	if (strcmp(s1, s2)) \
 	{ \
 		char errorMsg [BUFFER_LENGTH]; \
@@ -151,7 +153,7 @@ int init(int argc, char** argv);
 		keyRewindMeta(k2); \
 		while ((meta = keyNextMeta (k1)) != 0) \
 		{ \
-			const Key const * metaCmp = keyNextMeta(k2); \
+			const Key *const metaCmp = keyNextMeta(k2); \
 			if (metaCmp == 0) \
 			{ \
 				nbError++; \
@@ -167,7 +169,7 @@ int init(int argc, char** argv);
 			check_attributes(attributes); \
 		} \
 	 \
-		const Key const * metaCmp = keyNextMeta(k2); \
+		const Key *const metaCmp = keyNextMeta(k2); \
 		if (metaCmp != 0) \
 		{ \
 			nbError++; \

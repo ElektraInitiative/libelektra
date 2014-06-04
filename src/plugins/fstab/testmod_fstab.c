@@ -27,6 +27,7 @@
 
 #include <tests_plugin.h>
 
+
 void test_readfstab()
 {
 	Key * parentKey = keyNew ("user/tests/fstab", KEY_VALUE, srcdir_file("fstab"), KEY_END);
@@ -39,7 +40,7 @@ void test_readfstab()
 
 	succeed_if (plugin->kdbGet(plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 
-	output_keyset(ks);
+	// output_keyset(ks);
 
 	Key *key = ksLookupByName(ks, "user/tests/fstab/mediaext4/device",0);
 	exit_if_fail (key, "rootfs device not found");
@@ -48,7 +49,8 @@ void test_readfstab()
 	exit_if_fail (key = ksLookupByName(ks, "user/tests/fstab/mediaext4/dumpfreq",0), "rootfs device not found");
 	succeed_if (strcmp( "0", keyValue(key)) == 0, "dumpfreq not correct");
 
-	ksDel (ks);
+	ksDel(ks);
+	keyDel(parentKey);
 
 	PLUGIN_CLOSE();
 }

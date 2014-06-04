@@ -67,7 +67,7 @@ int elektraHostsAppendComment (char *comment, char *line)
 
 	if (line[0] == '#')
 	{
-		strncat (comment, line, HOSTS_KDB_BUFFER_SIZE-c-2);
+		strncat (comment, line+1, HOSTS_KDB_BUFFER_SIZE-c-2);
 		return 1; /* Complete line is comment, so go on.. */
 	}
 
@@ -123,8 +123,8 @@ size_t elektraHostsFindToken (char **token, char *line)
 
 void elektraHostsSetMeta(Key *key, int order)
 {
-	char buffer[50];
-	snprintf (buffer, 50, "%d", order);
+	char buffer[MAX_ORDER_SIZE];
+	snprintf (buffer, MAX_ORDER_SIZE, "%d", order);
 	keySetMeta(key, "order", buffer);
 }
 
@@ -161,7 +161,38 @@ int elektraHostsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 			keyNew ("system/elektra/modules/hosts/infos/licence",
 				KEY_VALUE, "BSD", KEY_END),
 			keyNew ("system/elektra/modules/hosts/infos/description",
-				KEY_VALUE, "/etc/hosts file", KEY_END),
+				KEY_VALUE,
+"This plugin reads and writes /etc/hosts files.\n"
+"\n"
+"The /etc/hosts file is a simple text file that associates IP addresses\n"
+"with hostnames, one line per IP address. The format is described in hosts(5).\n"
+"\n"
+"Canonical hostnames are stored as key names with the IP address as key\n"
+"value. Aliases are stored as sub keys with a read only duplicate of the\n"
+"associated ip address as value. Comments are stored using meta keys of\n"
+"type \"comment\" with the '#'-char stripped of.\n"
+"\n"
+"== Example ==\n"
+"Mount the plugin:\n"
+"$ kdb mount /etc/hosts system/hosts hosts\n"
+"\n"
+"Print out all known hosts and their aliases:\n"
+"$ kdb ls system/hosts\n"
+"\n"
+"Get IP address of host \"localhost\":\n"
+"$ kdb get system/hosts/localhost\n"
+"\n"
+"Fetch comment belonging to host \"localhost\":\n"
+"$ kdb getmeta system/hosts/localhost comment\n"
+"\n"
+"== Multiline comments ==\n"
+"Since line breaks are preserved, you can identify multi line comments\n"
+"by their trailing line break.\n"
+"\n"
+"== Ordering ==\n"
+"The ordering of the hosts is stored in meta keys of type \"order\".\n"
+"The value is an ascending number. Ordering of aliases is NOT preserved."
+				, KEY_END),
 			keyNew ("system/elektra/modules/hosts/infos/provides",
 				KEY_VALUE, "storage", KEY_END),
 			keyNew ("system/elektra/modules/hosts/infos/placements",
@@ -315,7 +346,15 @@ int elektraHostsSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 		if (lastline)
 		{
 			*lastline = '\0';
-			fprintf (fp, "%s\n", keyComment(key));
+			char *token, *saveptr, *mcomment = malloc (keyGetCommentSize(key));
+			strcpy (mcomment, keyComment(key));
+			token = strtok_r (mcomment, "\n", &saveptr);
+			while (token != 0)
+			{
+				fprintf (fp, "#%s\n", token);
+				token = strtok_r (NULL, "\n", &saveptr);
+			}
+			free (mcomment);
 			*lastline = '\n'; /* preserve comment */
 		}
 

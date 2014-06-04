@@ -2,7 +2,7 @@
 
 #include <kdb.hpp>
 #include <cmdline.hpp>
-#include <print.hpp>
+#include <keysetio.hpp>
 
 #include <iostream>
 #include <string>
@@ -26,7 +26,7 @@ int FstabCommand::execute(Cmdline const& cl)
 	KeySet conf;
 	Key parentKey(keyname, KEY_END);
 	kdb.get(conf, parentKey);
-	printWarnings(parentKey);
+	printWarnings(cerr, parentKey);
 	Key k = conf.lookup(keyname);
 
 	if (!k)
@@ -83,7 +83,7 @@ int FstabCommand::execute(Cmdline const& cl)
 	}
 
 	kdb.set(conf,parentKey);
-	printWarnings(parentKey);
+	printWarnings(cerr, parentKey);
 
 	return 0;
 }

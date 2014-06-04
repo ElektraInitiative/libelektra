@@ -34,6 +34,11 @@ macro (do_test source)
 		target_link_libraries (${source} elektra-static)
 	endif (BUILD_FULL)
 
+	if (INSTALL_TESTING)
+		install (TARGETS ${source}
+			DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+	endif (INSTALL_TESTING)
+
 	set_target_properties (${source} PROPERTIES
 			COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
 	add_test (${source}
@@ -45,17 +50,3 @@ foreach (file ${TESTS})
 	get_filename_component (name ${file} NAME_WE)
 	do_test (${name})
 endforeach (file ${TESTS})
-
-#lets use only the shared library because there we do not
-#have symbol clashes
-if (BUILD_SHARED)
-	include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
-	include_directories ("${CMAKE_SOURCE_DIR}/src/bindings/cpp/tests")
-	file (GLOB UNIT_TEST_SOURCES testmod_type.cpp)
-	add_executable(test_types
-			${UNIT_TEST_SOURCES}
-			${SOURCES}
-			${CMAKE_SOURCE_DIR}/src/bindings/cpp/tests/tests.cpp)
-	add_test(test_types "${CMAKE_CURRENT_BINARY_DIR}/test_types")
-	target_link_libraries (test_types elektra)
-endif (BUILD_SHARED)
