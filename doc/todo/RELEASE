@@ -30,6 +30,9 @@ Before release is done, following must be checked:
 If version numbers are correct in
 - CMakeLists.txt
 
+Memleaks:
+- ctest -T memcheck
+
 
 = Preperation =
 
