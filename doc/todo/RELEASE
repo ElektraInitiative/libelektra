@@ -2,8 +2,6 @@ This describes what to do for an release!
 
 = TODO =
 
-- VERSION is not suitable for debian commands, introduce DVERSION
-
 - make sure no TODO is in this file (resolve them first!)
 
 = Cleanup =
@@ -66,37 +64,43 @@ Now copy the packages to ftp (stay in same folder):
 
 == Debian Package ==
 
+export DVERSION=$VERSION-1
 
 Build deb:
  git-checkout debian
  git-merge --no-ff release
 
- dch --newversion $VERSION-1 "New upstream version."
+ dch --newversion $DVERSION "New upstream version."
  git-add debian/changelog
- git-commit -m "Debian Package $VERSION-1"
+ git-commit -m "Debian Package $DVERSION"
  cp ~elektra-ftp/releases/elektra-$VERSION.tar.gz ~elektra/elektra_$VERSION.orig.tar.gz
 
 Fix debian/ + document in NEWS what maintainer need to consider, then build the package:
  git-buildpackage -rfakeroot -k0B2F0DDC -sa
 
 Now move and install:
- cd ~elektra && mkdir deb/$VERSION && mv elektra_$VERSION* deb/$VERSION && mv *.deb deb/$VERSION && sudo dpkg -i deb/$VERSION/*.deb
+ cd ~elektra && mkdir deb/$DVERSION && mv elektra_$DVERSION* deb/$DVERSION && mv *.deb deb/$DVERSION && sudo dpkg -i deb/$DVERSION/*.deb
 
 
 Run some basic commands, at least:
  kdb --version && kdb test_key && man kdb
 
+Run local tests:
+ kdb run_all
+
 Now run lintian:
- lintian -EI --color=auto --pedantic deb/$VERSION/elektra_$VERSION-1_*.changes
+ lintian -EI --color=auto --pedantic deb/$DVERSION/elektra_$DVERSION-1_*.changes
 
 And run piuparts:
- sudo piuparts deb/$VERSION/elektra_$VERSION-1_*.changes
+ sudo piuparts deb/$DVERSION/elektra_$DVERSION_*.changes
 
 And run adequate (combined with piuparts and after installation)
  adequate '*elektra*'
 
 Install libelektra-test of the previous version and run:
  for i in `dpkg -L libelektra-test | grep tool_exec`; do $i; done
+or, if available:
+ kdb run_all
 
 
 
