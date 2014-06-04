@@ -4,7 +4,7 @@ from distutils.core import setup
 from distutils.util import get_platform
 
 setup(name='elektra-gen',
-      version='0.2',
+      version='${KDB_VERSION}',
       description='Elektra Front End Generator',
       long_description="""Generate Front Ends for static programming
       languages using Cheetah templates.""",
