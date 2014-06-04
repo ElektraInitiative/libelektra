@@ -270,10 +270,7 @@ int kdbClose(KDB *handle, Key *errorKey)
 
 	elektraTrieClose(handle->trie, errorKey);
 
-	if(handle->defaultBackend)
-	{
-		elektraBackendClose (handle->defaultBackend, errorKey);
-	}
+	elektraBackendClose (handle->defaultBackend, errorKey);
 
 	if (handle->modules)
 	{
