@@ -426,12 +426,12 @@ else ret = isValidXML(filename,KDB_SCHEMA_PATH);
  */
 int ksFromXMLfile(KeySet *ks, const char *filename)
 {
-	xmlTextReaderPtr reader;
-	xmlDocPtr doc;
+	xmlTextReaderPtr reader = 0;
+	xmlDocPtr doc = 0;
 	int ret=0;
 
 	doc = xmlParseFile(filename);
-	if (doc==NULL)
+	if (doc==0)
 	{
 		// TODO: distinguish between parser errors and no file
 		xmlCleanupParser();

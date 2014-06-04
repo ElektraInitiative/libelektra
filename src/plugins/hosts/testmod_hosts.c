@@ -29,7 +29,8 @@
 
 void test_readhosts()
 {
-	Key * parentKey = keyNew ("user/tests/hosts", KEY_VALUE, srcdir_file("hosts"), KEY_END);
+	char * filename = srcdir_file("hosts");
+	Key * parentKey = keyNew ("user/tests/hosts", KEY_VALUE, filename, KEY_END);
 	KeySet *conf = 0;
 	PLUGIN_OPEN("hosts");
 
@@ -52,6 +53,7 @@ void test_readhosts()
 	succeed_if (strcmp(" leader of the people\n and more\n", keyComment(key)) == 0, "comment not correct");
 
 	ksDel (ks);
+	keyDel(parentKey);
 
 	PLUGIN_CLOSE();
 }

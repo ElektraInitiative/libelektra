@@ -66,11 +66,10 @@ void test_hostLensRead(char *fileName)
 	succeed_if(strcmp ("alias2", keyValue (key)) == 0,
 			"name of alias2 of host1 not correct");
 
+	PLUGIN_CLOSE();
+
 	ksDel (ks);
-
-	PLUGIN_CLOSE()
-	;
-
+	keyDel(parentKey);
 }
 
 void test_hostLensWrite(char *fileName)
@@ -174,9 +173,10 @@ void test_hostLensModify(char *fileName)
 			compare_line_files (srcdir_file (fileName), keyString (parentKey)),
 			"files do not match as expected");
 
-	PLUGIN_CLOSE ()
-	;
+	PLUGIN_CLOSE ();
 
+	ksDel (ks);
+	keyDel (parentKey);
 }
 
 void test_order(char *fileName)
@@ -249,9 +249,9 @@ void test_order(char *fileName)
 
 	free (usedOrders);
 	ksDel (ks);
+	keyDel(parentKey);
 
-	PLUGIN_CLOSE()
-	;
+	PLUGIN_CLOSE() ;
 }
 
 int main(int argc, char** argv)
