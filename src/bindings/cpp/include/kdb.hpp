@@ -10,6 +10,14 @@
 #include <kdb.h>
 
 
+/**
+ * @brief This is the main namespace for the C++ binding and libraries.
+ *
+ * Classes or Functions directly below this namespace are header-only.
+ * Sub namespaces are intended for libraries and you need to link
+ * the library if you want to use them.
+ * - @see kdb::tools
+ */
 namespace kdb
 {
 
@@ -95,7 +103,7 @@ inline KDB::~KDB () throw()
  */
 inline void KDB::open (Key &errorKey)
 {
-	handle = ckdb::kdbOpen(*errorKey);
+	handle = ckdb::kdbOpen(errorKey.getKey());
 	if (!handle)
 	{
 		throw kdb::KDBException(errorKey);
@@ -113,7 +121,7 @@ inline void KDB::open (Key &errorKey)
  */
 inline void KDB::close (Key & errorKey) throw()
 {
-	ckdb::kdbClose(handle, *errorKey);
+	ckdb::kdbClose(handle, errorKey.getKey());
 	handle = 0;
 }
 

@@ -4,7 +4,7 @@
 
 #include <kdb.hpp>
 #include <cmdline.hpp>
-#include <print.hpp>
+#include <keysetio.hpp>
 
 using namespace kdb;
 using namespace std;
@@ -23,7 +23,7 @@ int LsCommand::execute(Cmdline const& cl)
 	if (!root.isValid())
 	{
 		throw invalid_argument(cl.arguments[0] +
-				"is not an valid keyname");
+				" is not a valid keyname");
 	}
 
 	kdb.get(ks, root);
@@ -36,7 +36,7 @@ int LsCommand::execute(Cmdline const& cl)
 
 	cout << part;
 
-	printWarnings(root);
+	printWarnings(cerr, root);
 
 	return 0;
 }

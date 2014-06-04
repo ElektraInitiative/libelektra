@@ -1,0 +1,5 @@
+127.0.0.1	localhost # wont lose that comment
+
+192.168.0.1	host1 alias1 alias2
+
+::1	localhost6

@@ -1,7 +1,17 @@
+/**
+ * \file
+ *
+ * \brief source file of mount command
+ *
+ * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
+
+
 #include <mount.hpp>
 #include <backend.hpp>
+#include <backends.hpp>
 #include <cmdline.hpp>
-#include <print.hpp>
 
 #include <algorithm>
 #include <iostream>
@@ -15,68 +25,45 @@
 
 using namespace std;
 using namespace kdb;
-
-std::string MountCommand::root = "system/elektra/mountpoints";
+using namespace kdb::tools;
 
 MountCommand::MountCommand()
 {}
 
-KeySet readMountConf()
+/**
+ * @brief Read in configuration and print warnings
+ *
+ * @post will update mountConf
+ */
+void MountCommand::readMountConf()
 {
-	KeySet mountConf;
-	Key parentKey("system/elektra/mountpoints", KEY_END);
+	Key parentKey(Backends::mountpointsPath, KEY_END);
 
 	kdb::KDB kdb (parentKey);
 	kdb.get(mountConf, parentKey);
 	kdb.close (parentKey);
 
-	printError(parentKey);
-	printWarnings (parentKey);
-
-	return mountConf;
+	printWarnings (cerr, parentKey);
 }
 
+/**
+ * @brief Output what currently is mounted
+ */
 void MountCommand::outputMtab()
 {
-	KeySet mountConf = readMountConf();
+	Backends::BackendInfoVector mtab = Backends::getBackendInfo(mountConf);
 
-	Key rootKey (root, KEY_END);
-	Key cur;
-
-	mountConf.rewind();
-	while (cur = mountConf.next())
+	for (Backends::BackendInfoVector::const_iterator it=mtab.begin();
+			it!=mtab.end(); ++it)
 	{
-		if (rootKey.isDirectBelow(cur))
-		{
-			Key path = mountConf.lookup (cur.getName() + "/config/path");
-			if (!path)
-			{
-				cout << cur.getName() << " has no path" << endl;
-				continue;
-			}
-			Key mp = mountConf.lookup (cur.getName() + "/mountpoint");
-			if (!mp)
-			{
-				cout << cur.getName() << " has no mountpoint" << endl;
-				continue;
-			}
-
-			cout << path.getString() << " on " << mp.getString() << " with name " << cur.getBaseName() << endl;
-		}
+		std::cout << it->path << " on " << it->mountpoint
+			  << " with name " << it->name << std::endl;
 	}
 }
 
-int MountCommand::execute(Cmdline const& cl)
+void MountCommand::processArguments(Cmdline const& cl)
 {
-	size_t argc = cl.arguments.size();
-	if (argc == 0)
-	{
-		// no interactive mode, so lets output the mtab
-		outputMtab();
-		return 0;
-	}
-
-	if (argc == 1)
+	if (!cl.interactive && cl.arguments.size() == 1)
 	{
 		throw invalid_argument("wrong number of arguments, 0 or more then 1 needed");
 	}
@@ -84,18 +71,21 @@ int MountCommand::execute(Cmdline const& cl)
 	if (cl.interactive)
 	{
 		cout << "Welcome to interactive mounting" << endl;
-		cout << "Please provide a unique name." << endl;
-
-	}
-	if (cl.debug)
-	{
-		cout << "Note that nothing will be written out" << endl;
+		cout << "Note that nothing will be made persistent" << endl;
 		cout << "until you say y at the very end of the mounting process" << endl;
+		cout << endl;
+		cout << "Please provide a unique name." << endl;
 	}
+}
 
-	KeySet mountConf = readMountConf();
-
-	Key rootKey (root, KEY_END);
+/**
+ * @brief Check for rootkey in  mountConf and add one if missing
+ *
+ * @param cl.verbose print text when it is missing
+ */
+void MountCommand::fixRootKey(Cmdline const& cl)
+{
+	Key rootKey (Backends::mountpointsPath, KEY_END);
 
 	Key cur;
 	cur = mountConf.lookup(rootKey);
@@ -105,29 +95,32 @@ int MountCommand::execute(Cmdline const& cl)
 		{
 			cout << "Did not find the root key, will add it" << endl;
 		}
-		mountConf.append ( *Key(root,
+		mountConf.append ( *Key(Backends::mountpointsPath,
 			KEY_COMMENT, "Below are the mountpoints.",
 			KEY_END));
 		mountConf.rewind();
 	}
+}
 
+/**
+ * @brief Set variable name (either interactive or by parameter)
+ */
+void MountCommand::getName(Cmdline const& cl)
+{
 	std::vector <std::string> names;
+	Backends::BackendInfoVector info = Backends::getBackendInfo(mountConf);
 	names.push_back("default");
-	while (cur = mountConf.next())
+	for (Backends::BackendInfoVector::const_iterator it=info.begin();
+			it!=info.end(); ++it)
 	{
-		if (rootKey.isDirectBelow(cur))
-		{
-			names.push_back(cur.getBaseName());
-		}
+		names.push_back(it->name);
 	}
 
-	cout << "Already used are: ";
-	std::copy (names.begin(), names.end(), ostream_iterator<std::string>(cout, " "));
-	cout << endl;
-
-	std::string name;
 	if (cl.interactive)
 	{
+		cout << "Already used are: ";
+		std::copy (names.begin(), names.end(), ostream_iterator<std::string>(cout, " "));
+		cout << endl;
 		std::cout << "Backend name: ";
 		cin >> name;
 	}
@@ -143,9 +136,19 @@ int MountCommand::execute(Cmdline const& cl)
 			std::replace(name.begin(), name.end(), '/', '_');
 		}
 	}
-	if (std::find(names.begin(), names.end(), name) != names.end()) throw NameAlreadyInUseException();
-	cout << endl;
 
+	if (std::find(names.begin(), names.end(), name) != names.end()) throw NameAlreadyInUseException();
+}
+
+/**
+ * @brief set mp (interactive or by commandline)
+ *
+ * @pre name must be set before
+ * @see getName()
+ */
+void MountCommand::getMountpoint(Cmdline const& cl)
+{
+	Key cur;
 	std::vector <std::string> mountpoints;
 	mountpoints.push_back("system/elektra");
 	mountConf.rewind();
@@ -163,13 +166,13 @@ int MountCommand::execute(Cmdline const& cl)
 		};
 	}
 
-	std::string mp = "/";
+	mp = "/";
 	if (name != "root")
 	{
-		cout << "Already used are: ";
-		std::copy (mountpoints.begin(), mountpoints.end(), ostream_iterator<std::string>(cout, " "));
 		if (cl.interactive)
 		{
+			cout << "Already used are: ";
+			std::copy (mountpoints.begin(), mountpoints.end(), ostream_iterator<std::string>(cout, " "));
 			cout << endl;
 			cout << "Please start with / for a cascading backend" << endl;
 			cout << "Enter the mountpoint: ";
@@ -192,152 +195,200 @@ int MountCommand::execute(Cmdline const& cl)
 		if (!kmp.isValid()) throw MountpointNotValid();
 		if (std::find(mountpoints.begin(), mountpoints.end(), kmp.getName()) != mountpoints.end()) throw MountpointAlreadyInUseException();
 	}
+}
 
-	cout << endl;
+void MountCommand::buildBackend(Cmdline const& cl)
+{
+	Backend backend (name, mp);
 
-
-
-
-	std::string path;
+	if (cl.debug)
 	{
-		Backend backend (name, mp);
-
 		cout << "Trying to load the resolver plugin" << endl;
+	}
 
-		backend.tryPlugin ("resolver");
+	backend.addPlugin ("resolver");
+
+	if (cl.interactive)
+	{
+		cout << endl;
+		cout << "Enter a path to a file in the filesystem." << endl;
+		cout << "The path must either not exist or be a file." << endl;
+		cout << "For user or cascading mountpoints it must be a relative path." << endl;
+		cout << "Then, the path will be resolved dynamically." << endl;
+		cout << "Path: ";
+		cin >> path;
+	}
+	else
+	{
+		path = cl.arguments[0];
+	}
+
+	backend.checkFile (path);
+
+	std::string configPath = Backends::mountpointsPath;
+	configPath += "/";
+	configPath += name;
+	configPath += "/config";
+	mountConf.append ( *Key(configPath,
+			KEY_VALUE, "",
+			KEY_COMMENT, "This is a configuration for a backend, see subkeys for more information",
+			KEY_END));
+	configPath += "/path";
+	mountConf.append ( *Key(configPath,
+			KEY_VALUE, path.c_str(),
+			KEY_COMMENT, "The path for this backend. Note that plugins can override that with more specific configuration.",
+			KEY_END));
+
+
+	if (cl.interactive)
+	{
+		cout << "Now enter a sequence of plugins you want in the backend" << endl;
+	}
+
+	appendPlugins(cl, backend);
+
+	Key rootKey (Backends::mountpointsPath, KEY_END);
+	backend.serialise (rootKey, mountConf);
+}
+
+void MountCommand::appendPlugins(Cmdline const& cl, Backend & backend)
+{
+	std::string pname;
+	size_t current_plugin = 2;
+	if (cl.interactive)
+	{
+		cout << "First Plugin: ";
+		cin >> pname;
+	}
+	else
+	{
+		if (current_plugin >=  cl.arguments.size())
+		{
+			pname = "dump";
+		}
+		else
+		{
+			pname = cl.arguments[current_plugin];
+		}
+		current_plugin ++;
+	}
+
+	while (pname != "." || !backend.validated())
+	{
+		try {
+			backend.addPlugin (pname);
+		}
+		catch (PluginCheckException const& e)
+		{
+			cout << "Could not add that plugin" << endl;
+			cout << e.what() << endl;
+		}
+		if (cl.interactive)
+		{
+			if (!backend.validated()) cout << "Not validated, try to add another plugin (. to abort)" << endl;
+			else cout << "Enter . to finish entering plugins" << endl;
+		}
 
 		if (cl.interactive)
 		{
 			cout << endl;
-			cout << "Enter a path to a file in the filesystem" << endl;
-			cout << "This is used by all plugins of this backend as fallback" << endl;
-			cout << "It must be provided and must be a valid path" << endl;
-			cout << "For user or cascading mountpoints it must be a relative path." << endl;
-			cout << "The actual path will be located dynamically by the resolver plugin." << endl;
-			cout << "Path: ";
-			cin >> path;
+			cout << "Next Plugin: ";
+			cin >> pname;
 		}
 		else
 		{
-			path = cl.arguments[0];
-		}
-		backend.checkFile (path);
-		backend.addPlugin ();
-
-		mountConf.append ( *Key( root  + "/" + name + "/config",
-				KEY_VALUE, "",
-				KEY_COMMENT, "This is a configuration for a backend, see subkeys for more information",
-				KEY_END));
-		mountConf.append ( *Key( root  + "/" + name + "/config/path",
-				KEY_VALUE, path.c_str(),
-				KEY_COMMENT, "The path for this backend. Note that plugins can override that with more specific configuration.",
-				KEY_END));
-		cout << endl;
-
-
-		cout << "Now enter a sequence of plugins you want in the backend" << endl;
-
-		size_t current_plugin = 2;
-		if (cl.interactive)
-		{
-			cout << "First Plugin: ";
-			cin >> name;
-		}
-		else
-		{
-			if (current_plugin >= argc)
+			if (current_plugin >=  cl.arguments.size())
 			{
-				name = "dump";
+				pname = ".";
 			}
 			else
 			{
-				name = cl.arguments[current_plugin];
+				pname = cl.arguments[current_plugin];
 			}
 			current_plugin ++;
 		}
 
-		while (name != "." || !backend.validated())
+		if (pname == "." && !backend.validated())
 		{
-			try {
-				backend.tryPlugin (name);
-				backend.addPlugin ();
-			}
-			catch (PluginCheckException const& e)
-			{
-				cout << "Could not add that plugin" << endl;
-				cout << e.what() << endl;
-			}
-			if (cl.interactive)
-			{
-				if (!backend.validated()) cout << "Not validated, try to add another plugin (. to abort)" << endl;
-				else cout << "Enter . to finish entering plugins" << endl;
-			}
-
-			if (cl.interactive)
-			{
-				cout << endl;
-				cout << "Next Plugin: ";
-				cin >> name;
-			}
-			else
-			{
-				if (current_plugin >= argc)
-				{
-					name = ".";
-				}
-				else
-				{
-					name = cl.arguments[current_plugin];
-				}
-				current_plugin ++;
-			}
-
-			if (name == "." && !backend.validated())
-			{
-				throw CommandAbortException();
-			}
+			throw CommandAbortException();
 		}
-
-		backend.serialize (rootKey, mountConf);
 	}
+}
 
-
-	if (cl.debug)
+void MountCommand::askForConfirmation(Cmdline const& cl)
+{
+	if (cl.interactive)
 	{
+		cout << endl;
 		cout << "Ready to mount with following configuration:" << endl;
 		cout << "Name:       " << name << endl;
 		cout << "Mountpoint: " << mp << endl;
 		cout << "Path:       " << path << endl;
+	}
+
+	if (cl.debug)
+	{
 		cout << "The configuration which will be set is:" << endl;
 		mountConf.rewind();
 		while (Key k = mountConf.next())
 		{
 			cout << k.getName() << " " << k.getString() << endl;
 		}
+	}
+
+	if (cl.interactive)
+	{
 		cout << "Are you sure you want to do that (y/N): ";
 		std::string answer;
 		cin >> answer;
 		if (answer != "y") throw CommandAbortException();
 	}
 
-
-	cout << "Now writing the mountpoint configuration";
+	if (cl.debug)
 	{
-		Key parentKey(root, KEY_END);
-
-		kdb::KDB kdb (parentKey);
-		cout << ".";
-		KeySet dummy;
-		kdb.get(dummy, parentKey);
-		cout << ".";
-		kdb.set(mountConf, parentKey);
-		cout << ".";
-		kdb.close (parentKey);
-		cout << endl;
-
-		printError(parentKey);
-		printWarnings(parentKey);
+		cout << "Now writing the mountpoint configuration";
 	}
+}
+
+/**
+ * @brief Really write out config
+ */
+void MountCommand::doIt()
+{
+	Key parentKey(Backends::mountpointsPath, KEY_END);
+
+	kdb::KDB kdb (parentKey);
+	kdb.set(mountConf, parentKey);
+	kdb.close (parentKey);
+
+	printWarnings(cerr, parentKey);
+}
+
+/**
+ * @brief Its quite linear whats going on, but there are many steps involved
+ *
+ * @param cl the commandline
+ *
+ * @retval 0 on success (otherwise exception)
+ */
+int MountCommand::execute(Cmdline const& cl)
+{
+	readMountConf();
+
+	if (!cl.interactive && cl.arguments.empty())
+	{
+		// no interactive mode, so lets output the mtab
+		outputMtab();
+		return 0;
+	}
+
+	processArguments(cl);
+	fixRootKey(cl);
+	getName(cl);
+	getMountpoint(cl);
+	buildBackend(cl);
+	askForConfirmation(cl);
+	doIt();
 
 	return 0;
 }

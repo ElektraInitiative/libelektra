@@ -83,6 +83,6 @@ if (DOXYGEN_FOUND)
 		)
 	endif (WITH_LATEX)
 else (DOXYGEN_FOUND)
-	message (WARNING "Doxygen not found, Reference Manual can't be created.")
+	message (WARNING "Doxygen not found, Reference Manual can't be created even though requested with BUILD_DOCUMENTATION.")
 endif (DOXYGEN_FOUND)
 

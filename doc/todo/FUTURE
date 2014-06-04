@@ -7,8 +7,6 @@ isDirectBelow:
 	Change Order of arguments? (see C++)
 	or improve keyRel?
 
-getRootKeys not needed OR (user + system are fixed) OR make / as root (see hierarchy below)
-
 keyset:
 	ensure that every ks* has as @post a sorted keyset
 	ksClear/keyClear weg (da mit *Copy(,0) ersetzbar)
@@ -133,25 +131,22 @@ libcomment: -> define as metadata
 	type
 	description
 
+== HIERARCHY ==
 
+make / as root?
 
-hierarchy: sorted by priority
-	add high level ksLookup which builds up hash for any search folders
+would require:
+	arbitrary cascading
+		high level ksLookup which builds up hash for any search folders
 		(e.g. /system/keybindings /user/keybindings /system/sw/myapp/keybindings...)
-	Let new software load old keys, even after renaming of keys
-		e.g. /system/old_app_name/keyname
-	add new folders next to system/ and user/
-	support multiple hierachies (doc, local) by conf
-	memory (memory fallback)
-	system/, local/, opt/(will be used if installed to /usr, /usr/local or /opt)
-	user/
-	current/ (configuration in the current working directory)
-	override/ (in memory override)
-	env for environment options overrides
-	cmd for commandline options overrides
-	doc(/usr/share/doc/kdb) hierachys, value -> comment
-	keyset: build up a hash with highest priority found
+	same backend mounting multiple times
 
+getRootKeys not needed OR (user + system are fixed)
+
+
+
+
+== Internals ==
 
 BackendCtl:
 	set and get options dynamically of backends
@@ -159,9 +154,6 @@ BackendCtl:
 	transactions
 	locking (performance)
 	filesys optimistic lock
-
-
-== Internals ==
 
 support multiple owner at once for kdbGet()/kdbSet()? -> or just set USER env or uid?
 allow mounting for users?

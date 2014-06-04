@@ -1,0 +1,8 @@
+add_subdirectory(include)
+add_subdirectory(src)
+
+if (BUILD_FULL OR BUILD_STATIC)
+	add_subdirectory (tests)
+	add_subdirectory (examples)
+endif (BUILD_FULL OR BUILD_STATIC)
+

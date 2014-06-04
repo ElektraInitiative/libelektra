@@ -288,7 +288,7 @@ int elektraDocGet(Plugin *handle, KeySet *returned, Key *parentKey)
  * - has @p all keys with the flag KEY_FLAG_SYNC set.
  * - contains only valid keys direct below (see keyIsDirectBelow()) your parentKey.
  *   That also means, that the parentKey will not be in that keyset.
- * - is in a sorted order, see ksSort().
+ * - is in a sorted order (given implicit by semantics of KeySet)
  * and that the handle:
  *  - is a valid KDB for your plugin.
  *  - that elektraPluginhGetBackendHandle() contains the same handle for lifetime kdbOpen()

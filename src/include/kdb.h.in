@@ -26,7 +26,11 @@
 #define KDB_VERSION_MINOR @KDB_VERSION_MINOR@
 #define KDB_VERSION_MICRO @KDB_VERSION_MICRO@
 
+#ifdef __cplusplus
+#define KS_END ((ckdb::Key*)0)
+#else
 #define KS_END ((Key*)0)
+#endif
 
 enum {
 	KEY_END=0,
@@ -184,8 +188,6 @@ int ksCopy(KeySet *dest, const KeySet *source);
 int ksClear(KeySet *ks);
 int ksDel(KeySet *ks);
 
-void ksSort(KeySet *ks);
-
 int ksNeedSync(const KeySet *ks);
 
 ssize_t ksGetSize(const KeySet *ks);
@@ -206,6 +208,7 @@ Key *ksTail(const KeySet *ks);
 
 cursor_t ksGetCursor(const KeySet *ks);
 int ksSetCursor(KeySet *ks, cursor_t cursor);
+Key *ksAtCursor(KeySet *ks, cursor_t cursor);
 
 Key *ksLookup(KeySet *ks, Key *k, option_t options);
 Key *ksLookupByName(KeySet *ks, const char *name, option_t options);

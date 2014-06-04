@@ -172,13 +172,19 @@ KeySet *ksNew(size_t alloc, ...)
 	KeySet *ks;
 	va_list va;
 
-	if (alloc) va_start(va, alloc);
+	va_start(va, alloc);
 	ks = ksVNew (alloc, va);
-	if (alloc) va_end (va);
+	va_end (va);
 
 	return ks;
 }
 
+/**
+ * @copydoc ksNew
+ *
+ * @pre caller must call va_start and va_end
+ * @par va the list of arguments
+ **/
 KeySet *ksVNew (size_t alloc, va_list va)
 {
 	KeySet *keyset=0;
@@ -205,9 +211,11 @@ KeySet *ksVNew (size_t alloc, va_list va)
 	keyset->array[0] = 0;
 	
 
-	if (alloc != 1) {
+	if (alloc != 1)
+	{
 		key = (struct _Key *) va_arg (va, struct _Key *);
-		while (key) {
+		while (key)
+		{
 			ksAppendKey(keyset, key);
 			key = (struct _Key *) va_arg (va, struct _Key *);
 		}
@@ -1191,6 +1199,23 @@ cursor_t ksGetCursor(const KeySet *ks)
 }
 
 /**
+ * @brief return key at given cursor position
+ *
+ * @param ks the keyset to pop key from
+ * @param c where to get
+ * @return the key at the cursor position on success
+ * @retval NULL on NULL pointer, negative cursor position
+ * or a position that does not lie within the keyset
+ */
+Key *ksAtCursor(KeySet *ks, cursor_t pos)
+{
+	if (!ks) return 0;
+	if (pos < 0) return 0;
+	if (ks->size < (size_t)pos) return 0;
+	return ks->array[pos];
+}
+
+/**
  * @internal
  *
  * @brief Pop key at given cursor position
@@ -1252,7 +1277,6 @@ Key *ksPopAtCursor(KeySet *ks, cursor_t pos)
 
 	return ksPop(ks);
 }
-
 
 
 

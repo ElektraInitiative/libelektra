@@ -18,7 +18,7 @@ namespace elektra
 
 using namespace kdb;
 
-void serialize(ostream &ofs, KeySet & output)
+void serialise(ostream &ofs, KeySet & output)
 {
 
 	ofs << '{' << endl;
@@ -39,7 +39,7 @@ void serialize(ostream &ofs, KeySet & output)
 	ofs << '}' << endl;
 }
 
-void unserialize(istream &in, KeySet & input)
+void unserialise(istream &in, KeySet & input)
 {
 	namespace qi = boost::spirit::qi;
 

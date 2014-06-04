@@ -10,6 +10,9 @@
 namespace kdb
 {
 
+class KeySetIterator;
+class KeySetReverseIterator;
+
 /**
  * @brief A keyset holds together a set of keys.
  *
@@ -40,7 +43,7 @@ public:
 
 	KeySet& operator=(KeySet const& other);
 
-	size_t size() const;
+	ssize_t size() const;
 
 	ckdb::KeySet* dup() const;
 
@@ -66,10 +69,273 @@ public:
 
 	Key lookup (const Key &k, const option_t options = KDB_O_NONE) const;
 	Key lookup (std::string const & name, const option_t options = KDB_O_NONE) const;
+	Key at (cursor_t pos) const;
+
+#ifndef WITHOUT_KEYSET_ITERATOR
+	typedef KeySetIterator iterator;
+	typedef KeySetIterator const_iterator;
+	typedef KeySetReverseIterator reverse_iterator;
+	typedef KeySetReverseIterator const_reverse_iterator;
+
+	iterator begin();
+	const_iterator begin() const;
+	iterator end();
+	const_iterator end() const;
+	reverse_iterator rbegin();
+	const_reverse_iterator rbegin() const;
+	reverse_iterator rend();
+	const_reverse_iterator rend() const;
+#if __cplusplus > 199711L
+	const_iterator cbegin() const noexcept;
+	const_iterator cend() const noexcept;
+	const_reverse_iterator crbegin() const noexcept;
+	const_reverse_iterator crend() const noexcept;
+#endif
+#endif //WITHOUT_KEYSET_ITERATOR
 
 private:
-	ckdb::KeySet * ks; ///< holds an elektra keyset
+	ckdb::KeySet *ks; ///< holds an elektra keyset
 };
+
+
+#ifndef WITHOUT_KEYSET_ITERATOR
+/**
+ * For C++ forward Iteration over KeySets.
+ * (External Iterator)
+ * @code
+	for (Key k:ks3)
+	{
+		std::cout << k.getName() << std::endl;
+	}
+ * @endcode
+ */
+class KeySetIterator
+{
+public:
+	typedef Key value_type;
+	typedef cursor_t difference_type;
+	typedef Key pointer;
+	typedef Key reference;
+	typedef std::random_access_iterator_tag iterator_category;
+
+	KeySetIterator(KeySet const & k) : ks(k), current() {};
+	KeySetIterator(KeySet const & k, const cursor_t c) : ks(k), current(c) {};
+	// conversion to const iterator?
+
+	Key get() const { return Key(ckdb::ksAtCursor(ks.getKeySet(), current)); }
+	Key get(cursor_t pos) const { return Key(ckdb::ksAtCursor(ks.getKeySet(), pos)); }
+
+	KeySet const & getKeySet() const { return ks; }
+
+	// Forward iterator requirements
+	reference operator*() const { return get(); }
+	pointer operator->() const { return get(); }
+	KeySetIterator& operator++() { ++current; return *this; }
+	KeySetIterator operator++(int) { return KeySetIterator(ks, current++); }
+
+	// Bidirectional iterator requirements
+	KeySetIterator& operator--() { --current; return *this; }
+	KeySetIterator operator--(int) { return KeySetIterator(ks, current--); }
+
+	// Random access iterator requirements
+	reference operator[](const difference_type& pos) const { return get(pos); }
+	KeySetIterator& operator+=(const difference_type& pos) { current += pos; return *this; }
+	KeySetIterator operator+(const difference_type& pos) const { return KeySetIterator(ks, current + pos); }
+	KeySetIterator& operator-=(const difference_type& pos) { current -= pos; return *this; }
+	KeySetIterator operator-(const difference_type& pos) const { return KeySetIterator(ks, current - pos); }
+	const cursor_t& base() const { return current; }
+
+private:
+	KeySet const & ks;
+	cursor_t current;
+};
+
+
+// Forward iterator requirements
+inline bool operator==(const KeySetIterator& lhs, const KeySetIterator& rhs)
+{ return &lhs.getKeySet() == &rhs.getKeySet() && lhs.base() == rhs.base(); }
+
+inline bool operator!=(const KeySetIterator& lhs, const KeySetIterator& rhs)
+{ return &lhs.getKeySet() != &rhs.getKeySet() || lhs.base() != rhs.base()  ; }
+
+// Random access iterator requirements
+inline bool operator<(const KeySetIterator& lhs, const KeySetIterator& rhs)
+{ return lhs.base() < rhs.base(); }
+
+inline bool operator>(const KeySetIterator& lhs, const KeySetIterator& rhs)
+{ return lhs.base() > rhs.base(); }
+
+inline bool operator<=(const KeySetIterator& lhs, const KeySetIterator& rhs)
+{ return lhs.base() <= rhs.base(); }
+
+inline bool operator>=(const KeySetIterator& lhs, const KeySetIterator& rhs)
+{ return lhs.base() >= rhs.base(); }
+
+#if __cplusplus > 199711L
+// DR 685.
+inline auto operator-(const KeySetIterator& lhs, const KeySetIterator& rhs)
+	-> decltype(lhs.base() - rhs.base())
+#else
+inline KeySetIterator::difference_type
+operator-(const KeySetIterator& lhs,
+	const KeySetIterator& rhs)
+#endif
+{ return lhs.base() - rhs.base(); }
+
+inline KeySetIterator
+operator+(KeySetIterator::difference_type n, const KeySetIterator& i)
+{ return KeySetIterator(i.getKeySet(), i.base() + n); }
+
+
+
+// some code duplication because std::reverse_iterator
+// does not work on value_types
+/**
+ * For C++ reverse Iteration over KeySets.
+ * (External Iterator)
+ */
+class KeySetReverseIterator
+{
+public:
+	typedef Key value_type;
+	typedef cursor_t difference_type;
+	typedef Key pointer;
+	typedef Key reference;
+	typedef std::random_access_iterator_tag iterator_category;
+
+	KeySetReverseIterator(KeySet const & k) : ks(k), current() {};
+	KeySetReverseIterator(KeySet const & k, const cursor_t c) : ks(k), current(c) {};
+	// conversion to const iterator?
+
+	Key get() const { return Key(ckdb::ksAtCursor(ks.getKeySet(), current)); }
+	Key get(cursor_t pos) const { return Key(ckdb::ksAtCursor(ks.getKeySet(), pos)); }
+
+	KeySet const & getKeySet() const { return ks;}
+
+	// Forward iterator requirements
+	reference operator*() const { return get(); }
+	pointer operator->() const { return get(); }
+	KeySetReverseIterator& operator++() { --current; return *this; }
+	KeySetReverseIterator operator++(int) { return KeySetReverseIterator(ks, current--); }
+
+	// Bidirectional iterator requirements
+	KeySetReverseIterator& operator--() { ++current; return *this; }
+	KeySetReverseIterator operator--(int) { return KeySetReverseIterator(ks, current++); }
+
+	// Random access iterator requirements
+	reference operator[](const difference_type& pos) const { return get(ks.size()-pos-1); }
+	KeySetReverseIterator& operator+=(const difference_type& pos) { current -= pos; return *this; }
+	KeySetReverseIterator operator+(const difference_type& pos) const { return KeySetReverseIterator(ks, current - pos); }
+	KeySetReverseIterator& operator-=(const difference_type& pos) { current += pos; return *this; }
+	KeySetReverseIterator operator-(const difference_type& pos) const { return KeySetReverseIterator(ks, current + pos); }
+	const cursor_t& base() const { return current; }
+
+private:
+	KeySet const & ks;
+	cursor_t current;
+};
+
+
+
+// Forward iterator requirements
+inline bool operator==(const KeySetReverseIterator& lhs, const KeySetReverseIterator& rhs)
+{ return &lhs.getKeySet() == &rhs.getKeySet() && lhs.base() == rhs.base(); }
+
+inline bool operator!=(const KeySetReverseIterator& lhs, const KeySetReverseIterator& rhs)
+{ return &lhs.getKeySet() != &rhs.getKeySet() || lhs.base() != rhs.base()  ; }
+
+// Random access iterator requirements
+inline bool operator<(const KeySetReverseIterator& lhs, const KeySetReverseIterator& rhs)
+{ return lhs.base() < rhs.base(); }
+
+inline bool operator>(const KeySetReverseIterator& lhs, const KeySetReverseIterator& rhs)
+{ return lhs.base() > rhs.base(); }
+
+inline bool operator<=(const KeySetReverseIterator& lhs, const KeySetReverseIterator& rhs)
+{ return lhs.base() <= rhs.base(); }
+
+inline bool operator>=(const KeySetReverseIterator& lhs, const KeySetReverseIterator& rhs)
+{ return lhs.base() >= rhs.base(); }
+
+#if __cplusplus > 199711L
+// DR 685.
+inline auto operator-(const KeySetReverseIterator& lhs, const KeySetReverseIterator& rhs)
+	-> decltype(lhs.base() - rhs.base())
+#else
+inline KeySetReverseIterator::difference_type
+operator-(const KeySetReverseIterator& lhs,
+	const KeySetReverseIterator& rhs)
+#endif
+{ return lhs.base() - rhs.base(); }
+
+inline KeySetReverseIterator
+operator+(KeySetReverseIterator::difference_type n, const KeySetReverseIterator& i)
+{ return KeySetReverseIterator(i.getKeySet(), i.base() + n); }
+
+
+
+inline KeySet::iterator KeySet::begin()
+{
+	return KeySet::iterator(*this, 0);
+}
+
+inline KeySet::const_iterator KeySet::begin() const
+{
+	return KeySet::const_iterator(*this, 0);
+}
+
+inline KeySet::iterator KeySet::end()
+{
+	return KeySet::iterator(*this, size());
+}
+
+inline KeySet::const_iterator KeySet::end() const
+{
+	return KeySet::const_iterator(*this, size());
+}
+
+inline KeySet::reverse_iterator KeySet::rbegin()
+{
+	return KeySet::reverse_iterator(*this, size()-1);
+}
+
+inline KeySet::const_reverse_iterator KeySet::rbegin() const
+{
+	return KeySet::const_reverse_iterator(*this, size()-1);
+}
+
+inline KeySet::reverse_iterator KeySet::rend()
+{
+	return KeySet::reverse_iterator(*this, -1);
+}
+
+inline KeySet::const_reverse_iterator KeySet::rend() const
+{
+	return KeySet::const_reverse_iterator(*this, -1);
+}
+
+#if __cplusplus > 199711L
+inline KeySet::const_iterator KeySet::cbegin() const noexcept
+{
+	return KeySet::const_iterator(*this, 0);
+}
+
+inline KeySet::const_iterator KeySet::cend() const noexcept
+{
+	return KeySet::const_iterator(*this, size());
+}
+
+inline KeySet::const_reverse_iterator KeySet::crbegin() const noexcept
+{
+	return KeySet::const_reverse_iterator(*this, size()-1);
+}
+
+inline KeySet::const_reverse_iterator KeySet::crend() const noexcept
+{
+	return KeySet::const_reverse_iterator(*this, -1);
+}
+#endif
+#endif //WITHOUT_KEYSET_ITERATOR
 
 
 /**
@@ -214,7 +480,7 @@ inline KeySet& KeySet::operator=(KeySet const& other)
  *
  * @return the number of keys in the keyset
  */
-inline size_t KeySet::size () const
+inline ssize_t KeySet::size () const
 {
 	return ckdb::ksGetSize(ks);
 }
@@ -358,7 +624,7 @@ inline Key KeySet::pop()
  */
 inline KeySet KeySet::cut (Key k)
 {
-	return KeySet(ckdb::ksCut(ks,*k));
+	return KeySet(ckdb::ksCut(ks, k.getKey()));
 }
 
 /**
@@ -387,6 +653,20 @@ inline Key KeySet::lookup (std::string const & name, option_t const options) con
 {
 	ckdb::Key *k = ckdb::ksLookupByName(ks, name.c_str(), options);
 	return Key(k);
+}
+
+/**
+ * @brief Lookup a key by index
+ *
+ * @param pos cursor position
+ *
+ * @return the found key
+ */
+inline Key KeySet::at (cursor_t pos) const
+{
+	if (pos < 0)
+		pos += size();
+	return Key(ckdb::ksAtCursor(ks, pos));
 }
 
 } // end of namespace kdb

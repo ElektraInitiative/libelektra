@@ -2,7 +2,6 @@
 
 #include <kdb.hpp>
 #include <cmdline.hpp>
-#include <print.hpp>
 
 #include <vector>
 #include <iostream>
@@ -237,7 +236,7 @@ void TestCommand::doBinaryTest()
 			}
 
 			nrTest ++;
-			if (res.getBinarySize() != teststrings[i].length())
+			if (res.getBinarySize() > 0 && (size_t)res.getBinarySize() != teststrings[i].length())
 			{
 				nrError ++;
 				cerr << "Binary test failed (length is not equal)" << endl;

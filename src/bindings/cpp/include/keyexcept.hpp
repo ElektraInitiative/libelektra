@@ -20,7 +20,9 @@ class KeyException : public Exception
 public:
 	virtual const char* what() const throw()
 	{
-		return "Exception thrown by a Key, typically because you called a function on a null key";
+		return  "Exception thrown by a Key, typically "
+			"because you called a method on a null key. "
+			"Make sure to check this with !key first";
 	}
 };
 
@@ -29,43 +31,29 @@ class KeyTypeMismatch: public KeyException
 public:
 	virtual const char* what() const throw()
 	{
-		return "Binary or String key mismatch";
+		return  "Binary/String key mismatch, use proper "
+			"getString()/getBinary() or use getValue() to get both.";
 	}
 };
+
+class KeyTypeConversion : public KeyException
+{
+public:
+	virtual const char* what() const throw()
+	{
+		return  "Could not convert data to requested type."
+			"get(Meta)<std::string> or use getMeta<const Key>."
+			"or specialise these template methods";
+	}
+};
+
 
 class KeyInvalidName : public KeyException
 {
 public:
 	virtual const char* what() const throw()
 	{
-		return "Invalid Keyname";
-	}
-};
-
-class KeyMetaException : public KeyException
-{
-public:
-	virtual const char* what() const throw()
-	{
-		return "Exception thrown by Key Meta Data related Operations";
-	}
-};
-
-class KeyNoSuchMeta : public KeyMetaException
-{
-public:
-	virtual const char* what() const throw()
-	{
-		return "No such meta data";
-	}
-};
-
-class KeyBadMeta : public KeyMetaException
-{
-public:
-	virtual const char* what() const throw()
-	{
-		return "Could not convert bad meta data";
+		return "Invalid Keyname: keyname needs to start with user/ or system/";
 	}
 };
 

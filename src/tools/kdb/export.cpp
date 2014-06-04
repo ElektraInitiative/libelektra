@@ -3,13 +3,13 @@
 #include <kdb.hpp>
 #include <modules.hpp>
 #include <cmdline.hpp>
-#include <print.hpp>
+#include <toolexcept.hpp>
 
 #include <iostream>
-#include <memory>
 
-using namespace kdb;
 using namespace std;
+using namespace kdb;
+using namespace kdb::tools;
 
 ExportCommand::ExportCommand()
 {}
@@ -29,7 +29,7 @@ int ExportCommand::execute(Cmdline const& cl)
 	}
 
 	kdb.get(ks, root);
-	printWarnings(root);
+	printWarnings(cerr, root);
 
 	KeySet part (ks.cut(root));
 
@@ -40,15 +40,15 @@ int ExportCommand::execute(Cmdline const& cl)
 	if (argc > 2 && cl.arguments[2] != "-") file = cl.arguments[2];
 
 	Modules modules;
-	auto_ptr<Plugin> plugin = modules.load(format);
+	PluginPtr plugin = modules.load(format);
 
 	Key errorKey;
 	errorKey.setString(file);
 
 	plugin->set(part, errorKey);
 
-	printError(errorKey);
-	printWarnings(errorKey);
+	printWarnings(cerr, errorKey);
+	printError(cerr, errorKey);
 
 	return 0;
 }

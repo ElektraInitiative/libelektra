@@ -5,60 +5,60 @@ import argparse
 import ConfigParser
 
 try:
-    from Cheetah.Template import Template
+	from Cheetah.Template import Template
 except ImportError:
-    print "You need to install Cheetah"
-    print
-    print "On Debian based systems type:"
-    print "apt-get install python-cheetah"
-    print
-    print "Or visit http://www.cheetahtemplate.org"
-    sys.exit(1)
+	print "You need to install Cheetah"
+	print
+	print "On Debian based systems type:"
+	print "apt-get install python-cheetah"
+	print
+	print "Or visit http://www.cheetahtemplate.org"
+	sys.exit(1)
 
 
 def main():
-    parser = argparse.ArgumentParser(prog="kdb gen",
-                                     description="Generates source files")
-    parser.add_argument("specification",
-        help="A meta configuration file that describes the configuration")
-    parser.add_argument("template",
-        help="The template file for cheetah")
-    parser.add_argument("--verbose",
-        help="Prints the specification",
-        action="store_true")
-    parser.add_argument("--output",
-        help="Write the evaluated file to given file (- for stdout)",
-        default='-')
-    args = parser.parse_args()
+	parser = argparse.ArgumentParser(prog="kdb gen",
+									 description="Generates source files")
+	parser.add_argument("specification",
+		help="A meta configuration file that describes the configuration")
+	parser.add_argument("template",
+		help="The template file for cheetah")
+	parser.add_argument("--verbose",
+		help="Prints the specification",
+		action="store_true")
+	parser.add_argument("--output",
+		help="Write the evaluated file to given file (- for stdout)",
+		default='-')
+	args = parser.parse_args()
 
-    parser = ConfigParser.ConfigParser(allow_no_value=True)
-    parser.read(args.specification)
+	parser = ConfigParser.ConfigParser(allow_no_value=True)
+	parser.read(args.specification)
 
-    parameterSpecification={}
-    parameterSpecification['parser'] = parser
-    parameterSpecification['args'] = args
-    parameterSpecification['parameters']={}
-    for section in parser.sections():
-        parameterSpecification['parameters'][section]={}
-        fallback={}
-        override={}
-        if parser.has_option(section, "fallback"):
-                fallback = parser.get(section, "fallback").split(' ')
-        if parser.has_option(section, "override"):
-                override = parser.get(section, "override").split(' ')
-        for item in parser.items(section):
-            parameterSpecification['parameters'][section][item[0]] = item[1]
+	parameterSpecification={}
+	parameterSpecification['parser'] = parser
+	parameterSpecification['args'] = args
+	parameterSpecification['parameters']={}
+	for section in parser.sections():
+		parameterSpecification['parameters'][section]={}
+		fallback={}
+		override={}
+		if parser.has_option(section, "fallback"):
+				fallback = parser.get(section, "fallback").split(' ')
+		if parser.has_option(section, "override"):
+				override = parser.get(section, "override").split(' ')
+		for item in parser.items(section):
+			parameterSpecification['parameters'][section][item[0]] = item[1]
 
-    if args.verbose:
-        print parameterSpecification
+	if args.verbose:
+		print parameterSpecification
 
-    template = str(Template(file=args.template,
-                            searchList=[parameterSpecification]))
+	template = str(Template(file=args.template,
+							searchList=[parameterSpecification]))
 
-    if args.output == '-':
-        print template
-    else:
-       with open(args.output, 'w') as f:
-           f.write(template)
+	if args.output == '-':
+		print template
+	else:
+	   with open(args.output, 'w') as f:
+		   f.write(template)
 
 main()

@@ -16,6 +16,8 @@
 /*Test size for small buffer
 #define HOSTS_KDB_BUFFER_SIZE 16 */
 
+#define MAX_ORDER_SIZE 50
+
 
 int elektraHostsGet(Plugin *handle, KeySet *ks, Key *parentKey);
 int elektraHostsSet(Plugin *handle, KeySet *ks, Key *parentKey);

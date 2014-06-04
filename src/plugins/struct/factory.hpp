@@ -3,8 +3,8 @@
 
 #include <map>
 #include <string>
-#include <memory>
 #include <stdexcept>
+#include <memory>
 
 //TODO: to add a new struct checker, 1.) include your header here
 #include "checker.hpp"
@@ -76,12 +76,12 @@ public:
 		}
 	}
 
-	std::auto_ptr<Checker> get(std::string const& which)
+	CheckerPtr get(std::string const& which)
 	{
 		Instancer* instancer = m_factory[which];
 		if (instancer)
 		{
-			std::auto_ptr <Checker> ret(instancer->get());
+			CheckerPtr ret(instancer->get());
 			return ret;
 		} else throw "Could not get instance";
 	}
@@ -116,7 +116,7 @@ static inline Checker* buildChecker(KeySet config)
 	std::string whichChecker;
 	ss >> whichChecker;
 
-	std::auto_ptr<Checker> c = f.get(whichChecker);
+	CheckerPtr c = f.get(whichChecker);
 	if (!c.get()) throw "Could not create list";
 
 	std::string whichParameter;

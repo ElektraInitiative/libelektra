@@ -119,6 +119,7 @@ public:
 
 		ostringstream o;
 		o << n;
+		if (o.fail()) return false;
 		if (o.str() != k.getString()) return false;
 
 		Key const min = k.getMeta<const Key>("check/type/min");

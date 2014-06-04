@@ -67,19 +67,19 @@ ostream& operator << (ostream& os, parse_t& p)
 		   << "	} else  keySetMeta(warningKey, \"warnings\", \"00\");" << endl
 		   << "" << endl
 		   << "	keySetMeta(warningKey, buffer, \"number description ingroup module file line function reason\");" << endl
-		   << "	strncat(buffer, \"/number\" , sizeof(buffer));" << endl
+		   << "	strcat(buffer, \"/number\" );" << endl
 		   << "	keySetMeta(warningKey, buffer, \"" << i << "\");" << endl
-		   << "	buffer[12] = '\\0'; strncat(buffer, \"/description\" , sizeof(buffer));" << endl
+		   << "	buffer[12] = '\\0'; strcat(buffer, \"/description\");" << endl
 		   << "	keySetMeta(warningKey, buffer, \"" << p[i]["description"] << "\");" << endl
-		   << "	buffer[12] = '\\0'; strncat(buffer, \"/ingroup\" , sizeof(buffer));" << endl
+		   << "	buffer[12] = '\\0'; strcat(buffer, \"/ingroup\");" << endl
 		   << "	keySetMeta(warningKey, buffer, \"" << p[i]["ingroup"] << "\");" << endl
-		   << "	buffer[12] = '\\0'; strncat(buffer, \"/module\" , sizeof(buffer));" << endl
+		   << "	buffer[12] = '\\0'; strcat(buffer, \"/module\");" << endl
 		   << "	keySetMeta(warningKey, buffer, \"" << p[i]["module"] << "\");" << endl
-		   << "	buffer[12] = '\\0'; strncat(buffer, \"/file\" , sizeof(buffer));" << endl
+		   << "	buffer[12] = '\\0'; strcat(buffer, \"/file\");" << endl
 		   << "	keySetMeta(warningKey, buffer, file);" << endl
-		   << "	buffer[12] = '\\0'; strncat(buffer, \"/line\" , sizeof(buffer));" << endl
+		   << "	buffer[12] = '\\0'; strcat(buffer, \"/line\");" << endl
 		   << "	keySetMeta(warningKey, buffer, line);" << endl
-		   << "	buffer[12] = '\\0'; strncat(buffer, \"/reason\" , sizeof(buffer));" << endl
+		   << "	buffer[12] = '\\0'; strcat(buffer, \"/reason\");" << endl
 		   << "	keySetMeta(warningKey, buffer, reason);" << endl
 		   << "}" << endl
 		   << endl;

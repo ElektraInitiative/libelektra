@@ -2,6 +2,33 @@
 
 kdb tools meta description files
 
+== MOUNT ==
+
+mountget, mountset, mountls
+
+rename getmeta to metaget, metaset, metals?
+
+add possibility to give names and configure plugins:
+
+e.g.
+kdb mount path=s.ini,recode=utf8..latin1,name=backendname /path/to/mount
+          ni,name=pluginname rebase,relative=/path
+
+kdb mount OpenICC_device_config_DB.json /org/freedesktop/openicc yajl
+          rebase,relative=/org/freedesktop/openicc,case=ignore
+
+
+allow to mount/umount plugin to all currently mounted backends +
+register them to be added for all future backends
+
+allow --no-env --no-arg --no-default arguments?
+
+== libelektra-tools ==
+
+including mounting functionality
+
+
+
 = KDB =
 
 list existing plugins
@@ -32,6 +59,8 @@ kdb-file/resolver (give file given key name)
 kdb-edit edit file in any of Elektra's format
 	export to temporary file, open with editor and reimport
 
+export should be able to export only configuration that was changed
+	(suppress default config)
 
 install config (mount+preload system config) by using meta struct
 
@@ -76,14 +105,6 @@ separate commit to kdbSet
 Code generator that does what "kdb mount" does but provides a statically
 compiled variant thereof.
 Needed for bootstrapping.
-
-
-== CODE ==
-
-duplicated code for printError() and printWarnings()
-(binding+kdb tool)
-use error value as exit (does it start with 0?)
-printError usw. Nicht von makro abhängig machen?
 
 
 == DBUS ==

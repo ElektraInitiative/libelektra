@@ -23,7 +23,7 @@ using namespace ckdb;
 namespace dump
 {
 
-int serialize(std::ostream &os, ckdb::Key *, ckdb::KeySet *ks)
+int serialise(std::ostream &os, ckdb::Key *, ckdb::KeySet *ks)
 {
 	ckdb::Key *cur;
 
@@ -58,7 +58,7 @@ int serialize(std::ostream &os, ckdb::Key *, ckdb::KeySet *ks)
 
 			if (!ret)
 			{
-				/* This meta key was not serialized up to now */
+				/* This meta key was not serialised up to now */
 				size_t metanamesize = ckdb::keyGetNameSize(meta);
 				size_t metavaluesize = ckdb::keyGetValueSize(meta);
 
@@ -76,7 +76,7 @@ int serialize(std::ostream &os, ckdb::Key *, ckdb::KeySet *ks)
 
 				ksAppendKey(metacopies, search);
 			} else {
-				/* Meta key already serialized, write out a reference to it */
+				/* Meta key already serialised, write out a reference to it */
 				keyDel (search);
 
 				os << "keyCopyMeta ";
@@ -93,7 +93,7 @@ int serialize(std::ostream &os, ckdb::Key *, ckdb::KeySet *ks)
 	return 1;
 }
 
-int unserialize(std::istream &is, ckdb::Key *errorKey, ckdb::KeySet *ks)
+int unserialise(std::istream &is, ckdb::Key *errorKey, ckdb::KeySet *ks)
 {
 	ckdb::Key *cur = 0;
 
@@ -203,8 +203,8 @@ int elektraDumpGet(ckdb::Plugin *, ckdb::KeySet *returned, ckdb::Key *parentKey)
 		keyDel (root);
 		void (*get) (void) = (void (*) (void)) elektraDumpGet;
 		void (*set) (void) = (void (*) (void)) elektraDumpSet;
-		void (*serialize) (void) = (void (*) (void)) dump::serialize;
-		void (*unserialize) (void) = (void (*) (void)) dump::unserialize;
+		void (*serialise) (void) = (void (*) (void)) dump::serialise;
+		void (*unserialise) (void) = (void (*) (void)) dump::unserialise;
 		KeySet *n = ksNew(50,
 			keyNew ("system/elektra/modules/dump",
 				KEY_VALUE, "dump plugin waits for your orders", KEY_END),
@@ -217,14 +217,14 @@ int elektraDumpGet(ckdb::Plugin *, ckdb::KeySet *returned, ckdb::Key *parentKey)
 				KEY_SIZE, sizeof (set),
 				KEY_BINARY,
 				KEY_VALUE, &set, KEY_END),
-			keyNew ("system/elektra/modules/dump/exports/serialize",
-				KEY_SIZE, sizeof (serialize),
+			keyNew ("system/elektra/modules/dump/exports/serialise",
+				KEY_SIZE, sizeof (serialise),
 				KEY_BINARY,
-				KEY_VALUE, &serialize, KEY_END),
-			keyNew ("system/elektra/modules/dump/exports/unserialize",
-				KEY_SIZE, sizeof (unserialize),
+				KEY_VALUE, &serialise, KEY_END),
+			keyNew ("system/elektra/modules/dump/exports/unserialise",
+				KEY_SIZE, sizeof (unserialise),
 				KEY_BINARY,
-				KEY_VALUE, &unserialize, KEY_END),
+				KEY_VALUE, &unserialise, KEY_END),
 			keyNew ("system/elektra/modules/dump/infos",
 				KEY_VALUE, "Dumps into a format tailored to KeySet semantics", KEY_END),
 			keyNew ("system/elektra/modules/dump/infos/author",
@@ -250,7 +250,7 @@ int elektraDumpGet(ckdb::Plugin *, ckdb::KeySet *returned, ckdb::Key *parentKey)
 	std::ifstream ofs(keyString(parentKey), std::ios::binary);
 	if (!ofs.is_open()) return 0;
 
-	return dump::unserialize (ofs, parentKey, returned);
+	return dump::unserialise (ofs, parentKey, returned);
 }
 
 int elektraDumpSet(ckdb::Plugin *, ckdb::KeySet *returned, ckdb::Key *parentKey)
@@ -265,7 +265,7 @@ int elektraDumpSet(ckdb::Plugin *, ckdb::KeySet *returned, ckdb::Key *parentKey)
 		return -1;
 	}
 
-	return dump::serialize (ofs, parentKey, returned);
+	return dump::serialise (ofs, parentKey, returned);
 }
 
 ckdb::Plugin *ELEKTRA_PLUGIN_EXPORT(dump)

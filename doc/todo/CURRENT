@@ -5,17 +5,13 @@ those which are necessary to fulfil the initial tasks)
 Items are e.g. BUGS, OPTIMIZE, PROBLEMS, TESTING, PLUGINS, TODO,..
 
 
-== 0.8.5 ==
-
-write some release notes
-reintergrate branch + push
-check buildserver
+== 0.8.7 ==
 
 gen:
+	Contextual
 	cleanup: utilities for cheetha+python
 
-gen examples:
-	use correct types
+allow key names starting with /?
 
 define sprintf+strtoXX
 string not needed: will be assumed if no type .given
@@ -24,7 +20,6 @@ additional test cases with all types (min, max)
 Starting points:
 	add small Tutorial for gen
 	add docu to examples
-
 
 announcements: docu
 	gen
@@ -38,26 +33,25 @@ fix types:
 template naming conventions
 refactor template code a bit (util class)
 
-=== tools ===
-
-make exec subfolder in kdb
-kdb- prefix unnecessary
-mv scripts to tools
 
 === test ===
 
+have a single add_test place
+install and search for all test_data in the same way
+
+test libelektratools:
+	addPlugin(Plugin) tests
+	usePath functionality?
+	codeReview
+
 check on 32bit system
-
-=== install ===
-
-install test scripts to tool exec path
-install test data + path
-man page path
-additional pathes must be in kdb repo (man pages, test data, templates)
-install man pages correctly under elektra3
+check icc/clang on buildserver
 
 
 === packaging ===
 
 man pages:
 	symlink kdb-full and kdb-static
+
+tests package (depends on all other packages)
+python+lua bindings

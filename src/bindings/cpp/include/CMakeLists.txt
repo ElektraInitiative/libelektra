@@ -1,10 +1,5 @@
+file(GLOB HEADER_FILES *.hpp)
+
 install (FILES
-	kdbexcept.hpp
-	kdb.hpp
-	kdbio.hpp
-	keyexcept.hpp
-	key.hpp
-	keyio.hpp
-	keyset.hpp
-	keysetio.hpp
+	${HEADER_FILES}
 	DESTINATION include/${TARGET_INCLUDE_FOLDER})

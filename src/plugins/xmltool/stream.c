@@ -350,7 +350,7 @@ ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
         xsi:schemaLocation="http://www.libelektra.org elektra.xsd">
  * @endverbatim
  *
- * @param ks the KeySet to serialize
+ * @param ks the KeySet to serialise
  * @param stream where to write output: a file or stdout
  * @param options accepted #option_t ORed:
  * - @p option_t::KDB_O_NUMBERS \n

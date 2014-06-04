@@ -159,7 +159,7 @@ set (KDB_DB_USER ".kdb" CACHE PATH
 #
 
 
-option (COMPILE_CXX11_MODE "Use the new C++11 standard" ON)
+option (ENABLE_CXX11 "Include code using C++11 standard, needs gcc 4.7 or comparable clang/icc" OFF)
 
 
 
@@ -193,16 +193,32 @@ else (BUILD_DOCUMENTATION)
 		)
 endif (BUILD_DOCUMENTATION)
 
-option (ENABLE_TESTING "Enable to run tests by make test target" ON)
-option (ENABLE_KDB_TESTING "Enable to run tests writing to hard disc using the kdb tool" ON)
-option (BUILD_TESTING "Build testcases" ON)
+option (ENABLE_TESTING "Enable to run (any) tests by make test" ON)
+if (ENABLE_TESTING)
+	option (ENABLE_KDB_TESTING "Enable to run tests writing to hard disc" ON)
+else (ENABLE_TESTING)
+	set (ENABLE_KDB_TESTING OFF CACHE BOOL "Enable to run tests writing to hard disc" FORCE)
+endif (ENABLE_TESTING)
+
+
+
+option (BUILD_TESTING "Build main test suite (does not affect plugins+bindings)" ON)
 if (BUILD_TESTING)
 	option (INSTALL_TESTING "Install testcases" ON)
-elseif (BUILD_TESTING)
+else (BUILD_TESTING)
 	#install testing makes no sense if it is not build
 	#(even though the option would not harm)
 	set (INSTALL_TESTING OFF CACHE BOOL "Install testcases" FORCE)
 endif (BUILD_TESTING)
+
+option (BUILD_SWIG "Enable SWIG generated bindings" OFF)
+if (BUILD_SWIG)
+	option (BUILD_SWIG_PYTHON "Enable the SWIG bindings for Python" OFF)
+	option (BUILD_SWIG_LUA    "Enable the SWIG bindings for Lua" OFF)
+else (BUILD_SWIG)
+	set (BUILD_SWIG_PYTHON OFF CACHE BOOL "Enable the SWIG bindings for Python" FORCE)
+	set (BUILD_SWIG_LUA    OFF CACHE BOOL "Enable the SWIG bindings for Lua" FORCE)
+endif (BUILD_SWIG)
 
 #
 # Developer builds (debug or verbose build)
