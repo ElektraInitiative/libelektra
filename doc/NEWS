@@ -1,20 +1,21 @@
 0.8.6 Release
 
-This release both adds many improvements and some technical previews.
+This release adds both many improvements and some technical previews.
 
 
 
 == Improvements ==
 
-The hosts plugin got a documentation and several bug fixes.
+The hosts plugin got documentation and several bug fixes.
 Multiline comments now remove the comment start sequences within
 the metadata comment.
 Additionally the kdb tool has an improved error message on invalid
-filenames.
+filenames. (thanks to Manuel Mausz)
 
-resolver did not delete tmpfile in some error situations
+Fix a issue that the resolver plugin did not delete tmpfile in some
+error situations and add testcases with error plugin.
 
-Fix KS_END in C++ without used namespace.
+Fix KS_END in C++ that did not specify the namespace.
 
 "kdb run_all" will now run all tests using Elektra from your system.
 Because not all testdata will be installed, some testcases fail unless
