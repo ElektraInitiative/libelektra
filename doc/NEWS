@@ -48,7 +48,7 @@ information about that topic later.
 
 The libtools library is back to life again! It has the same idea as its
 predecessor, but it is much more powerful. Because of the plugin system
-libtools is able to export and import in any configuration format
+libtools is able to export and import any configuration format
 Elektra supports. Additionally it adds support for mounting backends.
 While most of its functionality is mature, the API is not final, though.
 
@@ -59,23 +59,27 @@ While most of its functionality is mature, the API is not final, though.
 The API and ABI is as always backwards-compatible within the 0.8 series.
 
 This time it is, however, not forward-compatible (that means programs
-linked against 0.8.6 might not work with 0.8.5) because ksAtCursor()
+linked against 0.8.6 might not work with 0.8.5), because ksAtCursor()
 was added.
 
-ksAtCursor() finally provides the means for an external iterator. This
-was immediately exploited by an implementation of C++ iterators.
+ksAtCursor() provides the means for an external iterator. This
+was immediately exploited by an implementation of the C++
+iterators. These new C++(11) (reverse)iterators allow multi-pass
+algorithm over the same KeySet.
 
-New C++(11) iterators allow multi-pass algorithm over the same KeySet.
+ksSort was in the kdb.h header file, even though it never was
+needed nor available in 0.8. Automatic compatibility checkers may
+wrongly tell that the API is not compatible, but this is not the case
+(thanks to Manuel Mausz).
 
-ksSort was wrongly in the kdb.h header file, even though it never was
-available nor needed in 0.8. Automatic compatibility checkers may
-wrongly tell that the API is not compatible.
-(thanks to Manuel Mausz)
-
-The C++ API changed a bit, including:
+The C++ API changed, including:
 - does not wrongly convert garbage to default types using get<T>
 - getMeta now interally uses get<T> and both throw the KeyTypeConversion
   Exception
+- KeySet::at directly allows to use ksAtCursor()
+- KeyTypeConversion (or former KeyBadMeta) is not thrown anymore if key
+  is not available
+- Key::hasMeta allows to directly check if meta data is available
 
 CMake: ENABLE_CXX11 is now default OFF (because gcc 4.6 and older won't
        work with it). It disables some tests, though.
@@ -105,19 +109,21 @@ configuration file manipulation some of these features would be valuable
 for administrators and developers. Some of these mentioned Elektra
 features include but are not limited to: logging of all configuration
 changes done, transformation of character encoding as needed, import and
-export of configuration data as XML or JSON (Augeas has a similar feature
-for XML), file conflict detection and several different validations
-for configuration options (see [3] for a full list of features). With
-the Augeas storage plugin these features cannot be used with only the
-applications already integrated into Elektra, but with all applications
-for which lenses exist.  This storage plugin targets system administrators
-as well as developers, that wish to take advantage of Elektras features,
-but were unable to do so because of missing plugins. If no lens exists
-already, writing a new one requires neither programming skills nor
-knowledge of Elektras plugin architecture. Furthermore, implementing
-a new configuration file format is just a matter of writing a lens
-instead of writing a full-fledged parser.  [1] http://augeas.net/ [2]
-http://augeas.net/stock_lenses.html [3] http://www.libelektra.org
+export of configuration data in any format, e.g. XML or JSON (Augeas has
+a similar feature for XML), file conflict detection and several different
+validations for configuration options (see [3] for a full list of
+features). With the Augeas storage plugin these features cannot be used
+with only the applications already integrated into Elektra, but with all
+applications for which lenses exist.  This storage plugin targets system
+administrators as well as developers, that wish to take advantage of
+Elektras features, but were unable to do so because of missing plugins. If
+no lens exists already, writing a new one requires neither programming
+skills nor knowledge of Elektras plugin architecture. Furthermore,
+implementing a new configuration file format is just a matter of writing a
+lens instead of writing a full-fledged parser.
+[1] http://augeas.net/
+[2] http://augeas.net/stock_lenses.html
+[3] http://www.libelektra.org
 
 Since Elektra is written in C, integration is limited to projects
 written in C and languages compatible with C like C++. In order to
@@ -139,7 +145,6 @@ both Python and Lua into two generic plugins. Using these plugins in
 combination with the languages bindings it will be fully possible to
 write plugins for Elektra in languages other than C/C++.
 
-
 While Elektra offers sophisticated methods to store and manipulate
 configuration, currently there is only a command line tool (kdb)
 available to interact with the database. This requires the user to study
@@ -150,11 +155,25 @@ Raffael Pancheri is designing and implementing a Graphical User Interface
 and beneficial, Pancheri is following the design principles proposed by
 Ben Shneiderman and Jakob Nielson.
 
-
 Finally, as you already noticed, Ian Donnelly is working on a semantic
 3-way merge to make distribution and package upgrades smoother.
 This is done as GSOC project. The progress is documented here:
 http://community.libelektra.org/wp/
+
+
+You can download the release at:
+
+Docu can be found here:
+
+You can install the debian packages for debian (wheezy, amd64 only;
+some packages will be added later) by
+adding following lines to your /etc/apt/sources.list:
+ deb http://markus-raab.org/ftp/wheezy wheezy main
+
+and install or upgrade the packages with:
+ sudo apt-get update
+ sudo apt-get install libelektra-core4 libelektra-full4 libelektra-bin libelektra-dev libelektra-test libelektra-xmltool4 libelektra-json4 libelektra-dbus4 libelektra-doc
+
 
 
 
