@@ -8,7 +8,7 @@ git archive --prefix=elektra-${KDB_VERSION}/ --format=tar ${KDB_VERSION} | gzip 
 hashsum ()
 {
 	echo -n "name: "
-	ls `basename $1`
+	basename `ls $1`
 
 	echo -n "size: "
 	ls -l $1 | awk '{print $5;}'
