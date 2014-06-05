@@ -39,6 +39,85 @@ int elektraGlobMatch(Key *key, const Key *match)
 	return 0;
 }
 
+enum GlobDirection {
+	GET,
+	SET,
+};
+
+static KeySet* getGlobKeys(Key* parentKey, KeySet* keys, enum GlobDirection direction)
+{
+	KeySet* glob = ksNew (0);
+	Key* k;
+	size_t parentsize = keyGetNameSize (parentKey);
+	while ((k = ksNext (keys)) != 0)
+	{
+		/* First look if it is a glob key at all */
+		if (strncmp (keyName (k), "system/glob", sizeof("system/glob") - 1)
+				&& strncmp (keyName (k), "user/glob", sizeof("user/glob") - 1))
+			continue;
+
+		Key *filterIfBelowUser;
+		Key *filterIfBelowSystem;
+
+		if (direction == GET)
+		{
+			filterIfBelowUser = keyNew ("user/glob/set");
+			filterIfBelowSystem = keyNew ("system/glob/set");
+		}
+
+		if (direction == SET)
+		{
+			filterIfBelowUser = keyNew ("user/glob/get");
+			filterIfBelowSystem = keyNew ("system/glob/get");
+		}
+
+		if (keyIsBelow (filterIfBelowUser, k)
+				|| keyIsBelow (filterIfBelowSystem, k))
+		{
+			keyDel (filterIfBelowUser);
+			keyDel (filterIfBelowSystem);
+			continue;
+		}
+
+		keyDel (filterIfBelowUser);
+		keyDel (filterIfBelowSystem);
+
+		/* Look if we have a string */
+		size_t valsize = keyGetValueSize (k);
+		if (valsize < 2) continue;
+
+		/* We now know we want that key.
+		 Dup it to not change the configuration. */
+		Key* ins = keyDup (k);
+		/* Now look if we want cascading for the key */
+		if (keyString (k)[0] == '/')
+		{
+			char* newstring = malloc (valsize + parentsize);
+			strcpy (newstring, keyName (parentKey));
+			strcat (newstring, keyString (k));
+			keySetString (ins, newstring);
+			free (newstring);
+		}
+		ksAppendKey (glob, ins);
+	}
+	return glob;
+}
+
+static void applyGlob(KeySet* returned, KeySet* glob)
+{
+	Key* cur;
+	ksRewind (returned);
+	while ((cur = ksNext (returned)) != 0)
+	{
+		Key* match;
+		ksRewind (glob);
+		while ((match = ksNext (glob)) != 0)
+		{
+			elektraGlobMatch (cur, match);
+		}
+	}
+}
+
 int elektraGlobOpen(Plugin *handle ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
 {
 	/* plugin initialization logic should be here */
@@ -58,102 +137,74 @@ int elektraGlobClose(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED
 	return 1; /* success */
 }
 
+
+
 int elektraGlobGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey ELEKTRA_UNUSED)
 {
-	/* configuration only */
-	KeySet *n;
-	ksAppend (returned, n=ksNew (30,
-		keyNew ("system/elektra/modules/glob",
-			KEY_VALUE, "glob plugin waits for your orders", KEY_END),
-		keyNew ("system/elektra/modules/glob/exports", KEY_END),
-		keyNew ("system/elektra/modules/glob/exports/open",
-			KEY_FUNC, elektraGlobOpen,
-			KEY_END),
-		keyNew ("system/elektra/modules/glob/exports/close",
-			KEY_FUNC, elektraGlobClose,
-			KEY_END),
-		keyNew ("system/elektra/modules/glob/exports/get",
-			KEY_FUNC, elektraGlobGet,
-			KEY_END),
-		keyNew ("system/elektra/modules/glob/exports/set",
-			KEY_FUNC, elektraGlobSet,
-			KEY_END),
-		keyNew ("system/elektra/modules/glob/exports/elektraGlobMatch",
-			KEY_FUNC, elektraGlobMatch,
-			KEY_END),
-		keyNew ("system/elektra/modules/glob/infos",
-			KEY_VALUE, "All information you want to know", KEY_END),
-		keyNew ("system/elektra/modules/glob/infos/author",
-			KEY_VALUE, "Markus Raab <elektra@markus-raab.org>", KEY_END),
-		keyNew ("system/elektra/modules/glob/infos/licence",
-			KEY_VALUE, "BSD", KEY_END),
-		keyNew ("system/elektra/modules/glob/infos/description",
-			KEY_VALUE, "Copies meta data to keys using globbing", KEY_END),
-		keyNew ("system/elektra/modules/glob/infos/provides",
-			KEY_VALUE, "apply", KEY_END),
-		keyNew ("system/elektra/modules/glob/infos/placements",
-			KEY_VALUE, "presetstorage", KEY_END),
-		keyNew ("system/elektra/modules/glob/infos/needs",
-			KEY_VALUE, "", KEY_END),
-		keyNew ("system/elektra/modules/glob/infos/ordering",
-			KEY_VALUE, "check", KEY_END),
-		keyNew ("system/elektra/modules/glob/infos/version",
-			KEY_VALUE, PLUGINVERSION, KEY_END),
-		KS_END));
-	ksDel (n);
+	if (!strcmp (keyName(parentKey), "system/elektra/modules/glob"))
+	{
+		KeySet *n;
+		ksAppend (returned, n=ksNew (30,
+			keyNew ("system/elektra/modules/glob",
+				KEY_VALUE, "glob plugin waits for your orders", KEY_END),
+			keyNew ("system/elektra/modules/glob/exports", KEY_END),
+			keyNew ("system/elektra/modules/glob/exports/open",
+				KEY_FUNC, elektraGlobOpen,
+				KEY_END),
+			keyNew ("system/elektra/modules/glob/exports/close",
+				KEY_FUNC, elektraGlobClose,
+				KEY_END),
+			keyNew ("system/elektra/modules/glob/exports/get",
+				KEY_FUNC, elektraGlobGet,
+				KEY_END),
+			keyNew ("system/elektra/modules/glob/exports/set",
+				KEY_FUNC, elektraGlobSet,
+				KEY_END),
+			keyNew ("system/elektra/modules/glob/exports/elektraGlobMatch",
+				KEY_FUNC, elektraGlobMatch,
+				KEY_END),
+			keyNew ("system/elektra/modules/glob/infos",
+				KEY_VALUE, "All information you want to know", KEY_END),
+			keyNew ("system/elektra/modules/glob/infos/author",
+				KEY_VALUE, "Markus Raab <elektra@markus-raab.org>", KEY_END),
+			keyNew ("system/elektra/modules/glob/infos/licence",
+				KEY_VALUE, "BSD", KEY_END),
+			keyNew ("system/elektra/modules/glob/infos/description",
+				KEY_VALUE, "Copies meta data to keys using globbing", KEY_END),
+			keyNew ("system/elektra/modules/glob/infos/provides",
+				KEY_VALUE, "apply", KEY_END),
+			keyNew ("system/elektra/modules/glob/infos/placements",
+				KEY_VALUE, "presetstorage", KEY_END),
+			keyNew ("system/elektra/modules/glob/infos/needs",
+				KEY_VALUE, "", KEY_END),
+			keyNew ("system/elektra/modules/glob/infos/ordering",
+				KEY_VALUE, "check", KEY_END),
+			keyNew ("system/elektra/modules/glob/infos/version",
+				KEY_VALUE, PLUGINVERSION, KEY_END),
+			KS_END));
+		ksDel (n);
+	}
+
+	KeySet *keys = elektraPluginGetConfig(handle);
+	ksRewind (keys);
+
+	KeySet* glob = getGlobKeys (parentKey, keys, GET);
+	applyGlob (returned, glob);
+
+	ksDel (glob);
 
 	return 1; /* success */
 }
 
+
+
 int elektraGlobSet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	KeySet *keys = elektraPluginGetConfig(handle);
-	KeySet *glob = ksNew (0);
-
-	Key *k;
 	ksRewind (keys);
 
-	size_t parentsize = keyGetNameSize(parentKey);
-	while ((k = ksNext(keys)) != 0)
-	{
-
-		/* First look if it is a glob key at all */
-		if (strncmp (keyName(k), "system/glob", sizeof("system/glob")-1) &&
-		    strncmp (keyName(k), "user/glob", sizeof("user/glob")-1)) continue;
-
-		/* Look if we have a string */
-		size_t valsize = keyGetValueSize(k);
-		if (valsize < 2) continue;
-
-		/* We now know we want that key.
-		   Dup it to not change the configuration. */
-		Key *ins = keyDup (k);
-
-		/* Now look if we want cascading for the key */
-		if (keyString(k)[0] == '/')
-		{
-			char *newstring = malloc (valsize + parentsize);
-			strcpy (newstring, keyName(parentKey));
-			strcat (newstring, keyString(k));
-
-			keySetString (ins, newstring);
-			free (newstring);
-		}
-
-		ksAppendKey (glob, ins);
-	}
-
-	Key *cur;
-	ksRewind (returned);
-	while ((cur = ksNext(returned)) != 0)
-	{
-		Key *match;
-		ksRewind (glob);
-		while ((match = ksNext(glob)) != 0)
-		{
-			elektraGlobMatch (cur, match);
-		}
-	}
+	KeySet* glob = getGlobKeys (parentKey, keys, SET);
+	applyGlob (returned, glob);
 
 	ksDel (glob);
 
