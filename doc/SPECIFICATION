@@ -8,7 +8,23 @@
 # plugin: the plugins which use the meta-key (space separated)
 # description: explains what it is about
 #
-# v0.1
+# v0.2
+
+key: order
+type: int
+status: implemented
+plugin: hosts augeas keytometa
+description: relative order in the keyset if non-alphabetical order
+             is needed
+
+key: comment
+type: string
+status: implemented
+plugin: hosts (keytometa)
+description: the users comment about the key (mostly its value)
+             (TODO CHECK)
+             the first line is the comment after a key=value
+             further lines are the lines before a key=value
 
 key: check/type
 type: string
