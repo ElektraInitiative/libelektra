@@ -211,6 +211,15 @@ else (BUILD_TESTING)
 	set (INSTALL_TESTING OFF CACHE BOOL "Install testcases" FORCE)
 endif (BUILD_TESTING)
 
+
+set (ENABLE_COVERAGE OFF CACHE BOOL "enable coverage analysis (using gcov)")
+set (COVERAGE_PREFIX
+		"${PROJECT_SOURCE_DIR}/.."
+		CACHE FILEPATH
+		"Full path to common prefix of build+source directory"
+    )
+
+
 option (BUILD_SWIG "Enable SWIG generated bindings" OFF)
 if (BUILD_SWIG)
 	option (BUILD_SWIG_PYTHON "Enable the SWIG bindings for Python" OFF)
