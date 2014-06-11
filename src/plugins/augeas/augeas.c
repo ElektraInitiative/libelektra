@@ -211,8 +211,9 @@ static int foreachAugeasNode(augeas *handle, const char *treePath,
 	return result;
 }
 
-static Key **convertToArray(KeySet *ks)
+Key **ksToArray(KeySet *ks)
 {
+	/* TODO: rewind cursor after using it */
 	/* build an array of keys ordered by the order MetaKey */
 	Key **result;
 	size_t arraySize = ksGetSize (ks);
@@ -229,8 +230,6 @@ static Key **convertToArray(KeySet *ks)
 		result[index] = key;
 		++index;
 	}
-
-	qsort (result, arraySize, sizeof(Key *), keyCmpOrder);
 
 	return result;
 }
@@ -299,9 +298,11 @@ static int saveTree(augeas* augeasHandle, KeySet* ks, const char* lensPath,
 
 	size_t prefixSize = keyGetNameSize (parentKey) - 1;
 	size_t arraySize = ksGetSize (ks);
-	Key **keyArray = convertToArray (ks);
+	Key **keyArray = ksToArray (ks);
 
 	if (keyArray == 0) return -1;
+
+	qsort (keyArray, arraySize, sizeof(Key *), keyCmpOrder);
 
 	/* convert the Elektra KeySet to an Augeas tree */
 	for (size_t i = 0; i < arraySize; i++)
@@ -314,6 +315,8 @@ static int saveTree(augeas* augeasHandle, KeySet* ks, const char* lensPath,
 		free (nodeName);
 	}
 
+	free (keyArray);
+
 	/* remove keys not present in the KeySet */
 	struct OrphanSearch *data = malloc (sizeof(struct OrphanSearch));
 
@@ -323,6 +326,8 @@ static int saveTree(augeas* augeasHandle, KeySet* ks, const char* lensPath,
 	data->parentKey = parentKey;
 
 	foreachAugeasNode (augeasHandle, AUGEAS_TREE_ROOT, &removeOrphan, data);
+
+	free (data);
 
 	/* build the tree */
 	ret = aug_text_retrieve (augeasHandle, lensPath, AUGEAS_CONTENT_ROOT,

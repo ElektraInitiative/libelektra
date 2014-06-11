@@ -84,7 +84,7 @@ void test_hostLensWrite(char *fileName)
 			keyNew ("system/lens", KEY_VALUE, "Hosts.lns", KEY_END), KS_END);
 	PLUGIN_OPEN("augeas");
 
-	KeySet *ks = ksNew (30, keyNew ("user/tests/augeas-hosts/1"),
+	KeySet *ks = ksNew (30, keyNew ("user/tests/augeas-hosts/1", KEY_END),
 			keyNew ("user/tests/augeas-hosts/1/ipaddr", KEY_VALUE, "127.0.0.1",
 					KEY_META, "order", "10", KEY_END),
 			keyNew ("user/tests/augeas-hosts/1/canonical", KEY_VALUE,
@@ -123,6 +123,7 @@ void test_hostLensWrite(char *fileName)
 			compare_line_files (srcdir_file (fileName), keyString (parentKey)),
 			"files do not match as expected");
 
+	keyDel (parentKey);
 	ksDel (ks);
 
 	PLUGIN_CLOSE ()
@@ -147,18 +148,22 @@ void test_hostLensDelete(char *sourceFile, char *compFile)
 	Key *key = ksLookupByName (ks, "user/tests/augeas-hosts/1", 0);
 	exit_if_fail(key, "localhost not found");
 	ksPopAtCursor(ks, ksGetCursor(ks));
+	keyDel (key);
 
 	key = ksLookupByName (ks, "user/tests/augeas-hosts/1/ipaddr", 0);
 	exit_if_fail(key, "ip address of localhost not found");
 	ksPopAtCursor(ks, ksGetCursor(ks));
+	keyDel (key);
 
 	key = ksLookupByName (ks, "user/tests/augeas-hosts/1/canonical", 0);
 	exit_if_fail(key, "canonical of localhost not found");
 	ksPopAtCursor(ks, ksGetCursor(ks));
+	keyDel (key);
 
 	key = ksLookupByName (ks, "user/tests/augeas-hosts/1/#comment", 0);
 	exit_if_fail(key, "comment of localhost not found");
 	ksPopAtCursor(ks, ksGetCursor(ks));
+	keyDel (key);
 
 	char * fileNameCompare = malloc (strlen (compFile) + 6);
 	strcpy (fileNameCompare, compFile);
@@ -176,6 +181,9 @@ void test_hostLensDelete(char *sourceFile, char *compFile)
 	succeed_if(
 			compare_line_files (srcdir_file (compFile), keyString (parentKey)),
 			"files do not match as expected");
+
+	keyDel (parentKey);
+	ksDel (ks);
 
 	PLUGIN_CLOSE ()
 	;
@@ -338,6 +346,9 @@ void test_hostLensFormatting(char *fileName)
 	succeed_if(
 			compare_line_files (srcdir_file (fileName), keyString (parentKey)),
 			"files do not match as expected");
+
+	keyDel (parentKey);
+	ksDel (ks);
 
 	PLUGIN_CLOSE ()
 	;
