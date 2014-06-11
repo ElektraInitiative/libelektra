@@ -61,14 +61,14 @@ static KeySet* getGlobKeys(Key* parentKey, KeySet* keys, enum GlobDirection dire
 
 		if (direction == GET)
 		{
-			filterIfBelowUser = keyNew ("user/glob/set");
-			filterIfBelowSystem = keyNew ("system/glob/set");
+			filterIfBelowUser = keyNew ("user/glob/set", KEY_END);
+			filterIfBelowSystem = keyNew ("system/glob/set", KEY_END);
 		}
 
 		if (direction == SET)
 		{
-			filterIfBelowUser = keyNew ("user/glob/get");
-			filterIfBelowSystem = keyNew ("system/glob/get");
+			filterIfBelowUser = keyNew ("user/glob/get", KEY_END);
+			filterIfBelowSystem = keyNew ("system/glob/get", KEY_END);
 		}
 
 		if (keyIsBelow (filterIfBelowUser, k)
@@ -174,7 +174,7 @@ int elektraGlobGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 			keyNew ("system/elektra/modules/glob/infos/provides",
 				KEY_VALUE, "apply", KEY_END),
 			keyNew ("system/elektra/modules/glob/infos/placements",
-				KEY_VALUE, "presetstorage", KEY_END),
+				KEY_VALUE, "presetstorage postgetstorage", KEY_END),
 			keyNew ("system/elektra/modules/glob/infos/needs",
 				KEY_VALUE, "", KEY_END),
 			keyNew ("system/elektra/modules/glob/infos/ordering",
