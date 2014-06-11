@@ -103,7 +103,7 @@ inline void Subject::notify(Events const & events) const
 				os.insert(o); // (discarding duplicates)
 			}
 		}
-#if VERBOSE
+#if DEBUG && VERBOSE
 		else
 		{
 			std::cout << "Trying to notify " << e << " but event does not exist" << std::endl;
@@ -303,7 +303,7 @@ private:
 			// no layer was not active before, remember that
 			m_with_stack.push_back(std::make_pair(id, std::shared_ptr<Layer>()));
 		}
-#if VERBOSE
+#if DEBUG && VERBOSE
 		std::cout << "lazy activate layer: " << id << std::endl;
 #endif
 	}
@@ -326,7 +326,7 @@ public:
 			p.first->second = layer; // update
 		}
 		notify({layer->id()});
-#if VERBOSE
+#if DEBUG && VERBOSE
 		std::cout << "activate layer: " << layer->id() << std::endl;
 #endif
 	}
@@ -344,7 +344,7 @@ private:
 		}
 		// else: deactivate whats not there:
 		// nothing to do!
-#if VERBOSE
+#if DEBUG && VERBOSE
 		std::cout << "lazy deactivate layer: " << layer->id() << std::endl;
 #endif
 	}
@@ -355,7 +355,7 @@ public:
 	{
 		std::shared_ptr<Layer>layer = std::make_shared<T>(std::forward<Args>(args)...);
 		m_active_layers.erase(layer->id());
-#if VERBOSE
+#if DEBUG && VERBOSE
 		std::cout << "deactivate layer: " << layer->id() << std::endl;
 #endif
 		notify({layer->id()});
@@ -556,7 +556,7 @@ public:
 		m_atomic_context_changed = false;
 		m_volatile_context_changed = false;
 		*/
-#if VERBOSE
+#if DEBUG && VERBOSE
 		std::cout << "got name: " << m_evaluated_name << " to " << m_cache << std::endl;
 #endif
 	}
@@ -564,7 +564,7 @@ public:
 	// cache to keyset
 	void syncKeySet() const
 	{
-#if VERBOSE
+#if DEBUG && VERBOSE
 		std::cout << "set name: " << m_evaluated_name << " to " << m_cache << std::endl;
 #endif
 		kdb::Key found = m_ks.lookup(m_evaluated_name, 0);
@@ -586,7 +586,7 @@ private:
 	virtual void update() const
 	{
 		std::string evaluated_name = m_context.evaluate(m_meta.getString());
-#if VERBOSE
+#if DEBUG && VERBOSE
 		std::cout << "update " << evaluated_name << " from " << m_evaluated_name << std::endl;
 #endif
 		if (evaluated_name != m_evaluated_name)

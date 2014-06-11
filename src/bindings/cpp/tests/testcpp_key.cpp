@@ -248,7 +248,8 @@ void test_value ()
 	succeed_if (test.getString() == "", "String should be empty");
 
 	test.setString ("23.3");
-	succeed_if (test.get<double> () == 23.3, "could not get same double");
+	succeed_if (test.get<double> () >= 23.2, "could not get same double");
+	succeed_if (test.get<double> () <= 23.4, "could not get same double");
 	succeed_if (test.getBinarySize () == 5, "value size not correct");
 
 	test.setString ("401");

@@ -414,7 +414,7 @@ void test_type()
 	keyDel (key);
 }
 
-Key *c;
+Key * g_c;
 
 void j (Key *k)
 {
@@ -422,22 +422,22 @@ void j (Key *k)
 	char *value = malloc (size);
 	int bstring = keyIsString (k);
 
-	// receive key c
+	// receive key g_c
 	memcpy (value, keyValue(k), size);
-	keyCopy (k, c);
+	keyCopy (k, g_c);
 	if (bstring) keySetString (k, value);
 	else keySetBinary (k, value, size);
 	free (value);
 	// the caller will see the changed key k
-	// with the metadata from c
+	// with the metadata from g_c
 }
 
 void l(Key *k)
 {
-	// receive c
-	keyCopyMeta(k, c, "type");
+	// receive g_c
+	keyCopyMeta(k, g_c, "type");
 	// the caller will see the changed key k
-	// with the metadata "type" from c
+	// with the metadata "type" from g_c
 }
 
 void test_examples()
@@ -447,9 +447,9 @@ void test_examples()
 	keySetMeta (key, "def", "abc");
 	keySetMeta (key, "nop", "cup");
 
-	c = keyNew(0);
-	keySetMeta (c, "xef", "ybc");
-	keySetMeta (c, "xop", "yup");
+	g_c = keyNew(0);
+	keySetMeta (g_c, "xef", "ybc");
+	keySetMeta (g_c, "xop", "yup");
 
 	j(key);
 
@@ -459,15 +459,15 @@ void test_examples()
 	succeed_if (keyValue(keyGetMeta(key, "nop")) == 0, "old meta data remained");
 
 	keyDel (key);
-	keyDel (c);
+	keyDel (g_c);
 
 	key = keyNew(0);
 	keySetMeta (key, "def", "abc");
 	keySetMeta (key, "nop", "cup");
 
-	c = keyNew(0);
-	keySetMeta (c, "type", "boolean");
-	keySetMeta (c, "xop", "yup");
+	g_c = keyNew(0);
+	keySetMeta (g_c, "type", "boolean");
+	keySetMeta (g_c, "xop", "yup");
 
 	l (key);
 
@@ -477,7 +477,7 @@ void test_examples()
 	succeed_if (keyValue(keyGetMeta(key, "xop")) == 0, "this meta data was not requested to be copied");
 
 	keyDel (key);
-	keyDel (c);
+	keyDel (g_c);
 }
 
 void test_copy()
