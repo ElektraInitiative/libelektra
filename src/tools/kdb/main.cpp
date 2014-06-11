@@ -157,6 +157,7 @@ int main(int argc, char**argv)
 		std::cerr << "The command "
 			<< command
 			<< " terminated unsuccessfully with the info: "
+			<< std::endl
 			<< ce.what()
 			<< std::endl;
 		return 6;

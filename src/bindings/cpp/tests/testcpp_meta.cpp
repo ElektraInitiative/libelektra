@@ -181,6 +181,7 @@ void test_copyAll()
 			KEY_META, "a", "a meta value",
 			KEY_META, "b", "b meta value",
 			KEY_META, "c", "c meta value",
+			KEY_META, "i", "420",
 			KEY_END);
 	Key c;
 
@@ -188,13 +189,15 @@ void test_copyAll()
 
 	succeed_if (c.getMeta<const ckdb::Key*>("a") == c.getMeta<const ckdb::Key*>("a"), "copy meta did not work");
 	succeed_if (c.getMeta<const ckdb::Key*>("") == c.getMeta<const ckdb::Key*>(""), "copy meta did not work");
-	succeed_if (c.getMeta<int>("a") == 420, "could not get value copied before");
+	succeed_if (c.getMeta<int>("i") == 420, "could not get value copied before");
+	succeed_if (c.getMeta<std::string>("i") == "420", "did not copy meta value in the loop");
 	succeed_if (c.getMeta<const ckdb::Key*>("a") == c.getMeta<const ckdb::Key*>("a"), "copy meta did not work");
 
 	Key d;
 
 	d.copyAllMeta(k);
-	succeed_if (d.getMeta<std::string>("a") == "420", "did not copy meta value in the loop");
+	succeed_if (d.getMeta<std::string>("i") == "420", "did not copy meta value in the loop");
+	succeed_if (d.getMeta<int>("i") == 420, "could not get value copied before");
 	succeed_if (k.getMeta<const ckdb::Key*>("a") == d.getMeta<const ckdb::Key*>("a"),
 			"copy meta did not work in the loop");
 
