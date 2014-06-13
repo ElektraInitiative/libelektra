@@ -2,16 +2,20 @@ include(LibAddMacros)
 
 add_headers (HDR_FILES)
 add_cppheaders (HDR_FILES)
+add_toolheaders(HDR_FILES)
 
 macro (do_test source)
 	include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
-	set (SOURCES ${HDR_FILES} ${source}.cpp tests.cpp tests.hpp)
+	include_directories ("${PROJECT_SOURCE_DIR}/src/bindings/cpp/tests/")
+	set (SOURCES ${HDR_FILES} ${source}.cpp
+		${PROJECT_SOURCE_DIR}/src/bindings/cpp/tests/tests.cpp
+		${PROJECT_SOURCE_DIR}/src/bindings/cpp/tests/tests.hpp)
 	add_executable (${source} ${SOURCES})
 
 	if (BUILD_FULL)
-		target_link_libraries (${source} elektra-full)
+		target_link_libraries (${source} elektratools-full)
 	else (BUILD_FULL)
-		target_link_libraries (${source} elektra-static)
+		target_link_libraries (${source} elektratools-static)
 	endif (BUILD_FULL)
 
 	if (INSTALL_TESTING)
