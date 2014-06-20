@@ -70,7 +70,7 @@ endif ()
 # plugins with dependencies
 #
 set (PLUGINS_LIST_DEP
-	yajl dbus tcl xmltool augeas
+	yajl dbus tcl xmltool
 	)
 
 #
