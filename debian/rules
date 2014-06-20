@@ -7,7 +7,8 @@
 binary/libelektra-bin binary/libelektra-dev:: binary/libelektra
 
 # Which plugins and tools should be built
-ELEKTRA_PLUGINS=ALL
+ELEKTRA_PLUGINS=dump;resolver;template;doc;ccode;error;fstab;hexcode;hidden;ni;null;struct;success;tracer;type;validation;glob;hosts;iconv;network;path;syslog;uname;timeofday;simpleini;yajl;dbus;tcl;xmltool;augeas
+#ELEKTRA_PLUGINS=ALL
 ELEKTRA_TOOLS=ALL
 
 #workaround for hardening flags
