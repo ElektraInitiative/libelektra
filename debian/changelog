@@ -1,4 +1,11 @@
-elektra (0.8.6-1) UNRELEASED; urgency=low
+elektra (0.8.6-2) unstable; urgency=low
+
+  * Add augeas plugin.
+  * Add python bindings.
+
+ -- Markus Raab <debian@markus-raab.org>  Fri, 20 Jun 2014 11:45:40 +0200
+
+elektra (0.8.6-1) unstable; urgency=low
 
   * New upstream version.
 
