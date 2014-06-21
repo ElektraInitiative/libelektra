@@ -9,7 +9,6 @@ external dependency. Elektra abstracts from cross-platform-related issues
 with an consistent API, and allows applications to be aware of other
 applications' configurations, leveraging easy application integration.
 
-
 == Facts and Features ==
 
  * Elektra implements an API to fully access a global key database.
@@ -17,7 +16,7 @@ applications' configurations, leveraging easy application integration.
  * Elektra is multi-process safe and can be used in multi-threaded programs.
  * Elektra (except for some plugins) is portable and completely written in Ansi-C99.
  * Elektra (except for some plugins) has no external dependency.
- * Elektra uses the BSD licence.
+ * Elektra uses the [BSD licence](doc/COPYING).
  * Elektra is suitable for embedded systems and early boot stage programs.
  * Elektra supports comments and other non-configuration information by meta data.
  * Elektra can import, export and convert supported configuration files.
@@ -31,17 +30,17 @@ applications' configurations, leveraging easy application integration.
 == Further Information ==
 
 To get an introduction, it is best to take a look at the
-[[http://www.libelektra.org/ftp/elektra/presentations/2012/lgm.odp|presentation]],
+[presentation](http://www.libelektra.org/ftp/elektra/presentations/2012/lgm.odp),
 see the
-[[http://www.libelektra.org/ftp/elektra/poster.pdf|poster]]
+[poster](http://www.libelektra.org/ftp/elektra/poster.pdf)
 and read the
-[[http://www.libelektra.org/ftp/elektra/abridgement.pdf|abridgment]].
+[abridgment](http://www.libelektra.org/ftp/elektra/abridgement.pdf).
 
 The currently best information about Elektra is
-[[http://www.libelektra.org/ftp/elektra/thesis.pdf|this paper]].
+[this thesis](http://www.libelektra.org/ftp/elektra/thesis.pdf).
 
 The API documentation can be found
-[[http://doc.libelektra.org/api/current/html|here]].
+(here)[http://doc.libelektra.org/api/current/html].
 
 
 
@@ -49,21 +48,18 @@ The API documentation can be found
 
 Do not hesitate to ask any question on
 
- https://lists.sourceforge.net/lists/listinfo/registry-list
+ (Mailing List)[https://lists.sourceforge.net/lists/listinfo/registry-list]
 
 or one of the
-[[https://gitorious.org/elektra-initiative/libelektra/blobs/master/doc/AUTHORS|AUTHORS]].
+
+ [[doc/AUTHORS]].
 
 
 = Get Started =
 
 == Download ==
 
-Elektra's uses a [[http://gitorious.org/elektra-initiative/libelektra|git repository at gitorious]].
-
-The latest source code can be checked out with:
-
- git-clone git://gitorious.org/elektra-initiative/libelektra.git
+Elektra's uses a (git repository at github)[https://github.com/ElektraInitiative/libelektra].
 
 Releases can be downloaded from
 [[ftp://ftp.libelektra.org/elektra/releases/|ftp]]
@@ -88,7 +84,7 @@ and master branches on every commit.
 == Compile ==
 
 See the
-[[https://gitorious.org/elektra-initiative/libelektra/blobs/master/doc/COMPILE|COMPILE]]
+[[doc/COMPILE]]
 document in the repository for informations how to
 compile the software.
 
