@@ -36,13 +36,15 @@ see the
 and read the
 [abridgment](http://www.libelektra.org/ftp/elektra/abridgement.pdf).
 
+See [News](doc/NEWS) what is happening at the moment.
+During the summer you can read the [GSoC 2014 blog](http://community.libelektra.org/wp)!
+
 The currently best information about Elektra is
 [this thesis](http://www.libelektra.org/ftp/elektra/thesis.pdf).
 
 The API documentation can be found
 [here](http://doc.libelektra.org/api/current/html).
 
-![Elektra](doc/images/classes.png)
 
 
 ## Contact ##
@@ -57,10 +59,9 @@ or one of the [authors](doc/AUTHORS).
 
 Elektra's uses a [git repository at github](https://github.com/ElektraInitiative/libelektra).
 
-Releases can be downloaded from
-[ftp](ftp://ftp.libelektra.org/elektra/releases/)
-and
-[http](http://www.libelektra.org/ftp/elektra/releases/)
+Releases can be downloaded from [http](http://www.libelektra.org/ftp/elektra/releases/) and
+
+         ftp://ftp.libelektra.org/elektra/releases/
 
 To use the debian repository of the releases put following files in
 /etc/apt/sources.list:
@@ -69,8 +70,8 @@ To use the debian repository of the releases put following files in
          deb-src http://build.libelektra.org/debian/ elektra-release-glue main
 
 The [build server](http://build.libelektra.org:8080/) builds release
-and master branches on every commit and also produces [branch coverage
-reports](http://doc.libelektra.org/coverage/lagest).
+and master branches on every commit and also produces [LCOV code
+coverage report](http://doc.libelektra.org/coverage/latest).
 
 
 ## Compile ##
