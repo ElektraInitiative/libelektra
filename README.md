@@ -1,5 +1,3 @@
-# About #
-
 Elektra provides a universal and secure framework to store configuration
 parameters in a global, hierarchical key database.  The core is a small
 library implemented in C. The plugin-based framework fulfills many
@@ -8,6 +6,8 @@ across applications while it still allows the core to stay without any
 external dependency. Elektra abstracts from cross-platform-related issues
 with an consistent API, and allows applications to be aware of other
 applications' configurations, leveraging easy application integration.
+
+![Elektra](doc/images/circle.jpg)
 
 ## Facts and Features ##
 
@@ -42,6 +42,7 @@ The currently best information about Elektra is
 The API documentation can be found
 [here](http://doc.libelektra.org/api/current/html).
 
+![Elektra](doc/images/classes.png)
 
 
 ## Contact ##
