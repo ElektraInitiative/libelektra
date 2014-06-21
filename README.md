@@ -85,3 +85,9 @@ The preferred way to install Elektra is by using packages provided for
 your distribution.
 
 If there are no packages available, see the [installation document](doc/INSTALL).
+
+## Develop ##
+
+To start development, just clone the repo and start hacking.
+You should read the [coding document](doc/CODING) and
+[design document](doc/DESIGN) before you issue a pull request, though.
