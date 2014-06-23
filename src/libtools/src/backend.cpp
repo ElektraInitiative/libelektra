@@ -28,7 +28,7 @@ namespace tools
 /** Creates a new backend with a given name and mountpoint.
  * Parameters are needed for serialisation only, so you can
  * keep them empty if you do not want to serialise. */
-Backend::Backend(string name_ = "", string mp_ = "") :
+Backend::Backend(string name_, string mp_) :
 	name(name_), mp(mp_)
 {
 }
