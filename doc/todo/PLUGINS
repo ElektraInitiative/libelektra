@@ -132,6 +132,9 @@ C++: (FINISH cppplugin)
 
 == STORAGE ==
 
+linenumber plugin
+	just store every line of a file in an array
+
 xpath plugin:
 	on an xml file with an mapping from (reduced) xpath<->elektra keys
 
@@ -284,7 +287,13 @@ XDG specification:
 == SYNC plugin ==
 
 fsync the file in keyname
-abort on error
+abort on error (needs to be pre-commit)
+
+
+== RESTRICTIONs ==
+
+restrict plugins to be written to
+plugin: readonly (do not allow to be written to backend)
 
 
 == METAREWRITE plugin ==
