@@ -11,7 +11,9 @@
 #include "kdbconfig.h"
 #endif
 
-#include <stdio.h>
+/* used for asprintf */
+#define _GNU_SOURCE
+
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
@@ -21,20 +23,19 @@
 
 #include <tests_plugin.h>
 
-/* used for asprintf */
-#define _GNU_SOURCE
+
 #include <stdio.h>
 
 static Key *createMergingKey (int i) {
-	char *keyName;
-	char *keyValue;
+	char *name;
+	char *value;
 	char *order;
-	asprintf (&keyName, "user/convertkey%d", i);
-	asprintf (&keyValue, "meta line %d", i);
+	asprintf (&name, "user/convertkey%d", i);
+	asprintf (&value, "meta line %d", i);
 	asprintf (&order, "%i", i);
-	Key *key = keyNew (keyName, KEY_VALUE, keyValue, KEY_META,  "order", order, KEY_END);
-	free (keyName);
-	free (keyValue);
+	Key *key = keyNew (name, KEY_VALUE, value, KEY_META,  "order", order, KEY_END);
+	free (name);
+	free (value);
 	free (order);
 	return key;
 }
