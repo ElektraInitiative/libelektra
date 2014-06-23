@@ -52,23 +52,6 @@ void keySetOrderMeta(Key *key, int order)
 	free (buffer);
 }
 
-int keyCmpOrder(const void *a, const void *b)
-{
-	const Key **ka = (const Key **) a;
-	const Key **kb = (const Key **) b;
-
-	int aorder = 0;
-	int border = 0;
-
-	const Key *kam = keyGetMeta (*ka, "order");
-	const Key *kbm = keyGetMeta (*kb, "order");
-
-	if (kam) aorder = atoi (keyString (kam));
-	if (kbm) border = atoi (keyString (kbm));
-
-	return aorder - border;
-}
-
 static const char *getLensPath(Plugin *handle)
 {
 	KeySet *config = elektraPluginGetConfig (handle);
@@ -211,29 +194,6 @@ static int foreachAugeasNode(augeas *handle, const char *treePath,
 	return result;
 }
 
-Key **ksToArray(KeySet *ks)
-{
-	/* TODO: rewind cursor after using it */
-	/* build an array of keys ordered by the order MetaKey */
-	Key **result;
-	size_t arraySize = ksGetSize (ks);
-	result = calloc (arraySize, sizeof(Key *));
-
-	if (result == 0) return 0;
-
-	ksRewind (ks);
-	size_t index = 0;
-
-	Key *key;
-	while ((key = ksNext (ks)) != 0)
-	{
-		result[index] = key;
-		++index;
-	}
-
-	return result;
-}
-
 static char *loadFile(FILE *fh)
 {
 	/* open the file */
@@ -298,11 +258,11 @@ static int saveTree(augeas* augeasHandle, KeySet* ks, const char* lensPath,
 
 	size_t prefixSize = keyGetNameSize (parentKey) - 1;
 	size_t arraySize = ksGetSize (ks);
-	Key **keyArray = ksToArray (ks);
+	Key **keyArray = elektraKsToArray (ks);
 
 	if (keyArray == 0) return -1;
 
-	qsort (keyArray, arraySize, sizeof(Key *), keyCmpOrder);
+	qsort (keyArray, arraySize, sizeof(Key *), (int (*)(const void *, const void *))elektraKeyCmpOrder);
 
 	/* convert the Elektra KeySet to an Augeas tree */
 	for (size_t i = 0; i < arraySize; i++)

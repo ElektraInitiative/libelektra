@@ -18,8 +18,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-Key **ksToArray(const KeySet *ks);
-int keyCmpOrder(const void *a, const void *b);
 
 /*
  * Wrapper for the function comparing by order meta data. As
@@ -31,12 +29,12 @@ int elektraKeyCmpOrderWrapper(const void *a, const void *b)
 	const Key **ka = (const Key **) a;
 	const Key **kb = (const Key **) b;
 
-	int orderResult = keyCmpOrder(a, b);
+	int orderResult = elektraKeyCmpOrder(a, b);
 
 	/* comparing the order meta could not order the keys
 	 * revert to comparing the names instead
 	 */
-	if (orderResult == 0) return strcmp (keyName(*ka), keyName(*kb));
+	if (orderResult == 0) return keyCmp(*ka, *kb);
 
 	return orderResult;
 }
@@ -130,7 +128,7 @@ int elektraKeyToMetaGet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA
 		ksDel (n);
 	}
 
-	Key **keyArray = ksToArray(returned);
+	Key **keyArray = elektraKsToArray(returned);
 
 	if (keyArray == 0) {
 		ELEKTRA_SET_ERROR(87, parentKey, strerror(errno));
@@ -139,7 +137,7 @@ int elektraKeyToMetaGet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA
 	}
 
 	size_t numKeys = ksGetSize(returned);
-	qsort (keyArray, numKeys, sizeof (Key *), elektraKeyCmpOrderWrapper);
+	qsort (keyArray, numKeys, sizeof (Key *), (int (*)(const void *, const void *))elektraKeyCmpOrderWrapper);
 
 	Key *current;
 	KeySet *convertedKeys = ksNew(0);

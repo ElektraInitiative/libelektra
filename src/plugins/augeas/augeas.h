@@ -7,6 +7,7 @@
 
 #include <kdbplugin.h>
 #include <kdberrors.h>
+#include <kdbproposal.h>
 
 #include <augeas.h>
 #include <libgen.h>
