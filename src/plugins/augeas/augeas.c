@@ -52,6 +52,11 @@ void keySetOrderMeta(Key *key, int order)
 	free (buffer);
 }
 
+static int keyCmpOrderWrapper(const void *a, const void *b)
+{
+	return elektraKeyCmpOrder(*((const Key **)a), *((const Key **)b));
+}
+
 static const char *getLensPath(Plugin *handle)
 {
 	KeySet *config = elektraPluginGetConfig (handle);
@@ -262,7 +267,7 @@ static int saveTree(augeas* augeasHandle, KeySet* ks, const char* lensPath,
 
 	if (keyArray == 0) return -1;
 
-	qsort (keyArray, arraySize, sizeof(Key *), (int (*)(const void *, const void *))elektraKeyCmpOrder);
+	qsort (keyArray, arraySize, sizeof(Key *), keyCmpOrderWrapper);
 
 	/* convert the Elektra KeySet to an Augeas tree */
 	for (size_t i = 0; i < arraySize; i++)

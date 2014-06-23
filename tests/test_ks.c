@@ -2517,8 +2517,8 @@ void test_keyCmpOrder()
 	Key *k1 = keyNew ("user/a", KEY_META, "order", "20", KEY_END);
 	Key *k2 = keyNew ("user/b", KEY_META, "order", "10", KEY_END);
 
-	succeed_if (elektraKeyCmpOrder(k1, k2) < 0, "user/a is not smaller than user/b");
-	succeed_if (elektraKeyCmpOrder(k2, k1) > 0, "user/b is not greater than user/a");
+	succeed_if (elektraKeyCmpOrder(k1, k2) > 0, "user/a is not greater than user/b");
+	succeed_if (elektraKeyCmpOrder(k2, k1) < 0, "user/b is not smaller than user/a");
 
 	keySetMeta(k2, "order", "20");
 	succeed_if (elektraKeyCmpOrder(k1, k2) == 0, "keys with same order are not equal");

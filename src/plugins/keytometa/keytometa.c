@@ -29,7 +29,7 @@ int elektraKeyCmpOrderWrapper(const void *a, const void *b)
 	const Key **ka = (const Key **) a;
 	const Key **kb = (const Key **) b;
 
-	int orderResult = elektraKeyCmpOrder(a, b);
+	int orderResult = elektraKeyCmpOrder(*ka, *kb);
 
 	/* comparing the order meta could not order the keys
 	 * revert to comparing the names instead
@@ -137,7 +137,7 @@ int elektraKeyToMetaGet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA
 	}
 
 	size_t numKeys = ksGetSize(returned);
-	qsort (keyArray, numKeys, sizeof (Key *), (int (*)(const void *, const void *))elektraKeyCmpOrderWrapper);
+	qsort (keyArray, numKeys, sizeof (Key *), elektraKeyCmpOrderWrapper);
 
 	Key *current;
 	KeySet *convertedKeys = ksNew(0);

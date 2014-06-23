@@ -505,16 +505,14 @@ int keyCmp (const Key *k1, const Key *k2)
  *    with the metadata is considered greater. If no key has metadata,
  *    they are considered to be equal.
  */
-int elektraKeyCmpOrder(const Key *a, const Key *b)
+int elektraKeyCmpOrder(const Key *ka, const Key *kb)
 {
-	const Key **ka = (const Key **) a;
-	const Key **kb = (const Key **) b;
 
 	int aorder = -1;
 	int border = -1;
 
-	const Key *kam = keyGetMeta (*ka, "order");
-	const Key *kbm = keyGetMeta (*kb, "order");
+	const Key *kam = keyGetMeta (ka, "order");
+	const Key *kbm = keyGetMeta (kb, "order");
 
 	if (kam) aorder = atoi (keyString (kam));
 	if (kbm) border = atoi (keyString (kbm));
