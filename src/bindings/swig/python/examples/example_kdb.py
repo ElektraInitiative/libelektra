@@ -7,7 +7,7 @@ with kdb.KDB() as db:
 	db.get(ks, "user/MyApp")
 
 	# check if key exists
-	key = ks["user/MyApp/mykey"]
+	key = ks.lookup("user/MyApp/mykey")
 	if not key:
 		# create a new key + append to keyset
 		key = kdb.Key("user/MyApp/mykey")
