@@ -8,20 +8,20 @@ import Qt.labs.folderlistmodel 2.0
 
 ApplicationWindow {
     id: mainWindow
+
     visible: true
     width: Screen.desktopAvailableWidth
     height: Screen.desktopAvailableHeight
+
     title: "Elektra Editor"
 
     property int deltaKeyAreaHeight: Math.round(keyArea.height-searchResultsArea.height*0.5-defaultSpacing)
     property int deltaKeyAreaWidth: Math.round(mainRow.width*0.7-defaultSpacing)
     property int deltaMetaAreaHeight: Math.round(metaArea.height-searchResultsArea.height*0.5)
+
+    //Spacing & Margins recommended by KDE HIG
     property int defaultSpacing: 4
     property int defaultMargins: 8
-
-    //    DefaultFileDialog {
-    //        id: importDialog
-    //    }
 
     SystemPalette {
         id: activePalette
@@ -82,8 +82,8 @@ ApplicationWindow {
         text: qsTr("Delete")
         iconSource: "icons/delete.png"
         tooltip: "Delete"
-        enabled: false
-        //onTriggered:
+        shortcut: StandardKey.Delete
+        onTriggered: externTreeModel.deleteKey(treeView.currentNode.modelData.path)
     }
 
     Action {
@@ -128,8 +128,7 @@ ApplicationWindow {
         iconSource: "icons/synchronize.png"
         tooltip: qsTr("Synchronize")
         shortcut: StandardKey.Refresh
-        enabled: false
-        //        onTriggered: importDialog.open()
+        onTriggered: externTreeModel.synchronize()
     }
 
     Action {
@@ -280,6 +279,21 @@ ApplicationWindow {
         }
     }
 
+    Menu {
+        id: treeContextMenu
+        MenuItem {
+            id:tcmDelete
+            action: deleteAction
+        }
+    }
+    Menu {
+        id: keyContextMenu
+        MenuItem {
+            id:kcmDelete
+            action: deleteAction
+        }
+    }
+
     toolBar: ToolBar {
         id:mainToolbar
 
@@ -288,7 +302,7 @@ ApplicationWindow {
 
             anchors.fill: parent
             //            anchors.leftMargin: defaultMargins
-            anchors.rightMargin: defaultMargins
+            anchors.rightMargin: defaultSpacing
 
             ToolButton {
                 id:tbNew
@@ -332,23 +346,6 @@ ApplicationWindow {
     }
 
     ListModel {
-        id: keyModel
-
-        ListElement {
-            keyName: "Key 1"
-            keyValue: "Value 1"
-        }
-        ListElement {
-            keyName: "Key 2"
-            keyValue: "Value 2"
-        }
-        ListElement {
-            keyName: "Key 3"
-            keyValue: "Value 3"
-        }
-    }
-
-    ListModel {
         id: metaInfoModel
         ListElement {
             keyName: "Keyname"
@@ -385,13 +382,15 @@ ApplicationWindow {
             width: Math.round(parent.width*0.3)
             height: parent.height
 
+            //treeView is based on code user "Jens" posted in the qt-project forum (http://qt-project.org/forums/viewthread/30521/#146845)
+
             ScrollView {
                 id: treeView
 
                 anchors.fill: parent
                 anchors.margins: defaultSpacing
 
-                property var model: externTreeModel
+                property var model: externTreeModel.model
                 property int rowHeight: 19
                 property int columnIndent: 22
                 property var currentNode
@@ -401,7 +400,7 @@ ApplicationWindow {
                     id: label
                     text: model.modelData.name
                     color: activePalette.windowText
-//                    Component.onCompleted: console.log("modelData" + model.modelData + ", model: " + model + ", name: " + model.name + ", path: " + model.path + ", elements: " + model.children + ", childCount: " + model.childCount)
+                    //                    Component.onCompleted: console.log("modelData" + model.modelData + ", model: " + model + ", name: " + model.name + ", path: " + model.path + ", elements: " + model.children + ", childCount: " + model.childCount)
                 }
                 contentItem: Loader {
                     id: content
@@ -415,7 +414,7 @@ ApplicationWindow {
                         Repeater {
                             model: 1 + Math.max(treeView.contentItem.height, treeView.height) / treeView.rowHeight
                             Rectangle {
-//                                objectName: "Faen"
+                                //                                objectName: "Faen"
                                 color: activePalette.window
                                 width: treeView.width
                                 height: treeView.rowHeight
@@ -450,10 +449,15 @@ ApplicationWindow {
                                         }
                                         MouseArea {
                                             anchors.fill: rowfill
+                                            acceptedButtons: Qt.LeftButton | Qt.RightButton
                                             onPressed: {
-                                                treeView.currentNode = model
-                                                treeView.currentItem = loader
-                                                forceActiveFocus()
+                                                if(mouse.button == Qt.LeftButton){
+                                                    treeView.currentNode = model
+                                                    treeView.currentItem = loader
+                                                    forceActiveFocus()
+                                                }
+                                                else if(mouse.button == Qt.RightButton)
+                                                    treeContextMenu.popup()
                                             }
                                         }
                                         Row {
@@ -461,7 +465,8 @@ ApplicationWindow {
                                             Item {
                                                 width: treeView.rowHeight
                                                 height: treeView.rowHeight
-                                                opacity: model.modelData.childCount > 0 ? 1 : 0
+                                                opacity: model.modelData.childCount > 0 && !model.modelData.childrenHaveNoChildren ? 1 : 0
+
                                                 Image {
                                                     id: expander
                                                     source: "icons/expander.png"
@@ -517,18 +522,44 @@ ApplicationWindow {
                     frameVisible: false
                     alternatingRowColors: false
                     backgroundVisible: false
-                    model: keyModel
+                    onSelectionChanged: console.log(rowIndex)
+                    Keys.onRightPressed: keyContextMenu.popup()
 
+                    model: {
+                        if(treeView.currentNode.modelData.childCount > 0 && treeView.currentNode.modelData.childrenHaveNoChildren && treeView.currentNode !== null)
+                            treeView.currentNode.modelData.children
+                    }
                     TableViewColumn {
-                        role: "keyName"
+                        role: "name"
                         title: qsTr("Name")
                         width: Math.round(keyArea.width*0.5)
                     }
                     TableViewColumn {
-                        role: "keyValue"
+                        role: "value"
                         title: qsTr("Value")
                         width: Math.round(keyArea.width*0.5)
                     }
+
+//                    rowDelegate: Item {
+//                        Rectangle {
+//                            anchors.left: parent.left
+//                            anchors.right: parent.right
+//                            height: parent.height
+//                            color: activePalette.highlight
+//                        }
+//                        MouseArea {
+//                            anchors.fill: parent
+//                            acceptedButtons: Qt.LeftButton | Qt.RightButton
+//                            onClicked: {
+//                                if (mouse.button == Qt.LeftButton) {
+//                                    console.log("Left")
+//                                }
+//                                else if (mouse.button == Qt.RightButton) {
+//                                    keyContextMenu.popup()
+//                                }
+//                            }
+//                        }
+//                    }
                 }
             }
             BasicRectangle {
@@ -540,6 +571,7 @@ ApplicationWindow {
                     id: metaAreaView
                     anchors.fill: parent
                     anchors.margins: defaultMargins
+
                     ListView {
                         model: metaInfoModel
                         delegate: Text {
@@ -554,13 +586,13 @@ ApplicationWindow {
                 width: deltaKeyAreaWidth
                 height: Math.round(mainRow.height*0.2)
                 visible: false
+
                 Text {
                     anchors.fill: parent
                     anchors.margins: defaultMargins
                     text: "TODO:SEARCH_RESULTS"
                     color: activePalette.text
                 }
-
                 Button {
                     iconSource: "icons/dialog-close.png"
                     anchors.right: parent.right
@@ -599,11 +631,12 @@ ApplicationWindow {
             }
         }
     }
+
     statusBar: StatusBar {
         id:mainStatusBar
         RowLayout {
             Label {
-                text: treeView.currentNode.modelData.path
+                text: treeView.currentNode === null ? "" : treeView.currentNode.modelData.path
             }
         }
     }
