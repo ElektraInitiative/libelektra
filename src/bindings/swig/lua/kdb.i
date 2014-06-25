@@ -2,13 +2,17 @@
 
 %include "../common.i"
 
-%wrapper %{
+%wrapper {
   /* adds a variable/property to a class */
   void add_class_variable(lua_State *L, const char *classname,
     const char *name, lua_CFunction getFn,lua_CFunction setFn)
   {
     SWIG_Lua_get_class_metatable(L, classname);
+#if SWIG_VERSION > 0x030000
+    SWIG_Lua_add_variable(L, name, getFn, setFn);
+#else
     SWIG_Lua_add_class_variable(L, name, getFn, setFn);
+#endif
     lua_pop(L, 1);
   }
 
@@ -26,7 +30,7 @@
     }
     lua_pop(L, 1);
   }
-%}
+}
 
 
 /* handle exceptions */
