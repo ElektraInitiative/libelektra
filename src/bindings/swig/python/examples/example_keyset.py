@@ -29,7 +29,11 @@ print("Index access is supported as well:")
 print("  KeySet1[1]={0}".format(ks1[1]))
 print("  KeySet1[-1]={0}".format(ks1[-1]))
 print("  KeySet1['user/key1']={0}".format(ks1["user/key1"]))
-print("  KeySet1['doesnt_exist']={0}".format(ks1["doesnt_exist"]))
+try:
+	print("  KeySet1['doesnt_exist']={0}".format(ks1["doesnt_exist"]))
+except KeyError:
+	print("  KeySet1['doesnt_exist'] throws KeyError")
+print("  KeySet1.lookup('doesnt_exist')={0}".format(ks1.lookup("doesnt_exist")))
 print("")
 
 print("You asked for slices? You get slices:")
