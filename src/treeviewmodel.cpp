@@ -1,5 +1,5 @@
-#include "treeviewmodel.h"
-#include "confignode.h"
+#include "treeviewmodel.hpp"
+#include "confignode.hpp"
 
 TreeViewModel::TreeViewModel(QQmlContext *ctxt)
 {

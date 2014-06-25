@@ -3,8 +3,8 @@
 #include <QtQml>
 #include <QMetaType>
 
-#include "treeviewmodel.h"
-#include "confignode.h"
+#include "treeviewmodel.hpp"
+#include "confignode.hpp"
 
 int main(int argc, char *argv[])
 {

@@ -1,4 +1,4 @@
-#include "confignode.h"
+#include "confignode.hpp"
 
 using namespace kdb;
 
