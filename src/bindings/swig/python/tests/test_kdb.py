@@ -44,8 +44,9 @@ class KDB(unittest.TestCase):
 			ks = kdb.KeySet(100)
 			db.get(ks, "user/MyApp")
 
-			key = ks["user/MyApp/mykey"]
-			if not key:
+			try:
+				key = ks["user/MyApp/mykey"]
+			except KeyError:
 				key = kdb.Key("user/MyApp/mykey")
 				ks.append(key)
 			key.value = "new_value"
