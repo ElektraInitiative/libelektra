@@ -133,7 +133,6 @@ int elektraPythonOpen(ckdb::Plugin *handle, ckdb::Key *errorKey)
 	/* success if no script to execute */
 	if (script == NULL || keyString(script) == NULL)
 		return 0;
-	printf("open handle=%p\n", handle);
 
 	/* initialize python interpreter - only once */
 	pthread_mutex_lock(&mutex);
@@ -197,10 +196,10 @@ int elektraPythonOpen(ckdb::Plugin *handle, ckdb::Key *errorKey)
 	PyObject *func = PyObject_GetAttrString(pModule, "elektraOpen");
 	if (func)
 	{
-		PyObject *pyErrorKey = Python_fromSWIG(errorKey);
-		PyObject *args = Py_BuildValue("(O)", pyErrorKey);
+		PyObject *arg0 = Python_fromSWIG(errorKey);
+		PyObject *args = Py_BuildValue("(O)", arg0);
 		ret = Python_CallFunction_Int(func, args);
-		Py_DECREF(pyErrorKey);
+		Py_DECREF(arg0);
 		Py_DECREF(args);
 		Py_DECREF(func);
 	}
@@ -215,7 +214,6 @@ int elektraPythonClose(ckdb::Plugin *handle, ckdb::Key *errorKey)
 	moduleData *data = static_cast<moduleData *>(elektraPluginGetData(handle));
 	if (data == NULL)
 		return 0;
-	printf("close handle=%p\n", handle);
 
 	/* call python function */
 	int ret = 0;
@@ -225,10 +223,10 @@ int elektraPythonClose(ckdb::Plugin *handle, ckdb::Key *errorKey)
 		PyObject *func = PyObject_GetAttrString(data->pModule, "elektraClose");
 		if (func)
 		{
-			PyObject *pyErrorKey = Python_fromSWIG(errorKey);
-			PyObject *args = Py_BuildValue("(O)", pyErrorKey);
+			PyObject *arg0 = Python_fromSWIG(errorKey);
+			PyObject *args = Py_BuildValue("(O)", arg0);
 			ret = Python_CallFunction_Int(func, args);
-			Py_DECREF(pyErrorKey);
+			Py_DECREF(arg0);
 			Py_DECREF(args);
 			Py_DECREF(func);
 		}
@@ -252,18 +250,37 @@ int elektraPythonClose(ckdb::Plugin *handle, ckdb::Key *errorKey)
 	return ret;
 }
 
-int elektraPythonGet(ckdb::Plugin *handle ELEKTRA_UNUSED, ckdb::KeySet *returned,
+int elektraPythonGet(ckdb::Plugin *handle, ckdb::KeySet *returned,
 	ckdb::Key *parentKey)
 {
 #define _MODULE_CONFIG_PATH "system/elektra/modules/" MODULE_NAME
 
 	printf("XXX get %s\n", keyName(parentKey));
-	printf("get handle=%p\n", handle);
+
+	moduleData *data = static_cast<moduleData *>(elektraPluginGetData(handle));
+	if (data != NULL)
+	{
+		/* call python function */
+		int ret = 0;
+		PyGILState_STATE gstate = PyGILState_Ensure();
+		PyObject *func = PyObject_GetAttrString(data->pModule, "elektraGet");
+		if (func)
+		{
+			PyObject *arg0 = Python_fromSWIG(returned);
+			PyObject *arg1 = Python_fromSWIG(parentKey);
+			PyObject *args = Py_BuildValue("(OO)", arg0, arg1);
+			ret = Python_CallFunction_Int(func, args);
+			Py_DECREF(arg0);
+			Py_DECREF(arg1);
+			Py_DECREF(args);
+			Py_DECREF(func);
+		}
+		PyGILState_Release(gstate);
+		return ret;
+	}
 
 	KeySet *config = elektraPluginGetConfig(handle);
-
 	Key *k = ksLookupByName(config, "/path", 0);
-	printf("%p\n", k);
 	if (!strcmp(keyName(parentKey), _MODULE_CONFIG_PATH))
 	{
 		KeySet *n;
@@ -305,18 +322,60 @@ int elektraPythonGet(ckdb::Plugin *handle ELEKTRA_UNUSED, ckdb::KeySet *returned
 	return 1;
 }
 
-int elektraPythonSet(ckdb::Plugin *handle ELEKTRA_UNUSED,
-	ckdb::KeySet *returned ELEKTRA_UNUSED, ckdb::Key *parentKey ELEKTRA_UNUSED)
+int elektraPythonSet(ckdb::Plugin *handle, ckdb::KeySet *returned,
+	ckdb::Key *parentKey)
 {
 	printf("XXX set\n");
-	return 1;
+
+	int ret = 0;
+	moduleData *data = static_cast<moduleData *>(elektraPluginGetData(handle));
+	if (data != NULL)
+	{
+		/* call python function */
+		PyGILState_STATE gstate = PyGILState_Ensure();
+		PyObject *func = PyObject_GetAttrString(data->pModule, "elektraSet");
+		if (func)
+		{
+			PyObject *arg0 = Python_fromSWIG(returned);
+			PyObject *arg1 = Python_fromSWIG(parentKey);
+			PyObject *args = Py_BuildValue("(OO)", arg0, arg1);
+			ret = Python_CallFunction_Int(func, args);
+			Py_DECREF(arg0);
+			Py_DECREF(arg1);
+			Py_DECREF(args);
+			Py_DECREF(func);
+		}
+		PyGILState_Release(gstate);
+	}
+	return ret;
 }
 
-int elektraPythonError(ckdb::Plugin *handle ELEKTRA_UNUSED,
-	ckdb::KeySet *returned ELEKTRA_UNUSED, ckdb::Key *parentKey ELEKTRA_UNUSED)
+int elektraPythonError(ckdb::Plugin *handle, ckdb::KeySet *returned,
+	ckdb::Key *parentKey)
 {
 	printf("XXX error\n");
-	return 0;
+
+	int ret = 0;
+	moduleData *data = static_cast<moduleData *>(elektraPluginGetData(handle));
+	if (data != NULL)
+	{
+		/* call python function */
+		PyGILState_STATE gstate = PyGILState_Ensure();
+		PyObject *func = PyObject_GetAttrString(data->pModule, "elektraError");
+		if (func)
+		{
+			PyObject *arg0 = Python_fromSWIG(returned);
+			PyObject *arg1 = Python_fromSWIG(parentKey);
+			PyObject *args = Py_BuildValue("(OO)", arg0, arg1);
+			ret = Python_CallFunction_Int(func, args);
+			Py_DECREF(arg0);
+			Py_DECREF(arg1);
+			Py_DECREF(args);
+			Py_DECREF(func);
+		}
+		PyGILState_Release(gstate);
+	}
+	return ret;
 }
 
 ckdb::Plugin *ELEKTRA_PLUGIN_EXPORT(python)
