@@ -496,6 +496,41 @@ int keyCmp (const Key *k1, const Key *k2)
 }
 
 /**
+ * Compare the order metadata of two keys.
+ *
+ * @return a number less than, equal to or greater than zero if
+ *    the order of k1 is found, respectively, to be less than,
+ *    to match, or be greater than the order of k2. If one key
+ *    does have an order metadata but the other has not, the key
+ *    with the metadata is considered greater. If no key has metadata,
+ *    they are considered to be equal.
+ */
+int elektraKeyCmpOrder(const Key *ka, const Key *kb)
+{
+
+	int aorder = -1;
+	int border = -1;
+
+	const Key *kam = keyGetMeta (ka, "order");
+	const Key *kbm = keyGetMeta (kb, "order");
+
+	if (kam) aorder = atoi (keyString (kam));
+	if (kbm) border = atoi (keyString (kbm));
+
+	if (aorder > 0 && border > 0) return aorder -border;
+
+	if (aorder < 0 && border < 0) return 0;
+
+	if (aorder < 0 && border >= 0) return -1;
+
+	if (aorder >= 0 && border < 0) return 1;
+
+	/* cannot happen anyway */
+	return 0;
+}
+
+
+/**
  * @internal
  *
  * Checks if KeySet needs sync.
@@ -976,6 +1011,45 @@ Key *ksPop(KeySet *ks)
 	return ret;
 }
 
+/**
+ * Builds an array of pointers to the keys in the supplied keyset.
+ * The keys are not copied, calling keyDel may remove them from
+ * the keyset.
+ *
+ * The caller is responsible for freeing the returned array.
+ *
+ * @param ks the keyset object to work with
+ * @return an array containing the Keys from the KeySet
+ * @return NULL if @p is empty or on NULL pointers or if a
+ * memory allocation error occurs
+ */
+Key **elektraKsToArray(KeySet *ks)
+{
+	if (!ks) return 0;
+
+	Key **result;
+	size_t arraySize = ksGetSize (ks);
+
+	if (arraySize <= 0) return 0;
+
+	result = calloc (arraySize, sizeof(Key *));
+
+	if (result == 0) return 0;
+
+	cursor_t cursor = ksGetCursor(ks);
+	ksRewind (ks);
+	size_t index = 0;
+
+	Key *key;
+	while ((key = ksNext (ks)) != 0)
+	{
+		result[index] = key;
+		++index;
+	}
+	ksSetCursor(ks, cursor);
+
+	return result;
+}
 
 
 /*******************************************
