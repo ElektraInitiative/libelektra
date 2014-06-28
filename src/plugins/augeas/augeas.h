@@ -7,6 +7,7 @@
 
 #include <kdbplugin.h>
 #include <kdberrors.h>
+#include <kdbproposal.h>
 
 #include <augeas.h>
 #include <libgen.h>
@@ -15,6 +16,11 @@
 #include <unistd.h>
 #include <stddef.h>
 #include <errno.h>
+
+
+#define AUGEAS_OUTPUT_ROOT "/raw/output"
+#define AUGEAS_CONTENT_ROOT "/raw/content"
+#define AUGEAS_TREE_ROOT "/raw/tree"
 
 int elektraAugeasGet(Plugin *handle, KeySet *ks, Key *parentKey);
 int elektraAugeasSet(Plugin *handle, KeySet *ks, Key *parentKey);

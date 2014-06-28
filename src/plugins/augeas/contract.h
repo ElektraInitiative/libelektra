@@ -106,15 +106,6 @@ ksNew (30,
 				"\n"
 				"The operation simply fails with an undescriptive error.\n"
 				"\n"
-				"=== Comment Keys === \n"
-				"The current implementation does not differentiate between normal configuration directives and comments. This causes \n"
-				"comments to be represented as normal Elektra Keys instead of MetaKeys. \n"
-				"\n"
-				"=== Lost formatting information === \n"
-				"At the moment the storage backend uses a very naive way to convert an Elektra KeySet back to an Augeas\n"
-				"tree. This causes formatting information not directly represented in the Augeas tree to be lost. For example\n"
-				"this issue affects blank lines in the hosts file.\n"
-				"\n"
 				"=== Leaky abstraction of order ===\n"
 				"Most Augeas lenses require subtrees to be in a specific order. For example the hosts lens requires the ipaddr node \n"
 				"of an entry to precede the canonical node. Unfortunately the Augeas storage plugin has no knowledge about this required \n"
@@ -161,9 +152,7 @@ ksNew (30,
 				"== PLANNED IMPROVEMENTS ==\n"
 				"\n"
 				"* simplified mounting and configuration \n"
-				"* a validation plugin preventing inner node values \n"
-				"* a plugin converting Augeas comment# nodes to Elektra MetaKeys \n"
-				"* graceful handling of formatting information \n",
+				"* a validation plugin preventing inner node values \n",
 				KEY_END),
 		keyNew ("system/elektra/modules/augeas/infos/provides",
 				KEY_VALUE, "storage",
@@ -171,8 +160,8 @@ ksNew (30,
 		keyNew ("system/elektra/modules/augeas/infos/placements",
 				KEY_VALUE, "getstorage setstorage",
 				KEY_END),
-		keyNew ("system/elektra/modules/augeas/infos/needs",
-				KEY_VALUE, "",
+		keyNew ("system/elektra/modules/augeas/infos/recommends",
+				KEY_VALUE, "glob keytometa",
 				KEY_END),
 		keyNew ("system/elektra/modules/augeas/infos/version",
 				KEY_VALUE, PLUGINVERSION,

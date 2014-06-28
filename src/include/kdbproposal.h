@@ -23,5 +23,7 @@
 
 Key *ksPrev(KeySet *ks);
 Key *ksPopAtCursor(KeySet *ks, cursor_t c);
+Key **elektraKsToArray(KeySet *ks);
+int elektraKeyCmpOrder(const Key *a, const Key *b);
 
 #endif
