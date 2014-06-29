@@ -1,0 +1,41 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml/icons/arrow_export.png</file>
+        <file>qml/icons/arrow_import.png</file>
+        <file>qml/icons/clear.png</file>
+        <file>qml/icons/delete.png</file>
+        <file>qml/icons/emptyFile.png</file>
+        <file>qml/icons/expander.png</file>
+        <file>qml/icons/export.png</file>
+        <file>qml/icons/import.png</file>
+        <file>qml/icons/new.png</file>
+        <file>qml/icons/page-simple.png</file>
+        <file>qml/icons/redo.png</file>
+        <file>qml/icons/synchronize.png</file>
+        <file>qml/icons/undo.png</file>
+        <file>qml/icons/dialog-close.png</file>
+        <file>qml/icons/dialog-cancel.png</file>
+        <file>qml/icons/dialog-ok.png</file>
+        <file>qml/icons/go-next.png</file>
+        <file>qml/icons/go-previous.png</file>
+        <file>qml/icons/list-remove.png</file>
+        <file>qml/icons/list-add.png</file>
+        <file>qml/icons/application-exit.png</file>
+        <file>qml/main.qml</file>
+        <file>qml/WizardLoader.qml</file>
+        <file>qml/BasicWindow.qml</file>
+        <file>qml/ButtonRow.qml</file>
+        <file>qml/NewKeyWindow.qml</file>
+        <file>qml/NewMetaKey.qml</file>
+        <file>qml/Page1.qml</file>
+        <file>qml/Page2.qml</file>
+        <file>qml/Page3.qml</file>
+        <file>qml/Page4.qml</file>
+        <file>qml/SearchField.qml</file>
+        <file>qml/WizardTemplate.qml</file>
+        <file>qml/BasicRectangle.qml</file>
+        <file>qml/UnmountBackendWindow.qml</file>
+        <file>qml/DefaultFileDialog.qml</file>
+        <file>../../Desktop/p4n81s-libelektra/src/tools/kdb/rm.hpp</file>
+    </qresource>
+</RCC>
