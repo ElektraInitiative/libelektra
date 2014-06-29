@@ -1,14 +1,10 @@
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QtQml>
-#include <QDebug>
-#include <string>
-#include <kdb.hpp>
-#include <keyio.hpp>
+#include <QMetaType>
 
-#include "treeviewmodel.h"
-#include "confignode.h"
-#include "treemodel.h"
+#include "treeviewmodel.hpp"
+#include "confignode.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -17,11 +13,11 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
 
-    TreeViewModel model;
-
     QQmlContext *ctxt = engine.rootContext();
-    ctxt->setContextProperty("externTreeModel", model.getModel());
+    TreeViewModel *model = new TreeViewModel(ctxt);
+    ctxt->setContextProperty("externTreeModel", QVariant::fromValue(model));
 
     engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
     return app.exec();
 }
+

@@ -1,14 +1,15 @@
 QT += quick  gui core  qml  widgets
 
 SOURCES += src/main.cpp \
-    src/treeviewmodel.cpp \
-    src/confignode.cpp \
-    src/treeitem.cpp \
-    src/treemodel.cpp \
-    src/treenode.cpp
+		src/treeviewmodel.cpp \
+		src/confignode.cpp \
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
+
+INCLUDEPATH += /usr/local/include/elektra
+INCLUDEPATH += ../../Desktop/p4n81s-libelektra/src/tools/kdb/
+
 
 # Default rules for deployment.
 include(deployment.pri)
@@ -30,14 +31,12 @@ OTHER_FILES += \
 		qml/UnmountBackendWindow.qml \
 		qml/NewKeyWindow.qml \
 		qml/DefaultFileDialog.qml \
-		qml/NewArrayEntry.qml
+		qml/NewArrayEntry.qml \
 
 HEADERS += \
-    src/treeviewmodel.h \
-    src/confignode.h \
-    src/treeitem.h \
-    src/treemodel.h \
-    src/treenode.h
+		src/treeviewmodel.hpp \
+		src/confignode.hpp \
+		src/treeviewmodel.hpp \
 
 unix: CONFIG += link_pkgconfig
 unix: PKGCONFIG += elektra

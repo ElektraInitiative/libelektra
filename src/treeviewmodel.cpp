@@ -1,11 +1,18 @@
-#include "treeviewmodel.h"
-#include "confignode.h"
+#include "treeviewmodel.hpp"
+#include "confignode.hpp"
 
-TreeViewModel::TreeViewModel()
+using namespace std;
+using namespace kdb;
+
+TreeViewModel::TreeViewModel(QQmlContext *ctxt)
 {
-    ConfigNode *system = new ConfigNode("system", "system");
-    ConfigNode *root = new ConfigNode("user", "user");
-    m_model << system << root;
+    m_ctxt = ctxt;
+}
+
+TreeViewModel::~TreeViewModel()
+{
+    qDebug() << "Config Saved";
+    m_kdb.set(m_config, "/");
 }
 
 QVariantList TreeViewModel::getModel(){
@@ -29,10 +36,10 @@ void TreeViewModel::sink(ConfigNode *node, QStringList keys, QString path){
     QString name =  keys.takeFirst();
 
     if(node->hasChild(name)){
-        sink(node->getChild(name), keys, node->getPath() + "/" + name);
+        sink(node->getChildByName(name), keys, node->getPath() + "/" + name);
     }
     else{
-        ConfigNode *newNode = new ConfigNode(name,(path + "/" + name));
+        ConfigNode *newNode = new ConfigNode(name, (path + "/" + name));
         node->appendChild(newNode);
         sink(newNode, keys, node->getPath() + "/" + name);
     }
@@ -40,21 +47,40 @@ void TreeViewModel::sink(ConfigNode *node, QStringList keys, QString path){
 
 void TreeViewModel::synchronize()
 {
-    populateModel();
-    emit modelChanged();
+    m_ctxt->setContextProperty("externTreeModel", QVariant::fromValue(this));
+}
+
+void TreeViewModel::deleteKey(const QString &path)
+{
+    Key k = m_config.lookup(path.toStdString());
+
+    if(k){
+        qDebug() << "Key found";
+        m_config.cut(k);
+    }
+
+    m_kdb.set(m_config, path.toStdString());
+    synchronize();
 }
 
 void TreeViewModel::populateModel()
 {
-    KeySet config;
-    KDB kdb;
-    kdb.get(config, "/");
-    config.rewind();
+    m_kdb.get(m_config, "/");
+    m_config.rewind();
+
+    ConfigNode *system = new ConfigNode("system", "system");
+    ConfigNode *root = new ConfigNode("user", "user");
+
+    m_model.clear();
+    m_model << system << root;
 
     QStringList configData;
 
-    while(config.next()){
-        configData << QString::fromStdString(config.current().getName());
+    qDebug() << "In populateModel: ";
+
+    while(m_config.next()){
+        configData << QString::fromStdString(m_config.current().getName());
+        qDebug() << QString::fromStdString(m_config.current().getName());
     }
 
     for(int i = 0; i < configData.length(); i++){
@@ -72,5 +98,10 @@ void TreeViewModel::populateModel()
         else{
             qDebug() << "INVALID_KEY";
         }
+
     }
+
+    emit modelChanged();
+
+    qDebug() << "POPULATED===========================================!";
 }

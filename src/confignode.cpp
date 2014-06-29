@@ -1,4 +1,6 @@
-#include "confignode.h"
+#include "confignode.hpp"
+
+using namespace kdb;
 
 ConfigNode::ConfigNode(const QString &name, const QString &path):  m_name(name), m_path(path)
 {
@@ -19,6 +21,23 @@ QString ConfigNode::getPath()
     return m_path;
 }
 
+QString ConfigNode::getValue()
+{
+    KDB kdb;
+    KeySet config;
+    kdb.get(config, m_path.toStdString());
+
+    Key k = config.lookup(m_path.toStdString());
+
+    if(k && k.isString())
+        return QString::fromStdString(k.getString());
+    else if(k && k.isBinary())
+        return QString::fromStdString(k.getBinary());
+    else
+        return "";
+
+}
+
 void ConfigNode::appendChild(ConfigNode *node)
 {
     m_children.append(node);
@@ -36,13 +55,32 @@ bool ConfigNode::hasChild(const QString &name)
     return false;
 }
 
-ConfigNode *ConfigNode::getChild(QString &name)
+ConfigNode *ConfigNode::getChildByName(QString &name)
 {
     foreach(ConfigNode *node, m_children){
         if(node->getName() == name){
             return node;
         }
     }
+}
+
+ConfigNode *ConfigNode::getChildByIndex(int index)
+{
+    if(index >= 0 && index < m_children.length())
+        return m_children.at(index);
+    else
+        return new ConfigNode("","");
+}
+
+bool ConfigNode::childrenHaveNoChildren()
+{
+    int children = 0;
+
+    foreach(ConfigNode *node, m_children){
+        children += node->childCount();
+    }
+
+    return children == 0;
 }
 
 QVariantList ConfigNode::getChildren()

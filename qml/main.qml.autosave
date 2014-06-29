@@ -481,7 +481,7 @@ ApplicationWindow {
                                                     anchors.fill: parent
                                                     hoverEnabled: true
                                                     onClicked: {
-                                                        if(model.modelData.childCount > 0 && !model.modelData.childrenHaveNoChildren())
+                                                        if(model.modelData.childCount > 0 && !model.modelData.git push())
                                                             loader.expanded = !loader.expanded
                                                     }
                                                 }
