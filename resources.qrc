@@ -36,6 +36,5 @@
         <file>qml/BasicRectangle.qml</file>
         <file>qml/UnmountBackendWindow.qml</file>
         <file>qml/DefaultFileDialog.qml</file>
-        <file>../../Desktop/p4n81s-libelektra/src/tools/kdb/rm.hpp</file>
     </qresource>
 </RCC>

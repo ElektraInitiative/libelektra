@@ -8,7 +8,7 @@
 #include <kdb.hpp>
 #include <keyio.hpp>
 
-#include "confignode.hpp"
+#include "confignode.h"
 
 using namespace std;
 using namespace kdb;
@@ -24,15 +24,15 @@ public:
     void sink(ConfigNode *node, QStringList keys, QString path);
 
     Q_INVOKABLE void synchronize();
-    Q_INVOKABLE void deleteKey(const QString &path);
+    Q_INVOKABLE void deleteKey(QString path);
 
 private:
     QList<ConfigNode*> m_model;
     void populateModel();
     QQmlContext *m_ctxt;
 
-    kdb::KeySet m_config;
-    kdb::KDB m_kdb;
+    KeySet m_config;
+    KDB m_kdb;
 
 signals:
     void modelChanged();

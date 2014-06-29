@@ -1,18 +1,9 @@
 #include "treeviewmodel.hpp"
 #include "confignode.hpp"
 
-using namespace std;
-using namespace kdb;
-
 TreeViewModel::TreeViewModel(QQmlContext *ctxt)
 {
     m_ctxt = ctxt;
-}
-
-TreeViewModel::~TreeViewModel()
-{
-    qDebug() << "Config Saved";
-    m_kdb.set(m_config, "/");
 }
 
 QVariantList TreeViewModel::getModel(){

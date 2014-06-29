@@ -544,6 +544,27 @@ ApplicationWindow {
                         title: qsTr("Value")
                         width: Math.round(keyArea.width*0.5)
                     }
+
+//                    rowDelegate: Item {
+//                        Rectangle {
+//                            anchors.left: parent.left
+//                            anchors.right: parent.right
+//                            height: parent.height
+//                            color: activePalette.highlight
+//                        }
+//                        MouseArea {
+//                            anchors.fill: parent
+//                            acceptedButtons: Qt.LeftButton | Qt.RightButton
+//                            onClicked: {
+//                                if (mouse.button == Qt.LeftButton) {
+//                                    console.log("Left")
+//                                }
+//                                else if (mouse.button == Qt.RightButton) {
+//                                    keyContextMenu.popup()
+//                                }
+//                            }
+//                        }
+//                    }
                 }
             }
             BasicRectangle {
