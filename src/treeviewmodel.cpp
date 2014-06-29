@@ -1,6 +1,9 @@
 #include "treeviewmodel.hpp"
 #include "confignode.hpp"
 
+using namespace std;
+using namespace kdb;
+
 TreeViewModel::TreeViewModel(QQmlContext *ctxt)
 {
     m_ctxt = ctxt;

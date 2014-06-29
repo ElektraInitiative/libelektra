@@ -10,9 +10,6 @@
 
 #include "confignode.hpp"
 
-using namespace std;
-using namespace kdb;
-
 class TreeViewModel : public QObject {
     Q_OBJECT
 
