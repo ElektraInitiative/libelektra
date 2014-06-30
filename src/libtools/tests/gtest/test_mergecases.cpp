@@ -1,10 +1,10 @@
 #include <iostream>
-#include "gtest/gtest.h"
-#include "mergetools.hpp"
-#include "keysetio.hpp"
+#include <gtest/gtest.h>
+#include <merging/threewaymerge.hpp>
+#include <keysetio.hpp>
 
 using namespace kdb;
-using namespace kdb::tools;
+using namespace kdb::tools::merging;
 
 class MergeTest : public ::testing::Test
 {
@@ -26,29 +26,31 @@ protected:
 		base.append(baseParent);
 		base.append(Key("user/parentb/config/key1", KEY_VALUE, "value1", KEY_END));
 		base.append(Key("user/parentb/config/key2", KEY_VALUE, "value2", KEY_END));
-		base.append(Key("user/parentb/config/key3", KEY_VALUE, "value4", KEY_END));
-		base.append(Key("user/parentb/config/key4", KEY_VALUE, "value5", KEY_END));
+		base.append(Key("user/parentb/config/key3", KEY_VALUE, "value3", KEY_END));
+		base.append(Key("user/parentb/config/key4", KEY_VALUE, "value4", KEY_END));
 
 		ourParent = Key("user/parento", KEY_END);
 		ours.append(ourParent);
 		ours.append(Key("user/parento/config/key1", KEY_VALUE, "value1", KEY_END));
 		ours.append(Key("user/parento/config/key2", KEY_VALUE, "value2", KEY_END));
-		ours.append(Key("user/parento/config/key3", KEY_VALUE, "value4", KEY_END));
-		ours.append(Key("user/parento/config/key4", KEY_VALUE, "value5", KEY_END));
+		ours.append(Key("user/parento/config/key3", KEY_VALUE, "value3", KEY_END));
+		ours.append(Key("user/parento/config/key4", KEY_VALUE, "value4", KEY_END));
 
 		theirParent = Key("user/parentt", KEY_END);
 		theirs.append(theirParent);
 		theirs.append(Key("user/parentt/config/key1", KEY_VALUE, "value1", KEY_END));
 		theirs.append(Key("user/parentt/config/key2", KEY_VALUE, "value2", KEY_END));
-		theirs.append(Key("user/parentt/config/key3", KEY_VALUE, "value4", KEY_END));
-		theirs.append(Key("user/parentt/config/key4", KEY_VALUE, "value5", KEY_END));
+		theirs.append(Key("user/parentt/config/key3", KEY_VALUE, "value3", KEY_END));
+		theirs.append(Key("user/parentt/config/key4", KEY_VALUE, "value4", KEY_END));
 
+		/* used as reference for comparing by index */
 		mergeParent = Key("user/parentm", KEY_END);
 		expectedMerge.append(mergeParent);
 		expectedMerge.append(Key("user/parentm/config/key1", KEY_VALUE, "value1", KEY_END));
 		expectedMerge.append(Key("user/parentm/config/key2", KEY_VALUE, "value2", KEY_END));
-		expectedMerge.append(Key("user/parentm/config/key3", KEY_VALUE, "value4", KEY_END));
-		expectedMerge.append(Key("user/parentm/config/key4", KEY_VALUE, "value5", KEY_END));
+		expectedMerge.append(Key("user/parentm/config/key3", KEY_VALUE, "value3", KEY_END));
+		expectedMerge.append(Key("user/parentm/config/key4", KEY_VALUE, "value4", KEY_END));
+		expectedMerge.append(Key("user/parentm/config/key5", KEY_VALUE, "value5", KEY_END));
 
 	}
 
@@ -62,7 +64,6 @@ protected:
 	virtual void TearDown()
 	{}
 
-	// TODO: MergeTools version should be reused
 	virtual void compareKeys(const Key& k1, const Key& k2) {
 		EXPECT_EQ(k1, k2) << "keys have different names";
 		EXPECT_EQ(k1.getString(), k2.getString()) << "keys have different values";
@@ -85,32 +86,17 @@ protected:
 		return result;
 	}
 
-	virtual void testConflictString(std::string conflictName, ConflictOperation conflict)
-	{
-		switch (conflict)
-		{
-		case APPEND:
-			EXPECT_EQ("append", conflictName);
-			break;
-		case DELETE:
-			EXPECT_EQ("delete", conflictName);
-			break;
-		case MODIFY:
-			EXPECT_EQ("modify", conflictName);
-			break;
-		default:
-			ADD_FAILURE() << "Unknwon conflict operation: " << conflictName;
-		}
-	}
-
 	virtual void testConflictMeta(const Key& key, ConflictOperation our, ConflictOperation their)
 	{
-		Key const ourConflict = key.getMeta<Key const>("conflict/our");
+		Key const ourConflict = key.getMeta<Key const>("conflict/operation/our");
 		EXPECT_TRUE(ourConflict) << "No conflict metakey for our operation present";
-		testConflictString(ourConflict.getString(), our);
-		Key const theirConflict = key.getMeta<Key const>("conflict/their");
+		ConflictOperation operation = MergeConflictOperation::getFromName(ourConflict.getString());
+		EXPECT_EQ(our, operation);
+
+		Key const theirConflict = key.getMeta<Key const>("conflict/operation/their");
 		EXPECT_TRUE(theirConflict) << "No conflict metakey for their operation present";
-		testConflictString(theirConflict.getString(), their);
+		operation = MergeConflictOperation::getFromName(theirConflict.getString());
+		EXPECT_EQ(their, operation);
 	}
 
 };
@@ -152,6 +138,40 @@ TEST_F(MergeTest, SameDeletedKeyMerge)
 
 }
 
+TEST_F(MergeTest, AddEqualsKeyMerge)
+{
+	Key addedKey = Key("user/parento/config/key5", KEY_VALUE, "value5", KEY_END);
+	ours.append(addedKey);
+	MergeResult result = ThreeWayMerge::mergeKeySet(base, ours, theirs, mergeParent);
+	EXPECT_FALSE(result.hasConflicts()) << "Invalid conflict detected";
+
+	KeySet merged = result.getMergedKeys();
+	EXPECT_EQ(6, merged.size());
+	compareKeys( expectedMerge.at(0), merged.at(0));
+	compareKeys(expectedMerge.at(1), merged.at(1));
+	compareKeys(expectedMerge.at(2), merged.at(2));
+	compareKeys(expectedMerge.at(3), merged.at(3));
+	compareKeys(expectedMerge.at(4), merged.at(4));
+	compareKeys(expectedMerge.at(5), merged.at(5));
+}
+
+TEST_F(MergeTest, EqualsAddKeyMerge)
+{
+	Key addedKey = Key("user/parentt/config/key5", KEY_VALUE, "value5", KEY_END);
+	theirs.append(addedKey);
+	MergeResult result = ThreeWayMerge::mergeKeySet(base, ours, theirs, mergeParent);
+	EXPECT_FALSE(result.hasConflicts()) << "Invalid conflict detected";
+
+	KeySet merged = result.getMergedKeys();
+	EXPECT_EQ(6, merged.size());
+	compareKeys( expectedMerge.at(0), merged.at(0));
+	compareKeys(expectedMerge.at(1), merged.at(1));
+	compareKeys(expectedMerge.at(2), merged.at(2));
+	compareKeys(expectedMerge.at(3), merged.at(3));
+	compareKeys(expectedMerge.at(4), merged.at(4));
+	compareKeys(expectedMerge.at(5), merged.at(5));
+}
+
 TEST_F(MergeTest, DeleteModifyConflict)
 {
 	ours = deleteKey (ours, Key("user/parento/config/key1"));
@@ -167,9 +187,9 @@ TEST_F(MergeTest, DeleteModifyConflict)
 	KeySet merged = result.getMergedKeys();
 
 	compareKeys( expectedMerge.at(0), merged.at(0));
-	compareKeys(expectedMerge.at(1), merged.at(1));
-	compareKeys(expectedMerge.at(3), merged.at(3));
-	compareKeys(expectedMerge.at(4), merged.at(4));
+	compareKeys(expectedMerge.at(2), merged.at(1));
+	compareKeys(expectedMerge.at(3), merged.at(2));
+	compareKeys(expectedMerge.at(4), merged.at(3));
 
 }
 
@@ -183,14 +203,14 @@ TEST_F(MergeTest, ModifyDeleteConflict)
 
 	KeySet conflicts = result.getConflictSet();
 	EXPECT_EQ(1, conflicts.size()) << "Wrong number of conflicts";
-	testConflictMeta(conflicts.at(0), DELETE, MODIFY);
+	testConflictMeta(conflicts.at(0), MODIFY, DELETE);
 
 	KeySet merged = result.getMergedKeys();
 	EXPECT_EQ(4, merged.size());
-	compareKeys( expectedMerge.at(0), merged.at(0));
-	compareKeys(expectedMerge.at(2), merged.at(2));
-	compareKeys(expectedMerge.at(3), merged.at(3));
-	compareKeys(expectedMerge.at(4), merged.at(4));
+	compareKeys(expectedMerge.at(0), merged.at(0));
+	compareKeys(expectedMerge.at(2), merged.at(1));
+	compareKeys(expectedMerge.at(3), merged.at(2));
+	compareKeys(expectedMerge.at(4), merged.at(3));
 }
 
 TEST_F(MergeTest, DeleteEqualsMerges)
@@ -204,7 +224,7 @@ TEST_F(MergeTest, DeleteEqualsMerges)
 	EXPECT_EQ(4, merged.size());
 
 	/* key with index 1 should be deleted */
-	compareKeys( expectedMerge.at(0), merged.at(0));
+	compareKeys(expectedMerge.at(0), merged.at(0));
 	compareKeys(merged.at(1), expectedMerge.at(2));
 	compareKeys(merged.at(2), expectedMerge.at(3));
 	compareKeys(merged.at(3), expectedMerge.at(4));
@@ -283,7 +303,6 @@ TEST_F(MergeTest, SameModifyConflict)
 	EXPECT_EQ(1, conflicts.size());
 	testConflictMeta(conflicts.at(0), MODIFY, MODIFY);
 
-	// TODO: test saved conflict values
 	KeySet merged = result.getMergedKeys();
 
 	EXPECT_EQ(4, merged.size());
@@ -310,7 +329,7 @@ TEST_F(MergeTest, SameAddedEqualValueMerges)
 	compareKeys(expectedMerge.at(3), merged.at(3));
 	compareKeys(expectedMerge.at(4), merged.at(4));
 
-	// TODO: compare added keys
+	compareKeys(Key("user/parentm/config/key5", KEY_VALUE, "newvalue", KEY_END), merged.at(5));
 }
 
 TEST_F(MergeTest, SameAddedDifferentValueConflict)
@@ -324,7 +343,7 @@ TEST_F(MergeTest, SameAddedDifferentValueConflict)
 
 	KeySet conflicts = result.getConflictSet();
 	EXPECT_EQ(1, conflicts.size());
-	testConflictMeta(conflicts.at(0), APPEND, APPEND);
+	testConflictMeta(conflicts.at(0), ADD, ADD);
 
 	KeySet merged = result.getMergedKeys();
 

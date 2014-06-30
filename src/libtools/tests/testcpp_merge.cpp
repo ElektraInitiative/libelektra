@@ -1,14 +1,13 @@
 #include <iostream>
-#include "mergetools.hpp"
+#include <merging/threewaymerge.hpp>
 #include "keysetio.hpp"
 		
 		
 int main(void){
 	using namespace std;
 	using namespace kdb;
-	using namespace kdb::tools;
-		
-		
+	using namespace kdb::tools::merging;
+
 		
 	KeySet b;
 	KeySet o;

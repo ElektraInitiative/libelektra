@@ -4,14 +4,13 @@
 #include <modules.hpp>
 #include <cmdline.hpp>
 #include <keysetio.hpp>
-#include <mergetools.hpp>
 
 #include <iostream>
 #include <string>
 
 
 using namespace kdb;
-using namespace kdb::tools;
+using namespace kdb::tools::merging;
 using namespace std;
 
 
@@ -65,7 +64,7 @@ int MergeCommand::execute (Cmdline const& cl)
 	original.append(base);
 	original.append(ours);
 	original.append(theirs);
-	MergeResult result = ThreeWayMerge::mergeKeySet(base, root1, ours, root2, theirs, root3, root4);
+	MergeResult result = ThreeWayMerge::mergeKeySet(MergeTask(BaseMergeKeys(base, root1), OurMergeKeys(ours, root2), TheirMergeKeys(theirs, root3), root4));
 	
 	KeySet empty;
 	if( result.hasConflicts()){
