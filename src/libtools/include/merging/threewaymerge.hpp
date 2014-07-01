@@ -48,7 +48,8 @@ private:
 			const Key& newParent);
 	static std::string rebasePath(const Key& key, const Key& oldParent,
 			const Key& newParent);
-	static bool keyDataEqual(const kdb::Key&, const kdb::Key&);
+	static bool keyDataEqual(const Key&, const Key&);
+	static bool keyMetaEqual(Key&, Key&);
 	static void automaticMerge(const MergeTask& task, MergeResult& mergeResult,
 			bool reverseConflictMeta);
 };

@@ -24,7 +24,7 @@ namespace merging
  * @brief Determines if two keys are equal based on their GetString() values.
  * Returns true if they are equal. False if they are not.
  */
-bool ThreeWayMerge::keyDataEqual(const kdb::Key& k1, const kdb::Key& k2)
+bool ThreeWayMerge::keyDataEqual(const Key& k1, const Key& k2)
 {
 	if (!k1 && k2) return false;
 	if (k1 && !k2) return false;
@@ -32,6 +32,28 @@ bool ThreeWayMerge::keyDataEqual(const kdb::Key& k1, const kdb::Key& k2)
 	{
 		return false;
 	}
+	return true;
+}
+
+bool ThreeWayMerge::keyMetaEqual(Key& k1, Key& k2)
+{
+	k1.rewindMeta ();
+	Key currentMeta;
+	while ((currentMeta = k1.nextMeta ()))
+	{
+		string metaName = currentMeta.getName ();
+		if (!k2.hasMeta (metaName)) return false;
+		if (currentMeta.getString () != k2.getMeta<std::string> (metaName)) return false;
+	}
+
+	k2.rewindMeta ();
+	while ((currentMeta = k2.nextMeta ()))
+	{
+		string metaName = currentMeta.getName ();
+		if (!k1.hasMeta (metaName)) return false;
+		if (currentMeta.getString () != k1.getMeta<std::string> (metaName)) return false;
+	}
+
 	return true;
 }
 
@@ -70,8 +92,16 @@ void ThreeWayMerge::automaticMerge(const MergeTask& task,
 
 		if (keyDataEqual (our, theirLookupResult))
 		{
-			// keys match, nothing to do
-			mergeResult.addMergeKey (mergeKey);
+			// keydata matches, see if metakeys match
+			if (keyMetaEqual (our, theirLookupResult))
+			{
+				mergeResult.addMergeKey (mergeKey);
+			}
+			else
+			{
+				// metakeys are different
+				mergeResult.addConflict (mergeKey, META, META);
+			}
 		}
 		else
 		{
@@ -168,20 +198,24 @@ MergeResult ThreeWayMerge::mergeKeySet(const MergeTask& task)
 	return result;
 }
 
-
 /**
  *
  * Returns a keyset that is the result of a merge on two keysets (ours and theirs) using a base keyset as a refernece (a three-way merge).
  * If the merge function is unscuessful an empty KeySet will be returned.
  * This function is inteded as a basic version for the C++ API. It takes in three keysets and a parent key for where to store the merged keys.
  * It works by finidng the parent key for each keyset and then calling the more complex function above.
-**/
-MergeResult ThreeWayMerge::mergeKeySet(const KeySet& base, const KeySet& ours, const KeySet& theirs, Key& mergeRoot){
-	Key ourkey = ours.head().dup();
-	Key theirkey = theirs.head().dup();
-	Key basekey = base.head().dup();
+ **/
+MergeResult ThreeWayMerge::mergeKeySet(const KeySet& base, const KeySet& ours,
+		const KeySet& theirs, Key& mergeRoot)
+{
+	Key ourkey = ours.head ().dup ();
+	Key theirkey = theirs.head ().dup ();
+	Key basekey = base.head ().dup ();
 
-	MergeResult merged = mergeKeySet(MergeTask(BaseMergeKeys(base, basekey), OurMergeKeys(ours, ourkey), TheirMergeKeys(theirs, theirkey), mergeRoot));
+	MergeResult merged = mergeKeySet (
+			MergeTask (BaseMergeKeys (base, basekey),
+					OurMergeKeys (ours, ourkey),
+					TheirMergeKeys (theirs, theirkey), mergeRoot));
 
 	return merged;
 }

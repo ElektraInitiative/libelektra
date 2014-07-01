@@ -24,7 +24,7 @@ namespace merging
 
 enum ConflictOperation
 {
-	ADD, DELETE, MODIFY
+	ADD, DELETE, MODIFY, META
 };
 
 class InvalidConflictOperation: public std::runtime_error
@@ -50,6 +50,8 @@ public:
 			return "delete";
 		case MODIFY:
 			return "modify";
+		case META:
+			return "meta";
 		}
 	}
 
@@ -58,6 +60,7 @@ public:
 		if (name == "add") return ADD;
 		if (name == "delete") return DELETE;
 		if (name == "modify") return MODIFY;
+		if (name == "meta") return META;
 		throw InvalidConflictOperation (
 				"The conflict operation " + name + " is unknown");
 	}
