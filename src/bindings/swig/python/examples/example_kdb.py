@@ -7,11 +7,13 @@ with kdb.KDB() as db:
 	db.get(ks, "user/MyApp")
 
 	# check if key exists
-	key = ks.lookup("user/MyApp/mykey")
-	if not key:
+	try:
+		key = ks["user/MyApp/mykey"]
+	except KeyError:
 		# create a new key + append to keyset
 		key = kdb.Key("user/MyApp/mykey")
 		ks.append(key)
+
 	# change keys value
 	key.value = "new_value"
 
