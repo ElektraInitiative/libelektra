@@ -12,6 +12,8 @@ run-tests run-shell-tests
 kdb convert
 converting (any to any storage plugin)
 
+locales
+
 == LEVELS ==
 
 make different levels of testing:
