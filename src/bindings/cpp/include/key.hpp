@@ -1181,7 +1181,9 @@ inline bool Key::isInactive () const
  */
 inline bool Key::isBelow(const Key & k) const
 {
-	return ckdb::keyIsBelow(key, k.getKey());
+	int ret = ckdb::keyIsBelow(key, k.getKey());
+	if (ret == -1) return false;
+	return ret;
 }
 
 /**
@@ -1189,7 +1191,9 @@ inline bool Key::isBelow(const Key & k) const
  */
 inline bool Key::isBelowOrSame(const Key & k) const
 {
-	return ckdb::keyIsBelowOrSame(key, k.getKey());
+	int ret = ckdb::keyIsBelowOrSame(key, k.getKey());
+	if (ret == -1) return false;
+	return ret;
 }
 
 /**
@@ -1197,7 +1201,9 @@ inline bool Key::isBelowOrSame(const Key & k) const
  */
 inline bool Key::isDirectBelow(const Key & k) const
 {
-	return ckdb::keyIsDirectBelow(key, k.getKey());
+	int ret = ckdb::keyIsDirectBelow(key, k.getKey());
+	if (ret == -1) return false;
+	return ret;
 }
 
 /**
