@@ -1,9 +1,3 @@
 {
-    "user": {
-        "tests": {
-            "script": {
-                "key": "value"
-            }
-        }
-    }
+    "key": "value"
 }
