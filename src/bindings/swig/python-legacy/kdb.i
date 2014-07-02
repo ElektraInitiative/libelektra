@@ -1,11 +1,12 @@
 %module kdb
 
-/* python2 compat */
+%include "../python/kdb.i"
+
+/* python2 compat
 %pythonbegin %{
   from __future__ import print_function
 %}
-
-%include "../python/kdb.i"
+*/
 
 /*
  * python2 doesn't have a binary datatype
