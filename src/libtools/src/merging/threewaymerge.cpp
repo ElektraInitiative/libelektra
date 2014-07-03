@@ -21,8 +21,13 @@ namespace merging
 {
 
 /**
- * @brief Determines if two keys are equal based on their GetString() values.
- * Returns true if they are equal. False if they are not.
+ * Determines if two keys are equal based on their string value
+ * If one of the two keys is null, false is returned
+ *
+ * @param k1 the first key to be compared
+ * @param k2 the second key to be compared
+ * @return true if both keys are not null and have an
+ * equal string value, false otherwise
  */
 bool ThreeWayMerge::keyDataEqual(const Key& k1, const Key& k2)
 {
@@ -35,6 +40,14 @@ bool ThreeWayMerge::keyDataEqual(const Key& k1, const Key& k2)
 	return true;
 }
 
+/**
+ * Determines if two keys have equal metadata
+ *
+ *
+ * @param k1 the first key whose metadata should be compared
+ * @param k2 the second key whose metadata should be compared
+ * @return true if the keys have equal metadata, false otherwise
+ */
 bool ThreeWayMerge::keyMetaEqual(Key& k1, Key& k2)
 {
 	k1.rewindMeta ();
@@ -57,6 +70,19 @@ bool ThreeWayMerge::keyMetaEqual(Key& k1, Key& k2)
 	return true;
 }
 
+/**
+ * Rebases the relative path of the passed key from the old parent
+ * to the new parent and returns the new path.
+ *
+ * For example a key /user/example/config/key1 with the oldparent
+ * /user/example and the new parent /user/newexample/newpath would
+ * result in /user/newexample/newpath/config/key1
+ *
+ * @param key the key whose path should be rebased
+ * @param oldParent the old parent of the key
+ * @param newParent the new parent of the key
+ * @return the rebased path
+ */
 string ThreeWayMerge::rebasePath(const Key& key, const Key& oldParent,
 		const Key& newParent)
 {
@@ -68,6 +94,15 @@ string ThreeWayMerge::rebasePath(const Key& key, const Key& oldParent,
 	return newPath;
 }
 
+/**
+ * Rebases the supplied key from the old parent to the new parent.
+ *
+ * @see ThreeWayMerge::rebasePath
+ * @param key the key to be rebased
+ * @param oldParent the old parent of the key
+ * @param newParent the new parent of the key
+ * @return a rebased copy of the supplied key
+ */
 Key ThreeWayMerge::rebaseKey(const Key& key, const Key& oldParent,
 		const Key& newParent)
 {
@@ -184,10 +219,17 @@ void ThreeWayMerge::automaticMerge(const MergeTask& task,
 }
 
 /**
- * Returns a keyset that is the result of a merge on two keysets (ours and theirs) using a base keyset as a refernece (a three-way merge). 
- * If the merge function is unscuessful an empty KeySet will be returned. 
- * This function is inteded as a full version for the kdb merge command or for  the C++ API. 
- * It works by taking in three keysets, their parent keys and a parent key for where to store the merged KeySet.
+ * Performs a threeway merge according to the supplied MergeTask. All merged keys will
+ * be below the given mergeParent in the MergeTask. Found conflicts will be
+ * reported in the MergeResult. Conflicts are below the mergeParent as well and
+ * are not part of the mergedKeys.
+ *
+ * @see MergeTask
+ * @see MergeResult
+ *
+ * @param task a MergeTask describing the intended merge oparation
+ * @return a MergeResult that contains the merged keys as well as all found conflicts.
+ *
  **/
 MergeResult ThreeWayMerge::mergeKeySet(const MergeTask& task)
 {
@@ -198,13 +240,21 @@ MergeResult ThreeWayMerge::mergeKeySet(const MergeTask& task)
 	return result;
 }
 
+
 /**
+ * Performs a threeway merge based on the supplied KeySets. The result is the same
+ * as for ThreeWayMerge::mergeKeySet(const MergeTask&). The first key (i.e. the shortest)
+ * in each of the supplied KeySets is considered to be the corresponding parentKey.
+ * This means that the parent key of each KeySet MUST be part of the KeySet.
  *
- * Returns a keyset that is the result of a merge on two keysets (ours and theirs) using a base keyset as a refernece (a three-way merge).
- * If the merge function is unscuessful an empty KeySet will be returned.
- * This function is inteded as a basic version for the C++ API. It takes in three keysets and a parent key for where to store the merged keys.
- * It works by finidng the parent key for each keyset and then calling the more complex function above.
- **/
+ * @see ThreeWayMerge::mergeKeySet(const MergeTask&)
+ *
+ * @param base the KeySet containing the base keys and the base parentKey
+ * @param ours the KeySet containing our keys and our parentKey
+ * @param theirs the KeySet containing their keys and their parentKey
+ * @param meregRoot the parentKey for the merged keys
+ * @return a MergeResult that contains the merged keys as well as all found conflicts.
+ */
 MergeResult ThreeWayMerge::mergeKeySet(const KeySet& base, const KeySet& ours,
 		const KeySet& theirs, Key& mergeRoot)
 {
