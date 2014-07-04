@@ -8,8 +8,11 @@
  */
 
 #include <merging/threewaymerge.hpp>
+#include <helper/comparison.hpp>
+#include <helper/keyhelper.hpp>
 
 using namespace std;
+using namespace kdb::tools::helper;
 
 namespace kdb
 {
@@ -20,96 +23,6 @@ namespace tools
 namespace merging
 {
 
-/**
- * Determines if two keys are equal based on their string value
- * If one of the two keys is null, false is returned
- *
- * @param k1 the first key to be compared
- * @param k2 the second key to be compared
- * @return true if both keys are not null and have an
- * equal string value, false otherwise
- */
-bool ThreeWayMerge::keyDataEqual(const Key& k1, const Key& k2)
-{
-	if (!k1 && k2) return false;
-	if (k1 && !k2) return false;
-	if (k1.getString () != k2.getString ())
-	{
-		return false;
-	}
-	return true;
-}
-
-/**
- * Determines if two keys have equal metadata
- *
- *
- * @param k1 the first key whose metadata should be compared
- * @param k2 the second key whose metadata should be compared
- * @return true if the keys have equal metadata, false otherwise
- */
-bool ThreeWayMerge::keyMetaEqual(Key& k1, Key& k2)
-{
-	k1.rewindMeta ();
-	Key currentMeta;
-	while ((currentMeta = k1.nextMeta ()))
-	{
-		string metaName = currentMeta.getName ();
-		if (!k2.hasMeta (metaName)) return false;
-		if (currentMeta.getString () != k2.getMeta<std::string> (metaName)) return false;
-	}
-
-	k2.rewindMeta ();
-	while ((currentMeta = k2.nextMeta ()))
-	{
-		string metaName = currentMeta.getName ();
-		if (!k1.hasMeta (metaName)) return false;
-		if (currentMeta.getString () != k1.getMeta<std::string> (metaName)) return false;
-	}
-
-	return true;
-}
-
-/**
- * Rebases the relative path of the passed key from the old parent
- * to the new parent and returns the new path.
- *
- * For example a key /user/example/config/key1 with the oldparent
- * /user/example and the new parent /user/newexample/newpath would
- * result in /user/newexample/newpath/config/key1
- *
- * @param key the key whose path should be rebased
- * @param oldParent the old parent of the key
- * @param newParent the new parent of the key
- * @return the rebased path
- */
-string ThreeWayMerge::rebasePath(const Key& key, const Key& oldParent,
-		const Key& newParent)
-{
-	string oldPath = key.getFullName ();
-	string relativePath = oldPath.substr (oldParent.getFullName ().length (),
-			oldPath.length ());
-	string newPath = newParent.getFullName () + relativePath;
-
-	return newPath;
-}
-
-/**
- * Rebases the supplied key from the old parent to the new parent.
- *
- * @see ThreeWayMerge::rebasePath
- * @param key the key to be rebased
- * @param oldParent the old parent of the key
- * @param newParent the new parent of the key
- * @return a rebased copy of the supplied key
- */
-Key ThreeWayMerge::rebaseKey(const Key& key, const Key& oldParent,
-		const Key& newParent)
-{
-	Key result = key.dup ();
-	result.setName (rebasePath (key, oldParent, newParent));
-	return result;
-}
 
 // TODO: compare metakeys
 void ThreeWayMerge::automaticMerge(const MergeTask& task,
