@@ -22,27 +22,15 @@ MergeResult::MergeResult()
 {
 }
 
-MergeResult::MergeResult(const KeySet& _conflictSet, const KeySet& _mergedKeys)
+MergeResult::MergeResult(KeySet& _conflictSet, KeySet& _mergedKeys)
 {
 	conflictSet = _conflictSet;
 	mergedKeys = _mergedKeys;
 }
 
-// TODO: this implementation is extremely inefficient and just a workaround
 void MergeResult::removeMergeKey(Key& key)
 {
-	cursor_t cursor = mergedKeys.getCursor ();
-	mergedKeys.rewind ();
-
-	Key current;
-	KeySet result;
-	while ((current = mergedKeys.next ()))
-	{
-		if (current != key) result.append (current.dup ());
-	}
-
-	mergedKeys.setCursor (cursor);
-	mergedKeys = result;
+	mergedKeys.lookup(key, KDB_O_POP);
 }
 
 void MergeResult::addConflict(Key& key, ConflictOperation ourOperation,

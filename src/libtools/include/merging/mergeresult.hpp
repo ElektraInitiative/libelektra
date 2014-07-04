@@ -25,7 +25,7 @@ class MergeResult
 {
 public:
 	MergeResult();
-	MergeResult(const KeySet& conflictSet, const KeySet& mergedKeys);
+	MergeResult(KeySet& conflictSet, KeySet& mergedKeys);
 	~MergeResult()
 	{
 	}

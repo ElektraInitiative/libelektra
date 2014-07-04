@@ -88,23 +88,6 @@ protected:
 		compareKeys (expectedMerge.at (4), merged.at (3));
 	}
 
-	// TODO: dirty hack, but c++ interface is missing
-	virtual KeySet deleteKey(KeySet& keySet, const Key& key)
-	{
-		cursor_t cursor = keySet.getCursor ();
-		keySet.rewind ();
-
-		Key current;
-		KeySet result;
-		while ((current = keySet.next ()))
-		{
-			if (current != key) result.append (current.dup ());
-		}
-
-		keySet.setCursor (cursor);
-		return result;
-	}
-
 	virtual void testConflictMeta(const Key& key, ConflictOperation our, ConflictOperation their)
 	{
 		Key const ourConflict = key.getMeta<Key const> ("conflict/operation/our");
@@ -136,8 +119,9 @@ TEST_F(MergeTest, EqualKeySetsMerge)
 TEST_F(MergeTest, SameDeletedKeyMerge)
 {
 
-	ours = deleteKey (ours, Key ("user/parento/config/key1"));
-	theirs = deleteKey (theirs, Key ("user/parentt/config/key1"));
+	ours.lookup ("user/parento/config/key1", KDB_O_POP);
+	theirs.lookup ("user/parentt/config/key1", KDB_O_POP);
+	theirs.lookup ("user/parentt/config/key1", KDB_O_POP);
 
 	MergeResult result = ThreeWayMerge::mergeKeySet (base, ours, theirs, mergeParent);
 	EXPECT_FALSE(result.hasConflicts()) << "Invalid conflict detected";
@@ -174,7 +158,7 @@ TEST_F(MergeTest, EqualsAddKeyMerge)
 
 TEST_F(MergeTest, DeleteModifyConflict)
 {
-	ours = deleteKey (ours, Key ("user/parento/config/key1"));
+	ours.lookup ("user/parento/config/key1", KDB_O_POP);
 	theirs.lookup ("user/parentt/config/key1").setString ("modifiedvalue");
 
 	MergeResult result = ThreeWayMerge::mergeKeySet (base, ours, theirs, mergeParent);
@@ -191,7 +175,7 @@ TEST_F(MergeTest, DeleteModifyConflict)
 TEST_F(MergeTest, ModifyDeleteConflict)
 {
 	ours.lookup ("user/parento/config/key1").setString ("modifiedvalue");
-	theirs = deleteKey (theirs, Key ("user/parentt/config/key1"));
+	theirs.lookup ("user/parentt/config/key1", KDB_O_POP);
 
 	MergeResult result = ThreeWayMerge::mergeKeySet (base, ours, theirs, mergeParent);
 	ASSERT_TRUE(result.hasConflicts())<< "No conflict detected although conflicts should exist";
@@ -207,7 +191,7 @@ TEST_F(MergeTest, ModifyDeleteConflict)
 
 TEST_F(MergeTest, DeleteEqualsMerges)
 {
-	ours = deleteKey (ours, Key ("user/parento/config/key1"));
+	ours.lookup ("user/parento/config/key1", KDB_O_POP);
 
 	MergeResult result = ThreeWayMerge::mergeKeySet (base, ours, theirs, mergeParent);
 	EXPECT_FALSE(result.hasConflicts()) << "Invalid conflict detected";
@@ -221,7 +205,7 @@ TEST_F(MergeTest, DeleteEqualsMerges)
 
 TEST_F(MergeTest, EqualsDeleteMerges)
 {
-	theirs = deleteKey (theirs, Key ("user/parentt/config/key1"));
+	theirs.lookup ("user/parentt/config/key1", KDB_O_POP);
 
 	MergeResult result = ThreeWayMerge::mergeKeySet (base, ours, theirs, mergeParent);
 	EXPECT_FALSE(result.hasConflicts()) << "Invalid conflict detected";
