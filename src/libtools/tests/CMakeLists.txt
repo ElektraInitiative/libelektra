@@ -45,3 +45,8 @@ if (ENABLE_CXX11)
 		do_tool_test (${name})
 	endforeach (file ${TESTS})
 endif (ENABLE_CXX11)
+
+
+if (ENABLE_GTEST)
+	add_subdirectory(gtest)
+endif(ENABLE_GTEST)
