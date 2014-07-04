@@ -28,7 +28,11 @@ namespace tools
 /** Creates a new backend with a given name and mountpoint.
  * Parameters are needed for serialisation only, so you can
  * keep them empty if you do not want to serialise. */
+<<<<<<< HEAD
 Backend::Backend(string name_, string mp_) :
+=======
+Backend::Backend(string name_, string mp_):
+>>>>>>> 2f591c8... Started refactoring the merge code (along with unit tests)
 	name(name_), mp(mp_)
 {
 }
