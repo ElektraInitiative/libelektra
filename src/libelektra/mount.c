@@ -98,7 +98,7 @@ int elektraMountOpen(KDB *kdb, KeySet *config, KeySet *modules, Key *errorKey)
 			{
 				ELEKTRA_ADD_WARNING(24, errorKey, "mounting of backend failed");
 				ret = -1;
-				/* elektraMountBackend might have modified the refcounter. */
+				/* elektraMountBackend modified the refcounter. */
 				backend->refcounter = 1;
 				elektraBackendClose(backend, errorKey);
 				continue;
@@ -143,8 +143,9 @@ int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey)
 	if (backend != kdb->defaultBackend)
 	{
 		/* It is not reachable, mount it */
-		++ kdb->defaultBackend->refcounter;
 		elektraMountBackend (kdb, kdb->defaultBackend, errorKey);
+		/*elektraMountBackend will set refcounter*/
+		++ kdb->defaultBackend->refcounter;
 		kdb->split->syncbits[kdb->split->size-1] = 2;
 	} else {
 		/* Lets add the reachable default backend to split.
@@ -218,6 +219,12 @@ int elektraMountVersion (KDB *kdb, Key *errorKey)
 
 /**
  * Mounts a backend into the trie.
+ *
+ * @pre user must pass correctly allocated backend
+ * @post sets reference counter of backend
+ *
+ * @warning in case of default backends, the reference counter needs to
+ * be modified *after* calling elektraMountBackend.
  *
  * @param kdb the handle to work with
  * @param backend the backend to mount
