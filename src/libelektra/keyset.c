@@ -639,12 +639,14 @@ ssize_t ksSearchInternal(const KeySet *ks, const Key *toAppend)
  *
  * The KeySet internal cursor will be set to the new key.
  *
+ * It is save to use ksAppendKey(ks, keyNew(..)).
+ *
  *
  * @return the size of the KeySet after insertion
  * @return -1 on NULL pointers
  * @return -1 if insertion failed, the key will be deleted then.
  * @param ks KeySet that will receive the key
- * @param toAppend Key that will be appended to ks
+ * @param toAppend Key that will be appended to ks or deleted
  * @see ksAppend(), keyNew(), ksDel()
  * @see keyIncRef()
  *
@@ -657,6 +659,7 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
 	if (!toAppend) return -1;
 	if (!toAppend->key)
 	{
+		// needed for ksAppendKey(ks, keyNew(0))
 		keyDel (toAppend);
 		return -1;
 	}
