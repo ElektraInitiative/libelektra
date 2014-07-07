@@ -187,6 +187,11 @@ KDB * kdbOpen(Key *errorKey)
 		ELEKTRA_ADD_WARNING(17, errorKey,
 				"kdbGet() of " KDB_KEY_MOUNTPOINTS
 				" failed");
+		elektraBackendClose(handle->defaultBackend, errorKey);
+		elektraSplitDel(handle->split);
+		handle->defaultBackend = 0;
+		handle->trie = 0;
+
 		keySetName(errorKey, keyName(initialParent));
 		keyDel(initialParent);
 		return handle;
