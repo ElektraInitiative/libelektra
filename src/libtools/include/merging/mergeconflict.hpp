@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Implements a way to build and deal with a backend
+ * \brief Models a merge conflict
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
@@ -24,7 +24,7 @@ namespace merging
 
 enum ConflictOperation
 {
-	ADD, DELETE, MODIFY, META
+	ADD, DELETE, MODIFY, META, SAME
 };
 
 class InvalidConflictOperation: public std::runtime_error
@@ -52,6 +52,8 @@ public:
 			return "modify";
 		case META:
 			return "meta";
+		case SAME:
+			return "same";
 		}
 	}
 
@@ -61,6 +63,7 @@ public:
 		if (name == "delete") return DELETE;
 		if (name == "modify") return MODIFY;
 		if (name == "meta") return META;
+		if (name == "same") return SAME;
 		throw InvalidConflictOperation (
 				"The conflict operation " + name + " is unknown");
 	}

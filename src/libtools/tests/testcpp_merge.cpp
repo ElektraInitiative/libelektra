@@ -90,7 +90,8 @@ int main(void){
 	cout << endl << "Ours:" << endl << o << endl;	
 	cout << endl << "Theirs:" << endl << t << endl;
 		
-	MergeResult m = ThreeWayMerge::mergeKeySet(b, o, t, merge_root);
+	ThreeWayMerge merger;
+	MergeResult m = merger.mergeKeySet(b, o, t, merge_root);
 		
 	cout << endl << "Merged:" << endl << m.getMergedKeys() << endl;
 

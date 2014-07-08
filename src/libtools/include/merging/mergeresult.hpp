@@ -1,11 +1,12 @@
 /**
  * \file
  *
- * \brief Implements a way to build and deal with a backend
+ * \brief Class modelling the result of a three way merge
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
  */
+
 #ifndef MERGERESULT_HPP_
 #define MERGERESULT_HPP_
 
@@ -32,14 +33,22 @@ public:
 
 	void addConflict(Key& key, ConflictOperation ourOperation,
 			ConflictOperation theirOperation);
+
+	void resolveConflict(Key& key);
+
+	bool hasConflicts()
+	{
+		return conflictSet.size () != 0;
+	}
+
 	void addMergeKey(Key& key)
 	{
 		mergedKeys.append (key);
 	}
-	void removeMergeKey(Key& key);
-	bool hasConflicts()
+
+	void removeMergeKey(Key& key)
 	{
-		return conflictSet.size () != 0;
+		mergedKeys.lookup(key, KDB_O_POP);
 	}
 
 	KeySet getConflictSet()

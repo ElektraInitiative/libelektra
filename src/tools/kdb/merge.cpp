@@ -61,7 +61,8 @@ int MergeCommand::execute(Cmdline const& cl)
 	original.append (base);
 	original.append (ours);
 	original.append (theirs);
-	MergeResult result = ThreeWayMerge::mergeKeySet (
+	ThreeWayMerge merger;
+	MergeResult result = merger.mergeKeySet (
 			MergeTask (
 					BaseMergeKeys (base, mergeRoot),
 					OurMergeKeys (ours, ourRoot),
