@@ -38,8 +38,8 @@ protected:
 class BaseMergeKeys: public MergeKeys
 {
 public:
-	BaseMergeKeys(const KeySet& keys, const Key& parentKey) :
-			MergeKeys (keys, parentKey)
+	BaseMergeKeys(const KeySet& _keys, const Key& _parentKey) :
+			MergeKeys (_keys, _parentKey)
 	{
 	}
 };
@@ -47,8 +47,8 @@ public:
 class TheirMergeKeys: public MergeKeys
 {
 public:
-	TheirMergeKeys(const KeySet& keys, const Key& parentKey) :
-			MergeKeys (keys, parentKey)
+	TheirMergeKeys(const KeySet& _keys, const Key& _parentKey) :
+			MergeKeys (_keys, _parentKey)
 	{
 	}
 
@@ -57,8 +57,8 @@ public:
 class OurMergeKeys: public MergeKeys
 {
 public:
-	OurMergeKeys(const KeySet& keys, const Key& parentKey) :
-			MergeKeys (keys, parentKey)
+	OurMergeKeys(const KeySet& _keys, const Key& _parentKey) :
+			MergeKeys (_keys, _parentKey)
 	{
 	}
 };
