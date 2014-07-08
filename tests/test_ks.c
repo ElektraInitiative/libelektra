@@ -2492,23 +2492,25 @@ void test_ksToArray()
 			keyNew ("user/test3", KEY_END),
 	KS_END);
 
-	Key **keyArray = elektraKsToArray(ks);
+	Key **keyArray = calloc (ksGetSize (ks), sizeof (Key *));
+	elektraKsToMemArray(ks, keyArray);
 
 	succeed_if (!strcmp ("user/test1", keyName(keyArray[0])), "first key in array incorrect");
 	succeed_if (!strcmp ("user/test2", keyName(keyArray[1])), "second key in array incorrect");
 	succeed_if (!strcmp ("user/test3", keyName(keyArray[2])), "third key in array incorrect");
-	free (keyArray);
 
 	/* test if cursor is restored */
 	ksNext(ks);
 	cursor_t cursor = ksGetCursor(ks);
-	keyArray = elektraKsToArray(ks);
-	free (keyArray);
+	elektraKsToMemArray(ks, keyArray);
+
 	succeed_if (ksGetCursor(ks) == cursor, "cursor was not restored");
 
-	succeed_if (!elektraKsToArray(0), "wrong result on null pointer");
-	succeed_if (!elektraKsToArray(ksNew(0)), "wrong result on empty keyset");
+	succeed_if (elektraKsToMemArray(0, keyArray) < 0, "wrong result on null pointer");
+	succeed_if (elektraKsToMemArray(ks, 0) < 0, "wrong result on null buffer");
+	succeed_if (elektraKsToMemArray(ksNew(0), keyArray) == 0, "wrong result on empty keyset");
 
+	free (keyArray);
 	ksDel (ks);
 }
 
@@ -2516,6 +2518,10 @@ void test_keyCmpOrder()
 {
 	Key *k1 = keyNew ("user/a", KEY_META, "order", "20", KEY_END);
 	Key *k2 = keyNew ("user/b", KEY_META, "order", "10", KEY_END);
+
+	succeed_if (elektraKeyCmpOrder(0, 0) == 0, "null keys are not equal");
+	succeed_if (elektraKeyCmpOrder(k1, 0) == 1, "not null key is not greater than null key");
+	succeed_if (elektraKeyCmpOrder(0, k1) == -1, "null key is not smaller than not null key");
 
 	succeed_if (elektraKeyCmpOrder(k1, k2) > 0, "user/a is not greater than user/b");
 	succeed_if (elektraKeyCmpOrder(k2, k1) < 0, "user/b is not smaller than user/a");

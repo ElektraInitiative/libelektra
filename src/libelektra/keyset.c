@@ -500,13 +500,22 @@ int keyCmp (const Key *k1, const Key *k2)
  *
  * @return a number less than, equal to or greater than zero if
  *    the order of k1 is found, respectively, to be less than,
- *    to match, or be greater than the order of k2. If one key
- *    does have an order metadata but the other has not, the key
- *    with the metadata is considered greater. If no key has metadata,
+ *    to match, or be greater than the order of k2. If one key is
+ *    NULL, but the other isn't, the key which is not NULL is considered
+ *    to be greater. If both keys are NULL, they are
+ *    considered to be equal. If one key does have an order
+ *    metadata but the other has not, the key with the metadata
+ *    is considered greater. If no key has metadata,
  *    they are considered to be equal.
  */
 int elektraKeyCmpOrder(const Key *ka, const Key *kb)
 {
+
+	if (!ka && !kb) return 0;
+
+	if (ka && !kb) return 1;
+
+	if (!ka && kb) return -1;
 
 	int aorder = -1;
 	int border = -1;
@@ -517,7 +526,7 @@ int elektraKeyCmpOrder(const Key *ka, const Key *kb)
 	if (kam) aorder = atoi (keyString (kam));
 	if (kbm) border = atoi (keyString (kbm));
 
-	if (aorder > 0 && border > 0) return aorder -border;
+	if (aorder > 0 && border > 0) return aorder - border;
 
 	if (aorder < 0 && border < 0) return 0;
 
@@ -1016,39 +1025,41 @@ Key *ksPop(KeySet *ks)
  * The keys are not copied, calling keyDel may remove them from
  * the keyset.
  *
- * The caller is responsible for freeing the returned array.
+ * The size of the buffer can be easily allocated via ksGetSize. Example:
+ * @code
+ * KeySet *ks = somekeyset;
+ * Key **keyArray = calloc (ksGetSize(ks), sizeof (Key *));
+ * elektraKsToMemArray (ks, keyArray);
+ * ... work with the array ...
+ * free (keyArray);
+ * @endcode
  *
  * @param ks the keyset object to work with
- * @return an array containing the Keys from the KeySet
- * @return NULL if @p is empty or on NULL pointers or if a
- * memory allocation error occurs
+ * @param buffer the buffer to put the result into
+ * @return the number of elements in the array if successful
+ * @return a negative number on null pointers or if an error occurred
  */
-Key **elektraKsToArray(KeySet *ks)
+int elektraKsToMemArray(KeySet *ks, Key **buffer)
 {
-	if (!ks) return 0;
+	if (!ks) return -1;
+	if (!buffer) return -1;
 
-	Key **result;
-	size_t arraySize = ksGetSize (ks);
+	/* clear the received buffer */
+	memset (buffer, 0, ksGetSize (ks) * sizeof(Key *));
 
-	if (arraySize <= 0) return 0;
-
-	result = calloc (arraySize, sizeof(Key *));
-
-	if (result == 0) return 0;
-
-	cursor_t cursor = ksGetCursor(ks);
+	cursor_t cursor = ksGetCursor (ks);
 	ksRewind (ks);
 	size_t index = 0;
 
 	Key *key;
 	while ((key = ksNext (ks)) != 0)
 	{
-		result[index] = key;
+		buffer[index] = key;
 		++index;
 	}
-	ksSetCursor(ks, cursor);
+	ksSetCursor (ks, cursor);
 
-	return result;
+	return index;
 }
 
 

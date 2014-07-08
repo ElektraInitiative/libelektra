@@ -42,7 +42,7 @@ struct OrphanSearch
 	Key *parentKey;
 };
 
-typedef int (*ForeachCallback)(augeas *, const char *, void *);
+typedef int (*ForeachAugNodeClb)(augeas *, const char *, void *);
 
 void keySetOrderMeta(Key *key, int order)
 {
@@ -160,7 +160,7 @@ static int removeOrphan(augeas *handle, const char *treePath, void *data)
 }
 
 static int foreachAugeasNode(augeas *handle, const char *treePath,
-		ForeachCallback callback, void *callbackData)
+		ForeachAugNodeClb callback, void *callbackData)
 {
 	char *matchPath;
 	asprintf (&matchPath, "%s/*", treePath);
@@ -218,7 +218,7 @@ static char *loadFile(FILE *fh)
 		if (feof (fh) || ferror (fh) || readBytes != fileSize) return 0;
 
 		/* null terminate the string, as fread doesn't do it */
-		(content)[fileSize] = 0;
+		content[fileSize] = 0;
 	}
 	else if (fileSize == 0)
 	{
@@ -263,9 +263,14 @@ static int saveTree(augeas* augeasHandle, KeySet* ks, const char* lensPath,
 
 	size_t prefixSize = keyGetNameSize (parentKey) - 1;
 	size_t arraySize = ksGetSize (ks);
-	Key **keyArray = elektraKsToArray (ks);
+	Key **keyArray = calloc (ksGetSize(ks), sizeof (Key *));
+	ret = elektraKsToMemArray (ks, keyArray);
 
-	if (keyArray == 0) return -1;
+	if (ret < 0)
+	{
+		free (keyArray);
+		return -1;
+	}
 
 	qsort (keyArray, arraySize, sizeof(Key *), keyCmpOrderWrapper);
 
