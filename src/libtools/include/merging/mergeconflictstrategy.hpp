@@ -28,6 +28,10 @@ class MergeConflictStrategy
 public:
 	virtual ~MergeConflictStrategy() {};
 	virtual void resolveConflict(const MergeTask& task, Key& conflictKey, MergeResult& result) = 0;
+
+protected:
+	virtual ConflictOperation getOurConflictOperation(Key& conflictKey);
+	virtual ConflictOperation getTheirConflictOperation(Key& conflictKey);
 };
 
 }

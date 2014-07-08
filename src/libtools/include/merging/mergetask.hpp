@@ -25,8 +25,8 @@ namespace merging
 class MergeKeys
 {
 public:
-	const KeySet& keys;
-	const Key& parent;
+	const KeySet keys;
+	const Key parent;
 
 protected:
 	MergeKeys(const KeySet& _keys, const Key& _parentKey) :
@@ -66,13 +66,13 @@ public:
 class MergeTask
 {
 public:
-	const KeySet& base;
-	const KeySet& ours;
-	const KeySet& theirs;
-	const Key& baseParent;
-	const Key& ourParent;
-	const Key& theirParent;
-	const Key& mergeRoot;
+	KeySet base;
+	KeySet ours;
+	KeySet theirs;
+	Key baseParent;
+	Key ourParent;
+	Key theirParent;
+	Key mergeRoot;
 
 	MergeTask(const BaseMergeKeys& _base, const OurMergeKeys& _ours,
 			const TheirMergeKeys& _theirs, const Key& _mergeRoot) :
