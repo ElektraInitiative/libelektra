@@ -55,6 +55,8 @@ public:
 		case SAME:
 			return "same";
 		}
+
+		return "unknown";
 	}
 
 	static ConflictOperation getFromName(std::string name)
