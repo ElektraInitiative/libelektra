@@ -22,34 +22,27 @@ protected:
 
 TEST_F(ThreeWayMergeTest, EqualKeySetsMerge)
 {
-
-	MergeResult result = merger.mergeKeySet (base, ours, theirs, mergeParent);
-	EXPECT_FALSE(result.hasConflicts()) << "Invalid conflict detected";
-
-	KeySet merged = result.getMergedKeys ();
-
-	EXPECT_EQ(5, merged.size ());
-	compareAllKeys (merged);
-
-}
-
-TEST_F(ThreeWayMergeTest, SameDeletedKeyMerge)
-{
-
-	ours.lookup ("user/parento/config/key1", KDB_O_POP);
-	theirs.lookup ("user/parentt/config/key1", KDB_O_POP);
-	theirs.lookup ("user/parentt/config/key1", KDB_O_POP);
-
 	MergeResult result = merger.mergeKeySet (base, ours, theirs, mergeParent);
 	EXPECT_FALSE(result.hasConflicts()) << "Invalid conflict detected";
 
 	KeySet merged = result.getMergedKeys ();
 
 	EXPECT_EQ(4, merged.size ());
-	compareAllExceptKey1 (merged);
+	compareAllKeys (merged);
 }
 
+TEST_F(ThreeWayMergeTest, SameDeletedKeyMerge)
+{
+	ours.lookup ("user/parento/config/key1", KDB_O_POP);
+	theirs.lookup ("user/parentt/config/key1", KDB_O_POP);
 
+	MergeResult result = merger.mergeKeySet (base, ours, theirs, mergeParent);
+
+	EXPECT_FALSE(result.hasConflicts()) << "Invalid conflict detected";
+	KeySet merged = result.getMergedKeys ();
+	EXPECT_EQ(3, merged.size ());
+	compareAllExceptKey1 (merged);
+}
 
 TEST_F(ThreeWayMergeTest, DeleteModifyConflict)
 {
@@ -57,13 +50,13 @@ TEST_F(ThreeWayMergeTest, DeleteModifyConflict)
 	theirs.lookup ("user/parentt/config/key1").setString ("modifiedvalue");
 
 	MergeResult result = merger.mergeKeySet (base, ours, theirs, mergeParent);
-	EXPECT_TRUE(result.hasConflicts()) << "No conflict detected although conflicts should exist";
 
+	EXPECT_TRUE(result.hasConflicts()) << "No conflict detected although conflicts should exist";
 	KeySet conflicts = result.getConflictSet ();
 	ASSERT_EQ(1, conflicts.size())<< "Wrong number of conflicts";
 	testConflictMeta (conflicts.at (0), DELETE, MODIFY);
-
 	KeySet merged = result.getMergedKeys ();
+	EXPECT_EQ(3, merged.size ());
 	compareAllExceptKey1 (merged);
 }
 
@@ -80,10 +73,9 @@ TEST_F(ThreeWayMergeTest, ModifyDeleteConflict)
 	testConflictMeta (conflicts.at (0), MODIFY, DELETE);
 
 	KeySet merged = result.getMergedKeys ();
-	EXPECT_EQ(4, merged.size ());
+	EXPECT_EQ(3, merged.size ());
 	compareAllExceptKey1 (merged);
 }
-
 
 TEST_F(ThreeWayMergeTest, SameModifyConflict)
 {
@@ -99,7 +91,7 @@ TEST_F(ThreeWayMergeTest, SameModifyConflict)
 
 	KeySet merged = result.getMergedKeys ();
 
-	EXPECT_EQ(4, merged.size ());
+	EXPECT_EQ(3, merged.size ());
 	compareAllExceptKey1 (merged);
 }
 
@@ -113,10 +105,10 @@ TEST_F(ThreeWayMergeTest, SameAddedEqualValueMerges)
 
 	KeySet merged = result.getMergedKeys ();
 
-	EXPECT_EQ(6, merged.size ());
+	EXPECT_EQ(5, merged.size ());
 	compareAllKeys (merged);
 
-	compareKeys (Key ("user/parentm/config/key5", KEY_VALUE, "newvalue", KEY_END), merged.at (5));
+	compareKeys (Key ("user/parentm/config/key5", KEY_VALUE, "newvalue", KEY_END), merged.lookup (mk5));
 }
 
 TEST_F(ThreeWayMergeTest, SameAddedDifferentValueConflict)
@@ -134,7 +126,7 @@ TEST_F(ThreeWayMergeTest, SameAddedDifferentValueConflict)
 
 	KeySet merged = result.getMergedKeys ();
 
-	EXPECT_EQ(5, merged.size ());
+	EXPECT_EQ(4, merged.size ());
 
 	compareAllKeys (merged);
 }
@@ -151,5 +143,6 @@ TEST_F(ThreeWayMergeTest, SameMetaKeyModifyConflict)
 	EXPECT_EQ(1, conflicts.size ());
 	testConflictMeta (conflicts.at (0), META, META);
 	KeySet merged = result.getMergedKeys ();
+	EXPECT_EQ(3, merged.size ());
 	compareAllExceptKey1 (merged);
 }

@@ -43,6 +43,9 @@ void ThreeWayMerge::detectConflicts(const MergeTask& task, MergeResult& mergeRes
 
 	while ((our = task.ours.next ()))
 	{
+		if (our.getName() == task.ourParent.getName())
+			continue;
+
 		string theirLookup = rebasePath (our, task.ourParent, task.theirParent);
 		Key theirLookupResult = task.theirs.lookup (theirLookup);
 

@@ -32,61 +32,61 @@ protected:
 
 TEST_F(OneSideStrategyTest, BaseWinsCorrectly)
 {
-	base.lookup ("user/parentb/config/key1").setString("valueb");
-	ours.lookup ("user/parento/config/key1").setString("valueo");
-	theirs.lookup ("user/parentt/config/key1").setString("valuet");
-	Key conflictKey = mergeKeys.lookup ("user/parentm/config/key1");
+	base.lookup ("user/parentb/config/key1").setString ("valueb");
+	ours.lookup ("user/parento/config/key1").setString ("valueo");
+	theirs.lookup ("user/parentt/config/key1").setString ("valuet");
+	Key conflictKey = mk1;
 	result.addConflict (conflictKey, MODIFY, MODIFY);
 	conflictKey = result.getConflictSet ().at (0);
 
-	OneSideStrategy strategy(BASE);
+	OneSideStrategy strategy (BASE);
 	strategy.resolveConflict (task, conflictKey, result);
 
 	EXPECT_FALSE(result.hasConflicts()) << "Invalid conflict detected";
 	KeySet merged = result.getMergedKeys ();
 	cout << merged << endl;
-	EXPECT_EQ(5, merged.size ());
+	EXPECT_EQ(4, merged.size ());
 
-	compareKeys (Key ("user/parentm/config/key1", KEY_VALUE, "valueb", KEY_END), merged.at(1));
+	compareKeys (Key ("user/parentm/config/key1", KEY_VALUE, "valueb", KEY_END), merged.lookup (mk1));
 }
 
 TEST_F(OneSideStrategyTest, OursWinsCorrectly)
 {
-	base.lookup ("user/parentb/config/key1").setString("valueb");
-	ours.lookup ("user/parento/config/key1").setString("valueo");
-	theirs.lookup ("user/parentt/config/key1").setString("valuet");
-	Key conflictKey = mergeKeys.lookup ("user/parentm/config/key1");
+	base.lookup ("user/parentb/config/key1").setString ("valueb");
+	ours.lookup ("user/parento/config/key1").setString ("valueo");
+	theirs.lookup ("user/parentt/config/key1").setString ("valuet");
+	Key conflictKey = mk1;
 	result.addConflict (conflictKey, MODIFY, MODIFY);
 	conflictKey = result.getConflictSet ().at (0);
 
-	OneSideStrategy strategy(OURS);
+	OneSideStrategy strategy (OURS);
 	strategy.resolveConflict (task, conflictKey, result);
 
 	EXPECT_FALSE(result.hasConflicts()) << "Invalid conflict detected";
 	KeySet merged = result.getMergedKeys ();
 	cout << merged << endl;
-	EXPECT_EQ(5, merged.size ());
+	EXPECT_EQ(4, merged.size ());
 
-	compareKeys (Key ("user/parentm/config/key1", KEY_VALUE, "valueo", KEY_END), merged.at(1));
+	compareKeys (Key ("user/parentm/config/key1", KEY_VALUE, "valueo", KEY_END), merged.lookup (mk1));
 }
 
 TEST_F(OneSideStrategyTest, TheirsWinsCorrectly)
 {
-	base.lookup ("user/parentb/config/key1").setString("valueb");
-	ours.lookup ("user/parento/config/key1").setString("valueo");
-	theirs.lookup ("user/parentt/config/key1").setString("valuet");
-	Key conflictKey = mergeKeys.lookup ("user/parentm/config/key1");
+	base.lookup ("user/parentb/config/key1").setString ("valueb");
+	ours.lookup ("user/parento/config/key1").setString ("valueo");
+	theirs.lookup ("user/parentt/config/key1").setString ("valuet");
+	Key conflictKey = mk1;
 	result.addConflict (conflictKey, MODIFY, MODIFY);
 	conflictKey = result.getConflictSet ().at (0);
 
-	OneSideStrategy strategy(THEIRS);
+	OneSideStrategy strategy (THEIRS);
 	strategy.resolveConflict (task, conflictKey, result);
 
 	EXPECT_FALSE(result.hasConflicts()) << "Invalid conflict detected";
 	KeySet merged = result.getMergedKeys ();
 	cout << merged << endl;
-	EXPECT_EQ(5, merged.size ());
+	EXPECT_EQ(4, merged.size ());
 
-	compareKeys (Key ("user/parentm/config/key1", KEY_VALUE, "valuet", KEY_END), merged.at(1));
+	compareKeys (Key ("user/parentm/config/key1", KEY_VALUE, "valuet", KEY_END), merged.lookup (mk1));
 }
 

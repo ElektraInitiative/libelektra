@@ -25,33 +25,31 @@ protected:
 
 	MetaMergeStrategyTest() : task (MergeTask (BaseMergeKeys (base, baseParent),
 				OurMergeKeys (ours, ourParent),
-				TheirMergeKeys (theirs, theirParent),
-				mergeParent))
+				TheirMergeKeys (theirs, theirParent), mergeParent))
 	{
-		result = MergeResult(conflicts, mergeKeys);
+		result = MergeResult (conflicts, mergeKeys);
 	}
 };
 
 TEST_F(MetaMergeStrategyTest, MergesMetaWithInnerStrategy)
 {
-	base.lookup ("user/parentb/config/key1").setMeta("testmeta", "valueb");
-	ours.lookup ("user/parento/config/key1").setMeta("testmeta", "valueo");
-	theirs.lookup ("user/parentt/config/key1").setMeta("testmeta", "valuet");
-	Key conflictKey = mergeKeys.lookup ("user/parentm/config/key1");
+	base.lookup ("user/parentb/config/key1").setMeta ("testmeta", "valueb");
+	ours.lookup ("user/parento/config/key1").setMeta ("testmeta", "valueo");
+	theirs.lookup ("user/parentt/config/key1").setMeta ("testmeta", "valuet");
+	Key conflictKey = mk1;
 	result.addConflict (conflictKey, META, META);
 	conflictKey = result.getConflictSet ().at (0);
 
 	ThreeWayMerge merger;
-	merger.addConflictStrategy(new OneSideStrategy (OURS));
-	MetaMergeStrategy metaStrategy(merger);
+	merger.addConflictStrategy (new OneSideStrategy (OURS));
+	MetaMergeStrategy metaStrategy (merger);
 	metaStrategy.resolveConflict (task, conflictKey, result);
 
 	EXPECT_FALSE(result.hasConflicts()) << "Invalid conflict detected";
 	KeySet merged = result.getMergedKeys ();
 	cout << merged << endl;
-	EXPECT_EQ(5, merged.size ());
+	EXPECT_EQ(4, merged.size ());
 
-	EXPECT_EQ("valueo", merged.at(1).getMeta<string>("testmeta"));
+	EXPECT_EQ("valueo", merged.lookup (mk1).getMeta<string> ("testmeta"));
 }
-
 
