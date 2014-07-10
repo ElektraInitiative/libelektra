@@ -19,7 +19,7 @@ applications' configurations, leveraging easy application integration.
  * Elektra (except for some plugins) has no external dependency.
  * Elektra is suitable for embedded systems and early boot stage programs.
  * Elektra supports comments and other non-configuration information by meta data.
- * Elektra can import and export configuration files in any [src/plugins#Storage](supported format).
+ * Elektra can import and export configuration files in any [supported formats](src/plugins#Storage).
  * Elektra is able to log and notify other software on any configuration changes using [Dbus](http://freedesktop.org/wiki/Software/dbus/).
  * Elektra can improve robustness by rejecting invalid configuration.
  * Elektra provides different mechanisms to locate configuration files.
