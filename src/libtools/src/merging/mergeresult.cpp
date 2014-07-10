@@ -22,10 +22,12 @@ namespace merging
 
 MergeResult::MergeResult()
 {
+	resolvedKeys = 0;
 }
 
 MergeResult::MergeResult(KeySet& _conflictSet, KeySet& _mergedKeys)
 {
+	resolvedKeys = 0;
 	conflictSet = _conflictSet;
 	mergedKeys = _mergedKeys;
 }
@@ -61,7 +63,8 @@ void MergeResult::resolveConflict(Key& key)
 		}
 	}
 
-	this->conflictSet.lookup(key, KDB_O_POP);
+	conflictSet.lookup(key, KDB_O_POP);
+	resolvedKeys++;
 }
 
 }

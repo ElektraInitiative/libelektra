@@ -20,60 +20,89 @@ int MergeCommand::execute(Cmdline const& cl)
 {
 	int ret = 0;
 
-	if (cl.arguments.size () != 4)
+	if (cl.arguments.size () < 3)
 	{
-		throw invalid_argument ("wrong number of arguments, 4 needed");
+		throw invalid_argument ("wrong number of arguments, 3 needed");
 	}
 
-	Key mergeRoot (cl.arguments[0], KEY_END);
-	if (!mergeRoot.isValid ())
+	Key ourRoot (cl.arguments[0], KEY_END);
+	if (!ourRoot.isValid ())
 	{
 		throw invalid_argument (cl.arguments[0] + " is not a valid keyname");
 	}
 
-	Key ourRoot (cl.arguments[1], KEY_END);
-	if (!ourRoot.isValid ())
+	Key theirRoot (cl.arguments[1], KEY_END);
+	if (!theirRoot.isValid ())
 	{
 		throw invalid_argument (cl.arguments[1] + " is not a valid keyname");
 	}
 
-	Key theirRoot (cl.arguments[2], KEY_END);
-	if (!theirRoot.isValid ())
+	Key baseRoot (cl.arguments[2], KEY_END);
+	if (!baseRoot.isValid ())
 	{
 		throw invalid_argument (cl.arguments[2] + " is not a valid keyname");
 	}
 
-	Key baseRoot (cl.arguments[3], KEY_END);
-	if (!baseRoot.isValid ())
-	{
-		throw invalid_argument (cl.arguments[3] + " is not a valid keyname");
-	}
+	Key mergeRoot;
 
-	KeySet original;
+	if (cl.arguments.size() >= 4)
+	{
+		mergeRoot = Key (cl.arguments[3], KEY_END);
+
+		if (!mergeRoot.isValid ())
+		{
+			throw invalid_argument (cl.arguments[3] + "is not a valid keyname");
+		}
+ 	}
+	else
+ 	{
+		if (cl.overrideBase)
+		{
+			mergeRoot = baseRoot;
+		}
+		else
+		{
+			cerr << "if you really want to override the base keys, specifiy the -b option" << endl;
+			return -1;
+		}
+ 	}
+
 	KeySet base;
 	KeySet ours;
 	KeySet theirs;
 
-	kdb.get (original, baseRoot);
-	base = original.cut (mergeRoot);
-	ours = original.cut (ourRoot);
-	theirs = original.cut (theirRoot);
-	original.append (base);
-	original.append (ours);
-	original.append (theirs);
+	kdb.get (base, baseRoot);
+	kdb.get (ours, ourRoot);
+	kdb.get (theirs, theirRoot);
+
+	base = base.cut (baseRoot);
+	ours = ours.cut (ourRoot);
+	theirs = theirs.cut (theirRoot);
+
+	// TODO: check for last modification time (otherwise the result flaps)
 	ThreeWayMerge merger;
+	merger.addConflictStrategy(new AutoMergeStrategy());
 	MergeResult result = merger.mergeKeySet (
 			MergeTask (
-					BaseMergeKeys (base, mergeRoot),
+					BaseMergeKeys (base, baseRoot),
 					OurMergeKeys (ours, ourRoot),
-					TheirMergeKeys (theirs, theirRoot), baseRoot));
+					TheirMergeKeys (theirs, theirRoot), mergeRoot));
 
 	KeySet empty;
-	if (result.hasConflicts ())
+	if (!result.hasConflicts ())
 	{
-		cerr << "Conflicts where detected that could not be resolved automatically:" << endl;
+		KeySet resultKeys = result.getMergedKeys();
+		kdb.set (resultKeys, mergeRoot);
 
+		cout << resultKeys.size() << " keys in the result" << endl;
+		cout << result.getNumberOfEqualKeys() << " keys were equal" << endl;
+		cout << result.getNumberOfResolvedKeys() << " keys were resolved" << endl;
+	}
+	else
+	{
 		KeySet conflicts = result.getConflictSet();
+
+		cerr << conflicts.size() + " conflicts were detected that could not be resolved automatically:" << endl;
 		conflicts.rewind();
 		Key current;
 		while ((current = conflicts.next()))
@@ -90,8 +119,6 @@ int MergeCommand::execute(Cmdline const& cl)
 		ret = -1;
 	}
 
-	original.append (result.getMergedKeys ());
-	kdb.set (original, baseRoot);
 
 	return ret;
 }

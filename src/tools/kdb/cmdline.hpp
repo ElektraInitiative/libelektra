@@ -47,6 +47,7 @@ public:
 	bool test; /*!< Run some self tests instead of the normal action. */
 	bool recursive; /*!< Recursive mode. */
 	std::string strategy; /*!< Merging strategy. */
+	bool overrideBase; /*!< Override the base with the merge result */
 	bool verbose; /*!< Be more verbose. */
 	bool version; /*!< Return version info instead of the normal action.. */
 

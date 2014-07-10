@@ -55,14 +55,26 @@ public:
 	{
 		return conflictSet;
 	}
+
 	KeySet getMergedKeys()
 	{
 		return mergedKeys;
 	}
 
+	// TODO: test these functions
+	unsigned int getNumberOfResolvedKeys()
+	{
+		return resolvedKeys;
+	}
+
+	unsigned int getNumberOfEqualKeys()
+	{
+		return mergedKeys.size() - resolvedKeys - conflictSet.size();
+	}
 private:
 	KeySet conflictSet;
 	KeySet mergedKeys;
+	unsigned int resolvedKeys;
 
 	void addConflictMeta(Key& key, std::string const & who,
 			ConflictOperation operation);

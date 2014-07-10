@@ -4,6 +4,7 @@
 #include <command.hpp>
 #include <kdb.hpp>
 #include <merging/threewaymerge.hpp>
+#include <merging/automergestrategy.hpp>
 
 class MergeCommand : public Command
 {
@@ -17,12 +18,12 @@ public:
 
 	virtual std::string getShortOptions()
 	{
-		return "Htsv";
+		return "Htsvb";
 	}
 
 	virtual std::string getSynopsis()
 	{
-		return "[options] mergepath ourpath theirpath basepath";
+		return "[options] ourpath theirpath basepath [mergepath]";
 	}
 
 	virtual std::string getShortHelpText()
