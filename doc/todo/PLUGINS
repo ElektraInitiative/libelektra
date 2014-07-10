@@ -32,6 +32,9 @@ hostname
 uname also to set
 ulimit
 
+Shell expansion
+Environment expansion
+
 
 
 
@@ -62,6 +65,10 @@ rewrite of metadata to keys
 
 fstab:
 	support for spaces and so on (with \040)
+
+## add Limitations ##
+
+allow to lock down configuration for guis
 
 
 
