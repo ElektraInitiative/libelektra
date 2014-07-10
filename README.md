@@ -12,19 +12,20 @@ applications' configurations, leveraging easy application integration.
 ## Facts and Features ##
 
  * Elektra uses the [BSD licence](doc/COPYING).
- * Elektra implements an API to fully access a global key database.
+ * Elektra implements an [API](http://doc.libelektra.org/api/latest/html/) to fully access a global key database.
  * Elektra supports mounting of existing configuration files into the global key database.
  * Elektra is multi-process safe and can be used in multi-threaded programs.
  * Elektra (except for some plugins) is portable and completely written in Ansi-C99.
  * Elektra (except for some plugins) has no external dependency.
  * Elektra is suitable for embedded systems and early boot stage programs.
  * Elektra supports comments and other non-configuration information by meta data.
- * Elektra can import, export and convert supported configuration files.
+ * Elektra can import and export configuration files in any [src/plugins#Storage](supported format).
  * Elektra is able to log and notify other software on any configuration changes using [Dbus](http://freedesktop.org/wiki/Software/dbus/).
  * Elektra can improve robustness by rejecting invalid configuration.
- * Elektra is able to provide different mechanisms to locate configuration files.
+ * Elektra provides different mechanisms to locate configuration files.
  * Elektra supports different ways to escape and encode content of configuration files.
- * Standard key/value pair hierarchy and semantics are defined within [Freedesktop](http://freedesktop.org).
+ * Elektra provides many powerful [Bindings](src/bindings) to avoid low-level access code.
+ * Elektra provides powerful [Code Generation Techniques](src/tools/gen) for Configuration Access.
 
 
 ## Further Information ##
@@ -93,3 +94,6 @@ If there are no packages available, see the [installation document](doc/INSTALL)
 To start development, just clone the repo and start hacking.
 You should read the [coding document](doc/CODING) and
 [design document](doc/DESIGN) before you issue a pull request, though.
+
+
+Using the [KeySet](http://doc.libelektra.org/api/latest/html/group__keyset.html)
