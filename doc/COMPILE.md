@@ -1,14 +1,16 @@
-= COMPILE =
+# COMPILE #
 
-== DEPENDENCIES ==
+## DEPENDENCIES ##
 
-For the base system you only need cmake and build-essential.
+For the base system you only need cmake and build-essential (make, gcc,
+some unix tools).
 
 To build documentation you need doxygen and graphviz.
 
 To build pdf documentation you need pdflatex with
-  texlive-fonts-recommended
-  texlive-latex-recommended
+
+	texlive-fonts-recommended
+	texlive-latex-recommended
 
 For the debian package, please refer to debian/control (in the debian
 branch).
@@ -18,14 +20,14 @@ plugin.
 
 
 
-== PREPARATION ==
+## PREPARATION ##
 
 Elektra is using cmake.
 Tested are cmake version 2.6-patch 0 and version 2.8.2.
 
-To configure elektra graphically (with curses) run (.. belongs to command):
+To configure Elektra graphically (with curses) run (.. belongs to command):
 
- mkdir build && cd build && ccmake ..
+	mkdir build && cd build && ccmake ..
 
 and press 'c':
 
@@ -33,16 +35,16 @@ and press 'c':
 All options described here, can also be used with cmake rather then
 ccmake (.. belongs to the command!):
 
- mkdir build && cd build && cmake -D<OPTION1>=<VAR1> -D<OPTION2>=<VAR2> ..
+	mkdir build && cd build && cmake -D<OPTION1>=<VAR1> -D<OPTION2>=<VAR2> ..
 
 For information what you can use as OPTION1 and OPTION2 see above.
 Note to pass "" to VAR if it contains ;.
 E.g.:
 
- cmake -DPLUGINS="dump;resolver;yajl" ..
+	cmake -DPLUGINS="dump;resolver;yajl" ..
 
 
-=== COMPILERS ===
+### COMPILERS ###
 
 For supported compilers see the automatic build farm on
 http://build.libelektra.org:8080/
@@ -70,7 +72,7 @@ for example to use gcc-4.3
 
 
 
-=== OPTIONS ===
+### OPTIONS ###
 
 PLUGINS:
 	Because the core of elektra is minimal, plugins are needed to
@@ -99,7 +101,7 @@ KDB_DB_SYSTEM:
 	is the path where the system configuration is searched at runtime
 
 BUILD_DOCUMENTATION: build documentation with doxygen
- the kdb tool does only have the integrated docu at the moment
+	the kdb tool does only have the integrated docu at the moment
 
 
 CMAKE_INSTALL_PREFIX:
@@ -137,9 +139,9 @@ resolved) and then g to generate.  Finally press e to exit.
 
 
 
-== BUILDING ==
+## BUILDING ##
 
-=== NO IDE ===
+### NO IDE ###
 
 To build the source use:
 
@@ -150,7 +152,7 @@ You can pass:
  VERBOSE=1 to see the invocations of the compiler
 
 
-=== CodeBlocks ===
+### CodeBlocks ###
 
 You can build Elektra using Code::Blocks under Gentoo:
 
@@ -161,10 +163,10 @@ essential.
 
 For Most Linux system all you have to do is open up a console and 
 
- mkdir build 
- cd build 
- cmake .. -G 'CodeBlocks - Unix Makefiles' 
- make package
+        mkdir build 
+        cd build 
+        cmake .. -G 'CodeBlocks - Unix Makefiles' 
+        make package
 
 
 Note  1:

@@ -7,7 +7,7 @@ external dependency. Elektra abstracts from cross-platform-related issues
 with an consistent API, and allows applications to be aware of other
 applications' configurations, leveraging easy application integration.
 
-[Read more about Goals ..](doc/GOALS)
+[Read more about Goals ..](doc/GOALS.md)
 
 ![Elektra](doc/images/circle.jpg)
 
@@ -81,7 +81,7 @@ coverage report](http://doc.libelektra.org/coverage/latest).
 
 ## Compile ##
 
-See this [document](doc/COMPILE) for documentation how to compile the software.
+See this [document](doc/COMPILE.md) for documentation how to compile the software.
 You might find [configure](configure) useful: It will print the cmake
 commando you need when you are used to `./configure`.
 
