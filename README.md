@@ -7,6 +7,8 @@ external dependency. Elektra abstracts from cross-platform-related issues
 with an consistent API, and allows applications to be aware of other
 applications' configurations, leveraging easy application integration.
 
+[Read more about Goals ..](doc/GOALS)
+
 ![Elektra](doc/images/circle.jpg)
 
 ## Facts and Features ##

@@ -1,7 +1,7 @@
-== Target ==
+## Target ##
 
 - Embedded: Elektra is on the frontier for embedded systems because of
-  its tiny core and the many possibilities with it's plugins.
+  its tiny core and the many possibilities with it`s plugins.
 - Server: Elektra is ideal suited for a local configuration storage by
   mounting existing configuration files into the global tree. Nodes
   using Elektra can be connected by already existing configuration
@@ -10,7 +10,7 @@
   configuration tree. Missing is a description (schema) so that these
   values actually can be shared.
 
-== Quality Goals ==
+## Quality Goals ##
 
 1.) Extensibility
 
@@ -19,29 +19,32 @@ There are so many variants of
 - frontend integrations
 - bindings
 
-Nearly every aspekt of Elektra must be extremely extensible.
+Nearly every aspect of Elektra must be extremely extensible.
 On the other side semantics must be very clear and well defined
-so that this extensible system works reproduceable and predictable.
+so that this extensible system works reproducible and predictable.
 
-The user should only pay for what is needed. Only key/value pairs
-are the common factor, everything else is extended.
+> Only key/value pairs are the common factor and a way to get and set
+> them, everything else is an extension.
+
 
 
 2.) Simplicity
 
 An overly complex system cannot be managed nor understood.
-On the other side extensibility brings some complex issues,
+Extensibility brings some complex issues,
 which need to be solved - but in a way so that the user
 sees either nothing of it or only needs to understand very
-simple concepts in order that it works flawlessly.
+simple concepts so that it works flawlessly.
 Special care for simplicity is taken for the users:
-- Endusers when doing Elektra or Configuration upgrades
-  (they should never take any notice of Elektra, except that
-   it works better integrated and with less problems)
-- Frontend Programmers to integrate Elektra
-- Plugin Programmers to extend Elektra
-- Application's Maintainers to correctly setup+upgrade KDB
-- Administrators which want to change the maintainers setup
+- Endusers when reconfiguring or upgrading
+  should never take any notice of Elektra, except that
+  it works more robust, better integrated and with less problems.
+- Programmers should have multiple ways to take advantage of
+  Elektra so that it flawlessly integrate with their system.
+- Plugin Programmers: it should be simple to extend Elektra
+  in any desired way.
+- Application`s Maintainers to correctly setup+upgrade KDB
+- Administrators that want to change the maintainers setup
   according to their needs
 
 
@@ -51,3 +54,5 @@ Configuration is the main impact for bootup and startup time.
 Elektra needs to be similar fast then current solutions.
 Ideally it should get faster because of centralized optimization
 endeavours where everyone using Elektra can benefit from.
+
+> Only pay for what you need.
