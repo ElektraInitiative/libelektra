@@ -25,9 +25,7 @@ if (YAJL_FOUND)
 	add_sources (elektra-full ${SOURCES})
 	add_headers (SOURCES)
 
-	#does not work with cmake 2.6
-	file (COPY examples
-		DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+	install(DIRECTORY yajl DESTINATION ${TARGET_TEST_DATA_FOLDER})
 
 	set (PLUGIN_NAME elektra-yajl)
 	add_library (${PLUGIN_NAME} MODULE ${SOURCES})

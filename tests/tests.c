@@ -10,6 +10,7 @@ gid_t nbGid;
 
 char file [KDB_MAX_PATH_LENGTH];
 char srcdir [KDB_MAX_PATH_LENGTH];
+char tmpfilename [KDB_MAX_PATH_LENGTH];
 
 #ifdef HAVE_CLEARENV
 int clearenv();
@@ -21,21 +22,6 @@ int init (int argc, char**argv)
 {
 	setlocale (LC_ALL, "");
 
-	nbUid = getuid();
-	nbGid = getgid();
-
-	if (getenv ("srcdir"))
-	{
-		strncpy (srcdir, getenv ("srcdir"), sizeof(srcdir));
-	} else {
-		if (argc > 1)
-		{
-			strncpy (srcdir, argv[1], sizeof(srcdir));
-		} else {
-			strcpy (srcdir, ".");
-			warn_if_fail (0, "srcdir not set, will try current directory");
-		}
-	}
 #ifdef HAVE_CLEARENV
 	clearenv();
 #else
@@ -43,7 +29,21 @@ int init (int argc, char**argv)
 	unsetenv("USER");
 #endif
 
+	nbUid = getuid();
+	nbGid = getgid();
+
+	if (argc > 1)
+	{
+		strncpy (srcdir, argv[1], sizeof(srcdir));
+	} else {
+		strncpy (srcdir, BUILTIN_DATA_FOLDER, sizeof(srcdir));
+	}
+
+	// TODO: strange hack
 	setenv("HOME","/tmp/elektra-test",1);
+
+	succeed_if(tmpfilename == tmpnam(tmpfilename),
+			"could not generate file name");
 
 	return 0;
 }
@@ -181,6 +181,16 @@ char * srcdir_file(const char * fileName)
 	strcat(file, "/");
 	strcat(file, fileName);
 	return file;
+}
+
+const char *elektraFilename()
+{
+	return tmpfilename;
+}
+
+void elektraUnlink(const char* filename)
+{
+	unlink(filename);
 }
 
 void clear_sync (KeySet *ks)

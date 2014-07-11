@@ -21,6 +21,8 @@ check_type_size("long double"   SIZEOF_LONG_DOUBLE)
 
 set (BUILTIN_EXEC_FOLDER
 	"${CMAKE_INSTALL_PREFIX}/${TARGET_TOOL_EXEC_FOLDER}")
+set (BUILTIN_DATA_FOLDER
+	"${CMAKE_INSTALL_PREFIX}/${TARGET_TEST_DATA_FOLDER}")
 set (ELEKTRA_DEPRECATED "__attribute__ ((deprecated))")
 set (ELEKTRA_UNUSED "__attribute__ ((unused))")
 

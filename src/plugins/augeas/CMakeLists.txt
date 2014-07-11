@@ -34,16 +34,10 @@ if(LIBAUGEAS_FOUND AND LIBXML2_FOUND)
 		add_library (${PLUGIN_NAME} MODULE ${SOURCES})
 		target_link_libraries (${PLUGIN_NAME} elektra)
 		target_link_libraries (${PLUGIN_NAME} ${LIBAUGEAS_LIBRARIES})
-		
+
+		install(DIRECTORY augeas DESTINATION ${TARGET_TEST_DATA_FOLDER})
 		install (TARGETS ${PLUGIN_NAME}
 			DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})
-	
-		file (GLOB testfiles "testdata/*")
-		
-		foreach (testfilepath ${testfiles})
-			get_filename_component(testfile ${testfilepath} NAME)
-			configure_file(${testfilepath} ${CMAKE_CURRENT_BINARY_DIR}/testdata/${testfile})
-		endforeach()
 
 		add_plugintest(augeas)
 	else (HAS_LIBAUGEAS16)

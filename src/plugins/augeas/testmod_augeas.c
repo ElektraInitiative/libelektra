@@ -74,12 +74,8 @@ void test_hostLensRead(char *fileName)
 
 void test_hostLensWrite(char *fileName)
 {
-	char * fileNameCompare = malloc (strlen (fileName) + 6);
-	strcpy (fileNameCompare, fileName);
-	strcat (fileNameCompare, ".comp");
-
 	Key *parentKey = keyNew ("user/tests/augeas-hosts", KEY_VALUE,
-			srcdir_file (fileNameCompare), KEY_END);
+			elektraFilename(), KEY_END);
 	KeySet *conf = ksNew (20,
 			keyNew ("system/lens", KEY_VALUE, "Hosts.lns", KEY_END), KS_END);
 	PLUGIN_OPEN("augeas");
@@ -117,14 +113,14 @@ void test_hostLensWrite(char *fileName)
 	succeed_if(output_error (parentKey), "error in kdbSet");
 	succeed_if(output_warnings (parentKey), "warnings in kdbSet");
 
-	free (fileNameCompare);
-
 	succeed_if(
 			compare_line_files (srcdir_file (fileName), keyString (parentKey)),
 			"files do not match as expected");
 
 	keyDel (parentKey);
 	ksDel (ks);
+
+	elektraUnlink(keyString (parentKey));
 
 	PLUGIN_CLOSE ()
 	;
@@ -165,18 +161,12 @@ void test_hostLensDelete(char *sourceFile, char *compFile)
 	ksPopAtCursor(ks, ksGetCursor(ks));
 	keyDel (key);
 
-	char * fileNameCompare = malloc (strlen (compFile) + 6);
-	strcpy (fileNameCompare, compFile);
-	strcat (fileNameCompare, ".comp");
-
-	keySetString (parentKey, srcdir_file(fileNameCompare));
+	keySetString (parentKey, elektraFilename());
 
 	succeed_if(plugin->kdbSet (plugin, ks, parentKey) == 1,
 			"kdbSet was not successful");
 	succeed_if(output_error (parentKey), "error in kdbSet");
 	succeed_if(output_warnings (parentKey), "warnings in kdbSet");
-
-	free (fileNameCompare);
 
 	succeed_if(
 			compare_line_files (srcdir_file (compFile), keyString (parentKey)),
@@ -184,6 +174,8 @@ void test_hostLensDelete(char *sourceFile, char *compFile)
 
 	keyDel (parentKey);
 	ksDel (ks);
+
+	elektraUnlink(keyString (parentKey));
 
 	PLUGIN_CLOSE ()
 	;
@@ -217,24 +209,20 @@ void test_hostLensModify(char *sourceFile, char *compFile)
 	exit_if_fail(key, "line comment not found");
 	keySetString (key, "line comment modified");
 
-	char * fileNameCompare = malloc (strlen (compFile) + 6);
-	strcpy (fileNameCompare, compFile);
-	strcat (fileNameCompare, ".comp");
-
-	keySetString (parentKey, srcdir_file(fileNameCompare));
+	keySetString (parentKey, elektraFilename());
 
 	succeed_if(plugin->kdbSet (plugin, ks, parentKey) == 1,
 			"kdbSet was not successful");
 	succeed_if(output_error (parentKey), "error in kdbSet");
 	succeed_if(output_warnings (parentKey), "warnings in kdbSet");
 
-	free (fileNameCompare);
-
 	succeed_if(
 			compare_line_files (srcdir_file (compFile), keyString (parentKey)),
 			"files do not match as expected");
 
 	PLUGIN_CLOSE ();
+
+	elektraUnlink(keyString (parentKey));
 
 	ksDel (ks);
 	keyDel (parentKey);
@@ -330,18 +318,12 @@ void test_hostLensFormatting(char *fileName)
 	succeed_if(output_error (parentKey), "error in kdbGet");
 	succeed_if(output_warnings (parentKey), "warnings in kdbGet");
 
-	char * fileNameCompare = malloc (strlen (fileName) + 6);
-	strcpy (fileNameCompare, fileName);
-	strcat (fileNameCompare, ".comp");
-
-	keySetString (parentKey, srcdir_file(fileNameCompare));
+	keySetString (parentKey, elektraFilename());
 
 	succeed_if(plugin->kdbSet (plugin, ks, parentKey) == 1,
 			"kdbSet was not successful");
 	succeed_if(output_error (parentKey), "error in kdbSet");
 	succeed_if(output_warnings (parentKey), "warnings in kdbSet");
-
-	free (fileNameCompare);
 
 	succeed_if(
 			compare_line_files (srcdir_file (fileName), keyString (parentKey)),
@@ -349,6 +331,8 @@ void test_hostLensFormatting(char *fileName)
 
 	keyDel (parentKey);
 	ksDel (ks);
+
+	elektraUnlink(keyString (parentKey));
 
 	PLUGIN_CLOSE ()
 	;
@@ -362,12 +346,12 @@ int main(int argc, char** argv)
 
 	init (argc, argv);
 
-	test_hostLensRead ("testdata/hosts-read");
-	test_hostLensWrite ("testdata/hosts-write");
-	test_hostLensModify ("testdata/hosts-modify-in", "testdata/hosts-modify");
-	test_hostLensDelete ("testdata/hosts-delete-in", "testdata/hosts-delete");
-	test_hostLensFormatting("testdata/hosts-formatting");
-	test_order ("testdata/hosts-big");
+	test_hostLensRead ("augeas/hosts-read");
+	test_hostLensWrite ("augeas/hosts-write");
+	test_hostLensModify ("augeas/hosts-modify-in", "augeas/hosts-modify");
+	test_hostLensDelete ("augeas/hosts-delete-in", "augeas/hosts-delete");
+	test_hostLensFormatting("augeas/hosts-formatting");
+	test_order ("augeas/hosts-big");
 
 	printf ("\ntest_hosts RESULTS: %d test(s) done. %d error(s).\n", nbTest,
 			nbError);

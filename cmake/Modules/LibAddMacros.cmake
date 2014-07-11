@@ -62,7 +62,7 @@ macro (add_plugintest testname)
 				COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
 		add_test (testmod_${testname}
 				"${CMAKE_CURRENT_BINARY_DIR}/testmod_${testname}"
-				"${CMAKE_CURRENT_BINARY_DIR}"
+				"${CMAKE_CURRENT_SOURCE_DIR}"
 				)
 	endif (BUILD_FULL)
 endmacro (add_plugintest)

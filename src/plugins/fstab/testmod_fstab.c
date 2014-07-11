@@ -30,13 +30,13 @@
 
 void test_readfstab()
 {
-	Key * parentKey = keyNew ("user/tests/fstab", KEY_VALUE, srcdir_file("fstab"), KEY_END);
+	Key * parentKey = keyNew ("user/tests/fstab", KEY_VALUE, srcdir_file("fstab/fstab"), KEY_END);
 	KeySet *conf = 0;
 	PLUGIN_OPEN("fstab");
 
 	KeySet *ks=ksNew(0);
 
-	printf ("%s\n", srcdir_file("fstab"));
+	printf ("Using file: %s\n", srcdir_file("fstab/fstab"));
 
 	succeed_if (plugin->kdbGet(plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 
