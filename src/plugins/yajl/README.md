@@ -1,13 +1,13 @@
-infos = Information about YAIL plugin is in keys below
-infos/author = Markus Raab <elektra@libelektra.org>
-infos/licence = BSD
-infos/needs =
-infos/provides = storage
-infos/placements = getstorage setstorage
-infos/recommends = rebase directoryvalue comment type
-infos/description = JSON using YAIL
+- infos = Information about YAIL plugin is in keys below
+- infos/author = Markus Raab <elektra@libelektra.org>
+- infos/licence = BSD
+- infos/needs =
+- infos/provides = storage
+- infos/placements = getstorage setstorage
+- infos/recommends = rebase directoryvalue comment type
+- infos/description = JSON using YAIL
 
-## Introduction
+## Introduction ##
 
 This is a plugin reading and writing json files
 using the library [yail](http://lloyd.github.com/yajl/)
@@ -78,7 +78,9 @@ prints out then all device entries available in the config
 prints out "Glasshuette" with the example config in souce
 
 You can export the whole system openicc config to ini with:
+
         kdb export system/org/freedesktop/openicc simpleini > dump.ini
 
-or import it
+or import it:
+
         kdb import system/org/freedesktop/openicc ini < dump.ini
