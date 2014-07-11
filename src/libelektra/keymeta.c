@@ -34,6 +34,15 @@
  * give keys special semantics, so that plugins can treat
  * them differently.
  *
+ * Metakey, as opposed to Key,
+ * deliberately has following limitations:
+ * - no null values
+ * - no binary data
+ * - no modification of references (COW)
+ * - no guarantee of ordering
+ *
+ * ## Examples for metadata
+ *
  * File system information (see stat(2) for more information):
  * - uid: the user id (positive number)
  * - gid: the group id (positive number)

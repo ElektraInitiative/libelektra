@@ -86,7 +86,7 @@ int elektraSyslogGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *paren
 		keyNew ("system/elektra/modules/syslog/infos/description",
 			KEY_VALUE, "Logs set and error calls to syslog", KEY_END),
 		keyNew ("system/elektra/modules/syslog/infos/provides",
-			KEY_VALUE, "filter", KEY_END),
+			KEY_VALUE, "logging", KEY_END),
 		keyNew ("system/elektra/modules/syslog/infos/placements",
 			KEY_VALUE, "postcommit postrollback", KEY_END),
 		keyNew ("system/elektra/modules/syslog/infos/needs",
