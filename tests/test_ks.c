@@ -2484,6 +2484,64 @@ void test_ksPopAtCursor()
 	ksDel(ks_c);
 }
 
+void test_ksToArray()
+{
+	KeySet *ks = ksNew (5,
+			keyNew ("user/test1", KEY_END),
+			keyNew ("user/test2", KEY_END),
+			keyNew ("user/test3", KEY_END),
+	KS_END);
+
+	Key **keyArray = calloc (ksGetSize (ks), sizeof (Key *));
+	elektraKsToMemArray(ks, keyArray);
+
+	succeed_if (!strcmp ("user/test1", keyName(keyArray[0])), "first key in array incorrect");
+	succeed_if (!strcmp ("user/test2", keyName(keyArray[1])), "second key in array incorrect");
+	succeed_if (!strcmp ("user/test3", keyName(keyArray[2])), "third key in array incorrect");
+
+	/* test if cursor is restored */
+	ksNext(ks);
+	cursor_t cursor = ksGetCursor(ks);
+	elektraKsToMemArray(ks, keyArray);
+
+	succeed_if (ksGetCursor(ks) == cursor, "cursor was not restored");
+
+	succeed_if (elektraKsToMemArray(0, keyArray) < 0, "wrong result on null pointer");
+	succeed_if (elektraKsToMemArray(ks, 0) < 0, "wrong result on null buffer");
+	succeed_if (elektraKsToMemArray(ksNew(0), keyArray) == 0, "wrong result on empty keyset");
+
+	free (keyArray);
+	ksDel (ks);
+}
+
+void test_keyCmpOrder()
+{
+	Key *k1 = keyNew ("user/a", KEY_META, "order", "20", KEY_END);
+	Key *k2 = keyNew ("user/b", KEY_META, "order", "10", KEY_END);
+
+	succeed_if (elektraKeyCmpOrder(0, 0) == 0, "null keys are not equal");
+	succeed_if (elektraKeyCmpOrder(k1, 0) == 1, "not null key is not greater than null key");
+	succeed_if (elektraKeyCmpOrder(0, k1) == -1, "null key is not smaller than not null key");
+
+	succeed_if (elektraKeyCmpOrder(k1, k2) > 0, "user/a is not greater than user/b");
+	succeed_if (elektraKeyCmpOrder(k2, k1) < 0, "user/b is not smaller than user/a");
+
+	keySetMeta(k2, "order", "20");
+	succeed_if (elektraKeyCmpOrder(k1, k2) == 0, "keys with same order are not equal");
+	succeed_if (elektraKeyCmpOrder(k2, k1) == 0, "keys with same order are not equal");
+
+	keySetMeta(k2, "order", 0);
+	succeed_if (elektraKeyCmpOrder(k1, k2) > 0, "key with metadata is not greater than key without");
+	succeed_if (elektraKeyCmpOrder(k2, k1) < 0, "key with metadata is not greater than key without");
+
+	keySetMeta(k1, "order", 0);
+	succeed_if (elektraKeyCmpOrder(k1, k2) == 0, "keys without metadata are not equal");
+	succeed_if (elektraKeyCmpOrder(k2, k1) == 0, "keys without metadata are not equal");
+
+	keyDel (k1);
+	keyDel (k2);
+
+}
 
 int main(int argc, char** argv)
 {
@@ -2520,6 +2578,8 @@ int main(int argc, char** argv)
 	test_ksDoubleAppendKey();
 	test_ksAppendKey();
 	test_ksPopAtCursor();
+	test_ksToArray();
+	test_keyCmpOrder();
 	// test_ksModifyKey(); // TODO: Bug, not handled correctly
 
 	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);

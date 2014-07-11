@@ -23,5 +23,6 @@
 
 Key *ksPrev(KeySet *ks);
 Key *ksPopAtCursor(KeySet *ks, cursor_t c);
+int elektraKsToMemArray(KeySet *ks, Key **buffer);
 
 #endif
