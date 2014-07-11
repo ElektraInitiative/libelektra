@@ -33,7 +33,6 @@ refactor template code a bit (util class)
 
 ### test ###
 
-have a single add_test place
 install and search for all test_data in the same way
 
 test libelektratools:

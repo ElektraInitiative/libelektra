@@ -67,6 +67,32 @@ macro (add_plugintest testname)
 	endif (BUILD_FULL)
 endmacro (add_plugintest)
 
+# Add a test for cpp plugins
+macro (add_cpp_plugintest source)
+	include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
+	include_directories ("${CMAKE_SOURCE_DIR}/src/bindings/cpp/tests")
+	set (SOURCES ${HDR_FILES} ${source}.cpp ${CMAKE_SOURCE_DIR}/src/bindings/cpp/tests/tests.cpp)
+	add_executable (${source} ${SOURCES})
+
+	if (BUILD_FULL)
+		target_link_libraries (${source} elektra-full)
+	else (BUILD_FULL)
+		target_link_libraries (${source} elektra-static)
+	endif (BUILD_FULL)
+
+	if (INSTALL_TESTING)
+		install (TARGETS ${source}
+			DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+	endif (INSTALL_TESTING)
+
+	set_target_properties (${source} PROPERTIES
+			COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
+	add_test (${source}
+			"${CMAKE_CURRENT_BINARY_DIR}/${source}"
+			"${CMAKE_CURRENT_BINARY_DIR}/"
+			)
+endmacro (add_cpp_plugintest testname)
+
 
 #- Adds all headerfiles of global include path to the given variable
 #
