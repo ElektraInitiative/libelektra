@@ -34,15 +34,6 @@ class ThreeWayMerge
 
 public:
 
-	ThreeWayMerge()
-	{
-	}
-
-	~ThreeWayMerge()
-	{
-	}
-
-
 	/**
 	 * Performs a threeway merge according to the supplied MergeTask. All merged keys will
 	 * be below the given mergeParent in the MergeTask. Found conflicts will be

@@ -154,6 +154,8 @@ MergeResult ThreeWayMerge::mergeKeySet(const MergeTask& task)
 
 	if (!result.hasConflicts()) return result;
 
+
+	// TODO: test this behaviour (would probably need mocks)
 	Key current;
 	KeySet conflicts = result.getConflictSet();
 	conflicts.rewind();
@@ -162,6 +164,9 @@ MergeResult ThreeWayMerge::mergeKeySet(const MergeTask& task)
 		for (vector<MergeConflictStrategy *>::iterator it = strategies.begin (); it != strategies.end (); ++it)
 		{
 			(*it)->resolveConflict (task, current, result);
+
+			if (!result.isConflict(current))
+				break;
 		}
 	}
 

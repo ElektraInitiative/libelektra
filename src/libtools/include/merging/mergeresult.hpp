@@ -36,6 +36,12 @@ public:
 
 	void resolveConflict(Key& key);
 
+	// TODO: test this function
+	bool isConflict(Key& key)
+	{
+		return conflictSet.lookup(key);
+	}
+
 	bool hasConflicts()
 	{
 		return conflictSet.size () != 0;
