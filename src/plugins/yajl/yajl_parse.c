@@ -277,13 +277,44 @@ static void elektraYajlParseSuppressEmpty(KeySet *returned, Key* parentKey)
 	}
 }
 
+static inline KeySet *elektraGetModuleConfig()
+{
+	return ksNew (30,
+	keyNew ("system/elektra/modules/yajl",
+		KEY_VALUE, "yajl plugin waits for your orders", KEY_END),
+	keyNew ("system/elektra/modules/yajl/exports", KEY_END),
+	keyNew ("system/elektra/modules/yajl/exports/get",
+		KEY_FUNC, elektraYajlGet,
+		KEY_END),
+	keyNew ("system/elektra/modules/yajl/exports/set",
+		KEY_FUNC, elektraYajlSet,
+		KEY_END),
+#include "README.c"
+	keyNew ("system/elektra/modules/yajl/infos/metadata",
+		KEY_END),
+	keyNew ("system/elektra/modules/yajl/infos/metadata/boolean",
+		KEY_VALUE,
+	"Used to signal that a value should be syntactically rendered as boolean\n"
+	"See system/elektra/modules/type/infos/metadata/boolean for information what a boolean is.",
+		KEY_END),
+	keyNew ("system/elektra/modules/yajl/infos/version",
+		KEY_VALUE, PLUGINVERSION, KEY_END),
+	keyNew ("system/elektra/modules/yajl/config", KEY_END),
+	keyNew ("system/elektra/modules/yajl/config/",
+		KEY_VALUE, "system",
+		KEY_END),
+	keyNew ("system/elektra/modules/yajl/config/below",
+		KEY_VALUE, "user",
+		KEY_END),
+	KS_END);
+}
+
 int elektraYajlGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned,
 		Key *parentKey)
 {
 	if (!strcmp (keyName(parentKey), "system/elektra/modules/yajl"))
 	{
-		KeySet *moduleConfig =
-#include "contract.h"
+		KeySet *moduleConfig = elektraGetModuleConfig();
 		ksAppend(returned, moduleConfig);
 		ksDel(moduleConfig);
 		return 1;

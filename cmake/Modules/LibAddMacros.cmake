@@ -343,3 +343,35 @@ function(my_add_static_module name)
 	add_library(${name} STATIC ${srcs})
 endfunction()
 
+
+#
+# converts a README.md (markdown texts with key/value pairs)
+# to a README.c that contains keys to be added in the contract
+#
+# the key/value pairs need to be written like:
+# - infos/licence = BSD
+#
+# - infos/description =
+# has a special functionality: when it is used the rest of the file
+# is interpreted as description. So this key must be last.
+#
+function (generate_readme p)
+	# rerun cmake when README.md is changed
+	# also allows cmake variable substitution
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/README.md ${CMAKE_CURRENT_BINARY_DIR}/README.out)
+
+	# read
+	FILE(READ ${CMAKE_CURRENT_BINARY_DIR}/README.out contents)
+	STRING(REGEX REPLACE "\\\\" "\\\\\\\\" contents "${contents}")
+	STRING(REGEX REPLACE "\"" "\\\\\"" contents "${contents}")
+	STRING(REGEX REPLACE "\n" "\\\\n\"\n\"" contents "${contents}")
+	STRING(REGEX REPLACE "- infos = ([a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+	STRING(REGEX REPLACE "\"- +infos/licence *= *([a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/licence\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+	STRING(REGEX REPLACE "\"- +infos/author *= *([.@<>a-zA-Z0-9 %_-]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/author\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+	STRING(REGEX REPLACE "\"- +infos/provides *= *([a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/provides\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+	STRING(REGEX REPLACE "\"- +infos/placements *= *([a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/placements\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+	STRING(REGEX REPLACE "\"- +infos/recommends *= *([a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/recommends\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+	STRING(REGEX REPLACE "\"- +infos/needs *= *([a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/needs\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+	STRING(REGEX REPLACE "\"- +infos/description *= *(.*)\\\\n\"\n\"" "keyNew(\"system/elektra/modules/${p}/infos/description\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+	FILE(WRITE ${CMAKE_CURRENT_BINARY_DIR}/README.c ${contents})
+endfunction()
