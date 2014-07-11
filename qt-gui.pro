@@ -1,8 +1,17 @@
 QT += quick  gui core  qml  widgets
 
-SOURCES += src/main.cpp \
+SOURCES +=      src/main.cpp \
 		src/treeviewmodel.cpp \
 		src/confignode.cpp \
+                src/keynode.cpp
+
+HEADERS += \
+                src/treeviewmodel.hpp \
+                src/confignode.hpp \
+                src/treeviewmodel.hpp \
+                src/keynode.hpp \
+                src/visitor.hpp \
+                src/cpp_example_hierarchy.hpp
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
@@ -32,11 +41,6 @@ OTHER_FILES += \
 		qml/NewKeyWindow.qml \
 		qml/DefaultFileDialog.qml \
 		qml/NewArrayEntry.qml \
-
-HEADERS += \
-		src/treeviewmodel.hpp \
-		src/confignode.hpp \
-		src/treeviewmodel.hpp \
 
 unix: CONFIG += link_pkgconfig
 unix: PKGCONFIG += elektra

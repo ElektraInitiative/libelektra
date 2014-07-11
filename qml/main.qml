@@ -390,7 +390,7 @@ ApplicationWindow {
                 anchors.fill: parent
                 anchors.margins: defaultSpacing
 
-                property var model: externTreeModel.model
+                property var model: externTreeModel
                 property int rowHeight: 19
                 property int columnIndent: 22
                 property var currentNode
@@ -398,9 +398,10 @@ ApplicationWindow {
 
                 property Component delegate: Label {
                     id: label
-                    text: model.modelData.name
+                    text: model.name
                     color: activePalette.windowText
-                    //                    Component.onCompleted: console.log("modelData" + model.modelData + ", model: " + model + ", name: " + model.name + ", path: " + model.path + ", elements: " + model.children + ", childCount: " + model.childCount)
+                    Component.onCompleted: console.log("modelData " + model.modelData + ", model: " + model + ", name: " + model.name +
+                                                       ", path: " + model.path + ", elements: " + model.children + ", childCount: " + model.childCount)
                 }
                 contentItem: Loader {
                     id: content
@@ -414,7 +415,6 @@ ApplicationWindow {
                         Repeater {
                             model: 1 + Math.max(treeView.contentItem.height, treeView.height) / treeView.rowHeight
                             Rectangle {
-                                //                                objectName: "Faen"
                                 color: activePalette.window
                                 width: treeView.width
                                 height: treeView.rowHeight
@@ -466,7 +466,7 @@ ApplicationWindow {
                                             Item {
                                                 width: treeView.rowHeight
                                                 height: treeView.rowHeight
-                                                opacity: model.modelData.childCount > 0 && !model.modelData.childrenHaveNoChildren() ? 1 : 0
+                                                opacity: model.childCount > 0 && !model.childrenHaveNoChildren ? 1 : 0
 
                                                 Image {
                                                     id: expander
@@ -481,7 +481,7 @@ ApplicationWindow {
                                                     anchors.fill: parent
                                                     hoverEnabled: true
                                                     onClicked: {
-                                                        if(model.modelData.childCount > 0 && !model.modelData.childrenHaveNoChildren())
+                                                        if(model.childCount > 0 && !model.childrenHaveNoChildren)
                                                             loader.expanded = !loader.expanded
                                                     }
                                                 }
@@ -496,11 +496,11 @@ ApplicationWindow {
                                             id: loader
                                             x: treeView.columnIndent
                                             height: expanded ? implicitHeight : 0
-                                            property var node: model.modelData
+                                            property var node: model.children
                                             property bool expanded: false
-                                            property var elements: model.modelData.children
-                                            property var text: model.modelData.name
-                                            sourceComponent: (expanded && !!model.modelData.childCount > 0) ? treeBranch : undefined
+                                            property var elements: model.children
+                                            property var text: model.name
+                                            sourceComponent: (expanded && !!model.childCount > 0) ? treeBranch : undefined
                                         }
                                     }
                                 }
@@ -527,12 +527,12 @@ ApplicationWindow {
                     alternatingRowColors: false
                     backgroundVisible: false
 //                    onCurrentRowChanged: console.log(currentRow)
-                    onClicked: { selectedItem = treeView.currentNode.modelData.getChildByIndex(keyAreaView.currentRow).name }
+                    onClicked: { selectedItem = treeView.currentNode.getChildByIndex(keyAreaView.currentRow).name }
                     Keys.onRightPressed: keyContextMenu.popup()
 
-                    model: {
-                        if(treeView.currentNode.modelData.childCount > 0 && treeView.currentNode.modelData.childrenHaveNoChildren() && treeView.currentNode !== null)
-                            treeView.currentNode.modelData.children
+                    model:{
+                        if(treeView.currentNode.childCount > 0 && treeView.currentNode.childrenHaveNoChildren && treeView.currentNode !== null)
+                            treeView.currentNode.children
                     }
                     TableViewColumn {
                         role: "name"
@@ -544,27 +544,6 @@ ApplicationWindow {
                         title: qsTr("Value")
                         width: Math.round(keyArea.width*0.5)
                     }
-
-//                    rowDelegate: Item {
-//                        Rectangle {
-//                            anchors.left: parent.left
-//                            anchors.right: parent.right
-//                            height: parent.height
-//                            color: activePalette.highlight
-//                        }
-//                        MouseArea {
-//                            anchors.fill: parent
-//                            acceptedButtons: Qt.LeftButton | Qt.RightButton
-//                            onClicked: {
-//                                if (mouse.button == Qt.LeftButton) {
-//                                    console.log("Left")
-//                                }
-//                                else if (mouse.button == Qt.RightButton) {
-//                                    keyContextMenu.popup()
-//                                }
-//                            }
-//                        }
-//                    }
                 }
             }
             BasicRectangle {
@@ -643,7 +622,7 @@ ApplicationWindow {
             id: statusBarRow
             Label {
                 id: path
-                text: treeView.currentNode === null ? "" : treeView.currentNode.modelData.path + "/" + selectedItem
+                text: treeView.currentNode === null ? "" : treeView.currentNode.path + "/" + selectedItem
             }
         }
     }

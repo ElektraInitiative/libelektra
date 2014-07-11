@@ -1,25 +1,93 @@
 #include "treeviewmodel.hpp"
-#include "confignode.hpp"
 
 using namespace std;
 using namespace kdb;
 
-TreeViewModel::TreeViewModel(QQmlContext *ctxt)
+TreeViewModel::TreeViewModel(QObject *parent)
 {
-    m_ctxt = ctxt;
+    populateModel();
 }
 
-QVariantList TreeViewModel::getModel(){
+TreeViewModel::TreeViewModel(const TreeViewModel &other)
+{
 
-    populateModel();
+}
 
-    QVariantList model;
+TreeViewModel::~TreeViewModel()
+{
 
-    foreach(ConfigNode *node, m_model){
-        model.append(QVariant::fromValue(node));
+}
+
+//QVariantList TreeViewModel::getModel(){
+
+//    populateModel();
+
+//    QVariantList model;
+
+//    foreach(ConfigNode *node, m_model){
+//        model.append(QVariant::fromValue(node));
+//    }
+
+//    return model;
+//}
+
+int TreeViewModel::rowCount(const QModelIndex &parent) const
+{
+    Q_UNUSED(parent);
+    return m_model.count();
+}
+
+QVariant TreeViewModel::data(const QModelIndex &index, int role) const
+{
+//    qDebug() << index;
+
+    if (!index.isValid())
+        return QVariant();
+
+    if (index.row() > (m_model.size()-1) )
+        return QVariant();
+
+    ConfigNode *node = m_model.at(index.row());
+
+    switch (role)
+    {
+
+    case Qt::DisplayRole:
+
+    case NameRole:
+        return QVariant::fromValue(node->getName());
+
+    case PathRole:
+        return QVariant::fromValue(node->getPath());
+
+    case ValueRole:
+        return QVariant::fromValue(node->getValue());
+
+    case ChildCountRole:
+        return QVariant::fromValue(node->getChildCount());
+
+    case ChildrenRole:
+        return QVariant::fromValue(node->getChildren());
+
+    case ChildrenHaveNoChildrenRole:
+        return QVariant::fromValue(node->childrenHaveNoChildren());
+
+    default:
+        return QVariant();
+
     }
+}
 
-    return model;
+QHash<int, QByteArray> TreeViewModel::roleNames() const
+{
+    QHash<int, QByteArray> roles;
+    roles[NameRole] = "name";
+    roles[PathRole] = "path";
+    roles[ValueRole] = "value";
+    roles[ChildCountRole] = "childCount";
+    roles[ChildrenRole] = "children";
+    roles[ChildrenHaveNoChildrenRole] = "childrenHaveNoChildren";
+    return roles;
 }
 
 void TreeViewModel::sink(ConfigNode *node, QStringList keys, QString path){
@@ -39,23 +107,23 @@ void TreeViewModel::sink(ConfigNode *node, QStringList keys, QString path){
     }
 }
 
-void TreeViewModel::synchronize()
-{
-    m_ctxt->setContextProperty("externTreeModel", QVariant::fromValue(this));
-}
+//void TreeViewModel::synchronize()
+//{
+//    m_ctxt->setContextProperty("externTreeModel", QVariant::fromValue(this));
+//}
 
-void TreeViewModel::deleteKey(const QString &path)
-{
-    Key k = m_config.lookup(path.toStdString());
+//void TreeViewModel::deleteKey(const QString &path)
+//{
+//    Key k = m_config.lookup(path.toStdString());
 
-    if(k){
-        qDebug() << "Key found";
-        m_config.cut(k);
-    }
+//    if(k){
+//        qDebug() << "Key found";
+//        m_config.cut(k);
+//    }
 
-    m_kdb.set(m_config, path.toStdString());
-    synchronize();
-}
+//    m_kdb.set(m_config, path.toStdString());
+//    synchronize();
+//}
 
 void TreeViewModel::populateModel()
 {
@@ -74,7 +142,7 @@ void TreeViewModel::populateModel()
 
     while(m_config.next()){
         configData << QString::fromStdString(m_config.current().getName());
-        qDebug() << QString::fromStdString(m_config.current().getName());
+//        qDebug() << QString::fromStdString(m_config.current().getName());
     }
 
     for(int i = 0; i < configData.length(); i++){

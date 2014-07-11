@@ -1,7 +1,7 @@
-#ifndef TREELISTMODEL_H
-#define TREELISTMODEL_H
+#ifndef TREEVIEWMODEL_H
+#define TREEVIEWMODEL_H
 
-#include <QObject>
+#include <QAbstractListModel>
 #include <QList>
 #include <QDebug>
 #include <QtQml>
@@ -10,26 +10,43 @@
 
 #include "confignode.hpp"
 
-class TreeViewModel : public QObject {
+class TreeViewModel : public QAbstractListModel {
     Q_OBJECT
 
-    Q_PROPERTY(QVariantList model READ getModel() NOTIFY modelChanged())
+    //    Q_PROPERTY(QVariantList model READ getModel() NOTIFY modelChanged())
 
 public:
-    explicit TreeViewModel(QQmlContext*);
-    QVariantList getModel();
+
+    enum TreeViewModelRoles {
+        NameRole = Qt::UserRole + 1,
+        PathRole,
+        ValueRole,
+        ChildCountRole,
+        ChildrenRole,
+        ChildrenHaveNoChildrenRole
+    };
+
+    explicit TreeViewModel(QObject *parent =  0);
+    TreeViewModel(const TreeViewModel &other);
+    ~TreeViewModel();
+    //    QVariantList getModel();
+    int rowCount(const QModelIndex &parent = QModelIndex()) const;
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     void sink(ConfigNode *node, QStringList keys, QString path);
 
-    Q_INVOKABLE void synchronize();
-    Q_INVOKABLE void deleteKey(const QString &path);
+    //    Q_INVOKABLE void synchronize();
+    //    Q_INVOKABLE void deleteKey(const QString &path);
 
 private:
     QList<ConfigNode*> m_model;
     void populateModel();
-    QQmlContext *m_ctxt;
+    //    QQmlContext *m_ctxt;
 
     kdb::KeySet m_config;
     kdb::KDB m_kdb;
+
+protected:
+    QHash<int, QByteArray> roleNames() const;
 
 signals:
     void modelChanged();
@@ -38,6 +55,6 @@ public slots:
 
 };
 
-Q_DECLARE_METATYPE(TreeViewModel*)
+Q_DECLARE_METATYPE(TreeViewModel)
 
-#endif // TREELISTMODEL_H
+#endif // TREEVIEWMODEL_H

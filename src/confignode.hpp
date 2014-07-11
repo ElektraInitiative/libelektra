@@ -12,12 +12,23 @@ class ConfigNode : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(QString name READ getName() NOTIFY nameChanged())
-    Q_PROPERTY(QString path READ getPath() NOTIFY pathChanged())
-    Q_PROPERTY(QString value READ getValue() NOTIFY valueChanged())
-//    Q_PROPERTY(bool childrenHaveNoChildren READ childrenHaveNoChildren() NOTIFY childrenHaveNoChildrenChanged())
-    Q_PROPERTY(int childCount READ childCount() NOTIFY childCountChanged())
-    Q_PROPERTY(QVariantList children READ getChildren() NOTIFY childrenChanged())
+public:
+    ConfigNode();
+    explicit ConfigNode(const QString &name, const QString &path);
+    ConfigNode(const ConfigNode &other);
+    ~ConfigNode();
+
+    int getChildCount();
+    QString getName();
+    QString getPath();
+    QString getValue();
+    void appendChild(ConfigNode *node);
+    bool hasChild(const QString &name);
+    QVariantList getChildren();
+//    QVariant getChildren();
+    Q_INVOKABLE ConfigNode *getChildByName(QString &name);
+    Q_INVOKABLE ConfigNode *getChildByIndex(int index);
+    Q_INVOKABLE bool childrenHaveNoChildren();
 
 private:
     QString m_name;
@@ -25,30 +36,8 @@ private:
     QString m_value;
     QList<ConfigNode*> m_children;
 
-public:
-    explicit ConfigNode(const QString &name, const QString &path);
-
-    int childCount();
-    QString getName();
-    QString getPath();
-    QString getValue();
-    void appendChild(ConfigNode *node);
-    bool hasChild(const QString &name);
-    QVariantList getChildren();
-    Q_INVOKABLE ConfigNode *getChildByName(QString &name);
-    Q_INVOKABLE ConfigNode *getChildByIndex(int index);
-    Q_INVOKABLE bool childrenHaveNoChildren();
-
-signals:
-    void childrenChanged();
-    void nameChanged();
-    void pathChanged();
-    void childCountChanged();
-    void valueChanged();
-    void childrenHaveNoChildrenChanged();
-
-public slots:
-
 };
+
+Q_DECLARE_METATYPE(ConfigNode*)
 
 #endif // CONFIGNODE_H

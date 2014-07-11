@@ -8,13 +8,14 @@
 
 int main(int argc, char *argv[])
 {
-
     QApplication app(argc, argv);
+
+    qRegisterMetaType<TreeViewModel>();
 
     QQmlApplicationEngine engine;
 
     QQmlContext *ctxt = engine.rootContext();
-    TreeViewModel *model = new TreeViewModel(ctxt);
+    TreeViewModel *model = new TreeViewModel;
     ctxt->setContextProperty("externTreeModel", QVariant::fromValue(model));
 
     engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));

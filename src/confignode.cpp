@@ -2,11 +2,26 @@
 
 using namespace kdb;
 
+ConfigNode::ConfigNode()
+{
+
+}
+
 ConfigNode::ConfigNode(const QString &name, const QString &path):  m_name(name), m_path(path)
 {
 }
 
-int ConfigNode::childCount()
+ConfigNode::ConfigNode(const ConfigNode &other)
+{
+
+}
+
+ConfigNode::~ConfigNode()
+{
+
+}
+
+int ConfigNode::getChildCount()
 {
     return m_children.length();
 }
@@ -55,6 +70,22 @@ bool ConfigNode::hasChild(const QString &name)
     return false;
 }
 
+QVariantList ConfigNode::getChildren()
+{
+    QVariantList children;
+
+    foreach(ConfigNode *node, m_children){
+        children.append(QVariant::fromValue(node));
+    }
+
+    return children;
+}
+
+//QVariant ConfigNode::getChildren()
+//{
+//    return QVariant::fromValue(m_children);
+//}
+
 ConfigNode *ConfigNode::getChildByName(QString &name)
 {
     foreach(ConfigNode *node, m_children){
@@ -77,19 +108,10 @@ bool ConfigNode::childrenHaveNoChildren()
     int children = 0;
 
     foreach(ConfigNode *node, m_children){
-        children += node->childCount();
+        children += node->getChildCount();
     }
 
     return children == 0;
 }
 
-QVariantList ConfigNode::getChildren()
-{
-    QVariantList children;
 
-    foreach(ConfigNode *node, m_children){
-        children.append(QVariant::fromValue(node));
-    }
-
-    return children;
-}
