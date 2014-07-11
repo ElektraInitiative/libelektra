@@ -59,7 +59,7 @@ ksNew (30,
 				"\n"
 				"== MOUNTING AND CONFIGURATION == \n"
 				"\n"
-				"The plugin can be mounted via the mount command like any ohter plugin. \n"
+				"The plugin can be mounted via the mount command like any other plugin. \n"
 				"For example, in order to mount the hosts file with the augeas plugin, issue the following command: \n"
 				"\n"
 				"kdb mount /etc/hosts system/hosts augeas \n"

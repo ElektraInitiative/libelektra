@@ -74,7 +74,7 @@ int elektraHiddenGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			keyNew ("system/elektra/modules/hidden/infos/description",
 				KEY_VALUE, "Hides keys which start with a .", KEY_END),
 			keyNew ("system/elektra/modules/hidden/infos/provides",
-				KEY_VALUE, "filter", KEY_END),
+				KEY_VALUE, "", KEY_END),
 			keyNew ("system/elektra/modules/hidden/infos/placements",
 				KEY_VALUE, "postgetstorage presetstorage", KEY_END),
 			keyNew ("system/elektra/modules/hidden/infos/needs",

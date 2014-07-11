@@ -1,0 +1,152 @@
+[system/elektra/modules]
+type = null
+status = implemented
+version = 1.0.0
+description = This part of the hierarchy specifies the semantics of a
+  contract. Each key is a clause of the contract.
+  Whenever this file is changed, following files need to be adapted:
+  - src/libtools/src/plugin.cpp (validator of this specification)
+  - src/libtools/src/plugins.cpp (placements)
+  - cmake/Modules/LibAddMacros.cmake (for README.md conversion)
+  Use "kdb check" to validate.
+  In doubt this specification overrules other specifications.
+  It is allowed to export additional keys (below the plugins module
+  name). They might, however, someday conflict with the specification
+  here. So prefer to prefix plugin specific clauses.
+
+
+[system/elektra/modules/_]
+type = null
+status = implemented
+description = Indicates that the module exists.
+
+[system/elektra/modules/_/exports]
+type = null
+status = implemented
+description = Indicate that symbols are exported.
+
+
+[system/elektra/modules/_/exports/_]
+type = func
+status = implemented
+description = Allows a plugin to export any functions.
+  Typical names are get, set, error, open, close or checkfile.
+  The usage of such functions will couple plugins or applications
+  tightly, so avoid them if possible.
+
+[system/elektra/modules/_/constants]
+type = null
+status = implemented
+description = Indicate that constants are available.
+
+[system/elektra/modules/_/constants/_]
+type = string
+status = implemented
+description = Exports constants that might be interesting for users,
+  applications or other plugins.
+  All plugin specific compilation information (e.g. verbosity, pathes)
+  should be exported as constants.
+
+[system/elektra/modules/_/infos]
+type = string
+status = implemented
+description = Indicate that info is available.
+  These clauses are required so that plugins can be mounted.
+
+[system/elektra/modules/_/infos/author]
+type = string
+status = implemented
+description = The name and e-mail address of the author of the plugin.
+
+[system/elektra/modules/_/infos/licence]
+type = string
+status = implemented
+description = The licence relevant for the user of the plugin.
+  For plugins published with Elektra it is "BSD".
+  Note that it might be illegal to use some combinations of licences,
+  so "BSD" is preferred whenever possible.
+  If the plugin links against a library, the library's licence might
+  enforce another licence.
+
+[system/elektra/modules/_/infos/description]
+type = string
+status = implemented
+description = The full text describing everything relevant for the
+  users, developers or maintainers of this plugin.
+  Should be in markdown format with long tutorial-like explanations.
+  Use README.md to make the content easily readable and editable.
+  The clause should at least contain:
+  - Purpose
+  - Possible Usage
+  - (Current) Limitations, Roadmap or TODOs
+  - Dependencies
+  - affiliated Projects or Plugins
+  - relevant Links for further Information
+
+
+[system/elektra/modules/_/infos/provides]
+type = enum
+  resolver
+  storage
+  code
+  notification
+  apply
+  conv
+  check
+  logging
+status = implemented
+description = Introduces a more abstract name (=provider) for the type
+  of problem the plugin solves.
+  The enum lists the current known providers, even though any other
+  name can be used, too.
+  Note, that similar to adding new clauses, usages of prefixes is
+  highly recommended to avoid name conflicts with future providers added
+  here.
+
+[system/elektra/modules/_/infos/placements]
+type = enum
+  prerollback
+  rollback
+  postrollback
+  getresolver
+  pregetstorage
+  getstorage
+  postgetstorage
+  setresolver
+  presetstorage
+  setstorage
+  precommit
+  commit
+  postcommit
+status = implemented
+description = At which places the plugin should get a chance to be
+  executed. The enum shows the only supported places.
+
+[system/elektra/modules/_/infos/needs]
+type = string
+status = implemented
+description = Lists the requirements of the plugin.
+  This can be a name of a plugin, but you should always prefer
+  the name of providers.
+  Then, any plugin providing the functionality can be used and the
+  coupling is reduced.
+
+[system/elektra/modules/_/infos/recommends]
+type = string
+status = implemented
+description = Recommendations are similar to needs, but the backend
+  also validates if they are not included.
+
+[system/elektra/modules/_/infos/version]
+type = string
+status = implemented
+description = Exports the plugin version this plugin was compiled
+  against. Use the macro PLUGINVERSION in kdbplugin.h for its value.
+  The current version is the major version as indicated in this file.
+
+[system/elektra/modules/_/config/needs]
+type = null
+status = implemented
+description = Indicates that this plugin exports a configuration it
+  needs. All keys below will be propagated to the backend configuration.
+  One of the provider should provide this configuration.
