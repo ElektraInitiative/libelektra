@@ -14,16 +14,18 @@ applications' configurations, leveraging easy application integration.
  * Elektra uses the [BSD licence](doc/COPYING).
  * Elektra implements an [API](http://doc.libelektra.org/api/latest/html/) to fully access a global key database.
  * Elektra supports mounting of existing configuration files into the global key database.
+ * Elektra has dozens of [Plugins](src/plugins) that make it possible
+   to have a tiny core, but still support all features.
+   * Elektra can import and export configuration files in any [supported format](src/plugins#storage).
+   * Elektra is able to log and notify other software on any configuration changes using [Dbus](src/plugins/dbus) and [Journald](src/plugins/journald).
+   * Elektra can improve robustness by rejecting invalid configuration via [type checking](src/plugins/type), [regex](src/plugins/regex) and more.
+   * Elektra provides different mechanisms to [locate configuration files](src/plugins/resolver).
+   * Elektra supports different ways to [escape](src/plugins/ccode) and [encode](src/plugins/iconv) content of configuration files.
  * Elektra is multi-process safe and can be used in multi-threaded programs.
- * Elektra (except for some plugins) is portable and completely written in Ansi-C99.
- * Elektra (except for some plugins) has no external dependency.
+ * Elektra (except for some [plugins](src/plugins)) is portable and completely written in Ansi-C99.
+ * Elektra (except for some [plugins](src/plugins)) has no external dependency.
  * Elektra is suitable for embedded systems and early boot stage programs.
  * Elektra supports comments and other non-configuration information by meta data.
- * Elektra can import and export configuration files in any [supported formats](src/plugins#Storage).
- * Elektra is able to log and notify other software on any configuration changes using [Dbus](http://freedesktop.org/wiki/Software/dbus/).
- * Elektra can improve robustness by rejecting invalid configuration.
- * Elektra provides different mechanisms to locate configuration files.
- * Elektra supports different ways to escape and encode content of configuration files.
  * Elektra provides many powerful [Bindings](src/bindings) to avoid low-level access code.
  * Elektra provides powerful [Code Generation Techniques](src/tools/gen) for Configuration Access.
 

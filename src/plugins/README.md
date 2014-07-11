@@ -11,5 +11,5 @@ The most important plugins are:
 - [augeas](augeas) parses and generates many different configuration
   files
 - [xmltool](xmltool) uses XML.
-- [yajl](yail) uses JSON.
+- [yajl](yail#introduction) uses JSON.
 
