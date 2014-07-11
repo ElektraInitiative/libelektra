@@ -8,6 +8,9 @@
 #include <iostream>
 #include <string>
 
+#include <merging/automergestrategy.hpp>
+#include <merging/interactivemergestrategy.hpp>
+
 using namespace kdb;
 using namespace kdb::tools::merging;
 using namespace std;
@@ -81,7 +84,18 @@ int MergeCommand::execute(Cmdline const& cl)
 
 	// TODO: check for last modification time (otherwise the result flaps)
 	ThreeWayMerge merger;
-	merger.addConflictStrategy(new AutoMergeStrategy());
+
+	if (cl.interactive)
+	{
+		merger.addConflictStrategy(new InteractiveMergeStrategy(cin, cout));
+		cout << "Choose interactive merge" << endl;
+	}
+	else
+	{
+		merger.addConflictStrategy(new AutoMergeStrategy());
+	}
+
+
 	MergeResult result = merger.mergeKeySet (
 			MergeTask (
 					BaseMergeKeys (base, baseRoot),

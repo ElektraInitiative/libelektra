@@ -4,7 +4,6 @@
 #include <command.hpp>
 #include <kdb.hpp>
 #include <merging/threewaymerge.hpp>
-#include <merging/automergestrategy.hpp>
 
 class MergeCommand : public Command
 {
@@ -18,7 +17,7 @@ public:
 
 	virtual std::string getShortOptions()
 	{
-		return "Htsvb";
+		return "iHtsvb";
 	}
 
 	virtual std::string getSynopsis()
