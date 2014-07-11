@@ -57,7 +57,7 @@ public:
 		Key k;
 		while (k = config.next())
 		{
-			if (!root.isDirectBelow(k)) throw "Factory: key for configuration is not direct below";
+			if (!k.isDirectBelow(root)) throw "Factory: key for configuration is not direct below";
 
 			KeySet cks(config.cut(k));
 			m_factory.insert(std::make_pair(k.getBaseName(), new StructInstancer(cks)));

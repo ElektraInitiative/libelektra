@@ -3,7 +3,7 @@ Some enhanced ideas which will not be part of 0.8.
 
 == API Changes ==
 
-isDirectBelow:
+keyIsBelow/keyIsDirectBelow:
 	Change Order of arguments? (see C++)
 	or improve keyRel?
 
