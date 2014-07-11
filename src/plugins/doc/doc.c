@@ -135,6 +135,14 @@ int elektraDocOpen(Plugin *handle, Key *errorKey)
 }
  * @endcode
  *
+ * If your plugin has no useful way to startup without config, the
+ * module loader would not be able to load the module, too.
+ * To solve that problem the module loader adds the configuration key
+ * /module. Even if your plugin is basically not able to startup
+ * successfully, it should still provide a fallback when /module
+ * is present, so that docGet() on system/elektra/modules can be
+ * called successfully later on.
+ *
  * @note Make sure to free everything you allocate here within elektraDocClose().
  *
  * @return 0 on success

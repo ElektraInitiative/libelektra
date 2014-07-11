@@ -50,8 +50,6 @@ inline static int elektraStructOpenDelegator(ckdb::Plugin *handle, kdb::KeySet& 
 	}
 	catch (const char* msg)
 	{
-		// TODO: warnings are not always passed when plugin
-		// creation failed?
 		ELEKTRA_ADD_WARNING (58, errorKey, msg);
 		return -1;
 	}
