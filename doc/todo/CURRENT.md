@@ -5,21 +5,18 @@ those which are necessary to fulfil the initial tasks)
 Items are e.g. BUGS, OPTIMIZE, PROBLEMS, TESTING, PLUGINS, TODO,..
 
 
-== 0.8.7 ==
+## 0.8.7 ##
 
 gen:
 	Contextual
 	cleanup: utilities for cheetha+python
-
-allow key names starting with /?
-
-define sprintf+strtoXX
-string not needed: will be assumed if no type .given
-additional test cases with all types (min, max)
+	Write tutorial
 
 Starting points:
 	add small Tutorial for gen
 	add docu to examples
+
+allow key names starting with / and meta keynames?
 
 announcements: docu
 	gen
@@ -34,7 +31,7 @@ template naming conventions
 refactor template code a bit (util class)
 
 
-=== test ===
+### test ###
 
 have a single add_test place
 install and search for all test_data in the same way
@@ -44,14 +41,13 @@ test libelektratools:
 	usePath functionality?
 	codeReview
 
-check on 32bit system
-check icc/clang on buildserver
+have icc on buildserver
 
 
-=== packaging ===
+### packaging ###
 
 man pages:
-	symlink kdb-full and kdb-static
+- symlink kdb-full and kdb-static
 
 tests package (depends on all other packages)
-python+lua bindings
+python+lua bindings (need #11)
