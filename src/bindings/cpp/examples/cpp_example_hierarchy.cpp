@@ -99,10 +99,10 @@ public:
 	void add(Key k, unsigned long depth)
 	{
 		assert(k);
-		assert(m_self ? k.isBelow(m_self) : true);
+		assert(m_self ? m_self.isBelow(k) : true);
 		depth++;
 
-		if (k.isDirectBelow(m_self) || depth == name_depth(k))
+		if (m_self.isDirectBelow(k) || depth == name_depth(k))
 		{
 			for (KeyNodeIterator it = m_subnodes.begin();
 					it != m_subnodes.end();

@@ -95,7 +95,7 @@ assert(key:isUser()    == true)
 assert(bkey:isSystem() == true)
 assert(key:isString()  == true)
 assert(bkey:isBinary() == true)
-assert(kdb.Key("user/foo"):isBelow(key))
+assert(key:isBelow(kdb.Key("user/foo")))
 
 local k = kdb.Key("user/key1", kdb.KEY_VALUE, "value")
 assert(k:get(), "value")

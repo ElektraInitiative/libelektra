@@ -9,7 +9,6 @@ keyNew ("system/elektra/modules/yajl/exports/set",
 	KEY_FUNC, elektraYajlSet,
 	KEY_END),
 #include "README.c"
-/*
 keyNew ("system/elektra/modules/yajl/infos/metadata",
 	KEY_END),
 keyNew ("system/elektra/modules/yajl/infos/metadata/boolean",
@@ -17,7 +16,6 @@ keyNew ("system/elektra/modules/yajl/infos/metadata/boolean",
 "Used to signal that a value should be syntactically rendered as boolean\n"
 "See system/elektra/modules/type/infos/metadata/boolean for information what a boolean is.",
 	KEY_END),
-*/
 keyNew ("system/elektra/modules/yajl/infos/version",
 	KEY_VALUE, PLUGINVERSION, KEY_END),
 keyNew ("system/elektra/modules/yajl/config", KEY_END),

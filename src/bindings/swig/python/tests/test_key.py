@@ -103,7 +103,7 @@ class Key(unittest.TestCase):
 		self.assertTrue(self.bkey.isSystem())
 		self.assertTrue(self.key.isString())
 		self.assertTrue(self.bkey.isBinary())
-		self.assertTrue(kdb.Key("user/foo").isBelow(self.key))
+		self.assertTrue(self.key.isBelow(kdb.Key("user/foo")))
 
 		k = kdb.Key("user/key1", kdb.KEY_VALUE, "value")
 		self.assertEqual(k.get(), "value")
