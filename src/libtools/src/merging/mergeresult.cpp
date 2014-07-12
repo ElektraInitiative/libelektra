@@ -32,11 +32,15 @@ MergeResult::MergeResult(KeySet& _conflictSet, KeySet& _mergedKeys)
 	mergedKeys = _mergedKeys;
 }
 
-// TODO: consider making key const
 void MergeResult::addConflict(Key& key, ConflictOperation ourOperation,
 		ConflictOperation theirOperation)
 {
-	key.copyAllMeta(NULL);
+	key.rewindMeta();
+	while (Key currentMeta = key.nextMeta())
+	{
+		key.deleteMeta(currentMeta.getName());
+	}
+
 	key.setString("");
 	removeMergeKey (key);
 	key.setMeta ("conflict/operation/our",
@@ -56,10 +60,7 @@ void MergeResult::resolveConflict(Key& key)
 		// user/ or system/ cannot be created and therefore isBelow cannot be used
 		if (currentMeta.getName().find("conflict/") == 0)
 		{
-			// TODO: this is just a workaround for the meta deletion bug #8
-			// key.setMeta(currentMeta.getName(), NULL);
-			ckdb::keySetMeta(key.getKey(), currentMeta.getName().c_str(), 0);
-
+			key.deleteMeta(currentMeta.getName());
 		}
 	}
 
