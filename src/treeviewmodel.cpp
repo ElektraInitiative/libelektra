@@ -31,7 +31,7 @@ int TreeViewModel::rowCount(const QModelIndex &parent) const
 
 QVariant TreeViewModel::data(const QModelIndex &index, int role) const
 {
-//    qDebug() << index;
+    //    qDebug() << index;
 
     if (!index.isValid())
         return QVariant();
@@ -64,6 +64,9 @@ QVariant TreeViewModel::data(const QModelIndex &index, int role) const
     case ChildrenHaveNoChildrenRole:
         return QVariant::fromValue(node->childrenHaveNoChildren());
 
+    case MetaValueRole:
+        return QVariant::fromValue(node->getMetaValue());
+
     default:
         return QVariant();
 
@@ -75,21 +78,30 @@ bool TreeViewModel::setData(const QModelIndex &index, const QVariant &value, int
 
 }
 
-Qt::ItemFlags TreeViewModel::flags(const QModelIndex &index) const
+bool TreeViewModel::insertRows(int row, int count, const QModelIndex &parent)
 {
 
 }
 
-QHash<int, QByteArray> TreeViewModel::roleNames() const
+bool TreeViewModel::removeRow(int row, const QModelIndex &parent)
 {
-    QHash<int, QByteArray> roles;
-    roles[NameRole] = "name";
-    roles[PathRole] = "path";
-    roles[ValueRole] = "value";
-    roles[ChildCountRole] = "childCount";
-    roles[ChildrenRole] = "children";
-    roles[ChildrenHaveNoChildrenRole] = "childrenHaveNoChildren";
-    return roles;
+    Q_UNUSED(parent);
+
+    beginRemoveRows(QModelIndex(), row, row);
+
+    delete m_model.takeAt(row);
+
+    endRemoveRows();
+
+    return true;
+}
+
+Qt::ItemFlags TreeViewModel::flags(const QModelIndex &index) const
+{
+    if (!index.isValid())
+        return Qt::ItemIsEnabled;
+
+    return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
 }
 
 void TreeViewModel::sink(ConfigNode *node, QStringList keys, QString path){
@@ -117,17 +129,15 @@ void TreeViewModel::populateModel()
     ConfigNode *system = new ConfigNode("system", "system");
     ConfigNode *root = new ConfigNode("user", "user");
 
-    m_model.clear();
-    beginInsertRows(QModelIndex(),rowCount(),rowCount());
     m_model << system << root;
 
     QStringList configData;
 
-//    qDebug() << "In populateModel: ";
+    //    qDebug() << "In populateModel: ";
 
     while(m_config.next()){
         configData << QString::fromStdString(m_config.current().getName());
-//        qDebug() << QString::fromStdString(m_config.current().getName());
+        //        qDebug() << QString::fromStdString(m_config.current().getName());
     }
 
     for(int i = 0; i < configData.length(); i++){
@@ -151,4 +161,25 @@ void TreeViewModel::populateModel()
     emit modelChanged();
 
     qDebug() << "POPULATED===========================================!";
+}
+
+QVariantMap TreeViewModel::get(int idx) const {
+    QVariantMap map;
+    foreach(int k, roleNames().keys()) {
+        map[roleNames().value(k)] = data(index(idx, 0), k);
+    }
+    return map;
+}
+
+QHash<int, QByteArray> TreeViewModel::roleNames() const
+{
+    QHash<int, QByteArray> roles;
+    roles[NameRole] = "name";
+    roles[PathRole] = "path";
+    roles[ValueRole] = "value";
+    roles[ChildCountRole] = "childCount";
+    roles[ChildrenRole] = "children";
+    roles[ChildrenHaveNoChildrenRole] = "childrenHaveNoChildren";
+    roles[MetaValueRole] = "metaValue";
+    return roles;
 }

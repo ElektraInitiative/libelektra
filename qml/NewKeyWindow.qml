@@ -11,6 +11,9 @@ BasicWindow {
     property alias nameLabel: nameLabel
     property alias addButton: addButton
     property alias metaKeyModel: metaKeyModel
+    property string pathinfo
+    property string keyName
+    property string keyValue
 
     contents: ColumnLayout {
         anchors.fill: parent
@@ -20,7 +23,7 @@ BasicWindow {
 
         Text{
             id: pathInfo
-            text: "TODO: PathInfo > TODO: PathInfo > TODO: PathInfo"
+            text: pathinfo
             color: disabledPalette.text
         }
         RowLayout {
@@ -34,6 +37,7 @@ BasicWindow {
                 id: nameTextField
                 Layout.fillWidth: true
                 focus: true
+                placeholderText: keyName
             }
         }
         RowLayout {
@@ -47,6 +51,7 @@ BasicWindow {
             TextField {
                 id: valueTextField
                 Layout.fillWidth: true
+                placeholderText: keyValue
             }
         }
         BasicRectangle {
@@ -79,13 +84,11 @@ BasicWindow {
                     }
                 }
             }
-
         }
         Button {
             id: addButton
             anchors.horizontalCenter: parent.horizontalCenter
             text: qsTr("New Meta Key")
-            //onClicked: metaKeyModel.append({element.metaNamefield: "Ass";})
         }
     }
 }

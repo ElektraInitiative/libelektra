@@ -24,7 +24,8 @@ public:
         ValueRole,
         ChildCountRole,
         ChildrenRole,
-        ChildrenHaveNoChildrenRole
+        ChildrenHaveNoChildrenRole,
+        MetaValueRole
     };
 
     explicit TreeViewModel(QObject *parent =  0);
@@ -32,13 +33,18 @@ public:
     TreeViewModel(const TreeViewModel &other);
     ~TreeViewModel();
 
-    //mandatory methods
+    //mandatory methods inherited from QAbstractItemModel
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
+    bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex());
+    Q_INVOKABLE bool removeRow(int row, const QModelIndex &parent = QModelIndex());
     Qt::ItemFlags flags(const QModelIndex &index) const;
 
+    //recursive populating
     void sink(ConfigNode *node, QStringList keys, QString path);
+
+    Q_INVOKABLE QVariantMap get(int idx) const;
 
 private:
     QList<ConfigNode*> m_model;

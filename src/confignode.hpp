@@ -23,21 +23,25 @@ public:
     ConfigNode(const ConfigNode &other);
     ~ConfigNode();
 
-    int getChildCount();
-    QString getName();
-    QString getPath();
-    QString getValue();
-    void appendChild(ConfigNode *node);
-    bool hasChild(const QString &name);
-    TreeViewModel *getChildren();
-    Q_INVOKABLE ConfigNode *getChildByName(QString &name);
-    Q_INVOKABLE ConfigNode *getChildByIndex(int index);
-    Q_INVOKABLE bool childrenHaveNoChildren();
+    int                     getChildCount() const;
+    QString                 getName() const;
+    QString                 getPath() const;
+    QVariant                getValue() const;
+    void                    setName(const QString &name);
+    void                    setValue(const QVariant &value);
+    void                    appendChild(ConfigNode *node);
+    bool                    hasChild(const QString &name) const;
+    TreeViewModel           *getChildren();
+    TreeViewModel           *getMetaValue();
+    bool                    childrenHaveNoChildren() const;
+    ConfigNode              *getChildByName(QString &name);
+    Q_INVOKABLE ConfigNode  *getChildByIndex(int index);
 
 private:
     QString m_name;
     QString m_path;
-    QString m_value;
+    QVariant m_value;
+    kdb::Key m_key;
     QList<ConfigNode*> m_children;
 };
 

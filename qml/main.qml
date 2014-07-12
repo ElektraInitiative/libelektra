@@ -17,7 +17,7 @@ ApplicationWindow {
     property int deltaKeyAreaHeight: Math.round(keyArea.height-searchResultsArea.height*0.5-defaultSpacing)
     property int deltaKeyAreaWidth: Math.round(mainRow.width*0.7-defaultSpacing)
     property int deltaMetaAreaHeight: Math.round(metaArea.height-searchResultsArea.height*0.5)
-    property string selectedItem: ""
+    property var selectedItem
 
     //Spacing & Margins recommended by KDE HIG
     property int defaultSpacing: 4
@@ -39,6 +39,14 @@ ApplicationWindow {
     NewKeyWindow {
         id: newKeyWindow
         title: qsTr("Create new Key")
+    }
+
+    NewKeyWindow {
+        id: editKeyWindow
+        title: qsTr("Edit Key")
+        pathinfo: path.text
+        keyName: (typeof(selectedItem.name) === 'undefined' ? "" : selectedItem.name)
+        keyValue: (typeof(selectedItem.name) === 'undefined' ? "" : selectedItem.value)
     }
 
     NewKeyWindow {
@@ -83,7 +91,6 @@ ApplicationWindow {
         iconSource: "icons/delete.png"
         tooltip: "Delete"
         shortcut: StandardKey.Delete
-        onTriggered: {externTreeModel.deleteKey(path.text); selectedItem = ""}
     }
 
     Action {
@@ -109,7 +116,6 @@ ApplicationWindow {
         tooltip: qsTr("Undo")
         shortcut: StandardKey.Undo
         enabled: false
-        //        onTriggered: importDialog.open()
     }
 
     Action {
@@ -119,7 +125,6 @@ ApplicationWindow {
         tooltip: qsTr("Redo")
         shortcut: StandardKey.Redo
         enabled: false
-        //        onTriggered: importDialog.open()
     }
 
     Action {
@@ -149,8 +154,6 @@ ApplicationWindow {
         id: editAction
         text: qsTr("Edit...")
         tooltip: qsTr("Edit")
-        enabled: false
-        //        onTriggered:
     }
 
     Action {
@@ -159,7 +162,6 @@ ApplicationWindow {
         tooltip: qsTr("Cut")
         shortcut: StandardKey.Cut
         enabled: false
-        //        onTriggered:
     }
 
     Action {
@@ -168,7 +170,6 @@ ApplicationWindow {
         tooltip: qsTr("Copy")
         shortcut: StandardKey.Copy
         enabled: false
-        //        onTriggered:
     }
 
     Action {
@@ -177,7 +178,6 @@ ApplicationWindow {
         tooltip: qsTr("Paste")
         shortcut: StandardKey.Paste
         enabled: false
-        //        onTriggered:
     }
 
     menuBar: MenuBar {
@@ -289,8 +289,14 @@ ApplicationWindow {
     Menu {
         id: keyContextMenu
         MenuItem {
-            id:kcmDelete
+            id: kcmDelete
             action: deleteAction
+            onTriggered: {keyAreaView.model.removeRow(keyAreaView.tableIndex); metaAreaListView.model = {}}
+        }
+        MenuItem {
+            id: kcmEdit
+            action: editAction
+            onTriggered: editKeyWindow.show()
         }
     }
 
@@ -301,7 +307,6 @@ ApplicationWindow {
             id:tbLayout
 
             anchors.fill: parent
-            //            anchors.leftMargin: defaultMargins
             anchors.rightMargin: defaultSpacing
 
             ToolButton {
@@ -342,18 +347,6 @@ ApplicationWindow {
                 Layout.fillWidth: true
                 focus: true
             }
-        }
-    }
-
-    ListModel {
-        id: metaInfoModel
-        ListElement {
-            keyName: "Keyname"
-            keyValue: "Key1"
-        }
-        ListElement {
-            keyName: "Keytype"
-            keyValue: "String"
         }
     }
 
@@ -400,8 +393,8 @@ ApplicationWindow {
                     id: label
                     text: model.name
                     color: activePalette.windowText
-                    Component.onCompleted: console.log("modelData " + model.modelData + ", model: " + model + ", name: " + model.name +
-                                                       ", path: " + model.path + ", elements: " + model.children + ", childCount: " + model.childCount)
+                    //                    Component.onCompleted: console.log("modelData " + model.modelData + ", model: " + model + ", name: " + model.name +
+                    //                                                       ", path: " + model.path + ", elements: " + model.children + ", childCount: " + model.childCount)
                 }
                 contentItem: Loader {
                     id: content
@@ -521,14 +514,16 @@ ApplicationWindow {
 
                 TableView {
                     id: keyAreaView
+
+                    property int tableIndex: currentRow
                     anchors.fill: parent
                     anchors.margins: 2
                     frameVisible: false
                     alternatingRowColors: false
                     backgroundVisible: false
-//                    onCurrentRowChanged: console.log(currentRow)
-                    onClicked: { selectedItem = treeView.currentNode.getChildByIndex(keyAreaView.currentRow).name }
-                    Keys.onRightPressed: keyContextMenu.popup()
+                    onCurrentRowChanged: console.log(currentRow)
+                    Component.onCompleted: currentRow = -1
+                    onClicked: {selectedItem = model.get(currentRow)}
 
                     model:{
                         if(treeView.currentNode.childCount > 0 && treeView.currentNode.childrenHaveNoChildren && treeView.currentNode !== null)
@@ -544,6 +539,14 @@ ApplicationWindow {
                         title: qsTr("Value")
                         width: Math.round(keyArea.width*0.5)
                     }
+                    rowDelegate: Item {
+                        MouseArea {
+                            propagateComposedEvents: true
+                            anchors.fill: parent
+                            acceptedButtons: Qt.RightButton
+                            onClicked:keyContextMenu.popup()
+                        }
+                    }
                 }
             }
             BasicRectangle {
@@ -552,15 +555,21 @@ ApplicationWindow {
                 height: Math.round(mainRow.height*0.3)
 
                 ScrollView {
-                    id: metaAreaView
+                    id: metaAreaScrollView
                     anchors.fill: parent
                     anchors.margins: defaultMargins
 
                     ListView {
-                        model: metaInfoModel
+                        id: metaAreaListView
+                        property var metaAreaModel: selectedItem.metaValue
+                        model: metaAreaModel
                         delegate: Text {
                             color: activePalette.text
-                            text: keyName + ": " + keyValue
+
+                            text: {
+                                    if(typeof(selectedItem) !== 'undefined')
+                                        name + ": " + value
+                            }
                         }
                     }
                 }
@@ -618,11 +627,12 @@ ApplicationWindow {
 
     statusBar: StatusBar {
         id:mainStatusBar
+
         RowLayout {
             id: statusBarRow
             Label {
                 id: path
-                text: treeView.currentNode === null ? "" : treeView.currentNode.path + "/" + selectedItem
+                text: treeView.currentNode === null ? "" : treeView.currentNode.path + "/" + (typeof(selectedItem.name) === 'undefined' ? "" : selectedItem.name)
             }
         }
     }

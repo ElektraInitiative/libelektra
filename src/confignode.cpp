@@ -9,6 +9,17 @@ ConfigNode::ConfigNode()
 
 ConfigNode::ConfigNode(const QString &name, const QString &path):  m_name(name), m_path(path)
 {
+    KDB kdb;
+    KeySet config;
+    kdb.get(config, m_path.toStdString());
+
+    m_key = config.lookup(m_path.toStdString());
+
+    if(m_key && m_key.isString())
+        m_value = QVariant::fromValue(QString::fromStdString(m_key.getString()));
+
+    else if(m_key && m_key.isBinary())
+        m_value = QVariant::fromValue(QString::fromStdString(m_key.getBinary()));
 }
 
 ConfigNode::ConfigNode(const ConfigNode &other)
@@ -18,84 +29,39 @@ ConfigNode::ConfigNode(const ConfigNode &other)
 
 ConfigNode::~ConfigNode()
 {
-
+    qDeleteAll(m_children);
 }
 
-//int ConfigNode::rowCount(const QModelIndex &parent) const
-//{
-//    Q_UNUSED(parent)
-//    return m_children.count();
-//}
-
-//QVariant ConfigNode::data(const QModelIndex &index, int role) const
-//{
-//    if (!index.isValid())
-//        return QVariant();
-
-//    if (index.row() > (m_children.size()-1) )
-//        return QVariant();
-
-//    ConfigNode *node = m_children.at(index.row());
-
-//    switch (role)
-//    {
-
-//    case Qt::DisplayRole:
-
-//    case NameRole:
-//        return QVariant::fromValue(node->getName());
-
-//    case PathRole:
-//        return QVariant::fromValue(node->getPath());
-
-//    case ValueRole:
-//        return QVariant::fromValue(node->getValue());
-
-//    case ChildCountRole:
-//        return QVariant::fromValue(node->getChildCount());
-
-//    case ChildrenRole:
-//        return QVariant::fromValue(node->getChildren());
-
-//    case ChildrenHaveNoChildrenRole:
-//        return QVariant::fromValue(node->childrenHaveNoChildren());
-
-//    default:
-//        return QVariant();
-
-//    }
-//}
-
-int ConfigNode::getChildCount()
+int ConfigNode::getChildCount() const
 {
     return m_children.length();
 }
 
-QString ConfigNode::getName()
+QString ConfigNode::getName() const
 {
     return m_name;
 }
 
-QString ConfigNode::getPath()
+QString ConfigNode::getPath() const
 {
     return m_path;
 }
 
-QString ConfigNode::getValue()
+QVariant ConfigNode::getValue() const
 {
-    KDB kdb;
-    KeySet config;
-    kdb.get(config, m_path.toStdString());
 
-    Key k = config.lookup(m_path.toStdString());
+    return m_value;
 
-    if(k && k.isString())
-        return QString::fromStdString(k.getString());
-    else if(k && k.isBinary())
-        return QString::fromStdString(k.getBinary());
-    else
-        return "";
+}
 
+void ConfigNode::setName(const QString &name)
+{
+    m_name = name;
+}
+
+void ConfigNode::setValue(const QVariant &value)
+{
+    m_value = value;
 }
 
 void ConfigNode::appendChild(ConfigNode *node)
@@ -103,7 +69,7 @@ void ConfigNode::appendChild(ConfigNode *node)
     m_children.append(node);
 }
 
-bool ConfigNode::hasChild(const QString &name)
+bool ConfigNode::hasChild(const QString &name) const
 {
     foreach(ConfigNode *node, m_children){
         if(node->getName() == name){
@@ -118,6 +84,25 @@ bool ConfigNode::hasChild(const QString &name)
 TreeViewModel* ConfigNode::getChildren()
 {
     return new TreeViewModel(m_children);
+}
+
+TreeViewModel *ConfigNode::getMetaValue()
+{
+
+    QList<ConfigNode*> meta;
+
+    if(m_key){
+        m_key.rewindMeta();
+
+        while(m_key.nextMeta()){
+            ConfigNode *node = new ConfigNode();
+            node->setName(QString::fromStdString(m_key.currentMeta().getName()));
+            node->setValue(QString::fromStdString(m_key.currentMeta().getString()));
+            meta << node;
+        }
+    }
+
+    return new TreeViewModel(meta);
 }
 
 ConfigNode *ConfigNode::getChildByName(QString &name)
@@ -139,7 +124,7 @@ ConfigNode *ConfigNode::getChildByIndex(int index)
         return new ConfigNode("","");
 }
 
-bool ConfigNode::childrenHaveNoChildren()
+bool ConfigNode::childrenHaveNoChildren() const
 {
     int children = 0;
 
@@ -149,17 +134,3 @@ bool ConfigNode::childrenHaveNoChildren()
 
     return children == 0;
 }
-
-//QHash<int, QByteArray> ConfigNode::roleNames() const
-//{
-//    QHash<int, QByteArray> roles;
-//    roles[NameRole] = "name";
-//    roles[PathRole] = "path";
-//    roles[ValueRole] = "value";
-//    roles[ChildCountRole] = "childCount";
-//    roles[ChildrenRole] = "children";
-//    roles[ChildrenHaveNoChildrenRole] = "childrenHaveNoChildren";
-//    return roles;
-//}
-
-
