@@ -7,8 +7,11 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
+#include <merging/metamergestrategy.hpp>
 #include <merging/automergestrategy.hpp>
+#include <merging/onesidestrategy.hpp>
 #include <merging/interactivemergestrategy.hpp>
 
 using namespace kdb;
@@ -17,6 +20,53 @@ using namespace std;
 
 MergeCommand::MergeCommand()
 {
+	// TODO: this is just a quickfix, find a better solution
+	// without eager instantiating all the strategies. Maybe even automatically
+	// discover all available strategies
+	strategyMap.insert (make_pair ("auto", new AutoMergeStrategy()));
+
+	strategyMap.insert (make_pair ("ours", new OneSideStrategy(OURS)));
+	strategyMap.insert (make_pair ("theirs", new OneSideStrategy(THEIRS)));
+	strategyMap.insert (make_pair ("base", new OneSideStrategy(BASE)));
+
+	merger = ThreeWayMerge();
+	// TODO: for now we have to position this strategy manually
+	// to avoid meta information loss
+	metaStrategy = new MetaMergeStrategy(merger);
+	merger.addConflictStrategy(metaStrategy);
+}
+
+MergeCommand::~MergeCommand()
+{
+	vector<MergeConflictStrategy*> strategies = getAllStrategies();
+	for (vector<MergeConflictStrategy*>::iterator it = strategies.begin(); it != strategies.end (); ++it)
+	{
+		delete (*it);
+	}
+
+	delete (metaStrategy);
+}
+
+vector<MergeConflictStrategy*> MergeCommand::getAllStrategies()
+{
+	vector<MergeConflictStrategy*> result;
+	for (map<string, MergeConflictStrategy*>::iterator it = strategyMap.begin (); it != strategyMap.end (); ++it)
+	{
+		result.push_back ((*it).second);
+	}
+
+	return result;
+}
+
+string MergeCommand::getStrategyList()
+{
+	ostringstream oss;
+	for (map<string, MergeConflictStrategy*>::iterator it = strategyMap.begin (); it != strategyMap.end (); ++it)
+	{
+		oss << (*it).first << ",";
+	}
+
+	return oss.str ();
 }
 
 int MergeCommand::execute(Cmdline const& cl)
@@ -82,17 +132,31 @@ int MergeCommand::execute(Cmdline const& cl)
 	ours = ours.cut (ourRoot);
 	theirs = theirs.cut (theirRoot);
 
-	// TODO: check for last modification time (otherwise the result flaps)
-	ThreeWayMerge merger;
-
 	if (cl.interactive)
 	{
-		merger.addConflictStrategy(new InteractiveMergeStrategy(cin, cout));
+		merger.addConflictStrategy (new InteractiveMergeStrategy (cin, cout));
 		cout << "Choose interactive merge" << endl;
 	}
 	else
 	{
-		merger.addConflictStrategy(new AutoMergeStrategy());
+		if (cl.strategy.size () > 0)
+		{
+			istringstream sstream (cl.strategy);
+			string current;
+			while (getline (sstream, current, ','))
+			{
+				if (strategyMap.find (current) == strategyMap.end ())
+				{
+					throw invalid_argument (
+							"'" + current + "' is not a valid strategy. Valid strategies are: " + getStrategyList ());
+				}
+
+				MergeConflictStrategy *strategy = strategyMap[current];
+				merger.addConflictStrategy (strategy);
+			}
+
+
+		}
 	}
 
 
@@ -137,6 +201,3 @@ int MergeCommand::execute(Cmdline const& cl)
 	return ret;
 }
 
-MergeCommand::~MergeCommand()
-{
-}
