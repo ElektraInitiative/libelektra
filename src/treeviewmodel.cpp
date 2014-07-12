@@ -8,6 +8,11 @@ TreeViewModel::TreeViewModel(QObject *parent)
     populateModel();
 }
 
+TreeViewModel::TreeViewModel(QList<ConfigNode *> &nodes)
+{
+    m_model = nodes;
+}
+
 TreeViewModel::TreeViewModel(const TreeViewModel &other)
 {
 
@@ -15,21 +20,8 @@ TreeViewModel::TreeViewModel(const TreeViewModel &other)
 
 TreeViewModel::~TreeViewModel()
 {
-
+    qDeleteAll(m_model);
 }
-
-//QVariantList TreeViewModel::getModel(){
-
-//    populateModel();
-
-//    QVariantList model;
-
-//    foreach(ConfigNode *node, m_model){
-//        model.append(QVariant::fromValue(node));
-//    }
-
-//    return model;
-//}
 
 int TreeViewModel::rowCount(const QModelIndex &parent) const
 {
@@ -78,6 +70,16 @@ QVariant TreeViewModel::data(const QModelIndex &index, int role) const
     }
 }
 
+bool TreeViewModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+
+}
+
+Qt::ItemFlags TreeViewModel::flags(const QModelIndex &index) const
+{
+
+}
+
 QHash<int, QByteArray> TreeViewModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
@@ -107,24 +109,6 @@ void TreeViewModel::sink(ConfigNode *node, QStringList keys, QString path){
     }
 }
 
-//void TreeViewModel::synchronize()
-//{
-//    m_ctxt->setContextProperty("externTreeModel", QVariant::fromValue(this));
-//}
-
-//void TreeViewModel::deleteKey(const QString &path)
-//{
-//    Key k = m_config.lookup(path.toStdString());
-
-//    if(k){
-//        qDebug() << "Key found";
-//        m_config.cut(k);
-//    }
-
-//    m_kdb.set(m_config, path.toStdString());
-//    synchronize();
-//}
-
 void TreeViewModel::populateModel()
 {
     m_kdb.get(m_config, "/");
@@ -134,11 +118,12 @@ void TreeViewModel::populateModel()
     ConfigNode *root = new ConfigNode("user", "user");
 
     m_model.clear();
+    beginInsertRows(QModelIndex(),rowCount(),rowCount());
     m_model << system << root;
 
     QStringList configData;
 
-    qDebug() << "In populateModel: ";
+//    qDebug() << "In populateModel: ";
 
     while(m_config.next()){
         configData << QString::fromStdString(m_config.current().getName());

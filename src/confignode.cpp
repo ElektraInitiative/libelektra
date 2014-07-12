@@ -21,6 +21,51 @@ ConfigNode::~ConfigNode()
 
 }
 
+//int ConfigNode::rowCount(const QModelIndex &parent) const
+//{
+//    Q_UNUSED(parent)
+//    return m_children.count();
+//}
+
+//QVariant ConfigNode::data(const QModelIndex &index, int role) const
+//{
+//    if (!index.isValid())
+//        return QVariant();
+
+//    if (index.row() > (m_children.size()-1) )
+//        return QVariant();
+
+//    ConfigNode *node = m_children.at(index.row());
+
+//    switch (role)
+//    {
+
+//    case Qt::DisplayRole:
+
+//    case NameRole:
+//        return QVariant::fromValue(node->getName());
+
+//    case PathRole:
+//        return QVariant::fromValue(node->getPath());
+
+//    case ValueRole:
+//        return QVariant::fromValue(node->getValue());
+
+//    case ChildCountRole:
+//        return QVariant::fromValue(node->getChildCount());
+
+//    case ChildrenRole:
+//        return QVariant::fromValue(node->getChildren());
+
+//    case ChildrenHaveNoChildrenRole:
+//        return QVariant::fromValue(node->childrenHaveNoChildren());
+
+//    default:
+//        return QVariant();
+
+//    }
+//}
+
 int ConfigNode::getChildCount()
 {
     return m_children.length();
@@ -70,21 +115,10 @@ bool ConfigNode::hasChild(const QString &name)
     return false;
 }
 
-QVariantList ConfigNode::getChildren()
+TreeViewModel* ConfigNode::getChildren()
 {
-    QVariantList children;
-
-    foreach(ConfigNode *node, m_children){
-        children.append(QVariant::fromValue(node));
-    }
-
-    return children;
+    return new TreeViewModel(m_children);
 }
-
-//QVariant ConfigNode::getChildren()
-//{
-//    return QVariant::fromValue(m_children);
-//}
 
 ConfigNode *ConfigNode::getChildByName(QString &name)
 {
@@ -93,6 +127,8 @@ ConfigNode *ConfigNode::getChildByName(QString &name)
             return node;
         }
     }
+
+    return new ConfigNode("","");
 }
 
 ConfigNode *ConfigNode::getChildByIndex(int index)
@@ -113,5 +149,17 @@ bool ConfigNode::childrenHaveNoChildren()
 
     return children == 0;
 }
+
+//QHash<int, QByteArray> ConfigNode::roleNames() const
+//{
+//    QHash<int, QByteArray> roles;
+//    roles[NameRole] = "name";
+//    roles[PathRole] = "path";
+//    roles[ValueRole] = "value";
+//    roles[ChildCountRole] = "childCount";
+//    roles[ChildrenRole] = "children";
+//    roles[ChildrenHaveNoChildrenRole] = "childrenHaveNoChildren";
+//    return roles;
+//}
 
 

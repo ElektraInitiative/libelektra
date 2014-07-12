@@ -8,11 +8,16 @@
 #include <kdb.hpp>
 #include <keyio.hpp>
 
+#include "treeviewmodel.hpp"
+
+class TreeViewModel;
+
 class ConfigNode : public QObject
 {
     Q_OBJECT
 
 public:
+
     ConfigNode();
     explicit ConfigNode(const QString &name, const QString &path);
     ConfigNode(const ConfigNode &other);
@@ -24,8 +29,7 @@ public:
     QString getValue();
     void appendChild(ConfigNode *node);
     bool hasChild(const QString &name);
-    QVariantList getChildren();
-//    QVariant getChildren();
+    TreeViewModel *getChildren();
     Q_INVOKABLE ConfigNode *getChildByName(QString &name);
     Q_INVOKABLE ConfigNode *getChildByIndex(int index);
     Q_INVOKABLE bool childrenHaveNoChildren();
@@ -35,9 +39,8 @@ private:
     QString m_path;
     QString m_value;
     QList<ConfigNode*> m_children;
-
 };
 
-Q_DECLARE_METATYPE(ConfigNode*)
+Q_DECLARE_METATYPE(ConfigNode)
 
 #endif // CONFIGNODE_H

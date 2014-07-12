@@ -10,10 +10,11 @@
 
 #include "confignode.hpp"
 
-class TreeViewModel : public QAbstractListModel {
-    Q_OBJECT
+class ConfigNode;
 
-    //    Q_PROPERTY(QVariantList model READ getModel() NOTIFY modelChanged())
+class TreeViewModel : public QAbstractListModel {
+
+    Q_OBJECT
 
 public:
 
@@ -27,21 +28,21 @@ public:
     };
 
     explicit TreeViewModel(QObject *parent =  0);
+    TreeViewModel(QList<ConfigNode*> &nodes);
     TreeViewModel(const TreeViewModel &other);
     ~TreeViewModel();
-    //    QVariantList getModel();
+
+    //mandatory methods
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
-    void sink(ConfigNode *node, QStringList keys, QString path);
+    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
+    Qt::ItemFlags flags(const QModelIndex &index) const;
 
-    //    Q_INVOKABLE void synchronize();
-    //    Q_INVOKABLE void deleteKey(const QString &path);
+    void sink(ConfigNode *node, QStringList keys, QString path);
 
 private:
     QList<ConfigNode*> m_model;
     void populateModel();
-    //    QQmlContext *m_ctxt;
-
     kdb::KeySet m_config;
     kdb::KDB m_kdb;
 
