@@ -47,6 +47,7 @@ ApplicationWindow {
         pathinfo: path.text
         keyName: (typeof(selectedItem.name) === 'undefined' ? "" : selectedItem.name)
         keyValue: (typeof(selectedItem.name) === 'undefined' ? "" : selectedItem.value)
+        metaCount: (typeof(selectedItem.rowCount) === 'undefined' ? "" : selectedItem.rowCount)
     }
 
     NewKeyWindow {
@@ -296,7 +297,7 @@ ApplicationWindow {
         MenuItem {
             id: kcmEdit
             action: editAction
-            onTriggered: editKeyWindow.show()
+            onTriggered: {editKeyWindow.show(); editKeyWindow.populateMetaArea()}
         }
     }
 
@@ -521,7 +522,7 @@ ApplicationWindow {
                     frameVisible: false
                     alternatingRowColors: false
                     backgroundVisible: false
-                    onCurrentRowChanged: console.log(currentRow)
+//                    onCurrentRowChanged: console.log(currentRow)
                     Component.onCompleted: currentRow = -1
                     onClicked: {selectedItem = model.get(currentRow)}
 
@@ -539,12 +540,14 @@ ApplicationWindow {
                         title: qsTr("Value")
                         width: Math.round(keyArea.width*0.5)
                     }
-                    rowDelegate: Item {
+                    rowDelegate: Rectangle {
+                        width: keyAreaView.width
+                        color: styleData.selected ? activePalette.highlight : "transparent"
                         MouseArea {
                             propagateComposedEvents: true
                             anchors.fill: parent
                             acceptedButtons: Qt.RightButton
-                            onClicked:keyContextMenu.popup()
+                            onClicked: keyContextMenu.popup()
                         }
                     }
                 }
@@ -567,8 +570,8 @@ ApplicationWindow {
                             color: activePalette.text
 
                             text: {
-                                    if(typeof(selectedItem) !== 'undefined')
-                                        name + ": " + value
+                                if(typeof(selectedItem) !== 'undefined')
+                                    name + ": " + value
                             }
                         }
                     }

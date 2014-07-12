@@ -14,6 +14,7 @@ BasicWindow {
     property string pathinfo
     property string keyName
     property string keyValue
+    property int metaCount
 
     contents: ColumnLayout {
         anchors.fill: parent
@@ -37,7 +38,7 @@ BasicWindow {
                 id: nameTextField
                 Layout.fillWidth: true
                 focus: true
-                placeholderText: keyName
+                text: keyName
             }
         }
         RowLayout {
@@ -51,7 +52,7 @@ BasicWindow {
             TextField {
                 id: valueTextField
                 Layout.fillWidth: true
-                placeholderText: keyValue
+                text: keyValue
             }
         }
         BasicRectangle {
@@ -63,25 +64,20 @@ BasicWindow {
                 anchors.fill: parent
                 anchors.margins: defaultSpacing
                 ListView {
+                    id: metaKeyListView
                     anchors.fill: parent
                     spacing: defaultMargins
                     model: metaKeyModel
-                    delegate: myDelegate
+                    delegate: metaKeyDelegate
                 }
             }
             ListModel {
                 id: metaKeyModel
-
-                ListElement {
-                    element: "NewMetaKey.qml"
-                }
             }
             Component {
-                id: myDelegate
-                Item {
-                    Loader {
-                        source: element
-                    }
+                id: metaKeyDelegate
+                NewMetaKey {
+
                 }
             }
         }
@@ -89,6 +85,13 @@ BasicWindow {
             id: addButton
             anchors.horizontalCenter: parent.horizontalCenter
             text: qsTr("New Meta Key")
+            onClicked: metaKeyListView.model.append({})
+        }
+    }
+
+    function populateMetaArea() {
+        for(var i = 0; i < metaCount; i++){
+            metaKeyListView.model.append({"metaName": mainWindow.selectedItem.metaValue.get(i).name, "metaValue": mainWindow.selectedItem.metaValue.get(i).value})
         }
     }
 }

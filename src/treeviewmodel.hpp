@@ -25,7 +25,8 @@ public:
         ChildCountRole,
         ChildrenRole,
         ChildrenHaveNoChildrenRole,
-        MetaValueRole
+        MetaValueRole,
+        RowCountRole
     };
 
     explicit TreeViewModel(QObject *parent =  0);

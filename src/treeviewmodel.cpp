@@ -67,6 +67,9 @@ QVariant TreeViewModel::data(const QModelIndex &index, int role) const
     case MetaValueRole:
         return QVariant::fromValue(node->getMetaValue());
 
+    case RowCountRole:
+        return QVariant::fromValue(m_model.count());
+
     default:
         return QVariant();
 
@@ -181,5 +184,6 @@ QHash<int, QByteArray> TreeViewModel::roleNames() const
     roles[ChildrenRole] = "children";
     roles[ChildrenHaveNoChildrenRole] = "childrenHaveNoChildren";
     roles[MetaValueRole] = "metaValue";
+    roles[RowCountRole] = "rowCount";
     return roles;
 }

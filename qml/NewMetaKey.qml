@@ -8,9 +8,6 @@ Item {
     width: metaArea.width - 3*defaultMargins
     height: metaNameField.height
 
-    property alias metaNameField: metaNameField
-    property alias metaValueField: metaValueField
-
     RowLayout {
         anchors.fill: parent
         anchors.margins: defaultMargins
@@ -19,15 +16,18 @@ Item {
             id: metaNameField
             Layout.fillWidth: true
             placeholderText : qsTr("Meta Key Name...")
+            text: metaName
         }
         TextField {
             id: metaValueField
             Layout.fillWidth: true
             placeholderText : qsTr("Meta Key Value...")
+            text: metaValue
         }
         Button {
             id:deleteMetaButton
             iconSource: "icons/application-exit.png"
+            onClicked: metaKeyModel.remove(index)
         }
     }
 }
