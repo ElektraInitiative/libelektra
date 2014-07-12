@@ -55,10 +55,11 @@ void MetaMergeStrategy::resolveConflict(const MergeTask& task, Key& conflictKey,
 	Key ourKey = task.ours.lookup(ourLookup);
 	Key theirKey = task.theirs.lookup(theirLookup);
 
-	Key root ("user/");
+	Key root ("user/", KEY_END);
 	KeySet baseMeta = getMetaKeys (baseKey);
 	KeySet ourMeta = getMetaKeys (ourKey);
 	KeySet theirMeta = getMetaKeys (theirKey);
+
 	MergeTask metaTask(BaseMergeKeys (baseMeta, root), OurMergeKeys (ourMeta, root),
 			TheirMergeKeys (theirMeta, root), root);
 
