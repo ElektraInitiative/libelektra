@@ -96,6 +96,7 @@ TreeViewModel *ConfigNode::getMetaValue()
 
         while(m_key.nextMeta()){
             ConfigNode *node = new ConfigNode();
+            qDebug() << "Metaname = " << QString::fromStdString(m_key.currentMeta().getName());
             node->setName(QString::fromStdString(m_key.currentMeta().getName()));
             node->setValue(QString::fromStdString(m_key.currentMeta().getString()));
             meta << node;

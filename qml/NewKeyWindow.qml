@@ -6,7 +6,7 @@ import QtQuick.Layouts 1.1
 import QtQuick.Dialogs 1.1
 
 BasicWindow {
-
+    id: editWindow
     property alias valueLayout: valueLayout
     property alias nameLabel: nameLabel
     property alias addButton: addButton
@@ -14,7 +14,9 @@ BasicWindow {
     property string pathinfo
     property string keyName
     property string keyValue
-    property int metaCount
+    property int metaCount: 0
+
+    cancelButton.onClicked: {editWindow.visible = false; metaKeyListView.model.clear()}
 
     contents: ColumnLayout {
         anchors.fill: parent
@@ -90,6 +92,7 @@ BasicWindow {
     }
 
     function populateMetaArea() {
+        console.log(metaCount)
         for(var i = 0; i < metaCount; i++){
             metaKeyListView.model.append({"metaName": mainWindow.selectedItem.metaValue.get(i).name, "metaValue": mainWindow.selectedItem.metaValue.get(i).value})
         }

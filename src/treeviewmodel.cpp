@@ -68,7 +68,7 @@ QVariant TreeViewModel::data(const QModelIndex &index, int role) const
         return QVariant::fromValue(node->getMetaValue());
 
     case RowCountRole:
-        return QVariant::fromValue(m_model.count());
+        return QVariant::fromValue(m_model.size());
 
     default:
         return QVariant();

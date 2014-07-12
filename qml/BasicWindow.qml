@@ -9,6 +9,7 @@ Window {
     id: basicWindow
 
     property alias okButton: okButton
+    property alias cancelButton: cancelButton
     default property alias contents: placeholder.children
 
     minimumWidth: Math.round(mainWindow.width*0.35)
