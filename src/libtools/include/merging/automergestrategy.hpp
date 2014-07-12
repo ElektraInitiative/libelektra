@@ -6,8 +6,8 @@
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
  */
-#ifndef ONESIDESTRATEGY_HPP_
-#define ONESIDESTRATEGY_HPP_
+#ifndef AUTOMERGESTRATEGY_HPP_
+#define AUTOMERGESTRATEGY_HPP_
 
 #include <merging/mergeconflictstrategy.hpp>
 
@@ -30,4 +30,4 @@ public:
 }
 }
 
-#endif /* ONESIDESTRATEGY_HPP_ */
+#endif /* AUTOMERGESTRATEGY_HPP_ */
