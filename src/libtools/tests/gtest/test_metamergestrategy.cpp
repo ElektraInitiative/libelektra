@@ -53,3 +53,5 @@ TEST_F(MetaMergeStrategyTest, MergesMetaWithInnerStrategy)
 	EXPECT_EQ("valueo", merged.lookup (mk1).getMeta<string> ("testmeta"));
 }
 
+// TODO: test conflict resolution
+

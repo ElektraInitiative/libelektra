@@ -20,6 +20,8 @@ protected:
 	ThreeWayMerge merger;
 };
 
+// TODO: test all the cases from automergestrategy here too (they were moved)
+
 TEST_F(ThreeWayMergeTest, EqualKeySetsMerge)
 {
 	MergeResult result = merger.mergeKeySet (base, ours, theirs, mergeParent);
