@@ -11,12 +11,12 @@ BasicWindow {
     property alias nameLabel: nameLabel
     property alias addButton: addButton
     property alias metaKeyModel: metaKeyModel
-    property string pathinfo
-    property string keyName
-    property string keyValue
+    property string path: ""
+    property string keyName: ""
+    property string keyValue: ""
     property int metaCount: 0
 
-    cancelButton.onClicked: {editWindow.visible = false; metaKeyListView.model.clear()}
+    cancelButton.onClicked: {editWindow.visible = false; metaKeyModel.clear()}
 
     contents: ColumnLayout {
         anchors.fill: parent
@@ -26,7 +26,7 @@ BasicWindow {
 
         Text{
             id: pathInfo
-            text: pathinfo
+            text: path
             color: disabledPalette.text
         }
         RowLayout {
@@ -87,14 +87,14 @@ BasicWindow {
             id: addButton
             anchors.horizontalCenter: parent.horizontalCenter
             text: qsTr("New Meta Key")
-            onClicked: metaKeyListView.model.append({})
+            onClicked: metaKeyModel.append({})
         }
     }
 
     function populateMetaArea() {
-        console.log(metaCount)
+        console.log("i = " + metaCount + ", name = " + mainWindow.selectedItem.metaValue.get(i).name)
         for(var i = 0; i < metaCount; i++){
-            metaKeyListView.model.append({"metaName": mainWindow.selectedItem.metaValue.get(i).name, "metaValue": mainWindow.selectedItem.metaValue.get(i).value})
+            metaKeyModel.append({"metaName": mainWindow.selectedItem.metaValue.get(i).name, "metaValue": mainWindow.selectedItem.metaValue.get(i).value})
         }
     }
 }

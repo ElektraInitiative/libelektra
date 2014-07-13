@@ -26,16 +26,18 @@ public:
         ChildrenRole,
         ChildrenHaveNoChildrenRole,
         MetaValueRole,
-        RowCountRole
+        RowCountRole,
+        NodeRole
     };
 
     explicit TreeViewModel(QObject *parent =  0);
-    TreeViewModel(QList<ConfigNode*> &nodes);
+    TreeViewModel(QList<ConfigNode *> nodes);
     TreeViewModel(const TreeViewModel &other);
     ~TreeViewModel();
 
     //mandatory methods inherited from QAbstractItemModel
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
+    Q_INVOKABLE int qmlRowCount() const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
     bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex());

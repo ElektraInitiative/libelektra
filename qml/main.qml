@@ -17,7 +17,8 @@ ApplicationWindow {
     property int deltaKeyAreaHeight: Math.round(keyArea.height-searchResultsArea.height*0.5-defaultSpacing)
     property int deltaKeyAreaWidth: Math.round(mainRow.width*0.7-defaultSpacing)
     property int deltaMetaAreaHeight: Math.round(metaArea.height-searchResultsArea.height*0.5)
-    property var selectedItem
+    property var selectedItem: null
+    property var metaAreaModel: (selectedItem === null ? null : selectedItem.metaValue)
 
     //Spacing & Margins recommended by KDE HIG
     property int defaultSpacing: 4
@@ -44,10 +45,10 @@ ApplicationWindow {
     NewKeyWindow {
         id: editKeyWindow
         title: qsTr("Edit Key")
-        pathinfo: path.text
-        keyName: (typeof(selectedItem.name) === 'undefined' ? "" : selectedItem.name)
-        keyValue: (typeof(selectedItem.name) === 'undefined' ? "" : selectedItem.value)
-        metaCount: (typeof(selectedItem.rowCount) === 'undefined' ? "" : selectedItem.rowCount)
+        path: path.text
+        keyName: (selectedItem === null ? "" : selectedItem.name)
+        keyValue: (selectedItem === null ? "" : selectedItem.value)
+        metaCount: (metaAreaModel === null ? 0 : metaAreaModel.qmlRowCount())
     }
 
     NewKeyWindow {
@@ -387,8 +388,8 @@ ApplicationWindow {
                 property var model: externTreeModel
                 property int rowHeight: 19
                 property int columnIndent: 22
-                property var currentNode
-                property var currentItem
+                property var currentNode: null
+                property var currentItem: null
 
                 property Component delegate: Label {
                     id: label
@@ -448,7 +449,7 @@ ApplicationWindow {
                                                 if(mouse.button == Qt.LeftButton){
                                                     treeView.currentNode = model
                                                     treeView.currentItem = loader
-                                                    selectedItem = ""
+                                                    selectedItem = null
                                                     forceActiveFocus()
                                                 }
                                                 else if(mouse.button == Qt.RightButton)
@@ -524,11 +525,12 @@ ApplicationWindow {
                     backgroundVisible: false
 //                    onCurrentRowChanged: console.log(currentRow)
                     Component.onCompleted: currentRow = -1
-                    onClicked: {selectedItem = model.get(currentRow)}
+                    onClicked: selectedItem = model.get(currentRow)
 
                     model:{
-                        if(treeView.currentNode.childCount > 0 && treeView.currentNode.childrenHaveNoChildren && treeView.currentNode !== null)
-                            treeView.currentNode.children
+                        if(treeView.currentNode !== null)
+                            if(treeView.currentNode.childCount > 0 && treeView.currentNode.childrenHaveNoChildren)
+                                treeView.currentNode.children
                     }
                     TableViewColumn {
                         role: "name"
@@ -564,15 +566,11 @@ ApplicationWindow {
 
                     ListView {
                         id: metaAreaListView
-                        property var metaAreaModel: selectedItem.metaValue
                         model: metaAreaModel
+
                         delegate: Text {
                             color: activePalette.text
-
-                            text: {
-                                if(typeof(selectedItem) !== 'undefined')
-                                    name + ": " + value
-                            }
+                            text: selectedItem === null ? "" : (name + ": " + value)
                         }
                     }
                 }
@@ -627,7 +625,6 @@ ApplicationWindow {
             }
         }
     }
-
     statusBar: StatusBar {
         id:mainStatusBar
 
@@ -635,7 +632,7 @@ ApplicationWindow {
             id: statusBarRow
             Label {
                 id: path
-                text: treeView.currentNode === null ? "" : treeView.currentNode.path + "/" + (typeof(selectedItem.name) === 'undefined' ? "" : selectedItem.name)
+                text: treeView.currentNode === null ? "" : treeView.currentNode.path + "/" + (selectedItem === null ? "" : selectedItem.name)
             }
         }
     }

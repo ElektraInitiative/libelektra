@@ -5,17 +5,18 @@ using namespace kdb;
 
 TreeViewModel::TreeViewModel(QObject *parent)
 {
+    Q_UNUSED(parent)
     populateModel();
 }
 
-TreeViewModel::TreeViewModel(QList<ConfigNode *> &nodes)
+TreeViewModel::TreeViewModel(QList<ConfigNode *> nodes)
 {
     m_model = nodes;
 }
 
 TreeViewModel::TreeViewModel(const TreeViewModel &other)
 {
-
+    Q_UNUSED(other)
 }
 
 TreeViewModel::~TreeViewModel()
@@ -26,6 +27,11 @@ TreeViewModel::~TreeViewModel()
 int TreeViewModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
+    return m_model.count();
+}
+
+int TreeViewModel::qmlRowCount() const
+{
     return m_model.count();
 }
 
@@ -68,7 +74,10 @@ QVariant TreeViewModel::data(const QModelIndex &index, int role) const
         return QVariant::fromValue(node->getMetaValue());
 
     case RowCountRole:
-        return QVariant::fromValue(m_model.size());
+        return QVariant::fromValue(m_model.count());
+
+    case NodeRole:
+        return QVariant::fromValue(node);
 
     default:
         return QVariant();
@@ -78,12 +87,12 @@ QVariant TreeViewModel::data(const QModelIndex &index, int role) const
 
 bool TreeViewModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-
+    Q_UNIMPLEMENTED();
 }
 
 bool TreeViewModel::insertRows(int row, int count, const QModelIndex &parent)
 {
-
+    Q_UNIMPLEMENTED();
 }
 
 bool TreeViewModel::removeRow(int row, const QModelIndex &parent)
@@ -185,5 +194,6 @@ QHash<int, QByteArray> TreeViewModel::roleNames() const
     roles[ChildrenHaveNoChildrenRole] = "childrenHaveNoChildren";
     roles[MetaValueRole] = "metaValue";
     roles[RowCountRole] = "rowCount";
+    roles[NodeRole] = "node";
     return roles;
 }
