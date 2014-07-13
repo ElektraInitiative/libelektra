@@ -3,8 +3,6 @@
 
 #include <QObject>
 #include <QVariant>
-#include <QVariantList>
-#include <QtDeclarative/QDeclarativeListProperty>
 #include <kdb.hpp>
 #include <keyio.hpp>
 
@@ -18,9 +16,8 @@ class ConfigNode : public QObject
 
 public:
 
-    ConfigNode();
     explicit ConfigNode(const QString &name, const QString &path);
-    ConfigNode(const ConfigNode &other);
+    ConfigNode();
     ~ConfigNode();
 
     int                     getChildCount() const;
@@ -44,7 +41,5 @@ private:
     kdb::Key m_key;
     QList<ConfigNode*> m_children;
 };
-
-Q_DECLARE_METATYPE(ConfigNode)
 
 #endif // CONFIGNODE_H

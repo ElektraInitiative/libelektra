@@ -17,8 +17,9 @@ ApplicationWindow {
     property int deltaKeyAreaHeight: Math.round(keyArea.height-searchResultsArea.height*0.5-defaultSpacing)
     property int deltaKeyAreaWidth: Math.round(mainRow.width*0.7-defaultSpacing)
     property int deltaMetaAreaHeight: Math.round(metaArea.height-searchResultsArea.height*0.5)
-    property var selectedItem: null
-    property var metaAreaModel: (selectedItem === null ? null : selectedItem.metaValue)
+    property var keyAreaSelectedItem: null
+    //TreeViewModel
+    property var metaAreaModel: (keyAreaSelectedItem === null ? null : keyAreaSelectedItem.metaValue)
 
     //Spacing & Margins recommended by KDE HIG
     property int defaultSpacing: 4
@@ -45,10 +46,10 @@ ApplicationWindow {
     NewKeyWindow {
         id: editKeyWindow
         title: qsTr("Edit Key")
-        path: path.text
-        keyName: (selectedItem === null ? "" : selectedItem.name)
-        keyValue: (selectedItem === null ? "" : selectedItem.value)
-        metaCount: (metaAreaModel === null ? 0 : metaAreaModel.qmlRowCount())
+        path: treeView.currentNode === null ? "" : treeView.currentNode.path
+        keyName: keyAreaSelectedItem === null ? "" : keyAreaSelectedItem.name
+        keyValue: keyAreaSelectedItem === null ? "" : keyAreaSelectedItem.value
+        metaCount: metaAreaModel === null ? 0 : metaAreaModel.qmlRowCount()
     }
 
     NewKeyWindow {
@@ -136,6 +137,7 @@ ApplicationWindow {
         tooltip: qsTr("Synchronize")
         shortcut: StandardKey.Refresh
         onTriggered: externTreeModel.synchronize()
+        enabled: false
     }
 
     Action {
@@ -293,12 +295,19 @@ ApplicationWindow {
         MenuItem {
             id: kcmDelete
             action: deleteAction
-            onTriggered: {keyAreaView.model.removeRow(keyAreaView.tableIndex); metaAreaListView.model = {}}
+            onTriggered: {
+                keyAreaView.model.removeRow(keyAreaView.tableIndex)
+                keyAreaView.__decrementCurrentIndex()
+                keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.tableIndex)
+            }
         }
         MenuItem {
             id: kcmEdit
             action: editAction
-            onTriggered: {editKeyWindow.show(); editKeyWindow.populateMetaArea()}
+            onTriggered: {
+                editKeyWindow.show()
+                editKeyWindow.populateMetaArea()
+            }
         }
     }
 
@@ -395,8 +404,6 @@ ApplicationWindow {
                     id: label
                     text: model.name
                     color: activePalette.windowText
-                    //                    Component.onCompleted: console.log("modelData " + model.modelData + ", model: " + model + ", name: " + model.name +
-                    //                                                       ", path: " + model.path + ", elements: " + model.children + ", childCount: " + model.childCount)
                 }
                 contentItem: Loader {
                     id: content
@@ -426,7 +433,10 @@ ApplicationWindow {
                             Column {
                                 id: column
                                 x: 2
-                                Item { height: isRoot ? 0 : treeView.rowHeight; width: 1}
+                                Item {
+                                    height: isRoot ? 0 : treeView.rowHeight
+                                    width: 1
+                                }
                                 Repeater {
                                     model: elements
                                     Item {
@@ -449,7 +459,7 @@ ApplicationWindow {
                                                 if(mouse.button == Qt.LeftButton){
                                                     treeView.currentNode = model
                                                     treeView.currentItem = loader
-                                                    selectedItem = null
+                                                    keyAreaSelectedItem = null
                                                     forceActiveFocus()
                                                 }
                                                 else if(mouse.button == Qt.RightButton)
@@ -465,11 +475,15 @@ ApplicationWindow {
 
                                                 Image {
                                                     id: expander
-                                                    source: "icons/expander.png"
+                                                    source: "icons/arrow-right.png"
                                                     opacity: mouse.containsMouse ? 1 : 0.7
                                                     anchors.centerIn: parent
                                                     rotation: loader.expanded ? 90 : 0
-                                                    Behavior on rotation {NumberAnimation { duration: 120}}
+                                                    Behavior on rotation {
+                                                        NumberAnimation {
+                                                            duration: 120
+                                                        }
+                                                    }
                                                 }
                                                 MouseArea {
                                                     id: mouse
@@ -491,7 +505,7 @@ ApplicationWindow {
                                             id: loader
                                             x: treeView.columnIndent
                                             height: expanded ? implicitHeight : 0
-                                            property var node: model.children
+                                            property var node: model
                                             property bool expanded: false
                                             property var elements: model.children
                                             property var text: model.name
@@ -523,13 +537,14 @@ ApplicationWindow {
                     frameVisible: false
                     alternatingRowColors: false
                     backgroundVisible: false
-//                    onCurrentRowChanged: console.log(currentRow)
                     Component.onCompleted: currentRow = -1
-                    onClicked: selectedItem = model.get(currentRow)
+                    //QVariantMap
+                    onClicked: keyAreaSelectedItem = model.get(currentRow)
 
                     model:{
                         if(treeView.currentNode !== null)
                             if(treeView.currentNode.childCount > 0 && treeView.currentNode.childrenHaveNoChildren)
+                                //TreeViewModel
                                 treeView.currentNode.children
                     }
                     TableViewColumn {
@@ -570,7 +585,7 @@ ApplicationWindow {
 
                         delegate: Text {
                             color: activePalette.text
-                            text: selectedItem === null ? "" : (name + ": " + value)
+                            text: keyAreaSelectedItem === null ? "" : (name + ": " + value)
                         }
                     }
                 }
@@ -632,7 +647,7 @@ ApplicationWindow {
             id: statusBarRow
             Label {
                 id: path
-                text: treeView.currentNode === null ? "" : treeView.currentNode.path + "/" + (selectedItem === null ? "" : selectedItem.name)
+                text: treeView.currentNode === null ? "" : treeView.currentNode.path + "/" + (keyAreaSelectedItem === null ? "" : keyAreaSelectedItem.name)
             }
         }
     }

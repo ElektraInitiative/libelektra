@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
-    qRegisterMetaType<TreeViewModel>();
+    qRegisterMetaType<TreeViewModel>("TreeViewModel");
 
     QQmlApplicationEngine engine;
 

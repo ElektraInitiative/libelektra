@@ -5,7 +5,6 @@
         <file>qml/icons/clear.png</file>
         <file>qml/icons/delete.png</file>
         <file>qml/icons/emptyFile.png</file>
-        <file>qml/icons/expander.png</file>
         <file>qml/icons/export.png</file>
         <file>qml/icons/import.png</file>
         <file>qml/icons/new.png</file>
@@ -36,5 +35,6 @@
         <file>qml/BasicRectangle.qml</file>
         <file>qml/UnmountBackendWindow.qml</file>
         <file>qml/DefaultFileDialog.qml</file>
+        <file>qml/icons/arrow-right.png</file>
     </qresource>
 </RCC>

@@ -6,6 +6,17 @@ using namespace kdb;
 TreeViewModel::TreeViewModel(QObject *parent)
 {
     Q_UNUSED(parent)
+
+    qDebug() << "Name " << NameRole;
+    qDebug() << "Path " << PathRole;
+    qDebug() << "Value " << ValueRole;
+    qDebug() << "ChildCount " << ChildCountRole;
+    qDebug() << "Children " << ChildrenRole;
+    qDebug() << "CHNC " << ChildrenHaveNoChildrenRole;
+    qDebug() << "MetaV " << MetaValueRole;
+    qDebug() << "RC " << RowCountRole;
+    qDebug() << "NR " << NodeRole;
+
     populateModel();
 }
 
@@ -32,13 +43,11 @@ int TreeViewModel::rowCount(const QModelIndex &parent) const
 
 int TreeViewModel::qmlRowCount() const
 {
-    return m_model.count();
+    return rowCount();
 }
 
 QVariant TreeViewModel::data(const QModelIndex &index, int role) const
 {
-    //    qDebug() << index;
-
     if (!index.isValid())
         return QVariant();
 
@@ -46,6 +55,10 @@ QVariant TreeViewModel::data(const QModelIndex &index, int role) const
         return QVariant();
 
     ConfigNode *node = m_model.at(index.row());
+
+    //    qDebug() << "Role: " << role;
+
+
 
     switch (role)
     {
@@ -83,16 +96,34 @@ QVariant TreeViewModel::data(const QModelIndex &index, int role) const
         return QVariant();
 
     }
+
 }
 
 bool TreeViewModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    Q_UNIMPLEMENTED();
+    if (!index.isValid() || index.row() > (m_model.size()-1))
+        return false;
+
+    ConfigNode *node = m_model.at(index.row());
+
+    switch (role)
+    {
+
+    case NameRole:
+        node->setName(value.toString());
+    }
+
+    emit dataChanged(index, index);
+
+    return true;
 }
 
 bool TreeViewModel::insertRows(int row, int count, const QModelIndex &parent)
 {
-    Q_UNIMPLEMENTED();
+    Q_UNUSED(row)
+    Q_UNUSED(count)
+    Q_UNUSED(parent)
+    return false;
 }
 
 bool TreeViewModel::removeRow(int row, const QModelIndex &parent)
@@ -100,9 +131,7 @@ bool TreeViewModel::removeRow(int row, const QModelIndex &parent)
     Q_UNUSED(parent);
 
     beginRemoveRows(QModelIndex(), row, row);
-
     delete m_model.takeAt(row);
-
     endRemoveRows();
 
     return true;
@@ -145,11 +174,8 @@ void TreeViewModel::populateModel()
 
     QStringList configData;
 
-    //    qDebug() << "In populateModel: ";
-
     while(m_config.next()){
         configData << QString::fromStdString(m_config.current().getName());
-        //        qDebug() << QString::fromStdString(m_config.current().getName());
     }
 
     for(int i = 0; i < configData.length(); i++){
@@ -167,12 +193,7 @@ void TreeViewModel::populateModel()
         else{
             qDebug() << "INVALID_KEY";
         }
-
     }
-
-    emit modelChanged();
-
-    qDebug() << "POPULATED===========================================!";
 }
 
 QVariantMap TreeViewModel::get(int idx) const {

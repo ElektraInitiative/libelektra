@@ -2,11 +2,6 @@
 
 using namespace kdb;
 
-ConfigNode::ConfigNode()
-{
-
-}
-
 ConfigNode::ConfigNode(const QString &name, const QString &path):  m_name(name), m_path(path)
 {
     KDB kdb;
@@ -22,7 +17,7 @@ ConfigNode::ConfigNode(const QString &name, const QString &path):  m_name(name),
         m_value = QVariant::fromValue(QString::fromStdString(m_key.getBinary()));
 }
 
-ConfigNode::ConfigNode(const ConfigNode &other)
+ConfigNode::ConfigNode()
 {
 
 }
@@ -34,7 +29,7 @@ ConfigNode::~ConfigNode()
 
 int ConfigNode::getChildCount() const
 {
-    return m_children.length();
+    return m_children.count();
 }
 
 QString ConfigNode::getName() const
@@ -49,9 +44,7 @@ QString ConfigNode::getPath() const
 
 QVariant ConfigNode::getValue() const
 {
-
     return m_value;
-
 }
 
 void ConfigNode::setName(const QString &name)

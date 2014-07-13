@@ -17,6 +17,7 @@ BasicWindow {
     property int metaCount: 0
 
     cancelButton.onClicked: {editWindow.visible = false; metaKeyModel.clear()}
+    okButton.onClicked: {editWindow.visible = false; editAccepted()}
 
     contents: ColumnLayout {
         anchors.fill: parent
@@ -92,9 +93,13 @@ BasicWindow {
     }
 
     function populateMetaArea() {
-        console.log("i = " + metaCount + ", name = " + mainWindow.selectedItem.metaValue.get(i).name)
         for(var i = 0; i < metaCount; i++){
-            metaKeyModel.append({"metaName": mainWindow.selectedItem.metaValue.get(i).name, "metaValue": mainWindow.selectedItem.metaValue.get(i).value})
+            metaKeyModel.append({"metaName": mainWindow.keyAreaSelectedItem.metaValue.get(i).name, "metaValue": mainWindow.keyAreaSelectedItem.metaValue.get(i).value})
         }
+    }
+
+    function editAccepted() {
+
+        console.log("keyName = " + nameTextField.text)
     }
 }
