@@ -11,6 +11,7 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
 
     qRegisterMetaType<TreeViewModel>("TreeViewModel");
+    qRegisterMetaType<ConfigNode>("ConfigNode");
 
     QQmlApplicationEngine engine;
 

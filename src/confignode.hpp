@@ -17,6 +17,7 @@ class ConfigNode : public QObject
 public:
 
     explicit ConfigNode(const QString &name, const QString &path);
+    ConfigNode(const ConfigNode &other);
     ConfigNode();
     ~ConfigNode();
 
@@ -40,6 +41,11 @@ private:
     QVariant m_value;
     kdb::Key m_key;
     QList<ConfigNode*> m_children;
+
+signals:
+   void nameChanged();
 };
+
+Q_DECLARE_METATYPE(ConfigNode)
 
 #endif // CONFIGNODE_H

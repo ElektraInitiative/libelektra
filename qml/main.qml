@@ -18,6 +18,7 @@ ApplicationWindow {
     property int deltaKeyAreaWidth: Math.round(mainRow.width*0.7-defaultSpacing)
     property int deltaMetaAreaHeight: Math.round(metaArea.height-searchResultsArea.height*0.5)
     property var keyAreaSelectedItem: null
+    property alias keyAreaView: keyAreaView
     //TreeViewModel
     property var metaAreaModel: (keyAreaSelectedItem === null ? null : keyAreaSelectedItem.metaValue)
 
@@ -285,10 +286,10 @@ ApplicationWindow {
 
     Menu {
         id: treeContextMenu
-        MenuItem {
-            id:tcmDelete
-            action: deleteAction
-        }
+//        MenuItem {
+//            id:tcmDelete
+//            action: deleteAction
+//        }
     }
     Menu {
         id: keyContextMenu
@@ -298,7 +299,7 @@ ApplicationWindow {
             onTriggered: {
                 keyAreaView.model.removeRow(keyAreaView.tableIndex)
                 keyAreaView.__decrementCurrentIndex()
-                keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.tableIndex)
+                keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
             }
         }
         MenuItem {
@@ -531,7 +532,6 @@ ApplicationWindow {
                 TableView {
                     id: keyAreaView
 
-                    property int tableIndex: currentRow
                     anchors.fill: parent
                     anchors.margins: 2
                     frameVisible: false

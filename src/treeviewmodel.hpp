@@ -40,6 +40,7 @@ public:
     Q_INVOKABLE int     qmlRowCount() const;
     QVariant            data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     bool                setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
+    Q_INVOKABLE         void setDataValue(int index, const QVariant &value, const QString &role);
     bool                insertRows(int row, int count, const QModelIndex &parent = QModelIndex());
     Q_INVOKABLE bool    removeRow(int row, const QModelIndex &parent = QModelIndex());
     Qt::ItemFlags       flags(const QModelIndex &index) const;

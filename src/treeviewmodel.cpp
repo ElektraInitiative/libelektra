@@ -111,11 +111,29 @@ bool TreeViewModel::setData(const QModelIndex &index, const QVariant &value, int
 
     case NameRole:
         node->setName(value.toString());
+
+    case ValueRole:
+        node->setValue(value);
     }
 
     emit dataChanged(index, index);
 
     return true;
+}
+
+void TreeViewModel::setDataValue(int index, const QVariant &value, const QString &role)
+{
+    if(index < 0 || index > m_model.size() - 1)
+        return;
+
+     QModelIndex modelIndex = this->index(index);
+
+     if(role == "Name")
+        setData(modelIndex, value, NameRole);
+     else if(role == "Value")
+         setData(modelIndex, value, ValueRole);
+     else
+         return;
 }
 
 bool TreeViewModel::insertRows(int row, int count, const QModelIndex &parent)

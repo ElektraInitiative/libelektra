@@ -16,8 +16,14 @@ BasicWindow {
     property string keyValue: ""
     property int metaCount: 0
 
-    cancelButton.onClicked: {editWindow.visible = false; metaKeyModel.clear()}
-    okButton.onClicked: {editWindow.visible = false; editAccepted()}
+    cancelButton.onClicked: {
+        editWindow.visible = false
+        metaKeyModel.clear()
+    }
+    okButton.onClicked: {
+        editWindow.visible = false
+        editAccepted()
+    }
 
     contents: ColumnLayout {
         anchors.fill: parent
@@ -94,12 +100,13 @@ BasicWindow {
 
     function populateMetaArea() {
         for(var i = 0; i < metaCount; i++){
-            metaKeyModel.append({"metaName": mainWindow.keyAreaSelectedItem.metaValue.get(i).name, "metaValue": mainWindow.keyAreaSelectedItem.metaValue.get(i).value})
+            metaKeyModel.append({"metaName": keyAreaSelectedItem.metaValue.get(i).name, "metaValue": keyAreaSelectedItem.metaValue.get(i).value})
         }
     }
 
     function editAccepted() {
-
-        console.log("keyName = " + nameTextField.text)
+        keyAreaView.model.setDataValue(keyAreaView.currentRow, nameTextField.text, "Name")
+        keyAreaView.model.setDataValue(keyAreaView.currentRow, valueTextField.text, "Value")
+        keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
     }
 }

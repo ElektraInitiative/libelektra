@@ -43,6 +43,7 @@ Window {
             Button {
                 id:cancelButton
                 text: "Cancel"
+                isDefault: true
                 onClicked: basicWindow.visible = false
             }
         }

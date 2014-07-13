@@ -17,9 +17,14 @@ ConfigNode::ConfigNode(const QString &name, const QString &path):  m_name(name),
         m_value = QVariant::fromValue(QString::fromStdString(m_key.getBinary()));
 }
 
-ConfigNode::ConfigNode()
+ConfigNode::ConfigNode(const ConfigNode &other)
 {
 
+}
+
+ConfigNode::ConfigNode()
+{
+    m_children = QList<ConfigNode*>();
 }
 
 ConfigNode::~ConfigNode()
@@ -50,6 +55,7 @@ QVariant ConfigNode::getValue() const
 void ConfigNode::setName(const QString &name)
 {
     m_name = name;
+    emit nameChanged();
 }
 
 void ConfigNode::setValue(const QVariant &value)
