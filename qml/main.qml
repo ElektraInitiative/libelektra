@@ -18,7 +18,6 @@ ApplicationWindow {
     property int deltaKeyAreaWidth: Math.round(mainRow.width*0.7-defaultSpacing)
     property int deltaMetaAreaHeight: Math.round(metaArea.height-searchResultsArea.height*0.5)
     property var keyAreaSelectedItem: null
-    property alias keyAreaView: keyAreaView
     //TreeViewModel
     property var metaAreaModel: (keyAreaSelectedItem === null ? null : keyAreaSelectedItem.metaValue)
 

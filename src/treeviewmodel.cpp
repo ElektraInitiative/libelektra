@@ -128,10 +128,14 @@ void TreeViewModel::setDataValue(int index, const QVariant &value, const QString
 
      QModelIndex modelIndex = this->index(index);
 
-     if(role == "Name")
+     if(role == "Name"){
+         qDebug() << "Name " << value.toString();
         setData(modelIndex, value, NameRole);
-     else if(role == "Value")
+     }
+     else if(role == "Value"){
+         qDebug() << "Value " << value.toString();
          setData(modelIndex, value, ValueRole);
+     }
      else
          return;
 }

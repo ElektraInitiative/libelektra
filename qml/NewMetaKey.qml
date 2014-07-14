@@ -8,6 +8,9 @@ Item {
     width: metaArea.width - 3*defaultMargins
     height: metaNameField.height
 
+    property alias metaNameField: metaNameField
+    property alias metaValueField: metaValueField
+
     RowLayout {
         anchors.fill: parent
         anchors.margins: defaultMargins

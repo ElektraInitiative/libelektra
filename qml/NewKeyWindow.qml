@@ -86,7 +86,8 @@ BasicWindow {
             Component {
                 id: metaKeyDelegate
                 NewMetaKey {
-
+                    metaNameField.onTextChanged: metaKeyModel.set(index, {"metaName": metaNameField.text})
+                    metaValueField.onTextChanged: metaKeyModel.set(index, {"metaValue": metaValueField.text})
                 }
             }
         }
@@ -100,13 +101,20 @@ BasicWindow {
 
     function populateMetaArea() {
         for(var i = 0; i < metaCount; i++){
-            metaKeyModel.append({"metaName": keyAreaSelectedItem.metaValue.get(i).name, "metaValue": keyAreaSelectedItem.metaValue.get(i).value})
+            metaKeyModel.append({"metaName": metaAreaListView.model.get(i).name, "metaValue": metaAreaListView.model.get(i).value})
         }
     }
 
     function editAccepted() {
         keyAreaView.model.setDataValue(keyAreaView.currentRow, nameTextField.text, "Name")
         keyAreaView.model.setDataValue(keyAreaView.currentRow, valueTextField.text, "Value")
-        keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
+
+        for(var i = 0; i < metaKeyModel.count; i++) {
+            metaAreaListView.model.setDataValue(i, metaKeyModel.get(i).metaName, "Name")
+            metaAreaListView.model.setDataValue(i, metaKeyModel.get(i).metaValue, "Value")
+        }
+
+//        keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
+        metaKeyModel.clear()
     }
 }
