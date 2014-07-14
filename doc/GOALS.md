@@ -1,3 +1,19 @@
+## Goals ##
+
+- improve robustness
+  - reject invalid configuration
+  - avoid common programming errors by using better bindings
+- allow software to be better integrated on configuration level
+- postpone some decisions from programmers to
+  maintainers/administrators:
+  - syntax of the configuration files
+  - side effects (e.g. logging, vcs commit, notifications)
+  - flexible adoption to specific needs
+  - adoption of standards (xdg, xml, json)
+- reduce duplication of code (a single parser/generator used by
+  everyone accessing a specific part of configuration)
+
+
 ## Target ##
 
 - Embedded: Elektra is on the frontier for embedded systems because of
