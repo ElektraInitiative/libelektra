@@ -16,6 +16,7 @@ HEADERS += \
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
 
+INCLUDEPATH += /usr/include/elektra
 INCLUDEPATH += /usr/local/include/elektra
 INCLUDEPATH += ../../Desktop/p4n81s-libelektra/src/tools/kdb/
 
