@@ -24,14 +24,14 @@ public:
     int getChildCount() const;
     QString getName() const;
     QString getPath() const;
-    QVariantgetValue() const;
-    voidsetName(const QString &name);
-    voidsetValue(const QVariant &value);
-    voidappendChild(ConfigNode *node);
-    boolhasChild(const QString &name) const;
+    QVariant getValue() const;
+    void setName(const QString &name);
+    void setValue(const QVariant &value);
+    void appendChild(ConfigNode *node);
+    bool hasChild(const QString &name) const;
     TreeViewModel   *getChildren();
     TreeViewModel   *getMetaValue();
-    boolchildrenHaveNoChildren() const;
+    bool childrenHaveNoChildren() const;
     ConfigNode  *getChildByName(QString &name);
     Q_INVOKABLE ConfigNode  *getChildByIndex(int index);
 
