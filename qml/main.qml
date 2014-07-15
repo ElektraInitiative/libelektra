@@ -285,10 +285,10 @@ ApplicationWindow {
 
     Menu {
         id: treeContextMenu
-//        MenuItem {
-//            id:tcmDelete
-//            action: deleteAction
-//        }
+        //MenuItem {
+        //id:tcmDelete
+        //action: deleteAction
+        //}
     }
     Menu {
         id: keyContextMenu

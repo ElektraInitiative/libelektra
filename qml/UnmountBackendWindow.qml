@@ -33,7 +33,7 @@ BasicWindow {
                     anchors.fill: parent
                     model: mountedBackendsModel
                     focus: true
-                    //                    interactive: true
+                    //interactive: true
                     currentIndex: 0
                     highlight: Rectangle {
                         color: activePalette.highlight

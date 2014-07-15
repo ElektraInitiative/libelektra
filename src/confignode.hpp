@@ -21,18 +21,18 @@ public:
     ConfigNode();
     ~ConfigNode();
 
-    int                     getChildCount() const;
-    QString                 getName() const;
-    QString                 getPath() const;
-    QVariant                getValue() const;
-    void                    setName(const QString &name);
-    void                    setValue(const QVariant &value);
-    void                    appendChild(ConfigNode *node);
-    bool                    hasChild(const QString &name) const;
-    TreeViewModel           *getChildren();
-    TreeViewModel           *getMetaValue();
-    bool                    childrenHaveNoChildren() const;
-    ConfigNode              *getChildByName(QString &name);
+    int getChildCount() const;
+    QString getName() const;
+    QString getPath() const;
+    QVariantgetValue() const;
+    voidsetName(const QString &name);
+    voidsetValue(const QVariant &value);
+    voidappendChild(ConfigNode *node);
+    boolhasChild(const QString &name) const;
+    TreeViewModel   *getChildren();
+    TreeViewModel   *getMetaValue();
+    boolchildrenHaveNoChildren() const;
+    ConfigNode  *getChildByName(QString &name);
     Q_INVOKABLE ConfigNode  *getChildByIndex(int index);
 
 private:
@@ -43,7 +43,7 @@ private:
     QList<ConfigNode*> m_children;
 
 signals:
-   void nameChanged();
+    void nameChanged();
 };
 
 Q_DECLARE_METATYPE(ConfigNode)

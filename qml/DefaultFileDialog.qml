@@ -12,14 +12,14 @@
 ** modification, are permitted provided that the following conditions are
 ** met:
 **   * Redistributions of source code must retain the above copyright
-**     notice, this list of conditions and the following disclaimer.
+** notice, this list of conditions and the following disclaimer.
 **   * Redistributions in binary form must reproduce the above copyright
-**     notice, this list of conditions and the following disclaimer in
-**     the documentation and/or other materials provided with the
-**     distribution.
+** notice, this list of conditions and the following disclaimer in
+** the documentation and/or other materials provided with the
+** distribution.
 **   * Neither the name of Digia Plc and its Subsidiary(-ies) nor the names
-**     of its contributors may be used to endorse or promote products derived
-**     from this software without specific prior written permission.
+** of its contributors may be used to endorse or promote products derived
+** from this software without specific prior written permission.
 **
 **
 ** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -251,7 +251,7 @@ AbstractFileDialog {
                                         interval: 1000
                                         running: favoriteArea.containsMouse && !favoriteArea.pressed && folderLabel.truncated
                                         onTriggered: ControlsPrivate.Tooltip.showText(favoriteArea,
-                                                Qt.point(favoriteArea.mouseX, favoriteArea.mouseY), urlToPath(root.favoriteFolders[index]))
+                                                                                      Qt.point(favoriteArea.mouseX, favoriteArea.mouseY), urlToPath(root.favoriteFolders[index]))
                                     }
                                 }
                             }
@@ -281,18 +281,18 @@ AbstractFileDialog {
                 Layout.minimumWidth: 40
                 property bool needsWidthAdjustment: true
                 selectionMode: root.selectMultiple ?
-                    (ControlsPrivate.Settings.hasTouchScreen ? SelectionMode.MultiSelection : SelectionMode.ExtendedSelection) :
-                    SelectionMode.SingleSelection
+                                   (ControlsPrivate.Settings.hasTouchScreen ? SelectionMode.MultiSelection : SelectionMode.ExtendedSelection) :
+                                   SelectionMode.SingleSelection
                 onRowCountChanged: if (needsWidthAdjustment && rowCount > 0) {
-                    resizeColumnsToContents()
-                    needsWidthAdjustment = false
-                }
+                                       resizeColumnsToContents()
+                                       needsWidthAdjustment = false
+                                   }
                 model: FolderListModel {
                     showFiles: !root.selectFolder
                     nameFilters: root.selectedNameFilterExtensions
                     sortField: (view.sortIndicatorColumn === 0 ? FolderListModel.Name :
-                                (view.sortIndicatorColumn === 1 ? FolderListModel.Type :
-                                (view.sortIndicatorColumn === 2 ? FolderListModel.Size : FolderListModel.LastModified)))
+                                                                 (view.sortIndicatorColumn === 1 ? FolderListModel.Type :
+                                                                                                   (view.sortIndicatorColumn === 2 ? FolderListModel.Size : FolderListModel.LastModified)))
                     sortReversed: view.sortIndicatorOrder === Qt.DescendingOrder
                 }
 

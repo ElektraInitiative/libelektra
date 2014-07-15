@@ -56,7 +56,7 @@ QVariant TreeViewModel::data(const QModelIndex &index, int role) const
 
     ConfigNode *node = m_model.at(index.row());
 
-    //    qDebug() << "Role: " << role;
+    //qDebug() << "Role: " << role;
 
 
 
@@ -126,18 +126,18 @@ void TreeViewModel::setDataValue(int index, const QVariant &value, const QString
     if(index < 0 || index > m_model.size() - 1)
         return;
 
-     QModelIndex modelIndex = this->index(index);
+    QModelIndex modelIndex = this->index(index);
 
-     if(role == "Name"){
-         qDebug() << "Name " << value.toString();
+    if(role == "Name"){
+        qDebug() << "Name " << value.toString();
         setData(modelIndex, value, NameRole);
-     }
-     else if(role == "Value"){
-         qDebug() << "Value " << value.toString();
-         setData(modelIndex, value, ValueRole);
-     }
-     else
-         return;
+    }
+    else if(role == "Value"){
+        qDebug() << "Value " << value.toString();
+        setData(modelIndex, value, ValueRole);
+    }
+    else
+        return;
 }
 
 bool TreeViewModel::insertRows(int row, int count, const QModelIndex &parent)

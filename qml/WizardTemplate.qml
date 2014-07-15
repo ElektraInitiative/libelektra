@@ -25,7 +25,7 @@ Item {
 
             wrapMode: Text.WordWrap
             color: activePalette.text
-//            height: Math.round(wizardLoader.height*0.7)
+            //height: Math.round(wizardLoader.height*0.7)
             Layout.fillHeight: true
             Layout.fillWidth: true
             Layout.alignment:  Qt.AlignVCenter

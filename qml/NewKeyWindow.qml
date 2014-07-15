@@ -114,7 +114,7 @@ BasicWindow {
             metaAreaListView.model.setDataValue(i, metaKeyModel.get(i).metaValue, "Value")
         }
 
-//        keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
+        //keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
         metaKeyModel.clear()
     }
 }
