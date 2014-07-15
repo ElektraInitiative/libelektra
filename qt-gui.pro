@@ -41,6 +41,7 @@ OTHER_FILES += \
 		qml/NewKeyWindow.qml \
 		qml/DefaultFileDialog.qml \
 		qml/NewArrayEntry.qml \
+    qml/TreeView.qml
 
 unix: CONFIG += link_pkgconfig
 unix: PKGCONFIG += elektra
