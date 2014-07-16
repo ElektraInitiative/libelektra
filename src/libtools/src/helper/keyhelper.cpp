@@ -25,7 +25,7 @@ string rebasePath(const Key& key, const Key& oldParent,
 {
 	string oldKeyPath = key.getName ();
 
-	if (!oldParent.isBelowOrSame(key)) throw InvalidRebaseException("the supplied key is not below the old parent");
+	if (!key.isBelowOrSame(oldParent)) throw InvalidRebaseException("the supplied key is not below the old parent");
 
 	string relativePath = oldKeyPath.substr (oldParent.getName().length (),
 			oldKeyPath.length ());
