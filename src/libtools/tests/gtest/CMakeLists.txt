@@ -6,7 +6,7 @@ foreach (file ${TESTS})
 
 	get_filename_component (name ${file} NAME_WE)
 	
-	do_test (${name})
+	do_tool_test (${name})
 	
 	target_link_libraries(${name} gtest gtest_main)
 
