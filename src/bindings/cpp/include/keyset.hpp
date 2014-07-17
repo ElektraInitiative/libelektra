@@ -420,7 +420,7 @@ inline KeySet::~KeySet ()
 }
 
 /**
- * If you dont want destruction of keyset at
+ * If you don't want destruction of keyset at
  * the end you can release the pointer.
  * */
 inline ckdb::KeySet * KeySet::release()

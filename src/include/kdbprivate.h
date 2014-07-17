@@ -353,7 +353,7 @@ struct _Plugin
  *
  * A trie is a data structure which can handle the longest prefix matching very
  * fast. This is exactly what needs to be done when using kdbGet() and kdbSet()
- * in a hierachy where backends are mounted - you need the backend mounted
+ * in a hierarchy where backends are mounted - you need the backend mounted
  * closest to the parentKey.
  */
 struct _Trie
@@ -379,7 +379,7 @@ struct _Split
 	Backend **handles;	/*!< The KDB for the keyset */
 	Key **parents;		/*!< The parentkey for the keyset.
 				Is either the mountpoint of the backend
-				or "user", "system" for the splitted root backends */
+				or "user", "system" for the split root backends */
 	int *syncbits;		/*!< Bits for various options:
 				Bit 0: Is there any key in there which need to be synced?
 				Bit 1: Do we need relative checks? (cascading backend?)*/
@@ -393,7 +393,7 @@ struct _Split
 
 ssize_t keySetRaw(Key *key, const void *newBinary, size_t dataSize);
 
-/*Methods for splitted keysets */
+/*Methods for split keysets */
 Split * elektraSplitNew(void);
 void elektraSplitDel(Split *keysets);
 void elektraSplitResize(Split *ret);

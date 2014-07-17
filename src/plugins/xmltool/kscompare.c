@@ -8,14 +8,14 @@
  *
  * This method behavior is the following:
  * - A key (by full name) that is present on @p ks1 and @p ks2, and has
- *   something different, will be transfered from @p ks2 to @p ks1, and
+ *   something different, will be transferred from @p ks2 to @p ks1, and
  *   @p ks1's (old) version deleted.
- * - Keys present in @p ks1, but not in @p ks2 will be transfered from @p ks1
+ * - Keys present in @p ks1, but not in @p ks2 will be transferred from @p ks1
  *   to @p removed.
  * - Keys that are keyCompare() equal in @p ks1 and @p ks2 will be
  *   keyDel()eted from @p ks2.
  * - Keys present in @p ks2 but not in @p ks1 will
- *   be transfered to @p ks1.
+ *   be transferred to @p ks1.
  *
  * In the end, @p ks1 will have all the keys that matter, and @p ks2
  * will be empty.

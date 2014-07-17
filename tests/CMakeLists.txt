@@ -25,7 +25,7 @@
 
 include (LibAddMacros)
 
-#dont call add_headers in a loop
+#don't call add_headers in a loop
 add_headers (HDR_FILES)
 
 macro (do_test source)

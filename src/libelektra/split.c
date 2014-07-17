@@ -77,7 +77,7 @@ Split * elektraSplitNew(void)
 /**
  * Delete a split object.
  *
- * Will free all allocated resources of a splitted keyset.
+ * Will free all allocated resources of a split keyset.
  *
  * @param keysets the split object to work with
  * @ingroup split
@@ -191,7 +191,7 @@ ssize_t elektraSplitSearchBackend(Split *split, Backend *backend, Key *parent)
  *          keys below parentKey
  * @return 0 if parentKey == 0 or there are keys below
  *          or same than parentKey which do not fit
- *          in any of splitted keysets
+ *          in any of split keysets
  * @param split the split object to work with
  * @param parentKey the key which relation is searched for
  * @ingroup split
@@ -289,7 +289,7 @@ int elektraSplitBuildup (Split *split, KDB *kdb, Key *parentKey)
  */
 int elektraSplitDivide (Split *split, KDB *handle, KeySet *ks)
 {
-	ssize_t curFound = 0; /* If key could be appended to any of the existing splitted keysets */
+	ssize_t curFound = 0; /* If key could be appended to any of the existing split keysets */
 	int needsSync = 0;
 	Key *curKey = 0;
 	Backend *curHandle = 0;
@@ -331,7 +331,7 @@ int elektraSplitDivide (Split *split, KDB *handle, KeySet *ks)
  */
 int elektraSplitAppoint (Split *split, KDB *handle, KeySet *ks)
 {
-	ssize_t curFound = 0; /* If key could be appended to any of the existing splitted keysets */
+	ssize_t curFound = 0; /* If key could be appended to any of the existing split keysets */
 	Key *curKey = 0;
 	Backend *curHandle = 0;
 	ssize_t defFound = elektraSplitAppend (split, 0, 0, 0);
@@ -511,7 +511,7 @@ int elektraSplitMerge (Split *split, KeySet *dest)
  *
  * @return 0 if kdbSet() is not needed
  * @return 1 if kdbSet() is needed
- * @pre user/system was splitted before.
+ * @pre user/system was split before.
  * @param split the split object to work with
  * @ingroup split
  *
@@ -590,7 +590,7 @@ int elektraSplitPrepare (Split *split)
 
 		if ((split->syncbits[i] & 1) == 0)
 		{
-			/* We dont need i anymore */
+			/* We don't need i anymore */
 			for (size_t j = i+1; j<size; ++j)
 			{
 				if ((split->syncbits[j] & 1) == 1)
@@ -599,7 +599,7 @@ int elektraSplitPrepare (Split *split)
 					Key *tmpParent = 0;
 					int tmpSyncbits = 0;
 
-					/* Ohh, we have found an important j... lets swap j and i */
+					/* Ohh, we have found an important j... let's swap j and i */
 					ksDel (split->keysets[i]);
 					split->keysets[i] = ksDup(split->keysets[j]);
 
@@ -618,7 +618,7 @@ int elektraSplitPrepare (Split *split)
 				}
 			}
 
-			/* We are finished, search did not find anything which needed sync, so lets remove the rest */
+			/* We are finished, search did not find anything which needed sync, so let's remove the rest */
 			for (size_t j = i; j<size; ++j)
 			{
 				if ((split->syncbits[j] & 1) == 0)

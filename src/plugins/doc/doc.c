@@ -485,7 +485,7 @@ int docError(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key
  * You need to use a macro so that both dynamic and static loading
  * of the plugin works.
  *
- * The first paramter is the name of the plugin.
+ * The first parameter is the name of the plugin.
  * Then every plugin should have:
  * @c ELEKTRA_PLUGIN_OPEN,
  * @c ELEKTRA_PLUGIN_CLOSE,

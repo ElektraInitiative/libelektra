@@ -662,7 +662,7 @@ some cleanup to be less confusing.
 The user experience was improved. The ".kdb" or ".config" directory now
 will be created if they do not exist.
 
-The debian packages are now splitted to have full advantage of the
+The debian packages are now split to have full advantage of the
 new plugin system.  The core packages (libelektra, libelektra-dev and
 libelektra-bin) do not depend on libxml anymore.  New is the package
 libelektra-full, which contains a single dynamic library containing all
