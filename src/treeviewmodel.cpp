@@ -130,12 +130,12 @@ void TreeViewModel::setDataValue(int index, const QVariant& value, const QString
 
 	if (role == "Name")
 	{
-		qDebug() << "Name " << value.toString();
+//		qDebug() << "Name " << value.toString();
 		setData(modelIndex, value, NameRole);
 	}
 	else if (role == "Value")
 	{
-		qDebug() << "Value " << value.toString();
+//		qDebug() << "Value " << value.toString();
 		setData(modelIndex, value, ValueRole);
 	}
 	else
@@ -246,7 +246,7 @@ QVariant TreeViewModel::find(const QString& term)
 {
 	m_searchResults.clear();
 
-	foreach (ConfigNode * node, m_model)
+    foreach (ConfigNode* node, m_model)
 	{
 		find(node, term);
 	}
@@ -272,9 +272,8 @@ void TreeViewModel::find(ConfigNode* node, const QString term)
 		}
 	}
 
-	if (node->getName().contains(term, Qt::CaseInsensitive) || node->getValue().toString().contains(term, Qt::CaseInsensitive))
+    if (node->getName().contains(term) || node->getValue().toString().contains(term))
 	{
-		qDebug() << "found Item";
 		m_searchResults.append(node);
 	}
 
