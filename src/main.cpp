@@ -6,20 +6,20 @@
 #include "treeviewmodel.hpp"
 #include "confignode.hpp"
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-    QApplication app(argc, argv);
+	QApplication app(argc, argv);
 
-    qRegisterMetaType<TreeViewModel>("TreeViewModel");
-    qRegisterMetaType<ConfigNode>("ConfigNode");
+	qRegisterMetaType<TreeViewModel> ("TreeViewModel");
+	qRegisterMetaType<ConfigNode> ("ConfigNode");
 
-    QQmlApplicationEngine engine;
+	QQmlApplicationEngine engine;
 
-    QQmlContext *ctxt = engine.rootContext();
-    TreeViewModel *model = new TreeViewModel;
-    ctxt->setContextProperty("externTreeModel", QVariant::fromValue(model));
+	QQmlContext* ctxt = engine.rootContext();
+	TreeViewModel* model = new TreeViewModel;
+	ctxt->setContextProperty("externTreeModel", QVariant::fromValue(model));
 
-    engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
-    return app.exec();
+	engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
+	return app.exec();
 }
 
