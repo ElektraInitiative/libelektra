@@ -3,6 +3,8 @@ Subject: 0.8.7 release
 (This is preliminary, the release did not happen and the release notes
  are not finished.)
 
+Thanks to Pino Toscano for fixing a lot of spelling errors.
+
 kdb tool:
 not allowed subfolders are checked properly
 output warnings before error
