@@ -14,9 +14,9 @@ ApplicationWindow {
 
     title: "Elektra Editor"
 
-    property int deltaKeyAreaHeight: Math.round(keyArea.height-searchResultsArea.height*0.5-defaultSpacing)
-    property int deltaKeyAreaWidth: Math.round(mainRow.width*0.7-defaultSpacing)
-    property int deltaMetaAreaHeight: Math.round(metaArea.height-searchResultsArea.height*0.5)
+    property int deltaKeyAreaHeight: Math.round(keyArea.height - searchResultsArea.height*0.5 - defaultSpacing)
+    property int deltaKeyAreaWidth: Math.round(mainRow.width*0.7 - defaultSpacing)
+    property int deltaMetaAreaHeight: Math.round(metaArea.height - searchResultsArea.height*0.5)
     property var keyAreaSelectedItem: null
     //TreeViewModel
     property var metaAreaModel: (keyAreaSelectedItem === null ? null : keyAreaSelectedItem.metaValue)
@@ -357,6 +357,7 @@ ApplicationWindow {
                 id: searchField
                 Layout.fillWidth: true
                 focus: true
+                onAccepted: {searchResultsListView.model = treeView.model.find(text); searchResultsListView.currentIndex = -1}
             }
         }
     }
@@ -466,12 +467,6 @@ ApplicationWindow {
                 height: Math.round(mainRow.height*0.2)
                 visible: false
 
-                Text {
-                    anchors.fill: parent
-                    anchors.margins: defaultMargins
-                    text: "TODO:SEARCH_RESULTS"
-                    color: activePalette.text
-                }
                 Button {
                     iconSource: "icons/dialog-close.png"
                     anchors.right: parent.right
@@ -486,9 +481,31 @@ ApplicationWindow {
                         }
                     }
                 }
+
                 ScrollView {
-                    id: searchResultsAreaView
+                    id: searchResultsScrollView
                     anchors.fill: parent
+                    anchors.margins: defaultMargins
+
+                    ListView {
+                        id: searchResultsListView
+                        focus: false
+
+                        highlight: Rectangle {
+                            id: highlightBar
+                            color: activePalette.highlight
+                        }
+
+                        delegate: Text {
+                            color: activePalette.text
+                            text: path
+
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: {searchResultsListView.currentIndex = index}
+                            }
+                        }
+                    }
                 }
             }
             states:

@@ -20,7 +20,7 @@ TreeViewModel::TreeViewModel(QObject *parent)
     populateModel();
 }
 
-TreeViewModel::TreeViewModel(QList<ConfigNode *> nodes)
+TreeViewModel::TreeViewModel(QList<ConfigNode *> &nodes)
 {
     m_model = nodes;
 }
@@ -224,6 +224,41 @@ QVariantMap TreeViewModel::get(int idx) const {
         map[roleNames().value(k)] = data(index(idx, 0), k);
     }
     return map;
+}
+
+
+
+QVariant TreeViewModel::find(const QString &term)
+{
+    m_searchResults.clear();
+
+    foreach(ConfigNode *node, m_model){
+        find(node, term);
+    }
+
+    if(m_searchResults.count() == 0){
+        m_searchResults.append(new ConfigNode("NotfoundNode", "There were no results matching your query."));
+    }
+
+    return QVariant::fromValue(new TreeViewModel(m_searchResults));
+}
+
+void TreeViewModel::find(ConfigNode *node, const QString term)
+{
+
+    int tmpChildCount = node->getChildCount();
+
+    if(tmpChildCount > 0){
+        for(int i = 0; i < tmpChildCount; i++){
+            find(node->getChildByIndex(i), term);
+        }
+    }
+
+    if(node->getName().contains(term, Qt::CaseInsensitive) || node->getValue().toString().contains(term, Qt::CaseInsensitive)){
+        qDebug() << "found Item";
+        m_searchResults.append(node);
+    }
+
 }
 
 QHash<int, QByteArray> TreeViewModel::roleNames() const
