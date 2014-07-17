@@ -36,7 +36,7 @@ int elektraResolverCheckFile(const char* filename)
 	keyDel(check);
 	free(buffer);
 
-	/* Be strict, dont allow any .., even if it would be allowed sometimes */
+	/* Be strict, don't allow any .., even if it would be allowed sometimes */
 	if(strstr (filename, "..") != 0) return -1;
 
 

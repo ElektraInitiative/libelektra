@@ -144,7 +144,7 @@ struct ConflictViolation: public PluginCheckException
 	{
 		return  "Conflict Violation!\n"
 			"You tried to add a plugin which conflicts with another.\n"
-			"Please dont add a plugin which conflicts.";
+			"Please don't add a plugin which conflicts.";
 	}
 };
 

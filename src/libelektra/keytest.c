@@ -586,7 +586,7 @@ kdbGetByName(handle, ks, "user/sw/MyApp", 0);
 // we are interested only in key type and access permissions
 interests=(KEY_TYPE | KEY_MODE);
 
-ksRewind(ks);   // put cursor in the begining
+ksRewind(ks);   // put cursor in the beginning
 while ((curren=ksNext(ks))) {
 	match=keyCompare(current,base);
 	

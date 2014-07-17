@@ -160,7 +160,7 @@ Trie* elektraTrieInsert(Trie *trie, const char *name, Backend *value)
 			/* insert the name given as a parameter into the new trie entry */
 			trie->children[idx]=elektraTrieInsert(NULL, name+(p-trie->text[idx]), value);
 
-			/* insert the splitted try into the new trie entry */
+			/* insert the split try into the new trie entry */
 
 			idx2 = (unsigned char) newname[0];
 			trie->children[idx]->text[idx2]=newname;

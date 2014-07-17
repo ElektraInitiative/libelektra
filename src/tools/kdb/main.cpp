@@ -164,7 +164,7 @@ int main(int argc, char**argv)
 	}
 	catch (...)
 	{
-		std::cerr << "Unkown error" << std::endl;
+		std::cerr << "Unknown error" << std::endl;
 		displayHelp(argv[0], f.getCommands());
 		return 7;
 	}

@@ -40,7 +40,7 @@ inline static int elektraStructOpenDelegator(ckdb::Plugin *handle, kdb::KeySet& 
 	if (config.lookup("/module"))
 	{
 		// suppress warnings if it is just a module
-		// dont buildup the struct then
+		// don't buildup the struct then
 		return 0;
 	}
 

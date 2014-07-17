@@ -111,7 +111,7 @@
  * These libraries for backends will be loaded and with it the
  * @p KDB datastructure will be initialized.
  *
- * You must always call this method before retrieving or commiting any
+ * You must always call this method before retrieving or committing any
  * keys to the database. In the end of the program,
  * after using the key database, you must not forget to kdbClose().
  * You can use the atexit () handler for it.
@@ -487,7 +487,7 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 	// Check if a update is needed at all
 	switch(elektraGetCheckUpdateNeeded(split, parentKey))
 	{
-	case 0: // We dont need an update so lets do nothing
+	case 0: // We don't need an update so let's do nothing
 		keySetName (parentKey, keyName(initialParent));
 		keyDel (initialParent);
 		elektraSplitDel (split);

@@ -774,7 +774,7 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
  * @return the size of the KeySet after transfer
  * @return -1 on NULL pointers
  * @param ks the KeySet that will receive the keys
- * @param toAppend the KeySet that provides the keys that will be transfered
+ * @param toAppend the KeySet that provides the keys that will be transferred
  * @see ksAppendKey()
  * 
  */
@@ -1721,7 +1721,7 @@ if ((myKey = ksLookupByName (myConfig, "/myapp/current/specific/key", 0)) == NUL
  * 	Currently no options supported.
  * @return pointer to the Key found, 0 otherwise
  * @return 0 on NULL pointers
- * @see keyCompare() for very powerfull Key lookups in KeySets
+ * @see keyCompare() for very powerful Key lookups in KeySets
  * @see ksCurrent(), ksRewind(), ksNext()
  */
 Key *ksLookupByName(KeySet *ks, const char *name, option_t options)
@@ -1800,7 +1800,7 @@ while (key=ksLookupByString(ks,"my value",0))
  * 	  Lookup ignoring case.
  * @return the Key found, 0 otherwise
  * @see ksLookupByBinary()
- * @see keyCompare() for very powerfull Key lookups in KeySets
+ * @see keyCompare() for very powerful Key lookups in KeySets
  * @see ksCurrent(), ksRewind(), ksNext()
  */
 Key *ksLookupByString(KeySet *ks, const char *value, option_t options)
@@ -1860,7 +1860,7 @@ Key *ksLookupByString(KeySet *ks, const char *value, option_t options)
  * @return the Key found, NULL otherwise
  * @return 0 on NULL pointer
  * @see ksLookupByString()
- * @see keyCompare() for very powerfull Key lookups in KeySets
+ * @see keyCompare() for very powerful Key lookups in KeySets
  * @see ksCurrent(), ksRewind(), ksNext()
  */
 Key *ksLookupByBinary(KeySet *ks, const void *value, size_t size,

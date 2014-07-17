@@ -687,7 +687,7 @@ void rcall(KeySet ks)
 	succeed_if (ks.lookup("user/xxx"), "could not find key");
 	succeed_if (!ks.lookup("user/yyy"), "could not find key");
 
-	// dont destroy ks
+	// don't destroy ks
 	ks.release();
 }
 

@@ -261,20 +261,20 @@ void test_tempname()
 
 void test_checkfile()
 {
-	succeed_if (elektraResolverCheckFile("valid") == 1, "valid file not recogniced");
-	succeed_if (elektraResolverCheckFile("/valid") == 0, "valid absolute file not recogniced");
-	succeed_if (elektraResolverCheckFile("/absolute/valid") == 0, "valid absolute file not recogniced");
-	succeed_if (elektraResolverCheckFile("../valid") == -1, "invalid file not recogniced");
-	succeed_if (elektraResolverCheckFile("valid/..") == -1, "invalid file not recogniced");
-	succeed_if (elektraResolverCheckFile("/../valid") == -1, "invalid absolute file not recogniced");
-	succeed_if (elektraResolverCheckFile("/valid/..") == -1, "invalid absolute file not recogniced");
+	succeed_if (elektraResolverCheckFile("valid") == 1, "valid file not recognised");
+	succeed_if (elektraResolverCheckFile("/valid") == 0, "valid absolute file not recognised");
+	succeed_if (elektraResolverCheckFile("/absolute/valid") == 0, "valid absolute file not recognised");
+	succeed_if (elektraResolverCheckFile("../valid") == -1, "invalid file not recognised");
+	succeed_if (elektraResolverCheckFile("valid/..") == -1, "invalid file not recognised");
+	succeed_if (elektraResolverCheckFile("/../valid") == -1, "invalid absolute file not recognised");
+	succeed_if (elektraResolverCheckFile("/valid/..") == -1, "invalid absolute file not recognised");
 	succeed_if (elektraResolverCheckFile("very..strict") == -1, "resolver is currently very strict");
 	succeed_if (elektraResolverCheckFile("very/..strict") == -1, "resolver is currently very strict");
 	succeed_if (elektraResolverCheckFile("very../strict") == -1, "resolver is currently very strict");
 	succeed_if (elektraResolverCheckFile("very/../strict") == -1, "resolver is currently very strict");
-	succeed_if (elektraResolverCheckFile("/") == -1, "invalid absolute file not recogniced");
-	succeed_if (elektraResolverCheckFile(".") == -1, "invalid file not recogniced");
-	succeed_if (elektraResolverCheckFile("..") == -1, "invalid file not recogniced");
+	succeed_if (elektraResolverCheckFile("/") == -1, "invalid absolute file not recognised");
+	succeed_if (elektraResolverCheckFile(".") == -1, "invalid file not recognised");
+	succeed_if (elektraResolverCheckFile("..") == -1, "invalid file not recognised");
 }
 
 

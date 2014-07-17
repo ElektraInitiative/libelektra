@@ -2380,7 +2380,7 @@ void test_ksDoubleAppendKey()
 	keyDel (k); // has no effect
 
 	ksDel (ks);
-	// dont free key here!!
+	// don't free key here!!
 }
 
 void test_ksAppendKey()

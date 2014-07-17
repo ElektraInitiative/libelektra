@@ -103,7 +103,7 @@ system/elektra/mountpoints/<name>
  * configuration like needed.
  *
  * @note The given KeySet will be deleted within the function,
- * dont use it afterwards.
+ * don't use it afterwards.
  *
  * @param elektraConfig the configuration to work with.
  *        It is used to build up this backend.
