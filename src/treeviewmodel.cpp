@@ -173,6 +173,12 @@ bool TreeViewModel::removeRow(int row, const QModelIndex& parent)
 {
 	Q_UNUSED(parent);
 
+	if (row < 0 || row > m_model.size()-1)
+	{
+		qDebug() << "Tried to remove row out of bounds";
+		return false;
+	}
+
 	beginRemoveRows(QModelIndex(), row, row);
 	delete m_model.takeAt(row);
 	endRemoveRows();
