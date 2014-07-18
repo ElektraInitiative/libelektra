@@ -8,34 +8,39 @@
  */
 
 
+
+
 #include <backend.hpp>
+
 
 #include <kdbmodule.h>
 #include <kdbplugin.h>
 #include <kdbprivate.h>
 
+
 #include <kdb.hpp>
 #include <cassert>
 
+
 using namespace std;
+
 
 namespace kdb
 {
 
+
 namespace tools
 {
+
 
 /** Creates a new backend with a given name and mountpoint.
  * Parameters are needed for serialisation only, so you can
  * keep them empty if you do not want to serialise. */
-<<<<<<< HEAD
-Backend::Backend(string name_, string mp_) :
-=======
 Backend::Backend(string name_, string mp_):
->>>>>>> 2f591c8... Started refactoring the merge code (along with unit tests)
 	name(name_), mp(mp_)
 {
 }
+
 
 Backend::~Backend()
 {
@@ -44,6 +49,7 @@ Backend::~Backend()
 		delete plugins[i];
 	}
 }
+
 
 /**@pre: resolver needs to be loaded first
  * Will check the filename.
@@ -54,7 +60,9 @@ void Backend::checkFile (std::string file)
 	checkFilePtr checkFileFunction = (checkFilePtr) plugins.back()->getSymbol("checkfile");
 	assert(checkFileFunction);
 
+
 	int res = checkFileFunction(file.c_str());
+
 
 	if (mp.substr(0,6) == "system")
 	{
@@ -62,8 +70,10 @@ void Backend::checkFile (std::string file)
 		return;
 	}
 
+
 	if (res <= 0) throw FileNotValidException();
 }
+
 
 void Backend::tryPlugin (std::string pluginName)
 {
@@ -73,7 +83,9 @@ void Backend::tryPlugin (std::string pluginName)
 	Key errorKey;
 	string realPluginName;
 
+
 	Key k(std::string("system/elektra/key/#0") + pluginName, KEY_END);
+
 
 	if (ckdb::elektraProcessPlugin (*k, &nr, &cPluginName, &cReferenceName, *errorKey) == -1)
 	{
@@ -82,13 +94,17 @@ void Backend::tryPlugin (std::string pluginName)
 		throw BadPluginName();
 	}
 
+
 	if (cPluginName)
 	{
 		realPluginName = cPluginName;
 		ckdb::elektraFree(cPluginName);
 	}
 
+
 	if (realPluginName.find('#') != string::npos) throw BadPluginName();
+
+
 
 
 	KeySet testConfig(1,
@@ -98,7 +114,9 @@ void Backend::tryPlugin (std::string pluginName)
 			KEY_END),
 		KS_END);
 
+
 	PluginPtr plugin = modules.load(realPluginName, testConfig);
+
 
 	// because PluginPtr might be auto_ptr we cannot make that more
 	// pretty:
@@ -106,14 +124,17 @@ void Backend::tryPlugin (std::string pluginName)
 	getplugins.tryPlugin   (*plugin.get());
 	setplugins.tryPlugin   (*plugin.get());
 
+
 	for (size_t i=0; i<plugins.size(); ++i)
 	{
 		if (plugin->name() == plugins[i]->name())
 			throw PluginAlreadyInserted();
 	}
 
+
 	plugins.push_back(plugin.release());
 }
+
 
 /**
  * Add a plugin that can be loaded, meets all
@@ -135,9 +156,11 @@ void Backend::addPlugin (std::string pluginName)
 	getplugins.addPlugin (*plugins.back());
 	setplugins.addPlugin (*plugins.back());
 
+
 	KeySet toAdd = plugins.back()->getNeededConfig();
 	config.append(toAdd);
 }
+
 
 /**
  * @return true if backend is validated
@@ -147,12 +170,15 @@ bool Backend::validated ()
 {
 	bool ret = true;
 
+
 	if (!errorplugins.validated()) ret = false;
 	if (!getplugins.validated()) ret = false;
 	if (!setplugins.validated()) ret = false;
 
+
 	return ret;
 }
+
 
 /**
  * @pre name and mountpoint set
@@ -165,6 +191,7 @@ void Backend::serialise (kdb::Key &rootKey, kdb::KeySet &ret)
 	backendRootKey.addBaseName (name);
 	backendRootKey.setString("serialised Backend");
 	ret.append(backendRootKey);
+
 
 	if (mp == "/")
 	{
@@ -179,7 +206,7 @@ void Backend::serialise (kdb::Key &rootKey, kdb::KeySet &ret)
 		Key k("system" + mp, KEY_END);
 		Key restrictedPath ("system/elektra", KEY_END);
 		if (!k) throw MountpointInvalidException();
-		if (k.isBelow(restrictedPath)) throw MountpointInvalidException();
+		if (restrictedPath.isBelow(k)) throw MountpointInvalidException();
 		ret.append ( *Key(	rootKey.getName() + "/mountpoint",
 				KEY_VALUE, mp.c_str(),
 				KEY_COMMENT, "The mountpoint says the location where the backend should be mounted.\n"
@@ -190,7 +217,7 @@ void Backend::serialise (kdb::Key &rootKey, kdb::KeySet &ret)
 		Key k(mp, KEY_END);
 		Key restrictedPath ("system/elektra", KEY_END);
 		if (!k) throw MountpointInvalidException();
-		if (k.isBelow(restrictedPath)) throw MountpointInvalidException();
+		if (restrictedPath.isBelow(k)) throw MountpointInvalidException();
 		ret.append ( *Key(	rootKey.getName() + "/mountpoint",
 				KEY_VALUE, mp.c_str(),
 				KEY_COMMENT, "The mountpoint says the location where the backend should be mounted.\n"
@@ -198,13 +225,16 @@ void Backend::serialise (kdb::Key &rootKey, kdb::KeySet &ret)
 				KEY_END));
 	}
 
+
 	config.rewind();
 	Key common = config.next();
 	if (common)
 	{
 		string commonName = common.getName();
 
+
 		// TODO commonName might be too long if config/needs key is missing
+
 
 		while (Key k = config.next())
 		{
@@ -217,11 +247,15 @@ void Backend::serialise (kdb::Key &rootKey, kdb::KeySet &ret)
 		}
 	}
 
+
 	errorplugins.serialise(backendRootKey, ret);
 	getplugins.serialise(backendRootKey, ret);
 	setplugins.serialise(backendRootKey, ret);
 }
 
-}
 
 }
+
+
+}
+
