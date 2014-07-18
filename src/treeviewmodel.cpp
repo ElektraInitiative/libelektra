@@ -31,6 +31,7 @@ TreeViewModel::TreeViewModel(const TreeViewModel& other)
 
 TreeViewModel::~TreeViewModel()
 {
+	// TODO: is this needed?
 	qDeleteAll(m_model);
 }
 
@@ -40,6 +41,7 @@ int TreeViewModel::rowCount(const QModelIndex& parent) const
 	return m_model.count();
 }
 
+// TODO: why do we have a qml* variant here?
 int TreeViewModel::qmlRowCount() const
 {
 	return rowCount();
@@ -48,21 +50,28 @@ int TreeViewModel::qmlRowCount() const
 QVariant TreeViewModel::data(const QModelIndex& index, int role) const
 {
 	if (!index.isValid())
+	{
+		qDebug() << "index not valid";
+		// TODO: why is this function called with wrong index?
 		return QVariant();
+	}
 
 	if (index.row() > (m_model.size() - 1))
+	{
+		qDebug() << "row too high" << index.row();
+		// TODO: why is this function called with wrong index?
 		return QVariant();
+	}
 
 	ConfigNode* node = m_model.at(index.row());
 
 	//qDebug() << "Role: " << role;
 
-
-
 	switch (role)
 	{
 
 	case Qt::DisplayRole:
+		// TODO: document fallthrough if it was desired
 
 	case NameRole:
 		return QVariant::fromValue(node->getName());
@@ -92,6 +101,7 @@ QVariant TreeViewModel::data(const QModelIndex& index, int role) const
 		return QVariant::fromValue(node);
 
 	default:
+		qDebug() << "Unknown role " << role;
 		return QVariant();
 
 	}
