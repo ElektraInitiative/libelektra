@@ -20,13 +20,13 @@ int main(int argc, char* argv[])
 	app.installTranslator(&tr);
 
 	QQmlApplicationEngine engine;
-
 	QQmlContext* ctxt = engine.rootContext();
-	TreeViewModel* model = new TreeViewModel;
 
 	kdb::KDB kdb;
 	kdb::KeySet config;
 	kdb.get(config, "/");
+
+	TreeViewModel* model = new TreeViewModel;
 	model->populateModel(config);
 	ctxt->setContextProperty("externTreeModel", QVariant::fromValue(model));
 

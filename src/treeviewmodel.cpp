@@ -7,6 +7,7 @@ TreeViewModel::TreeViewModel(QObject* parent)
 {
 	Q_UNUSED(parent)
 
+	/*
 	qDebug() << "Name " << NameRole;
 	qDebug() << "Path " << PathRole;
 	qDebug() << "Value " << ValueRole;
@@ -16,6 +17,7 @@ TreeViewModel::TreeViewModel(QObject* parent)
 	qDebug() << "MetaV " << MetaValueRole;
 	qDebug() << "RC " << RowCountRole;
 	qDebug() << "NR " << NodeRole;
+	*/
 }
 
 TreeViewModel::TreeViewModel(QList<ConfigNode*> const & nodes)
@@ -188,18 +190,22 @@ Qt::ItemFlags TreeViewModel::flags(const QModelIndex& index) const
 
 void TreeViewModel::sink(ConfigNode* node, QStringList keys, QString path)
 {
-
 	if (keys.length() == 0)
 		return;
 
+	// qDebug() << "in sink: " << keys << " with path: " << path;
+
 	QString name =  keys.takeFirst();
+	// qDebug() << "with name: " << name << " and node " << node;
 
 	if (node->hasChild(name))
 	{
+		// qDebug() << "has child: " << name << " with path: " << node->getPath();
 		sink(node->getChildByName(name), keys, node->getPath() + "/" + name);
 	}
 	else
 	{
+		// qDebug() << "new child: " << name << " with path: " << (path + "/" + name);
 		ConfigNode* newNode = new ConfigNode(name, (path + "/" + name));
 		node->appendChild(newNode);
 		sink(newNode, keys, node->getPath() + "/" + name);
