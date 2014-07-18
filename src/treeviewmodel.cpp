@@ -16,22 +16,22 @@ TreeViewModel::TreeViewModel(QObject* parent)
 	qDebug() << "MetaV " << MetaValueRole;
 	qDebug() << "RC " << RowCountRole;
 	qDebug() << "NR " << NodeRole;
-
-	populateModel();
 }
 
-TreeViewModel::TreeViewModel(QList<ConfigNode*>& nodes)
+TreeViewModel::TreeViewModel(QList<ConfigNode*> const & nodes)
 {
-	m_model = nodes;
+	m_model = nodes; // copy from other list
 }
 
 TreeViewModel::TreeViewModel(const TreeViewModel& other)
+	: QAbstractListModel()
 {
-	Q_UNUSED(other)
+	m_model = other.m_model; // copy from other list
 }
 
 TreeViewModel::~TreeViewModel()
 {
+	// TODO: is this needed?
 	qDeleteAll(m_model);
 }
 
@@ -41,6 +41,7 @@ int TreeViewModel::rowCount(const QModelIndex& parent) const
 	return m_model.count();
 }
 
+// TODO: why do we have a qml* variant here?
 int TreeViewModel::qmlRowCount() const
 {
 	return rowCount();
@@ -49,21 +50,28 @@ int TreeViewModel::qmlRowCount() const
 QVariant TreeViewModel::data(const QModelIndex& index, int role) const
 {
 	if (!index.isValid())
+	{
+		qDebug() << "index not valid";
+		// TODO: why is this function called with wrong index?
 		return QVariant();
+	}
 
 	if (index.row() > (m_model.size() - 1))
+	{
+		qDebug() << "row too high" << index.row();
+		// TODO: why is this function called with wrong index?
 		return QVariant();
+	}
 
 	ConfigNode* node = m_model.at(index.row());
 
 	//qDebug() << "Role: " << role;
 
-
-
 	switch (role)
 	{
 
 	case Qt::DisplayRole:
+		// TODO: document fallthrough if it was desired
 
 	case NameRole:
 		return QVariant::fromValue(node->getName());
@@ -93,6 +101,7 @@ QVariant TreeViewModel::data(const QModelIndex& index, int role) const
 		return QVariant::fromValue(node);
 
 	default:
+		qDebug() << "Unknown role " << role;
 		return QVariant();
 
 	}
@@ -102,7 +111,10 @@ QVariant TreeViewModel::data(const QModelIndex& index, int role) const
 bool TreeViewModel::setData(const QModelIndex& index, const QVariant& value, int role)
 {
 	if (!index.isValid() || index.row() > (m_model.size() - 1))
+	{
+		qDebug() << "Wrong index called";
 		return false;
+	}
 
 	ConfigNode* node = m_model.at(index.row());
 
@@ -121,10 +133,14 @@ bool TreeViewModel::setData(const QModelIndex& index, const QVariant& value, int
 	return true;
 }
 
+// TODO: Why are there two implementations of setData needed?
 void TreeViewModel::setDataValue(int index, const QVariant& value, const QString& role)
 {
 	if (index < 0 || index > m_model.size() - 1)
+	{
+		qDebug() << "Wrong index called";
 		return;
+	}
 
 	QModelIndex modelIndex = this->index(index);
 
@@ -144,6 +160,7 @@ void TreeViewModel::setDataValue(int index, const QVariant& value, const QString
 
 bool TreeViewModel::insertRows(int row, int count, const QModelIndex& parent)
 {
+	// TODO: not implemented
 	Q_UNUSED(row)
 	Q_UNUSED(count)
 	Q_UNUSED(parent)
@@ -189,21 +206,19 @@ void TreeViewModel::sink(ConfigNode* node, QStringList keys, QString path)
 	}
 }
 
-void TreeViewModel::populateModel()
+void TreeViewModel::populateModel(kdb::KeySet const & config)
 {
-	m_kdb.get(m_config, "/");
-	m_config.rewind();
-
 	ConfigNode* system = new ConfigNode("system", "system");
-	ConfigNode* root = new ConfigNode("user", "user");
+	ConfigNode* user = new ConfigNode("user", "user");
 
-	m_model << system << root;
+	m_model << system << user;
 
 	QStringList configData;
 
-	while (m_config.next())
+	config.rewind();
+	while (config.next())
 	{
-		configData << QString::fromStdString(m_config.current().getName());
+		configData << QString::fromStdString(config.current().getName());
 	}
 
 	for (int i = 0; i < configData.length(); i++)
@@ -246,7 +261,7 @@ QVariant TreeViewModel::find(const QString& term)
 {
 	m_searchResults.clear();
 
-    foreach (ConfigNode* node, m_model)
+	foreach (ConfigNode* node, m_model)
 	{
 		find(node, term);
 	}

@@ -1,18 +1,15 @@
 QT += quick  gui core  qml  widgets
 
-SOURCES +=      src/main.cpp \
+SOURCES += \
+		src/main.cpp \
 		src/treeviewmodel.cpp \
-		src/confignode.cpp \
-                src/keynode.cpp
+		src/confignode.cpp
 
 HEADERS += \
-                src/treeviewmodel.hpp \
-                src/confignode.hpp \
-                src/treeviewmodel.hpp \
-                src/keynode.hpp \
-                src/visitor.hpp \
-                src/cpp_example_hierarchy.hpp
+		src/treeviewmodel.hpp \
+		src/confignode.hpp
 
+CONFIG += debug
 TRANSLATIONS += qml/i18n/qml_de.ts
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
