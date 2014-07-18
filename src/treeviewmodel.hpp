@@ -57,7 +57,7 @@ public:
 	Qt::ItemFlags           flags(const QModelIndex& index) const;
 
 	/// recursively populate the model
-	void populateModel();
+	void populateModel(kdb::KeySet const & config);
 
 	// TODO: what are the methods for?
 	Q_INVOKABLE QVariantMap get(int idx) const;
@@ -70,10 +70,6 @@ private:
 	QList<ConfigNode*> m_model;
 	// TODO: why are the searchResults in the same model??
 	QList<ConfigNode*> m_searchResults;
-	// TODO: remove:
-	kdb::KeySet m_config;
-	// TODO: certainly to be removed:
-	kdb::KDB m_kdb;
 
 protected:
 	QHash<int, QByteArray> roleNames() const;

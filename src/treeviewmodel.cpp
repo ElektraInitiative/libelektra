@@ -111,7 +111,10 @@ QVariant TreeViewModel::data(const QModelIndex& index, int role) const
 bool TreeViewModel::setData(const QModelIndex& index, const QVariant& value, int role)
 {
 	if (!index.isValid() || index.row() > (m_model.size() - 1))
+	{
+		qDebug() << "Wrong index called";
 		return false;
+	}
 
 	ConfigNode* node = m_model.at(index.row());
 
@@ -130,10 +133,14 @@ bool TreeViewModel::setData(const QModelIndex& index, const QVariant& value, int
 	return true;
 }
 
+// TODO: Why are there two implementations of setData needed?
 void TreeViewModel::setDataValue(int index, const QVariant& value, const QString& role)
 {
 	if (index < 0 || index > m_model.size() - 1)
+	{
+		qDebug() << "Wrong index called";
 		return;
+	}
 
 	QModelIndex modelIndex = this->index(index);
 
@@ -153,6 +160,7 @@ void TreeViewModel::setDataValue(int index, const QVariant& value, const QString
 
 bool TreeViewModel::insertRows(int row, int count, const QModelIndex& parent)
 {
+	// TODO: not implemented
 	Q_UNUSED(row)
 	Q_UNUSED(count)
 	Q_UNUSED(parent)
@@ -198,11 +206,8 @@ void TreeViewModel::sink(ConfigNode* node, QStringList keys, QString path)
 	}
 }
 
-void TreeViewModel::populateModel()
+void TreeViewModel::populateModel(kdb::KeySet const & config)
 {
-	m_kdb.get(m_config, "/");
-	m_config.rewind();
-
 	ConfigNode* system = new ConfigNode("system", "system");
 	ConfigNode* user = new ConfigNode("user", "user");
 
@@ -210,9 +215,10 @@ void TreeViewModel::populateModel()
 
 	QStringList configData;
 
-	while (m_config.next())
+	config.rewind();
+	while (config.next())
 	{
-		configData << QString::fromStdString(m_config.current().getName());
+		configData << QString::fromStdString(config.current().getName());
 	}
 
 	for (int i = 0; i < configData.length(); i++)
