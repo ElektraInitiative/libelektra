@@ -86,7 +86,6 @@ void ConfigNode::appendChild(ConfigNode* node)
 
 bool ConfigNode::hasChild(const QString& name) const
 {
-	Q_ASSERT(m_children);
 	foreach (ConfigNode * node, m_children->model())
 	{
 		if (node->getName() == name)
@@ -105,7 +104,6 @@ TreeViewModel* ConfigNode::getChildren()
 
 TreeViewModel* ConfigNode::getMetaValue()
 {
-
 	QList<ConfigNode*> meta;
 
 	if (m_key)
@@ -121,6 +119,8 @@ TreeViewModel* ConfigNode::getMetaValue()
 		}
 	}
 
+	// TODO: dangling reference, will crash on modifications
+	// (to be fixed by holding TreeViewModel)
 	return new TreeViewModel(meta);
 }
 
@@ -134,6 +134,7 @@ ConfigNode* ConfigNode::getChildByName(QString& name)
 		}
 	}
 
+	// TODO: dangling reference (return 0?)
 	return new ConfigNode("", "");
 }
 
@@ -141,8 +142,9 @@ ConfigNode* ConfigNode::getChildByIndex(int index)
 {
 	if (index >= 0 && index < m_children->model().length())
 		return m_children->model().at(index);
-	else
-		return new ConfigNode("", "");
+
+	// TODO: dangling reference (return 0?)
+	return new ConfigNode("", "");
 }
 
 bool ConfigNode::childrenHaveNoChildren() const

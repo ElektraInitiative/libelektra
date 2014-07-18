@@ -47,6 +47,7 @@ private:
 	// that is the only part we need:
 	kdb::Key m_key;
 	TreeViewModel* m_children;
+	// missing: TreeViewModel for metadata
 
 signals:
 	void nameChanged();
