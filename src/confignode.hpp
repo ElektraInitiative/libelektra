@@ -15,7 +15,7 @@ class ConfigNode : public QObject
 	Q_OBJECT
 
 public:
-	// TODO: why not pass the KeySet*
+	// TODO: why not pass the Key directly
 	explicit ConfigNode(const QString& name, const QString& path);
 	/// Needed by Qt
 	ConfigNode(const ConfigNode& other);

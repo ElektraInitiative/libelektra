@@ -194,6 +194,7 @@ Qt::ItemFlags TreeViewModel::flags(const QModelIndex& index) const
 	return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
 }
 
+// TODO: make recursion more elegant, pass Key
 void TreeViewModel::sink(ConfigNode* node, QStringList keys, QString path)
 {
 	if (keys.length() == 0)
@@ -218,6 +219,7 @@ void TreeViewModel::sink(ConfigNode* node, QStringList keys, QString path)
 	}
 }
 
+
 void TreeViewModel::populateModel(kdb::KeySet const & config)
 {
 	ConfigNode* system = new ConfigNode("system", "system");
@@ -233,6 +235,7 @@ void TreeViewModel::populateModel(kdb::KeySet const & config)
 		configData << QString::fromStdString(config.current().getName());
 	}
 
+	// TODO: it is useless to have two loops here
 	for (int i = 0; i < configData.length(); i++)
 	{
 
