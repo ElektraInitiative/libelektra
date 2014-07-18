@@ -15,72 +15,86 @@ class ConfigNode;
 class TreeViewModel : public QAbstractListModel
 {
 
-	Q_OBJECT
+    Q_OBJECT
 
 public:
 
-	// TODO: document roles
-	enum TreeViewModelRoles
-	{
-	 NameRole = Qt::UserRole + 1,
-	 PathRole,
-	 ValueRole,
-	 ChildCountRole,
-	 ChildrenRole,
-	 ChildrenHaveNoChildrenRole,
-	 MetaValueRole,
-	 RowCountRole,
-	 NodeRole
-	};
+    /**
+     * @brief The TreeViewModelRoles enum
+     * @
+     */
+    enum TreeViewModelRoles
+    {
+     NameRole = Qt::UserRole + 1, ///< The role QML can access the name of a node at a specified index.
+     PathRole, ///< The role QML can access the path of a node at a specified index.
+     ValueRole, ///< The role QML can access the value of a node at a specified index.
+     ChildCountRole, ///< The role QML can access the number of children of a node at a specified index.
+     ChildrenRole, ///< The role QML can access the children model of a node at a specified index.
+     ChildrenHaveNoChildrenRole, ///< The role QML can access if children of a node at a specified index do have children on their own.
+     MetaValueRole, ///< The role QML can access the meta model of a node at a specified index.
+     RowCountRole, ///for testing purposes, not sure if it stays
+     NodeRole ///for testing purposes, not sure if it stays
+    };
 
-	explicit TreeViewModel(QObject* parent =  0);
-	// TODO: is this constructor needed?
-	TreeViewModel(QList<ConfigNode*> const & nodes);
-	// Needed for Qt
-	TreeViewModel(TreeViewModel const & other);
-	~TreeViewModel();
+    explicit TreeViewModel(QObject* parent =  0);
+    // TODO: is this constructor needed?
+    TreeViewModel(QList<ConfigNode*> const & nodes);
+    // Needed for Qt
+    TreeViewModel(TreeViewModel const & other);
+    ~TreeViewModel();
 
-	/// @return the underlying model
-	QList<ConfigNode*>& model()
-	{
-		return m_model;
-	}
+    /// @return the underlying model
+    QList<ConfigNode*>& model()
+    {
+        return m_model;
+    }
 
-	//mandatory methods inherited from QAbstractItemModel
-	int                     rowCount(const QModelIndex& parent = QModelIndex()) const;
-	Q_INVOKABLE int         qmlRowCount() const;
-	QVariant                data(const QModelIndex& index, int role = Qt::DisplayRole) const;
-	bool                    setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
-	Q_INVOKABLE void        setDataValue(int index, const QVariant& value, const QString& role);
-	bool                    insertRows(int row, int count, const QModelIndex& parent = QModelIndex());
-	Q_INVOKABLE bool        removeRow(int row, const QModelIndex& parent = QModelIndex());
-	Qt::ItemFlags           flags(const QModelIndex& index) const;
+    //mandatory methods inherited from QAbstractItemModel
+    int                     rowCount(const QModelIndex& parent = QModelIndex()) const;
+    Q_INVOKABLE int         qmlRowCount() const;
+    QVariant                data(const QModelIndex& index, int role = Qt::DisplayRole) const;
+    bool                    setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
+    Q_INVOKABLE void        setDataValue(int index, const QVariant& value, const QString& role);
+    bool                    insertRows(int row, int count, const QModelIndex& parent = QModelIndex());
+    Q_INVOKABLE bool        removeRow(int row, const QModelIndex& parent = QModelIndex());
+    Qt::ItemFlags           flags(const QModelIndex& index) const;
 
-	/// recursively populate the model
-	void populateModel(kdb::KeySet const & config);
+    /// recursively populate the model
+    void populateModel(kdb::KeySet const & config);
 
-	// TODO: add visitor in order to:
-	// print tree for debugging purposes
-	// get current KeySet (by appending all Keys in the ConfigNodes
-	//    with this KeySet we can implement undo and save to storage
+    // TODO: add visitor in order to:
+    // print tree for debugging purposes
+    // get current KeySet (by appending all Keys in the ConfigNodes
+    //    with this KeySet we can implement undo and save to storage
 
-	// TODO: what are the methods for?
-	Q_INVOKABLE QVariantMap get(int idx) const;
-	Q_INVOKABLE QVariant    find(const QString& term);
+
+    /**
+     * @brief Get the roles of a ConfigNode at the specifies index. Needed to access roles from outside a delegate in QML.
+     * @param idx The index of the ConfigNode.
+     * @return A map of the roles of the ConfigNode at the specified index.
+     */
+    Q_INVOKABLE QVariantMap get(int idx) const;
+
+    /**
+      * @brief Find a search term in the model.
+      * @param term The search term of interest.
+      * @return A model whick includes all confignodes that have the search term in their name or value.
+      */
+    Q_INVOKABLE QVariant    find(const QString& term);
 
 private:
-	void sink(ConfigNode* node, QStringList keys, QString path);
-	void find(ConfigNode* node, const QString term);
+    void sink(ConfigNode* node, QStringList keys, QString path);
+    void find(ConfigNode* node, const QString term);
 
-	QList<ConfigNode*> m_model;
-	// TODO: why are the searchResults in the same model??
-	QList<ConfigNode*> m_searchResults;
+    QList<ConfigNode*> m_model;
+    // TODO: why are the searchResults in the same model??
+    QList<ConfigNode*> m_searchResults;
 
 protected:
-	QHash<int, QByteArray> roleNames() const;
+    QHash<int, QByteArray> roleNames() const;
 
 signals:
-	void modelChanged();
+    void modelChanged();
 
 public slots:
 

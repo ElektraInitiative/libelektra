@@ -10,7 +10,6 @@ HEADERS += \
 		src/confignode.hpp
 
 CONFIG += debug
-TRANSLATIONS += qml/i18n/qml_de.ts
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
@@ -19,12 +18,11 @@ INCLUDEPATH += /usr/include/elektra
 INCLUDEPATH += /usr/local/include/elektra
 INCLUDEPATH += ../../Desktop/p4n81s-libelektra/src/tools/kdb/
 
-
 # Default rules for deployment.
 include(deployment.pri)
 
 RESOURCES += resources.qrc \
-    i18n.qrc
+			i18n.qrc
 
 OTHER_FILES += \
 		qml/main.qml\
