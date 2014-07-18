@@ -52,7 +52,7 @@ Item {
                 spacing: defaultSpacing
 
                 Label {
-                    text: "Included Plugins"
+                    text: qsTr("Included Plugins")
                 }
                 BasicRectangle {
                     id: includedPluginsArea
@@ -69,7 +69,7 @@ Item {
                 spacing: defaultSpacing
 
                 Label {
-                    text: "Plugin Info"
+                    text: qsTr("Plugin Info")
                 }
                 BasicRectangle {
                     id: pluginInfoArea

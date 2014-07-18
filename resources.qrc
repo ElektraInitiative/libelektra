@@ -32,10 +32,9 @@
         <file>qml/Page4.qml</file>
         <file>qml/SearchField.qml</file>
         <file>qml/WizardTemplate.qml</file>
-        <file>qml/BasicRectangle.qml</file>
         <file>qml/UnmountBackendWindow.qml</file>
-        <file>qml/DefaultFileDialog.qml</file>
         <file>qml/icons/arrow-right.png</file>
         <file>qml/TreeView.qml</file>
+        <file>qml/BasicRectangle.qml</file>
     </qresource>
 </RCC>

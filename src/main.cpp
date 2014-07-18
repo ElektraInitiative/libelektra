@@ -8,18 +8,23 @@
 
 int main(int argc, char* argv[])
 {
-	QApplication app(argc, argv);
+    QApplication app(argc, argv);
 
-	qRegisterMetaType<TreeViewModel> ("TreeViewModel");
-	qRegisterMetaType<ConfigNode> ("ConfigNode");
+    qRegisterMetaType<TreeViewModel> ("TreeViewModel");
+    qRegisterMetaType<ConfigNode> ("ConfigNode");
 
-	QQmlApplicationEngine engine;
+    QString locale = QLocale::system().name();
 
-	QQmlContext* ctxt = engine.rootContext();
-	TreeViewModel* model = new TreeViewModel;
-	ctxt->setContextProperty("externTreeModel", QVariant::fromValue(model));
+    QTranslator tr;
+    tr.load(QString(":/qml/i18n/lang_") + locale + QString(".qm"));
+    app.installTranslator(&tr);
 
-	engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
-	return app.exec();
+    QQmlApplicationEngine engine;
+
+    QQmlContext* ctxt = engine.rootContext();
+    TreeViewModel* model = new TreeViewModel;
+    ctxt->setContextProperty("externTreeModel", QVariant::fromValue(model));
+
+    engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
+    return app.exec();
 }
-

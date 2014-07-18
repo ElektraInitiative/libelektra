@@ -237,7 +237,7 @@ ApplicationWindow {
 
             Menu {
                 id:edNew
-                title: "New"
+                title: qsTr("New")
 
                 MenuItem {
                     id:edNewKey
