@@ -32,6 +32,9 @@ KeySet *set_pluginconf()
 
 void test_resolve()
 {
+	char *path;
+	int pathLen;
+
 	printf ("Resolve Filename\n");
 
 	KeySet *modules = ksNew(0);
@@ -72,8 +75,13 @@ void test_resolve()
 	succeed_if (resolveFilename(forKey, &h->user, forKey) != -1,
 			"could not resolve filename");
 
+	pathLen = tempHomeLen + 1 + strlen (KDB_DB_USER) + 12 + 1;
+	path = malloc (pathLen);
+	succeed_if (path != 0, "malloc failed");
+	snprintf (path, pathLen, "%s/%s/elektra.ecf", tempHome, KDB_DB_USER);
+
 	succeed_if (!strcmp(h->user.path, "elektra.ecf"), "path not set correctly");
-	succeed_if (!strcmp(h->user.filename, "/tmp/elektra-test/" KDB_DB_USER "/elektra.ecf"), "filename not set correctly");
+	succeed_if (!strcmp(h->user.filename, path), "filename not set correctly");
 	resolverClose(&h->user);
 
 #ifdef HAVE_SETENV
@@ -128,6 +136,7 @@ void test_resolve()
 	elektraPluginClose(plugin, 0);
 	elektraModulesClose(modules, 0);
 	ksDel (modules);
+	free (path);
 }
 
 void test_name()
