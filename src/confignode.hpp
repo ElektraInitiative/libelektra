@@ -15,12 +15,15 @@ class ConfigNode : public QObject
 	Q_OBJECT
 
 public:
-
+	// TODO: why not pass the Key directly
 	explicit ConfigNode(const QString& name, const QString& path);
+	/// Needed by Qt
 	ConfigNode(const ConfigNode& other);
+	/// Needed by Qt
 	ConfigNode();
 	~ConfigNode();
 
+	// TODO: documentation!
 	int                     getChildCount() const;
 	QString                 getName() const;
 	QString                 getPath() const;
@@ -36,11 +39,15 @@ public:
 	Q_INVOKABLE ConfigNode* getChildByIndex(int index);
 
 private:
+	// TODO: not needed if we hold the Key
 	QString m_name;
 	QString m_path;
 	QVariant m_value;
+
+	// that is the only part we need:
 	kdb::Key m_key;
-	QList<ConfigNode*> m_children;
+	TreeViewModel* m_children;
+	// missing: TreeViewModel for metadata
 
 signals:
 	void nameChanged();

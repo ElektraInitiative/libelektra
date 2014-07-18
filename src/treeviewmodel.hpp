@@ -59,6 +59,11 @@ public:
 	/// recursively populate the model
 	void populateModel(kdb::KeySet const & config);
 
+	// TODO: add visitor in order to:
+	// print tree for debugging purposes
+	// get current KeySet (by appending all Keys in the ConfigNodes
+	//    with this KeySet we can implement undo and save to storage
+
 	// TODO: what are the methods for?
 	Q_INVOKABLE QVariantMap get(int idx) const;
 	Q_INVOKABLE QVariant    find(const QString& term);
