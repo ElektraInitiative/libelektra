@@ -23,6 +23,7 @@ int main(int argc, char* argv[])
 
     QQmlContext* ctxt = engine.rootContext();
     TreeViewModel* model = new TreeViewModel;
+    model->populateModel();
     ctxt->setContextProperty("externTreeModel", QVariant::fromValue(model));
 
     engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));

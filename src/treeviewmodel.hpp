@@ -19,6 +19,7 @@ class TreeViewModel : public QAbstractListModel
 
 public:
 
+	// TODO: document roles
 	enum TreeViewModelRoles
 	{
 	 NameRole = Qt::UserRole + 1,
@@ -33,9 +34,17 @@ public:
 	};
 
 	explicit TreeViewModel(QObject* parent =  0);
-	TreeViewModel(QList<ConfigNode*>& nodes);
-	TreeViewModel(const TreeViewModel& other);
+	// TODO: is this constructor needed?
+	TreeViewModel(QList<ConfigNode*> const & nodes);
+	// Needed for Qt
+	TreeViewModel(TreeViewModel const & other);
 	~TreeViewModel();
+
+	/// @return the underlying model
+	QList<ConfigNode*>& model()
+	{
+		return m_model;
+	}
 
 	//mandatory methods inherited from QAbstractItemModel
 	int                     rowCount(const QModelIndex& parent = QModelIndex()) const;
@@ -47,18 +56,23 @@ public:
 	Q_INVOKABLE bool        removeRow(int row, const QModelIndex& parent = QModelIndex());
 	Qt::ItemFlags           flags(const QModelIndex& index) const;
 
-	//recursive populating
-	void                    sink(ConfigNode* node, QStringList keys, QString path);
+	/// recursively populate the model
+	void populateModel();
 
+	// TODO: what are the methods for?
 	Q_INVOKABLE QVariantMap get(int idx) const;
 	Q_INVOKABLE QVariant    find(const QString& term);
 
 private:
-	QList<ConfigNode*> m_model;
-	QList<ConfigNode*> m_searchResults;
+	void sink(ConfigNode* node, QStringList keys, QString path);
 	void find(ConfigNode* node, const QString term);
-	void populateModel();
+
+	QList<ConfigNode*> m_model;
+	// TODO: why are the searchResults in the same model??
+	QList<ConfigNode*> m_searchResults;
+	// TODO: remove:
 	kdb::KeySet m_config;
+	// TODO: certainly to be removed:
 	kdb::KDB m_kdb;
 
 protected:

@@ -16,18 +16,17 @@ TreeViewModel::TreeViewModel(QObject* parent)
 	qDebug() << "MetaV " << MetaValueRole;
 	qDebug() << "RC " << RowCountRole;
 	qDebug() << "NR " << NodeRole;
-
-	populateModel();
 }
 
-TreeViewModel::TreeViewModel(QList<ConfigNode*>& nodes)
+TreeViewModel::TreeViewModel(QList<ConfigNode*> const & nodes)
 {
-	m_model = nodes;
+	m_model = nodes; // copy from other list
 }
 
 TreeViewModel::TreeViewModel(const TreeViewModel& other)
+	: QAbstractListModel()
 {
-	Q_UNUSED(other)
+	m_model = other.m_model; // copy from other list
 }
 
 TreeViewModel::~TreeViewModel()
@@ -195,9 +194,9 @@ void TreeViewModel::populateModel()
 	m_config.rewind();
 
 	ConfigNode* system = new ConfigNode("system", "system");
-	ConfigNode* root = new ConfigNode("user", "user");
+	ConfigNode* user = new ConfigNode("user", "user");
 
-	m_model << system << root;
+	m_model << system << user;
 
 	QStringList configData;
 
@@ -246,7 +245,7 @@ QVariant TreeViewModel::find(const QString& term)
 {
 	m_searchResults.clear();
 
-    foreach (ConfigNode* node, m_model)
+	foreach (ConfigNode* node, m_model)
 	{
 		find(node, term);
 	}
