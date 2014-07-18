@@ -51,6 +51,7 @@ set (PLUGINS_LIST_POSIX
 	syslog uname
 	timeofday
 	simpleini
+	line
 	)
 
 #
