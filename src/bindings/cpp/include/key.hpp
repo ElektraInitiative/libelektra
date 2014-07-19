@@ -162,6 +162,8 @@ public:
 	template <class T>
 	inline void setMeta(const std::string &metaName, T x);
 
+	inline void delMeta(const std::string &metaName);
+
 	inline void copyMeta(const Key &other, const std::string &metaName);
 	inline void copyAllMeta(const Key &other);
 
@@ -958,12 +960,12 @@ inline yourtype Key::getMeta(const std::string &name) const
  * otherwise you will get an compiler error.
  *
  * If no meta is available:
- * - char* is null
+ * - char* is null (evaluates to 0)
  * - const Key is null (evaluate to false)
  * - otherwise the default constructed type will be returned
  * @see hasMeta
  *
- * @see setMeta(), copyMeta(), copyAllMeta()
+ * @see delMeta(), setMeta(), copyMeta(), copyAllMeta()
  */
 template <class T>
 inline T Key::getMeta(const std::string &metaName) const
@@ -1033,9 +1035,20 @@ inline std::string Key::getMeta(const std::string &name) const
 }
 
 /**
+ * Set metadata for key.
+ *
  * @copydoc keySetMeta
  *
- * @see getMeta(), copyMeta(), copyAllMeta()
+ * @warning unlike the C Interface, it is not possible to remove
+ * metadata with this method.
+ * k.setMeta("something", NULL) will lead to set the number 0 or to
+ * something different (may depend on compiler definition of NULL).
+ * See discussion in Issue
+ * https://github.com/ElektraInitiative/libelektra/issues/8
+ *
+ * Use delMeta() to avoid these issues.
+ *
+ * @see delMeta(), getMeta(), copyMeta(), copyAllMeta()
  */
 template <class T>
 inline void Key::setMeta(const std::string &metaName, T x)
@@ -1043,6 +1056,16 @@ inline void Key::setMeta(const std::string &metaName, T x)
 	Key k;
 	k.set<T>(x);
 	ckdb::keySetMeta(key, metaName.c_str(), k.getString().c_str());
+}
+
+/**
+ * Delete metadata for key.
+ *
+ * @see setMeta(), getMeta(), copyMeta(), copyAllMeta()
+ */
+inline void Key::delMeta(const std::string &metaName)
+{
+	ckdb::keySetMeta(key, metaName.c_str(), 0);
 }
 
 /**

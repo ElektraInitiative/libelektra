@@ -22,8 +22,12 @@ void test_basic()
 	succeed_if (test.getMeta<int>("myint") == 333, "could not set other meta");
 
 	test.setMeta<double>("mydouble", 333.3);
+	succeed_if (test.hasMeta("mydouble"), "no meta data even though it was just set");
 	succeed_if (test.getMeta<double>("mydouble") >= 333.2, "could not set other meta");
 	succeed_if (test.getMeta<double>("mydouble") <= 333.4, "could not set other meta");
+
+	test.delMeta("mydouble");
+	succeed_if (!test.hasMeta("mydouble"), "meta data there even though it was just deleted");
 
 	test.setMeta<std::string>("mystr", "str");
 	succeed_if (test.getMeta<std::string>("mystr") == "str", "could not set other meta");
