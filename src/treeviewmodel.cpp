@@ -20,10 +20,10 @@ TreeViewModel::TreeViewModel(QObject* parent)
     */
 }
 
-TreeViewModel::TreeViewModel(QList<ConfigNode*> const & nodes)
-{
-    m_model = nodes; // copy from other list
-}
+//TreeViewModel::TreeViewModel(QList<ConfigNode*> const & nodes)
+//{
+//    m_model = nodes; // copy from other list
+//}
 
 TreeViewModel::TreeViewModel(const TreeViewModel& other)
     : QAbstractListModel()
@@ -74,7 +74,6 @@ QVariant TreeViewModel::data(const QModelIndex& index, int role) const
 
     case Qt::DisplayRole:
         // TODO: document fallthrough if it was desired
-
     case NameRole:
         return QVariant::fromValue(node->getName());
 
@@ -142,12 +141,12 @@ bool TreeViewModel::setData(const QModelIndex& index, const QVariant& value, int
 }
 
 // TODO: Why are there two implementations of setData needed?
-// Because QML cannot call setData() directly.
+// Because QML cannot call setData() directly (see https://bugreports.qt-project.org/browse/QTBUG-7932)
 void TreeViewModel::setDataValue(int index, const QVariant& value, const QString& role)
 {
     if (index < 0 || index > m_model.size() - 1)
     {
-        qDebug() << "setDataValue: Wrong index called";
+        qDebug() << "setDataValue: Wrong index called. model.size = " << m_model.size() << " index = " << index;
         return;
     }
 
@@ -253,23 +252,41 @@ QVariantMap TreeViewModel::get(int idx) const
     return map;
 }
 
-
-
 QVariant TreeViewModel::find(const QString& term)
 {
-    m_searchResults.clear();
+    TreeViewModel* searchResults = new TreeViewModel;
 
     foreach (ConfigNode* node, m_model)
     {
-        find(node, term);
+        find(node, searchResults, term);
     }
 
-    if (m_searchResults.count() == 0)
+    if (searchResults->model().count() == 0)
     {
-        m_searchResults.append(new ConfigNode("NotfoundNode", "There were no results matching your query.", 0));
+        searchResults->model().append(new ConfigNode("NotfoundNode", "There were no results matching your query.", 0));
     }
 
-    return QVariant::fromValue(new TreeViewModel(m_searchResults));
+    return QVariant::fromValue(searchResults);
+}
+
+void TreeViewModel::find(ConfigNode* node, TreeViewModel *searchResults, const QString term)
+{
+
+    int tmpChildCount = node->getChildCount();
+
+    if (tmpChildCount > 0)
+    {
+        for (int i = 0; i < tmpChildCount; i++)
+        {
+            find(node->getChildByIndex(i), searchResults, term);
+        }
+    }
+
+    if (node->getName().contains(term) || node->getValue().toString().contains(term))
+    {
+        searchResults->model().append(node);
+    }
+
 }
 
 bool TreeViewModel::removeRow(int row, const QModelIndex& parent)
@@ -297,26 +314,6 @@ bool TreeViewModel::insertRow(int row, const QModelIndex& parent)
     endInsertRows();
 
     return true;
-}
-
-void TreeViewModel::find(ConfigNode* node, const QString term)
-{
-
-    int tmpChildCount = node->getChildCount();
-
-    if (tmpChildCount > 0)
-    {
-        for (int i = 0; i < tmpChildCount; i++)
-        {
-            find(node->getChildByIndex(i), term);
-        }
-    }
-
-    if (node->getName().contains(term) || node->getValue().toString().contains(term))
-    {
-        m_searchResults.append(node);
-    }
-
 }
 
 QHash<int, QByteArray> TreeViewModel::roleNames() const

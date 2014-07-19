@@ -37,8 +37,7 @@ public:
     };
 
     explicit TreeViewModel(QObject* parent =  0);
-    // TODO: is this constructor needed?
-    TreeViewModel(QList<ConfigNode*> const & nodes);
+
     // Needed for Qt
     TreeViewModel(TreeViewModel const & other);
     ~TreeViewModel();
@@ -84,19 +83,15 @@ public:
 
 private:
     void sink(ConfigNode* node, QStringList keys, QString path, kdb::Key key);
-    void find(ConfigNode* node, const QString term);
+    void find(ConfigNode *node, TreeViewModel *searchResults, const QString term);
 
     QList<ConfigNode*> m_model;
-    // TODO: why are the searchResults in the same model??
-    QList<ConfigNode*> m_searchResults;
 
 protected:
     QHash<int, QByteArray> roleNames() const;
 
 signals:
     void modelChanged();
-
-public slots:
 
 };
 
