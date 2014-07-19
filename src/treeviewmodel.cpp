@@ -147,7 +147,7 @@ void TreeViewModel::setDataValue(int index, const QVariant& value, const QString
 {
     if (index < 0 || index > m_model.size() - 1)
     {
-        qDebug() << "Wrong index called";
+        qDebug() << "setDataValue: Wrong index called";
         return;
     }
 
@@ -170,33 +170,6 @@ void TreeViewModel::setDataValue(int index, const QVariant& value, const QString
     }
     else
         return;
-}
-
-bool TreeViewModel::insertRows(int row, int count, const QModelIndex& parent)
-{
-    // TODO: not implemented
-    beginInsertRows(parent, row, count);
-    m_model.append(new ConfigNode());
-    endInsertRows();
-
-    return true;
-}
-
-bool TreeViewModel::removeRow(int row, const QModelIndex& parent)
-{
-    Q_UNUSED(parent);
-
-    if (row < 0 || row > m_model.size()-1)
-    {
-        qDebug() << "Tried to remove row out of bounds";
-        return false;
-    }
-
-    beginRemoveRows(QModelIndex(), row, row);
-    delete m_model.takeAt(row);
-    endRemoveRows();
-
-    return true;
 }
 
 Qt::ItemFlags TreeViewModel::flags(const QModelIndex& index) const
@@ -299,12 +272,31 @@ QVariant TreeViewModel::find(const QString& term)
     return QVariant::fromValue(new TreeViewModel(m_searchResults));
 }
 
-void TreeViewModel::addNode(int index)
+bool TreeViewModel::removeRow(int row, const QModelIndex& parent)
 {
-    //TODO: add Node
-    qDebug() << "Index = " << index;
-    QModelIndex modelIndex = createIndex(index, 0);
-    insertRows(index, 1, modelIndex);
+    Q_UNUSED(parent);
+
+    if (row < 0 || row > m_model.size()-1)
+    {
+        qDebug() << "Tried to remove row out of bounds. model.size = " <<  m_model.size() << ", index = " << row;
+        return false;
+    }
+
+    beginRemoveRows(QModelIndex(), row, row);
+    delete m_model.takeAt(row);
+    endRemoveRows();
+
+    return true;
+}
+
+bool TreeViewModel::insertRow(int row, const QModelIndex& parent)
+{
+    Q_UNUSED(parent);
+    beginInsertRows(QModelIndex(), row, row);
+    m_model.insert(row, new ConfigNode());
+    endInsertRows();
+
+    return true;
 }
 
 void TreeViewModel::find(ConfigNode* node, const QString term)

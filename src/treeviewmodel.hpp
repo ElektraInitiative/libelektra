@@ -55,7 +55,7 @@ public:
     QVariant                data(const QModelIndex& index, int role = Qt::DisplayRole) const;
     bool                    setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
     Q_INVOKABLE void        setDataValue(int index, const QVariant& value, const QString& role);
-    bool                    insertRows(int row, int count, const QModelIndex& parent = QModelIndex());
+    Q_INVOKABLE bool        insertRow(int row, const QModelIndex &parent = QModelIndex());
     Q_INVOKABLE bool        removeRow(int row, const QModelIndex& parent = QModelIndex());
     Qt::ItemFlags           flags(const QModelIndex& index) const;
 
@@ -81,8 +81,6 @@ public:
       * @return A model which includes all ConfigNodes that have the search term in their name or value.
       */
     Q_INVOKABLE QVariant    find(const QString& term);
-
-    Q_INVOKABLE void        addNode(int index);
 
 private:
     void sink(ConfigNode* node, QStringList keys, QString path, kdb::Key key);

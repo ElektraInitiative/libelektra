@@ -96,13 +96,13 @@ BasicWindow {
             id: addButton
             anchors.horizontalCenter: parent.horizontalCenter
             text: qsTr("New Meta Key")
-            onClicked: {metaKeyModel.append({}); metaAreaListView.model.addNode(metaCount)}
+            onClicked: {metaKeyModel.append({"metaName" : "", "metaValue" : ""}); metaAreaListView.model.insertRow(metaCount); metaCount++;}
         }
     }
 
     function populateMetaArea() {
         for(var i = 0; i < metaCount; i++){
-            metaKeyModel.append({"metaName": metaAreaListView.model.get(i).name, "metaValue": metaAreaListView.model.get(i).value})
+            metaKeyModel.append({"metaName" : metaAreaListView.model.get(i).name, "metaValue" : metaAreaListView.model.get(i).value})
         }
     }
 
