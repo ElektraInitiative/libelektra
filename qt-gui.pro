@@ -3,11 +3,14 @@ QT += quick  gui core  qml  widgets
 SOURCES += \
 		src/main.cpp \
 		src/treeviewmodel.cpp \
-		src/confignode.cpp
+		src/confignode.cpp \
+    src/printvisitor.cpp
 
 HEADERS += \
 		src/treeviewmodel.hpp \
-		src/confignode.hpp
+		src/confignode.hpp \
+    src/visitor.hpp \
+    src/printvisitor.hpp
 
 CONFIG += debug
 

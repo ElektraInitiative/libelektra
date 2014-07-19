@@ -6,24 +6,7 @@ using namespace kdb;
 TreeViewModel::TreeViewModel(QObject* parent)
 {
     Q_UNUSED(parent)
-
-    /*
-    qDebug() << "Name " << NameRole;
-    qDebug() << "Path " << PathRole;
-    qDebug() << "Value " << ValueRole;
-    qDebug() << "ChildCount " << ChildCountRole;
-    qDebug() << "Children " << ChildrenRole;
-    qDebug() << "CHNC " << ChildrenHaveNoChildrenRole;
-    qDebug() << "MetaV " << MetaValueRole;
-    qDebug() << "RC " << RowCountRole;
-    qDebug() << "NR " << NodeRole;
-    */
 }
-
-//TreeViewModel::TreeViewModel(QList<ConfigNode*> const & nodes)
-//{
-//    m_model = nodes; // copy from other list
-//}
 
 TreeViewModel::TreeViewModel(const TreeViewModel& other)
     : QAbstractListModel()
@@ -43,24 +26,18 @@ int TreeViewModel::rowCount(const QModelIndex& parent) const
     return m_model.count();
 }
 
-// TODO: why do we have a qml* variant here?
-int TreeViewModel::qmlRowCount() const
-{
-    return rowCount();
-}
-
 QVariant TreeViewModel::data(const QModelIndex& index, int role) const
 {
     if (!index.isValid())
     {
-        qDebug() << "index not valid";
+        qDebug() << "TreeVieModel::data: index not valid";
         // TODO: why is this function called with wrong index?
         return QVariant();
     }
 
     if (index.row() > (m_model.size() - 1))
     {
-        qDebug() << "row too high" << index.row();
+        qDebug() << "TreeVieModel::data: row too high" << index.row();
         // TODO: why is this function called with wrong index?
         return QVariant();
     }
@@ -94,9 +71,6 @@ QVariant TreeViewModel::data(const QModelIndex& index, int role) const
 
     case MetaValueRole:
         return QVariant::fromValue(node->getMetaValue());
-
-    case RowCountRole:
-        return QVariant::fromValue(m_model.count());
 
     case NodeRole:
         return QVariant::fromValue(node);
@@ -154,17 +128,14 @@ void TreeViewModel::setDataValue(int index, const QVariant& value, const QString
 
     if (role == "Name")
     {
-//        qDebug() << "Name " << value.toString();
         setData(modelIndex, value, NameRole);
     }
     else if (role == "Value")
     {
-//        qDebug() << "Value " << value.toString();
         setData(modelIndex, value, ValueRole);
     }
     else if (role == "MetaValue")
     {
-//        qDebug() << "MetaValue " << value.toString();
         setData(modelIndex, value, MetaValueRole);
     }
     else
@@ -215,6 +186,7 @@ void TreeViewModel::populateModel(kdb::KeySet const & config)
     QStringList configData;
 
     config.rewind();
+
     while (config.next())
     {
         QString currentKey = QString::fromStdString(config.current().getName());
@@ -237,6 +209,13 @@ void TreeViewModel::populateModel(kdb::KeySet const & config)
         }
 
     }
+
+}
+
+void TreeViewModel::accept(Visitor &visitor)
+{
+    foreach (ConfigNode *node, m_model)
+        node->accept(visitor);
 
 }
 
@@ -310,6 +289,8 @@ bool TreeViewModel::insertRow(int row, const QModelIndex& parent)
 {
     Q_UNUSED(parent);
     beginInsertRows(QModelIndex(), row, row);
+    //TODO: Problem ==> what key should the Node have? If this is a MetaModel
+    //it needs a valid key.
     m_model.insert(row, new ConfigNode());
     endInsertRows();
 
@@ -326,7 +307,6 @@ QHash<int, QByteArray> TreeViewModel::roleNames() const
     roles[ChildrenRole] = "children";
     roles[ChildrenHaveNoChildrenRole] = "childrenHaveNoChildren";
     roles[MetaValueRole] = "metaValue";
-    roles[RowCountRole] = "rowCount";
     roles[NodeRole] = "node";
     return roles;
 }

@@ -29,7 +29,10 @@ int main(int argc, char* argv[])
 	TreeViewModel* model = new TreeViewModel;
 	model->populateModel(config);
 	ctxt->setContextProperty("externTreeModel", QVariant::fromValue(model));
-
 	engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
+
+    PrintVisitor printer;
+    model->accept(printer);
+
 	return app.exec();
 }

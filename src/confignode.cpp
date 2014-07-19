@@ -14,11 +14,6 @@ ConfigNode::ConfigNode(const QString& name, const QString& path, const Key &key)
     // with getBaseName() and getName())
     // TODO: avoid rereading the whole database dozens of times!
     // (pass Key here)
-//    KDB kdb;
-//    KeySet config;
-//    kdb.get(config, m_path.toStdString());
-
-//    m_key = config.lookup(m_path.toStdString());
 
     if (m_key && m_key.isString())
         m_value = QVariant::fromValue(QString::fromStdString(m_key.getString()));
@@ -93,6 +88,19 @@ void ConfigNode::setMeta(const QString &name, const QVariant &value)
 void ConfigNode::deleteMeta(const QString &name)
 {
     m_key.delMeta(name.toStdString());
+}
+
+void ConfigNode::accept(Visitor &visitor)
+{
+    visitor.visit(this);
+
+    foreach (ConfigNode *node, m_children->model())
+        node->accept(visitor);
+}
+
+Key ConfigNode::getKey()
+{
+    return m_key;
 }
 
 void ConfigNode::appendChild(ConfigNode* node)

@@ -9,8 +9,10 @@
 #include <keyio.hpp>
 
 #include "confignode.hpp"
+#include "printvisitor.hpp"
 
 class ConfigNode;
+class Visitor;
 
 class TreeViewModel : public QAbstractListModel
 {
@@ -32,8 +34,7 @@ public:
      ChildrenRole, ///< The role QML can access the children model of a node at a specified index.
      ChildrenHaveNoChildrenRole, ///< The role QML can access if children of a node at a specified index do have children on their own.
      MetaValueRole, ///< The role QML can access the meta model of a node at a specified index.
-     RowCountRole, ///for testing purposes, not sure if it stays
-     NodeRole ///for testing purposes, not sure if it stays
+     NodeRole ///<for testing purposes, not sure if it stays
     };
 
     explicit TreeViewModel(QObject* parent =  0);
@@ -49,8 +50,7 @@ public:
     }
 
     //mandatory methods inherited from QAbstractItemModel
-    int                     rowCount(const QModelIndex& parent = QModelIndex()) const;
-    Q_INVOKABLE int         qmlRowCount() const;
+    Q_INVOKABLE int         rowCount(const QModelIndex& parent = QModelIndex()) const;
     QVariant                data(const QModelIndex& index, int role = Qt::DisplayRole) const;
     bool                    setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
     Q_INVOKABLE void        setDataValue(int index, const QVariant& value, const QString& role);
@@ -66,6 +66,7 @@ public:
     // get current KeySet (by appending all Keys in the ConfigNodes
     //    with this KeySet we can implement undo and save to storage
 
+    void accept(Visitor &visitor);
 
     /**
      * @brief Get the roles of a ConfigNode at the specifies index. Needed to access roles from outside a delegate in QML.
