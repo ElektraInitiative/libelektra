@@ -82,6 +82,8 @@ public:
       */
     Q_INVOKABLE QVariant    find(const QString& term);
 
+    Q_INVOKABLE void        addNode(int index);
+
 private:
     void sink(ConfigNode* node, QStringList keys, QString path, kdb::Key key);
     void find(ConfigNode* node, const QString term);

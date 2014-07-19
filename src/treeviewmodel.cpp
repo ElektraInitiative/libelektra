@@ -175,10 +175,11 @@ void TreeViewModel::setDataValue(int index, const QVariant& value, const QString
 bool TreeViewModel::insertRows(int row, int count, const QModelIndex& parent)
 {
     // TODO: not implemented
-    Q_UNUSED(row)
-    Q_UNUSED(count)
-    Q_UNUSED(parent)
-    return false;
+    beginInsertRows(parent, row, count);
+    m_model.append(new ConfigNode());
+    endInsertRows();
+
+    return true;
 }
 
 bool TreeViewModel::removeRow(int row, const QModelIndex& parent)
@@ -296,6 +297,14 @@ QVariant TreeViewModel::find(const QString& term)
     }
 
     return QVariant::fromValue(new TreeViewModel(m_searchResults));
+}
+
+void TreeViewModel::addNode(int index)
+{
+    //TODO: add Node
+    qDebug() << "Index = " << index;
+    QModelIndex modelIndex = createIndex(index, 0);
+    insertRows(index, 1, modelIndex);
 }
 
 void TreeViewModel::find(ConfigNode* node, const QString term)

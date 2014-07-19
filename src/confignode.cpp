@@ -84,8 +84,7 @@ void ConfigNode::setValue(const QVariant& value)
 
 void ConfigNode::setMeta(const QString &name, const QVariant &value)
 {
-    //should delete key but doesn't??
-    m_key.setMeta(m_name.toStdString(), NULL);
+    m_key.delMeta(m_name.toStdString());
     m_name = name;
     m_value = value;
     m_key.setMeta(name.toStdString(), value.toString().toStdString());
