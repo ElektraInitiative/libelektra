@@ -3,20 +3,22 @@
 
 using namespace kdb;
 
-ConfigNode::ConfigNode(const QString& name, const QString& path)
+ConfigNode::ConfigNode(const QString& name, const QString& path, const Key &key)
     : m_name(name)
     , m_path(path)
+    , m_key(key)
     , m_children(new TreeViewModel)
+    , m_metaData(new TreeViewModel)
 {
     // TODO: why not give full path? (or even better, pass Key
     // with getBaseName() and getName())
     // TODO: avoid rereading the whole database dozens of times!
     // (pass Key here)
-    KDB kdb;
-    KeySet config;
-    kdb.get(config, m_path.toStdString());
+//    KDB kdb;
+//    KeySet config;
+//    kdb.get(config, m_path.toStdString());
 
-    m_key = config.lookup(m_path.toStdString());
+//    m_key = config.lookup(m_path.toStdString());
 
     if (m_key && m_key.isString())
         m_value = QVariant::fromValue(QString::fromStdString(m_key.getString()));
@@ -28,6 +30,7 @@ ConfigNode::ConfigNode(const QString& name, const QString& path)
 ConfigNode::ConfigNode(const ConfigNode& other)
     : QObject()
     , m_children(new TreeViewModel)
+    , m_metaData(new TreeViewModel)
 {
     m_name = other.m_name;
     m_path = other.m_path;
@@ -37,12 +40,14 @@ ConfigNode::ConfigNode(const ConfigNode& other)
 
 ConfigNode::ConfigNode()
     : m_children(new TreeViewModel)
+    , m_metaData(new TreeViewModel)
 {
 }
 
 ConfigNode::~ConfigNode()
 {
     delete m_children;
+    delete m_metaData;
 }
 
 int ConfigNode::getChildCount() const
@@ -69,14 +74,21 @@ void ConfigNode::setName(const QString& name)
 {
     m_name = name;
     // TODO: key is not updated
-    emit nameChanged();
 }
 
 void ConfigNode::setValue(const QVariant& value)
 {
     m_value = value;
     // TODO: key is not updated
-    // TODO: no signal emitted
+}
+
+void ConfigNode::setMeta(const QString &name, const QVariant &value)
+{
+    //should delete key but doesn't??
+    m_key.setMeta(m_name.toStdString(), NULL);
+    m_name = name;
+    m_value = value;
+    m_key.setMeta(name.toStdString(), value.toString().toStdString());
 }
 
 void ConfigNode::appendChild(ConfigNode* node)
@@ -104,24 +116,22 @@ TreeViewModel* ConfigNode::getChildren()
 
 TreeViewModel* ConfigNode::getMetaValue()
 {
-    QList<ConfigNode*> meta;
-
     if (m_key)
     {
         m_key.rewindMeta();
+        m_metaData->model().clear();
 
         while (m_key.nextMeta())
         {
-            ConfigNode* node = new ConfigNode();
+            ConfigNode* node = new ConfigNode("", "", m_key);
             node->setName(QString::fromStdString(m_key.currentMeta().getName()));
             node->setValue(QString::fromStdString(m_key.currentMeta().getString()));
-            meta << node;
+            m_metaData->model().append(node);
         }
+
     }
 
-    // TODO: dangling reference, will crash on modifications
-    // (to be fixed by holding TreeViewModel)
-    return new TreeViewModel(meta);
+    return m_metaData;
 }
 
 ConfigNode* ConfigNode::getChildByName(QString& name)
@@ -135,7 +145,7 @@ ConfigNode* ConfigNode::getChildByName(QString& name)
     }
 
     // TODO: dangling reference (return 0?)
-    return new ConfigNode("", "");
+    return new ConfigNode("", "", 0);
 }
 
 ConfigNode* ConfigNode::getChildByIndex(int index)
@@ -144,7 +154,7 @@ ConfigNode* ConfigNode::getChildByIndex(int index)
         return m_children->model().at(index);
 
     // TODO: dangling reference (return 0?)
-    return new ConfigNode("", "");
+    return new ConfigNode("", "", 0);
 }
 
 bool ConfigNode::childrenHaveNoChildren() const

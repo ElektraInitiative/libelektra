@@ -7,6 +7,7 @@ import QtQuick.Dialogs 1.1
 
 BasicWindow {
     id: editWindow
+
     property alias valueLayout: valueLayout
     property alias nameLabel: nameLabel
     property alias addButton: addButton
@@ -110,11 +111,10 @@ BasicWindow {
         keyAreaView.model.setDataValue(keyAreaView.currentRow, valueTextField.text, "Value")
 
         for(var i = 0; i < metaKeyModel.count; i++) {
-            metaAreaListView.model.setDataValue(i, metaKeyModel.get(i).metaName, "Name")
-            metaAreaListView.model.setDataValue(i, metaKeyModel.get(i).metaValue, "Value")
+            metaAreaListView.model.setDataValue(i, [metaKeyModel.get(i).metaName, metaKeyModel.get(i).metaValue], "MetaValue")
         }
 
-        //keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
         metaKeyModel.clear()
     }
+
 }

@@ -78,12 +78,12 @@ public:
     /**
       * @brief Find a search term in the model.
       * @param term The search term of interest.
-      * @return A model whick includes all confignodes that have the search term in their name or value.
+      * @return A model which includes all ConfigNodes that have the search term in their name or value.
       */
     Q_INVOKABLE QVariant    find(const QString& term);
 
 private:
-    void sink(ConfigNode* node, QStringList keys, QString path);
+    void sink(ConfigNode* node, QStringList keys, QString path, kdb::Key key);
     void find(ConfigNode* node, const QString term);
 
     QList<ConfigNode*> m_model;

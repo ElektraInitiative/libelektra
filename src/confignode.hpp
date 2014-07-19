@@ -16,7 +16,7 @@ class ConfigNode : public QObject
 
 public:
     // TODO: why not pass the Key directly
-    explicit ConfigNode(const QString& name, const QString& path);
+    explicit ConfigNode(const QString& name, const QString& path, const kdb::Key &key);
     /// Needed by Qt
     ConfigNode(const ConfigNode& other);
     /// Needed by Qt
@@ -104,6 +104,7 @@ public:
       */
      Q_INVOKABLE ConfigNode* getChildByIndex(int index);
 
+    void setMeta(const QString &name, const QVariant &value);
 private:
     // TODO: not needed if we hold the Key
     QString m_name;
@@ -114,10 +115,6 @@ private:
     kdb::Key m_key;
     TreeViewModel* m_children;
     TreeViewModel* m_metaData;
-    // missing: TreeViewModel for metadata
-
-signals:
-    void nameChanged();
 };
 
 Q_DECLARE_METATYPE(ConfigNode)

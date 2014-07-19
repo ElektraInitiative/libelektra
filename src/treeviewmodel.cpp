@@ -125,9 +125,15 @@ bool TreeViewModel::setData(const QModelIndex& index, const QVariant& value, int
 
     case NameRole:
         node->setName(value.toString());
+        break;
 
     case ValueRole:
         node->setValue(value);
+        break;
+
+    case MetaValueRole:
+        QVariantList valueList = value.toList();
+        node->setMeta(valueList.at(0).toString(), valueList.at(1));
     }
 
     emit dataChanged(index, index);
@@ -136,6 +142,7 @@ bool TreeViewModel::setData(const QModelIndex& index, const QVariant& value, int
 }
 
 // TODO: Why are there two implementations of setData needed?
+// Because QML cannot call setData() directly.
 void TreeViewModel::setDataValue(int index, const QVariant& value, const QString& role)
 {
     if (index < 0 || index > m_model.size() - 1)
@@ -148,13 +155,18 @@ void TreeViewModel::setDataValue(int index, const QVariant& value, const QString
 
     if (role == "Name")
     {
-//		qDebug() << "Name " << value.toString();
+//        qDebug() << "Name " << value.toString();
         setData(modelIndex, value, NameRole);
     }
     else if (role == "Value")
     {
-//		qDebug() << "Value " << value.toString();
+//        qDebug() << "Value " << value.toString();
         setData(modelIndex, value, ValueRole);
+    }
+    else if (role == "MetaValue")
+    {
+//        qDebug() << "MetaValue " << value.toString();
+        setData(modelIndex, value, MetaValueRole);
     }
     else
         return;
@@ -195,7 +207,7 @@ Qt::ItemFlags TreeViewModel::flags(const QModelIndex& index) const
 }
 
 // TODO: make recursion more elegant, pass Key
-void TreeViewModel::sink(ConfigNode* node, QStringList keys, QString path)
+void TreeViewModel::sink(ConfigNode* node, QStringList keys, QString path, Key key)
 {
     if (keys.length() == 0)
         return;
@@ -208,22 +220,22 @@ void TreeViewModel::sink(ConfigNode* node, QStringList keys, QString path)
     if (node->hasChild(name))
     {
         // qDebug() << "has child: " << name << " with path: " << node->getPath();
-        sink(node->getChildByName(name), keys, node->getPath() + "/" + name);
+        sink(node->getChildByName(name), keys, node->getPath() + "/" + name, key);
     }
     else
     {
         // qDebug() << "new child: " << name << " with path: " << (path + "/" + name);
-        ConfigNode* newNode = new ConfigNode(name, (path + "/" + name));
+        ConfigNode* newNode = new ConfigNode(name, (path + "/" + name), key);
         node->appendChild(newNode);
-        sink(newNode, keys, node->getPath() + "/" + name);
+        sink(newNode, keys, node->getPath() + "/" + name, key);
     }
 }
 
 
 void TreeViewModel::populateModel(kdb::KeySet const & config)
 {
-    ConfigNode* system = new ConfigNode("system", "system");
-    ConfigNode* user = new ConfigNode("user", "user");
+    ConfigNode* system = new ConfigNode("system", "system", 0);
+    ConfigNode* user = new ConfigNode("user", "user", 0);
 
     m_model << system << user;
 
@@ -239,12 +251,12 @@ void TreeViewModel::populateModel(kdb::KeySet const & config)
         if (splittedKey.at(0) == "system")
         {
             splittedKey.removeFirst();
-            sink(m_model.at(0), splittedKey, "system");
+            sink(m_model.at(0), splittedKey, "system", config.current());
         }
         else if (splittedKey.at(0) == "user")
         {
             splittedKey.removeFirst();
-            sink(m_model.at(1), splittedKey, "user");
+            sink(m_model.at(1), splittedKey, "user", config.current());
         }
         else
         {
@@ -280,7 +292,7 @@ QVariant TreeViewModel::find(const QString& term)
 
     if (m_searchResults.count() == 0)
     {
-        m_searchResults.append(new ConfigNode("NotfoundNode", "There were no results matching your query."));
+        m_searchResults.append(new ConfigNode("NotfoundNode", "There were no results matching your query.", 0));
     }
 
     return QVariant::fromValue(new TreeViewModel(m_searchResults));
