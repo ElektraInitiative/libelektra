@@ -84,10 +84,15 @@ void ConfigNode::setValue(const QVariant& value)
 
 void ConfigNode::setMeta(const QString &name, const QVariant &value)
 {
-    m_key.delMeta(m_name.toStdString());
+    deleteMeta(m_name);
     m_name = name;
     m_value = value;
     m_key.setMeta(name.toStdString(), value.toString().toStdString());
+}
+
+void ConfigNode::deleteMeta(const QString &name)
+{
+    m_key.delMeta(name.toStdString());
 }
 
 void ConfigNode::appendChild(ConfigNode* node)

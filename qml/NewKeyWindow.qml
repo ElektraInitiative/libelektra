@@ -96,7 +96,7 @@ BasicWindow {
             id: addButton
             anchors.horizontalCenter: parent.horizontalCenter
             text: qsTr("New Meta Key")
-            onClicked: {metaKeyModel.append({"metaName" : "", "metaValue" : ""}); metaAreaListView.model.insertRow(metaCount); metaCount++;}
+            onClicked: {metaKeyModel.append({"metaName" : "", "metaValue" : ""}); metaAreaListView.model.insertRow(metaCount);}
         }
     }
 

@@ -102,9 +102,10 @@ public:
       * @param index The index of the wanted child.
       * @return The child on the given index.
       */
-     Q_INVOKABLE ConfigNode* getChildByIndex(int index);
+    Q_INVOKABLE ConfigNode* getChildByIndex(int index);
 
-    void setMeta(const QString &name, const QVariant &value);
+    void                    setMeta(const QString &name, const QVariant &value);
+    Q_INVOKABLE void        deleteMeta(const QString &name);
 private:
     // TODO: not needed if we hold the Key
     QString m_name;

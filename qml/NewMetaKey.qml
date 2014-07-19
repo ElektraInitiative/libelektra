@@ -30,7 +30,7 @@ Item {
         Button {
             id:deleteMetaButton
             iconSource: "icons/application-exit.png"
-            onClicked: {var idx = index; metaKeyModel.remove(idx); metaAreaListView.model.removeRow(idx); metaCount--}
+            onClicked: {var idx = index; metaKeyModel.remove(idx); metaAreaListView.model.get(idx).node.deleteMeta(metaNameField.text); metaAreaListView.model.removeRow(idx)}
         }
     }
 }
