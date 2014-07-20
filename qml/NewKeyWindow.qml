@@ -114,9 +114,12 @@ BasicWindow {
         keyAreaView.model.setDataValue(keyAreaView.currentRow, nameTextField.text, "Name")
         keyAreaView.model.setDataValue(keyAreaView.currentRow, valueTextField.text, "Value")
 
-        //add new nodes to meta-model
-        for(var i = 0; i < metaKeyModel.count - 1; i++) {
-            metaAreaListView.model.qmlInsertRow(metaCount + i, keyAreaSelectedItem.node);
+        //if user has created new metakeys
+        if(metaKeyModel.count > metaCount){
+            //add new nodes to meta-model
+            for(var i = metaCount; i < metaKeyModel.count; i++) {
+                metaAreaListView.model.qmlInsertRow(i, keyAreaSelectedItem.node);
+            }
         }
         //fill the meta nodes with provided names/values
         for(var i = 0; i < metaKeyModel.count; i++) {
