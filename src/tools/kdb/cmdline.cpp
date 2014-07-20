@@ -131,9 +131,9 @@ Cmdline::Cmdline (int argc,
 		option b = {"overrideBase", no_argument, 0, 'b'};
 		long_options.push_back(b);
 		helpText += "-b --overrideBase        allow overriding the base with the merge result\n";
-		helpText += "						  with this option the merge command is no longer idempotent\n";
+		helpText += "                         with this option the merge command is no longer idempotent\n";
 		helpText += "                         (i.e. repeating the same command multiple times would yield\n";
-		helpText += "						  different results, because the base changes every time)";
+		helpText += "                         different results, because the base changes every time)\n";
 	}
 	if (acceptedOptions.find('v')!=string::npos)
 	{
