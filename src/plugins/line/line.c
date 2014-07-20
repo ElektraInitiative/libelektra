@@ -46,6 +46,8 @@ int elektraLineGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 				KEY_VALUE, "storage", KEY_END),
 			keyNew ("system/elektra/modules/line/infos/placements",
 				KEY_VALUE, "getstorage setstorage", KEY_END),
+			keyNew ("system/elektra/modules/line/infos/needs",
+				KEY_VALUE, "", KEY_END),
 			keyNew ("system/elektra/modules/line/infos/version",
 				KEY_VALUE, PLUGINVERSION, KEY_END),
 			KS_END);
