@@ -68,7 +68,7 @@ QVariant ConfigNode::getValue() const
 void ConfigNode::setName(const QString& name)
 {
     m_name = name;
-    m_key.setBaseName(name);
+    m_key.setBaseName(name.toStdString());
 }
 
 void ConfigNode::setValue(const QVariant& value)
