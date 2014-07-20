@@ -96,7 +96,10 @@ BasicWindow {
             id: addButton
             anchors.horizontalCenter: parent.horizontalCenter
             text: qsTr("New Meta Key")
-            onClicked: {metaKeyModel.append({"metaName" : "", "metaValue" : ""}); metaAreaListView.model.insertRow(metaCount);}
+            onClicked: {
+                //add visual item
+                metaKeyModel.append({"metaName" : "", "metaValue" : ""})
+            }
         }
     }
 
@@ -107,9 +110,15 @@ BasicWindow {
     }
 
     function editAccepted() {
+        //set key name & value
         keyAreaView.model.setDataValue(keyAreaView.currentRow, nameTextField.text, "Name")
         keyAreaView.model.setDataValue(keyAreaView.currentRow, valueTextField.text, "Value")
 
+        //add new nodes to meta-model
+        for(var i = 0; i < metaKeyModel.count - 1; i++) {
+            metaAreaListView.model.insertRow(metaCount + i);
+        }
+        //fill the meta nodes with provided names/values
         for(var i = 0; i < metaKeyModel.count; i++) {
             metaAreaListView.model.setDataValue(i, [metaKeyModel.get(i).metaName, metaKeyModel.get(i).metaValue], "MetaValue")
         }
