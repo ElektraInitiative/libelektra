@@ -299,25 +299,18 @@ bool TreeViewModel::insertRow(int row, const QModelIndex& parent)
 }
 
 
-void TreeViewModel::qmlInsertRow(int row, const QString &path)
+void TreeViewModel::qmlInsertRow(int row, ConfigNode *node)
 {
-    KDB kdb;
-    KeySet set;
-    kdb.get(set, "/");
 
-    m_metaModelParent = set.lookup(path.toStdString());
+
+    m_metaModelParent = node->getKey();
 
     if(m_metaModelParent){
-        qDebug() << "successfully found key " << QString::fromStdString(m_metaModelParent.getFullName());
+        qDebug() << "successfully got key " << QString::fromStdString(m_metaModelParent.getFullName());
         insertRow(row);
     }
     else
-        qDebug() << "Key " << path << " not valid!";
-}
-
-void TreeViewModel::test(Key key)
-{
-    qDebug() << "key " << QString::fromStdString(key.getFullName()) << " passed";
+        qDebug() << "Key " << QString::fromStdString(node->getKey().getFullName()) << " not valid!";
 }
 
 QHash<int, QByteArray> TreeViewModel::roleNames() const

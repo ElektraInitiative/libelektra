@@ -116,7 +116,7 @@ BasicWindow {
 
         //add new nodes to meta-model
         for(var i = 0; i < metaKeyModel.count - 1; i++) {
-            metaAreaListView.model.qmlInsertRow(metaCount + i, path + "/" + nameTextField.text);
+            metaAreaListView.model.qmlInsertRow(metaCount + i, keyAreaSelectedItem.node);
         }
         //fill the meta nodes with provided names/values
         for(var i = 0; i < metaKeyModel.count; i++) {

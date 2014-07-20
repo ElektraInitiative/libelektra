@@ -27,14 +27,14 @@ public:
      */
     enum TreeViewModelRoles
     {
-     NameRole = Qt::UserRole + 1, ///< The role QML can access the name of a node at a specified index.
-     PathRole, ///< The role QML can access the path of a node at a specified index.
-     ValueRole, ///< The role QML can access the value of a node at a specified index.
-     ChildCountRole, ///< The role QML can access the number of children of a node at a specified index.
-     ChildrenRole, ///< The role QML can access the children model of a node at a specified index.
-     ChildrenHaveNoChildrenRole, ///< The role QML can access if children of a node at a specified index do have children on their own.
-     MetaValueRole, ///< The role QML can access the meta model of a node at a specified index.
-     NodeRole ///<for testing purposes, not sure if it stays
+        NameRole = Qt::UserRole + 1, ///< The role QML can access the name of a node at a specified index.
+        PathRole, ///< The role QML can access the path of a node at a specified index.
+        ValueRole, ///< The role QML can access the value of a node at a specified index.
+        ChildCountRole, ///< The role QML can access the number of children of a node at a specified index.
+        ChildrenRole, ///< The role QML can access the children model of a node at a specified index.
+        ChildrenHaveNoChildrenRole, ///< The role QML can access if children of a node at a specified index do have children on their own.
+        MetaValueRole, ///< The role QML can access the meta model of a node at a specified index.
+        NodeRole ///<for testing purposes, not sure if it stays
     };
 
     explicit TreeViewModel(QObject* parent =  0);
@@ -81,10 +81,7 @@ public:
       * @return A model which includes all ConfigNodes that have the search term in their name or value.
       */
     Q_INVOKABLE QVariant    find(const QString& term);
-
-    Q_INVOKABLE void qmlInsertRow(int row, const QString &path);
-
-    Q_INVOKABLE void test(kdb::Key key);
+    Q_INVOKABLE void qmlInsertRow(int row, ConfigNode *node);
 
 private:
     void sink(ConfigNode* node, QStringList keys, QString path, kdb::Key key);
