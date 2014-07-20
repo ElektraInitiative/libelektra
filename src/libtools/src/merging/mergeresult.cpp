@@ -38,7 +38,7 @@ void MergeResult::addConflict(Key& key, ConflictOperation ourOperation,
 	key.rewindMeta();
 	while (Key currentMeta = key.nextMeta())
 	{
-		key.deleteMeta(currentMeta.getName());
+		key.delMeta(currentMeta.getName());
 	}
 
 	key.setString("");
@@ -60,7 +60,7 @@ void MergeResult::resolveConflict(Key& key)
 		// user/ or system/ cannot be created and therefore isBelow cannot be used
 		if (currentMeta.getName().find("conflict/") == 0)
 		{
-			key.deleteMeta(currentMeta.getName());
+			key.delMeta(currentMeta.getName());
 		}
 	}
 
