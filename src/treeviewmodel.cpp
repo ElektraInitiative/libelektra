@@ -291,10 +291,33 @@ bool TreeViewModel::insertRow(int row, const QModelIndex& parent)
     beginInsertRows(QModelIndex(), row, row);
     //TODO: Problem ==> what key should the Node have? If this is a MetaModel
     //it needs a valid key.
-    m_model.insert(row, new ConfigNode());
+    qDebug() << "creating new node with key " << QString::fromStdString(m_metaModelParent.getFullName());
+    m_model.insert(row, new ConfigNode("", "", m_metaModelParent));
     endInsertRows();
 
     return true;
+}
+
+
+void TreeViewModel::qmlInsertRow(int row, const QString &path)
+{
+    KDB kdb;
+    KeySet set;
+    kdb.get(set, "/");
+
+    m_metaModelParent = set.lookup(path.toStdString());
+
+    if(m_metaModelParent){
+        qDebug() << "successfully found key " << QString::fromStdString(m_metaModelParent.getFullName());
+        insertRow(row);
+    }
+    else
+        qDebug() << "Key " << path << " not valid!";
+}
+
+void TreeViewModel::test(Key key)
+{
+    qDebug() << "key " << QString::fromStdString(key.getFullName()) << " passed";
 }
 
 QHash<int, QByteArray> TreeViewModel::roleNames() const

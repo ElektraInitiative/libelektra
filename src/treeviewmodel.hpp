@@ -82,11 +82,16 @@ public:
       */
     Q_INVOKABLE QVariant    find(const QString& term);
 
+    Q_INVOKABLE void qmlInsertRow(int row, const QString &path);
+
+    Q_INVOKABLE void test(kdb::Key key);
+
 private:
     void sink(ConfigNode* node, QStringList keys, QString path, kdb::Key key);
     void find(ConfigNode *node, TreeViewModel *searchResults, const QString term);
 
     QList<ConfigNode*> m_model;
+    kdb::Key m_metaModelParent;
 
 protected:
     QHash<int, QByteArray> roleNames() const;
