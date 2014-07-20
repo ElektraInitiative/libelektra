@@ -7,12 +7,10 @@
  *
  */
 
-#ifndef INTERACTIVEMERGESTRATEGY_HPP_
-#define INTERACTIVEMERGESTRATEGY_HPP_
+#ifndef ELEKTRA_LIBTOOL_INTERACTIVEMERGESTRATEGY_HPP
+#define ELEKTRA_LIBTOOL_INTERACTIVEMERGESTRATEGY_HPP
 
 #include <merging/mergeconflictstrategy.hpp>
-
-using namespace std;
 
 namespace kdb
 {
@@ -27,20 +25,22 @@ class InteractiveMergeStrategy : public MergeConflictStrategy
 {
 public:
 
-	InteractiveMergeStrategy(istream& _inputStream, ostream& _outputStream) :
-			inputStream (_inputStream), outputStream (_outputStream)
+	InteractiveMergeStrategy(std::istream & input,
+			std::ostream & output) :
+		inputStream (input),
+		outputStream (output)
 	{
 	}
 
 	virtual void resolveConflict(const MergeTask& task, Key& conflictKey, MergeResult& result);
 
 private:
-	istream& inputStream;
-	ostream& outputStream;
+	std::istream& inputStream;
+	std::ostream& outputStream;
 };
 
 }
 }
 }
 
-#endif /* INTERACTIVEMERGESTRATEGY_HPP_ */
+#endif
