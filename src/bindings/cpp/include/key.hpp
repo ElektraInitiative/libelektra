@@ -161,7 +161,6 @@ public:
 
 	template <class T>
 	inline void setMeta(const std::string &metaName, T x);
-	inline void deleteMeta(const std::string &metaName);
 
 	inline void delMeta(const std::string &metaName);
 
@@ -1057,11 +1056,6 @@ inline void Key::setMeta(const std::string &metaName, T x)
 	Key k;
 	k.set<T>(x);
 	ckdb::keySetMeta(key, metaName.c_str(), k.getString().c_str());
-}
-
-inline void Key::deleteMeta(const std::string &metaName)
-{
-	ckdb::keySetMeta(key, metaName.c_str(), 0);
 }
 
 /**
