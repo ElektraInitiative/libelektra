@@ -29,7 +29,8 @@ Cmdline::Cmdline (int argc,
 	noNewline(),
 	test(),
 	recursive(),
-	strategy("preserve"),
+	strategy("auto"),
+	overrideBase(),
 	verbose(),
 	version(),
 
@@ -125,6 +126,15 @@ Cmdline::Cmdline (int argc,
 		helpText += "                         overwrite .. overwrite keys with same name\n";
 		helpText += "                         cut .. completely cut at rootkey to make place for new keys\n";
 	}
+	if (acceptedOptions.find('b') != string::npos)
+	{
+		option b = {"overrideBase", no_argument, 0, 'b'};
+		long_options.push_back(b);
+		helpText += "-b --overrideBase        allow overriding the base with the merge result\n";
+		helpText += "						  with this option the merge command is no longer idempotent\n";
+		helpText += "                         (i.e. repeating the same command multiple times would yield\n";
+		helpText += "						  different results, because the base changes every time)";
+	}
 	if (acceptedOptions.find('v')!=string::npos)
 	{
 		option o = {"verbose", no_argument, 0, 'v'};
@@ -162,6 +172,7 @@ Cmdline::Cmdline (int argc,
 		case 't': test = true; break;
 		case 'r': recursive = true; break;
 		case 's': strategy = optarg; break;
+		case 'b': overrideBase = true; break;
 		case 'v': verbose = true; break;
 		case 'V': version = true; break;
 
