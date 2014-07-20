@@ -68,13 +68,13 @@ QVariant ConfigNode::getValue() const
 void ConfigNode::setName(const QString& name)
 {
     m_name = name;
-    // TODO: key is not updated
+    m_key.setBaseName(name);
 }
 
 void ConfigNode::setValue(const QVariant& value)
 {
     m_value = value;
-    // TODO: key is not updated
+    m_key.setString(value.toString().toStdString());
 }
 
 void ConfigNode::setMeta(const QString &name, const QVariant &value)
@@ -156,8 +156,7 @@ ConfigNode* ConfigNode::getChildByName(QString& name)
         }
     }
 
-    // TODO: dangling reference (return 0?)
-    return new ConfigNode("", "", 0);
+    return NULL;
 }
 
 ConfigNode* ConfigNode::getChildByIndex(int index)
@@ -165,8 +164,7 @@ ConfigNode* ConfigNode::getChildByIndex(int index)
     if (index >= 0 && index < m_children->model().length())
         return m_children->model().at(index);
 
-    // TODO: dangling reference (return 0?)
-    return new ConfigNode("", "", 0);
+    return NULL;
 }
 
 bool ConfigNode::childrenHaveNoChildren() const
