@@ -82,6 +82,7 @@ public:
       */
     Q_INVOKABLE QVariant    find(const QString& term);
     Q_INVOKABLE void qmlInsertRow(int row, ConfigNode *node);
+    Q_INVOKABLE void clear();
 
 private:
     void sink(ConfigNode* node, QStringList keys, QString path, kdb::Key key);

@@ -49,7 +49,6 @@ ApplicationWindow {
         path: treeView.currentNode === null ? "" : treeView.currentNode.path
         keyName: keyAreaSelectedItem === null ? "" : keyAreaSelectedItem.name
         keyValue: keyAreaSelectedItem === null ? "" : keyAreaSelectedItem.value
-        metaCount: metaAreaModel === null ? 0 : metaAreaModel.rowCount()
     }
 
     NewKeyWindow {

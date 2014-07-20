@@ -288,10 +288,7 @@ bool TreeViewModel::removeRow(int row, const QModelIndex& parent)
 bool TreeViewModel::insertRow(int row, const QModelIndex& parent)
 {
     Q_UNUSED(parent);
-    beginInsertRows(QModelIndex(), row, row);
-    //TODO: Problem ==> what key should the Node have? If this is a MetaModel
-    //it needs a valid key.
-    qDebug() << "creating new node with key " << QString::fromStdString(m_metaModelParent.getFullName());
+    beginInsertRows(QModelIndex(), row, row);    
     m_model.insert(row, new ConfigNode("", "", m_metaModelParent));
     endInsertRows();
 
@@ -301,16 +298,20 @@ bool TreeViewModel::insertRow(int row, const QModelIndex& parent)
 
 void TreeViewModel::qmlInsertRow(int row, ConfigNode *node)
 {
-
-
     m_metaModelParent = node->getKey();
 
     if(m_metaModelParent){
-        qDebug() << "successfully got key " << QString::fromStdString(m_metaModelParent.getFullName());
         insertRow(row);
     }
     else
         qDebug() << "Key " << QString::fromStdString(node->getKey().getFullName()) << " not valid!";
+}
+
+void TreeViewModel::clear()
+{
+    beginResetModel();
+    m_model.clear();
+    endResetModel();
 }
 
 QHash<int, QByteArray> TreeViewModel::roleNames() const

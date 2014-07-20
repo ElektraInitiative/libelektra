@@ -82,7 +82,6 @@ void ConfigNode::setMeta(const QString &name, const QVariant &value)
     deleteMeta(m_name);
     m_name = name;
     m_value = value;
-    qDebug() << "setting metaname " << name << " and metavalue " << value.toString() << " to key " << QString::fromStdString(m_key.getName());
     m_key.setMeta(name.toStdString(), value.toString().toStdString());
 }
 

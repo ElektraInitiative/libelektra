@@ -15,7 +15,6 @@ BasicWindow {
     property string path: ""
     property string keyName: ""
     property string keyValue: ""
-    property int metaCount: 0
 
     cancelButton.onClicked: {
         editWindow.visible = false
@@ -57,7 +56,7 @@ BasicWindow {
 
             Label {
                 id: valueLabel
-                text: qsTr("Key Value: ")
+                text: qsTr("Key Value:  ")
             }
             TextField {
                 id: valueTextField
@@ -104,7 +103,7 @@ BasicWindow {
     }
 
     function populateMetaArea() {
-        for(var i = 0; i < metaCount; i++){
+        for(var i = 0; i < metaAreaModel.rowCount(); i++){
             metaKeyModel.append({"metaName" : metaAreaListView.model.get(i).name, "metaValue" : metaAreaListView.model.get(i).value})
         }
     }
@@ -114,13 +113,14 @@ BasicWindow {
         keyAreaView.model.setDataValue(keyAreaView.currentRow, nameTextField.text, "Name")
         keyAreaView.model.setDataValue(keyAreaView.currentRow, valueTextField.text, "Value")
 
-        //if user has created new metakeys
-        if(metaKeyModel.count > metaCount){
-            //add new nodes to meta-model
-            for(var i = metaCount; i < metaKeyModel.count; i++) {
-                metaAreaListView.model.qmlInsertRow(i, keyAreaSelectedItem.node);
-            }
+        //clear old nodes
+        metaAreaListView.model.clear()
+
+        //insert new nodes
+        for(var i = 0; i < metaKeyModel.count; i++) {
+            metaAreaListView.model.qmlInsertRow(i, keyAreaSelectedItem.node);
         }
+
         //fill the meta nodes with provided names/values
         for(var i = 0; i < metaKeyModel.count; i++) {
             metaAreaListView.model.setDataValue(i, [metaKeyModel.get(i).metaName, metaKeyModel.get(i).metaValue], "MetaValue")
