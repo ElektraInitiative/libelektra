@@ -11,6 +11,7 @@
 #include <merging/automergestrategy.hpp>
 #include "mergetestutils.cpp"
 
+using namespace std;
 using namespace kdb;
 using namespace kdb::tools::merging;
 

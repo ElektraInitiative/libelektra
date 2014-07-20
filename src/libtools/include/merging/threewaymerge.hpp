@@ -18,8 +18,6 @@
 #include <merging/mergetask.hpp>
 #include <merging/mergeconflictstrategy.hpp>
 
-using namespace std;
-
 namespace kdb
 {
 
@@ -69,7 +67,7 @@ public:
 	void addConflictStrategy(MergeConflictStrategy *strategy) { strategies.push_back(strategy); }
 
 private:
-	vector<MergeConflictStrategy *> strategies;
+	std::vector<MergeConflictStrategy *> strategies;
 	void detectConflicts(const MergeTask& task, MergeResult& mergeResult,
 			bool reverseConflictMeta);
 };
