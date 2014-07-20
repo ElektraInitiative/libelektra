@@ -212,6 +212,8 @@ else (BUILD_TESTING)
 endif (BUILD_TESTING)
 
 
+set (ENABLE_GTEST OFF CACHE BOOL "enable use of gtest unit testing")
+
 set (ENABLE_COVERAGE OFF CACHE BOOL "enable coverage analysis (using gcov)")
 set (COVERAGE_PREFIX
 		"${PROJECT_SOURCE_DIR}/.."
