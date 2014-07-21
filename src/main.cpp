@@ -32,7 +32,10 @@ int main(int argc, char* argv[])
 	engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
 
     PrintVisitor printer;
-   // model->accept(printer);
+    model->accept(printer);
+
+    KeySetVisitor ksVisit;
+    model->accept(ksVisit);
 
 	return app.exec();
 }

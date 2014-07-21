@@ -4,13 +4,15 @@ SOURCES += \
 		src/main.cpp \
 		src/treeviewmodel.cpp \
 		src/confignode.cpp \
-    src/printvisitor.cpp
+    src/printvisitor.cpp \
+    src/keysetvisitor.cpp
 
 HEADERS += \
 		src/treeviewmodel.hpp \
 		src/confignode.hpp \
     src/visitor.hpp \
-    src/printvisitor.hpp
+    src/printvisitor.hpp \
+    src/keysetvisitor.hpp
 
 CONFIG += debug
 

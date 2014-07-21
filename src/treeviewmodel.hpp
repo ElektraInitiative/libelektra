@@ -10,6 +10,7 @@
 
 #include "confignode.hpp"
 #include "printvisitor.hpp"
+#include "keysetvisitor.hpp"
 
 class ConfigNode;
 class Visitor;

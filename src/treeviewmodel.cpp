@@ -214,9 +214,7 @@ void TreeViewModel::populateModel(kdb::KeySet const & config)
 
 void TreeViewModel::accept(Visitor &visitor)
 {
-    foreach (ConfigNode *node, m_model)
-        node->accept(visitor);
-
+    visitor.visit(this);
 }
 
 QVariantMap TreeViewModel::get(int idx) const
