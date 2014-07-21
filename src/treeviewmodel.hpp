@@ -82,22 +82,20 @@ public:
       * @return A model which includes all ConfigNodes that have the search term in their name or value.
       */
     Q_INVOKABLE QVariant    find(const QString& term);
-    Q_INVOKABLE void qmlInsertRow(int row, ConfigNode *node);
-    Q_INVOKABLE void clear();
+    Q_INVOKABLE void        qmlInsertRow(int row, ConfigNode *node);
+    Q_INVOKABLE void        clear();
+    Q_INVOKABLE void        synchronize();
+    void                    repopulateModel(kdb::KeySet set);
 
 private:
-    void sink(ConfigNode* node, QStringList keys, QString path, kdb::Key key);
-    void find(ConfigNode *node, TreeViewModel *searchResults, const QString term);
+    void                    sink(ConfigNode* node, QStringList keys, QString path, kdb::Key key);
+    void                    find(ConfigNode *node, TreeViewModel *searchResults, const QString term);
 
     QList<ConfigNode*> m_model;
     kdb::Key m_metaModelParent;
 
 protected:
-    QHash<int, QByteArray> roleNames() const;
-
-signals:
-    void modelChanged();
-
+    QHash<int, QByteArray>  roleNames() const;
 };
 
 Q_DECLARE_METATYPE(TreeViewModel)

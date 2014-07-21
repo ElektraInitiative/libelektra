@@ -135,8 +135,8 @@ ApplicationWindow {
         iconSource: "icons/synchronize.png"
         tooltip: qsTr("Synchronize")
         shortcut: StandardKey.Refresh
-        onTriggered: externTreeModel.synchronize()
-        enabled: false
+        onTriggered: {externTreeModel.synchronize(); keyAreaSelectedItem = null}
+        //enabled: false
     }
 
     Action {
