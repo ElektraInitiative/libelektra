@@ -43,6 +43,15 @@ Backends::BackendInfoVector Backends::getBackendInfo(KeySet mountConf)
 	return move(ret);
 }
 
+std::string Backends::getConfigBasePath(std::string name)
+{
+	std::string configPath = Backends::mountpointsPath;
+	configPath += "/";
+	configPath += name;
+	configPath += "/config";
+	return configPath;
+}
+
 const char *Backends::mountpointsPath = "system/elektra/mountpoints";
 
 }

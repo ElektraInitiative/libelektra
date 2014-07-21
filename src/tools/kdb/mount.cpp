@@ -225,10 +225,8 @@ void MountCommand::buildBackend(Cmdline const& cl)
 
 	backend.checkFile (path);
 
-	std::string configPath = Backends::mountpointsPath;
-	configPath += "/";
-	configPath += name;
-	configPath += "/config";
+	std::string configPath = Backends::getConfigBasePath(name);
+
 	mountConf.append ( *Key(configPath,
 			KEY_VALUE, "",
 			KEY_COMMENT, "This is a configuration for a backend, see subkeys for more information",
@@ -251,6 +249,63 @@ void MountCommand::buildBackend(Cmdline const& cl)
 	backend.serialise (rootKey, mountConf);
 }
 
+bool MountCommand::readPluginConfig(Cmdline const& cl, size_t current_plugin)
+{
+	string keyName;
+	string value;
+
+	// use heap as it might not be used
+	istringstream *sstream = 0;
+
+	if (cl.interactive)
+	{
+		cout << "Enter the plugin configuration" << endl;
+		cout << "All configurations will be placed below config/" << endl;
+		cout << "Use '.' as Key name to finish" << endl;
+	}
+	else
+	{
+		if (current_plugin + 1 >= cl.arguments.size ()) return false;
+
+		string configString = cl.arguments[current_plugin + 1];
+
+		// check if the next argument is a config (otherwise it is treated as plugin name)
+		if (configString.find ('=') == string::npos) return false;
+
+		sstream = new istringstream (configString);
+	}
+	const string configBasePath = Backends::getConfigBasePath (name);
+
+	while (true)
+	{
+		if (cl.interactive)
+		{
+			cout << "Enter the Key name: ";
+			cin >> keyName;
+
+			if (keyName == ".") break;
+
+			cout << "Enter the Key value: ";
+			cin >> value;
+		}
+
+		else
+		{
+			if (!std::getline (*sstream, keyName, '=')) break;
+
+			if (!std::getline (*sstream, value, ',')) value = "";
+		}
+
+		Key configKey = Key (configBasePath, KEY_END);
+		configKey.addBaseName (keyName);
+		configKey.setString (value);
+		mountConf.append (configKey);
+	}
+
+	delete (sstream);
+	return true;
+}
+
 void MountCommand::appendPlugins(Cmdline const& cl, Backend & backend)
 {
 	std::string pname;
@@ -259,6 +314,7 @@ void MountCommand::appendPlugins(Cmdline const& cl, Backend & backend)
 	{
 		cout << "First Plugin: ";
 		cin >> pname;
+		readPluginConfig (cl, current_plugin);
 	}
 	else
 	{
@@ -269,9 +325,14 @@ void MountCommand::appendPlugins(Cmdline const& cl, Backend & backend)
 		else
 		{
 			pname = cl.arguments[current_plugin];
+			if (readPluginConfig (cl, current_plugin))
+			{
+				current_plugin ++;
+			}
 		}
 		current_plugin ++;
 	}
+
 
 	while (pname != "." || !backend.validated())
 	{
@@ -294,6 +355,11 @@ void MountCommand::appendPlugins(Cmdline const& cl, Backend & backend)
 			cout << endl;
 			cout << "Next Plugin: ";
 			cin >> pname;
+
+			if (pname != ".")
+			{
+				readPluginConfig (cl, current_plugin);
+			}
 		}
 		else
 		{
@@ -304,6 +370,10 @@ void MountCommand::appendPlugins(Cmdline const& cl, Backend & backend)
 			else
 			{
 				pname = cl.arguments[current_plugin];
+				if (readPluginConfig (cl, current_plugin))
+				{
+					current_plugin ++;
+				}
 			}
 			current_plugin ++;
 		}
@@ -313,6 +383,7 @@ void MountCommand::appendPlugins(Cmdline const& cl, Backend & backend)
 			throw CommandAbortException();
 		}
 	}
+
 }
 
 void MountCommand::askForConfirmation(Cmdline const& cl)
