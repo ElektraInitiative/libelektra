@@ -32,10 +32,7 @@ Item {
             iconSource: "icons/application-exit.png"
 
             onClicked: {
-                var idx = index // index of this item
-                metaKeyModel.remove(idx)// remove the visual item
-                metaAreaListView.model.get(idx).node.deleteMeta(metaNameField.text)// delete the metakey in the node in the metaArea model
-                metaAreaListView.model.removeRow(idx)// remove the node from the metaArea model
+                metaKeyModel.remove(index)// remove the visual item
             }
         }
     }

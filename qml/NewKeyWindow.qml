@@ -113,18 +113,20 @@ BasicWindow {
         keyAreaView.model.setDataValue(keyAreaView.currentRow, nameTextField.text, "Name")
         keyAreaView.model.setDataValue(keyAreaView.currentRow, valueTextField.text, "Value")
 
+        //delete metaKeys
+        for(var i = 0; i < metaAreaModel.rowCount(); i++)
+            metaAreaListView.model.get(i).node.deleteMeta(metaAreaListView.model.get(i).name)
+
         //clear old meta nodes
         metaAreaListView.model.clear()
 
         //insert new meta nodes
-        for(var i = 0; i < metaKeyModel.count; i++) {
+        for(var i = 0; i < metaKeyModel.count; i++)
             metaAreaListView.model.qmlInsertRow(i, keyAreaSelectedItem.node);
-        }
 
         //fill the meta nodes with provided names/values
-        for(var i = 0; i < metaKeyModel.count; i++) {
+        for(var i = 0; i < metaKeyModel.count; i++)
             metaAreaListView.model.setDataValue(i, [metaKeyModel.get(i).metaName, metaKeyModel.get(i).metaValue], "MetaValue")
-        }
 
         metaKeyModel.clear()
     }
