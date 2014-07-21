@@ -109,8 +109,8 @@ public:
     void                    setMeta(const QString &name, const QVariant &value);
     Q_INVOKABLE void        deleteMeta(const QString &name);
 
-    void accept(Visitor &visitor);
-    kdb::Key getKey();
+    void                    accept(Visitor &visitor);
+    kdb::Key                getKey();
 
 private:
     // TODO: not needed if we hold the Key

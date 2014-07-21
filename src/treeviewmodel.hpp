@@ -34,7 +34,7 @@ public:
         ChildrenRole, ///< The role QML can access the children model of a node at a specified index.
         ChildrenHaveNoChildrenRole, ///< The role QML can access if children of a node at a specified index do have children on their own.
         MetaValueRole, ///< The role QML can access the meta model of a node at a specified index.
-        NodeRole ///<for testing purposes, not sure if it stays
+        NodeRole ///< The role QML can retrieve the node at a specified index.
     };
 
     explicit TreeViewModel(QObject* parent =  0);

@@ -12,8 +12,6 @@ ConfigNode::ConfigNode(const QString& name, const QString& path, const Key &key)
 {
     // TODO: why not give full path? (or even better, pass Key
     // with getBaseName() and getName())
-    // TODO: avoid rereading the whole database dozens of times!
-    // (pass Key here)
 
     if (m_key && m_key.isString())
         m_value = QVariant::fromValue(QString::fromStdString(m_key.getString()));
