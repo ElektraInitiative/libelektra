@@ -132,6 +132,12 @@ TARGET_PLUGIN_FOLDER:
 	It can be also left empty to install plugins next
 	to other libraries.
 
+GTEST_ROOT:
+	Specifies the root of the GoogleTest sources, to be used
+	for some of the tests. A CMakeLists.txt inside GTEST_ROOT
+	will be searched as way to detect a valid GoogleTest source
+	directory.
+
 
 It is recommended that you browse through all of the options.
 Afterwards press c again (maybe multiple times until all variables are
