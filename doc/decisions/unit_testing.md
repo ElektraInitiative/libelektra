@@ -23,7 +23,9 @@ the assertion that failed).
 
 ## Decision
 
-- Google Unit testing framework
+- Google Unit testing framework with code embedded in Elektra for
+  systems where no source is installed (Debian Wheezy, Arch Linux,
+  Fedora,...)
 
 
 ## Argument
