@@ -9,6 +9,8 @@ section here.
 
 ## Implemented
 
+- [Holes](holes.md)
+
 ## Decided
 
 ## In Discussion
@@ -16,3 +18,5 @@ section here.
 - [Unit Testing](unit_testing.md)
 
 ## Drafts
+
+- [Script Testing](script_testing.md)

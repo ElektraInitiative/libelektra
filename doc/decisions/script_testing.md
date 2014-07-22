@@ -1,4 +1,7 @@
-Positions:
+# Script Testing
+
+## Considered Alternatives
+
 * http://pythonpaste.org/scripttest/
  + easy to work with
  - can only trace a single directory (would not work with /etc + ~)
