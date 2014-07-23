@@ -103,3 +103,36 @@ status: idea
 plugin: evaluater
 description: evaluate expression to check if key should be included, program should
  abort or however evalute plugin is configured
+
+key: uid
+status: currently obsolete
+type: time
+description: The owner of the key.
+
+key: gid
+status: currently obsolete
+type: time
+description: The group of the key.
+
+key: mode
+status: currently obsolete
+type: int
+description: The access mode of the key.
+
+
+key: atime
+type: time
+status: currently obsolete
+description: The time when the key was last accessed.
+
+
+key: mtime
+type: time
+status: currently obsolete
+description: The time when the value of a key were last modified.
+
+
+key: ctime
+type: time
+status: currently obsolete
+description: The time when the meta data of a key were last modified.

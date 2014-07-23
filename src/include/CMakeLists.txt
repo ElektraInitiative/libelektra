@@ -1,6 +1,6 @@
 include(CheckIncludeFile)
 include(CheckSymbolExists)
-INCLUDE (CheckTypeSize)
+include(CheckTypeSize)
 
 check_symbol_exists(clearenv     "stdlib.h"         HAVE_CLEARENV)
 check_symbol_exists(setenv       "stdlib.h"         HAVE_SETENV)
