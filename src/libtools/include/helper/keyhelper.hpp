@@ -11,8 +11,8 @@
 #define KEYHELPER_HPP_
 
 #include <string>
-#include <stdexcept>
 #include <kdb.hpp>
+#include <toolexcept.hpp>
 
 namespace kdb
 {
@@ -22,6 +22,14 @@ namespace tools
 
 namespace helper
 {
+
+class InvalidRebaseException : public ToolException
+{
+public:
+	InvalidRebaseException(std::string message) :
+			ToolException(message)
+	{};
+};
 
 /**
  * Rebases the supplied key from the old parent to the new parent.
@@ -52,15 +60,6 @@ Key rebaseKey(const Key& key, const Key& oldParent, const Key& newParent);
 std::string rebasePath(const Key& key, const Key& oldParent,
 		const Key& newParent);
 
-class InvalidRebaseException: public std::runtime_error
-{
-public:
-	InvalidRebaseException(std::string _message) :
-			runtime_error (_message)
-	{
-	}
-	;
-};
 }
 }
 }

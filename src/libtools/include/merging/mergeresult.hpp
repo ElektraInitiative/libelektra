@@ -36,7 +36,7 @@ public:
 
 	void resolveConflict(Key& key);
 
-	// TODO: test this function
+	// TODO:  test this function
 	bool isConflict(Key& key)
 	{
 		return conflictSet.lookup(key);
@@ -67,7 +67,7 @@ public:
 		return mergedKeys;
 	}
 
-	// TODO: test these functions
+	// TODO:  test these functions
 	unsigned int getNumberOfResolvedKeys()
 	{
 		return resolvedKeys;

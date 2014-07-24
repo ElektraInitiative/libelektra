@@ -11,7 +11,7 @@
 #define MERGECONFLICT_HPP_
 
 #include <string>
-#include <stdexcept>
+#include <toolexcept.hpp>
 
 namespace kdb
 {
@@ -22,19 +22,19 @@ namespace tools
 namespace merging
 {
 
-enum ConflictOperation
-{
-	ADD, DELETE, MODIFY, META, SAME
-};
-
-class InvalidConflictOperation: public std::runtime_error
+class InvalidConflictOperation : public ToolException
 {
 public:
-	InvalidConflictOperation(std::string _message) :
-			runtime_error (_message)
+	InvalidConflictOperation(std::string message) :
+			ToolException(message)
 	{
 	}
 	;
+};
+
+enum ConflictOperation
+{
+	ADD, DELETE, MODIFY, META, SAME
 };
 
 class MergeConflictOperation

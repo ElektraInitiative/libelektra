@@ -74,6 +74,12 @@ public:
 	Key theirParent;
 	Key mergeRoot;
 
+	/**
+	 * @param _base the KeySet containing the base keys and the base parentKey
+	 * @param _ours the KeySet containing our keys and our parentKey
+	 * @param _theirs the KeySet containing their keys and their parentKey
+	 * @param _mergeRoot the parentKey for the merged keys
+	 */
 	MergeTask(const BaseMergeKeys& _base, const OurMergeKeys& _ours,
 			const TheirMergeKeys& _theirs, const Key& _mergeRoot) :
 			base (_base.keys), ours (_ours.keys), theirs (_theirs.keys), baseParent (

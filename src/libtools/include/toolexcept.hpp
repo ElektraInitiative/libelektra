@@ -34,13 +34,17 @@ namespace tools
  * @brief All exceptions from the elektratools library are derived from
  * this exception
  */
-struct ToolException : public std::exception
+struct ToolException : public std::runtime_error
 {
-	virtual const char* what() const throw()
-	{
-		return  "When you read this, that means there was something wrong with Elektra Tools.\n"
-			"Seems like a check could not specify the error any further";
-	}
+	ToolException() :
+			runtime_error(
+		"When you read this, that means there was something wrong with Elektra Tools.\n"
+		"Seems like a wrong exception was thrown."
+				)
+	{};
+	ToolException(std::string message) :
+			runtime_error(message)
+	{};
 };
 
 struct PluginCheckException : public ToolException
