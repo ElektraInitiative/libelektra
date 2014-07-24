@@ -23,7 +23,8 @@ MergeCommand::MergeCommand()
 	// TODO: this is just a quickfix, find a better solution
 	// without eager instantiating all the strategies. Maybe even automatically
 	// discover all available strategies
-	strategyMap.insert (make_pair ("auto", new AutoMergeStrategy()));
+	// comment markus: the factory could be part of libtools
+	strategyMap.insert (make_pair ("preserve", new AutoMergeStrategy()));
 
 	strategyMap.insert (make_pair ("ours", new OneSideStrategy(OURS)));
 	strategyMap.insert (make_pair ("theirs", new OneSideStrategy(THEIRS)));
@@ -78,14 +79,14 @@ int MergeCommand::execute(Cmdline const& cl)
 		throw invalid_argument ("wrong number of arguments, 3 needed");
 	}
 
-	Key ourRoot (cl.arguments[0], KEY_END);
-	if (!ourRoot.isValid ())
+	Key oursRoot (cl.arguments[0], KEY_END);
+	if (!oursRoot.isValid ())
 	{
 		throw invalid_argument (cl.arguments[0] + " is not a valid keyname");
 	}
 
-	Key theirRoot (cl.arguments[1], KEY_END);
-	if (!theirRoot.isValid ())
+	Key theirsRoot (cl.arguments[1], KEY_END);
+	if (!theirsRoot.isValid ())
 	{
 		throw invalid_argument (cl.arguments[1] + " is not a valid keyname");
 	}
@@ -104,43 +105,66 @@ int MergeCommand::execute(Cmdline const& cl)
 
 		if (!mergeRoot.isValid ())
 		{
-			throw invalid_argument (cl.arguments[3] + "is not a valid keyname");
+			throw invalid_argument (cl.arguments[3] + " is not a valid keyname");
+		}
+
+		KeySet discard;
+		kdb.get (discard, mergeRoot);
+		discard = discard.cut(mergeRoot);
+		if (discard.size() != 0)
+		{
+			if (cl.verbose) std::cout << "discard contained " << discard;
+			throw invalid_argument (cl.arguments[3] + " already contained keys, choose another place where merge result should be written to");
 		}
  	}
 	else
  	{
 		if (cl.overrideBase)
 		{
+			KeySet discard;
+			kdb.get (discard, mergeRoot);
 			mergeRoot = baseRoot;
 		}
 		else
 		{
-			cerr << "if you really want to override the base keys, specifiy the -b option" << endl;
+			cerr << "if you really want to override the base keys, specify the -b option" << endl;
 			return -1;
 		}
- 	}
+	}
 
-	KeySet base;
 	KeySet ours;
 	KeySet theirs;
+	KeySet base;
 
-	kdb.get (base, baseRoot);
-	kdb.get (ours, ourRoot);
-	kdb.get (theirs, theirRoot);
-
-	base = base.cut (baseRoot);
-	ours = ours.cut (ourRoot);
-	theirs = theirs.cut (theirRoot);
+	{
+		KDB lkdb;
+		lkdb.get (ours, oursRoot);
+		ours = ours.cut (oursRoot);
+		if (cl.verbose) std::cout << "we got ours: " << oursRoot << " with keys " << ours << std::endl;
+	}
+	{
+		KDB lkdb;
+		lkdb.get (theirs, theirsRoot);
+		theirs = theirs.cut (theirsRoot);
+		if (cl.verbose) std::cout << "we got theirs: " << theirsRoot << " with keys " << theirs << std::endl;
+	}
+	{
+		KDB lkdb;
+		lkdb.get (base, baseRoot);
+		base = base.cut (baseRoot);
+		if (cl.verbose) std::cout << "we got base: " << baseRoot << " with keys " << base << std::endl;
+	}
 
 	if (cl.interactive)
 	{
 		merger.addConflictStrategy (new InteractiveMergeStrategy (cin, cout));
-		cout << "Choose interactive merge" << endl;
+		cout << "Chose interactive merge" << endl;
 	}
 	else
 	{
 		if (cl.strategy.size () > 0)
 		{
+			// strategies are comma separated, split them
 			istringstream sstream (cl.strategy);
 			string current;
 			while (getline (sstream, current, ','))
@@ -163,18 +187,22 @@ int MergeCommand::execute(Cmdline const& cl)
 	MergeResult result = merger.mergeKeySet (
 			MergeTask (
 					BaseMergeKeys (base, baseRoot),
-					OurMergeKeys (ours, ourRoot),
-					TheirMergeKeys (theirs, theirRoot), mergeRoot));
+					OurMergeKeys (ours, oursRoot),
+					TheirMergeKeys (theirs, theirsRoot), mergeRoot));
 
 	KeySet empty;
 	if (!result.hasConflicts ())
 	{
 		KeySet resultKeys = result.getMergedKeys();
+		KeySet discard;
 		kdb.set (resultKeys, mergeRoot);
 
-		cout << resultKeys.size() << " keys in the result" << endl;
-		cout << result.getNumberOfEqualKeys() << " keys were equal" << endl;
-		cout << result.getNumberOfResolvedKeys() << " keys were resolved" << endl;
+		if (cl.verbose)
+		{
+			cout << resultKeys.size() << " keys in the result" << endl;
+			cout << result.getNumberOfEqualKeys() << " keys were equal" << endl;
+			cout << result.getNumberOfResolvedKeys() << " keys were resolved" << endl;
+		}
 	}
 	else
 	{

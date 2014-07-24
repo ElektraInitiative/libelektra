@@ -41,7 +41,18 @@ public:
 	virtual std::string getLongHelpText()
 	{
 		return
-			"Completes a three-way merge between keysets and saves the resulting keyset to mergepath\n\nmergepath .. path where the merged keyset should be saved\nourpath .. path to the keyset to serve as ours\ntheirpath .. path to the keyset to serve as theirs\nbasepath .. path to the base keyset\n";
+			"Does a three-way merge between keysets.\n"
+			"On success the resulting keyset will be saved to mergepath.\n"
+			"On unresolved conflicts nothing will be changed.\n"
+			"\n"
+			"Conflicts in a merge can be resolved using a strategy with -s.\n"
+			"\n"
+			"ourpath ..    path to the keyset to serve as ours\n"
+			"theirpath ..  path to the keyset to serve as theirs\n"
+			"basepath ..   path to the base keyset\n"
+			"mergepath ..  path without keys where the merged keyset will be saved\n"
+			"              (if omitted -b must be given)\n"
+			;
 	}
 
 

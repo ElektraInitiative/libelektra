@@ -29,7 +29,7 @@ Cmdline::Cmdline (int argc,
 	noNewline(),
 	test(),
 	recursive(),
-	strategy("auto"),
+	strategy("preserve"),
 	overrideBase(),
 	verbose(),
 	version(),
@@ -121,10 +121,18 @@ Cmdline::Cmdline (int argc,
 		acceptedOptions.insert(optionPos+1, ":");
 		option o = {"strategy", required_argument, 0, 's'};
 		long_options.push_back(o);
-		helpText += "-s --strategy <name>     the strategy which should be used on conflicts\n";
-		helpText += "                         preserve .. no old key is overwritten (default)\n";
-		helpText += "                         overwrite .. overwrite keys with same name\n";
-		helpText += "                         cut .. completely cut at rootkey to make place for new keys\n";
+		helpText +=
+			"-s --strategy <name>     the strategy which should be used on conflicts\n"
+			"                       For merging:\n"
+			"                         preserve  .. fail on conflict (default)\n"
+			"                         ours      .. use ours for conflicts\n"
+			"                         theirs    .. use theirs for conflicts\n"
+			"                         base      .. use base for conflicts\n"
+			"                       Otherwise:\n"
+			"                         preserve  .. no old key is overwritten (default)\n"
+			"                         overwrite .. overwrite keys with same name\n"
+			"                         cut       .. completely cut at rootkey to make place for new keys\n"
+			"";
 	}
 	if (acceptedOptions.find('b') != string::npos)
 	{
