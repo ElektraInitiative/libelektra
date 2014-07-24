@@ -14,7 +14,7 @@ Because the contracts also contain information for humans, these parts
 are written in a README.md files of the plugins. To make the contracts
 machine-readable, the following CMake command exists:
 
-	generate_readme(<pluginname>)
+	generate_readme(pluginname)
 
 It will generate a README.c (in the build-directory) out of the
 README.md of the plugin''s source directory.
@@ -39,6 +39,12 @@ the end of the file).
 
 For the meaning (semantics) of those entries, please refer to [contract
 specification](/doc/CONTRACT.ini).
+
+The already said generate_readme will produce a list of Keys using the
+information in README.md. It would look like (for the third key):
+
+		keyNew ("system/elektra/modules/yajl/infos/licence",
+			KEY_VALUE, "BSD", KEY_END),
 
 ## Including README.c ##
 
