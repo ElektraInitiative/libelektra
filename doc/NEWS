@@ -1,9 +1,30 @@
+-------------
+
+Author:
+Date:
 Subject: 0.8.7 release
 
 (This is preliminary, the release did not happen and the release notes
  are not finished.)
 
-Thanks to Pino Toscano for fixing a lot of spelling errors.
+Thanks to Pino Toscano for fixing a lot of spelling errors, simplify
+RPATH setting, improvements of test cases, and his debian-packaging efforts.
+
+Thanks to Manuel Mausz for further improving lua and python3 bindings
+and the new python2 bindings.
+
+The GSoC efforts have their first large contribution to Elektra, the 3
+way merge finally arrives with this release. It is still a long way to
+go, however, because augeas plugins can only be mounted with a
+workaround and the package integration of the 3-way merge is still in
+its infancy. More information about GSoC and its progress can be found
+[here](http://community.libelektra.org/wp).
+
+A special thanks to  Felix Berlakovich for his contributions to the
+3-way merge, including meta merging, conflict resolving strategies and
+the extensive testing.
+
+Added delMeta() for C++.
 
 kdb tool:
 not allowed subfolders are checked properly
@@ -12,23 +33,50 @@ output warnings before error
 fix compilation warnings
 improve test coverage
 
-Bugs now on github
+Now a script for tab completion is available
+[here](/scripts/scripts/kdb-bash-completion).
 
-Add python 2 packages
+[Specification of meta data](doc/specification.ini) and
+[contracts](doc/contracts.ini) written/greatly improved.
+
+[Decisions](decisions) are introduced again.
+
+We now fully embrace github:
+- We use its issue tracker (all issues from local text files were moved
+  there)
+- We have rewritten most READMEs to use githubs markdown
+- On pull requests the build server checks if the merge would break
+  the build.
+- All previous gitorious users are now at github. (Most had an account
+  anyway)
 
 Most often the KeySet is ideal, e.g. when doing full iteration or when
 performing set operations. In some cases, however, a hierarchical data
 structure fits better. This is especially true for GUIs. Luckily, Keys
 can be in multiple data structures because of their reference counting.
 
-Fix kdb import/export for some plugins.
+Fix kdb import/export for some plugins (Should now work with any storage
+plugin again).
 
-Order of arguments in isBelow, isDirectBelow, isBelowOrSame changed for
-readability. k.isBelow(root) now means the obvious thing.
-keyIsBelow is unaffected by the change.
+Raffael Pancheri also made progress with its qt-gui. It now features a
+model that implements great parts of Elektra's features. Unfortunately
+the model cannot be serialised and thus changes cannot made persistent.
+Also undo and other important use-cases are still not there. The GUI
+looks very clean and was evaluated in a SUS study on 23.07.2014.
+The current implementation can be found at
+[]().
 
+kdb run_all should run flawlessly with this release. Remaining problems
+with not installed test data were fixed.
 
-use README.md for plugins
+Some remaining mem leaks in rare circumstances were fixed. Valgrind
+should now never report any leaks, if it does, please report the issue.
+
+Arguments of isBelow, isDirectBelow, isBelowOrSame are swapped for
+better readability. k.isBelow(root) now means the obvious thing.
+The change only effects the C++ binding, keyIsBelow is unaffected by
+the change.
+
 many distributions already have elektra packages
  - [Fedora](https://admin.fedoraproject.org/pkgdb/package/elektra/)
  - [Gentoo](http://packages.gentoo.org/package/app-admin/elektra)
