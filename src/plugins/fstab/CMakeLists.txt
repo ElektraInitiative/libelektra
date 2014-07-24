@@ -5,6 +5,8 @@ try_compile (HAS_MNTENT
 
 include(LibAddMacros)
 
+generate_readme (fstab)
+
 if (HAS_MNTENT)
 	set (SOURCES fstab.h fstab.c)
 	add_sources (elektra-full ${SOURCES})

@@ -1,5 +1,7 @@
 include (LibAddMacros)
 
+generate_readme (ccode)
+
 set (SOURCES ccode.h ccode.c)
 add_sources (elektra-full ${SOURCES})
 add_headers (SOURCES)

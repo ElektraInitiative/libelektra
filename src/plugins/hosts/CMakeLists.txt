@@ -1,5 +1,7 @@
 include(LibAddMacros)
 
+generate_readme (hosts)
+
 set (SOURCES hosts.h hosts.c)
 add_sources (elektra-full ${SOURCES})
 add_headers (SOURCES)
