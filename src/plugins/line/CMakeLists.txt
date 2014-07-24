@@ -6,6 +6,8 @@ try_compile (COMPAT_GETLINE
 		)
 
 	if (COMPAT_GETLINE)
+		generate_readme (line)	
+			
 		set (SOURCES line.h line.c)
 		add_sources (elektra-full ${SOURCES})
 		add_headers (SOURCES)
