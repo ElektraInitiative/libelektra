@@ -31,7 +31,7 @@ To avoid the problems we initally stated, we use [a specification](specification
 Using the specification, we can generate code similar to the code above, but without any of the errors.
 To generate the code we use:
 
-	kdb gen specification.ini template_context.hpp > lift_context.hpp
+	kdb gen specification.ini template_context.hpp -o lift_context.hpp
 
 Using the generated code is very easy, we just create a parameter
 object:
@@ -115,7 +115,7 @@ The specification entries "opt" and "opt/long" will generate, next to
 the contextual value ```firefox.profile``` additional code parsing can be 
 done via the commandline:
 
-	kdb gen specification.ini template_genopt.c > genopt.c
+	kdb gen specification.ini template_genopt.c -o genopt.c
 
 To parse all arguments as defined in the specification, we simply use
 the generated function:
