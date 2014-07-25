@@ -4,12 +4,17 @@ add_headers (HDR_FILES)
 add_cppheaders (HDR_FILES)
 add_toolheaders(HDR_FILES)
 
-add_subdirectory (${CMAKE_SOURCE_DIR}/lib/gtest-1.7.0 ${CMAKE_BINARY_DIR}/lib/gtest)
-include_directories(SYSTEM ${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+include (FindGoogleTest)
 
-set_property (TARGET gtest PROPERTY COMPILE_FLAGS "-w" )
-set_property (TARGET gtest_main PROPERTY COMPILE_FLAGS "-w" )
+if (GOOGLETEST_FOUND)
+	add_subdirectory(${GOOGLETEST_ROOT} ${CMAKE_CURRENT_BINARY_DIR}/gtest)
+	include_directories(${GOOGLETEST_ROOT}/include ${GOOGLETEST_ROOT})
 
+	set_property (TARGET gtest PROPERTY COMPILE_FLAGS "-w" )
+	set_property (TARGET gtest_main PROPERTY COMPILE_FLAGS "-w" )
+else ()
+	message(SEND_ERROR "googletest not found")
+endif ()
 
 macro (do_tool_test source)
 	include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
