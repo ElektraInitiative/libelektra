@@ -42,6 +42,9 @@ static Key *createMergingKey (int i) {
 
 static KeySet* createSimpleTestKeys()
 {
+	/* the keys to be converted are simply appended to the next
+	 * or the previous key.
+	 */
 	return ksNew (20,
 			keyNew ("user/normalkey1",
 					KEY_META, "order", "10", KEY_END),
@@ -68,6 +71,9 @@ static KeySet* createSimpleTestKeys()
 
 static KeySet* createMergeTestkeys()
 {
+	/* the keys to be converted are merged together
+	 * into a single metadata
+	 */
 	KeySet* ks = ksNew (0);
 	for (int i = 1; i <= 3; i++)
 	{
@@ -90,8 +96,50 @@ static KeySet* createMergeTestkeys()
 	return ks;
 }
 
+static KeySet* createSkipMergeTestKeys()
+{
+	/* the keys to be converted are interweaved with keys
+	 * of the other directio
+	 */
+	return ksNew (20,
+			keyNew ("user/normalkey1",
+					KEY_META, "order", "10", KEY_END),
+			keyNew ("user/convertkey1",
+					KEY_VALUE, "meta line1",
+					KEY_META, "order", "20",
+					KEY_META, "convert/metaname", "testmeta",
+					KEY_META, "convert/append", "previous",
+					KEY_END),
+			keyNew ("user/convertkey2",
+					KEY_VALUE, "meta line2",
+					KEY_META, "order", "30",
+					KEY_META, "convert/metaname", "testmeta",
+					KEY_META, "convert/append", "next",
+					KEY_END),
+			keyNew ("user/convertkey3",
+					KEY_VALUE, "meta line3",
+					KEY_META, "order", "40",
+					KEY_META, "convert/metaname", "testmeta",
+					KEY_META, "convert/append", "previous",
+					KEY_END),
+			keyNew ("user/convertkey4",
+					KEY_VALUE, "meta line4",
+					KEY_META, "order", "50",
+					KEY_META, "convert/metaname", "testmeta",
+					KEY_META, "convert/append", "next",
+					KEY_END),
+			keyNew ("user/normalkey2",
+					KEY_META, "order", "60",
+					KEY_END),
+			KS_END);
+}
+
 static KeySet *createParentTestKeys()
 {
+
+	/* all keys to be converted are appended to the
+	 * parent key of the keyset for any of the possible reasons
+	 */
 	return ksNew (20,
 			keyNew ("user/parentkey1",
 					KEY_META, "order", "10", KEY_END),
@@ -134,6 +182,27 @@ static KeySet *createParentTestKeys()
 					KEY_END),
 			keyNew ("user/normalkey2",
 					KEY_META, "order", "100",
+					KEY_END),
+			KS_END);
+}
+
+static KeySet* createDifferentMetaNameTestKeys()
+{
+	return ksNew (20,
+			keyNew ("user/convertkey1",
+					KEY_VALUE, "meta line1",
+					KEY_META, "order", "10",
+					KEY_META, "convert/metaname", "testmeta1",
+					KEY_META, "convert/append", "next",
+					KEY_END),
+			keyNew ("user/convertkey2",
+					KEY_VALUE, "meta line2",
+					KEY_META, "order", "20",
+					KEY_META, "convert/metaname", "testmeta2",
+					KEY_META, "convert/append", "next",
+					KEY_END),
+			keyNew ("user/normalkey1",
+					KEY_META, "order", "30",
 					KEY_END),
 			KS_END);
 }
@@ -296,6 +365,68 @@ void test_metaMerging ()
 	PLUGIN_CLOSE ();
 }
 
+void test_metaSkipMerge()
+{
+	Key *parentKey = keyNew ("user/tests/keytometa", KEY_END);
+	KeySet *conf = ksNew (0);
+	PLUGIN_OPEN("keytometa");
+
+	KeySet* ks = createSkipMergeTestKeys();
+	succeed_if(plugin->kdbGet (plugin, ks, parentKey) >= 1,
+			"call to kdbGet was not successful");
+	succeed_if(output_error (parentKey), "error in kdbGet");
+	succeed_if(output_warnings (parentKey), "warnings in kdbGet");
+
+	Key *key = ksLookupByName(ks, "user/normalkey1", 0);
+	succeed_if (key, "normalkey1 was removed");
+
+	const Key *metaKey1 = keyGetMeta(key, "testmeta");
+	succeed_if (metaKey1, "normalkey1 contained no metakey");
+	const char *expected1 = "meta line1\nmeta line3";
+	succeed_if (!strcmp (keyString(metaKey1), expected1), "metakey of normalkey1 contained incorrect data");
+
+	key = ksLookupByName(ks, "user/normalkey2", 0);
+	succeed_if (key, "normalkey2 was removed");
+
+	const Key *metaKey2 = keyGetMeta(key, "testmeta");
+	succeed_if (metaKey2, "normalkey2 contained no metakey");
+	const char *expected2 = "meta line2\nmeta line4";
+	succeed_if (!strcmp (keyString(metaKey2), expected2), "metakey of normalkey2 contained incorrect data");
+
+	keyDel (parentKey);
+	ksDel(ks);
+	PLUGIN_CLOSE ();
+}
+
+void test_differentMetaNames () {
+	Key *parentKey = keyNew ("user/tests/keytometa", KEY_END);
+	KeySet *conf = ksNew (0);
+	PLUGIN_OPEN("keytometa");
+
+	KeySet *ks = createDifferentMetaNameTestKeys();
+	succeed_if(plugin->kdbGet (plugin, ks, parentKey) >= 1,
+			"call to kdbGet was not successful");
+	succeed_if(output_error (parentKey), "error in kdbGet");
+	succeed_if(output_warnings (parentKey), "warnings in kdbGet");
+
+	Key *key = ksLookupByName(ks, "user/normalkey1", 0);
+	succeed_if (key, "normalkey1 was removed");
+
+	const Key *metaKey1 = keyGetMeta(key, "testmeta1");
+	succeed_if (metaKey1, "normalkey1 contained no meta testmeta1");
+	const char *expected1 = "meta line1";
+	succeed_if (!strcmp (keyString(metaKey1), expected1), "metakey testmeta1 of normalkey1 contained incorrect data");
+
+	const Key *metaKey2= keyGetMeta(key, "testmeta2");
+	succeed_if (metaKey2, "normalkey1 contained no meta testmeta1");
+	const char *expected2 = "meta line2";
+	succeed_if (!strcmp (keyString(metaKey2), expected2), "metakey testmeta1 of normalkey1 contained incorrect data");
+
+	keyDel (parentKey);
+	ksDel(ks);
+	PLUGIN_CLOSE ();
+}
+
 void test_restoreOnSet () {
 	Key *parentKey = keyNew ("user/tests/keytometa", KEY_END);
 	KeySet *conf = ksNew (0);
@@ -349,6 +480,8 @@ int main(int argc, char** argv)
 	test_simpleAppendModes();
 	test_parentAppendMode();
 	test_metaMerging();
+	test_metaSkipMerge();
+	test_differentMetaNames();
 	test_restoreOnSet();
 
 	printf ("\ntest_hosts RESULTS: %d test(s) done. %d error(s).\n", nbTest,
