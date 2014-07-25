@@ -42,7 +42,7 @@ Using semi-structured data for config files:
 Providing information found on the system not available in persistent
 files:
 
-- [uname](uname) information from the uname(1) tool.
+- [uname](uname) information from the uname syscall.
 
 
 ## Filter ##
