@@ -161,6 +161,7 @@ set (KDB_DB_USER ".kdb" CACHE PATH
 
 option (ENABLE_CXX11 "Include code using C++11 standard, needs gcc 4.7 or comparable clang/icc" OFF)
 
+set (GTEST_ROOT "" CACHE PATH "use external gtest instead of internal")
 
 
 
@@ -210,9 +211,6 @@ else (BUILD_TESTING)
 	#(even though the option would not harm)
 	set (INSTALL_TESTING OFF CACHE BOOL "Install testcases" FORCE)
 endif (BUILD_TESTING)
-
-
-set (ENABLE_EXTERNAL_GTEST OFF CACHE BOOL "use external gtest instead of internal")
 
 set (ENABLE_COVERAGE OFF CACHE BOOL "enable coverage analysis (using gcov)")
 set (COVERAGE_PREFIX
