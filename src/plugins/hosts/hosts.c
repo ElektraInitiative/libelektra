@@ -205,13 +205,13 @@ int elektraHostsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 				KEY_VALUE, PLUGINVERSION, KEY_END),
 			keyNew ("system/elektra/modules/hosts/config", KEY_END),
 			keyNew ("system/elektra/modules/hosts/config/needs", KEY_END),
-			keyNew ("system/elektra/modules/hosts/config/needs/glob/#1",
+			keyNew ("system/elektra/modules/hosts/config/needs/glob/set/#1",
 				KEY_VALUE, "/*",
 				KEY_META, "check/ipaddr", "", /* Preferred way to check */
 				KEY_META, "validation/regex", "^[0-9.:]+$", /* Can be checked additionally */
 				KEY_META, "validation/message", "Character present not suitable for ip address",
 				KEY_END),
-			keyNew ("system/elektra/modules/hosts/config/needs/glob/#2",
+			keyNew ("system/elektra/modules/hosts/config/needs/glob/set/#2",
 				KEY_VALUE, "/*/*",
 				KEY_META, "validation/regex", "^[0-9a-zA-Z.:]+$", /* Only basic character validation */
 				KEY_META, "validation/message", "Character present not suitable for host address",
