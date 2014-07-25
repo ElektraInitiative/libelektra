@@ -35,9 +35,9 @@ To generate the code we use:
 Using the generated code is very easy, we just create a parameter
 object:
 
->	kdb::KeySet ks;
->	kdb::Context c;
-> kdb::Parameters par(ks,c);
+	kdb::KeySet ks;
+	kdb::Context c;
+    kdb::Parameters par(ks,c);
 
 and access the keys as if they were variables:
 
