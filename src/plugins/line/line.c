@@ -19,6 +19,20 @@
 #include <stddef.h>
 #include <string.h>
 
+static inline KeySet *elektraLineContract()
+{
+    return ksNew (30,
+		keyNew ("system/elektra/modules/line",
+			KEY_VALUE, "line plugin waits for your orders", KEY_END),
+		keyNew ("system/elektra/modules/line/exports", KEY_END),
+		keyNew ("system/elektra/modules/line/exports/get",
+			KEY_FUNC, elektraLineGet, KEY_END),
+		keyNew ("system/elektra/modules/line/exports/set",
+			KEY_FUNC, elektraLineSet, KEY_END),
+#include "README.c"
+    		KS_END);
+}
+
 
 int elektraLineGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
@@ -26,34 +40,10 @@ int elektraLineGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 
 	if (!strcmp (keyName(parentKey), "system/elektra/modules/line"))
 	{
-		KeySet *moduleConfig = ksNew (30,
-			keyNew ("system/elektra/modules/line",
-				KEY_VALUE, "line plugin waits for your orders", KEY_END),
-			keyNew ("system/elektra/modules/line/exports", KEY_END),
-			keyNew ("system/elektra/modules/line/exports/get",
-				KEY_FUNC, elektraLineGet, KEY_END),
-			keyNew ("system/elektra/modules/line/exports/set",
-				KEY_FUNC, elektraLineSet, KEY_END),
-			keyNew ("system/elektra/modules/line/infos",
-				KEY_VALUE, "All information you want to know", KEY_END),
-			keyNew ("system/elektra/modules/line/infos/author",
-				KEY_VALUE, "Ian Donnelly <ian.s.donnelly@gmail.com>", KEY_END),
-			keyNew ("system/elektra/modules/line/infos/licence",
-				KEY_VALUE, "BSD", KEY_END),
-			keyNew ("system/elektra/modules/line/infos/description",
-				KEY_VALUE, "Very simple storage which writes out line by line", KEY_END),
-			keyNew ("system/elektra/modules/line/infos/provides",
-				KEY_VALUE, "storage", KEY_END),
-			keyNew ("system/elektra/modules/line/infos/placements",
-				KEY_VALUE, "getstorage setstorage", KEY_END),
-			keyNew ("system/elektra/modules/line/infos/needs",
-				KEY_VALUE, "", KEY_END),
-			keyNew ("system/elektra/modules/line/infos/version",
-				KEY_VALUE, PLUGINVERSION, KEY_END),
-			KS_END);
-		ksAppend (returned, moduleConfig);
-		ksDel (moduleConfig);
-		return 1;
+		KeySet *moduleConfig = elektraLineContract();
+    		ksAppend(returned, moduleConfig);
+    		ksDel(moduleConfig);
+    		return 1;
 	}
 	char *value = NULL;
 	char *key;

@@ -6,7 +6,9 @@ try_compile (COMPAT_GETLINE
 		)
 
 	if (COMPAT_GETLINE)
-		generate_readme (line)	
+		generate_readme (line)
+		add_includes (elektra-full ${CMAKE_CURRENT_BINARY_DIR})
+		include_directories (${CMAKE_CURRENT_BINARY_DIR})
 			
 		set (SOURCES line.h line.c)
 		add_sources (elektra-full ${SOURCES})
