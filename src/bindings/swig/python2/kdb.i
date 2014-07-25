@@ -1,6 +1,6 @@
 %module kdb
 
-%include "../python/kdb.i"
+%include "../python3/kdb.i"
 
 /* python2 compat
 %pythonbegin %{
