@@ -47,7 +47,7 @@ enum GlobDirection {
 static KeySet* getGlobKeys(Key* parentKey, KeySet* keys, enum GlobDirection direction)
 {
 	KeySet* glob = ksNew (0);
-	Key* k;
+	Key* k = 0;
 	size_t parentsize = keyGetNameSize (parentKey);
 	while ((k = ksNext (keys)) != 0)
 	{
@@ -56,8 +56,8 @@ static KeySet* getGlobKeys(Key* parentKey, KeySet* keys, enum GlobDirection dire
 				&& strncmp (keyName (k), "user/glob", sizeof("user/glob") - 1))
 			continue;
 
-		Key *filterIfBelowUser;
-		Key *filterIfBelowSystem;
+		Key *filterIfBelowUser = 0;
+		Key *filterIfBelowSystem = 0;
 
 		if (direction == GET)
 		{

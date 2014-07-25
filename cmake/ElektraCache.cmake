@@ -48,6 +48,7 @@ set (PLUGINS_LIST_NODEP
 set (PLUGINS_LIST_POSIX
 	glob  hosts  iconv  network
 	path
+	keytometa
 	syslog uname
 	timeofday
 	simpleini

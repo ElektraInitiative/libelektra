@@ -256,7 +256,7 @@ int elektraKeyToMetaSet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA
 			/* this might be NULL as the key might have been deleted */
 			if (target) {
 
-				char *result;
+				char *result = 0;
 				if (target != previous) {
 					free (value);
 					const Key *valueKey = keyGetMeta(target, keyString(metaName));
