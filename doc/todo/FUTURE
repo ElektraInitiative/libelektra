@@ -3,10 +3,6 @@ Some enhanced ideas which will not be part of 0.8.
 
 == API Changes ==
 
-keyIsBelow/keyIsDirectBelow:
-	Change Order of arguments? (see C++)
-	or improve keyRel?
-
 keyset:
 	ensure that every ks* has as @post a sorted keyset
 	ksClear/keyClear weg (da mit *Copy(,0) ersetzbar)
@@ -29,7 +25,8 @@ lazy kdbOpen, maybe kdbConstruct and kdbDestruct needed too?
 
 == Error handling ==
 
-translation of exceptions too different languages
+translation of exceptions to different languages
+(or by GUI only?)
 
 
 == Elektra types ==
@@ -130,18 +127,6 @@ libcomment: -> define as metadata
 	default
 	type
 	description
-
-== HIERARCHY ==
-
-make / as root?
-
-would require:
-	arbitrary cascading
-		high level ksLookup which builds up hash for any search folders
-		(e.g. /system/keybindings /user/keybindings /system/sw/myapp/keybindings...)
-	same backend mounting multiple times
-
-getRootKeys not needed OR (user + system are fixed)
 
 
 
