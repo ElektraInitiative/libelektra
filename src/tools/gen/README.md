@@ -3,6 +3,7 @@
 This tutorial serves as a guide for how you can use the code generator and
 contextual values.
 
+
 ## Motivation
 
 Writing your own conversion of the strings parsed from commandline
@@ -30,7 +31,7 @@ To avoid the problems we initally stated, we use [a specification](specification
 Using the specification, we can generate code similar to the code above, but without any of the errors.
 To generate the code we use:
 
->	kdb gen specification.ini template_context.hpp > lift_context.hpp
+	kdb gen specification.ini template_context.hpp > lift_context.hpp
 
 Using the generated code is very easy, we just create a parameter
 object:
