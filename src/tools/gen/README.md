@@ -1,7 +1,8 @@
 # Code Generation
 
-This tutorial guides you into how you can use the code generator and
+This tutorial serves as a guide for how you can use the code generator and
 contextual values.
+
 
 ## Motivation
 
@@ -20,25 +21,24 @@ We see already multiple problems with this code:
 - No error handling for null/binary keys
 - No error handling when string is not an integer
 
-Our approach allows to avoid all such errors and saves time for more
+Our approach avoids all such errors and saves time for more
 important implementation tasks.
 
 
 ## Specification
 
-To avoid initial stated problems, we use [a specification](specification.ini).
-From that specification code is generated similar to the error-prone
-code above, but without its problems.
+To avoid the problems we initally stated, we use [a specification](specification.ini).
+Using the specification, we can generate code similar to the code above, but without any of the errors.
 To generate the code we use:
 
 	kdb gen specification.ini template_context.hpp > lift_context.hpp
 
-The usage of the generated code is very easy, we just create a parameter
+Using the generated code is very easy, we just create a parameter
 object:
 
 	kdb::KeySet ks;
 	kdb::Context c;
-	kdb::Parameters par(ks,c);
+    kdb::Parameters par(ks,c);
 
 and access the keys as if they were variables:
 
@@ -49,7 +49,7 @@ For a full example, see [here](lift_context.cpp).
 
 ## Contextual Values
 
-The key value often depends on a context.
+The value of a key often depends on a context.
 E.g. if an application is started with another profile:
 
 	firefox -P anonymous
@@ -102,8 +102,8 @@ If no placeholder exists ```%``` will be used.
 
 ## Commandline Arguments
 
-Now we want to implement the -P commandline option. That is a trivial
-tasks when using Elektra's code generator. We simply add another
+Now if we want to implement the -P commandline option, we can do so very 
+easily using Elektra's code generator. We simply add another
 item in the specification:
 
 	[/firefox/profile]
@@ -112,8 +112,8 @@ item in the specification:
 	opt/long=profile
 
 The specification entries "opt" and "opt/long" will generate, next to
-the contextual value ```firefox.profile``` additional code parsing the
-commandline:
+the contextual value ```firefox.profile``` additional code parsing can be 
+done via the commandline:
 
 	kdb gen specification.ini template_genopt.c > genopt.c
 
