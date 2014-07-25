@@ -9,6 +9,7 @@ The plugins are:
 
 ![Overview Plugins](/doc/images/overview_plugins.png)
 
+
 ## Storage ##
 
 Before configuration is actually written, the file name needs to be
@@ -43,6 +44,7 @@ files:
 
 - [uname](uname) information from the uname(1) tool.
 
+
 ## Filter ##
 
 Rewrite unwanted characters with different techniques
@@ -58,6 +60,7 @@ Doing other stuff:
 - [hidden](hidden) 
 - [null](null) takes care of null values and other binary specialities
 
+
 ## Notification ##
 
 Send out all changes to configuration to:
@@ -71,22 +74,23 @@ Trace everything that happens within KDB:
 - [timeofday](timeofday)
 - [tracer](tracer)
 
-## Application ##
-
-Applies meta data on keys:
-
-- [glob](glob) using globbing techniques
-- [struct](struct) using a defined structure (may also reject
-  configuration not aligned to that structure)
 
 ## Checker ##
 
-Plugins that check if values are valid based on meta data.
+Copies meta data to keys:
+
+- [glob](glob) using globbing techniques
+- [struct](struct) using a defined structure (may also reject
+  configuration not conforming to that structure)
+
+Plugins that check if values are valid based on meta data (typically
+copied by another plugin just before):
 
 - [validation](validation) by using regex
 - [network](network) by using network APIs
 - [path](path) by checking files on filesystem
-- [type](type) using type checking (CORBA types)
+- [type](type) using runtime type checking (CORBA types)
+
 
 ## Others ##
 
@@ -94,3 +98,9 @@ Plugins that check if values are valid based on meta data.
 - [error](error) yields errors as described in metadata
 - [success](success) is always successful
 - [template](template) to be copied for new plugins
+
+To add a new plugin you can copy the template plugin. Please make sure
+to add your plugin:
+
+- to this list, at least in Others
+- to [cmake](/cmake/ElektraCache.cmake), at least in ALL
