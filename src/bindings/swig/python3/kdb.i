@@ -85,9 +85,7 @@
     elif arg == KEY_NULL:
       pass
     else:
-      if DEBUG:
-        import sys
-        print("Unknown option in keyNew {0}".format(arg), file=sys.stderr)
+      pass # print("Unknown option in keyNew {0}".format(arg), file=sys.stderr)
 }
 
 // properties
