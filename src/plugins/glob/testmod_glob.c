@@ -78,6 +78,8 @@ void test_setGlobalMatch()
 
 	testKeys (ks);
 	ksDel(ks);
+
+	PLUGIN_CLOSE();
 }
 
 void test_getGlobalMatch()
@@ -100,6 +102,8 @@ void test_getGlobalMatch()
 
 	testKeys (ks);
 	ksDel(ks);
+
+	PLUGIN_CLOSE();
 }
 
 void test_getDirectionMatch()
@@ -126,6 +130,8 @@ void test_getDirectionMatch()
 
 	testKeys (ks);
 	ksDel(ks);
+
+	PLUGIN_CLOSE();
 }
 
 void test_setDirectionMatch()
@@ -152,6 +158,8 @@ void test_setDirectionMatch()
 
 	testKeys (ks);
 	ksDel(ks);
+
+	PLUGIN_CLOSE();
 }
 
 int main(int argc, char** argv)

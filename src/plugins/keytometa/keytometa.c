@@ -63,7 +63,7 @@ static int appendWithNewline(char **str1, const char *str2)
 	int len1 = *str1 ? strlen (*str1) : 0;
 	int len2 = str2 ? strlen (str2) : 0;
 
-	char *dst = malloc (len1 + len2 + 2);
+	char *dst = malloc (len1 + len2 + 2); //TODO: memleak
 
 	if (!dst) return 0;
 
@@ -142,8 +142,6 @@ int elektraKeyToMetaGet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA
 
 	Key *current;
 	KeySet *convertedKeys = ksNew(0);
-
-	char *currentData = 0;
 	Key *appendToKey;
 
 	for (size_t index = 0; index < numKeys; index++)
@@ -198,6 +196,8 @@ int elektraKeyToMetaGet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA
 		{
 			/* collect the data from all the keys to be collapsed */
 			size_t i;
+			char *currentData = 0;
+
 			for (i = index; i < numKeys; i++)
 			{
 				Key *collapseKey = keyArray[i];
