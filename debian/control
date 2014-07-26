@@ -9,7 +9,7 @@ Build-Depends: debhelper (>= 8),
  libboost-dev,
  cmake,
  libdbus-1-dev,
- libaugeas0-dev (>= 1.0.0),
+ libaugeas-dev (>= 1.0.0),
  libyajl-dev,
  python-support (>= 0.90)
 Standards-Version: 3.9.4
