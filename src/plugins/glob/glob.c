@@ -158,46 +158,9 @@ int elektraGlobGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 	if (!strcmp (keyName(parentKey), "system/elektra/modules/glob"))
 	{
 		// TODO: improve plugin contract
-		KeySet *n;
-		ksAppend (returned, n=ksNew (30,
-			keyNew ("system/elektra/modules/glob",
-				KEY_VALUE, "glob plugin waits for your orders", KEY_END),
-			keyNew ("system/elektra/modules/glob/exports", KEY_END),
-			keyNew ("system/elektra/modules/glob/exports/open",
-				KEY_FUNC, elektraGlobOpen,
-				KEY_END),
-			keyNew ("system/elektra/modules/glob/exports/close",
-				KEY_FUNC, elektraGlobClose,
-				KEY_END),
-			keyNew ("system/elektra/modules/glob/exports/get",
-				KEY_FUNC, elektraGlobGet,
-				KEY_END),
-			keyNew ("system/elektra/modules/glob/exports/set",
-				KEY_FUNC, elektraGlobSet,
-				KEY_END),
-			keyNew ("system/elektra/modules/glob/exports/elektraGlobMatch",
-				KEY_FUNC, elektraGlobMatch,
-				KEY_END),
-			keyNew ("system/elektra/modules/glob/infos",
-				KEY_VALUE, "All information you want to know", KEY_END),
-			keyNew ("system/elektra/modules/glob/infos/author",
-				KEY_VALUE, "Felix Berlakovich <elektra@berlakovich.net>", KEY_END),
-			keyNew ("system/elektra/modules/glob/infos/licence",
-				KEY_VALUE, "BSD", KEY_END),
-			keyNew ("system/elektra/modules/glob/infos/description",
-				KEY_VALUE, "Copies meta data to keys using globbing", KEY_END),
-			keyNew ("system/elektra/modules/glob/infos/provides",
-				KEY_VALUE, "apply", KEY_END),
-			keyNew ("system/elektra/modules/glob/infos/placements",
-				KEY_VALUE, "presetstorage postgetstorage", KEY_END),
-			keyNew ("system/elektra/modules/glob/infos/needs",
-				KEY_VALUE, "", KEY_END),
-			keyNew ("system/elektra/modules/glob/infos/ordering",
-				KEY_VALUE, "check", KEY_END),
-			keyNew ("system/elektra/modules/glob/infos/version",
-				KEY_VALUE, PLUGINVERSION, KEY_END),
-			KS_END));
-		ksDel (n);
+		KeySet *config =
+				#include "contract.h"
+		ksAppend (returned, config);
 		return 1;
 	}
 
