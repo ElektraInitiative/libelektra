@@ -1,13 +1,13 @@
-doc/README
-doc/todo/CURRENT
+README.md
+doc/todo/CURRENT.md
 doc/todo/TODO
-doc/todo/BUGS
 doc/todo/FUTURE
 doc/AUTHORS
-doc/COMPILE
+doc/COMPILE.md
 doc/NEWS
 doc/VERSION
 doc/CHANGES
 doc/DESIGN
 doc/GIT
 doc/SECURITY
+doc/GOALS.md
