@@ -1,16 +1,15 @@
 -------------
 
-Author:
-Date:
+Author: Markus Raab
+Date: 28.07.2014
 Subject: 0.8.7 release
+Note: This is preliminary, the release did not happen and the release notes
+      are not finished.
 
-(This is preliminary, the release did not happen and the release notes
- are not finished.)
 
-Thanks to Pino Toscano for fixing a lot of spelling errors, simplify
-RPATH setting, improvements of test cases, and his debian-packaging efforts.
+## New Features ##
 
-Thanks to Manuel Mausz for further improving lua and python3 bindings
+Thanks to Manuel Mausz for further improving lua, python3 bindings
 and the new python2 bindings.
 
 The GSoC efforts have their first large contribution to Elektra, the 3
@@ -24,22 +23,64 @@ A special thanks to  Felix Berlakovich for his contributions to the
 3-way merge, including meta merging, conflict resolving strategies and
 the extensive testing.
 
-Added delMeta() for C++.
-
-kdb tool:
-not allowed subfolders are checked properly
-output warnings before error
-
-fix compilation warnings
-improve test coverage
+Additionally he added the plugin keytometa and greatly improved the glob
+plugin. These plugins are technical previews and will receive some
+improvements in the next release, too.
 
 Now a script for tab completion is available
-[here](/scripts/scripts/kdb-bash-completion).
+[here](/scripts/scripts/kdb-bash-completion), again thanks to Felix
+Berlakovich.
+
+
+## Corrections ##
+
+Thanks to Pino Toscano for fixing a lot of spelling errors, simplify
+RPATH setting, improvements of test cases, and his debian-packaging
+efforts.
+
+In the kdb tool not allowed subfolders are now checked properly
+and the output of warnings comes before output of the error.
+This fixes the problem that in the case of a longer list of
+warnings one did not see the error anymore.
+
+Fix compilation warnings on clang and gcc 4.9.
+Also improve test coverage on kdb tool and some plugins.
+
+Fix kdb import/export for some plugins (Should now work with any storage
+plugin again).
+
+kdb run_all should run flawlessly with this release. Remaining problems
+with not installed test data were fixed.
+
+Some remaining mem leaks in rare circumstances were fixed. Valgrind
+should now never report any leaks, if it does, please report the issue.
+
+
+## API Changes ##
+
+Added delMeta() for C++, because setMeta() with NULL will set the
+number 0 and not remove the meta.
+
+Arguments of isBelow, isDirectBelow, isBelowOrSame are swapped for
+better readability. k.isBelow(root) now means the obvious thing.
+The change only effects the C++ binding, keyIsBelow is unaffected by
+the change.
+
+
+## Documentation ##
 
 [Specification of meta data](doc/specification.ini) and
 [contracts](doc/contracts.ini) written/greatly improved.
 
 [Decisions](decisions) are introduced again.
+
+Most often the KeySet is ideal, e.g. when doing full iteration or when
+performing set operations. In some cases, however, a hierarchical data
+structure fits better. This is especially true for GUIs. Luckily, Keys
+can be in multiple data structures because of their reference counting.
+
+
+## Other Stuff ##
 
 We now fully embrace github:
 - We use its issue tracker (all issues from local text files were moved
@@ -50,14 +91,6 @@ We now fully embrace github:
 - All previous gitorious users are now at github. (Most had an account
   anyway)
 
-Most often the KeySet is ideal, e.g. when doing full iteration or when
-performing set operations. In some cases, however, a hierarchical data
-structure fits better. This is especially true for GUIs. Luckily, Keys
-can be in multiple data structures because of their reference counting.
-
-Fix kdb import/export for some plugins (Should now work with any storage
-plugin again).
-
 Raffael Pancheri also made progress with its qt-gui. It now features a
 model that implements great parts of Elektra's features. Unfortunately
 the model cannot be serialised and thus changes cannot made persistent.
@@ -66,30 +99,21 @@ looks very clean and was evaluated in a SUS study on 23.07.2014.
 The current implementation can be found at
 []().
 
-kdb run_all should run flawlessly with this release. Remaining problems
-with not installed test data were fixed.
-
-Some remaining mem leaks in rare circumstances were fixed. Valgrind
-should now never report any leaks, if it does, please report the issue.
-
-Arguments of isBelow, isDirectBelow, isBelowOrSame are swapped for
-better readability. k.isBelow(root) now means the obvious thing.
-The change only effects the C++ binding, keyIsBelow is unaffected by
-the change.
-
-many distributions already have elektra packages
+Many distributions already have elektra packages
  - [Fedora](https://admin.fedoraproject.org/pkgdb/package/elektra/)
  - [Gentoo](http://packages.gentoo.org/package/app-admin/elektra)
  - [Arch Linux](https://aur.archlinux.org/packages/elektra/)
 
 In some distributions Elektra packages are available, but are not
-up-to-date. We would love to see them updated. These include:
+up-to-date. Pino Toscano is working on get them up-to-date.
  - [Ubuntu](https://launchpad.net/ubuntu/+source/elektra)
  - [Debian](https://packages.debian.org/de/wheezy/libelektra3)
  - [Linux Mint](http://community.linuxmint.com/software/view/elektra)
 
 A special thanks to Kai-Uwe Behrmann for provides packages for
-[CentOS, Fedora, OpenSUSE, RHEL and SLE](http://software.opensuse.org/download.html?project=home%3Abekun&package=elektra).
+[CentOS, Fedora, OpenSUSE, RHEL and
+SLE](http://software.opensuse.org/download.html?project=home%3Abekun&package=elektra).
+
 
 
 -------------
