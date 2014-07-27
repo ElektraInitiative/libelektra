@@ -1,1 +1,4 @@
 usr/bin/kdb
+usr/lib/libelektratools-full.so
+usr/lib/libelektratools-static.a
+usr/lib/libelektratools.so
