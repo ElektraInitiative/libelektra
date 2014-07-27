@@ -25,15 +25,24 @@ setup(name='elektra-gen',
           'c_support',
           'gen_support',
           'opt_support',
+          'nested_support',
+          'context_support',
           ],
       data_files = [
           ('@CMAKE_INSTALL_PREFIX@/@TARGET_TEMPLATE_FOLDER@', [
-                 '${CMAKE_CURRENT_SOURCE_DIR}/template_genopt.h',
+                 '${CMAKE_CURRENT_SOURCE_DIR}/README.md',
+                 '${CMAKE_CURRENT_SOURCE_DIR}/specification.ini',
+                 '${CMAKE_CURRENT_SOURCE_DIR}/template_context.hpp',
                  '${CMAKE_CURRENT_SOURCE_DIR}/template_genopt.c',
+                 '${CMAKE_CURRENT_SOURCE_DIR}/template_genopt.h',
                  '${CMAKE_CURRENT_SOURCE_DIR}/template.h',
                  '${CMAKE_CURRENT_SOURCE_DIR}/template.hpp',
-                 '${CMAKE_CURRENT_SOURCE_DIR}/template.man',
                  '${CMAKE_CURRENT_SOURCE_DIR}/template.html',
+                 '${CMAKE_CURRENT_SOURCE_DIR}/template.man',
+                 '${CMAKE_CURRENT_SOURCE_DIR}/template_nested.hpp',
+                 '${CMAKE_CURRENT_SOURCE_DIR}/util.tmpl',
+                 '${CMAKE_CURRENT_SOURCE_DIR}/visit_context.cpp',
+                 '${CMAKE_CURRENT_SOURCE_DIR}/visit_specification.ini',
                 ]
           )
       ]
