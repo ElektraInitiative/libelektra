@@ -43,8 +43,7 @@ commands below work for copy&paste:
 
 Now lets merge that to the release branch:
  git-checkout release
- git-merge --no-ff master
- git-commit --amend -m "Merge for release $VERSION"
+ git-merge --no-ff master -m "Merge for release $VERSION"
 
 
 == Prepare Source Package ==
@@ -66,8 +65,7 @@ export DVERSION=$VERSION-1
 
 Build deb:
  git-checkout debian
- git-merge --no-ff release
- git-commit --amend -m "Merge for debian release $DVERSION"
+ git-merge --no-ff release -m "Merge for debian release $DVERSION"
 
  dch --newversion $DVERSION "New upstream version."
  git-add debian/changelog
