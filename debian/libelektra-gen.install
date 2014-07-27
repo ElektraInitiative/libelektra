@@ -1,2 +1,16 @@
 usr/lib/elektra/tool_exec/gen
-usr/lib/python2.7/dist-packages
+usr/lib/python2.7/dist-packages/elektra_gen-0.8.7.egg-info
+usr/lib/python2.7/dist-packages/opt_support.py
+usr/lib/python2.7/dist-packages/opt_support.pyc
+usr/lib/python2.7/dist-packages/gen_support.py
+usr/lib/python2.7/dist-packages/gen_support.pyc
+usr/lib/python2.7/dist-packages/c_support.pyc
+usr/lib/python2.7/dist-packages/_kdb.so
+usr/lib/python2.7/dist-packages/cpp_support.py
+usr/lib/python2.7/dist-packages/c_support.py
+usr/lib/python2.7/dist-packages/nested_support.py
+usr/lib/python2.7/dist-packages/cpp_support.pyc
+usr/lib/python2.7/dist-packages/context_support.py
+usr/lib/python2.7/dist-packages/context_support.pyc
+usr/lib/python2.7/dist-packages/kdb.py
+usr/lib/python2.7/dist-packages/nested_support.pyc
