@@ -1,1 +1,3 @@
-usr/lib/elektra/tool_exec/test_*
+usr/lib/elektra/tool_exec/test*
+usr/lib/elektra/tool_exec/check*
+usr/lib/elektra/tool_exec/run_all
