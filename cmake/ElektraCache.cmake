@@ -300,7 +300,7 @@ set (TARGET_DOCUMENTATION_LATEX_FOLDER
     )
 
 set (TARGET_TOOL_EXEC_FOLDER
-		"lib/elektra/tool_exec"
+		"lib${LIB_SUFFIX}/elektra/tool_exec"
 		CACHE STRING
 		"This folder (below prefix) will be used to install additional kdb-tools"
     )
