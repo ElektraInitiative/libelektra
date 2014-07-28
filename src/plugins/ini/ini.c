@@ -15,6 +15,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <kdberrors.h>
+#include <kdbextension.h>
 #include "lib/inih.h"
 #include "ini.h"
 
