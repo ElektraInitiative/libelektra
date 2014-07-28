@@ -33,6 +33,7 @@ Cmdline::Cmdline (int argc,
 	overrideBase(),
 	verbose(),
 	version(),
+	withoutElektra(),
 
 	executable(),
 	commandName()
@@ -155,6 +156,12 @@ Cmdline::Cmdline (int argc,
 		long_options.push_back(o);
 		helpText += "-V --version             print version info\n";
 	}
+	if (acceptedOptions.find('E')!=string::npos)
+	{
+		option o = {"without-elektra", no_argument, 0, 'E'};
+		long_options.push_back(o);
+		helpText += "-E --without-elektra     omit system/elektra directory\n";
+	}
 
 
 	option o = {0, 0, 0, 0};
@@ -183,6 +190,7 @@ Cmdline::Cmdline (int argc,
 		case 'b': overrideBase = true; break;
 		case 'v': verbose = true; break;
 		case 'V': version = true; break;
+		case 'E': withoutElektra= true; break;
 
 		default: invalidOpt = true; break;
 		}

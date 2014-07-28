@@ -50,6 +50,7 @@ public:
 	bool overrideBase; /*!< Override the base with the merge result */
 	bool verbose; /*!< Be more verbose. */
 	bool version; /*!< Return version info instead of the normal action.. */
+	bool withoutElektra;
 
 	/** The path to the kdb exectuable. */
 	std::string executable;
