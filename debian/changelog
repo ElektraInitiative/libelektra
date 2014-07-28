@@ -1,6 +1,11 @@
-elektra (0.8.7-1) UNRELEASED; urgency=low
+elektra (0.8.7-2) unstable; urgency=low
 
-  * New upstream version.
+  * Fix installation of contextual and other gen templates
+
+ -- Markus Raab <debian@markus-raab.org>  Mon, 28 Jul 2014 20:37:07 +0200
+
+elektra (0.8.7-1) unstable; urgency=low
+
   * New upstream version.
 
  -- Markus Raab <debian@markus-raab.org>  Mon, 28 Jul 2014 10:33:00 +0200
