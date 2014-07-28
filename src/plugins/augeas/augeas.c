@@ -359,18 +359,29 @@ int elektraAugeasGet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 	FILE *fh = fopen (keyString (parentKey), "r");
 
-	if (fh == 0) ELEKTRA_SET_ERRNO_ERROR(9, parentKey);
+	if (fh == 0)
+	{
+		ELEKTRA_SET_ERRNO_ERROR(9, parentKey);
+	}
 
 	/* load its contents into a string */
 	char *content = loadFile (fh);
 
-	if (content == 0) ELEKTRA_SET_ERRNO_ERROR(76, parentKey);
+	if (content == 0)
+	{
+		fclose(fh);
+		ELEKTRA_SET_ERRNO_ERROR(76, parentKey);
+	}
 
 	/* convert the string into an augeas tree */
 	ret = loadTree (augeasHandle, lensPath, content);
 	free (content);
 
-	if (ret < 0) ELEKTRA_SET_AUGEAS_ERROR(augeasHandle, parentKey);
+	if (ret < 0)
+	{
+		fclose(fh);
+		ELEKTRA_SET_AUGEAS_ERROR(augeasHandle, parentKey);
+	}
 
 	/* convert the augeas tree to an Elektra KeySet */
 	ksClear (returned);
@@ -383,7 +394,10 @@ int elektraAugeasGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			sizeof(struct KeyConversion));
 
 	if (!conversionData)
-	ELEKTRA_SET_GENERAL_ERROR(87, parentKey, strerror (errno));
+	{
+		fclose(fh);
+		ELEKTRA_SET_GENERAL_ERROR(87, parentKey, strerror (errno));
+	}
 
 	conversionData->currentOrder = 0;
 	conversionData->parentKey = key;
@@ -396,9 +410,12 @@ int elektraAugeasGet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 	if (ret < 0)
 	{
+		fclose(fh);
 		ksDel (append);
 		ELEKTRA_SET_AUGEAS_ERROR(augeasHandle, parentKey);
 	}
+
+	fclose(fh);
 
 	ksAppend (returned, append);
 	ksDel (append);
@@ -414,11 +431,16 @@ int elektraAugeasSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	const char *lensPath = getLensPath (handle);
 
 	if (!lensPath)
-	ELEKTRA_SET_GENERAL_ERROR(86, parentKey, keyName (parentKey));
+	{
+		ELEKTRA_SET_GENERAL_ERROR(86, parentKey, keyName (parentKey));
+	}
 
 	FILE *fh = fopen (keyValue (parentKey), "w+");
 
-	if (fh == 0) ELEKTRA_SET_ERRNO_ERROR(9, parentKey);
+	if (fh == 0)
+	{
+		ELEKTRA_SET_ERRNO_ERROR(9, parentKey);
+	}
 
 	int ret = 0;
 
@@ -427,13 +449,21 @@ int elektraAugeasSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		/* load a fresh copy of the file into the tree */
 		char *content = loadFile (fh);
 
-		if (content == 0) ELEKTRA_SET_ERRNO_ERROR(76, parentKey);
+		if (content == 0)
+		{
+			fclose(fh);
+			ELEKTRA_SET_ERRNO_ERROR(76, parentKey);
+		}
 
 		/* convert the string into an augeas tree */
 		ret = loadTree (augeasHandle, lensPath, content);
 		free (content);
 
-		if (ret < 0) ELEKTRA_SET_AUGEAS_ERROR(augeasHandle, parentKey);
+		if (ret < 0)
+		{
+			fclose(fh);
+			ELEKTRA_SET_AUGEAS_ERROR(augeasHandle, parentKey);
+		}
 	}
 
 	ret = saveTree (augeasHandle, returned, lensPath, parentKey);

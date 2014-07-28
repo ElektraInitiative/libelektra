@@ -117,13 +117,11 @@ void test_hostLensWrite(char *fileName)
 			compare_line_files (srcdir_file (fileName), keyString (parentKey)),
 			"files do not match as expected");
 
-	keyDel (parentKey);
-	ksDel (ks);
-
 	elektraUnlink(keyString (parentKey));
 
-	PLUGIN_CLOSE ()
-	;
+	ksDel (ks);
+
+	PLUGIN_CLOSE ();
 }
 
 void test_hostLensDelete(char *sourceFile, char *compFile)
@@ -172,10 +170,10 @@ void test_hostLensDelete(char *sourceFile, char *compFile)
 			compare_line_files (srcdir_file (compFile), keyString (parentKey)),
 			"files do not match as expected");
 
-	keyDel (parentKey);
 	ksDel (ks);
 
 	elektraUnlink(keyString (parentKey));
+	keyDel (parentKey);
 
 	PLUGIN_CLOSE ()
 	;
@@ -329,10 +327,10 @@ void test_hostLensFormatting(char *fileName)
 			compare_line_files (srcdir_file (fileName), keyString (parentKey)),
 			"files do not match as expected");
 
+	elektraUnlink(keyString (parentKey));
 	keyDel (parentKey);
 	ksDel (ks);
 
-	elektraUnlink(keyString (parentKey));
 
 	PLUGIN_CLOSE ()
 	;

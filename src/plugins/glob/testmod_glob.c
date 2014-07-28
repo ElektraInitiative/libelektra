@@ -101,6 +101,8 @@ void test_zeroMatchFlags()
 			"value of metakey testmetakey1 not correct");
 
 	ksDel(ks);
+	keyDel(parentKey);
+	PLUGIN_CLOSE();
 }
 
 void test_setGlobalMatch()
@@ -123,6 +125,7 @@ void test_setGlobalMatch()
 
 	testKeys (ks);
 	ksDel(ks);
+	keyDel(parentKey);
 
 	PLUGIN_CLOSE();
 }
@@ -147,6 +150,7 @@ void test_getGlobalMatch()
 
 	testKeys (ks);
 	ksDel(ks);
+	keyDel(parentKey);
 
 	PLUGIN_CLOSE();
 }
@@ -175,6 +179,7 @@ void test_getDirectionMatch()
 
 	testKeys (ks);
 	ksDel(ks);
+	keyDel(parentKey);
 
 	PLUGIN_CLOSE();
 }
@@ -203,6 +208,7 @@ void test_setDirectionMatch()
 
 	testKeys (ks);
 	ksDel(ks);
+	keyDel(parentKey);
 
 	PLUGIN_CLOSE();
 }
