@@ -3,6 +3,7 @@
 #include "type_checker.hpp"
 
 #include <locale>
+#include <stdexcept>
 
 using namespace elektra;
 
@@ -145,7 +146,14 @@ void test_float()
 	succeed_if (tc.check(k), "should check successfully");
 	k.setString("1,5");
 	succeed_if (!tc.check(k), "should fail");
-	std::locale::global(std::locale(""));
+	try {
+		std::locale::global(std::locale(""));
+		succeed_if(1, "locale set correctly");
+	}
+	catch (std::runtime_error const & e)
+	{
+		warn_if_fail(0, "Could not set locale, the locales in your system are broken");
+	}
 	k.setString("1,5");
 	succeed_if (!tc.check(k), "should fail even if global locale was changed");
 	k.setString("1233322.5");

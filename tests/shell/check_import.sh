@@ -16,11 +16,17 @@ cleanup()
 	rm -f $FILE
 }
 
+[ -e /dev/stdin ]
+exit_if_fail "For export/import /dev (and /proc) must be mounted"
+
+[ -e /proc/self/fd/1 ]
+exit_if_fail "For export/import /proc (and /dev) must be mounted"
+
 for PLUGIN in $PLUGINS
 do
 	if is_not_rw_storage
 	then
-		echo "$PLUGIN not a read-write storage"
+		echo "-- $PLUGIN not a read-write storage"
 		continue;
 	fi
 
@@ -40,8 +46,13 @@ do
 	test "`$KDB ls $ROOT`" = "user/tests/script"
 	succeed_if "key name not correct one_value"
 
-	test "`$KDB get $ROOT`" = root
-	succeed_if "root value not correct"
+	if [ "x$PLUGIN" != "xyajl" ]
+	then
+		#TODO: yajl currently cannot hold values within
+		#directories, do not hardcode that
+		test "`$KDB get $ROOT`" = root
+		succeed_if "root value not correct"
+	fi
 
 	$KDB export $ROOT $PLUGIN > $FILE
 	succeed_if "Could not run kdb export"
@@ -62,8 +73,13 @@ do
 	test "`$KDB ls $ROOT`" = "user/tests/script"
 	succeed_if "key name not correct one_value empty root"
 
-	test "`$KDB get $ROOT`" = root
-	succeed_if "root value not correct"
+	if [ "x$PLUGIN" != "xyajl" ]
+	then
+		#TODO: yajl currently cannot hold values within
+		#directories, do not hardcode that
+		test "`$KDB get $ROOT`" = root
+		succeed_if "root value not correct"
+	fi
 
 	$KDB export $ROOT $PLUGIN > $FILE
 	succeed_if "Could not run kdb export"
@@ -87,8 +103,13 @@ do
 	test "`$KDB ls $ROOT`" = "user/tests/script"
 	succeed_if "key name not correct"
 
-	test "`$KDB get $ROOT`" = root
-	succeed_if "root value not correct"
+	if [ "x$PLUGIN" != "xyajl" ]
+	then
+		#TODO: yajl currently cannot hold values within
+		#directories, do not hardcode that
+		test "`$KDB get $ROOT`" = root
+		succeed_if "root value not correct"
+	fi
 
 	$KDB export $ROOT $PLUGIN > $FILE
 	succeed_if "Could not run kdb export"
@@ -99,8 +120,13 @@ do
 	$KDB rm -r $ROOT
 	succeed_if "Could not remove root"
 
-	test "`$KDB get $SIDE`" = val
-	succeed_if "root value not correct"
+	if [ "x$PLUGIN" != "xyajl" ]
+	then
+		#TODO: yajl currently cannot hold values within
+		#directories, do not hardcode that
+		test "`$KDB get $SIDE`" = val
+		succeed_if "root value not correct"
+	fi
 
 	$KDB rm $SIDE
 	succeed_if "Could not remove $SIDE"
@@ -118,7 +144,7 @@ do
 user/tests/script/key"
 	succeed_if "key name not correct"
 
-	if [ "x$PLUGIN" = "xyail" ]
+	if [ "x$PLUGIN" != "xyajl" ]
 	then
 		#TODO: yajl currently cannot hold values within
 		#directories, do not hardcode that
@@ -148,8 +174,13 @@ user/tests/script/key"
 	test "`$KDB ls $ROOT`" = "user/tests/script"
 	succeed_if "key name not correct"
 
-	test "`$KDB get $ROOT`" = root
-	succeed_if "root value not correct"
+	if [ "x$PLUGIN" != "xyajl" ]
+	then
+		#TODO: yajl currently cannot hold values within
+		#directories, do not hardcode that
+		test "`$KDB get $ROOT`" = root
+		succeed_if "root value not correct"
+	fi
 
 	$KDB export $ROOT $PLUGIN > $FILE
 	succeed_if "Could not run kdb export"
@@ -184,8 +215,13 @@ user/tests/script/key"
 	test "`$KDB ls $ROOT`" = "user/tests/script"
 	succeed_if "key name not correct"
 
-	test "`$KDB get $ROOT`" = root
-	succeed_if "root value not correct"
+	if [ "x$PLUGIN" != "xyajl" ]
+	then
+		#TODO: yajl currently cannot hold values within
+		#directories, do not hardcode that
+		test "`$KDB get $ROOT`" = root
+		succeed_if "root value not correct"
+	fi
 
 	$KDB export $ROOT $PLUGIN > $FILE
 	succeed_if "Could not run kdb export"
@@ -193,8 +229,13 @@ user/tests/script/key"
 	diff $DATADIR/one_value.$PLUGIN $FILE
 	succeed_if "Export file one_value.$PLUGIN was not equal"
 
-	test "`$KDB get $SIDE`" = val
-	succeed_if "root value not correct"
+	if [ "x$PLUGIN" != "xyajl" ]
+	then
+		#TODO: yajl currently cannot hold values within
+		#directories, do not hardcode that
+		test "`$KDB get $SIDE`" = val
+		succeed_if "root value not correct"
+	fi
 
 	$KDB rm $SIDE
 	succeed_if "Could not remove $SIDE"

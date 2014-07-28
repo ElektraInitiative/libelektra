@@ -1,6 +1,10 @@
-if (BUILD_SWIG_PYTHON)
-	add_subdirectory (python)
-endif (BUILD_SWIG_PYTHON)
+if (BUILD_SWIG_PYTHON2)
+	add_subdirectory (python2)
+endif (BUILD_SWIG_PYTHON2)
+
+if (BUILD_SWIG_PYTHON3)
+	add_subdirectory (python3)
+endif (BUILD_SWIG_PYTHON3)
 
 if (BUILD_SWIG_LUA)
 	add_subdirectory (lua)

@@ -135,6 +135,14 @@ int elektraDocOpen(Plugin *handle, Key *errorKey)
 }
  * @endcode
  *
+ * If your plugin has no useful way to startup without config, the
+ * module loader would not be able to load the module, too.
+ * To solve that problem the module loader adds the configuration key
+ * /module. Even if your plugin is basically not able to startup
+ * successfully, it should still provide a fallback when /module
+ * is present, so that docGet() on system/elektra/modules can be
+ * called successfully later on.
+ *
  * @note Make sure to free everything you allocate here within elektraDocClose().
  *
  * @return 0 on success
@@ -477,7 +485,7 @@ int docError(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key
  * You need to use a macro so that both dynamic and static loading
  * of the plugin works.
  *
- * The first paramter is the name of the plugin.
+ * The first parameter is the name of the plugin.
  * Then every plugin should have:
  * @c ELEKTRA_PLUGIN_OPEN,
  * @c ELEKTRA_PLUGIN_CLOSE,

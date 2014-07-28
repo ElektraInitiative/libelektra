@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Allows to list all available backends
+ * \brief Allows one to list all available backends
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
@@ -33,7 +33,7 @@ struct BackendInfo
 };
 
 /**
- * @brief Allows to list backends
+ * @brief Allows one to list backends
  */
 class Backends
 {

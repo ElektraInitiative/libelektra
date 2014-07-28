@@ -9,6 +9,9 @@ set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/"
 #needed by ifs below
 include (cmake/ElektraCache.cmake)
 include (cmake/ElektraCompiling.cmake)
+if (ENABLE_COVERAGE)
+	include (cmake/ElektraCoverage.cmake)
+endif (ENABLE_COVERAGE)
 
 if (ENABLE_TESTING)
 	enable_testing ()
@@ -41,11 +44,12 @@ set (REVERSE_DOMAIN org.libelektra)
 
 set (KDB_VERSION_MAJOR 0)
 set (KDB_VERSION_MINOR 8)
-set (KDB_VERSION_MICRO 6)
+set (KDB_VERSION_MICRO 7)
 
 set (KDB_VERSION "${KDB_VERSION_MAJOR}.${KDB_VERSION_MINOR}.${KDB_VERSION_MICRO}")
 
 set (SO_VERSION 4)
+#set (SO_VERSION_TOOLS 3)
 
 #needs version above
 include (cmake/ElektraPackaging.cmake)
@@ -81,8 +85,9 @@ endif (BUILD_FULL OR BUILD_STATIC)
 ADD_CUSTOM_TARGET(uninstall
 	"${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/ElektraUninstall.cmake")
 
-configure_file( "${CMAKE_CURRENT_SOURCE_DIR}/scripts/make-source-package"
-		"${CMAKE_CURRENT_BINARY_DIR}/scripts/make-source-package")
+configure_file(
+	"${CMAKE_CURRENT_SOURCE_DIR}/scripts/make-source-package.in"
+	"${CMAKE_CURRENT_BINARY_DIR}/scripts/make-source-package")
 
 ADD_CUSTOM_TARGET(source-package
 		COMMAND "${CMAKE_CURRENT_BINARY_DIR}/scripts/make-source-package"

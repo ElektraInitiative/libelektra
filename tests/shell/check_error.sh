@@ -28,6 +28,11 @@ fi
 
 TMPFILE=`mktemp`
 ERROR_FILE=${FILE_SUFFIX}_error.ecf
+#subfolders not supported:
+#USER_ERROR_FOLDER=${USER_FOLDER}/subfolder
+#SYSTEM_ERROR_FOLDER=${SYSTEM_FOLDER}/subfolder
+USER_ERROR_FILE=${USER_FOLDER}/${ERROR_FILE}
+SYSTEM_ERROR_FILE=${SYSTEM_FOLDER}/${ERROR_FILE}
 ERROR_MOUNTPOINT=/test/script/error
 ERROR_MOUNTNAME=_test_script_error
 if is_plugin_available error
@@ -36,6 +41,7 @@ then
 
 	$KDB mount $ERROR_FILE $ERROR_MOUNTPOINT dump error > /dev/null 2>&1
 	succeed_if "could not mount error at $ERROR_MOUNTPOINT"
+
 
 	$KDB mv $ROOT/valueable_data $ROOT/error/dump > $TMPFILE 2>&1
 	[ $? -ne 0 ]
@@ -88,5 +94,7 @@ fi
 
 rm -f $USER_FOLDER/$FILE_SUFFIX*
 rm -f $SYSTEM_FOLDER/$FILE_SUFFIX*
+#rmdir $USER_ERROR_FOLDER
+#rmdir $SYSTEM_ERROR_FOLDER
 
 end_script error

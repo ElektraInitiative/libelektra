@@ -58,6 +58,10 @@ void test_ksdup()
 	succeed_if (ks3.size() == 3, "size not correct");
 
 	KeySet ks4 (ks3.dup());
+	succeed_if (ks4.lookup("user/key3/1"), "could not find key");
+	succeed_if (ks4.lookup("user/key3/2"), "could not find key");
+	succeed_if (ks4.lookup("user/key3/3"), "could not find key");
+	succeed_if (ks4.lookup("user/key3/3").getString() == "value", "value not correct");
 	succeed_if (ks4.size() == 3, "size not correct");
 
 	// ks3.toStream(stdout, 0);
@@ -683,7 +687,7 @@ void rcall(KeySet ks)
 	succeed_if (ks.lookup("user/xxx"), "could not find key");
 	succeed_if (!ks.lookup("user/yyy"), "could not find key");
 
-	// dont destroy ks
+	// don't destroy ks
 	ks.release();
 }
 
@@ -790,6 +794,33 @@ void test_lookuppop()
 	}
 }
 
+void test_duplicate()
+{
+	cout << "testing ksdup" << endl;
+
+	KeySet ks3 (5,
+		*Key ("user/key3/1", KEY_END),
+		*Key ("user/key3/2", KEY_END),
+		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
+		KS_END);
+	succeed_if (ks3.lookup("user/key3/1"), "could not find key");
+	succeed_if (ks3.lookup("user/key3/2"), "could not find key");
+	succeed_if (ks3.lookup("user/key3/3"), "could not find key");
+	succeed_if (ks3.lookup("user/key3/3").getString() == "value", "value not correct");
+	succeed_if (ks3.size() == 3, "size not correct");
+
+	KeySet ks4;
+	ks4 = ks3;
+	succeed_if (ks4.lookup("user/key3/1"), "could not find key");
+	succeed_if (ks4.lookup("user/key3/2"), "could not find key");
+	succeed_if (ks4.lookup("user/key3/3"), "could not find key");
+	succeed_if (ks4.lookup("user/key3/3").getString() == "value", "value not correct");
+	succeed_if (ks4.size() == 3, "size not correct");
+
+	// ks3.toStream(stdout, 0);
+	// ks4.toStream(stdout, 0);
+}
+
 
 int main()
 {
@@ -812,6 +843,7 @@ int main()
 	test_ksccall();
 	test_ksrelease();
 	test_lookuppop();
+	test_duplicate();
 
 	cout << endl;
 	cout << "test_key RESULTS: " << nbTest << " test(s) done. " << nbError << " error(s)." << endl;

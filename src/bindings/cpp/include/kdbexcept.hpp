@@ -41,8 +41,8 @@ public:
 			// used either from namespace kdb or global
 			// namespace.
 			std::stringstream ss;
-			printError(ss, m_key);
 			printWarnings(ss, m_key);
+			printError(ss, m_key);
 			m_str = ss.str();
 		}
 		return m_str.c_str();

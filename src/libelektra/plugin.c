@@ -158,7 +158,7 @@ int elektraProcessPlugin(Key *cur, int *pluginNumber, char **pluginName, char **
 			return 2;
 		}
 	} else {
-		*pluginName = elektraMalloc (fullsize-2); /* dont alloc for #n */
+		*pluginName = elektraMalloc (fullsize-2); /* don't alloc for #n */
 		strncpy (*pluginName, &fullname[2],fullsize-2);
 
 		return 1;

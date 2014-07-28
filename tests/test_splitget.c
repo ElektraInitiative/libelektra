@@ -1,5 +1,5 @@
 /*************************************************************************** 
- *           test_splitset.c  - Test suite for splitted keyset data structure
+ *           test_splitset.c  - Test suite for split keyset data structure
  *                  -------------------
  *  begin                : Tue Jun 29 2010
  *  copyright            : (C) 2010 by Markus Raab

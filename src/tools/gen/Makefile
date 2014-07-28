@@ -26,31 +26,31 @@ util.py:util.tmpl
 	cheetah-compile util.tmpl
 
 lift.html:${GEN} specification.ini template.html
-	${GEN} specification.ini template.html > lift.html
+	${GEN} specification.ini template.html -o lift.html
 
 lift.3:${GEN} specification.ini template.man
-	${GEN} specification.ini template.man > lift.3
+	${GEN} specification.ini template.man -o lift.3
 
 lift.h:${GEN} specification.ini template.h c_support.py
-	${GEN} specification.ini template.h > lift.h
+	${GEN} specification.ini template.h -o lift.h
 
 lift.hpp:${GEN} specification.ini template.hpp
-	${GEN} specification.ini template.hpp > lift.hpp
+	${GEN} specification.ini template.hpp -o lift.hpp
 
 lift_nested.hpp:${GEN} specification.ini template_nested.hpp nested_support.py
-	${GEN} specification.ini template_nested.hpp > lift_nested.hpp
+	${GEN} specification.ini template_nested.hpp -o lift_nested.hpp
 
 lift_context.hpp:${GEN} specification.ini template_context.hpp context_support.py
-	${GEN} specification.ini template_context.hpp > lift_context.hpp
+	${GEN} specification.ini template_context.hpp -o lift_context.hpp
 
 visit_context.hpp:${GEN} visit_specification.ini template_context.hpp context_support.py
-	${GEN} visit_specification.ini template_context.hpp > visit_context.hpp
+	${GEN} visit_specification.ini template_context.hpp -o visit_context.hpp
 
 genopt.c:${GEN} specification.ini template_genopt.c opt_support.py
-	${GEN} specification.ini template_genopt.c > genopt.c
+	${GEN} specification.ini template_genopt.c -o genopt.c
 
 genopt.h:${GEN} specification.ini template_genopt.h opt_support.py
-	${GEN} specification.ini template_genopt.h > genopt.h
+	${GEN} specification.ini template_genopt.h -o genopt.h
 
 lift:lift.c lift.h genopt.c genopt.h
 	cc ${FLAGS} ${LDFLAGS} ${CFLAGS} -Wall -D _GNU_SOURCE lift.c genopt.c genopt.h lift.h ${ELEKTRA} -o lift

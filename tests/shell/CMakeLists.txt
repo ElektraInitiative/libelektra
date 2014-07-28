@@ -105,12 +105,8 @@ function (add_scripttest testname)
 endfunction (add_scripttest)
 
 if (INSTALL_TESTING)
-	#does not work with cmake 2.6
-	file (COPY data
-		DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-
 	install (
-		DIRECTORY "data/"
+		DIRECTORY "shell"
 		DESTINATION ${TARGET_TEST_DATA_FOLDER}
 	)
 endif (INSTALL_TESTING)

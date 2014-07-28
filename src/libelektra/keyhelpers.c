@@ -143,10 +143,10 @@ char *keyNameGetOneLevel(const char *name, size_t *size)
  * @see keyGetFullRootNameSize()
  * @ingroup keyname
  */
-ssize_t keyNameGetFullRootNameSize(const char *keyName)
+ssize_t keyNameGetFullRootNameSize(const char *name)
 {
 	char *end;
-	int length=strlen(keyName);
+	int length=strlen(name);
 
 	if (!length) return 0;
 
@@ -160,11 +160,11 @@ ssize_t keyNameGetFullRootNameSize(const char *keyName)
 		\.
 		(empty)
 	*/
-	end=strchr(keyName,KDB_PATH_SEPARATOR);
+	end=strchr(name,KDB_PATH_SEPARATOR);
 	if (!end) /* Reached end of string. Root is entire key. */
-		end = (char *)keyName + length;
+		end = (char *)name + length;
 
-	return end-keyName+1;
+	return end-name+1;
 }
 
 
@@ -249,9 +249,9 @@ ssize_t keyGetRootName(const Key *key, char *returned, size_t maxSize)
  * @see keyGetRootNameSize()
  * @ingroup keyname
  */
-ssize_t keyNameGetRootNameSize(const char *keyName)
+ssize_t keyNameGetRootNameSize(const char *name)
 {
-	int length=strlen(keyName);
+	int length=strlen(name);
 
 	if (!length) return 0;
 
@@ -269,8 +269,8 @@ ssize_t keyNameGetRootNameSize(const char *keyName)
 	(empty)
 	*/
 	
-	if (keyNameIsUser(keyName)) return sizeof("user");
-	else if (keyNameIsSystem(keyName)) return sizeof("system");
+	if (keyNameIsUser(name)) return sizeof("user");
+	else if (keyNameIsSystem(name)) return sizeof("system");
 	else {
 		/*errno=KDB_ERR_INVALIDKEY;*/
 		return -1;
@@ -464,10 +464,10 @@ ssize_t keyGetParentName(const Key *key, char *returnedParent, size_t maxSize)
  * @ingroup keytest
  *
  */
-int keyNameGetNamespace(const char *keyName)
+int keyNameGetNamespace(const char *name)
 {
-	if (keyNameIsSystem(keyName)) return KEY_NS_SYSTEM;
-	if (keyNameIsUser(keyName)) return KEY_NS_USER;
+	if (keyNameIsSystem(name)) return KEY_NS_SYSTEM;
+	if (keyNameIsUser(name)) return KEY_NS_USER;
 	return 0;
 }
 
@@ -501,9 +501,9 @@ int keyGetNamespace(const Key *key)
  * @ingroup keyname
  *
  */
-int keyNameIsSystem(const char *keyName)
+int keyNameIsSystem(const char *name)
 {
-	if (!strncmp("system",keyName,sizeof("system")-1)) return 1;
+	if (!strncmp("system",name,sizeof("system")-1)) return 1;
 	return 0;
 }
 
@@ -517,9 +517,9 @@ int keyNameIsSystem(const char *keyName)
  * @ingroup keyname
  *
  */
-int keyNameIsUser(const char *keyName)
+int keyNameIsUser(const char *name)
 {
-	if (!strncmp("user",keyName,sizeof("user")-1)) return 1;
+	if (!strncmp("user",name,sizeof("user")-1)) return 1;
 	return 0;
 }
 

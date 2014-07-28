@@ -92,7 +92,7 @@ int elektraTracerGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			keyNew ("system/elektra/modules/tracer/infos/description",
 				KEY_VALUE, "The first plugin", KEY_END),
 			keyNew ("system/elektra/modules/tracer/infos/provides",
-				KEY_VALUE, "", KEY_END),
+				KEY_VALUE, "logging", KEY_END),
 			keyNew ("system/elektra/modules/tracer/infos/needs",
 				KEY_VALUE, "", KEY_END),
 			keyNew ("system/elektra/modules/tracer/infos/placements",

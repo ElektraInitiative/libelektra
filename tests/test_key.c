@@ -821,10 +821,10 @@ void test_keyName()
 	succeed_if (strcmp (keyName(key), "user") == 0, "Name Problem: Double Dot as basename");
 
 	keySetName(key,"user/..");
-	succeed_if (strcmp (keyName(key), "user") == 0, "Name Problem: Can't go higher then user in hierachy");
+	succeed_if (strcmp (keyName(key), "user") == 0, "Name Problem: Can't go higher then user in hierarchy");
 
 	keySetName(key,"user/hidden/../..");
-	succeed_if (strcmp (keyName(key), "user") == 0, "Name Problem: Can't go higher then user in hierachy");
+	succeed_if (strcmp (keyName(key), "user") == 0, "Name Problem: Can't go higher then user in hierarchy");
 
 	succeed_if (keySetName(key, "user///sw/../sw//././MyApp")==sizeof("user/sw/MyApp"), "could not set keySet example");
 	succeed_if (strcmp (keyName(key), "user/sw/MyApp") == 0, "Example of keySet does not work");

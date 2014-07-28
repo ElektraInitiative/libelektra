@@ -157,13 +157,14 @@ int main(int argc, char**argv)
 		std::cerr << "The command "
 			<< command
 			<< " terminated unsuccessfully with the info: "
+			<< std::endl
 			<< ce.what()
 			<< std::endl;
 		return 6;
 	}
 	catch (...)
 	{
-		std::cerr << "Unkown error" << std::endl;
+		std::cerr << "Unknown error" << std::endl;
 		displayHelp(argv[0], f.getCommands());
 		return 7;
 	}

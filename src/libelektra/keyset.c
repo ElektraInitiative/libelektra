@@ -496,6 +496,50 @@ int keyCmp (const Key *k1, const Key *k2)
 }
 
 /**
+ * Compare the order metadata of two keys.
+ *
+ * @return a number less than, equal to or greater than zero if
+ *    the order of k1 is found, respectively, to be less than,
+ *    to match, or be greater than the order of k2. If one key is
+ *    NULL, but the other isn't, the key which is not NULL is considered
+ *    to be greater. If both keys are NULL, they are
+ *    considered to be equal. If one key does have an order
+ *    metadata but the other has not, the key with the metadata
+ *    is considered greater. If no key has metadata,
+ *    they are considered to be equal.
+ */
+int elektraKeyCmpOrder(const Key *ka, const Key *kb)
+{
+
+	if (!ka && !kb) return 0;
+
+	if (ka && !kb) return 1;
+
+	if (!ka && kb) return -1;
+
+	int aorder = -1;
+	int border = -1;
+
+	const Key *kam = keyGetMeta (ka, "order");
+	const Key *kbm = keyGetMeta (kb, "order");
+
+	if (kam) aorder = atoi (keyString (kam));
+	if (kbm) border = atoi (keyString (kbm));
+
+	if (aorder > 0 && border > 0) return aorder - border;
+
+	if (aorder < 0 && border < 0) return 0;
+
+	if (aorder < 0 && border >= 0) return -1;
+
+	if (aorder >= 0 && border < 0) return 1;
+
+	/* cannot happen anyway */
+	return 0;
+}
+
+
+/**
  * @internal
  *
  * Checks if KeySet needs sync.
@@ -639,12 +683,14 @@ ssize_t ksSearchInternal(const KeySet *ks, const Key *toAppend)
  *
  * The KeySet internal cursor will be set to the new key.
  *
+ * It is save to use ksAppendKey(ks, keyNew(..)).
+ *
  *
  * @return the size of the KeySet after insertion
  * @return -1 on NULL pointers
  * @return -1 if insertion failed, the key will be deleted then.
  * @param ks KeySet that will receive the key
- * @param toAppend Key that will be appended to ks
+ * @param toAppend Key that will be appended to ks or deleted
  * @see ksAppend(), keyNew(), ksDel()
  * @see keyIncRef()
  *
@@ -657,6 +703,7 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
 	if (!toAppend) return -1;
 	if (!toAppend->key)
 	{
+		// needed for ksAppendKey(ks, keyNew(0))
 		keyDel (toAppend);
 		return -1;
 	}
@@ -727,7 +774,7 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
  * @return the size of the KeySet after transfer
  * @return -1 on NULL pointers
  * @param ks the KeySet that will receive the keys
- * @param toAppend the KeySet that provides the keys that will be transfered
+ * @param toAppend the KeySet that provides the keys that will be transferred
  * @see ksAppendKey()
  * 
  */
@@ -976,6 +1023,47 @@ Key *ksPop(KeySet *ks)
 	return ret;
 }
 
+/**
+ * Builds an array of pointers to the keys in the supplied keyset.
+ * The keys are not copied, calling keyDel may remove them from
+ * the keyset.
+ *
+ * The size of the buffer can be easily allocated via ksGetSize. Example:
+ * @code
+ * KeySet *ks = somekeyset;
+ * Key **keyArray = calloc (ksGetSize(ks), sizeof (Key *));
+ * elektraKsToMemArray (ks, keyArray);
+ * ... work with the array ...
+ * free (keyArray);
+ * @endcode
+ *
+ * @param ks the keyset object to work with
+ * @param buffer the buffer to put the result into
+ * @return the number of elements in the array if successful
+ * @return a negative number on null pointers or if an error occurred
+ */
+int elektraKsToMemArray(KeySet *ks, Key **buffer)
+{
+	if (!ks) return -1;
+	if (!buffer) return -1;
+
+	/* clear the received buffer */
+	memset (buffer, 0, ksGetSize (ks) * sizeof(Key *));
+
+	cursor_t cursor = ksGetCursor (ks);
+	ksRewind (ks);
+	size_t index = 0;
+
+	Key *key;
+	while ((key = ksNext (ks)) != 0)
+	{
+		buffer[index] = key;
+		++index;
+	}
+	ksSetCursor (ks, cursor);
+
+	return index;
+}
 
 
 /*******************************************
@@ -1202,7 +1290,7 @@ cursor_t ksGetCursor(const KeySet *ks)
  * @brief return key at given cursor position
  *
  * @param ks the keyset to pop key from
- * @param c where to get
+ * @param pos where to get
  * @return the key at the cursor position on success
  * @retval NULL on NULL pointer, negative cursor position
  * or a position that does not lie within the keyset
@@ -1633,7 +1721,7 @@ if ((myKey = ksLookupByName (myConfig, "/myapp/current/specific/key", 0)) == NUL
  * 	Currently no options supported.
  * @return pointer to the Key found, 0 otherwise
  * @return 0 on NULL pointers
- * @see keyCompare() for very powerfull Key lookups in KeySets
+ * @see keyCompare() for very powerful Key lookups in KeySets
  * @see ksCurrent(), ksRewind(), ksNext()
  */
 Key *ksLookupByName(KeySet *ks, const char *name, option_t options)
@@ -1712,7 +1800,7 @@ while (key=ksLookupByString(ks,"my value",0))
  * 	  Lookup ignoring case.
  * @return the Key found, 0 otherwise
  * @see ksLookupByBinary()
- * @see keyCompare() for very powerfull Key lookups in KeySets
+ * @see keyCompare() for very powerful Key lookups in KeySets
  * @see ksCurrent(), ksRewind(), ksNext()
  */
 Key *ksLookupByString(KeySet *ks, const char *value, option_t options)
@@ -1772,7 +1860,7 @@ Key *ksLookupByString(KeySet *ks, const char *value, option_t options)
  * @return the Key found, NULL otherwise
  * @return 0 on NULL pointer
  * @see ksLookupByString()
- * @see keyCompare() for very powerfull Key lookups in KeySets
+ * @see keyCompare() for very powerful Key lookups in KeySets
  * @see ksCurrent(), ksRewind(), ksNext()
  */
 Key *ksLookupByBinary(KeySet *ks, const void *value, size_t size,

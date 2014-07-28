@@ -74,17 +74,13 @@ void test_hostLensRead(char *fileName)
 
 void test_hostLensWrite(char *fileName)
 {
-	char * fileNameCompare = malloc (strlen (fileName) + 6);
-	strcpy (fileNameCompare, fileName);
-	strcat (fileNameCompare, ".comp");
-
 	Key *parentKey = keyNew ("user/tests/augeas-hosts", KEY_VALUE,
-			srcdir_file (fileNameCompare), KEY_END);
+			elektraFilename(), KEY_END);
 	KeySet *conf = ksNew (20,
 			keyNew ("system/lens", KEY_VALUE, "Hosts.lns", KEY_END), KS_END);
 	PLUGIN_OPEN("augeas");
 
-	KeySet *ks = ksNew (30, keyNew ("user/tests/augeas-hosts/1"),
+	KeySet *ks = ksNew (30, keyNew ("user/tests/augeas-hosts/1", KEY_END),
 			keyNew ("user/tests/augeas-hosts/1/ipaddr", KEY_VALUE, "127.0.0.1",
 					KEY_META, "order", "10", KEY_END),
 			keyNew ("user/tests/augeas-hosts/1/canonical", KEY_VALUE,
@@ -117,22 +113,77 @@ void test_hostLensWrite(char *fileName)
 	succeed_if(output_error (parentKey), "error in kdbSet");
 	succeed_if(output_warnings (parentKey), "warnings in kdbSet");
 
-	free (fileNameCompare);
-
 	succeed_if(
 			compare_line_files (srcdir_file (fileName), keyString (parentKey)),
 			"files do not match as expected");
 
+	elektraUnlink(keyString (parentKey));
+
 	ksDel (ks);
+
+	PLUGIN_CLOSE ();
+}
+
+void test_hostLensDelete(char *sourceFile, char *compFile)
+{
+	Key *parentKey = keyNew ("user/tests/augeas-hosts", KEY_VALUE,
+			srcdir_file (sourceFile), KEY_END);
+	KeySet *conf = ksNew (20,
+			keyNew ("system/lens", KEY_VALUE, "Hosts.lns", KEY_END), KS_END);
+	PLUGIN_OPEN("augeas");
+
+	KeySet *ks = ksNew (0);
+
+	succeed_if(plugin->kdbGet (plugin, ks, parentKey) >= 1,
+			"call to kdbGet was not successful");
+	succeed_if(output_error (parentKey), "error in kdbGet");
+	succeed_if(output_warnings (parentKey), "warnings in kdbGet");
+
+	Key *key = ksLookupByName (ks, "user/tests/augeas-hosts/1", 0);
+	exit_if_fail(key, "localhost not found");
+	ksPopAtCursor(ks, ksGetCursor(ks));
+	keyDel (key);
+
+	key = ksLookupByName (ks, "user/tests/augeas-hosts/1/ipaddr", 0);
+	exit_if_fail(key, "ip address of localhost not found");
+	ksPopAtCursor(ks, ksGetCursor(ks));
+	keyDel (key);
+
+	key = ksLookupByName (ks, "user/tests/augeas-hosts/1/canonical", 0);
+	exit_if_fail(key, "canonical of localhost not found");
+	ksPopAtCursor(ks, ksGetCursor(ks));
+	keyDel (key);
+
+	key = ksLookupByName (ks, "user/tests/augeas-hosts/1/#comment", 0);
+	exit_if_fail(key, "comment of localhost not found");
+	ksPopAtCursor(ks, ksGetCursor(ks));
+	keyDel (key);
+
+	keySetString (parentKey, elektraFilename());
+
+	succeed_if(plugin->kdbSet (plugin, ks, parentKey) == 1,
+			"kdbSet was not successful");
+	succeed_if(output_error (parentKey), "error in kdbSet");
+	succeed_if(output_warnings (parentKey), "warnings in kdbSet");
+
+	succeed_if(
+			compare_line_files (srcdir_file (compFile), keyString (parentKey)),
+			"files do not match as expected");
+
+	ksDel (ks);
+
+	elektraUnlink(keyString (parentKey));
+	keyDel (parentKey);
 
 	PLUGIN_CLOSE ()
 	;
+
 }
 
-void test_hostLensModify(char *fileName)
+void test_hostLensModify(char *sourceFile, char *compFile)
 {
 	Key *parentKey = keyNew ("user/tests/augeas-hosts", KEY_VALUE,
-			srcdir_file (fileName), KEY_END);
+			srcdir_file (sourceFile), KEY_END);
 	KeySet *conf = ksNew (20,
 			keyNew ("system/lens", KEY_VALUE, "Hosts.lns", KEY_END), KS_END);
 	PLUGIN_OPEN("augeas");
@@ -156,24 +207,20 @@ void test_hostLensModify(char *fileName)
 	exit_if_fail(key, "line comment not found");
 	keySetString (key, "line comment modified");
 
-	char * fileNameCompare = malloc (strlen (fileName) + 6);
-	strcpy (fileNameCompare, fileName);
-	strcat (fileNameCompare, ".comp");
-
-	keySetString (parentKey, srcdir_file(fileNameCompare));
+	keySetString (parentKey, elektraFilename());
 
 	succeed_if(plugin->kdbSet (plugin, ks, parentKey) == 1,
 			"kdbSet was not successful");
 	succeed_if(output_error (parentKey), "error in kdbSet");
 	succeed_if(output_warnings (parentKey), "warnings in kdbSet");
 
-	free (fileNameCompare);
-
 	succeed_if(
-			compare_line_files (srcdir_file (fileName), keyString (parentKey)),
+			compare_line_files (srcdir_file (compFile), keyString (parentKey)),
 			"files do not match as expected");
 
 	PLUGIN_CLOSE ();
+
+	elektraUnlink(keyString (parentKey));
 
 	ksDel (ks);
 	keyDel (parentKey);
@@ -254,6 +301,42 @@ void test_order(char *fileName)
 	PLUGIN_CLOSE() ;
 }
 
+void test_hostLensFormatting(char *fileName)
+{
+	Key *parentKey = keyNew ("user/tests/augeas-hosts", KEY_VALUE,
+			srcdir_file (fileName), KEY_END);
+	KeySet *conf = ksNew (20,
+			keyNew ("system/lens", KEY_VALUE, "Hosts.lns", KEY_END), KS_END);
+	PLUGIN_OPEN("augeas");
+
+	KeySet *ks = ksNew (0);
+
+	succeed_if(plugin->kdbGet (plugin, ks, parentKey) >= 1,
+			"call to kdbGet was not successful");
+	succeed_if(output_error (parentKey), "error in kdbGet");
+	succeed_if(output_warnings (parentKey), "warnings in kdbGet");
+
+	keySetString (parentKey, elektraFilename());
+
+	succeed_if(plugin->kdbSet (plugin, ks, parentKey) == 1,
+			"kdbSet was not successful");
+	succeed_if(output_error (parentKey), "error in kdbSet");
+	succeed_if(output_warnings (parentKey), "warnings in kdbSet");
+
+	succeed_if(
+			compare_line_files (srcdir_file (fileName), keyString (parentKey)),
+			"files do not match as expected");
+
+	elektraUnlink(keyString (parentKey));
+	keyDel (parentKey);
+	ksDel (ks);
+
+
+	PLUGIN_CLOSE ()
+	;
+
+}
+
 int main(int argc, char** argv)
 {
 	printf ("AUGEAS       TESTS\n");
@@ -261,10 +344,12 @@ int main(int argc, char** argv)
 
 	init (argc, argv);
 
-	test_hostLensRead ("testdata/hosts-read");
-	test_hostLensWrite ("testdata/hosts-write");
-	test_hostLensModify ("testdata/hosts-modify");
-	test_order ("testdata/hosts-big");
+	test_hostLensRead ("augeas/hosts-read");
+	test_hostLensWrite ("augeas/hosts-write");
+	test_hostLensModify ("augeas/hosts-modify-in", "augeas/hosts-modify");
+	test_hostLensDelete ("augeas/hosts-delete-in", "augeas/hosts-delete");
+	test_hostLensFormatting("augeas/hosts-formatting");
+	test_order ("augeas/hosts-big");
 
 	printf ("\ntest_hosts RESULTS: %d test(s) done. %d error(s).\n", nbTest,
 			nbError);

@@ -248,7 +248,8 @@ void test_value ()
 	succeed_if (test.getString() == "", "String should be empty");
 
 	test.setString ("23.3");
-	succeed_if (test.get<double> () == 23.3, "could not get same double");
+	succeed_if (test.get<double> () >= 23.2, "could not get same double");
+	succeed_if (test.get<double> () <= 23.4, "could not get same double");
 	succeed_if (test.getBinarySize () == 5, "value size not correct");
 
 	test.setString ("401");
@@ -346,14 +347,29 @@ void test_name()
 	test.setBaseName ("mykey");
 	succeed_if (test.getName() == "user/dir/mykey", "Basename did not work");
 	test.setName (test.getName() + "/onedeeper"); // add basename is trivial
+	succeed_if (test.getName().find('/') == 4, "user length"); // keyGetRootNameSize trivial
+
+	// so we finally got a name, lets test below
 	succeed_if (test.getName() == "user/dir/mykey/onedeeper", "Basename did not work");
 
-	succeed_if (test.getName().find('/') == 4, "user length"); // keyGetRootNameSize trivial
-	succeed_if (test.isBelow (Key("user/dir/mykey/onedeeper/below", KEY_END)), "key is below");
-	succeed_if (!test.isBelow (Key("user/dir/mykey/twodeeper/below", KEY_END)), "key is below");
-	succeed_if (test.isDirectBelow (Key("user/dir/mykey/onedeeper/below", KEY_END)), "key is direct below");
-	succeed_if (!test.isDirectBelow (Key("user/dir/mykey/onedeeper/twodeeper/below", KEY_END)), "key is direct below");
-	succeed_if (!test.isDirectBelow (Key("user/dir/mykey/twodeeper/below", KEY_END)), "key is direct below");
+	succeed_if (test.isBelow (Key("user", KEY_END)), "key is below");
+	succeed_if (test.isBelow (Key("user/dir", KEY_END)), "key is below");
+	succeed_if (test.isBelow (Key("user/dir/mykey", KEY_END)), "key is below");
+	succeed_if (!test.isBelow (Key("user/dir/mykey/onedeeper", KEY_END)), "key is not below (but same)");
+	succeed_if (!test.isBelow (Key("user/otherdir", KEY_END)), "key is not below");
+
+	succeed_if (test.isBelowOrSame (Key("user", KEY_END)), "key is below");
+	succeed_if (test.isBelowOrSame (Key("user/dir", KEY_END)), "key is below");
+	succeed_if (test.isBelowOrSame (Key("user/dir/mykey", KEY_END)), "key is below");
+	succeed_if (test.isBelowOrSame (Key("user/dir/mykey/onedeeper", KEY_END)), "key is same");
+	succeed_if (!test.isBelowOrSame (Key("user/otherdir", KEY_END)), "key is not below");
+
+	succeed_if (test.isDirectBelow (Key("user/dir/mykey", KEY_END)), "key is direct below");
+	succeed_if (!test.isDirectBelow (Key("user/dir/test", KEY_END)), "key is not direct below");
+	succeed_if (!test.isDirectBelow (Key("user/dir", KEY_END)), "key is not direct below");
+	succeed_if (!test.isDirectBelow (Key("user/dir/otherdir", KEY_END)), "key is not direct below");
+	succeed_if (!test.isDirectBelow (Key("user/otherdir", KEY_END)), "key is not direct below");
+	succeed_if (!test.isDirectBelow (Key("user", KEY_END)), "key is not direct below");
 }
 
 void f(Key)

@@ -42,7 +42,7 @@ int elektraJournaldGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *par
 		keyNew ("system/elektra/modules/journald/infos/description",
 			KEY_VALUE, "Logs set and error calls to journald", KEY_END),
 		keyNew ("system/elektra/modules/journald/infos/provides",
-			KEY_VALUE, "filter", KEY_END),
+			KEY_VALUE, "logging", KEY_END),
 		keyNew ("system/elektra/modules/journald/infos/placements",
 			KEY_VALUE, "postcommit postrollback", KEY_END),
 		keyNew ("system/elektra/modules/journald/infos/needs",

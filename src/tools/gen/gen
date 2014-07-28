@@ -23,10 +23,10 @@ def main():
 		help="A meta configuration file that describes the configuration")
 	parser.add_argument("template",
 		help="The template file for cheetah")
-	parser.add_argument("--verbose",
+	parser.add_argument("-v", "--verbose",
 		help="Prints the specification",
 		action="store_true")
-	parser.add_argument("--output",
+	parser.add_argument("-o", "--output",
 		help="Write the evaluated file to given file (- for stdout)",
 		default='-')
 	args = parser.parse_args()

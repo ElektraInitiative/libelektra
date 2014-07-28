@@ -33,6 +33,12 @@ int ExportCommand::execute(Cmdline const& cl)
 
 	KeySet part (ks.cut(root));
 
+	if (cl.withoutElektra)
+	{
+		Key systemElektra("system/elektra", KEY_END);
+		part.cut(systemElektra);
+	}
+
 	string format = "dump";
 	if (argc > 1) format = cl.arguments[1];
 
@@ -42,7 +48,7 @@ int ExportCommand::execute(Cmdline const& cl)
 	Modules modules;
 	PluginPtr plugin = modules.load(format);
 
-	Key errorKey;
+	Key errorKey(root);
 	errorKey.setString(file);
 
 	plugin->set(part, errorKey);

@@ -1,6 +1,6 @@
 include(CheckIncludeFile)
 include(CheckSymbolExists)
-INCLUDE (CheckTypeSize)
+include(CheckTypeSize)
 
 check_symbol_exists(clearenv     "stdlib.h"         HAVE_CLEARENV)
 check_symbol_exists(setenv       "stdlib.h"         HAVE_SETENV)
@@ -21,6 +21,8 @@ check_type_size("long double"   SIZEOF_LONG_DOUBLE)
 
 set (BUILTIN_EXEC_FOLDER
 	"${CMAKE_INSTALL_PREFIX}/${TARGET_TOOL_EXEC_FOLDER}")
+set (BUILTIN_DATA_FOLDER
+	"${CMAKE_INSTALL_PREFIX}/${TARGET_TEST_DATA_FOLDER}")
 set (ELEKTRA_DEPRECATED "__attribute__ ((deprecated))")
 set (ELEKTRA_UNUSED "__attribute__ ((unused))")
 

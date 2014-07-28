@@ -29,7 +29,7 @@
 
 void test_readhosts()
 {
-	char * filename = srcdir_file("hosts");
+	char * filename = srcdir_file("hosts/hosts");
 	Key * parentKey = keyNew ("user/tests/hosts", KEY_VALUE, filename, KEY_END);
 	KeySet *conf = 0;
 	PLUGIN_OPEN("hosts");

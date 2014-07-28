@@ -43,8 +43,7 @@ commands below work for copy&paste:
 
 Now lets merge that to the release branch:
  git-checkout release
- git-merge --no-ff master
- git-commit --amend -m "Merge for release $VERSION"
+ git-merge --no-ff master -m "Merge for release $VERSION"
 
 
 == Prepare Source Package ==
@@ -66,7 +65,7 @@ export DVERSION=$VERSION-1
 
 Build deb:
  git-checkout debian
- git-merge --no-ff release
+ git-merge --no-ff release -m "Merge for debian release $DVERSION"
 
  dch --newversion $DVERSION "New upstream version."
  git-add debian/changelog
@@ -78,6 +77,7 @@ Fix debian/ + document in NEWS what maintainer need to consider, then build the 
 
 Now move and install:
  cd ~elektra && mkdir deb/$DVERSION && mv elektra_$DVERSION* deb/$DVERSION && mv *.deb deb/$DVERSION && sudo dpkg -i deb/$DVERSION/*.deb
+ mv elektra_$VERSION.orig.tar.gz deb/$DVERSION/
 
 
 Run some basic commands, at least:
@@ -87,7 +87,7 @@ Run local tests:
  kdb run_all
 
 Now run lintian:
- lintian -EI --color=auto --pedantic deb/$DVERSION/elektra_$DVERSION-1_*.changes
+ lintian -EI --color=auto --pedantic deb/$DVERSION/elektra_$VERSION_*.changes
 
 And run piuparts:
  sudo piuparts deb/$DVERSION/elektra_$DVERSION_*.changes
@@ -125,7 +125,7 @@ Symlink current to latest version and add everything:
 
 == Debian Package ==
 
- cd ~elektra/deb/$VERSION && reprepro --ignore=wrongdistribution include wheezy elektra_$VERSION-1_amd64.changes && update-reprepro
+ cd ~elektra/deb/$DVERSION && reprepro --ignore=wrongdistribution include wheezy elektra_$VERSION-1_amd64.changes && update-reprepro
 
 == Commit source package ==
 
@@ -149,11 +149,10 @@ Push elektra-doc to gitorious:
 
 == Announce ==
 
-Write NEWS for new release (do not forget to add links where to download release):
- editor doc/NEWS
+git checkout master
 
-Maybe also generate a ChangeLog?
- git log --first-parent master > ~e/doc/ChangeLog
+Finish NEWS for new release (do not forget to add links where to download release):
+ editor doc/NEWS
 
 Finally check links and send out mail to list
 (Personal notice: see also NOTIFY)

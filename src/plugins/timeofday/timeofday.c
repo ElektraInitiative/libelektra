@@ -147,7 +147,7 @@ int elektraTimeofdayGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			keyNew ("system/elektra/modules/timeofday/infos/description",
 				KEY_VALUE, "Prints timestamps when a method is called", KEY_END),
 			keyNew ("system/elektra/modules/timeofday/infos/provides",
-				KEY_VALUE, "timeofday", KEY_END),
+				KEY_VALUE, "logging", KEY_END),
 			keyNew ("system/elektra/modules/timeofday/infos/placements",
 				KEY_VALUE, "pregetstorage postgetstorage presetstorage precommit postcommit prerollback postrollback", KEY_END),
 			keyNew ("system/elektra/modules/timeofday/infos/needs",

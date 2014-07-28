@@ -107,7 +107,7 @@ BEGIN_TEST(tree)
    Ni_Free(node);
 END_TEST()
 
-BEGIN_TEST(values)
+BEGIN_TEST(test_values)
    Ni_node node = Ni_New();
    assert(node != NULL);
 
@@ -446,7 +446,7 @@ int main()
 	TEST(ver);
 	TEST(new);
 	TEST(tree);
-	TEST(values);
+	TEST(test_values);
 	TEST(parse_spaces_quotes);
 	TEST(output);
 	TEST(output_modified);

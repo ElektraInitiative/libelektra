@@ -21,7 +21,7 @@ Backends::BackendInfoVector Backends::getBackendInfo(KeySet mountConf)
 	mountConf.rewind();
 	while (cur = mountConf.next())
 	{
-		if (rootKey.isDirectBelow(cur))
+		if (cur.isDirectBelow(rootKey))
 		{
 			BackendInfo bi;
 
