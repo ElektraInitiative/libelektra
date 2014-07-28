@@ -160,8 +160,8 @@ static void flushConvertedKeys(Key *target, KeySet *converted, KeySet *orig)
 
 static KeySet *convertKeys(Key **keyArray, size_t numKeys, KeySet *orig)
 {
-	Key *current;
-	Key *prevAppendTarget;
+	Key *current = 0;
+	Key *prevAppendTarget = 0;
 	KeySet *prevConverted = ksNew (0);
 	KeySet *nextConverted = ksNew (0);
 	KeySet *result = ksNew (0);

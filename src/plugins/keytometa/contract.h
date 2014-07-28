@@ -20,7 +20,7 @@ ksNew (30,
 			keyNew ("system/elektra/modules/keytometa/exports/set",
 				KEY_FUNC, elektraKeyToMetaSet,
 				KEY_END),
-#include "README.c"
+#include "readme_keytometa.c"
 			keyNew ("system/elektra/modules/keytometa/infos",
 				KEY_VALUE, "All information you want to know", KEY_END),
 			keyNew ("system/elektra/modules/keytometa/infos/version",

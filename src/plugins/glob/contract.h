@@ -29,7 +29,9 @@ ksNew (30,
 		keyNew ("system/elektra/modules/glob/exports/elektraGlobMatch",
 			KEY_FUNC, elektraGlobMatch,
 			KEY_END),
-#include "README.c"
+#include "readme_glob.c"
+		keyNew ("system/elektra/modules/glob/infos/ordering",
+			KEY_VALUE, "check", KEY_END),
 		keyNew ("system/elektra/modules/glob/infos/version",
 			KEY_VALUE, PLUGINVERSION, KEY_END),
 		KS_END);

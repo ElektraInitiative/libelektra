@@ -3,6 +3,7 @@
 - infos/licence = BSD
 - infos/needs =
 - infos/ordering = check
+- infos/provides = 
 - infos/placements = presetstorage postgetstorage
 - infos/description = copies metadata to keys with the help of globbing
 
