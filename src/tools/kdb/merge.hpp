@@ -30,7 +30,7 @@ public:
 
 	virtual std::string getSynopsis()
 	{
-		return "[options] ourpath theirpath basepath [mergepath]";
+		return "[options] ourpath theirpath basepath resultpath";
 	}
 
 	virtual std::string getShortHelpText()
@@ -50,8 +50,8 @@ public:
 			"ourpath ..    path to the keyset to serve as ours\n"
 			"theirpath ..  path to the keyset to serve as theirs\n"
 			"basepath ..   path to the base keyset\n"
-			"mergepath ..  path without keys where the merged keyset will be saved\n"
-			"              (if omitted -b must be given)\n"
+			"resultpath .. path without keys where the merged keyset will be saved\n"
+			"              (use -b to override results)\n"
 			;
 	}
 
