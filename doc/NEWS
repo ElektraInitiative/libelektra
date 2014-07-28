@@ -21,22 +21,26 @@ its infancy. More information about GSoC and its progress can be found
 
 A special thanks to  Felix Berlakovich for his contributions to the
 3-way merge, including meta merging, conflict resolving strategies and
-the extensive testing.
+extensive testing.
 
-Additionally he added the plugin keytometa and greatly improved the glob
-plugin. These plugins are technical previews and will receive some
-improvements in the next release, too.
+Additionally, he added the plugins keytometa, ini and greatly improved
+the glob plugin. These plugins are technical previews and will receive
+some improvements in the next release, too.
 
 Now a script for tab completion is available
 [here](/scripts/scripts/kdb-bash-completion), again thanks to Felix
 Berlakovich.
 
+The contextual values now got a [tutorial]
+(https://github.com/ElektraInitiative/libelektra/tree/master/src/tools/gen)
+and small fixes.
+
 
 ## Corrections ##
 
 Thanks to Pino Toscano for fixing a lot of spelling errors, simplify
-RPATH setting, improvements of test cases, and his debian-packaging
-efforts.
+RPATH setting, respect $HOME and $TMPDIR, improvements of test cases,
+and his debian-packaging efforts.
 
 In the kdb tool not allowed subfolders are now checked properly
 and the output of warnings comes before output of the error.
@@ -50,7 +54,9 @@ Fix kdb import/export for some plugins (Should now work with any storage
 plugin again).
 
 kdb run_all should run flawlessly with this release. Remaining problems
-with not installed test data were fixed.
+with not installed test data were fixed. kdb run_all also checks if the
+test cases do not modify any existing key and keeps a backup if this
+happened.
 
 Some remaining mem leaks in rare circumstances were fixed. Valgrind
 should now never report any leaks, if it does, please report the issue.
@@ -85,7 +91,7 @@ can be in multiple data structures because of their reference counting.
 We now fully embrace github:
 - We use its issue tracker (all issues from local text files were moved
   there)
-- We have rewritten most READMEs to use githubs markdown
+- We have rewritten many READMEs to use githubs markdown
 - On pull requests the build server checks if the merge would break
   the build.
 - All previous gitorious users are now at github. (Most had an account
@@ -96,21 +102,22 @@ model that implements great parts of Elektra's features. Unfortunately
 the model cannot be serialised and thus changes cannot made persistent.
 Also undo and other important use-cases are still not there. The GUI
 looks very clean and was evaluated in a SUS study on 23.07.2014.
-The current implementation can be found at
-[]().
+The current implementation can be found [here]
+(https://github.com/0003088/qt-gui).
 
-Many distributions already have elektra packages
+Many distributions already have Elektra packages
  - [Fedora](https://admin.fedoraproject.org/pkgdb/package/elektra/)
  - [Gentoo](http://packages.gentoo.org/package/app-admin/elektra)
  - [Arch Linux](https://aur.archlinux.org/packages/elektra/)
 
 In some distributions Elektra packages are available, but are not
-up-to-date. Pino Toscano is working on get them up-to-date.
+up-to-date. Pino Toscano is working on get them (actually 
+Debian, but others are derived from it) up-to-date.
  - [Ubuntu](https://launchpad.net/ubuntu/+source/elektra)
  - [Debian](https://packages.debian.org/de/wheezy/libelektra3)
  - [Linux Mint](http://community.linuxmint.com/software/view/elektra)
 
-A special thanks to Kai-Uwe Behrmann for provides packages for
+A special thanks to Kai-Uwe Behrmann for providing packages for
 [CentOS, Fedora, OpenSUSE, RHEL and
 SLE](http://software.opensuse.org/download.html?project=home%3Abekun&package=elektra).
 
