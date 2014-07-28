@@ -89,10 +89,10 @@ Run local tests:
  kdb run_all
 
 Now run lintian:
- lintian -EI --color=auto --pedantic deb/$DVERSION/elektra_$VERSION_*.changes
+ lintian -EI --color=auto --pedantic deb/$DVERSION/elektra_${VERSION}_*.changes
 
 And run piuparts:
- sudo piuparts deb/$DVERSION/elektra_$DVERSION_*.changes
+ sudo piuparts deb/$DVERSION/elektra_${DVERSION}_*.changes
 
 And run adequate (combined with piuparts and after installation)
  adequate '*elektra*'
@@ -127,7 +127,7 @@ Symlink current to latest version and add everything:
 
 == Debian Package ==
 
- cd ~elektra/deb/$DVERSION && reprepro --ignore=wrongdistribution include wheezy elektra_$DVERSION_amd64.changes && update-reprepro
+ cd ~elektra/deb/$DVERSION && reprepro --ignore=wrongdistribution include wheezy elektra_${DVERSION}_amd64.changes && update-reprepro
 
 == Commit source package ==
 
