@@ -1,25 +1,18 @@
-Plugins to be added for current releases.
-Implement and test easy to implement, but useful plugins
-as many different plugins as possible.
-Prefer using great frameworks to do that in short time.
+Ideas for new PLUGINS in elektra.
+Prefer using great frameworks to do that in short time with high quality.
 
 
-== export BUILD INFORMATION ==
+# Information Plugins #
+
+Idea: expose information of OS or Elektra to the user.
+
+## export BUILD INFORMATION ##
 
 similar to KDB_VERSION constants, all other CMake constants of the
 elektra installation should be included in a plugin like version
 
 
-== VERSION IN CONTRACT ==
-
-Configure file for plugin.h
-with defines for verbosity, configuration, version numbers + contract in
-static inline function
-with licence, author in contract
-Everything also in constants/build_info
-add dependencies in contract?
-
-== Contract on Plugin configuration ==
+## Contract on Plugin configuration ##
 
 do not only depend on "provides" but on configuration another plugin
 provides. This option would allow to add multiple plugins with same
@@ -27,19 +20,11 @@ functionality, but only one is configured to do it actually.
 * type checker
 * encoding
 
-
-== name conversion ==
-
-rebase plugin:
-	remove/add a common prefix after parentKey
-
-trim
-lowercase
-encoding
+Contract-Checker (linking against libtools) should be plugin too
+	makes sure only valid backend configurations are written
 
 
-
-== OS abstraction ==
+## OS abstraction ##
 
 chdir/getcwd
 chroot
@@ -47,61 +32,73 @@ hostname
 uname also to set
 ulimit
 
-== global plugins ==
-
-needed for global constraints, notifications, remappings and so on
-
-== plugin commands ==
-
-metadata that is evaluated by plugins
-
-selective commit phases:
-	define phases, minimum:
-	commit
-	check
-
-norecursive:
-	only fetch a single plugin without recursion
-
-== DISTRIBUTOR BACKENDS ==
-
-can be used as default using symlinks
-
-1.st level citizen
-	allow resolver only (one plugin for backend to be able to hierarchically stack backends)
-	share modules globally (to allow loading of module within module)
-
-mount: current implementation
-mount-mpi: current implementation, but multithreaded
-filesystem: implementation compatible with 0.7
-lazy-mount
-bind-mount
-owner support
-user-mount
-
-do not hardcode 10 plugins (rationale?)
+Shell expansion
+Environment expansion
 
 
 
-== JSON ==
 
-yail
-	advanced functionality
-	finish kdbSet
-	test roundtrips
-	configureable root
-	compilation variants: yail 1+2
+# Helper plugins #
 
-json serialization:
-	* should handle cppcms config files
-	  http://cppcms.com/wikipp/en/page/cppcms_1x_config
-	* should handle openicc
-	  doc/standards/OpenICC_device_config_DB.json
-	  http://www.freedesktop.org/wiki/Specifications/icc_meta_tag_for_monitor_profiles
+## name conversion ##
+
+rebase plugin:
+	remove/add a common prefix after parentKey
+
+trim
+encoding
+
+Namecencode
+nameutf8encode
+namehexencode
+
+make name lowercase
+	(case sensitivity can be error prone)
+
+
+## fix Limitations ##
+
+Idea: fix limitations of current plugins using other plugins
+
+Needed for yajl: rewrite of values in directories as subkeys
+rewrite of metadata to keys
+
+fstab:
+	support for spaces and so on (with \040)
+
+## add Limitations ##
+
+allow to lock down configuration for guis
+
+
+
+# Storage plugins #
+
+## Generic ##
+
+Build a generic storage plugin to replace dump:
+- preserving order
+- preserving comments
+- human read+writeable
+
+
+## JSON ##
+
+* should handle cppcms config files
+  http://cppcms.com/wikipp/en/page/cppcms_1x_config
+* should handle openicc
+  doc/standards/OpenICC_device_config_DB.json
+  http://www.freedesktop.org/wiki/Specifications/icc_meta_tag_for_monitor_profiles
 
 http://json-schema.org
 
-== PRETTY ==
+## HOSTS ##
+
+does not fully support ipv6
+canonical_name is not canonical anymore
+(solve by having ipv4 and ipv6 subhierarchies?)
+
+## PRETTY ##
 
 latex plugin to make pretty printed key/value pairs
 dot/graphviz plugin to visualize graph of keys
@@ -115,36 +112,10 @@ literate data
 	needs two more special characters next to seperator, but is
 	otherwise alike
 
+## self written ##
 
-== CPPPLUGIN ==
-
-cppplugin:
-	make a nice and easy cpp solution for plugins
-	(integration into cpp binding)
-	assemble C symbols with macros
-	keep C->C++ problems at one place to be included
-
-C++: (FINISH cppplugin)
-	how to write backends in C++
-	Exceptions propagations
-	(C++ Exceptions to error codes)
-
-
-== STORAGE ==
-
-xpath plugin:
-	on an xml file with an mapping from (reduced) xpath<->elektra keys
-
-C/C++ serialization
-	(ksNew(keyNew()))
-	reading with llvm?
-
-using libraries:
-	libconfig
-	eet
-	tdb.samba (using tdb_traverse)
-
-/etc/groups plugin
+linenumber plugin
+	just store every line of a file in an array
 
 filesys:
 	reintroduce? (useful for 0.7 migrations)
@@ -155,6 +126,21 @@ filesys:
 	compare sets between current and desired state (set operations)
 	could be default-storage plugin, integrated resolver for previous siutation
 
+## library supported ##
+
+xpath plugin:
+	on an xml file with an mapping from (reduced) xpath<->elektra keys
+
+C/C++ serialization
+	(ksNew(keyNew()))
+	reading with llvm?
+
+libconfig
+eet
+tdb.samba (using tdb_traverse)
+
+/etc/groups plugin
+
 other file formats:
 	xfree
 	apache
@@ -163,26 +149,25 @@ other file formats:
 	xml
 	inittab
 
-fstab:
-	support for spaces and so on (with \040)
-
 tcl:
 	parse output?
 	struct output!
 
-create storage plugins with lenses
+compile lenses as plugin:
+	+ no dependency at runtime
+	+ may be faster?
 
-== ERROR ==
-
-
-error specification plugin:
-	parse error specification content into keyset
+## ERROR ##
 
 ignore_error plugin:
 	transform error of a plugin to a warning
 
 
-== FILTER ==
+
+
+
+
+# FILTER Plugins #
 
 Forensic Logging:
 	environment, pid, gid, uid
@@ -204,16 +189,28 @@ base64 encoding (and reverse)
 
 libgcryt (LGPL, GPLv3?) used by cppcms
 
-make name lowercase
-	(case sensitivity can be error prone)
-
 infer links between configuration (user/a=@user/b)
 	and copy values
 
-convert units (e.g. G, M, m,..) to values (and back)
+
+## RESTRICTIONs ##
+
+restrict plugins to be written to
+plugin: readonly (do not allow to be written to backend)
 
 
-== TYPE ==
+## METAREWRITE plugin ##
+
+meta data rewriter into value
+replaces NULL plugin
+
+binary, type and any other meta data
+encoded into string value
+also encode null value (only possible in binary)
+and binary (including encoding of null bytes and terminating null?)
+
+
+## TYPE ##
 
 struct: checker
 	cannot be deeply nested
@@ -224,28 +221,28 @@ Checkers:
 	check if hosts are reachable (/etc/hosts)
 
 
-== HOSTS ==
-
-does not fully support ipv6
-canonical_name is not canonical anymore
-(solve by having ipv4 and ipv6 subhierarchies?)
+convert units (e.g. G, M, m,..) to values (and back)
 
 
-=== RESOLVER ===
+# RESOLVER #
 
-make (at least) 4 resolvers:
-	resolver-debug for tests
-		concurrency: sets breakpoints within
-		folder: write into folders controlled by env, maybe xdg
-	resolver-xdg-passwd
-		use passwd with XDG overides
-	resolver-xdg
-		use $HOME with XDG overides
-	resolver-hardcoded (just use KDB_DB_* for single users embedded systems)
-	resolver-passwd
-	resolver-posix
-		using HOME def. in posix: http://pubs.opengroup.org/onlinepubs/009695399/basedefs/xbd_chap08.html
-		using USER as fallback? not def. in posix, but often in shells
+## split up ##
+
+resolver-debug for tests
+	concurrency: sets breakpoints within
+	folder: write into folders controlled by env, maybe xdg
+resolver-xdg-passwd
+	use passwd with XDG overides
+resolver-xdg
+	use $HOME with XDG overides
+resolver-hardcoded (just use KDB_DB_* for single users embedded systems)
+resolver-passwd
+resolver-posix
+	using HOME def. in posix: http://pubs.opengroup.org/onlinepubs/009695399/basedefs/xbd_chap08.html
+	using USER as fallback? not def. in posix, but often in shells
+
+
+## improvements ##
 
 better error messages:
 	#9 (when opening file failed)
@@ -281,24 +278,69 @@ XDG specification:
 	describe, implement, test
 	xdg mail announce
 
-== SYNC plugin ==
+
+## SYNC plugin ##
 
 fsync the file in keyname
-abort on error
+abort on error (needs to be pre-commit)
 
 
-== METAREWRITE plugin ==
-
-meta data rewriter into value
-replaces NULL plugin
-
-binary, type and any other meta data
-encoded into string value
-also encode null value (only possible in binary)
-and binary (including encoding of null bytes and terminating null?)
 
 
-== DEFAULT PLUGINS ==
+
+# Improve the plugin system itself #
+
+## global plugins ##
+
+needed for
+
+- global constraints and type checking
+- single notifications per kdbGet/kdbSet
+
+
+## VERSION IN CONTRACT ##
+
+Configure file for plugin.h
+with defines for verbosity, configuration, version numbers + contract in
+static inline function
+with licence, author in contract
+Everything also in constants/build_info
+add dependencies in contract?
+
+
+## plugin commands ##
+
+metadata that is evaluated by plugins
+
+selective commit phases:
+	define phases, minimum:
+	commit
+	check
+
+norecursive:
+	only fetch a single plugin without recursion
+
+
+## DISTRIBUTOR BACKENDS ##
+
+can be used as default using symlinks
+
+1.st level citizen
+	allow resolver only (one plugin for backend to be able to hierarchically stack backends)
+	share modules globally (to allow loading of module within module)
+
+mount: current implementation
+mount-mpi: current implementation, but multithreaded
+filesystem: implementation compatible with 0.7
+lazy-mount
+bind-mount
+owner support
+user-mount
+
+do not hardcode 10 plugins (rationale?)
+
+
+## DEFAULT PLUGINS ##
 
 default plugin handling: resolver/storage
 
@@ -318,14 +360,15 @@ DEFAULT_BACKEND ->
 	(+ make it work)
 	good out-of-the-box behaviour
 
+## CPPPLUGIN ##
 
-others:
-	memory (just hold everything in a keyset)
-	bind (just map keys from somewhere else)
+cppplugin:
+	make a nice and easy cpp solution for plugins
+	(integration into cpp binding)
+	assemble C symbols with macros
+	keep C->C++ problems at one place to be included
 
-	meta-infos hide
-
-	Namecencode
-	nameutf8encode
-	namehexencode
-
+C++: (FINISH cppplugin)
+	how to write backends in C++
+	Exceptions propagations
+	(C++ Exceptions to error codes)

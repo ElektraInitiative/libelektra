@@ -30,8 +30,10 @@ Cmdline::Cmdline (int argc,
 	test(),
 	recursive(),
 	strategy("preserve"),
+	overrideBase(),
 	verbose(),
 	version(),
+	withoutElektra(),
 
 	executable(),
 	commandName()
@@ -120,10 +122,27 @@ Cmdline::Cmdline (int argc,
 		acceptedOptions.insert(optionPos+1, ":");
 		option o = {"strategy", required_argument, 0, 's'};
 		long_options.push_back(o);
-		helpText += "-s --strategy <name>     the strategy which should be used on conflicts\n";
-		helpText += "                         preserve .. no old key is overwritten (default)\n";
-		helpText += "                         overwrite .. overwrite keys with same name\n";
-		helpText += "                         cut .. completely cut at rootkey to make place for new keys\n";
+		helpText +=
+			"-s --strategy <name>     the strategy which should be used on conflicts\n"
+			"                       For merging:\n"
+			"                         preserve  .. fail on conflict (default)\n"
+			"                         ours      .. use ours for conflicts\n"
+			"                         theirs    .. use theirs for conflicts\n"
+			"                         base      .. use base for conflicts\n"
+			"                       Otherwise:\n"
+			"                         preserve  .. no old key is overwritten (default)\n"
+			"                         overwrite .. overwrite keys with same name\n"
+			"                         cut       .. completely cut at rootkey to make place for new keys\n"
+			"";
+	}
+	if (acceptedOptions.find('b') != string::npos)
+	{
+		option b = {"overrideBase", no_argument, 0, 'b'};
+		long_options.push_back(b);
+		helpText += "-b --overrideBase        allow overriding the base with the merge result\n";
+		helpText += "                         with this option the merge command is no longer idempotent\n";
+		helpText += "                         (i.e. repeating the same command multiple times would yield\n";
+		helpText += "                         different results, because the base changes every time)\n";
 	}
 	if (acceptedOptions.find('v')!=string::npos)
 	{
@@ -136,6 +155,12 @@ Cmdline::Cmdline (int argc,
 		option o = {"version", no_argument, 0, 'V'};
 		long_options.push_back(o);
 		helpText += "-V --version             print version info\n";
+	}
+	if (acceptedOptions.find('E')!=string::npos)
+	{
+		option o = {"without-elektra", no_argument, 0, 'E'};
+		long_options.push_back(o);
+		helpText += "-E --without-elektra     omit system/elektra directory\n";
 	}
 
 
@@ -162,8 +187,10 @@ Cmdline::Cmdline (int argc,
 		case 't': test = true; break;
 		case 'r': recursive = true; break;
 		case 's': strategy = optarg; break;
+		case 'b': overrideBase = true; break;
 		case 'v': verbose = true; break;
 		case 'V': version = true; break;
+		case 'E': withoutElektra= true; break;
 
 		default: invalidOpt = true; break;
 		}

@@ -1,3 +1,5 @@
+#include "kdbconfig.h"
+
 #include <contextual.hpp>
 
 #include <thread>

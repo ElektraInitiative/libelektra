@@ -62,10 +62,36 @@ macro (add_plugintest testname)
 				COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
 		add_test (testmod_${testname}
 				"${CMAKE_CURRENT_BINARY_DIR}/testmod_${testname}"
-				"${CMAKE_CURRENT_BINARY_DIR}"
+				"${CMAKE_CURRENT_SOURCE_DIR}"
 				)
 	endif (BUILD_FULL)
 endmacro (add_plugintest)
+
+# Add a test for cpp plugins
+macro (add_cpp_plugintest source)
+	include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
+	include_directories ("${CMAKE_SOURCE_DIR}/src/bindings/cpp/tests")
+	set (SOURCES ${HDR_FILES} ${source}.cpp ${CMAKE_SOURCE_DIR}/src/bindings/cpp/tests/tests.cpp)
+	add_executable (${source} ${SOURCES})
+
+	if (BUILD_FULL)
+		target_link_libraries (${source} elektra-full)
+	else (BUILD_FULL)
+		target_link_libraries (${source} elektra-static)
+	endif (BUILD_FULL)
+
+	if (INSTALL_TESTING)
+		install (TARGETS ${source}
+			DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+	endif (INSTALL_TESTING)
+
+	set_target_properties (${source} PROPERTIES
+			COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
+	add_test (${source}
+			"${CMAKE_CURRENT_BINARY_DIR}/${source}"
+			"${CMAKE_CURRENT_BINARY_DIR}/"
+			)
+endmacro (add_cpp_plugintest testname)
 
 
 #- Adds all headerfiles of global include path to the given variable
@@ -343,3 +369,38 @@ function(my_add_static_module name)
 	add_library(${name} STATIC ${srcs})
 endfunction()
 
+
+#
+# Parameter: the pluginname
+#
+# converts a README.md (markdown texts with key/value pairs)
+# to a readme_pluginname.c that contains keys to be added in the contract
+#
+# the key/value pairs need to be written like:
+# - infos/licence = BSD
+#
+# - infos/description =
+# has a special functionality: when it is used the rest of the file
+# is interpreted as description. So this key must be last.
+#
+function (generate_readme p)
+	# rerun cmake when README.md is changed
+	# also allows cmake variable substitution
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/README.md ${CMAKE_CURRENT_BINARY_DIR}/README.out)
+
+	# read
+	FILE(READ ${CMAKE_CURRENT_BINARY_DIR}/README.out contents)
+	STRING(REGEX REPLACE "\\\\" "\\\\\\\\" contents "${contents}")
+	STRING(REGEX REPLACE "\"" "\\\\\"" contents "${contents}")
+	STRING(REGEX REPLACE "\n" "\\\\n\"\n\"" contents "${contents}")
+	STRING(REGEX REPLACE "- infos = ([a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+	STRING(REGEX REPLACE "\"- +infos/licence *= *([a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/licence\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+	STRING(REGEX REPLACE "\"- +infos/author *= *([.@<>a-zA-Z0-9 %_-]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/author\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+	STRING(REGEX REPLACE "\"- +infos/provides *= *([a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/provides\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+	STRING(REGEX REPLACE "\"- +infos/placements *= *([a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/placements\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+	STRING(REGEX REPLACE "\"- +infos/recommends *= *([a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/recommends\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+	STRING(REGEX REPLACE "\"- +infos/ordering *= *([a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/ordering\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+	STRING(REGEX REPLACE "\"- +infos/needs *= *([a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/needs\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+	STRING(REGEX REPLACE "\"- +infos/description *= *(.*)\\\\n\"\n\"" "keyNew(\"system/elektra/modules/${p}/infos/description\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+	FILE(WRITE ${CMAKE_CURRENT_BINARY_DIR}/readme_${p}.c ${contents})
+endfunction()

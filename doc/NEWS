@@ -1,6 +1,165 @@
-0.8.6 Release
+-------------
 
-This release adds both many improvements and some technical previews.
+Author: Markus Raab
+Date: 28.07.2014
+Subject: 0.8.7 release
+Note: This is preliminary, the release did not happen and the release notes
+      are not finished.
+
+
+## New Features ##
+
+Thanks to Manuel Mausz for further improving lua, python3 bindings
+and the new python2 bindings.
+
+The GSoC efforts have their first large contribution to Elektra, the 3
+way merge finally arrives with this release. It is still a long way to
+go, however, because augeas plugins can only be mounted with a
+workaround and the package integration of the 3-way merge is still in
+its infancy. More information about GSoC and its progress can be found
+[here](http://community.libelektra.org/wp).
+
+A special thanks to  Felix Berlakovich for his contributions to the
+3-way merge, including meta merging, conflict resolving strategies and
+extensive testing.
+
+Additionally, he added the plugins keytometa, ini and greatly improved
+the glob plugin. These plugins are technical previews and will receive
+some improvements in the next release, too.
+
+Now a script for tab completion is available
+[here](/scripts/scripts/kdb-bash-completion), again thanks to Felix
+Berlakovich.
+
+The contextual values now got a [tutorial]
+(https://github.com/ElektraInitiative/libelektra/tree/master/src/tools/gen)
+and small fixes.
+
+
+## Corrections ##
+
+Thanks to Pino Toscano for fixing a lot of spelling errors, simplify
+RPATH setting, respect $HOME and $TMPDIR, improvements of test cases,
+and his debian-packaging efforts.
+
+In the kdb tool not allowed subfolders are now checked properly
+and the output of warnings comes before output of the error.
+This fixes the problem that in the case of a longer list of
+warnings one did not see the error anymore.
+
+Fix compilation warnings on clang and gcc 4.9.
+Also improve test coverage on kdb tool and some plugins.
+
+Fix kdb import/export for some plugins (Should now work with any storage
+plugin again).
+
+kdb run_all should run flawlessly with this release. Remaining problems
+with not installed test data were fixed. kdb run_all also checks if the
+test cases do not modify any existing key and keeps a backup if this
+happened.
+
+Some remaining mem leaks in rare circumstances were fixed. Valgrind
+should now never report any leaks, if it does, please report the issue.
+
+
+## API Changes ##
+
+Added delMeta() for C++, because setMeta() with NULL will set the
+number 0 and not remove the meta.
+
+Arguments of isBelow, isDirectBelow, isBelowOrSame are swapped for
+better readability. k.isBelow(root) now means the obvious thing.
+The change only effects the C++ binding, keyIsBelow is unaffected by
+the change.
+
+
+## Documentation ##
+
+[Specification of meta data](doc/specification.ini) and
+[contracts](doc/contracts.ini) written/greatly improved.
+
+[Decisions](decisions) are introduced again.
+
+Most often the KeySet is ideal, e.g. when doing full iteration or when
+performing set operations. In some cases, however, a hierarchical data
+structure fits better. This is especially true for GUIs. Luckily, Keys
+can be in multiple data structures because of their reference counting.
+
+
+## Other Stuff ##
+
+We now fully embrace github:
+- We use its issue tracker (all issues from local text files were moved
+  there)
+- We have rewritten many READMEs to use githubs markdown
+- On pull requests the build server checks if the merge would break
+  the build.
+- All previous gitorious users are now at github. (Most had an account
+  anyway)
+
+Raffael Pancheri also made progress with its qt-gui. It now features a
+model that implements great parts of Elektra's features. Unfortunately
+the model cannot be serialised and thus changes cannot made persistent.
+Also undo and other important use-cases are still not there. The GUI
+looks very clean and was evaluated in a SUS study on 23.07.2014.
+The current implementation can be found [here]
+(https://github.com/0003088/qt-gui).
+
+Many distributions already have Elektra packages
+ - [Fedora](https://admin.fedoraproject.org/pkgdb/package/elektra/)
+ - [Gentoo](http://packages.gentoo.org/package/app-admin/elektra)
+ - [Arch Linux](https://aur.archlinux.org/packages/elektra/)
+
+In some distributions Elektra packages are available, but are not
+up-to-date. Pino Toscano is working on get them (actually 
+Debian, but others are derived from it) up-to-date.
+ - [Ubuntu](https://launchpad.net/ubuntu/+source/elektra)
+ - [Debian](https://packages.debian.org/de/wheezy/libelektra3)
+ - [Linux Mint](http://community.linuxmint.com/software/view/elektra)
+
+A special thanks to Kai-Uwe Behrmann for providing packages for
+[CentOS, Fedora, OpenSUSE, RHEL and
+SLE](http://software.opensuse.org/download.html?project=home%3Abekun&package=elektra).
+
+
+
+-------------
+
+Date: 21.06.2014
+Subject: Move to Github, Code Coverage Report
+
+The Elektra Initiative moved to Github for following reasons:
+
+- We were seriously missing a bug tracker
+- It may make collaboration easier
+- Build Server Integration:
+ - [Build on MergeRequests](http://build.libelektra.org:8080/job/elektra-mergerequests/)
+   waits for the first merge request to be built!
+ - And the build status is now published [for this job](http://build.libelektra.org:8080/job/elektra-gcc47-all/)
+
+
+The main entrance point and URL for any advertisement and linking stays
+
+  http://www.libelektra.org
+
+(which points to github at the moment)
+
+
+Additionally (not related to github), we now have a
+[LCOV code coverage report](http://doc.libelektra.org/coverage/latest/)!
+
+
+best regards,
+Markus
+
+
+
+
+Subject: 0.8.6 Release
+
+Hello List,
+
+this release adds both many improvements and some technical previews.
 
 
 
@@ -85,6 +244,9 @@ CMake: ENABLE_CXX11 is now default OFF (because gcc 4.6 and older won't
        work with it). It disables some tests, though.
 unique_ptr will automatically be used instead of auto_ptr in this mode.
 
+Note for maintainers: libelektratools now needs to be installed so that
+the kdb tool will work.
+
 
 == Outlook ==
 
@@ -161,19 +323,31 @@ This is done as GSOC project. The progress is documented here:
 http://community.libelektra.org/wp/
 
 
+== Get It! ==
+
 You can download the release at:
+ http://www.markus-raab.org/ftp/elektra/releases/elektra-0.8.6.tar.gz
+ size: 1188337
+ md5sum: 4a59824e70a29295e9ef9ae7605d9299
+ sha1: 2570710b0057470223611ca00d61a0196e54e7b2
+ sha256: e815cf69b070c339784472841aa0ee0b169fab7c78f41cbbd7044f53fa9ed216
+
 
 Docu can be found here:
+ http://doc.libelektra.org/api/0.8.6/html/
 
-You can install the debian packages for debian (wheezy, amd64 only;
-some packages will be added later) by
-adding following lines to your /etc/apt/sources.list:
+You can install the debian packages for debian (wheezy, amd64 only,
+some packages will be added later) by adding following lines to your
+/etc/apt/sources.list:
  deb http://markus-raab.org/ftp/wheezy wheezy main
 
 and install or upgrade the packages with:
  sudo apt-get update
  sudo apt-get install libelektra-core4 libelektra-full4 libelektra-bin libelektra-dev libelektra-test libelektra-xmltool4 libelektra-json4 libelektra-dbus4 libelektra-doc
 
+
+Best regards,
+Markus
 
 
 
@@ -569,7 +743,7 @@ some cleanup to be less confusing.
 The user experience was improved. The ".kdb" or ".config" directory now
 will be created if they do not exist.
 
-The debian packages are now splitted to have full advantage of the
+The debian packages are now split to have full advantage of the
 new plugin system.  The core packages (libelektra, libelektra-dev and
 libelektra-bin) do not depend on libxml anymore.  New is the package
 libelektra-full, which contains a single dynamic library containing all

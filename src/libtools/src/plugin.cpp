@@ -102,7 +102,7 @@ void Plugin::parse ()
 
 	if (k)
 	{
-		while ((k = info.next()) && k.getDirName() == root.getName())
+		while ((k = info.next()) && k.isBelow(root))
 		{
 			symbols[k.getBaseName()] = (*k.getFunc());
 		}
@@ -113,7 +113,7 @@ void Plugin::parse ()
 
 	if (k)
 	{
-		while ((k = info.next()) && k.getDirName() == root.getName())
+		while ((k = info.next()) && k.isBelow(root))
 		{
 			infos[k.getBaseName()] = k.getString();
 		}

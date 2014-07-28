@@ -11,6 +11,51 @@
 #define POSTFIX_SIZE 50
 
 /**
+ * Check if supplied filename is ok.
+ *
+ * This symbol is exported and used during mounting.
+ *
+ * @return 1 on success (Relative path)
+ * @returns 0 on success (Absolute path)
+ * @return -1 on a non-valid file
+ */
+int elektraResolverCheckFile(const char* filename)
+{
+	if(!filename) return -1;
+	if(filename[0] == '0') return -1;
+
+	size_t size = strlen(filename);
+	char *buffer = malloc(size + sizeof ("system/"));
+	strcpy(buffer, "system/");
+	strcat(buffer, filename);
+
+	/* Because of the outbreak bugs these tests are not enough */
+	Key *check = keyNew(buffer, KEY_END);
+	if(!strcmp(keyName(check), "")) goto error;
+	if(!strcmp(keyName(check), "system")) goto error;
+	keyDel(check);
+	free(buffer);
+
+	/* Be strict, don't allow any .., even if it would be allowed sometimes */
+	if(strstr (filename, "..") != 0) return -1;
+
+
+	if(filename[0] == '/') return 0;
+
+	/* subfolders (for non-absolute filenames) currently not
+	 * supported:
+	 * @see resolveFilename(), dirname is not set properly then */
+	if(strstr (filename, "/") != 0) return -1;
+
+	return 1;
+
+error:
+	keyDel (check);
+	free (buffer);
+	return -1;
+}
+
+/**
  * @brief Create unique postfix for temporary files
  *
  * Write max strlen(name)+POSTFIX_SIZE-1 characters to where.

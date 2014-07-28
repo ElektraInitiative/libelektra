@@ -44,7 +44,7 @@ int ImportCommand::execute(Cmdline const& cl)
 	Modules modules;
 	PluginPtr plugin = modules.load(format);
 
-	Key errorKey;
+	Key errorKey(root);
 	errorKey.setString(file);
 
 	plugin->get(importedKeys, errorKey);

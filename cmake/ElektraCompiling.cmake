@@ -52,13 +52,28 @@ endif ()
 set (COMMON_FLAGS "${COMMON_FLAGS} -pedantic")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wall -Wextra")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wno-overlength-strings")
+set (COMMON_FLAGS "${COMMON_FLAGS} -Wsign-compare -Wfloat-equal")
+set (COMMON_FLAGS "${COMMON_FLAGS} -Wformat-security")
+set (COMMON_FLAGS "${COMMON_FLAGS} -Wshadow")
+set (COMMON_FLAGS "${COMMON_FLAGS} -Wcomments -Wtrigraphs -Wundef")
+set (COMMON_FLAGS "${COMMON_FLAGS} -Wuninitialized")
+set (COMMON_FLAGS "${COMMON_FLAGS} -Wno-ignored-qualifiers")
+
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--unresolved-symbols=ignore-in-shared-libs")
+
+
+if (ENABLE_COVERAGE)
+	set (COMMON_FLAGS "${COMMON_FLAGS} -fprofile-arcs -ftest-coverage")
+	set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fprofile-arcs -ftest-coverage -lgcov")
+endif (ENABLE_COVERAGE)
+
 
 
 #
 # Merge all flags
 #
 set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${C_STD} ${EXTRA_FLAGS} ${COMMON_FLAGS} -Wsign-compare -Wfloat-equal -Wformat-security")
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_STD} ${EXTRA_FLAGS} ${COMMON_FLAGS} -Wshadow -Wno-missing-field-initializers")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_STD} ${EXTRA_FLAGS} ${COMMON_FLAGS} -Wno-missing-field-initializers")
 
 message (STATUS "C flags are ${CMAKE_C_FLAGS}")
 message (STATUS "CXX flags are ${CMAKE_CXX_FLAGS}")

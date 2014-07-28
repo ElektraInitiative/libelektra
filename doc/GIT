@@ -69,36 +69,25 @@ git reset origin/master
 
 git-ref-log # recover
 
+== Github ==
 
-== Gitorious merge requests ==
+When doing merge requests our [buildserver](http://build.libelektra.org:8080)
+will build authorized users. If you are not yet authorized following
+question will be asked (by user markus2330):
 
-git checkout -b integration
-git pull origin refs/merge-requests/892
-git log --pretty=oneline --abbrev-commit master..integration
+	Can one of the admins verify if this patch should be build?
 
+Then one of the admins:
+- fberlakovich
+- manuelm
+- markus2330
+- beku
+need to confirm by saying:
+	.*add\W+to\W+whitelist.*
+or if just the pull request should be checked:
+	.*build\W+allow.*
+or if just a single build should be started:
+	.*build\W+start.*
 
-http://qt-jambi.org/developers/merge_requests
-http://blog.gitorious.org/2009/07/15/new-merge-request-functionality/
-
-
-
-= MIGRATION =
-
-This git folder was imported initially with the command:
-git svn clone -T trunk -t tags -b unstable https://svn.libelektra.org/svn/elektra
-
-then every remote branch (git branch -a) was checked out using:
-git checkout -b $BRANCH $BRANCH
-
-== OTHER TRY ==
-
-(lead to elektra-history)
-
-git svn clone --authors-file=/home/markus/Projekte/Elektra/current/doc/GIT_AUTHORS --prefix=svn/ -T trunk -t tags -b unstable https://svn.libelektra.org/svn/elektra
-
-
-git svn-abandon-fix-refs
-git svn-abandon-cleanup
-
-(nice authors, branches and tags.. but unstable branch missing!)
-
+If you want any configuration changes, please contact
+Markus Raab <elektra@markus-raab.org>

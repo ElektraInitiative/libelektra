@@ -1,5 +1,5 @@
 /*************************************************************************** 
- *           test_splitset.c  - Test suite for splitted keyset data structure
+ *           test_splitset.c  - Test suite for split keyset data structure
  *                  -------------------
  *  begin                : Tue Jun 29 2010
  *  copyright            : (C) 2010 by Markus Raab
@@ -185,7 +185,7 @@ void test_mount()
 	succeed_if (split->handles, "did not alloc handles array");
 	succeed_if (split->syncbits[0] == 1, "system part need to by synced");
 	succeed_if (split->syncbits[1] == 1, "user part need to by synced");
-	succeed_if (split->size == 3, "not splitted according user, system");
+	succeed_if (split->size == 3, "not split according user, system");
 	succeed_if (ksGetSize(split->keysets[0]) == 2, "size of keyset not correct");
 	succeed_if (ksGetSize(split->keysets[1]) == 2, "size of keyset not correct");
 	compare_keyset(split->keysets[1], split1);
@@ -204,7 +204,7 @@ void test_mount()
 	succeed_if (split->syncbits[1] == 0, "user part does not need to by synced");
 	succeed_if (ksGetSize(split->keysets[0]) == 2, "size of keyset not correct");
 	succeed_if (ksGetSize(split->keysets[1]) == 2, "size of keyset not correct");
-	succeed_if (split->size == 3, "not splitted according user, system");
+	succeed_if (split->size == 3, "not split according user, system");
 	elektraSplitDel (split);
 
 	split = elektraSplitNew();
@@ -217,7 +217,7 @@ void test_mount()
 	succeed_if (split->syncbits[1] == 1, "user part need to by synced");
 	succeed_if (ksGetSize(split->keysets[0]) == 2, "size of keyset not correct");
 	succeed_if (ksGetSize(split->keysets[1]) == 2, "size of keyset not correct");
-	succeed_if (split->size == 3, "not splitted according user, system");
+	succeed_if (split->size == 3, "not split according user, system");
 	elektraSplitDel (split);
 
 	split = elektraSplitNew();
@@ -230,7 +230,7 @@ void test_mount()
 	succeed_if (split->syncbits[1] == 1, "user part need to by synced");
 	succeed_if (ksGetSize(split->keysets[0]) == 2, "size of keyset not correct");
 	succeed_if (ksGetSize(split->keysets[1]) == 2, "size of keyset not correct");
-	succeed_if (split->size == 3, "not splitted according user, system");
+	succeed_if (split->size == 3, "not split according user, system");
 	elektraSplitDel (split);
 
 
@@ -277,7 +277,7 @@ void test_easyparent()
 
 	succeed_if (split->keysets, "did not alloc keysets array");
 	succeed_if (split->handles, "did not alloc handles array");
-	succeed_if (split->size == 2, "not splitted according user, system");
+	succeed_if (split->size == 2, "not split according user, system");
 	succeed_if (split->syncbits[0] & 1, "system part need to by synced");
 	succeed_if (split->syncbits[1] & 1, "user part need to be synced");
 	compare_keyset(split->keysets[0], split1);
@@ -294,7 +294,7 @@ void test_easyparent()
 
 	succeed_if (split->keysets, "did not alloc keysets array");
 	succeed_if (split->handles, "did not alloc handles array");
-	succeed_if (split->size == 2, "not splitted according user, system");
+	succeed_if (split->size == 2, "not split according user, system");
 	succeed_if (split->syncbits[0] & 1, "system part need to by synced");
 	succeed_if (split->syncbits[1] & 1, "user part need to be synced");
 	compare_keyset(split->keysets[0], split1);
@@ -347,7 +347,7 @@ void test_optimize()
 
 	succeed_if (split->keysets, "did not alloc keysets array");
 	succeed_if (split->handles, "did not alloc handles array");
-	succeed_if (split->size == 3, "not splitted according user, system");
+	succeed_if (split->size == 3, "not split according user, system");
 	succeed_if (split->syncbits[0] == 1, "system part not optimized");
 	succeed_if (split->syncbits[1] == 0, "user part need to by synced");
 	compare_keyset(split->keysets[0], split1);
@@ -364,7 +364,7 @@ void test_optimize()
 
 	succeed_if (split->keysets, "did not alloc keysets array");
 	succeed_if (split->handles, "did not alloc handles array");
-	succeed_if (split->size == 3, "not splitted according user, system");
+	succeed_if (split->size == 3, "not split according user, system");
 	succeed_if (split->syncbits[0] == 0, "system part not optimized");
 	succeed_if (split->syncbits[1] == 0, "user part not optimized");
 	compare_keyset(split->keysets[0], split1);
@@ -387,7 +387,7 @@ void test_optimize()
 
 	succeed_if (split->keysets, "did not alloc keysets array");
 	succeed_if (split->handles, "did not alloc handles array");
-	succeed_if (split->size == 3, "not splitted according user, system");
+	succeed_if (split->size == 3, "not split according user, system");
 	succeed_if (split->syncbits[0] == 1, "optimized too much");
 	succeed_if (split->syncbits[1] == 1, "optimized too much");
 	compare_keyset(split->keysets[0], split1);
@@ -455,7 +455,7 @@ void test_three()
 
 	succeed_if (split->keysets, "did not alloc keysets array");
 	succeed_if (split->handles, "did not alloc handles array");
-	succeed_if (split->size == 5, "not splitted according three");
+	succeed_if (split->size == 5, "not split according three");
 	succeed_if (split->syncbits[0] == 1, "system part need to by synced");
 	succeed_if (split->syncbits[1] == 1, "user part need to by synced");
 	succeed_if (split->syncbits[2] == 1, "user part need to by synced");
@@ -476,7 +476,7 @@ void test_three()
 	/* Prepare should not change anything here (everything needs sync) */
 	succeed_if (split->keysets, "did not alloc keysets array");
 	succeed_if (split->handles, "did not alloc handles array");
-	succeed_if (split->size == 4, "not splitted according three");
+	succeed_if (split->size == 4, "not split according three");
 	succeed_if (split->syncbits[0] == 1, "system part need to by synced");
 	succeed_if (split->syncbits[1] == 1, "user part need to by synced");
 	succeed_if (split->syncbits[2] == 1, "user part need to by synced");
@@ -569,7 +569,7 @@ void test_userremove()
 	elektraSplitDel (split);
 
 
-	/* But it should even need sync when we dont have any unsynced keys! */
+	/* But it should even need sync when we don't have any unsynced keys! */
 	clear_sync(ks);
 	split = elektraSplitNew();
 
@@ -696,7 +696,7 @@ void test_systemremove()
 	elektraSplitDel (split);
 
 
-	/* But it should even need sync when we dont have any unsynced keys! */
+	/* But it should even need sync when we don't have any unsynced keys! */
 	clear_sync(ks);
 	split = elektraSplitNew();
 

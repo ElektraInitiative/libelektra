@@ -2,3 +2,6 @@
 
 variadic templates in  key, ks constructors
 .get<TypeWrapper> in KeySet or is ContextualValue approach better?
+
+KeyName(Reverse)Iterator:
+	allow iterations over key name (/, with respect of \/?)

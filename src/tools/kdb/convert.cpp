@@ -44,7 +44,7 @@ int ConvertCommand::execute(Cmdline const& cl)
 	PluginPtr import_plugin = modules.load(import_format);
 	PluginPtr export_plugin = modules.load(export_format);
 
-	Key errorKey;
+	Key errorKey; // TODO: root key?
 	KeySet keys;
 
 	errorKey.setString(import_file);

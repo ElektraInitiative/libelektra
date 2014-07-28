@@ -26,6 +26,8 @@
 
 #include "resolver.h"
 
+#include "kdbos.h"
+
 #include <stdlib.h>
 
 #ifdef HAVE_CTYPE_H
@@ -562,42 +564,6 @@ int elektraResolverError(Plugin *handle, KeySet *returned ELEKTRA_UNUSED, Key *p
 	pk->fd = -1;
 
 	return 0;
-}
-
-/**
- * @return 1 on success (Relative path)
- * @returns 0 on success (Absolute path)
- * @return -1 on a non-valid file
- */
-int elektraResolverCheckFile(const char* filename)
-{
-	if(!filename) return -1;
-	if(filename[0] == '0') return -1;
-
-	size_t size = strlen(filename);
-	char *buffer = malloc(size + sizeof ("system/"));
-	strcpy(buffer, "system/");
-	strcat(buffer, filename);
-
-	/* Because of the outbreak bugs these tests are not enough */
-	Key *check = keyNew(buffer, KEY_END);
-	if(!strcmp(keyName(check), "")) goto error;
-	if(!strcmp(keyName(check), "system")) goto error;
-	keyDel(check);
-	free(buffer);
-
-	/* Be strict, dont allow any .., even if it would be allowed sometimes */
-	if(strstr (filename, "..") != 0) return -1;
-
-
-	if(filename[0] == '/') return 0;
-
-	return 1;
-
-error:
-	keyDel (check);
-	free (buffer);
-	return -1;
 }
 
 

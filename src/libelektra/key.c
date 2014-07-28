@@ -264,26 +264,26 @@ Key *k = keyNew(0);
 // keyNeedSync() will be false
  * @endcode
  *
- * @param keyName a valid name to the key, or NULL to get a simple
+ * @param name a valid name to the key, or NULL to get a simple
  * 	initialized, but really empty, object 
  * @see keyDel()
  * @return a pointer to a new allocated and initialized Key object.
- * @retval NULL on malloc error or if an invalid @p keyName was passed (see keySetName()).
+ * @retval NULL on malloc error or if an invalid @p name was passed (see keySetName()).
  * @ingroup key
  *
  */
-Key *keyNew(const char *keyName, ...) {
+Key *keyNew(const char *name, ...) {
 	Key * k;
 	va_list va;
 
-	if (!keyName)
+	if (!name)
 	{
 		k = elektraKeyMalloc();
 	}
 	else
 	{
-		va_start(va,keyName);
-		k = keyVNew (keyName, va);
+		va_start(va,name);
+		k = keyVNew (name, va);
 		va_end (va);
 	}
 
@@ -297,7 +297,7 @@ Key *keyNew(const char *keyName, ...) {
  * @pre caller must use va_start and va_end on va
  * @param va the variadic argument list 
  */
-Key *keyVNew (const char *keyName, va_list va)
+Key *keyVNew (const char *name, va_list va)
 {
 	Key *key=0;
 	keyswitch_t action=0;
@@ -308,8 +308,8 @@ Key *keyVNew (const char *keyName, va_list va)
 	key=elektraKeyMalloc();
 	if (!key) return 0;
 
-	if (keyName) {
-		keySetName(key,keyName);
+	if (name) {
+		keySetName(key, name);
 
 		action=va_arg(va, keyswitch_t);
 		while (action) {

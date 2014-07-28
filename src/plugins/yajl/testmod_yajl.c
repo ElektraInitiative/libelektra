@@ -472,7 +472,7 @@ void test_json(const char * fileName,
 		     KeySet * compareKeySet,
 		     KeySet * conf)
 {
-	printf ("Test json with %s\n", fileName);
+	printf ("Test json with %s\n", srcdir_file(fileName));
 
 	Plugin *plugin = elektraPluginOpen("yajl", modules, conf, 0);
 	exit_if_fail (plugin != 0, "could not open plugin");
@@ -492,19 +492,16 @@ void test_json(const char * fileName,
 	*/
 	compare_keyset(keys, compareKeySet);
 
-	char * fileNameCompare = malloc(strlen(fileName)+6);
-	strcpy(fileNameCompare, fileName);
-	strcat(fileNameCompare, ".comp");
-	keySetString(parentKey, srcdir_file(fileNameCompare));
+	keySetString(parentKey, elektraFilename());
 	// printf("File name is: %s\n", keyString(parentKey));
 
 	succeed_if(plugin->kdbSet(plugin, keys, parentKey) == 1, "kdbSet was not successful");
 	succeed_if(output_error(parentKey), "error in kdbSet");
 	succeed_if(output_warnings(parentKey), "warnings in kdbSet");
-	free(fileNameCompare);
 
 	succeed_if(compare_line_files(srcdir_file(fileName), keyString(parentKey)),
 			"files do not match as expected");
+	elektraUnlink(keyString(parentKey));
 
 	/*
 	printf ("The keys we read out are:\n");
@@ -523,7 +520,7 @@ void test_json(const char * fileName,
 void test_readWrite(const char * fileName,
 		     KeySet * conf)
 {
-	printf ("Test read write with %s\n", fileName);
+	printf ("Test read write with %s\n", srcdir_file(fileName));
 
 	Plugin *plugin = elektraPluginOpen("yajl", modules, conf, 0);
 	exit_if_fail (plugin != 0, "could not open plugin");
@@ -539,20 +536,17 @@ void test_readWrite(const char * fileName,
 
 	// output_keyset(keys);
 
-	char * fileNameCompare = malloc(strlen(fileName)+6);
-	strcpy(fileNameCompare, fileName);
-	strcat(fileNameCompare, ".comp");
-	keySetString(parentKey, srcdir_file(fileNameCompare));
+	keySetString(parentKey, elektraFilename());
 	// keySetString(parentKey, "/proc/self/fd/1");
 	// printf("File name is: %s\n", keyString(parentKey));
 
 	succeed_if(plugin->kdbSet(plugin, keys, parentKey) == 1, "kdbSet was not successful");
 	succeed_if(output_error(parentKey), "error in kdbSet");
 	succeed_if(output_warnings(parentKey), "warnings in kdbSet");
-	free(fileNameCompare);
 
 	succeed_if(compare_line_files(srcdir_file(fileName), keyString(parentKey)),
 	 		"files do not match as expected");
+	elektraUnlink(keyString(parentKey));
 
 	keyDel (parentKey);
 	ksDel (keys);
@@ -818,37 +812,37 @@ int main(int argc, char** argv)
 	test_countLevel();
 	test_writing();
 
-	test_json("examples/testdata_null.json", getNullKeys(), ksNew(0));
-	test_json("examples/testdata_boolean.json", getBooleanKeys(), ksNew(0));
-	test_json("examples/testdata_number.json", getNumberKeys(), ksNew(0));
-	test_json("examples/testdata_string.json", getStringKeys(), ksNew(0));
-	test_json("examples/testdata_maps.json", getMapKeys(), ksNew(0));
-	test_json("examples/testdata_array.json", getArrayKeys(), ksNew(0));
-	test_json("examples/testdata_below.json", getBelowKeys(), ksNew(0));
-	test_json("examples/OpenICC_device_config_DB.json", getOpenICCKeys(), ksNew(0));
+	test_json("yajl/testdata_null.json", getNullKeys(), ksNew(0));
+	test_json("yajl/testdata_boolean.json", getBooleanKeys(), ksNew(0));
+	test_json("yajl/testdata_number.json", getNumberKeys(), ksNew(0));
+	test_json("yajl/testdata_string.json", getStringKeys(), ksNew(0));
+	test_json("yajl/testdata_maps.json", getMapKeys(), ksNew(0));
+	test_json("yajl/testdata_array.json", getArrayKeys(), ksNew(0));
+	test_json("yajl/testdata_below.json", getBelowKeys(), ksNew(0));
+	test_json("yajl/OpenICC_device_config_DB.json", getOpenICCKeys(), ksNew(0));
 
 	// TODO currently do not have a KeySet, wait for C-plugin to make
 	// it easy to generate it..
-	test_readWrite("examples/empty_object.json", ksNew(0));
-	test_readWrite("examples/empty_array.json", ksNew(0));
-	test_readWrite("examples/rfc_object.json", ksNew(0));
-	test_readWrite("examples/rfc_array.json", ksNew(0));
-	test_readWrite("examples/testdata_array_mixed.json", ksNew(0));
-	test_readWrite("examples/testdata_array_in_array.json", ksNew(0));
-	test_readWrite("examples/testdata_array_in_array_anon_map.json", ksNew(0));
-	test_readWrite("examples/testdata_array_nested.json", ksNew(0));
-	test_readWrite("examples/testdata_array_broken.json", ksNew(0));
-	test_readWrite("examples/testdata_array_special_ending.json", ksNew(0));
-	test_readWrite("examples/testdata_array_outside.json", ksNew(0));
-	test_readWrite("examples/keyframes_complex.json", ksNew(0));
-	test_readWrite("examples/testdata_array_mixed2.json", ksNew(0));
-	test_readWrite("examples/testdata_array_special_start.json", ksNew(0));
-	test_readWrite("examples/testdata_array_mixed3.json", ksNew(0));
-	test_readWrite("examples/testdata_empty_in_array.json", ksNew(0));
-	test_readWrite("examples/testdata_empty_in_map.json", ksNew(0));
-	test_readWrite("examples/testdata_empty_in_array1.json", ksNew(0));
-	test_readWrite("examples/testdata_empty_in_map2.json", ksNew(0));
-	test_readWrite("examples/testdata_empty_in_map1.json", ksNew(0));
+	test_readWrite("yajl/empty_object.json", ksNew(0));
+	test_readWrite("yajl/empty_array.json", ksNew(0));
+	test_readWrite("yajl/rfc_object.json", ksNew(0));
+	test_readWrite("yajl/rfc_array.json", ksNew(0));
+	test_readWrite("yajl/testdata_array_mixed.json", ksNew(0));
+	test_readWrite("yajl/testdata_array_in_array.json", ksNew(0));
+	test_readWrite("yajl/testdata_array_in_array_anon_map.json", ksNew(0));
+	test_readWrite("yajl/testdata_array_nested.json", ksNew(0));
+	test_readWrite("yajl/testdata_array_broken.json", ksNew(0));
+	test_readWrite("yajl/testdata_array_special_ending.json", ksNew(0));
+	test_readWrite("yajl/testdata_array_outside.json", ksNew(0));
+	test_readWrite("yajl/keyframes_complex.json", ksNew(0));
+	test_readWrite("yajl/testdata_array_mixed2.json", ksNew(0));
+	test_readWrite("yajl/testdata_array_special_start.json", ksNew(0));
+	test_readWrite("yajl/testdata_array_mixed3.json", ksNew(0));
+	test_readWrite("yajl/testdata_empty_in_array.json", ksNew(0));
+	test_readWrite("yajl/testdata_empty_in_map.json", ksNew(0));
+	test_readWrite("yajl/testdata_empty_in_array1.json", ksNew(0));
+	test_readWrite("yajl/testdata_empty_in_map2.json", ksNew(0));
+	test_readWrite("yajl/testdata_empty_in_map1.json", ksNew(0));
 
 	elektraModulesClose(modules, 0);
 	ksDel (modules);

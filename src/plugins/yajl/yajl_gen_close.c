@@ -51,7 +51,7 @@ static void elektraGenCloseLast(yajl_gen g, const Key *key)
  * _/#
  * _/___empty_map
  * (lookahead says it is not a map)
- * -> dont do anything
+ * -> don't do anything
  *
  * (C3)
  * #

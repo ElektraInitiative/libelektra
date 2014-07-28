@@ -40,7 +40,7 @@ inline static int elektraStructOpenDelegator(ckdb::Plugin *handle, kdb::KeySet& 
 	if (config.lookup("/module"))
 	{
 		// suppress warnings if it is just a module
-		// dont buildup the struct then
+		// don't buildup the struct then
 		return 0;
 	}
 
@@ -50,8 +50,6 @@ inline static int elektraStructOpenDelegator(ckdb::Plugin *handle, kdb::KeySet& 
 	}
 	catch (const char* msg)
 	{
-		// TODO: warnings are not always passed when plugin
-		// creation failed?
 		ELEKTRA_ADD_WARNING (58, errorKey, msg);
 		return -1;
 	}

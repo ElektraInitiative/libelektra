@@ -1,0 +1,41 @@
+###########################################################################
+##
+## This script sets up basic bash completion for the kdb command
+##
+##
+## Put it under /etc/bash_completion.d or load it just for the current
+## session with . <scriptname>
+##
+###########################################################################
+
+
+_kdb () 
+{
+	local cur commands
+	COMPREPLY=()
+
+	# assign the currently active word
+	cur="${COMP_WORDS[COMP_CWORD]}"
+	prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+	# initialize
+	kdbpath=$(which kdb)
+	commands=$(${kdbpath} 2>&1 | sed -e '0,/^Known commands are/d' | awk '{print $1}' | tr '\n' ' ')
+	pathcommands="export file get getmeta cp ls lsmeta mv rm set setmeta sget vset"
+
+	# only kdb was entered yet, print a list of available commands
+	if [[ $COMP_CWORD -le 1 ]]; then
+	   COMPREPLY=( $(compgen -W "${commands}" -- ${cur}) )
+	   return 0
+	fi
+
+	# a command which expects a path as its first parameter was entered
+	if [[ $pathcommands =~ $prev ]]; then
+	   paths=$( { ${kdbpath} ls system && ${kdbpath} ls user; } | tr '\n' ' ')
+	   COMPREPLY=( $(compgen -W "${paths}" -- ${cur}) )
+	   return 0;
+	fi
+}
+
+# complete the command with _kdb and fall back to filename completion
+complete -o default -F _kdb kdb

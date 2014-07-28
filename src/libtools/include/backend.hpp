@@ -46,7 +46,7 @@ private:
 	void tryPlugin (std::string name);
 
 public:
-	Backend(std::string name, std::string mountpoint);
+	Backend(std::string name = "", std::string mountpoint = "");
 	~Backend();
 
 	void addPlugin (std::string name);

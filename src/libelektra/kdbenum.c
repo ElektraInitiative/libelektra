@@ -104,7 +104,7 @@ enum option_t
 	KDB_O_SYNC=1<<9,
 /** This option has no effect.
       KeySets are always sorted.
-      @deprecated dont use */
+      @deprecated don't use */
 	KDB_O_SORT=1<<10,
 /** Do not call kdbGet() for every key
       containing other keys (keyIsDir()). */

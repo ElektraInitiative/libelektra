@@ -30,7 +30,7 @@ public:
 
 	virtual std::string getLongHelpText()
 	{
-		return "While elektra allows to store configuration in binary\n"
+		return "While elektra allows one to store configuration in binary\n"
 		       "key databases, there are typically stored in configuration\n"
 		       "files.\n"
 		       "For administrative users and people used to configuration\n"

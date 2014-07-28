@@ -66,7 +66,7 @@ public:
 		{
 			Key searchKey = config.next();
 			if (!searchKey) throw "StructChecker: More keys found than structure should have";
-			if (!root.isDirectBelow(cur)) throw "StructChecker: key is not direct below";
+			if (!cur.isDirectBelow(root)) throw "StructChecker: key is not direct below";
 
 			if (searchKey.getBaseName() != cur.getBaseName())
 				throw "StructChecker: did not find expected subkey";

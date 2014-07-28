@@ -10,6 +10,7 @@ int main()
 	Backend b("my_backend", "/");
 	b.addPlugin("resolver");
 	b.addPlugin("dump");
+	b.validated();
 
 	Key rootKey(Backends::mountpointsPath, KEY_END);
 	KeySet mountConfig;

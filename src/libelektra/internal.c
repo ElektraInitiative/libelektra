@@ -229,7 +229,7 @@ int elektraRealloc (void ** buffer, size_t size)
  * @code
 if ((buffer = elektraMalloc (length)) == 0) {
 	// here comes the failure handler
-	// no allocation happened here, so dont use buffer
+	// no allocation happened here, so don't use buffer
 #if DEBUG
 	fprintf (stderr, "Allocation error");
 #endif

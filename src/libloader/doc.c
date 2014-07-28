@@ -57,7 +57,7 @@ int elektraModulesInit (KeySet *modules, Key *error)
  * system/elektra/modules/name
  * You might want to use an struct and store it there as binary key.
  *
- * If anything goes wrong dont append anything to modules. Instead
+ * If anything goes wrong don't append anything to modules. Instead
  * report the error to the error key and return with 0.
  *
  * @pre the name is not null, empty and has at least one character

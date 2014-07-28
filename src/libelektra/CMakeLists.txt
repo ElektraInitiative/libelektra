@@ -73,11 +73,9 @@ if (BUILD_SHARED)
 			VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION})
 	set_target_properties (elektra PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 
-	#always search in /lib and /usr/lib and also in the folder the
-	#user decided to install elektra (e.g. /usr/local/)
-	set (ELEKTRA_RPATH "/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}")
-	set (ELEKTRA_RPATH "${ELEKTRA_RPATH}:/usr/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}")
-	set (ELEKTRA_RPATH "${ELEKTRA_RPATH}:${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}")
+	#search only in the prefix the user decided to install elektra
+	#(e.g. /usr/local/)
+	set (ELEKTRA_RPATH "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}")
 
 	#RPATH settings, see http://www.itk.org/Wiki/CMake_RPATH_handling
 	#those settings are needed to find the plugins at runtime even without ld.so.conf

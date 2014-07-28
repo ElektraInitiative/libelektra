@@ -18,6 +18,11 @@ swig_link_libraries (swig-lua elektra ${LUA_LIBRARIES})
 set_target_properties (swig-lua PROPERTIES OUTPUT_NAME kdb)
 set_target_properties (${SWIG_MODULE_swig-lua_REAL_NAME} PROPERTIES PREFIX "")
 
+install (
+	TARGETS swig-lua
+	LIBRARY DESTINATION ${TARGET_LUA_CMOD_FOLDER}
+)
+
 include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 include_directories (${CMAKE_SOURCE_DIR}/src/swig/)
 
