@@ -39,7 +39,7 @@ Memleaks:
 Set environment variable VERSION to current version to make the
 commands below work for copy&paste:
 
- export VERSION=0.x.y
+ export VERSION=0.8.8
 
 Now lets merge that to the release branch:
  git-checkout release
@@ -127,7 +127,7 @@ Symlink current to latest version and add everything:
 
 == Debian Package ==
 
- cd ~elektra/deb/$DVERSION && reprepro --ignore=wrongdistribution include wheezy elektra_$VERSION-1_amd64.changes && update-reprepro
+ cd ~elektra/deb/$DVERSION && reprepro --ignore=wrongdistribution include wheezy elektra_$DVERSION_amd64.changes && update-reprepro
 
 == Commit source package ==
 
