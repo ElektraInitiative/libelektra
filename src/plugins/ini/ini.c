@@ -18,6 +18,9 @@
 #include "lib/inih.h"
 #include "ini.h"
 
+#include "contract.h"
+
+
 #define ELEKTRA_SET_GENERAL_ERROR_IF(id, parentKey, message, condition) \
 	do { \
 		if (condition) \
@@ -118,8 +121,7 @@ int elektraIniGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKe
 
 	if (!strcmp (keyName (parentKey), "system/elektra/modules/ini"))
 	{
-		KeySet *info =
-#include "contract.h"
+		KeySet *info = getPluginContract();
 
 		ksAppend (returned, info);
 		ksDel (info);
