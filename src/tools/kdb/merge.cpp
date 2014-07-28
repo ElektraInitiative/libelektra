@@ -74,9 +74,9 @@ int MergeCommand::execute(Cmdline const& cl)
 {
 	int ret = 0;
 
-	if (cl.arguments.size () < 3)
+	if (cl.arguments.size () < 4)
 	{
-		throw invalid_argument ("wrong number of arguments, 3 needed");
+		throw invalid_argument ("wrong number of arguments, 4 needed");
 	}
 
 	Key oursRoot (cl.arguments[0], KEY_END);
@@ -97,39 +97,10 @@ int MergeCommand::execute(Cmdline const& cl)
 		throw invalid_argument (cl.arguments[2] + " is not a valid keyname");
 	}
 
-	Key mergeRoot;
-
-	if (cl.arguments.size() >= 4)
+	Key resultRoot (cl.arguments[3], KEY_END);
+	if (!baseRoot.isValid ())
 	{
-		mergeRoot = Key (cl.arguments[3], KEY_END);
-
-		if (!mergeRoot.isValid ())
-		{
-			throw invalid_argument (cl.arguments[3] + " is not a valid keyname");
-		}
-
-		KeySet discard;
-		kdb.get (discard, mergeRoot);
-		discard = discard.cut(mergeRoot);
-		if (discard.size() != 0)
-		{
-			if (cl.verbose) std::cout << "discard contained " << discard;
-			throw invalid_argument (cl.arguments[3] + " already contained keys, choose another place where merge result should be written to");
-		}
- 	}
-	else
- 	{
-		if (cl.overrideBase)
-		{
-			KeySet discard;
-			kdb.get (discard, mergeRoot);
-			mergeRoot = baseRoot;
-		}
-		else
-		{
-			cerr << "if you really want to override the base keys, specify the -b option" << endl;
-			return -1;
-		}
+		throw invalid_argument (cl.arguments[3] + " is not a valid keyname");
 	}
 
 	KeySet ours;
@@ -153,6 +124,22 @@ int MergeCommand::execute(Cmdline const& cl)
 		lkdb.get (base, baseRoot);
 		base = base.cut (baseRoot);
 		if (cl.verbose) std::cout << "we got base: " << baseRoot << " with keys " << base << std::endl;
+	}
+
+	KeySet resultKeys;
+	kdb.get(resultKeys, resultRoot);
+
+	KeySet discard = resultKeys.cut(resultRoot);
+	if (discard.size() != 0)
+	{
+		if (cl.overrideBase)
+		{
+			if (cl.verbose) std::cout << "will remove " << discard.size() << " keys, because -b was given" << std::endl;
+		}
+		else
+		{
+			std::cerr << discard.size() << " keys exist in merge resultroot, will quit. Use -b to override the keys there." << std::endl;
+		}
 	}
 
 	if (cl.interactive)
@@ -188,18 +175,17 @@ int MergeCommand::execute(Cmdline const& cl)
 			MergeTask (
 					BaseMergeKeys (base, baseRoot),
 					OurMergeKeys (ours, oursRoot),
-					TheirMergeKeys (theirs, theirsRoot), mergeRoot));
+					TheirMergeKeys (theirs, theirsRoot), resultRoot));
 
 	KeySet empty;
 	if (!result.hasConflicts ())
 	{
-		KeySet resultKeys = result.getMergedKeys();
-		KeySet discard;
-		kdb.set (resultKeys, mergeRoot);
+		resultKeys.append(result.getMergedKeys());
+		kdb.set (resultKeys, resultRoot);
 
 		if (cl.verbose)
 		{
-			cout << resultKeys.size() << " keys in the result" << endl;
+			cout << result.getMergedKeys().size() << " keys in the result" << endl;
 			cout << result.getNumberOfEqualKeys() << " keys were equal" << endl;
 			cout << result.getNumberOfResolvedKeys() << " keys were resolved" << endl;
 		}
