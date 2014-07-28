@@ -16,7 +16,7 @@ machine-readable, the following CMake command exists:
 
 	generate_readme(pluginname)
 
-It will generate a README.c (in the build-directory) out of the
+It will generate a readme_plugginname.c (in the build-directory) out of the
 README.md of the plugin''s source directory.
 
 
@@ -46,7 +46,7 @@ information in README.md. It would look like (for the third key):
 		keyNew ("system/elektra/modules/yajl/infos/licence",
 			KEY_VALUE, "BSD", KEY_END),
 
-## Including README.c ##
+## Including readme_pluginname.c ##
 
 In your plugin, specifically in your elektraYourpluginGet()
 implementation, you have to return the contract whenever configuration
@@ -76,7 +76,7 @@ It may look like:
 		keyNew ("system/elektra/modules/yajl/exports/set",
 			KEY_FUNC, elektraYajlSet,
 			KEY_END),
-	#include "README.c"
+	#include "readme_yourplugin.c"
 		keyNew ("system/elektra/modules/yajl/infos/version",
 			KEY_VALUE, PLUGINVERSION, KEY_END),
 		keyNew ("system/elektra/modules/yajl/config", KEY_END),
@@ -93,7 +93,7 @@ It basically only contains the symbols to be exported (that are
 dependent on your functions to be available) and the plugin version
 information that is always defined to the macro PLUGINVERSION.
 
-As already said, README.c is generated in the binary directory,
+As already said, readme_yourplugin.c is generated in the binary directory,
 so make sure that your CMakeLists.txt contains:
 
 	include_directories (${CMAKE_CURRENT_BINARY_DIR})

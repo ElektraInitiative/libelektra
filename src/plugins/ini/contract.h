@@ -20,7 +20,7 @@ ksNew (30,
 		keyNew ("system/elektra/modules/ini/exports/set",
 				KEY_FUNC, elektraIniSet,
 				KEY_END),
-#include "README.c"
+#include "readme_ini.c"
 		keyNew ("system/elektra/modules/ini/infos/version",
 				KEY_VALUE, PLUGINVERSION,
 				KEY_END),
