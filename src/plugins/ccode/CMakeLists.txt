@@ -1,6 +1,8 @@
 include (LibAddMacros)
 
 generate_readme (ccode)
+add_includes (elektra-full ${CMAKE_CURRENT_BINARY_DIR})
+include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
 set (SOURCES ccode.h ccode.c)
 add_sources (elektra-full ${SOURCES})
