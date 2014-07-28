@@ -33,6 +33,7 @@ static const char *getGlobFlags (KeySet* keys, Key *globKey)
 	Key *flagKey = keyDup (globKey);
 	keyAddBaseName(flagKey, "flags");
 	Key *flagResult = ksLookup (keys, flagKey, KDB_O_NONE);
+	keyDel(flagKey);
 
 	if (flagResult)
 	{
