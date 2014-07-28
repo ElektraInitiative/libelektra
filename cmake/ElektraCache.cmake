@@ -48,6 +48,7 @@ set (PLUGINS_LIST_NODEP
 set (PLUGINS_LIST_POSIX
 	glob  hosts  iconv  network
 	path
+	keytometa
 	syslog uname
 	timeofday
 	simpleini
@@ -161,6 +162,7 @@ set (KDB_DB_USER ".kdb" CACHE PATH
 
 option (ENABLE_CXX11 "Include code using C++11 standard, needs gcc 4.7 or comparable clang/icc" OFF)
 
+set (GTEST_ROOT "" CACHE PATH "use external gtest instead of internal")
 
 
 
@@ -211,7 +213,6 @@ else (BUILD_TESTING)
 	set (INSTALL_TESTING OFF CACHE BOOL "Install testcases" FORCE)
 endif (BUILD_TESTING)
 
-
 set (ENABLE_COVERAGE OFF CACHE BOOL "enable coverage analysis (using gcov)")
 set (COVERAGE_PREFIX
 		"${PROJECT_SOURCE_DIR}/.."
@@ -222,10 +223,12 @@ set (COVERAGE_PREFIX
 
 option (BUILD_SWIG "Enable SWIG generated bindings" OFF)
 if (BUILD_SWIG)
-	option (BUILD_SWIG_PYTHON "Enable the SWIG bindings for Python" OFF)
+	option (BUILD_SWIG_PYTHON2 "Enable the SWIG bindings for Python2" OFF)
+	option (BUILD_SWIG_PYTHON3 "Enable the SWIG bindings for Python3" OFF)
 	option (BUILD_SWIG_LUA    "Enable the SWIG bindings for Lua" OFF)
 else (BUILD_SWIG)
-	set (BUILD_SWIG_PYTHON OFF CACHE BOOL "Enable the SWIG bindings for Python" FORCE)
+	set (BUILD_SWIG_PYTHON2 OFF CACHE BOOL "Enable the SWIG bindings for Python" FORCE)
+	set (BUILD_SWIG_PYTHON3 OFF CACHE BOOL "Enable the SWIG bindings for Python" FORCE)
 	set (BUILD_SWIG_LUA    OFF CACHE BOOL "Enable the SWIG bindings for Lua" FORCE)
 endif (BUILD_SWIG)
 
@@ -297,7 +300,7 @@ set (TARGET_DOCUMENTATION_LATEX_FOLDER
     )
 
 set (TARGET_TOOL_EXEC_FOLDER
-		"lib/elektra/tool_exec"
+		"lib${LIB_SUFFIX}/elektra/tool_exec"
 		CACHE STRING
 		"This folder (below prefix) will be used to install additional kdb-tools"
     )

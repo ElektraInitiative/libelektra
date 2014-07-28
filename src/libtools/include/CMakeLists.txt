@@ -1,4 +1,4 @@
-file (GLOB HDR_FILES *.hpp)
+file (GLOB_RECURSE HDR_FILES *.hpp)
 
 install (FILES
 	${HDR_FILES}

@@ -40,7 +40,12 @@ USER="`id -un`"
 GROUP="`id -gn`"
 
 SYSTEM_FOLDER=@KDB_DB_SYSTEM@
-USER_FOLDER=@KDB_DB_HOME@/$USER/@KDB_DB_USER@
+if [ -n "$HOME" ]
+then
+	USER_FOLDER=$HOME/@KDB_DB_USER@
+else
+	USER_FOLDER=@KDB_DB_HOME@/$USER/@KDB_DB_USER@
+fi
 PLUGINS=`echo "@PLUGINS@" | tr ';' ' '`
 
 DATE=`date "+%b %d %H:%M"`
@@ -89,18 +94,18 @@ end_script()
 #
 # COMMON CHECKS
 #
+KDB_VERSION="@KDB_VERSION@"
+SO_VERSION="@SO_VERSION@"
 
 check_version()
 {
 	echo "Check if script tests the correct version"
 
 	REAL_KDB_VERSION="`$KDB get system/elektra/version/constants/KDB_VERSION 2> /dev/null`"
-	KDB_VERSION="@KDB_VERSION@"
 	[ "x$REAL_KDB_VERSION" = "x$KDB_VERSION" ]
 	exit_if_fail "Script was not compiled ($KDB_VERSION) with this elektra version ($REAL_KDB_VERSION): KDB_VERSION mismatch"
 
 	REAL_SO_VERSION="`$KDB get system/elektra/version/constants/SO_VERSION 2> /dev/null`"
-	SO_VERSION="@SO_VERSION@"
 	[ "x$REAL_SO_VERSION" = "x$SO_VERSION" ]
 	exit_if_fail "Script was not compiled ($SO_VERSION) with this elektra version ($REAL_SO_VERSION): SO_VERSION mismatch"
 }
@@ -183,11 +188,6 @@ is_plugin_available()
 	done
 	return 1
 }
-
-
-
-
-
 
 
 

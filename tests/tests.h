@@ -51,6 +51,9 @@ extern int nbTest;
 extern uid_t nbUid;
 extern gid_t nbGid;
 
+extern char *tempHome;
+extern int tempHomeLen;
+
 int init(int argc, char** argv);
 
 #define warn_if_fail(expression, message) \

@@ -106,10 +106,6 @@ ksNew (30,
 				"\n"
 				"The operation simply fails with an undescriptive error.\n"
 				"\n"
-				"=== Comment Keys === \n"
-				"The current implementation does not differentiate between normal configuration directives and comments. This causes \n"
-				"comments to be represented as normal Elektra Keys instead of MetaKeys. \n"
-				"\n"
 				"=== Leaky abstraction of order ===\n"
 				"Most Augeas lenses require subtrees to be in a specific order. For example the hosts lens requires the ipaddr node \n"
 				"of an entry to precede the canonical node. Unfortunately the Augeas storage plugin has no knowledge about this required \n"
@@ -156,21 +152,32 @@ ksNew (30,
 				"== PLANNED IMPROVEMENTS ==\n"
 				"\n"
 				"* simplified mounting and configuration \n"
-				"* a validation plugin preventing inner node values \n"
-				"* a plugin converting Augeas comment# nodes to Elektra MetaKeys \n",
+				"* a validation plugin preventing inner node values \n",
 				KEY_END),
 		keyNew ("system/elektra/modules/augeas/infos/provides",
 				KEY_VALUE, "storage",
 				KEY_END),
+		keyNew ("system/elektra/modules/augeas/infos/needs",
+			KEY_VALUE, "", KEY_END),
 		keyNew ("system/elektra/modules/augeas/infos/placements",
 				KEY_VALUE, "getstorage setstorage",
 				KEY_END),
-		keyNew ("system/elektra/modules/augeas/infos/needs",
-				KEY_VALUE, "",
+		keyNew ("system/elektra/modules/augeas/infos/recommends",
+				KEY_VALUE, "glob keytometa",
 				KEY_END),
 		keyNew ("system/elektra/modules/augeas/infos/version",
 				KEY_VALUE, PLUGINVERSION,
 				KEY_END),
+		keyNew ("system/elektra/modules/augeas/config", KEY_END),
+		keyNew ("system/elektra/modules/augeas/config/needs", KEY_END),
+		keyNew ("system/elektra/modules/augeas/config/needs/glob/get/#1",
+			KEY_VALUE, "*#comment*",
+			KEY_META, "convert/metaname", "comment", /* comment keys are converted to comments */
+			KEY_META, "convert/append", "next", /* usually comments belong to the following key */
+			KEY_END),
+		keyNew ("system/elektra/modules/augeas/config/needs/glob/get/#1/flags",
+			KEY_VALUE, "0", /* disable the path matching mode */
+			KEY_END),
 		KS_END);
 
 // @formatter:on

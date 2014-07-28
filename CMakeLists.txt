@@ -44,11 +44,12 @@ set (REVERSE_DOMAIN org.libelektra)
 
 set (KDB_VERSION_MAJOR 0)
 set (KDB_VERSION_MINOR 8)
-set (KDB_VERSION_MICRO 6)
+set (KDB_VERSION_MICRO 7)
 
 set (KDB_VERSION "${KDB_VERSION_MAJOR}.${KDB_VERSION_MINOR}.${KDB_VERSION_MICRO}")
 
 set (SO_VERSION 4)
+#set (SO_VERSION_TOOLS 3)
 
 #needs version above
 include (cmake/ElektraPackaging.cmake)

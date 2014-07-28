@@ -32,6 +32,7 @@
 #include <umount.hpp>
 #include <file.hpp>
 #include <sget.hpp>
+#include <merge.hpp>
 
 class Instancer
 {
@@ -79,6 +80,7 @@ public:
 		m_factory.insert(std::make_pair("umount", new Cnstancer<UmountCommand>()));
 		m_factory.insert(std::make_pair("file", new Cnstancer<FileCommand>()));
 		m_factory.insert(std::make_pair("sget", new Cnstancer<ShellGetCommand>()));
+		m_factory.insert(std::make_pair("merge", new Cnstancer<MergeCommand>));
 	}
 
 	~Factory()

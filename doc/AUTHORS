@@ -32,6 +32,10 @@ Bindings: python
 Devel/Test on: Debian Testing
 
 
+Felix Berlakovich <elektra@berlakovich.net>
+journald plugin, augeas plugin, keytometa, main development
+Devel/Test on: Debian Wheezy
+
 Andreas Rottmann <rotty@debian.org>
 Debian packaging
 Bindings: scheme
@@ -58,6 +62,4 @@ Elektra logo, website design.
 Pino Toscano <pino@kde.org>
 Debian Packaging, Documentation
 
-Felix Berlakovich <elektra@berlakovich.net>
-journald plugin
-Devel/Test on: Fedora amd64
+

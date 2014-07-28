@@ -39,12 +39,11 @@ Memleaks:
 Set environment variable VERSION to current version to make the
 commands below work for copy&paste:
 
- export VERSION=0.x.y
+ export VERSION=0.8.8
 
 Now lets merge that to the release branch:
  git-checkout release
- git-merge --no-ff master
- git-commit --amend -m "Merge for release $VERSION"
+ git-merge --no-ff master -m "Merge for release $VERSION"
 
 
 == Prepare Source Package ==
@@ -66,8 +65,7 @@ export DVERSION=$VERSION-1
 
 Build deb:
  git-checkout debian
- git-merge --no-ff release
- git-commit --amend -m "Merge for debian release $DVERSION"
+ git-merge --no-ff release -m "Merge for debian release $DVERSION"
 
  dch --newversion $DVERSION "New upstream version."
  git-add debian/changelog
@@ -78,8 +76,10 @@ Fix debian/ + document in NEWS what maintainer need to consider, then build the 
  git-buildpackage -rfakeroot -k0B2F0DDC -sa
 
 Now move and install:
- cd ~elektra && mkdir deb/$DVERSION && mv elektra_$DVERSION* deb/$DVERSION && mv *.deb deb/$DVERSION && sudo dpkg -i deb/$DVERSION/*.deb
- mv elektra_$VERSION.orig.tar.gz deb/$DVERSION/
+ cd ~elektra
+ mkdir deb/$DVERSION
+ mv elektra_$DVERSION* deb/$DVERSION && mv *.deb deb/$DVERSION && mv elektra_$VERSION.orig.tar.gz deb/$DVERSION/
+ sudo dpkg -i deb/$DVERSION/*.deb
 
 
 Run some basic commands, at least:
@@ -89,10 +89,10 @@ Run local tests:
  kdb run_all
 
 Now run lintian:
- lintian -EI --color=auto --pedantic deb/$DVERSION/elektra_$VERSION_*.changes
+ lintian -EI --color=auto --pedantic deb/$DVERSION/elektra_${VERSION}_*.changes
 
 And run piuparts:
- sudo piuparts deb/$DVERSION/elektra_$DVERSION_*.changes
+ sudo piuparts deb/$DVERSION/elektra_${DVERSION}_*.changes
 
 And run adequate (combined with piuparts and after installation)
  adequate '*elektra*'
@@ -127,7 +127,7 @@ Symlink current to latest version and add everything:
 
 == Debian Package ==
 
- cd ~elektra/deb/$DVERSION && reprepro --ignore=wrongdistribution include wheezy elektra_$VERSION-1_amd64.changes && update-reprepro
+ cd ~elektra/deb/$DVERSION && reprepro --ignore=wrongdistribution include wheezy elektra_${DVERSION}_amd64.changes && update-reprepro
 
 == Commit source package ==
 

@@ -147,6 +147,8 @@ public:
 
 	/**
 	 * Lookup value for a current active layer
+	 *
+	 * @param layer the name of the requested layer
 	 */
 	std::string operator[](std::string const & layer) const
 	{
@@ -162,6 +164,9 @@ public:
 	/**
 	 * Attach observer using to all events given by
 	 * its specification (name)
+	 *
+	 * @param key_name the name with placeholders to be used for attaching
+	 * @param observer the observer to attach to
 	 */
 	void attachByName(std::string const & key_name, Observer & observer)
 	{
@@ -174,6 +179,8 @@ public:
 	/**
 	 * Evaluate a specification (name) and return
 	 * a key name under current context
+	 *
+	 * @param key_name the name with placeholders to be evaluated
 	 */
 	std::string evaluate(std::string const & key_name) const
 	{
@@ -208,6 +215,10 @@ public:
 
 	/**
 	 * Evaluate specification with this context.
+	 *
+	 * @param key_name the keyname with placeholders to evaluate
+	 * @param on_layer the function to be called for every
+	 *                 placeholder found
 	 *
 	 * @par on_layer is called for every layer in the
 	 * specification.

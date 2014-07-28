@@ -16,6 +16,12 @@ cleanup()
 	rm -f $FILE
 }
 
+[ -e /dev/stdin ]
+exit_if_fail "For export/import /dev (and /proc) must be mounted"
+
+[ -e /proc/self/fd/1 ]
+exit_if_fail "For export/import /proc (and /dev) must be mounted"
+
 for PLUGIN in $PLUGINS
 do
 	if is_not_rw_storage
