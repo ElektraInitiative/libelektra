@@ -196,7 +196,7 @@ int elektraCcodeGet(Plugin *handle, KeySet *returned, Key *parentKey)
 				KEY_FUNC, elektraCcodeGet, KEY_END),
 			keyNew ("system/elektra/modules/ccode/exports/set",
 				KEY_FUNC, elektraCcodeSet, KEY_END),
-#include "README.c"
+#include "readme_ccode.c"
 			keyNew ("system/elektra/modules/ccode/infos/version",
 				KEY_VALUE, PLUGINVERSION, KEY_END),
 			KS_END);

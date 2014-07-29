@@ -97,7 +97,7 @@ int elektraFstabGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 			keyNew ("system/elektra/modules/fstab/exports/set",
 				KEY_FUNC, elektraFstabSet,
 				KEY_END),
-#include "README.c"
+#include "readme_fstab.c"
 			keyNew ("system/elektra/modules/fstab/infos/version",
 				KEY_VALUE, PLUGINVERSION, KEY_END),
 			keyNew ("system/elektra/modules/fstab/config/needs",

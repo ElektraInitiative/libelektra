@@ -154,7 +154,7 @@ int elektraHostsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 			keyNew ("system/elektra/modules/hosts/exports/set",
 				KEY_FUNC, elektraHostsSet,
 				KEY_END),
-#include "README.c"
+#include "readme_hosts.c"
 			keyNew ("system/elektra/modules/hosts/infos/version",
 				KEY_VALUE, PLUGINVERSION, 
 				KEY_END),
