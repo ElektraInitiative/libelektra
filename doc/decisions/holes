@@ -1,5 +1,0 @@
-holes in config makes sense in the KeySet as today, but is maybe not a
-good idea for strongly hierarchically structured data.
-
-+ allow specific overrides without override of structure below
-

@@ -14,7 +14,7 @@ fi
 
 check_version
 
-EXTERNAL_FOLDER=@CMAKE_SOURCE_DIR@/external
+EXTERNAL_FOLDER=@CMAKE_SOURCE_DIR@/examples/external
 
 do_tests()
 {

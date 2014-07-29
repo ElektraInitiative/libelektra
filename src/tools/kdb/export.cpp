@@ -33,6 +33,12 @@ int ExportCommand::execute(Cmdline const& cl)
 
 	KeySet part (ks.cut(root));
 
+	if (cl.withoutElektra)
+	{
+		Key systemElektra("system/elektra", KEY_END);
+		part.cut(systemElektra);
+	}
+
 	string format = "dump";
 	if (argc > 1) format = cl.arguments[1];
 

@@ -126,12 +126,10 @@ class ContextHierarchy(Hierarchy):
 		new_name=""
 		for c in hierarchy.name:
 			if c == '%':
-				print "// TOGGLE bef", capture_id
 				capture_id = not capture_id
-				print "// TOGGLE aft", capture_id
 			elif capture_id:
 				new_name += c
-		print "// ADD", hierarchy.name, "new", new_name
+		#print "// ADD", hierarchy.name, "new", new_name
 		hierarchy.info["name"] = hierarchy.name
 		import os.path
 		hierarchy._name = os.path.normpath(new_name)

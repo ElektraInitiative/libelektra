@@ -16,10 +16,17 @@ char tmpfilename [KDB_MAX_PATH_LENGTH];
 int clearenv();
 #endif
 
+char *tempHome;
+int tempHomeLen;
+
+static void clean_temp_home (void);
+
 /**Does some useful startup.
  */
 int init (int argc, char**argv)
 {
+	char *tmpvar;
+
 	setlocale (LC_ALL, "");
 
 #ifdef HAVE_CLEARENV
@@ -39,8 +46,19 @@ int init (int argc, char**argv)
 		strncpy (srcdir, BUILTIN_DATA_FOLDER, sizeof(srcdir));
 	}
 
-	// TODO: strange hack
-	setenv("HOME","/tmp/elektra-test",1);
+	tmpvar = getenv ("TMPDIR");
+	if (!tmpvar)
+	{
+		tmpvar = "/tmp";
+	}
+	tempHomeLen = strlen (tmpvar) + 1 + 13 + 6 + 1;
+	tempHome = malloc (tempHomeLen);
+	succeed_if (tempHome != 0, "malloc failed");
+	snprintf (tempHome, tempHomeLen, "%s/elektra-test.XXXXXX", tmpvar);
+	succeed_if (mkdtemp (tempHome) != 0, "mkdtemp failed");
+	setenv("HOME",tempHome,1);
+
+	atexit (clean_temp_home);
 
 	succeed_if(tmpfilename == tmpnam(tmpfilename),
 			"could not generate file name");
@@ -381,4 +399,14 @@ int output_error(Key *errorKey)
 	printf ("reason: : %s\n", keyString(keyGetMeta(errorKey, "error/reason")));
 
 	return 0;
+}
+
+static void clean_temp_home (void)
+{
+	if (!tempHome) return;
+
+	rmdir (tempHome);
+	free (tempHome);
+	tempHome = NULL;
+	tempHomeLen = 0;
 }

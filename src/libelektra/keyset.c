@@ -1290,7 +1290,7 @@ cursor_t ksGetCursor(const KeySet *ks)
  * @brief return key at given cursor position
  *
  * @param ks the keyset to pop key from
- * @param c where to get
+ * @param pos where to get
  * @return the key at the cursor position on success
  * @retval NULL on NULL pointer, negative cursor position
  * or a position that does not lie within the keyset
