@@ -29,7 +29,7 @@ static inline KeySet *elektraLineContract()
 			KEY_FUNC, elektraLineGet, KEY_END),
 		keyNew ("system/elektra/modules/line/exports/set",
 			KEY_FUNC, elektraLineSet, KEY_END),
-#include "README.c"
+#include "readme_line.c"
 		keyNew ("system/elektra/modules/line/infos/version",
 			KEY_VALUE, PLUGINVERSION, KEY_END),
     		KS_END);
