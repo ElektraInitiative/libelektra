@@ -41,6 +41,7 @@ ConfigNode::~ConfigNode()
 {
     delete m_children;
     delete m_metaData;
+    m_key.clear();
 }
 
 int ConfigNode::getChildCount() const
@@ -66,6 +67,7 @@ QVariant ConfigNode::getValue() const
 void ConfigNode::setName(const QString& name)
 {
     m_name = name;
+    qDebug() << " Key with name " << QString::fromStdString(m_key.getName()) << " has new base name " << name;
     m_key.setBaseName(name.toStdString());
 }
 
@@ -99,6 +101,12 @@ void ConfigNode::accept(Visitor &visitor)
 Key ConfigNode::getKey()
 {
     return m_key;
+}
+
+void ConfigNode::deleteKey()
+{
+    qDebug() << "clearing key " << QString::fromStdString(m_key.getName());
+    m_key.clear();
 }
 
 void ConfigNode::appendChild(ConfigNode* node)

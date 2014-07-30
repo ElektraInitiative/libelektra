@@ -111,6 +111,7 @@ public:
 
     void                    accept(Visitor &visitor);
     kdb::Key                getKey();
+    void                    deleteKey();
 
 private:
     // TODO: not needed if we hold the Key

@@ -12,7 +12,8 @@ public:
     void visit(TreeViewModel *model);
 
 private:
-    kdb::KeySet set;
+    kdb::KDB m_kdb;
+    kdb::KeySet m_set;
 };
 
 #endif // KEYSETVISITOR_HPP

@@ -183,8 +183,6 @@ void TreeViewModel::populateModel(kdb::KeySet const & config)
 
     m_model << system << user;
 
-    QStringList configData;
-
     config.rewind();
 
     while (config.next())
@@ -277,6 +275,7 @@ bool TreeViewModel::removeRow(int row, const QModelIndex& parent)
     }
 
     beginRemoveRows(QModelIndex(), row, row);
+    m_model.at(row)->deleteKey();
     delete m_model.takeAt(row);
     endRemoveRows();
 
@@ -286,7 +285,7 @@ bool TreeViewModel::removeRow(int row, const QModelIndex& parent)
 bool TreeViewModel::insertRow(int row, const QModelIndex& parent)
 {
     Q_UNUSED(parent);
-    beginInsertRows(QModelIndex(), row, row);    
+    beginInsertRows(QModelIndex(), row, row);
     m_model.insert(row, new ConfigNode("", "", m_metaModelParent));
     endInsertRows();
 
@@ -305,10 +304,24 @@ void TreeViewModel::qmlInsertRow(int row, ConfigNode *node)
         qDebug() << "Key " << QString::fromStdString(node->getKey().getFullName()) << " not valid!";
 }
 
+void TreeViewModel::synchronize()
+{
+    KeySetVisitor ksVisit;
+    accept(ksVisit);
+}
+
 void TreeViewModel::clear()
 {
     beginResetModel();
     m_model.clear();
+    endResetModel();
+}
+
+void TreeViewModel::repopulateModel(KeySet set)
+{
+    beginResetModel();
+    m_model.clear();
+    populateModel(set);
     endResetModel();
 }
 
