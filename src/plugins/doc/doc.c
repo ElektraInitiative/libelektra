@@ -140,7 +140,7 @@ int elektraDocOpen(Plugin *handle, Key *errorKey)
  * To solve that problem the module loader adds the configuration key
  * /module. Even if your plugin is basically not able to startup
  * successfully, it should still provide a fallback when /module
- * is present, so that docGet() on system/elektra/modules can be
+ * is present, so that elektraDocGet() on system/elektra/modules can be
  * called successfully later on.
  *
  * @note Make sure to free everything you allocate here within elektraDocClose().
@@ -153,7 +153,7 @@ int elektraDocOpen(Plugin *handle, Key *errorKey)
  *      elektraPluginGetConfig()
  * @ingroup plugin
  */
-int docOpen(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
+int elektraDocOpen(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
 {
 	/* plugin initialization logic */
 
@@ -183,7 +183,7 @@ int docOpen(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
  *      elektraPluginGetConfig()
  * @ingroup plugin
  */
-int docClose(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
+int elektraDocClose(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
 {
 	return 0; /* success */
 }
@@ -350,7 +350,7 @@ int elektraDocGet(Plugin *handle, KeySet *returned, Key *parentKey)
  *
  * @ingroup plugin
  */
-int docGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
+int elektraDocGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
 {
 	ssize_t nr_keys = 0;
 	/* get all keys below parentKey and count them with nr_keys */
@@ -449,7 +449,7 @@ elektraPluginSet(KDB *handle, KeySet *keyset, Key *parentKey)
  *
  * @ingroup plugin
  */
-int docSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
+int elektraDocSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
 {
 	ssize_t nr_keys = 0;
 	/* set all keys below parentKey and count them with nr_keys */
@@ -470,7 +470,7 @@ int docSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *
  *
  * @ingroup plugin
  */
-int docError(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
+int elektraDocError(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
 {
 	return 0;
 }
@@ -506,11 +506,11 @@ int docError(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key
 Plugin *ELEKTRA_PLUGIN_EXPORT(doc)
 {
 	return elektraPluginExport(DOC_PLUGIN_NAME,
-		ELEKTRA_PLUGIN_OPEN,	&docOpen,
-		ELEKTRA_PLUGIN_CLOSE,	&docClose,
-		ELEKTRA_PLUGIN_GET,	&docGet,
-		ELEKTRA_PLUGIN_SET,	&docSet,
-		ELEKTRA_PLUGIN_ERROR,	&docError,
+		ELEKTRA_PLUGIN_OPEN,	&elektraDocOpen,
+		ELEKTRA_PLUGIN_CLOSE,	&elektraDocClose,
+		ELEKTRA_PLUGIN_GET,	&elektraDocGet,
+		ELEKTRA_PLUGIN_SET,	&elektraDocSet,
+		ELEKTRA_PLUGIN_ERROR,	&elektraDocError,
 		ELEKTRA_PLUGIN_END);
 }
 
