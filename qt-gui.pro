@@ -1,18 +1,22 @@
-QT += quick  gui core  qml  widgets
+QT += quick  gui core  qml  widgets testlib
 
 SOURCES += \
-		src/main.cpp \
-		src/treeviewmodel.cpp \
-		src/confignode.cpp \
+    src/main.cpp \
+    src/treeviewmodel.cpp \
+    src/confignode.cpp \
     src/printvisitor.cpp \
-    src/keysetvisitor.cpp
+    src/keysetvisitor.cpp \
+    modeltest/dynamictreemodel.cpp \
+    modeltest/modeltest.cpp
 
 HEADERS += \
-		src/treeviewmodel.hpp \
-		src/confignode.hpp \
+    src/treeviewmodel.hpp \
+    src/confignode.hpp \
     src/visitor.hpp \
     src/printvisitor.hpp \
-    src/keysetvisitor.hpp
+    src/keysetvisitor.hpp \
+    modeltest/dynamictreemodel.h \
+    modeltest/modeltest.h
 
 CONFIG += debug
 
@@ -21,30 +25,34 @@ QML_IMPORT_PATH =
 
 INCLUDEPATH += /usr/include/elektra
 INCLUDEPATH += /usr/local/include/elektra
-INCLUDEPATH += ../../Desktop/p4n81s-libelektra/src/tools/kdb/
 
 # Default rules for deployment.
 include(deployment.pri)
 
-RESOURCES += resources.qrc \
-			i18n.qrc
+RESOURCES += \
+    resources.qrc
+    i18n.qrc
 
 OTHER_FILES += \
-		qml/main.qml\
-		qml/BasicWindow.qml\
-		qml/ButtonRow.qml\
-		qml/Page1.qml\
-		qml/Page2.qml\
-		qml/Page3.qml\
-		qml/WizardLoader.qml\
-		qml/WizardTemplate.qml\
-		qml/Page4.qml\
-		qml/NewMetaKey.qml\
-		qml/BasicRectangle.qml \
-		qml/UnmountBackendWindow.qml \
-		qml/NewKeyWindow.qml \
-		qml/NewArrayEntry.qml \
-		qml/TreeView.qml
+    qml/main.qml\
+    qml/BasicWindow.qml\
+    qml/ButtonRow.qml\
+    qml/Page1.qml\
+    qml/Page2.qml\
+    qml/Page3.qml\
+    qml/WizardLoader.qml\
+    qml/WizardTemplate.qml\
+    qml/Page4.qml\
+    qml/NewMetaKey.qml\
+    qml/BasicRectangle.qml \
+    qml/UnmountBackendWindow.qml \
+    qml/NewKeyWindow.qml \
+    qml/NewArrayEntry.qml \
+    qml/TreeView.qml \
 
 unix: CONFIG += link_pkgconfig
 unix: PKGCONFIG += elektra
+
+SUBDIRS += \
+    unittest/unittest.pro \
+#    modeltest/modeltest.pro

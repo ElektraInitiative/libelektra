@@ -111,7 +111,8 @@ public:
 
     void                    accept(Visitor &visitor);
     kdb::Key                getKey();
-    void                    deleteKey();
+    void                    setKey(kdb::Key key);
+    void                    add(kdb::Key key, unsigned long depth);
 
 private:
     // TODO: not needed if we hold the Key
@@ -121,8 +122,11 @@ private:
 
     // that is the only part we need:
     kdb::Key m_key;
+    unsigned long m_depth;
     TreeViewModel* m_children;
     TreeViewModel* m_metaData;
+
+    unsigned long nameDepth(kdb::Key key);
 };
 
 Q_DECLARE_METATYPE(ConfigNode)

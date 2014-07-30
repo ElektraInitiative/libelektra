@@ -109,6 +109,35 @@ void ConfigNode::deleteKey()
     m_key.clear();
 }
 
+void ConfigNode::setKey(Key key)
+{
+    m_key = key;
+}
+
+void ConfigNode::add(Key key, unsigned long depth)
+{
+    assert(key);
+    assert(m_key ? m_key.isBelow(key) : true);
+    depth++;
+
+    if(m_key.isDirectBelow(key) || depth == nameDepth(key))
+}
+
+unsigned long ConfigNode::nameDepth(Key key)
+{
+    std::string name = key.getName();
+    unsigned long pos = name.find("/", 0);
+    unsigned long depth = 0;
+
+    while (pos != std::string::npos)
+    {
+        pos = name.find("/", pos+1);
+        ++ depth;
+    }
+
+    return depth;
+}
+
 void ConfigNode::appendChild(ConfigNode* node)
 {
     m_children->model().append(node);

@@ -79,12 +79,14 @@ ApplicationWindow {
         iconSource: "icons/new.png"
         tooltip: qsTr("New Key")
         onTriggered: newKeyWindow.show()
+        enabled: false
     }
 
     Action {
         id:newArrayAction
         text: qsTr("Array Entry...")
         onTriggered: newArrayWindow.show()
+        enabled: false
     }
 
     Action {
@@ -93,6 +95,7 @@ ApplicationWindow {
         iconSource: "icons/delete.png"
         tooltip: "Delete"
         shortcut: StandardKey.Delete
+        enabled: false
     }
 
     Action {
@@ -101,6 +104,7 @@ ApplicationWindow {
         iconSource: "icons/import.png"
         tooltip: qsTr("Import Configuration")
         onTriggered: importDialog.open()
+        enabled: false
     }
 
     Action {
@@ -109,6 +113,7 @@ ApplicationWindow {
         iconSource: "icons/export.png"
         tooltip: qsTr("Export Configuration")
         onTriggered: exportDialog.open()
+        enabled: false
     }
 
     Action {
@@ -144,6 +149,7 @@ ApplicationWindow {
         text: qsTr("Create Backend...")
         tooltip: qsTr("Create Backend")
         onTriggered: wizardLoader.show()
+        enabled: false
     }
 
     Action {
@@ -151,6 +157,7 @@ ApplicationWindow {
         text: qsTr("Unmount Backend...")
         tooltip: qsTr("Unmount Backend")
         onTriggered: unmountBackendWindow.show()
+        enabled: false
     }
 
     Action {

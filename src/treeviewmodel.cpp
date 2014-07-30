@@ -30,14 +30,14 @@ QVariant TreeViewModel::data(const QModelIndex& index, int role) const
 {
     if (!index.isValid())
     {
-        qDebug() << "TreeVieModel::data: index not valid";
+        qDebug() << "TreeViewModel::data: index not valid. Index = " << index.row() << " Model size = " << m_model.size();
         // TODO: why is this function called with wrong index?
         return QVariant();
     }
 
     if (index.row() > (m_model.size() - 1))
     {
-        qDebug() << "TreeVieModel::data: row too high" << index.row();
+        qDebug() << "TreeViewModel::data: row too high" << index.row();
         // TODO: why is this function called with wrong index?
         return QVariant();
     }
@@ -87,7 +87,7 @@ bool TreeViewModel::setData(const QModelIndex& index, const QVariant& value, int
 {
     if (!index.isValid() || index.row() > (m_model.size() - 1))
     {
-        qDebug() << "Wrong index called";
+        qDebug() << "TreeViewModel::setData: Wrong index called";
         return false;
     }
 
@@ -120,7 +120,7 @@ void TreeViewModel::setDataValue(int index, const QVariant& value, const QString
 {
     if (index < 0 || index > m_model.size() - 1)
     {
-        qDebug() << "setDataValue: Wrong index called. model.size = " << m_model.size() << " index = " << index;
+        qDebug() << "TreeViewModel::setDataValue: Wrong index called. model.size = " << m_model.size() << " index = " << index;
         return;
     }
 
@@ -323,6 +323,26 @@ void TreeViewModel::repopulateModel(KeySet set)
     m_model.clear();
     populateModel(set);
     endResetModel();
+}
+
+void TreeViewModel::add(const KeySet &config)
+{
+    for (KeySet::iterator it = config.begin(); it !=config.end(); ++it)
+    {
+        add(*it);
+    }
+}
+
+void TreeViewModel::add(Key key)
+{
+    if(key.getName() == "user")
+        m_userRootNode->setKey(key);
+    else if(key.getName() == "system")
+        m_systemRootNode->setKey(key);
+    else if(key.isUser())
+        m_userRootNode->add(key, 0);
+    else
+        m_systemRootNode->add(key, 0);
 }
 
 QHash<int, QByteArray> TreeViewModel::roleNames() const

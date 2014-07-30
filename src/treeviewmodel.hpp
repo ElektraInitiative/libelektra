@@ -40,6 +40,14 @@ public:
 
     explicit TreeViewModel(QObject* parent =  0);
 
+    explicit TreeViewModel(kdb::KeySet & keyset) :
+        m_userRootNode(),
+        m_systemRootNode(),
+        m_keySet(keyset)
+    {
+        add(keyset);
+    }
+
     // Needed for Qt
     TreeViewModel(TreeViewModel const & other);
     ~TreeViewModel();
@@ -87,12 +95,19 @@ public:
     Q_INVOKABLE void        synchronize();
     void                    repopulateModel(kdb::KeySet set);
 
+    void add(kdb::KeySet const & config);
+    void add(kdb::Key key);
+
 private:
     void                    sink(ConfigNode* node, QStringList keys, QString path, kdb::Key key);
     void                    find(ConfigNode *node, TreeViewModel *searchResults, const QString term);
 
     QList<ConfigNode*> m_model;
     kdb::Key m_metaModelParent;
+
+    ConfigNode *m_userRootNode;
+    ConfigNode *m_systemRootNode;
+    kdb::KeySet m_keySet;
 
 protected:
     QHash<int, QByteArray>  roleNames() const;

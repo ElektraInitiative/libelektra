@@ -2,9 +2,11 @@
 #include <QQmlApplicationEngine>
 #include <QtQml>
 #include <QMetaType>
+#include <QtTest/qtestcase.h>
 
 #include "treeviewmodel.hpp"
 #include "confignode.hpp"
+#include "modeltest/modeltest.h"
 
 int main(int argc, char* argv[])
 {
@@ -27,13 +29,17 @@ int main(int argc, char* argv[])
     kdb.get(config, "/");
 
     TreeViewModel* model = new TreeViewModel;
+    new ModelTest(model);
+
     model->populateModel(config);
 
     ctxt->setContextProperty("externTreeModel", QVariant::fromValue(model));
     engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
 
-    PrintVisitor printer;
-   // model->accept(printer);
+//    PrintVisitor printer;
+//    model->accept(printer);
 
+//    KeySetVisitor ksVisit;
+//    model->accept(ksVisit);
     return app.exec();
 }
