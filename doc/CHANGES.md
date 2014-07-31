@@ -15,14 +15,14 @@ but three API bugs had to be fixed:
 
  - the metadata which was filesys only is removed
 
-   keyMeta: newly introduced API
+ - KeyMeta: newly introduced API
    remove old keyGetATime, keyGetUID, ..
    (They are still implemented with new metadata interface in the
     testcases: tests/test_meta.c)
 
  - keyset now describes the desired state of configuration (no removed keys)
 
-   keyNext: wrong documentation (subsequent calls will still return NULL ptr)
+ - keyNext: wrong documentation (subsequent calls will still return NULL ptr)
 
  - kdbSet() now requires you to use kdbGet() before.
    This is needed because elektra now can detect multi-process

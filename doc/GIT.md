@@ -7,7 +7,7 @@
 
 ## BASIC Configuration ##
 
-make sure to do:
+make sure to do:  
 	git config --global merge.ff false
 	git config merge.ff false
 
@@ -52,24 +52,24 @@ release.  (see config option above)
 
 ## Local branches ##
 
-You should always make your own feature branch with:
+You should always make your own feature branch with:  
 	git-checkout -b <feature-branch-name>
 
 On this branch it is not so important that every
 commit compiles or all test cases run.
 
-To merge a branch use (no-fastforward):
+To merge a branch use (no-fastforward):  
 	git-merge --no-ff <branchname>
 
 If you already did some commits, but want them in a branch,
-you can do:
-	git-branch foo
-	git reset HEAD^^  (für 2 commits zurück oder)
-	git reset origin/master
+you can do:  
+	git-branch foo  
+	git reset HEAD^^  (for 2 commits back)  
+	git reset origin/master  
 
 	git-ref-log # recover
 
-## Github# ##
+## Github ##
 
 When doing merge requests our [buildserver](http://build.libelektra.org:8080)
 will build authorized users. If you are not yet authorized following
@@ -82,11 +82,11 @@ Then one of the admins:
 - manuelm
 - markus2330
 - beku
-need to confirm by saying:
+need to confirm by saying:  
 	.*add\W+to\W+whitelist.*
-or if just the pull request should be checked:
+or if just the pull request should be checked:  
 	.*build\W+allow.*
-or if just a single build should be started:
+or if just a single build should be started:  
 	.*build\W+start.*
 
 If you want any configuration changes, please contact

@@ -6,11 +6,11 @@ KDB_VERSION_MINOR and KDB_VERSION_MICRO which are
 numbers. They represent the public announced version
 information.
 
-The same information can be retrieved at runtime using
-system/elektra/version/constants/KDB_VERSION
-system/elektra/version/constants/KDB_VERSION_MAJOR
-system/elektra/version/constants/KDB_VERSION_MICRO
-system/elektra/version/constants/KDB_VERSION_MINOR
+The same information can be retrieved at runtime using  
+	system/elektra/version/constants/KDB_VERSION
+	system/elektra/version/constants/KDB_VERSION_MAJOR
+	system/elektra/version/constants/KDB_VERSION_MICRO
+	system/elektra/version/constants/KDB_VERSION_MINOR
 
 
 KDB_VERSION
