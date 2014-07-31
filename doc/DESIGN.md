@@ -79,7 +79,7 @@ can generate any key or keyset in a single c-statement. This can be
 done programmatically by keyGenerate or ksGenerate in libelektratools.
 
 To just get a key, use  
-	Key *k = keyNew (0);
+	Key *k = keyNew (0);  
 and to just get a keyset, use  
 	KeySet *k = ksNew (0);
 
@@ -165,13 +165,13 @@ must be returned.
 
 
 There are some functions which return an internal string:  
-	const char *keyName(const Key *key);
-	const char *keyBaseName(const Key *key);
-	const char *keyOwner(const Key *key);
-	const char *keyComment(const Key *key);
+	const char *keyName(const Key *key);  
+	const char *keyBaseName(const Key *key);  
+	const char *keyOwner(const Key *key);  
+	const char *keyComment(const Key *key);  
 
 and in the case that (keyIsBinary(key)==1) also:  
-	const void *keyValue(const Key *key);
+	const void *keyValue(const Key *key);  
 
 A Null pointer will lead in all that cases that you get back
 a Null pointer.
@@ -211,9 +211,9 @@ KEY_TYPE.
 
 The data structures start with a capital letter for every part of
 the word:  
-	KDB ... Key Data Base Handle
-	KeySet ... Key Set
-	Key ... Key
+	KDB ... Key Data Base Handle  
+	KeySet ... Key Set  
+	Key ... Key  
 
 keyGetUID() and keyGetGID() have upper case letters because ID is commonly
 written in upper case letters.
@@ -234,12 +234,12 @@ used, its more disturbing then have any positive effect. The only
 exceptions are:
 
 In special:  
-	const char *keyName(const Key *key);
-	const char *keyBaseName(const Key *key);
-	const char *keyComment(const Key *key);
-	const void *keyValue(const Key *key);
-	const char *keyString(const Key *key);
-	const Key  *keyGetMeta(const Key *key, const char* metaName)
+	const char *keyName(const Key *key);  
+	const char *keyBaseName(const Key *key);  
+	const char *keyComment(const Key *key);  
+	const void *keyValue(const Key *key);  
+	const char *keyString(const Key *key);  
+	const Key  *keyGetMeta(const Key *key, const char* metaName)  
 
 These functions are really thought to get something and not to change anything!
 Elektra will lose the knowledge if these keys are synchronized or not. So

@@ -8,8 +8,8 @@
 ## BASIC Configuration ##
 
 make sure to do:  
-	git config --global merge.ff false
-	git config merge.ff false
+	git config --global merge.ff false  
+	git config merge.ff false  
 
 ## Remote Branches ##
 
@@ -81,7 +81,7 @@ Then one of the admins:
 - fberlakovich
 - manuelm
 - markus2330
-- beku
+- beku  
 need to confirm by saying:  
 	.*add\W+to\W+whitelist.*
 or if just the pull request should be checked:  
