@@ -15,9 +15,11 @@ make sure to do:
 ## Remote Branches ##
 
 To list all remote branches use:
+
 	git-branch -a
 
 To checkout a remote branch initially use:
+
 	git-checkout -b <branchname> origin/<branchname>
 
 Once you have done this, it will be a local branch, too.
@@ -54,12 +56,14 @@ release.  (see config option above)
 ## Local branches ##
 
 You should always make your own feature branch with:  
+
 	git-checkout -b <feature-branch-name>
 
 On this branch it is not so important that every
 commit compiles or all test cases run.
 
 To merge a branch use (no-fastforward):  
+
 	git-merge --no-ff <branchname>
 
 If you already did some commits, but want them in a branch,
