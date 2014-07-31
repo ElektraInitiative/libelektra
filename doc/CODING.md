@@ -122,15 +122,15 @@ Use \copydoc, \copybrief and \copydetails intensively.
 
 
 Files should start with:  
->---- file template ----
->/**
->* \file
->*
->* \brief <short statement about the content of the file>
->*
->* \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
->*
->*/
+>---- file template ----  
+>/**  
+>* \file  
+>*  
+>* \brief <short statement about the content of the file>  
+>*  
+>* \copyright BSD License (see doc/COPYING or http://www.libelektra.org)  
+>*  
+>*/  
 >---- file template ----
 
 \file should *not* contain any text.
