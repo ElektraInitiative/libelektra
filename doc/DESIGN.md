@@ -34,19 +34,19 @@ addition to all that malloc and free must have the same libc
 version. malloc in a library linked against another libc, but
 freed by the application could lead to hard to find bugs.
 
-Some calls have a opposite call to get the structure freed again:
-KDB * kdbOpen();
-will need the function:
-int kdbClose(KDB *handle);
+Some calls have a opposite call to get the structure freed again:  
+    KDB * kdbOpen();
+will need the function:  
+	int kdbClose(KDB *handle);
 to get rid of the resources again. It maybe also shut down
 connections, so it really must be called at the end of the
 program.
 
-Key *keyNew(const char *keyName, ...);
-int keyDel(Key *key);
+	Key *keyNew(const char *keyName, ...);
+	int keyDel(Key *key);
 
-KeySet *ksNew(int alloc, ...);
-int ksDel(KeySet *ks);
+	KeySet *ksNew(int alloc, ...);
+	int ksDel(KeySet *ks);
 
 These 2 pairs just malloc what is necessary and free it again.
 There are more mallocs then just the KDB, Key and KeySet
@@ -57,16 +57,16 @@ Name, Value, Comment can't be handled as easy, because elektra
 does not provide a string library. There are 2 ways to access it,
 showed on the Comment example:
 
-char *keyComment(const Key *key);
+	char *keyComment(const Key *key);
 just returns the comment and does not allow any change of size of
 the comment.
 
-ssize_t keyGetCommentSize(const Key *key);
+	ssize_t keyGetCommentSize(const Key *key);
 to see how long the comment is for above function and how much
 buffer to allocate for function below. This value can be directly
 passed to malloc.
 
-ssize_t keyGetComment(const Key *key, char *returnedDesc, size_t maxSize);
+	ssize_t keyGetComment(const Key *key, char *returnedDesc, size_t maxSize);
 will write the comment in a buffer maintained by you which is allocated
 with at least the size of the function above.
 
@@ -78,10 +78,10 @@ as alternative to keySet* functions and to ksAppendKey(). With that you
 can generate any key or keyset in a single c-statement. This can be
 done programmatically by keyGenerate or ksGenerate in libelektratools.
 
-To just get a key, use
-Key *k = keyNew (0);
-and to just get a keyset, use
-KeySet *k = ksNew (0);
+To just get a key, use  
+	Key *k = keyNew (0);
+and to just get a keyset, use  
+	KeySet *k = ksNew (0);
 
 The macros va_start and va_end will not be used then. Otherwise pass
 a list like described in the documentation.
@@ -114,27 +114,27 @@ char array, with a terminating '\0', but Binary is a void array,
 not terminated by '\0'. Only strings may be converted to other charsets.
 Use the appendant Get functions, to be not depend on that internal facts.
 
-const void *keyValue(const Key *key);
+	const void *keyValue(const Key *key);
 does not specify whether it is a binary or string, it will just return
 the pointer to it. When Key is a string (check with keyIsString()) at
 least "" will be returned, see below Return Values for strings.
 For binary data a NULL pointer is also possible
 to distinguish between no data and '\0'.
 
-ssize_t keyGetValueSize(const Key *key);
+	ssize_t keyGetValueSize(const Key *key);
 does not specify whether it is a binary or string, it will just return
 the size which can be passed to malloc to hold the entire value.
 
-ssize_t keyGetString(const Key *key, char *returnedString, size_t maxSize);
+	ssize_t keyGetString(const Key *key, char *returnedString, size_t maxSize);
 Get the string into a buffer maintained by you.
 
-ssize_t keySetString(Key *key, const char *newString);
+	ssize_t keySetString(Key *key, const char *newString);
 Set the null terminated string.
 
-ssize_t keyGetBinary(const Key *key, void *returnedBinary, size_t maxSize);
+	ssize_t keyGetBinary(const Key *key, void *returnedBinary, size_t maxSize);
 Get the binary data which might contain '\0'.
 
-ssize_t keySetBinary(Key *key, const void *newBinary, size_t dataSize);
+	ssize_t keySetBinary(Key *key, const void *newBinary, size_t dataSize);
 Set the binary data which might contain '\0'. The length is given
 by dataSize.
 
@@ -164,14 +164,14 @@ exceeds that limit -1 (see above Return Value) or NULL pointer
 must be returned.
 
 
-There are some functions which return an internal string:
-const char *keyName(const Key *key);
-const char *keyBaseName(const Key *key);
-const char *keyOwner(const Key *key);
-const char *keyComment(const Key *key);
+There are some functions which return an internal string:  
+	const char *keyName(const Key *key);
+	const char *keyBaseName(const Key *key);
+	const char *keyOwner(const Key *key);
+	const char *keyComment(const Key *key);
 
-and in the case that (keyIsBinary(key)==1) also:
-const void *keyValue(const Key *key);
+and in the case that (keyIsBinary(key)==1) also:  
+	const void *keyValue(const Key *key);
 
 A Null pointer will lead in all that cases that you get back
 a Null pointer.
@@ -210,10 +210,10 @@ with KDB_O, errors KDB_ERR, namespaces KEY_NS and key types with
 KEY_TYPE.
 
 The data structures start with a capital letter for every part of
-the word:
-KDB ... Key Data Base Handle
-KeySet ... Key Set
-Key ... Key
+the word:  
+	KDB ... Key Data Base Handle
+	KeySet ... Key Set
+	Key ... Key
 
 keyGetUID() and keyGetGID() have upper case letters because ID is commonly
 written in upper case letters.
@@ -233,16 +233,14 @@ or KeySet is not modified, const is used. For return values no const is
 used, its more disturbing then have any positive effect. The only
 exceptions are:
 
-In special:
-const char *keyName(const Key *key);
-const char *keyBaseName(const Key *key);
-const char *keyComment(const Key *key);
-const void *keyValue(const Key *key);
-const char *keyString(const Key *key);
-const Key  *keyGetMeta(const Key *key, const char* metaName)
+In special:  
+	const char *keyName(const Key *key);
+	const char *keyBaseName(const Key *key);
+	const char *keyComment(const Key *key);
+	const void *keyValue(const Key *key);
+	const char *keyString(const Key *key);
+	const Key  *keyGetMeta(const Key *key, const char* metaName)
 
 These functions are really thought to get something and not to change anything!
 Elektra will lose the knowledge if these keys are synchronized or not. So
 they are marked const, and you must not cast that away.
-
-

@@ -61,7 +61,6 @@ Additional gcc 4.6 armhf is tested regularly.
 |      gcc          | 4.6                         |      armhf        |
 |      gcc          | (Debian 4.4.5-8) 4.4.5      |      i386         |
 |     clang         | version 1.1 (Debian 2.7-3)  |x86_64-pc-linux-gnu|
-|-------------------|-----------------------------|-------------------|
 
 
 To change the compiler, use
