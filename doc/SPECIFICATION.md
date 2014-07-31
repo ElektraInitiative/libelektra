@@ -1,14 +1,15 @@
-#This document describes all meta data/schema values available.
-#
-# meta-meta (description how to parse that file)
-#
-# key: the name of the meta-key
-# type: (string|enumeration|regular expression) the type of the meta-value
-# status: (implemented|idea) the current state of this meta data entry
-# plugin: the plugins which use the meta-key (space separated)
-# description: explains what it is about
-#
-# v0.2
+# TESTING #
+
+>This document describes all meta data/schema values available.
+>meta-meta (description how to parse that file)
+
+>key: the name of the meta-key
+>type: (string|enumeration|regular expression) the type of the meta-value
+>status: (implemented|idea) the current state of this meta data entry
+>plugin: the plugins which use the meta-key (space separated)
+>description: explains what it is about
+
+>v0.2
 
 key: order
 type: int

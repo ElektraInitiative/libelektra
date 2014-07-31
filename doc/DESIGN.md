@@ -1,5 +1,4 @@
-Elektra Design Document
-=======================
+# DESIGN ##
 
 This document describes the design of the c-api and gives
 hints for binding writers. It does not aim to plugin writers
@@ -18,8 +17,7 @@ document the KDB API is described. But sometimes there are
 hints for elektra specific conventions.
 
 
-Data Structures
-===============
+## Data Structures ##
 
 Key, KeySet and KDB datastructures are defined in kdbprivate.h
 to remain ABI compatible when something is added to a struct. That means
@@ -27,8 +25,7 @@ it is not possible to put one of elektra's datastructures on the stack.
 You must use the memory management facilities mentioned in the next chapter.
 
 
-Memory Management
-=================
+## Memory Management ##
 
 Elektra manages memory itself. No free must be required, which
 was not allocated by the programmer himself. This avoids that
@@ -74,8 +71,7 @@ will write the comment in a buffer maintained by you which is allocated
 with at least the size of the function above.
 
 
-Variable Arguments
-==================
+## Variable Arguments ##
 
 The constructors for Key and KeySet take a variable list of arguments
 as alternative to keySet* functions and to ksAppendKey(). With that you
@@ -91,8 +87,7 @@ The macros va_start and va_end will not be used then. Otherwise pass
 a list like described in the documentation.
 
 
-Off-by-one
-==========
+## Off-by-one ##
 
 Off-by-one errors (OBOE) are avoided by starting all pointers with 0
 as usual in C. The size returned by the *GetSize functions
@@ -101,8 +96,7 @@ the size needed to be allocated. So if you add 1 to it, too much is
 allocated, but no error will occur.
 
 
-Minimal Set
-===========
+## Minimal Set ##
 
 The functions listed in kdb.h is a minimal set to fully work with
 a key database. They are implemented in src/libelektra in ANSI C.
@@ -112,9 +106,7 @@ They need the POSIX interface and can optionally use iconv to make
 utf8 conversations.
 
 
-Value, String or Binary
-=======================
-
+## Value, String or Binary ##
 
 Some confusion is about value, string or binary. Value is just a name
 which does not specify if it is a string or binary. String is a
@@ -147,8 +139,7 @@ Set the binary data which might contain '\0'. The length is given
 by dataSize.
 
 
-Return Value
-============
+## Return Value ##
 
 There are many different types of return values. What they have in
 common is there error behaviour. Every function must return -1 on
@@ -195,8 +186,7 @@ This is not true for keyValue in the case of binary data, because
 may also return 0 for that reason.
 
 
-Error Handling
-==============
+## Error Handling ##
 
 Error handling will not be implemented with 0.7.0. So it won't be
 possible for an application to determine what exactly went wrong.
@@ -204,8 +194,7 @@ possible for an application to determine what exactly went wrong.
 Elektra does not set errno. If a function you call sets errno, make sure
 to set it back to the old value again.
 
-Naming
-======
+## Naming ##
 
 All Function Names begin with their class name, e.g. kdb, ks or key.
 The words are written together with large letters for separation.
@@ -237,8 +226,7 @@ Those have the prefix elektra*. They will always be Elektra specific and
 won't be implemented by other KDB implementations.
 
 
-const
-=====
+## const ##
 
 Where possible the functions should use const for parameters. Where Key
 or KeySet is not modified, const is used. For return values no const is

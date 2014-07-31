@@ -1,4 +1,4 @@
-= INTRODUCTION =
+# TESTING #
 
 Libraries need a pervasive testing for continuous improvement. Any
 problem found and behaviour described must be written down as test and
@@ -14,7 +14,7 @@ Elektra are:
 2.) API Test which test the library
 3.) Integration tests which test commandline tools built on the library
 
-== Integration Tests ==
+## Integration Tests ##
 
 
 
