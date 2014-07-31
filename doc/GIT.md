@@ -15,11 +15,9 @@ make sure to do:
 ## Remote Branches ##
 
 To list all remote branches use:
-
 	git-branch -a
 
 To checkout a remote branch initially use:
-
 	git-checkout -b <branchname> origin/<branchname>
 
 Once you have done this, it will be a local branch, too.
