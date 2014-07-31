@@ -293,8 +293,11 @@ bool TreeViewModel::removeRow(int row, const QModelIndex& parent)
 bool TreeViewModel::insertRow(int row, const QModelIndex& parent)
 {
     Q_UNUSED(parent);
+    ConfigNode *node = new ConfigNode;
+    node->setKey(m_metaModelParent);
     beginInsertRows(QModelIndex(), row, row);
-    m_model.insert(row, new ConfigNode("", "", m_metaModelParent));
+    m_model.insert(row, node);
+ //   m_model.insert(row, new ConfigNode("", "", m_metaModelParent));
     endInsertRows();
 
     return true;

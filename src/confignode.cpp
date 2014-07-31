@@ -70,11 +70,13 @@ QVariant ConfigNode::getValue() const
 
 void ConfigNode::setName(const QString& name)
 {
+    qDebug() << "ConfigNode::setName: Node with name " << m_name << " has new name " << name;
     m_name = name;
-    qDebug() << " Key with name " << QString::fromStdString(m_key.getName()) << " has new base name " << name;
 
-    if(QString::fromStdString(m_key.getName()) != "")
+    if(QString::fromStdString(m_key.getName()) != ""){
+        qDebug() << "ConfigNode::setName: Key with name " << QString::fromStdString(m_key.getName()) << " has new base name " << name;
         m_key.setBaseName(name.toStdString());
+    }
 }
 
 void ConfigNode::setValue(const QVariant& value)
@@ -87,18 +89,22 @@ void ConfigNode::setValue(const QVariant& value)
 
 void ConfigNode::setMeta(const QString &name, const QVariant &value)
 {
-    deleteMeta(m_name);
+    qDebug() << "ConfigNode::setMeta: metaNode " << m_name << " has new metaname " << name;
     m_name = name;
     m_value = value;
 
-    if(m_key)
+    if(m_key){
+//        deleteMeta(m_name);
         m_key.setMeta(name.toStdString(), value.toString().toStdString());
+    }
 }
 
 void ConfigNode::deleteMeta(const QString &name)
 {
-    if(m_key)
+    if(m_key){
+        qDebug() << "metakey " << name << " deleted";
         m_key.delMeta(name.toStdString());
+    }
 }
 
 void ConfigNode::accept(Visitor &visitor)
@@ -130,8 +136,7 @@ void ConfigNode::populateMetaModel()
         while (m_key.nextMeta())
         {
             ConfigNode* node = new ConfigNode();
-            node->setName(QString::fromStdString(m_key.currentMeta().getName()));
-            node->setValue(QString::fromStdString(m_key.currentMeta().getString()));
+            node->setMeta(QString::fromStdString(m_key.currentMeta().getName()), QVariant::fromValue(QString::fromStdString(m_key.currentMeta().getString())));
             m_metaData->model().append(node);
         }
     }
