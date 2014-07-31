@@ -8,6 +8,7 @@
 ## BASIC Configuration ##
 
 make sure to do:  
+
 	git config --global merge.ff false  
 	git config merge.ff false  
 
@@ -63,6 +64,7 @@ To merge a branch use (no-fastforward):
 
 If you already did some commits, but want them in a branch,
 you can do:  
+
 	git-branch foo  
 	git reset HEAD^^  (for 2 commits back)  
 	git reset origin/master  

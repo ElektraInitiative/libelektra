@@ -64,9 +64,11 @@ Additional gcc 4.6 armhf is tested regularly.
 
 
 To change the compiler, use  
+
 	CMAKE_C_COMPILER and CMAKE_CXX_COMPILER.
 
 for example to use gcc-4.3  
+
 	cmake -DCMAKE_C_COMPILER=gcc-4.3 -DCMAKE_CXX_COMPILER=g++-4.3 ..
 
 
@@ -74,36 +76,39 @@ for example to use gcc-4.3
 ### OPTIONS ###
 
 #### PLUGINS ####
-	Because the core of elektra is minimal, plugins are needed to
-	actually read and write to configuration files (storage plugins),
-	commit the changes (resolver plugin) and also do many other
-	tasks related to configuration.
-	To add all plugins, you can use  
+Because the core of elektra is minimal, plugins are needed to
+actually read and write to configuration files (storage plugins),
+commit the changes (resolver plugin) and also do many other
+tasks related to configuration.
+To add all plugins, you can use  
+
 		-DPLUGINS=ALL
-	To add all plugins not having additional dependencies
-	(they need only POSIX), you can use  
+To add all plugins not having additional dependencies
+(they need only POSIX), you can use  
+	
 		-DPLUGINS=NODEP
-	To manually set the default (same as not setting PLUGINS), you can use  
+To manually set the default (same as not setting PLUGINS), you can use  
+
 		-DPLUGINS=DEFAULT
 
 #### CMAKE_BUILD_TYPE  ####
-	Debug, Release or RelWithDebInfo
-	See help bar at bottom of ccmake for that option or:
-	http://www.cmake.org/Wiki/CMake_Useful_Variables
+Debug, Release or RelWithDebInfo
+See help bar at bottom of ccmake for that option or:
+http://www.cmake.org/Wiki/CMake_Useful_Variables
 
 #### DEBUG_BUILD and ELEKTRA_VERBOSE_BUILD  ####
-	Only needed by elektra developers.
-	Make the library to output some or a lot of things.
-	It is not recommended to use these options.
+Only needed by elektra developers.
+Make the library to output some or a lot of things.
+It is not recommended to use these options.
 
-#### KDB_DB_SYSTEM ####  
-	is the path where the system configuration is searched at runtime
+#### KDB_DB_SYSTEM ####
+is the path where the system configuration is searched at runtime
 
 #### BUILD_DOCUMENTATION ####
 build documentation with doxygen the kdb tool does only have the integrated docu at the moment
 
 
-#### CMAKE_INSTALL_PREFIX ####  
+#### CMAKE_INSTALL_PREFIX ####
 By default all files will installed below /usr/local.
 Edit that cache entry to change that behaviour.
 Also called system prefix within the documentation.
@@ -112,32 +117,32 @@ If you want to create a package afterwards it is ok to use
 pathes that you can write to (e.g. CMAKE_INSTALL_PREFIX /home/markus/bin)
 
 #### LIB_SUFFIX ####
-	Lets you install libraries into architecture specific folder.
-	E.g. for 32/64 bit systems you might install libraries under
-	lib64. Set LIB_SUFFIX to 64 to achieve exactly that.
-	So the system library folder will be CMAKE_INSTALL_PREFIX/lib64
-	then.
+Lets you install libraries into architecture specific folder.
+E.g. for 32/64 bit systems you might install libraries under
+lib64. Set LIB_SUFFIX to 64 to achieve exactly that.
+So the system library folder will be CMAKE_INSTALL_PREFIX/lib64
+then.
 
 #### TARGET_INCLUDE_FOLDER ####
-	By default include folders will be installed below
-	CMAKE_INSTALL_PREFIX/include/elektra
-	This entry let you change the elektra.
-	If the entry is empty, the include files will be
-	installed directly to CMAKE_INSTALL_PREFIX/include.
+By default include folders will be installed below
+CMAKE_INSTALL_PREFIX/include/elektra
+This entry let you change the elektra.
+If the entry is empty, the include files will be
+installed directly to CMAKE_INSTALL_PREFIX/include.
 
 #### TARGET_PLUGIN_FOLDER ####
-	Similar to above, but with the plugins. Default is:
-	CMAKE_INSTALL_PREFIX/lib${LIB_SUFFIX}/elektra
-	It can be also left empty to install plugins next
-	to other libraries.
+Similar to above, but with the plugins. Default is:
+CMAKE_INSTALL_PREFIX/lib${LIB_SUFFIX}/elektra
+It can be also left empty to install plugins next
+to other libraries.
 
 
 #### GTEST_ROOT ####
-	Specifies the root of the GoogleTest sources, to be used
-	for some of the tests. A CMakeLists.txt inside GTEST_ROOT
-	will be searched as way to detect a valid GoogleTest source
-	directory.
-	If it is "", an internal version of gtest will be used.
+Specifies the root of the GoogleTest sources, to be used
+for some of the tests. A CMakeLists.txt inside GTEST_ROOT
+will be searched as way to detect a valid GoogleTest source
+directory.
+If it is "", an internal version of gtest will be used.
 
 It is recommended that you browse through all of the options.
 Afterwards press c again (maybe multiple times until all variables are
