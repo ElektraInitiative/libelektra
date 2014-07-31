@@ -1,4 +1,6 @@
-List of authors that contributed to Elektra.
+# AUTHORS #
+
+The list of authors that contributed to Elektra.
 
 
 Markus Raab <elektra@markus-raab.org>
@@ -63,3 +65,6 @@ Pino Toscano <pino@kde.org>
 Debian Packaging, Documentation
 
 
+Ian S. Donnelly <ian.s.donnelly@gmail.com>
+Google Summer of Code 2014
+Devel/Test on: Debian Stable

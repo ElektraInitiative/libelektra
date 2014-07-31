@@ -1,6 +1,8 @@
+# CHANGES #
+
 These document describes the Changes from Elektra 0.7 to 0.8
 
-== API ==
+## API ##
 
 It was taken care that there are as little as possible,
 but three API bugs had to be fixed:
@@ -39,12 +41,12 @@ but three API bugs had to be fixed:
    keysets.
 
 
-C++ Interface:
+### C++ Interface: ###
 
 - always compare names (not identity) operator== affected
 
 
-== Build system ==
+## Build system ##
 
  - Changed from autotools to cmake.
 
@@ -60,7 +62,7 @@ C++ Interface:
  - New build variant: libelektra-full
    It is a dynamic library with everything statically included.
 
-== Languages ==
+## Languages ##
 
  -  Core is now Ansi C 99.
 

@@ -1,5 +1,4 @@
-Security related document
-=========================
+# SECURITY #
 
 Security is a very important point in librarys. In most use
 cases there is nearly no point of danger in using elektra.
@@ -7,8 +6,7 @@ But some a very security related, especially when you use
 a daemon or some kind of distributed configuration.
 
 
-Files and Environment Variables
-===============================
+## Files and Environment Variables ##
 
 system/ pathes are never effected by environment variables.
 They always use the build-in KDB_DB_SYSTEM path.
@@ -32,8 +30,7 @@ By making KDB_DB_SYSTEM world-writeable, the users might overwrite
 the configuration of others.
 
 
-Compiler Options
-================
+## Compiler Options ##
 
 Can be changed using standard CMake ways.
 Some hints:
@@ -42,8 +39,7 @@ http://wiki.debian.org/Hardening
 
 
 
-Memory Leaks
-============
+## Memory Leaks ##
 
 We use valgrind (--tool=memcheck) to make sure that elektra
 does not suffer memory leaks and incorrect memory handling.
