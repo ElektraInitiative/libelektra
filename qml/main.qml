@@ -415,8 +415,6 @@ ApplicationWindow {
                     alternatingRowColors: false
                     backgroundVisible: false
                     Component.onCompleted: currentRow = -1
-                    //QVariantMap
-                    onClicked: keyAreaSelectedItem = model.get(currentRow)
 
                     model:{
                         if(treeView.currentNode !== null)
@@ -440,8 +438,19 @@ ApplicationWindow {
                         MouseArea {
                             propagateComposedEvents: true
                             anchors.fill: parent
-                            acceptedButtons: Qt.RightButton
-                            onClicked: keyContextMenu.popup()
+                            acceptedButtons: Qt.LeftButton | Qt.RightButton
+                            onClicked: {
+                                if(mouse.button === Qt.RightButton)
+                                    keyContextMenu.popup()
+                                else
+                                    keyAreaView.selection.select(keyAreaView.currentRow)
+                                    keyAreaSelectedItem = model.get(keyAreaView.currentRow)
+                            }
+
+                            onDoubleClicked: {
+                                editKeyWindow.show()
+                                editKeyWindow.populateMetaArea()
+                            }
                         }
                     }
                 }

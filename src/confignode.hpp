@@ -5,6 +5,7 @@
 #include <QVariant>
 #include <kdb.hpp>
 #include <keyio.hpp>
+#include <cassert>
 
 #include "treeviewmodel.hpp"
 #include "printvisitor.hpp"
@@ -114,6 +115,8 @@ public:
     void                    setKey(kdb::Key key);
     void                    add(kdb::Key key, unsigned long depth);
 
+    void                    deleteKey();
+
 private:
     // TODO: not needed if we hold the Key
     QString m_name;
@@ -122,11 +125,10 @@ private:
 
     // that is the only part we need:
     kdb::Key m_key;
-    unsigned long m_depth;
     TreeViewModel* m_children;
     TreeViewModel* m_metaData;
 
-    unsigned long nameDepth(kdb::Key key);
+    void populateMetaModel();
 };
 
 Q_DECLARE_METATYPE(ConfigNode)

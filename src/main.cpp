@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
     kdb.get(config, "/");
 
     TreeViewModel* model = new TreeViewModel;
-    new ModelTest(model);
+//    new ModelTest(model);
 
     model->populateModel(config);
 
@@ -39,7 +39,5 @@ int main(int argc, char* argv[])
 //    PrintVisitor printer;
 //    model->accept(printer);
 
-//    KeySetVisitor ksVisit;
-//    model->accept(ksVisit);
     return app.exec();
 }

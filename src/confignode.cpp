@@ -15,9 +15,11 @@ ConfigNode::ConfigNode(const QString& name, const QString& path, const Key &key)
 
     if (m_key && m_key.isString())
         m_value = QVariant::fromValue(QString::fromStdString(m_key.getString()));
-
     else if (m_key && m_key.isBinary())
         m_value = QVariant::fromValue(QString::fromStdString(m_key.getBinary()));
+
+    if(m_key)
+        populateMetaModel();
 }
 
 ConfigNode::ConfigNode(const ConfigNode& other)
@@ -41,7 +43,9 @@ ConfigNode::~ConfigNode()
 {
     delete m_children;
     delete m_metaData;
-    m_key.clear();
+
+    if(m_key)
+        m_key.clear();
 }
 
 int ConfigNode::getChildCount() const
@@ -68,13 +72,17 @@ void ConfigNode::setName(const QString& name)
 {
     m_name = name;
     qDebug() << " Key with name " << QString::fromStdString(m_key.getName()) << " has new base name " << name;
-    m_key.setBaseName(name.toStdString());
+
+    if(QString::fromStdString(m_key.getName()) != "")
+        m_key.setBaseName(name.toStdString());
 }
 
 void ConfigNode::setValue(const QVariant& value)
 {
     m_value = value;
-    m_key.setString(value.toString().toStdString());
+
+    if(m_key)
+        m_key.setString(value.toString().toStdString());
 }
 
 void ConfigNode::setMeta(const QString &name, const QVariant &value)
@@ -82,12 +90,15 @@ void ConfigNode::setMeta(const QString &name, const QVariant &value)
     deleteMeta(m_name);
     m_name = name;
     m_value = value;
-    m_key.setMeta(name.toStdString(), value.toString().toStdString());
+
+    if(m_key)
+        m_key.setMeta(name.toStdString(), value.toString().toStdString());
 }
 
 void ConfigNode::deleteMeta(const QString &name)
 {
-    m_key.delMeta(name.toStdString());
+    if(m_key)
+        m_key.delMeta(name.toStdString());
 }
 
 void ConfigNode::accept(Visitor &visitor)
@@ -109,33 +120,26 @@ void ConfigNode::deleteKey()
     m_key.clear();
 }
 
+void ConfigNode::populateMetaModel()
+{
+    if (m_key)
+    {
+        m_key.rewindMeta();
+        m_metaData->model().clear();
+
+        while (m_key.nextMeta())
+        {
+            ConfigNode* node = new ConfigNode();
+            node->setName(QString::fromStdString(m_key.currentMeta().getName()));
+            node->setValue(QString::fromStdString(m_key.currentMeta().getString()));
+            m_metaData->model().append(node);
+        }
+    }
+}
+
 void ConfigNode::setKey(Key key)
 {
     m_key = key;
-}
-
-void ConfigNode::add(Key key, unsigned long depth)
-{
-    assert(key);
-    assert(m_key ? m_key.isBelow(key) : true);
-    depth++;
-
-    if(m_key.isDirectBelow(key) || depth == nameDepth(key))
-}
-
-unsigned long ConfigNode::nameDepth(Key key)
-{
-    std::string name = key.getName();
-    unsigned long pos = name.find("/", 0);
-    unsigned long depth = 0;
-
-    while (pos != std::string::npos)
-    {
-        pos = name.find("/", pos+1);
-        ++ depth;
-    }
-
-    return depth;
 }
 
 void ConfigNode::appendChild(ConfigNode* node)
@@ -163,21 +167,6 @@ TreeViewModel* ConfigNode::getChildren()
 
 TreeViewModel* ConfigNode::getMetaValue()
 {
-    if (m_key)
-    {
-        m_key.rewindMeta();
-        m_metaData->model().clear();
-
-        while (m_key.nextMeta())
-        {
-            ConfigNode* node = new ConfigNode("", "", m_key);
-            node->setName(QString::fromStdString(m_key.currentMeta().getName()));
-            node->setValue(QString::fromStdString(m_key.currentMeta().getString()));
-            m_metaData->model().append(node);
-        }
-
-    }
-
     return m_metaData;
 }
 

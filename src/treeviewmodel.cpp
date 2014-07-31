@@ -156,6 +156,8 @@ void TreeViewModel::sink(ConfigNode* node, QStringList keys, QString path, Key k
     if (keys.length() == 0)
         return;
 
+    bool isLeaf = keys.length() == 1;
+
     // qDebug() << "in sink: " << keys << " with path: " << path;
 
     QString name =  keys.takeFirst();
@@ -168,9 +170,15 @@ void TreeViewModel::sink(ConfigNode* node, QStringList keys, QString path, Key k
     }
     else
     {
-        // qDebug() << "new child: " << name << " with path: " << (path + "/" + name);
-        ConfigNode* newNode = new ConfigNode(name, (path + "/" + name), key);
+        ConfigNode* newNode;
+
+        if(isLeaf)
+            newNode = new ConfigNode(name, (path + "/" + name), key);
+        else
+            newNode = new ConfigNode(name, (path + "/" + name), 0);
+
         node->appendChild(newNode);
+
         sink(newNode, keys, node->getPath() + "/" + name, key);
     }
 }
@@ -323,26 +331,6 @@ void TreeViewModel::repopulateModel(KeySet set)
     m_model.clear();
     populateModel(set);
     endResetModel();
-}
-
-void TreeViewModel::add(const KeySet &config)
-{
-    for (KeySet::iterator it = config.begin(); it !=config.end(); ++it)
-    {
-        add(*it);
-    }
-}
-
-void TreeViewModel::add(Key key)
-{
-    if(key.getName() == "user")
-        m_userRootNode->setKey(key);
-    else if(key.getName() == "system")
-        m_systemRootNode->setKey(key);
-    else if(key.isUser())
-        m_userRootNode->add(key, 0);
-    else
-        m_systemRootNode->add(key, 0);
 }
 
 QHash<int, QByteArray> TreeViewModel::roleNames() const
