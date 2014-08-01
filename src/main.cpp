@@ -24,14 +24,10 @@ int main(int argc, char* argv[])
     QQmlApplicationEngine engine;
     QQmlContext* ctxt = engine.rootContext();
 
-    kdb::KDB kdb;
-    kdb::KeySet config;
-    kdb.get(config, "/");
-
-    TreeViewModel* model = new TreeViewModel;
+    TreeViewModel* model = new TreeViewModel();
 //    new ModelTest(model);
 
-    model->populateModel(config);
+    model->populateModel();
 
     ctxt->setContextProperty("externTreeModel", QVariant::fromValue(model));
     engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));

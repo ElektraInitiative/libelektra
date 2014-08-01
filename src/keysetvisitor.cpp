@@ -2,9 +2,16 @@
 
 using namespace kdb;
 
+KeySetVisitor::KeySetVisitor(KeySet &keySet)
+    : m_set(keySet)
+{
+
+}
+
 void KeySetVisitor::visit(ConfigNode *node)
 {
     Key key = node->getKey();
+
     if(key){
         qDebug() << "Appending key " << QString::fromStdString(key.getName());
         m_set.append(node->getKey());
@@ -15,12 +22,11 @@ void KeySetVisitor::visit(ConfigNode *node)
 
 void KeySetVisitor::visit(TreeViewModel *model)
 {
-    m_kdb.get(m_set, "/");
-
+    m_set.clear();
+    qDebug() << "===================================";
     foreach (ConfigNode *node, model->model())
         node->accept(*this);
+    qDebug() << "===================================";
 
-    m_kdb.set(m_set, "/");
-
-    model->repopulateModel(m_set);
+    model->repopulateModel();
 }

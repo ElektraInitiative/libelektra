@@ -39,6 +39,7 @@ public:
     };
 
     explicit TreeViewModel(QObject* parent =  0);
+    explicit TreeViewModel(kdb::KeySet &keySet);
 
     // Needed for Qt
     TreeViewModel(TreeViewModel const & other);
@@ -60,7 +61,7 @@ public:
     Qt::ItemFlags           flags(const QModelIndex& index) const;
 
     /// recursively populate the model
-    void                    populateModel(kdb::KeySet const & config);
+    void                    populateModel();
 
     void                    accept(Visitor &visitor);
 
@@ -80,15 +81,16 @@ public:
     Q_INVOKABLE void        qmlInsertRow(int row, ConfigNode *node);
     Q_INVOKABLE void        clear();
     Q_INVOKABLE void        synchronize();
-    void                    repopulateModel(kdb::KeySet set);
+    void                    repopulateModel();
 
 private:
     void                    sink(ConfigNode* node, QStringList keys, QString path, kdb::Key key);
     void                    find(ConfigNode *node, TreeViewModel *searchResults, const QString term);
 
-    QList<ConfigNode*> m_model;
-    kdb::Key m_metaModelParent;
-    kdb::KeySet m_keySet;
+    QList<ConfigNode*>      m_model;
+    kdb::Key                m_metaModelParent;
+    kdb::KDB                m_kdb;
+    kdb::KeySet             m_keySet;
 
 protected:
     QHash<int, QByteArray>  roleNames() const;

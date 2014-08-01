@@ -5,7 +5,14 @@ using namespace kdb;
 
 TreeViewModel::TreeViewModel(QObject* parent)
 {
-    Q_UNUSED(parent)
+    Q_UNUSED(parent);
+    m_kdb.get(m_keySet, "/");
+}
+
+TreeViewModel::TreeViewModel(KeySet &keySet)
+    : m_keySet(keySet)
+{
+
 }
 
 TreeViewModel::TreeViewModel(const TreeViewModel& other)
@@ -156,7 +163,7 @@ void TreeViewModel::sink(ConfigNode* node, QStringList keys, QString path, Key k
     if (keys.length() == 0)
         return;
 
-    bool isLeaf = keys.length() == 1;
+    bool isLeaf = (keys.length() == 1);
 
     // qDebug() << "in sink: " << keys << " with path: " << path;
 
@@ -175,7 +182,7 @@ void TreeViewModel::sink(ConfigNode* node, QStringList keys, QString path, Key k
         if(isLeaf)
             newNode = new ConfigNode(name, (path + "/" + name), key);
         else
-            newNode = new ConfigNode(name, (path + "/" + name), 0);
+            newNode = new ConfigNode(name, (path + "/" + name), NULL);
 
         node->appendChild(newNode);
 
@@ -184,30 +191,30 @@ void TreeViewModel::sink(ConfigNode* node, QStringList keys, QString path, Key k
 }
 
 
-void TreeViewModel::populateModel(kdb::KeySet const & config)
+void TreeViewModel::populateModel()
 {
     ConfigNode* system = new ConfigNode("system", "system", 0);
     ConfigNode* user = new ConfigNode("user", "user", 0);
 
     m_model << system << user;
 
-    config.rewind();
+    m_keySet.rewind();
 
-    while (config.next())
+    while (m_keySet.next())
     {
-        QString currentKey = QString::fromStdString(config.current().getName());
+        QString currentKey = QString::fromStdString(m_keySet.current().getName());
 
         QStringList splittedKey = currentKey.split("/");
 
         if (splittedKey.at(0) == "system")
         {
             splittedKey.removeFirst();
-            sink(m_model.at(0), splittedKey, "system", config.current());
+            sink(m_model.at(0), splittedKey, "system", m_keySet.current());
         }
         else if (splittedKey.at(0) == "user")
         {
             splittedKey.removeFirst();
-            sink(m_model.at(1), splittedKey, "user", config.current());
+            sink(m_model.at(1), splittedKey, "user", m_keySet.current());
         }
         else
         {
@@ -294,6 +301,7 @@ bool TreeViewModel::insertRow(int row, const QModelIndex& parent)
 {
     Q_UNUSED(parent);
     ConfigNode *node = new ConfigNode;
+    node->setName(QString::fromStdString(m_metaModelParent.getName()));
     node->setKey(m_metaModelParent);
     beginInsertRows(QModelIndex(), row, row);
     m_model.insert(row, node);
@@ -317,8 +325,9 @@ void TreeViewModel::qmlInsertRow(int row, ConfigNode *node)
 
 void TreeViewModel::synchronize()
 {
-    KeySetVisitor ksVisit;
+    KeySetVisitor ksVisit(m_keySet);
     accept(ksVisit);
+    m_kdb.set(m_keySet, "/");
 }
 
 void TreeViewModel::clear()
@@ -328,11 +337,11 @@ void TreeViewModel::clear()
     endResetModel();
 }
 
-void TreeViewModel::repopulateModel(KeySet set)
+void TreeViewModel::repopulateModel()
 {
     beginResetModel();
     m_model.clear();
-    populateModel(set);
+    populateModel();
     endResetModel();
 }
 
