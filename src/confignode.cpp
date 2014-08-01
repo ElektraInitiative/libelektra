@@ -153,7 +153,7 @@ void ConfigNode::setKey(Key key)
 
 void ConfigNode::appendChild(ConfigNode* node)
 {
-    m_children->model().append(node);
+    m_children->append(node);
 }
 
 bool ConfigNode::hasChild(const QString& name) const

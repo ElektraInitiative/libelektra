@@ -22,11 +22,15 @@ void KeySetVisitor::visit(ConfigNode *node)
 
 void KeySetVisitor::visit(TreeViewModel *model)
 {
-    m_set.clear();
     qDebug() << "===================================";
     foreach (ConfigNode *node, model->model())
         node->accept(*this);
     qDebug() << "===================================";
 
     model->repopulateModel();
+}
+
+KeySet &KeySetVisitor::getKeySet()
+{
+    return m_set;
 }

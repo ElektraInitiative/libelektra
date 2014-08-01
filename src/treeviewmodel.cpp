@@ -218,7 +218,7 @@ void TreeViewModel::populateModel()
         }
         else
         {
-            qDebug() << "INVALID_KEY";
+            qDebug() << "TreeViewModel::populateModel: INVALID_KEY: " << currentKey;
         }
 
     }
@@ -305,7 +305,6 @@ bool TreeViewModel::insertRow(int row, const QModelIndex& parent)
     node->setKey(m_metaModelParent);
     beginInsertRows(QModelIndex(), row, row);
     m_model.insert(row, node);
- //   m_model.insert(row, new ConfigNode("", "", m_metaModelParent));
     endInsertRows();
 
     return true;
@@ -323,11 +322,44 @@ void TreeViewModel::qmlInsertRow(int row, ConfigNode *node)
         qDebug() << "Key " << QString::fromStdString(node->getKey().getFullName()) << " not valid!";
 }
 
+void TreeViewModel::createNewNode(const QString &path, const QString &value)
+{
+    qDebug() << "TreeViewModel::createNewNode: path = " << path << " value = " << value;
+    Key key;
+    key.setName(path.toStdString());
+    key.setString(value.toStdString());
+
+    QStringList splittedKey = path.split("/");
+
+    if (splittedKey.at(0) == "system")
+    {
+        splittedKey.removeFirst();
+        sink(m_model.at(0), splittedKey, "system", key);
+    }
+    else if (splittedKey.at(0) == "user")
+    {
+        splittedKey.removeFirst();
+        sink(m_model.at(1), splittedKey, "user", key);
+    }
+    else
+    {
+        qDebug() << "TreeViewModel::createNewNode: INVALID_KEY: " << path;
+    }
+}
+
+void TreeViewModel::append(ConfigNode *node)
+{
+    beginInsertRows(QModelIndex(), m_model.size(), m_model.size());
+    m_model.append(node);
+    endInsertRows();
+}
+
 void TreeViewModel::synchronize()
 {
     KeySetVisitor ksVisit(m_keySet);
     accept(ksVisit);
-    m_kdb.set(m_keySet, "/");
+    m_kdb.set(ksVisit.getKeySet(), "/");
+    qDebug() << "Last Key is " << QString::fromStdString(ksVisit.getKeySet().tail().getFullName());
 }
 
 void TreeViewModel::clear()
@@ -339,10 +371,10 @@ void TreeViewModel::clear()
 
 void TreeViewModel::repopulateModel()
 {
-    beginResetModel();
+//    beginResetModel();
     m_model.clear();
     populateModel();
-    endResetModel();
+    //    endResetModel();
 }
 
 QHash<int, QByteArray> TreeViewModel::roleNames() const

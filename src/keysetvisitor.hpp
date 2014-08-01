@@ -11,6 +11,7 @@ public:
     explicit KeySetVisitor(kdb::KeySet &keySet);
     void visit(ConfigNode *node);
     void visit(TreeViewModel *model);
+    kdb::KeySet& getKeySet();
 
 private:
     kdb::KDB m_kdb;

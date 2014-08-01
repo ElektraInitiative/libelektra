@@ -82,6 +82,8 @@ public:
     Q_INVOKABLE void        clear();
     Q_INVOKABLE void        synchronize();
     void                    repopulateModel();
+    Q_INVOKABLE void        createNewNode(const QString &path, const QString &value);
+    void                    append(ConfigNode *node);
 
 private:
     void                    sink(ConfigNode* node, QStringList keys, QString path, kdb::Key key);

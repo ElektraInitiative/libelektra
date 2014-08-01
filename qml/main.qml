@@ -41,6 +41,37 @@ ApplicationWindow {
     NewKeyWindow {
         id: newKeyWindow
         title: qsTr("Create new Key")
+        path: treeView.currentNode === null ? "" : treeView.currentNode.path
+
+        function editAccepted() {
+            //insert new node
+            externTreeModel.createNewNode(treeView.currentNode.path + "/" + nameTextField.text, valueTextField.text)
+            //            //set key name & value
+            //            keyAreaView.model.setDataValue(keyAreaView.currentRow, nameTextField.text, "Name")
+            //            keyAreaView.model.setDataValue(keyAreaView.currentRow, valueTextField.text, "Value")
+
+            //            //delete metaKeys
+            //            for(var i = 0; i < metaAreaModel.rowCount(); i++)
+            //                metaAreaListView.model.get(i).node.deleteMeta(metaAreaListView.model.get(i).name)
+
+            //            //clear old meta nodes
+            //            metaAreaListView.model.clear()
+
+//            //insert new meta nodes
+//            for(var i = 0; i < metaKeyModel.count; i++)
+//                externTreeModel.qmlInsertRow(i, keyAreaSelectedItem.node);
+
+//            //fill the meta nodes with provided names/values
+//            for(var i = 0; i < metaKeyModel.count; i++){
+//                metaAreaListView.model.setDataValue(i, [metaKeyModel.get(i).metaName, metaKeyModel.get(i).metaValue], "MetaValue")
+//            }
+
+            nameTextField.text = ""
+            valueTextField.text = ""
+            nameTextField.focus = true
+            metaKeyModel.clear()
+//            externTreeModel.synchronize()
+        }
     }
 
     NewKeyWindow {
@@ -49,6 +80,37 @@ ApplicationWindow {
         path: treeView.currentNode === null ? "" : treeView.currentNode.path
         keyName: keyAreaSelectedItem === null ? "" : keyAreaSelectedItem.name
         keyValue: keyAreaSelectedItem === null ? "" : keyAreaSelectedItem.value
+
+        function populateMetaArea() {
+            for(var i = 0; i < metaAreaModel.rowCount(); i++){
+                metaKeyModel.append({"metaName" : metaAreaListView.model.get(i).name, "metaValue" : metaAreaListView.model.get(i).value})
+            }
+        }
+
+        function editAccepted() {
+            //set key name & value
+            console.log("current row " + keyAreaView.currentRow)
+            keyAreaView.model.setDataValue(keyAreaView.currentRow, nameTextField.text, "Name")
+            keyAreaView.model.setDataValue(keyAreaView.currentRow, valueTextField.text, "Value")
+
+            //delete metaKeys
+            for(var i = 0; i < metaAreaModel.rowCount(); i++)
+                metaAreaListView.model.get(i).node.deleteMeta(metaAreaListView.model.get(i).name)
+
+            //clear old meta nodes
+            metaAreaListView.model.clear()
+
+            //insert new meta nodes
+            for(var i = 0; i < metaKeyModel.count; i++)
+                metaAreaListView.model.qmlInsertRow(i, keyAreaSelectedItem.node);
+
+            //fill the meta nodes with provided names/values
+            for(var i = 0; i < metaKeyModel.count; i++){
+                metaAreaListView.model.setDataValue(i, [metaKeyModel.get(i).metaName, metaKeyModel.get(i).metaValue], "MetaValue")
+            }
+
+            metaKeyModel.clear()
+        }
     }
 
     NewKeyWindow {
@@ -79,7 +141,7 @@ ApplicationWindow {
         iconSource: "icons/new.png"
         tooltip: qsTr("New Key")
         onTriggered: newKeyWindow.show()
-        enabled: false
+        //        enabled: false
     }
 
     Action {
@@ -95,7 +157,7 @@ ApplicationWindow {
         iconSource: "icons/delete.png"
         tooltip: "Delete"
         shortcut: StandardKey.Delete
-        enabled: false
+        //        enabled: false
     }
 
     Action {
@@ -140,7 +202,10 @@ ApplicationWindow {
         iconSource: "icons/synchronize.png"
         tooltip: qsTr("Synchronize")
         shortcut: StandardKey.Refresh
-        onTriggered: {externTreeModel.synchronize(); keyAreaSelectedItem = null}
+        onTriggered: {
+            externTreeModel.synchronize()
+            //keyAreaSelectedItem = null
+        }
         //enabled: false
     }
 
@@ -299,12 +364,29 @@ ApplicationWindow {
     Menu {
         id: keyContextMenu
         MenuItem {
+            id: kcmNewKey
+            action: newKeyAction
+//            onTriggered: {
+//                keyAreaView.model.removeRow(keyAreaView.tableIndex)
+//                keyAreaView.__decrementCurrentIndex()
+//                console.log(keyAreaView.rowCount)
+//                if(keyAreaView.rowCount !== 0)
+//                    keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
+//                else
+//                    keyAreaSelectedItem = null
+//            }
+        }
+        MenuItem {
             id: kcmDelete
             action: deleteAction
             onTriggered: {
                 keyAreaView.model.removeRow(keyAreaView.tableIndex)
                 keyAreaView.__decrementCurrentIndex()
-                keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
+                console.log(keyAreaView.rowCount)
+                if(keyAreaView.rowCount !== 0)
+                    keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
+                else
+                    keyAreaSelectedItem = null
             }
         }
         MenuItem {
@@ -435,6 +517,7 @@ ApplicationWindow {
                     rowDelegate: Rectangle {
                         width: keyAreaView.width
                         color: styleData.selected ? activePalette.highlight : "transparent"
+
                         MouseArea {
                             propagateComposedEvents: true
                             anchors.fill: parent
@@ -442,9 +525,11 @@ ApplicationWindow {
                             onClicked: {
                                 if(mouse.button === Qt.RightButton)
                                     keyContextMenu.popup()
-                                else
-                                    keyAreaView.selection.select(keyAreaView.currentRow)
-                                    keyAreaSelectedItem = model.get(keyAreaView.currentRow)
+                                else{
+                                    keyAreaView.selection.select(styleData.row)
+                                    keyAreaView.currentRow = styleData.row
+                                    keyAreaSelectedItem = model.get(styleData.row)
+                                }
                             }
 
                             onDoubleClicked: {

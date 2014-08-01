@@ -12,6 +12,8 @@ BasicWindow {
     property alias nameLabel: nameLabel
     property alias addButton: addButton
     property alias metaKeyModel: metaKeyModel
+    property alias nameTextField: nameTextField
+    property alias valueTextField: valueTextField
     property string path: ""
     property string keyName: ""
     property string keyValue: ""
@@ -101,35 +103,4 @@ BasicWindow {
             }
         }
     }
-
-    function populateMetaArea() {
-        for(var i = 0; i < metaAreaModel.rowCount(); i++){
-            metaKeyModel.append({"metaName" : metaAreaListView.model.get(i).name, "metaValue" : metaAreaListView.model.get(i).value})
-        }
-    }
-
-    function editAccepted() {
-        //set key name & value
-        keyAreaView.model.setDataValue(keyAreaView.currentRow, nameTextField.text, "Name")
-        keyAreaView.model.setDataValue(keyAreaView.currentRow, valueTextField.text, "Value")
-
-        //delete metaKeys
-        for(var i = 0; i < metaAreaModel.rowCount(); i++)
-            metaAreaListView.model.get(i).node.deleteMeta(metaAreaListView.model.get(i).name)
-
-        //clear old meta nodes
-        metaAreaListView.model.clear()
-
-        //insert new meta nodes
-        for(var i = 0; i < metaKeyModel.count; i++)
-            metaAreaListView.model.qmlInsertRow(i, keyAreaSelectedItem.node);
-
-        //fill the meta nodes with provided names/values
-        for(var i = 0; i < metaKeyModel.count; i++){
-            metaAreaListView.model.setDataValue(i, [metaKeyModel.get(i).metaName, metaKeyModel.get(i).metaValue], "MetaValue")
-        }
-
-        metaKeyModel.clear()
-    }
-
 }
