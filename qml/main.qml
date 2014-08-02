@@ -60,7 +60,7 @@ ApplicationWindow {
             valueTextField.text = ""
             nameTextField.focus = true
             metaKeyModel.clear()
-//            externTreeModel.synchronize()
+            //            externTreeModel.synchronize()
         }
     }
 
@@ -88,9 +88,9 @@ ApplicationWindow {
 
             console.log(isEdited)
             //create undo command
-            if(isEdited)
-                undoManager.createEditCommand(keyAreaView.model, keyAreaView.currentRow, keyName.toString(), keyValue.toString(), keyAreaSelectedItem.metaValue,
-                                              nameTextField.text, valueTextField.text, metaData)
+//            if(isEdited)
+//                undoManager.createEditCommand(keyAreaView.model, keyAreaView.currentRow, keyName.toString(), keyValue.toString(), keyAreaSelectedItem.metaValue,
+//                                              nameTextField.text, valueTextField.text, metaData)
 
             //set key name & value
             keyAreaView.model.setDataValue(keyAreaView.currentRow, nameTextField.text, "Name")
@@ -98,24 +98,25 @@ ApplicationWindow {
 
             //set metaData
             console.log(keyAreaView.currentRow)
-           // metaAreaModel.get(keyAreaView.currentRow).node.setMeta(metaData)
+            // metaAreaModel.get(keyAreaView.currentRow).node.setMeta(metaData)
             keyAreaSelectedItem.node.setMeta(metaData)
 
-//            //delete metaKeys
-//            for(var i = 0; i < metaAreaModel.rowCount(); i++)
-//                metaAreaModel.get(i).node.deleteMeta(metaAreaModel.get(i).name)
+            /*****************************************************************************************************************************/
+            //            //delete metaKeys
+            //            for(var i = 0; i < metaAreaModel.rowCount(); i++)
+            //                metaAreaModel.get(i).node.deleteMeta(metaAreaModel.get(i).name)
 
-//            //clear old meta nodes
-//            metaAreaModel.clear()
+            //            //clear old meta nodes
+            //            metaAreaModel.clear()
 
-//            //insert new meta nodes
-//            for(var i = 0; i < metaKeyModel.count; i++)
-//                metaAreaModel.qmlInsertRow(i, keyAreaSelectedItem.node);
+            //            //insert new meta nodes
+            //            for(var i = 0; i < metaKeyModel.count; i++)
+            //                metaAreaModel.qmlInsertRow(i, keyAreaSelectedItem.node);
 
-//            //fill the meta nodes with provided names/values
-//            for(var i = 0; i < metaKeyModel.count; i++){
-//               metaAreaModel.setDataValue(i, [metaKeyModel.get(i).metaName, metaKeyModel.get(i).metaValue], "MetaValue")
-//            }
+            //            //fill the meta nodes with provided names/values
+            //            for(var i = 0; i < metaKeyModel.count; i++){
+            //               metaAreaModel.setDataValue(i, [metaKeyModel.get(i).metaName, metaKeyModel.get(i).metaValue], "MetaValue")
+            //            }
 
             metaKeyModel.clear()
         }
@@ -441,6 +442,10 @@ ApplicationWindow {
                 height: 28
             }
 
+            Image {
+                id: searchLogo
+                source: "icons/edit-find.png"
+            }
             SearchField {
                 id: searchField
                 Layout.fillWidth: true
@@ -496,7 +501,7 @@ ApplicationWindow {
                     frameVisible: false
                     alternatingRowColors: false
                     backgroundVisible: false
-                    Component.onCompleted: currentRow = -1
+//                    Component.onCompleted: currentRow = -1
 
                     model:{
                         if(treeView.currentNode !== null)
@@ -514,27 +519,29 @@ ApplicationWindow {
                         title: qsTr("Value")
                         width: Math.round(keyArea.width*0.5)
                     }
-                    rowDelegate: Rectangle {
-                        width: keyAreaView.width
-                        color: styleData.selected ? activePalette.highlight : "transparent"
+                    rowDelegate: Component {
+                        Rectangle {
+                            width: keyAreaView.width
+                            color: styleData.selected ? activePalette.highlight : "transparent"
 
-                        MouseArea {
-                            propagateComposedEvents: true
-                            anchors.fill: parent
-                            acceptedButtons: Qt.LeftButton | Qt.RightButton
-                            onClicked: {
-                                if(mouse.button === Qt.RightButton)
-                                    keyContextMenu.popup()
-                                else{
-                                    keyAreaView.selection.select(styleData.row)
-                                    keyAreaView.currentRow = styleData.row
-                                    keyAreaSelectedItem = model.get(styleData.row)
+                            MouseArea {
+                                anchors.fill: parent
+                                acceptedButtons: Qt.LeftButton | Qt.RightButton
+                                onClicked: {
+                                    if(mouse.button === Qt.RightButton)
+                                        keyContextMenu.popup()
+                                    else{
+                                        keyAreaView.selection.clear()
+                                        keyAreaView.selection.select(styleData.row)
+                                        keyAreaView.currentRow = styleData.row
+                                        keyAreaSelectedItem = model.get(styleData.row)
+                                    }
                                 }
-                            }
 
-                            onDoubleClicked: {
-                                editKeyWindow.show()
-                                editKeyWindow.populateMetaArea()
+                                onDoubleClicked: {
+                                    editKeyWindow.show()
+                                    editKeyWindow.populateMetaArea()
+                                }
                             }
                         }
                     }

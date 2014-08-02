@@ -34,6 +34,7 @@ void UndoManager::createEditCommand(TreeViewModel *model, int index, const QStri
                                     const QString &newName, const QVariant &newValue, const QVariant &newMetaData)
 {
     m_undoStack->push(new EditCommand(model, index, oldName, oldValue, oldMetaData, newName, newValue, newMetaData));
+    qDebug() << "Stack size = " << m_undoStack->count();
 }
 
 void UndoManager::redo()

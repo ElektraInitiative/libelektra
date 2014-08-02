@@ -23,12 +23,12 @@ void EditCommand::undo()
 {
     m_model->setDataValue(m_index, m_oldName, "Name");
     m_model->setDataValue(m_index, m_oldValue, "Value");
-    //m_model->setDataValue(m_index, m_oldMetaData, "MetaValue");
+    m_model->setDataValue(m_index, m_oldMetaData, "MetaValue");
 }
 
 void EditCommand::redo()
 {
     m_model->setDataValue(m_index, m_newName, "Name");
     m_model->setDataValue(m_index, m_newValue, "Value");
-    //m_model->setDataValue(m_index, m_newMetaData, "MetaValue");
+    m_model->setDataValue(m_index, m_newMetaData, "MetaValue");
 }

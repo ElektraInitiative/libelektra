@@ -36,5 +36,7 @@
         <file>qml/icons/arrow-right.png</file>
         <file>qml/TreeView.qml</file>
         <file>qml/BasicRectangle.qml</file>
+        <file>qml/icons/edit-find.png</file>
+        <file>qml/icons/edit-clear.png</file>
     </qresource>
 </RCC>
