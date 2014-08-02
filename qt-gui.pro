@@ -7,7 +7,8 @@ SOURCES += \
     src/printvisitor.cpp \
     src/keysetvisitor.cpp \
     modeltest/dynamictreemodel.cpp \
-    modeltest/modeltest.cpp
+    modeltest/modeltest.cpp \
+    src/undomanager.cpp
 
 HEADERS += \
     src/treeviewmodel.hpp \
@@ -16,7 +17,8 @@ HEADERS += \
     src/printvisitor.hpp \
     src/keysetvisitor.hpp \
     modeltest/dynamictreemodel.h \
-    modeltest/modeltest.h
+    modeltest/modeltest.h \
+    src/undomanager.hpp
 
 CONFIG += debug
 

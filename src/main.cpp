@@ -6,6 +6,7 @@
 
 #include "treeviewmodel.hpp"
 #include "confignode.hpp"
+#include "undomanager.hpp"
 #include "modeltest/modeltest.h"
 
 int main(int argc, char* argv[])
@@ -14,6 +15,7 @@ int main(int argc, char* argv[])
 
     qRegisterMetaType<TreeViewModel> ("TreeViewModel");
     qRegisterMetaType<ConfigNode> ("ConfigNode");
+    qRegisterMetaType<UndoManager> ("UndoManager");
 
     QString locale = QLocale::system().name();
 
@@ -24,12 +26,15 @@ int main(int argc, char* argv[])
     QQmlApplicationEngine engine;
     QQmlContext* ctxt = engine.rootContext();
 
+    UndoManager manager;
+
     TreeViewModel* model = new TreeViewModel();
     //new ModelTest(model);
 
     model->populateModel();
 
-    ctxt->setContextProperty("externTreeModel", QVariant::fromValue(model));
+    ctxt->setContextProperty("undoManager", &manager);
+    ctxt->setContextProperty("externTreeModel", model);
     engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
 
 //    PrintVisitor printer;

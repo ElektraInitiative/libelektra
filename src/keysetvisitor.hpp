@@ -14,7 +14,6 @@ public:
     kdb::KeySet& getKeySet();
 
 private:
-    kdb::KDB m_kdb;
     kdb::KeySet m_set;
 };
 

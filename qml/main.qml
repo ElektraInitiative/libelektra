@@ -173,7 +173,8 @@ ApplicationWindow {
         iconSource: "icons/undo.png"
         tooltip: qsTr("Undo")
         shortcut: StandardKey.Undo
-        enabled: false
+        enabled: undoManager.canUndo
+        onTriggered: undoManager.undo()
     }
 
     Action {
@@ -182,7 +183,8 @@ ApplicationWindow {
         iconSource: "icons/redo.png"
         tooltip: qsTr("Redo")
         shortcut: StandardKey.Redo
-        enabled: false
+        enabled: undoManager.canRedo
+        onTriggered: undoManager.redo()
     }
 
     Action {
@@ -193,9 +195,7 @@ ApplicationWindow {
         shortcut: StandardKey.Refresh
         onTriggered: {
             externTreeModel.synchronize()
-            //keyAreaSelectedItem = null
         }
-        //enabled: false
     }
 
     Action {
@@ -277,6 +277,7 @@ ApplicationWindow {
                 id:dbExit
                 text: qsTr("Exit")
                 shortcut: StandardKey.Quit
+                onTriggered: Qt.quit()
             }
         }
 
