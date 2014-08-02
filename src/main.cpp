@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
 
     UndoManager manager;
 
-    TreeViewModel* model = new TreeViewModel();
+    TreeViewModel* model = new TreeViewModel;
     //new ModelTest(model);
 
     model->populateModel();

@@ -8,21 +8,23 @@ import QtQuick.Dialogs 1.1
 BasicWindow {
     id: editWindow
 
-    property alias valueLayout: valueLayout
-    property alias nameLabel: nameLabel
-    property alias addButton: addButton
-    property alias metaKeyModel: metaKeyModel
-    property alias nameTextField: nameTextField
-    property alias valueTextField: valueTextField
+    property alias  valueLayout: valueLayout
+    property alias  nameLabel: nameLabel
+    property alias  addButton: addButton
+    property alias  metaKeyModel: metaKeyModel
+    property alias  nameTextField: nameTextField
+    property alias  valueTextField: valueTextField
     property string path: ""
     property string keyName: ""
     property string keyValue: ""
+    property bool   isEdited: true
 
     cancelButton.onClicked: {
         editWindow.visible = false
         metaKeyModel.clear()
     }
     okButton.onClicked: {
+        //TODO: check if user has edited the node
         editWindow.visible = false
         editAccepted()
     }

@@ -107,7 +107,10 @@ public:
       */
     Q_INVOKABLE ConfigNode* getChildByIndex(int index);
 
+    void                    setPath(const QString &path);
+
     void                    setMeta(const QString &name, const QVariant &value);
+    Q_INVOKABLE void        setMeta(const QVariantMap &metaData);
     Q_INVOKABLE void        deleteMeta(const QString &name);
 
     void                    accept(Visitor &visitor);

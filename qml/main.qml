@@ -42,6 +42,7 @@ ApplicationWindow {
         id: newKeyWindow
         title: qsTr("Create new Key")
         path: treeView.currentNode === null ? "" : treeView.currentNode.path
+        isEdited: false
 
         function editAccepted() {
 
@@ -77,26 +78,44 @@ ApplicationWindow {
         }
 
         function editAccepted() {
+
+            var metaData = {};
+
+            //collect metadata
+            for(var i = 0; i < metaKeyModel.count; i++){
+                metaData[metaKeyModel.get(i).metaName] = metaKeyModel.get(i).metaValue
+            }
+
+            console.log(isEdited)
+            //create undo command
+            if(isEdited)
+                undoManager.createEditCommand(keyAreaView.model, keyAreaView.currentRow, keyName.toString(), keyValue.toString(), keyAreaSelectedItem.metaValue,
+                                              nameTextField.text, valueTextField.text, metaData)
+
             //set key name & value
-            console.log("current row " + keyAreaView.currentRow)
             keyAreaView.model.setDataValue(keyAreaView.currentRow, nameTextField.text, "Name")
             keyAreaView.model.setDataValue(keyAreaView.currentRow, valueTextField.text, "Value")
 
-            //delete metaKeys
-            for(var i = 0; i < metaAreaModel.rowCount(); i++)
-                metaAreaListView.model.get(i).node.deleteMeta(metaAreaListView.model.get(i).name)
+            //set metaData
+            console.log(keyAreaView.currentRow)
+           // metaAreaModel.get(keyAreaView.currentRow).node.setMeta(metaData)
+            keyAreaSelectedItem.node.setMeta(metaData)
 
-            //clear old meta nodes
-            metaAreaListView.model.clear()
+//            //delete metaKeys
+//            for(var i = 0; i < metaAreaModel.rowCount(); i++)
+//                metaAreaModel.get(i).node.deleteMeta(metaAreaModel.get(i).name)
 
-            //insert new meta nodes
-            for(var i = 0; i < metaKeyModel.count; i++)
-                metaAreaListView.model.qmlInsertRow(i, keyAreaSelectedItem.node);
+//            //clear old meta nodes
+//            metaAreaModel.clear()
 
-            //fill the meta nodes with provided names/values
-            for(var i = 0; i < metaKeyModel.count; i++){
-                metaAreaListView.model.setDataValue(i, [metaKeyModel.get(i).metaName, metaKeyModel.get(i).metaValue], "MetaValue")
-            }
+//            //insert new meta nodes
+//            for(var i = 0; i < metaKeyModel.count; i++)
+//                metaAreaModel.qmlInsertRow(i, keyAreaSelectedItem.node);
+
+//            //fill the meta nodes with provided names/values
+//            for(var i = 0; i < metaKeyModel.count; i++){
+//               metaAreaModel.setDataValue(i, [metaKeyModel.get(i).metaName, metaKeyModel.get(i).metaValue], "MetaValue")
+//            }
 
             metaKeyModel.clear()
         }
@@ -174,7 +193,7 @@ ApplicationWindow {
         tooltip: qsTr("Undo")
         shortcut: StandardKey.Undo
         enabled: undoManager.canUndo
-        onTriggered: undoManager.undo()
+        onTriggered: { undoManager.undo(); keyAreaView.update()}
     }
 
     Action {
@@ -184,7 +203,7 @@ ApplicationWindow {
         tooltip: qsTr("Redo")
         shortcut: StandardKey.Redo
         enabled: undoManager.canRedo
-        onTriggered: undoManager.redo()
+        onTriggered: { undoManager.redo(); keyAreaView.update()}
     }
 
     Action {
@@ -356,15 +375,6 @@ ApplicationWindow {
         MenuItem {
             id: kcmNewKey
             action: newKeyAction
-//            onTriggered: {
-//                keyAreaView.model.removeRow(keyAreaView.tableIndex)
-//                keyAreaView.__decrementCurrentIndex()
-//                console.log(keyAreaView.rowCount)
-//                if(keyAreaView.rowCount !== 0)
-//                    keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
-//                else
-//                    keyAreaSelectedItem = null
-//            }
         }
         MenuItem {
             id: kcmDelete

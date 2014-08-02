@@ -55,7 +55,6 @@ public:
     Q_INVOKABLE int         rowCount(const QModelIndex& parent = QModelIndex()) const;
     QVariant                data(const QModelIndex& index, int role = Qt::DisplayRole) const;
     bool                    setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
-    Q_INVOKABLE void        setDataValue(int index, const QVariant& value, const QString& role);
     Q_INVOKABLE bool        insertRow(int row, const QModelIndex &parent = QModelIndex());
     Q_INVOKABLE bool        removeRow(int row, const QModelIndex& parent = QModelIndex());
     Qt::ItemFlags           flags(const QModelIndex& index) const;
@@ -84,6 +83,7 @@ public:
     void                    repopulateModel();
     Q_INVOKABLE void        createNewNode(const QString &path, const QString &value, const QVariantMap metaData);
     void                    append(ConfigNode *node);
+    Q_INVOKABLE void        setDataValue(int index, const QVariant& value, const QString& role);
 
 private:
     void                    sink(ConfigNode* node, QStringList keys, QString path, kdb::Key key);

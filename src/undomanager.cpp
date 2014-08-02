@@ -1,5 +1,6 @@
 #include <QUndoStack>
 #include "undomanager.hpp"
+#include "editcommand.hpp"
 
 UndoManager::UndoManager(QObject *parent) :
     QObject(parent)
@@ -21,12 +22,18 @@ UndoManager::~UndoManager()
 
 bool UndoManager::canUndo() const
 {
-    return false;
+    return m_undoStack->canUndo();
 }
 
 bool UndoManager::canRedo() const
 {
-    return false;
+    return m_undoStack->canRedo();
+}
+
+void UndoManager::createEditCommand(TreeViewModel *model, int index, const QString &oldName, const QVariant &oldValue, const QVariant &oldMetaData,
+                                    const QString &newName, const QVariant &newValue, const QVariant &newMetaData)
+{
+    m_undoStack->push(new EditCommand(model, index, oldName, oldValue, oldMetaData, newName, newValue, newMetaData));
 }
 
 void UndoManager::redo()

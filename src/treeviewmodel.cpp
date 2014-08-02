@@ -157,7 +157,6 @@ Qt::ItemFlags TreeViewModel::flags(const QModelIndex& index) const
     return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
 }
 
-// TODO: make recursion more elegant, pass Key
 void TreeViewModel::sink(ConfigNode* node, QStringList keys, QString path, Key key)
 {
     if (keys.length() == 0)
@@ -365,7 +364,7 @@ void TreeViewModel::synchronize()
     KeySetVisitor ksVisit(m_keySet);
     accept(ksVisit);
     m_kdb.set(ksVisit.getKeySet(), "/");
-    qDebug() << "Last Key is " << QString::fromStdString(ksVisit.getKeySet().tail().getFullName());
+//    qDebug() << "Last Key is " << QString::fromStdString(ksVisit.getKeySet().tail().getFullName());
 }
 
 void TreeViewModel::clear()

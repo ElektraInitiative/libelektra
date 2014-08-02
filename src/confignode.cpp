@@ -100,6 +100,31 @@ void ConfigNode::setMeta(const QString &name, const QVariant &value)
     }
 }
 
+void ConfigNode::setMeta(const QVariantMap &metaData)
+{
+    for(int i = 0; i < m_metaData->model().size(); i++)
+    {
+        m_metaData->model().at(i)->deleteMeta(m_metaData->model().at(i)->getName());
+    }
+
+    m_metaData->clear();
+
+    for(int i = 0; i < metaData.size(); i++)
+    {
+        m_metaData->qmlInsertRow(i, this);
+    }
+
+    int counter = 0;
+
+    for(QVariantMap::const_iterator iter = metaData.begin(); iter != metaData.end(); iter++)
+    {
+        QVariantList tmp;
+        tmp << iter.key() << iter.value();
+        m_metaData->setDataValue(counter, tmp, "MetaValue");
+        counter++;
+    }
+}
+
 void ConfigNode::deleteMeta(const QString &name)
 {
     if(m_key){
@@ -198,6 +223,11 @@ ConfigNode* ConfigNode::getChildByIndex(int index)
         return m_children->model().at(index);
 
     return NULL;
+}
+
+void ConfigNode::setPath(const QString &path)
+{
+    m_path = path;
 }
 
 bool ConfigNode::childrenHaveNoChildren() const
