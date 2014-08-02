@@ -82,7 +82,7 @@ public:
     Q_INVOKABLE void        clear();
     Q_INVOKABLE void        synchronize();
     void                    repopulateModel();
-    Q_INVOKABLE void        createNewNode(const QString &path, const QString &value);
+    Q_INVOKABLE void        createNewNode(const QString &path, const QString &value, const QVariantMap metaData);
     void                    append(ConfigNode *node);
 
 private:

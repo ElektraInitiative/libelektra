@@ -113,8 +113,6 @@ public:
     void                    accept(Visitor &visitor);
     kdb::Key                getKey();
     void                    setKey(kdb::Key key);
-    void                    add(kdb::Key key, unsigned long depth);
-
     void                    deleteKey();
 
 private:

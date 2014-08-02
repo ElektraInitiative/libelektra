@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
     QQmlContext* ctxt = engine.rootContext();
 
     TreeViewModel* model = new TreeViewModel();
-//    new ModelTest(model);
+    //new ModelTest(model);
 
     model->populateModel();
 

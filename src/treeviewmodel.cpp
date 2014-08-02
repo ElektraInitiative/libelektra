@@ -322,12 +322,18 @@ void TreeViewModel::qmlInsertRow(int row, ConfigNode *node)
         qDebug() << "Key " << QString::fromStdString(node->getKey().getFullName()) << " not valid!";
 }
 
-void TreeViewModel::createNewNode(const QString &path, const QString &value)
+void TreeViewModel::createNewNode(const QString &path, const QString &value, const QVariantMap metaData)
 {
     qDebug() << "TreeViewModel::createNewNode: path = " << path << " value = " << value;
     Key key;
     key.setName(path.toStdString());
     key.setString(value.toStdString());
+
+    for(QVariantMap::const_iterator iter = metaData.begin(); iter != metaData.end(); iter++)
+    {
+        qDebug() << iter.key() << iter.value();
+        key.setMeta(iter.key().toStdString(), iter.value().toString().toStdString());
+    }
 
     QStringList splittedKey = path.split("/");
 
