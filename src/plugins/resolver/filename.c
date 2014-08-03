@@ -77,6 +77,166 @@ static void elektraGenTempFilename(char *where, const char *filename)
 			tv.tv_usec);
 }
 
+int elektraResolveSystem(resolverHandle *p)
+{
+	if (p->path[0] == '/')
+	{
+		/* Use absolute path */
+		size_t filenameSize = strlen(p->path) + 1;
+		p->filename = malloc (filenameSize);
+		strcpy (p->filename, p->path);
+
+		p->dirname = malloc (filenameSize);
+		strcpy (p->dirname, dirname(p->filename));
+
+		// dirname may have destroyed the content of
+		// filename, so write it again
+		strcpy (p->filename, p->path);
+
+		p->tempfile = malloc(filenameSize + POSTFIX_SIZE);
+		elektraGenTempFilename(p->tempfile, p->filename);
+
+		return 0;
+	}
+	p->dirname= malloc (sizeof(KDB_DB_SYSTEM));
+	strcpy (p->dirname, KDB_DB_SYSTEM);
+
+	size_t filenameSize = sizeof(KDB_DB_SYSTEM)
+		+ strlen(p->path) + sizeof("/") + 1;
+	p->filename = malloc (filenameSize);
+	strcpy (p->filename, KDB_DB_SYSTEM);
+	strcat (p->filename, "/");
+	strcat (p->filename, p->path);
+
+	p->tempfile = malloc (filenameSize + POSTFIX_SIZE);
+	elektraGenTempFilename(p->tempfile, p->filename);
+	return 1;
+}
+
+void elektraResolveUsingHome(resolverHandle *p, const char *home)
+{
+	size_t dirnameSize = 0;
+	Key *canonify = keyNew("user", KEY_END);
+
+	keyAddBaseName(canonify, home);
+	dirnameSize = keyGetNameSize(canonify) +
+			sizeof("/" KDB_DB_USER);
+	p->dirname = malloc(dirnameSize);
+	strcpy (p->dirname, keyName(canonify)
+			+4); // cut user, but leave slash
+	strcat (p->dirname, "/" KDB_DB_USER);
+	keyDel(canonify);
+}
+
+int elektraResolvePasswd(resolverHandle *p, Key *warningsKey)
+{
+	struct passwd pwd;
+	struct passwd *result;
+	char *buf;
+	ssize_t bufsize;
+	int s;
+
+	bufsize = sysconf(_SC_GETPW_R_SIZE_MAX);
+	if (bufsize == -1)          /* Value was indeterminate */
+	{
+		bufsize = 16384;        /* Should be more than enough */
+	}
+
+	buf = malloc(bufsize);
+	if (buf == NULL) {
+		return 0;
+	}
+
+	s = getpwuid_r(geteuid(), &pwd, buf, bufsize, &result);
+	if (result == NULL)
+	{
+		free(buf);
+		if (s != 0)
+		{
+			ELEKTRA_ADD_WARNING(90, warningsKey, strerror(s));
+		}
+		return 0;
+	}
+
+	/*
+	printf("Info: %s; UID: %ld0, Home: %s\n",
+			pwd.pw_gecos,
+			(long) pwd.pw_uid,
+			pwd.pw_dir);
+	*/
+
+	elektraResolveUsingHome(p, pwd.pw_dir);
+
+	return 1;
+}
+
+int elektraResolveEnv(resolverHandle *p)
+{
+	const char * home = getenv("HOME");
+
+	if (!home)
+	{
+		return 0;
+	}
+
+	elektraResolveUsingHome(p, home);
+
+	return 1;
+}
+
+int elektraResolveOwner(resolverHandle *p)
+{
+	const char* owner = getenv("USER");
+
+	if (!owner)
+	{
+		return 0;
+	}
+
+	Key *canonify = keyNew("user", KEY_END);
+	keyAddBaseName(canonify, owner);
+	size_t dirnameSize = sizeof(KDB_DB_HOME "/")
+			+ keyGetNameSize(canonify)
+			+ sizeof("/" KDB_DB_USER);
+
+	p->dirname= malloc (dirnameSize);
+	strcpy (p->dirname, KDB_DB_HOME "/");
+	strcat (p->dirname, keyName(canonify)
+			+5); // cut user/
+	strcat (p->dirname, "/" KDB_DB_USER);
+	keyDel(canonify);
+
+	return 1;
+}
+
+
+int elektraResolveBuildin(resolverHandle *p)
+{
+	size_t dirnameSize = sizeof(KDB_DB_HOME "/")
+		+ sizeof("/" KDB_DB_USER);
+
+	p->dirname= malloc (dirnameSize);
+	strcpy (p->dirname, KDB_DB_HOME "/");
+	strcat (p->dirname, KDB_DB_USER);
+
+	return 1;
+}
+
+void elektraResolveFinish(resolverHandle *p)
+{
+	size_t filenameSize = strlen(p->dirname)
+			+ strlen(p->path) +
+			+ sizeof("/");
+
+	p->filename = malloc (filenameSize);
+	strcpy (p->filename, p->dirname);
+	strcat (p->filename, "/");
+	strcat (p->filename, p->path);
+
+	p->tempfile = malloc (filenameSize + POSTFIX_SIZE);
+	elektraGenTempFilename(p->tempfile, p->filename);
+}
+
 /**Resolve the filename.
  *
  * For system keys it must be an absolute path, or KDB_DB_SYSTEM
@@ -103,106 +263,40 @@ static void elektraGenTempFilename(char *where, const char *filename)
  *         be found
  * warnings will be reported to warningsKey
  */
-int resolveFilename(Key* forKey, resolverHandle *p, Key *warningsKey)
+int elektraResolveFilename(Key* forKey, resolverHandle *p, Key *warningsKey)
 {
 	if (!strncmp(keyName(forKey), "system", 6))
 	{
-		if (p->path[0] == '/')
-		{
-			/* Use absolute path */
-			size_t filenameSize = strlen(p->path) + 1;
-			p->filename = malloc (filenameSize);
-			strcpy (p->filename, p->path);
-
-			p->dirname = malloc (filenameSize);
-			strcpy (p->dirname, dirname(p->filename));
-
-			// dirname may have destroyed the content of
-			// filename, so write it again
-			strcpy (p->filename, p->path);
-
-			p->tempfile = malloc(filenameSize + POSTFIX_SIZE);
-			elektraGenTempFilename(p->tempfile, p->filename);
-
-			return 0;
-		}
-		p->dirname= malloc (sizeof(KDB_DB_SYSTEM));
-		strcpy (p->dirname, KDB_DB_SYSTEM);
-
-		size_t filenameSize = sizeof(KDB_DB_SYSTEM)
-			+ strlen(p->path) + sizeof("/") + 1;
-		p->filename = malloc (filenameSize);
-		strcpy (p->filename, KDB_DB_SYSTEM);
-		strcat (p->filename, "/");
-		strcat (p->filename, p->path);
-
-		p->tempfile = malloc (filenameSize + POSTFIX_SIZE);
-		elektraGenTempFilename(p->tempfile, p->filename);
-		return 1;
+		return elektraResolveSystem(p);
 	}
 	else if (!strncmp(keyName(forKey), "user", 4))
 	{
-		const char * home = getenv("HOME");
-		size_t dirnameSize = 0;
-
-		if (!home)
+		int finished = 0;
+		if (!finished)
 		{
-			const char* owner = getenv("USER");
-
-			if (!owner)
-			{
-				dirnameSize = sizeof(KDB_DB_HOME "/")
-					+ sizeof("/" KDB_DB_USER);
-
-				p->dirname= malloc (dirnameSize);
-				strcpy (p->dirname, KDB_DB_HOME "/");
-				strcat (p->dirname, KDB_DB_USER);
-			}
-			else
-			{
-				Key *canonify = keyNew("user", KEY_END);
-				keyAddBaseName(canonify, owner);
-				dirnameSize = sizeof(KDB_DB_HOME "/")
-						+ keyGetNameSize(canonify)
-						+ sizeof("/" KDB_DB_USER);
-
-				p->dirname= malloc (dirnameSize);
-				strcpy (p->dirname, KDB_DB_HOME "/");
-				strcat (p->dirname, keyName(canonify)
-						+5); // cut user/
-				strcat (p->dirname, "/" KDB_DB_USER);
-				keyDel(canonify);
-			}
-
-			ELEKTRA_ADD_WARNING(83, warningsKey,
-					p->dirname);
+			finished = elektraResolvePasswd(p, warningsKey);
 		}
-		else
+		if (!finished)
 		{
-			Key *canonify = keyNew("user", KEY_END);
-			keyAddBaseName(canonify, home);
-			dirnameSize = keyGetNameSize(canonify) +
-					sizeof("/" KDB_DB_USER);
-			p->dirname = malloc(dirnameSize);
-			strcpy (p->dirname, keyName(canonify)
-					+4); // cut user, but leave slash
-			strcat (p->dirname, "/" KDB_DB_USER);
-			keyDel(canonify);
+			finished = elektraResolveEnv(p);
+		}
+		if (!finished)
+		{
+			finished = elektraResolveOwner(p);
+		}
+		if (!finished)
+		{
+			elektraResolveBuildin(p);
+		}
+		if (!finished)
+		{
+			ELEKTRA_SET_ERROR(83, warningsKey,
+				"the configuration was:");
 		}
 
-		size_t filenameSize = dirnameSize
-				+ strlen(p->path) +
-				+ sizeof("/");
+		elektraResolveFinish(p);
 
-		p->filename = malloc (filenameSize);
-		strcpy (p->filename, p->dirname);
-		strcat (p->filename, "/");
-		strcat (p->filename, p->path);
-
-		p->tempfile = malloc (filenameSize + POSTFIX_SIZE);
-		elektraGenTempFilename(p->tempfile, p->filename);
-
-		return 1;
+		return finished;
 	}
 
 	return -1;

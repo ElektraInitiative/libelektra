@@ -47,6 +47,8 @@ struct _resolverHandle
 	char *tempfile;///< temporary file storages write to
 
 	const char *path; ///< the configuration file name as passed from config
+	const char *env;  ///< environment variables to search for files
+	const char *fix;  ///< add
 };
 
 typedef struct _resolverHandles resolverHandles;
@@ -60,7 +62,7 @@ struct _resolverHandles
 void resolverInit (resolverHandle *p, const char *path);
 void resolverClose (resolverHandle *p);
 
-int resolveFilename(Key* forKey, resolverHandle *p, Key *warningKey);
+int elektraResolveFilename(Key* forKey, resolverHandle *p, Key *warningKey);
 int elektraResolverCheckFile (const char* filename);
 
 int elektraResolverOpen(Plugin *handle, Key *errorKey);

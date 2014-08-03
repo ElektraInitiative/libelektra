@@ -63,7 +63,7 @@ void test_resolve()
 	resolverClose(&h->user);
 
 	Key *forKey = keyNew("system", KEY_END);
-	succeed_if (resolveFilename(forKey, &h->system, forKey) != -1,
+	succeed_if (elektraResolveFilename(forKey, &h->system, forKey) != -1,
 			"could not resolve filename");
 
 	succeed_if (!strcmp(h->system.path, "elektra.ecf"), "path not set correctly");
@@ -72,7 +72,7 @@ void test_resolve()
 
 
 	keySetName(forKey, "user");
-	succeed_if (resolveFilename(forKey, &h->user, forKey) != -1,
+	succeed_if (elektraResolveFilename(forKey, &h->user, forKey) != -1,
 			"could not resolve filename");
 
 	pathLen = tempHomeLen + 1 + strlen (KDB_DB_USER) + 12 + 1;
@@ -88,7 +88,7 @@ void test_resolve()
 	unsetenv("USER");
 	unsetenv("HOME");
 	keySetName(forKey, "system");
-	succeed_if (resolveFilename(forKey, &h->system, forKey) != -1,
+	succeed_if (elektraResolveFilename(forKey, &h->system, forKey) != -1,
 			"could not resolve filename");
 
 	succeed_if (!strcmp(h->system.path, "elektra.ecf"), "path not set correctly");
@@ -97,7 +97,7 @@ void test_resolve()
 
 
 	keySetName(forKey, "user");
-	succeed_if (resolveFilename(forKey, &h->user, forKey) != -1,
+	succeed_if (elektraResolveFilename(forKey, &h->user, forKey) != -1,
 			"could not resolve filename");
 
 	succeed_if (!strcmp(h->user.path, "elektra.ecf"), "path not set correctly");
@@ -106,7 +106,7 @@ void test_resolve()
 
 
 	setenv("USER","other",1);
-	succeed_if (resolveFilename(forKey, &h->user, forKey) != -1,
+	succeed_if (elektraResolveFilename(forKey, &h->user, forKey) != -1,
 			"could not resolve filename");
 
 	succeed_if (!strcmp(h->user.path, "elektra.ecf"), "path not set correctly");
@@ -114,7 +114,7 @@ void test_resolve()
 	resolverClose(&h->user);
 
 	setenv("HOME","/nfshome//max//",1);
-	succeed_if (resolveFilename(forKey, &h->user, forKey) != -1,
+	succeed_if (elektraResolveFilename(forKey, &h->user, forKey) != -1,
 			"could not resolve filename");
 
 	succeed_if (!strcmp(h->user.path, "elektra.ecf"), "path not set correctly");
@@ -125,7 +125,7 @@ void test_resolve()
 #endif
 
 	keySetName(forKey, "user");
-	succeed_if (resolveFilename(forKey, &h->user, forKey) != -1,
+	succeed_if (elektraResolveFilename(forKey, &h->user, forKey) != -1,
 			"could not resolve filename");
 
 	succeed_if (!strcmp(h->user.path, "elektra.ecf"), "path not set correctly");

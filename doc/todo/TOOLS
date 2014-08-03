@@ -8,14 +8,19 @@ mountget, mountset, mountls
 
 rename getmeta to metaget, metaset, metals?
 
+Allow to pass mounting config with kdb-tools and libtools
+
 add possibility to give names and configure plugins:
 
 e.g.
+#recode will be used both for renaming of value+name
 kdb mount path=s.ini,recode=utf8..latin1,name=backendname /path/to/mount
-          ni,name=pluginname rebase,relative=/path
+          ni,name=pluginname rename,rebase=/path iconv
 
-kdb mount OpenICC_device_config_DB.json /org/freedesktop/openicc yajl
-          rebase,relative=/org/freedesktop/openicc,case=ignore
+#mount openicc DB
+kdb mount --resolver openicc
+          OpenICC_device_config_DB.json /org/freedesktop/openicc
+          yajl rename,rebase=/org/freedesktop/openicc,recase=lower
 
 
 allow to mount/umount plugin to all currently mounted backends +

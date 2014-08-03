@@ -42,13 +42,13 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-//TODO: make multiple resolver plugins
+#include <sys/types.h>
+#include <dirent.h>
+
+#ifdef RESOLVER_DEBUG
 //has stop signals at certain points to let you test
 //concurrent access from shell scripts
 // #define RESOLVER_DEBUG
-
-#ifdef RESOLVER_DEBUG
-#include <sys/types.h>
 #include <signal.h>
 #endif
 
@@ -144,7 +144,7 @@ int elektraResolverOpen(Plugin *handle, Key *errorKey)
 	}
 
 	Key *testKey = keyNew("system", KEY_END);
-	if (resolveFilename(testKey, &p->system, errorKey) == -1)
+	if (elektraResolveFilename(testKey, &p->system, errorKey) == -1)
 	{
 		resolverClose(&p->user);
 		resolverClose(&p->system);
@@ -155,7 +155,7 @@ int elektraResolverOpen(Plugin *handle, Key *errorKey)
 	}
 
 	keySetName(testKey, "user");
-	if (resolveFilename(testKey, &p->user, errorKey) == -1)
+	if (elektraResolveFilename(testKey, &p->user, errorKey) == -1)
 	{
 		resolverClose(&p->user);
 		resolverClose(&p->system);
@@ -503,6 +503,16 @@ int elektraSetCommit(resolverHandle *pk, Key *parentKey)
 	elektraUnlockFile(pk->fd, parentKey);
 	elektraCloseFile(pk->fd, parentKey);
 
+	DIR * dirp = opendir(pk->dirname);
+	// checking dirp not needed, fsync will have EBADF
+	if (fsync(dirfd(dirp)) == -1)
+	{
+		char buffer[ERROR_SIZE];
+		strerror_r(errno, buffer, ERROR_SIZE);
+		ELEKTRA_ADD_WARNING (88, parentKey, buffer);
+	}
+	closedir(dirp); // TODO: check for error?
+
 	return ret;
 }
 
@@ -511,7 +521,7 @@ int elektraResolverSet(Plugin *handle, KeySet *returned ELEKTRA_UNUSED, Key *par
 {
 	resolverHandle *pk = elektraGetResolverHandle(handle, parentKey);
 
-	// might be useless, will not harm
+	// might be useless (case of error), will not harm
 	keySetString(parentKey, pk->tempfile);
 
 	int errnoSave = errno;
