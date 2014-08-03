@@ -11,23 +11,13 @@ BasicWindow {
     property alias  valueLayout: valueLayout
     property alias  nameLabel: nameLabel
     property alias  addButton: addButton
-    property alias  metaKeyModel: metaKeyModel
+    property alias  metaKeyModel: qmlMetaKeyModel
     property alias  nameTextField: nameTextField
     property alias  valueTextField: valueTextField
     property string path: ""
     property string keyName: ""
     property string keyValue: ""
     property bool   isEdited: true
-
-    cancelButton.onClicked: {
-        editWindow.visible = false
-        metaKeyModel.clear()
-    }
-    okButton.onClicked: {
-        //TODO: check if user has edited the node
-        editWindow.visible = false
-        editAccepted()
-    }
 
     contents: ColumnLayout {
         anchors.fill: parent
@@ -80,18 +70,18 @@ BasicWindow {
                     id: metaKeyListView
                     anchors.fill: parent
                     spacing: defaultMargins
-                    model: metaKeyModel
+                    model: qmlMetaKeyModel
                     delegate: metaKeyDelegate
                 }
             }
             ListModel {
-                id: metaKeyModel
+                id: qmlMetaKeyModel
             }
             Component {
                 id: metaKeyDelegate
                 NewMetaKey {
-                    metaNameField.onTextChanged: metaKeyModel.set(index, {"metaName": metaNameField.text})
-                    metaValueField.onTextChanged: metaKeyModel.set(index, {"metaValue": metaValueField.text})
+                    metaNameField.onTextChanged: qmlMetaKeyModel.set(index, {"metaName": metaNameField.text})
+                    metaValueField.onTextChanged: qmlMetaKeyModel.set(index, {"metaValue": metaValueField.text})
                 }
             }
         }
@@ -101,8 +91,17 @@ BasicWindow {
             text: qsTr("New Meta Key")
             onClicked: {
                 //add visual item
-                metaKeyModel.append({"metaName" : "", "metaValue" : ""})
+                qmlMetaKeyModel.append({"metaName" : "", "metaValue" : ""})
             }
         }
+    }
+    cancelButton.onClicked: {
+        editWindow.visible = false
+        qmlMetaKeyModel.clear()
+    }
+    okButton.onClicked: {
+        //TODO: check if user has edited the node
+        editWindow.visible = false
+        editAccepted()
     }
 }

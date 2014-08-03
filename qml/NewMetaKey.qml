@@ -32,7 +32,7 @@ Item {
             iconSource: "icons/application-exit.png"
 
             onClicked: {
-                metaKeyModel.remove(index)// remove the visual item
+                qmlMetaKeyModel.remove(index)// remove the visual item
             }
         }
     }

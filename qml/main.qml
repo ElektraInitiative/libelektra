@@ -88,9 +88,9 @@ ApplicationWindow {
 
             console.log(isEdited)
             //create undo command
-//            if(isEdited)
-//                undoManager.createEditCommand(keyAreaView.model, keyAreaView.currentRow, keyName.toString(), keyValue.toString(), keyAreaSelectedItem.metaValue,
-//                                              nameTextField.text, valueTextField.text, metaData)
+            if(isEdited)
+                undoManager.createEditCommand(keyAreaView.model, keyAreaView.currentRow, keyName.toString(), keyValue.toString(), keyAreaSelectedItem.metaValue,
+                                              nameTextField.text, valueTextField.text, metaData)
 
             //set key name & value
             keyAreaView.model.setDataValue(keyAreaView.currentRow, nameTextField.text, "Name")
@@ -575,6 +575,7 @@ ApplicationWindow {
                 visible: false
 
                 Button {
+                    id: searchResultsCloseButton
                     iconSource: "icons/dialog-close.png"
                     anchors.right: parent.right
                     anchors.top: parent.top
@@ -593,6 +594,7 @@ ApplicationWindow {
                     id: searchResultsScrollView
                     anchors.fill: parent
                     anchors.margins: defaultMargins
+                    anchors.rightMargin: searchResultsCloseButton.width
 
                     ListView {
                         id: searchResultsListView

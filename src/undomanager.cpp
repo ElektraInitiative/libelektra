@@ -37,12 +37,12 @@ void UndoManager::createEditCommand(TreeViewModel *model, int index, const QStri
     qDebug() << "Stack size = " << m_undoStack->count();
 }
 
-void UndoManager::redo()
-{
-    m_undoStack->redo();
-}
-
 void UndoManager::undo()
 {
     m_undoStack->undo();
+}
+
+void UndoManager::redo()
+{
+    m_undoStack->redo();
 }
