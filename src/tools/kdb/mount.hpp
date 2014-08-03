@@ -58,6 +58,7 @@ class MountCommand : public Command
 	void buildBackend(Cmdline const& cl);
 	void appendPlugins(Cmdline const& cl, kdb::tools::Backend & backend);
 	bool readPluginConfig(Cmdline const& cl, size_t current_plugin);
+	void addConfig (std::string const& configBasePath, std::string const& name, std::string const& value);
 	void askForConfirmation(Cmdline const& cl);
 	void doIt();
 
