@@ -3,7 +3,7 @@
 This document provides an introduction in how the source code of
 libelektra is organized and how and where to add functionality.
 
-Make sure to read DESIGN together with this document.
+Make sure to read [DESIGN](design.md) together with this document.
 
 ## Folder structure ##
 
