@@ -77,6 +77,7 @@ static int iniSectionToElektraKey (void *vconfig, const char *section)
 	Configuration *config = (Configuration *)vconfig;
 
 	Key *appendKey = keyDup (config->parentKey);
+	keySetString(appendKey, 0);
 
 	keyAddBaseName(appendKey, section);
 	writeCommentToMeta (config, appendKey);

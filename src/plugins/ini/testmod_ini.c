@@ -44,6 +44,7 @@ void test_plainIniRead(char *fileName)
 	key = ksLookupByName (ks, "user/tests/ini-read/section1", KDB_O_NONE);
 	exit_if_fail(key, "section1 not found");
 	succeed_if (keyIsDir(key), "section1 is not a directory key");
+	succeed_if (!strcmp ("", keyString(key)), "section value was not empty");
 
 	key = ksLookupByName (ks, "user/tests/ini-read/section1/key1", KDB_O_NONE);
 	exit_if_fail(key, "key1 not found");
