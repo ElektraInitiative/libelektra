@@ -13,7 +13,7 @@ if (YAJL_FOUND)
 	add_includes (elektra-full ${CMAKE_CURRENT_BINARY_DIR})
 	include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
-	set (SOURCES yajl.c array.c iterator.c yajl_gen.c
+	set (SOURCES yajl.c iterator.c yajl_gen.c
 		yajl_gen_open.c  yajl_gen_close.c
 		yajl_parse.c name.c)
 

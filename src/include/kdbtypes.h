@@ -33,7 +33,7 @@
 
 #include "kdbconfig.h"
 
-#if __cplusplus
+#ifdef __cplusplus
 #if __cplusplus <= 199711L
 // for C++97 or older
 

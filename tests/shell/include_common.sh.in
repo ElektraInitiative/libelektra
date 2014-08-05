@@ -173,6 +173,7 @@ is_not_rw_storage()
 	test ! "x`$KDB info $PLUGIN provides 2>/dev/null`" = "xstorage" \
 	-o "x$PLUGIN" = "xhosts" \
 	-o "x$PLUGIN" = "xfstab" \
+	-o "x$PLUGIN" = "xline" \
 	-o "x$PLUGIN" = "xuname" \
 	-o "x$PLUGIN" = "xaugeas"
 }

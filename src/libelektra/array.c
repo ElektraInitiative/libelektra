@@ -1,7 +1,10 @@
-#include "array.h"
+#include <kdbproposal.h>
+#include "kdbtypes.h"
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <limits.h>
+#include <errno.h>
 
 /**
  * @brief Increment the name of the key by one
@@ -11,14 +14,14 @@
  * e.g. user/abc/#9 will be changed to
  *      user/abc/#_10
  *
- * TODO: add elektraArrayIncName for kdb tool
- * use it for other arrays within elektra
- * add more test cases
- *
+ * For the start:
+ *      user/abc
+ * will be changed to
+ *      user/abc/#0
  *
  * @param key which base name will be incremented
  *
- * @retval -1 on error
+ * @retval -1 on error (e.g. too large array)
  * @retval 0 on success
  */
 int elektraArrayIncName(Key *key)
@@ -35,7 +38,9 @@ int elektraArrayIncName(Key *key)
 	}
 	else if (*baseName != '#')
 	{
-		return -1;
+		// finished: just start a new array
+		keyAddBaseName(key, "#0");
+		return 0;
 	}
 
 	++baseName; // jump over #
@@ -44,31 +49,52 @@ int elektraArrayIncName(Key *key)
 		++baseName;
 	}
 
-	// TODO: implement error handling for non-numbers
-	// needs also ajustment in jumping over all _ to
-	// be robust against any text
-	int oldIndex = atoi(baseName);
-	int newIndex = oldIndex+1; // we increment by one
+	long int oldIndex  = 0;
+
+	char *endptr;
+	int errnosave = errno;
+	errno = 0;
+	oldIndex = strtol(baseName, &endptr, 10);
+
+	if (errno != 0) // any error
+	{
+		errno = errnosave;
+		return -1;
+	}
+
+	if (oldIndex < 0) // underflow
+	{
+		return -1;
+	}
+
+	if (oldIndex == LONG_MAX) // overflow
+	{
+		return -1;
+	}
+
+	if (endptr == baseName)
+	{
+		return -1;
+	}
+
+	long int newIndex = oldIndex+1; // we increment by one
 
 	// maximal size calculation (C99 would also allow non maximum though...)
-	size_t sizeHash = 1;
 	size_t sizeMax_ = 9; // maximum of n-1 _
 	size_t sizeNum = 10; // maximum of 10 digits in 32bit number
-	size_t size = sizeHash + sizeMax_ + sizeNum + 1;
-	char newName[size]; // #_______________________________________________________4000000000
+	size_t size = sizeMax_ + sizeNum + 1;
+	char newName[size]; // #_________4000000000
 
 	// now we fill out newName
 	size_t index = 0; // index of newName
 	newName[index++] = '#';
-	size_t size_=0;
-	size_t i = newIndex/10;
+	long int i = newIndex/10;
 	while (i>0)
 	{
-		size_++; // increment the number of decimals
 		newName[index++] = '_'; // index n-1 of decimals
 		i/=10;
 	}
-	if (snprintf (&newName[index], sizeNum, "%d", newIndex)  < 0)
+	if (snprintf (&newName[index], size, "%ld", newIndex)  < 0)
 	{
 		return -1;
 	}

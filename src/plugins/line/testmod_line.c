@@ -22,17 +22,17 @@ void test_readline(){
 
 	KeySet *ks=ksNew(0);
 	succeed_if (plugin->kdbGet(plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
-	Key *key = ksLookupByName(ks, "user/tests/line/line01", 0);
+	Key *key = ksLookupByName(ks, "user/tests/line/#0", 0);
 	exit_if_fail (key, "line1 key not found");
-	succeed_if (strcmp("test1", keyValue(key)) == 0, "line1 does not match");
+	succeed_if (strcmp("test1", keyValue(key)) == 0, "line ´ does not match");
 
-	key = ksLookupByName(ks, "user/tests/line/line11", 0);
+	key = ksLookupByName(ks, "user/tests/line/#_10", 0);
 	exit_if_fail (key, "line11 key not found");
-	succeed_if (strcmp("", keyValue(key)) == 0, "line11 should be blank");
+	succeed_if (strcmp("", keyValue(key)) == 0, "line 10 should be blank");
 
-	key = ksLookupByName(ks, "user/tests/line/line14", 0);
+	key = ksLookupByName(ks, "user/tests/line/#_13", 0);
 	exit_if_fail (key, "line14 key not found");
-	succeed_if (strcmp("printf(\"hello world\\n\");", keyValue(key)) == 0, "line14 not correct");
+	succeed_if (strcmp("printf(\"hello world\\n\");", keyValue(key)) == 0, "line 13 not correct");
 
 	ksDel (ks);
 	keyDel(parentKey);

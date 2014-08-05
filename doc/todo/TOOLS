@@ -29,7 +29,12 @@ including mounting functionality
 
 
 
+
+
+
 = KDB =
+
+allow key array increments with kdb tool
 
 list existing plugins
 	which are available? (src/plugins)
@@ -65,6 +70,8 @@ export should be able to export only configuration that was changed
 install config (mount+preload system config) by using meta struct
 
 == GEN ==
+
+code generator always yields LONG_MIN, LONG_MAX on any type!
 
 cmake support for "kdb gen" (run kdb gen within cmake)
 

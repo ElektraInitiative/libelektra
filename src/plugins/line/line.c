@@ -13,6 +13,7 @@
 #include "line.h"
 
 #include <kdberrors.h>
+#include <kdbproposal.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,7 +22,7 @@
 
 static inline KeySet *elektraLineContract()
 {
-    return ksNew (30,
+	return ksNew (30,
 		keyNew ("system/elektra/modules/line",
 			KEY_VALUE, "line plugin waits for your orders", KEY_END),
 		keyNew ("system/elektra/modules/line/exports", KEY_END),
@@ -32,7 +33,40 @@ static inline KeySet *elektraLineContract()
 #include "readme_line.c"
 		keyNew ("system/elektra/modules/line/infos/version",
 			KEY_VALUE, PLUGINVERSION, KEY_END),
-    		KS_END);
+	KS_END);
+}
+
+int elektraLineRead(FILE * fp, KeySet * returned)
+{
+	char *value = NULL;
+	size_t len = 0;
+	ssize_t n = 0;
+	Key *read = NULL;
+
+	//Read in each line
+	while ((n = getline(&value, &len, fp)) != -1)
+	{
+		//Remove trailing newline
+		if (value[strlen(value) - 1] == '\n')
+		{ // TODO use n instead of strlen
+			value[strlen(value) - 1] = '\0';
+		}
+		read = keyDup(ksTail(returned));
+		if (elektraArrayIncName(read) == -1)
+		{
+			free (value);
+			keyDel (read);
+			return -1;
+		}
+		// TODO: check for null keys
+		keySetString(read, value);
+
+		ksAppendKey (returned, read);
+		free(value);
+		len=0;
+	}
+
+	return 1;
 }
 
 
@@ -43,19 +77,11 @@ int elektraLineGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 	if (!strcmp (keyName(parentKey), "system/elektra/modules/line"))
 	{
 		KeySet *moduleConfig = elektraLineContract();
-    		ksAppend(returned, moduleConfig);
-    		ksDel(moduleConfig);
-    		return 1;
+		ksAppend(returned, moduleConfig);
+		ksDel(moduleConfig);
+		return 1;
 	}
-	char *value = NULL;
-	char *key;
-	Key *read;
-	int i;
-	int digits = 0;
-	size_t numberSize;
-	size_t stringSize;
-	size_t len = 0;
-	ssize_t n;
+
 	FILE *fp = fopen (keyString(parentKey), "r");
 	if (!fp)
 	{
@@ -63,58 +89,25 @@ int elektraLineGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 		// return -1;
 		return 0; // we just ignore if we could not open file
 	}
-	//Find # of lines
-	char ch;
-	while(!feof(fp)){
-  		ch = fgetc(fp);
-  		if(ch == '\n')
-    			digits++;
-	}
-	for(i = 0; digits > 0; i++) 
-		digits /= 10;
-	digits = i;
-	rewind(fp);
-	i = 0;
-	//Read in each line
-	while ((n = getline(&value, &len, fp)) != -1)
-	{
-		//Remove trailing newline
-		if (value[strlen(value) - 1] == '\n') {
-  			value[strlen(value) - 1] = '\0';
-		}
-		i++;
-		//Set key to correct size
-		numberSize = snprintf(0, 0, "%0*d", digits, i);
-		stringSize = sizeof("line") + numberSize + 1;
-		key = malloc(stringSize);
-		//Append i to line
-		snprintf (key, stringSize, "line%0*d", digits, i);
-		read = keyDup(parentKey);
-		if (keyAddBaseName(read, key) == -1)
-		{
-			fclose (fp);
-			keyDel (read);
-			ELEKTRA_SET_ERROR(59, parentKey, key);
-			return -1;
-		}
-		keySetString(read, value);
 
-		ksAppendKey (returned, read);
-		free (key);
-		len=0;
-		free(value);
-	}
+	ksAppendKey (returned, keyDup(parentKey)); // start with parentKey
 
-	if (feof(fp) == 0)
+	int ret = elektraLineRead(fp, returned);
+
+	if (ret == -1)
 	{
-		fclose (fp);
+			ELEKTRA_SET_ERROR(59, parentKey,
+					"could not increment array");
+	}
+	else if (feof(fp) == 0)
+	{
 		ELEKTRA_SET_ERROR(60, parentKey, "not at the end of file");
-		return -1;
+		ret = -1;
 	}
 
 	fclose (fp);
 
-	return 1; /* success */
+	return ret ; /* success */
 }
 
 int elektraLineSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
@@ -122,6 +115,7 @@ int elektraLineSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 	/* set all keys */
 
 	FILE *fp = fopen(keyString(parentKey), "w");
+
 	if (!fp)
 	{
 		ELEKTRA_SET_ERROR(74, parentKey, keyString(parentKey));
