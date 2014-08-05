@@ -1,69 +1,69 @@
 The list of authors that contributed to Elektra.
 
 
-Markus Raab <elektra@markus-raab.org>  
-maintainer, development, documentation  
+Markus Raab <elektra@markus-raab.org>
+maintainer, development, documentation
 Devel/Test on: Debian
 
 
-Christopher Meng <cickumqt@gmail.com>  
-Fedora packaging  
+Christopher Meng <cickumqt@gmail.com>
+Fedora packaging
 Test on: Fedora
 
 
-Avi Alkalay <avi@unix.sh>  
-Initial concept&architecture, development, manuals, previous website  
+Avi Alkalay <avi@unix.sh>
+Initial concept&architecture, development, manuals, previous website
 Backends: berkleydb, filesys, fstab
 
 
-Yannick Lecaillez <yl@itioweb.com>  
-Mandriva packaging, adaptation for using autotools & libtool  
+Yannick Lecaillez <yl@itioweb.com>
+Mandriva packaging, adaptation for using autotools & libtool
 Devel/Test on: Mandriva x86
 
 
-Jens Andersen <jens.andersen@gmail.com>  
-nss-elektra, development and porting.  
+Jens Andersen <jens.andersen@gmail.com>
+nss-elektra, development and porting.
 Devel/Test on:
 
 
-Patrick Sabin <patricksabin@gmx.at>  
-unstable development, Python kdb  
+Patrick Sabin <patricksabin@gmx.at>
+unstable development, Python kdb
 Bindings: python
 Devel/Test on: Debian Testing
 
 
-Felix Berlakovich <elektra@berlakovich.net>  
-journald plugin, augeas plugin, keytometa, main development  
+Felix Berlakovich <elektra@berlakovich.net>
+journald plugin, augeas plugin, keytometa, main development
 Devel/Test on: Debian Wheezy
 
 
-Andreas Rottmann <rotty@debian.org>  
-Debian packaging  
+Andreas Rottmann <rotty@debian.org>
+Debian packaging
 Bindings: scheme
 
 
-Simon Law <sfllaw@debian.org>  
-Debian Packaging  
+Simon Law <sfllaw@debian.org>
+Debian Packaging
 
 
-Pier Luigi Fiorini <pierluigi.fiorini@mockup.org>  
-pkg-config file  
+Pier Luigi Fiorini <pierluigi.fiorini@mockup.org>
+pkg-config file
 Devel/Test on:
 
 
-Rèmi <remipouak@yahoo.fr>  
-XML schema  
+Rèmi <remipouak@yahoo.fr>
+XML schema
 Devel/Test on:
 
 
-Studio-HB <contact@studio-hb.com>  
+Studio-HB <contact@studio-hb.com>
 Elektra logo, website design.
 
 
-Pino Toscano <pino@kde.org>  
+Pino Toscano <pino@kde.org>
 Debian Packaging, Documentation
 
 
-Ian S. Donnelly <ian.s.donnelly@gmail.com>  
-Google Summer of Code 2014  
+Ian S. Donnelly <ian.s.donnelly@gmail.com>
+Google Summer of Code 2014
 Devel/Test on: Debian Stable

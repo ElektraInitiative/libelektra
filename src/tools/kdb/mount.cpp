@@ -225,10 +225,8 @@ void MountCommand::buildBackend(Cmdline const& cl)
 
 	backend.checkFile (path);
 
-	std::string configPath = Backends::mountpointsPath;
-	configPath += "/";
-	configPath += name;
-	configPath += "/config";
+	std::string configPath = Backends::getConfigBasePath(name);
+
 	mountConf.append ( *Key(configPath,
 			KEY_VALUE, "",
 			KEY_COMMENT, "This is a configuration for a backend, see subkeys for more information",
@@ -251,6 +249,68 @@ void MountCommand::buildBackend(Cmdline const& cl)
 	backend.serialise (rootKey, mountConf);
 }
 
+void MountCommand::addConfig (string const& configBasePath, string const& keyName, string const& value)
+{
+	Key configKey = Key (configBasePath, KEY_END);
+	configKey.addBaseName (keyName);
+	configKey.setString (value);
+	mountConf.append (configKey);
+}
+
+bool MountCommand::readPluginConfig(Cmdline const& cl, size_t current_token)
+{
+	string keyName;
+	string value;
+
+	const string configBasePath = Backends::getConfigBasePath (name);
+	if (cl.interactive)
+	{
+		cout << "Enter the plugin configuration" << endl;
+		cout << "Use '.' as Key name to finish" << endl;
+
+		while (true)
+		{
+			cout << "Enter the Key name: ";
+			cin >> keyName;
+
+			if (keyName == ".") break;
+
+			cout << "Enter the Key value: ";
+			cin >> value;
+
+			addConfig (configBasePath, keyName, value);
+		}
+	}
+	else
+	{
+		// check if there is a further token (which might be the config of the current plugin)
+		if (current_token + 1 >= cl.arguments.size ()) return false;
+
+		string configString = cl.arguments[current_token + 1];
+
+		// check if the next argument is a config (otherwise it is treated as plugin name)
+		// only a token with a '=' is treated as config
+		if (configString.find ('=') == string::npos) return false;
+
+		istringstream sstream(configString);
+
+		while (true)
+		{
+			// read until the next '=', this will be the keyname
+			if (!std::getline (sstream, keyName, '=')) break;
+
+			// read until a ',' or the end of line
+			// if nothing is read because the '=' is the last character
+			// in the config string, consider the value empty
+			if (!std::getline (sstream, value, ',')) value = "";
+
+			addConfig (configBasePath, keyName, value);
+		}
+	}
+
+	return true;
+}
+
 void MountCommand::appendPlugins(Cmdline const& cl, Backend & backend)
 {
 	std::string pname;
@@ -259,6 +319,7 @@ void MountCommand::appendPlugins(Cmdline const& cl, Backend & backend)
 	{
 		cout << "First Plugin: ";
 		cin >> pname;
+		readPluginConfig (cl, current_plugin);
 	}
 	else
 	{
@@ -269,9 +330,14 @@ void MountCommand::appendPlugins(Cmdline const& cl, Backend & backend)
 		else
 		{
 			pname = cl.arguments[current_plugin];
+			if (readPluginConfig (cl, current_plugin))
+			{
+				current_plugin ++;
+			}
 		}
 		current_plugin ++;
 	}
+
 
 	while (pname != "." || !backend.validated())
 	{
@@ -294,6 +360,11 @@ void MountCommand::appendPlugins(Cmdline const& cl, Backend & backend)
 			cout << endl;
 			cout << "Next Plugin: ";
 			cin >> pname;
+
+			if (pname != ".")
+			{
+				readPluginConfig (cl, current_plugin);
+			}
 		}
 		else
 		{
@@ -304,6 +375,10 @@ void MountCommand::appendPlugins(Cmdline const& cl, Backend & backend)
 			else
 			{
 				pname = cl.arguments[current_plugin];
+				if (readPluginConfig (cl, current_plugin))
+				{
+					current_plugin ++;
+				}
 			}
 			current_plugin ++;
 		}
@@ -313,6 +388,7 @@ void MountCommand::appendPlugins(Cmdline const& cl, Backend & backend)
 			throw CommandAbortException();
 		}
 	}
+
 }
 
 void MountCommand::askForConfirmation(Cmdline const& cl)
