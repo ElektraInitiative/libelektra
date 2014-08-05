@@ -154,55 +154,10 @@ int elektraHostsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 			keyNew ("system/elektra/modules/hosts/exports/set",
 				KEY_FUNC, elektraHostsSet,
 				KEY_END),
-			keyNew ("system/elektra/modules/hosts/infos",
-				KEY_VALUE, "All information you want to know", KEY_END),
-			keyNew ("system/elektra/modules/hosts/infos/author",
-				KEY_VALUE, "Markus Raab <elektra@markus-raab.org>", KEY_END),
-			keyNew ("system/elektra/modules/hosts/infos/licence",
-				KEY_VALUE, "BSD", KEY_END),
-			keyNew ("system/elektra/modules/hosts/infos/description",
-				KEY_VALUE,
-"This plugin reads and writes /etc/hosts files.\n"
-"\n"
-"The /etc/hosts file is a simple text file that associates IP addresses\n"
-"with hostnames, one line per IP address. The format is described in hosts(5).\n"
-"\n"
-"Canonical hostnames are stored as key names with the IP address as key\n"
-"value. Aliases are stored as sub keys with a read only duplicate of the\n"
-"associated ip address as value. Comments are stored using meta keys of\n"
-"type \"comment\" with the '#'-char stripped of.\n"
-"\n"
-"== Example ==\n"
-"Mount the plugin:\n"
-"$ kdb mount /etc/hosts system/hosts hosts\n"
-"\n"
-"Print out all known hosts and their aliases:\n"
-"$ kdb ls system/hosts\n"
-"\n"
-"Get IP address of host \"localhost\":\n"
-"$ kdb get system/hosts/localhost\n"
-"\n"
-"Fetch comment belonging to host \"localhost\":\n"
-"$ kdb getmeta system/hosts/localhost comment\n"
-"\n"
-"== Multiline comments ==\n"
-"Since line breaks are preserved, you can identify multi line comments\n"
-"by their trailing line break.\n"
-"\n"
-"== Ordering ==\n"
-"The ordering of the hosts is stored in meta keys of type \"order\".\n"
-"The value is an ascending number. Ordering of aliases is NOT preserved."
-				, KEY_END),
-			keyNew ("system/elektra/modules/hosts/infos/provides",
-				KEY_VALUE, "storage", KEY_END),
-			keyNew ("system/elektra/modules/hosts/infos/placements",
-				KEY_VALUE, "getstorage setstorage", KEY_END),
-			keyNew ("system/elektra/modules/hosts/infos/needs",
-				KEY_VALUE, "", KEY_END),
-			keyNew ("system/elektra/modules/hosts/infos/recommends",
-				KEY_VALUE, "glob network", KEY_END),
+#include "readme_hosts.c"
 			keyNew ("system/elektra/modules/hosts/infos/version",
-				KEY_VALUE, PLUGINVERSION, KEY_END),
+				KEY_VALUE, PLUGINVERSION, 
+				KEY_END),
 			keyNew ("system/elektra/modules/hosts/config", KEY_END),
 			keyNew ("system/elektra/modules/hosts/config/needs", KEY_END),
 			keyNew ("system/elektra/modules/hosts/config/needs/glob/set/#1",
