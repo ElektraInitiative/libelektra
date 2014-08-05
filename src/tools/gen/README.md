@@ -1,7 +1,8 @@
 # Code Generation
 
 This tutorial serves as a guide for how you can use the code generator and
-contextual values.
+contextual values. For more background read
+[this paper](http://www.markus-raab.org/ftp/papers/cop2014program.pdf).
 
 
 ## Motivation
@@ -127,3 +128,6 @@ Then we can implement firefox-like profiles as shown
 commandline:
 
 	par.activate<ProfileLayer>(par.profile);
+
+If you want to know more read
+[this paper](http://www.markus-raab.org/ftp/papers/cop2014program.pdf).
