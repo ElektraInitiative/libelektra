@@ -493,6 +493,7 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 		elektraSplitDel (split);
 		return 0;
 	case -1: goto error;
+	// otherwise falltrough
 	}
 
 	if(elektraSplitAppoint (split, handle, ks) == -1)

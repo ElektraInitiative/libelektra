@@ -10,13 +10,13 @@ section here.
 ## Implemented
 
 - [Holes](holes.md)
+- [Unit Testing](unit_testing.md)
 
 ## Decided
 
 ## In Discussion
 
-- [Unit Testing](unit_testing.md)
-
 ## Drafts
 
+- [Specification](specification.md)
 - [Script Testing](script_testing.md)
