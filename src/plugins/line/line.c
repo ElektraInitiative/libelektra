@@ -47,9 +47,9 @@ int elektraLineRead(FILE * fp, KeySet * returned)
 	while ((n = getline(&value, &len, fp)) != -1)
 	{
 		//Remove trailing newline
-		if (value[strlen(value) - 1] == '\n')
-		{ // TODO use n instead of strlen
-			value[strlen(value) - 1] = '\0';
+		if (value[n - 1] == '\n')
+		{
+			value[n - 1] = '\0';
 		}
 		read = keyDup(ksTail(returned));
 		if (elektraArrayIncName(read) == -1)
