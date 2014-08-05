@@ -21,7 +21,7 @@ if(NOT GOOGLETEST_ROOT)
 
 	if (GOOGLETEST_FOUND)
 		add_subdirectory(${GOOGLETEST_ROOT} ${CMAKE_CURRENT_BINARY_DIR}/gtest)
-		include_directories(${GOOGLETEST_ROOT}/include ${GOOGLETEST_ROOT})
+		include_directories(SYSTEM ${GOOGLETEST_ROOT}/include)
 
 		set_property (TARGET gtest PROPERTY COMPILE_FLAGS "-w" )
 		set_property (TARGET gtest_main PROPERTY COMPILE_FLAGS "-w" )
@@ -32,7 +32,6 @@ endif()
 
 
 macro (add_gtest source)
-	include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
 	set (SOURCES ${HDR_FILES} ${source}.cpp)
 	add_executable (${source} ${SOURCES})
 
