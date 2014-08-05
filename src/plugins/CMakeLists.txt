@@ -1,6 +1,10 @@
 foreach (plugin ${PLUGINS})
-	message("-- Include Plugin ${plugin}")
-	add_subdirectory ("${plugin}")
+	if(${plugin} MATCHES ".*_.*")
+		message(STATUS "Include Plugin's build variant ${plugin}")
+	else()
+		message(STATUS "Include Plugin ${plugin}")
+		add_subdirectory ("${plugin}")
+	endif()
 endforeach(plugin)
 
 # Check for plugins will be done here, because plugins might

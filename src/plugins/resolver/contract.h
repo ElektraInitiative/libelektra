@@ -35,7 +35,7 @@ ksNew (50,
 		KEY_VALUE, "BSD", KEY_END),
 	keyNew ("system/elektra/modules/resolver/infos/description",
 		KEY_VALUE,
-" == Scope ==\n"
+"== Scope ==\n"
 "\n"
 "The resolver handles operating system dependent tasks.\n"
 "One task is the resolving of the filenames for user and system (hence its name)\n"

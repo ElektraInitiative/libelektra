@@ -170,7 +170,7 @@ int elektraResolvePasswd(resolverHandle *p, Key *warningsKey)
 	return 1;
 }
 
-int elektraResolveEnv(resolverHandle *p)
+int elektraResolveEnvHome(resolverHandle *p)
 {
 	const char * home = getenv("HOME");
 
@@ -184,7 +184,7 @@ int elektraResolveEnv(resolverHandle *p)
 	return 1;
 }
 
-int elektraResolveOwner(resolverHandle *p)
+int elektraResolveEnvUser(resolverHandle *p)
 {
 	const char* owner = getenv("USER");
 
@@ -237,6 +237,23 @@ void elektraResolveFinish(resolverHandle *p)
 	elektraGenTempFilename(p->tempfile, p->filename);
 }
 
+
+int elektraResolveUser(char variant, resolverHandle *p, Key *warningsKey)
+{
+	switch (variant)
+	{
+	case 'p':
+		return elektraResolvePasswd(p, warningsKey);
+	case 'h':
+		return elektraResolveEnvHome(p);
+	case 'u':
+		return elektraResolveEnvUser(p);
+	case 'b':
+		return elektraResolveBuildin(p);
+	}
+	return -1;
+}
+
 /**Resolve the filename.
  *
  * For system keys it must be an absolute path, or KDB_DB_SYSTEM
@@ -265,6 +282,7 @@ void elektraResolveFinish(resolverHandle *p)
  */
 int elektraResolveFilename(Key* forKey, resolverHandle *p, Key *warningsKey)
 {
+	printf ("do resolving %s\n", USERVARIANT);
 	if (!strncmp(keyName(forKey), "system", 6))
 	{
 		return elektraResolveSystem(p);
@@ -272,26 +290,15 @@ int elektraResolveFilename(Key* forKey, resolverHandle *p, Key *warningsKey)
 	else if (!strncmp(keyName(forKey), "user", 4))
 	{
 		int finished = 0;
-		if (!finished)
+		for (size_t i=0; !finished && i<sizeof(USERVARIANT); ++i)
 		{
-			finished = elektraResolvePasswd(p, warningsKey);
+			finished = elektraResolveUser(USERVARIANT[i],
+					p, warningsKey);
 		}
-		if (!finished)
-		{
-			finished = elektraResolveEnv(p);
-		}
-		if (!finished)
-		{
-			finished = elektraResolveOwner(p);
-		}
-		if (!finished)
-		{
-			elektraResolveBuildin(p);
-		}
-		if (!finished)
+		if (finished == -1)
 		{
 			ELEKTRA_SET_ERROR(83, warningsKey,
-				"the configuration was:");
+				"the configuration is: " USERVARIANT);
 		}
 
 		elektraResolveFinish(p);
