@@ -1,4 +1,4 @@
-= Version =
+# Version #
 
 The version of elektra is handeled with the kdb.h macros
 KDB_VERSION which is a string and KDB_VERSION_MAJOR,
@@ -6,11 +6,11 @@ KDB_VERSION_MINOR and KDB_VERSION_MICRO which are
 numbers. They represent the public announced version
 information.
 
-The same information can be retrieved at runtime using
-system/elektra/version/constants/KDB_VERSION
-system/elektra/version/constants/KDB_VERSION_MAJOR
-system/elektra/version/constants/KDB_VERSION_MICRO
-system/elektra/version/constants/KDB_VERSION_MINOR
+The same information can be retrieved at runtime using  
+	system/elektra/version/constants/KDB_VERSION
+	system/elektra/version/constants/KDB_VERSION_MAJOR
+	system/elektra/version/constants/KDB_VERSION_MICRO
+	system/elektra/version/constants/KDB_VERSION_MINOR
 
 
 KDB_VERSION
@@ -24,7 +24,7 @@ to plugins. It consists of only 5 functions
 and is described in src/plugins/doc/doc.c.
 
 
-= Compatibility =
+## Compatibility ##
 
 This document describes under which circumstances API
 and ABI incompatiblities may occur. As developer from
@@ -65,7 +65,7 @@ http://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html
 http://packages.debian.org/de/sid/icheck
 
 
-= Increment =
+## Increment ##
 
 This document describes how to increment the KDB_VERSION.
 KDB_VERSION consists of a triplet integer current:revision:age.

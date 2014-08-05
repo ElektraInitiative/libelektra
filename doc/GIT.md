@@ -1,28 +1,31 @@
-= INTRODUCTION =
+# INTRODUCTION #
 
-== BASIC GIT COMMANDS ==
+## BASIC GIT COMMANDS ##
 
-git add .
-git commit -a
+    git add .
+	git commit -a
 
-== BASIC Configuration ==
+## BASIC Configuration ##
 
-make sure to do:
-git config --global merge.ff false
-git config merge.ff false
+make sure to do:  
 
-== Remote Branches ==
+	git config --global merge.ff false  
+	git config merge.ff false  
+
+## Remote Branches ##
 
 To list all remote branches use:
- git-branch -a
+
+	git-branch -a
 
 To checkout a remote branch initially use:
- git-checkout -b <branchname> origin/<branchname>
+
+	git-checkout -b <branchname> origin/<branchname>
 
 Once you have done this, it will be a local branch, too.
 Following remote branches should exist:
 
- master
+	master
 
 This is the development branch. Please try
 to not work directly on it, but instead
@@ -33,7 +36,7 @@ master should always compile and all test
 cases should pass successfully.
 (see config option above)
 
- release
+	release
 
 Once the master is ready to be released,
 it should be merged to the release branch
@@ -41,7 +44,7 @@ with --no-ff. So on the release branch
 there are only merges from master.
 (see config option above)
 
- debian
+	debian
 
 Is the branch to be used to build debian
 packages. It additionally contains the
@@ -50,26 +53,29 @@ should be on the debian branch - otherwise
 it should only contain --no-ff merges from
 release.  (see config option above)
 
-== Local branches ==
+## Local branches ##
 
-You should always make your own feature branch with:
-git-checkout -b <feature-branch-name>
+You should always make your own feature branch with:  
+
+	git-checkout -b <feature-branch-name>
 
 On this branch it is not so important that every
 commit compiles or all test cases run.
 
-To merge a branch use (no-fastforward):
-git-merge --no-ff <branchname>
+To merge a branch use (no-fastforward):  
+
+	git-merge --no-ff <branchname>
 
 If you already did some commits, but want them in a branch,
-you can do:
-git-branch foo
-git reset HEAD^^  (für 2 commits zurück oder)
-git reset origin/master
+you can do:  
 
-git-ref-log # recover
+	git-branch foo  
+	git reset HEAD^^  (for 2 commits back)  
+	git reset origin/master  
 
-== Github ==
+	git-ref-log # recover
+
+## Github ##
 
 When doing merge requests our [buildserver](http://build.libelektra.org:8080)
 will build authorized users. If you are not yet authorized following
@@ -81,12 +87,12 @@ Then one of the admins:
 - fberlakovich
 - manuelm
 - markus2330
-- beku
-need to confirm by saying:
+- beku  
+need to confirm by saying:  
 	.*add\W+to\W+whitelist.*
-or if just the pull request should be checked:
+or if just the pull request should be checked:  
 	.*build\W+allow.*
-or if just a single build should be started:
+or if just a single build should be started:  
 	.*build\W+start.*
 
 If you want any configuration changes, please contact
