@@ -5,9 +5,8 @@
 
 #include <kdberrors.h>
 #include <kdbconfig.h>
+#include <kdbproposal.h>
 #include <yajl/yajl_parse.h>
-
-#include "array.h"
 
 
 /**

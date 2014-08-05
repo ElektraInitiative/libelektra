@@ -22,6 +22,9 @@ do
 		MOUNT_PLUGIN="$PLUGIN ccode null"
 		TESTS="basic"
 		;;
+	"line")
+		TESTS="basic"
+		;;
 	"simpleini")
 		MOUNT_PLUGIN="$PLUGIN hexcode null"
 		TESTS="basic string"
