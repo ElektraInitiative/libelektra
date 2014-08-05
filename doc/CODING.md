@@ -1,9 +1,11 @@
+# CODING #
+
 This document provides an introduction in how the source code of
 libelektra is organized and how and where to add functionality.
 
-Make sure to read DESIGN together with this document.
+Make sure to read [DESIGN](DESIGN.md) together with this document.
 
-= Folder structure =
+## Folder structure ##
 
 After you downloaded and unpacked Elektra you see untypically many
 folders. The reason is that Elektra project consists of many activities.
@@ -12,7 +14,7 @@ The most important are:
 src ... Here is the source for the library and the tools itself.
 tests ... Is the testing framework for the Source
 
-= Source Code =
+## Source Code ##
 
 libelektra is the ANSI/ISO C-Core which does interacts between the user
 and the plugins.
@@ -27,7 +29,7 @@ for static linking and win32.
 
 kdb is the commandline-tool to access and initialize the Elektra database.
 
-== General Guidelines ==
+### General Guidelines ###
 
 It is only allowed to break  a guidelines if there is a good reason
 for it. When doing so, document the fact either in the commit message,
@@ -47,7 +49,7 @@ intent to add a new rule here.
 See DESIGN document too, they complement each other.
 
 
-== C Guidelines ==
+### C Guidelines ###
 
 Functions should not exceed 100 lines.
 Files should not exceed 1000 lines.
@@ -94,7 +96,7 @@ with ks, key or kdb.
 Example: src/libelektra/kdb.c
 
 
-== C++ Guidelines ==
+### C++ Guidelines ###
 
 Everything as in C if not noted otherwise.
 
@@ -111,7 +113,7 @@ Write everything within namespaces and do not prefix names.
 Example: bindings/cpp/include/kdb.hpp
 
 
-== Doxygen Guidelines ==
+### Doxygen Guidelines ###
 
 Use doxygen to document APIs, if available.
 
@@ -120,19 +122,19 @@ Use \copydoc, \copybrief and \copydetails intensively.
 
 
 Files should start with:
----- file template ----
-/**
- * \file
- *
- * \brief <short statement about the content of the file>
- *
- * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
- *
- */
----- file template ----
 
-\file should *not* contain any text.
-\brief should contain a short statement about the content of the file.
+	/**
+	* \file
+	*
+	* \brief <short statement about the content of the file>
+	*
+	* \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+	*
+	*/
+
+Note:
+- file has *no* parameters.
+- brief should contain a short statement about the content of the file.
 
 The duplication of the filename, author and date is not needed, because
 this information is tracked using git.

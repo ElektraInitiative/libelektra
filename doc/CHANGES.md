@@ -1,6 +1,8 @@
+# CHANGES #
+
 These document describes the Changes from Elektra 0.7 to 0.8
 
-== API ==
+## API ##
 
 It was taken care that there are as little as possible,
 but three API bugs had to be fixed:
@@ -13,14 +15,14 @@ but three API bugs had to be fixed:
 
  - the metadata which was filesys only is removed
 
-   keyMeta: newly introduced API
+ - KeyMeta: newly introduced API
    remove old keyGetATime, keyGetUID, ..
    (They are still implemented with new metadata interface in the
     testcases: tests/test_meta.c)
 
  - keyset now describes the desired state of configuration (no removed keys)
 
-   keyNext: wrong documentation (subsequent calls will still return NULL ptr)
+ - keyNext: wrong documentation (subsequent calls will still return NULL ptr)
 
  - kdbSet() now requires you to use kdbGet() before.
    This is needed because elektra now can detect multi-process
@@ -39,12 +41,12 @@ but three API bugs had to be fixed:
    keysets.
 
 
-C++ Interface:
+### C++ Interface: ###
 
 - always compare names (not identity) operator== affected
 
 
-== Build system ==
+## Build system ##
 
  - Changed from autotools to cmake.
 
@@ -60,7 +62,7 @@ C++ Interface:
  - New build variant: libelektra-full
    It is a dynamic library with everything statically included.
 
-== Languages ==
+## Languages ##
 
  -  Core is now Ansi C 99.
 
