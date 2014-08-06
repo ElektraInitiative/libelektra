@@ -70,7 +70,7 @@ resulting from key1 and key4 would receive the metadata resulting from key3.
 
 ### PREVIOUS STRATEGY ###
 
-The metadata is added to the key preceeding the converted key in a sorted keyset. 
+The metadata is added to the key preceding the converted key in a sorted keyset. 
 If no such key is found (for example because the key to be converted is the first one), 
 the strategy is reverted to parent. For example consider the following keyset:
 
