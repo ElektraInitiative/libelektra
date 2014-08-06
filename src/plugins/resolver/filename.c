@@ -283,6 +283,11 @@ static int elektraResolveUser(char variant, resolverHandle *p, Key *warningsKey)
 int ELEKTRA_PLUGIN_FUNCTION(resolver, filename)
 	(Key* forKey, resolverHandle *p, Key *warningsKey)
 {
+	if (!p)
+	{
+		return -1;
+	}
+
 	if (!strncmp(keyName(forKey), "system", 6))
 	{
 		return elektraResolveSystem(p);

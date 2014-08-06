@@ -20,8 +20,8 @@ add_plugin(resolver
 		${CMAKE_SOURCE_DIR}/src/include
 	COMPILE_DEFINITIONS
 		ELEKTRA_VARIANT_BASE=\"\"
-		ELEKTRA_VARIANT_USER=\"pb\"
-		ELEKTRA_VARIANT_SYSTEM=\"pb\")
+		ELEKTRA_VARIANT_USER=\"hub\"
+		ELEKTRA_VARIANT_SYSTEM=\"b\")
 
 add_plugintest(resolver)
 

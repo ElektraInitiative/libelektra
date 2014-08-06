@@ -131,17 +131,15 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, open)
 	KeySet *resolverConfig = elektraPluginGetConfig(handle);
 	const char *path = keyString(ksLookupByName(resolverConfig, "/path", 0));
 
-	resolverHandles *p = malloc(sizeof(resolverHandles));
-	resolverInit (&p->user, path);
-	resolverInit (&p->system, path);
-
-
 	if (!path)
 	{
-		free (p);
 		ELEKTRA_SET_ERROR(34, errorKey, "Could not find file configuration");
 		return -1;
 	}
+
+	resolverHandles *p = malloc(sizeof(resolverHandles));
+	resolverInit (&p->user, path);
+	resolverInit (&p->system, path);
 
 	Key *testKey = keyNew("system", KEY_END);
 	if (ELEKTRA_PLUGIN_FUNCTION(resolver, filename)(testKey, &p->system, errorKey) == -1)
@@ -176,10 +174,14 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, close)
 {
 	resolverHandles *ps = elektraPluginGetData(handle);
 
-	resolverClose(&ps->user);
-	resolverClose(&ps->system);
+	if (ps)
+	{
+		resolverClose(&ps->user);
+		resolverClose(&ps->system);
 
-	free (ps);
+		free (ps);
+		elektraPluginSetData(handle, 0);
+	}
 
 	return 0; /* success */
 }
