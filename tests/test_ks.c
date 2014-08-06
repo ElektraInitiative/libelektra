@@ -2508,7 +2508,9 @@ void test_ksToArray()
 
 	succeed_if (elektraKsToMemArray(0, keyArray) < 0, "wrong result on null pointer");
 	succeed_if (elektraKsToMemArray(ks, 0) < 0, "wrong result on null buffer");
-	succeed_if (elektraKsToMemArray(ksNew(0), keyArray) == 0, "wrong result on empty keyset");
+	KeySet *empty = ksNew(0);
+	succeed_if (elektraKsToMemArray(empty, keyArray) == 0, "wrong result on empty keyset");
+	ksDel(empty);
 
 	free (keyArray);
 	ksDel (ks);

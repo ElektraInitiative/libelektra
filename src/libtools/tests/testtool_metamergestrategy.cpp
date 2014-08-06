@@ -42,6 +42,7 @@ TEST_F(MetaMergeStrategyTest, MergesMetaWithInnerStrategy)
 	conflictKey = result.getConflictSet ().at (0);
 
 	ThreeWayMerge merger;
+	// TODO @fberlakovich: memleak
 	merger.addConflictStrategy (new OneSideStrategy (OURS));
 	MetaMergeStrategy metaStrategy (merger);
 	metaStrategy.resolveConflict (task, conflictKey, result);
