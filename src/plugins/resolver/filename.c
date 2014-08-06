@@ -19,7 +19,7 @@
  * @returns 0 on success (Absolute path)
  * @return -1 on a non-valid file
  */
-int elektraResolverCheckFile(const char* filename)
+int ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)(const char* filename)
 {
 	if(!filename) return -1;
 	if(filename[0] == '0') return -1;
@@ -77,7 +77,7 @@ static void elektraGenTempFilename(char *where, const char *filename)
 			tv.tv_usec);
 }
 
-int elektraResolveSystem(resolverHandle *p)
+static int elektraResolveSystem(resolverHandle *p)
 {
 	if (p->path[0] == '/')
 	{
@@ -113,7 +113,7 @@ int elektraResolveSystem(resolverHandle *p)
 	return 1;
 }
 
-void elektraResolveUsingHome(resolverHandle *p, const char *home)
+static void elektraResolveUsingHome(resolverHandle *p, const char *home)
 {
 	size_t dirnameSize = 0;
 	Key *canonify = keyNew("user", KEY_END);
@@ -128,7 +128,7 @@ void elektraResolveUsingHome(resolverHandle *p, const char *home)
 	keyDel(canonify);
 }
 
-int elektraResolvePasswd(resolverHandle *p, Key *warningsKey)
+static int elektraResolvePasswd(resolverHandle *p, Key *warningsKey)
 {
 	struct passwd pwd;
 	struct passwd *result;
@@ -170,7 +170,7 @@ int elektraResolvePasswd(resolverHandle *p, Key *warningsKey)
 	return 1;
 }
 
-int elektraResolveEnvHome(resolverHandle *p)
+static int elektraResolveEnvHome(resolverHandle *p)
 {
 	const char * home = getenv("HOME");
 
@@ -184,7 +184,7 @@ int elektraResolveEnvHome(resolverHandle *p)
 	return 1;
 }
 
-int elektraResolveEnvUser(resolverHandle *p)
+static int elektraResolveEnvUser(resolverHandle *p)
 {
 	const char* owner = getenv("USER");
 
@@ -210,7 +210,7 @@ int elektraResolveEnvUser(resolverHandle *p)
 }
 
 
-int elektraResolveBuildin(resolverHandle *p)
+static int elektraResolveBuildin(resolverHandle *p)
 {
 	size_t dirnameSize = sizeof(KDB_DB_HOME "/")
 		+ sizeof("/" KDB_DB_USER);
@@ -222,7 +222,7 @@ int elektraResolveBuildin(resolverHandle *p)
 	return 1;
 }
 
-void elektraResolveFinish(resolverHandle *p)
+static void elektraResolveFinish(resolverHandle *p)
 {
 	size_t filenameSize = strlen(p->dirname)
 			+ strlen(p->path) +
@@ -238,7 +238,7 @@ void elektraResolveFinish(resolverHandle *p)
 }
 
 
-int elektraResolveUser(char variant, resolverHandle *p, Key *warningsKey)
+static int elektraResolveUser(char variant, resolverHandle *p, Key *warningsKey)
 {
 	switch (variant)
 	{
@@ -280,9 +280,9 @@ int elektraResolveUser(char variant, resolverHandle *p, Key *warningsKey)
  *         be found
  * warnings will be reported to warningsKey
  */
-int elektraResolveFilename(Key* forKey, resolverHandle *p, Key *warningsKey)
+int ELEKTRA_PLUGIN_FUNCTION(resolver, filename)
+	(Key* forKey, resolverHandle *p, Key *warningsKey)
 {
-	printf ("do resolving %s\n", USERVARIANT);
 	if (!strncmp(keyName(forKey), "system", 6))
 	{
 		return elektraResolveSystem(p);
@@ -290,15 +290,15 @@ int elektraResolveFilename(Key* forKey, resolverHandle *p, Key *warningsKey)
 	else if (!strncmp(keyName(forKey), "user", 4))
 	{
 		int finished = 0;
-		for (size_t i=0; !finished && i<sizeof(USERVARIANT); ++i)
+		for (size_t i=0; !finished && i<sizeof(ELEKTRA_VARIANT_USER); ++i)
 		{
-			finished = elektraResolveUser(USERVARIANT[i],
+			finished = elektraResolveUser(ELEKTRA_VARIANT_USER[i],
 					p, warningsKey);
 		}
 		if (finished == -1)
 		{
 			ELEKTRA_SET_ERROR(83, warningsKey,
-				"the configuration is: " USERVARIANT);
+				"the configuration is: " ELEKTRA_VARIANT_USER);
 		}
 
 		elektraResolveFinish(p);

@@ -1,7 +1,12 @@
 include(LibAddPlugin)
 
-set (SOURCES resolver.h resolver.c filename.c lock.c)
+set (SOURCES resolver.h resolver.c filename.c)
 
+include_directories(${CMAKE_SOURCE_DIR}/src/include)
+include_directories(${CMAKE_BINARY_DIR}/src/include)
+
+add_library(elektra-resolver-lock STATIC lock.c)
+set_property(TARGET elektra-resolver-lock APPEND PROPERTY COMPILE_FLAGS -fPIC)
 
 #configure_file(resolverconfig.h)# TODO: for every variant
 add_plugin(resolver
@@ -9,12 +14,14 @@ add_plugin(resolver
 		${SOURCES}
 	LINK_LIBRARIES
 		elektra
+		elektra-resolver-lock
 	INCLUDE_DIRECTORIES
 		${CMAKE_BINARY_DIR}/src/include
 		${CMAKE_SOURCE_DIR}/src/include
 	COMPILE_DEFINITIONS
-		USERVARIANT=\"pb\"
-		SYSTEMVARIANT=\"pb\")
+		ELEKTRA_VARIANT_BASE=\"\"
+		ELEKTRA_VARIANT_USER=\"pb\"
+		ELEKTRA_VARIANT_SYSTEM=\"pb\")
 
 add_plugintest(resolver)
 
@@ -30,12 +37,15 @@ foreach (plugin ${PLUGINS})
 				${SOURCES}
 			LINK_LIBRARIES
 				elektra
+				elektra-resolver-lock
 			INCLUDE_DIRECTORIES
 				${CMAKE_BINARY_DIR}/src/include
 				${CMAKE_SOURCE_DIR}/src/include
 			COMPILE_DEFINITIONS
-				USERVARIANT=\"${uservariant}\"
-				SYSTEMVARIANT=\"${systemvariant}\")
+				ELEKTRA_VARIANT_BASE=\"\"
+				ELEKTRA_VARIANT_USER=\"${uservariant}\"
+				ELEKTRA_VARIANT_SYSTEM=\"${systemvariant}\"
+				ELEKTRA_VARIANT=${variant})
 	endif()
 endforeach(plugin)
 

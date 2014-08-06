@@ -3,9 +3,6 @@
 
 int main(int argc, char**argv)
 {
-	char toolsfunc[][20] = {"ksFromXMLfile", "ksFromXML", "ksToStream",
-		"ksOutput", "ksGenerate", "keyToStream", "keyOutput",
-		"keyGenerate"};
 	int i;
 	size_t j;
 
@@ -44,15 +41,7 @@ int main(int argc, char**argv)
 
 	for (i=1; i<argc; ++i)
 	{
-		if (!strcmp (argv[i], "libelektratools"))
-		{
-			for (j=0; j<sizeof(toolsfunc)/20; ++j)
-			{
-				fprintf(f, "extern void libelektratools_LTX_%s (void);\n", toolsfunc[j]);
-			}
-		} else {
-			fprintf(f, "extern void libelektra_%s_LTX_elektraPluginSymbol (void);\n", argv[i]);
-		}
+		fprintf(f, "extern void libelektra_%s_LTX_elektraPluginSymbol (void);\n", argv[i]);
 	}
 
 	fclose (f);
@@ -72,18 +61,9 @@ int main(int argc, char**argv)
 
 	for (i=1; i<argc; ++i)
 	{
-		if (!strcmp (argv[i], "libelektratools"))
-		{
-			fprintf(f, "\t{\"libelektratools\", 0},\n");
-			for (j=0; j<sizeof(toolsfunc)/20; ++j)
-			{
-				fprintf(f, "\t{\"%s\", &libelektratools_LTX_%s},\n", toolsfunc[j], toolsfunc[j]);
-			}
-		} else {
-			printf ("Exporting symbols for %s ...\n", argv[i]);
-			fprintf(f, "\t{\"%s\", 0},\n", argv[i]);
-			fprintf(f, "\t{\"elektraPluginSymbol\", &libelektra_%s_LTX_elektraPluginSymbol},\n", argv[i]);
-		}
+		printf ("Exporting symbols for %s ...\n", argv[i]);
+		fprintf(f, "\t{\"%s\", 0},\n", argv[i]);
+		fprintf(f, "\t{\"elektraPluginSymbol\", &libelektra_%s_LTX_elektraPluginSymbol},\n", argv[i]);
 	}
 
 	fprintf(f, "\t{ 0 , 0 }\n");

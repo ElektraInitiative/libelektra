@@ -32,6 +32,8 @@
 #include <kdbplugin.h>
 #include <kdberrors.h>
 
+#include "lock.h"
+
 #define ERROR_SIZE 1024
 
 typedef struct _resolverHandle resolverHandle;
@@ -59,21 +61,21 @@ struct _resolverHandles
 	resolverHandle system;
 };
 
-void resolverInit (resolverHandle *p, const char *path);
-void resolverClose (resolverHandle *p);
+int ELEKTRA_PLUGIN_FUNCTION(resolver, checkFile)
+	(const char* filename);
+int ELEKTRA_PLUGIN_FUNCTION(resolver, filename)
+	(Key* forKey, resolverHandle *p, Key *warningsKey);
 
-int elektraResolveFilename(Key* forKey, resolverHandle *p, Key *warningKey);
-int elektraResolverCheckFile (const char* filename);
-
-int elektraResolverOpen(Plugin *handle, Key *errorKey);
-int elektraResolverClose(Plugin *handle, Key *errorKey);
-int elektraResolverGet(Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraResolverSet(Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraResolverError(Plugin *handle, KeySet *returned, Key *parentKey);
+int ELEKTRA_PLUGIN_FUNCTION(resolver, open)
+	(Plugin *handle, Key *errorKey);
+int ELEKTRA_PLUGIN_FUNCTION(resolver, close)
+	(Plugin *handle, Key *errorKey);
+int ELEKTRA_PLUGIN_FUNCTION(resolver, get)
+	(Plugin *handle, KeySet *ks, Key *parentKey);
+int ELEKTRA_PLUGIN_FUNCTION(resolver, set)
+	(Plugin *handle, KeySet *ks, Key *parentKey);
+int ELEKTRA_PLUGIN_FUNCTION(resolver, error)
+	(Plugin *handle, KeySet *returned, Key *parentKey);
 Plugin *ELEKTRA_PLUGIN_EXPORT(resolver);
-
-int elektraLockFile(int fd, Key *parentKey);
-int elektraUnlockFile(int fd, Key *parentKey);
-void elektraCloseFile(int fd, Key *parentKey);
 
 #endif

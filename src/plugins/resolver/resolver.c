@@ -56,7 +56,7 @@
 #error "Something turned _GNU_SOURCE on, this breaks strerror_r!"
 #endif
 
-void resolverInit (resolverHandle *p, const char *path)
+static void resolverInit (resolverHandle *p, const char *path)
 {
 	p->fd = -1;
 	p->mtime = 0;
@@ -76,7 +76,7 @@ static resolverHandle * elektraGetResolverHandle(Plugin *handle, Key *parentKey)
 }
 
 
-void resolverClose (resolverHandle *p)
+static void resolverClose (resolverHandle *p)
 {
 	free (p->filename); p->filename = 0;
 	free (p->dirname); p->dirname= 0;
@@ -124,8 +124,8 @@ static void elektraAddErrnoText(char *errorText)
 	}
 }
 
-
-int elektraResolverOpen(Plugin *handle, Key *errorKey)
+int ELEKTRA_PLUGIN_FUNCTION(resolver, open)
+	(Plugin *handle, Key *errorKey)
 {
 
 	KeySet *resolverConfig = elektraPluginGetConfig(handle);
@@ -144,7 +144,7 @@ int elektraResolverOpen(Plugin *handle, Key *errorKey)
 	}
 
 	Key *testKey = keyNew("system", KEY_END);
-	if (elektraResolveFilename(testKey, &p->system, errorKey) == -1)
+	if (ELEKTRA_PLUGIN_FUNCTION(resolver, filename)(testKey, &p->system, errorKey) == -1)
 	{
 		resolverClose(&p->user);
 		resolverClose(&p->system);
@@ -155,7 +155,7 @@ int elektraResolverOpen(Plugin *handle, Key *errorKey)
 	}
 
 	keySetName(testKey, "user");
-	if (elektraResolveFilename(testKey, &p->user, errorKey) == -1)
+	if (ELEKTRA_PLUGIN_FUNCTION(resolver, filename)(testKey, &p->user, errorKey) == -1)
 	{
 		resolverClose(&p->user);
 		resolverClose(&p->system);
@@ -171,7 +171,8 @@ int elektraResolverOpen(Plugin *handle, Key *errorKey)
 	return 0; /* success */
 }
 
-int elektraResolverClose(Plugin *handle, Key *errorKey ELEKTRA_UNUSED)
+int ELEKTRA_PLUGIN_FUNCTION(resolver, close)
+	(Plugin *handle, Key *errorKey ELEKTRA_UNUSED)
 {
 	resolverHandles *ps = elektraPluginGetData(handle);
 
@@ -184,7 +185,8 @@ int elektraResolverClose(Plugin *handle, Key *errorKey ELEKTRA_UNUSED)
 }
 
 
-int elektraResolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
+int ELEKTRA_PLUGIN_FUNCTION(resolver, get)
+	(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	resolverHandle *pk = elektraGetResolverHandle(handle, parentKey);
 
@@ -366,7 +368,7 @@ error:
  * @retval 0 success
  * @retval -1 error
  */
-int elektraCheckConflict(resolverHandle *pk, Key *parentKey)
+static int elektraCheckConflict(resolverHandle *pk, Key *parentKey)
 {
 	if (pk->mtime == 0)
 	{
@@ -426,7 +428,7 @@ int elektraCheckConflict(resolverHandle *pk, Key *parentKey)
  * @retval 0 on success
  * @retval -1 on error
  */
-int elektraSetPrepare(resolverHandle *pk, Key *parentKey)
+static int elektraSetPrepare(resolverHandle *pk, Key *parentKey)
 {
 #ifdef RESOLVER_DEBUG
 	// we are somewhere in the middle of work
@@ -477,7 +479,7 @@ int elektraSetPrepare(resolverHandle *pk, Key *parentKey)
  * @retval 0 on success
  * @retval -1 on error
  */
-int elektraSetCommit(resolverHandle *pk, Key *parentKey)
+static int elektraSetCommit(resolverHandle *pk, Key *parentKey)
 {
 	int ret = 0;
 
@@ -517,7 +519,8 @@ int elektraSetCommit(resolverHandle *pk, Key *parentKey)
 }
 
 
-int elektraResolverSet(Plugin *handle, KeySet *returned ELEKTRA_UNUSED, Key *parentKey)
+int ELEKTRA_PLUGIN_FUNCTION(resolver, set)
+	(Plugin *handle, KeySet *r ELEKTRA_UNUSED, Key *parentKey)
 {
 	resolverHandle *pk = elektraGetResolverHandle(handle, parentKey);
 
@@ -554,7 +557,8 @@ int elektraResolverSet(Plugin *handle, KeySet *returned ELEKTRA_UNUSED, Key *par
 	return ret;
 }
 
-int elektraResolverError(Plugin *handle, KeySet *returned ELEKTRA_UNUSED, Key *parentKey)
+int ELEKTRA_PLUGIN_FUNCTION(resolver, error)
+	(Plugin *handle, KeySet *r ELEKTRA_UNUSED, Key *parentKey)
 {
 	int errnoSave = errno;
 	resolverHandle *pk = elektraGetResolverHandle(handle, parentKey);
@@ -580,11 +584,11 @@ int elektraResolverError(Plugin *handle, KeySet *returned ELEKTRA_UNUSED, Key *p
 Plugin *ELEKTRA_PLUGIN_EXPORT(resolver)
 {
 	return elektraPluginExport("resolver",
-		ELEKTRA_PLUGIN_OPEN,	&elektraResolverOpen,
-		ELEKTRA_PLUGIN_CLOSE,	&elektraResolverClose,
-		ELEKTRA_PLUGIN_GET,	&elektraResolverGet,
-		ELEKTRA_PLUGIN_SET,	&elektraResolverSet,
-		ELEKTRA_PLUGIN_ERROR,	&elektraResolverError,
+		ELEKTRA_PLUGIN_OPEN,	&ELEKTRA_PLUGIN_FUNCTION(resolver, open),
+		ELEKTRA_PLUGIN_CLOSE,	&ELEKTRA_PLUGIN_FUNCTION(resolver, close),
+		ELEKTRA_PLUGIN_GET,	&ELEKTRA_PLUGIN_FUNCTION(resolver, get),
+		ELEKTRA_PLUGIN_SET,	&ELEKTRA_PLUGIN_FUNCTION(resolver, get),
+		ELEKTRA_PLUGIN_ERROR,	&ELEKTRA_PLUGIN_FUNCTION(resolver, error),
 		ELEKTRA_PLUGIN_END);
 }
 

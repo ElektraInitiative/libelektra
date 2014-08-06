@@ -25,9 +25,23 @@
 #include <kdb.h>
 
 #ifdef ELEKTRA_STATIC
-        #define ELEKTRA_PLUGIN_EXPORT(module) libelektra_##module##_LTX_elektraPluginSymbol(void)
+	#ifdef ELEKTRA_VARIANT
+		#define ELEKTRA_PLUGIN_EXPORT(module) ELEKTRA_PLUGIN_EXPORT2(module, ELEKTRA_VARIANT)
+		#define ELEKTRA_PLUGIN_EXPORT2(module, variant) ELEKTRA_PLUGIN_EXPORT3(module, variant)
+		#define ELEKTRA_PLUGIN_EXPORT3(module, variant) libelektra_##module##_##variant##_LTX_elektraPluginSymbol(void)
+	#else
+		#define ELEKTRA_PLUGIN_EXPORT(module) libelektra_##module##_LTX_elektraPluginSymbol(void)
+	#endif
 #else
         #define ELEKTRA_PLUGIN_EXPORT(module) elektraPluginSymbol(void)
+#endif
+
+#ifdef ELEKTRA_VARIANT
+	#define ELEKTRA_PLUGIN_FUNCTION(module, function) ELEKTRA_PLUGIN_FUNCTION2(module, ELEKTRA_VARIANT, function)
+	#define ELEKTRA_PLUGIN_FUNCTION2(module, variant, function) ELEKTRA_PLUGIN_FUNCTION3(module, variant, function)
+	#define ELEKTRA_PLUGIN_FUNCTION3(module, variant, function) libelektra_##module##_##variant##_LTX_elektraPlugin##function
+#else
+	#define ELEKTRA_PLUGIN_FUNCTION(module, function) libelektra_##module##_LTX_elektraPlugin##function
 #endif
 
 /**

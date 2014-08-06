@@ -30,6 +30,7 @@ KeySet *set_pluginconf()
 }
 
 
+/*
 void test_resolve()
 {
 	char *path;
@@ -138,6 +139,7 @@ void test_resolve()
 	ksDel (modules);
 	free (path);
 }
+*/
 
 void test_name()
 {
@@ -270,20 +272,20 @@ void test_tempname()
 
 void test_checkfile()
 {
-	succeed_if (elektraResolverCheckFile("valid") == 1, "valid file not recognised");
-	succeed_if (elektraResolverCheckFile("/valid") == 0, "valid absolute file not recognised");
-	succeed_if (elektraResolverCheckFile("/absolute/valid") == 0, "valid absolute file not recognised");
-	succeed_if (elektraResolverCheckFile("../valid") == -1, "invalid file not recognised");
-	succeed_if (elektraResolverCheckFile("valid/..") == -1, "invalid file not recognised");
-	succeed_if (elektraResolverCheckFile("/../valid") == -1, "invalid absolute file not recognised");
-	succeed_if (elektraResolverCheckFile("/valid/..") == -1, "invalid absolute file not recognised");
-	succeed_if (elektraResolverCheckFile("very..strict") == -1, "resolver is currently very strict");
-	succeed_if (elektraResolverCheckFile("very/..strict") == -1, "resolver is currently very strict");
-	succeed_if (elektraResolverCheckFile("very../strict") == -1, "resolver is currently very strict");
-	succeed_if (elektraResolverCheckFile("very/../strict") == -1, "resolver is currently very strict");
-	succeed_if (elektraResolverCheckFile("/") == -1, "invalid absolute file not recognised");
-	succeed_if (elektraResolverCheckFile(".") == -1, "invalid file not recognised");
-	succeed_if (elektraResolverCheckFile("..") == -1, "invalid file not recognised");
+	succeed_if (ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)("valid") == 1, "valid file not recognised");
+	succeed_if (ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)("/valid") == 0, "valid absolute file not recognised");
+	succeed_if (ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)("/absolute/valid") == 0, "valid absolute file not recognised");
+	succeed_if (ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)("../valid") == -1, "invalid file not recognised");
+	succeed_if (ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)("valid/..") == -1, "invalid file not recognised");
+	succeed_if (ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)("/../valid") == -1, "invalid absolute file not recognised");
+	succeed_if (ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)("/valid/..") == -1, "invalid absolute file not recognised");
+	succeed_if (ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)("very..strict") == -1, "resolver is currently very strict");
+	succeed_if (ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)("very/..strict") == -1, "resolver is currently very strict");
+	succeed_if (ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)("very../strict") == -1, "resolver is currently very strict");
+	succeed_if (ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)("very/../strict") == -1, "resolver is currently very strict");
+	succeed_if (ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)("/") == -1, "invalid absolute file not recognised");
+	succeed_if (ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)(".") == -1, "invalid file not recognised");
+	succeed_if (ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)("..") == -1, "invalid file not recognised");
 }
 
 
@@ -294,7 +296,7 @@ int main(int argc, char** argv)
 
 	init (argc, argv);
 
-	test_resolve();
+	// test_resolve();
 	test_name();
 	test_lockname();
 	test_tempname();
