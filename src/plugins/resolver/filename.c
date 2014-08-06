@@ -295,15 +295,25 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, filename)
 	else if (!strncmp(keyName(forKey), "user", 4))
 	{
 		int finished = 0;
-		for (size_t i=0; !finished && i<sizeof(ELEKTRA_VARIANT_USER); ++i)
+		size_t i;
+		for (i=0; !finished && i<sizeof(ELEKTRA_VARIANT_USER); ++i)
 		{
 			finished = elektraResolveUser(ELEKTRA_VARIANT_USER[i],
 					p, warningsKey);
 		}
 		if (finished == -1)
 		{
+			// TODO: add i and ELEKTRA_VARIANT_USER[i]
 			ELEKTRA_SET_ERROR(83, warningsKey,
-				"the configuration is: " ELEKTRA_VARIANT_USER);
+				"resolver failed, the configuration is: " ELEKTRA_VARIANT_USER);
+			return -1;
+		}
+
+		if (p->dirname == 0)
+		{
+			ELEKTRA_SET_ERROR(83, warningsKey,
+				"no resolver set the dirname, the configuration is: " ELEKTRA_VARIANT_USER);
+			return -1;
 		}
 
 		elektraResolveFinish(p);

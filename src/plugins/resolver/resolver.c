@@ -195,8 +195,8 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, get)
 	// might be useless, will not harm
 	keySetString(parentKey, pk->filename);
 
-
-	Key *root = keyNew("system/elektra/modules/resolver", KEY_END);
+	Key *root = keyNew("system/elektra/modules/"
+			ELEKTRA_PLUGIN_NAME , KEY_END);
 
 	if (keyRel(root, parentKey) >= 0)
 	{
@@ -585,11 +585,11 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, error)
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(resolver)
 {
-	return elektraPluginExport("resolver",
+	return elektraPluginExport(ELEKTRA_PLUGIN_NAME,
 		ELEKTRA_PLUGIN_OPEN,	&ELEKTRA_PLUGIN_FUNCTION(resolver, open),
 		ELEKTRA_PLUGIN_CLOSE,	&ELEKTRA_PLUGIN_FUNCTION(resolver, close),
 		ELEKTRA_PLUGIN_GET,	&ELEKTRA_PLUGIN_FUNCTION(resolver, get),
-		ELEKTRA_PLUGIN_SET,	&ELEKTRA_PLUGIN_FUNCTION(resolver, get),
+		ELEKTRA_PLUGIN_SET,	&ELEKTRA_PLUGIN_FUNCTION(resolver, set),
 		ELEKTRA_PLUGIN_ERROR,	&ELEKTRA_PLUGIN_FUNCTION(resolver, error),
 		ELEKTRA_PLUGIN_END);
 }

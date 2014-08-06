@@ -21,7 +21,8 @@ add_plugin(resolver
 	COMPILE_DEFINITIONS
 		ELEKTRA_VARIANT_BASE=\"\"
 		ELEKTRA_VARIANT_USER=\"hub\"
-		ELEKTRA_VARIANT_SYSTEM=\"b\")
+		ELEKTRA_VARIANT_SYSTEM=\"b\"
+		ELEKTRA_PLUGIN_NAME=\"resolver\")
 
 add_plugintest(resolver)
 
@@ -45,7 +46,8 @@ foreach (plugin ${PLUGINS})
 				ELEKTRA_VARIANT_BASE=\"\"
 				ELEKTRA_VARIANT_USER=\"${uservariant}\"
 				ELEKTRA_VARIANT_SYSTEM=\"${systemvariant}\"
-				ELEKTRA_VARIANT=${variant})
+				ELEKTRA_VARIANT=${variant}
+				ELEKTRA_PLUGIN_NAME=\"${plugin}\")
 	endif()
 endforeach(plugin)
 
