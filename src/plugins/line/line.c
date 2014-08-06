@@ -62,9 +62,8 @@ int elektraLineRead(FILE * fp, KeySet * returned)
 		keySetString(read, value);
 
 		ksAppendKey (returned, read);
-		free(value);
-		len=0;
 	}
+	free(value);
 
 	return 1;
 }
