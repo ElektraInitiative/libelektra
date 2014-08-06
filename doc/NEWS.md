@@ -255,10 +255,10 @@ The C++ API changed, including:
 - does not wrongly convert garbage to default types using get<T>
 - getMeta now interally uses get<T> and both throw the KeyTypeConversion
   Exception
-- KeySet::at directly allows to use ksAtCursor()
+- KeySet::at directly allows one to use ksAtCursor()
 - KeyTypeConversion (or former KeyBadMeta) is not thrown anymore if key
   is not available
-- Key::hasMeta allows to directly check if meta data is available
+- Key::hasMeta allows one to directly check if meta data is available
 
 CMake: ENABLE_CXX11 is now default OFF (because gcc 4.6 and older won't
        work with it). It disables some tests, though.
@@ -428,7 +428,7 @@ pages.
 Test data for the test cases will be installed, too. The path can be
 configured with:
 TARGET_TEST_DATA_FOLDER
-The path allows to run tests from an installed version.
+The path allows one to run tests from an installed version.
 
 Additionally, many small bugs were fixed. The release is, as always,
 100% binary and API compatible, so you can drop it in and all

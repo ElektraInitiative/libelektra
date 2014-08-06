@@ -17,7 +17,7 @@
 #include <gtest/gtest.h>
 
 /**
- * @brief Easily allows to generate regression tests for keysets.
+ * @brief Easily allows one to generate regression tests for keysets.
  *
  * @param tocheck the keyset to check (name + string)
  * @param name the name of the keyset

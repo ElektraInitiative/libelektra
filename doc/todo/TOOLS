@@ -85,7 +85,7 @@ environment parsing support
 static compilation model
 
 has_ queries
-(allows to differ between default fallback and intentional set default)
+(allows one to differ between default fallback and intentional set default)
 
 new generators:
 	all hardcoded (without elektra dependency)?
