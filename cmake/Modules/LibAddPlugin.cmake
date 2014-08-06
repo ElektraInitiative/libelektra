@@ -12,11 +12,11 @@ function(add_plugin PLUGIN_SHORT_NAME)
 	set (PLUGIN_NAME elektra-${PLUGIN_SHORT_NAME})
 	set (PLUGIN_OBJS ${PLUGIN_NAME}-objects)
 
-	message (STATUS "name: ${PLUGIN_NAME}")
-	message (STATUS "srcs are: ${ARG_SOURCES}")
-	message (STATUS "deps are: ${ARG_LINK_LIBRARIES}")
-	message (STATUS "comp are: ${ARG_COMPILE_DEFINITIONS}")
-	message (STATUS "incl are: ${ARG_INCLUDE_DIRECTORIES}")
+	#message (STATUS "name: ${PLUGIN_NAME}")
+	#message (STATUS "srcs are: ${ARG_SOURCES}")
+	#message (STATUS "deps are: ${ARG_LINK_LIBRARIES}")
+	#message (STATUS "comp are: ${ARG_COMPILE_DEFINITIONS}")
+	#message (STATUS "incl are: ${ARG_INCLUDE_DIRECTORIES}")
 
 	add_library (${PLUGIN_OBJS} OBJECT ${ARG_SOURCES})
 

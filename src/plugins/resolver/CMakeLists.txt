@@ -8,7 +8,6 @@ include_directories(${CMAKE_BINARY_DIR}/src/include)
 add_library(elektra-resolver-lock STATIC lock.c)
 set_property(TARGET elektra-resolver-lock APPEND PROPERTY COMPILE_FLAGS -fPIC)
 
-#configure_file(resolverconfig.h)# TODO: for every variant
 add_plugin(resolver
 	SOURCES
 		${SOURCES}
@@ -30,8 +29,16 @@ foreach (plugin ${PLUGINS})
 	if(${plugin} MATCHES "resolver_.*")
 		string(REGEX REPLACE "resolver_" "" variant ${plugin})
 		string(REGEX REPLACE "_" "-" variantname ${variant})
-		string(REGEX REPLACE "_.*" "" uservariant ${variant})
-		string(REGEX REPLACE ".*_" "" systemvariant ${variant})
+		string(REGEX REPLACE "_" ";" variantlist ${variant})
+
+		string(FIND "${basevariant}" "c" out_var_n)
+		if (out_var_n)
+			set (FURTHER_DEFINITIONS "ELEKTRA_CONFLICT_DEBUG")
+		endif ()
+
+		list(GET variantlist 0 variant_base)
+		list(GET variantlist 1 variant_user)
+		list(GET variantlist 2 variant_system)
 
 		add_plugin(${variantname}
 			SOURCES
@@ -43,11 +50,12 @@ foreach (plugin ${PLUGINS})
 				${CMAKE_BINARY_DIR}/src/include
 				${CMAKE_SOURCE_DIR}/src/include
 			COMPILE_DEFINITIONS
-				ELEKTRA_VARIANT_BASE=\"\"
-				ELEKTRA_VARIANT_USER=\"${uservariant}\"
-				ELEKTRA_VARIANT_SYSTEM=\"${systemvariant}\"
+				ELEKTRA_VARIANT_BASE=\"${variant_base}\"
+				ELEKTRA_VARIANT_USER=\"${variant_user}\"
+				ELEKTRA_VARIANT_SYSTEM=\"${variant_system}\"
 				ELEKTRA_VARIANT=${variant}
-				ELEKTRA_PLUGIN_NAME=\"${plugin}\")
+				ELEKTRA_PLUGIN_NAME=\"${plugin}\"
+				${FURTHER_DEFINITIONS})
 	endif()
 endforeach(plugin)
 

@@ -34,6 +34,7 @@ set (PLUGINS_LIST_COMPILE
 # Should compile on every system where elektra compiles.
 #
 set (PLUGINS_LIST_NODEP
+	resolver_c_b_b  # needed for tests
 	ccode
 	error  fstab
 	hexcode  hidden

@@ -67,6 +67,19 @@ ksNew (50,
 "\n"
 "\n"
 "\n"
+#ifdef ELEKTRA_CONFLICT_DEBUG
+"== Debugging Conflicts ==\n"
+"\n"
+"You have build the resolver with an option that will send a signal\n"
+"SIGSTOP during its critical section.\n"
+"\n"
+"This way you can easily investigate problems.\n"
+"There is also a shellscript test, which does that.\n"
+"\n"
+"DO NOT USE THIS PLUGIN IN PRODUCTION!!!\n"
+"\n"
+"IT IS FOR DEBUG PURPOSES ONLY!!!\n"
+#endif
 "\n"
 "\n"
 "\n"
@@ -75,7 +88,7 @@ ksNew (50,
 	keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/infos/provides",
 		KEY_VALUE, "" ELEKTRA_PLUGIN_NAME "", KEY_END),
 	keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/infos/placements",
-		KEY_VALUE, "rollback get" ELEKTRA_PLUGIN_NAME " set" ELEKTRA_PLUGIN_NAME " commit", KEY_END),
+		KEY_VALUE, "rollback getresolver setresolver commit", KEY_END),
 	keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/infos/needs",
 		KEY_VALUE, "", KEY_END),
 	keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/infos/version",

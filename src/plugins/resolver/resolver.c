@@ -45,10 +45,9 @@
 #include <sys/types.h>
 #include <dirent.h>
 
-#ifdef RESOLVER_DEBUG
+#ifdef ELEKTRA_CONFLICT_DEBUG
 //has stop signals at certain points to let you test
 //concurrent access from shell scripts
-// #define RESOLVER_DEBUG
 #include <signal.h>
 #endif
 
@@ -432,7 +431,7 @@ static int elektraCheckConflict(resolverHandle *pk, Key *parentKey)
  */
 static int elektraSetPrepare(resolverHandle *pk, Key *parentKey)
 {
-#ifdef RESOLVER_DEBUG
+#ifdef ELEKTRA_CONFLICT_DEBUG
 	// we are somewhere in the middle of work
 	kill(getpid(), SIGSTOP);
 #endif
@@ -456,7 +455,7 @@ static int elektraSetPrepare(resolverHandle *pk, Key *parentKey)
 		return -1;
 	}
 
-#ifdef RESOLVER_DEBUG
+#ifdef ELEKTRA_CONFLICT_DEBUG
 	kill(getpid(), SIGSTOP);
 #endif
 
