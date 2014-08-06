@@ -40,6 +40,7 @@ void test_resolve()
 	KeySet *modules = ksNew(0);
 	elektraModulesInit (modules, 0);
 
+	Key *parentKey = keyNew("system", KEY_END);
 	Plugin *plugin = elektraPluginOpen("resolver", modules, set_pluginconf(), 0);
 	exit_if_fail (plugin, "could not load resolver plugin");
 
@@ -58,81 +59,61 @@ void test_resolve()
 	succeed_if (!strcmp(plugin->name, "resolver"), "got wrong name");
 
 	resolverHandles *h = elektraPluginGetData(plugin);
-	succeed_if (h != 0, "no plugin handle");
-	resolverClose(&h->system);
-	resolverClose(&h->user);
-
-	Key *forKey = keyNew("system", KEY_END);
-	succeed_if (resolveFilename(forKey, &h->system, forKey) != -1,
-			"could not resolve filename");
-
+	exit_if_fail (h != 0, "no plugin handle");
 	succeed_if (!strcmp(h->system.path, "elektra.ecf"), "path not set correctly");
 	succeed_if (!strcmp(h->system.filename, KDB_DB_SYSTEM "/elektra.ecf"), "resulting filename not correct");
-	resolverClose(&h->system);
+	plugin->kdbClose(plugin, parentKey);
 
-
-	keySetName(forKey, "user");
-	succeed_if (resolveFilename(forKey, &h->user, forKey) != -1,
-			"could not resolve filename");
-
+	plugin->kdbOpen(plugin, parentKey);
+	h = elektraPluginGetData(plugin);
+	exit_if_fail (h != 0, "no plugin handle");
 	pathLen = tempHomeLen + 1 + strlen (KDB_DB_USER) + 12 + 1;
 	path = malloc (pathLen);
-	succeed_if (path != 0, "malloc failed");
+	exit_if_fail (path != 0, "malloc failed");
 	snprintf (path, pathLen, "%s/%s/elektra.ecf", tempHome, KDB_DB_USER);
-
-	succeed_if (!strcmp(h->user.path, "elektra.ecf"), "path not set correctly");
-	succeed_if (!strcmp(h->user.filename, path), "filename not set correctly");
-	resolverClose(&h->user);
+	succeed_if_same_string (h->user.path, "elektra.ecf");
+	succeed_if_same_string (h->user.filename, path);
+	plugin->kdbClose(plugin, parentKey);
 
 #ifdef HAVE_SETENV
 	unsetenv("USER");
 	unsetenv("HOME");
-	keySetName(forKey, "system");
-	succeed_if (resolveFilename(forKey, &h->system, forKey) != -1,
-			"could not resolve filename");
-
-	succeed_if (!strcmp(h->system.path, "elektra.ecf"), "path not set correctly");
-	succeed_if (!strcmp(h->system.filename, KDB_DB_SYSTEM "/elektra.ecf"), "resulting filename not correct");
-	resolverClose(&h->system);
-
-
-	keySetName(forKey, "user");
-	succeed_if (resolveFilename(forKey, &h->user, forKey) != -1,
-			"could not resolve filename");
-
-	succeed_if (!strcmp(h->user.path, "elektra.ecf"), "path not set correctly");
-	succeed_if (!strcmp(h->user.filename, KDB_DB_HOME "/" KDB_DB_USER "/elektra.ecf"), "filename not set correctly");
-	resolverClose(&h->user);
-
+	plugin->kdbOpen(plugin, parentKey);
+	h = elektraPluginGetData(plugin);
+	exit_if_fail (h != 0, "no plugin handle");
+	succeed_if_same_string (h->system.path, "elektra.ecf");
+	succeed_if_same_string (h->system.filename, KDB_DB_SYSTEM "/elektra.ecf");
+	succeed_if_same_string (h->user.path, "elektra.ecf");
+	succeed_if_same_string (h->user.filename, KDB_DB_HOME "/" KDB_DB_USER "/elektra.ecf");
+	plugin->kdbClose(plugin, parentKey);
 
 	setenv("USER","other",1);
-	succeed_if (resolveFilename(forKey, &h->user, forKey) != -1,
-			"could not resolve filename");
-
+	plugin->kdbOpen(plugin, parentKey);
+	h = elektraPluginGetData(plugin);
+	exit_if_fail (h != 0, "no plugin handle");
 	succeed_if (!strcmp(h->user.path, "elektra.ecf"), "path not set correctly");
 	succeed_if (!strcmp(h->user.filename, KDB_DB_HOME "/other/" KDB_DB_USER "/elektra.ecf"), "filename not set correctly");
-	resolverClose(&h->user);
+	plugin->kdbClose(plugin, parentKey);
 
 	setenv("HOME","/nfshome//max//",1);
-	succeed_if (resolveFilename(forKey, &h->user, forKey) != -1,
-			"could not resolve filename");
-
+	plugin->kdbOpen(plugin, parentKey);
+	h = elektraPluginGetData(plugin);
+	exit_if_fail (h != 0, "no plugin handle");
 	succeed_if (!strcmp(h->user.path, "elektra.ecf"), "path not set correctly");
 	succeed_if (!strcmp(h->user.filename, "/nfshome/max/" KDB_DB_USER "/elektra.ecf"), "filename not set correctly");
-	resolverClose(&h->user);
+	plugin->kdbClose(plugin, parentKey);
 	unsetenv("HOME");
 	unsetenv("USER");
 #endif
-
-	keySetName(forKey, "user");
-	succeed_if (resolveFilename(forKey, &h->user, forKey) != -1,
-			"could not resolve filename");
-
+	plugin->kdbOpen(plugin, parentKey);
+	h = elektraPluginGetData(plugin);
+	exit_if_fail (h != 0, "no plugin handle");
+	keySetName(parentKey, "user");
 	succeed_if (!strcmp(h->user.path, "elektra.ecf"), "path not set correctly");
 	succeed_if (!strcmp(h->user.filename, KDB_DB_HOME "/" KDB_DB_USER "/elektra.ecf"), "filename not set correctly");
-	resolverClose(&h->user);
+	plugin->kdbClose(plugin, parentKey);
 
-	keyDel (forKey);
+	keyDel (parentKey);
 	elektraPluginClose(plugin, 0);
 	elektraModulesClose(modules, 0);
 	ksDel (modules);
@@ -173,8 +154,7 @@ void test_name()
 
 	keySetName(parentKey, "user");
 	plugin->kdbGet(plugin, 0, parentKey);
-	succeed_if (!strcmp(keyString(parentKey), KDB_DB_HOME "/" KDB_DB_USER "/elektra.ecf"),
-			"resulting filename not correct");
+	succeed_if_same_string (keyString(parentKey), KDB_DB_HOME "/" KDB_DB_USER "/elektra.ecf");
 
 	keyDel (parentKey);
 	elektraPluginClose(plugin, 0);
@@ -216,8 +196,7 @@ void test_lockname()
 
 	keySetName(parentKey, "user");
 	plugin->kdbGet(plugin, 0, parentKey);
-	succeed_if (!strcmp(h->user.dirname, KDB_DB_HOME "/" KDB_DB_USER),
-			"resulting filename not correct");
+	succeed_if_same_string (h->user.dirname, KDB_DB_HOME "/" KDB_DB_USER);
 
 	keyDel (parentKey);
 	elektraPluginClose(plugin, 0);
@@ -270,20 +249,20 @@ void test_tempname()
 
 void test_checkfile()
 {
-	succeed_if (elektraResolverCheckFile("valid") == 1, "valid file not recognised");
-	succeed_if (elektraResolverCheckFile("/valid") == 0, "valid absolute file not recognised");
-	succeed_if (elektraResolverCheckFile("/absolute/valid") == 0, "valid absolute file not recognised");
-	succeed_if (elektraResolverCheckFile("../valid") == -1, "invalid file not recognised");
-	succeed_if (elektraResolverCheckFile("valid/..") == -1, "invalid file not recognised");
-	succeed_if (elektraResolverCheckFile("/../valid") == -1, "invalid absolute file not recognised");
-	succeed_if (elektraResolverCheckFile("/valid/..") == -1, "invalid absolute file not recognised");
-	succeed_if (elektraResolverCheckFile("very..strict") == -1, "resolver is currently very strict");
-	succeed_if (elektraResolverCheckFile("very/..strict") == -1, "resolver is currently very strict");
-	succeed_if (elektraResolverCheckFile("very../strict") == -1, "resolver is currently very strict");
-	succeed_if (elektraResolverCheckFile("very/../strict") == -1, "resolver is currently very strict");
-	succeed_if (elektraResolverCheckFile("/") == -1, "invalid absolute file not recognised");
-	succeed_if (elektraResolverCheckFile(".") == -1, "invalid file not recognised");
-	succeed_if (elektraResolverCheckFile("..") == -1, "invalid file not recognised");
+	succeed_if (ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)("valid") == 1, "valid file not recognised");
+	succeed_if (ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)("/valid") == 0, "valid absolute file not recognised");
+	succeed_if (ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)("/absolute/valid") == 0, "valid absolute file not recognised");
+	succeed_if (ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)("../valid") == -1, "invalid file not recognised");
+	succeed_if (ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)("valid/..") == -1, "invalid file not recognised");
+	succeed_if (ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)("/../valid") == -1, "invalid absolute file not recognised");
+	succeed_if (ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)("/valid/..") == -1, "invalid absolute file not recognised");
+	succeed_if (ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)("very..strict") == -1, "resolver is currently very strict");
+	succeed_if (ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)("very/..strict") == -1, "resolver is currently very strict");
+	succeed_if (ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)("very../strict") == -1, "resolver is currently very strict");
+	succeed_if (ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)("very/../strict") == -1, "resolver is currently very strict");
+	succeed_if (ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)("/") == -1, "invalid absolute file not recognised");
+	succeed_if (ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)(".") == -1, "invalid file not recognised");
+	succeed_if (ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)("..") == -1, "invalid file not recognised");
 }
 
 

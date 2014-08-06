@@ -15,6 +15,8 @@
 #include <kdbmodule.h>
 #include <kdbprivate.h>
 
+#include <algorithm>
+
 #include <plugin.hpp>
 
 // for stdout
@@ -125,22 +127,53 @@ void Plugin::parse ()
 
 void Plugin::check(vector<string> & warnings)
 {
+	if (infos.find("version") == infos.end()) warnings.push_back ("no version found");
+	else if (infos["version"] != PLUGINVERSION) throw VersionInfoMismatch();
+
 	if (infos.find("licence") == infos.end()) warnings.push_back ("no licence information found");
 	else if (infos["licence"] != "BSD") warnings.push_back
 		("the licence is not BSD, it might change the overall licence of your elektra installation");
 
-
 	if (infos.find("description") == infos.end()) warnings.push_back ("no description of the plugin found");
 
 	if (infos.find("provides") == infos.end()) warnings.push_back ("no provides information found");
-	if (infos.find("placements") == infos.end()) warnings.push_back ("no placements information found");
+	if (infos.find("placements") == infos.end())
+	{
+		warnings.push_back ("no placements information found");
+	} else {
+		std::vector<std::string> pp;
+		pp.push_back("prerollback");
+		pp.push_back("rollback");
+		pp.push_back("postrollback");
+		pp.push_back("getresolver");
+		pp.push_back("pregetstorage");
+		pp.push_back("getstorage");
+		pp.push_back("postgetstorage");
+		pp.push_back("setresolver");
+		pp.push_back("presetstorage");
+		pp.push_back("setstorage");
+		pp.push_back("precommit");
+		pp.push_back("commit");
+		pp.push_back("postcommit");
+		std::string placements = infos["placements"];
+		istringstream is(placements);
+		std::string placement;
+		while (is >> placement)
+		{
+			if (std::find(pp.begin(), pp.end(), placement) == pp.end())
+			{
+				warnings.push_back ("not supported placement "
+					+ placement
+					+ " found");
+			}
+		}
+	}
 	if (infos.find("needs") == infos.end()) warnings.push_back ("no needs information found");
 
-	if (infos.find("version") == infos.end()) warnings.push_back ("no version found");
-	else if (infos["version"] != PLUGINVERSION) throw VersionInfoMismatch();
-
-	if (infos.find("author") == infos.end()) warnings.push_back ("no author found");
-	else {
+	if (infos.find("author") == infos.end())
+	{
+		warnings.push_back ("no author found");
+	} else {
 		std::string author = infos["author"];
 		size_t ppos = 0;
 		ppos = author.find ('<', ppos);

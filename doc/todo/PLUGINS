@@ -42,8 +42,7 @@ Environment expansion
 
 ## name conversion ##
 
-rebase plugin:
-	remove/add a common prefix after parentKey
+rename plugin
 
 trim
 encoding
@@ -54,6 +53,17 @@ namehexencode
 
 make name lowercase
 	(case sensitivity can be error prone)
+
+rebase: remove/add a common prefix after parentKey
+	cut of common basename below mountpoint), e.g. with config
+rebase=org/freedesktop/openicc
+system/org/freedesktop/openicc/org/freedesktop/openicc/device ->
+system/org/freedesktop/openicc/device
+
+Additional interesting features: trim, lowercase, arbitrary recodings
+via python/lua function
+
+recode of names (using iconv)
 
 
 ## fix Limitations ##

@@ -1,8 +1,13 @@
-#include "resolver.h"
+#include "lock.h"
+
+#include <kdbprivate.h>
+#include <kdberrors.h>
 
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
+
+#define ERROR_SIZE 1024
 
 /**
  * Locks file for exclusive read/write mode.

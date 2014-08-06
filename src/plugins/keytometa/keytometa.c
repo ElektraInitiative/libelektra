@@ -285,7 +285,8 @@ int elektraKeyToMetaSet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA
 			if (target) {
 
 				char *result = 0;
-				if (target != previous) {
+				if (target != previous)
+				{
 					/* handle the first meta line this means initializing strtok and related buffers */
 					free (value);
 					const Key *valueKey = keyGetMeta(target, keyString(metaName));

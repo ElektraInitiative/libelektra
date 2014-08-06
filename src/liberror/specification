@@ -483,29 +483,48 @@ severity:warning
 ingroup:kdb
 
 number:83
-description:resolver was missing some information, keys might be stored at wrong place
-severity:warning
+description:resolver was not able to resolve a filename (see warnings above)
+severity:error
 ingroup:plugin
-module:storage
+module:resolver
 
 number:84
 description:Read only plugin, kdbSet not supported
 severity:error
 ingroup:kdb
 
-number: 85
+number:85
 description:an Augeas error occurred
 severity:error
 ingroup:plugin
 module:storage
 
-number: 86
+number:86
 description:no Augeas lens was configured
 severity:error
 ingroup:plugin
 module:storage
 
-number: 87
+number:87
 description:memory allocation error
 severity:error
 ingroup:plugin
+
+number:88
+description:could not sync directory
+severity:warning
+ingroup:plugin
+module:resolver
+
+number:89
+description:could not sync config file
+severity:error
+ingroup:plugin
+module:sync
+
+number:90
+description:could not retrieve from passwd using getpwuid_r
+severity:warning
+ingroup:plugin
+module:resolver
+
