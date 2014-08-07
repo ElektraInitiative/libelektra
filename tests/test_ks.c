@@ -2542,7 +2542,26 @@ void test_keyCmpOrder()
 
 	keyDel (k1);
 	keyDel (k2);
+}
 
+void test_ksOrder()
+{
+	KeySet* ks = ksNew(20,
+		keyNew("user/test/test", KEY_END),
+		keyNew("user/test/test/bar", KEY_END),
+		keyNew("user/test/test/foo", KEY_END),
+		keyNew("user/test/test-foo", KEY_END),
+		KS_END);
+	ksRewind(ks);
+	ksNext(ks);
+	succeed_if_same_string(keyName(ksCurrent(ks)), "user/test/test");
+	ksNext(ks);
+	succeed_if_same_string(keyName(ksCurrent(ks)), "user/test/test/bar");
+	ksNext(ks);
+	succeed_if_same_string(keyName(ksCurrent(ks)), "user/test/test/foo");
+	ksNext(ks);
+	succeed_if_same_string(keyName(ksCurrent(ks)), "user/test/test-foo");
+	succeed_if(0, "does not succeed");
 }
 
 int main(int argc, char** argv)
@@ -2583,6 +2602,7 @@ int main(int argc, char** argv)
 	test_ksToArray();
 	test_keyCmpOrder();
 	// test_ksModifyKey(); // TODO: Bug, not handled correctly
+	// test_ksOrder(); // TODO: Bug, not handled correctly
 
 	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
