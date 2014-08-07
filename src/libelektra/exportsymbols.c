@@ -4,7 +4,6 @@
 int main(int argc, char**argv)
 {
 	int i;
-	size_t j;
 
 	/*Exit if no backend is given with error code, because
 	  argv[1] is used below*/
