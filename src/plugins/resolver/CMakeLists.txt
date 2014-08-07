@@ -31,14 +31,17 @@ foreach (plugin ${PLUGINS})
 		string(REGEX REPLACE "_" "-" variantname ${variant})
 		string(REGEX REPLACE "_" ";" variantlist ${variant})
 
-		string(FIND "${basevariant}" "c" out_var_n)
-		if (out_var_n)
-			set (FURTHER_DEFINITIONS "ELEKTRA_CONFLICT_DEBUG")
-		endif ()
-
 		list(GET variantlist 0 variant_base)
 		list(GET variantlist 1 variant_user)
 		list(GET variantlist 2 variant_system)
+
+		# if a c is found in the first part of the variant
+		# the conflict debug mode is activated
+		string(FIND "${variant_base}" "c" out_var_n)
+		if (NOT "${out_var_n}" EQUAL "-1")
+			set (FURTHER_DEFINITIONS "ELEKTRA_CONFLICT_DEBUG")
+		endif ()
+
 
 		add_plugin(${variantname}
 			SOURCES
