@@ -2,14 +2,12 @@ include(LibAddPlugin)
 
 set (SOURCES resolver.h resolver.c filename.c)
 
-include_directories(${CMAKE_SOURCE_DIR}/src/include)
-include_directories(${CMAKE_BINARY_DIR}/src/include)
-
-
-set (LOCK_SOURCES lock.h lock.c)
-add_headers(LOCK_SOURCES)
-add_library(elektra-resolver-lock STATIC ${LOCK_SOURCES})
-set_property(TARGET elektra-resolver-lock APPEND PROPERTY COMPILE_FLAGS -fPIC)
+add_plugin_helper(elektra-resolver-lock
+	SOURCES
+		lock.c
+	INCLUDE_DIRECTORIES
+		${CMAKE_BINARY_DIR}/src/include
+		${CMAKE_SOURCE_DIR}/src/include)
 
 add_plugin(resolver
 	SOURCES

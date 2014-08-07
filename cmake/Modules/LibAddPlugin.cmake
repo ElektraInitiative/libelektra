@@ -1,5 +1,34 @@
 include(LibParseArguments)
 
+function(add_plugin_helper HELPER_NAME)
+	parse_arguments(ARG
+		"SOURCES;LINK_LIBRARIES;COMPILE_DEFINITIONS;INCLUDE_DIRECTORIES"
+		"" # no option
+		${ARGN}
+		)
+
+	add_headers(ARG_SOURCES)
+	add_library (${HELPER_NAME} STATIC ${ARG_SOURCES})
+
+	set_property(TARGET ${HELPER_NAME}
+		APPEND PROPERTY COMPILE_DEFINITIONS
+		${ARG_COMPILE_DEFINITIONS}
+		"HAVE_KDBCONFIG_H;ELEKTRA_STATIC"
+		)
+
+	set_property(TARGET ${HELPER_NAME}
+		APPEND PROPERTY INCLUDE_DIRECTORIES
+		${ARG_INCLUDE_DIRECTORIES})
+
+	set_property(TARGET ${HELPER_NAME}
+		APPEND PROPERTY COMPILE_FLAGS
+		${CMAKE_PIC_FLAGS}) # needed for shared libraries
+
+	# needs cmake 3.0:
+	#set_property(TARGET ${PLUGIN_OBJS}
+	#	PROPERTY CMAKE_POSITION_INDEPENDENT_CODE ON)
+endfunction()
+
 function(add_plugin PLUGIN_SHORT_NAME)
 
 	parse_arguments(ARG
@@ -33,7 +62,7 @@ function(add_plugin PLUGIN_SHORT_NAME)
 
 	set_property(TARGET ${PLUGIN_OBJS}
 		APPEND PROPERTY COMPILE_FLAGS
-		-fPIC) # needed for shared libraries
+		${CMAKE_PIC_FLAGS}) # needed for shared libraries
 
 	# needs cmake 3.0:
 	#set_property(TARGET ${PLUGIN_OBJS}
