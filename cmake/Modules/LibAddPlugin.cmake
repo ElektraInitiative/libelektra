@@ -18,6 +18,7 @@ function(add_plugin PLUGIN_SHORT_NAME)
 	#message (STATUS "comp are: ${ARG_COMPILE_DEFINITIONS}")
 	#message (STATUS "incl are: ${ARG_INCLUDE_DIRECTORIES}")
 
+	add_headers(ARG_SOURCES)
 	add_library (${PLUGIN_OBJS} OBJECT ${ARG_SOURCES})
 
 	set_property(TARGET ${PLUGIN_OBJS}
