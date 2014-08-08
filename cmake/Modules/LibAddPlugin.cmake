@@ -1,4 +1,5 @@
 include(LibParseArguments)
+include(LibAddMacros)
 
 function(add_plugin_helper HELPER_NAME)
 	parse_arguments(ARG
@@ -18,7 +19,10 @@ function(add_plugin_helper HELPER_NAME)
 
 	set_property(TARGET ${HELPER_NAME}
 		APPEND PROPERTY INCLUDE_DIRECTORIES
-		${ARG_INCLUDE_DIRECTORIES})
+		${ARG_INCLUDE_DIRECTORIES}
+		${CMAKE_BINARY_DIR}/src/include
+		${CMAKE_SOURCE_DIR}/src/include
+		)
 
 	set_property(TARGET ${HELPER_NAME}
 		APPEND PROPERTY COMPILE_FLAGS
@@ -30,7 +34,6 @@ function(add_plugin_helper HELPER_NAME)
 endfunction()
 
 function(add_plugin PLUGIN_SHORT_NAME)
-
 	parse_arguments(ARG
 		"SOURCES;LINK_LIBRARIES;COMPILE_DEFINITIONS;INCLUDE_DIRECTORIES"
 		"" # no option
