@@ -5,9 +5,7 @@ set (SOURCES resolver.h resolver.c filename.c)
 add_plugin_helper(elektra-resolver-lock
 	SOURCES
 		lock.c
-	INCLUDE_DIRECTORIES
-		${CMAKE_BINARY_DIR}/src/include
-		${CMAKE_SOURCE_DIR}/src/include)
+		)
 
 add_plugin(resolver
 	SOURCES
@@ -15,9 +13,6 @@ add_plugin(resolver
 	LINK_LIBRARIES
 		elektra
 		elektra-resolver-lock
-	INCLUDE_DIRECTORIES
-		${CMAKE_BINARY_DIR}/src/include
-		${CMAKE_SOURCE_DIR}/src/include
 	COMPILE_DEFINITIONS
 		ELEKTRA_VARIANT_BASE=\"\"
 		ELEKTRA_VARIANT_USER=\"hub\"
@@ -49,9 +44,6 @@ foreach (plugin ${PLUGINS})
 			LINK_LIBRARIES
 				elektra
 				elektra-resolver-lock
-			INCLUDE_DIRECTORIES
-				${CMAKE_BINARY_DIR}/src/include
-				${CMAKE_SOURCE_DIR}/src/include
 			COMPILE_DEFINITIONS
 				ELEKTRA_VARIANT_BASE=\"${variant_base}\"
 				ELEKTRA_VARIANT_USER=\"${variant_user}\"
