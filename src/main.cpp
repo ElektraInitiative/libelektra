@@ -3,6 +3,7 @@
 #include <QtQml>
 #include <QMetaType>
 #include <QtTest/qtestcase.h>
+#include <kdb.hpp>
 
 #include "treeviewmodel.hpp"
 #include "confignode.hpp"
@@ -27,8 +28,9 @@ int main(int argc, char* argv[])
     QQmlContext* ctxt = engine.rootContext();
 
     UndoManager manager;
+    kdb::KeySet set;
 
-    TreeViewModel* model = new TreeViewModel;
+    TreeViewModel* model = new TreeViewModel(set);
     //new ModelTest(model);
 
     model->populateModel();

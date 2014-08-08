@@ -6,13 +6,12 @@ using namespace kdb;
 TreeViewModel::TreeViewModel(QObject* parent)
 {
     Q_UNUSED(parent);
-    m_kdb.get(m_keySet, "/");
 }
 
 TreeViewModel::TreeViewModel(KeySet &keySet)
     : m_keySet(keySet)
 {
-
+    m_kdb.get(m_keySet, "");
 }
 
 TreeViewModel::TreeViewModel(const TreeViewModel& other)
