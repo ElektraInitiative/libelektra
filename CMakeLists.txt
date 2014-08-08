@@ -79,7 +79,7 @@ if (BUILD_FULL OR BUILD_STATIC)
 endif (BUILD_FULL OR BUILD_STATIC)
 
 if (BUILD_FULL OR BUILD_STATIC)
-	add_subdirectory (benchmarks EXCLUDE_FROM_ALL)
+	add_subdirectory (benchmarks)
 endif (BUILD_FULL OR BUILD_STATIC)
 
 ADD_CUSTOM_TARGET(uninstall
