@@ -86,7 +86,7 @@ ksNew (50,
 "\n"
 		,KEY_END),
 	keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/infos/provides",
-		KEY_VALUE, "" ELEKTRA_PLUGIN_NAME "", KEY_END),
+		KEY_VALUE, "resolver", KEY_END),
 	keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/infos/placements",
 		KEY_VALUE, "rollback getresolver setresolver commit", KEY_END),
 	keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/infos/needs",

@@ -36,7 +36,7 @@ public:
 
 	virtual std::string getShortOptions()
 	{
-		return "id";
+		return "idR";
 	}
 
 	virtual std::string getSynopsis()

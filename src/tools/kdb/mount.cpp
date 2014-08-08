@@ -68,10 +68,11 @@ void MountCommand::buildBackend(Cmdline const& cl)
 
 	if (cl.debug)
 	{
-		cout << "Trying to load the resolver plugin" << endl;
+		cout << "Trying to load the resolver plugin " << cl.resolver << endl;
 	}
 
-	backend.addPlugin ("resolver");
+	backend.addPlugin (cl.resolver);
+
 
 	if (cl.interactive)
 	{
