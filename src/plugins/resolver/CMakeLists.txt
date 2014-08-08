@@ -28,7 +28,6 @@ add_plugintest(resolver)
 foreach (plugin ${PLUGINS})
 	if(${plugin} MATCHES "resolver_.*")
 		string(REGEX REPLACE "resolver_" "" variant ${plugin})
-		string(REGEX REPLACE "_" "-" variantname ${variant})
 		string(REGEX REPLACE "_" ";" variantlist ${variant})
 
 		list(GET variantlist 0 variant_base)
@@ -43,7 +42,7 @@ foreach (plugin ${PLUGINS})
 		endif ()
 
 
-		add_plugin(${variantname}
+		add_plugin(${plugin}
 			SOURCES
 				${SOURCES}
 			LINK_LIBRARIES
