@@ -24,12 +24,12 @@ echo ELEKTRA VALIDATE TESTS
 echo ========================================
 echo
 
-$VALIDATOR --schema "$SCHEMA" $srcdir/tests/key.xml > /dev/null || exit 5
-$VALIDATOR --schema "$SCHEMA" $srcdir/tests/keyset.xml > /dev/null || exit 5
+$VALIDATOR --schema "$SCHEMA" $srcdir/xmltool/key.xml > /dev/null || exit 5
+$VALIDATOR --schema "$SCHEMA" $srcdir/xmltool/keyset.xml > /dev/null || exit 5
 
-$VALIDATOR --schema "$SCHEMA" $srcdir/tests/filesys.xml > /dev/null || exit 5
-$VALIDATOR --schema "$SCHEMA" $srcdir/tests/fstab.xml > /dev/null || exit 5
-$VALIDATOR --schema "$SCHEMA" $srcdir/tests/passwd.xml > /dev/null || exit 5
+$VALIDATOR --schema "$SCHEMA" $srcdir/xmltool/filesys.xml > /dev/null || exit 5
+$VALIDATOR --schema "$SCHEMA" $srcdir/xmltool/fstab.xml > /dev/null || exit 5
+$VALIDATOR --schema "$SCHEMA" $srcdir/xmltool/passwd.xml > /dev/null || exit 5
 
 exit 0
 

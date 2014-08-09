@@ -25,14 +25,14 @@ void test_readwrite()
 
 	printf("Testing Read and write xml\n");
 
-	fout = fopen (srcdir_file("key-gen.xml"), "w");
+	fout = fopen (srcdir_file("xmltool/key-gen.xml"), "w");
 	ks = ksNew(0);
-	exit_if_fail( ksFromXMLfile(ks, srcdir_file("key.xml")) == 0, "ksFromXMLfile(key.xml) failed.");
+	exit_if_fail( ksFromXMLfile(ks, srcdir_file("xmltool/key.xml")) == 0, "ksFromXMLfile(key.xml) failed.");
 	ksToStream (ks, fout, KDB_O_HEADER);
 	fclose (fout);
 
-	compare_files (srcdir_file("key.xml"));
-	unlink (srcdir_file("key-gen.xml"));
+	compare_files (srcdir_file("xmltool/key.xml"));
+	unlink (srcdir_file("xmltool/key-gen.xml"));
 
 	ksDel (ks);
 }
@@ -44,14 +44,14 @@ void test_readwrite_hier()
 
 	printf("Testing Read and write xml\n");
 
-	fout = fopen (srcdir_file("key-gen.xml"), "w");
+	fout = fopen (srcdir_file("xmltool/key-gen.xml"), "w");
 	ks = ksNew(0);
-	exit_if_fail( ksFromXMLfile(ks, srcdir_file("key.xml")) == 0, "ksFromXMLfile(key.xml) failed.");
+	exit_if_fail( ksFromXMLfile(ks, srcdir_file("xmltool/key.xml")) == 0, "ksFromXMLfile(key.xml) failed.");
 	ksToStream (ks, fout, KDB_O_HIER | KDB_O_HEADER);
 	fclose (fout);
 
-	compare_files (srcdir_file("key.xml"));
-	unlink (srcdir_file("key-gen.xml"));
+	compare_files (srcdir_file("xmltool/key.xml"));
+	unlink (srcdir_file("xmltool/key-gen.xml"));
 
 	ksDel (ks);
 }
@@ -66,7 +66,7 @@ void test_key()
 	printf("Testing Key from xml\n");
 
 	ks = ksNew(0);
-	exit_if_fail( ksFromXMLfile(ks, srcdir_file("key.xml")) == 0, "ksFromXMLfile(key.xml) failed.");
+	exit_if_fail( ksFromXMLfile(ks, srcdir_file("xmltool/key.xml")) == 0, "ksFromXMLfile(key.xml) failed.");
 	counter = 0;
 	ksRewind(ks);
 	while ( (cur = ksNext(ks)) ) {
@@ -167,7 +167,7 @@ void test_keyset()
 	printf("Testing KeySet from xml\n");
 
 	ks = ksNew(0);
-	exit_if_fail( ksFromXMLfile(ks, srcdir_file("keyset.xml")) == 0, "ksFromXMLfile(key.xml) failed.");
+	exit_if_fail( ksFromXMLfile(ks, srcdir_file("xmltool/keyset.xml")) == 0, "ksFromXMLfile(key.xml) failed.");
 	counter = 0;
 	ksRewind(ks);
 	while ( (cur = ksNext(ks)) ) {
