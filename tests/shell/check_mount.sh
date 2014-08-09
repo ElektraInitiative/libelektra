@@ -78,9 +78,10 @@ then
         test "$configvalue" = "testfile" 
         succeed_if "path was not set correctly"
 
-        $KDB umount $ROOT_MOUNTNAME2
-        succeed_if "could not unmount remounted mountpoint"	
-
+        echo "Testing unmount via path"
+        
+        $KDB umount $ROOT_MOUNTPOINT2
+        succeed_if "unable to unmount $ROOT_MOUNTPOINT2 via path"
 														
 	fi
 fi
