@@ -10,7 +10,8 @@ gid_t nbGid;
 
 char file [KDB_MAX_PATH_LENGTH];
 char srcdir [KDB_MAX_PATH_LENGTH];
-char tmpfilename [KDB_MAX_PATH_LENGTH];
+char *tmpfilename;
+int tmpfilenameLen;
 
 #ifdef HAVE_CLEARENV
 int clearenv();
@@ -26,6 +27,7 @@ static void clean_temp_home (void);
 int init (int argc, char**argv)
 {
 	char *tmpvar;
+	int fd;
 
 	setlocale (LC_ALL, "");
 
@@ -60,8 +62,13 @@ int init (int argc, char**argv)
 
 	atexit (clean_temp_home);
 
-	succeed_if(tmpfilename == tmpnam(tmpfilename),
-			"could not generate file name");
+	tmpfilenameLen = tempHomeLen + 1 + 12 + 6 + 1;
+	tmpfilename = malloc (tmpfilenameLen);
+	succeed_if (tmpfilenameLen != 0, "malloc failed");
+	snprintf (tmpfilename, tmpfilenameLen, "%s/elektra-tmp.XXXXXX", tempHome);
+	fd = mkstemp (tmpfilename);
+	succeed_if (fd != -1, "mkstemp failed");
+	close (fd);
 
 	return 0;
 }
@@ -404,6 +411,14 @@ int output_error(Key *errorKey)
 static void clean_temp_home (void)
 {
 	if (!tempHome) return;
+
+	if (tmpfilename)
+	{
+		elektraUnlink (tmpfilename);
+		free (tmpfilename);
+		tmpfilename = NULL;
+		tmpfilenameLen = 0;
+	}
 
 	rmdir (tempHome);
 	free (tempHome);
