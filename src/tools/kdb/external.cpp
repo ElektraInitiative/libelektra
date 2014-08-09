@@ -17,6 +17,29 @@ extern char **environ;
 
 const char * buildinExecPath = BUILTIN_EXEC_FOLDER;
 
+static std::string cwd()
+{
+	std::vector<char> current_dir;
+#ifdef PATH_MAX
+	current_dir.resize(PATH_MAX);
+#else
+	current_dir.resize(1024);
+#endif
+	errno = 0;
+	while (getcwd(&current_dir[0], current_dir.size()) == NULL && errno == ERANGE) {
+		current_dir.resize(current_dir.size() + 1024);
+	}
+	if (errno != 0) {
+		std::cerr << "Could not determine current path"
+			<< " because: "
+			<< strerror(errno)
+			<< std::endl;
+		return std::string();
+	}
+
+	return &current_dir[0];
+}
+
 void tryExternalCommand(char** argv)
 {
 	std::vector<std::string> pathes;
@@ -36,18 +59,10 @@ void tryExternalCommand(char** argv)
 		if (pathes[p][0] != '/')
 		{
 			// no absolute path, so work with current path
-			char currentPath [PATH_MAX];
+			const std::string currentPath = cwd();
 
-			if (!getcwd(currentPath, sizeof(currentPath)))
+			if (currentPath.empty())
 			{
-				std::cerr << "Could not determine "
-					<< "current path for path "
-					<< pathes[p]
-					<< " and command name: "
-					<< argv[0]
-					<< " because: "
-					<< strerror(errno)
-					<< std::endl;
 				continue;
 			}
 			command += currentPath;
