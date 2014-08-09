@@ -374,9 +374,11 @@ void test_mode()
 	succeed_if (!strcmp(keyValue (keyGetMeta(key, "mode")), "x1"), "meta value for mode was not set correctly");
 	succeed_if (keyGetMode(key) == KDB_FILE_MODE, "mode was not set correctly");
 
+#if SIZEOF_MODE_T > 2
 	succeed_if (keySetMeta (key, "mode", "2000000") == sizeof("2000000"), "could not set large mode");
 	succeed_if (!strcmp(keyValue (keyGetMeta(key, "mode")), "2000000"), "meta value for large mode was not set correctly");
 	succeed_if (keyGetMode(key) == 02000000, "large mode was not set correctly");
+#endif
 
 	succeed_if (keySetMeta (key, "mode", "1x") == sizeof("1x"), "could not set meta");
 	succeed_if (!strcmp(keyValue (keyGetMeta(key, "mode")), "1x"), "meta value for mode was not set correctly");

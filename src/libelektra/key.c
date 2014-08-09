@@ -154,7 +154,7 @@ keyDel (emptyNamedKey);
  *   Next parameter is taken as the UID (uid_t) or GID (gid_t) that will
  *   be defined on the key. See keySetUID() and keySetGID().
  * - keyswitch_t::KEY_MODE \n
- *   Next parameter is taken as mode permissions (mode_t) to the key.
+ *   Next parameter is taken as mode permissions (int) to the key.
  *   See keySetMode().
  * - keyswitch_t::KEY_DIR \n
  *   Define that the key is a directory rather than a ordinary key.
@@ -339,7 +339,10 @@ Key *keyVNew (const char *name, va_list va)
 					keySetGID(key,va_arg(va,gid_t));
 					break;
 				case KEY_MODE:
-					keySetMode(key,va_arg(va, mode_t));
+					/* Theoretically this should be mode_t, but prefer using
+					   int to avoid troubles when sizeof(mode_t)!=sizeof(int)
+					 */
+					keySetMode(key,va_arg(va, int));
 					break;
 				case KEY_OWNER:
 					keySetOwner(key,va_arg(va,char *));
