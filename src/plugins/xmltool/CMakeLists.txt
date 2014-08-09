@@ -18,6 +18,8 @@ if (LIBXML2_FOUND)
 
 	add_libraries(elektra-full ${LIBXML2_LIBRARIES})
 
+	add_plugintest (xmltool)
+
 	add_subdirectory (tests)
 else (LIBXML2_FOUND)
 	remove_plugin (xmltool "libxml2 not found")
