@@ -36,7 +36,7 @@ The other option, strategy is:
 The current list of strategies are:
 >preserve							the merge will fail if a conflict is detected
 >ours									the merge will use our version during a conflict
->theirs									the merge will use their version during a conflcit
+>theirs									the merge will use their version during a conflict
 >base									the merge will use the base version during a conflict
 
 If no strategy is specified, the merge will default to the preserve strategy as to not risk making the wrong decision. 
