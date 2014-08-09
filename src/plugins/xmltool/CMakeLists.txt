@@ -21,8 +21,6 @@ if (LIBXML2_FOUND)
 	add_plugintest (xmltool)
 
 	install(DIRECTORY xmltool DESTINATION ${TARGET_TEST_DATA_FOLDER})
-
-	add_subdirectory (tests)
 else (LIBXML2_FOUND)
 	remove_plugin (xmltool "libxml2 not found")
 endif (LIBXML2_FOUND)
