@@ -17,15 +17,29 @@ RemountCommand::RemountCommand()
 
 void RemountCommand::getExistingMountpoint(Cmdline const & cl)
 {
-	string existingBackend = cl.arguments[2];
-	Backends::BackendInfoVector mtab = Backends::getBackendInfo(mountConf);
+	string existingBackend;
+	Backends::BackendInfoVector mtab = Backends::getBackendInfo (mountConf);
+	bool byPath = cl.arguments[2].find ("/") != string::npos;
 	bool backendFound = false;
-	for (Backends::BackendInfoVector::const_iterator it=mtab.begin();
-			it!=mtab.end(); ++it)
+	for (Backends::BackendInfoVector::const_iterator it = mtab.begin (); it != mtab.end (); ++it)
 	{
-		if (it->name == existingBackend)
+		if (byPath)
 		{
-			backendFound = true;
+			if (it->mountpoint == cl.arguments[2])
+			{
+				backendFound = true;
+			}
+		}
+		else
+		{
+			if (it->name == cl.arguments[2])
+			{
+				backendFound = true;
+			}
+		}
+
+		if (backendFound)
+		{
 			existingName = it->name;
 			break;
 		}
