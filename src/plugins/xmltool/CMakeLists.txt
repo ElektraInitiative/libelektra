@@ -18,7 +18,9 @@ if (LIBXML2_FOUND)
 
 	add_libraries(elektra-full ${LIBXML2_LIBRARIES})
 
-	add_subdirectory (tests)
+	add_plugintest (xmltool)
+
+	install(DIRECTORY xmltool DESTINATION ${TARGET_TEST_DATA_FOLDER})
 else (LIBXML2_FOUND)
 	remove_plugin (xmltool "libxml2 not found")
 endif (LIBXML2_FOUND)
