@@ -59,8 +59,7 @@ int UmountCommand::execute(Cmdline const& cl)
 	kdb.get (conf, parentKey);
 	printWarnings (cerr, parentKey);
 
-	int pos = cl.arguments[0].find("/");
-	if (pos != -1)
+	if (cl.arguments[0].find("/") != string::npos)
 	{
 		if (deleteByMountPath(conf, cl.arguments[0]) == 0)
 		{
