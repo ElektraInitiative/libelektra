@@ -29,6 +29,7 @@ Cmdline::Cmdline (int argc,
 	noNewline(),
 	test(),
 	recursive(),
+	resolver("resolver"),
 	strategy("preserve"),
 	overrideBase(),
 	verbose(),
@@ -116,6 +117,17 @@ Cmdline::Cmdline (int argc,
 		long_options.push_back(o);
 		helpText += "-r --recursive           work in a recursive mode\n";
 	}
+	optionPos = acceptedOptions.find('R');
+	if (optionPos!=string::npos)
+	{
+		acceptedOptions.insert(optionPos+1, ":");
+		option o = {"resolver", required_argument, 0, 'R'};
+		long_options.push_back (o);
+		helpText +=
+				"-R --resolver <name>     the resolver plugin to use\n"
+				"                         if no resolver is given, the default resolver is used\n"
+				"";
+	}
 	optionPos = acceptedOptions.find('s');
 	if (optionPos!=string::npos)
 	{
@@ -186,6 +198,7 @@ Cmdline::Cmdline (int argc,
 		case 'n': noNewline = true; break;
 		case 't': test = true; break;
 		case 'r': recursive = true; break;
+		case 'R': resolver = optarg; break;
 		case 's': strategy = optarg; break;
 		case 'b': overrideBase = true; break;
 		case 'v': verbose = true; break;

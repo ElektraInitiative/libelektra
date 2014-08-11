@@ -14,6 +14,7 @@
 #include <set.hpp>
 #include <ls.hpp>
 #include <mount.hpp>
+#include <remount.hpp>
 #include <metaget.hpp>
 #include <metaset.hpp>
 #include <metals.hpp>
@@ -65,6 +66,7 @@ public:
 		m_factory.insert(std::make_pair("cp", new Cnstancer<CpCommand>()));
 		m_factory.insert(std::make_pair("mv", new Cnstancer<MvCommand>()));
 		m_factory.insert(std::make_pair("mount", new Cnstancer<MountCommand>()));
+		m_factory.insert(std::make_pair("remount", new Cnstancer<RemountCommand>()));
 		m_factory.insert(std::make_pair("shell", new Cnstancer<ShellCommand>()));
 		m_factory.insert(std::make_pair("getmeta", new Cnstancer<MetaGetCommand>()));
 		m_factory.insert(std::make_pair("setmeta", new Cnstancer<MetaSetCommand>()));

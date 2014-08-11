@@ -2,51 +2,81 @@
 
 #include <kdb.hpp>
 #include <cmdline.hpp>
+#include <backends.hpp>
 
 #include <iostream>
 
 using namespace std;
 using namespace kdb;
+using namespace kdb::tools;
 
 UmountCommand::UmountCommand()
 {}
+
+int UmountCommand::deleteByBackendName(KeySet& conf, std::string const & backendName)
+{
+	const std::string keyName = string(Backends::mountpointsPath) + "/"  + backendName;
+	Key x(keyName, KEY_END);
+	if (!x)
+	{
+		throw invalid_argument(keyName + " is not a valid keyname");
+	}
+
+	KeySet ks = conf.cut (x);
+	return ks.size();
+}
+
+int UmountCommand::deleteByMountPath(KeySet& conf, std::string const & mountPath)
+{
+	Backends::BackendInfoVector mtab = Backends::getBackendInfo (conf);
+
+	std::string backendName;
+	for (Backends::BackendInfoVector::const_iterator it = mtab.begin (); it != mtab.end (); ++it)
+	{
+		if (it->mountpoint == mountPath)
+		{
+			backendName = it->name;
+			break;
+		}
+	}
+
+	if (!backendName.empty())
+	{
+		return deleteByBackendName (conf, backendName);
+	}
+	else
+	{
+		return 0;
+	}
+}
 
 int UmountCommand::execute(Cmdline const& cl)
 {
 	if (cl.arguments.size() != 1) throw invalid_argument("1 argument required");
 
-	std::string const & mountpoints_name =
-		"system/elektra/mountpoints";
-
-	std::string const & backend_name = cl.arguments[0];
-
 	KeySet conf;
-	std::string key_name = mountpoints_name + "/"  + backend_name;
-	Key x(key_name, KEY_END);
-	if (!x)
+	Key parentKey (Backends::mountpointsPath, KEY_END);
+	kdb.get (conf, parentKey);
+	printWarnings (cerr, parentKey);
+
+	if (cl.arguments[0].find("/") != string::npos)
 	{
-		throw invalid_argument(key_name + " is not a valid keyname");
+		if (deleteByMountPath(conf, cl.arguments[0]) == 0)
+		{
+			cerr << "Mountpoint " << cl.arguments[0] << " does not exist" << endl;
+			return 1;
+		}
+	}
+	else
+	{
+		if (deleteByBackendName (conf, cl.arguments[0]) == 0)
+		{
+			cerr << "Backend " << cl.arguments[0] << " does not exist" << endl;
+			return 1;
+		}
 	}
 
-	{
-		Key parentKey(mountpoints_name, KEY_END);
-		kdb.get(conf, parentKey);
-		printWarnings (cerr, parentKey);
-	}
-
-	KeySet ks = conf.cut (x);
-
-	if (ks.size() == 0)
-	{
-		cerr << "Backend " << backend_name << " does not exist"  << endl;
-		return 1;
-	}
-
-	{
-		Key parentKey(mountpoints_name, KEY_END);
-		kdb.set(conf, parentKey);
-		printWarnings (cerr, parentKey);
-	}
+	kdb.set(conf, parentKey);
 
 	return 0;
 }

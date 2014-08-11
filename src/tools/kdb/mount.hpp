@@ -11,33 +11,7 @@
 #ifndef MOUNT_HPP
 #define MOUNT_HPP
 
-#include <command.hpp>
-#include <kdb.hpp>
-
-struct NameAlreadyInUseException : public CommandException
-{
-	virtual const char* what() const throw()
-	{
-		return "Name already used, will abort";
-	}
-};
-
-struct MountpointNotValid: public CommandException
-{
-	virtual const char* what() const throw()
-	{
-		return "The supplied name did not start with /\n"
-			"nor is it a valid keyname";
-	}
-};
-
-struct MountpointAlreadyInUseException : public CommandException
-{
-	virtual const char* what() const throw()
-	{
-		return "Mountpoint already used, will abort";
-	}
-};
+#include <mountbase.hpp>
 
 namespace kdb
 {
@@ -47,25 +21,14 @@ namespace tools
 }
 }
 
-class MountCommand : public Command
+class MountCommand : public MountBaseCommand
 {
-	void readMountConf();
 	void outputMtab();
 	void processArguments(Cmdline const& cl);
-	void fixRootKey(Cmdline const& cl);
-	void getName(Cmdline const& cl);
-	void getMountpoint(Cmdline const& cl);
 	void buildBackend(Cmdline const& cl);
 	void appendPlugins(Cmdline const& cl, kdb::tools::Backend & backend);
 	bool readPluginConfig(Cmdline const& cl, size_t current_plugin);
 	void addConfig (std::string const& configBasePath, std::string const& name, std::string const& value);
-	void askForConfirmation(Cmdline const& cl);
-	void doIt();
-
-	kdb::KeySet mountConf;
-	std::string name;
-	std::string path;
-	std::string mp;
 
 public:
 	MountCommand();
@@ -73,7 +36,7 @@ public:
 
 	virtual std::string getShortOptions()
 	{
-		return "id";
+		return "idR";
 	}
 
 	virtual std::string getSynopsis()
