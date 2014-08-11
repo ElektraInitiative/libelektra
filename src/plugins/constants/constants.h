@@ -1,0 +1,5 @@
+#ifndef ELEKTRA_PLUGIN_CONSTANTS_H
+#define ELEKTRA_PLUGIN_CONSTANTS_H
+
+
+#endif
