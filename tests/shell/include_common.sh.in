@@ -175,6 +175,7 @@ is_not_rw_storage()
 	-o "x$PLUGIN" = "xfstab" \
 	-o "x$PLUGIN" = "xline" \
 	-o "x$PLUGIN" = "xuname" \
+	-o "x$PLUGIN" = "xconstants" \
 	-o "x$PLUGIN" = "xaugeas"
 }
 
