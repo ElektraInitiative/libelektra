@@ -1,5 +1,6 @@
 #include <external.hpp>
 #include "kdbconfig.h"
+#include <kdbos.h>
 
 #include <string>
 #include <vector>
@@ -16,6 +17,25 @@
 extern char **environ;
 
 const char * buildinExecPath = BUILTIN_EXEC_FOLDER;
+
+static std::string cwd()
+{
+	std::vector<char> current_dir;
+	current_dir.resize(KDB_MAX_PATH_LENGTH);
+	errno = 0;
+	while (getcwd(&current_dir[0], current_dir.size()) == NULL
+			&& errno == ERANGE)
+	{
+		current_dir.resize(current_dir.size()*2);
+	}
+
+	if (errno != 0)
+	{
+		return std::string();
+	}
+
+	return std::string(&current_dir[0]);
+}
 
 void tryExternalCommand(char** argv)
 {
@@ -36,14 +56,14 @@ void tryExternalCommand(char** argv)
 		if (pathes[p][0] != '/')
 		{
 			// no absolute path, so work with current path
-			char currentPath [PATH_MAX];
+			const std::string currentPath = cwd();
 
-			if (!getcwd(currentPath, sizeof(currentPath)))
+			if (currentPath.empty())
 			{
 				std::cerr << "Could not determine "
-					<< "current path for path "
+					<< "current path for "
 					<< pathes[p]
-					<< " and command name: "
+					<< " with command name: "
 					<< argv[0]
 					<< " because: "
 					<< strerror(errno)
