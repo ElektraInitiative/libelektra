@@ -30,11 +30,11 @@ root of a KeySet. Resultpath is pretty self-explanatory, it is just where you wa
 
 As for the options, there are a few basic options:
 	
-    -i  --interactive                which attempts the merge in an interactive way
+    -i  --interactive			which attempts the merge in an interactive way
 	
-	-t  --test                          which tests the propsed merge and informs you about possible conflicts
+	-t  --test					which tests the propsed merge and informs you about possible conflicts
     
-	-b --overrideBase           which overwrites the base KeySet with the result.
+	-b --overrideBase	which overwrites the base KeySet with the result.
 
 ### Strategies ###
 
@@ -42,17 +42,17 @@ Addtionally there is an option to specify a merge strategy, which is very import
 
 The option for strategy is:
 
-	-s --strategy <name>					which is used to specify a strategy to use in case of a conflict
+	-s --strategy <name>		which is used to specify a strategy to use in case of a conflict
 
 The current list of strategies are:
 
-	preserve          the merge will fail if a conflict is detected
+	preserve		the merge will fail if a conflict is detected
 	
-	ours                 the merge will use our version during a conflict
+	ours				the merge will use our version during a conflict
 	
-	theirs               the merge will use their version during a conflict
+	theirs			the merge will use their version during a conflict
 	
-	base	                the merge will use the base version during a conflict
+	base				the merge will use the base version during a conflict
 
 If no strategy is specified, the merge will default to the preserve strategy as to not risk making the wrong decision. 
 If any of the other strategies are specified, when a conflcit is detected, merge will use the Key specified by the

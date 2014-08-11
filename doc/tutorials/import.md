@@ -42,11 +42,11 @@ For kdb import, you can specify a strategy to use if Keys already exist in the s
 
 The current list of strategies are:
 
-	preserve						any keys already in the destination will not be overwritten
+	preserve					any keys already in the destination will not be overwritten
 	
-	overwite						any keys already in the destination will be overwritten if a new key has the same name
+	overwite					any keys already in the destination will be overwritten if a new key has the same name
 	
-	cut								all keys already in the destination will be removed, then new keys will be imported
+	cut							all keys already in the destination will be removed, then new keys will be imported
 
 If no strategy is specified, the command defaults to the preserve strategy as to not be destructive to any previous keys.
 
