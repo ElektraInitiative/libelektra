@@ -54,7 +54,7 @@ Backend::~Backend()
 /**@pre: resolver needs to be loaded first
  * Will check the filename.
  * @throw FileNotValidException if filename is not valid */
-void Backend::checkFile (std::string file)
+void Backend::checkFile (std::string file) const
 {
 	typedef int (*checkFilePtr) (const char*);
 	checkFilePtr checkFileFunction = (checkFilePtr) plugins.back()->getSymbol("checkfile");
@@ -166,7 +166,7 @@ void Backend::addPlugin (std::string pluginName)
  * @return true if backend is validated
  * @return false if more plugins are needed to be valided
  */
-bool Backend::validated ()
+bool Backend::validated () const
 {
 	bool ret = true;
 
@@ -177,6 +177,48 @@ bool Backend::validated ()
 
 
 	return ret;
+}
+
+void Backend::status (std::ostream & os) const
+{
+	if (validated())
+	{
+		os << "No error, everything validated" << std::endl;
+	}
+	else
+	{
+		os << "Backend is not validated" << std::endl;
+		if (!errorplugins.validated()) 
+		{
+			os << "Error Plugins are not validated" << std::endl;
+		}
+
+		if (!getplugins.validated()) 
+		{
+			os << "Get Plugins are not validated" << std::endl;
+		}
+
+		if (!setplugins.validated()) 
+		{
+			os << "Set Plugins are not validated" << std::endl;
+		}
+
+	}
+	errorplugins.status(os);
+}
+
+/**
+ * @brief Prints the current status
+ *
+ * @param os stream to print to
+ * @param b backend to get status from
+ *
+ * @return ref to stream
+ */
+std::ostream & operator<<(std::ostream & os, Backend const & b)
+{
+	b.status(os);
+	return os;
 }
 
 

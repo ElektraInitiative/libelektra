@@ -14,6 +14,7 @@
 
 #include <kdbprivate.h>
 
+#include <iterator>
 #include <algorithm>
 
 using namespace std;
@@ -145,12 +146,12 @@ bool Plugins::checkPlacement (Plugin &plugin, std::string which)
 	return false;
 }
 
-bool Plugins::validateProvided()
+bool Plugins::validateProvided() const
 {
 	return getNeededMissing().empty();
 }
 
-std::vector<std::string> Plugins::getNeededMissing()
+std::vector<std::string> Plugins::getNeededMissing() const
 {
 	std::vector<std::string> ret;
 	for (size_t i=0; i< needed.size(); ++i)
@@ -164,7 +165,7 @@ std::vector<std::string> Plugins::getNeededMissing()
 	return ret;
 }
 
-std::vector<std::string> Plugins::getRecommendedMissing()
+std::vector<std::string> Plugins::getRecommendedMissing() const
 {
 	std::vector<std::string> ret;
 	for (size_t i=0; i< recommended.size(); ++i)
@@ -372,19 +373,38 @@ void SetPlugins::addPlugin (Plugin &plugin)
 }
 
 
+void ErrorPlugins::status (std::ostream & os) const
+{
+	std::vector<std::string> n= getNeededMissing();
+	if (!n.empty())
+	{
+		os << "Needed plugins that are missing are: ";
+		std::copy(n.begin(), n.end(),
+			std::ostream_iterator<std::string>(os, " "));
+		os << std::endl;
+	}
+	std::vector<std::string> r= getRecommendedMissing();
+	if (!r.empty())
+	{
+		os << "Recommendations that are not fulfilled are: ";
+		std::copy(r.begin(), r.end(),
+			std::ostream_iterator<std::string>(os, " "));
+		os << std::endl;
+	}
+}
 
 
-bool ErrorPlugins::validated ()
+bool ErrorPlugins::validated () const
 {
 	return nrResolverPlugins == 1 && validateProvided();
 }
 
-bool GetPlugins::validated ()
+bool GetPlugins::validated () const
 {
 	return nrStoragePlugins == 1 && nrResolverPlugins == 1;
 }
 
-bool SetPlugins::validated ()
+bool SetPlugins::validated () const
 {
 	return nrStoragePlugins == 1 && nrResolverPlugins == 1;
 }
