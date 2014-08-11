@@ -212,8 +212,8 @@ void MountCommand::appendPlugins(Cmdline const& cl, Backend & backend)
 		}
 		catch (PluginCheckException const& e)
 		{
-			cout << "Could not add that plugin" << endl;
-			cout << e.what() << endl;
+			cerr << "Could not add that plugin" << endl;
+			cerr << e.what() << endl;
 		}
 		if (cl.interactive)
 		{
@@ -251,6 +251,7 @@ void MountCommand::appendPlugins(Cmdline const& cl, Backend & backend)
 
 		if (pname == "." && !backend.validated())
 		{
+			std::cerr << backend << std::endl;
 			throw CommandAbortException();
 		}
 	}
