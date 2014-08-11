@@ -343,12 +343,6 @@ int elektraConstantsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKe
 
 
 	key = keyDup (parentKey);
-	keyAddBaseName(key, "package/docdir");
-	keySetString(key, "@CMAKE_INSTALL_PREFIX@/@TARGET_DOCUMENTATION_FOLDE");
-	ksAppendKey(ks, key);
-
-
-	key = keyDup (parentKey);
 	keyAddBaseName(key, "package/plugindir");
 	keySetString(key, "@CMAKE_INSTALL_PREFIX@/lib@LIB_SUFFIX@/@TARGET_PLUGIN_FOLDER@");
 	ksAppendKey(ks, key);
