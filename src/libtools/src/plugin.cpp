@@ -15,6 +15,7 @@
 #include <kdbmodule.h>
 #include <kdbprivate.h>
 
+#include <set>
 #include <algorithm>
 
 #include <plugin.hpp>
@@ -98,9 +99,17 @@ void Plugin::loadInfo()
 
 void Plugin::parse ()
 {
-	Key root (std::string("system/elektra/modules/") + pluginName + "/exports", KEY_END);
+	Key root (std::string("system/elektra/modules/") + pluginName, KEY_END);
 
 	Key k = info.lookup (root);
+	if (!k)
+	{
+		throw PluginNoContract();
+	}
+
+	root.setName(std::string("system/elektra/modules/") + pluginName + "/exports");
+
+	k = info.lookup (root);
 
 	if (k)
 	{
@@ -190,30 +199,62 @@ void Plugin::check(vector<string> & warnings)
 		if (lpos < pos) warnings.push_back ("> found before @");
 	}
 
+	std::set<func_t> checkDups;
+	std::pair<std::set<func_t>::iterator, bool> ret;
 	if (plugin->kdbOpen)
 	{
 		if (symbols.find("open") == symbols.end()) warnings.push_back ("no open symbol exported");
 		else if (symbols["open"] != (func_t) plugin->kdbOpen) throw SymbolMismatch ("open");
+		ret = checkDups.insert(symbols["open"]);
+		if (!ret.second) throw SymbolDuplicate("open");
 	}
 	if (plugin->kdbClose)
 	{
 		if (symbols.find("close") == symbols.end()) warnings.push_back ("no close symbol exported");
 		else if (symbols["close"] != (func_t) plugin->kdbClose) throw SymbolMismatch ("close");
+		ret = checkDups.insert(symbols["close"]);
+		if (!ret.second) throw SymbolDuplicate("close");
 	}
 	if (plugin->kdbGet)
 	{
 		if (symbols.find("get") == symbols.end()) warnings.push_back ("no get symbol exported");
 		else if (symbols["get"] != (func_t) plugin->kdbGet) throw SymbolMismatch ("get");
+		ret = checkDups.insert(symbols["get"]);
+		if (!ret.second) throw SymbolDuplicate("get");
 	}
 	if (plugin->kdbSet)
 	{
 		if (symbols.find("set") == symbols.end()) warnings.push_back ("no set symbol exported");
 		else if (symbols["set"] != (func_t) plugin->kdbSet) throw SymbolMismatch ("set");
+		ret = checkDups.insert(symbols["set"]);
+		if (!ret.second) throw SymbolDuplicate("set");
 	}
 	if (plugin->kdbError)
 	{
 		if (symbols.find("error") == symbols.end()) warnings.push_back ("no error symbol exported");
 		else if (symbols["error"] != (func_t) plugin->kdbError) throw SymbolMismatch ("error");
+		ret = checkDups.insert(symbols["error"]);
+		if (!ret.second) throw SymbolDuplicate("error");
+	}
+	if(symbols.find("open") != symbols.end())
+	{
+		if (!plugin->kdbOpen) throw SymbolMismatch ("open");
+	}
+	if(symbols.find("close") != symbols.end())
+	{
+		if (!plugin->kdbClose) throw SymbolMismatch ("close");
+	}
+	if(symbols.find("get") != symbols.end())
+	{
+		if (!plugin->kdbGet) throw SymbolMismatch ("get");
+	}
+	if(symbols.find("set") != symbols.end())
+	{
+		if (!plugin->kdbSet) throw SymbolMismatch ("set");
+	}
+	if(symbols.find("error") != symbols.end())
+	{
+		if (!plugin->kdbError) throw SymbolMismatch ("error");
 	}
 }
 
