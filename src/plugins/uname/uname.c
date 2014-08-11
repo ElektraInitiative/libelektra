@@ -75,11 +75,8 @@ int elektraUnameGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 "machine\n"
 "\n"
 "To mount it, use kdb mount -R noresolver none system/uname uname \n"
-"/tmp can be replaced with any existing file or directory.\n"
-"It will only be used for stat(), which is currently needed because\n"
-"plugins cannot be mounted without resolver.\n"
 "\n"
-"They are readonly.\n"
+"The plugin is readonly.\n"
 				, KEY_END),
 			keyNew ("system/elektra/modules/uname/infos/provides",
 				KEY_VALUE, "storage", KEY_END),
@@ -91,9 +88,6 @@ int elektraUnameGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 				KEY_VALUE, "", KEY_END),
 			keyNew ("system/elektra/modules/uname/infos/version",
 				KEY_VALUE, PLUGINVERSION, KEY_END),
-			keyNew ("system/elektra/modules/uname/config/needs",
-				KEY_VALUE, "The configuration which is needed",
-				KEY_END),
 			KS_END);
 		ksAppend (returned, moduleConfig);
 		ksDel (moduleConfig);
@@ -109,6 +103,7 @@ int elektraUnameGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 
 	if (ret != 0)
 	{
+		// TODO: set error
 		return -1;
 	}
 
