@@ -4,7 +4,10 @@
 
 #include <string.h>
 
-#define STRINGIFY(x) #x
+#include <kdberrors.h>
+
+#define STRINGIFY(x) STRINGIFY2(x)
+#define STRINGIFY2(x) #x
 
 int elektraConstantsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED);
 int elektraConstantsSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED);
@@ -32,17 +35,14 @@ int elektraConstantsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKe
 			KEY_VALUE,
 "Includes constants information into the key database.\n"
 "\n"
-"To mount it, use kdb mount -R noresolver none  system/constants constants \n"
-"/tmp can be replaced with any existing file or directory.\n"
-"It will only be used for stat(), which is currently needed because\n"
-"plugins cannot be mounted without resolver.\n"
+"To mount it, use kdb mount -R noresolver none system/constants constants \n"
 "\n"
 "The plugin is readonly.\n"
 			, KEY_END));
 		ksAppendKey(ks, keyNew ("system/elektra/modules/constants/infos/provides",
 			KEY_VALUE, "storage", KEY_END));
 		ksAppendKey(ks, keyNew ("system/elektra/modules/constants/infos/placements",
-			KEY_VALUE, "getstorage", KEY_END));
+			KEY_VALUE, "setstorage getstorage", KEY_END));
 		ksAppendKey(ks, keyNew ("system/elektra/modules/constants/infos/needs",
 			KEY_VALUE, "", KEY_END));
 		ksAppendKey(ks, keyNew ("system/elektra/modules/constants/infos/recommends",
@@ -235,8 +235,8 @@ int elektraConstantsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKe
 
 
 	key = keyDup (parentKey);
-	keyAddBaseName(key, "cmake/@CMAKE_INSTALL_PREFIX");
-	keySetString(key, "@prefix=@CMAKE_INSTALL_PREFIX@");
+	keyAddBaseName(key, "cmake/CMAKE_INSTALL_PREFIX");
+	keySetString(key, "@CMAKE_INSTALL_PREFIX@");
 	ksAppendKey(ks, key);
 
 
@@ -374,9 +374,9 @@ int elektraConstantsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKe
 	return 1; /* success */
 }
 
-int elektraConstantsSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
+int elektraConstantsSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey)
 {
-	// ELEKTRA_SET_ERROR(84, parentKey, keyName(parentKey));
+	ELEKTRA_SET_ERROR(84, parentKey, keyName(parentKey));
 
 	return -1;
 }
