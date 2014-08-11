@@ -58,13 +58,13 @@ If no strategy is specified, the merge will default to the preserve strategy as 
 If any of the other strategies are specified, when a conflcit is detected, merge will use the Key specified by the
 strategy (ours, theirs, or base) for the resulting Key. 
 
-## Examples ##
+## Basic Example ##
 
 Basic Usage:
 
 	kdb merge system/hosts/ours system/hosts/theirs system/hosts/base system/hosts/result
 	
-### Examples Using Strategies ###
+## Examples Using Strategies ##
   
 Here are examples of the same KeySets being merged using different strateigies.
 The KeySets are mounted using the simpleini file, the left side of '=' is the name of
@@ -94,14 +94,14 @@ Here is their KeySet, system/theirs:
 	
 Now we will examine the result KeySet with the different strategies.
 
-#### Preserve ####
+### Preserve ###
 
 	kdb merge -s preserve system/ours system/theirs system/base system/result
 	
 The merge will fail because of a conflict for key4 since key4 was deleted in our KeySet and
 edited in their KeySet. Since we used preserve, the merge fails and the result KeySet is not saved.
 
-#### Ours ####
+### Ours ###
 
 	kdb merge -s ours system/ours system/theirs system/base system/result
 
@@ -112,7 +112,7 @@ The result KeySet, system/result will be:
 	key3=3  
 	key5=fish  
 	
-#### Theirs ####
+### Theirs ###
 
 	kdb merge -s theirs system/ours system/theirs system/base system/result
 	
@@ -123,7 +123,7 @@ The result KeySet, system/result will be:
 	key4=banana
 	key5=fish
 	
-#### Base ####
+### Base ###
 
 	kdb merge -s base system/ours system/theirs system/base system/result
 	
