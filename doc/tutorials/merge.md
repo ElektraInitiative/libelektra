@@ -30,28 +30,29 @@ root of a KeySet. Resultpath is pretty self-explanatory, it is just where you wa
 
 As for the options, there are a few basic options:
 	
-    -i  --interactive 				which attempts the merge in an interactive way
+    -i  --interactive                which attempts the merge in an interactive way
 	
-	-t  --test				which tests the propsed merge and informs you about possible conflicts
+	-t  --test                          which tests the propsed merge and informs you about possible conflicts
     
-	-b --overrideBase 				which overwrites the base KeySet with the result.
+	-b --overrideBase           which overwrites the base KeySet with the result.
 
 ### Strategies ###
 
 Addtionally there is an option to specify a merge strategy, which is very important.
 
 The option for strategy is:
+
 	-s --strategy <name>					which is used to specify a strategy to use in case of a conflict
 
 The current list of strategies are:
 
-	preserve					the merge will fail if a conflict is detected
+	preserve          the merge will fail if a conflict is detected
 	
-	ours					the merge will use our version during a conflict
+	ours                 the merge will use our version during a conflict
 	
-	theirs				the merge will use their version during a conflict
+	theirs               the merge will use their version during a conflict
 	
-	base					the merge will use the base version during a conflict
+	base	                the merge will use the base version during a conflict
 
 If no strategy is specified, the merge will default to the preserve strategy as to not risk making the wrong decision. 
 If any of the other strategies are specified, when a conflcit is detected, merge will use the Key specified by the
@@ -71,85 +72,65 @@ the Key, the right side is its string value.
   
 We start with the base KeySet, system/base:
 
-  	key1=1
-	
-	key2=2
-	
-	key3=3
-	
-	key4=4
-	
-	key5=5
+  	key1=1  
+	key2=2  
+	key3=3  
+	key4=4  
+	key5=5  
 	
 Here is our KeySet, system/ours:
 
-	key1=apple
-	
-	key2=2
-	
-	key3=3
-	
-	key5=fish
+	key1=apple  
+	key2=2  
+	key3=3  
+	key5=fish  
 	
 Here is their KeySet, system/theirs:
 
-	key1=1
-	
-	key2=pie
-	
-	key4=banana
-	
-	key5=5
+	key1=1  
+	key2=pie  
+	key4=banana  
+	key5=5  
 	
 Now we will examine the result KeySet with the different strategies.
 
-When we use the preserve strategy:
+#### Preserve ####
 
 	kdb merge -s preserve system/ours system/theirs system/base system/result
 	
 The merge will fail because of a conflict for key4 since key4 was deleted in our KeySet and
 edited in their KeySet. Since we used preserve, the merge fails and the result KeySet is not saved.
 
-When we use the strategy ours:
+#### Ours ####
 
 	kdb merge -s ours system/ours system/theirs system/base system/result
 
 The result KeySet, system/result will be:
 
-	key1=apple
+	key1=apple  
+	key2=pie  
+	key3=3  
+	key5=fish  
 	
-	key2=pie
-	
-	key3=3
-	
-	key5=fish
-	
-When we use the strategy theirs:
+#### Theirs ####
 
 	kdb merge -s theirs system/ours system/theirs system/base system/result
 	
 The result KeySet, system/result will be:
 
 	key1=apple
-	
 	key2=pie
-	
 	key4=banana
-	
 	key5=fish
 	
-When we use the strategy base:
+#### Base ####
 
 	kdb merge -s base system/ours system/theirs system/base system/result
 	
 The result KeySet, system/result will be:
 
 	key1=apple
-	
 	key2=pie
-	
 	key3=3
-	
 	key4=4
-	
 	key5=5
