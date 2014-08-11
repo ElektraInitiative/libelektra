@@ -34,7 +34,7 @@ As for the options, there are a few basic options:
 	
 	-t  --test					which tests the propsed merge and informs you about possible conflicts
     
-	-b --overrideBase	which overwrites the base KeySet with the result.
+	-b --overrideBase		which overwrites the base KeySet with the result.
 
 ### Strategies ###
 
@@ -46,11 +46,11 @@ The option for strategy is:
 
 The current list of strategies are:
 
-	preserve		the merge will fail if a conflict is detected
+	preserve			the merge will fail if a conflict is detected
 	
 	ours				the merge will use our version during a conflict
 	
-	theirs			the merge will use their version during a conflict
+	theirs				the merge will use their version during a conflict
 	
 	base				the merge will use the base version during a conflict
 
