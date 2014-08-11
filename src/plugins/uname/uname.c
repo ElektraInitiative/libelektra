@@ -74,7 +74,7 @@ int elektraUnameGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 "version\n"
 "machine\n"
 "\n"
-"To mount it, use src/kdb/kdb-full mount /tmp system/uname uname \n"
+"To mount it, use kdb mount -R noresolver none system/uname uname \n"
 "/tmp can be replaced with any existing file or directory.\n"
 "It will only be used for stat(), which is currently needed because\n"
 "plugins cannot be mounted without resolver.\n"
@@ -88,7 +88,7 @@ int elektraUnameGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 			keyNew ("system/elektra/modules/uname/infos/needs",
 				KEY_VALUE, "", KEY_END),
 			keyNew ("system/elektra/modules/uname/infos/recommends",
-				KEY_VALUE, "struct type path", KEY_END),
+				KEY_VALUE, "", KEY_END),
 			keyNew ("system/elektra/modules/uname/infos/version",
 				KEY_VALUE, PLUGINVERSION, KEY_END),
 			keyNew ("system/elektra/modules/uname/config/needs",
