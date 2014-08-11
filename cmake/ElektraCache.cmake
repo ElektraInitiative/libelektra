@@ -1,7 +1,12 @@
 #
 # CACHE
 #
-# Here the cache variables are set
+# Here all cache variables are set
+#
+#
+# If you add something here, make sure to also add it in
+# src/include/kdbversion.h.in
+
 
 #
 # the default list of plugins
@@ -34,13 +39,13 @@ set (PLUGINS_LIST_COMPILE
 # Should compile on every system where elektra compiles.
 #
 set (PLUGINS_LIST_NODEP
-	resolver_c_b_b  # needed for tests
 	ccode
 	error  fstab
 	hexcode  hidden
 	ni  null
 	struct  success
 	tracer  type  validation
+	constants
 	)
 
 #
@@ -54,6 +59,7 @@ set (PLUGINS_LIST_POSIX
 	timeofday
 	simpleini
 	line
+	resolver_c_b_b  # needed for tests
 	)
 
 #
