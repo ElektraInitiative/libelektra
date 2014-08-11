@@ -3,7 +3,7 @@ include (LibAddMacros)
 
 configure_file(constants.c.in ${CMAKE_BINARY_DIR}/constants.c)
 
-set (SOURCES constants.h ${CMAKE_BINARY_DIR}/constants.c)
+set (SOURCES ${CMAKE_BINARY_DIR}/constants.c)
 add_sources (elektra-full ${SOURCES})
 add_headers (SOURCES)
 
