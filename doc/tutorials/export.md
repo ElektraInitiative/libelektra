@@ -22,8 +22,8 @@ Keys to a file.
 
 The format argument can be a very powerful option to use with kdb export. 
 The format argument allows a user to specify which format is used to export the
-Keys from the Key Database. The user can specify a plug-in to serve as the format
-for the exported Keys. For instance, if a user mounted their hosts file to system/hosts
+Keys from the Key Database. The user can specify any storage plug-in to serve as the 
+format for the exported Keys. For instance, if a user mounted their hosts file to system/hosts
 using 
 	kdb mount /etc/hosts system/hosts hosts
 , they would be able to export these Keys using the hosts format by using the command
@@ -38,12 +38,7 @@ such as reimporting them later.
 
 ## Options ##
 
-The kdb export command takes several available options. 
-They are:
-    -H --help 							which prints the help text
-
-    -V --version						prints info about the version
-	
+The kdb export command takes one unique option:
 	-E --without-elektra			which omits the system/elektra directory of keys
 
 ## Example ##

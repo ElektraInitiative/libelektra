@@ -50,7 +50,7 @@ information in README.md. It would look like (for the third key):
 
 In your plugin, specifically in your elektraPluginGet()
 implementation, you have to return the contract whenever configuration
-below system/elektra/modules/yourplugin is requested:
+below system/elektra/modules/plugin is requested:
 
 	if (!strcmp (keyName(parentKey), "system/elektra/modules/plugin"))
 	{

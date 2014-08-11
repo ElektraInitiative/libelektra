@@ -18,8 +18,8 @@ Key Database. Typically, it is used with a pipe to read in the Keys from a file.
 
 The format argument can be a very powerful option to use with kdb import. 
 The format argument allows a user to specify which format is used to import the
-Keys into the Key Database. The user can specify a plug-in to serve as the format
-for the Keys to be imported. For instance, if a user wanted to import a /etc/hosts
+Keys into the Key Database. The user can specify any storage plug-in to serve as the 
+format for the Keys to be imported. For instance, if a user wanted to import a /etc/hosts
 file into KDB without mounting it, they could use the command:
 	cat /etc/hosts | kdb import system/hosts hosts
 . This command would essentially copy the current hosts file into KDB, like mounting it,
@@ -32,15 +32,8 @@ such as reimporting them later.
 
 ## Options ##
 
-The kdb import command takes several available options. 
-They are:
-    -H --help 							which prints the help text
-
+The kdb import command only takes one unique option:
 	-s --strategy <name>		which is used to specify a strategy
-
-    -v --verbose						which runs the merge in verbose mode
-
-    -V --version						prints info about the version
 
 ### Strategies ###
 
