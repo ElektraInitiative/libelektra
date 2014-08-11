@@ -34,7 +34,7 @@ As for the options, there are a few basic options:
 	
 	-t  --test					which tests the propsed merge and informs you about possible conflicts
     
-	-b --overrideBase		which overwrites the base KeySet with the result.
+	-b --overrideBase			which overwrites the base KeySet with the result.
 
 ### Strategies ###
 
