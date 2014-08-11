@@ -6,13 +6,13 @@ The kdb tool allows users to interact with Elektra's Key Database via the comman
 This tutorial explains the export function of kdb. This command lets you export Keys from 
 the Elektra Key Database.
 
-The command to use kdb import is:
+The command to use kdb export is:
 
     kdb export [options] source [format]
 
 In this command, source is the root key of which Keys should be exported. For
 instance, kdb export system/export would export all the keys below
-system/export. Addtionally, this command exports keys under the system/elektra
+system/export. Additionally, this command exports keys under the system/elektra
 directory by default. It does this so that information about the keys stored under
 this directory will be included if the Keys are later imported into an Elektra Key 
 Database. This command export Keys to stdout to store them into the Elektra
