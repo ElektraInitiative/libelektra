@@ -1,80 +1,31 @@
-/***************************************************************************
-                     noresolver.c  -  Skeleton of a plugin
-                             -------------------
-    begin                : Fri May 21 2010
-    copyright            : (C) 2010 by Markus Raab
-    email                : elektra@markus-raab.org
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This is the skeleton of the methods you'll have to implement in order *
- *   to provide a valid plugin.                                            *
- *   Simple fill the empty functions with your code and you are            *
- *   ready to go.                                                          *
- *                                                                         *
- ***************************************************************************/
-
-
 #ifndef HAVE_KDBCONFIG
 # include "kdbconfig.h"
 #endif
 
 #include "noresolver.h"
 
-int elektraNoresolverOpen(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
+int elektraNoresolverCheckFile(const char * f ELEKTRA_UNUSED)
 {
-	/* plugin initialization logic */
-
-	return 1; /* success */
+	return 1;
 }
-
-int elektraNoresolverClose(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
-{
-	/* free all plugin resources and shut it down */
-
-	return 1; /* success */
-}
-
-#define ELEKTRA_PLUGIN_NAME noresolver
 
 static KeySet * elektraNoresolverModules()
 {
 	return ksNew (50,
 	keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "",
 			KEY_VALUE, "" ELEKTRA_PLUGIN_NAME " plugin waits for your orders", KEY_END),
-		keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/constants", KEY_END),
-		keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/constants/KDB_DB_SYSTEM",
-			KEY_VALUE, KDB_DB_SYSTEM, KEY_END),
-		keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/constants/KDB_DB_HOME",
-			KEY_VALUE, KDB_DB_HOME, KEY_END),
-		keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/constants/KDB_DB_USER",
-			KEY_VALUE, KDB_DB_USER, KEY_END),
 		keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports", KEY_END),
-		keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/open",
-			KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION(resolver, open),
-			KEY_END),
-		keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/close",
-			KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION(resolver, close),
-			KEY_END),
 		keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/get",
-			KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION(resolver, get),
+			KEY_FUNC, elektraNoresolverGet,
 			KEY_END),
 		keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/set",
-			KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION(resolver, set),
+			KEY_FUNC, elektraNoresolverSet,
 			KEY_END),
 		keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/error",
-			KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION(resolver, error),
+			KEY_FUNC, elektraNoresolverError,
 			KEY_END),
 		keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/checkfile",
-			KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION(resolver, checkFile),
+			KEY_FUNC, elektraNoresolverCheckFile,
 			KEY_END),
 		keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/infos",
 			KEY_VALUE, "All information you want to know are in keys below", KEY_END),
@@ -97,6 +48,20 @@ static KeySet * elektraNoresolverModules()
 
 int elektraNoresolverGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
 {
+
+	Key *root = keyNew("system/elektra/modules/"
+			ELEKTRA_PLUGIN_NAME , KEY_END);
+
+	if (keyRel(parentKey, parentKey) >= 0)
+	{
+		keyDel(root);
+		KeySet *info = elektraNoresolverModules();
+		ksAppend(returned, info);
+		ksDel (info);
+		return 1;
+	}
+	keyDel(root);
+
 	/* get all keys */
 
 	return 1; /* success */
@@ -119,8 +84,6 @@ int elektraNoresolverError(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKT
 Plugin *ELEKTRA_PLUGIN_EXPORT(noresolver)
 {
 	return elektraPluginExport("noresolver",
-		ELEKTRA_PLUGIN_OPEN,	&elektraNoresolverOpen,
-		ELEKTRA_PLUGIN_CLOSE,	&elektraNoresolverClose,
 		ELEKTRA_PLUGIN_GET,	&elektraNoresolverGet,
 		ELEKTRA_PLUGIN_SET,	&elektraNoresolverSet,
 		ELEKTRA_PLUGIN_ERROR,	&elektraNoresolverError,
