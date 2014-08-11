@@ -52,7 +52,7 @@ int elektraNoresolverGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA
 	Key *root = keyNew("system/elektra/modules/"
 			ELEKTRA_PLUGIN_NAME , KEY_END);
 
-	if (keyRel(parentKey, parentKey) >= 0)
+	if (keyRel(root, parentKey) >= 0)
 	{
 		keyDel(root);
 		KeySet *info = elektraNoresolverModules();
