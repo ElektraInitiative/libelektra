@@ -7,6 +7,7 @@ This tutorial explains the export function of kdb. This command lets you export 
 the Elektra Key Database.
 
 The command to use kdb import is:
+
     kdb export [options] source [format]
 
 In this command, source is the root key of which Keys should be exported. For
@@ -24,11 +25,9 @@ The format argument can be a very powerful option to use with kdb export.
 The format argument allows a user to specify which format is used to export the
 Keys from the Key Database. The user can specify any storage plug-in to serve as the 
 format for the exported Keys. For instance, if a user mounted their hosts file to system/hosts
-using 
-	kdb mount /etc/hosts system/hosts hosts
-, they would be able to export these Keys using the hosts format by using the command
-	kdb export system/hosts hosts > hosts.ecf
-. This command would essentially create a backup of their current /etc/hosts file in a valid format
+using 'kdb mount /etc/hosts system/hosts hosts', they would be able to export these Keys using 
+the hosts format by using the command 'kdb export system/hosts hosts > hosts.ecf'. 
+This command would essentially create a backup of their current /etc/hosts file in a valid format
 for /etc/hosts. 
 
 If no format is specified, the format "dump" will be used instead. The dump format is the standard way
@@ -39,9 +38,11 @@ such as reimporting them later.
 ## Options ##
 
 The kdb export command takes one unique option:
+
 	-E --without-elektra			which omits the system/elektra directory of keys
 
 ## Example ##
+
 	kdb export system/backup > backup.ecf
 
 This command would export all keys stored under system/backup, along with relevant Keys in system/elektra, into a file called backup.ecf.
