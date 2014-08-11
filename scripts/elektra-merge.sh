@@ -18,7 +18,7 @@ help()
 }
 
 if [ "$#" != "4" ]; then
-    echo "4 arguments required, but $? given"
+    echo "4 arguments required, but $# given"
     help
     exit 1  
 fi
