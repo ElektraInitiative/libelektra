@@ -29,12 +29,6 @@ grepcmd=$(command -v grep) || { >&2 echo "No grep command found"; exit 1; }
 awkcmd=$(command -v awk) || { >&2 echo "No awk command found"; exit 1; }
 kdbcmd=$(command -v kdb) || { >&2 echo "No kdb command found"; exit 1; }
 
-if [ "X$kdbcmd" == "X" ]; then
-    >&2 echo "the kdb command was not found"
-    help
-    exit 1
-fi
-
 mounts=$($kdbcmd mount | $grepcmd "$ours")
 nummounts=$($wccmd -l <<< "$mounts")
 
