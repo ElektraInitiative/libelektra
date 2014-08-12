@@ -59,3 +59,6 @@ the variants name as macro you can use
 within the code and can have two plugins: one (called myplugin_varianta)
 compiled included the ```#ifdef``` the other (base variant called
 myplugin) without.
+
+Currently compilation variants is used in [the resolver
+plugin](/src/plugins/resolver/resolver.c).
