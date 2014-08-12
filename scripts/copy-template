@@ -1,9 +1,13 @@
 #!/bin/sh
 
-#copying and renaming of templates is often
-#useful
-
 set -e
+
+if [ $# -ne 1 ]; then
+	echo "$0 <new-pluginname>"
+	echo "allows you to copy templates and rename them properly"
+	echo "This was meant for creating new plugins"
+	exit 0
+fi
 
 
 First=`echo $1 | sed 's/\<./\u&/'`
