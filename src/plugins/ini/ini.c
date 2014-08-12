@@ -21,7 +21,11 @@
 
 #include "contract.h"
 
+//@fberlakovich please fix review comments
+//the plugin is a great improvement over ni, thanks for it!
 
+//TODO review MRA: this macro really isn't a good idea
+//rather write your wrapper for fopen that sets the error on errors
 #define ELEKTRA_SET_GENERAL_ERROR_IF(id, parentKey, message, condition) \
 	do { \
 		if (condition) \
@@ -32,10 +36,13 @@
 		} \
 	} while (0)
 
+//TODO review MRA: this macro really isn't a good idea
 #define ELEKTRA_SET_ERRNO_ERROR_IF(id, parentKey, condition) \
 	ELEKTRA_SET_GENERAL_ERROR_IF(id, parentKey, strerror(errno), condition)
 
 
+//TODO review MRA: better name than Configuration?
+//its rather a handle for the callbacks?
 typedef struct {
 	const Key *parentKey;
 	KeySet *result;
@@ -133,6 +140,7 @@ int elektraIniGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKe
 	FILE *fh = fopen (keyString (parentKey), "r");
 	ELEKTRA_SET_ERRNO_ERROR_IF(9, parentKey, !fh);
 
+	//TODO: review MRA ksGetSize(returned) is always zero iirc
 	KeySet *append = ksNew (ksGetSize (returned) * 2, KS_END);
 
 	Configuration config;

@@ -225,13 +225,12 @@ and binary (including encoding of null bytes and terminating null?)
 struct: checker
 	cannot be deeply nested
 	don't throw char*
-	string as element of exception class
+	check arrays
 
 Checkers:
-	check if hosts are reachable (/etc/hosts)
+	check if hosts are reachable (e.g. by ping)
 
-
-convert units (e.g. G, M, m,..) to values (and back)
+units-of-measurements (e.g. m, kg, A, ..)
 
 
 # RESOLVER #

@@ -2,34 +2,13 @@ The list of authors that contributed to Elektra.
 
 
 Markus Raab <elektra@markus-raab.org>
-maintainer, development, documentation
+maintainer, main development, documentation
 Devel/Test on: Debian
 
 
-Christopher Meng <cickumqt@gmail.com>
-Fedora packaging
-Test on: Fedora
-
-
-Avi Alkalay <avi@unix.sh>
-Initial concept&architecture, development, manuals, previous website
-Backends: berkleydb, filesys, fstab
-
-
-Yannick Lecaillez <yl@itioweb.com>
-Mandriva packaging, adaptation for using autotools & libtool
-Devel/Test on: Mandriva x86
-
-
-Jens Andersen <jens.andersen@gmail.com>
-nss-elektra, development and porting.
-Devel/Test on:
-
-
-Patrick Sabin <patricksabin@gmx.at>
-unstable development, Python kdb
-Bindings: python
-Devel/Test on: Debian Testing
+Manuel Mausz
+bindings, swig, gobject, main development
+Devel/Test on: Fedora
 
 
 Felix Berlakovich <elektra@berlakovich.net>
@@ -37,33 +16,61 @@ journald plugin, augeas plugin, keytometa, main development
 Devel/Test on: Debian Wheezy
 
 
-Andreas Rottmann <rotty@debian.org>
-Debian packaging
-Bindings: scheme
-
-
-Simon Law <sfllaw@debian.org>
-Debian Packaging
-
-
-Pier Luigi Fiorini <pierluigi.fiorini@mockup.org>
-pkg-config file
-Devel/Test on:
-
-
-Rèmi <remipouak@yahoo.fr>
-XML schema
-Devel/Test on:
-
-
-Studio-HB <contact@studio-hb.com>
-Elektra logo, website design.
-
-
 Pino Toscano <pino@kde.org>
 Debian Packaging, Documentation
+Devel/Test on: Debian
+
+
+Kai-Uwe Behrmann <kai-uwe@behrmann.name>
+Test/Packaging on: CentOS, Fedora, OpenSUSE, RHEL and SLE
+
+
+Christopher Meng <cickumqt@gmail.com>
+Fedora packaging
+Test on: Fedora
 
 
 Ian S. Donnelly <ian.s.donnelly@gmail.com>
 Google Summer of Code 2014
 Devel/Test on: Debian Stable
+
+
+Charles Lindsay
+ni library
+
+
+Avi Alkalay <avi@unix.sh>
+Initial concept, previous website
+Backends: fstab
+
+
+Yannick Lecaillez <yl@itioweb.com>
+previous Mandriva packaging
+
+
+Jens Andersen <jens.andersen@gmail.com>
+bug fixing
+
+
+Patrick Sabin <patricksabin@gmx.at>
+trie development, previous python bindings
+
+Studio-HB <contact@studio-hb.com>
+Elektra logo, design of previous website
+
+
+Pier Luigi Fiorini <pierluigi.fiorini@mockup.org>
+pkg-config file
+
+
+Rèmi <remipouak@yahoo.fr>
+XML schema
+
+
+Andreas Rottmann <rotty@debian.org>
+previous Debian packaging and 0.7 scheme bindings
+
+
+Simon Law <sfllaw@debian.org>
+previous Debian Packaging
+
