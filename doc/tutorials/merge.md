@@ -30,7 +30,7 @@ root of a KeySet. Resultpath is pretty self-explanatory, it is just where you wa
 
 As for the options, there are a few basic options:
 	
-    -i  --interactive			which attempts the merge in an interactive way
+	-i  --interactive			which attempts the merge in an interactive way
 	
 	-t  --test					which tests the propsed merge and informs you about possible conflicts
     
@@ -72,7 +72,7 @@ the Key, the right side is its string value.
   
 We start with the base KeySet, system/base:
 
-  	key1=1  
+	key1=1  
 	key2=2  
 	key3=3  
 	key4=4  
