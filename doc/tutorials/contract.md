@@ -1,6 +1,6 @@
 # Contract #
 
-In Elektra multiple plugins form a backend. If every plugin would do
+In Elektra, multiple plugins form a backend. If every plugin would do
 whatever it likes to do, there would be chaos and backends would be
 unpredictable.
 
@@ -48,23 +48,23 @@ information in README.md. It would look like (for the third key):
 
 ## Including readme_pluginname.c ##
 
-In your plugin, specifically in your elektraYourpluginGet()
+In your plugin, specifically in your elektraPluginGet()
 implementation, you have to return the contract whenever configuration
-below system/elektra/modules/yourplugin is requested:
+below system/elektra/modules/plugin is requested:
 
-	if (!strcmp (keyName(parentKey), "system/elektra/modules/yajl"))
+	if (!strcmp (keyName(parentKey), "system/elektra/modules/plugin"))
 	{
-		KeySet *moduleConfig = elektraYourpluginContract();
+		KeySet *moduleConfig = elektraPluginContract();
 		ksAppend(returned, moduleConfig);
 		ksDel(moduleConfig);
 		return 1;
 	}
 
-The elektraYourpluginContract() is also a method implemented by you
+The elektraPluginContract() is a method implemented by the plug-in developer
 containing the parts of the contract not specified in README.md.
-It may look like:
+An example of this function (taken from the yajl plugin):
 
-	static inline KeySet *elektraYourpluginContract()
+	static inline KeySet *elektraYajlContract()
 	{
 		return ksNew (30,
 		keyNew ("system/elektra/modules/yajl",
