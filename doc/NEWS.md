@@ -12,10 +12,12 @@ allows to transform configuration files into configuration trees and
 back. That is it strength (it is easy to add support for a particual
 legacy configuration files), but also it weakness (the mapping is
 implementation-defined by a language that is limited to a bit more than
-regular expressions).
+regular expressions). Augeas is not able nor is it intended to provide 
+an abstraction over the configuration files. Instead Augeas tries to mirror
+the structure of the configuration as closely as possible.
 
 Elektra''s goal, instead, is not only to provide access to legacy
-configuration files, but instead to provide access to the configuration
+configuration files, but to provide access to the configuration
 exactly as the programs itself sees it. So with Elektra, the developers of
 applications are part of Elektra''s ecosystem by providing specifications
 how their configuration should look like and by writing plugins that
@@ -48,7 +50,7 @@ like it is done in Config::Model).
 
 What has this to do with 3-way merges? Surprisingly, it actually has:
 - Because in the way augeas trees are implementation defined, they are not 
-  well suited for merging (except another Elektra plugin would transform them)
+  well suited for merging (except another Elektra plugin would transform them).
 - Config::Model does 3-way merges without storing "base". This works because 
   it relies on the specification to be complete. When projects and maintainers 
   start to write specifications for Elektra, this is a fantastic way. So 
