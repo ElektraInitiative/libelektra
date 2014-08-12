@@ -1,19 +1,25 @@
-Add items here which should be implemented within the next release.
-Release often, so keep this list very short.
+Here are items that should be implemented within the next releases.
+We release often, so this list is short.
 During implementation phase no new items may be added here (only
-those which are necessary to fulfil the initial tasks)
-Items are e.g. BUGS, OPTIMIZE, PROBLEMS, TESTING, PLUGINS, TODO,..
+those which are necessary to fulfil the initial tasks).
+A complete list of ideas what could be done can be found in the
+[todo folder](.).
 
 
-## 0.8.8 ##
+# 0.8.8 #
 
 fix resolver:
 	add sync
-	[xdg and so on](PLUGINS)
 
 fix types:
 	type checker should check like defined in schema
 	let json use same types (double, boolean, nothing for string)
+
+finish GSoC
+
+
+
+# 0.8.9 #
 
 allow more key names
 	starting with /
@@ -54,7 +60,6 @@ defaults are hardcoded (for system without /etc)
 test libelektratools:
 	addPlugin(Plugin) tests
 	usePath functionality?
-	codeReview
 
 have icc on buildserver
 
