@@ -11,7 +11,7 @@ The command to use kdb export is:
     kdb export [options] source [format]
 
 In this command, source is the root key of which Keys should be exported. For
-instance, kdb export system/export would export all the keys below
+instance, `kdb export system/export` would export all the keys below
 system/export. Additionally, this command exports keys under the system/elektra
 directory by default. It does this so that information about the keys stored under
 this directory will be included if the Keys are later imported into an Elektra Key 
@@ -22,22 +22,23 @@ Keys to a file.
 ### Format ###
 
 The format argument can be a very powerful option to use with kdb export. 
-The format argument allows a user to specify which format is used to export the
+The format argument allows a user to specify which plug-in is used to export the
 Keys from the Key Database. The user can specify any storage plug-in to serve as the 
 format for the exported Keys. For instance, if a user mounted their hosts file to system/hosts
-using 'kdb mount /etc/hosts system/hosts hosts', they would be able to export these Keys using 
-the hosts format by using the command 'kdb export system/hosts hosts > hosts.ecf'. 
+using `kdb mount /etc/hosts system/hosts hosts`, they would be able to export these Keys using 
+the hosts format by using the command `kdb export system/hosts hosts > hosts.ecf`. 
 This command would essentially create a backup of their current /etc/hosts file in a valid format
 for /etc/hosts. 
 
-If no format is specified, the format "dump" will be used instead. The dump format is the standard way
-of expressing Keys and all their releavnt information. This format is intended to be used only within Elektra.
+If no format is specified, the format `dump` will be used instead. The dump format is the standard way
+of expressing Keys and all their relevant information. This format is intended to be used only within Elektra.
 The dump format is a good means of backing up Keys from the Key Database for use with Elektra later 
-such as reimporting them later. 
+such as reimporting them later.  As of this writing, dump is the only way to fully preserve all parts of the
+KeySet.
 
 ## Options ##
 
-The kdb export command takes one unique option:
+The kdb export command takes one special option:
 
 	-E --without-elektra			which omits the system/elektra directory of keys
 
