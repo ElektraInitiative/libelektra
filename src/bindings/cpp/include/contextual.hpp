@@ -149,6 +149,7 @@ public:
 	 * Lookup value for a current active layer
 	 *
 	 * @param layer the name of the requested layer
+	 * @return the layer
 	 */
 	std::string operator[](std::string const & layer) const
 	{
@@ -222,6 +223,7 @@ public:
 	 *
 	 * @par on_layer is called for every layer in the
 	 * specification.
+	 * @return the evaluated string
 	*/
 	std::string evaluate(std::string const & key_name, std::function<bool(std::string const &, std::string &, bool in_group)> const & on_layer) const
 	{

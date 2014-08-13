@@ -184,6 +184,8 @@ KeySet *ksNew(size_t alloc, ...)
  *
  * @pre caller must call va_start and va_end
  * @par va the list of arguments
+ * @param alloc the allocation size
+ * @param va the list of variable arguments
  **/
 KeySet *ksVNew (size_t alloc, va_list va)
 {
@@ -507,6 +509,9 @@ int keyCmp (const Key *k1, const Key *k2)
  *    metadata but the other has not, the key with the metadata
  *    is considered greater. If no key has metadata,
  *    they are considered to be equal.
+ *
+ * @param ka key to compare with
+ * @param kb other key to compare with
  */
 int elektraKeyCmpOrder(const Key *ka, const Key *kb)
 {

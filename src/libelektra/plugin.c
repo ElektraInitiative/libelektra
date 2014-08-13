@@ -438,7 +438,7 @@ Plugin *elektraPluginVersion(void)
  * The order and number of arguments are flexible (as in keyNew() and ksNew()) to let
  * libelektra.so evolve without breaking its ABI compatibility with plugins.
  * So for each method a plugin must export, there is a flag defined by
- * #plugin_t.
+ * @p plugin_t.
  Each flag tells kdbPluginExport() which method comes
  * next. A plugin can have no implementation for a few methods that have
  * default inefficient high-level implementations and to use these defaults, simply
