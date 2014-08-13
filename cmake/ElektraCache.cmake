@@ -172,6 +172,12 @@ option (ENABLE_CXX11 "Include code using C++11 standard, needs gcc 4.7 or compar
 
 set (GTEST_ROOT "" CACHE PATH "use external gtest instead of internal")
 
+set (CMAKE_PIC_FLAGS "-fPIC"
+	CACHE STRING "Which pic flags should be used for cases cmake cannot handle it itself")
+
+set (CMAKE_STATIC_FLAGS ""
+	CACHE STRING "Which static flags should be used for compilation of *-static libs+tools, use \"-static\" if you want a real static kdb-static (it needs .a for every dependency though)")
+
 
 
 

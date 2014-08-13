@@ -71,16 +71,6 @@ if (ENABLE_COVERAGE)
 endif (ENABLE_COVERAGE)
 
 
-if (CMAKE_PIC_FLAGS)
-	message(STATUS "Will use pic flags: ${CMAKE_PIC_FLAGS}")
-else()
-	set (CMAKE_PIC_FLAGS "-fPIC")
-endif()
-
-if (CMAKE_STATIC_FLAGS)
-	message(STATUS "Will use static flags: ${CMAKE_STATIC_FLAGS}")
-endif()
-
 
 #
 # Merge all flags

@@ -11,7 +11,6 @@ add_plugin(resolver
 	SOURCES
 		${SOURCES}
 	LINK_LIBRARIES
-		elektra
 		elektra-resolver-lock
 	COMPILE_DEFINITIONS
 		ELEKTRA_VARIANT_BASE=\"\"
