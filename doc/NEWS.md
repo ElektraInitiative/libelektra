@@ -9,51 +9,51 @@ configuration management tools.
 
 Augeas, in short, introduces a special-purpose programming language that
 allows to transform configuration files into configuration trees and
-back. That is it strength (it is easy to add support for a particual
+back. That is it strength (it is easy to add support for a particular
 legacy configuration files), but also it weakness (the mapping is
 implementation-defined by a language that is limited to a bit more than
-regular expressions). Augeas is not able nor is it intended to provide 
-an abstraction over the configuration files. Instead Augeas tries to mirror
+regular expressions). Augeas is not able nor is it intended to provide
+an abstraction over the configuration files. Instead Augeas mirrors
 the structure of the configuration as closely as possible.
 
 Elektra''s goal, instead, is not only to provide access to legacy
 configuration files, but to provide access to the configuration
-exactly as the programs itself sees it. So with Elektra, the developers of
+exactly as the programs itself uses it. So with Elektra, the developers of
 applications are part of Elektra''s ecosystem by providing specifications
 how their configuration should look like and by writing plugins that
 define how the configuration is accessed and checked. Ideally, after
 some time of legacy issues and migration, developers will also not
 have to care about plugins anymore, but just use any available ones
-(that can be different on the target system). What is about to stay is
-a specification that defines the application''s configuration,
-e.g. in INI (could be any syntax):
+(and users of their application can choose any other compatible plugin).
+What is about to stay is a specification that defines the application''s
+configuration, e.g. in INI (could be any syntax):
 
     [/yourapp/file_dialog/show_hidden_files]
     type=Boolean
     default=true
 
 allows other applications to reuse your setting show_hidden_files by
-refering to above specification. So Elektra not only abstracts from
+referring to above specification. So Elektra not only abstracts from
 cross-platform-related issues with an consistent API, but also allows
 us to be aware of other applications'' configurations, leveraging easy
 application integration.
 
-Config::Model shares most of the goals, especially those regarding
+Config::Model shares most of Elektra''s goals, especially those regarding
 validation (you saw the type=Boolean above) and having a unified
 interface for all programs (this feature is unavoidable with any such
 approach). The projects mainly differs that Elektra is supposed to be used
 by the programs themselves (and not only by GUIs and validation tools)
 and that Elektra has self-describing data: the specification itself
 is also in Elektra''s key database, stored in meta data and e.g. below
-system/elektra/mountpoints (and not by the usage of Perl data structures
-like it is done in Config::Model).
+system/elektra/mountpoints (and not in Perl data structures
+as it is done in Config::Model).
 
 What has this to do with 3-way merges? Surprisingly, it actually has:
-- Because in the way augeas trees are implementation defined, they are not 
+- Because in the way Augeas trees are implementation defined, they are not
   well suited for merging (except another Elektra plugin would transform them).
-- Config::Model does 3-way merges without storing "base". This works because 
-  it relies on the specification to be complete. When projects and maintainers 
-  start to write specifications for Elektra, this is a fantastic way. So 
+- Config::Model does 3-way merges without storing "base". This works because
+  it relies on the specification to be complete. When projects and maintainers
+  start to write specifications for Elektra, this is a fantastic way. So
   maybe we will hear more about that in a future GSoC :-)
 
 
