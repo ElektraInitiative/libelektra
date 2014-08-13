@@ -5,23 +5,6 @@
 #
 # Backends and Bindings specific tests might be in
 # their folders.
-#
-# To run all tests, simply type:
-#  make test
-#
-# To run specific tests, type:
-#  ctest -R name
-#
-# To run tests with valgrind, type:
-#  ctest -T memcheck
-#
-# To run verbose (to see output and commands), type:
-#  ctest -V
-#
-# For example, to run keyset test with valgrind and verbose, type:
-#  ctest -V -T memcheck -R ks
-#
-##
 
 include (LibAddMacros)
 
@@ -48,10 +31,21 @@ macro (do_test source)
 			COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
 	set_target_properties (${source} PROPERTIES LINKER_LANGUAGE CXX)
 	add_test (${source}
-			"${PROJECT_BINARY_DIR}/tests/${source}"
-			"${PROJECT_BINARY_DIR}/tests"
+			"${CMAKE_CURRENT_BINARY_DIR}/${source}"
+			"${CMAKE_CURRENT_BINARY_DIR}"
 			)
 endmacro (do_test)
+
+add_custom_target(run_all
+	COMMAND ${CMAKE_CTEST_COMMAND}
+	--force-new-ctest-process --output-on-failure
+	--build-config "$<CONFIGURATION>"
+	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
+
+add_custom_target(run_memcheck
+	COMMAND "${CMAKE_SOURCE_DIR}/scripts/run_memcheck"
+	"$<CONFIGURATION>"
+	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
 
 file (GLOB TESTS test_*.c)
 foreach (file ${TESTS})

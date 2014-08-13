@@ -1,0 +1,31 @@
+#!/bin/sh
+
+if [ $# -ne 1 ]
+then
+	echo "No build config. This script is supposed to run by using make run_memcheck"
+	exit 1
+fi
+
+# checks for memleaks in ctest and gives a non-null return value
+# if a memleak is found
+#
+# Memory checking results:
+# Potential Memory Leak - 2706
+# Memory Leak - 10
+# Uninitialized Memory Conditional - 76
+# Uninitialized Memory Read - 276
+
+ctest -T memcheck --output-on-failure --build-config $1 -LE memleak |\
+awk '
+BEGIN { ret=0; }
+
+/^Potential Memory Leak - [0-9]+$/ { ret=1; }
+/^Memory Leak - [0-9]+$/ { ret=2; }
+/^Uninitialized Memory Conditional - [0-9]+$/ { ret=3; }
+/^Uninitialized Memory Read - [0-9]+$/ { ret=4; }
+/^Uninitialized Memory Write - [0-9]+$/ { ret=5; }
+
+{ print; }
+
+END{ exit ret; }
+'

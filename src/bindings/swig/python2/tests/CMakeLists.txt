@@ -7,6 +7,9 @@ macro (do_python_test source)
 		COMMAND ${PYTHON_EXECUTABLE} -B ${source}
 		)
 	set_tests_properties (${name} PROPERTIES ENVIRONMENT "PYTHONPATH=${PYTHON_MODULEPATH}")
+
+	# python is a huge memleaker
+	set_property(TEST ${name} PROPERTY LABELS memleak)
 endmacro (do_python_test)
 
 file (GLOB TESTS *.py)

@@ -27,7 +27,8 @@ cleanup()
 }
 
 #needed to have job control:
-set -m
+# set: can't access tty; job control turned off
+set -m || exit 0
 
 
 if is_plugin_available $PLUGIN

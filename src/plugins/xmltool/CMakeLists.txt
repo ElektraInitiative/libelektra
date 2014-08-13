@@ -20,6 +20,9 @@ if (LIBXML2_FOUND)
 
 	add_plugintest (xmltool)
 
+	#xmllib2 leaks memory
+	set_property(TEST testmod_xmltool PROPERTY LABELS memleak)
+
 	install(DIRECTORY xmltool DESTINATION ${TARGET_TEST_DATA_FOLDER})
 else (LIBXML2_FOUND)
 	remove_plugin (xmltool "libxml2 not found")

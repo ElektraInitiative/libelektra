@@ -24,3 +24,6 @@ foreach (file ${TESTS})
 	get_filename_component (name ${file} NAME_WE)
 	add_cpp_plugintest(${name})
 endforeach (file ${TESTS})
+
+#C++ stdlib memleaks on using locales
+set_property(TEST testmod_type PROPERTY LABELS memleak)

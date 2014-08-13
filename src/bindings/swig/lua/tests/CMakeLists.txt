@@ -7,6 +7,7 @@ macro (do_lua_test source)
 		COMMAND "lua" ${source}
 		)
 	set_tests_properties (${name} PROPERTIES ENVIRONMENT "LUA_CPATH=${LUA_MODULEPATH}/?.so")
+	set_property(TEST ${name} PROPERTY LABELS memleak)
 endmacro (do_lua_test)
 
 file (GLOB TESTS *.lua)
