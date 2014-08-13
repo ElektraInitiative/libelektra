@@ -16,16 +16,16 @@ regular expressions). Augeas is not able nor is it intended to provide
 an abstraction over the configuration files. Instead Augeas mirrors
 the structure of the configuration as closely as possible.
 
-Elektra''s goal, instead, is not only to provide access to legacy
+Elektra's goal, instead, is not only to provide access to legacy
 configuration files, but to provide access to the configuration
 exactly as the programs itself uses it. So with Elektra, the developers of
-applications are part of Elektra''s ecosystem by providing specifications
+applications are part of Elektra's ecosystem by providing specifications
 how their configuration should look like and by writing plugins that
 define how the configuration is accessed and checked. Ideally, after
 some time of legacy issues and migration, developers will also not
 have to care about plugins anymore, but just use any available ones
 (and users of their application can choose any other compatible plugin).
-What is about to stay is a specification that defines the application''s
+What is about to stay is a specification that defines the application's
 configuration, e.g. in INI (could be any syntax):
 
     [/yourapp/file_dialog/show_hidden_files]
@@ -35,16 +35,16 @@ configuration, e.g. in INI (could be any syntax):
 allows other applications to reuse your setting show_hidden_files by
 referring to above specification. So Elektra not only abstracts from
 cross-platform-related issues with an consistent API, but also allows
-us to be aware of other applications'' configurations, leveraging easy
+us to be aware of other applications' configurations, leveraging easy
 application integration.
 
-Config::Model shares most of Elektra''s goals, especially those regarding
+Config::Model shares most of Elektra's goals, especially those regarding
 validation (you saw the type=Boolean above) and having a unified
 interface for all programs (this feature is unavoidable with any such
 approach). The projects mainly differs that Elektra is supposed to be used
 by the programs themselves (and not only by GUIs and validation tools)
 and that Elektra has self-describing data: the specification itself
-is also in Elektra''s key database, stored in meta data and e.g. below
+is also in Elektra's key database, stored in meta data and e.g. below
 system/elektra/mountpoints (and not in Perl data structures
 as it is done in Config::Model).
 
@@ -61,9 +61,9 @@ What has this to do with 3-way merges? Surprisingly, it actually has:
 
 -------------
 
-Author: Markus Raab
-Date: 28.07.2014
-Subject: 0.8.7 release
+%Author: Markus Raab
+%Date: 28.07.2014
+%Subject: 0.8.7 release
 
 Again, we managed to have a great feature release with dozens of
 corrections!
