@@ -34,13 +34,13 @@ As for the options, there are a few basic options:
 	
     -i  --interactive			which attempts the merge in an interactive way
 	
-	-t  --test					which tests the propsed merge and informs you about possible conflicts
+	-t  --test					which tests the proposed merge and informs you about possible conflicts
     
 	-f --force					which overwrites any Keys in resultpath
 
 ### Strategies ###
 
-Addtionally there is an option to specify a merge strategy, which is very important.
+Additionally there is an option to specify a merge strategy, which is very important.
 
 The option for strategy is:
 
@@ -57,7 +57,7 @@ The current list of strategies are:
 	base				the merge will use the base version during a conflict
 
 If no strategy is specified, the merge will default to the preserve strategy as to not risk making the wrong decision. 
-If any of the other strategies are specified, when a conflcit is detected, merge will use the Key specified by the
+If any of the other strategies are specified, when a conflict is detected, merge will use the Key specified by the
 strategy (ours, theirs, or base) for the resulting Key. 
 
 ## Basic Example ##
