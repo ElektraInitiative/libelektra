@@ -11,8 +11,9 @@ TTY=`tty`
 if [ "$x$TTY" = "not a tty" ]; then
 	echo "no tty found, wont run test"
 	exit 0
+else
 	if [ -w "$TTY" ]; then
-		echo "tty found successfully and is writeable"
+		echo "tty $TTY found successfully and is writeable"
 	else
 		echo "tty implementation did not output tty, output was $TTY"
 		exit 0
