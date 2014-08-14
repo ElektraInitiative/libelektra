@@ -33,6 +33,9 @@ function(add_plugin_helper HELPER_NAME)
 	#	PROPERTY CMAKE_POSITION_INDEPENDENT_CODE ON)
 endfunction()
 
+# do not add elektra as library
+# only add libraries found by cmake and helper libraries created with
+# add_plugin_helper
 function(add_plugin PLUGIN_SHORT_NAME)
 	parse_arguments(ARG
 		"SOURCES;LINK_LIBRARIES;COMPILE_DEFINITIONS;INCLUDE_DIRECTORIES"
