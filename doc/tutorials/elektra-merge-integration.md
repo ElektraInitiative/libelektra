@@ -64,8 +64,7 @@ need to have this command run on the first install, if it runs on upgrades there
 Next, you must update the line containing `ucf` with the options `--three-way` an `--threeway-merge-command` like so:
 	ucf --three-way --threeway-merge-command elektra-merge <New File> <Destination>
 	
-Then, in your `postrm` script, during a purge, you must umount the config file before deleting it:
-	kdb umount <name>
+The file will automatically be unmounted from KDB when it is deleted on perge. 
 
 That's it! With those small changes you can use Elektra to perform automatic three-way merges on any files
 that your package uses ucf to handle!
