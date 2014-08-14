@@ -59,6 +59,13 @@ public:
 	 */
 	MergeResult mergeKeySet(const MergeTask& task);
 
+	/**
+	 * Adds a conflict resolution strategy to the merger. The merger tries to resolve conflicts
+	 * with the strategies registered in the order they were added. The caller is responsible for
+	 * freeing the strategy, but it must not be freed as long as the merger is used.
+	 *
+	 * @param a conflict reoslution strategy to be consulted in case of conflicts
+	 */
 	void addConflictStrategy(MergeConflictStrategy *strategy) { strategies.push_back(strategy); }
 
 private:

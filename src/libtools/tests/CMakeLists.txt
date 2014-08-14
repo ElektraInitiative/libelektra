@@ -11,6 +11,3 @@ foreach (file ${TESTS})
 	get_filename_component (name ${file} NAME_WE)
 	add_gtest (${name})
 endforeach (file ${TESTS})
-
-#TODO: unclear ownership and memleak in MetaMergeStrategyTest
-set_property(TEST testtool_metamergestrategy PROPERTY LABELS memleak)
