@@ -42,9 +42,10 @@ do
 
 	$KDB import $ROOT $PLUGIN < $DATADIR/one_value.$PLUGIN
 	succeed_if "Could not run kdb import"
-
+		
 	test "`$KDB ls $ROOT`" = "user/tests/script"
 	succeed_if "key name not correct one_value"
+
 
 	if [ "x$PLUGIN" != "xyajl" ]
 	then
@@ -97,7 +98,7 @@ do
 	$KDB set $ROOT "wrong_root" >/dev/null
 	exit_if_fail "could not set wrong_root"
 
-	$KDB import -s overwrite $ROOT $PLUGIN < $DATADIR/one_value.$PLUGIN
+	$KDB import -s "newkey,theirvalue" $ROOT $PLUGIN < $DATADIR/one_value.$PLUGIN
 	succeed_if "Could not run kdb import"
 
 	test "`$KDB ls $ROOT`" = "user/tests/script"
@@ -120,16 +121,16 @@ do
 	$KDB rm -r $ROOT
 	succeed_if "Could not remove root"
 
-	if [ "x$PLUGIN" != "xyajl" ]
-	then
+	#	if [ "x$PLUGIN" != "xyajl" ]
+	#then
 		#TODO: yajl currently cannot hold values within
 		#directories, do not hardcode that
-		test "`$KDB get $SIDE`" = val
-		succeed_if "root value not correct"
-	fi
+		#		test "`$KDB get $SIDE`" = val
+		#succeed_if "root value not correct"
+	#fi
 
-	$KDB rm $SIDE
-	succeed_if "Could not remove $SIDE"
+	#$KDB rm $SIDE
+	#succeed_if "Could not remove $SIDE"
 
 
 
@@ -168,7 +169,7 @@ user/tests/script/key"
 	$KDB set $SIDE val
 	succeed_if "Could not set $SIDE"
 
-	$KDB import -s cut $ROOT $PLUGIN < $DATADIR/one_value.$PLUGIN
+	$KDB import -s theirs $ROOT $PLUGIN < $DATADIR/one_value.$PLUGIN
 	succeed_if "Could not run kdb import"
 
 	test "`$KDB ls $ROOT`" = "user/tests/script"
@@ -188,11 +189,11 @@ user/tests/script/key"
 	diff $DATADIR/one_value.$PLUGIN $FILE
 	succeed_if "Export file one_value.$PLUGIN was not equal"
 
-	test "`$KDB get $SIDE`" = val
-	succeed_if "side value not correct"
+	#test "`$KDB get $SIDE`" = val
+	#succeed_if "side value not correct"
 
-	$KDB rm $SIDE
-	succeed_if "Could not remove $SIDE"
+	#$KDB rm $SIDE
+	#succeed_if "Could not remove $SIDE"
 
 
 
@@ -209,7 +210,7 @@ user/tests/script/key"
 	$KDB set $SIDE val
 	succeed_if "Could not set $SIDE"
 
-	$KDB import -s cut $ROOT $PLUGIN < $DATADIR/one_value.$PLUGIN
+	$KDB import -s theirs $ROOT $PLUGIN < $DATADIR/one_value.$PLUGIN
 	succeed_if "Could not run kdb import"
 
 	test "`$KDB ls $ROOT`" = "user/tests/script"
@@ -229,20 +230,21 @@ user/tests/script/key"
 	diff $DATADIR/one_value.$PLUGIN $FILE
 	succeed_if "Export file one_value.$PLUGIN was not equal"
 
-	if [ "x$PLUGIN" != "xyajl" ]
-	then
+	#	if [ "x$PLUGIN" != "xyajl" ]
+	#then
 		#TODO: yajl currently cannot hold values within
 		#directories, do not hardcode that
-		test "`$KDB get $SIDE`" = val
-		succeed_if "root value not correct"
-	fi
+		#	test "`$KDB get $SIDE`" = val
+		#succeed_if "root value not correct"
+	#fi
 
-	$KDB rm $SIDE
-	succeed_if "Could not remove $SIDE"
+	#	$KDB rm $SIDE
+	#succeed_if "Could not remove $SIDE"
 
 
 	$KDB rm -r $ROOT
 	succeed_if "Could not remove $ROOT"
+		
 done
 
 end_script

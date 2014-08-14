@@ -8,9 +8,14 @@
 
 #include <iostream>
 
+#include <merging/threewaymerge.hpp>
+#include <merging/metamergestrategy.hpp>
+#include <mergehelper.hpp>
+
 using namespace std;
 using namespace kdb;
 using namespace kdb::tools;
+using namespace kdb::tools::merging;
 
 ImportCommand::ImportCommand()
 {}
@@ -30,8 +35,9 @@ int ImportCommand::execute(Cmdline const& cl)
 	}
 
 	KeySet originalKeys;
-	kdb.get(originalKeys, root);
-	printWarnings(cerr, root);
+	kdb.get (originalKeys, root);
+	originalKeys = originalKeys.cut(root);
+	printWarnings (cerr, root);
 
 	KeySet importedKeys;
 
@@ -42,44 +48,53 @@ int ImportCommand::execute(Cmdline const& cl)
 	if (argc > 2 && cl.arguments[2] != "-") file = cl.arguments[2];
 
 	Modules modules;
-	PluginPtr plugin = modules.load(format);
+	PluginPtr plugin = modules.load (format);
 
-	Key errorKey(root);
-	errorKey.setString(file);
+	Key errorKey (root);
+	errorKey.setString (file);
 
-	plugin->get(importedKeys, errorKey);
+	plugin->get (importedKeys, errorKey);
 
-	printWarnings(cerr, errorKey);
-	printError(cerr, errorKey);
+	printWarnings (cerr, errorKey);
+	printError (cerr, errorKey);
 
-	KeySet mergedKeys;
-	if (cl.strategy == "cut")
+	ThreeWayMerge merger;
+	MergeHelper helper;
+
+	KeySet base;
+
+	// TODO: this should not be neccessary, but
+	// applying threeway strategies to a twoway merge is hard
+	base = KeySet();
+
+	// TODO: for now we have to position this strategy manually
+	// to avoid meta information loss
+	MetaMergeStrategy metaStrategy(merger);
+	merger.addConflictStrategy(&metaStrategy);
+
+	helper.parseStrategies (cl, merger);
+	MergeResult result = merger.mergeKeySet (
+			MergeTask (BaseMergeKeys (base, root), OurMergeKeys (originalKeys, root),
+					TheirMergeKeys (importedKeys, root), root));
+
+	helper.reportResult (cl, result, cout, cerr);
+
+	int ret = 0;
+	if (!result.hasConflicts ())
 	{
-		KeySet rootKeys(originalKeys.cut(root));
-		mergedKeys.append(importedKeys);
-		mergedKeys.append(originalKeys);
-		// rootKeys are dropped
-	}
-	else if (cl.strategy == "overwrite")
-	{
-		mergedKeys.append(originalKeys);
-		mergedKeys.append(importedKeys);
+		if (cl.verbose)
+		{
+			cout << "The merged keyset with strategy " << cl.strategy << " is:" << endl;
+			cout << result.getMergedKeys();
+		}
+
+		KeySet resultKeys = result.getMergedKeys();
+		kdb.set (resultKeys, root);
 	}
 	else
 	{
-		// default strategy preserve
-		mergedKeys.append(importedKeys);
-		mergedKeys.append(originalKeys);
+		ret = -1;
 	}
-
-
-	if (cl.verbose)
-	{
-		cout << "The merged keyset with strategy " << cl.strategy << " is:" << endl;
-		cout << mergedKeys;
-	}
-
-	kdb.set(mergedKeys, root);
 
 	return 0;
 }
