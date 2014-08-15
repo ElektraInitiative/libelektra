@@ -66,6 +66,12 @@ static KeySet* createSimpleTestKeys()
 					KEY_META, "convert/metaname", "testmeta",
 					KEY_META, "convert/append", "previous",
 					KEY_END),
+			keyNew ("user/normalkey1/subkey",
+					KEY_VALUE, "testvalue3",
+					KEY_META, "order", "60",
+					KEY_META, "convert/metaname", "testmeta",
+					KEY_META, "convert/append", "parent",
+					KEY_END),
 			KS_END);
 }
 
@@ -264,6 +270,7 @@ void test_parentAppendMode()
 	succeed_if (key, "normalkey2 was removed");
 	succeed_if (!keyGetMeta (key, "testmeta"), "normalkey2 should not contain any meta data");
 
+
 	keyDel (parentKey);
 	ksDel (ks);
 	PLUGIN_CLOSE();
@@ -293,16 +300,25 @@ void test_simpleAppendModes()
 	succeed_if (key, "normalkey2 was removed");
 
 	const Key *metaKey1 = keyGetMeta(key, "testmeta");
-	succeed_if (metaKey1, "normalkey1 contained no metakey");
-	succeed_if (!strcmp (keyString(metaKey1), "testvalue1"), "metakey of normalkey1 contained incorrect data");
+	succeed_if (metaKey1, "normalkey2 contained no metakey");
+	succeed_if (!strcmp (keyString(metaKey1), "testvalue1"), "metakey of normalkey2 contained incorrect data");
 
 	/* normalkey3 must contain meta information generated from convertkey2 (via previous) */
 	key = ksLookupByName (ks, "user/normalkey3", 0);
 	succeed_if (key, "normalkey3 was removed");
 
 	const Key *metaKey2 = keyGetMeta(key, "testmeta");
-	succeed_if (metaKey2, "normalkey1 contained no metakey");
-	succeed_if (!strcmp (keyString(metaKey2), "testvalue2"), "metakey of normalkey2 contained incorrect data");
+	succeed_if (metaKey2, "normalkey3 contained no metakey");
+	succeed_if (!strcmp (keyString(metaKey2), "testvalue2"), "metakey of normalkey3 contained incorrect data");
+
+	/* normalkey1 must contain meta information generated from subkey (via parent) */
+	key = ksLookupByName (ks, "user/normalkey1", 0);
+	succeed_if (key, "normalkey1 was removed");
+
+	const Key *metaKey3 = keyGetMeta(key, "testmeta");
+	succeed_if (metaKey3, "normalkey1 contained no metakey");
+	succeed_if (!strcmp (keyString(metaKey3), "testvalue3"), "metakey of normalkey1 contained incorrect data");
+
 
 	keyDel (parentKey);
 	ksDel(ks);
@@ -463,6 +479,11 @@ void test_restoreOnSet () {
 	key = ksLookupByName (ks, "user/convertkey2", 0);
 	succeed_if (key, "convertkey2 was not restored");
 	succeed_if (!strcmp (keyString(key), "testvalue2"), " value of convertkey2 was modified");
+
+	key = ksLookupByName (ks, "user/normalkey1/subkey", 0);
+	succeed_if (key, "subkey was not restored");
+	succeed_if (!strcmp (keyString(key), "testvalue3"), " value of subkey was modified");
+
 
 	keyDel (parentKey);
 	ksDel(ks);
