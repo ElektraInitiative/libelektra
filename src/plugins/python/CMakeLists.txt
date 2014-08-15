@@ -24,13 +24,13 @@ if (PYTHONLIBS_FOUND AND SWIG_FOUND)
 		DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}
 	)
 
-	include_directories (${PYTHON_INCLUDE_PATH})
+	include_directories (${PYTHON_INCLUDE_DIR})
 	include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
 	target_link_libraries (${PLUGIN_NAME} elektra)
 	target_link_libraries (${PLUGIN_NAME} ${PYTHON_LIBRARIES})
 
-	add_includes (elektra-full ${PYTHON_INCLUDE_PATH})
+  add_includes (elektra-full ${PYTHON_INCLUDE_DIR})
 
 	add_libraries (elektra-full ${PYTHON_LIBRARIES})
 
