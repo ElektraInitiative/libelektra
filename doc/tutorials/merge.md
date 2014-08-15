@@ -140,4 +140,4 @@ The result KeySet, system/result will be:
 	key4=4
 	key5=5
 	
-The same conflcit is dounf in key4, but here we use the base version to solve it so key4=4.
+The same conflict is found in key4, but here we use the base version to solve it so key4=4.
