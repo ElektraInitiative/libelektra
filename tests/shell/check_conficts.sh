@@ -5,15 +5,18 @@ echo ELEKTRA CHECK CONFLICTS SCRIPTS TESTS
 echo
 
 TTY=`tty`
+
+echo -n "Searching for tty: "
+tty
 RET=$?
 
 #needed to have job control:
 # set: can't access tty; job control turned off
-if [ $? -eq 0 ]; then
+if [ $RET -eq 0 ]; then
 	if [ -w "$TTY" ]; then
-		echo "tty $TTY found successfully and is writeable"
+		echo "tty found successfully and is writeable"
 	else
-		echo "tty implementation did not output writeable tty, output was $TTY"
+		echo "tty found, but tty is not writeable"
 		exit 1
 	fi
 else
