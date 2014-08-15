@@ -1,5 +1,6 @@
 install (PROGRAMS elektra-merge DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS elektra-mount DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+install (PROGRAMS elektra-umount DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 IF (IS_DIRECTORY /etc/bash_completion.d)
 	install (PROGRAMS kdb-bash-completion 
