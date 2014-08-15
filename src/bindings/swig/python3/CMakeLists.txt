@@ -11,7 +11,7 @@ endif ()
 add_headers (HDR_FILES)
 add_cppheaders (HDR_FILES)
 
-include_directories (${PYTHON_INCLUDE_PATH})
+include_directories (${PYTHON_INCLUDE_DIR})
 include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 
 set (CMAKE_SWIG_OUTDIR ${CMAKE_CURRENT_BINARY_DIR})
