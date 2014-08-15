@@ -31,6 +31,7 @@ if (PYTHONLIBS_FOUND AND SWIG_FOUND)
 	target_link_libraries (${PLUGIN_NAME} ${PYTHON_LIBRARIES})
 
   add_includes (elektra-full ${PYTHON_INCLUDE_DIR})
+  add_includes (elektra-full ${CMAKE_CURRENT_BINARY_DIR})
 
 	add_libraries (elektra-full ${PYTHON_LIBRARIES})
 
