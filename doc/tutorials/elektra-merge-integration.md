@@ -61,10 +61,18 @@ config file to Elektra (but only on the first install):
 As stated above, you must always have the current version of the config file mounted as `ours` in Elektra. You only
 need to have this command run on the first install, if it runs on upgrades there will be issues.
 
-Next, you must update the line containing `ucf` with the options `--three-way` an `--threeway-merge-command` like so:
+Next, you must update the line containing `ucf` with the options `--three-way` and `--threeway-merge-command` like so:
 	ucf --three-way --threeway-merge-command elektra-merge <New File> <Destination>
 	
-The file will automatically be unmounted from KDB when it is deleted on perge. 
+Then, in your `postrm` script, during a purge, you must umount the config file before deleting it: 
+	kdb umount <name> 
 
 That's it! With those small changes you can use Elektra to perform automatic three-way merges on any files
 that your package uses ucf to handle!
+
+## Example ##
+
+Below is a diff representing the changes we made to the samba-common package in order to allow
+automatic configuration merging for `smb.conf` using Elektra. We chose this package because it already
+uses ucf to handle `smb.conf` but it frequently requires users to manually merge changes across versions.
+Here is the patch showing what we changed:
