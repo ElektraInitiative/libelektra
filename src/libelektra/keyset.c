@@ -1057,17 +1057,17 @@ int elektraKsToMemArray(KeySet *ks, Key **buffer)
 
 	cursor_t cursor = ksGetCursor (ks);
 	ksRewind (ks);
-	size_t index = 0;
+	size_t idx = 0;
 
 	Key *key;
 	while ((key = ksNext (ks)) != 0)
 	{
-		buffer[index] = key;
-		++index;
+		buffer[idx] = key;
+		++idx;
 	}
 	ksSetCursor (ks, cursor);
 
-	return index;
+	return idx;
 }
 
 
