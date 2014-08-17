@@ -1,6 +1,6 @@
 import QtQuick 2.3
 
-NewKeyWindow {
+KeyWindow {
 
     title: qsTr("Edit Key")
     path: treeView.currentNode === null ? "" : treeView.currentNode.path

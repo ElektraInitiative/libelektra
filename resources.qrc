@@ -39,5 +39,6 @@
         <file>qml/icons/edit-find.png</file>
         <file>qml/icons/edit-clear.png</file>
         <file>qml/EditKeyWindow.qml</file>
+        <file>qml/KeyWindow.qml</file>
     </qresource>
 </RCC>

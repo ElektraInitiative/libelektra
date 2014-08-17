@@ -1,129 +1,27 @@
-import QtQuick 2.2
-import QtQuick.Controls 1.1
-import QtQuick.Window 2.1
-import QtQuick.Controls.Styles 1.2
-import QtQuick.Layouts 1.1
-import QtQuick.Dialogs 1.1
+import QtQuick 2.0
 
-BasicWindow {
-    id: editWindow
+KeyWindow {
 
-//    property alias  valueLayout: valueLayout
-    property alias  nameLabel: nameLabel
-    property alias  addButton: addButton
-    property alias  metaKeyModel: qmlMetaKeyModel
-    property alias  nameTextField: nameTextField
-    property alias  valueTextField: valueTextField
-    property string path: ""
-    property string keyName: ""
-    property string keyValue: ""
-    property bool   isEdited: true
+    title: qsTr("Create new Key")
+    path: treeView.currentNode === null ? "" : treeView.currentNode.path
+    isEdited: false
 
-    contents: ColumnLayout {
-        anchors.fill: parent
-        anchors.margins: defaultMargins
-        anchors.centerIn: parent
-        spacing: defaultMargins
+    function editAccepted() {
 
-        Text{
-            id: pathInfo
-            text: path
-            color: disabledPalette.text
-        }
-        GridLayout {
-            columns: 2
-            Label {
-                id:nameLabel
-                text: qsTr("Key Name: ")
-            }
-            TextField {
-                id: nameTextField
-                Layout.fillWidth: true
-                focus: true
-                text: keyName
-            }
-            Label {
-                id: valueLabel
-                text: qsTr("Key Value: ")
-            }
-            TextField {
-                id: valueTextField
-                Layout.fillWidth: true
-                text: keyValue
-            }
-        }
-        //        RowLayout {
-        //            spacing: defaultSpacing
+        var metaData = {};
 
-        //            Label {
-        //                id:nameLabel
-        //                text: qsTr("Key Name: ")
-        //            }
-        //            TextField {
-        //                id: nameTextField
-        //                Layout.fillWidth: true
-        //                focus: true
-        //                text: keyName
-        //            }
-        //        }
-        //        RowLayout {
-        //            id:valueLayout
-        //            spacing: defaultSpacing
+        //collect metadata
+        for(var i = 0; i < metaKeyModel.count; i++)
+            metaData[metaKeyModel.get(i).metaName] = metaKeyModel.get(i).metaValue
 
-        //            Label {
-        //                id: valueLabel
-        //                text: qsTr("Key Value:  ")
-        //            }
-        //            TextField {
-        //                id: valueTextField
-        //                Layout.fillWidth: true
-        //                text: keyValue
-        //            }
-        //        }
-        BasicRectangle {
-            id: metaArea
-            Layout.fillWidth: true
-            Layout.fillHeight: true
 
-            ScrollView {
-                anchors.fill: parent
-                anchors.margins: defaultSpacing
-                ListView {
-                    id: metaKeyListView
-                    anchors.fill: parent
-                    spacing: defaultMargins
-                    model: qmlMetaKeyModel
-                    delegate: metaKeyDelegate
-                }
-            }
-            ListModel {
-                id: qmlMetaKeyModel
-            }
-            Component {
-                id: metaKeyDelegate
-                NewMetaKey {
-                    metaNameField.onTextChanged: qmlMetaKeyModel.set(index, {"metaName": metaNameField.text})
-                    metaValueField.onTextChanged: qmlMetaKeyModel.set(index, {"metaValue": metaValueField.text})
-                }
-            }
-        }
-        Button {
-            id: addButton
-            anchors.horizontalCenter: parent.horizontalCenter
-            text: qsTr("New Meta Key")
-            onClicked: {
-                //add visual item
-                qmlMetaKeyModel.append({"metaName" : "", "metaValue" : ""})
-            }
-        }
-    }
-    cancelButton.onClicked: {
-        editWindow.visible = false
-        qmlMetaKeyModel.clear()
-    }
-    okButton.onClicked: {
-        //TODO: check if user has edited the node
-        editWindow.visible = false
-        editAccepted()
+        //insert new node
+        externTreeModel.createNewNode(treeView.currentNode.path + "/" + nameTextField.text, valueTextField.text, metaData)
+
+        nameTextField.text = ""
+        valueTextField.text = ""
+        nameTextField.focus = true
+        metaKeyModel.clear()
+        //            externTreeModel.synchronize()
     }
 }

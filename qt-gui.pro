@@ -50,9 +50,9 @@ OTHER_FILES += \
     qml/NewMetaKey.qml\
     qml/BasicRectangle.qml \
     qml/UnmountBackendWindow.qml \
-    qml/NewKeyWindow.qml \
     qml/NewArrayEntry.qml \
     qml/TreeView.qml \
+    qml/KeyWindow.qml
 
 unix: CONFIG += link_pkgconfig
 unix: PKGCONFIG += elektra
