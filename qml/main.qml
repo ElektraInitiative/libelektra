@@ -122,13 +122,13 @@ ApplicationWindow {
         }
     }
 
-    NewKeyWindow {
-        id: newArrayWindow
-        title: qsTr("Create new Array Entry")
-        valueLayout.visible: false
-        nameLabel.text: qsTr("Array Name: ")
-        addButton.text: qsTr("New Array Entry")
-    }
+//    NewKeyWindow {
+//        id: newArrayWindow
+//        title: qsTr("Create new Array Entry")
+//        valueLayout.visible: false
+//        nameLabel.text: qsTr("Array Name: ")
+//        addButton.text: qsTr("New Array Entry")
+//    }
 
     UnmountBackendWindow {
         id: unmountBackendWindow

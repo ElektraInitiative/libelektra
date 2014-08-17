@@ -8,7 +8,7 @@ import QtQuick.Dialogs 1.1
 BasicWindow {
     id: editWindow
 
-    property alias  valueLayout: valueLayout
+//    property alias  valueLayout: valueLayout
     property alias  nameLabel: nameLabel
     property alias  addButton: addButton
     property alias  metaKeyModel: qmlMetaKeyModel
@@ -30,9 +30,8 @@ BasicWindow {
             text: path
             color: disabledPalette.text
         }
-        RowLayout {
-            spacing: defaultSpacing
-
+        GridLayout {
+            columns: 2
             Label {
                 id:nameLabel
                 text: qsTr("Key Name: ")
@@ -43,14 +42,9 @@ BasicWindow {
                 focus: true
                 text: keyName
             }
-        }
-        RowLayout {
-            id:valueLayout
-            spacing: defaultSpacing
-
             Label {
                 id: valueLabel
-                text: qsTr("Key Value:  ")
+                text: qsTr("Key Value: ")
             }
             TextField {
                 id: valueTextField
@@ -58,6 +52,34 @@ BasicWindow {
                 text: keyValue
             }
         }
+        //        RowLayout {
+        //            spacing: defaultSpacing
+
+        //            Label {
+        //                id:nameLabel
+        //                text: qsTr("Key Name: ")
+        //            }
+        //            TextField {
+        //                id: nameTextField
+        //                Layout.fillWidth: true
+        //                focus: true
+        //                text: keyName
+        //            }
+        //        }
+        //        RowLayout {
+        //            id:valueLayout
+        //            spacing: defaultSpacing
+
+        //            Label {
+        //                id: valueLabel
+        //                text: qsTr("Key Value:  ")
+        //            }
+        //            TextField {
+        //                id: valueTextField
+        //                Layout.fillWidth: true
+        //                text: keyValue
+        //            }
+        //        }
         BasicRectangle {
             id: metaArea
             Layout.fillWidth: true
