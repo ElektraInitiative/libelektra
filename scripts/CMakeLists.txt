@@ -1,10 +1,9 @@
 install (PROGRAMS elektra-merge DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 IF (IS_DIRECTORY /etc/bash_completion.d)
-	install (PROGRAMS kdb-bash-completion 
+	install (FILES kdb-bash-completion
 			DESTINATION /etc/bash_completion.d 
-			RENAME kdb
-			PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
+			RENAME kdb)
 ENDIF()
 
 configure_file(
