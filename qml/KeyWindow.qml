@@ -17,7 +17,7 @@ BasicWindow {
     property string path: ""
     property string keyName: ""
     property string keyValue: ""
-    property bool   isEdited: true
+    property bool   isEdited: false
 
     contents: ColumnLayout {
         anchors.fill: parent
@@ -119,10 +119,11 @@ BasicWindow {
     }
     cancelButton.onClicked: {
         keyWindow.visible = false
+        nameTextField.undo()
+        valueTextField.undo()
         qmlMetaKeyModel.clear()
     }
     okButton.onClicked: {
-        //TODO: check if user has edited the node
         keyWindow.visible = false
         editAccepted()
     }

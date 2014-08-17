@@ -120,7 +120,7 @@ ApplicationWindow {
         tooltip: qsTr("Undo")
         shortcut: StandardKey.Undo
         enabled: undoManager.canUndo
-        onTriggered: { undoManager.undo()}//; keyAreaView.update()}
+        onTriggered: { undoManager.undo()}
     }
 
     Action {
@@ -130,7 +130,7 @@ ApplicationWindow {
         tooltip: qsTr("Redo")
         shortcut: StandardKey.Redo
         enabled: undoManager.canRedo
-        onTriggered: { undoManager.redo()}//; keyAreaView.update()}
+        onTriggered: { undoManager.redo()}
     }
 
     Action {
@@ -453,18 +453,21 @@ ApplicationWindow {
                             MouseArea {
                                 anchors.fill: parent
                                 acceptedButtons: Qt.LeftButton | Qt.RightButton
+
                                 onClicked: {
+                                    keyAreaSelectedItem = model.get(styleData.row)
+
                                     if(mouse.button === Qt.RightButton)
                                         keyContextMenu.popup()
                                     else{
                                         keyAreaView.selection.clear()
                                         keyAreaView.selection.select(styleData.row)
                                         keyAreaView.currentRow = styleData.row
-                                        keyAreaSelectedItem = model.get(styleData.row)
                                     }
                                 }
 
                                 onDoubleClicked: {
+                                    keyAreaSelectedItem = model.get(styleData.row)
                                     editKeyWindow.show()
                                     editKeyWindow.populateMetaArea()
                                 }

@@ -22,7 +22,7 @@ EditCommand::EditCommand(TreeViewModel *model, int index, const QString &oldName
 
 void EditCommand::undo()
 {
-    qDebug() << "oldModeldata " << m_oldMetaData;
+//    qDebug() << "oldModeldata " << m_oldMetaData;
 
     m_model->setDataValue(m_index, m_oldName, "Name");
     m_model->setDataValue(m_index, m_oldValue, "Value");
@@ -31,7 +31,7 @@ void EditCommand::undo()
 
 void EditCommand::redo()
 {
-    qDebug() << "newModeldata " << m_newMetaData;
+//    qDebug() << "newModeldata " << m_newMetaData;
     m_model->setDataValue(m_index, m_newName, "Name");
     m_model->setDataValue(m_index, m_newValue, "Value");
     //m_model->setDataValue(m_index, m_newMetaData, "MetaValue");
