@@ -45,8 +45,7 @@ approach). The projects mainly differs that Elektra is supposed to be used
 by the programs themselves (and not only by GUIs and validation tools)
 and that Elektra uses self-describing data: the specification itself
 is also in Elektra's key database, stored in meta data and e.g. below
-system/elektra/mountpoints (and not in Perl data structures
-as it is done in Config::Model). In Elektra validators can be
+system/elektra/mountpoints. In Elektra validators can be
 written in any language (because the specification is just data)
 and can enforce constraints on any access (because plugins define
 the behaviour of the key database).
