@@ -76,7 +76,6 @@ int main()
 	char* str2 = malloc(sizeof(str1));
 	strcat(str2, str1);
 	str2[sizeof(str1)-5] = 'X';
-	printf ("%s length: %d\n", str2, sizeof(str1));
 
 	int res = 0;
 
