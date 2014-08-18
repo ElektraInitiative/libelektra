@@ -268,7 +268,7 @@ int elektraKeyToMetaSet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA
 
 	ksRewind (converted);
 
-	char *saveptr;
+	char *saveptr = 0;
 	char *value = 0;
 	Key *current;
 	Key *previous = 0;
