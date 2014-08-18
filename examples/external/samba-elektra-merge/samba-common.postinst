@@ -1,0 +1,108 @@
+#!/bin/sh
+#
+#
+
+set -e
+
+# Do debconf stuff here
+. /usr/share/debconf/confmodule
+
+TEMPDIR=/var/run/samba/upgrades
+NEWFILE=$TEMPDIR/smb.conf
+CONFIG=/etc/samba/smb.conf
+
+# ------------------------- Debconf questions start ---------------------
+
+configure_smb_conf() {
+	local CONFIG
+	CONFIG="$1"
+
+	# Is the user configuring with debconf, or he/she prefers
+	# swat/manual config?
+	db_get samba-common/do_debconf || true
+	if [ "${RET}" != "true" ]; then
+		return 0
+	fi
+
+	# Get workgroup name
+	db_get samba-common/workgroup || true
+	WORKGROUP="${RET}"
+
+	# Oh my GOD, this is ugly.  Why would anyone put these
+	# characters in a workgroup name?  Why, Lord, why???
+	WORKGROUP=`echo $WORKGROUP | \
+	           sed -e's/\\\\/\\\\\\\\/g
+	                  s#/#\\\\/#g
+	                  s/&/\\\&/g
+	                  s/\\\$/\\\\\\\$/g'`
+
+	sed -i -e "s/^\([[:space:]]*\)\[global\]/\1\[global\]/i
+		/^[[:space:]]*\[global\]/,/^[[:space:]]*\[/ \
+			s/^\([[:space:]]*\)workgroup[[:space:]]*=.*/\1workgroup = ${WORKGROUP}/i" \
+		"$CONFIG"
+
+	# Encrypt passwords?
+	db_get samba-common/encrypt_passwords || true
+	ENCRYPT_PASSWORDS="${RET}"
+
+	sed -i -e "s/^\([[:space:]]*\)\[global\]/\1\[global\]/i
+		/^[[:space:]]*\[global\]/,/^[[:space:]]*\[/ \
+		        s/^\([[:space:]]*\)encrypt passwords[[:space:]]*=.*/\1encrypt passwords = ${ENCRYPT_PASSWORDS}/i" \
+		"$CONFIG"
+
+	# Install DHCP support
+	db_get samba-common/dhcp
+	if [ "$RET" = true ] && \
+	   ! grep -q dhcp.conf "$CONFIG"
+	then
+		sed -i -e "s/^\([[:space:]]*\)\[global\]/\1\[global\]/i
+			/^[[:space:]]*\[global\]/,/^[[:space:]]*\[/ {
+				/wins server[[:space:]]*=/a \\
+\\
+# If we receive WINS server info from DHCP, override the options above. \\
+   include = /etc/samba/dhcp.conf
+}" "$CONFIG"
+	elif [ "$RET" != true ]; then
+		sed -i -e '
+		/^#[[:space:]]*If we receive WINS server info from DHCP, override the options above/d
+		/^#*[[:space:]]*include[[:space:]]*=[[:space:]]*\/etc\/samba\/dhcp.conf/,/[^[:space:]]/ {
+			/^#*[[:space:]]*include[[:space:]]*=[[:space:]]*\/etc\/samba\/dhcp.conf/d
+			/^[[:space:]]*$/d
+		}' "$CONFIG"
+	fi
+
+}
+
+
+if [ -e "$CONFIG" ]; then
+	configure_smb_conf "$CONFIG"
+fi
+
+mkdir -p "$TEMPDIR"
+
+cp /usr/share/samba/smb.conf "$NEWFILE"
+configure_smb_conf "$NEWFILE"
+
+if [ -e "$CONFIG" ]; then
+	sed -e '1,/^[;#[:space:]]*\[cdrom\]/ { d }
+		1,/^[[:space:]]*\[/ { /^[^[]/d; /^$/d }
+	' "$CONFIG" >> "$NEWFILE"
+fi
+
+elektra-mount "$CONFIG" system/samba/smb ini
+ucf --three-way --threeway-merge-command elektra-merge --debconf-ok "$NEWFILE" "$CONFIG"
+
+if [ ! -e "$CONFIG" ]; then
+	echo "Install/upgrade will fail. To recover, please try:"
+	echo " sudo cp /usr/share/samba/smb.conf $CONFIG"
+	echo " sudo dpkg --configure -a"
+else
+	ucfr samba-common "$CONFIG"
+	chmod a+r "$CONFIG"
+fi
+
+# ------------------------- Debconf questions end ---------------------
+
+db_stop
+
+#DEBHELPER#
