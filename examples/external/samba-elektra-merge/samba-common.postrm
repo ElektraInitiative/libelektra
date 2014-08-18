@@ -1,0 +1,15 @@
+#!/bin/sh
+
+set -e
+if [ "$1" = purge ]; then
+	elektra-umount system_samba_smb
+	rm -rf /etc/samba/ /var/cache/samba/ /var/lib/samba/ /var/run/samba/
+	if [ -x "`which ucf 2>/dev/null`" ]; then
+		ucf --purge /etc/samba/smb.conf
+	fi
+	if [ -x "`which ucfr 2>/dev/null`" ]; then
+		ucfr --purge samba-common /etc/samba/smb.conf
+	fi
+fi
+
+#DEBHELPER#
