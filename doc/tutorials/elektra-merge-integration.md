@@ -60,13 +60,13 @@ or perhaps:
 	
 All you must do is in `postinst`, when run with the `configure` option you must mount the
 config file to Elektra:
-	elektra-mount <New File> <Mouting Destination> <Backend>
+	kdb elektra-mount <New File> <Mouting Destination> <Backend>
 
 Next, you must update the line containing `ucf` with the options `--three-way` and `--threeway-merge-command` like so:
 	ucf --three-way --threeway-merge-command elektra-merge <New File> <Destination>
 	
 Then, in your `postrm` script, during a purge, you must umount the config file before deleting it: 
-	elektra-umount <name> 
+	kdb elektra-umount <name> 
 
 That's it! With those small changes you can use Elektra to perform automatic three-way merges on any files
 that your package uses ucf to handle!
@@ -82,12 +82,12 @@ Here is the patch showing what we changed:
 	92c92,93
 	< ucf --three-way --debconf-ok "$NEWFILE" "$CONFIG"
 	---
-	> elektra-mount "$CONFIG" system/samba/smb ini
+	> kdb elektra-mount "$CONFIG" system/samba/smb ini
 	> ucf --three-way --threeway-merge-command elektra-merge --debconf-ok "$NEWFILE" "$CONFIG"
 	Only in samba/samba-3.6.6/debian/: samba-common.postinst~
 	diff samba_orig/samba-3.6.6/debian/samba-common.postrm samba/samba-3.6.6/debian/samba-common.postrm
 	4a5
-	> 	elektra-umount system/samba/smb
+	> 	kdb elektra-umount system/samba/smb
 	
 As you can see, all we had to do was add the line to mount `smb.conf` during install, update the ucf command to include the
 new `--threeway-merge-command` option, and unmount `system/samba/smb` during a purge. It really is that easy!
