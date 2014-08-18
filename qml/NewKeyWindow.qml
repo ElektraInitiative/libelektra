@@ -1,10 +1,9 @@
-import QtQuick 2.0
+import QtQuick 2.3
 
 KeyWindow {
 
     title: qsTr("Create new Key")
     path: treeView.currentNode === null ? "" : treeView.currentNode.path
-    isEdited: false
 
     function editAccepted() {
 
@@ -13,7 +12,6 @@ KeyWindow {
         //collect metadata
         for(var i = 0; i < metaKeyModel.count; i++)
             metaData[metaKeyModel.get(i).metaName] = metaKeyModel.get(i).metaValue
-
 
         //insert new node
         externTreeModel.createNewNode(treeView.currentNode.path + "/" + nameTextField.text, valueTextField.text, metaData)

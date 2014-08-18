@@ -16,10 +16,6 @@ KeyWindow {
 
     function editAccepted() {
 
-        //TODO: check if user has edited the key
-        if(keyName !== nameTextField.text || keyValue !== valueTextField.text)
-            isEdited = true;
-
         var metaData = {};
 
         //collect metadata in a map
@@ -33,8 +29,8 @@ KeyWindow {
                                           nameTextField.text, valueTextField.text, metaData)
 
         //set key name & value
-        keyAreaView.model.setDataValue(keyAreaView.currentRow, nameTextField.text, "Name")
-        keyAreaView.model.setDataValue(keyAreaView.currentRow, valueTextField.text, "Value")
+        keyAreaView.model.setData(keyAreaView.currentRow, nameTextField.text, "Name")
+        keyAreaView.model.setData(keyAreaView.currentRow, valueTextField.text, "Value")
 
 
         console.log(keyAreaView.currentRow)

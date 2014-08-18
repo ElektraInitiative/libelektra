@@ -33,7 +33,14 @@ bool UndoManager::canRedo() const
 void UndoManager::createEditCommand(TreeViewModel *model, int index, const QString &oldName, const QVariant &oldValue, const QVariant &oldMetaData,
                                     const QString &newName, const QVariant &newValue, const QVariant &newMetaData)
 {
-    m_undoStack->push(new EditCommand(model, index, oldName, oldValue, oldMetaData, newName, newValue, newMetaData));
+    TreeViewModel *tmpModel = qvariant_cast<TreeViewModel*>(oldMetaData);
+    QVariantMap oldMDMap;
+
+    foreach(ConfigNode *node, tmpModel->model()){
+        oldMDMap.insert(node->getName(), node->getValue());
+    }
+
+    m_undoStack->push(new EditCommand(model, index, oldName, oldValue, oldMDMap, newName, newValue, newMetaData.toMap()));
     qDebug() << "Stack size = " << m_undoStack->count();
 }
 

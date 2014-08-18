@@ -96,11 +96,13 @@ BasicWindow {
                     delegate: metaKeyDelegate
                 }
             }
+
             ListModel {
                 id: qmlMetaKeyModel
             }
             Component {
                 id: metaKeyDelegate
+
                 NewMetaKey {
                     metaNameField.onTextChanged: qmlMetaKeyModel.set(index, {"metaName": metaNameField.text})
                     metaValueField.onTextChanged: qmlMetaKeyModel.set(index, {"metaValue": metaValueField.text})
@@ -124,6 +126,15 @@ BasicWindow {
         qmlMetaKeyModel.clear()
     }
     okButton.onClicked: {
+        //check if user has edited keyname or keyvalue
+        if(keyName !== nameTextField.text || keyValue !== valueTextField.text)
+            isEdited = true
+
+        //TODO: check if user has edited the metakeys
+        console.log("namefield " + qmlMetaKeyModel.get(0).metaName)
+//        if(qmlMetaKeyModel.get(0).metaName !== qmlMetaKeyModel.get(0).metaNameField)
+//            isEdited = true
+
         keyWindow.visible = false
         editAccepted()
     }

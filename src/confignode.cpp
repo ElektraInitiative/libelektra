@@ -93,7 +93,8 @@ void ConfigNode::setMeta(const QString &name, const QVariant &value)
     m_name = name;
     m_value = value;
 
-    if(m_key){
+    if(m_key)
+    {
 //        deleteMeta(m_name);
 //        qDebug() << "ConfigNode::setMeta: key " << QString::fromStdString(m_key.getName()) << " has new metakey " << name;
         m_key.setMeta(name.toStdString(), value.toString().toStdString());
@@ -120,14 +121,15 @@ void ConfigNode::setMeta(const QVariantMap &metaData)
     {
         QVariantList tmp;
         tmp << iter.key() << iter.value();
-        m_metaData->setDataValue(counter, tmp, "MetaValue");
+        m_metaData->setData(counter, tmp, "MetaValue");
         counter++;
     }
 }
 
 void ConfigNode::deleteMeta(const QString &name)
 {
-    if(m_key){
+    if(m_key)
+    {
         qDebug() << "metakey " << name << " of node " << m_name << " deleted";
         m_key.delMeta(name.toStdString());
     }

@@ -122,11 +122,11 @@ bool TreeViewModel::setData(const QModelIndex& index, const QVariant& value, int
 
 // TODO: Why are there two implementations of setData needed?
 // Because QML cannot call setData() directly (see https://bugreports.qt-project.org/browse/QTBUG-7932)
-void TreeViewModel::setDataValue(int index, const QVariant& value, const QString& role)
+void TreeViewModel::setData(int index, const QVariant& value, const QString& role)
 {
     if (index < 0 || index > m_model.size() - 1)
     {
-        qDebug() << "TreeViewModel::setDataValue: Wrong index called. model.size = " << m_model.size() << " index = " << index;
+        qDebug() << "TreeViewModel::setData: Wrong index called. model.size = " << m_model.size() << " index = " << index;
         return;
     }
 

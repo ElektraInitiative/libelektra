@@ -1,7 +1,7 @@
 #include "editcommand.hpp"
 
-EditCommand::EditCommand(TreeViewModel *model, int index, const QString &oldName, const QVariant &oldValue, const QVariant &oldMetaData,
-                         const QString &newName, const QVariant &newValue, const QVariant &newMetaData, QUndoCommand *parent)
+EditCommand::EditCommand(TreeViewModel *model, int index, const QString &oldName, const QVariant &oldValue, const QVariantMap &oldMetaData,
+                         const QString &newName, const QVariant &newValue, const QVariantMap &newMetaData, QUndoCommand *parent)
     : QUndoCommand(parent)
     , m_model(model)
     , m_index(index)
@@ -24,15 +24,15 @@ void EditCommand::undo()
 {
 //    qDebug() << "oldModeldata " << m_oldMetaData;
 
-    m_model->setDataValue(m_index, m_oldName, "Name");
-    m_model->setDataValue(m_index, m_oldValue, "Value");
-//    m_model->setDataValue(m_index, m_oldMetaData, "MetaValue");
+    m_model->setData(m_index, m_oldName, "Name");
+    m_model->setData(m_index, m_oldValue, "Value");
+    m_model->model().at(m_index)->setMeta(m_oldMetaData);
 }
 
 void EditCommand::redo()
 {
 //    qDebug() << "newModeldata " << m_newMetaData;
-    m_model->setDataValue(m_index, m_newName, "Name");
-    m_model->setDataValue(m_index, m_newValue, "Value");
-    //m_model->setDataValue(m_index, m_newMetaData, "MetaValue");
+    m_model->setData(m_index, m_newName, "Name");
+    m_model->setData(m_index, m_newValue, "Value");
+    m_model->model().at(m_index)->setMeta(m_newMetaData);
 }

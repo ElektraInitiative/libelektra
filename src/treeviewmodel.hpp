@@ -83,7 +83,7 @@ public:
     void                    repopulateModel();
     Q_INVOKABLE void        createNewNode(const QString &path, const QString &value, const QVariantMap metaData);
     void                    append(ConfigNode *node);
-    Q_INVOKABLE void        setDataValue(int index, const QVariant& value, const QString& role);
+    Q_INVOKABLE void        setData(int index, const QVariant& value, const QString& role);
 
 private:
     void                    sink(ConfigNode* node, QStringList keys, QString path, kdb::Key key);
