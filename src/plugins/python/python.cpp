@@ -46,7 +46,7 @@ extern "C"
 typedef struct
 {
 	PyObject *kdbModule;
-	PyObject *pModule;
+	PyObject *instance;
 } moduleData;
 
 /* pythons repr() - a little debug helper - misses all Py_DECREF calls! */
@@ -155,6 +155,7 @@ int elektraPythonOpen(ckdb::Plugin *handle, ckdb::Key *errorKey)
 	if (!Python_AppendToSysPath(dname))
 	{
 		std::cerr << "ERROR: Unable to extend sys.path" << std::endl;
+		free(tmpScript);
 		return -1;
 	}
 	free(tmpScript);
@@ -167,6 +168,7 @@ int elektraPythonOpen(ckdb::Plugin *handle, ckdb::Key *errorKey)
 		PyErr_Print();
 		return -1;
 	}
+	Py_XDECREF(kdbModule);
 
 	/* import module/script */
 	tmpScript = strdup(keyString(script));
@@ -180,20 +182,42 @@ int elektraPythonOpen(ckdb::Plugin *handle, ckdb::Key *errorKey)
 	{
 		std::cerr << "ERROR: Failed to import python module" << std::endl;
 		PyErr_Print();
+		free(tmpScript);
 		return -1;
 	}
 	free(tmpScript);
 
+	/* get class */
+	PyObject *klass = PyObject_GetAttrString(pModule, "ElektraPlugin");
+	Py_DECREF(pModule);
+	if (klass == NULL)
+	{
+		std::cerr << "ERROR: Module doesn't provide a ElektraPlugin class" << std::endl;
+		PyErr_Print();
+		return -1;
+	}
+
+	/* create instance of class */
+	PyObject *args = Py_BuildValue("()");
+	PyObject *inst = PyEval_CallObject(klass, inst);
+	Py_DECREF(klass);
+	Py_DECREF(args);
+	if (inst == NULL)
+	{
+		std::cerr << "ERROR: Unable to call ElektraPlugin.class()" << std::endl;
+		PyErr_Print();
+		return -1;
+	}
+
 	/* store modules */
 	moduleData *data = new moduleData;
-	data->kdbModule = kdbModule;
-	data->pModule = pModule;
+	data->instance = inst;
 	elektraPluginSetData(handle, data);
 
 	/* call python function */
 	int ret = 0;
 	PyGILState_STATE gstate = PyGILState_Ensure();
-	PyObject *func = PyObject_GetAttrString(pModule, "elektraOpen");
+	PyObject *func = PyObject_GetAttrString(data->instance, "open");
 	if (func)
 	{
 		PyObject *arg0 = Python_fromSWIG(errorKey);
@@ -218,9 +242,9 @@ int elektraPythonClose(ckdb::Plugin *handle, ckdb::Key *errorKey)
 	/* call python function */
 	int ret = 0;
 	PyGILState_STATE gstate = PyGILState_Ensure();
-	if (data->pModule != NULL)
+	if (data->instance != NULL)
 	{
-		PyObject *func = PyObject_GetAttrString(data->pModule, "elektraClose");
+		PyObject *func = PyObject_GetAttrString(data->instance, "close");
 		if (func)
 		{
 			PyObject *arg0 = Python_fromSWIG(errorKey);
@@ -231,10 +255,10 @@ int elektraPythonClose(ckdb::Plugin *handle, ckdb::Key *errorKey)
 			Py_DECREF(func);
 		}
 
-		Py_DECREF(data->pModule);
+		/* clean up references */
+		Py_DECREF(data->instance);
+		data->instance = NULL;
 	}
-
-	Py_XDECREF(data->kdbModule);
 
 	PyGILState_Release(gstate);
 
@@ -243,7 +267,10 @@ int elektraPythonClose(ckdb::Plugin *handle, ckdb::Key *errorKey)
 	pthread_mutex_lock(&mutex);
 	open_cnt--;
 	if (!open_cnt && Py_IsInitialized())
+	{
+		printf("really destroying python\n");
 		Py_Finalize();
+	}
 	pthread_mutex_unlock(&mutex);
 
 	delete data;
@@ -263,7 +290,7 @@ int elektraPythonGet(ckdb::Plugin *handle, ckdb::KeySet *returned,
 		/* call python function */
 		int ret = 0;
 		PyGILState_STATE gstate = PyGILState_Ensure();
-		PyObject *func = PyObject_GetAttrString(data->pModule, "elektraGet");
+		PyObject *func = PyObject_GetAttrString(data->instance, "get");
 		if (func)
 		{
 			PyObject *arg0 = Python_fromSWIG(returned);
@@ -333,7 +360,7 @@ int elektraPythonSet(ckdb::Plugin *handle, ckdb::KeySet *returned,
 	{
 		/* call python function */
 		PyGILState_STATE gstate = PyGILState_Ensure();
-		PyObject *func = PyObject_GetAttrString(data->pModule, "elektraSet");
+		PyObject *func = PyObject_GetAttrString(data->instance, "set");
 		if (func)
 		{
 			PyObject *arg0 = Python_fromSWIG(returned);
@@ -361,7 +388,7 @@ int elektraPythonError(ckdb::Plugin *handle, ckdb::KeySet *returned,
 	{
 		/* call python function */
 		PyGILState_STATE gstate = PyGILState_Ensure();
-		PyObject *func = PyObject_GetAttrString(data->pModule, "elektraError");
+		PyObject *func = PyObject_GetAttrString(data->instance, "error");
 		if (func)
 		{
 			PyObject *arg0 = Python_fromSWIG(returned);
