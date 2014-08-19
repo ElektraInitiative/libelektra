@@ -28,10 +28,8 @@
 
 #ifdef __cplusplus
 #define KS_END ((ckdb::Key*)0)
-//#define KEY_END ((ckdb::Key*)0)
 #else
 #define KS_END ((Key*)0)
-// #define KEY_END ((Key*)0)
 #endif
 
 

@@ -15,6 +15,9 @@ remove old metadata get/set
 
 remove null ptr checks? (speed? decision?)
 
+make KEY_END, ELEKTRA_PLUGIN_END also pointers and check them with
+sentinel, have a single way how to terminate vaargs
+
 
 === Plugin API Changes ===
 
