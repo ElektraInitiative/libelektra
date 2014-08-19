@@ -11,7 +11,8 @@ Build-Depends: debhelper (>= 8),
  libdbus-1-dev,
  libaugeas-dev (>= 1.0.0),
  libyajl-dev,
- python-support (>= 0.90)
+ python-support (>= 0.90),
+ swig2.0
 Standards-Version: 3.9.4
 Homepage: http://www.libelektra.org
 Vcs-Browser: http://gitorious.org/elektra-initiative/libelektra/commits/debian
