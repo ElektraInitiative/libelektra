@@ -10,8 +10,8 @@ KeyWindow {
         var metaData = {};
 
         //collect metadata
-        for(var i = 0; i < metaKeyModel.count; i++)
-            metaData[metaKeyModel.get(i).metaName] = metaKeyModel.get(i).metaValue
+        for(var i = 0; i < qmlMetaKeyModel.count; i++)
+            metaData[qmlMetaKeyModel.get(i).metaName] = qmlMetaKeyModel.get(i).metaValue
 
         //insert new node
         externTreeModel.createNewNode(treeView.currentNode.path + "/" + nameTextField.text, valueTextField.text, metaData)
@@ -19,7 +19,7 @@ KeyWindow {
         nameTextField.text = ""
         valueTextField.text = ""
         nameTextField.focus = true
-        metaKeyModel.clear()
+        qmlMetaKeyModel.clear()
         //            externTreeModel.synchronize()
     }
 }

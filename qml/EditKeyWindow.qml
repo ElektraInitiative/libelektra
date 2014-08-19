@@ -10,7 +10,7 @@ KeyWindow {
 
     function populateMetaArea() {
         for(var i = 0; i < metaAreaModel.rowCount(); i++){
-            metaKeyModel.append({"metaName" : metaAreaListView.model.get(i).name, "metaValue" : metaAreaListView.model.get(i).value})
+            qmlMetaKeyModel.append({"metaName" : metaAreaListView.model.get(i).name, "metaValue" : metaAreaListView.model.get(i).value})
         }
     }
 
@@ -19,8 +19,8 @@ KeyWindow {
         var metaData = {};
 
         //collect metadata in a map
-        for(var i = 0; i < metaKeyModel.count; i++){
-            metaData[metaKeyModel.get(i).metaName] = metaKeyModel.get(i).metaValue
+        for(var i = 0; i < qmlMetaKeyModel.count; i++){
+            metaData[qmlMetaKeyModel.get(i).metaName] = qmlMetaKeyModel.get(i).metaValue
         }
 
         //create undo command
@@ -38,6 +38,6 @@ KeyWindow {
         //set metaData
         keyAreaSelectedItem.node.setMeta(metaData)
 
-        metaKeyModel.clear()
+        qmlMetaKeyModel.clear()
     }
 }

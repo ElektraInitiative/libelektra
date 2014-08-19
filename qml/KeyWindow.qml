@@ -11,7 +11,7 @@ BasicWindow {
 //    property alias  valueLayout: valueLayout
     property alias  nameLabel: nameLabel
     property alias  addButton: addButton
-    property alias  metaKeyModel: qmlMetaKeyModel
+    property alias  qmlMetaKeyModel: qmlMetaKeyModel
     property alias  nameTextField: nameTextField
     property alias  valueTextField: valueTextField
     property string path: ""
@@ -104,8 +104,20 @@ BasicWindow {
                 id: metaKeyDelegate
 
                 NewMetaKey {
-                    metaNameField.onTextChanged: qmlMetaKeyModel.set(index, {"metaName": metaNameField.text})
-                    metaValueField.onTextChanged: qmlMetaKeyModel.set(index, {"metaValue": metaValueField.text})
+                    //check if user has edited metakeyname or metakeyvalue. This comparison can only happen here since
+                    //"metaNameField.text" cannot be accessed outside the delegate.
+                    metaNameField.onTextChanged:  {
+                        if(metaName !== metaNameField.text){
+                            qmlMetaKeyModel.set(index, {"metaName": metaNameField.text})
+                            isEdited = true
+                        }
+                    }
+                    metaValueField.onTextChanged: {
+                        if(metaValue !== metaValueField.text){
+                            qmlMetaKeyModel.set(index, {"metaValue": metaValueField.text})
+                            isEdited = true
+                        }
+                    }
                 }
             }
         }
@@ -121,6 +133,7 @@ BasicWindow {
     }
     cancelButton.onClicked: {
         keyWindow.visible = false
+        isEdited = false
         nameTextField.undo()
         valueTextField.undo()
         qmlMetaKeyModel.clear()
@@ -129,11 +142,6 @@ BasicWindow {
         //check if user has edited keyname or keyvalue
         if(keyName !== nameTextField.text || keyValue !== valueTextField.text)
             isEdited = true
-
-        //TODO: check if user has edited the metakeys
-        console.log("namefield " + qmlMetaKeyModel.get(0).metaName)
-//        if(qmlMetaKeyModel.get(0).metaName !== qmlMetaKeyModel.get(0).metaNameField)
-//            isEdited = true
 
         keyWindow.visible = false
         editAccepted()
