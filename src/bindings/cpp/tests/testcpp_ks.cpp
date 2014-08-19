@@ -821,6 +821,27 @@ void test_duplicate()
 	// ks4.toStream(stdout, 0);
 }
 
+KeySet fill_vaargs(size_t size, ...)
+{
+	va_list ap;
+	va_start(ap, size);
+	KeySet ks(KeySet::Hints(size), ap);
+	va_end(ap);
+	return ks;
+}
+
+void test_vaargs()
+{
+	cout << "testing vaargs" << endl;
+
+	KeySet ks = fill_vaargs(20,
+			*Key("user/a", KEY_END),
+			*Key("user/b", KEY_END),
+			KS_END);
+	succeed_if (ks.lookup("user/a"), "could not find key");
+	succeed_if (ks.lookup("user/b"), "could not find key");
+}
+
 
 int main()
 {
@@ -844,6 +865,7 @@ int main()
 	test_ksrelease();
 	test_lookuppop();
 	test_duplicate();
+	test_vaargs();
 
 	cout << endl;
 	cout << "test_key RESULTS: " << nbTest << " test(s) done. " << nbError << " error(s)." << endl;
