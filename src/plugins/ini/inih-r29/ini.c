@@ -62,6 +62,8 @@ static char* strncpy0(char* dest, const char* src, size_t size)
 int ini_parse_file(FILE* file,
                    int (*handler)(void*, const char*, const char*,
                                   const char*),
+                   int (*sectionHandler)(void*, const char*),
+                   int (*commentHandler)(void*, const char*),
                    void* user)
 {
     /* Uses a fair bit of stack (use heap instead if you need to) */
@@ -102,6 +104,9 @@ int ini_parse_file(FILE* file,
         start = lskip(rstrip(start));
 
         if (*start == ';' || *start == '#') {
+        	start += 1;
+        	if (!commentHandler(user, start) && !error)
+        		error = lineno;
             /* Per Python ConfigParser, allow '#' comments at start of line */
         }
 #if INI_ALLOW_MULTILINE
@@ -119,6 +124,8 @@ int ini_parse_file(FILE* file,
                 *end = '\0';
                 strncpy0(section, start + 1, sizeof(section));
                 *prev_name = '\0';
+                if(!sectionHandler(user, section) && !error)
+                	error = lineno;
             }
             else if (!error) {
                 /* No ']' found on section line */
@@ -166,8 +173,11 @@ int ini_parse_file(FILE* file,
 
 /* See documentation in header file. */
 int ini_parse(const char* filename,
-              int (*handler)(void*, const char*, const char*, const char*),
-              void* user)
+			int (*handler)(void*, const char*, const char*,
+						   const char*),
+			int (*sectionHandler)(void*, const char*),
+			int (*commentHandler)(void*, const char*),
+			void* user)
 {
     FILE* file;
     int error;
@@ -175,7 +185,7 @@ int ini_parse(const char* filename,
     file = fopen(filename, "r");
     if (!file)
         return -1;
-    error = ini_parse_file(file, handler, user);
+    error = ini_parse_file(file, handler, sectionHandler, commentHandler, user);
     fclose(file);
     return error;
 }
