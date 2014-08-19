@@ -1,0 +1,12 @@
+Common subdirectories: samba_orig/samba-3.6.6/debian/patches and samba/samba-3.6.6/debian/patches
+Common subdirectories: samba_orig/samba-3.6.6/debian/po and samba/samba-3.6.6/debian/po
+diff samba_orig/samba-3.6.6/debian/samba-common.postinst samba/samba-3.6.6/debian/samba-common.postinst
+92c92,93
+< ucf --three-way --debconf-ok "$NEWFILE" "$CONFIG"
+---
+> kdb elektra-mount "$CONFIG" system/samba/smb ini
+> ucf --three-way --threeway-merge-command elektra-merge --debconf-ok "$NEWFILE" "$CONFIG"
+diff samba_orig/samba-3.6.6/debian/samba-common.postrm samba/samba-3.6.6/debian/samba-common.postrm
+4a5
+> 	kdb elektra-umount system_samba_smb
+Common subdirectories: samba_orig/samba-3.6.6/debian/source and samba/samba-3.6.6/debian/source
