@@ -127,7 +127,7 @@ void test_simple()
 {
 	printf ("Test plugin\n");
 
-	KeySet *modules = ksNew(0);
+	KeySet *modules = ksNew(0, KS_END);
 	elektraModulesInit (modules, 0);
 
 	Plugin *plugin = elektraPluginOpen("default", modules, set_pluginconf(), 0);
@@ -149,7 +149,7 @@ void test_simple()
 void test_name()
 {
 	printf ("Test name\n");
-	KeySet *modules = ksNew(0);
+	KeySet *modules = ksNew(0, KS_END);
 	Key *errorKey = keyNew(0);;
 
 	succeed_if (elektraPluginOpen(0, modules, set_pluginconf(), errorKey) == 0, "should fail with no name");

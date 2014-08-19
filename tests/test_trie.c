@@ -167,7 +167,7 @@ void test_iterate()
 	succeed_if (backend == b3, "should be same backend");
 	compare_key(b3->mountpoint, mp2);
 
-	KeySet *mps = ksNew(0);
+	KeySet *mps = ksNew(0, KS_END);
 	collect_mountpoints(trie, mps);
 	succeed_if (ksGetSize (mps) == 2, "not both mountpoints collected");
 	compare_key(ksHead(mps), mp);
@@ -234,7 +234,7 @@ void test_reviterate()
 	succeed_if (backend == b3, "should be same backend");
 	compare_key(b3->mountpoint, mp2);
 
-	KeySet *mps = ksNew(0);
+	KeySet *mps = ksNew(0, KS_END);
 	collect_mountpoints(trie, mps);
 	succeed_if (ksGetSize (mps) == 2, "not both mountpoints collected");
 	compare_key(ksHead(mps), mp);
@@ -370,7 +370,7 @@ void test_moreiterate()
 	succeed_if (b3, "there should be a backend");
 	compare_key(b3->mountpoint, ksLookupByName(mps, "system/tests/hosts/below",0));
 
-	KeySet *mps_cmp = ksNew(0);
+	KeySet *mps_cmp = ksNew(0, KS_END);
 	collect_mountpoints(trie, mps_cmp);
 	succeed_if (ksGetSize(mps_cmp) == 8, "size should be 8");
 	compare_keyset(mps, mps_cmp);
@@ -521,7 +521,7 @@ void test_revmoreiterate()
 	output_trie(trie);
 	*/
 
-	KeySet *mps_cmp = ksNew(0);
+	KeySet *mps_cmp = ksNew(0, KS_END);
 	collect_mountpoints(trie, mps_cmp);
 	succeed_if (ksGetSize(mps_cmp) == 8, "size should be 8");
 	compare_keyset(mps, mps_cmp);

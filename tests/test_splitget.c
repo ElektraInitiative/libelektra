@@ -570,7 +570,7 @@ void test_merge()
 	succeed_if (split->handles[1] == rootBackend, "should be root backend");
 	succeed_if (split->handles[2] == backend, "should be root backend");
 
-	KeySet *nks = ksNew (0);
+	KeySet *nks = ksNew(0, KS_END);
 	succeed_if (elektraSplitMerge (split, nks) == 1, "could not merge together keysets");
 	compare_keyset(ks, nks);
 	// output_keyset (nks);
@@ -594,7 +594,7 @@ void test_realworld()
 	Key *parent = 0;
 	KDB *handle = elektraCalloc(sizeof(struct _KDB));
 	handle->split = elektraSplitNew();
-	KeySet *modules = ksNew(0);
+	KeySet *modules = ksNew(0, KS_END);
 	elektraModulesInit(modules, 0);
 
 	elektraMountOpen(handle, set_realworld(), modules, 0);

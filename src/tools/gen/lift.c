@@ -43,7 +43,7 @@ int main(int argc, char**argv)
 {
 	Key *parentKey = keyNew("", KEY_END);
 	KDB *kdb = kdbOpen(parentKey);
-	KeySet *conf = ksNew(0);
+	KeySet *conf = ksNew(0, KS_END);
 
 	// get all config files
 	kdbGetByName(kdb, conf, parentKey, "/test/lift");

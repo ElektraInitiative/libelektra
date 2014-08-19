@@ -134,7 +134,7 @@ keyDel(key);
  * @par Example:
  * @code
 KDB *handle = kdbOpen();
-KeySet *ks=ksNew(0);
+KeySet *ks=ksNew(0, KS_END);
 Key *current=0;
 
 kdbGetByName(handle,ks,"system/sw/my",KDB_O_SORT|KDB_O_RECURSIVE);

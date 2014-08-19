@@ -18,18 +18,18 @@
 void test_ksNew()
 {
 	KeySet *ks=0;
-	KeySet * keys = ksNew (15,0);
+	KeySet * keys = ksNew (15, KS_END);
 	KeySet * config;
 
 	printf("Test ks creation\n");
-	exit_if_fail((ks=ksNew(0)) != 0, "could not create new keyset");
+	exit_if_fail((ks=ksNew(0, KS_END)) != 0, "could not create new keyset");
 
 	succeed_if (ksAppendKey(ks,keyNew(0)) == -1, "could append a key with no name");
 	succeed_if (ksAppendKey(ks,keyNew(0)) == -1, "could append a key with no name");
 	succeed_if (ksAppendKey(ks,keyNew(0)) == -1, "could append a key with no name");
 	succeed_if(ksGetSize(ks) == 0, "size not correct after 3 keys");
 
-	KeySet *ks2=ksNew (0);
+	KeySet *ks2=ksNew(0, KS_END);
 	ksCopy (ks2, ks);
 	succeed_if(ksGetSize(ks2) == 0, "size not correct after 3 keys");
 
@@ -55,7 +55,8 @@ void test_ksNew()
 	config = ksNew (100,
 		keyNew ("user/sw/app/fixedConfiguration/key1", KEY_VALUE, "value1", 0),
 		keyNew ("user/sw/app/fixedConfiguration/key2", KEY_VALUE, "value2", 0),
-		keyNew ("user/sw/app/fixedConfiguration/key3", KEY_VALUE, "value3", 0),0);
+		keyNew ("user/sw/app/fixedConfiguration/key3", KEY_VALUE, "value3", 0),
+		KS_END);
 	succeed_if(ksGetSize(config) == 3, "could not append 3 keys in keyNew");
 	succeed_if(ksGetAlloc(config) == 100, "allocation size wrong");
 	keyDel (ksPop (config));
@@ -70,7 +71,8 @@ void test_ksNew()
 		keyNew ("user/sw/app/fixedConfiguration/key1", KEY_VALUE, "value1", 0),
 		keyNew ("user/sw/app/fixedConfiguration/key2", KEY_VALUE, "value2", 0),
 		keyNew ("user/sw/app/fixedConfiguration/key3", KEY_VALUE, "value1", 0),
-		keyNew ("user/sw/app/fixedConfiguration/key4", KEY_VALUE, "value3", 0),0);
+		keyNew ("user/sw/app/fixedConfiguration/key4", KEY_VALUE, "value3", 0),
+		KS_END);
 
 	succeed_if(ksGetSize(config) == 4, "could not append 5 keys in keyNew");
 	succeed_if(ksGetAlloc(config) == 17, "allocation size wrong");
@@ -87,7 +89,7 @@ void test_ksNew()
 void test_ksDuplicate()
 {
 	printf ("Test bug duplicate\n");
-	KeySet *ks = ksNew(0);
+	KeySet *ks = ksNew(0, KS_END);
 
 	succeed_if (ksAppendKey (ks, keyNew("system/duplicate", KEY_VALUE, "abc", KEY_END)) == 1, "could not append key");
 	succeed_if (!strcmp (keyValue(ksLookupByName(ks, "system/duplicate", 0)), "abc"), "wrong value for inserted key");
@@ -158,7 +160,7 @@ void test_ksLookupOwner()
 void test_ksHole()
 {
 	printf ("Test holes in keysets\n");
-	KeySet *ks = ksNew(0);
+	KeySet *ks = ksNew(0, KS_END);
 
 	succeed_if (ksAppendKey (ks, keyNew("system/sw/new", KEY_VALUE, "abc", KEY_END)) == 1, "could not append key");
 	succeed_if (ksAppendKey (ks, keyNew("system/sw/new/sub", KEY_VALUE, "xyz", KEY_END)) == 2, "could not append key");
@@ -211,7 +213,7 @@ void test_append()
 	Key *s1, *s2, *s3;
 	KeySet *ks;
 
-	ks = ksNew(0);
+	ks = ksNew(0, KS_END);
 
 	succeed_if (ksAppendKey (ks, key=keyNew("system/sw/new", KEY_VALUE, "abc", KEY_END)) == 1, "could not append key");
 	succeed_if (ksGetSize (ks) == 1, "wrong size");
@@ -227,7 +229,7 @@ void test_append()
 	ksDel (ks);
 
 
-	ks = ksNew(0);
+	ks = ksNew(0, KS_END);
 
 	succeed_if (ksAppendKey (ks, key=keyNew("system/sw/new", KEY_VALUE, "abc", KEY_END)) == 1, "could not append key");
 	succeed_if (ksGetSize (ks) == 1, "wrong size");
@@ -243,7 +245,7 @@ void test_append()
 	ksDel (ks);
 
 
-	ks = ksNew(0);
+	ks = ksNew(0, KS_END);
 
 	succeed_if (ksAppendKey (ks, n=keyNew("system/sw/new/sub1", KEY_VALUE, "xyz1", KEY_END)) == 1, "could not append key");
 	succeed_if (ksGetSize (ks) == 1, "wrong size");
@@ -278,7 +280,7 @@ void test_append()
 		memcpy (solutioncopy, solution, size*sizeof(struct Key*));
 		per (i, solutioncopy, next);
 
-		ks = ksNew (0);
+		ks = ksNew(0, KS_END);
 
 		for (j=0; j<size-1; ++j)
 		{
@@ -294,7 +296,7 @@ void test_append()
 	}
 
 
-	ks = ksNew(0);
+	ks = ksNew(0, KS_END);
 
 	succeed_if (ksAppendKey (ks, key) == 1, "could not append key");
 	succeed_if (ksGetSize (ks) == 1, "wrong size");
@@ -327,7 +329,7 @@ void test_append()
 	ksDel (ks);
 
 
-	ks = ksNew(0);
+	ks = ksNew(0, KS_END);
 
 	succeed_if (ksAppendKey (ks, s3) == 1, "could not append key");
 	succeed_if (ksGetSize (ks) == 1, "wrong size");
@@ -449,7 +451,7 @@ void test_appendowner()
 	s1=keyNew("system/sw/new", KEY_VALUE, "xyz1", KEY_OWNER, "s1", KEY_END);
 	s2=keyNew("system/sw/new", KEY_VALUE, "xyz2", KEY_OWNER, "s2", KEY_END);
 	s3=keyNew("system/sw/new", KEY_VALUE, "xyz3", KEY_OWNER, "s3", KEY_END);
-	ks = ksNew(0);
+	ks = ksNew(0, KS_END);
 
 	succeed_if (ksAppendKey (ks, key) == 1, "could not append key");
 	succeed_if (ksGetSize (ks) == 1, "wrong size");

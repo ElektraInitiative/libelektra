@@ -141,7 +141,7 @@ ssize_t elektraSplitAppend(Split *split, Backend *backend, Key *parentKey, int s
 	++ split->size;
 	if (split->size > split->alloc) elektraSplitResize(split);
 
-	split->keysets[split->size-1]=ksNew(0);
+	split->keysets[split->size-1]=ksNew(0, KS_END);
 	split->handles[split->size-1]=backend;
 	split->parents[split->size-1]=parentKey;
 	split->syncbits[split->size-1]=syncbits;

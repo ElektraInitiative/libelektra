@@ -162,9 +162,9 @@ static KeySet *convertKeys(Key **keyArray, size_t numKeys, KeySet *orig)
 {
 	Key *current = 0;
 	Key *prevAppendTarget = 0;
-	KeySet *prevConverted = ksNew (0);
-	KeySet *nextConverted = ksNew (0);
-	KeySet *result = ksNew (0);
+	KeySet *prevConverted = ksNew(0, KS_END);
+	KeySet *nextConverted = ksNew(0, KS_END);
+	KeySet *result = ksNew(0, KS_END);
 
 	for (size_t index = 0; index < numKeys; index++)
 	{

@@ -29,7 +29,7 @@ void test_hostLensRead(char *fileName)
 			keyNew ("system/lens", KEY_VALUE, "Hosts.lns", KEY_END), KS_END);
 	PLUGIN_OPEN("augeas");
 
-	KeySet *ks = ksNew (0);
+	KeySet *ks = ksNew(0, KS_END);
 
 	succeed_if(plugin->kdbGet (plugin, ks, parentKey) >= 1,
 			"call to kdbGet was not successful");
@@ -132,7 +132,7 @@ void test_hostLensDelete(char *sourceFile, char *compFile)
 			keyNew ("system/lens", KEY_VALUE, "Hosts.lns", KEY_END), KS_END);
 	PLUGIN_OPEN("augeas");
 
-	KeySet *ks = ksNew (0);
+	KeySet *ks = ksNew(0, KS_END);
 
 	succeed_if(plugin->kdbGet (plugin, ks, parentKey) >= 1,
 			"call to kdbGet was not successful");
@@ -188,7 +188,7 @@ void test_hostLensModify(char *sourceFile, char *compFile)
 			keyNew ("system/lens", KEY_VALUE, "Hosts.lns", KEY_END), KS_END);
 	PLUGIN_OPEN("augeas");
 
-	KeySet *ks = ksNew (0);
+	KeySet *ks = ksNew(0, KS_END);
 
 	succeed_if(plugin->kdbGet (plugin, ks, parentKey) >= 1,
 			"call to kdbGet was not successful");
@@ -234,7 +234,7 @@ void test_order(char *fileName)
 			keyNew ("system/lens", KEY_VALUE, "Hosts.lns", KEY_END), KS_END);
 	PLUGIN_OPEN("augeas");
 
-	KeySet *ks = ksNew (0);
+	KeySet *ks = ksNew(0, KS_END);
 
 	succeed_if(plugin->kdbGet (plugin, ks, parentKey) >= 1,
 			"call to kdbGet was not successful");
@@ -309,7 +309,7 @@ void test_hostLensFormatting(char *fileName)
 			keyNew ("system/lens", KEY_VALUE, "Hosts.lns", KEY_END), KS_END);
 	PLUGIN_OPEN("augeas");
 
-	KeySet *ks = ksNew (0);
+	KeySet *ks = ksNew(0, KS_END);
 
 	succeed_if(plugin->kdbGet (plugin, ks, parentKey) >= 1,
 			"call to kdbGet was not successful");

@@ -68,7 +68,7 @@ KDB* kdb_open()
 {
 	KDB *handle = elektraCalloc(sizeof(struct _KDB));
 	handle->split = elektraSplitNew();
-	handle->modules = ksNew(0);
+	handle->modules = ksNew(0, KS_END);
 	elektraModulesInit(handle->modules, 0);
 	return handle;
 }
@@ -1097,7 +1097,7 @@ void test_emptysplit()
 	KDB *handle = kdb_open();
 	succeed_if (elektraMountDefault (handle, handle->modules, 0) == 0, "could not open default backend");
 
-	KeySet *ks = ksNew (0);
+	KeySet *ks = ksNew(0, KS_END);
 	Split *split = elektraSplitNew();
 	Key *parentKey;
 
@@ -1141,7 +1141,7 @@ void test_nothingsync()
 	KDB *handle = kdb_open();
 	succeed_if (elektraMountDefault (handle, handle->modules, 0) == 0, "could not open default backend");
 
-	KeySet *ks = ksNew (0);
+	KeySet *ks = ksNew(0, KS_END);
 
 	Split *split = elektraSplitNew();
 	Key *parentKey = keyNew("user", KEY_VALUE, "default", KEY_END);

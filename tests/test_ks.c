@@ -18,18 +18,18 @@
 void test_ksNew()
 {
 	KeySet *ks=0;
-	KeySet * keys = ksNew (15,0);
+	KeySet * keys = ksNew (15, KS_END);
 	KeySet * config;
 
 	printf("Test ks creation\n");
-	exit_if_fail((ks=ksNew(0)) != 0, "could not create new keyset");
+	exit_if_fail((ks=ksNew(0, KS_END)) != 0, "could not create new keyset");
 
 	succeed_if (ksAppendKey(ks,keyNew("user/a", KEY_END)) == 1, "could not append a key");
 	succeed_if (ksAppendKey(ks,keyNew("user/b", KEY_END)) == 2, "could not append a key");
 	succeed_if (ksAppendKey(ks,keyNew("user/c", KEY_END)) == 3, "could not append a key");
 	succeed_if(ksGetSize(ks) == 3, "size not correct after 3 keys");
 
-	KeySet *ks2=ksNew (0);
+	KeySet *ks2=ksNew(0, KS_END);
 	ksCopy (ks2, ks);
 	compare_keyset (ks, ks2);
 
@@ -55,7 +55,7 @@ void test_ksNew()
 	config = ksNew (100,
 		keyNew ("user/sw/app/fixedConfiguration/key1", KEY_VALUE, "value1", 0),
 		keyNew ("user/sw/app/fixedConfiguration/key2", KEY_VALUE, "value2", 0),
-		keyNew ("user/sw/app/fixedConfiguration/key3", KEY_VALUE, "value3", 0),0);
+		keyNew ("user/sw/app/fixedConfiguration/key3", KEY_VALUE, "value3", 0), KS_END);
 	succeed_if(ksGetSize(config) == 3, "could not append 3 keys in keyNew");
 	succeed_if(ksGetAlloc(config) == 100, "allocation size wrong");
 	keyDel (ksPop (config));
@@ -70,7 +70,7 @@ void test_ksNew()
 		keyNew ("user/sw/app/fixedConfiguration/key1", KEY_VALUE, "value1", 0),
 		keyNew ("user/sw/app/fixedConfiguration/key2", KEY_VALUE, "value2", 0),
 		keyNew ("user/sw/app/fixedConfiguration/key3", KEY_VALUE, "value1", 0),
-		keyNew ("user/sw/app/fixedConfiguration/key4", KEY_VALUE, "value3", 0),0);
+		keyNew ("user/sw/app/fixedConfiguration/key4", KEY_VALUE, "value3", 0), KS_END);
 
 	succeed_if(ksGetSize(config) == 4, "could not append 5 keys in keyNew");
 	succeed_if(ksGetAlloc(config) == 15, "allocation size wrong");
@@ -103,7 +103,7 @@ void test_ksEmpty()
 	KeySet *ks2;
 	Key *current;
 
-	ks = ksNew(0);
+	ks = ksNew(0, KS_END);
 	succeed_if (ksGetSize (ks) == 0, "size not correct");
 	succeed_if (ksPop (ks) == 0, "pop empty keyset");
 	succeed_if (ksGetSize (ks) == 0, "size not correct");
@@ -118,8 +118,8 @@ void test_ksEmpty()
 	keyDel (current);
 	ksDel (ks);
 
-	ks = ksNew (0);
-	ks2 = ksNew (0);
+	ks = ksNew(0, KS_END);
+	ks2 = ksNew(0, KS_END);
 	succeed_if (ksAppend (ks, ks2) == 0, "could not append empty keyset");
 	succeed_if (ksGetSize (ks) == 0, "empty keyset does not have correct size");
 	succeed_if (ksGetSize (ks2) == 0, "empty keyset does not have correct size");
@@ -129,7 +129,7 @@ void test_ksEmpty()
 	ksDel (ks2);
 
 	ks = ksNew (1, current=keyNew("user/test", KEY_END), KS_END);
-	ks2 = ksNew (0);
+	ks2 = ksNew(0, KS_END);
 	succeed_if (ksGetSize (ks) == 1, "empty keyset does not have correct size");
 	succeed_if (ksGetSize (ks2) == 0, "empty keyset does not have correct size");
 	succeed_if (ksAppend (ks, ks2) == 1, "could not append empty keyset");
@@ -147,7 +147,7 @@ void test_ksEmpty()
 	ksDel (ks2);
 
 
-	ks = ksNew (0);
+	ks = ksNew(0, KS_END);
 	ks2 = ksNew (1, current=keyNew("user/test", KEY_END), KS_END);
 	succeed_if (ksGetSize (ks) == 0, "empty keyset does not have correct size");
 	succeed_if (ksGetSize (ks2) == 1, "empty keyset does not have correct size");
@@ -178,7 +178,7 @@ void test_ksReference()
 
 	printf("Test reference of key\n");
 
-	ks=ksNew(0);
+	ks=ksNew(0, KS_END);
 	k1 = keyNew("user/aname", KEY_END);
 	succeed_if (keyGetRef(k1) == 0, "reference counter of new key");
 	succeed_if (ksAppendKey(ks,k1) == 1, "size should be one");
@@ -235,7 +235,7 @@ void test_ksReference()
 	succeed_if (keyGetRef(k2) == 1, "reference counter, delete from first keyset");
 	ksDel (ks1); // k1 and k2 deleted
 
-	ks1=ksNew(0);
+	ks1=ksNew(0, KS_END);
 	k1=keyNew("user/k1", KEY_END);
 	succeed_if (keyGetRef(k1) == 0, "reference counter of new inserted key");
 	succeed_if (ksAppendKey(ks1, k1) == 1, "appending did not work");
@@ -285,7 +285,7 @@ void test_ksResize()
 {
 	int i;
 	KeySet *ks=0;
-	KeySet *copy = ksNew (0);
+	KeySet *copy = ksNew(0, KS_END);
 	char name[NAME_SIZE];
 
 	ks = ksNew (20,
@@ -314,7 +314,7 @@ void test_ksResize()
 	ksDel (ks);
 
 	printf("Test resize of keyset\n");
-	exit_if_fail((ks=ksNew(0)) != 0, "could not create new keyset");
+	exit_if_fail((ks=ksNew(0, KS_END)) != 0, "could not create new keyset");
 	for (i=0; i< 100; i++)
 	{
 		snprintf(name, NAME_SIZE, "user/test%d", i);
@@ -338,7 +338,7 @@ void test_ksResize()
 	succeed_if(ksGetAlloc(ks) == 15, "allocation size wrong");
 	ksDel (ks);
 	
-	exit_if_fail((ks=ksNew(0)) != 0, "could not create new keyset");
+	exit_if_fail((ks=ksNew(0, KS_END)) != 0, "could not create new keyset");
 	ksResize (ks, 100);
 	succeed_if(ksGetAlloc(ks) == 100, "allocation size wrong");
 	for (i=0; i< 100; i++)
@@ -381,7 +381,7 @@ void test_ksDup()
 
 	printf("Test ks duplication\n");
 
-	exit_if_fail((ks=ksNew(0)) != 0, "could not create new keyset");
+	exit_if_fail((ks=ksNew(0, KS_END)) != 0, "could not create new keyset");
 	other=ksDup(ks);
 	succeed_if(other, "other creation failed");
 	succeed_if(ksGetSize(ks) == 0, "ks has keys");
@@ -441,8 +441,8 @@ void test_ksCopy()
 
 	printf("Test ks copy\n");
 
-	other = ksNew(0);
-	exit_if_fail((ks=ksNew(0)) != 0, "could not create new keyset");
+	other = ksNew(0, KS_END);
+	exit_if_fail((ks=ksNew(0, KS_END)) != 0, "could not create new keyset");
 	succeed_if(ksCopy(other,ks)==1, "Copy failed");
 	succeed_if(other, "other creation failed");
 	succeed_if(ksGetSize(ks) == 0, "ks has keys");
@@ -450,8 +450,8 @@ void test_ksCopy()
 	ksDel (other);
 	ksDel (ks);
 
-	other = ksNew(0);
-	exit_if_fail((ks=ksNew(1, keyNew("user/test3", KEY_END), 0)) != 0, "could not create new keyset");
+	other = ksNew(0, KS_END);
+	exit_if_fail((ks=ksNew(1, keyNew("user/test3", KEY_END), KS_END)) != 0, "could not create new keyset");
 	succeed_if(ksCopy(other,ks)==1, "Copy failed");
 	succeed_if(other, "other creation failed");
 	succeed_if(ksGetSize(ks) == 1, "ks has no keys");
@@ -459,8 +459,8 @@ void test_ksCopy()
 	ksDel (other);
 	ksDel (ks);
 
-	other = ksNew(0);
-	exit_if_fail((ks=ksNew(1, keyNew("user/testro", KEY_END), 0)) != 0, "could not create new keyset");
+	other = ksNew(0, KS_END);
+	exit_if_fail((ks=ksNew(1, keyNew("user/testro", KEY_END), KS_END)) != 0, "could not create new keyset");
 	succeed_if (ksAppendKey(ks,keyNew("user/test1", KEY_END)) == 2, "could not append a key");
 	succeed_if (ksAppendKey(ks,keyNew("user/test2", KEY_END)) == 3, "could not append a key");
 	succeed_if (ksAppendKey(ks,keyNew("user/test3", KEY_END)) == 4, "could not append a key");
@@ -471,8 +471,8 @@ void test_ksCopy()
 	ksDel (other);
 	ksDel (ks);
 
-	other = ksNew(0);
-	exit_if_fail((ks=ksNew(1, keyNew("system/test", KEY_END), 0)) != 0, "could not create new keyset");
+	other = ksNew(0, KS_END);
+	exit_if_fail((ks=ksNew(1, keyNew("system/test", KEY_END), KS_END)) != 0, "could not create new keyset");
 	succeed_if (ksAppendKey(ks,keyNew("user/test1", KEY_END)) == 2, "could not append a key");
 	succeed_if (ksAppendKey(ks,keyNew("user/test2", KEY_END)) == 3, "could not append a key");
 	succeed_if (ksAppendKey(ks,keyNew("user/test3", KEY_END)) == 4, "could not append a key");
@@ -484,8 +484,8 @@ void test_ksCopy()
 	ksDel (other);
 	ksDel (ks);
 
-	other = ksNew(0);
-	exit_if_fail((ks=ksNew(1, keyNew("user/mykeys", KEY_END), 0)) != 0, "could not create new keyset");
+	other = ksNew(0, KS_END);
+	exit_if_fail((ks=ksNew(1, keyNew("user/mykeys", KEY_END), KS_END)) != 0, "could not create new keyset");
 	succeed_if (ksAppendKey(ks,keyNew("user/test1", KEY_END)) == 2, "could not append a key");
 	succeed_if (ksAppendKey(ks,keyNew("user/test2", KEY_END)) == 3, "could not append a key");
 	succeed_if (ksAppendKey(ks,keyNew("user/test3", KEY_END)) == 4, "could not append a key");
@@ -498,8 +498,8 @@ void test_ksCopy()
 	ksDel (other);
 	ksDel (ks);
 
-	other = ksNew(0);
-	exit_if_fail((ks=ksNew(1, keyNew("user/a/b/c", KEY_END), 0)) != 0, "could not create new keyset");
+	other = ksNew(0, KS_END);
+	exit_if_fail((ks=ksNew(1, keyNew("user/a/b/c", KEY_END), KS_END)) != 0, "could not create new keyset");
 	succeed_if (ksAppendKey(ks,keyNew("user/a/test", KEY_END)) == 2, "could not append a key");
 	succeed_if (ksAppendKey(ks,keyNew("user/a/b/test", KEY_END)) == 3, "could not append a key");
 	succeed_if (ksAppendKey(ks,keyNew("user/a/b/ctest", KEY_END)) == 4, "could not append a key");
@@ -520,10 +520,10 @@ void test_ksCopy()
 
 
 
-	ks = ksNew(0);
+	ks = ksNew(0, KS_END);
 	ksAppendKey(ks, keyNew ("user/abc", KEY_META, "def", "egh", KEY_END));
 
-	other = ksNew(0);
+	other = ksNew(0, KS_END);
 	ksCopy (other, ks);
 	compare_keyset(ks, other);
 
@@ -533,8 +533,8 @@ void test_ksCopy()
 
 void test_ksIterate()
 {
-	KeySet *ks=ksNew(0);
-	KeySet *other=ksNew(0);
+	KeySet *ks=ksNew(0, KS_END);
+	KeySet *other=ksNew(0, KS_END);
 	Key * key;
 	int i;
 	char name [] = "user/n";
@@ -601,14 +601,14 @@ void test_ksIterate()
 		keyNew("user/1", KEY_END),
 		keyNew("user/2", KEY_END),
 		keyNew("user/3", KEY_END),
-		0);
+		KS_END);
 	
 	other = ksNew(10,
 		keyNew("user/4", KEY_END),
 		keyNew("user/5", KEY_END),
 		keyNew("user/6", KEY_END),
 		keyNew("user/7", KEY_END),
-		0);
+		KS_END);
 
 	succeed_if(ksAppend(ks,other) == 8, "could not append keys");
 
@@ -627,7 +627,7 @@ void test_ksIterate()
 
 void test_ksCursor()
 {
-	KeySet *ks=ksNew(0);
+	KeySet *ks=ksNew(0, KS_END);
 	Key * key;
 	cursor_t cursor;
 	Key *cur;
@@ -685,7 +685,7 @@ void test_ksCursor()
 		keyNew("user/1", KEY_END),
 		keyNew("user/2", KEY_END),
 		keyNew("user/3", KEY_END),
-		0);
+		KS_END);
 
 	ksRewind (ks);
 	for (i=0; i < 4; i++)
@@ -710,7 +710,7 @@ void test_ksCursor()
 		keyNew("user/1", KEY_END),
 		keyNew("user/2", KEY_END),
 		keyNew("user/3", KEY_END),
-		0);
+		KS_END);
 
 	ksRewind (ks);
 	for (i=0; i < 4; i++)
@@ -737,7 +737,7 @@ void test_ksAtCursor()
 	Key *current;
 	Key *other;
 	Key *testKeys[5];
-	ks = ksNew (0);
+	ks = ksNew(0, KS_END);
 
 	testKeys[0] = keyNew ("user/test1", KEY_END);
 	testKeys[1] = keyNew ("user/test2", KEY_END);
@@ -802,7 +802,7 @@ void test_ksSort()
 
 	printf("Test ks sort\n");
 
-	ks=ksNew(0);
+	ks=ksNew(0, KS_END);
 	ksAppendKey(ks, keyNew("user/bname", KEY_END));
 	ksAppendKey(ks, keyNew("user/aname", KEY_END));
 	ksAppendKey(ks, keyNew("user/cname", KEY_END));
@@ -818,7 +818,7 @@ void test_ksSort()
 	succeed_if (strcmp (keyName (key), "user/cname") == 0, "c should be 3.");
 	ksDel (ks);
 	
-	ks=ksNew(0);
+	ks=ksNew(0, KS_END);
 	ksAppendKey(ks, keyNew("user/a", KEY_END));
 	ksAppendKey(ks, keyNew("user/e", KEY_END));
 	ksAppendKey(ks, keyNew("user/b1", KEY_END));
@@ -867,7 +867,7 @@ void test_ksSort()
 	}
 	ksDel (ks);
 
-	ks=ksNew(0);
+	ks=ksNew(0, KS_END);
 	k1 = keyNew("user/xname", KEY_END);
 	ksAppendKey(ks,k1);
 
@@ -881,7 +881,7 @@ void test_ksSort()
 	key = ksNext(ks);
 	ksDel(ks);
 	
-	ks=ksNew(0);
+	ks=ksNew(0, KS_END);
 	k1 = keyNew("user/yname", KEY_END);
 	k2 = keyDup (k1);
 	ksAppendKey(ks,k2);
@@ -891,7 +891,7 @@ void test_ksSort()
 	key = ksNext(ks);
 	ksDel(ks);
 
-	ks=ksNew(0);
+	ks=ksNew(0, KS_END);
 	ksAppendKey(ks, keyNew("user/a", KEY_END));
 	ksAppendKey(ks, keyNew("user/e", KEY_END));
 	ksAppendKey(ks, keyNew("user/b", KEY_END));
@@ -932,7 +932,7 @@ void test_ksSort()
 	ksDel (ks);
 
 	
-	ks=ksNew(0);
+	ks=ksNew(0, KS_END);
 	ksAppendKey(ks, keyNew("user/a", KEY_END));
 	ksAppendKey(ks, keyNew("user/e", KEY_END));
 	ksAppendKey(ks, keyNew("user/b/a", KEY_END));
@@ -979,7 +979,7 @@ void test_ksSort()
 	}
 	ksDel (ks);
 	
-	ks=ksNew(0);
+	ks=ksNew(0, KS_END);
 	ksAppendKey(ks, keyNew("user/dir1/key1", KEY_END));
 	ksAppendKey(ks, keyNew("user/dir1/key2", KEY_END));
 	ksAppendKey(ks, keyNew("user/dir1/key3", KEY_END));
@@ -1031,8 +1031,8 @@ void ksUnsort (KeySet *ks)
 {
 	Key *cur;
 	size_t size = 0;
-	KeySet *randks=ksNew(0); /*This is the final randomized keyset*/
-	KeySet *tempks=ksNew(0); /*Temporary storage for keys not chosen to be inserted*/
+	KeySet *randks=ksNew(0, KS_END); /*This is the final randomized keyset*/
+	KeySet *tempks=ksNew(0, KS_END); /*Temporary storage for keys not chosen to be inserted*/
 
 	while (ksGetSize(ks) > 0)
 	{
@@ -1204,7 +1204,7 @@ void test_ksLookupByName()
 void test_ksLookupName()
 {
 	Key * found;
-	KeySet *ks= ksNew(0);
+	KeySet *ks= ksNew(0, KS_END);
 	
 	printf ("Test lookup functions\n");
 
@@ -1312,7 +1312,7 @@ void test_ksLookupName()
 void test_ksLookupNameCascading()
 {
 	Key * found;
-	KeySet *ks= ksNew(0);
+	KeySet *ks= ksNew(0, KS_END);
 
 	printf ("Test cascading lookup functions\n");
 
@@ -1408,7 +1408,7 @@ void test_ksLookupNameCascading()
 void test_ksLookupNameDomain()
 {
 	Key * found;
-	KeySet *ks= ksNew(0);
+	KeySet *ks= ksNew(0, KS_END);
 
 	printf ("Test domain lookup functions\n");
 
@@ -1444,7 +1444,7 @@ void test_ksLookupNameAll()
 {
 	Key * found;
 	cursor_t cursor;
-	KeySet *ks= ksNew(0);
+	KeySet *ks= ksNew(0, KS_END);
 	printf ("Test lookup functions with KDB_O_NOALL\n");
 	ksAppendKey(ks, keyNew("user/a", KEY_END));
 	ksAppendKey(ks, keyNew("user/b", KEY_END));
@@ -1593,7 +1593,7 @@ void test_ksLookupNameAll()
 /*
 void test_ksLookupValue()
 {
-	KeySet *ks = ksNew(0);
+	KeySet *ks = ksNew(0, KS_END);
 	Key *found;
 	printf ("test lookups for values\n");
 	
@@ -1677,7 +1677,7 @@ void test_ksLookupValue()
 //copied out from example	
 void test_ksExample()
 {
-	KeySet *ks=ksNew(0);
+	KeySet *ks=ksNew(0, KS_END);
 	Key * key;
 
 	ksAppendKey(ks,keyNew("user/test", KEY_END));       // an empty key
@@ -1818,7 +1818,7 @@ void test_ksAppend()
 	for (i=0; i<2; i++)
 	{
 		KeySet *tmp = ksNew(ksGetSize(returned), KS_END);
-		KeySet *keys = ksNew (0);
+		KeySet *keys = ksNew(0, KS_END);
 
 		/* add all keys direct below parentKey */
 		ksRewind (returned);
@@ -1868,10 +1868,10 @@ void test_ksAppend()
 	ksDel (testDirectBelow);
 	ksDel (returned);
 
-	KeySet * ks = ksNew(0);
+	KeySet * ks = ksNew(0, KS_END);
 	ksAppendKey(ks, keyNew ("user/abc", KEY_META, "xyz", "egh", KEY_END));
 
-	KeySet * other = ksNew(0);
+	KeySet * other = ksNew(0, KS_END);
 	ksAppend (other, ks);
 	compare_keyset(ks, other);
 	compare_keyset(ks, ks);
@@ -1999,19 +1999,19 @@ void test_ksFunctional()
 		succeed_if (strcmp (keyComment (current), "comment") == 0, "for each did not add comment");
 	}
 
-	out = ksNew (0);
+	out = ksNew(0, KS_END);
 	succeed_if (ksGetSize(ks) == 7, "initial size wrong");
 	succeed_if (ksGetSize(out) == 0, "initial size wrong");
 	ksFilter (out, ks, has_a);
 	succeed_if (ksGetSize(out) == 5, "has_a cutted more then the user/b");
 	ksDel (out);
 
-	out = ksNew (0);
+	out = ksNew(0, KS_END);
 	ksFilter (out, ks, below_a);
 	succeed_if (ksGetSize(out) == 4, "below_a cutted more then the user/ab/2");
 	ksDel (out);
 
-	out = ksNew (0);
+	out = ksNew(0, KS_END);
 	ksFilter (out, ks, direct_below_a);
 	succeed_if (ksGetSize(out) == 2, "direct_below_a cutted more then the user/a/b/*");
 	ksDel (out);
@@ -2031,7 +2031,7 @@ void test_ksFunctional()
 
 	succeed_if (ksForEach (values, sum_helper) == 251, "could not sum up");
 
-	KeySet *values_below_30 = ksNew (0);
+	KeySet *values_below_30 = ksNew(0, KS_END);
 	ksFilter (values_below_30, values, below_30);
 	succeed_if (ksGetSize (values_below_30) == 3, "could not filter out everything above 30");
 	succeed_if (ksForEach (values_below_30, sum_helper) == 56, "could not sum up");
@@ -2096,7 +2096,7 @@ void test_ksLookupPop()
 
 	ksDel (small);
 
-	KeySet *ks= ksNew(0);
+	KeySet *ks= ksNew(0, KS_END);
 
 	ksAppendKey(ks, keyNew("user/domain/key",  KEY_VALUE, "domainvalue",
 		KEY_OWNER, "markus", KEY_END));
@@ -2276,7 +2276,7 @@ void test_ksSync()
 	KeySet *ks;
 	Key *key;
 
-	ks = ksNew(0);
+	ks = ksNew(0, KS_END);
 	succeed_if (ksNeedSync(ks) == 0, "need sync after creation");
 
 	keyDel (ksPop (ks));
@@ -2284,7 +2284,7 @@ void test_ksSync()
 	ksDel (ks);
 
 
-	ks = ksNew(0);
+	ks = ksNew(0, KS_END);
 	succeed_if (ksNeedSync(ks) == 0, "need sync after creation");
 
 	ksAppendKey (ks, keyNew ("user/key", KEY_END));
@@ -2295,7 +2295,7 @@ void test_ksSync()
 	ksDel (ks);
 
 
-	ks = ksNew(0);
+	ks = ksNew(0, KS_END);
 	succeed_if (ksNeedSync(ks) == 0, "need sync after creation");
 
 	ksAppendKey (ks, keyNew ("user/key", KEY_END));
@@ -2366,7 +2366,7 @@ void test_ksDoubleAppendKey()
 	printf ("Test double appending of key\n");
 
 	Key *k = keyNew("user/my_double_key", KEY_END);
-	KeySet *ks = ksNew(0);
+	KeySet *ks = ksNew(0, KS_END);
 
 	ksAppendKey (ks, k);
 	succeed_if (ksGetSize (ks) == 1, "size not correct");
@@ -2389,7 +2389,7 @@ void test_ksAppendKey()
 	KeySet *ks=0;
 	Key *cur;
 
-	exit_if_fail((ks=ksNew(0)) != 0, "could not create new keyset");
+	exit_if_fail((ks=ksNew(0, KS_END)) != 0, "could not create new keyset");
 
 	succeed_if (ksAppendKey(ks,cur=keyNew("user/a", KEY_END)) == 1, "could not append a key");
 	succeed_if (ksCurrent(ks) == cur, "did not update current position");
@@ -2413,7 +2413,7 @@ void test_ksAppendKey()
 
 	ksDel (ks);
 
-	exit_if_fail ((ks=ksNew(0)) != 0, "could not create new keyset");
+	exit_if_fail ((ks=ksNew(0, KS_END)) != 0, "could not create new keyset");
 	succeed_if (ksAppendKey(ks,cur=keyNew("user", KEY_END)) == 1, "could not append a key");
 	succeed_if (ksCurrent(ks) == cur, "did not update current position");
 	succeed_if (ksGetSize(ks) == 1, "size not correct after 1 keys");
@@ -2447,7 +2447,7 @@ void test_ksModifyKey()
 	KeySet *ks=0;
 	Key *cur;
 
-	exit_if_fail((ks=ksNew(0)) != 0, "could not create new keyset");
+	exit_if_fail((ks=ksNew(0, KS_END)) != 0, "could not create new keyset");
 
 	succeed_if (ksAppendKey(ks,cur=keyNew("user/a", KEY_END)) == 1, "could not append a key");
 	succeed_if (ksCurrent(ks) == cur, "did not update current position");
@@ -2508,7 +2508,7 @@ void test_ksToArray()
 
 	succeed_if (elektraKsToMemArray(0, keyArray) < 0, "wrong result on null pointer");
 	succeed_if (elektraKsToMemArray(ks, 0) < 0, "wrong result on null buffer");
-	KeySet *empty = ksNew(0);
+	KeySet *empty = ksNew(0, KS_END);
 	succeed_if (elektraKsToMemArray(empty, keyArray) == 0, "wrong result on empty keyset");
 	ksDel(empty);
 

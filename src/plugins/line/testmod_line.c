@@ -20,7 +20,7 @@ void test_readline(){
 	PLUGIN_OPEN("line");
 	printf("%s\n", filename);
 
-	KeySet *ks=ksNew(0);
+	KeySet *ks=ksNew(0, KS_END);
 	succeed_if (plugin->kdbGet(plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	Key *key = ksLookupByName(ks, "user/tests/line/#0", 0);
 	exit_if_fail (key, "line1 key not found");

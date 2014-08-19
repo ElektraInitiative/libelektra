@@ -14,7 +14,7 @@
 #include <tests_internal.h>
 
 #define PLUGIN_OPEN(NAME) \
-		KeySet *modules = ksNew(0); \
+		KeySet *modules = ksNew(0, KS_END); \
 		elektraModulesInit(modules, 0); \
 		Plugin *plugin = elektraPluginOpen(NAME, modules, conf, 0); \
 		exit_if_fail (plugin != 0, "could not open " NAME " plugin"); \

@@ -31,7 +31,7 @@ int serialise(std::ostream &os, ckdb::Key *, ckdb::KeySet *ks)
 
 	os << "ksNew " << ckdb::ksGetSize(ks) << std::endl;
 
-	ckdb::KeySet *metacopies = ckdb::ksNew(0);
+	ckdb::KeySet *metacopies = ckdb::ksNew(0, KS_END);
 
 	ksRewind(ks);
 	while ((cur = ksNext(ks)) != 0)

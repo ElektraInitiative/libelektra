@@ -26,7 +26,7 @@ void test_readwrite()
 	printf("Testing Read and write xml\n");
 
 	fout = fopen (srcdir_file("xmltool/key-gen.xml"), "w");
-	ks = ksNew(0);
+	ks = ksNew(0, KS_END);
 	exit_if_fail( ksFromXMLfile(ks, srcdir_file("xmltool/key.xml")) == 0, "ksFromXMLfile(key.xml) failed.");
 	ksToStream (ks, fout, KDB_O_HEADER);
 	fclose (fout);
@@ -45,7 +45,7 @@ void test_readwrite_hier()
 	printf("Testing Read and write xml\n");
 
 	fout = fopen (srcdir_file("xmltool/key-gen.xml"), "w");
-	ks = ksNew(0);
+	ks = ksNew(0, KS_END);
 	exit_if_fail( ksFromXMLfile(ks, srcdir_file("xmltool/key.xml")) == 0, "ksFromXMLfile(key.xml) failed.");
 	ksToStream (ks, fout, KDB_O_HIER | KDB_O_HEADER);
 	fclose (fout);
@@ -65,7 +65,7 @@ void test_key()
 
 	printf("Testing Key from xml\n");
 
-	ks = ksNew(0);
+	ks = ksNew(0, KS_END);
 	exit_if_fail( ksFromXMLfile(ks, srcdir_file("xmltool/key.xml")) == 0, "ksFromXMLfile(key.xml) failed.");
 	counter = 0;
 	ksRewind(ks);
@@ -166,7 +166,7 @@ void test_keyset()
 
 	printf("Testing KeySet from xml\n");
 
-	ks = ksNew(0);
+	ks = ksNew(0, KS_END);
 	exit_if_fail( ksFromXMLfile(ks, srcdir_file("xmltool/keyset.xml")) == 0, "ksFromXMLfile(key.xml) failed.");
 	counter = 0;
 	ksRewind(ks);

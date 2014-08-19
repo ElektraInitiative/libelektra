@@ -171,7 +171,7 @@ keyDel (emptyNamedKey);
  *
  * @par Example:
  * @code
-KeySet *ks=ksNew(0);
+KeySet *ks=ksNew(0, KS_END);
 
 ksAppendKey(ks,keyNew(0));       // an empty key
 

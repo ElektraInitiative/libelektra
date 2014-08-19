@@ -2,7 +2,7 @@
 #include <kdb.h>
 
 int main() {
-	KeySet *ks=ksNew(0);
+	KeySet *ks=ksNew(0, KS_END);
 	Key *key=0;
 
 	printf ("Generate some keys...");

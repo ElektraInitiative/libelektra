@@ -34,7 +34,7 @@ void test_readhosts()
 	KeySet *conf = 0;
 	PLUGIN_OPEN("hosts");
 
-	KeySet *ks=ksNew(0);
+	KeySet *ks=ksNew(0, KS_END);
 
 	succeed_if (plugin->kdbGet(plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 

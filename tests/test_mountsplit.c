@@ -189,7 +189,7 @@ void test_us()
 	printf ("Test mounting of user and system backends\n");
 
 	KDB *kdb = kdb_new();
-	KeySet *modules = ksNew(0);
+	KeySet *modules = ksNew(0, KS_END);
 	elektraModulesInit(modules, 0);
 	Key *mp;
 

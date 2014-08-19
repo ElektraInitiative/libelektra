@@ -221,7 +221,7 @@ void test_simpletrie()
 	printf ("Test simple mount with plugins\n");
 
 	KDB *kdb = kdb_new();
-	KeySet *modules = ksNew(0);
+	KeySet *modules = ksNew(0, KS_END);
 	elektraModulesInit(modules, 0);
 
 	KeySet *config = set_simple();
@@ -326,7 +326,7 @@ void test_two()
 	printf ("Test two mounts\n");
 
 	KDB *kdb = kdb_new();
-	KeySet *modules = ksNew(0);
+	KeySet *modules = ksNew(0, KS_END);
 	elektraModulesInit(modules, 0);
 
 	KeySet *config = set_two();
@@ -396,7 +396,7 @@ void test_us()
 	printf ("Test mounting of user and system backends\n");
 
 	KDB *kdb = kdb_new();
-	KeySet *modules = ksNew(0);
+	KeySet *modules = ksNew(0, KS_END);
 	elektraModulesInit(modules, 0);
 
 	KeySet *config = set_us();

@@ -45,7 +45,7 @@ static const char *getGlobFlags (KeySet* keys, Key *globKey)
 
 static KeySet* getGlobKeys(Key* parentKey, KeySet* keys, enum GlobDirection direction)
 {
-	KeySet* glob = ksNew (0);
+	KeySet* glob = ksNew(0, KS_END);
 	Key* k = 0;
 	size_t parentsize = keyGetNameSize (parentKey);
 

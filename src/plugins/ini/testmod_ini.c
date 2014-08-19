@@ -27,10 +27,10 @@ void test_plainIniRead(char *fileName)
 	Key *parentKey = keyNew ("user/tests/ini-read", KEY_VALUE,
 			srcdir_file(fileName), KEY_END);
 
-	KeySet *conf = ksNew (0);
+	KeySet *conf = ksNew(0, KS_END);
 	PLUGIN_OPEN ("ini");
 
-	KeySet *ks = ksNew (0);
+	KeySet *ks = ksNew(0, KS_END);
 
 	succeed_if(plugin->kdbGet (plugin, ks, parentKey) >= 1,
 			"call to kdbGet was not successful");
@@ -65,7 +65,7 @@ void test_plainIniWrite(char *fileName)
 {
 	Key *parentKey = keyNew ("user/tests/ini-write", KEY_VALUE,
 			elektraFilename(), KEY_END);
-	KeySet *conf = ksNew (0);
+	KeySet *conf = ksNew(0, KS_END);
 	PLUGIN_OPEN("ini");
 
 	KeySet *ks = ksNew (30,
@@ -108,10 +108,10 @@ void test_commentIniRead(char *fileName)
 	Key *parentKey = keyNew ("user/tests/ini-read", KEY_VALUE,
 			srcdir_file(fileName), KEY_END);
 
-	KeySet *conf = ksNew (0);
+	KeySet *conf = ksNew(0, KS_END);
 	PLUGIN_OPEN ("ini");
 
-	KeySet *ks = ksNew (0);
+	KeySet *ks = ksNew(0, KS_END);
 
 	succeed_if(plugin->kdbGet (plugin, ks, parentKey) >= 1,
 			"call to kdbGet was not successful");
@@ -147,7 +147,7 @@ void test_commentIniWrite(char *fileName)
 {
 	Key *parentKey = keyNew ("user/tests/ini-write", KEY_VALUE,
 			elektraFilename(), KEY_END);
-	KeySet *conf = ksNew (0);
+	KeySet *conf = ksNew(0, KS_END);
 	PLUGIN_OPEN("ini");
 
 	KeySet *ks = ksNew (30,

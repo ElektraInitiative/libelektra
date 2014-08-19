@@ -37,7 +37,7 @@ void test_resolve()
 
 	printf ("Resolve Filename\n");
 
-	KeySet *modules = ksNew(0);
+	KeySet *modules = ksNew(0, KS_END);
 	elektraModulesInit (modules, 0);
 
 	Key *parentKey = keyNew("system", KEY_END);
@@ -124,7 +124,7 @@ void test_name()
 {
 	printf ("Resolve Name\n");
 
-	KeySet *modules = ksNew(0);
+	KeySet *modules = ksNew(0, KS_END);
 	elektraModulesInit (modules, 0);
 
 	Plugin *plugin = elektraPluginOpen("resolver", modules, set_pluginconf(), 0);
@@ -166,7 +166,7 @@ void test_lockname()
 {
 	printf ("Resolve Dirname\n");
 
-	KeySet *modules = ksNew(0);
+	KeySet *modules = ksNew(0, KS_END);
 	elektraModulesInit (modules, 0);
 
 	Plugin *plugin = elektraPluginOpen("resolver", modules, set_pluginconf(), 0);
@@ -208,7 +208,7 @@ void test_tempname()
 {
 	printf ("Resolve Tempname\n");
 
-	KeySet *modules = ksNew(0);
+	KeySet *modules = ksNew(0, KS_END);
 	elektraModulesInit (modules, 0);
 
 	Plugin *plugin = elektraPluginOpen("resolver", modules, set_pluginconf(), 0);

@@ -33,7 +33,7 @@
 
 int elektraHiddenOpen(Plugin *handle, Key *errorKey ELEKTRA_UNUSED)
 {
-	elektraPluginSetData(handle, ksNew(0));
+	elektraPluginSetData(handle, ksNew(0, KS_END));
 
 	return 1; /* success */
 }

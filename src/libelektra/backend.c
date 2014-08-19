@@ -123,7 +123,7 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
 	KeySet *systemConfig = 0;
 	int failure = 0;
 
-	referencePlugins = ksNew(0);
+	referencePlugins = ksNew(0, KS_END);
 	ksRewind(elektraConfig);
 
 	root = ksNext (elektraConfig);

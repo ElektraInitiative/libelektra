@@ -72,7 +72,7 @@ void test_simple()
 {
 	printf ("Test simple building of backend\n");
 
-	KeySet *modules = ksNew(0);
+	KeySet *modules = ksNew(0, KS_END);
 	elektraModulesInit(modules, 0);
 
 	Key *errorKey = 0;
@@ -118,7 +118,7 @@ void test_default()
 {
 	printf ("Test default\n");
 
-	KeySet *modules = ksNew(0);
+	KeySet *modules = ksNew(0, KS_END);
 	elektraModulesInit(modules, 0);
 
 
@@ -184,7 +184,7 @@ void test_backref()
 {
 	printf ("Test back references\n");
 
-	KeySet *modules = ksNew(0);
+	KeySet *modules = ksNew(0, KS_END);
 	elektraModulesInit(modules, 0);
 
 	Backend *backend = elektraBackendOpen(set_backref(), modules, 0);

@@ -85,7 +85,7 @@ To just get a key, use
 	Key *k = keyNew (0);  
 and to just get a keyset, use  
 
-	KeySet *k = ksNew (0);
+	KeySet *k = ksNew(0, KS_END);
 
 The macros va_start and va_end will not be used then. Otherwise pass
 a list like described in the documentation.

@@ -110,7 +110,7 @@ int elektraModulesClose (KeySet *modules, Key *errorKey)
 			if (ret != -1)
 			{
 				/* First failure, start saving handles where close did not work */
-				newModules = ksNew(0);
+				newModules = ksNew(0, KS_END);
 				ksAppendKey (newModules, root);
 			}
 			ret = -1;

@@ -433,8 +433,8 @@ void test_keyReference()
 	succeed_if (keyGetRef(key) == 0, "reference counter");
 	keyDel(key);    // key is now deleted
 
-	ks1 = ksNew(0);
-	ks2 = ksNew(0);
+	ks1 = ksNew(0, KS_END);
+	ks2 = ksNew(0, KS_END);
 	key = keyNew("user/key", KEY_END); // ref counter 0
 	succeed_if (keyGetRef(key) == 0, "reference counter");
 	ksAppendKey(ks1, key); // ref counter of key 1

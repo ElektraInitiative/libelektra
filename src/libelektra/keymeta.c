@@ -307,7 +307,7 @@ int keyCopyMeta(Key *dest, const Key *source, const char *metaName)
 		}
 	} else {
 		/*Create a new place for meta information.*/
-		dest->meta = ksNew(0);
+		dest->meta = ksNew(0, KS_END);
 		if (!dest->meta)
 		{
 			return -1;
@@ -537,7 +537,7 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 	if (!key->meta)
 	{
 		/*Create a new place for meta information.*/
-		key->meta = ksNew(0);
+		key->meta = ksNew(0, KS_END);
 		if (!key->meta)
 		{
 			keyDel (toSet);

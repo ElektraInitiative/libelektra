@@ -109,11 +109,11 @@ ksDel (myConfig); // delete keyset and all keys appended
  * with a list of keys. Either your first and only parameter is 0 or
  * your last parameter must be KEY_END.
  *
- * So, terminate with ksNew(0) or ksNew(20, ..., KS_END)
+ * So, terminate with ksNew(0, KS_END) or ksNew(20, ..., KS_END)
  *
  * For most uses
  * @code
-KeySet *keys = ksNew(0);
+KeySet *keys = ksNew(0, KS_END);
 // work with it
 ksDel (keys);
  * @endcode
@@ -579,7 +579,7 @@ int ksNeedSync(const KeySet *ks)
  * @param ks the keyset object to work with
  * @return the number of keys that @p ks contains.
  * @return -1 on NULL pointer
- * @see ksNew(0), ksDel()
+ * @see ksNew(0, KS_END), ksDel()
  */
 ssize_t ksGetSize(const KeySet *ks)
 {
@@ -911,7 +911,7 @@ KeySet *ksCut(KeySet *ks, const Key *cutpoint)
 	}
 
 	// we found nothing
-	if (it == ks->size) return ksNew (0);
+	if (it == ks->size) return ksNew(0, KS_END);
 
 	// we found the cutpoint
 	found = it;
@@ -986,8 +986,8 @@ KeySet *ksCut(KeySet *ks, const Key *cutpoint)
  * or keyDup().
  *
  *@code
-ks1=ksNew(0);
-ks2=ksNew(0);
+ks1=ksNew(0, KS_END);
+ks2=ksNew(0, KS_END);
 
 k1=keyNew("user/name", KEY_END); // ref counter 0
 ksAppendKey(ks1, k1); // ref counter 1

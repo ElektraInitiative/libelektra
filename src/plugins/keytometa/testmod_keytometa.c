@@ -74,7 +74,7 @@ static KeySet* createMergeTestkeys()
 	/* the keys to be converted are merged together
 	 * into a single metadata
 	 */
-	KeySet* ks = ksNew (0);
+	KeySet* ks = ksNew(0, KS_END);
 	for (int i = 1; i <= 3; i++)
 	{
 		Key* key = createMergingKey (i);
@@ -210,7 +210,7 @@ static KeySet* createDifferentMetaNameTestKeys()
 void test_parentAppendMode()
 {
 	Key *parentKey = keyNew ("user/tests/keytometa", KEY_END);
-	KeySet *conf = ksNew (0);
+	KeySet *conf = ksNew(0, KS_END);
 	PLUGIN_OPEN ("keytometa");
 
 	KeySet *ks = createParentTestKeys ();
@@ -273,7 +273,7 @@ void test_parentAppendMode()
 void test_simpleAppendModes()
 {
 	Key *parentKey = keyNew ("user/tests/keytometa", KEY_END);
-	KeySet *conf = ksNew (0);
+	KeySet *conf = ksNew(0, KS_END);
 	PLUGIN_OPEN("keytometa");
 
 
@@ -315,7 +315,7 @@ void test_simpleAppendModes()
 void test_metaMerging ()
 {
 	Key *parentKey = keyNew ("user/tests/keytometa", KEY_END);
-	KeySet *conf = ksNew (0);
+	KeySet *conf = ksNew(0, KS_END);
 	PLUGIN_OPEN("keytometa");
 
 	KeySet* ks = createMergeTestkeys ();
@@ -368,7 +368,7 @@ void test_metaMerging ()
 void test_metaSkipMerge()
 {
 	Key *parentKey = keyNew ("user/tests/keytometa", KEY_END);
-	KeySet *conf = ksNew (0);
+	KeySet *conf = ksNew(0, KS_END);
 	PLUGIN_OPEN("keytometa");
 
 	KeySet* ks = createSkipMergeTestKeys();
@@ -400,7 +400,7 @@ void test_metaSkipMerge()
 
 void test_differentMetaNames () {
 	Key *parentKey = keyNew ("user/tests/keytometa", KEY_END);
-	KeySet *conf = ksNew (0);
+	KeySet *conf = ksNew(0, KS_END);
 	PLUGIN_OPEN("keytometa");
 
 	KeySet *ks = createDifferentMetaNameTestKeys();
@@ -429,7 +429,7 @@ void test_differentMetaNames () {
 
 void test_restoreOnSet () {
 	Key *parentKey = keyNew ("user/tests/keytometa", KEY_END);
-	KeySet *conf = ksNew (0);
+	KeySet *conf = ksNew(0, KS_END);
 	PLUGIN_OPEN("keytometa");
 
 	KeySet *ks = createSimpleTestKeys ();
