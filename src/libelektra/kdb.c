@@ -128,7 +128,7 @@ KDB * kdbOpen(Key *errorKey)
 
 	handle = elektraCalloc(sizeof(struct _KDB));
 
-	handle->modules = ksNew(0);
+	handle->modules = ksNew(0, KS_END);
 	if(elektraModulesInit(handle->modules, errorKey) == -1)
 	{
 		return 0;
@@ -147,7 +147,7 @@ KDB * kdbOpen(Key *errorKey)
 	elektraSplitAppend (handle->split, handle->defaultBackend,
 			keyNew (KDB_KEY_MOUNTPOINTS, KEY_END), 2);
 
-	keys=ksNew(0);
+	keys=ksNew(0, KS_END);
 
 	Key *initialParent = keyDup (errorKey);
 	keySetName(errorKey, KDB_KEY_MOUNTPOINTS);

@@ -59,6 +59,11 @@
 #ifndef KDBOS_H
 #define KDBOS_H
 
+#ifdef __GNUC__
+#define ELEKTRA_SENTINEL  __attribute__ ((sentinel))
+#else
+#define ELEKTRA_SENTINEL
+#endif
 
 #ifndef WIN32
 

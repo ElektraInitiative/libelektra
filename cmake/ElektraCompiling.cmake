@@ -24,7 +24,10 @@ endif()
 #
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	#older clang did not support non-pod-varargs (will compile, but crash if used)
-	set (EXTRA_FLAGS "${EXTRA_FLAGS} -Wno-error=non-pod-varargs")
+	#so simply avoid to use it
+	#icc also crashes (but just warns, no error)
+	#set (EXTRA_FLAGS "${EXTRA_FLAGS} -Wno-error=non-pod-varargs")
+
 	#not supported by icc:
 	set (EXTRA_FLAGS "${EXTRA_FLAGS} -Wno-deprecated-declarations")
 	message (STATUS "Clang detected")
