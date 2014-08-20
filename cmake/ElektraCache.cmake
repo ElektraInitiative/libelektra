@@ -237,12 +237,10 @@ set (COVERAGE_PREFIX
 
 option (BUILD_SWIG "Enable SWIG generated bindings" OFF)
 if (BUILD_SWIG)
-	option (BUILD_SWIG_PYTHON2 "Enable the SWIG bindings for Python2" OFF)
-	option (BUILD_SWIG_PYTHON3 "Enable the SWIG bindings for Python3" OFF)
+	option (BUILD_SWIG_PYTHON "Enable the SWIG bindings for Python" OFF)
 	option (BUILD_SWIG_LUA    "Enable the SWIG bindings for Lua" OFF)
 else (BUILD_SWIG)
-	set (BUILD_SWIG_PYTHON2 OFF CACHE BOOL "Enable the SWIG bindings for Python" FORCE)
-	set (BUILD_SWIG_PYTHON3 OFF CACHE BOOL "Enable the SWIG bindings for Python" FORCE)
+	set (BUILD_SWIG_PYTHON OFF CACHE BOOL "Enable the SWIG bindings for Python" FORCE)
 	set (BUILD_SWIG_LUA    OFF CACHE BOOL "Enable the SWIG bindings for Lua" FORCE)
 endif (BUILD_SWIG)
 
