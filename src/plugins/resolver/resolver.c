@@ -44,6 +44,7 @@
 
 #include <sys/types.h>
 #include <dirent.h>
+#include <kdberrors.h>
 
 #ifdef ELEKTRA_CONFLICT_DEBUG
 //has stop signals at certain points to let you test

@@ -1,11 +1,11 @@
 include(LibAddPlugin)
 
-set (SOURCES resolver.h resolver.c filename.c)
-
 add_plugin_helper(elektra-resolver-lock
 	SOURCES
 		lock.c
 		)
+
+set (SOURCES resolver.h resolver.c filename.c)
 
 add_plugin(resolver
 	SOURCES
