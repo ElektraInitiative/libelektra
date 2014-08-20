@@ -11,7 +11,7 @@ http://code.google.com/p/inih/
 #include <ctype.h>
 #include <string.h>
 
-#include "ini.h"
+#include "inih.h"
 
 #if !INI_USE_STACK
 #include <stdlib.h>
