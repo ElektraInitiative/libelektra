@@ -41,7 +41,7 @@ see the
 and read the
 [abridgment](http://www.libelektra.org/ftp/elektra/abridgement.pdf).
 
-See [News](doc/NEWS) what is happening at the moment.
+See [News](doc/NEWS.md) what is happening at the moment.
 During the summer you can read the [GSoC 2014 blog](http://community.libelektra.org/wp)!
 
 The currently best information about Elektra is
@@ -117,10 +117,10 @@ To start development, just clone the repo and start hacking!
 
 - We encourage you to improve documentation, especially the README.md
   as if they were a webpage.
-- You should read the [coding document](doc/CODING) before you issue a
+- You should read the [coding document](doc/CODING.md) before you issue a
   pull request.
 - Make yourself familiar with the [KeySet](http://doc.libelektra.org/api/latest/html/group__keyset.html).
-- You should read the [design document](doc/DESIGN) before you make
+- You should read the [design document](doc/DESIGN.md) before you make
   design relevant decisions.
 - You can always peek into the [TODOs](doc/todo), if you don't know
   what to do.
