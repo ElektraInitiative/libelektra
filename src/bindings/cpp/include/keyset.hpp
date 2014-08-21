@@ -31,16 +31,7 @@ public:
 	inline KeySet(ckdb::KeySet *k);
 	inline KeySet(const KeySet &other);
 
-	class Hints
-	{
-	public:
-		explicit Hints(size_t a) : m_alloc(a) {}
-		size_t alloc() {return m_alloc;}
-	private:
-		size_t m_alloc;
-	};
-
-	inline explicit KeySet(Hints hints, va_list ap);
+	inline explicit KeySet(size_t alloc, va_list ap);
 	inline explicit KeySet(size_t alloc, ...);
 
 	inline ~KeySet ();
@@ -396,9 +387,14 @@ inline KeySet::KeySet (const KeySet &other)
  *
  * @copydoc ksVNew
  */
-inline KeySet::KeySet (KeySet::Hints hints, va_list ap)
+inline KeySet::KeySet (size_t alloc, va_list ap)
 {
-	ks = ckdb::ksVNew (hints.alloc(), ap);
+	if (ap == 0)
+	{
+		ks = ckdb::ksNew (alloc, KS_END);
+	} else {
+		ks = ckdb::ksVNew (alloc, ap);
+	}
 }
 
 /**
