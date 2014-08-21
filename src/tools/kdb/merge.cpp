@@ -92,7 +92,9 @@ int MergeCommand::execute(Cmdline const& cl)
 		if (cl.force)
 		{
 			if (cl.verbose)
+			{
 				std::cout << "will remove " << discard.size () << " keys, because -f was given" << std::endl;
+			}
 		}
 		else
 		{
