@@ -132,9 +132,9 @@ void test_commentIniRead(char *fileName)
 
 	key = ksLookupByName (ks, "user/tests/ini-read/section1/key1", KDB_O_NONE);
 	exit_if_fail(key, "key1 not found");
-	const Key *keyComment = keyGetMeta(key, "comment");
-	exit_if_fail(keyComment, "key1 contained no comment");
-	succeed_if (!strcmp ("key comment1\nkey comment2", keyString(keyComment)), "key1 contained an invalid comment");
+	const Key *keyComment_ = keyGetMeta(key, "comment");
+	exit_if_fail(keyComment_, "key1 contained no comment");
+	succeed_if (!strcmp ("key comment1\nkey comment2", keyString(keyComment_)), "key1 contained an invalid comment");
 
 	ksDel (ks);
 	keyDel (parentKey);
