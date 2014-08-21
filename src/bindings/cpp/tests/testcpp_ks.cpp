@@ -825,7 +825,7 @@ KeySet fill_vaargs(size_t size, ...)
 {
 	va_list ap;
 	va_start(ap, size);
-	KeySet ks(KeySet::Hints(size), ap);
+	KeySet ks(size, ap);
 	va_end(ap);
 	return ks;
 }

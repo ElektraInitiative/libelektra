@@ -2410,6 +2410,36 @@ static void test_ksOrder()
 	succeed_if(0, "does not succeed");
 }
 
+KeySet * fill_vaargs(size_t size, ...)
+{
+	va_list ap;
+	va_start(ap, size);
+	KeySet *ks =ksVNew(size, ap);
+	va_end(ap);
+	return ks;
+}
+
+static void test_keyVNew()
+{
+	printf ("Test keyVNew\n");
+
+	KeySet *ks = ksVNew(0, *(va_list*)KS_END);
+	succeed_if (ks != 0, "did not create KeySet");
+	ksDel(ks);
+
+	ks = ksVNew(10, *(va_list*)KS_END);
+	succeed_if (ks != 0, "did not create KeySet");
+	ksDel(ks);
+
+	ks = fill_vaargs(20,
+			keyNew("user/a", KEY_END),
+			KS_END);
+	succeed_if (ks != 0, "did not create KeySet");
+	succeed_if (ksGetSize(ks) == 1, "KeySet wrong size");
+	succeed_if (ksLookupByName(ks, "user/a", 0) != 0, "could not lookup key");
+	ksDel(ks);
+}
+
 int main(int argc, char** argv)
 {
 	printf("KEYSET ABI   TESTS\n");
@@ -2443,6 +2473,7 @@ int main(int argc, char** argv)
 	test_ksDoubleAppendKey();
 	test_ksAppendKey();
 	test_keyCmpOrder();
+	test_keyVNew();
 
 	// BUGS:
 	// test_ksLookupValue();
