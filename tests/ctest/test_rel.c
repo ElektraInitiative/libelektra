@@ -15,7 +15,7 @@
 
 #include <tests.h>
 
-void test_equal()
+static void test_equal()
 {
 	printf ("check if equal\n");
 
@@ -45,7 +45,7 @@ void test_equal()
 	keyDel (k2);
 }
 
-void test_directbelow()
+static void test_directbelow()
 {
 	printf ("check if direct below\n");
 	Key *k1 = keyNew(0);
@@ -74,7 +74,7 @@ void test_directbelow()
 	keyDel (k2);
 }
 
-void test_below()
+static void test_below()
 {
 	printf ("check if below\n");
 	Key *k1 = keyNew(0);
@@ -103,7 +103,7 @@ void test_below()
 	keyDel (k2);
 }
 
-void test_examples()
+static void test_examples()
 {
 	printf ("check examples\n");
 	Key *key = keyNew(0);
@@ -135,7 +135,7 @@ void test_examples()
 	keyDel (check);
 }
 
-void test_hierarchy()
+static void test_hierarchy()
 {
 	printf ("check hierarchy\n");
 	Key *key = keyNew(0);
@@ -161,7 +161,7 @@ void test_hierarchy()
 	keyDel (check);
 }
 
-void test_null()
+static void test_null()
 {
 	printf ("check invalid keys or null ptr\n");
 	Key *key = keyNew(0);

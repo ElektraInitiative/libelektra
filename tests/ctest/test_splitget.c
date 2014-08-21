@@ -57,7 +57,7 @@ KeySet *set_realworld()
 
 
 
-void test_simple()
+static void test_simple()
 {
 	printf ("Test simple trie\n");
 
@@ -116,7 +116,7 @@ void test_simple()
 }
 
 
-void test_get()
+static void test_get()
 {
 	printf ("Test basic get\n");
 	KDB *handle = elektraCalloc(sizeof(struct _KDB));
@@ -190,7 +190,7 @@ void test_get()
 	ksDel (modules);
 }
 
-void test_limit()
+static void test_limit()
 {
 	printf ("Test limit\n");
 	KDB *handle = elektraCalloc(sizeof(struct _KDB));
@@ -270,7 +270,7 @@ void test_limit()
 }
 
 
-void test_nobackend()
+static void test_nobackend()
 {
 	printf ("Test keys without backends in split\n");
 
@@ -331,7 +331,7 @@ void test_nobackend()
 }
 
 
-void test_sizes()
+static void test_sizes()
 {
 	printf ("Test sizes\n");
 	KDB *handle = elektraCalloc(sizeof(struct _KDB));
@@ -419,7 +419,7 @@ void test_sizes()
 }
 
 
-void test_triesizes()
+static void test_triesizes()
 {
 	printf ("Test sizes in backends with trie\n");
 
@@ -500,7 +500,7 @@ void test_triesizes()
 }
 
 
-void test_merge()
+static void test_merge()
 {
 	printf ("Test sizes in backends with trie\n");
 
@@ -587,7 +587,7 @@ void test_merge()
 }
 
 
-void test_realworld()
+static void test_realworld()
 {
 	printf ("Test real world example\n");
 

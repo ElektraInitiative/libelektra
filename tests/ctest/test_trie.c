@@ -26,7 +26,7 @@ Trie *test_insert (Trie *trie, char *name, char* value)
 }
 
 
-void test_minimaltrie()
+static void test_minimaltrie()
 {
 	printf ("Test minimal trie\n");
 
@@ -63,7 +63,7 @@ KeySet *simple_config(void)
 		KS_END);
 }
 
-void test_simple()
+static void test_simple()
 {
 	printf ("Test simple trie\n");
 
@@ -101,7 +101,7 @@ void test_simple()
 	keyDel (searchKey);
 }
 
-void collect_mountpoints(Trie *trie, KeySet *mountpoints)
+static void collect_mountpoints(Trie *trie, KeySet *mountpoints)
 {
 	int i;
 	for (i=0; i <= KDB_MAX_UCHAR; ++i)
@@ -111,7 +111,7 @@ void collect_mountpoints(Trie *trie, KeySet *mountpoints)
 	}
 }
 
-void test_iterate()
+static void test_iterate()
 {
 	printf ("Test iterate trie\n");
 
@@ -178,7 +178,7 @@ void test_iterate()
 	keyDel (searchKey);
 }
 
-void test_reviterate()
+static void test_reviterate()
 {
 	printf ("Test reviterate trie\n");
 
@@ -282,7 +282,7 @@ KeySet *set_mountpoints(void)
 		KS_END);
 }
 
-void test_moreiterate()
+static void test_moreiterate()
 {
 	printf ("Test moreiterate trie\n");
 
@@ -379,7 +379,7 @@ void test_moreiterate()
 	keyDel (searchKey);
 }
 
-void test_revmoreiterate()
+static void test_revmoreiterate()
 {
 	printf ("Test revmoreiterate trie\n");
 
@@ -533,7 +533,7 @@ void test_revmoreiterate()
 }
 
 
-void test_umlauts()
+static void test_umlauts()
 {
 	printf ("Test umlauts trie\n");
 
@@ -588,7 +588,7 @@ void test_umlauts()
 	keyDel (searchKey);
 }
 
-void test_endings()
+static void test_endings()
 {
 	printf ("Test endings trie\n");
 
@@ -705,7 +705,7 @@ void test_endings()
 	}
 }
 
-void test_root()
+static void test_root()
 {
 	printf ("Test trie with root\n");
 
@@ -750,7 +750,7 @@ void test_root()
 	keyDel (searchKey);
 }
 
-void test_double()
+static void test_double()
 {
 	printf ("Test double insertion\n");
 
@@ -782,7 +782,7 @@ void test_double()
 	elektraTrieClose(trie, 0);
 }
 
-void test_emptyvalues()
+static void test_emptyvalues()
 {
 	printf ("Test empty values in trie\n");
 

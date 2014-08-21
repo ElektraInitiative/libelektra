@@ -15,7 +15,7 @@
 
 #include <tests_internal.h>
 
-void test_ksNew()
+static void test_ksNew()
 {
 	KeySet *ks=0;
 	KeySet * keys = ksNew (15, KS_END);
@@ -86,7 +86,7 @@ void test_ksNew()
 	succeed_if(ksDel(ks2) == 0, "could not delete keyset");
 }
 
-void test_ksDuplicate()
+static void test_ksDuplicate()
 {
 	printf ("Test bug duplicate\n");
 	KeySet *ks = ksNew(0, KS_END);
@@ -100,72 +100,15 @@ void test_ksDuplicate()
 	ksDel (ks);
 }
 
-void test_ksLookupCase()
-{
-	printf ("Test bug lookup with case\n");
-	KeySet *ks = ksNew(32,
-			keyNew("system/ay/key", KEY_VALUE, "aykey", KEY_END),
-			keyNew("system/mY/kex", KEY_VALUE, "mykex", KEY_END),
-			keyNew("system/xy/key", KEY_VALUE, "xykey", KEY_END),
-			keyNew("system/My/key", KEY_VALUE, "Mykey", KEY_END),
-			KS_END);
-	Key *found = ksLookupByName (ks, "system/my/key", KDB_O_NOCASE);
-	succeed_if (found != 0, "could not find key (binary search fails when ignoring case)");
-	ksDel (ks);
-}
-
-void test_ksLookupOwner()
-{
-	printf ("Test bug lookup with owner\n");
-	Key *found = 0;
-	KeySet *ks = ksNew(32,
-			keyNew("user:fritz/my/key", KEY_VALUE, "fritz", KEY_END),
-			keyNew("user:frotz/my/key", KEY_VALUE, "frotz", KEY_END),
-			keyNew("user/my/key", KEY_VALUE, "current", KEY_END), KS_END);
-
-	found = ksLookupByName (ks, "user/my/key", KDB_O_WITHOWNER);
-	succeed_if (found != 0, "could not find key");
-	succeed_if (!strcmp (keyValue(found), "current"), "got wrong key");
-
-	found = ksLookupByName (ks, "user:fritz/my/key", KDB_O_WITHOWNER);
-	succeed_if (found != 0, "could not find key");
-	succeed_if (!strcmp (keyValue(found), "fritz"), "got wrong key");
-
-	found = ksLookupByName (ks, "user:frotz/my/key", KDB_O_WITHOWNER);
-	succeed_if (found != 0, "could not find key");
-	succeed_if (!strcmp (keyValue(found), "frotz"), "got wrong key");
-
-	found = ksLookupByName (ks, "user:fretz/my/key", KDB_O_WITHOWNER);
-	succeed_if (found == 0, "found non existing key");
-
-	found = ksLookupByName (ks, "user/my/key", 0);
-	succeed_if (found != 0, "could not find key");
-	succeed_if (!strcmp (keyValue(found), "fritz"), "binary search seems to be non-deterministic");
-
-	found = ksLookupByName (ks, "user:fritz/my/key", 0);
-	succeed_if (found != 0, "could not find key");
-	succeed_if (!strcmp (keyValue(found), "fritz"), "binary search seems to be non-deterministic");
-
-	found = ksLookupByName (ks, "user:frotz/my/key", 0);
-	succeed_if (found != 0, "could not find key");
-	succeed_if (!strcmp (keyValue(found), "fritz"), "binary search seems to be non-deterministic");
-
-	found = ksLookupByName (ks, "user:fretz/my/key", 0);
-	succeed_if (found != 0, "could not find key");
-	succeed_if (!strcmp (keyValue(found), "fritz"), "binary search seems to be non-deterministic");
-
-	ksDel (ks);
-}
-
-void test_ksHole()
+static void test_ksHole()
 {
 	printf ("Test holes in keysets\n");
 	KeySet *ks = ksNew(0, KS_END);
 
 	succeed_if (ksAppendKey (ks, keyNew("system/sw/new", KEY_VALUE, "abc", KEY_END)) == 1, "could not append key");
 	succeed_if (ksAppendKey (ks, keyNew("system/sw/new/sub", KEY_VALUE, "xyz", KEY_END)) == 2, "could not append key");
-	succeed_if (ksAppendKey (ks, keyNew("system/sw/new/mis/sub", KEY_VALUE, "xyz", KEY_END)) == -1,
-			"could append key which makes a hole");
+	succeed_if (ksAppendKey (ks, keyNew("system/sw/new/mis/sub", KEY_VALUE, "xyz", KEY_END)) == 3,
+			"could not append key which makes a hole");
 
 	ksDel (ks);
 
@@ -180,7 +123,7 @@ int fac(int i)
 }
 
 /* Buggy, does not really yield all permutations */
-void per (int k, Key** pool, Key** result)
+static void per (int k, Key** pool, Key** result)
 {
 	int i;
 	int selected;
@@ -204,7 +147,7 @@ void per (int k, Key** pool, Key** result)
 	result[size-1] = 0;
 }
 
-void test_append()
+static void test_append()
 {
 	printf ("Test if keyset is sorted after appending\n");
 
@@ -378,7 +321,7 @@ void test_append()
 	keyDecRef (s3);  keyDel (s3);
 }
 
-void test_equal()
+static void test_equal()
 {
 	Key *k1 = keyNew(0);
 	Key *k2 = keyNew(0);
@@ -402,7 +345,7 @@ void test_equal()
 	keyDel (k2);
 }
 
-void test_cmp()
+static void test_cmp()
 {
 	printf ("Compare two keys\n");
 
@@ -440,7 +383,7 @@ void test_cmp()
 	keyDel (k2);
 }
 
-void test_appendowner()
+static void test_appendowner()
 {
 	Key *key, *s1, *s2, *s3;
 	KeySet *ks;
@@ -482,7 +425,7 @@ void test_appendowner()
 	ksDel (ks);
 }
 
-void test_strcmp()
+static void test_strcmp()
 {
 	printf ("Testing string comparision\n");
 
@@ -528,11 +471,7 @@ int main(int argc, char** argv)
 	test_ksNew();
 	test_ksDuplicate();
 
-	// TODO Bugs
-	// test_ksLookupCase();
-	// test_ksLookupOwner();
-	// test_ksHole();
-
+	test_ksHole();
 	test_append();
 	test_equal();
 	test_cmp();

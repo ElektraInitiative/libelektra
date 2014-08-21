@@ -15,7 +15,7 @@
 
 #include <tests.h>
 
-void test_ksNew()
+static void test_ksNew()
 {
 	KeySet *ks=0;
 	KeySet * keys = ksNew (15, KS_END);
@@ -96,7 +96,7 @@ void test_ksNew()
 	ksDel (ks_c);
 }
 
-void test_ksEmpty()
+static void test_ksEmpty()
 {
 	printf ("Test empty keysets\n");
 	KeySet *ks;
@@ -168,7 +168,7 @@ void test_ksEmpty()
 
 #define NR_KEYSETS 10
 
-void test_ksReference()
+static void test_ksReference()
 {
 	KeySet *ks=0;
 	KeySet *ks1;
@@ -281,7 +281,7 @@ void test_ksReference()
 
 #define NAME_SIZE 250
 
-void test_ksResize()
+static void test_ksResize()
 {
 	int i;
 	KeySet *ks=0;
@@ -374,7 +374,7 @@ void test_ksResize()
 	ksDel (ks);
 }
 
-void test_ksDup()
+static void test_ksDup()
 {
 	KeySet *ks=0;
 	KeySet *other=0;
@@ -434,7 +434,7 @@ void test_ksDup()
 	ksDel (ks);
 }
 
-void test_ksCopy()
+static void test_ksCopy()
 {
 	KeySet *ks=0;
 	KeySet *other=0;
@@ -531,7 +531,7 @@ void test_ksCopy()
 	ksDel (ks);
 }
 
-void test_ksIterate()
+static void test_ksIterate()
 {
 	KeySet *ks=ksNew(0, KS_END);
 	KeySet *other=ksNew(0, KS_END);
@@ -625,7 +625,7 @@ void test_ksIterate()
 	ksDel (other);
 }
 
-void test_ksCursor()
+static void test_ksCursor()
 {
 	KeySet *ks=ksNew(0, KS_END);
 	Key * key;
@@ -731,7 +731,7 @@ void test_ksCursor()
 	ksDel (ks);
 }
 
-void test_ksAtCursor()
+static void test_ksAtCursor()
 {
 	KeySet *ks;
 	Key *current;
@@ -794,7 +794,7 @@ void test_ksAtCursor()
 
 }
 
-void test_ksSort()
+static void test_ksSort()
 {
 	KeySet	*ks;
 	Key	*key, *k1, *k2;
@@ -1027,7 +1027,7 @@ void test_ksSort()
 	ksDel (ks);
 }
 
-void ksUnsort (KeySet *ks)
+static void ksUnsort (KeySet *ks)
 {
 	Key *cur;
 	size_t size = 0;
@@ -1055,7 +1055,7 @@ void ksUnsort (KeySet *ks)
 	ksDel (tempks);
 }
 
-void test_ksLookup()
+static void test_ksLookup()
 {
 	printf ("Test lookup\n");
 
@@ -1129,7 +1129,7 @@ void test_ksLookup()
 	for (i=23; i<32;i++) keyDel (k[i]);
 }
 
-void test_ksLookupByName()
+static void test_ksLookupByName()
 {
 	printf ("Test lookup by name\n");
 
@@ -1201,7 +1201,7 @@ void test_ksLookupByName()
 }
 
 
-void test_ksLookupName()
+static void test_ksLookupName()
 {
 	Key * found;
 	KeySet *ks= ksNew(0, KS_END);
@@ -1309,7 +1309,7 @@ void test_ksLookupName()
 	ksDel(ks);
 }
 
-void test_ksLookupNameCascading()
+static void test_ksLookupNameCascading()
 {
 	Key * found;
 	KeySet *ks= ksNew(0, KS_END);
@@ -1405,7 +1405,7 @@ void test_ksLookupNameCascading()
 	ksDel(ks);
 }
 
-void test_ksLookupNameDomain()
+static void test_ksLookupNameDomain()
 {
 	Key * found;
 	KeySet *ks= ksNew(0, KS_END);
@@ -1440,7 +1440,7 @@ void test_ksLookupNameDomain()
 	ksDel(ks);
 }
 
-void test_ksLookupNameAll()
+static void test_ksLookupNameAll()
 {
 	Key * found;
 	cursor_t cursor;
@@ -1591,7 +1591,7 @@ void test_ksLookupNameAll()
 }
 
 /*
-void test_ksLookupValue()
+static void test_ksLookupValue()
 {
 	KeySet *ks = ksNew(0, KS_END);
 	Key *found;
@@ -1675,7 +1675,7 @@ void test_ksLookupValue()
 */
 
 //copied out from example	
-void test_ksExample()
+static void test_ksExample()
 {
 	KeySet *ks=ksNew(0, KS_END);
 	Key * key;
@@ -1743,7 +1743,7 @@ void test_ksExample()
 }
 
 #define MAX_SIZE 200
-void test_ksCommonParentName()
+static void test_ksCommonParentName()
 {
 	char ret [MAX_SIZE+1];
 	KeySet *ks = ksNew (10,
@@ -1797,7 +1797,7 @@ void test_ksCommonParentName()
 	ksDel (ks);
 }
 
-void test_ksAppend()
+static void test_ksAppend()
 {
 	int i;
 
@@ -1971,7 +1971,7 @@ int sum_helper (Key *check) { return atoi(keyValue(check)); }
 int below_30 (Key *check) { return atoi(keyValue(check))<30; }
 int find_80 (Key *check) { int n=atoi(keyValue(check)); return n>70?-1:1; }
 
-void test_ksFunctional()
+static void test_ksFunctional()
 {
 	Key *found;
 	Key *current;
@@ -2044,7 +2044,7 @@ void test_ksFunctional()
 	ksDel (values_below_30);
 }
 
-void test_ksLookupPop()
+static void test_ksLookupPop()
 {
 	printf ("Test ksLookup with KDB_O_POP\n");
 
@@ -2269,7 +2269,7 @@ void test_ksLookupPop()
 	
 }
 
-void test_ksSync()
+static void test_ksSync()
 {
 	printf ("Test sync flag of KeySet\n");
 
@@ -2311,7 +2311,7 @@ void test_ksSync()
 	ksDel (ks);
 }
 
-void test_ksDoubleFree()
+static void test_ksDoubleFree()
 {
 	/* Valgrind only test */
 	KeySet *ks1 = ksNew (5,
@@ -2337,7 +2337,7 @@ void test_ksDoubleFree()
 	ksDel (ks2);
 }
 
-void test_ksDoubleAppend()
+static void test_ksDoubleAppend()
 {
 	printf ("Test double appending\n");
 
@@ -2361,7 +2361,7 @@ void test_ksDoubleAppend()
 	ksDel (ks2);
 }
 
-void test_ksDoubleAppendKey()
+static void test_ksDoubleAppendKey()
 {
 	printf ("Test double appending of key\n");
 
@@ -2383,7 +2383,7 @@ void test_ksDoubleAppendKey()
 	// don't free key here!!
 }
 
-void test_ksAppendKey()
+static void test_ksAppendKey()
 {
 	printf ("Test cursor after appending key\n");
 	KeySet *ks=0;
@@ -2439,7 +2439,7 @@ void test_ksAppendKey()
 	ksDel (ks);
 }
 
-void test_ksModifyKey()
+static void test_ksModifyKey()
 {
 	// TODO: broken, it is allowed to change keyname!
 	printf ("Test modify key after insertion\n");
@@ -2457,7 +2457,7 @@ void test_ksModifyKey()
 	ksDel (ks);
 }
 
-void test_keyCmpOrder()
+static void test_keyCmpOrder()
 {
 	Key *k1 = keyNew ("user/a", KEY_META, "order", "20", KEY_END);
 	Key *k2 = keyNew ("user/b", KEY_META, "order", "10", KEY_END);
@@ -2485,7 +2485,7 @@ void test_keyCmpOrder()
 	keyDel (k2);
 }
 
-void test_ksOrder()
+static void test_ksOrder()
 {
 	KeySet* ks = ksNew(20,
 		keyNew("user/test/test", KEY_END),
@@ -2517,7 +2517,7 @@ int main(int argc, char** argv)
 	test_ksReference();
 	test_ksDup();
 	test_ksCopy();
-	// test_ksResize();
+	test_ksResize();
 	test_ksIterate();
 	test_ksCursor();
 	test_ksAtCursor();

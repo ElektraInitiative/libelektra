@@ -93,7 +93,7 @@ struct test tstKeyName[] =
 	}
 };
 
-void test_keyComparing()
+static void test_keyComparing()
 {
 	Key *key1 = keyNew(0);
 	Key *key2 = keyNew(0);
@@ -140,7 +140,7 @@ void test_keyComparing()
 	keyDel (key2);
 }
 
-void test_keyNewSpecial()
+static void test_keyNewSpecial()
 {
 	printf ("Test special key creation\n");
 
@@ -170,7 +170,7 @@ void test_keyNewSpecial()
 	keyDel (k);
 }
 
-void test_keyNewSystem()
+static void test_keyNewSystem()
 {
 	Key     *key;
 	char array[] = "here is some data stored";
@@ -269,7 +269,7 @@ void test_keyNewSystem()
 	succeed_if(keyDel(k3) == 0, "keyDel: Unable to delete key with name + value");
 }
 
-void test_keyNewUser()
+static void test_keyNewUser()
 {
 	Key     *key;
 	char array[] = "here is some data stored";
@@ -369,7 +369,7 @@ void test_keyNewUser()
 	keyDel (k1);
 }
 
-void test_keyReference()
+static void test_keyReference()
 {
 	printf("Test key reference\n");
 
@@ -482,7 +482,7 @@ void test_keyReference()
 
 }
 
-void test_keyName()
+static void test_keyName()
 {
 	Key	*key;
 	size_t	size;
@@ -941,7 +941,7 @@ void test_keyName()
 }
 
 
-void test_keyValue()
+static void test_keyValue()
 {
 	Key * key;
 	char	ret [1000];
@@ -1143,7 +1143,7 @@ void test_keyValue()
 
 }
 
-void test_keyBinary(void)
+static void test_keyBinary(void)
 {
 	Key *key =0;
 	char ret [1000];
@@ -1252,7 +1252,7 @@ void test_keyBinary(void)
 
 }
 
-void test_keyComment()
+static void test_keyComment()
 {
 	Key * key;
 	char	ret [1000];
@@ -1345,7 +1345,7 @@ void test_keyComment()
 
 }
 
-void test_keyOwner()
+static void test_keyOwner()
 {
 	Key * key;
 	char	ret [1000];
@@ -1394,7 +1394,7 @@ void test_keyOwner()
 	succeed_if (keyDel (key) == 0, "could not delete key");
 }
 
-void test_keyInactive ()
+static void test_keyInactive ()
 {
 	Key * key = keyNew(0);
 
@@ -1437,7 +1437,7 @@ void test_keyInactive ()
 	keyDel (key);
 }
 
-void test_keyBelow()
+static void test_keyBelow()
 {
 	Key * key1 = keyNew(0);
 	Key * key2 = keyNew(0);
@@ -1532,7 +1532,7 @@ void test_keyBelow()
 	keyDel (key2);
 }
 
-void test_keyDup()
+static void test_keyDup()
 {
 	Key     *orig, *copy;
 
@@ -1594,7 +1594,7 @@ void test_keyDup()
 	keyDel (copy);
 }
 
-void test_keyCopy()
+static void test_keyCopy()
 {
 	Key     *orig, *copy;
 
@@ -1663,7 +1663,7 @@ void test_keyCopy()
 	keyDel (copy);
 }
 
-void test_keyDir (void)
+static void test_keyDir (void)
 {
 	mode_t i;
 	Key * key = keyNew ("user", KEY_END);
@@ -1728,7 +1728,7 @@ void test_keyDir (void)
 	keyDel (key);
 }
 
-void test_keyTime()
+static void test_keyTime()
 {
 	Key * key = keyNew (KEY_END);
 	time_t now = time(0);
@@ -1795,7 +1795,7 @@ void test_keyTime()
 	keyDel (key);
 }
 
-void test_keyMeta(void)
+static void test_keyMeta(void)
 {
 	Key *key=0;
 
@@ -1864,7 +1864,7 @@ void test_keyMeta(void)
 }
 
 
-void test_keyNamespace()
+static void test_keyNamespace()
 {
 	Key *key;
 
@@ -1926,10 +1926,10 @@ void test_keyNamespace()
 }
 
 typedef void (*fun_t) ();
-void fun()
+static void fun()
 {}
 
-void test_binary()
+static void test_binary()
 {
 	printf ("Test binary values\n");
 
@@ -2044,7 +2044,7 @@ void test_binary()
 	keyDel (k);
 }
 
-void test_keyBelowOrSame()
+static void test_keyBelowOrSame()
 {
 	Key * key1 = keyNew(0);
 	Key * key2 = keyNew(0);
@@ -2109,7 +2109,7 @@ void test_keyBelowOrSame()
 	keyDel (key2);
 }
 
-void test_keyNameSpecial()
+static void test_keyNameSpecial()
 {
 	printf ("Test special keynames");
 	Key *k = keyNew (KEY_END);
@@ -2208,7 +2208,7 @@ void test_keyNameSpecial()
 	keyDel (k);
 }
 
-void test_keyClear()
+static void test_keyClear()
 {
 	printf ("Test clear of key\n");
 
@@ -2273,7 +2273,7 @@ void test_keyClear()
 	keyDel(k1);
 }
 
-void test_keyBaseName()
+static void test_keyBaseName()
 {
 	// TODO: Bug, does not work at the moment!
 	printf ("Test add and set basename");

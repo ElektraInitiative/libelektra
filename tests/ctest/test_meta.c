@@ -1,6 +1,6 @@
 #include <tests_internal.h>
 
-void test_ro()
+static void test_ro()
 {
 	Key *key;
 

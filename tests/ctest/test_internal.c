@@ -15,7 +15,7 @@
 
 #include <tests_internal.h>
 
-void test_elektraMalloc()
+static void test_elektraMalloc()
 {
 	char * buffer=0;
 	buffer = elektraMalloc(50);
@@ -48,7 +48,7 @@ void test_elektraMalloc()
 	elektraFree(dup);
 }
 
-void test_elektraStrLen()
+static void test_elektraStrLen()
 {
 	char charSeq [5];
 

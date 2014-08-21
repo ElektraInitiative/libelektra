@@ -15,7 +15,7 @@
 
 #include <tests.h>
 
-void test_basic()
+static void test_basic()
 {
 	Key *key;
 	key = keyNew("user/metakey", KEY_END);
@@ -60,7 +60,7 @@ void test_basic()
 	keyDel (key);
 }
 
-void test_iterate()
+static void test_iterate()
 {
 	Key *key;
 
@@ -87,7 +87,7 @@ void test_iterate()
 	keyDel (key);
 }
 
-void test_size()
+static void test_size()
 {
 	Key *key;
 	char *buffer;
@@ -188,7 +188,7 @@ void test_size()
 
 }
 
-void test_uid()
+static void test_uid()
 {
 	Key *key;
 
@@ -242,7 +242,7 @@ void test_uid()
 	keyDel (key);
 }
 
-void test_dup()
+static void test_dup()
 {
 	Key *key;
 	Key *dup;
@@ -266,7 +266,7 @@ void test_dup()
 	keyDel (key);
 }
 
-void test_comment()
+static void test_comment()
 {
 	Key *key;
 	char ret[10];
@@ -303,7 +303,7 @@ void test_comment()
 	succeed_if (keyDel (key) == 0, "could not delete key");
 }
 
-void test_owner()
+static void test_owner()
 {
 	Key *key;
 
@@ -342,7 +342,7 @@ void test_owner()
 	succeed_if (keyDel (key) == 0, "could not delete key with env");
 }
 
-void test_mode()
+static void test_mode()
 {
 	Key *key;
 
@@ -401,7 +401,7 @@ void test_mode()
 	keyDel (key);
 }
 
-void test_type()
+static void test_type()
 {
 	Key *key;
 
@@ -418,7 +418,7 @@ void test_type()
 
 Key * g_c;
 
-void j (Key *k)
+static void j (Key *k)
 {
 	size_t size = keyGetValueSize (k);
 	char *value = malloc (size);
@@ -434,7 +434,7 @@ void j (Key *k)
 	// with the metadata from g_c
 }
 
-void l(Key *k)
+static void l(Key *k)
 {
 	// receive g_c
 	keyCopyMeta(k, g_c, "type");
@@ -442,7 +442,7 @@ void l(Key *k)
 	// with the metadata "type" from g_c
 }
 
-void test_examples()
+static void test_examples()
 {
 	Key *key;
 	key = keyNew(0);
@@ -482,7 +482,7 @@ void test_examples()
 	keyDel (g_c);
 }
 
-void test_copy()
+static void test_copy()
 {
 	printf ("Test key meta copy\n");
 
@@ -572,7 +572,7 @@ void test_copy()
 	keyDel (c);
 }
 
-void test_new()
+static void test_new()
 {
 	Key *key;
 	key = keyNew ("user/test",
@@ -623,7 +623,7 @@ void test_new()
 }
 
 
-void test_copyall()
+static void test_copyall()
 {
 	printf ("Test key meta copy all\n");
 

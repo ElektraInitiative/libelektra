@@ -1,6 +1,6 @@
 #include <tests_internal.h>
 
-void test_ksPopAtCursor()
+static void test_ksPopAtCursor()
 {
 	KeySet *ks = ksNew (
 		5,
@@ -27,7 +27,7 @@ void test_ksPopAtCursor()
 	ksDel(ks_c);
 }
 
-void test_ksToArray()
+static void test_ksToArray()
 {
 	KeySet *ks = ksNew (5,
 			keyNew ("user/test1", KEY_END),

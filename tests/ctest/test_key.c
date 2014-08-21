@@ -1,6 +1,6 @@
 #include <tests_internal.h>
 
-void test_keyRefcounter()
+static void test_keyRefcounter()
 {
 	Key *key = keyNew(0);
 	key->ksReference = 5;
@@ -15,7 +15,7 @@ void test_keyRefcounter()
 	keyDel (key);
 }
 
-void test_keyHelpers()
+static void test_keyHelpers()
 {
 	char *name="user/abc/defghi/jkl";
 	char *p;
@@ -276,7 +276,7 @@ void test_keyHelpers()
 	keyDel (k2);
 }
 
-void test_keyPlugin()
+static void test_keyPlugin()
 {
 	Plugin *plug = (Plugin *) 1222243;
 
