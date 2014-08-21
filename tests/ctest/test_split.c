@@ -58,7 +58,7 @@ KeySet *root_config(void)
 
 
 
-void test_create()
+static void test_create()
 {
 	printf ("Test create split\n");
 
@@ -79,7 +79,7 @@ void test_create()
 	elektraSplitDel (split);
 }
 
-void test_resize()
+static void test_resize()
 {
 	printf ("Test resize split\n");
 
@@ -102,7 +102,7 @@ void test_resize()
 	elektraSplitDel (split);
 }
 
-void test_append()
+static void test_append()
 {
 	printf ("Test append split\n");
 
@@ -129,7 +129,7 @@ void test_append()
 	elektraSplitDel (split);
 }
 
-void test_searchroot()
+static void test_searchroot()
 {
 	printf ("Test search root\n");
 

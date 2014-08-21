@@ -33,7 +33,7 @@ Backend *b_new(const char *name, const char *value)
 	return backend;
 }
 
-void kdb_del(KDB *kdb)
+static void kdb_del(KDB *kdb)
 {
 	elektraBackendClose (kdb->defaultBackend, 0);
 	elektraTrieClose(kdb->trie, 0);
@@ -42,7 +42,7 @@ void kdb_del(KDB *kdb)
 	elektraFree (kdb);
 }
 
-void test_mount()
+static void test_mount()
 {
 	printf ("test mount backend\n");
 
@@ -90,7 +90,7 @@ KeySet *minimal_config(void)
 }
 
 
-void test_minimaltrie()
+static void test_minimaltrie()
 {
 	printf ("Test minimal mount\n");
 
@@ -118,7 +118,7 @@ KeySet *simple_config(void)
 		KS_END);
 }
 
-void test_simple()
+static void test_simple()
 {
 	printf ("Test simple mount\n");
 
@@ -216,7 +216,7 @@ KeySet *set_pluginconf()
 		KS_END);
 }
 
-void test_simpletrie()
+static void test_simpletrie()
 {
 	printf ("Test simple mount with plugins\n");
 
@@ -321,7 +321,7 @@ KeySet *set_two()
 		KS_END);
 }
 
-void test_two()
+static void test_two()
 {
 	printf ("Test two mounts\n");
 
@@ -391,7 +391,7 @@ KeySet *set_us()
 
 }
 
-void test_us()
+static void test_us()
 {
 	printf ("Test mounting of user and system backends\n");
 
@@ -454,7 +454,7 @@ KeySet *endings_config(void)
 		KS_END);
 }
 
-void test_endings()
+static void test_endings()
 {
 	printf ("Test mounting with different endings\n");
 
@@ -558,7 +558,7 @@ KeySet *oldroot_config(void)
 		KS_END);
 }
 
-void test_oldroot()
+static void test_oldroot()
 {
 	printf ("Test mounting with old root\n");
 
@@ -617,7 +617,7 @@ KeySet *cascading_config(void)
 		KS_END);
 }
 
-void keySetCascading(Key *key, const char* name)
+static void keySetCascading(Key *key, const char* name)
 {
 	size_t size = elektraStrLen(name) + 1;
 	if (size < 2) return;
@@ -629,7 +629,7 @@ void keySetCascading(Key *key, const char* name)
 	strcpy (key->key+1, name);
 }
 
-void test_cascading()
+static void test_cascading()
 {
 	printf ("Test simple mount with cascading\n");
 
@@ -715,7 +715,7 @@ KeySet *root_config(void)
 		KS_END);
 }
 
-void test_root()
+static void test_root()
 {
 	printf ("Test mounting with root\n");
 
@@ -771,7 +771,7 @@ void test_root()
 	ksDel (modules);
 }
 
-void test_default()
+static void test_default()
 {
 	printf ("Test mounting with default\n");
 
@@ -844,7 +844,7 @@ void test_default()
 	ksDel (modules);
 }
 
-void test_modules()
+static void test_modules()
 {
 	printf ("Test mounting with modules\n");
 
@@ -930,23 +930,6 @@ void test_modules()
 	ksDel (modules);
 }
 
-void test_kdbopen()
-{
-	printf ("Test mounting modules\n");
-
-	Key *errorKey = keyNew("", KEY_END);
-	KDB *kdb = kdbOpen (errorKey);
-
-	output_trie (kdb->trie);
-
-	kdbClose (kdb, errorKey);
-
-	succeed_if(output_warnings (errorKey), "warnings found");
-	succeed_if(output_error (errorKey), "error found");
-
-	keyDel (errorKey);
-}
-
 int main(int argc, char** argv)
 {
 	printf("TRIE       TESTS\n");
@@ -966,7 +949,6 @@ int main(int argc, char** argv)
 	test_root();
 	test_default();
 	test_modules();
-	// test_kdbopen();
 
 	printf("\ntest_trie RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

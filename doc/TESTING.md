@@ -43,19 +43,71 @@ The testing must happen on every level of the software to achieve a
 maximum coverage with the available time. In the rest of the document
 we describe the different levels and where these tests are.
 
-## C Unit Tests ###
+### CFramework ###
 
-C Unit Tests are written in plain C with the help of some assertion
-macros.
+This is basically a bunch of assertion macros and some output
+facilities. It is written in pure C and very lightweight.
 
-## API Tests ###
+It is located [here](/tests/cframework).
 
-## C++ Unit Tests ###
+### ABI Tests ###
 
-## Shell Tests ###
+C ABI Tests are written in plain C with the help of cframework.
 
-## Integration Tests ###
+The main purpose of these tests are, that the binaries of old versions
+can be used against new versions as ABI tests.
 
-## Convention Tests ###
+So lets say we compile Elektra 0.8.8 (at this version dedicated ABI
+tests were introduced) in the -full variant. But when we run the
+tests, we use libelektra-full.so.0.8.9 (either by installing it or
+by setting LD_LIBRARY_PATH). You can check with ldd which version is
+used.
+
+The tests are located [here](/tests/abi).
 
 
+### C Unit Tests ###
+
+C Unit Tests are written in plain C with the help of cframework.
+
+It is used to test internal data structures of libelektra that are not
+ABI relevant.
+
+ABI tests can be done on theses tests, too. But by nature from time to
+time these tests will fail.
+
+They are located [here](/tests/cunit).
+
+
+### Module Tests ###
+
+The modules, which are typically used as plugins in Elektra (but can
+also be available statically or in the -full variant), should have their
+own tests.
+
+Use the Cmake macro add_plugintest for adding these tests.
+
+
+### C++ Unit Tests ###
+
+C++ Unit tests are done using the gtest framework. See [architectural
+decision](/doc/decisions/unit_testing.md).
+
+Use the CMake macro add_gtest for adding these tests.
+
+
+### Script Tests ###
+
+Script test are done using POSIX shell + CMake. See [architectural
+decision](/doc/decisions/script_testing.md).
+
+The script tests have different purposes:
+- End to End tests (usage of tools as a user would do)
+- External Compilation tests (compile and run programs as a user would do)
+- Conventions tests (do internal checks that check for common problems)
+- Meta Test Suites (run other test suites)
+
+
+### Other kind of Tests ###
+
+Bindings, other than C++ typically have their own way of testing.

@@ -16,7 +16,7 @@
 
 #include <tests_internal.h>
 
-void test_process(void)
+static void test_process(void)
 {
 	printf ("Test processing of plugin name\n");
 
@@ -123,7 +123,7 @@ KeySet *set_pluginconf()
 		KS_END);
 }
 
-void test_simple()
+static void test_simple()
 {
 	printf ("Test plugin\n");
 
@@ -146,7 +146,7 @@ void test_simple()
 	ksDel (modules);
 }
 
-void test_name()
+static void test_name()
 {
 	printf ("Test name\n");
 	KeySet *modules = ksNew(0, KS_END);

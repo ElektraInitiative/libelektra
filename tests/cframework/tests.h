@@ -17,10 +17,6 @@
 #include "kdbconfig.h"
 #endif
 
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-
 #ifdef HAVE_STDIO_H
 #include <stdio.h>
 #endif
@@ -33,15 +29,8 @@
 #include <string.h>
 #endif
 
-#ifdef HAVE_TIME_H
-#include <time.h>
-#endif
-
-#ifdef HAVE_LOCALE_H
-#include <locale.h>
-#endif
-
 #include <kdb.h>
+#include <kdbextension.h>
 
 #define BUFFER_LENGTH 4096
 

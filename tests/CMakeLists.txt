@@ -13,7 +13,8 @@ add_headers (HDR_FILES)
 
 macro (do_test source)
 	include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
-	set (SOURCES ${HDR_FILES} ${source}.c tests.c)
+	set (SOURCES ${HDR_FILES} ${source}.c $<TARGET_OBJECTS:cframework>)
+	add_testheaders(SOURCES)
 	add_executable (${source} ${SOURCES})
 
 	if (INSTALL_TESTING)
@@ -47,12 +48,9 @@ add_custom_target(run_memcheck
 	"$<CONFIGURATION>"
 	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
 
-file (GLOB TESTS test_*.c)
-foreach (file ${TESTS})
-	get_filename_component (name ${file} NAME_WE)
-	do_test (${name})
-endforeach (file ${TESTS})
-
+add_subdirectory (cframework)
 add_subdirectory (shell)
+add_subdirectory (abi)
+add_subdirectory (ctest)
 
 include_directories ("${PROJECT_SOURCE_DIR}/tests")

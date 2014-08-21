@@ -73,13 +73,13 @@ KDB* kdb_open()
 	return handle;
 }
 
-void kdb_close(KDB *kdb)
+static void kdb_close(KDB *kdb)
 {
 	kdbClose (kdb, 0);
 }
 
 
-void test_needsync()
+static void test_needsync()
 {
 	printf ("Test needs sync\n");
 
@@ -150,7 +150,7 @@ void test_needsync()
 
 
 
-void test_mount()
+static void test_mount()
 {
 	printf ("Test mount split\n");
 
@@ -240,7 +240,7 @@ void test_mount()
 	kdb_close(handle);
 }
 
-void test_easyparent()
+static void test_easyparent()
 {
 	printf ("Test parent separation of user and system (default Backend)\n");
 
@@ -309,7 +309,7 @@ void test_easyparent()
 	kdb_close(handle);
 }
 
-void test_optimize()
+static void test_optimize()
 {
 	printf ("Test optimization split (user, system in trie)\n");
 
@@ -403,7 +403,7 @@ void test_optimize()
 	kdb_close(handle);
 }
 
-void test_three()
+static void test_three()
 {
 	printf ("Test three mountpoints\n");
 
@@ -503,7 +503,7 @@ void test_three()
 }
 
 
-void test_userremove()
+static void test_userremove()
 {
 	printf ("Test user removing\n");
 	Key *parent = 0;
@@ -630,7 +630,7 @@ void test_userremove()
 }
 
 
-void test_systemremove()
+static void test_systemremove()
 {
 	printf ("Test system removing\n");
 	Key *parent = 0;
@@ -757,7 +757,7 @@ void test_systemremove()
 }
 
 
-void test_emptyremove()
+static void test_emptyremove()
 {
 	printf ("Test empty removing\n");
 
@@ -829,7 +829,7 @@ void test_emptyremove()
 	keyDel (parent);
 }
 
-void test_realworld()
+static void test_realworld()
 {
 	printf ("Test real world example\n");
 
@@ -1090,7 +1090,7 @@ void test_realworld()
 }
 
 
-void test_emptysplit()
+static void test_emptysplit()
 {
 	printf ("Test empty split\n");
 
@@ -1135,7 +1135,7 @@ void test_emptysplit()
 }
 
 
-void test_nothingsync()
+static void test_nothingsync()
 {
 	printf ("Test buildup with nothing to sync\n");
 	KDB *handle = kdb_open();

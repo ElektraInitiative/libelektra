@@ -68,7 +68,7 @@ KeySet *set_pluginconf()
 		KS_END);
 }
 
-void test_simple()
+static void test_simple()
 {
 	printf ("Test simple building of backend\n");
 
@@ -114,7 +114,7 @@ void test_simple()
 	ksDel (modules);
 }
 
-void test_default()
+static void test_default()
 {
 	printf ("Test default\n");
 
@@ -180,7 +180,7 @@ KeySet *set_backref()
 
 }
 
-void test_backref()
+static void test_backref()
 {
 	printf ("Test back references\n");
 

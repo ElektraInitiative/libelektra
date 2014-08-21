@@ -59,7 +59,7 @@ KeySet * set_oa ()
 
 ssize_t ksSearchInternal(const KeySet *ks, const Key *toAppend);
 
-void test_search()
+static void test_search()
 {
 	printf ("Testing operation search (internal)\n");
 
@@ -154,7 +154,7 @@ void test_search()
 	ksDel (a);
 }
 
-void test_cut()
+static void test_cut()
 {
 	printf ("Testing operation cut\n");
 
@@ -207,7 +207,7 @@ void test_cut()
 	}
 }
 
-void test_cutpoint()
+static void test_cutpoint()
 {
 	printf ("Testing operation cut point\n");
 
@@ -251,7 +251,7 @@ void test_cutpoint()
 	ksDel (cmp_part);
 }
 
-void test_cutpoint_1()
+static void test_cutpoint_1()
 {
 	printf ("Testing operation cut point 1\n");
 
@@ -298,7 +298,7 @@ void test_cutpoint_1()
 	ksDel (cmp_part);
 }
 
-void test_unique_cutpoint()
+static void test_unique_cutpoint()
 {
 	printf ("Testing operation cut with unique cutpoint\n");
 
@@ -336,7 +336,7 @@ void test_unique_cutpoint()
 	keyDel (cutpoint);
 }
 
-void test_cutbelow()
+static void test_cutbelow()
 {
 	printf ("Testing cutting below some keys\n");
 
@@ -381,7 +381,7 @@ void test_cutbelow()
 	keyDel (cutpoint);
 }
 
-void test_cutbelow_1()
+static void test_cutbelow_1()
 {
 	printf ("Testing cutting below some keys\n");
 
@@ -430,7 +430,7 @@ void test_cutbelow_1()
 
 ssize_t ksCopyInternal(KeySet *ks, size_t to, size_t from);
 
-void test_copy()
+static void test_copy()
 {
 	printf ("Testing operation copy (internal)\n");
 
@@ -488,7 +488,7 @@ KeySet *set_simple()
 
 }
 
-void test_simple()
+static void test_simple()
 {
 	KeySet *config = set_simple();
 	KeySet * result_res = ksNew( 16 ,
@@ -526,7 +526,7 @@ void test_simple()
 	ksDel (config);
 }
 
-void test_cursor()
+static void test_cursor()
 {
 	printf ("test cut cursor\n");
 
@@ -596,7 +596,7 @@ void test_cursor()
 	ksDel (res);
 }
 
-void test_morecut()
+static void test_morecut()
 {
 	printf ("More cut test cases\n");
 
@@ -649,7 +649,7 @@ void test_morecut()
 	ksDel (split2);
 }
 
-void test_cutafter()
+static void test_cutafter()
 {
 	printf ("More cut after\n");
 
@@ -719,11 +719,11 @@ int main(int argc, char** argv)
 	test_unique_cutpoint();
 	test_cutbelow();
 	test_cutbelow_1();
-	// test_copy(); // TODO has memory problems...
 	test_simple();
 	test_cursor();
 	test_morecut();
 	test_cutafter();
+	// test_copy(); // TODO has memory problems...
 
 	printf("\ntest_operation RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

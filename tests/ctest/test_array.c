@@ -2,7 +2,7 @@
 
 #include "tests.h"
 
-void test_array()
+static void test_array()
 {
 	printf ("Test array\n");
 
