@@ -3,7 +3,7 @@
 #include <vector>
 
 #include <cmdline.hpp>
-
+#include <keysetio.hpp>
 
 #include <mergehelper.hpp>
 #include <merging/automergestrategy.hpp>
