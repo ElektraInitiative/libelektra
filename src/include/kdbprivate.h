@@ -461,7 +461,7 @@ Backend* elektraMountGetBackend(KDB *handle, const Key *key);
 
 /*Private helper for keys*/
 int keyInit(Key *key);
-int keyClose(Key *key);
+void keyVInit(Key *key, const char *keyname, va_list ap);
 
 int ksInit(KeySet *ks);
 int ksClose(KeySet *ks);

@@ -299,78 +299,9 @@ Key *keyNew(const char *name, ...) {
  */
 Key *keyVNew (const char *name, va_list va)
 {
-	Key *key=0;
-	keyswitch_t action=0;
-	void * value=0;
-	ssize_t valueSize=-1;
-	void (*p) (void)=0;
-
-	key=elektraKeyMalloc();
+	Key *key=elektraKeyMalloc();
 	if (!key) return 0;
-
-	if (name) {
-		keySetName(key, name);
-
-		action=va_arg(va, keyswitch_t);
-		while (action) {
-			switch (action) {
-				case KEY_SIZE:
-					valueSize=va_arg(va, size_t);
-					break;
-				case KEY_BINARY:
-					keySetMeta (key, "binary", "");
-					break;
-				case KEY_VALUE:
-					value = va_arg(va, void *);
-					if (valueSize>=0 && keyIsBinary(key))
-					{
-						keySetBinary(key,value, valueSize);
-					} else if (keyIsBinary(key)) {
-						valueSize = (ssize_t) elektraStrLen (value);
-						keySetBinary(key,value, valueSize);
-					} else {
-						keySetString(key,value);
-					}
-					break;
-				case KEY_UID:
-					keySetUID(key,va_arg(va,uid_t));
-					break;
-				case KEY_GID:
-					keySetGID(key,va_arg(va,gid_t));
-					break;
-				case KEY_MODE:
-					/* Theoretically this should be mode_t, but prefer using
-					   int to avoid troubles when sizeof(mode_t)!=sizeof(int)
-					 */
-					keySetMode(key,va_arg(va, int));
-					break;
-				case KEY_OWNER:
-					keySetOwner(key,va_arg(va,char *));
-					break;
-				case KEY_COMMENT:
-					keySetComment(key,va_arg(va,char *));
-					break;
-				case KEY_DIR:
-					keySetDir(key);
-					break;
-				case KEY_FUNC:
-					p = va_arg(va, void(*)(void));
-					keySetBinary(key, &p, sizeof(p));
-					break;
-				case KEY_META:
-					value = va_arg (va,char *);
-					/*First parameter is name*/
-					keySetMeta (key, value, va_arg(va,char *));
-					break;
-				default:
-#if DEBUG
-					fprintf (stderr, "Unknown option in keyNew %ld\n", (long int)action);
-#endif
-					break;
-			}
-			action=va_arg(va, keyswitch_t);
-		}
-	}
+	keyVInit(key, name, va);
 	return key;
 }
 
