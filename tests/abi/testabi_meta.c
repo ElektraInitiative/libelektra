@@ -13,7 +13,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <tests_internal.h>
+#include <tests.h>
 
 void test_basic()
 {
@@ -747,7 +747,7 @@ void test_copyall()
 
 int main(int argc, char** argv)
 {
-	printf("KEY META     TESTS\n");
+	printf("KEY META ABI TESTS\n");
 	printf("==================\n\n");
 
 	init (argc, argv);
@@ -767,7 +767,7 @@ int main(int argc, char** argv)
 	test_copyall();
 
 
-	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	printf("\ntestabi_meta RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
 }

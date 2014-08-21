@@ -13,7 +13,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <tests_internal.h>
+#include <tests.h>
 
 #ifdef HAVE_TIME_H
 #include <time.h>
@@ -2589,7 +2589,7 @@ void test_keyBaseName()
 
 int main(int argc, char** argv)
 {
-	printf("    KEY  TESTS\n");
+	printf("KEY ABI  TESTS\n");
 	printf("==================\n\n");
 
 	init (argc, argv);
@@ -2620,7 +2620,7 @@ int main(int argc, char** argv)
 
 	// test_keyBaseName(); // TODO: Bug, does not work at the moment
 
-	printf("\ntest_key RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	printf("\ntestabi_key RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
 }
