@@ -34,7 +34,13 @@ do
 
 	echo "Import with existing root"
 
-	$KDB set $ROOT "root" >/dev/null
+    if [ "x$PLUGIN" != "xyajl" ]
+    then
+        $KDB set $ROOT "root" >/dev/null
+    else
+        $KDB set $ROOT "" > /dev/null    
+    fi
+    
 	exit_if_fail "could not set root"
 
 	test `$KDB ls $ROOT` = $ROOT
@@ -121,16 +127,16 @@ do
 	$KDB rm -r $ROOT
 	succeed_if "Could not remove root"
 
-	#	if [ "x$PLUGIN" != "xyajl" ]
-	#then
+	if [ "x$PLUGIN" != "xyajl" ]
+	then
 		#TODO: yajl currently cannot hold values within
 		#directories, do not hardcode that
-		#		test "`$KDB get $SIDE`" = val
-		#succeed_if "root value not correct"
-	#fi
+		test "`$KDB get $SIDE`" = val
+		succeed_if "root value not correct"
+	fi
 
-	#$KDB rm $SIDE
-	#succeed_if "Could not remove $SIDE"
+	$KDB rm $SIDE
+	succeed_if "Could not remove $SIDE"
 
 
 
@@ -189,11 +195,11 @@ user/tests/script/key"
 	diff $DATADIR/one_value.$PLUGIN $FILE
 	succeed_if "Export file one_value.$PLUGIN was not equal"
 
-	#test "`$KDB get $SIDE`" = val
-	#succeed_if "side value not correct"
+	test "`$KDB get $SIDE`" = val
+	succeed_if "side value not correct"
 
-	#$KDB rm $SIDE
-	#succeed_if "Could not remove $SIDE"
+	$KDB rm $SIDE
+	succeed_if "Could not remove $SIDE"
 
 
 
@@ -230,16 +236,16 @@ user/tests/script/key"
 	diff $DATADIR/one_value.$PLUGIN $FILE
 	succeed_if "Export file one_value.$PLUGIN was not equal"
 
-	#	if [ "x$PLUGIN" != "xyajl" ]
-	#then
+	if [ "x$PLUGIN" != "xyajl" ]
+	then
 		#TODO: yajl currently cannot hold values within
 		#directories, do not hardcode that
-		#	test "`$KDB get $SIDE`" = val
-		#succeed_if "root value not correct"
-	#fi
+		test "`$KDB get $SIDE`" = val
+		succeed_if "root value not correct"
+	fi
 
-	#	$KDB rm $SIDE
-	#succeed_if "Could not remove $SIDE"
+	$KDB rm $SIDE
+	succeed_if "Could not remove $SIDE"
 
 
 	$KDB rm -r $ROOT

@@ -35,9 +35,13 @@ int ImportCommand::execute(Cmdline const& cl)
 	}
 
 	KeySet originalKeys;
-	kdb.get (originalKeys, root);
-	originalKeys = originalKeys.cut(root);
-	printWarnings (cerr, root);
+
+	{
+		KDB lkdb;
+		lkdb.get (originalKeys, root);
+		originalKeys = originalKeys.cut(root);
+		printWarnings (cerr, root);
+	}
 
 	KeySet importedKeys;
 
