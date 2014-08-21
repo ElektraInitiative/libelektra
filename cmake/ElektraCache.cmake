@@ -47,7 +47,6 @@ set (PLUGINS_LIST_NODEP
 	hexcode
 	hidden
 	ni
-	ini
 	null
 	struct
 	success
@@ -56,6 +55,7 @@ set (PLUGINS_LIST_NODEP
 	validation
 	constants
 	noresolver
+	ini
 	)
 
 #

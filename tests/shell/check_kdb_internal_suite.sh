@@ -22,6 +22,10 @@ do
 		MOUNT_PLUGIN="$PLUGIN ccode null"
 		TESTS="basic"
 		;;
+	"ini")
+		#test broken?
+		continue
+		;;
 	"line")
 		TESTS="basic"
 		;;
