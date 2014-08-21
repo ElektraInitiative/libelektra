@@ -59,10 +59,16 @@
 #ifndef KDBOS_H
 #define KDBOS_H
 
-#ifdef __GNUC__
-#define ELEKTRA_SENTINEL  __attribute__ ((sentinel))
+#ifdef __cplusplus
+#define KS_END ((ckdb::Key*)0)
 #else
-#define ELEKTRA_SENTINEL
+#define KS_END ((Key*)0)
+#endif
+
+
+#ifdef __GNUC__
+#undef ELEKTRA_SENTINEL
+#define ELEKTRA_SENTINEL  __attribute__ ((sentinel))
 #endif
 
 #ifndef WIN32

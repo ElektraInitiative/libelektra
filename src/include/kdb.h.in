@@ -19,18 +19,13 @@
 #ifndef KDB_H
 #define KDB_H
 
-#include "kdbos.h"
-
+#define ELEKTRA_SENTINEL
 #define KDB_VERSION "@KDB_VERSION@"
 #define KDB_VERSION_MAJOR @KDB_VERSION_MAJOR@
 #define KDB_VERSION_MINOR @KDB_VERSION_MINOR@
 #define KDB_VERSION_MICRO @KDB_VERSION_MICRO@
 
-#ifdef __cplusplus
-#define KS_END ((ckdb::Key*)0)
-#else
-#define KS_END ((Key*)0)
-#endif
+#include "kdbos.h"
 
 
 enum {

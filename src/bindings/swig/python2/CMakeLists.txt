@@ -5,7 +5,8 @@ find_package (PythonInterp 2.7 REQUIRED)
 find_package (PythonLibs 2.7 REQUIRED)
 
 if (PYTHONLIBS_VERSION_STRING MATCHES "^3\\.[0-9]+")
-	message (SEND_ERROR "python2 is for python 2.7 only")
+	message (SEND_ERROR "python2 is for python 2.7 only and not
+	${PYTHONLIBS_VERSION_STRING}")
 endif ()
 
 add_headers (HDR_FILES)

@@ -5,7 +5,8 @@ find_package (PythonInterp 3 REQUIRED)
 find_package (PythonLibs 3 REQUIRED)
 
 if (PYTHONLIBS_VERSION_STRING MATCHES "^2\\.[0-9]+")
-	message (SEND_ERROR "python3 is for python 3 only")
+	message (SEND_ERROR "python3 is for python 3 only and not
+	${PYTHONLIBS_VERSION_STRING}")
 endif ()
 
 add_headers (HDR_FILES)
@@ -22,6 +23,8 @@ set_source_files_properties (kdb.i PROPERTIES SWIG_FLAGS "-py3;-extranative")
 swig_add_module (swig-python3 python kdb.i)
 swig_link_libraries (swig-python3 elektra ${PYTHON_LIBRARIES})
 set_target_properties (_swig-python3 PROPERTIES OUTPUT_NAME _kdb)
+
+set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "-DSWIG_TYPE_TABLE=kdb")
 
 set (PYTHON_GET_MODULES_DIR_COMMAND "from distutils.sysconfig import get_python_lib; print(get_python_lib(True, prefix='${CMAKE_INSTALL_PREFIX}'))")
 execute_process (
