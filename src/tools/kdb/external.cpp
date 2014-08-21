@@ -1,6 +1,6 @@
+#include <kdb.h>
 #include <external.hpp>
 #include "kdbconfig.h"
-#include <kdbos.h>
 
 #include <string>
 #include <vector>

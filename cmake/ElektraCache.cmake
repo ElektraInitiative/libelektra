@@ -14,7 +14,8 @@
 # They are essential so that elektra can work
 #
 set (PLUGINS_LIST_DEFAULT
-	dump resolver
+	dump
+	resolver
 	)
 
 #
@@ -30,7 +31,8 @@ endif ()
 # Should compile on every system where elektra compiles.
 #
 set (PLUGINS_LIST_COMPILE
-	template doc
+	template
+	doc
 	)
 
 #
@@ -40,22 +42,34 @@ set (PLUGINS_LIST_COMPILE
 #
 set (PLUGINS_LIST_NODEP
 	ccode
-	error  fstab
-	hexcode  hidden
-	ni  null
-	struct  success
-	tracer  type  validation
+	error
+	fstab
+	hexcode
+	hidden
+	ni
+	ini
+	null
+	struct
+	success
+	tracer
+	type
+	validation
 	constants
+	noresolver
 	)
 
 #
 # Plugins which use some posix facility
 #
 set (PLUGINS_LIST_POSIX
-	glob  hosts  iconv  network
+	glob
+	hosts
+	iconv
+	network
 	path
 	keytometa
-	syslog uname
+	syslog
+	uname
 	timeofday
 	simpleini
 	line
@@ -79,7 +93,12 @@ endif ()
 # plugins with dependencies
 #
 set (PLUGINS_LIST_DEP
-	yajl dbus tcl xmltool augeas
+	yajl
+	dbus
+	tcl
+	xmltool
+	augeas
+	journald
 	)
 
 #

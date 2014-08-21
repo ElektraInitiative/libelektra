@@ -719,11 +719,11 @@ int main(int argc, char** argv)
 	test_unique_cutpoint();
 	test_cutbelow();
 	test_cutbelow_1();
-	// test_copy(); // TODO has memory problems...
 	test_simple();
 	test_cursor();
 	test_morecut();
 	test_cutafter();
+	// test_copy(); // TODO has memory problems...
 
 	printf("\ntest_operation RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
