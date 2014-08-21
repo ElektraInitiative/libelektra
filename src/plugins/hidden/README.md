@@ -2,7 +2,7 @@
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
-- infos/provides = code
+- infos/provides = 
 - infos/placements = postgetstorage presetstorage
 - infos/description = Hides keys which start with a .
 
