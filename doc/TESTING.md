@@ -43,19 +43,19 @@ The testing must happen on every level of the software to achieve a
 maximum coverage with the available time. In the rest of the document
 we describe the different levels and where these tests are.
 
-## C Unit Tests ###
+### C Unit Tests ###
 
 C Unit Tests are written in plain C with the help of some assertion
 macros.
 
-## API Tests ###
-
-## C++ Unit Tests ###
-
-## Shell Tests ###
-
-## Integration Tests ###
-
-## Convention Tests ###
+### API Tests ###
+#
+### C++ Unit Tests ###
+#
+### Shell Tests ###
+#
+### Integration Tests ###
+#
+### Convention Tests ###
 
 

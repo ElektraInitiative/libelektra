@@ -15,6 +15,10 @@
 
 #include <tests_internal.h>
 
+#ifdef HAVE_TIME_H
+#include <time.h>
+#endif
+
 struct test {
 	char	*testName;
 	char	*keyName;
