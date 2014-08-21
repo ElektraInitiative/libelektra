@@ -478,13 +478,6 @@ void test_keyReference()
 	succeed_if (keyIncRef(key) == SSIZE_MAX, "should stay at maximum");
 	succeed_if (keyGetRef(key) == SSIZE_MAX, "reference counter");
 	succeed_if (keyIncRef(key) == SSIZE_MAX, "should stay at maximum");
-
-	key->ksReference = 5;
-	while (keyGetRef(key) > 0) keyDecRef(key);
-	succeed_if (keyGetRef(key) == 0, "reference counter");
-	succeed_if (keyDecRef(key) == 0, "should stay at minimum");
-	succeed_if (keyGetRef(key) == 0, "reference counter");
-	succeed_if (keyDecRef(key) == 0, "should stay at minimum");
 	keyDel (key);
 
 }
@@ -895,10 +888,10 @@ void test_keyName()
 
 		/* keyGetFullRootNameSize */
 		size = keyGetFullRootNameSize(key);
-		succeed_if( (size == elektraStrLen(tstKeyName[i].expectedFRootName)), "keyGetFullRootNameSize" );
+		succeed_if( (size == strlen(tstKeyName[i].expectedFRootName)+1), "keyGetFullRootNameSize" );
 		
 		/* keyGetFullRootName */
-		buf = elektraMalloc(size*sizeof(char));
+		buf = malloc(size*sizeof(char));
 		keyGetFullRootName(key, buf, size);
 		// printf ("comp: %s - %s\n", buf, tstKeyName[i].expectedFRootName);
 		succeed_if( (strncmp(buf, tstKeyName[i].expectedFRootName, size) == 0), "keyGetFullRootName" );
@@ -906,33 +899,33 @@ void test_keyName()
 
 		/* keyGetParentNameSize */
 		size = keyGetParentNameSize(key);
-		succeed_if( (size == elektraStrLen(tstKeyName[i].expectedParentName)), "ketGetParentNameSize" );
+		succeed_if( (size == strlen(tstKeyName[i].expectedParentName)+1), "ketGetParentNameSize" );
 
 		/* keyGetParentName */
 		size = keyGetParentNameSize(key)+1;
-		buf = elektraMalloc(size*sizeof(char));
+		buf = malloc(size*sizeof(char));
 		keyGetParentName(key, buf, size);
 		succeed_if( (strncmp(buf, tstKeyName[i].expectedParentName, size) == 0), "keyGetParentName" );
 		free(buf);
 
 		/* keyGetBaseNameSize */
 		size = keyGetBaseNameSize(key);
-		succeed_if( (size == elektraStrLen(tstKeyName[i].expectedBaseName)), "keyGetBaseNameSize" );
+		succeed_if( (size == strlen(tstKeyName[i].expectedBaseName)+1), "keyGetBaseNameSize" );
 
 		/* keyGetBaseName */
 		size = keyGetBaseNameSize(key)+1;
-		buf = elektraMalloc(size*sizeof(char));
+		buf = malloc(size*sizeof(char));
 		keyGetBaseName(key, buf, size);
 		succeed_if( (strncmp(buf, tstKeyName[i].expectedBaseName, size) == 0), "keyGetBaseName" );
 		free(buf);
 
 		/* keyGetNameSize */
 		size = keyGetNameSize(key);
-		succeed_if( (size == elektraStrLen(tstKeyName[i].expectedKeyName)), "keyGetKeyNameSize" );
+		succeed_if( (size == strlen(tstKeyName[i].expectedKeyName)+1), "keyGetKeyNameSize" );
 		
 		/* keyGetName */
 		size = keyGetNameSize(key);
-		buf = elektraMalloc(size*sizeof(char));
+		buf = malloc(size*sizeof(char));
 		keyGetName(key, buf, size);
 		succeed_if( (strcmp(buf, tstKeyName[i].expectedKeyName) == 0), "keyGetName" );
 		free(buf);
@@ -1870,267 +1863,6 @@ void test_keyMeta(void)
 	keyDel (key);
 }
 
-void test_keyHelpers()
-{
-	char *name="user/abc/defghi/jkl";
-	char *p;
-	size_t size=0;
-	int level=0;
-	char buffer[20];
-	
-	Key *key=keyNew("system/parent/base",KEY_END);
-	char *parentName;
-	size_t parentSize;
-	Key *k1, *k2;
-
-	printf ("Test key helpers\n");
-
-	/* copied out of example from keyNameGetOneLevel
-	 Lets define a key name with a lot of repeating '/' and escaped '/'
-	 char *keyName="user////abc/def\\/ghi////jkl///";*/
-
-	p=name;
-	while (*(p=keyNameGetOneLevel(p+size,&size))) {
-		level++;
-
-		strncpy(buffer,p,size);
-		buffer[size]=0;
-
-		/* printf("Level %d name: \"%s\"\n",level,buffer);*/
-		switch (level)
-		{
-			case 1: succeed_if (strcmp (buffer, "user") == 0, "keyNameGetOneLevel not correct"); break;
-			case 2: succeed_if (strcmp (buffer, "abc") == 0, "keyNameGetOneLevel not correct"); break;
-			case 3: succeed_if (strcmp (buffer, "defghi") == 0, "keyNameGetOneLevel not correct"); break;
-			case 4: succeed_if (strcmp (buffer, "jkl") == 0, "keyNameGetOneLevel not correct"); break;
-			default: succeed_if (0, "should not reach case statement");
-		}
-	}
-
-	/* with escaped sequence:*/
-	name="user////abc/def\\/ghi////jkl///";
-	size=0;
-	level=0;
-
-	p=name;
-	while (*(p=keyNameGetOneLevel(p+size,&size))) {
-		level++;
-
-		strncpy(buffer,p,size);
-		buffer[size]=0;
-
-		/* printf("Level %d name: \"%s\"\n",level,buffer);*/
-		switch (level)
-		{
-			case 1: succeed_if (strcmp (buffer, "user") == 0, "keyNameGetOneLevel not correct");
-				succeed_if (size == 4, "wrong size returned"); break;
-			case 2: succeed_if (strcmp (buffer, "abc") == 0, "keyNameGetOneLevel not correct");
-				succeed_if (size == 3, "wrong size returned"); break;
-			case 3: succeed_if (strcmp (buffer, "def\\/ghi") == 0, "keyNameGetOneLevel not correct");
-				succeed_if (size == 8, "wrong size returned"); break;
-			case 4: succeed_if (strcmp (buffer, "jkl") == 0, "keyNameGetOneLevel not correct");
-				succeed_if (size == 3, "wrong size returned"); break;
-			default: succeed_if (0, "should not reach case statement");
-		}
-	}
-
-	/* with escaped sequence at the end:*/
-	name="user////abc/def\\/ghi////jkl\\/\\/";
-	size=0;
-	level=0;
-
-	p=name;
-	while (*(p=keyNameGetOneLevel(p+size,&size))) {
-		level++;
-
-		strncpy(buffer,p,size);
-		buffer[size]=0;
-
-		/* printf("Level %d name: \"%s\"\n",level,buffer);*/
-		switch (level)
-		{
-			case 1: succeed_if (strcmp (buffer, "user") == 0, "keyNameGetOneLevel not correct");
-				succeed_if (size == 4, "wrong size returned"); break;
-			case 2: succeed_if (strcmp (buffer, "abc") == 0, "keyNameGetOneLevel not correct");
-				succeed_if (size == 3, "wrong size returned"); break;
-			case 3: succeed_if (strcmp (buffer, "def\\/ghi") == 0, "keyNameGetOneLevel not correct");
-				succeed_if (size == 8, "wrong size returned"); break;
-			case 4: succeed_if (strcmp (buffer, "jkl\\/\\/") == 0, "keyNameGetOneLevel not correct");
-				succeed_if (size == 7, "wrong size returned"); break;
-			default: succeed_if (0, "should not reach case statement");
-		}
-	}
-
-	/* with escaped sequence at the begin:*/
-	name="user////\\/abc/\\/def\\/ghi////jkl\\/\\/";
-	size=0;
-	level=0;
-
-	p=name;
-	while (*(p=keyNameGetOneLevel(p+size,&size))) {
-		level++;
-
-		strncpy(buffer,p,size);
-		buffer[size]=0;
-
-		/* printf("Level %d name: \"%s\"\n",level,buffer);*/
-		switch (level)
-		{
-			case 1: succeed_if (strcmp (buffer, "user") == 0, "keyNameGetOneLevel not correct");
-				succeed_if (size == 4, "wrong size returned"); break;
-			case 2: succeed_if (strcmp (buffer, "\\/abc") == 0, "keyNameGetOneLevel not correct");
-				succeed_if (size == 5, "wrong size returned"); break;
-			case 3: succeed_if (strcmp (buffer, "\\/def\\/ghi") == 0, "keyNameGetOneLevel not correct");
-				succeed_if (size == 10, "wrong size returned"); break;
-			case 4: succeed_if (strcmp (buffer, "jkl\\/\\/") == 0, "keyNameGetOneLevel not correct");
-				succeed_if (size == 7, "wrong size returned"); break;
-			default: succeed_if (0, "should not reach case statement");
-		}
-	}
-	
-
-	parentSize=keyGetParentNameSize(key);
-	parentName=malloc(parentSize);
-	keyGetParentName(key,parentName,parentSize);
-	succeed_if (strcmp (parentName, "system/parent") == 0, "parentName error");
-	free (parentName);
-	keyDel (key);
-
-	succeed_if (keyAddBaseName (0, "s") == -1, "null pointer saftey");
-
-	k1 = keyNew ("user/dir1/dir2", KEY_END);
-	succeed_if (keyAddBaseName (k1, 0) == 15, "Could not add nothing to basename");
-	succeed_if (strcmp (keyName(k1), "user/dir1/dir2") == 0, "added basename not correct");
-	succeed_if (keyAddBaseName (k1, "") == 15, "Could not add nothing to basename");
-	succeed_if (strcmp (keyName(k1), "user/dir1/dir2") == 0, "added basename not correct");
-	succeed_if (keyAddBaseName (k1, "mykey") == 21, "Could not add basename");
-	succeed_if (strcmp (keyName(k1), "user/dir1/dir2/mykey") == 0, "added basename not correct");
-	succeed_if (keyGetNameSize(k1) == 21, "Name size not correct");
-	succeed_if (keyAddBaseName (k1, "mykey") == 27, "Could not add basename");
-	succeed_if (strcmp (keyName(k1), "user/dir1/dir2/mykey/mykey") == 0, "added basename not correct");
-	succeed_if (keyGetNameSize(k1) == 27, "Name size not correct");
-	succeed_if (keyAddBaseName (k1, "a") == 29, "Could not add basename");
-	succeed_if (strcmp (keyName(k1), "user/dir1/dir2/mykey/mykey/a") == 0, "added basename not correct");
-	succeed_if (keyGetNameSize(k1) == 29, "Name size not correct");
-	keyDel (k1);
-
-	k1 = keyNew ("user/dir1/dir2", KEY_END);
-	succeed_if (keyAddBaseName (k1, "mykey/mykey/a") == 29, "Could not add basename");
-	succeed_if (strcmp (keyName(k1), "user/dir1/dir2/mykey/mykey/a") == 0, "added basename not correct");
-	succeed_if (keyGetNameSize(k1) == 29, "Name size not correct");
-	keyDel (k1);
-
-	k1 = keyNew ("user/////dir1//////dir2", KEY_END);
-	succeed_if (keyAddBaseName (k1, "mykey/////mykey////a") == 29, "Could not add basename");
-	succeed_if (strcmp (keyName(k1), "user/dir1/dir2/mykey/mykey/a") == 0, "added basename not correct");
-	succeed_if (keyGetNameSize(k1) == 29, "Name size not correct");
-	keyDel (k1);
-
-	k1 = keyNew ("user/dir1/////dir2////", KEY_END);
-	succeed_if (keyAddBaseName (k1, "////mykey////mykey/a") == 29, "Could not add basename");
-	succeed_if (strcmp (keyName(k1), "user/dir1/dir2/mykey/mykey/a") == 0, "added basename not correct");
-	succeed_if (keyGetNameSize(k1) == 29, "Name size not correct");
-	keyDel (k1);
-
-	k1 = keyNew ("user/dir1/dir2", KEY_END);
-	succeed_if (keyAddBaseName (k1, "mykey/mykey////a///") == 29, "Could not add basename");
-	succeed_if (strcmp (keyName(k1), "user/dir1/dir2/mykey/mykey/a") == 0, "added basename not correct");
-	succeed_if (keyGetNameSize(k1) == 29, "Name size not correct");
-	keyDel (k1);
-
-	k2 = keyNew (KEY_END);
-	succeed_if (keyAddBaseName (k2, "no") == -1, "Could not add basename");
-	succeed_if (strcmp (keyName(k2), "") == 0, "added basename not correct");
-	succeed_if (keyGetNameSize(k2) == 1, "Name size not correct");
-	keyDel (k2);
-
-	k2 = keyNew (KEY_END);
-	succeed_if (keyAddBaseName (k2, "user") == 5, "Could not add basename");
-	succeed_if (strcmp (keyName(k2), "user") == 0, "added basename not correct");
-	succeed_if (keyGetNameSize(k2) == 5, "Name size not correct");
-	keyDel (k2);
-
-	k2 = keyNew ("user/dir1/dir2/mykey/mykey/a", KEY_END);
-	succeed_if (keySetBaseName (k2, "mykey") == 33, "Could not add basename");
-	succeed_if (strcmp (keyName(k2), "user/dir1/dir2/mykey/mykey/mykey") == 0, "added basename not correct");
-	succeed_if (keyGetNameSize(k2) == 33, "Name size not correct");
-	succeed_if (keySetBaseName (k2, "einva") == 33, "Could not add basename");
-	succeed_if (strcmp (keyName(k2), "user/dir1/dir2/mykey/mykey/einva") == 0, "added basename not correct");
-	succeed_if (keyGetNameSize(k2) == 33, "Name size not correct");
-	succeed_if (keySetBaseName (k2, "chang") == 33, "Could not add basename");
-	succeed_if (strcmp (keyName(k2), "user/dir1/dir2/mykey/mykey/chang") == 0, "added basename not correct");
-	succeed_if (keySetBaseName (k2, "change") == 34, "Could not add basename");
-	succeed_if (keyGetNameSize(k2) == 34, "Name size not correct");
-	succeed_if (strcmp (keyName(k2), "user/dir1/dir2/mykey/mykey/change") == 0, "added basename not correct");
-	keyDel (k2);
-
-	k2 = keyNew ("user/dir1/a", KEY_END);
-	succeed_if (keySetBaseName (k2, "") == 10, "Could not add basename");
-	succeed_if (strcmp (keyName(k2), "user/dir1") == 0, "added basename not correct");
-	succeed_if (keyGetNameSize(k2) == 10, "Name size not correct");
-	keyDel (k2);
-
-	k2 = keyNew ("user/dir1/a", KEY_END);
-	succeed_if (keySetBaseName (k2, "some/more") == 20, "Could not add basename");
-	succeed_if (strcmp (keyName(k2), "user/dir1/some/more") == 0, "added basename not correct");
-	succeed_if (keyGetNameSize(k2) == 20, "Name size not correct");
-	keyDel (k2);
-
-	k2 = keyNew ("user/dir1/a", KEY_END);
-	succeed_if (keySetBaseName (k2, "some////more") == 20, "Could not add basename");
-	succeed_if (strcmp (keyName(k2), "user/dir1/some/more") == 0, "added basename not correct");
-	succeed_if (keyGetNameSize(k2) == 20, "Name size not correct");
-	keyDel (k2);
-
-	k2 = keyNew ("user/dir1/a", KEY_END);
-	succeed_if (keySetBaseName (k2, "some////more///") == 20, "Could not add basename");
-	succeed_if (strcmp (keyName(k2), "user/dir1/some/more") == 0, "added basename not correct");
-	succeed_if (keyGetNameSize(k2) == 20, "Name size not correct");
-	keyDel (k2);
-
-	k2 = keyNew ("user/dir1/a", KEY_END);
-	succeed_if (keySetBaseName (k2, "///some////more") == 20, "Could not add basename");
-	succeed_if (strcmp (keyName(k2), "user/dir1/some/more") == 0, "added basename not correct");
-	succeed_if (keyGetNameSize(k2) == 20, "Name size not correct");
-	keyDel (k2);
-
-	k2 = keyNew ("user", KEY_END);
-	succeed_if (keySetBaseName (k2, "user") == 5, "Could not add basename");
-	succeed_if (strcmp (keyName(k2), "user") == 0, "added basename not correct");
-	succeed_if (keyGetNameSize(k2) == 5, "Name size not correct");
-	keyDel (k2);
-
-	k2 = keyNew ("system", KEY_END);
-	succeed_if (keySetBaseName (k2, "user") == 5, "Could not add basename");
-	succeed_if (strcmp (keyName(k2), "user") == 0, "added basename not correct");
-	succeed_if (keyGetNameSize(k2) == 5, "Name size not correct");
-	keyDel (k2);
-
-	k2 = keyNew ("user", KEY_END);
-	succeed_if (keySetBaseName (k2, "system") == 7, "Could not add basename");
-	succeed_if (strcmp (keyName(k2), "system") == 0, "added basename not correct");
-	succeed_if (keyGetNameSize(k2) == 7, "Name size not correct");
-	keyDel (k2);
-
-	k2 = keyNew ("system", KEY_END);
-	succeed_if (keySetBaseName (k2, "system") == 7, "Could not add basename");
-	succeed_if (strcmp (keyName(k2), "system") == 0, "added basename not correct");
-	succeed_if (keyGetNameSize(k2) == 7, "Name size not correct");
-	keyDel (k2);
-
-	k2 = keyNew ("user", KEY_END);
-	succeed_if (keySetBaseName (k2, "no") == -1, "Could not add basename");
-	succeed_if (strcmp (keyName(k2), "") == 0, "added basename not correct");
-	succeed_if (keyGetNameSize(k2) == 1, "Name size not correct");
-	keyDel (k2);
-
-	k2 = keyNew ("system", KEY_END);
-	succeed_if (keySetBaseName (k2, "no") == -1, "Could not add basename");
-	succeed_if (strcmp (keyName(k2), "") == 0, "added basename not correct");
-	succeed_if (keyGetNameSize(k2) == 1, "Name size not correct");
-	keyDel (k2);
-}
-
 
 void test_keyNamespace()
 {
@@ -2258,23 +1990,6 @@ void test_binary()
 	keyDel (k);
 
 
-
-
-	Plugin *plug = (Plugin *) 1222243;
-
-	k = 
-		keyNew("system/name",
-			KEY_BINARY,
-			KEY_SIZE, sizeof (plug),
-			KEY_VALUE, &plug,
-			KEY_END);
-	Plugin *xlug = *(Plugin**)keyValue(k);
-
-	succeed_if (xlug == plug, "should point to the same");
-	succeed_if (plug == (Plugin *) 1222243, "should point to that");
-	succeed_if (xlug == (Plugin *) 1222243, "should point to that too");
-
-	keyDel (k);
 
 
 	fun_t tmp = fun;
@@ -2611,7 +2326,6 @@ int main(int argc, char** argv)
 	test_keyDir();
 	test_keyTime();
 	test_keyMeta();
-	test_keyHelpers();
 	test_keyNamespace();
 	test_binary();
 	test_keyBelowOrSame();

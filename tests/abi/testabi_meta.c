@@ -572,27 +572,6 @@ void test_copy()
 	keyDel (c);
 }
 
-void test_ro()
-{
-	Key *key;
-
-	key = keyNew(KEY_END);
-	key->flags |= KEY_FLAG_RO;
-
-	succeed_if (keySetString(key, "a") == -1, "read only string, not allowed to set");
-	succeed_if (keySetBinary(key, "a", 2) == -1, "read only string, not allowed to set");
-	succeed_if (keySetName(key, "user") == -1, "read only string, not allowed to set");
-	succeed_if (keySetMeta(key, "meta", "value") == -1, "read only string, not allowed to set");
-
-	keyDel (key);
-
-	key = keyNew(KEY_END);
-	succeed_if (keySetMeta(key, "meta", "value") == sizeof("value"), "could not set meta");
-
-	// TODO check if RO
-	keyDel (key);
-}
-
 void test_new()
 {
 	Key *key;
@@ -762,7 +741,6 @@ int main(int argc, char** argv)
 	test_type();
 	test_examples();
 	test_copy();
-	test_ro();
 	test_new();
 	test_copyall();
 
