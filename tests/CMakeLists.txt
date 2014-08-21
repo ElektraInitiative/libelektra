@@ -50,7 +50,7 @@ add_custom_target(run_memcheck
 
 add_subdirectory (cframework)
 add_subdirectory (shell)
-#add_subdirectory (api)
+add_subdirectory (abi)
 add_subdirectory (ctest)
 
 include_directories ("${PROJECT_SOURCE_DIR}/tests")

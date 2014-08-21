@@ -28,7 +28,9 @@
 #ifdef HAVE_STRING_H
 #include <string.h>
 #endif
+
 #include <kdb.h>
+#include <kdbextension.h>
 
 #define BUFFER_LENGTH 4096
 

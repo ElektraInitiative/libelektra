@@ -13,7 +13,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <tests_internal.h>
+#include <tests.h>
 
 void test_ksNew()
 {
@@ -2457,65 +2457,6 @@ void test_ksModifyKey()
 	ksDel (ks);
 }
 
-void test_ksPopAtCursor()
-{
-	KeySet *ks = ksNew (
-		5,
-		keyNew ("user/valid/key1", KEY_END),
-		keyNew ("user/valid/key2", KEY_END),
-		keyNew ("system/valid/key1", KEY_END),
-		keyNew ("system/valid/key2", KEY_END),
-		KS_END);
-	KeySet *ks_c = ksNew (
-		5,
-		keyNew ("user/valid/key1", KEY_END),
-		keyNew ("user/valid/key2", KEY_END),
-		keyNew ("system/valid/key1", KEY_END),
-		KS_END);
-	ksRewind(ks);
-	ksNext(ks);
-	ksNext(ks);
-	cursor_t c = ksGetCursor(ks);
-	keyDel (ksPopAtCursor(ks, c));
-	succeed_if(ksCurrent(ks) == 0, "cursor position wrong");
-
-	compare_keyset(ks, ks_c);
-	ksDel(ks);
-	ksDel(ks_c);
-}
-
-void test_ksToArray()
-{
-	KeySet *ks = ksNew (5,
-			keyNew ("user/test1", KEY_END),
-			keyNew ("user/test2", KEY_END),
-			keyNew ("user/test3", KEY_END),
-	KS_END);
-
-	Key **keyArray = calloc (ksGetSize (ks), sizeof (Key *));
-	elektraKsToMemArray(ks, keyArray);
-
-	succeed_if (!strcmp ("user/test1", keyName(keyArray[0])), "first key in array incorrect");
-	succeed_if (!strcmp ("user/test2", keyName(keyArray[1])), "second key in array incorrect");
-	succeed_if (!strcmp ("user/test3", keyName(keyArray[2])), "third key in array incorrect");
-
-	/* test if cursor is restored */
-	ksNext(ks);
-	cursor_t cursor = ksGetCursor(ks);
-	elektraKsToMemArray(ks, keyArray);
-
-	succeed_if (ksGetCursor(ks) == cursor, "cursor was not restored");
-
-	succeed_if (elektraKsToMemArray(0, keyArray) < 0, "wrong result on null pointer");
-	succeed_if (elektraKsToMemArray(ks, 0) < 0, "wrong result on null buffer");
-	KeySet *empty = ksNew(0, KS_END);
-	succeed_if (elektraKsToMemArray(empty, keyArray) == 0, "wrong result on empty keyset");
-	ksDel(empty);
-
-	free (keyArray);
-	ksDel (ks);
-}
-
 void test_keyCmpOrder()
 {
 	Key *k1 = keyNew ("user/a", KEY_META, "order", "20", KEY_END);
@@ -2566,7 +2507,7 @@ void test_ksOrder()
 
 int main(int argc, char** argv)
 {
-	printf("KEYSET       TESTS\n");
+	printf("KEYSET ABI   TESTS\n");
 	printf("==================\n\n");
 
 	init (argc, argv);
@@ -2598,13 +2539,11 @@ int main(int argc, char** argv)
 	test_ksDoubleAppend();
 	test_ksDoubleAppendKey();
 	test_ksAppendKey();
-	test_ksPopAtCursor();
-	test_ksToArray();
 	test_keyCmpOrder();
 	// test_ksModifyKey(); // TODO: Bug, not handled correctly
 	// test_ksOrder(); // TODO: Bug, not handled correctly
 
-	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	printf("\ntestabi_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
 }

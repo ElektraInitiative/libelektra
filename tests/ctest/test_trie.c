@@ -13,10 +13,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <tests.h>
-
-/*Needs private declarations*/
-#include <kdbprivate.h>
+#include <tests_internal.h>
 
 
 Trie *test_insert (Trie *trie, char *name, char* value)
