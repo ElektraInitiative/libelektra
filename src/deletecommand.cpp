@@ -5,6 +5,7 @@ DeleteCommand::DeleteCommand(TreeViewModel *model, ConfigNode *node, int index)
     , m_node(*node)
     , m_index(index)
 {
+    setText("delete");
 }
 
 void DeleteCommand::undo()

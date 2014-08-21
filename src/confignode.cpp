@@ -140,7 +140,7 @@ void ConfigNode::deleteMeta(const QString &name)
 {
     if(m_key)
     {
-        qDebug() << "metakey " << name << " of node " << m_name << " deleted";
+//        qDebug() << "metakey " << name << " of node " << m_name << " deleted";
         m_key.delMeta(name.toStdString());
     }
 }

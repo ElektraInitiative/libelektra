@@ -13,29 +13,37 @@ class UndoManager : public QObject
     Q_PROPERTY(bool canUndo READ canUndo() NOTIFY canUndoChanged())
     Q_PROPERTY(bool canRedo READ canRedo() NOTIFY canRedoChanged())
 
+    Q_PROPERTY(QString redoText READ redoText() NOTIFY redoTextChanged())
+    Q_PROPERTY(QString undoText READ undoText() NOTIFY undoTextChanged())
+
 public:
 
-    explicit UndoManager(QObject *parent = 0);
-    UndoManager(UndoManager const & other);
-    ~UndoManager();
+                explicit    UndoManager(QObject *parent = 0);
+                            UndoManager(UndoManager const & other);
+                            ~UndoManager();
 
-    bool                canUndo() const;
-    bool                canRedo() const;
+                bool        canUndo() const;
+                bool        canRedo() const;
 
-    Q_INVOKABLE void    createEditCommand(TreeViewModel *model, int index, const QString &oldName, const QVariant &oldValue, const QVariant &oldMetaData,
+                QString     redoText() const;
+                QString     undoText() const;
+
+    Q_INVOKABLE void        createEditCommand(TreeViewModel *model, int index, const QString &oldName, const QVariant &oldValue, const QVariant &oldMetaData,
                                           const QString &newName, const QVariant &newValue, const QVariant &newMetaData);
 
-    Q_INVOKABLE void    createDeleteCommand(TreeViewModel *model, ConfigNode *node, int index);
+    Q_INVOKABLE void        createDeleteCommand(TreeViewModel *model, ConfigNode *node, int index);
 
 Q_SIGNALS:
 
-    void                canUndoChanged();
-    void                canRedoChanged();
+                void        canUndoChanged();
+                void        canRedoChanged();
+                void        redoTextChanged();
+                void        undoTextChanged();
 
 public Q_SLOTS:
 
-    void                undo();
-    void                redo();
+                void         undo();
+                void         redo();
 
 private:
 

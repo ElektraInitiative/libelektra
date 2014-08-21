@@ -5,12 +5,14 @@
 
 UndoManager::UndoManager(QObject *parent) :
     QObject(parent)
-    , m_undoStack(new QUndoStack(this))
+  , m_undoStack(new QUndoStack(this))
 {
     connect(m_undoStack, SIGNAL(canRedoChanged(bool)), this, SIGNAL(canRedoChanged()));
     connect(m_undoStack, SIGNAL(canUndoChanged(bool)), this, SIGNAL(canUndoChanged()));
+    connect(m_undoStack, SIGNAL(redoTextChanged(QString)), this, SIGNAL(redoTextChanged()));
+    connect(m_undoStack, SIGNAL(undoTextChanged(QString)), this, SIGNAL(undoTextChanged()));
 
-    m_undoStack->setUndoLimit(50);
+    m_undoStack->setUndoLimit(100);
 }
 
 UndoManager::UndoManager(const UndoManager &other)
@@ -60,4 +62,14 @@ void UndoManager::undo()
 void UndoManager::redo()
 {
     m_undoStack->redo();
+}
+
+QString UndoManager::undoText() const
+{
+    return m_undoStack->undoText();
+}
+
+QString UndoManager::redoText() const
+{
+    return m_undoStack->redoText();
 }

@@ -48,13 +48,13 @@ ApplicationWindow {
     }
 
 
-//    NewKeyWindow {
-//        id: newArrayWindow
-//        title: qsTr("Create new Array Entry")
-//        valueLayout.visible: false
-//        nameLabel.text: qsTr("Array Name: ")
-//        addButton.text: qsTr("New Array Entry")
-//    }
+    //    NewKeyWindow {
+    //        id: newArrayWindow
+    //        title: qsTr("Create new Array Entry")
+    //        valueLayout.visible: false
+    //        nameLabel.text: qsTr("Array Name: ")
+    //        addButton.text: qsTr("New Array Entry")
+    //    }
 
     UnmountBackendWindow {
         id: unmountBackendWindow
@@ -119,7 +119,19 @@ ApplicationWindow {
         tooltip: qsTr("Undo")
         shortcut: StandardKey.Undo
         enabled: undoManager.canUndo
-        onTriggered: {undoManager.undo()}
+        onTriggered: {
+
+            if(undoManager.undoText === "delete"){
+                undoManager.undo()
+                keyAreaView.__incrementCurrentIndex()
+                keyAreaView.selection.clear()
+                keyAreaView.selection.select(keyAreaView.currentRow)
+                keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
+            }
+            else{
+                undoManager.undo()
+            }
+        }
     }
 
     Action {
@@ -129,7 +141,25 @@ ApplicationWindow {
         tooltip: qsTr("Redo")
         shortcut: StandardKey.Redo
         enabled: undoManager.canRedo
-        onTriggered: {undoManager.redo()}
+        onTriggered: {
+
+            if(undoManager.redoText === "delete"){
+                undoManager.redo()
+
+                keyAreaView.__decrementCurrentIndex()
+                keyAreaView.selection.clear()
+                keyAreaView.selection.select(keyAreaView.currentRow)
+                keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
+
+                if(keyAreaView.rowCount !== 0)
+                    keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
+                else
+                    keyAreaSelectedItem = null
+            }
+            else{
+                undoManager.redo()
+            }
+        }
     }
 
     Action {
@@ -308,11 +338,13 @@ ApplicationWindow {
             action: deleteAction
 
             onTriggered: {
-                var idx = keyAreaView.currentRow
 
-                undoManager.createDeleteCommand(keyAreaView.model, keyAreaSelectedItem.node, idx)
-//                keyAreaView.model.removeRow(idx)
+                undoManager.createDeleteCommand(keyAreaView.model, keyAreaSelectedItem.node, keyAreaView.currentRow)
+
                 keyAreaView.__decrementCurrentIndex()
+                keyAreaView.selection.clear()
+                keyAreaView.selection.select(keyAreaView.currentRow)
+                keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
 
                 if(keyAreaView.rowCount !== 0)
                     keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
@@ -431,7 +463,6 @@ ApplicationWindow {
                     frameVisible: false
                     alternatingRowColors: false
                     backgroundVisible: false
-//                    Component.onCompleted: currentRow = -1
 
                     model:{
                         if(treeView.currentNode !== null)
