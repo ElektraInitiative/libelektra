@@ -1,18 +1,18 @@
 include (${SWIG_USE_FILE})
 include(LibAddMacros)
 
-find_package (PythonInterp 2.7 REQUIRED)
-find_package (PythonLibs 2.7 REQUIRED)
+find_package (Python2Interp 2.7 REQUIRED)
+find_package (Python2Libs 2.7 REQUIRED)
 
-if (PYTHONLIBS_VERSION_STRING MATCHES "^3\\.[0-9]+")
+if (PYTHON2LIBS_VERSION_STRING MATCHES "^3\\.[0-9]+")
 	message (SEND_ERROR "python2 is for python 2.7 only and not
-	${PYTHONLIBS_VERSION_STRING}")
+	${PYTHON2LIBS_VERSION_STRING}")
 endif ()
 
 add_headers (HDR_FILES)
 add_cppheaders (HDR_FILES)
 
-include_directories (${PYTHON_INCLUDE_DIR})
+include_directories (${PYTHON2_INCLUDE_DIR})
 include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 
 set (CMAKE_SWIG_OUTDIR ${CMAKE_CURRENT_BINARY_DIR})
@@ -26,7 +26,7 @@ set_target_properties (_swig-python2 PROPERTIES OUTPUT_NAME _kdb)
 
 set (PYTHON_GET_MODULES_DIR_COMMAND "from distutils.sysconfig import get_python_lib; print(get_python_lib(True, prefix='${CMAKE_INSTALL_PREFIX}'))")
 execute_process (
-	COMMAND ${PYTHON_EXECUTABLE} -c "${PYTHON_GET_MODULES_DIR_COMMAND}"
+	COMMAND ${PYTHON2_EXECUTABLE} -c "${PYTHON_GET_MODULES_DIR_COMMAND}"
 	OUTPUT_VARIABLE PYTHON_SITE_PACKAGES
 	OUTPUT_STRIP_TRAILING_WHITESPACE
 )

@@ -56,6 +56,7 @@ macro (add_plugintest testname)
 				$<TARGET_OBJECTS:cframework>
 				${ARGN}
 				)
+		add_headers(TEST_SOURCES)
 		add_testheaders(TEST_SOURCES)
 		include_directories ("${CMAKE_SOURCE_DIR}/tests/cframework")
 		add_executable (testmod_${testname} ${TEST_SOURCES} testmod_${testname}.c)

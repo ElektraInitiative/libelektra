@@ -1,6 +1,7 @@
 include(LibAddMacros)
 
 set(SOURCES tests.c)
+add_headers(SOURCES)
 add_testheaders(SOURCES)
 
 add_library(cframework OBJECT ${SOURCES})

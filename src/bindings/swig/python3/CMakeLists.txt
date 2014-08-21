@@ -1,6 +1,7 @@
 include (${SWIG_USE_FILE})
 include(LibAddMacros)
 
+#set (PythonInterp_FIND_VERSION_EXACT ON)
 find_package (PythonInterp 3 REQUIRED)
 find_package (PythonLibs 3 REQUIRED)
 
