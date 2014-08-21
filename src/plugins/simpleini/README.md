@@ -11,7 +11,7 @@
 
 This plugin reads and writes files written in a basic ini format.
 
-## Restrictions##
+## Restrictions ##
 
 This plugin can work with files in a simple ini format. This plugins needs the code and null plugins. 
 A code plugin is used for the escape character for special symbols and the null plugin
