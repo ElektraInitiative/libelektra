@@ -25,7 +25,7 @@ public:
     Q_INVOKABLE void    createEditCommand(TreeViewModel *model, int index, const QString &oldName, const QVariant &oldValue, const QVariant &oldMetaData,
                                           const QString &newName, const QVariant &newValue, const QVariant &newMetaData);
 
-
+    Q_INVOKABLE void    createDeleteCommand(TreeViewModel *model, ConfigNode *node, int index);
 
 Q_SIGNALS:
 

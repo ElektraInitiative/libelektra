@@ -9,7 +9,8 @@ SOURCES += \
 		modeltest/dynamictreemodel.cpp \
 		modeltest/modeltest.cpp \
 		src/undomanager.cpp \
-		src/editcommand.cpp
+		src/editcommand.cpp \
+    src/deletecommand.cpp
 
 HEADERS += \
 		src/treeviewmodel.hpp \
@@ -20,7 +21,8 @@ HEADERS += \
 		modeltest/dynamictreemodel.h \
 		modeltest/modeltest.h \
 		src/undomanager.hpp \
-		src/editcommand.hpp
+		src/editcommand.hpp \
+    src/deletecommand.hpp
 
 CONFIG += debug
 

@@ -76,7 +76,7 @@ QVariant TreeViewModel::data(const QModelIndex& index, int role) const
         return QVariant::fromValue(node->childrenHaveNoChildren());
 
     case MetaValueRole:
-        return QVariant::fromValue(node->getMetaValue());
+        return QVariant::fromValue(node->getMetaKeys());
 
     case NodeRole:
         return QVariant::fromValue(node);
@@ -146,6 +146,18 @@ void TreeViewModel::setData(int index, const QVariant& value, const QString& rol
     }
     else
         return;
+}
+
+QString TreeViewModel::toString()
+{
+    QString model = "\n";
+
+    foreach(ConfigNode *node, m_model){
+        model += node->getPath();
+        model += "\n";
+    }
+
+    return model;
 }
 
 Qt::ItemFlags TreeViewModel::flags(const QModelIndex& index) const
@@ -308,8 +320,15 @@ bool TreeViewModel::insertRow(int row, const QModelIndex& parent)
     return true;
 }
 
+void TreeViewModel::insertRow(int row, ConfigNode *node)
+{
+    beginInsertRows(QModelIndex(), row, row);
+    m_model.insert(row, node);
+    endInsertRows();
+}
 
-void TreeViewModel::qmlInsertRow(int row, ConfigNode *node)
+
+void TreeViewModel::insertMetaRow(int row, ConfigNode *node)
 {
     m_metaModelParent = node->getKey();
 
@@ -319,6 +338,8 @@ void TreeViewModel::qmlInsertRow(int row, ConfigNode *node)
     else
         qDebug() << "Key " << QString::fromStdString(node->getKey().getFullName()) << " not valid!";
 }
+
+
 
 void TreeViewModel::createNewNode(const QString &path, const QString &value, const QVariantMap metaData)
 {

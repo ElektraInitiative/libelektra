@@ -28,15 +28,15 @@ KeyWindow {
             undoManager.createEditCommand(keyAreaView.model, keyAreaView.currentRow, keyName.toString(), keyValue.toString(), keyAreaSelectedItem.metaValue,
                                           nameTextField.text, valueTextField.text, metaData)
 
-        //set key name & value
-        keyAreaView.model.setData(keyAreaView.currentRow, nameTextField.text, "Name")
-        keyAreaView.model.setData(keyAreaView.currentRow, valueTextField.text, "Value")
+//        //set key name & value
+//        keyAreaView.model.setData(keyAreaView.currentRow, nameTextField.text, "Name")
+//        keyAreaView.model.setData(keyAreaView.currentRow, valueTextField.text, "Value")
 
 
-        console.log(keyAreaView.currentRow)
+//        console.log(keyAreaView.currentRow)
 
-        //set metaData
-        keyAreaSelectedItem.node.setMeta(metaData)
+//        //set metaData
+//        keyAreaSelectedItem.node.setMeta(metaData)
 
         qmlMetaKeyModel.clear()
     }

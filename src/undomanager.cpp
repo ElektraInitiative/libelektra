@@ -1,6 +1,7 @@
 #include <QUndoStack>
 #include "undomanager.hpp"
 #include "editcommand.hpp"
+#include "deletecommand.hpp"
 
 UndoManager::UndoManager(QObject *parent) :
     QObject(parent)
@@ -8,6 +9,8 @@ UndoManager::UndoManager(QObject *parent) :
 {
     connect(m_undoStack, SIGNAL(canRedoChanged(bool)), this, SIGNAL(canRedoChanged()));
     connect(m_undoStack, SIGNAL(canUndoChanged(bool)), this, SIGNAL(canUndoChanged()));
+
+    m_undoStack->setUndoLimit(50);
 }
 
 UndoManager::UndoManager(const UndoManager &other)
@@ -33,6 +36,7 @@ bool UndoManager::canRedo() const
 void UndoManager::createEditCommand(TreeViewModel *model, int index, const QString &oldName, const QVariant &oldValue, const QVariant &oldMetaData,
                                     const QString &newName, const QVariant &newValue, const QVariant &newMetaData)
 {
+    //convert TreeViewModel to QVariantMap
     TreeViewModel *tmpModel = qvariant_cast<TreeViewModel*>(oldMetaData);
     QVariantMap oldMDMap;
 
@@ -41,7 +45,11 @@ void UndoManager::createEditCommand(TreeViewModel *model, int index, const QStri
     }
 
     m_undoStack->push(new EditCommand(model, index, oldName, oldValue, oldMDMap, newName, newValue, newMetaData.toMap()));
-    qDebug() << "Stack size = " << m_undoStack->count();
+}
+
+void UndoManager::createDeleteCommand(TreeViewModel *model, ConfigNode *node, int index)
+{
+    m_undoStack->push(new DeleteCommand(model, node, index));
 }
 
 void UndoManager::undo()

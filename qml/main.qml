@@ -92,7 +92,6 @@ ApplicationWindow {
         iconSource: "icons/delete.png"
         tooltip: "Delete"
         shortcut: StandardKey.Delete
-        //        enabled: false
     }
 
     Action {
@@ -120,7 +119,7 @@ ApplicationWindow {
         tooltip: qsTr("Undo")
         shortcut: StandardKey.Undo
         enabled: undoManager.canUndo
-        onTriggered: { undoManager.undo()}
+        onTriggered: {undoManager.undo()}
     }
 
     Action {
@@ -130,7 +129,7 @@ ApplicationWindow {
         tooltip: qsTr("Redo")
         shortcut: StandardKey.Redo
         enabled: undoManager.canRedo
-        onTriggered: { undoManager.redo()}
+        onTriggered: {undoManager.redo()}
     }
 
     Action {
@@ -305,11 +304,16 @@ ApplicationWindow {
         }
         MenuItem {
             id: kcmDelete
+
             action: deleteAction
+
             onTriggered: {
-                keyAreaView.model.removeRow(keyAreaView.tableIndex)
+                var idx = keyAreaView.currentRow
+
+                undoManager.createDeleteCommand(keyAreaView.model, keyAreaSelectedItem.node, idx)
+//                keyAreaView.model.removeRow(idx)
                 keyAreaView.__decrementCurrentIndex()
-                console.log(keyAreaView.rowCount)
+
                 if(keyAreaView.rowCount !== 0)
                     keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
                 else

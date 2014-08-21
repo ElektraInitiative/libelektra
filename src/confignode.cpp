@@ -24,13 +24,23 @@ ConfigNode::ConfigNode(const QString& name, const QString& path, const Key &key)
 
 ConfigNode::ConfigNode(const ConfigNode& other)
     : QObject()
-    , m_children(new TreeViewModel)
-    , m_metaData(new TreeViewModel)
+    , m_children(new TreeViewModel())
+    , m_metaData(new TreeViewModel())
 {
     m_name = other.m_name;
     m_path = other.m_path;
     m_value = other.m_value;
-    m_key = other.m_key;
+    m_key = other.m_key.dup();
+
+    foreach(ConfigNode *node, other.getChildren()->model())
+    {
+        m_children->append(new ConfigNode(*node));
+    }
+
+    foreach(ConfigNode *node, other.getMetaKeys()->model())
+    {
+        m_metaData->append(new ConfigNode(*node));
+    }
 }
 
 ConfigNode::ConfigNode()
@@ -112,7 +122,7 @@ void ConfigNode::setMeta(const QVariantMap &metaData)
 
     for(int i = 0; i < metaData.size(); i++)
     {
-        m_metaData->qmlInsertRow(i, this);
+        m_metaData->insertMetaRow(i, this);
     }
 
     int counter = 0;
@@ -143,14 +153,14 @@ void ConfigNode::accept(Visitor &visitor)
         node->accept(visitor);
 }
 
-Key ConfigNode::getKey()
+Key ConfigNode::getKey() const
 {
     return m_key;
 }
 
 void ConfigNode::deleteKey()
 {
-    qDebug() << "clearing key " << QString::fromStdString(m_key.getName());
+//    qDebug() << "ConfigNode::deleteKey: clearing key " << QString::fromStdString(m_key.getName());
     m_key.clear();
 }
 
@@ -196,17 +206,17 @@ bool ConfigNode::hasChild(const QString& name) const
     return false;
 }
 
-TreeViewModel* ConfigNode::getChildren()
+TreeViewModel* ConfigNode::getChildren() const
 {
     return m_children;
 }
 
-TreeViewModel* ConfigNode::getMetaValue()
+TreeViewModel* ConfigNode::getMetaKeys() const
 {
     return m_metaData;
 }
 
-ConfigNode* ConfigNode::getChildByName(QString& name)
+ConfigNode* ConfigNode::getChildByName(QString& name) const
 {
     foreach (ConfigNode * node, m_children->model())
     {
@@ -219,7 +229,7 @@ ConfigNode* ConfigNode::getChildByName(QString& name)
     return NULL;
 }
 
-ConfigNode* ConfigNode::getChildByIndex(int index)
+ConfigNode* ConfigNode::getChildByIndex(int index) const
 {
     if (index >= 0 && index < m_children->model().length())
         return m_children->model().at(index);

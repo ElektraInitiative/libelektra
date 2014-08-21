@@ -6,9 +6,10 @@
 
 class EditCommand : public QUndoCommand
 {
+
 public:
     explicit EditCommand(TreeViewModel *model, int index, const QString &oldName, const QVariant &oldValue, const QVariantMap &oldMetaData,
-                         const QString &newName, const QVariant &newValue, const QVariantMap &newMetaData, QUndoCommand *parent = 0);
+                         const QString &newName, const QVariant &newValue, const QVariantMap &newMetaData);
     virtual void undo();
     virtual void redo();
 
@@ -18,10 +19,10 @@ private:
     int m_index;
 
     QString m_oldName;
-    QString m_newName;
+    QVariant m_oldValue;
     QVariantMap m_oldMetaData;
 
-    QVariant m_oldValue;
+    QString m_newName;
     QVariant m_newValue;
     QVariantMap m_newMetaData;
 };

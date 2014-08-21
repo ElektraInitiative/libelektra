@@ -79,13 +79,13 @@ public:
      * @brief Get the children of this ConfigNode.
      * @return The children of this ConfigNode as model.
      */
-    TreeViewModel*          getChildren();
+    TreeViewModel*          getChildren() const;
 
     /**
      * @brief Get the metakeys of this ConfigNode.
      * @return The metakeys of this ConfigNode as model.
      */
-    TreeViewModel*          getMetaValue();
+    TreeViewModel*          getMetaKeys() const;
 
     /**
      * @brief Returns if the children of this ConfigNode have any children themselves.
@@ -98,14 +98,14 @@ public:
      * @param name The name of the child which is looked for.
      * @return The child with the given name if it is a child of this ConfigNode.
      */
-    ConfigNode*             getChildByName(QString& name);
+    ConfigNode*             getChildByName(QString& name) const;
 
     /**
       * @brief Returns a child on a given index.
       * @param index The index of the wanted child.
       * @return The child on the given index.
       */
-    Q_INVOKABLE ConfigNode* getChildByIndex(int index);
+    Q_INVOKABLE ConfigNode* getChildByIndex(int index) const;
 
     void                    setPath(const QString &path);
 
@@ -114,7 +114,7 @@ public:
     Q_INVOKABLE void        deleteMeta(const QString &name);
 
     void                    accept(Visitor &visitor);
-    kdb::Key                getKey();
+    kdb::Key                getKey() const;
     void                    setKey(kdb::Key key);
     void                    deleteKey();
 
