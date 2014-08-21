@@ -85,15 +85,29 @@ The modules, which are typically used as plugins in Elektra (but can
 also be available statically or in the -full variant), should have their
 own tests.
 
-Use the macro add_plugintest for adding these tests.
+Use the Cmake macro add_plugintest for adding these tests.
 
 
 ### C++ Unit Tests ###
 
-### Shell Tests ###
+C++ Unit tests are done using the gtest framework. See [architectural
+decision](/doc/decisions/unit_testing.md).
 
-### Integration Tests ###
-
-### Convention Tests ###
+Use the CMake macro add_gtest for adding these tests.
 
 
+### Script Tests ###
+
+Script test are done using POSIX shell + CMake. See [architectural
+decision](/doc/decisions/script_testing.md).
+
+The script tests have different purposes:
+- End to End tests (usage of tools as a user would do)
+- External Compilation tests (compile and run programs as a user would do)
+- Conventions tests (do internal checks that check for common problems)
+- Meta Test Suites (run other test suites)
+
+
+### Other kind of Tests ###
+
+Bindings, other than C++ typically have their own way of testing.

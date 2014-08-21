@@ -15,7 +15,7 @@ if(NOT GOOGLETEST_ROOT)
 			set(GOOGLETEST_FOUND TRUE)
 		endif()
 	else()
-		set(GOOGLETEST_ROOT ${CMAKE_SOURCE_DIR}/src/external/gtest-1.7.0)
+		set(GOOGLETEST_ROOT ${CMAKE_SOURCE_DIR}/tests/gtest-1.7.0)
 		set(GOOGLETEST_FOUND TRUE)
 	endif()
 
