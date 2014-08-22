@@ -6,6 +6,11 @@ try_compile(HAS_UNAME
 include(LibAddMacros)
 
 if(HAS_UNAME)
+
+	generate_readme (uname)
+	add_includes (elektra-full ${CMAKE_CURRENT_BINARY_DIR})
+	include_directories (${CMAKE_CURRENT_BINARY_DIR})
+
 	set (SOURCES uname.h uname.c)
 	add_sources (elektra-full ${SOURCES})
 	add_headers (SOURCES)
