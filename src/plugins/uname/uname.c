@@ -56,36 +56,7 @@ int elektraUnameGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 			keyNew ("system/elektra/modules/uname/exports/set",
 				KEY_FUNC, elektraUnameSet,
 				KEY_END),
-			keyNew ("system/elektra/modules/uname/infos",
-				KEY_VALUE, "All information you want to know", KEY_END),
-			keyNew ("system/elektra/modules/uname/infos/author",
-				KEY_VALUE, "Markus Raab <elektra@markus-raab.org>", KEY_END),
-			keyNew ("system/elektra/modules/uname/infos/licence",
-				KEY_VALUE, "BSD", KEY_END),
-			keyNew ("system/elektra/modules/uname/infos/description",
-				KEY_VALUE,
-"Includes uname information into the key database.\n"
-"\n"
-"It defines following keynames below its mountpoint:\n"
-"\n"
-"sysname\n"
-"nodename\n"
-"release\n"
-"version\n"
-"machine\n"
-"\n"
-"To mount it, use kdb mount -R noresolver none system/uname uname \n"
-"\n"
-"The plugin is readonly.\n"
-				, KEY_END),
-			keyNew ("system/elektra/modules/uname/infos/provides",
-				KEY_VALUE, "storage", KEY_END),
-			keyNew ("system/elektra/modules/uname/infos/placements",
-				KEY_VALUE, "getstorage setstorage", KEY_END),
-			keyNew ("system/elektra/modules/uname/infos/needs",
-				KEY_VALUE, "", KEY_END),
-			keyNew ("system/elektra/modules/uname/infos/recommends",
-				KEY_VALUE, "", KEY_END),
+#include "readme_uname.c"
 			keyNew ("system/elektra/modules/uname/infos/version",
 				KEY_VALUE, PLUGINVERSION, KEY_END),
 			KS_END);
