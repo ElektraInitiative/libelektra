@@ -1,5 +1,47 @@
 # NEWS #
 
+
+0.8.8 Release
+
+This text is preliminary, the release did not happen!
+
+- Now Python 2+3 work in parallel
+- python2 interpreter is found correctly (also on Arch)
+- New Test strategy [/doc/TESTING.md]
+- Sentinel now makes sure that you cannot forget KS_END to end ksNew
+- mounting, unmounting, merging scripts
+- Fixes for architecture-specific problems by Pino
+- New resolver tests for conflicts (needs tty)
+- Build Server now has icc
+- added remount tool
+- import now can use merge strategies
+- added lots of tutorials
+- README.md now for most plugins
+- mount is now more verbose when validation fails
+- plugin noresolver added
+- constants plugin added
+- fix .pc file
+- umount now also accepts mountpath
+- mount allows to specify different resolvers
+- fix compilation problem with KDB_MAX_PATH_LENGTH
+- tmpnam to mkstemp (security)
+- make test data naming consistent (thanks Pino)
+- added compilation variants plugins
+- added new variants for resolver
+- buildserver checks more things (memcheck, if plugins are added correctly, ABI tests)
+- added targets run_all and run_memcheck
+- link to contextual paper
+- add SPECIFICATION
+- intro for C++ binding
+- use LIB_SUFFIX for TARGET_TOOL_EXEC_FOLDER thanks to Kai Uwe
+
+
+
+---------
+
+%Author: Markus Raab
+%Date: 22.08.2014
+
 A common question is: now we have Augeas for editing config files,
 why do we need Elektra, Config::Model or something else?
 
@@ -9,12 +51,12 @@ configuration management tools.
 
 Augeas, in short, introduces a special-purpose programming language that
 allows to transform configuration files into configuration trees and
-back. That is it strength (it is easy to add support for a particular
-legacy configuration files), but also it weakness (the mapping is
-implementation-defined by a language that is limited to a bit more than
-regular expressions). Augeas is not able nor is it intended to provide
-an abstraction over the configuration files. Instead Augeas mirrors
-the structure of the configuration as closely as possible.
+back. This transformation is it strength (so it is easy to add support
+for a particular legacy configuration files), but also it weakness (the
+mapping is implementation-defined by a language that is limited to a bit
+more than regular expressions). Augeas is not able nor is it intended
+to provide more abstraction over the configuration files. Instead Augeas
+mirrors the structure of the configuration as closely as possible.
 
 Elektra's goal, instead, is not only to provide access to legacy
 configuration files, but to provide access to the configuration
@@ -23,10 +65,10 @@ applications are part of Elektra's ecosystem by providing specifications
 how their configuration should look like and by writing plugins that
 define how the configuration is accessed and checked. Ideally, after
 some time of legacy issues and migration, developers will also not
-have to care about plugins anymore, but just use any available ones
-(and users of their application can choose any other compatible plugin).
-What is about to stay is a specification that defines the application's
-configuration, e.g. in INI (could be any syntax):
+have to care about writing plugins anymore, but just use any available
+ones (and users of their application can choose any other compatible
+plugin).  What is about to stay is a specification that defines the
+application's configuration, e.g. in INI (could be any syntax):
 
     [/yourapp/file_dialog/show_hidden_files]
     type=Boolean
@@ -49,14 +91,6 @@ system/elektra/mountpoints. In Elektra validators can be
 written in any language (because the specification is just data)
 and can enforce constraints on any access (because plugins define
 the behaviour of the key database).
-
-What has this to do with 3-way merges? Surprisingly, it actually has:
-- Because in the way Augeas trees are implementation defined, they are not
-  well suited for merging (except another Elektra plugin would transform them).
-- Config::Model does 3-way merges without storing "base". This works because
-  it relies on the specification to be complete. When projects and maintainers
-  start to write specifications for Elektra, this is a fantastic way. So
-  maybe we will hear more about that in a future GSoC :-)
 
 
 
