@@ -14,11 +14,11 @@ This plugin is a storage plugin that takes `/etc/uname` file as its backend stor
 ## Special Values ##
 
 This plugin defines following keynames below its mountpoint:		
-	sysname
-	nodename
-	release
-	version
-	machine
+	  	- sysname
+	  	- nodename
+	  	- release
+	  	- version
+		- machine
 
 ## Restrictions ##
 
@@ -27,4 +27,4 @@ This plugin is read-only.
 ## Example ##
 
 To mount uname information using this plugin:		
-	kdb mount -R noresolver none system/uname uname
+		kdb mount -R noresolver none system/uname uname
