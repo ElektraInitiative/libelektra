@@ -56,4 +56,5 @@ http://www.chaoslizard.org/devel/bohr/wiki/Docs/Ni
 ## Example ##
 
 Exporting a KeySet to the nickle format:
-	kdb export system/example ni > example.ini
+
+		kdb export system/example ni > example.ini
