@@ -43,7 +43,7 @@ int elektraPathGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 		keyNew ("system/elektra/modules/path/exports/set",
 			KEY_FUNC, elektraPathSet,
 			KEY_END),
-#include "readme_path"
+#include "readme_path.c"
 		keyNew ("system/elektra/modules/path/infos/version",
 			KEY_VALUE, PLUGINVERSION, KEY_END),
 		KS_END));
