@@ -238,7 +238,7 @@ KeySet *ksVNew (size_t alloc, va_list va)
  * but there reference counter is updated, so both keysets
  * need ksDel().
  *
- * @param source has to be an initializised source KeySet
+ * @param source has to be an initialized source KeySet
  * @return a flat copy of source on success
  * @return 0 on NULL pointer
  * @see ksNew(), ksDel()

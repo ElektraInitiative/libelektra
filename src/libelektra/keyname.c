@@ -685,7 +685,7 @@ ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize)
  * @warning You should not change a keys name once it belongs to a
  *          keyset because it would destroy the order.
  *
- * TODO: does not recognice .. and . in the string!
+ * TODO: does not recognise .. and . in the string!
  *
  * @param key the key object to work with
  * @param baseName the string to append to the name
