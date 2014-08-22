@@ -105,7 +105,7 @@ int elektraStructGet(ckdb::Plugin *, ckdb::KeySet *returned, ckdb::Key *)
 		keyNew ("system/elektra/modules/struct/exports/set",
 			KEY_FUNC, elektraStructSet,
 			KEY_END),
-#include "struct.c"
+#include "readme_struct.c"
 		keyNew ("system/elektra/modules/struct/infos/version",
 			KEY_VALUE, PLUGINVERSION, KEY_END),
 		KS_END));
