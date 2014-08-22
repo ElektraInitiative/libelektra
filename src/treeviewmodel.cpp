@@ -214,6 +214,8 @@ void TreeViewModel::populateModel()
     {
         QString currentKey = QString::fromStdString(m_keySet.current().getName());
 
+//        qDebug() << "TreeViewModel::populateModel: currentKey: " << currentKey;
+
         QStringList splittedKey = currentKey.split("/");
 
         if (splittedKey.at(0) == "system")
@@ -339,8 +341,6 @@ void TreeViewModel::insertMetaRow(int row, ConfigNode *node)
         qDebug() << "Key " << QString::fromStdString(node->getKey().getFullName()) << " not valid!";
 }
 
-
-
 void TreeViewModel::createNewNode(const QString &path, const QString &value, const QVariantMap metaData)
 {
     qDebug() << "TreeViewModel::createNewNode: path = " << path << " value = " << value;
@@ -384,7 +384,7 @@ void TreeViewModel::synchronize()
     KeySetVisitor ksVisit(m_keySet);
     accept(ksVisit);
     m_kdb.set(ksVisit.getKeySet(), "/");
-//    qDebug() << "Last Key is " << QString::fromStdString(ksVisit.getKeySet().tail().getFullName());
+    repopulateModel();
 }
 
 void TreeViewModel::clear()
@@ -399,7 +399,7 @@ void TreeViewModel::repopulateModel()
 //    beginResetModel();
     m_model.clear();
     populateModel();
-    //    endResetModel();
+//    endResetModel();
 }
 
 QHash<int, QByteArray> TreeViewModel::roleNames() const

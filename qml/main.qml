@@ -76,7 +76,6 @@ ApplicationWindow {
         iconSource: "icons/new.png"
         tooltip: qsTr("New Key")
         onTriggered: newKeyWindow.show()
-        //        enabled: false
     }
 
     Action {

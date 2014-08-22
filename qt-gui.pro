@@ -1,27 +1,27 @@
 QT += quick  gui core  qml  widgets testlib
 
 SOURCES += \
-		src/main.cpp \
-		src/treeviewmodel.cpp \
-		src/confignode.cpp \
-		src/printvisitor.cpp \
-		src/keysetvisitor.cpp \
-		modeltest/dynamictreemodel.cpp \
-		modeltest/modeltest.cpp \
-		src/undomanager.cpp \
-		src/editcommand.cpp \
+    src/main.cpp \
+    src/treeviewmodel.cpp \
+    src/confignode.cpp \
+    src/printvisitor.cpp \
+    src/keysetvisitor.cpp \
+    modeltest/dynamictreemodel.cpp \
+    modeltest/modeltest.cpp \
+    src/undomanager.cpp \
+    src/editcommand.cpp \
     src/deletecommand.cpp
 
 HEADERS += \
-		src/treeviewmodel.hpp \
-		src/confignode.hpp \
-		src/visitor.hpp \
-		src/printvisitor.hpp \
-		src/keysetvisitor.hpp \
-		modeltest/dynamictreemodel.h \
-		modeltest/modeltest.h \
-		src/undomanager.hpp \
-		src/editcommand.hpp \
+    src/treeviewmodel.hpp \
+    src/confignode.hpp \
+    src/visitor.hpp \
+    src/printvisitor.hpp \
+    src/keysetvisitor.hpp \
+    modeltest/dynamictreemodel.h \
+    modeltest/modeltest.h \
+    src/undomanager.hpp \
+    src/editcommand.hpp \
     src/deletecommand.hpp
 
 CONFIG += debug
@@ -36,31 +36,31 @@ INCLUDEPATH += /usr/local/include/elektra
 include(deployment.pri)
 
 RESOURCES += \
-		resources.qrc
-		i18n.qrc
+    resources.qrc
+    i18n.qrc
 
 OTHER_FILES += \
-		qml/main.qml\
-		qml/BasicWindow.qml\
-		qml/ButtonRow.qml\
-		qml/Page1.qml\
-		qml/Page2.qml\
-		qml/Page3.qml\
-		qml/WizardLoader.qml\
-		qml/WizardTemplate.qml\
-		qml/Page4.qml\
-		qml/NewMetaKey.qml\
-		qml/BasicRectangle.qml \
-		qml/UnmountBackendWindow.qml \
-		qml/NewArrayEntry.qml \
-		qml/TreeView.qml \
-		qml/KeyWindow.qml \
-		qml/NewKeyWindow.qml \
-		qml/EditKeyWindow.qml
+    qml/main.qml\
+    qml/BasicWindow.qml\
+    qml/ButtonRow.qml\
+    qml/Page1.qml\
+    qml/Page2.qml\
+    qml/Page3.qml\
+    qml/WizardLoader.qml\
+    qml/WizardTemplate.qml\
+    qml/Page4.qml\
+    qml/NewMetaKey.qml\
+    qml/BasicRectangle.qml \
+    qml/UnmountBackendWindow.qml \
+    qml/NewArrayEntry.qml \
+    qml/TreeView.qml \
+    qml/KeyWindow.qml \
+    qml/NewKeyWindow.qml \
+    qml/EditKeyWindow.qml
 
 unix: CONFIG += link_pkgconfig
 unix: PKGCONFIG += elektra
 
 SUBDIRS += \
-		unittest/unittest.pro \
+    unittest/unittest.pro \
 #    modeltest/modeltest.pro

@@ -19,6 +19,7 @@ ScrollView {
         text: model.name
         color: activePalette.windowText
     }
+
     contentItem: Loader {
         id: content
 
@@ -30,6 +31,7 @@ ScrollView {
             anchors.fill: parent
             Repeater {
                 model: 1 + Math.max(treeView.contentItem.height, treeView.height) / treeView.rowHeight
+
                 Rectangle {
                     color: activePalette.window
                     width: treeView.width
@@ -37,15 +39,20 @@ ScrollView {
                 }
             }
         }
+
         Component {
             id: treeBranch
+
             Item {
                 id: root
+
                 property bool isRoot: false
                 implicitHeight: column.implicitHeight
                 implicitWidth: column.implicitWidth
+
                 Column {
                     id: column
+
                     x: 2
                     Item {
                         height: isRoot ? 0 : treeView.rowHeight
@@ -53,13 +60,17 @@ ScrollView {
                     }
                     Repeater {
                         model: elements
+
                         Item {
                             id: filler
+
                             width: Math.max(loader.width + treeView.columnIndent, row.width)
                             height: Math.max(row.height, loader.height)
                             property var _model: model
+
                             Rectangle {
                                 id: rowfill
+
                                 x: treeView.mapToItem(rowfill, 0, 0).x
                                 width: treeView.width
                                 height: treeView.rowHeight
@@ -82,6 +93,7 @@ ScrollView {
                             }
                             Row {
                                 id: row
+
                                 Item {
                                     width: treeView.rowHeight
                                     height: treeView.rowHeight
@@ -89,6 +101,7 @@ ScrollView {
 
                                     Image {
                                         id: expander
+
                                         source: "icons/arrow-right.png"
                                         opacity: mouse.containsMouse ? 1 : 0.7
                                         anchors.centerIn: parent
@@ -101,6 +114,7 @@ ScrollView {
                                     }
                                     MouseArea {
                                         id: mouse
+
                                         anchors.fill: parent
                                         hoverEnabled: true
                                         onClicked: {
@@ -117,6 +131,7 @@ ScrollView {
                             }
                             Loader {
                                 id: loader
+
                                 x: treeView.columnIndent
                                 height: expanded ? implicitHeight : 0
                                 property var node: model

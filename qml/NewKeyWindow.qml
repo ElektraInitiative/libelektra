@@ -20,6 +20,5 @@ KeyWindow {
         valueTextField.text = ""
         nameTextField.focus = true
         qmlMetaKeyModel.clear()
-        //            externTreeModel.synchronize()
     }
 }

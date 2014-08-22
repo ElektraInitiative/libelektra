@@ -81,7 +81,7 @@ public:
                 void            insertRow(int row, ConfigNode* node);
     Q_INVOKABLE void            clear();
     Q_INVOKABLE void            synchronize();
-                void            repopulateModel();
+    Q_INVOKABLE void            repopulateModel();
     Q_INVOKABLE void            createNewNode(const QString &path, const QString &value, const QVariantMap metaData);
                 void            append(ConfigNode *node);
     Q_INVOKABLE void            setData(int index, const QVariant& value, const QString& role);

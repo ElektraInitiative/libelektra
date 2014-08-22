@@ -14,10 +14,11 @@ void KeySetVisitor::visit(ConfigNode *node)
 
     if(key){
         qDebug() << "Appending key " << QString::fromStdString(key.getName());
-        m_set.append(node->getKey());
+        m_set.append(key);
     }
-    else
+    else{
         qDebug() << "Key of node " << node->getName() << " is null";
+    }
 }
 
 void KeySetVisitor::visit(TreeViewModel *model)
