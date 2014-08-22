@@ -23,7 +23,7 @@ if (COMPAT_GETLINE)
 	install (TARGETS ${PLUGIN_NAME}
 		DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})
 else (COMPAT_GETLINE)
-	remove_plugin (line "Unable to use getline fucntion. Check libc version, should be higher than 4.6.27.")
+	remove_plugin (line "Unable to use getline function. Check libc version, should be higher than 4.6.27.")
 endif (COMPAT_GETLINE)
 
 add_plugintest (line)

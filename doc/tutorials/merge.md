@@ -13,7 +13,7 @@ The command to use this tool is:
 The standard naming scheme for a three-way merge consists of ours, theirs, and base:
 *	ours refers to the local copy of a file
 *	theirs refers to a remote copy
-*	base refers to their common anscestor. 
+*	base refers to their common ancestor. 
 
 This works very similarly for KeySets, especially ones that consist of mounted conffiles. 
 
