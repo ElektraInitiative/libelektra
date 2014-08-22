@@ -10,7 +10,7 @@
 
 This plugin is a storage plugin allowing Elektra to read and write xml formatted files. It uses the libelektratools xml format.
 
-## Restrictions ## 
+## Restrictions ##
 
 This plugin has a difficult time reconginzing whether a key has a null value or an empty value.
 
