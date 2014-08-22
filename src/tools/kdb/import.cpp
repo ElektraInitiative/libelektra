@@ -83,7 +83,6 @@ int ImportCommand::execute(Cmdline const& cl)
 
 	helper.reportResult (cl, result, cout, cerr);
 
-	int ret = 0;
 	if (!result.hasConflicts ())
 	{
 		if (cl.verbose)
@@ -94,13 +93,12 @@ int ImportCommand::execute(Cmdline const& cl)
 
 		KeySet resultKeys = result.getMergedKeys();
 		kdb.set (resultKeys, root);
+		return 0;
 	}
 	else
 	{
-		ret = -1;
+		return -1;
 	}
-
-	return 0;
 }
 
 ImportCommand::~ImportCommand()
