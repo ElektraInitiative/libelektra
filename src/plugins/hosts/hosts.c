@@ -1,40 +1,70 @@
-/***************************************************************************
-            hosts.c  -  Access the /etc/hosts file
-                             -------------------
-    begin                : Nov 2007
-    copyright            : (C) 2007 by Markus Raab
-    email                : elektra@markus-raab.org
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
-
-
-
-/***************************************************************************
- *                                                                         *
- *   This is the skeleton of the methods you'll have to implement in order *
- *   to provide libelektra.so a valid backend.                             *
- *   Simple fill the empty _hosts functions with your code and you are   *
- *   ready to go.                                                          *
- *                                                                         *
- ***************************************************************************/
-
+/**
+ * \file
+ *
+ * \brief Plugin for reading and writing the hosts file
+ *
+ * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
 
 #include "hosts.h"
+
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
 
 #ifndef HAVE_KDBCONFIG
 # include "kdbconfig.h"
 #endif
 
 #include <kdbextension.h>
+#include <kdbproposal.h>
 
 size_t elektraStrLen(const char *s);
 
+/*
+ * Determines the address family of the supplied network address
+ *
+ * @param address the network address to be analysed
+ * @return a number identifying the network address (e.g. AF_INET) or -1 if an error occurred
+ */
+static int getAddressFamily(const char *address)
+{
+	struct addrinfo hint;
+	struct addrinfo *info;
+	memset (&hint, 0, sizeof (hint));
+
+	/* no specific family is requested and name lookups are disabled */
+	hint.ai_family = AF_UNSPEC;
+	hint.ai_flags = AI_NUMERICHOST;
+
+	int ret = getaddrinfo (address, 0, &hint, &info);
+
+	if (ret != 0)
+	{
+		return -1;
+	}
+
+	int result = info->ai_family;
+	freeaddrinfo (info);
+	return result;
+}
+
+static void addAddressHierarchy(Key* key, char* fieldbuffer)
+{
+	/* determine whether this is an ipv4 or ipv6 entry */
+	int family = getAddressFamily (fieldbuffer);
+
+	/* in case of an error default to ipv4 */
+	switch (family)
+	{
+	case AF_INET6:
+		keyAddBaseName (key, "ipv6");
+		break;
+	default:
+		keyAddBaseName (key, "ipv4");
+	}
+}
 
 /** Appends a comment to key found in line.
  *
@@ -132,12 +162,12 @@ int elektraHostsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 {
 	int errnosave = errno;
 	FILE * fp;
-	char readbuffer [HOSTS_KDB_BUFFER_SIZE];
-	char *fieldbuffer;
+	char readBuffer [HOSTS_KDB_BUFFER_SIZE];
+	char *fieldBuffer;
 	size_t readsize;
 	char *fret;
 	int   sret;
-	Key *key, *alias, *tmp;
+	Key *alias;
 	char comment [HOSTS_KDB_BUFFER_SIZE] = "";
 	KeySet *append = 0;
 	size_t order = 1;
@@ -188,16 +218,17 @@ int elektraHostsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 	ksClear (returned);
 	append = ksNew(ksGetSize(returned)*2, KS_END);
 
-	key = keyDup (parentKey);
+	Key *key = keyDup (parentKey);
 	ksAppendKey(append, key);
 
 	while (1)
 	{
-		fret = fgets (readbuffer, HOSTS_KDB_BUFFER_SIZE, fp);
+		fret = fgets (readBuffer, HOSTS_KDB_BUFFER_SIZE, fp);
+
 		if (fret == 0) 
 		{
+			/* we are done, flush everything we have collected */
 			fclose (fp);
-
 			ksClear (returned);
 			ksAppend (returned, append);
 			ksDel (append);
@@ -205,50 +236,94 @@ int elektraHostsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 			return 1;
 		}
 
-		if (elektraHostsAppendComment(comment, readbuffer)) continue;
+		/* search for a comment in the current line (if any) */
+		if (elektraHostsAppendComment(comment, readBuffer)) continue;
 
-		sret = elektraHostsFindToken (&fieldbuffer, readbuffer);
+		/* read the ip address (if any) */
+		sret = elektraHostsFindToken (&fieldBuffer, readBuffer);
 		if (sret == 0) continue;
 
-		key = ksLookupByName(returned, fieldbuffer, KDB_O_POP);
-		if (!key) key = keyDup (parentKey);
-		keySetString (key, fieldbuffer);
-		keySetComment (key, comment);
-		*comment = '\0'; /* Start with a new comment */
+		/* from now on we know that we are in a line with a hosts entry */
+		key = keyDup (parentKey);
 
+		/* determine whether this is an ipv4 or ipv6 entry */
+		addAddressHierarchy (key, fieldBuffer);
+
+		keySetString (key, fieldBuffer);
+
+		/* read the canonical name */
 		readsize = sret;
-		sret = elektraHostsFindToken (&fieldbuffer, readbuffer+readsize);
-		keyAddBaseName (key, fieldbuffer);
+		sret = elektraHostsFindToken (&fieldBuffer, readBuffer+readsize);
+		keyAddBaseName (key, fieldBuffer);
 
+		/* canonical names have to be unique. If the hosts file contains
+		 * duplicates, we honor only the first entry. This mirrors the
+		 * behaviour of most name resolution implementations
+		 */
+		if (ksLookup(append, key, KDB_O_NONE))
+		{
+			keyDel (key);
+			continue;
+		}
+
+		/* flush any collected comment lines and start with a new comment */
+		keySetComment (key, comment);
+		*comment = '\0';
+
+		/* assign an order to the entry */
 		elektraHostsSetMeta(key, order);
-		++ order; /* Next key gets next number */
+		++ order;
 
 		ksAppendKey(append, key);
 
-		ssize_t nr_alias = 0;
-		while (1) /*Read in aliases*/
+		/* Read in aliases */
+		while (1)
 		{
 			readsize += sret;
-			sret = elektraHostsFindToken (&fieldbuffer, readbuffer+readsize);
+			sret = elektraHostsFindToken (&fieldBuffer, readBuffer+readsize);
 			if (sret == 0) break;
 
-			tmp = keyDup (key);
-			keyAddBaseName (tmp, fieldbuffer);
-			alias = ksLookup(returned, tmp, KDB_O_POP);
-			if (!alias) alias = tmp;
-			else keyDel (tmp);
+			alias = keyDup (key);
+			keyAddBaseName (alias, fieldBuffer);
 
-			ksAppendKey(append, alias);
-			++ nr_alias;
+			/* only add the alias if it does not exist already */
+			if(ksLookup(returned, alias, KDB_O_NONE))
+			{
+				keyDel (alias);
+			}
+			else
+			{
+				ksAppendKey(append, alias);
+			}
 		}
 	}
 
-	ELEKTRA_SET_ERROR(10, parentKey, readbuffer);
+	ELEKTRA_SET_ERROR(10, parentKey, readBuffer);
 	ksDel (append);
 	// kdbbUnlock (fp);
 	fclose (fp);
 	errno = errnosave;
 	return -1;
+}
+
+static int keyCmpOrderWrapper(const void *a, const void *b)
+{
+	return elektraKeyCmpOrder(*((const Key **)a), *((const Key **)b));
+}
+
+static void writeHostsComment(FILE *fp, Key *key)
+{
+	char *saveptr = 0;
+	char *commentLine;
+	char *commentCopy = malloc (keyGetCommentSize(key));
+	strcpy (commentCopy, keyComment(key));
+	commentLine = strtok_r (commentCopy, "\n", &saveptr);
+	while (commentLine != 0)
+	{
+		fprintf (fp, "# %s\n", commentLine);
+		commentLine = strtok_r (NULL, "\n", &saveptr);
+	}
+	free (commentCopy);
 }
 
 int elektraHostsSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
@@ -267,55 +342,50 @@ int elektraHostsSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 		return -1;
 	}
 
-	Key **keyarray;
-	size_t retsize = ksGetSize(returned);
-	size_t keyarraysize = retsize *2 +2;
-	keyarray = calloc (keyarraysize, sizeof (Key*));
-	size_t keyarrayend = retsize +1;
+	/* build an array of entries and sort them according to their order metadata */
+	Key **keyArray;
+	size_t arraySize = ksGetSize(returned);
+	keyArray = calloc (arraySize, sizeof (Key*));
 
 	ksRewind (returned);
-	while ((key = ksNext (returned)) != 0)
-	{
-		/* Only accept keys direct below parentKey */
-		if (keyRel (parentKey, key) != 1) continue;
+	int ret = elektraKsToMemArray(returned, keyArray);
 
-		const Key *orderkey = keyGetMeta (key, "order");
-		int order = 0;
-		if (orderkey) order = atoi (keyString(orderkey));
-		if (order <= 0 || (size_t)order > retsize)
-		{
-			/* Append to the end */
-			keyarray[keyarrayend] = key;
-			++ keyarrayend;
-		} else {
-			keyarray[order] = key;
-			++ order;
-		}
+	if (ret < 0)
+	{
+		ELEKTRA_SET_ERROR (67, parentKey, strerror (errno));
+		fclose (fp);
+		return -1;
 	}
 
-	for (size_t i=0; i< keyarraysize; ++i)
+	qsort (keyArray, arraySize, sizeof(Key *), keyCmpOrderWrapper);
+
+	Key *ipv4Base = keyDup (parentKey);
+	keyAddBaseName(ipv4Base, "ipv4");
+	Key *ipv6Base = keyDup (parentKey);
+	keyAddBaseName (ipv6Base, "ipv6");
+
+	/* now write the hosts file */
+	for (size_t i=0; i< arraySize; ++i)
 	{
-		key = keyarray[i];
-		if (!key) continue;
+		key = keyArray[i];
+
+		/* only process canonical name keys */
+		if (!keyIsDirectBelow(ipv4Base, key) && !keyIsDirectBelow(ipv6Base, key)) continue;
+
 		lastline = strrchr (keyComment(key), '\n');
 		if (lastline)
 		{
 			*lastline = '\0';
-			char *token, *saveptr, *mcomment = malloc (keyGetCommentSize(key));
-			strcpy (mcomment, keyComment(key));
-			token = strtok_r (mcomment, "\n", &saveptr);
-			while (token != 0)
-			{
-				fprintf (fp, "#%s\n", token);
-				token = strtok_r (NULL, "\n", &saveptr);
-			}
-			free (mcomment);
+			writeHostsComment (fp, key);
 			*lastline = '\n'; /* preserve comment */
 		}
 
 		fprintf (fp, "%s\t%s", (char*)keyValue(key), (char*)keyBaseName (key));
 
-		ksLookup(returned, key, 0);
+		/* position the cursor at the current key and
+		 * iterate over its subkeys
+		 */
+		ksLookup(returned, key, KDB_O_NONE);
 		while ((alias = ksNext (returned)) != 0)
 		{
 			if (keyRel (key, alias) < 1) break;
@@ -325,17 +395,19 @@ int elektraHostsSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 
 		if (lastline)
 		{
-			if (*(lastline+1) != '\0') fprintf (fp, " #%s", lastline+1);
+			if (*(lastline+1) != '\0') fprintf (fp, " # %s", lastline+1);
 		} else {
-			if (*keyComment(key) != '\0') fprintf (fp, " #%s", keyComment(key));
+			if (*keyComment(key) != '\0') fprintf (fp, " # %s", keyComment(key));
 		}
 
 		fprintf (fp, "\n");
 	}
+	keyDel (ipv4Base);
+	keyDel (ipv6Base);
 
 	fclose (fp);
 	errno = errnosave;
-	free (keyarray);
+	free (keyArray);
 	return 1;
 }
 
