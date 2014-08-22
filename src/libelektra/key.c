@@ -71,7 +71,7 @@
 #include "kdbprivate.h"
 
 /*
- * Allocates and initialices a key
+ * Allocates and initializes a key
  * @returns 0 if allocation did not work, the key otherwise
  */
 static Key *elektraKeyMalloc()
@@ -414,7 +414,7 @@ int g (const Key * source, KeySet * ks)
  * It can also be optimized in the checks, because the keyname
  * is known to be valid.
  *
- * @param source has to be an initializised source Key
+ * @param source has to be an initialized source Key
  * @return 0 failure or on NULL pointer
  * @return a fully copy of source on success
  * @see ksAppend(), keyDel(), keyNew()
