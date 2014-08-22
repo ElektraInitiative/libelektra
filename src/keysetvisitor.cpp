@@ -3,16 +3,15 @@
 using namespace kdb;
 
 KeySetVisitor::KeySetVisitor(KeySet &keySet)
-    : m_set(keySet)
 {
-
+    m_set = keySet;
 }
 
 void KeySetVisitor::visit(ConfigNode *node)
 {
     Key key = node->getKey();
 
-    if(key){
+    if(key && key.isValid()){
         qDebug() << "Appending key " << QString::fromStdString(key.getName());
         m_set.append(key);
     }
@@ -28,7 +27,7 @@ void KeySetVisitor::visit(TreeViewModel *model)
         node->accept(*this);
     qDebug() << "===================================";
 
-    model->repopulateModel();
+    model->populateModel();
 }
 
 KeySet &KeySetVisitor::getKeySet()

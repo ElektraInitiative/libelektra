@@ -60,7 +60,7 @@ public:
                 Qt::ItemFlags   flags(const QModelIndex& index) const;
 
     // recursively populate the model
-    void                        populateModel();
+    Q_INVOKABLE void            populateModel();
 
     void                        accept(Visitor &visitor);
 
@@ -81,7 +81,6 @@ public:
                 void            insertRow(int row, ConfigNode* node);
     Q_INVOKABLE void            clear();
     Q_INVOKABLE void            synchronize();
-    Q_INVOKABLE void            repopulateModel();
     Q_INVOKABLE void            createNewNode(const QString &path, const QString &value, const QVariantMap metaData);
                 void            append(ConfigNode *node);
     Q_INVOKABLE void            setData(int index, const QVariant& value, const QString& role);

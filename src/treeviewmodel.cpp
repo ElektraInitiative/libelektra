@@ -374,17 +374,16 @@ void TreeViewModel::createNewNode(const QString &path, const QString &value, con
 
 void TreeViewModel::append(ConfigNode *node)
 {
-    beginInsertRows(QModelIndex(), m_model.size(), m_model.size());
-    m_model.append(node);
-    endInsertRows();
+    insertRow(rowCount(), node);
 }
 
 void TreeViewModel::synchronize()
 {
     KeySetVisitor ksVisit(m_keySet);
     accept(ksVisit);
-    m_kdb.set(ksVisit.getKeySet(), "/");
-    repopulateModel();
+    m_keySet = ksVisit.getKeySet();
+    m_kdb.set(m_keySet, "/");
+    populateModel();
 }
 
 void TreeViewModel::clear()
@@ -392,14 +391,6 @@ void TreeViewModel::clear()
     beginResetModel();
     m_model.clear();
     endResetModel();
-}
-
-void TreeViewModel::repopulateModel()
-{
-//    beginResetModel();
-    m_model.clear();
-    populateModel();
-//    endResetModel();
 }
 
 QHash<int, QByteArray> TreeViewModel::roleNames() const
