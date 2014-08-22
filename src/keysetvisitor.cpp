@@ -16,7 +16,7 @@ void KeySetVisitor::visit(ConfigNode *node)
         m_set.append(key);
     }
     else{
-        qDebug() << "Key of node " << node->getName() << " is null";
+        qDebug() << "Key of node " << node->getName() << " is null or invalid";
     }
 }
 

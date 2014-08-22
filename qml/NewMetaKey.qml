@@ -33,6 +33,7 @@ Item {
 
             onClicked: {
                 qmlMetaKeyModel.remove(index)// remove the visual item
+                isEdited = true
             }
         }
     }
