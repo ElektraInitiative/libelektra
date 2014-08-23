@@ -18,6 +18,8 @@
 
 #include <kdbtools.h>
 
+#include <unistd.h>
+
 void test_readwrite()
 {
 	KeySet		*ks;

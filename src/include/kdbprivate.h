@@ -18,6 +18,7 @@
 #define KDBPRIVATE_H
 
 #include <kdb.h>
+#include <kdbhelper.h>
 #include <kdbconfig.h>
 #include <kdbplugin.h>
 #include <kdbextension.h>
@@ -413,15 +414,6 @@ int elektraSplitSync (Split *split);
 int elektraSplitPrepare (Split *split);
 int elektraSplitUpdateSize (Split *split);
 
-/*Internal helpers*/
-ssize_t elektraMemcpy (Key** array1, Key** array2, size_t size);
-ssize_t elektraMemmove (Key** array1, Key** array2, size_t size);
-void *elektraMalloc (size_t size);
-void *elektraCalloc (size_t size);
-void  elektraFree (void *ptr);
-char *elektraStrDup (const char *s);
-char *elektraStrNDup (const char *s, size_t l);
-int elektraRealloc(void **buffer, size_t size);
 
 /*Backend handling*/
 Backend* elektraBackendOpen(KeySet *elektra_config, KeySet *modules, Key *errorKey);
@@ -466,12 +458,11 @@ int keyClose(Key *key);
 int ksInit(KeySet *ks);
 int ksClose(KeySet *ks);
 
-int elektraStrCmp (const char *s1, const char *s2);
-int elektraStrCaseCmp (const char *s1, const char *s2);
-size_t elektraStrLen(const char *s);
-
 int keyClearSync (Key *key);
 
+/*Used for internal memcpy/memmove*/
+ssize_t elektraMemcpy (Key** array1, Key** array2, size_t size);
+ssize_t elektraMemmove (Key** array1, Key** array2, size_t size);
 
 /** Test a bit. @see set_bit(), clear_bit() */
 #define test_bit(var,bit)            ((var) &   (bit))

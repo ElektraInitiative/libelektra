@@ -344,3 +344,32 @@ size_t elektraStrLen(const char *s)
 	if (found) return found-s+1;
 	return 0;
 }
+
+/**
+ * Escapes (a part of) a key name.
+ *
+ * As described in Syntax for Key Names, special characters will be
+ * prefixed with a \\.
+ *
+ * The string will be written to dest.
+ * @warning May need twice the storage than the source string.
+ *   Do not use the source string as destination string.
+int elektraKeyNameEscape(const char *source, char *dest)
+{
+}
+ */
+
+/**
+ * Unescapes (a part of) a key name.
+ *
+ * As described in Syntax for Key Names, special characters are
+ * prefixed with a \\. This method removes all \\ that are such
+ * escape characters.
+ *
+ * The new string will be written to dest.
+ * May only need half the storage than the source string.
+ * It is safe to use the same string for source and dest.
+int elektraKeyNameUnescape(const char *source, char *dest);
+{
+}
+ */
