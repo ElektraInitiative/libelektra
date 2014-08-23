@@ -35,13 +35,9 @@ int ImportCommand::execute(Cmdline const& cl)
 	}
 
 	KeySet originalKeys;
-
-	{
-		KDB lkdb;
-		lkdb.get (originalKeys, root);
-		originalKeys = originalKeys.cut(root);
-		printWarnings (cerr, root);
-	}
+	kdb.get (originalKeys, root);
+	KeySet existingKeys = originalKeys.cut (root);
+	printWarnings (cerr, root);
 
 	KeySet importedKeys;
 
@@ -78,7 +74,7 @@ int ImportCommand::execute(Cmdline const& cl)
 
 	helper.parseStrategies (cl, merger);
 	MergeResult result = merger.mergeKeySet (
-			MergeTask (BaseMergeKeys (base, root), OurMergeKeys (originalKeys, root),
+			MergeTask (BaseMergeKeys (base, root), OurMergeKeys (existingKeys, root),
 					TheirMergeKeys (importedKeys, root), root));
 
 	helper.reportResult (cl, result, cout, cerr);
@@ -92,7 +88,8 @@ int ImportCommand::execute(Cmdline const& cl)
 		}
 
 		KeySet resultKeys = result.getMergedKeys();
-		kdb.set (resultKeys, root);
+		originalKeys.append(resultKeys);
+		kdb.set (originalKeys, root);
 		return 0;
 	}
 	else
