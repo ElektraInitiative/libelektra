@@ -11,10 +11,11 @@
 
 This plugin is an implementation of a parser and generator of the /etc/fstab file.
 
+## old fstab Entries ##
 
-## Special Values ##
+(Deprecated, remove this section after it is reimplemented in the new
+ way)
 
-####fstab Devices####
 For each device in fstab elektra will store the following keys:
  pseudoname/device
  pseudoname/mpoint
@@ -38,13 +39,6 @@ with a number from 00 on for XX
 
 otherwise the mountpoint without  the '/' character will be used.
 
-
-## Restrictions ##
-
-setmntent is used and restrict the capabilities in many ways.
-At one point you can't use any comments, they will be generated
-automatically.
-
 At the other point there is the issue with the pseudonames,
 you can't rely on the pseudoname you have set.
 
@@ -58,13 +52,59 @@ of the rootfs and set it again the resulting fstab will be like:
 
 which will be not like you desired!
 
-#### Portability ####
+setmntent is used, so it is only conforming to BSD 4.3 and linux and you
+can't use any comments.
 
-setmntent is used, so it is only conforming to BSD 4.3 and linux.
+## new fstab Entries ##
 
-## Examples ##
+Specification:
 
-##Examples##
+    [/_]
+    type = array
+    explanation = the name of the key is the mountpoint (so the former
+      mpoint is not needed); the value is the number of entries in the
+      array
+    [/_/#]
+    explanation = an entry in the array
+    [/_/#/device]
+    [/_/#/type]
+    [/_/#/options]
+    [/_/#/dumpfreq]
+    [/_/#/passno]
+
+
+Example: A fstab that looks like:
+
+    /dev/sr0        /media/cdrom   udf,iso9660 user,noauto     0       0
+
+would have a key name that is an array (so the value is the number of
+children, in this case 1):
+
+    system/filesystems/\/media\/cdrom
+
+with the array entry:
+
+    system/filesystems/\/media\/cdrom0/#0/
+
+So when following line is added
+
+    /dev/sr0        /media/cdrom   ramfs user,noauto     0       0
+
+Implementation hint: use keyAddBaseName() to get escaping of /, then
+add array items below it
+
+If a mount point exists more than once (that could be proc, swap or
+overlay mountpoints) the array below gets incremented (otherwise #0 is
+used for every unique entry).
+
+The order of the array must, of course, be preserved. Other lines may
+be reordered for now, a proper "order" could be done later.
+
+Spaces in the names are replaced by \040 in the fstab.
+
+
+## Example ##
 
 Mount the plugin:
->$ kdb mount /etc/fstab system/fstab fstab
+
+$ kdb mount /etc/fstab system/filesystems fstab
