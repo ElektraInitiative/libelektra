@@ -779,8 +779,10 @@ ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize)
  *
  * If you do not want escaping, use keySetBaseName() instead. E.g. if
  * you want to add an inactive key, use:
- * keyAddName(key, ""); // add an empty baseName
- * keySetName(key, ".hiddenkey");
+ * @snippet testabi_key.c base1
+ *
+ * or when you want to add an array item, use:
+ * @snippet testabi_key.c base2
  *
  * @see elektraKeyNameUnescape() to unescape the string.
  *

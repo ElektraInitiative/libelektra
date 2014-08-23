@@ -2382,6 +2382,24 @@ static void test_keyBaseName()
 	output_key(k);
 	succeed_if_same_string(keyName(k), "system/valid/has\\/slash");
 
+	//! [base1]
+	keySetName (k, "system/valid");
+	keyAddBaseName(k, ""); // add an empty baseName
+	keySetBaseName(k, ".hiddenkey");
+	succeed_if_same_string(keyName(k), "system/valid/.hiddenkey");
+	//! [base1]
+
+	//! [base2]
+	keySetName (k, "system/valid");
+	keyAddBaseName(k, ""); // add an empty baseName
+	keySetBaseName(k, "#0");
+	succeed_if_same_string(keyName(k), "system/valid/#0");
+	//! [base2]
+
+	keySetName (k, "system/valid");
+	keyAddBaseName(k, "#0"); // add an empty baseName
+	succeed_if_same_string(keyName(k), "system/valid/\\#0");
+
 
 	keySetName (k, "system/valid");
 	succeed_if (!strcmp(keyBaseName(k), "valid"), "invalid base name");

@@ -899,13 +899,7 @@ ssize_t ksCopyInternal(KeySet *ks, size_t to, size_t from)
  * - @p system/mountpoint/other/key1
  *
  * When you use
- * @code
-KeySet *ks = ksNew(0, KS_END);
-kdbGet(kdb, ks, parentKey);
-Key *cutpoint = keyNew("system/mountpoint/interest", KEY_END);
-KeySet *returned = ksCut(ks, cutpoint);
-kdbSet(kdb, ks, parentKey); // all keys below cutpoint are now removed
- * @endcode
+ * @snippet cut.c cut
  *
  * Then in @p returned are:
  * - @p system/mountpoint/interest
