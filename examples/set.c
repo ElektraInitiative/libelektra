@@ -36,7 +36,7 @@ void check_key()
 	const char * key_name = keyName(result);
 	const char * key_value = keyString(result);
 	const char * key_comment = keyString(keyGetMeta(result, "comment"));
-	printf("key: %s value: %s comment: %s", key_name, key_value, key_comment);
+	printf("key: %s value: %s comment: %s\n", key_name, key_value, key_comment);
 	ksDel(ks);
 	keyDel(key);
 	keyDel(top);
