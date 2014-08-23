@@ -2384,14 +2384,16 @@ static void test_keyBaseName()
 
 	//! [base1]
 	keySetName (k, "system/valid");
-	keyAddBaseName(k, ""); // add an empty baseName
+	keyAddBaseName(k, "");
+	succeed_if_same_string(keyName(k), "system/valid/%");
 	keySetBaseName(k, ".hiddenkey");
 	succeed_if_same_string(keyName(k), "system/valid/.hiddenkey");
 	//! [base1]
 
 	//! [base2]
 	keySetName (k, "system/valid");
-	keyAddBaseName(k, ""); // add an empty baseName
+	keyAddBaseName(k, "");
+	succeed_if_same_string(keyName(k), "system/valid/%");
 	keySetBaseName(k, "#0");
 	succeed_if_same_string(keyName(k), "system/valid/#0");
 	//! [base2]
