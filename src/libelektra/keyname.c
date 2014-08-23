@@ -46,9 +46,23 @@
  * So, always prefer to construct a key and/or:
  * - use keySetName() to check if the key name is correct
  * - use keySetBaseName() to check if the key name part is correct
- * - Do not try to validate with your own algorithm!
- * - Also, always prefer to use keyAddBaseName() if you need escaping
- * - Do not try to escape the strings yourself!
+ * - Do not validate with your own algorithm!
+ * - Also, always prefer to use keyAddBaseName() if you need escaping.
+ * - Do not escape the strings yourself!
+ * - Use elektraKeyNameUnescape() if you want to remove escape sequences.
+ * - Do not unescape the strings yourself!
+ *
+ *
+ * @par Semantics for Key Name Parts
+ * Here we define only the semantics for parts of key names.
+ * - \% denotes an empty key name part.
+ * - key name parts starting with \# are array elements
+ * - key name parts starting with . (dot) mean:
+ *   - "." (dot) means that the part does not exist
+ *   - ".." (dot-dot) means that the part does not exist and also not
+ *     the parent.
+ *   - other key name parts starting with . (dot) mean the key is
+ *     inactive, see keyIsInactive().
  *
  *
  * @par Syntax for Key Names
@@ -72,20 +86,13 @@
  *   So we have the regular expression #[_]*[0-9]+ with the further
  *   limitation that the number of _ is defined by the number of
  *   digits-1.
- * - Use \\# if you want your key name part to start with #
- * - Use \\\\# allows to use \\ as character before #
+ * - Use \\# if you want your key name part to start with # (and is not
+ *   an array)
+ * - Use \\\\# allows to use \\ as character before \#
+ * - Use \\% if you want your key name part to start with \%  (and does
+ *   not represent an empty name)
+ * - Use \\\\% allows to use \\ as character before \%
  *
- *
- * @par Semantics for Key Name Parts
- * Here we define only the semantics for parts of key names.
- * - \% denotes an empty key name part.
- * - key name parts starting with \# are array elements
- * - key name parts starting with . (dot) mean:
- *   - "." (dot) means that the part does not exist
- *   - ".." (dot-dot) means that the part does not exist and also not
- *     the parent.
- *   - other key name parts starting with . (dot) mean the key is
- *     inactive, see keyIsInactive().
  *
  * @par Semantics for Key Name Specifications
  * - _ denotes that the key name part is
@@ -747,19 +754,35 @@ ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize)
 /**
  * Adds @p baseName to the current key name.
  *
- * Assumes that @p key is a directory. @p baseName is appended to it.
- * The function adds @c '/' if needed while concatenating.
+ * A new baseName will be added, no other part of the key name will be
+ * affected.
+ *
+ * Assumes that @p key is a directory and will append @p baseName to it.
+ * The function adds @c '/' for concatenating.
  *
  * So if @p key has name @c "system/dir1/dir2" and this method is called with
- * @p baseName @c "mykey", the resulting key will have name
+ * @p baseName @c "mykey", the resulting key will have the name
  * @c "system/dir1/dir2/mykey".
  *
- * When baseName is 0 or "" nothing will happen and the size of the name is returned.
+ * When @p baseName is 0 nothing will happen and the size of the name is returned.
  *
- * @warning You should not change a keys name once it belongs to a
- *          keyset because it would destroy the order.
+ * The escaping rules apply as specified above. So @p baseName will
+ * be escaped when:
+ * - it starts with . (dot). So it is not possible to create
+ *   inactive keys (see keyIsInactive())
+ * - it starts with \# (hash). So it is not possible to create array names
+ * - is empty "". (\% will be used then)
+ * - is \% (empty parts of key name need empty @p baseName)
+ * - any \\ occur.
  *
- * TODO: does not recognice .. and . in the string!
+ * Internally elektraKeyNameEscape() is used.
+ *
+ * If you do not want escaping, use keySetBaseName() instead. E.g. if
+ * you want to add an inactive key, use:
+ * keyAddName(key, ""); // add an empty baseName
+ * keySetName(key, ".hiddenkey");
+ *
+ * @see elektraKeyNameUnescape() to unescape the string.
  *
  * @param key the key object to work with
  * @param baseName the string to append to the name
@@ -802,10 +825,12 @@ ssize_t keyAddBaseName(Key *key, const char *baseName)
 /**
  * Sets @c baseName as the new basename for @c key.
  *
+ * Only the baseName will be affected and no other part of the key.
+ *
  * All text after the last @c '/' in the @p key keyname is erased and
  * @p baseName is appended.
  *
- * So lets suppose @p key has name @c "system/dir1/dir2/key1". If @p baseName
+ * So let us suppose @p key has name @c "system/dir1/dir2/key1". If @p baseName
  * is @c "key2", the resulting key name will be @c "system/dir1/dir2/key2".
  * If @p baseName is empty or NULL, the resulting key name will
  * be @c "system/dir1/dir2".
@@ -839,17 +864,19 @@ ssize_t keySetBaseName(Key *key, const char *baseName)
 		key->key[key->keySize-1]=0; /* finalize string */
 		/*Now add new baseName*/
 		p = baseName;
-		while (*(p=keyNameGetOneLevel(p+size,&size)))
+		while (*(p=keyNameGetOneLevel(p+size,&size))) /*not needed*/
 		{
 			key->keySize += size+1;
 			key->key=realloc(key->key,key->keySize);
 
 			key->key[key->keySize-size-2]=KDB_PATH_SEPARATOR;
 			memcpy(key->key+key->keySize-size-1,p,size);
+			/* use keySetRawName() internally and not
+			 * key->key*/
 		}
 		key->key[key->keySize-1]=0; /* finalize string */
 		return key->keySize;
-	} else return keySetName(key,baseName);
+	} else return keySetName(key,baseName); /*that cannot be a good idea*/
 }
 
 
