@@ -42,7 +42,7 @@ set (PLUGINS_LIST_NODEP
 	ccode
 	error  fstab
 	hexcode  hidden
-	ni  null
+	ni  null ini
 	struct  success
 	tracer  type  validation
 	constants
