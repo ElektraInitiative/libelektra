@@ -16,7 +16,7 @@ This text is preliminary, the release did not happen!
 - added remount tool
 - import now can use merge strategies
 - added lots of tutorials
-- README.md now for most plugins
+- README.md now for some plugins
 - mount is now more verbose when validation fails
 - plugin noresolver added
 - constants plugin added
@@ -29,7 +29,7 @@ This text is preliminary, the release did not happen!
 - added compilation variants plugins
 - added new variants for resolver
 - buildserver checks more things (memcheck, if plugins are added correctly, ABI tests)
-- added targets run_all and run_memcheck
+- added targets run_all and run_memcheck (make test TODO)
 - link to contextual paper
 - add SPECIFICATION
 - intro for C++ binding

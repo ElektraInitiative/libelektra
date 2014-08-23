@@ -369,6 +369,15 @@ static int elektraGetDoUpdate(Split *split, Key *parentKey)
  *     otherwise they will be lost. This stems from the fact that the
  *     user has the only copy of the whole configuration and backends
  *     only write configuration that was passed to them.
+ *     For example, if you kdbGet() "system/mountpoint/interest"
+ *     you will not only get all keys below system/mountpoint/interest,
+ *     but also all keys below system/mountpoint (if system/mountpoint
+ *     is a mountpoint as the name suggests, but
+ *     system/mountpoint/interest is not a mountpoint).
+ *     Make sure to not touch or remove keys outside the keys of interest,
+ *     because others may need them!
+ *
+ * @see ksCut() for further remarks on that topic.
  *
  * @par Example:
  *

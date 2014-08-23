@@ -30,22 +30,96 @@
  * Everything here can also be done with keySetName, described in key.
  *
  *
- * @par Rules for Key Names
+ * @par Terminology of Key Names
+ * - A *key name* (see keySetName() and keyName()) describes the
+ *   position of a key within the key database.
+ *   To be unique, it is always absolute and canonical.
+ * - Key names are composed out of many *key name parts* split by a
+ *   separator. These *key name parts* do not contain a unescaped
+ *   separator.
+ * - A *key base name* (see keySetBaseName() and keyAddBaseName()) is
+ *   the last part of the key name.
  *
+ *
+ * @note The rules are currently not formally specified and are subject
+ * of change in the next major release.
+ * So, always prefer to construct a key and/or:
+ * - use keySetName() to check if the key name is correct
+ * - use keySetBaseName() to check if the key name part is correct
+ * - Do not try to validate with your own algorithm!
+ * - Also, always prefer to use keyAddBaseName() if you need escaping
+ * - Do not try to escape the strings yourself!
+ *
+ *
+ * @par Syntax for Key Names
+ * The key name parts are designed to hold any character allowed in
+ * C-Strings.
+ * Some escaping is needed to achieve this.
+ * - \\0 (null-character) must not occur within names, but denotes the
+ *   end of the key name
+ * - / (slash) is the separator of key name parts.
+ * - \\ (backslash) is the escape characters for the situations as
+ *   described here (and only these). In the other situations \\
+ *   can be used as any other character.
+ * - \\/ allows to escape /
+ * - \\\\/ allows to use \\ as character before /
+ * - . (dot) and .. (dot-dot) must not occur as part in a key name
+ * - Use \\. and \\.. if you want your key name part to represent . and ..
+ * - Use \\\\. and \\\\.. allows to use \\ as character before . and ..
+ * - // (slash-slash) must not occur in key names
+ * - If a key name part starts with \#, it is an array entry. Then
+ *   only _ (underscore) followed by 0-9 is allowed.
+ *   So we have the regular expression #[_]*[0-9]+ with the further
+ *   limitation that the number of _ is defined by the number of
+ *   digits-1.
+ * - Use \\# if you want your key name part to start with #
+ * - Use \\\\# allows to use \\ as character before #
+ *
+ *
+ * @par Semantics for Key Name Parts
+ * Here we define only the semantics for parts of key names.
+ * - \% denotes an empty key name part.
+ * - key name parts starting with \# are array elements
+ * - key name parts starting with . (dot) mean:
+ *   - "." (dot) means that the part does not exist
+ *   - ".." (dot-dot) means that the part does not exist and also not
+ *     the parent.
+ *   - other key name parts starting with . (dot) mean the key is
+ *     inactive, see keyIsInactive().
+ *
+ * @par Semantics for Key Name Specifications
+ * - _ denotes that the key name part is
+ *   arbitrary (syntax as described above).
+ * - \# denotes that the key name part
+ *   has array syntax.
+ * - names surrounded by \% (e.g. \%profile\%)
+ *   denotes a placeholder.
+ *
+ *
+ * @par Canonicalization for Key Names
+ * - // is shortened to /
+ * - /./ is shortened to /
+ * - _/../ is shortened to _
+ *
+ *
+ * @par Usage of Key Names
  * When using Elektra to store your application's configuration and state,
  * please keep in mind the following rules:
- * - You are not allowed to create keys right under @p system or @p user.
- * - You are not allowed to create folder keys right under @p system or @p user.
- *   They are reserved for very essential OS subsystems.
- * - The keys for your application, called say @e MyApp, should be created under
- *   @p system/sw/MyApp and/or @p user/sw/MyApp.
+ * - Avoid to have your applications root right under @p system or @p user.
+ *   (rationale: it would make the hierarchy too flat.)
+ * - Avoid the usage of characters other then a-z, 0-9 and _.
+ *   (rationale: it would allow too many similar, confusing names.)
+ *   (exceptions: if the user or a technology, decide about parts of
+ *   the key name, this restriction does not apply, e.g. if the wlan
+ *   essid is used as part of the key name)
  * - It is suggested to make your application look for default keys under
- *   @p system/sw/MyApp/current and/or @p user/sw/MyApp/current. This way, from
+ *   @p /sw/myapp/#/%/ where \# is a major version number, e.g. \#3 for
+ *   the 4th version and % is a profile (% for default profile). This way, from
  *   a sysadmin perspective, it will be possible to copy the
- *   @p system/sw/MyApp/current tree to something like @p system/sw/MyApp/old,
- *   and keep system clean and organized.
- * - \\0 must not occur in names.
- * - / is the seperator.
+ *   @p system/sw/myapp/#3/%/ tree to something like
+ *   @p system/sw/myapp/#3/old/ and keep system clean and organized.
+ *   Additionally, it is possible to start the old version of the app,
+ *   using @p /sw/myapp/#2.
  *
  */
 

@@ -874,12 +874,53 @@ ssize_t ksCopyInternal(KeySet *ks, size_t to, size_t from)
  *
  * Searches for the cutpoint inside the KeySet ks.
  * If found it cuts out everything which is below (see keyIsBelow()) this key.
- * If not found an empty keyset is returned.
+ * These keys will be missing in the keyset @p ks.
+ * Instead, they will be moved to the returned keyset.
+ * If @p cutpoint is not found an empty keyset is returned and @p ks
+ * is not changed.
  *
  * The cursor will stay at the same key as it was before.
- * If the cursor was inside the region of cutted (moved)
+ * If the cursor was inside the region of cut (moved)
  * keys, the cursor will be set to the key before
  * the cutpoint.
+ *
+ * If you use ksCut() on a keyset you got from kdbGet() and plan to make
+ * a kdbSet() later, make sure that you keep all keys that should not
+ * be removed permanently. You have to keep the KeySet that was returned
+ * and the KeySet @p ks.
+ *
+ * @par Example:
+ *
+ * You have the keyset @p ks:
+ * - @p system/mountpoint/interest
+ * - @p system/mountpoint/interest/folder
+ * - @p system/mountpoint/interest/folder/key1
+ * - @p system/mountpoint/interest/folder/key2
+ * - @p system/mountpoint/other/key1
+ *
+ * When you use
+ * @code
+KeySet *ks = ksNew(0, KS_END);
+kdbGet(kdb, ks, parentKey);
+Key *cutpoint = keyNew("system/mountpoint/interest", KEY_END);
+KeySet *returned = ksCut(ks, cutpoint);
+kdbSet(kdb, ks, parentKey); // all keys below cutpoint are now removed
+ * @endcode
+ *
+ * Then in @p returned are:
+ * - @p system/mountpoint/interest
+ * - @p system/mountpoint/interest/folder
+ * - @p system/mountpoint/interest/folder/key1
+ * - @p system/mountpoint/interest/folder/key2
+ *
+ * And in @p ks are:
+ * - @p system/mountpoint/other/key1
+ *
+ * So kdbSet() permanently removes all keys below
+ * @p system/mountpoint/interest.
+ *
+ * @see kdbGet() for explanation why you might get more keys than you
+ * requested.
  *
  * @return a new allocated KeySet which needs to deleted with ksDel().
  *         The keyset consists of all keys (of the original keyset ks)
