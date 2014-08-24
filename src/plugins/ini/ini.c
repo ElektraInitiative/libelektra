@@ -16,7 +16,7 @@
 #include <stdlib.h>
 #include <kdberrors.h>
 #include <kdbextension.h>
-#include "lib/inih.h"
+#include <inih.h>
 #include "ini.h"
 
 #include "contract.h"
