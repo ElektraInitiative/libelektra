@@ -14,11 +14,6 @@ The CCODE PLUGIN allows us to map any single escaped
 character to be replaced by another single character and vice versa. 
 The user can conﬁgure this mapping.
 
-
-## Special values ##
-
-
-
 ## Restrictions ##
 
 This method of encoding characters is not as powerful as the hexcode plugin in terms of reduction. 
@@ -27,4 +22,6 @@ So it can represent any key value with only 17 characters.
 On the other hand, ccode cannot reduce the set more than by half.
 
 
-## Examples ##
+## Usage ##
+
+Add 'ccode' to 'infos/needs' for any plugin that you want to be filtered by ccode.
