@@ -16,7 +16,7 @@ This text is preliminary, the release did not happen!
 - added remount tool
 - import now can use merge strategies
 - added lots of tutorials
-- README.md now for some plugins
+- README.md now for some plugins (thanks to Ian)
 - mount is now more verbose when validation fails
 - plugin noresolver added
 - constants plugin added
@@ -34,6 +34,9 @@ This text is preliminary, the release did not happen!
 - add SPECIFICATION
 - intro for C++ binding
 - use LIB_SUFFIX for TARGET_TOOL_EXEC_FOLDER thanks to Kai Uwe
+- Fix search for boost (thank Pino)
+- rewrote hosts plugin to support ipv6 properly (thanks to Felix)
+- GSoC finished successfully (thanks Ian, Felix, see http://community.libelektra.org/wp)
 
 
 
