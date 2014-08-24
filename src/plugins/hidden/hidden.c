@@ -65,20 +65,7 @@ int elektraHiddenGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			keyNew ("system/elektra/modules/hidden/exports/set",
 				KEY_FUNC, elektraHiddenSet,
 				KEY_END),
-			keyNew ("system/elektra/modules/hidden/infos",
-				KEY_VALUE, "All information you want to know", KEY_END),
-			keyNew ("system/elektra/modules/hidden/infos/author",
-				KEY_VALUE, "Markus Raab <elektra@markus-raab.org>", KEY_END),
-			keyNew ("system/elektra/modules/hidden/infos/licence",
-				KEY_VALUE, "BSD", KEY_END),
-			keyNew ("system/elektra/modules/hidden/infos/description",
-				KEY_VALUE, "Hides keys which start with a .", KEY_END),
-			keyNew ("system/elektra/modules/hidden/infos/provides",
-				KEY_VALUE, "", KEY_END),
-			keyNew ("system/elektra/modules/hidden/infos/placements",
-				KEY_VALUE, "postgetstorage presetstorage", KEY_END),
-			keyNew ("system/elektra/modules/hidden/infos/needs",
-				KEY_VALUE, "", KEY_END),
+#include "readme_hidden.c"
 			keyNew ("system/elektra/modules/hidden/infos/version",
 				KEY_VALUE, PLUGINVERSION, KEY_END),
 			KS_END);
@@ -94,7 +81,7 @@ int elektraHiddenGet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 	while ((cur = ksNext(returned)) != 0)
 	{
-		if (keyBaseName(cur)[0] != '.') ksAppendKey (newReturned, cur);
+		if (keyIsInactive(cur)) ksAppendKey (newReturned, cur);
 		else ksAppendKey (hiddenKeys, cur);
 	}
 

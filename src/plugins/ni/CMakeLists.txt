@@ -10,6 +10,10 @@ set (NI_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/nickel-1.1.0/include ${CMAKE_CURRENT
 add_includes (elektra-full ${NI_INCLUDE})
 include_directories (${NI_INCLUDE})
 
+generate_readme (ni)
+add_includes (elektra-full ${CMAKE_CURRENT_BINARY_DIR})
+include_directories (${CMAKE_CURRENT_BINARY_DIR})
+
 set (SOURCES ni.h ni.c ${NI_FILES})
 add_sources (elektra-full ${SOURCES})
 add_headers (SOURCES)

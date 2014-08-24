@@ -1,5 +1,9 @@
 include (LibAddMacros)
 
+generate_readme (type)
+add_includes (elektra-full ${CMAKE_CURRENT_BINARY_DIR})
+include_directories (${CMAKE_CURRENT_BINARY_DIR})
+
 set (SOURCES type.hpp type.cpp
 		types.hpp types.cpp
 		type_checker.hpp)

@@ -1,5 +1,9 @@
 include (LibAddMacros)
 
+generate_readme (validation)
+add_includes (elektra-full ${CMAKE_CURRENT_BINARY_DIR})
+include_directories (${CMAKE_CURRENT_BINARY_DIR})
+
 set (SOURCES lookupre.c validation.h validation.c)
 add_sources (elektra-full ${SOURCES})
 add_headers (SOURCES)
