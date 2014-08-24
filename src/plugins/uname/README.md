@@ -9,17 +9,19 @@
 
 ## Introduction ##
 
-This plugin is a storage plugin that takes `/etc/uname` file as its backend storage. The `kdbGet()` method will parse `/etc/uname` and generate a  valid key tree. The `kdbSet()` method will take a KeySet with valid filesystem keys and print an equivalent regular uname in stdout. 
+This plugin is a storage plugin that will use the syscall `uname (2)`.
+No resolver is needed for that plugin to work.
+
 
 ## Special Values ##
 
-This plugin defines following keynames below its mountpoint:	
-	
-	  	- sysname	
-	  	- nodename		
-	  	- release		
-	  	- version		
-		- machine		
+This plugin defines following keynames below its mountpoint:
+
+	sysname
+	nodename
+	release
+	version
+	machine
 
 ## Restrictions ##
 
@@ -27,5 +29,5 @@ This plugin is read-only.
 
 ## Example ##
 
-To mount uname information using this plugin:		
+To mount uname information using this plugin:
 `kdb mount -R noresolver none system/uname uname`
