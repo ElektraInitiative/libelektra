@@ -9,3 +9,5 @@
 ## Introduction ##
 
 This plugin simply hides Keys whose names start with a `.`.
+
+See keyIsInactive() for more information.

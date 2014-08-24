@@ -81,7 +81,7 @@ int elektraHiddenGet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 	while ((cur = ksNext(returned)) != 0)
 	{
-		if (keyBaseName(cur)[0] != '.') ksAppendKey (newReturned, cur);
+		if (keyIsInactive(cur)) ksAppendKey (newReturned, cur);
 		else ksAppendKey (hiddenKeys, cur);
 	}
 
