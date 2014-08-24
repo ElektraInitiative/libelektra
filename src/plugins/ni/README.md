@@ -10,7 +10,7 @@
 
 This plugin uses the nickel library in order to read/write configuration data in the nickel ini format.
 
-## Sepecial Values ##
+## Special Values ##
 
 Nickel (Ni) has its strength in building up a hierarchical
 recursive Node structure which is perfect for parsing and
@@ -28,8 +28,10 @@ parser.
 
 The random order of the files and the cutting out of comments
 is a large flaw in general but does not bother for kde config
-because it removes comments too (?) and can restore the same
-order easily.
+because the kde config system removes comments, too.
+
+For many other ini files, e.g. smb.conf you should prefer the
+[ini plugin](/src/plugins/ini).
 
 The API of nickel is very suited for elektra, it can use
 `FILE*` pointers (using that elektra could open and lock
@@ -45,10 +47,9 @@ rewritten again.
 The error handling is
 very spartanic.
 
-## More Information ##
+## More Information about Nickel ##
 
 author: charles@chaoslizard.org
-comments for sections/keys
 
 http://chaoslizard.sourceforge.net/nickel
 http://www.chaoslizard.org/devel/bohr/wiki/Docs/Ni
