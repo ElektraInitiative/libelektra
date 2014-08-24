@@ -58,9 +58,10 @@
  * - \% denotes an empty key name part.
  * - key name parts starting with \# are array elements
  * - key name parts starting with . (dot) mean:
- *   - "." (dot) means that the part does not exist
+ *   - "." (dot) means that the part does not exist (i.e. it will be removed during
+ *     canonicalization)
  *   - ".." (dot-dot) means that the part does not exist and also not
- *     the parent.
+ *     the parent.(i.e. they will be removed during canonicalization)
  *   - other key name parts starting with . (dot) mean the key is
  *     inactive, see keyIsInactive().
  *
@@ -839,6 +840,8 @@ ssize_t keyAddBaseName(Key *key, const char *baseName)
  * If @p baseName is empty or NULL, the resulting key name will
  * be @c "system/dir1/dir2".
  *
+ * You can use '\.' and '\..' to delete parts of the keyname.
+ *
  * @warning You should not change a keys name once it belongs to a
  *          keyset because it would destroy the order.
  *
@@ -860,24 +863,60 @@ ssize_t keySetBaseName(Key *key, const char *baseName)
 	if (!key) return -1;
 
 	if (key->key) {
+
 		/*Throw away basename of key->key*/
 		p=strrchr (key->key, '/');
-		if (p == 0) return keySetName(key, baseName);
-		key->keySize -= (key->key+key->keySize-1)-p;
-		key->key=realloc(key->key,key->keySize);
-		key->key[key->keySize-1]=0; /* finalize string */
-		/*Now add new baseName*/
-		p = baseName;
-		while (*(p=keyNameGetOneLevel(p+size,&size))) /*not needed*/
+		if (p == 0)
 		{
-			key->keySize += size+1;
-			key->key=realloc(key->key,key->keySize);
+			/* we would remove even the namespace */
+			if (!strcmp (baseName, "")) return -1;
 
-			key->key[key->keySize-size-2]=KDB_PATH_SEPARATOR;
-			memcpy(key->key+key->keySize-size-1,p,size);
-			/* use keySetRawName() internally and not
-			 * key->key*/
+			if (!strcmp (baseName, ".")) return -1;
+
+			return keySetName(key, baseName);
 		}
+
+		/* check if the found / is the only one */
+		if (strchr (key->key, '/') == p)
+		{
+			/* we would delete the whole keyname */
+			if (!strcmp (baseName, "..")) return -1;
+
+			/* we would leave only the namespace */
+			if (!strcmp (baseName, ".")) return -1;
+		}
+
+		key->keySize -= (key->key+key->keySize-1)-p;
+		key->key[key->keySize-1]=0; /* finalize string */
+
+		/* remove yet another part */
+		if (!strcmp (baseName, ".."))
+		{
+			p=strrchr (key->key, '/');
+			key->keySize -= (key->key+key->keySize-1)-p;
+			key->key[key->keySize-1]=0; /* finalize string */
+		}
+
+		/* free the now unused space */
+		key->key=realloc(key->key,key->keySize);
+
+		/* these cases just delete keyname parts so we are done */
+		if (!strcmp (baseName, "..") ||
+				!strcmp (baseName, ".") ||
+				!strcmp (baseName, ""))
+		{
+			return key->keySize;
+		}
+
+		/* Now add new baseName */
+		size = strlen (baseName);
+		key->keySize += size + 1;
+		key->key = realloc (key->key, key->keySize);
+
+		key->key[key->keySize - size - 2] = KDB_PATH_SEPARATOR;
+		memcpy (key->key + key->keySize - size - 1, baseName, size);
+		/* use keySetRawName() internally and not
+		 * key->key*/
 		key->key[key->keySize-1]=0; /* finalize string */
 		return key->keySize;
 	} else return keySetName(key,baseName); /*that cannot be a good idea*/
