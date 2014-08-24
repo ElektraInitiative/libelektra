@@ -2,6 +2,10 @@ find_package (LibXml2 REQUIRED)
 if (LIBXML2_FOUND)
 	include (LibAddMacros)
 
+	generate_readme (xmltool)
+	add_includes (elektra-full ${CMAKE_CURRENT_BINARY_DIR})
+	include_directories (${CMAKE_CURRENT_BINARY_DIR})
+
 	add_includes (elektra-full ${LIBXML2_INCLUDE_DIR})
 	include_directories (${LIBXML2_INCLUDE_DIR})
 
