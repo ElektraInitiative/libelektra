@@ -60,7 +60,19 @@ public:
 			"\n"
 			"With the -i option, the mounting will be done interactively\n"
 			"With no options and no arguments, the current mountpoints will be listed\n"
-			"Example: kdb mount /etc/file system/file plugin1 plugin1config=config1 plugin2 plugin2config=config2\n"
+			"\n"
+			"Examples:\n"
+			"\n"
+			"kdb mount /etc/file system/file plugin1 plugin1config=config1 plugin2 plugin2config=config2\n"
+			"\n"
+			"recode will be used both for renaming of value+name\n"
+			"kdb mount path=s.ini,recode=utf8..latin1,name=backendname /path/to/mount\n"
+			"          ni,name=pluginname rename,rebase=/path iconv\n"
+			"\n"
+			"mount openicc DB\n"
+			"kdb mount --resolver openicc\n"
+			"          OpenICC_device_config_DB.json /org/freedesktop/openicc\n"
+			"          yajl rename,rebase=/org/freedesktop/openicc,recase=lower\n"
 			;
 	}
 

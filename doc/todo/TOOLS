@@ -1,36 +1,11 @@
 == TOOLS ==
 
-kdb tools meta description files
 
 == MOUNT ==
 
-mountget, mountset, mountls
-
-rename getmeta to metaget, metaset, metals?
-
-Allow to pass mounting config with kdb-tools and libtools
-
-add possibility to give names and configure plugins:
-
-e.g.
-#recode will be used both for renaming of value+name
-kdb mount path=s.ini,recode=utf8..latin1,name=backendname /path/to/mount
-          ni,name=pluginname rename,rebase=/path iconv
-
-#mount openicc DB
-kdb mount --resolver openicc
-          OpenICC_device_config_DB.json /org/freedesktop/openicc
-          yajl rename,rebase=/org/freedesktop/openicc,recase=lower
-
-
-allow to mount/umount plugin to all currently mounted backends +
-register them to be added for all future backends
+multi-mount (e.g. all .ini from one folder)
 
 allow --no-env --no-arg --no-default arguments?
-
-== libelektra-tools ==
-
-including mounting functionality
 
 
 
@@ -39,6 +14,10 @@ including mounting functionality
 
 = KDB =
 
+
+kdb tools meta description files
+	list all tools (with --help)
+
 allow key array increments with kdb tool
 
 list existing plugins
@@ -46,6 +25,8 @@ list existing plugins
 	which are installed
 	kdb pls
 	(workaround: use ls /usr/lib/elektra)
+
+allow change of symlink (resolver, storage)
 
 kdb-shell:
 	use import/export
