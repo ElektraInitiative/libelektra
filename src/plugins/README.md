@@ -33,6 +33,7 @@ Read (and write) standard config files of /etc:
 Having flat, but arbitrary configuration:
 
 - [simpleini](simpleini) is ini without sections
+- [ini](ini) is ini with sections and comments
 - [tcl](tcl)-like config files (including meta data)
 
 Using semi-structured data for config files:
