@@ -2277,7 +2277,6 @@ static void test_keyClear()
 	keyDel(k1);
 }
 
-// TODO: Bug, does not work at the moment!
 static void test_keyBaseName()
 {
 	printf ("Test set and add basename");
@@ -2344,6 +2343,25 @@ static void test_keyBaseName()
 	output_key(k);
 	succeed_if_same_string(keyName(k), "system/\\/");
 
+	keySetName (k, "system/valid");
+	succeed_if (keySetBaseName (k, "\\\\/") == -1, "backslash escaped, but slash unescaped");
+	output_key(k);
+	succeed_if_same_string(keyName(k), "system/valid");
+
+	keySetName (k, "system/valid");
+	succeed_if (keySetBaseName (k, "\\\\\\/") >= 0, "backslash escaped, slash escaped");
+	output_key(k);
+	succeed_if_same_string(keyName(k), "system/\\\\\\/");
+
+	keySetName (k, "system/valid");
+	succeed_if (keySetBaseName (k, "\\\\\\") == -1, "backslash escaped, but backslash unescaped");
+	output_key(k);
+	succeed_if_same_string(keyName(k), "system/valid");
+
+	keySetName (k, "system/valid");
+	succeed_if (keySetBaseName (k, "\\\\\\\\") >= 0, "backslash escaped, backslash escaped");
+	output_key(k);
+	succeed_if_same_string(keyName(k), "system/\\\\\\\\");
 
 	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, "\\\\") >= 0, "escaped backslash ok");
@@ -2351,11 +2369,44 @@ static void test_keyBaseName()
 	succeed_if_same_string (keyName (k), "system/\\\\");
 
 	keySetName (k, "system/valid");
+	succeed_if (keySetBaseName (k, "\\.") >= 0, "escaped dot");
+	output_key (k);
+	succeed_if_same_string (keyName (k), "system/\\.");
+
+	keySetName (k, "system/valid");
+	succeed_if (keySetBaseName (k, "\\..") >= 0, "escaped dot-dot");
+	output_key (k);
+	succeed_if_same_string (keyName (k), "system/\\..");
+
+	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, "\\%") >= 0, "wrong escape sequence detected (is correct)");
 	output_key(k);
 	succeed_if_same_string(keyName(k), "system/\\%"); // not an empty name, % is escaped
 
+	keySetName (k, "system/valid");
+	succeed_if (keySetBaseName (k, "#1") >= 0, "valid array entry");
+	output_key (k);
+	succeed_if_same_string (keyName (k), "system/#1");
 
+	keySetName (k, "system/valid");
+	succeed_if (keySetBaseName (k, "#10") == -1, "array entry misses underscore, but is valid");
+	output_key (k);
+	succeed_if_same_string (keyName (k), "system/valid");
+
+	keySetName (k, "system/valid");
+	succeed_if (keySetBaseName (k, "#_10") >= 0, "valid array entry");
+	output_key (k);
+	succeed_if_same_string (keyName (k), "system/#_10");
+
+	keySetName (k, "system/valid");
+	succeed_if (keySetBaseName (k, "#__100") >= 0, "valid array entry");
+	output_key (k);
+	succeed_if_same_string (keyName (k), "system/#__100");
+
+	keySetName (k, "system/valid");
+	succeed_if (keySetBaseName (k, "#_100") == -1, "array entry misses underscore, but is valid");
+	output_key (k);
+	succeed_if_same_string (keyName (k), "system/valid");
 
 	keySetName (k, "system/valid");
 	succeed_if (keyAddBaseName (k, "") >= 0, "could not add a base name");
@@ -2461,7 +2512,7 @@ int main(int argc, char** argv)
 	test_keyNameSpecial();
 	test_keyClear();
 
-	test_keyBaseName(); // TODO: Bug, does not work at the moment
+	test_keyBaseName();
 
 	printf("\ntestabi_key RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

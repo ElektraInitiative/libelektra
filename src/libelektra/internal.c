@@ -446,34 +446,58 @@ int elektraKeyNameUnescape(const char *source, char *dest)
 int elektraValidateKeyNamePart(const char *name)
 {
 	const char *current = name;
-	const char *first = name;
 	const char *last = name + strlen(name) - 1;
 	const char *escapable = "\\/%#.";
-
-	/* search escape characters that do not escape anything */
-	while ((current = strchr (current, '\\')) != 0)
-	{
-		/* a single slash at the end is always invalid */
-		if (current == last) return 0;
-
-		/* check if the following character is escapable */
-		if (!strchr (escapable, *(current+1))) return 0;
-
-		current = current + 2;
-	}
+	int escapeCount = 0;
 
 	current = name;
-
-	/* search for unescaped slashes */
-	while ((current = strchr (current, '/')) != 0)
+	while (*current)
 	{
-		/* a slash at the beginning is always invalid */
-		if (current == first) return 0;
+		if (*current == '\\')
+		{
+			escapeCount++;
+			if (escapeCount % 2 != 0)
+			{
+				/* this backslash won't be able to escape anything */
+				if (current == last) return 0;
 
-		/* check if the slash was escaped */
-		if (*(current -1) != '\\') return 0;
+				/* check if the following character is escapable */
+				if (!strchr (escapable, *(current+1))) return 0;
+			}
+		}
+		else
+		{
+			/* there are no escape characters left to escape this slash */
+			if (*current == '/' && escapeCount % 2 == 0) return 0;
 
-		current = current + 1;
+			escapeCount = 0;
+		}
+
+		current ++;
+	}
+
+	/* validate array syntax */
+	current = name;
+
+	if (*current == '#')
+	{
+		current++;
+		int underscores = 0;
+		int digits = 0;
+
+		/* count the underscores */
+		for (; *current == '_'; current++)
+		{
+			underscores++;
+		}
+
+		/* count the digits */
+		for (; isdigit (*current); current++)
+		{
+			digits++;
+		}
+
+		if (underscores != digits -1) return 0;
 	}
 
 	return 1;

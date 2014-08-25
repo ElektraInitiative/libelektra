@@ -792,7 +792,6 @@ ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize)
  *
  * @see elektraKeyNameUnescape() to unescape the string.
  *
- * TODO: does not recognise .. and . in the string!
  *
  * @param key the key object to work with
  * @param baseName the string to append to the name
