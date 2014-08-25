@@ -354,10 +354,15 @@ size_t elektraStrLen(const char *s)
  * The string will be written to dest.
  * @warning May need twice the storage than the source string.
  *   Do not use the source string as destination string.
+ */
 int elektraKeyNameEscape(const char *source, char *dest)
 {
+	// TODO: unify at some central place
+	const char *specialCharacters = "\\/%#.";
+
+	return 1;
 }
- */
+
 
 /**
  * Unescapes (a part of) a key name.
@@ -369,7 +374,54 @@ int elektraKeyNameEscape(const char *source, char *dest)
  * The new string will be written to dest.
  * May only need half the storage than the source string.
  * It is safe to use the same string for source and dest.
-int elektraKeyNameUnescape(const char *source, char *dest);
+
+int elektraKeyNameUnescape(const char *source, char *dest)
 {
+	return 1;
 }
+*/
+
+/**
+ * Validates whether the supplied keyname part is valid
+ * The function looks for escape characters that do not escape
+ * anything and also for unescaped characters that have
+ * to be escaped.
+ *
+ * @param the key name part that is to be checked
+ * @return true if the supplied keyname part is valid, false otherwise
  */
+int elektraValidateKeyNamePart(const char *name)
+{
+	char *current = name;
+	char *first = name;
+	char *last = name + strlen(name) - 1;
+	const char *escapable = "\\/%#.";
+
+	/* search escape characters that do not escape anything */
+	while ((current = strchr (current, '\\')) != 0)
+	{
+		/* a single slash at the end is always invalid */
+		if (current == last) return 0;
+
+		/* check if the following character is escapable */
+		if (!strchr (escapable, *(current+1))) return 0;
+
+		current = current + 2;
+	}
+
+	current = name;
+
+	/* search for unescaped slashes */
+	while ((current = strchr (current, '/')) != 0)
+	{
+		/* a slash at the beginning is always invalid */
+		if (current == first) return 0;
+
+		/* check if the slash was escaped */
+		if (*(current -1) != '\\') return 0;
+
+		current = current + 1;
+	}
+
+	return 1;
+}

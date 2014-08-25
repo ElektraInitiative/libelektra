@@ -21,6 +21,8 @@ size_t elektraStrLen(const char *s);
 int elektraKeyNameEscape(const char *source, char *dest);
 int elektraKeyNameUnescape(const char *source, char *dest);
 
+int elektraValidateKeyNamePart(const char *name);
+
 #ifdef __cplusplus
 }
 }

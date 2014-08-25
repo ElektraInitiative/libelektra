@@ -2294,20 +2294,15 @@ static void test_keyBaseName()
 	output_key (k);
 	succeed_if_same_string(keyName(k), "system");
 
-	keySetName (k, "system/valid");
-	succeed_if (keySetBaseName (k, ".") == -1, "not useful, use empty string or % instead");
-	output_key(k);
-	succeed_if_same_string(keyName(k), "system/valid");
+	keySetName (k, "system/valid/deep");
+	succeed_if (keySetBaseName (k, ".") > 0, "could not remove basename");
+	output_key (k);
+	succeed_if_same_string(keyName (k), "system/valid");
 
 	keySetName (k, "system/valid/deeper/deep");
 	succeed_if (keySetBaseName (k, "..") > 0, "could not remove basenames");
 	output_key (k);
 	succeed_if_same_string(keyName (k), "system/valid");
-
-	keySetName (k, "system/valid/deep");
-	succeed_if (keySetBaseName (k, ".") > 0, "could not remove basename");
-	output_key (k);
-	succeed_if_same_string (keyName (k), "system/valid");
 
 	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, "") > 0, "could not remove base name");
@@ -2349,6 +2344,11 @@ static void test_keyBaseName()
 	output_key(k);
 	succeed_if_same_string(keyName(k), "system/\\/");
 
+
+	keySetName (k, "system/valid");
+	succeed_if (keySetBaseName (k, "\\\\") >= 0, "escaped backslash ok");
+	output_key (k);
+	succeed_if_same_string (keyName (k), "system/\\\\");
 
 	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, "\\%") >= 0, "wrong escape sequence detected (is correct)");
