@@ -138,7 +138,7 @@ int elektraIniGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKe
 	cbHandle.parentKey = parentKey;
 	cbHandle.result = append;
 	cbHandle.collectedComment = 0;
-	ksAppendKey (cbHandle.result, parentKey);
+	ksAppendKey (cbHandle.result, keyDup(parentKey));
 	int ret = ini_parse_file(fh,iniKeyToElektraKey, iniSectionToElektraKey, iniCommentToMeta, &cbHandle);
 
 	fclose (fh);
