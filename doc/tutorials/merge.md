@@ -20,25 +20,27 @@ This works very similarly for KeySets, especially ones that consist of mounted c
 For mounted conffiles:
 *	ours should be the user's copy
 *	theirs would be the maintainers copy, 
-*	base would be the conffile as it was during the last package upgrade or during the package install. 
+*	base would be the previous version of the maintainer's copy.
 
-If you are just trying to merge any two KeySets that derive from the same base, ours and theirs can be interchanged. 
+If the user is just trying to accomplish is a three-way merge using any two arbitrary keysets that share a base, 
+it doesn't matter which ones are defined as ours or theirs as long as they use the correct base KeySet.
 In kdb merge, ourpath, theirpath, and basepath work just like ours, theirs, and base except each one represents the 
-root of a KeySet. Resultpath is pretty self-explanatory, it is just where you want the result of the merge to be saved under. 
+root of a KeySet. Resultpath is pretty self-explanatory, it is just where you want the result of the merge to be saved under.
+It's worth noting, resultpath should be empty before attempting a merge, otherwise there can be unintended consquences.
 
 ## Options ##
 
 As for the options, there are a few basic options:
 	
-	-i  --interactive			which attempts the merge in an interactive way
+    -i  --interactive			which attempts the merge in an interactive way
 	
-	-t  --test					which tests the propsed merge and informs you about possible conflicts
+	-t  --test					which tests the proposed merge and informs you about possible conflicts
     
-	-b --overrideBase			which overwrites the base KeySet with the result.
+	-f --force					which overwrites any Keys in resultpath
 
 ### Strategies ###
 
-Addtionally there is an option to specify a merge strategy, which is very important.
+Additionally there is an option to specify a merge strategy, which is very important.
 
 The option for strategy is:
 
@@ -55,7 +57,7 @@ The current list of strategies are:
 	base				the merge will use the base version during a conflict
 
 If no strategy is specified, the merge will default to the preserve strategy as to not risk making the wrong decision. 
-If any of the other strategies are specified, when a conflcit is detected, merge will use the Key specified by the
+If any of the other strategies are specified, when a conflict is detected, merge will use the Key specified by the
 strategy (ours, theirs, or base) for the resulting Key. 
 
 ## Basic Example ##
@@ -72,7 +74,7 @@ the Key, the right side is its string value.
   
 We start with the base KeySet, system/base:
 
-	key1=1  
+  	key1=1  
 	key2=2  
 	key3=3  
 	key4=4  
@@ -108,9 +110,11 @@ edited in their KeySet. Since we used preserve, the merge fails and the result K
 The result KeySet, system/result will be:
 
 	key1=apple  
-	key2=pie  
-	key3=3  
+	key2=pie 
 	key5=fish  
+	
+Because the conflict of key4 (it was deleted in ours but changed in theirs) is solved by using our copy
+thus deleting the key. 
 	
 ### Theirs ###
 
@@ -123,6 +127,8 @@ The result KeySet, system/result will be:
 	key4=banana
 	key5=fish
 	
+Here, the conflict of key4 is solved by using their copy, thus key4=banana.
+	
 ### Base ###
 
 	kdb merge -s base system/ours system/theirs system/base system/result
@@ -131,6 +137,7 @@ The result KeySet, system/result will be:
 
 	key1=apple
 	key2=pie
-	key3=3
 	key4=4
 	key5=5
+	
+The same conflict is found in key4, but here we use the base version to solve it so key4=4.
