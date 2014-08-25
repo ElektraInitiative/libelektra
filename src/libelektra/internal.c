@@ -477,6 +477,9 @@ int elektraValidateKeyNamePart(const char *name)
 	}
 
 	/* validate array syntax */
+
+	// TOOD: deactivated as it would break the yajl plugin
+	/*
 	current = name;
 
 	if (*current == '#')
@@ -485,13 +488,11 @@ int elektraValidateKeyNamePart(const char *name)
 		int underscores = 0;
 		int digits = 0;
 
-		/* count the underscores */
 		for (; *current == '_'; current++)
 		{
 			underscores++;
 		}
 
-		/* count the digits */
 		for (; isdigit (*current); current++)
 		{
 			digits++;
@@ -499,6 +500,8 @@ int elektraValidateKeyNamePart(const char *name)
 
 		if (underscores != digits -1) return 0;
 	}
+	*/
+
 
 	return 1;
 }

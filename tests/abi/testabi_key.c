@@ -2383,6 +2383,8 @@ static void test_keyBaseName()
 	output_key(k);
 	succeed_if_same_string(keyName(k), "system/\\%"); // not an empty name, % is escaped
 
+	// TODO: deactivated until the validation can be reenabled
+	/*
 	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, "#1") >= 0, "valid array entry");
 	output_key (k);
@@ -2407,6 +2409,8 @@ static void test_keyBaseName()
 	succeed_if (keySetBaseName (k, "#_100") == -1, "array entry misses underscore, but is valid");
 	output_key (k);
 	succeed_if_same_string (keyName (k), "system/valid");
+
+	*/
 
 	keySetName (k, "system/valid");
 	succeed_if (keyAddBaseName (k, "") >= 0, "could not add a base name");

@@ -118,7 +118,22 @@ static void elektraResolveUsingHome(resolverHandle *p, const char *home)
 	size_t dirnameSize = 0;
 	Key *canonify = keyNew("user", KEY_END);
 
+	// TODO: this is really cumbersume and should be simplified
+	size_t baseSize = keyGetNameSize(canonify);
+	size_t keyNameSize = strlen (home) + baseSize + 1;
+	char *newName = malloc (keyNameSize);
+	strcpy (newName, keyName (canonify));
+	newName[baseSize - 1] = KDB_PATH_SEPARATOR;
+	newName[baseSize] = 0;
+	strcat (newName, home);
+
+	keySetName(canonify, newName);
+	free (newName);
+
+	/* this was the old way
 	keyAddBaseName(canonify, home);
+	*/
+
 	dirnameSize = keyGetNameSize(canonify) +
 			sizeof("/" KDB_DB_USER);
 	p->dirname = malloc(dirnameSize);

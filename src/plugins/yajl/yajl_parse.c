@@ -224,7 +224,8 @@ static int elektraYajlParseStartArray(void *ctx)
 
 	Key * newKey = keyNew (keyName(currentKey), KEY_END);
 	// add a pseudo element for empty array
-	keyAddBaseName(newKey, "###empty_array");
+	keyAddBaseName(newKey, "");
+	keySetBaseName(newKey, "###empty_array");
 	ksAppendKey(ks, newKey);
 
 #ifdef ELEKTRA_YAJL_VERBOSE
