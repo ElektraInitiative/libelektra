@@ -2422,10 +2422,10 @@ static void test_keyBaseName()
 	succeed_if (!strcmp(keyBaseName(k), "valid"), "invalid base name");
 
 	keySetName (k, "system");
-	succeed_if (!strcmp(keyBaseName(k), "system"), "invalid base name for system");
+	succeed_if (!strcmp(keyBaseName(k), ""), "invalid base name for system");
 
 	keySetName (k, "user");
-	succeed_if (!strcmp(keyBaseName(k), "user"), "invalid base name for user");
+	succeed_if (!strcmp(keyBaseName(k), ""), "invalid base name for user");
 
 	keyDel (k);
 }
