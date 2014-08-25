@@ -810,7 +810,7 @@ ssize_t keyAddBaseName(Key *key, const char *baseName)
 	if (!key) return -1;
 
 	if (!baseName) return key->keySize;
-	char *escaped = elektraMalloc (strlen (baseName) * 2 + 1);
+	char *escaped = elektraMalloc (strlen (baseName) * 2 + 2);
 	elektraKeyNameEscape (baseName, escaped);
 	if (key->key)
 	{
