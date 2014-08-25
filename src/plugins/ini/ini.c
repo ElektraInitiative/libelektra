@@ -138,7 +138,7 @@ int elektraIniGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKe
 	cbHandle.parentKey = parentKey;
 	cbHandle.result = append;
 	cbHandle.collectedComment = 0;
-
+	ksAppendKey (cbHandle.result, parentKey);
 	int ret = ini_parse_file(fh,iniKeyToElektraKey, iniSectionToElektraKey, iniCommentToMeta, &cbHandle);
 
 	fclose (fh);
@@ -196,6 +196,8 @@ int elektraIniSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKe
 	Key *current;
 	while ((current = ksNext (returned)))
 	{
+		if (!strcmp (keyName(current), keyName(parentKey))) continue;
+
 		writeComments (current, fh);
 		size_t baseNameSize = keyGetBaseNameSize(current);
 		char *name = malloc (baseNameSize);
