@@ -349,7 +349,9 @@ size_t elektraStrLen(const char *s)
  * Escapes (a part of) a key name.
  *
  * As described in Syntax for Key Names, special characters will be
- * prefixed with a \\.
+ * prefixed with a \\. No existing escaping is assumed. That means
+ * that even sequences that look like escapings will be escaped again.
+ * For example, \\/ wille be escaped to \\\\\\/.
  *
  * The string will be written to dest.
  * @warning May need twice the storage than the source string.
@@ -357,8 +359,59 @@ size_t elektraStrLen(const char *s)
  */
 int elektraKeyNameEscape(const char *source, char *dest)
 {
-	// TODO: unify at some central place
-	const char *specialCharacters = "\\/%#.";
+	if (!source) return -1;
+
+	if (!dest) return -1;
+
+	char *sp = source;
+	char *dp = dest;
+
+	if (!strcmp ("", sp))
+	{
+		strcpy(dp,"%");
+		return 1;
+	}
+
+	if (!strcmp ("%", sp))
+	{
+		strcpy(dp, "\\%");
+		return 1;
+	}
+
+	if (!strcmp ("..", sp))
+	{
+		strcpy(dp, "\\..");
+		return 1;
+	}
+
+	if (!strcmp (".", sp))
+	{
+		strcpy(dp, "\\.");
+		return 1;
+	}
+
+	if (*sp == '#')
+	{
+		dp[0] = '\\';
+		dp[1] = '#';
+		dp += 2;
+		sp++;
+	}
+
+	/* slashes and backslashes are escaped everywhere */
+	while (*sp)
+	{
+		if (*sp == '/' || *sp == '\\')
+		{
+			*dp='\\';
+			dp++;
+		}
+
+		*dp = *sp;
+		dp++;
+		sp++;
+	}
+	*dp = 0;
 
 	return 1;
 }
@@ -392,9 +445,9 @@ int elektraKeyNameUnescape(const char *source, char *dest)
  */
 int elektraValidateKeyNamePart(const char *name)
 {
-	char *current = name;
-	char *first = name;
-	char *last = name + strlen(name) - 1;
+	const char *current = name;
+	const char *first = name;
+	const char *last = name + strlen(name) - 1;
 	const char *escapable = "\\/%#.";
 
 	/* search escape characters that do not escape anything */

@@ -810,8 +810,8 @@ ssize_t keyAddBaseName(Key *key, const char *baseName)
 
 	if (!key) return -1;
 
-	if (!baseName || !baseName[0]) return key->keySize;
-	char *escaped = 0;
+	if (!baseName) return key->keySize;
+	char *escaped = elektraMalloc (strlen (baseName) * 2 + 1);
 	elektraKeyNameEscape (baseName, escaped);
 	if (key->key)
 	{
@@ -823,11 +823,14 @@ ssize_t keyAddBaseName(Key *key, const char *baseName)
 		memcpy (key->key + key->keySize - size - 1, escaped, size);
 
 		key->key[key->keySize - 1] = 0; /* finalize string */
+		elektraFree (escaped);
 		return key->keySize;
 	}
 	else
 	{
-		return keySetName (key, escaped);
+		int result = keySetName (key, escaped);
+		elektraFree (escaped);
+		return result;
 	}
 }
 
