@@ -132,7 +132,7 @@ int elektraIniGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKe
 		return -1;
 	}
 
-	KeySet *append = ksNew (0);
+	KeySet *append = ksNew (0, KS_END);
 
 	CallbackHandle cbHandle;
 	cbHandle.parentKey = parentKey;
