@@ -29,7 +29,7 @@ TEST_F(ThreeWayMergeTest, EqualKeySetsMerge)
 
 	KeySet merged = result.getMergedKeys ();
 
-	EXPECT_EQ(4, merged.size ());
+	EXPECT_EQ(5, merged.size ());
 	compareAllKeys (merged);
 }
 
@@ -42,7 +42,7 @@ TEST_F(ThreeWayMergeTest, SameDeletedKeyMerge)
 
 	EXPECT_FALSE(result.hasConflicts()) << "Invalid conflict detected";
 	KeySet merged = result.getMergedKeys ();
-	EXPECT_EQ(3, merged.size ());
+	EXPECT_EQ(4, merged.size ());
 	compareAllExceptKey1 (merged);
 }
 
@@ -58,7 +58,7 @@ TEST_F(ThreeWayMergeTest, DeleteModifyConflict)
 	ASSERT_EQ(1, conflicts.size())<< "Wrong number of conflicts";
 	testConflictMeta (conflicts.at (0), DELETE, MODIFY);
 	KeySet merged = result.getMergedKeys ();
-	EXPECT_EQ(3, merged.size ());
+	EXPECT_EQ(4, merged.size ());
 	compareAllExceptKey1 (merged);
 }
 
@@ -75,7 +75,7 @@ TEST_F(ThreeWayMergeTest, ModifyDeleteConflict)
 	testConflictMeta (conflicts.at (0), MODIFY, DELETE);
 
 	KeySet merged = result.getMergedKeys ();
-	EXPECT_EQ(3, merged.size ());
+	EXPECT_EQ(4, merged.size ());
 	compareAllExceptKey1 (merged);
 }
 
@@ -93,7 +93,7 @@ TEST_F(ThreeWayMergeTest, SameModifyConflict)
 
 	KeySet merged = result.getMergedKeys ();
 
-	EXPECT_EQ(3, merged.size ());
+	EXPECT_EQ(4, merged.size ());
 	compareAllExceptKey1 (merged);
 }
 
@@ -107,7 +107,7 @@ TEST_F(ThreeWayMergeTest, SameAddedEqualValueMerges)
 
 	KeySet merged = result.getMergedKeys ();
 
-	EXPECT_EQ(5, merged.size ());
+	EXPECT_EQ(6, merged.size ());
 	compareAllKeys (merged);
 
 	compareKeys (Key ("user/parentm/config/key5", KEY_VALUE, "newvalue", KEY_END), merged.lookup (mk5));
@@ -128,7 +128,7 @@ TEST_F(ThreeWayMergeTest, SameAddedDifferentValueConflict)
 
 	KeySet merged = result.getMergedKeys ();
 
-	EXPECT_EQ(4, merged.size ());
+	EXPECT_EQ(5, merged.size ());
 
 	compareAllKeys (merged);
 }
@@ -145,6 +145,6 @@ TEST_F(ThreeWayMergeTest, SameMetaKeyModifyConflict)
 	EXPECT_EQ(1, conflicts.size ());
 	testConflictMeta (conflicts.at (0), META, META);
 	KeySet merged = result.getMergedKeys ();
-	EXPECT_EQ(3, merged.size ());
+	EXPECT_EQ(4, merged.size ());
 	compareAllExceptKey1 (merged);
 }

@@ -7,8 +7,8 @@
  *
  */
 
-#ifndef ONESIDESTRATEGY_HPP_
-#define ONESIDESTRATEGY_HPP_
+#ifndef NEWKEYSTRATEGY_HPP_
+#define NEWKEYSTRATEGY_HPP_
 
 #include <merging/mergeconflictstrategy.hpp>
 
@@ -21,13 +21,10 @@ namespace tools
 namespace merging
 {
 
-class OneSideStrategy : public MergeConflictStrategy
+class NewKeyStrategy : public MergeConflictStrategy
 {
-
 public:
-	ConflictResolutionSide winningSide;
-
-	OneSideStrategy(ConflictResolutionSide _winningSide) : winningSide (_winningSide)
+	NewKeyStrategy()
 	{
 	}
 
@@ -38,4 +35,4 @@ public:
 }
 }
 
-#endif /* ONESIDESTRATEGY_HPP_ */
+#endif /* NEWKEYSTRATEGY_HPP_ */
