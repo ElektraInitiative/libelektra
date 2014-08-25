@@ -45,7 +45,10 @@ enum {
 	KEY_FUNC=1<<12,
 	KEY_DIR=1<<14,
 	KEY_META=1<<15,
-	KEY_NULL=1<<16
+	KEY_NULL=1<<16,
+	KEY_LOCK_NAME=1<<17,
+	KEY_LOCK_VALUE=1<<18,
+	KEY_LOCK_META=1<<19
 };
 
 enum {
@@ -109,6 +112,7 @@ int keyCopy(Key *dest, const Key *source);
 int keyClear(Key *key);
 int keyDel(Key *key);
 
+int keyLock(Key *key, option_t lock);
 ssize_t keyIncRef(Key *key);
 ssize_t keyDecRef(Key *key);
 ssize_t keyGetRef(const Key *key);

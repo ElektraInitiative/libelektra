@@ -274,14 +274,10 @@ void Backend::serialise (kdb::Key &rootKey, kdb::KeySet &ret)
 	{
 		string commonName = common.getName();
 
-
-		// TODO commonName might be too long if config/needs key is missing
-
-
 		while (Key k = config.next())
 		{
 			string newName = k.getName().substr (commonName.length());
-			Key x (k);
+			Key x(k.dup());
 			x.setName(backendRootKey.getName());
 			x.addBaseName("config");
 			x.addBaseName(newName);

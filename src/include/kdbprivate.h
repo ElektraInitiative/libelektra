@@ -108,21 +108,28 @@ typedef enum
 {
 	KEY_FLAG_SYNC=1,	/*!<
 		Key need sync.
-		If name or value
+		If name, value or metadata
 		are changed this flag will be set, so that the backend will sync
 		the key to database.*/
-	KEY_FLAG_META=1<<2,	/*!<
-		Key meta need sync.
-		TODO: not used currently
-		If meta
-		is changed this flag will be set, so that the backend will sync
-		the key to database.*/
-	KEY_FLAG_RO=1<<3	/*!<
-		Read only flag.
-		TODO: not used currently
-		Key is read only and not allowed
-		to be changed. All attempts to change name, value,
-		or meta data will be ignored.*/
+	KEY_FLAG_RO_NAME=1<<1,	/*!<
+		Read only flag for name.
+		Key name is read only and not allowed
+		to be changed. All attempts to change the name
+		will lead to an error.
+		Needed for meta keys and keys that are in a data
+		structure that depends on name ordering.*/
+	KEY_FLAG_RO_VALUE=1<<2,	/*!<
+		Read only flag for value.
+		Key value is read only and not allowed
+		to be changed. All attempts to change the value
+		will lead to an error.
+		Needed for meta keys*/
+	KEY_FLAG_RO_META=1<<3	/*!<
+		Read only flag for meta.
+		Key meta is read only and not allowed
+		to be changed. All attempts to change the value
+		will lead to an error.
+		Needed for meta keys.*/
 } keyflag_t;
 
 
@@ -136,17 +143,11 @@ typedef enum
  */
 typedef enum
 {
-	KS_FLAG_SYNC=1,	/*!<
+	KS_FLAG_SYNC=1	/*!<
 		KeySet need sync.
 		If keys were popped from the Keyset
 		this flag will be set, so that the backend will sync
 		the keys to database.*/
-	KS_FLAG_RO=1<<3	/*!<
-		Read only flag.
-		KeySet is read only and not allowed
-		TODO: not used currently
-		to be changed. All attempts to append or pop keys
-		will be ignored.*/
 } ksflag_t;
 
 
@@ -455,10 +456,13 @@ Backend* elektraMountGetBackend(KDB *handle, const Key *key);
 int keyInit(Key *key);
 void keyVInit(Key *key, const char *keyname, va_list ap);
 
+int keyClearSync (Key *key);
+
+/*Private helper for keyset*/
 int ksInit(KeySet *ks);
 int ksClose(KeySet *ks);
 
-int keyClearSync (Key *key);
+ssize_t ksSearchInternal(const KeySet *ks, const Key *toAppend);
 
 /*Used for internal memcpy/memmove*/
 ssize_t elektraMemcpy (Key** array1, Key** array2, size_t size);

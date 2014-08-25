@@ -184,6 +184,8 @@ static void test_ksReference()
 	succeed_if (ksAppendKey(ks,k1) == 1, "size should be one");
 	succeed_if (keyGetRef(k1) == 1, "reference counter of inserted key");
 	succeed_if (ksGetSize(ks) == 1, "wrong size, should stay after inserting duplication");
+	succeed_if (ksHead(ks) == k1, "head wrong");
+	succeed_if (ksTail(ks) == k1, "tail wrong");
 
 	k2 = keyDup (k1);
 	keySetString(k2, "newvalue");
@@ -208,6 +210,8 @@ static void test_ksReference()
 	k2=ksLookupByName(ks, "system/key", 0);
 	succeed_if (keyGetRef(k1) == 1, "reference counter of new inserted key");
 	succeed_if (keyGetRef(k2) == 1, "reference counter of new inserted key");
+	succeed_if (ksHead(ks) == k2, "head wrong");
+	succeed_if (ksTail(ks) == k1, "tail wrong");
 
 	ksDel (ks);
 
@@ -221,6 +225,8 @@ static void test_ksReference()
 	succeed_if (keyGetRef(k1) == 1, "reference counter of new inserted key");
 	succeed_if (keyGetRef(k2) == 1, "reference counter of new inserted key");
 	ks1=ksDup (ks);
+	succeed_if (ksHead(ks1) == k2, "head in dup wrong");
+	succeed_if (ksTail(ks1) == k1, "tail in dup wrong");
 
 	succeed_if (keyGetRef(k1) == 2, "reference counter after duplication of keyset");
 	succeed_if (keyGetRef(k2) == 2, "reference counter after ksdup");
@@ -2346,7 +2352,6 @@ static void test_ksAppendKey()
 
 static void test_ksModifyKey()
 {
-	// TODO: broken, it is allowed to change keyname!
 	printf ("Test modify key after insertion\n");
 
 	KeySet *ks=0;
@@ -2357,37 +2362,11 @@ static void test_ksModifyKey()
 	succeed_if (ksAppendKey(ks,cur=keyNew("user/a", KEY_END)) == 1, "could not append a key");
 	succeed_if (ksCurrent(ks) == cur, "did not update current position");
 	succeed_if (keySetName (cur, "user/b") == -1, "set name with appended key should be disallowed");
+	succeed_if (keySetString (cur, "x") > 0, "changing value is ok");
+	succeed_if (keySetMeta (cur, "x", "y") > 0, "changing meta is ok");
 	succeed_if (ksCurrent(ks) == cur, "did not update current position");
 
 	ksDel (ks);
-}
-
-static void test_keyCmpOrder()
-{
-	Key *k1 = keyNew ("user/a", KEY_META, "order", "20", KEY_END);
-	Key *k2 = keyNew ("user/b", KEY_META, "order", "10", KEY_END);
-
-	succeed_if (elektraKeyCmpOrder(0, 0) == 0, "null keys are not equal");
-	succeed_if (elektraKeyCmpOrder(k1, 0) == 1, "not null key is not greater than null key");
-	succeed_if (elektraKeyCmpOrder(0, k1) == -1, "null key is not smaller than not null key");
-
-	succeed_if (elektraKeyCmpOrder(k1, k2) > 0, "user/a is not greater than user/b");
-	succeed_if (elektraKeyCmpOrder(k2, k1) < 0, "user/b is not smaller than user/a");
-
-	keySetMeta(k2, "order", "20");
-	succeed_if (elektraKeyCmpOrder(k1, k2) == 0, "keys with same order are not equal");
-	succeed_if (elektraKeyCmpOrder(k2, k1) == 0, "keys with same order are not equal");
-
-	keySetMeta(k2, "order", 0);
-	succeed_if (elektraKeyCmpOrder(k1, k2) > 0, "key with metadata is not greater than key without");
-	succeed_if (elektraKeyCmpOrder(k2, k1) < 0, "key with metadata is not greater than key without");
-
-	keySetMeta(k1, "order", 0);
-	succeed_if (elektraKeyCmpOrder(k1, k2) == 0, "keys without metadata are not equal");
-	succeed_if (elektraKeyCmpOrder(k2, k1) == 0, "keys without metadata are not equal");
-
-	keyDel (k1);
-	keyDel (k2);
 }
 
 static void test_ksOrder()
@@ -2408,6 +2387,8 @@ static void test_ksOrder()
 	ksNext(ks);
 	succeed_if_same_string(keyName(ksCurrent(ks)), "user/test/test-foo");
 	succeed_if(0, "does not succeed");
+
+	ksDel(ks);
 }
 
 KeySet * fill_vaargs(size_t size, ...)
@@ -2438,6 +2419,601 @@ static void test_keyVNew()
 	succeed_if (ksGetSize(ks) == 1, "KeySet wrong size");
 	succeed_if (ksLookupByName(ks, "user/a", 0) != 0, "could not lookup key");
 	ksDel(ks);
+}
+
+
+static KeySet * set_a ()
+{
+	return ksNew(16,
+		keyNew ("user/0", KEY_END),
+		keyNew ("user/a", KEY_END),
+		keyNew ("user/a/a", KEY_END),
+		keyNew ("user/a/a/a", KEY_END),
+		keyNew ("user/a/a/b", KEY_END),
+		keyNew ("user/a/b", KEY_END),
+		keyNew ("user/a/b/a", KEY_END),
+		keyNew ("user/a/b/b", KEY_END),
+		keyNew ("user/a/c", KEY_END),
+		keyNew ("user/a/d", KEY_END),
+		keyNew ("user/a/x/a", KEY_END),
+		keyNew ("user/a/x/b", KEY_END),
+		keyNew ("user/a/x/c", KEY_END),
+		keyNew ("user/a/x/c/a", KEY_END),
+		keyNew ("user/a/x/c/b", KEY_END),
+		keyNew ("user/x", KEY_END),
+		KS_END);
+}
+
+static KeySet * set_oa ()
+{
+	return ksNew(14,
+		keyNew ("user/a", KEY_END),
+		keyNew ("user/a/a", KEY_END),
+		keyNew ("user/a/a/a", KEY_END),
+		keyNew ("user/a/a/b", KEY_END),
+		keyNew ("user/a/b", KEY_END),
+		keyNew ("user/a/b/a", KEY_END),
+		keyNew ("user/a/b/b", KEY_END),
+		keyNew ("user/a/c", KEY_END),
+		keyNew ("user/a/d", KEY_END),
+		keyNew ("user/a/x/a", KEY_END),
+		keyNew ("user/a/x/b", KEY_END),
+		keyNew ("user/a/x/c", KEY_END),
+		keyNew ("user/a/x/c/a", KEY_END),
+		keyNew ("user/a/x/c/b", KEY_END),
+		KS_END);
+}
+
+
+static void test_cut()
+{
+	printf ("Testing operation cut\n");
+
+	KeySet *orig;
+	Key *cutpoint;
+	KeySet *result;
+	KeySet *real_orig;
+
+	orig = set_oa();
+	cutpoint = keyNew ("user/a", KEY_END);
+	result = ksCut(orig, cutpoint);
+	succeed_if (ksGetSize(orig) == 0, "orig not empty");
+	real_orig = set_oa();
+	compare_keyset(result, real_orig);
+	ksDel (orig);
+	ksDel (result);
+	ksDel (real_orig);
+	keyDel (cutpoint);
+
+
+	KeySet *cmp_orig[16];
+	KeySet *cmp_result[16];
+#include "data_cut.c"
+
+	for (int i=0; i<16; ++i)
+	{
+		orig = set_a();
+		cutpoint = keyDup (ksAtCursor(orig, i));
+		result = ksCut(orig, cutpoint);
+
+		compare_keyset(result, cmp_result[i]);
+		compare_keyset(orig, cmp_orig[i]);
+
+		/*
+		Key *key;
+		printf ("orig[%d] = ksNew (%zd, ", i, ksGetSize(orig));
+		ksRewind(orig); while ((key=ksNext(orig))!= 0) printf ("keyNew (\"%s\", KEY_END), ", keyName(key));
+		printf ("KS_END);\n");
+
+		printf ("result[%d] = ksNew (%zd, ", i, ksGetSize(result));
+		ksRewind(result); while ((key=ksNext(result))!= 0) printf ("keyNew (\"%s\", KEY_END), ", keyName(key));
+		printf ("KS_END);\n");
+		*/
+
+		keyDel (cutpoint);
+		ksDel (result);
+		ksDel (orig);
+		ksDel (cmp_orig[i]);
+		ksDel (cmp_result[i]);
+	}
+}
+
+static void test_cutpoint()
+{
+	printf ("Testing operation cut point\n");
+
+	Key *cutpoint = keyNew("user/a/b/c", KEY_END);
+	KeySet *orig = ksNew(30,
+			keyNew("user/a", KEY_END),
+			keyNew("user/a/b", KEY_END),
+			cutpoint,
+			keyNew("user/a/b/c/d", KEY_END),
+			keyNew("user/a/b/c/d/e", KEY_END),
+			keyNew("user/a/b/c/e", KEY_END),
+			keyNew("user/a/b/c/e/d", KEY_END),
+			KS_END);
+	ksRewind(orig);
+	ksNext(orig);
+	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/a"), "wrong cursor");
+	ksNext(orig);
+	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/a/b"), "wrong cursor");
+
+	KeySet *part = ksCut(orig, cutpoint);
+
+	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/a/b"), "cursor should stay");
+
+	KeySet *cmp_orig = ksNew(15,
+			keyNew("user/a", KEY_END),
+			keyNew("user/a/b", KEY_END),
+			KS_END);
+	compare_keyset(orig, cmp_orig);
+	ksDel (orig);
+	ksDel (cmp_orig);
+
+	KeySet *cmp_part = ksNew(15,
+			cutpoint,
+			keyNew("user/a/b/c/d", KEY_END),
+			keyNew("user/a/b/c/d/e", KEY_END),
+			keyNew("user/a/b/c/e", KEY_END),
+			keyNew("user/a/b/c/e/d", KEY_END),
+			KS_END);
+	compare_keyset(part, cmp_part);
+	ksDel (part);
+	ksDel (cmp_part);
+}
+
+static void test_cutpoint_1()
+{
+	printf ("Testing operation cut point 1\n");
+
+	Key *cutpoint = keyNew("user/a/b/c", KEY_END);
+	KeySet *orig = ksNew(30,
+			keyNew("user/a", KEY_END),
+			keyNew("user/a/b", KEY_END),
+			cutpoint,
+			keyNew("user/a/b/c/d", KEY_END),
+			keyNew("user/a/b/c/d/e", KEY_END),
+			keyNew("user/a/b/c/e", KEY_END),
+			keyNew("user/a/b/c/e/d", KEY_END),
+			KS_END);
+	ksRewind(orig);
+	ksNext(orig);
+	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/a"), "wrong cursor");
+	ksNext(orig);
+	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/a/b"), "wrong cursor");
+	ksNext(orig);
+	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/a/b/c"), "wrong cursor");
+
+	KeySet *part = ksCut(orig, cutpoint);
+
+	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/a/b"),
+			"cursor should jump for cutpoint");
+
+	KeySet *cmp_orig = ksNew(15,
+			keyNew("user/a", KEY_END),
+			keyNew("user/a/b", KEY_END),
+			KS_END);
+	compare_keyset(orig, cmp_orig);
+	ksDel (orig);
+	ksDel (cmp_orig);
+
+	KeySet *cmp_part = ksNew(15,
+			cutpoint,
+			keyNew("user/a/b/c/d", KEY_END),
+			keyNew("user/a/b/c/d/e", KEY_END),
+			keyNew("user/a/b/c/e", KEY_END),
+			keyNew("user/a/b/c/e/d", KEY_END),
+			KS_END);
+	compare_keyset(part, cmp_part);
+	ksDel (part);
+	ksDel (cmp_part);
+}
+
+static void test_unique_cutpoint()
+{
+	printf ("Testing operation cut with unique cutpoint\n");
+
+	Key *cutpoint = keyNew("user/a/b/c", KEY_END);
+	KeySet *orig = ksNew(30,
+			keyNew("user/a", KEY_END),
+			keyNew("user/a/b", KEY_END),
+			keyNew("user/a/b/c", KEY_END),
+			keyNew("user/a/b/c/d", KEY_END),
+			keyNew("user/a/b/c/d/e", KEY_END),
+			keyNew("user/a/b/c/e", KEY_END),
+			keyNew("user/a/b/c/e/d", KEY_END),
+			KS_END);
+
+	KeySet *part = ksCut(orig, cutpoint);
+
+	KeySet *cmp_orig = ksNew(15,
+			keyNew("user/a", KEY_END),
+			keyNew("user/a/b", KEY_END),
+			KS_END);
+	compare_keyset(orig, cmp_orig);
+	ksDel (orig);
+	ksDel (cmp_orig);
+
+	KeySet *cmp_part = ksNew(15,
+			keyNew("user/a/b/c", KEY_END),
+			keyNew("user/a/b/c/d", KEY_END),
+			keyNew("user/a/b/c/d/e", KEY_END),
+			keyNew("user/a/b/c/e", KEY_END),
+			keyNew("user/a/b/c/e/d", KEY_END),
+			KS_END);
+	compare_keyset(part, cmp_part);
+	ksDel (part);
+	ksDel (cmp_part);
+	keyDel (cutpoint);
+}
+
+static void test_cutbelow()
+{
+	printf ("Testing cutting below some keys\n");
+
+	Key *cutpoint = keyNew("user/export", KEY_END);
+	KeySet *orig = ksNew(30,
+			keyNew("user/export-backup-2/x", KEY_END),
+			keyNew("user/export-backup/b", KEY_END),
+			keyNew("user/export/a", KEY_END),
+			keyNew("user/export/c", KEY_END),
+			keyNew("user/export/c/x", KEY_END),
+			keyNew("user/export/c/x/b/blah", KEY_END),
+			keyNew("user/export/xyz", KEY_END),
+			KS_END);
+	ksRewind(orig);
+	ksNext(orig);
+	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/export-backup-2/x"), "wrong cursor");
+	ksNext(orig);
+	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/export-backup/b"), "wrong cursor");
+
+	KeySet *part = ksCut(orig, cutpoint);
+
+	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/export-backup/b"), "wrong cursor");
+
+	KeySet *cmp_orig = ksNew(15,
+			keyNew("user/export-backup-2/x", KEY_END),
+			keyNew("user/export-backup/b", KEY_END),
+			KS_END);
+	compare_keyset(orig, cmp_orig);
+	ksDel (orig);
+	ksDel (cmp_orig);
+
+	KeySet *cmp_part = ksNew(15,
+			keyNew("user/export/a", KEY_END),
+			keyNew("user/export/c", KEY_END),
+			keyNew("user/export/c/x", KEY_END),
+			keyNew("user/export/c/x/b/blah", KEY_END),
+			keyNew("user/export/xyz", KEY_END),
+			KS_END);
+	compare_keyset(part, cmp_part);
+	ksDel (part);
+	ksDel (cmp_part);
+	keyDel (cutpoint);
+}
+
+static void test_cutbelow_1()
+{
+	printf ("Testing cutting below some keys\n");
+
+	Key *cutpoint = keyNew("user/export", KEY_END);
+	KeySet *orig = ksNew(30,
+			keyNew("user/export-backup-2/x", KEY_END),
+			keyNew("user/export-backup/b", KEY_END),
+			keyNew("user/export/a", KEY_END),
+			keyNew("user/export/c", KEY_END),
+			keyNew("user/export/c/x", KEY_END),
+			keyNew("user/export/c/x/b/blah", KEY_END),
+			keyNew("user/export/xyz", KEY_END),
+			KS_END);
+	ksRewind(orig);
+	ksNext(orig);
+	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/export-backup-2/x"), "wrong cursor");
+	ksNext(orig);
+	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/export-backup/b"), "wrong cursor");
+	ksNext(orig);
+	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/export/a"), "wrong cursor");
+
+	KeySet *part = ksCut(orig, cutpoint);
+
+	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/export-backup/b"), "wrong cursor");
+
+	KeySet *cmp_orig = ksNew(15,
+			keyNew("user/export-backup-2/x", KEY_END),
+			keyNew("user/export-backup/b", KEY_END),
+			KS_END);
+	compare_keyset(orig, cmp_orig);
+	ksDel (orig);
+	ksDel (cmp_orig);
+
+	KeySet *cmp_part = ksNew(15,
+			keyNew("user/export/a", KEY_END),
+			keyNew("user/export/c", KEY_END),
+			keyNew("user/export/c/x", KEY_END),
+			keyNew("user/export/c/x/b/blah", KEY_END),
+			keyNew("user/export/xyz", KEY_END),
+			KS_END);
+	compare_keyset(part, cmp_part);
+	ksDel (part);
+	ksDel (cmp_part);
+	keyDel (cutpoint);
+}
+
+ssize_t ksCopyInternal(KeySet *ks, size_t to, size_t from);
+
+static void test_copy()
+{
+	printf ("Testing operation copy (internal)\n");
+
+	KeySet *copy[17][17];
+#include "data_copy.c"
+
+	KeySet *current;
+
+	for (int i=0; i<17; ++i)
+	{
+		for (int j=0; j<17; ++j)
+		{
+			/* There are some cases which contain duplicates, we have to jump these...*/
+			if (i>j) goto cleanup;
+			if (i==0 && j==16) goto cleanup;
+
+			current = set_a();
+			/* Some blocks are lost in the next operation */
+			succeed_if (ksCopyInternal (current, i, j) != -1, "ksCopyInternal failed");
+			compare_keyset(current, copy[i][j]);
+			ksDel (current);
+
+cleanup:
+			ksDel (copy[i][j]);
+		}
+	}
+}
+
+KeySet *set_simple()
+{
+	return ksNew(50,
+		keyNew ("system/elektra/mountpoints/simple", KEY_END),
+
+		keyNew ("system/elektra/mountpoints/simple/config", KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/config/anything", KEY_VALUE, "backend", KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/config/more", KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/config/more/config", KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/config/more/config/below", KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/config/path", KEY_END),
+
+		keyNew ("system/elektra/mountpoints/simple/getplugins", KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer", KEY_VALUE, "tracer", KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config", KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config/anything", KEY_VALUE, "plugin", KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config/more", KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config/more/config", KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config/more/config/below", KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config/path", KEY_END),
+
+		keyNew ("system/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user/tests/backend/simple", KEY_END),
+
+		keyNew ("system/elektra/mountpoints/simple/setplugins", KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/setplugins/#1tracer", KEY_VALUE, "tracer", KEY_END),
+		KS_END);
+
+}
+
+static void test_simple()
+{
+	KeySet *config = set_simple();
+	KeySet * result_res = ksNew( 16 ,
+		keyNew ("system/elektra/mountpoints/simple/config" , KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/config/anything",  KEY_VALUE, "backend", KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/config/more" , KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/config/more/config" , KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/config/more/config/below" , KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/config/path" , KEY_END),
+		KS_END);
+	KeySet *result_config = ksNew( 22 ,
+		keyNew ("system/elektra/mountpoints/simple" , KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/getplugins" , KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer", KEY_VALUE, "tracer", KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config" , KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config/anything", KEY_VALUE, "plugin", KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config/more" , KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config/more/config" , KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config/more/config/below" , KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config/path" , KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user/tests/backend/simple", KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/setplugins" , KEY_END),
+		keyNew ("system/elektra/mountpoints/simple/setplugins/#1tracer", KEY_VALUE, "tracer", KEY_END),
+		KS_END);
+	Key *key = ksLookup(config, keyNew("system/elektra/mountpoints/simple/config", KEY_END), KDB_O_DEL);
+	succeed_if (ksGetCursor(config) == 1, "cursor not set correctly");
+	KeySet *res = ksCut (config, key);
+	succeed_if (ksGetCursor(config) == 0, "cursor should stay as is");
+	compare_keyset(config, result_config);
+	compare_keyset(res, result_res);
+
+	ksDel (result_config);
+	ksDel (result_res);
+	ksDel (res);
+	ksDel (config);
+}
+
+static void test_cursor()
+{
+	printf ("test cut cursor\n");
+
+	KeySet *config = set_simple();
+
+	ksRewind (config);
+	succeed_if (ksGetCursor(config) == -1, "should be invalid cursor");
+	succeed_if (ksNext(config) != 0, "should be root key");
+	succeed_if (ksGetCursor(config) == 0, "cursor on first position");
+	succeed_if (!strcmp (keyName(ksCurrent(config)), "system/elektra/mountpoints/simple"),
+			"not pointing to the root key");
+	succeed_if (ksNext(config) != 0, "should be on config");
+	succeed_if (ksGetCursor(config) == 1, "cursor on config");
+	succeed_if (!strcmp (keyName(ksCurrent(config)), "system/elektra/mountpoints/simple/config"),
+			"not pointing to the correct key");
+
+	KeySet *res = ksCut(config, ksCurrent(config));
+	succeed_if (ksGetCursor(config) == 0, "cursor on first position");
+	succeed_if (!strcmp (keyName(ksCurrent(config)), "system/elektra/mountpoints/simple"),
+			"not pointing to the root key again");
+
+	succeed_if (ksNext(config) != 0, "should be on config");
+	succeed_if (ksGetCursor(config) == 1, "cursor on getplugins");
+	succeed_if (!strcmp (keyName(ksCurrent(config)), "system/elektra/mountpoints/simple/getplugins"),
+			"not pointing to the correct key");
+
+	KeySet *getplugins = ksCut(config, ksCurrent(config));
+	succeed_if (ksGetCursor(getplugins) == -1, "should be invalid cursor");
+	succeed_if (ksNext(getplugins) != 0, "should be root key");
+	succeed_if (ksGetCursor(getplugins) == 0, "cursor on first position");
+
+	succeed_if (ksNext(getplugins) != 0, "should be tracer");
+	succeed_if (ksGetCursor(getplugins) == 1, "cursor not correct");
+
+	KeySet *gettracer = ksCut (getplugins, ksCurrent (getplugins));
+	succeed_if (ksNext(getplugins) == 0, "should be no more getplugins");
+
+	succeed_if (ksNext(config) != 0, "next did not work");
+	succeed_if (ksGetCursor(config ) == 1, "cursor not correct");
+	succeed_if (!strcmp (keyName(ksCurrent(config)), "system/elektra/mountpoints/simple/mountpoint"),
+			"not pointing to the correct key");
+
+	succeed_if (ksNext(config) != 0, "next did not work");
+	succeed_if (ksGetCursor(config ) == 2, "cursor not correct");
+	succeed_if (!strcmp (keyName(ksCurrent(config)), "system/elektra/mountpoints/simple/setplugins"),
+			"not pointing to the correct key");
+
+	KeySet *setplugins = ksCut(config, ksCurrent(config));
+	succeed_if (ksNext(config) == 0, "should be no more config");
+	succeed_if (ksNext(setplugins) != 0, "ksnext did not work");
+	succeed_if (!strcmp (keyName(ksCurrent(setplugins)), "system/elektra/mountpoints/simple/setplugins"),
+			"not pointing to the correct key");
+	succeed_if (ksNext(setplugins) != 0, "ksnext did not work");
+
+	KeySet *settracer = ksCut (setplugins, ksCurrent (setplugins));
+	succeed_if (ksNext(setplugins) == 0, "should be no more setplugins");
+	succeed_if (ksGetSize(settracer) == 1, "should be only one key");
+
+	succeed_if (ksGetSize(config) == 2, "should be only three keys remaining: root, mountpoint");
+
+
+	ksDel (setplugins);
+	ksDel (getplugins);
+	ksDel (settracer);
+	ksDel (gettracer);
+	ksDel (config);
+	ksDel (res);
+}
+
+static void test_morecut()
+{
+	printf ("More cut test cases\n");
+
+	KeySet *ks = ksNew (
+		5,
+		keyNew ("user/valid/key1", KEY_END),
+		keyNew ("user/valid/key2", KEY_END),
+		keyNew ("system/valid/key1", KEY_END),
+		keyNew ("system/valid/key2", KEY_END),
+		KS_END);
+	// printf ("%s\n", keyName(ksCurrent(ks)));
+	succeed_if (!strcmp(keyName(ksCurrent(ks)), "system/valid/key2"),
+			"cursor jumped somewhere else");
+	ksNext(ks);
+	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/valid/key1"), "wrong cursor");
+	ksNext(ks);
+	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/valid/key2"), "wrong cursor");
+	// printf ("%s\n", keyName(ksCurrent(ks)));
+	/*
+	ksNext(ks);
+	succeed_if (!strcmp(keyName(ksCurrent(ks)), "system/valid/key1"), "wrong cursor");
+	*/
+
+	KeySet *split1 = ksNew (
+		3,
+		keyNew ("user/valid/key1", KEY_END),
+		keyNew ("user/valid/key2", KEY_END),
+		KS_END);
+	KeySet *split2 = ksNew (
+		3,
+		keyNew ("system/valid/key1", KEY_END),
+		keyNew ("system/valid/key2", KEY_END),
+		KS_END);
+
+	Key *userKey = keyNew("user", KEY_END);
+
+	KeySet *cut = ksCut (ks, userKey);
+	// printf ("%s\n", keyName(ksCurrent(ks)));
+	succeed_if (!strcmp(keyName(ksCurrent(ks)), "system/valid/key2"),
+			"cursor jumped somewhere else");
+
+	compare_keyset(cut, split1);
+	compare_keyset(ks, split2);
+	ksDel (cut);
+
+	keyDel (userKey);
+
+	ksDel (ks);
+	ksDel (split1);
+	ksDel (split2);
+}
+
+static void test_cutafter()
+{
+	printf ("More cut after\n");
+
+	KeySet *ks = ksNew (
+		5,
+		keyNew ("user/a/valid/key", KEY_END),
+		keyNew ("user/a/x/valid/key", KEY_END),
+		keyNew ("user/b/valid/key", KEY_END),
+		keyNew ("user/b/x/valid/key", KEY_END),
+		keyNew ("user/c/valid/key", KEY_END),
+		keyNew ("user/c/x/valid/key", KEY_END),
+		KS_END);
+	ksRewind(ks);
+	ksNext(ks);
+	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/a/valid/key"), "wrong cursor");
+	ksNext(ks);
+	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/a/x/valid/key"), "wrong cursor");
+	ksNext(ks);
+	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/b/valid/key"), "wrong cursor");
+	ksNext(ks);
+	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/b/x/valid/key"), "wrong cursor");
+	ksNext(ks);
+	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/c/valid/key"), "wrong cursor");
+	// printf ("%s\n", keyName(ksCurrent(ks)));
+
+	KeySet *split1 = ksNew (
+		8,
+		keyNew ("user/b/valid/key", KEY_END),
+		keyNew ("user/b/x/valid/key", KEY_END),
+		KS_END);
+	KeySet *split2 = ksNew (
+		8,
+		keyNew ("user/a/valid/key", KEY_END),
+		keyNew ("user/a/x/valid/key", KEY_END),
+		keyNew ("user/c/valid/key", KEY_END),
+		keyNew ("user/c/x/valid/key", KEY_END),
+		KS_END);
+
+	Key *userKey = keyNew("user/b", KEY_END);
+
+	KeySet *cut = ksCut (ks, userKey);
+	// printf ("%s\n", keyName(ksCurrent(ks)));
+	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/c/valid/key"), "wrong cursor");
+
+	compare_keyset(cut, split1);
+	compare_keyset(ks, split2);
+	ksDel (cut);
+
+	keyDel (userKey);
+
+	ksDel (ks);
+	ksDel (split1);
+	ksDel (split2);
 }
 
 int main(int argc, char** argv)
@@ -2472,12 +3048,21 @@ int main(int argc, char** argv)
 	test_ksDoubleAppend();
 	test_ksDoubleAppendKey();
 	test_ksAppendKey();
-	test_keyCmpOrder();
 	test_keyVNew();
+	test_ksModifyKey();
+	test_cut();
+	test_cutpoint();
+	test_cutpoint_1();
+	test_unique_cutpoint();
+	test_cutbelow();
+	test_cutbelow_1();
+	test_simple();
+	test_cursor();
+	test_morecut();
+	test_cutafter();
 
 	// BUGS:
 	// test_ksLookupValue();
-	// test_ksModifyKey();
 	// test_ksOrder();
 
 	printf("\ntestabi_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);

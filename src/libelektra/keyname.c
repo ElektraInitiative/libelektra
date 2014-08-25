@@ -212,6 +212,7 @@ const char *keyName(const Key *key)
 }
 
 
+
 /**
  * Bytes needed to store the key name without owner.
  *
@@ -339,7 +340,7 @@ ssize_t keySetName(Key *key, const char *newName)
 	size_t size=0;
 
 	if (!key) return -1;
-	if (key->flags & KEY_FLAG_RO) return -1;
+	if (test_bit(key->flags,  KEY_FLAG_RO_NAME)) return -1;
 
 	if (key->key) free (key->key);
 	key->key = 0;

@@ -2415,6 +2415,55 @@ static void test_keyBaseName()
 	keyDel (k);
 }
 
+static void test_keyLock()
+{
+	printf ("Test locking\n");
+
+	Key *key = keyNew("", KEY_LOCK_NAME, KEY_END);
+	Key *key2 = keyNew("", KEY_LOCK_NAME, KEY_END);
+
+	succeed_if (keySetName(key, "user") == -1, "read only name, not allowed to set");
+
+	keyDel (key);
+	key = keyNew("", KEY_LOCK_VALUE, KEY_END);
+
+	succeed_if (keySetString(key, "a") == -1, "read only string, not allowed to set");
+	succeed_if (keySetBinary(key, "a", 2) == -1, "read only string, not allowed to set");
+
+	keyDel (key);
+	key = keyNew("", KEY_LOCK_META, KEY_END);
+
+	succeed_if (keySetMeta(key, "meta", "value") == -1, "read only meta, not allowed to set");
+	succeed_if (keyCopyMeta(key, key2,  "meta") == -1, "read only meta, not allowed to set");
+	succeed_if (keyCopyAllMeta(key, key2) == -1, "read only meta, not allowed to set");
+
+	keyDel (key);
+	key = keyNew(KEY_END);
+
+	keyLock(key, KEY_LOCK_NAME);
+	succeed_if (keySetName(key, "user") == -1, "read only name, not allowed to set");
+
+	keyDel (key);
+	key = keyNew(KEY_END);
+
+	keyLock(key, KEY_LOCK_VALUE);
+
+	succeed_if (keySetString(key, "a") == -1, "read only string, not allowed to set");
+	succeed_if (keySetBinary(key, "a", 2) == -1, "read only string, not allowed to set");
+
+	keyDel (key);
+	key = keyNew(KEY_END);
+
+	keyLock(key, KEY_LOCK_META);
+
+	succeed_if (keySetMeta(key, "meta", "value") == -1, "read only meta, not allowed to set");
+	succeed_if (keyCopyMeta(key, key2,  "meta") == -1, "read only meta, not allowed to set");
+	succeed_if (keyCopyAllMeta(key, key2) == -1, "read only meta, not allowed to set");
+
+	keyDel (key);
+	keyDel (key2);
+}
+
 
 int main(int argc, char** argv)
 {
@@ -2445,6 +2494,7 @@ int main(int argc, char** argv)
 	test_keyBelowOrSame();
 	test_keyNameSpecial();
 	test_keyClear();
+	test_keyLock();
 
 	// test_keyBaseName(); // TODO: Bug, does not work at the moment
 

@@ -568,7 +568,7 @@ int keyInit(Key *key)
  * helper functions for keyNew/keyVNew
  *
  * @pre caller must use va_start and va_end on va
- * @param key initializised Key
+ * @param key initialized Key
  * @param keyName a valid name to the key, or NULL to get a simple
  * initialized, but really empty, object
  * @param va the variadic argument list
@@ -626,6 +626,15 @@ void keyVInit (Key *key, const char *name, va_list va)
 					break;
 				case KEY_DIR:
 					keySetDir(key);
+					break;
+				case KEY_LOCK_NAME:
+					keyLock(key, KEY_LOCK_NAME);
+					break;
+				case KEY_LOCK_VALUE:
+					keyLock(key, KEY_LOCK_VALUE);
+					break;
+				case KEY_LOCK_META:
+					keyLock(key, KEY_LOCK_META);
 					break;
 				case KEY_FUNC:
 					p = va_arg(va, void(*)(void));

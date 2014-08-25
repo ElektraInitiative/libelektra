@@ -275,7 +275,7 @@ int keyCopyMeta(Key *dest, const Key *source, const char *metaName)
 
 	if (!source) return -1;
 	if (!dest) return -1;
-	if (dest->flags & KEY_FLAG_RO) return -1;
+	if (dest->flags & KEY_FLAG_RO_META) return -1;
 
 	ret = (Key*) keyGetMeta (source, metaName);
 
@@ -382,7 +382,7 @@ int keyCopyAllMeta(Key *dest, const Key *source)
 {
 	if (!source) return -1;
 	if (!dest) return -1;
-	if (dest->flags & KEY_FLAG_RO) return -1;
+	if (dest->flags & KEY_FLAG_RO_META) return -1;
 
 
 	if (source->meta)
@@ -484,7 +484,7 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 	ssize_t metaStringSize = 0;
 
 	if (!key) return -1;
-	if (key->flags & KEY_FLAG_RO) return -1;
+	if (key->flags & KEY_FLAG_RO_META) return -1;
 	if (!metaName) return -1;
 	metaNameSize = elektraStrLen (metaName);
 	if (metaNameSize == -1) return -1;
@@ -545,7 +545,10 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 		}
 	}
 
-	toSet->flags |= KEY_FLAG_RO;
+	set_bit(toSet->flags, KEY_FLAG_RO_NAME);
+	set_bit(toSet->flags, KEY_FLAG_RO_VALUE);
+	set_bit(toSet->flags, KEY_FLAG_RO_META);
+
 	ksAppendKey (key->meta, toSet);
 	key->flags |= KEY_FLAG_SYNC;
 	return metaStringSize;

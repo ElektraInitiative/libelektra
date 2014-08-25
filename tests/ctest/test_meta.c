@@ -5,19 +5,17 @@ static void test_ro()
 	Key *key;
 
 	key = keyNew(KEY_END);
-	key->flags |= KEY_FLAG_RO;
+	key->flags |= KEY_FLAG_RO_VALUE;
 
 	succeed_if (keySetString(key, "a") == -1, "read only string, not allowed to set");
 	succeed_if (keySetBinary(key, "a", 2) == -1, "read only string, not allowed to set");
-	succeed_if (keySetName(key, "user") == -1, "read only string, not allowed to set");
-	succeed_if (keySetMeta(key, "meta", "value") == -1, "read only string, not allowed to set");
 
-	keyDel (key);
+	key->flags |= KEY_FLAG_RO_NAME;
+	succeed_if (keySetName(key, "user") == -1, "read only name, not allowed to set");
 
-	key = keyNew(KEY_END);
-	succeed_if (keySetMeta(key, "meta", "value") == sizeof("value"), "could not set meta");
+	key->flags |= KEY_FLAG_RO_META;
+	succeed_if (keySetMeta(key, "meta", "value") == -1, "read only meta, not allowed to set");
 
-	// TODO check if RO
 	keyDel (key);
 }
 
