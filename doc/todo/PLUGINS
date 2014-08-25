@@ -70,8 +70,8 @@ recode of names (using iconv)
 
 Idea: fix limitations of current plugins using other plugins
 
-Needed for yajl: rewrite of values in directories as subkeys
-rewrite of metadata to keys
+Needed for yajl+ini:
+	rewrite of values in directories as subkeys
 
 fstab:
 	support for spaces and so on (with \040)
@@ -80,6 +80,18 @@ fstab:
 
 allow to lock down configuration for guis
 
+
+## Helper Library for storage plugins ##
+
+Refactoring hosts + ini?
+
+## Absolute/Relative ##
+
+Some plugins persist the relative key name (ini, yajl), other the absolute name
+
+import/export and copying existing config files behaves very different
+on relative/absolute file names, so there should be a way to specify
+this properly
 
 
 # Storage plugins #
@@ -276,10 +288,6 @@ tmp files:
 
 resolver:
 	configureable flush+locking
-
-kdb file
-	using resolver plugin without function! (parent value!)
-	should be returned in kdbGet/kdbSet?
 
 XDG specification:
 	write a xdg plugin which does xdg conforming resolving
