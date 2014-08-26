@@ -28,10 +28,11 @@ public:
                 QString     redoText() const;
                 QString     undoText() const;
 
-    Q_INVOKABLE void        createEditCommand(TreeViewModel *model, int index, const QString &oldName, const QVariant &oldValue, const QVariant &oldMetaData,
+    Q_INVOKABLE void        createEditKeyCommand(TreeViewModel *model, int index, const QString &oldName, const QVariant &oldValue, const QVariant &oldMetaData,
                                           const QString &newName, const QVariant &newValue, const QVariant &newMetaData);
 
-    Q_INVOKABLE void        createDeleteCommand(TreeViewModel *model, ConfigNode *node, int index);
+    Q_INVOKABLE void        createDeleteKeyCommand(TreeViewModel *model, ConfigNode *node, int index);
+    Q_INVOKABLE void        createNewKeyCommand(TreeViewModel *model, const QString &name, const QString &value, const QVariantMap &metaData);
 
 Q_SIGNALS:
 

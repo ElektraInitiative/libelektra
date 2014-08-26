@@ -1,6 +1,6 @@
-#include "deletecommand.hpp"
+#include "deletekeycommand.hpp"
 
-DeleteCommand::DeleteCommand(TreeViewModel *model, ConfigNode *node, int index)
+DeleteKeyCommand::DeleteKeyCommand(TreeViewModel *model, ConfigNode *node, int index)
     : m_model(model)
     , m_node(*node)
     , m_index(index)
@@ -8,12 +8,12 @@ DeleteCommand::DeleteCommand(TreeViewModel *model, ConfigNode *node, int index)
     setText("delete");
 }
 
-void DeleteCommand::undo()
+void DeleteKeyCommand::undo()
 {
     m_model->insertRow(m_index, new ConfigNode(m_node));
 }
 
-void DeleteCommand::redo()
+void DeleteKeyCommand::redo()
 {
     m_model->removeRow(m_index);
 }

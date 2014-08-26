@@ -1,14 +1,14 @@
-#ifndef EDITCOMMAND_HPP
-#define EDITCOMMAND_HPP
+#ifndef EDITKEYCOMMAND_HPP
+#define EDITKEYCOMMAND_HPP
 
 #include <QUndoCommand>
 #include "treeviewmodel.hpp"
 
-class EditCommand : public QUndoCommand
+class EditKeyCommand : public QUndoCommand
 {
 
 public:
-    explicit        EditCommand(TreeViewModel *model, int index, const QString &oldName, const QVariant &oldValue, const QVariantMap &oldMetaData,
+    explicit        EditKeyCommand(TreeViewModel *model, int index, const QString &oldName, const QVariant &oldValue, const QVariantMap &oldMetaData,
                                 const QString &newName, const QVariant &newValue, const QVariantMap &newMetaData, QUndoCommand *parent = 0);
     virtual void    undo();
     virtual void    redo();
@@ -27,4 +27,4 @@ private:
     QVariantMap     m_newMetaData;
 };
 
-#endif // EDITCOMMAND_HPP
+#endif // EDITKEYCOMMAND_HPP

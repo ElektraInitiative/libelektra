@@ -25,7 +25,7 @@ KeyWindow {
 
         //create undo command
         if(isEdited)
-            undoManager.createEditCommand(keyAreaView.model, keyAreaView.currentRow, keyName.toString(), keyValue.toString(), keyAreaSelectedItem.metaValue,
+            undoManager.createEditKeyCommand(keyAreaView.model, keyAreaView.currentRow, keyName.toString(), keyValue.toString(), keyAreaSelectedItem.metaValue,
                                           nameTextField.text, valueTextField.text, metaData)
 
 //        //set key name & value

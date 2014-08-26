@@ -13,8 +13,11 @@ KeyWindow {
         for(var i = 0; i < qmlMetaKeyModel.count; i++)
             metaData[qmlMetaKeyModel.get(i).metaName] = qmlMetaKeyModel.get(i).metaValue
 
-        //insert new node
-        externTreeModel.createNewNode(treeView.currentNode.path + "/" + nameTextField.text, valueTextField.text, metaData)
+        //create UndoCommand
+        undoManager.createNewKeyCommand(externTreeModel, treeView.currentNode.path + "/" + nameTextField.text, valueTextField.text, metaData)
+
+//        //insert new node
+//        externTreeModel.createNewNode(treeView.currentNode.path + "/" + nameTextField.text, valueTextField.text, metaData)
 
         nameTextField.text = ""
         valueTextField.text = ""

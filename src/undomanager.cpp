@@ -1,7 +1,8 @@
 #include <QUndoStack>
 #include "undomanager.hpp"
-#include "editcommand.hpp"
-#include "deletecommand.hpp"
+#include "editkeycommand.hpp"
+#include "deletekeycommand.hpp"
+#include "newkeycommand.hpp"
 
 UndoManager::UndoManager(QObject *parent) :
     QObject(parent)
@@ -35,7 +36,7 @@ bool UndoManager::canRedo() const
     return m_undoStack->canRedo();
 }
 
-void UndoManager::createEditCommand(TreeViewModel *model, int index, const QString &oldName, const QVariant &oldValue, const QVariant &oldMetaData,
+void UndoManager::createEditKeyCommand(TreeViewModel *model, int index, const QString &oldName, const QVariant &oldValue, const QVariant &oldMetaData,
                                     const QString &newName, const QVariant &newValue, const QVariant &newMetaData)
 {
     //convert TreeViewModel to QVariantMap
@@ -46,12 +47,17 @@ void UndoManager::createEditCommand(TreeViewModel *model, int index, const QStri
         oldMDMap.insert(node->getName(), node->getValue());
     }
 
-    m_undoStack->push(new EditCommand(model, index, oldName, oldValue, oldMDMap, newName, newValue, newMetaData.toMap()));
+    m_undoStack->push(new EditKeyCommand(model, index, oldName, oldValue, oldMDMap, newName, newValue, newMetaData.toMap()));
 }
 
-void UndoManager::createDeleteCommand(TreeViewModel *model, ConfigNode *node, int index)
+void UndoManager::createDeleteKeyCommand(TreeViewModel *model, ConfigNode *node, int index)
 {
-    m_undoStack->push(new DeleteCommand(model, node, index));
+    m_undoStack->push(new DeleteKeyCommand(model, node, index));
+}
+
+void UndoManager::createNewKeyCommand(TreeViewModel *model, const QString &name, const QString &value, const QVariantMap &metaData)
+{
+    m_undoStack->push(new NewKeyCommand(model, name, value, metaData));
 }
 
 void UndoManager::undo()

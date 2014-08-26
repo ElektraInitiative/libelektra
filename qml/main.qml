@@ -338,7 +338,7 @@ ApplicationWindow {
 
             onTriggered: {
 
-                undoManager.createDeleteCommand(keyAreaView.model, keyAreaSelectedItem.node, keyAreaView.currentRow)
+                undoManager.createDeleteKeyCommand(keyAreaView.model, keyAreaSelectedItem.node, keyAreaView.currentRow)
 
                 keyAreaView.__decrementCurrentIndex()
                 keyAreaView.selection.clear()
@@ -604,8 +604,11 @@ ApplicationWindow {
 
         RowLayout {
             id: statusBarRow
+
             Label {
                 id: path
+                anchors.fill: parent
+                anchors.leftMargin: defaultMargins
                 text: treeView.currentNode === null ? "" : treeView.currentNode.path + "/" + (keyAreaSelectedItem === null ? "" : keyAreaSelectedItem.name)
             }
         }

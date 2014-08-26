@@ -1,6 +1,6 @@
-#include "editcommand.hpp"
+#include "editkeycommand.hpp"
 
-EditCommand::EditCommand(TreeViewModel *model, int index, const QString &oldName, const QVariant &oldValue, const QVariantMap &oldMetaData,
+EditKeyCommand::EditKeyCommand(TreeViewModel *model, int index, const QString &oldName, const QVariant &oldValue, const QVariantMap &oldMetaData,
                          const QString &newName, const QVariant &newValue, const QVariantMap &newMetaData, QUndoCommand *parent)
     :  QUndoCommand(parent)
     ,  m_model(model)
@@ -15,14 +15,14 @@ EditCommand::EditCommand(TreeViewModel *model, int index, const QString &oldName
     setText("edit");
 }
 
-void EditCommand::undo()
+void EditKeyCommand::undo()
 {
     m_model->setData(m_index, m_oldName, "Name");
     m_model->setData(m_index, m_oldValue, "Value");
     m_model->model().at(m_index)->setMeta(m_oldMetaData);
 }
 
-void EditCommand::redo()
+void EditKeyCommand::redo()
 {
     m_model->setData(m_index, m_newName, "Name");
     m_model->setData(m_index, m_newValue, "Value");
