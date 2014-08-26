@@ -1406,11 +1406,14 @@ static void test_keyInactive ()
 	succeed_if (!keyIsInactive(key), "Key should not be inactive");
 
 	keySetName(key,"user/.hidden/valid");
-	succeed_if (!keyIsInactive(key), "Key should not be inactive");
+	succeed_if (keyIsInactive(key), "Key should be inactive");
 	
 	keySetName(key,"user/.hidden/€valid");
-	succeed_if (!keyIsInactive(key), "Key should not be inactive");
+	succeed_if (keyIsInactive(key), "Key should be inactive");
 	
+	keySetName(key,"user/..hidden/valid");
+	succeed_if (keyIsInactive(key), "Key should be inactive");
+
 	keySetName(key,"user/hidden");
 	succeed_if (!keyIsInactive(key), "Key should not be inactive");
 	
@@ -1432,9 +1435,8 @@ static void test_keyInactive ()
 	keySetName(key,"user/.HiddenDirectoryKey");
 	succeed_if (keyIsInactive(key), "Key should be inactive");
 	
-	//TODO: should be inactive:
-	// keySetName(key,"user/.HiddenDirectoryKey/StringKey");
-	// succeed_if (keyIsInactive(key), "Key should be inactive");
+	keySetName(key,"user/.HiddenDirectoryKey/StringKey");
+	succeed_if (keyIsInactive(key), "Key should be inactive");
 	
 	keySetName(key,"user/tests/file8xdLVS/filesys/.HiddenStringKey");
 	succeed_if (keyIsInactive(key), "Key should be inactive");
