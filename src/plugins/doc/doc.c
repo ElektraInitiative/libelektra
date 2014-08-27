@@ -14,7 +14,55 @@
  ***************************************************************************/
 
 
+
+/**
+ * @brief Sets the error in the keys metadata.
+ *
+ * Include kdberrors.h to make it work
+ *
+ * @ingroup plugin
+ *
+ * @param number the error number from src/liberror/specification
+ * @param key to write the error to
+ * @param text additional text for the user
+ */
+#define ELEKTRA_SET_ERROR(number, key, text)
+#undef ELEKTRA_SET_ERROR
+
+/**
+ * @brief Adds an warning in the keys metadata.
+ *
+ * Include kdberrors.h to make it work
+ *
+ * @ingroup plugin
+ *
+ * @param number the warning number from src/liberror/specification
+ * @param key to write the error to
+ * @param text additional text for the user
+ */
+#define ELEKTRA_ADD_WARNING(number, key, text)
+#undef ELEKTRA_ADD_WARNING
+
+/**
+ * @brief Declare a plugin's function name suitable for
+ * <a href="md_compilation_variants.html">compilation variants</a>.
+ *
+ * It can be used in the same way as #ELEKTRA_PLUGIN_EXPORT.
+ * @see ELEKTRA_PLUGIN_EXPORT
+ *
+ * @param plugin the name of the plugin
+ * @param which which function it is (open, close, get, set, error)
+ */
+#define ELEKTRA_PLUGIN_FUNCTION(plugin, which)
+#undef ELEKTRA_PLUGIN_FUNCTION
+
+
+//! [plugin_include]
 #include <kdbplugin.h>
+#include <kdberrors.h>
+//! [plugin_include]
+
+#include <stdlib.h>
 
 #ifndef HAVE_KDBCONFIG
 # include "kdbconfig.h"
@@ -38,124 +86,153 @@
  * @since version 0.8.0 Elektra backends are composed out of multiple
  * plugins.
  *
+ * To get started with writing plugins, first read our
+ * <a href="md_contract.html">plugin tutorial</a>!
+ *
+ * A plugin can implement any functionality related to
+ * configuration.
+ * There are 5 possible entry points for a plugin.
+ * - elektraDocGet() will be called when configuration or the plugin's
+ *   contract is retrieved from the key database
+ * - elektraDocSet() will be called when configuration is written to the
+ *   key database
+ * - elektraDocOpen() will be called before any other method of the
+ *   plugin is called
+ * - elektraDocClose() will be called as last method
+ * - elektraDocError() will be called when kdbSet() failed (to give the
+ *   plugin a chance to recover/undo its actions)
+ *
+ * The names described here contain "Doc" within the method's name
+ * just because the plugin
+ * described here is called doc (see src/plugins/doc/doc.c).
+ * Always replace Doc with the name of the plugin you
+ * are going to implement or use #ELEKTRA_PLUGIN_FUNCTION
+ * if you need
+ * <a href="md_compilation_variants.html">compilation variants</a>.
+ *
+ *
  * @par Overview
  * There are different types of plugins for different concerns.
  * The types of plugins handled in this document:
- * - file storage plugins (also called just storage plugins here)
- * - filter plugins
- * \n
- * See http://www.libelektra.org/ftp/elektra/thesis.pdf
- * for an detailed explanation and description of other types
- * of plugins.
- * \n
- * A plugin can implement anything related to configuration.
- * There are 5 possible entry points, as described in this
- * document:
- * - elektraDocOpen()
- * - elektraDocClose()
- * - elektraDocGet()
- * - elektraDocSet()
- * - elektraDocError() (not needed by storage or filter plugins)
- * \n
- * Depending of the type of plugin you need not to implement all of
- * them.
- * \n
- * @note that the Doc within the name is just because the plugin
- *       described here is called doc (see src/plugins/doc/doc.c).
- *       Always replace Doc with the name of the plugin you
- *       are going to implement.
- *
- * See the descriptions below what each of them is supposed to do.
- *
- * @par Storage Plugins
- * A filter plugin is a plugin which already receives some keys.
- * It may process or change the keyset.
- * Or it may reject specific keysets which do not meet some
- * criteria.
- *
- * @par Filter Plugins
- * A storage plugin gets an empty keyset and constructs the
- * information out from a file.
- * \n
- * Other persistent storage then a file is not handled within
- * this document because it involves many other issues.
- * For files the resolver plugin already takes care for
- * transactions and rollback.
+ * - A storage plugin gets an empty keyset in elektraDocGet()
+ *   and constructs the information out from a file.
+ *   In elektraDocSet() the keyset is written to a file.
+ *   \n
+ *   Other persistent storage then a file is not handled within
+ *   this document because it involves many other issues.
+ *   For files the resolver plugin already takes care for
+ *   transactions and rollback.
+ * - A filter plugin is a plugin which already receives some keys.
+ *   It may process or change the keyset.
+ *   Or it may reject specific keysets which do not meet some
+ *   criteria.
  *
  * @par Error and Warnings
- * In any case of trouble, use ELEKTRA_SET_ERROR and return with -1.
- * You might add warnings with ELEKTRA_ADD_WARNING if you think
- * it is appropriate.
+ * In case of trouble, in some methods you can use
+ * the macro #ELEKTRA_SET_ERROR (in other methods it is not allowed).
+ * You might add warnings with the macro #ELEKTRA_ADD_WARNING.
+ * Read the documentation of the individual methods to
+ * decide what you should do.
  *
- * @note some docu in this section might be confusing or not updated,
- * please refer to http://www.libelektra.org/ftp/elektra/thesis.pdf
- * or ask at the mailinglist if something is unclear.
+ * @see http://www.libelektra.org/ftp/elektra/thesis.pdf
+ *   for an detailed explanation and description of other types
+ *   of plugins or ask at the mailinglist if something is unclear.
  *
  * @addtogroup plugin
  * @{
  */
 
 
-
-
+//! [global data]
+typedef struct { int global; } GlobalData;
+//! [global data]
 
 /**
- * Initialize the plugin.
+ * @brief Initialize data for the plugin.
  *
  * This is the first method called after dynamically loading
- * this plugin.
+ * this plugin. It is guaranteed, that this method will be called
+ * before any other method.
  *
  * This method is responsible for:
  * - plugin's specific configuration gathering
- * - all plugin's internal structs initialization
- * - if unavoidable initial setup of all I/O details such as opening a file, connecting to a
- *   database, setup connection to a server, etc.
+ * - initialization of all plugin's internal structs
+ * - initial setup of all I/O details such as opening a file, connecting to a
+ *   database, setup connection to a server, iff this cannot be done per
+ *   invocation in elektraDocGet() and elektraDocSet().
  *
  * You may also read the configuration you can get with elektraPluginGetConfig() and transform it
  * into other structures used by your plugin.
  *
- * @note The plugin must not have any global variables. If you do
+ * @note The plugin must not have any global variables. If you have one
  *       Elektra will not be threadsafe.
- *       It is not a good assumption that your plugin will be opened
- *       only once.
+ *       Do not assume that your plugin will be opened
+ *       only once or will not be reopened at a later time.
  *
- * Instead you can use elektraPluginGetData() and elektraPluginSetData() to store
+ * Instead of global variables the methods elektraPluginGetData()
+ * and elektraPluginSetData() exist to store
  * and get any information related to your plugin.
  *
  * The correct substitute for global variables will be:
- * @code
-struct _GlobalData{ int global; };
-typedef struct _GlobalData GlobalData;
-int elektraDocOpen(Plugin *handle, Key *errorKey)
-{
-	GlobalData *data;
-	data=malloc(sizeof(GlobalData));
-	data.global = 20;
-	elektraPluginSetData(handle,data);
-}
- * @endcode
+ *
+ * @snippet doc.c global data
+ *
+ * and then initialize it using:
+ *
+ * @snippet doc.c doc open
+ *
+ * Make sure to free everything you allocate within elektraDocClose().
+ *
+ * @see elektraDocClose()
  *
  * If your plugin has no useful way to startup without config, the
- * module loader would not be able to load the module, too.
+ * module loader would not be able to load the module.
  * To solve that problem the module loader adds the configuration key
  * /module. Even if your plugin is basically not able to startup
  * successfully, it should still provide a fallback when /module
  * is present, so that elektraDocGet() on system/elektra/modules can be
  * called successfully later on.
  *
- * @note Make sure to free everything you allocate here within elektraDocClose().
+ * @snippet doc.c doc module
  *
- * @return 0 on success
+ *
+ * @retval -1 on error, your plugin will be removed then and the missing
+ * plugin added instead.
+ * Use #ELEKTRA_ADD_WARNING to indicate the problem. The system will
+ * automatically add the information that the plugin was removed,
+ * so you do not need the user give that information.
+ *
+ * @retval 0 on success
+ *
  * @param handle contains internal information of the plugin
- * @param errorKey defines an errorKey
- * @see kdbOpen() which will call elektraDocOpen()
+ * @param warningsKey can be used to add warnings with the macro
+ *        #ELEKTRA_ADD_WARNING (Do not add errors!)
  * @see elektraPluginGetData(), elektraPluginSetData() and
  *      elektraPluginGetConfig()
  * @ingroup plugin
  */
-int elektraDocOpen(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
+int elektraDocOpen(Plugin *handle, Key *warningsKey);
+
+//! [doc open]
+int elektraDocOpen(Plugin *handle, Key *warningsKey ELEKTRA_UNUSED)
 {
-	/* plugin initialization logic */
+	GlobalData *data;
+	KeySet *config = elektraPluginGetConfig(handle);
+	Key * kg = ksLookupByName(config, "/global", 0);
+
+	data=malloc(sizeof(GlobalData));
+	data->global = 0;
+	if (kg) data->global = atoi(keyString(kg));
+	elektraPluginSetData(handle,data);
+//! [doc open]
+
+//! [doc module]
+	if (ksLookupByName(config, "/module", 0))
+	{
+		return 0;
+	}
+	// do some setup that will fail without configuration
+//! [doc module]
 
 	return 0; /* success */
 }
@@ -175,18 +252,30 @@ int elektraDocOpen(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
  * the point to shutdown any affairs with the storage.
  *
  * @param handle contains internal information of the plugin
- * @param errorKey is needed to add warnings using ELEKTRA_ADD_WARNING
+ * @param warningsKey can be used to to add warnings using
+ *        #ELEKTRA_ADD_WARNING (Do not add errors!)
  *
- * @retval 0 on success
+ * @retval 0 on success (no other return value currently allowed)
+ *
+ * @snippet doc.c doc close
+ *
+ * @retval -1 on problems
+ *
  * @see kdbClose()
  * @see elektraPluginGetData(), elektraPluginSetData() and
  *      elektraPluginGetConfig()
  * @ingroup plugin
  */
-int elektraDocClose(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
+int elektraDocClose(Plugin *handle, Key *warningsKey);
+
+//! [doc close]
+int elektraDocClose(Plugin *handle, Key *warningsKey ELEKTRA_UNUSED)
 {
+	free (elektraPluginGetData(handle));
+
 	return 0; /* success */
 }
+//! [doc close]
 
 
 
