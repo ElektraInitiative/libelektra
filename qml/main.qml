@@ -199,7 +199,6 @@ ApplicationWindow {
         text: qsTr("Cut")
         tooltip: qsTr("Cut")
         shortcut: StandardKey.Cut
-        enabled: false
     }
 
     Action {
@@ -207,7 +206,6 @@ ApplicationWindow {
         text: qsTr("Copy")
         tooltip: qsTr("Copy")
         shortcut: StandardKey.Copy
-        enabled: false
     }
 
     Action {
@@ -215,7 +213,6 @@ ApplicationWindow {
         text: qsTr("Paste")
         tooltip: qsTr("Paste")
         shortcut: StandardKey.Paste
-        enabled: false
     }
 
     menuBar: MenuBar {
@@ -325,11 +322,48 @@ ApplicationWindow {
         //action: deleteAction
         //}
     }
+
     Menu {
         id: keyContextMenu
+
         MenuItem {
             id: kcmNewKey
             action: newKeyAction
+        }
+        MenuItem {
+            id: kcmEdit
+            action: editAction
+            onTriggered: {
+                editKeyWindow.show()
+                editKeyWindow.populateMetaArea()
+            }
+        }
+        MenuItem {
+            id: kcmCut
+
+            action: cutAction
+            onTriggered: console.log("cut")
+        }
+        MenuItem {
+            id: kcmCopy
+
+            action: copyAction
+
+            onTriggered: {
+                console.log("copy")
+                keyAreaView.copyPasteIndex = keyAreaView.currentRow
+                keyAreaView.currentNodePath = treeView.currentNode.path
+            }
+        }
+        MenuItem {
+            id: kcmPaste
+
+            action: pasteAction
+            onTriggered: {
+                console.log("paste")
+                keyAreaView.copyPasteIndex = -1
+                keyAreaView.currentNodePath = ""
+            }
         }
         MenuItem {
             id: kcmDelete
@@ -338,25 +372,22 @@ ApplicationWindow {
 
             onTriggered: {
 
-                undoManager.createDeleteKeyCommand(keyAreaView.model, keyAreaSelectedItem.node, keyAreaView.currentRow)
+                if(keyAreaSelectedItem !== null){
+                    undoManager.createDeleteKeyCommand(keyAreaView.model, keyAreaSelectedItem.node, keyAreaView.currentRow)
 
-                keyAreaView.__decrementCurrentIndex()
-                keyAreaView.selection.clear()
-                keyAreaView.selection.select(keyAreaView.currentRow)
-                keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
-
-                if(keyAreaView.rowCount !== 0)
+                    keyAreaView.__decrementCurrentIndex()
+                    keyAreaView.selection.clear()
+                    keyAreaView.selection.select(keyAreaView.currentRow)
                     keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
-                else
-                    keyAreaSelectedItem = null
-            }
-        }
-        MenuItem {
-            id: kcmEdit
-            action: editAction
-            onTriggered: {
-                editKeyWindow.show()
-                editKeyWindow.populateMetaArea()
+
+                    if(keyAreaView.rowCount !== 0)
+                        keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
+                    else
+                        keyAreaSelectedItem = null
+                }
+                else if(treeView.currentNode !== null){
+                    //TODO: delete branch
+                }
             }
         }
     }
@@ -447,15 +478,35 @@ ApplicationWindow {
         }
         Column {
             id: keyMetaColumn
+
             spacing: defaultSpacing
 
             BasicRectangle {
                 id: keyArea
+
                 width: deltaKeyAreaWidth
                 height: Math.round(mainRow.height*0.7 - defaultSpacing)
 
+                Component {
+                    id: tableViewColumnDelegate
+
+                    Item {
+                        anchors.fill: parent
+                        anchors.margins: defaultSpacing
+
+                        Text{
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: styleData.value
+                            color: (keyAreaView.copyPasteIndex === styleData.row && treeView.currentNode.path === keyAreaView.currentNodePath) ? disabledPalette.text : activePalette.text
+                        }
+                    }
+                }
+
                 TableView {
                     id: keyAreaView
+
+                    property int copyPasteIndex
+                    property string currentNodePath
 
                     anchors.fill: parent
                     anchors.margins: 2
@@ -473,13 +524,17 @@ ApplicationWindow {
                         role: "name"
                         title: qsTr("Name")
                         width: Math.round(keyArea.width*0.5)
+                        delegate: tableViewColumnDelegate
                     }
                     TableViewColumn {
                         role: "value"
                         title: qsTr("Value")
                         width: Math.round(keyArea.width*0.5)
+                        delegate: tableViewColumnDelegate
                     }
+
                     rowDelegate: Component {
+
                         Rectangle {
                             width: keyAreaView.width
                             color: styleData.selected ? activePalette.highlight : "transparent"
@@ -512,16 +567,19 @@ ApplicationWindow {
             }
             BasicRectangle {
                 id: metaArea
+
                 width: deltaKeyAreaWidth
                 height: Math.round(mainRow.height*0.3)
 
                 ScrollView {
                     id: metaAreaScrollView
+
                     anchors.fill: parent
                     anchors.margins: defaultMargins
 
                     ListView {
                         id: metaAreaListView
+
                         model: metaAreaModel
 
                         delegate: Text {
@@ -533,12 +591,14 @@ ApplicationWindow {
             }
             BasicRectangle {
                 id: searchResultsArea
+
                 width: deltaKeyAreaWidth
                 height: Math.round(mainRow.height*0.2)
                 visible: false
 
                 Button {
                     id: searchResultsCloseButton
+
                     iconSource: "icons/dialog-close.png"
                     anchors.right: parent.right
                     anchors.top: parent.top
@@ -555,12 +615,14 @@ ApplicationWindow {
 
                 ScrollView {
                     id: searchResultsScrollView
+
                     anchors.fill: parent
                     anchors.margins: defaultMargins
                     anchors.rightMargin: searchResultsCloseButton.width
 
                     ListView {
                         id: searchResultsListView
+
                         focus: false
 
                         highlight: Rectangle {
