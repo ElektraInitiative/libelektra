@@ -114,8 +114,9 @@ thread2
  * You don't need to use the kdbOpen() if you only want to
  * manipulate plain in-memory Key or KeySet objects.
  *
+ * @pre errorKey must be a valid key, e.g. created with keyNew()
+ *
  * @param errorKey the key which holds errors and warnings which were issued
- *                 must be given
  * @see kdbGet(), kdbClose() to end all affairs to the key database.
  * @return a KDB pointer on success
  * @return NULL on failure
@@ -235,6 +236,8 @@ KDB * kdbOpen(Key *errorKey)
  * will be freed. After a kdbClose(), the @p handle can't be used anymore.
  *
  * @pre The handle must be a valid handle as returned from kdbOpen()
+ *
+ * @pre errorKey must be a valid key, e.g. created with keyNew()
  *
  * @param handle contains internal information of
  *               @link kdbOpen() opened @endlink key database
