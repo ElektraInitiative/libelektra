@@ -62,10 +62,10 @@
 #include <stdlib.h>
 #endif
 
+#if DEBUG && HAVE_STDIO_H
 #include <stdio.h>
-#include <stdarg.h>
+#endif
 
-#include "kdb.h"
 #include "kdbprivate.h"
 
 
@@ -379,75 +379,41 @@ ssize_t keySetString(Key *key, const char *newStringValue)
 	return ret;
 }
 
-/*
-char * elektraPrintF(const char *format, va_list ap)
+
+/**
+ * @brief Set a formatted string
+ *
+ * @param key the key to set the string value
+ * @param format NULL-terminated text format string
+ * @param ... more arguments
+ *
+ * @return the size of the string as set (with including 0)
+ */
+ssize_t keySetStringF(Key *key, const char *format, ...)
 {
-}
-*/
-
-
-int keySetStringF(Key *key, const char *format, ...)
-{
-	va_list arg_list, arg_list_adj;
-
-	static int const default_size = 512;
-	char fixed_size_buffer[default_size];
-
-	va_start(arg_list, format);
-	va_copy(arg_list_adj, arg_list);
-	// http://gcc.gnu.org/ml/gcc/2001-08/msg00489.html
-	// claims that copy is necessary, because va_start again
-	// won't work
-
-	int const calculated_length =
-		vsnprintf(fixed_size_buffer,
-				default_size,
-				format,
-				arg_list);
-
-	va_end(arg_list);
-
-	if (calculated_length == -1)
-	{
-		va_end(arg_list_adj);
-		// before Glibc 2.0.6, always -1 is returned
-		// we won't do Glibc job, please upgrade
-		return -1;
-	}
-
-	if (calculated_length < default_size)
-	{
-		va_end(arg_list_adj);
-		// content was written successfully into
-		// fixed_size_buffer
-		return keySetString(key, fixed_size_buffer);
-	}
-	// String is longer then default_size.
-	// Allocate an intermediate buffer
-	// according to the calculated length from our last try
-	int const adjusted_buffer_size = calculated_length + 1;
-	char *buffer = elektraMalloc(adjusted_buffer_size);
-
-	int const ret = vsnprintf(buffer,
-			adjusted_buffer_size,
-			format,
-			arg_list_adj);
-
-	va_end(arg_list_adj);
-
-	if(ret == -1)
-	{
-		elektraFree(buffer);
-		return -1;
-	}
+	va_list arg_list;
 
 	keySetMeta (key, "binary", 0);
-	if (key->data.c) elektraFree(key->data.c);
-	key->data.c = buffer;
-	key->dataSize = adjusted_buffer_size;
+
+	va_start(arg_list, format);
+	char *p = elektraFormat(format, arg_list);
+	va_end(arg_list);
+
+	if (!p)
+	{
+		return -1;
+	}
+
+	if (key->data.c)
+	{
+		elektraFree(key->data.c);
+	}
+
+	key->data.c = p;
+	key->dataSize = elektraStrLen(key->data.c);
 	set_bit(key->flags, KEY_FLAG_SYNC);
 
-	return adjusted_buffer_size;
+	return key->dataSize;
 }
 
 

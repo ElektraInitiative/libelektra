@@ -1,6 +1,8 @@
 #ifndef KDB_HELPER
 #define KDB_HELPER
 
+#include <stdarg.h>
+
 #ifdef __cplusplus
 namespace ckdb {
 extern "C" {
@@ -16,6 +18,8 @@ int elektraRealloc(void **buffer, size_t size);
 int elektraStrCmp (const char *s1, const char *s2);
 int elektraStrCaseCmp (const char *s1, const char *s2);
 size_t elektraStrLen(const char *s);
+
+char *elektraFormat(const char *format, va_list arg_list);
 
 // not yet implemented:
 int elektraKeyNameEscape(const char *source, char *dest);
