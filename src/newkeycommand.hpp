@@ -8,7 +8,7 @@ class NewKeyCommand : public QUndoCommand
 {
 
 public:
-    explicit NewKeyCommand(TreeViewModel *model, const QString &name, const QString &value, const QVariantMap &metaData, QUndoCommand *parent = 0);
+    explicit NewKeyCommand(TreeViewModel *model, const QString &path, const QString &value, const QVariantMap &metaData, QUndoCommand *parent = 0);
 
     virtual void undo();
     virtual void redo();
@@ -16,7 +16,7 @@ public:
 private:
 
     TreeViewModel *m_model;
-    QString m_name;
+    QString m_path;
     QString m_value;
     QVariantMap m_metaData;
 

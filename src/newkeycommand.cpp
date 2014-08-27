@@ -1,9 +1,9 @@
 #include "newkeycommand.hpp"
 
-NewKeyCommand::NewKeyCommand(TreeViewModel *model, const QString &name, const QString &value, const QVariantMap &metaData, QUndoCommand *parent)
+NewKeyCommand::NewKeyCommand(TreeViewModel *model, const QString &path, const QString &value, const QVariantMap &metaData, QUndoCommand *parent)
     : QUndoCommand(parent)
     , m_model(model)
-    , m_name(name)
+    , m_path(path)
     , m_value(value)
     , m_metaData(metaData)
 {
@@ -12,10 +12,10 @@ NewKeyCommand::NewKeyCommand(TreeViewModel *model, const QString &name, const QS
 
 void NewKeyCommand::undo()
 {
-
+    m_model->deletePath(m_path);
 }
 
 void NewKeyCommand::redo()
 {
-    m_model->createNewNode(m_name, m_value, m_metaData);
+    m_model->createNewNode(m_path, m_value, m_metaData);
 }

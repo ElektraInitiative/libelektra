@@ -116,7 +116,9 @@ public:
     void                    accept(Visitor &visitor);
     kdb::Key                getKey() const;
     void                    setKey(kdb::Key key);
-    void                    deleteKey();
+    void                    invalidateKey();
+    void                    deletePath(QStringList &path);
+    int                     getIndexByName(const QString &name);
 
 private:
     // TODO: not needed if we hold the Key

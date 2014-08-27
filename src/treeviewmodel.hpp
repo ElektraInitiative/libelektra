@@ -85,6 +85,7 @@ public:
                 void            append(ConfigNode *node);
     Q_INVOKABLE void            setData(int index, const QVariant& value, const QString& role);
                 QString         toString();
+                void            deletePath(const QString &path);
 
 private:
     void                        sink(ConfigNode* node, QStringList keys, QString path, kdb::Key key);

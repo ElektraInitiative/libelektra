@@ -160,6 +160,26 @@ QString TreeViewModel::toString()
     return model;
 }
 
+void TreeViewModel::deletePath(const QString &path)
+{
+    QStringList splittedPath = path.split("/");
+
+    QString root = splittedPath.takeFirst();
+
+    if(root == "system")
+    {
+        m_model.at(0)->deletePath(splittedPath);
+    }
+    else if(root == "user")
+    {
+        m_model.at(1)->deletePath(splittedPath);
+    }
+    else
+    {
+        qDebug() << "TreeViewModel::deletePath: INVALID_PATH";
+    }
+}
+
 Qt::ItemFlags TreeViewModel::flags(const QModelIndex& index) const
 {
     if (!index.isValid())
@@ -214,19 +234,18 @@ void TreeViewModel::populateModel()
     {
         QString currentKey = QString::fromStdString(m_keySet.current().getName());
 
-//        qDebug() << "TreeViewModel::populateModel: currentKey: " << currentKey;
+        //        qDebug() << "TreeViewModel::populateModel: currentKey: " << currentKey;
 
-        QStringList splittedKey = currentKey.split("/");
+        QStringList keys = currentKey.split("/");
+        QString root = keys.takeFirst();
 
-        if (splittedKey.at(0) == "system")
+        if (root == "system")
         {
-            splittedKey.removeFirst();
-            sink(m_model.at(0), splittedKey, "system", m_keySet.current());
+            sink(m_model.at(0), keys, "system", m_keySet.current());
         }
-        else if (splittedKey.at(0) == "user")
+        else if (root == "user")
         {
-            splittedKey.removeFirst();
-            sink(m_model.at(1), splittedKey, "user", m_keySet.current());
+            sink(m_model.at(1), keys, "user", m_keySet.current());
         }
         else
         {
@@ -302,7 +321,7 @@ bool TreeViewModel::removeRow(int row, const QModelIndex& parent)
     }
 
     beginRemoveRows(QModelIndex(), row, row);
-    m_model.at(row)->deleteKey();
+    m_model.at(row)->invalidateKey();
     delete m_model.takeAt(row);
     endRemoveRows();
 
