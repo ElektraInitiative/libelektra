@@ -37,17 +37,17 @@ that allow the plug-in to work:
 - elektraPluginClose() is used to free resources that might be required for the plug-in.	
 - ELEKTRA_PLUGIN_EXPORT(Plugin) simply lets Elektra know that the plug-in exists and what the name of the above functions are.	
 
-Most simply put: most plug-ins consist of five major functions, elektraPluginOpen(), elektraPluginClose(), elektraPluginGet(), elektraPluginSet(), 
-and ELEKTRA_EXPORT_PLUGIN(Plugin).
+Most simply put: most plug-ins consist of five major functions, `elektraPluginOpen()`, `elektraPluginClose()`, `elektraPluginGet()`, `elektraPluginSet()`, 
+and `ELEKTRA_EXPORT_PLUGIN(Plugin)`.
 
 Because remembering all these functions can be cumbersome, we provide a skeleton plugin in order to easily create a new plugin. 
 The skeleton plugin is called "template" and a new plugin can be created by calling the 
-[copy-template script](https://github.com/ElektraInitiative/libelektra/blob/master/scripts/copy-template) . 
+[copy-template script](scripts/copy-template) . 
 For example for my plugin I called `../../scripts/copy-template line` from within the plugins directory. Afterwards two 
 important things are left to be done:
 
-- remove all functions (and their exports) from the plugin that are not needed. For example not every plugin actually makes use of the elektraPluginOpen() function.</li>
-- provide a basic contract as described above</li>
+- remove all functions (and their exports) from the plugin that are not needed. For example not every plugin actually makes use of the `elektraPluginOpen()` function.
+- provide a basic contract as described above
 
 After these two steps your plugin is ready to be compiled, installed and mounted for the first time. Have a look at 
 [How-To: kdb mount](http://community.libelektra.org/wp/?p=31)
@@ -215,7 +215,7 @@ Basically the implementation of `elektraLineSet` can be described with the follo
 	}	
 	close the file
 
-The fullblown code can be found at [line plugin](https://github.com/ElektraInitiative/libelektra/blob/master/src/plugins/line/line.c)
+The fullblown code can be found at [line plugin](src/plugins/line/line.c)
 
 As you can see, all `elektraLineSet` does is open a file, take each Key from the KeySet (remember they are named `#1`, `#2` ... `#_22`) in order, 
 and write each key as it's own line in the file. Since we don't care about the name of the Key in this case (other than for order), we just write 
