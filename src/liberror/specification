@@ -534,3 +534,22 @@ severity:warning
 ingroup:plugin
 module:resolver
 
+number:91
+description:Failed to reopen default backend (see warnings for more information)
+severity:warning
+ingroup:kdb
+
+number:92
+description:Mounting modules did not work
+severity:warning
+ingroup:kdb
+
+number:93
+description:Initial loading of trie did not work
+severity:warning
+ingroup:kdb
+
+number:94
+description:Could not initialize the modules
+severity:fatal
+ingroup:kdb

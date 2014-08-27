@@ -131,6 +131,10 @@ KDB * kdbOpen(Key *errorKey)
 	handle->modules = ksNew(0, KS_END);
 	if(elektraModulesInit(handle->modules, errorKey) == -1)
 	{
+		ksDel(handle->modules);
+		elektraFree(handle);
+		ELEKTRA_SET_ERROR(94, errorKey,
+				"elektraModulesInit returned with -1");
 		return 0;
 	}
 
@@ -138,6 +142,8 @@ KDB * kdbOpen(Key *errorKey)
 			errorKey);
 	if(!handle->defaultBackend)
 	{
+		ksDel(handle->modules);
+		elektraFree(handle);
 		ELEKTRA_SET_ERROR(40, errorKey,
 				"could not open default backend");
 		return 0;
@@ -189,20 +195,23 @@ KDB * kdbOpen(Key *errorKey)
 	// Open the trie, keys will be deleted within elektraMountOpen
 	if (elektraMountOpen(handle, keys, handle->modules, errorKey) == -1)
 	{
-		// Initial loading of trie did not work
+		ELEKTRA_ADD_WARNING(93, errorKey,
+				"Initial loading of trie did not work");
 	}
 
 	if (elektraMountDefault(handle, handle->modules, errorKey) == -1)
 	{
 		ELEKTRA_SET_ERROR(40, errorKey,
-				"could not reopen default backend");
+				"could not reopen and mount default backend");
+		kdbClose(handle, errorKey);
 		keyDel (initialParent);
 		return 0;
 	}
 
 	if (elektraMountModules(handle, handle->modules, errorKey) == -1)
 	{
-		// Mounting modules did not work
+		ELEKTRA_ADD_WARNING(92, errorKey,
+				"Mounting modules did not work");
 	}
 
 	elektraMountVersion (handle, errorKey);
