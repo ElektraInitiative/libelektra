@@ -114,8 +114,9 @@ thread2
  * You don't need to use the kdbOpen() if you only want to
  * manipulate plain in-memory Key or KeySet objects.
  *
+ * @pre errorKey must be a valid key, e.g. created with keyNew()
+ *
  * @param errorKey the key which holds errors and warnings which were issued
- *                 must be given
  * @see kdbGet(), kdbClose() to end all affairs to the key database.
  * @return a KDB pointer on success
  * @return NULL on failure
@@ -131,6 +132,10 @@ KDB * kdbOpen(Key *errorKey)
 	handle->modules = ksNew(0, KS_END);
 	if(elektraModulesInit(handle->modules, errorKey) == -1)
 	{
+		ksDel(handle->modules);
+		elektraFree(handle);
+		ELEKTRA_SET_ERROR(94, errorKey,
+				"elektraModulesInit returned with -1");
 		return 0;
 	}
 
@@ -138,6 +143,8 @@ KDB * kdbOpen(Key *errorKey)
 			errorKey);
 	if(!handle->defaultBackend)
 	{
+		ksDel(handle->modules);
+		elektraFree(handle);
 		ELEKTRA_SET_ERROR(40, errorKey,
 				"could not open default backend");
 		return 0;
@@ -189,20 +196,23 @@ KDB * kdbOpen(Key *errorKey)
 	// Open the trie, keys will be deleted within elektraMountOpen
 	if (elektraMountOpen(handle, keys, handle->modules, errorKey) == -1)
 	{
-		// Initial loading of trie did not work
+		ELEKTRA_ADD_WARNING(93, errorKey,
+				"Initial loading of trie did not work");
 	}
 
 	if (elektraMountDefault(handle, handle->modules, errorKey) == -1)
 	{
 		ELEKTRA_SET_ERROR(40, errorKey,
-				"could not reopen default backend");
+				"could not reopen and mount default backend");
+		kdbClose(handle, errorKey);
 		keyDel (initialParent);
 		return 0;
 	}
 
 	if (elektraMountModules(handle, handle->modules, errorKey) == -1)
 	{
-		// Mounting modules did not work
+		ELEKTRA_ADD_WARNING(92, errorKey,
+				"Mounting modules did not work");
 	}
 
 	elektraMountVersion (handle, errorKey);
@@ -226,6 +236,8 @@ KDB * kdbOpen(Key *errorKey)
  * will be freed. After a kdbClose(), the @p handle can't be used anymore.
  *
  * @pre The handle must be a valid handle as returned from kdbOpen()
+ *
+ * @pre errorKey must be a valid key, e.g. created with keyNew()
  *
  * @param handle contains internal information of
  *               @link kdbOpen() opened @endlink key database

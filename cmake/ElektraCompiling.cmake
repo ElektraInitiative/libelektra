@@ -55,7 +55,7 @@ endif ()
 #
 # Common flags can be used by both C and C++
 #
-set (COMMON_FLAGS "${COMMON_FLAGS} -pedantic")
+set (COMMON_FLAGS "${COMMON_FLAGS} -pedantic -Wno-variadic-macros")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wall -Wextra")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wno-overlength-strings")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wsign-compare -Wfloat-equal")

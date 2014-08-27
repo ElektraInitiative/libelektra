@@ -34,7 +34,7 @@
 #include "kdbconfig.h"
 #endif
 
-#if DEBUG && HAVE_STDIO_H
+#if HAVE_STDIO_H
 #include <stdio.h>
 #endif
 
@@ -343,6 +343,71 @@ size_t elektraStrLen(const char *s)
 	char *found=strchr(s,0);
 	if (found) return found-s+1;
 	return 0;
+}
+
+/**
+ * @brief Does string formating in fresh allocated memory
+ *
+ * @param format as in printf()
+ * @param arg_list as in printf()
+ *
+ * @return new allocated memory (free with elektraFree)
+ */
+char *elektraFormat(const char *format, va_list arg_list)
+{
+	static int const default_size = 512;
+	char *buffer = elektraMalloc(default_size);
+	if (!buffer) return 0;
+
+	va_list arg_list_adj;
+	va_copy(arg_list_adj, arg_list);
+
+	int const calculated_length =
+		vsnprintf(buffer,
+				default_size,
+				format,
+				arg_list);
+
+	if (calculated_length == -1)
+	{
+		va_end(arg_list_adj);
+		// before Glibc 2.0.6, always -1 is returned
+		// we won't do Glibc job, please upgrade
+		return 0;
+	}
+
+	if (calculated_length < default_size)
+	{
+		va_end(arg_list_adj);
+		// content was written successfully into
+		// default sized buffer
+		return buffer;
+	}
+
+	// String is longer then default_size.
+	// Allocate an intermediate buffer
+	// according to the calculated length from our last try
+	size_t const adjusted_buffer_size = calculated_length + 1;
+	elektraRealloc((void**)&buffer, adjusted_buffer_size);
+	if (!buffer)
+	{
+		va_end(arg_list_adj);
+		return 0;
+	}
+
+	int const ret = vsnprintf(buffer,
+			adjusted_buffer_size,
+			format,
+			arg_list_adj);
+
+	va_end(arg_list_adj);
+
+	if(ret == -1)
+	{
+		elektraFree(buffer);
+		return 0;
+	}
+	return buffer;
 }
 
 /**

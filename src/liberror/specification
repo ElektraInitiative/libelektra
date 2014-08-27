@@ -21,6 +21,7 @@ number:1
 ingroup:modules
 description:could not load module, dlopen failed
 module:dl
+severity:warning
 class:FailedLoadModuleError
 extends:ModuleError
 
@@ -28,17 +29,20 @@ number:2
 ingroup:modules
 description:could not get pointer to factory, dlsym failed
 module:dl
+severity:warning
 class:FailedResolveSymbolError
 extends:ModuleError
 
 number:3
 ingroup:modules
 description:could not find root key
+severity:warning
 module:dl
 
 number:4
 ingroup:modules
 description:could not close a module, dlclose failed
+severity:warning
 module:dl
 
 number:5
@@ -49,9 +53,9 @@ class:NoDefaultBackendError
 extends:KDBOpenError
 
 number:6
-description:Could not call elektraPluginFactory
+description:Could not call function exported by ELEKTRA_PLUGIN_EXPORT
 ingroup:kdb
-severity:fatal
+severity:warning
 
 number:7
 description:failed to open trie, continue with default backend
@@ -74,7 +78,7 @@ severity:normal
 ingroup:kdb
 
 number:11
-description:kdbOpen() failed
+description:open of plugin returned unsuccessfully (reason contains plugin, see other warnings for details)
 severity:warning
 ingroup:kdb
 
@@ -226,8 +230,8 @@ severity:error
 ingroup:kdb
 
 number:39
-description:not a valid name supplied for loading plugins
-severity:fatal
+description:not a valid name supplied for a plugin
+severity:warning
 ingroup:modules
 module:dl
 
@@ -410,6 +414,7 @@ number:70
 ingroup:modules
 description:could not load module, static load failed
 module:static
+severity:warning
 class:FailedLoadModuleError
 extends:ModuleError
 
@@ -417,6 +422,7 @@ number:71
 ingroup:modules
 description:could not get pointer to factory, static sym failed
 module:dl
+severity:warning
 class:FailedResolveSymbolError
 extends:ModuleError
 
@@ -528,3 +534,22 @@ severity:warning
 ingroup:plugin
 module:resolver
 
+number:91
+description:Failed to reopen default backend (see warnings for more information)
+severity:warning
+ingroup:kdb
+
+number:92
+description:Mounting modules did not work
+severity:warning
+ingroup:kdb
+
+number:93
+description:Initial loading of trie did not work
+severity:warning
+ingroup:kdb
+
+number:94
+description:Could not initialize the modules
+severity:fatal
+ingroup:kdb

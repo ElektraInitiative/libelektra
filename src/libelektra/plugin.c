@@ -225,7 +225,7 @@ int elektraProcessPlugins(Plugin **plugins, KeySet *modules, KeySet *referencePl
 				/* case 1, we create a new plugin,
 				   note that errorKey is not passed here, because it would set error information
 				   but we only want a warning instead. */
-				plugins[pluginNumber] = elektraPluginOpen(pluginName, modules, pluginConfig, 0);
+				plugins[pluginNumber] = elektraPluginOpen(pluginName, modules, pluginConfig, errorKey);
 				if (!plugins[pluginNumber])
 				{
 					ELEKTRA_ADD_WARNING (64, errorKey, pluginName);
@@ -289,7 +289,7 @@ Plugin* elektraPluginOpen(const char *name, KeySet *modules, KeySet *config, Key
 
 	if (!name || name[0] == '\0')
 	{
-		ELEKTRA_SET_ERROR(39, errorKey, "name is null or empty");
+		ELEKTRA_ADD_WARNING(39, errorKey, "name is null or empty");
 		goto err_clup;
 	}
 
@@ -302,21 +302,21 @@ Plugin* elektraPluginOpen(const char *name, KeySet *modules, KeySet *config, Key
 
 	if (*n == '\0')
 	{
-		ELEKTRA_SET_ERROR(39, errorKey, "name contained slashes only");
+		ELEKTRA_ADD_WARNING(39, errorKey, "name contained slashes only");
 		goto err_clup;
 	}
 
 	pluginFactory = elektraModulesLoad(modules, name, errorKey);
 	if (pluginFactory == 0)
 	{
-		/* error already set by elektraModulesLoad */
+		/* warning already set by elektraModulesLoad */
 		goto err_clup;
 	}
 
 	handle = pluginFactory();
 	if (handle == 0)
 	{
-		ELEKTRA_SET_ERROR(6, errorKey, name);
+		ELEKTRA_ADD_WARNING(6, errorKey, name);
 		goto err_clup;
 	}
 

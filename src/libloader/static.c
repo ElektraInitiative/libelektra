@@ -68,11 +68,7 @@ elektraPluginFactory elektraModulesLoad (KeySet *modules, const char *name, Key 
 
 	if (handle == NULL)
 	{
-		char *errorText = malloc(strlen(name) + 40);
-		strcpy (errorText, "Did not find module ");
-		strcat (errorText, name);
-		ELEKTRA_SET_ERROR(70, error, errorText);
-		free (errorText);
+		ELEKTRA_ADD_WARNINGF(70, error, "Did not find module: %s", name);
 		keyDel (moduleKey);
 		return 0;
 	}
@@ -81,7 +77,7 @@ elektraPluginFactory elektraModulesLoad (KeySet *modules, const char *name, Key 
 
 	if (module == NULL)
 	{
-		ELEKTRA_SET_ERROR(71, error, "no such symbol elektraPluginSymbol");
+		ELEKTRA_ADD_WARNING(71, error, "no such symbol elektraPluginSymbol");
 		return 0;
 	}
 
