@@ -43,8 +43,8 @@ int SetCommand::execute(Cmdline const& cl)
 	// the config
 	kdb.get(conf, k);
 
-	printError(cerr, k);
 	printWarnings(cerr, k);
+	printError(cerr, k);
 
 	Key key = conf.lookup(name);
 
@@ -78,8 +78,8 @@ int SetCommand::execute(Cmdline const& cl)
 	}
 	Key n;
 	kdb.set(conf, n);
-	printError(cerr, n);
 	printWarnings(cerr, n);
+	printError(cerr, n);
 
 	return 0;
 }
