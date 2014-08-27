@@ -33,8 +33,6 @@
 
 #include <stdlib.h>
 
-#include <stdio.h> //TODO
-
 int elektraErrorOpen(Plugin *handle ELEKTRA_UNUSED, Key *parentKey)
 {
 	KeySet *conf = elektraPluginGetConfig(handle);
@@ -55,12 +53,7 @@ int elektraErrorOpen(Plugin *handle ELEKTRA_UNUSED, Key *parentKey)
 	{
 		if (parentKey)
 		{
-			fprintf (stderr, "Trigger error: %d", atoi(keyString(error)));
 			elektraTriggerError (atoi(keyString(error)), parentKey, "from error plugin in kdbOpen");
-		}
-		else
-		{
-			fprintf (stderr, "no parent key: %d", atoi(keyString(error)));
 		}
 		return -1;
 	}
