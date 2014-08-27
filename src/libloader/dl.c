@@ -69,7 +69,7 @@ elektraPluginFactory elektraModulesLoad (KeySet *modules, const char *name, Key 
 
 	if (module.handle == NULL)
 	{
-		ELEKTRA_SET_ERROR(1, errorKey, dlerror());
+		ELEKTRA_ADD_WARNINGF(1, errorKey, "of module: %s, because: %s", moduleName, dlerror());
 		keyDel (moduleKey);
 		return 0;
 	}
@@ -77,7 +77,7 @@ elektraPluginFactory elektraModulesLoad (KeySet *modules, const char *name, Key 
 	module.symbol.v = dlsym(module.handle, "elektraPluginSymbol");
 	if (module.symbol.v == NULL)
 	{
-		ELEKTRA_SET_ERROR(2, errorKey, dlerror());
+		ELEKTRA_ADD_WARNINGF(2, errorKey, "of module: %s, because: %s", moduleName,  dlerror());
 		dlclose(module.handle);
 		keyDel (moduleKey);
 		return 0;
@@ -98,7 +98,7 @@ int elektraModulesClose (KeySet *modules, Key *errorKey)
 
 	if (!root)
 	{
-		ELEKTRA_SET_ERROR(3, errorKey, "root key not found");
+		ELEKTRA_ADD_WARNING(3, errorKey, "no key system/elektra/modules");
 		return -1;
 	}
 
@@ -114,7 +114,7 @@ int elektraModulesClose (KeySet *modules, Key *errorKey)
 				ksAppendKey (newModules, root);
 			}
 			ret = -1;
-			ELEKTRA_SET_ERROR(4, errorKey, dlerror());
+			ELEKTRA_ADD_WARNING(4, errorKey, dlerror());
 
 			ksAppendKey(newModules, cur);
 		} else {
