@@ -1,7 +1,8 @@
 #include "deletekeycommand.hpp"
 
-DeleteKeyCommand::DeleteKeyCommand(TreeViewModel *model, ConfigNode *node, int index)
-    : m_model(model)
+DeleteKeyCommand::DeleteKeyCommand(TreeViewModel *model, ConfigNode *node, int index, QUndoCommand *parent)
+    : QUndoCommand(parent)
+    , m_model(model)
     , m_node(*node)
     , m_index(index)
 {

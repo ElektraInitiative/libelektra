@@ -8,7 +8,7 @@ class DeleteKeyCommand : public QUndoCommand
 {
 
 public:
-    explicit DeleteKeyCommand(TreeViewModel *model, ConfigNode *node, int index);
+    explicit DeleteKeyCommand(TreeViewModel *model, ConfigNode *node, int index, QUndoCommand *parent = 0);
 
     virtual void undo();
     virtual void redo();

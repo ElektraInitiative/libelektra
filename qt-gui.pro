@@ -11,7 +11,9 @@ SOURCES += \
     src/undomanager.cpp \
     src/newkeycommand.cpp \
     src/deletekeycommand.cpp \
-    src/editkeycommand.cpp
+    src/editkeycommand.cpp \
+    src/copykeycommand.cpp \
+    src/cutkeycommand.cpp
 
 HEADERS += \
     src/treeviewmodel.hpp \
@@ -24,7 +26,9 @@ HEADERS += \
     src/undomanager.hpp \
     src/newkeycommand.hpp \
     src/editkeycommand.hpp \
-    src/deletekeycommand.hpp
+    src/deletekeycommand.hpp \
+    src/cutkeycommand.hpp \
+    src/copykeycommand.hpp
 
 CONFIG += debug
 
