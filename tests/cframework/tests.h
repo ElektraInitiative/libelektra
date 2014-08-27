@@ -116,10 +116,11 @@ int init(int argc, char** argv);
 	{ \
 		char errorMsg [BUFFER_LENGTH]; \
 		 \
-		strcpy(errorMsg, "string "); \
+		strcpy(errorMsg, "string \""); \
 		strcat(errorMsg, s1); \
-		strcat(errorMsg, " is not equal "); \
+		strcat(errorMsg, "\" is not equal \""); \
 		strcat(errorMsg, s2); \
+		strcat(errorMsg, "\""); \
 		 \
 		yield_error(errorMsg); \
 	} \
