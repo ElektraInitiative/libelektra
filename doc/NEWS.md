@@ -5,6 +5,32 @@
 
 This text is preliminary, the release did not happen!
 
+## New features
+
+- ELEKTRA_ADD_WARNINGF and ELEKTRA_SET_ERRORF
+
+error plugin
+
+## API Proposals
+
+keySetStringF
+
+## Tools
+
+kdb check improved
+several small fixes in tools
+
+## Issues
+
+fix #12
+
+## Docu
+
+- added Tutorials
+- greatly improved description about plugins
+
+## Unsorted things
+
 - Now Python 2+3 work in parallel
 - python2 interpreter is found correctly (also on Arch)
 - New Test strategy [/doc/TESTING.md]
