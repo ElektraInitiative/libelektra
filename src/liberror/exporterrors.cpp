@@ -52,7 +52,7 @@ ostream& operator << (ostream& os, parse_t& p)
 	   << "#define ELEKTRA_ADD_WARNINGF_HELPER(number, key, text, file, line, ...) ELEKTRA_ADD_WARNINGF_HELPER_HELPER\\" << endl
 	   << "	(number, key, text, file, line, ##__VA_ARGS__)" << endl
 	   << "" << endl
-	   << "#define ELEKTRA_ADD_WARNINGF_HELPER_HELPER(number, key, text, file, line, ...) elektraAddWarning ## number\\" << endl
+	   << "#define ELEKTRA_ADD_WARNINGF_HELPER_HELPER(number, key, text, file, line, ...) elektraAddWarningf ## number\\" << endl
 	   << "	(key, text, file, #line, ##__VA_ARGS__)" << endl
 	   << endl
 	   << endl;
@@ -66,9 +66,19 @@ ostream& operator << (ostream& os, parse_t& p)
 
 		if (p[i]["severity"] == "warning")
 		{
+		for (int f=0; f<2; ++f)
+		{
+		if (f == 0)
+		{
+		os << "static inline void elektraAddWarningf" << i << "(Key *warningKey, const char *reason," << endl
+		   << "	const char *file, const char *line, ...)  __attribute__ ((format (printf, 2, 5)));" << endl;
+		os << "static inline void elektraAddWarningf" << i << "(Key *warningKey, const char *reason," << endl
+		   << "	const char *file, const char *line, ...)" << endl;
+		} else {
 		os << "static inline void elektraAddWarning" << i << "(Key *warningKey, const char *reason," << endl
-		   << "	const char *file, const char *line, ...)" << endl
-		   << "{" << endl
+		   << "	const char *file, const char *line)" << endl;
+		}
+		os << "{" << endl
 		   << "	if (!warningKey) return;" << endl
 		   << "" << endl
 		   << "	char buffer[] = \"warnings/#00\\0description\";" << endl
@@ -100,19 +110,37 @@ ostream& operator << (ostream& os, parse_t& p)
 		   << "	keySetMeta(warningKey, buffer, file);" << endl
 		   << "	buffer[12] = '\\0'; strcat(buffer, \"/line\");" << endl
 		   << "	keySetMeta(warningKey, buffer, line);" << endl
-		   << "	buffer[12] = '\\0'; strcat(buffer, \"/reason\");" << endl
-		   << "	va_list arg;" << endl
+		   << "	buffer[12] = '\\0'; strcat(buffer, \"/reason\");" << endl;
+		if (f==0)
+		{
+		os << "	va_list arg;" << endl
 		   << "	va_start(arg, line);" << endl
 		   << "	char * r = elektraFormat(reason, arg);" << endl
 		   << "	keySetMeta(warningKey, buffer, r);" << endl
 		   << "	elektraFree(r);" << endl
-		   << "	va_end(arg);" << endl
-		   << "}" << endl
-		   << endl;
+		   << "	va_end(arg);" << endl;
 		} else {
+		os << "	keySetMeta(warningKey, buffer, reason);" << endl;
+		}
+		os << "}" << endl
+		   << endl;
+		}
+		} else {
+		for (int f=0; f<2; ++f)
+		{
+		if (f == 0)
+		{
+		os << "static inline void elektraSetErrorf" << i << "(Key *errorKey, const char *reason," << endl
+		   << "	const char *file, const char *line, ...)  __attribute__ ((format (printf, 2, 5)));" << endl
+		   << "static inline void elektraSetErrorf" << i << "(Key *errorKey, const char *reason," << endl
+		   << "	const char *file, const char *line, ...)" << endl;
+		}
+		else
+		{
 		os << "static inline void elektraSetError" << i << "(Key *errorKey, const char *reason," << endl
-		   << "	const char *file, const char *line, ...)" << endl
-		   << "{" << endl
+		   << "	const char *file, const char *line)" << endl;
+		}
+		os << "{" << endl
 		   << "	if (!errorKey) return;" << endl
 		   << "	keySetMeta(errorKey, \"error\", \"" << "number description ingroup module file line function reason" << "\");" << endl
 		   << "	keySetMeta(errorKey, \"error/number\", \"" << i << "\");" << endl
@@ -120,15 +148,21 @@ ostream& operator << (ostream& os, parse_t& p)
 		   << "	keySetMeta(errorKey, \"error/ingroup\", \"" << p[i]["ingroup"] << "\");" << endl
 		   << "	keySetMeta(errorKey, \"error/module\", \"" << p[i]["module"] << "\");" << endl
 		   << "	keySetMeta(errorKey, \"error/file\", " << "file" << ");" << endl
-		   << "	keySetMeta(errorKey, \"error/line\", " << "line" << ");" << endl
-		   << "	va_list arg;" << endl
+		   << "	keySetMeta(errorKey, \"error/line\", " << "line" << ");" << endl;
+		if (f== 0)
+		{
+		os << "	va_list arg;" << endl
 		   << "	va_start(arg, line);" << endl
 		   << "	char * r = elektraFormat(reason, arg);" << endl
 		   << "	keySetMeta(errorKey, \"error/reason\", " << "r" << ");" << endl
 		   << "	elektraFree(r);" << endl
-		   << "	va_end(arg);" << endl
-		   << "}" << endl
+		   << "	va_end(arg);" << endl;
+		} else {
+		os << "	keySetMeta(errorKey, \"error/reason\", " << "reason" << ");" << endl;
+		}
+		os << "}" << endl
 		   << endl;
+		}
 		}
 	}
 
