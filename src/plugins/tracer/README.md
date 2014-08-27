@@ -1,4 +1,4 @@
-- infos = Information about the timeofday plugin is in keys below
+- infos = Information about the tracer plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
