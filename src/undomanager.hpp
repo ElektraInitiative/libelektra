@@ -39,7 +39,7 @@ public:
 
     Q_INVOKABLE void        createDeleteKeyCommand(TreeViewModel *model, ConfigNode *node, int index);
     Q_INVOKABLE void        createNewKeyCommand(TreeViewModel *model, const QString &name, const QString &value, const QVariantMap &metaData);
-    Q_INVOKABLE void        createCopyKeyCommand();
+    Q_INVOKABLE void        createCopyKeyCommand(ConfigNode *target);
     Q_INVOKABLE void        createCutKeyCommand();
 
 Q_SIGNALS:

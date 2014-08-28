@@ -374,7 +374,7 @@ ApplicationWindow {
 
                 if(undoManager.clipboardType === "copy"){
                     console.log("type is copy")
-                    undoManager.createCopyKeyCommand()
+                    undoManager.createCopyKeyCommand(treeView.currentNode.node)
                 }
                 else if (undoManager.clipboardType === "cut"){
                     console.log("type is cut")

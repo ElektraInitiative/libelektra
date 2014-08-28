@@ -2,21 +2,22 @@
 #define COPYKEYCOMMAND_H
 
 #include <QUndoCommand>
-#include <QApplication>
-#include <QClipboard>
+#include "confignode.hpp"
+
 #include <QDebug>
 
 class CopyKeyCommand : public QUndoCommand
 {
 public:
-    explicit CopyKeyCommand(QUndoCommand *parent = 0);
+    explicit CopyKeyCommand(ConfigNode *source, ConfigNode *target, QUndoCommand *parent = 0);
 
     virtual void undo();
     virtual void redo();
 
 private:
 
-    QClipboard *m_clipboard;
+    ConfigNode m_source;
+    ConfigNode *m_target;
 };
 
 #endif // COPYKEYCOMMAND_H

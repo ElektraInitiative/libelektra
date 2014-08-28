@@ -24,13 +24,13 @@ ConfigNode::ConfigNode(const QString& name, const QString& path, const Key &key)
 
 ConfigNode::ConfigNode(const ConfigNode& other)
     : QObject()
+    , m_name(other.m_name)
+    , m_path(other.m_path)
+    , m_value(other.m_value)
+    , m_key(other.m_key.dup())
     , m_children(new TreeViewModel())
     , m_metaData(new TreeViewModel())
 {
-    m_name = other.m_name;
-    m_path = other.m_path;
-    m_value = other.m_value;
-    m_key = other.m_key.dup();
 
     foreach(ConfigNode *node, other.getChildren()->model())
     {
@@ -212,6 +212,11 @@ void ConfigNode::populateMetaModel()
 void ConfigNode::setKey(Key key)
 {
     m_key = key;
+}
+
+void ConfigNode::setKeyName(const QString &name)
+{
+    m_key.setName(name.toStdString());
 }
 
 void ConfigNode::appendChild(ConfigNode* node)

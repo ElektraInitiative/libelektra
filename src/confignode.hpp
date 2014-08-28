@@ -116,6 +116,7 @@ public:
     void                    accept(Visitor &visitor);
     kdb::Key                getKey() const;
     void                    setKey(kdb::Key key);
+    void                    setKeyName(const QString &name);
     void                    invalidateKey();
     void                    deletePath(QStringList &path);
     int                     getIndexByName(const QString &name);

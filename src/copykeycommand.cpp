@@ -1,22 +1,24 @@
 #include "copykeycommand.hpp"
 #include "treeviewmodel.hpp"
 
-CopyKeyCommand::CopyKeyCommand(QUndoCommand *parent)
+CopyKeyCommand::CopyKeyCommand(ConfigNode *source, ConfigNode *target, QUndoCommand *parent)
     : QUndoCommand(parent)
+    , m_source(*source)
+    , m_target(target)
 {
     setText("copy");
-    m_clipboard = QApplication::clipboard();
-    ConfigNode *node = qvariant_cast<ConfigNode*>(m_clipboard->property("node"));
-    int index = m_clipboard->property("index").toInt();
-    qDebug() << "clipboard node name " << node->getName() << " has index " << index;
 }
 
 void CopyKeyCommand::undo()
 {
-
+    m_target->getChildren()->removeRow(m_target->getIndexByName(m_source.getName()));
 }
 
 void CopyKeyCommand::redo()
 {
+    QString newPath = m_target->getPath() + "/" + m_source.getName();
+    m_source.setPath(newPath);
+    m_source.setKeyName(newPath);
 
+    m_target->appendChild(new ConfigNode(m_source));
 }
