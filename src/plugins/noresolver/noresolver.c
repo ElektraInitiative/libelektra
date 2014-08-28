@@ -4,8 +4,15 @@
 
 #include "noresolver.h"
 
-int elektraNoresolverCheckFile(const char * f ELEKTRA_UNUSED)
+/**
+ * @retval 1 on success (Relative path)
+ * @retval 0 on success (Absolute path)
+ * @retval never -1 (success guaranteed)
+ */
+int elektraNoresolverCheckFile(const char * filename)
 {
+	if (filename[0] == '/') return 0;
+
 	return 1;
 }
 

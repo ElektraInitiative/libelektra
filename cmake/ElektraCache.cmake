@@ -49,7 +49,6 @@ set (PLUGINS_LIST_NODEP
 	ni
 	null
 	struct
-	success
 	tracer
 	type
 	validation
