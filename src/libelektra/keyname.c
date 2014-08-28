@@ -801,7 +801,7 @@ ssize_t keyAddBaseName(Key *key, const char *baseName)
 {
 	if (!key) return -1;
 	if (!baseName) return key->keySize;
-	// if (test_bit(key->flags,  KEY_FLAG_RO_NAME)) return -1;
+	if (test_bit(key->flags,  KEY_FLAG_RO_NAME)) return -1;
 	if (!key->key) return -1;
 
 	size_t size=0;
@@ -833,13 +833,14 @@ ssize_t keyAddBaseName(Key *key, const char *baseName)
  * @retval -1 if key is a null pointer or did not have a valid name before
  * @retval -1 if newName is a null pointer or not a valid name (contains \\ in beginning)
  * @retval -1 on allocation errors
+ * @retval -1 if key was inserted to a keyset before
  * @retval size of the new key
  */
 ssize_t keyAddName(Key *key, const char *newName)
 {
 	if (!key) return -1;
 	if (!newName) return key->keySize;
-	// if (test_bit(key->flags,  KEY_FLAG_RO_NAME)) return -1;
+	if (test_bit(key->flags,  KEY_FLAG_RO_NAME)) return -1;
 	// if (!elektraValidateKeyNamePart(newName)) return -1;
 	if (!key->key) return -1;
 
@@ -932,6 +933,7 @@ ssize_t keySetBaseName(Key *key, const char *baseName)
 	if (!key) return -1;
 
 	if (!key->key) return -1;
+	if (test_bit(key->flags,  KEY_FLAG_RO_NAME)) return -1;
 
 	if (!baseName)
 	{
