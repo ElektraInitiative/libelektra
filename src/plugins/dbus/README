@@ -1,2 +1,0 @@
-to log notification events:
-dbus-monitor type='signal',interface='org.libelektra',path='/org/libelektra/configuration'

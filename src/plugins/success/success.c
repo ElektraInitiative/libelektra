@@ -72,20 +72,7 @@ int elektraSuccessGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *pare
 			keyNew ("system/elektra/modules/success/exports/checkfile",
 				KEY_FUNC, elektraSuccessCheckFile,
 				KEY_END),
-			keyNew ("system/elektra/modules/success/infos",
-				KEY_VALUE, "All information you want to know", KEY_END),
-			keyNew ("system/elektra/modules/success/infos/author",
-				KEY_VALUE, "Markus Raab <elektra@markus-raab.org>", KEY_END),
-			keyNew ("system/elektra/modules/success/infos/licence",
-				KEY_VALUE, "BSD", KEY_END),
-			keyNew ("system/elektra/modules/success/infos/description",
-				KEY_VALUE, "Dumps complete Elektra Semantics", KEY_END),
-			keyNew ("system/elektra/modules/success/infos/provides",
-				KEY_VALUE, "resolver", KEY_END),
-			keyNew ("system/elektra/modules/success/infos/placements",
-				KEY_VALUE, "rollback getresolver setresolver", KEY_END),
-			keyNew ("system/elektra/modules/success/infos/needs",
-				KEY_VALUE, "", KEY_END),
+#include "readme_success.c"
 			keyNew ("system/elektra/modules/success/infos/version",
 				KEY_VALUE, PLUGINVERSION, KEY_END),
 			KS_END);
@@ -110,7 +97,7 @@ int elektraSuccessError(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_
 
 /**
  * @return 1 on success (Relative path)
- * @returns 0 on success (Absolut path)
+ * @returns 0 on success (Absolute path)
  * @return never -1 (success guaranteed)
  */
 int elektraSuccessCheckFile (const char* filename)

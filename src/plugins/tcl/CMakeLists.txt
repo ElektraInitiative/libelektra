@@ -2,6 +2,10 @@ find_package(Boost)
 if (Boost_FOUND)
 	include (LibAddMacros)
 
+	generate_readme (tcl)
+	add_includes (elektra-full ${CMAKE_CURRENT_BINARY_DIR})
+	include_directories (${CMAKE_CURRENT_BINARY_DIR})
+
 	set (SOURCES tcl.hpp tcl.cpp action.hpp action.cpp printer.hpp printer.cpp)
 	add_sources (elektra-full ${SOURCES})
 	add_headers (SOURCES)
