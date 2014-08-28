@@ -2287,6 +2287,10 @@ static void test_keyBaseName()
 	Key *k = keyNew (KEY_END);
 
 	keySetName (k, "system/valid");
+	succeed_if (keySetBaseName (k, 0) != -1, "successfully remove basename");
+	succeed_if_same_string(keyName(k), "system");
+
+	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, "..") == -1, "outbreak should not be allowed, use empty string two times");
 	output_key(k);
 	succeed_if_same_string(keyName(k), "system/valid");

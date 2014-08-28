@@ -344,11 +344,11 @@ static void elektraFinalizeName(Key *key)
  *
  * On invalid names, NULL or "" the name will be "" afterwards.
  *
- * @warning You shall not change a key name once it belongs to a keyset.
  *
  * @retval size in bytes of this new key name including ending NULL
  * @retval 0 if newName is an empty string or a NULL pointer (name will be empty afterwards)
  * @retval -1 if newName is invalid (name will be empty afterwards)
+ * @retval -1 if key was inserted to a keyset before
  * @param key the key object to work with
  * @param newName the new key name
  * @see keyNew(), keySetOwner()
@@ -791,6 +791,7 @@ ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize)
  * @return the size in bytes of the new key name including the ending NULL
  * @return -1 if the key had no name
  * @return -1 on NULL pointers
+ * @retval -1 if key was inserted to a keyset before
  * @see keySetBaseName()
  * @see keySetName() to set a new name.
  * @ingroup keyname
@@ -918,6 +919,7 @@ ssize_t keyAddName(Key *key, const char *newName)
  * @param baseName the string used to overwrite the basename of the key
  * @return the size in bytes of the new key name
  * @return -1 on NULL pointers
+ * @retval -1 if key was inserted to a keyset before
  * @see keyAddBaseName()
  * @see keySetName() to set a new name
  * @ingroup keyname
@@ -928,12 +930,20 @@ ssize_t keySetBaseName(Key *key, const char *baseName)
 	const char *p=0;
 
 	if (!key) return -1;
-	// if (test_bit(key->flags,  KEY_FLAG_RO_NAME)) return -1;
-
-	if (!elektraValidateKeyNamePart(baseName)) return -1;
 
 	if (!key->key) return -1;
 
+	if (!baseName)
+	{
+		p=strrchr (key->key, '/');
+		if (p == 0) return -1;
+
+		key->keySize -= (key->key+key->keySize-1)-p;
+		elektraFinalizeName(key);
+		return key->keySize;
+	}
+
+	if (!elektraValidateKeyNamePart(baseName)) return -1;
 
 	/*Throw away basename of key->key*/
 	p=strrchr (key->key, '/');
@@ -973,6 +983,7 @@ ssize_t keySetBaseName(Key *key, const char *baseName)
 			!strcmp (baseName, ".") ||
 			!strcmp (baseName, ""))
 	{
+		elektraFinalizeName(key);
 		return key->keySize;
 	}
 
