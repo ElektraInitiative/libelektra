@@ -189,15 +189,15 @@ static void test_keyHelpers()
 	*/
 
 	k2 = keyNew (KEY_END);
-	succeed_if (keyAddBaseName (k2, "no") == -1, "Could not add basename");
+	succeed_if (keyAddBaseName (k2, "no") == -1, "Could add basename on empty name");
 	succeed_if (strcmp (keyName(k2), "") == 0, "added basename not correct");
 	succeed_if (keyGetNameSize(k2) == 1, "Name size not correct");
 	keyDel (k2);
 
 	k2 = keyNew (KEY_END);
-	succeed_if (keyAddBaseName (k2, "user") == 5, "Could not add basename");
-	succeed_if (strcmp (keyName(k2), "user") == 0, "added basename not correct");
-	succeed_if (keyGetNameSize(k2) == 5, "Name size not correct");
+	succeed_if (keyAddBaseName (k2, "user") == -1, "Could add basename on empty name");
+	succeed_if (strcmp (keyName(k2), "") == 0, "added basename not correct");
+	succeed_if (keyGetNameSize(k2) == 1, "Name size not correct");
 	keyDel (k2);
 
 	k2 = keyNew ("user/dir1/dir2/mykey/mykey/a", KEY_END);
@@ -301,8 +301,6 @@ static void test_keyPlugin()
 	succeed_if (xlug == (Plugin *) 1222243, "should point to that too");
 
 	keyDel (k);
-
-
 }
 
 int main(int argc, char** argv)

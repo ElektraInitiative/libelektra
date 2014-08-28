@@ -149,7 +149,9 @@ int keyIsString(const Key *key);
 const char *keyName(const Key *key);
 ssize_t keyGetNameSize(const Key *key);
 ssize_t keyGetName(const Key *key, char *returnedName, size_t maxSize);
+
 ssize_t keySetName(Key *key, const char *newname);
+ssize_t keyAddName(Key *key, const char *addName);
 
 ssize_t keyGetFullNameSize(const Key *key);
 ssize_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize);
@@ -157,8 +159,9 @@ ssize_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize);
 const char *keyBaseName(const Key *key);
 ssize_t keyGetBaseNameSize(const Key *key);
 ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize);
-ssize_t keyAddBaseName(Key *key,const char *baseName);
+
 ssize_t keySetBaseName(Key *key,const char *baseName);
+ssize_t keyAddBaseName(Key *key,const char *baseName);
 
 /* Value Manipulation Methods */
 const void *keyValue(const Key *key);

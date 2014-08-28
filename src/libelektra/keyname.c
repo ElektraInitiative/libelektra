@@ -297,6 +297,28 @@ ssize_t keyGetName(const Key *key, char *returnedName, size_t maxSize)
 	return key->keySize;
 }
 
+/**
+ * @internal
+ *
+ * @brief Call this function after every key changing operation
+ *
+ * @pre key->key and key->keySize are set accordingly and the size of
+ * allocation is twice as what you actually needed.
+ *
+ * @post we get a unsynced key with a correctly terminated
+ * key name suitable for ordering and the name getter methods
+ *
+ * It will duplicate the key length and put a second name afterwards
+ * that is used for sorting keys.
+ *
+ * @param key
+ */
+static void elektraFinalizeName(Key *key)
+{
+	key->key[key->keySize - 1] = 0; /* finalize string */
+
+	key->flags |= KEY_FLAG_SYNC;
+}
 
 
 
@@ -340,7 +362,6 @@ ssize_t keySetName(Key *key, const char *newName)
 	size_t length;
 	size_t rootLength, userLength, systemLength, ownerLength;
 	char *p=0;
-	size_t size=0;
 
 	if (!key) return -1;
 	if (test_bit(key->flags,  KEY_FLAG_RO_NAME)) return -1;
@@ -407,7 +428,7 @@ ssize_t keySetName(Key *key, const char *newName)
 			key->keySize+=userLength;
 		}
 
-		rootLength  = userLength;
+		rootLength  = userLength+1;
 	} else if (keyNameIsSystem(newName)) {
 		/* handle "system*" */
 		if (length > systemLength && *(newName+systemLength)!=KDB_PATH_SEPARATOR)
@@ -421,7 +442,7 @@ ssize_t keySetName(Key *key, const char *newName)
 
 		keySetOwner (key, NULL);
 
-		rootLength  = systemLength;
+		rootLength  = systemLength+1;
 	} else {
 		/* Given newName is neither "system" or "user" */
 		/*errno=KDB_ERR_INVALIDKEY;*/
@@ -439,7 +460,7 @@ ssize_t keySetName(Key *key, const char *newName)
 	   - key->keySize has number of bytes that will be allocated for key name
 	     with already removed owner.
 	   - key->owner is already set
-	   - rootLength is sizeof("user")-1 or sizeof("system")-1
+	   - rootLength is sizeof("user") or sizeof("system")
 	*/
 
 	/* Allocate memory for key->key */
@@ -453,49 +474,17 @@ ssize_t keySetName(Key *key, const char *newName)
 
 	/* copy the root of newName to final destination */
 	strncpy(key->key,newName,rootLength);
-	
-	/* skip the root */
-	p=(char *)newName;
-	size=0;
-	p=keyNameGetOneLevel(p+size,&size);
-	
-	/* iterate over each single folder name removing repeated '/' and escaping when needed */
+
+	/* finish root name for keyAddName() */
 	key->keySize=rootLength;
-	while (*(p=keyNameGetOneLevel(p+size,&size))) {
-		/* printf ("level: %s, size: %d\n", p, size); */
-		if (size == 1 && strncmp (p, ".",1) == 0)
-		{
-			/* printf ("ignore .\n"); */
-			continue; /* just ignore current directory */
-		}
-		else if (size == 2 && strncmp (p, "..",2) == 0) /* give away directory */
-		{
-			key->key[key->keySize] = 0; /* initialize first (valgrind) */
-			while (key->keySize > rootLength && key->key[key->keySize] != KDB_PATH_SEPARATOR) key->keySize--;
-			/* printf ("do .. (key->keySize: %d), key->key: %s, rootLength: %d, key->keySize: %d\n",
-					key->keySize, key->key, rootLength, key->keySize); */
-			continue;
-		}
-		/* Add a '/' to the end of key name */
-		key->key[key->keySize]=KDB_PATH_SEPARATOR;
-		key->keySize++;
-		
-		/* carefully append basenames */
-		memcpy(key->key+key->keySize,p,size);
-		key->keySize+=size;
-	}
+	key->key[rootLength] = '\0';
 
-	/* remove unescaped trailing slashes */
-	while (key->key[key->keySize-1] == KDB_PATH_SEPARATOR && key->key[key->keySize-2] != '\\') key->keySize--;
-	key->key[key->keySize]=0; /* finalize string */
+	/* skip namespace we already processed */
+	p=keyNameGetOneLevel(newName,&length);
 
-	key->flags |= KEY_FLAG_SYNC;
-
-	key->keySize ++; /*for \\0 ending*/
-	return key->keySize;
+	return keyAddName(key, p+length);
 
 error_mem:
-	/*errno=KDB_ERR_NOMEM;*/
 	return -1;
 }
 
@@ -809,35 +798,94 @@ ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize)
  */
 ssize_t keyAddBaseName(Key *key, const char *baseName)
 {
-	size_t size=0;
-
 	if (!key) return -1;
-	if (test_bit(key->flags,  KEY_FLAG_RO_NAME)) return -1;
-
 	if (!baseName) return key->keySize;
+	// if (test_bit(key->flags,  KEY_FLAG_RO_NAME)) return -1;
+	if (!key->key) return -1;
+
+	size_t size=0;
 	char *escaped = elektraMalloc (strlen (baseName) * 2 + 2);
 	elektraKeyNameEscape (baseName, escaped);
-	if (key->key)
-	{
-		size = strlen (escaped);
-		key->keySize += size + 1;
-		key->key = realloc (key->key, key->keySize);
+	size = strlen (escaped);
+	key->keySize += size + 1;
+	key->key = realloc (key->key, key->keySize);
 
-		key->key[key->keySize - size - 2] = KDB_PATH_SEPARATOR;
-		memcpy (key->key + key->keySize - size - 1, escaped, size);
+	key->key[key->keySize - size - 2] = KDB_PATH_SEPARATOR;
+	memcpy (key->key + key->keySize - size - 1, escaped, size);
 
-		key->key[key->keySize - 1] = 0; /* finalize string */
-		elektraFree (escaped);
-		return key->keySize;
-	}
-	else
-	{
-		int result = keySetName (key, escaped);
-		elektraFree (escaped);
-		return result;
-	}
+	elektraFree (escaped);
+
+	elektraFinalizeName(key);
+
+	return key->keySize;
 }
 
+/**
+ * @brief Add a already escaped name to the keyname.
+ *
+ * The same way as in keySetName() this method finds the canonical pathname.
+ * Unlike, keySetName() it adds it to an already existing name.
+ *
+ * @param key the key where a name should be added
+ * @param newName the new name to append
+ *
+ * @retval -1 if key is a null pointer or did not have a valid name before
+ * @retval -1 if newName is a null pointer or not a valid name (contains \\ in beginning)
+ * @retval -1 on allocation errors
+ * @retval size of the new key
+ */
+ssize_t keyAddName(Key *key, const char *newName)
+{
+	if (!key) return -1;
+	if (!newName) return key->keySize;
+	// if (test_bit(key->flags,  KEY_FLAG_RO_NAME)) return -1;
+	// if (!elektraValidateKeyNamePart(newName)) return -1;
+	if (!key->key) return -1;
+
+	size_t const newSize = key->keySize + elektraStrLen(newName);
+	size_t const rootLength = key->keySize;
+	elektraRealloc ((void**)&key->key, newSize*2);
+	if (!key->key) return -1;
+
+	size_t size=0;
+	const char * p = newName;
+
+	-- key->keySize; // fix keySize for loop below
+
+	/* iterate over each single folder name removing repeated '/', .  and .. */
+	while (*(p=keyNameGetOneLevel(p+size,&size))) {
+		// printf ("level: %s, size: %d\n", p, size);
+		if (size == 1 && strncmp (p, ".",1) == 0)
+		{
+			/* printf ("ignore .\n"); */
+			continue; /* just ignore current directory */
+		}
+		else if (size == 2 && strncmp (p, "..",2) == 0) /* give away directory */
+		{
+			key->key[key->keySize] = 0; /* initialize first (valgrind) */
+			while (key->keySize >= rootLength && key->key[key->keySize] != KDB_PATH_SEPARATOR) key->keySize--;
+			/* printf ("do .. (key->keySize: %d), key->key: %s, rootLength: %d, key->keySize: %d\n",
+					key->keySize, key->key, rootLength, key->keySize); */
+			continue;
+		}
+		/* Add a '/' to the end of key name */
+		key->key[key->keySize]=KDB_PATH_SEPARATOR;
+		key->keySize++;
+		
+		/* carefully append basenames */
+		memcpy(key->key+key->keySize,p,size);
+		key->keySize+=size;
+	}
+
+	/* remove unescaped trailing slashes */
+	while (key->key[key->keySize-1] == KDB_PATH_SEPARATOR && key->key[key->keySize-2] != '\\') key->keySize--;
+	key->keySize ++; /*for \\0 ending*/
+
+
+	elektraFinalizeName(key);
+
+	return key->keySize;
+}
 
 
 
@@ -880,67 +928,65 @@ ssize_t keySetBaseName(Key *key, const char *baseName)
 	const char *p=0;
 
 	if (!key) return -1;
-	if (test_bit(key->flags,  KEY_FLAG_RO_NAME)) return -1;
+	// if (test_bit(key->flags,  KEY_FLAG_RO_NAME)) return -1;
 
 	if (!elektraValidateKeyNamePart(baseName)) return -1;
 
-	if (key->key) {
+	if (!key->key) return -1;
 
 
-		/*Throw away basename of key->key*/
+	/*Throw away basename of key->key*/
+	p=strrchr (key->key, '/');
+	if (p == 0)
+	{
+		/* we would remove even the namespace */
+		if (!strcmp (baseName, "")) return -1;
+
+		if (!strcmp (baseName, ".")) return -1;
+
+		return keySetName(key, baseName);
+	}
+
+	/* check if the found / is the only one */
+	if (strchr (key->key, '/') == p)
+	{
+		/* we would delete the whole keyname */
+		if (!strcmp (baseName, "..")) return -1;
+	}
+
+	key->keySize -= (key->key+key->keySize-1)-p;
+	key->key[key->keySize-1]=0; /* finalize string */
+
+	/* remove yet another part */
+	if (!strcmp (baseName, ".."))
+	{
 		p=strrchr (key->key, '/');
-		if (p == 0)
-		{
-			/* we would remove even the namespace */
-			if (!strcmp (baseName, "")) return -1;
-
-			if (!strcmp (baseName, ".")) return -1;
-
-			return keySetName(key, baseName);
-		}
-
-		/* check if the found / is the only one */
-		if (strchr (key->key, '/') == p)
-		{
-			/* we would delete the whole keyname */
-			if (!strcmp (baseName, "..")) return -1;
-		}
-
 		key->keySize -= (key->key+key->keySize-1)-p;
 		key->key[key->keySize-1]=0; /* finalize string */
+	}
 
-		/* remove yet another part */
-		if (!strcmp (baseName, ".."))
-		{
-			p=strrchr (key->key, '/');
-			key->keySize -= (key->key+key->keySize-1)-p;
-			key->key[key->keySize-1]=0; /* finalize string */
-		}
+	/* free the now unused space */
+	key->key=realloc(key->key,key->keySize);
 
-		/* free the now unused space */
-		key->key=realloc(key->key,key->keySize);
-
-		/* these cases just delete keyname parts so we are done */
-		if (!strcmp (baseName, "..") ||
-				!strcmp (baseName, ".") ||
-				!strcmp (baseName, ""))
-		{
-			return key->keySize;
-		}
-
-		/* Now add new baseName */
-		size = strlen (baseName);
-		key->keySize += size + 1;
-		key->key = realloc (key->key, key->keySize);
-
-		key->key[key->keySize - size - 2] = KDB_PATH_SEPARATOR;
-		memcpy (key->key + key->keySize - size - 1, baseName, size);
-		/* use keySetRawName() internally and not
-		 * key->key*/
-
-		key->key[key->keySize-1]=0; /* finalize string */
+	/* these cases just delete keyname parts so we are done */
+	if (!strcmp (baseName, "..") ||
+			!strcmp (baseName, ".") ||
+			!strcmp (baseName, ""))
+	{
 		return key->keySize;
-	} else return keySetName(key,baseName); /*that cannot be a good idea*/
+	}
+
+	/* Now add new baseName */
+	size = strlen (baseName);
+	key->keySize += size + 1;
+	key->key = realloc (key->key, key->keySize);
+
+	key->key[key->keySize - size - 2] = KDB_PATH_SEPARATOR;
+	memcpy (key->key + key->keySize - size - 1, baseName, size);
+
+	elektraFinalizeName(key);
+
+	return key->keySize;
 }
 
 

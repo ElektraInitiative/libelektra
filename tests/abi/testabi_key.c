@@ -824,7 +824,8 @@ static void test_keyName()
 	succeed_if (strcmp (keyName(key), "user") == 0, "Name Problem: Can't go higher then user in hierarchy");
 
 	succeed_if (keySetName(key, "user///sw/../sw//././MyApp")==sizeof("user/sw/MyApp"), "could not set keySet example");
-	succeed_if (strcmp (keyName(key), "user/sw/MyApp") == 0, "Example of keySet does not work");
+	// printf("%s %d\n", keyName(key), keyGetNameSize(key));
+	succeed_if_same_string (keyName(key), "user/sw/MyApp");
 	succeed_if (keyGetNameSize(key) == sizeof("user/sw/MyApp"), "incorrect length for keySet example");
 
 	printf("Test Mixed Dots and Slashes in Key Name\n");
@@ -2536,6 +2537,25 @@ static void test_keyLock()
 	keyDel (key2);
 }
 
+static void test_keyAddName()
+{
+	Key *k = keyNew("user", KEY_END);
+	keyAddName(k, "something");
+	succeed_if_same_string(keyName(k), "user/something");
+	keyAddName(k, "with/slash");
+	succeed_if_same_string(keyName(k), "user/something/with/slash");
+	keyDel(k);
+
+	k = keyNew("system/elektra/mountpoints/_t_error/config", KEY_END);
+	keyAddName(k, "on_open/error");
+	succeed_if_same_string(keyName(k), "system/elektra/mountpoints/_t_error/config/on_open/error");
+	keyDel(k);
+
+	k = keyNew("user", KEY_END);
+	succeed_if (keyAddName(k, "///sw/../sw//././MyApp")==sizeof("user/sw/MyApp"), "could not set keySet example");
+	succeed_if_same_string(keyName(k), "user/sw/MyApp");
+	keyDel(k);
+}
 
 int main(int argc, char** argv)
 {
@@ -2567,8 +2587,8 @@ int main(int argc, char** argv)
 	test_keyNameSpecial();
 	test_keyClear();
 	test_keyLock();
-
 	test_keyBaseName();
+	test_keyAddName();
 
 	printf("\ntestabi_key RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
