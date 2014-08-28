@@ -51,7 +51,7 @@
 
 #include "kdb.h"
 #include "kdbprivate.h"
-
+#include "kdbinternal.h"
 
 /** \internal
  *
@@ -401,10 +401,13 @@ int keyRel (const Key *key, const Key *check)
 /**
  * Check whether a key is inactive or not.
  *
- * In elektra terminology any key is inactive if the
- * it's basename starts with '.'. Inactive keys
- * must not have any meaning to applications, they
- * are reserved for users and administrators.
+ * In elektra terminology any key is inactive if
+ * it's basename starts with '.'. A key is
+ * also inactive if it is below an inactive key.
+ * For example, user/key/.hidden is inactive and so
+ * is user/.hidden/below.
+ * Inactive keys must not have any meaning to applications,
+ * they are reserved for users and administrators.
  *
  * To remove a whole hierarchy in elektra, don't
  * forget to pass option_t::KDB_O_INACTIVE to
@@ -421,18 +424,28 @@ int keyRel (const Key *key, const Key *check)
  */
 int keyIsInactive (const Key *key)
 {
-	char *name = 0;
-
 	if (!key) return -1;
 
-	name = strrchr (keyName(key), '/');
 
-	if (!name) return -1;
+	if (!keyName(key)) return -1;
 
-	/* the slash can't be a trailing slash
-	but there might be no name at all! */
-	if (name[1] == '.') return 1;
-	else return 0;
+	if (keyName(key)[0] == '\0') return -1;
+
+	const char *p = keyName(key);
+	size_t size=0;
+
+	while (*(p=keyNameGetOneLevel(p+size,&size)))
+	{
+		if (size > 0)
+		{
+			if (p[0] == '.')
+			{
+				return 1;
+			}
+		}
+	}
+
+	return 0;
 }
 
 
