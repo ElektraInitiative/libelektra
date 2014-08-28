@@ -56,7 +56,10 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 
 	if (section)
 	{
-		keyAddBaseName(appendKey, section);
+		if (*section != '\0')
+		{
+			keyAddBaseName(appendKey, section);
+		}
 	}
 
 	keyAddBaseName (appendKey, name);

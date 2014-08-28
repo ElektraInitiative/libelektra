@@ -39,7 +39,8 @@ int elektraArrayIncName(Key *key)
 	else if (*baseName != '#')
 	{
 		// finished: just start a new array
-		keyAddBaseName(key, "#0");
+		keyAddBaseName(key, "");
+		keySetBaseName(key, "#0");
 		return 0;
 	}
 

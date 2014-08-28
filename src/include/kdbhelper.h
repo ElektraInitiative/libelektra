@@ -25,6 +25,8 @@ char *elektraFormat(const char *format, va_list arg_list);
 int elektraKeyNameEscape(const char *source, char *dest);
 int elektraKeyNameUnescape(const char *source, char *dest);
 
+int elektraValidateKeyNamePart(const char *name);
+
 #ifdef __cplusplus
 }
 }

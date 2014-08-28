@@ -414,15 +414,73 @@ char *elektraFormat(const char *format, va_list arg_list)
  * Escapes (a part of) a key name.
  *
  * As described in Syntax for Key Names, special characters will be
- * prefixed with a \\.
+ * prefixed with a \\. No existing escaping is assumed. That means
+ * that even sequences that look like escapings will be escaped again.
+ * For example, \\/ wille be escaped to \\\\\\/.
  *
  * The string will be written to dest.
  * @warning May need twice the storage than the source string.
  *   Do not use the source string as destination string.
+ */
 int elektraKeyNameEscape(const char *source, char *dest)
 {
+	if (!source) return -1;
+
+	if (!dest) return -1;
+
+	char *sp = source;
+	char *dp = dest;
+
+	if (!strcmp ("", sp))
+	{
+		strcpy(dp,"%");
+		return 1;
+	}
+
+	if (!strcmp ("%", sp))
+	{
+		strcpy(dp, "\\%");
+		return 1;
+	}
+
+	if (!strcmp ("..", sp))
+	{
+		strcpy(dp, "\\..");
+		return 1;
+	}
+
+	if (!strcmp (".", sp))
+	{
+		strcpy(dp, "\\.");
+		return 1;
+	}
+
+	if (*sp == '#')
+	{
+		dp[0] = '\\';
+		dp[1] = '#';
+		dp += 2;
+		sp++;
+	}
+
+	/* slashes and backslashes are escaped everywhere */
+	while (*sp)
+	{
+		if (*sp == '/' || *sp == '\\')
+		{
+			*dp='\\';
+			dp++;
+		}
+
+		*dp = *sp;
+		dp++;
+		sp++;
+	}
+	*dp = 0;
+
+	return 1;
 }
- */
+
 
 /**
  * Unescapes (a part of) a key name.
@@ -434,7 +492,81 @@ int elektraKeyNameEscape(const char *source, char *dest)
  * The new string will be written to dest.
  * May only need half the storage than the source string.
  * It is safe to use the same string for source and dest.
-int elektraKeyNameUnescape(const char *source, char *dest);
+
+int elektraKeyNameUnescape(const char *source, char *dest)
 {
+	return 1;
 }
+*/
+
+/**
+ * Validates whether the supplied keyname part is valid
+ * The function looks for escape characters that do not escape
+ * anything and also for unescaped characters that have
+ * to be escaped.
+ *
+ * @param the key name part that is to be checked
+ * @return true if the supplied keyname part is valid, false otherwise
  */
+int elektraValidateKeyNamePart(const char *name)
+{
+	const char *current = name;
+	const char *last = name + strlen(name) - 1;
+	const char *escapable = "\\/%#.";
+	int escapeCount = 0;
+
+	current = name;
+	while (*current)
+	{
+		if (*current == '\\')
+		{
+			escapeCount++;
+			if (escapeCount % 2 != 0)
+			{
+				/* this backslash won't be able to escape anything */
+				if (current == last) return 0;
+
+				/* check if the following character is escapable */
+				if (!strchr (escapable, *(current+1))) return 0;
+			}
+		}
+		else
+		{
+			/* there are no escape characters left to escape this slash */
+			if (*current == '/' && escapeCount % 2 == 0) return 0;
+
+			escapeCount = 0;
+		}
+
+		current ++;
+	}
+
+	/* validate array syntax */
+
+	// TOOD: deactivated as it would break the yajl plugin
+	/*
+	current = name;
+
+	if (*current == '#')
+	{
+		current++;
+		int underscores = 0;
+		int digits = 0;
+
+		for (; *current == '_'; current++)
+		{
+			underscores++;
+		}
+
+		for (; isdigit (*current); current++)
+		{
+			digits++;
+		}
+
+		if (underscores != digits -1) return 0;
+	}
+	*/
+
+
+	return 1;
+}

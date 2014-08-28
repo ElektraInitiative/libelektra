@@ -66,6 +66,20 @@ static void test_elektraStrLen()
 	}
 }
 
+static void test_elektraValidateKeyNamePart()
+{
+	succeed_if (elektraValidateKeyNamePart("normalKey"), "key name part without special characters is invalid");
+	succeed_if (!elektraValidateKeyNamePart("Icontaina\\"), "unescaped backslash is valid");
+	succeed_if (!elektraValidateKeyNamePart("Icontaina/"), "unescaped slash is valid");
+	succeed_if (elektraValidateKeyNamePart("Icontaina%"), "unescaped % is invalid")
+	succeed_if (elektraValidateKeyNamePart("Icontaina#"), "unescaped # is invalid")
+	succeed_if (elektraValidateKeyNamePart("Icontaina."), "unescaped . is invalid")
+	succeed_if (elektraValidateKeyNamePart("Icontaina.."), "unescaped .. is invalid")
+	succeed_if (!elektraValidateKeyNamePart("\\x"), "invalid escape sequence is valid");
+	succeed_if (!elektraValidateKeyNamePart("textbefore\\x"), "invalid escape sequence is valid");
+	succeed_if (elektraValidateKeyNamePart("\\\\"), "escaped escape character is invalid");
+	succeed_if (elektraValidateKeyNamePart("\\/"), "escaped slash is invalid");
+}
 
 int main(int argc, char** argv)
 {
@@ -76,6 +90,7 @@ int main(int argc, char** argv)
 
 	test_elektraMalloc();
 	test_elektraStrLen();
+	test_elektraValidateKeyNamePart();
 
 	printf("\ntest_internals RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

@@ -58,9 +58,12 @@
  * - \% denotes an empty key name part.
  * - key name parts starting with \# are array elements
  * - key name parts starting with . (dot) mean:
- *   - "." (dot) means that the part does not exist
- *   - ".." (dot-dot) means that the part does not exist and also not
- *     the parent.
+ *   - "." (dot) followed by nothing else
+ *   means that the part does not exist
+ *   (i.e. it will be removed during canonicalization)
+ *   - ".." (dot-dot) followed by nothing else
+ *   means that the part does not exist and also not
+ *   the parent.(i.e. they will be removed during canonicalization)
  *   - other key name parts starting with . (dot) mean the key is
  *     inactive, see keyIsInactive().
  *
@@ -73,8 +76,8 @@
  *   end of the key name
  * - / (slash) is the separator of key name parts.
  * - \\ (backslash) is the escape characters for the situations as
- *   described here (and only these). In the other situations \\
- *   can be used as any other character.
+ *   described here (and only these). If the \\ character should be part
+ *   of the key name part it must be escaped by itself.
  * - \\/ allows to escape /
  * - \\\\/ allows to use \\ as character before /
  * - . (dot) and .. (dot-dot) must not occur as part in a key name
@@ -155,7 +158,7 @@
 
 #include "kdb.h"
 #include "kdbinternal.h"
-
+#include "kdbhelper.h"
 
 
 
@@ -759,7 +762,7 @@ ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize)
  * affected.
  *
  * Assumes that @p key is a directory and will append @p baseName to it.
- * The function adds @c '/' for concatenating.
+ * The function adds the path separator for concatenating.
  *
  * So if @p key has name @c "system/dir1/dir2" and this method is called with
  * @p baseName @c "mykey", the resulting key will have the name
@@ -773,8 +776,11 @@ ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize)
  *   inactive keys (see keyIsInactive())
  * - it starts with \# (hash). So it is not possible to create array names
  * - is empty "". (\% will be used then)
+ * - is . (dot)
+ * - is .. (dot-dot)
  * - is \% (empty parts of key name need empty @p baseName)
  * - any \\ occur.
+ * - any / occur
  *
  * Internally elektraKeyNameEscape() is used.
  *
@@ -787,7 +793,6 @@ ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize)
  *
  * @see elektraKeyNameUnescape() to unescape the string.
  *
- * TODO: does not recognise .. and . in the string!
  *
  * @param key the key object to work with
  * @param baseName the string to append to the name
@@ -802,25 +807,31 @@ ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize)
 ssize_t keyAddBaseName(Key *key, const char *baseName)
 {
 	size_t size=0;
-	const char *p=0;
 
 	if (!key) return -1;
 
-	if (!baseName || !baseName[0]) return key->keySize;
+	if (!baseName) return key->keySize;
+	char *escaped = elektraMalloc (strlen (baseName) * 2 + 2);
+	elektraKeyNameEscape (baseName, escaped);
+	if (key->key)
+	{
+		size = strlen (escaped);
+		key->keySize += size + 1;
+		key->key = realloc (key->key, key->keySize);
 
-	if (key->key) {
-		p = baseName;
-		while (*(p=keyNameGetOneLevel(p+size,&size)))
-		{
-			key->keySize += size+1;
-			key->key=realloc(key->key,key->keySize);
+		key->key[key->keySize - size - 2] = KDB_PATH_SEPARATOR;
+		memcpy (key->key + key->keySize - size - 1, escaped, size);
 
-			key->key[key->keySize-size-2]=KDB_PATH_SEPARATOR;
-			memcpy(key->key+key->keySize-size-1,p,size);
-		}
-		key->key[key->keySize-1]=0; /* finalize string */
+		key->key[key->keySize - 1] = 0; /* finalize string */
+		elektraFree (escaped);
 		return key->keySize;
-	} else return keySetName(key,baseName);
+	}
+	else
+	{
+		int result = keySetName (key, escaped);
+		elektraFree (escaped);
+		return result;
+	}
 }
 
 
@@ -840,10 +851,16 @@ ssize_t keyAddBaseName(Key *key, const char *baseName)
  * If @p baseName is empty or NULL, the resulting key name will
  * be @c "system/dir1/dir2".
  *
+ * This function does not escape the supplied name argument, but validates
+ * whether the argument is properly escaped.
+ *
+ * You can use special names to manipulate the keyname (. (dot), .. (dot-dot) and "" (empty)).
+ * However, . (dot) and .. (dot-dot) are deprecated and their use is discouraged.
+ * Use "" (empty) instead.
+ * @see keyname for more details on special names
+ *
  * @warning You should not change a keys name once it belongs to a
  *          keyset because it would destroy the order.
- *
- * TODO: does not work with .. and .
  *
  * @param key the key object to work with
  * @param baseName the string used to overwrite the basename of the key
@@ -860,25 +877,62 @@ ssize_t keySetBaseName(Key *key, const char *baseName)
 
 	if (!key) return -1;
 
+	if (!elektraValidateKeyNamePart(baseName)) return -1;
+
 	if (key->key) {
+
+
 		/*Throw away basename of key->key*/
 		p=strrchr (key->key, '/');
-		if (p == 0) return keySetName(key, baseName);
-		key->keySize -= (key->key+key->keySize-1)-p;
-		key->key=realloc(key->key,key->keySize);
-		key->key[key->keySize-1]=0; /* finalize string */
-		/*Now add new baseName*/
-		p = baseName;
-		while (*(p=keyNameGetOneLevel(p+size,&size))) /*not needed*/
+		if (p == 0)
 		{
-			key->keySize += size+1;
-			key->key=realloc(key->key,key->keySize);
+			/* we would remove even the namespace */
+			if (!strcmp (baseName, "")) return -1;
 
-			key->key[key->keySize-size-2]=KDB_PATH_SEPARATOR;
-			memcpy(key->key+key->keySize-size-1,p,size);
-			/* use keySetRawName() internally and not
-			 * key->key*/
+			if (!strcmp (baseName, ".")) return -1;
+
+			return keySetName(key, baseName);
 		}
+
+		/* check if the found / is the only one */
+		if (strchr (key->key, '/') == p)
+		{
+			/* we would delete the whole keyname */
+			if (!strcmp (baseName, "..")) return -1;
+		}
+
+		key->keySize -= (key->key+key->keySize-1)-p;
+		key->key[key->keySize-1]=0; /* finalize string */
+
+		/* remove yet another part */
+		if (!strcmp (baseName, ".."))
+		{
+			p=strrchr (key->key, '/');
+			key->keySize -= (key->key+key->keySize-1)-p;
+			key->key[key->keySize-1]=0; /* finalize string */
+		}
+
+		/* free the now unused space */
+		key->key=realloc(key->key,key->keySize);
+
+		/* these cases just delete keyname parts so we are done */
+		if (!strcmp (baseName, "..") ||
+				!strcmp (baseName, ".") ||
+				!strcmp (baseName, ""))
+		{
+			return key->keySize;
+		}
+
+		/* Now add new baseName */
+		size = strlen (baseName);
+		key->keySize += size + 1;
+		key->key = realloc (key->key, key->keySize);
+
+		key->key[key->keySize - size - 2] = KDB_PATH_SEPARATOR;
+		memcpy (key->key + key->keySize - size - 1, baseName, size);
+		/* use keySetRawName() internally and not
+		 * key->key*/
+
 		key->key[key->keySize-1]=0; /* finalize string */
 		return key->keySize;
 	} else return keySetName(key,baseName); /*that cannot be a good idea*/
