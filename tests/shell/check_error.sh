@@ -81,7 +81,7 @@ then
 
 
 
-	echo "Test failed plugin at kdbOpen()"
+	echo "Test error plugin when open"
 
 	$KDB mount $ERROR_FILE $ERROR_MOUNTPOINT dump error on_open/error=10 > /dev/null 2>&1
 	succeed_if "could not mount error at $ERROR_MOUNTPOINT"
@@ -102,7 +102,8 @@ then
 	[ $? -ne 0 ]
 	succeed_if "Was able to get from missing backend"
 
-	# cat $TMPFILE
+	#echo "Output was:"
+	#cat $TMPFILE
 
 	grep "Error (#62) occurred!" $TMPFILE > /dev/null
 	succeed_if "Error not found in output"
