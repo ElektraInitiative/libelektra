@@ -2,6 +2,8 @@
 #define UNDOMANAGER_HPP
 
 #include <QObject>
+#include <QApplication>
+#include <QClipboard>
 #include "confignode.hpp"
 
 class QUndoStack;
@@ -15,6 +17,7 @@ class UndoManager : public QObject
 
     Q_PROPERTY(QString redoText READ redoText() NOTIFY redoTextChanged())
     Q_PROPERTY(QString undoText READ undoText() NOTIFY undoTextChanged())
+    Q_PROPERTY(QString clipboardType READ clipboardType() NOTIFY clipboardTypeChanged())
 
 public:
 
@@ -27,12 +30,17 @@ public:
 
                 QString     redoText() const;
                 QString     undoText() const;
+                QString     clipboardType() const;
+
+    Q_INVOKABLE void        putToClipboard(const QString &type, ConfigNode *node, int index);
 
     Q_INVOKABLE void        createEditKeyCommand(TreeViewModel *model, int index, const QString &oldName, const QVariant &oldValue, const QVariant &oldMetaData,
                                           const QString &newName, const QVariant &newValue, const QVariant &newMetaData);
 
     Q_INVOKABLE void        createDeleteKeyCommand(TreeViewModel *model, ConfigNode *node, int index);
     Q_INVOKABLE void        createNewKeyCommand(TreeViewModel *model, const QString &name, const QString &value, const QVariantMap &metaData);
+    Q_INVOKABLE void        createCopyKeyCommand();
+    Q_INVOKABLE void        createCutKeyCommand();
 
 Q_SIGNALS:
 
@@ -40,6 +48,7 @@ Q_SIGNALS:
                 void        canRedoChanged();
                 void        redoTextChanged();
                 void        undoTextChanged();
+                void        clipboardTypeChanged();
 
 public Q_SLOTS:
 
@@ -49,6 +58,8 @@ public Q_SLOTS:
 private:
 
     QUndoStack *m_undoStack;
+    QClipboard *m_clipboard;
+    QString     m_clipboardType;
 };
 
 Q_DECLARE_METATYPE(UndoManager)

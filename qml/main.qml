@@ -342,7 +342,13 @@ ApplicationWindow {
             id: kcmCut
 
             action: cutAction
-            onTriggered: console.log("cut")
+            onTriggered: {
+                console.log("cut")
+                keyAreaView.copyPasteIndex = keyAreaView.currentRow
+                keyAreaView.currentNodePath = treeView.currentNode.path
+
+                undoManager.putToClipboard("cut" ,keyAreaSelectedItem.node, keyAreaView.currentRow)
+            }
         }
         MenuItem {
             id: kcmCopy
@@ -353,6 +359,8 @@ ApplicationWindow {
                 console.log("copy")
                 keyAreaView.copyPasteIndex = keyAreaView.currentRow
                 keyAreaView.currentNodePath = treeView.currentNode.path
+
+                undoManager.putToClipboard("copy", keyAreaSelectedItem.node, keyAreaView.currentRow)
             }
         }
         MenuItem {
@@ -363,6 +371,15 @@ ApplicationWindow {
                 console.log("paste")
                 keyAreaView.copyPasteIndex = -1
                 keyAreaView.currentNodePath = ""
+
+                if(undoManager.clipboardType === "copy"){
+                    console.log("type is copy")
+                    undoManager.createCopyKeyCommand()
+                }
+                else if (undoManager.clipboardType === "cut"){
+                    console.log("type is cut")
+                    undoManager.createCutKeyCommand()
+                }
             }
         }
         MenuItem {

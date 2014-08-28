@@ -3,6 +3,8 @@
 #include "editkeycommand.hpp"
 #include "deletekeycommand.hpp"
 #include "newkeycommand.hpp"
+#include "copykeycommand.hpp"
+#include "cutkeycommand.hpp"
 
 UndoManager::UndoManager(QObject *parent) :
     QObject(parent)
@@ -13,7 +15,7 @@ UndoManager::UndoManager(QObject *parent) :
     connect(m_undoStack, SIGNAL(redoTextChanged(QString)), this, SIGNAL(redoTextChanged()));
     connect(m_undoStack, SIGNAL(undoTextChanged(QString)), this, SIGNAL(undoTextChanged()));
 
-    m_undoStack->setUndoLimit(100);
+    m_clipboard = QApplication::clipboard();
 }
 
 UndoManager::UndoManager(const UndoManager &other)
@@ -60,6 +62,17 @@ void UndoManager::createNewKeyCommand(TreeViewModel *model, const QString &name,
     m_undoStack->push(new NewKeyCommand(model, name, value, metaData));
 }
 
+void UndoManager::createCopyKeyCommand()
+{
+    m_clipboardType = "copy";
+    m_undoStack->push(new CopyKeyCommand());
+}
+
+void UndoManager::createCutKeyCommand()
+{
+    m_clipboardType = "cut";
+}
+
 void UndoManager::undo()
 {
     m_undoStack->undo();
@@ -73,6 +86,21 @@ void UndoManager::redo()
 QString UndoManager::undoText() const
 {
     return m_undoStack->undoText();
+}
+
+QString UndoManager::clipboardType() const
+{
+    return m_clipboardType;
+}
+
+void UndoManager::putToClipboard(const QString &type, ConfigNode *node, int index)
+{
+    m_clipboardType = type;
+
+    m_clipboard->setProperty("node", QVariant::fromValue(node));
+    m_clipboard->setProperty("index", QVariant::fromValue(index));
+
+    emit clipboardTypeChanged();
 }
 
 QString UndoManager::redoText() const
