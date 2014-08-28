@@ -428,7 +428,7 @@ int elektraKeyNameEscape(const char *source, char *dest)
 
 	if (!dest) return -1;
 
-	char *sp = source;
+	const char *sp = source;
 	char *dp = dest;
 
 	if (!strcmp ("", sp))
