@@ -416,7 +416,7 @@ char *elektraFormat(const char *format, va_list arg_list)
  * As described in Syntax for Key Names, special characters will be
  * prefixed with a \\. No existing escaping is assumed. That means
  * that even sequences that look like escapings will be escaped again.
- * For example, \\/ wille be escaped to \\\\\\/.
+ * For example, \\/ will be escaped to \\\\\\/.
  *
  * The string will be written to dest.
  * @warning May need twice the storage than the source string.
@@ -492,12 +492,11 @@ int elektraKeyNameEscape(const char *source, char *dest)
  * The new string will be written to dest.
  * May only need half the storage than the source string.
  * It is safe to use the same string for source and dest.
-
+**/
 int elektraKeyNameUnescape(const char *source, char *dest)
 {
 	return 1;
 }
-*/
 
 /**
  * Validates whether the supplied keyname part is valid

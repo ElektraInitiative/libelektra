@@ -756,7 +756,7 @@ ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize)
 
 
 /**
- * Adds @p baseName to the current key name.
+ * Adds @p baseName (that will be escaped) to the current key name.
  *
  * A new baseName will be added, no other part of the key name will be
  * affected.
@@ -784,6 +784,9 @@ ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize)
  *
  * Internally elektraKeyNameEscape() is used.
  *
+ * A simple example to use keyAddBaseName() is:
+ * @snippet basename.c set base basic
+ *
  * If you do not want escaping, use keySetBaseName() instead. E.g. if
  * you want to add an inactive key, use:
  * @snippet testabi_key.c base1
@@ -793,7 +796,7 @@ ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize)
  *
  * @see elektraKeyNameUnescape() to unescape the string.
  *
- *
+ * @see keySetBaseName() to set a base name without escaping
  * @param key the key object to work with
  * @param baseName the string to append to the name
  * @return the size in bytes of the new key name including the ending NULL
@@ -809,6 +812,7 @@ ssize_t keyAddBaseName(Key *key, const char *baseName)
 	size_t size=0;
 
 	if (!key) return -1;
+	if (test_bit(key->flags,  KEY_FLAG_RO_NAME)) return -1;
 
 	if (!baseName) return key->keySize;
 	char *escaped = elektraMalloc (strlen (baseName) * 2 + 2);
@@ -876,6 +880,7 @@ ssize_t keySetBaseName(Key *key, const char *baseName)
 	const char *p=0;
 
 	if (!key) return -1;
+	if (test_bit(key->flags,  KEY_FLAG_RO_NAME)) return -1;
 
 	if (!elektraValidateKeyNamePart(baseName)) return -1;
 
