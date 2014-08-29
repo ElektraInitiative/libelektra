@@ -109,10 +109,18 @@ int init(int argc, char** argv);
 	} \
 }
 
+#define ELEKTRA_GCC_WARNING(x) _Pragma(ELEKTRA_GCC_HELPER2(x))
+#define ELEKTRA_GCC_HELPER2(y) ELEKTRA_GCC_HELPER1(#y)
+#define ELEKTRA_GCC_HELPER1(x) ELEKTRA_GCC_HELPER0(GCC diagnostic ignored x)
+#define ELEKTRA_GCC_HELPER0(x) #x
+
 #define succeed_if_same_string(s1, s2) \
 { \
 	nbTest++; \
-	if (strcmp(s1, s2)) \
+	ELEKTRA_GCC_WARNING(-Waddress) \
+	if (!s1) yield_error("left hand is null pointer") \
+	else if (!s2) yield_error("left hand is null pointer") \
+	else if (strcmp(s1, s2)) \
 	{ \
 		char errorMsg [BUFFER_LENGTH]; \
 		 \
@@ -124,6 +132,7 @@ int init(int argc, char** argv);
 		 \
 		yield_error(errorMsg); \
 	} \
+	_Pragma("GCC diagnostic pop") \
 }
 
 

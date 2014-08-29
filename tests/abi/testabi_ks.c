@@ -2399,6 +2399,11 @@ static void test_ksOrder()
 	keyNew("user/x-A", KEY_END),
 	keyNew("user/x-A-a", KEY_END),
 	keyNew("user/x-A-b", KEY_END),
+	keyNew("user/x-\\%", KEY_END),
+	keyNew("user/x-\\%-a", KEY_END),
+	keyNew("user/x-\\%-b", KEY_END),
+	keyNew("user/x-\\%a", KEY_END),
+	keyNew("user/x-\\%b", KEY_END),
 	keyNew("user/x-aA", KEY_END),
 	keyNew("user/x-aA-a", KEY_END),
 	keyNew("user/x-aA-b", KEY_END),
@@ -2407,16 +2412,11 @@ static void test_ksOrder()
 	keyNew("user/x-a\\/b-a", KEY_END),
 	keyNew("user/x-a\\/b-b", KEY_END),
 	keyNew("user/x-aa", KEY_END),
+	keyNew("user/x-aa-a", KEY_END),
 	keyNew("user/x-aa-b", KEY_END),
-	keyNew("user/x-aa-b", KEY_END),
-	keyNew("user/x-\\%", KEY_END),
-	keyNew("user/x-\\%-a", KEY_END),
-	keyNew("user/x-\\%-b", KEY_END),
-	keyNew("user/x-\\%a", KEY_END),
-	keyNew("user/x-\\%b", KEY_END),
 	KS_END);
-	ksRewind(ks);
 
+	succeed_if(ksCurrent(ks) == 0, "not rewinded");
 	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x");
 	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-%");
 	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-%-a");
@@ -2426,6 +2426,11 @@ static void test_ksOrder()
 	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-A");
 	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-A-a");
 	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-A-b");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-\\%");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-\\%-a");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-\\%-b");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-\\%a");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-\\%b");
 	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-aA");
 	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-aA-a");
 	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-aA-b");
@@ -2434,13 +2439,8 @@ static void test_ksOrder()
 	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-a\\/b-a");
 	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-a\\/b-b");
 	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-aa");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-aa-a");
 	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-aa-b");
-	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-aa-b");
-	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-\\%");
-	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-\\%-a");
-	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-\\%-b");
-	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-\\%a");
-	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-\\%b");
 	ksDel(ks);
 }
 
