@@ -26,7 +26,8 @@ The problems were following:
 keyAddBaseName/keySetBaseName did something obvious when no special
 characters were in the baseName. But once there were, there are two
 different interpretations what it should do:
-1.) add/set a basename, so escape slashes in the basename
+1.) add/set a basename, so escape characters that are not canonical
+    in the basename
 2.) add all parts of the name given (with slashes)
 
 The methods were used in both ways, so it was obvious that something is

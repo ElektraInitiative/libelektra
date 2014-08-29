@@ -8,4 +8,6 @@
 
 ## Introduction ##
 
-This plugin is a logging plugin which adds a log entry to syslog on certain methods. Whenever a set or an error call occurs within Elektra it adds a new log entry to syslog about the call.
+This plugin is a logging plugin which adds a log entry to syslog on
+commit and rollback of the configuration.
+
