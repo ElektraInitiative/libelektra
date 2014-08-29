@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QApplication>
 #include <QClipboard>
-#include "confignode.hpp"
+#include "treeviewmodel.hpp"
 
 class QUndoStack;
 
@@ -32,7 +32,7 @@ public:
                 QString     undoText() const;
                 QString     clipboardType() const;
 
-    Q_INVOKABLE void        putToClipboard(const QString &type, ConfigNode *node, int index);
+    Q_INVOKABLE void        putToClipboard(const QString &type, TreeViewModel *model, ConfigNode *node, int index);
 
     Q_INVOKABLE void        createEditKeyCommand(TreeViewModel *model, int index, const QString &oldName, const QVariant &oldValue, const QVariant &oldMetaData,
                                           const QString &newName, const QVariant &newValue, const QVariant &newMetaData);
@@ -40,7 +40,7 @@ public:
     Q_INVOKABLE void        createDeleteKeyCommand(TreeViewModel *model, ConfigNode *node, int index);
     Q_INVOKABLE void        createNewKeyCommand(TreeViewModel *model, const QString &name, const QString &value, const QVariantMap &metaData);
     Q_INVOKABLE void        createCopyKeyCommand(ConfigNode *target);
-    Q_INVOKABLE void        createCutKeyCommand();
+    Q_INVOKABLE void        createCutKeyCommand(ConfigNode *target);
 
 Q_SIGNALS:
 

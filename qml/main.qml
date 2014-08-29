@@ -21,6 +21,8 @@ ApplicationWindow {
     //TreeViewModel
     property var metaAreaModel: (keyAreaSelectedItem === null ? null : keyAreaSelectedItem.metaValue)
 
+    property bool hasPasted: false
+
     //Spacing & Margins recommended by KDE HIG
     property int defaultSpacing: 4
     property int defaultMargins: 8
@@ -347,7 +349,8 @@ ApplicationWindow {
                 keyAreaView.copyPasteIndex = keyAreaView.currentRow
                 keyAreaView.currentNodePath = treeView.currentNode.path
 
-                undoManager.putToClipboard("cut" ,keyAreaSelectedItem.node, keyAreaView.currentRow)
+                undoManager.putToClipboard("cut", keyAreaView.model, keyAreaSelectedItem.node, keyAreaView.currentRow)
+                hasPasted = false
             }
         }
         MenuItem {
@@ -360,7 +363,7 @@ ApplicationWindow {
                 keyAreaView.copyPasteIndex = keyAreaView.currentRow
                 keyAreaView.currentNodePath = treeView.currentNode.path
 
-                undoManager.putToClipboard("copy", keyAreaSelectedItem.node, keyAreaView.currentRow)
+                undoManager.putToClipboard("copy", keyAreaView.model, keyAreaSelectedItem.node, keyAreaView.currentRow)
             }
         }
         MenuItem {
@@ -373,12 +376,17 @@ ApplicationWindow {
                 keyAreaView.currentNodePath = ""
 
                 if(undoManager.clipboardType === "copy"){
-                    console.log("type is copy")
                     undoManager.createCopyKeyCommand(treeView.currentNode.node)
                 }
                 else if (undoManager.clipboardType === "cut"){
-                    console.log("type is cut")
-                    undoManager.createCutKeyCommand()
+
+                    if(hasPasted){
+                        undoManager.createCopyKeyCommand(treeView.currentNode.node)
+                    }
+                    else{
+                        undoManager.createCutKeyCommand(treeView.currentNode.node)
+                        hasPasted = true
+                    }
                 }
             }
         }
