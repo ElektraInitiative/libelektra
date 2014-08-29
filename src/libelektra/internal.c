@@ -540,32 +540,6 @@ int elektraValidateKeyNamePart(const char *name)
 		current ++;
 	}
 
-	/* validate array syntax */
-
-	// TOOD: deactivated as it would break the yajl plugin
-	/*
-	current = name;
-
-	if (*current == '#')
-	{
-		current++;
-		int underscores = 0;
-		int digits = 0;
-
-		for (; *current == '_'; current++)
-		{
-			underscores++;
-		}
-
-		for (; isdigit (*current); current++)
-		{
-			digits++;
-		}
-
-		if (underscores != digits -1) return 0;
-	}
-	*/
-
 
 	return 1;
 }

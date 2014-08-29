@@ -477,7 +477,7 @@ ssize_t keySetName(Key *key, const char *newName)
 
 	/* finish root name for keyAddName() */
 	key->keySize=rootLength;
-	key->key[rootLength] = '\0';
+	key->key[rootLength-1] = '\0';
 
 	/* skip namespace we already processed */
 	p=keyNameGetOneLevel(newName,&length);

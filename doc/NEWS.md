@@ -35,6 +35,12 @@ add/set a basename (variant 1).
 
 keySetBaseName(keyBaseName()) now does what is expected: nothing
 
+ksNew() does now return a keyset with a properly set cursor (ksRewind).
+
+elektraArrayIncName now works correctly with starting elements, empty
+arrays embedded in other arrays (yajl+line plugin)
+elektraArrayValidateName added, thanks to Felix
+
 The variant 2, to add any name was added and is called keyAddName().
 
 When keys are renamed after adding to a keyset is a bad thing because it

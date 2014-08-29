@@ -2389,6 +2389,60 @@ static void test_ksOrder()
 	succeed_if(0, "does not succeed");
 
 	ksDel(ks);
+
+	ks = ksNew(20,
+	keyNew("user/x", KEY_END),
+	keyNew("user/x-%", KEY_END),
+	keyNew("user/x-%-a", KEY_END),
+	keyNew("user/x-%-b", KEY_END),
+	keyNew("user/x-%a", KEY_END),
+	keyNew("user/x-%b", KEY_END),
+	keyNew("user/x-A", KEY_END),
+	keyNew("user/x-A-a", KEY_END),
+	keyNew("user/x-A-b", KEY_END),
+	keyNew("user/x-aA", KEY_END),
+	keyNew("user/x-aA-a", KEY_END),
+	keyNew("user/x-aA-b", KEY_END),
+	keyNew("user/x-a\\/a", KEY_END),
+	keyNew("user/x-a\\/b", KEY_END),
+	keyNew("user/x-a\\/b-a", KEY_END),
+	keyNew("user/x-a\\/b-b", KEY_END),
+	keyNew("user/x-aa", KEY_END),
+	keyNew("user/x-aa-b", KEY_END),
+	keyNew("user/x-aa-b", KEY_END),
+	keyNew("user/x-\\%", KEY_END),
+	keyNew("user/x-\\%-a", KEY_END),
+	keyNew("user/x-\\%-b", KEY_END),
+	keyNew("user/x-\\%a", KEY_END),
+	keyNew("user/x-\\%b", KEY_END),
+	KS_END);
+	ksRewind(ks);
+
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-%");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-%-a");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-%-b");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-%a");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-%b");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-A");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-A-a");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-A-b");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-aA");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-aA-a");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-aA-b");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-a\\/a");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-a\\/b");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-a\\/b-a");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-a\\/b-b");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-aa");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-aa-b");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-aa-b");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-\\%");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-\\%-a");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-\\%-b");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-\\%a");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-\\%b");
+	ksDel(ks);
 }
 
 KeySet * fill_vaargs(size_t size, ...)
@@ -2739,37 +2793,6 @@ static void test_cutbelow_1()
 	keyDel (cutpoint);
 }
 
-ssize_t ksCopyInternal(KeySet *ks, size_t to, size_t from);
-
-static void test_copy()
-{
-	printf ("Testing operation copy (internal)\n");
-
-	KeySet *copy[17][17];
-#include "data_copy.c"
-
-	KeySet *current;
-
-	for (int i=0; i<17; ++i)
-	{
-		for (int j=0; j<17; ++j)
-		{
-			/* There are some cases which contain duplicates, we have to jump these...*/
-			if (i>j) goto cleanup;
-			if (i==0 && j==16) goto cleanup;
-
-			current = set_a();
-			/* Some blocks are lost in the next operation */
-			succeed_if (ksCopyInternal (current, i, j) != -1, "ksCopyInternal failed");
-			compare_keyset(current, copy[i][j]);
-			ksDel (current);
-
-cleanup:
-			ksDel (copy[i][j]);
-		}
-	}
-}
-
 KeySet *set_simple()
 {
 	return ksNew(50,
@@ -3063,7 +3086,7 @@ int main(int argc, char** argv)
 
 	// BUGS:
 	// test_ksLookupValue();
-	// test_ksOrder();
+	test_ksOrder();
 
 	printf("\ntestabi_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

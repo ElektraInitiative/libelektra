@@ -156,10 +156,7 @@ ksDel (config);
  * The main benefit of taking a list of variant length parameters is to be able
  * to have one C-Statement for any possible KeySet.
  *
- * Due to ABI compatibility, the @p KeySet structure is only declared in kdb.h,
- * and not defined. So you can only declare @p pointers to @p KeySets in your
- * program.
- * See http://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html#AEN135
+ * @post the keyset is rewinded properly
  *
  * @see ksDel() to free the keyset afterwards
  * @see ksDup() to duplicate an existing keyset
@@ -222,6 +219,8 @@ KeySet *ksVNew (size_t alloc, va_list va)
 		}
 
 	}
+
+	ksRewind(keyset);
 
 	return keyset;
 }
