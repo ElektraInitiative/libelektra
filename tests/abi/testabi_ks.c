@@ -90,9 +90,8 @@ static void test_ksNew()
 		keyNew ("system/valid/key1", KEY_END),
 		keyNew ("system/valid/key2", KEY_END),
 		KS_END);
-	// TODO: why is the cursor here?
-	succeed_if (!strcmp(keyName(ksCurrent(ks_c)), "system/valid/key2"),
-			"cursor jumped somewhere else");
+
+	succeed_if (ksCurrent(ks_c) == 0, "should be rewinded");
 	ksDel (ks_c);
 }
 
@@ -2403,7 +2402,7 @@ static void test_ksOrder()
 	keyNew("user/x-aA", KEY_END),
 	keyNew("user/x-aA-a", KEY_END),
 	keyNew("user/x-aA-b", KEY_END),
-	keyNew("user/x-a\\/a", KEY_END),
+	keyNew("user/x-a\\/", KEY_END),
 	keyNew("user/x-a\\/b", KEY_END),
 	keyNew("user/x-a\\/b-a", KEY_END),
 	keyNew("user/x-a\\/b-b", KEY_END),
@@ -2430,7 +2429,7 @@ static void test_ksOrder()
 	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-aA");
 	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-aA-a");
 	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-aA-b");
-	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-a\\/a");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-a\\/");
 	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-a\\/b");
 	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-a\\/b-a");
 	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-a\\/b-b");
@@ -2941,18 +2940,15 @@ static void test_morecut()
 		keyNew ("system/valid/key1", KEY_END),
 		keyNew ("system/valid/key2", KEY_END),
 		KS_END);
-	// printf ("%s\n", keyName(ksCurrent(ks)));
-	succeed_if (!strcmp(keyName(ksCurrent(ks)), "system/valid/key2"),
-			"cursor jumped somewhere else");
+	succeed_if (ksCurrent(ks) == 0, "should be rewinded");
+	ksNext(ks);
+	succeed_if (!strcmp(keyName(ksCurrent(ks)), "system/valid/key1"), "wrong cursor");
+	ksNext(ks);
+	succeed_if (!strcmp(keyName(ksCurrent(ks)), "system/valid/key2"), "wrong cursor");
 	ksNext(ks);
 	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/valid/key1"), "wrong cursor");
 	ksNext(ks);
 	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/valid/key2"), "wrong cursor");
-	// printf ("%s\n", keyName(ksCurrent(ks)));
-	/*
-	ksNext(ks);
-	succeed_if (!strcmp(keyName(ksCurrent(ks)), "system/valid/key1"), "wrong cursor");
-	*/
 
 	KeySet *split1 = ksNew (
 		3,
@@ -2968,9 +2964,6 @@ static void test_morecut()
 	Key *userKey = keyNew("user", KEY_END);
 
 	KeySet *cut = ksCut (ks, userKey);
-	// printf ("%s\n", keyName(ksCurrent(ks)));
-	succeed_if (!strcmp(keyName(ksCurrent(ks)), "system/valid/key2"),
-			"cursor jumped somewhere else");
 
 	compare_keyset(cut, split1);
 	compare_keyset(ks, split2);
