@@ -21,7 +21,7 @@ ApplicationWindow {
     //TreeViewModel
     property var metaAreaModel: (keyAreaSelectedItem === null ? null : keyAreaSelectedItem.metaValue)
 
-    property bool hasPasted: false
+    property int pasteCounter: 0
 
     //Spacing & Margins recommended by KDE HIG
     property int defaultSpacing: 4
@@ -129,6 +129,10 @@ ApplicationWindow {
                 keyAreaView.selection.select(keyAreaView.currentRow)
                 keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
             }
+            else if(undoManager.undoText === "cut"){
+                pasteCounter--
+                undoManager.undo()
+            }
             else{
                 undoManager.undo()
             }
@@ -156,6 +160,10 @@ ApplicationWindow {
                     keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
                 else
                     keyAreaSelectedItem = null
+            }
+            else if(undoManager.redoText === "cut"){
+                pasteCounter--
+                undoManager.redo()
             }
             else{
                 undoManager.redo()
@@ -350,7 +358,7 @@ ApplicationWindow {
                 keyAreaView.currentNodePath = treeView.currentNode.path
 
                 undoManager.putToClipboard("cut", keyAreaView.model, keyAreaSelectedItem.node, keyAreaView.currentRow)
-                hasPasted = false
+                pasteCounter = 0
             }
         }
         MenuItem {
@@ -380,12 +388,13 @@ ApplicationWindow {
                 }
                 else if (undoManager.clipboardType === "cut"){
 
-                    if(hasPasted){
-                        undoManager.createCopyKeyCommand(treeView.currentNode.node)
+                    if(pasteCounter === 0){
+                        undoManager.createCutKeyCommand(treeView.currentNode.node)
+                        pasteCounter++
                     }
                     else{
-                        undoManager.createCutKeyCommand(treeView.currentNode.node)
-                        hasPasted = true
+                        undoManager.createCopyKeyCommand(treeView.currentNode.node)
+                        pasteCounter++
                     }
                 }
             }
