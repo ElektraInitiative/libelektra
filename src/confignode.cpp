@@ -3,16 +3,14 @@
 
 using namespace kdb;
 
-ConfigNode::ConfigNode(const QString& name, const QString& path, const Key &key)
+ConfigNode::ConfigNode(const QString& name, const QString& path, const Key &key, TreeViewModel *parentModel)
     : m_name(name)
     , m_path(path)
     , m_key(key)
     , m_children(new TreeViewModel)
     , m_metaData(new TreeViewModel)
+    , m_parentModel(parentModel)
 {
-    // TODO: why not give full path? (or even better, pass Key
-    // with getBaseName() and getName())
-
     if (m_key && m_key.isString())
         m_value = QVariant::fromValue(QString::fromStdString(m_key.getString()));
     else if (m_key && m_key.isBinary())
@@ -30,6 +28,7 @@ ConfigNode::ConfigNode(const ConfigNode& other)
     , m_key(other.m_key.dup())
     , m_children(new TreeViewModel())
     , m_metaData(new TreeViewModel())
+    , m_parentModel(other.m_parentModel)
 {
 
     foreach(ConfigNode *node, other.getChildren()->model())
@@ -46,17 +45,19 @@ ConfigNode::ConfigNode(const ConfigNode& other)
 ConfigNode::ConfigNode()
     : m_children(new TreeViewModel)
     , m_metaData(new TreeViewModel)
+    , m_parentModel(new TreeViewModel)
 {
 }
 
-ConfigNode::~ConfigNode()
-{
-    delete m_children;
-    delete m_metaData;
+//ConfigNode::~ConfigNode()
+//{
+//    delete m_children;
+//    delete m_metaData;
+//    m_parentModel = NULL;
 
-    if(m_key)
-        m_key.clear();
-}
+//    if(m_key)
+//        m_key.clear();
+//}
 
 int ConfigNode::getChildCount() const
 {
@@ -190,6 +191,16 @@ int ConfigNode::getIndexByName(const QString &name)
     return -1;
 }
 
+TreeViewModel *ConfigNode::getParentModel()
+{
+    return m_parentModel;
+}
+
+void ConfigNode::setParentModel(TreeViewModel *parent)
+{
+    m_parentModel = parent;
+}
+
 void ConfigNode::populateMetaModel()
 {
     if (m_key)
@@ -201,9 +212,11 @@ void ConfigNode::populateMetaModel()
         {
             //      qDebug() << "ConfigNode::populateMetaModel: key " << QString::fromStdString(m_key.getName()) << " has metakey " << QString::fromStdString(m_key.currentMeta().getName());
             ConfigNode* node = new ConfigNode();
+
             node->setName(QString::fromStdString(m_key.getName()));
             node->setKey(m_key);
             node->setMeta(QString::fromStdString(m_key.currentMeta().getName()), QVariant::fromValue(QString::fromStdString(m_key.currentMeta().getString())));
+
             m_metaData->model().append(node);
         }
     }

@@ -19,12 +19,12 @@ class ConfigNode : public QObject
 
 public:
 
-    explicit ConfigNode(const QString& name, const QString& path, const kdb::Key &key);
+    explicit ConfigNode(const QString& name, const QString& path, const kdb::Key &key, TreeViewModel *parentModel);
     /// Needed by Qt
     ConfigNode(const ConfigNode& other);
     /// Needed by Qt
     ConfigNode();
-    ~ConfigNode();
+//    ~ConfigNode();
 
     /**
      * @brief Returns the number of children of this ConfigNode.
@@ -105,21 +105,23 @@ public:
       * @param index The index of the wanted child.
       * @return The child on the given index.
       */
-    Q_INVOKABLE ConfigNode* getChildByIndex(int index) const;
+    Q_INVOKABLE ConfigNode*     getChildByIndex(int index) const;
 
-    void                    setPath(const QString &path);
+                void            setPath(const QString &path);
 
-    void                    setMeta(const QString &name, const QVariant &value);
-    Q_INVOKABLE void        setMeta(const QVariantMap &metaData);
-    Q_INVOKABLE void        deleteMeta(const QString &name);
+                void            setMeta(const QString &name, const QVariant &value);
+    Q_INVOKABLE void            setMeta(const QVariantMap &metaData);
+    Q_INVOKABLE void            deleteMeta(const QString &name);
 
-    void                    accept(Visitor &visitor);
-    kdb::Key                getKey() const;
-    void                    setKey(kdb::Key key);
-    void                    setKeyName(const QString &name);
-    void                    invalidateKey();
-    void                    deletePath(QStringList &path);
-    int                     getIndexByName(const QString &name);
+                void            accept(Visitor &visitor);
+                kdb::Key        getKey() const;
+                void            setKey(kdb::Key key);
+                void            setKeyName(const QString &name);
+                void            invalidateKey();
+                void            deletePath(QStringList &path);
+                int             getIndexByName(const QString &name);
+                TreeViewModel*  getParentModel();
+                void            setParentModel(TreeViewModel *parent);
 
 private:
     // TODO: not needed if we hold the Key
@@ -131,6 +133,7 @@ private:
     kdb::Key m_key;
     TreeViewModel* m_children;
     TreeViewModel* m_metaData;
+    TreeViewModel* m_parentModel;
 
     void populateMetaModel();
 };

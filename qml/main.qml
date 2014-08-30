@@ -122,7 +122,7 @@ ApplicationWindow {
         enabled: undoManager.canUndo
         onTriggered: {
 
-            if(undoManager.undoText === "delete"){
+            if(undoManager.undoText === "deleteKey"){
                 undoManager.undo()
                 keyAreaView.__incrementCurrentIndex()
                 keyAreaView.selection.clear()
@@ -148,8 +148,7 @@ ApplicationWindow {
         enabled: undoManager.canRedo
         onTriggered: {
 
-            if(undoManager.redoText === "delete"){
-                undoManager.redo()
+            if(undoManager.redoText === "deleteKey"){
 
                 keyAreaView.__decrementCurrentIndex()
                 keyAreaView.selection.clear()
@@ -161,14 +160,18 @@ ApplicationWindow {
                 else
                     keyAreaSelectedItem = null
             }
+            else if(undoManager.redoText === "deleteBranch"){
+
+                if(metaAreaModel !== null)
+                    metaAreaModel = null
+            }
             else if(undoManager.redoText === "cut"){
                 pasteCounter--
-                undoManager.redo()
             }
-            else{
-                undoManager.redo()
-            }
+
+            undoManager.redo()
         }
+
     }
 
     Action {
@@ -407,7 +410,7 @@ ApplicationWindow {
             onTriggered: {
 
                 if(keyAreaSelectedItem !== null){
-                    undoManager.createDeleteKeyCommand(keyAreaView.model, keyAreaSelectedItem.node, keyAreaView.currentRow)
+                    undoManager.createDeleteKeyCommand("deleteKey", keyAreaView.model, keyAreaSelectedItem.node, keyAreaView.currentRow)
 
                     keyAreaView.__decrementCurrentIndex()
                     keyAreaView.selection.clear()
@@ -419,8 +422,8 @@ ApplicationWindow {
                     else
                         keyAreaSelectedItem = null
                 }
-                else if(treeView.currentNode !== null){
-                    //TODO: delete branch
+                else if(treeView.currentNode !== null && keyAreaSelectedItem === null){
+                    undoManager.createDeleteKeyCommand("deleteBranch", treeView.currentNode.parentModel, treeView.currentNode.node, treeView.currentNode.index)
                 }
             }
         }

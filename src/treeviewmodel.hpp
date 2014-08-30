@@ -35,7 +35,9 @@ public:
         ChildrenRole, ///< The role QML can access the children model of a node at a specified index.
         ChildrenHaveNoChildrenRole, ///< The role QML can access if children of a node at a specified index do have children on their own.
         MetaValueRole, ///< The role QML can access the meta model of a node at a specified index.
-        NodeRole ///< The role QML can retrieve the node at a specified index.
+        NodeRole, ///< The role QML can retrieve the node at a specified index.
+        ParentModelRole,
+        IndexRole
     };
 
     explicit TreeViewModel(QObject* parent =  0);
@@ -86,6 +88,7 @@ public:
     Q_INVOKABLE void            setData(int index, const QVariant& value, const QString& role);
                 QString         toString();
                 void            deletePath(const QString &path);
+    Q_INVOKABLE int             getIndexByName(const QString &name) const;
 
 private:
     void                        sink(ConfigNode* node, QStringList keys, QString path, kdb::Key key);

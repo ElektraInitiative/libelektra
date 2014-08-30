@@ -1,12 +1,12 @@
 #include "deletekeycommand.hpp"
 
-DeleteKeyCommand::DeleteKeyCommand(TreeViewModel *model, ConfigNode *node, int index, QUndoCommand *parent)
+DeleteKeyCommand::DeleteKeyCommand(const QString &type, TreeViewModel *model, ConfigNode *node, int index, QUndoCommand *parent)
     : QUndoCommand(parent)
     , m_model(model)
     , m_node(*node)
     , m_index(index)
 {
-    setText("delete");
+    setText(type);
 }
 
 void DeleteKeyCommand::undo()

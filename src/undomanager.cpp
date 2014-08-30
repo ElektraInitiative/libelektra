@@ -52,9 +52,9 @@ void UndoManager::createEditKeyCommand(TreeViewModel *model, int index, const QS
     m_undoStack->push(new EditKeyCommand(model, index, oldName, oldValue, oldMDMap, newName, newValue, newMetaData.toMap()));
 }
 
-void UndoManager::createDeleteKeyCommand(TreeViewModel *model, ConfigNode *node, int index)
+void UndoManager::createDeleteKeyCommand(const QString &type, TreeViewModel *model, ConfigNode *node, int index)
 {
-    m_undoStack->push(new DeleteKeyCommand(model, node, index));
+    m_undoStack->push(new DeleteKeyCommand(type, model, node, index));
 }
 
 void UndoManager::createNewKeyCommand(TreeViewModel *model, const QString &name, const QString &value, const QVariantMap &metaData)

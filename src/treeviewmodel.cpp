@@ -50,8 +50,6 @@ QVariant TreeViewModel::data(const QModelIndex& index, int role) const
 
     ConfigNode* node = m_model.at(index.row());
 
-    //qDebug() << "Role: " << role;
-
     switch (role)
     {
 
@@ -80,6 +78,12 @@ QVariant TreeViewModel::data(const QModelIndex& index, int role) const
 
     case NodeRole:
         return QVariant::fromValue(node);
+
+    case ParentModelRole:
+        return QVariant::fromValue(node->getParentModel());
+
+    case IndexRole:
+        return QVariant::fromValue(index.row());
 
     default:
         qDebug() << "Unknown role " << role;
@@ -180,6 +184,16 @@ void TreeViewModel::deletePath(const QString &path)
     }
 }
 
+int TreeViewModel::getIndexByName(const QString &name) const
+{
+    for(int i = 0; i < m_model.count(); i++){
+        if(m_model.at(i)->getName() == name)
+            return i;
+    }
+
+    return -1;
+}
+
 Qt::ItemFlags TreeViewModel::flags(const QModelIndex& index) const
 {
     if (!index.isValid())
@@ -210,9 +224,9 @@ void TreeViewModel::sink(ConfigNode* node, QStringList keys, QString path, Key k
         ConfigNode* newNode;
 
         if(isLeaf)
-            newNode = new ConfigNode(name, (path + "/" + name), key);
+            newNode = new ConfigNode(name, (path + "/" + name), key, node->getChildren());
         else
-            newNode = new ConfigNode(name, (path + "/" + name), NULL);
+            newNode = new ConfigNode(name, (path + "/" + name), NULL, node->getChildren());
 
         node->appendChild(newNode);
 
@@ -223,8 +237,8 @@ void TreeViewModel::sink(ConfigNode* node, QStringList keys, QString path, Key k
 
 void TreeViewModel::populateModel()
 {
-    ConfigNode* system = new ConfigNode("system", "system", 0);
-    ConfigNode* user = new ConfigNode("user", "user", 0);
+    ConfigNode* system = new ConfigNode("system", "system", 0, this);
+    ConfigNode* user = new ConfigNode("user", "user", 0, this);
 
     m_model << system << user;
 
@@ -284,7 +298,7 @@ QVariant TreeViewModel::find(const QString& term)
 
     if (searchResults->model().count() == 0)
     {
-        searchResults->model().append(new ConfigNode("NotfoundNode", "There were no results matching your query.", 0));
+        searchResults->model().append(new ConfigNode("NotfoundNode", "There were no results matching your query.", 0, this));
     }
 
     return QVariant::fromValue(searchResults);
@@ -314,7 +328,7 @@ bool TreeViewModel::removeRow(int row, const QModelIndex& parent)
 {
     Q_UNUSED(parent);
 
-    if (row < 0 || row > m_model.size()-1)
+    if (row < 0 || row > m_model.size() - 1)
     {
         qDebug() << "Tried to remove row out of bounds. model.size = " <<  m_model.size() << ", index = " << row;
         return false;
@@ -334,6 +348,8 @@ bool TreeViewModel::insertRow(int row, const QModelIndex& parent)
     ConfigNode *node = new ConfigNode;
     node->setName(QString::fromStdString(m_metaModelParent.getName()));
     node->setKey(m_metaModelParent);
+    node->setParentModel(this);
+
     beginInsertRows(QModelIndex(), row, row);
     m_model.insert(row, node);
     endInsertRows();
@@ -415,6 +431,7 @@ void TreeViewModel::clear()
 QHash<int, QByteArray> TreeViewModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
+
     roles[NameRole] = "name";
     roles[PathRole] = "path";
     roles[ValueRole] = "value";
@@ -423,5 +440,8 @@ QHash<int, QByteArray> TreeViewModel::roleNames() const
     roles[ChildrenHaveNoChildrenRole] = "childrenHaveNoChildren";
     roles[MetaValueRole] = "metaValue";
     roles[NodeRole] = "node";
+    roles[ParentModelRole] = "parentModel";
+    roles[IndexRole] = "index";
+
     return roles;
 }
