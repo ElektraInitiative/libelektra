@@ -143,8 +143,6 @@ static void test_keyHelpers()
 
 	succeed_if (keyAddBaseName (0, "s") == -1, "null pointer saftey");
 
-	// TODO: the disabled tests wont work anymore with the new behaviour of keyAddBasename
-
 	k1 = keyNew ("user/dir1/dir2", KEY_END);
 	succeed_if (keyAddBaseName (k1, 0) == 15, "Could not add nothing to basename");
 	succeed_if (strcmp (keyName(k1), "user/dir1/dir2") == 0, "added basename not correct");
@@ -153,7 +151,7 @@ static void test_keyHelpers()
 	succeed_if (keyAddBaseName (k1, "mykey") == 23, "Could not add basename");
 	succeed_if (strcmp (keyName(k1), "user/dir1/dir2/%/mykey") == 0, "added basename not correct");
 	succeed_if (keyGetNameSize(k1) == 23, "Name size not correct");
-	succeed_if (keyAddBaseName (k1, "mykey") == 29, "Could not add basename");
+	succeed_if (keyAddBaseName (k1, "mykey") == sizeof("user/dir1/dir2/%/mykey/mykey"), "Could not add basename");
 	succeed_if (strcmp (keyName(k1), "user/dir1/dir2/%/mykey/mykey") == 0, "added basename not correct");
 	succeed_if (keyGetNameSize(k1) == 29, "Name size not correct");
 	succeed_if (keyAddBaseName (k1, "a") == 31, "Could not add basename");
@@ -161,32 +159,33 @@ static void test_keyHelpers()
 	succeed_if (keyGetNameSize(k1) == 31, "Name size not correct");
 	keyDel (k1);
 
-	/*
-	k1 = keyNew ("user/dir1/dir2", KEY_END);
-	succeed_if (keyAddBaseName (k1, "mykey/mykey/a") == 29, "Could not add basename");
-	succeed_if (strcmp (keyName(k1), "user/dir1/dir2/mykey/mykey/a") == 0, "added basename not correct");
-	succeed_if (keyGetNameSize(k1) == 29, "Name size not correct");
-	keyDel (k1);
+{
+	k2 = keyNew ("user/dir1/dir2", KEY_END);
+	char c[] = "user/dir1/dir2/mykey\\/mykey\\/a";
+	succeed_if (keyAddBaseName (k2, "mykey/mykey/a") == sizeof(c), "Could not add basename");
+	succeed_if_same_string (keyName(k2), c);
+	succeed_if (keyGetNameSize(k2) == sizeof(c), "Name size not correct");
+	keyDel (k2);
+}
 
-	k1 = keyNew ("user/////dir1//////dir2", KEY_END);
-	succeed_if (keyAddBaseName (k1, "mykey/////mykey////a") == 29, "Could not add basename");
-	succeed_if (strcmp (keyName(k1), "user/dir1/dir2/mykey/mykey/a") == 0, "added basename not correct");
-	succeed_if (keyGetNameSize(k1) == 29, "Name size not correct");
-	keyDel (k1);
+{
+	k2 = keyNew ("user/dir1/dir2", KEY_END);
+	char c[] = "user/dir1/dir2/mykey\\/\\/\\/\\/a";
+	succeed_if (keyAddBaseName (k2, "mykey////a") == sizeof(c), "Could not add basename");
+	succeed_if_same_string (keyName(k2), c);
+	succeed_if (keyGetNameSize(k2) == sizeof(c), "Name size not correct");
+	keyDel (k2);
+}
 
-	k1 = keyNew ("user/dir1/////dir2////", KEY_END);
-	succeed_if (keyAddBaseName (k1, "////mykey////mykey/a") == 29, "Could not add basename");
-	succeed_if (strcmp (keyName(k1), "user/dir1/dir2/mykey/mykey/a") == 0, "added basename not correct");
-	succeed_if (keyGetNameSize(k1) == 29, "Name size not correct");
-	keyDel (k1);
+{
+	k2 = keyNew ("user/dir1/dir2", KEY_END);
+	char c[] = "user/dir1/dir2/mykey\\/\\/\\/\\/";
+	succeed_if (keyAddBaseName (k2, "mykey////") == sizeof(c), "Could not add basename");
+	succeed_if_same_string (keyName(k2), c);
+	succeed_if (keyGetNameSize(k2) == sizeof(c), "Name size not correct");
+	keyDel (k2);
+}
 
-	k1 = keyNew ("user/dir1/dir2", KEY_END);
-	succeed_if (keyAddBaseName (k1, "mykey/mykey////a///") == 29, "Could not add basename");
-	succeed_if (strcmp (keyName(k1), "user/dir1/dir2/mykey/mykey/a") == 0, "added basename not correct");
-	succeed_if (keyGetNameSize(k1) == 29, "Name size not correct");
-	keyDel (k1);
-
-	*/
 
 	k2 = keyNew (KEY_END);
 	succeed_if (keyAddBaseName (k2, "no") == -1, "Could add basename on empty name");
@@ -253,7 +252,7 @@ static void test_keyHelpers()
 	k2 = keyNew ("system", KEY_END);
 	succeed_if (keySetBaseName (k2, "system") == -1, "Could add basename, but there is none");
 	succeed_if (strcmp (keyName(k2), "system") == 0, "basename not correct");
-	succeed_if (keyGetNameSize(k2) == 5, "Name size not correct");
+	succeed_if (keyGetNameSize(k2) == 7, "Name size not correct");
 	keyDel (k2);
 }
 
