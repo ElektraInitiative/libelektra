@@ -345,6 +345,9 @@ static void elektraFinalizeName(Key *key)
 {
 	key->key[key->keySize - 1] = 0; /* finalize string */
 
+	key->keyUSize = elektraUnescapeKeyName(key->key,
+			key->key+key->keySize);
+
 	key->flags |= KEY_FLAG_SYNC;
 }
 
@@ -835,7 +838,7 @@ ssize_t keyAddBaseName(Key *key, const char *baseName)
 	elektraEscapeKeyNamePart(baseName, escaped);
 	size = strlen (escaped);
 	key->keySize += size + 1;
-	elektraRealloc ((void**)&key->key, key->keySize);
+	elektraRealloc ((void**)&key->key, key->keySize*2);
 	if (!key->key)
 	{
 		elektraFree (escaped);
@@ -988,7 +991,7 @@ ssize_t keySetBaseName(Key *key, const char *baseName)
 	elektraEscapeKeyNamePart(baseName, escaped);
 	size_t sizeEscaped = elektraStrLen (escaped);
 
-	elektraRealloc((void**)&key->key, key->keySize+sizeEscaped);
+	elektraRealloc((void**)&key->key, (key->keySize+sizeEscaped)*2);
 	if (!key->key)
 	{
 		elektraFree (escaped);
