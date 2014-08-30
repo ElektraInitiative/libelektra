@@ -2287,6 +2287,11 @@ static void test_ksDoubleAppendKey()
 	ksAppendKey (ks, k);
 	succeed_if (ksGetSize (ks) == 1, "size not correct");
 
+	Key *k2 = keyNew("user:owner/my_double_key", KEY_END);
+
+	ksAppendKey (ks, k2);
+	succeed_if (ksGetSize (ks) == 2, "size not correct");
+
 	keyDel (k); // has no effect
 
 	ksDel (ks);
