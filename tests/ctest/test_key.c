@@ -275,6 +275,38 @@ static void test_keyPlugin()
 	keyDel (k);
 }
 
+static void test_keyUnescaped()
+{
+	printf ("test unescaped\n");
+
+	Key *k = keyNew("user/something", KEY_END);
+	succeed_if (!memcmp(keyUnescapedName(k), "user\0something", sizeof("user/something")), "unescaped name wrong");
+
+	keySetName(k, "system/something/else");
+	succeed_if (!memcmp(keyUnescapedName(k), "system\0something\0else", sizeof("system/something/else")), "unescaped name wrong");
+
+	keyAddBaseName(k, "more");
+	succeed_if (!memcmp(keyUnescapedName(k), "system\0something\0else\0more", sizeof("system/something/else/more")), "unescaped name wrong");
+
+	keySetBaseName(k, "else");
+	succeed_if (!memcmp(keyUnescapedName(k), "system\0something\0else\0else", sizeof("system/something/else/else")), "unescaped name wrong");
+
+	keySetBaseName(k, "");
+	succeed_if (!memcmp(keyUnescapedName(k), "system\0something\0else\0\0", sizeof("system/something/else/")), "unescaped name wrong");
+
+	keySetBaseName(k, "%");
+	succeed_if (!memcmp(keyUnescapedName(k), "system\0something\0else\0%", sizeof("system/something/else/%")), "unescaped name wrong");
+
+	/* print memory of keyUnescapedName
+	for (size_t i = 0; i<sizeof("system/something/else/\\%"); ++i)
+	{
+		printf ("%c %d\n", (char)((char*)keyUnescapedName(k))[i], (int)((char*)keyUnescapedName(k))[i]);
+	}
+	*/
+
+	keyDel(k);
+}
+
 int main(int argc, char** argv)
 {
 	printf("KEY      TESTS\n");
@@ -285,6 +317,7 @@ int main(int argc, char** argv)
 	test_keyRefcounter();
 	test_keyHelpers();
 	test_keyPlugin();
+	test_keyUnescaped();
 
 	printf("\ntest_key RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

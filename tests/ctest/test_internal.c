@@ -93,7 +93,6 @@ static void test_elektraEscapeKeyNamePart()
 	succeed_if_same_string (elektraEscapeKeyNamePart("..", dest), "\\..");
 	succeed_if_same_string (elektraEscapeKeyNamePart("%", dest), "\\%");
 	succeed_if_same_string (elektraEscapeKeyNamePart("", dest), "%");
-	succeed_if_same_string (elektraEscapeKeyNamePart("/", dest), "\\/");
 	succeed_if_same_string (elektraEscapeKeyNamePart("///", dest), "\\/\\/\\/");
 	succeed_if_same_string (elektraEscapeKeyNamePart("a/b", dest), "a\\/b");
 	succeed_if_same_string (elektraEscapeKeyNamePart("a//b", dest), "a\\/\\/b");
@@ -102,8 +101,17 @@ static void test_elektraEscapeKeyNamePart()
 	succeed_if_same_string (elektraEscapeKeyNamePart("a/%/b", dest), "a\\/%\\/b");
 	succeed_if_same_string (elektraEscapeKeyNamePart("a/x/b", dest), "a\\/x\\/b");
 	succeed_if_same_string (elektraEscapeKeyNamePart("\\", dest), "\\");
-	succeed_if_same_string (elektraEscapeKeyNamePart("\\.", dest), "\\.");
+	succeed_if_same_string (elektraEscapeKeyNamePart("a\\.", dest), "a\\.");
+	succeed_if_same_string (elektraEscapeKeyNamePart("\\.", dest), "\\\\.");
+	succeed_if_same_string (elektraEscapeKeyNamePart("\\\\.", dest), "\\\\\\.");
+	succeed_if_same_string (elektraEscapeKeyNamePart("\\..", dest), "\\\\..");
+	succeed_if_same_string (elektraEscapeKeyNamePart("\\\\..", dest), "\\\\\\..");
+	succeed_if_same_string (elektraEscapeKeyNamePart("\\\\\\..", dest), "\\\\\\\\..");
+	succeed_if_same_string (elektraEscapeKeyNamePart("/", dest), "\\/");
 	succeed_if_same_string (elektraEscapeKeyNamePart("\\/", dest), "\\\\/");
+	succeed_if_same_string (elektraEscapeKeyNamePart("\\\\/", dest), "\\\\\\/");
+	succeed_if_same_string (elektraEscapeKeyNamePart("ab\\\\/", dest), "ab\\\\\\/");
+	succeed_if_same_string (elektraEscapeKeyNamePart("ab\\\\/de", dest), "ab\\\\\\/de");
 }
 
 static void test_elektraUnescapeKeyName()
@@ -115,6 +123,9 @@ static void test_elektraUnescapeKeyName()
 
 	succeed_if (elektraUnescapeKeyName("abc", dest) == 4, "size of unescaping wrong");
 	succeed_if_same_string("abc", dest);
+
+	succeed_if (elektraUnescapeKeyName("\\\\.", dest) == 3, "size of unescaping wrong");
+	succeed_if_same_string("\\.", dest);
 
 	succeed_if (elektraUnescapeKeyName("abc/def", dest) == 8, "size of unescaping wrong");
 	p = dest; succeed_if_same_string("abc", p);
@@ -143,6 +154,11 @@ static void test_elektraUnescapeKeyName()
 	p += 4;   succeed_if_same_string("..", p);
 	p += 3;   succeed_if_same_string("def", p);
 
+	succeed_if(elektraUnescapeKeyName("abc/\\\\../def", dest) == 12, "size of unescaping wrong");
+	p = dest; succeed_if_same_string("abc", p);
+	p += 4;   succeed_if_same_string("\\..", p);
+	p += 4;   succeed_if_same_string("def", p);
+
 	succeed_if(elektraUnescapeKeyName("a\\c/\\../d\\f", dest) == 11, "size of unescaping wrong");
 	p = dest; succeed_if_same_string("a\\c", p);
 	p += 4;   succeed_if_same_string("..", p);
@@ -157,6 +173,11 @@ static void test_elektraUnescapeKeyName()
 	p = dest; succeed_if_same_string("\\b", p);
 	p += 3;   succeed_if_same_string("%", p);
 	p += 2;   succeed_if_same_string("\\e", p);
+
+	succeed_if(elektraUnescapeKeyName("\\b/\\\\%/\\e", dest) == 9, "size of unescaping wrong");
+	p = dest; succeed_if_same_string("\\b", p);
+	p += 3;   succeed_if_same_string("\\%", p);
+	p += 3;   succeed_if_same_string("\\e", p);
 
 	succeed_if(elektraUnescapeKeyName("a\\/\\/def", dest) == 7, "size of unescaping wrong");
 	p = dest; succeed_if_same_string("a//def", p);

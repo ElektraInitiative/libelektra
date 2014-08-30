@@ -21,10 +21,19 @@
 
 #include <kdb.h>
 
+// is this needed?
 Key *ksPrev(KeySet *ks);
 Key *ksPopAtCursor(KeySet *ks, cursor_t c);
+
+// is the unescaped name useful for applications?
+const void *keyUnescapedName(const Key *key);
+ssize_t keyGetUnescapedNameSize(const Key *key);
+
+// can be made simply without elektra's internals, so better keep it as
+// extension.
 int keySetStringF(Key *key, const char *format, ...);
 
+// could also be in an extension library.
 int elektraArrayIncName(Key *key);
 int elektraKsToMemArray(KeySet *ks, Key **buffer);
 

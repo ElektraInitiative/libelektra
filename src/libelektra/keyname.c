@@ -618,12 +618,12 @@ ssize_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize)
 
 
 /**
- * Returns a pointer to the real internal key name where the @p basename starts.
+ * @brief Returns a pointer to the internal unescaped key name where the @p basename starts.
  *
  * This is a much more efficient version of keyGetBaseName() and you should
  * use it if you are responsible enough to not mess up things. The name might
- * change or even point to a wrong place after a keySetName(). If you need
- * a copy of the basename consider to use keyGetBaseName().
+ * change or even point to a wrong place after a keySetName(). So make
+ * sure to copy the memory before the name changes.
  *
  * keyBaseName() returns "" when there is no keyBaseName. The reason is
  * @code
@@ -635,10 +635,9 @@ keyBaseName(key); // you would expect "" here
 keyDel(key);
  * @endcode
  *
- * @note Note that the Key structure keeps its own size field that is calculated
- * by library internal calls, so to avoid inconsistencies, you
- * must never use the pointer returned by keyBaseName() method to set a new
- * value. Use keySetBaseName() instead.
+ * @note You must never use the pointer returned by keyBaseName()
+ * method to change the name, but you should use keySetBaseName()
+ * instead.
  *
  * @param key the object to obtain the basename from
  * @return a pointer to the basename
@@ -651,19 +650,15 @@ keyDel(key);
  */
 const char *keyBaseName(const Key *key)
 {
-	char *p=0;
-	char *base=0;
-	size_t size=0;
-
 	if (!key) return 0;
+	if (!key->key) return "";
 
-	p = key->key;
+	char *p = key->key + key->keySize + key->keyUSize - 1;
 
-	if (!p) return "";
+	char *base=0;
+	while (*(--p)) base=p;
 
-	while (*(p=keyNameGetOneLevel(p+size,&size))) base=p;
-
-	if (base != key->key) return base;
+	if (base != (key->key + key->keyUSize)) return base;
 	else return "";
 }
 

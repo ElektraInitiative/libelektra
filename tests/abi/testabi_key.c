@@ -71,7 +71,7 @@ struct test tstKeyName[] =
 
 	{ "Key containing escaped separator", "user:yl///foo\\///bar\\/foo_bar\\",
 		"user/foo\\//bar\\/foo_bar\\", 	/* keyName 	*/
-		"bar\\/foo_bar\\", 		/* keyBaseName 	*/
+		"bar/foo_bar\\", 		/* keyBaseName 	*/
 		"user:yl",			/* keyGetFullRootName 	*/ 
 		"user/foo\\/"			/* keyGetParentName	*/
 	
@@ -79,12 +79,36 @@ struct test tstKeyName[] =
 
 	{ "Key containing escaped separator at the end", "user:yl///foo\\///bar\\/foo_bar\\/",
 		"user/foo\\//bar\\/foo_bar\\/",	/* keyName 	*/
-		"bar\\/foo_bar\\/", 		/* keyBaseName 	*/
+		"bar/foo_bar/", 		/* keyBaseName 	*/
 		"user:yl",			/* keyGetFullRootName 	*/ 
 		"user/foo\\/"			/* keyGetParentName	*/
 	
 	},
+
+	{ "Key with empty part", "user///%",
+		"user/%",	/* keyName 	*/
+		"", 		/* keyBaseName 	*/
+		"",			/* keyGetFullRootName 	*/ 
+		""			/* keyGetParentName	*/
 	
+	},
+
+	{ "Key with escaped %", "user///\\%",
+		"user/\\%",	/* keyName 	*/
+		"%", 		/* keyBaseName 	*/
+		"",			/* keyGetFullRootName 	*/ 
+		""			/* keyGetParentName	*/
+	
+	},
+
+	{ "Key with multi escaped %", "user///\\\\%",
+		"user/\\\\%",	/* keyName 	*/
+		"\\%", 		/* keyBaseName 	*/
+		"",			/* keyGetFullRootName 	*/ 
+		""			/* keyGetParentName	*/
+	
+	},
+
 	{ NULL, NULL,
 		NULL, /* keyName 	*/
 		NULL, /* keyBaseName 	*/
@@ -882,10 +906,10 @@ static void test_keyName()
 		key = keyNew(tstKeyName[i].keyName, KEY_END);
 
 		/* keyName */
-		succeed_if( (strcmp(keyName(key), tstKeyName[i].expectedKeyName) == 0) , "keyName" );
+		succeed_if_same_string(keyName(key), tstKeyName[i].expectedKeyName);
 
 		/* keyBaseName */
-		succeed_if( (strcmp(keyBaseName(key), tstKeyName[i].expectedBaseName) == 0), "keyBaseName" );
+		succeed_if_same_string(keyBaseName(key), tstKeyName[i].expectedBaseName);
 
 		/* keyGetFullRootNameSize */
 		size = keyGetFullRootNameSize(key);
@@ -917,7 +941,7 @@ static void test_keyName()
 		size = keyGetBaseNameSize(key)+1;
 		buf = malloc(size*sizeof(char));
 		keyGetBaseName(key, buf, size);
-		succeed_if( (strncmp(buf, tstKeyName[i].expectedBaseName, size) == 0), "keyGetBaseName" );
+		succeed_if_same_string(buf, tstKeyName[i].expectedBaseName);
 		free(buf);
 
 		/* keyGetNameSize */
@@ -2314,59 +2338,85 @@ static void test_keySetBaseName()
 	succeed_if_same_string(keyName(k), "system/\\\\\\\\/");
 
 	keySetName (k, "system/valid");
-	succeed_if (keySetBaseName (k, "%") == sizeof("system/\\%"), "backslash escaped, but backslash unescaped");
+	succeed_if (keySetBaseName (k, "%") == sizeof("system/\\%"), "could not set basename");
+	succeed_if_same_string(keyBaseName(k), "%");
 	succeed_if_same_string(keyName(k), "system/\\%");
 
 	keySetName (k, "system/valid");
+	succeed_if (keySetBaseName (k, ".") == sizeof("system/\\%"), "could not set basename");
+	succeed_if_same_string(keyBaseName(k), ".");
+	succeed_if_same_string(keyName(k), "system/\\.");
+
+	keySetName (k, "system/valid");
+	succeed_if (keySetBaseName (k, "..") == sizeof("system/\\.."), "could not set basename");
+	succeed_if_same_string(keyBaseName(k), "..");
+	succeed_if_same_string(keyName(k), "system/\\..");
+
+	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, "\\\\\\\\") >= 0, "backslash escaped, backslash escaped");
+	succeed_if_same_string(keyBaseName(k), "\\\\\\\\");
 	succeed_if_same_string(keyName(k), "system/\\\\\\\\");
 
 	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, "\\\\") >= 0, "escaped backslash ok");
+	succeed_if_same_string(keyBaseName(k), "\\\\");
 	succeed_if_same_string (keyName (k), "system/\\\\");
 
 	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, "\\.") >= 0, "escaped dot");
-	succeed_if_same_string (keyName (k), "system/\\.");
+	succeed_if_same_string(keyBaseName(k), "\\.");
+	succeed_if_same_string (keyName (k), "system/\\\\.");
 
 	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, "\\..") >= 0, "escaped dot-dot");
-	succeed_if_same_string (keyName (k), "system/\\..");
+	succeed_if_same_string(keyBaseName(k), "\\..");
+	succeed_if_same_string(keyName (k), "system/\\\\..");
 
 	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, "%") == sizeof("system/\\%"), "add some char");
+	succeed_if_same_string(keyBaseName(k), "%");
 	succeed_if_same_string(keyName(k), "system/\\%");
 
 	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, "#1") == sizeof("system/#1"), "valid array entry");
-	output_key (k);
+	succeed_if_same_string(keyBaseName(k), "#1");
 	succeed_if_same_string (keyName (k), "system/#1");
 
 	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, "#_10") >= 0, "valid array entry");
-	output_key (k);
-	succeed_if_same_string (keyName (k), "system/#_10");
-
-	//! [base1]
-	keySetName (k, "system/valid");
-	keyAddBaseName(k, "");
-	succeed_if_same_string(keyName(k), "system/valid/%");
-	keySetBaseName(k, ".hiddenkey");
-	succeed_if_same_string(keyName(k), "system/valid/.hiddenkey");
-	//! [base1]
-
-	//! [base2]
-	keySetName (k, "system/valid");
-	keyAddBaseName(k, 0);
-	succeed_if_same_string(keyName(k), "system/valid");
-	keySetBaseName(k, "#0");
-	succeed_if_same_string(keyName(k), "system/#0");
-	//! [base2]
+	succeed_if_same_string(keyBaseName(k), "#_10");
+	succeed_if_same_string(keyName (k), "system/#_10");
 
 	keySetName(k, "user/tests/yajl/___empty_map");
 	keySetBaseName(k, "#0");
+	succeed_if_same_string(keyBaseName(k), "#0");
+
 	keySetBaseName(k, "nullkey");
+	succeed_if_same_string(keyBaseName(k), "nullkey");
 	succeed_if_same_string(keyName(k), "user/tests/yajl/nullkey");
+
+	//! [base1]
+	keySetName (k, "system/valid");
+	keySetBaseName(k, ".hiddenkey");
+	succeed_if_same_string(keyBaseName(k), ".hiddenkey");
+	succeed_if_same_string(keyName(k), "system/.hiddenkey");
+	//! [base1]
+
+	//! [base2]
+	keySetName (k, "system/valid");
+	keySetBaseName(k, "");
+	succeed_if_same_string(keyBaseName(k), "");
+	succeed_if_same_string(keyName(k), "system/%");
+	//! [base2]
+
+	//! [base3]
+	keySetName (k, "system/valid");
+	keySetBaseName(k, "%");
+	succeed_if_same_string(keyBaseName(k), "%");
+	succeed_if_same_string(keyName(k), "system/\\%");
+	//! [base3]
+
+
 
 	keyDel (k);
 }
@@ -2453,6 +2503,9 @@ static void test_keyLock()
 
 	keyLock(key, KEY_LOCK_NAME);
 	succeed_if (keySetName(key, "user") == -1, "read only name, not allowed to set");
+	succeed_if (keyAddName(key, "a") == -1, "read only name, not allowed to set");
+	succeed_if (keySetBaseName(key, "a") == -1, "read only name, not allowed to set");
+	succeed_if (keyAddBaseName(key, "a") == -1, "read only name, not allowed to set");
 
 	keyDel (key);
 	key = keyNew(KEY_END);
@@ -2495,6 +2548,7 @@ static void test_keyAddName()
 	keyDel(k);
 }
 
+
 int main(int argc, char** argv)
 {
 	printf("KEY ABI  TESTS\n");
@@ -2527,6 +2581,7 @@ int main(int argc, char** argv)
 	test_keyLock();
 	test_keySetBaseName();
 	test_keyAddBaseName();
+	test_keyAddName();
 	test_keyAddName();
 
 	printf("\ntestabi_key RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);

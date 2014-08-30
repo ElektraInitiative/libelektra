@@ -460,6 +460,26 @@ int elektraValidateKeyNamePart(const char *name)
 /**
  * @internal
  *
+ * @brief Write number backslashes to dest
+ *
+ * @param dest where to write to, will be updated to position after
+ *        the written backslashes
+ * @param number of backslashes to write
+ */
+static void elektraWriteBackslashes(char **dest, size_t number)
+{
+	char * dp = *dest;
+	while (number--)
+	{
+		*dp = '\\';
+		++dp;
+	}
+	*dest = dp;
+}
+
+/**
+ * @internal
+ *
  * @brief Unescapes the beginning of the key name part
  *
  * If there was something to escape in the begin, then it is guaranteed
@@ -488,6 +508,23 @@ int elektraUnescapeKeyNamePartBegin(const char *source, size_t size, char **dest
 		return 1;
 	}
 
+	size_t skippedBackslashes = 0;
+	// skip all backslashes, but one, at start of a name
+	while (*sp == '\\')
+	{
+		++sp; 
+		++skippedBackslashes;
+	}
+	size -= skippedBackslashes;
+
+	if (skippedBackslashes > 0)
+	{
+		// correct by one (avoid lookahead in loop)
+		--sp;
+		++size;
+		--skippedBackslashes;
+	}
+
 	if (size <= 1)
 	{
 		// matches below would be wrong
@@ -496,6 +533,7 @@ int elektraUnescapeKeyNamePartBegin(const char *source, size_t size, char **dest
 
 	if (!strncmp ("\\%", sp, size))
 	{
+		elektraWriteBackslashes(&dp, skippedBackslashes);
 		strcpy(dp, "%");
 		*dest = dp+1;
 		return 1;
@@ -503,6 +541,7 @@ int elektraUnescapeKeyNamePartBegin(const char *source, size_t size, char **dest
 
 	if (!strncmp ("\\.", sp, size))
 	{
+		elektraWriteBackslashes(&dp, skippedBackslashes);
 		strcpy(dp, ".");
 		*dest = dp+1;
 		return 1;
@@ -516,6 +555,7 @@ int elektraUnescapeKeyNamePartBegin(const char *source, size_t size, char **dest
 
 	if (!strncmp ("\\..", sp, size))
 	{
+		elektraWriteBackslashes(&dp, skippedBackslashes);
 		strcpy(dp, "..");
 		*dest = dp+2;
 		return 1;
@@ -595,7 +635,6 @@ size_t elektraUnescapeKeyName(const char *source, char *dest)
 	return dp-dest;
 }
 
-
 /**
  * @internal
  *
@@ -612,20 +651,31 @@ int elektraEscapeKeyNamePartBegin(const char *source, char *dest)
 		return 1;
 	}
 
+	size_t skippedBackslashes = 0;
+	// skip all backslashes at start of a name
+	while (*sp == '\\')
+	{
+		++sp;
+		++skippedBackslashes;
+	}
+
 	if (!strcmp ("%", sp))
 	{
+		elektraWriteBackslashes(&dp, skippedBackslashes);
 		strcpy(dp, "\\%");
 		return 1;
 	}
 
 	if (!strcmp (".", sp))
 	{
+		elektraWriteBackslashes(&dp, skippedBackslashes);
 		strcpy(dp, "\\.");
 		return 1;
 	}
 
 	if (!strcmp ("..", sp))
 	{
+		elektraWriteBackslashes(&dp, skippedBackslashes);
 		strcpy(dp, "\\..");
 		return 1;
 	}
@@ -667,7 +717,6 @@ char *elektraEscapeKeyNamePart(const char *source, char *dest)
 	/* slashes and backslashes are escaped everywhere */
 	while (*sp)
 	{
-		// TODO backslash handling
 		if (*sp == '/')
 		{
 			*dp='\\';
