@@ -196,6 +196,9 @@ static void test_elektraUnescapeKeyName()
 
 	succeed_if(elektraUnescapeKeyName("\\/\\/..\\/\\/", dest) == 7, "size of unescaping wrong");
 	p = dest; succeed_if_same_string("//..//", p);
+
+	succeed_if(elektraUnescapeKeyName("bar\\/foo_bar\\/", dest) == sizeof("bar/foo_bar/"), "size of unescaping wrong");
+	p = dest; succeed_if_same_string("bar/foo_bar/", p);
 }
 
 static void test_keyNameGetOneLevel()

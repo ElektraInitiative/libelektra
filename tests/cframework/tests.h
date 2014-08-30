@@ -30,7 +30,7 @@
 #endif
 
 #include <kdb.h>
-#include <kdbextension.h>
+#include <kdbhelper.h>
 
 #define BUFFER_LENGTH 4096
 
@@ -79,24 +79,28 @@ int init(int argc, char** argv);
 	} \
 }
 
-#define check_attributes(attributes) \
-{ \
-	succeed_if ((attributes & KEY_NAME) == 0 , "compare key: NAME not equal"); \
-	succeed_if ((attributes & KEY_VALUE) == 0 , "compare key: VALUE not equal"); \
-	succeed_if ((attributes & KEY_OWNER) == 0 , "compare key: OWNER not equal"); \
-	succeed_if ((attributes & KEY_COMMENT) == 0 , "compare key: COMMENT not equal"); \
-	succeed_if ((attributes & KEY_UID) == 0 , "compare key: UID not equal"); \
-	succeed_if ((attributes & KEY_GID) == 0 , "compare key: GID not equal"); \
-	succeed_if ((attributes & KEY_MODE ) == 0 , "compare key: MODE  not equal"); \
-	succeed_if ((attributes & KEY_NULL ) == 0, "compare key: one of the keys is null"); \
-}
-
 #define quote_string(x) #x
 
 #define compare_key_name(k1, k2) \
 { \
 	nbTest++; \
 	if (strcmp(keyName(k1), keyName(k2))) \
+	{ \
+		char errorMsg [BUFFER_LENGTH]; \
+		 \
+		strcpy(errorMsg, "key name "); \
+		strcat(errorMsg, keyName(k1)); \
+		strcat(errorMsg, " is not equal "); \
+		strcat(errorMsg, keyName(k2)); \
+		 \
+		yield_error(errorMsg); \
+	} \
+}
+
+#define compare_key_string(k1, k2) \
+{ \
+	nbTest++; \
+	if (strcmp(keyString(k1), keyString(k2))) \
 	{ \
 		char errorMsg [BUFFER_LENGTH]; \
 		 \
@@ -163,8 +167,7 @@ int init(int argc, char** argv);
 	{ \
 		compare_key_name(k1, k2); \
 		 \
-		keyswitch_t attributes = keyCompare(k1, k2); \
-		check_attributes(attributes); \
+		compare_key_string(k1, k2); \
 		 \
 		const Key * meta; \
 		keyRewindMeta(k1); \
@@ -183,8 +186,6 @@ int init(int argc, char** argv);
 					); \
 				break; \
 			} \
-			attributes = keyCompare(meta, metaCmp); \
-			check_attributes(attributes); \
 		} \
 	 \
 		const Key *const metaCmp = keyNextMeta(k2); \

@@ -397,18 +397,13 @@ ssize_t keySetName(Key *key, const char *newName)
 	if (!key) return -1;
 	if (test_bit(key->flags,  KEY_FLAG_RO_NAME)) return -1;
 
-	if (key->key) free (key->key);
+	if (key->key) elektraFree(key->key);
 	key->key = 0;
 	key->keySize=1; /* equal to length plus room for \\0 */
 
 	/* handle null new key name, removing the old name */
 	if (!newName || !(length=elektraStrLen(newName)-1))
 	{
-		if (key->key) {
-			key->keySize = 0;
-			free(key->key);
-			key->key=0;
-		}
 		return 0;
 	}
 
@@ -446,9 +441,6 @@ ssize_t keySetName(Key *key, const char *newName)
 				key->keySize+=length-ownerLength-1;  /* -1 is for the ':' */
 			} else if (*(newName+userLength)!=KDB_PATH_SEPARATOR) {
 				/* handle when != "user/ *" */
-				/*errno=KDB_ERR_INVALIDKEY;*/
-				key->key = 0;
-				key->keySize = 1;
 				return -1;
 			} else {
 				/* handle regular "user/ *" */
@@ -464,9 +456,6 @@ ssize_t keySetName(Key *key, const char *newName)
 		/* handle "system*" */
 		if (length > systemLength && *(newName+systemLength)!=KDB_PATH_SEPARATOR)
 		{	/* handle when != "system/ *" */
-			/*errno=KDB_ERR_INVALIDKEY;*/
-			key->key = 0;
-			key->keySize = 1;
 			return -1;
 		}
 		key->keySize+=length;
@@ -476,12 +465,6 @@ ssize_t keySetName(Key *key, const char *newName)
 		rootLength  = systemLength+1;
 	} else {
 		/* Given newName is neither "system" or "user" */
-		/*errno=KDB_ERR_INVALIDKEY;*/
-		key->key = 0;
-		key->keySize = 1;
-
-		keySetOwner (key, NULL);
-
 		return -1;
 	}
 
@@ -489,19 +472,15 @@ ssize_t keySetName(Key *key, const char *newName)
 	   At this point:
 	   - key->key has no memory (re)allocated yet
 	   - key->keySize has number of bytes that will be allocated for key name
-	     with already removed owner.
-	   - key->owner is already set
+	     with already removed owner. (even though we do not need it)
+	   - owner is already set
 	   - rootLength is sizeof("user") or sizeof("system")
 	*/
 
 	/* Allocate memory for key->key */
-	p=malloc(key->keySize);
+	p=elektraMalloc(rootLength);
 	if (NULL==p) goto error_mem;
-	if (key->key) free(key->key);
 	key->key=p;
-
-	/* here key->key must have a correct size allocated buffer */
-	if (!key->key) return -1;
 
 	/* copy the root of newName to final destination */
 	strncpy(key->key,newName,rootLength);
@@ -510,10 +489,11 @@ ssize_t keySetName(Key *key, const char *newName)
 	key->keySize=rootLength;
 	key->key[rootLength-1] = '\0';
 
+	size_t size = 0;
 	/* skip namespace we already processed */
-	p=keyNameGetOneLevel(newName,&length);
+	p=keyNameGetOneLevel(newName,&size);
 
-	return keyAddName(key, p+length);
+	return keyAddName(key, p+size);
 
 error_mem:
 	return -1;
@@ -655,7 +635,7 @@ const char *keyBaseName(const Key *key)
 
 	char *p = key->key + key->keySize + key->keyUSize - 1;
 
-	char *base=0;
+	char *base=p;
 	while (*(--p)) base=p;
 
 	if (base != (key->key + key->keyUSize)) return base;
@@ -683,24 +663,10 @@ const char *keyBaseName(const Key *key)
  */
 ssize_t keyGetBaseNameSize(const Key *key)
 {
-	char *p=0;
-	char *base=0;
-	size_t size=0;
-	size_t baseSize=0;
+	const char * baseName = keyBaseName(key);
+	if (!baseName) return -1;
 
-	if (!key) return -1;
-
-	p = key->key;;
-
-	if (!p) return 1;
-
-	while (*(p=keyNameGetOneLevel(p+size,&size))) {
-		base=p;
-		baseSize=size;
-	}
-	
-	if (base == key->key) return 1;
-	else return baseSize+1;
+	return elektraStrLen(baseName);
 }
 
 
@@ -731,6 +697,7 @@ ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize)
 	if (!maxSize) return -1;
 
 	if (maxSize > SSIZE_MAX) return -1;
+	ssize_t maxSSize = maxSize;
 
 	if (!key->key)
 	{
@@ -738,33 +705,21 @@ ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize)
 		return 1;
 	}
 
-	// TODO: not needed, just use keyBaseName()
-	size_t size=0;
-	char *baseName=0;
-	size_t baseSize=0;
-	char *p = key->key;
-
-	while (*(p=keyNameGetOneLevel(p+size,&size)))
+	ssize_t baseSize = keyGetBaseNameSize(key);
+	if (maxSSize < baseSize)
 	{
-		baseName=p;
-		baseSize=size+1;
-	}
-
-	if (!baseName || baseName==key->key)
-	{
-		returned[0] = 0;
-		return 1;
-	}
-	// TODO: not needed
-
-	if (maxSize < baseSize)
-	{
-		// truncated
 		return -1;
-	} else {
-		strncpy(returned,baseName,baseSize);
-		return baseSize;
 	}
+
+	const char *baseName = keyBaseName(key);
+
+	if (!baseName)
+	{
+		return -1;
+	}
+
+	strncpy(returned,baseName,baseSize);
+	return baseSize;
 }
 
 
