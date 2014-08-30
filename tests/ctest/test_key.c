@@ -215,72 +215,45 @@ static void test_keyHelpers()
 	keyDel (k2);
 
 	k2 = keyNew ("user/dir1/a", KEY_END);
-	succeed_if (keySetBaseName (k2, "") == 10, "Could not add basename");
+	succeed_if (keySetBaseName (k2, 0) == 10, "Could not add basename");
 	succeed_if (strcmp (keyName(k2), "user/dir1") == 0, "added basename not correct");
 	succeed_if (keyGetNameSize(k2) == 10, "Name size not correct");
 	keyDel (k2);
 
-	/* TODO: these tests wont work anymore with the new behaviour of keySetBaseName
 	k2 = keyNew ("user/dir1/a", KEY_END);
-	succeed_if (keySetBaseName (k2, "some/more") == 20, "Could not add basename");
-	succeed_if (strcmp (keyName(k2), "user/dir1/some/more") == 0, "added basename not correct");
-	succeed_if (keyGetNameSize(k2) == 20, "Name size not correct");
+	succeed_if (keySetBaseName (k2, "some/more") == sizeof("user/dir1/some\\/more"), "Could not add basename");
+	succeed_if (strcmp (keyName(k2), "user/dir1/some\\/more") == 0, "added basename not correct");
+	succeed_if (keyGetNameSize(k2) == sizeof("user/dir1/some\\/more"), "Name size not correct");
 	keyDel (k2);
 
+{
 	k2 = keyNew ("user/dir1/a", KEY_END);
-	succeed_if (keySetBaseName (k2, "some////more") == 20, "Could not add basename");
-	succeed_if (strcmp (keyName(k2), "user/dir1/some/more") == 0, "added basename not correct");
-	succeed_if (keyGetNameSize(k2) == 20, "Name size not correct");
+	char c[] = "user/dir1/some\\/\\/\\/\\/more";
+	succeed_if (keySetBaseName (k2, "some////more") == sizeof(c), "Could not add basename");
+	succeed_if_same_string (keyName(k2), c);
+	succeed_if (keyGetNameSize(k2) == sizeof(c), "Name size not correct");
 	keyDel (k2);
+}
 
+{
 	k2 = keyNew ("user/dir1/a", KEY_END);
-	succeed_if (keySetBaseName (k2, "some////more///") == 20, "Could not add basename");
-	succeed_if (strcmp (keyName(k2), "user/dir1/some/more") == 0, "added basename not correct");
-	succeed_if (keyGetNameSize(k2) == 20, "Name size not correct");
+	char c[] = "user/dir1/\\/\\/\\/\\/more";
+	succeed_if (keySetBaseName (k2, "////more") == sizeof(c), "Could not add basename");
+	succeed_if_same_string (keyName(k2), c);
+	succeed_if (keyGetNameSize(k2) == sizeof(c), "Name size not correct");
 	keyDel (k2);
-
-	k2 = keyNew ("user/dir1/a", KEY_END);
-	succeed_if (keySetBaseName (k2, "///some////more") == 20, "Could not add basename");
-	succeed_if (strcmp (keyName(k2), "user/dir1/some/more") == 0, "added basename not correct");
-	succeed_if (keyGetNameSize(k2) == 20, "Name size not correct");
-	keyDel (k2);
-
-	*/
+}
 
 	k2 = keyNew ("user", KEY_END);
-	succeed_if (keySetBaseName (k2, "user") == 5, "Could not add basename");
-	succeed_if (strcmp (keyName(k2), "user") == 0, "added basename not correct");
+	succeed_if (keySetBaseName (k2, "user") == -1, "Could add basename, but there is none");
+	succeed_if (strcmp (keyName(k2), "user") == 0, "basename not correct");
 	succeed_if (keyGetNameSize(k2) == 5, "Name size not correct");
 	keyDel (k2);
 
 	k2 = keyNew ("system", KEY_END);
-	succeed_if (keySetBaseName (k2, "user") == 5, "Could not add basename");
-	succeed_if (strcmp (keyName(k2), "user") == 0, "added basename not correct");
+	succeed_if (keySetBaseName (k2, "system") == -1, "Could add basename, but there is none");
+	succeed_if (strcmp (keyName(k2), "system") == 0, "basename not correct");
 	succeed_if (keyGetNameSize(k2) == 5, "Name size not correct");
-	keyDel (k2);
-
-	k2 = keyNew ("user", KEY_END);
-	succeed_if (keySetBaseName (k2, "system") == 7, "Could not add basename");
-	succeed_if (strcmp (keyName(k2), "system") == 0, "added basename not correct");
-	succeed_if (keyGetNameSize(k2) == 7, "Name size not correct");
-	keyDel (k2);
-
-	k2 = keyNew ("system", KEY_END);
-	succeed_if (keySetBaseName (k2, "system") == 7, "Could not add basename");
-	succeed_if (strcmp (keyName(k2), "system") == 0, "added basename not correct");
-	succeed_if (keyGetNameSize(k2) == 7, "Name size not correct");
-	keyDel (k2);
-
-	k2 = keyNew ("user", KEY_END);
-	succeed_if (keySetBaseName (k2, "no") == -1, "Could not add basename");
-	succeed_if (strcmp (keyName(k2), "") == 0, "added basename not correct");
-	succeed_if (keyGetNameSize(k2) == 1, "Name size not correct");
-	keyDel (k2);
-
-	k2 = keyNew ("system", KEY_END);
-	succeed_if (keySetBaseName (k2, "no") == -1, "Could not add basename");
-	succeed_if (strcmp (keyName(k2), "") == 0, "added basename not correct");
-	succeed_if (keyGetNameSize(k2) == 1, "Name size not correct");
 	keyDel (k2);
 }
 

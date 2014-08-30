@@ -2280,75 +2280,42 @@ static void test_keyClear()
 	keyDel(k1);
 }
 
-static void test_keyBaseName()
+static void test_keySetBaseName()
 {
-	printf ("Test set and add basename");
+	printf ("Test set and add basename\n");
 
 	Key *k = keyNew (KEY_END);
 
-	keySetName (k, "system/valid");
-	succeed_if (keySetBaseName (k, 0) != -1, "successfully remove basename");
-	succeed_if_same_string(keyName(k), "system");
-
-	keySetName (k, "system/valid");
-	succeed_if (keySetBaseName (k, "..") == -1, "outbreak should not be allowed, use empty string two times");
-	succeed_if_same_string(keyName(k), "system/valid");
+	succeed_if (keySetBaseName (k, "abc") == -1, "invalid key");
+	succeed_if_same_string(keyName(k), "");
 
 	keySetName (k, "system");
-	succeed_if (keySetBaseName (k, ".") == -1, "outbreak should not be allowed, use empty string");
-	succeed_if_same_string(keyName(k), "system");
-
-	keySetName (k, "system/valid/deep");
-	succeed_if (keySetBaseName (k, ".") > 0, "could not remove basename");
-	succeed_if_same_string(keyName (k), "system/valid");
-
-	keySetName (k, "system/valid/deeper/deep");
-	succeed_if (keySetBaseName (k, "..") > 0, "could not remove basenames");
-	succeed_if_same_string(keyName (k), "system/valid");
-
-	keySetName (k, "system/valid");
-	succeed_if (keySetBaseName (k, "") > 0, "could not remove base name");
-	succeed_if_same_string(keyName(k), "system");
-
-	keySetName (k, "system");
-	succeed_if (keySetBaseName (k, "") == -1, "could remove root?");
+	succeed_if (keySetBaseName (k, 0) == -1, "could remove root name");
 	succeed_if_same_string(keyName(k), "system");
 
 	keySetName (k, "system/valid");
-	succeed_if (keySetBaseName (k, "%") > 0, "could not set empty name");
+	succeed_if (keySetBaseName (k, 0) == sizeof("system"), "could not remove base name");
+	succeed_if_same_string(keyName(k), "system");
+
+	keySetName (k, "system/valid");
+	succeed_if (keySetBaseName (k, "") > 0, "could not set empty name");
 	succeed_if_same_string(keyName(k), "system/%"); // is an empty name
 
 	keySetName (k, "system/valid");
-	succeed_if (keySetBaseName (k, "\\x") == -1, "wrong escape sequence undetected");
-	succeed_if_same_string(keyName(k), "system/valid");
-
-	keySetName (k, "system/valid");
-	succeed_if (keySetBaseName (k, "a\\x") == -1, "wrong escape sequence undetected");
-	succeed_if_same_string(keyName(k), "system/valid");
-
-	keySetName (k, "system/valid");
-	succeed_if (keySetBaseName (k, "a/b") == -1, "slash not allowed");
-	succeed_if_same_string(keyName(k), "system/valid");
-
-	keySetName (k, "system/valid");
-	succeed_if (keySetBaseName (k, "/") == -1, "slash not allowed");
-	succeed_if_same_string(keyName(k), "system/valid");
-
-	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, "\\/") >= 0, "escaped slash ok");
-	succeed_if_same_string(keyName(k), "system/\\/");
+	succeed_if_same_string(keyName(k), "system/\\\\/");
 
 	keySetName (k, "system/valid");
-	succeed_if (keySetBaseName (k, "\\\\/") == -1, "backslash escaped, but slash unescaped");
-	succeed_if_same_string(keyName(k), "system/valid");
-
-	keySetName (k, "system/valid");
-	succeed_if (keySetBaseName (k, "\\\\\\/") >= 0, "backslash escaped, slash escaped");
+	succeed_if (keySetBaseName (k, "\\\\/") >= 0, "backslash escaped, but slash unescaped");
 	succeed_if_same_string(keyName(k), "system/\\\\\\/");
 
 	keySetName (k, "system/valid");
-	succeed_if (keySetBaseName (k, "\\\\\\") == -1, "backslash escaped, but backslash unescaped");
-	succeed_if_same_string(keyName(k), "system/valid");
+	succeed_if (keySetBaseName (k, "\\\\\\/") >= 0, "backslash escaped, slash escaped");
+	succeed_if_same_string(keyName(k), "system/\\\\\\\\/");
+
+	keySetName (k, "system/valid");
+	succeed_if (keySetBaseName (k, "%") == sizeof("system/\\%"), "backslash escaped, but backslash unescaped");
+	succeed_if_same_string(keyName(k), "system/\\%");
 
 	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, "\\\\\\\\") >= 0, "backslash escaped, backslash escaped");
@@ -2367,37 +2334,48 @@ static void test_keyBaseName()
 	succeed_if_same_string (keyName (k), "system/\\..");
 
 	keySetName (k, "system/valid");
-	succeed_if (keySetBaseName (k, "\\%") >= 0, "wrong escape sequence detected (is correct)");
-	succeed_if_same_string(keyName(k), "system/\\%"); // not an empty name, % is escaped
+	succeed_if (keySetBaseName (k, "%") == sizeof("system/\\%"), "add some char");
+	succeed_if_same_string(keyName(k), "system/\\%");
 
-	// TODO: deactivated until the validation can be reenabled
-	/*
 	keySetName (k, "system/valid");
-	succeed_if (keySetBaseName (k, "#1") >= 0, "valid array entry");
+	succeed_if (keySetBaseName (k, "#1") == sizeof("system/#1"), "valid array entry");
 	output_key (k);
 	succeed_if_same_string (keyName (k), "system/#1");
-
-	keySetName (k, "system/valid");
-	succeed_if (keySetBaseName (k, "#10") == -1, "array entry misses underscore, but is valid");
-	output_key (k);
-	succeed_if_same_string (keyName (k), "system/valid");
 
 	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, "#_10") >= 0, "valid array entry");
 	output_key (k);
 	succeed_if_same_string (keyName (k), "system/#_10");
 
+	//! [base1]
 	keySetName (k, "system/valid");
-	succeed_if (keySetBaseName (k, "#__100") >= 0, "valid array entry");
-	output_key (k);
-	succeed_if_same_string (keyName (k), "system/#__100");
+	keyAddBaseName(k, "");
+	succeed_if_same_string(keyName(k), "system/valid/%");
+	keySetBaseName(k, ".hiddenkey");
+	succeed_if_same_string(keyName(k), "system/valid/.hiddenkey");
+	//! [base1]
 
+	//! [base2]
 	keySetName (k, "system/valid");
-	succeed_if (keySetBaseName (k, "#_100") == -1, "array entry misses underscore, but is valid");
-	output_key (k);
-	succeed_if_same_string (keyName (k), "system/valid");
+	keyAddBaseName(k, 0);
+	succeed_if_same_string(keyName(k), "system/valid");
+	keySetBaseName(k, "#0");
+	succeed_if_same_string(keyName(k), "system/#0");
+	//! [base2]
 
-	*/
+	keySetName(k, "user/tests/yajl/___empty_map");
+	keySetBaseName(k, "#0");
+	keySetBaseName(k, "nullkey");
+	succeed_if_same_string(keyName(k), "user/tests/yajl/nullkey");
+
+	keyDel (k);
+}
+
+static void test_keyAddBaseName()
+{
+	printf ("Test add basename\n");
+
+	Key *k = keyNew (KEY_END);
 
 	keySetName (k, "system/valid");
 	succeed_if (keyAddBaseName (k, "") >= 0, "could not add a base name");
@@ -2408,12 +2386,12 @@ static void test_keyBaseName()
 	succeed_if_same_string(keyName(k), "system/valid/\\%");
 
 	keySetName (k, "system/valid");
-	succeed_if (keyAddBaseName (k, "#") >= 0, "could not add a base name");
-	succeed_if_same_string(keyName(k), "system/valid/\\#");
+	succeed_if (keyAddBaseName (k, "#") == sizeof("system/valid/#"), "could not add a base name");
+	succeed_if_same_string(keyName(k), "system/valid/#");
 
 	keySetName (k, "system/valid");
 	succeed_if (keyAddBaseName (k, "#_2") >= 0, "could not add a base name");
-	succeed_if_same_string(keyName(k), "system/valid/\\#_2");
+	succeed_if_same_string(keyName(k), "system/valid/#_2");
 
 	keySetName (k, "system/valid");
 	succeed_if (keyAddBaseName (k, ".") >= 0, "could not add a base name");
@@ -2431,25 +2409,9 @@ static void test_keyBaseName()
 	succeed_if (keyAddBaseName (k, "has/slash") >= 0, "could not add a base name");
 	succeed_if_same_string(keyName(k), "system/valid/has\\/slash");
 
-	//! [base1]
 	keySetName (k, "system/valid");
-	keyAddBaseName(k, "");
-	succeed_if_same_string(keyName(k), "system/valid/%");
-	keySetBaseName(k, ".hiddenkey");
-	succeed_if_same_string(keyName(k), "system/valid/.hiddenkey");
-	//! [base1]
-
-	//! [base2]
-	keySetName (k, "system/valid");
-	keyAddBaseName(k, "");
-	succeed_if_same_string(keyName(k), "system/valid/%");
-	keySetBaseName(k, "#0");
+	keyAddBaseName(k, "#0");
 	succeed_if_same_string(keyName(k), "system/valid/#0");
-	//! [base2]
-
-	keySetName (k, "system/valid");
-	keyAddBaseName(k, "#0"); // add an empty baseName
-	succeed_if_same_string(keyName(k), "system/valid/\\#0");
 
 
 	keySetName (k, "system/valid");
@@ -2563,7 +2525,8 @@ int main(int argc, char** argv)
 	test_keyNameSpecial();
 	test_keyClear();
 	test_keyLock();
-	test_keyBaseName();
+	test_keySetBaseName();
+	test_keyAddBaseName();
 	test_keyAddName();
 
 	printf("\ntestabi_key RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);

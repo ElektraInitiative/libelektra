@@ -728,24 +728,23 @@ ssize_t keyGetBaseNameSize(const Key *key)
  */
 ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize)
 {
-	size_t size=0;
-	char *p=0;
-	char *baseName=0;
-	size_t baseSize=0;
-
 	if (!key) return -1;
 	if (!returned) return -1;
 	if (!maxSize) return -1;
 
 	if (maxSize > SSIZE_MAX) return -1;
 
-	p = key->key;
-
-	if (!p)
+	if (!key->key)
 	{
 		returned[0] = 0;
 		return 1;
 	}
+
+	// TODO: not needed, just use keyBaseName()
+	size_t size=0;
+	char *baseName=0;
+	size_t baseSize=0;
+	char *p = key->key;
 
 	while (*(p=keyNameGetOneLevel(p+size,&size)))
 	{
@@ -758,10 +757,11 @@ ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize)
 		returned[0] = 0;
 		return 1;
 	}
+	// TODO: not needed
 
-	if (maxSize < baseSize) {
-		/*strncpy(returned,baseName,maxSize);*/
-		/*errno=KDB_ERR_TRUNC;*/
+	if (maxSize < baseSize)
+	{
+		// truncated
 		return -1;
 	} else {
 		strncpy(returned,baseName,baseSize);
@@ -835,7 +835,12 @@ ssize_t keyAddBaseName(Key *key, const char *baseName)
 	elektraEscapeKeyNamePart(baseName, escaped);
 	size = strlen (escaped);
 	key->keySize += size + 1;
-	key->key = realloc (key->key, key->keySize);
+	elektraRealloc ((void**)&key->key, key->keySize);
+	if (!key->key)
+	{
+		elektraFree (escaped);
+		return -1;
+	}
 
 	key->key[key->keySize - size - 2] = KDB_PATH_SEPARATOR;
 	memcpy (key->key + key->keySize - size - 1, escaped, size);
@@ -949,78 +954,54 @@ ssize_t keyAddName(Key *key, const char *newName)
  */
 ssize_t keySetBaseName(Key *key, const char *baseName)
 {
-	size_t size=0;
-	const char *p=0;
-
 	if (!key) return -1;
-
-	if (!key->key) return -1;
 	if (test_bit(key->flags,  KEY_FLAG_RO_NAME)) return -1;
-	// char *escaped = elektraMalloc (strlen (baseName) * 2 + 2);
-	// elektraKeyNameEscape (baseName, escaped);
+	if (!key->key) return -1;
+
+	size_t size=0;
+	char *searchBaseName=0;
+	size_t searchBaseSize=0;
+	char *p = key->key;
+
+	while (*(p=keyNameGetOneLevel(p+size,&size)))
+	{
+		searchBaseName=p;
+		searchBaseSize=size+1;
+	}
+
+	if (!searchBaseName || searchBaseName==key->key)
+	{
+		return -1;
+	}
+
+	// truncate the key
+	key->keySize -= searchBaseSize;
 
 	if (!baseName)
 	{
-		p=strrchr (key->key, '/');
-		if (p == 0) return -1;
-
-		key->keySize -= (key->key+key->keySize-1)-p;
+		// just remove base name
 		elektraFinalizeName(key);
 		return key->keySize;
 	}
 
-	if (!elektraValidateKeyNamePart(baseName)) return -1;
+	char *escaped = elektraMalloc (strlen (baseName) * 2 + 2);
+	elektraEscapeKeyNamePart(baseName, escaped);
+	size_t sizeEscaped = elektraStrLen (escaped);
 
-	/*Throw away basename of key->key*/
-	p=strrchr (key->key, '/');
-	if (p == 0)
+	elektraRealloc((void**)&key->key, key->keySize+sizeEscaped);
+	if (!key->key)
 	{
-		/* we would remove even the namespace */
-		if (!strcmp (baseName, "")) return -1;
-
-		if (!strcmp (baseName, ".")) return -1;
-
-		return keySetName(key, baseName);
+		elektraFree (escaped);
+		return -1;
 	}
 
-	/* check if the found / is the only one */
-	if (strchr (key->key, '/') == p)
-	{
-		/* we would delete the whole keyname */
-		if (!strcmp (baseName, "..")) return -1;
-	}
+	key->key [key->keySize - 1] = KDB_PATH_SEPARATOR;
+	memcpy (key->key + key->keySize,
+			escaped, sizeEscaped);
 
-	key->keySize -= (key->key+key->keySize-1)-p;
-	key->key[key->keySize-1]=0; /* finalize string */
+	elektraFree (escaped);
 
-	/* remove yet another part */
-	if (!strcmp (baseName, ".."))
-	{
-		p=strrchr (key->key, '/');
-		key->keySize -= (key->key+key->keySize-1)-p;
-		key->key[key->keySize-1]=0; /* finalize string */
-	}
-
-	/* free the now unused space */
-	key->key=realloc(key->key,key->keySize);
-
-	/* these cases just delete keyname parts so we are done */
-	if (!strcmp (baseName, "..") ||
-			!strcmp (baseName, ".") ||
-			!strcmp (baseName, ""))
-	{
-		elektraFinalizeName(key);
-		return key->keySize;
-	}
-
-	/* Now add new baseName */
-	size = strlen (baseName);
-	key->keySize += size + 1;
-	key->key = realloc (key->key, key->keySize);
-
-	key->key[key->keySize - size - 2] = KDB_PATH_SEPARATOR;
-	memcpy (key->key + key->keySize - size - 1, baseName, size);
-
+	key->keySize += sizeEscaped;
 	elektraFinalizeName(key);
 
 	return key->keySize;
