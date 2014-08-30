@@ -118,8 +118,8 @@ int init(int argc, char** argv);
 { \
 	nbTest++; \
 	ELEKTRA_GCC_WARNING(-Waddress) \
-	if (!s1) yield_error("left hand is null pointer") \
-	else if (!s2) yield_error("left hand is null pointer") \
+	if (!s1) yield_error("left hand side is null pointer") \
+	else if (!s2) yield_error("right hand side is null pointer") \
 	else if (strcmp(s1, s2)) \
 	{ \
 		char errorMsg [BUFFER_LENGTH]; \
@@ -134,6 +134,22 @@ int init(int argc, char** argv);
 	} \
 	_Pragma("GCC diagnostic pop") \
 }
+
+// not recommended to use, only works with int (not size_t, ssize_t,...)
+#define succeed_if_same_int(s1, s2) \
+{ \
+	nbTest++; \
+	if (s1 != s2) \
+	{ \
+		char errorMsg [BUFFER_LENGTH]; \
+		 \
+		snprintf(errorMsg, BUFFER_LENGTH, \
+			 "int %d is not equal %d", s1, s2); \
+		 \
+		yield_error(errorMsg); \
+	} \
+}
+
 
 
 /**

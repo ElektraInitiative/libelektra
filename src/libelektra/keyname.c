@@ -267,8 +267,7 @@ ssize_t keyGetUnescapedNameSize(const Key *key)
 	{
 		return 0;
 	}
-	// else return key->keyUSize;
-	return -1; // TODO implement
+	else return key->keyUSize;
 }
 
 
@@ -800,8 +799,6 @@ ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize)
  * - any \\ occur.
  * - any / occur
  *
- * Internally elektraKeyNameEscape() is used.
- *
  * A simple example to use keyAddBaseName() is:
  * @snippet basename.c set base basic
  *
@@ -835,7 +832,7 @@ ssize_t keyAddBaseName(Key *key, const char *baseName)
 
 	size_t size=0;
 	char *escaped = elektraMalloc (strlen (baseName) * 2 + 2);
-	elektraKeyNameEscape (baseName, escaped);
+	elektraEscapeKeyNamePart(baseName, escaped);
 	size = strlen (escaped);
 	key->keySize += size + 1;
 	key->key = realloc (key->key, key->keySize);
@@ -934,16 +931,12 @@ ssize_t keyAddName(Key *key, const char *newName)
  * If @p baseName is empty or NULL, the resulting key name will
  * be @c "system/dir1/dir2".
  *
- * This function does not escape the supplied name argument, but validates
- * whether the argument is properly escaped.
+ * This function does proper escaping on the supplied name argument.
  *
- * You can use special names to manipulate the keyname (. (dot), .. (dot-dot) and "" (empty)).
- * However, . (dot) and .. (dot-dot) are deprecated and their use is discouraged.
- * Use "" (empty) instead.
+ * You can use all names to set as basename (e.g. . (dot), ..
+ * (dot-dot), % and "" (empty)). They will be properly escaped.
+ *
  * @see keyname for more details on special names
- *
- * @warning You should not change a keys name once it belongs to a
- *          keyset because it would destroy the order.
  *
  * @param key the key object to work with
  * @param baseName the string used to overwrite the basename of the key
@@ -963,6 +956,8 @@ ssize_t keySetBaseName(Key *key, const char *baseName)
 
 	if (!key->key) return -1;
 	if (test_bit(key->flags,  KEY_FLAG_RO_NAME)) return -1;
+	// char *escaped = elektraMalloc (strlen (baseName) * 2 + 2);
+	// elektraKeyNameEscape (baseName, escaped);
 
 	if (!baseName)
 	{

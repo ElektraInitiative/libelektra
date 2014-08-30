@@ -193,6 +193,12 @@ struct _Key
 	size_t         keySize;
 
 	/**
+	 * Size of the unescaped key name in bytes, including all NULL.
+	 * @see keyBaseName(), keyUnescapedName()
+	 */
+	size_t         keyUSize;
+
+	/**
 	 * Some control and internal flags.
 	 */
 	keyflag_t      flags;
@@ -467,6 +473,13 @@ ssize_t ksSearchInternal(const KeySet *ks, const Key *toAppend);
 /*Used for internal memcpy/memmove*/
 ssize_t elektraMemcpy (Key** array1, Key** array2, size_t size);
 ssize_t elektraMemmove (Key** array1, Key** array2, size_t size);
+
+char *elektraStrNDup (const char *s, size_t l);
+
+char *elektraEscapeKeyNamePart(const char *source, char *dest);
+size_t elektraUnescapeKeyName(const char *source, char *dest);
+
+int elektraValidateKeyNamePart(const char *name);
 
 /** Test a bit. @see set_bit(), clear_bit() */
 #define test_bit(var,bit)            ((var) &   (bit))
