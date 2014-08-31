@@ -389,6 +389,12 @@ void elektraFinalizeName(Key *key)
  */
 ssize_t keySetName(Key *key, const char *newName)
 {
+	return elektraKeySetName(key, newName, 0);
+}
+
+ssize_t elektraKeySetName(Key *key, const char *newName,
+		enum elektra_name_options options)
+{
 	size_t length;
 	size_t rootLength, userLength, systemLength, ownerLength;
 	char *p=0;
@@ -407,8 +413,8 @@ ssize_t keySetName(Key *key, const char *newName)
 	}
 
 	rootLength=keyNameGetFullRootNameSize(newName)-1;
-	if (!rootLength) {
-		/*errno=KDB_ERR_INVALIDKEY;*/
+	if (!(options & KDB_O_CASCADING_NAME) && !rootLength)
+	{
 		return -1;
 	}
 	userLength=sizeof("user")-1;
@@ -417,7 +423,36 @@ ssize_t keySetName(Key *key, const char *newName)
 	
 	if (ownerLength>0) --ownerLength;
 
-	if (keyNameIsUser(newName))
+	if ((options & KDB_O_EMPTY_NAME) &&
+		(!strcmp(newName, "")))
+	{
+		key->key = elektraCalloc(2);
+		key->key[0] = '0';
+		key->keySize=1;
+		elektraFinalizeName(key);
+		return key->keySize;
+	}
+	if ((options & KDB_O_CASCADING_NAME) &&
+		(newName[0] == '/'))
+	{
+		if (!strcmp(newName, "/"))
+		{
+			key->key = elektraCalloc(4);
+			key->key[0] = '/';
+			key->keySize=2;
+			elektraFinalizeName(key);
+			return key->keySize;
+		}
+		/* handle cascading key names */
+		rootLength = 1;
+	}
+	else if (options & KDB_O_META_NAME)
+	{
+		size_t size = 0;
+		p=keyNameGetOneLevel(newName,&size);
+		rootLength = size+1;
+	}
+	else if (keyNameIsUser(newName))
 	{
 		/* handle "user*" */
 		if (length > userLength)
@@ -451,7 +486,9 @@ ssize_t keySetName(Key *key, const char *newName)
 		}
 
 		rootLength  = userLength+1;
-	} else if (keyNameIsSystem(newName)) {
+	}
+	else if (keyNameIsSystem(newName))
+	{
 		/* handle "system*" */
 		if (length > systemLength && *(newName+systemLength)!=KDB_PATH_SEPARATOR)
 		{	/* handle when != "system/ *" */
@@ -462,8 +499,10 @@ ssize_t keySetName(Key *key, const char *newName)
 		keySetOwner (key, NULL);
 
 		rootLength  = systemLength+1;
-	} else {
-		/* Given newName is neither "system" or "user" */
+	}
+	else
+	{
+		/**Unsupported key name */
 		return -1;
 	}
 
@@ -477,7 +516,7 @@ ssize_t keySetName(Key *key, const char *newName)
 	*/
 
 	/* Allocate memory for key->key */
-	p=elektraMalloc(rootLength);
+	p=elektraCalloc(rootLength);
 	if (NULL==p) goto error_mem;
 	key->key=p;
 
@@ -489,8 +528,17 @@ ssize_t keySetName(Key *key, const char *newName)
 	key->key[rootLength-1] = '\0';
 
 	size_t size = 0;
-	/* skip namespace we already processed */
-	p=keyNameGetOneLevel(newName,&size);
+	if ((options & KDB_O_CASCADING_NAME) &&
+		(newName[0] == '/'))
+	{
+		p = (char*)newName;
+		size=1;
+	}
+	else
+	{
+		/* skip namespace we already processed */
+		p=keyNameGetOneLevel(newName,&size);
+	}
 
 	return keyAddName(key, p+size);
 

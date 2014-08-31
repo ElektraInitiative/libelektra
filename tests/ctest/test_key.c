@@ -914,6 +914,42 @@ static void test_keyNamespace()
 	keyDel (key);
 }
 
+static void test_elektraKeySetName()
+{
+	printf ("test elektraKeySetName\n");
+
+	Key *key = keyNew("", KEY_END);
+	succeed_if(elektraKeySetName(key, "/", KDB_O_CASCADING_NAME) != -1, "could not set cascading name");
+	succeed_if_same_string(keyName(key), "/");
+	elektraKeySetName(key, "/cascading", KDB_O_CASCADING_NAME);
+	succeed_if_same_string(keyName(key), "/cascading");
+	elektraKeySetName(key, "/cascading/s/deep/below", KDB_O_CASCADING_NAME);
+	succeed_if_same_string(keyName(key), "/cascading/s/deep/below");
+	elektraKeySetName(key, "user/cascading/s/deep/below", KDB_O_CASCADING_NAME);
+	succeed_if_same_string(keyName(key), "user/cascading/s/deep/below");
+	elektraKeySetName(key, "system/cascading/s/deep/below", KDB_O_CASCADING_NAME);
+	succeed_if_same_string(keyName(key), "system/cascading/s/deep/below");
+
+	elektraKeySetName(key, "order", KDB_O_META_NAME);
+	succeed_if_same_string(keyName(key), "order");
+	elektraKeySetName(key, "check/type", KDB_O_META_NAME);
+	succeed_if_same_string(keyName(key), "check/type");
+
+	elektraKeySetName(key, "", KDB_O_EMPTY_NAME);
+	succeed_if_same_string(keyName(key), "");
+
+	elektraKeySetName(key, "", KDB_O_META_NAME | KDB_O_EMPTY_NAME);
+	succeed_if_same_string(keyName(key), "");
+
+	elektraKeySetName(key, "", KDB_O_META_NAME | KDB_O_CASCADING_NAME);
+	succeed_if_same_string(keyName(key), "");
+
+	keySetName(key, 0);
+	succeed_if_same_string(keyName(key), "");
+	succeed_if(key->key == 0, "not reset to nullpointer");
+
+	keyDel(key);
+}
 
 int main(int argc, char** argv)
 {
@@ -937,6 +973,7 @@ int main(int argc, char** argv)
 	test_keyMeta();
 	test_keyNamespace();
 	test_owner();
+	test_elektraKeySetName();
 
 	printf("\ntest_key RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

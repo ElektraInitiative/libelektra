@@ -437,13 +437,7 @@ const Key *keyGetMeta(const Key *key, const char* metaName)
 	if (!key->meta) return 0;
 
 	search = keyNew (KEY_END);
-	search->key = elektraStrDup(metaName);
-	search->keySize = elektraStrLen(metaName);
-	elektraRealloc((void**)&search->key, search->keySize*2);
-	if (!search->key) return 0;
-	elektraFinalizeName(search); // TODO: allow meta keys
-
-	if (!search->key) return 0; /*Duplication did not work*/
+	elektraKeySetName(search, metaName, KDB_O_META_NAME | KDB_O_EMPTY_NAME);
 
 	ret = ksLookup(key->meta, search, 0);
 
@@ -482,7 +476,6 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 	const char *newMetaString)
 {
 	Key *toSet;
-	char *metaNameDup;
 	char *metaStringDup;
 	ssize_t metaNameSize;
 	ssize_t metaStringSize = 0;
@@ -497,17 +490,7 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 	toSet = keyNew(KEY_END);
 	if (!toSet) return -1;
 
-	metaNameDup = elektraStrNDup(metaName, metaNameSize);
-	if (!metaNameDup)
-	{
-		keyDel (toSet);
-		return -1;
-	}
-	toSet->key = metaNameDup;
-	toSet->keySize = metaNameSize;
-	elektraRealloc((void**)&toSet->key, metaNameSize*2);
-	if (!toSet->key) return -1;
-	elektraFinalizeName(toSet); // TODO: allow meta keys
+	elektraKeySetName(toSet, metaName, KDB_O_META_NAME | KDB_O_EMPTY_NAME);
 
 	/*Lets have a look if the key is already inserted.*/
 	if (key->meta)

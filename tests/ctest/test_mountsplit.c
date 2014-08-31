@@ -243,18 +243,6 @@ KeySet *cascading_config(void)
 		KS_END);
 }
 
-static void keySetCascading(Key *key, const char* name)
-{
-	size_t size = elektraStrLen(name) + 1;
-	if (size < 2) return;
-
-	elektraFree (key->key);
-	key->key = elektraMalloc (size);
-	key->keySize = size;
-	key->key[0] = '/';
-	strcpy (key->key+1, name);
-}
-
 static void test_cascading()
 {
 	printf ("Test simple mount with cascading\n");
@@ -290,7 +278,7 @@ static void test_cascading()
 
 
 	mp = keyNew("", KEY_VALUE, "simple", KEY_END);
-	keySetCascading (mp, "tests/simple");
+	elektraKeySetName(mp, "tests/simple", KDB_O_CASCADING_NAME);
 
 	keySetName(searchKey, "user/tests/simple");
 	backend = elektraTrieLookup(kdb->trie, searchKey);
@@ -374,7 +362,7 @@ static void test_root()
 
 	Key *searchKey = keyNew("", KEY_END);
 	Key *rmp = keyNew("", KEY_VALUE, "root", KEY_END);
-	keySetCascading (rmp, "");
+	elektraKeySetName(rmp, "", KDB_O_CASCADING_NAME);
 	Backend *b2 = 0;
 
 	keySetName (searchKey, "user");
@@ -442,7 +430,7 @@ static void test_default()
 
 	Key *searchKey = keyNew("", KEY_END);
 	Key *rmp = keyNew("", KEY_VALUE, "root", KEY_END);
-	keySetCascading (rmp, "");
+	keySetName(rmp, 0);
 	Backend *b2 = 0;
 
 	keySetName (searchKey, "user");
@@ -532,7 +520,7 @@ static void test_modules()
 
 	Key *searchKey = keyNew("", KEY_END);
 	Key *rmp = keyNew("", KEY_VALUE, "root", KEY_END);
-	keySetCascading (rmp, "");
+	keySetName(rmp, 0);
 	Backend *b2 = 0;
 
 	keySetName (searchKey, "user");

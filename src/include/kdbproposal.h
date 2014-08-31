@@ -21,6 +21,12 @@
 
 #include <kdb.h>
 
+#ifdef __cplusplus
+namespace ckdb {
+extern "C" {
+#endif
+
+
 // is this needed?
 Key *ksPrev(KeySet *ks);
 Key *ksPopAtCursor(KeySet *ks, cursor_t c);
@@ -31,11 +37,29 @@ ssize_t keyGetUnescapedNameSize(const Key *key);
 
 // can be made simply without elektra's internals, so better keep it as
 // extension.
-int keySetStringF(Key *key, const char *format, ...);
+ssize_t keySetStringF(Key *key, const char *format, ...);
 
 // could also be in an extension library.
 int elektraArrayIncName(Key *key);
 int elektraKsToMemArray(KeySet *ks, Key **buffer);
 KeySet* elektraRenameKeys(KeySet *config, const char* name);
+
+// this might become the new keySetName
+enum elektra_name_options
+{
+	KDB_O_CASCADING_NAME=1,
+	KDB_O_META_NAME=2,
+	KDB_O_EMPTY_NAME=4
+};
+
+ssize_t elektraKeySetName(Key *key, const char *newName,
+		enum elektra_name_options options);
+
+
+#ifdef __cplusplus
+}
+}
+#endif
+
 
 #endif

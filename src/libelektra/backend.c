@@ -115,19 +115,10 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
 			}
 			else if (!strcmp(keyBaseName(cur), "mountpoint"))
 			{
-				if (keyString(cur)[0] == '/')
-				{
-					backend->mountpoint = keyNew("",
-							KEY_VALUE, keyBaseName(root), KEY_END);
-					backend->mountpoint->key = elektraStrDup(keyString(cur));
-					backend->mountpoint->keySize = cur->dataSize;
-					elektraRealloc((void**)&backend->mountpoint->key, cur->dataSize*2);
-					if (!backend->mountpoint->key) return 0;
-					elektraFinalizeName(backend->mountpoint); // TODO: allow cascading keys
-				} else {
-					backend->mountpoint = keyNew(keyString(cur),
-							KEY_VALUE, keyBaseName(root), KEY_END);
-				}
+				backend->mountpoint = keyNew("",
+						KEY_VALUE, keyBaseName(root), KEY_END);
+				elektraKeySetName(backend->mountpoint, keyString(cur),
+						KDB_O_CASCADING_NAME);
 
 				if (!backend->mountpoint)
 				{

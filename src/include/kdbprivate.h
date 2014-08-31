@@ -21,6 +21,7 @@
 #include <kdbhelper.h>
 #include <kdbconfig.h>
 #include <kdbplugin.h>
+#include <kdbproposal.h>
 #include <kdbextension.h>
 
 #include <limits.h>
