@@ -111,57 +111,23 @@ ssize_t elektraMemmove (Key** array1, Key** array2, size_t size)
 	return size;
 }
 
-/**Compare Strings using kdb semantics.
+/**@brief Compare Strings.
  *
  * @param s1 The first string to be compared
  * @param s2 The second string to be compared
  *
- * / is handled special, it will always be prefered
- * for any other character.
- *
  * @ingroup internal
  * @return a negative number if s1 is less than s2
- * @return a number less than, equal to or greater than zero if
- *    s1 is found, respectively, to be less than, to match, or
- *    be greater than s2.
+ * @return 0 if s1 matches s2
+ * @return a positive number if s1 is greater than s2
  **/
 int elektraStrCmp (const char *s1, const char *s2)
 {
-	int c1;
-	int c2;
-
-	if (s1 == s2) return 0;
-
-	for(; *s1 == *s2; ++s1, ++s2)
-		if(*s1 == 0)
-			return 0;
-
-	c1 = *(unsigned char *)s1;
-	c2 = *(unsigned char *)s2;
-	if (c1 == '\0')
-	{
-		c1 = 0;
-	} else {
-		if (c1 == '/') c1 = 1;
-		else ++c1;
-	}
-
-	if (c2 == '\0')
-	{
-		c2 = 0;
-	} else {
-		if (c2 == '/') c2 = 1;
-		else ++c2;
-	}
-
-	return c1 - c2;
+	return strcmp(s1, s2);
 }
 
 
-/**Compare Strings ignoring case using kdb semantics.
- *
- * TODO: semantics not correct
- * Does not work with binary sort.
+/**@brief Compare Strings ignoring case.
  *
  * @param s1 The first string to be compared
  * @param s2 The second string to be compared
@@ -173,18 +139,7 @@ int elektraStrCmp (const char *s1, const char *s2)
  **/
 int elektraStrCaseCmp (const char *s1, const char *s2)
 {
-	const unsigned char *p1 = (const unsigned char *)s1;
-	const unsigned char *p2 = (const unsigned char *)s2;
-	int result;
-
-	if (p1 == p2) return 0;
-
-	while ((result = tolower(*p1)-tolower(*p2 ++)) == 0)
-	{
-		if (*p1++ == '\0') break;
-	}
-
-	return result;
+	return strcasecmp(s1, s2);
 }
 
 /**Reallocate Storage in a save way.
