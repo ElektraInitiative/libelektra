@@ -69,11 +69,11 @@ KeySet* elektraRenameKeys(KeySet *config, const char* name)
 
 	root = ksNext (config);
 	rootSize = keyGetNameSize(root);
-	if (rootSize == -1) return 0;
 
 	keyDel (ksLookup (config, root, KDB_O_POP));
 
 	KeySet *newConfig = ksNew(ksGetSize(config), KS_END);
+	if (rootSize == -1) return newConfig;
 
 	while ((cur = ksPop(config)) != 0)
 	{
@@ -207,7 +207,7 @@ int elektraProcessPlugins(Plugin **plugins, KeySet *modules, KeySet *referencePl
 				return -1;
 			}
 
-			printf ("Will add plugin number %d with name %s\n", pluginNumber, pluginName);
+
 
 			if (pluginName)
 			{
@@ -216,7 +216,7 @@ int elektraProcessPlugins(Plugin **plugins, KeySet *modules, KeySet *referencePl
 				KeySet *cutConfig = ksCut (config, key);
 				keyDel (key);
 
-				KeySet* pluginConfig = elektraRenameKeys(cutConfig, "user");
+				KeySet *pluginConfig = elektraRenameKeys(cutConfig, "user");
 				ksDel(cutConfig);
 				if (!pluginConfig) return -1;
 				ksAppend(pluginConfig, systemConfig);

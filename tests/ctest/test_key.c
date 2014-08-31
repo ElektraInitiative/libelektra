@@ -937,16 +937,23 @@ static void test_elektraKeySetName()
 
 	elektraKeySetName(key, "", KDB_O_EMPTY_NAME);
 	succeed_if_same_string(keyName(key), "");
+	succeed_if(key->key != 0, "null pointer?");
+	succeed_if_same_string(keyName(key), "");
 
 	elektraKeySetName(key, "", KDB_O_META_NAME | KDB_O_EMPTY_NAME);
 	succeed_if_same_string(keyName(key), "");
-
-	elektraKeySetName(key, "", KDB_O_META_NAME | KDB_O_CASCADING_NAME);
+	succeed_if(key->key != 0, "null pointer?");
 	succeed_if_same_string(keyName(key), "");
 
 	keySetName(key, 0);
 	succeed_if_same_string(keyName(key), "");
-	succeed_if(key->key == 0, "not reset to nullpointer");
+	succeed_if(key->key != 0, "null pointer?");
+	succeed_if_same_string(keyName(key), "");
+
+	elektraKeySetName(key, "", KDB_O_META_NAME | KDB_O_CASCADING_NAME);
+	succeed_if_same_string(keyName(key), "");
+	succeed_if(key->key != 0, "null pointer?");
+	succeed_if_same_string(keyName(key), "");
 
 	keyDel(key);
 }

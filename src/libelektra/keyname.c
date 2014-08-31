@@ -341,7 +341,7 @@ ssize_t keyGetName(const Key *key, char *returnedName, size_t maxSize)
  *
  * @param key
  */
-void elektraFinalizeName(Key *key)
+ssize_t elektraFinalizeName(Key *key)
 {
 	key->key[key->keySize - 1] = 0; /* finalize string */
 
@@ -349,8 +349,19 @@ void elektraFinalizeName(Key *key)
 			key->key+key->keySize);
 
 	key->flags |= KEY_FLAG_SYNC;
+
+	return key->keySize;
 }
 
+ssize_t elektraFinalizeEmptyName(Key *key)
+{
+	key->key = elektraCalloc(2); // two null pointers
+	key->keySize = 1;
+	key->keyUSize = 1;
+	key->flags |= KEY_FLAG_SYNC;
+
+	return key->keySize;
+}
 
 
 /**
@@ -409,7 +420,8 @@ ssize_t elektraKeySetName(Key *key, const char *newName,
 	/* handle null new key name, removing the old name */
 	if (!newName || !(length=elektraStrLen(newName)-1))
 	{
-		return 0;
+		elektraFinalizeEmptyName(key);
+		return 0; // we need to return 0 because of specification
 	}
 
 	rootLength=keyNameGetFullRootNameSize(newName)-1;
@@ -426,11 +438,7 @@ ssize_t elektraKeySetName(Key *key, const char *newName,
 	if ((options & KDB_O_EMPTY_NAME) &&
 		(!strcmp(newName, "")))
 	{
-		key->key = elektraCalloc(2);
-		key->key[0] = '0';
-		key->keySize=1;
-		elektraFinalizeName(key);
-		return key->keySize;
+		return elektraFinalizeEmptyName(key);
 	}
 	if ((options & KDB_O_CASCADING_NAME) &&
 		(newName[0] == '/'))

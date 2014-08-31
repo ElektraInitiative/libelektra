@@ -78,20 +78,37 @@ static void test_simple()
 	Key *errorKey = 0;
 	Backend *backend = elektraBackendOpen(set_simple(), modules, errorKey);
 	succeed_if (backend->errorplugins[0] == 0, "there should be no plugin");
-	exit_if_fail (backend->errorplugins[1] != 0, "there should be a plugin");
 	succeed_if (backend->errorplugins[2] == 0, "there should be no plugin");
+	succeed_if (backend->errorplugins[3] == 0, "there should be no plugin");
+	succeed_if (backend->errorplugins[4] == 0, "there should be no plugin");
+	succeed_if (backend->errorplugins[5] == 0, "there should be no plugin");
+	succeed_if (backend->errorplugins[6] == 0, "there should be no plugin");
+	succeed_if (backend->errorplugins[7] == 0, "there should be no plugin");
+	succeed_if (backend->errorplugins[8] == 0, "there should be no plugin");
+	succeed_if (backend->errorplugins[9] == 0, "there should be no plugin");
+	exit_if_fail (backend->errorplugins[1] != 0, "there should be a plugin");
 
 	succeed_if (backend->getplugins[0] == 0, "there should be no plugin");
-	exit_if_fail (backend->getplugins[1] != 0, "there should be a plugin");
 	succeed_if (backend->getplugins[2] == 0, "there should be no plugin");
+	succeed_if (backend->getplugins[3] == 0, "there should be no plugin");
+	succeed_if (backend->getplugins[4] == 0, "there should be no plugin");
+	succeed_if (backend->getplugins[5] == 0, "there should be no plugin");
+	succeed_if (backend->getplugins[6] == 0, "there should be no plugin");
+	succeed_if (backend->getplugins[7] == 0, "there should be no plugin");
+	succeed_if (backend->getplugins[8] == 0, "there should be no plugin");
+	succeed_if (backend->getplugins[9] == 0, "there should be no plugin");
+	exit_if_fail (backend->getplugins[1] != 0, "there should be a plugin");
 
 	succeed_if (backend->setplugins[0] == 0, "there should be no plugin");
-	exit_if_fail (backend->setplugins[1] != 0, "there should be a plugin");
 	succeed_if (backend->setplugins[2] == 0, "there should be no plugin");
-
-	succeed_if (backend->errorplugins[0] == 0, "there should be no plugin");
-	exit_if_fail (backend->errorplugins[1] != 0, "there should be a plugin");
-	succeed_if (backend->errorplugins[2] == 0, "there should be no plugin");
+	succeed_if (backend->setplugins[3] == 0, "there should be no plugin");
+	succeed_if (backend->setplugins[4] == 0, "there should be no plugin");
+	succeed_if (backend->setplugins[5] == 0, "there should be no plugin");
+	succeed_if (backend->setplugins[6] == 0, "there should be no plugin");
+	succeed_if (backend->setplugins[7] == 0, "there should be no plugin");
+	succeed_if (backend->setplugins[8] == 0, "there should be no plugin");
+	succeed_if (backend->setplugins[9] == 0, "there should be no plugin");
+	exit_if_fail (backend->setplugins[1] != 0, "there should be a plugin");
 
 	Key *mp;
 	succeed_if ((mp = backend->mountpoint) != 0, "no mountpoint found");

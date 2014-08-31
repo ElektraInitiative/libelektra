@@ -127,9 +127,30 @@ static void test_elektraRenameKeys()
 	KeySet *result = elektraRenameKeys(ks, "user/x");
 	compare_keyset(result, cmp);
 	// output_keyset(result);
-
 	ksDel(cmp);
 	ksDel(result);
+	ksDel(ks);
+
+	ks= ksNew(0, KS_END);
+	result = elektraRenameKeys(ks, "user");
+	output_keyset(result);
+
+	ksDel(result);
+	ksDel(ks);
+}
+
+static void test_elektraEmptyKeys()
+{
+	Key *key = keyNew("", KEY_END);
+	KeySet *ks = ksNew(0, KS_END);
+
+	elektraKeySetName(key, "", KDB_O_META_NAME | KDB_O_CASCADING_NAME);
+	succeed_if_same_string(keyName(key), "");
+	succeed_if(key->key != 0, "null pointer?");
+	ksAppendKey(ks, key);
+
+	succeed_if(ksLookup(ks, key, 0) == key, "could not find empty key");
+
 	ksDel(ks);
 }
 
@@ -139,6 +160,7 @@ int main()
 
 	test_ksCommonParentName();
 	test_elektraRenameKeys();
+	test_elektraEmptyKeys();
 
 	return nbError;
 }

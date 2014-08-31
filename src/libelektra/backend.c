@@ -107,7 +107,7 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
 			else if (!strcmp(keyBaseName(cur), "getplugins"))
 			{
 				if (elektraProcessPlugins(backend->getplugins, modules, referencePlugins,
-							systemConfig, systemConfig, errorKey) == -1)
+							cut, systemConfig, errorKey) == -1)
 				{
 					ELEKTRA_ADD_WARNING(13, errorKey, "elektraProcessPlugins for get failed");
 					failure = 1;
@@ -118,21 +118,23 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
 				backend->mountpoint = keyNew("",
 						KEY_VALUE, keyBaseName(root), KEY_END);
 				elektraKeySetName(backend->mountpoint, keyString(cur),
-						KDB_O_CASCADING_NAME);
+						KDB_O_CASCADING_NAME | KDB_O_EMPTY_NAME);
 
 				if (!backend->mountpoint)
 				{
-					ELEKTRA_ADD_WARNING(14, errorKey, keyValue(cur));
+					ELEKTRA_ADD_WARNINGF(14, errorKey,
+						"Could not create mountpoint with name %s and value %s",
+						keyString(cur), keyBaseName(root));
 					failure = 1;
 				}
 
 				keyIncRef(backend->mountpoint);
-				ksDel (systemConfig);
+				ksDel (cut);
 			}
 			else if (!strcmp(keyBaseName(cur), "setplugins"))
 			{
 				if (elektraProcessPlugins(backend->setplugins, modules, referencePlugins,
-							systemConfig, systemConfig, errorKey) == -1)
+							cut, systemConfig, errorKey) == -1)
 				{
 					ELEKTRA_ADD_WARNING(15, errorKey, "elektraProcessPlugins for set failed");
 					failure = 1;
@@ -141,7 +143,7 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
 			else if (!strcmp(keyBaseName(cur), "errorplugins"))
 			{
 				if (elektraProcessPlugins(backend->errorplugins, modules, referencePlugins,
-							systemConfig, systemConfig, errorKey) == -1)
+							cut, systemConfig, errorKey) == -1)
 				{
 					ELEKTRA_ADD_WARNING(15, errorKey, "elektraProcessPlugins for error failed");
 					failure = 1;
@@ -149,7 +151,7 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
 			} else {
 				// no one cares about that config
 				ELEKTRA_ADD_WARNING(16, errorKey, keyBaseName(cur));
-				ksDel (systemConfig);
+				ksDel (cut);
 			}
 		}
 	}
