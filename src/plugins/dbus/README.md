@@ -8,10 +8,17 @@
 
 ## Introduction ##
 
-This plugin is a notification plugin which sends a signal to dbus when a method is called. This allows external programs to take action when dbus notifies the program that a certain method has taken place with Elektra. 
+This plugin is a notification plugin which sends a signal to dbus when a
+method is called. This plugin allows external programs to take action
+when dbus notifies the program that a certain method has taken place
+with Elektra.
 
 ## Usage ##
 
-to log notification events:
+Mount the plugin additionally to a storage plugin, e.g.
 
-	dbus-monitor type='signal',interface='org.libelektra',path='/org/libelektra/configuration'	
+	kdb mount file.dump / dump dbus
+
+then we can receive the notification events using:
+
+	dbus-monitor type='signal',interface='org.libelektra',path='/org/libelektra/configuration'

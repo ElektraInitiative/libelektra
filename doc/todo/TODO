@@ -192,6 +192,7 @@ See also OPTIMISE
 
 ksForEach (ks, func, handle)
 	void func (Key*, void* handle);
+	also with lambdas in c++ (check if external loop is faster?)
 
 relations
 

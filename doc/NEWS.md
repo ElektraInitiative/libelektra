@@ -15,6 +15,54 @@ error plugin
 
 keySetStringF
 
+## Compatibility
+
+This time we had to break compatibility. We did not change the ABI (your
+application still will be able to use Elektra 0.8.8) and we did not
+change the API (your application still will compile against Elektra). We
+changed the third part of our interface: the semantic interface.
+
+The problems were following:
+keyAddBaseName/keySetBaseName did something obvious when no special
+characters were in the baseName. But once there were, there are two
+different interpretations what it should do:
+1.) add/set a basename, so escape characters that are not canonical
+    in the basename
+2.) add all parts of the name given (with slashes)
+
+The methods were used in both ways, so it was obvious that something is
+very wrong. We decided that it should do what the name says, that is
+add/set a basename (variant 1).
+
+keySetBaseName(keyBaseName()) now does what is expected: nothing
+
+ksNew() does now return a keyset with a properly set cursor (ksRewind).
+
+elektraArrayIncName now works correctly with starting elements, empty
+arrays embedded in other arrays (yajl+line plugin)
+elektraArrayValidateName added, thanks to Felix
+
+The variant 2, to add any name was added and is called keyAddName().
+
+When keys are renamed after adding to a keyset is a bad thing because it
+destroys the order of the keyset. This will now be avoided by a runtime
+check.
+
+Because its always possible that software relies on bugs the more
+compatible way to deal with such a situation
+is to still provide the old interface and
+a new one additionally. Manuel said he will create a prototype to
+introduce symbol versioning in Elektra. With that, old customers
+would still receive the old behaviour, but people compiling against
+a new version would get the new behaviour. So in one of the next
+releases we will also avoid semantic interface changes when there
+is a valid use case for it (there is none if the program e.g.
+crashes).
+Symbol versioning also allows to compile against old versions on
+purpose if you do not want the new behaviour.
+
+
+
 ## Tools
 
 kdb check improved

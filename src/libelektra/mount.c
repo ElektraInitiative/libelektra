@@ -243,7 +243,7 @@ int elektraMountBackend (KDB *kdb, Backend *backend, Key *errorKey ELEKTRA_UNUSE
 	/* Note that you must set the refcounter to the number of insertions
 	   into the trie */
 
-	if (!backend->mountpoint->key)
+	if (!strcmp(keyName(backend->mountpoint), ""))
 	{
 		/* Default backend */
 		sprintf(mountpoint, "system/elektra/");
@@ -251,7 +251,7 @@ int elektraMountBackend (KDB *kdb, Backend *backend, Key *errorKey ELEKTRA_UNUSE
 		elektraSplitAppend(kdb->split, backend, keyNew("system/elektra/", KEY_VALUE, "default", KEY_END), 0);
 		backend->refcounter = 1;
 	}
-	else if (!strcmp (backend->mountpoint->key, "/"))
+	else if (!strcmp (keyName(backend->mountpoint), "/"))
 	{
 		/* Root backend */
 		sprintf(mountpoint, "system%s", keyName(backend->mountpoint));
@@ -263,7 +263,7 @@ int elektraMountBackend (KDB *kdb, Backend *backend, Key *errorKey ELEKTRA_UNUSE
 		elektraSplitAppend(kdb->split, backend, keyNew("user", KEY_VALUE, "root", KEY_END), 2);
 		backend->refcounter = 2;
 	}
-	else if (backend->mountpoint->key[0] == '/')
+	else if (keyName(backend->mountpoint)[0] == '/')
 	{
 		/* Cascading Backend */
 		sprintf(mountpoint, "system%s/", keyName(backend->mountpoint));
@@ -277,7 +277,7 @@ int elektraMountBackend (KDB *kdb, Backend *backend, Key *errorKey ELEKTRA_UNUSE
 			keyNew(mountpoint, KEY_VALUE, keyString(backend->mountpoint), KEY_END), 2);
 		backend->refcounter = 2;
 	} else {
-		/* Normal single mounted backend */
+		/* Common single mounted backend */
 		sprintf(mountpoint, "%s/", keyName(backend->mountpoint));
 		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
 		elektraSplitAppend(kdb->split, backend, keyDup (backend->mountpoint), 0);
@@ -351,7 +351,7 @@ Key* elektraMountGetMountpoint(KDB *handle, const Key *where)
  */
 Backend* elektraMountGetBackend(KDB *handle, const Key *key)
 {
-	if (!key || !key->key) return handle->defaultBackend;
+	if (!key || !strcmp(keyName(key), "")) return handle->defaultBackend;
 
 	Backend *ret = elektraTrieLookup(handle->trie, key);
 	if (!ret) return handle->defaultBackend;

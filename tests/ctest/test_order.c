@@ -425,42 +425,6 @@ static void test_appendowner()
 	ksDel (ks);
 }
 
-static void test_strcmp()
-{
-	printf ("Testing string comparision\n");
-
-	char array[] =  "user/key/a";
-	char array2[] = "user/key\0";
-
-	succeed_if (elektraStrCmp ("user/key", "user/key") == 0, "key should be equal");
-	succeed_if (    strcmp ("user/key", "user/key") == 0, "key should be equal");
-
-	succeed_if (elektraStrCmp ("user/keya", "user/key") > 0, "longer key should be greater");
-	succeed_if (    strcmp ("user/keya", "user/key") > 0, "longer key should be greater");
-
-	succeed_if (elektraStrCmp ("user/key"  , "user/key/a") < 0, "key should be greater");
-	succeed_if (    strcmp ("user/key"  , "user/key/a") < 0, "key should be greater");
-
-	succeed_if (elektraStrCmp ("user/keyab", "user/key/a") > 0, "key should be greater");
-	succeed_if (    strcmp ("user/keyab", "user/key/a") > 0, "key should be greater");
-
-	succeed_if (elektraStrCmp ("user/key.a", "user/key/a") > 0, "key should be greater");
-	succeed_if (    strcmp ("user/key.a", "user/key/a") < 0, "strcmp should have a different result");
-
-	for (int i=1; i< 256; i++)
-	{
-		array2[8] = i;
-		succeed_if (elektraStrCmp (array2, "user/key") > 0, "longer key should be greater");
-		succeed_if (elektraStrCmp ("user/key", array2) < 0, "longer key should be greater");
-
-		array[8] = i;
-		if (i == '/') continue;
-		succeed_if (elektraStrCmp (array, "user/key/a") > 0, "key with / should be greater");
-		succeed_if (elektraStrCmp ("user/key/a", array) < 0, "key with / should be greater");
-	}
-
-}
-
 int main(int argc, char** argv)
 {
 	printf("KEYSET ORDERING      TESTS\n");
@@ -476,7 +440,6 @@ int main(int argc, char** argv)
 	test_equal();
 	test_cmp();
 	test_appendowner();
-	test_strcmp();
 
 	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

@@ -49,7 +49,7 @@ static void test_ksNew()
 
 
 	succeed_if(ksGetSize(keys) == 0, "could not append 3 more keys");
-	succeed_if(ksGetAlloc(keys) == 15, "allocation size wrong");
+	// succeed_if(ksGetAlloc(keys) == 15, "allocation size wrong");
 	succeed_if(ksDel(keys) == 0, "could not delete keyset");
 
 	config = ksNew (100,
@@ -57,13 +57,15 @@ static void test_ksNew()
 		keyNew ("user/sw/app/fixedConfiguration/key2", KEY_VALUE, "value2", 0),
 		keyNew ("user/sw/app/fixedConfiguration/key3", KEY_VALUE, "value3", 0), KS_END);
 	succeed_if(ksGetSize(config) == 3, "could not append 3 keys in keyNew");
-	succeed_if(ksGetAlloc(config) == 100, "allocation size wrong");
+	// this behaviour might change, do not build on it,
+	// and there is no compatible way to get the alloc info
+	// succeed_if(ksGetAlloc(config) == 100, "allocation size wrong");
 	keyDel (ksPop (config));
-	succeed_if(ksGetAlloc(config) == 49, "allocation size wrong");
+	// succeed_if(ksGetAlloc(config) == 49, "allocation size wrong");
 	keyDel (ksPop (config));
-	succeed_if(ksGetAlloc(config) == 24, "allocation size wrong");
+	// succeed_if(ksGetAlloc(config) == 24, "allocation size wrong");
 	keyDel (ksPop (config));
-	succeed_if(ksGetAlloc(config) == 15, "allocation size wrong");
+	// succeed_if(ksGetAlloc(config) == 15, "allocation size wrong");
 	succeed_if(ksDel(config) == 0, "could not delete keyset");
 
 	config = ksNew (10,
@@ -73,7 +75,7 @@ static void test_ksNew()
 		keyNew ("user/sw/app/fixedConfiguration/key4", KEY_VALUE, "value3", 0), KS_END);
 
 	succeed_if(ksGetSize(config) == 4, "could not append 5 keys in keyNew");
-	succeed_if(ksGetAlloc(config) == 15, "allocation size wrong");
+	// succeed_if(ksGetAlloc(config) == 15, "allocation size wrong");
 	ksAppendKey(config, keyNew ("user/sw/app/fixedConfiguration/key6", KEY_VALUE, "value4", 0));
 
 	ksClear (ks2);
@@ -90,9 +92,8 @@ static void test_ksNew()
 		keyNew ("system/valid/key1", KEY_END),
 		keyNew ("system/valid/key2", KEY_END),
 		KS_END);
-	// TODO: why is the cursor here?
-	succeed_if (!strcmp(keyName(ksCurrent(ks_c)), "system/valid/key2"),
-			"cursor jumped somewhere else");
+
+	succeed_if (ksCurrent(ks_c) == 0, "should be rewinded");
 	ksDel (ks_c);
 }
 
@@ -970,6 +971,24 @@ static void test_ksLookup()
 {
 	printf ("Test lookup\n");
 
+	Key *simpleKey = keyNew("user/find_me", KEY_END);
+	KeySet *simple = ksNew(5, simpleKey, KS_END);
+
+	Key *foundKey = ksLookup(simple, simpleKey, 0);
+	succeed_if(foundKey == simpleKey, "could not find key in keyset");
+
+	Key *simpleKey2 = keyNew("user/find_me/a", KEY_END);
+	ksAppendKey(simple, simpleKey2);
+
+	foundKey = ksLookup(simple, simpleKey, 0);
+	succeed_if(foundKey == simpleKey, "could not find key in keyset again");
+	// output_key(foundKey);
+
+	foundKey = ksLookup(simple, simpleKey2, 0);
+	succeed_if(foundKey == simpleKey2, "could not find other key in keyset");
+	// output_keyset(simple);
+	ksDel(simple);
+
 	int i,j;
 	Key *k[1000];
 	KeySet *ks = ksNew (30,
@@ -1020,18 +1039,18 @@ static void test_ksLookup()
 	{
 		ksUnsort(ks);
 		for (j=0; j<23;j++)
-			succeed_if (ksLookup(ks, k[j], 0)==k[j], "did not found key");
-		succeed_if (ksLookup(ks, k[23], KDB_O_NOCASE) == k[5], "did not found key");
+			succeed_if (ksLookup(ks, k[j], 0)==k[j], "did not find key");
+		succeed_if (ksLookup(ks, k[23], KDB_O_NOCASE) == k[5], "did not find key");
 		succeed_if (ksLookup(ks, k[23], 0) == 0, "found wrong key");
-		succeed_if (ksLookup(ks, k[24], KDB_O_NOCASE) == k[6], "did not found key");
+		succeed_if (ksLookup(ks, k[24], KDB_O_NOCASE) == k[6], "did not find key");
 		succeed_if (ksLookup(ks, k[24], 0) == 0, "found wrong key");
-		succeed_if (ksLookup(ks, k[25], KDB_O_NOCASE) == k[6], "did not found key");
+		succeed_if (ksLookup(ks, k[25], KDB_O_NOCASE) == k[6], "did not find key");
 		succeed_if (ksLookup(ks, k[25], KDB_O_WITHOWNER|KDB_O_NOCASE) == 0, "found wrong key");
-		succeed_if (ksLookup(ks, k[28], 0) == k[6], "did not found key");
+		succeed_if (ksLookup(ks, k[28], 0) == k[6], "did not find key");
 		succeed_if (ksLookup(ks, k[28], KDB_O_WITHOWNER) == 0, "found wrong key");
-		succeed_if (ksLookup(ks, k[31], KDB_O_WITHOWNER) == k[13], "did not found key");
+		succeed_if (ksLookup(ks, k[31], KDB_O_WITHOWNER) == k[13], "did not find key");
 		/* Empty lines to add more tests:
-		succeed_if (ksLookup(ks, k[], ) == k[], "did not found key");
+		succeed_if (ksLookup(ks, k[], ) == k[], "did not find key");
 		succeed_if (ksLookup(ks, k[], ) == 0, "found wrong key");
 		*/
 	}
@@ -1092,18 +1111,18 @@ static void test_ksLookupByName()
 	{
 		ksUnsort(ks);
 		for (j=0; j<23;j++)
-			succeed_if (ksLookupByName(ks, name[j], 0)==k[j], "did not found key");
-		succeed_if (ksLookupByName(ks, name[23], KDB_O_NOCASE) == k[5], "did not found key");
+			succeed_if (ksLookupByName(ks, name[j], 0)==k[j], "did not find key");
+		succeed_if (ksLookupByName(ks, name[23], KDB_O_NOCASE) == k[5], "did not find key");
 		succeed_if (ksLookupByName(ks, name[23], 0) == 0, "found wrong key");
-		succeed_if (ksLookupByName(ks, name[24], KDB_O_NOCASE) == k[6], "did not found key");
+		succeed_if (ksLookupByName(ks, name[24], KDB_O_NOCASE) == k[6], "did not find key");
 		succeed_if (ksLookupByName(ks, name[24], 0) == 0, "found wrong key");
-		succeed_if (ksLookupByName(ks, name[25], KDB_O_NOCASE) == k[6], "did not found key");
+		succeed_if (ksLookupByName(ks, name[25], KDB_O_NOCASE) == k[6], "did not find key");
 		succeed_if (ksLookupByName(ks, name[25], KDB_O_WITHOWNER|KDB_O_NOCASE) == 0, "found wrong key");
-		succeed_if (ksLookupByName(ks, name[28], 0) == k[6], "did not found key");
+		succeed_if (ksLookupByName(ks, name[28], 0) == k[6], "did not find key");
 		succeed_if (ksLookupByName(ks, name[28], KDB_O_WITHOWNER) == 0, "found wrong key");
-		succeed_if (ksLookupByName(ks, name[31], KDB_O_WITHOWNER) == k[13], "did not found key");
+		succeed_if (ksLookupByName(ks, name[31], KDB_O_WITHOWNER) == k[13], "did not find key");
 		/* Empty lines to add more tests:
-		succeed_if (ksLookupByName(ks, name[], ) == name[], "did not found key");
+		succeed_if (ksLookupByName(ks, name[], ) == name[], "did not find key");
 		succeed_if (ksLookupByName(ks, name[], ) == 0, "found wrong key");
 		*/
 	}
@@ -1137,7 +1156,7 @@ static void test_ksLookupName()
 	found = ksLookupByName (ks, "user/named/key", 0);
 	succeed_if (ksCurrent(ks) == found, "current not set correctly");
 
-	succeed_if (found != 0, "did not found correct name");
+	succeed_if (found != 0, "did not find correct name");
 	succeed_if (ksCurrent(ks) == found, "current not set correctly");
 	succeed_if (strcmp (keyName(found), "user/named/key") == 0, "name not correct in found key");
 	succeed_if (strcmp (keyValue(found), "myvalue") == 0, "not correct value in found key");
@@ -1170,25 +1189,25 @@ static void test_ksLookupName()
 	//now try to find them, and compare value
 	found = ksLookupByName (ks, "user/domain/key", 0);
 	succeed_if (ksCurrent(ks) == found, "current not set correctly");
-	succeed_if (found != 0, "did not found correct name");
+	exit_if_fail (found != 0, "did not find correct name");
 	succeed_if (strcmp (keyName(found), "user/domain/key") == 0, "name not correct in found key");
 	succeed_if (strcmp (keyValue(found), "domainvalue") == 0, "not correct value in found key");
 	
 	found = ksLookupByName (ks, "user/single/key", 0);
 	succeed_if (ksCurrent(ks) == found, "current not set correctly");
-	succeed_if (found != 0, "did not found correct name");
+	succeed_if (found != 0, "did not find correct name");
 	succeed_if (strcmp (keyName(found), "user/single/key") == 0, "name not correct in found key");
 	succeed_if (strcmp (keyValue(found), "singlevalue") == 0, "not correct value in found key");
 	
 	found = ksLookupByName (ks, "system/named/key", 0);
 	succeed_if (ksCurrent(ks) == found, "current not set correctly");
-	succeed_if (found != 0, "did not found correct name");
+	succeed_if (found != 0, "did not find correct name");
 	succeed_if (strcmp (keyName(found), "system/named/key") == 0, "name not correct in found key");
 	succeed_if (strcmp (keyValue(found), "syskey") == 0, "not correct value in found key");
 	
 	found = ksLookupByName (ks, "user/named/bin", 0);
 	succeed_if (ksCurrent(ks) == found, "current not set correctly");
-	succeed_if (found != 0, "did not found correct name");
+	succeed_if (found != 0, "did not find correct name");
 	succeed_if (strcmp (keyName(found), "user/named/bin") == 0, "name not correct in found key");
 	succeed_if (strncmp (keyValue(found), "binary\1\2data",10) == 0, "not correct value in found key");
 
@@ -1398,12 +1417,10 @@ static void test_ksLookupNameAll()
 	ksRewind(ks);
 	found = ksLookupByName (ks, "user/00", KDB_O_NOALL);
 	succeed_if (found != 0, "could not find key");
-	succeed_if (keyIsDir (found) == 1, "should be dir");
 	succeed_if (strcmp (keyName(found), "user/00") == 0, "name not correct in found key");
 
 	found = ksLookupByName (ks, "user/01", KDB_O_NOALL);
 	succeed_if (found != 0, "could not find key");
-	succeed_if (keyIsDir (found) == 1, "should be dir");
 	succeed_if (strcmp (keyName(found), "user/01") == 0, "name not correct in found key");
 
 	found = ksNext (ks);
@@ -1413,7 +1430,6 @@ static void test_ksLookupNameAll()
 	found = ksLookupByName (ks, "user/02", KDB_O_NOALL);
 	succeed_if (ksCurrent(ks) == found, "current not set correctly");
 	succeed_if (found != 0, "could not find key");
-	succeed_if (keyIsDir (found) == 1, "should be dir");
 	succeed_if (strcmp (keyName(found), "user/02") == 0, "name not correct in found key");
 
 	cursor = ksGetCursor (ks);
@@ -1436,13 +1452,11 @@ static void test_ksLookupNameAll()
 	found = ksLookupByName (ks, "user/00", KDB_O_NOALL | KDB_O_NOCASE);
 	succeed_if (ksCurrent(ks) == found, "current not set correctly");
 	succeed_if (found != 0, "could not find key");
-	succeed_if (keyIsDir (found) == 1, "should be dir");
 	succeed_if (strcmp (keyName(found), "user/00") == 0, "name not correct in found key");
 
 	found = ksLookupByName (ks, "user/01", KDB_O_NOALL | KDB_O_NOCASE);
 	succeed_if (ksCurrent(ks) == found, "current not set correctly");
 	succeed_if (found != 0, "could not find key");
-	succeed_if (keyIsDir (found) == 1, "should be dir");
 	succeed_if (strcmp (keyName(found), "user/01") == 0, "name not correct in found key");
 
 	found = ksNext (ks);
@@ -1453,7 +1467,6 @@ static void test_ksLookupNameAll()
 	found = ksLookupByName (ks, "user/02", KDB_O_NOALL | KDB_O_NOCASE);
 	succeed_if (ksCurrent(ks) == found, "current not set correctly");
 	succeed_if (found != 0, "could not find key");
-	succeed_if (keyIsDir (found) == 1, "should be dir");
 	succeed_if (strcmp (keyName(found), "user/02") == 0, "name not correct in found key");
 
 	found = ksLookupByName (ks, "user/02/F", KDB_O_NOALL | KDB_O_NOCASE);
@@ -1469,12 +1482,10 @@ static void test_ksLookupNameAll()
 	ksRewind(ks);
 	found = ksLookupByName (ks, "user/00", KDB_O_NOALL | KDB_O_WITHOWNER | KDB_O_NOCASE);
 	succeed_if (found != 0, "could not find key");
-	succeed_if (keyIsDir (found) == 1, "should be dir");
-	succeed_if (strcmp (keyName(found), "user/00") == 0, "name not correct in found key");
+	succeed_if_same_string (keyName(found), "user/00");
 
 	found = ksLookupByName (ks, "user/01", KDB_O_NOALL | KDB_O_WITHOWNER | KDB_O_NOCASE);
 	succeed_if (found != 0, "could not find key");
-	succeed_if (keyIsDir (found) == 1, "should be dir");
 	succeed_if (strcmp (keyName(found), "user/01") == 0, "name not correct in found key");
 
 	found = ksNext (ks);
@@ -1483,7 +1494,6 @@ static void test_ksLookupNameAll()
 
 	found = ksLookupByName (ks, "user/02", KDB_O_NOALL | KDB_O_WITHOWNER | KDB_O_NOCASE);
 	succeed_if (found != 0, "could not find key");
-	succeed_if (keyIsDir (found) == 1, "should be dir");
 	succeed_if (strcmp (keyName(found), "user/02") == 0, "name not correct in found key");
 
 	found = ksLookupByName (ks, "user/a", KDB_O_NOALL | KDB_O_WITHOWNER | KDB_O_NOCASE);
@@ -1653,61 +1663,6 @@ static void test_ksExample()
 	ksDel(ks);
 }
 
-#define MAX_SIZE 200
-static void test_ksCommonParentName()
-{
-	char ret [MAX_SIZE+1];
-	KeySet *ks = ksNew (10,
-		keyNew("system/sw/xorg/Monitors/Monitor1/vrefresh",0),
-		keyNew("system/sw/xorg/Monitors/Monitor1/hrefresh",0),
-		keyNew("system/sw/xorg/Monitors/Monitor2/vrefresh",0),
-		keyNew("system/sw/xorg/Monitors/Monitor2/hrefresh",0),
-		keyNew("system/sw/xorg/Devices/Device1/driver",0),
-		keyNew("system/sw/xorg/Devices/Device1/mode",0),KS_END);
-
-	printf ("Test common parentname\n");
-
-	succeed_if (ksGetCommonParentName(ks, ret, MAX_SIZE) > 0, "could not find correct parentname");
-	succeed_if (strcmp (ret, "system/sw/xorg") == 0, "parentname not correct");
-	ksDel (ks);
-
-	ks = ksNew (10,
-		keyNew("system",0),
-		keyNew("user",0),KS_END);
-	succeed_if (ksGetCommonParentName(ks, ret, MAX_SIZE) == 0, "could find correct parentname");
-	succeed_if (strcmp (ret, "") == 0, "parentname not empty");
-	ksDel (ks);
-
-	ks = ksNew (10,
-		keyNew("system/some/thing",0),
-		keyNew("system/other/thing",0), KS_END);
-	succeed_if (ksGetCommonParentName(ks, ret, MAX_SIZE) == 7, "could find correct parentname");
-	succeed_if (strcmp (ret, "system") == 0, "parentname not empty");
-	ksDel (ks);
-
-	ks = ksNew (10,
-		keyNew("system/here/in/deep/goes/ok/thing",0),
-		keyNew("system/here/in/deep/goes/ok/other/thing",0),
-		KS_END);
-	succeed_if (ksGetCommonParentName(ks, ret, MAX_SIZE) > 0, "could find correct parentname");
-	succeed_if (strcmp (ret, "system/here/in/deep/goes/ok") == 0, "parentname not empty");
-	ksDel (ks);
-
-	ks = ksNew (10,
-		keyNew("system/here/in/deep/goes/ok/thing",0),
-		keyNew("system/here/in/deep/goes/ok/other/thing",0),
-		keyNew("user/unique/thing",0),KS_END);
-	succeed_if (ksGetCommonParentName(ks, ret, MAX_SIZE) == 0, "could find correct parentname");
-	succeed_if (strcmp (ret, "") == 0, "parentname not empty");
-	ksDel (ks);
-
-	ks = ksNew (10,
-		keyNew("user/unique/thing",0),KS_END);
-	succeed_if (ksGetCommonParentName(ks, ret, MAX_SIZE) > 0, "could find correct parentname");
-	succeed_if (strcmp (ret, "user/unique/thing") == 0, "parentname not empty");
-	ksDel (ks);
-}
-
 static void test_ksAppend()
 {
 	int i;
@@ -1760,9 +1715,9 @@ static void test_ksAppend()
 			succeed_if (ksGetSize (returned) == 84, "size not correct");
 			succeed_if (ksGetSize (keys) == 18, "size not correct");
 
-			succeed_if (ksGetAlloc (tmp) == 102, "alloc not correct");
-			succeed_if (ksGetAlloc (returned) == 127, "alloc not correct");
-			succeed_if (ksGetAlloc (keys) == 31, "alloc not correct");
+			// succeed_if (ksGetAlloc (tmp) == 102, "alloc not correct");
+			// succeed_if (ksGetAlloc (returned) == 127, "alloc not correct");
+			// succeed_if (ksGetAlloc (keys) == 31, "alloc not correct");
 		}
 
 		ksAppend (returned, keys); /* add the keys back */
@@ -1873,7 +1828,7 @@ int ksFilter (KeySet *result, KeySet *input, int (*filter) (Key *k))
 Key *global_a;
 
 int add_string (Key *check) { return keySetString (check, "string"); }
-int add_comment (Key *check) { return keySetComment (check, "comment"); }
+// int add_comment (Key *check) { return keySetComment (check, "comment"); }
 int has_a (Key *check) { return keyName(check)[5]=='a'; }
 int below_a (Key *check) { return keyIsBelow(global_a, check); }
 int direct_below_a (Key *check) { return keyIsDirectBelow(global_a, check); }
@@ -1901,13 +1856,13 @@ static void test_ksFunctional()
 	printf ("Test functional style\n");
 
 	ksForEach (ks, add_string);
-	ksForEach (ks, add_comment);
+	// ksForEach (ks, add_comment);
 
 	ksRewind (ks);
 	while ((current = ksNext(ks)) != 0)
 	{
 		succeed_if (strcmp (keyValue (current), "string") == 0, "for each did not add string");
-		succeed_if (strcmp (keyComment (current), "comment") == 0, "for each did not add comment");
+		// succeed_if (strcmp (keyComment (current), "comment") == 0, "for each did not add comment");
 	}
 
 	out = ksNew(0, KS_END);
@@ -2027,7 +1982,7 @@ static void test_ksLookupPop()
 	found = ksLookupByName (ks, "user/named/key", KDB_O_POP);
 	succeed_if (ksGetSize(ks) == 7, "did not pop key");
 	succeed_if (ksCurrent(ks) == 0, "current not set correctly");
-	succeed_if (found != 0, "did not found correct name");
+	succeed_if (found != 0, "did not find correct name");
 	succeed_if (ksCurrent(ks) == 0, "current not set correctly");
 	succeed_if (strcmp (keyName(found), "user/named/key") == 0, "name not correct in found key");
 	succeed_if (strcmp (keyValue(found), "myvalue") == 0, "not correct value in found key");
@@ -2058,7 +2013,7 @@ static void test_ksLookupPop()
 	found = ksLookupByName (ks, "user/named/key", KDB_O_POP);
 	succeed_if (ksGetSize(ks) == 7, "did not pop key");
 	succeed_if (ksCurrent(ks) == 0, "current not set correctly");
-	succeed_if (found != 0, "did not found correct name");
+	succeed_if (found != 0, "did not find correct name");
 	succeed_if (ksCurrent(ks) == 0, "current not set correctly");
 	succeed_if (strcmp (keyName(found), "user/named/key") == 0, "name not correct in found key");
 	succeed_if (strcmp (keyValue(found), "singlevalue") == 0, "not correct value in found key");
@@ -2073,7 +2028,7 @@ static void test_ksLookupPop()
 	found = ksLookupByName (ks, "user/domain/key", KDB_O_POP);
 	succeed_if (ksGetSize(ks) == 7, "did not pop key");
 	succeed_if (ksCurrent(ks) == 0, "current not set correctly");
-	succeed_if (found != 0, "did not found correct name");
+	succeed_if (found != 0, "did not find correct name");
 	succeed_if (strcmp (keyName(found), "user/domain/key") == 0, "name not correct in found key");
 	succeed_if (strcmp (keyValue(found), "domainvalue") == 0, "not correct value in found key");
 	succeed_if (keyDel (found) == 0, "could not del popped key");
@@ -2081,7 +2036,7 @@ static void test_ksLookupPop()
 	found = ksLookupByName (ks, "user/single/key", KDB_O_POP);
 	succeed_if (ksGetSize(ks) == 6, "did not pop key");
 	succeed_if (ksCurrent(ks) == 0, "current not set correctly");
-	succeed_if (found != 0, "did not found correct name");
+	succeed_if (found != 0, "did not find correct name");
 	succeed_if (strcmp (keyName(found), "user/single/key") == 0, "name not correct in found key");
 	succeed_if (strcmp (keyValue(found), "singlevalue") == 0, "not correct value in found key");
 	succeed_if (keyDel (found) == 0, "could not del popped key");
@@ -2089,7 +2044,7 @@ static void test_ksLookupPop()
 	found = ksLookupByName (ks, "system/named/key", KDB_O_POP);
 	succeed_if (ksGetSize(ks) == 5, "did not pop key");
 	succeed_if (ksCurrent(ks) == 0, "current not set correctly");
-	succeed_if (found != 0, "did not found correct name");
+	succeed_if (found != 0, "did not find correct name");
 	succeed_if (strcmp (keyName(found), "system/named/key") == 0, "name not correct in found key");
 	succeed_if (strcmp (keyValue(found), "syskey") == 0, "not correct value in found key");
 	succeed_if (keyDel (found) == 0, "could not del popped key");
@@ -2097,7 +2052,7 @@ static void test_ksLookupPop()
 	found = ksLookupByName (ks, "user/named/bin", KDB_O_POP);
 	succeed_if (ksGetSize(ks) == 4, "pop key");
 	succeed_if (ksCurrent(ks) == 0, "current not set correctly");
-	succeed_if (found != 0, "did not found correct name");
+	succeed_if (found != 0, "did not find correct name");
 	succeed_if (strcmp (keyName(found), "user/named/bin") == 0, "name not correct in found key");
 	succeed_if (strncmp (keyValue(found), "binary\1\2data",10) == 0, "not correct value in found key");
 	succeed_if (keyDel (found) == 0, "could not del popped key");
@@ -2288,6 +2243,11 @@ static void test_ksDoubleAppendKey()
 	ksAppendKey (ks, k);
 	succeed_if (ksGetSize (ks) == 1, "size not correct");
 
+	Key *k2 = keyNew("user:owner/my_double_key", KEY_END);
+
+	ksAppendKey (ks, k2);
+	succeed_if (ksGetSize (ks) == 2, "size not correct");
+
 	keyDel (k); // has no effect
 
 	ksDel (ks);
@@ -2377,7 +2337,7 @@ static void test_ksOrder()
 		keyNew("user/test/test/foo", KEY_END),
 		keyNew("user/test/test-foo", KEY_END),
 		KS_END);
-	ksRewind(ks);
+
 	ksNext(ks);
 	succeed_if_same_string(keyName(ksCurrent(ks)), "user/test/test");
 	ksNext(ks);
@@ -2386,8 +2346,61 @@ static void test_ksOrder()
 	succeed_if_same_string(keyName(ksCurrent(ks)), "user/test/test/foo");
 	ksNext(ks);
 	succeed_if_same_string(keyName(ksCurrent(ks)), "user/test/test-foo");
-	succeed_if(0, "does not succeed");
 
+	ksDel(ks);
+
+	ks = ksNew(20,
+	keyNew("user/x", KEY_END),
+	keyNew("user/x/%", KEY_END),
+	keyNew("user/x/%/a", KEY_END),
+	keyNew("user/x/%/b", KEY_END),
+	keyNew("user/x/\\%", KEY_END),
+	keyNew("user/x/\\%/a", KEY_END),
+	keyNew("user/x/\\%/b", KEY_END),
+	keyNew("user/x/%a", KEY_END),
+	keyNew("user/x/%b", KEY_END),
+	keyNew("user/x/A", KEY_END),
+	keyNew("user/x/A/a", KEY_END),
+	keyNew("user/x/A/b", KEY_END),
+	keyNew("user/x/\\%a", KEY_END),
+	keyNew("user/x/\\%b", KEY_END),
+	keyNew("user/x/a\\/", KEY_END),
+	keyNew("user/x/a\\/b", KEY_END),
+	keyNew("user/x/a\\/b/a", KEY_END),
+	keyNew("user/x/a\\/b/b", KEY_END),
+	keyNew("user/x/aA", KEY_END),
+	keyNew("user/x/aA/a", KEY_END),
+	keyNew("user/x/aA/b", KEY_END),
+	keyNew("user/x/aa", KEY_END),
+	keyNew("user/x/aa/a", KEY_END),
+	keyNew("user/x/aa/b", KEY_END),
+	KS_END);
+
+	succeed_if(ksCurrent(ks) == 0, "not rewinded");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/%");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/%/a");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/%/b");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/\\%");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/\\%/a");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/\\%/b");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/%a");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/%b");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/A");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/A/a");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/A/b");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/\\%a");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/\\%b");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/a\\/");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/a\\/b");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/a\\/b/a");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/a\\/b/b");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/aA");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/aA/a");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/aA/b");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/aa");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/aa/a");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/aa/b");
 	ksDel(ks);
 }
 
@@ -2653,23 +2666,23 @@ static void test_cutbelow()
 
 	Key *cutpoint = keyNew("user/export", KEY_END);
 	KeySet *orig = ksNew(30,
-			keyNew("user/export-backup-2/x", KEY_END),
-			keyNew("user/export-backup/b", KEY_END),
 			keyNew("user/export/a", KEY_END),
 			keyNew("user/export/c", KEY_END),
 			keyNew("user/export/c/x", KEY_END),
 			keyNew("user/export/c/x/b/blah", KEY_END),
 			keyNew("user/export/xyz", KEY_END),
+			keyNew("user/export-backup/b", KEY_END),
+			keyNew("user/export-backup-2/x", KEY_END),
 			KS_END);
 	ksRewind(orig);
 	ksNext(orig);
-	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/export-backup-2/x"), "wrong cursor");
-	ksNext(orig);
-	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/export-backup/b"), "wrong cursor");
+	succeed_if_same_string(keyName(ksCurrent(orig)), "user/export/a");
+	ksLookupByName(orig, "user/export-backup/b", 0);
+	succeed_if_same_string(keyName(ksCurrent(orig)), "user/export-backup/b");
 
 	KeySet *part = ksCut(orig, cutpoint);
 
-	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/export-backup/b"), "wrong cursor");
+	succeed_if_same_string(keyName(ksCurrent(orig)), "user/export-backup/b");
 
 	KeySet *cmp_orig = ksNew(15,
 			keyNew("user/export-backup-2/x", KEY_END),
@@ -2690,84 +2703,6 @@ static void test_cutbelow()
 	ksDel (part);
 	ksDel (cmp_part);
 	keyDel (cutpoint);
-}
-
-static void test_cutbelow_1()
-{
-	printf ("Testing cutting below some keys\n");
-
-	Key *cutpoint = keyNew("user/export", KEY_END);
-	KeySet *orig = ksNew(30,
-			keyNew("user/export-backup-2/x", KEY_END),
-			keyNew("user/export-backup/b", KEY_END),
-			keyNew("user/export/a", KEY_END),
-			keyNew("user/export/c", KEY_END),
-			keyNew("user/export/c/x", KEY_END),
-			keyNew("user/export/c/x/b/blah", KEY_END),
-			keyNew("user/export/xyz", KEY_END),
-			KS_END);
-	ksRewind(orig);
-	ksNext(orig);
-	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/export-backup-2/x"), "wrong cursor");
-	ksNext(orig);
-	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/export-backup/b"), "wrong cursor");
-	ksNext(orig);
-	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/export/a"), "wrong cursor");
-
-	KeySet *part = ksCut(orig, cutpoint);
-
-	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/export-backup/b"), "wrong cursor");
-
-	KeySet *cmp_orig = ksNew(15,
-			keyNew("user/export-backup-2/x", KEY_END),
-			keyNew("user/export-backup/b", KEY_END),
-			KS_END);
-	compare_keyset(orig, cmp_orig);
-	ksDel (orig);
-	ksDel (cmp_orig);
-
-	KeySet *cmp_part = ksNew(15,
-			keyNew("user/export/a", KEY_END),
-			keyNew("user/export/c", KEY_END),
-			keyNew("user/export/c/x", KEY_END),
-			keyNew("user/export/c/x/b/blah", KEY_END),
-			keyNew("user/export/xyz", KEY_END),
-			KS_END);
-	compare_keyset(part, cmp_part);
-	ksDel (part);
-	ksDel (cmp_part);
-	keyDel (cutpoint);
-}
-
-ssize_t ksCopyInternal(KeySet *ks, size_t to, size_t from);
-
-static void test_copy()
-{
-	printf ("Testing operation copy (internal)\n");
-
-	KeySet *copy[17][17];
-#include "data_copy.c"
-
-	KeySet *current;
-
-	for (int i=0; i<17; ++i)
-	{
-		for (int j=0; j<17; ++j)
-		{
-			/* There are some cases which contain duplicates, we have to jump these...*/
-			if (i>j) goto cleanup;
-			if (i==0 && j==16) goto cleanup;
-
-			current = set_a();
-			/* Some blocks are lost in the next operation */
-			succeed_if (ksCopyInternal (current, i, j) != -1, "ksCopyInternal failed");
-			compare_keyset(current, copy[i][j]);
-			ksDel (current);
-
-cleanup:
-			ksDel (copy[i][j]);
-		}
-	}
 }
 
 KeySet *set_simple()
@@ -2918,18 +2853,15 @@ static void test_morecut()
 		keyNew ("system/valid/key1", KEY_END),
 		keyNew ("system/valid/key2", KEY_END),
 		KS_END);
-	// printf ("%s\n", keyName(ksCurrent(ks)));
-	succeed_if (!strcmp(keyName(ksCurrent(ks)), "system/valid/key2"),
-			"cursor jumped somewhere else");
+	succeed_if (ksCurrent(ks) == 0, "should be rewinded");
+	ksNext(ks);
+	succeed_if (!strcmp(keyName(ksCurrent(ks)), "system/valid/key1"), "wrong cursor");
+	ksNext(ks);
+	succeed_if (!strcmp(keyName(ksCurrent(ks)), "system/valid/key2"), "wrong cursor");
 	ksNext(ks);
 	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/valid/key1"), "wrong cursor");
 	ksNext(ks);
 	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/valid/key2"), "wrong cursor");
-	// printf ("%s\n", keyName(ksCurrent(ks)));
-	/*
-	ksNext(ks);
-	succeed_if (!strcmp(keyName(ksCurrent(ks)), "system/valid/key1"), "wrong cursor");
-	*/
 
 	KeySet *split1 = ksNew (
 		3,
@@ -2945,9 +2877,6 @@ static void test_morecut()
 	Key *userKey = keyNew("user", KEY_END);
 
 	KeySet *cut = ksCut (ks, userKey);
-	// printf ("%s\n", keyName(ksCurrent(ks)));
-	succeed_if (!strcmp(keyName(ksCurrent(ks)), "system/valid/key2"),
-			"cursor jumped somewhere else");
 
 	compare_keyset(cut, split1);
 	compare_keyset(ks, split2);
@@ -3039,7 +2968,6 @@ int main(int argc, char** argv)
 	test_ksLookupNameAll();
 	test_ksLookupNameCascading();
 	test_ksExample();
-	test_ksCommonParentName();
 	test_ksAppend();
 	test_ksFunctional();
 	test_ksLookupPop();
@@ -3055,15 +2983,14 @@ int main(int argc, char** argv)
 	test_cutpoint_1();
 	test_unique_cutpoint();
 	test_cutbelow();
-	test_cutbelow_1();
 	test_simple();
 	test_cursor();
 	test_morecut();
 	test_cutafter();
+	test_ksOrder();
 
 	// BUGS:
 	// test_ksLookupValue();
-	// test_ksOrder();
 
 	printf("\ntestabi_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

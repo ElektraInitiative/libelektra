@@ -4,11 +4,11 @@
 - infos/needs = code
 - infos/provides = storage
 - infos/placements = setstorage getstorage
-- infos/description = Write out in tcl lists
+- infos/description = Serialize tcl lists
 
 ## Introduction ##
 
-This plugin is a code plugin which write keys to lists in the style of the Tcl prograaming language. 
-
+This plugin is a storage plugin which write keys to lists in the style of
+the Tcl prograaming language.
 
 

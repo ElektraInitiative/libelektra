@@ -106,6 +106,7 @@ public:
 	inline std::string getDirName() const;
 
 	inline void setName (const std::string &newName);
+	inline void addName (const std::string &addedName);
 	inline void setBaseName (const std::string &baseName);
 	inline void addBaseName (const std::string &baseName);
 
@@ -543,6 +544,14 @@ inline std::string Key::getDirName() const
 inline void Key::setName (const std::string &newName)
 {
 	if (ckdb::keySetName (getKey(), newName.c_str()) == -1)
+	{
+		throw KeyInvalidName();
+	}
+}
+
+inline void Key::addName (const std::string &addedName)
+{
+	if (ckdb::keyAddName (getKey(), addedName.c_str()) == -1)
 	{
 		throw KeyInvalidName();
 	}

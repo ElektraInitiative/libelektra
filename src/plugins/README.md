@@ -16,7 +16,7 @@ Before configuration is actually written, the file name needs to be
 determined:
 
 - [resolver](resolver) uses POSIX APIs to handle conflicts gracefully
-- [noresolver](noresolver) does not resolve
+- [noresolver](noresolver) does not resolve, but can act as one
 
 Read and write everything a KeySet might contain:
 
@@ -111,7 +111,6 @@ copied by another plugin just before):
 
 - [doc](doc) contains the documentation of the plugin interface
 - [error](error) yields errors as described in metadata
-- [success](success) is always successful
 - [template](template) to be copied for new plugins
 
 To add a new plugin you can copy the template plugin. Please make sure

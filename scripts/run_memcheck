@@ -14,6 +14,9 @@ fi
 # Memory Leak - 10
 # Uninitialized Memory Conditional - 76
 # Uninitialized Memory Read - 276
+#
+# It returns successful, even if test cases failed, so it is intended
+# to be complementary to run_all, not instead.
 
 ctest -T memcheck --output-on-failure --build-config $1 -LE memleak |\
 awk '

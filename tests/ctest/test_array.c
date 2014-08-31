@@ -6,9 +6,7 @@ static void test_array()
 {
 	printf ("Test array\n");
 
-	Key *k = keyNew("user/array", KEY_END);
-	succeed_if(!elektraArrayIncName(k), "increment init array entry name returned error");
-	succeed_if(!strcmp(keyName(k), "user/array/#0"), "array entry name not correct");
+	Key *k = keyNew("user/array/#0", KEY_END);
 	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
 	succeed_if(!strcmp(keyName(k), "user/array/#1"), "array entry name not correct");
 	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
@@ -88,6 +86,31 @@ static void test_array()
 	keyDel(k);
 }
 
+static void test_noArray()
+{
+	printf ("Test no array\n");
+	Key *k = keyNew("user/noarray", KEY_END);
+
+	succeed_if(elektraArrayIncName(0) == -1, "null pointer");
+	succeed_if(elektraArrayIncName(k) == -1, "no array");
+
+	keyDel(k);
+}
+
+static void test_startArray()
+{
+	printf ("Test start array\n");
+	Key *k = keyNew("user/startarray/#", KEY_END);
+
+	succeed_if(elektraArrayIncName(k) == 0, "no array start");
+	succeed_if(!strcmp(keyName(k), "user/startarray/#0"), "array entry name not correct");
+	succeed_if(elektraArrayIncName(k) == 0, "no array inc");
+	succeed_if(!strcmp(keyName(k), "user/startarray/#1"), "array entry name not correct");
+
+	keyDel(k);
+}
+
+
 int main(int argc, char** argv)
 {
 	printf(" ARRAY   TESTS\n");
@@ -96,6 +119,8 @@ int main(int argc, char** argv)
 	init (argc, argv);
 
 	test_array();
+	test_noArray();
+	test_startArray();
 
 	printf("\ntest_array RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

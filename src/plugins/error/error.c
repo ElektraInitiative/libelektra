@@ -33,9 +33,20 @@
 
 #include <stdlib.h>
 
+// #include <stdio.h>
+
 int elektraErrorOpen(Plugin *handle ELEKTRA_UNUSED, Key *parentKey)
 {
 	KeySet *conf = elektraPluginGetConfig(handle);
+
+	/*
+	FILE *f = fopen("error_plugin_debug.log", "a");
+	fprintf (f, "HUHU %s\n", keyName(parentKey));
+	ksRewind(conf);
+	while(ksNext(conf)) fprintf(f, "%s\n", keyName(ksCurrent(conf)));
+	fclose(f);
+	*/
+
 	if (ksLookupByName(conf, "/module", 0))
 	{
 		// suppress warnings + errors if it is just a module

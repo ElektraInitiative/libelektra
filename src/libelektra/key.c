@@ -656,8 +656,8 @@ int keyClear(Key *key)
 	size_t ref = 0;
 
 	ref = key->ksReference;
-	if (key->key) free(key->key);
-	if (key->data.v) free(key->data.v);
+	if (key->key) elektraFree(key->key);
+	if (key->data.v) elektraFree(key->data.v);
 	if (key->meta) ksDel(key->meta);
 
 	keyInit (key);

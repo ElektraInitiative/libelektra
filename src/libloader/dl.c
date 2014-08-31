@@ -57,7 +57,7 @@ elektraPluginFactory elektraModulesLoad (KeySet *modules, const char *name, Key 
 		return module->symbol.f;
 	}
 
-	char *moduleName = malloc (sizeof("libelektra-") + strlen(name) + sizeof (".so") + 1);
+	char *moduleName = elektraMalloc (sizeof("libelektra-") + strlen(name) + sizeof (".so") + 1);
 
 	strcpy (moduleName, "libelektra-");
 	strcat (moduleName, name);
@@ -65,12 +65,12 @@ elektraPluginFactory elektraModulesLoad (KeySet *modules, const char *name, Key 
 
 	Module module;
 	module.handle = dlopen(moduleName, RTLD_LAZY);
-	free (moduleName);
 
 	if (module.handle == NULL)
 	{
 		ELEKTRA_ADD_WARNINGF(1, errorKey, "of module: %s, because: %s", moduleName, dlerror());
 		keyDel (moduleKey);
+		elektraFree(moduleName);
 		return 0;
 	}
 
@@ -80,11 +80,13 @@ elektraPluginFactory elektraModulesLoad (KeySet *modules, const char *name, Key 
 		ELEKTRA_ADD_WARNINGF(2, errorKey, "of module: %s, because: %s", moduleName,  dlerror());
 		dlclose(module.handle);
 		keyDel (moduleKey);
+		elektraFree(moduleName);
 		return 0;
 	}
 
 	keySetBinary (moduleKey, &module, sizeof (Module));
 	ksAppendKey (modules, moduleKey);
+	elektraFree(moduleName);
 
 	return module.symbol.f;
 }

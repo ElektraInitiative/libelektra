@@ -30,7 +30,7 @@
 #endif
 
 #include <kdb.h>
-#include <kdbextension.h>
+#include <kdbhelper.h>
 
 #define BUFFER_LENGTH 4096
 
@@ -79,18 +79,6 @@ int init(int argc, char** argv);
 	} \
 }
 
-#define check_attributes(attributes) \
-{ \
-	succeed_if ((attributes & KEY_NAME) == 0 , "compare key: NAME not equal"); \
-	succeed_if ((attributes & KEY_VALUE) == 0 , "compare key: VALUE not equal"); \
-	succeed_if ((attributes & KEY_OWNER) == 0 , "compare key: OWNER not equal"); \
-	succeed_if ((attributes & KEY_COMMENT) == 0 , "compare key: COMMENT not equal"); \
-	succeed_if ((attributes & KEY_UID) == 0 , "compare key: UID not equal"); \
-	succeed_if ((attributes & KEY_GID) == 0 , "compare key: GID not equal"); \
-	succeed_if ((attributes & KEY_MODE ) == 0 , "compare key: MODE  not equal"); \
-	succeed_if ((attributes & KEY_NULL ) == 0, "compare key: one of the keys is null"); \
-}
-
 #define quote_string(x) #x
 
 #define compare_key_name(k1, k2) \
@@ -109,10 +97,34 @@ int init(int argc, char** argv);
 	} \
 }
 
+#define compare_key_string(k1, k2) \
+{ \
+	nbTest++; \
+	if (strcmp(keyString(k1), keyString(k2))) \
+	{ \
+		char errorMsg [BUFFER_LENGTH]; \
+		 \
+		strcpy(errorMsg, "key name "); \
+		strcat(errorMsg, keyName(k1)); \
+		strcat(errorMsg, " is not equal "); \
+		strcat(errorMsg, keyName(k2)); \
+		 \
+		yield_error(errorMsg); \
+	} \
+}
+
+#define ELEKTRA_GCC_WARNING(x) _Pragma(ELEKTRA_GCC_HELPER2(x))
+#define ELEKTRA_GCC_HELPER2(y) ELEKTRA_GCC_HELPER1(#y)
+#define ELEKTRA_GCC_HELPER1(x) ELEKTRA_GCC_HELPER0(GCC diagnostic ignored x)
+#define ELEKTRA_GCC_HELPER0(x) #x
+
 #define succeed_if_same_string(s1, s2) \
 { \
 	nbTest++; \
-	if (strcmp(s1, s2)) \
+	ELEKTRA_GCC_WARNING(-Waddress) \
+	if (!s1) yield_error("left hand side is null pointer") \
+	else if (!s2) yield_error("right hand side is null pointer") \
+	else if (strcmp(s1, s2)) \
 	{ \
 		char errorMsg [BUFFER_LENGTH]; \
 		 \
@@ -124,7 +136,24 @@ int init(int argc, char** argv);
 		 \
 		yield_error(errorMsg); \
 	} \
+	_Pragma("GCC diagnostic pop") \
 }
+
+// not recommended to use, only works with int (not size_t, ssize_t,...)
+#define succeed_if_same_int(s1, s2) \
+{ \
+	nbTest++; \
+	if (s1 != s2) \
+	{ \
+		char errorMsg [BUFFER_LENGTH]; \
+		 \
+		snprintf(errorMsg, BUFFER_LENGTH, \
+			 "int %d is not equal %d", s1, s2); \
+		 \
+		yield_error(errorMsg); \
+	} \
+}
+
 
 
 /**
@@ -138,8 +167,7 @@ int init(int argc, char** argv);
 	{ \
 		compare_key_name(k1, k2); \
 		 \
-		keyswitch_t attributes = keyCompare(k1, k2); \
-		check_attributes(attributes); \
+		compare_key_string(k1, k2); \
 		 \
 		const Key * meta; \
 		keyRewindMeta(k1); \
@@ -158,8 +186,6 @@ int init(int argc, char** argv);
 					); \
 				break; \
 			} \
-			attributes = keyCompare(meta, metaCmp); \
-			check_attributes(attributes); \
 		} \
 	 \
 		const Key *const metaCmp = keyNextMeta(k2); \

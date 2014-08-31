@@ -89,14 +89,21 @@ int elektraLineGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 		return 0; // we just ignore if we could not open file
 	}
 
-	ksAppendKey (returned, keyDup(parentKey)); // start with parentKey
+	Key *b= keyNew(keyName(parentKey), KEY_END);
+	ksAppendKey (returned, keyDup(b)); // start with parentKey
+	keyAddName(b, "#"); // start point for our array
+	ksAppendKey (returned, b);
 
 	int ret = elektraLineRead(fp, returned);
 
+	// get rid of startpoint, if it was an empty file
+	keyDel(ksLookup(returned, b, KDB_O_POP));
+
 	if (ret == -1)
 	{
-			ELEKTRA_SET_ERROR(59, parentKey,
-					"could not increment array");
+		ELEKTRA_SET_ERROR(59, parentKey,
+				"could not increment array");
+		ret = -1;
 	}
 	else if (feof(fp) == 0)
 	{

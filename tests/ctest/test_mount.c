@@ -932,7 +932,7 @@ static void test_modules()
 
 int main(int argc, char** argv)
 {
-	printf("TRIE       TESTS\n");
+	printf("MOUNT      TESTS\n");
 	printf("==================\n\n");
 
 	init (argc, argv);

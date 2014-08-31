@@ -52,42 +52,39 @@
 
 
 /**
- * Takes the first key and cuts off this common part
- * for all other keys.
+ * @brief Takes the first key and cuts off this common part
+ * for all other keys, instead name will be prepended
  *
- * The first key is removed.
+ * @return a new allocated keyset with keys in user namespace.
  *
- * Will convert to a user-config.
+ * The first key is removed in the resulting keyset.
  */
-static int elektraRenamePluginConfig(KeySet *config)
+KeySet* elektraRenameKeys(KeySet *config, const char* name)
 {
 	Key *root;
 	Key *cur;
-	ssize_t userSize = sizeof("user");
 	ssize_t rootSize = 0;
 
 	ksRewind(config);
 
 	root = ksNext (config);
 	rootSize = keyGetNameSize(root);
-	if (rootSize == -1) return -1;
 
 	keyDel (ksLookup (config, root, KDB_O_POP));
 
-	while ((cur = ksNext(config)) != 0)
+	KeySet *newConfig = ksNew(ksGetSize(config), KS_END);
+	if (rootSize == -1) return newConfig;
+
+	while ((cur = ksPop(config)) != 0)
 	{
-		ssize_t curSize = keyGetNameSize(cur);
-		if (curSize == -1) return -1;
-		// cant use strcpy here, because it fills up everything with 0
-		strcpy (cur->key, "user/");
-		for (ssize_t i=0; i<curSize-rootSize; ++i)
-		{
-			cur->key[i+userSize] = cur->key[i+rootSize];
-		}
-		cur->keySize = curSize-rootSize+userSize;
+		Key *dupKey = keyDup(cur);
+		keySetName(dupKey, name);
+		keyAddName(dupKey, keyName(cur)+rootSize-1);
+		ksAppendKey(newConfig, dupKey);
+		keyDel(cur);
 	}
 
-	return 0;
+	return newConfig;
 }
 
 /**
@@ -198,9 +195,8 @@ int elektraProcessPlugins(Plugin **plugins, KeySet *modules, KeySet *referencePl
 		{
 			char *pluginName = 0;
 			char *referenceName = 0;
-			int pluginNumber;
+			int pluginNumber = 0;
 
-			KeySet *pluginConfig;
 			Key *key;
 
 			if (elektraProcessPlugin(cur, &pluginNumber, &pluginName, &referenceName, errorKey) == -1)
@@ -211,14 +207,18 @@ int elektraProcessPlugins(Plugin **plugins, KeySet *modules, KeySet *referencePl
 				return -1;
 			}
 
+
+
 			if (pluginName)
 			{
 				key = keyDup (cur);
 				keyAddBaseName(key, "config");
-				pluginConfig = ksCut (config, key);
+				KeySet *cutConfig = ksCut (config, key);
 				keyDel (key);
 
-				elektraRenamePluginConfig(pluginConfig);
+				KeySet *pluginConfig = elektraRenameKeys(cutConfig, "user");
+				ksDel(cutConfig);
+				if (!pluginConfig) return -1;
 				ksAppend(pluginConfig, systemConfig);
 				ksRewind(pluginConfig); /* TODO: bug ksAppend invalidates cursor */
 
