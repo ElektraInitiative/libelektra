@@ -973,15 +973,20 @@ static void test_ksLookup()
 
 	Key *simpleKey = keyNew("user/find_me", KEY_END);
 	KeySet *simple = ksNew(5, simpleKey, KS_END);
+
 	Key *foundKey = ksLookup(simple, simpleKey, 0);
 	succeed_if(foundKey == simpleKey, "could not find key in keyset");
-	Key *simpleKey2 = keyNew("user/do_not_look", KEY_END);
+
+	Key *simpleKey2 = keyNew("user/find_me/a", KEY_END);
 	ksAppendKey(simple, simpleKey2);
+
 	foundKey = ksLookup(simple, simpleKey, 0);
-	succeed_if(foundKey == simpleKey, "could not find key in keyset");
+	succeed_if(foundKey == simpleKey, "could not find key in keyset again");
+	// output_key(foundKey);
+
 	foundKey = ksLookup(simple, simpleKey2, 0);
-	succeed_if(foundKey == simpleKey2, "could not find key in keyset");
-	output_keyset(simple);
+	succeed_if(foundKey == simpleKey2, "could not find other key in keyset");
+	// output_keyset(simple);
 	ksDel(simple);
 
 	int i,j;
@@ -1477,7 +1482,7 @@ static void test_ksLookupNameAll()
 	ksRewind(ks);
 	found = ksLookupByName (ks, "user/00", KDB_O_NOALL | KDB_O_WITHOWNER | KDB_O_NOCASE);
 	succeed_if (found != 0, "could not find key");
-	succeed_if (strcmp (keyName(found), "user/00") == 0, "name not correct in found key");
+	succeed_if_same_string (keyName(found), "user/00");
 
 	found = ksLookupByName (ks, "user/01", KDB_O_NOALL | KDB_O_WITHOWNER | KDB_O_NOCASE);
 	succeed_if (found != 0, "could not find key");
@@ -2332,7 +2337,7 @@ static void test_ksOrder()
 		keyNew("user/test/test/foo", KEY_END),
 		keyNew("user/test/test-foo", KEY_END),
 		KS_END);
-	/*
+
 	ksNext(ks);
 	succeed_if_same_string(keyName(ksCurrent(ks)), "user/test/test");
 	ksNext(ks);
@@ -2341,63 +2346,61 @@ static void test_ksOrder()
 	succeed_if_same_string(keyName(ksCurrent(ks)), "user/test/test/foo");
 	ksNext(ks);
 	succeed_if_same_string(keyName(ksCurrent(ks)), "user/test/test-foo");
-	succeed_if(0, "does not succeed");
-	*/
 
 	ksDel(ks);
 
 	ks = ksNew(20,
 	keyNew("user/x", KEY_END),
-	keyNew("user/x-%", KEY_END),
-	keyNew("user/x-%-a", KEY_END),
-	keyNew("user/x-%-b", KEY_END),
-	keyNew("user/x-%a", KEY_END),
-	keyNew("user/x-%b", KEY_END),
-	keyNew("user/x-A", KEY_END),
-	keyNew("user/x-A-a", KEY_END),
-	keyNew("user/x-A-b", KEY_END),
-	keyNew("user/x-\\%", KEY_END),
-	keyNew("user/x-\\%-a", KEY_END),
-	keyNew("user/x-\\%-b", KEY_END),
-	keyNew("user/x-\\%a", KEY_END),
-	keyNew("user/x-\\%b", KEY_END),
-	keyNew("user/x-aA", KEY_END),
-	keyNew("user/x-aA-a", KEY_END),
-	keyNew("user/x-aA-b", KEY_END),
-	keyNew("user/x-a\\/", KEY_END),
-	keyNew("user/x-a\\/b", KEY_END),
-	keyNew("user/x-a\\/b-a", KEY_END),
-	keyNew("user/x-a\\/b-b", KEY_END),
-	keyNew("user/x-aa", KEY_END),
-	keyNew("user/x-aa-a", KEY_END),
-	keyNew("user/x-aa-b", KEY_END),
+	keyNew("user/x/%", KEY_END),
+	keyNew("user/x/%/a", KEY_END),
+	keyNew("user/x/%/b", KEY_END),
+	keyNew("user/x/\\%", KEY_END),
+	keyNew("user/x/\\%/a", KEY_END),
+	keyNew("user/x/\\%/b", KEY_END),
+	keyNew("user/x/%a", KEY_END),
+	keyNew("user/x/%b", KEY_END),
+	keyNew("user/x/A", KEY_END),
+	keyNew("user/x/A/a", KEY_END),
+	keyNew("user/x/A/b", KEY_END),
+	keyNew("user/x/\\%a", KEY_END),
+	keyNew("user/x/\\%b", KEY_END),
+	keyNew("user/x/a\\/", KEY_END),
+	keyNew("user/x/a\\/b", KEY_END),
+	keyNew("user/x/a\\/b/a", KEY_END),
+	keyNew("user/x/a\\/b/b", KEY_END),
+	keyNew("user/x/aA", KEY_END),
+	keyNew("user/x/aA/a", KEY_END),
+	keyNew("user/x/aA/b", KEY_END),
+	keyNew("user/x/aa", KEY_END),
+	keyNew("user/x/aa/a", KEY_END),
+	keyNew("user/x/aa/b", KEY_END),
 	KS_END);
 
 	succeed_if(ksCurrent(ks) == 0, "not rewinded");
 	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x");
-	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-%");
-	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-%-a");
-	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-%-b");
-	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-%a");
-	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-%b");
-	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-A");
-	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-A-a");
-	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-A-b");
-	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-\\%");
-	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-\\%-a");
-	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-\\%-b");
-	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-\\%a");
-	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-\\%b");
-	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-aA");
-	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-aA-a");
-	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-aA-b");
-	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-a\\/");
-	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-a\\/b");
-	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-a\\/b-a");
-	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-a\\/b-b");
-	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-aa");
-	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-aa-a");
-	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x-aa-b");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/%");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/%/a");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/%/b");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/\\%");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/\\%/a");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/\\%/b");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/%a");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/%b");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/A");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/A/a");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/A/b");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/\\%a");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/\\%b");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/a\\/");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/a\\/b");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/a\\/b/a");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/a\\/b/b");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/aA");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/aA/a");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/aA/b");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/aa");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/aa/a");
+	ksNext(ks); succeed_if_same_string(keyName(ksCurrent(ks)), "user/x/aa/b");
 	ksDel(ks);
 }
 
@@ -2663,70 +2666,23 @@ static void test_cutbelow()
 
 	Key *cutpoint = keyNew("user/export", KEY_END);
 	KeySet *orig = ksNew(30,
-			keyNew("user/export-backup-2/x", KEY_END),
-			keyNew("user/export-backup/b", KEY_END),
 			keyNew("user/export/a", KEY_END),
 			keyNew("user/export/c", KEY_END),
 			keyNew("user/export/c/x", KEY_END),
 			keyNew("user/export/c/x/b/blah", KEY_END),
 			keyNew("user/export/xyz", KEY_END),
+			keyNew("user/export-backup/b", KEY_END),
+			keyNew("user/export-backup-2/x", KEY_END),
 			KS_END);
 	ksRewind(orig);
 	ksNext(orig);
-	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/export-backup-2/x"), "wrong cursor");
-	ksNext(orig);
-	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/export-backup/b"), "wrong cursor");
+	succeed_if_same_string(keyName(ksCurrent(orig)), "user/export/a");
+	ksLookupByName(orig, "user/export-backup/b", 0);
+	succeed_if_same_string(keyName(ksCurrent(orig)), "user/export-backup/b");
 
 	KeySet *part = ksCut(orig, cutpoint);
 
-	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/export-backup/b"), "wrong cursor");
-
-	KeySet *cmp_orig = ksNew(15,
-			keyNew("user/export-backup-2/x", KEY_END),
-			keyNew("user/export-backup/b", KEY_END),
-			KS_END);
-	compare_keyset(orig, cmp_orig);
-	ksDel (orig);
-	ksDel (cmp_orig);
-
-	KeySet *cmp_part = ksNew(15,
-			keyNew("user/export/a", KEY_END),
-			keyNew("user/export/c", KEY_END),
-			keyNew("user/export/c/x", KEY_END),
-			keyNew("user/export/c/x/b/blah", KEY_END),
-			keyNew("user/export/xyz", KEY_END),
-			KS_END);
-	compare_keyset(part, cmp_part);
-	ksDel (part);
-	ksDel (cmp_part);
-	keyDel (cutpoint);
-}
-
-static void test_cutbelow_1()
-{
-	printf ("Testing cutting below some keys\n");
-
-	Key *cutpoint = keyNew("user/export", KEY_END);
-	KeySet *orig = ksNew(30,
-			keyNew("user/export-backup-2/x", KEY_END),
-			keyNew("user/export-backup/b", KEY_END),
-			keyNew("user/export/a", KEY_END),
-			keyNew("user/export/c", KEY_END),
-			keyNew("user/export/c/x", KEY_END),
-			keyNew("user/export/c/x/b/blah", KEY_END),
-			keyNew("user/export/xyz", KEY_END),
-			KS_END);
-	ksRewind(orig);
-	ksNext(orig);
-	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/export-backup-2/x"), "wrong cursor");
-	ksNext(orig);
-	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/export-backup/b"), "wrong cursor");
-	ksNext(orig);
-	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/export/a"), "wrong cursor");
-
-	KeySet *part = ksCut(orig, cutpoint);
-
-	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/export-backup/b"), "wrong cursor");
+	succeed_if_same_string(keyName(ksCurrent(orig)), "user/export-backup/b");
 
 	KeySet *cmp_orig = ksNew(15,
 			keyNew("user/export-backup-2/x", KEY_END),
@@ -3027,15 +2983,14 @@ int main(int argc, char** argv)
 	test_cutpoint_1();
 	test_unique_cutpoint();
 	test_cutbelow();
-	test_cutbelow_1();
 	test_simple();
 	test_cursor();
 	test_morecut();
 	test_cutafter();
+	test_ksOrder();
 
 	// BUGS:
 	// test_ksLookupValue();
-	test_ksOrder();
 
 	printf("\ntestabi_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

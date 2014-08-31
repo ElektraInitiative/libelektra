@@ -108,11 +108,37 @@ static void test_ksCommonParentName()
 	ksDel (ks);
 }
 
+static void test_elektraRenameKeys()
+{
+	KeySet *ks= ksNew(20,
+		keyNew("system/some/common/prefix", KEY_END),
+		keyNew("system/some/common/prefix/dir", KEY_END),
+		keyNew("system/some/common/prefix/dir/keya", KEY_END),
+		keyNew("system/some/common/prefix/some", KEY_VALUE, "huhu", KEY_END),
+		keyNew("system/some/common/prefix/other", KEY_END),
+		KS_END);
+	KeySet *cmp= ksNew(20,
+		keyNew("user/x/dir", KEY_END),
+		keyNew("user/x/dir/keya", KEY_END),
+		keyNew("user/x/some", KEY_VALUE, "huhu", KEY_END),
+		keyNew("user/x/other", KEY_END),
+		KS_END);
+
+	KeySet *result = elektraRenameKeys(ks, "user/x");
+	compare_keyset(result, cmp);
+	// output_keyset(result);
+
+	ksDel(cmp);
+	ksDel(result);
+	ksDel(ks);
+}
+
 int main()
 {
 	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	test_ksCommonParentName();
+	test_elektraRenameKeys();
 
 	return nbError;
 }
