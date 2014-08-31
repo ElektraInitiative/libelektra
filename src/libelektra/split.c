@@ -234,7 +234,7 @@ int elektraSplitSearchRoot(Split *split, Key *parentKey)
 int elektraSplitBuildup (Split *split, KDB *kdb, Key *parentKey)
 {
 
-	if (!parentKey || !parentKey->key)
+	if (!parentKey || !strcmp(keyName(parentKey), ""))
 	{
 		parentKey = 0;
 	}
