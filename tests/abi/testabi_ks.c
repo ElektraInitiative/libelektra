@@ -971,6 +971,19 @@ static void test_ksLookup()
 {
 	printf ("Test lookup\n");
 
+	Key *simpleKey = keyNew("user/find_me", KEY_END);
+	KeySet *simple = ksNew(5, simpleKey, KS_END);
+	Key *foundKey = ksLookup(simple, simpleKey, 0);
+	succeed_if(foundKey == simpleKey, "could not find key in keyset");
+	Key *simpleKey2 = keyNew("user/do_not_look", KEY_END);
+	ksAppendKey(simple, simpleKey2);
+	foundKey = ksLookup(simple, simpleKey, 0);
+	succeed_if(foundKey == simpleKey, "could not find key in keyset");
+	foundKey = ksLookup(simple, simpleKey2, 0);
+	succeed_if(foundKey == simpleKey2, "could not find key in keyset");
+	output_keyset(simple);
+	ksDel(simple);
+
 	int i,j;
 	Key *k[1000];
 	KeySet *ks = ksNew (30,
@@ -1021,18 +1034,18 @@ static void test_ksLookup()
 	{
 		ksUnsort(ks);
 		for (j=0; j<23;j++)
-			succeed_if (ksLookup(ks, k[j], 0)==k[j], "did not found key");
-		succeed_if (ksLookup(ks, k[23], KDB_O_NOCASE) == k[5], "did not found key");
+			succeed_if (ksLookup(ks, k[j], 0)==k[j], "did not find key");
+		succeed_if (ksLookup(ks, k[23], KDB_O_NOCASE) == k[5], "did not find key");
 		succeed_if (ksLookup(ks, k[23], 0) == 0, "found wrong key");
-		succeed_if (ksLookup(ks, k[24], KDB_O_NOCASE) == k[6], "did not found key");
+		succeed_if (ksLookup(ks, k[24], KDB_O_NOCASE) == k[6], "did not find key");
 		succeed_if (ksLookup(ks, k[24], 0) == 0, "found wrong key");
-		succeed_if (ksLookup(ks, k[25], KDB_O_NOCASE) == k[6], "did not found key");
+		succeed_if (ksLookup(ks, k[25], KDB_O_NOCASE) == k[6], "did not find key");
 		succeed_if (ksLookup(ks, k[25], KDB_O_WITHOWNER|KDB_O_NOCASE) == 0, "found wrong key");
-		succeed_if (ksLookup(ks, k[28], 0) == k[6], "did not found key");
+		succeed_if (ksLookup(ks, k[28], 0) == k[6], "did not find key");
 		succeed_if (ksLookup(ks, k[28], KDB_O_WITHOWNER) == 0, "found wrong key");
-		succeed_if (ksLookup(ks, k[31], KDB_O_WITHOWNER) == k[13], "did not found key");
+		succeed_if (ksLookup(ks, k[31], KDB_O_WITHOWNER) == k[13], "did not find key");
 		/* Empty lines to add more tests:
-		succeed_if (ksLookup(ks, k[], ) == k[], "did not found key");
+		succeed_if (ksLookup(ks, k[], ) == k[], "did not find key");
 		succeed_if (ksLookup(ks, k[], ) == 0, "found wrong key");
 		*/
 	}
@@ -1093,18 +1106,18 @@ static void test_ksLookupByName()
 	{
 		ksUnsort(ks);
 		for (j=0; j<23;j++)
-			succeed_if (ksLookupByName(ks, name[j], 0)==k[j], "did not found key");
-		succeed_if (ksLookupByName(ks, name[23], KDB_O_NOCASE) == k[5], "did not found key");
+			succeed_if (ksLookupByName(ks, name[j], 0)==k[j], "did not find key");
+		succeed_if (ksLookupByName(ks, name[23], KDB_O_NOCASE) == k[5], "did not find key");
 		succeed_if (ksLookupByName(ks, name[23], 0) == 0, "found wrong key");
-		succeed_if (ksLookupByName(ks, name[24], KDB_O_NOCASE) == k[6], "did not found key");
+		succeed_if (ksLookupByName(ks, name[24], KDB_O_NOCASE) == k[6], "did not find key");
 		succeed_if (ksLookupByName(ks, name[24], 0) == 0, "found wrong key");
-		succeed_if (ksLookupByName(ks, name[25], KDB_O_NOCASE) == k[6], "did not found key");
+		succeed_if (ksLookupByName(ks, name[25], KDB_O_NOCASE) == k[6], "did not find key");
 		succeed_if (ksLookupByName(ks, name[25], KDB_O_WITHOWNER|KDB_O_NOCASE) == 0, "found wrong key");
-		succeed_if (ksLookupByName(ks, name[28], 0) == k[6], "did not found key");
+		succeed_if (ksLookupByName(ks, name[28], 0) == k[6], "did not find key");
 		succeed_if (ksLookupByName(ks, name[28], KDB_O_WITHOWNER) == 0, "found wrong key");
-		succeed_if (ksLookupByName(ks, name[31], KDB_O_WITHOWNER) == k[13], "did not found key");
+		succeed_if (ksLookupByName(ks, name[31], KDB_O_WITHOWNER) == k[13], "did not find key");
 		/* Empty lines to add more tests:
-		succeed_if (ksLookupByName(ks, name[], ) == name[], "did not found key");
+		succeed_if (ksLookupByName(ks, name[], ) == name[], "did not find key");
 		succeed_if (ksLookupByName(ks, name[], ) == 0, "found wrong key");
 		*/
 	}
@@ -1138,7 +1151,7 @@ static void test_ksLookupName()
 	found = ksLookupByName (ks, "user/named/key", 0);
 	succeed_if (ksCurrent(ks) == found, "current not set correctly");
 
-	succeed_if (found != 0, "did not found correct name");
+	succeed_if (found != 0, "did not find correct name");
 	succeed_if (ksCurrent(ks) == found, "current not set correctly");
 	succeed_if (strcmp (keyName(found), "user/named/key") == 0, "name not correct in found key");
 	succeed_if (strcmp (keyValue(found), "myvalue") == 0, "not correct value in found key");
@@ -1171,25 +1184,25 @@ static void test_ksLookupName()
 	//now try to find them, and compare value
 	found = ksLookupByName (ks, "user/domain/key", 0);
 	succeed_if (ksCurrent(ks) == found, "current not set correctly");
-	succeed_if (found != 0, "did not found correct name");
+	exit_if_fail (found != 0, "did not find correct name");
 	succeed_if (strcmp (keyName(found), "user/domain/key") == 0, "name not correct in found key");
 	succeed_if (strcmp (keyValue(found), "domainvalue") == 0, "not correct value in found key");
 	
 	found = ksLookupByName (ks, "user/single/key", 0);
 	succeed_if (ksCurrent(ks) == found, "current not set correctly");
-	succeed_if (found != 0, "did not found correct name");
+	succeed_if (found != 0, "did not find correct name");
 	succeed_if (strcmp (keyName(found), "user/single/key") == 0, "name not correct in found key");
 	succeed_if (strcmp (keyValue(found), "singlevalue") == 0, "not correct value in found key");
 	
 	found = ksLookupByName (ks, "system/named/key", 0);
 	succeed_if (ksCurrent(ks) == found, "current not set correctly");
-	succeed_if (found != 0, "did not found correct name");
+	succeed_if (found != 0, "did not find correct name");
 	succeed_if (strcmp (keyName(found), "system/named/key") == 0, "name not correct in found key");
 	succeed_if (strcmp (keyValue(found), "syskey") == 0, "not correct value in found key");
 	
 	found = ksLookupByName (ks, "user/named/bin", 0);
 	succeed_if (ksCurrent(ks) == found, "current not set correctly");
-	succeed_if (found != 0, "did not found correct name");
+	succeed_if (found != 0, "did not find correct name");
 	succeed_if (strcmp (keyName(found), "user/named/bin") == 0, "name not correct in found key");
 	succeed_if (strncmp (keyValue(found), "binary\1\2data",10) == 0, "not correct value in found key");
 
@@ -1964,7 +1977,7 @@ static void test_ksLookupPop()
 	found = ksLookupByName (ks, "user/named/key", KDB_O_POP);
 	succeed_if (ksGetSize(ks) == 7, "did not pop key");
 	succeed_if (ksCurrent(ks) == 0, "current not set correctly");
-	succeed_if (found != 0, "did not found correct name");
+	succeed_if (found != 0, "did not find correct name");
 	succeed_if (ksCurrent(ks) == 0, "current not set correctly");
 	succeed_if (strcmp (keyName(found), "user/named/key") == 0, "name not correct in found key");
 	succeed_if (strcmp (keyValue(found), "myvalue") == 0, "not correct value in found key");
@@ -1995,7 +2008,7 @@ static void test_ksLookupPop()
 	found = ksLookupByName (ks, "user/named/key", KDB_O_POP);
 	succeed_if (ksGetSize(ks) == 7, "did not pop key");
 	succeed_if (ksCurrent(ks) == 0, "current not set correctly");
-	succeed_if (found != 0, "did not found correct name");
+	succeed_if (found != 0, "did not find correct name");
 	succeed_if (ksCurrent(ks) == 0, "current not set correctly");
 	succeed_if (strcmp (keyName(found), "user/named/key") == 0, "name not correct in found key");
 	succeed_if (strcmp (keyValue(found), "singlevalue") == 0, "not correct value in found key");
@@ -2010,7 +2023,7 @@ static void test_ksLookupPop()
 	found = ksLookupByName (ks, "user/domain/key", KDB_O_POP);
 	succeed_if (ksGetSize(ks) == 7, "did not pop key");
 	succeed_if (ksCurrent(ks) == 0, "current not set correctly");
-	succeed_if (found != 0, "did not found correct name");
+	succeed_if (found != 0, "did not find correct name");
 	succeed_if (strcmp (keyName(found), "user/domain/key") == 0, "name not correct in found key");
 	succeed_if (strcmp (keyValue(found), "domainvalue") == 0, "not correct value in found key");
 	succeed_if (keyDel (found) == 0, "could not del popped key");
@@ -2018,7 +2031,7 @@ static void test_ksLookupPop()
 	found = ksLookupByName (ks, "user/single/key", KDB_O_POP);
 	succeed_if (ksGetSize(ks) == 6, "did not pop key");
 	succeed_if (ksCurrent(ks) == 0, "current not set correctly");
-	succeed_if (found != 0, "did not found correct name");
+	succeed_if (found != 0, "did not find correct name");
 	succeed_if (strcmp (keyName(found), "user/single/key") == 0, "name not correct in found key");
 	succeed_if (strcmp (keyValue(found), "singlevalue") == 0, "not correct value in found key");
 	succeed_if (keyDel (found) == 0, "could not del popped key");
@@ -2026,7 +2039,7 @@ static void test_ksLookupPop()
 	found = ksLookupByName (ks, "system/named/key", KDB_O_POP);
 	succeed_if (ksGetSize(ks) == 5, "did not pop key");
 	succeed_if (ksCurrent(ks) == 0, "current not set correctly");
-	succeed_if (found != 0, "did not found correct name");
+	succeed_if (found != 0, "did not find correct name");
 	succeed_if (strcmp (keyName(found), "system/named/key") == 0, "name not correct in found key");
 	succeed_if (strcmp (keyValue(found), "syskey") == 0, "not correct value in found key");
 	succeed_if (keyDel (found) == 0, "could not del popped key");
@@ -2034,7 +2047,7 @@ static void test_ksLookupPop()
 	found = ksLookupByName (ks, "user/named/bin", KDB_O_POP);
 	succeed_if (ksGetSize(ks) == 4, "pop key");
 	succeed_if (ksCurrent(ks) == 0, "current not set correctly");
-	succeed_if (found != 0, "did not found correct name");
+	succeed_if (found != 0, "did not find correct name");
 	succeed_if (strcmp (keyName(found), "user/named/bin") == 0, "name not correct in found key");
 	succeed_if (strncmp (keyValue(found), "binary\1\2data",10) == 0, "not correct value in found key");
 	succeed_if (keyDel (found) == 0, "could not del popped key");

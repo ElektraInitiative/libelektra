@@ -423,15 +423,15 @@ static int keyCmpInternal(const void *p1, const void *p2)
  *
  * keyCmp() defines the sorting order for a KeySet.
  *
- * The following 3 points are the rules for null values.
- * They only take account when none of the preceding rules
- * matched.
+ * The following 3 points are the rules for null values:
  *
  * - A null pointer will be found to be smaller than every other
  * key. If both are null pointers, 0 is returned.
  *
  * - A null name will be found to be smaller than every other
  * name. If both are null names, 0 is returned.
+ *
+ * If the name is equal then:
  *
  * - No owner will be found to be smaller then every other owner.
  * If both don't have a owner, 0 is returned.
@@ -452,9 +452,7 @@ static int keyCmpInternal(const void *p1, const void *p2)
 // keyCmp(0,k2) == -1
  * @endcode
  *
- * You can write similar equation for the other rules.
- *
- * Here are some more examples with equation:
+ * Here are some more examples:
  * @code
 Key *k1 = keyNew("user/a", KEY_END);
 Key *k2 = keyNew("user/b", KEY_END);
@@ -463,6 +461,7 @@ Key *k2 = keyNew("user/b", KEY_END);
 // keyCmp(k2,k1) > 0
  * @endcode
  *
+ * And even more:
  * @code
 Key *k1 = keyNew("user/a", KEY_OWNER, "markus", KEY_END);
 Key *k2 = keyNew("user/a", KEY_OWNER, "max", KEY_END);
@@ -471,9 +470,8 @@ Key *k2 = keyNew("user/a", KEY_OWNER, "max", KEY_END);
 // keyCmp(k2,k1) > 0
  * @endcode
  *
- * @warning Do not try to strcmp the keyName() yourself because
- *      the used strcmp implementation is allowed to differ from
- *      simple ascii comparison.
+ * Do not strcmp the keyName() yourself because
+ * the result differs from simple ascii comparison.
  *
  * @param k1 the first key object to compare with
  * @param k2 the second key object to compare with
