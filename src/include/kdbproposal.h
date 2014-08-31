@@ -36,5 +36,6 @@ int keySetStringF(Key *key, const char *format, ...);
 // could also be in an extension library.
 int elektraArrayIncName(Key *key);
 int elektraKsToMemArray(KeySet *ks, Key **buffer);
+KeySet* elektraRenameKeys(KeySet *config, const char* name);
 
 #endif

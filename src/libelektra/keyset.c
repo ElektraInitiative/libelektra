@@ -379,33 +379,121 @@ int ksClear(KeySet *ks)
 }
 
 
+/**
+ * @brief Compare by unescaped name only (not by owner, they are equal)
+ *
+ * Other Cmp* are based on this one.
+ *
+ * Is suitable for binary search (but may return wrong owner)
+ *
+ */
+static int keyCmpByName(const void *p1, const void *p2)
+{
+	Key *key1=*(Key **)p1;
+	Key *key2=*(Key **)p2;
+	const void *name1 = keyUnescapedName(key1);
+	const void *name2 = keyUnescapedName(key2);
+	size_t const nameSize1 = keyGetUnescapedNameSize(key1);
+	size_t const nameSize2 = keyGetUnescapedNameSize(key2);
+	int ret = 0;
+	if (nameSize1 == nameSize2)
+	{
+		ret = memcmp(name1, name2, nameSize2);
+	} else {
+		if (nameSize1 < nameSize2)
+		{
+			ret = memcmp(name1, name2, nameSize1);
+			if (ret==0) ret = -1;
+		} else {
+			ret = memcmp(name1, name2, nameSize2);
+			if (ret==0) ret = 1;
+		}
+	}
+	return ret;
+}
+
+static int keyCompareByOwner(const void *p1, const void *p2)
+{
+	Key *key1=*(Key **)p1;
+	Key *key2=*(Key **)p2;
+	const char *owner1 = keyValue(keyGetMeta(key1, "owner"));
+	const char *owner2 = keyValue(keyGetMeta(key2, "owner"));
+	if (!owner1 && !owner2) return 0;
+	if (!owner1) return -1;
+	if (!owner2) return 1;
+	return elektraStrCmp(owner1, owner2);
+}
 
 /**
  * @internal
  *
- * Used as a callback by the qsort() function
+ * Defines how keys are sorted in the keyset
+ *
+ * Compares by unescaped name, and if equal by owner
+ *
+ * Is suitable for binary search
+ *
+ * @see keyCmp, keyCmpByName
  */
-static int keyCmpInternal(const void *p1, const void *p2)
+static int keyCmpByNameOwner(const void *p1, const void *p2)
+{
+	int ret = keyCmpByName(p1, p2);
+
+	if (ret == 0)
+	{
+		return keyCompareByOwner(p1,p2);
+	}
+	return ret;
+}
+
+/**
+ * @brief Compare by name
+ *
+ * @return 
+ */
+static int keyCompareByName(const void *p1, const void *p2)
 {
 	Key *key1=*(Key **)p1;
 	Key *key2=*(Key **)p2;
 	const char *name1 = keyName(key1);
 	const char *name2 = keyName(key2);
-	int ret = strcmp(name1, name2);
 
-	/* sort by owner */
-	if (ret == 0)
-	{
-		const char *owner1 = keyOwner(key1);
-		const char *owner2 = keyOwner(key2);
-		if (!owner1 && !owner2) return 0;
-		if (!owner1) return -1;
-		if (!owner2) return 1;
-		return strcmp(owner1, owner2);
-	}
-
-	return ret;
+	return elektraStrCmp(name1, name2);
 }
+
+static int keyCompareByNameCase(const void *p1, const void *p2)
+{
+	Key *key1=*(Key **)p1;
+	Key *key2=*(Key **)p2;
+	const char *name1 = keyName(key1);
+	const char *name2 = keyName(key2);
+
+	return elektraStrCaseCmp(name1, name2);
+}
+
+static int keyCompareByNameOwner(const void *p1, const void *p2)
+{
+	int result = keyCompareByName(p1, p2);
+
+	if (result == 0)
+	{
+		return keyCompareByOwner(p1,p2);
+	}
+	return result;
+}
+
+
+static int keyCompareByNameOwnerCase(const void *p1, const void *p2)
+{
+	int result = keyCompareByNameCase(p1, p2);
+
+	if (result == 0)
+	{
+		return keyCompareByOwner(p1,p2);
+	}
+	return result;
+}
+
 
 
 /**
@@ -446,11 +534,7 @@ static int keyCmpInternal(const void *p1, const void *p2)
  * Given any Keys k1 and k2 constructed with keyNew(), following
  * equation hold true:
  *
- * @code
-// keyCmp(0,0) == 0
-// keyCmp(k1,0) ==  1
-// keyCmp(0,k2) == -1
- * @endcode
+ * @snippet testabi_rel cmp null
  *
  * Here are some more examples:
  * @code
@@ -490,7 +574,7 @@ int keyCmp (const Key *k1, const Key *k2)
 	if (!k1->key) return -1;
 	if (!k2->key) return 1;
 
-	return keyCmpInternal(&k1, &k2);
+	return keyCmpByNameOwner(&k1, &k2);
 }
 
 /**
@@ -639,7 +723,7 @@ ssize_t ksSearchInternal(const KeySet *ks, const Key *toAppend)
 			break;
 		}
 		middle = left + ((right-left)/2);
-		cmpresult = keyCmpInternal(&toAppend, &ks->array[middle]);
+		cmpresult = keyCmpByNameOwner(&toAppend, &ks->array[middle]);
 		if (cmpresult > 0)
 		{
 			insertpos = left = middle + 1;
@@ -801,9 +885,6 @@ ssize_t ksAppend(KeySet *ks, const KeySet *toAppend)
 	}
 	return ks->size;
 }
-
-
-static int keyCompareByNameOwner(const void *p1, const void *p2);
 
 
 /**
@@ -1458,62 +1539,6 @@ int ksSetCursor(KeySet *ks, cursor_t cursor)
  *    Looking up Keys inside KeySets       *
  *******************************************/
 
-static int keyCompareByName(const void *p1, const void *p2)
-{
-	Key *key1=*(Key **)p1;
-	Key *key2=*(Key **)p2;
-	const char *name1 = keyName(key1);
-	const char *name2 = keyName(key2);
-
-	return strcmp(name1, name2);
-}
-
-static int keyCompareByNameCase(const void *p1, const void *p2)
-{
-	Key *key1=*(Key **)p1;
-	Key *key2=*(Key **)p2;
-	const char *name1 = keyName(key1);
-	const char *name2 = keyName(key2);
-
-	return elektraStrCaseCmp(name1, name2);
-}
-
-static int keyCompareByNameOwner(const void *p1, const void *p2)
-{
-	Key *key1=*(Key **)p1;
-	Key *key2=*(Key **)p2;
-	const char *name1 = keyName(key1);
-	const char *name2 = keyName(key2);
-	int result = strcmp(name1, name2);
-
-	if (result == 0)
-	{
-		const char *owner1 = keyOwner(key1);
-		const char *owner2 = keyOwner(key2);
-		return strcmp(owner1, owner2);
-	}
-	else return result;
-}
-
-
-static int keyCompareByNameOwnerCase(const void *p1, const void *p2)
-{
-	Key *key1=*(Key **)p1;
-	Key *key2=*(Key **)p2;
-	const char *name1 = keyName(key1);
-	const char *name2 = keyName(key2);
-	int result = elektraStrCaseCmp(name1, name2);
-
-	if (result == 0)
-	{
-		const char *owner1 = keyOwner(key1);
-		const char *owner2 = keyOwner(key2);
-		return elektraStrCaseCmp(owner1, owner2);
-	}
-	else return result;
-}
-
-
 /**
  * Look for a Key contained in @p ks that matches the name of the @p key.
  *
@@ -1619,11 +1644,7 @@ int f(KeySet *iterator, KeySet *lookup)
  */
 Key *ksLookup(KeySet *ks, Key * key, option_t options)
 {
-	Key *current;
-	Key ** found;
 	cursor_t cursor = 0;
-	size_t jump = 0;
-	/*If there is a known offset in the beginning jump could be set*/
 
 	if (!ks) return 0;
 
@@ -1631,8 +1652,13 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 
 	if (!key) return 0;
 
-	if (options & KDB_O_NOALL)
+	if ((options & KDB_O_NOALL)
+		// || (options & KDB_O_NOCASE)
+		// || (options & KDB_O_WITHOWNER)
+		) // binary search with nocase won't work
 	{
+		Key *current;
+		if (!(options & KDB_O_NOALL)) ksRewind(ks);
 		while ((current=ksNext(ks)) != 0)
 		{
 			if ((options & KDB_O_WITHOWNER) && (options & KDB_O_NOCASE))
@@ -1653,18 +1679,21 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 		if (current == 0) ksSetCursor (ks, cursor);
 		return current;
 	} else {
+		Key ** found;
+		size_t jump = 0;
+		/*If there is a known offset in the beginning jump could be set*/
 		if ((options & KDB_O_WITHOWNER) && (options & KDB_O_NOCASE))
 			found = (Key **) bsearch (&key, ks->array+jump, ks->size-jump,
 				sizeof (Key *), keyCompareByNameOwnerCase);
 		else if (options & KDB_O_WITHOWNER)
 			found = (Key **) bsearch (&key, ks->array+jump, ks->size-jump,
-				sizeof (Key *), keyCompareByNameOwner);
+				sizeof (Key *), keyCmpByNameOwner);
 		else if (options & KDB_O_NOCASE)
 			found = (Key **) bsearch (&key, ks->array+jump, ks->size-jump,
 				sizeof (Key *), keyCompareByNameCase);
 		else
-			found = (Key **) bsearch (&key, ks->array+jump, ks->size-jump,
-				sizeof (Key *), keyCompareByName);
+		found = (Key **) bsearch (&key, ks->array+jump, ks->size-jump,
+			sizeof (Key *), keyCmpByName);
 		if (options & KDB_O_DEL) keyDel (key);
 		if (found)
 		{

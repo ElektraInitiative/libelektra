@@ -47,6 +47,13 @@ static void test_basic()
 	keySetMeta(key, "empty", "");
 	succeed_if (!strcmp(keyValue(keyGetMeta(key, "empty")), ""), "Problem with empty meta string");
 
+	keySetMeta(key, "owner", "hugo");
+	succeed_if (!strcmp(keyValue(keyGetMeta(key, "owner")), "hugo"), "Problem with meta string");
+
+	keySetMeta(key, "mode", "775");
+	succeed_if (!strcmp(keyValue(keyGetMeta(key, "owner")), "hugo"), "Problem with meta string");
+	succeed_if (!strcmp(keyValue(keyGetMeta(key, "mode")), "775"), "Problem with meta string");
+
 	keySetMeta(key, "", "empty");
 	succeed_if (!strcmp(keyValue(keyGetMeta(key, "")), "empty"), "Problem with empty name");
 

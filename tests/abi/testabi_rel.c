@@ -15,14 +15,30 @@
 
 #include <tests.h>
 
-static void test_equal()
+static void test_keyCmp()
 {
-	printf ("check if equal\n");
+	printf ("check keyCmp\n");
 
-	Key *k1 = keyNew(0);
-	Key *k2 = keyNew(0);
+	Key *k1 = keyNew("user/valid", KEY_END);
+	Key *k2 = keyNew("user/valid", KEY_END);
 
-	succeed_if (keyCmp (0,0)    == 0, "null pointers should be same");
+	Key *nk1 = keyNew(0);
+	Key *nk2 = keyNew(0);
+
+	succeed_if(keyCmp(0,0) == 0, "all null pointers are same");
+	succeed_if(keyCmp(nk1,0) ==  1, "null pointer is smaller");
+	succeed_if(keyCmp(0,nk2) == -1, "null pointer is smaller");
+
+	//! [base null]
+	succeed_if(keyCmp(0,0) == 0, "all null pointers same");
+	succeed_if(keyCmp(k1,0) ==  1, "null pointer is smaller");
+	succeed_if(keyCmp(0,k2) == -1, "null pointer is smaller");
+	//! [base null]
+
+	succeed_if(keyCmp(nk1,nk1) == 0, "all null keys are same");
+	succeed_if(keyCmp(k1,nk1) ==  1, "null keys are smaller");
+	succeed_if(keyCmp(nk1,k2) == -1, "null keys are smaller");
+
 	succeed_if (keyCmp (k1, k2) == 0, "should be same");
 
 	keySetName (k1, ""); keySetName (k2, "");
@@ -34,12 +50,55 @@ static void test_equal()
 	keySetName (k1, "system"); keySetName (k2, "system");
 	succeed_if (keyCmp (k1, k2) == 0, "should be same");
 
+	keySetName (k1, "system"); keySetName (k2, "user");
+	succeed_if (keyCmp (k1, k2) < 0, "system is smaller");
+	succeed_if (keyCmp (k2, k1) > 0, "system is smaller");
+
 	keySetName (k1, "user/a"); keySetName (k2, "user/a");
 	succeed_if (keyCmp (k1, k2) == 0, "should be same");
+	succeed_if (keyCmp (k2, k1) == 0, "should be same");
 
-	keySetName (k1, "user/tests/simple"); keySetName (k2, "user/tests/simple/below");
-	succeed_if (keyRel (k1, k2) >= 0, "should be below");
-	succeed_if (keyRel (k1, k2) == 1, "should be below");
+	keySetName (k1, "user/a"); keySetName (k2, "user/b");
+	succeed_if (keyCmp (k1, k2) < 0, "a is smaller");
+	succeed_if (keyCmp (k2, k1) > 0, "a is smaller");
+
+	keySetName (k1, "user/a/a"); keySetName (k2, "user/a-a");
+	succeed_if (keyCmp (k1, k2) < 0, "/ is smaller");
+	succeed_if (keyCmp (k2, k1) > 0, "/ is smaller");
+
+	char cmp [] = "user/a-a";
+	for (int i=1; i<256; ++i)
+	{
+		if (i=='/') continue;
+		cmp[6] = i;
+		// printf ("%i %s\n", i, cmp);
+		keySetName (k1, "user/a/a"); keySetName (k2, cmp);
+		succeed_if (keyCmp (k1, k2) < 0, "/ is smaller");
+		succeed_if (keyCmp (k2, k1) > 0, "/ is smaller");
+	}
+
+	keySetName (k1, "user/a"); keySetName (k2, "user/a/a");
+	succeed_if (keyCmp (k1, k2) < 0, "/ is smaller");
+	succeed_if (keyCmp (k2, k1) > 0, "/ is smaller");
+
+	keySetName (k1, "user/a"); keySetName (k2, "user/a-a");
+	succeed_if (keyCmp (k1, k2) < 0, "/ is smaller");
+	succeed_if (keyCmp (k2, k1) > 0, "/ is smaller");
+
+	keySetName (k1, "user/a"); keySetName (k2, "user/aa");
+	succeed_if (keyCmp (k1, k2) < 0, "/ is smaller");
+	succeed_if (keyCmp (k2, k1) > 0, "/ is smaller");
+
+	keySetName (k1, "user/a"); keySetName (k2, "user/a-");
+	succeed_if (keyCmp (k1, k2) < 0, "/ is smaller");
+	succeed_if (keyCmp (k2, k1) > 0, "/ is smaller");
+
+	keySetName (k1, "user/find_me"); keySetName (k2, "user/find_me/a");
+	succeed_if (keyCmp (k1, k2) < 0, "find_me is smaller");
+	succeed_if (keyCmp (k2, k1) > 0, "find_me is smaller");
+
+	keyDel (nk1);
+	keyDel (nk2);
 
 	keyDel (k1);
 	keyDel (k2);
@@ -79,6 +138,10 @@ static void test_below()
 	printf ("check if below\n");
 	Key *k1 = keyNew(0);
 	Key *k2 = keyNew(0);
+
+	keySetName (k1, "user/tests/simple"); keySetName (k2, "user/tests/simple/below");
+	succeed_if (keyRel (k1, k2) >= 0, "should be below");
+	succeed_if (keyRel (k1, k2) == 1, "should be below");
 
 	keySetName (k1, "user"); keySetName (k2, "user/a/a");
 	succeed_if (keyRel (k1, k2) == 2, "should be below");
@@ -189,7 +252,7 @@ int main(int argc, char** argv)
 
 	init (argc, argv);
 
-	test_equal();
+	test_keyCmp();
 	test_directbelow();
 	test_below();
 	test_examples();

@@ -45,44 +45,6 @@
 #include <kdbinternal.h>
 
 
-/**
- * Takes the first key and cuts off this common part
- * for all other keys.
- *
- * The first key is removed.
- *
- * Works only for system-configs.
- */
-static int renameBackendConfig(KeySet *config)
-{
-	Key *root;
-	Key *cur;
-	ssize_t systemSize = sizeof("system");
-	ssize_t rootSize = 0;
-
-	ksRewind(config);
-
-	root = ksNext (config);
-	rootSize = keyGetNameSize(root);
-	if (rootSize == -1) return -1;
-
-	keyDel (ksLookup (config, root, KDB_O_POP));
-
-	while ((cur = ksNext(config)) != 0)
-	{
-		ssize_t curSize = keyGetNameSize(cur);
-		if (curSize == -1) return -1;
-		for (ssize_t i=0; i<curSize-rootSize; ++i)
-		{
-			cur->key[i+systemSize] = cur->key[i+rootSize];
-		}
-		cur->keySize = curSize-rootSize+systemSize;
-	}
-
-	return 0;
-}
-
-
 /**Builds a backend out of the configuration supplied
  * from:
  *
@@ -139,13 +101,13 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
 			KeySet *cut = ksCut (elektraConfig, cur);
 			if (!strcmp(keyBaseName(cur), "config"))
 			{
-				systemConfig = cut;
-				renameBackendConfig (systemConfig);
+				systemConfig = elektraRenameKeys(cut, "system");
+				ksDel (cut);
 			}
 			else if (!strcmp(keyBaseName(cur), "getplugins"))
 			{
 				if (elektraProcessPlugins(backend->getplugins, modules, referencePlugins,
-							cut, systemConfig, errorKey) == -1)
+							systemConfig, systemConfig, errorKey) == -1)
 				{
 					ELEKTRA_ADD_WARNING(13, errorKey, "elektraProcessPlugins for get failed");
 					failure = 1;
@@ -159,6 +121,9 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
 							KEY_VALUE, keyBaseName(root), KEY_END);
 					backend->mountpoint->key = elektraStrDup(keyString(cur));
 					backend->mountpoint->keySize = cur->dataSize;
+					elektraRealloc((void**)&backend->mountpoint->key, cur->dataSize*2);
+					if (!backend->mountpoint->key) return 0;
+					elektraFinalizeName(backend->mountpoint); // TODO: allow cascading keys
 				} else {
 					backend->mountpoint = keyNew(keyString(cur),
 							KEY_VALUE, keyBaseName(root), KEY_END);
@@ -171,12 +136,12 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
 				}
 
 				keyIncRef(backend->mountpoint);
-				ksDel (cut);
+				ksDel (systemConfig);
 			}
 			else if (!strcmp(keyBaseName(cur), "setplugins"))
 			{
 				if (elektraProcessPlugins(backend->setplugins, modules, referencePlugins,
-							cut, systemConfig, errorKey) == -1)
+							systemConfig, systemConfig, errorKey) == -1)
 				{
 					ELEKTRA_ADD_WARNING(15, errorKey, "elektraProcessPlugins for set failed");
 					failure = 1;
@@ -185,7 +150,7 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
 			else if (!strcmp(keyBaseName(cur), "errorplugins"))
 			{
 				if (elektraProcessPlugins(backend->errorplugins, modules, referencePlugins,
-							cut, systemConfig, errorKey) == -1)
+							systemConfig, systemConfig, errorKey) == -1)
 				{
 					ELEKTRA_ADD_WARNING(15, errorKey, "elektraProcessPlugins for error failed");
 					failure = 1;
@@ -193,7 +158,7 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
 			} else {
 				// no one cares about that config
 				ELEKTRA_ADD_WARNING(16, errorKey, keyBaseName(cur));
-				ksDel (cut);
+				ksDel (systemConfig);
 			}
 		}
 	}

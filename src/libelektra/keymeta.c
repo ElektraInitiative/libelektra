@@ -441,7 +441,7 @@ const Key *keyGetMeta(const Key *key, const char* metaName)
 	search->keySize = elektraStrLen(metaName);
 	elektraRealloc((void**)&search->key, search->keySize*2);
 	if (!search->key) return 0;
-	elektraFinalizeName(search);
+	elektraFinalizeName(search); // TODO: allow meta keys
 
 	if (!search->key) return 0; /*Duplication did not work*/
 
@@ -507,7 +507,7 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 	toSet->keySize = metaNameSize;
 	elektraRealloc((void**)&toSet->key, metaNameSize*2);
 	if (!toSet->key) return -1;
-	elektraFinalizeName(toSet);
+	elektraFinalizeName(toSet); // TODO: allow meta keys
 
 	/*Lets have a look if the key is already inserted.*/
 	if (key->meta)
