@@ -341,7 +341,7 @@ ssize_t keyGetName(const Key *key, char *returnedName, size_t maxSize)
  *
  * @param key
  */
-static void elektraFinalizeName(Key *key)
+void elektraFinalizeName(Key *key)
 {
 	key->key[key->keySize - 1] = 0; /* finalize string */
 
@@ -387,7 +387,6 @@ static void elektraFinalizeName(Key *key)
  * @see keySetBaseName(), keyAddBaseName() to manipulate a name
  * @ingroup keyname
  */
-
 ssize_t keySetName(Key *key, const char *newName)
 {
 	size_t length;
@@ -867,7 +866,6 @@ ssize_t keyAddName(Key *key, const char *newName)
 	while (key->key[key->keySize-1] == KDB_PATH_SEPARATOR && key->key[key->keySize-2] != '\\') key->keySize--;
 	key->keySize ++; /*for \\0 ending*/
 
-
 	elektraFinalizeName(key);
 
 	return key->keySize;
@@ -993,8 +991,8 @@ keyOwner(key); // you would expect "" here
  *
  * @param key the key object to work with
  * @return a pointer to internal owner
- * @return "" when there is no (a empty) owner
- * @return 0 on NULL pointer
+ * @retval "" when there is no (a empty) owner
+ * @retval 0 iff key is a NULL pointer
  * @see keyGetOwnerSize() for the size of the string with concluding 0
  * @see keyGetOwner(), keySetOwner()
  * @see keyName() for name without owner
@@ -1010,7 +1008,6 @@ const char *keyOwner(const Key *key)
 
 	if (!owner)
 	{
-		/*errno=KDB_ERR_NOKEY;*/
 		return "";
 	}
 
