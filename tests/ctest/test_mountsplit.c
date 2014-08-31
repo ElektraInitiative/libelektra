@@ -278,7 +278,7 @@ static void test_cascading()
 
 
 	mp = keyNew("", KEY_VALUE, "simple", KEY_END);
-	elektraKeySetName(mp, "tests/simple", KDB_O_CASCADING_NAME);
+	elektraKeySetName(mp, "/tests/simple", KDB_O_CASCADING_NAME);
 
 	keySetName(searchKey, "user/tests/simple");
 	backend = elektraTrieLookup(kdb->trie, searchKey);
@@ -362,7 +362,7 @@ static void test_root()
 
 	Key *searchKey = keyNew("", KEY_END);
 	Key *rmp = keyNew("", KEY_VALUE, "root", KEY_END);
-	elektraKeySetName(rmp, "", KDB_O_CASCADING_NAME);
+	elektraKeySetName(rmp, "/", KDB_O_CASCADING_NAME);
 	Backend *b2 = 0;
 
 	keySetName (searchKey, "user");
@@ -430,7 +430,7 @@ static void test_default()
 
 	Key *searchKey = keyNew("", KEY_END);
 	Key *rmp = keyNew("", KEY_VALUE, "root", KEY_END);
-	keySetName(rmp, 0);
+	elektraKeySetName(rmp, "/", KDB_O_CASCADING_NAME);
 	Backend *b2 = 0;
 
 	keySetName (searchKey, "user");
@@ -520,7 +520,7 @@ static void test_modules()
 
 	Key *searchKey = keyNew("", KEY_END);
 	Key *rmp = keyNew("", KEY_VALUE, "root", KEY_END);
-	keySetName(rmp, 0);
+	elektraKeySetName(rmp, "/", KDB_O_CASCADING_NAME);
 	Backend *b2 = 0;
 
 	keySetName (searchKey, "user");
