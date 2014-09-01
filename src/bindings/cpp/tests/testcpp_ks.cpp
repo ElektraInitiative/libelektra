@@ -331,6 +331,8 @@ void test_per()
 	solution.push_back(Key("user/s/1", KEY_END));
 	solution.push_back(Key("user/s/2", KEY_END));
 	solution.push_back(Key("user/s/3", KEY_END));
+	solution.push_back(Key("user/s/3/s", KEY_END));
+	solution.push_back(Key("user/s/3-3", KEY_END));
 
 	vector <Key> permutation(solution);
 
@@ -339,32 +341,17 @@ void test_per()
 		ks.append(permutation[0]);
 		ks.append(permutation[1]);
 		ks.append(permutation[2]);
+		ks.append(permutation[3]);
+		ks.append(permutation[4]);
 		ks.rewind();
 		for (ssize_t i=0; i<ks.size(); ++i)
 		{
-			succeed_if (*ks.next() == *solution[i], "wrong order");
+			succeed_if (*ks.next() == *solution[i], "wrong order ");
 		}
 	} while (next_permutation(permutation.begin(), permutation.end()));
 
 	solution.push_back(Key("user/s/x", KEY_END));
-	permutation.push_back(solution[3]); // need a copy of same key, otherwise name is not the same string
-	sort(permutation.begin(), permutation.end());
-
-	do {
-		KeySet ks;
-		ks.append(permutation[0]);
-		ks.append(permutation[1]);
-		ks.append(permutation[2]);
-		ks.append(permutation[3]);
-		ks.rewind();
-		for (ssize_t i=0; i<ks.size(); ++i)
-		{
-			succeed_if (*ks.next() == *solution[i], "wrong order");
-		}
-	} while (next_permutation(permutation.begin(), permutation.end()));
-
-	solution.push_back(Key("user/x/y", KEY_END));
-	permutation.push_back(solution[4]);
+	permutation.push_back(solution[4]); // need a copy of same key, otherwise name is not the same string
 	sort(permutation.begin(), permutation.end());
 
 	do {
@@ -374,6 +361,27 @@ void test_per()
 		ks.append(permutation[2]);
 		ks.append(permutation[3]);
 		ks.append(permutation[4]);
+		ks.append(permutation[5]);
+		ks.rewind();
+		for (ssize_t i=0; i<ks.size(); ++i)
+		{
+			succeed_if (*ks.next() == *solution[i], "wrong order");
+		}
+	} while (next_permutation(permutation.begin(), permutation.end()));
+
+	solution.push_back(Key("user/x/y", KEY_END));
+	permutation.push_back(solution[5]);
+	sort(permutation.begin(), permutation.end());
+
+	do {
+		KeySet ks;
+		ks.append(permutation[0]);
+		ks.append(permutation[1]);
+		ks.append(permutation[2]);
+		ks.append(permutation[3]);
+		ks.append(permutation[4]);
+		ks.append(permutation[5]);
+		ks.append(permutation[6]);
 		ks.rewind();
 		for (ssize_t i=0; i<ks.size(); ++i)
 		{
@@ -394,6 +402,8 @@ void test_per()
 		ks.append(permutation[3]);
 		ks.append(permutation[4]);
 		ks.append(permutation[5]);
+		ks.append(permutation[6]);
+		ks.append(permutation[7]);
 		ks.rewind();
 		for (ssize_t i=0; i<ks.size(); ++i)
 		{

@@ -186,6 +186,8 @@ cmd for commandline options overrides
 
 == DATA STRUCTURES ==
 
+keyAdd (.. until rootKey)
+
 Only implement what is really needed.
 (can take some time to do it well!)
 See also OPTIMISE

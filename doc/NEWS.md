@@ -9,11 +9,16 @@ This text is preliminary, the release did not happen!
 
 - ELEKTRA_ADD_WARNINGF and ELEKTRA_SET_ERRORF
 
-error plugin
+error plugin on open
+
+sync plugin
+
+
 
 ## API Proposals
 
 keySetStringF
+keyLock
 
 ## Compatibility
 
@@ -71,6 +76,7 @@ several small fixes in tools
 ## Issues
 
 fix #12
+fix searching for boost
 
 ## Docu
 
