@@ -36,13 +36,13 @@ ostream& operator << (ostream& os, parse_t& p)
 	   << "	(key, text, file, #line)" << endl
 	   << endl
 	   << endl
-	   << "#define ELEKTRA_SET_ERRORF(number, key, text, ...) ELEKTRA_SET_ERROR_HELPERF\\" << endl
+	   << "#define ELEKTRA_SET_ERRORF(number, key, text, ...) ELEKTRA_SET_ERRORF_HELPER\\" << endl
 	   << "	(number, key, text, __FILE__, __LINE__, ##__VA_ARGS__)" << endl
 	   << endl
 	   << "#define ELEKTRA_SET_ERRORF_HELPER(number, key, text, file, line, ...) ELEKTRA_SET_ERRORF_HELPER_HELPER\\" << endl
 	   << "	(number, key, text, file, line, ##__VA_ARGS__)" << endl
 	   << endl
-	   << "#define ELEKTRA_SET_ERRORF_HELPER_HELPER(number, key, text, file, line, ...) elektraSetError ## number\\" << endl
+	   << "#define ELEKTRA_SET_ERRORF_HELPER_HELPER(number, key, text, file, line, ...) elektraSetErrorf ## number\\" << endl
 	   << "	(key, text, file, #line,  ##__VA_ARGS__)" << endl
 	   << endl
 	   << endl

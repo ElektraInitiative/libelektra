@@ -16,6 +16,7 @@
 set (PLUGINS_LIST_DEFAULT
 	dump
 	resolver
+	sync
 	)
 
 #

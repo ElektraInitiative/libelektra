@@ -249,15 +249,20 @@ units-of-measurements (e.g. m, kg, A, ..)
 
 ## split up ##
 
+nosync+nolock variants
+
 resolver-debug for tests
-	concurrency: sets breakpoints within
-	folder: write into folders controlled by env, maybe xdg
+	concurrency: sets breakpoints within (done!)
+	folder: write into folders controlled by env
 resolver-xdg-passwd
 	use passwd with XDG overides
 resolver-xdg
 	use $HOME with XDG overides
-resolver-hardcoded (just use KDB_DB_* for single users embedded systems)
+resolver-hardcoded
+	(just use KDB_DB_* for single users embedded systems)
+	done! (needs better docu)
 resolver-passwd
+	done! (needs better docu)
 resolver-posix
 	using HOME def. in posix: http://pubs.opengroup.org/onlinepubs/009695399/basedefs/xbd_chap08.html
 	using USER as fallback? not def. in posix, but often in shells
