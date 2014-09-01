@@ -30,36 +30,36 @@
  *
  *
  * @par Terminology of Key Names
- * - A *key name* (see keySetName() and keyName()) describes the
- *   position of a key within the key database.
+ * - A *key name* (see keySetName() and keyName()) defines the
+ *   place of a key within the key database.
  *   To be unique, it is always absolute and canonical.
  * - Key names are composed out of many *key name parts* split by a
  *   separator. These *key name parts* do not contain a unescaped
  *   separator.
  * - A *key base name* (see keySetBaseName() and keyAddBaseName()) is
  *   the last part of the key name.
- * - A namespace denotes the physical space the key comes from:
- *   - user keys come from user's home directories
- *   - system keys come from systems etc directories
+ * - A namespace denotes the place the key comes from:
+ *   - _user_ keys come from user's home directories
+ *   - _system_ keys come from systems etc directories
  * - A *C-String* is a null terminated sequence of characters.
  *   So \\0 (null-character) must not occur within a C-String.
  *
  *
  * @note The rules are currently not formally specified and are subject
  * of change in the next major release.
- * So, always prefer to construct a key and/or:
- * - use keySetName() and keyAddName() to get the canonified version of the keyname
- * - use keySetBaseName() and keyAddBaseName() to get an escaped key
+ * So, always prefer:
+ * - To use keySetName() and keyAddName() to get the canonified version of the keyname
+ * - To use keySetBaseName() and keyAddBaseName() to get an escaped key
  *   name part.
- * - Do not escape or canonify with your own algorithms!
- * - Use keyUnescapedName() and keyBaseName() to have access to the
+ * - Not to escape or canonify with your own algorithms!
+ * - To use keyUnescapedName() and keyBaseName() to have access to the
  *   key name without escape sequences (key name parts are null
  *   terminated)
- * - Do not unescape the strings yourself!
+ * - Not to unescape the strings yourself!
  *
  *
  * @par Syntax for Key Names
- * Still, key names and key name parts have following goals:
+ * Key names and key name parts have following goals:
  * - The C-String passed to keySetName() and keyAddName() may be any
  *   C-String.
  * - The *key name parts* (e.g. keySetBaseName(), keyBaseName()) may
@@ -82,18 +82,18 @@
  *
  *
  * @par Conventions for key names
- * - key name parts starting with \# are array elements
+ * - Key name parts starting with \# are array elements.
  *   Then only _ (underscore) followed by 0-9 is allowed.
  *   So we have the regular expression #[_]*[0-9]+ with the further
  *   limitation that the number of _ is defined by the number of
  *   digits-1.
- * - key name parts starting with _ are reserved for special purposes
+ * - Key name parts starting with _ are reserved for special purposes
  *   (if you use this within a plugin you still have to make sure _ is
  *   escaped properly)
- * - key name parts starting with @ are reserved for special purposes
+ * - Key name parts starting with @ are reserved for special purposes
  *   (if you use this within a plugin you still have to make sure @ is
  *   escaped properly)
- * - if any key name part starts with . (dot) it means the key is
+ * - If any key name part starts with . (dot) it means the key is
  *   inactive, see keyIsInactive().
  *
  *
@@ -103,12 +103,13 @@
  *   The \\ character must only be escaped, when one of the following
  *   rules apply. So there is no stray escape character possible.
  * - \\/ allows to escape /
- * - \\\\/ allows to use \\ as character before /
+ * - \\\\/ allows to use \\ as character before / (and so on)
  * - Use \\. and \\.. if you want your key name part to represent . and ..
- * - \\\\. and \\\\.. allows to use \\ as character before . and ..
+ * - \\\\. and \\\\.. allows to use \\ as character before . and .. (and so on)
  * - Use \\% if you want your key name part to start with \% (and does
  *   not represent an empty name)
- * - Use \\\\% allows to use \\ as character before \%
+ * - Use \\\\% allows to use \\ as character before \% (and so on)
+
  *
  *
  * @par Semantics for Key Name Specifications
@@ -381,7 +382,7 @@ ssize_t elektraFinalizeEmptyName(Key *key)
  * A private copy of the key name will be stored, and the @p newName
  * parameter can be freed after this call.
  *
- * .., . and / will be handled correctly. A valid name will be build
+ * .., . and / will be handled as in filesystem pathes. A valid name will be build
  * out of the (valid) name what you pass, e.g. user///sw/../sw//././MyApp -> user/sw/MyApp
  *
  * On invalid names, NULL or "" the name will be "" afterwards.
@@ -661,14 +662,10 @@ ssize_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize)
  * sure to copy the memory before the name changes.
  *
  * keyBaseName() returns "" when there is no keyBaseName. The reason is
- * @code
-key=keyNew(0);
-keySetName(key,"");
-keyBaseName(key); // you would expect "" here
-keySetName(key,"user");
-keyBaseName(key); // you would expect "" here
-keyDel(key);
- * @endcode
+ * @snippet testabi_key.c base0 empty
+ *
+ * And there is also support for really empty basenames:
+ * @snippet testabi_key.c base1 empty
  *
  * @note You must never use the pointer returned by keyBaseName()
  * method to change the name, but you should use keySetBaseName()
@@ -795,39 +792,23 @@ ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize)
  *
  * When @p baseName is 0 nothing will happen and the size of the name is returned.
  *
- * The escaping rules apply as specified above. So @p baseName will
- * be escaped when:
- * - it starts with . (dot). So it is not possible to create
- *   inactive keys (see keyIsInactive())
- * - it starts with \# (hash). So it is not possible to create array names
- * - is empty "". (\% will be used then)
- * - is . (dot)
- * - is .. (dot-dot)
- * - is \% (empty parts of key name need empty @p baseName)
- * - any \\ occur.
- * - any / occur
+ * The escaping rules apply as in @link keyname above @endlink.
  *
- * A simple example to use keyAddBaseName() is:
- * @snippet basename.c set base basic
+ * A simple example is:
+ * @snippet basename.c add base basic
  *
- * If you do not want escaping, use keySetBaseName() instead. E.g. if
- * you want to add an inactive key, use:
- * @snippet testabi_key.c base1
+ * E.g. if you add . it will be escaped:
+ * @snippet testabi_key.c base1 add
  *
- * or when you want to add an array item, use:
- * @snippet testabi_key.c base2
+ * @see keySetBaseName() to set a base name
+ * @see keySetName() to set a new name.
  *
- * @see elektraKeyNameUnescape() to unescape the string.
- *
- * @see keySetBaseName() to set a base name without escaping
  * @param key the key object to work with
  * @param baseName the string to append to the name
  * @return the size in bytes of the new key name including the ending NULL
  * @return -1 if the key had no name
  * @return -1 on NULL pointers
  * @retval -1 if key was inserted to a keyset before
- * @see keySetBaseName()
- * @see keySetName() to set a new name.
  * @ingroup keyname
  *
  */
@@ -947,6 +928,16 @@ ssize_t keyAddName(Key *key, const char *newName)
  *
  * You can use all names to set as basename (e.g. . (dot), ..
  * (dot-dot), % and "" (empty)). They will be properly escaped.
+ *
+ * A simple example is:
+ * @snippet basename.c set base basic
+ *
+ * If you do not want escaping, use keySetBaseName() instead. E.g. if
+ * you want to add an inactive key, use:
+ * @snippet testabi_key.c base1
+ *
+ * or when you want to add an array item, use:
+ * @snippet testabi_key.c base2
  *
  * @see keyname for more details on special names
  *
