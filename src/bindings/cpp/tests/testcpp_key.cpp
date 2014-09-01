@@ -65,10 +65,12 @@ void test_keynew()
 	succeed_if(key3.getName() == "system/name", "key3 has wrong name");
 	succeed_if(key3.getBaseName() == "name", "wrong base name");
 	succeed_if (key3.getDirName() == "system", "wrong dir name");
+	/*
 	key3.addName("some/more");
 	succeed_if(key3.getName() == "system/name/some/more", "key3 has wrong name");
 	succeed_if(key3.getBaseName() == "more", "wrong base name");
 	succeed_if (key3.getDirName() == "system/name/some", "wrong dir name");
+	*/
 
 	// Key with name + value
 	Key key4 ("system/sw/test",

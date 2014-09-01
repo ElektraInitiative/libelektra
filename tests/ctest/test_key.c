@@ -1010,6 +1010,57 @@ static void test_keyLock()
 	keyDel (key2);
 }
 
+static void test_keyAddName()
+{
+	Key *k = keyNew("user", KEY_END);
+	keyAddName(k, "something");
+	succeed_if_same_string(keyName(k), "user/something");
+
+	keyAddName(k, "with/slash");
+	succeed_if_same_string(keyName(k), "user/something/with/slash");
+	keyDel(k);
+
+	k = keyNew("system/elektra/mountpoints/_t_error/config", KEY_END);
+	keyAddName(k, "on_open/error");
+	succeed_if_same_string(keyName(k), "system/elektra/mountpoints/_t_error/config/on_open/error");
+	keyDel(k);
+
+	k = keyNew("user", KEY_END);
+	succeed_if (keyAddName(k, "///sw/../sw//././MyApp")==sizeof("user/sw/MyApp"), "could not add name");
+	succeed_if_same_string(keyName(k), "user/sw/MyApp");
+	keyDel(k);
+
+	k = keyNew("user", KEY_END);
+	succeed_if (keyAddName(k, "bar\\/foo_bar\\/")==sizeof("user/bar\\/foo_bar\\/"), "could not add name");
+	succeed_if_same_string(keyName(k), "user/bar\\/foo_bar\\/");
+	keyDel(k);
+
+	k = keyNew("user", KEY_END);
+	succeed_if (keyAddName(k, "ba\\\\/foo_bar\\/")==sizeof("user/ba\\\\/foo_bar\\/"), "could not add name");
+	succeed_if_same_string(keyName(k), "user/ba\\\\/foo_bar\\/");
+	keyDel(k);
+
+	k = keyNew("user", KEY_END);
+	succeed_if (keyAddName(k, "ba\\\\/foo_bar\\//%")==sizeof("user/ba\\\\/foo_bar\\//%"), "could not add name");
+	succeed_if_same_string(keyName(k), "user/ba\\\\/foo_bar\\//%");
+	keyDel(k);
+
+	k = keyNew("user:yl", KEY_END);
+	succeed_if (keyAddName(k, "ba\\\\/foo_bar\\//%")==sizeof("user/ba\\\\/foo_bar\\//%"), "could not add name");
+	succeed_if_same_string(keyName(k), "user/ba\\\\/foo_bar\\//%");
+	keyDel(k);
+
+	k = keyNew("user:yl", KEY_END);
+	succeed_if (keyAddName(k, "ba\\\\foo_bar\\//%")==sizeof("user/ba\\\\foo_bar\\//%"), "could not add name");
+	succeed_if_same_string(keyName(k), "user/ba\\\\foo_bar\\//%");
+	keyDel(k);
+
+	k = keyNew("system", KEY_END);
+	succeed_if (keyAddName(k, "ba\\\\/foo_bar\\//%")==sizeof("system/ba\\\\/foo_bar\\//%"), "could not add name");
+	succeed_if_same_string(keyName(k), "system/ba\\\\/foo_bar\\//%");
+	keyDel(k);
+}
+
 int main(int argc, char** argv)
 {
 	printf("KEY      TESTS\n");
@@ -1034,6 +1085,7 @@ int main(int argc, char** argv)
 	test_owner();
 	test_elektraKeySetName();
 	test_keyLock();
+	test_keyAddName();
 
 	printf("\ntest_key RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

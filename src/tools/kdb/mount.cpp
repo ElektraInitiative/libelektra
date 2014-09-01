@@ -117,8 +117,8 @@ void MountCommand::buildBackend(Cmdline const& cl)
 
 void MountCommand::addConfig (string const& configBasePath, string const& keyName, string const& value)
 {
-	Key configKey = Key (configBasePath, KEY_END);
-	configKey.addName (keyName);
+	Key configKey = Key (configBasePath + "/" + keyName, KEY_END);
+	// configKey.addName (keyName);
 	configKey.setString (value);
 	mountConf.append (configKey);
 }
