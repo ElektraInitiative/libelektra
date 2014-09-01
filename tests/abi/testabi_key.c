@@ -1902,21 +1902,17 @@ static void test_keyAddBaseName()
 	Key *k = keyNew (KEY_END);
 
 //![base0 empty]
-k=keyNew(0);
 keySetName(k,"");
 succeed_if_same_string(keyBaseName(k), "");
 keySetName(k,"user");
 succeed_if_same_string(keyBaseName(k), "");
-keyDel(k);
 //![base0 empty]
 
 //![base1 empty]
-k=keyNew(0);
 keySetName (k, "system/valid");
 succeed_if (keyAddBaseName (k, "") >= 0, "could not add a base name");
 succeed_if_same_string(keyName(k), "system/valid/%");
 succeed_if_same_string(keyBaseName(k), "");
-keyDel(k);
 //![base1 empty]
 
 	keySetName (k, "system/valid");
