@@ -10,7 +10,7 @@
 
 When writing a C string in C code some characters cannot be expressed 
 directly but have a special one letter abbreviation. 
-The CCODE PLUGIN allows us to map any single escaped 
+The ccode plugin allows us to map any single escaped 
 character to be replaced by another single character and vice versa. 
 The user can conﬁgure this mapping.
 

@@ -73,6 +73,12 @@ machine-readable, the following CMake command exists:
 It will generate a readme_plugginname.c (in the build-directory) out of the
 README.md of the plugin''s source directory.
 
+But prefer to use
+
+	add_plugin(pluginname)
+
+where the readme (among many other things) are already done for you.
+
 
 ### Content of README.md ###
 
@@ -148,10 +154,11 @@ dependent on your functions to be available) and the plugin version
 information that is always defined to the macro PLUGINVERSION.
 
 As already said, readme_yourplugin.c is generated in the binary directory,
-so make sure that your CMakeLists.txt contains:
+so make sure that your CMakeLists.txt contains (prefer to use add_plugin
+where this is already done correctly):
 
 	include_directories (${CMAKE_CURRENT_BINARY_DIR})
-	
+
 ## Coding ##
 
 This section will focus on an overview of the kind of code you would use to develop a plugin. It gives examples from real plugins

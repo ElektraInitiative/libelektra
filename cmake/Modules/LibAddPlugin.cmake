@@ -56,19 +56,27 @@ function(add_plugin PLUGIN_SHORT_NAME)
 	add_headers(ARG_SOURCES)
 	add_library (${PLUGIN_OBJS} OBJECT ${ARG_SOURCES})
 
+	#message ("generate readme for ${PLUGIN_SHORT_NAME}")
+	generate_readme (${PLUGIN_SHORT_NAME})
+
 	set_property(TARGET ${PLUGIN_OBJS}
 		APPEND PROPERTY COMPILE_DEFINITIONS
 		${ARG_COMPILE_DEFINITIONS}
 		"HAVE_KDBCONFIG_H;ELEKTRA_STATIC"
+		"PLUGIN_SHORT_NAME=${PLUGIN_SHORT_NAME}"
+		"README=readme_${PLUGIN_SHORT_NAME}.c"
 		)
 
 	set_property(TARGET ${PLUGIN_OBJS}
 		APPEND PROPERTY INCLUDE_DIRECTORIES
-		${ARG_INCLUDE_DIRECTORIES})
+		${ARG_INCLUDE_DIRECTORIES}
+		${CMAKE_CURRENT_BINARY_DIR} #for readme
+		)
 
 	set_property(TARGET ${PLUGIN_OBJS}
 		APPEND PROPERTY COMPILE_FLAGS
-		${CMAKE_PIC_FLAGS}) # needed for shared libraries
+		${CMAKE_PIC_FLAGS} # needed for shared libraries
+		)
 
 	# needs cmake 3.0:
 	#set_property(TARGET ${PLUGIN_OBJS}
@@ -87,7 +95,9 @@ function(add_plugin PLUGIN_SHORT_NAME)
 			)
 		set_property(TARGET ${PLUGIN_NAME}
 			APPEND PROPERTY INCLUDE_DIRECTORIES
-			${ARG_INCLUDE_DIRECTORIES})
+			${ARG_INCLUDE_DIRECTORIES}
+			${CMAKE_CURRENT_BINARY_DIR} #for readme
+			)
 	endif()
 
 	set_property (GLOBAL APPEND PROPERTY "elektra-full_SRCS"

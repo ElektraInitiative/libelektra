@@ -46,6 +46,8 @@ that, you can use:
   ```ELEKTRA_PLUGIN_FUNCTION(myplugin, open)``` where myplugin is
   the name of the plugin and the second argument is how the function
   should be called.
+- Including a readme for every variant (with #ifdef for different text)
+  using the macro ```#include ELEKTRA_README(myplugin)```
 
 
 As a summary, you can have many plugins build out of the same source.
