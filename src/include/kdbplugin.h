@@ -23,6 +23,7 @@
 #define KDBPLUGIN_H
 
 #include <kdb.h>
+#include <kdbhelper.h>
 
 #define ELEKTRA_QUOTE(x)       #x
 

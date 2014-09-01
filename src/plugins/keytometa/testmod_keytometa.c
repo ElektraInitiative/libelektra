@@ -505,7 +505,7 @@ int main(int argc, char** argv)
 	test_differentMetaNames();
 	test_restoreOnSet();
 
-	printf ("\ntest_hosts RESULTS: %d test(s) done. %d error(s).\n", nbTest,
+	printf ("\ntest_keytometa RESULTS: %d test(s) done. %d error(s).\n", nbTest,
 			nbError);
 
 	return nbError;

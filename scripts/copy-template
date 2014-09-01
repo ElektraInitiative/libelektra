@@ -3,21 +3,42 @@
 set -e
 
 if [ $# -ne 1 ]; then
-	echo "$0 <new-pluginname>"
+	echo "Usage: $0 <new-pluginname>"
+	echo
 	echo "allows you to copy templates and rename them properly"
 	echo "This was meant for creating new plugins"
 	exit 0
 fi
 
+PLUGIN=$1
 
-First=`echo $1 | sed 's/\<./\u&/'`
-ALL=`echo $1 | sed 's/.*/\U&/'`
+if echo $PLUGIN | egrep -q '^[a-z]+$'; then
+	if [ -d $PLUGIN ]
+	then
+		echo "Plugin $PLUGIN already exists"
+		exit 1
+	else
+		echo "Creating new plugin $PLUGIN"
+	fi
+else
+	echo "Pluginnames must consist only of characters a-z"
+	exit 1
+fi
 
-cp -r template $1
-cd $1
-mv template.c $1.c
-mv template.h $1.h
+First=`echo $PLUGIN | sed 's/\<./\u&/'`
+ALL=`echo $PLUGIN | sed 's/.*/\U&/'`
 
-sed -i s/TEMPLATE/$ALL/g $1.c $1.h CMakeLists.txt
-sed -i s/Template/$First/g $1.c $1.h CMakeLists.txt
-sed -i s/template/$1/g $1.c $1.h CMakeLists.txt
+cp -r template $PLUGIN
+cd $PLUGIN
+mv template.c $PLUGIN.c
+mv template.h $PLUGIN.h
+mv testmod_template.c testmod_$PLUGIN.c
+
+do_replacements()
+{
+	sed -i s/TEMPLATE/$ALL/g $*
+	sed -i s/Template/$First/g $*
+	sed -i s/template/$PLUGIN/g $*
+}
+
+do_replacements testmod_$1.c $1.c $1.h CMakeLists.txt README.md
