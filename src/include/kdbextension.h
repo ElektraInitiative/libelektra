@@ -90,7 +90,6 @@ int keyIsUser(const Key *key);
 int keyNameIsSystem(const char *keyname);
 int keyNameIsUser(const char *keyname);
 
-int keyIsInactive(const Key *key);
 
 /***************************************
  *

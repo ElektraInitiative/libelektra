@@ -1132,6 +1132,12 @@ static void test_keyInactive ()
 	
 	keySetName(key,"user/tests/file8xdLVS/filesys/.HiddenStringKey");
 	succeed_if (keyIsInactive(key), "Key should be inactive");
+	
+	keySetName(key,"user/.hidden/nothidden/hierarchy");
+	succeed_if (keyIsInactive(key) == 1, "Key should be inactive");
+	
+	keySetName(key,"user/.hidden/nothidden/hierarchy");
+	succeed_if (keyIsInactive(key) == 1, "Key should be inactive");
 	keyDel (key);
 }
 

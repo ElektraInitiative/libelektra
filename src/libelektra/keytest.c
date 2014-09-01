@@ -399,26 +399,23 @@ int keyRel (const Key *key, const Key *check)
 
 
 /**
- * Check whether a key is inactive or not.
+ * Check whether a key is inactive.
  *
- * In elektra terminology any key is inactive if
- * it's basename starts with '.'. A key is
+ * In Elektra terminology a hierarchy of keys is inactive if
+ * the rootkey's basename starts with '.'. So a key is
  * also inactive if it is below an inactive key.
  * For example, user/key/.hidden is inactive and so
  * is user/.hidden/below.
- * Inactive keys must not have any meaning to applications,
- * they are reserved for users and administrators.
  *
- * To remove a whole hierarchy in elektra, don't
- * forget to pass option_t::KDB_O_INACTIVE to
- * kdbGet() to receive the inactive keys in order
- * to remove them.
- *
- * Otherwise you should not fetch these keys.
+ * Inactive keys should not have any meaning to applications,
+ * they are only a convention reserved for users and
+ * administrators. To automatically remove all inactive keys
+ * for an application, consider to use the hidden plugin.
  *
  * @param key the key object to work with
- * @return 1 if the key is inactive, 0 otherwise
- * @return -1 on NULL pointer or when key has no name
+ * @retval 1 if the key is inactive
+ * @retval 0 if the key is active
+ * @retval -1 on NULL pointer or when key has no name
  * @ingroup keytest
  *
  */
@@ -426,12 +423,10 @@ int keyIsInactive (const Key *key)
 {
 	if (!key) return -1;
 
-
-	if (!keyName(key)) return -1;
-
-	if (keyName(key)[0] == '\0') return -1;
-
 	const char *p = keyName(key);
+	if (!p) return -1;
+	if (p[0] == '\0') return -1;
+
 	size_t size=0;
 
 	while (*(p=keyNameGetOneLevel(p+size,&size)))
