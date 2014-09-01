@@ -1725,82 +1725,103 @@ static void test_keySetBaseName()
 
 	succeed_if (keySetBaseName (k, "abc") == -1, "invalid key");
 	succeed_if_same_string(keyName(k), "");
+	succeed_if_same_string(keyBaseName(k), "");
 
 	keySetName (k, "system");
 	succeed_if (keySetBaseName (k, 0) == -1, "could remove root name");
 	succeed_if_same_string(keyName(k), "system");
+	succeed_if_same_string(keyBaseName(k), "");
+
+	keySetName (k, "user");
+	succeed_if (keySetBaseName (k, 0) == -1, "could remove root name");
+	succeed_if_same_string(keyName(k), "user");
+	succeed_if_same_string(keyBaseName(k), "");
 
 	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, 0) == sizeof("system"), "could not remove base name");
 	succeed_if_same_string(keyName(k), "system");
+	succeed_if_same_string(keyBaseName(k), "");
 
 	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, "") > 0, "could not set empty name");
 	succeed_if_same_string(keyName(k), "system/%"); // is an empty name
+	succeed_if_same_string(keyBaseName(k), "");
+
+	keySetName (k, "system/valid");
+	succeed_if (keySetBaseName (k, "/") >= 0, "escaped slash ok");
+	succeed_if_same_string(keyName(k), "system/\\/");
+	succeed_if_same_string(keyBaseName(k), "/");
 
 	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, "\\/") >= 0, "escaped slash ok");
 	succeed_if_same_string(keyName(k), "system/\\\\/");
+	succeed_if_same_string(keyBaseName(k), "\\/");
 
 	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, "\\\\/") >= 0, "backslash escaped, but slash unescaped");
 	succeed_if_same_string(keyName(k), "system/\\\\\\/");
+	succeed_if_same_string(keyBaseName(k), "\\\\/");
 
 	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, "\\\\\\/") >= 0, "backslash escaped, slash escaped");
 	succeed_if_same_string(keyName(k), "system/\\\\\\\\/");
+	succeed_if_same_string(keyBaseName(k), "\\\\\\/");
 
 	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, "%") == sizeof("system/\\%"), "could not set basename");
 	succeed_if_same_string(keyBaseName(k), "%");
 	succeed_if_same_string(keyName(k), "system/\\%");
+	succeed_if_same_string(keyBaseName(k), "%");
 
 	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, ".") == sizeof("system/\\%"), "could not set basename");
 	succeed_if_same_string(keyBaseName(k), ".");
 	succeed_if_same_string(keyName(k), "system/\\.");
+	succeed_if_same_string(keyBaseName(k), ".");
 
 	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, "..") == sizeof("system/\\.."), "could not set basename");
 	succeed_if_same_string(keyBaseName(k), "..");
 	succeed_if_same_string(keyName(k), "system/\\..");
+	succeed_if_same_string(keyBaseName(k), "..");
 
 	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, "\\\\\\\\") >= 0, "backslash escaped, backslash escaped");
-	succeed_if_same_string(keyBaseName(k), "\\\\\\\\");
 	succeed_if_same_string(keyName(k), "system/\\\\\\\\");
+	succeed_if_same_string(keyBaseName(k), "\\\\\\\\");
 
 	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, "\\\\") >= 0, "escaped backslash ok");
-	succeed_if_same_string(keyBaseName(k), "\\\\");
 	succeed_if_same_string (keyName (k), "system/\\\\");
+	succeed_if_same_string(keyBaseName(k), "\\\\");
 
 	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, "\\.") >= 0, "escaped dot");
-	succeed_if_same_string(keyBaseName(k), "\\.");
 	succeed_if_same_string (keyName (k), "system/\\\\.");
+	succeed_if_same_string(keyBaseName(k), "\\.");
 
 	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, "\\..") >= 0, "escaped dot-dot");
-	succeed_if_same_string(keyBaseName(k), "\\..");
 	succeed_if_same_string(keyName (k), "system/\\\\..");
+	succeed_if_same_string(keyBaseName(k), "\\..");
 
 	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, "%") == sizeof("system/\\%"), "add some char");
-	succeed_if_same_string(keyBaseName(k), "%");
 	succeed_if_same_string(keyName(k), "system/\\%");
+	succeed_if_same_string(keyBaseName(k), "%");
 
 	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, "#1") == sizeof("system/#1"), "valid array entry");
-	succeed_if_same_string(keyBaseName(k), "#1");
 	succeed_if_same_string (keyName (k), "system/#1");
+	succeed_if_same_string(keyBaseName(k), "#1");
 
 	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, "#_10") >= 0, "valid array entry");
-	succeed_if_same_string(keyBaseName(k), "#_10");
 	succeed_if_same_string(keyName (k), "system/#_10");
+	succeed_if_same_string(keyBaseName(k), "#_10");
 
 	keySetName(k, "user/tests/yajl/___empty_map");
+	succeed_if_same_string(keyBaseName(k), "___empty_map");
 	keySetBaseName(k, "#0");
 	succeed_if_same_string(keyBaseName(k), "#0");
 
@@ -1811,22 +1832,22 @@ static void test_keySetBaseName()
 	//! [base1]
 	keySetName (k, "system/valid");
 	keySetBaseName(k, ".hiddenkey");
-	succeed_if_same_string(keyBaseName(k), ".hiddenkey");
 	succeed_if_same_string(keyName(k), "system/.hiddenkey");
+	succeed_if_same_string(keyBaseName(k), ".hiddenkey");
 	//! [base1]
 
 	//! [base2]
 	keySetName (k, "system/valid");
 	keySetBaseName(k, "");
-	succeed_if_same_string(keyBaseName(k), "");
 	succeed_if_same_string(keyName(k), "system/%");
+	succeed_if_same_string(keyBaseName(k), "");
 	//! [base2]
 
 	//! [base3]
 	keySetName (k, "system/valid");
 	keySetBaseName(k, "%");
-	succeed_if_same_string(keyBaseName(k), "%");
 	succeed_if_same_string(keyName(k), "system/\\%");
+	succeed_if_same_string(keyBaseName(k), "%");
 	//! [base3]
 
 
@@ -1843,48 +1864,68 @@ static void test_keyAddBaseName()
 	keySetName (k, "system/valid");
 	succeed_if (keyAddBaseName (k, "") >= 0, "could not add a base name");
 	succeed_if_same_string(keyName(k), "system/valid/%");
+	succeed_if_same_string(keyBaseName(k), "");
 
 	keySetName (k, "system/valid");
 	succeed_if (keyAddBaseName (k, "%") >= 0, "could not add a base name");
 	succeed_if_same_string(keyName(k), "system/valid/\\%");
+	succeed_if_same_string(keyBaseName(k), "%");
 
 	keySetName (k, "system/valid");
 	succeed_if (keyAddBaseName (k, "#") == sizeof("system/valid/#"), "could not add a base name");
 	succeed_if_same_string(keyName(k), "system/valid/#");
+	succeed_if_same_string(keyBaseName(k), "#");
 
 	keySetName (k, "system/valid");
 	succeed_if (keyAddBaseName (k, "#_2") >= 0, "could not add a base name");
 	succeed_if_same_string(keyName(k), "system/valid/#_2");
+	succeed_if_same_string(keyBaseName(k), "#_2");
 
 	keySetName (k, "system/valid");
 	succeed_if (keyAddBaseName (k, ".") >= 0, "could not add a base name");
 	succeed_if_same_string(keyName(k), "system/valid/\\.");
+	succeed_if_same_string(keyBaseName(k), ".");
 
 	keySetName (k, "system/valid");
 	succeed_if (keyAddBaseName (k, "..") >= 0, "could not add a base name");
 	succeed_if_same_string(keyName(k), "system/valid/\\..");
+	succeed_if_same_string(keyBaseName(k), "..");
+
 
 	keySetName (k, "system/valid");
 	succeed_if (keyAddBaseName (k, "hello%#") >= 0, "could not add a base name");
 	succeed_if_same_string(keyName(k), "system/valid/hello%#");
+	succeed_if_same_string(keyBaseName(k), "hello%#");
+
+	keySetName (k, "system/valid");
+	succeed_if (keyAddBaseName (k, "hello..") >= 0, "could not add a base name");
+	succeed_if_same_string(keyName(k), "system/valid/hello..");
+	succeed_if_same_string(keyBaseName(k), "hello..");
+
+	keySetName (k, "system/valid");
+	succeed_if (keyAddBaseName (k, "..hello..") >= 0, "could not add a base name");
+	succeed_if_same_string(keyName(k), "system/valid/..hello..");
+	succeed_if_same_string(keyBaseName(k), "..hello..");
 
 	keySetName (k, "system/valid");
 	succeed_if (keyAddBaseName (k, "has/slash") >= 0, "could not add a base name");
 	succeed_if_same_string(keyName(k), "system/valid/has\\/slash");
+	succeed_if_same_string(keyBaseName(k), "has/slash");
 
 	keySetName (k, "system/valid");
 	keyAddBaseName(k, "#0");
 	succeed_if_same_string(keyName(k), "system/valid/#0");
+	succeed_if_same_string(keyBaseName(k), "#0");
 
 
 	keySetName (k, "system/valid");
-	succeed_if (!strcmp(keyBaseName(k), "valid"), "invalid base name");
+	succeed_if_same_string(keyBaseName(k), "valid");
 
 	keySetName (k, "system");
-	succeed_if (!strcmp(keyBaseName(k), ""), "invalid base name for system");
+	succeed_if_same_string(keyBaseName(k), "");
 
 	keySetName (k, "user");
-	succeed_if (!strcmp(keyBaseName(k), ""), "invalid base name for user");
+	succeed_if_same_string(keyBaseName(k), "");
 
 	keyDel (k);
 }
