@@ -112,6 +112,20 @@ fix #12
 - rewrote hosts plugin to support ipv6 properly (thanks to Felix)
 - GSoC finished successfully (thanks Ian, Felix, see http://community.libelektra.org/wp)
 
+- introduce proposals:
+  elektraKeySetName
+
+  fix sorting
+  fully implementing escaping and unescaping names within keys
+- fix keyBase*
+
+- refactor test cases, abi now without proposed or similar stuff
+- improve array handling
+
+- fix many tutorials
+
+- add KEY_FLAG_RO_NAME
+
 
 
 ---------

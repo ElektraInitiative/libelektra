@@ -104,10 +104,14 @@ static void test_simple()
 static void collect_mountpoints(Trie *trie, KeySet *mountpoints)
 {
 	int i;
-	for (i=0; i <= KDB_MAX_UCHAR; ++i)
+	for (i=0; i<KDB_MAX_UCHAR; ++i)
 	{
 		if (trie->value[i]) ksAppendKey(mountpoints, ((Backend*) trie->value[i])->mountpoint);
 		if (trie->children[i]) collect_mountpoints(trie->children[i], mountpoints);
+	}
+	if (trie->empty_value)
+	{
+		ksAppendKey(mountpoints, ((Backend*) trie->empty_value)->mountpoint);
 	}
 }
 
@@ -166,6 +170,8 @@ static void test_iterate()
 
 	KeySet *mps = ksNew(0, KS_END);
 	collect_mountpoints(trie, mps);
+	// output_keyset(mps);
+	// output_trie(trie);
 	succeed_if (ksGetSize (mps) == 2, "not both mountpoints collected");
 	compare_key(ksHead(mps), mp);
 	compare_key(ksTail(mps), mp2);
