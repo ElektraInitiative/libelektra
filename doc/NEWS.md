@@ -3,16 +3,21 @@
 
 0.8.8 Release
 
-This text is preliminary, the release did not happen!
-
 ## New features
+
+sync plugin
 
 - ELEKTRA_ADD_WARNINGF and ELEKTRA_SET_ERRORF
 
 error plugin on open
 
-sync plugin
-
+- mounting, unmounting, merging scripts
+- added remount tool
+- import now can use merge strategies
+- plugin noresolver added
+- umount now also accepts mountpath
+- mount allows to specify different resolvers
+- rewrote hosts plugin to support ipv6 properly (thanks to Felix)
 
 
 ## API Proposals
@@ -83,26 +88,23 @@ fix searching for boost
 - added Tutorials
 - greatly improved description about plugins
 
+## Testing
+
+- New Test strategy [/doc/TESTING.md]
+- New resolver tests for conflicts (needs tty)
+- Build Server now has icc
+
 ## Unsorted things
 
 - Now Python 2+3 work in parallel
 - python2 interpreter is found correctly (also on Arch)
-- New Test strategy [/doc/TESTING.md]
 - Sentinel now makes sure that you cannot forget KS_END to end ksNew
-- mounting, unmounting, merging scripts
 - Fixes for architecture-specific problems by Pino
-- New resolver tests for conflicts (needs tty)
-- Build Server now has icc
-- added remount tool
-- import now can use merge strategies
 - added lots of tutorials
 - README.md now for some plugins (thanks to Ian)
 - mount is now more verbose when validation fails
-- plugin noresolver added
 - constants plugin added
 - fix .pc file
-- umount now also accepts mountpath
-- mount allows to specify different resolvers
 - fix compilation problem with KDB_MAX_PATH_LENGTH
 - tmpnam to mkstemp (security)
 - make test data naming consistent (thanks Pino)
@@ -115,7 +117,6 @@ fix searching for boost
 - intro for C++ binding
 - use LIB_SUFFIX for TARGET_TOOL_EXEC_FOLDER thanks to Kai Uwe
 - Fix search for boost (thank Pino)
-- rewrote hosts plugin to support ipv6 properly (thanks to Felix)
 - GSoC finished successfully (thanks Ian, Felix, see http://community.libelektra.org/wp)
 
 - introduce proposals:
