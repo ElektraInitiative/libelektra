@@ -141,6 +141,15 @@ static void test_keyNewSpecial()
 	k = keyNew ("system spaces", KEY_END);
 	succeed_if (!strcmp (keyName(k), ""), "name should be empty after initialization");
 	keyDel (k);
+
+	k = keyNew ("system/bin",
+			KEY_BINARY,
+			KEY_VALUE, "a 2d\0b",
+			KEY_END);
+	succeed_if_same_string (keyValue(k), "a 2d");
+	succeed_if(keyGetValueSize(k) == sizeof("a 2d"), "no KEY_SIZE given, so bin is truncated");
+	succeed_if(keyIsBinary(k), "not a binary key");
+	keyDel (k);
 }
 
 static void test_keyNewSystem()
@@ -1691,6 +1700,37 @@ static void test_keyBaseName()
 	succeed_if_same_string(keyName(k), "user/foo\\//bar\\/foo_bar\\/");
 	succeed_if_same_string(keyBaseName(k), "bar/foo_bar/");
 
+	keySetName (k, "system");
+	succeed_if_same_string(keyBaseName(k), "");
+
+	keySetName (k, "system/valid//////");
+	succeed_if_same_string(keyName(k), "system/valid");
+	succeed_if_same_string(keyBaseName(k), "valid");
+
+	keySetName (k, "system//////valid//////");
+	succeed_if_same_string(keyName(k), "system/valid");
+	succeed_if_same_string(keyBaseName(k), "valid");
+
+	keySetName (k, "system///.///valid//.////");
+	succeed_if_same_string(keyName(k), "system/valid");
+	succeed_if_same_string(keyBaseName(k), "valid");
+
+	keySetName (k, "user");
+	succeed_if_same_string(keyBaseName(k), "");
+
+	keySetName (k, "user/valid//////");
+	succeed_if_same_string(keyName(k), "user/valid");
+	succeed_if_same_string(keyBaseName(k), "valid");
+
+	keySetName (k, "user//////valid//////");
+	succeed_if_same_string(keyName(k), "user/valid");
+	succeed_if_same_string(keyBaseName(k), "valid");
+
+	keySetName (k, "user///.///valid//.////");
+	succeed_if_same_string(keyName(k), "user/valid");
+	succeed_if_same_string(keyBaseName(k), "valid");
+
+
 	keySetName(k, "user:yl///foo\\///bar\\/foo_bar\\/");
 	succeed_if_same_string(keyName(k), "user/foo\\//bar\\/foo_bar\\/");
 	succeed_if_same_string(keyBaseName(k), "bar/foo_bar/");
@@ -1916,16 +1956,6 @@ static void test_keyAddBaseName()
 	keyAddBaseName(k, "#0");
 	succeed_if_same_string(keyName(k), "system/valid/#0");
 	succeed_if_same_string(keyBaseName(k), "#0");
-
-
-	keySetName (k, "system/valid");
-	succeed_if_same_string(keyBaseName(k), "valid");
-
-	keySetName (k, "system");
-	succeed_if_same_string(keyBaseName(k), "");
-
-	keySetName (k, "user");
-	succeed_if_same_string(keyBaseName(k), "");
 
 	keyDel (k);
 }

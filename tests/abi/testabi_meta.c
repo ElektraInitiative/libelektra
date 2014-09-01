@@ -373,6 +373,40 @@ static void test_copy()
 
 	keyDel (k);
 	keyDel (c);
+
+
+
+	k=keyNew ("user/metakey",
+		KEY_META, "t", "test1",
+		KEY_META, "a", "another",
+		KEY_META, "cya", "see the meta data later",
+		KEY_META, "mode", "0775",
+		KEY_END);
+	c=keyNew ("user/metacopy",
+		KEY_META, "t", "test1",
+		KEY_META, "a", "wrong",
+		KEY_META, "old", "will stay",
+		KEY_END);
+
+	succeed_if (keyGetMeta(k, "t") != 0, "could not get meta key");
+	succeed_if (keyGetMeta(k, "a") != 0, "could not get meta key");
+
+	succeed_if (keyCopyMeta(c, k, "t") == 1, "could not copy meta data");
+	succeed_if (keyGetMeta(k, "t") == keyGetMeta(c, "t"), "not the same meta data after copy");
+	succeed_if_same_string (keyValue(keyGetMeta(k, "t")), "test1");
+	succeed_if_same_string (keyValue(keyGetMeta(c, "t")), "test1");
+
+	succeed_if (keyCopyMeta(c, k, "a") == 1, "could not copy meta data");
+	succeed_if (keyGetMeta(k, "a") == keyGetMeta(c, "a"), "not the same meta data after copy");
+	succeed_if_same_string (keyValue(keyGetMeta(k, "a")), "another");
+	succeed_if_same_string (keyValue(keyGetMeta(c, "a")), "another");
+
+	succeed_if_same_string (keyValue(keyGetMeta(c, "old")), "will stay");
+	succeed_if (keyGetMeta(c, "cya") == 0, "meta key should not be there");
+	succeed_if (keyGetMeta(c, "mode") == 0, "meta key should not be there");
+
+	keyDel (k);
+	keyDel (c);
 }
 
 static void test_new()
