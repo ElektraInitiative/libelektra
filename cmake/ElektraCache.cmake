@@ -373,3 +373,15 @@ set(DISCLAMER "
  *                                                                         *
  ***************************************************************************/")
 
+
+MARK_AS_ADVANCED(FORCE
+	# might be relevant to users:
+	GTEST_ROOT
+	COVERAGE_PREFIX
+	Boost_DIR
+
+	# are kind of internal:
+	SWIG_DIR SWIG_EXECUTABLE SWIG_VERSION
+	gtest_build_samples gtest_build_tests gtest_disable_pthreads
+	gtest_force_shared_crt BUILD_SHARED_LIBS
+	)
