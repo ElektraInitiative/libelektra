@@ -30,6 +30,36 @@
 #undef ELEKTRA_SET_ERROR
 
 /**
+ * @brief Sets the error in the keys metadata.
+ *
+ * Include kdberrors.h to make it work
+ *
+ * @ingroup plugin
+ *
+ * @param number the error number from src/liberror/specification
+ * @param key to write the error to
+ * @param formatstring a format string as in printf
+ * @param ... further arguments as in printf
+ */
+#define ELEKTRA_SET_ERRORF(number, key, formatstring, ...)
+#undef ELEKTRA_SET_ERRORF
+
+/**
+ * @brief Adds an warning in the keys metadata.
+ *
+ * Include kdberrors.h to make it work
+ *
+ * @ingroup plugin
+ *
+ * @param number the warning number from src/liberror/specification
+ * @param key to write the error to
+ * @param formatstring a format string as in printf
+ * @param ... further arguments as in printf
+ */
+#define ELEKTRA_ADD_WARNINGF(number, key, formatstring, ...)
+#undef ELEKTRA_ADD_WARNINGF
+
+/**
  * @brief Adds an warning in the keys metadata.
  *
  * Include kdberrors.h to make it work
@@ -45,7 +75,7 @@
 
 /**
  * @brief Declare a plugin's function name suitable for
- * <a href="md_compilation_variants.html">compilation variants</a>.
+ * compilation variants (see doc/tutorials).
  *
  * It can be used in the same way as #ELEKTRA_PLUGIN_EXPORT.
  * @see ELEKTRA_PLUGIN_EXPORT
@@ -69,12 +99,18 @@
 #endif
 
 
+//! [global data]
+typedef struct { int global; } GlobalData;
+//! [global data]
+
+
 #define DOC_PLUGIN_NAME "doc"
 #define DOC_PLUGIN_VERSION "1.0.0"
 
 
 /**
  * @defgroup plugin Plugins
+ * 
  * @brief Elektra plugin framework
  *
  * @since version 0.4.9, Elektra can dynamically load different key storage
@@ -87,7 +123,7 @@
  * plugins.
  *
  * To get started with writing plugins, first read our
- * <a href="md_contract.html">plugin tutorial</a>!
+ * plugin tutorial in doc/tutorials!
  *
  * A plugin can implement any functionality related to
  * configuration.
@@ -141,11 +177,6 @@
  * @addtogroup plugin
  * @{
  */
-
-
-//! [global data]
-typedef struct { int global; } GlobalData;
-//! [global data]
 
 /**
  * @brief Initialize data for the plugin.
@@ -238,8 +269,6 @@ int elektraDocOpen(Plugin *handle, Key *warningsKey ELEKTRA_UNUSED)
 }
 
 
-
-
 /**
  * Finalize the plugin.
  *
@@ -259,7 +288,8 @@ int elektraDocOpen(Plugin *handle, Key *warningsKey ELEKTRA_UNUSED)
  *
  * @snippet doc.c doc close
  *
- * @retval -1 on problems
+ * @retval -1 on problems (only use ELEKTRA_ADD_WARNING, but never
+ * set an error).
  *
  * @see kdbClose()
  * @see elektraPluginGetData(), elektraPluginSetData() and
@@ -267,6 +297,9 @@ int elektraDocOpen(Plugin *handle, Key *warningsKey ELEKTRA_UNUSED)
  * @ingroup plugin
  */
 int elektraDocClose(Plugin *handle, Key *warningsKey);
+
+#ifdef DOX
+#endif
 
 //! [doc close]
 int elektraDocClose(Plugin *handle, Key *warningsKey ELEKTRA_UNUSED)
@@ -278,6 +311,8 @@ int elektraDocClose(Plugin *handle, Key *warningsKey ELEKTRA_UNUSED)
 //! [doc close]
 
 
+#ifdef DOX
+#endif
 
 /**
  * Retrieve information from a permanent storage to construct
@@ -287,7 +322,6 @@ int elektraDocClose(Plugin *handle, Key *warningsKey ELEKTRA_UNUSED)
  *
  * The elektraDocGet() function handle everything related
  * to receiving keys.
- *
  *
  * @subsection storage Storage Plugins
  *
@@ -379,23 +413,21 @@ int elektraDocGet(Plugin *handle, KeySet *returned, Key *parentKey)
  * @pre The caller kdbGet() will make sure before you are called
  * that the parentKey:
  * - is a valid key (means that it is a system or user key).
- * - is below (see keyIsBelow()) your mountpoint and that your plugin is responsible for it.
+ * - is your mountpoint and that your plugin is responsible for it.
  * and that the returned:
  * - is a valid keyset.
- * - has @p all keys with the flag KEY_FLAG_SYNC set.
- * - contains only valid keys direct below (see keyIsDirectBelow()) your parentKey.
- *   That also means, that the parentKey will not be in that keyset.
+ * - your plugin is only called when needed (e.g. only if file was modified)
+ * - has @p all keys related to your plugin.
+ * - contains only valid keys direct below (see keyIsBelow()) your parentKey.
  * - is in a sorted order (given implicit by semantics of KeySet)
  * and that the handle:
- *  - is a valid KDB for your plugin.
- *  - that elektraPluginhGetBackendHandle() contains the same handle for lifetime kdbOpen()
- *    until elektraPluginClose() was called.
+ *  - is valid for your plugin.
+ *  - that elektraPluginGetData() contains the same handle for lifetime
+ *    of your plugin until elektraPluginClose() was called.
  *
  * @pre The caller kdbGet() will make sure that afterwards you were called,
  * whenever the user requested it with the options, that:
  * - hidden keys they will be thrown away.
- * - dirs or only dirs kdbGet() will remove
- *   the other.
  * - you will be called again recursively with all subdirectories.
  * - the keyset will be sorted when needed.
  * - the keys in returned having KEY_FLAG_SYNC will be sorted out.
@@ -420,8 +452,6 @@ int elektraDocGet(Plugin *handle, KeySet *returned, Key *parentKey)
  * For other types (e.g. databases) you need to implement your own
  * resolver doing this.
  *
- * @note If any calls you use change errno, make sure to restore the old errno.
- *
  * @see kdbGet() for caller.
  *
  * @param handle contains internal information of @link kdbOpen() opened @endlink key database
@@ -435,7 +465,7 @@ int elektraDocGet(Plugin *handle, KeySet *returned, Key *parentKey)
  * @return 1 on success
  * @return 0 when nothing was to do
  * @return -1 on failure, the current key in returned shows the position.
- *         use ELEKTRA_SET_ERROR of kdberrors.h to define the error code
+ *         use #ELEKTRA_SET_ERROR of kdberrors.h to define the error code
  *
  * @ingroup plugin
  */
@@ -452,89 +482,78 @@ int elektraDocGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED
  *
  * This function does everything related to set and remove keys in a
  * plugin. There is only one function for that purpose to make
- * implementation and locking much easier.
+ * implementation much easier.
  *
  * The keyset @p returned was filled in with information from the application
  * using elektra and the task of this function is to store it in a permanent
  * way so that a subsequent call of elektraPluginGet() can rebuild the keyset
- * as it was before. See the live cycle of a comment to understand:
+ * as it was before. See the live cycle to understand:
  * @code
 void usercode (Key *key)
 {
-	keySetComment (key, "mycomment"); // the usercode stores a comment for the key
+	keySetString (key, "mycomment"); // the user changes the key
 	ksAppendKey(keyset, key); // append the key to the keyset
-	kdbSet (handle, keyset, 0, 0);
+	kdbSet (handle, keyset, 0, 0); // and syncs it to disc
 }
 
 // so now kdbSet is called
-int kdbSet(KDB *handle, KeySet *keyset, Key *parentKey, options)
+int kdbSet(KDB *handle, KeySet *keyset, Key *parentKey)
 {
-	// find appropriate plugin
-	elektraPluginSet (handle, keyset, 0); // the keyset with the key will be passed to this function
+	// find appropriate plugin and then call it:
+	elektraPluginSet (handle, keyset, 0);
+	// the keyset with the key (and others for this plugin)
+	// will be passed to this function
 }
 
-// so now elektraPluginSet(), which is the function described here, is called
-elektraPluginSet(KDB *handle, KeySet *keyset, Key *parentKey)
+// so now elektraPluginSet(), which is the function described here,
+// is called:
+elektraPluginSet(Plugin *plugin, KeySet *keyset, Key *parentKey)
 {
-	// the task of elektraPluginSet is now to store the comment
-	Key *key = ksCurrent (keyset); // get out the key where the user set the comment before
-	char *comment = allocate(size);
-	keyGetComment (key, comment, size);
-	savetodisc (comment);
+	// the task of elektraPluginSet is now to store the keys
+	Key *key = ksCurrent (keyset);
+	savetodisc (key);
 }
  * @endcode
- * Of course not only the comment, but all information of every key in the keyset
- * @p returned need to be stored permanetly. So this specification needs to give
+ * Of course all information of every key in the keyset
+ * @p returned need to be stored permanently. So this specification needs to give
  * an exhaustive list of information present in a key.
  *
  * @pre The keyset @p returned holds all keys which must be saved
  * permanently for this keyset. The keyset is sorted and rewinded.
- * All keys having children must be true for keyIsDir().
  *
  * @pre The @p parentKey is the key which is the ancestor for all other keys in the
  * keyset. The first key of the keyset @p returned has the same keyname.
- * The parentKey is below the mountpoint, see kdbhGetMountpoint().
+ * The name of the parentKey marks the mountpoint.
+ * The string of the parentKey is the filename to write to.
  *
- * @pre The caller kdbSet will fulfill following parts:
- * - If the user does not want hidden keys they will be thrown away.
- *   All keys in @p returned need to be stored permanently.
- * - If the user does not want dirs or only dirs kdbGet() will remove
- *   the other.
- * - Sorting of the keyset. It is not important in which order the keys
- *   are appended.
- * So make sure to set all keys, all directories and also all
- * hidden keys. If some of them are not wished, the caller kdbSet() will
- * sort them out.
+ * Make sure to set all keys, all directories and also all
+ * hidden keys. If some of them are not wished, the caller kdbSet()
+ * and plugins will sort them out.
  *
- * @invariant There are no global variables and kdbhGetBackendData()
- *  only stores information which can be regenerated any time.
+ * @invariant There are no global variables, but instead
+ *  elektraPluginGetData() will be used.
  *  The handle is the same when it is the same plugin.
  *
  * @post The information of the keyset @p returned is stored permanently.
- *
- * Lock your permanent storage in an exclusive way, no access of a
- * concurrent elektraPluginSet_plugin() or kdbGet() is possible
- * and these methods block until the function has finished.
- * Otherwise declare kdbcGetnoLock().
  *
  * @see kdbSet() for caller.
  *
  * @param handle contains internal information of the plugin
  * @param returned contains a keyset with relevant keys
  * @param parentKey contains the information where to set the keys
+ *    (name is mountpoint your plugin is mounted, string is the
+ *    file to write to)
  *
  * @return When everything works gracefully return the number of keys you set.
  * The cursor position and the keys remaining in the keyset are not important.
  *
- *
- * @note If any calls you use change errno, make sure to restore the old errno.
- *
  * @retval 1 on success
  * @retval 0 on success with no changed key in database
- * @retval -1 on failure. The cause of the error needs to beadded in parentKey
- *
- * You also have to make sure that ksGetCursor()
- * shows to the position where the error appeared.
+ * @retval -1 on failure. The cause of the error needs to be added in parentKey
+ *   You also have to make sure that ksGetCursor()
+ *   shows to the position where the error appeared.
+ *   Set an error using #ELEKTRA_SET_ERROR to inform the user what went
+ *   wrong.
  *
  * @ingroup plugin
  */

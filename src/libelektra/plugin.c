@@ -498,6 +498,11 @@ Plugin *elektraPluginExport(const char *pluginName, ...)
 /**
  * Returns the configuration of that plugin.
  *
+ * - The user/ config holds plugin specific configuration
+ * - The system/ config holds backend specific configuration
+ *
+ * So prefer cascading lookups to honor both.
+ *
  * @param handle a pointer to the plugin
  * @ingroup plugin
  * @return keyset to the configuration for that plugin
