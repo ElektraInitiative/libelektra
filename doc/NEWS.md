@@ -1,11 +1,11 @@
 # NEWS #
 
 
+## 0.8.8 Release
+
 %Author: Markus Raab
 %Date: 02.09.2014
 
-
-0.8.8 Release
 
 In this release we changed 578 files in 473 commits
 (68596 insertions(+), 59260 deletions(-) compared to Elektra 0.8.7).
@@ -54,7 +54,8 @@ to plugins having errors when they initialize themselves.
 
 So following plugins were added: sync noresolver line ini constants
 Nearly all plugins now have a README.md for further information
-(thanks to Ian).
+(thanks to Ian). An overview of all plugin is on with links to them:
+https://github.com/ElektraInitiative/libelektra/blob/master/src/plugins/
 
 The kdb tools were greatly improved (thanks to Felix):
 - added remount tool
@@ -135,6 +136,13 @@ for that purpose, but we also improved testing in other parts:
 - (New Test strategy)[/doc/TESTING.md]
 - New resolver tests for conflicts (needs tty)
 
+If you try to execute test_ks from 0.8.7 with libelektra 0.8.8 it will
+crash, but not because of any incompatibility, but because of strcmp in
+the test itself gets a null pointer. The pointer is now null, because
+ksNew correctly rewinds its internal cursor (see above). Amusingly,
+it says on that line 94 in test_ks.c:
+  // TODO: why is the cursor here?
+
 ## API Proposals
 
 see above for more information:
@@ -209,10 +217,10 @@ https://github.com/ElektraInitiative/libelektra/issues/25
 You can download the release from:
 
 http://www.markus-raab.org/ftp/elektra/releases/elektra-0.8.8.tar.gz
-size: 
-md5sum: 
-sha1: 
-sha256: 
+size: 1644441
+md5sum: fe11c6704b0032bdde2d0c8fa5e1c7e3
+sha1: 16e43c63cd6d62b9fce82cb0a33288c390e39d12
+sha256: ae75873966f4b5b5300ef5e5de5816542af50f35809f602847136a8cb21104e2
 
 
 already built API-Docu can be found here:
