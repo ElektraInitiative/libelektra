@@ -29,7 +29,7 @@ $Id$
 #include <libxml/xmlreader.h>
 #include <libxml/xmlschemas.h>
 
-#include <kdbtools.h>
+#include "kdbtools.h"
 #include <kdbinternal.h>
 
 /*

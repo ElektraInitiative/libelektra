@@ -27,7 +27,7 @@
 #define ELEKTRA_PLUGIN_XMLTOOL_H
 
 #include <kdbplugin.h>
-#include <kdbtools.h>
+#include <stdio.h>
 
 ssize_t ksToStream(const KeySet *ks, FILE* stream, option_t options);
 int ksFromXML(KeySet *ks, int fd);
