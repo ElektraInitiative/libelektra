@@ -1,29 +1,96 @@
 # NEWS #
 
 
+%Author: Markus Raab
+%Date: 02.09.2014
+
+
 0.8.8 Release
+
+In this release we changed 578 files in 473 commits
+(68596 insertions(+), 59260 deletions(-) compared to Elektra 0.8.7).
+We assume thats the largest change set for any of Elektra's releases
+up to now. It happened only within a bit more than a month up
+(0.8.7 was released 28.07.2014).
+
 
 ## New features
 
-sync plugin
+GSoC finished successfully (thanks Ian and Felix)
+See http://community.libelektra.org/wp for the latest results.
+So Elektra now has a 3-way merging framework that is superior
+to text-based merging in many scenarios (e.g. moving configuration
+options within a file or with in-line comments) iff a storage plugin
+creates key names that are not only line numbers.
+We love to get Feedback!
 
-- ELEKTRA_ADD_WARNINGF and ELEKTRA_SET_ERRORF
+Writing plugins is now even more comfortable.
+A plugin writer tutorial was written (thanks Ian):
+https://github.com/ElektraInitiative/libelektra/blob/master/doc/tutorials/plugins.md
+The documentation was completely reworked:
+http://doc.libelektra.org/api/0.8.7/html/group__plugin.html
+And two new macros allow printf formating for warnings and errors
+(ELEKTRA_ADD_WARNINGF and ELEKTRA_SET_ERRORF).
 
-error plugin on open
+The ini plugin was greatly improved (tested with samba configurations
+and added to ALL plugins) and the hosts plugin was rewritten to support
+ipv6 properly (thanks to Felix).
 
-- mounting, unmounting, merging scripts
+The constants plugin was added and allows introspection of Elektra's
+cmake variables. Because such non-file based plugins (e.g. also uname)
+do not need resolving, the plugin noresolver was added. It supersedes
+the success plugin.
+
+Elektra now allows to correctly fsync its configuration files
+(sync plugin) and the folders where files are stored (resolver plugin).
+Just make sure to add the "sync" plugin using kdb mount.
+The resolver plugin now reads from passwd and no longer needs
+environment variables.  Additionally, the resolver plugin was prepared
+to support other variants by so called compilation variants.
+
+The error plugin now allows, next to list all possible errors, to
+provoke errors when opening plugins. We fixed some issues related
+to plugins having errors when they initialize themselves.
+
+So following plugins were added: sync noresolver line ini constants
+Nearly all plugins now have a README.md for further information
+(thanks to Ian).
+
+The kdb tools were greatly improved (thanks to Felix):
 - added remount tool
-- import now can use merge strategies
-- plugin noresolver added
 - umount now also accepts mountpath
 - mount allows to specify different resolvers
-- rewrote hosts plugin to support ipv6 properly (thanks to Felix)
+- import now can use merge strategies
+- check without arguments checks key database
+- mount is now more verbose when validation fails
 
+New/improved scripts/make targets (note that scripts can be executed by
+kdb <script>):
+- mounting, unmounting scripts were added
+- generate template for a new plugin was improved
+- configure-debian was added
+- added targets run_all and run_memcheck
+- bash completion file now installed
+- ucf integration
+- merging scripts were added for the usage with ucf
+- scripts doing internal checks on source of plugins
 
 ## API Proposals
 
-keySetStringF
-keyLock
+keySetStringF      ..  printf format-style changing of the key string
+keyLock            ..  to allow to secure keys against modifications
+elektraKeySetName  ..  to allow to set meta + cascading keys
+keyNameAdd         ..  see explanation below in "Compatibility"
+keyUnescapedName   ..  also see below
+
+elektraArrayIncName() now works correctly with empty arrays embedded in
+other arrays (yajl+line plugin)
+elektraArrayValidateName() was also added, thanks to Felix.
+
+These methods are declared in the file kdbproposal.h
+but do not guarantee any forms of compatibility (they might
+even be removed).
+
 
 ## Compatibility
 
@@ -44,94 +111,70 @@ The methods were used in both ways, so it was obvious that something is
 very wrong. We decided that it should do what the name says, that is
 add/set a basename (variant 1).
 
-keySetBaseName(keyBaseName()) now does what is expected: nothing
+The variant 2, to add any name was added and is called keyAddName() and
+added as proposal.
+
+When keys are renamed after adding to a keyset is a bad thing because it
+destroys the order of the keyset. This is now avoided by keyLock.
+Use keyDup() to get rid of such locks.
+
+Another, even larger, change is also about ordering of keys in keysets.
+Elektra now internally has an null-terminated unescaped keyname.
+Ordering of keysets will always happen on this name. The keyCmp() tool
+can be used to check this order. It works very efficiently with
+memcmp() and never gets confused by ASCII ordering of / (because / is
+0 in the unescaped keyname).
+
+The syntax, semantics and conventions of key names is now documented in
+detail:
+http://doc.libelektra.org/api/0.8.8/html/group__keyname.html
 
 ksNew() does now return a keyset with a properly set cursor (ksRewind).
 
-elektraArrayIncName now works correctly with starting elements, empty
-arrays embedded in other arrays (yajl+line plugin)
-elektraArrayValidateName added, thanks to Felix
+Because its always possible that software relies on bugs the
+better way to deal with such a situation (as the keySetBaseName()
+situation described above) is to provide the same function twice.
+Manuel said he will create a prototype to introduce symbol versioning
+in Elektra. With that, old customers would still receive the old
+behaviour, but people compiling against a new version would get the new
+behaviour. So in one of the next releases we will also avoid semantic
+interface changes when there is a valid use case for it (there is none
+if the program e.g.  crashes).
 
-The variant 2, to add any name was added and is called keyAddName().
-
-When keys are renamed after adding to a keyset is a bad thing because it
-destroys the order of the keyset. This will now be avoided by a runtime
-check.
-
-Because its always possible that software relies on bugs the more
-compatible way to deal with such a situation
-is to still provide the old interface and
-a new one additionally. Manuel said he will create a prototype to
-introduce symbol versioning in Elektra. With that, old customers
-would still receive the old behaviour, but people compiling against
-a new version would get the new behaviour. So in one of the next
-releases we will also avoid semantic interface changes when there
-is a valid use case for it (there is none if the program e.g.
-crashes).
 Symbol versioning also allows to compile against old versions on
 purpose if you do not want the new behaviour.
 
+We have prepared an ABI-test suite, that also checks behaviour,
+for that purpose, but we also improved testing in other parts:
+- (New Test strategy)[/doc/TESTING.md]
+- New resolver tests for conflicts (needs tty)
 
+And the Buildserver:
+ - now also compiles with icc
+ - runs make run_memcheck
+ - checks if plugins are added correctly
+ - runs those ABI tests
 
-## Tools
-
-kdb check improved
-several small fixes in tools
 
 ## Issues
 
-fix #12
-fix searching for boost
-
-## Docu
-
-- added Tutorials
-- greatly improved description about plugins
-
-## Testing
-
-- New Test strategy [/doc/TESTING.md]
-- New resolver tests for conflicts (needs tty)
-- Build Server now has icc
-
-## Unsorted things
-
+Many issues were resolved as you can see in github:
+https://github.com/ElektraInitiative/libelektra/issues
+Alone for the milestone 0.8.8 we closed 17 issues, including
+those mentioned in "Compatibility". Other issues (not all were
+tracked on github):
+- fix undefined errors in kdbOpen() or kdbClose()
 - Now Python 2+3 work in parallel
 - python2 interpreter is found correctly (also on Arch)
 - Sentinel now makes sure that you cannot forget KS_END to end ksNew
 - Fixes for architecture-specific problems by Pino
-- added lots of tutorials
-- README.md now for some plugins (thanks to Ian)
-- mount is now more verbose when validation fails
-- constants plugin added
 - fix .pc file
 - fix compilation problem with KDB_MAX_PATH_LENGTH
 - tmpnam to mkstemp (security)
 - make test data naming consistent (thanks Pino)
-- added compilation variants plugins
-- added new variants for resolver
-- buildserver checks more things (memcheck, if plugins are added correctly, ABI tests)
-- added targets run_all and run_memcheck (make test TODO)
-- link to contextual paper
-- add SPECIFICATION
-- intro for C++ binding
 - use LIB_SUFFIX for TARGET_TOOL_EXEC_FOLDER thanks to Kai Uwe
 - Fix search for boost (thank Pino)
-- GSoC finished successfully (thanks Ian, Felix, see http://community.libelektra.org/wp)
 
-- introduce proposals:
-  elektraKeySetName
-
-  fix sorting
-  fully implementing escaping and unescaping names within keys
-- fix keyBase*
-
-- refactor test cases, abi now without proposed or similar stuff
-- improve array handling
-
-- fix many tutorials
-
-- add KEY_FLAG_RO_NAME
 
 
 
