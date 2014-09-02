@@ -47,11 +47,10 @@ install (FILES
 	kdbextension.h
 	kdbtypes.h
 	"${CMAKE_CURRENT_BINARY_DIR}/kdb.h"
-	kdbinternal.h
 	kdbmodule.h
 	kdbos.h
 	kdbplugin.h
 	kdbprivate.h
-	kdbtools.h
+	kdbproposal.h
 	"${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h"
 	DESTINATION include/${TARGET_INCLUDE_FOLDER})
