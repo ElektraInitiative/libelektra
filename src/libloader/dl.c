@@ -57,7 +57,7 @@ elektraPluginFactory elektraModulesLoad (KeySet *modules, const char *name, Key 
 		return module->symbol.f;
 	}
 
-	char *moduleName = malloc (sizeof("libelektra-") + strlen(name) + sizeof (".so") + 1);
+	char *moduleName = elektraMalloc (sizeof("libelektra-") + strlen(name) + sizeof (".so") + 1);
 
 	strcpy (moduleName, "libelektra-");
 	strcat (moduleName, name);
@@ -65,26 +65,28 @@ elektraPluginFactory elektraModulesLoad (KeySet *modules, const char *name, Key 
 
 	Module module;
 	module.handle = dlopen(moduleName, RTLD_LAZY);
-	free (moduleName);
 
 	if (module.handle == NULL)
 	{
-		ELEKTRA_SET_ERROR(1, errorKey, dlerror());
+		ELEKTRA_ADD_WARNINGF(1, errorKey, "of module: %s, because: %s", moduleName, dlerror());
 		keyDel (moduleKey);
+		elektraFree(moduleName);
 		return 0;
 	}
 
 	module.symbol.v = dlsym(module.handle, "elektraPluginSymbol");
 	if (module.symbol.v == NULL)
 	{
-		ELEKTRA_SET_ERROR(2, errorKey, dlerror());
+		ELEKTRA_ADD_WARNINGF(2, errorKey, "of module: %s, because: %s", moduleName,  dlerror());
 		dlclose(module.handle);
 		keyDel (moduleKey);
+		elektraFree(moduleName);
 		return 0;
 	}
 
 	keySetBinary (moduleKey, &module, sizeof (Module));
 	ksAppendKey (modules, moduleKey);
+	elektraFree(moduleName);
 
 	return module.symbol.f;
 }
@@ -98,7 +100,7 @@ int elektraModulesClose (KeySet *modules, Key *errorKey)
 
 	if (!root)
 	{
-		ELEKTRA_SET_ERROR(3, errorKey, "root key not found");
+		ELEKTRA_ADD_WARNING(3, errorKey, "no key system/elektra/modules");
 		return -1;
 	}
 
@@ -110,11 +112,11 @@ int elektraModulesClose (KeySet *modules, Key *errorKey)
 			if (ret != -1)
 			{
 				/* First failure, start saving handles where close did not work */
-				newModules = ksNew(0);
+				newModules = ksNew(0, KS_END);
 				ksAppendKey (newModules, root);
 			}
 			ret = -1;
-			ELEKTRA_SET_ERROR(4, errorKey, dlerror());
+			ELEKTRA_ADD_WARNING(4, errorKey, dlerror());
 
 			ksAppendKey(newModules, cur);
 		} else {

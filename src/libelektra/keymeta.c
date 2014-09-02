@@ -275,7 +275,7 @@ int keyCopyMeta(Key *dest, const Key *source, const char *metaName)
 
 	if (!source) return -1;
 	if (!dest) return -1;
-	if (dest->flags & KEY_FLAG_RO) return -1;
+	if (dest->flags & KEY_FLAG_RO_META) return -1;
 
 	ret = (Key*) keyGetMeta (source, metaName);
 
@@ -307,7 +307,7 @@ int keyCopyMeta(Key *dest, const Key *source, const char *metaName)
 		}
 	} else {
 		/*Create a new place for meta information.*/
-		dest->meta = ksNew(0);
+		dest->meta = ksNew(0, KS_END);
 		if (!dest->meta)
 		{
 			return -1;
@@ -382,7 +382,7 @@ int keyCopyAllMeta(Key *dest, const Key *source)
 {
 	if (!source) return -1;
 	if (!dest) return -1;
-	if (dest->flags & KEY_FLAG_RO) return -1;
+	if (dest->flags & KEY_FLAG_RO_META) return -1;
 
 
 	if (source->meta)
@@ -437,9 +437,7 @@ const Key *keyGetMeta(const Key *key, const char* metaName)
 	if (!key->meta) return 0;
 
 	search = keyNew (KEY_END);
-	search->key = elektraStrDup(metaName);
-
-	if (!search->key) return 0; /*Duplication did not work*/
+	elektraKeySetName(search, metaName, KDB_O_META_NAME | KDB_O_EMPTY_NAME);
 
 	ret = ksLookup(key->meta, search, 0);
 
@@ -478,13 +476,12 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 	const char *newMetaString)
 {
 	Key *toSet;
-	char *metaNameDup;
 	char *metaStringDup;
 	ssize_t metaNameSize;
 	ssize_t metaStringSize = 0;
 
 	if (!key) return -1;
-	if (key->flags & KEY_FLAG_RO) return -1;
+	if (key->flags & KEY_FLAG_RO_META) return -1;
 	if (!metaName) return -1;
 	metaNameSize = elektraStrLen (metaName);
 	if (metaNameSize == -1) return -1;
@@ -493,14 +490,7 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 	toSet = keyNew(KEY_END);
 	if (!toSet) return -1;
 
-	metaNameDup = elektraStrNDup(metaName, metaNameSize);
-	if (!metaNameDup)
-	{
-		keyDel (toSet);
-		return -1;
-	}
-	toSet->key = metaNameDup;
-	toSet->keySize = metaNameSize;
+	elektraKeySetName(toSet, metaName, KDB_O_META_NAME | KDB_O_EMPTY_NAME);
 
 	/*Lets have a look if the key is already inserted.*/
 	if (key->meta)
@@ -537,7 +527,7 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 	if (!key->meta)
 	{
 		/*Create a new place for meta information.*/
-		key->meta = ksNew(0);
+		key->meta = ksNew(0, KS_END);
 		if (!key->meta)
 		{
 			keyDel (toSet);
@@ -545,7 +535,10 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 		}
 	}
 
-	toSet->flags |= KEY_FLAG_RO;
+	set_bit(toSet->flags, KEY_FLAG_RO_NAME);
+	set_bit(toSet->flags, KEY_FLAG_RO_VALUE);
+	set_bit(toSet->flags, KEY_FLAG_RO_META);
+
 	ksAppendKey (key->meta, toSet);
 	key->flags |= KEY_FLAG_SYNC;
 	return metaStringSize;

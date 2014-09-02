@@ -34,7 +34,7 @@ void test_readfstab()
 	KeySet *conf = 0;
 	PLUGIN_OPEN("fstab");
 
-	KeySet *ks=ksNew(0);
+	KeySet *ks=ksNew(0, KS_END);
 
 	printf ("Using file: %s\n", srcdir_file("fstab/fstab"));
 

@@ -1,17 +1,10 @@
 #ifndef MERGE_HPP
 #define MERGE_HPP
 
-#include <map>
-
 #include <command.hpp>
 #include <kdb.hpp>
 
-#include <merging/threewaymerge.hpp>
-#include <merging/metamergestrategy.hpp>
-#include <merging/mergeconflictstrategy.hpp>
-
 using namespace std;
-using namespace kdb::tools::merging;
 
 class MergeCommand : public Command
 {
@@ -25,7 +18,7 @@ public:
 
 	virtual std::string getShortOptions()
 	{
-		return "iHtsvb";
+		return "iHtsvf";
 	}
 
 	virtual std::string getSynopsis()
@@ -55,15 +48,6 @@ public:
 			;
 	}
 
-
-private:
-	map<string, MergeConflictStrategy*> strategyMap;
-
-	ThreeWayMerge merger;
-	MetaMergeStrategy *metaStrategy;
-
-	vector<MergeConflictStrategy*> getAllStrategies();
-	string getStrategyList();
 };
 
 #endif

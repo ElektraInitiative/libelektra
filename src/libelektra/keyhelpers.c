@@ -38,7 +38,9 @@
 
 
 
-/*
+/**
+ * @internal
+ *
  * Returns one level of the key name.
  *
  * Interface should be build on top of Keys.
@@ -133,7 +135,9 @@ char *keyNameGetOneLevel(const char *name, size_t *size)
 
 
 
-/*
+/**
+ * @internal
+ *
  * Gets number of bytes needed to store root name of a key name
  *
  * Possible root key names are @p system, @p user or @p "user:someuser" .
@@ -169,7 +173,9 @@ ssize_t keyNameGetFullRootNameSize(const char *name)
 
 
 
-/*
+/**
+ * @internal
+ *
  * Gets number of bytes needed to store root name of a key.
  *
  * Possible root key names are @p system or @p user .
@@ -190,7 +196,9 @@ ssize_t keyGetRootNameSize(const Key *key)
 
 
 
-/*
+/**
+ * @internal
+ *
  * Copy to @p returned the root name of @p key.
  *
  * Some examples:
@@ -234,7 +242,9 @@ ssize_t keyGetRootName(const Key *key, char *returned, size_t maxSize)
 
 
 
-/*
+/**
+ * @internal
+ *
  * Gets number of bytes needed to store root name of a key name without
  * user domain.
  *
@@ -281,7 +291,9 @@ ssize_t keyNameGetRootNameSize(const char *name)
 
 
 
-/*
+/**
+ * @internal
+ *
  * Calculates number of bytes needed to store full root name of a key.
  *
  * Possible root key names are @p system, @p user or @p user:someuser.
@@ -308,7 +320,9 @@ ssize_t keyGetFullRootNameSize(const Key *key)
 }
 
 
-/*
+/**
+ * @internal
+ *
  * Copy to @p returned the full root name of the key.
  *
  * Some examples:
@@ -365,7 +379,9 @@ ssize_t keyGetFullRootName(const Key *key, char *returned, size_t maxSize)
 
 
 
-/*
+/**
+ * @internal
+ *
  * Get the number of bytes needed to store this key's parent name without
  * user domain, and with the ending NULL.
  *
@@ -410,7 +426,9 @@ ssize_t keyGetParentNameSize(const Key *key)
 
 
 
-/*
+/**
+ * @internal
+ *
  * Copy this key's parent name (without owner) into a pre-allocated buffer.
  *
  * @par Example:
@@ -451,7 +469,9 @@ ssize_t keyGetParentName(const Key *key, char *returnedParent, size_t maxSize)
 
 
 
-/*
+/**
+ * @internal
+ *
  * Return the namespace of a key name.
  *
  * Currently valid namespaces are KeyNamespace::KEY_NS_SYSTEM and KeyNamespace::KEY_NS_USER.
@@ -473,7 +493,9 @@ int keyNameGetNamespace(const char *name)
 
 
 
-/*
+/**
+ * @internal
+ *
  * Return the namespace of a key
  *
  * Currently valid namespaces are KeyNamespace::KEY_NS_SYSTEM and KeyNamespace::KEY_NS_USER.
@@ -492,7 +514,9 @@ int keyGetNamespace(const Key *key)
 }
 
 
-/*
+/**
+ * @internal
+ *
  * Check whether a key name is under the @p system namespace or not
  *
  * @return 1 if string begins with @p system , 0 otherwise
@@ -508,7 +532,9 @@ int keyNameIsSystem(const char *name)
 }
 
 
-/*
+/**
+ * @internal
+ *
  * Check whether a key name is under the @p user namespace or not
  *
  * @return 1 if string begins with @p user, 0 otherwise
@@ -524,13 +550,109 @@ int keyNameIsUser(const char *name)
 }
 
 
-/*********************************************************************
- *                Data constructors (protected)                      *
- *********************************************************************/
+/**
+ * @internal
+ *
+ * clears key (all data members are set to zero)
+ */
 int keyInit(Key *key)
 {
 	memset(key,0,sizeof(Key));
 
 	return 0;
+}
+
+/**
+ * @internal
+ *
+ * helper functions for keyNew/keyVNew
+ *
+ * @pre caller must use va_start and va_end on va
+ * @param key initialized Key
+ * @param keyName a valid name to the key, or NULL to get a simple
+ * initialized, but really empty, object
+ * @param va the variadic argument list
+ */
+void keyVInit (Key *key, const char *name, va_list va)
+{
+	keyswitch_t action=0;
+	void * value=0;
+	ssize_t valueSize=-1;
+	void (*p) (void)=0;
+
+	if (!key) return;
+
+	if (name) {
+		keySetName(key, name);
+
+		action=va_arg(va, keyswitch_t);
+		while (action) {
+			switch (action) {
+				case KEY_SIZE:
+					valueSize=va_arg(va, size_t);
+					break;
+				case KEY_BINARY:
+					keySetMeta (key, "binary", "");
+					break;
+				case KEY_VALUE:
+					value = va_arg(va, void *);
+					if (valueSize>=0 && keyIsBinary(key))
+					{
+						keySetBinary(key,value, valueSize);
+					} else if (keyIsBinary(key)) {
+						valueSize = (ssize_t) elektraStrLen (value);
+						keySetBinary(key,value, valueSize);
+					} else {
+						keySetString(key,value);
+					}
+					break;
+				case KEY_UID:
+					keySetUID(key,va_arg(va,uid_t));
+					break;
+				case KEY_GID:
+					keySetGID(key,va_arg(va,gid_t));
+					break;
+				case KEY_MODE:
+					/* Theoretically this should be mode_t, but prefer using
+					   int to avoid troubles when sizeof(mode_t)!=sizeof(int)
+					 */
+					keySetMode(key,va_arg(va, int));
+					break;
+				case KEY_OWNER:
+					keySetOwner(key,va_arg(va,char *));
+					break;
+				case KEY_COMMENT:
+					keySetComment(key,va_arg(va,char *));
+					break;
+				case KEY_DIR:
+					keySetDir(key);
+					break;
+				case KEY_LOCK_NAME:
+					keyLock(key, KEY_LOCK_NAME);
+					break;
+				case KEY_LOCK_VALUE:
+					keyLock(key, KEY_LOCK_VALUE);
+					break;
+				case KEY_LOCK_META:
+					keyLock(key, KEY_LOCK_META);
+					break;
+				case KEY_FUNC:
+					p = va_arg(va, void(*)(void));
+					keySetBinary(key, &p, sizeof(p));
+					break;
+				case KEY_META:
+					value = va_arg (va,char *);
+					/*First parameter is name*/
+					keySetMeta (key, value, va_arg(va,char *));
+					break;
+				default:
+#if DEBUG
+					fprintf (stderr, "Unknown option in keyNew %ld\n", (long int)action);
+#endif
+					break;
+			}
+			action=va_arg(va, keyswitch_t);
+		}
+	}
 }
 

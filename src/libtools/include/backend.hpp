@@ -15,6 +15,7 @@
 #include <modules.hpp>
 #include <toolexcept.hpp>
 
+#include <ostream>
 #include <string>
 
 #include <kdb.hpp>
@@ -50,10 +51,13 @@ public:
 	~Backend();
 
 	void addPlugin (std::string name);
-	void checkFile (std::string file);
-	bool validated ();
+	void checkFile (std::string file) const;
+	void status (std::ostream & os) const;
+	bool validated () const;
 	void serialise (kdb::Key &rootKey, kdb::KeySet &ret);
 };
+
+std::ostream & operator<<(std::ostream & os, Backend const & b);
 
 }
 

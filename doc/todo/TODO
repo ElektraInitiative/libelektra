@@ -164,7 +164,7 @@ spec:
 	has metadata only for all other hierarchies
 	including explanation, description
 	(but not comments which are specific for individual keys)
-	allows to retrieve config with globs and placeholders
+	allows one to retrieve config with globs and placeholders
 	metadata in unapplied form
 	other hierarchies get the metadata copied by struct checker
 
@@ -186,12 +186,15 @@ cmd for commandline options overrides
 
 == DATA STRUCTURES ==
 
+keyAdd (.. until rootKey)
+
 Only implement what is really needed.
 (can take some time to do it well!)
 See also OPTIMISE
 
 ksForEach (ks, func, handle)
 	void func (Key*, void* handle);
+	also with lambdas in c++ (check if external loop is faster?)
 
 relations
 

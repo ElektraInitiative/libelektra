@@ -18,7 +18,7 @@ macro (do_benchmark source)
 
 	get_target_property (command ${source} LOCATION)
 
-	add_custom_target (benchmark
+	add_custom_target (benchmark_${source}
 		rm -f *.out
 		COMMAND valgrind --tool=callgrind --callgrind-out-file=callgrind.out "${command}" > output.out
 		# COMMAND strace -o strace.out "${command}"
@@ -27,4 +27,5 @@ macro (do_benchmark source)
 endmacro (do_benchmark)
 
 do_benchmark (large)
+do_benchmark (cmp)
 

@@ -23,3 +23,6 @@ install ( FILES
 		"${CMAKE_CURRENT_BINARY_DIR}/elektra.pc"
 		DESTINATION lib${LIB_SUFFIX}/${TARGET_PKGCONFIG_FOLDER}
 	)
+
+ADD_CUSTOM_TARGET(uninstall
+	"${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/ElektraUninstall.cmake")

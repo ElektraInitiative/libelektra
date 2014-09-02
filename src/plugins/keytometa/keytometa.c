@@ -118,7 +118,8 @@ void removeKeyFromResult(Key* convertKey, Key* target, KeySet* orig)
 	 * before removing it from the result
 	 */
 	keySetMeta (convertKey, CONVERT_TARGET, keyName (target));
-	ksLookup (orig, convertKey, KDB_O_POP);
+	Key *key = ksLookup (orig, convertKey, KDB_O_POP);
+	keyDel (key);
 }
 
 static void flushConvertedKeys(Key *target, KeySet *converted, KeySet *orig)
@@ -162,9 +163,9 @@ static KeySet *convertKeys(Key **keyArray, size_t numKeys, KeySet *orig)
 {
 	Key *current = 0;
 	Key *prevAppendTarget = 0;
-	KeySet *prevConverted = ksNew (0);
-	KeySet *nextConverted = ksNew (0);
-	KeySet *result = ksNew (0);
+	KeySet *prevConverted = ksNew(0, KS_END);
+	KeySet *nextConverted = ksNew(0, KS_END);
+	KeySet *result = ksNew(0, KS_END);
 
 	for (size_t index = 0; index < numKeys; index++)
 	{
@@ -172,6 +173,9 @@ static KeySet *convertKeys(Key **keyArray, size_t numKeys, KeySet *orig)
 
 		if (!keyGetMeta (current, CONVERT_METANAME))
 		{
+			/* flush out "previous" and "next" keys which may have been collected
+			 * because the current key serves as a new border
+			 */
 			ksAppend (result, prevConverted);
 			flushConvertedKeys (prevAppendTarget, prevConverted, orig);
 			prevAppendTarget = current;
@@ -199,6 +203,7 @@ static KeySet *convertKeys(Key **keyArray, size_t numKeys, KeySet *orig)
 		{
 			Key *parent = findNearestParent (current, orig);
 			elektraKeyAppendMetaLine (parent, metaName, keyString (current));
+			ksAppendKey (result, current);
 			removeKeyFromResult(current, parent, orig);
 		}
 
@@ -251,6 +256,14 @@ int elektraKeyToMetaGet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA
 	KeySet *convertedKeys = convertKeys(keyArray, numKeys, returned);
 
 	free (keyArray);
+
+	/* cleanup what might have been left from a previous call */
+	KeySet *old = elektraPluginGetData(handle);
+	if (old)
+	{
+		ksDel (old);
+	}
+
 	elektraPluginSetData(handle, convertedKeys);
 
 	errno = errnosave;
@@ -268,7 +281,7 @@ int elektraKeyToMetaSet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA
 
 	ksRewind (converted);
 
-	char *saveptr;
+	char *saveptr = 0;
 	char *value = 0;
 	Key *current;
 	Key *previous = 0;
@@ -285,7 +298,8 @@ int elektraKeyToMetaSet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA
 			if (target) {
 
 				char *result = 0;
-				if (target != previous) {
+				if (target != previous)
+				{
 					/* handle the first meta line this means initializing strtok and related buffers */
 					free (value);
 					const Key *valueKey = keyGetMeta(target, keyString(metaName));
@@ -314,8 +328,21 @@ int elektraKeyToMetaSet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA
 	free (value);
 
 	ksDel (converted);
+	elektraPluginSetData(handle, 0);
 
 	return 1; /* success */
+}
+
+int elektraKeyToMetaClose(Plugin *handle, Key *errorKey ELEKTRA_UNUSED)
+{
+	KeySet *old = elektraPluginGetData(handle);
+
+	if (old)
+	{
+		ksDel (old);
+	}
+
+	return 1;
 }
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(keytometa)
@@ -323,6 +350,7 @@ Plugin *ELEKTRA_PLUGIN_EXPORT(keytometa)
 	return elektraPluginExport("keytometa",
 		ELEKTRA_PLUGIN_GET,	&elektraKeyToMetaGet,
 		ELEKTRA_PLUGIN_SET,	&elektraKeyToMetaSet,
+		ELEKTRA_PLUGIN_CLOSE, &elektraKeyToMetaClose,
 		ELEKTRA_PLUGIN_END);
 }
 

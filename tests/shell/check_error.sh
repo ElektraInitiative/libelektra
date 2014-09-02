@@ -74,17 +74,51 @@ then
 	succeed_if "cant ls $ROOT (may mean that $ROOT folder is not clean)"
 
 	[ "x`$KDB get $ROOT/valueable_data 2> /dev/null`" = "ximportant_unrecoverable_data" ]
-	succeed_if "Important data lost"
+	succeed_if "data would have been lost"
+
+	$KDB umount $ERROR_MOUNTNAME >/dev/null
+	succeed_if "could not umount $ERROR_MOUNTNAME"
+
+
+
+	echo "Test error plugin when open"
+
+	$KDB mount $ERROR_FILE $ERROR_MOUNTPOINT dump error on_open/error=10 > /dev/null 2>&1
+	succeed_if "could not mount error at $ERROR_MOUNTPOINT"
+
+	$KDB get system > /dev/null 2>&1
+	[ $? -ne 0 ]
+	succeed_if "Was able to get from missing backend"
+
+	$KDB get user > /dev/null 2>&1
+	[ $? -ne 0 ]
+	succeed_if "Was able to get from missing backend"
+
+	$KDB get system$ROOT_MOUNTPOINT > /dev/null 2>&1
+	[ $? -ne 0 ]
+	succeed_if "Was able to get from missing backend"
+
+	$KDB get system$ERROR_MOUNTPOINT > $TMPFILE 2>&1
+	[ $? -ne 0 ]
+	succeed_if "Was able to get from missing backend"
+
+	#echo "Output was:"
+	#cat $TMPFILE
+
+	grep "Error (#62) occurred!" $TMPFILE > /dev/null
+	succeed_if "Error not found in output"
+
+	grep "Description: Tried to get a key from a missing backend" $TMPFILE > /dev/null
+	succeed_if "Wrong description in output"
+
+
+	$KDB umount $ERROR_MOUNTNAME >/dev/null
+	succeed_if "could not umount $ERROR_MOUNTNAME"
 fi
 rm $TMPFILE
 
 
 
-if is_plugin_available error
-then
-	$KDB umount $ERROR_MOUNTNAME >/dev/null
-	succeed_if "could not umount $ERROR_MOUNTNAME"
-fi
 
 if is_plugin_available dump
 then

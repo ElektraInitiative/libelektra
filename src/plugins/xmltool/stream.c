@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include <kdbtools.h>
+#include "kdbtools.h"
 #include <kdbinternal.h>
 
 

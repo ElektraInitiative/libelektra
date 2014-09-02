@@ -38,9 +38,9 @@
 KeySet *ks1,*ks2,*removed;
 Key *key;
 
-ks1=ksNew(0);
-ks2=ksNew(0);
-removed=ksNew(0);
+ks1=ksNew(0, KS_END);
+ks2=ksNew(0, KS_END);
+removed=ksNew(0, KS_END);
 
 // ...
 // Populate ks1 and ks2....

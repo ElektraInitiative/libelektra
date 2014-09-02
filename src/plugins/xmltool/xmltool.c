@@ -24,6 +24,7 @@
 
 
 #include "xmltool.h"
+#include "kdbtools.h"
 
 #include "kdbconfig.h"
 
@@ -48,20 +49,7 @@ int elektraXmltoolGet(Plugin *handle ELEKTRA_UNUSED,
 				KEY_FUNC, ksFromXMLfile, KEY_END),
 			keyNew ("system/elektra/modules/xmltool/exports/ksToStream",
 				KEY_FUNC, ksToStream, KEY_END),
-			keyNew ("system/elektra/modules/xmltool/infos",
-				KEY_VALUE, "All information you want to know", KEY_END),
-			keyNew ("system/elektra/modules/xmltool/infos/author",
-				KEY_VALUE, "Markus Raab <elektra@markus-raab.org>", KEY_END),
-			keyNew ("system/elektra/modules/xmltool/infos/licence",
-				KEY_VALUE, "BSD", KEY_END),
-			keyNew ("system/elektra/modules/xmltool/infos/description",
-				KEY_VALUE, "Storage using libelektratools xml format.", KEY_END),
-			keyNew ("system/elektra/modules/xmltool/infos/provides",
-				KEY_VALUE, "storage", KEY_END),
-			keyNew ("system/elektra/modules/xmltool/infos/placements",
-				KEY_VALUE, "getstorage setstorage", KEY_END),
-			keyNew ("system/elektra/modules/xmltool/infos/needs",
-				KEY_VALUE, "", KEY_END),
+#include "readme_xmltool.c"
 			keyNew ("system/elektra/modules/xmltool/infos/version",
 				KEY_VALUE, PLUGINVERSION, KEY_END),
 			KS_END);

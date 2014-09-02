@@ -1,9 +1,9 @@
-find_program(PYTHON "python")
+find_package (Python2Interp 2.7 REQUIRED)
 
-if (PYTHON)
+if (PYTHON2_EXECUTABLE)
 	#add_custom_command(
 	#	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/timestamp
-	#	COMMAND ${PYTHON} setup.py build
+	#	COMMAND ${PYTHON2_EXECUTABLE} setup.py build
 	#	COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_BINARY_DIR}/timestamp
 	#	DEPENDS ${DEPS}
 	#	)
@@ -12,9 +12,8 @@ if (PYTHON)
 	set(SETUP_PY ${CMAKE_CURRENT_BINARY_DIR}/setup.py)
 	configure_file(setup.py.in ${SETUP_PY})
 
-	#"/usr/local/lib/python2.7/dist-packages"
 	install(CODE "execute_process(COMMAND
-		${PYTHON} ${SETUP_PY}
+			${PYTHON2_EXECUTABLE} ${SETUP_PY}
 			--no-user-cfg
 			--quiet
 			install

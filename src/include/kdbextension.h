@@ -90,7 +90,6 @@ int keyIsUser(const Key *key);
 int keyNameIsSystem(const char *keyname);
 int keyNameIsUser(const char *keyname);
 
-int keyIsInactive(const Key *key);
 
 /***************************************
  *
@@ -130,7 +129,6 @@ ssize_t ksGetCommonParentName(const KeySet *ks,char *returnedCommonParent,
  * Allocation
  *****************/
 
-int ksNeedSort(const KeySet *ks);
 int ksResize(KeySet *ks, size_t size);
 size_t ksGetAlloc(const KeySet *ks);
 

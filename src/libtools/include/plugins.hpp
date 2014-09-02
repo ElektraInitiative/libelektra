@@ -73,9 +73,9 @@ public:
 	/** Validate needed, and provided information.
 	 * (Recommended ignored, @see getRecommendedMissing(),
 	 * @see getNeededMissing() */
-	bool validateProvided();
-	std::vector<std::string> getNeededMissing();
-	std::vector<std::string> getRecommendedMissing();
+	bool validateProvided() const;
+	std::vector<std::string> getNeededMissing() const;
+	std::vector<std::string> getRecommendedMissing() const;
 
 	/** @return true if plugin should be ignored */
 	bool checkPlacement (Plugin &plugin, std::string which);
@@ -96,7 +96,7 @@ public:
 	 */
 	void tryPlugin (Plugin &plugin);
 	void addPlugin (Plugin &plugin);
-	bool validated ();
+	bool validated () const;
 
 	void serialise (kdb::Key &baseKey, kdb::KeySet &ret);
 };
@@ -106,7 +106,7 @@ class SetPlugins : private Plugins
 public:
 	void tryPlugin (Plugin &plugin);
 	void addPlugin (Plugin &plugin);
-	bool validated ();
+	bool validated () const;
 
 	void serialise (kdb::Key &baseKey, kdb::KeySet &ret);
 };
@@ -114,9 +114,11 @@ public:
 class ErrorPlugins : private Plugins
 {
 public:
+	void status (std::ostream & os) const;
+
 	void tryPlugin (Plugin &plugin);
 	void addPlugin (Plugin &plugin);
-	bool validated ();
+	bool validated () const;
 
 	void serialise (kdb::Key &baseKey, kdb::KeySet &ret);
 };

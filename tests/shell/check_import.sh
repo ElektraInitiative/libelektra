@@ -30,11 +30,23 @@ do
 		continue;
 	fi
 
+	if [ $PLUGIN = "ini" ]
+	then
+		#TODO: broken?
+		continue
+	fi
+
 	echo -------- $PLUGIN -----------
 
 	echo "Import with existing root"
 
-	$KDB set $ROOT "root" >/dev/null
+    if [ "x$PLUGIN" != "xyajl" ]
+    then
+        $KDB set $ROOT "root" >/dev/null
+    else
+        $KDB set $ROOT "" > /dev/null    
+    fi
+    
 	exit_if_fail "could not set root"
 
 	test `$KDB ls $ROOT` = $ROOT
@@ -42,12 +54,13 @@ do
 
 	$KDB import $ROOT $PLUGIN < $DATADIR/one_value.$PLUGIN
 	succeed_if "Could not run kdb import"
-
+		
 	test "`$KDB ls $ROOT`" = "user/tests/script"
 	succeed_if "key name not correct one_value"
 
-	if [ "x$PLUGIN" != "xyajl" ]
+	if [ "x$PLUGIN" != "xyajl" -a "x$PLUGIN" != "xini" ]
 	then
+		#TODO: ini currently cannot represent the parentKey
 		#TODO: yajl currently cannot hold values within
 		#directories, do not hardcode that
 		test "`$KDB get $ROOT`" = root
@@ -73,8 +86,9 @@ do
 	test "`$KDB ls $ROOT`" = "user/tests/script"
 	succeed_if "key name not correct one_value empty root"
 
-	if [ "x$PLUGIN" != "xyajl" ]
+	if [ "x$PLUGIN" != "xyajl" -a "x$PLUGIN" != "xini" ]
 	then
+        #TODO: ini currently cannot represent the parentKey	    
 		#TODO: yajl currently cannot hold values within
 		#directories, do not hardcode that
 		test "`$KDB get $ROOT`" = root
@@ -97,14 +111,15 @@ do
 	$KDB set $ROOT "wrong_root" >/dev/null
 	exit_if_fail "could not set wrong_root"
 
-	$KDB import -s overwrite $ROOT $PLUGIN < $DATADIR/one_value.$PLUGIN
+	$KDB import -s "newkey,theirvalue" $ROOT $PLUGIN < $DATADIR/one_value.$PLUGIN
 	succeed_if "Could not run kdb import"
 
 	test "`$KDB ls $ROOT`" = "user/tests/script"
 	succeed_if "key name not correct"
 
-	if [ "x$PLUGIN" != "xyajl" ]
+	if [ "x$PLUGIN" != "xyajl" -a "x$PLUGIN" != "xini" ]
 	then
+        #TODO: ini currently cannot represent the parentKey	    
 		#TODO: yajl currently cannot hold values within
 		#directories, do not hardcode that
 		test "`$KDB get $ROOT`" = root
@@ -120,8 +135,9 @@ do
 	$KDB rm -r $ROOT
 	succeed_if "Could not remove root"
 
-	if [ "x$PLUGIN" != "xyajl" ]
+	if [ "x$PLUGIN" != "xyajl" -a "x$PLUGIN" != "xini" ]
 	then
+        #TODO: ini currently cannot represent the parentKey	    
 		#TODO: yajl currently cannot hold values within
 		#directories, do not hardcode that
 		test "`$KDB get $SIDE`" = val
@@ -144,8 +160,9 @@ do
 user/tests/script/key"
 	succeed_if "key name not correct"
 
-	if [ "x$PLUGIN" != "xyajl" ]
+	if [ "x$PLUGIN" != "xyajl" -a "x$PLUGIN" != "xini" ]
 	then
+        #TODO: ini currently cannot represent the parentKey	    
 		#TODO: yajl currently cannot hold values within
 		#directories, do not hardcode that
 		test "`$KDB get $ROOT`" = root
@@ -168,14 +185,15 @@ user/tests/script/key"
 	$KDB set $SIDE val
 	succeed_if "Could not set $SIDE"
 
-	$KDB import -s cut $ROOT $PLUGIN < $DATADIR/one_value.$PLUGIN
+	$KDB import -s theirs $ROOT $PLUGIN < $DATADIR/one_value.$PLUGIN
 	succeed_if "Could not run kdb import"
 
 	test "`$KDB ls $ROOT`" = "user/tests/script"
 	succeed_if "key name not correct"
 
-	if [ "x$PLUGIN" != "xyajl" ]
+	if [ "x$PLUGIN" != "xyajl" -a "x$PLUGIN" != "xini" ]
 	then
+        #TODO: ini currently cannot represent the parentKey	    
 		#TODO: yajl currently cannot hold values within
 		#directories, do not hardcode that
 		test "`$KDB get $ROOT`" = root
@@ -209,14 +227,15 @@ user/tests/script/key"
 	$KDB set $SIDE val
 	succeed_if "Could not set $SIDE"
 
-	$KDB import -s cut $ROOT $PLUGIN < $DATADIR/one_value.$PLUGIN
+	$KDB import -s theirs $ROOT $PLUGIN < $DATADIR/one_value.$PLUGIN
 	succeed_if "Could not run kdb import"
 
 	test "`$KDB ls $ROOT`" = "user/tests/script"
 	succeed_if "key name not correct"
 
-	if [ "x$PLUGIN" != "xyajl" ]
+	if [ "x$PLUGIN" != "xyajl" -a "x$PLUGIN" != "xini" ]
 	then
+        #TODO: ini currently cannot represent the parentKey	    
 		#TODO: yajl currently cannot hold values within
 		#directories, do not hardcode that
 		test "`$KDB get $ROOT`" = root
@@ -229,8 +248,9 @@ user/tests/script/key"
 	diff $DATADIR/one_value.$PLUGIN $FILE
 	succeed_if "Export file one_value.$PLUGIN was not equal"
 
-	if [ "x$PLUGIN" != "xyajl" ]
+	if [ "x$PLUGIN" != "xyajl" -a "x$PLUGIN" != "xini" ]
 	then
+        #TODO: ini currently cannot represent the parentKey	    
 		#TODO: yajl currently cannot hold values within
 		#directories, do not hardcode that
 		test "`$KDB get $SIDE`" = val
@@ -243,6 +263,7 @@ user/tests/script/key"
 
 	$KDB rm -r $ROOT
 	succeed_if "Could not remove $ROOT"
+		
 done
 
 end_script

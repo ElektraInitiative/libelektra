@@ -106,20 +106,12 @@ public:
 	inline std::string getDirName() const;
 
 	inline void setName (const std::string &newName);
+	// inline void addName (const std::string &addedName);
 	inline void setBaseName (const std::string &baseName);
 	inline void addBaseName (const std::string &baseName);
 
 	inline ssize_t getFullNameSize() const;
 	inline std::string getFullName() const;
-
-	inline Key& operator=  (const std::string &newName);
-	inline Key& operator+= (const std::string &baseName);
-	inline Key& operator-= (const std::string &baseName);
-
-	inline Key& operator=  (const char *newName);
-	inline Key& operator+= (const char *baseName);
-	inline Key& operator-= (const char *baseName);
-
 
 	// operators
 
@@ -548,6 +540,16 @@ inline void Key::setName (const std::string &newName)
 	}
 }
 
+/*
+inline void Key::addName (const std::string &addedName)
+{
+	if (ckdb::keyAddName (getKey(), addedName.c_str()) == -1)
+	{
+		throw KeyInvalidName();
+	}
+}
+*/
+
 /**Sets a base name for a key.
  *
  * @copydoc keySetBaseName
@@ -605,66 +607,6 @@ inline std::string Key::getFullName() const
 	std::string str (csize-1, '\0');
 	ckdb::keyGetFullName (getKey(), &str[0], csize);
 	return str;
-}
-
-/**
- * Assign the name of a key.
- *
- * @see keySetName
- */
-inline Key& Key::operator= (const std::string &newName)
-{
-	ckdb::keySetName(getKey(), newName.c_str());
-	return *this;
-}
-
-/**
- * Add a new basename.
- *
- * @see keyAddBaseName()
- */
-inline Key& Key::operator+= (const std::string &newAddBaseName)
-{
-	ckdb::keyAddBaseName(getKey(), newAddBaseName.c_str());
-	return *this;
-}
-
-/**
- * Set a new basename.
- *
- * @see keySetBaseName()
- */
-inline Key& Key::operator-= (const std::string &newSetBaseName)
-{
-	ckdb::keySetBaseName(getKey(), newSetBaseName.c_str());
-	return *this;
-}
-
-/**
- * @copydoc Key::operator= (const std::string &newName)
- */
-inline Key& Key::operator= (const char *newName)
-{
-	ckdb::keySetName(getKey(), newName);
-	return *this;
-}
-
-/**
- * @copydoc Key::operator+= (const std::string &)
- */
-inline Key& Key::operator+= (const char *newAddBaseName)
-{
-	ckdb::keyAddBaseName(getKey(), newAddBaseName);
-	return *this;
-}
-
-/**
- * @copydoc Key::operator-= (const std::string &)
- */
-inline Key& Key::operator-= (const char *newSetBaseName)
-{
-	ckdb::keySetBaseName(getKey(), newSetBaseName);
-	return *this;
 }
 
 /**

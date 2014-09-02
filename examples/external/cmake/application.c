@@ -4,7 +4,7 @@
 
 int main()
 {
-	KeySet *myConfig = ksNew(0);
+	KeySet *myConfig = ksNew(0, KS_END);
 	Key *key = keyNew("system/test/myapp",KEY_END);
 	KDB *handle = kdbOpen(key);
 

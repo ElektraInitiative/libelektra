@@ -21,10 +21,9 @@ namespace tools
 namespace merging
 {
 
-enum ConflictResolutionSide { BASE, OURS, THEIRS };
-
 class OneSideStrategy : public MergeConflictStrategy
 {
+
 public:
 	ConflictResolutionSide winningSide;
 

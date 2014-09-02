@@ -34,14 +34,14 @@ void benchmarkOpen()
 
 void benchmarkInread()
 {
-	KeySet *n = ksNew(0);
+	KeySet *n = ksNew(0, KS_END);
 	kdbGet(kdb, n, key);
 	ksDel(n);
 }
 
 void benchmarkReadin()
 {
-	KeySet *n = ksNew(0);
+	KeySet *n = ksNew(0, KS_END);
 	kdbGet(kdb, n, key);
 	ksDel(n);
 }

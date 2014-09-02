@@ -30,8 +30,15 @@ if (BUILD_STATIC)
 	add_executable (kdb-static ${SOURCES})
 
 	set_target_properties (kdb-static PROPERTIES LINKER_LANGUAGE CXX)
+	set_target_properties (kdb-static PROPERTIES
+			COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H;ELEKTRA_STATIC")
 
-	target_link_libraries (kdb-static elektra-static elektratools-static)
+	target_link_libraries (kdb-static elektra-static
+		elektra-resolver-lock elektratools-static)
+	if (CMAKE_STATIC_FLAGS)
+		set_target_properties (kdb-static PROPERTIES LINK_FLAGS
+			${CMAKE_STATIC_FLAGS})
+	endif()
 
 	install (TARGETS kdb-static DESTINATION bin)
 endif (BUILD_STATIC)

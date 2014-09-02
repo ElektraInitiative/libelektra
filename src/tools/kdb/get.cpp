@@ -42,8 +42,8 @@ int GetCommand::execute (Cmdline const& cl)
 		cout << endl;
 	}
 
-	printError(cerr, x);
 	printWarnings(cerr, x);
+	printError(cerr, x);
 
 	return ret;
 }

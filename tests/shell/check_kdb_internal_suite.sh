@@ -22,6 +22,13 @@ do
 		MOUNT_PLUGIN="$PLUGIN ccode null"
 		TESTS="basic"
 		;;
+	"ini")
+		#test broken?
+		continue
+		;;
+	"line")
+		TESTS="basic"
+		;;
 	"simpleini")
 		MOUNT_PLUGIN="$PLUGIN hexcode null"
 		TESTS="basic string"
@@ -55,6 +62,8 @@ do
 		rm -f $USER_FOLDER/$FILE
 		rm -f $SYSTEM_FOLDER/$FILE
 
+		echo "Failed during $PLUGIN"
+
 		USER_REMAINING="`find $USER_FOLDER -maxdepth 1 -name $FILE'*' -print -exec rm {} +`"
 		test -z "$USER_REMAINING"
 		succeed_if "found remaining files $USER_REMAINING in $USER_FOLDER"
@@ -64,6 +73,7 @@ do
 		succeed_if "found remaining files $SYSTEM_REMAINING in $SYSTEM_FOLDER"
 	}
 
+	echo "Running tests for $PLUGIN"
 	for ROOT in $USER_ROOT $SYSTEM_ROOT
 	do
 		$KDB test "$ROOT" $TESTS

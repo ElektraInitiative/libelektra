@@ -26,26 +26,119 @@
 #include <kdb.h>
 * @endcode
  *
- * These functions make it easier for c programmers to work with key names.
- * Everything here can also be done with keySetName, described in key.
+ * These functions make it easier for C programmers to work with key names.
  *
  *
- * @par Rules for Key Names
+ * @par Terminology of Key Names
+ * - A *key name* (see keySetName() and keyName()) defines the
+ *   place of a key within the key database.
+ *   To be unique, it is always absolute and canonical.
+ * - Key names are composed out of many *key name parts* split by a
+ *   separator. These *key name parts* do not contain a unescaped
+ *   separator.
+ * - A *key base name* (see keySetBaseName() and keyAddBaseName()) is
+ *   the last part of the key name.
+ * - A namespace denotes the place the key comes from:
+ *   - _user_ keys come from user's home directories
+ *   - _system_ keys come from systems etc directories
+ * - A *C-String* is a null terminated sequence of characters.
+ *   So \\0 (null-character) must not occur within a C-String.
  *
+ *
+ * @note The rules are currently not formally specified and are subject
+ * of change in the next major release.
+ * So, always prefer:
+ * - To use keySetName() and keyAddName() to get the canonified version of the keyname
+ * - To use keySetBaseName() and keyAddBaseName() to get an escaped key
+ *   name part.
+ * - Not to escape or canonify with your own algorithms!
+ * - To use keyUnescapedName() and keyBaseName() to have access to the
+ *   key name without escape sequences (key name parts are null
+ *   terminated)
+ * - Not to unescape the strings yourself!
+ *
+ *
+ * @par Syntax for Key Names
+ * Key names and key name parts have following goals:
+ * - The C-String passed to keySetName() and keyAddName() may be any
+ *   C-String.
+ * - The *key name parts* (e.g. keySetBaseName(), keyBaseName()) may
+ *   be any C-String.
+ * Escaping is needed to achieve both goals.
+ *
+ *
+ * @par Semantics for Key Name Parts
+ * - \% denotes an empty key name part.
+ *
+ *
+ * @par Canonicalization for Key Names
+ * - / (slash) is the separator between key name parts.
+ * - // is shortened to /
+ * - trailing / (slashes) are removed
+ * - . (dot) and .. (dot-dot) is removed in an canonical key name, with
+ *   following rules:
+ *   - /./ is shortened to /
+ *   - _/../ is shortened to _
+ *
+ *
+ * @par Conventions for key names
+ * - Key name parts starting with \# are array elements.
+ *   Then only _ (underscore) followed by 0-9 is allowed.
+ *   So we have the regular expression #[_]*[0-9]+ with the further
+ *   limitation that the number of _ is defined by the number of
+ *   digits-1.
+ * - Key name parts starting with _ are reserved for special purposes
+ *   (if you use this within a plugin you still have to make sure _ is
+ *   escaped properly)
+ * - Key name parts starting with @ are reserved for special purposes
+ *   (if you use this within a plugin you still have to make sure @ is
+ *   escaped properly)
+ * - If any key name part starts with . (dot) it means the key is
+ *   inactive, see keyIsInactive().
+ *
+ *
+ * @par Escaping rules
+ * - \\ (backslash) is the escape character for the situations as
+ *   described here (and only these).
+ *   The \\ character must only be escaped, when one of the following
+ *   rules apply. So there is no stray escape character possible.
+ * - \\/ allows to escape /
+ * - \\\\/ allows to use \\ as character before / (and so on)
+ * - Use \\. and \\.. if you want your key name part to represent . and ..
+ * - \\\\. and \\\\.. allows to use \\ as character before . and .. (and so on)
+ * - Use \\% if you want your key name part to start with \% (and does
+ *   not represent an empty name)
+ * - Use \\\\% allows to use \\ as character before \% (and so on)
+
+ *
+ *
+ * @par Semantics for Key Name Specifications
+ * - _ denotes that the key name part is
+ *   arbitrary (syntax as described above).
+ * - \# denotes that the key name part
+ *   has array syntax.
+ * - names surrounded by \% (e.g. \%profile\%)
+ *   denotes a placeholder.
+ *
+ *
+ * @par Usage of Key Names
  * When using Elektra to store your application's configuration and state,
  * please keep in mind the following rules:
- * - You are not allowed to create keys right under @p system or @p user.
- * - You are not allowed to create folder keys right under @p system or @p user.
- *   They are reserved for very essential OS subsystems.
- * - The keys for your application, called say @e MyApp, should be created under
- *   @p system/sw/MyApp and/or @p user/sw/MyApp.
+ * - Avoid to have your applications root right under @p system or @p user.
+ *   (rationale: it would make the hierarchy too flat.)
+ * - Avoid the usage of characters other then a-z, 0-9 and _.
+ *   (rationale: it would allow too many similar, confusing names.)
+ *   (exceptions: if the user or a technology, decide about parts of
+ *   the key name, this restriction does not apply, e.g. if the wlan
+ *   essid is used as part of the key name)
  * - It is suggested to make your application look for default keys under
- *   @p system/sw/MyApp/current and/or @p user/sw/MyApp/current. This way, from
+ *   @p /sw/myapp/#/%/ where \# is a major version number, e.g. \#3 for
+ *   the 4th version and % is a profile (% for default profile). This way, from
  *   a sysadmin perspective, it will be possible to copy the
- *   @p system/sw/MyApp/current tree to something like @p system/sw/MyApp/old,
- *   and keep system clean and organized.
- * - \\0 must not occur in names.
- * - / is the seperator.
+ *   @p system/sw/myapp/#3/%/ tree to something like
+ *   @p system/sw/myapp/#3/old/ and keep system clean and organized.
+ *   Additionally, it is possible to start the old version of the app,
+ *   using @p /sw/myapp/#2.
  *
  */
 
@@ -74,7 +167,7 @@
 
 #include "kdb.h"
 #include "kdbinternal.h"
-
+#include "kdbhelper.h"
 
 
 
@@ -123,11 +216,21 @@ const char *keyName(const Key *key)
 	if (!key) return 0;
 
 	if (!key->key) {
-		/*errno=KDB_ERR_NOKEY;*/
 		return "";
 	}
 
 	return key->key;
+}
+
+const void *keyUnescapedName(const Key *key)
+{
+	if (!key) return 0;
+
+	if (!key->key) {
+		return "";
+	}
+
+	return key->key+key->keySize;
 }
 
 
@@ -151,10 +254,21 @@ ssize_t keyGetNameSize(const Key *key)
 
 	if (!key->key)
 	{
-		/*errno = KDB_ERR_NOKEY;*/
 		return 1;
 	}
 	else return key->keySize;
+}
+
+
+ssize_t keyGetUnescapedNameSize(const Key *key)
+{
+	if (!key) return -1;
+
+	if (!key->key)
+	{
+		return 0;
+	}
+	else return key->keyUSize;
 }
 
 
@@ -212,7 +326,43 @@ ssize_t keyGetName(const Key *key, char *returnedName, size_t maxSize)
 	return key->keySize;
 }
 
+/**
+ * @internal
+ *
+ * @brief Call this function after every key changing operation
+ *
+ * @pre key->key and key->keySize are set accordingly and the size of
+ * allocation is twice as what you actually needed.
+ *
+ * @post we get a unsynced key with a correctly terminated
+ * key name suitable for ordering and the name getter methods
+ *
+ * It will duplicate the key length and put a second name afterwards
+ * that is used for sorting keys.
+ *
+ * @param key
+ */
+ssize_t elektraFinalizeName(Key *key)
+{
+	key->key[key->keySize - 1] = 0; /* finalize string */
 
+	key->keyUSize = elektraUnescapeKeyName(key->key,
+			key->key+key->keySize);
+
+	key->flags |= KEY_FLAG_SYNC;
+
+	return key->keySize;
+}
+
+ssize_t elektraFinalizeEmptyName(Key *key)
+{
+	key->key = elektraCalloc(2); // two null pointers
+	key->keySize = 1;
+	key->keyUSize = 1;
+	key->flags |= KEY_FLAG_SYNC;
+
+	return key->keySize;
+}
 
 
 /**
@@ -232,16 +382,16 @@ ssize_t keyGetName(const Key *key, char *returnedName, size_t maxSize)
  * A private copy of the key name will be stored, and the @p newName
  * parameter can be freed after this call.
  *
- * .., . and / will be handled correctly. A valid name will be build
+ * .., . and / will be handled as in filesystem pathes. A valid name will be build
  * out of the (valid) name what you pass, e.g. user///sw/../sw//././MyApp -> user/sw/MyApp
  *
  * On invalid names, NULL or "" the name will be "" afterwards.
  *
- * @warning You shall not change a key name once it belongs to a keyset.
  *
  * @retval size in bytes of this new key name including ending NULL
  * @retval 0 if newName is an empty string or a NULL pointer (name will be empty afterwards)
  * @retval -1 if newName is invalid (name will be empty afterwards)
+ * @retval -1 if key was inserted to a keyset before
  * @param key the key object to work with
  * @param newName the new key name
  * @see keyNew(), keySetOwner()
@@ -249,35 +399,35 @@ ssize_t keyGetName(const Key *key, char *returnedName, size_t maxSize)
  * @see keySetBaseName(), keyAddBaseName() to manipulate a name
  * @ingroup keyname
  */
-
 ssize_t keySetName(Key *key, const char *newName)
+{
+	return elektraKeySetName(key, newName, 0);
+}
+
+ssize_t elektraKeySetName(Key *key, const char *newName,
+		enum elektra_name_options options)
 {
 	size_t length;
 	size_t rootLength, userLength, systemLength, ownerLength;
 	char *p=0;
-	size_t size=0;
 
 	if (!key) return -1;
-	if (key->flags & KEY_FLAG_RO) return -1;
+	if (test_bit(key->flags,  KEY_FLAG_RO_NAME)) return -1;
 
-	if (key->key) free (key->key);
+	if (key->key) elektraFree(key->key);
 	key->key = 0;
 	key->keySize=1; /* equal to length plus room for \\0 */
 
 	/* handle null new key name, removing the old name */
 	if (!newName || !(length=elektraStrLen(newName)-1))
 	{
-		if (key->key) {
-			key->keySize = 0;
-			free(key->key);
-			key->key=0;
-		}
-		return 0;
+		elektraFinalizeEmptyName(key);
+		return 0; // we need to return 0 because of specification
 	}
 
 	rootLength=keyNameGetFullRootNameSize(newName)-1;
-	if (!rootLength) {
-		/*errno=KDB_ERR_INVALIDKEY;*/
+	if (!(options & KDB_O_CASCADING_NAME) && !rootLength)
+	{
 		return -1;
 	}
 	userLength=sizeof("user")-1;
@@ -286,7 +436,32 @@ ssize_t keySetName(Key *key, const char *newName)
 	
 	if (ownerLength>0) --ownerLength;
 
-	if (keyNameIsUser(newName))
+	if ((options & KDB_O_EMPTY_NAME) &&
+		(!strcmp(newName, "")))
+	{
+		return elektraFinalizeEmptyName(key);
+	}
+	if ((options & KDB_O_CASCADING_NAME) &&
+		(newName[0] == '/'))
+	{
+		if (!strcmp(newName, "/"))
+		{
+			key->key = elektraCalloc(4);
+			key->key[0] = '/';
+			key->keySize=2;
+			elektraFinalizeName(key);
+			return key->keySize;
+		}
+		/* handle cascading key names */
+		rootLength = 1;
+	}
+	else if (options & KDB_O_META_NAME)
+	{
+		size_t size = 0;
+		p=keyNameGetOneLevel(newName,&size);
+		rootLength = size+1;
+	}
+	else if (keyNameIsUser(newName))
 	{
 		/* handle "user*" */
 		if (length > userLength)
@@ -309,9 +484,6 @@ ssize_t keySetName(Key *key, const char *newName)
 				key->keySize+=length-ownerLength-1;  /* -1 is for the ':' */
 			} else if (*(newName+userLength)!=KDB_PATH_SEPARATOR) {
 				/* handle when != "user/ *" */
-				/*errno=KDB_ERR_INVALIDKEY;*/
-				key->key = 0;
-				key->keySize = 1;
 				return -1;
 			} else {
 				/* handle regular "user/ *" */
@@ -322,29 +494,24 @@ ssize_t keySetName(Key *key, const char *newName)
 			key->keySize+=userLength;
 		}
 
-		rootLength  = userLength;
-	} else if (keyNameIsSystem(newName)) {
+		rootLength  = userLength+1;
+	}
+	else if (keyNameIsSystem(newName))
+	{
 		/* handle "system*" */
 		if (length > systemLength && *(newName+systemLength)!=KDB_PATH_SEPARATOR)
 		{	/* handle when != "system/ *" */
-			/*errno=KDB_ERR_INVALIDKEY;*/
-			key->key = 0;
-			key->keySize = 1;
 			return -1;
 		}
 		key->keySize+=length;
 
 		keySetOwner (key, NULL);
 
-		rootLength  = systemLength;
-	} else {
-		/* Given newName is neither "system" or "user" */
-		/*errno=KDB_ERR_INVALIDKEY;*/
-		key->key = 0;
-		key->keySize = 1;
-
-		keySetOwner (key, NULL);
-
+		rootLength  = systemLength+1;
+	}
+	else
+	{
+		/**Unsupported key name */
 		return -1;
 	}
 
@@ -352,65 +519,39 @@ ssize_t keySetName(Key *key, const char *newName)
 	   At this point:
 	   - key->key has no memory (re)allocated yet
 	   - key->keySize has number of bytes that will be allocated for key name
-	     with already removed owner.
-	   - key->owner is already set
-	   - rootLength is sizeof("user")-1 or sizeof("system")-1
+	     with already removed owner. (even though we do not need it)
+	   - owner is already set
+	   - rootLength is sizeof("user") or sizeof("system")
 	*/
 
 	/* Allocate memory for key->key */
-	p=malloc(key->keySize);
+	p=elektraCalloc(rootLength);
 	if (NULL==p) goto error_mem;
-	if (key->key) free(key->key);
 	key->key=p;
-
-	/* here key->key must have a correct size allocated buffer */
-	if (!key->key) return -1;
 
 	/* copy the root of newName to final destination */
 	strncpy(key->key,newName,rootLength);
-	
-	/* skip the root */
-	p=(char *)newName;
-	size=0;
-	p=keyNameGetOneLevel(p+size,&size);
-	
-	/* iterate over each single folder name removing repeated '/' and escaping when needed */
+
+	/* finish root name for keyAddName() */
 	key->keySize=rootLength;
-	while (*(p=keyNameGetOneLevel(p+size,&size))) {
-		/* printf ("level: %s, size: %d\n", p, size); */
-		if (size == 1 && strncmp (p, ".",1) == 0)
-		{
-			/* printf ("ignore .\n"); */
-			continue; /* just ignore current directory */
-		}
-		else if (size == 2 && strncmp (p, "..",2) == 0) /* give away directory */
-		{
-			key->key[key->keySize] = 0; /* initialize first (valgrind) */
-			while (key->keySize > rootLength && key->key[key->keySize] != KDB_PATH_SEPARATOR) key->keySize--;
-			/* printf ("do .. (key->keySize: %d), key->key: %s, rootLength: %d, key->keySize: %d\n",
-					key->keySize, key->key, rootLength, key->keySize); */
-			continue;
-		}
-		/* Add a '/' to the end of key name */
-		key->key[key->keySize]=KDB_PATH_SEPARATOR;
-		key->keySize++;
-		
-		/* carefully append basenames */
-		memcpy(key->key+key->keySize,p,size);
-		key->keySize+=size;
+	key->key[rootLength-1] = '\0';
+
+	size_t size = 0;
+	if ((options & KDB_O_CASCADING_NAME) &&
+		(newName[0] == '/'))
+	{
+		p = (char*)newName;
+		size=1;
+	}
+	else
+	{
+		/* skip namespace we already processed */
+		p=keyNameGetOneLevel(newName,&size);
 	}
 
-	/* remove unescaped trailing slashes */
-	while (key->key[key->keySize-1] == KDB_PATH_SEPARATOR && key->key[key->keySize-2] != '\\') key->keySize--;
-	key->key[key->keySize]=0; /* finalize string */
-
-	key->flags |= KEY_FLAG_SYNC;
-
-	key->keySize ++; /*for \\0 ending*/
-	return key->keySize;
+	return keyAddName(key, p+size);
 
 error_mem:
-	/*errno=KDB_ERR_NOMEM;*/
 	return -1;
 }
 
@@ -513,27 +654,22 @@ ssize_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize)
 
 
 /**
- * Returns a pointer to the real internal key name where the @p basename starts.
+ * @brief Returns a pointer to the internal unescaped key name where the @p basename starts.
  *
  * This is a much more efficient version of keyGetBaseName() and you should
  * use it if you are responsible enough to not mess up things. The name might
- * change or even point to a wrong place after a keySetName(). If you need
- * a copy of the basename consider to use keyGetBaseName().
+ * change or even point to a wrong place after a keySetName(). So make
+ * sure to copy the memory before the name changes.
  *
  * keyBaseName() returns "" when there is no keyBaseName. The reason is
- * @code
-key=keyNew(0);
-keySetName(key,"");
-keyBaseName(key); // you would expect "" here
-keySetName(key,"user");
-keyBaseName(key); // you would expect "" here
-keyDel(key);
- * @endcode
+ * @snippet testabi_key.c base0 empty
  *
- * @note Note that the Key structure keeps its own size field that is calculated
- * by library internal calls, so to avoid inconsistencies, you
- * must never use the pointer returned by keyBaseName() method to set a new
- * value. Use keySetBaseName() instead.
+ * And there is also support for really empty basenames:
+ * @snippet testabi_key.c base1 empty
+ *
+ * @note You must never use the pointer returned by keyBaseName()
+ * method to change the name, but you should use keySetBaseName()
+ * instead.
  *
  * @param key the object to obtain the basename from
  * @return a pointer to the basename
@@ -546,19 +682,15 @@ keyDel(key);
  */
 const char *keyBaseName(const Key *key)
 {
-	char *p=0;
-	char *base=0;
-	size_t size=0;
-
 	if (!key) return 0;
+	if (!key->key) return "";
 
-	p = key->key;
+	char *p = key->key + key->keySize + key->keyUSize - 1;
 
-	if (!p) return "";
+	char *base=p;
+	while (*(--p)) base=p;
 
-	while (*(p=keyNameGetOneLevel(p+size,&size))) base=p;
-
-	if (base != key->key) return base;
+	if (base != (key->key + key->keyUSize)) return base;
 	else return "";
 }
 
@@ -583,24 +715,10 @@ const char *keyBaseName(const Key *key)
  */
 ssize_t keyGetBaseNameSize(const Key *key)
 {
-	char *p=0;
-	char *base=0;
-	size_t size=0;
-	size_t baseSize=0;
+	const char * baseName = keyBaseName(key);
+	if (!baseName) return -1;
 
-	if (!key) return -1;
-
-	p = key->key;;
-
-	if (!p) return 1;
-
-	while (*(p=keyNameGetOneLevel(p+size,&size))) {
-		base=p;
-		baseSize=size;
-	}
-	
-	if (base == key->key) return 1;
-	else return baseSize+1;
+	return elektraStrLen(baseName);
 }
 
 
@@ -626,101 +744,169 @@ ssize_t keyGetBaseNameSize(const Key *key)
  */
 ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize)
 {
-	size_t size=0;
-	char *p=0;
-	char *baseName=0;
-	size_t baseSize=0;
-
 	if (!key) return -1;
 	if (!returned) return -1;
 	if (!maxSize) return -1;
 
 	if (maxSize > SSIZE_MAX) return -1;
+	ssize_t maxSSize = maxSize;
 
-	p = key->key;
-
-	if (!p)
+	if (!key->key)
 	{
 		returned[0] = 0;
 		return 1;
 	}
 
-	while (*(p=keyNameGetOneLevel(p+size,&size)))
+	ssize_t baseSize = keyGetBaseNameSize(key);
+	if (maxSSize < baseSize)
 	{
-		baseName=p;
-		baseSize=size+1;
-	}
-
-	if (!baseName || baseName==key->key)
-	{
-		returned[0] = 0;
-		return 1;
-	}
-
-	if (maxSize < baseSize) {
-		/*strncpy(returned,baseName,maxSize);*/
-		/*errno=KDB_ERR_TRUNC;*/
 		return -1;
-	} else {
-		strncpy(returned,baseName,baseSize);
-		return baseSize;
 	}
+
+	const char *baseName = keyBaseName(key);
+
+	if (!baseName)
+	{
+		return -1;
+	}
+
+	strncpy(returned,baseName,baseSize);
+	return baseSize;
 }
 
 
 
 
 /**
- * Adds @p baseName to the current key name.
+ * Adds @p baseName (that will be escaped) to the current key name.
  *
- * Assumes that @p key is a directory. @p baseName is appended to it.
- * The function adds @c '/' if needed while concatenating.
+ * A new baseName will be added, no other part of the key name will be
+ * affected.
+ *
+ * Assumes that @p key is a directory and will append @p baseName to it.
+ * The function adds the path separator for concatenating.
  *
  * So if @p key has name @c "system/dir1/dir2" and this method is called with
- * @p baseName @c "mykey", the resulting key will have name
+ * @p baseName @c "mykey", the resulting key will have the name
  * @c "system/dir1/dir2/mykey".
  *
- * When baseName is 0 or "" nothing will happen and the size of the name is returned.
+ * When @p baseName is 0 nothing will happen and the size of the name is returned.
  *
- * @warning You should not change a keys name once it belongs to a
- *          keyset because it would destroy the order.
+ * The escaping rules apply as in @link keyname above @endlink.
  *
- * TODO: does not recognice .. and . in the string!
+ * A simple example is:
+ * @snippet basename.c add base basic
+ *
+ * E.g. if you add . it will be escaped:
+ * @snippet testabi_key.c base1 add
+ *
+ * @see keySetBaseName() to set a base name
+ * @see keySetName() to set a new name.
  *
  * @param key the key object to work with
  * @param baseName the string to append to the name
  * @return the size in bytes of the new key name including the ending NULL
  * @return -1 if the key had no name
  * @return -1 on NULL pointers
- * @see keySetBaseName()
- * @see keySetName() to set a new name.
+ * @retval -1 if key was inserted to a keyset before
  * @ingroup keyname
  *
  */
 ssize_t keyAddBaseName(Key *key, const char *baseName)
 {
-	size_t size=0;
-	const char *p=0;
-
 	if (!key) return -1;
+	if (!baseName) return key->keySize;
+	if (test_bit(key->flags,  KEY_FLAG_RO_NAME)) return -1;
+	if (!key->key) return -1;
 
-	if (!baseName || !baseName[0]) return key->keySize;
+	size_t size=0;
+	char *escaped = elektraMalloc (strlen (baseName) * 2 + 2);
+	elektraEscapeKeyNamePart(baseName, escaped);
+	size = strlen (escaped);
+	key->keySize += size + 1;
+	elektraRealloc ((void**)&key->key, key->keySize*2);
+	if (!key->key)
+	{
+		elektraFree (escaped);
+		return -1;
+	}
 
-	if (key->key) {
-		p = baseName;
-		while (*(p=keyNameGetOneLevel(p+size,&size)))
-		{
-			key->keySize += size+1;
-			key->key=realloc(key->key,key->keySize);
+	key->key[key->keySize - size - 2] = KDB_PATH_SEPARATOR;
+	memcpy (key->key + key->keySize - size - 1, escaped, size);
 
-			key->key[key->keySize-size-2]=KDB_PATH_SEPARATOR;
-			memcpy(key->key+key->keySize-size-1,p,size);
-		}
-		key->key[key->keySize-1]=0; /* finalize string */
-		return key->keySize;
-	} else return keySetName(key,baseName);
+	elektraFree (escaped);
+
+	elektraFinalizeName(key);
+
+	return key->keySize;
 }
 
+/**
+ * @brief Add a already escaped name to the keyname.
+ *
+ * The same way as in keySetName() this method finds the canonical pathname.
+ * Unlike, keySetName() it adds it to an already existing name.
+ *
+ * @param key the key where a name should be added
+ * @param newName the new name to append
+ *
+ * @retval -1 if key is a null pointer or did not have a valid name before
+ * @retval -1 if newName is a null pointer or not a valid name (contains \\ in beginning)
+ * @retval -1 on allocation errors
+ * @retval -1 if key was inserted to a keyset before
+ * @retval size of the new key
+ */
+ssize_t keyAddName(Key *key, const char *newName)
+{
+	if (!key) return -1;
+	if (!newName) return key->keySize;
+	if (test_bit(key->flags,  KEY_FLAG_RO_NAME)) return -1;
+	// if (!elektraValidateKeyNamePart(newName)) return -1;
+	if (!key->key) return -1;
+
+	size_t const newSize = key->keySize + elektraStrLen(newName);
+	size_t const rootLength = key->keySize;
+	elektraRealloc ((void**)&key->key, newSize*2);
+	if (!key->key) return -1;
+
+	size_t size=0;
+	const char * p = newName;
+
+	-- key->keySize; // fix keySize for loop below
+
+	/* iterate over each single folder name removing repeated '/', .  and .. */
+	while (*(p=keyNameGetOneLevel(p+size,&size))) {
+		// printf ("level: %s, size: %d\n", p, size);
+		if (size == 1 && strncmp (p, ".",1) == 0)
+		{
+			/* printf ("ignore .\n"); */
+			continue; /* just ignore current directory */
+		}
+		else if (size == 2 && strncmp (p, "..",2) == 0) /* give away directory */
+		{
+			key->key[key->keySize] = 0; /* initialize first (valgrind) */
+			while (key->keySize >= rootLength && key->key[key->keySize] != KDB_PATH_SEPARATOR) key->keySize--;
+			/* printf ("do .. (key->keySize: %d), key->key: %s, rootLength: %d, key->keySize: %d\n",
+					key->keySize, key->key, rootLength, key->keySize); */
+			continue;
+		}
+		/* Add a '/' to the end of key name */
+		key->key[key->keySize]=KDB_PATH_SEPARATOR;
+		key->keySize++;
+		
+		/* carefully append basenames */
+		memcpy(key->key+key->keySize,p,size);
+		key->keySize+=size;
+	}
+
+	/* remove unescaped trailing slashes */
+	while (key->key[key->keySize-1] == KDB_PATH_SEPARATOR && key->key[key->keySize-2] != '\\') key->keySize--;
+	key->keySize ++; /*for \\0 ending*/
+
+	elektraFinalizeName(key);
+
+	return key->keySize;
+}
 
 
 
@@ -728,54 +914,95 @@ ssize_t keyAddBaseName(Key *key, const char *baseName)
 /**
  * Sets @c baseName as the new basename for @c key.
  *
+ * Only the baseName will be affected and no other part of the key.
+ *
  * All text after the last @c '/' in the @p key keyname is erased and
  * @p baseName is appended.
  *
- * So lets suppose @p key has name @c "system/dir1/dir2/key1". If @p baseName
+ * So let us suppose @p key has name @c "system/dir1/dir2/key1". If @p baseName
  * is @c "key2", the resulting key name will be @c "system/dir1/dir2/key2".
  * If @p baseName is empty or NULL, the resulting key name will
  * be @c "system/dir1/dir2".
  *
- * @warning You should not change a keys name once it belongs to a
- *          keyset because it would destroy the order.
+ * This function does proper escaping on the supplied name argument.
  *
- * TODO: does not work with .. and .
+ * You can use all names to set as basename (e.g. . (dot), ..
+ * (dot-dot), % and "" (empty)). They will be properly escaped.
+ *
+ * A simple example is:
+ * @snippet basename.c set base basic
+ *
+ * If you do not want escaping, use keySetBaseName() instead. E.g. if
+ * you want to add an inactive key, use:
+ * @snippet testabi_key.c base1
+ *
+ * or when you want to add an array item, use:
+ * @snippet testabi_key.c base2
+ *
+ * @see keyname for more details on special names
  *
  * @param key the key object to work with
  * @param baseName the string used to overwrite the basename of the key
  * @return the size in bytes of the new key name
  * @return -1 on NULL pointers
+ * @retval -1 if key was inserted to a keyset before
  * @see keyAddBaseName()
  * @see keySetName() to set a new name
  * @ingroup keyname
  */
 ssize_t keySetBaseName(Key *key, const char *baseName)
 {
-	size_t size=0;
-	const char *p=0;
-
 	if (!key) return -1;
+	if (test_bit(key->flags,  KEY_FLAG_RO_NAME)) return -1;
+	if (!key->key) return -1;
 
-	if (key->key) {
-		/*Throw away basename of key->key*/
-		p=strrchr (key->key, '/');
-		if (p == 0) return keySetName(key, baseName);
-		key->keySize -= (key->key+key->keySize-1)-p;
-		key->key=realloc(key->key,key->keySize);
-		key->key[key->keySize-1]=0; /* finalize string */
-		/*Now add new baseName*/
-		p = baseName;
-		while (*(p=keyNameGetOneLevel(p+size,&size)))
-		{
-			key->keySize += size+1;
-			key->key=realloc(key->key,key->keySize);
+	size_t size=0;
+	char *searchBaseName=0;
+	size_t searchBaseSize=0;
+	char *p = key->key;
 
-			key->key[key->keySize-size-2]=KDB_PATH_SEPARATOR;
-			memcpy(key->key+key->keySize-size-1,p,size);
-		}
-		key->key[key->keySize-1]=0; /* finalize string */
+	while (*(p=keyNameGetOneLevel(p+size,&size)))
+	{
+		searchBaseName=p;
+		searchBaseSize=size+1;
+	}
+
+	if (!searchBaseName || searchBaseName==key->key)
+	{
+		return -1;
+	}
+
+	// truncate the key
+	key->keySize -= searchBaseSize;
+
+	if (!baseName)
+	{
+		// just remove base name
+		elektraFinalizeName(key);
 		return key->keySize;
-	} else return keySetName(key,baseName);
+	}
+
+	char *escaped = elektraMalloc (strlen (baseName) * 2 + 2);
+	elektraEscapeKeyNamePart(baseName, escaped);
+	size_t sizeEscaped = elektraStrLen (escaped);
+
+	elektraRealloc((void**)&key->key, (key->keySize+sizeEscaped)*2);
+	if (!key->key)
+	{
+		elektraFree (escaped);
+		return -1;
+	}
+
+	key->key [key->keySize - 1] = KDB_PATH_SEPARATOR;
+	memcpy (key->key + key->keySize,
+			escaped, sizeEscaped);
+
+	elektraFree (escaped);
+
+	key->keySize += sizeEscaped;
+	elektraFinalizeName(key);
+
+	return key->keySize;
 }
 
 
@@ -811,8 +1038,8 @@ keyOwner(key); // you would expect "" here
  *
  * @param key the key object to work with
  * @return a pointer to internal owner
- * @return "" when there is no (a empty) owner
- * @return 0 on NULL pointer
+ * @retval "" when there is no (a empty) owner
+ * @retval 0 iff key is a NULL pointer
  * @see keyGetOwnerSize() for the size of the string with concluding 0
  * @see keyGetOwner(), keySetOwner()
  * @see keyName() for name without owner
@@ -828,7 +1055,6 @@ const char *keyOwner(const Key *key)
 
 	if (!owner)
 	{
-		/*errno=KDB_ERR_NOKEY;*/
 		return "";
 	}
 

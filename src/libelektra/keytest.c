@@ -51,7 +51,7 @@
 
 #include "kdb.h"
 #include "kdbprivate.h"
-
+#include "kdbinternal.h"
 
 /** \internal
  *
@@ -399,40 +399,48 @@ int keyRel (const Key *key, const Key *check)
 
 
 /**
- * Check whether a key is inactive or not.
+ * Check whether a key is inactive.
  *
- * In elektra terminology any key is inactive if the
- * it's basename starts with '.'. Inactive keys
- * must not have any meaning to applications, they
- * are reserved for users and administrators.
+ * In Elektra terminology a hierarchy of keys is inactive if
+ * the rootkey's basename starts with '.'. So a key is
+ * also inactive if it is below an inactive key.
+ * For example, user/key/.hidden is inactive and so
+ * is user/.hidden/below.
  *
- * To remove a whole hierarchy in elektra, don't
- * forget to pass option_t::KDB_O_INACTIVE to
- * kdbGet() to receive the inactive keys in order
- * to remove them.
- *
- * Otherwise you should not fetch these keys.
+ * Inactive keys should not have any meaning to applications,
+ * they are only a convention reserved for users and
+ * administrators. To automatically remove all inactive keys
+ * for an application, consider to use the hidden plugin.
  *
  * @param key the key object to work with
- * @return 1 if the key is inactive, 0 otherwise
- * @return -1 on NULL pointer or when key has no name
+ * @retval 1 if the key is inactive
+ * @retval 0 if the key is active
+ * @retval -1 on NULL pointer or when key has no name
  * @ingroup keytest
  *
  */
 int keyIsInactive (const Key *key)
 {
-	char *name = 0;
-
 	if (!key) return -1;
 
-	name = strrchr (keyName(key), '/');
+	const char *p = keyName(key);
+	if (!p) return -1;
+	if (p[0] == '\0') return -1;
 
-	if (!name) return -1;
+	size_t size=0;
 
-	/* the slash can't be a trailing slash
-	but there might be no name at all! */
-	if (name[1] == '.') return 1;
-	else return 0;
+	while (*(p=keyNameGetOneLevel(p+size,&size)))
+	{
+		if (size > 0)
+		{
+			if (p[0] == '.')
+			{
+				return 1;
+			}
+		}
+	}
+
+	return 0;
 }
 
 
@@ -574,7 +582,7 @@ if (changes & KEY_UID)
  * @par Example of very powerful specific Key lookup in a KeySet:
  * @code
 KDB *handle = kdbOpen();
-KeySet *ks=ksNew(0);
+KeySet *ks=ksNew(0, KS_END);
 Key *base = keyNew ("user/sw/MyApp/something", KEY_END);
 Key *current;
 uint32_t match;

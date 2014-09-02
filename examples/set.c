@@ -28,7 +28,7 @@ void check_key()
 	KDB * kdb_handle = kdbOpen(error_key);
 	Key * top = keyNew(KEY_END);
 	keySetName(top, "user/sw/MyApp"); // == 14
-	KeySet * ks = ksNew(0);
+	KeySet * ks = ksNew(0, KS_END);
 	kdbGet(kdb_handle, ks, top);
 	Key * key = keyNew(KEY_END);
 	keySetName(key, "user/sw/MyApp/Tests/TestKey1"); // == 14
@@ -36,7 +36,7 @@ void check_key()
 	const char * key_name = keyName(result);
 	const char * key_value = keyString(result);
 	const char * key_comment = keyString(keyGetMeta(result, "comment"));
-	printf("key: %s value: %s comment: %s", key_name, key_value, key_comment);
+	printf("key: %s value: %s comment: %s\n", key_name, key_value, key_comment);
 	ksDel(ks);
 	keyDel(key);
 	keyDel(top);
@@ -52,7 +52,7 @@ int main()
 	Key * top = keyNew(KEY_END);
 	keySetName(top, "user/sw/MyApp");
 
-	KeySet * ks = ksNew(0);
+	KeySet * ks = ksNew(0, KS_END);
 	kdbGet(kdb_handle, ks, top);
 
 	Key * key = keyNew(KEY_END);

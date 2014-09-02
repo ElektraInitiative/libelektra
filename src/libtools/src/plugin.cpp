@@ -15,6 +15,9 @@
 #include <kdbmodule.h>
 #include <kdbprivate.h>
 
+#include <set>
+#include <algorithm>
+
 #include <plugin.hpp>
 
 // for stdout
@@ -96,9 +99,17 @@ void Plugin::loadInfo()
 
 void Plugin::parse ()
 {
-	Key root (std::string("system/elektra/modules/") + pluginName + "/exports", KEY_END);
+	Key root (std::string("system/elektra/modules/") + pluginName, KEY_END);
 
 	Key k = info.lookup (root);
+	if (!k)
+	{
+		throw PluginNoContract();
+	}
+
+	root.setName(std::string("system/elektra/modules/") + pluginName + "/exports");
+
+	k = info.lookup (root);
 
 	if (k)
 	{
@@ -125,22 +136,53 @@ void Plugin::parse ()
 
 void Plugin::check(vector<string> & warnings)
 {
+	if (infos.find("version") == infos.end()) warnings.push_back ("no version found");
+	else if (infos["version"] != PLUGINVERSION) throw VersionInfoMismatch();
+
 	if (infos.find("licence") == infos.end()) warnings.push_back ("no licence information found");
 	else if (infos["licence"] != "BSD") warnings.push_back
 		("the licence is not BSD, it might change the overall licence of your elektra installation");
 
-
 	if (infos.find("description") == infos.end()) warnings.push_back ("no description of the plugin found");
 
 	if (infos.find("provides") == infos.end()) warnings.push_back ("no provides information found");
-	if (infos.find("placements") == infos.end()) warnings.push_back ("no placements information found");
+	if (infos.find("placements") == infos.end())
+	{
+		warnings.push_back ("no placements information found");
+	} else {
+		std::vector<std::string> pp;
+		pp.push_back("prerollback");
+		pp.push_back("rollback");
+		pp.push_back("postrollback");
+		pp.push_back("getresolver");
+		pp.push_back("pregetstorage");
+		pp.push_back("getstorage");
+		pp.push_back("postgetstorage");
+		pp.push_back("setresolver");
+		pp.push_back("presetstorage");
+		pp.push_back("setstorage");
+		pp.push_back("precommit");
+		pp.push_back("commit");
+		pp.push_back("postcommit");
+		std::string placements = infos["placements"];
+		istringstream is(placements);
+		std::string placement;
+		while (is >> placement)
+		{
+			if (std::find(pp.begin(), pp.end(), placement) == pp.end())
+			{
+				warnings.push_back ("not supported placement "
+					+ placement
+					+ " found");
+			}
+		}
+	}
 	if (infos.find("needs") == infos.end()) warnings.push_back ("no needs information found");
 
-	if (infos.find("version") == infos.end()) warnings.push_back ("no version found");
-	else if (infos["version"] != PLUGINVERSION) throw VersionInfoMismatch();
-
-	if (infos.find("author") == infos.end()) warnings.push_back ("no author found");
-	else {
+	if (infos.find("author") == infos.end())
+	{
+		warnings.push_back ("no author found");
+	} else {
 		std::string author = infos["author"];
 		size_t ppos = 0;
 		ppos = author.find ('<', ppos);
@@ -157,30 +199,62 @@ void Plugin::check(vector<string> & warnings)
 		if (lpos < pos) warnings.push_back ("> found before @");
 	}
 
+	std::set<func_t> checkDups;
+	std::pair<std::set<func_t>::iterator, bool> ret;
 	if (plugin->kdbOpen)
 	{
 		if (symbols.find("open") == symbols.end()) warnings.push_back ("no open symbol exported");
 		else if (symbols["open"] != (func_t) plugin->kdbOpen) throw SymbolMismatch ("open");
+		ret = checkDups.insert(symbols["open"]);
+		if (!ret.second) throw SymbolDuplicate("open");
 	}
 	if (plugin->kdbClose)
 	{
 		if (symbols.find("close") == symbols.end()) warnings.push_back ("no close symbol exported");
 		else if (symbols["close"] != (func_t) plugin->kdbClose) throw SymbolMismatch ("close");
+		ret = checkDups.insert(symbols["close"]);
+		if (!ret.second) throw SymbolDuplicate("close");
 	}
 	if (plugin->kdbGet)
 	{
 		if (symbols.find("get") == symbols.end()) warnings.push_back ("no get symbol exported");
 		else if (symbols["get"] != (func_t) plugin->kdbGet) throw SymbolMismatch ("get");
+		ret = checkDups.insert(symbols["get"]);
+		if (!ret.second) throw SymbolDuplicate("get");
 	}
 	if (plugin->kdbSet)
 	{
 		if (symbols.find("set") == symbols.end()) warnings.push_back ("no set symbol exported");
 		else if (symbols["set"] != (func_t) plugin->kdbSet) throw SymbolMismatch ("set");
+		ret = checkDups.insert(symbols["set"]);
+		if (!ret.second) throw SymbolDuplicate("set");
 	}
 	if (plugin->kdbError)
 	{
 		if (symbols.find("error") == symbols.end()) warnings.push_back ("no error symbol exported");
 		else if (symbols["error"] != (func_t) plugin->kdbError) throw SymbolMismatch ("error");
+		ret = checkDups.insert(symbols["error"]);
+		if (!ret.second) throw SymbolDuplicate("error");
+	}
+	if(symbols.find("open") != symbols.end())
+	{
+		if (!plugin->kdbOpen) throw SymbolMismatch ("open");
+	}
+	if(symbols.find("close") != symbols.end())
+	{
+		if (!plugin->kdbClose) throw SymbolMismatch ("close");
+	}
+	if(symbols.find("get") != symbols.end())
+	{
+		if (!plugin->kdbGet) throw SymbolMismatch ("get");
+	}
+	if(symbols.find("set") != symbols.end())
+	{
+		if (!plugin->kdbSet) throw SymbolMismatch ("set");
+	}
+	if(symbols.find("error") != symbols.end())
+	{
+		if (!plugin->kdbError) throw SymbolMismatch ("error");
 	}
 }
 

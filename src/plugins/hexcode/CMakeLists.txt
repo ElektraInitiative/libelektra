@@ -1,5 +1,9 @@
 include (LibAddMacros)
 
+generate_readme (hexcode)
+add_includes (elektra-full ${CMAKE_CURRENT_BINARY_DIR})
+include_directories (${CMAKE_CURRENT_BINARY_DIR})
+
 set (SOURCES hexcode.h hexcode.c)
 add_sources (elektra-full ${SOURCES})
 add_headers (SOURCES)

@@ -36,10 +36,11 @@
  * Key properties are:
  * - @link keyname Key name @endlink
  * - @link keyvalue Key value @endlink
- * - @link keyGetComment() Key comment @endlink
- * - @link keyGetOwner() Key owner @endlink
- * - @link keymeta UID, GID and filesystem-like mode permissions @endlink
- * - @link keymeta Mode, change and modification times @endlink
+ * - @link keymeta Key meta data @endlink, including but not limited to:
+ *   - @link keyGetComment() Key comment @endlink
+ *   - @link keyGetOwner() Key owner @endlink
+ *   - @link keymeta UID, GID and filesystem-like mode permissions @endlink
+ *   - @link keymeta Mode, change and modification times @endlink
  *
  * Described here the methods to allocate and free the key.
  *
@@ -71,7 +72,7 @@
 #include "kdbprivate.h"
 
 /*
- * Allocates and initialices a key
+ * Allocates and initializes a key
  * @returns 0 if allocation did not work, the key otherwise
  */
 static Key *elektraKeyMalloc()
@@ -154,7 +155,7 @@ keyDel (emptyNamedKey);
  *   Next parameter is taken as the UID (uid_t) or GID (gid_t) that will
  *   be defined on the key. See keySetUID() and keySetGID().
  * - keyswitch_t::KEY_MODE \n
- *   Next parameter is taken as mode permissions (mode_t) to the key.
+ *   Next parameter is taken as mode permissions (int) to the key.
  *   See keySetMode().
  * - keyswitch_t::KEY_DIR \n
  *   Define that the key is a directory rather than a ordinary key.
@@ -171,7 +172,7 @@ keyDel (emptyNamedKey);
  *
  * @par Example:
  * @code
-KeySet *ks=ksNew(0);
+KeySet *ks=ksNew(0, KS_END);
 
 ksAppendKey(ks,keyNew(0));       // an empty key
 
@@ -299,75 +300,9 @@ Key *keyNew(const char *name, ...) {
  */
 Key *keyVNew (const char *name, va_list va)
 {
-	Key *key=0;
-	keyswitch_t action=0;
-	void * value=0;
-	ssize_t valueSize=-1;
-	void (*p) (void)=0;
-
-	key=elektraKeyMalloc();
+	Key *key=elektraKeyMalloc();
 	if (!key) return 0;
-
-	if (name) {
-		keySetName(key, name);
-
-		action=va_arg(va, keyswitch_t);
-		while (action) {
-			switch (action) {
-				case KEY_SIZE:
-					valueSize=va_arg(va, size_t);
-					break;
-				case KEY_BINARY:
-					keySetMeta (key, "binary", "");
-					break;
-				case KEY_VALUE:
-					value = va_arg(va, void *);
-					if (valueSize>=0 && keyIsBinary(key))
-					{
-						keySetBinary(key,value, valueSize);
-					} else if (keyIsBinary(key)) {
-						valueSize = (ssize_t) elektraStrLen (value);
-						keySetBinary(key,value, valueSize);
-					} else {
-						keySetString(key,value);
-					}
-					break;
-				case KEY_UID:
-					keySetUID(key,va_arg(va,uid_t));
-					break;
-				case KEY_GID:
-					keySetGID(key,va_arg(va,gid_t));
-					break;
-				case KEY_MODE:
-					keySetMode(key,va_arg(va, mode_t));
-					break;
-				case KEY_OWNER:
-					keySetOwner(key,va_arg(va,char *));
-					break;
-				case KEY_COMMENT:
-					keySetComment(key,va_arg(va,char *));
-					break;
-				case KEY_DIR:
-					keySetDir(key);
-					break;
-				case KEY_FUNC:
-					p = va_arg(va, void(*)(void));
-					keySetBinary(key, &p, sizeof(p));
-					break;
-				case KEY_META:
-					value = va_arg (va,char *);
-					/*First parameter is name*/
-					keySetMeta (key, value, va_arg(va,char *));
-					break;
-				default:
-#if DEBUG
-					fprintf (stderr, "Unknown option in keyNew %ld\n", (long int)action);
-#endif
-					break;
-			}
-			action=va_arg(va, keyswitch_t);
-		}
-	}
+	keyVInit(key, name, va);
 	return key;
 }
 
@@ -411,7 +346,7 @@ int g (const Key * source, KeySet * ks)
  * It can also be optimized in the checks, because the keyname
  * is known to be valid.
  *
- * @param source has to be an initializised source Key
+ * @param source has to be an initialized source Key
  * @return 0 failure or on NULL pointer
  * @return a fully copy of source on success
  * @see ksAppend(), keyDel(), keyNew()
@@ -434,7 +369,9 @@ Key* keyDup(const Key *source)
 	dest->data.v=
 	dest->meta=0;
 
+	/* get rid of properties bound to old key */
 	dest->ksReference = 0;
+	dest->flags=KEY_FLAG_SYNC;
 
 	if (source->key && keySetName(dest,source->key) == -1) goto memerror;
 	if (source->data.v && keySetRaw(dest,source->data.v,source->dataSize) == -1) goto memerror;
@@ -447,6 +384,66 @@ Key* keyDup(const Key *source)
 memerror:
 	keyDel (dest);
 	return 0;
+}
+
+
+/**
+ * @brief Permanently locks a part of the key
+ *
+ * This can be:
+ * - KEY_FLAG_LOCK_NAME to lock the name
+ * - KEY_FLAG_LOCK_VALUE to lock the value
+ * - KEY_FLAG_LOCK_META to lock the meta data
+ *
+ * To unlock the key, duplicate it.
+ *
+ * It is also possible to lock when the key is created with
+ * keyNew().
+ *
+ * Some data structures need to lock the key (most likely
+ * its name), so that the ordering does not get confused.
+ *
+ * @param key which name should be locked
+ *
+ * @see keyNew(), keyDup(), ksAppendKey()
+ * @retval >0 the bits that were successfully locked
+ * @retval 0 if everything was locked before
+ * @retval -1 if it could not be locked (nullpointer)
+ */
+int keyLock(Key *key, /*option_t*/ enum elektra_lock_options what)
+{
+	int ret = 0;
+
+	if (!key) return -1;
+
+	if (test_bit(what, KEY_LOCK_NAME))
+	{
+		if (!test_bit(key->flags, KEY_FLAG_RO_NAME))
+		{
+			set_bit(key->flags, KEY_FLAG_RO_NAME);
+			set_bit(ret, KEY_LOCK_NAME);
+		}
+	}
+
+	if (test_bit(what, KEY_LOCK_VALUE))
+	{
+		if (!test_bit(key->flags, KEY_FLAG_RO_VALUE))
+		{
+			set_bit(key->flags, KEY_FLAG_RO_VALUE);
+			set_bit(ret, KEY_LOCK_VALUE);
+		}
+	}
+
+	if (test_bit(what, KEY_LOCK_META))
+	{
+		if (!test_bit(key->flags, KEY_FLAG_RO_META))
+		{
+			set_bit(key->flags, KEY_FLAG_RO_META);
+			set_bit(ret, KEY_LOCK_META);
+		}
+	}
+
+	return ret;
 }
 
 
@@ -659,8 +656,8 @@ int keyClear(Key *key)
 	size_t ref = 0;
 
 	ref = key->ksReference;
-	if (key->key) free(key->key);
-	if (key->data.v) free(key->data.v);
+	if (key->key) elektraFree(key->key);
+	if (key->data.v) elektraFree(key->data.v);
 	if (key->meta) ksDel(key->meta);
 
 	keyInit (key);

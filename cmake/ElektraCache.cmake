@@ -1,7 +1,12 @@
 #
 # CACHE
 #
-# Here the cache variables are set
+# Here all cache variables are set
+#
+#
+# If you add something here, make sure to also add it in
+# src/include/kdbversion.h.in
+
 
 #
 # the default list of plugins
@@ -9,7 +14,9 @@
 # They are essential so that elektra can work
 #
 set (PLUGINS_LIST_DEFAULT
-	dump resolver
+	dump
+	resolver
+	sync
 	)
 
 #
@@ -25,7 +32,8 @@ endif ()
 # Should compile on every system where elektra compiles.
 #
 set (PLUGINS_LIST_COMPILE
-	template doc
+	template
+	doc
 	)
 
 #
@@ -35,23 +43,37 @@ set (PLUGINS_LIST_COMPILE
 #
 set (PLUGINS_LIST_NODEP
 	ccode
-	error  fstab
-	hexcode  hidden
-	ni  null
-	struct  success
-	tracer  type  validation
+	error
+	fstab
+	hexcode
+	hidden
+	ni
+	null
+	struct
+	tracer
+	type
+	validation
+	constants
+	noresolver
+	ini
 	)
 
 #
 # Plugins which use some posix facility
 #
 set (PLUGINS_LIST_POSIX
-	glob  hosts  iconv  network
+	glob
+	hosts
+	iconv
+	network
 	path
 	keytometa
-	syslog uname
+	syslog
+	uname
 	timeofday
 	simpleini
+	line
+	resolver_c_b_b  # needed for tests
 	)
 
 #
@@ -71,7 +93,12 @@ endif ()
 # plugins with dependencies
 #
 set (PLUGINS_LIST_DEP
-	yajl dbus tcl xmltool augeas
+	yajl
+	dbus
+	tcl
+	xmltool
+	augeas
+	journald
 	)
 
 #
@@ -164,6 +191,12 @@ option (ENABLE_CXX11 "Include code using C++11 standard, needs gcc 4.7 or compar
 
 set (GTEST_ROOT "" CACHE PATH "use external gtest instead of internal")
 
+set (CMAKE_PIC_FLAGS "-fPIC"
+	CACHE STRING "Which pic flags should be used for cases cmake cannot handle it itself")
+
+set (CMAKE_STATIC_FLAGS ""
+	CACHE STRING "Which static flags should be used for compilation of *-static libs+tools, use \"-static\" if you want a real static kdb-static (it needs .a for every dependency though)")
+
 
 
 
@@ -221,16 +254,15 @@ set (COVERAGE_PREFIX
     )
 
 
-option (BUILD_SWIG "Enable SWIG generated bindings" OFF)
-if (BUILD_SWIG)
-	option (BUILD_SWIG_PYTHON2 "Enable the SWIG bindings for Python2" OFF)
-	option (BUILD_SWIG_PYTHON3 "Enable the SWIG bindings for Python3" OFF)
-	option (BUILD_SWIG_LUA    "Enable the SWIG bindings for Lua" OFF)
-else (BUILD_SWIG)
-	set (BUILD_SWIG_PYTHON2 OFF CACHE BOOL "Enable the SWIG bindings for Python" FORCE)
-	set (BUILD_SWIG_PYTHON3 OFF CACHE BOOL "Enable the SWIG bindings for Python" FORCE)
-	set (BUILD_SWIG_LUA    OFF CACHE BOOL "Enable the SWIG bindings for Lua" FORCE)
-endif (BUILD_SWIG)
+option (BUILD_SWIG_PYTHON2 "Enable the SWIG bindings for Python2" OFF)
+option (BUILD_SWIG_PYTHON3 "Enable the SWIG bindings for Python3" OFF)
+option (BUILD_SWIG_LUA    "Enable the SWIG bindings for Lua" OFF)
+if (BUILD_SWIG_LUA)
+	set (TARGET_LUA_CMOD_FOLDER "lib${LIB_SUFFIX}/lua/5.2"
+		CACHE PATH
+		"Directory to install Lua binary modules (configure lua via LUA_CPATH)"
+	)
+endif (BUILD_SWIG_LUA)
 
 #
 # Developer builds (debug or verbose build)
@@ -300,7 +332,7 @@ set (TARGET_DOCUMENTATION_LATEX_FOLDER
     )
 
 set (TARGET_TOOL_EXEC_FOLDER
-		"lib/elektra/tool_exec"
+		"lib${LIB_SUFFIX}/elektra/tool_exec"
 		CACHE STRING
 		"This folder (below prefix) will be used to install additional kdb-tools"
     )
@@ -341,3 +373,15 @@ set(DISCLAMER "
  *                                                                         *
  ***************************************************************************/")
 
+
+MARK_AS_ADVANCED(FORCE
+	# might be relevant to users:
+	GTEST_ROOT
+	COVERAGE_PREFIX
+	Boost_DIR
+
+	# are kind of internal:
+	SWIG_DIR SWIG_EXECUTABLE SWIG_VERSION
+	gtest_build_samples gtest_build_tests gtest_disable_pthreads
+	gtest_force_shared_crt BUILD_SHARED_LIBS
+	)

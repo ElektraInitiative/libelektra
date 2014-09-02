@@ -57,8 +57,22 @@
 
 
 #ifndef KDBOS_H
+#ifndef KDB_H
+# error you attempted to include kdbos.h outside from kdb.h, please include kdb.h instead
+#endif
 #define KDBOS_H
 
+#ifdef __cplusplus
+#define KS_END ((ckdb::Key*)0)
+#else
+#define KS_END ((Key*)0)
+#endif
+
+
+#ifdef __GNUC__
+#undef ELEKTRA_SENTINEL
+#define ELEKTRA_SENTINEL  __attribute__ ((sentinel))
+#endif
 
 #ifndef WIN32
 
@@ -141,13 +155,25 @@ typedef ssize_t cursor_t;
 typedef int keyswitch_t;
 typedef int option_t;
 
-/**Separator for key names.
- * This character will be used to separate key names*/
+/**@brief Separator for key names.
+ *
+ * This character will be used to separate key names
+ *
+ * @see @link keyname here @endlink.
+ * */
 #define KDB_PATH_SEPARATOR '/'
+
+/**@brief Escape symbol for special characters in the key name.
+ * 
+ * @see @link keyname here @endlink.
+ * */
 #define KDB_PATH_ESCAPE '\\'
 
+/**For iteration over trie children/values
+ *
+ * for (i=0; i<KDB_MAX_UCHAR; ++i)
+ * */
 #define KDB_MAX_UCHAR (UCHAR_MAX+1)
-
 
 
 #endif /* KDBOS_H */

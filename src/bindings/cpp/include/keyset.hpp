@@ -344,7 +344,7 @@ inline KeySet::const_reverse_iterator KeySet::crend() const noexcept
  * @copydoc ksNew
  */
 inline KeySet::KeySet () :
-	ks (ckdb::ksNew(0))
+	ks (ckdb::ksNew(0, KS_END))
 {}
 
 /**
@@ -389,7 +389,12 @@ inline KeySet::KeySet (const KeySet &other)
  */
 inline KeySet::KeySet (size_t alloc, va_list ap)
 {
-	ks = ckdb::ksVNew (alloc, ap);
+	if (ap == 0)
+	{
+		ks = ckdb::ksNew (alloc, KS_END);
+	} else {
+		ks = ckdb::ksVNew (alloc, ap);
+	}
 }
 
 /**
@@ -426,7 +431,7 @@ inline KeySet::~KeySet ()
 inline ckdb::KeySet * KeySet::release()
 {
 	ckdb::KeySet *ret = ks;
-	ks = ckdb::ksNew(0);
+	ks = ckdb::ksNew(0, KS_END);
 	return ret;
 }
 

@@ -34,6 +34,10 @@ public:
 	}
 
 	virtual int execute (Cmdline const& cmdline);
+
+private:
+	int deleteByBackendName(kdb::KeySet& mountConf, std::string const & backendName);
+	int deleteByMountPath(kdb::KeySet& mountCOnf, std::string const & mountPath);
 };
 
 #endif

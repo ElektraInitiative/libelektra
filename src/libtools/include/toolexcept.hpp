@@ -245,6 +245,21 @@ struct SymbolMismatch: public PluginCheckException
 	}
 };
 
+struct SymbolDuplicate: public PluginCheckException
+{
+	std::string symbol;
+	SymbolDuplicate(std::string const& symbol_) :
+		symbol(symbol_)
+	{}
+	~SymbolDuplicate () throw()
+	{}
+	virtual const char* what() const throw()
+	{
+		// TODO: not safe return value
+		return std::string(std::string("The symbol \"") + symbol + "\" has the same value as another symbol!").c_str();
+	}
+};
+
 struct StoragePlugin : public PluginCheckException
 {
 	virtual const char* what() const throw()
@@ -270,11 +285,20 @@ struct PluginWrongName : public PluginCheckException
 	}
 };
 
+struct PluginNoContract: public PluginCheckException
+{
+	virtual const char* what() const throw()
+	{
+		return "No contract found for that plugin!\n"
+			"Make sure you export kdbGet correctly!";
+	}
+};
+
 struct PluginNoInfo: public PluginCheckException
 {
 	virtual const char* what() const throw()
 	{
-		return "No info found for that plugin!";
+		return "No info found for that plugin within contract!";
 	}
 };
 

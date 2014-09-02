@@ -23,6 +23,10 @@ do
 	"tcl")
 		MOUNT_PLUGIN="tcl ccode null"
 		;;
+	"ini")
+		#TODO: broken?
+		continue
+		;;
 	"yajl")
 		MOUNT_PLUGIN="$PLUGIN"
 		#TODO: add plugin to fix problem

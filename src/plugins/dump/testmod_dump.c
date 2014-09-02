@@ -78,7 +78,7 @@ void test_readdump(const char *file)
 	Key *mnt;
 	KeySet *conf;
 	KeySet *ks = get_dump();
-	KeySet *read = ksNew(0);
+	KeySet *read = ksNew(0, KS_END);
 	Key *k1, *k2;
 
 	printf("Test read dump\n");

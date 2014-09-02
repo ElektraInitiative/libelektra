@@ -1,11 +1,21 @@
 This describes what to do for an release!
 
+= Info =
+
+Following shell expansions are used in this document:
+ ~e           .. source of libelektra
+ ~build       .. the build directory
+ ~elektra     .. the directory above ~e and ~build
+ ~elektra-ftp .. where ftp files go to
+ ~elektra-doc .. where doc flies go to
+
+
 = TODO =
 
 - make sure no TODO is in this file (resolve them first!)
 
-= Cleanup =
 
+= Cleanup =
 
 For the first few steps you have to work on branch master:
  git-checkout master
@@ -19,6 +29,9 @@ And now commit everything:
 Clean up the mess left over:
  git-clean -df
 
+Make an empty builddirectory:
+ mkdir ~build
+
 
 == Check ==
 
@@ -30,8 +43,8 @@ Before release is done, following must be checked:
 If version numbers are correct in
 - CMakeLists.txt
 
-Memleaks:
-- ctest -T memcheck
+Rebuild cleanly, run all tests and also check for memleaks:
+  ~e/scripts/configure-debian ~e && make -j20 && make run_all && make run_memcheck
 
 
 = Preperation =
@@ -39,7 +52,7 @@ Memleaks:
 Set environment variable VERSION to current version to make the
 commands below work for copy&paste:
 
- export VERSION=0.x.y
+ export VERSION=0.8.8
 
 Now lets merge that to the release branch:
  git-checkout release
@@ -51,8 +64,9 @@ Now lets merge that to the release branch:
 Build tar.gz and tag version and make hashsum:
  cd ~build && make source-package
 
-Unpack + compile (with all available plugins) + test those sources (using valgrind!):
-tar xvzf elektra-$VERSION.tar.gz && mkdir build && cd build && cmake -DPLUGINS=ALL ../elektra-$VERSION && make -j 5 && ctest -T memcheck
+Unpack + compile (with all available plugins) + test those sources:
+ tar xvzf elektra-$VERSION.tar.gz && mkdir build
+ cd ~build/build && ~e/scripts/configure-debian ~e && make -j 20 && make run_all && make run_memcheck
 
 Now copy the packages to ftp (stay in same folder):
  cp ~build/elektra-$VERSION.tar.gz ~elektra-ftp/releases
@@ -76,8 +90,10 @@ Fix debian/ + document in NEWS what maintainer need to consider, then build the 
  git-buildpackage -rfakeroot -k0B2F0DDC -sa
 
 Now move and install:
- cd ~elektra && mkdir deb/$DVERSION && mv elektra_$DVERSION* deb/$DVERSION && mv *.deb deb/$DVERSION && sudo dpkg -i deb/$DVERSION/*.deb
- mv elektra_$VERSION.orig.tar.gz deb/$DVERSION/
+ cd ~elektra
+ mkdir deb/$DVERSION
+ mv elektra_$DVERSION* deb/$DVERSION && mv *.deb deb/$DVERSION && mv elektra_$VERSION.orig.tar.gz deb/$DVERSION/
+ sudo dpkg -i deb/$DVERSION/*.deb
 
 
 Run some basic commands, at least:
@@ -86,20 +102,10 @@ Run some basic commands, at least:
 Run local tests:
  kdb run_all
 
-Now run lintian:
- lintian -EI --color=auto --pedantic deb/$DVERSION/elektra_$VERSION_*.changes
-
-And run piuparts:
- sudo piuparts deb/$DVERSION/elektra_$DVERSION_*.changes
-
-And run adequate (combined with piuparts and after installation)
- adequate '*elektra*'
-
 Install libelektra-test of the previous version and run:
  for i in `dpkg -L libelektra-test | grep tool_exec`; do $i; done
 or, if available:
  kdb run_all
-
 
 
 == Test external tools ==
@@ -108,10 +114,12 @@ or, if available:
 Check if tools based on elektra still do:
  dq
 
+Run unit-tests in-source again (because they use installed kdb.h):
+ make run_all
 
 == Documentation ==
 
-And the API docu (stay in same folder):
+And the API docu:
  mkdir ~elektra-doc/api/$VERSION/
  cd ~build && make html man && cp -ra doc/html doc/latex doc/man ~elektra-doc/api/$VERSION/
 
@@ -125,7 +133,7 @@ Symlink current to latest version and add everything:
 
 == Debian Package ==
 
- cd ~elektra/deb/$DVERSION && reprepro --ignore=wrongdistribution include wheezy elektra_$VERSION-1_amd64.changes && update-reprepro
+ cd ~elektra/deb/$DVERSION && reprepro --ignore=wrongdistribution include wheezy elektra_${DVERSION}_amd64.changes && update-reprepro
 
 == Commit source package ==
 
