@@ -12,7 +12,7 @@ usr/lib/elektra4/libelektra-hidden.so*
 usr/lib/elektra4/libelektra-ni.so*
 usr/lib/elektra4/libelektra-null.so*
 usr/lib/elektra4/libelektra-struct.so*
-usr/lib/elektra4/libelektra-success.so*
+usr/lib/elektra4/libelektra-noresolver.so*
 usr/lib/elektra4/libelektra-tracer.so*
 usr/lib/elektra4/libelektra-type.so*
 usr/lib/elektra4/libelektra-validation.so*
@@ -25,4 +25,5 @@ usr/lib/elektra4/libelektra-syslog.so*
 usr/lib/elektra4/libelektra-uname.so*
 usr/lib/elektra4/libelektra-timeofday.so*
 usr/lib/elektra4/libelektra-simpleini.so*
+usr/lib/elektra4/libelektra-ini.so*
 usr/lib/elektra4/libelektra-tcl.so*

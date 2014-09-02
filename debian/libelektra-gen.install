@@ -1,5 +1,5 @@
 usr/lib/elektra/tool_exec/gen
-usr/lib/python2.7/dist-packages/elektra_gen-0.8.7.egg-info
+usr/lib/python2.7/dist-packages/elektra_gen*.egg-info
 usr/lib/python2.7/dist-packages/opt_support.py
 usr/lib/python2.7/dist-packages/opt_support.pyc
 usr/lib/python2.7/dist-packages/gen_support.py
