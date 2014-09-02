@@ -430,21 +430,38 @@ Plugin *elektraPluginVersion(void)
 
 
 /**
- * This function must be called by a plugin's elektraPluginSymbol() to
- * define the plugin's methods that will be exported.
+ * @brief Allows to Export Methods for a Plugin.
  *
- * See ELEKTRA_PLUGIN_EXPORT() how to use it for plugins.
+ * This function must be called within ELEKTRA_PLUGIN_EXPORT.
+ * It define the plugin's methods that will be exported.
  *
- * The order and number of arguments are flexible (as in keyNew() and ksNew()) to let
- * libelektra.so evolve without breaking its ABI compatibility with plugins.
- * So for each method a plugin must export, there is a flag defined by
- * @p plugin_t.
- Each flag tells kdbPluginExport() which method comes
- * next. A plugin can have no implementation for a few methods that have
- * default inefficient high-level implementations and to use these defaults, simply
- * don't pass anything to kdbPluginExport() about them.
+ * All KDB methods implemented by the plugin basically could
+ * have random names (convention is elektraName*), except
+ * ELEKTRA_PLUGIN_EXPORT.
  *
- * @param pluginName a simple name for this plugin
+ * This is the single symbol that will be looked up
+ * when loading the plugin, and the first method of the backend
+ * implementation that will be called.
+ *
+ * You need to use a macro so that both dynamic and static loading
+ * of the plugin works. For example for the doc plugin:
+ * @snippet doc.c export
+ *
+ * The first parameter is the name of the plugin.
+ * Then every plugin should have:
+ * @c ELEKTRA_PLUGIN_OPEN,
+ * @c ELEKTRA_PLUGIN_CLOSE,
+ * @c ELEKTRA_PLUGIN_GET,
+ * @c ELEKTRA_PLUGIN_SET and optionally
+ * @c ELEKTRA_PLUGIN_ERROR.
+ *
+ * The list is terminated with
+ * @c ELEKTRA_PLUGIN_END.
+ *
+ * You must use static "char arrays" in a read only segment.
+ * Don't allocate storage, it won't be freed.
+ *
+ * @param pluginName the name of this plugin
  * @return an object that contains all plugin informations needed by
  * 	libelektra.so
  * @ingroup plugin
@@ -496,7 +513,7 @@ Plugin *elektraPluginExport(const char *pluginName, ...)
 
 
 /**
- * Returns the configuration of that plugin.
+ * @brief Returns the configuration of that plugin.
  *
  * - The user/ config holds plugin specific configuration
  * - The system/ config holds backend specific configuration
@@ -513,7 +530,7 @@ KeySet *elektraPluginGetConfig(Plugin *handle)
 }
 
 /**
- * Store a pointer to any plugin related data.
+ * @brief Store a pointer to any plugin related data.
  *
  * @param plugin a pointer to the plugin
  * @param data the pointer to the data
@@ -525,7 +542,7 @@ void elektraPluginSetData(Plugin *plugin, void *data)
 }
 
 /**
- * Get a pointer to any plugin related data stored before.
+ * @brief Get a pointer to any plugin related data stored before.
  *
  * @param plugin a pointer to the plugin
  * @return a pointer to the data

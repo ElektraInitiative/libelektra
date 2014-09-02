@@ -10,10 +10,6 @@ FILE=`mktemp`
 for PLUGIN in $PLUGINS
 do
 	case "$PLUGIN" in
-	"doc")
-		# has no contract
-		continue
-		;;
 	"tracer")
 		# output on open/close
 		continue
